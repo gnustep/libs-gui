@@ -95,7 +95,7 @@ static BOOL _gs_display_reading_progress = NO;
   [super initWithContentRect: NSMakeRect (100, 100, 308, 317)
 	 styleMask: (NSTitledWindowMask | NSResizableWindowMask) 
 	 backing: 2 defer: YES];
-  [self setMinSize: NSMakeSize (308, 317)];
+  [self setMinSize: [self frame].size];
   [[self contentView] setBounds: NSMakeRect (0, 0, 308, 317)];
   
   r = NSMakeRect (0, 64, 308, 245);
@@ -252,8 +252,10 @@ static BOOL _gs_display_reading_progress = NO;
 
 - (void) _getOriginalSize
 {
+  /* Used in setMinSize: */
   _originalMinSize = [self minSize];
-  _originalSize = [self frame].size;
+  /* Used in setContentSize: */
+  _originalSize = [[self contentView] frame].size;
 }
 
 - (void) _resetDefaults
@@ -310,8 +312,10 @@ static BOOL _gs_display_reading_progress = NO;
 
 + (id) savePanel
 {
-  if (!_gs_gui_save_panel)
-    _gs_gui_save_panel = [[NSSavePanel alloc] init];
+  if (_gs_gui_save_panel == nil)
+    {
+      _gs_gui_save_panel = [[NSSavePanel alloc] init];
+    }
 
   [_gs_gui_save_panel _resetDefaults];
 
@@ -357,64 +361,79 @@ static BOOL _gs_display_reading_progress = NO;
 
 - (void) setAccessoryView: (NSView*)aView
 {
-  NSView *contentView;
-  NSRect addedFrame, bottomFrame, topFrame;
+  NSRect accessoryViewFrame, bottomFrame, topFrame;
+  NSRect tmpRect;
   NSSize contentSize, contentMinSize;
-  NSSize accessoryViewSize;
+  float addedHeight, accessoryWidth;
 
   if (aView == _accessoryView)
     return;
   
-  contentView = [self contentView];
+  /* The following code is very tricky.  Please think and test a lot
+     before changing it. */
 
-  // Remove accessory view
-  if (_accessoryView)
+  /* Remove old accessory view if any */
+  if (_accessoryView != nil)
     {
-      accessoryViewSize = [_accessoryView frame].size;
+      /* Remove accessory view */
+      accessoryViewFrame = [_accessoryView frame];
       [_accessoryView removeFromSuperview];
-      contentSize = [contentView frame].size;
-      contentSize.height -= (accessoryViewSize.height 
-			     + (_SAVE_PANEL_Y_PAD * 2));
+
+      /* Change the min size before doing the resizing otherwise it
+	 could be a problem. */
       [self setMinSize: _originalMinSize];
+
+      /* Resize the panel to the height without the accessory view. 
+	 This must be done with the special care of not resizing 
+	 the heights of the other views. */
+      addedHeight = accessoryViewFrame.size.height + (_SAVE_PANEL_Y_PAD * 2);
+      contentSize = [[self contentView] frame].size;
+      contentSize.height -= addedHeight;
+      // Resize without modifying topView and bottomView height.
       [_topView setAutoresizingMask: NSViewWidthSizable];
       [_bottomView setAutoresizingMask: NSViewWidthSizable];
       [self setContentSize: contentSize];
       [_topView setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
       [_bottomView setAutoresizingMask: NSViewWidthSizable];
-      topFrame = [_topView frame];
-      topFrame.origin.y -= (accessoryViewSize.height + (_SAVE_PANEL_Y_PAD * 2));
-      [_topView setFrameOrigin: topFrame.origin];
-      // Restore original size
-      [self setMinSize: _originalMinSize];
-      [self setContentSize: _originalSize];
-    }
 
+      /* Move top view to its position without accessory view */
+      topFrame = [_topView frame];
+      topFrame.origin.y -= addedHeight;
+      [_topView setFrameOrigin: topFrame.origin];
+    }
+  
+  /* Resize the panel to its original size.  This resizes freely the
+     heights of the views.  NB: minSize *must* come first */
+  [self setMinSize: _originalMinSize];
+  [self setContentSize: _originalSize];
+  
+  /* Set the new accessory view */
   _accessoryView = aView;
   
-  if (_accessoryView)
+  /* If there is a new accessory view, plug it in */
+  if (_accessoryView != nil)
     {
-      // The new accessory view must not play tricks in the vertical direction
+      /* Make sure the new accessory view behaves */
       [_accessoryView setAutoresizingMask: ([_accessoryView autoresizingMask] 
 					    & !NSViewHeightSizable 
 					    & !NSViewMaxYMargin
 					    & !NSViewMinYMargin)];  
-      //
-      // Resize ourselves to make room for the accessory view
-      //
-      addedFrame = [_accessoryView frame];
-      contentSize = _originalSize;
-      contentSize.height += (addedFrame.size.height + (_SAVE_PANEL_Y_PAD * 2));
-      if ((addedFrame.size.width + (_SAVE_PANEL_X_PAD * 2)) > contentSize.width)
-	contentSize.width = (addedFrame.size.width + (_SAVE_PANEL_X_PAD * 2));  
-      contentMinSize = _originalMinSize;
-      contentMinSize.height += (addedFrame.size.height 
-				+ (_SAVE_PANEL_Y_PAD * 2));
-      if ((addedFrame.size.width + (_SAVE_PANEL_X_PAD * 2)) 
-	  > contentMinSize.width)
-	contentMinSize.width = (addedFrame.size.width 
-				+ (_SAVE_PANEL_X_PAD * 2));  
+      
+      /* Compute size taken by the new accessory view */
+      accessoryViewFrame = [_accessoryView frame];
+      addedHeight = accessoryViewFrame.size.height + (_SAVE_PANEL_Y_PAD * 2);
+      accessoryWidth = accessoryViewFrame.size.width + (_SAVE_PANEL_X_PAD * 2);
 
-      // Our views should resize horizontally, but not vertically
+      /* Resize content size accordingly */
+      contentSize = _originalSize;
+      contentSize.height += addedHeight;
+      if (accessoryWidth > contentSize.width)
+	{
+	  contentSize.width = accessoryWidth;
+	}
+      
+      /* Set new content size without resizing heights of topView, bottomView */
+      // Our views should resize horizontally if needed, but not vertically
       [_topView setAutoresizingMask: NSViewWidthSizable];
       [_bottomView setAutoresizingMask: NSViewWidthSizable];
       [self setContentSize: contentSize];
@@ -422,29 +441,40 @@ static BOOL _gs_display_reading_progress = NO;
       [_topView setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
       [_bottomView setAutoresizingMask: NSViewWidthSizable];
 
+      /* Compute new min size */
+      contentMinSize = _originalMinSize;
+      contentMinSize.height += addedHeight;
+      // width is more delicate
+      tmpRect = NSMakeRect (0, 0, contentMinSize.width, contentMinSize.height);
+      tmpRect = [NSWindow contentRectForFrameRect: tmpRect 
+			  styleMask: [self styleMask]];
+      if (accessoryWidth > tmpRect.size.width)
+	{
+	  contentMinSize.width += accessoryWidth - tmpRect.size.width;
+	}
       // Set new min size
       [self setMinSize: contentMinSize];
 
-      //
-      // Pack the Views
-      //
+      /*
+       * Pack the Views
+       */
 
-      // BottomView is ready
+      /* BottomView is ready */
       bottomFrame = [_bottomView frame];
 
-      // AccessoryView
-      addedFrame.origin.x = (contentSize.width - addedFrame.size.width)/2;
-      addedFrame.origin.y =  bottomFrame.origin.y + bottomFrame.size.height 
-                                 + _SAVE_PANEL_Y_PAD;
-      [_accessoryView setFrameOrigin: addedFrame.origin];
+      /* AccessoryView */
+      accessoryViewFrame.origin.x 
+	= (contentSize.width - accessoryViewFrame.size.width) / 2;
+      accessoryViewFrame.origin.y =  NSMaxY (bottomFrame) + _SAVE_PANEL_Y_PAD;
+      [_accessoryView setFrameOrigin: accessoryViewFrame.origin];
 
-      // TopView
+      /* TopView */
       topFrame = [_topView frame];
-      topFrame.origin.y += (addedFrame.size.height + (_SAVE_PANEL_Y_PAD * 2));
+      topFrame.origin.y += addedHeight;
       [_topView setFrameOrigin: topFrame.origin];
-      
-      // Add the accessory view
-      [contentView addSubview:_accessoryView];
+
+      /* Add the accessory view */
+      [[self contentView] addSubview: _accessoryView];
     }
 }
 
