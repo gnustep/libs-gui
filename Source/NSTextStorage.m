@@ -186,6 +186,7 @@ static NSNotificationCenter *nc = nil;
 - (void) processEditing
 {
   NSRange	r;
+  int original_delta;
   int i;
   unsigned length;
 
@@ -201,6 +202,7 @@ static NSNotificationCenter *nc = nil;
 
   /* Very important: we save the current _editedRange */
   r = _editedRange;
+  original_delta = _editedDelta;
   length = [self length];
   // Multiple adds at the end might give a too long result
   if (NSMaxRange(r) > length)
@@ -220,6 +222,31 @@ static NSNotificationCenter *nc = nil;
   [nc postNotificationName: NSTextStorageDidProcessEditingNotification
                     object: self];
   _editCount--;
+
+  /*
+  The attribute fixes might have added or removed characters. We must make
+  sure that range and delta we give to the layout managers is valid.
+  */
+  if (original_delta != _editedDelta)
+    {
+      if (_editedDelta - original_delta > 0)
+	{
+	  r.length += _editedDelta - original_delta;
+	}
+      else
+	{
+	  if (original_delta - _editedDelta > r.length)
+	    {
+	      r.length = 0;
+	      if (r.location > [self length])
+		r.location = [self length];
+	    }
+	  else
+	    {
+	      r.length += _editedDelta - original_delta;
+	    }
+	}
+    }
 
   /*
    * Calls textStorage:edited:range:changeInLength:invalidatedRange: for
