@@ -23,7 +23,7 @@
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
    Library General Public License for more details.
 
    You should have received a copy of the GNU Library General Public
@@ -54,9 +54,11 @@
 
 @implementation NSView
 
-//
-//  Class variables
-//
+/*
+ *  Class variables
+ */
+static Class	rectClass;
+
 static NSAffineTransform	*flip = nil;
 
 static void	(*appImp)(NSAffineTransform*, SEL, NSAffineTransform*) = 0;
@@ -65,9 +67,9 @@ static SEL	appSel = @selector(appendTransform:);
 static void	(*invalidateImp)(NSView*, SEL) = 0;
 static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
-//
-// Class methods
-//
+/*
+ * Class methods
+ */
 + (void) initialize
 {
   if (self == [NSView class])
@@ -84,6 +86,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
       flip = [matrixClass new];
       [flip setTransformStruct: ats];
 
+      rectClass = [GSTrackingRect class];
       NSDebugLLog(@"NSView", @"Initialize NSView class\n");
       [self setVersion: 1];
     }
@@ -98,9 +101,9 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   return [GSCurrentContext() focusView];
 }
 
-//
-// Instance methods
-//
+/*
+ * Instance methods
+ */
 - (id) init
 {
   return [self initWithFrame: NSZeroRect];
@@ -108,7 +111,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
 - (id) initWithFrame: (NSRect)frameRect
 {
-  [super init];				// super is NSResponder
+  [super init];
 
   NSAssert(frameRect.size.width >= 0 && frameRect.size.height >= 0,
 	@"illegal frame dimensions supplied");
@@ -219,25 +222,26 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
 - (NSView*) ancestorSharedWithView: (NSView*)aView
 {
-  if (self == aView)			// Are they the same view?
+  if (self == aView)
     return self;
 
-  if ([self isDescendantOf: aView])	// Is self a descendant of view?
+  if ([self isDescendantOf: aView])
     return aView;
 
-  if ([aView isDescendantOf: self])	// Is view a descendant of self?
+  if ([aView isDescendantOf: self])
     return self;
 
-  // If neither are descendants of each other and either does not have a
-  // superview then they cannot have a common ancestor
-
+  /*
+   * If neither are descendants of each other and either does not have a
+   * superview then they cannot have a common ancestor
+   */
   if (![self superview])
     return nil;
 
   if (![aView superview])
     return nil;
 
-  // Find the common ancestor of superviews
+  /* Find the common ancestor of superviews */
   return [[self superview] ancestorSharedWithView: [aView superview]];
 }
 
@@ -282,7 +286,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   if (coordinates_valid)
     (*invalidateImp)(self, invalidateSel);
 
-  if (!super_view)      // if no superview then just return
+  if (!super_view)
     return;
 
   if ([window firstResponder] == self)
@@ -308,7 +312,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   if (coordinates_valid)
     (*invalidateImp)(self, invalidateSel);
 
-  if (!super_view)	// if no superview then just return
+  if (!super_view)
     return;
 
   if ([window firstResponder] == self)
@@ -368,7 +372,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 	  /*
 	   * Ok - the standard case - we remove the newView from wherever it
 	   * was (which may have been in this view), locate the position of
-           * the oldView (which may have changed due to the removal of the
+	   * the oldView (which may have changed due to the removal of the
 	   * newView), remove the oldView, and insert the newView in it's
 	   * place.
 	   */
@@ -444,7 +448,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   bounds.size = frame.size;
   [frameMatrix setFrameOrigin: frame.origin];
 
-  [self resizeSubviewsWithOldSize: old_size];	// Resize the subviews
+  [self resizeSubviewsWithOldSize: old_size];
   if (post_frame_changes)
     [[NSNotificationCenter defaultCenter]
 		    postNotificationName: NSViewFrameDidChangeNotification
@@ -474,7 +478,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
     (*invalidateImp)(self, invalidateSel);
   frame.size = bounds.size = newSize;
 
-  [self resizeSubviewsWithOldSize: old_size];		// Resize the subviews
+  [self resizeSubviewsWithOldSize: old_size];
   if (post_frame_changes)
     [[NSNotificationCenter defaultCenter]
 		    postNotificationName: NSViewFrameDidChangeNotification
@@ -516,8 +520,8 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
 - (void) scaleUnitSquareToSize: (NSSize)newSize
 {
-  float	sx;
-  float	sy;
+  float sx;
+  float sy;
 
   NSAssert(newSize.width > 0 && newSize.height > 0, @"illegal size supplied");
 
@@ -888,7 +892,9 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   post_bounds_changes = flag;
 }
 
-// resize subviews only if we are supposed to and we have never been rotated
+/*
+ * resize subviews only if we are supposed to and we have never been rotated
+ */
 - (void) resizeSubviewsWithOldSize: (NSSize)oldSize
 {
   if (_rFlags.has_subviews)
@@ -910,18 +916,20 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
 - (void) resizeWithOldSuperviewSize: (NSSize)oldSize
 {
-  float change, changePerOption;
-  int options = 0;
-  NSSize old_size = frame.size;
-  NSSize superViewFrameSize = [super_view frame].size;
-  BOOL changedOrigin = NO;
-  BOOL changedSize = NO;
+  float		change;
+  float		changePerOption;
+  int		options = 0;
+  NSSize	old_size = frame.size;
+  NSSize	superViewFrameSize = [super_view frame].size;
+  BOOL		changedOrigin = NO;
+  BOOL		changedSize = NO;
 
-  // do nothing if view is not resizable
   if (autoresizingMask == NSViewNotSizable)
     return;
 
-  // determine if and how the X axis can be resized
+  /*
+   * determine if and how the X axis can be resized
+   */
   if (autoresizingMask & NSViewWidthSizable)
     options++;
   if (autoresizingMask & NSViewMinXMargin)
@@ -929,7 +937,9 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   if (autoresizingMask & NSViewMaxXMargin)
     options++;
 
-  // adjust the X axis if any X options are set in the mask
+  /*
+   * adjust the X axis if any X options are set in the mask
+   */
   if (options >= 1)
     {
       change = superViewFrameSize.width - oldSize.width;
@@ -956,7 +966,9 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 	}
     }
 
-  // determine if and how the Y axis can be resized
+  /*
+   * determine if and how the Y axis can be resized
+   */
   options = 0;
   if (autoresizingMask & NSViewHeightSizable)
     options++;
@@ -965,7 +977,9 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   if (autoresizingMask & NSViewMaxYMargin)
     options++;
 
-  // adjust the Y axis if any Y options are set in the mask
+  /*
+   * adjust the Y axis if any Y options are set in the mask
+   */
   if (options >= 1)
     {
       change = superViewFrameSize.height - oldSize.height;
@@ -1260,11 +1274,11 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
       /*
        * If the rect we displayed contains the invalidRect or visibleRect
-       * then we can empty invalidRect.  All subviews will have been
+       * then we can empty invalidRect.	 All subviews will have been
        * fully displayed, so this view no longer needs to be displayed.
        */
       if (NSEqualRects(aRect, NSUnionRect(invalidRect, aRect)) == YES
-        || NSEqualRects(aRect, NSUnionRect(visibleRect, aRect)) == YES)
+	|| NSEqualRects(aRect, NSUnionRect(visibleRect, aRect)) == YES)
 	{
 	  invalidRect = NSZeroRect;
 	  needs_display = NO;
@@ -1300,7 +1314,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
   if (NSIsEmptyRect(aRect) == NO)
     {
-      NSGraphicsContext	*ctxt = GSCurrentContext();
+      NSGraphicsContext *ctxt = GSCurrentContext();
 
       /*
        * Now we draw this view.
@@ -1377,7 +1391,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   [window flushWindow];
 }
 
-- (void)drawRect: (NSRect)rect
+- (void) drawRect: (NSRect)rect
 {}
 
 - (NSRect) visibleRect
@@ -1434,15 +1448,15 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
     }
 }
 
-//
-// Scrolling
-//
-- (NSRect)adjustScroll: (NSRect)newVisible
+/*
+ * Scrolling
+ */
+- (NSRect) adjustScroll: (NSRect)newVisible
 {
   return NSZeroRect;
 }
 
-- (BOOL)autoscroll: (NSEvent*)theEvent
+- (BOOL) autoscroll: (NSEvent*)theEvent
 {
   if (super_view)
     return [super_view autoscroll: theEvent];
@@ -1467,17 +1481,16 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   return NO;
 }
 
-//
-// Managing the Cursor
-//
-// We utilize the tracking rectangle class
-// to also maintain the cursor rects
-//
+/*
+ * Managing the Cursor
+ *
+ * We use the tracking rectangle class to maintain the cursor rects
+ */
 - (void) addCursorRect: (NSRect)aRect cursor: (NSCursor*)anObject
 {
   GSTrackingRect	*m;
 
-  m = [GSTrackingRect allocWithZone: NSDefaultMallocZone()];
+  m = [rectClass allocWithZone: NSDefaultMallocZone()];
   m = [m initWithRect: aRect
 		  tag: 0
 		owner: anObject
@@ -1501,8 +1514,9 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   GSTrackingRect	*o;
   NSCursor		*c;
 
-  o = [e nextObject];				// Base remove test
-  while (o)					// upon cursor object
+  /* Base remove test upon cursor object */
+  o = [e nextObject];
+  while (o)
     {
       c = [o owner];
       if (c == anObject)
@@ -1613,9 +1627,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   return view;
 }
 
-//
-// Aiding Event Handling
-//
+/*
+ * Aiding Event Handling
+ */
 - (BOOL) acceptsFirstMouse: (NSEvent*)theEvent
 {
   return NO;
@@ -1627,7 +1641,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   unsigned count;
   NSView *v = nil, *w;
 
-  // If not within our frame then immediately return
+  /* If not within our frame then it can't be a hit */
   if (![self mouse: aPoint inRect: frame])
     return nil;
 
@@ -1635,7 +1649,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
   if (_rFlags.has_subviews)
     {
-      count = [sub_views count];			// Check our sub_views
+      count = [sub_views count];
       if (count > 0)
 	{
 	  NSView*	array[count];
@@ -1651,7 +1665,10 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	    }
 	}
     }
-  if (v)		// mouse is either in the subview or within self
+  /*
+   * mouse is either in the subview or within self
+   */
+  if (v)
     return v;
   else
     return self;
@@ -1724,33 +1741,33 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     }
   ++t;
 
-  m = [[GSTrackingRect alloc] initWithRect: aRect
-				        tag: t
-				      owner: anObject
-				   userData: data
-				     inside: flag];
-  AUTORELEASE(m);
+  m = [[rectClass alloc] initWithRect: aRect
+				  tag: t
+				owner: anObject
+			     userData: data
+			       inside: flag];
   [tracking_rects addObject: m];
+  RELEASE(m);
   _rFlags.has_trkrects = 1;
   return t;
 }
 
-//
-// Dragging
-//
+/*
+ * Dragging
+ */
 - (BOOL) dragFile: (NSString*)filename
 	 fromRect: (NSRect)rect
-       	slideBack: (BOOL)slideFlag
+	slideBack: (BOOL)slideFlag
 	    event: (NSEvent*)event
 {
   return NO;
 }
 
 - (void) dragImage: (NSImage*)anImage
-	        at: (NSPoint)viewLocation
+		at: (NSPoint)viewLocation
 	    offset: (NSSize)initialOffset
 	     event: (NSEvent*)event
-        pasteboard: (NSPasteboard*)pboard
+	pasteboard: (NSPasteboard*)pboard
 	    source: (id)sourceObject
 	 slideBack: (BOOL)slideFlag
 {}
@@ -1770,9 +1787,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     }
 }
 
-//
-// Printing
-//
+/*
+ * Printing
+ */
 - (NSData*) dataWithEPSInsideRect: (NSRect)aRect
 {
   return nil;
@@ -1791,9 +1808,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 {
 }
 
-//
-// Pagination
-//
+/*
+ * Pagination
+ */
 - (void) adjustPageHeightNew: (float*)newBottom
 			 top: (float)oldTop
 		      bottom: (float)oldBottom
@@ -1833,9 +1850,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   return 0;
 }
 
-//
-// Writing Conforming PostScript
-//
+/*
+ * Writing Conforming PostScript
+ */
 - (void) beginPage: (int)ordinalNum
 	     label: (NSString*)aString
 	      bBox: (NSRect)pageRect
@@ -1863,7 +1880,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (void) beginSetup
 {
-}				// not implemented
+}
 
 - (void) beginTrailer
 {
@@ -1901,9 +1918,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 {
 }
 
-//
-// NSCoding protocol
-//
+/*
+ * NSCoding protocol
+ */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
@@ -1957,9 +1974,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   return self;
 }
 
-//
-// Accessor methods
-//
+/*
+ * Accessor methods
+ */
 - (void) setAutoresizesSubviews: (BOOL)flag
 {
   autoresize_subviews = flag;
@@ -2161,7 +2178,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	    {
 	      /*
 	       * The flipping process must result in a coordinate system that
-	       * exactly overlays the original.  To do that, we must translate
+	       * exactly overlays the original.	 To do that, we must translate
 	       * the origin by the height of the view.
 	       */
 	      flip->matrix.ty = bounds.size.height;

@@ -4,7 +4,7 @@
    Copyright (C) 1996 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
-            Venkat Ajjanagadde <venkat@ocbi.com>
+	    Venkat Ajjanagadde <venkat@ocbi.com>
    Date: 1996
    Author:  Felipe A. Rodriguez <far@ix.netcom.com>
    Date: June 1998
@@ -20,7 +20,7 @@
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
    Library General Public License for more details.
 
    You should have received a copy of the GNU Library General Public
@@ -82,11 +82,11 @@
 
 @end
 
-//*****************************************************************************
-//
-//      NSWindow
-//
-//*****************************************************************************
+/*****************************************************************************
+ *
+ *	NSWindow
+ *
+ *****************************************************************************/
 
 @implementation NSWindow
 
@@ -105,9 +105,9 @@ static IMP	ccImp;
 static IMP	ctImp;
 static Class	responderClass;
 
-//
-// Class methods
-//
+/*
+ * Class methods
+ */
 + (void) initialize
 {
   if (self == [NSWindow class])
@@ -121,35 +121,36 @@ static Class	responderClass;
 }
 
 + (void) removeFrameUsingName: (NSString *)name
-{                                                       // Saving and restoring
-}                                                       // the window's frame
+{
+}
 
 + (NSRect) contentRectForFrameRect: (NSRect)aRect
-                         styleMask: (unsigned int)aStyle
+			 styleMask: (unsigned int)aStyle
 {
   return aRect;
 }
 
 + (NSRect) frameRectForContentRect: (NSRect)aRect
-                         styleMask: (unsigned int)aStyle
+			 styleMask: (unsigned int)aStyle
 {
   return aRect;
 }
 
 + (NSRect) minFrameWidthWithTitle: (NSString *)aTitle
-                        styleMask: (unsigned int)aStyle
+			styleMask: (unsigned int)aStyle
 {
   return NSZeroRect;
 }
 
-+ (NSWindowDepth) defaultDepthLimit                      // default Screen and
-{                                                       // window depth
+/* default Screen and window depth */
++ (NSWindowDepth) defaultDepthLimit
+{
   return 8;
 }
 
-//
-// Instance methods
-//
+/*
+ * Instance methods
+ */
 - (id) init
 {
   int style;
@@ -185,9 +186,9 @@ static Class	responderClass;
   [super dealloc];
 }
 
-//
-// Initializing and getting a new NSWindow object
-//
+/*
+ * Initializing and getting a new NSWindow object
+ */
 - (id) initWithContentRect: (NSRect)contentRect
 		 styleMask: (unsigned int)aStyle
 		   backing: (NSBackingStoreType)bufferingType
@@ -206,7 +207,7 @@ static Class	responderClass;
 		 styleMask: (unsigned int)aStyle
 		   backing: (NSBackingStoreType)bufferingType
 		     defer: (BOOL)flag
-                    screen: (NSScreen*)aScreen
+		    screen: (NSScreen*)aScreen
 {
   NSRect r = [[NSScreen mainScreen] frame];
   NSRect cframe;
@@ -216,22 +217,24 @@ static Class	responderClass;
     NSLog(@"No application!\n");
 
   NSDebugLog(@"NSWindow start of init\n");
-                                                    // Initialize attributes
-  [self cleanInit];                               // and flags
+
+  /* Initialize attributes and flags */
+  [self cleanInit];
 
   backing_type = bufferingType;
   style_mask = aStyle;
-                                                    // Size the attributes
+
   frame = [NSWindow frameRectForContentRect: contentRect styleMask: aStyle];
   minimum_size = NSZeroSize;
   maximum_size = r.size;
-                                                    // Next responder is the
-  [self setNextResponder: NSApp];                 // application
 
-  cursor_rects_enabled = YES;                     // Cursor management
+  [self setNextResponder: NSApp];
+
+  cursor_rects_enabled = YES;
   cursor_rects_valid = NO;
 
-  cframe.origin = NSZeroPoint;                    // Create the content view
+  /* Create the content view */
+  cframe.origin = NSZeroPoint;
   cframe.size = frame.size;
   [self setContentView: AUTORELEASE([[NSView alloc] initWithFrame: cframe])];
 
@@ -244,9 +247,9 @@ static Class	responderClass;
   return self;
 }
 
-//
-// Accessing the content view
-//
+/*
+ * Accessing the content view
+ */
 - (id) contentView
 {
   return content_view;
@@ -256,11 +259,10 @@ static Class	responderClass;
 {
   NSView *wv;
 
-  // contentview can't be nil
   if (!aView)
     aView = AUTORELEASE([[NSView alloc] initWithFrame: frame]);
 
-  // If window view has not been created, create it
+  /* If window view has not been created, create it */
   if ((!content_view) || ([content_view superview] == nil))
     {
       wv = [[GSWindowView allocWithZone: [self zone]] initWithFrame: frame];
@@ -276,17 +278,17 @@ static Class	responderClass;
 
   [content_view setFrame: [wv frame]];		    // Resize to fill window.
   [content_view setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
-  [wv addSubview: content_view];                    // Add to our window view
-  NSAssert1 ([[wv subviews] count] == 1, @"window's view has %d  subviews!",
-                [[wv subviews] count]);
-                                                    // Make self the view's
-  [content_view setNextResponder: self];             // next responder
+  [wv addSubview: content_view];		    // Add to our window view
+  NSAssert1 ([[wv subviews] count] == 1, @"window's view has %d	 subviews!",
+		[[wv subviews] count]);
+
+  [content_view setNextResponder: self];
   [content_view setNeedsDisplay: YES];		    // Make sure we redraw.
 }
 
-//
-// Window graphics
-//
+/*
+ * Window graphics
+ */
 - (NSColor *) backgroundColor
 {
   return background_color;
@@ -337,9 +339,9 @@ static Class	responderClass;
   return window_title;
 }
 
-//
-// Window device attributes
-//
+/*
+ * Window device attributes
+ */
 - (NSBackingStoreType) backingType
 {
   return backing_type;
@@ -375,9 +377,9 @@ static Class	responderClass;
   return window_num;
 }
 
-//
-// The miniwindow
-//
+/*
+ * The miniwindow
+ */
 - (NSImage *) miniwindowImage
 {
   return miniaturized_image;
@@ -408,9 +410,9 @@ static Class	responderClass;
 		    filename: isDoc];
 }
 
-//
-// The field editor
-//
+/*
+ * The field editor
+ */
 - (void) endEditingFor: (id)anObject
 {
 }
@@ -419,7 +421,7 @@ static Class	responderClass;
 {
   /* ask delegate if it can provide a field editor */
   if ([delegate respondsToSelector:
-            @selector(windowWillReturnFieldEditor:toObject:)])
+	    @selector(windowWillReturnFieldEditor:toObject:)])
     return [delegate windowWillReturnFieldEditor: self toObject: anObject];
 
   /*
@@ -435,9 +437,9 @@ static Class	responderClass;
   return _fieldEditor;
 }
 
-//
-// Window status and ordering
-//
+/*
+ * Window status and ordering
+ */
 - (void) becomeKeyWindow
 {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
@@ -497,13 +499,13 @@ static Class	responderClass;
 
 - (void) makeKeyAndOrderFront: (id)sender
 {
-  [self makeKeyWindow];                           // Make self the key window
+  [self makeKeyWindow];
   /*
    * OPENSTEP makes a window the main window when it makes it the key window.
    * So we do the same (though the documentation doesn't mention it).
    */
   [self makeMainWindow];
-  [self orderFront: sender];                      // order self to the front
+  [self orderFront: sender];
 }
 
 - (void) makeKeyWindow
@@ -524,7 +526,7 @@ static Class	responderClass;
 }
 
 - (void) orderBack: (id)sender
-{}      // implemented in back end
+{}	// implemented in back end
 
 - (void) orderFront: (id)sender
 {}
@@ -566,9 +568,9 @@ static Class	responderClass;
   window_level = newLevel;
 }
 
-//
-// Moving and resizing the window
-//
+/*
+ * Moving and resizing the window
+ */
 - (NSPoint) cascadeTopLeftFromPoint: (NSPoint)topLeftPoint
 {
   return NSZeroPoint;
@@ -648,9 +650,9 @@ static Class	responderClass;
   increments = aSize;
 }
 
-//
-// Converting coordinates
-//
+/*
+ * Converting coordinates
+ */
 - (NSPoint) convertBaseToScreen: (NSPoint)basePoint
 {
   NSPoint screenPoint;
@@ -671,9 +673,9 @@ static Class	responderClass;
   return basePoint;
 }
 
-//
-// Managing the display
-//
+/*
+ * Managing the display
+ */
 - (void) disableFlushWindow
 {
   disable_flush_window = YES;
@@ -681,16 +683,16 @@ static Class	responderClass;
 
 - (void) display
 {
-  needs_display = NO;                             // inform first responder
-						  // of it's status so it can
-  [first_responder becomeFirstResponder];         // set the focus to itself
+  needs_display = NO;
+  /*
+   * inform first responder of it's status so it can set the focus to itself
+   */
+  [first_responder becomeFirstResponder];
 
-  [self disableFlushWindow];                      // tmp disable display
-
-  [[content_view superview] display];             // Draw the window view
-
-  [self enableFlushWindow];                       // Reenable displaying and
-  [self flushWindowIfNeeded];                     // flush the window
+  [self disableFlushWindow];
+  [[content_view superview] display];
+  [self enableFlushWindow];
+  [self flushWindowIfNeeded];
 }
 
 - (void) displayIfNeeded
@@ -771,8 +773,8 @@ static Class	responderClass;
 
 - (BOOL) canStoreColor
 {
-  if (depth_limit > 1)                            // If the depth is greater
-    return YES;                                 // than a single bit
+  if (depth_limit > 1)
+    return YES;
   else
     return NO;
 }
@@ -807,9 +809,9 @@ static Class	responderClass;
   dynamic_depth_limit = flag;
 }
 
-//
-// Cursor management
-//
+/*
+ * Cursor management
+ */
 - (BOOL) areCursorRectsEnabled
 {
   return cursor_rects_enabled;
@@ -885,9 +887,9 @@ static Class	responderClass;
   cursor_rects_valid = YES;
 }
 
-//
-// Handling user actions and events
-//
+/*
+ * Handling user actions and events
+ */
 - (void) close
 {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
@@ -1002,9 +1004,9 @@ static Class	responderClass;
     {
       is_edited = flag;
       if (menu_exclude == NO)
-        {
-          [NSApp updateWindowsItem: self];
-        }
+	{
+	  [NSApp updateWindowsItem: self];
+	}
     }
 }
 
@@ -1013,9 +1015,9 @@ static Class	responderClass;
   is_released_when_closed = flag;
 }
 
-//
-// Aiding event handling
-//
+/*
+ * Aiding event handling
+ */
 - (BOOL) acceptsMouseMovedEvents
 {
   return accepts_mouse_moved;
@@ -1027,7 +1029,7 @@ static Class	responderClass;
 }
 
 - (void) discardEventsMatchingMask: (unsigned int)mask
-                       beforeEvent: (NSEvent *)lastEvent
+		       beforeEvent: (NSEvent *)lastEvent
 {
   [NSApp discardEventsMatchingMask: mask beforeEvent: lastEvent];
 }
@@ -1053,8 +1055,10 @@ static Class	responderClass;
   if (![aResponder acceptsFirstResponder])
     return NO;
 
-  // If there is a first responder tell it to resign.
-  // Change only if it replies Y
+  /*
+   * If there is a first responder tell it to resign.
+   * Change only if it replies Y
+   */
   if ((first_responder) && (![first_responder resignFirstResponder]))
     return NO;
 
@@ -1067,8 +1071,8 @@ static Class	responderClass;
  * loop status */
 - (NSPoint) mouseLocationOutsideOfEventStream
 {
-  float	x;
-  float	y;
+  float x;
+  float y;
 
   DPSmouselocation(GSCurrentContext(), &x, &y);
   x -= frame.origin.x;
@@ -1085,7 +1089,7 @@ static Class	responderClass;
 }
 
 - (NSEvent *) nextEventMatchingMask: (unsigned int)mask
-                          untilDate: (NSDate *)expiration
+			  untilDate: (NSDate *)expiration
 			     inMode: (NSString *)mode
 			    dequeue: (BOOL)deqFlag
 {
@@ -1298,8 +1302,8 @@ static Class	responderClass;
   NSView	*v;
   NSEventType	type;
 
-  if (!cursor_rects_valid)                // If the cursor rects are invalid
-    {                                   // Then discard and reset
+  if (!cursor_rects_valid)
+    {
       [self discardCursorRects];
       [self resetCursorRects];
     }
@@ -1307,7 +1311,7 @@ static Class	responderClass;
   type = [theEvent type];
   switch (type)
     {
-      case NSLeftMouseDown:                               // Left mouse down
+      case NSLeftMouseDown:				  // Left mouse down
 	v = [content_view hitTest: [theEvent locationInWindow]];
 	if (first_responder != v)
 	  {
@@ -1320,19 +1324,19 @@ static Class	responderClass;
 	last_point = [theEvent locationInWindow];
 	break;
 
-      case NSLeftMouseUp:                                 // Left mouse up
+      case NSLeftMouseUp:				  // Left mouse up
 	v = first_responder;	/* Send to the view that got the mouse down. */
 	[v mouseUp: theEvent];
 	last_point = [theEvent locationInWindow];
 	break;
 
-      case NSRightMouseDown:                              // Right mouse down
+      case NSRightMouseDown:				  // Right mouse down
 	v = [content_view hitTest: [theEvent locationInWindow]];
 	[v rightMouseDown: theEvent];
 	last_point = [theEvent locationInWindow];
 	break;
 
-      case NSRightMouseUp:                                // Right mouse up
+      case NSRightMouseUp:				  // Right mouse up
 	v = [content_view hitTest: [theEvent locationInWindow]];
 	[v rightMouseUp: theEvent];
 	last_point = [theEvent locationInWindow];
@@ -1354,32 +1358,38 @@ static Class	responderClass;
 	    default:
 	      if (accepts_mouse_moved)
 		{
-		  // If the window is set to accept mouse movements, we need to
-		  // forward the mouse movement to the correct view.
+		  /*
+		   * If the window is set to accept mouse movements, we need to
+		   * forward the mouse movement to the correct view.
+		   */
 		  v = [content_view hitTest: [theEvent locationInWindow]];
 		  [v mouseMoved: theEvent];
 		}
 	      break;
 	  }
 
-	// We need to go through all of the views, and if there is any with
-	// a tracking rectangle then we need to determine if we should send
-	// a NSMouseEntered or NSMouseExited event.
+	/*
+	 * We need to go through all of the views, and if there is any with
+	 * a tracking rectangle then we need to determine if we should send
+	 * a NSMouseEntered or NSMouseExited event.
+	 */
 	(*ctImp)(self, ctSel, content_view, theEvent);
 
 	if (is_key)
 	  {
-	    // We need to go through all of the views, and if there is any with
-	    // a cursor rectangle then we need to determine if we should send a
-	    // cursor update event.
+	    /*
+	     * We need to go through all of the views, and if there is any with
+	     * a cursor rectangle then we need to determine if we should send a
+	     * cursor update event.
+	     */
 	    (*ccImp)(self, ccSel, content_view, theEvent);
 	  }
 
 	last_point = [theEvent locationInWindow];
 	break;
 
-      case NSMouseEntered:                                // Mouse entered
-      case NSMouseExited:                                 // Mouse exited
+      case NSMouseEntered:				  // Mouse entered
+      case NSMouseExited:				  // Mouse exited
 	break;
 
       case NSKeyDown: 
@@ -1391,26 +1401,29 @@ static Class	responderClass;
 	[first_responder keyDown: theEvent];
 	break;
 
-      case NSKeyUp:                                           // Key up
-	  if (original_responder)                     // send message to the
-	    [original_responder keyUp: theEvent];    // object that got the
-	  break;                                      // key down
-
-      case NSFlagsChanged:                                // Flags changed
+      case NSKeyUp:					      // Key up
+	  /*
+	   * send message to the object that got the key down
+	   */
+	  if (original_responder)
+	    [original_responder keyUp: theEvent];
 	  break;
 
-      case NSCursorUpdate:                                // Cursor update
+      case NSFlagsChanged:				  // Flags changed
+	  break;
+
+      case NSCursorUpdate:				  // Cursor update
 	{
 	  GSTrackingRect *r =(GSTrackingRect *)[theEvent userData];
 	  NSCursor *c = (NSCursor *)[r owner];
 
 	  c = (NSCursor *)[r owner];
-	  if ([theEvent trackingNumber])          // It's a mouse entered
+	  if ([theEvent trackingNumber])	  // It's a mouse entered
 	    {
 	      if (c && [c isSetOnMouseEntered])
 		[c set];
 	    }
-	  else                                    // it is a mouse exited
+	  else					  // it is a mouse exited
 	    {
 	      if (c && [c isSetOnMouseExited])
 		[c set];
@@ -1419,6 +1432,9 @@ static Class	responderClass;
 	break;
 
       case NSPeriodic: 
+      case NSAppKitDefined:
+      case NSSystemDefined:
+      case NSApplicationDefined:
 	break;
     }
 }
@@ -1433,16 +1449,16 @@ static Class	responderClass;
   return NO;
 }
 
-//
-// Dragging
-//
+/*
+ * Dragging
+ */
 - (void) dragImage: (NSImage *)anImage
-               at: (NSPoint)baseLocation
-               offset: (NSSize)initialOffset
-               event: (NSEvent *)event
-               pasteboard: (NSPasteboard *)pboard
-               source: sourceObject
-               slideBack: (BOOL)slideFlag
+	       at: (NSPoint)baseLocation
+	       offset: (NSSize)initialOffset
+	       event: (NSEvent *)event
+	       pasteboard: (NSPasteboard *)pboard
+	       source: sourceObject
+	       slideBack: (BOOL)slideFlag
 {
 }
 
@@ -1461,9 +1477,9 @@ static Class	responderClass;
     }
 }
 
-//
-// Services and windows menu support
-//
+/*
+ * Services and windows menu support
+ */
 - (BOOL) isExcludedFromWindowsMenu
 {
   return menu_exclude;
@@ -1475,7 +1491,7 @@ static Class	responderClass;
 }
 
 - validRequestorForSendType: (NSString *)sendType
-                 returnType: (NSString *)returnType
+		 returnType: (NSString *)returnType
 {
   id result = nil;
 
@@ -1489,9 +1505,9 @@ static Class	responderClass;
   return result;
 }
 
-//
-// Saving and restoring the frame
-//
+/*
+ * Saving and restoring the frame
+ */
 - (NSString *) frameAutosaveName
 {
   return nil;
@@ -1520,9 +1536,9 @@ static Class	responderClass;
   return nil;
 }
 
-//
-// Printing and postscript
-//
+/*
+ * Printing and postscript
+ */
 - (NSData *) dataWithEPSInsideRect: (NSRect)rect
 {
   return nil;
@@ -1534,9 +1550,9 @@ static Class	responderClass;
 - (void) print: (id)sender
 {}
 
-//
-// Assigning a delegate
-//
+/*
+ * Assigning a delegate
+ */
 - (id) delegate
 {
   return delegate;
@@ -1572,9 +1588,9 @@ static Class	responderClass;
   SET_DELEGATE_NOTIFICATION(WillMove);
 }
 
-//
-// Implemented by the delegate
-//
+/*
+ * Implemented by the delegate
+ */
 - (BOOL) windowShouldClose: (id)sender
 {
   if ([delegate respondsToSelector: @selector(windowShouldClose:)])
@@ -1680,9 +1696,9 @@ static Class	responderClass;
     return [delegate windowWillMove: aNotification];
 }
 
-//
-// NSCoding protocol
-//
+/*
+ * NSCoding protocol
+ */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [self setNextResponder: nil];
@@ -1752,7 +1768,7 @@ static Class	responderClass;
   maximum_size = [aDecoder decodeSize];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &miniaturized_image];
   [aDecoder decodeValueOfObjCType: @encode(NSBackingStoreType)
-        at: &backing_type];
+	at: &backing_type];
   [aDecoder decodeValueOfObjCType: @encode(int) at: &window_level];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_one_shot];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_autodisplay];
@@ -1782,9 +1798,9 @@ static Class	responderClass;
 
 @end
 
-//
-// GNUstep backend methods
-//
+/*
+ * GNUstep backend methods
+ */
 @implementation NSWindow (GNUstepBackend)
 
 + (NSWindow*) _windowWithTag: (int)windowNumber
@@ -1797,15 +1813,15 @@ static Class	responderClass;
   window_num = windowNum;
 }
 
-//
-// Mouse capture/release
-//
-- (void) _captureMouse: sender           {}          // Do nothing, should be
-- (void) _releaseMouse: sender           {}          // implemented by back-end
+/*
+ * Mouse capture/release
+ */
+- (void) _captureMouse: sender		 {}	     // Do nothing, should be
+- (void) _releaseMouse: sender		 {}	     // implemented by back-end
 
-- (void) performDeminiaturize: sender     {}
-- (void) performHide: sender              {}
-- (void) performUnhide: sender            {}
+- (void) performDeminiaturize: sender	  {}
+- (void) performHide: sender		  {}
+- (void) performUnhide: sender		  {}
 
 /*
  * Allow subclasses to init without the backend
