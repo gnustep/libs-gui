@@ -75,7 +75,7 @@
 
 - (id)initWithContentsOfFile:(NSString *)fileName ofType:(NSString *)fileType
 {
-  [super init];
+  [self init];
 	
   if ([self readFromFile:fileName ofType:fileType])
     {
@@ -628,7 +628,7 @@
 {
   // We have an _docFlags.inClose flag, but I don't think we need to use it.
   [_windowControllers makeObjectsPerformSelector:@selector(close)];
-  [[NSDocumentController sharedDocumentController] _removeDocument:self];
+  [[NSDocumentController sharedDocumentController] removeDocument:self];
 }
 
 - (void)windowControllerWillLoadNib:(NSWindowController *)windowController {}
