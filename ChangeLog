@@ -16,7 +16,8 @@
 
 Thu May  4 19:11:48 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
-	* Source/NSPanel.m ([GSAlertPanel -initWithContentRect:styleMask:backing:defer:screen:]): 
+	* Source/NSPanel.m ([GSAlertPanel 
+	-initWithContentRect:styleMask:backing:defer:screen:]): 
 	Fixed position of the panel title, so that it is displayed again.
 
 2000-04-29 Richard Frith-Macdonald <rfm@gnu.org>
