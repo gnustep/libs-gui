@@ -16,7 +16,7 @@
    
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
    Library General Public License for more details.
 
    You should have received a copy of the GNU Library General Public
@@ -25,31 +25,50 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include	<Foundation/NSObject.h>
-#include	<Foundation/NSGeometry.h>
+#include <Foundation/NSObject.h>
+#include <Foundation/NSGeometry.h>
 
 /*
- *	Dummy definitions provided here to avoid errors when not linking with
- *	a back end.
+ * Dummy definitions provided here to avoid errors when not linking with
+ * a back end.
  */
 
-BOOL initialize_gnustep_backend(void)					{ return YES; }
-void NSHighlightRect(NSRect aRect)						{}
-void NSRectFill(NSRect aRect)							{}
-void NSBeep(void)										{}
-void NSFrameRect(NSRect aRect)  						{}
-void NSDrawButton(NSRect aRect, NSRect clipRect)		{}
-void NSDrawGrayBezel(NSRect aRect, NSRect clipRect)		{}
-void NSDrawGroove(NSRect aRect, NSRect clipRect)		{}
-
-void PSlineto(float x, float y)							{}
-void PSmoveto(float x, float y)							{}
-void PSrlineto(float x, float y)						{}
-void PSsetgray(float num)								{}					
-void PSstroke(void)										{}
-void PSsetlinewidth(float width)						{}			
-void PSgrestore(void)									{}
-void PSgsave(void)										{}
+BOOL initialize_gnustep_backend(void)
+{
+  return YES;
+}
+void NSHighlightRect(NSRect aRect)
+{}
+void NSRectFill(NSRect aRect)
+{}
+void NSBeep(void)
+{}
+void NSFrameRect(NSRect aRect)
+{}
+void NSEraseRect(NSRect aRect)
+{}
+void NSDrawButton(NSRect aRect, NSRect clipRect)
+{}
+void NSDrawGrayBezel(NSRect aRect, NSRect clipRect)
+{}
+void NSDrawGroove(NSRect aRect, NSRect clipRect)
+{}
+void PSlineto(float x, float y)
+{}
+void PSmoveto(float x, float y)
+{}
+void PSrlineto(float x, float y)
+{}
+void PSsetgray(float num)
+{}
+void PSstroke(void)
+{}
+void PSsetlinewidth(float width)
+{}
+void PSgrestore(void)
+{}
+void PSgsave(void)
+{}
 
 void GSfill() {}
 void GSsetgray() {}
