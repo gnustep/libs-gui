@@ -34,6 +34,11 @@
 @class NSString;
 
 enum {
+  NSUtilityWindowMask = 16,
+  NSDocModalWindowMask = 32
+};
+
+enum {
   NSOKButton = 1,
   NSCancelButton = 0
 };
@@ -57,19 +62,12 @@ enum {
 #define	NS_ALERTERROR		NSAlertErrorReturn
 #endif
 
-@interface NSPanel : NSWindow <NSCoding>
+@interface NSPanel : NSWindow
 {
-  // Attributes
-  BOOL _becomesKeyOnlyIfNeeded;
-  BOOL _isFloatingPanel;
-  BOOL _worksWhenModal;
-  id file_name;
-  id directory;
-  id panel_title;
-  id accessory_view;
-  id required_type;
-  id panel_prompt;
-  id file_package;
+  // Think of the following as BOOL ivars
+#define _becomesKeyOnlyIfNeeded _f.subclass_bool_one
+#define _isFloatingPanel _f.subclass_bool_two
+#define _worksWhenModal _f.subclass_bool_three
 }
 
 //
@@ -81,12 +79,6 @@ enum {
 - (void)setFloatingPanel:(BOOL)flag;
 - (void)setWorksWhenModal:(BOOL)flag;
 - (BOOL)worksWhenModal;
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
 
 @end
 
