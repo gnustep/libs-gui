@@ -38,10 +38,11 @@
   // Attributes
   NSColor *_background_color;
   NSColor *_text_color;
-  BOOL _draws_background;
+  // Think of the following ones as of two BOOL ivars
+#define _textfieldcell_draws_background _cell.subclass_bool_one
   // The following is different from _draws_background 
   // if we are using a semi-transparent color.
-  BOOL _isOpaque;
+#define _textfieldcell_is_opaque _cell.subclass_bool_two
 }
 
 //
