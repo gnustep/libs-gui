@@ -1087,21 +1087,57 @@ byExtendingSelection: (BOOL)flag
 }
 
 - (void) validateEditing
-{ 
+{
   if (_textObject)
     {
-      [_editedCell setStringValue: [_textObject text]];
+      NSFormatter *formatter;
+      NSString *string;
+      id newObjectValue;
+      BOOL validatedOK = YES;
 
-      if (_del_editable)
+      formatter = [_editedCell formatter];
+      string = [_textObject text];
+
+      if (formatter == nil)
 	{
-	  [_delegate tableView: self 
-		     setObjectValue: [_editedCell objectValue]  
-		     forTableColumn: [_tableColumns objectAtIndex: 
-						      _editedColumn]
-		     row: _editedRow];
+	  newObjectValue = string;
+	}
+      else
+	{
+	  NSString *error;
+	  
+	  if ([formatter getObjectValue: &newObjectValue 
+			 forString: string 
+			 errorDescription: &error] == NO)
+	    {
+	      if ([_delegate control: self 
+			     didFailToFormatString: string 
+			     errorDescription: error] == NO)
+		{
+		  validatedOK = NO;
+		}
+	      else
+		{
+		  newObjectValue = string;
+		}
+	    }
+	}
+      if (validatedOK == YES)
+	{
+	  [_editedCell setObjectValue: newObjectValue];
+	  
+	  if (_del_editable)
+	    {
+	      NSTableColumn *tb;
+	      
+	      tb = [_tableColumns objectAtIndex: _editedColumn];
+	      
+	      [_delegate tableView: self  setObjectValue: newObjectValue
+			 forTableColumn: tb  row: _editedRow];
+	    }
 	}
     }
-}			
+}
 
 - (void) editColumn: (int) columnIndex 
 		row: (int) rowIndex 
@@ -1586,8 +1622,13 @@ byExtendingSelection: (BOOL)flag
 	  }
 	}
     }
-  
+
   // Double-click events
+
+  // FIXME: Start editing only if row is selected
+  if ([self isRowSelected: _clickedRow] == NO)
+    return;
+
   if ([_delegate respondsToSelector: 
 		   @selector(tableView:shouldEditTableColumn:row:)])
     {
@@ -2409,6 +2450,24 @@ byExtendingSelection: (BOOL)flag
 	}
       
       return YES;
+    }
+
+  if ([_delegate respondsToSelector: 
+		   @selector(control:isValidObject:)] == YES)
+    {
+      NSFormatter *formatter;
+      id newObjectValue;
+      
+      formatter = [_cell formatter];
+      
+      if ([formatter getObjectValue: &newObjectValue 
+		     forString: [_textObject text] 
+		     errorDescription: NULL] == YES)
+	{
+	  if ([_delegate control: self
+			 isValidObject: newObjectValue] == NO)
+	    return NO;
+	}
     }
 
   return [_editedCell isEntryAcceptable: [aTextObject text]];
