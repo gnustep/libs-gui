@@ -1,3 +1,8 @@
+Thu Aug 17 08:51:45 2000  Adam Fedor  <fedor@ultra.doc.com>
+
+	* Headers/gnustep/gui/NSLayoutManager.h: Add hyphenation 
+	prototypes (patch from Jeff Teunissen <deek@dusknet.dhs.org>).
+
 2000-08-07  Adam Fedor  <fedor@gnu.org>
 
 	* Merge 0.6.6 branch into main.

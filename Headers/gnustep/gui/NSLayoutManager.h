@@ -155,7 +155,7 @@ typedef enum {
     BOOL			_showsControlChars;
     float			_hyphenationFactor;
     BOOL			_usesScreenFonts;
-  BOOL finished;
+    BOOL			finished;
 }
 
 /**************************** Initialization ****************************/
@@ -398,6 +398,11 @@ typedef enum {
 - (void)drawUnderlineForGlyphRange:(NSRange)glyphRange underlineType:(int)underlineVal baselineOffset:(float)baselineOffset lineFragmentRect:(NSRect)lineRect lineFragmentGlyphRange:(NSRange)lineGlyphRange containerOrigin:(NSPoint)containerOrigin;
 - (void)underlineGlyphRange:(NSRange)glyphRange underlineType:(int)underlineVal lineFragmentRect:(NSRect)lineRect lineFragmentGlyphRange:(NSRange)lineGlyphRange containerOrigin:(NSPoint)containerOrigin;
     // The first of these methods actually draws an appropriate underline for the glyph range given.  The second method potentailly breaks the range it is given up into subranges and calls drawUnderline... for ranges that should actually have the underline drawn.  As examples of why there are two methods, consider two situations.  First, in all cases you don't want to underline the leading and trailing whitespace on a line.  The -underlineGlyphRange... method is passed glyph ranges that have underlining turned on, but it will then look for this leading and trailing white space and only pass the ranges that should actually be underlined to -drawUnderline...  Second, if the underlineType: indicates that only words, (ie no whitespace), should be underlined, then -underlineGlyphRange... will carve the range it is passed up into words and only pass word ranges to -drawUnderline.
+
+/************************ Hyphenation support ************************/
+
+- (float) hyphenationFactor;
+- (void) setHyphenationFactor: (float)factor;
 
 @end
 
