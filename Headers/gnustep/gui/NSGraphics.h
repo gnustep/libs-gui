@@ -340,4 +340,34 @@ NSArray* GSAllWindows();
 NSWindow* GSWindowWithNumber(int num);
 #endif
 
+#ifndef	STRICT_OPENSTEP
+// Window operations
+void NSConvertGlobalToWindowNumber(int globalNum, unsigned int *winNum);
+void NSConvertWindowNumberToGlobal(int winNum, unsigned int *globalNum);
+
+// Rectangle drawing
+NSRect NSDrawColorTiledRects(NSRect boundsRect, NSRect clipRect, 
+			     const NSRectEdge *sides, NSColor **colors, 
+			     int count);
+void NSDrawDarkBezel(NSRect aRect, NSRect clipRect);
+void NSDrawLightBezel(NSRect aRect, NSRect clipRect);
+void NSRectFillListWithColors(const NSRect *rects, NSColor **colors, int count);
+void NSRectFillUsingOperation(NSRect aRect, NSCompositingOperation op);
+void NSRectFillListUsingOperation(const NSRect *rects, int count, 
+				  NSCompositingOperation op);
+void NSRectFillListWithColorsUsingOperation(const NSRect *rects, 
+					    NSColor **colors, 
+					    int num, 
+					    NSCompositingOperation op);
+
+void NSDrawWindowBackground(NSRect aRect);
+
+// Context information
+void NSCountWindowsForContext(int context, int *count);
+void NSWindowListForContext(int context, int size, int list[][]);
+int NSGetWindowServerMemory(int context, int *virtualMemory, 
+			    int *windowBackingMemory, NSString **windowDumpStream);
+
+#endif
+
 #endif /* __NSGraphics_h__ */

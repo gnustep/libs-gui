@@ -145,6 +145,45 @@ int NSRunLocalizedAlertPanel(NSString *table,
                              NSString *otherButton, ...);
 #endif
 
+#ifndef	STRICT_OPENSTEP
+//
+// New alert interface of Mac OS X
+//
+void NSBeginAlertSheet(NSString *title, 
+		       NSString *defaultButton, 
+		       NSString *alternateButton, 
+		       NSString *otherButton, 
+		       NSWindow *docWindow, 
+		       id modalDelegate, 
+		       SEL willEndSelector, 
+		       SEL didEndSelector, 
+		       void *contextInfo, 
+		       NSString *msg, ...);
+
+void NSBeginCriticalAlertSheet(NSString *title, 
+			       NSString *defaultButton, 
+			       NSString *alternateButton, 
+			       NSString *otherButton, 
+			       NSWindow *docWindow, 
+			       id modalDelegate, 
+			       SEL willEndSelector, 
+			       SEL didEndSelector, 
+			       void *contextInfo, 
+			       NSString *msg, ...);
+
+void NSBeginInformationalAlertSheet(NSString *title, 
+				    NSString *defaultButton, 
+				    NSString *alternateButton, 
+				    NSString *otherButton,
+				    NSWindow *docWindow, 
+				    id modalDelegate, 
+				    SEL willEndSelector, 
+				    SEL didEndSelector, 
+				    void *contextInfo, 
+				    NSString *msg, ...);
+
+#endif
+
 //
 // Release an Attention Panel
 //
