@@ -150,7 +150,7 @@
 	[_tag capitalizedString]];
       sel = NSSelectorFromString(selName);
 	      
-      if ([_src respondsToSelector: sel])
+      if (sel && [_src respondsToSelector: sel])
 	{
 	  [_src performSelector: sel withObject: _dst];
 	}

@@ -68,7 +68,6 @@
 #ifndef __WIN32__
 #include <unistd.h>		/* for L_SET, etc definitions */
 #endif /* !__WIN32__ */
-#include <AppKit/nsimage-tiff.h>
 
 typedef struct {
   char* data;

@@ -121,6 +121,11 @@ _NSAppKitUncaughtExceptionHandler (NSException *exception)
 	 library exception handler */
       [exception raise];
     }
+  else if (retVal == NSAlertOther)
+    {
+      /* Debug button: abort so we can trace the error in gdb */
+      abort();
+    }
 
   /* The user said to go on - more fun I guess - turn the AppKit
      exception handler on again */

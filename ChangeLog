@@ -1,3 +1,14 @@
+2001-05-07  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSApplication.m (_NSAppKitUncaughtExceptionHandler): Abort
+	when debug buttons is pressed (so gdb can do a bt).
+
+2001-05-06  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSBundleAdditions.m ([NSNibOutletConnector
+	-establishConnection]): Test for non-NULL sel (patch suggested by
+	Raphael Sebbe <raphael_sebbe@mac.com>).
+
 2000-05-08  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSTabViewItem.h
