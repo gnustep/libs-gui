@@ -181,20 +181,20 @@ static inline float defaultFontHeight ()
 {
   self = [super init];
 
-  _lineLayoutInformation = [[NSMutableArray alloc] init];
+  _lineLayoutInfo = [[NSMutableArray alloc] init];
   return self;
 }
 
 - (void) dealloc
 {
-  RELEASE(_lineLayoutInformation);
+  RELEASE(_lineLayoutInfo);
 
   [super dealloc];
 }
 
 - (void) setTextStorage: (NSTextStorage*)aTextStorage
 {
-  [_lineLayoutInformation removeAllObjects];
+  [_lineLayoutInfo removeAllObjects];
 
   [super setTextStorage: aTextStorage];
 }
@@ -202,13 +202,13 @@ static inline float defaultFontHeight ()
 // Returns the currently used bounds for all the text
 - (NSRect)usedRectForTextContainer:(NSTextContainer *)aTextContainer
 {
-  if ([_lineLayoutInformation count])
+  if ([_lineLayoutInfo count])
     {
       NSEnumerator *lineEnum;
       _GNULineLayoutInfo *currentInfo;
       NSRect retRect = NSMakeRect (0, 0, 0, 0);
 
-      for ((lineEnum = [_lineLayoutInformation objectEnumerator]);
+      for ((lineEnum = [_lineLayoutInfo objectEnumerator]);
 	   (currentInfo = [lineEnum nextObject]);)
 	{
 	  retRect = NSUnionRect (retRect, currentInfo->usedRect);
@@ -223,9 +223,8 @@ static inline float defaultFontHeight ()
 		inTextContainer: (NSTextContainer*)aTextContainer
  fractionOfDistanceThroughGlyph: (float*)partialFraction
 {
-  _GNULineLayoutInfo *currentInfo = [_lineLayoutInformation 
-				      objectAtIndex: 
-					[self lineLayoutIndexForPoint: point]];
+  unsigned index = [self lineLayoutIndexForPoint: point];
+  _GNULineLayoutInfo *currentInfo = [_lineLayoutInfo objectAtIndex: index];
   NSRect rect = currentInfo->usedRect;
   NSRange range = currentInfo->glyphRange;
   int i;
@@ -240,13 +239,41 @@ static inline float defaultFontHeight ()
     {
       *partialFraction = 0.0;
     }
+
+  /* Make sure min is >= 0.  */
+  min = MAX(0, min);
+
+  /* The point is before the beginning of the line.  Return the first
+     location on the line (or 0).  */
   if (x <= fmin)
     {
-      return MAX(0, min - 1);
+      return min;
     }
+  /* The point is after the end of the line.  */
   if (x >= fmax)
     {
-      return MAX(0, max);
+      if (max == 0)
+	{
+	  return 0;
+	}
+      else if ((max == [_textStorage length])
+	       && (index == [_lineLayoutInfo count] - 1))
+	{
+	  /* We are on the very last line and we are asked for the
+             glyph index on a point after the end of the line.  Return
+             end of text then.  */
+	  return MAX(0, [_textStorage length]);
+	}
+      else
+	{
+	  /* In all other cases, this is a normal line (== any line
+	     but the very last one); a newline or space is ending it,
+	     and when you click after the end of the line, we don't
+	     want to go to the next line: return the position just
+	     before the newline or space (that is, return the position
+	     just after the last displayed glyph on that line).  */
+	  return MAX(0, max - 1);
+	}
     }
   if (range.length == 1)
     {
@@ -286,7 +313,7 @@ static inline float defaultFontHeight ()
 	      *partialFraction = 1.0 - (w1 - x)/(w1 - w2); 
 	    }
 	}
-      return MAX(0, i-1);
+      return MAX(0, i - 1);
     }
   return MAX(0, min - 1);
 }
@@ -296,14 +323,13 @@ static inline float defaultFontHeight ()
 {
   _GNULineLayoutInfo *currentInfo;
   
-  if (![_textStorage length] || ![_lineLayoutInformation count])
+  if (![_textStorage length] || ![_lineLayoutInfo count])
     {
       return NSMakeRect (0, 0, 0, defaultFontHeight ());      	
     }
   
-  currentInfo = [_lineLayoutInformation 
-		  objectAtIndex: [self lineLayoutIndexForGlyphIndex: 
-					 index]];
+  currentInfo = [_lineLayoutInfo objectAtIndex: 
+				   [self lineLayoutIndexForGlyphIndex: index]];
 
   if (lineFragmentRange)
     {
@@ -318,7 +344,7 @@ static inline float defaultFontHeight ()
 {
   _GNULineLayoutInfo *currentInfo;
   
-  if (![_textStorage length] || ![_lineLayoutInformation count])
+  if (![_textStorage length] || ![_lineLayoutInfo count])
     {
       // we return the line fragment from the virtual newline
       // that we added at the end of the empty text
@@ -327,12 +353,11 @@ static inline float defaultFontHeight ()
 	  lineFragmentRange->location=0;
 	  lineFragmentRange->length=0;
 	}
-      return ((_GNULineLayoutInfo *)[_lineLayoutInformation lastObject])->usedRect;
+      return ((_GNULineLayoutInfo *)[_lineLayoutInfo lastObject])->usedRect;
     }
   
-  currentInfo = [_lineLayoutInformation 
-		  objectAtIndex: [self lineLayoutIndexForGlyphIndex: 
-					 index]];
+  currentInfo = [_lineLayoutInfo objectAtIndex: 
+				   [self lineLayoutIndexForGlyphIndex: index]];
 
   if (lineFragmentRange)
     {
@@ -348,14 +373,13 @@ static inline float defaultFontHeight ()
   unsigned start;
   _GNULineLayoutInfo *currentInfo;
   
-  if (![_textStorage length] || ![_lineLayoutInformation count])
+  if (![_textStorage length] || ![_lineLayoutInfo count])
     {
       return NSMakePoint(0, 0);
     }
     
-  currentInfo = [_lineLayoutInformation 
-		    objectAtIndex: [self lineLayoutIndexForGlyphIndex: 
-					     index]];
+  currentInfo = [_lineLayoutInfo objectAtIndex: 
+				   [self lineLayoutIndexForGlyphIndex: index]];
   if (index >= NSMaxRange (currentInfo->glyphRange))
     {
       x = [self _sizeOfRange: currentInfo->glyphRange].width;
@@ -379,7 +403,7 @@ static inline float defaultFontHeight ()
   NSSize size;
   NSRect rect;
 
-  if (![_textStorage length] || ![_lineLayoutInformation count])
+  if (![_textStorage length] || ![_lineLayoutInfo count])
     {
       return NSMakeRect (0, 0, 0, defaultFontHeight ());
     }
@@ -392,7 +416,7 @@ static inline float defaultFontHeight ()
     {
       // the range is not multiline.
 
-      currentInfo = [_lineLayoutInformation objectAtIndex: i1];
+      currentInfo = [_lineLayoutInfo objectAtIndex: i1];
       rect1 = currentInfo->usedRect;
       size = [self _sizeOfRange: 
 		     NSMakeRange 
@@ -406,7 +430,7 @@ static inline float defaultFontHeight ()
 				currentInfo->glyphRange.location, 1)].width;
       // rect1 is the rect for the first glyph in the range
       
-      currentInfo = [_lineLayoutInformation objectAtIndex: i2];
+      currentInfo = [_lineLayoutInfo objectAtIndex: i2];
       rect2 = currentInfo->usedRect;
       size = [self _sizeOfRange: 
 		     NSMakeRange 
@@ -428,10 +452,10 @@ static inline float defaultFontHeight ()
       // this is a multiline range, therefore the bounding rect goes
       // from the beginning of a line till the end
       // getting the lineFragmentRects will give the correct result
-      currentInfo = [_lineLayoutInformation objectAtIndex: i1];
+      currentInfo = [_lineLayoutInfo objectAtIndex: i1];
       rect1 = currentInfo->lineFragmentRect;
       
-      currentInfo = [_lineLayoutInformation objectAtIndex: i2];
+      currentInfo = [_lineLayoutInfo objectAtIndex: i2];
       rect2 = currentInfo->lineFragmentRect;
     }
 
@@ -628,11 +652,10 @@ static inline float defaultFontHeight ()
 	       forGlyphRange: (NSRange)glyphRange
 		    usedRect: (NSRect)usedRect
 {
-  [_lineLayoutInformation addObject:
-      [_GNULineLayoutInfo
-	  lineLayoutWithRange: glyphRange
-	  rect: fragmentRect
-	  usedRect: usedRect]];
+  [_lineLayoutInfo addObject: [_GNULineLayoutInfo
+				lineLayoutWithRange: glyphRange
+				rect: fragmentRect
+				usedRect: usedRect]];
 }
 
 - (void) setLocation: (NSPoint)aPoint
@@ -660,7 +683,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
 {
   int i;
   int min = 0;
-  int max = MAX(0, (int)[_lineLayoutInformation count] - 1);
+  int max = MAX(0, (int)[_lineLayoutInfo count] - 1);
   float y = point.y;
   float fmin;
   float fmax;
@@ -671,8 +694,8 @@ forStartOfGlyphRange: (NSRange)glyphRange
       return 0;
     }
 
-  fmin = NSMinY([[_lineLayoutInformation objectAtIndex: 0] lineFragmentRect]);
-  fmax = NSMaxY([[_lineLayoutInformation lastObject] lineFragmentRect]);
+  fmin = NSMinY([[_lineLayoutInfo objectAtIndex: 0] lineFragmentRect]);
+  fmax = NSMaxY([[_lineLayoutInfo lastObject] lineFragmentRect]);
 
   if (y >= fmax)
     return max;
@@ -684,7 +707,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
   i = (int)((max - min) * (y - fmin) / (fmax - fmin)) + min;
   while (min < max)
     {
-      _GNULineLayoutInfo *ci = [_lineLayoutInformation objectAtIndex: i];
+      _GNULineLayoutInfo *ci = [_lineLayoutInfo objectAtIndex: i];
 
       rect = ci->lineFragmentRect;
 
@@ -710,7 +733,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
 {
   int i;
   int min = 0;
-  int max = MAX(0, (int)[_lineLayoutInformation count] - 1);
+  int max = MAX(0, (int)[_lineLayoutInfo count] - 1);
   unsigned y = anIndex;
   unsigned fmin;
   unsigned fmax;
@@ -721,8 +744,8 @@ forStartOfGlyphRange: (NSRange)glyphRange
       return 0;
     }
 
-  fmin = [[_lineLayoutInformation objectAtIndex: 0] glyphRange].location;
-  fmax = NSMaxRange([[_lineLayoutInformation lastObject] glyphRange]);
+  fmin = [[_lineLayoutInfo objectAtIndex: 0] glyphRange].location;
+  fmax = NSMaxRange([[_lineLayoutInfo lastObject] glyphRange]);
 
   if (y >= fmax)
     return max;
@@ -734,7 +757,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
   i = (int)((max - min) * (y - fmin) / (fmax - fmin)) + min;
   while (min < max)
     {
-      _GNULineLayoutInfo *ci = [_lineLayoutInformation objectAtIndex: i];
+      _GNULineLayoutInfo *ci = [_lineLayoutInfo objectAtIndex: i];
 
       range = ci->glyphRange;
 
@@ -764,21 +787,21 @@ forStartOfGlyphRange: (NSRange)glyphRange
   unsigned startIndex;
   unsigned endIndex;
 
-  if ([_lineLayoutInformation count] == 0)
+  if ([_lineLayoutInfo count] == 0)
     {
       return NSMakeRange (0, 0);
     }
 
-  if (startLine >= [_lineLayoutInformation count])
-    currentInfo = [_lineLayoutInformation lastObject];
+  if (startLine >= [_lineLayoutInfo count])
+    currentInfo = [_lineLayoutInfo lastObject];
   else
-    currentInfo = [_lineLayoutInformation objectAtIndex: startLine];
+    currentInfo = [_lineLayoutInfo objectAtIndex: startLine];
   startIndex = currentInfo->glyphRange.location;
 
-  if (endLine >= [_lineLayoutInformation count])
-    currentInfo = [_lineLayoutInformation lastObject];
+  if (endLine >= [_lineLayoutInfo count])
+    currentInfo = [_lineLayoutInfo lastObject];
   else
-    currentInfo = [_lineLayoutInformation objectAtIndex: endLine];
+    currentInfo = [_lineLayoutInfo objectAtIndex: endLine];
   endIndex = NSMaxRange(currentInfo->glyphRange);
 
   return NSMakeRange(startIndex, endIndex - startIndex);
@@ -797,12 +820,12 @@ forStartOfGlyphRange: (NSRange)glyphRange
   container = [self textContainerForGlyphAtIndex: index effectiveRange: NULL];
   if (container)
     width = [container containerSize].width;
-  if (![_textStorage length] || ![_lineLayoutInformation count])
+  if (![_textStorage length] || ![_lineLayoutInfo count])
     {
       return NSMakeRect(0, 0, width, defaultFontHeight ());
     }
 
-  currentInfo = [_lineLayoutInformation lastObject];
+  currentInfo = [_lineLayoutInfo lastObject];
   if (index >= NSMaxRange(currentInfo->glyphRange))
     {
       NSRect rect = currentInfo->usedRect;
@@ -813,9 +836,8 @@ forStartOfGlyphRange: (NSRange)glyphRange
     }
 
 
-  currentInfo = [_lineLayoutInformation 
-		  objectAtIndex: [self lineLayoutIndexForGlyphIndex: 
-					 index]];
+  currentInfo = [_lineLayoutInfo objectAtIndex: 
+				   [self lineLayoutIndexForGlyphIndex: index]];
   start = currentInfo->glyphRange.location;
   rect = currentInfo->usedRect;
   x = rect.origin.x + [self _sizeOfRange: NSMakeRange(start, index-start)].width;
@@ -854,13 +876,13 @@ forStartOfGlyphRange: (NSRange)glyphRange
 
   startLine = [self lineLayoutIndexForPoint: upperLeftPoint];
   endLine = [self lineLayoutIndexForPoint: lowerRightPoint];
-  if (++endLine > [_lineLayoutInformation count])
-    endLine = [_lineLayoutInformation count];
+  if (++endLine > [_lineLayoutInfo count])
+    endLine = [_lineLayoutInfo count];
 
   return NSMakeRange(startLine, endLine - startLine);
 }
 
-// relies on _lineLayoutInformation
+// relies on _lineLayoutInfo
 - (void) drawLinesInLineRange: (NSRange)aRange
 		      atPoint: (NSPoint)containerOrigin
 {
@@ -868,12 +890,12 @@ forStartOfGlyphRange: (NSRange)glyphRange
   NSEnumerator *lineEnum;
   _GNULineLayoutInfo *currentInfo;
 
-  if ([_lineLayoutInformation count] == 0)
+  if ([_lineLayoutInfo count] == 0)
     {
       return;
     }
 
-  linesToDraw = [_lineLayoutInformation subarrayWithRange: aRange];
+  linesToDraw = [_lineLayoutInfo subarrayWithRange: aRange];
 
   for ((lineEnum = [linesToDraw objectEnumerator]);
        (currentInfo = [lineEnum nextObject]);)
@@ -890,21 +912,22 @@ forStartOfGlyphRange: (NSRange)glyphRange
 - (void) setNeedsDisplayForLineRange: (NSRange)redrawLineRange
 		     inTextContainer: (NSTextContainer *)aTextContainer 
 {
-  if ([_lineLayoutInformation count]
-      && NSMaxRange (redrawLineRange) <= [_lineLayoutInformation count]
+  if ([_lineLayoutInfo count]
+      && NSMaxRange (redrawLineRange) <= [_lineLayoutInfo count]
       && redrawLineRange.length)
     {
       _GNULineLayoutInfo *firstInfo
-	= [_lineLayoutInformation objectAtIndex: redrawLineRange.location];
+	= [_lineLayoutInfo objectAtIndex: redrawLineRange.location];
       NSRect displayRect = firstInfo->lineFragmentRect;
       float width = 0;
       if (aTextContainer)
 	width = [aTextContainer containerSize].width;
       if (redrawLineRange.length > 1)
 	  displayRect = NSUnionRect(displayRect,
-				    [[_lineLayoutInformation
+				    [[_lineLayoutInfo
 					 objectAtIndex: 
-					     (int)NSMaxRange(redrawLineRange) - 1] lineFragmentRect]);
+					     (int)NSMaxRange(redrawLineRange) 
+				       - 1] lineFragmentRect]);
 
       displayRect.size.width = width;
       displayRect.origin.x +=
@@ -919,7 +942,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
 		    offset: (int)relocOffset
 		floatTrift: (float*)yDisplacement
 {
-  _GNULineLayoutInfo *lastInfo = [_lineLayoutInformation lastObject];
+  _GNULineLayoutInfo *lastInfo = [_lineLayoutInfo lastObject];
   // The start character in the ghostArray
   unsigned nextChar = NSMaxRange(lastInfo->glyphRange) - relocOffset;
   NSEnumerator *relocEnum;
@@ -957,7 +980,7 @@ NSDebugLog(@"Reloc %@ to %d", NSStringFromRange(currReloc->glyphRange), nextChar
 	  currReloc->lineFragmentRect.origin.y += yReloc;
 	  currReloc->usedRect.origin.y += yReloc;
 	}
-      [_lineLayoutInformation addObject:  currReloc];
+      [_lineLayoutInfo addObject:  currReloc];
     }
 
   return YES;
@@ -992,7 +1015,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   NSString *allText = [_textStorage string];
   unsigned length = [allText length];
   unsigned paraPos;
-  int maxLines = [_lineLayoutInformation count];
+  int maxLines = [_lineLayoutInfo count];
   int aLine = 0;
   // for optimization detection
   NSMutableArray *ghostArray = nil;
@@ -1007,7 +1030,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
       if (nextLine < maxLines)
 	{
 	  // remember old array for optimization purposes
-	  ghostArray = AUTORELEASE([[_lineLayoutInformation
+	  ghostArray = AUTORELEASE([[_lineLayoutInfo
 				      subarrayWithRange:
 					NSMakeRange (nextLine, 
 						     maxLines - nextLine)]
@@ -1017,7 +1040,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
       aLine = MAX(0, insertionLineIndex - 1);
       if (aLine)
 	{
-	  _GNULineLayoutInfo *lastValidLineInfo = [_lineLayoutInformation 
+	  _GNULineLayoutInfo *lastValidLineInfo = [_lineLayoutInfo 
 						    objectAtIndex: aLine - 1];
 	  NSRect aRect = lastValidLineInfo->usedRect;
 	  
@@ -1027,7 +1050,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	  drawingPoint.y += aRect.size.height;
 	}
       
-      [_lineLayoutInformation removeObjectsInRange:
+      [_lineLayoutInfo removeObjectsInRange:
 				NSMakeRange (aLine, maxLines - aLine)];
     }
   
@@ -1048,7 +1071,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	
 	if ([style alignment] == NSRightTextAlignment)
 	  {
-	    [_lineLayoutInformation
+	    [_lineLayoutInfo
 	      addObject: [_GNULineLayoutInfo
 			   lineLayoutWithRange: NSMakeRange (0, 0)
 			   rect: NSMakeRect (0, 0, width, defaultFontHeight ())
@@ -1056,7 +1079,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	  }
 	else if ([style alignment] == NSCenterTextAlignment)
 	  {
-	    [_lineLayoutInformation
+	    [_lineLayoutInfo
 	      addObject: [_GNULineLayoutInfo
 			   lineLayoutWithRange: NSMakeRange (0, 0)
 			   rect: NSMakeRect (0, 0, width, defaultFontHeight ())
@@ -1064,7 +1087,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	  }
 	else
 	  {
-	    [_lineLayoutInformation
+	    [_lineLayoutInfo
 	      addObject: [_GNULineLayoutInfo
 			   lineLayoutWithRange: NSMakeRange (0, 0)
 			   rect: NSMakeRect (0, 0, width, defaultFontHeight ())
@@ -1146,7 +1169,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	  if (NSIsEmptyRect(fragmentRect))
  	    {
 	      // No more space in the text container, give up doing the layout
-	      int a = MAX (1, [_lineLayoutInformation count] - aLine);
+	      int a = MAX (1, [_lineLayoutInfo count] - aLine);
 	      return NSMakeRange(aLine, a);
 	    }
 
@@ -1329,7 +1352,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 		  // y displacement: redisplay all remaining lines
 		  if (yDisplacement)
 		    {
-		      erg = [_lineLayoutInformation count] - aLine;
+		      erg = [_lineLayoutInfo count] - aLine;
 		    }
 		  else 
 		    {
@@ -1362,7 +1385,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	
 	if ([style alignment] == NSRightTextAlignment)
 	  {
-	    [_lineLayoutInformation
+	    [_lineLayoutInfo
 	      addObject: [_GNULineLayoutInfo
 			   lineLayoutWithRange: NSMakeRange (length, 0)
 			   rect:
@@ -1378,7 +1401,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	  }
 	else if ([style alignment] == NSCenterTextAlignment)
 	  {
-	    [_lineLayoutInformation
+	    [_lineLayoutInfo
 	      addObject: [_GNULineLayoutInfo
 			   lineLayoutWithRange: NSMakeRange (length, 0)
 			   rect: 
@@ -1394,7 +1417,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	  }
 	else
 	  {
-	    [_lineLayoutInformation
+	    [_lineLayoutInfo
 	      addObject: [_GNULineLayoutInfo
 			   lineLayoutWithRange: NSMakeRange (length, 0)
 			   rect: NSMakeRect (drawingPoint.x, drawingPoint.y, 
@@ -1406,7 +1429,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
     }
   
   // lines actually updated (optimized drawing)
-  return NSMakeRange(aLine, MAX(1, [_lineLayoutInformation count] - aLine));
+  return NSMakeRange(aLine, MAX(1, [_lineLayoutInfo count] - aLine));
 }
 
 
@@ -1439,7 +1462,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
     {
       return 0;
     }
-  else if (upFlag == NO  &&  line == ([_lineLayoutInformation count] - 1))
+  else if (upFlag == NO  &&  line == ([_lineLayoutInfo count] - 1))
     {
       return [_textStorage length];
     }
@@ -1454,7 +1477,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
       line += 1;
     }
 
-  lineInfo = [_lineLayoutInformation objectAtIndex: line];
+  lineInfo = [_lineLayoutInfo objectAtIndex: line];
   
   rect  = lineInfo->usedRect;
   range = lineInfo->glyphRange;
