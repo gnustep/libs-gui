@@ -1,4 +1,4 @@
-/* 
+/* -*-objc-*-
    NSSplitView.h
 
    Allows multiple views to share a region in a window
@@ -69,7 +69,7 @@
 
 @end
 
-@interface NSObject(NSSplitViewDelegate)
+@interface NSObject (NSSplitViewDelegate)
 - (void) splitView: (NSSplitView *)sender 
 resizeSubviewsWithOldSize: (NSSize)oldSize;
 
@@ -77,6 +77,10 @@ resizeSubviewsWithOldSize: (NSSize)oldSize;
 constrainMinCoordinate: (float *)min 
      maxCoordinate: (float *)max 
        ofSubviewAt: (int)offset;
+
+- (float) splitView: (NSSplitView *)sender
+constrainSplitPosition: (float)proposedPosition
+	ofSubviewAt: (int)offset;
 
 - (void) splitViewWillResizeSubviews: (NSNotification *)notification;
 - (void) splitViewDidResizeSubviews: (NSNotification *)notification;
