@@ -701,13 +701,15 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   NSView *document;
+  BOOL temp;
 
   self = [super initWithCoder: aDecoder];
   [self setAutoresizesSubviews: YES];
 
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_backgroundColor];
+  [self setBackgroundColor: [aDecoder decodeObject]];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_copiesOnScroll];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_drawsBackground];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &temp];
+  [self setDrawsBackground: temp];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_cursor];
 
   if ([[self subviews] count] > 0)
