@@ -1,3 +1,8 @@
+2004-04-15  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
+
+	* Source/NSInputManager.m (-initWithName:host:): Release the
+	  local autorelease pool before returning nil.
+
 2004-04-13  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
 
 	* Source/NSInputManager.m (-createKeyBindingTable): Remove the
