@@ -883,18 +883,30 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
 - (void)_removeSubviewFromViewsThatNeedDisplay:(NSView*)view
 {
+  // If no subviews need to be displayed then
+  // then view must not be among them
+  if (!_subviewsThatNeedDisplay)
+    return;
+
   /* Remove view from the list of subviews that need display */
   if (_subviewsThatNeedDisplay == view)
-    _subviewsThatNeedDisplay = view->_nextSiblingSubviewThatNeedsDisplay;
+    {
+      _subviewsThatNeedDisplay = view->_nextSiblingSubviewThatNeedsDisplay;
+      [view _recursivelyResetNeedsDisplayInAllViews];
+    }
   else {
     NSView* currentView;
 
     for (currentView = _subviewsThatNeedDisplay;
-	 currentView->_nextSiblingSubviewThatNeedsDisplay;
+	 currentView && currentView->_nextSiblingSubviewThatNeedsDisplay;
 	 currentView = currentView->_nextSiblingSubviewThatNeedsDisplay)
       if (currentView->_nextSiblingSubviewThatNeedsDisplay == view)
-	currentView->_nextSiblingSubviewThatNeedsDisplay
+	{
+	  currentView->_nextSiblingSubviewThatNeedsDisplay
 	    = view->_nextSiblingSubviewThatNeedsDisplay;
+	  [view _recursivelyResetNeedsDisplayInAllViews];
+	  break;
+	}
   }
 }
 
@@ -934,6 +946,7 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
     currentView = nextView;
   }
   _subviewsThatNeedDisplay = NULL;
+  _nextSiblingSubviewThatNeedsDisplay = NULL;
 }
 
 - (void)_displayNeededViews

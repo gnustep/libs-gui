@@ -3,7 +3,7 @@
 
    Control to display and select from hierarchal lists
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1997 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -41,6 +41,33 @@
 @interface NSBrowser : NSControl <NSCoding>
 {
   // Attributes
+  Class _browserCellClass;
+  id _browserCellPrototype;
+  id _browserMatrixClass;
+  NSString *_pathSeparator;
+  BOOL _isLoaded;
+  BOOL _allowsBranchSelection;
+  BOOL _allowsEmptySelection;
+  BOOL _allowsMultipleSelection;
+  BOOL _reusesColumns;
+  int _maxVisibleColumns;
+  float _minColumnWidth;
+  BOOL _separatesColumns;
+  BOOL _takesTitleFromPreviousColumn;
+  BOOL _isTitled;
+  BOOL _hasHorizontalScroller;
+  NSScroller *_horizontalScroller;
+  BOOL _acceptsArrowKeys;
+  BOOL _sendsActionOnArrowKeys;
+  id _browserDelegate;
+  BOOL _passiveDelegate;
+  SEL _doubleAction;
+  NSMutableArray *_browserColumns;
+  id _titleCell;
+  NSSize _columnSize;
+  int _lastColumnLoaded;
+  int _firstVisibleColumn;
+  int _lastVisibleColumn;
 }
 
 //
@@ -208,7 +235,10 @@
 - (int)browser:(NSBrowser *)sender
   numberOfRowsInColumn:(int)column;
 - (BOOL)browser:(NSBrowser *)sender
-     selectCell:(NSString *)title
+selectCellWithString:(NSString *)title
+       inColumn:(int)column;
+- (BOOL)browser:(NSBrowser *)sender
+      selectRow:(int)row
        inColumn:(int)column;
 - (NSString *)browser:(NSBrowser *)sender
 	titleOfColumn:(int)column;

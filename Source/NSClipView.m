@@ -59,7 +59,7 @@
 {
   [super init];
   [self setAutoresizesSubviews:YES];
-  [self setBackgroundColor:[[self window] backgroundColor]];
+  [self setBackgroundColor:[NSColor lightGrayColor]];
   return self;
 }
 

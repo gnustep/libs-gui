@@ -99,6 +99,7 @@
 
   [c setBackgroundColor: background_color];
   [c setTextColor: text_color];
+  [c setDrawsBackground: draw_background];
 
   return c;
 }

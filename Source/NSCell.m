@@ -98,6 +98,8 @@
 
 - (id)initImageCell:(NSImage *)anImage
 {
+  [super init];
+
   [self _init];
 
   // Not an image class --then forget it
@@ -113,6 +115,8 @@
 
 - (id)initTextCell:(NSString *)aString
 {
+  [super init];
+
   [self _init];
 
   cell_font = [[NSFont userFontOfSize:12] retain];

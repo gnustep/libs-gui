@@ -14,6 +14,13 @@ The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSIO
 @itemize @bullet
 
 @item
+NSBrowser and NSBrowserCell have been implemented.  There is one odd
+display artifact; lists which are smaller than the browser column area
+have the list justified to the bottom of the column versus the top of
+the column.  This is actually an issue with NSMatrix and will be
+remedied when flip views are implemented.
+
+@item
 Two important optimizations that speed up the displaying of views and flushing
 of windows have been implemented. Only the views that need display and those
 that produce visible effects on the screen receive the -drawRect: message.

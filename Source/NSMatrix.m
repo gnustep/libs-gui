@@ -132,7 +132,7 @@ static void growMatrix (tMatrix m, int numRows, int numCols)
     /* Grow the existing rows to numCols */
     for (i = 0; i < numRows; i++) {
       m->matrix[i] = realloc (m->matrix[i], numCols * sizeof (BOOL));
-      for (j = m->allocatedCols; j < numCols; j++)
+      for (j = m->allocatedCols - 1; j < numCols; j++)
 	m->matrix[i][j] = NO;
     }
     m->allocatedCols = numCols;
@@ -422,9 +422,9 @@ static int mouseDownFlags = 0;
   int i;
 
   /* Grow the matrix if necessary */
-  if (column > numCols)
+  if (column >= numCols)
     [self renewRows:(numRows == 0 ? 1 : numRows) columns:column];
-  else if (numRows == 0) {
+  if (numRows == 0) {
     numRows = 1;
     [cells addObject:[NSMutableArray array]];
   }
@@ -443,9 +443,9 @@ static int mouseDownFlags = 0;
   int i;
 
   /* Grow the matrix if necessary */
-  if (column > numCols)
+  if (column >= numCols)
     [self renewRows:(numRows == 0 ? 1 : numRows) columns:column];
-  else if (numRows == 0) {
+  if (numRows == 0) {
     numRows = 1;
     [cells addObject:[NSMutableArray array]];
   }
@@ -465,9 +465,9 @@ static int mouseDownFlags = 0;
   int i;
 
   /* Grow the matrix if necessary */
-  if (row > numRows)
+  if (row >= numRows)
     [self renewRows:row columns:(numCols == 0 ? 1 : numCols)];
-  else if (numCols == 0)
+  if (numCols == 0)
     numCols = 1;
 
   [cells insertObject:[NSMutableArray arrayWithCapacity:numCols] atIndex:row];
@@ -485,9 +485,9 @@ static int mouseDownFlags = 0;
 - (void)insertRow:(int)row withCells:(NSArray*)cellArray
 {
   /* Grow the matrix if necessary */
-  if (row > numRows)
+  if (row >= numRows)
     [self renewRows:row columns:(numCols == 0 ? 1 : numCols)];
-  else if (numCols == 0)
+  if (numCols == 0)
     numCols = 1;
 
   [cells insertObject:[cellArray subarrayWithRange:NSMakeRange(0, numCols)]

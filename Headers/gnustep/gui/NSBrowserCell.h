@@ -32,10 +32,20 @@
 #include <AppKit/NSCell.h>
 
 @class NSImage;
+@class NSTextFieldCell;
 
 @interface NSBrowserCell : NSCell <NSCoding>
 {
   // Attributes
+  NSImage *_alternateImage;
+  NSCell *_branchImage;
+  NSCell *_highlightBranchImage;
+  NSTextFieldCell *_browserText;
+  BOOL _isLeaf;
+  BOOL _isLoaded;
+
+  // reserved for the backend
+  void *_be_bfc_reserved;
 }
 
 //

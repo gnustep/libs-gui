@@ -61,9 +61,13 @@ Many of the methods have code, but whether the class
 is usable depends upon how much implementation has been done in the
 backend.
 
-@item NSBrowser:: [2]
+@item NSBrowser:: [9]
+There is an odd display artifact; lists which are smaller than the
+browser column area have the list justified to the bottom of the column
+versus the top of the column.  This is actually an issue with NSMatrix
+and will be remedied when flip views are implemented.
 
-@item NSBrowserCell:: [2]
+@item NSBrowserCell:: [9]
 
 @item NSButton:: [9]
 Repeat intervals have been implemented.

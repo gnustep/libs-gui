@@ -27,10 +27,10 @@ ADDITIONAL_INCLUDE_DIRS += -I../Headers -I$(GNUSTEP_SYSTEM_ROOT)/Headers
 # ADDITIONAL_LDFLAGS += 
 
 # Additional library directories the linker should search
-ADDITIONAL_LIB_DIRS += 
+ADDITIONAL_LIB_DIRS += -L../Source/$(GNUSTEP_OBJ_DIR)
 
 # Additional libraries when linking tools
-ADDITIONAL_TOOL_LIBS += -lgnustep-gui
+ADDITIONAL_TOOL_LIBS += -lgnustep-gui -ltiff
 
 # Additional libraries when linking applications
 ADDITIONAL_GUI_LIBS +=

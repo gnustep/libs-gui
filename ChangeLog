@@ -1,3 +1,36 @@
+Thu Oct 30 15:51:43 1997  Scott Christley  <scottc@net-community.com>
+
+	* GNUmakefile: Add Tools directory.
+	* Headers/gnustep/gui/NSBrowser.h: Initial implementation.
+	* Headers/gnustep/gui/NSBrowserCell.h: Initial implementation.
+	* Source/NSBrowser.m: Initial implementation.
+	* Source/NSBrowserCell.m: Initial implementation.
+	* Documentation/news.tmpl.texi: Update.
+	* Documentation/status.tmpl.texi: Update.
+
+	* Source/NSCell.m (-initImageCell:, -initTextCell:): init super.
+
+	* Source/NSClipView.m (-init): Set background to gray as we may not
+	have a window yet.
+
+	* Source/NSMatrix.m: Fix column and row range checks.
+
+	* Source/NSTextFieldCell.m (-copyWithZone:): Set draws
+	background flag for new cell.
+
+	* Source/NSView.m: Reset subview needs display variables
+	when view is removed from superview.
+
+	* Source/GNUmakefile: Add NSPasteboard.m.
+
+	* Testing/GNUmakefile: Use test.make
+	* Testing/GNUmakefile.postamble: Remove install code.
+	* Testing/GNUmakefile.preamble: Add directory and library.
+
+	* Tools/GNUmakefile: Make system root the default install dir.
+	* Tools/GNUmakefile.postamble: Install after instead of before.
+	* Tools/GNUmakefile.preamble: Add directory and library.
+
 Wed Oct 29 12:22:22 1997  Ovidiu Predescu <ovidiu@net-community.com>
 
 	Bug fixes for NSForm and NSFormCell from Benhur Stein

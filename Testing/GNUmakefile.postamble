@@ -15,8 +15,7 @@
 # after-all::
 
 # Things to do before installing
-before-install::
-	$(INSTALL) -m 05755 gpbs $(GNUSTEP_SYSTEM_ROOT)/Tools
+# before-install::
 
 # Things to do after installing
 # after-install::

@@ -32,7 +32,7 @@ include $(GNUSTEP_SYSTEM_ROOT)/Makefiles/common.make
 #
 # The list of subproject directories
 #
-SUBPROJECTS = Source Images Testing
+SUBPROJECTS = Source Images Tools Testing
 
 -include GNUmakefile.preamble
 
