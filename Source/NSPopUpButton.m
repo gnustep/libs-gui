@@ -84,7 +84,21 @@
   pulls_down = flag;
   selected_item = 0;
 
+  [super setTarget: self];
+
+  popb_win = [[NSMenuWindow alloc] initWithContentRect: frameRect
+                                styleMask: NSBorderlessWindowMask
+                                backing: NSBackingStoreRetained
+                                defer: NO];
+
+  [popb_win setContentView: popb_view];
+
   return self;
+}
+
+- (void) close
+{
+  [popb_win orderOut: self];
 }
 
 - (void) dealloc
@@ -337,15 +351,94 @@
 - (void)mouseDown:(NSEvent *)theEvent
 {
   NSNotificationCenter *nc;
+  NSPoint cP;
+  NSRect butf;
+  NSRect winf;   
 
   nc = [NSNotificationCenter defaultCenter];
   [nc postNotificationName: NSPopUpButtonWillPopUpNotification
                     object: self
                   userInfo: nil];
+
+  /*
+   * Get frame of this button in window coordinates,
+   * and origin in screen coordinates.
+   */
+  butf = [self frame];
+  butf = [[self superview] convertRect: butf toView: nil];
+  butf.origin = [[self window] convertBaseToScreen: butf.origin];
+ 
+  /*
+   * Determine frame size for a popup window capable of containing the
+   * menu view.
+   */
+  [popb_view sizeToFitForPopUpButton];
+  [popb_view setFrameOrigin: NSMakePoint(0,0)];
+  winf = [NSMenuWindow frameRectForContentRect: [popb_view frame]
+                                     styleMask: [popb_win styleMask]];
+  /*
+   * Set popup window frame origin so that the top-left corner of the
+   * window lines up with the top-left corner of this button.
+   */
+  winf.origin = butf.origin;
+  winf.origin.y += butf.size.height - winf.size.height;
+  
+  /*
+   * Small hack to fix line up.
+   */
+
+  winf.origin.x += 1;
+  winf.origin.y -= 1;
+ 
+//NSLog(@"butf %@", NSStringFromRect(butf));
+//NSLog(@"winf %@", NSStringFromRect(winf));
+
+  if (pulls_down == NO)
+    {
+      winf.origin.y += (selected_item * butf.size.height);
+    }
+
+  [popb_win setFrame: winf display: YES];
+  [popb_win orderFrontRegardless];
+  [popb_win display];
+    
+  cP = [theEvent locationInWindow];
+  cP = [[self window] convertBaseToScreen: cP];
+  cP = [popb_win convertScreenToBase: cP];
+ 
+  [popb_view mouseDown:
+    [NSEvent mouseEventWithType: NSLeftMouseDragged
+                       location: cP
+                  modifierFlags: [theEvent modifierFlags]
+                      timestamp: [theEvent timestamp]
+                   windowNumber: [popb_win windowNumber]
+                        context: [theEvent context]
+                    eventNumber: [theEvent eventNumber]
+                     clickCount: [theEvent clickCount]
+                       pressure: [theEvent pressure]]];
 }
 
 - (void)mouseUp:(NSEvent *)theEvent
 {
+  NSPoint cP;
+
+  cP = [[self window] convertBaseToScreen: [theEvent locationInWindow]];
+  cP = [popb_win convertScreenToBase: cP];
+ 
+//NSLog(@"location x = %d, y = %d\n", (int)cP.x, (int)cP.y);
+    
+  [popb_view mouseUp:
+    [NSEvent mouseEventWithType: NSLeftMouseUp
+                       location: cP
+                  modifierFlags: [theEvent modifierFlags]
+                      timestamp: [theEvent timestamp]
+                   windowNumber: [popb_win windowNumber]
+                        context: [theEvent context]
+                    eventNumber: [theEvent eventNumber]
+                     clickCount: [theEvent clickCount]
+                       pressure: [theEvent pressure]]];
+
+  [popb_win orderOut: nil];
 }
 
 - (void)mouseMoved:(NSEvent *)theEvent

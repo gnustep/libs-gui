@@ -2,6 +2,8 @@
 
 	* Source/NSMenu.m: merge in all backend code. All that remains in
 	the backend is NSMenuWindow.
+	* Source/NSPopUpButton.m: merged in all backend code. Relies on
+	NSMenuWindow now.
 
 1999-07-27  Michael Hanni  <mhanni@sprintmail.com>
 

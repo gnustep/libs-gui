@@ -56,6 +56,8 @@
   BOOL is_up;
   BOOL pulls_down;
 
+  NSMenuWindow *popb_win;
+
   // Reserved for back-end use
   void *be_pub_reserved;
 }

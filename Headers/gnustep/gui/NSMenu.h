@@ -36,6 +36,7 @@
 #include <AppKit/NSImage.h>
 #include <AppKit/NSMenuView.h>
 #include <AppKit/PSOperators.h>
+#include <AppKit/NSWindow.h>
 
 @class NSString;
 @class NSEvent;
