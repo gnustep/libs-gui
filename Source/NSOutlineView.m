@@ -1675,6 +1675,8 @@ static NSImage *unexpandable  = nil;
   // move the drawing rect over like in the drawRow routine...
   drawingRect = [self frameOfCellAtColumn: columnIndex  row: rowIndex];
 
+  [self lockFocus];
+
   if(tb == [self outlineTableColumn])
     {
       level = [self levelForItem: item];
@@ -1718,7 +1720,9 @@ static NSImage *unexpandable  = nil;
 		   delegate: self
 		   event: theEvent];
     }
-  return;    
+
+  [self unlockFocus];
+  return;
 }
 @end /* implementation of NSOutlineView */
 

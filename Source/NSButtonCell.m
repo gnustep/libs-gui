@@ -615,7 +615,6 @@
   // draw the border if needed
   if (_cell.is_bordered)
     {
-      [controlView lockFocus];
       // FIXME Should check the bezel and gradient style
       if (_cell.is_highlighted && (_highlightsByMask & NSPushInCellMask))
         {
@@ -625,7 +624,6 @@
         {
           NSDrawButton(cellFrame, NSZeroRect);
         }
-      [controlView unlockFocus];
     }
 
   [self drawInteriorWithFrame: cellFrame inView: controlView];
@@ -651,7 +649,6 @@
   _control_view = controlView;
 
   cellFrame = [self drawingRectForBounds: cellFrame];
-  [controlView lockFocus];
 
   if (_cell.is_highlighted)
     {
@@ -897,8 +894,6 @@
       else
 	NSDottedFrameRect(titleRect);
     }
-
-  [controlView unlockFocus];
 }
 
 - (NSSize) cellSize 

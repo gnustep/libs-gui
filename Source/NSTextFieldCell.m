@@ -161,10 +161,8 @@ static NSColor	*txtCol;
 {
   if (_textfieldcell_draws_background)
     {
-      [controlView lockFocus];
       [_background_color set];
       NSRectFill ([self drawingRectForBounds: cellFrame]);
-      [controlView unlockFocus];
     }
   [super drawInteriorWithFrame: cellFrame inView: controlView];
 }

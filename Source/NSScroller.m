@@ -677,6 +677,8 @@ static NSColor *scrollBarColor = nil;
   id		theCell = nil;
   NSRect	rect;
 
+  [self lockFocus];
+
   NSDebugLog (@"trackScrollButtons");
   do
     {
@@ -739,6 +741,8 @@ static NSColor *scrollBarColor = nil;
 				       dequeue: YES];
     }
   while ([theEvent type] != NSLeftMouseUp);
+
+  [self unlockFocus];
 
   NSDebugLog (@"return from trackScrollButtons");
 }

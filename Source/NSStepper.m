@@ -203,6 +203,7 @@ id _nsstepperCellClass = nil;
       return;
     }
 
+  [self lockFocus];
   {
     BOOL overButton = YES;
     int ignore = 3;
@@ -298,6 +299,7 @@ id _nsstepperCellClass = nil;
     [_window flushWindow];
     [_window _releaseMouse: self];
   }
+  [self unlockFocus];
 }
 
 - (void)_increment

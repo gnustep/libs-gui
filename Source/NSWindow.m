@@ -324,9 +324,8 @@ static NSCell	*tileCell = nil;
     {
       [imageCell setImage: anImage];
     }
-  if (_window != nil)
+  if ([self lockFocusIfCanDraw])
     {
-      [self lockFocus];
       [self drawRect: [self bounds]];
       [self unlockFocus];
       [_window flushWindow];
@@ -351,9 +350,8 @@ static NSCell	*tileCell = nil;
     {
       [titleCell setStringValue: aString];
     }
-  if (_window != nil)
+  if ([self lockFocusIfCanDraw])
     {
-      [self lockFocus];
       [self drawRect: [self bounds]];
       [self unlockFocus];
       [_window flushWindow];

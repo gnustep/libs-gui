@@ -534,15 +534,11 @@ static NSImage *_pbc_image[2];
   if (_buttoncell_is_transparent)
     return;
 
-  [view lockFocus];
-
   cellFrame = [self drawingRectForBounds: cellFrame];
 
   if (_cell.shows_first_responder
       && [[view window] firstResponder] == view)
     NSDottedFrameRect(cellFrame);
-
-  [view unlockFocus]; 
 }
 
 /* FIXME: this method needs to be rewritten to be something like 

@@ -1135,6 +1135,8 @@ static NSColor	*shadowCol;
     {  
       NSRect   cvBounds = [cv bounds];
       NSWindow *cvWin = [cv window];
+
+      [cv lockFocus];
       
       [self setNextState];
       [self highlight: YES withFrame: cvBounds inView: cv];
@@ -1147,6 +1149,8 @@ static NSColor	*shadowCol;
       [self highlight: NO withFrame: cvBounds inView: cv];
       [cvWin flushWindow];
       
+      [cv unlockFocus];
+
       if (action)
 	{
 	  NS_DURING
@@ -1596,8 +1600,6 @@ static NSColor	*shadowCol;
       cellFrame.size.height -= 2;
     }
 
-  [controlView lockFocus];
-
   switch (_cell.type)
     {
       case NSTextCellType:
@@ -1637,7 +1639,6 @@ static NSColor	*shadowCol;
   // NB: We don't do any highlighting to make it easier for subclasses
   // to reuse this code while doing their own custom highlighting and
   // prettyfying
-  [controlView unlockFocus];
 }
 
 - (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
@@ -1649,16 +1650,12 @@ static NSColor	*shadowCol;
   // draw the border if needed
   if (_cell.is_bordered)
     {
-      [controlView lockFocus];
       [shadowCol set];
       NSFrameRect(cellFrame);
-      [controlView unlockFocus];
     }
   else if (_cell.is_bezeled)
     {
-      [controlView lockFocus];
       NSDrawWhiteBezel(cellFrame, NSZeroRect);
-      [controlView unlockFocus];
     }
 
   [self drawInteriorWithFrame: cellFrame inView: controlView];

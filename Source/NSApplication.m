@@ -439,10 +439,15 @@ static NSCell* tileCell = nil;
 
 - (void) setImage: (NSImage *)anImage
 {
-  [tileCell drawWithFrame: NSMakeRect(0,0,64,64) inView: self];
   [dragCell setImage: anImage];
-  [dragCell drawWithFrame: NSMakeRect(8,8,48,48) inView: self];
-  [_window flushWindow];
+
+  if ([self lockFocusIfCanDraw])
+    {
+      [tileCell drawWithFrame: NSMakeRect(0,0,64,64) inView: self];
+      [dragCell drawWithFrame: NSMakeRect(8,8,48,48) inView: self];
+      [self unlockFocus];
+      [_window flushWindow];
+    }
 }
 
 @end

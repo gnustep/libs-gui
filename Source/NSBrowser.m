@@ -192,9 +192,7 @@ static NSTextFieldCell *titleCell;
       return;
     }
 
-  [controlView lockFocus];
   NSDrawGrayBezel (cellFrame, NSZeroRect);
-  [controlView unlockFocus];
   [self drawInteriorWithFrame: cellFrame  inView: controlView];
 }
 @end
@@ -752,8 +750,10 @@ static NSTextFieldCell *titleCell;
   // Update and display title of column
   if (_isTitled)
     {
+      [self lockFocus];
       [self drawTitleOfColumn: column
 	    inRect: [self titleFrameOfColumn: column]];
+      [self unlockFocus];
     }
 
   // Display column
@@ -762,6 +762,9 @@ static NSTextFieldCell *titleCell;
   if (!(sc = [bc columnScrollView]))
     return;
 
+  /* FIXME: why the following ?  Are we displaying now, or marking for
+   * later display ??  Given the name, I think we are displaying
+   * now.  */
   [sc setNeedsDisplay: YES];
 }
 
@@ -1800,7 +1803,6 @@ static NSTextFieldCell *titleCell;
       if (_allowsBranchSelection == NO && [cell isLeaf] == NO)
 	{
 	  [selectedCells removeObject: cell];
-	  continue;
 	}
     }
 
@@ -1826,6 +1828,11 @@ static NSTextFieldCell *titleCell;
       while ((cell = [enumerator nextObject]))
 	[sender selectCell: cell];
 
+      // FIXME: shouldn't be locking focus on another object
+      // probably all this loop is wrong, because deselectSelectedCell
+      // above may have changed array a.
+      [sender lockFocus];
+
       enumerator = [a objectEnumerator];
       while ((cell = [enumerator nextObject]))
 	{
@@ -1840,6 +1847,9 @@ static NSTextFieldCell *titleCell;
 		[sender drawCellAtRow: row column: 0];
 	    }
 	}
+      [sender unlockFocus];
+      [self displayIfNeeded];
+      [_window flushWindow];
     }
 
   if (selectedCellsCount > 0)

@@ -317,16 +317,12 @@ static NSColor	*shadowCol;
   
   if (_cell.is_bordered)
     {
-      [controlView lockFocus];
       [shadowCol set];
       NSFrameRect(borderedFrame);
-      [controlView unlockFocus];
     }
   else if (_cell.is_bezeled)
     {
-      [controlView lockFocus];
       NSDrawWhiteBezel(borderedFrame, NSZeroRect);
-      [controlView unlockFocus];
     }
 
   //

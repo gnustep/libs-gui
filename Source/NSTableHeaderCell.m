@@ -69,7 +69,6 @@ static NSColor *clearCol = nil;
       NSRect rect;
       NSGraphicsContext *ctxt;
 
-      [controlView lockFocus];
       ctxt = GSCurrentContext();
 
       if (GSWViewIsFlipped(ctxt) == YES)
@@ -86,7 +85,6 @@ static NSColor *clearCol = nil;
       DPSsetgray(ctxt, NSLightGray);
       DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect),
 		  NSWidth(rect), NSHeight(rect));
-      [controlView unlockFocus];
     }
   else
     {
@@ -99,7 +97,6 @@ static NSColor *clearCol = nil;
       NSRect rect;
       NSGraphicsContext *ctxt;
       
-      [controlView lockFocus];
       ctxt = GSCurrentContext();
 
       if (GSWViewIsFlipped(ctxt) == YES)
@@ -116,7 +113,6 @@ static NSColor *clearCol = nil;
       DPSsetgray(ctxt, NSDarkGray);
       DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect),
 		  NSWidth(rect), NSHeight(rect));
-      [controlView unlockFocus];
     }
   [self drawInteriorWithFrame: cellFrame inView: controlView];
 }
@@ -158,7 +154,6 @@ static NSColor *clearCol = nil;
 	}
       // Prepare to draw
       cellFrame = [self drawingRectForBounds: cellFrame];
-      [controlView lockFocus];
       // Deal with the background
       if ([self isOpaque])
 	{
@@ -192,7 +187,6 @@ static NSColor *clearCol = nil;
 	  [_cell_image compositeToPoint: position operation: NSCompositeCopy];
 	}
       // End the drawing
-      [controlView unlockFocus];
       break;
       
     case NSNullCellType:

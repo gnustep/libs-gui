@@ -121,24 +121,16 @@
 	// nada
 	break;
       case NSImageFramePhoto:
-	[controlView lockFocus];
 	NSDrawFramePhoto(cellFrame, NSZeroRect);
-	[controlView unlockFocus];
 	break;
       case NSImageFrameGrayBezel:
-	[controlView lockFocus];
 	NSDrawGrayBezel(cellFrame, NSZeroRect);
-	[controlView unlockFocus];
 	break;
       case NSImageFrameGroove:
-	[controlView lockFocus];
 	NSDrawGroove(cellFrame, NSZeroRect);
-	[controlView unlockFocus];
 	break;
       case NSImageFrameButton:
-	[controlView lockFocus];
 	NSDrawButton(cellFrame, NSZeroRect);
-	[controlView unlockFocus];
 	break;
     }
 
@@ -294,13 +286,10 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
     position.y += imageSize.height;
 
   // draw!
-  [controlView lockFocus];
   [_cell_image compositeToPoint: position operation: NSCompositeSourceOver];
 
   if (_cell.shows_first_responder)
     NSDottedFrameRect(cellFrame);
-
-  [controlView unlockFocus];
 }
 
 - (NSSize) cellSize

@@ -369,6 +369,8 @@ static Class cellClass;
   [NSEvent startPeriodicEventsAfterDelay: 0.05 withPeriod: 0.05];
   [[NSRunLoop currentRunLoop] limitDateForMode: NSEventTrackingRunLoopMode];
 
+  [self lockFocus];
+
   while (eventType != NSLeftMouseUp)
     {
       theEvent = [app nextEventMatchingMask: eventMask
@@ -407,6 +409,7 @@ static Class cellClass;
 	    }
 	}
     }
+  [self unlockFocus];
   // If the control is not continuous send the action at the end of the drag
   if (!isContinuous)
     {
@@ -439,7 +442,9 @@ static Class cellClass;
 	    {
 	      [self sendAction: [_cell action] to: [_cell target]];
 	    }
+	  [self lockFocus];
 	  [_cell drawWithFrame: _bounds inView: self];
+	  [self unlockFocus];
 	  [_window flushWindow];
 	}
       

@@ -230,8 +230,6 @@ static NSFont *_leafFont;
   if (!cvWin)
     return;
 
-  [controlView lockFocus];
-
   if (_cell.is_highlighted || _cell.state)
     {
       backColor = [self highlightColorInView: controlView];
@@ -308,8 +306,6 @@ static NSFont *_leafFont;
     NSDottedFrameRect(cellFrame);
 
   _cell.shows_first_responder = showsFirstResponder;
-
-  [controlView unlockFocus];
 }
 
 - (BOOL) isOpaque

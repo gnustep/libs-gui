@@ -239,13 +239,11 @@
 
   {
     NSGraphicsContext *ctxt = GSCurrentContext();
-    [self lockFocus];
     DPSsetgray(ctxt, NSBlack);
     DPSrectfill(ctxt,_bounds.origin.x, _bounds.origin.y,
 		_bounds.size.width, 1.);
     DPSrectfill(ctxt, NSMaxX(_bounds)-1., NSMinY(_bounds),
 		1., _bounds.size.height);
-    [self unlockFocus];
   }
 }
 
@@ -519,10 +517,12 @@
 	rect.size.height--;
 	[[currentColumn headerCell] setHighlighted: YES];
 
+	[self lockFocus];
 	[[currentColumn headerCell]
 	  highlight: YES
 	  withFrame: rect
 	  inView: self];
+	[self unlockFocus];
 	[_window flushWindow];
       }
 
@@ -755,10 +755,12 @@
 		[[currentColumn headerCell]
 		  setHighlighted: NO];
 		
+		[self lockFocus];
 		[[currentColumn headerCell] 
 		  highlight: NO
 		  withFrame: rect
 		  inView: self];
+		[self unlockFocus];
 		[_window flushWindow];
 	      }
 	      if (i > columnIndex)
@@ -810,10 +812,12 @@
 		[[currentColumn headerCell]
 		  setHighlighted: NO];
 		
+		[self lockFocus];
 		[[currentColumn headerCell] 
 		  highlight: NO
 		  withFrame: rect
 		  inView: self];
+		[self unlockFocus];
 		[_window flushWindow];
 	      }
 

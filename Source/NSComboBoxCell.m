@@ -1006,18 +1006,23 @@ buttonCellFrameFromRect(NSRect cellRect)
   // We can not use performClick: on the button cell here as 
   // the button uses only part of the bounds of the control view.
   NSWindow *cvWin = [controlView window];
-      
+
+  [controlView lockFocus];
   [_buttonCell highlight: YES 
 	       withFrame: buttonCellFrameFromRect(cellFrame) 
 	       inView: controlView];
+  [controlView unlockFocus];
   [cvWin flushWindow];
 
   [self _didClick: self];
   
+  [controlView lockFocus];
   [_buttonCell highlight: NO 
 	       withFrame: buttonCellFrameFromRect(cellFrame) 
 	       inView: controlView];
+  [controlView unlockFocus];
   [cvWin flushWindow];
+
 }
 
 - (void) _didClick: (id)sender
@@ -1031,7 +1036,8 @@ buttonCellFrameFromRect(NSRect cellRect)
       object: popView
       userInfo: nil];
 
-  // HACK Abort the editing, otherwise the selected value is overwritten by the editor
+  // HACK Abort the editing, otherwise the selected value is
+  // overwritten by the editor
   //if ([_control_view isKindOfClass: NSControl])
   [(NSControl *)_control_view abortEditing];
 

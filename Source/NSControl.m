@@ -512,6 +512,7 @@ static Class actionCellClass;
     }
   
   [_window _captureMouse: self];
+  [self lockFocus];
 
   e = theEvent;
   while (!done) 		// loop until mouse goes up
@@ -556,6 +557,8 @@ static Class actionCellClass;
       [_cell highlight: NO withFrame: _bounds inView: self];
       [_window flushWindow];
     }
+
+  [self unlockFocus];
 
   [_cell sendActionOn: oldActionMask];
 

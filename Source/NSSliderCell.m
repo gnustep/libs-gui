@@ -173,7 +173,6 @@
 
   cellFrame = [self drawingRectForBounds: cellFrame];
 
-  [controlView lockFocus];
   if (vertical != _isVertical)
     {
       if (vertical == YES)
@@ -205,7 +204,6 @@
     }
 
   [self drawKnob];
-  [controlView unlockFocus];
 }
 
 - (BOOL) isOpaque

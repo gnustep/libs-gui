@@ -369,8 +369,6 @@ static NSImage	*arrowImageH = nil;
   if (!_cell.is_bordered)
     return;
 
-  [controlView lockFocus];
-
   if (_cell.is_highlighted && (_highlightsByMask & NSPushInCellMask))
     {
       NSDrawGrayBezel(cellFrame, NSZeroRect);
@@ -379,8 +377,6 @@ static NSImage	*arrowImageH = nil;
     {
       NSDrawButton(cellFrame, NSZeroRect);
     }
-
-  [controlView unlockFocus];
 }
 
 - (void) drawImageWithFrame: (NSRect)cellFrame
@@ -538,7 +534,6 @@ static NSImage	*arrowImageH = nil;
     return;
 
   cellFrame = [self drawingRectForBounds: cellFrame];
-  [controlView lockFocus];
 
   if (_cell.is_highlighted)
     {
@@ -618,7 +613,6 @@ static NSImage	*arrowImageH = nil;
   if (_keyEquivalentWidth > 0)
     [self drawKeyEquivalentWithFrame: cellFrame inView: controlView];
 
-  [controlView unlockFocus];
   _backgroundColor = nil;
 }
 

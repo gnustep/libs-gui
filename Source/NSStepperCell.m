@@ -253,7 +253,6 @@ inline void HighlightDownButton(NSRect aRect)
   NSRect downRect;
   NSRect twoButtons;
   NSGraphicsContext *ctxt;
-  [controlView lockFocus];
   ctxt = GSCurrentContext();
 
   {
@@ -283,8 +282,6 @@ inline void HighlightDownButton(NSRect aRect)
 		       up_sides, grays, 2);
     }
   }
-
-  [controlView unlockFocus];
 }
 
 - (void) highlight: (BOOL) highlight
@@ -295,7 +292,6 @@ inline void HighlightDownButton(NSRect aRect)
   NSRect upRect;
   NSRect downRect;
   NSGraphicsContext *ctxt;
-  [controlView lockFocus];
   ctxt = GSCurrentContext();
   {
     upRect = [self upButtonRectWithFrame: frame];
@@ -317,7 +313,6 @@ inline void HighlightDownButton(NSRect aRect)
 	  DrawDownButton(downRect);
       }
   }
-  [controlView unlockFocus];
 }
 
 - (NSRect) upButtonRectWithFrame: (NSRect) frame
