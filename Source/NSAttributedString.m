@@ -28,6 +28,8 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
+#include <Foundation/NSString.h>
+#include <Foundation/NSRange.h>
 #include <AppKit/NSAttributedString.h>
 #include <AppKit/NSParagraphStyle.h>
 #include <AppKit/NSTextAttachment.h>
@@ -35,11 +37,8 @@
 #include <AppKit/NSColor.h>
 // For the colour name spaces
 #include <AppKit/NSGraphics.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSRange.h>
 
-#include "Parsers/rtfConsumer.h"
-#include "Parsers/RTFProducer.h"
+#include <AppKit/GSTextConverter.h>
 
 /* Cache class pointers to avoid the expensive lookup by string. */ 
 static Class dictionaryClass = nil;
@@ -98,6 +97,55 @@ static inline void cache_init ()
     {
       cache_init_real ();
     }
+}
+
+/*
+  Return a suitable converter for the text format supplied as argument.
+  If producer is YES a class capable of writting that format is returned,
+  otherwise a class able to read the format is returned.
+ */
+static Class converter_class(NSString *format, BOOL producer)
+{
+  static NSMutableDictionary *p_classes = nil;
+  static NSMutableDictionary *c_classes = nil;
+  Class found;
+
+  if (producer)
+    {
+      if (p_classes == nil)
+	p_classes = [NSMutableDictionary new];
+
+      found = [p_classes objectForKey: format];
+      if (found == Nil)
+        {
+	  if ([format isEqual: @"RTF"])
+	    found = NSClassFromString(@"RTFProducer");
+	  else if ([format isEqual: @"RTFD"])
+	    found = NSClassFromString(@"RTFDProducer");
+	  if (found != Nil)
+	    [p_classes setObject: found forKey: format];
+	}
+      return found;
+    }
+  else 
+    {
+      if (c_classes == nil)
+	c_classes = [NSMutableDictionary new];
+
+      found = [c_classes objectForKey: format];
+      if (found == Nil)
+        {
+	  if ([format isEqual: @"RTF"])
+	    found = NSClassFromString(@"RTFConsumer");
+	  else if ([format isEqual: @"RTFD"])
+	    found = NSClassFromString(@"RTFDConsumer");
+	  if (found != Nil)
+	    [c_classes setObject: found forKey: format];
+	}
+      return found;
+    }
+
+  return Nil;
 }
 
 @implementation NSAttributedString (AppKit)
@@ -476,8 +524,9 @@ documentAttributes: (NSDictionary **)dict
 - (id) initWithRTFDFileWrapper: (NSFileWrapper *)wrapper
             documentAttributes: (NSDictionary **)dict
 {
-  NSAttributedString *new = [RTFConsumer parseRTFD: wrapper
-					 documentAttributes: dict];
+  NSAttributedString *new = [converter_class(@"RTFD", NO) 
+					    parseFile: wrapper
+					    documentAttributes: dict];
   // We do not return self but the newly created object
   RELEASE (self);
   return RETAIN (new); 
@@ -486,21 +535,20 @@ documentAttributes: (NSDictionary **)dict
 - (id) initWithRTFD: (NSData*)data
  documentAttributes: (NSDictionary**)dict
 {
-  NSFileWrapper *wrapper = [[NSFileWrapper alloc] 
-			       initWithSerializedRepresentation: data];
-  NSAttributedString *new = [RTFConsumer parseRTFD: wrapper
-					 documentAttributes: dict];
+  NSAttributedString *new = [converter_class(@"RTFD", NO)
+					    parseData: data
+					    documentAttributes: dict];
   // We do not return self but the newly created object
   RELEASE (self);
-  RELEASE (wrapper);
   return RETAIN (new); 
 }
 
 - (id) initWithRTF: (NSData *)data
   documentAttributes: (NSDictionary **)dict
 {
-  NSAttributedString *new = [RTFConsumer parseRTF: data
-					 documentAttributes: dict];
+  NSAttributedString *new = [converter_class(@"RTF", NO) 
+					    parseData: data
+					    documentAttributes: dict];
   // We do not return self but the newly created object
   RELEASE (self);
   return RETAIN (new); 
@@ -525,22 +573,25 @@ documentAttributes: (NSDictionary **)dict
 - (NSData *) RTFFromRange: (NSRange)range
        documentAttributes: (NSDictionary *)dict
 {
-  return [RTFProducer produceRTF: [self attributedSubstringFromRange: range]
-		      documentAttributes: dict];
+  return [converter_class(@"RTF", YES) 
+			 produceDataFrom: [self attributedSubstringFromRange: range]
+			 documentAttributes: dict];
 }
 
 - (NSData *) RTFDFromRange: (NSRange)range
        documentAttributes: (NSDictionary *)dict
 {
-  return [[RTFProducer produceRTFD: [self attributedSubstringFromRange: range]
-		       documentAttributes: dict] serializedRepresentation];
+  return [converter_class(@"RTFD", YES)  
+			 produceDataFrom: [self attributedSubstringFromRange: range]
+			 documentAttributes: dict];
 }
 
 - (NSFileWrapper *) RTFDFileWrapperFromRange: (NSRange)range
 			  documentAttributes: (NSDictionary *)dict
 {
-  return [RTFProducer produceRTFD: [self attributedSubstringFromRange: range]
-		      documentAttributes: dict];
+  return [converter_class(@"RTFD", YES)
+			 produceFileFrom: [self attributedSubstringFromRange: range]
+			 documentAttributes: dict];
 }
 
 @end
