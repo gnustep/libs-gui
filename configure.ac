@@ -208,10 +208,13 @@ ADDITIONAL_DEPENDS="$GRAPHIC_LIBS"
 #--------------------------------------------------------------------
 # NSSound
 #--------------------------------------------------------------------
+AC_ARG_ENABLE(gsnd, 
+  [  --disable-gsnd          Disable gsnd server],,
+  enable_gsnd=yes)
 audio_ok=no
 BUILD_GSND=
 AC_CHECK_LIB(audiofile, afGetVirtualFrameSize, audio_ok=yes, audio_ok=no)
-if test $audio_ok = yes; then
+if test $audio_ok = yes -a $enable_gsnd = yes; then
   AC_CHECK_HEADERS(audiofile.h)
   ADDITIONAL_DEPENDS="$ADDITIONAL_DEPENDS -laudiofile"
   BUILD_GSND=gsnd

@@ -824,6 +824,11 @@ if test -n "$ac_init_help"; then
 
   cat <<\_ACEOF
 
+Optional Features:
+  --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
+  --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
+  --disable-gsnd          Disable gsnd server
+
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
@@ -3174,6 +3179,13 @@ ADDITIONAL_DEPENDS="$GRAPHIC_LIBS"
 #--------------------------------------------------------------------
 # NSSound
 #--------------------------------------------------------------------
+# Check whether --enable-gsnd or --disable-gsnd was given.
+if test "${enable_gsnd+set}" = set; then
+  enableval="$enable_gsnd"
+
+else
+  enable_gsnd=yes
+fi;
 audio_ok=no
 BUILD_GSND=
 echo "$as_me:$LINENO: checking for afGetVirtualFrameSize in -laudiofile" >&5
@@ -3237,7 +3249,7 @@ else
   audio_ok=no
 fi
 
-if test $audio_ok = yes; then
+if test $audio_ok = yes -a $enable_gsnd = yes; then
 
 for ac_header in audiofile.h
 do
