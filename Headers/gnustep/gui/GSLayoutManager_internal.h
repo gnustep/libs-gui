@@ -246,18 +246,23 @@ the last run and i==r->head.glyph_length. */
 #define GLYPH_STEP_FORWARD(r, i, pos, cpos) \
   { \
     i++; \
-    while (i==r->head.glyph_length) \
+    while (i == r->head.glyph_length) \
       { \
 	if (!r->head.next || !r->head.next->complete) \
 	  { \
-	    if (cpos+r->head.char_length==[_textStorage length]) \
+	    if (cpos + r->head.char_length == [_textStorage length]) \
 	      break; \
-	    [self _generateGlyphsUpToCharacter: cpos+r->head.char_length]; \
+	    /* This call might lead to the current run being extended, so \
+	    we make sure that we check r->head.glyph_length again. */ \
+	    [self _generateGlyphsUpToCharacter: cpos + r->head.char_length]; \
 	  } \
-	pos+=r->head.glyph_length; \
-	cpos+=r->head.char_length; \
-	r=(glyph_run_t *)r->head.next; \
-	i=0; \
+	else \
+	  { \
+	    pos += r->head.glyph_length; \
+	    cpos += r->head.char_length; \
+	    r = (glyph_run_t *)r->head.next; \
+	    i = 0; \
+	  } \
       } \
   }
 

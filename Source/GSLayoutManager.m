@@ -498,7 +498,7 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
       pos += new->head.char_length;
     }
 
-//	[self _glyphDumpRuns];
+  [self _sanityChecks];
 }
 
 
@@ -858,22 +858,11 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
     cadj = cpos;
     while (r2->glyphs[i].char_offset + cadj == j)
       {
-	i++;
-	while (i == r2->head.glyph_length)
+	GLYPH_STEP_FORWARD(r2,i,adj,cadj)
+	if (i==r2->head.glyph_length)
 	  {
-	    if (!r2->head.next || !r2->head.next->complete)
-	      {
-		if (cadj + r2->head.char_length == [_textStorage length])
-		  {
-		    last = cadj + r2->head.char_length;
-		    goto found;
-		  }
-		[self _generateGlyphsUpToCharacter: cadj + r2->head.char_length];
-	      }
-	    adj += r2->head.glyph_length;
-	    cadj += r2->head.char_length;
-	    r2 = (glyph_run_t *)r2->head.next;
-	    i = 0;
+	    last = cadj + r2->head.char_length;
+	    goto found;
 	  }
       }
     last = r2->glyphs[i].char_offset + cadj;
@@ -998,7 +987,7 @@ places where we switch.
     *actualRange = range;
 
 
-//  printf("range=(%i+%i) lengthChange=%i\n", range.location, range.length, lengthChange);
+//  printf("\n +++ range=(%i+%i) lengthChange=%i\n", range.location, range.length, lengthChange);
   [self _sanityChecks];
 //  [self _glyphDumpRuns];
 

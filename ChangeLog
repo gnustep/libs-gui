@@ -1,3 +1,10 @@
+2003-04-03 20:28  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/GSLayoutManager_internal.h,
+	Source/GSLayoutManager.m: When stepping forward at the end of the
+	glyph runs, correctly handle the case where the current run is
+	extended.
+
 2003-04-02 15:26  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSHorizontalTypesetter.m: Tweak glyph caching parameters
