@@ -1,5 +1,16 @@
   NSServices = (
     {
+      NSFilter = cat;
+      NSInputMechanism = NSUnixStdio;
+      NSPortName = "/bin/cat";
+      NSSendTypes = (
+	NSFilenamesPboardType
+      );
+      NSReturnTypes = (
+	NSGeneralPboardType
+      );
+    },
+    {
       NSPortName = ExampleServices;
       NSFilter = md5;
       NSSendTypes = (

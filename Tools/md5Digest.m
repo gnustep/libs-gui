@@ -25,33 +25,50 @@
 #include <Foundation/NSFileHandle.h>
 #include <Foundation/NSProcessInfo.h>
 #include <Foundation/NSString.h>
+#include <Foundation/NSUserDefaults.h>
 #include <AppKit/NSPasteboard.h>
 
 int
 main(int argc, char** argv, char **env_c)
 {
   CREATE_AUTORELEASE_POOL(pool);
-  NSFileHandle	*fh;
-  NSData	*data;
-  NSString	*string;
-  NSPasteboard	*pb;
+  NSFileHandle		*fh;
+  NSData		*data;
+  NSString		*string;
+  NSPasteboard		*pb;
+  NSUserDefaults	*defs;
 
 #ifdef GS_PASS_ARGUMENTS
   [NSProcessInfo initializeWithArguments:argv count:argc environment:env_c];
 #endif
 
-  NSLog(@"This program expects to read utf8 text from stdin -");
-  fh = [NSFileHandle fileHandleWithStandardInput];
-  data = [fh readDataToEndOfFile];
-  string = [[NSString alloc] initWithData: data
-				 encoding: NSUTF8StringEncoding];
-  data = [NSSerializer serializePropertyList: string];
+  defs = [NSUserDefaults standardUserDefaults];
+  string = [defs stringForKey: @"CatFile"];
+  if (string != nil)
+    {
+      data = [NSSerializer serializePropertyList: string];
+      pb = [NSPasteboard pasteboardByFilteringData: data
+					    ofType: NSFilenamesPboardType];
+      NSLog(@"Types: %@", [pb types]);
+      data = [pb dataForType: NSGeneralPboardType];
+      NSLog(@"Got %@", data);
+    }
+  else
+    {
+      NSLog(@"This program expects to read utf8 text from stdin -");
+      fh = [NSFileHandle fileHandleWithStandardInput];
+      data = [fh readDataToEndOfFile];
+      string = [[NSString alloc] initWithData: data
+				     encoding: NSUTF8StringEncoding];
+      data = [NSSerializer serializePropertyList: string];
 
-  pb = [NSPasteboard pasteboardByFilteringData: data
-					ofType: NSStringPboardType];
-  NSLog(@"Types: %@", [pb types]);
-  data = [pb dataForType: @"md5Digest"];
-  NSLog(@"Got %@", data);
+      pb = [NSPasteboard pasteboardByFilteringData: data
+					    ofType: NSStringPboardType];
+      NSLog(@"Types: %@", [pb types]);
+      data = [pb dataForType: @"md5Digest"];
+      NSLog(@"Got %@", data);
+    }
+
   RELEASE(pool);
   exit(EXIT_SUCCESS);
 }

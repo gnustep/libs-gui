@@ -209,6 +209,7 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
     {
       NSMutableData	*m = [NSMutableData dataWithCapacity: 1023];
       NSString		*filename;
+      NSString		*path;
       NSData		*d;
       NSPipe		*p;
       NSTask		*t;
@@ -217,8 +218,8 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
       /*
        * The data for an NSUnixStdio filter must be one or more filenames
        */
-      if ([type isEqualToString: NSFilenamesPboardType] == NO
-	&& [type hasPrefix: namePrefix] == NO)
+      if ([fromType isEqualToString: NSFilenamesPboardType] == NO
+	&& [fromType hasPrefix: namePrefix] == NO)
 	{
 	  [sender setData: [NSData data] forType: type];
 	  return;	// Not the name of a file to filter.
@@ -258,7 +259,12 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
        * Set up and launch task to filter the named file.
        */
       t = [NSTask new];
-      [t setLaunchPath: [info objectForKey: @"NSPortName"]];
+      path = [info objectForKey: @"NSExecutable"];
+      if ([path length] == 0)
+	{
+	  path = [info objectForKey: @"NSPortName"];
+	}
+      [t setLaunchPath: path];
       [t setArguments: [NSArray arrayWithObject: filename]];
       p = [NSPipe pipe];
       [t setStandardOutput: p];
@@ -267,7 +273,8 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
       /*
        * Read all the data that the task writes.
        */
-      while ((d = [[p fileHandleForReading] availableData]) != nil)
+      while ((d = [[p fileHandleForReading] availableData]) != nil
+	&& [d length] > 0)
 	{
 	  [m appendData: d];
 	}

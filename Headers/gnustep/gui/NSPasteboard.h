@@ -46,10 +46,21 @@
 APPKIT_EXPORT NSString *NSStringPboardType;
 
 /**
- * Pasteboard contains string color information
+ * Pasteboard contains color information
  */
 APPKIT_EXPORT NSString *NSColorPboardType;
+
+/**
+ * Pasteboard contains generic file content information (serialized)
+ * as written by [NSPasteboard-writeFileContents:] or
+ * [NSPasteboard-writeFileWrapper:] 
+ */
 APPKIT_EXPORT NSString *NSFileContentsPboardType;
+
+/**
+ * Pasteboard contains an array of filenames (serialized)
+ * as written by [NSPasteboard-setPropertyList:forType:]
+ */
 APPKIT_EXPORT NSString *NSFilenamesPboardType;
 
 /**

@@ -1362,10 +1362,13 @@ GSPerformService(NSString *serviceItem, NSPasteboard *pboard, BOOL isFilter)
   finishBy = [NSDate dateWithTimeIntervalSinceNow: seconds];
   appPath = [service objectForKey: @"ServicePath"];
   userData = [service objectForKey: @"NSUserData"];
-  message = [service objectForKey: @"NSMessage"];
-  if (isFilter == YES && [message length] == 0)
+  if (isFilter == YES)
     {
       message = [service objectForKey: @"NSFilter"];
+    }
+  else
+    {
+      message = [service objectForKey: @"NSMessage"];
     }
   selName = [message stringByAppendingString: @":userData:error:"];
 
