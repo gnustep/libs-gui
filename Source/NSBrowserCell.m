@@ -96,16 +96,9 @@ static NSFont *_leafFont;
 /*
  * Instance methods
  */
-- (id) init
-{
-  return [self initTextCell: @"aTitle"];
-}
-
 - (id) initTextCell: (NSString *)aString
 {
   [super initTextCell: aString];
-  _cell.is_editable = NO;
-  _cell.is_bordered = NO;
   _cell.text_align = NSLeftTextAlignment;
   _alternateImage = nil;
   if (_gsFontifyCells)
@@ -122,6 +115,27 @@ static NSFont *_leafFont;
 
   return self;
 }
+
+- (id) initImageCell: (NSImage *)anImage
+{
+  [super initImageCell: anImage];
+  _cell.text_align = NSLeftTextAlignment;
+  _alternateImage = nil;
+  if (_gsFontifyCells)
+    {
+      // To make the [self setLeaf: NO] effective
+      _browsercell_is_leaf = YES; 
+      [self setLeaf: NO];
+    }
+  else
+    {
+      _browsercell_is_leaf = NO; 
+    }
+  _browsercell_is_loaded = NO;
+
+  return self;
+}
+
 
 - (void) dealloc
 {
@@ -232,8 +246,6 @@ static NSFont *_leafFont;
       [backColor set];
       if (!_browsercell_is_leaf)
 	image = [isa highlightedBranchImage];
-      else if (_alternateImage)
-	image = _alternateImage;
     }
   else
     {
@@ -241,13 +253,13 @@ static NSFont *_leafFont;
       [backColor set];
       if (!_browsercell_is_leaf)
 	image = [isa branchImage];
-      else if (_alternateImage)
-	image = _alternateImage;
     }
   
-  NSRectFill(cellFrame);	// Clear the background
+  // Clear the background
+  NSRectFill(cellFrame);	
 
-  if (image)
+  // Draw the branch image if there is one
+  if (image) 
     {
       NSRect image_rect;
 
@@ -267,7 +279,30 @@ static NSFont *_leafFont;
 
       title_rect.size.width -= image_rect.size.width + 8;	
     }
-  [super drawInteriorWithFrame: title_rect inView: controlView];
+  
+  // Draw the body of the cell
+  if ((_cell.type == NSImageCellType) 
+      && (_cell.is_highlighted || _cell.state)
+      && _alternateImage)
+    {
+      // Draw the alternateImage 
+      NSSize size;
+      NSPoint position;
+      
+      size = [_alternateImage size];
+      position.x = MAX(NSMidX(title_rect) - (size.width/2.),0.);
+      position.y = MAX(NSMidY(title_rect) - (size.height/2.),0.);
+      if ([controlView isFlipped])
+	position.y += size.height;
+      [_alternateImage compositeToPoint: position 
+		       operation: NSCompositeCopy];
+    }
+  else
+    {
+      // Draw image, or text
+      [super drawInteriorWithFrame: title_rect inView: controlView];
+    }
+
   [controlView unlockFocus];
 }
 
