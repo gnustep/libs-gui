@@ -1,3 +1,12 @@
+2000-04-23  FredKiefer  <FredKiefer@Hugo>
+
+	* GSTextStorage.m: Corrections in replaceCharactersInRange:withString:
+
+2000-04-20  fedor  <fedor@Hugo>
+
+	* NSBrowser.m, NSFont.m, NSFontManager.m, NSGraphicsContext.m:
+	New backend access methods
+
 2000-04-20  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/GSMethodTable.h: Added methods to get 
