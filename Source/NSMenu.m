@@ -123,6 +123,7 @@ static NSNotificationCenter *nc;
 - (NSString *) _locationKey;
 - (NSMenuPanel *) _createWindow;
 - (void) _updateUserDefaults: (id) notification;
+- (void) _rightMouseDisplay: (NSEvent*)theEvent;
 
 @end
 
@@ -240,6 +241,13 @@ static NSNotificationCenter *nc;
         }
       [defaults synchronize];
     }
+}
+
+- (void) _rightMouseDisplay: (NSEvent*)theEvent
+{
+  [self displayTransient];
+  [_view mouseDown: theEvent];
+  [self closeTransient];
 }
 
 @end
@@ -1025,7 +1033,7 @@ static NSNotificationCenter *nc;
 		withEvent: (NSEvent*)event
 		  forView: (NSView*)view
 {
-  // TODO
+  [menu _rightMouseDisplay: event];
 }
 
 /*
@@ -1192,13 +1200,6 @@ static NSNotificationCenter *nc;
   [self setTornOff: NO];
   [self _updateUserDefaults: nil];
 } 
-
-- (void) _rightMouseDisplay: (NSEvent*)theEvent
-{
-  [self displayTransient];
-  [_view mouseDown: theEvent];
-  [self closeTransient];
-}
 
 - (void) display
 {
