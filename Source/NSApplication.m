@@ -242,7 +242,6 @@ struct _NSModalSession {
  * Class variables
  */
 static NSEvent *null_event;
-static NSString *NSAbortModalException = @"NSAbortModalException";
 static Class arpClass;
 static NSNotificationCenter *nc;
 
