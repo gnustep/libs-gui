@@ -1,5 +1,20 @@
 2001-10-08  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/gnustep/gui/NSMenu.h
+	Replace ivar _isBeholden_byPopup with _popUpButtonCell. Change
+	method [_setOwnedByPopUp:] to take an NSPopUpButtonCell instead
+	of a Bool.
+	* Source/NSMenu.m
+	Adopted to changes in header. In [update] check for popup buttons
+	also the action of the popup itself, if there is non for the item.
+	In [performActionForItemAtIndex:] if we are owned by a popup
+	button, send this action, if the menu item does not have an action.
+	* Source/NSPopUpButtonCell.m
+	Changed all calls to [NSMenu _setOwnedByPopUp:] and added missing
+	one in [setMenu:].
+	
+2001-10-08  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/gnustep/gui/NSScreen.h
 	Added method [resetScreens].
 	* Source/NSScreen.m
