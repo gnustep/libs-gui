@@ -1,3 +1,10 @@
+Tue Feb  9 12:20:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+	
+	* Source/NSView.m: Various tidyups suggested by Benhur
+	* Source/PSMatrix.m: ([-rectInMatrixSpace:]) and ([-sizeInMatrixSpace:])
+	fixed for negative values.
+	* Source/NSScrollView.m: Resize code fix.
+
 Fri Feb  5 19:46:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSView.m: Coordinate conversion fixe by
