@@ -324,13 +324,10 @@ static NSColor	*shadowCol;
 {
   NSString *string = aString;
 
+  NSAssert (string != nil, NSInvalidArgumentException);
+
   _cell.type = NSTextCellType;
   _cell.contents_is_attributed_string = NO;
-
-  if (string == nil)
-    {
-      string = @"";
-    }
 
   if (_formatter == nil)
     {
