@@ -1,3 +1,10 @@
+Tue Jul  3 18:46:38 2001  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSMenu.m ([NSMenuWindowTitleView -drawRect:]): Cache 
+	the title attributes used when drawing.
+	* Source/NSPopUpButton.m ([-mouseDown:]): Trivial rearrangement to
+	spare two method calls.
+
 Fri Jun 29 11:18:44 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Headers/gnustep/gui/AppKit.h: Include NSWindowController.h
