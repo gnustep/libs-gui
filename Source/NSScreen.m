@@ -53,10 +53,15 @@ NSScreen *mainScreen = nil;
 //
 + (NSScreen *)mainScreen
 {
-	if (!mainScreen)
-		mainScreen = [[NSScreen alloc] init];
-
-	return mainScreen;
+  NSMutableDictionary *dict;
+  
+  if (mainScreen)
+    return mainScreen; 
+  
+  dict = [NSMutableDictionary dictionary];
+  [dict setObject: @"Main" forKey: @"NSScreenKeyName"];
+  mainScreen = [[NSScreen alloc] initWithDeviceDescription: dict];
+  return mainScreen;
 }
 
 + (NSScreen *)deepestScreen
@@ -72,14 +77,21 @@ NSScreen *mainScreen = nil;
 //
 // Instance methods
 //
+- initWithDeviceDescription: (NSDictionary *)dict
+{
+  [super init];
+  depth = 0;
+  frame = NSZeroRect;
+  if (dict)
+    device_desc = [dict mutableCopy];
+  else
+    device_desc = [[NSMutableDictionary dictionary] retain];
+  return self;
+}
+
 - init
 {
-	[super init];				// Create our device description dictionary
-								// The backend will have to fill the dictionary
-	device_desc = [NSMutableDictionary dictionary];
-    depth = 0;
-    frame = NSZeroRect;
-	return self;
+  return [self initWithDeviceDescription: NULL];
 }
 
 //

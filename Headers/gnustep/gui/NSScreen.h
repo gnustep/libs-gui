@@ -63,4 +63,11 @@
 
 @end
 
+#ifndef NO_GNUSTEP
+// Need this definition for backend classes
+@interface NSScreen (GNUstep)
+- initWithDeviceDescription: (NSDictionary *)dict;
+@end
+#endif
+
 #endif // _GNUstep_H_NSScreen

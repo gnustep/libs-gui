@@ -1,3 +1,12 @@
+1999-04-14  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/gnustep/gui/NSScreen.h: Add initializer.
+	* Source/NSScreen.m (initWithDeviceDescription:): New method to
+	make it easier to determine screen information.
+
+	* Source/NSBundleAdditions.m (+loadNibFile:): Fix unarchiver
+	method name.
+
 Wed Apr 14 16:58:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	Applied changes by Tim.Bissell@dresdnerkb.com -

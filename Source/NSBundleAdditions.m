@@ -60,7 +60,7 @@
     {
       NSUnarchiver	*unarchiver;
 
-      unarchiver = [[NSUnarchiver alloc] initWithData: data];
+      unarchiver = [[NSUnarchiver alloc] initForReadingWithData: data];
       if (unarchiver)
 	{
 	  id	obj;
