@@ -1,3 +1,10 @@
+2001-12-17  Pierre-Yves Rivaille  <pyrivail@ens-lyon.fr>
+
+        * Source/NSButtonCell.m ([NSButtonCell -drawInteriorWithFrame:inView:])
+	removed the code that drew the background (osx doesn't draw background)
+	* Source/NSProgressIndicator.m ([NSProgressIndicator +initialize]): 
+	retain the fillColour.
+
 2001-12-17  Adam Fedor  <fedor@gnu.org>
 
 	* Source/*m: Add basic markup for autogsdoc generation.
