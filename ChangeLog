@@ -1,3 +1,32 @@
+Mon Jan 29 19:04:53 2001  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* GNUmakefile.postamble (after-install): Install gui.make in 
+	$(GNUSTEP_MAKEFILES)/Additional/gui.make.
+	* gui.make: New file extracted from gnustep make package.
+	* GNUmakefile: Include local gui.make.
+	* Documentation/GNUmakefile: Idem.
+	* Documentation/gsdoc/GNUmakefile: Idem. 
+	* Images/GNUmakefile: Idem.
+	* Model/GNUmakefile: Idem.
+	* Panels/GNUmakefile: Idem.
+	* PrinterTypes/GNUmakefile: Idem.
+	* Source/GNUmakefile: Idem.
+	* Testing/GNUmakefile: Idem.
+	* Tools/GNUmakefile: Idem.
+
+	* Source/GNUmakefile (libgnustep-gui_HEADER_FILES_INSTALL_DIR):
+	Dont' install into xxx/Headers/gnustep/AppKit/ but simply into
+	xxx/Headers/AppKit.
+	* Source/GNUmakefile.preamble (ADDITIONAL_INSTALL_DIRS): Create
+	zzz/Headers/AppKit rather than zzz/Headers/gnustep/AppKit.
+
+	* Model/GNUmakefile.postamble (after-distclean): Remove
+	GNUmakefile.local.
+	* Panels/GNUmakefile.postamble: Idem.
+	* Source/GNUmakefile.postamble: Idem.
+	* Testing/GNUmakefile.postamble: Idem.
+	* Tools/GNUmakefile.postamble: Idem.
+	
 Sun Jan 28 21:30:39 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSClipView.m ([-setFrame:]), ([-setFrameOrigin:]),
