@@ -1,6 +1,6 @@
 /** <title>NSOpenPanel</title> -*-objc-*-
 
-   <abstract>Standard open panel for opening files</abstract>
+   <abstract>Standard panel for opening files</abstract>
 
    Copyright (C) 1996, 1998, 1999, 2000 Free Software Foundation, Inc.
 
@@ -225,6 +225,28 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 
 @end
 
+/** 
+    <p>Implements a panel that allows the user to select a file or files.
+    NSOpenPanel is based on the NSSavePanel implementation and shares
+    a lot of similarities with it.
+    </p>
+    <p>
+    There is only one open panel per application and this panel is obtained
+    by calling the +openPanel class method. From here, you should set the
+    characteristics of the file selection mechanism using the
+    -setCanChooseFiles:, -setCanChooseDirectories: and 
+    -setAllowsMultipleSelection: methods. The default is YES except for
+    allowing multiple selection. When ready to show the panel, use the
+    -runModalForTypes:, or a similar method to show the panel in a modal
+    session. Other methods allow you to set the initial directory and
+    initially selected file. The method will return one of NSOKButton
+    or NSCancelButton depending on which button the user pressed.
+    </p>
+    <p>
+    Use the -filename or -filenames: method to retrieve the name of the
+    file the user selected.
+    </p>
+ */
 @implementation NSOpenPanel
 
 /*
@@ -241,6 +263,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 /*
  * Accessing the NSOpenPanel shared instance
  */
+/** Returns the shared NSOpenPanel instance */
 + (NSOpenPanel *) openPanel
 {
   if (!_gs_gui_open_panel)
@@ -264,37 +287,47 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 /*
  * Filtering Files
  */
+/** Allows the user to select multiple files if flag is YES. */
 - (void) setAllowsMultipleSelection: (BOOL)flag
 {
   [_browser setAllowsMultipleSelection: flag];
 }
 
+/** Returns YES if the user is allowed to select multiple files. The
+    default behavior is not to allow mutiple selections. */
 - (BOOL) allowsMultipleSelection
 {
   return [_browser allowsMultipleSelection];
 }
 
+/** Allows the user to choose directories if flag is YES. */
 - (void) setCanChooseDirectories: (BOOL)flag
 {
   _canChooseDirectories = flag;
   [_browser setAllowsBranchSelection: flag];
 }
 
+/** Returns YES if the user is allowed to choose directories  The
+    default behavior is to allow choosing directories. */
 - (BOOL) canChooseDirectories
 {
   return _canChooseDirectories;
 }
 
+/** Allows the user to choose files if flag is YES */
 - (void) setCanChooseFiles: (BOOL)flag
 {
   _canChooseFiles = flag;
 }
 
+/** Returns YES if the user is allowed to choose files.  The
+    default behavior it to allow choosing files.  */
 - (BOOL) canChooseFiles
 {
   return _canChooseFiles;
 }
 
+/** Returns the absolute path of the file selected by the user.  */
 - (NSString*) filename
 {
   NSArray *ret;
@@ -307,9 +340,10 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
     return nil;
 }
 
-/*
- * Querying the Chosen Files
- */
+/** Returns an array containing the absolute paths (as NSString
+ objects) of the selected files and directories.  If multiple
+ selections aren't allowed, the array contains a single name.
+*/
 - (NSArray *) filenames
 {
   if ([_browser allowsMultipleSelection])
@@ -353,6 +387,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
     }
 }
 
+/** Returns an array of the selected files as URLs */
 - (NSArray *) URLs
 {
   NSMutableArray *ret = [NSMutableArray new];
@@ -370,13 +405,19 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 /*
  * Running the NSOpenPanel
  */
+/** Displays the open panel in a modal session, filtering for
+    files that have the specified types */
 - (int) runModalForTypes: (NSArray *)fileTypes
 {
-  return [self runModalForDirectory: nil
-			       file: nil
+  return [self runModalForDirectory: @""
+			       file: @""
 			      types: fileTypes];
 }
 
+/** Displays the open panel in a modal session, with the directory
+    path shown and file name (if any) selected. Files are filtered for the
+    specified types. The directory and filename can be empty strings
+    but must not be nil.  */
 - (int) runModalForDirectory: (NSString *)path
 			file: (NSString *)name
 			types: (NSArray *)fileTypes

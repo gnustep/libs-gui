@@ -1,3 +1,19 @@
+2002-10-11  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/gnustep/gui/NSOpenPanel.h: Move comments to source file
+	as autogsdoc.
+	* Headers/gnustep/gui/NSSavePanel.h: Idem.
+	* Source/NSOpenPanel.m: Document.
+	* Source/NSSavePanel.m: Idem.
+
+	* Source/NSBrowser.m: Change NSDebugLog to NSDebugLLog (or remove).
+	* Source/NSButtonCell.m, Source/NSCell.m, Source/NSControl.m,
+	Source/NSEvent.m, Source/NSFontManager.m, Source/NSFontPanel.m,
+	Source/NSImageCell.m, Source/NSMatrix.m, Source/NSMenu.m,
+	Source/NSMenuItem.m, Source/NSResponder.m, Source/NSRulerView.m,
+	Source/NSScrollView.m, Source/NSSplitView.m, Source/NSStepper.m,
+	Source/NSTableHeaderView.m, Source/NSWindow.m: Idem.
+
 Fri Oct 11 15:10:42 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/gnustep/gui/AppKit.h: Include AppKit/NSFileWrapper.h

@@ -416,8 +416,6 @@ static Class imageClass;
 {
   NSMenuItem *copy = (NSMenuItem*)NSCopyObject (self, 0, zone);
 
-  NSDebugLog (@"menu item '%@' copy", _title);
-
   // We reset the menu to nil to allow the reuse of the copy
   copy->_menu = nil;
   copy->_title = [_title copyWithZone: zone];

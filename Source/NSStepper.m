@@ -49,7 +49,6 @@ id _nsstepperCellClass = nil;
 {
   if (self == [NSStepper class])
     {
-      NSDebugLog(@"Initialize NSStepper class\n");
       [self setVersion: 1];
       [self setCellClass: [NSStepperCell class]];
     }

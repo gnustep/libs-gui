@@ -365,25 +365,20 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
 {
   [super encodeWithCoder: aCoder];
 
-  NSDebugLog(@"NSImageCell: start encoding");
   [aCoder encodeValueOfObjCType: @encode(NSImageAlignment) at: &_imageAlignment];
   [aCoder encodeValueOfObjCType: @encode(NSImageFrameStyle) at: &_frameStyle];
   [aCoder encodeValueOfObjCType: @encode(NSImageScaling) at: &_imageScaling];
   [aCoder encodeSize: _original_image_size];
-  NSDebugLog(@"NSImageCell: finish encoding");
 }
 
 - (id) initWithCoder: (NSCoder *)aDecoder
 {
   [super initWithCoder: aDecoder];
 
-  NSDebugLog(@"NSImageCell: start decoding");
   [aDecoder decodeValueOfObjCType: @encode(NSImageAlignment) at: &_imageAlignment];
   [aDecoder decodeValueOfObjCType: @encode(NSImageFrameStyle) at: &_frameStyle];
   [aDecoder decodeValueOfObjCType: @encode(NSImageScaling) at: &_imageScaling];
   _original_image_size = [aDecoder decodeSize];
-  NSDebugLog(@"NSImageCell: finish decoding");
-
   return self;
 }
 

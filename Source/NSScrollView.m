@@ -56,7 +56,6 @@ static float scrollerWidth;
 {
   if (self == [NSScrollView class])
     {
-      NSDebugLog(@"Initialize NSScrollView class\n");
       [self setRulerViewClass: [NSRulerView class]];
       scrollerWidth = [NSScroller scrollerWidth];
       [self setVersion: 2];
@@ -318,7 +317,7 @@ static float scrollerWidth;
       /* If view is flipped reverse the scroll direction */
       amount = -amount;
     }
-  NSDebugLog (@"increment/decrement: amount = %f, flipped = %d",
+  NSDebugLLog (@"NSScrollView", @"increment/decrement: amount = %f, flipped = %d",
     amount, _contentView ? _contentView->_rFlags.flipped_view : 0);
 
   point.y = clipViewBounds.origin.y + amount;
@@ -463,7 +462,7 @@ static float scrollerWidth;
     }
   point = clipViewBounds.origin;
 
-  NSDebugLog (@"_doScroll: float value = %f", floatValue);
+  NSDebugLLog (@"NSScrollView", @"_doScroll: float value = %f", floatValue);
 
   /* do nothing if scroller is unknown */
   if (scroller != _horizScroller && scroller != _vertScroller)
@@ -522,7 +521,8 @@ static float scrollerWidth;
 	      /* If view is flipped reverse the scroll direction */
 	      amount = -amount;
 	    }
-	  NSDebugLog (@"increment/decrement: amount = %f, flipped = %d",
+	  NSDebugLLog (@"NSScrollView", 
+		       @"increment/decrement: amount = %f, flipped = %d",
 	    amount, _contentView ? _contentView->_rFlags.flipped_view : 0);
 	  point.y = clipViewBounds.origin.y + amount;
 	}
@@ -582,7 +582,7 @@ static float scrollerWidth;
       return;
     }
 
-  NSDebugLog (@"reflectScrolledClipView:");
+  NSDebugLLog (@"NSScrollView", @"reflectScrolledClipView:");
 
   if (_contentView)
     {
@@ -1240,7 +1240,6 @@ static float scrollerWidth;
 {
   [super encodeWithCoder: aCoder];
       
-  NSDebugLLog(@"NSScrollView", @"NSScrollView: start encoding\n");
   [aCoder encodeObject: _contentView];
   [aCoder encodeValueOfObjCType: @encode(NSBorderType) at: &_borderType];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_scrollsDynamically];
@@ -1273,7 +1272,6 @@ static float scrollerWidth;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasCornerView];
 
   /* We do not need to encode headerview, cornerview stuff */
-  NSDebugLLog(@"NSScrollView", @"NSScrollView: finish encoding\n");
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder

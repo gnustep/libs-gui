@@ -71,7 +71,6 @@ static Class eventClass;
 {
   if (self == [NSEvent class])
     {
-      NSDebugLog(@"Initialize NSEvent class\n");
       [self setVersion: 1];
       eventClass = [NSEvent class];
     }
@@ -283,7 +282,7 @@ static Class eventClass;
   NSTimer		*timer;
   NSMutableDictionary	*dict = GSCurrentThreadDictionary();
 
-  NSDebugLog (@"startPeriodicEventsAfterDelay: withPeriod: ");
+  NSDebugLLog (@"NSEvent", @"startPeriodicEventsAfterDelay: withPeriod: ");
 
   if ([dict objectForKey: timerKey])
     [NSException raise: NSInternalInconsistencyException
@@ -322,7 +321,7 @@ static Class eventClass;
 				     data1: 0
 				     data2: 0];
 
-  NSDebugLog (@"_timerFired: ");
+  NSDebugLLog (@"NSEvent", @"_timerFired: ");
   [NSApp postEvent: periodicEvent atStart: NO];
 }
 
@@ -334,7 +333,7 @@ static Class eventClass;
   NSTimer		*realTimer;
   NSMutableDictionary	*dict = GSCurrentThreadDictionary();
 
-  NSDebugLog (@"_registerRealTimer: ");
+  NSDebugLLog (@"NSEvent", @"_registerRealTimer: ");
   {
     NSTimeInterval	timeInterval;
     NSEvent		*periodicEvent;
@@ -368,7 +367,7 @@ static Class eventClass;
   NSTimer		*timer;
   NSMutableDictionary	*dict = GSCurrentThreadDictionary();
 
-  NSDebugLog (@"stopPeriodicEvents");
+  NSDebugLLog (@"NSEvent", @"stopPeriodicEvents");
   timer = [dict objectForKey: timerKey];
   [timer invalidate];
   [dict removeObjectForKey: timerKey];

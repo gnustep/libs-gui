@@ -1,7 +1,7 @@
 /* 
    NSOpenPanel.h
 
-   Standard open panel for opening files
+   Standard panel for opening files
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
@@ -59,10 +59,6 @@
 - (void)setCanChooseDirectories:(BOOL)flag;
 - (void)setCanChooseFiles:(BOOL)flag;
 
-// Querying the Chosen Files
-// Returns an array containing the absolute paths (as NSString
-// objects) of the selected files and directories.  If multiple
-// selections aren't allowed, the array contains a single name.
 - (NSArray *)filenames;
 
 // Running an NSOpenPanel 

@@ -2388,7 +2388,7 @@ static SEL getSel;
 	  switch ([theEvent type])
 	    {
 	    case NSPeriodic:
-	      NSDebugLog(@"NSMatrix: got NSPeriodic event\n");
+	      NSDebugLLog(@"NSMatrix", @"matrix: got NSPeriodic event\n");
 	      shouldProceedEvent = YES;
 	      break;
 
@@ -2397,7 +2397,7 @@ static SEL getSel;
 	    case NSLeftMouseDown:
 	    default:
 	      shouldProceedEvent = YES;
-	      NSDebugLog(@"NSMatrix: got event of type: %d\n",
+	      NSDebugLLog(@"NSMatrix", @"matrix: got event of type: %d\n",
 			 [theEvent type]);
 	      ASSIGN(lastEvent, theEvent);
 	      continue;

@@ -400,7 +400,7 @@ static NSColor	*shadowCol;
       }
     default:
       {
-	NSDebugLog (@"cell attribute %d not supported", aParameter);
+	NSWarnLog (@"cell attribute %d not supported", aParameter);
 	break;
       }
     }
@@ -516,7 +516,7 @@ static NSColor	*shadowCol;
       }
     default:
       {
-	NSDebugLog (@"cell attribute %d not supported", aParameter);
+	NSWarnLog (@"cell attribute %d not supported", aParameter);
 	break;
       }
     }
@@ -1270,11 +1270,8 @@ static NSColor	*shadowCol;
   BOOL		done;
   BOOL		mouseWentUp;
 
-  NSDebugLog(@"NSCell start tracking\n");
-  NSDebugLog(@"NSCell tracking in rect %f %f %f %f\n",
-		      cellFrame.origin.x, cellFrame.origin.y,
-		      cellFrame.size.width, cellFrame.size.height);
-  NSDebugLog(@"NSCell initial point %f %f\n", point.x, point.y);
+  NSDebugLLog(@"NSCell", @"cell start tracking in rect %@ initial point %f %f",
+	     NSStringFromRect(cellFrame), point.x, point.y);
 
   _mouse_down_flags = [theEvent modifierFlags];
   if (![self startTrackingAt: point inView: controlView])
@@ -1294,7 +1291,7 @@ static NSColor	*shadowCol;
       event_mask |= NSPeriodicMask;
     }
 
-  NSDebugLog(@"NSCell get mouse events\n");
+  NSDebugLLog(@"NSCell", @"cell get mouse events\n");
   mouseWentUp = NO;
   done = NO;
   while (!done)
@@ -1328,23 +1325,23 @@ static NSColor	*shadowCol;
 	      location = [theEvent locationInWindow];
 	    }
 	  point = [controlView convertPoint: location fromView: nil];
-	  NSDebugLog(@"NSCell location %f %f\n", location.x, location.y);
-	  NSDebugLog(@"NSCell point %f %f\n", point.x, point.y);
+	  NSDebugLLog(@"NSCell", @"location %f %f\n", location.x, location.y);
+	  NSDebugLLog(@"NSCell", @"point %f %f\n", point.x, point.y);
 	}
       else
 	{
 	  periodCount++;
-	  NSDebugLog (@"got a periodic event");
+	  NSDebugLLog (@"NSCell", @"cell got a periodic event");
 	}
 
       if (![controlView mouse: point inRect: cellFrame])
 	{
-	  NSDebugLog(@"NSCell point not in cell frame\n");
+	  NSDebugLLog(@"NSCell", @"point not in cell frame\n");
 
 	  pointIsInCell = NO;	
 	  if (flag == NO) 
 	    {
-	      NSDebugLog(@"NSCell return immediately\n");
+	      NSDebugLLog(@"NSCell", @"cell return immediately\n");
 	      done = YES;
 	    }
 	}
@@ -1357,14 +1354,14 @@ static NSColor	*shadowCol;
 					at: point 	// tracking?
 				    inView: controlView])
 	{
-	  NSDebugLog(@"NSCell stop tracking\n");
+	  NSDebugLLog(@"NSCell", @"cell stop tracking\n");
 	  done = YES;
 	}
       
       // Did the mouse go up?
       if (eventType == NSLeftMouseUp)
 	{
-	  NSDebugLog(@"NSCell mouse went up\n");
+	  NSDebugLLog(@"NSCell", @"cell mouse went up\n");
 	  mouseWentUp = YES;
 	  done = YES;
 	}
@@ -1397,11 +1394,11 @@ static NSColor	*shadowCol;
   // Return YES only if the mouse went up within the cell
   if (mouseWentUp && (flag || [controlView mouse: point inRect: cellFrame]))
     {
-      NSDebugLog(@"NSCell mouse went up in cell\n");
+      NSDebugLLog(@"NSCell", @"mouse went up in cell\n");
       return YES;
     }
 
-  NSDebugLog(@"NSCell mouse did not go up in cell\n");
+  NSDebugLLog(@"NSCell", @"mouse did not go up in cell\n");
   return NO;				// Otherwise return NO
 }
 
@@ -1646,8 +1643,6 @@ static NSColor	*shadowCol;
 
 - (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  NSDebugLog (@"NSCell drawWithFrame: inView: ");
-
   // do nothing if cell's frame rect is zero
   if (NSIsEmptyRect(cellFrame) || ![controlView window])
     return;

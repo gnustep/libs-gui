@@ -347,8 +347,8 @@ static NSNotificationCenter *nc = nil;
 	}
       if (NSEqualRects(r, oldRect) == NO)
 	{
-	  NSDebugLog(@"drawing divider at x: %d, y: %d, w: %d, h: %d\n",
-	    (int)NSMinX(r), (int)NSMinY(r), (int)NSWidth(r), (int)NSHeight(r));
+	  NSDebugLLog(@"NSSplitView", @"drawing divider at %@\n",
+		      NSStringFromRect(r));
 	  [_dividerColor set];
 	
 	    
@@ -552,7 +552,7 @@ static NSNotificationCenter *nc = nil;
 	}
     }
   [prev setFrame: r];
-  NSDebugLog(@"drawing PREV at x: %d, y: %d, w: %d, h: %d\n",
+  NSDebugLLog(@"NSSplitView", @"drawing PREV at x: %d, y: %d, w: %d, h: %d\n",
 	     (int)NSMinX(r),(int)NSMinY(r),(int)NSWidth(r),(int)NSHeight(r));
 
   r1 = [v frame];
@@ -583,7 +583,7 @@ static NSNotificationCenter *nc = nil;
 	}
     }
   [v setFrame: r1];
-  NSDebugLog(@"drawing LAST at x: %d, y: %d, w: %d, h: %d\n",
+  NSDebugLLog(@"NSSplitView", @"drawing LAST at x: %d, y: %d, w: %d, h: %d\n",
 	     (int)NSMinX(r1),(int)NSMinY(r1),(int)NSWidth(r1),
 	     (int)NSHeight(r1));
 

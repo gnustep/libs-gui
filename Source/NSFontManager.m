@@ -62,8 +62,6 @@ static Class		fontPanelClass = Nil;
 {
   if (self == [NSFontManager class])
     {
-      NSDebugLog(@"Initialize NSFontManager class\n");
-
       // Initial version
       [self setVersion: 1];
 
@@ -90,7 +88,6 @@ static Class		fontPanelClass = Nil;
 {
   if (!sharedFontManager)
     {
-      NSDebugLog(@"Initializing NSFontManager fonts\n");
       sharedFontManager = [[fontManagerClass alloc] init];
     }
   return sharedFontManager;

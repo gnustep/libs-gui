@@ -472,7 +472,6 @@ static NSNotificationCenter *nc = nil;
 {
   if (self == [NSWindow class])
     {
-      NSDebugLog(@"Initialize NSWindow class\n");
       [self setVersion: 2];
       ccSel = @selector(_checkCursorRectangles:forEvent:);
       ctSel = @selector(_checkTrackingRectangles:forEvent:);
@@ -568,8 +567,6 @@ static NSNotificationCenter *nc = nil;
 - (id) init
 {
   int style;
-
-  NSDebugLog(@"NSWindow -init\n");
 
   style = NSTitledWindowMask | NSClosableWindowMask
 	  | NSMiniaturizableWindowMask | NSResizableWindowMask;
@@ -3746,8 +3743,6 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 
   [super encodeWithCoder: aCoder];
 
-  NSDebugLog(@"NSWindow: start encoding\n");
-
   [aCoder encodeRect: [[self contentView] frame]];
   [aCoder encodeValueOfObjCType: @encode(unsigned) at: &_styleMask];
   [aCoder encodeValueOfObjCType: @encode(NSBackingStoreType) at: &_backingType];
@@ -3785,8 +3780,6 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 
   [aCoder encodeObject: _miniaturizedImage];
   [aCoder encodeConditionalObject: _initialFirstResponder];
-
-  NSDebugLog(@"NSWindow: finish encoding\n");
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -3804,7 +3797,6 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
       int			anInt;
       id			obj;
 
-      NSDebugLog(@"NSWindow: start decoding\n");
       aRect = [aDecoder decodeRect];
       [aDecoder decodeValueOfObjCType: @encode(unsigned)
 				   at: &aStyle];
@@ -3866,7 +3858,6 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 				   at: &_initialFirstResponder];
 
       [self setFrameTopLeftPoint: p];
-      NSDebugLog(@"NSWindow: finish decoding\n");
     }
 
   return self;

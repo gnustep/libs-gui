@@ -95,81 +95,25 @@ enum {
  */
 - (void) setAccessoryView: (NSView *)aView;
 - (NSView *) accessoryView;
-
-/*
- * Sets the title of the NSSavePanel to title. By default, 
- * 'Save' is the title string. If you adapt the NSSavePanel 
- * for other uses, its title should reflect the user action 
- * that brings it to the screen.
- */
 - (void) setTitle: (NSString *)title;
 - (NSString *) title;
 - (void) setPrompt: (NSString *)prompt;
-
-/*
- * Returns the prompt of the Save panel field that holds 
- * the current pathname or file name. By default this 
- * prompt is 'Name: '. *Note - currently no prompt is shown.
- */
 - (NSString *) prompt;
 
 /*
  * Setting Directory and File Type
  */
 - (NSString *) requiredFileType;
-
-/*
- * Sets the current path name in the Save panel's browser. 
- * The path argument must be an absolute path name.
- */
 - (void) setDirectory: (NSString *)path;
-
-/*
- * Specifies the type, a file name extension to be appended to 
- * any selected files that don't already have that extension;
- * The argument type should not include the period that begins 
- * the extension.  Invoke this method each time the Save panel 
- * is used for another file type within the application.
- */
 - (void) setRequiredFileType: (NSString *)fileType;
 
-/*
- * Sets the NSSavePanel's behavior for displaying file packages 
- * (for example, MyApp.app) to the user.  If flag is YES, the 
- * user is shown files and subdirectories within a file 
- * package.  If NO, the NSSavePanel shows each file package as 
- * a file, thereby giving no indication that it is a directory.
- */
 - (void) setTreatsFilePackagesAsDirectories: (BOOL)flag;
 - (BOOL) treatsFilePackagesAsDirectories;
 
-/*
- * Validates and possibly reloads the browser columns visible 
- * in the Save panel by causing the delegate method 
- * panel: shouldShowFilename: to be invoked. One situation in 
- * which this method would find use is whey you want the 
- * browser show only files with certain extensions based on the 
- * selection made in an accessory-view pop-up list.  When the 
- * user changes the selection, you would invoke this method to
- * revalidate the visible columns. 
- */
 - (void) validateVisibleColumns;
 
 /*
  * Running the NSSavePanel
- */
-
-/*
- * Initializes the panel to the directory specified by path 
- * and, optionally, the file specified by filename, then 
- * displays it and begins its modal event loop; path and 
- * filename can be empty strings, but cannot be nil.  The 
- * method invokes Application's runModalForWindow: method with 
- * self as the argument.  Returns NSOKButton (if the user 
- * clicks the OK button) or NSCancelButton (if the user clicks 
- * the Cancel button).	Do not invoke filename or directory 
- * within a modal loop because the information that these 
- * methods fetch is updated only upon return.
  */
 - (int) runModalForDirectory: (NSString *)path file: (NSString *)filename;
 - (int) runModal;
@@ -191,14 +135,6 @@ enum {
 /*
  * Reading Save Information
  */
-
-/*
- * Returns the absolute pathname of the directory currently 
- * shown in the panel.	Do not invoke this method within a 
- * modal session (runModal or runModalForDirectory: file: )
- * because the directory information is only updated just 
- * before the modal session ends.
- */
 - (NSString *) directory;
 - (NSString *) filename;
 
@@ -218,7 +154,7 @@ enum {
  * Methods Implemented by the Delegate 
  */
 @interface NSObject (NSSavePanelDelegate)
-/*
+/**
  * The NSSavePanel sends this message just before the end of a 
  * modal session for each file name displayed or selected 
  * (including file names in multiple selections).  The delegate 

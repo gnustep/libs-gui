@@ -812,7 +812,8 @@
 	  
 	  if (![self mouse: point inRect: cellFrame])
 	    {
-	      NSDebugLog(@"NSCell point not in cell frame\n");
+	      NSDebugLLog(@"NSCell", 
+			  @"tableheaderview point not in cell frame\n");
 	      {
 		NSRect rect = [self headerRectOfColumn: columnIndex];
 		[_tableView _mouseDownInHeaderOfTableColumn: 

@@ -570,7 +570,8 @@ static NSTextFieldCell *titleCell;
 	  // if unable to find a cell whose title matches aStr return NO
 	  if (found == NO)
 	    {
-	      NSDebugLog (@"NSBrowser: unable to find cell '%@' in column %d\n", 
+	      NSDebugLLog (@"NSBrowser", 
+			   @"unable to find cell '%@' in column %d\n", 
 			  aStr, column + i);
 	      break;
 	    }

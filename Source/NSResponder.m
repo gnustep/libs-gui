@@ -45,8 +45,6 @@
 {
   if (self == [NSResponder class])
     {
-      NSDebugLog(@"Initialize NSResponder class\n");
-
       [self setVersion: 1];
       
       /* Gets the current input manager - this forces it to read the

@@ -41,10 +41,6 @@
 
 @implementation NSDocument
 
-+ (void)initialize
-{
-}
-
 + (NSArray *)readableTypes
 {
   return [[NSDocumentController sharedDocumentController]
@@ -53,7 +49,8 @@
 
 + (NSArray *)writableTypes
 {
-  return [[NSDocumentController sharedDocumentController] _editorTypesForClass:self];
+  return [[NSDocumentController sharedDocumentController] 
+	   _editorTypesForClass:self];
 }
 
 + (BOOL)isNativeType:(NSString *)type

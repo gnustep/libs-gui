@@ -1,6 +1,6 @@
 /** <title>NSSavePanel</title>
 
-   <abstract>Standard save panel for saving files</abstract>
+   <abstract>Standard panel for saving files</abstract>
 
    Copyright (C) 1999, 2000 Free Software Foundation, Inc.
 
@@ -468,6 +468,24 @@ selectCellWithString: (NSString*)title
 //
 // NSSavePanel methods
 //
+/** 
+    <p>Implements a panel that allows the user to save a file.
+    </p>
+    <p>
+    There is only one save panel per application and this panel is obtained
+    by calling the +savePanel class method. From here, you should set the
+    required file extension using -setRequiredFileType:
+    When ready to show the panel, use the
+    -runModal, or a similar method to show the panel in a modal
+    session. Other methods allow you to set the initial directory and
+    initially choosen file. The method will return one of NSOKButton
+    or NSCancelButton depending on which button the user pressed.
+    </p>
+    <p>
+    Use the -filename method to retrieve the name of the
+    file the user choose.
+    </p>
+ */
 @implementation NSSavePanel
 
 + (void) initialize
@@ -486,6 +504,7 @@ selectCellWithString: (NSString*)title
     }
 }
 
+/** Returns the shared NSSavePanel instance */
 + (id) savePanel
 {
   if (_gs_gui_save_panel == nil)
@@ -529,6 +548,14 @@ selectCellWithString: (NSString*)title
   return self;
 }
 
+/** Sets an accessory view which is shown near the bottom of the
+    panel. The panel is automatically expanded with enough room to
+    show the extra view. You can use this extra view to customize
+    various characteristics of the file selection mechanism. For instance
+    you could add a popup button which allows the user to select the
+    format that the file is saved in (e.g. rtf or txt). See
+    also -validateVisibleColumns .
+*/
 - (void) setAccessoryView: (NSView*)aView
 {
   NSRect accessoryViewFrame, bottomFrame;
@@ -635,6 +662,12 @@ selectCellWithString: (NSString*)title
     }
 }
 
+/**
+ * Sets the title of the NSSavePanel to title. By default, 
+ * 'Save' is the title string. If you adapt the NSSavePanel 
+ * for other uses, its title should reflect the user action 
+ * that brings it to the screen.
+ */
 - (void) setTitle: (NSString*)title
 {
   [_titleField setStringValue: title];
@@ -644,27 +677,39 @@ selectCellWithString: (NSString*)title
   [_titleField sizeToFit];
 }
 
+/** Returns the title of the save panel */
 - (NSString*) title
 {
   return [_titleField stringValue];
 }
 
+/**
+ * Returns the prompt of the Save panel field that holds 
+ * the current pathname or file name. By default this 
+ * prompt is 'Name: '.
+ */
 - (void) setPrompt: (NSString*)prompt
 {
   [[_form cellAtIndex: 0] setTitle: prompt];
   [_form setNeedsDisplay: YES];
 }
 
+/** Returns the prompt used in the current path field.  */
 - (NSString*) prompt
 {
   return [[_form cellAtIndex: 0] title];
 }
 
+/** Returns the accesory view (if any). */
 - (NSView*) accessoryView
 {
   return _accessoryView;
 }
 
+/**
+ * Sets the current path name in the Save panel's browser. 
+ * The path argument must be an absolute path name.
+ */
 - (void) setDirectory: (NSString*)path
 {
   NSString *standardizedPath = [path stringByStandardizingPath];
@@ -680,31 +725,64 @@ selectCellWithString: (NSString*)title
     }
 }
 
+/**
+ * Specifies the type, a file name extension to be appended to 
+ * any selected files that don't already have that extension;
+ * The argument type should not include the period that begins 
+ * the extension.  Invoke this method each time the Save panel 
+ * is used for another file type within the application.
+ */
 - (void) setRequiredFileType: (NSString*)fileType
 {
   ASSIGN(_requiredFileType, fileType);
 }
 
+/** Returns the required file type. The default is no required file type.  */
 - (NSString*) requiredFileType
 {
   return _requiredFileType;
 }
 
+/** Returns YES if file packages are shown as directories. The default
+    is NO.  */
 - (BOOL) treatsFilePackagesAsDirectories
 {
   return _treatsFilePackagesAsDirectories;
 }
 
+/**
+ * Sets the NSSavePanel's behavior for displaying file packages 
+ * (for example, MyApp.app) to the user.  If flag is YES, the 
+ * user is shown files and subdirectories within a file 
+ * package.  If NO, the NSSavePanel shows each file package as 
+ * a file, thereby giving no indication that it is a directory.
+ */
 - (void) setTreatsFilePackagesAsDirectories: (BOOL)flag
 {
   _treatsFilePackagesAsDirectories = flag;
 }
 
+/**
+ * Validates and possibly reloads the browser columns that are visible 
+ * in the Save panel by causing the delegate method 
+ * -panel:shouldShowFilename: to be invoked. One situation in 
+ * which this method would find use is whey you want the 
+ * browser to show only files with certain extensions based on the 
+ * selection made in an accessory-view pop-up list.  When the 
+ * user changes the selection, you would invoke this method to
+ * revalidate the visible columns. 
+ */
 - (void) validateVisibleColumns
 {
   [_browser validateVisibleColumns];
 }
 
+/**
+ * Shows the save panel for the user. This method invokes
+ * -runModalForDirectory:file: with empty strings for the directory and
+ * filename.  Returns NSOKButton (if the user clicks the OK button) or
+ * NSCancelButton (if the user clicks the Cancel button).
+ */
 - (int) runModal
 {
   if (_directory)
@@ -715,6 +793,16 @@ selectCellWithString: (NSString*)title
 				 file: @""];
 }
 
+/**
+ * Initializes the panel to the directory specified by path 
+ * and, optionally, the file specified by filename, then 
+ * displays it and begins its modal event loop; path and 
+ * filename can be empty strings, but cannot be nil.  The 
+ * method invokes NSApplication:-runModalForWindow: method with 
+ * self as the argument.  Returns NSOKButton (if the user 
+ * clicks the OK button) or NSCancelButton (if the user clicks 
+ * the Cancel button).
+ */
 - (int) runModalForDirectory: (NSString*)path file: (NSString*)filename
 {
   [self _setupForDirectory: path file: filename];
@@ -755,6 +843,11 @@ selectCellWithString: (NSString*)title
 	 contextInfo: contextInfo];
 }
 
+/**
+ * Returns the directory choosen by the user.  Do not invoke directory
+ * within a modal loop because the information that these methods
+ * fetch is updated only upon return.
+ */
 - (NSString*) directory
 {
   if (_directory)
@@ -763,6 +856,11 @@ selectCellWithString: (NSString*)title
     return @"";
 }
 
+/**
+ * Returns the absolute filename choosen by the user.  Do not invoke
+ * filename within a modal loop because the information that these
+ * methods fetch is updated only upon return.
+ */
 - (NSString*) filename
 {
   if (_fullFileName == nil)

@@ -163,8 +163,6 @@ static NSNotificationCenter *nc;
 
 - (void) dealloc
 {
-  NSDebugLog (@"NSMenu `%@' dealloc", _title);
-
   [nc removeObserver: self];
 
   RELEASE(_notifications);

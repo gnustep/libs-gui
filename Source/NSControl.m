@@ -55,7 +55,6 @@ static Class actionCellClass;
 {
   if (self == [NSControl class])
     {
-      NSDebugLog(@"Initialize NSControl class\n");
       [self setVersion: 1];
       cellClass = [NSCell class];
       usedCellClass = cellClass;
@@ -493,7 +492,6 @@ static Class actionCellClass;
   unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask
     | NSMouseMovedMask | NSLeftMouseDraggedMask | NSOtherMouseDraggedMask
     | NSRightMouseDraggedMask;
-  NSDebugLog(@"NSControl mouseDown\n");
 
   if (![self isEnabled])
     return;
@@ -542,7 +540,6 @@ static Class actionCellClass;
       if (done)
 	break;
 
-      NSDebugLog(@"NSControl process another event\n");
       e = [theApp nextEventMatchingMask: event_mask
 			      untilDate: nil
 				 inMode: NSEventTrackingRunLoopMode

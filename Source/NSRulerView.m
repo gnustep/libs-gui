@@ -178,7 +178,6 @@ static NSMutableDictionary *units = nil;
       NSArray *array2;
       NSArray *array10;
 
-      NSDebugLog(@"Initialize NSRulerView class\n");
       [self setVersion: 0.01];
 
       units = [[NSMutableDictionary alloc] init];

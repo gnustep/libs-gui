@@ -1111,8 +1111,6 @@
   BOOL tmp;
   [super encodeWithCoder: aCoder];
 
-  NSDebugLog(@"NSButtonCell: start encoding\n");
-
   [aCoder encodeObject: _keyEquivalent];
   [aCoder encodeObject: _keyEquivalentFont];
   [aCoder encodeObject: _altContents];
@@ -1127,7 +1125,6 @@
   [aCoder encodeValueOfObjCType: @encode(unsigned int)
 			     at: &_showAltStateMask];
 
-  NSDebugLog(@"NSButtonCell: finish encoding\n");
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -1135,8 +1132,6 @@
   // FIXME: Add new ivars
   BOOL tmp;
   [super initWithCoder: aDecoder];
-
-  NSDebugLog(@"NSButtonCell: start decoding\n");
 
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_keyEquivalent];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_keyEquivalentFont];
@@ -1150,8 +1145,6 @@
 			       at: &_highlightsByMask];
   [aDecoder decodeValueOfObjCType: @encode(unsigned int)
 			       at: &_showAltStateMask];
-
-  NSDebugLog(@"NSButtonCell: finish decoding\n");
 
   return self;
 }
