@@ -1,3 +1,10 @@
+2004-06-26  Serg Stoyan <stoyan255@ukr.net>
+
+        * Source/NSBrowser.m:
+	(updateScroller): Use _firstVisibleColumn to define visibility of
+	scroller. Use _lastVisibleColumn to calculate knob proportion if
+	last visible column and last loaded column is not the same.
+	
 2004-06-25  Serg Stoyan <stoyan255@ukr.net>
 
         * Source/NSBrowser.m:
