@@ -1,17 +1,17 @@
 /*
    NSTextAttachment.h
 
-	Classes to represent text attachments.
+   Classes to represent text attachments.
+   
+   NSTextAttachment is used to represent text attachments. When inline, 
+   text attachments appear as the value of the NSAttachmentAttributeName 
+   attached to the special character NSAttachmentCharacter.
+   
+   NSTextAttachment uses an object obeying the NSTextAttachmentCell 
+   protocol to get input from the user and to display an image.
 
-	NSTextAttachment is used to represent text attachments. When inline, 
-	text attachments appear as the value of the NSAttachmentAttributeName 
-	attached to the special character NSAttachmentCharacter.
-
-	NSTextAttachment uses an object obeying the NSTextAttachmentCell 
-	protocol to get input from the user and to display an image.
-
-	NSTextAttachmentCell is a simple subclass of NSCell which provides 
-	the NSTextAttachment protocol.
+   NSTextAttachmentCell is a simple subclass of NSCell which provides 
+   the NSTextAttachment protocol.
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
@@ -42,10 +42,10 @@
 
 #ifndef STRICT_OPENSTEP
 
-#import <Foundation/Foundation.h>
-#import <AppKit/NSCell.h>
-#import <AppKit/NSStringDrawing.h>
+#include <Foundation/NSGeometry.h>
+#include <AppKit/NSCell.h>
 
+@class NSTextContainer;
 @class NSFileWrapper;
 @class NSTextAttachment;
 
@@ -53,21 +53,45 @@ enum {
     NSAttachmentCharacter = 0xfffc	/* To denote attachments. */
 };
 
-/* These are the only methods required of cells in text attachments... The default NSCell class implements most of these; the NSTextAttachmentCell class is a subclass which implements all and provides some additional functionality.
+/* 
+   These are the only methods required of cells in text attachments... 
+   The default NSCell class implements most of these; the NSTextAttachmentCell 
+   class is a subclass which implements all and provides some additional 
+   functionality.
  */
 @protocol NSTextAttachmentCell <NSObject>
 - (void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView;
-- (BOOL)wantsToTrackMouse;
-- (void)highlight:(BOOL)flag withFrame:(NSRect)cellFrame inView:(NSView *)controlView;
-- (BOOL)trackMouse:(NSEvent *)theEvent inRect:(NSRect)cellFrame ofView:(NSView *)controlView untilMouseUp:(BOOL)flag;
+- (void)drawWithFrame:(NSRect)cellFrame 
+	       inView:(NSView *)controlView 
+       characterIndex:(unsigned)charIndex;
+- (void)highlight:(BOOL)flag 
+	withFrame:(NSRect)cellFrame 
+	   inView:(NSView *)controlView;
 - (NSSize)cellSize;
 - (NSPoint)cellBaselineOffset;
+- (NSRect)cellFrameForTextContainer:(NSTextContainer *)textContainer 
+	       proposedLineFragment:(NSRect)lineFrag
+		      glyphPosition:(NSPoint)position 
+		     characterIndex:(unsigned)charIndex;
+- (BOOL)wantsToTrackMouse;
+- (BOOL)trackMouse:(NSEvent *)theEvent 
+	    inRect:(NSRect)cellFrame 
+	    ofView:(NSView *)controlView 
+      untilMouseUp:(BOOL)flag;
+- (BOOL)trackMouse:(NSEvent *)theEvent 
+	    inRect:(NSRect)cellFrame 
+	    ofView:(NSView *)controlView
+  atCharacterIndex:(unsigned)charIndex 
+      untilMouseUp:(BOOL)flag;
 - (void)setAttachment:(NSTextAttachment *)anObject;
 - (NSTextAttachment *)attachment;
 @end
 
 
-/* Simple class to provide basic attachment cell functionality. By default this class causes NSTextView to send out delegate messages when the attachment is clicked on or dragged.
+/* 
+   Simple class to provide basic attachment cell functionality. 
+   By default this class causes NSTextView to send out delegate 
+   messages when the attachment is clicked on or dragged.
  */
 @interface NSTextAttachmentCell : NSCell <NSTextAttachmentCell> {
     NSTextAttachment *_attachment;
@@ -78,22 +102,25 @@ enum {
 @interface NSTextAttachment : NSObject <NSCoding> {
     NSFileWrapper *_fileWrapper;
     id <NSTextAttachmentCell>_cell;
-    struct {
-        unsigned int cellWasExplicitlySet:1;
-        unsigned int :31;
-    } _flags;
 }
 
-/* Designated initializer.
+/* 
+   Designated initializer.
  */
 - (id)initWithFileWrapper:(NSFileWrapper *)fileWrapper;
 
-/* The fileWrapper is the meat of most types of attachment.  It can be set or queried with these methods.  An NSTextAttachment usually has a fileWrapper.  setFileWrapper does not update the attachment's cell in any way.
+/* 
+   The fileWrapper is the meat of most types of attachment.  
+   It can be set or queried with these methods.  An NSTextAttachment 
+   usually has a fileWrapper.  setFileWrapper does not update the 
+   attachment's cell in any way.
  */
 - (void)setFileWrapper:(NSFileWrapper *)fileWrapper;
 - (NSFileWrapper *)fileWrapper;
 
-/* The cell which handles user interaction. By default an instance of NSTextAttachmentCell is used.
+/* 
+   The cell which handles user interaction. 
+   By default an instance of NSTextAttachmentCell is used.
  */
 - (id <NSTextAttachmentCell>)attachmentCell;
 - (void)setAttachmentCell:(id <NSTextAttachmentCell>)cell;
