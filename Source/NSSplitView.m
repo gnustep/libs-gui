@@ -81,6 +81,9 @@
   float		divVertical, divHorizontal;
   NSDate	*farAway = [NSDate distantFuture];
   unsigned	int eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask;
+  /* YES if delegate implements splitView:constrainSplitPosition:ofSubviewAt:*/
+  BOOL          delegateConstrains = NO;
+  
 
   /*  if there are less the two subviews, there is nothing to do */
   if (count < 2)
@@ -164,6 +167,18 @@
 	  prev = v;
         }
     }
+
+  /* Check if the delegate wants to constrain the spliview divider to
+     certain positions */
+  if (_delegate 
+      && [_delegate 
+	   respondsToSelector:
+	     @selector(splitView:constrainSplitPosition:ofSubviewAt:)])
+    {
+      delegateConstrains = YES;
+    }
+  
+
   if (_isVertical == NO)
     {
       divVertical = _dividerWidth;
@@ -239,6 +254,20 @@
   while ([e type] != NSLeftMouseUp)
     {
       p = [self convertPoint: [e locationInWindow] fromView: nil];
+      if (delegateConstrains)
+	{
+	  if (_isVertical)
+	    {
+	      p.x = [_delegate splitView: self  constrainSplitPosition: p.x
+			       ofSubviewAt: offset];
+	    }
+	  else
+	    {
+	      p.y = [_delegate splitView: self  constrainSplitPosition: p.y
+			       ofSubviewAt: offset];
+	    }
+	}
+      
       if (_isVertical == NO)
 	{
 	  if (p.y < minCoord)
