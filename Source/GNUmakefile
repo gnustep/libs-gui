@@ -91,6 +91,8 @@ NSImage.m \
 NSImageCell.m \
 NSImageRep.m \
 NSImageView.m \
+NSInputManager.m \
+NSInputServer.m \
 NSInterfaceStyle.m \
 NSLayoutManager.m \
 NSMatrix.m \
@@ -234,6 +236,8 @@ NSImage.h \
 NSImageCell.h \
 NSImageRep.h \
 NSImageView.h \
+NSInputManager.h \
+NSInputServer.h \
 NSInterfaceStyle.h \
 NSLayoutManager.h \
 NSMatrix.h \
