@@ -505,6 +505,8 @@ static NSColor	*shadowCol;
   
   [textObject setFont: [self font]];
   [textObject setAlignment: [self alignment]];
+  [textObject setEditable: [self isEditable]];
+  [textObject setSelectable: [self isSelectable]];
   return textObject;
 }
 
@@ -518,33 +520,25 @@ static NSColor	*shadowCol;
 			(cell_type != NSTextCellType))
     return;
 
-  textObject = [self setUpFieldEditorAttributes: textObject];
   [textObject setDelegate: anObject];
-  [textObject setFrame: aRect];
+  [textObject setFrame: [self drawingRectForBounds: aRect]];
   [textObject setText: [self stringValue]];
-  [controlView addSubview:textObject];  
+  [controlView addSubview: textObject];  
+  [[controlView window] makeFirstResponder: textObject];
+  // Attention: if you see crashes, they are likely to come 
+  // from the following message.  Fix NSText.
   [textObject display];
 
-  [[controlView window] makeFirstResponder: textObject];
-
   if ([theEvent type] == NSLeftMouseDown)
-    [textObject mouseDown:theEvent];
+    [textObject mouseDown: theEvent];
 }
 
-/*
- * editing is complete, remove the text obj acting as the field
- * editor from window's view heirarchy, set our contents from it
- */
 - (void) endEditing: (NSText*)textObject
 {
   [textObject setDelegate: nil];
-  [textObject retain];
   [textObject removeFromSuperview];
-  [self setStringValue: [textObject text]];
-  [textObject setString: @""];
 }
 
-// TODO: Check, what exactly this method is supposed to do?
 - (void) selectWithFrame: (NSRect)aRect
 		  inView: (NSView *)controlView
 		  editor: (NSText *)textObject
@@ -556,13 +550,14 @@ static NSColor	*shadowCol;
 			(cell_type != NSTextCellType))
     return;
 
-  textObject = [self setUpFieldEditorAttributes: textObject];
-  [textObject setFrame: aRect];
+  [textObject setFrame: [self drawingRectForBounds: aRect]];
   [textObject setText: [self stringValue]];
   [textObject setDelegate: anObject];
-  [textObject setSelectedRange: NSMakeRange (selStart, selLength)];
   [controlView addSubview: textObject];
+  [textObject setSelectedRange: NSMakeRange (selStart, selLength)];
   [[controlView window] makeFirstResponder: textObject];
+  // Attention: if you see crashes, they are likely to come 
+  // from the following message.  Fix NSText.
   [textObject display];
 }
 
