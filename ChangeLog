@@ -1,5 +1,10 @@
 2005-03-29 Adrian Robert <arobert@cogsci.ucsd.edu>
 
+	* Source/NSWorkspace.m (-_extIconForApp:info:): Check filename is
+	not empty string before passing to [NSBunder -pathForImageResource:].
+
+2005-03-29 Adrian Robert <arobert@cogsci.ucsd.edu>
+
 	* Source/NSGraphicsContext.m: Undeprecate DPSxshow, DPSyshow,
 	DPSxyshow, DPSashow, DPSwidthshow, and DPSawidthshow.
 

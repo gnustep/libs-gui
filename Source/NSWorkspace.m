@@ -1645,7 +1645,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   NSDictionary	*typeInfo = [extInfo objectForKey: appName];
   NSString	*file = [typeInfo objectForKey: @"NSIcon"];
 
-  if (file)
+  if (file && [file length] != 0)
     {
       if ([file isAbsolutePath] == NO)
 	{
@@ -1673,7 +1673,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   return nil;
 }
 
-/** Returns the default icon to display for a directory */
+/** Returns the default icon to display for a file */
 - (NSImage*) unknownFiletypeImage
 {
   static NSImage *image = nil;
