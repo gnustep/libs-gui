@@ -1,3 +1,7 @@
+2003-08-29  Adam Fedor  <fedor@gnu.org>
+
+	* Tools/gsnd/gsnd.m (main): Reopen stderr.
+
 2003-08-29  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* NSToolbarItem.[hm]: Implemented copyWithZone: for NSCopying,

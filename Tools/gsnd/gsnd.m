@@ -1102,6 +1102,13 @@ int main(int argc, char** argv, char **env)
       gsnd_log(LOG_CRIT);
       exit(EXIT_FAILURE);
     }
+  if (is_daemon && open("/dev/null", O_WRONLY) != 2)
+    {
+      sprintf(ebuf, "failed to open stderr from /dev/null (%s)\n",
+	strerror(errno));
+      gsnd_log(LOG_CRIT);
+      exit(EXIT_FAILURE);
+    }
 
   gsnd = [[SoundServer alloc] init];
 
