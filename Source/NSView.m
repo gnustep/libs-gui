@@ -2600,7 +2600,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
  *   [d setNextKeyView: a];
  * </example>
  */
-- (voidi) setNextKeyView: (NSView *)aView
+- (void) setNextKeyView: (NSView *)aView
 {
   NSView	*tmp;
   unsigned	count;
@@ -3512,7 +3512,6 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   NSRect	rect;
   NSEnumerator	*e;
   NSView	*sub;
-  NSView	*prev;
   NSArray	*subs;
 
   self = [super initWithCoder: aDecoder];
