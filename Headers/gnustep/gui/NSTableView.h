@@ -50,6 +50,9 @@
   NSTableHeaderView *_headerView;
   NSView            *_cornerView;
   SEL                _doubleAction;
+  id                 _target;
+  int                _clickedRow;
+  int                _clickedColumn;
 
   /*
    * Ivars Acting as Cache 
@@ -60,10 +63,10 @@
   BOOL   _del_responds;
 
   /*
-   * We cache column origins (precisely, the x coordinate of the left origin of 
-   * each column).  When a column width is changed through [NSTableColumn setWidth:],
-   * then [NSTableView tile] gets called, which updates the cache.
-   */
+   * We cache column origins (precisely, the x coordinate of the left
+   * origin of each column).  When a column width is changed through
+   * [NSTableColumn setWidth:], then [NSTableView tile] gets called,
+   * which updates the cache.  */
   float *_columnOrigins;
 
   /* if YES [which happens only during a sizeToFit], we are doing
@@ -202,6 +205,9 @@
 
 @end /* interface of NSTableView */
 
+@interface NSTableView (GNUPrivate)
+- (void) _sendDoubleActionForColumn: (int)columnIndex;
+@end
 
 /* 
  * Informal protocol NSTableDataSource 
