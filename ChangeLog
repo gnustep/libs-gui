@@ -1,3 +1,7 @@
+Mon Dec 30 18:29:41 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Model/GNUmakefile: Updated all checks for library-combo.
+
 Sun Dec 29 12:27:35 2002  Gregory John Casamento  <greg_casamento@yahoo.com>
 
 	* Headers/gnustep/gui/GSNibTemplates.h: Added declaration for
