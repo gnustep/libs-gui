@@ -267,13 +267,11 @@
 {
   NSDictionary	*table;
   NSBundle	*bundle;
-  NSString	*file;
 
   if (owner == nil || aNibName == nil)
     return NO;
 
   table = [NSDictionary dictionaryWithObject: owner forKey: @"NSOwner"];
-  file = [aNibName stringByDeletingPathExtension];
   bundle = [self bundleForClass: [owner class]];
   if (bundle == nil)
     {
