@@ -115,7 +115,7 @@ enum {
   struct GSCellFlagsType { 
     // total 28 bits.  Any idea on how to use the other 4 ?
     unsigned	is_highlighted:1;
-    unsigned	is_enabled:1;    
+    unsigned	is_disabled:1;    
     unsigned	is_editable:1;   
     unsigned	is_bordered:1;   
     unsigned	is_bezeled:1;   
