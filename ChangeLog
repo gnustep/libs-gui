@@ -1,3 +1,10 @@
+Mon Oct 21 01:17:41 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSView.m ([-setNextKeyView:], [-setPreviousKeyView:]):
+	Rewritten the way the next/previous key view chain is managed, to
+	fix problem when a next/previous key view is replaced with a new
+	one (Patch by Caba Conti modified).
+
 2002-10-20  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/gnustep/gui/NSComboBox.h: Add APPKIT_EXPORT and make layout
