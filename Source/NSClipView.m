@@ -91,7 +91,13 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 
 - (void) dealloc
 {
-  RELEASE(_documentView);
+  if (_documentView != nil)
+    {
+      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+      
+      [nc removeObserver: self  name: nil  object: _documentView];
+      RELEASE(_documentView);
+    }
   RELEASE(_cursor);
   RELEASE(_backgroundColor);
 
