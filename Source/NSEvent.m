@@ -46,6 +46,7 @@
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSGraphics.h>
+#include <AppKit/PSOperators.h>
 
 /*
  *	gstep-base has a faster mechanism to get the current thread.
@@ -585,6 +586,9 @@ static Class eventClass;
 	[aCoder encodeValuesOfObjCTypes: "sii", &event_data.misc.sub_type,
 		&event_data.misc.data1, &event_data.misc.data2];
 	break;
+      case NSScrollWheel:
+	// FIXME
+	break;
     }
 }
 
@@ -638,6 +642,10 @@ static Class eventClass;
 	[aDecoder decodeValuesOfObjCTypes: "sii", &event_data.misc.sub_type,
 		&event_data.misc.data1, &event_data.misc.data2];
 	break;
+
+      case NSScrollWheel:
+	// FIXME
+	break;
     }
 
   return self;
@@ -657,7 +665,7 @@ static Class eventClass;
       event_data.key.unmodified_keys = [event_data.key.unmodified_keys copyWithZone: zone];
     }
   else if (event_type == NSCursorUpdate)
-    event_data.tracking.user_data = [event_data.tracking.user_data copyWithZone: zone];
+    event_data.tracking.user_data = (void *)[(id)event_data.tracking.user_data copyWithZone: zone];
 
   return e;
 }
@@ -749,6 +757,9 @@ static Class eventClass;
 	      modifier_flags, event_time, window_num, event_context,
 	      event_data.misc.sub_type, event_data.misc.data1,
 	      event_data.misc.data2];
+	break;
+      case NSScrollWheel:
+	// FIXME
 	break;
     }
 
