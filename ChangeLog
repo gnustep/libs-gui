@@ -11,6 +11,9 @@
 	Add some documentation.
 	* Source/NSWindow.m ([NSWindow -dealloc]): Check for context
 	before undefining gstate.
+	([NSWindow -miniaturize:]): Don't create miniwindow if server
+	can't handle it.
+	* Source/GSDisplayServer.m (-appOwnsMiniwindow): Implement.
 
 2002-04-01  Gregory Casamento <greg_casamento@yahoo.com>
 

@@ -2101,6 +2101,7 @@ resetCursorRectsForView(NSView *theView)
   the screen and it's counterpart (mini)window is displayed.  */
 - (void) miniaturize: (id)sender
 {
+  GSDisplayServer *srv = GSServerForWindow(self);
   [nc postNotificationName: NSWindowWillMiniaturizeNotification
 		    object: self];
   
@@ -2113,7 +2114,7 @@ resetCursorRectsForView(NSView *theView)
   /*
    * Ensure that we have a miniwindow counterpart.
    */
-  if (_counterpart == 0)
+  if (_counterpart == 0 && [srv appOwnsMiniwindow])
     {
       NSWindow		*mini;
       NSMiniWindowView	*v;
@@ -2131,7 +2132,7 @@ resetCursorRectsForView(NSView *theView)
       RELEASE(v);
     }
   [self _lossOfKeyOrMainWindow];
-  [GSServerForWindow(self) miniwindow: _windowNum];
+  [srv miniwindow: _windowNum];
   _f.visible = NO;
   
   [nc postNotificationName: NSWindowDidMiniaturizeNotification

@@ -461,6 +461,16 @@ GSCurrentServer(void)
   [self subclassResponsibility: _cmd];
 }
 
+/** Returns YES if the application should create the miniwindow counterpart
+    to the full size window and own it. Some display systems handle the
+    miniwindow themselves. In this case the backend subclass should
+    override this method to return NO. */
+- (BOOL) appOwnsMiniwindow
+{
+  return YES;
+}
+
+
 /** Sets the window drawable for the current NSGraphicsContext,
     typically by calling [NSGraphicsContext -DPSsetgcdrawable::::],
     although depending on the concrete implmentation, more information

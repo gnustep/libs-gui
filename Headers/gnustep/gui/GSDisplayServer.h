@@ -95,6 +95,7 @@ GSDisplayServer * GSCurrentServer(void);
 - (void) windowbacking: (NSBackingStoreType)type;
 - (void) titlewindow: (NSString *) window_title : (int) win;
 - (void) miniwindow: (int) win;
+- (BOOL) appOwnsMiniwindow;
 - (void) windowdevice: (int) win;
 - (void) orderwindow: (int) op : (int) otherWin : (int) win;
 - (void) movewindow: (NSPoint)loc : (int) win;
