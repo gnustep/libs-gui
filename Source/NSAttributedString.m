@@ -121,8 +121,14 @@ paraBreakCSet()
 
 + (NSAttributedString *)attributedStringWithAttachment:(NSTextAttachment *)attachment
 {
-  // FIXME: Still missing
-  return nil;
+  unichar ch = NSAttachmentCharacter;
+  NSString *string = [NSString stringWithCharacters: &ch 
+			       length: 1];
+  NSDictionary *attributes = [NSDictionary dictionaryWithObject: attachment
+					   forKey: NSAttachmentAttributeName];
+
+  return [[self alloc] initWithString: string 
+		       attributes: attributes];
 }
 
 - (BOOL) containsAttachments
@@ -406,18 +412,11 @@ documentAttributes: (NSDictionary**)dict
 - (id) initWithRTF: (NSData*)data
   documentAttributes: (NSDictionary**)dict
 {
-  NSString *rtfString = [[NSString alloc] 
-			    initWithData: data
-			    encoding: NSASCIIStringEncoding];
-  NSMutableAttributedString *result = [[NSMutableAttributedString alloc] init];
+  NSAttributedString *new = parseRTFintoAttributedString(data, dict);
 
-  parseRTFintoAttributedString(rtfString, result, dict); 
-
-  self = [self initWithAttributedString: result];
-  RELEASE(rtfString);
-  RELEASE(result);
-
-  return self;
+  // We do not return self but the newly created object
+  RELEASE(self);
+  return RETAIN(new); 
 }
 
 - (id) initWithHTML: (NSData*)data
