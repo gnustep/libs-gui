@@ -35,6 +35,7 @@
 #include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSColor.h>
+#include <AppKit/DPSOperators.h>
 
 #ifdef STRICT_OPENSTEP
 // This is used for the old text functions.
@@ -318,13 +319,6 @@ NSRectFillListWithColors(const NSRect *rects, NSColor **colors, int count)
 }
 
 void 
-NSRectFillUsingOperation(NSRect aRect, NSCompositingOperation op)
-{
-  // FIXME
-  NSRectFill(aRect);
-}
-
-void 
 NSRectFillListUsingOperation(const NSRect *rects, int count, 
 			     NSCompositingOperation op)
 {
@@ -352,6 +346,45 @@ NSRectFillListWithColorsUsingOperation(const NSRect *rects,
 }
 
 
+//*****************************************************************************
+//
+// 	Draws an unfilled rectangle, clipped by clipRect, whose border
+//	is defined by the parallel arrays sides and grays, both of length
+//	count. Each element of sides specifies an edge of the rectangle,
+//	which is drawn with a width of 1.0 using the corresponding gray level
+//	from grays. If the edges array contains recurrences of the same edge,
+//	each is inset within the previous edge.
+//
+//*****************************************************************************
+
+NSRect 
+NSDrawTiledRects(NSRect aRect,const NSRect clipRect,  
+		 const NSRectEdge * sides, 
+		 const float *grays, int count)
+{
+  int i;
+  NSRect slice;
+  NSRect remainder = aRect;
+  NSRect rects[count];
+  BOOL hasClip = !NSIsEmptyRect(clipRect);
+
+  if (hasClip && NSIntersectsRect(aRect, clipRect) == NO)
+    return remainder;
+
+  for (i = 0; i < count; i++)
+    {
+      NSDivideRect(remainder, &slice, &remainder, 1.0, sides[i]);
+      if (hasClip)
+	rects[i] = NSIntersectionRect(slice, clipRect);
+      else
+	rects[i] = slice;
+    }
+
+  NSRectFillListWithGrays(rects, grays, count);
+
+  return remainder;
+}
+
 NSRect 
 NSDrawColorTiledRects(NSRect boundsRect, NSRect clipRect, 
 		      const NSRectEdge *sides, NSColor **colors, 
@@ -378,6 +411,121 @@ NSDrawColorTiledRects(NSRect boundsRect, NSRect clipRect,
   NSRectFillListWithColors(rects, colors, count);
 
   return remainder;
+}
+
+void
+NSDrawButton(const NSRect aRect, const NSRect clipRect)
+{
+  NSRectEdge up_sides[] = {NSMinXEdge, NSMaxYEdge, 
+			   NSMaxXEdge, NSMinYEdge, 
+			   NSMaxXEdge, NSMinYEdge};
+  NSRectEdge down_sides[] = {NSMinXEdge, NSMinYEdge, 
+			     NSMaxXEdge, NSMaxYEdge, 
+			     NSMaxXEdge, NSMaxYEdge};
+  float grays[] = {NSWhite, NSWhite, 
+		   NSBlack, NSBlack, 
+		   NSDarkGray, NSDarkGray};
+  NSRect rect;
+  NSGraphicsContext *ctxt = GSCurrentContext();
+
+  if (GSWViewIsFlipped(ctxt) == YES)
+    {
+      rect = NSDrawTiledRects(aRect, clipRect,
+			       down_sides, grays, 6);
+    }
+  else
+    {
+      rect = NSDrawTiledRects(aRect, clipRect,
+			       up_sides, grays, 6);
+    }
+
+  DPSsetgray(ctxt, NSLightGray);
+  DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect), 
+	      NSWidth(rect), NSHeight(rect));
+}
+
+void
+NSDrawGrayBezel(const NSRect aRect, const NSRect clipRect)
+{
+  NSRectEdge up_sides[] = {NSMinXEdge, NSMaxYEdge, NSMinXEdge, NSMaxYEdge, 
+			   NSMaxXEdge, NSMinYEdge, NSMaxXEdge, NSMinYEdge};
+  NSRectEdge down_sides[] = {NSMinXEdge, NSMinYEdge, NSMinXEdge, NSMinYEdge, 
+			     NSMaxXEdge, NSMaxYEdge, NSMaxXEdge, NSMaxYEdge};
+  float grays[] = {NSDarkGray, NSDarkGray, NSBlack, NSBlack, 
+		   NSWhite, NSWhite, NSLightGray, NSLightGray};
+  NSRect rect;
+  NSGraphicsContext *ctxt = GSCurrentContext();
+
+  if (GSWViewIsFlipped(ctxt) == YES)
+    {
+      rect = NSDrawTiledRects(aRect, clipRect,
+			       down_sides, grays, 8);
+    }
+  else
+    {
+      rect = NSDrawTiledRects(aRect, clipRect,
+			       up_sides, grays, 8);
+    }
+
+  DPSsetgray(ctxt, NSLightGray);
+  DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect), 
+	      NSWidth(rect), NSHeight(rect));
+}
+
+void 
+NSDrawGroove(const NSRect aRect, const NSRect clipRect)
+{
+  NSRectEdge up_sides[] = {NSMinXEdge, NSMaxYEdge, NSMinXEdge, NSMaxYEdge, 
+			   NSMaxXEdge, NSMinYEdge, NSMaxXEdge, NSMinYEdge};
+  NSRectEdge down_sides[] = {NSMinXEdge, NSMinYEdge, NSMinXEdge, NSMinYEdge, 
+			     NSMaxXEdge, NSMaxYEdge, NSMaxXEdge, NSMaxYEdge};
+  float grays[] = {NSDarkGray, NSDarkGray, NSWhite, NSWhite,
+		   NSWhite, NSWhite, NSDarkGray, NSDarkGray};
+  NSRect rect;
+  NSGraphicsContext *ctxt = GSCurrentContext();
+
+  if (GSWViewIsFlipped(ctxt) == YES)
+    {
+      rect = NSDrawTiledRects(aRect, clipRect,
+			       down_sides, grays, 8);
+    }
+  else
+    {
+      rect = NSDrawTiledRects(aRect, clipRect,
+			       up_sides, grays, 8);
+    }
+
+  DPSsetgray(ctxt, NSLightGray);
+  DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect), 
+	      NSWidth(rect), NSHeight(rect));
+}
+
+void 
+NSDrawWhiteBezel(const NSRect aRect,  const NSRect clipRect)
+{
+  NSRectEdge up_sides[] = {NSMinXEdge, NSMaxYEdge, NSMinXEdge, NSMaxYEdge, 
+			   NSMaxXEdge, NSMinYEdge, NSMaxXEdge, NSMinYEdge};
+  NSRectEdge down_sides[] = {NSMinXEdge, NSMinYEdge, NSMinXEdge, NSMinYEdge, 
+			     NSMaxXEdge, NSMaxYEdge, NSMaxXEdge, NSMaxYEdge};
+  float grays[] = {NSDarkGray, NSDarkGray, NSDarkGray, NSDarkGray,
+		   NSWhite, NSWhite, NSLightGray, NSLightGray};
+  NSRect rect;
+  NSGraphicsContext *ctxt = GSCurrentContext();
+
+  if (GSWViewIsFlipped(ctxt) == YES)
+    {
+      rect = NSDrawTiledRects(aRect, clipRect,
+			       down_sides, grays, 8);
+    }
+  else
+    {
+      rect = NSDrawTiledRects(aRect, clipRect,
+			       up_sides, grays, 8);
+    }
+
+  DPSsetgray(ctxt, NSWhite);
+  DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect), 
+	      NSWidth(rect), NSHeight(rect));
 }
 
 void 

@@ -162,54 +162,19 @@ NSRectFillListWithGrays(const NSRect *rects,const float *grays,int count)
     (ctxt, @selector(NSRectFillListWithGrays:::), rects, grays, count);
 }
 
-static inline void
-NSDrawButton(const NSRect aRect, const NSRect clipRect)
-{
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  (ctxt->methods->NSDrawButton__)
-    (ctxt, @selector(NSDrawButton::), aRect, clipRect);
-}
+NSRect NSDrawTiledRects(NSRect aRect,const NSRect clipRect,  
+			const NSRectEdge * sides, 
+			const float *grays, int count);
+void NSDrawButton(const NSRect aRect, const NSRect clipRect);
+void NSDrawGrayBezel(const NSRect aRect, const NSRect clipRect);
+void NSDrawGroove(const NSRect aRect, const NSRect clipRect);
+void NSDrawWhiteBezel(const NSRect aRect, const NSRect clipRect);
 
+// This is from an old version of the specification 
 static inline void
-NSDrawGrayBezel(const NSRect aRect, const NSRect clipRect)
+NSDrawBezel(const NSRect aRect, const NSRect clipRect)
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  (ctxt->methods->NSDrawGrayBezel__)
-    (ctxt, @selector(NSDrawGrayBezel::), aRect, clipRect);
-}
-
-static inline void
-NSDrawGroove(const NSRect aRect, const NSRect clipRect)
-{
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  (ctxt->methods->NSDrawGroove__)
-    (ctxt, @selector(NSDrawGroove::), aRect, clipRect);
-}
-
-static inline void
-NSDrawWhiteBezel(const NSRect aRect, const NSRect clipRect)
-{
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  (ctxt->methods->NSDrawWhiteBezel__)
-    (ctxt, @selector(NSDrawWhiteBezel::), aRect, clipRect);
-}
-
-static inline void
-NSDrawBezel(NSRect aRect, NSRect clipRect)
-{
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  (ctxt->methods->NSDrawGrayBezel__)
-    (ctxt, @selector(NSDrawGrayBezel::), aRect, clipRect);
-}
-
-static inline NSRect
-NSDrawTiledRects(NSRect boundsRect, NSRect clipRect,
-  const NSRectEdge *sides, const float *grays, int count)
-{
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  return (ctxt->methods->NSDrawTiledRects_____)
-    (ctxt, @selector(NSDrawTiledRects:::::), boundsRect, clipRect,
-     sides, grays, count);
+  NSDrawGrayBezel(aRect, clipRect);
 }
 
 static inline void
@@ -352,7 +317,15 @@ NSRect NSDrawColorTiledRects(NSRect boundsRect, NSRect clipRect,
 void NSDrawDarkBezel(NSRect aRect, NSRect clipRect);
 void NSDrawLightBezel(NSRect aRect, NSRect clipRect);
 void NSRectFillListWithColors(const NSRect *rects, NSColor **colors, int count);
-void NSRectFillUsingOperation(NSRect aRect, NSCompositingOperation op);
+
+static inline void
+NSRectFillUsingOperation(NSRect aRect, NSCompositingOperation op) 
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  (ctxt->methods->NSRectFillUsingOperation__)
+    (ctxt, @selector(NSRectFillUsingOperation::), aRect, op);
+}
+
 void NSRectFillListUsingOperation(const NSRect *rects, int count, 
 				  NSCompositingOperation op);
 void NSRectFillListWithColorsUsingOperation(const NSRect *rects, 

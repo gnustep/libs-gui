@@ -35,7 +35,6 @@
 #include <Foundation/NSSet.h>
 
 #include <AppKit/NSDragging.h>
-#include <AppKit/GSMethodTable.h>
 
 
 @class NSDate;
@@ -82,6 +81,10 @@ typedef enum _NSCompositingOperation
   NSCompositePlusLighter
 
 } NSCompositingOperation;
+
+// We have to load this after the NSCompositingOperation are defined!!!
+#include <AppKit/GSMethodTable.h>
+
 
 /*
  * Window ordering
@@ -463,18 +466,11 @@ NSGraphicsContext	*GSCurrentContext();
 - (void) NSRectFillList: (const NSRect *)rects : (int) count;
 - (void) NSRectFillListWithGrays: (const NSRect *)rects : (const float *)grays
 				:(int) count;
-- (NSRect) NSDrawTiledRects: (NSRect) aRect : (const NSRect) clipRect  
-			   : (const NSRectEdge *) sides 
-			   :  (const float *)grays : (int) count;
+- (void) NSRectFillUsingOperation: (NSRect) aRect : (NSCompositingOperation) op;
 
 /*
  * Draw a Bordered Rectangle
  */
-- (void) NSDrawButton: (const NSRect) aRect : (const NSRect) clipRect;
-- (void) NSDrawGrayBezel: (const NSRect) aRect : (const NSRect) clipRect;
-- (void) NSDrawBezel: (const NSRect) aRect : (const NSRect) clipRect;
-- (void) NSDrawGroove: (const NSRect) aRect : (const NSRect) clipRect;
-- (void) NSDrawWhiteBezel: (const NSRect) aRect :  (const NSRect) clipRect;
 - (void) NSDottedFrameRect: (const NSRect) aRect;
 - (void) NSFrameRect: (const NSRect) aRect;
 - (void) NSFrameRectWithWidth: (const NSRect) aRect :  (float) frameWidth;

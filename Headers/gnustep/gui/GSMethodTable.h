@@ -536,18 +536,12 @@ typedef struct {
   void (*NSRectFillList__)(NSGraphicsContext*, SEL, const NSRect *rects, int count);
   void (*NSRectFillListWithGrays___)(NSGraphicsContext*, SEL, const NSRect *rects, 
 			     const float *grays, int count);
+  void (*NSRectFillUsingOperation__)(NSGraphicsContext*, SEL, 
+				     NSRect aRect, NSCompositingOperation op);
 
 /*
  * Draw a Bordered Rectangle
  */
-  void (*NSDrawButton__)(NSGraphicsContext*, SEL, const NSRect aRect, const NSRect clipRect);
-  void (*NSDrawGrayBezel__)(NSGraphicsContext*, SEL, const NSRect aRect, const NSRect clipRect);
-  void (*NSDrawBezel__)(NSGraphicsContext*, SEL, const NSRect aRect, const NSRect clipRect);
-  void (*NSDrawGroove__)(NSGraphicsContext*, SEL, const NSRect aRect, const NSRect clipRect);
-  NSRect (*NSDrawTiledRects_____)(NSGraphicsContext*, SEL, NSRect aRect, const NSRect clipRect, 
-			const NSRectEdge *sides, const float *grays, 
-			int count);
-  void (*NSDrawWhiteBezel__)(NSGraphicsContext*, SEL, const NSRect aRect, const NSRect clipRect);
   void (*NSDottedFrameRect_)(NSGraphicsContext*, SEL, const NSRect aRect);
   void (*NSFrameRect_)(NSGraphicsContext*, SEL, const NSRect aRect);
   void (*NSFrameRectWithWidth__)(NSGraphicsContext*, SEL, const NSRect aRect, float frameWidth);
