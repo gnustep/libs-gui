@@ -2262,11 +2262,11 @@ image.
 
   if ([[item target] isDocumentEdited])
     {
-      newImage = [NSImage imageNamed: @"common_WMCloseBroken"];
+      newImage = [NSImage imageNamed: @"common_CloseBroken"];
     }
   else
     {
-      newImage = [NSImage imageNamed: @"common_WMClose"];
+      newImage = [NSImage imageNamed: @"common_Close"];
     }
 
   if (newImage != oldImage)
