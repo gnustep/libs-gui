@@ -128,15 +128,10 @@ static NSColor	*shadowCol;
   _cell.type = NSImageCellType;
   _cell_image = RETAIN(anImage);
   _cell.image_position = NSImageOnly;
-  _typingAttributes = [[NSMutableDictionary alloc] 
-			  initWithObjectsAndKeys: 
-			      [NSFont userFontOfSize: 0], NSFontAttributeName,
-			      [NSMutableParagraphStyle defaultParagraphStyle], 
-			      NSParagraphStyleAttributeName,
-			      nil];
 
   // Implicitly set by allocation:
   //
+  //_typingAttributes = nil;
   //_cell.is_highlighted = NO;
   //_cell.is_disabled = NO;
   //_cell.is_editable = NO;
@@ -150,10 +145,7 @@ static NSColor	*shadowCol;
   //_cell.is_scrollable = NO;
   //_cell.is_selectable = NO;
   //_cell.is_continuous = NO;
-  //_cell.float_autorange = NO;
   //_cell.state = 0;
-  //_cell_float_left = 0;
-  //_cell_float_right = 0;
   _action_mask = NSLeftMouseUpMask;
 
   return self;
@@ -162,16 +154,11 @@ static NSColor	*shadowCol;
 - (id) initTextCell: (NSString*)aString
 {
   _cell.type = NSTextCellType;
-  _typingAttributes = [[NSMutableDictionary alloc] 
-			  initWithObjectsAndKeys: 
-			      [NSFont userFontOfSize: 0], NSFontAttributeName,
-			      [NSMutableParagraphStyle defaultParagraphStyle], 
-			      NSParagraphStyleAttributeName,
-			      nil];
   _contents = RETAIN(aString);
 
   // Implicitly set by allocation:
   //
+  //_typingAttributes = nil;
   //_cell_image = nil;
   //_cell.image_position = NSNoImage;
   //_cell.is_disabled = NO;
@@ -183,9 +170,6 @@ static NSColor	*shadowCol;
   //_cell.is_scrollable = NO;
   //_cell.is_selectable = NO;
   //_cell.is_continuous = NO;
-  _cell.float_autorange = YES;
-  _cell_float_right = 6;
-  //_cell_float_left = 0;
   _action_mask = NSLeftMouseUpMask;
 
   return self;
@@ -195,7 +179,7 @@ static NSColor	*shadowCol;
 {
   TEST_RELEASE (_contents);
   TEST_RELEASE (_cell_image);
-  RELEASE (_typingAttributes);
+  TEST_RELEASE (_typingAttributes);
   TEST_RELEASE (_represented_object);
   TEST_RELEASE (_objectValue);
   TEST_RELEASE (_formatter);
@@ -516,13 +500,13 @@ static NSColor	*shadowCol;
  */
 - (NSTextAlignment) alignment
 {
-    return [[_typingAttributes objectForKey: NSParagraphStyleAttributeName] 
+    return [[[self _typingAttributes] objectForKey: NSParagraphStyleAttributeName] 
 	       alignment];
 }
 
 - (NSFont*) font
 {
-  return [_typingAttributes objectForKey: NSFontAttributeName];
+  return [[self _typingAttributes] objectForKey: NSFontAttributeName];
 }
 
 - (BOOL) isEditable
@@ -542,7 +526,7 @@ static NSColor	*shadowCol;
 
 - (void) setAlignment: (NSTextAlignment)mode
 {
-  [[_typingAttributes objectForKey: NSParagraphStyleAttributeName] 
+  [[[self _typingAttributes] objectForKey: NSParagraphStyleAttributeName] 
       setAlignment: mode];
 }
 
@@ -560,13 +544,13 @@ static NSColor	*shadowCol;
 {
   if (fontObject == nil)
     {
-      [_typingAttributes removeObjectForKey: NSFontAttributeName];
+      [[self _typingAttributes] removeObjectForKey: NSFontAttributeName];
     }
   else 
     {
       NSAssert([fontObject isKindOfClass: fontClass], NSInvalidArgumentException);
 
-      [_typingAttributes setObject: fontObject forKey: NSFontAttributeName];
+      [[self _typingAttributes] setObject: fontObject forKey: NSFontAttributeName];
     }
 }
 
@@ -591,20 +575,20 @@ static NSColor	*shadowCol;
 {
   if (flag)
     {
-      [[_typingAttributes objectForKey: NSParagraphStyleAttributeName] 
+      [[[self _typingAttributes] objectForKey: NSParagraphStyleAttributeName] 
 	  setLineBreakMode: NSLineBreakByWordWrapping];
       _cell.is_scrollable = NO;
     }
   else
     {
-      [[_typingAttributes objectForKey: NSParagraphStyleAttributeName] 
+      [[[self _typingAttributes] objectForKey: NSParagraphStyleAttributeName] 
 	  setLineBreakMode: NSLineBreakByClipping];
     }   
 }
 
 - (BOOL) wraps
 {
-  return ([[_typingAttributes objectForKey: NSParagraphStyleAttributeName] 
+  return ([[[self _typingAttributes] objectForKey: NSParagraphStyleAttributeName] 
 	      lineBreakMode] == NSLineBreakByWordWrapping);
 }
 
@@ -613,6 +597,9 @@ static NSColor	*shadowCol;
   [self setStringValue: [attribStr string]];
   ASSIGN(_typingAttributes, [[attribStr attributesAtIndex: 0 effectiveRange: NULL]
 				mutableCopy]);
+  if ([_typingAttributes objectForKey: NSParagraphStyleAttributeName] == nil)
+      [_typingAttributes setObject: [NSMutableParagraphStyle defaultParagraphStyle] 
+			 forKey: NSParagraphStyleAttributeName];
 }
 
 - (NSAttributedString*) attributedStringValue
@@ -620,10 +607,10 @@ static NSColor	*shadowCol;
   if (_formatter != nil)
     {
       return [_formatter attributedStringForObjectValue: _objectValue 
-			 withDefaultAttributes: _typingAttributes];
+			 withDefaultAttributes: [self _typingAttributes]];
     }
   return AUTORELEASE([[NSAttributedString alloc] initWithString: _contents 
-						 attributes: _typingAttributes]);
+						 attributes: [self _typingAttributes]]);
 }
 
 - (void) setAllowsEditingTextAttributes: (BOOL)flag
@@ -755,9 +742,7 @@ static NSColor	*shadowCol;
 			   left: (unsigned int)leftDigits
 			  right: (unsigned int)rightDigits
 {
-  _cell.float_autorange = autoRange;
-  _cell_float_left = leftDigits;
-  _cell_float_right = rightDigits;
+  // TODO: Pass this on to the formatter to handle
 }
 
 - (void) setFormatter: (NSFormatter*)newFormatter 
@@ -1581,8 +1566,6 @@ static NSColor	*shadowCol;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   flag = _cell.is_continuous;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _cell.float_autorange;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   flag = _cell.allows_mixed_state;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   tmp_int = _cell.type;
@@ -1594,8 +1577,6 @@ static NSColor	*shadowCol;
   tmp_int = _cell.state;
   [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
   [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_mnemonic_location];
-  [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_cell_float_left];
-  [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_cell_float_right];
   [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_mouse_down_flags];
   [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_action_mask];
   [aCoder encodeValueOfObjCType: @encode(id) at: &_formatter];
@@ -1639,8 +1620,6 @@ static NSColor	*shadowCol;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
   _cell.is_continuous = flag;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _cell.float_autorange = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
   _cell.allows_mixed_state = flag;
   [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
   _cell.type = tmp_int;
@@ -1652,10 +1631,6 @@ static NSColor	*shadowCol;
   _cell.state = tmp_int;
   [aDecoder decodeValueOfObjCType: @encode(unsigned int) 
 	    at: &_mnemonic_location];
-  [aDecoder decodeValueOfObjCType: @encode(unsigned int) 
-	    at: &_cell_float_left];
-  [aDecoder decodeValueOfObjCType: @encode(unsigned int) 
-	    at: &_cell_float_right];
   [aDecoder decodeValueOfObjCType: @encode(unsigned int) 
 	    at: &_mouse_down_flags];
   [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &_action_mask];
@@ -1681,7 +1656,6 @@ static NSColor	*shadowCol;
 
 @implementation NSCell (PrivateMethods)
 
-// TODO: Remove this hack without breaking NSTextFieldCell
 - (NSColor*) textColor
 {
   if (_cell.is_disabled)
@@ -1690,13 +1664,30 @@ static NSColor	*shadowCol;
     return txtCol;    
 }
 
+- (NSMutableDictionary*) _typingAttributes
+{
+  if (_typingAttributes == nil)
+    {
+      _typingAttributes = [[NSMutableDictionary alloc] 
+			      initWithObjectsAndKeys: 
+				  [NSFont userFontOfSize: 0], NSFontAttributeName,
+			      [NSMutableParagraphStyle defaultParagraphStyle], 
+			      NSParagraphStyleAttributeName,
+			      nil];
+    }
+
+  // TODO: Remove this hack without breaking NSTextFieldCell
+  [_typingAttributes setObject: [self textColor] forKey: NSForegroundColorAttributeName];
+  return _typingAttributes;
+}
+
 - (NSSize) _sizeText: (NSString*) title
 {
     NSSize size;
   if (title == nil)
     return NSMakeSize(0,0);
 
-  size = [title sizeWithAttributes: _typingAttributes];
+  size = [title sizeWithAttributes: [self _typingAttributes]];
   return size;
 }
 
@@ -1719,8 +1710,7 @@ static NSColor	*shadowCol;
   cellFrame.origin.y = NSMidY (cellFrame) - titleSize.height/2; 
   cellFrame.size.height = titleSize.height;
 
-  [_typingAttributes setObject: [self textColor] forKey: NSForegroundColorAttributeName];
-  [title drawInRect: cellFrame  withAttributes: _typingAttributes];
+  [title drawInRect: cellFrame  withAttributes: [self _typingAttributes]];
 }
 
 @end
