@@ -374,6 +374,11 @@ GSCurrentServer(void)
   return NO;
 }
 
+- (void) restrictWindow: (int)win toImage: (NSImage*)image
+{
+  [self subclassResponsibility: _cmd];
+}
+
 /* Screen information */
 /** Retuns the resolution, in points, for the indicated screen of the
     display. */
