@@ -152,6 +152,34 @@
 
 @end
 
+@interface GSBrowserTitleCell: NSTextFieldCell
+@end
+
+@implementation GSBrowserTitleCell
+- (id) initTextCell: (NSString *)aString
+{
+  [super initTextCell: aString];
+
+  [self setTextColor: [NSColor windowFrameTextColor]];
+  [self setBackgroundColor: [NSColor controlShadowColor]];
+  [self setEditable: NO];
+  [self setBezeled: YES];
+  [self setAlignment: NSCenterTextAlignment];
+  draw_background = YES;
+  return self;
+}
+- (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
+{
+  if (NSIsEmptyRect (cellFrame))
+    return;
+
+  [controlView lockFocus];
+  NSDrawGrayBezel (cellFrame, NSZeroRect);
+  [controlView unlockFocus];
+  [self drawInteriorWithFrame: cellFrame inView: controlView];
+}
+@end
+
 //
 // Private NSBrowser methods
 //
@@ -227,14 +255,7 @@
   _passiveDelegate = YES;
   _doubleAction = NULL;
   _browserColumns = [[NSMutableArray alloc] init];
-  _titleCell = [NSTextFieldCell new];
-  [_titleCell setEditable: NO];
-  [_titleCell setTextColor: [NSColor windowFrameTextColor]];
-  [_titleCell setBackgroundColor: [NSColor controlShadowColor]];
-  [_titleCell setDrawsBackground: YES];
-  //[_titleCell setBordered: YES];
-  [_titleCell setBezeled: YES];
-  [_titleCell setAlignment: NSCenterTextAlignment];
+  _titleCell = [GSBrowserTitleCell new];
 
   // Calculate geometry
   [self tile];
