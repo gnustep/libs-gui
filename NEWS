@@ -1,7 +1,44 @@
 NEWS
 ****
 
-The currently released version of the library is `0.6.5'.
+The currently released version of the library is `0.6.6'.
+
+Noteworthy changes in version `0.6.6'
+=====================================
+
+   * Window hints for motif and generic window managers.
+
+   * Major improvements to the text handling classes (NSText,
+     NSTextView, etc)
+
+   * Pasting of fonts and rulers.
+
+   * Much better RTF handling
+
+   * DnD for NSColorWell
+
+   * Much improved NSSplitView
+
+   * New classes - NSColorPanel, NSTableView
+
+   * NSScreen rewritten with full support for all methods and functions.
+
+   * Can use image reading routines from WindowMaker if available to
+     read a variety of image formats besides TIFF.
+
+   * Many fixes to get the AppKit to work better with WindowMaker.
+
+   * Much better gmodel support (particularly with nibs translated from
+     NeXT or OPENSTEP 4.2).
+
+   * Muh improved font classes and font support.
+
+   In addition both the xgps and xdps backends have seen some large
+efficiency improvements. Much better font support. The xdps backend
+itself has seen speed improvements by at least a factor of 4. Note
+however, that the xdps backend is still considered experimental and you
+may have to deal with many problems in order to get it working. We
+recommend sticking with the xgps backend (the default) for now.
 
 Noteworthy changes in version `0.6.5'
 =====================================

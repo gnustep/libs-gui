@@ -16,4 +16,6 @@ version.tmpl.texi
 *.pg
 *.ps
 *.vrs
+*.cl
+*.pr
 

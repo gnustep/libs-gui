@@ -237,9 +237,8 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
  */
 - (unsigned) characterIndexForPoint: (NSPoint)point;
 - (NSRect) rectForCharacterIndex: (unsigned)index;
+- (NSRect) rectForCharacterRange: (NSRange)aRange;
 - (void) _buildUpLayout;
-- (void) drawRect: (NSRect)rect
-    withSelection: (NSRange)range;
 - (NSRect) _textBounds;
 
 /*
@@ -257,12 +256,10 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
 - (void) _illegalMovement: (int) notNumber;
 - (void) deleteRange: (NSRange)aRange backspace: (BOOL)flag;
 
-- (void) setSelectedRangeNoDrawing: (NSRange)range;
 - (void) drawInsertionPointAtIndex: (unsigned)index
 			     color: (NSColor*)color
 			  turnedOn: (BOOL)flag;
 - (void) drawSelectionAsRangeNoCaret: (NSRange)aRange;
-- (void) drawSelectionAsRange: (NSRange)aRange;
 
 @end
 
@@ -295,6 +292,7 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
 
 - (unsigned) characterIndexForPoint: (NSPoint)point;
 - (NSRect) rectForCharacterIndex: (unsigned) index;
+- (NSRect) rectForCharacterRange: (NSRange) aRange;
 - (NSRange) characterRangeForBoundingRect: (NSRect)bounds;
 - (NSRange) lineRangeForRect: (NSRect) aRect;
 
@@ -611,6 +609,38 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
 		    rect.size.height);
 }
 
+- (NSRect) rectForCharacterRange: (NSRange)aRange
+{
+  float maxWidth = [self frame].size.width;
+  _GNULineLayoutInfo *currentInfo;
+  unsigned i1, i2;
+  NSRect rect1, rect2;
+
+  if (![_textStorage length])
+    {
+      return NSMakeRect (0, 0, maxWidth,
+			 [self _sizeOfRange: NSMakeRange(0,1)].height);
+    }
+
+  i1 = [self lineLayoutIndexForCharacterIndex: aRange.location];
+  i2 = [self lineLayoutIndexForCharacterIndex: NSMaxRange(aRange)];
+
+  // This is not exacty what we need, but should be correct enought
+  currentInfo = [lineLayoutInformation 
+		    objectAtIndex: i1];
+  rect1 = [currentInfo lineRect];
+
+  if (i1 == i2)
+    {
+      return rect1;
+    }
+
+  currentInfo = [lineLayoutInformation 
+		    objectAtIndex: i2];
+  rect2 = [currentInfo lineRect];
+  return NSUnionRect(rect1, rect2);
+}
+
 - (void) setNeedsDisplayForLineRange: (NSRange)redrawLineRange
 {
   NSRect myFrame = [self frame];
@@ -669,6 +699,10 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
    invalidatedRange:(NSRange)invalidatedCharRange;
 {
   NSRange lineRange;
+
+  // No editing
+  if (!mask)
+    return;
 
   lineRange = [self rebuildForRange: aRange
 		delta: delta];
@@ -1319,7 +1353,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   _tf.is_selectable = YES;
   _tf.is_rich_text = NO;
   _tf.imports_graphics = NO;
-  _tf.draws_background = NO;
+  _tf.draws_background = YES;
   _tf.is_horizontally_resizable = NO;
   _tf.is_vertically_resizable = YES;
   _tf.uses_font_panel = YES;
@@ -1393,7 +1427,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
   [self _buildUpLayout];
   [self sizeToFit];
-  [self setSelectedRangeNoDrawing: NSMakeRange (0, 0)];
+  [self setSelectedRange: NSMakeRange (0, 0)];
   [self setNeedsDisplay: YES];
 }
 
@@ -1560,32 +1594,28 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   return _selected_range;
 }
 
-
 - (void) setSelectedRange: (NSRange)range
 {
-  BOOL didLock = NO;
+  NSRange oldRange = _selected_range;
+  NSRange overlap;
 
-  if (!_window)
+  // Do ntohing if the range is still the same
+  if (NSEqualRanges(range, oldRange))
     return;
 
-  if ([[self class] focusView] != self)
-    {
-      [self lockFocus];
-      didLock = YES;
-    }
+  //<!> ask delegate for selection validation
 
-  if (_selected_range.length == 0)	// remove old cursor
-    {
-      [self drawInsertionPointAtIndex: _selected_range.location
-	    color: nil turnedOn: NO];
-    }
-  else
-    {
-      // This does an unhighlight of the old selected region
-      [self drawSelectionAsRange: _selected_range];
-    }
+  _selected_range  = range;
+  [self updateFontPanel];
 
-  [self setSelectedRangeNoDrawing: range];
+#if 0
+  [[NSNotificationCenter defaultCenter]
+    postNotificationName: NSTextViewDidChangeSelectionNotification
+    object: self
+    userInfo: [NSDictionary dictionaryWithObjectsAndKeys:
+		  NSStringFromRange (_selected_range),
+		NSOldSelectedCharacterRange, nil]];
+#endif
 
   // display
   if (range.length)
@@ -1601,12 +1631,36 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	}
       // <!>enable caret timed entry
     }
-  [self drawSelectionAsRange: range];
-  [self scrollRangeToVisible: range];
 
-  if (didLock)
+  if (!_window)
+    return;
+
+  // Make the selected range visible
+  [self scrollRangeToVisible: _selected_range]; 
+
+  // Redisplay what has changed
+  // This does an unhighlight of the old selected region
+  overlap = NSIntersectionRange(oldRange, _selected_range);
+  if (overlap.length)
     {
-      [self unlockFocus];
+      // Try to optimize for overlapping ranges
+      [self setNeedsDisplayInRect: 
+		[self rectForCharacterRange: 
+			  MakeRangeFromAbs(MIN(range.location,
+					       oldRange.location),
+					   MAX(range.location,
+					       oldRange.location))]];
+      [self setNeedsDisplayInRect: 
+		[self rectForCharacterRange: 
+			  MakeRangeFromAbs(MIN(NSMaxRange(range),
+					       NSMaxRange(oldRange)),
+					   MAX(NSMaxRange(range),
+					       NSMaxRange (oldRange)))]];
+    }
+  else
+    {
+      [self setNeedsDisplayInRect: [self rectForCharacterRange: range]];
+      [self setNeedsDisplayInRect: [self rectForCharacterRange: oldRange]];
     }
 }
 
@@ -1677,7 +1731,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
 - (void) selectAll: (id)sender
 {
-  [self setSelectedRange: NSMakeRange(0,[self textLength])];
+  [self setSelectedRange: NSMakeRange(0, [self textLength])];
 }
 
 /*
@@ -2137,11 +2191,8 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   // This makes things so much simpler and stabler for now.
   if (_tf.is_field_editor == NO)
     {
-      [self scrollRectToVisible:
-	      NSUnionRect ([self rectForCharacterIndex: 
-				   _selected_range.location],
-			   [self rectForCharacterIndex:
-				   NSMaxRange (_selected_range)])];
+      [self scrollRectToVisible: [self rectForCharacterRange: 
+					   _selected_range]];
     }
 }
 
@@ -2180,17 +2231,18 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 - (void) mouseDown: (NSEvent*)theEvent
 {
   NSSelectionGranularity granularity = NSSelectByCharacter;
-  NSRange chosenRange, prevChosenRange, proposedRange;
+  NSRange chosenRange, proposedRange;
   NSPoint point, startPoint;
   NSEvent *currentEvent;
   unsigned startIndex;
-  BOOL didDragging = NO;
 
-  // If not selectable then don't recognize the mouse down
+  // If not selectable than don't recognize the mouse down
   if (!_tf.is_selectable)
     return;
 
-  if (![_window makeFirstResponder: self])
+  // Only try to make first responder if editable, otherwise the 
+  // delegate will stop it in becomeFirstResponder.
+  if (_tf.is_editable && ![_window makeFirstResponder: self])
     return;
 
   switch ([theEvent clickCount])
@@ -2206,90 +2258,47 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   startPoint = [self convertPoint: [theEvent locationInWindow] fromView: nil];
   startIndex = [self characterIndexForPoint: startPoint];
 
-  proposedRange = NSMakeRange (startIndex, 0);
-  chosenRange = prevChosenRange = [self selectionRangeForProposedRange:
-					  proposedRange
-					granularity: granularity];
+  proposedRange = NSMakeRange(startIndex, 0);
+  chosenRange = [self selectionRangeForProposedRange: proposedRange
+		      granularity: granularity];
 
-  [self lockFocus];
-
-  // clean up before doing the dragging
-  if (_selected_range.length == 0)	// remove old cursor
-    {
-      [self drawInsertionPointAtIndex: _selected_range.location
-	    color: nil turnedOn: NO];
-    }
-  else
-    [self drawSelectionAsRangeNoCaret: _selected_range];
+  [self setSelectedRange: chosenRange];
+  // Do an imidiate redisplay for visual feedback
+  [_window flushWindow];
 
   //<!> make this non - blocking (or make use of timed entries)
+  // run modal loop
   for (currentEvent = [_window
 			nextEventMatchingMask:
 			  (NSLeftMouseDraggedMask|NSLeftMouseUpMask)];
        [currentEvent type] != NSLeftMouseUp;
        (currentEvent = [_window
 			 nextEventMatchingMask:
-			   (NSLeftMouseDraggedMask|NSLeftMouseUpMask)]),
-	 prevChosenRange = chosenRange)	// run modal loop
+			   (NSLeftMouseDraggedMask|NSLeftMouseUpMask)]))
     {
       BOOL didScroll = [self autoscroll: currentEvent];
       point = [self convertPoint: [currentEvent locationInWindow]
 		    fromView: nil];
       proposedRange = MakeRangeFromAbs ([self characterIndexForPoint: point],
 					startIndex);
+      // Add one more character as selected, as zero length is cursor.
+      proposedRange.length++;
+ 
       chosenRange = [self selectionRangeForProposedRange: proposedRange
 			  granularity: granularity];
 
-      if (NSEqualRanges (prevChosenRange, chosenRange))
-	{
-	  if (!didDragging)
-	    {
-	      [self drawSelectionAsRangeNoCaret: chosenRange];
-	      [_window flushWindow];
-	    }
-	  else
-	    continue;
-	}
-      // this changes the selection without needing instance drawing
-      // (carefully thought out ; - )
-      if (!didScroll)
-	{
-	  [self drawSelectionAsRangeNoCaret:
-		  MakeRangeFromAbs (MIN (chosenRange.location,
-					 prevChosenRange.location),
-				    MAX (chosenRange.location,
-					 prevChosenRange.location))];
-	  [self drawSelectionAsRangeNoCaret:
-		  MakeRangeFromAbs (MIN (NSMaxRange (chosenRange),
-					 NSMaxRange (prevChosenRange)),
-				    MAX (NSMaxRange (chosenRange),
-					 NSMaxRange (prevChosenRange)))];
-	  [_window flushWindow];
-	}
-      else
-	{
-	  [self drawRect: [self visibleRect] withSelection: chosenRange];
-	  [_window flushWindow];
-	}
+      [self setSelectedRange: chosenRange];
 
-      didDragging = YES;
+      if (didScroll)
+	[self setNeedsDisplay: YES];
+      // Do an imidiate redisplay for visual feedback
+      [_window flushWindow];
     }
 
-  NSDebugLog(@"chosenRange. location  = % d, length  = %d\n",
+  NSDebugLog(@"chosenRange. location  = %d, length  = %d\n",
 	     (int)chosenRange.location, (int)chosenRange.length);
-
-  [self setSelectedRangeNoDrawing: chosenRange];
-  if (!didDragging)
-    [self drawSelectionAsRange: chosenRange];
-  else if (chosenRange.length  == 0)
-    [self drawInsertionPointAtIndex: chosenRange.location
-	  color: _caret_color turnedOn: YES];
-
   // remember for column stable cursor up/down
   _currentCursor = [self rectForCharacterIndex: chosenRange.location].origin;
-
-  [self unlockFocus];
-  [_window flushWindow];
 }
 
 - (void) keyDown: (NSEvent*)theEvent
@@ -2366,6 +2375,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 {
   unsigned cursorIndex;
   NSPoint cursorPoint;
+  NSRange newRange;
 
   if (_tf.is_field_editor)
     {
@@ -2387,15 +2397,17 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   cursorIndex = [self characterIndexForPoint:
 			NSMakePoint (_currentCursor.x + 0.001,
 				     MAX (0, cursorPoint.y - 0.001))];
-  [self setSelectedRange: [self selectionRangeForProposedRange:
-				  NSMakeRange (cursorIndex, 0)
-				granularity: NSSelectByCharacter]];
+
+  newRange.location = cursorIndex;
+  newRange.length = 0;
+  [self setSelectedRange: newRange];
 }
 
 - (void) moveDown: (id) sender
 {
   unsigned cursorIndex;
   NSRect cursorRect;
+  NSRange newRange;
 
   if (_tf.is_field_editor)
     {
@@ -2407,7 +2419,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   if (_selected_range.location == [self textLength])
     return;
 
-  if (_selected_range.length)
+  if (_selected_range.length != 0)
     {
       _currentCursor = [self rectForCharacterIndex:
 			       NSMaxRange (_selected_range)].origin;
@@ -2417,36 +2429,43 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   cursorIndex = [self characterIndexForPoint:
 			NSMakePoint (_currentCursor.x + 0.001,
 				     NSMaxY (cursorRect) + 0.001)];
-  [self setSelectedRange: [self selectionRangeForProposedRange:
-				  NSMakeRange (cursorIndex, 0)
-				granularity: NSSelectByCharacter]];
+
+  newRange.location = cursorIndex;
+  newRange.length = 0;
+  [self setSelectedRange: newRange];
 }
 
 - (void) moveLeft: (id) sender
 {
+  NSRange newSelectedRange;
+
   /* Do nothing if we are at beginning of text */
   if (_selected_range.location == 0)
     return;
 
-  [self setSelectedRange:
-	  [self selectionRangeForProposedRange:
-		  NSMakeRange (_selected_range.location - 1, 0)
-		granularity: NSSelectByCharacter]];
+  newSelectedRange.location = _selected_range.location - 1;
+  newSelectedRange.length = 0;
+
+  [self setSelectedRange: newSelectedRange];
+
   _currentCursor.x = [self rectForCharacterIndex:
 			   _selected_range.location].origin.x;
 }
 
 - (void) moveRight: (id) sender
 {
+  NSRange newSelectedRange;
+  unsigned int length = [self textLength];
+
   /* Do nothing if we are at end of text */
-  if (_selected_range.location == [self textLength])
+  if (_selected_range.location == length)
     return;
 
-  [self setSelectedRange:
-	  [self selectionRangeForProposedRange:
-		  NSMakeRange (MIN (NSMaxRange (_selected_range) + 1,
-				    [self textLength]), 0)
-		granularity: NSSelectByCharacter]];
+  newSelectedRange.location = MIN (NSMaxRange (_selected_range) + 1, length);
+  newSelectedRange.length = 0;
+
+  [self setSelectedRange: newSelectedRange];
+
   _currentCursor.x = [self rectForCharacterIndex:
 			   _selected_range.location].origin.x;
 }
@@ -2469,7 +2488,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   // Add any clean-up stuff here
 
   if ([self shouldDrawInsertionPoint])
-  {
+    {
       [self lockFocus];
       [self drawInsertionPointAtIndex: _selected_range.location
 	    color: nil turnedOn: NO];
@@ -2510,7 +2529,34 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
 - (void) drawRect: (NSRect)rect
 {
-  [self drawRect: rect withSelection: _selected_range];
+  NSRange drawnRange;
+  NSRange newRange;
+
+  if (_tf.draws_background)
+    {
+      // clear area under text
+      [[self backgroundColor] set];
+      NSRectFill(rect);
+    }
+
+  drawnRange = [_layoutManager drawRectCharacters: rect];
+
+  // We have to redraw the part of the selection that is inside
+  // the redrawn lines
+  newRange = NSIntersectionRange(_selected_range, drawnRange);
+  // Was there any overlapping with the selection?
+  if ((_selected_range.length &&
+       NSLocationInRange(newRange.location, _selected_range)))
+    {
+      [self drawSelectionAsRangeNoCaret: newRange];
+    }
+  else if ([self shouldDrawInsertionPoint] && 
+	   (_selected_range.location == newRange.location))
+    {
+      [self drawInsertionPointAtIndex: _selected_range.location
+	    color: _caret_color
+	    turnedOn: YES];
+    }
 }
 
 // text lays out from top to bottom
@@ -2835,7 +2881,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 {
   unsigned index;
   NSRange aRange;
-  NSRange newRange = proposedCharRange;
+  NSRange newRange;
   NSString *string = [self string];
   unsigned length = [string length];
 
@@ -2845,36 +2891,77 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
       proposedCharRange.length = 0;
       return proposedCharRange;
     }
-  if (proposedCharRange.length > length - proposedCharRange.location)
+
+  if (NSMaxRange(proposedCharRange) > length)
     {
       proposedCharRange.length = length - proposedCharRange.location;
     }
 
-  if (!length)
+  if (length == 0)
+    {
       return proposedCharRange;
+    }
 
   switch (granularity)
     {
     case NSSelectByWord:
-      index = [_textStorage nextWordFromIndex: proposedCharRange.location
-				   forward: NO];
+      /* FIXME: The following code (or the routines it calls) does the
+	 wrong thing when you double-click on the space between two
+	 words */
+      if ((proposedCharRange.location + 1) < length)
+	{
+	  index = [_textStorage nextWordFromIndex: 
+				  (proposedCharRange.location + 1)
+				forward: NO];
+	}
+      else
+	{
+	  /* Exception: end of text */
+	  index = [_textStorage nextWordFromIndex: proposedCharRange.location
+				forward: NO];
+	}
       newRange.location = index;
-      index = [_textStorage nextWordFromIndex: NSMaxRange(proposedCharRange)
-				   forward: YES];
-      if (index > newRange.location)
-	newRange.length = index - 1 - newRange.location;
+      index = [_textStorage nextWordFromIndex: NSMaxRange (proposedCharRange)
+                                      forward: YES];
+      if (index <= newRange.location)
+	{
+	  newRange.length = 0;
+	}
+      else
+	{
+	  if (index == length)
+	    {
+	      /* We are at the end of text ! */
+	      newRange.length = index - newRange.location;
+	    }
+	  else 
+	    {
+	      /* FIXME: The following will not work if there is more than a 
+		 single character between the two words ! */
+	      newRange.length = index - 1 - newRange.location;
+	    }
+	}
       return newRange;
+
     case NSSelectByParagraph:
-      return [[self string] lineRangeForRange: proposedCharRange];
+      return [string lineRangeForRange: proposedCharRange];
 
     case NSSelectByCharacter:
     default:
-      aRange = [string rangeOfComposedCharacterSequenceAtIndex: proposedCharRange.location];
-      newRange.location = aRange.location;
-      // If the proposedCharRange is empty we only ajust the beginning
-      if (!proposedCharRange.length)
-	return newRange;
-      aRange = [string rangeOfComposedCharacterSequenceAtIndex: NSMaxRange(proposedCharRange)];
+      if (proposedCharRange.length == 0)
+	return proposedCharRange;
+
+      /* Expand the beginning character */
+      index = proposedCharRange.location;
+      newRange = [string rangeOfComposedCharacterSequenceAtIndex: index];
+      /* If the proposedCharRange is empty we only ajust the beginning */
+      if (proposedCharRange.length == 0)
+	{
+	  return newRange;
+	}
+      /* Expand the finishing character */
+      index = NSMaxRange (proposedCharRange) - 1;
+      aRange = [string rangeOfComposedCharacterSequenceAtIndex: index];
       newRange.length = NSMaxRange(aRange) - newRange.location;
       return newRange;
     }
@@ -3373,6 +3460,11 @@ other than copy/paste or dragging. */
   return [_layoutManager rectForCharacterIndex: index];
 }
 
+- (NSRect) rectForCharacterRange: (NSRange) aRange
+{
+  return [_layoutManager rectForCharacterRange: aRange];
+}
+
 - (void) _buildUpLayout
 {
   if (_layoutManager == nil)
@@ -3386,31 +3478,6 @@ other than copy/paste or dragging. */
 - (NSRect) _textBounds
 {
   return [_layoutManager _textBounds];
-}
-
-- (void) drawRect: (NSRect) rect
-    withSelection: (NSRange) selectedCharacterRange
-{
-  NSRange drawnRange;
-  NSRange newRange;
-
-  if (_tf.draws_background)
-    {
-      // clear area under text
-      [[self backgroundColor] set];
-      NSRectFill(rect);
-    }
-
-  drawnRange = [_layoutManager drawRectCharacters: rect];
-
-  // We have to redraw the part of the selection that is inside
-  // the redrawn lines
-  newRange = NSIntersectionRange(selectedCharacterRange, drawnRange);
-  // Was there any overlapping with the selection?
-  if ((selectedCharacterRange.length &&
-       NSLocationInRange(newRange.location, selectedCharacterRange)) ||
-      (selectedCharacterRange.location == newRange.location))
-    [self drawSelectionAsRange: newRange];
 }
 
 - (void) drawInsertionPointAtIndex: (unsigned) index
@@ -3478,33 +3545,4 @@ other than copy/paste or dragging. */
     }
 }
 
-- (void) drawSelectionAsRange: (NSRange) aRange
-{
-  if (aRange.length)
-    {
-      [self drawSelectionAsRangeNoCaret: aRange];
-    }
-  else
-    {
-      [self drawInsertionPointAtIndex: aRange.location
-				color: _caret_color
-			     turnedOn: YES];
-    }
-}
-
-// low level selection setting including delegation
-- (void) setSelectedRangeNoDrawing: (NSRange)range
-{
-  //<!> ask delegate for selection validation
-  _selected_range  = range;
-  [self updateFontPanel];
-#if 0
-  [[NSNotificationCenter defaultCenter]
-    postNotificationName: NSTextViewDidChangeSelectionNotification
-    object: self
-    userInfo: [NSDictionary dictionaryWithObjectsAndKeys:
-		  NSStringFromRange (_selected_range),
-		NSOldSelectedCharacterRange, nil]];
-#endif
-}
 @end

@@ -70,7 +70,7 @@
 			  [NSCharacterSet whitespaceAndNewlineCharacterSet]\
 			intoString:NULL]
 
-static NSString *NSPrinter_PATH = @"gnustep/PrinterTypes";
+static NSString *NSPrinter_PATH = @"PrinterTypes";
 static NSString *NSPrinter_INDEXFILE = @"Printers";
 
 //
@@ -82,8 +82,6 @@ static NSMapTable *typeMap = NULL;
 static NSMapTable *nameMap = NULL;
 // Dictionary of real printers, from which NSPrinters can be made
 static NSDictionary *nameDict = nil;
-// Bundles used to load printer related information, such as PPDs.
-static NSBundle *userBundle = nil, *localBundle = nil, *systemBundle = nil;
 // An array to cache the available printer types
 static NSArray *printerTypesAvailable = nil;
 
@@ -160,6 +158,7 @@ static int gethex(unichar character)
     raise:NSPPDParseException 
     format:@"Badly formatted hexadeximal substring in PPD printer file."];
   // NOT REACHED
+  return 0; /* Quiet compiler warnings */
 }
 
 // Function to convert hexadecimal substrings
@@ -214,23 +213,9 @@ static NSString *interpretQuotedValue(NSString *qString)
 
 static NSString *getFile(NSString *name, NSString *type)
 {
-  NSString *path;
-  path = [userBundle pathForResource:name
-		     ofType:type
-		     inDirectory:NSPrinter_PATH];
-  if (path && [path length])
-    return path;
-  path = [localBundle pathForResource:name
-		      ofType:type
-		      inDirectory:NSPrinter_PATH];
-  if (path && [path length])
-    return path;
-  path = [systemBundle pathForResource:name
-		       ofType:type
-		       inDirectory:NSPrinter_PATH];
-  if (path && [path length])
-    return path;
-  return nil;
+  return [NSBundle pathForGNUstepResource: name
+		                   ofType: type
+		              inDirectory: NSPrinter_PATH];
 }
 
 
@@ -363,39 +348,11 @@ andOptionTranslation:(NSString *)optionTranslation
 
 + (NSArray *)printerTypes
 {
-  /*
-  NSDirectoryEnumerator *files;
-  NSMutableArray *printers;
-  NSString *fileName;
-  int length;
-  NSRange range;
-  if (printerTypesAvailable)
-    return printerTypesAvailable;
-  files = [[NSFileManager defaultManager] enumeratorAtPath:NSPrinter_PATH];
-  printers = [NSMutableArray array];
-  while ((fileName = [files nextObject]))
-    {
-      length = [fileName length];
-      if ([[fileName substringFromIndex:length - 4] isEqual:@".ppd"])
-	{
-	  range = [fileName rangeOfString:@"/" options:NSBackwardsSearch];
-	  if (range.length)
-	    {
-	      range.location++;
-	      range.length = length - range.location - 4;
-	      fileName = [fileName substringFromRange:range];
-	    }
-	  else
-	    fileName = [fileName substringToIndex:length - 4];
-	  if (![printers containsObject:fileName])
-	    [printers addObject:fileName];
-	}
-    }
-    */
-  // userBundle, localBundle, systemBundle
-  NSArray *userPaths = nil, *localPaths = nil, *systemPaths = nil;
+  NSBundle *lbdle;
+  NSArray *lpaths;
   NSMutableArray *printers;
   NSString *path;
+  NSDictionary *env;
   NSAutoreleasePool *subpool; // There's a lot of temp strings used...
   int i, max;
 
@@ -404,28 +361,34 @@ andOptionTranslation:(NSString *)optionTranslation
 
   printers = [[NSMutableArray array] retain];
   subpool = [[NSAutoreleasePool alloc] init];
-  userPaths = [userBundle pathsForResourcesOfType:@"ppd"
-			  inDirectory:NSPrinter_PATH];
-  localPaths = [localBundle pathsForResourcesOfType:@"ppd"
-			    inDirectory:NSPrinter_PATH];
-  systemPaths = [systemBundle pathsForResourcesOfType:@"ppd"
+
+  env = [[NSProcessInfo processInfo] environment];
+  lbdle = [NSBundle bundleWithPath: [env objectForKey: @"GNUSTEP_USER_ROOT"]];
+  lpaths = [lbdle pathsForResourcesOfType:@"ppd"
 			      inDirectory:NSPrinter_PATH];
-  max = [userPaths count];
+  max = [lpaths count];
   for(i=0 ; i<max ; i++)
     {
-      path = [[userPaths objectAtIndex:i] lastPathComponent];
+      path = [[lpaths objectAtIndex:i] lastPathComponent];
       [printers addObject:[path substringToIndex:[path length]-4]];
     }
-  max = [localPaths count];
+
+  lbdle = [NSBundle bundleWithPath: [env objectForKey: @"GNUSTEP_LOCAL_ROOT"]];
+  lpaths = [lbdle pathsForResourcesOfType:@"ppd"
+			      inDirectory:NSPrinter_PATH];
+  max = [lpaths count];
   for(i=0 ; i<max ; i++)
     {
-      path = [[localPaths objectAtIndex:i] lastPathComponent];
+      path = [[lpaths objectAtIndex:i] lastPathComponent];
       [printers addObject:[path substringToIndex:[path length]-4]];
     }
-  max = [systemPaths count];
+
+  lpaths = [[NSBundle gnustepBundle] pathsForResourcesOfType:@"ppd"
+			      inDirectory:NSPrinter_PATH];
+  max = [lpaths count];
   for(i=0 ; i<max ; i++)
     {
-      path = [[systemPaths objectAtIndex:i] lastPathComponent];
+      path = [[lpaths objectAtIndex:i] lastPathComponent];
       [printers addObject:[path substringToIndex:[path length]-4]];
     }
   [subpool release];
@@ -924,8 +887,6 @@ andOptionTranslation:(NSString *)optionTranslation
 + allocMaps
 {
   NSString *path;
-  NSMutableString *user, *local, *system;
-  NSDictionary *env;
 
   // Allocate name and type maps
   typeMap = NSCreateMapTable(NSObjectMapKeyCallBacks,
@@ -934,25 +895,6 @@ andOptionTranslation:(NSString *)optionTranslation
   nameMap = NSCreateMapTable(NSObjectMapKeyCallBacks,
 			     NSNonRetainedObjectMapValueCallBacks,
 			     NAMEMAPSIZE);
-
-  // Create the printer bundles
-  env = [[NSProcessInfo processInfo] environment];
-  user = [[[env objectForKey: @"GNUSTEP_USER_ROOT"]
-            mutableCopy] autorelease];
-  [user appendString: @"/Libraries"];
-  local = [[[env objectForKey: @"GNUSTEP_LOCAL_ROOT"]
-            mutableCopy] autorelease];
-  [local appendString: @"/Libraries"];
-  system = [[[env objectForKey: @"GNUSTEP_SYSTEM_ROOT"]
-            mutableCopy] autorelease];
-  [system appendString: @"/Libraries"];
-
-  if (user)
-    userBundle = [NSBundle bundleWithPath: user];
-  if (local)
-    localBundle = [NSBundle bundleWithPath: local];
-  if (system)
-    systemBundle = [NSBundle bundleWithPath: system];
 
   // Load the index file
   path = getFile(NSPrinter_INDEXFILE, nil);

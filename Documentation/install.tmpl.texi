@@ -31,22 +31,12 @@ Install @samp{gcc}.  The library requires gcc version
 @value{GNUSTEP-GUI-GCC} or later.
 
 @item
-Install @samp{gnustep-base} or @samp{libFoundation}.  This library requires the 
-classes either in the GNUstep Base Library or libFoundation. You must also
-apply the Objective-C Runtime patches to GCC which makes the runtime
-thread-safe, if your version of GCC lacks them.
+Install the @samp{gnustep-base} library.
 
 @item
 Install the @samp{TIFF} library.  This library requires the header files
 in the TIFF library to compile; the TIFF library is used for the NSImage
 and associated classes for reading, writing, and manipulating tiff files.
-
-@item
-Install @samp{DGS}.  Though this library does not directly use the Display
-Ghostscript System; it does require the DPS client library headers
-in order to compile.  You should have at least version 
-@value{GNUSTEP-GUI-DGS}; likewise, you could just install the DPS client
-library itself in which use version @value{GNUSTEP-GUI-DPSCLIENT}.
 
 @item
 Configure the package for your system.  In the directory that this

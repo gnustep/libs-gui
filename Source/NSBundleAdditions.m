@@ -475,7 +475,6 @@
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [super encodeWithCoder: aCoder];
   [aCoder encodeObject: nameTable];
   [aCoder encodeObject: connections];
 }
@@ -492,7 +491,6 @@
 
 - (id) initWithCoder: (NSCoder*)aCoder
 {
-  self = [super initWithCoder: aCoder];
   [aCoder decodeValueOfObjCType: @encode(id) at: &nameTable];
   [aCoder decodeValueOfObjCType: @encode(id) at: &connections];
   return self;
@@ -515,7 +513,6 @@
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [super encodeWithCoder: aCoder];
   [aCoder encodeObject: theClass];
   [aCoder encodeRect: theFrame];
 }

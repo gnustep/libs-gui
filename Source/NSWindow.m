@@ -2942,7 +2942,7 @@ resetCursorRectsForView(NSView *theView)
     {
       fRect.size.height = minimum_size.height;
     }
-  [self setFrame: fRect display: YES];
+  [self setFrame: fRect display: (_f.visible) ? YES : NO];
 }
 
 - (BOOL) setFrameUsingName: (NSString*)name

@@ -1,7 +1,7 @@
 ANNOUNCE
 ********
 
-This is version 0.6.5 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.6.6 of the GNUstep GUI library (`gnustep-gui').
 
 What is the GNUstep GUI Library?
 ================================
@@ -31,132 +31,44 @@ component like the GNUstep X/DPS GUI Backend.
 What's new in this release?
 ===========================
 
-   The currently released version of the library is `0.6.5'.
+   The currently released version of the library is `0.6.6'.
 
-Noteworthy changes in version `0.6.5'
+Noteworthy changes in version `0.6.6'
 =====================================
 
-   Many of the basic GUI classes have been vastly improved or
-rewritten, thanks to Nicola Pero  <n.pero@mi.flashnet.it> and many
-others.
+   * Window hints for motif and generic window managers.
 
-   * New Info Panel support
+   * Major improvements to the text handling classes (NSText,
+     NSTextView, etc)
 
-   * New NSBezierPath
+   * Pasting of fonts and rulers.
 
-   * Rewrite of several classes including Cell and Button classes.
+   * Much better RTF handling
 
-   * Rewrite of NSBrowser, NSSavePanel, menus, text classes,
-     NSTableHeader.
+   * DnD for NSColorWell
 
-   * RTF Parser
+   * Much improved NSSplitView
 
-   * Implemented image caching.
+   * New classes - NSColorPanel, NSTableView
 
-   * Implemented editing in Forms, Matricies.
+   * NSScreen rewritten with full support for all methods and functions.
 
-   * New autolayout classes GSHBox, GSTable, and GSVBox.
+   * Can use image reading routines from WindowMaker if available to
+     read a variety of image formats besides TIFF.
 
-   * Almost all back-end classes have been removed and code incorporated
-     in a DPS-like graphics context structure.
+   * Many fixes to get the AppKit to work better with WindowMaker.
 
-   * Better keyboard handling.
+   * Much better gmodel support (particularly with nibs translated from
+     NeXT or OPENSTEP 4.2).
 
-   * NSHelpManager, NSComboBox, ProgressIndicator written.
+   * Muh improved font classes and font support.
 
-   In addition a preliminary version of an Interface Builder (Gorm) has
-been written, thanks to Richard Frith-Macdonald
-<richard@brainstorm.co.uk>
-
-Noteworthy changes in version `0.6.0'
-=====================================
-
-   A Huge amount of progress, although a lot still needs to be done.
-It's usable for a large base of moderately simple apps. Several
-NeXT/OpenStep apps and libraries have been ported with little changes.
-
-   * Drag and Drop support fleshed out but not completed.
-
-   * NSText and related classes rewritten. Basic functionality but much
-     needs to be done to finish them off.
-
-   * nib2gmodel app works with MacOS-X
-
-   * Work done in minimizing the backend which allowed a lot of
-     functionality to move to the GNU library.
-
-   * Menu code rewritten.
-
-   * PopupButtons now work.
-
-   * Many new images
-
-   * Basic functionality for NSTabView
-
-   * Much better lockFocus support in NSView. Flipped views handled.
-
-   * Rewrite of NSSavePanel and NSOpenPanel
-
-   * Several fixes that at least double the speed of the gui.
-
-Noteworthy changes in version `0.5.5'
-=====================================
-
-   Too extensive to list.
-
-   * A lot of rewritting has been done to the classes, with general
-     cleanup of coordinate conversion code, etc.
-
-
-Noteworthy changes in version `0.5.0'
-=====================================
-
-   * NSBrowser and NSBrowserCell have been implemented.  There is one
-     odd display artifact; lists which are smaller than the browser
-     column area have the list justified to the bottom of the column
-     versus the top of the column.  This is actually an issue with
-     NSMatrix and will be remedied when flip views are implemented.
-
-   * Two important optimizations that speed up the displaying of views
-     and flushing of windows have been implemented. Only the views that
-     need display and those that produce visible effects on the screen
-     receive the -drawRect: message.  Flushing of windows occurs only
-     in rectangles that get displayed not in the whole window.
-
-   * Rotation and scaling of views have been finally implemented. The
-     code requires backend support for changing the state of the
-     graphics context accordingly.
-
-   * NSScrollView and NSClipView have been implemented. The current
-     implemented behavior is to call the document view to display the
-     exposed region. Copying on scroll will be supported soon, at least
-     on Solaris DPS, where it seems the Postscript language has
-     provisions for copying drawn regions of screen.  Hopefully DGS
-     will also have this facility by the end of the year.
-
-   * NSScroller has been completely reworked to gain speed by using
-     timer events.
-
-   * NSSlider has been implemented. Thanks to Frank Knobloch for
-     supporting this and the NSScrollView implementation.
-
-   * NSBox has been implemented.
-
-   * The library has been ported to work under Solaris with the native
-     DPS and the NeXT/Apple's Portable Distributed Objects (PDO)
-     environment.
-
-   * The library has been integrated with the makefile package so we
-     now benefit from all of the features the makefile package gives
-     us, especially the possibility to build shared libraries on
-     various systems and having different types (debug and profile) of
-     the library compiled at the same time.
-
-   * NSCell is able to continuosly send the action to the target while
-     the user is tracking the mouse.
-
-   * Several cleanups and as usual, many bug fixes.
-
+   In addition both the xgps and xdps backends have seen some large
+efficiency improvements. Much better font support. The xdps backend
+itself has seen speed improvements by at least a factor of 4. Note
+however, that the xdps backend is still considered experimental and you
+may have to deal with many problems in order to get it working. We
+recommend sticking with the xgps backend (the default) for now.
 
 How can I get support for this software?
 ========================================
@@ -165,22 +77,22 @@ How can I get support for this software?
 GNUstep GUI Library; however, you may wish to use the GNUstep
 discussion mailing list for general questions and discussion.  Look at
 the GNUstep Web Pages for more information regarding GNUstep resources
-`http://www.gnustep.org/'
+<http://www.gnustep.org/>
 
 Where can you get it?  How can you compile it?
 ==============================================
 
-   The gstep-gui-0.6.5.tar.gz distribution file has been placed on
+   The gstep-gui-0.6.6.tar.gz distribution file has been placed on
 `ftp.gnustep.org' in `pub/gnustep/core'.
 
    The program requires gcc 2.8.0 or higher.
 
-   The Display Ghostscript System version 0.5.7 and the TIFF Graphics
+   The Display Ghostscript System version 0.5.10 and the TIFF Graphics
 library version 3.4 may be required depending on the backend you choose.
 
    It also requires a FoundationKit library as specified by the OpenStep
 specification.  The FoundationKit libraries known to work are the
-GNUstep Base Library version `0.6.5'.
+GNUstep Base Library version `0.6.6'.
 
    The `.tar' file is compressed with GNU gzip.  Gzip can be obtained by
 anonymous ftp at any of the GNU archive sites.
@@ -190,7 +102,7 @@ with no subject line, and two-line body with line one `help' and line
 two `quit'.
 
    The most recent (not necessarily tested) snapshots of the library
-will be placed in `ftp://alpha.gnu.org/gnu/gnustep'.
+will be placed in <ftp://alpha.gnu.org/gnu/gnustep>.
 
 Where do I send bug reports?
 ============================
@@ -200,118 +112,13 @@ Where do I send bug reports?
 Obtaining GNU Software
 ======================
 
-   Check out the GNU web site. (`http://www.gnu.org/')
+   Check out the GNU web site. (<http://www.gnu.org/>)
 
-   Check out the GNUstep web site. (`http://www.gnustep.org/')
+   Check out the GNUstep web site. (<http://www.gnustep.org/>)
 
    The GNUstep GUI Library was donated to the Free Software Foundation
 as part of the On-line Community project of NET-Community.
 NET-Community is a company that develops and supports free software.
 Check out their web site to learn more.
-(`http://www.net-community.com/')
-
-   Most GNU software is packed using the GNU `gzip' compression program.
-Source code is available on most sites distributing GNU software.
-
-   For information on how to order GNU software on tape, floppy or
-cd-rom, or printed GNU manuals, check the file etc/ORDERS in the GNU
-Emacs distribution or in GNUinfo/ORDERS on prep, or e-mail a request to:
-<gnu@gnu.org>
-
-   By ordering your GNU software from the FSF, you help us continue to
-develop more free software.  Media revenues are our primary source of
-support.  Donations to FSF are deductible on US tax returns.
-
-   The above software will soon be at these ftp sites as well.  Please
-try them before `ftp.gnu.org' as it is very busy!
-
-   thanx <gnu@gnu.org>
-
-*ASIA:*
-        - `ftp://ftp.cs.titech.ac.jp'
-
-        - `ftp://utsun.s.u-tokyo.ac.jp/ftpsync/prep'
-
-        - `ftp://cair.kaist.ac.kr/pub/gnu'
-
-        - `ftp://ftp.nectec.or.th/pub/mirrors/gnu'
-
-*AUSTRALIA:*
-        - `ftp://archie.au/gnu' (archie.oz or archie.oz.au for ACSnet)
-
-*AFRICA:*
-        - `ftp://ftp.sun.ac.za/pub/gnu'
-
-*MIDDLE-EAST:*
-        - `ftp://ftp.technion.ac.il/pub/unsupported/gnu'
-
-*EUROPE:*
-        - `ftp://irisa.irisa.fr/pub/gnu'
-
-        - `ftp://ftp.univ-lyon1.fr/pub/gnu'
-
-        - `ftp://ftp.mcc.ac.uk'
-
-        - `ftp://unix.hensa.ac.uk/pub/uunet/systems/gnu'
-
-        - `ftp://src.doc.ic.ac.uk/gnu'
-
-        - `ftp://ftp.ieunet.ie/pub/gnu'
-
-        - `ftp://ftp.eunet.ch'
-
-        - `ftp://nic.switch.ch/mirror/gnu'
-
-        - `ftp://ftp.informatik.rwth-aachen.de/pub/gnu'
-
-        - `ftp://ftp.informatik.tu-muenchen.de'
-
-        - `ftp://ftp.win.tue.nl/pub/gnu'
-
-        - `ftp://ftp.funet.fi/pub/gnu'
-
-        - `ftp://ftp.denet.dk'
-
-        - `ftp://ftp.stacken.kth.se'
-
-        - `ftp://isy.liu.se'
-
-        - `ftp://ftp.luth.se/pub/unix/gnu'
-
-        - `ftp://ftp.sunet.se/pub/gnu'
-
-        - `ftp://archive.eu.net'
-
-*SOUTH AMERICA:*
-        - `ftp://ftp.unicamp.br/pub/gnu'
-
-*WESTERN CANADA:*
-        - `ftp://ftp.cs.ubc.ca/mirror2/gnu'
-
-*USA:*
-        - `ftp://wuarchive.wustl.edu/systems/gnu'
-
-        - `ftp://labrea.stanford.edu'
-
-        - `ftp://ftp.digex.net/pub/gnu'
-
-        - `ftp://ftp.kpc.com/pub/mirror/gnu'
-
-        - `ftp://f.ms.uky.edu/pub3/gnu'
-
-        - `ftp://jaguar.utah.edu/gnustuff'
-
-        - `ftp://ftp.hawaii.edu/mirrors/gnu'
-
-        - `ftp://vixen.cso.uiuc.edu/gnu'
-
-        - `ftp://mrcnext.cso.uiuc.edu/pub/gnu'
-
-        - `ftp://ftp.cs.columbia.edu/archives/gnu/prep'
-
-        - `ftp://col.hp.com/mirrors/gnu'
-
-        - `ftp://gatekeeper.dec.com/pub/GNU'
-
-        - `ftp://ftp.uu.net/systems/gnu'
+(<http://www.net-community.com/>)
 

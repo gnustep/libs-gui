@@ -1,9 +1,9 @@
 #
-#  Top level makefile for GNUstep GUI Library
-#
+#  Images makefile for GNUstep GUI Library
 #  Copyright (C) 1997 Free Software Foundation, Inc.
 #
-#  Author: Scott Christley <scottc@net-community.com>
+#  Author:  Scott Christley <scottc@net-community.com>
+#  Date:  September 1997
 #
 #  This file is part of the GNUstep GUI Library.
 #
@@ -17,13 +17,9 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
 #  Library General Public License for more details.
 #
-#  If you are interested in a warranty or support for this source code,
-#  contact Scott Christley at scottc@net-community.com
-#
 #  You should have received a copy of the GNU Library General Public
-#  License along with this library; see the file COPYING.LIB.
-#  If not, write to the Free Software Foundation,
-#  59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+#  License along with this library; if not, write to the Free
+#  Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 
 GNUSTEP_INSTALLATION_DIR = $(GNUSTEP_SYSTEM_ROOT)
 
@@ -31,13 +27,26 @@ GNUSTEP_MAKEFILES = $(GNUSTEP_SYSTEM_ROOT)/Makefiles
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
-#
-# The list of subproject directories
-#
-SUBPROJECTS = Source Images Model Tools Panels PrinterTypes
+include ../Version
+
+INSTALL_DIR = $(GNUSTEP_RESOURCES)/PrinterTypes
+
+RESOURCE_DIRS = \
+English.lproj	\
+French.lproj	\
+German.lproj	\
+Italian.lproj	\
+Spanish.lproj	\
+Swedish.lproj
+
+
+RESOURCE_FILES = Printers
 
 -include GNUmakefile.preamble
 
-include $(GNUSTEP_MAKEFILES)/aggregate.make
+-include GNUmakefile.local
+# We don't actually build anything in this directory so
+# just include the common makefile rules
+include $(GNUSTEP_MAKEFILES)/rules.make
 
 -include GNUmakefile.postamble
