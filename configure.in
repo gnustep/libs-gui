@@ -28,6 +28,12 @@ AC_INIT(Source/NSApplication.m)
 AC_CONFIG_HEADER(Headers/gnustep/gui/config.h)
 
 #--------------------------------------------------------------------
+# Find the compiler
+#--------------------------------------------------------------------
+AC_PROG_CC
+AC_PROG_CPP
+
+#--------------------------------------------------------------------
 # Determine the host, build, and target systems
 #--------------------------------------------------------------------
 AC_CANONICAL_SYSTEM

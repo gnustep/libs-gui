@@ -1,3 +1,7 @@
+2001-07-11  Adam Fedor  <fedor@gnu.org>
+
+	* configure.in: Add PROG_CC check
+
 2001-07-08  Adam Fedor  <fedor@gnu.org>
 
 	* Merge from 0.7.0.
