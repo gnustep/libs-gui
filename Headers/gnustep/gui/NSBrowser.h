@@ -158,6 +158,7 @@
 - (int) numberOfVisibleColumns;
 - (void) reloadColumn: (int)column;
 - (void) selectAll: (id)sender;
+- (void) selectRow: (int)row inColumn: (int)col;
 - (int) selectedColumn;
 - (int) selectedRow: (int)row nColumn: (int)column;
 - (void) setLastColumn: (int)column;
