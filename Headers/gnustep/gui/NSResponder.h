@@ -29,7 +29,6 @@
 #ifndef _GNUstep_H_NSResponder
 #define _GNUstep_H_NSResponder
 
-#include <gnustep/gui/config.h>
 #include <Foundation/NSCoder.h>
 
 @class NSString;

@@ -30,7 +30,6 @@
 #ifndef _GNUstep_H_NSFont
 #define _GNUstep_H_NSFont
 
-#include <gnustep/gui/config.h>
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSGeometry.h>
 

@@ -1,10 +1,9 @@
-# @configure_input@
 #
-#  Images makefile for the GNUstep GUI Library.
+#  Images makefile for GNUstep GUI Library
 #  Copyright (C) 1997 Free Software Foundation, Inc.
 #
-#  Author: Scott Christley <scottc@net-community.com>
-#  Date: January 1997
+#  Author:  Scott Christley <scottc@net-community.com>
+#  Date:  September 1997
 #
 #  This file is part of the GNUstep GUI Library.
 #
@@ -22,28 +21,12 @@
 #  License along with this library; if not, write to the Free
 #  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-SHELL = /bin/sh
+include $(GNUSTEP_SYSTEM_ROOT)/Makefiles/common.make
 
-#### Start of system configuration section. ####
+include ../Version
+include ../config.mak
 
-srcdir = @srcdir@
-VPATH = @srcdir@
-
-prefix = @prefix@
-exec_prefix = @exec_prefix@
-libdir = @libdir@
-gnustep_libdir = $(libdir)/gnustep
-imagedir = $(gnustep_libdir)/Images
-
-INSTALL = @INSTALL@
-INSTALL_PROGRAM = @INSTALL_PROGRAM@
-INSTALL_DATA = @INSTALL_DATA@
-
-#### End of system configuration section. ####
-
-include $(srcdir)/../Version
-
-all: 
+imagedir = $(GNUSTEP_RESOURCES)/Images
 
 IMAGE_FILES = \
 GNUstep_Images_Copyright \
@@ -67,24 +50,10 @@ common_SwitchOff.tiff \
 common_Dimple.tiff \
 common_ret.tiff
 
-installdirs:
-	$(srcdir)/../mkinstalldirs $(libdir) $(gnustep_libdir) $(imagedir)
+-include Makefile.preamble
 
-install: installdirs
-	for file in $(IMAGE_FILES); do \
-	  $(INSTALL_DATA) $(srcdir)/$$file $(imagedir)/$$file ; \
-	done
+# We don't actually build anything in this directory so
+# just include the common makefile rules
+include $(GNUSTEP_SYSTEM_ROOT)/Makefiles/rules.make
 
-uninstall:
-	for file in $(IMAGE_FILES); do \
-	  rm -f $(imagedir)/$$file ; \
-	done
-
-mostlyclean:
-	rm -f *~
-clean: mostlyclean
-distclean: clean
-	rm -f Makefile
-
-Makefile: $(srcdir)/Makefile.in
-	cd ..; $(SHELL) config.status
+-include Makefile.postamble

@@ -29,7 +29,6 @@
 #ifndef _GNUstep_H_NSScreen
 #define _GNUstep_H_NSScreen
 
-#include <gnustep/gui/config.h>
 #include <Foundation/NSObject.h>
 #include <AppKit/NSGraphics.h>
 

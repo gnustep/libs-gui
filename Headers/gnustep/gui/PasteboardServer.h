@@ -27,7 +27,6 @@
 #ifndef _GNUstep_H_PasteboardServer
 #define _GNUstep_H_PasteboardServer
 
-#include <gnustep/gui/config.h>
 #include <Foundation/NSObject.h>
 #include <Foundation/NSString.h>
 #include <AppKit/NSPasteboard.h>

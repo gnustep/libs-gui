@@ -33,12 +33,6 @@
 
 #include <Foundation/NSGeometry.h>
 
-/* Do we have the TIFF Graphics library */
-#undef HAVE_TIFF_H
-
-/* Do we have the DPS Client library? */
-#undef HAVE_DPS_DPSCLIENT_H
-
 /* Define NSDebugLog if not defined */
 #ifndef NSDebugLog
 # ifdef DEBUGLOG

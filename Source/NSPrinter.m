@@ -42,6 +42,7 @@
  * Do encoding/decoding
  */
 
+#include <gnustep/gui/config.h>
 #include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDictionary.h>

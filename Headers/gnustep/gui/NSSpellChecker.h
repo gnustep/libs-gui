@@ -29,7 +29,6 @@
 #ifndef _GNUstep_H_NSSpellChecker
 #define _GNUstep_H_NSSpellChecker
 
-#include <gnustep/gui/config.h>
 #include <Foundation/NSObject.h>
 #include <Foundation/NSRange.h>
 

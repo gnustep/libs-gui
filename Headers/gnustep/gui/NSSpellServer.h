@@ -29,7 +29,6 @@
 #ifndef _GNUstep_H_NSSpellServer
 #define _GNUstep_H_NSSpellServer
 
-#include <gnustep/gui/config.h>
 #include <Foundation/NSObject.h>
 #include <Foundation/NSArray.h>
 

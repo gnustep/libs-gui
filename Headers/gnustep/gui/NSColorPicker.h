@@ -29,7 +29,6 @@
 #ifndef _GNUstep_H_NSColorPicker
 #define _GNUstep_H_NSColorPicker
 
-#include <gnustep/gui/config.h>
 #include <Foundation/NSObject.h>
 #include <AppKit/NSColorPicking.h>
 

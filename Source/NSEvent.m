@@ -27,6 +27,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
+#include <gnustep/gui/config.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSLock.h>
 #include <Foundation/NSTimer.h>

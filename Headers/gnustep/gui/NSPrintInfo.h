@@ -29,7 +29,6 @@
 #ifndef _GNUstep_H_NSPrintInfo
 #define _GNUstep_H_NSPrintInfo
 
-#include <gnustep/gui/config.h>
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSGeometry.h>
 

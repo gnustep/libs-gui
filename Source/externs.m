@@ -26,6 +26,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
+#include <gnustep/gui/config.h>
 #include <Foundation/NSString.h>
 #include <AppKit/NSEvent.h>
 
@@ -58,7 +59,6 @@ NSString *NSPPDIncludeNotFoundException = @"PPDIncludeNotFound";
 NSString *NSPPDIncludeStackOverflowException = @"PPDIncludeStackOverflow";
 NSString *NSPPDIncludeStackUnderflowException = @"PPDIncludeStackUnderflow";
 NSString *NSPPDParseException = @"PPDParse";
-NSString *NSPasteboardCommunicationException = @"PasteboardCommunication";
 NSString *NSPrintOperationExistsException = @"PrintOperationExists";
 NSString *NSPrintPackageException = @"PrintPackage";
 NSString *NSPrintingCommunicationException = @"PrintingCommunication";
@@ -160,7 +160,7 @@ NSString *NSDeviceSize = @"Size";
 NSString *NSImageRepRegistryChangedNotification =
 @"NSImageRepRegistryChangedNotification";
 
-// NSPasteboard Type Globals 
+// Pasteboard Type Globals 
 NSString *NSStringPboardType = @"NSStringPboardType";
 NSString *NSColorPboardType = @"NSColorPboardType";
 NSString *NSFileContentsPboardType = @"NSFileContentsPboardType";
@@ -174,12 +174,18 @@ NSString *NSTIFFPboardType = @"NSTIFFPboardType";
 NSString *NSDataLinkPboardType = @"NSDataLinkPboardType";
 NSString *NSGeneralPboardType = @"NSGeneralPboardType";
 
-// NSPasteboard Name Globals 
+// Pasteboard Name Globals 
 NSString *NSDragPboard = @"NSDragPboard";
 NSString *NSFindPboard = @"NSFindPboard";
 NSString *NSFontPboard = @"NSFontPboard";
 NSString *NSGeneralPboard = @"NSGeneralPboard";
 NSString *NSRulerPboard = @"NSRulerPboard";
+
+//
+// Pasteboard Exceptions
+//
+NSString *NSPasteboardCommunicationException
+= @"NSPasteboardCommunicationException";
 
 // Printing Information Dictionary Keys 
 NSString *NSPrintAllPages = @"PrintAllPages";

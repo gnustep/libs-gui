@@ -29,11 +29,10 @@
 #ifndef _GNUstep_H_DPSTypes
 #define _GNUstep_H_DPSTypes
 
-#include <gnustep/gui/config.h>
-
 @class NSString;
 
 // These are already defined in the DPSclient headers
+#if 0
 #ifndef HAVE_DPS_DPSCLIENT_H
 typedef void *DPSProgramEncoding;
 typedef void *DPSNameEncoding;
@@ -42,6 +41,7 @@ typedef void *DPSErrorProc;
 typedef void DPSBinObjSeqRec;
 typedef unsigned int DPSDefinedType;
 #endif /* HAVE_DPS_DPSCLIENT_H */
+#endif
 
 //
 // Backing Store Types

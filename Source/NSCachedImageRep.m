@@ -31,6 +31,7 @@
     using the rect information.
 */
 
+#include <gnustep/gui/config.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSException.h>
 

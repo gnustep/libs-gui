@@ -34,13 +34,7 @@
 #ifndef _GNUstep_H_tiff
 #define _GNUstep_H_tiff
 
-#include <gnustep/gui/config.h>
-
-#ifdef HAVE_TIFF_H
 #include <tiffio.h>
-#else
-#define TIFF void
-#endif
 #include <sys/types.h>
 
 /* Structure to store common information about a tiff. */

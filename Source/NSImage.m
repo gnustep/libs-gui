@@ -30,6 +30,7 @@
 	(findImageNamed:).
 	[3] bestRepresentation is not complete.
 */
+#include <gnustep/gui/config.h>
 #include <string.h>
 
 #include <Foundation/NSString.h>

@@ -27,6 +27,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
+#include <gnustep/gui/config.h>
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/PasteboardServer.h>
 #include <Foundation/NSArray.h>
@@ -40,33 +41,6 @@
 #include <Foundation/NSProcessInfo.h>
 #include <Foundation/NSSerialization.h>
 #include <Foundation/NSUserDefaults.h>
-
-// Pasteboard Type Globals 
-NSString *NSStringPboardType = @"NSStringPboardType";
-NSString *NSColorPboardType = @"NSColorPboardType";
-NSString *NSFileContentsPboardType = @"NSFileContentsPboardType";
-NSString *NSFilenamesPboardType = @"NSFilenamesPboardType";
-NSString *NSFontPboardType = @"NSFontPboardType";
-NSString *NSRulerPboardType = @"NSRulerPboardType";
-NSString *NSPostScriptPboardType = @"NSPostScriptPboardType";
-NSString *NSTabularTextPboardType = @"NSTabularTextPboardType";
-NSString *NSRTFPboardType = @"NSRTFPboardType";
-NSString *NSTIFFPboardType = @"NSTIFFPboardType";
-NSString *NSDataLinkPboardType = @"NSDataLinkPboardType";
-NSString *NSGeneralPboardType = @"NSGeneralPboardType";
-
-// Pasteboard Name Globals 
-NSString *NSDragPboard = @"NSDragPboard";
-NSString *NSFindPboard = @"NSFindPboard";
-NSString *NSFontPboard = @"NSFontPboard";
-NSString *NSGeneralPboard = @"NSGeneralPboard";
-NSString *NSRulerPboard = @"NSRulerPboard";
-
-//
-// Pasteboard Exceptions
-//
-NSString *NSPasteboardCommunicationException
-= @"NSPasteboardCommunicationException";
 
 @interface NSPasteboard (Private)
 + (id<PasteboardServer>) _pbs;

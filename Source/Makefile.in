@@ -158,7 +158,8 @@ gui/NSWindow.h \
 gui/NSWorkspace.h \
 gui/TrackingRectangle.h \
 gui/config.h \
-gui/nsimage-tiff.h
+gui/nsimage-tiff.h \
+gui/PSMatrix.h
 
 GNUSTEP_DPS_HEADERS = dps/NSDPSContext.h \
 dps/DPSOperators.h \

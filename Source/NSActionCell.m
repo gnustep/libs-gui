@@ -26,6 +26,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
+#include <gnustep/gui/config.h>
 #include <Foundation/NSCoder.h>
 #include <AppKit/NSActionCell.h>
 #include <AppKit/NSControl.h>

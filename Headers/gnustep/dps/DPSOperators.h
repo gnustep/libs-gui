@@ -29,14 +29,12 @@
 #ifndef _GNUstep_H_DPSOperators
 #define _GNUstep_H_DPSOperators
 
-#include <gnustep/gui/config.h>
-
 // Use the DPSclient library if we have it
-#ifdef HAVE_DPS_DPSCLIENT_H
+// #ifdef HAVE_DPS_DPSCLIENT_H
 
 #include <DPS/dpsclient.h>
 #include <DPS/psops.h>
 
-#endif /* HAVE_DPS_DPSCLIENT_H */
+// #endif /* HAVE_DPS_DPSCLIENT_H */
 
 #endif /* _GNUstep_H_DPSOperators */

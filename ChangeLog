@@ -1,3 +1,126 @@
+Tue Sep 23 14:28:14 1997  Scott Christley  <scottc@net-community.com>
+
+	* Convert to the GNUstep makefile package.
+	* Makefile: New file.
+	* Makefile.postamble: New file.
+	* config.mak.in: New file.
+	* Makefile.in: Delete.
+	* Makefile.sed.net: Delete.
+	* configure.in (AC_OUTPUT): Do not create makefiles.  Eliminate
+	checks for TIFF and DPS.
+	* configure: Regnerate for configure.in changes.
+	* Source/Makefile: New file.
+	* Source/Makefile.preamble: New file.
+	* Source/Makefile.postamble: New file.
+	* Source/Makefile.in: Delete.
+	* Source/Makefile.sed.nt: Delete.
+	* Testing/Makefile.sed.nt: Delete.
+	* gnustep/gui/config.h.in: Remove TIFF and DPS macros.
+	* Images/Makefile: New file.
+	* Images/Makefile/postamble: New file.
+	* Images/Makefile.in: Delete.
+
+	* The config.h files should not be installed with the other
+	header files; it is only used for compilation, so the source
+	files should include it not the header files.
+	* gnustep/dps/DPSOperators.h: Do not include config.h.
+	* gnustep/dps/TypesandConstants.h: Likewise.
+	* gnustep/gui/NSCell.h: Likewise.
+	* gnustep/gui/NSColor.h: Likewise.
+	* gnustep/gui/NSColorList.h: Likewise.
+	* gnustep/gui/NSColorPicker.h: Likewise.
+	* gnustep/gui/NSCursor.h: Likewise.
+	* gnustep/gui/NSDataLink.h: Likewise.
+	* gnustep/gui/NSDataLinkManager.h: Likewise.
+	* gnustep/gui/NSEvent.h: Likewise.
+	* gnustep/gui/NSFont.h: Likewise.
+	* gnustep/gui/NSFontManager.h: Likewise.
+	* gnustep/gui/NSImage.h: Likewise.
+	* gnustep/gui/NSImageRep.h: Likewise.
+	* gnustep/gui/NSPasteboard.h: Likewise.
+	* gnustep/gui/NSPrintInfo.h: Likewise.
+	* gnustep/gui/NSPrintOperation.h: Likewise.
+	* gnustep/gui/NSResponder.h: Likewise.
+	* gnustep/gui/NSScreen.h: Likewise.
+	* gnustep/gui/NSSelection.h: Likewise.
+	* gnustep/gui/NSSpellChecker.h: Likewise.
+	* gnustep/gui/NSSpellServer.h: Likewise.
+	* gnustep/gui/NSWorkspace.h: Likewise.
+	* gnustep/gui/NSPasteboardServer.h: Likewise.
+	* gnustep/gui/nimage-tiff.h: Likewise.
+	* Source/NSActionCell.m: Include config.h.
+	* Source/NSApplication.m: Likewise.
+	* Source/NSBitmapImageRep.m: Likewise.
+	* Source/NSBox.m: Likewise.
+	* Source/NSBrowser.m: Likewise.
+	* Source/NSBrowserCell.m: Likewise.
+	* Source/NSBundleAdditions.m: Likewise.
+	* Source/NSButton.m: Likewise.
+	* Source/NSButtonCell.m: Likewise.
+	* Source/NSCStringText.m: Likewise.
+	* Source/NSCachedImageRep.m: Likewise.
+	* Source/NSCell.m: Likewise.
+	* Source/NSClipView.m: Likewise.
+	* Source/NSColor.m: Likewise.
+	* Source/NSColorList.m: Likewise.
+	* Source/NSColorPanel.m: Likewise.
+	* Source/NSColorPicker.m: Likewise.
+	* Source/NSColorWell.m: Likewise.
+	* Source/NSControl.m: Likewise.
+	* Source/NSCursor.m: Likewise.
+	* Source/NSCustomImageRep.m: Likewise.
+	* Source/NSNSDPSContext.m: Likewise.
+	* Source/NSDataLink.m: Likewise.
+	* Source/NSDataLinkManager.m: Likewise.
+	* Source/NSDataLinkPanel.m: Likewise.
+	* Source/NSEPSImageRep.m: Likewise.
+	* Source/NSEvent.m: Likewise.
+	* Source/NSFont.m: Likewise.
+	* Source/NSFontManager.m: Likewise.
+	* Source/NSFontPanel.m: Likewise.
+	* Source/NSForm.m: Likewise.
+	* Source/NSFormCell.m: Likewise.
+	* Source/NSHelpPanel.m: Likewise.
+	* Source/NSImage.m: Likewise.
+	* Source/NSImageRep.m: Likewise.
+	* Source/NSMatrix.m: Likewise.
+	* Source/NSMenu.m: Likewise.
+	* Source/NSMenuItem.m: Likewise.
+	* Source/NSOpenPanel.m: Likewise.
+	* Source/NSPageLayout.m: Likewise.
+	* Source/NSPanel.m: Likewise.
+	* Source/NSPasteboard.m: Likewise.
+	* Source/NSPopUpButton.m: Likewise.
+	* Source/NSPrintInfo.m: Likewise.
+	* Source/NSPrintOperation.m: Likewise.
+	* Source/NSPrintPanel.m: Likewise.
+	* Source/NSPrinter.m: Likewise.
+	* Source/NSResponder.m: Likewise.
+	* Source/NSSavePanel.m: Likewise.
+	* Source/NSScreen.m: Likewise.
+	* Source/NSScrollView.m: Likewise.
+	* Source/NSScroller.m: Likewise.
+	* Source/NSSelection.m: Likewise.
+	* Source/NSSlider.m: Likewise.
+	* Source/NSSpellChecker.m: Likewise.
+	* Source/NSSpellServer.m: Likewise.
+	* Source/NSSplitView.m: Likewise.
+	* Source/NSText.m: Likewise.
+	* Source/NSTextField.m: Likewise.
+	* Source/NSTextFieldCell.m: Likewise.
+	* Source/NSView.m: Likewise.
+	* Source/NSWindow.m: Likewise.
+	* Source/NSWorkspace.m: Likewise.
+	* Source/PSMatrix.m: Likewise.
+	* Source/TrackingRectangle.m: Likewise.
+	* Source/externs.m: Likewise.
+	* Source/gpbs.m: Likewise.
+	* Source/tiff.m: Likewise.
+
+	* Source/NSPasteboard.m: Move global strings to externs.m
+
+	* Source/gpbs.m: Add copyright and license information.
+
 Wed Aug 27 14:04:38 1997  Ovidiu Predescu <ovidiu@net-community.com>
 
 	* Headers/gnustep/gui/config.h.in (OBJC_MALLOC, OBJC_FREE): New defines
