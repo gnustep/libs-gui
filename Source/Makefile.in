@@ -312,6 +312,7 @@ clean:
 	rm -f *~
 	rm -f *$(oext)
 	rm -f $(MAIN_FILE)$(libext)
+	rm -f $(INIT_FILE).c
 distclean: clean
 	rm -f Makefile
 maintainer-clean: distclean

@@ -135,20 +135,27 @@ BOOL GNU_CONTEXT_SYNCHRONIZED;
 + (NSDPSContext *)currentContext
 {
   NSThread *current_thread = [NSThread currentThread];
-  NSDPSContext *current_context;
+  NSDPSContext *current_context = nil;
 
+  NSLog(@"NSDPSContext: +currentContext\n");
   // Get current context for current thread
   [GNU_CONTEXT_LOCK lock];
+  NSLog(@"NSDPSContext: enter critical section\n");
   current_context = [GNU_CONTEXT_THREAD_DICT objectForKey: current_thread];
+  NSLog(@"NSDPSContext: Looked in context dictionary\n");
 
   // If not in dictionary then create one
   if (!current_context)
     {
+      NSLog(@"NSDPSContext: Did not find context so create it\n");
       current_context = [[NSDPSContext alloc] init];
+      NSLog(@"NSDPSContext: set the context\n");
       [self setCurrentContext: current_context];
     }
   [GNU_CONTEXT_LOCK unlock];
+  NSLog(@"NSDPSContext: exit critical section\n");
 
+  NSLog(@"NSDPSContext: return from +currentContext\n");
   return current_context;
 }
 
@@ -156,16 +163,26 @@ BOOL GNU_CONTEXT_SYNCHRONIZED;
 {
   NSThread *current_thread = [NSThread currentThread];
 
+  NSLog(@"NSDPSContext: +setCurrentContext\n");
   [GNU_CONTEXT_LOCK lock];
+  NSLog(@"NSDPSContext: enter critical section\n");
 
   // If no context then remove from dictionary
   if (!context)
-    [GNU_CONTEXT_THREAD_DICT removeObjectForKey: current_thread];
+    {
+      NSLog(@"NSDPSContext: remove from dictionary\n");
+      [GNU_CONTEXT_THREAD_DICT removeObjectForKey: current_thread];
+    }
   else
-    [GNU_CONTEXT_THREAD_DICT setObject: context 
-			     forKey: current_thread];
+    {
+      NSLog(@"NSDPSContext: add to dictionary\n");
+      [GNU_CONTEXT_THREAD_DICT setObject: context 
+			       forKey: current_thread];
+    }
 
   [GNU_CONTEXT_LOCK unlock];
+  NSLog(@"NSDPSContext: exit critical section\n");
+  NSLog(@"NSDPSContext: return from +setCurrentContext\n");
 }
 
 - (NSDPSContext *)DPSContext

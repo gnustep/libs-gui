@@ -31,6 +31,15 @@
 #include <gnustep/gui/NSView.h>
 #include <gnustep/gui/NSWindow.h>
 #include <gnustep/base/NSCoder.h>
+#include <gnustep/base/NSDictionary.h>
+#include <gnustep/base/NSThread.h>
+#include <gnustep/base/NSLock.h>
+
+//
+// Class variables
+//
+NSMutableDictionary *gnustep_gui_nsview_thread_dict;
+NSRecursiveLock *gnustep_gui_nsview_lock;
 
 // NSView notifications
 NSString *NSViewFrameChangedNotification;
@@ -52,15 +61,72 @@ NSString *NSViewFocusChangedNotification;
 
       // Initial version
       [self setVersion:1];
+
+      // Allocate dictionary for maintaining
+      // mapping of threads to focused views
+      gnustep_gui_nsview_thread_dict = [NSMutableDictionary dictionary];
+      // Create lock for serializing access to dictionary
+      gnustep_gui_nsview_lock = [[NSRecursiveLock alloc] init];
     }
 }
 
 //
 // Focusing
 //
+// +++ Really each thread should have a stack!
+//
++ (void)pushFocusView:(NSView *)focusView
+{
+  NSThread *current_thread = [NSThread currentThread];
+
+  NSLog(@"NSView: +pushFocusView\n");
+  [gnustep_gui_nsview_lock lock];
+  NSLog(@"NSView: enter critical section\n");
+
+  // If no context then remove from dictionary
+  if (!focusView)
+    {
+      NSLog(@"NSView: remove from dictionary\n");
+      [gnustep_gui_nsview_thread_dict removeObjectForKey: current_thread];
+    }
+  else
+    {
+      NSLog(@"NSView: add to dictionary\n");
+      [gnustep_gui_nsview_thread_dict setObject: focusView 
+				      forKey: current_thread];
+    }
+
+  [gnustep_gui_nsview_lock unlock];
+  NSLog(@"NSView: exit critical section\n");
+  NSLog(@"NSView: return from +pushFocusView\n");
+}
+
++ (NSView *)popFocusView
+{}
+
 + (NSView *)focusView
 {
-  return nil;
+  NSThread *current_thread = [NSThread currentThread];
+  NSView *current_view = nil;
+
+  NSLog(@"NSView: +focusView\n");
+  // Get focused view for current thread
+  [gnustep_gui_nsview_lock lock];
+  NSLog(@"NSView: enter critical section\n");
+  current_view = [gnustep_gui_nsview_thread_dict objectForKey: current_thread];
+  NSLog(@"NSView: Looked in view dictionary\n");
+
+  // If not in dictionary then no focused view
+  if (!current_view)
+      NSLog(@"NSView: Did not find a view\n");
+  else
+      NSLog(@"NSView: Found a view\n");
+
+  [gnustep_gui_nsview_lock unlock];
+  NSLog(@"NSView: exit critical section\n");
+
+  NSLog(@"NSView: return from +focusView\n");
+  return current_view;
 }
 
 //
@@ -151,7 +217,7 @@ NSString *NSViewFocusChangedNotification;
 
 - (void)addSubview:(NSView *)aView
 	positioned:(NSWindowOrderingMode)place
-relativeTo:(NSView *)otherView
+	relativeTo:(NSView *)otherView
 {
   // Not a NSView --then forget it
   if (![aView isKindOfClass:[NSView class]]) return;
@@ -520,10 +586,12 @@ relativeTo:(NSView *)otherView
 //
 - (void)lockFocus
 {
+  [[self class] pushFocusView: self];
 }
 
 - (void)unlockFocus
 {
+  [[self class] popFocusView];
 }
 
 //
