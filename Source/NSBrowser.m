@@ -3153,7 +3153,11 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 	}
 
       if (!_reusesColumns && i >= _maxVisibleColumns)
-	[_browserColumns removeObject:bc];
+	{
+	  [_browserColumns removeObject:bc];
+	  count--;
+	  i--;
+	}
     }
   
   if (column == 0)

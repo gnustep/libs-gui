@@ -1,5 +1,10 @@
 2001-03-22  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
 
+	* Source/NSBrowser.m ([NSBrowser -_unloadFromColumn:]): fix index out
+	of bound (patch by Enrico Sersale <enrico@imago.ro>)
+
+2001-03-22  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
+
 	* Source/NSButtonCell.m ([NSButtonCell -setCellAttribute:to:]):
 	implemented.
 	([NSButtonCell -cellAttribute:]): implemented.
