@@ -1,5 +1,10 @@
 2005-03-10  Nicola Pero <n.pero@mi.flashnet.it>
 
+	* Headers/AppKit/AppKitDefines.h (GS_EXPORT): Use extern, not
+	__declspec(dllexport), on mingw
+	
+2005-03-10  Nicola Pero <n.pero@mi.flashnet.it>
+
 	* configure.ac: Fixed setting variable when libjpeg can't be found.
 	* configure: Regenereated.
 

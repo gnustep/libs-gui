@@ -27,8 +27,17 @@
 #ifdef GNUSTEP_WITH_DLL 
 
 #if BUILD_libgnustep_gui_DLL
+#
+# if defined(__MINGW32__)
+  /* On Mingw, the compiler will export all symbols automatically, so
+   * __declspec(dllexport) is not needed.
+   */
+#  define APPKIT_EXPORT  extern
+#  define APPKIT_DECLARE 
+# else
 #  define APPKIT_EXPORT  __declspec(dllexport)
 #  define APPKIT_DECLARE __declspec(dllexport)
+# endif
 #else
 #  define APPKIT_EXPORT  extern __declspec(dllimport)
 #  define APPKIT_DECLARE __declspec(dllimport)
