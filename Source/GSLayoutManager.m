@@ -1901,6 +1901,12 @@ forStartOfGlyphRange: (NSRange)glyphRange
   used = NSZeroRect;
   for (i = 0, lf = tc->linefrags; i < tc->num_linefrags; i++, lf++)
     used = NSUnionRect(used, lf->used_rect);
+
+  if (container == extra_textcontainer)
+    {
+      used = NSUnionRect(used, extra_used_rect);
+    }
+
   return used;
 }
 
@@ -2023,6 +2029,32 @@ forStartOfGlyphRange: (NSRange)glyphRange
   if (gindex)
     *gindex = [self firstUnlaidGlyphIndex];
 }
+
+
+-(void) setExtraLineFragmentRect: (NSRect)linefrag
+			usedRect: (NSRect)used
+		   textContainer: (NSTextContainer *)tc
+{
+  extra_rect = linefrag;
+  extra_used_rect = used;
+  extra_textcontainer = tc;
+}
+
+-(NSRect) extraLineFragmentRect
+{
+  return extra_rect;
+}
+
+-(NSRect) extraLineFragmentUsedRect
+{
+  return extra_used_rect;
+}
+
+-(NSTextContainer *) extraLineFragmentTextContainer
+{
+  return extra_textcontainer;
+}
+
 
 @end
 

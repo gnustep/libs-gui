@@ -1,3 +1,16 @@
+2003-02-16 04:14  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/GSLayoutManager.h, Source/GSLayoutManager.m:
+	Add methods for setting and getting the extra line fragment
+	information.
+
+	* Source/GSHorizontalTypesetter.m (-layoutLineNewParagraph:): Set
+	the extra line fragment information as required.
+
+	* Source/NSLayoutManager.m: Use the extra line fragment information
+	to position the insertion point properly when it's placed after the
+	last character in the text.
+
 2003-02-15 18:22  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/NSTextView.h, Source/NSLayoutManager.m,

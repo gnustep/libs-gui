@@ -589,13 +589,8 @@ Insertion point positioning and movement.
 {
   if (cindex == [[_textStorage string] length])
     {
-      if (!cindex)
-	{
-	  *fraction = 0.0;
-	  return (unsigned int)-1;
-	}
-      *fraction = 1.0;
-      return [self numberOfGlyphs] - 1;
+      *fraction = 0.0;
+      return (unsigned int)-1;
     }
   else
     {
@@ -639,12 +634,29 @@ has the same y origin and height as the line frag rect it is in.
 				   fractionThrough: &fraction_through];
   if (glyph_index == (unsigned int)-1)
     {
-      if (num_textcontainers > 0)
-	*textContainer = 0;
-      else
-	*textContainer = -1;
-      /* TODO: use extra rect, etc. */
-      return NSMakeRect(1,1,1,13);
+      /* Need complete layout information. */
+      [self _doLayout];
+      if (extra_textcontainer)
+	{
+	  for (tc = textcontainers, i = 0; i < num_textcontainers; i++, tc++)
+	    if (tc == textcontainers)
+	      break;
+	  NSAssert(i < num_textcontainers, @"invalid extraTextContainer");
+	  *textContainer = i;
+	  r = extra_rect;
+	  r.size.width = 1;
+	  return r;
+	}
+      glyph_index = [self numberOfGlyphs] - 1;
+      if (glyph_index == (unsigned int)-1)
+	{
+	  /* No information is available. */
+
+	  /* will be -1 if there are no text containers */
+	  *textContainer = num_textcontainers - 1;
+	  return NSMakeRect(1, 1, 1, 15);
+	}
+      fraction_through = 1.0;
     }
 
   [self _doLayoutToGlyph: glyph_index];
@@ -861,6 +873,8 @@ has the same y origin and height as the line frag rect it is in.
 	}
       else
 	{
+	  if (i == tc->num_linefrags)
+	    i--, lf--;
 	  /* Find the target line. Move at least (should be up to?)
 	  distance, and at least one line. */
 	  for (; i >= 0; i--, lf--)

@@ -266,6 +266,21 @@ manager might be substituting screen fonts. */
 	effectiveRange: (NSRange *)effectiveGlyphRange;
 
 
+/*
+The typesetter may set this to mark where the rectangle the insertion point
+is to be placed if the insertion point is beyond the last character of the
+text. The extra text container is reset to nil any time layout is
+invalidated.
+*/
+-(void) setExtraLineFragmentRect: (NSRect)linefrag
+			usedRect: (NSRect)used
+		   textContainer: (NSTextContainer *)tc;
+
+-(NSRect) extraLineFragmentRect;
+-(NSRect) extraLineFragmentUsedRect;
+-(NSTextContainer *) extraLineFragmentTextContainer;
+
+
 /* Extension, but without this, there's no way to get the starting locations
 of the nominally spaced glyphs. */
 - (NSRange) rangeOfNominallySpacedGlyphsContainingIndex:(unsigned int)glyphIndex

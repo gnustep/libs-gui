@@ -187,10 +187,10 @@ the last time or not, we wouldn't need to clear the cache every time */
       cache = realloc(cache,sizeof(glyph_cache_t) * cache_size);
     }
 
-  for (g = &cache[cache_length];cache_length < new_length;cache_length++,g++)
+  for (g = &cache[cache_length]; cache_length < new_length; cache_length++, g++)
     {
       g->g = [curLayoutManager glyphAtIndex: cache_base + cache_length
-			     isValidIndex: &valid];
+			       isValidIndex: &valid];
       if (!valid)
 	{
 	  at_end = YES;
@@ -444,9 +444,9 @@ restart:
       tindent = [curTextContainer containerSize].width + tindent;
 
     remain = NSMakeRect(hindent,
-		      curPoint.y,
-		      tindent - hindent,
-		      line_height + [curParagraphStyle lineSpacing]);
+			curPoint.y,
+			tindent - hindent,
+			line_height + [curParagraphStyle lineSpacing]);
   }
 
   /*
@@ -518,6 +518,8 @@ restart:
     /*
     Main glyph layout loop.
     */
+    /* TODO: handling of newParagraph is ugly. must be set on all exits
+    from this loop */
     while (1)
       {
 //        printf("at %3i+%3i\n",cache_base,i);
@@ -530,10 +532,16 @@ restart:
 	if (i >= cache_length)
 	  {
 	    if (at_end)
-	      break;
+	      {
+	        newParagraph = NO;
+	        break;
+	      }
 	    [self _cacheGlyphs: cache_length + 16];
-	    if (i == cache_length)
-	      break;
+	    if (i >= cache_length)
+	      {
+	        newParagraph = NO;
+	        break;
+	      }
 	    g = cache + i;
 	  }
 
@@ -600,7 +608,10 @@ restart:
 	    prev_had_non_nominal_width = NO;
 
 	    if (ch == 0xa)
-	      break;
+	      {
+	        newParagraph = YES;
+	        break;
+	      }
 
 	    if (ch == 0x9)
 	      {
@@ -810,7 +821,10 @@ restart:
 	    lf++;
 	    lfi++;
 	    if (lfi == num_line_frags)
-	      break;
+	      {
+		newParagraph = NO;
+		break;
+	      }
 	    first_glyph = i;
 	  }
 	else
@@ -843,8 +857,6 @@ restart:
 	  [self rightAlignLine: line_frags : num_line_frags];
 	else if ([curParagraphStyle alignment] == NSCenterTextAlignment)
 	  [self centerAlignLine: line_frags : num_line_frags];
-
-	newParagraph = YES;
       }
     else
       {
@@ -857,7 +869,6 @@ restart:
 	  [self centerAlignLine: line_frags : num_line_frags];
 
 	lfi--;
-	newParagraph = NO;
       }
 
     /* Layout is complete. Package it and give it to the layout manager. */
@@ -930,8 +941,52 @@ restart:
       line_frags = NULL;
     }
 
-  /* TODO: if we're really at the end, we should probably set the extra
-  line frag stuff here */
+  /* Check if we're at the end. */
+  {
+    BOOL valid;
+    [curLayoutManager glyphAtIndex: curGlyph
+		      isValidIndex: &valid];
+    if (!valid)
+      {
+	/*
+	We've typeset all glyphs, and thus return 2. If we ended with a
+	new-line, we set the extra line frag rect here so the insertion point
+	will be properly positioned after a trailing newline in the text.
+	*/
+	if (newParagraph)
+	  {
+	    NSRect r, r2, remain;
+	    float hindent, tindent;
+
+	    hindent = [curParagraphStyle firstLineHeadIndent];
+	    tindent = [curParagraphStyle tailIndent];
+	    if (tindent <= 0.0)
+	      tindent = [curTextContainer containerSize].width + tindent;
+	    line_height = [curFont defaultLineHeightForFont];
+
+	    r = NSMakeRect(hindent,
+			   curPoint.y,
+			   tindent - hindent,
+			   line_height + [curParagraphStyle lineSpacing]);
+
+	    r = [curTextContainer lineFragmentRectForProposedRect: r
+		  sweepDirection: NSLineSweepRight
+		  movementDirection: NSLineMoveDown
+		  remainingRect: &remain];
+
+	    if (!NSEqualRects(r, NSZeroRect))
+	      {
+		r2 = r;
+		r2.size.width = 1;
+		[curLayoutManager setExtraLineFragmentRect: r
+		  usedRect: r2
+		  textContainer: curTextContainer];
+	      }
+	  }
+        return 2;
+      }
+  }
+
   if (newParagraph)
     return 3;
   else
