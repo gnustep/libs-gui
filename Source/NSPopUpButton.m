@@ -401,6 +401,13 @@ Class _nspopupbuttonCellClass = 0;
 		// Dismiss the popUp
 		[_cell dismissPopUp];
 
+		{
+		  id selectedItem = [self selectedItem];
+		  [NSApp sendAction: [selectedItem action] 
+			 to: [selectedItem target]
+			 from: selectedItem];
+		}
+
 		[super sendAction: [self action]
 		       to: [self target]];
 	      }
