@@ -3,6 +3,11 @@
 	* Source/NSApplication.m:
 	(updateWindowsItem:): call to sizeToFit removed. NSMenuItemCell
 	manipulation removed which the cell makes internally anyways.
+	
+	* Source/NSMenuView.m:
+	(- update:): if we are a popup bail out before messing around 
+	with titleview buttons.
+	(isOpaque): method added. We are opaque after all.
 	 
 2003-04-11  Serg Stoyan <stoyan@hologr.com>
 
