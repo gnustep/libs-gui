@@ -377,7 +377,7 @@ static NSCell* tileCell = nil;
      then we ask the delegate if the app is to be terminated. */
   if (wasMain && count == 0)
     {
-      NSLog(@"asking delegate whether to terminate app...");
+      NSDebugLog(@"asking delegate whether to terminate app...");
       if ([delegate respondsToSelector:
 	@selector(applicationShouldTerminateAfterLastWindowClosed:)])
 	{
