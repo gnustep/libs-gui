@@ -1,3 +1,9 @@
+Thu Mar  9 23:32:36 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Model/GMAppKit.m ([NSView -subviewsForModel]): Fixed fatal
+	problem for encoding editable textfields in gmodels: do not encode
+	Apple's private class _NSKeyboardFocusClipView.
+
 Thu Mar  9 19:42:17 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSSplitView.m ([-adjustSubviews]): Fixed bug in
