@@ -34,6 +34,8 @@
 @class NSFont;
 @class NSView;
 @class NSButton;
+@class NSBrowser;
+@class NSTextField;
 
 enum {
   NSFPPreviewButton,
@@ -49,7 +51,22 @@ enum {
 {
   // Attributes
   NSFont *_panelFont;
+  BOOL _multiple;
+  BOOL _preview;
+
+  // store currently selected information
+  NSMutableArray *_familyList;
+  NSMutableArray *_faceList;
+  int _family;
+  int _face;
+
+  // fields for display
   NSButton *_setButton;
+  NSTextField *_previewArea;
+  NSBrowser *_familyBrowser;
+  NSBrowser *_faceBrowser;
+  NSBrowser *_sizeBrowser;
+  NSTextField *_sizeField;
   NSView *_accessoryView;
 }
 
