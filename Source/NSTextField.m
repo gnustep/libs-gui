@@ -280,8 +280,7 @@ static Class textFieldCellClass;
   if ([self isSelectable] == NO)
     return;
 
-  // This could happen if someone pressed the mouse 
-  // on the borders
+  /* This could happen if someone pressed the mouse on the borders.  */
   if (_text_object)
     return;
 
@@ -306,6 +305,7 @@ static Class textFieldCellClass;
 	delegate: self
 	event: theEvent];
 }
+
 - (BOOL) acceptsFirstMouse: (NSEvent *)aEvent
 {
   return YES;
@@ -453,13 +453,13 @@ static Class textFieldCellClass;
 
   [self validateEditing];
 
+  [_cell endEditing: [aNotification object]];
+
   d = [NSDictionary dictionaryWithObject: [aNotification object] 
 		    forKey: @"NSFieldEditor"];
   [nc postNotificationName: NSControlTextDidEndEditingNotification
       object: self
       userInfo: d];
-
-  [_cell endEditing: [aNotification object]];
 
   textMovement = [[aNotification userInfo] objectForKey: @"NSTextMovement"];
   if (textMovement)

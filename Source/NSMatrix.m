@@ -1520,6 +1520,9 @@ static SEL getSel;
 
   [self validateEditing];
 
+  [_selectedCell endEditing: [aNotification object]];
+  _textObject = nil;
+
   d = [[NSMutableDictionary alloc] initWithDictionary: 
 				     [aNotification userInfo]];
   AUTORELEASE (d);
@@ -1527,9 +1530,6 @@ static SEL getSel;
   [nc postNotificationName: NSControlTextDidEndEditingNotification
       object: self
       userInfo: d];
-
-  [_selectedCell endEditing: [aNotification object]];
-  _textObject = nil;
 
   textMovement = [[aNotification userInfo] objectForKey: @"NSTextMovement"];
   if (textMovement)

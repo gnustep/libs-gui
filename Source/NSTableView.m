@@ -5886,7 +5886,6 @@ byExtendingSelection: (BOOL)flag
     
     for (i = startingRow; i <= endingRow; i++)
       {
-	
 	[_backgroundColor set];
 	NSRectFill (localBackground);
 	[self highlightSelectionInClipRect: localBackground];
@@ -6035,13 +6034,6 @@ byExtendingSelection: (BOOL)flag
 
   [self validateEditing];
 
-  d = [[NSMutableDictionary alloc] initWithDictionary: 
-				     [aNotification userInfo]];
-  [d setObject: [aNotification object] forKey: @"NSFieldEditor"];
-  [nc postNotificationName: NSControlTextDidEndEditingNotification
-      object: self
-      userInfo: d];
-
   [_editedCell endEditing: [aNotification object]];
   [self setNeedsDisplayInRect: 
 	  [self frameOfCellAtColumn: _editedColumn row: _editedRow]];
@@ -6054,6 +6046,13 @@ byExtendingSelection: (BOOL)flag
   /* Only then Reset them */
   _editedColumn = -1;
   _editedRow = -1;
+
+  d = [[NSMutableDictionary alloc] initWithDictionary: 
+				     [aNotification userInfo]];
+  [d setObject: [aNotification object] forKey: @"NSFieldEditor"];
+  [nc postNotificationName: NSControlTextDidEndEditingNotification
+      object: self
+      userInfo: d];
 
   textMovement = [[aNotification userInfo] objectForKey: @"NSTextMovement"];
   if (textMovement)
