@@ -208,7 +208,7 @@ static NSNotificationCenter *nc;
 {
   [super initWithFrame: frameRect];
 
-  [self setMinSize: frameRect.size];
+  [self setMinSize: NSMakeSize (0, 0)];
   [self setMaxSize: NSMakeSize (HUGE,HUGE)];
 
   _tf.is_field_editor = NO;
@@ -231,11 +231,6 @@ static NSNotificationCenter *nc;
   //[self setSelectedRange: NSMakeRange (0, 0)];
 
   [aTextContainer setTextView: self];
-  [aTextContainer setWidthTracksTextView: YES];
-  [aTextContainer setHeightTracksTextView: YES];
-
-  // FIXME: ?? frame was given as an argument so we shouldn't resize.
-  [self sizeToFit];
 
   [self setEditable: YES];
   [self setUsesFontPanel: YES];
@@ -779,33 +774,17 @@ static NSNotificationCenter *nc;
 /*
  * [NSText] Managing size
  */
-/* FIXME: Remove this method! */
 - (void) setHorizontallyResizable: (BOOL)flag
 {
-  NSSize containerSize = [_textContainer containerSize];
-
-  if (flag)
-    containerSize.width = HUGE;
-  else
-    containerSize.width = _frame.size.width - 2.0 * [self textContainerInset].width;
-
-  [_textContainer setContainerSize: containerSize];
+  /* Safety call */
   [_textContainer setWidthTracksTextView: !flag];
 
   [super setHorizontallyResizable: flag];
 }
 
-/* FIXME: Remove this method! */
 - (void) setVerticallyResizable: (BOOL)flag
 {
-  NSSize containerSize = [_textContainer containerSize];
-
-  if (flag)
-    containerSize.height = HUGE;
-  else
-    containerSize.height = _frame.size.height - 2.0 * [self textContainerInset].height;
-
-  [_textContainer setContainerSize: containerSize];
+  /* Safety call */
   [_textContainer setHeightTracksTextView: !flag];
 
   [super setVerticallyResizable: flag];
@@ -813,33 +792,15 @@ static NSNotificationCenter *nc;
 
 - (void) sizeToFit
 {
-  // if we are a field editor we don't have to handle the size.
-  if (_tf.is_field_editor)
-    return;
-  else
+  if (_tf.is_horizontally_resizable || _tf.is_vertically_resizable)
     {
-      NSSize oldSize = _frame.size;
-      float newWidth = oldSize.width;
-      float newHeight = oldSize.height;
-      NSRect textRect = [_layoutManager usedRectForTextContainer: 
-					  _textContainer];
-      NSSize newSize;
+      NSSize size;
+      
+      size = [_layoutManager usedRectForTextContainer: _textContainer].size;
+      size.width  += 2 * _textContainerInset.width;
+      size.height += 2 * _textContainerInset.height;
 
-      if (_tf.is_horizontally_resizable)
-	{
-	  newWidth = textRect.size.width;
-	}
-      if (_tf.is_vertically_resizable)
-	{
-	  newHeight = textRect.size.height;
-	}
-
-      newSize = NSMakeSize(MIN(_maxSize.width, MAX(newWidth, _minSize.width)),
-			   MIN(_maxSize.height, MAX(newHeight, _minSize.height)));
-      if (!NSEqualSizes(oldSize, newSize))
-	{
-	  [self setFrameSize: newSize];
-	}
+      [self setConstrainedFrameSize: size];
     }
 }
 
@@ -980,14 +941,12 @@ static NSNotificationCenter *nc;
   _textStorage = [_layoutManager textStorage];
 
   [self _updateMultipleTextViews];
-
-  // FIXME: Hack to get the layout change
-  [_textContainer setContainerSize: _frame.size];
 }
 
 - (void) replaceTextContainer: (NSTextContainer*)aTextContainer
 {
-  // Notify layoutManager of change?
+  /* FIXME/TODO: Tell the layout manager the text container is changed
+     keeping all the rest intact */
 
   /* Do not retain: text container is owning us. */
   _textContainer = aTextContainer;
@@ -1018,17 +977,32 @@ static NSNotificationCenter *nc;
 
 - (void) invalidateTextContainerOrigin
 {
-  // recompute the textContainerOrigin
-  // use bounds, inset, and used rect.
-  /*
-  NSRect bRect = [self bounds];
-  NSRect uRect = [[self layoutManager] usedRectForTextContainer: _textContainer];
+  NSRect usedRect;
+  NSSize textContainerSize;
 
-  if ([self isFlipped])
-    _textContainerOrigin = ;
-  else
-    _textContainerOrigin = ;
-  */
+  usedRect = [_layoutManager usedRectForTextContainer: _textContainer];
+  textContainerSize = [_textContainer containerSize];
+  
+  /* The `text container origin' is - I think - the origin of the used
+     rect, but relative to our own coordinate system (used rect as
+     returned by [NSLayoutManager -usedRectForTextContainer:] is
+     instead relative to the text container coordinate system).  This
+     information is used when we ask the layout manager to draw - the
+     base point is precisely this `text container origin', which is
+     the origin of the used rect in our own coordinate system. */
+  
+  /* First get the pure text container origin */
+  _textContainerOrigin.x = NSMinX (_bounds);
+  _textContainerOrigin.x += _textContainerInset.width;
+  /* Then move to the used rect origin */
+  _textContainerOrigin.x += usedRect.origin.x;
+  
+  /* First get the pure text container origin */
+  _textContainerOrigin.y = NSMaxY (_bounds);
+  _textContainerOrigin.y -= _textContainerInset.height;
+  _textContainerOrigin.y -= textContainerSize.height;
+  /* Then move to the used rect origin */
+  _textContainerOrigin.y += usedRect.origin.y;
 }
 
 - (NSLayoutManager*) layoutManager
@@ -1107,8 +1081,34 @@ static NSNotificationCenter *nc;
 
 - (void) setConstrainedFrameSize: (NSSize)desiredSize
 {
-  // some black magic here.
-  [self setFrameSize: desiredSize];
+  NSSize newSize;
+
+  if (_tf.is_horizontally_resizable)
+    {
+      newSize.width = desiredSize.width;
+      newSize.width = MAX (newSize.width, _minSize.width);
+      newSize.width = MIN (newSize.width, _maxSize.width);
+    }
+  else
+    {
+      newSize.width  = _frame.size.width;
+    }
+
+  if (_tf.is_vertically_resizable)
+    {
+      newSize.height = desiredSize.height;
+      newSize.height = MAX (newSize.height, _minSize.height);
+      newSize.height = MIN (newSize.height, _maxSize.height);
+    }
+  else
+    {
+      newSize.height = _frame.size.height;
+    }
+  
+  if (NSEqualSizes (_frame.size, newSize) == NO)
+    {
+      [self setFrameSize: newSize];
+    }
 }
 
 - (void) cleanUpAfterDragOperation
@@ -1207,6 +1207,8 @@ static NSNotificationCenter *nc;
 - (void) setFieldEditor: (BOOL)flag
 {
   NSTEXTVIEW_SYNC (setFieldEditor:);
+  [self setHorizontallyResizable: NO];
+  [self setVerticallyResizable: NO];
   [super setFieldEditor: flag];
 }
 
@@ -3010,7 +3012,7 @@ other than copy/paste or dragging. */
 		         nil];
 }
 
-- (void) setAttributes: (NSDictionary*) attributes range: (NSRange) aRange
+- (void) setAttributes: (NSDictionary*)attributes  range: (NSRange)aRange
 {
   NSString *type;
   id val;
@@ -3124,7 +3126,7 @@ other than copy/paste or dragging. */
 			   _selected_range.location].origin;
 }
 
-- (unsigned) characterIndexForPoint: (NSPoint) point
+- (unsigned) characterIndexForPoint: (NSPoint)point
 {
   unsigned	index;
   float		fraction;
