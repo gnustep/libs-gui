@@ -1,3 +1,11 @@
+2004-06-17  Fred Kiefer <FredKiefer@gmx.de>
+
+       * Source/NSComboBoxCell.m: buttonCellFrameFromRect(),
+       (-drawWithFrame:inView:), (-highlight:withFrame:inView:) and
+       (-trackMouse:...untilMouseUp:): Made draw bettere when used in a
+       flipped view. (-positionWithComboBoxCell:) position popup correctly
+       for flipped view.
+
 2004-06-16  Fred Kiefer <FredKiefer@gmx.de>
 
         * Source/NSTableView.m: (-mouseDown:) Added mouse tracking in the cell.

@@ -308,7 +308,6 @@ static GSComboWindow *gsWindow = nil;
   NSRect viewWithComboCellFrame;
   NSRect rect;
   NSPoint point, oldPoint;
-  NSView *superview = [viewWithComboCell superview];
    
   [self layoutWithComboBoxCell: comboBoxCell];
   
@@ -319,8 +318,16 @@ static GSComboWindow *gsWindow = nil;
   
   screenFrame = [[[viewWithComboCell window] screen] frame];
   viewWithComboCellFrame = [comboBoxCell _textCellFrame];
-  point = viewWithComboCellFrame.origin;
-  
+  if ([viewWithComboCell isFlipped])
+  {
+      point = viewWithComboCellFrame.origin;
+      point.y = NSMaxY(viewWithComboCellFrame);
+  }
+  else
+  {
+      point = viewWithComboCellFrame.origin;
+  }
+
   // Switch to the window coordinates
   point = [viewWithComboCell convertPoint: point toView: nil];
   
@@ -1319,7 +1326,7 @@ static inline NSRect textCellFrameFromRect(NSRect cellRect)
 static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 {
   return NSMakeRect(NSMaxX(cellRect) - ButtonWidth - BorderSize,
-		    NSMaxY(cellRect) - ButtonHeight - BorderSize,
+		    NSMinY(cellRect) + BorderSize,
 		    ButtonWidth,
 		    ButtonHeight);
 }
@@ -1338,7 +1345,8 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 
 - (void) drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
 {
-  NSRect rect = NSMakeRect(cellFrame.origin.x, cellFrame.origin.y, cellFrame.size.width, ComboBoxHeight);
+//  NSRect rect = NSMakeRect(cellFrame.origin.x, cellFrame.origin.y, cellFrame.size.width, ComboBoxHeight);
+    NSRect rect = cellFrame;
 
   // FIX ME: Is this test case below with the method call really needed ?
   if ([GSCurrentContext() isDrawingToScreen]) 
@@ -1360,8 +1368,9 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 	 withFrame: (NSRect)cellFrame
 	    inView: (NSView *)controlView
 {
-  NSRect rect = NSMakeRect(cellFrame.origin.x, cellFrame.origin.y, cellFrame.size.width, ComboBoxHeight);  
-  
+//  NSRect rect = NSMakeRect(cellFrame.origin.x, cellFrame.origin.y, cellFrame.size.width, ComboBoxHeight);  
+      NSRect rect = cellFrame;
+
   // FIX ME: Is this test case below with the method call really needed ?
   if ([GSCurrentContext() isDrawingToScreen])
     {
@@ -1387,7 +1396,8 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
   NSPoint point;
   BOOL isFlipped = [controlView isFlipped];
   BOOL clicked = NO;
-  
+  NSRect buttonRect = buttonCellFrameFromRect(cellFrame);
+
   // Should this be set by NSActionCell ?
   if (_control_view != controlView)
     _control_view = controlView;
@@ -1405,22 +1415,22 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 	{
 	  return NO;
 	}
-      else if (NSMouseInRect(point, buttonCellFrameFromRect(cellFrame), isFlipped))
+      else if (NSMouseInRect(point, buttonRect, isFlipped))
  	{
           [controlView lockFocus];
-          [_buttonCell highlight: YES withFrame: buttonCellFrameFromRect(cellFrame) inView: controlView];
+          [_buttonCell highlight: YES withFrame: buttonRect inView: controlView];
 	  [controlView unlockFocus];
 	  [cvWindow flushWindow];
 	  
           clicked = [_buttonCell trackMouse: theEvent 
-	                             inRect: buttonCellFrameFromRect(cellFrame)
+	                             inRect: buttonRect
 	                             ofView: controlView
 		  	       untilMouseUp: NO];
 
           /* The click will be send by the target/action we have set for the button cell. */
 	  	       
 	  [controlView lockFocus];
-          [_buttonCell highlight: NO withFrame: buttonCellFrameFromRect(cellFrame) inView: controlView];
+          [_buttonCell highlight: NO withFrame: buttonRect inView: controlView];
 	  [controlView unlockFocus];
 	  [cvWindow flushWindow];
 	  
@@ -1654,10 +1664,11 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
                          inView: (NSView *)controlView
 {
   NSWindow *cvWindow = [controlView window];
+  NSRect buttonRect = buttonCellFrameFromRect(cellFrame);
 
   [controlView lockFocus];
   [_buttonCell highlight: YES 
-	       withFrame: buttonCellFrameFromRect(cellFrame) 
+	       withFrame: buttonRect
 	          inView: controlView];
   [controlView unlockFocus];
   [cvWindow flushWindow];
@@ -1666,7 +1677,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
   
   [controlView lockFocus];
   [_buttonCell highlight: NO 
-	       withFrame: buttonCellFrameFromRect(cellFrame) 
+	       withFrame: buttonRect
 	          inView: controlView];
   [controlView unlockFocus];
   [cvWindow flushWindow];
