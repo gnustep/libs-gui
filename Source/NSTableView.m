@@ -6217,11 +6217,6 @@ byExtendingSelection: (BOOL)flag
 - (NSTableColumn *) highlightedTableColumn
 {
   return _highlightedTableColumn;
-
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"highlightedTableColumn", "NSTableView");
-  return nil;
 }
 
 - (void) setHighlightedTableColumn: (NSTableColumn *)aTableColumn
@@ -6332,7 +6327,7 @@ byExtendingSelection: (BOOL)flag
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   int version = [aDecoder versionForClassName: 
-			    NSStringFromClass([self class])];
+			    @"NSTableView"];
 
   id aDelegate;
 
@@ -6381,6 +6376,7 @@ byExtendingSelection: (BOOL)flag
       _selectedRow = -1;
       _editedColumn = -1;
       _editedRow = -1;
+      [self tile];
     }
   else if (version == 1)
     {

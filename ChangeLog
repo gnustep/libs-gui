@@ -1,3 +1,18 @@
+2002-03-26  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Source/NSBundleAdditions.m 
+	([NSNibOutletConnector -establishConnection]): 
+	Only capitalize the first letter of the outlet in order to have
+	the accessor method's name.
+	* Source/NSTableView.m ([NSTableView initWithCoder:]):
+	Use @"NSTableView" insted of NSStringFromClass([self class]) when
+	looking for version. Call -tile to set up everything properly.
+	* Source/NSScrollView.m ([NSScrollView encodeWithCoder:] &
+	[NSScrollView initWithCoder:]):
+	Encode/decode _hasHeaderView, _hasCornerView & _headerClipView.
+	Don't recreate cornerView & headerView at decoding time, because
+	they are encoded by NSView anyway.
+
 Tue Mar 26 14:33:24 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/GSTable.m: Removed GSTransparentView and replaced it with

@@ -147,8 +147,9 @@ static const int currentVersion = 1;
       NSString	*selName;
       SEL	sel;
 
-      selName = [NSString stringWithFormat: @"set%@:",
-	[_tag capitalizedString]];
+      selName = [NSString stringWithFormat: @"set%@%@:",
+			  [[_tag substringToIndex: 1] uppercaseString],
+			  [_tag substringFromIndex: 1]];
       sel = NSSelectorFromString(selName);
 	      
       if (sel && [_src respondsToSelector: sel])
