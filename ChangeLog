@@ -1,3 +1,8 @@
+2001-08-13  Pierre-Yves  <pyrivail@spocky.imada.sdu.dk>
+
+	* Source/Functions.m
+	Esthetic corrections to NSDrawGrayBezel and NSDrawWhiteBezel
+
 Sun Aug 12 05:46:32 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSBezierPath.m
