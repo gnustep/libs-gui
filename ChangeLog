@@ -1,3 +1,8 @@
+2002-11-26 16:29  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSLayoutManager.m: Changed to conform to coding
+	standards. Cleanups.
+
 2002-11-26 15:41  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/GSLayoutManager_internal.h,
