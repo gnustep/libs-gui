@@ -115,6 +115,12 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 
 @implementation NSBox (GMArchiverMethods)
++ (id)createObjectForModelUnarchiver:(GMUnarchiver*)unarchiver
+{
+  NSLog (@"creating NSBox");
+  return [self alloc];
+}
+
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
   [super encodeWithModelArchiver:archiver];
@@ -328,6 +334,7 @@ void __dummy_GMAppKit_functionForLinking() {}
   else if ([colorSpaceName isEqual:@"NSNamedColorSpace"]) {
     NSAssert (0, @"Named color spaces not supported yet!");
   }
+  return nil;
 }
 
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
@@ -337,8 +344,7 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (Class)classForModelArchiver
 {
-//  return [NSColor class];
-  return isa;
+  return [NSColor class];
 }
 
 @end /* NSColor (GMArchiverMethods) */
@@ -712,6 +718,7 @@ void __dummy_GMAppKit_functionForLinking() {}
   NSView* view = [[[self allocWithZone:[unarchiver objectZone]]
 				initWithFrame:rect]
 				autorelease];
+  NSLog (@"created view %@", view);
   return view;
 }
 
