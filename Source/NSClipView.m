@@ -37,22 +37,6 @@
   [a release]; \
   a = b;
 
-#ifdef MIN
-# undef MIN
-#endif
-#define MIN(a, b) \
-    ({typedef _ta = (a), _tb = (b);   \
-	_ta _a = (a); _tb _b = (b);     \
-	_a < _b ? _a : _b; })
-
-#ifdef MAX
-# undef MAX
-#endif
-#define MAX(a, b) \
-    ({typedef _ta = (a), _tb = (b);   \
-	_ta _a = (a); _tb _b = (b);     \
-	_a > _b ? _a : _b; })
-
 @implementation NSClipView
 
 - init

@@ -52,34 +52,9 @@
   [a release]; \
   a = b;
 
-#ifdef MIN
-# undef MIN
-#endif
-#define MIN(a, b) \
-    ({typedef _ta = (a), _tb = (b);   \
-	_ta _a = (a); _tb _b = (b);     \
-	_a < _b ? _a : _b; })
-
-#ifdef MAX
-# undef MAX
-#endif
-#define MAX(a, b) \
-    ({typedef _ta = (a), _tb = (b);   \
-	_ta _a = (a); _tb _b = (b);     \
-	_a > _b ? _a : _b; })
-
-#ifdef ABS
-# undef ABS
-#endif
-#define ABS(x) \
-    ({typedef _tx = (x); \
-      _tx _x = (x); \
-      _x >= 0 ? _x : -_x; })
-
 #define SIGN(x) \
-    ({typedef _tx = (x); \
-      _tx _x = (x); \
-      _x > 0 ? 1 : (_x == 0 ? 0 : -1); })
+    ({typeof(x) _SIGN_x = (x); \
+      _SIGN_x > 0 ? 1 : (_SIGN_x == 0 ? 0 : -1); })
 
 #define FREE(p) do { if (p) free (p); } while (0)
 
