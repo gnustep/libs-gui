@@ -43,6 +43,13 @@
 static void flatten(NSPoint coeff[], float flatness, NSBezierPath *path);
 static Class NSBezierPath_concrete_class = nil;
 
+static NSWindingRule default_winding_rule = NSNonZeroWindingRule;
+static float default_line_width = 1.0;
+static float default_flatness = 1.0;
+static NSLineJoinStyle default_line_join_style = NSMiterLineJoinStyle;
+static NSLineCapStyle default_line_cap_style = NSButtLineCapStyle;
+static float default_miter_limit = 10.0;
+
 @interface NSBezierPath (PrivateMethods)
 
 - (void)_invalidateCache;
@@ -191,103 +198,101 @@ static Class NSBezierPath_concrete_class = nil;
 //
 + (void)setDefaultMiterLimit:(float)limit
 {
+  default_miter_limit = limit;
+  // Do we need this?
   PSsetmiterlimit(limit);
 }
 
 + (float)defaultMiterLimit
 {
-  float limit;
-	
-  PScurrentmiterlimit(&limit);
-  return limit;
+  return default_miter_limit;
 }
 
 + (void)setDefaultFlatness:(float)flatness
 {
+  default_flatness = flatness;
   PSsetflat(flatness);
 }
 
 + (float)defaultFlatness
 {
-  float flatness;
-	
-  PScurrentflat(&flatness);
-  return flatness;
+  return default_flatness;
 }
 
 + (void)setDefaultWindingRule:(NSWindingRule)windingRule
 {
-  // TODO
+  default_winding_rule = windingRule;
 }
 
 + (NSWindingRule)defaultWindingRule
 {
-  // TODO
-  return NSNonZeroWindingRule;
+  return default_winding_rule;
 }
 
 + (void)setDefaultLineCapStyle:(NSLineCapStyle)lineCapStyle
 {
+  default_line_cap_style = lineCapStyle;
   PSsetlinecap(lineCapStyle);
 }
 
 + (NSLineCapStyle)defaultLineCapStyle
 {
-  int lineCapStyle;
-	
-  PScurrentlinecap(&lineCapStyle);
-  return lineCapStyle;
+  return default_line_cap_style;
 }
 
 + (void)setDefaultLineJoinStyle:(NSLineJoinStyle)lineJoinStyle
 {
+  default_line_join_style = lineJoinStyle;
   PSsetlinejoin(lineJoinStyle);
 }
 
 + (NSLineJoinStyle)defaultLineJoinStyle
 {
-  int lineJoinStyle;
-  
-  PScurrentlinejoin(&lineJoinStyle);
-  return lineJoinStyle;
+  return default_line_join_style;
 }
 
 + (void)setDefaultLineWidth:(float)lineWidth
 {
+  default_line_width = lineWidth;
   PSsetlinewidth(lineWidth);
 }
 
 + (float)defaultLineWidth
 {
-  float lineWidth;
-	
-  PScurrentlinewidth(&lineWidth);
-  return lineWidth;
+  return default_line_width;
 }
 
 - (id) init
 {
   [super init];
 
-  // FIXME: Should those values come from the default?
-  [self setLineWidth: 1];
-  [self setFlatness: 1];
-  [self setLineCapStyle: NSButtLineCapStyle];
-  [self setLineJoinStyle: NSMiterLineJoinStyle];
-  [self setWindingRule: NSNonZeroWindingRule];
+  // Those values come from the default.
+  [self setLineWidth: default_line_width];
+  [self setFlatness: default_flatness];
+  [self setLineCapStyle: default_line_cap_style];
+  [self setLineJoinStyle: default_line_join_style];
+  [self setMiterLimit: default_miter_limit];
+  [self setWindingRule: default_winding_rule];
   // Set by allocation
   //_bounds = NSZeroRect;
   //_controlPointBounds = NSZeroRect;
   //_cachesBezierPath = NO;
   //_cacheImage = nil;
+  //_dash_count = 0;
+  //_dash_phase = 0;
+  //_dash_pattern = NULL; 
 
   return self;
 }
 
 - (void) dealloc
 {
-  if(_cacheImage)
+  if(_cacheImage != nil)
     RELEASE(_cacheImage);
+
+  if (_dash_pattern != NULL)
+    NSZoneFree([self zone], _dash_pattern);
+
   [super dealloc];
 }
 
@@ -424,12 +429,36 @@ static Class NSBezierPath_concrete_class = nil;
 
 - (void)getLineDash:(float *)pattern count:(int *)count phase:(float *)phase
 {
-  // TODO
+  // FIXME: How big is the pattern array? 
+  // We assume that this value is in count!
+  if (count != NULL)
+    {
+      if (*count < _dash_count)
+        {
+	  *count = _dash_count;
+	  return;
+	}
+      *count = _dash_count;
+    }
+
+  if (phase != NULL)
+    *phase = _dash_phase;
+
+  memcpy(pattern, _dash_pattern, _dash_count * sizeof(float));
 }
 
 - (void)setLineDash:(const float *)pattern count:(int)count phase:(float)phase
 {
-  // TODO
+  NSZone *myZone = [self zone];
+  
+  if ( _dash_pattern == NULL)
+    _dash_pattern = NSZoneMalloc(myZone, count * sizeof(float));
+  else
+    NSZoneRealloc(myZone, _dash_pattern, count * sizeof(float));
+
+  _dash_count = count;
+  _dash_phase = phase;
+  memcpy(_dash_pattern, pattern, _dash_count * sizeof(float));
 }
 
 //
@@ -1115,6 +1144,15 @@ static Class NSBezierPath_concrete_class = nil;
 
   if(_cachesBezierPath && _cacheImage)
       path->_cacheImage = [_cacheImage copy];
+
+  if (_dash_pattern != NULL)
+    {
+      float *pattern = NSZoneMalloc(zone, _dash_count * sizeof(float));
+
+      memcpy(pattern, _dash_pattern, _dash_count * sizeof(float));
+      _dash_pattern = pattern;
+    }
+
   return path;
 }
 
@@ -1250,6 +1288,8 @@ static Class NSBezierPath_concrete_class = nil;
   NSBezierPathElement type;
   NSPoint pts[3];
   int i, count;
+  float pattern[10];
+  float phase;
 
   DPSnewpath(ctxt);
   DPSsetlinewidth(ctxt, [self lineWidth]);
@@ -1257,6 +1297,10 @@ static Class NSBezierPath_concrete_class = nil;
   DPSsetlinecap(ctxt, [self lineCapStyle]);
   DPSsetmiterlimit(ctxt, [self miterLimit]);
   DPSsetflat(ctxt, [self flatness]);
+
+  [self getLineDash: pattern count: &count phase: &phase];
+  if (count != 0 && count < 10)
+    DPSsetdash(ctxt, pattern, count, phase);
 
   count = [self elementCount];
   for(i = 0; i < count; i++) 
