@@ -1010,95 +1010,58 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
     {
       unsigned	i, count;
       BOOL	stillNeedsDisplay = NO;
-      NSRect	rect;
+      NSRect	redrawRect;
 
-      count = [sub_views count];
-      rect = NSIntersectionRect(aRect, invalidRect);
-      if (NSIsEmptyRect(rect) == NO)
+      if (coordinates_valid == NO)
+	[self _rebuildCoordinates];
+      aRect = NSIntersectionRect(aRect, visibleRect);
+
+      redrawRect = NSIntersectionRect(aRect, invalidRect);
+      if (NSIsEmptyRect(redrawRect) == NO)
 	{
 	  [self lockFocus];
-	  [self drawRect: rect];
+	  [self drawRect: redrawRect];
 	  [self unlockFocus];
-
-	  if (count > 0)
-	    {
-	      NSView*	array[count];
-
-	      [sub_views getObjects: array];
-	      for (i = 0; i < count; i++)
-		{
-		  NSRect isect;
-		  NSView *subview = array[i];
-		  NSRect subviewFrame = subview->frame;
-
-		  if ([subview->frameMatrix isRotated])
-		    {
-		      [subview->frameMatrix boundingRectFor: subviewFrame
-						     result: &subviewFrame];
-		    }
-		  /*
-		   * Having drawn ourself into the rect, we must unconditionally
-		   * draw any subviews that are also in that rectangle.
-		   */
-		  isect = NSIntersectionRect(aRect, subviewFrame);
-		  if (NSIsEmptyRect(isect) == NO)
-		    {
-		      isect = [subview convertRect: isect
-					  fromView: self];
-		      [subview displayRectIgnoringOpacity: isect];
-		    }
-		  else
-		    {
-		      if (subview->needs_display)
-			{
-			  [subview displayIfNeededIgnoringOpacity];
-			}
-		    }
-		  if (subview->needs_display)
-		    {
-		      stillNeedsDisplay = YES;
-		    }
-		}
-	    }
-
-	  /*
-	   *	If the rect we displayed contains the invalidRect
-	   *	for the view then we can clear the invalidRect,
-	   *	otherwise, we still need to be displayed.
-	   */
-	  rect = NSUnionRect(invalidRect, aRect);
-	  if (NSEqualRects(rect, aRect) == YES)
-	    {
-	      invalidRect = NSZeroRect;
-	    }
-	  else
-	    {
-	      stillNeedsDisplay = YES;
-	    }
 	}
-      else if (count > 0)
+
+      count = [sub_views count];
+      if (count > 0)
 	{
 	  NSView*	array[count];
 
 	  [sub_views getObjects: array];
-	  /*
-	   *	We don't have an invalidRect - so it must be one of our
-	   *	subviews that actually needs the display.
-	   */
+
 	  for (i = 0; i < count; i++)
 	    {
-	      NSView	*subview = array[i];
+	      NSRect isect;
+	      NSView *subview = array[i];
+	      NSRect subviewFrame = subview->frame;
+
+	      if ([subview->frameMatrix isRotated])
+		{
+		  [subview->frameMatrix boundingRectFor: subviewFrame
+						 result: &subviewFrame];
+		}
+
+	      /*
+	       * Having drawn ourself into the rect, we must make sure that
+	       * subviews overlapping the area are redrawn.
+	       */
+	      isect = NSIntersectionRect(redrawRect, subviewFrame);
+	      if (NSIsEmptyRect(isect) == NO)
+		{
+		  isect = [subview convertRect: isect
+				      fromView: self];
+		  /*
+		   * hack the ivars of the subview directly for speed.
+		   */
+		  subview->needs_display = YES;
+		  subview->invalidRect = NSUnionRect(subview->invalidRect,
+			isect);
+		}
 
 	      if (subview->needs_display)
 		{
-		  NSRect	subviewFrame = subview->frame;
-		  NSRect	isect;
-
-		  if ([subview->frameMatrix isRotated])
-		    {
-		      [subview->frameMatrix boundingRectFor: subviewFrame
-						     result: &subviewFrame];
-		    }
 		  isect = NSIntersectionRect(aRect, subviewFrame);
 		  if (NSIsEmptyRect(isect) == NO)
 		    {
@@ -1113,10 +1076,20 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 		}
 	    }
 	}
-      if (NSIsEmptyRect(invalidRect) == NO)
-	needs_display = YES;
+
+      /*
+       * If our invalid rectangle is entirely contained with the area we
+       * have just redisplayed, then we set the invalid rectangle to zero
+       */
+      redrawRect = NSUnionRect(invalidRect, aRect);
+      if (NSEqualRects(aRect, redrawRect) == YES)
+	{
+	  invalidRect = NSZeroRect;
+	  needs_display = stillNeedsDisplay;
+	}
       else
-	needs_display = stillNeedsDisplay;
+	needs_display = YES;
+
       [window flushWindow];
     }
 }
