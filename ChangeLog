@@ -1,3 +1,10 @@
+2002-10-13  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/GSNibTemplates.h: Added parentClassName member to 
+	templates so that the parent of the custom class could be stored.
+	* Source/NSBundleAdditions.m: Made necessary modfications to the
+	template implementations to use the parent class name
+
 2002-10-13  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSSavePanel.m: ([--browser:createRowsForColumn:inMatrix:])

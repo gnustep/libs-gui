@@ -730,6 +730,8 @@ Class gmodel_class(void)
   // Start initially with the highest level class...
   ASSIGN(_className, NSStringFromClass([super class]));
   RETAIN(_className);
+  ASSIGN(_parentClassName, NSStringFromClass([super class]));
+  RETAIN(_parentClassName);
 
   // defer flag...
   _deferFlag = NO;
@@ -740,6 +742,7 @@ Class gmodel_class(void)
 - (id) initWithCoder: (NSCoder *)aCoder
 {
   [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
+  [aCoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];  
   [aCoder decodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];  
   return [super initWithCoder: aCoder];
 }
@@ -747,6 +750,7 @@ Class gmodel_class(void)
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
   [aCoder encodeValueOfObjCType: @encode(id) at: &_className];  
+  [aCoder encodeValueOfObjCType: @encode(id) at: &_parentClassName];  
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];  
   [super encodeWithCoder: aCoder];
 }
@@ -832,6 +836,8 @@ Class gmodel_class(void)
   // Start initially with the highest level class...
   ASSIGN(_className, NSStringFromClass([super class]));
   RETAIN(_className);
+  ASSIGN(_parentClassName, NSStringFromClass([super class]));
+  RETAIN(_parentClassName);
   [super initWithFrame: frame];
 
   return self;
@@ -843,20 +849,22 @@ Class gmodel_class(void)
   [super init];
   ASSIGN(_className, NSStringFromClass([super class]));
   RETAIN(_className);
+  ASSIGN(_parentClassName, NSStringFromClass([super class]));
+  RETAIN(_parentClassName);
   return self;
 }
 
 - (id) initWithCoder: (NSCoder *)aCoder
 {
   [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
-  [super initWithCoder: aCoder];
-
-  return self;
+  [aCoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];
+  return [super initWithCoder: aCoder];
 }
 
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
   [aCoder encodeValueOfObjCType: @encode(id) at: &_className];  
+  [aCoder encodeValueOfObjCType: @encode(id) at: &_parentClassName];  
   [super encodeWithCoder: aCoder];
 }
 
@@ -921,6 +929,8 @@ Class gmodel_class(void)
   // Start initially with the highest level class...
   ASSIGN(_className, NSStringFromClass([super class]));
   RETAIN(_className);
+  ASSIGN(_parentClassName, NSStringFromClass([super class]));
+  RETAIN(_parentClassName);
   [super initWithFrame: frame];
   return self;
 }
@@ -937,14 +947,14 @@ Class gmodel_class(void)
 - (id) initWithCoder: (NSCoder *)aCoder
 {
   [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
-  [super initWithCoder: aCoder];
-
-  return self;
+  [aCoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];  
+  return [super initWithCoder: aCoder];
 }
 
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
   [aCoder encodeValueOfObjCType: @encode(id) at: &_className];  
+  [aCoder encodeValueOfObjCType: @encode(id) at: &_parentClassName];  
   [super encodeWithCoder: aCoder];
 }
 
@@ -1018,6 +1028,8 @@ Class gmodel_class(void)
   // Start initially with the highest level class...
   ASSIGN(_className, NSStringFromClass([super class]));
   RETAIN(_className);
+  ASSIGN(_parentClassName, NSStringFromClass([super class]));
+  RETAIN(_parentClassName);
   [super initWithFrame: frame];
   return self;
 }
@@ -1027,19 +1039,22 @@ Class gmodel_class(void)
   [super init];
   ASSIGN(_className, NSStringFromClass([super class]));
   RETAIN(_className);
+  ASSIGN(_parentClassName, NSStringFromClass([super class]));
+  RETAIN(_parentClassName);
   return self;
 }
 
 - (id) initWithCoder: (NSCoder *)aCoder
 {
   [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
-  [super initWithCoder: aCoder];
-  return self;
+  [aCoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];  
+  return [super initWithCoder: aCoder];
 }
 
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
   [aCoder encodeValueOfObjCType: @encode(id) at: &_className];  
+  [aCoder encodeValueOfObjCType: @encode(id) at: &_parentClassName];  
   [super encodeWithCoder: aCoder];
 }
 
@@ -1118,19 +1133,22 @@ Class gmodel_class(void)
   // Start initially with the highest level class...
   ASSIGN(_className, NSStringFromClass([super class]));
   RETAIN(_className);
+  ASSIGN(_parentClassName, NSStringFromClass([super class]));
+  RETAIN(_parentClassName);
   return self;
 }
 
 - (id) initWithCoder: (NSCoder *)aCoder
 {
   [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
-  [super initWithCoder: aCoder];
-  return self;
+  [aCoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];  
+  return [super initWithCoder: aCoder];
 }
 
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
   [aCoder encodeValueOfObjCType: @encode(id) at: &_className];  
+  [aCoder encodeValueOfObjCType: @encode(id) at: &_parentClassName];  
   [super encodeWithCoder: aCoder];
 }
 
@@ -1194,6 +1212,8 @@ Class gmodel_class(void)
   // Start initially with the highest level class...
   ASSIGN(_className, NSStringFromClass([super class]));
   RETAIN(_className);
+  ASSIGN(_parentClassName, NSStringFromClass([super class]));
+  RETAIN(_parentClassName);
   [super initWithFrame: frame];
 
   return self;
@@ -1205,12 +1225,15 @@ Class gmodel_class(void)
   [super init];
   ASSIGN(_className, NSStringFromClass([super class]));
   RETAIN(_className);
+  ASSIGN(_parentClassName, NSStringFromClass([super class]));
+  RETAIN(_parentClassName);
   return self;
 }
 
 - (id) initWithCoder: (NSCoder *)aCoder
 {
   [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
+  [aCoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];  
   [aCoder decodeValueOfObjCType: @encode(id) at: &_delegate];  
   [aCoder decodeValueOfObjCType: @encode(id) at: &_dataSource];  
   [aCoder decodeValueOfObjCType: @encode(BOOL) at: &_usesDataSource];  
@@ -1220,6 +1243,7 @@ Class gmodel_class(void)
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
   [aCoder encodeValueOfObjCType: @encode(id) at: &_className];  
+  [aCoder encodeValueOfObjCType: @encode(id) at: &_parentClassName];  
   [aCoder encodeValueOfObjCType: @encode(id) at: &_delegate];  
   [aCoder encodeValueOfObjCType: @encode(id) at: &_dataSource];  
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_usesDataSource];  
@@ -1310,6 +1334,8 @@ Class gmodel_class(void)
   // Start initially with the highest level class...
   ASSIGN(_className, NSStringFromClass([super class]));
   RETAIN(_className);
+  ASSIGN(_parentClassName, NSStringFromClass([super class]));
+  RETAIN(_parentClassName);
   _buttonType = NSMomentaryLightButton;
   [super initWithFrame: frame];
   
@@ -1322,6 +1348,8 @@ Class gmodel_class(void)
   [super init];
   ASSIGN(_className, NSStringFromClass([super class]));
   RETAIN(_className);
+  ASSIGN(_parentClassName, NSStringFromClass([super class]));
+  RETAIN(_parentClassName);
   _buttonType = NSMomentaryLightButton;
   return self;
 }
@@ -1329,6 +1357,7 @@ Class gmodel_class(void)
 - (id) initWithCoder: (NSCoder *)aCoder
 {
   [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
+  [aCoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];  
   [aCoder decodeValueOfObjCType: @encode(int) at: &_buttonType];  
   return [super initWithCoder: aCoder];
 }
@@ -1336,6 +1365,7 @@ Class gmodel_class(void)
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
   [aCoder encodeValueOfObjCType: @encode(id) at: &_className];  
+  [aCoder encodeValueOfObjCType: @encode(id) at: &_parentClassName];  
   [aCoder encodeValueOfObjCType: @encode(int) at: &_buttonType];  
   [super encodeWithCoder: aCoder];
 }

@@ -80,6 +80,7 @@
 @interface NSWindowTemplate : NSWindow <GSTemplate>
 {
   NSString            *_className;
+  NSString            *_parentClassName;
   BOOL                 _deferFlag;
 }
 @end
@@ -87,30 +88,35 @@
 @interface NSViewTemplate : NSView <GSTemplate>
 {
   NSString            *_className;
+  NSString            *_parentClassName;
 }
 @end
 
 @interface NSTextTemplate : NSText <GSTemplate>
 {
   NSString            *_className;
+  NSString            *_parentClassName;
 }
 @end
 
 @interface NSTextViewTemplate : NSTextView <GSTemplate> 
 {
   NSString            *_className;
+  NSString            *_parentClassName;
 }
 @end
 
 @interface NSMenuTemplate : NSMenu <GSTemplate>
 {
   NSString            *_className;
+  NSString            *_parentClassName;
 }
 @end
 
 @interface NSControlTemplate : NSControl <GSTemplate>
 {
   NSString            *_className;
+  NSString            *_parentClassName;
   id                   _delegate;
   id                   _dataSource;
   BOOL                 _usesDataSource;
@@ -120,6 +126,7 @@
 @interface NSButtonTemplate : NSButton <GSTemplate>
 {
   NSString            *_className;
+  NSString            *_parentClassName;
   NSButtonType         _buttonType;
 }
 @end
