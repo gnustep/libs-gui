@@ -434,11 +434,8 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
 
 - (int) runModal
 {
-  NSApplication	*app;
-
-  app = [NSApplication sharedApplication];
   active = YES;
-  [app runModalForWindow: self];
+  [NSApp runModalForWindow: self];
   return result;
 }
 
@@ -690,9 +687,6 @@ NSRunAlertPanel(NSString *title,
       standardAlertPanel = panel;
     }
 
-  if ([NSApp isActive])
-    [panel makeKeyWindow];
-  [panel orderFrontRegardless];
   result = [panel runModal];
   NSReleaseAlertPanel(panel);
   return result;
@@ -714,9 +708,6 @@ NSRunCriticalAlertPanel(NSString *title,
 		defaultButton, alternateButton, otherButton, ap);
   va_end (ap);
 
-  if ([NSApp isActive])
-    [panel makeKeyWindow];
-  [panel orderFrontRegardless];
   result = [panel runModal];
   NSReleaseAlertPanel(panel);
   return result;
@@ -738,9 +729,6 @@ NSRunInformationalAlertPanel(NSString *title,
 		defaultButton, alternateButton, otherButton, ap);
   va_end (ap);
 
-  if ([NSApp isActive])
-    [panel makeKeyWindow];
-  [panel orderFrontRegardless];
   result = [panel runModal];
   NSReleaseAlertPanel(panel);
   return result;
@@ -803,9 +791,6 @@ NSRunLocalizedAlertPanel(NSString *table,
       standardAlertPanel = panel;
     }
 
-  if ([NSApp isActive])
-    [panel makeKeyWindow];
-  [panel orderFrontRegardless];
   result = [panel runModal];
   NSReleaseAlertPanel(panel);
   return result;

@@ -1,3 +1,10 @@
+Thu Nov  4  1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSApplication.m: ([-runModalforWindow:]) make the window key
+	and order to front as specified in MacOS-X docs.
+	* Source/NSPanel.m: Remove redundant code from alert panels -
+	now done in NSApplication.
+
 Tue Nov  2  1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSMatrix.m: Complete rewrite of code for handling cells

@@ -612,6 +612,10 @@ static NSCell* tileCell = nil;
   if ([theWindow isKindOfClass: [NSPanel class]])
     [theWindow center];
 
+  if ([self isActive])
+    [theWindow makeKeyWindow];
+  [theWindow orderFrontRegardless];
+
   theSession = NULL;
   code = NSRunContinuesResponse;
 
