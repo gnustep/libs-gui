@@ -1,4 +1,3 @@
-
 /* 
    Functions.m
 
@@ -28,7 +27,7 @@
 #include <AppKit/NSCStringText.h>
 #include <AppKit/NSEvent.h>
 #include <AppKit/GSWraps.h>
-
+#include <AppKit/DPSOperators.h>
 
 /*
  * Dummy definitions provided here to avoid errors when not linking with
