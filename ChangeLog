@@ -1,3 +1,9 @@
+1999-02-21 Michael Hanni <mhanni@sprintmail.com>
+
+	* Headers/gnustep/gui/NSRulerView.h: added (note: not implemented)
+	* Headers/gnustep/gui/NSRulerMarker.h: added (note: not
+	implemented)
+
 Sun Feb 21 20:36:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Headers/gnustep/gui/NSCell.h: tidyup

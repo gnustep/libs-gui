@@ -31,6 +31,7 @@
 #include <AppKit/NSScroller.h>
 #include <AppKit/NSClipView.h>
 #include <AppKit/NSScrollView.h>
+#include <AppKit/NSRulerView.h>
 #include <AppKit/NSWindow.h>
 
 //

@@ -33,13 +33,12 @@
 
 #include <AppKit/NSText.h>
 #include <AppKit/NSTextAttachment.h>
+#include <AppKit/NSRulerView.h>
+#include <AppKit/NSRulerMarker.h>
 
 @class NSTextContainer;
 @class NSTextStorage;
 @class NSLayoutManager;
-@class NSRulerView;
-@class NSRulerMarker;
-
 
 //@interface NSTextView : NSText <NSTextInput>
 @interface NSTextView : NSText 

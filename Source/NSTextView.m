@@ -26,6 +26,7 @@
 */
 
 #include <AppKit/NSTextView.h>
+#include <AppKit/NSRulerView.h>
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSSpellChecker.h>
 #include <AppKit/NSFontPanel.h>
