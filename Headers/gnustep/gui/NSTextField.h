@@ -36,7 +36,7 @@
 @class NSText;
 @class NSCursor;
 
-@interface NSTextField : NSControl <NSCoding>
+@interface NSTextField : NSControl
 {
   // Attributes
   id _delegate;
@@ -101,11 +101,17 @@
 - (BOOL)textShouldBeginEditing:(NSText *)textObject;
 - (BOOL)textShouldEndEditing:(NSText *)textObject;
 
+#ifndef	STRICT_OPENSTEP
 //
-// NSCoding protocol
+// Rich Text
 //
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
+- (void)setAllowsEditingTextAttributes:(BOOL)flag;
+- (BOOL)allowsEditingTextAttributes;
+- (void)setImportsGraphics:(BOOL)flag;
+- (BOOL)importsGraphics;
+
+- (void)setTitleWithMnemonic:(NSString *)aString;
+#endif
 
 @end
 
