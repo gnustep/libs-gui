@@ -1,12 +1,42 @@
-#import <AppKit/NSDocument.h>
-#import <Foundation/NSData.h>
-#import <AppKit/NSFileWrapper.h>
-#import <AppKit/NSSavePanel.h>
-#import <AppKit/NSPrintInfo.h>
-#import <AppKit/NSPageLayout.h>
-#import <AppKit/NSView.h>
-#import <AppKit/NSPopUpButton.h>
-#import <AppKit/NSDocumentFrameworkPrivate.h>
+/*
+   NSDocument.m
+
+   The abstract document class
+
+   Copyright (C) 1999 Free Software Foundation, Inc.
+
+   Author: Carl Lindberg <Carl.Lindberg@hbo.com>
+   Date: 1999
+   Modifications: Fred Kiefer <FredKiefer@gmx.de>
+   Date: June 2000
+
+   This file is part of the GNUstep GUI Library.
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, write to the Free Software Foundation,
+   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+*/
+
+#include <Foundation/NSData.h>
+#include <AppKit/NSDocument.h>
+#include <AppKit/NSFileWrapper.h>
+#include <AppKit/NSSavePanel.h>
+#include <AppKit/NSPrintInfo.h>
+#include <AppKit/NSPageLayout.h>
+#include <AppKit/NSView.h>
+#include <AppKit/NSPopUpButton.h>
+#include <AppKit/NSDocumentFrameworkPrivate.h>
 
 
 @implementation NSDocument
@@ -39,6 +69,7 @@
   
   [super init];
   _documentIndex = untitledCount++;
+  _windowControllers = [[NSMutableArray alloc] init];
   return self;
 }
 
@@ -53,7 +84,11 @@
     }
   else
     {
-      [self release];
+      //FIXME -- localize.
+      NSRunAlertPanel(@"Load failed",
+		      @"Could not load file %@.",
+		      nil, nil, nil, fileName);
+      RELEASE(self);
       return nil;
     }
 	
@@ -66,12 +101,16 @@
 
   if ([self readFromURL:url ofType:fileType])
     {
+      //FIXME -- localize.
+      NSRunAlertPanel(@"Load failed",
+		      @"Could not load URL %@.",
+		      nil, nil, nil, [url absoluteString]);
       [self setFileType:fileType];
       [self setFileName:[url path]];
     }
   else
     {
-      [self release];
+      RELEASE(self);
       return nil;
     }
   
@@ -81,14 +120,14 @@
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [(NSObject*)_undoManager release];
-  [_fileName release];
-  [_fileType release];
-  [_windowControllers release];
-  [_window release];
-  [_printInfo release];
-  [savePanelAccessory release];
-  [spaButton release];
+  RELEASE(_undoManager);
+  RELEASE(_fileName);
+  RELEASE(_fileType);
+  RELEASE(_windowControllers);
+  RELEASE(_window);
+  RELEASE(_printInfo);
+  RELEASE(savePanelAccessory);
+  RELEASE(spaButton);
   [super dealloc];
 }
 
@@ -99,9 +138,7 @@
 
 - (void)setFileName:(NSString *)fileName
 {
-  [fileName retain];
-  [_fileName release];
-  _fileName = fileName;
+  ASSIGN(_fileName, fileName);
 	
   [_windowControllers makeObjectsPerformSelector:
 			@selector(_synchronizeWindowTitleWithDocumentName)];
@@ -114,9 +151,7 @@
 
 - (void)setFileType:(NSString *)type
 {
-  [type retain];
-  [_fileType release];
-  _fileType = type;
+  ASSIGN(_fileType, type);
 }
 
 - (NSArray *)windowControllers
@@ -126,27 +161,9 @@
 
 - (void)addWindowController:(NSWindowController *)windowController
 {
-  if (_windowControllers == nil) _windowControllers = [[NSMutableArray alloc] init];
-
   [_windowControllers addObject:windowController];
   if ([windowController document] != self)
     [windowController setDocument:self];
-}
-
-- (void)_removeWindowController:(NSWindowController *)windowController
-{
-  if ([_windowControllers containsObject:windowController])
-    {
-      BOOL autoClose = [windowController shouldCloseDocument];
-      
-      [windowController setDocument:nil];
-      [_windowControllers removeObject:windowController];
-      
-      if (autoClose || [_windowControllers count] == 0)
-        {
-	  [self close];
-	}
-    }
 }
 
 - (NSString *)windowNibName
@@ -162,29 +179,16 @@
   _window = window;
 }
 
-/*
- * This private method is used to transfer window ownership to the
- * NSWindowController in situations (such as the default) where the
- * document is set to the nib owner, and thus owns the window immediately
- * following the loading of the nib.
- */
-- (NSWindow *)_transferWindowOwnership
-{
-  NSWindow *window = _window;
-  _window = nil;
-  return [window autorelease];
-}
-
 - (void)makeWindowControllers
 {
   NSString *name = [self windowNibName];
 
-  if ([name length] > 0)
+  if (name != nil && [name length] > 0)
     {
       NSWindowController *controller;
       controller = [[NSWindowController alloc] initWithWindowNibName:name owner:self];
       [self addWindowController:controller];
-      [controller release];
+      RELEASE(controller);
     }
   else
     {
@@ -310,7 +314,7 @@
   if (data == nil) 
     return nil;
 
-  return [[[NSFileWrapper alloc] initRegularFileWithContents:data] autorelease];
+  return AUTORELEASE([[NSFileWrapper alloc] initRegularFileWithContents:data]);
 }
 
 - (BOOL)loadFileWrapperRepresentation:(NSFileWrapper *)wrapper ofType:(NSString *)type
@@ -338,13 +342,38 @@
 
 - (BOOL)readFromFile:(NSString *)fileName ofType:(NSString *)type
 {
-  NSFileWrapper *wrapper = [[[NSFileWrapper alloc] initWithPath:fileName] autorelease];
+  NSFileWrapper *wrapper = AUTORELEASE([[NSFileWrapper alloc] initWithPath:fileName]);
   return [self loadFileWrapperRepresentation:wrapper ofType:type];
 }
 
 - (BOOL)revertToSavedFromFile:(NSString *)fileName ofType:(NSString *)type
 {
   return [self readFromFile:fileName ofType:type];
+}
+
+- (BOOL)writeToURL:(NSURL *)url ofType:(NSString *)type
+{
+  NSData *data = [self dataRepresentationOfType:type];
+  
+  if (data == nil) 
+    return NO;
+
+  return [url setResourceData: data];
+}
+
+- (BOOL)readFromURL:(NSURL *)url ofType:(NSString *)type
+{
+  NSData *data = [url resourceDataUsingCache: YES];
+
+  if (data == nil) 
+    return NO;
+
+  return [self loadDataRepresentation: data ofType: type];
+}
+
+- (BOOL)revertToSavedFromURL:(NSURL *)url ofType:(NSString *)type
+{
+  return [self readFromURL: url ofType: type];
 }
 
 - (IBAction)changeSaveType:(id)sender
@@ -425,9 +454,7 @@
 
 - (void)setPrintInfo:(NSPrintInfo *)printInfo
 {
-  [printInfo retain];
-  [_printInfo release];
-  _printInfo = printInfo;
+  ASSIGN(_printInfo, printInfo);
 }
 
 
@@ -457,7 +484,7 @@
 
 - (IBAction)printDocument:(id)sender
 {
-	[self printShowingPrintPanel:YES];
+  [self printShowingPrintPanel:YES];
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)anItem
@@ -470,32 +497,35 @@
   return YES;
 }
 
-- (NSString *)saveFileType
+- (NSString *)fileTypeFromLastRunSavePanel
 {
   // FIXME this should return type picked on save accessory
   // return [spaPopupButton title];
   return [self fileType];
 }
 
-- (void)_doSaveAs:(NSSaveOperationType)saveOperation
+- (BOOL)writeToFile:(NSString *)fileName 
+	     ofType:(NSString *)type 
+       originalFile:(NSString *)origFileName
+      saveOperation:(NSSaveOperationType)saveOp
+{
+  return [self writeToFile: fileName ofType: type];
+}
+
+- (BOOL)writeWithBackupToFile:(NSString *)fileName 
+		       ofType:(NSString *)fileType 
+		saveOperation:(NSSaveOperationType)saveOp
 {
   NSFileManager *fileManager = [NSFileManager defaultManager];
-  NSString *filename = [self fileName];
   NSString *backupFilename = nil;
-  
-  if (filename == nil || saveOperation != NSSaveOperation)
+
+  if (fileName)
     {
-      filename = [self fileNameFromRunningSavePanelForSaveOperation:saveOperation];
-      if (saveOperation == NSSaveOperation) saveOperation = NSSaveAsOperation;
-    }
-	
-  if (filename)
-    {
-      if ([fileManager fileExistsAtPath:filename])
+      if ([fileManager fileExistsAtPath:fileName])
 	{
-	  NSString *extension  = [filename pathExtension];
+	  NSString *extension  = [fileName pathExtension];
 	  
-	  backupFilename = [filename stringByDeletingPathExtension];
+	  backupFilename = [fileName stringByDeletingPathExtension];
 	  backupFilename = [backupFilename stringByAppendingString:@"~"];
 	  backupFilename = [backupFilename stringByAppendingPathExtension:extension];
 
@@ -506,7 +536,7 @@
 	    [fileManager removeFileAtPath:backupFilename handler:nil];
 
 	  // Move or copy?
-	  if (![fileManager movePath:filename toPath:backupFilename handler:nil] &&
+	  if (![fileManager movePath:fileName toPath:backupFilename handler:nil] &&
 	      [self keepBackupFile])
             {
 	      //FIXME -- localize.
@@ -514,15 +544,18 @@
 					   @"Can't create backup file.  Save anyways?",
 					   @"Save", @"Cancel", nil);
 	      
-	      if (result != NSAlertDefaultReturn) return;
+	      if (result != NSAlertDefaultReturn) return NO;
             }
 	}
-      if ([self writeToFile:filename ofType:[self saveFileType]])
+      if ([self writeToFile: fileName 
+		ofType: fileType
+		originalFile: backupFilename
+		saveOperation: saveOp])
 	{
-	  if (saveOperation != NSSaveToOperation)
+	  if (saveOp != NSSaveToOperation)
 	    {
-	      [self setFileName:filename];
-	      [self setFileType:[self saveFileType]];
+	      [self setFileName:fileName];
+	      [self setFileType: fileType];
 	      [self updateChangeCount:NSChangeCleared];
 	    }
 	  
@@ -530,23 +563,49 @@
 	    {
 	      [fileManager removeFileAtPath:backupFilename handler:nil];
 	    }
+
+	  return YES;
 	}
     }
+
+  return NO;
 }
 
 - (IBAction)saveDocument:(id)sender
 {
-  [self _doSaveAs:NSSaveOperation];
+  NSString *filename = [self fileName];
+
+  if (filename == nil)
+    {
+      [self saveDocumentAs: sender];
+      return;
+    }
+
+  [self writeWithBackupToFile: filename 
+	ofType: [self fileType]
+	saveOperation: NSSaveOperation];
 }
 
 - (IBAction)saveDocumentAs:(id)sender
 {
-  [self _doSaveAs:NSSaveAsOperation];
+  NSString *filename = 
+      [self fileNameFromRunningSavePanelForSaveOperation: 
+		NSSaveAsOperation];
+
+  [self writeWithBackupToFile: filename 
+	ofType: [self fileTypeFromLastRunSavePanel]
+	saveOperation: NSSaveAsOperation];
 }
 
 - (IBAction)saveDocumentTo:(id)sender
 {
-  [self _doSaveAs:NSSaveToOperation];
+  NSString *filename = 
+      [self fileNameFromRunningSavePanelForSaveOperation: 
+		NSSaveToOperation];
+
+  [self writeWithBackupToFile: filename 
+	ofType: [self fileTypeFromLastRunSavePanel]
+	saveOperation: NSSaveToOperation];
 }
 
 - (IBAction)revertDocumentToSaved:(id)sender
@@ -579,7 +638,7 @@
 {
   if (_undoManager == nil && [self hasUndoManager])
     {
-      [self setUndoManager:[[[NSUndoManager alloc] init] autorelease]];
+      [self setUndoManager: AUTORELEASE([[NSUndoManager alloc] init])];
     }
   
   return _undoManager;
@@ -604,9 +663,7 @@
 		  object:_undoManager];
         }
       
-      [(NSObject*)undoManager retain];
-      [(NSObject*)_undoManager release];
-      _undoManager = undoManager;
+      ASSIGN(_undoManager, undoManager);
       
       if (_undoManager == nil)
         {
@@ -642,6 +699,38 @@
     [self setUndoManager:nil];
   
   _docFlags.hasUndoManager = flag;
+}
+@end
+
+@implementation NSDocument(Private)
+
+/*
+ * This private method is used to transfer window ownership to the
+ * NSWindowController in situations (such as the default) where the
+ * document is set to the nib owner, and thus owns the window immediately
+ * following the loading of the nib.
+ */
+- (NSWindow *)_transferWindowOwnership
+{
+  NSWindow *window = _window;
+  _window = nil;
+  return AUTORELEASE(window);
+}
+
+- (void)_removeWindowController:(NSWindowController *)windowController
+{
+  if ([_windowControllers containsObject:windowController])
+    {
+      BOOL autoClose = [windowController shouldCloseDocument];
+      
+      [windowController setDocument:nil];
+      [_windowControllers removeObject:windowController];
+      
+      if (autoClose || [_windowControllers count] == 0)
+        {
+	  [self close];
+	}
+    }
 }
 
 - (void)_changeWasDone:(NSNotification *)notification
