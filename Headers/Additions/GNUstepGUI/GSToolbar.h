@@ -76,6 +76,7 @@ APPKIT_EXPORT NSString *NSToolbarWillAddItemNotification;
   NSToolbarDisplayMode _displayMode;
   NSToolbarSizeMode _sizeMode;
   NSString *_identifier;
+  NSString *_selectedItemIdentifier;
   NSMutableArray *_items;
   GSToolbarView *_toolbarView;
   NSWindow *_window;
@@ -109,6 +110,7 @@ APPKIT_EXPORT NSString *NSToolbarWillAddItemNotification;
 - (void) setConfigurationFromDictionary: (NSDictionary*)configDict;
 - (void) setDelegate: (id)delegate;
 - (void) setSelectedItemIdentifier: (NSString *) identifier;
+- (void) setUsesStandardBackgroundColor: (BOOL)standard;
 - (NSToolbarSizeMode) sizeMode;
 
 @end /* interface of NSToolbar */
@@ -138,7 +140,7 @@ willBeInsertedIntoToolbar: (BOOL)flag;
 // Extensions
 
 @interface NSArray (ObjectsWithValueForKey)
-- (NSArray *) objectsWithValue: (NSString *)value forKey: (NSString *)key;
+- (NSArray *) objectsWithValue: (id)value forKey: (NSString *)key;
 @end
 
 #endif /* _GNUstep_H_NSToolbar */

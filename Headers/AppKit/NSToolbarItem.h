@@ -72,6 +72,7 @@ APPKIT_EXPORT NSString *NSToolbarPrintItemIdentifier;
   id _view;
   NSView *_backView;
   BOOL _modified;
+  BOOL _selectable;
 
   // size
   NSSize _maxSize;
@@ -134,8 +135,9 @@ APPKIT_EXPORT NSString *NSToolbarPrintItemIdentifier;
 
 @end /* interface of NSToolbarItem */
 
-@protocol NSToolbarItemValidation
-- (BOOL) validateToolbarItem: (NSToolbarItem *)theItem;
+// Informal protocol for the toolbar validation
+@interface NSObject (NSToolbarItemValidation)
+- (BOOL) validateToolbarItem: (NSToolbarItem *)toolbarItem;
 @end
 
 #endif /* _GNUstep_H_NSToolbarItem */

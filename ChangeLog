@@ -1,10 +1,25 @@
+2004-05-23  Quentin Mathe <qmathe@lub-internet.fr>
+        
+        * Source/GSToolbarView.m:
+	* Headers/GNUstepGUI/GSToolbarView.h:
+        * Source/GSToolbar.m:
+	* Headers/GNUstepGUI/GSToolbar.h:
+	* Source/NSToolbar.m:
+	* Headers/AppKit/NSToolbar.h:
+	* Source/NSToolbarItem.m:
+	* Headers/AppKit/NSToolbarItem.h:
+	* Source/NSWindow+Toolbar.m:
+	Last part in the validation implementation, border taken in account by the 
+	layout process, lot of memory leaks fixed, selected item possibility 
+	implemented and other minor improvements.
+	
 2004-05-18  Quentin Mathe  <qmathe@club-internet.fr>
 
-        * Source/GSToolbarView: Added color customization (default background
+        * Source/GSToolbarView.m: Added color customization (default background
 	color is now no color), part of the toolbar validation mechanism
 	and other minor changes.
 	* Headers/GNUstepGUI/GSToolbarView.h: Same.
-	* Source/NSToolbarItem: Added part of the toolbar validation mechanism,
+	* Source/NSToolbarItem.m: Added part of the toolbar validation mechanism,
 	new menuFormRepresentation implementation to have the menu item titles
 	used as label with the text display mode and other minor changes.
 

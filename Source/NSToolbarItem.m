@@ -62,11 +62,16 @@
 @end
 
 @interface NSToolbarItem (GNUstepPrivate)
+- (void) _layout;
+// ---
 - (NSView *) _backView;
 - (NSMenuItem *) _defaultMenuFormRepresentation;
 - (BOOL) _isFlexibleSpace;
 - (BOOL) _isModified;
-- (void) _layout;
+- (BOOL) _selectable;
+- (void) _setSelectable: (BOOL)selectable;
+- (BOOL) _selected;
+- (void) _setSelected: (BOOL)selected;
 - (void) _setToolbar: (GSToolbar *)toolbar;
 @end
 
@@ -85,20 +90,31 @@
 
 - (id) initWithToolbarItem: (NSToolbarItem *)toolbarItem;
 - (void) layout;
-- (void) setToolbarItemAction: (SEL)action;
+
+// Accessors
 - (NSToolbarItem *) toolbarItem;
 - (SEL) toolbarItemAction;
+- (void) setToolbarItemAction: (SEL)action;
 @end
 
 @implementation GSToolbarButton
 - (id) initWithToolbarItem: (NSToolbarItem *)toolbarItem
 { 
   self = [super initWithFrame: NSMakeRect(_ItemBackViewX, _ItemBackViewY, _ItemBackViewDefaultWidth, _ItemBackViewDefaultHeight)];
+  // Frame will be reset by the layout method
+  
   if (self != nil)
     {
       ASSIGN(_toolbarItem, toolbarItem);
     }
   return self;   
+}
+
+- (void) dealloc
+{
+  RELEASE(_toolbarItem);
+  
+  [super dealloc];
 }
 
 - (void) layout
@@ -107,9 +123,11 @@
   NSAttributedString *attrStr;
   NSDictionary *attr;
   NSFont *font = [NSFont systemFontOfSize: 11]; // [NSFont smallSystemFontSize] or better should NSControlContentFontSize
-
+  unsigned int borderMask = [[[_toolbarItem toolbar] _toolbarView] borderMask];
+  NSString *label = [_toolbarItem label];
+  
   // Adjust the layout in accordance with NSToolbarSizeMode
-
+  
   switch ([[_toolbarItem toolbar] sizeMode])
     {
       case NSToolbarSizeModeDefault:
@@ -137,11 +155,27 @@
     }
     
   [[self cell] setFont: font];
+  
+  // Adjust the layout in accordance with the border
+  
+  if (!(borderMask & GSToolbarViewBottomBorder))
+    {
+      layoutedHeight++;
+      layoutedWidth++;
+    }
+
+  if (!(borderMask & GSToolbarViewTopBorder))
+    {
+      layoutedHeight++;
+      layoutedWidth++; 
+    }
              
   // Adjust the layout in accordance with the label
 	
   attr = [NSDictionary dictionaryWithObject: font forKey: @"NSFontAttributeName"];
-  attrStr = [[NSAttributedString alloc] initWithString: [_toolbarItem label] attributes: attr];
+  if (label == nil || [label isEqualToString: @""])
+    label = @"Dummy";
+  attrStr = [[NSAttributedString alloc] initWithString: label attributes: attr];
       
   textWidth = [attrStr size].width + 2 * _InsetItemTextX;
   if (layoutedWidth != -1 && textWidth > layoutedWidth) 
@@ -176,8 +210,20 @@
    
 }
 
+- (void) mouseDown: (NSEvent *)event
+{
+  if ([_toolbarItem _selectable] && [self state])
+    return; // Abort in case the button is selectable and selected
+    // HACK: must be improved to handle drag event
+  
+  [super mouseDown: event];
+}
+
 - (BOOL) sendAction: (SEL)action to: (id)target
 { 
+  if ([_toolbarItem _selectable])
+    [[_toolbarItem toolbar] setSelectedItemIdentifier: [_toolbarItem itemIdentifier]];
+  
   if (_toolbarItemAction)
     {
       return [NSApp sendAction: _toolbarItemAction to: target from: _toolbarItem];
@@ -227,6 +273,7 @@
 {  
   self = [super initWithFrame: NSMakeRect(_ItemBackViewX, _ItemBackViewY, _ItemBackViewDefaultWidth,
   _ItemBackViewDefaultHeight)];
+  // Frame will be reset by the layout method
   
   if (self != nil)
     {  
@@ -236,12 +283,20 @@
   return self;
 }
 
+- (void) dealloc
+{
+  RELEASE(_toolbarItem);
+  //RELEASE(_font);
+  
+  [super dealloc];
+}
+
 - (void)drawRect: (NSRect)rect
 {
   NSAttributedString *attrString;
   NSDictionary *attr;
   NSColor *color;
-  int textX;
+  float textX;
   
   [super drawRect: rect]; // We draw _view which is a subview
   
@@ -258,10 +313,10 @@
     {
       // we draw the label
       attr = [NSDictionary dictionaryWithObjectsAndKeys: _font, 
-                                                         @"NSFontAttributeName", 
+                                        @"NSFontAttributeName", 
 							 color,
-                                                         @"NSForegroundColorAttributeName",
-							 nil];
+                             @"NSForegroundColorAttributeName",
+						          nil];
       attrString = [[NSAttributedString alloc] initWithString: [_toolbarItem label] attributes: attr];
       textX = (([self frame].size.width - _InsetItemTextX) - [attrString size].width) / 2;
       [attrString drawAtPoint: NSMakePoint(textX, _InsetItemTextY)];
@@ -275,6 +330,8 @@
   float textWidth, layoutedWidth = -1, layoutedHeight = -1;
   NSAttributedString *attrStr;
   NSDictionary *attr;
+  unsigned int borderMask = [[[_toolbarItem toolbar] _toolbarView] borderMask];
+  NSString *label = [_toolbarItem label];
   
   _font = [NSFont systemFontOfSize: 11]; // [NSFont smallSystemFontSize] or better should be NSControlContentFontSize
   
@@ -307,11 +364,27 @@
       default:
 	NSLog(@"Invalid NSToolbarSizeMode"); // invalid
     } 
+    
+  // Adjust the layout in accordance with the border
+  
+  if (!(borderMask & GSToolbarViewBottomBorder))
+    {
+      layoutedHeight++;
+      layoutedWidth++;
+    }
+
+  if (!(borderMask & GSToolbarViewTopBorder))
+    {
+      layoutedHeight++;
+      layoutedWidth++; 
+    }
   
   // Adjust the layout in accordance with the label
  
   attr = [NSDictionary dictionaryWithObject: _font forKey: @"NSFontAttributeName"];
-  attrStr = [[NSAttributedString alloc] initWithString: [_toolbarItem label] attributes: attr];
+  if (label == nil || [label isEqualToString: @""])
+    label = @"Dummy";
+  attrStr = [[NSAttributedString alloc] initWithString: label attributes: attr];
       
   textWidth = [attrStr size].width + 2 * _InsetItemTextX;
   if (textWidth > layoutedWidth)
@@ -430,7 +503,12 @@
 
 - (void) _layout 
 {
-  // override the default implementation in order to do nothing
+  NSView *backView = [self _backView];
+  
+  // override the default implementation
+  
+  [(id)backView layout];
+  [backView setFrameSize: NSMakeSize(30, [backView frame].size.height)];
 }
 @end
 
@@ -452,11 +530,6 @@
 - (NSMenuItem *) _defaultMenuFormRepresentation 
 {
   return nil;// override the default implementation in order to do nothing
-}
-
-- (void) _layout 
-{
-  // override the default implementation in order to do nothing
 }
 @end
 
@@ -485,6 +558,8 @@
 {
   NSView *backView = [self _backView];
   
+  [(id)backView layout];
+  
   [backView setFrameSize: NSMakeSize(0, [backView frame].size.height)];
   
   // override the default implementation in order to reset the _backView to a zero width
@@ -504,7 +579,7 @@
 
   self = [super initWithItemIdentifier: itemIdentifier];
   [self setImage: image];
-  [self setLabel: @"Colors"];
+  [self setLabel: @"Colors"]; // FIX ME: localize
 
   // set action...
   [self setTarget: nil]; // goes to first responder..
@@ -527,7 +602,7 @@
 
   self = [super initWithItemIdentifier: itemIdentifier];
   [self setImage: image];
-  [self setLabel: @"Fonts"];
+  [self setLabel: @"Fonts"]; // FIX ME: localize
 
   // set action...
   [self setTarget: nil]; // goes to first responder..
@@ -550,7 +625,7 @@
   
   self = [super initWithItemIdentifier: itemIdentifier];
   [self setImage: image];
-  [self setLabel: @"Customize"];
+  [self setLabel: @"Customize"]; // FIX ME: localize
 
   // set action...
   [self setTarget: nil]; // goes to first responder..
@@ -573,7 +648,7 @@
 
   self = [super initWithItemIdentifier: itemIdentifier];
   [self setImage: image];
-  [self setLabel: @"Print..."];
+  [self setLabel: @"Print..."];  // FIX ME: localize
 
   // set action...
   [self setTarget: nil]; // goes to first responder..
@@ -694,6 +769,20 @@
     }
   
   return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_itemIdentifier);
+  RELEASE(_label);
+  RELEASE(_image);
+  RELEASE(_menuFormRepresentation);
+  RELEASE(_paletteLabel);
+  RELEASE(_toolTip);
+  RELEASE(_view);
+  RELEASE(_backView);
+  
+  [super dealloc];
 }
 
 - (BOOL) isEnabled
@@ -943,6 +1032,45 @@
 - (BOOL) _isFlexibleSpace
 {
   return [self isKindOfClass: [GSToolbarFlexibleSpaceItem class]];
+}
+
+- (BOOL) _selectable
+{
+  return _selectable;
+}
+
+- (BOOL) _selected
+{
+  return [(GSToolbarButton *)_backView state];
+}
+
+- (void) _setSelected: (BOOL)selected
+{
+  if (_selectable && ![self _selected] && selected)
+    {
+      [(GSToolbarButton *)_backView performClick:self];
+    }
+  else if (!selected)
+    {
+      [(GSToolbarButton *)_backView setState: NO];
+    }
+  else if (!_selectable)
+    {
+      NSLog(@"The toolbar item %@ is not selectable", self);
+    }
+}
+
+- (void) _setSelectable: (BOOL)selectable
+{
+  if ([_backView isKindOfClass: [GSToolbarButton class]])
+    {
+      _selectable = selectable;
+      [(GSToolbarButton *)_backView setButtonType: NSOnOffButton];
+    }
+  else
+    {
+      NSLog(@"The toolbar item %@ is not selectable", self);
+    }   
 }
 
 - (void) _setToolbar: (GSToolbar *)toolbar

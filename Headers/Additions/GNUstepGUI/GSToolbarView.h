@@ -52,9 +52,9 @@ enum {
 };
 
 typedef enum {
-  _ToolbarViewDefaultHeight = 61,
-  _ToolbarViewRegularHeight = 61,
-  _ToolbarViewSmallHeight = 51
+  _ToolbarViewDefaultHeight = 62,
+  _ToolbarViewRegularHeight = 62,
+  _ToolbarViewSmallHeight = 52
 } _ToolbarViewHeight;
 
 typedef enum {
@@ -88,6 +88,7 @@ static const int _ClippedItemsViewWidth = 28;
   unsigned int _borderMask;
   NSToolbarDisplayMode _displayMode;
   NSToolbarSizeMode _sizeMode;
+  NSRect _rectAvailable;
   unsigned int _heightFromLayout;
 }
 
@@ -105,12 +106,9 @@ static const int _ClippedItemsViewWidth = 28;
 @end
 
 // Toolbar related NSColor methods
-
 @interface NSColor (Extensions)
-
 + (NSColor *) toolbarBackgroundColor;
 + (NSColor *) toolbarBorderColor;
-
 @end
 
 #endif

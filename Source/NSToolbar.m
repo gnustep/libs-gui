@@ -73,9 +73,13 @@ static const int current_version = 1;
 
 @interface GSToolbarView (GNUstepPrivate)
 - (void) _reload;
+
+// Accessors
 - (NSArray *) _visibleBackViews;
-- (BOOL) _willBeVisible;
+- (void) _setSizeMode: (NSToolbarSizeMode)sizeMode;
+- (NSToolbarSizeMode) _sizeMode;
 - (void) _setWillBeVisible: (BOOL)willBeVisible;
+- (BOOL) _willBeVisible;
 @end
 
 @interface NSWindow (ToolbarPrivate)
@@ -204,6 +208,7 @@ static const int current_version = 1;
             broadcast: (BOOL)broadcast
 {
    _sizeMode = sizeMode;
+   [_toolbarView _setSizeMode: _sizeMode];
    
    [_toolbarView _reload];
    [_window _adjustToolbarView];
@@ -246,7 +251,8 @@ static const int current_version = 1;
 
 - (void)_setWindow: (NSWindow *)window 
 {
-  ASSIGN(_window, window); 
+  _window = window; 
+  // We don't do an ASSIGN because the toolbar view retains us.
   // call [NSWindow(Toolbar) setToolbar:] to set the toolbar window 
 }
 
