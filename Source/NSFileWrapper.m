@@ -218,8 +218,10 @@
         }
     }
   if (success && updateFilenamesFlag)
-    [self setFilename: path];
-
+    {
+      [self setFilename: [path lastPathComponent]];
+    }
+  
   return success;
 }
 
