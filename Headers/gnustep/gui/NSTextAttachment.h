@@ -100,21 +100,6 @@ enum {
 
 @end
 
-
-/* Convenience for creating an attributed string with an attachment.
- */
-@interface NSAttributedString (NSAttributedStringAttachmentConveniences)
-
-+ (NSAttributedString *)attributedStringWithAttachment:(NSTextAttachment *)attachment;
-
-@end
-
-@interface NSMutableAttributedString (NSMutableAttributedStringAttachmentConveniences)
-
-- (void)updateAttachmentsFromPath:(NSString *)path;
-
-@end
-
 #endif
 
 #endif /* _GNUstep_H_NSTextAttachment */
