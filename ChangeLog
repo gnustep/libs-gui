@@ -1,3 +1,7 @@
+2003-06-20  Adam Fedor  <fedor@gnu.org>
+
+	* Version 0.8.7
+
 2003-06-21  David Ayers  <d.ayers@inode.at>
 
 	* PrinterTypes/GNUmakefile.postamble: Add -f option to rm in

@@ -1,7 +1,7 @@
 ANNOUNCE
 ********
 
-This is version 0.8.6 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.8.7 of the GNUstep GUI library (`gnustep-gui').
 
 What is the GNUstep GUI Library?
 ================================
@@ -28,22 +28,20 @@ systems.
 GNUstep Base Library, the TIFF Graphics library, and a back-end
 component like the GNUstep 'Back' Backend.
 
-Noteworthy changes in version `0.8.6'
+Noteworthy changes in version `0.8.7'
 =====================================
 
-   Updated to install in new locations based on changes in gnustep-make
-1.7.0.
+   * NSBezierPath glyph methods implemented (depends on backend).
 
-   * New implementation of RTF producer (from Axel "Mikesch" Katerbau)
+   * NSDataLink[Panel/Manager] - some implementation
 
-   * Speed improvements, especially in tracking mouses movements.
-
-   * Lots of menu improvements.
+   * Added default to load user-defined bundles (GSAppKitUserBundles
+     default).
 
 Where can you get it?  How can you compile it?
 ==============================================
 
-   The gstep-gui-0.8.6.tar.gz distribution file has been placed on
+   The gstep-gui-0.8.7.tar.gz distribution file has been placed on
 `ftp.gnustep.org' in `pub/gnustep/core'.
 
    the TIFF Graphics library version 3.4 is required.

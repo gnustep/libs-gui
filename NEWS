@@ -1,7 +1,17 @@
 NEWS
 ****
 
-The currently released version of the library is `0.8.6'.
+The currently released version of the library is `0.8.7'.
+
+Noteworthy changes in version `0.8.7'
+=====================================
+
+   * NSBezierPath glyph methods implemented (depends on backend).
+
+   * NSDataLink[Panel/Manager] - some implementation
+
+   * Added default to load user-defined bundles (GSAppKitUserBundles
+     default).
 
 Noteworthy changes in version `0.8.6'
 =====================================

@@ -9,6 +9,15 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.8.7}
+
+@itemize @bullet
+@item NSBezierPath glyph methods implemented (depends on backend).
+@item NSDataLink[Panel/Manager] - some implementation
+@item Added default to load user-defined bundles (GSAppKitUserBundles default).
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.8.6}
 
@@ -19,8 +28,6 @@ Updated to install in new locations based on changes in gnustep-make 1.7.0.
 @item Speed improvements, especially in tracking mouses movements.
 @item Lots of menu improvements.
 @end itemize
-
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.8.5}
 
