@@ -1,3 +1,10 @@
+Fri Jan  8 14:25:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+        * Images/GNUmakefile: Added common_WMClose.tiff and
+        common_WMCloseBroken.tiff images.
+        * Source/NSApplication.m: Use specific images for denoting state of
+        documents in windows menu.
+
 Thu Jan  7 16:15:18 1999  Adam Fedor  <fedor@ultra.doc.com>
 
 	* Headers/gnustep/gui/GSContext.h: Add new backend instance
