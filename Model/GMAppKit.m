@@ -157,6 +157,7 @@ void __dummy_GMAppKit_functionForLinking() {}
 @end /* NSBox (GMArchiverMethods) */
 
 
+#if 0
 @implementation NSButton (GMArchiverMethods)
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
@@ -213,6 +214,7 @@ void __dummy_GMAppKit_functionForLinking() {}
 }
 
 @end /* NSButton (GMArchiverMethods) */
+#endif
 
 
 @implementation NSCell (GMArchiverMethods)
@@ -761,14 +763,18 @@ void __dummy_GMAppKit_functionForLinking() {}
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
   [archiver encodeString:[self title] withName:@"title"];
-  if ([self respondsToSelector: @selector(image)])
-    [archiver encodeObject:[self image] withName:@"image"];
-  if ([self respondsToSelector: @selector(onStateImage)])
-    [archiver encodeObject:[self onStateImage] withName:@"onStateImage"];
-  if ([self respondsToSelector: @selector(offStateImage)])
-    [archiver encodeObject:[self offStateImage] withName:@"offStateImage"];
-  if ([self respondsToSelector: @selector(mixedStateImage)])
-    [archiver encodeObject:[self mixedStateImage] withName:@"mixedStateImage"];
+  if ([self hasSubmenu] == NO)
+    {
+      if ([self respondsToSelector: @selector(image)])
+        [archiver encodeObject:[self image] withName:@"image"];
+      if ([self respondsToSelector: @selector(onStateImage)])
+        [archiver encodeObject:[self onStateImage] withName:@"onStateImage"];
+      if ([self respondsToSelector: @selector(offStateImage)])
+        [archiver encodeObject:[self offStateImage] withName:@"offStateImage"];
+      if ([self respondsToSelector: @selector(mixedStateImage)])
+         [archiver encodeObject:[self mixedStateImage]
+                       withName:@"mixedStateImage"];
+    }
   [archiver encodeString:[self keyEquivalent] withName:@"keyEquivalent"];
   if ([self respondsToSelector: @selector(state)])
     [archiver encodeInt:[self state] withName:@"state"];
@@ -884,6 +890,8 @@ void __dummy_GMAppKit_functionForLinking() {}
   [archiver encodeInt:      [self tag]       withName: @"tag"];
   [archiver encodeObject:   [self target]    withName: @"target"];
   [archiver encodeSelector: [self action]    withName: @"action"];
+  [archiver encodeInt:      [self autoresizingMask]
+             withName:      @"autoresizingMask"];
   
   /* OUCH! This code crashes the translator; probably we interfere somehow with
      the way NSPopUpButton is handled by the NeXT's NIB code. Sorry, the
@@ -945,6 +953,9 @@ void __dummy_GMAppKit_functionForLinking() {}
   [self setTag:     [unarchiver decodeIntWithName:      @"tag"]];
   [self setTarget:  [unarchiver decodeObjectWithName:   @"target"]];
   [self setAction:  [unarchiver decodeSelectorWithName: @"action"]];
+
+  [self setAutoresizingMask:
+      [unarchiver decodeIntWithName: @"autoresizingMask"]];
   
   return self;
 }
@@ -981,46 +992,18 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
-  id theCell = [self cell];
-
   [super encodeWithModelArchiver:archiver];
 
-  [archiver encodeBOOL:[self isSelectable] withName:@"isSelectable"];
   [archiver encodeSelector:[self errorAction] withName:@"errorAction"];
-  [archiver encodeObject:[self textColor] withName:@"textColor"];
-  [archiver encodeObject:[self backgroundColor] withName:@"backgroundColor"];
-  [archiver encodeBOOL:[self drawsBackground] withName:@"drawsBackground"];
-  [archiver encodeBOOL:[self isBordered] withName:@"isBordered"];
-  [archiver encodeBOOL:[self isBezeled] withName:@"isBezeled"];
   [archiver encodeObject:[self delegate] withName:@"delegate"];
-  [archiver encodeString:[self stringValue] withName:@"stringValue"];
-  [archiver encodeBOOL:[self isEditable] withName:@"isEditable"];
-  [archiver encodeBOOL:[theCell isScrollable] withName:@"isScrollable"];
 }
 
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
 {
-  id theCell;
-
   self = [super initWithModelUnarchiver:unarchiver];
 
-  [self setSelectable:[unarchiver decodeBOOLWithName:@"isSelectable"]];
   [self setErrorAction:[unarchiver decodeSelectorWithName:@"errorAction"]];
-  [self setTextColor:[unarchiver decodeObjectWithName:@"textColor"]];
-  [self setBackgroundColor:
-	    [unarchiver decodeObjectWithName:@"backgroundColor"]];
-  [self setDrawsBackground:[unarchiver decodeBOOLWithName:@"drawsBackground"]];
-
-  [self setBordered:[unarchiver decodeBOOLWithName:@"isBordered"]];
-  [self setBezeled:[unarchiver decodeBOOLWithName:@"isBezeled"]];
-
   [self setDelegate:[unarchiver decodeObjectWithName:@"delegate"]];
-
-  theCell = [self cell];
-
-  [theCell setStringValue:[unarchiver decodeStringWithName:@"stringValue"]];
-  [self setEditable:[unarchiver decodeBOOLWithName:@"isEditable"]];
-  [theCell setScrollable:[unarchiver decodeBOOLWithName:@"isScrollable"]];
 
   return self;
 }
@@ -1448,6 +1431,7 @@ void __dummy_GMAppKit_functionForLinking() {}
   self = [super initWithModelUnarchiver:unarchiver];
 
   [self setColor:[unarchiver decodeObjectWithName:@"color"]];
+  [self setBordered:[unarchiver decodeBOOLWithName:@"isBordered"]];
 
   return self;
 }
@@ -1457,6 +1441,7 @@ void __dummy_GMAppKit_functionForLinking() {}
   [super encodeWithModelArchiver:archiver];
 
   [archiver encodeObject:[self color] withName:@"color"];
+  [archiver encodeBOOL:[self isBordered] withName:@"isBordered"];
 }
 
 @end /* NSColorWell (GMArchiverMethods) */

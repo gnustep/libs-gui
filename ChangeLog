@@ -1,3 +1,13 @@
+2000-05-17  Jonathan Gapen  <jagapen@whitewater.chem.wisc.edu>
+	* Model/GMAppKit.m:  NSButton methods removed; all NSButton
+	attributes are actually stored in an associated NSButtonCell.
+	Eliminate (de)archiving of NSTextField attributes that duplicate
+	attributes of its associated NSTextFieldCell.
+	NSMenuItem [encodeWithModelArchiver:] Do not encode images when
+	the item has a submenu. (Patch from Nicola Pero.)  (De)archive
+	autoresizing mask in NSPopUpButton.  (De)archive border attribute
+	of NSColorWell.
+
 2000-05-13  Fred Kiefer  <FredKiefer@gmx.de>
 	* Headers/gnustep/gui/NSText.h:
 	* Headers/gnustep/gui/NSTextView.h:
