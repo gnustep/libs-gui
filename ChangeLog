@@ -1,3 +1,22 @@
+Sat Jun 16 15:19:29 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSCell.m ([-performClick:]): Call setNextState:
+	also when we have no control view.
+	
+Sat Jun 16 14:53:05 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Patches by Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>.
+	* Source/NSBrowser.m ([-keyDown:]): Added missing return - in the
+	case that TAB was pressed.
+	* Source/NSCell.m ([-performClick:]): Call setNextState:.
+	* Source/NSFontPanel.m ([-_initWithoutGModel]): Use defer=YES when
+	initializing the panel.  Set up the next key view chain.  Set the
+	initial first responder to be the Set button.
+	([-fieldEditor:forObject:]): New method.
+	* Source/NSPanel.m ([GSAlertPanel
+	-initWithContentRect:styleMask:backing:defer:screen:]): Set up the
+	next key view chain.
+	
 Wed Jun 13 02:36:44 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSBitmapImageRep.m ([+imageRepsWithData:]): Replaced
