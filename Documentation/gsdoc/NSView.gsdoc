@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.6//EN" "http://www.gnustep.org/gsdoc-0_6_6.xml">
 <gsdoc base="NSView" prev="NSTextView.html" next="NSWindow.html" up="Gui.html">
   <head>
     <title>NSView</title>
@@ -10,8 +10,11 @@
     <author name="James Dessart">
       <email address="skwirl@cam.org"/>
     </author>
-    <version>0.2</version>
-    <date>8 April, 2000</date>
+    <author name="Nicola Pero">
+      <email address="n.pero@mi.flashnet.it"/>
+    </author>
+    <version>0.3</version>
+    <date>24 November, 2000</date>
   </head>
   <body>
     <chapter>
@@ -353,6 +356,24 @@
           <sel>drawRect:</sel>
           <arg type="NSRect">aRect</arg>
           <desc>
+	    This method is invoked to handle drawing inside the view.
+	    The default NSView's implementation does nothing;
+	    subclasses might override it to draw something inside the
+	    view.  Since NSView's implementation is guaranteed to be
+	    empty, you should not call super's implementation when you
+	    override it in subclasses.  drawRect: is invoked when the
+	    focus has already been locked on the view; you can use
+	    arbitrary postscript functions in drawRect: to draw inside
+	    your view; the coordinate system in which you draw is the
+	    view's own coordinate system (this means for example that
+	    you should refer to the rectangle covered by the view
+	    using its bounds, and not its frame).  The argument of
+	    drawRect: is the rectangle which needs to be redrawn.  In
+	    a lossy implementation, you can ignore the argument and
+	    redraw the whole view; if you are aiming at performance,
+	    you may want to redraw only what is inside the rectangle
+	    which needs to be redrawn; this usually improves drawing
+	    performance considerably.
           </desc>
         </method>
         <method type="void">
