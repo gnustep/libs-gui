@@ -30,15 +30,38 @@
 */ 
 
 #include <gnustep/gui/config.h>
-#include <Foundation/NSString.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSDictionary.h>
 #include <AppKit/NSMenuItem.h>
 #include <AppKit/NSMenu.h>
 
 static BOOL usesUserKeyEquivalents = NO;
-
 static Class imageClass;
+
+@interface GSMenuSeparator : NSMenuItem
+
+@end
+
+@implementation GSMenuSeparator
+
+- (id) init
+{
+  self = [super initWithTitle: @"-----------"
+		action: NULL
+		keyEquivalent: @""];
+  _enabled = NO;
+  _changesState = NO;
+  return self;
+}
+
+- (BOOL) isSeparatorItem
+{
+  return YES;
+}
+
+// FIXME: We need a lot of methods to switch of changes for a separator
+@end
+
 
 @implementation NSMenuItem
 
@@ -63,38 +86,28 @@ static Class imageClass;
 
 + (id <NSMenuItem>) separatorItem
 {
-  // FIXME: implementation needed (Lazaro).
-  return nil;
+  return [GSMenuSeparator new];
 }
 
 - (id) init
 {
-  self = [super init];
-  mi_target = nil;
-  mi_menu = nil;
-  mi_mnemonicLocation = 255; // No mnemonic
-  mi_image = nil;
-  mi_onStateImage = nil;
-  mi_offStateImage = nil;
-  mi_mixedStateImage = nil;
-  mi_enabled = YES;
-  mi_state = NSOffState;
-  mi_changesState = NO;
-  return self;
+  return [self initWithTitle: @""
+	       action: NULL
+	       keyEquivalent: @""];
 }
 
 - (void) dealloc
 {
   NSDebugLog (@"NSMenuItem '%@' dealloc", [self title]);
 
-  TEST_RELEASE(mi_title);
-  TEST_RELEASE(mi_keyEquivalent);
-  TEST_RELEASE(mi_image);
-  TEST_RELEASE(mi_onStateImage);
-  TEST_RELEASE(mi_offStateImage);
-  TEST_RELEASE(mi_mixedStateImage);
-  TEST_RELEASE(mi_submenu);
-  TEST_RELEASE(mi_representedObject);
+  TEST_RELEASE(_title);
+  TEST_RELEASE(_keyEquivalent);
+  TEST_RELEASE(_image);
+  TEST_RELEASE(_onStateImage);
+  TEST_RELEASE(_offStateImage);
+  TEST_RELEASE(_mixedStateImage);
+  TEST_RELEASE(_submenu);
+  TEST_RELEASE(_representedObject);
   [super dealloc];
 }
 
@@ -102,34 +115,43 @@ static Class imageClass;
 	      action: (SEL)aSelector
        keyEquivalent: (NSString*)charCode
 {
-  self = [self init];
+  self = [super init];
+  //_menu = nil;
   [self setTitle: aString];
-  mi_action = aSelector;
   [self setKeyEquivalent: charCode];
+  _keyEquivalentModifierMask = NSCommandKeyMask;
+  _mnemonicLocation = 255; // No mnemonic
+  _state = NSOffState;
+  _enabled = YES;
+  //_image = nil;
   // Set the images according to the spec. On: check mark; off: dash.
   [self setOnStateImage: [imageClass imageNamed: @"common_2DCheckMark"]];
   [self setMixedStateImage: [imageClass imageNamed: @"common_2DDash"]];
+  //_offStateImage = nil;
+  //_target = nil;
+  _action = aSelector;
+  //_changesState = NO;
   return self;
 }
 
 - (void) setMenu: (NSMenu*)menu
 {
-  mi_menu = menu;
-  if (mi_submenu != nil)
+  _menu = menu;
+  if (_submenu != nil)
     {
-      [mi_submenu setSupermenu: menu];
-      [self setTarget: mi_menu];
+      [_submenu setSupermenu: menu];
+      [self setTarget: _menu];
     }
 }
 
 - (NSMenu*) menu
 {
-  return mi_menu;
+  return _menu;
 }
 
 - (BOOL) hasSubmenu
 {
-  return (mi_submenu == nil) ? NO : YES;
+  return (_submenu == nil) ? NO : YES;
 }
 
 - (void) setSubmenu: (NSMenu*)submenu
@@ -137,53 +159,41 @@ static Class imageClass;
   if ([submenu supermenu] != nil)
     [NSException raise: NSInvalidArgumentException
 		format: @"submenu already has supermenu: "];
-  ASSIGN(mi_submenu, submenu);
-  [submenu setSupermenu: mi_menu];
-  [self setTarget: mi_menu];
+  ASSIGN(_submenu, submenu);
+  [submenu setSupermenu: _menu];
+  [self setTarget: _menu];
   [self setAction: @selector(submenuAction:)];
 }
 
 - (NSMenu*) submenu
 {
-  return mi_submenu;
+  return _submenu;
 }
 
 - (void) setTitle: (NSString*)aString
 {
-  NSString *_string;
+  if (nil == aString)
+    aString = @"";
 
-  if (!aString)
-    _string = @"";
-  else
-    _string = [aString copy];
-
-  TEST_RELEASE(mi_title);
-  mi_title = _string;
+  ASSIGNCOPY(_title,  aString);
 }
 
 - (NSString*) title
 {
-  return mi_title;
+  return _title;
 }
 
 - (BOOL) isSeparatorItem
 {
-  // FIXME: This stuff only makes sense in MacOS or Windows alike
-  // interface styles. Maybe someone wants to implement this (Lazaro).
   return NO;
 }
 
 - (void) setKeyEquivalent: (NSString*)aKeyEquivalent
 {
-  NSString *_string;
+  if (nil == aKeyEquivalent)
+    aKeyEquivalent = @"";
 
-  if (!aKeyEquivalent)
-    _string = @"";
-  else
-    _string = [aKeyEquivalent copy];
-
-  TEST_RELEASE(mi_keyEquivalent);
-  mi_keyEquivalent = _string;
+  ASSIGNCOPY(_keyEquivalent,  aKeyEquivalent);
 }
 
 - (NSString*) keyEquivalent
@@ -191,67 +201,66 @@ static Class imageClass;
   if (usesUserKeyEquivalents)
     return [self userKeyEquivalent];
   else
-    return mi_keyEquivalent;
+    return _keyEquivalent;
 }
 
 - (void) setKeyEquivalentModifierMask: (unsigned int)mask
 {
-  mi_keyEquivalentModifierMask = mask;
+  _keyEquivalentModifierMask = mask;
 }
 
 - (unsigned int) keyEquivalentModifierMask
 {
-  return mi_keyEquivalentModifierMask;
+  return _keyEquivalentModifierMask;
 }
 
 - (NSString*) userKeyEquivalent
 {
-  NSString	*userKeyEquivalent = [[[[NSUserDefaults standardUserDefaults]
-      persistentDomainForName:NSGlobalDomain]
-      objectForKey:@"NSCommandKeys"]
-      objectForKey:mi_title];
+  NSString *userKeyEquivalent = [[[[NSUserDefaults standardUserDefaults]
+				      persistentDomainForName: NSGlobalDomain]
+				     objectForKey: @"NSCommandKeys"]
+				    objectForKey: _title];
 
-  if (!userKeyEquivalent)
+  if (nil == userKeyEquivalent)
     userKeyEquivalent = @"";
 
   return userKeyEquivalent;
 }
 
+- (unsigned int) userKeyEquivalentModifierMask
+{
+  // FIXME
+  return NSCommandKeyMask;
+}
+
 - (void) setMnemonicLocation: (unsigned)location
 {
-  mi_mnemonicLocation = location;
+  _mnemonicLocation = location;
 }
 
 - (unsigned) mnemonicLocation
 {
-  if (mi_mnemonicLocation != 255)
-    return mi_mnemonicLocation;
+  if (_mnemonicLocation != 255)
+    return _mnemonicLocation;
   else
     return NSNotFound;
 }
 
 - (NSString*) mnemonic
 {
-  if (mi_mnemonicLocation != 255)
-    return [[mi_title substringFromIndex: mi_mnemonicLocation]
-	                substringToIndex: 1];
+  if (_mnemonicLocation != 255)
+    return [_title substringWithRange: NSMakeRange(_mnemonicLocation, 1)];
   else
     return @"";
 }
 
 - (void) setTitleWithMnemonic: (NSString*)stringWithAmpersand
 {
-  // FIXME: Do something more than copy the string.  Anyway this will only
-  // sense in Windows, so... (Lazaro).
-  NSString *_string;
+  unsigned int location = [stringWithAmpersand rangeOfString: @"&"].location;
 
-  if (!stringWithAmpersand)
-    _string = @"";
-  else
-    _string = [stringWithAmpersand copy];
-
-  TEST_RELEASE(mi_title);
-  mi_title = _string;
+  [self setTitle: [stringWithAmpersand stringByReplacingString: @"&"
+				       withString: @""]];
+  [self setMnemonicLocation: location];
 }
 
 - (void) setImage: (NSImage *)image
@@ -259,23 +268,23 @@ static Class imageClass;
   NSAssert(image == nil || [image isKindOfClass: imageClass],
     NSInvalidArgumentException);
 
-  ASSIGN(mi_image, image);
+  ASSIGN(_image, image);
 }
 
 - (NSImage*) image
 {
-  return mi_image;
+  return _image;
 }
 
 - (void) setState: (int)state
 {
-  mi_state = state;
-  mi_changesState = YES;
+  _state = state;
+  _changesState = YES;
 }
 
 - (int) state
 {
-  return mi_state;
+  return _state;
 }
 
 - (void) setOnStateImage: (NSImage*)image
@@ -283,12 +292,12 @@ static Class imageClass;
   NSAssert(image == nil || [image isKindOfClass: imageClass],
     NSInvalidArgumentException);
 
-  ASSIGN(mi_onStateImage, image);
+  ASSIGN(_onStateImage, image);
 }
 
 - (NSImage*) onStateImage
 {
-  return mi_onStateImage;
+  return _onStateImage;
 }
 
 - (void) setOffStateImage: (NSImage*)image
@@ -296,12 +305,12 @@ static Class imageClass;
   NSAssert(image == nil || [image isKindOfClass: imageClass],
     NSInvalidArgumentException);
 
-  ASSIGN(mi_offStateImage, image);
+  ASSIGN(_offStateImage, image);
 }
 
 - (NSImage*) offStateImage
 {
-  return mi_offStateImage;
+  return _offStateImage;
 }
 
 - (void) setMixedStateImage: (NSImage*)image
@@ -309,62 +318,62 @@ static Class imageClass;
   NSAssert(image == nil || [image isKindOfClass: imageClass],
     NSInvalidArgumentException);
 
-  ASSIGN(mi_mixedStateImage, image);
+  ASSIGN(_mixedStateImage, image);
 }
 
 - (NSImage*) mixedStateImage
 {
-  return mi_mixedStateImage;
+  return _mixedStateImage;
 }
 
 - (void) setEnabled: (BOOL)flag
 {
-  mi_enabled = flag;
+  _enabled = flag;
 }
 
 - (BOOL) isEnabled
 {
-  return mi_enabled;
+  return _enabled;
 }
 
 - (void) setTarget: (id)anObject
 {
-  mi_target = anObject;
+  _target = anObject;
 }
 
 - (id) target
 {
-  return mi_target;
+  return _target;
 }
 
 - (void) setAction: (SEL)aSelector
 {
-  mi_action = aSelector;
+  _action = aSelector;
 }
 
 - (SEL) action
 {
-  return mi_action;
+  return _action;
 }
 
 - (void) setTag: (int)anInt
 {
-  mi_tag = anInt;
+  _tag = anInt;
 }
 
 - (int) tag
 {
-  return mi_tag;
+  return _tag;
 }
 
 - (void) setRepresentedObject: (id)anObject
 {
-  ASSIGN(mi_representedObject, anObject);
+  ASSIGN(_representedObject, anObject);
 }
 
 - (id) representedObject
 {
-  return mi_representedObject;
+  return _representedObject;
 }
 
 /*
@@ -372,26 +381,20 @@ static Class imageClass;
  */
 - (id) copyWithZone: (NSZone*)zone
 {
-  NSMenuItem *copy = [[isa allocWithZone: zone] init];
+  NSMenuItem *copy = (NSMenuItem*)NSCopyObject (self, 0, zone);
 
   NSDebugLog (@"menu item '%@' copy", [self title]);
-  copy->mi_menu = mi_menu;
-  copy->mi_title = [mi_title copyWithZone: zone];
-  copy->mi_keyEquivalent = [mi_keyEquivalent copyWithZone: zone];
-  copy->mi_keyEquivalentModifierMask = mi_keyEquivalentModifierMask;
-  copy->mi_mnemonicLocation = mi_mnemonicLocation;
-  copy->mi_state = mi_state;
-  copy->mi_enabled = mi_enabled;
-  ASSIGN(copy->mi_image, mi_image);
-  ASSIGN(copy->mi_onStateImage, mi_onStateImage);
-  ASSIGN(copy->mi_offStateImage, mi_offStateImage);
-  ASSIGN(copy->mi_mixedStateImage, mi_mixedStateImage);
-  copy->mi_changesState = mi_changesState;
-  copy->mi_target = mi_target;
-  copy->mi_action = mi_action;
-  copy->mi_tag = mi_tag;
-  copy->mi_representedObject = RETAIN(mi_representedObject);
-  copy->mi_submenu = [mi_submenu copy];
+
+  // We reset the menu to nil to allow the reuse of the copy
+  copy->_menu = nil;
+  copy->_title = [_title copyWithZone: zone];
+  copy->_keyEquivalent = [_keyEquivalent copyWithZone: zone];
+  copy->_image = [_image copyWithZone: zone];
+  copy->_onStateImage = [_onStateImage copyWithZone: zone];
+  copy->_offStateImage = [_offStateImage copyWithZone: zone];
+  copy->_mixedStateImage = [_mixedStateImage copyWithZone: zone];
+  copy->_representedObject = RETAIN(_representedObject);
+  copy->_submenu = [_submenu copy];
 
   return copy;
 }
@@ -401,42 +404,42 @@ static Class imageClass;
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodeObject: mi_title];
-  [aCoder encodeObject: mi_keyEquivalent];
-  [aCoder encodeValueOfObjCType: "I" at: &mi_keyEquivalentModifierMask];
-  [aCoder encodeValueOfObjCType: "I" at: &mi_mnemonicLocation];
-  [aCoder encodeValueOfObjCType: "i" at: &mi_state];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &mi_enabled];
-  [aCoder encodeObject: mi_image];
-  [aCoder encodeObject: mi_onStateImage];
-  [aCoder encodeObject: mi_offStateImage];
-  [aCoder encodeObject: mi_mixedStateImage];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &mi_changesState];
-  [aCoder encodeConditionalObject: mi_target];
-  [aCoder encodeValueOfObjCType: @encode(SEL) at: &mi_action];
-  [aCoder encodeValueOfObjCType: "i" at: &mi_tag];
-  [aCoder encodeConditionalObject: mi_representedObject];
-  [aCoder encodeObject: mi_submenu];
+  [aCoder encodeObject: _title];
+  [aCoder encodeObject: _keyEquivalent];
+  [aCoder encodeValueOfObjCType: "I" at: &_keyEquivalentModifierMask];
+  [aCoder encodeValueOfObjCType: "I" at: &_mnemonicLocation];
+  [aCoder encodeValueOfObjCType: "i" at: &_state];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_enabled];
+  [aCoder encodeObject: _image];
+  [aCoder encodeObject: _onStateImage];
+  [aCoder encodeObject: _offStateImage];
+  [aCoder encodeObject: _mixedStateImage];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_changesState];
+  [aCoder encodeConditionalObject: _target];
+  [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
+  [aCoder encodeValueOfObjCType: "i" at: &_tag];
+  [aCoder encodeConditionalObject: _representedObject];
+  [aCoder encodeObject: _submenu];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &mi_title];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &mi_keyEquivalent];
-  [aDecoder decodeValueOfObjCType: "I" at: &mi_keyEquivalentModifierMask];
-  [aDecoder decodeValueOfObjCType: "I" at: &mi_mnemonicLocation];
-  [aDecoder decodeValueOfObjCType: "i" at: &mi_state];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &mi_enabled];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &mi_image];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &mi_onStateImage];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &mi_offStateImage];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &mi_mixedStateImage];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &mi_changesState];
-  mi_target = [aDecoder decodeObject];
-  [aDecoder decodeValueOfObjCType: @encode(SEL) at: &mi_action];
-  [aDecoder decodeValueOfObjCType: "i" at: &mi_tag];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &mi_representedObject];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &mi_submenu];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_title];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_keyEquivalent];
+  [aDecoder decodeValueOfObjCType: "I" at: &_keyEquivalentModifierMask];
+  [aDecoder decodeValueOfObjCType: "I" at: &_mnemonicLocation];
+  [aDecoder decodeValueOfObjCType: "i" at: &_state];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_enabled];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_image];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_onStateImage];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_offStateImage];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_mixedStateImage];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_changesState];
+  _target = [aDecoder decodeObject];
+  [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
+  [aDecoder decodeValueOfObjCType: "i" at: &_tag];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_representedObject];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_submenu];
 
   return self;
 }
@@ -452,12 +455,12 @@ static Class imageClass;
  */
 - (void) setChangesState: (BOOL)flag
 {
-  mi_changesState = flag;
+  _changesState = flag;
 }
 
 - (BOOL) changesState
 {
-  return mi_changesState;
+  return _changesState;
 }
 
 @end
