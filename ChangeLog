@@ -1,3 +1,14 @@
+2003-04-10  Serg Stoyan <stoyan@hologr.com>
+
+	* Source/NSPopUpButton.m:
+	(mouseDown): Get selected item index from _cell. Set NSMenuView
+	selected item if selection changed, revert to old if unchanged or
+	menu item disabled.
+	
+	* Source/NSPopUpButtonCell.m:
+	(selectItem:): Remove image from old selected item and add image 
+	to new selected item only if image is not set by user.
+
 2003-04-10  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSWindow.m ([-sendEvent:], case NSRightMouseDown):
