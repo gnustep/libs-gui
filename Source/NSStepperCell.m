@@ -124,7 +124,7 @@
   return c;
 }
 
-inline void DrawUpButton(NSRect aRect)
+static inline void DrawUpButton(NSRect aRect)
 {
   NSRectEdge up_sides[] = {NSMinXEdge, NSMaxYEdge, 
 			   NSMaxXEdge, NSMinYEdge};
@@ -154,7 +154,7 @@ inline void DrawUpButton(NSRect aRect)
   PSstroke();
 }
 
-inline void HighlightUpButton(NSRect aRect)
+static inline void HighlightUpButton(NSRect aRect)
 {
   NSRectEdge up_sides[] = {NSMinXEdge, NSMaxYEdge, 
 			   NSMaxXEdge, NSMinYEdge};
@@ -184,7 +184,7 @@ inline void HighlightUpButton(NSRect aRect)
   PSstroke();
 }
 
-inline void DrawDownButton(NSRect aRect)
+static inline void DrawDownButton(NSRect aRect)
 {
   NSRectEdge up_sides[] = {NSMinXEdge, NSMaxYEdge, 
 			   NSMaxXEdge, NSMinYEdge};
@@ -215,7 +215,7 @@ inline void DrawDownButton(NSRect aRect)
   PSstroke();
 }
 
-inline void HighlightDownButton(NSRect aRect)
+static inline void HighlightDownButton(NSRect aRect)
 {
   NSRectEdge up_sides[] = {NSMinXEdge, NSMaxYEdge, 
 			   NSMaxXEdge, NSMinYEdge};

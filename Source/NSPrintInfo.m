@@ -45,9 +45,9 @@
 // FIXME: retain/release of dictionary with retain/release of printInfo?
 
 // Class variables:
-NSPrintInfo *sharedPrintInfoObject = nil;
-NSMutableDictionary *printInfoDefaults = nil;
-NSDictionary *paperSizes = nil;
+static NSPrintInfo *sharedPrintInfoObject = nil;
+static NSMutableDictionary *printInfoDefaults = nil;
+static NSDictionary *paperSizes = nil;
 
 @interface NSPrintInfo (private)
 + initPrintInfoDefaults;

@@ -115,10 +115,10 @@ static NSColor			*clearColor = nil;
 static Class			cachedClass = 0;
 static Class			bitmapClass = 0;
 
-NSArray *iterate_reps_for_types(NSArray *imageReps, SEL method);
+static NSArray *iterate_reps_for_types(NSArray *imageReps, SEL method);
 
 /* Find the GSRepData object holding a representation */
-GSRepData*
+static GSRepData*
 repd_for_rep(NSArray *_reps, NSImageRep *rep)
 {
   NSEnumerator	*enumerator = [_reps objectEnumerator];
@@ -1309,7 +1309,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
    array of objects.  Add these together, with duplicates
    weeded out.  Used by imageUnfilteredPasteboardTypes,
    imageUnfilteredFileTypes, etc. */
-NSArray *
+static NSArray *
 iterate_reps_for_types(NSArray* imageReps, SEL method)
 {
   NSImageRep	*rep;

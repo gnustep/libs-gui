@@ -30,9 +30,9 @@
 
 @implementation NSProgressIndicator
 
-NSColor *fillColour = nil;
+static NSColor *fillColour = nil;
 #define maxCount 1
-NSImage *images[maxCount];
+static NSImage *images[maxCount];
 
 + (void) initialize
 {
