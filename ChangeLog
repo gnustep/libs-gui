@@ -1,3 +1,8 @@
+Fri Sep  1 12:01:36 2000  Georg Fleischmann  <georg@vhf.de>
+
+	* Source/NSTabView.m ([-drawRect:]): Redraw using bounds instead
+	 of rect.
+	
 Fri Sep  1 00:56:05 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSColorPanel.m ([+dragColor:withEvent:fromView:]): Fixed 
@@ -5,13 +10,13 @@ Fri Sep  1 00:56:05 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 2000-08-31  Fred Kiefer  <FredKiefer@gmx.de>
 
-	* Headers/gnustep/gui/NSFont.h: 
-	Removed method -widths, as this is no longer needed.
+	* Headers/gnustep/gui/NSFont.h: Removed method -widths, as this is
+	no longer needed.
 	* Headers/gnustep/gui/GSFontInfo.h: Removed ivar and method
-	widths. Changed ivar weigth to type int and added ivars traits and
-	mostCompatibleStringEncoding. 
+	widths.  Changed ivar weigth to type int and added ivars traits
+	and mostCompatibleStringEncoding.
 	* Source/NSFont.m: Removed method -widths 
-	* Source/GSFontInfo.m: Removed method -widths. Changed [weigth],
+	* Source/GSFontInfo.m: Removed method -widths.  Changed [weigth],
 	[mostCompatibleStringEncoding] and [traits] to return the ivars.
 	Set those in [init] to the default values.
 
