@@ -1,3 +1,11 @@
+2000-04-07  Jonathan Gapen  <jagapen@whitewater.chem.wisc.edu>
+
+	* Source/NSWindow.m: Update [-performClose:] to check send
+	[-windowWillClose:] message to window controller's document.
+	* Source/NSWindowController.m: Add copyright notice, update
+	to GC-compatible RETAIN/ASSIGN macros, re-format.
+	* Source/NSWorkspace.m: [-getInfoForFile:application:type:] Implement.
+
 2000-04-06  Adam Fedor  <fedor@gnu.org>
 
 	* Source/GSFontInfo.m: allFonts returns GSFontInfo objects.

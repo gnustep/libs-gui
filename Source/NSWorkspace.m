@@ -50,6 +50,8 @@
 #define stringify_it(X) #X
 #define	mkpath(X) stringify_it(X) "/Tools"
 
+#define PosixExecutePermission	(0111)
+
 static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
 
 @interface	_GSWorkspaceCenter: NSNotificationCenter
@@ -736,7 +738,69 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 	    application: (NSString **)appName
 		   type: (NSString **)type
 {
-  return NO;
+  NSFileManager *fm = [NSFileManager defaultManager];
+  NSDictionary *attributes;
+  NSString *fileType;
+  NSString *extension = [fullPath pathExtension];
+
+  attributes = [fm fileAttributesAtPath:fullPath traverseLink:YES];
+  if (attributes)
+    {
+      fileType = [attributes fileType];
+      if ([fileType isEqualToString: NSFileTypeRegular])
+        {
+          if ([attributes filePosixPermissions] & PosixExecutePermission)
+            {
+              *type = NSShellCommandFileType;
+              *appName = nil;
+            }
+          else
+            {
+              *type = NSPlainFileType;
+              *appName = [self getBestAppInRole:nil forExtension:extension];
+            }
+        }
+      else if([fileType isEqualToString: NSFileTypeDirectory])
+        {
+          if ([extension isEqualToString: @"app"]
+              || [extension isEqualToString: @"debug"]
+              || [extension isEqualToString: @"profile"])
+            {
+              *type = NSApplicationFileType;
+              *appName = nil;
+            }
+          else if ([extension isEqualToString: @"bundle"])
+            {
+              *type = NSPlainFileType;
+              *appName = nil;
+            }
+          // the idea here is that if the parent directory's fileSystemNumber
+          // differs, this must be a filesystem mount point
+          else if ([[fm fileAttributesAtPath:
+                       [fullPath stringByDeletingLastPathComponent]
+                                traverseLink:YES] fileSystemNumber]
+                     != [attributes fileSystemNumber])
+            {
+              *type = NSFilesystemFileType;
+              *appName = nil;
+            }
+          else
+            {
+              *type = NSDirectoryFileType;
+              *appName = nil;
+            }
+        }
+      else
+        {
+          // this catches sockets, character special, block special, and
+          // unknown file types
+          *type = NSPlainFileType;
+          *appName = nil;
+        }
+      return YES;
+    }
+  else
+    return NO;
 }
 
 - (NSImage *) iconForFile: (NSString *)aPath

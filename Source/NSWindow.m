@@ -1780,6 +1780,18 @@ resetCursorRectsForView(NSView *theView)
       return;
     }
 
+  if (_windowController)
+    {
+      NSDocument *document = [_windowController document];
+
+      if (document && (document != _delegate)
+            && [document respondsToSelector: @selector(windowShouldClose:)]
+              && ![document windowShouldClose: self])
+        {
+          NSBeep();
+          return;
+        }
+    }
   if ([_delegate respondsToSelector: @selector(windowShouldClose:)])
     {
       /*
