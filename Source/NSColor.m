@@ -1009,8 +1009,10 @@ static NSMutableDictionary	*colorStrings = nil;
 
 - (NSColor *)colorWithAlphaComponent:(float)alpha
 {
-  [self setAlpha: alpha];
-  return self;
+  NSColor       *aCopy = [self copy];
+  if (aCopy)
+    [aCopy setAlpha: alpha];
+  return aCopy;
 }
 
 - (NSColor*) highlightWithLevel: (float)level
