@@ -1206,15 +1206,25 @@ Class gmodel_class(void)
 {
   [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
   [aCoder decodeValueOfObjCType: @encode(id) at: &_delegate];  
-  [super initWithCoder: aCoder];
-
-  return self;
+  [aCoder decodeValueOfObjCType: @encode(id) at: &_dataSource];  
+  [aCoder decodeValueOfObjCType: @encode(BOOL) at: &_usesDataSource];  
+  [aCoder decodeValueOfObjCType: @encode(int) at: &_buttonType];  
+  [aCoder decodeValueOfObjCType: @encode(int) at: &_bezelStyle]; 
+  [aCoder decodeValueOfObjCType: @encode(BOOL) at: &_bordered];   
+  [aCoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsMixedState];   
+  return [super initWithCoder: aCoder];
 }
 
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
   [aCoder encodeValueOfObjCType: @encode(id) at: &_className];  
   [aCoder encodeValueOfObjCType: @encode(id) at: &_delegate];  
+  [aCoder encodeValueOfObjCType: @encode(id) at: &_dataSource];  
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_usesDataSource];  
+  [aCoder encodeValueOfObjCType: @encode(int) at: &_buttonType];  
+  [aCoder encodeValueOfObjCType: @encode(int) at: &_bezelStyle]; 
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_bordered];   
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsMixedState];   
   [super encodeWithCoder: aCoder];
 }
 
@@ -1251,6 +1261,7 @@ Class gmodel_class(void)
   [obj setFont: [self font]];
   [obj setAlignment: [self alignment]];
   [obj setEnabled: [self isEnabled]];
+  [obj setContinuous: [self isContinuous]];
 
   // since only some controls have delegates, we need to test...
   if([obj respondsToSelector: @selector(setDelegate:)])
@@ -1276,6 +1287,7 @@ Class gmodel_class(void)
       [obj setButtonType: _buttonType];
       [obj setBezelStyle: _bezelStyle];
       [obj setBordered: _bordered];
+      [obj setAllowsMixedState: _allowsMixedState];
     }
 
   RELEASE(self);

@@ -117,6 +117,7 @@
   NSButtonType         _buttonType;
   NSBezelStyle         _bezelStyle;
   BOOL                 _bordered;
+  BOOL                 _allowsMixedState;
 }
 @end
 
