@@ -171,7 +171,7 @@ static NSImage *_pbc_image[2];
 
 - (void) insertItemWithTitle: (NSString *)title atIndex: (int)index
 {
-  NSMenuItem *anItem;
+  id <NSMenuItem> anItem;
   int count = [_menu numberOfItems];
 
   if (index < 0)
@@ -298,7 +298,7 @@ static NSImage *_pbc_image[2];
 
 - (void) selectItemAtIndex: (int)index
 {
-  NSMenuItem	*anItem;
+  id <NSMenuItem> anItem;
 
   if (index < 0) 
     anItem = nil;
@@ -310,14 +310,14 @@ static NSImage *_pbc_image[2];
 
 - (void) selectItemWithTitle: (NSString *)title
 {
-  NSMenuItem	*anItem = [self itemWithTitle: title];
+  id <NSMenuItem> anItem = [self itemWithTitle: title];
 
   [self selectItem: anItem];
 }
 
 - (void) setTitle: (NSString *)aString
 {
-  NSMenuItem	*anItem;
+  id <NSMenuItem> anItem;
 
   if (_pbcFlags.pullsDown)
     {
