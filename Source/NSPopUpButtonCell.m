@@ -72,14 +72,16 @@ static NSImage *_pbc_image[2];
     }
 
   _menu = [[NSMenu alloc] initWithTitle: @""];
-  [_menu _setOwnedByPopUp: YES];
+  [_menu _setOwnedByPopUp: self];
 
   return self;
 }
 
 - (void) setMenu: (NSMenu *)menu
 {
+  [_menu _setOwnedByPopUp: nil];    
   ASSIGN(_menu, menu);
+  [_menu _setOwnedByPopUp: self];
 }
 
 - (NSMenu *) menu
@@ -632,7 +634,7 @@ static NSImage *_pbc_image[2];
   [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
   _pbcFlags.arrowPosition = flag;
 
-  [_menu _setOwnedByPopUp: YES];
+  [_menu _setOwnedByPopUp: self];
   return self;
 }
 
