@@ -1,3 +1,8 @@
+2003-10-29  Bjorn Giesler <bjoern@giesler.de>
+
+	* Source/externs.m: New MacOS 10.3 pasteboard types
+	* Headers/AppKit/NSPasteboard.h: New MacOS 10.3 pasteboard types
+
 2003-10-29  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSDisplayServer.m: ([-dealloc]) remove deallocated server

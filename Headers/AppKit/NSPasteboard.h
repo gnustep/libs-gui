@@ -128,6 +128,16 @@ APPKIT_EXPORT NSString *NSURLPboardType;
  * Pasteboard contains HTML data
  */
 APPKIT_EXPORT NSString *NSHTMLPboardType;
+
+/**
+ * Pasteboard contains VCard (address book) data
+ */
+APPKIT_EXPORT NSString *NSVCardPboardType;
+
+/**
+ * Pasteboard contains promised files
+ */
+APPKIT_EXPORT NSString *NSFilesPromisePboardType;
 #endif
 
 /**
