@@ -1432,7 +1432,18 @@ incorrectly. */
   if (!_tf.is_horizontally_resizable)
     size.width = _bounds.size.width;
   else
-    size.width += 2 * _textContainerInset.width;
+    {
+      size.width += 2 * _textContainerInset.width;
+
+      /*
+      The +1 is to make sure that we always have one extra point on the right
+      where we can draw the insertion pointer for a character that touches
+      the right edge. This is a bit of a hack, but the insertion pointer
+      often disappears in field editors without this.
+      */
+      if (!_textContainerInset.width)
+	size.width += 1;
+    }
 
   if (!_tf.is_vertically_resizable)
     size.height = _bounds.size.height;

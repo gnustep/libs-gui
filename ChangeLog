@@ -1,3 +1,8 @@
+2003-11-19 21:53  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSTextView.m (-sizeToFit): If we are horizontally resizable
+	and the inset width is 0, increase our width by 1.
+
 2003-11-19 17:06  Alexander Malmberg <alexander@malmberg.org>
 
 	* Tools/GNUmakefile, Tools/example.m, Tools/exampleInfo.plist,
