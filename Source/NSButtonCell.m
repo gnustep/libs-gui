@@ -786,17 +786,12 @@
 - (id) copyWithZone: (NSZone*)zone
 {
   NSButtonCell	*c = [super copyWithZone: zone];
-
+  
+  /* Hmmm. */
   c->_altContents = [_altContents copyWithZone: zone];
-  if (_altImage)
-    c->_altImage = RETAIN(_altImage);
-  c->_keyEquivalent = [_keyEquivalent copyWithZone: zone];
-  if (_keyEquivalentFont)
-    c->_keyEquivalentFont = RETAIN(_keyEquivalentFont);
-  //c->_keyEquivalentModifierMask = _keyEquivalentModifierMask;
-  //c->_buttoncell_is_transparent = _buttoncell_is_transparent;
-  //c->_highlightsByMask = _highlightsByMask;
-  //c->_showAltStateMask = _showAltStateMask;
+  TEST_RETAIN (_altImage);
+  TEST_RETAIN (_keyEquivalent);
+  TEST_RETAIN (_keyEquivalentFont);
 
   return c;
 }
