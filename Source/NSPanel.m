@@ -118,7 +118,18 @@
 
 - (void) setFloatingPanel: (BOOL)flag
 {
-  _isFloatingPanel = flag;
+  if (_isFloatingPanel != flag)
+    {
+      _isFloatingPanel = flag;
+      if (flag == YES)
+	{
+	  [self setLevel: NSFloatingWindowLevel];
+	}
+      else
+	{
+	  [self setLevel: NSNormalWindowLevel];
+	}
+    }
 }
 
 - (BOOL) worksWhenModal
@@ -308,7 +319,7 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
       [box setTitlePosition: NSNoTitle];
       [box setBorderType: NSGrooveBorder];
       [content addSubview: box];
-      [box release];
+      RELEASE(box);
 
       rect.size.height = bh;
       rect.size.width = bw;
