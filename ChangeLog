@@ -1,3 +1,11 @@
+Mon Mar 11 15:05:02 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/libgnustep-gui.def
+	(__objc_class_name_GSGlyphLocation,__objc_class_name_GSLineLayoutInfo,
+	__objc_class_name_GSRunStorage, __objc_class_name__GSRunSearchKey,
+	__objc_class_name_GSTextContainerLayoutInfo): Removed (Suggested
+	by Fred Kiefer).
+
 2002-03-10  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSPasteboard.m: Start gpbs for other server automatically.
