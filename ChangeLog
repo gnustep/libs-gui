@@ -1,3 +1,10 @@
+2002-06-28  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWindow.m: ([-flushWindow]) don't flush context for
+	non-retained windows unless flushing is enabled.  Actually I'm
+	not sure about this ... according to the documentation this
+	method should never flush non-retained windows anyway.
+
 Thu Jun 27 11:49:57 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSTextField.m ([-textDidEndEditing:]): Set _text_object

@@ -1771,22 +1771,35 @@ static NSNotificationCenter *nc = nil;
     }
 }
 
+/**
+ * Flush all drawing in the windows buffer to the screen unless the window
+ * is not buffered or flushing is not enabled.
+ */
 - (void) flushWindow
 {
-  int i;
-  NSGraphicsContext* context = GSCurrentContext();
+  int			i;
 
-  // do nothing if backing is not buffered
-  if (_backingType == NSBackingStoreNonretained)
+  /*
+   * If flushWindow is called while flush is disabled
+   * mark self as needing a flush, then return
+   */
+  if (_disableFlushWindow)
     {
-      [context flushGraphics];
+      _f.needs_flush = YES;
       return;
     }
 
-  if (_disableFlushWindow)		// if flushWindow is called
-    {					// while flush is disabled
-      _f.needs_flush = YES;		// mark self as needing a
-      return;				// flush, then return
+  /*
+   * Just flush graphics if backing is not buffered.
+   * The documentation actually says that this is wrong ... the method
+   * should do nothing when the backingType is NSBackingStoreNonretained
+   */
+  if (_backingType == NSBackingStoreNonretained)
+    {
+      NSGraphicsContext	*context = GSCurrentContext();
+
+      [context flushGraphics];
+      return;
     }
 
   /* Check for special case of flushing while we are lock focused.
@@ -1807,12 +1820,14 @@ static NSNotificationCenter *nc = nil;
   while (i-- > 0)
     {
       _rectNeedingFlush = NSUnionRect(_rectNeedingFlush,
-       [[_rectsBeingDrawn objectAtIndex: i] rectValue]);
+        [[_rectsBeingDrawn objectAtIndex: i] rectValue]);
     }
 
-  if (_windowNum)
-    [GSServerForWindow(self) flushwindowrect: _rectNeedingFlush
-		      : _windowNum];
+  if (_windowNum > 0)
+    {
+      [GSServerForWindow(self) flushwindowrect: _rectNeedingFlush
+					      : _windowNum];
+    }
   _f.needs_flush = NO;
   _rectNeedingFlush = NSZeroRect;
 }
