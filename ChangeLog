@@ -1,3 +1,8 @@
+2002-02-12  Richard Frith-Macdonald  <rfm@gnu.org>
+
+	* Source/NSBundleAdditions.m: Fix dumb error in my last modification.
+	(bug report by Stephen brandon).
+
 Mon Feb 11 14:39:03 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	Updated for change in semantics of -string method of

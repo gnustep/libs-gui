@@ -249,7 +249,7 @@ Class gmodel_class(void)
 	}
       else
 	{
-	  fileName = [fileName stringByAppendingPathExtension: @"gmodel"];
+	  fileName = [base stringByAppendingPathExtension: @"gmodel"];
 	  ext = @"gmodel";
 	}
     }
