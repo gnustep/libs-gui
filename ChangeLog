@@ -1,3 +1,12 @@
+2002-01-23  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSInterfaceStyle.m (NSInterfaceStyleForKey): Use default
+	style if no key for style is located. Don't cache key in this case.
+	* Source/NSMenu.m (-nestedSetFrameOrigin:aPoint): Use
+	locationForSubmenu to get submenu location.
+	* Source/NSMenuView.m (-locationForSubmenu:): Fix
+	location of submenu for GSWindowMakerInterfaceStyle.
+
 2002-01-22  Richard Frith-Macdonald  <rfm@gnu.org>
 
 	* Source/NSWorkspace.h: new ivar

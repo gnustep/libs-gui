@@ -63,6 +63,28 @@ typedef struct {
   @defs(NSResponder)
 } *accessToResponder;
 
+/**
+   <p>
+   Returns the interface style the responder should use, which affects
+   how a UI element (such as a button or menu) is displayed. If the 
+   responder has an interface style set, the key is ignored and the
+   responder's interface style is returned. Otherwise the style
+   associated with the key is returned (if set), otherwise the default
+   style is returned. In no case will the style <code>NSNoInterfaceStyle</code>
+   be returned.
+   </p>
+   <p>
+   Styles can be set using the user defaults system. Currently available
+   styles are <code>NSNextStepInterfaceStyle</code>,
+   <code>NSMacintoshInterfaceStyle</code>, 
+   <code>NSWindows95InterfaceStyle</code>, 
+   <code>GSWindowMakerInterfaceStyle</code>. You can set a default style
+   for all UI elements using the <code>NSInterfaceStyleDefault</code> key:
+   <example>
+   defaults write NSGlobalDomain NSInterfaceStyleDefault GSWindowMakerInterfaceStyle 
+   </example>
+   </p>
+*/
 extern  NSInterfaceStyle
 NSInterfaceStyleForKey(NSString *key, NSResponder *responder)
 {
@@ -108,9 +130,10 @@ NSInterfaceStyleForKey(NSString *key, NSResponder *responder)
 	  if (def == nil
 	    || (style = styleFromString(def)) == NSNoInterfaceStyle)
 	    {
-	      style = NSNextStepInterfaceStyle;
+	      style = defStyle;
 	    }
-	  NSMapInsert(styleMap, (void*)key, (void*)style);
+	  if (style != NSNoInterfaceStyle)
+	    NSMapInsert(styleMap, (void*)key, (void*)style);
 	}
       return style;
     }

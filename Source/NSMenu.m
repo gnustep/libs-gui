@@ -1216,10 +1216,14 @@ static NSNotificationCenter *nc;
     return (NSWindow *)_aWindow;
 }
 
+/**
+   Set the frame origin of the receiver to aPoint. If a submenu of
+   the receiver is attached. The frame origin of the submenu is set
+   appropriately.
+*/
 - (void) nestedSetFrameOrigin: (NSPoint) aPoint
 {
   NSWindow *theWindow = _follow_transient ? _bWindow : _aWindow;
-  NSRect frame;
 
   // Move ourself and get our width.
   [theWindow setFrameOrigin: aPoint];
@@ -1227,11 +1231,7 @@ static NSNotificationCenter *nc;
   // Do the same for attached menus.
   if (_attachedMenu)
     {
-      frame = [theWindow frame];
-      // First locate the origin.
-      aPoint.x += frame.size.width;
-      aPoint.y += frame.size.height
-	- [_attachedMenu->_aWindow frame].size.height;
+      aPoint = [self locationForSubmenu: _attachedMenu];
       [_attachedMenu nestedSetFrameOrigin: aPoint];
     }
 }

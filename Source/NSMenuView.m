@@ -608,6 +608,10 @@
   [self setNeedsDisplayInRect: aRect];
 }
 
+/**
+   Returns the correct frame origin for aSubmenu based on the location
+   of the receiver. This location may depend on the current NSInterfaceStyle.
+*/
 - (NSPoint) locationForSubmenu: (NSMenu *)aSubmenu
 {
   NSRect frame = [_window frame];
@@ -621,7 +625,6 @@
   else
     submenuFrame = NSZeroRect;
 
-  // FIXME: Fix this to support styles when the menus move.
   if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil)
       == GSWindowMakerInterfaceStyle)
     {
@@ -632,7 +635,8 @@
 						  aRect.origin.y)];
 
       return NSMakePoint (frame.origin.x + frame.size.width,
-			  subOrigin.y - (submenuFrame.size.height - 43));
+			  subOrigin.y - (submenuFrame.size.height + 3 -
+      					 2*[NSMenuView menuBarHeight]));
     }
   else
     {
