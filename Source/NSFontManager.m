@@ -49,10 +49,6 @@ static NSFontPanel	*fontPanel = nil;
 static Class		fontManagerClass = Nil;
 static Class		fontPanelClass = Nil;
 
-@interface NSFont (Private)
-- (GSFontInfo *) fontInfo;
-@end
-
 @interface NSFontManager (GNUstepBackend)
 - (BOOL) _includeFont: (NSString*)fontName;
 @end

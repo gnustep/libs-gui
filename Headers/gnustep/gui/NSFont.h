@@ -171,6 +171,12 @@ extern const float *NSFontIdentityMatrix;
 @end
 
 #ifndef	STRICT_OPENSTEP
+@class GSFontInfo;
+
+@interface NSFont (GNUstep)
+- (GSFontInfo *) fontInfo;
+@end
+
 int NSConvertGlyphsToPackedGlyphs(NSGlyph *glBuf, 
 				  int count, 
 				  NSMultibyteGlyphPacking packing, 
