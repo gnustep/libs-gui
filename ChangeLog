@@ -1,3 +1,9 @@
+2002-09-22 16:33  Alexander Malmberg  <alexander@malmberg.org>
+
+	* Source/NSTextView.m (-initWithFrame:textContainer:): Set
+	uses_font_panel and uses_ruler to NO while initializing	and back
+	to YES when we're done.
+
 2002-09-22 16:26  Alexander Malmberg  <alexander@malmberg.org>
 
 	* Source/NSFontPanel.m (-init): Set sane defaults _before_ trying

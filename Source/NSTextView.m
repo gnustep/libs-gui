@@ -225,8 +225,8 @@ static NSNotificationCenter *nc;
   _tf.draws_background = YES;
   _tf.is_horizontally_resizable = NO;
   _tf.is_vertically_resizable = NO;
-  _tf.uses_font_panel = YES;
-  _tf.uses_ruler = YES;
+  _tf.uses_font_panel = NO;
+  _tf.uses_ruler = NO;
   _tf.is_ruler_visible = NO;
   _original_selected_range.location = NSNotFound;
   ASSIGN (_caret_color, [NSColor blackColor]);
@@ -238,10 +238,13 @@ static NSNotificationCenter *nc;
   [aTextContainer setTextView: self];
 
   [self setEditable: YES];
-  [self setUsesFontPanel: YES];
-  [self setUsesRuler: YES];
 
   [self setSelectedRange: NSMakeRange (0, 0)];
+
+  /* We don't set these to YES until we're here, so the caller has a
+  chance to set them to NO before we actually do any updates. */
+  [self setUsesFontPanel: YES];
+  [self setUsesRuler: YES];
 
   return self;
 }
