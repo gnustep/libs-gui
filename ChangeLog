@@ -1,3 +1,7 @@
+Mon Mar  1 17:12:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Headers/AppKit/NSCell.h: Added MacOS-X cell state constants.
+
 Thu Feb 25 15:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	Added support for the new (MacOS-X) NSGraphicsContext class by
