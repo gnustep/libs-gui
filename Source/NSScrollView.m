@@ -905,21 +905,6 @@ static float scrollerWidth;
 - (void) drawRect: (NSRect)rect
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
-  NSSize border = _sizeForBorderType(_borderType);
-  float horizLinePosition = border.width;
-  float horizLineLength = _bounds.size.width;
-  float headerViewHeight = 0;
-
-  if (_hasHeaderView == YES)
-    {
-      headerViewHeight = [[_headerClipView documentView] frame].size.height;
-    }
-  if ((_hasCornerView == YES) && (_hasHorizScroller == YES) 
-      && (headerViewHeight == 0))
-    {
-      headerViewHeight = [[(NSTableView *)[_contentView documentView] 
-					  cornerView] frame].size.height;
-    }
   
   switch (_borderType)
     {
@@ -942,38 +927,34 @@ static float scrollerWidth;
 
   [[NSColor controlDarkShadowColor] set];
   DPSsetlinewidth(ctxt, 1);
+
   if (_hasVertScroller)
     {
-      horizLinePosition = scrollerWidth + border.width;
-      horizLineLength -= scrollerWidth + 2 * border.width;
-      DPSmoveto(ctxt, horizLinePosition, border.height);
-      if (_rFlags.flipped_view)
-	{
-	  DPSrmoveto(ctxt, 0, headerViewHeight);
-	}
-      DPSrlineto(ctxt, 0, _bounds.size.height - headerViewHeight 
-		 - 2 * border.height - 1);
-      DPSstroke(ctxt);
-      if ((_hasHeaderView == YES) && (_hasCornerView == NO)) 
-	{
-	  float yStart = border.height + headerViewHeight - 1;
+      NSLog(@"VertScroller height:%f content height:%f", 
+	    [_vertScroller frame].size.height, [self frame].size.height);
 
-	  if (_rFlags.flipped_view == NO)
-	    yStart = _bounds.size.height - yStart;
-	  DPSmoveto(ctxt, horizLinePosition, yStart); 
-	  DPSlineto(ctxt, border.width, yStart);
+      DPSmoveto(ctxt, [_vertScroller frame].origin.x + scrollerWidth, 
+		[_vertScroller frame].origin.y - 1);
+      DPSrlineto(ctxt, 0, [_vertScroller frame].size.height+1);
 	  DPSstroke(ctxt);
 	}
-    }
 
   if (_hasHorizScroller)
     {
-      float ypos = scrollerWidth + border.height + 1;
+      float ypos;
+      float scrollerY = [_horizScroller frame].origin.y;
 
       if (_rFlags.flipped_view)
-	ypos = _bounds.size.height - ypos;
-      DPSmoveto(ctxt, horizLinePosition, ypos);
-      DPSrlineto(ctxt, horizLineLength - 1, 0);
+	{
+	  ypos = scrollerY - 1;
+	}
+      else
+	{
+	  ypos = scrollerY + scrollerWidth + 1;
+	}
+
+      DPSmoveto(ctxt, [_horizScroller frame].origin.x - 1, ypos);
+      DPSrlineto(ctxt, [_horizScroller frame].size.width + 1, 0);
       DPSstroke(ctxt);
     }
 }
