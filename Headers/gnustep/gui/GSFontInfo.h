@@ -50,7 +50,7 @@
 - (NSArray*) availableMembersOfFontFamily: (NSString*)family;
 @end
 
-@interface GSFontInfo : NSObject
+@interface GSFontInfo : NSObject <NSCopying>
 {
   NSMutableDictionary* fontDictionary;
 

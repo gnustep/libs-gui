@@ -2,6 +2,7 @@
 
 	* Headers/gnustep/gui/NSFont.h: Conform to NSCopying.
 	* Source/NSFont.m ([NSFont -copyWithZone:]): Implement.
+	* Source/GSFontInfo.m: (-copyWithZone:): Likewise
 
 2000-03-31  Jonathan Gapen  <jagapen@whitewater.chem.wisc.edu>
 
