@@ -3089,7 +3089,7 @@ of characters (if any) to be replaced by the new data.
     {
       [ret addObject: NSRTFDPboardType];
       //[ret addObject: NSTIFFPboardType];
-      //[ret addObject: NSFileContentsPboardType];
+      [ret addObject: NSFileContentsPboardType];
     }
   if (_tf.is_rich_text)
     [ret addObject: NSRTFPboardType];
