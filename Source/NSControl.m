@@ -116,9 +116,9 @@ static id _NSCONTROL_CELL_CLASS = nil;
 
 - (void) setCell: (NSCell *)aCell
 {
-  if (![aCell isKindOfClass: [NSCell class]])
+  if (aCell != nil && [aCell isKindOfClass: [NSCell class]] == NO)
     [NSException raise: NSInvalidArgumentException
-		format: @"attempt to set silly value for control cell"];
+		format: @"attempt to set non-cell object for control cell"];
 
   [cell setControlView: nil];
   [aCell setControlView: self];
