@@ -29,13 +29,12 @@
 #include <AppKit/NSOpenGL.h>
 #include <AppKit/GSDisplayServer.h>
 
-
 @implementation NSOpenGLContext
 + _classContext
 {
   Class glContextClass = [GSCurrentServer() glContextClass];
 
-  if ( glContextClass == nil )
+  if (glContextClass == nil)
     {
       NSWarnMLog(@"Backend doesn't have any gl context");
       return nil;
@@ -51,7 +50,7 @@
 + allocWithZone: (NSZone *) z
 {
   Class c = [self _classContext];
-  if ( c )
+  if (c)
     return NSAllocateObject(c, 0, z);
   else
     return nil;
@@ -64,6 +63,8 @@
 
 + (NSOpenGLContext *)currentContext
 {
+  /* FIXME - There doesn't seem to be a way to fix the following
+   * warning.  */
   return [[self _classContext] currentContext];
 }
 
