@@ -1,3 +1,9 @@
+Fri Feb 12 21:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSView.m: Tidied some more.
+	* Source/NSText.m: Don't use display - use setNeedsDisplay: instead
+	so that drawing gets done automatically.
+
 Fri Feb 12 16:20:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSView.m: Improve window flushing

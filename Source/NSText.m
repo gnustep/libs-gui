@@ -644,7 +644,7 @@ typedef enum
 	[lineLayoutInformation autorelease]; lineLayoutInformation=nil;	// force complete re-layout
 	[self setRichText:NO];
 
-	//[self display];
+	//[self setNeedsDisplay: YES];
 }
 -(void) setText:(NSString *)string {[self setString:string];}
 
@@ -697,7 +697,7 @@ typedef enum
 	[self updateDragTypeRegistration];
 
 	[self sizeToFit];
-	[self display];
+	[self setNeedsDisplay: YES];
 }
 
 - (void)setSelectable:(BOOL)flag
@@ -779,7 +779,7 @@ typedef enum
 - (void)setTextColor:(NSColor *)color
 {	ASSIGN(text_color,color);
 
-	if(![self isRichText]) [self display];
+	if(![self isRichText]) [self setNeedsDisplay: YES];
 }
 
 - (void)setUsesFontPanel:(BOOL)flag
@@ -1043,7 +1043,7 @@ typedef enum
 		[self updateDragTypeRegistration];
 		[self replaceRange:NSMakeRange(0,[self textLength]) withAttributedString:peek];
 		[self rebuildLineLayoutInformationStartingAtLine:0];
-		[self display];
+		[self setNeedsDisplay: YES];
 		return YES;
 	}
 	return NO;
@@ -1430,7 +1430,7 @@ fprintf(stderr, " NSText keyDown \n");
 
 			[lineLayoutInformation autorelease]; lineLayoutInformation=nil;
 			[self rebuildLineLayoutInformationStartingAtLine:0];
-			[self display];
+			[self setNeedsDisplay: YES];
 			return;
 #endif
 #if 1
@@ -1502,7 +1502,7 @@ fprintf(stderr, " NSText keyDown \n");
 
 			[lineLayoutInformation autorelease]; lineLayoutInformation=nil;
 			[self rebuildLineLayoutInformationStartingAtLine:0];
-			[self display];
+			[self setNeedsDisplay: YES];
 		return;
 #endif
 #if 1

@@ -201,12 +201,6 @@ id t;
 - (SEL)errorAction						{ return error_action; }
 - (void)setErrorAction:(SEL)aSelector	{ error_action = aSelector; }
 
-- (void)displayRect:(NSRect)rect					// not per OS spec FIX ME
-{
-	[super displayRect:rect];
-	[window flushWindow];
-}
-
 //
 // Handling Events 
 //
