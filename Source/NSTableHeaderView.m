@@ -270,6 +270,10 @@
 	  columns = [_tableView tableColumns];
 	  /* Column at the left */
 	  columnLow = [columns objectAtIndex: _resizedColumn];
+	  if ([columnLow isResizable] == NO)
+	    {
+	      return;
+	    }
 	  /* We use p as a temporary variable for a while */
 	  p = NSMinX (rectLow) + [columnLow minWidth];
 	  minCoord = MAX (p, minCoord);
@@ -278,7 +282,10 @@
 
 	  /* Column at the right */
 	  columnHigh = [columns objectAtIndex: _resizedColumn + 1];
-	  
+	  if ([columnHigh isResizable] == NO)
+	    {
+	      return;
+	    }	  
 	  /* This is trickier - think to what happens at the column on
 	     the right when the user released the mouse somewhere */
 	  p = NSMaxX (rectHigh) - [columnHigh minWidth];
