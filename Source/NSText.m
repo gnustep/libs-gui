@@ -35,6 +35,10 @@
 #include <AppKit/NSFont.h>
 #include <AppKit/NSColor.h>
 
+#define ASSIGN(variable, value) [value retain]; \
+								[variable release]; \
+								variable = value;
+
 //
 // NSText implementation
 //
@@ -78,6 +82,14 @@
   default_font = [NSFont userFontOfSize:12];
   return self;
 }
+
+- (void)dealloc 
+{
+    [background_color release];
+
+    [super dealloc];
+}
+
 //
 // Getting and Setting Contents 
 //
@@ -201,7 +213,7 @@
 
 - (void)setBackgroundColor:(NSColor *)color
 {
-  background_color = color;
+	ASSIGN(background_color, color);
 }
 
 - (void)setColor:(NSColor *)color

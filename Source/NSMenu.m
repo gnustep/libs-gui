@@ -142,10 +142,11 @@ static NSFont* menuFont = nil;
 {
   id menuCell = [[[NSMenu cellClass] new] autorelease];
 
+  [menuCell setFont:menuFont];			// set font first in order to avoid
+										// recalc of some cached params in xraw
   [menuCell setTitle:aString];
   [menuCell setAction:aSelector];
   [menuCell setKeyEquivalent:charCode];
-  [menuCell setFont:menuFont];
 
   [cells insertObject:menuCell atIndex:index];
   [self _resizeMenuForCellSize];

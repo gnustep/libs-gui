@@ -1,8 +1,10 @@
-Tues July 14 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+Tues July 18 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* Source/NSBrowser.m fixed bug where column matrix was getting released
         twice in method _performLoadOfColumn.  
-	* NSCell.m:  isOpaque returns whether cell is bezeled per NS docs.
+	* NSCell.m: isOpaque returns whether cell is bezeled per NS docs.
+	* NSText.m: implemented setBackground and back color release in dealloc.
+	* NSMenu.m: insertItemWithTitle moved set font position for performance
 
 Fri May 29 13:30:14 1998  Adam Fedor  <fedor@ultra.doc.com>
 
