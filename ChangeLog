@@ -1,3 +1,11 @@
+Thu Feb 21 23:29:50 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/NSWindow.h (_originalResponder): Ivar removed.
+	* Source/NSWindow.m ([-sendEvent:]): Send key up to the first
+	responder, not to the original responder.
+	([-dealloc]): Do not release _originalResponder.
+	([-_initDefaults]): Do not set _originalResponder.
+	
 Thu Feb 21 11:01:43 2002  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSApplication.m ([-changeWindowsItem:title:filename:]):
