@@ -404,7 +404,7 @@ static GSFontEnumerator *sharedEnumerator = nil;
 - (float)defaultLineHeightForFont
 {
   // ascent plus descent plus some suitable linegap
-  return [self ascender] + [self descender] + [self pointSize]/ 11.0;
+  return [self ascender] - [self descender] + [self pointSize]/ 11.0;
 }
 
 - (NSSize) advancementForGlyph: (NSGlyph)aGlyph
