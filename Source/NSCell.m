@@ -33,6 +33,7 @@
 #include <Foundation/NSException.h>
 #include <Foundation/NSValue.h>
 
+#include <AppKit/AppKitExceptions.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSImage.h>
@@ -694,6 +695,8 @@
 
 - (void) setAction: (SEL)aSelector
 {
+  [NSException raise: NSInternalInconsistencyException
+	      format: @"attempt to set an action in an NSCell"];
 }
 
 - (BOOL) isContinuous
@@ -718,6 +721,8 @@
 
 - (void) setTarget: (id)anObject
 {
+  [NSException raise: NSInternalInconsistencyException
+	      format: @"attempt to set a target in an NSCell"];
 }
 
 - (id) target
@@ -751,6 +756,8 @@
 //
 - (void) setTag: (int)anInt
 {
+  [NSException raise: NSInternalInconsistencyException
+	      format: @"attempt to set a tag in an NSCell"];
 }
 
 - (int) tag
@@ -763,7 +770,7 @@
 //
 - (NSString*) keyEquivalent
 {
-  return nil;
+  return @"";
 }
 
 //
@@ -943,7 +950,14 @@
 //
 - (NSComparisonResult) compare: (id)otherCell
 {
-  return 0;
+  if ([otherCell isKindOfClass: [NSCell class]] == NO)
+    [NSException raise: NSBadComparisonException
+		format: @"NSCell comparison with non-NSCell"];
+  if (cell_type != NSTextCellType
+    || ((NSCell*)otherCell)->cell_type != NSTextCellType)
+    [NSException raise: NSBadComparisonException
+		format: @"Comparison between non-text cells"];
+  return [contents compare: ((NSCell*)otherCell)->contents];
 }
 
 //

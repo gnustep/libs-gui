@@ -1,3 +1,7 @@
+Thu Mar 25 09:12:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Source/NSCell.m: Added all the exceptions mentioned in the docs.
+
 Wed Mar 24 10:52:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
         * Source/NSMenu.m: ([-acceptsFirstmouse:]) implemented.
