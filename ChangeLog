@@ -1,11 +1,16 @@
+2002-06-10  Alexander Malmberg  <alexander@malmberg.org>
+
+        * Source/GSServicesManager.m (-performService:...): Create
+        and use a local copy of the NSPasteboard.
+
 2002-06-08  Alexander Malmberg  <alexander@malmberg.org>
 
-        * Source/NSWindow (-_initDefaults): Make _miniaturizedImage
+        * Source/NSWindow.m (-_initDefaults): Make _miniaturizedImage
         default to the application icon.
 
 2002-06-08  Alexander Malmberg  <alexander@malmberg.org>
 
-	* Source/GSServicesProvider.m (-doService:): Only try to
+	* Source/GSServicesManager.m (-doService:): Only try to
         write/read selection if the send/return type isn't nil.
         Fix calls to NSRunAlertPanel() so they don't do printf()
         expansion on the message twice.

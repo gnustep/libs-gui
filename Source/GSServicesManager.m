@@ -316,6 +316,14 @@ NSRegisterServicesProvider(id provider, NSString *name)
   SEL	msgSel = NSSelectorFromString(name);
   IMP	msgImp;
 
+  /*
+  Create a local NSPasteboard object for this pasteboard. If we try to
+  use the remote NSPasteboard object, we get trouble when setting property
+  lists since the remote NSPasteboard fails to serialize the local property
+  list objects for sending to gpbs.
+  */
+  pb = [NSPasteboard pasteboardWithName: [pb name]];
+
   if (obj != nil && [obj respondsToSelector: msgSel])
     {
       msgImp = [obj methodForSelector: msgSel];
