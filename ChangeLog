@@ -1,3 +1,18 @@
+1999-01-28  Adam Fedor  <fedor@doc.com>
+
+	* Model/GNUmakefile (libgmodel_OBJC_FILES): Add GMArchiver.m.
+	(ADDITIONAL_TOOL_LIBS): Remove FoundationExt.
+	* Headers/gnustep/gui/GMAppKit.h: Update GMArchiver include.
+	* Model/IBClasses.m: Likewise.
+	* Model/IMConnectors.m: Likewise.
+	* Model/IMCustomObject.m: Likewise.
+	* Model/IMConnectors.m: Likewise.
+	* Model/IMLoading.m: Likewise.
+	* Model/Translator.m: Likewise.
+	* Source/NSPanel.m: Likewise.
+	* Source/NSSavePanel.m: Likewise.
+
+
 Fri Jan 22 20:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSView: Rewrote all the coordinate conversion methods to
