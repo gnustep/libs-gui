@@ -627,7 +627,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
       NSMutableSet      *keyEquivalents;
       unsigned          pos;
       unsigned          loc0;
-      unsigned          loc1;
+      unsigned          loc1 = 0;
       SEL               sel = @selector(doService:);
       NSMenu            *submenu = nil;
 
@@ -763,8 +763,8 @@ static NSString         *disabledName = @".GNUstepDisabled";
       if (result == NSAlertDefaultReturn || result == NSAlertOtherReturn)
         {
           if (result == NSAlertOtherReturn)
-            appName = [NSString stringWithFormat: @"%@_%d",
-			 appName, (int)getpid()];
+	    appName = [[NSProcessInfo processInfo] globallyUniqueString];
+
           [[NSPortNameServer defaultPortNameServer] removePortForName: appName];
 
           NS_DURING
