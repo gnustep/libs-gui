@@ -79,6 +79,9 @@ enum {
   BOOL _delegateHasShowFilenameFilter;
   BOOL _delegateHasValidNameFilter;
   BOOL _selfHasShowExtensionFilter;
+
+  // YES when we stopped because the user pressed 'OK'
+  BOOL _OKButtonPressed;
 }
 
 /*
