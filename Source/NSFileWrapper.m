@@ -35,6 +35,7 @@
 #include <AppKit/NSWorkspace.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSData.h>
+#include <Foundation/NSValue.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSFileManager.h>
 
@@ -54,7 +55,7 @@
   [super init];
 
   _wrapperType = GSFileWrapperDirectoryType;
-  _wrapperData = [NSMutableDictionary dictionaryWithCapacity: [docs count]];
+  ASSIGN(_wrapperData, [NSMutableDictionary dictionaryWithCapacity: [docs count]]);
 
   enumerator = [docs keyEnumerator];
   while ((key = [enumerator nextObject]))
@@ -91,7 +92,8 @@
 
   return self;
 }
-										// Init an instance from the file,
+
+// Init an instance from the file,
 // directory, or symbolic link at path. 
 // This can create a tree of instances
 // with a directory instance at the top
@@ -118,16 +120,17 @@
       while ((filename = [enumerator nextObject]))
         {
           [fileWrappers addObject: 
-            [[NSFileWrapper alloc] initWithPath: 
-              [path stringByAppendingPathComponent: filename]]];
+	     AUTORELEASE([[NSFileWrapper alloc] initWithPath: 
+	       [path stringByAppendingPathComponent: filename]])];
         }
       self = [self initDirectoryWithFileWrappers: 
         [NSDictionary dictionaryWithObjects: fileWrappers forKeys: filenames]];
+      RELEASE(fileWrappers);
     }
   else if ([fileType isEqualToString: @"NSFileTypeRegular"])
     {
       self = [self initRegularFileWithContents: 
-                 [[NSData alloc] initWithContentsOfFile: path]];
+		AUTORELEASE([[NSData alloc] initWithContentsOfFile: path])];
     }
   else if ([fileType isEqualToString: @"NSFileTypeSymbolicLink"])
     {
@@ -137,7 +140,8 @@
 
   return self;
 }
-										// Init an instance from data in std
+
+// Init an instance from data in std
 // serial format.  Serial format is the
 // same as that used by NSText's 
 // RTFDFromRange: method.  This can 
@@ -147,7 +151,39 @@
 // FIXME - implement
 - (id) initWithSerializedRepresentation: (NSData*)data
 {
-  return nil;
+  NSDictionary *dict = [NSDeserializer deserializePropertyListFromData: data
+				       mutableContainers: NO];
+  NSNumber *type = [dict objectForKey: @"Type"];
+
+  switch ([type intValue])
+    {
+      case GSFileWrapperDirectoryType: 
+        {
+	  NSMutableDictionary *dict2 = [dict objectForKey: @"Contents"];
+          NSEnumerator *enumerator = [dict2 keyEnumerator];
+          NSString *key;
+
+          while ((key = (NSString*)[enumerator nextObject]))
+            {
+	      [dict2 setObject: AUTORELEASE([[NSFileWrapper alloc] 
+				    initWithSerializedRepresentation: 
+					[dict2 objectForKey: key]]) forKey: key];
+            }
+	  [self initDirectoryWithFileWrappers: dict2];
+        }
+      case GSFileWrapperRegularFileType:
+        {
+	  [self initRegularFileWithContents: [dict objectForKey: @"Contents"]];
+        }
+ 
+      case GSFileWrapperSymbolicLinkType: 
+        {
+	  [self initSymbolicLinkWithDestination: [dict objectForKey: @"Contents"]];
+        }
+    }
+  [self setFileAttributes: [dict objectForKey: @"Attributes"]];
+
+  return self;
 }
 
 - (void) dealloc
@@ -217,7 +253,33 @@
 // FIXME - implement
 - (NSData*) serializedRepresentation
 {
-  return nil;
+  NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+
+  [dict setObject: [NSNumber numberWithInt: _wrapperType] forKey: @"Type"];
+  [dict setObject: [self fileAttributes] forKey: @"Attributes"];
+  
+  switch (_wrapperType)
+    {
+      case GSFileWrapperDirectoryType: 
+        {
+	  NSMutableDictionary *dict2 = [NSMutableDictionary dictionary];
+          NSEnumerator *enumerator = [_wrapperData keyEnumerator];
+          NSString *key;
+
+          while ((key = (NSString*)[enumerator nextObject]))
+            {
+	      [dict2 setObject: [[_wrapperData objectForKey: key] 
+				    serializedRepresentation] forKey: key];
+            }
+	    [dict setObject: dict2 forKey: @"Contents"];
+        }
+      case GSFileWrapperRegularFileType: 
+      case GSFileWrapperSymbolicLinkType: 
+        {
+	    [dict setObject: _wrapperData forKey: @"Contents"];
+        }
+    }
+  return [NSSerializer serializePropertyList: dict];
 }
 
 - (void) setFilename: (NSString*)filename
@@ -292,7 +354,7 @@
 
 - (NSImage*) icon;
 {
-  if (!_iconImage)
+  if (_iconImage == nil)
     return [[NSWorkspace sharedWorkspace] iconForFile: [self filename]];
   else
     return _iconImage;
@@ -385,7 +447,7 @@
   NSFileWrapper *wrapper;
   GSFileWrapperDirectoryTypeCheck();
 
-  wrapper = [[NSFileWrapper alloc] initWithPath: path];
+  wrapper = AUTORELEASE([[NSFileWrapper alloc] initWithPath: path]);
   if (wrapper != nil)
     return [self addFileWrapper: wrapper];
   else
@@ -398,7 +460,7 @@
   NSFileWrapper *wrapper;
   GSFileWrapperDirectoryTypeCheck();
 
-  wrapper = [[NSFileWrapper alloc] initRegularFileWithContents: data];
+  wrapper = AUTORELEASE([[NSFileWrapper alloc] initRegularFileWithContents: data]);
   if (wrapper != nil)
     {
       [wrapper setPreferredFilename: filename];
@@ -414,7 +476,7 @@
   NSFileWrapper *wrapper;
   GSFileWrapperDirectoryTypeCheck();
 
-  wrapper = [[NSFileWrapper alloc] initSymbolicLinkWithDestination: path];
+  wrapper = AUTORELEASE([[NSFileWrapper alloc] initSymbolicLinkWithDestination: path]);
   if (wrapper != nil)
     {
       [wrapper setPreferredFilename: filename];
