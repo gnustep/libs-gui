@@ -1145,7 +1145,14 @@ void __dummy_GMAppKit_functionForLinking() {}
   [self setBackgroundColor:
 	  [unarchiver decodeObjectWithName:@"backgroundColor"]];
   if ([unarchiver decodeBOOLWithName:@"isVisible"])
-    [self orderFront:nil];
+    {
+      /* If we are the main gmodel of the application, this code is
+	 being executed before the app became active, so we have to
+	 force ordering front of the window.  TODO: Refine the code so
+	 that if we are not the main gmodel then a more appropriate 
+         [self orderFront:nil] is used.*/
+      [self orderFrontRegardless];
+    }
 
 #if GNU_GUI_LIBRARY
 	[[self contentView] setNeedsDisplay:YES];
