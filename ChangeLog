@@ -1,3 +1,9 @@
+2004-02-29  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSToolbar.m: Added code in 
+	-[NSToolbar insertItemWithIdentifier:atIndex:] to properly
+	handle when a system defined identifier is passed to the toolbar.
+
 2004-03-01  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Header/AppKit/NSTableView.h:

@@ -410,6 +410,22 @@ static NSMutableArray *toolbars;
     }
 }
 
+- (id) _toolbarItemForIdentifier: (NSString *)itemIdent
+{
+  id item = nil;
+  if([itemIdent isEqual: NSToolbarSeparatorItemIdentifier] ||
+     [itemIdent isEqual: NSToolbarSpaceItemIdentifier] ||
+     [itemIdent isEqual: NSToolbarFlexibleSpaceItemIdentifier] ||
+     [itemIdent isEqual: NSToolbarShowColorsItemIdentifier] ||
+     [itemIdent isEqual: NSToolbarShowFontsItemIdentifier] ||
+     [itemIdent isEqual: NSToolbarCustomizeToolbarItemIdentifier] ||
+     [itemIdent isEqual: NSToolbarPrintItemIdentifier])
+    {
+      item = [[NSToolbarItem alloc] initWithItemIdentifier: itemIdent];
+    }
+  return item;
+}
+
 /*
  *
  * The methods below handles the toolbar edition and broacasts each associated event
@@ -434,25 +450,31 @@ static NSMutableArray *toolbars;
   
   if([allowedItems containsObject: itemIdentifier])
     {
-      item = [_delegate toolbar: self 
-    	  itemForItemIdentifier: itemIdentifier
-      willBeInsertedIntoToolbar: YES];
-      
+      item = [self _toolbarItemForIdentifier: itemIdentifier];
+      if(item == nil)
+	{
+	  item = [_delegate toolbar: self 
+			    itemForItemIdentifier: itemIdentifier
+			    willBeInsertedIntoToolbar: YES];
+	}
+	  
       if (item != nil)
-        {
-          [nc postNotificationName: NSToolbarWillAddItemNotification object: self];
-          [item _setToolbar: self];
-          [_items insertObject: item atIndex: index];
-          if (!_build) // we reload the toolbarView each time a new item is added except when we build/create the toolbar
-            [_toolbarView _reload];
-    
-          if (broadcast)
-            {    
-              TRANSMIT(_insertItemWithItemIdentifier: itemIdentifier atIndex: index broadcast: NO);
-            }
-        }  
-    } 
-    
+	{
+	  [nc postNotificationName: NSToolbarWillAddItemNotification object: self];
+	  [item _setToolbar: self];
+	  [_items insertObject: item atIndex: index];
+	  // We reload the toolbarView each time a new item is 
+	  // added except when we build/create the toolbar
+	  if (!_build) 
+	    [_toolbarView _reload];
+	  
+	  if (broadcast)
+	    {    
+	      TRANSMIT(_insertItemWithItemIdentifier: itemIdentifier 
+		       atIndex: index broadcast: NO);
+	    }
+	}
+    }
 }
 
 - (void) _removeItemAtIndex: (int)index broadcast: (BOOL)broadcast
