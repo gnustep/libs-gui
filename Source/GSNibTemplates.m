@@ -42,16 +42,17 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSKeyValueCoding.h>
-#include "AppKit/NSMenu.h"
-#include "AppKit/NSControl.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSSound.h"
-#include "AppKit/NSView.h"
-#include "AppKit/NSTextView.h"
-#include "AppKit/NSWindow.h"
+#include <AppKit/NSMenu.h>
+#include <AppKit/NSImage.h>
+#include <AppKit/NSSound.h>
+#include <AppKit/NSView.h>
+#include <AppKit/NSTextView.h>
+#include <AppKit/NSWindow.h>
 #include <AppKit/NSNibLoading.h>
 #include <AppKit/NSNibConnector.h>
 #include <AppKit/NSApplication.h>
+#include <AppKit/NSTableColumn.h>
+#include <AppKit/NSTabViewItem.h>
 #include <GNUstepBase/GSObjCRuntime.h>
 #include <GNUstepGUI/GSNibTemplates.h>
 
@@ -163,19 +164,20 @@ static const int currentVersion = 1; // GSNibItem version number...
       while ((key = [enumerator nextObject]) != nil)
 	{
 	  if ([context objectForKey: key] == nil || 
-	      ([key isEqualToString: @"NSOwner"] && // we want to send the message to the owner
-	       [key isEqualToString: @"NSWindowsMenu"] == NO && // we don't want to send a message to these menus twice, 
-	       [key isEqualToString: @"NSServicesMenu"] == NO && // if they're custom classes.
-	       [key isEqualToString: @"NSVisible"] == NO && // also exclude any other special parts of the nameTable.
-	       [key isEqualToString: @"NSDeferred"] == NO &&
-	       [key isEqualToString: @"NSTopLevelObjects"] == NO)) 
+	      [key isEqualToString: @"NSOwner"]) // we want to send the message to the owner
 	    {
-	      id	o;
-
-	      o = [nameTable objectForKey: key];
-	      if ([o respondsToSelector: @selector(awakeFromNib)])
+	      if([key isEqualToString: @"NSWindowsMenu"] == NO && // we don't want to send a message to these menus twice, 
+		 [key isEqualToString: @"NSServicesMenu"] == NO && // if they're custom classes.
+		 [key isEqualToString: @"NSVisible"] == NO && // also exclude any other special parts of the nameTable.
+		 [key isEqualToString: @"NSDeferred"] == NO &&
+		 [key isEqualToString: @"NSTopLevelObjects"] == NO &&
+		 [key isEqualToString: @"GSCustomClassMap"] == NO)		
 		{
-		  [o awakeFromNib];
+		  id o = [nameTable objectForKey: key];
+		  if ([o respondsToSelector: @selector(awakeFromNib)])
+		    {
+		      [o awakeFromNib];
+		    }
 		}
 	    }
 	}
@@ -203,21 +205,28 @@ static const int currentVersion = 1; // GSNibItem version number...
       enumerator = [nameTable keyEnumerator];
       while ((key = [enumerator nextObject]) != nil)
 	{
-	  if ([context objectForKey: key] == nil || 
-	      ([key isEqualToString: @"NSOwner"] == NO && // dont retain the owner.
-	       [key isEqualToString: @"NSWindowsMenu"] == NO && // exclude special sections.
-	       [key isEqualToString: @"NSServicesMenu"] == NO &&
-	       [key isEqualToString: @"NSVisible"] == NO && 
-	       [key isEqualToString: @"NSDeferred"] == NO &&
-	       [key isEqualToString: @"NSTopLevelObjects"] == NO)) 
+	  if ([context objectForKey: key] == nil &&
+	      [key isEqualToString: @"NSWindowsMenu"] == NO && // exclude special sections.
+	      [key isEqualToString: @"NSServicesMenu"] == NO &&
+	      [key isEqualToString: @"NSVisible"] == NO && 
+	      [key isEqualToString: @"NSDeferred"] == NO &&
+	      [key isEqualToString: @"NSTopLevelObjects"] == NO &&
+	      [key isEqualToString: @"GSCustomClassMap"] == NO)
 	    {
-	      id	o = [nameTable objectForKey: key];
+	      id o = [nameTable objectForKey: key];
 	      // RETAIN all top-level items...
 	      if (([o isKindOfClass: [NSMenu class]] == YES &&
 		   [key isEqualToString: @"NSMenu"] == YES) || // the main menu...
 		  ([o isKindOfClass: [NSWindow class]] == YES) || // any windows...
-		  ([o isKindOfClass: [NSObject class]] == YES &&
-		   [o isKindOfClass: [NSView class]] == NO)) // any objects which are not views..
+		  ([o isKindOfClass: [NSObject class]] == YES && // any controllers...
+		   [o isKindOfClass: [NSCell class]] == NO && // no cells
+		   [o isKindOfClass: [NSMenu class]] == NO && // no menus, they're handled above
+		   [o isKindOfClass: [NSMenuItem class]] == NO && // no menu items 
+		   [o isKindOfClass: [NSTableColumn class]] == NO && // no table columns
+		   [o isKindOfClass: [NSTabViewItem class]] == NO && // no table columns
+		   [o isKindOfClass: [NSWindow class]] == NO && // no tab view items
+		   [o isKindOfClass: [NSView class]] == NO // no tab view items
+		   )) 
 		{
 		  if(topLevelObjects == nil)
 		    {
@@ -236,7 +245,7 @@ static const int currentVersion = 1; // GSNibItem version number...
 		}
 	    }
 	}
-    
+
       /*
        * See if there are objects that should be made visible.
        */
@@ -363,15 +372,19 @@ static const int currentVersion = 1; // GSNibItem version number...
       
       obj = [cls allocWithZone: [self zone]];
       if (theFrame.size.height > 0 && theFrame.size.width > 0)
-	obj = [obj initWithFrame: theFrame];
+	{
+	  obj = [obj initWithFrame: theFrame];
+	}
       else
-	obj = [obj init];
+	{
+	  obj = [obj init];
+	}
 
       if ([obj respondsToSelector: @selector(setAutoresizingMask:)])
 	{
 	  [obj setAutoresizingMask: mask];
 	}
-      
+
       RELEASE(self);
       return obj;
     }
@@ -392,10 +405,14 @@ static const int currentVersion = 1; // GSNibItem version number...
       
       obj = [cls allocWithZone: [self zone]];
       if (theFrame.size.height > 0 && theFrame.size.width > 0)
-	obj = [obj initWithFrame: theFrame];
+	{
+	  obj = [obj initWithFrame: theFrame];
+	}
       else
-	obj = [obj init];
-      
+	{
+	  obj = [obj init];
+	}
+
       RELEASE(self);
       return obj;
     }

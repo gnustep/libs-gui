@@ -1,3 +1,10 @@
+2003-12-28 19:33  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/AppKit/NSMenuItem.h: Added documentation for many 
+	of the methods in NSMenuItem.
+	* Source/GSNibTemplates.m: Further refinements on the earlier
+	memory leak fix.
+
 2003-12-25 00:03  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSDataLinkPanel.m: Changed to use the correct method
