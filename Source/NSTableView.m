@@ -3460,9 +3460,7 @@ inline float computePeriod(NSPoint mouseLocationWin,
 	  
 	  // Prepare the cell
 	  tb = [_tableColumns objectAtIndex: _clickedColumn];
-	  // NB: need to be released when no longer used
-	  // Not sure if we really need a copy here.
-	  cell = [[tb dataCellForRow: _clickedRow] copy];
+	  cell = [tb dataCellForRow: _clickedRow];
 	  [cell setObjectValue: [self _objectValueForTableColumn: tb
 				      row: _clickedRow]];
 	  cellFrame = [self frameOfCellAtColumn: _clickedColumn 
@@ -3498,8 +3496,6 @@ inline float computePeriod(NSPoint mouseLocationWin,
 	  [cell setHighlighted: NO];
 	  [self setNeedsDisplayInRect: cellFrame];
 	  lastEvent = [NSApp currentEvent];
-
-	  DESTROY(cell);
 	}
 
       while (done != YES)

@@ -1,3 +1,9 @@
+2004-09-05 10:30  Matt Rice <ratmice@yahoo.com>
+
+	* Source/NSTableView.m: [NSTableView mouseDown:] removed code which
+	copied and subsequently DESTROYs dataCell.  This was causing a 
+	SIGSEGV.
+	
 2004-09-05 06:23  Matt Rice <ratmice@yahoo.com>
 
 	* Source/GSServicesManager.m: new method -activateIgnoringOtherApps:
