@@ -1,3 +1,10 @@
+2000-09-22  Lyndon Tremblay  <humasect@home.com>
+
+	* Source/NSBundleAdditions.m ([NSBundle +loadNibFile:externalNameTable:withZone:]):
+	access NSOwner from infoDict only when necessary, notify of loading nib.
+	* Model/GMAppKit.m: Removed silly emacs C++ mode tag.
+	* Model/IMLoading.m: Likewise.
+
 2000-09-19 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTextStorage.m: ([-string]) fix to return autoreleased

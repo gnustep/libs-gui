@@ -203,7 +203,6 @@
 {
   BOOL		loaded = NO;
   NSUnarchiver	*unarchiver = nil;
-  id            owner = [context objectForKey: @"NSOwner"];
   NSString      *ext = [fileName pathExtension];
   
 
@@ -212,9 +211,10 @@
   if([ext isEqualToString: @"gmodel"])
     {
       return [GMModel loadIMFile: fileName
-		      owner: owner];
+		      owner: [context objectForKey: @"NSOwner"]];
     } 
 
+  NSLog(@"Loading Nib `%@'...\n", fileName);
   NS_DURING
     {
       NSData	*data = [NSData dataWithContentsOfFile: fileName];
@@ -255,6 +255,10 @@
       TEST_RELEASE(unarchiver);
     }
   NS_ENDHANDLER
+
+  if (!loaded)
+	NSLog(@"Failed to load Nib\n");
+  
   return loaded;
 }
 

@@ -1,4 +1,4 @@
-/* -*- C++ -*-
+/*
    GMAppKit.m
 
    Copyright (C) 1996 Free Software Foundation, Inc.
