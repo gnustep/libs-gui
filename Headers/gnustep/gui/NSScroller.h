@@ -72,6 +72,7 @@ typedef enum _NSScrollerArrow {
   NSScrollerPart _hitPart;
   NSScrollArrowPosition _arrowsPosition;
   NSUsableScrollerParts _usableParts;
+  BOOL _cacheValid;
 }
 
 //
