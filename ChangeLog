@@ -1,3 +1,19 @@
+Sun Sep 10 16:49:50 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Headers/gnustep/gui/NSMatrix.h: Prefixed all ivars with
+	underscore.
+	* Source/NSMatrix.m: Updated for change in ivars.
+	* Source/NSForm.m ([-calcSize]): Idem.
+	
+Sun Sep 10 16:17:36 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSTableColumn.m ([-initWithIdentifier:]): Made column
+	editable by default.
+	* Source/NSTableHeaderView.m ([-mouseDown:]): Do not start
+	resizing if the column is not resizable.
+	* Source/NSTableView.m ([-mouseDown:]): Do not start editing if
+	the column is not editable.
+	
 Fri Sep  8 18:42:10 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSWindow.m ([-setFrame:display:]): Call
