@@ -596,7 +596,7 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 
 - (void) setSupermenu: (NSMenu *)supermenu
 {
-  ASSIGN(menu_supermenu, supermenu);
+  menu_supermenu = supermenu;
 }
 
 //

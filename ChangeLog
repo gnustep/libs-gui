@@ -1,3 +1,12 @@
+2000-09-08 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSMenu.m: ([-setSupermenu:]) don't retain supermenu.
+	* Source/NSMenuItem.m: ([-setSubmenu:]) set target and action for
+	handling submenu, and set supermenu for submenu.
+	([-setMenu:]) if item has a submenu, set supermenu for submenu of item,
+	and set target to be the new menu, so clicking on this item will raise
+	the submenu.
+
 2000-09-08  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Source/NSText.m: Changed varius places to make 

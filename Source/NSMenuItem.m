@@ -115,6 +115,11 @@ static Class imageClass;
 - (void) setMenu: (NSMenu*)menu
 {
   mi_menu = menu;
+  if (mi_submenu != nil)
+    {
+      [mi_submenu setSupermenu: menu];
+      [self setTarget: mi_menu];
+    }
 }
 
 - (NSMenu*) menu
@@ -133,6 +138,9 @@ static Class imageClass;
     [NSException raise: NSInvalidArgumentException
 		format: @"submenu already has supermenu: "];
   ASSIGN(mi_submenu, submenu);
+  [submenu setSupermenu: mi_menu];
+  [self setTarget: mi_menu];
+  [self setAction: @selector(submenuAction:)];
 }
 
 - (NSMenu*) submenu
@@ -393,7 +401,6 @@ static Class imageClass;
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [super encodeWithCoder: aCoder];
   [aCoder encodeObject: mi_title];
   [aCoder encodeObject: mi_keyEquivalent];
   [aCoder encodeValueOfObjCType: "I" at: &mi_keyEquivalentModifierMask];
@@ -414,7 +421,6 @@ static Class imageClass;
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  self = [super initWithCoder: aDecoder];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &mi_title];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &mi_keyEquivalent];
   [aDecoder decodeValueOfObjCType: "I" at: &mi_keyEquivalentModifierMask];
