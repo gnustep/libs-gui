@@ -36,6 +36,11 @@ include ../Version
 LIBRARY_NAME=libgnustep-gui
 
 # The Objective-C source files to be compiled
+libgnustep-gui_C_FILES = \
+Parsers/rtfGrammer.tab.c \
+Parsers/rtfScanner.c
+
+# The Objective-C source files to be compiled
 libgnustep-gui_OBJC_FILES = Functions.m \
 NSActionCell.m \
 NSAffineTransform.m \
@@ -139,7 +144,8 @@ tiff.m \
 externs.m \
 GSTable.m \
 GSHbox.m \
-GSVbox.m
+GSVbox.m \
+Parsers/attributedStringConsumer.m
 
 ifneq ($(FOUNDATION_LIB), fd)
 libgnustep-gui_OBJC_FILES += NSPasteboard.m

@@ -4,6 +4,7 @@
 #include <AppKit/NSFont.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSRange.h>
+#include "Parsers/rtfConsumer.h"
 
 /*
  * function to return a character set containing characters that
@@ -277,11 +278,6 @@ paraBreakCSet()
  * With love from Michael, hehe.
  */
 
-- (id) initWithRTF: (NSData*)data
-  documentAttributes: (NSDictionary**)dict
-{
-  return self;
-}
 
 - (id) initWithRTFD: (NSData*)data
  documentAttributes: (NSDictionary**)dict

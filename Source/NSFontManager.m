@@ -254,6 +254,30 @@ static Class fontPanelClass = Nil;
       return nil;
     }
 }
+#else
+- (NSFont *)convertFont:(NSFont *)fontObject
+	       toFamily:(NSString *)family
+{
+  return fontObject;
+}
+
+- (NSFont *)convertFont:(NSFont *)fontObject
+		 toFace:(NSString *)typeface
+{
+  return fontObject;
+}
+
+- (NSFont *)convertFont:(NSFont *)fontObject
+	    toHaveTrait:(NSFontTraitMask)trait
+{
+  return fontObject;
+}
+
+- (NSFont *)convertFont:(NSFont *)fontObject
+		 toSize:(float)size
+{
+  return fontObject;
+}
 #endif
 
 //

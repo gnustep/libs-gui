@@ -36,7 +36,8 @@
 #
 
 # Things to do before compiling
-#before-all::
+before-all::
+	$(MKDIRS) ./$(GNUSTEP_OBJ_DIR)/Parsers
 
 # Things to do after compiling
 # after-all::
@@ -73,3 +74,6 @@
 
 #
 # GNUstep GUI Library specific targets
+
+Parsers/rtfGrammer.tab.c: Parsers/rtfGrammer.y
+	$(BISON) $(BISON_FLAGS) $<

@@ -1,3 +1,13 @@
+1999-12-16 Adam Fedor <fedor@gnu.org>
+
+	* New RTF parser from Stefan Bðhringer
+	<stefan.boehringer@uni-bochum.de>. May not work because
+	of incomplete implementation of NSFontManager and others.
+	* Source/Parsers/attributedStringConsumer.m New file.
+	* Source/Parsers/rtfScanner.c: Likewise.
+	* Source/Parsers/rtfGrammer.y: Likewise.
+	* Source/NSFontManager.m: Stubs for some unimplemented functions.
+	
 Thu Dec 16 04:09:20 1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/AppKit/NSControl.h: Prefixed ivars with underscore;
