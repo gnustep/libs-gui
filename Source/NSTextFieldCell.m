@@ -88,7 +88,7 @@ static NSColor	*txtCol;
 - (id) initTextCell: (NSString *)aString
 {
   [super initTextCell: aString];
-  text_align = NSLeftTextAlignment;
+  _text_align = NSLeftTextAlignment;
 
   ASSIGN(_text_color, txtCol);
   ASSIGN(_background_color, bgCol);
