@@ -218,7 +218,8 @@ AppKit/GSMethodTable.h \
 AppKit/DPSOperators.h \
 AppKit/PSOperators.h \
 AppKit/GSPasteboardServer.h \
-AppKit/GSServicesManager.h
+AppKit/GSServicesManager.h \
+AppKit/GSWraps.h
 
 -include GNUmakefile.preamble
 

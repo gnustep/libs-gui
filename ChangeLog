@@ -1,3 +1,7 @@
+Sun Jun 27  7:50:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/GNUmakefile: Install GSWraps.h
+
 Fri Jun 25 12:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/GMArchiver.m: Fix for decodeDoubleWithName: by
