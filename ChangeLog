@@ -1,3 +1,8 @@
+Thu Dec  9 03:12:16 1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSMatrix.m ([-keyDown:]): Trivial implementation to allow
+ 	ESC to abort the save panel, method still to implement.
+
 Wed Dec  8 14:59:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Headers/AppKit/NSWindow.m: Added new ivar for window view and a
