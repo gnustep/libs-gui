@@ -1,5 +1,3 @@
-# Generated automatically from Makefile.in by configure.
-#
 #  Documentation makefile for GNUstep GUI Library
 #  Copyright (C) 1996 Free Software Foundation, Inc.
 #
@@ -257,6 +255,3 @@ distclean: clean
 	rm -f Makefile 
 
 maintainer-clean: distclean
-
-Makefile: Makefile.in
-	cd ..; $(SHELL) config.status

@@ -1018,11 +1018,11 @@ static int mouseDownFlags = 0;
 
   /* Draw the cells within the drawing rectangle. */
   intRect = upperLeftRect = [self cellFrameAtRow:row1 column:col1];
-  for (i = row1; i <= row2; i++) {
+  for (i = row1; i <= row2 && i < numRows; i++) {
     row = [cells objectAtIndex:i];
     intRect.origin.x = upperLeftRect.origin.x;
 
-    for (j = col1; j <= col2; j++) {
+    for (j = col1; j <= col2 && j < numCols; j++) {
       NSCell *aCell = [row objectAtIndex:j];
       [aCell drawWithFrame:intRect inView:self];
       intRect.origin.x += cellSize.width + intercell.width;
@@ -1198,7 +1198,6 @@ static int mouseDownFlags = 0;
 	  /* At the first click, deselect the selected cell */
 	  if (!previousCell) {
 	    NSRect f = [self cellFrameAtRow:selectedRow column:selectedColumn];
-	    id aCell = selectedCell;
 
 	    [self deselectSelectedCell];
 	    [self setNeedsDisplayInRect:f];

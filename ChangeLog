@@ -3,6 +3,9 @@ Mon Oct 13 16:17:45 1997  Ovidiu Predescu <ovidiu@net-community.com>
 	* Source/NSMatrix.m: Removed commented out portions of code.
 	* Headers/gnustep/gui/NSApplication.h: Added a definition for
 	initialize_gnustep_backend.
+	* Documentation/Makefile: Remove dependency on Makefile.in.
+	* Documentation/news.tmpl.texi: Updated.
+	* Documentation/status.tmpl.texi: Updated.
 
 Mon Oct 13 12:08:51 1997  Ovidiu Predescu <ovidiu@net-community.com>
 

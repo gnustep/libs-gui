@@ -1,7 +1,7 @@
 ANNOUNCE
 ********
 
-This is version 0.3.0 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.4.0 of the GNUstep GUI library (`gnustep-gui').
 
 What is the GNUstep GUI Library?
 ================================
@@ -31,38 +31,47 @@ component like the GNUstep X/DPS GUI Backend.
 What's new in this release?
 ===========================
 
-   The currently released version of the library is `0.3.0'.
+   The currently released version of the library is `0.4.0'.
 
-Noteworthy changes in version `0.3.0'
+Noteworthy changes in version `0.4.0'
 =====================================
 
-   * Completely reworked the menu class. The NSMenu class is now
-     inherited from NSObject and using the new implementation menus
-     have been implemented for the XDPS backend (they have the look and
-     feel of the NeXTStep menus!).
+   * Two important optimizations that speed up the displaying of views
+     and flushing of windows have been implemented. Only the views that
+     need display and those that produce visible effects on the screen
+     receive the -drawRect: message.  Flushing of windows occurs only
+     in rectangles that get displayed not in the whole window.
 
-   * NSRunLoop has been integrated with NSApplication. Using this
-     capability time events have been implemented to NSEvent class.
-     These events allow several improvements in the interaction between
-     user and the graphic interface.
+   * Rotation and scalation of view have been finally implemented. The
+     code requires backend support for changing the state of the
+     graphics context accordingly.
 
-   * NSMatrix has been reworked, it is now conforming to the OpenStep
-     specification and it knows all the selection modes. It uses time
-     events to enhance the drawing speed during mouse drags.
+   * NSScrollView and NSClipView have been implemented. The current
+     implemented behavior is to call the document view to display the
+     exposed region. Copying on scroll will be supported soon, at least
+     on Solaris DPS, where it seems the Postscript language has
+     provisions for copying drawn regions of screen.  Hopefully DGS
+     will also have such facilities by the end of the year.
 
-   * The initial implementation of NSForm has been made although it has
-     not been tested yet.
+   * NSScroller has been completely reworked to gain speed by using
+     timer events.
 
-   * NSPrinter has been implemented though it was not throughly tested;
-     thanks to Simon Frankau.
+   * NSSlider has been implemented. Thanks to Frank Knobloch for
+     supporting this and the NSScrollView implementation.
 
-   * Configure script has been changed to detect the underlaying
-     Foundation library.  The currently supported libraries are
-     gnustep-base and libFoundation.
+   * The library has been ported to work under Solaris with the native
+     DPS with the NeXT's Portable Distributed Objects (PDO) environment.
 
-   * Several cleanups have been made in a lot of classes: the
-     retain/release policy has been fixed, the cell classes correctly
-     implement the NSCopying protocol and many others.
+   * NSCell is able to continuosly send the action to the target while
+     the user is tracking the mouse.
+
+   * The library has been integrated with the makefile package so we
+     now benefit from all of the features the makefile package gives
+     us, especially the possibility to build shared libraries on
+     various systems and having different types (debug and profile) of
+     the library compiled at the same time.
+
+   * Several cleanups and as usual, many bug fixes.
 
 How can I get support for this software?
 ========================================
@@ -79,7 +88,7 @@ GNUstep GUI Library, see the file `SUPPORT' for more information.
 Where can you get it?  How can you compile it?
 ==============================================
 
-   The gstep-gui-0.3.0.tar.gz distribution file has been placed on
+   The gstep-gui-0.4.0.tar.gz distribution file has been placed on
 `ftp.gnustep.org' in `pub/gnustep'.
 
    The program requires gcc 2.7.0 or higher.
