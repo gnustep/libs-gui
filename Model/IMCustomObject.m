@@ -23,7 +23,7 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#import <Foundation/NSObjCRuntime.h>
+#include <Foundation/NSObjCRuntime.h>
 #include <AppKit/GMArchiver.h>
 #include "AppKit/IMCustomObject.h"
 
@@ -47,26 +47,30 @@ extern BOOL _fileOwnerDecoded;
   IMCustomObject* customObject = [[self new] autorelease];
   Class class;
 
-  if (!_fileOwnerDecoded) {
-    _fileOwnerDecoded = YES;
-    customObject->className = [unarchiver decodeStringWithName:@"className"];
-    customObject->extension = [unarchiver decodeObjectWithName:@"extension"];
-    customObject->realObject = [unarchiver decodeObjectWithName:@"realObject"];
-
-    customObject->realObject = _nibOwner;
-    return customObject;
-  }
-
+  if (!_fileOwnerDecoded) 
+    {
+      _fileOwnerDecoded = YES;
+      customObject->className = [unarchiver decodeStringWithName:@"className"];
+      customObject->extension = [unarchiver decodeObjectWithName:@"extension"];
+      customObject->realObject = [unarchiver decodeObjectWithName:@"realObject"];
+      customObject->realObject = _nibOwner;
+      return customObject;
+    }
+  
   customObject->className = [unarchiver decodeStringWithName:@"className"];
   customObject->extension = [unarchiver decodeObjectWithName:@"extension"];
   customObject->realObject = [unarchiver decodeObjectWithName:@"realObject"];
 
   class = NSClassFromString (customObject->className);
   if (class)
-    customObject->realObject = [[class alloc] init];
-  else {
-    NSLog (@"Class %@ not linked into application!", customObject->className);
-  }
+    {
+      customObject->realObject = [[class alloc] init];
+    }
+  else 
+    {
+      NSLog (@"Class %@ not linked into application!", 
+	     customObject->className);
+    }
 
   return customObject;
 }
@@ -76,16 +80,20 @@ extern BOOL _fileOwnerDecoded;
   return realObject;
 }
 
-- (void)encodeWithModelArchiver:(GMArchiver*)archiver
+- (void)encodeWithModelArchiver: (GMArchiver*)archiver
 {
   [archiver encodeString:className withName:@"className"];
   if (realObject)
-    [archiver encodeObject:realObject withName:@"realObject"];
+    {
+      [archiver encodeObject:realObject withName:@"realObject"];
+    }
   if (extension)
-    [archiver encodeObject:extension withName:@"extension"];
+    {
+      [archiver encodeObject:extension withName:@"extension"];
+    }
 }
 
-- (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
+- (id)initWithModelUnarchiver: (GMUnarchiver*)unarchiver
 {
   return self;
 }
@@ -95,35 +103,40 @@ extern BOOL _fileOwnerDecoded;
 
 @implementation IMCustomView
 
-+ (id)createObjectForModelUnarchiver:(GMUnarchiver*)unarchiver
++ (id)createObjectForModelUnarchiver: (GMUnarchiver*)unarchiver
 {
   IMCustomView* customView = [[self new] autorelease];
   Class class;
 
-  if (!_fileOwnerDecoded) {
-    _fileOwnerDecoded = YES;
-    customView->className = [unarchiver decodeStringWithName:@"className"];
-    customView->extension = [unarchiver decodeObjectWithName:@"extension"];
-    customView->realObject = [unarchiver decodeObjectWithName:@"realObject"];
-    customView->realObject = _nibOwner;
-	[customView setFrame:[unarchiver decodeRectWithName:@"frame"]];
-
-    return customView;
-  }
-
-  customView->className = [unarchiver decodeStringWithName:@"className"];
-  customView->extension = [unarchiver decodeObjectWithName:@"extension"];
-  customView->realObject = [unarchiver decodeObjectWithName:@"realObject"];
-  [customView setFrame:[unarchiver decodeRectWithName:@"frame"]];
-
+  if (!_fileOwnerDecoded) 
+    {
+      _fileOwnerDecoded = YES;
+      customView->className = [unarchiver decodeStringWithName: @"className"];
+      customView->extension = [unarchiver decodeObjectWithName: @"extension"];
+      customView->realObject = [unarchiver decodeObjectWithName: @"realObject"];
+      customView->realObject = _nibOwner;
+      [customView setFrame: [unarchiver decodeRectWithName: @"frame"]];
+      
+      return customView;
+    }
+  
+  customView->className = [unarchiver decodeStringWithName: @"className"];
+  customView->extension = [unarchiver decodeObjectWithName: @"extension"];
+  customView->realObject = [unarchiver decodeObjectWithName: @"realObject"];
+  [customView setFrame: [unarchiver decodeRectWithName: @"frame"]];
+  
   class = NSClassFromString (customView->className);
   if (class)
-    customView->realObject = [[class alloc] initWithFrame:[customView frame]];
-  else {
-    NSLog (@"Class %@ not linked into application!", customView->className);
-  }
-
-return customView->realObject;
+    {
+      customView->realObject = [[class alloc] initWithFrame: 
+						[customView frame]];
+    }
+  else 
+    {
+      NSLog (@"Class %@ not linked into application!", customView->className);
+    }
+  
+  return customView->realObject;
   return customView;
 }
 
@@ -134,13 +147,17 @@ return customView->realObject;
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
-  [archiver encodeString:className withName:@"className"];
-  [archiver encodeRect:[self frame] withName:@"frame"];
+  [archiver encodeString: className  withName: @"className"];
+  [archiver encodeRect: [self frame]  withName: @"frame"];
 
   if (realObject)
-    [archiver encodeObject:realObject withName:@"realObject"];
+    {
+      [archiver encodeObject:realObject withName:@"realObject"];
+    }
   if (extension)
-    [archiver encodeObject:extension withName:@"extension"];
+    {
+      [archiver encodeObject:extension withName:@"extension"];
+    }
 }
 
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
