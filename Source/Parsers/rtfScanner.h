@@ -60,4 +60,9 @@ typedef enum {
 
 void	lexInitContext(RTFscannerCtxt *lctxt, void *customContext, int (*getcharFunction)());
 
+/*	external symbols from the grammer	*/
+/*int	GSRTFparse(void *ctxt, RTFscannerCtxt *lctxt);*/
+int	GSRTFparse(void *ctxt, void *lctxt);
+
 #endif
+

@@ -147,36 +147,47 @@ LexKeyword	RTFcommands[]={
 	"cb",		token(RTFcolorbg),
 	"cf",		token(RTFcolorfg),
 	"colortbl",	token(RTFcolortable),
+	"cpg",		token(RTFcpg),
 	"dn",		token(RTFsubscript),
 	"f", 		token(RTFfont),
+	"fcharset",	token(RTFfcharset),
 	"fdecor",	token(RTFfamilyDecor),
 	"fi", 		token(RTFfirstLineIndent),
 	"fmodern",	token(RTFfamilyModern),
 	"fnil",		token(RTFfamilyNil),
 	"fonttbl",	token(RTFfontListStart),
+	"footer",	token(RTFfooter),
+	"footnote",	token(RTFfootnote),
+	"fprq",	        token(RTFfprq),
 	"froman",	token(RTFfamilyRoman),
 	"fs",		token(RTFfontSize),
 	"fscript",	token(RTFfamilyScript),
 	"fswiss",	token(RTFfamilySwiss),
 	"ftech",	token(RTFfamilyTech),
 	"green",	token(RTFgreen),
+	"header",	token(RTFheader),
 	"i",		token(RTFitalic),
+	"info",		token(RTFinfo),
 	"li", 		token(RTFleftIndent),
 	"mac",	        token(RTFmac),
+	"margb",	token(RTFmarginButtom),
 	"margl",	token(RTFmarginLeft),
 	"margr",	token(RTFmarginRight),
+	"margt",	token(RTFmarginTop),
 	"paperh",	token(RTFpaperHeight),
 	"paperw",	token(RTFpaperWidth),
 	"par",	        token(RTFparagraph),
 	"pard",	        token(RTFdefaultParagraph),
 	"pc",	        token(RTFpc),
 	"pca",	        token(RTFpca),
+	"pict",	        token(RTFpict),
 	"qc",	        token(RTFalignCenter),
 	"ql",	        token(RTFalignLeft),
 	"qr",	        token(RTFalignRight),
 	"red",		token(RTFred),
 	"rtf",		token(RTFstart),
 	"s",	        token(RTFstyle),
+	"stylesheet",   token(RTFstylesheet),
 	"tab",	        token(RTFtabulator),
 	"ul",		token(RTFunderline),
 	"ulnone",	token(RTFunderlineStop),
@@ -366,6 +377,7 @@ int	GSRTFlex(YYSTYPE *lvalp, YYLTYPE *llocp, RTFscannerCtxt *lctxt)	/* provide v
 	      case '~': c = ' ';
 		  break;
 	      case '\n':
+	      case '\r':
 		  // release is up to the consumer
 		  cv = calloc(1, 2);
 		  cv[0] = '\n';
@@ -374,8 +386,29 @@ int	GSRTFlex(YYSTYPE *lvalp, YYLTYPE *llocp, RTFscannerCtxt *lctxt)	/* provide v
 		  token = RTFtext;
 		  return token;
 	      case '{':
+		  // release is up to the consumer
+		  cv = calloc(1, 2);
+		  cv[0] = '{';
+		  cv[1] = '\0';
+		  lvalp->text = cv;
+		  token = RTFtext;
+		  return token;
 	      case '}':
+		  // release is up to the consumer
+		  cv = calloc(1, 2);
+		  cv[0] = '}';
+		  cv[1] = '\0';
+		  lvalp->text = cv;
+		  token = RTFtext;
+		  return token;
 	      case '\\':
+		  // release is up to the consumer
+		  cv = calloc(1, 2);
+		  cv[0] = '\\';
+		  cv[1] = '\0';
+		  lvalp->text = cv;
+		  token = RTFtext;
+		  return token;
 	      default:
 		  // fall through
 	  }

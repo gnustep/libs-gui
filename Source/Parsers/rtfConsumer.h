@@ -27,13 +27,7 @@
 #ifndef _rtfConsumer_h_INCLUDE
 #define _rtfConsumer_h_INCLUDE
 
-#include	"Parsers/rtfScanner.h"
-
-/*	external symbols from the grammer	*/
-int	GSRTFparse(void *ctxt, RTFscannerCtxt *lctxt);
-
-BOOL parseRTFintoAttributedString(NSString *rtfString, 
-				  NSMutableAttributedString *result,
-				  NSDictionary **dict);
+NSAttributedString *parseRTFintoAttributedString(NSData *rtfData, 
+						 NSDictionary **dict);
 
 #endif

@@ -34,6 +34,9 @@
    measurement is usually in twips: one twentieth of a point (this is about 0.01764 mm)
    a tabstop of 540 twips (as it occurs on NeXT) is therefore about 0.95 cm
 */
+#define	halfpoints2points(a)	((a)/2.0)
+#define	twips2points(a)	((a)/20.0)
+#define	twips2mm(a)	((a)*0.01764)
 
 /*	prepare the ctxt, or whatever you want	*/
 void	GSRTFstart(void *ctxt);
@@ -44,8 +47,8 @@ void	GSRTFstop(void *ctxt);
 /*	those pairing functions enclose RTFBlocks. Use it to capture the hierarchical attribute changes of blocks.
 	i.e. attributes of a block are forgotten once a block is closed
 */
-void	GSRTFopenBlock(void *ctxt);
-void	GSRTFcloseBlock(void *ctxt);
+void	GSRTFopenBlock(void *ctxt, BOOL ignore);
+void	GSRTFcloseBlock(void *ctxt, BOOL ignore);
 
 /*	handle errors	*/
 void	GSRTFerror(const char *msg);
@@ -77,6 +80,10 @@ void GSRTFpaperHeight(void *ctxt, int height);
 void GSRTFmarginLeft(void *ctxt, int margin);
 /* set right margin in twips */
 void GSRTFmarginRight(void *ctxt, int margin);
+/* set top margin in twips */
+void GSRTFmarginTop(void *ctxt, int margin);
+/* set buttom margin in twips */
+void GSRTFmarginButtom(void *ctxt, int margin);
 /* set first line indent */
 void GSRTFfirstLineIndent(void *ctxt, int indent);
 /* set left indent */
@@ -89,6 +96,10 @@ void GSRTFalignLeft(void *ctxt);
 void GSRTFalignRight(void *ctxt);
 /* set paragraph style */
 void GSRTFstyle(void *ctxt, int style);
+/* Add a colour to the colour table*/
+void GSRTFaddColor(void *ctxt, int red, int green, int blue);
+/* Add the default colour to the colour table*/
+void GSRTFaddDefaultColor(void *ctxt);
 /* set background colour */
 void GSRTFcolorbg(void *ctxt, int color);
 /* set foreground colour */
