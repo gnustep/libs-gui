@@ -154,7 +154,7 @@
   NSFileWrapper *wrapper = [NSUnarchiver unarchiveObjectWithData: data]; 
 
   RELEASE(self);
-  return wrapper;
+  return RETAIN(wrapper);
 }
 
 - (void) dealloc
@@ -532,13 +532,46 @@
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [aDecoder decodeValueOfObjCType: @encode(GSFileWrapperType) at: &_wrapperType];
+  int wrapperType;
+  NSString *preferredFilename;
+  NSDictionary *fileAttributes;
+  id wrapperData;
+  NSImage *iconImage;
+
+  [aDecoder decodeValueOfObjCType: @encode(GSFileWrapperType) at: &wrapperType];
   // Dont restore the file name
-  _preferredFilename = [aDecoder decodeObject];
-  _fileAttributes = [aDecoder decodeObject];
-  _wrapperData = [aDecoder decodeObject];
-  _iconImage = [aDecoder decodeObject];
+  preferredFilename = [aDecoder decodeObject];
+  fileAttributes = [aDecoder decodeObject];
+  wrapperData = [aDecoder decodeObject];
+  iconImage = [aDecoder decodeObject];
+
+  switch (wrapperType)
+    {
+      case GSFileWrapperRegularFileType: 
+	self = [self initRegularFileWithContents: wrapperData];
+        break;
+      case GSFileWrapperSymbolicLinkType: 
+	self = [self initSymbolicLinkWithDestination: wrapperData];
+        break;
+      case GSFileWrapperDirectoryType: 
+	self = [self initDirectoryWithFileWrappers: wrapperData];
+	break;
+    }
+
+  if (preferredFilename != nil)
+    {
+      [self setPreferredFilename: preferredFilename];
+    }
+  if (fileAttributes != nil)
+    {
+      [self setFileAttributes: fileAttributes];
+    }
+  if (iconImage != nil)
+    {
+      [self setIcon: iconImage];
+    }
   return self;
 }
 
 @end
+
