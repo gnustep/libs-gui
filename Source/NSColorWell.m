@@ -107,7 +107,7 @@
 {
   if (NSIsEmptyRect(insideRect))
     return;
-  [the_color drawSwatchInRect insideRect];
+  [the_color drawSwatchInRect: insideRect];
 }
 
 //
