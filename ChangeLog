@@ -1,3 +1,11 @@
+2003-02-15 18:22  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/NSTextView.h, Source/NSLayoutManager.m,
+	Source/NSTextView.m: Change the way the text view is told about
+	layout invalidation. Change NSTextView to update its state as
+	late as possible before displaying, and make sure it's updated
+	when it's resized.
+
 2003-02-15 18:11  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSParagraphStyle.m ([NSMutableParagraphStyle

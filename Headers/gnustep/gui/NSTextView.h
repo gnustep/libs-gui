@@ -525,6 +525,12 @@ already been laid out. */
 /* For internal use. */
 -(void) _syncTextViewsByCalling: (SEL)action  withFlag: (BOOL)flag;
 -(void) _recacheDelegateResponses;
+
+/*
+NSLayoutManager will send this message to a text view when layout information
+for that text view has been invalidated.
+*/
+-(void) _layoutManagerDidInvalidateLayout;
 @end
 
 

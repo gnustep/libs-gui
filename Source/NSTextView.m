@@ -52,6 +52,7 @@
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSNotification.h>
+#include <Foundation/NSRunLoop.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSTimer.h>
 #include <Foundation/NSValue.h>
@@ -292,6 +293,55 @@ decoded.
     }
 }
 
+
+/*
+Called when our state needs updating due to external changes. Currently,
+this happens when layout has been invalidated, and when we are resized.
+*/
+-(void) _updateState: (id)sender
+{
+  [self sizeToFit];
+  /* TODO: we don't have to redisplay the entire view */
+  [self setNeedsDisplay: YES];
+  [self updateInsertionPointStateAndRestartTimer:
+    [self shouldDrawInsertionPoint]];
+}
+
+-(void) _layoutManagerDidInvalidateLayout
+{
+  /*
+  We don't want to do the update right away, since the invalidation might
+  be followed by further invalidation if the user of the text system is
+  making large rearrangements of the text network. This also makes us a
+  lot more forgiving; no real works is done until "later", so the user can
+  have the text network in an inconsistent state for short periods of time.
+  (This shouldn't be relied on, though. If possible, avoid it.)
+
+  Actually, we want to run as late as possible. However, it seems to me that
+  we must run before [NSWindow -_handleWindowNeedsDisplay:] (or that it
+  would be a very good idea to do so, since we might end up resizing
+  ourselves and stuff like that). Thus, we use -performSelector:... with
+  an order 1 under that for window updating.
+
+  If the update method is not called before the real redisplay (if someone
+  forces a redisplay right away), we might draw incorrectly, but it shouldn't
+  cause any other harm.
+  */
+  [[NSRunLoop currentRunLoop] cancelPerformSelector: @selector(_updateState:)
+    target: self
+    argument: nil];
+  [[NSRunLoop currentRunLoop]
+    performSelector: @selector(_updateState:)
+	     target: self
+	   argument: nil
+	      order: 599999
+	      modes: [NSArray arrayWithObjects: /* TODO: set up array in advance */
+		       NSDefaultRunLoopMode,
+		       NSModalPanelRunLoopMode,
+		       NSEventTrackingRunLoopMode, nil]];
+}
+
+
 @end
 
 
@@ -432,6 +482,12 @@ If a text view is added to an empty text network, it keeps its attributes.
 
   [container setTextView: self];
   [self invalidateTextContainerOrigin];
+
+  [self setPostsFrameChangedNotifications: YES];
+  [[NSNotificationCenter defaultCenter] addObserver: self
+    selector: @selector(_updateState:)
+    name: NSViewFrameDidChangeNotification
+    object: self];
 
   return self;
 }
@@ -606,6 +662,12 @@ _tf.delegate_responds_to* */
   [self _recacheDelegateResponses];
   [self invalidateTextContainerOrigin];
 
+  [self setPostsFrameChangedNotifications: YES];
+  [[NSNotificationCenter defaultCenter] addObserver: self
+    selector: @selector(_updateState:)
+    name: NSViewFrameDidChangeNotification
+    object: self];
+
   return self;
 }
 
@@ -633,6 +695,13 @@ _tf.delegate_responds_to* */
 	  return;
 	}
     }
+
+  [[NSNotificationCenter defaultCenter] removeObserver: self
+    name: NSViewFrameDidChangeNotification
+    object: self];
+  [[NSRunLoop currentRunLoop] cancelPerformSelector: @selector(_updateState:)
+    target: self
+    argument: nil];
 
   DESTROY(_selectedTextAttributes);
   DESTROY(_markedTextAttributes);

@@ -1547,7 +1547,7 @@ TODO: not really clear what these should do
   unsigned int g;
   int i;
 
-  /* Invalidate display from the first glyph not laid out (which will
+  /* Invalidate from the first glyph not laid out (which will
   generally be the first glyph to have been invalidated). */
   g = layout_glyph;
 
@@ -1559,8 +1559,7 @@ TODO: not really clear what these should do
 	  g < textcontainers[i].pos + textcontainers[i].length)
         continue;
 
-      [[textcontainers[i].textContainer textView] sizeToFit];
-      [[textcontainers[i].textContainer textView] setNeedsDisplay: YES];
+      [[textcontainers[i].textContainer textView] _layoutManagerDidInvalidateLayout];
     }
 }
 
