@@ -162,6 +162,7 @@ Gui_AGSDOC_FLAGS = \
 	-VariablesTemplate TypesAndConstants \
 	-WordMap '{\
 	APPKIT_EXPORT=extern;APPKIT_DECLARE="";\
+	DEFINE_RINT_IF_MISSING=""; \
 	}' -Up Gui
 
 include $(GNUSTEP_MAKEFILES)/documentation.make
