@@ -26,19 +26,11 @@ the library can be easily ported to other display systems.
 
 The GNUstep GUI Library requires the GNU Objective-C compiler, the
 GNUstep Base Library, the TIFF Graphics library, and a back-end
-component like the GNUstep X/DPS GUI Backend.
+component like the GNUstep X/GPS GUI Backend.
 
 @set ANNOUNCE-ONLY
 @include news.texi
 @clear ANNOUNCE-ONLY
-
-@section How can I get support for this software?
-
-We currently do not have a mailing list setup explicitly for the
-GNUstep GUI Library; however, you may wish to use the GNUstep
-discussion mailing list for general questions and discussion.  Look at
-the GNUstep Web Pages for more information regarding GNUstep resources
-@url{http://www.gnustep.org/}
 
 @section Where can you get it?  How can you compile it?
 
@@ -47,12 +39,6 @@ The gstep-gui-@value{GNUSTEP-GUI-VERSION}.tar.gz distribution
 file has been placed on @samp{@value{GNUSTEP-GUI-FTP-MACHINE}} in
 @samp{@value{GNUSTEP-GUI-FTP-DIRECTORY}}.
 @end ifset
-@ifclear GNUSTEP-GUI-FTP-MACHINE
-The gstep-gui-@value{GNUSTEP-GUI-VERSION}.tar.gz distribution
-file has not been made available by anonymous ftp.
-@end ifclear
-
-The program requires gcc @value{GNUSTEP-GUI-GCC} or higher.
 
 the TIFF Graphics library version
 @value{GNUSTEP-GUI-LIBTIFF} is required.

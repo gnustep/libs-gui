@@ -1,3 +1,14 @@
+2002-03-19  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSWindow.m ([NSWindow -sendEvent:]): In resize event, get
+	new origin from event location field.
+
+	* Source/GSFontInfo.m ([GSFontInfo
+	+encodingForRegistry:encoding:]): Handle big5 encoding (patch from
+	Yen-Ju Chen)
+
+	* Documentation/news.texi: Update.
+
 Mon Mar 18 16:00:34 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSTableView.m ([-draggingUpdated:sender]): Make the gui

@@ -248,6 +248,11 @@ static GSFontEnumerator *sharedEnumerator = nil;
       if ([encoding isEqualToString: @"0"])
 	return NSGB2312StringEncoding;
     }
+  else if ([registry isEqualToString: @"big5"])
+    {
+      if ([encoding isEqualToString: @"0"])
+        return NSBIG5StringEncoding;
+    }
 
   return NSASCIIStringEncoding;
 }

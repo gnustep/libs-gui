@@ -31,7 +31,7 @@ to such a degree to be unusable.
 @item NSHelpPanel, NSHelpManager
 @end itemize
 
-Classses that need work (well every class needs work!)
+Classes that need work (well every class needs work!)
 
 @itemize @bullet
 @item NSComboBox, NSComboBoxCell

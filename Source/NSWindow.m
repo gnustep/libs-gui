@@ -732,8 +732,6 @@ static NSNotificationCenter *nc = nil;
 		   backing: (NSBackingStoreType)bufferingType
 		     defer: (BOOL)flag
 {
-  NSDebugLog(@"NSWindow -initWithContentRect: \n");
-
   return [self initWithContentRect: contentRect
 			 styleMask: aStyle
 			   backing: bufferingType
@@ -771,11 +769,10 @@ static NSNotificationCenter *nc = nil;
 {
   NSRect		cframe;
 
-  NSDebugLog(@"NSWindow default initializer\n");
   if (!NSApp)
     NSLog(@"No application!\n");
 
-  NSDebugLog(@"NSWindow start of init\n");
+  NSDebugLLog(@"NSWindow", @"NSWindow start of init\n");
   if (!windowmaps)
     windowmaps = NSCreateMapTable(NSIntMapKeyCallBacks,
 				 NSNonRetainedObjectMapValueCallBacks, 20);
@@ -824,7 +821,7 @@ static NSNotificationCenter *nc = nil;
   else
     NSDebugLLog(@"NSWindow", @"Defering NSWindow creation\n");
 
-  NSDebugLog(@"NSWindow end of init\n");
+  NSDebugLLog(@"NSWindow", @"NSWindow end of init\n");
   return self;
 }
 
@@ -2642,6 +2639,9 @@ resetCursorRectsForView(NSView *theView)
   // Quietly discard an unused mouse down.
 }
 
+/** Handles mouse and other events sent to the received by NSApplication.
+    Do not invoke this method directly.
+*/
 - (void) sendEvent: (NSEvent*)theEvent
 {
   NSView	*v;
@@ -2840,6 +2840,9 @@ resetCursorRectsForView(NSView *theView)
 	    case GSAppKitWindowResized:
 	      _frame.size.width = (float)[theEvent data1];
 	      _frame.size.height = (float)[theEvent data2];
+	      /* Resize events always move the frame origin. The new origin
+		 is stored in the event location field */
+	      _frame.origin = [theEvent locationInWindow];
 	      if (_autosaveName != nil)
 		{
 		  [self saveFrameUsingName: _autosaveName];

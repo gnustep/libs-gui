@@ -9,6 +9,20 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.7.6}
+
+@itemize @bullet
+@item NSOutlineView implemented.
+@item Improvements to NSTableView, NSPopUpButton, NSTextView, NSFontPanel
+@item Scroll wheel support.
+@item Fully-functional keybindings, including multi-stroke keybindings.
+@item Memory panel available from Info Panel.
+@end itemize
+
+@c ====================================================================
+@c Keep the next line just below the list of changes in most recent version.
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.7.5}
 
 @itemize @bullet
@@ -27,10 +41,6 @@ The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSIO
 @item Near rewrite of Menu handling code.
 @item Gmodel code compiled as a separate bundle.
 @end itemize
-
-@c ====================================================================
-@c Keep the next line just below the list of changes in most recent version.
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.7.0}
 
