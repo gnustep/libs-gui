@@ -202,10 +202,13 @@ static id validationCenter;
 
 @implementation GSValidationManager
 
-- (id) initWithWindow: (NSWindow *)window {
+- (id) initWithWindow: (NSWindow *)window
+{
   if ((self = [super init]) != nil)
-    {;
-      NSView *vw = [window _windowView];
+    {
+      NSView *vw;
+
+      vw = [window _windowView];
       
       ASSIGN(_window, window);
       [nc addObserver: self selector: @selector(windowDidUpdate:) 
@@ -214,8 +217,11 @@ static id validationCenter;
         name: NSWindowWillCloseNotification object: _window];
 						
       ASSIGN(_trackingRectView, vw);
-      _trackingRect = [_trackingRectView addTrackingRect: 
-        [_trackingRectView bounds] owner: self userData: nil assumeInside: NO];
+      _trackingRect 
+	= [_trackingRectView addTrackingRect: [_trackingRectView bounds]
+			     owner: self 
+			     userData: nil 
+			     assumeInside: NO];
     }
     
   return self;

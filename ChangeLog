@@ -1,3 +1,10 @@
+2004-06-02  Riccardo Mottola  <rollei@tiscalinet.it>
+	    David Ayers  <d.ayers@inode.at>
+
+	* Source/GSToolbar.m ([GSValidationManager-initWithWindow:):
+	Move variable declarations to the beginning of the block.
+	Format according to standards.
+	
 2004-06-01  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* configure.ac: added code to detect the presence of 
