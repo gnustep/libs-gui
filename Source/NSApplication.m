@@ -55,6 +55,7 @@
 #include <AppKit/NSDocumentController.h>
 #include <AppKit/NSPopUpButton.h>
 #include <AppKit/NSPasteboard.h>
+#include <AppKit/NSColorPanel.h>
 #include <AppKit/NSPanel.h>
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSImage.h>
@@ -1627,8 +1628,12 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
  */
 - (void) orderFrontColorPanel: sender
 { 
-  NSRunAlertPanel (NULL, @"Color Panel not implemented yet",
-		   @"OK", NULL, NULL);
+  NSColorPanel *colorPanel = [NSColorPanel sharedColorPanel];
+
+  if (colorPanel)
+    [colorPanel orderFront: nil];
+  else
+    NSBeep();
 }
 
 - (void) orderFrontDataLinkPanel: sender
