@@ -1,3 +1,16 @@
+Sat Mar 11 05:54:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSPanel.m: Completely reformatted and added some fixes for
+	errors in positioning/sizing the panel.
+
+Fri Mar 10 17:42:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSWindow.m: Reverted last change to NSWindow as they left
+	it unable to compile and the intended modification to the center
+	method seemed bogus - it would have left the window positioned 17.5
+	pixels below the center of the screen. and I don't think that that
+	is what is desired.
+	
 Fri Mar 10 13:36:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSCell.m: fixed formatting to be consistent and conform
@@ -6,14 +19,14 @@ Fri Mar 10 13:36:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 2000-03-10  Pascal J. Bourguignon  <pjb@imaginet.fr>
 
-	* Source/GSUtil.m 
+	* Source/GSUtil.m:
 
 	A new file where to put utility functions used by the classes. For
 	now,  only   contains  the  GSUtil_sizeOfMultilineStringWithFont()
 	function.
 
-	* Source/NSCell.m 
-	* Source/NSButtonCell.m 
+	* Source/NSCell.m: 
+	* Source/NSButtonCell.m :
 
 	Updated -cellSize  to process multiline string  value. This should
 	improve greately the behaviour  of NSTextField and consequently of
@@ -23,7 +36,7 @@ Fri Mar 10 13:36:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 	drawInteriorWithFrame:inView:]   to   handle  properly   multiline
 	strings.
 
-	* Source/NSPanel.m
+	* Source/NSPanel.m:
 
 	Added the following  features to GSAlertPanel private subclass
 	of NSPanel:
@@ -41,7 +54,7 @@ Fri Mar 10 13:36:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 	- more than one attention panel can be run simultaneously, without
 	  the later invocation stealing the panel of the former one.
 
-	* Source/NSWindow.m
+	* Source/NSWindow.m:
 	
 	Moved  constant   invocation  of  the   method  -[NSParagraphStyle
 	attribute:atIndex:effectiveRange:]  outside of  loops  and removed
@@ -51,7 +64,7 @@ Fri Mar 10 13:36:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 	windows as high as the screen  would be centered at y=0 instead of
 	y=title bar height/2.
 
-	* Testing/NSPanelTest
+	* Testing/NSPanelTest:
 
 	Also, I've  added a NSPanelTest application  in core/Testing, that
 	will show how nice have become the Alert panels...
