@@ -41,6 +41,7 @@
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSLock.h>
+#include <Foundation/NSPathUtilities.h>
 #include <Foundation/NSPortNameServer.h>
 #include <Foundation/NSProcessInfo.h>
 #include <Foundation/NSSerialization.h>
@@ -51,9 +52,6 @@
 #include <Foundation/NSTimer.h>
 
 #include <gnustep/gui/GSPasteboardServer.h>
-
-#define stringify_it(X) #X
-#define	prog_path(X) stringify_it(X) "/Tools/gpbs"
 
 @interface NSPasteboard (Private)
 + (id<GSPasteboardSvr>) _pbs;
@@ -143,8 +141,17 @@ static  NSMapTable              *mimeMap = NULL;
 	      static	NSString	*cmd = nil;
 
 	      if (cmd == nil)
-		cmd = [NSString stringWithCString: 
-			prog_path(GNUSTEP_INSTALL_PREFIX)];
+	        {
+#ifdef GNUSTEP_BASE_LIBRARY
+		  cmd = RETAIN([[NSSearchPathForDirectoriesInDomains(
+		      GSToolsDirectory, NSSystemDomainMask, YES) objectAtIndex: 0] 
+				   stringByAppendingPathComponent: @"gpbs"]);
+#else
+		  cmd = RETAIN([[@GNUSTEP_INSTALL_PREFIX 
+				    stringByAppendingPathComponent: @"Tools"] 
+				   stringByAppendingPathComponent: @"gpbs"]);
+#endif
+		}
 	      [NSTask launchedTaskWithLaunchPath: cmd arguments: nil];
 	      [NSTimer scheduledTimerWithTimeInterval: 5.0
 					   invocation: nil
