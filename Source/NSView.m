@@ -3785,8 +3785,12 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	}
       if ([aDecoder containsValueForKey: @"NSvFlags"])
         {
-	  //int vFlags = [aDecoder decodeIntForKey: @"NSvFlags"];
-	  // FIXME set the flags
+	  int vFlags = [aDecoder decodeIntForKey: @"NSvFlags"];
+
+	  // We are lucky here, Apple use the same constants
+	  // in the lower bits of the flags
+	  [self setAutoresizingMask: vFlags & 0x3F];
+	  [self setHidden: vFlags & (1 << 32)];
 	}
     }
   else

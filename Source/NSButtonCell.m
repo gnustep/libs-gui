@@ -129,6 +129,23 @@
   [super dealloc];
 }
 
+
+- (void) setType: (NSCellType)aType
+{
+  /* We do nothing here (we match the Mac OS X behavior) because with
+   * NSButtonCell GNUstep implementation the cell type is binded to the image
+   * position. Such behavior has been choosen because it permits to have
+   * -setFont: -setTitle -setImage: methods which are symetrical by not altering
+   * the cell type, morevover a cell type is more characterized by the potential
+   * visibility of the image (which is under the control of the method
+   * -setImagePosition:) than by the value of the image ivar itself (related to
+   * -setImage: method).  
+   * On Mac OS X, the NSButtonCell cell type is NSTextCellType by default or
+   * NSImageCellType if the initialization has been done with -initImageCell:,
+   * it should be noted that the cell type never changes later.
+   */
+}
+
 /*
  * Setting the Titles
  */
