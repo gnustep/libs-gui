@@ -1,5 +1,5 @@
 /* 
-   GNUServicesManager.h
+   GSServicesManager.h
 
    Copyright (C) 1998 Free Software Foundation, Inc.
 
@@ -24,8 +24,8 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#ifndef _GNUstep_H_GNUServicesManager
-#define _GNUstep_H_GNUServicesManager
+#ifndef _GNUstep_H_GSServicesManager
+#define _GNUstep_H_GSServicesManager
 
 @class	NSApplication;
 @class	NSArray;
@@ -37,7 +37,7 @@
 @class	NSString;
 @class	NSTimer;
 
-@interface      GNUServicesManager : NSObject
+@interface      GSServicesManager : NSObject
 {
   NSApplication         *application;
   NSMenu                *servicesMenu;
@@ -54,8 +54,8 @@
   NSMutableDictionary	*allServices;
   NSTimer		*timer;
 }
-+ (GNUServicesManager*) newWithApplication: (NSApplication*)app;
-+ (GNUServicesManager*) manager;
++ (GSServicesManager*) newWithApplication: (NSApplication*)app;
++ (GSServicesManager*) manager;
 - (void) checkServices;
 - (void) doService: (NSCell*)item;
 - (BOOL) hasRegisteredTypes: (NSDictionary*)service;

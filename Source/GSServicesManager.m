@@ -1,5 +1,5 @@
 /* 
-   GNUServicesManager.m
+   GSServicesManager.m
 
    Copyright (C) 1998 Free Software Foundation, Inc.
 
@@ -53,7 +53,7 @@
 #include <AppKit/NSCell.h>
 #include <AppKit/NSWorkspace.h>
 
-#include <AppKit/GNUServicesManager.h>
+#include <AppKit/GSServicesManager.h>
 
 #define stringify_it(X) #X
 #define prog_path(X,Y) \
@@ -222,9 +222,9 @@ NSRegisterServicesProvider(id provider, NSString *name)
 
 
 
-@implementation GNUServicesManager
+@implementation GSServicesManager
 
-static GNUServicesManager	*manager = nil;
+static GSServicesManager	*manager = nil;
 static NSString         *servicesName = @".GNUstepServices";
 static NSString         *disabledName = @".GNUstepDisabled";
 
@@ -234,7 +234,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
  *      provider with the applications name so we can handle incoming
  *      service requests.
  */
-+ (GNUServicesManager*) newWithApplication: (NSApplication*)app
++ (GSServicesManager*) newWithApplication: (NSApplication*)app
 {
   NSDictionary	*env;
   NSString	*str;
@@ -247,7 +247,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
       return manager;
     }
 
-  manager = [GNUServicesManager alloc];
+  manager = [GSServicesManager alloc];
 
   env = [[NSProcessInfo processInfo] environment];
   str = [env objectForKey: @"GNUSTEP_USER_ROOT"];
@@ -279,7 +279,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
   return manager;
 }
 
-+ (GNUServicesManager*) manager
++ (GSServicesManager*) manager
 {
   if (manager == nil)
     {
@@ -962,7 +962,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
     }
 }
 
-@end /* GNUServicesManager */
+@end /* GSServicesManager */
 
 
 BOOL
@@ -1081,13 +1081,13 @@ int
 NSSetShowsServicesMenuItem(NSString *name, BOOL enabled)
 {
 
-  return [[GNUServicesManager manager] setShowsServicesMenuItem: name
+  return [[GSServicesManager manager] setShowsServicesMenuItem: name
 							     to: enabled];
 }
 
 BOOL
 NSShowsServicesMenuItem(NSString * name)
 {
-  return [[GNUServicesManager manager] showsServicesMenuItem: name];
+  return [[GSServicesManager manager] showsServicesMenuItem: name];
 }
 

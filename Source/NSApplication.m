@@ -57,7 +57,7 @@
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSMenuItem.h>
 #include <AppKit/NSCursor.h>
-#include <AppKit/GNUServicesManager.h>
+#include <AppKit/GSServicesManager.h>
 #include <AppKit/IMLoading.h>
 
 
@@ -120,7 +120,7 @@ static NSString	*NSAbortModalException = @"NSAbortModalException";
 
 	NSDebugLog(@"Begin of NSApplication -init\n");
 
-	listener = [GNUServicesManager newWithApplication: self];
+	listener = [GSServicesManager newWithApplication: self];
 	window_list = [NSMutableArray new];					// allocate window list
 	window_count = 1;
 

@@ -106,8 +106,7 @@ NSView.m \
 NSWindow.m \
 NSWorkspace.m \
 GSTrackingRect.m \
-GNUAlertPanel.m \
-GNUServicesManager.m \
+GSServicesManager.m \
 PSMatrix.m \
 tiff.m \
 externs.m
@@ -202,7 +201,7 @@ AppKit/NSWorkspace.h \
 AppKit/GSTrackingRect.h \
 AppKit/PSMatrix.h \
 AppKit/nsimage-tiff.h \
-AppKit/GNUServicesManager.h \
+AppKit/GSServicesManager.h \
 
 -include GNUmakefile.preamble
 
