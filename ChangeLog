@@ -1,3 +1,10 @@
+2003-04-17  Serg Stoyan <stoyan@hologr.com>
+
+	* Source/NSMenuItemCell.m:
+	(setMenuView:): Setting image position and
+	_mcell_belongs_to_popupbutton ivar for popup button cell.
+	(calcSize): Removed code from setMenuView placed here.
+	
 2003-04-13 Michael Hanni  <michael@deviant-behavior.com>
 
 	* Images/common_WMCloseBroken.tiff,common_WMClose.tiff: remove 
