@@ -12,6 +12,8 @@
 	* Source/NSToolbarItem.m: same...
 	* Source/NSWindow+Toolbar.[hm]: New category to localize
 	changes for NSToolbar which need to reside in NSWindow.
+	* Images/common_ToolbarClippedItemsMark.tiff: ">>" image to
+	show that there are more items which are not being displayed.
 
 2004-02-24  Fred Kiefer <FredKiefer@gmx.de>
 
