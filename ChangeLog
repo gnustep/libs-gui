@@ -1,3 +1,11 @@
+Mon Sep 20  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSView.m ([-setFrameSize:]): use zero width or height if
+	the width or height of the argument is negative, but don't crash
+	the app. ([-setFrame:]): idem.
+	Modified by RFM to apply to all other cases of checking view size
+	also, retain NSAssert() to give core dump wieh built for debugging.
+
 Mon Sep 20  1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSPanel.m: Remove unnecessary -center messages.

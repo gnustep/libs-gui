@@ -192,7 +192,16 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   NSAssert(frameRect.size.width >= 0 && frameRect.size.height >= 0,
 	@"illegal frame dimensions supplied");
-
+  if (frameRect.size.width < 0)
+    {
+      NSLog(@"[NSView -initWithFrame:] given negative width");
+      frameRect.size.width = 0;
+    }
+  if (frameRect.size.height < 0)
+    {
+      NSLog(@"[NSView -initWithFrame:] given negative height");
+      frameRect.size.height = 0;
+    }
   frame = frameRect;			// Set frame rectangle
   bounds.origin = NSZeroPoint;		// Set bounds rectangle
   bounds.size = frame.size;
@@ -539,7 +548,16 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   NSAssert(frameRect.size.width >= 0 && frameRect.size.height >= 0,
 	@"illegal frame dimensions supplied");
-
+  if (frameRect.size.width < 0)
+    {
+      NSLog(@"[NSView -setFrame:] given negative width");
+      frameRect.size.width = 0;
+    }
+  if (frameRect.size.height < 0)
+    {
+      NSLog(@"[NSView -setFrame:] given negative heigth");
+      frameRect.size.height = 0;
+    }
   if (coordinates_valid)
     (*invalidateImp)(self, invalidateSel);
   frame = frameRect;
@@ -572,6 +590,16 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   NSAssert(newSize.width >= 0 && newSize.height >= 0,
 	@"illegal frame dimensions supplied");
+  if (newSize.width < 0)
+    {
+      NSLog(@"[NSView -setFrameSize:] given negative width");
+      newSize.width = 0;
+    }
+  if (newSize.height < 0)
+    {
+      NSLog(@"[NSView -setFrameSize:] given negative height");
+      newSize.height = 0; 
+    }
   if (coordinates_valid)
     (*invalidateImp)(self, invalidateSel);
   frame.size = bounds.size = newSize;
@@ -622,7 +650,16 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   float sy;
 
   NSAssert(newSize.width > 0 && newSize.height > 0, @"illegal size supplied");
-
+  if (newSize.width < 0)
+    {
+      NSLog(@"[NSView -scaleUnitSquareToSize:] given negative width");
+      newSize.width = 0;
+    }
+  if (newSize.height < 0)
+    {
+      NSLog(@"[NSView -scaleUnitSquareToSize:] given negative height");
+      newSize.height = 0;
+    }
   if (coordinates_valid)
     (*invalidateImp)(self, invalidateSel);
 
@@ -669,7 +706,16 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   NSAssert(aRect.size.width >= 0 && aRect.size.height >= 0,
 	@"illegal bounds dimensions supplied");
-
+  if (aRect.size.width < 0)
+    {
+      NSLog(@"[NSView -setBounds:] given negative width");
+      aRect.size.width = 0;
+    }
+  if (aRect.size.height < 0)
+    {
+      NSLog(@"[NSView -setBounds:] given negative height");
+      aRect.size.height = 0;
+    }
   if (coordinates_valid)
     (*invalidateImp)(self, invalidateSel);
 
@@ -731,7 +777,16 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   NSAssert(newSize.width >= 0 && newSize.height >= 0,
 	@"illegal bounds dimensions supplied");
-
+  if (newSize.width < 0)
+    {
+      NSLog(@"[NSView -setBoundsSize:] given negative width");
+      newSize.width = 0;
+    }
+  if (newSize.height < 0)
+    {
+      NSLog(@"[NSView -setBoundsSize:] given negative height");
+      newSize.height = 0;
+    }
   if (coordinates_valid)
     {
       (*invalidateImp)(self, invalidateSel);
