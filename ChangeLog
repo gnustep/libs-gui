@@ -1,3 +1,13 @@
+Fri Aug 10 11:00:00 2001  Nicola Pero <n.pero@mi.flashnet.it>
+
+	* Source/Parsers/attributedStringConsumer.m (GSRTFcolorbg): set
+	color to white if index is out of bounds.
+	
+Fri Aug 10 10:59:00 2001  Georg Fleischmann <georg@vhf.de>
+
+	* Source/Parsers/attributedStringConsumer.m (GSRTFcolorfg): set
+	color to black if index is out of bounds.
+
 Tue Aug  7 05:08:01 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Testing/GNUmakefile: Simplified, removed unused bloat, removed
