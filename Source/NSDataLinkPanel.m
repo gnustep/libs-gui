@@ -26,6 +26,7 @@
 #include "config.h"
 #include "AppKit/NSDataLinkPanel.h"
 #include "AppKit/NSNibLoading.h"
+#include "GSGuiPrivate.h"
 
 static NSDataLinkPanel *__sharedDataLinkPanel;
 

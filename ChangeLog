@@ -1,3 +1,13 @@
+2003-01-07  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSHbox.h:
+	* Headers/Additions/GNUstepGUI/GSVbox.h:
+	Cleaned up to remove compiler warnings.
+	* Source/NSDataLinkPanel.m: Added include of GSGuiPrivate.h to
+	remove compiler warning.
+	* Source/NSPrintInfo.m: Removed unused global paperSizes.
+	* Source/NSScroller.m: (-trackKnob:) Initialise presentEvent.
+
 2004-01-06 23:39  Gregory John Casamento  <greg_casamento@yahoo.com>
 
 	* Source/NSSpellServer.m: Documentation.

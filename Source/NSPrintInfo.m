@@ -47,7 +47,6 @@
 // Class variables:
 static NSPrintInfo *sharedPrintInfoObject = nil;
 static NSMutableDictionary *printInfoDefaults = nil;
-static NSDictionary *paperSizes = nil;
 
 @interface NSPrintInfo (private)
 + initPrintInfoDefaults;

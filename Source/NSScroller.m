@@ -591,7 +591,7 @@ static NSColor *scrollBarColor = nil;
   float		floatValue;
   float		offset;
   float		initialOffset;
-  NSEvent	*presentEvent;
+  NSEvent	*presentEvent = theEvent;
   NSEventType	eventType = [theEvent type];
   NSRect	knobRect;
   unsigned	flags = [theEvent modifierFlags];

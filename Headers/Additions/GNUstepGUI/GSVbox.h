@@ -60,19 +60,6 @@
 -(id) init;
 
 //
-// Setting Border.
-//
-
-// Inherited from GSTable Class: 
-//-(void) setBorder: (float)aBorder;
-//-(void) setXBorder: (float)aBorder;
-//-(void) setYBorder: (float)aBorder;
-//-(void) setMinXBorder: (float)aBorder;
-//-(void) setMaxXBorder: (float)aBorder;
-//-(void) setMinYBorder: (float)aBorder;
-//-(void) setMaxYBorder: (float)aBorder;
-
-//
 //  Adding a View. 
 //
 /** See the documentation for GSHbox */
@@ -103,21 +90,8 @@ enablingYResizing: (BOOL)aFlag
 //  Setting Margins.  
 //
 
-//-(void) setDefaultMinYMargin: (float)aMargin;
-
-//
-// Minimum Size. 
-// 
-
-// Inherited from GSTable Class: 
-// -(NSSize) minimumSize;
-
-//
-// Resizing. 
-// 
-
-// Inherited from GSTable Class: 
-// -(void) sizeToFit;
+/** See the documentation for GSHbox */
+-(void) setDefaultMinYMargin: (float)aMargin;
 
 //
 // Getting Number of Views
@@ -127,8 +101,3 @@ enablingYResizing: (BOOL)aFlag
 @end
 
 #endif /* _GNUstep_H_GSVbox */
-
-
-
-
-

@@ -178,29 +178,6 @@
  when you initialize it. 
 */
 -(id) init;
-//
-// Setting Border.
-// 
-
-/** Set the spacing around the table.
- Changing the border will update immediately the box.
- The default border is zero.
-
- Inherited from GSTable Class: 
- To have the same border on the four sides use: 
-*/
--(void) setBorder: (float)aBorder;
-
-/** Set borders in the horizontal direction. */
--(void) setXBorder: (float)aBorder;
-/** Set borders in the vertical direction. */
--(void) setYBorder: (float)aBorder;
- 
--(void) setMinXBorder: (float)aBorder;
--(void) setMaxXBorder: (float)aBorder;
--(void) setMinYBorder: (float)aBorder;
--(void) setMaxYBorder: (float)aBorder;
-
 
 //
 //  Adding a View. 
@@ -296,31 +273,10 @@ between the separator and the last added view.
  In a GSHbox, only one margin is used, the one between each view 
  and the preceding one.  If what you want is space around the GSHbox, 
  you don't want a margin but a border; use setBorder: 
- (see above, "Setting Border"). 
+ (see GSTable, "Setting Border"). 
  If you need more complicated margins/borders, use GSTable. 
 */
 -(void) setDefaultMinXMargin: (float)aMargin;
-
-//
-// Minimum Size. 
-// 
-
-/**  This returns the minimum size the GSHbox should be resized to. 
- Trying to resize the GSHbox below this size will only result in clipping 
- (ie, making it disappear) part of the GSHbox.
- Inherited from GSTable Class: 
-*/
- -(NSSize) minimumSize;
-
-//
-// Resizing. 
-// 
-
-/** If for any reason you need the GSHbox to revert to its minimum size, 
- invoke the following.
- Inherited from GSTable Class: 
-*/
- -(void) sizeToFit;
 
 //
 // Getting Number of Views
