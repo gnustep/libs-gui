@@ -1,7 +1,34 @@
 2000-09-26  Lyndon Tremblay  <humasect@home.com>
 
+
+	* Source/NSMenu.m ([NSMenu -itemWithTitle:]): Use -isEqualToString:
+	instead of -isEqual:
+	([NSMenu -performKeyEquivalent:]): Likewise.
+	([NSMenu -performActionForItemAtIndex:]): Use NSApp instead
+	of sharedApplication.
+	([NSMenu -display]): Avoids calling NSMakePoint()
+	([NSMenu -displayTransient]): Cache contentView.
+	([NSMenu -closeTransient]): Likewise.
+
+	* Source/NSApplication.m ([NSAppIconView -mouseDown:]): Use
+	NSApp instead of [NSApplication sharedApplication].
+	([NSApplication -init]): Avoid variables getting set twice.
+	([NSApplication -sendEvent:]): Cache NSEvent type.
+
+	* Source/NSMenu.m ([NSMenu -initWithTitle:]): Also removed
+	a bunch of message calls. Also removed variables getting set
+	twice.
+	([NSMenu -insertItemWithTitle:action:keyEquivalent:atIndex:]):
+	Message cleanup.
+
 	* Source/NSApplication.m ([NSApplication +initialize]): Override
 	Foundation's uncaught exception handler.
+	([NSApplication -init]): Save a few objc message calls.
+	([NSApplication -run]): Likewise. Also cache [NSDate distantFuture].
+	Also using GC macros.
+	([NSApplication -runModalSession:]): Also save message calls,
+	and GC support. Also eliminates creating an ARP each loop,
+	only once.
 
 	* Headers/AppKit/NSPanel.h (NSAlert*): #defines to comply
 	with MacOS X [apparently].

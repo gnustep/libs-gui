@@ -158,8 +158,8 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 
 - (id) initWithTitle: (NSString*)aTitle
 {
-  NSNotificationCenter *theCenter = [NSNotificationCenter defaultCenter];
   NSRect                winRect   = {{0,0},{20,23}};
+  NSView *contentView;
 
   [super init];
 
@@ -167,7 +167,7 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
   ASSIGN(menu_title, aTitle);
 
   // Create an array to store out menu items.
-  menu_items = [NSMutableArray new];
+  menu_items = [[NSMutableArray alloc] init];
 
   // Create a NSMenuView to draw our menu items.
   menu_view = [[NSMenuView alloc] initWithFrame: NSMakeRect(0,0,50,50)];
@@ -176,34 +176,38 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
   [menu_view setMenu: self];
 
   // We have no supermenu.
-  menu_supermenu = nil;
-  menu_is_tornoff = NO;
-  menu_is_visible = NO;
-  menu_follow_transient = NO;
+  // menu_supermenu = nil;
+  // menu_is_tornoff = NO;
+  // menu_is_visible = NO;
+  // menu_follow_transient = NO;
+  // menu_is_beholdenToPopUpButton = NO;
+
   menu_changedMessagesEnabled = YES;
-  menu_notifications = [NSMutableArray new];
-  menu_is_beholdenToPopUpButton = NO;
+  menu_notifications = [[NSMutableArray alloc] init];
   menu_changed = YES;
   // According to the spec, menus do autoenable by default.
   menu_autoenable = YES;
 
   // Transient windows private stuff.
-  _oldAttachedMenu = nil;
+  // _oldAttachedMenu = nil;
 
   // Create the windows that will display the menu.
   aWindow = [[NSMenuWindow alloc] init];
   bWindow = [[NSMenuWindow alloc] init];
 
-  titleView = [NSMenuWindowTitleView new];
+  titleView = [[NSMenuWindowTitleView alloc] init];
   [titleView setFrameOrigin: NSMakePoint(0, winRect.size.height - 23)];
   [titleView setFrameSize: NSMakeSize (winRect.size.width, 23)];
-  [[aWindow contentView] addSubview: menu_view];
-  [[aWindow contentView] addSubview: titleView];
+
+  contentView = [aWindow contentView];
+  [contentView addSubview: menu_view];
+  [contentView addSubview: titleView];
+  
   [titleView setMenu: self];
 
   // Set up the notification to start the process of redisplaying
   // the menus where the user left them the last time.
-  [theCenter addObserver: self
+  [[NSNotificationCenter defaultCenter] addObserver: self
 	        selector: @selector(_showTornOffMenuIfAny:)
 	            name: NSApplicationWillFinishLaunchingNotification 
 	          object: NSApp];
@@ -268,7 +272,7 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 			  keyEquivalent: (NSString*)charCode 
 			        atIndex: (unsigned int)index
 {
-  id anItem = [NSMenuItem new];
+  id anItem = [[NSMenuItem alloc] init];
 
   [anItem setTitle: aString];
   [anItem setAction: aSelector];
@@ -389,7 +393,7 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
     {
       id menuItem = [menu_items objectAtIndex: i];
 
-      if ([[menuItem title] isEqual: aString])
+      if ([[menuItem title] isEqualToString: aString])
         return menuItem;
     }
   return nil;
@@ -552,14 +556,14 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 
   if (![self isFollowTransient])
     {
-      frame = [aWindow frame];
       win_link = aWindow;
     }
   else
     {
-      frame = [bWindow frame];
       win_link = bWindow;
     }
+
+  frame = [win_link frame];
             
   if (aSubmenu)
     {
@@ -711,7 +715,7 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
         }
       else
         {
-          if ([[item keyEquivalent] isEqual: 
+          if ([[item keyEquivalent] isEqualToString: 
 				      [theEvent charactersIgnoringModifiers]])
 	    {
 	      [menu_view performActionWithHighlightingForItemAtIndex: i];
@@ -742,7 +746,7 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
                   userInfo: d];
   if ([item action])
     {
-      [[NSApplication sharedApplication] sendAction: [item action]
+      [NSApp sendAction: [item action]
 					 to: [item target]
 					 from: item];
     }
@@ -1054,11 +1058,11 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 	    }
 	  else
 	    {
-	      float	aPoint = [[NSScreen mainScreen] frame].size.height
-		             - [aWindow frame].size.height;
+	      NSPoint aPoint = {0, [[NSScreen mainScreen] frame].size.height
+							- [aWindow frame].size.height};
 
-	      [aWindow setFrameOrigin: NSMakePoint(0,aPoint)];
-	      [bWindow setFrameOrigin: NSMakePoint(0,aPoint)];
+	      [aWindow setFrameOrigin: aPoint];
+	      [bWindow setFrameOrigin: aPoint];
 	    }
 	}
     }
@@ -1079,6 +1083,7 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 - (void) displayTransient
 {
   NSPoint location;
+  NSView *contentView;
 
   menu_follow_transient = YES;
 
@@ -1112,8 +1117,9 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
   if (menu_is_tornoff)
     [titleView _releaseCloseButton];
 
-  [[bWindow contentView] addSubview: menu_view];
-  [[bWindow contentView] addSubview: titleView];
+  contentView = [bWindow contentView];
+  [contentView addSubview: menu_view];
+  [contentView addSubview: titleView];
 
   [bWindow orderFront: self];
 
@@ -1143,18 +1149,20 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 
 - (void) closeTransient
 {
+  NSView *contentView;
+  
   [bWindow orderOut: self];
   [menu_view removeFromSuperviewWithoutNeedingDisplay];
   [titleView removeFromSuperviewWithoutNeedingDisplay];
 
-  [[aWindow contentView] addSubview: menu_view];
+  contentView = [aWindow contentView];
+  [contentView addSubview: menu_view];
 
   if (menu_is_tornoff)
     [titleView _addCloseButton];
 
-  [[aWindow contentView] addSubview: titleView];
-
-  [[aWindow contentView] setNeedsDisplay: YES];
+  [contentView addSubview: titleView];
+  [contentView setNeedsDisplay: YES];
 
   // Restore the old submenu (if any).
   if (menu_supermenu != nil)
@@ -1367,9 +1375,9 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
   // Draw the title.
   [[NSColor windowFrameTextColor] set];
   [[NSFont boldSystemFontOfSize: 0] set];
+  
   PSmoveto(rect.origin.x + 7, rect.origin.y + 7);
   PSshow([[menu title] cString]);
-
 }
 
 - (void) mouseDown: (NSEvent*)theEvent

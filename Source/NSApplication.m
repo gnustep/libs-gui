@@ -197,7 +197,6 @@ static NSCell* tileCell = nil;
       unsigned	eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
 	| NSPeriodicMask | NSMiddleMouseUpMask | NSRightMouseUpMask;
       NSDate	*theDistantFuture = [NSDate distantFuture];
-      NSApplication *theApp = [NSApplication sharedApplication];
       BOOL	done = NO;
 
       lastLocation = [theEvent locationInWindow];
@@ -205,7 +204,7 @@ static NSCell* tileCell = nil;
 
       while (!done)
 	{
-	  theEvent = [theApp nextEventMatchingMask: eventMask
+	  theEvent = [NSApp nextEventMatchingMask: eventMask
 					 untilDate: theDistantFuture
 					    inMode: NSEventTrackingRunLoopMode
 					   dequeue: YES];
@@ -559,18 +558,20 @@ static NSCell* tileCell = nil;
     
     NSDebugLog(@"Begin of NSApplication -init\n");
     
-    _hidden = [NSMutableArray new];
-    _inactive = [NSMutableArray new];
+    _hidden = [[NSMutableArray alloc] init];
+    _inactive = [[NSMutableArray alloc] init];
     unhide_on_activation = YES;
     app_is_hidden = YES;
-    app_is_active = NO;
+    //app_is_active = NO;
     listener = [GSServicesManager newWithApplication: self];
     
-    main_menu = nil;
+    //main_menu = nil;
     windows_need_update = YES;
-    
-    current_event = [NSEvent new];		// no current event
-    null_event = [NSEvent new];			// create dummy event
+
+	/* We shouldn't be so generous, NSEvent doesn't use -init */
+	
+    current_event = [NSEvent alloc];		// no current event
+    null_event = [NSEvent alloc];			// create dummy event
     
     /* We are the end of responder chain	*/
     [self setNextResponder: nil];
@@ -880,12 +881,14 @@ static NSCell* tileCell = nil;
 - (void) run
 {
   NSEvent *e;
-  Class arpClass = [NSAutoreleasePool class];	 /* Cache the class */
-  NSAutoreleasePool* pool;
+  //Class arpClass = [NSAutoreleasePool class];	 /* Cache the class */
+  NSAutoreleasePool *pool = nil;
+  id distantFuture = [NSDate distantFuture];     /* Cache this, safe */
 
+  
   NSDebugLog(@"NSApplication -run\n");
 
-  pool = [arpClass new];
+  RECREATE_AUTORELEASE_POOL(pool);
   /*
    *  Set this flag here in case the application is actually terminated
    *  inside -finishLaunching.
@@ -899,13 +902,14 @@ static NSCell* tileCell = nil;
 
   [listener updateServicesMenu];
   [main_menu update];
-  RELEASE(pool);
+  DESTROY(pool);
+  
   while (app_should_quit == NO)
     {
-      pool = [arpClass new];
+	  RECREATE_AUTORELEASE_POOL(pool);
 
       e = [self nextEventMatchingMask: NSAnyEventMask
-			    untilDate: [NSDate distantFuture]
+			    untilDate: distantFuture
 			       inMode: NSDefaultRunLoopMode
 			      dequeue: YES];
       if (e != nil)
@@ -928,7 +932,7 @@ static NSCell* tileCell = nil;
 	  [self updateWindows];
 	}
 
-      RELEASE(pool);
+      DESTROY(pool);
     }
 
   [GSCurrentContext() destroyContext];
@@ -1065,11 +1069,12 @@ static NSCell* tileCell = nil;
 
 - (int) runModalSession: (NSModalSession)theSession
 {
-  NSAutoreleasePool	*pool;
+  NSAutoreleasePool	*pool = nil;
   NSGraphicsContext	*ctxt;
   BOOL		found = NO;
   NSEvent	*event;
   NSDate	*limit;
+  
 
   if (theSession != session)
     {
@@ -1077,7 +1082,7 @@ static NSCell* tileCell = nil;
 		  format: @"runModalSession: with wrong session"];
     }
 
-  pool = [NSAutoreleasePool new];
+  RECREATE_AUTORELEASE_POOL(pool);
 
   [theSession->window orderFrontRegardless];
   if ([theSession->window canBecomeKeyWindow] == YES)
@@ -1113,14 +1118,14 @@ static NSCell* tileCell = nil;
     }
   while (found == NO && theSession->runState == NSRunContinuesResponse);
 
-  RELEASE(pool);
   /*
    *	Deal with the events in the queue.
    */
+  DESTROY(pool);
+  RECREATE_AUTORELEASE_POOL(pool);
+  
   while (found == YES && theSession->runState == NSRunContinuesResponse)
     {
-      pool = [NSAutoreleasePool new];
-
       event = DPSGetEvent(ctxt, NSAnyEventMask, limit, NSDefaultRunLoopMode);
       if (event != nil)
 	{
@@ -1157,10 +1162,10 @@ static NSCell* tileCell = nil;
 	      [self updateWindows];
 	    }
 	}
-      RELEASE(pool);
     }
 
   NSAssert(session == theSession, @"Session was changed while running");
+  RELEASE(pool);
 
   return theSession->runState;
 }
@@ -1206,13 +1211,17 @@ static NSCell* tileCell = nil;
  */
 - (void) sendEvent: (NSEvent *)theEvent
 {
+  NSEventType type;
+
+  
   if (theEvent == null_event)
     {
       NSDebugLLog(@"NSEvent", @"Not sending the Null Event\n");
       return;
     }
 
-  switch ([theEvent type])
+  type = [theEvent type];
+  switch (type)
     {
       case NSPeriodic:	/* NSApplication traps the periodic events	*/
 	break;
@@ -1252,12 +1261,12 @@ static NSCell* tileCell = nil;
 
 	  if (!theEvent)
 	    NSDebugLLog(@"NSEvent", @"NSEvent is nil!\n");
-	  NSDebugLLog(@"NSEvent", @"NSEvent type: %d", [theEvent type]);
+	  NSDebugLLog(@"NSEvent", @"NSEvent type: %d", type);
 	  NSDebugLLog(@"NSEvent", @"send event to window");
 	  NSDebugLLog(@"NSEvent", [window description]);
 	  if (window)
 	    [window sendEvent: theEvent];
-	  else if ([theEvent type] == NSRightMouseDown)
+	  else if (type == NSRightMouseDown)
 	    [self rightMouseDown: theEvent];
 	  else
 	    NSDebugLLog(@"NSEvent", @"no window");
