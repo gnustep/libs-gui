@@ -1,3 +1,11 @@
+2002-06-24  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWorkspace.m: Comitted Jeffs latest attemtpt at handling
+	lookup of apps by name correctly ... but rewritten somewhat to
+	remove one assumption I thought was unwarrented, and to try to
+	conform to what the MacOS-X implementation actually does rather
+	than what the MacOS-X documentation says it should do.
+
 Mon Jun 24 13:17:37 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	Originated by a patch/suggestion by Serg Stoyan

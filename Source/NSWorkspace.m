@@ -472,14 +472,18 @@ static NSString			*_rootPath = @"/";
   id app = [self _workspaceApplication];
 
   if (app == nil)
-    return NO;
+    {
+      return NO;
+    }
   else
-    // Send the request on to the Workspace application
-    return [app performFileOperation: operation
-		       source: source
-		  destination: destination
-		        files: files
-			  tag: tag];
+    {
+      // Send the request on to the Workspace application
+      return [app performFileOperation: operation
+				source: source
+			   destination: destination
+				 files: files
+				   tag: tag];
+    }
 }
 
 - (BOOL) selectFile: (NSString*)fullPath
@@ -488,39 +492,84 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   id app = [self _workspaceApplication];
 
   if (app == nil)
-    return NO;
+    {
+      return NO;
+    }
   else
-    // Send the request on to the Workspace application
-    return [app selectFile: fullPath
-		inFileViewerRootedAtPath: rootFullpath];
+    {
+      // Send the request on to the Workspace application
+      return [app selectFile: fullPath
+	inFileViewerRootedAtPath: rootFullpath];
+    }
 }
 
-/*
- * Requesting Information about Files
+/**
+ * Given an application name, return the full path for that application.<br />
+ * This method looks for the application in standard locations, and if not
+ * found there, according to MacOS-X documentation, returns nil.<br />
+ * If the supplied application name is an absolute path, returns that path
+ * irrespective of whether such an application exists or not.  This is
+ * <em>not</em> the docmented debavior in the MacOS-X documentation, but is
+ * the MacOS-X implemented behavior.<br />
+ * If the appName has an extension, it is used, otherwise in GNUstep
+ * the standard app, debug, and profile extensions * are tried.<br />
  */
 - (NSString*) fullPathForApplication: (NSString*)appName
 {
-  NSString      *last = [appName lastPathComponent];
+  NSString	*base;
+  NSString	*path;
+  NSString	*ext;
 
-  if ([appName isEqual: last])
+  if ([appName length] == 0)
     {
-      NSString  *ext = [appName pathExtension];
-
-      if ([ext length] == 0)
-        {
-          appName = [last stringByAppendingPathExtension: @"app"];
-	  if ([applications objectForKey: appName] == nil)
-	    {
-	      appName = [last stringByAppendingPathExtension: @"debug"];
-	      if ([applications objectForKey: appName] == nil)
-		{
-		  appName = [last stringByAppendingPathExtension: @"profile"];
-		}
-	    }
-        }
-      return [applications objectForKey: appName];
+      return nil;
     }
-  return nil;
+  if ([[appName lastPathComponent] isEqual: appName] == NO)
+    {
+      if ([appName isAbsolutePath] == YES)
+	{
+	  return appName;		// MacOS-X implementation behavior.
+	}
+      /*
+       * Relative path ... get standarized absolute path
+       */
+      path = [[NSFileManager defaultManager] currentDirectoryPath];
+      appName = [path stringByAppendingPathComponent: appName];
+      appName = [appName stringByStandardizingPath];
+    }
+  base = [appName stringByDeletingLastPathComponent];
+  appName = [appName lastPathComponent];
+  ext = [appName pathExtension];
+  if ([ext length] == 0) // no extension, let's find one
+    {
+      path = [appName stringByAppendingPathExtension: @"app"];
+      path = [applications objectForKey: path];
+      if (path == nil)
+	{
+	  path = [appName stringByAppendingPathExtension: @"debug"];
+	  path = [applications objectForKey: path];
+	}
+      if (path == nil)
+	{
+	  path = [appName stringByAppendingPathExtension: @"profile"];
+	  path = [applications objectForKey: path];
+	}
+    }
+  else
+    {
+      path = [applications objectForKey: appName];
+    }
+
+  /*
+   * If the original name included a path, check that the located name
+   * matches it.  If it doesn't we return nil as MacOS-X does.
+   */
+  if (base != nil
+    && [base isEqual: [path stringByDeletingLastPathComponent]] == NO)
+    {
+      path = nil;
+    }
+  return path;
 }
 
 - (BOOL) getFileSystemInfoForPath: (NSString*)fullPath
@@ -1093,34 +1142,53 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 }
 
 /**
- * Returns the application bundle for the named application.
+ * Returns the application bundle for the named application. Accepts
+ * either a full path to an app or just the name. The extension (.app,
+ * .debug, .profile) is optional, but if provided it will be used.< br />
+ * Returns nil if the specified app does not exist as requested.
  */
 - (NSBundle*) bundleForApp: (NSString*)appName
 {
-  NSString	*path;
-
   if ([appName length] == 0)
     {
       return nil;
     }
-  path = appName;
-  appName = [path lastPathComponent];
-  if ([appName isEqual: path])
+  if ([[appName lastPathComponent] isEqual: appName]) // it's a name
     {
-      path = [self fullPathForApplication: appName];
-      appName = [[path lastPathComponent] stringByDeletingPathExtension];
+      appName = [self fullPathForApplication: appName];
     }
-  else if ([[appName pathExtension] length] == 0)
+  else
     {
-      path = [path stringByAppendingPathExtension: @"app"];
-    }
+      NSFileManager	*fm;
+      NSString		*ext;
 
-  if (path == nil)
+      fm = [NSFileManager defaultManager];
+      ext = [appName pathExtension];
+      if ([ext length] == 0) // no extension, let's find one
+	{
+	  NSString	*path;
+
+	  path = [appName stringByAppendingPathExtension: @"app"];
+	  if ([fm fileExistsAtPath: path] == NO)
+	    {
+	      path = [appName stringByAppendingPathExtension: @"debug"];
+	      if ([fm fileExistsAtPath: path] == NO)
+		{
+		  path = [appName stringByAppendingPathExtension: @"profile"];
+		}
+	    }
+	  appName = path;
+	}
+      if ([fm fileExistsAtPath: appName] == NO) // path doesn't exist
+	{
+	  appName = nil;
+	}
+    }
+  if (appName == nil)
     {
       return nil;
     }
-
-  return [NSBundle bundleWithPath: path];
+  return [NSBundle bundleWithPath: appName];
 }
 
 /**
