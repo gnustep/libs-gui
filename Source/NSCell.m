@@ -360,39 +360,46 @@ static NSColor	*shadowCol;
  */
 - (int) cellAttribute: (NSCellAttribute)aParameter
 {
-    switch (aParameter)
+  switch (aParameter)
+    {
+    case NSCellDisabled: return _cell.is_disabled;
+    case NSCellState: return _cell.state;
+    case NSCellEditable: return _cell.is_editable;
+    case NSCellHighlighted: return _cell.is_highlighted;
+    case NSCellIsBordered: return _cell.is_bordered;
+    case NSCellAllowsMixedState: return _cell.allows_mixed_state; 
+
+      /*
+	case NSPushInCell: return 0; 
+	case NSChangeGrayCell: return 0; 
+	case NSCellLightsByContents: return 0; 
+	case NSCellLightsByGray: return 0; 
+	case NSChangeBackgroundCell: return 0; 
+	case NSCellLightsByBackground: return 0; 
+	case NSCellChangesContents: return 0;  
+	case NSCellIsInsetButton: return 0;  
+      */
+    case NSCellHasOverlappingImage: 
       {
-	case NSCellDisabled: return _cell.is_disabled;
-	case NSCellState: return _cell.state;
-	case NSCellEditable: return _cell.is_editable;
-	case NSCellHighlighted: return _cell.is_highlighted;
-	case NSCellIsBordered: return _cell.is_bordered;
-	case NSCellAllowsMixedState: return _cell.allows_mixed_state; 
-
-/*	
-	case NSPushInCell: return _cell.;
-	case NSChangeGrayCell: return _cell.;
-	case NSCellLightsByContents: return _cell.;
-	case NSCellLightsByGray: return _cell.;
-	case NSChangeBackgroundCell: return _cell.;
-	case NSCellLightsByBackground: return _cell.;
-	case NSCellChangesContents: return _cell.;  
-	case NSCellIsInsetButton: return _cell.;
-*/
-	case NSCellHasOverlappingImage: 
-	  return _cell.image_position == NSImageOverlaps;
-	case NSCellHasImageHorizontal: 
-	  {
-	    return (_cell.image_position == NSImageRight) 
-	      || (_cell.image_position == NSImageLeft);
-	  }
-	case NSCellHasImageOnLeftOrBottom: 
-	  {
-	    return (_cell.image_position == NSImageBelow) 
-	      || (_cell.image_position == NSImageLeft);
-	  }
+	return _cell.image_position == NSImageOverlaps;
       }
-
+    case NSCellHasImageHorizontal: 
+      {
+	return (_cell.image_position == NSImageRight) 
+	  || (_cell.image_position == NSImageLeft);
+      }
+    case NSCellHasImageOnLeftOrBottom: 
+      {
+	return (_cell.image_position == NSImageBelow) 
+	  || (_cell.image_position == NSImageLeft);
+      }
+    default:
+      {
+	NSDebugLog (@"cell attribute %d not supported", aParameter);
+	break;
+      }
+    }
+  
   return 0;
 }
 
@@ -500,6 +507,11 @@ static NSColor	*shadowCol;
     case NSCellAllowsMixedState:
       {
 	_cell.allows_mixed_state = value;
+	break;
+      }
+    default:
+      {
+	NSDebugLog (@"cell attribute %d not supported", aParameter);
 	break;
       }
     }
