@@ -1,3 +1,8 @@
+2005-01-13  Adam Fedor  <fedor@gnu.org>
+
+	* Source/GNUmakefile.preamble: Extend FILTER_OUT flag to
+	all sparc architectures.
+
 2005-01-12 16:40  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/AppKit/NSBezierPath.h (-windingCountAtPoint:): Mark as
@@ -91,7 +96,7 @@
 
 	* Source/GSDragView.m ([GSDragView -_setCursor]): Initialize variable.
 	* Source/NSMatrix.m: Rename vaguely-named macro.
-	(Based on Path #3499 from Patrick Middleton).
+	(Based on Patch #3499 from Patrick Middleton).
 
 2004-11-11  Adam Fedor  <fedor@gnu.org>
 
@@ -440,7 +445,7 @@
 	(-dealloc): Unset the menu of the view. 
 	(-initWithTitle:): Use setMenuRepresentation: to set the view.
 	
-004-09-24  Adam Fedor  <fedor@gnu.org>
+2004-09-24  Adam Fedor  <fedor@gnu.org>
 
 	* Version 0.9.4
 
