@@ -34,6 +34,8 @@
 #include <AppKit/NSGraphics.h>
 #include <AppKit/PSOperators.h>
 
+#include <math.h>
+
 @class NSTableView;
 
 /*
@@ -230,6 +232,8 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 	 scrolling.  Then, document view needs to redraw the remaining
 	 areas. */
 
+	
+
       /* Common part - which is a first approx of what we could
          copy... */
       intersection = NSIntersectionRect (originalBounds, newBounds);
@@ -399,10 +403,29 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
      do the scrolling, the difference is an integer and so we can copy
      the image translating it by an integer in device space - and not
      by a float. */
+  /*
   new = [self convertPoint: new  toView: nil];
   new.x = (int)new.x;
   new.y = (int)new.y;
   new = [self convertPoint: new  fromView: nil];
+  */
+
+  /*
+     We don't make it an integer this way anymore.
+     This is not needed when _copiesOnScroll is not set.
+     If _copiesOnScroll is set, we make sure the difference between old
+     position and new position is an integer so we can copy the image 
+     easily. 
+  */
+  if (_copiesOnScroll)
+    {
+      new.x =
+	_bounds.origin.x + 
+	(rint(new.x - _bounds.origin.x));
+      new.y =
+	_bounds.origin.y +
+	(rint(new.y - _bounds.origin.y));
+    }
 
   return new;
 }

@@ -794,6 +794,17 @@ static NSImage *unexpandable  = nil;
   [aDecoder decodeValueOfObjCType: @encode(float) at: &_indentationPerLevel];
   _outlineTableColumn = [aDecoder decodeObject];
 
+  _itemDict = [NSMutableDictionary dictionary];
+  _items = [NSMutableArray array];
+  _expandedItems = [NSMutableArray array];
+  _levelOfItems = [NSMutableDictionary dictionary];
+
+  // Retain items
+  RETAIN(_items);
+  RETAIN(_expandedItems);
+  RETAIN(_itemDict);
+  RETAIN(_levelOfItems);
+
   return self;
 }
 

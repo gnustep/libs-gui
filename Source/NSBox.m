@@ -35,6 +35,8 @@
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSTextFieldCell.h>
 
+#include <math.h>
+
 @interface NSBox (Private)
 - (NSRect) calcSizesAllowingNegative: (BOOL)aFlag;
 @end
@@ -531,6 +533,8 @@
 	NSSize titleSize = [_cell cellSize];
 	NSSize borderSize = _sizeForBorderType (_border_type);
 	float c;
+	float topMargin;
+	float topOffset;
 
 	// Add spacer around title
 	titleSize.width += 6;
@@ -538,26 +542,39 @@
 
 	_border_rect = _bounds;
 
+	topMargin = ceil(titleSize.height / 2);
+	topOffset = titleSize.height - topMargin;
+	
 	// Adjust by the title size
-	_border_rect.size.height -= titleSize.height / 2;
-
+	_border_rect.size.height -= topMargin;
+	
 	// Add the offsets to the border rect
 	r.origin.x = _border_rect.origin.x + _offsets.width + borderSize.width;
-	r.origin.y = _border_rect.origin.y + _offsets.height + borderSize.height;
 	r.size.width = _border_rect.size.width - (2 * _offsets.width)
 	  - (2 * borderSize.width);
-	r.size.height = _border_rect.size.height - (2 * _offsets.height)
-	  - (2 * borderSize.height);
+	
+	if (topOffset > _offsets.height)
+	  {
+	    r.origin.y = _border_rect.origin.y + _offsets.height + borderSize.height;
+	    r.size.height = _border_rect.size.height - _offsets.height
+	      - (2 * borderSize.height) - topOffset;
+	  }
+	else
+	  {
+	    r.origin.y = _border_rect.origin.y + _offsets.height + borderSize.height;
+	    r.size.height = _border_rect.size.height - (2 * _offsets.height)
+	      - (2 * borderSize.height);
+	  }
 
 	// Adjust by the title size
-	r.size.height -= (titleSize.height / 2) + borderSize.height;
+	//	r.size.height -= titleSize.height + borderSize.height;
 
 	// center the title cell
 	c = (_border_rect.size.width - titleSize.width) / 2;
 	if (c < 0) c = 0;
 	_title_rect.origin.x = _border_rect.origin.x + c;
 	_title_rect.origin.y = _border_rect.origin.y + _border_rect.size.height
-	  - (titleSize.height / 2);
+	  - topMargin;
 	_title_rect.size = titleSize;
 
 	break;
@@ -567,6 +584,8 @@
 	NSSize titleSize = [_cell cellSize];
 	NSSize borderSize = _sizeForBorderType (_border_type);
 	float c;
+	float bottomMargin;
+	float bottomOffset;
 
 	// Add spacer around title
 	titleSize.width += 6;
@@ -574,22 +593,37 @@
 
 	_border_rect = _bounds;
 
+	bottomMargin = ceil(titleSize.height / 2);
+	bottomOffset = titleSize.height - bottomMargin;
+
 	// Adjust by the title size
-	_border_rect.origin.y += titleSize.height / 2;
-	_border_rect.size.height -= titleSize.height / 2;
+	_border_rect.origin.y += bottomMargin;
+	_border_rect.size.height -= bottomMargin;
 
 	// Add the offsets to the border rect
 	r.origin.x = _border_rect.origin.x + _offsets.width + borderSize.width;
-	r.origin.y = _border_rect.origin.y + _offsets.height + borderSize.height;
 	r.size.width = _border_rect.size.width - (2 * _offsets.width)
 	  - (2 * borderSize.width);
-	r.size.height = _border_rect.size.height - (2 * _offsets.height)
-	  - (2 * borderSize.height);
+
+	if (bottomOffset > _offsets.height)
+	  {
+	    r.origin.y = _border_rect.origin.y + bottomOffset + borderSize.height;
+	    r.size.height = _border_rect.size.height - _offsets.height
+	      - bottomOffset
+	      - (2 * borderSize.height);
+	  }
+	else
+	  {
+	    r.origin.y = _border_rect.origin.y + _offsets.height + borderSize.height;
+	    r.size.height = _border_rect.size.height - (2 * _offsets.height)
+	      - (2 * borderSize.height);
+	  }
 
 	// Adjust by the title size
+	/*
 	r.origin.y += (titleSize.height / 2) + borderSize.height;
 	r.size.height -= (titleSize.height / 2) + borderSize.height;
-
+	*/
 	// center the title cell
 	c = (_border_rect.size.width - titleSize.width) / 2;
 	if (c < 0) c = 0;

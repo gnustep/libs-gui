@@ -6379,7 +6379,18 @@ byExtendingSelection: (BOOL)flag
       _selectedRow = -1;
       _editedColumn = -1;
       _editedRow = -1;
+      
+      /*
       [self tile];
+      
+      NSLog(@"frame %@", NSStringFromRect([self frame]));
+      NSLog(@"dataSource %@", _dataSource);
+      if (_dataSource != nil)
+	{
+	  [self setDataSource: _dataSource];
+	  NSLog(@"dataSource set");
+	}
+      */
     }
   else if (version == 2)
     {

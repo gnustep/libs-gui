@@ -51,6 +51,8 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSMatrix.h>
 
+#include <math.h>
+
 static NSNotificationCenter *nc;
 
 #define	STRICT	0
@@ -199,8 +201,8 @@ static SEL getSel;
   [self setFrame: frameRect];
 
   if ((_numCols > 0) && (_numRows > 0))
-    _cellSize = NSMakeSize (frameRect.size.width/_numCols,
-			    frameRect.size.height/_numRows);
+    _cellSize = NSMakeSize (rint(frameRect.size.width/_numCols),
+			    rint(frameRect.size.height/_numRows));
   else
     _cellSize = NSMakeSize (DEFAULT_CELL_WIDTH, DEFAULT_CELL_HEIGHT);
 
@@ -1671,6 +1673,8 @@ static SEL getSel;
       for (j = 0; j < _numCols; j++)
 	{
 	  NSSize tempSize = [_cells[i][j] cellSize];
+	  tempSize.height = ceil(tempSize.height);
+	  tempSize.width = ceil(tempSize.width);
 	  if (tempSize.width > newSize.width)
 	    {
 	      newSize.width = tempSize.width;
@@ -2790,6 +2794,7 @@ static SEL getSel;
 	    }
 	  change.height = change.height / nr;
 	  _cellSize.height += change.height;
+	  _cellSize.height = rint(_cellSize.height);
 	  if (_cellSize.height < 0)
 	    _cellSize.height = 0;
 	}
@@ -2804,6 +2809,7 @@ static SEL getSel;
 	    }
 	  change.width = change.width / nc;
 	  _cellSize.width += change.width;
+	  _cellSize.width = rint(_cellSize.width);
 	  if (_cellSize.width < 0)
 	    _cellSize.width = 0;
 	}

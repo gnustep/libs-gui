@@ -1,3 +1,18 @@
+2002-03-31  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Source/NSMatrix.m :
+	Use integer coordinates for _cellSize when autoresizing.
+	* Source/NSBox.m ([NSBox -calcSizesAllowingNegative:])
+	(case NSAtBottom & case NSAtTop):
+	Use integer coordinates and small cosmetic changes.
+	* Source/NSOutlineView.m ([NSOutlineView -initWithCoder:]): 
+	Bugfix.
+	* Source/NSClipView.m ([NSClipView -constrainScrollPoint:]): 
+	Make sure the difference between old position and new position
+	is an integer vector.
+	* Source/NSTableView.m ([NSTableView -initWithCoder:]):
+	Bugfix.
+
 2002-03-30  Adam Fedor  <fedor@gnu.org>
 
 	* gui/Model/GMAppKit.m (-encodeWithModelArchiver:): Encode an
