@@ -29,6 +29,7 @@
 #import <Foundation/NSNotification.h>
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSCell.h>
+#import <AppKit/NSFont.h>
 #import <AppKit/NSClipView.h>
 #import <AppKit/NSColor.h>
 #import <AppKit/NSEvent.h>
@@ -64,10 +65,6 @@ static NSImage *collapsed = nil;
 static NSImage *expanded  = nil;
 static NSImage *unexpandable  = nil;
 
-// Some necessary things which should not become ivars....
-static float widest = 0.0;
-
-
 @interface NSOutlineView (NotificationRequestMethods)
 - (void) _postSelectionIsChangingNotification;
 - (void) _postSelectionDidChangeNotification;
@@ -81,7 +78,7 @@ static float widest = 0.0;
 			    row: (int) rowIndex;
 @end
 
-// These methods are defined in NSTableView.
+// These methods are private...
 @interface NSOutlineView (TableViewInternalPrivate)
 - (void) _setSelectingColumns: (BOOL)flag;
 - (BOOL) _editNextEditableCellAfterRow: (int)row
@@ -92,7 +89,81 @@ static float widest = 0.0;
 - (void) _autoloadTableColumns;
 - (void) _openItem: (id)item;
 - (void) _closeItem: (id)item;
+- (NSDictionary *) _itemDictionary;
 @end
+
+// static functions
+static void _loadDictionary(NSOutlineView *outline,
+			    id startitem,
+			    NSMutableDictionary *allItems)
+{
+  int num = [[outline dataSource] outlineView: outline
+				  numberOfChildrenOfItem: startitem];
+  int i = 0;
+  id sitem = startitem;
+
+  if((num > 0) && !([allItems objectForKey: startitem]))
+    {
+      if(sitem == nil)
+	{
+	  sitem = [NSNull null];
+	}
+
+      [allItems setObject: [NSMutableArray array]
+		forKey: sitem];
+
+    }
+
+  for(i = 0; i < num; i++)
+    {
+      id anitem = [[outline dataSource] outlineView: outline
+					child: i
+					ofItem: startitem];
+      id anarray = [allItems objectForKey: sitem];
+      
+      [anarray addObject: anitem];
+      _loadDictionary(outline, anitem, allItems); 
+    }
+}
+
+static int _levelForItem(NSDictionary *outlineDict,
+			 id startitem,
+			 id searchitem,
+			 int level,
+			 BOOL *found)
+{
+  id sitem = startitem;
+  int num = 0;
+  int i = 0;
+  int finallevel = 0;
+
+  if(sitem == nil)
+    sitem = [NSNull null];
+  
+  // get the count for the array...
+  num = [[outlineDict objectForKey: sitem] count];
+
+  if(*found == YES)
+    {
+      return level;
+    }
+  
+  if(searchitem == startitem)
+    {
+      *found = YES;
+      return level;
+    }
+
+  for(i = 0; i < num; i++)
+    {
+      id anitem = [[outlineDict objectForKey: sitem] objectAtIndex: i];
+	
+      finallevel = _levelForItem(outlineDict, anitem, searchitem, level + 1, found); 
+      if(*found) break;
+    }
+
+  return finallevel;
+}
 
 @implementation NSOutlineView
 
@@ -103,8 +174,8 @@ static float widest = 0.0;
     {
       [self setVersion: current_version];
       nc = [NSNotificationCenter defaultCenter];
-      collapsed = [NSImage imageNamed: @"common_outlineCollapsed.tiff"];
-      expanded  = [NSImage imageNamed: @"common_outlineExpanded.tiff"];
+      collapsed    = [NSImage imageNamed: @"common_outlineCollapsed.tiff"];
+      expanded     = [NSImage imageNamed: @"common_outlineExpanded.tiff"];
       unexpandable = [NSImage imageNamed: @"common_outlineUnexpandable.tiff"];
     }
 }
@@ -114,18 +185,20 @@ static float widest = 0.0;
 {
   [super initWithFrame: frame];
 
+  // Initial values
   _indentationMarkerFollowsCell = NO;
   _autoResizesOutlineColumn = NO;
   _autosaveExpandedItems = NO;
   _indentationPerLevel = 0.0;
   _outlineTableColumn = nil;
-  _shouldCollapse = NO;
+  _itemDict = [NSMutableDictionary dictionary];
   _items = [NSMutableArray array];
   _expandedItems = [NSMutableArray array];
 
   // Retain items
   RETAIN(_items);
   RETAIN(_expandedItems);
+  RETAIN(_itemDict);
 
   return self;
 }
@@ -141,27 +214,29 @@ static float widest = 0.0;
 }
 
 // Collect all of the items under a given element.
-static void _collectItems(NSOutlineView *outline,
-		     id startitem,
-		     NSMutableArray *allChildren)
+- (void)_collectItemsStartingWith: (id)startitem
+			     into: (NSMutableArray *)allChildren
 {
-  int num = [[outline dataSource] outlineView: outline
-				  numberOfChildrenOfItem: startitem];
+  int num = 0;
   int i = 0;
+  id sitem = startitem;
 
+  if(sitem == nil)
+    sitem = [NSNull null];
+
+  num = [[_itemDict objectForKey: sitem] count];
   for(i = 0; i < num; i++)
     {
-      id anitem = [[outline dataSource] outlineView: outline
-					child: i
-					ofItem: startitem];
+      id anitem = [[_itemDict objectForKey: sitem] objectAtIndex: i];
 
       // Only collect the children if the item is expanded
-      if([outline isItemExpanded: startitem])
+      if([self isItemExpanded: startitem])
 	{
 	  [allChildren addObject: anitem];
 	}
 
-      _collectItems(outline, anitem, allChildren); 
+      [self _collectItemsStartingWith: anitem
+	    into: allChildren]; 
     }
 }
 
@@ -171,7 +246,7 @@ static void _collectItems(NSOutlineView *outline,
   int i = 0;
   NSMutableArray *removeAll = [NSMutableArray array];
 
-  _collectItems(self, item, removeAll);
+  [self _collectItemsStartingWith: item into: removeAll];
   numchildren = [removeAll count];
 
   // close the item...
@@ -192,11 +267,17 @@ static void _collectItems(NSOutlineView *outline,
 
 - (void)_openItem: (id)item
 {
-  int numchildren = [_dataSource outlineView: self 
-				 numberOfChildrenOfItem: item];
+  int numchildren = 0;
   int i = 0;
   int insertionPoint = 0;
-
+  id sitem = item;
+  
+  if(item == nil)
+    sitem = [NSNull null];
+  
+  numchildren = [[_itemDict objectForKey: sitem] count];
+  // NSLog(@"item: %@ children: %d", sitem, numchildren);
+  
   // open the item...
   if(item != nil)
     {
@@ -216,9 +297,7 @@ static void _collectItems(NSOutlineView *outline,
   [self setNeedsDisplay: YES];  
   for(i=numchildren-1; i >= 0; i--)
     {
-      id child = [_dataSource outlineView: self
-			      child: i
-			      ofItem: item];
+      id child = [[_itemDict objectForKey: sitem] objectAtIndex: i];
 
       // Add all of the children...
       if([self isItemExpanded: child])
@@ -226,9 +305,9 @@ static void _collectItems(NSOutlineView *outline,
 	  NSMutableArray *insertAll = [NSMutableArray array];
 	  int i = 0, numitems = 0;
 
-	  _collectItems(self, child, insertAll);
+	  [self _collectItemsStartingWith: child into: insertAll];
 	  numitems = [insertAll count];
-	  for(i = numitems-1; i >= 0; i--)
+ 	  for(i = numitems-1; i >= 0; i--)
 	    {
 	      [_items insertObject: [insertAll objectAtIndex: i]
 		      atIndex: insertionPoint];
@@ -278,37 +357,41 @@ static void _collectItems(NSOutlineView *outline,
 
       if(collapseChildren) // collapse all
 	{
-	  int numchild = [_dataSource outlineView: self
-				      numberOfChildrenOfItem: item];
+	  int numchild = 0;
 	  int index = 0;
+	  NSMutableArray *allChildren = [NSMutableArray array];
+
+	  [self _collectItemsStartingWith: item into: allChildren];
+	  numchild = [allChildren count];
+
 	  for(index = 0;index < numchild;index++)
 	    {
-	      id child = [_dataSource outlineView: self
-				      child: index
-				      ofItem: item];
-	      NSMutableDictionary *infoDict = [NSDictionary dictionary];      
-	      [infoDict setObject: child forKey: @"NSObject"];
+	      id child = [allChildren objectAtIndex: index];
 
-	      // Send out the notification to let observers know 
-	      // that this is about to occur.
-	      [nc postNotificationName: NSOutlineViewItemWillCollapseNotification
-		  object: self
-		  userInfo: infoDict];
-
-	      if([self isItemExpanded: child])
+	      if([self isExpandable: child] &&
+		 [self isItemExpanded: child])
 		{
+		  NSMutableDictionary *childDict = [NSDictionary dictionary];      
+		  [childDict setObject: child forKey: @"NSObject"];
+		  
+		  // Send out the notification to let observers know 
+		  // that this is about to occur.
+		  [nc postNotificationName: NSOutlineViewItemWillCollapseNotification
+		      object: self
+		      userInfo: childDict];
+		  
 		  [self _closeItem: child];
+		  
+		  // Send out the notification to let observers know that
+		  // this is about to occur.
+		  [nc postNotificationName: NSOutlineViewItemDidCollapseNotification
+		      object: self
+		      userInfo: childDict];
 		}
-
-	      // Send out the notification to let observers know that
-	      // this is about to occur.
-	      [nc postNotificationName: NSOutlineViewItemDidCollapseNotification
-		  object: self
-		  userInfo: infoDict];
 	    }
 	}
+      [self noteNumberOfRowsChanged];
     }
-  [self reloadData];
 }
 
 - (void)expandItem: (id)item
@@ -350,35 +433,41 @@ static void _collectItems(NSOutlineView *outline,
 
       if(expandChildren) // expand all
 	{
-	  int numchild = [_dataSource outlineView: self
-				      numberOfChildrenOfItem: item];
+	  NSMutableArray *allChildren = nil;
+	  int numchild = 0;
 	  int index = 0;
+
+	  [self _collectItemsStartingWith: item into: allChildren];
+	  numchild = [allChildren count];
+
 	  for(index = 0;index < numchild;index++)
 	    {
-	      id child = [_dataSource outlineView: self
-				      child: index
-				      ofItem: item];
-	      // Send out the notification to let observers know that this has
-	      // occured.
-	      [nc postNotificationName: NSOutlineViewItemWillExpandNotification
-		  object: self
-		  userInfo: infoDict];
-	      
-	      if(![self isItemExpanded: child])
-		{
-		  [self _openItem: child];
-		}
-	      
-	      // Send out the notification to let observers know that this has
-	      // occured.
-	      [nc postNotificationName: NSOutlineViewItemDidExpandNotification
-		  object: self
-		  userInfo: infoDict];
+	      id child = [allChildren objectAtIndex: index];
 
+	      if([self isExpandable: child] &&
+		 ![self isItemExpanded: child])
+		{
+		  NSMutableDictionary *childDict = [NSMutableDictionary dictionary];
+		  
+		  [childDict setObject: child forKey: @"NSObject"];
+		  // Send out the notification to let observers know that this has
+		  // occured.
+		  [nc postNotificationName: NSOutlineViewItemWillExpandNotification
+		      object: self
+		      userInfo: childDict];
+
+		  [self _openItem: child];
+		  
+		  // Send out the notification to let observers know that this has
+		  // occured.
+		  [nc postNotificationName: NSOutlineViewItemDidExpandNotification
+		      object: self
+		      userInfo: childDict];
+		}
 	    }
 	}      
     }
-  [self reloadData];
+  [self noteNumberOfRowsChanged];
 }
 
 - (BOOL)indentationMarkerFollowsCell
@@ -398,18 +487,11 @@ static void _collectItems(NSOutlineView *outline,
 
 - (BOOL)isItemExpanded: (id)item
 {
-  id object = item;
-
-  // if the object to be expanded is nil, then the root
-  // object is being queried.   We need to check for a
-  // placeholder.
-  if(object == nil)
-    {
-      object = @"root";
-    }
+  if(item == nil)
+      return YES;
 
   // Check the array to determine if it is expanded.
-  return([_expandedItems containsObject: object]);
+  return([_expandedItems containsObject: item]);
 }
 
 - (id)itemAtRow: (int)row
@@ -417,47 +499,12 @@ static void _collectItems(NSOutlineView *outline,
   return [_items objectAtIndex: row];
 }
 
-// Utility function to determine the level of an item.
-static int _levelForItem(NSOutlineView *outline,
-			id startitem,
-			id searchitem,
-			int level,
-			BOOL *found)
-{
-  int num = [[outline dataSource] outlineView: outline
-				  numberOfChildrenOfItem: startitem];
-  int i = 0;
-  int finallevel = 0;
-
-  if(*found == YES)
-    {
-      return level;
-    }
-  
-  if(searchitem == startitem)
-    {
-      *found = YES;
-      return level;
-    }
-
-  for(i = 0; i < num; i++)
-    {
-      id anitem = [[outline dataSource] outlineView: outline
-					child: i
-					ofItem: startitem];
-      finallevel = _levelForItem(outline, anitem, searchitem, level + 1, found); 
-      if(*found) break;
-    }
-
-  return finallevel;
-}
-
 - (int)levelForItem: (id)item
 {
   if(item != nil)
     {
       BOOL found = NO;
-      return _levelForItem(self, nil, item, -1, &found);
+      return _levelForItem(_itemDict, nil, item, -1, &found);
     }
 
   return -1;
@@ -473,14 +520,81 @@ static int _levelForItem(NSOutlineView *outline,
   return _outlineTableColumn;
 }
 
+- (BOOL)_findItem: (id)item
+       childIndex: (int *)index
+	 ofParent: (id)parent
+{
+  NSArray *allKeys = [_itemDict allKeys];
+  BOOL hasChildren = NO;
+  NSEnumerator *en = [allKeys objectEnumerator];
+  id object = nil;
+
+  // initial values for return parameters
+  *index = NSNotFound;
+  parent = nil;
+  
+  if([allKeys containsObject: item])
+    {
+      hasChildren = YES;
+    }
+  
+  while((object = [en nextObject]))
+    {
+      NSArray *childArray = [_itemDict objectForKey: object];
+
+      if((*index = [childArray indexOfObject: item]) != NSNotFound)
+	{
+	  parent = object;
+	  break;
+	}
+    }
+
+  return hasChildren;
+}
+
 - (void)reloadItem: (id)item
 {
-  [self reloadItem: item reloadChildren: YES];
+  [self reloadItem: item reloadChildren: NO];
 }
 
 - (void)reloadItem: (id)item reloadChildren: (BOOL)reloadChildren
 {
-  // Nothing yet...
+  id object = item;
+  id parent = nil;
+  id dsobj = nil;
+  BOOL haschildren = NO;
+  int index = 0;
+
+  if(object == nil)
+    object = [NSNull null];
+  
+  // find the item
+  haschildren = [self _findItem: object
+		   childIndex: &index
+		   ofParent: parent];
+
+  dsobj = [_dataSource outlineView: self
+		       child: index
+		       ofItem: parent];
+  
+  [[_itemDict objectForKey: parent] removeObject: item];
+  [[_itemDict objectForKey: parent] insertObject: dsobj atIndex: index];
+  
+  if(reloadChildren && haschildren) // expand all
+    {
+      NSMutableDictionary *allChildren = [NSMutableDictionary dictionary];
+      _loadDictionary(self, item, allChildren);
+      [_itemDict addEntriesFromDictionary: allChildren];
+
+      // release the old array
+      if(_items != nil)
+	{
+	  RELEASE(_items); 
+	}
+
+      // regenerate the _items array based on the new dictionary
+      [self _openItem: nil];
+    }      
 }
 
 - (int)rowForItem: (id)item
@@ -515,7 +629,7 @@ static int _levelForItem(NSOutlineView *outline,
 
 - (BOOL)shouldCollapseAutoExpandedItemsForDeposited: (BOOL)deposited
 {
-  return _shouldCollapse;
+  return YES;
 }
 
 - (void) noteNumberOfRowsChanged
@@ -639,10 +753,25 @@ static int _levelForItem(NSOutlineView *outline,
 
 - (void) reloadData
 {
-  if([_items count] == 0)
+  // release the old array
+  if(_items != nil)
     {
-      [self _openItem: nil];
+      RELEASE(_items); 
     }
+
+  if(_itemDict != nil)
+    {
+      RELEASE(_itemDict);
+    }
+
+  // create a new empty one
+  _items = RETAIN([NSMutableArray array]); 
+  _itemDict = RETAIN([NSMutableDictionary dictionary]); 
+
+  // reload all the open items...
+  _loadDictionary(self, nil, _itemDict);
+  NSLog(@"Dictionary = %@",_itemDict);
+  [self _openItem: nil];
   [super reloadData];
 }
 
@@ -683,7 +812,6 @@ static int _levelForItem(NSOutlineView *outline,
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autosaveExpandedItems];
   [aCoder encodeValueOfObjCType: @encode(float) at: &_indentationPerLevel];
   [aCoder encodeConditionalObject: _outlineTableColumn];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_shouldCollapse];
 }
 
 - (id) initWithCoder: (NSCoder *)aDecoder
@@ -696,7 +824,6 @@ static int _levelForItem(NSOutlineView *outline,
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_autosaveExpandedItems];
   [aDecoder decodeValueOfObjCType: @encode(float) at: &_indentationPerLevel];
   _outlineTableColumn = [aDecoder decodeObject];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_shouldCollapse];
 
   return self;
 }
@@ -705,15 +832,21 @@ static int _levelForItem(NSOutlineView *outline,
 {
   NSPoint location = [theEvent locationInWindow];
   NSTableColumn *tb;
+  NSImage *image = nil;
 
   location = [self convertPoint: location  fromView: nil];
   _clickedRow = [self rowAtPoint: location];
   _clickedColumn = [self columnAtPoint: location];
 
-  NSLog(@"Clicked on row: %d, %d",_clickedRow, _clickedColumn);
-  NSLog(@"item for row: %@",[self itemAtRow: _clickedRow]);
-  NSLog(@"level for row: %d",[self levelForRow: _clickedRow]);
-
+  if([self isItemExpanded: [self itemAtRow: _clickedRow]])
+    {
+      image = expanded;
+    }
+  else
+    {
+      image = collapsed;
+    }
+  
   tb = [_tableColumns objectAtIndex: _clickedColumn];
   if(tb == _outlineTableColumn)
     {
@@ -725,10 +858,8 @@ static int _levelForItem(NSOutlineView *outline,
 	  position = _indentationPerLevel * level;
 	}
       
-      NSLog(@"x = %f", location.x);
-      if(location.x >= position && location.x <= position + 10)
+      if(location.x >= position && location.x <= position + [image size].width)
 	{
-	  NSLog(@"HIT!!");
 	  if(![self isItemExpanded: [self itemAtRow: _clickedRow]])
 	    {
 	      [self expandItem: [self itemAtRow: _clickedRow]];
@@ -819,7 +950,7 @@ static int _levelForItem(NSOutlineView *outline,
 	      NSImage *image = nil;
 	      int level = 0;
 	      float indentationFactor = 0.0;
-	      float originalWidth = drawingRect.size.width;
+	      // float originalWidth = drawingRect.size.width;
 
 	      // display the correct arrow...
 	      if([self isItemExpanded: item])
@@ -859,14 +990,6 @@ static int _levelForItem(NSOutlineView *outline,
 	      drawingRect.origin.x += indentationFactor + [image size].width + 5;
 	      drawingRect.size.width -= indentationFactor + [image size].width + 5;
 	      
-	      if (widest < (drawingRect.origin.x + originalWidth))
-		{
-		  widest = (drawingRect.origin.x + originalWidth);
-		}
-	      else
-		{
-		  // NSLog(@"Still widest = %lf", widest);
-		}
 	    }
 
 	  [cell drawWithFrame: drawingRect inView: self];
@@ -879,23 +1002,24 @@ static int _levelForItem(NSOutlineView *outline,
 {
   int index = 0;
 
-  for(index = 1;index <= _numberOfRows; index++)
+  if(_autoResizesOutlineColumn)
     {
-      NSRect drawingRect;
-
-      drawingRect = [self frameOfCellAtColumn: 1
-			  row: index];
+      float widest = 0;
+      for(index = 0;index < _numberOfRows; index++)
+	{
+	  float offset = [self levelForRow: index] * 
+	    [self indentationPerLevel];
+	  NSRect drawingRect = [self frameOfCellAtColumn: 0
+				     row: index];
+	  float length = drawingRect.size.width + offset;
+	  NSLog(@"index = %d, offset = %f, textLength = %f",
+		index, offset, length);
+	  if(widest < length) widest = length;
+	}
+      // [_outlineTableColumn setWidth: widest];
     }
 
   [super drawRect: aRect];
-
-  // We need to resize here since all of the columns have been
-  // processed.
-  if(_autoResizesOutlineColumn)
-    {
-      //      [_outlineTableColumn setWidth: widest];
-      widest = 0; // blank this since it was just set into the column..
-    }
 }
 
 

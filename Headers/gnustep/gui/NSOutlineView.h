@@ -36,6 +36,7 @@
 
 @interface NSOutlineView : NSTableView
 {
+  NSMutableDictionary *_itemDict;
   NSMutableArray *_items;
   NSMutableArray *_expandedItems;
   BOOL _autoResizesOutlineColumn;
@@ -43,7 +44,6 @@
   BOOL _autosaveExpandedItems;
   float _indentationPerLevel;
   NSTableColumn *_outlineTableColumn;
-  BOOL _shouldCollapse;
 }
 
 // Instance methods

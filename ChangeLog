@@ -1,3 +1,13 @@
+Sat Mar 23 11:34:10 2002  Gregory John Casamento <greg_casamento@yahoo.com>
+	
+	* Headers/gnustep/gui/NSOutlineView.h: Added dictionary to speed
+	up generation of the _items list.  Also, this keeps the outline view
+	from being updated without an explicit call to reloadData.
+
+	* Source/NSOutlineView.m: Implemented -[NSOutlineView reloadItem:]
+	and -[NSOutlineView reloadItem:reloadChildren:] and improved
+	-[NSOutlineView reloadData]
+	
 Fri Mar 22 13:09:03 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/gnustep/gui/NSRulerView.h: Merged new code from Diego
