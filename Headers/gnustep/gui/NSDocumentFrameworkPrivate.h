@@ -34,7 +34,6 @@
 - (NSArray *)_editorAndViewerTypesForClass:(Class)documentClass;
 - (NSArray *)_editorTypesForClass:(Class)fp12;
 - (NSArray *)_exportableTypesForClass:(Class)documentClass;
-- (void)_removeDocument:(NSDocument *)document;
 @end
 
 
