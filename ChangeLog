@@ -1,3 +1,10 @@
+Mon Jul  8 13:55:13 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSSavePanel.m ([-createRowsForColumn:]): Removed usage of
+	nested function which was causing the library not to compile on
+	some platforms.
+	(compareFilenames): New static function doing the same.
+
 2002-07-05  Adam Fedor  <fedor@gnu.org>
 
 	* Images/common_ArrowDown.tiff: Transparency fix.
