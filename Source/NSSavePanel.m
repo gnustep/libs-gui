@@ -41,6 +41,8 @@
 #include <AppKit/NSSavePanel.h>
 #include <AppKit/NSOpenPanel.h>
 #include <AppKit/NSBrowserCell.h>
+#include <Foundation/NSFileManager.h>
+#include <AppKit/NSMatrix.h>
 #include <AppKit/IMLoading.h>
 #include <extensions/GMArchiver.h>
 
@@ -60,9 +62,23 @@
 static NSSavePanel *gnustep_gui_save_panel = nil;
 
 @interface _SavePanel : NSObject
+-(void)browser :(NSBrowser *)sender createRowsForColumn:(int)column
+                    inMatrix:(NSMatrix *)matrix;
+-(void)browser :(NSBrowser *)sender willDisplayCell:(id)cell
+                    atRow:(int)row
+                   column:(int)column;
 @end
 
+//======================================================================
+// _SavePanel: used for loading gmodels, NSBrowser delegate
+//======================================================================
 @implementation _SavePanel
+
++ (id)init
+{
+    NSLog(@"asdasdasd");
+    return (self = [super init]);
+}
 //
 // Model stuff
 //
@@ -78,6 +94,71 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 {
     if (gnustep_gui_save_panel)
 	[archiver encodeObject:gnustep_gui_save_panel withName:@"panel"];
+}
+
+//
+// Browser stuff
+- (void)browser:(NSBrowser*)sender createRowsForColumn:(int)column
+       inMatrix:(NSMatrix*)matrix
+{
+    NSFileManager *fm = [NSFileManager defaultManager];
+    NSString *ptc = [sender pathToColumn: column];
+    NSArray *files = [fm directoryContentsAtPath: ptc];
+    int i, count = [files count];
+
+    if (!count)
+	return;
+
+    [matrix addColumn];
+    for (i=0 ; i<count ; ++i) {
+	id cell;
+	BOOL exists = NO, is_dir = NO;
+	NSMutableString *s = [[[NSMutableString alloc] initWithString: ptc]
+			     autorelease];
+
+	if (i != 0)
+	    [matrix insertRow:i];
+	
+	cell = [matrix cellAtRow:i column:0];
+	[cell setStringValue:[files objectAtIndex:i]];
+	
+	[s appendString: @"/"];
+	[s appendString: [files objectAtIndex: i]];
+	exists = [fm fileExistsAtPath: s isDirectory: &is_dir];
+	
+	if (exists && is_dir)
+	    [cell setLeaf:NO];
+	else
+	    [cell setLeaf:YES];
+    }
+}
+
+- (void)browser:(NSBrowser*)sender willDisplayCell:(id)cell
+          atRow:(int)row
+         column:(int)column
+{
+}
+
+- (BOOL)browser:(NSBrowser *)sender selectCellWithString:(NSString *)title
+       inColumn:(int)column
+{
+    NSString *ptc = [sender pathToColumn: column];
+    NSMutableString *s = [[[NSMutableString alloc] initWithString:ptc]
+			 autorelease];
+
+    NSLog(@"-browser:selectCellWithString {%@}", title);
+
+    if (column > 0)
+	[s appendString: @"/"];
+    [s appendString:title];
+
+    NSLog(@"-browser: source path: %@", s);
+}
+
+- (BOOL)fileManager:(NSFileManager*)fileManager
+         shouldProceedAfterError:(NSDictionary*)errorDictionary
+{
+    return YES;
 }
 
 @end
@@ -106,8 +187,6 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 	}
     }
 
-    //was it loaded?
-    NSLog(@"Savepanel: %@", [gnustep_gui_save_panel description]);
     return gnustep_gui_save_panel;
 }
 
