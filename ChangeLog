@@ -1,3 +1,10 @@
+2004-07-29  Adrian Robert  <arobert@cogsci.ucsd.edu>
+
+	* Documentation/GuiUser/DefaultsSummary.gsdoc: Added some explanation
+	of how to set defaults and description of domains, since this isn't
+	readily accessible elsewhere.  Also, documented
+	NSShowNonLocalizedStrings default.
+
 2004-07-28  Adam Fedor  <fedor@gnu.org>
 
 	* PrinterTypes/: Remove PPD files
