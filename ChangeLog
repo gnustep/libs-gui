@@ -1,3 +1,8 @@
+Thu Apr 29 13:10:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSControl.m: ([-drawRect:]) implemented to call ([-drawCell:])
+	This (undocumented) behavior seems to be what OPENSTEP does.
+
 Thu Apr 29 12:40:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	Patches by Tim Bissell
