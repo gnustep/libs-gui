@@ -223,6 +223,7 @@ enum {
 - (void) unlockFocus;
 #ifndef STRICT_OPENSTEP
 - (BOOL) lockFocusIfCanDraw;
+- (void) lockFocusInRect: (NSRect)rect;
 #endif
 
 /*
