@@ -1,3 +1,9 @@
+2003-12-29 20:43  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibTemplates.m: removed extraneous retain in
+	GSClassSwapper which was causing the retain counts of
+	custom classes to be one too many. 
+
 2003-12-29  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSApplication.m (-activateIgnoringOtherApps:): Change

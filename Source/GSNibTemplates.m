@@ -550,7 +550,7 @@ static const int currentVersion = 1; // GSNibItem version number...
 
   // Do this here since we are not using decode to do this.
   // Normally decode does a retain, so we must do it here.
-  RETAIN(obj); 
+  // RETAIN(obj); 
 
   // change the class of the instance to the one we want to see...
   return obj;
