@@ -581,10 +581,10 @@ NSApplication	*NSApp = nil;
 
 	    if (!copyOfMainMenu)	/* display the menu under the mouse */
 	      copyOfMainMenu = [main_menu copy];
-	    copyMenuWindow = [copyOfMainMenu menuWindow];
+	    copyMenuWindow = [copyOfMainMenu window];
 	    [copyOfMainMenu _rightMouseDisplay];
 	    [copyMenuWindow _captureMouse: self];
-	    [[copyOfMainMenu menuCells] mouseDown: theEvent];
+	    [[copyOfMainMenu menuView] mouseDown: theEvent];
 	    [copyMenuWindow _releaseMouse: self];
 	  }
 	break;

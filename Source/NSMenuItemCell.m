@@ -228,6 +228,7 @@ static BOOL usesUserKeyEquivalents = YES;
 {
   NSGraphicsContext     *ctxt = GSCurrentContext();
   NSRect floodRect = cellFrame;
+  NSString *keyQ = nil;
 
   NSDrawButton(cellFrame, cellFrame);
 
@@ -256,6 +257,13 @@ static BOOL usesUserKeyEquivalents = YES;
     floodRect.size.width = 7;
 
     [self _drawImage:[NSImage imageNamed:@"common_3DArrowRight"] inFrame:floodRect];  
+  } else if (keyQ = [self keyEquivalent]) {
+    floodRect.origin.x = cellFrame.size.width - 12;
+    floodRect.origin.y += 5;
+    floodRect.size.height = 7;
+    floodRect.size.width = 7;
+
+    [self _drawText:keyQ inFrame:floodRect];
   }
 }
 @end

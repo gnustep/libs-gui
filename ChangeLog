@@ -8,6 +8,10 @@ sub-menu again - it doesn't. [FIXED]
 I'm not sure if you already know about this one. [FIXED]
 6. If I drag off the bottom of a menu (or submenu) then release the mouse
 button, the app crashes. [FIXED]
+[ 7 is fixed in the backend. ]
+
+	* Source/NSMenuItemCell.m: paper-bag-over-the-head-goof:
+	keyEquivalents are now drawn. How did I miss those?
 
 1999-06-29  Michael Hanni  <mhanni@sprintmail.com>
 
