@@ -38,6 +38,18 @@
 #include <AppKit/NSCachedImageRep.h>
 #include <AppKit/NSWindow.h>
 
+@interface GSCacheW : NSWindow
+@end
+
+@implementation GSCacheW
+
+- (void) initDefaults
+{
+  [super initDefaults];
+  menu_exclude = YES;           // Don't show in windows menu.
+}
+@end
+
 /* Backend protocol - methods that must be implemented by the backend to
    complete the class */
 @protocol NXCachedImageRepBackend
@@ -48,17 +60,26 @@
 
 // Initializing an NSCachedImageRep 
 - (id) initWithSize: (NSSize)aSize
-		depth: (NSWindowDepth)aDepth
-		separate: (BOOL)separate
-		alpha: (BOOL)alpha
+	      depth: (NSWindowDepth)aDepth
+	   separate: (BOOL)separate
+	      alpha: (BOOL)alpha
 {
-  return nil;
+  NSWindow	*win;
+  NSRect	frame;
+
+  frame.origin = NSMakePoint(0,0);
+  frame.size = aSize;
+  win = [[GSCacheW alloc] initWithContentRect: frame
+				    styleMask: NSBorderlessWindowMask
+				      backing: NSBackingStoreRetained
+					defer: NO];
+  self = [self initWithWindow: win rect: frame];
+  [win release];
+  return self;
 }
 
-- initWithWindow: (NSWindow *)win rect: (NSRect)rect
+- (id) initWithWindow: (NSWindow *)win rect: (NSRect)rect
 {
-  int style = NSClosableWindowMask;
-
   [super init];
 
   _window = [win retain];
@@ -72,16 +93,17 @@
       if (!_window) 
 	{
 	  [NSException raise: NSInvalidArgumentException
-	    format: @"Must specify either window or rect when creating NSCachedImageRep"];
+		      format: @"Must specify either window or rect when "
+			      @"creating NSCachedImageRep"];
 	}
 
       _rect = [_window frame];
     }
   if (!_window)
-    _window = [[NSWindow alloc] initWithContentRect: _rect
-			styleMask: style
-			backing: NSBackingStoreRetained
-			defer: NO];
+    _window = [[GSCacheW alloc] initWithContentRect: _rect
+					  styleMask: NSBorderlessWindowMask
+					    backing: NSBackingStoreRetained
+					      defer: NO];
   return self;
 }
 
@@ -104,6 +126,7 @@
 
 - (BOOL)draw
 {
+  NSCopyBits([_window gState], _rect, _rect.origin);
   return NO;
 }
 

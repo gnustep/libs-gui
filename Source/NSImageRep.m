@@ -279,17 +279,27 @@ static NSMutableArray*	imageReps = NULL;
 // Drawing the Image
 - (BOOL) draw
 {
-  [self subclassResponsibility: _cmd];
-  return NO;
+  return YES;		/* Subclass should implement this.	*/
 }
 
 - (BOOL) drawAtPoint: (NSPoint)aPoint
 {
-  return NO;
+  NSRect        r;
+
+  if (aPoint.x == 0 && aPoint.y == 0)
+    return [self draw];
+  r.origin = aPoint;
+  r.size = size;
+  return [self drawInRect: r];
 }
 
 - (BOOL) drawInRect: (NSRect)aRect
 {
+  float	x, y;
+
+  if (size.height == 0 || size.width == 0)
+    return NO;
+/* FIXME - should scale and move as necessary. */
   return NO;
 }
 

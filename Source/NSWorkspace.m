@@ -43,50 +43,28 @@
 #include <Foundation/NSException.h>
 #include <Foundation/NSProcessInfo.h>
 #include <Foundation/NSFileManager.h>
+#include <Foundation/NSNotificationQueue.h>
 
 #define stringify_it(X) #X
 #define	mkpath(X) stringify_it(X) "/Tools"
-
-static NSDictionary	*applications = nil;
 
 
 @implementation	NSWorkspace
 
 static NSWorkspace		*sharedWorkspace = nil;
 static NSNotificationCenter	*workspaceCenter = nil;
+static NSMutableDictionary	*iconMap = nil;
 static BOOL 			userDefaultsChanged = NO;
 
-static NSString			*appListName = @".GNUstepAppList";
+static NSString			*appListName = @"Services/.GNUstepAppList";
 static NSString			*appListPath = nil;
-static NSDictionary		*_suffixes = nil;
-static NSString			*defaultIconPath = nil;
+static NSDictionary		*applications = nil;
+
+static NSString			*extPrefName = @".GNUstepExtPrefs";
+static NSString			*extPrefPath = nil;
+static NSDictionary		*extPreferences = nil;
+
 static NSString			*_rootPath = @"/";
-
-
-static NSString* gnustep_target_dir = 
-#ifdef GNUSTEP_TARGET_DIR
-  @GNUSTEP_TARGET_DIR;
-#else
-  nil;
-#endif
-static NSString* gnustep_target_cpu = 
-#ifdef GNUSTEP_TARGET_CPU
-  @GNUSTEP_TARGET_CPU;
-#else
-  nil;
-#endif
-static NSString* gnustep_target_os = 
-#ifdef GNUSTEP_TARGET_OS
-  @GNUSTEP_TARGET_OS;
-#else
-  nil;
-#endif
-static NSString* library_combo = 
-#ifdef LIBRARY_COMBO
-  @LIBRARY_COMBO;
-#else
-  nil;
-#endif
 
 //
 // Class methods
@@ -97,6 +75,9 @@ static NSString* library_combo =
     {
       static BOOL	beenHere;
       NSDictionary	*env;
+      NSString		*home;
+      NSData		*data;
+      NSDictionary	*dict;
 
       // Initial version
       [self setVersion: 1];
@@ -111,49 +92,44 @@ static NSString* library_combo =
       beenHere = YES;
 
       workspaceCenter = [NSNotificationCenter new];
+      iconMap = [NSMutableDictionary new];
+
+      /*
+       *	The home directory for per-user information is given by
+       *	the GNUSTEP_USER_ROOT environment variable, or is assumed
+       *	to be the 'GNUstep' subdirectory of the users home directory.
+       */
       env = [[NSProcessInfo processInfo] environment];
-      if (env)
+      if (!env || !(home = [env objectForKey: @"GNUSTEP_USER_ROOT"]))
 	{
-	  NSString	*str;
-          NSData	*data;
-          NSDictionary	*newApps;
-
-	  str = [env objectForKey: @"GNUSTEP_USER_ROOT"];
-	  if (str == nil)
-	    str = [NSString stringWithFormat: @"%@/GNUstep",
-		NSHomeDirectory()];
-	  str = [str stringByAppendingPathComponent: @"Services"];
-	  str = [str stringByAppendingPathComponent: appListName];
-	  appListPath = [str retain];
-
-	  if ((str = [env objectForKey: @"GNUSTEP_TARGET_DIR"]) != nil)
-	    gnustep_target_dir = [str retain];
-	  else if ((str = [env objectForKey: @"GNUSTEP_HOST_DIR"]) != nil)
-	    gnustep_target_dir = [str retain];
-	
-	  if ((str = [env objectForKey: @"GNUSTEP_TARGET_CPU"]) != nil)
-	    gnustep_target_cpu = [str retain];
-	  else if ((str = [env objectForKey: @"GNUSTEP_HOST_CPU"]) != nil)
-	    gnustep_target_cpu = [str retain];
-	
-	  if ((str = [env objectForKey: @"GNUSTEP_TARGET_OS"]) != nil)
-	    gnustep_target_os = [str retain];
-	  else if ((str = [env objectForKey: @"GNUSTEP_HOST_OS"]) != nil)
-	    gnustep_target_os = [str retain];
-	
-	  if ((str = [env objectForKey: @"LIBRARY_COMBO"]) != nil)
-	    library_combo = [str retain];
-
-          data = [NSData dataWithContentsOfFile: appListPath];
-          if (data)
-            newApps = [NSDeserializer deserializePropertyListFromData: data
-                                                    mutableContainers: NO];
-          applications = [newApps retain];
+	  home = [NSString stringWithFormat: @"%@/GNUstep", NSHomeDirectory()];
 	}
 
-      _suffixes = [NSDictionary dictionaryWithContentsOfFile:@"Suffixes.plist"];
-      _suffixes = [_suffixes retain];
-      defaultIconPath = [_suffixes objectForKey: @"ICON_PATH"];       
+      /*
+       *	Load file extension preferences.
+       */
+      extPrefPath = [home stringByAppendingPathComponent: extPrefName];
+      [extPrefPath retain];
+      data = [NSData dataWithContentsOfFile: extPrefPath];
+      if (data)
+	{
+	  dict = [NSDeserializer deserializePropertyListFromData: data
+					       mutableContainers: NO];
+	  extPreferences = [dict retain];
+	}
+
+      /*
+       *	Load cached application information.
+       */
+      appListPath = [home stringByAppendingPathComponent: appListName];
+      [appListPath retain];
+      data = [NSData dataWithContentsOfFile: appListPath];
+      if (data)
+	{
+	  dict = [NSDeserializer deserializePropertyListFromData: data
+					       mutableContainers: NO];
+	  applications = [dict retain];
+	}
 
       [gnustep_global_lock unlock];
     }
@@ -179,31 +155,46 @@ static NSString* library_combo =
 	  sharedWorkspace =
 		(NSWorkspace*)NSAllocateObject(self, 0, NSDefaultMallocZone());
 
+	  [NSNotificationCenter addObserver: sharedWorkspace
+				   selector: @selector(noteUserDefaultsChanged)
+				       name: NSUserDefaultsDidChangeNotification
+				     object: nil];
 	}
       [gnustep_global_lock unlock];
     }
   return sharedWorkspace;
 }
 
+static NSImage*
+extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
+{
+  NSString	*file = [typeInfo objectForKey: @"NSIcon"];
+
+  if (file)
+    {
+      if ([file isAbsolutePath] == NO)
+	{
+	  NSString	*path;
+
+	  path = [ws fullPathForApplication: appName];
+	  file = [path stringByAppendingString: file];
+	}
+      if ([[NSFileManager defaultManager] isReadableFileAtPath: file] == YES)
+	{
+	  return [[[NSImage alloc] initWithContentsOfFile: file] autorelease];
+	}
+    }
+  return nil;
+}
+
 - (NSImage*) _getImageWithName: (NSString *)name
 		     alternate: (NSString *)alternate
 {
-  NSString	*iconName = nil;
   NSImage	*image = nil;
 
-  iconName = (NSString *)[_suffixes objectForKey: name];
-  if (iconName != nil)
-    {
-      NSString	*iconPath;
-
-      iconPath = [defaultIconPath stringByAppendingPathComponent: iconName];
-      image = [[NSImage alloc] initWithContentsOfFile: iconPath];
-    }
-  if ((image == nil) && (alternate != nil))
-    {
-	image = [[NSImage imageNamed: alternate] retain]; // !!! was retained
-    }
-
+  image = [NSImage imageNamed: name];
+  if (image == nil)
+    image = [NSImage imageNamed: alternate];
   return image;
 }
 
@@ -214,8 +205,8 @@ static NSString* library_combo =
 
   if (image == nil)
     {
-      image = [self _getImageWithName: @"FOLDER_ICON"
-			    alternate: @"Folder.tiff"];
+      image = [[self _getImageWithName: @"Folder.tiff"
+			     alternate: @"common_Folder.tiff"] retain];
     }
 
   return image;
@@ -228,8 +219,8 @@ static NSString* library_combo =
 
   if (image == nil)
     {
-      image = [self _getImageWithName: @"UNKNOWN_ICON"
-			    alternate: @"Unknown"];
+      image = [[self _getImageWithName: @"Unknown.tiff"
+			     alternate: @"common_Unknown.tiff"] retain];
     }
 
   return image;
@@ -242,11 +233,220 @@ static NSString* library_combo =
 
   if (image == nil)
     {
-      image = [self _getImageWithName: @"ROOT_ICON"
-			    alternate: @"Unknown"];
+      image = [[self _getImageWithName: @"Root_PC.tiff"
+			     alternate: @"common_Root_PC.tiff"] retain];
     }
 
   return image;
+}
+
+- (NSImage*) _iconForExtension: (NSString*)ext
+{
+  NSImage	*icon = nil;
+
+  if (ext == nil || [ext isEqualToString: @""])
+    return nil;
+  /*
+   * extensions are case-insensitive - convert to lowercase.
+   */
+  ext = [ext lowercaseString];
+  if ((icon = [iconMap objectForKey: ext]) == nil)
+    {
+      NSDictionary	*prefs;
+      NSDictionary	*extInfo;
+      NSString		*iconPath;
+
+      /*
+       * If there is a user-specified preference for an image -
+       * try to use that one.
+       */
+      prefs = [extPreferences objectForKey: ext];
+      iconPath = [prefs objectForKey: @"Icon"];
+      if (iconPath)
+	{
+	  icon = [[NSImage alloc] initWithContentsOfFile: iconPath];
+	  [icon autorelease];
+	}
+
+      if (icon == nil && (extInfo = [self infoForExtension: ext]) != nil)
+	{
+	  NSDictionary	*typeInfo;
+	  NSString	*appName;
+
+	  /*
+	   * If there are any application preferences given, try to use the
+	   * icon for this file that is used by the preferred app.
+	   */
+	  if (prefs)
+	    {
+	      if ((appName = [extInfo objectForKey: @"Editor"]) != nil)
+		{
+		  typeInfo = [extInfo objectForKey: appName];
+		  icon = extIconForApp(self, appName, typeInfo);
+		}
+	      if (icon == nil
+		&& (appName = [extInfo objectForKey: @"Viewer"]) != nil)
+		{
+		  typeInfo = [extInfo objectForKey: appName];
+		  icon = extIconForApp(self, appName, typeInfo);
+		}
+	    }
+
+	  if (icon == nil)
+	    {
+	      NSEnumerator	*enumerator;
+
+	      /*
+	       * Still no icon - try all the apps that handle this file
+	       * extension.
+	       */
+	      enumerator = [extInfo keyEnumerator];
+	      while (icon == nil && (appName = [enumerator nextObject]) != nil)
+		{
+		  typeInfo = [extInfo objectForKey: appName];
+		  icon = extIconForApp(self, appName, typeInfo);
+		}
+	    }
+	}
+
+      if (icon == nil)
+	{
+	}
+
+      /*
+       * Nothing found at all - use the unknowntype icon.
+       */
+      if (icon == nil)
+	{
+	  icon = [self unknownFiletypeImage];
+	}
+
+      /*
+       * Set the icon in the cache for next time.
+       */
+      if (icon != nil)
+	[iconMap setObject: icon forKey: ext];
+    }
+  return icon;
+}
+
+- (BOOL) _extension: (NSString*)ext
+               role: (NSString*)role
+	        app: (NSString**)app
+	    andInfo: (NSDictionary**)inf
+{
+  NSEnumerator	*enumerator;
+  NSString      *appName = nil;
+  NSDictionary	*apps;
+  NSDictionary	*prefs;
+  NSDictionary	*info;
+
+  ext = [ext lowercaseString];
+  apps = [self infoForExtension: ext];
+  if (apps == nil || [apps count] == 0)
+    return NO;
+
+  /*
+   *	Look for the name of the preferred app in this role.
+   *	A 'nil' roll is a wildcard - find the preferred Editor or Viewer.
+   */
+  prefs = [extPreferences objectForKey: ext];
+
+  if (role == nil || [role isEqualToString: @"Editor"])
+    {
+      appName = [prefs objectForKey: @"Editor"];
+      if (appName)
+	{
+	  info = [apps objectForKey: appName];
+	  if (info)
+	    {
+	      if (app)
+		*app = appName;
+	      if (inf)
+		*inf = info;
+	      return YES;
+	    }
+	}
+    }
+  if (role == nil || [role isEqualToString: @"Viewer"])
+    {
+      appName = [prefs objectForKey: @"Viewer"];
+      if (appName)
+	{
+	  info = [apps objectForKey: appName];
+	  if (info)
+	    {
+	      if (app)
+		*app = appName;
+	      if (inf)
+		*inf = info;
+	      return YES;
+	    }
+	}
+    }
+
+  /*
+   * Go through the dictionary of apps that know about this file type and
+   * determine the best application to open the file by examining the
+   * type information for each app.
+   * The 'NSRole' field specifies what the app can do with the file - if it
+   * is missing, we assume an 'Editor' role.
+   */
+  enumerator = [apps keyEnumerator];
+
+  if (role == nil)
+    {
+      BOOL	found = NO;
+
+      /*
+       * If the requested role is 'nil', we can accept an app that is either
+       * an Editor (preferred) or a Viewer.
+       */
+      while ((appName = [enumerator nextObject]) != nil)
+	{
+	  NSString	*str;
+
+	  info = [apps objectForKey: appName];
+	  str = [info objectForKey: @"NSRole"];
+	  if (str == nil || [str isEqualToString: @"Editor"])
+	    {
+	      if (app)
+		*app = appName;
+	      if (inf)
+		*inf = info;
+	      return YES;
+	    }
+	  else if ([str isEqualToString: @"Viewer"])
+	    {
+	      if (app)
+		*app = appName;
+	      if (inf)
+		*inf = info;
+	      found = YES;
+	    }
+	}
+      return found;
+    }
+  else
+    {
+      while ((appName = [enumerator nextObject]) != nil)
+	{
+	  NSString	*str;
+
+	  info = [apps objectForKey: appName];
+	  str = [info objectForKey: @"NSRole"];
+	  if ((str == nil && [role isEqualToString: @"Editor"])
+	    || [str isEqualToString: role])
+	    {
+	      if (app)
+		*app = appName;
+	      if (inf)
+		*inf = info;
+	      return YES;
+	    }
+	}
+      return NO;
+    }
 }
 
 
@@ -272,21 +472,9 @@ static NSString* library_combo =
 - (BOOL) openFile: (NSString *)fullPath
 {
   NSString      *ext = [fullPath pathExtension];
-  NSDictionary  *map;
-  NSArray       *apps;
   NSString      *appName;
 
-  /*
-   *    Get the applications cache (generated by the make_services tool)
-   *    and lookup the special entry that contains a dictionary of all
-   *    file extensions recognised by GNUstep applications.  Then find
-   *    the array of applications that can handle our file.
-   */
-  if (applications == nil)
-    [self findApplications];
-  map = [applications objectForKey: @"GSExtensionsMap"];
-  apps = [map objectForKey: ext];
-  if (apps == nil || [apps count] == 0)
+  if ([self _extension: ext role: nil app: &appName andInfo: 0] == NO)
     {
       NSRunAlertPanel(nil,
 	[NSString stringWithFormat: 
@@ -294,9 +482,6 @@ static NSString* library_combo =
 	@"Continue", nil, nil);
       return NO;
     }
-
-  /* FIXME - need a mechanism for determining default application */
-  appName = [apps objectAtIndex: 0];
 
   return [self openFile: fullPath withApplication: appName];
 }
@@ -369,10 +554,10 @@ static NSString* library_combo =
 // Manipulating Files	
 //
 - (BOOL) performFileOperation: (NSString *)operation
-		      source: (NSString *)source
-		 destination: (NSString *)destination
-		       files: (NSArray *)files
-			 tag: (int *)tag
+		       source: (NSString *)source
+		  destination: (NSString *)destination
+		        files: (NSArray *)files
+			  tag: (int *)tag
 {
   return NO;
 }
@@ -428,45 +613,64 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   NSImage	*image = nil;
   BOOL		isDir = NO;
   NSString	*iconPath = nil;
-  NSString	*pathExtension = nil;
+  NSString	*pathExtension = [[aPath pathExtension] lowercaseString];
   NSFileManager	*mgr = [NSFileManager defaultManager];
 
   if ([mgr fileExistsAtPath: aPath isDirectory: &isDir] && isDir)
     {
-      // we have a directory
-      iconPath = [aPath stringByAppendingPathComponent: @".dir.tiff"];
-
-      NSLog(@"iconPath is '%@'", iconPath);
-
-      NS_DURING
+      if ([pathExtension isEqualToString: @"app"]
+	|| [pathExtension isEqualToString: @"debug"]
+	|| [pathExtension isEqualToString: @"profile"])
 	{
-	  image = [[NSImage alloc] initWithContentsOfFile: iconPath];
-	  [image autorelease];
-	}
-      NS_HANDLER
-	{
-	  NSLog(@"BAD TIFF FILE '%@'", iconPath);
-	}
-      NS_ENDHANDLER
+	  NSBundle	*bundle;
 
-      NSLog(@"aPath is '%@'", aPath);
-
-
-      if (((!image)
-	&& (pathExtension = [aPath pathExtension]))
-	&& ([pathExtension isEqual: @""] == NO))
-	{
-	  if ((iconPath = [[_suffixes objectForKey: pathExtension]
-	    objectForKey: @"ICON"]) != nil)
+	  bundle = [NSBundle bundleWithPath: aPath];
+	  iconPath = [[bundle infoDictionary] objectForKey: @"NSIcon"];
+	  if (iconPath && [iconPath isAbsolutePath] == NO)
 	    {
-	      NSLog(@"using '%@'",
-		[defaultIconPath stringByAppendingPathComponent: iconPath]);
+	      iconPath = [aPath stringByAppendingPathComponent: iconPath];
+	    }
+	  /*
+	   *	If there is no icon specified in the Info.plist for app
+	   *	try 'wrapper/app.tiff' and 'wrapper/.dir.tiff' as
+	   *	possible locations for the application icon.
+	   */
+	  if (iconPath == nil)
+	    {
+	      NSString	*str;
 
-	      image = [[NSImage alloc] initWithContentsOfFile: 
-	        [defaultIconPath stringByAppendingPathComponent: iconPath]];
-	      [image autorelease];
+	      str = [[aPath lastPathComponent] stringByDeletingPathExtension];
+	      iconPath = [aPath stringByAppendingPathComponent: str];
+	      iconPath = [iconPath stringByAppendingPathExtension: @"tiff"];
+	      if ([mgr isReadableFileAtPath: iconPath] == NO)
+		{
+		  str = @".dir.tiff";
+		  iconPath = [aPath stringByAppendingPathComponent: str];
+		  if ([mgr isReadableFileAtPath: iconPath] == NO)
+		    iconPath = nil;
+		}
+	    }
+
+	  if (iconPath)
+	    {
+	      NS_DURING
+		{
+		  image = [[NSImage alloc] initWithContentsOfFile: iconPath];
+		  [image autorelease];
+		}
+	      NS_HANDLER
+		{
+		  NSLog(@"BAD TIFF FILE '%@'", iconPath);
+		}
+	      NS_ENDHANDLER
 	    }
 	}
+
+      if (image == nil)
+	{
+	  image = [self _iconForExtension: pathExtension];
+	}
+
       if (image == nil)
 	{
 	  if ([aPath isEqual: _rootPath])
@@ -475,23 +679,11 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 	    image= [self folderImage];
 	}
     }
-  else							// not a directory
+  else
     {
-      if (((!image) && (pathExtension = [aPath pathExtension]))
-	&& ([pathExtension isEqual: @""] == NO))
-	{
-	  NSLog(@"pathExtension is '%@'",pathExtension);
-	  if ((iconPath = [[_suffixes objectForKey: pathExtension]
-	    objectForKey: @"ICON"]) != nil)
-	    {
-	      NSLog(@"using '%@'",
-		[defaultIconPath stringByAppendingPathComponent: iconPath]);
+      NSDebugLog(@"pathExtension is '%@'", pathExtension);
 
-	      image = [[NSImage alloc] initWithContentsOfFile: 
-	        [defaultIconPath stringByAppendingPathComponent: iconPath]];
-	      [image autorelease];
-	    }
-	}
+      image = [self _iconForExtension: pathExtension];
     }
 
   if (image == nil)
@@ -538,7 +730,7 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 {
   static NSString	*path = nil;
   NSData		*data;
-  NSDictionary		*newApps;
+  NSDictionary		*dict;
   NSTask		*task;
 
   /*
@@ -552,14 +744,25 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   if (task != nil)
     [task waitUntilExit];
 
+  data = [NSData dataWithContentsOfFile: extPrefPath];
+  if (data)
+    {
+      dict = [NSDeserializer deserializePropertyListFromData: data
+					   mutableContainers: NO];
+      ASSIGN(extPreferences, dict);
+    }
+
   data = [NSData dataWithContentsOfFile: appListPath];
   if (data)
-    newApps = [NSDeserializer deserializePropertyListFromData: data
-					    mutableContainers: NO];
-  else
-    newApps = [NSDictionary dictionary];
-
-  ASSIGN(applications, newApps);
+    {
+      dict = [NSDeserializer deserializePropertyListFromData: data
+					   mutableContainers: NO];
+      ASSIGN(applications, dict);
+    }
+  /*
+   *	Invalidate the cache of icons for file extensions.
+   */
+  [iconMap removeAllObjects];
 }
 
 //
@@ -674,6 +877,7 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 - (void) noteUserDefaultsChanged
 {
   userDefaultsChanged = YES;
+  
 }
 
 - (BOOL) userDefaultsChanged
@@ -702,3 +906,141 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 
 @end
 
+@implementation	NSWorkspace (GNUstep)
+
+- (NSString*) getBestAppInRole: (NSString*)role
+		  forExtension: (NSString*)ext
+{
+  NSString	*appName = nil;
+
+  if (extPreferences != nil)
+    {
+      NSDictionary	*inf;
+
+      inf = [extPreferences objectForKey: [ext lowercaseString]];
+      if (inf != nil)
+	{
+	  if (role == nil)
+	    {
+	      appName = [inf objectForKey: @"Editor"];
+	      if (appName == nil)
+		appName = [inf objectForKey: @"Viewer"];
+	    }
+	  else
+	    {
+	      appName = [inf objectForKey: role];
+	    }
+	}
+    }
+  return appName;
+}
+
+- (NSString*) getBestIconForExtension: (NSString*)ext
+{
+  NSString	*iconPath = nil;
+
+  if (extPreferences != nil)
+    {
+      NSDictionary	*inf;
+
+      inf = [extPreferences objectForKey: [ext lowercaseString]];
+      if (inf != nil)
+	iconPath = [inf objectForKey: @"Icon"];
+    }
+  return iconPath;
+}
+
+- (NSDictionary*) infoForExtension: (NSString*)ext
+{
+  NSDictionary  *map;
+
+  ext = [ext lowercaseString];
+  /*
+   *    Get the applications cache (generated by the make_services tool)
+   *    and lookup the special entry that contains a dictionary of all
+   *    file extensions recognised by GNUstep applications.  Then find
+   *    the dictionary of applications that can handle our file.
+   */
+  if (applications == nil)
+    [self findApplications];
+  map = [applications objectForKey: @"GSExtensionsMap"];
+  return [map objectForKey: ext];
+}
+
+- (void) setBestApp: (NSString*)appName
+	     inRole: (NSString*)role
+       forExtension: (NSString*)ext
+{
+  NSMutableDictionary	*map;
+  NSMutableDictionary	*inf;
+  NSData		*data;
+
+  ext = [ext lowercaseString];
+  if (extPreferences)
+    map = [extPreferences mutableCopy];
+  else
+    map = [NSMutableDictionary new];
+
+  inf = [[map objectForKey: ext] mutableCopy];
+  if (inf == nil)
+    {
+      inf = [NSMutableDictionary new];
+    }
+  if (appName == nil)
+    {
+      if (role == nil)
+	{
+	  NSString	*iconPath = [inf objectForKey: @"Icon"];
+
+	  [iconPath retain];
+	  [inf removeAllObjects];
+	  if (iconPath)
+	    {
+	      [inf setObject: iconPath forKey: @"Icon"];
+	    }
+	}
+      else
+	{
+	  [inf removeObjectForKey: role];
+	}
+    }
+  else
+    {
+      [inf setObject: appName forKey: (role ? role : @"Editor")];
+    }
+  [map setObject: inf forKey: ext];
+  [inf release];
+  [extPreferences release];
+  extPreferences = inf;
+  data = [NSSerializer serializePropertyList: extPreferences];
+  [data writeToFile: extPrefPath atomically: YES];
+}
+
+- (void) setBestIcon: (NSString*)iconPath forExtension: (NSString*)ext
+{
+  NSMutableDictionary	*map;
+  NSMutableDictionary	*inf;
+  NSData		*data;
+
+  ext = [ext lowercaseString];
+  if (extPreferences)
+    map = [extPreferences mutableCopy];
+  else
+    map = [NSMutableDictionary new];
+
+  inf = [[map objectForKey: ext] mutableCopy];
+  if (inf == nil)
+    inf = [NSMutableDictionary new];
+  if (iconPath)
+    [inf setObject: iconPath forKey: @"Icon"];
+  else
+    [inf removeObjectForKey: @"Icon"];
+  [map setObject: inf forKey: ext];
+  [inf release];
+  [extPreferences release];
+  extPreferences = inf;
+  data = [NSSerializer serializePropertyList: extPreferences];
+  [data writeToFile: extPrefPath atomically: YES];
+}
+
+@end
