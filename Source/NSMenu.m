@@ -317,7 +317,7 @@ static NSNotificationCenter *nc;
 
   _changedMessagesEnabled = YES;
   _notifications = [[NSMutableArray alloc] init];
-  _changed = YES;
+  _needsSizing = YES;
   // According to the spec, menus do autoenable by default.
   _autoenable = YES;
 
@@ -392,7 +392,7 @@ static NSNotificationCenter *nc;
     return;
   
   [_items insertObject: newItem atIndex: index];
-  _changed = YES;
+  _needsSizing = YES;
   
   // Create the notification for the menu representation.
   d = [NSDictionary
@@ -464,7 +464,7 @@ static NSNotificationCenter *nc;
 
   [anItem setMenu: nil];
   [_items removeObjectAtIndex: index];
-  _changed = YES;
+  _needsSizing = YES;
   
   d = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt: index]
 		    forKey: @"NSMenuItemIndex"];
@@ -488,7 +488,7 @@ static NSNotificationCenter *nc;
   if (-1 == index)
     return;
 
-  _changed = YES;
+  _needsSizing = YES;
 
   d = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt: index]
 		    forKey: @"NSMenuItemIndex"];
@@ -814,7 +814,7 @@ static NSNotificationCenter *nc;
       [self setMenuChangedMessagesEnabled: YES];
     }
 
-  if (_changed && ([_aWindow isVisible] || [_bWindow isVisible]))
+  if (_needsSizing && ([_aWindow isVisible] || [_bWindow isVisible]))
     {
       NSDebugLLog (@"NSMenu", @" Calling Size To Fit (A)");
       [self sizeToFit];
@@ -917,7 +917,7 @@ static NSNotificationCenter *nc;
 {
   ASSIGN(_title, aTitle);
 
-  _changed = YES;
+  _needsSizing = YES;
   if ([_aWindow isVisible] || [_bWindow isVisible])
     {
       [self sizeToFit];
@@ -999,8 +999,8 @@ static NSNotificationCenter *nc;
   NSRect menuFrame;
   NSSize size;
 
-	[_view update];
-	
+  [_view sizeToFit];
+  
   menuFrame = [_view frame];
   size = menuFrame.size;
  
@@ -1038,7 +1038,7 @@ static NSNotificationCenter *nc;
   
   [_view setNeedsDisplay: YES];
   
-  _changed = NO;
+  _needsSizing = NO;
 }
 
 /*
@@ -1228,8 +1228,8 @@ static NSNotificationCenter *nc;
       NSDebugLLog (@"NSMenu", 
                    @"trying to display while alreay displayed transient");
     }
-  
-  if (_changed)
+
+  if (_needsSizing)
     {
       [self sizeToFit];
     }
@@ -1296,8 +1296,8 @@ static NSNotificationCenter *nc;
   contentView = [_bWindow contentView];
   [contentView addSubview: _view];
 
-//  [_view update];
-  if (_changed)
+  [_view update];
+  if (_needsSizing)
     {
       [self sizeToFit];
     }
@@ -1384,8 +1384,9 @@ static NSNotificationCenter *nc;
 
   contentView = [_aWindow contentView];
   [contentView addSubview: _view];
-  [contentView setNeedsDisplay: YES]; 
 
+  [contentView setNeedsDisplay: YES]; 
+  
   // Restore the old submenu (if any).
   if (_superMenu != nil)
     {
@@ -1397,6 +1398,7 @@ static NSNotificationCenter *nc;
   [[self menuRepresentation] setHighlightedItemIndex: _oldHiglightedIndex];
   
   _transient = NO;
+  [_view update];
 }
 
 - (NSWindow*) window
