@@ -1,10 +1,18 @@
 /*
    NSLayoutManager.m
 
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2002, 2003 Free Software Foundation, Inc.
 
    Author: Alexander Malmberg <alexander@malmberg.org>
-   Date: 2002
+   Date: November 2002 - February 2003
+
+   Parts based on the old NSLayoutManager.m:
+   Author: Jonathan Gapen <jagapen@smithlab.chem.wisc.edu>
+   Date: July 1999
+   Author:  Michael Hanni <mhanni@sprintmail.com>
+   Date: August 1999
+   Author: Richard Frith-Macdonald <rfm@gnu.org>
+   Date: January 2001
 
    This file is part of the GNUstep GUI Library.
 
@@ -50,6 +58,9 @@ Need to figure out how to handle it.
 
 #include <Foundation/NSException.h>
 #include <AppKit/NSColor.h>
+#include <AppKit/NSImage.h>
+#include <AppKit/NSParagraphStyle.h>
+#include <AppKit/NSRulerMarker.h>
 #include <AppKit/NSTextContainer.h>
 #include <AppKit/NSTextStorage.h>
 #include <AppKit/NSWindow.h>
@@ -1435,11 +1446,46 @@ for (i = 0; i < gbuf_len; i++) printf("   %3i : %04x\n", i, gbuf[i]); */
 
 
 -(NSArray *) rulerMarkersForTextView: (NSTextView *)textView
-		      paragraphStyle: (NSParagraphStyle *)style
-			       ruler: (NSRulerView *)ruler
+		      paragraphStyle: (NSParagraphStyle *)paragraphStyle
+			       ruler: (NSRulerView *)aRulerView
 {
-  /* TODO */
-  return nil;
+  NSRulerMarker *marker;
+  NSTextTab *tab;
+  NSImage *image;
+  NSArray *tabs = [paragraphStyle tabStops];
+  NSEnumerator *enumerator = [tabs objectEnumerator];
+  NSMutableArray *markers = [NSMutableArray arrayWithCapacity: [tabs count]];
+
+  while ((tab = [enumerator nextObject]) != nil)
+    {
+      switch ([tab tabStopType])
+        {
+	  case NSLeftTabStopType:
+	    image = [NSImage imageNamed: @"common_LeftTabStop"];
+	    break;
+	  case NSRightTabStopType:
+	    image = [NSImage imageNamed: @"common_RightTabStop"];
+	    break;
+	  case NSCenterTabStopType:
+	    image = [NSImage imageNamed: @"common_CenterTabStop"];
+	    break;
+	  case NSDecimalTabStopType:
+	    image = [NSImage imageNamed: @"common_DecimalTabStop"];
+	    break;
+	  default:
+	    image = nil;
+	    break;
+	}
+      marker = [[NSRulerMarker alloc] 
+		   initWithRulerView: aRulerView
+		   markerLocation: [tab location]
+		   image: image
+		   imageOrigin: NSMakePoint(0, 0)];
+      [marker setRepresentedObject: tab];
+      [markers addObject: marker];
+    }
+
+  return markers;
 }
 
 -(NSView *) rulerAccessoryViewForTextView: (NSTextView *)textView

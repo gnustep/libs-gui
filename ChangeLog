@@ -1,3 +1,8 @@
+2003-02-16 15:51  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSLayoutManager.m: Bring back the old implementation of
+	-rulerMarkersForTextView:paragraphStyle:ruler:.
+
 Sun Feb 16 14:54:50 2003  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSSplitView.m ([-mouseDown:]): Corrected offset used in
