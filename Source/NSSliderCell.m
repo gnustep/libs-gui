@@ -50,6 +50,10 @@
   _cell.is_bezeled = YES;
 
   _knobCell = [NSCell new];
+  _titleCell = [NSTextFieldCell new];
+  [_titleCell setTextColor: [NSColor controlTextColor]];
+  [_titleCell setStringValue: @""];
+  [_titleCell setAlignment: NSCenterTextAlignment];
 
   return self;
 }
@@ -104,12 +108,12 @@
 
 - (void) drawKnob
 {
-  [self drawKnob: [self knobRectFlipped: [[self controlView] isFlipped]]];
+  [self drawKnob: [self knobRectFlipped: [_control_view isFlipped]]];
 }
 
 - (void) drawKnob: (NSRect)knobRect
 {
-  [_knobCell drawInteriorWithFrame: knobRect inView: [self controlView]];
+  [_knobCell drawInteriorWithFrame: knobRect inView: _control_view];
 }
 
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
@@ -143,10 +147,14 @@
   _trackRect = cellFrame;
 
   [self drawBarInside: cellFrame flipped: [controlView isFlipped]];
-  if (_titleCell != nil)
+
+  /* Draw title - Uhmmm - shouldn't this better go into
+     drawBarInside:flipped: ? */
+  if (_isVertical == NO)
     {
       [_titleCell drawInteriorWithFrame: cellFrame inView: controlView];
     }
+
   [self drawKnob];
   [controlView unlockFocus];
 }
