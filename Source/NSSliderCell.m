@@ -61,7 +61,7 @@
   [super dealloc];
 }
 
-- (BOOL) isFliped
+- (BOOL) isFlipped
 {
   return YES;
 }
