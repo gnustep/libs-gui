@@ -1,3 +1,12 @@
+Wed Mar 24 10:52:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+        * Source/NSMenu.m: ([-acceptsFirstmouse:]) implemented.
+        * Source/NSScroller.m: ([-acceptsFirstmouse:]) implemented.
+        * Source/NSButton.m: ([-acceptsFirstmouse:]) implemented.
+        * Source/NSSplitView.m: ([-acceptsFirstmouse:]) implemented.
+        * Source/NSWindow.m: Now uses ([-acceptsFirstmouse:]) as it should and
+        sends mouse movement and drag events as it should.
+
 Wed Mar 24 08:23:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	Incorporated patches by Benhur-de-Oliveira.Stein@imag.fr
