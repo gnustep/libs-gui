@@ -812,55 +812,92 @@ static NSImage *_pbc_image[2];
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  int flag;
   id<NSMenuItem> selectedItem;
   NSMenu *menu;
-  int version = [aDecoder versionForClassName: 
-			      @"NSPopUpButtonCell"];
 
   self = [super initWithCoder: aDecoder];
-  menu = [aDecoder decodeObject];
-  /* 
-     FIXME: This same ivar already gets set in NSCell initWithCoder, 
-     but there it is used directly not via a method call. So here we first 
-     unset it and than set it again as our setMenu: method tries to optimize 
-     duplicate calls.
-   */
-  [self setMenu: nil];
-  [self setMenu: menu];
-  selectedItem = [aDecoder decodeObject];
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
-  _pbcFlags.pullsDown = flag;
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
-  _pbcFlags.preferredEdge = flag;
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
-  _pbcFlags.usesItemFromMenu = flag;
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
-  _pbcFlags.altersStateOfSelectedItem = flag;
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
-  _pbcFlags.arrowPosition = flag;
 
-  if (version < 2)
+  if ([aDecoder allowsKeyedCoding])
     {
-      int i;
-
-      // Not the stored format did change but the interpretation of it.
-      // in version 1 most of the ivars were not used, so their values may
-      // be arbitray. We overwrite them with valid settings.
-      [self setPullsDown: _pbcFlags.pullsDown];
-      _pbcFlags.usesItemFromMenu = YES;
-      
-      for (i = 0; i < [_menu numberOfItems]; i++)
+      if ([aDecoder containsValueForKey: @"NSAltersState"])
         {
-	  id <NSMenuItem> anItem = [menu itemAtIndex: i];
-	 
-	  [anItem setOnStateImage: nil];
-	  [anItem setMixedStateImage: nil];
+	  BOOL alters = [aDecoder decodeBoolForKey: @"NSAltersState"];
+	  
+	  [self setAltersStateOfSelectedItem: alters];
 	}
-      [self setEnabled: YES];
-    }
+      if ([aDecoder containsValueForKey: @"NSUsesItemFromMenu"])
+        {
+	  BOOL usesItem = [aDecoder decodeBoolForKey: @"NSUsesItemFromMenu"];
+	  
+	  [self setUsesItemFromMenu: usesItem];
+	}
+      if ([aDecoder containsValueForKey: @"NSArrowPosition"])
+        {
+	  NSPopUpArrowPosition position = [aDecoder decodeIntForKey: 
+							@"NSArrowPosition"];
+	  
+	  [self setArrowPosition: position];
+	}
+      if ([aDecoder containsValueForKey: @"NSPreferredEdge"])
+        {
+	  NSRectEdge edge = [aDecoder decodeIntForKey: @"NSPreferredEdge"];
+	  
+	  [self setPreferredEdge: edge];
+	}
 
-  [self selectItem: selectedItem];
+      menu = [aDecoder decodeObjectForKey: @"NSMenu"];
+      [self setMenu: menu];
+      selectedItem = [aDecoder decodeObjectForKey: @"NSMenuItem"];
+    }
+  else
+    {
+      int flag;
+      int version = [aDecoder versionForClassName: 
+				  @"NSPopUpButtonCell"];
+
+      menu = [aDecoder decodeObject];
+      /* 
+	 FIXME: This same ivar already gets set in NSCell initWithCoder, 
+	 but there it is used directly not via a method call. So here we first 
+	 unset it and than set it again as our setMenu: method tries to optimize 
+	 duplicate calls.
+      */
+      [self setMenu: nil];
+      [self setMenu: menu];
+      selectedItem = [aDecoder decodeObject];
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
+      _pbcFlags.pullsDown = flag;
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
+      _pbcFlags.preferredEdge = flag;
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
+      _pbcFlags.usesItemFromMenu = flag;
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
+      _pbcFlags.altersStateOfSelectedItem = flag;
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
+      _pbcFlags.arrowPosition = flag;
+      
+      if (version < 2)
+        {
+	  int i;
+	  
+	  // Not the stored format did change but the interpretation of it.
+	  // in version 1 most of the ivars were not used, so their values may
+	  // be arbitray. We overwrite them with valid settings.
+	  [self setPullsDown: _pbcFlags.pullsDown];
+	  _pbcFlags.usesItemFromMenu = YES;
+	  
+	  for (i = 0; i < [_menu numberOfItems]; i++)
+	    {
+	      id <NSMenuItem> anItem = [menu itemAtIndex: i];
+	      
+	      [anItem setOnStateImage: nil];
+	      [anItem setMixedStateImage: nil];
+	    }
+	  [self setEnabled: YES];
+	}
+      
+      [self selectItem: selectedItem];
+    }
   return self;
 }
 

@@ -1,3 +1,10 @@
+2004-02-05  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenu.m
+	* Source/NSMenuItem.m
+	* Source/NSPopUpButtonCell.m
+	Added keyed decoding. 
+	
 2004-02-04 01:24  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSView.m: Remove uses of the deprecated "casts as lvalues"

@@ -456,30 +456,44 @@ static Class imageClass;
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  int version = [aDecoder versionForClassName: 
-			    @"NSMenuItem"];
-
-  if (version == 2)
+  if ([aDecoder allowsKeyedCoding])
     {
-      [aDecoder decodeValueOfObjCType: @encode(id) at: &_title];
-      [aDecoder decodeValueOfObjCType: @encode(id) at: &_keyEquivalent];
-      [aDecoder decodeValueOfObjCType: "I" at: &_keyEquivalentModifierMask];
-      [aDecoder decodeValueOfObjCType: "I" at: &_mnemonicLocation];
-      [aDecoder decodeValueOfObjCType: "i" at: &_state];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_enabled];
-      [aDecoder decodeValueOfObjCType: @encode(id) at: &_image];
-      [aDecoder decodeValueOfObjCType: @encode(id) at: &_onStateImage];
-      [aDecoder decodeValueOfObjCType: @encode(id) at: &_offStateImage];
-      [aDecoder decodeValueOfObjCType: @encode(id) at: &_mixedStateImage];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_changesState];
-      [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
-      [aDecoder decodeValueOfObjCType: "i" at: &_tag];
-      [aDecoder decodeValueOfObjCType: @encode(id) at: &_representedObject];
-      [aDecoder decodeValueOfObjCType: @encode(id) at: &_submenu];
-      _target = [aDecoder decodeObject];
+      NSString *title = [aDecoder decodeObjectForKey: @"NSTitle"];
+      NSString *action = [aDecoder decodeObjectForKey: @"NSAction"];
+      NSString *key = [aDecoder decodeObjectForKey: @"NSKeyEquiv"];
+      //NSMenu *menu = [aDecoder decodeObjectForKey: @"NSMenu"];
+      NSImage *mixedImage = [aDecoder decodeObjectForKey: @"NSMixedImage"];
+      NSImage *onImage = [aDecoder decodeObjectForKey: @"NSOnImage"];
+       id target = [aDecoder decodeObjectForKey: @"NSTarget"];
+
+      self = [self initWithTitle: title
+		   action: NSSelectorFromString(action)
+		   keyEquivalent: key];
+      [self setTarget: target];
+      [self setMixedStateImage: mixedImage];
+      [self setOnStateImage: onImage];
+
+      if ([aDecoder containsValueForKey: @"NSKeyEquivModMask"])
+        {
+	    //int keyMask = [aDecoder decodeIntForKey: @"NSKeyEquivModMask"];
+	}
+      if ([aDecoder containsValueForKey: @"NSMnemonicLoc"])
+        {
+	  int loc = [aDecoder decodeIntForKey: @"NSMnemonicLoc"];
+	  [self setMnemonicLocation: loc];
+	}
+      if ([aDecoder containsValueForKey: @"NSState"])
+        {
+	  int state = [aDecoder decodeIntForKey: @"NSState"];
+
+	  [self setState: state];
+	}
     }
   else
     {
+      int version = [aDecoder versionForClassName: 
+				  @"NSMenuItem"];
+    
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_title];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_keyEquivalent];
       [aDecoder decodeValueOfObjCType: "I" at: &_keyEquivalentModifierMask];
@@ -491,11 +505,18 @@ static Class imageClass;
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_offStateImage];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_mixedStateImage];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_changesState];
-      _target = [aDecoder decodeObject];
+      if (version == 1)
+        {
+	  _target = [aDecoder decodeObject];
+	}
       [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
       [aDecoder decodeValueOfObjCType: "i" at: &_tag];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_representedObject];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_submenu];
+      if (version == 2)
+        {
+	  _target = [aDecoder decodeObject];
+	}
     }
   return self;
 }

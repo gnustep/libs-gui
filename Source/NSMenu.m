@@ -1067,17 +1067,25 @@ static NSNotificationCenter *nc;
   [encoder encodeValueOfObjCType: @encode(BOOL) at: &_autoenable];
 }
 
-- (id) initWithCoder: (NSCoder*)decoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
   NSString	*dTitle;
   NSArray	*dItems;
   BOOL		dAuto;
   unsigned	i;
 
-  dTitle = [decoder decodeObject];
-  dItems = [decoder decodeObject];
-  [decoder decodeValueOfObjCType: @encode(BOOL) at: &dAuto];
-
+  if ([aDecoder allowsKeyedCoding])
+    {
+      dAuto = YES;
+      dTitle = [aDecoder decodeObjectForKey: @"NSTitle"];
+      dItems = [aDecoder decodeObjectForKey: @"NSMenuItems"];
+    }
+  else
+    {
+      dTitle = [aDecoder decodeObject];
+      dItems = [aDecoder decodeObject];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &dAuto];
+    }
   self = [self initWithTitle: dTitle];
   [self setAutoenablesItems: dAuto];
 
