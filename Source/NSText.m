@@ -3192,7 +3192,20 @@ _relocLayoutArray (NSMutableArray *lineLayoutInformation,
 }
 
 // text lays out from top to bottom
-- (BOOL) isFlipped {return YES;}
+- (BOOL) isFlipped 
+{
+  return YES;
+}
+
+- (BOOL) isOpaque
+{ 
+  if (draws_background == NO 
+      || background_color == nil 
+      || [background_color alphaComponent] < 1.0)
+    return NO;
+  else
+    return YES; 
+}
 
 //
 // Copy and paste

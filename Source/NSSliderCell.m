@@ -152,6 +152,11 @@
   [controlView unlockFocus];
 }
 
+- (BOOL) isOpaque
+{
+  return YES;
+}
+
 - (float) knobThickness
 {
   NSImage* image = [_knobCell image];
