@@ -378,6 +378,8 @@ static NSCell* tileCell = nil;
 
 - (id) init
 {
+  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+
   if (NSApp != nil && NSApp != self)
     {
       RELEASE(self);
@@ -410,6 +412,19 @@ static NSCell* tileCell = nil;
 
   /* We are the end of responder chain	*/
   [self setNextResponder: nil];
+
+  /* Register self as observer to window events. */
+  [nc addObserver: self selector: @selector(_windowWillClose:)
+      name: NSWindowWillCloseNotification object: nil];
+  [nc addObserver: self selector: @selector(_windowDidBecomeKey:)
+      name: NSWindowDidBecomeKeyNotification object: nil];
+  [nc addObserver: self selector: @selector(_windowDidBecomeMain:)
+      name: NSWindowDidBecomeMainNotification object: nil];
+  [nc addObserver: self selector: @selector(_windowDidResignKey:)
+      name: NSWindowDidResignKeyNotification object: nil];
+  [nc addObserver: self selector: @selector(_windowDidResignMain:)
+      name: NSWindowDidResignMainNotification object: nil];
+
   return self;
 }
 
@@ -451,18 +466,6 @@ static NSCell* tileCell = nil;
   [listener registerAsServiceProvider];
 
   [self activateIgnoringOtherApps: YES];
-
-  /* Register self as observer to window events. */
-  [nc addObserver: self selector: @selector(_windowWillClose:)
-      name: NSWindowWillCloseNotification object: nil];
-  [nc addObserver: self selector: @selector(_windowDidBecomeKey:)
-      name: NSWindowDidBecomeKeyNotification object: nil];
-  [nc addObserver: self selector: @selector(_windowDidBecomeMain:)
-      name: NSWindowDidBecomeMainNotification object: nil];
-  [nc addObserver: self selector: @selector(_windowDidResignKey:)
-      name: NSWindowDidResignKeyNotification object: nil];
-  [nc addObserver: self selector: @selector(_windowDidResignMain:)
-      name: NSWindowDidResignMainNotification object: nil];
 
   /* finish the launching post notification that launching has finished */
   [nc postNotificationName: NSApplicationDidFinishLaunchingNotification

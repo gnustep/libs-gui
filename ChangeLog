@@ -1,3 +1,8 @@
+Mon Nov 22 14:51:33:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSApplication.m: Start listening for window notifications
+	in initialisation.
+
 1999-11-21  Tim McIntosh  <rockford@novia.net>
 
 	* Model/GMAppKit.m ([NSMenuItem -initWithModelUnarchiver:]),

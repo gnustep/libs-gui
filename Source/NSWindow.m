@@ -673,6 +673,10 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (int)otherWin
 {
+  if (_f.is_key == YES && place == NSWindowOut)
+    {
+      [self resignKeyWindow];
+    }
   DPSorderwindow(GSCurrentContext(), place, otherWin, [self windowNumber]);
 }
 
