@@ -814,7 +814,7 @@ NSGraphicsContext	*GSCurrentContext(void)
 /* ----------------------------------------------------------------------- */
 /** Displays a string as in the PostScript ashow operator. This operator
     is obsolete. You should instead use -DPSshow: with appropriate
-    -DPSrmoveto: operations and/or the -GSSetCharacterSpacing: method 
+    -DPSrmoveto:: operations and/or the -GSSetCharacterSpacing: method 
 */
 - (void) DPSashow: (float)x : (float)y : (const char *)s 
 {
@@ -823,7 +823,7 @@ NSGraphicsContext	*GSCurrentContext(void)
 
 /** Displays a string as in the PostScript awidthshow operator. This operator
     is obsolete. You should instead use -DPSshow: with appropriate
-    -DPSrmoveto: operations and/or the -GSSetCharacterSpacing: method 
+    -DPSrmoveto:: operations and/or the -GSSetCharacterSpacing: method 
 */
 - (void) DPSawidthshow: (float)cx : (float)cy : (int)c : (float)ax : (float)ay : (const char *)s 
 {
@@ -846,7 +846,7 @@ NSGraphicsContext	*GSCurrentContext(void)
 
 /** Displays a string as in the PostScript widthshow operator. This operator
     is obsolete. You should instead use -DPSshow: with appropriate
-    -DPSrmoveto: operations.
+    -DPSrmoveto:: operations.
 */
 - (void) DPSwidthshow: (float)x : (float)y : (int)c : (const char *)s 
 {
@@ -855,7 +855,7 @@ NSGraphicsContext	*GSCurrentContext(void)
 
 /** Displays a string as in the PostScript widthshow operator. This operator
     is obsolete. You should instead use -DPSshow: with appropriate
-    -DPSrmoveto: operations.
+    -DPSrmoveto:: operations.
 */
 - (void) DPSxshow: (const char *)s : (const float*)numarray : (int)size 
 {
@@ -864,7 +864,7 @@ NSGraphicsContext	*GSCurrentContext(void)
 
 /** Displays a string as in the PostScript xyshow operator. This operator
     is obsolete. You should instead use -DPSshow: with appropriate
-    -DPSrmoveto: operations.
+    -DPSrmoveto:: operations.
 */
 - (void) DPSxyshow: (const char *)s : (const float*)numarray : (int)size 
 {
@@ -873,7 +873,7 @@ NSGraphicsContext	*GSCurrentContext(void)
 
 /** Displays a string as in the PostScript yshow operator. This operator
     is obsolete. You should instead use -DPSshow: with appropriate
-    -DPSrmoveto: operations.
+    -DPSrmoveto:: operations.
 */
 - (void) DPSyshow: (const char *)s : (const float*)numarray : (int)size 
 {

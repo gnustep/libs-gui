@@ -348,7 +348,7 @@ to keep the following information in mind.
 <item> The menus (or the menu items) form a tree.  Navigating through this tree
 is done with the methods [NSMenu-supermenu], which returns the parent menu
 of the receiver, and with [NSMenu-itemAtIndex:] which returns a
-NSMenuItem on which we can call [NSMenuItem-submenu] for a child menu.
+NSMenuItem on which we can call [(NSMenuItem)-submenu] for a child menu.
 </item>
 <item> The menus as displayed on the screen do NOT form a tree.
 This because detached and transient menus lead to duplicate menus on the screen.
