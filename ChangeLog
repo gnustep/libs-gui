@@ -2,6 +2,8 @@
 
 	* Source/libgnustep-gui.def: Regenerated
 	* ColorPickers/GNUmakefile: add local library paths
+	* Source/GSLayoutManager.m: Use rand() rather than random() as it
+	is portable to mingw32.
 
 Wed Feb  5 04:56:45 2003  Serg Stoyan <stoyan@hologr.com>
 	

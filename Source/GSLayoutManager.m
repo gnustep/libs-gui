@@ -39,12 +39,12 @@
 
 
 
-/* TODO: is using random() here ok? */
+/* TODO: is using rand() here ok? */
 static int random_level(void)
 {
   int i;
   for (i = 0; i < SKIP_LIST_DEPTH - 2; i++)
-    if ((random() % SKIP_LIST_LEVEL_PROBABILITY) != 0)
+    if ((rand() % SKIP_LIST_LEVEL_PROBABILITY) != 0)
       break;
   return i;
 }
