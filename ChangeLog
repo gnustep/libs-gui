@@ -1,3 +1,12 @@
+2003-04-10  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Source/NSWindow.m ([-sendEvent:], case NSRightMouseDown):
+	removed code to display the menu. This is now done by 
+	[NSView -rightMouseDown:].
+	* Source/NSView.m: overrides -menu, 
+	changes -rightMouseDown: to display the menu,
+	documents -menu, -menuForEvent: and +defaultMenu.
+
 2003-04-10  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSServicesManager.m: on opening file, only activate for

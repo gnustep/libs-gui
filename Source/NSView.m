@@ -59,6 +59,7 @@
 #include <AppKit/NSClipView.h>
 #include <AppKit/NSFont.h>
 #include <AppKit/NSGraphics.h>
+#include <AppKit/NSMenu.h>
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSPrintInfo.h>
 #include <AppKit/NSPrintOperation.h>
@@ -3764,14 +3765,58 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 }
 
 
-/*
- * Menu operations
+/**
+ * <p>Returns the default menu to be used for instances of the 
+ *    current class: if no menu has been set through setMenu:
+ *    this default menu will be used.
+ * </p>
+ * <p>NSView's implementation returns nil. You should override
+ *    this method if you want all instances of your custom view
+ *    to use the same menu.
+ * </p>
  */
 + (NSMenu *)defaultMenu
 {
   return nil;
 }
 
+/**
+ * <p>NSResponder's method, overriden by NSView.</p>
+ * <p>If no menu has been set through the use of setMenu:, or 
+ *    if a nil value has been set through setMenu:, then the 
+ *    value returned by defaultMenu is used. Otherwise this
+ *    method returns the menu set through NSResponder.
+ * <p>
+ * <p> see [NSResponder -menu], [NSResponder -setMenu:],
+ *     [NSView +defaultMenu] and [NSView -menuForEvent:].
+ * </p>
+ */
+- (NSMenu *)menu
+{
+  NSMenu *m = [super menu];
+  if (m)
+    {
+      return m;
+    }
+  else
+    {
+      return [[self class] defaultMenu];
+    }
+}
+
+/**
+ * <p>Returns the menu that it appropriates for the given 
+ *    event. NSView's implementation returns the default menu of
+ *    the view.</p>
+ * <p>This methods is intended to be overriden so that it can
+ *    return a context-sensitive for appropriate mouse's events. (
+ *    (although it seems it can be used for any kind of event)</p>
+ * <p>This method is used by NSView's rightMouseDown: method, 
+ *    and the returned NSMenu is displayed as a context menu</p> 
+ * <p> see [NSResponder -menu], [NSResponder -setMenu:],
+ *     [NSView +defaultMenu] and [NSView -menu].
+ * </p>
+ */
 - (NSMenu *)menuForEvent:(NSEvent *)theEvent
 {
   return [self menu];
@@ -3935,6 +3980,22 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	  _visibleRect = NSIntersectionRect(superviewsVisibleRect, _bounds);
 
 	}
+    }
+}
+
+- (void) rightMouseDown: (NSEvent *) theEvent
+{
+  NSMenu *m;
+  m = [self menuForEvent: theEvent];
+  if (m)
+    {
+      [NSMenu popUpContextMenu: m
+	      withEvent: theEvent
+	      forView: self];
+    }
+  else
+    {
+      [super rightMouseDown: theEvent];
     }
 }
 

@@ -2889,17 +2889,7 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 	{
 	  NSMenu *m;
 	  v = [_contentView hitTest: [theEvent locationInWindow]];
-	  m = [v menuForEvent: theEvent];
-	  if (m)
-	    {
-	      [NSMenu popUpContextMenu: m
-		      withEvent: theEvent
-		      forView: v];
-	    }
-	  else
-	    {
-	      [v rightMouseDown: theEvent];
-	    }
+	  [v rightMouseDown: theEvent];
 	  _lastPoint = [theEvent locationInWindow];
 	}
 	break;
