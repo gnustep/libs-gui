@@ -1,3 +1,8 @@
+2002-09-27  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSFont.m: Replace caching code which never released fonts
+	with a cache which only holds fonts as long as something is using them.
+
 2002-09-26  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSBrowserCell.h

@@ -30,6 +30,7 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSSet.h>
+#include <Foundation/NSMapTable.h>
 
 #include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSFont.h>
@@ -115,9 +116,8 @@ NSArray *_preferredFonts;
 /* Class for fonts */
 static Class	NSFontClass = 0;
 
-/* Store all created fonts for reuse. 
-   ATTENTION: This way a font will never get freed! */
-static NSMutableDictionary* globalFontDictionary = nil;
+/* Cache all created fonts for reuse. */
+static NSMapTable* globalFontMap = 0;
 
 static NSUserDefaults	*defaults = nil;
 
@@ -149,7 +149,7 @@ setNSFont(NSString* key, NSFont* font)
   userCacheNeedsRecomputing = YES;
   userFixedCacheNeedsRecomputing = YES;
 
-  /* Don't care about errors*/
+  /* Don't care about errors */
   [defaults synchronize];
 }
 
@@ -161,7 +161,8 @@ setNSFont(NSString* key, NSFont* font)
   if (self == [NSFont class])
     {
       NSFontClass = self;
-      globalFontDictionary = [NSMutableDictionary new];
+      globalFontMap = NSCreateMapTable(NSObjectMapKeyCallBacks,
+	NSNonRetainedObjectMapValueCallBacks, 64);
 
       if (defaults == nil)
 	{
@@ -483,19 +484,18 @@ setNSFont(NSString* key, NSFont* font)
   NSString *nameWithMatrix;
 
   nameWithMatrix = [NSString stringWithFormat:
-                             @"%@ %.3f %.3f %.3f %.3f %.3f %.3f",
-                             aFontName,
-                             fontMatrix[0], fontMatrix[1], fontMatrix[2], 
-			     fontMatrix[3], fontMatrix[4], fontMatrix[5]];
+    @"%@ %.3f %.3f %.3f %.3f %.3f %.3f", aFontName,
+    fontMatrix[0], fontMatrix[1], fontMatrix[2], 
+    fontMatrix[3], fontMatrix[4], fontMatrix[5]];
 
   /* Check whether the font is cached */
-  font = [globalFontDictionary objectForKey: nameWithMatrix];
-  if(font == nil)
+  font = (id)NSMapGet(globalFontMap, (void*)nameWithMatrix);
+  if (font == nil)
     {
       font = AUTORELEASE([[NSFontClass alloc] initWithName: aFontName
-					      matrix: fontMatrix]);
+						    matrix: fontMatrix]);
       /* Cache the font for later use */
-      [globalFontDictionary setObject: font forKey: nameWithMatrix];
+      NSMapInsert(globalFontMap, (void*)nameWithMatrix, (void*)font);
     }
 
   return font;
@@ -555,6 +555,13 @@ setNSFont(NSString* key, NSFont* font)
 
 - (void) dealloc
 {
+  NSString	*nameWithMatrix  = [NSString alloc];
+
+  nameWithMatrix = [nameWithMatrix initWithFormat:
+    @"%@ %.3f %.3f %.3f %.3f %.3f %.3f", fontName,
+    matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]];
+  NSMapRemove(globalFontMap, (void*)nameWithMatrix);
+  RELEASE(nameWithMatrix);
   RELEASE(fontName);
   RELEASE(fontInfo);
   [super dealloc];

@@ -105,7 +105,7 @@ static GSFontEnumerator *sharedEnumerator = nil;
                              matrix: (const float *)fmatrix;
 {
   return AUTORELEASE([[fontInfoClass alloc] initWithFontName: nfontName 
-                                                     matrix: fmatrix]);
+						      matrix: fmatrix]);
 }
 
 + (int) weightForString: (NSString *)weightString
@@ -116,35 +116,35 @@ static GSFontEnumerator *sharedEnumerator = nil;
   if (dict == nil)
     {
       dict = [NSDictionary dictionaryWithObjectsAndKeys:
-			       [NSNumber numberWithInt: 1], @"ultralight",
-			   [NSNumber numberWithInt: 2], @"thin",
-			   [NSNumber numberWithInt: 3], @"light",
-			   [NSNumber numberWithInt: 3], @"extralight",
-			   [NSNumber numberWithInt: 4], @"book",
-			   [NSNumber numberWithInt: 5], @"regular",
-			   [NSNumber numberWithInt: 5], @"plain",
-			   [NSNumber numberWithInt: 5], @"display",
-			   [NSNumber numberWithInt: 5], @"roman",
-			   [NSNumber numberWithInt: 5], @"semilight",
-			   [NSNumber numberWithInt: 6], @"medium",
-			   [NSNumber numberWithInt: 7], @"demi",
-			   [NSNumber numberWithInt: 7], @"demibold",
-			   [NSNumber numberWithInt: 8], @"semi",
-			   [NSNumber numberWithInt: 8], @"semibold",
-			   [NSNumber numberWithInt: 9], @"bold",
-			   [NSNumber numberWithInt: 10], @"extra",
-			   [NSNumber numberWithInt: 10], @"extrabold",
-			   [NSNumber numberWithInt: 11], @"heavy",
-			   [NSNumber numberWithInt: 11], @"heavyface",
-			   [NSNumber numberWithInt: 12], @"ultrabold",
-			   [NSNumber numberWithInt: 12], @"black",
-			   [NSNumber numberWithInt: 13], @"ultra",
-			   [NSNumber numberWithInt: 13], @"ultrablack",
-			   [NSNumber numberWithInt: 13], @"fat",
-			   [NSNumber numberWithInt: 14], @"extrablack",
-			   [NSNumber numberWithInt: 14], @"obese",
-			   [NSNumber numberWithInt: 14], @"nord",
-			   nil];
+	[NSNumber numberWithInt: 1], @"ultralight",
+	[NSNumber numberWithInt: 2], @"thin",
+	[NSNumber numberWithInt: 3], @"light",
+	[NSNumber numberWithInt: 3], @"extralight",
+	[NSNumber numberWithInt: 4], @"book",
+	[NSNumber numberWithInt: 5], @"regular",
+	[NSNumber numberWithInt: 5], @"plain",
+	[NSNumber numberWithInt: 5], @"display",
+	[NSNumber numberWithInt: 5], @"roman",
+	[NSNumber numberWithInt: 5], @"semilight",
+	[NSNumber numberWithInt: 6], @"medium",
+	[NSNumber numberWithInt: 7], @"demi",
+	[NSNumber numberWithInt: 7], @"demibold",
+	[NSNumber numberWithInt: 8], @"semi",
+	[NSNumber numberWithInt: 8], @"semibold",
+	[NSNumber numberWithInt: 9], @"bold",
+	[NSNumber numberWithInt: 10], @"extra",
+	[NSNumber numberWithInt: 10], @"extrabold",
+	[NSNumber numberWithInt: 11], @"heavy",
+	[NSNumber numberWithInt: 11], @"heavyface",
+	[NSNumber numberWithInt: 12], @"ultrabold",
+	[NSNumber numberWithInt: 12], @"black",
+	[NSNumber numberWithInt: 13], @"ultra",
+	[NSNumber numberWithInt: 13], @"ultrablack",
+	[NSNumber numberWithInt: 13], @"fat",
+	[NSNumber numberWithInt: 14], @"extrablack",
+	[NSNumber numberWithInt: 14], @"obese",
+	[NSNumber numberWithInt: 14], @"nord",
+	nil];
       RETAIN(dict);
     }
 
@@ -166,11 +166,11 @@ static GSFontEnumerator *sharedEnumerator = nil;
   if (arr == nil)
     {
       arr = [NSArray arrayWithObjects: @"", @"ultralight",
-		     @"thin", @"light", @"book", @"regular",
-		     @"medium", @"demibold", @"semibold",
-		     @"bold", @"extrabold", @"heavy",
-		     @"black", @"ultrablack", @"extrablack", 
-		     nil];
+	@"thin", @"light", @"book", @"regular",
+	@"medium", @"demibold", @"semibold",
+	@"bold", @"extrabold", @"heavy",
+	@"black", @"ultrablack", @"extrablack", 
+	nil];
       RETAIN(arr);
     }
 
@@ -277,7 +277,7 @@ static GSFontEnumerator *sharedEnumerator = nil;
   [super dealloc];
 }
 
-- copyWithZone: (NSZone *)zone
+- (id) copyWithZone: (NSZone *)zone
 {
   GSFontInfo *copy;
   if (NSShouldRetainWithZone(self, zone))
@@ -295,7 +295,7 @@ static GSFontEnumerator *sharedEnumerator = nil;
 
 /* We really want a mutable class for this, but this is quick and easy since
    it's not really a public class anyway */
-- mutableCopyWithZone: (NSZone *)zone
+- (id) mutableCopyWithZone: (NSZone *)zone
 {
   GSFontInfo *copy;
   copy = (GSFontInfo*) NSCopyObject (self, 0, zone);
@@ -406,7 +406,7 @@ static GSFontEnumerator *sharedEnumerator = nil;
   return xHeight; 
 }
 
-- (float)defaultLineHeightForFont
+- (float) defaultLineHeightForFont
 {
   // ascent plus descent plus some suitable linegap
   return [self ascender] - [self descender] + [self pointSize]/ 11.0;
