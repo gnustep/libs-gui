@@ -1,3 +1,11 @@
+2000-11-06  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/GSSimpleLayoutManager.m: Renamed the ivars of
+	_GNULineLayoutInfo to correspond to those of
+	GSLineLayoutInfo. Call a few more abstract methods. Added
+	AutoreleasePool in [rebuildForRange:delta:inTextContainer:] to free
+	up memory.
+
 Thu Nov  9 09:49:07 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/GSInfoPanel.m ([GSInfoPanel -initWithDictionary:]): Use
