@@ -394,6 +394,34 @@ static BOOL _gs_display_reading_progress = NO;
     }
 }
 
+- (BOOL) _browser: (NSBrowser*)sender
+selectCellWithString: (NSString*)title
+	inColumn: (int)column
+{
+  NSMatrix *m;
+  BOOL isLeaf;
+  NSString *path;
+
+  m = [sender matrixInColumn: column];
+  isLeaf = [[m selectedCell] isLeaf];
+  path = [sender pathToColumn: column];
+
+  if (isLeaf)
+    {
+      ASSIGN (_directory, path);
+      ASSIGN (_fullFileName, [path stringByAppendingPathComponent: title]);
+    }
+  else
+    {
+      ASSIGN (_directory, [path stringByAppendingPathComponent: title]);
+      ASSIGN (_fullFileName, nil);
+    }
+
+  [self _selectTextInColumn:column];
+  
+  return YES;
+}
+
 - (void) _setupForDirectory: (NSString *)path file: (NSString *)filename
 {
   if (path == nil || filename == nil)
@@ -417,7 +445,7 @@ static BOOL _gs_display_reading_progress = NO;
    */
   _OKButtonPressed = NO;
 
-  [self browser: _browser
+  [self _browser: _browser
 	selectCellWithString: [[_browser selectedCell] stringValue] 
 	inColumn: [_browser selectedColumn]];
 }
@@ -997,10 +1025,6 @@ createRowsForColumn: (int)column
 - (BOOL) browser: (NSBrowser*)sender
    isColumnValid: (int)column;
 
-- (BOOL) browser: (NSBrowser*)sender
-selectCellWithString: (NSString*)title
-	inColumn: (int)column;
-
 - (void) browser: (NSBrowser*)sender
  willDisplayCell: (id)cell
            atRow: (int)row
@@ -1220,34 +1244,6 @@ createRowsForColumn: (int)column
 	  return NO;
       }
 
-  return YES;
-}
-
-- (BOOL) browser: (NSBrowser*)sender
-selectCellWithString: (NSString*)title
-	inColumn: (int)column
-{
-  NSMatrix *m;
-  BOOL isLeaf;
-  NSString *path;
-
-  m = [sender matrixInColumn: column];
-  isLeaf = [[m selectedCell] isLeaf];
-  path = [sender pathToColumn: column];
-
-  if (isLeaf)
-    {
-      ASSIGN (_directory, path);
-      ASSIGN (_fullFileName, [path stringByAppendingPathComponent: title]);
-    }
-  else
-    {
-      ASSIGN (_directory, [path stringByAppendingPathComponent: title]);
-      ASSIGN (_fullFileName, nil);
-    }
-
-  [self _selectTextInColumn:column];
-  
   return YES;
 }
 

@@ -519,55 +519,6 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
   return self;
 }
 @end
-//
-// NSOpenPanel browser delegate methods
-//
-@interface NSOpenPanel (_BrowserDelegate)
-- (BOOL) browser: (NSBrowser *)sender
-selectCellWithString: (NSString *)title
-	inColumn: (int)column;
-@end
-
-@implementation NSOpenPanel (_BrowserDelegate)
-- (BOOL) browser: (NSBrowser *)sender
-selectCellWithString: (NSString *)title
-	inColumn: (int)column
-{
-  NSMatrix *m;
-  NSArray *c;
-  BOOL isLeaf;
-
-  m = [_browser matrixInColumn: column];
-  c = [m selectedCells];
-  
-  if ([c count] == 1)
-    {
-      isLeaf = [[c objectAtIndex: 0] isLeaf];
-
-      if (_canChooseDirectories == NO)
-	{
-	  [_okButton setEnabled: isLeaf];
-	  return [super browser: sender
-			selectCellWithString: title
-			inColumn: column];
-	}
-      else // _canChooseDirectories
-	{
-	  BOOL ret;
-	  ret = [super browser: sender
-		       selectCellWithString: title
-		       inColumn: column];
-	  if (isLeaf == NO)
-	    ASSIGN (_fullFileName, _directory);
-	  return ret;
-	}
-    }
-  else // Multiple Selection, and it is not the first item of the selection
-    {
-      return YES;
-    }
-}
-@end
 
 //
 // NSForm delegate methods

@@ -5,6 +5,14 @@
 	(-setPath:): Call delegate -browser:selectCellWithString:inColumn:.
 	(-doClick:): Do not call the above methods.
 	(-initWithCoder:): Set _isLoaded to NO.
+	* Source/NSSavePanel.m (-_browser:selectCellWithString:inColumn): 
+	Rename from -browser:selectCellWithString:inColumn.
+	(_setupForDirectory:file:) Use it.
+	* Source/NSOpenPanel.m (-browser:selectCellWithString:inColumn):
+	Remove.
+
+	* Source/NSWindow.m ([NSWindow -performClose:]): Don't close
+	if a modal session is going and we aren't the modal window.
 
 2002-09-07  Fred Kiefer <FredKiefer@gmx.de>
 

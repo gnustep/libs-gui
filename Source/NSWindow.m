@@ -2202,6 +2202,11 @@ resetCursorRectsForView(NSView *theView)
 
 - (void) performClose: (id)sender
 {
+  /* Don't close if a modal session is running and we are not the
+     modal window */
+  if ([NSApp modalWindow] && self != [NSApp modalWindow])
+    return;
+
   /* self must have a close button in order to be closed */
   if (!(_styleMask & NSClosableWindowMask))
     {
