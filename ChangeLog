@@ -1,3 +1,11 @@
+2000-04-12  Jonathan Gapen <jagapen@whitewater.chem.wisc.edu>
+
+	* Model/GMAppKit.m: Added methods for NSSliderCell.
+	* Model/IMLoading.m: Use [-pathExtension] rather than [-hasSuffix]
+	to check for gmodel filename extension.
+	* Source/NSSliderCell.m: Tweaked drawing code to account for
+	border/bezel and to draw the title cell properly.
+
 2000-04-10  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Documentation/gsdoc/GNUmakefile: New file to build documentation
