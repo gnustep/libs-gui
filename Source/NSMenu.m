@@ -535,9 +535,9 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 
 - (NSPoint) locationForSubmenu: (NSMenu*)aSubmenu
 {
-  NSRect    frame;
-  NSRect    submenuFrame;
-  NSWindow *win_link;
+  NSRect	frame;
+  NSRect	submenuFrame;
+  NSWindow	*win_link;
 
   if (![self isFollowTransient])
     {
@@ -1016,9 +1016,11 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
   [titleView _releaseCloseButton];
 } 
 
-- (void) _rightMouseDisplay
+- (void) _rightMouseDisplay: (NSEvent*)theEvent
 {
-  // TODO: implement this method.
+  [self displayTransient];
+  [menu_view mouseDown: theEvent];
+  [self closeTransient];
 }
 
 - (void) display
@@ -1085,12 +1087,27 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 
   menu_follow_transient = YES;
 
-  // Cache the old submenu if any.
-  _oldAttachedMenu = menu_supermenu->menu_attachedMenu;
-  menu_supermenu->menu_attachedMenu = self;
+  /*
+   * Cache the old submenu if any and query the supermenu our position.
+   * Otherwise, raise menu under the mouse.
+   */
+  if (menu_supermenu != nil)
+    {
+      _oldAttachedMenu = menu_supermenu->menu_attachedMenu;
+      menu_supermenu->menu_attachedMenu = self;
+      location = [menu_supermenu locationForSubmenu: self];
+    }
+  else
+    {
+      NSRect	frame = [aWindow frame];
 
-  // Query the supermenu our position.
-  location = [menu_supermenu locationForSubmenu: self];
+      location = [aWindow mouseLocationOutsideOfEventStream];
+      location = [aWindow convertBaseToScreen: location];
+      location.x -= frame.size.width/2;
+      if (location.x < 0)
+	location.x = 0;
+      location.y -= frame.size.height - 10;
+    }
 
   [bWindow setFrameOrigin: location];
 
@@ -1144,15 +1161,16 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 
   [[aWindow contentView] setNeedsDisplay: YES];
 
-  // Restore the old submenu.
-  menu_supermenu->menu_attachedMenu = _oldAttachedMenu;
+  // Restore the old submenu (if any).
+  if (menu_supermenu != nil)
+    menu_supermenu->menu_attachedMenu = _oldAttachedMenu;
 
   menu_follow_transient = NO;
 
   menu_isPartlyOffScreen = IS_OFFSCREEN(aWindow);
 }
 
-- (NSWindow *) window
+- (NSWindow*) window
 {
   if (menu_follow_transient)
     return (NSWindow *)bWindow;

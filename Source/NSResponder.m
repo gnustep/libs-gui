@@ -204,14 +204,16 @@
 
 - (void) rightMouseDown: (NSEvent *)theEvent
 {
-  if (next_responder)
-    return [next_responder rightMouseDown: theEvent];
+  if (next_responder != nil)
+    {
+      return [next_responder rightMouseDown: theEvent];
+    }
   else
     {
       NSMenu	*menu = [NSApp mainMenu];
 
-      if (menu)
-	[menu _rightMouseDisplay];
+      if (menu != nil)
+	[menu _rightMouseDisplay: theEvent];
       else
 	return [self noResponderFor: @selector(rightMouseDown:)];
     }

@@ -709,15 +709,12 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   [targetMenuView setHighlightedItemIndex: -1];
 }
 
-#define MOVE_THRESHOLD_DELTA 1.0
+#define MOVE_THRESHOLD_DELTA 2.0
 #define DELAY_MULTIPLIER     6
 
-- (BOOL) trackWithEvent: (NSEvent *)event
+- (BOOL) trackWithEvent: (NSEvent*)event
 {
-  NSApplication *theApp           = [NSApplication sharedApplication];  
-  unsigned       eventMask        = NSLeftMouseUpMask 
-			          | NSLeftMouseDraggedMask
-                                  | NSPeriodicMask;
+  unsigned	eventMask = NSPeriodicMask;
   NSDate        *theDistantFuture = [NSDate distantFuture];
   int		index;
   NSPoint	location;
@@ -728,7 +725,28 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   int		delayCount = 0;
   float		xDelta = MOVE_THRESHOLD_DELTA;
   float		yDelta = 0.0;
+  NSEvent	*original;
+  NSEventType	type = [event type];
+  NSEventType	end;
 
+  /*
+   * The original event is unused except to determine whether the method
+   * was invoked in response to a right or left mouse down.
+   * We pass the same event on when we want tracking to move into a
+   * submenu.
+   */
+  original = AUTORELEASE(RETAIN(event));
+  if (type == NSRightMouseDown)
+    {
+      end = NSRightMouseUp;
+      eventMask |= NSRightMouseUpMask | NSRightMouseDraggedMask;
+    }
+  else
+    {
+      end = NSLeftMouseUp;
+      eventMask |= NSLeftMouseUpMask | NSLeftMouseDraggedMask;
+    }
+      
   do
     {
       location     = [window mouseLocationOutsideOfEventStream];
@@ -738,7 +756,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 	{
 	  mouseMoved = YES;	/* Ok - had an initial movement. */
 	}
-      if ([event type] == NSPeriodic)
+      if (type == NSPeriodic)
 	{
 	  if ([menuv_menu isPartlyOffScreen])
 	    {
@@ -781,7 +799,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 		   */
 		  delayCount++;
 		  if (delayCount >= DELAY_MULTIPLIER
-		    || (xDiff < -xDelta)
+		    || (xDiff < 0)
 		    || (yDelta < 0.0 && yDiff > -yDelta)
 		    || (yDelta > 0.0 && yDiff < -yDelta))
 		    {
@@ -798,9 +816,26 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 
       if (index == -1)
 	{
-	  if ([menuv_menu attachedMenu])
+	  NSWindow	*w;
+
+	  location = [window convertBaseToScreen: location];
+
+	  /*
+	   * If the mouse is back in the supermenu, we return NO so that
+	   * our caller knows the button was not released.
+	   */
+	  w = [[menuv_menu supermenu] window];
+	  if (w != nil && NSMouseInRect(location, [w frame], NO) == YES)
 	    {
-	      if ([[self attachedMenuView] trackWithEvent: event])
+	      return NO;
+	    }
+	  /*
+	   * if the mouse is in our attached menu - get that menu to track it.
+	   */
+	  w = [[menuv_menu attachedMenu] window];
+	  if (w != nil && NSMouseInRect(location, [w frame], NO) == YES)
+	    {
+	      if ([[self attachedMenuView] trackWithEvent: original])
 		return YES;
 	    }
 	  else
@@ -808,10 +843,11 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 	      if (index != menuv_highlightedItemIndex)
 		[self setHighlightedItemIndex: index];
 	    }
-
+#if 0
 	  if (([menuv_menu supermenu] && ![menuv_menu isTornOff])
 	      || [menuv_menu isFollowTransient])
 	    return NO;
+#endif
 	}
       else
 	{
@@ -841,12 +877,13 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 	    }
 	}
 
-      event = [theApp nextEventMatchingMask: eventMask
-		                  untilDate: theDistantFuture
-		                     inMode: NSEventTrackingRunLoopMode
-		                    dequeue: YES];
+      event = [NSApp nextEventMatchingMask: eventMask
+		                 untilDate: theDistantFuture
+		                    inMode: NSEventTrackingRunLoopMode
+		                   dequeue: YES];
+      type = [event type];
     }
-  while ([event type] != NSLeftMouseUp);
+  while (type != end);
 
   // Perform actions as needed.
   if (index != -1 && !alreadyAttachedMenu)
@@ -883,19 +920,21 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   return YES;
 }
 
-- (void) mouseDown: (NSEvent *)theEvent
+- (void) mouseDown: (NSEvent*)theEvent
 {
-  NSMenu     *candidateMenu;
-  NSMenu     *masterMenu;
-  NSMenuView *masterMenuView;
-  NSPoint     originalLocation;
+  NSMenu	*candidateMenu;
+  NSMenu	*masterMenu;
+  NSMenuView	*masterMenuView;
+  NSPoint	originalLocation;
 
   menuv_keepAttachedMenus = YES;
 
-  for (candidateMenu = masterMenu = menuv_menu;
-       (candidateMenu = [masterMenu supermenu])
-	 && (![masterMenu isTornOff] || [masterMenu isFollowTransient]);
-       masterMenu = candidateMenu);
+  masterMenu = menuv_menu;
+  while ((candidateMenu = [masterMenu supermenu]) != nil
+    && ([masterMenu isTornOff] == NO || [masterMenu isFollowTransient] == YES))
+    {
+      masterMenu = candidateMenu;
+    }
 
   originalLocation = [[masterMenu window] frame].origin;
 
