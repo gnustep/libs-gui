@@ -9,11 +9,6 @@
 
 	* GSTextStorage.m: Corrections in replaceCharactersInRange:withString:
 
-2000-04-20  fedor  <fedor@gnu.org>
-
-	* NSBrowser.m, NSFont.m, NSFontManager.m, NSGraphicsContext.m:
-	New backend access methods
-
 2000-04-20  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/GSMethodTable.h: Added methods to get 
@@ -23,7 +18,7 @@
 	* Headers/gnustep/gui/PSOperators.h: Likewise
 	* Source/NSGraphicsContext.m: Likewise
 	* Source/NSBrowser.m (-setDelegate:): 
-	browser:willDisplayCell:atRow:column: is only requiired for a
+	browser:willDisplayCell:atRow:column: is only required for a
 	passive browser delegate.
 
 	* Source/NSFont.m (-fontInfo): New private method.
