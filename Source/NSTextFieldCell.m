@@ -107,8 +107,8 @@ static NSColor	*txtCol;
 {
   NSTextFieldCell *c = [super copyWithZone: zone];
 
-  c->_background_color = [_background_color copyWithZone: zone];
-  c->_text_color = [_text_color copyWithZone: zone];
+  RETAIN (_background_color);
+  RETAIN (_text_color);
 
   return c;
 }
