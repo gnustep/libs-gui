@@ -72,7 +72,7 @@ typedef enum
 /* OPT: This is just a simple implementation that should let me figure out
 how it's supposed to work. It's functional and correct, but it isn't fast. */
 
-  int layout_glyph, layout_char;
+  unsigned int layout_glyph, layout_char;
 
   struct GSLayoutManager_textcontainer_s *textcontainers;
   int num_textcontainers;
