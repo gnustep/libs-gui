@@ -134,6 +134,8 @@
 
 - (id)dataCell
 {
+  if (!tbcol_datacell)
+    return [[NSTextFieldCell new] autorelease];
   return tbcol_datacell;
 }
 @end

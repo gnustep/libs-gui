@@ -1,3 +1,12 @@
+1999-07-26  Michael Hanni  <mhanni@sprintmail.com>
+
+	* Source/NSTableView.m: added much more code to this
+	implementation. Almost to the point where it could display
+	something useful. Alas, some difficulties remain because the
+	linkages between the NSTable* classes is by no means clear.
+	* Source/NSTableColumn.m: if the datacell type has not been set
+	and is asked for we create a standard NSTextFieldCell.
+
 1999-07-25  Michael Hanni  <mhanni@sprintmail.com>
 
 	* Source/NSTextStorage.m: removed excess calls to
