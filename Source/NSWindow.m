@@ -1784,16 +1784,17 @@ resetCursorRectsForView(NSView *theView)
 
 - (void) _processResizeEvent
 {
-  NSGraphicsContext* context = GSCurrentContext();
 
   if (gstate)
     {
+      NSGraphicsContext* context = GSCurrentContext();
       DPSgsave(context);
       DPSsetgstate(context, gstate);
+      DPSupdatewindow(context, window_num);
+      DPScurrentgstate(context, gstate);
+      DPSpop(context);
+      DPSgrestore(context);
     }
-  DPSupdatewindow(context, window_num);
-  if (gstate)
-    DPSgrestore(context);
 
   [self update];
 }
