@@ -2064,7 +2064,7 @@ afterString in order over charRange. */
   startPoint = [self convertPoint: [theEvent locationInWindow] fromView: nil];
   startIndex = [self characterIndexForPoint: startPoint];
 
-  if (_tf.imports_graphics == YES)
+  if ([_textStorage containsAttachments])
     {
       NSTextAttachment *attachment;
       
