@@ -37,36 +37,6 @@ void __dummy_IMLoading_functionForLinking()
   __dummy_IMLoading_functionForLinking();
 }
 
-@implementation NSBundle (IMLoading)
-
-- (BOOL)loadIMFile:(NSString*)path owner:(id)owner
-{
-  return [GMModel loadIMFile:path owner:owner bundle:self];
-}
-
-+ (BOOL)loadGModelNamed:(NSString *)gmodelName owner:(id)owner
-{
-  NSBundle *bundle;
-  NSString *path;
-
-  /* Pull off the .gmodel extension (if any) for pathForResource:ofType: */
-  if ([[gmodelName pathExtension] isEqualToString:@"gmodel"])
-    gmodelName = [gmodelName stringByDeletingPathExtension];
-
-  /* Use owner's bundle (if any) just like +loadNibNamed:owner: does. */
-  bundle = [NSBundle bundleForClass: [owner class]];
-
-  if (bundle == nil)
-    bundle = [NSBundle mainBundle];
-
-  path = [bundle pathForResource:gmodelName ofType:@"gmodel"];
-
-  return [GMModel loadIMFile:path owner:owner bundle:bundle];
-}
-
-@end /* NSBundle(IMLoading) */
-
-
 @implementation GMModel
 
 id _nibOwner = nil;
@@ -110,7 +80,8 @@ BOOL _fileOwnerDecoded = NO;
 	  NSString *root;
 	  
 	  root = [NSString stringWithCString:getenv("GNUSTEP_SYSTEM_ROOT")];
-	  root = [root stringByAppendingPathComponent:@"Library/Model/"];
+	  root = [root stringByAppendingPathComponent:@"Library"];
+	  root = [root stringByAppendingPathComponent:@"Model"];
 	  abspath = [root stringByAppendingPathComponent:path];
 	  if (![[NSFileManager defaultManager] fileExistsAtPath:abspath])
 	      return NO;
