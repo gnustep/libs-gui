@@ -222,6 +222,7 @@ static NSNotificationCenter *nc;
   _tf.uses_font_panel = YES;
   _tf.uses_ruler = YES;
   _tf.is_ruler_visible = NO;
+  _original_selected_range.location = NSNotFound;
   ASSIGN (_caret_color, [NSColor blackColor]); 
   [self setTypingAttributes: [isa defaultTypingAttributes]];
 
@@ -1267,35 +1268,56 @@ static NSNotificationCenter *nc;
 {
   /* TODO: Use affinity to determine the insertion point */
 
+  /* The `official' (the last one the delegate approved of) selected
+     range before this one. */
+  NSRange oldRange;
+  /* If the user was interactively changing the selection, the last
+     displayed selection could have been a temporary selection,
+     different from the last official one: */
+  NSRange oldDisplayedRange = _selected_range;
+
   if (flag == YES)
     {
-      _selected_range = range;
-      [self setSelectionGranularity: NSSelectByCharacter];
-      return;
+      /* Store the original range before the interactive selection
+         process begin.  That's because we will need to ask the delegate 
+	 if it's all right for him to do the change, and then notify 
+	 him we did.  In both cases, we need to post the original selection 
+	 together with the new one. */
+      if (_original_selected_range.location == NSNotFound)
+	{
+	  _original_selected_range = _selected_range;
+	}
     }
-  else
+  else 
     {
-      NSRange oldRange = _selected_range;
-      NSRange overlap;
+      /* Retrieve the original range */
+      if (_original_selected_range.location != NSNotFound)
+	{
+	  oldRange = _original_selected_range;
+	  _original_selected_range.location = NSNotFound;
+	}
+      else
+	{
+	  oldRange = _selected_range;
+	}
+      
+      /* Ask delegate to modify the range */
+      if (_tvf.delegate_responds_to_will_change_sel)
+	{
+	  range = [_delegate textView: _notifObject
+			     willChangeSelectionFromCharacterRange: oldRange
+			     toCharacterRange: range];
+	}
+    }
 
-      // Nothing to do, if the range is still the same
-      if (NSEqualRanges(range, oldRange))
-	return;
-      
-      //<!> ask delegate for selection validation
-      
-      _selected_range = range;
+  /* Set the new selected range */
+  _selected_range = range;
+
+  if (flag == NO)
+    {
       [self updateFontPanel];
       
-#if 0
-      [nc postNotificationName: NSTextViewDidChangeSelectionNotification
-	  object: self
-	  userInfo: [NSDictionary dictionaryWithObjectsAndKeys:
-				    NSStringFromRange (_selected_range),
-				  NSOldSelectedCharacterRange, nil]];
-#endif
-      
-      // display
+      /* Insertion Point */
       if (range.length)
 	{
 	  /* <!>disable caret timed entry */
@@ -1312,44 +1334,70 @@ static NSNotificationCenter *nc;
 	    }
 	  /* <!>enable caret timed entry */
 	}
-      
-      if (!_window)
-	return;
-      
-      // Make the selected range visible
-      [self scrollRangeToVisible: range]; 
-      
-      // Redisplay what has changed
-      // This does an unhighlight of the old selected region
+    }
+
+  if (_window != nil)
+    {
+      NSRange overlap;
+
+      if (flag == NO)
+	{
+	  /* Make the selected range visible */
+	  [self scrollRangeToVisible: range]; 
+	}
+
+      /* Try to optimize for overlapping ranges */
       overlap = NSIntersectionRange (oldRange, range);
       if (overlap.length)
 	{
-	  // Try to optimize for overlapping ranges
-	  if (range.location != oldRange.location)
+	  if (range.location != oldDisplayedRange.location)
 	    {
 	      NSRange r;
-	      r = MakeRangeFromAbs (MIN (range.location, oldRange.location),
-				    MAX (range.location, oldRange.location));
-	      [self setNeedsDisplayInRect: [self rectForCharacterRange: r]];
+	      r = MakeRangeFromAbs (MIN (range.location, 
+					 oldDisplayedRange.location),
+				    MAX (range.location, 
+					 oldDisplayedRange.location));
+	      [self setNeedsDisplayInRect: [self rectForCharacterRange: r]
+		    avoidAdditionalLayout: YES];
 	    }
-	  if (NSMaxRange (range) != NSMaxRange (oldRange))
+	  if (NSMaxRange (range) != NSMaxRange (oldDisplayedRange))
 	    {
-	      NSRange r = MakeRangeFromAbs (MIN (NSMaxRange (range), 
-						 NSMaxRange (oldRange)),
-					    MAX (NSMaxRange (range),
-						 NSMaxRange (oldRange)));
-	      [self setNeedsDisplayInRect: [self rectForCharacterRange: r]];
+	      NSRange r;
+
+	      r = MakeRangeFromAbs (MIN (NSMaxRange (range), 
+					 NSMaxRange (oldDisplayedRange)),
+				    MAX (NSMaxRange (range),
+					 NSMaxRange (oldDisplayedRange)));
+	      [self setNeedsDisplayInRect: [self rectForCharacterRange: r]
+		    avoidAdditionalLayout: YES];
 	    }
 	}
       else
 	{
-	  [self setNeedsDisplayInRect: [self rectForCharacterRange: range]];
-	  [self setNeedsDisplayInRect: [self rectForCharacterRange: oldRange]];
+	  [self setNeedsDisplayInRect: [self rectForCharacterRange: range]
+		avoidAdditionalLayout: YES];
+	  [self setNeedsDisplayInRect: [self rectForCharacterRange: 
+					       oldDisplayedRange]
+		avoidAdditionalLayout: YES];
 	}
-      
-      [self setSelectionGranularity: NSSelectByCharacter];
-      // Also removes the marking from
-      // marked text if the new selection is greater than the marked region.
+    }
+  
+  [self setSelectionGranularity: NSSelectByCharacter];
+  
+  /* TODO: Remove the marking from marked text if the new selection is
+     greater than the marked region. */
+  
+  if (flag == NO)
+    {
+      NSDictionary *userInfo;
+
+      userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+				 [NSValue valueWithBytes: &oldRange 
+					  objCType: @encode(NSRange)],
+			       NSOldSelectedCharacterRange, nil];
+       
+      [nc postNotificationName: NSTextViewDidChangeSelectionNotification
+	  object: _notifObject  userInfo: userInfo];
     }
 }
 
@@ -1919,8 +1967,9 @@ afterString in order over charRange. */
 
   chosenRange = [self selectionRangeForProposedRange: proposedRange
 		      granularity: granularity];
+  [self setSelectedRange: chosenRange  affinity: affinity  
+	stillSelecting: YES];
 
-  [self setSelectedRange: chosenRange];
   /* Do an immediate redisplay for visual feedback */
   [_window flushWindow]; /* FIXME: This doesn't work while it should ! */
 
@@ -1940,8 +1989,8 @@ afterString in order over charRange. */
 					startIndex);
       chosenRange = [self selectionRangeForProposedRange: proposedRange
 			  granularity: granularity];
-
-      [self setSelectedRange: chosenRange];
+      [self setSelectedRange: chosenRange  affinity: affinity  
+	    stillSelecting: YES];
 
       if (didScroll)
 	{
@@ -1955,6 +2004,12 @@ afterString in order over charRange. */
 
   NSDebugLog(@"chosenRange. location  = %d, length  = %d\n",
 	     (int)chosenRange.location, (int)chosenRange.length);
+
+  [self setSelectedRange: chosenRange  affinity: affinity  
+	stillSelecting: NO];
+
+  /* Ahm - this shouldn't really be needed but... */
+  [_window flushWindow];
 
   /* Remember granularity till a new selection destroys the memory */
   [self setSelectionGranularity: granularity];
@@ -2392,6 +2447,8 @@ container, returning the modified location. */
 
 - (void) setDelegate: (id)anObject
 {
+  SEL selector;
+  
   /* Code to allow sharing the delegate */
   if (_tvf.multiple_textviews && (IS_SYNCHRONIZING_DELEGATES == NO))
     {
@@ -2425,8 +2482,8 @@ container, returning the modified location. */
 
   [super setDelegate: anObject];
 
-  if ([_delegate respondsToSelector: 
-		   @selector(shouldChangeTextInRange:replacementString:)])
+  selector = @selector(shouldChangeTextInRange:replacementString:);
+  if ([_delegate respondsToSelector: selector])
     {
       _tvf.delegate_responds_to_should_change = YES;
     }
@@ -2435,6 +2492,16 @@ container, returning the modified location. */
       _tvf.delegate_responds_to_should_change = NO;
     }
 
+  selector = @selector(textView:willChangeSelectionFromCharacterRange:toCharacterRange:);
+  if ([_delegate respondsToSelector: selector])
+    {
+      _tvf.delegate_responds_to_will_change_sel = YES;
+    }
+  else
+    {
+      _tvf.delegate_responds_to_will_change_sel = NO;
+    }
+  
   /* SET_DELEGATE_NOTIFICATION defined at the beginning of file */
 
   /* NSText notifications */
