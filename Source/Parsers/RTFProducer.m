@@ -49,50 +49,6 @@
 			  documentAttributes: (NSDictionary*)dict;
 @end
 
-@interface NSString (Replacing)
-- (NSString*) stringByReplacingEveryOccurrenceOfString: (NSString*)aString
-					    withString: (NSString*)other;
-@end
-
-@implementation NSString (Replacing)
-
-- (NSString*) stringByReplacingEveryOccurrenceOfString: (NSString*)aString
-					    withString: (NSString*)other
-{
-  unsigned		len = [self length];
-  NSMutableString	*erg = [NSMutableString string];
-  NSRange		currRange = [self rangeOfString: aString];
-  unsigned		prevLocation = 0;
-
-  while (currRange.length > 0)
-    {
-      if (currRange.location > 0)
-	{
-	  NSRange	r;
-
-	  r = NSMakeRange(prevLocation, currRange.location - prevLocation);
-	  [erg appendString: [self substringWithRange: r]];
-	}
-      [erg appendString: other];
-      currRange.location += currRange.length;
-      currRange.length = len - currRange.location;
-      prevLocation = currRange.location;
-      currRange = [self rangeOfString: aString
-			      options: NSLiteralSearch
-				range: currRange];
-    }
-  if (prevLocation < len)
-    {
-      NSRange	r;
-
-      r = NSMakeRange(prevLocation, len - prevLocation);
-      [erg appendString: [self substringWithRange: r]];
-    }
-
-  return erg;
-}
-@end
-
 @implementation RTFProducer
 
 + (NSFileWrapper*) produceRTFD: (NSAttributedString*) aText
@@ -194,6 +150,7 @@
 	  NSString	*fontFamily;
 	  NSString	*detail;
 
+	  // If we ever have more fonts to map to families, we should use a dictionary
 	  if ([currFont isEqualToString: @"Symbol"])
 	    fontFamily = @"tech";
 	  else if ([currFont isEqualToString: @"Helvetica"])
@@ -476,11 +433,17 @@
 	  NSFont			*font;
 	  NSString			*fontName;
 	  NSFontTraitMask		traits;
+	  NSFontTraitMask		oldTraits;
 	  
 	  font = [attributes objectForKey: NSFontAttributeName];
 	  fontName = [font familyName];
 	  traits = [[NSFontManager sharedFontManager] traitsOfFont: font];
 	  
+	  if (currentFont == nil)
+	    oldTraits = 0;
+	  else
+	    oldTraits = [[NSFontManager sharedFontManager] traitsOfFont: currentFont];
+
 	  /*
 	   * font name
 	   */
@@ -504,15 +467,31 @@
 	  /*
 	   * font attributes
 	   */
-	  if (traits & NSItalicFontMask)
+	  if ((traits & NSItalicFontMask) != (oldTraits & NSItalicFontMask))
 	    {
-	      [headerString appendString: @"\\i"];
-	      [trailerString appendString: @"\\i0"];
+	      if (traits & NSItalicFontMask)
+	        {
+		  [headerString appendString: @"\\i"];
+		  [trailerString appendString: @"\\i0"];
+		}
+	      else 
+	        {
+		  [headerString appendString: @"\\i0"];
+		  [trailerString appendString: @"\\i"];
+		}
 	    }
-	  if (traits & NSBoldFontMask)
+	  if ((traits & NSBoldFontMask) != (oldTraits & NSBoldFontMask))
 	    {
-	      [headerString appendString: @"\\b"];
-	      [trailerString appendString: @"\\b0"];
+	      if (traits & NSBoldFontMask)
+	        {
+		  [headerString appendString: @"\\b"];
+		  [trailerString appendString: @"\\b0"];
+		}
+	      else
+	        {
+		  [headerString appendString: @"\\b0"];
+		  [trailerString appendString: @"\\b"];
+		}
 	    }
 
 	  if (first)
