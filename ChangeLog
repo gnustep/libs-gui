@@ -1,3 +1,10 @@
+Sun Aug 12 03:42:30 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSImage.m ([NSImage -setName:]): Fixed bug in last change
+	- btw change not documented in ChangeLog - make sure we don't
+	accidentally release self when removing it from the dictionary of
+	names.  That was crashing apps with an icon on startup.
+
 2001-08-12  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSImageCell.h
