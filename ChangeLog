@@ -1,3 +1,29 @@
+Mon Jan 24 23:45:30 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Implemented a standard Info Panel for GNUstep.  To make everyone
+	happy, both -orderFrontStandardAboutPanel: and
+	-orderFrontStandardInfoPanel: are available; one displays 'About'
+	in the title, and the other displays 'Info'; they are otherwise
+	identical.  GNUstep recommends using the 'Info' version.
+	* Source/GNUmakefile (libgnustep-gui_OBJC_FILES): Added GSInfoPanel.  
+	(libgnustep-gui_HEADER_FILES): Idem.
+	* Source/GSInfoPanel.m: New class.
+	* Headers/AppKit/GSInfoPanel.h: New class.
+	* Headers/AppKit/NSApplication.h: Added ivar _infoPanel, declaration 
+	of new methods. 
+	* Source/NSApplication.m
+	([-orderFrontStandardInfoPanelWithOptions:]): New method, implemented.  
+	([-orderFrontStandardInfoPanel:]): Idem.  ([-orderFrontStandardAboutPanel:]): 
+	Idem.  ([-orderFrontStandardAboutPanelWithOptions:]): Idem.  ([-dealloc]): 
+	Added release of _infoPanel.
+
+Mon Jan 24 04:01:55 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSApplication.m ([-orderFrontHelpPanel:]),
+	([-orderFrontColorPanel:]), ([-orderFrontDataLinkPanel:]),
+	([-runPageLayout:]): Display an alert panel informing that the
+	corresponding panel has not been implemented yet.
+
 2000-01-21  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/NSGraphicsContext.m: Change NSCompositeData...
