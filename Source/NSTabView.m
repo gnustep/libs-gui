@@ -26,7 +26,6 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-
 #include <AppKit/NSColor.h>
 #include <AppKit/NSFont.h>
 #include <AppKit/NSGraphics.h>
@@ -38,23 +37,24 @@
 #include <AppKit/PSOperators.h>
 
 @implementation NSTabView
+
 - (id) initWithFrame: (NSRect)rect
 {
   [super initWithFrame: rect];
 
   // setup variables  
 
-  ASSIGN (tab_items, [NSMutableArray array]);
-  ASSIGN (tab_font, [NSFont systemFontOfSize: 0]);
-  tab_selected = nil;
+  ASSIGN (_items, [NSMutableArray array]);
+  ASSIGN (_font, [NSFont systemFontOfSize: 0]);
+  _selected = nil;
 
   return self;
 }
 
 - (void) dealloc
 {
-  RELEASE(tab_items);
-  RELEASE(tab_font);
+  RELEASE(_items);
+  RELEASE(_font);
   [super dealloc];
 }
 
@@ -62,63 +62,56 @@
 
 - (void) addTabViewItem: (NSTabViewItem*)tabViewItem
 {
-  [tabViewItem _setTabView: self];
-  [tab_items insertObject: tabViewItem atIndex: [tab_items count]];
-
-  if ([tab_delegate respondsToSelector: 
-    @selector(tabViewDidChangeNumberOfTabViewItems:)])
-    {
-      [tab_delegate tabViewDidChangeNumberOfTabViewItems: self];
-    }
+  [self insertTabViewItem: tabViewItem atIndex: [_items count]];
 }
 
 - (void) insertTabViewItem: (NSTabViewItem*)tabViewItem
 		   atIndex: (int)index
 {
   [tabViewItem _setTabView: self];
-  [tab_items insertObject: tabViewItem atIndex: index];
+  [_items insertObject: tabViewItem atIndex: index];
 
-  if ([tab_delegate respondsToSelector: 
+  if ([_delegate respondsToSelector: 
     @selector(tabViewDidChangeNumberOfTabViewItems:)])
     {
-      [tab_delegate tabViewDidChangeNumberOfTabViewItems: self];
+      [_delegate tabViewDidChangeNumberOfTabViewItems: self];
     }
 }
 
 - (void) removeTabViewItem: (NSTabViewItem*)tabViewItem
 {
-  unsigned i = [tab_items indexOfObject: tabViewItem];
+  unsigned i = [_items indexOfObject: tabViewItem];
   
   if (i == NSNotFound)
     return;
 
-  if ([tabViewItem isEqual: tab_selected])
+  if ([tabViewItem isEqual: _selected])
     {
-      tab_selected = nil;
+      _selected = nil;
     }
 
-  [tab_items removeObjectAtIndex: i];
+  [_items removeObjectAtIndex: i];
 
-  if ([tab_delegate respondsToSelector: 
+  if ([_delegate respondsToSelector: 
     @selector(tabViewDidChangeNumberOfTabViewItems:)])
     {
-      [tab_delegate tabViewDidChangeNumberOfTabViewItems: self];
+      [_delegate tabViewDidChangeNumberOfTabViewItems: self];
     }
 }
 
 - (int) indexOfTabViewItem: (NSTabViewItem*)tabViewItem
 {
-  return [tab_items indexOfObject: tabViewItem];
+  return [_items indexOfObject: tabViewItem];
 }
 
 - (int) indexOfTabViewItemWithIdentifier: (id)identifier
 {
-  unsigned	howMany = [tab_items count];
+  unsigned	howMany = [_items count];
   unsigned	i;
 
   for (i = 0; i < howMany; i++)
     {
-      id	anItem = [tab_items objectAtIndex: i];
+      id anItem = [_items objectAtIndex: i];
 
       if ([[anItem identifier] isEqual: identifier])
         return i;
@@ -129,17 +122,17 @@
 
 - (int) numberOfTabViewItems
 {
-  return [tab_items count];
+  return [_items count];
 }
 
 - (NSTabViewItem*) tabViewItemAtIndex: (int)index
 {
-  return [tab_items objectAtIndex: index];
+  return [_items objectAtIndex: index];
 }
 
 - (NSArray*) tabViewItems
 {
-  return (NSArray*)tab_items;
+  return (NSArray*)_items;
 }
 
 - (void) selectFirstTabViewItem: (id)sender
@@ -149,66 +142,71 @@
 
 - (void) selectLastTabViewItem: (id)sender
 {
-  [self selectTabViewItem: [tab_items lastObject]];
+  [self selectTabViewItem: [_items lastObject]];
 }
 
 - (void) selectNextTabViewItem: (id)sender
 {
-  [self selectTabViewItemAtIndex: tab_selected_item+1];
+  if (_selected_item + 1 < [_items count])
+    [self selectTabViewItemAtIndex: _selected_item+1];
 }
 
 - (void) selectPreviousTabViewItem: (id)sender
 {
-  [self selectTabViewItemAtIndex: tab_selected_item-1];
+  if (_selected_item > 0)
+    [self selectTabViewItemAtIndex: _selected_item-1];
 }
 
 - (NSTabViewItem*) selectedTabViewItem
 {
-  return [tab_items objectAtIndex: tab_selected_item];
+  if (_selected_item == NSNotFound)
+    return nil;
+  return [_items objectAtIndex: _selected_item];
 }
 
 - (void) selectTabViewItem: (NSTabViewItem*)tabViewItem
 {
   BOOL canSelect = YES;
 
-  if ([tab_delegate respondsToSelector: 
+  if ([_delegate respondsToSelector: 
     @selector(tabView: shouldSelectTabViewItem:)])
     {
-      canSelect = [tab_delegate tabView: self
+      canSelect = [_delegate tabView: self
 		shouldSelectTabViewItem: tabViewItem];
     }
 
   if (canSelect)
     {
-      if (tab_selected)
+      if (_selected)
         {
-          [tab_selected _setTabState: NSBackgroundTab];
-          if ([tab_selected view])
-	    [[tab_selected view] removeFromSuperview];
+          [_selected _setTabState: NSBackgroundTab];
+          if ([_selected view])
+	    [[_selected view] removeFromSuperview];
         }
 
-      tab_selected = tabViewItem;
+      _selected = tabViewItem;
 
-      if ([tab_delegate respondsToSelector: 
+      if ([_delegate respondsToSelector: 
 	@selector(tabView: willSelectTabViewItem:)])
 	{
-	  [tab_delegate tabView: self willSelectTabViewItem: tab_selected];
+	  [_delegate tabView: self willSelectTabViewItem: _selected];
 	}
 
-      tab_selected_item = [tab_items indexOfObject: tab_selected];
-      [tab_selected _setTabState: NSSelectedTab];
+      _selected_item = [_items indexOfObject: _selected];
+      [_selected _setTabState: NSSelectedTab];
 
-      if ([tab_selected view])
+      if ([_selected view])
 	{
-	  [self addSubview: [tab_selected view]];
+	  [self addSubview: [_selected view]];
+	  [[_selected initialFirstResponder] becomeFirstResponder];
 	}
 
       [self setNeedsDisplay: YES];
 
-      if ([tab_delegate respondsToSelector: 
+      if ([_delegate respondsToSelector: 
 	@selector(tabView: didSelectTabViewItem:)])
 	{
-	  [tab_delegate tabView: self didSelectTabViewItem: tab_selected];
+	  [_delegate tabView: self didSelectTabViewItem: _selected];
 	}
     }
 }
@@ -218,7 +216,7 @@
   if (index < 0)
     [self selectTabViewItem: nil];
   else
-    [self selectTabViewItem: [tab_items objectAtIndex: index]];
+    [self selectTabViewItem: [_items objectAtIndex: index]];
 }
 
 - (void) takeSelectedTabViewItemFromSender: (id)sender
@@ -240,57 +238,57 @@
 	  index = row * cols + col;
 	}
     }
-  [self selectTabViewItem: [tab_items objectAtIndex: index]];
+  [self selectTabViewItemAtIndex: index];
 }
 
 - (void) setFont: (NSFont*)font
 {
-  ASSIGN(tab_font, font);
+  ASSIGN(_font, font);
 }
 
 - (NSFont*) font
 {
-  return tab_font;
+  return _font;
 }
 
 - (void) setTabViewType: (NSTabViewType)tabViewType
 {
-  tab_type = tabViewType;
+  _type = tabViewType;
 }
 
 - (NSTabViewType) tabViewType
 {
-  return tab_type;
+  return _type;
 }
 
 - (void) setDrawsBackground: (BOOL)flag
 {
-  tab_draws_background = flag;
+  _draws_background = flag;
 }
 
 - (BOOL) drawsBackground
 {
-  return tab_draws_background;
+  return _draws_background;
 }
 
 - (void) setAllowsTruncatedLabels: (BOOL)allowTruncatedLabels
 {
-  tab_truncated_label = allowTruncatedLabels;
+  _truncated_label = allowTruncatedLabels;
 }
 
 - (BOOL) allowsTruncatedLabels
 {
-  return tab_truncated_label;
+  return _truncated_label;
 }
 
 - (void) setDelegate: (id)anObject
 {
-  tab_delegate = anObject;
+  _delegate = anObject;
 }
 
 - (id) delegate
 {
-  return tab_delegate;
+  return _delegate;
 }
 
 // content and size
@@ -304,7 +302,7 @@
 {
   NSRect cRect = _bounds;
 
-  if (tab_type == NSTopTabsBezelBorder)
+  if (_type == NSTopTabsBezelBorder)
     {
       cRect.origin.y += 1; 
       cRect.origin.x += 0.5; 
@@ -312,7 +310,7 @@
       cRect.size.height -= 18.5;
     }
   
-  if (tab_type == NSNoTabsBezelBorder)
+  if (_type == NSNoTabsBezelBorder)
     {
       cRect.origin.y += 1; 
       cRect.origin.x += 0.5; 
@@ -320,7 +318,7 @@
       cRect.size.height -= 2;
     }
 
-  if (tab_type == NSBottomTabsBezelBorder)
+  if (_type == NSBottomTabsBezelBorder)
     {
       cRect.size.height -= 8;
       cRect.origin.y = 8;
@@ -335,7 +333,7 @@
 {
   NSGraphicsContext     *ctxt = GSCurrentContext();
   float			borderThickness;
-  int			howMany = [tab_items count];
+  int			howMany = [_items count];
   int			i;
   NSRect		previousRect;
   int			previousState = 0;
@@ -343,8 +341,9 @@
 
   DPSgsave(ctxt);
 
-  switch (tab_type)
+  switch (_type)
     {
+      default:
       case NSTopTabsBezelBorder: 
 	aRect.size.height -= 16;
 	NSDrawButton(aRect, NSZeroRect);
@@ -375,16 +374,16 @@
 	break;
     }
 
-  if (!tab_selected)
+  if (!_selected)
     [self selectFirstTabViewItem: nil];
 
-  if (tab_type == NSNoTabsBezelBorder || tab_type == NSNoTabsLineBorder)
+  if (_type == NSNoTabsBezelBorder || _type == NSNoTabsLineBorder)
     {
       DPSgrestore(ctxt);
       return;
     }
 
-  if (tab_type == NSBottomTabsBezelBorder)
+  if (_type == NSBottomTabsBezelBorder)
     {
       for (i = 0; i < howMany; i++) 
 	{
@@ -392,7 +391,7 @@
 	  NSSize	s;
 	  NSRect	r;
 	  NSPoint	iP;
-	  NSTabViewItem *anItem = [tab_items objectAtIndex: i];
+	  NSTabViewItem *anItem = [_items objectAtIndex: i];
 	  NSTabState	itemState;
 
 	  itemState = [anItem tabState];
@@ -517,7 +516,7 @@
 	    }
 	}
     }
-  else if (tab_type == NSTopTabsBezelBorder)
+  else if (_type == NSTopTabsBezelBorder)
     {
       for (i = 0; i < howMany; i++) 
 	{
@@ -525,7 +524,7 @@
 	  NSSize s;
 	  NSRect r;
 	  NSPoint iP;
-	  NSTabViewItem *anItem = [tab_items objectAtIndex: i];
+	  NSTabViewItem *anItem = [_items objectAtIndex: i];
 	  NSTabState itemState;
 	  
 	  itemState = [anItem tabState];
@@ -642,14 +641,14 @@
 
 - (NSTabViewItem*) tabViewItemAtPoint: (NSPoint)point
 {
-  int		howMany = [tab_items count];
+  int		howMany = [_items count];
   int		i;
 
   point = [self convertPoint: point fromView: nil];
 
   for (i = 0; i < howMany; i++)
     {
-      NSTabViewItem *anItem = [tab_items objectAtIndex: i];
+      NSTabViewItem *anItem = [_items objectAtIndex: i];
 
       if(NSPointInRect(point,[anItem _tabRect]))
 	return anItem;
@@ -662,12 +661,34 @@
 {
   NSTabViewItem *anItem = [self tabViewItemAtPoint: aPoint];
 
-  if (anItem && ![anItem isEqual: tab_selected])
+  if (anItem && ![anItem isEqual: _selected])
     {
       [self selectTabViewItem: anItem];
     }
 
   return [super hitTest: aPoint];
+}
+
+- (NSControlSize)controlSize
+{
+  // FIXME
+  return NSRegularControlSize;
+}
+
+- (void)setControlSize:(NSControlSize)size
+{
+  // FIXME 
+}
+
+- (NSControlTint)controlTint
+{
+  // FIXME
+  return NSDefaultControlTint;
+}
+
+- (void)setControlTint:(NSControlTint)tint
+{
+  // FIXME 
 }
 
 // Coding.
@@ -676,26 +697,26 @@
 { 
   [super encodeWithCoder: aCoder];
            
-  [aCoder encodeObject: tab_items];
-  [aCoder encodeObject: tab_font];
-  [aCoder encodeValueOfObjCType: @encode(NSTabViewType) at: &tab_type];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &tab_draws_background];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &tab_truncated_label];
-  [aCoder encodeObject: tab_delegate];
-  [aCoder encodeValueOfObjCType: "i" at: &tab_selected_item];
+  [aCoder encodeObject: _items];
+  [aCoder encodeObject: _font];
+  [aCoder encodeValueOfObjCType: @encode(NSTabViewType) at: &_type];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_draws_background];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_truncated_label];
+  [aCoder encodeObject: _delegate];
+  [aCoder encodeValueOfObjCType: "i" at: &_selected_item];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   [super initWithCoder: aDecoder];
 
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &tab_items];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &tab_font];
-  [aDecoder decodeValueOfObjCType: @encode(NSTabViewType) at: &tab_type];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tab_draws_background];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tab_truncated_label];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &tab_delegate];
-  [aDecoder decodeValueOfObjCType: "i" at: &tab_selected_item];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_items];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_font];
+  [aDecoder decodeValueOfObjCType: @encode(NSTabViewType) at: &_type];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_draws_background];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_truncated_label];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_delegate];
+  [aDecoder decodeValueOfObjCType: "i" at: &_selected_item];
 
   return self;
 }
