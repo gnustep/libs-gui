@@ -1,3 +1,23 @@
+Tue Sep 24 03:29:55 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSSplitView.m: Cache the default notification center for
+	the whole class.
+	* Source/NSTextStorage.m: Idem.
+	
+Tue Sep 24 03:14:12 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSTextField.m ([-dealloc]): Implemented (Reported missing
+	by David Ayers).
+	* Source/NSDrawer.m ([-dealloc]): Remove the delegate from the
+	notification center.
+	* Source/NSMatrix.m ([-dealloc]): Idem.
+	* Source/NSSplitView.m ([-dealloc]): Idem.
+	* Source/NSTableView.m ([-dealloc]): Idem.
+	* Source/NSTextStorage.m ([-dealloc]): Idem.
+	* Source/NSWindow.m ([-dealloc]): Idem.
+	* Source/NSToolbar.m ([GSToolbarButton -dealloc]): New method.
+	([NSToolbar -dealloc]): New method.
+
 Mon Sep 23 15:23:23 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSApplication.m (initialize_gnustep_backend): Improved
