@@ -296,9 +296,13 @@ Class _nspopupbuttonCellClass = 0;
 { 
   NSMenuView *mr = [[cell menu] menuRepresentation];
   NSEvent    *e;
-
+  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+  
   if ([self isEnabled] == NO)
     return;
+
+  [nc postNotificationName: NSPopUpButtonWillPopUpNotification
+      object: self];
 
   // Attach the popUp
   [cell attachPopUpWithFrame: bounds
