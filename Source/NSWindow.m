@@ -1232,6 +1232,8 @@ resetCursorRectsForView(NSView *theView)
     RETAIN(self);
 
   [nc postNotificationName: NSWindowWillCloseNotification object: self];
+  [self resignKeyWindow];
+  [self resignMainWindow];
   [NSApp removeWindowsItem: self];
   [self orderOut: self];
 

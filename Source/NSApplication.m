@@ -427,6 +427,7 @@ static NSCell* tileCell = nil;
   NSArray		*windows_list;
   unsigned		count;
   unsigned		i;
+  BOOL			hadDuplicates = NO;
 
   mainModelFile = [infoDict objectForKey: @"NSMainNibFile"];
   if (mainModelFile && ![mainModelFile isEqual: @""])
@@ -454,18 +455,6 @@ static NSCell* tileCell = nil;
   /* Register our listener to incoming services requests etc. */
   [listener registerAsServiceProvider];
 
-  /* Register self as observer to window events. */
-  [nc addObserver: self selector: @selector(_windowWillClose:)
-      name: NSWindowWillCloseNotification object: nil];
-  [nc addObserver: self selector: @selector(_windowDidBecomeKey:)
-      name: NSWindowDidBecomeKeyNotification object: nil];
-  [nc addObserver: self selector: @selector(_windowDidBecomeMain:)
-      name: NSWindowDidBecomeMainNotification object: nil];
-  [nc addObserver: self selector: @selector(_windowDidResignKey:)
-      name: NSWindowDidResignKeyNotification object: nil];
-  [nc addObserver: self selector: @selector(_windowDidResignMain:)
-      name: NSWindowDidResignMainNotification object: nil];
-
   /*
    * Establish the current key and main windows.  We need to do this in case
    * the windows were created and set to be key/main earlier - before the
@@ -485,7 +474,9 @@ static NSCell* tileCell = nil;
 	    }
 	  else
 	    {
-	      NSLog(@"Duplicate keyWindow ignored");
+	      hadDuplicates = YES;
+	      NSDebugLog(@"Duplicate keyWindow ignored");
+	      [win resignKeyWindow];
 	    }
 	}
       if ([win isMainWindow] == YES)
@@ -496,10 +487,37 @@ static NSCell* tileCell = nil;
 	    }
 	  else
 	    {
-	      NSLog(@"Duplicate mainWindow ignored");
+	      hadDuplicates = YES;
+	      NSDebugLog(@"Duplicate mainWindow ignored");
+	      [win resignMainWindow];
 	    }
 	}
     }
+
+  /*
+   * If there was more than one window set as key or main, we must make sure
+   * that the one we have recorded is the real one by making it become key/main
+   * again.
+   */
+  if (hadDuplicates)
+    {
+      [_main_window resignMainWindow];
+      [_main_window becomeMainWindow];
+      [_key_window resignKeyWindow];
+      [_key_window becomeKeyWindow];
+    }
+
+  /* Register self as observer to window events. */
+  [nc addObserver: self selector: @selector(_windowWillClose:)
+      name: NSWindowWillCloseNotification object: nil];
+  [nc addObserver: self selector: @selector(_windowDidBecomeKey:)
+      name: NSWindowDidBecomeKeyNotification object: nil];
+  [nc addObserver: self selector: @selector(_windowDidBecomeMain:)
+      name: NSWindowDidBecomeMainNotification object: nil];
+  [nc addObserver: self selector: @selector(_windowDidResignKey:)
+      name: NSWindowDidResignKeyNotification object: nil];
+  [nc addObserver: self selector: @selector(_windowDidResignMain:)
+      name: NSWindowDidResignMainNotification object: nil];
 
   [self activateIgnoringOtherApps: YES];
 
@@ -1268,13 +1286,13 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
     {
       [self unhideWithoutActivation];
       unhide_on_activation = NO;
-      if (app_is_active == NO)
-	{
-	  /*
-	   * Activation should make the applications menus visible.
-	   */
-	  [self activateIgnoringOtherApps: YES];
-	}
+    }
+  if (app_is_active == NO)
+    {
+      /*
+       * Activation should make the applications menus visible.
+       */
+      [self activateIgnoringOtherApps: YES];
     }
 }
 

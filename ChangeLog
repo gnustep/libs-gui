@@ -3,6 +3,7 @@ Mon Nov 22 17:05:33:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 	* Source/NSApplication.m: Start listening for window notifications
 	whenm the app becomes active, and check to see which windows are key
 	and main.
+	([-unhide:]) fixed to activate app even if it wasn't hidden.
 
 1999-11-21  Tim McIntosh  <rockford@novia.net>
 
