@@ -1520,7 +1520,7 @@ static NSNotificationCenter *nc;
       return;
     }
 
-  charRange = NSMakeRange (_selected_range.location, 1);
+  charRange = NSMakeRange (_selected_range.location, 0);
   glyphRange = [_layoutManager glyphRangeForCharacterRange: charRange 
 			       actualCharacterRange: NULL];
   glyphIndex = glyphRange.location;
