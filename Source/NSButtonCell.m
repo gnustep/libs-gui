@@ -964,6 +964,10 @@
     {
       borderSize.height += 1;
       borderSize.width  += 3;
+
+      /* Add some more space because it looks better.  */
+      borderSize.height += 2;
+      borderSize.width  += 3;
     }
   
   // Add border size
