@@ -23,7 +23,8 @@
   tbv_columns = [NSMutableArray new];
   tbv_gridColor = [NSColor gridColor];
 
-  tbv_headerView = nil;
+  tbv_headerView = [NSTableHeaderView new];
+  return self;
 }
 
 - (void)setDataSource:(id)anObject
@@ -597,7 +598,7 @@ object with the NSTableView as the text delegate. */
 			    objectValueForTableColumn: [tbv_columns objectAtIndex:i]
 						  row: rowIndex]];
 
-      [aCell drawWithFrame: colRect];
+      [aCell drawWithFrame: colRect inView: self];
     }
 }
 
@@ -611,14 +612,21 @@ object with the NSTableView as the text delegate. */
  //FIXME, explain.
 }
 
+- (void) drawRect: (NSRect)aRect
+{
+  int i;
+  for (i = 0; i < [self numberOfColumns]; i++)
+    [self drawRow: i clipRect: aRect];
+}
+
 - (void)scrollRowToVisible:(int)rowIndex
 {
-  [(NSClipView *)super_view scrollToPoint:NSZeroPoint];
+  [(NSClipView *)_super_view scrollToPoint:NSZeroPoint];
 }
 
 - (void)scrollColumnToVisible:(int)columnIndex
 {
-  [(NSClipView *)super_view scrollToPoint:NSZeroPoint];
+  [(NSClipView *)_super_view scrollToPoint:NSZeroPoint];
 }
 
 - (BOOL)textShouldBeginEditing:(NSText *)textObject
