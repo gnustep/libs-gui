@@ -1,3 +1,16 @@
+2004-08-12 01:42  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSLayoutManager.m
+	(-textStorage:edited:range:changeInLength:invalidatedRange:):
+	Adjust the selected range even if there's no length change. Change
+	the handling of the in/in case. Set the selected range using a text
+	view if we have any attached.
+	* Source/NSTextView.m (-insertText:): Don't set the selected range.
+	(-setSelectedRange:affinity:stillSelecting:): Clamp the old range
+	to the length of the text.
+	* Source/NSTextView_actions.m (-deleteForward:, -deleteBackward:):
+	Don't set the selected range.
+
 2004-08-11 21:35  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSButtonCell.m (-drawInteriorWithFrame:inView:): Move

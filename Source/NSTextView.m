@@ -1793,10 +1793,6 @@ This method is for user changes; see NSTextView_actions.m.
     }
 
   [self didChangeText];
-
-  /* TODO? move cursor <!> [self selectionRangeForProposedRange: ] */
-  [self setSelectedRange:
-	  NSMakeRange(insertRange.location + [insertString length], 0)];
 }
 
 
@@ -2711,6 +2707,14 @@ afterString in order over charRange.
 		 affinity: (NSSelectionAffinity)affinity
 	   stillSelecting: (BOOL)stillSelectingFlag
 {
+  /*
+  Note that this method might be called from the layout manager to update
+  the selection after the text storage has been changed. If text was deleted,
+  the old selected range might extend outside the current string. Also note
+  that this happens during the processing of the changes in the text storage.
+  Thus, it isn't safe to modify the text storage.
+  */
+
   /* The `official' (the last one the delegate approved of) selected
      range before this one. */
   NSRange oldRange;
@@ -2845,6 +2849,17 @@ afterString in order over charRange.
 	    [self scrollRangeToVisible:
 	      NSMakeRange(charRange.location + charRange.length, 0)];
 	}
+
+      /*
+      If this call is caused by text being deleted, oldDisplayedRange might
+      extend outside the current text. We clamp it to the current length here
+      for safety. Redisplay might be a bit off in this case, but the text
+      change will cause any missing bits to be redisplayed anyway.
+      */
+      if (oldDisplayedRange.location > length)
+	oldDisplayedRange.location = length;
+      if (NSMaxRange(oldDisplayedRange) > length)
+	oldDisplayedRange.length = length - oldDisplayedRange.location;
 
       /* Try to optimize for overlapping ranges */
       overlap = NSIntersectionRange (oldRange, charRange);

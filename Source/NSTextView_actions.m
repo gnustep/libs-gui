@@ -583,10 +583,6 @@ static NSNumber *float_plus_one(NSNumber *cur)
   [_textStorage deleteCharactersInRange: range];
   [_textStorage endEditing];
   [self didChangeText];
-
-  /* The new selected range is just the insertion point at the beginning 
-     of deleted range */
-  [self setSelectedRange: NSMakeRange (range.location, 0)];
 }
 
 - (void) deleteBackward: (id)sender
@@ -626,10 +622,6 @@ static NSNumber *float_plus_one(NSNumber *cur)
   [_textStorage deleteCharactersInRange: range];
   [_textStorage endEditing];
   [self didChangeText];
-
-  /* The new selected range is just the insertion point at the beginning 
-     of deleted range */
-  [self setSelectedRange: NSMakeRange (range.location, 0)];
 }
 
 

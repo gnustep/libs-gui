@@ -2094,7 +2094,7 @@ no_soft_invalidation:
 
   [self _didInvalidateLayout];
 
-  if ((mask & NSTextStorageEditedCharacters) && lengthChange)
+  if (mask & NSTextStorageEditedCharacters)
     {
       /*
       Adjust the selected range so it's still valid. We don't try to
@@ -2116,7 +2116,7 @@ no_soft_invalidation:
       --------------------------
       after     after     location += lengthChange;
       in        after     length = NSMaxRange(sel)-NSMaxRange(range)-lengthChange; location=NSMaxRange(range);
-      in        in        length = 0; location=range.location;
+      in        in        length = 0; location=NSMaxRange(range);
       before    after     length += lengthChange;
       before    in        length = range.location-location;
       before    before    do nothing
@@ -2127,34 +2127,43 @@ no_soft_invalidation:
       One important property of this behavior is that if length is 0 before,
       it will be 0 after.
       */
+      NSRange newRange = _selected_range;
+
       if (_selected_range.location >= NSMaxRange(range) - lengthChange)
 	{ /* after after */
-	  _selected_range.location += lengthChange;
+	  newRange.location += lengthChange;
 	}
       else if (_selected_range.location >= range.location)
 	{
 	  if (NSMaxRange(_selected_range) > NSMaxRange(range) - lengthChange)
 	    { /* in after */
-	      _selected_range.length = NSMaxRange(_selected_range) - NSMaxRange(range) - lengthChange;
-	      _selected_range.location = NSMaxRange(range);
+	      newRange.length = NSMaxRange(_selected_range) - NSMaxRange(range) - lengthChange;
+	      newRange.location = NSMaxRange(range);
 	    }
 	  else
 	    { /* in in */
-	      _selected_range.length = 0;
-	      _selected_range.location = range.location;
+	      newRange.length = 0;
+	      newRange.location = NSMaxRange(range);
 	    }
 	}
       else if (NSMaxRange(_selected_range) > NSMaxRange(range) - lengthChange)
 	{ /* before after */
-	  _selected_range.length += lengthChange;
+	  newRange.length += lengthChange;
 	}
       else if (NSMaxRange(_selected_range) > range.location)
 	{ /* before in */
-	  _selected_range.length = range.location - _selected_range.location;
+	  newRange.length = range.location - _selected_range.location;
 	}
       else
 	{ /* before before */
 	}
+
+      /* If there are text views attached to use, let them handle the
+      change. */
+      if ([self firstTextView])
+	[[self firstTextView] setSelectedRange: newRange];
+      else
+	_selected_range = newRange;
     }
 }
 
