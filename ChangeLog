@@ -1,3 +1,12 @@
+2002-08-29  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSDisplayServer.m:
+	* Source/NSApplication.m:
+	* Source/NSFont.m:
+	* Source/NSInterfaceStyle.m:
+	* Source/NSTableColumn.m:
+	Documentation fixups ... correct gsdoc markup etc.
+
 2002-08-28  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBezierPath.m

@@ -76,18 +76,20 @@ typedef struct {
    <p>
    Styles can be set using the user defaults system. Currently available
    styles are 
+   </p>
    <list>
-     <item>NSNextStepInterfaceStyle</item>,
-     <item>NSMacintoshInterfaceStyle</item>, 
-     <item>NSWindows95InterfaceStyle</item>, 
-     <item>GSWindowMakerInterfaceStyle</item>. 
+     <item>NSNextStepInterfaceStyle</item>
+     <item>NSMacintoshInterfaceStyle</item> 
+     <item>NSWindows95InterfaceStyle</item> 
+     <item>GSWindowMakerInterfaceStyle</item>
    </list>
+   <p>
    You can set a default style
    for all UI elements using the <code>NSInterfaceStyleDefault</code> key:
+   </p>
    <example>
    defaults write NSGlobalDomain NSInterfaceStyleDefault GSWindowMakerInterfaceStyle 
    </example>
-   </p>
 */
 extern  NSInterfaceStyle
 NSInterfaceStyleForKey(NSString *key, NSResponder *responder)
@@ -99,7 +101,8 @@ NSInterfaceStyleForKey(NSString *key, NSResponder *responder)
    */
   if (responder)
     {
-      style = (NSInterfaceStyle)((accessToResponder)responder)->_interface_style;
+      style
+	= (NSInterfaceStyle)((accessToResponder)responder)->_interface_style;
       if (style != NSNoInterfaceStyle)
 	{
 	  return style;

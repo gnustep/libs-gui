@@ -142,11 +142,13 @@ GSCurrentServer(void)
     be initialized. Typically these values are specific to the
     concrete implementation. The current set of attributes that can be
     used with GSDisplayServer is.
+   </p>
    <list>
-     <item>GSDisplayName</item>,
-     <item>GSDisplayNumber</item>,
-     <item>GSScreenNumber</item>,
+     <item>GSDisplayName</item>
+     <item>GSDisplayNumber</item>
+     <item>GSScreenNumber</item>
    </list>
+   <p>
    GSDisplayName is window server specific and shouldn't be used when
    creating a GSDisplayServer (although you can retrieve the value with
    the -attributes method). On X-Windows the value might be set to something

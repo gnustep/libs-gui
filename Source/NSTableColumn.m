@@ -22,21 +22,9 @@
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
 
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSValue.h>
-#include <AppKit/NSTableHeaderCell.h>
-#include <AppKit/NSTableColumn.h>
-#include <AppKit/NSTableView.h>
-
-/**
-  <unit>
-  <heading>Class Description</heading>
-
-  <p>
-  NSTableColumn objects represent columns in NSTableViews.  
-  </p>
+ <chapter>
+  <heading>Overview of NSTableColumn</heading>
   <section>
     <heading>The Column Identifier</heading>
     <p>
@@ -70,8 +58,20 @@
     of this header cell to the desired title.
     </p>
   </section>
-  </unit>
+ </chapter>
 */  
+
+#include <Foundation/NSNotification.h>
+#include <Foundation/NSValue.h>
+#include <AppKit/NSTableHeaderCell.h>
+#include <AppKit/NSTableColumn.h>
+#include <AppKit/NSTableView.h>
+
+/**
+  <p>
+  NSTableColumn objects represent columns in NSTableViews.  
+  </p>
+ */
 @implementation NSTableColumn
 
 /*

@@ -1177,8 +1177,8 @@ variable. Before processing the event, it makes the session window key
 and orders the window front, so there is no need to do this
 separately. When finished, it returns the state of the session (i.e.
 whether it is still running or has been stopped, etc) 
-<p>
 </p>
+<p>
 See Also: -runModalForWindow:
 </p>
 */
@@ -1303,8 +1303,8 @@ See Also: -runModalForWindow:
 /**
 <p>
    Returns the window that is part of the current modal session, if any.
-<p>
 </p>
+<p>
 See -runModalForWindow:
 </p>
 */

@@ -66,6 +66,7 @@ static BOOL userFixedCacheNeedsRecomputing = NO;
   the class methods listed below for more information. These default
   fonts can be set using the user defaults system. The default
   font names available are:
+  </p>
   <list>
     <item>NSBoldFont                Helvetica-Bold</item>
     <item>NSControlContentFont      Helvetica</item>
@@ -79,7 +80,9 @@ static BOOL userFixedCacheNeedsRecomputing = NO;
     <item>NSUserFixedPitchFont      Courier</item>
     <item>NSUserFont                Helvetica</item>
   </list>
-  The defualt sizes are:
+  <p>
+  The default sizes are:
+  </p>
   <list>
     <item>NSBoldFontSize            (none)</item>
     <item>NSControlContentFontSize  (none)</item>
@@ -94,6 +97,7 @@ static BOOL userFixedCacheNeedsRecomputing = NO;
     <item>NSUserFixedPitchFontSize  (none)</item>
     <item>NSUserFontSize            (none)</item>
   </list>
+  <p>
   Font sizes list with (none) default to NSFontSize.
   </p>
 
