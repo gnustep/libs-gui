@@ -185,10 +185,12 @@
       tab_selected_item = [tab_items indexOfObject: tab_selected];
       [tab_selected _setTabState: NSSelectedTab];
 
-      [self setNeedsDisplay: YES];
+//      [self setNeedsDisplay: YES];
 
       if ([tab_selected view])
 	[self addSubview: [tab_selected view]];
+
+      [self setNeedsDisplay: YES];
 
       if ([tab_delegate respondsToSelector: 
 	@selector(tabView: didSelectTabViewItem:)])
@@ -287,20 +289,29 @@
 
 - (NSRect) contentRect
 {
-  NSRect cRect = _frame;
+  NSRect cRect = _bounds;
 
-  cRect.origin.x = 0;
-  cRect.origin.y = 0;
+//  cRect.origin.x = 0;
+//  cRect.origin.y = 0;
 
   if (tab_type == NSTopTabsBezelBorder)
     {
-      cRect.origin.y = 0;
-      cRect.size.height -= 16;
+      cRect.origin.y += 1; 
+      cRect.origin.x += 0.5; 
+      cRect.size.width -= 2;
+      cRect.size.height -= 18.5;
+    }
+  
+  if (tab_type == NSNoTabsBezelBorder)
+    {
+      cRect.origin.y += 1; 
+      cRect.origin.x += 0.5; 
+      cRect.size.width -= 2;
+      cRect.size.height -= 2;
     }
 
   if (tab_type == NSBottomTabsBezelBorder)
     {
-      NSLog(@"hehehe. %f", cRect.origin.y);
       cRect.size.height -= 8;
       cRect.origin.y = 8;
     }
@@ -318,8 +329,7 @@
   int			i;
   NSRect		previousRect;
   int			previousState = 0;
-
-  rect = _bounds;
+  NSRect		aRect = _bounds;
 
   DPSgsave(ctxt);
 
@@ -327,7 +337,7 @@
     {
       case NSTopTabsBezelBorder: 
 	rect.size.height -= 16;
-	NSDrawButton(rect, rect);
+	NSDrawButton(rect, NSZeroRect);
 	borderThickness = 2;
 	break;
 

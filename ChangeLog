@@ -1,3 +1,7 @@
+2000-10-19  Michael Hanni <mhanni@sprintmail.com>
+
+	* Source/NSTabView.m: a few bugfixes.
+
 2000-10-17  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSPageLayout.h:
