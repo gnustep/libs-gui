@@ -46,6 +46,7 @@
 
 - (id)initWithItemIdentifier: (NSString *)itemIdentifier
 {
+  ASSIGN(_itemIdentifier,itemIdentifier);
   return self;
 }
 
@@ -161,6 +162,9 @@
 
 - (void)validate
 {
+  // validate by default, we know that all of the
+  // "standard" items are correct.
+  _enabled = YES;
 }
 
 - (NSView *)view
@@ -179,10 +183,127 @@
   return _target;
 }
 
-
 // NSCopying protocol
 - (id)copyWithZone: (NSZone *)zone 
 {
+  return self;
+}
+@end
+
+/*
+ *
+ * Standard toolbar items.
+ *
+ */
+
+// ---- NSToolbarSeperatorItemIdentifier
+@interface GSToolbarSeperatorItem : NSToolbarItem
+{
+}
+@end
+
+@implementation GSToolbarSeperatorItem
+- (id) initWithItemIdentifier: (NSString *)itemIdentifier
+{
+  NSImage *image = [NSImage imageNamed: @"GSToolbarSeperatorItem"];
+  [super initWithItemIdentifier: itemIdentifier];
+  [self setImage: image];
+  return self;
+}
+@end
+
+// ---- NSToolbarSpaceItemIdentifier
+@interface GSToolbarSpaceItem : NSToolbarItem
+{
+}
+@end
+
+@implementation GSToolbarSpaceItem
+- (id) initWithItemIdentifier: (NSString *)itemIdentifier
+{
+  NSImage *image = [NSImage imageNamed: @"GSToolbarSpaceItem"];
+  [super initWithItemIdentifier: itemIdentifier];
+  [self setImage: image];
+  return self;
+}
+@end
+
+// ---- NSToolbarFlexibleSpaceItemIdentifier
+@interface GSToolbarFlexibleSpaceItem : NSToolbarItem
+{
+}
+@end
+
+@implementation GSToolbarFlexibleSpaceItem
+- (id) initWithItemIdentifier: (NSString *)itemIdentifier
+{
+  NSImage *image = [NSImage imageNamed: @"GSToolbarFlexibleSpaceItem"];
+  [super initWithItemIdentifier: itemIdentifier];
+  [self setImage: image];
+  return self;
+}
+@end
+
+// ---- NSToolbarShowColorsItemIdentifier
+@interface GSToolbarShowColorsItem : NSToolbarItem
+{
+}
+@end
+
+@implementation GSToolbarShowColorsItem
+- (id) initWithItemIdentifier: (NSString *)itemIdentifier
+{
+  NSImage *image = [NSImage imageNamed: @"GSToolbarShowColorsItem"];
+  [super initWithItemIdentifier: itemIdentifier];
+  [self setImage: image];
+  return self;
+}
+@end
+
+// ---- NSToolbarShowFontsItemIdentifier
+@interface GSToolbarShowFontsItem : NSToolbarItem
+{
+}
+@end
+
+@implementation GSToolbarShowFontsItem
+- (id) initWithItemIdentifier: (NSString *)itemIdentifier
+{
+  NSImage *image = [NSImage imageNamed: @"GSToolbarShowFontsItem"];
+  [super initWithItemIdentifier: itemIdentifier];
+  [self setImage: image];
+  return self;
+}
+@end
+
+// ---- NSToolbarCustomizeToolbarItemIdentifier
+@interface GSToolbarCustomizeToolbarItem : NSToolbarItem
+{
+}
+@end
+
+@implementation GSToolbarCustomizeToolbarItem
+- (id) initWithItemIdentifier: (NSString *)itemIdentifier
+{
+  NSImage *image = [NSImage imageNamed: @"GSToolbarCustomizeToolbarItem"];
+  [super initWithItemIdentifier: itemIdentifier];
+  [self setImage: image];
+  return self;
+}
+@end
+
+// ---- NSToolbarPrintItemIdentifier
+@interface GSToolbarPrintItem : NSToolbarItem
+{
+}
+@end
+
+@implementation GSToolbarPrintItem
+- (id) initWithItemIdentifier: (NSString *)itemIdentifier
+{
+  NSImage *image = [NSImage imageNamed: @"GSToolbarPrintItem"];
+  [super initWithItemIdentifier: itemIdentifier];
+  [self setImage: image];
   return self;
 }
 @end

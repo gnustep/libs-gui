@@ -294,6 +294,10 @@ Class gmodel_class(void)
 		{
 		  id	obj;
 		  
+		  // font fallback and automatic translation...
+		  [unarchiver decodeClassName: @"NSFont" asClassName: @"GSFontProxy"];
+		  // [unarchiver decodeClassName: @"NSString" asClassName: @"GSStringProxy"];
+
 		  NSDebugLog(@"Invoking unarchiver");
 		  [unarchiver setObjectZone: zone];
 		  obj = [unarchiver decodeObject];
@@ -609,7 +613,7 @@ Class gmodel_class(void)
 - (id) initWithCoder: (NSCoder*)aCoder
 {
   int version = [aCoder versionForClassName: @"GSNibContainer"]; 
-
+  
   if(version == GNUSTEP_NIB_VERSION)
     {
       [aCoder decodeValueOfObjCType: @encode(id) at: &nameTable];
@@ -1542,3 +1546,32 @@ Class gmodel_class(void)
   ASSIGN(_template, template);
 }
 @end
+
+// Font proxy...
+@implementation GSFontProxy
+- (id) initWithCoder: (NSCoder *)aDecoder
+{
+  id result = [super initWithCoder: aDecoder];
+  NSDebugLog(@"Inside font proxy...");
+  if(result == nil)
+    {
+      NSDebugLog(@"Couldn't find the font specified, so supply a system font instead.");
+      result = [NSFont systemFontOfSize: [NSFont systemFontSize]];
+    }
+
+  return result;
+}
+@end
+
+// String proxy for dynamic translation...
+/*
+@implementation GSStringProxy
+- (id) initWithCoder: (NSCoder *)aDecoder
+{
+  id result = [[NSString alloc] initWithCoder: aDecoder];
+  NSLog(@"Do your translation here... %@", result);
+  return result;
+}
+@end
+*/
+// end of NSBundleAdditions...

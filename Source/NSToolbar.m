@@ -37,8 +37,9 @@
 #include <AppKit/NSToolbar.h>
 #include <AppKit/NSView.h>
 #include <AppKit/NSButton.h>
-// #include <AppKit/GSHbox.h>
+#include <AppKit/NSNibLoading.h>
 
+// internal
 static NSNotificationCenter *nc = nil;
 static const int current_version = 1;
 
@@ -165,15 +166,9 @@ static const int current_version = 1;
       tableKey = [NSString stringWithFormat: @"NSToolbar Config %@", 
 			   _identifier];
       config = [defaults objectForKey: tableKey];
-      
       if (config != nil) 
 	{
-	  NSEnumerator *en = [config objectEnumerator];
-	  id item = nil;
-	  
-	  while ((item = [en nextObject]) != nil) 
-	    {
-	    }
+	  [self setConfigurationFromDictionary: config];
 	}
     }
 }
@@ -188,7 +183,6 @@ static const int current_version = 1;
   return self;
 }
 
-/* FIXME */
 - (void) dealloc
 {
   DESTROY (_identifier);
@@ -236,6 +230,8 @@ static const int current_version = 1;
 
 - (void) runCustomizationPalette: (id)sender
 {
+  _customizationPaletteIsRunning = [NSBundle loadNibNamed: @"GSToolbarCustomizationPalette" 
+					     owner: self];
 }
 
 - (void) setAllowsUserCustomization: (BOOL)flag
@@ -301,11 +297,18 @@ static const int current_version = 1;
 
 - (void) validateVisibleItems
 {
+  NSEnumerator *en = [_visibleItems objectEnumerator];
+  NSToolbarItem *item = nil;
+
+  while((item = [en nextObject]) != nil)
+    {
+      [item validate];
+    }
 }
 
 - (NSArray *) visibleItems
 {
-  return nil;
+  return _visibleItems;
 }
 @end /* interface of NSToolbar */
 

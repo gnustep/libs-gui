@@ -431,7 +431,7 @@ NSString *NSToolbarWillAddItemNotification = @"NSToolbarWillAddItemNotification"
 // NSToolbarItem constants
 NSString *NSToolbarSeperatorItemIdentifier = @"NSToolbarSeperatorItemIdentifier";
 NSString *NSToolbarSpaceItemIdentifier = @"NSToolbarSpaceItemIdentifier";
-NSString *NSToolbarFlexibleSpaveItemIdentifier = @"NSToolbarFlexibleSpaveItemIdentifier";
+NSString *NSToolbarFlexibleSpaceItemIdentifier = @"NSToolbarFlexibleSpaceItemIdentifier";
 NSString *NSToolbarShowColorsItemIdentifier = @"NSToolbarShowColorsItemIdentifier";
 NSString *NSToolbarShowFontsItemIdentifier = @"NSToolbarShowFontsItemIdentifier";
 NSString *NSToolbarCustomizeToolbarItemIdentifier = @"NSToolbarCustomizeToolbarItemIdentifier";

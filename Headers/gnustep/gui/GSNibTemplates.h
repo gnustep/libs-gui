@@ -144,4 +144,11 @@
 - (void) setTemplate: (id)template;
 @end
 
+@interface GSFontProxy : NSFont
+@end
+
+/*
+@interface GSStringProxy : NSString
+@end
+*/
 #endif /* _GNUstep_H_GSNibTemplates */

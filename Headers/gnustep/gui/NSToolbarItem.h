@@ -49,7 +49,7 @@
  */
 APPKIT_EXPORT NSString *NSToolbarSeperatorItemIdentifier;
 APPKIT_EXPORT NSString *NSToolbarSpaceItemIdentifier;
-APPKIT_EXPORT NSString *NSToolbarFlexibleSpaveItemIdentifier;
+APPKIT_EXPORT NSString *NSToolbarFlexibleSpaceItemIdentifier;
 APPKIT_EXPORT NSString *NSToolbarShowColorsItemIdentifier;
 APPKIT_EXPORT NSString *NSToolbarShowFontsItemIdentifier;
 APPKIT_EXPORT NSString *NSToolbarCustomizeToolbarItemIdentifier;

@@ -1,3 +1,20 @@
+Sun Dec 29 12:27:35 2002  Gregory John Casamento  <greg_casamento@yahoo.com>
+
+	* Headers/gnustep/gui/GSNibTemplates.h: Added declaration for
+	class GSFontProxy.
+	* Source/NSBundleAdditions.m: Added definition for class 
+	GSFontProxy.  This class handles the fall back which is 
+	necessary when unarchiving NSFont when the specified font is 
+	unavailable.   Modified unarchiving code to use the new
+	class when unarchiving.
+	* Headers/gnustep/gui/NSToolbarItem.h: Corrected spelling of
+	NSToolbarFlexibleSpaceItemIdentifier.
+	* Source/NSToolbarItem.m: Did some initial work on the
+	default toolbar items.
+	* Source/externs.m: Corrected spelling of
+	NSToolbarFlexibleSpaceItemIdentifier.
+	
+	
 Sat Dec 28 01:42:40 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSWindow.m ([-_initBackendWindow:]): Fixed code resetting
