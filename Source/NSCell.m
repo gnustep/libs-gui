@@ -603,6 +603,7 @@ static NSColor	*shadowCol;
     }
 }
 
+
 /*
  * Setting the NSCell's State
  */
@@ -1664,6 +1665,11 @@ static NSColor	*shadowCol;
     }
 
   [self drawInteriorWithFrame: cellFrame inView: controlView];
+}
+
+- (void) setHighlighted: (BOOL) flag
+{
+  _cell.is_highlighted = flag;
 }
 
 - (BOOL) isHighlighted

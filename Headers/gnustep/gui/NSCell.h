@@ -392,6 +392,7 @@ typedef enum _NSControlSize {
 	withFrame:(NSRect)cellFrame
 	   inView:(NSView *)controlView;
 - (BOOL)isHighlighted;
+- (void)setHighlighted: (BOOL) flag;
 
 //
 // Editing Text 

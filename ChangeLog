@@ -1,3 +1,9 @@
+2002-01-31  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Source/NSCell.m
+	* Headers/gnustep/gui/NSCell.h : new [NSCell -setHighlighted:] 
+	method
+
 2002-01-30  Adam Fedor  <fedor@gnu.org>
 
 	* Version: 0.7.5
