@@ -37,6 +37,9 @@
    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#ifndef _GNUstep_H_NSTextAttachment
+#define _GNUstep_H_NSTextAttachment
+
 #ifndef STRICT_OPENSTEP
 
 #import <Foundation/Foundation.h>
@@ -113,3 +116,6 @@ enum {
 @end
 
 #endif
+
+#endif /* _GNUstep_H_NSTextAttachment */
+
