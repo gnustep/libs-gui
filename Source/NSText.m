@@ -53,6 +53,7 @@
 #include <AppKit/NSColor.h>
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSSpellChecker.h>
+#include <AppKit/NSClipView.h>
 
 #include <AppKit/NSDragging.h> 
 #include <AppKit/NSStringDrawing.h>
@@ -985,31 +986,59 @@ NSLog(@"did set font");
 
 -(void) sizeToFit
 {
-/*
-	NSRect sizeToRect=[self frame];
-	if([self isHorizontallyResizable])
-	{	if([lineLayoutInformation count])
-		{	sizeToRect=[self boundingRectForLineRange:NSMakeRange(0,[lineLayoutInformation count])];
-		} else sizeToRect.size=minSize;
-	} else if([self isVerticallyResizable])
-	{	if([lineLayoutInformation count])
-		{	NSRect rect=NSUnionRect([[lineLayoutInformation objectAtIndex:0] lineRect],
-									[[lineLayoutInformation lastObject] lineRect]);
-			float	newHeight=rect.size.height;
+  NSRect sizeToRect=[self frame];
 
-			if([[lineLayoutInformation lastObject] type] == LineLayoutInfoType_Paragraph && NSMaxY(rect)<= newHeight)
-				newHeight+=[[lineLayoutInformation lastObject] lineRect].size.height;	// cursor in last line (virtual)
+  NSLog(@"- sizeToFit called.\n");
 
-			newHeight=MIN(maxSize.height,MAX(newHeight,minSize.height));
-			sizeToRect=NSMakeRect(sizeToRect.origin.x,sizeToRect.origin.y-(newHeight-sizeToRect.size.height),
-									sizeToRect.size.width,newHeight);
-		} else sizeToRect=NSMakeRect(0,0,minSize.width,minSize.height);
-	}
-	if(!NSEqualSizes([self frame].size,sizeToRect.size))
-	{	[self setFrame:sizeToRect];	//[self setFrameSize:sizeToRect.size];
-	}
-*/
+  if ([self isFieldEditor]) // if we are a field editor we don't have to handle the size.
+    return;
+
+  if([self isHorizontallyResizable]) {	
+    if([lineLayoutInformation count]) {	
+      sizeToRect=[self boundingRectForLineRange:NSMakeRange(0,[lineLayoutInformation count])];
+    } 
+    else 
+      sizeToRect.size=minSize;
+  } 
+  else if([self isVerticallyResizable]) {
+    if([lineLayoutInformation count]) {	
+      NSRect rect=NSUnionRect([[lineLayoutInformation objectAtIndex:0]
+					 lineRect],
+				[[lineLayoutInformation lastObject] lineRect]);
+      float newHeight=rect.size.height;
+      float newY;
+      NSRect tRect;
+
+      if([[lineLayoutInformation lastObject] type] == LineLayoutInfoType_Paragraph && NSMaxY(rect)<= newHeight)
+        newHeight+=[[lineLayoutInformation lastObject] lineRect].size.height;
+
+      tRect = [(NSClipView*)[self superview] documentVisibleRect];
+
+      if (currentCursorY < tRect.size.height + tRect.origin.y -
+[[lineLayoutInformation lastObject] lineRect].size.height)
+	newY = sizeToRect.origin.y;
+      else if (currentCursorY > tRect.size.height + tRect.origin.y -
+[[lineLayoutInformation lastObject] lineRect].size.height) {
+	newY = currentCursorY - tRect.size.height +
+([[lineLayoutInformation lastObject] lineRect].size.height * 2);
+	[[self superview] scrollToPoint:NSMakePoint(sizeToRect.origin.x,newY)];
+      }
+      else
+	NSLog(@"=========> Oops!\n");
+
+      newHeight=MIN(maxSize.height,MAX(newHeight,minSize.height));
+      sizeToRect=NSMakeRect(sizeToRect.origin.x,sizeToRect.origin.y,
+					sizeToRect.size.width,newHeight);
+    } 
+    else 
+      sizeToRect=NSMakeRect(0,0,minSize.width,minSize.height);
+  }
+
+  if(!NSEqualSizes([self frame].size,sizeToRect.size)) {
+    [self setFrame:sizeToRect];	//[self setFrameSize:sizeToRect.size];
+  }
 }
+
 -(void) sizeToFit:sender {[self sizeToFit];}
 
 //
@@ -1075,8 +1104,10 @@ NSLog(@"did set font");
 //
 
 -(void) scrollRangeToVisible:(NSRange)range
-{	[self scrollRectToVisible:NSUnionRect([self rectForCharacterIndex:[self selectedRange].location],
-										  [self rectForCharacterIndex:NSMaxRange([self selectedRange])])];
+{
+	[self scrollRectToVisible:NSUnionRect([self
+rectForCharacterIndex:[self selectedRange].location],
+	[self rectForCharacterIndex:NSMaxRange([self selectedRange])])];
 }
 
 //
@@ -1134,21 +1165,31 @@ NSLog(@"did set font");
 {	unsigned	cursorIndex;
 	NSPoint		cursorPoint;
 
-	if([self selectedRange].length) currentCursorX=[self rectForCharacterIndex:[self selectedRange].location].origin.x;
+	if([self selectedRange].length) {
+	currentCursorX=[self rectForCharacterIndex:[self selectedRange].location].origin.x;
+	currentCursorY=[self rectForCharacterIndex:[self selectedRange].location].origin.y;
+	}
 	cursorIndex=[self selectedRange].location;
 	cursorPoint=[self rectForCharacterIndex:cursorIndex].origin;
 	cursorIndex=[self characterIndexForPoint:NSMakePoint(currentCursorX+0.001,MAX(0,cursorPoint.y-0.001))];
 	[self setSelectedRange:[self selectionRangeForProposedRange:NSMakeRange(cursorIndex,0) granularity:NSSelectByCharacter]];
+// FIXME: Terrible hack.
+	[self insertText:@""];
 }
 -(void) moveCursorDown:sender
 {	unsigned			cursorIndex;
 	NSRect				cursorRect;
 
-	if([self selectedRange].length) currentCursorX=[self rectForCharacterIndex:NSMaxRange([self selectedRange])].origin.x;
+	if([self selectedRange].length) {
+currentCursorX=[self rectForCharacterIndex:NSMaxRange([self selectedRange])].origin.x;
+currentCursorY=[self rectForCharacterIndex:NSMaxRange([self selectedRange])].origin.y;
+	}
 	cursorIndex=[self selectedRange].location;
 	cursorRect=[self rectForCharacterIndex:cursorIndex];
 	cursorIndex=[self characterIndexForPoint:NSMakePoint(currentCursorX+0.001,NSMaxY(cursorRect)+0.001)];
 	[self setSelectedRange:[self selectionRangeForProposedRange:NSMakeRange(cursorIndex,0) granularity:NSSelectByCharacter]];
+// FIXME: Terrible hack.
+	[self insertText:@""];
 }
 -(void) moveCursorLeft:sender
 {	[self setSelectedRange:[self selectionRangeForProposedRange:NSMakeRange([self selectedRange].location-1,0) granularity:NSSelectByCharacter]];
@@ -1237,6 +1278,7 @@ NSLog(@"did set font");
 	else if(chosenRange.length == 0) [self drawInsertionPointAtIndex:chosenRange.location color:[NSColor blackColor] turnedOn:YES];
 
 	currentCursorX=[self rectForCharacterIndex:chosenRange.location].origin.x;	// remember for column stable cursor up/down
+	currentCursorY=[self rectForCharacterIndex:chosenRange.location].origin.y;	// remember for column stable cursor up/down
 
 	[self unlockFocus];
 	[[self window] flushWindow];
@@ -1331,6 +1373,7 @@ NSLog(NSStringFromRange(redrawLineRange));
 
 	[self setSelectedRange:NSMakeRange([self selectedRange].location+[insertString length],0)];	// move cursor <!> [self selectionRangeForProposedRange:]
 	currentCursorX=[self rectForCharacterIndex:[self selectedRange].location].origin.x;		// remember x for row-stable cursor movements
+	currentCursorY=[self rectForCharacterIndex:[self selectedRange].location].origin.y;		// remember x for row-stable cursor movements
 
 	redrawLineRange=NSIntersectionRange(redrawLineRange,[self lineRangeForRect:[self visibleRect]]);
 	[self redisplayForLineRange:redrawLineRange];
@@ -1376,6 +1419,7 @@ NSLog(NSStringFromRange(redrawLineRange));
 
 	[self setSelectedRange:NSMakeRange(deleteRange.location,0)];	// move cursor <!> [self selectionRangeForProposedRange:]
 	currentCursorX=[self rectForCharacterIndex:[self selectedRange].location].origin.x;		// remember x for row-stable cursor movements
+	currentCursorY=[self rectForCharacterIndex:[self selectedRange].location].origin.y;		// remember x for row-stable cursor movements
 	redrawLineRange=NSIntersectionRange(redrawLineRange,[self lineRangeForRect:[self visibleRect]]);
 	[self redisplayForLineRange:redrawLineRange];
 
@@ -1421,6 +1465,7 @@ NSLog(NSStringFromRange(redrawLineRange));
 		case NSCarriageReturnKey:	// return
 			if([self isFieldEditor])	//textShouldEndEditing delegation is handled in resignFirstResponder
 			{
+	NSLog(@"isFieldEditor return\n");
 #if 0
 // Movement codes for movement between fields; these codes are the intValue of the NSTextMovement key in NSTextDidEndEditing notifications
 				[NSNumber numberWithInt:NSIllegalTextMovement]
@@ -1432,12 +1477,14 @@ NSLog(NSStringFromRange(redrawLineRange));
 				[NSNumber numberWithInt:NSUpTextMovement]
 				[NSNumber numberWithInt:NSDownTextMovement]
 #endif
-
 				[[self window] makeFirstResponder:[self nextResponder]];
 				[self textDidEndEditing:[NSNotification notificationWithName:NSTextDidEndEditingNotification object:self
 							   userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:NSReturnTextMovement],@"NSTextMovement",nil]]];
 			} else
-			{	[self insertText:[[self class] newlineString]];
+			{
+	NSLog(@"\bCarriage return.\b\n");
+
+	[self insertText:[[self class] newlineString]];
 				return;
 			}
 		break;

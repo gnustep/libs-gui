@@ -115,6 +115,7 @@ typedef enum _NSSelectionAffinity
 	NSCharacterSet				*selectionWordGranularitySet,*selectionParagraphGranularitySet;
 	BOOL						 displayDisabled;
 	float						 currentCursorX;			// column-stable cursor up/down
+	float						 currentCursorY; // column-stable cursor up/down
 }
 
 

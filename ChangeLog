@@ -1,3 +1,12 @@
+1999-06-23  Michael Hanni  <mhanni@sprintmail.com>
+
+	* Source/NSText.m: tweaked - sizeToFit and now scrollbars are
+	correctly positioned. Furthermore down arrow will move you down
+	through text in Edit.app (up arrow does too, but the algo doesn't
+	work for it so its dead.)
+	* Source/NSTabViewItem.m: remove top line drawing.
+	* Source/NSTabView.m: add top line drawing.
+
 1999-06-22  Michael Hanni  <mhanni@sprintmail.com>
 
 	* Source/NSText.m: new file from Daniel. Modifications to allow it

@@ -126,12 +126,7 @@
       
   DPSgsave(ctxt);
 
-  DPSsetlinewidth(ctxt, 1);
-  DPSsetgray(ctxt, 1);
-
   fRect = tabRect;
-
-  fRect.size.height -= 5;
 
   if (item_state == NSSelectedTab) {
     fRect.origin.y -= 1;
@@ -142,13 +137,9 @@
     [[NSColor lightGrayColor] set];
     NSRectFill(fRect);
   } else {
+    [[NSColor lightGrayColor] set];
     NSRectFill(fRect);
   }
-
-  DPSsetgray(ctxt, 1);
-  DPSmoveto(ctxt, tabRect.origin.x, tabRect.origin.y+16);
-  DPSrlineto(ctxt, tabRect.size.width, 0);
-  DPSstroke(ctxt);
 
   lRect = tabRect;
   lRect.origin.y += 3;

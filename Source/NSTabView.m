@@ -205,7 +205,8 @@
     NSTabViewItem *anItem = [tab_items objectAtIndex:i];
     NSTabState itemState;
 
-    if (i == 2) [anItem _setTabState:NSSelectedTab];
+    // hack to simulate a selected tab other than tab one.
+    if (i == 1) [anItem _setTabState:NSSelectedTab];
 
     itemState = [anItem tabState];
 
@@ -229,7 +230,13 @@
       r.origin.x = rect.origin.x + 13;
       r.origin.y = rect.size.height;
       r.size.width = s.width;
-      r.size.height = 20;
+      r.size.height = 15;
+
+      DPSsetlinewidth(ctxt,1);
+      DPSsetgray(ctxt,1);
+      DPSmoveto(ctxt, r.origin.x, r.origin.y+16);
+      DPSrlineto(ctxt, r.size.width, 0);
+      DPSstroke(ctxt);      
 
       [anItem drawLabel:NO inRect:r];
 
@@ -261,7 +268,13 @@
       r.origin.x = iP.x + 13;
       r.origin.y = rect.size.height;
       r.size.width = s.width;
-      r.size.height = 20;
+      r.size.height = 15;
+
+      DPSsetlinewidth(ctxt,1);
+      DPSsetgray(ctxt,1);
+      DPSmoveto(ctxt, r.origin.x, r.origin.y+16);
+      DPSrlineto(ctxt, r.size.width, 0);
+      DPSstroke(ctxt);      
 
       [anItem drawLabel:NO inRect:r];
 
