@@ -32,6 +32,7 @@
 #include <Foundation/NSSet.h>
 #include <Foundation/NSMapTable.h>
 #include <Foundation/NSException.h>
+#include <Foundation/NSDebug.h>
 
 #include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSFont.h>
@@ -1014,7 +1015,6 @@ static BOOL flip_hack;
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  printf("encoding role %i\n",role);
   [aCoder encodeValueOfObjCType: @encode(int) at: &role];
 
   if (role == 0)
@@ -1037,12 +1037,10 @@ static BOOL flip_hack;
   BOOL	fix;
   int the_role;
 
-  printf("[NSFont -initWithCoder:] version %i\n",version);
   if (version == 3)
     {
       [aDecoder decodeValueOfObjCType: @encode(int)
 				   at: &the_role];
-      printf("got explicit role %i\n",the_role);
     }
   else
     {
@@ -1134,8 +1132,7 @@ static BOOL flip_hack;
 	    break;
 
 	  default:
-//	    NSDebugLLog(@"NSFont", @"unknown role %i", the_role);
-	    printf("unknown role %i", the_role);
+	    NSDebugLLog(@"NSFont", @"unknown role %i", the_role);
 	    /* fall through */
 	  case RoleUserFont:
 	    new = [isa userFontOfSize: size];
