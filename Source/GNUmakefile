@@ -165,6 +165,7 @@ AppKit/AppKitExceptions.h \
 AppKit/DPSOperators.h \
 AppKit/GMAppKit.h \
 AppKit/GMArchiver.h \
+AppKit/GSFontInfo.h \
 AppKit/GSInfoPanel.h \
 AppKit/GSMethodTable.h \
 AppKit/GSPasteboardServer.h \
