@@ -351,7 +351,10 @@ NSPrintPanel *shared_instance;
   [[CONTROL(self, NSPPPageRangeFrom) cellAtIndex: 0] setStringValue: @"" ];
   [[CONTROL(self, NSPPPageRangeTo) cellAtIndex: 0] setStringValue: @"" ];
   [CONTROL(self, NSPPPageChoiceMatrix) selectCellAtRow: 0 column: 0];
-  scale = [[dict objectForKey: NSPrintScalingFactor] doubleValue];
+  if ([dict objectForKey: NSPrintScalingFactor])
+    scale = [[dict objectForKey: NSPrintScalingFactor] doubleValue];
+  else 
+    scale = 0;
   if (scale == 0)
     scale = 1;
   [CONTROL(self, NSPPScaleField) setIntValue: (int)(scale*100)];
