@@ -967,7 +967,9 @@ static NSMapTable* windowmaps = NULL;
  */
 - (void) setWindowController: (NSWindowController*)windowController
 {
-  ASSIGN(_windowController, windowController);
+  /* The window controller owns us, we only keep a weak reference to
+     it */
+  _windowController = windowController;
 }
 
 - (id) windowController
