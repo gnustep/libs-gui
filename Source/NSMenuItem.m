@@ -160,9 +160,14 @@ static Class imageClass;
     [NSException raise: NSInvalidArgumentException
 		format: @"submenu already has supermenu: "];
   ASSIGN(_submenu, submenu);
-  [submenu setSupermenu: _menu];
+  if (submenu != nil)
+    {
+      [submenu setSupermenu: _menu];
+      [submenu setTitle: [self title]];
+    }
   [self setTarget: _menu];
   [self setAction: @selector(submenuAction:)];
+  [_menu itemChanged: self];
 }
 
 - (NSMenu*) submenu
@@ -176,6 +181,7 @@ static Class imageClass;
     aString = @"";
 
   ASSIGNCOPY(_title,  aString);
+  [_menu itemChanged: self];
 }
 
 - (NSString*) title
@@ -194,6 +200,7 @@ static Class imageClass;
     aKeyEquivalent = @"";
 
   ASSIGNCOPY(_keyEquivalent,  aKeyEquivalent);
+  [_menu itemChanged: self];
 }
 
 - (NSString*) keyEquivalent
@@ -236,6 +243,7 @@ static Class imageClass;
 - (void) setMnemonicLocation: (unsigned)location
 {
   _mnemonicLocation = location;
+  [_menu itemChanged: self];
 }
 
 - (unsigned) mnemonicLocation
@@ -269,6 +277,7 @@ static Class imageClass;
     NSInvalidArgumentException);
 
   ASSIGN(_image, image);
+  [_menu itemChanged: self];
 }
 
 - (NSImage*) image
@@ -278,8 +287,12 @@ static Class imageClass;
 
 - (void) setState: (int)state
 {
+  if (_state == state)
+    return;
+
   _state = state;
   _changesState = YES;
+  [_menu itemChanged: self];
 }
 
 - (int) state
@@ -293,6 +306,7 @@ static Class imageClass;
     NSInvalidArgumentException);
 
   ASSIGN(_onStateImage, image);
+  [_menu itemChanged: self];
 }
 
 - (NSImage*) onStateImage
@@ -306,6 +320,7 @@ static Class imageClass;
     NSInvalidArgumentException);
 
   ASSIGN(_offStateImage, image);
+  [_menu itemChanged: self];
 }
 
 - (NSImage*) offStateImage
@@ -319,6 +334,7 @@ static Class imageClass;
     NSInvalidArgumentException);
 
   ASSIGN(_mixedStateImage, image);
+  [_menu itemChanged: self];
 }
 
 - (NSImage*) mixedStateImage
@@ -328,7 +344,11 @@ static Class imageClass;
 
 - (void) setEnabled: (BOOL)flag
 {
+  if (flag == _enabled)
+    return;
+
   _enabled = flag;
+  [_menu itemChanged: self];
 }
 
 - (BOOL) isEnabled
@@ -338,7 +358,11 @@ static Class imageClass;
 
 - (void) setTarget: (id)anObject
 {
+  if (_target == anObject)
+    return;
+
   _target = anObject;
+  [_menu itemChanged: self];
 }
 
 - (id) target
@@ -348,7 +372,11 @@ static Class imageClass;
 
 - (void) setAction: (SEL)aSelector
 {
+  if (_action == aSelector)
+    return;
+
   _action = aSelector;
+  [_menu itemChanged: self];
 }
 
 - (SEL) action
