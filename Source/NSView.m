@@ -1273,55 +1273,38 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) resizeWithOldSuperviewSize: (NSSize)oldSize
 {
-  float		change;
-  float		changePerOption;
   int		options = 0;
-  NSRect        newFrame, newBounds;
   NSSize	superViewFrameSize = [_super_view frame].size;
+  NSRect        newFrame = _frame;
   BOOL		changedOrigin = NO;
   BOOL		changedSize = NO;
-
-  /* FIXME: No need to compute the bounds.  setFrame: should do that
-     if needed */
 
   if (_autoresizingMask == NSViewNotSizable)
     return;
 
-  newFrame = _frame;
-  newBounds = _bounds;
   /*
    * determine if and how the X axis can be resized
    */
   if (_autoresizingMask & NSViewWidthSizable)
     options++;
+
   if (_autoresizingMask & NSViewMinXMargin)
     options++;
+
   if (_autoresizingMask & NSViewMaxXMargin)
     options++;
 
   /*
    * adjust the X axis if any X options are set in the mask
    */
-  if (options >= 1)
+  if (options > 0)
     {
-      change = superViewFrameSize.width - oldSize.width;
-      changePerOption = change/options;
+      float change = superViewFrameSize.width - oldSize.width;
+      float changePerOption = change / options;
 
       if (_autoresizingMask & NSViewWidthSizable)
 	{ 
-	  float oldFrameWidth = newFrame.size.width;
-
           newFrame.size.width += changePerOption;
-
-	  if (_is_rotated_or_scaled_from_base)
-	    {
-	      newBounds.size.width *= newFrame.size.width/oldFrameWidth;
-	    }
-	  else
-	    {
-	      newBounds.size.width += changePerOption;
-	    }
-
           changedSize = YES;
 	}
       if (_autoresizingMask & NSViewMinXMargin)
@@ -1337,34 +1320,24 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   options = 0;
   if (_autoresizingMask & NSViewHeightSizable)
     options++;
+
   if (_autoresizingMask & NSViewMinYMargin)
     options++;
+
   if (_autoresizingMask & NSViewMaxYMargin)
     options++;
 
   /*
    * adjust the Y axis if any Y options are set in the mask
    */
-  if (options >= 1)
+  if (options > 0)
     {
-      change = superViewFrameSize.height - oldSize.height;
-      changePerOption = change/options;
-
+      float change = superViewFrameSize.height - oldSize.height;
+      float changePerOption = change / options;
+      
       if (_autoresizingMask & NSViewHeightSizable)
 	{
-	  float oldFrameHeight = newFrame.size.height;
-
           newFrame.size.height += changePerOption;
-	  
-	  if (_is_rotated_or_scaled_from_base)
-	    {
-	      newBounds.size.height *= newFrame.size.height/oldFrameHeight;
-	    }
-	  else
-	    {
-	      newBounds.size.height += changePerOption;
-	    }
-	      
 	  changedSize = YES;
 	}
       if (_autoresizingMask & (NSViewMaxYMargin | NSViewMinYMargin))
