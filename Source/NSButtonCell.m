@@ -503,10 +503,19 @@
 	imageRect.origin = cellFrame.origin;
 	imageRect.size.width = imageSize.width;
 	imageRect.size.height = cellFrame.size.height;
-
+	if (_cell.is_bordered || _cell.is_bezeled) 
+	    {
+	      imageRect.origin.x += 3;
+	      imageRect.size.height -= 2;
+	      imageRect.origin.y += 1;
+	    }
 	titleRect = imageRect;
 	titleRect.origin.x += imageSize.width + xDist;
 	titleRect.size.width = cellFrame.size.width - imageSize.width - xDist;
+	if (_cell.is_bordered || _cell.is_bezeled) 
+	  {
+	    titleRect.size.width -= 3;
+	  }
 	break;
 
       case NSImageRight: 
@@ -514,10 +523,20 @@
 	imageRect.origin.y = cellFrame.origin.y;
 	imageRect.size.width = imageSize.width;
 	imageRect.size.height = cellFrame.size.height;
-
+	if (_cell.is_bordered || _cell.is_bezeled) 
+	    {
+	      imageRect.origin.x -= 3;
+	      imageRect.size.height -= 2;
+	      imageRect.origin.y += 1;
+	    }
 	titleRect.origin = cellFrame.origin;
 	titleRect.size.width = cellFrame.size.width - imageSize.width - xDist;
 	titleRect.size.height = cellFrame.size.height;
+	if (_cell.is_bordered || _cell.is_bezeled) 
+	  {
+	    titleRect.origin.x += 3;
+	    titleRect.size.width -= 3;
+	  }
 	break;
 
       case NSImageAbove: 
@@ -528,6 +547,7 @@
 	titleRect.size.width = cellFrame.size.width;
 	titleRect.size.height = cellFrame.size.height - imageSize.height
 	  - yDist;
+	// TODO: Add distance from border if needed
 	if (flippedView)
 	  {
 	    imageRect.origin.y = NSMinY(cellFrame);
@@ -548,6 +568,7 @@
 	titleRect.size.width = cellFrame.size.width;
 	titleRect.size.height = cellFrame.size.height - imageSize.height
 	  - yDist;
+	// TODO: Add distance from border if needed
 	if (flippedView)
 	  {
 	    imageRect.origin.y = NSMaxY(cellFrame) - imageRect.size.height;
@@ -563,6 +584,7 @@
       case NSImageOverlaps: 
 	titleRect = cellFrame;
 	imageRect = cellFrame;
+	// TODO: Add distance from border if needed
 	break;
     }
   if (imageToDisplay != nil)
@@ -634,7 +656,7 @@
   
   if (titleToDisplay)
     titleSize = NSMakeSize ([_cell_font widthOfString: titleToDisplay], 
-			    [_cell_font pointSize]);
+			    [_cell_font boundingRectForFont].size.height); 
   else 
     titleSize = NSZeroSize;
   
@@ -680,19 +702,19 @@
       break;
     }
   
-  // Add some spacing between text/image and border
-  // if there is text in the button
-  if (titleToDisplay) {
-    s.width += 2 * xDist;
-    s.height += 2 * yDist;
-  }
- 
   // Get border size
   if (_cell.is_bordered)
     // Buttons only have three paths for border (NeXT looks)
     borderSize = NSMakeSize (1.5, 1.5);
   else
     borderSize = NSZeroSize;
+
+  if ((_cell.is_bordered || _cell.is_bezeled) 
+      && (_cell.image_position != NSImageOnly))
+    {
+      borderSize.height += 1;
+      borderSize.width  += 3;
+    }
   
   // Add border size
   s.width += 2 * borderSize.width;
