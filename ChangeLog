@@ -1,3 +1,8 @@
+2003-09-21 15:15  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSTextView.m (-readSelectionFromPasteboard:type:): Handle
+	NSTIFFPboardType. Based on patch from Nicolas Roard.
+
 2003-09-20  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSWindowController.m ([NSWindowController -setDocument:]): 

@@ -3554,7 +3554,30 @@ right.)
 	    }
 	  return YES;
 	}
-      // TODO: Should also support: NSTIFFPboardType
+      if ([type isEqualToString: NSTIFFPboardType])
+	{
+	  if (changeRange.location != NSNotFound)
+	    {
+	      NSData *pboardData = [pboard dataForType: NSTIFFPboardType];
+	      NSFileWrapper *wrapper = [[NSFileWrapper alloc] initRegularFileWithContents: pboardData];
+	      NSImage *image = [[NSImage alloc] initWithData: pboardData];
+	      NSTextAttachment *attachment = [[NSTextAttachment alloc] initWithFileWrapper: wrapper];
+	      NSAttributedString *as = [NSAttributedString attributedStringWithAttachment: attachment];
+
+	      [wrapper setIcon: image];
+	      if ([self shouldChangeTextInRange: changeRange
+			      replacementString: [as string]])
+		{
+		  [self replaceCharactersInRange: changeRange
+			    withAttributedString: as];
+		  [self didChangeText];
+		}
+	      RELEASE(attachment);
+	      RELEASE(image);
+	      RELEASE(wrapper);
+	    }
+	  return YES;
+        }
       if ([type isEqualToString: NSFileContentsPboardType])
 	{
 	  NSTextAttachment *attachment = [[NSTextAttachment alloc] 
@@ -3565,7 +3588,7 @@ right.)
 
 	  if (changeRange.location != NSNotFound &&
 	      [self shouldChangeTextInRange: changeRange
-		replacementString: [as string]]) /* TODO: is this correct? */
+		replacementString: [as string]])
 	    {
 	      [self replaceCharactersInRange: changeRange
 		withAttributedString: as];
@@ -3668,7 +3691,7 @@ right.)
   if (_tf.imports_graphics)
     {
       [ret addObject: NSRTFDPboardType];
-      //[ret addObject: NSTIFFPboardType];
+      [ret addObject: NSTIFFPboardType];
       [ret addObject: NSFileContentsPboardType];
     }
   if (_tf.is_rich_text)
