@@ -1209,8 +1209,8 @@ static MPoint anchor = {0, 0};
 					if (previousCell == aCell)			// more than one cell
 						break;				 			// to be selected
 
-					[selectedCell setState:0];			// deselect previous
-					if (!previousCell)					// selection
+					[selectedCell setState:0];			// deselect previously
+					if (!previousCell)					// selected cell
 						previousCellRect = [self cellFrameAtRow:selectedRow 
 									  			 column:selectedColumn];
 					[selectedCell highlight:NO 			
@@ -1220,8 +1220,8 @@ static MPoint anchor = {0, 0};
 													[selectedColumn] = NO;				
 					[self setNeedsDisplayInRect:previousCellRect];
 
-					ASSIGN(selectedCell, aCell);		// select current
-					selectedRow = row;					// selection
+					ASSIGN(selectedCell, aCell);		// select current cell
+					selectedRow = row;					
 					selectedColumn = column;
 					[aCell setState:1];					
 					[aCell highlight:YES withFrame:rect inView:self];
@@ -1313,9 +1313,8 @@ static MPoint anchor = {0, 0};
     		}
 		lastLocation = [lastEvent locationInWindow];
 		lastLocation = [self convertPoint:lastLocation fromView:nil];
-  		}								// a mouse up terminates the selection
-										// loop.  we then need to complete the 
-										// selection process and send actions
+  		}
+						
 	[[self window] releaseMouse: self];				// Release the mouse
 
   	switch (mode) 									// Finalize the selection
@@ -1325,13 +1324,10 @@ static MPoint anchor = {0, 0};
 			[selectedCell setState:![selectedCell state]];
 		case NSRadioModeMatrix:				
 			[selectedCell highlight:NO withFrame:rect inView:self];
+		case NSListModeMatrix:						
 			[self setNeedsDisplayInRect:rect];
 			break;
-		case NSListModeMatrix:						// save last position after
-			anchor = MakePoint (column, row);		// mouse up as new anchor
-			break;									// point in List mode
-  		}
-								// in Track and Highlight modes the single
+  		}						// in Track and Highlight modes the single
 								// click action has already been sent by the  
 								// cell to it's target (if it has one)
 	if ((mode != NSTrackModeMatrix) && (mode != NSHighlightModeMatrix) && 
@@ -1340,21 +1336,19 @@ static MPoint anchor = {0, 0};
 							withObject:self];
 	else 										// selected cell has no target
 		{										// so send single click action 
-		if (target)								// to matrix's (self) target			
+		if (target)								// to matrix's (self's) target			
 			[target performSelector:action withObject:self];
 		}
-							// click count > 1 indicates a mouse double click					
+								// click count > 1 indicates a double click					
 	if (target && doubleAction && ([lastEvent clickCount] > 1))				
-		[target performSelector:doubleAction withObject:self];
-
+		[target performSelector:doubleAction withObject:self];	
+																
 	[self unlockFocus];
 
 	if ((mode != NSTrackModeMatrix) && (mode != NSHighlightModeMatrix)) 
 		[NSEvent stopPeriodicEvents];
 
 	[lastEvent release];
-
-	[self setNeedsDisplayInRect:rect];
 }
 
 - (BOOL)performKeyEquivalent:(NSEvent*)theEvent

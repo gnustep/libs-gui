@@ -1,3 +1,8 @@
+<<<<<<< ChangeLog
+Weds July 29 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* NSMatrix.m in mouseDown adjusted the selection process when in List mode
+
 Tue Jul 28 13:02:43 1998  Adam Fedor  <fedor@ultra.doc.com>
 
 	* Source/NSSplitView.m: Implemention from Robert Vasvari
