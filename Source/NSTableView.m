@@ -1896,7 +1896,7 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 		   row: row] == NO)
       {
 	return NO;
-	}
+      }
   }
   
   return YES;
@@ -3587,8 +3587,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		    {
 		      draggingPossible = NO;
 		    }
-		  else if (mouseLocationWin.x - initialLocation.x >= 4
-			   || mouseLocationWin.x - initialLocation.x <= -4)
+		  else if (fabs(mouseLocationWin.x - initialLocation.x) >= 4)
 		    {
 		      NSPasteboard *pboard;
 		      NSArray *rows;
@@ -3596,7 +3595,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		      mouseLocationView.x = _bounds.origin.x;
 		      oldRow = currentRow;
 		      currentRow = [self rowAtPoint: mouseLocationView];
-		      if (oldRow != currentRow)
+		      if (![_selectedRows containsIndex: currentRow])
 			{
 			  /* Mouse drag in a row that wasn't selected.
 			     select the new row before dragging */
@@ -3608,7 +3607,6 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 					      currentRow,
 					      &_selectedRow,
 					      selectionMode);
-			  
 			}
 
 		      rows = [self _selectedRowArray];

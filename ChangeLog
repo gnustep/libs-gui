@@ -1,3 +1,8 @@
+2004-09-23 22:33  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSTableView.m (-mouseDown:): Fix the check that detects
+	when an unselected row is being dragged.
+
 2004-09-23 18:01  Alexander Malmberg <alexander@malmberg.org>
 
 	* Printing/GSLPR/GSLPRPrintOperation.m (-createContext): Always use
