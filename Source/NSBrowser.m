@@ -34,6 +34,7 @@
 #include <math.h>                  // (float)rintf(float x)
 #include <gnustep/gui/config.h>
 #include <Foundation/NSArray.h>
+#include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
 #include <AppKit/NSBrowser.h>
 #include <AppKit/NSBrowserCell.h>

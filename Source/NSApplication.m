@@ -57,6 +57,7 @@
 #include <AppKit/NSPopUpButton.h>
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSColorPanel.h>
+#include <AppKit/NSFontManager.h>
 #include <AppKit/NSPanel.h>
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSImage.h>

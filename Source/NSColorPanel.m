@@ -30,6 +30,7 @@
 #include <Foundation/NSEnumerator.h>
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSLock.h>
+#include <Foundation/NSNotification.h>
 #include <Foundation/NSPathUtilities.h>
 #include <AppKit/NSButtonCell.h>
 #include <AppKit/NSColor.h>
@@ -37,6 +38,7 @@
 #include <AppKit/NSColorPicker.h>
 #include <AppKit/NSColorPicking.h>
 #include <AppKit/NSColorWell.h>
+#include <AppKit/NSImage.h>
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSApplication.h>

@@ -25,6 +25,7 @@
 */
 
 #include <Foundation/NSNotification.h>
+#include <Foundation/NSValue.h>
 #include <AppKit/NSTableHeaderCell.h>
 #include <AppKit/NSTableColumn.h>
 #include <AppKit/NSTableView.h>

@@ -34,6 +34,7 @@
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSString.h>
+#include <Foundation/NSProcessInfo.h>
 
 static id 
 _value_from_info_plist_for_key (NSString *key)

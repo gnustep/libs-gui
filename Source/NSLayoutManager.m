@@ -32,6 +32,7 @@
 #include <AppKit/NSParagraphStyle.h>
 #include "GSSimpleLayoutManager.h"
 
+#include <AppKit/NSImage.h>
 #include <AppKit/NSWindow.h>
 #include <Foundation/NSException.h>
 

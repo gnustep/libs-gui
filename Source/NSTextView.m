@@ -59,6 +59,7 @@
 #include <AppKit/NSLayoutManager.h>
 #include <AppKit/NSTextStorage.h>
 #include <AppKit/NSColorPanel.h>
+#include <AppKit/NSAttributedString.h>
 
 #define HUGE 1e7
 

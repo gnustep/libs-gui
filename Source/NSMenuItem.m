@@ -30,6 +30,7 @@
 #include <gnustep/gui/config.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSDictionary.h>
+#include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
 #include <AppKit/NSMenuItem.h>
 #include <AppKit/NSMenu.h>

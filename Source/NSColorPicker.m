@@ -28,6 +28,7 @@
 */ 
 
 #include <gnustep/gui/config.h>
+#include <Foundation/NSBundle.h>
 #include <AppKit/NSButtonCell.h>
 #include <AppKit/NSColorPicker.h>
 

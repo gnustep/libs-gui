@@ -26,12 +26,20 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
+#include <Foundation/NSException.h>
+#include <Foundation/NSFormatter.h>
+#include <Foundation/NSNotification.h>
+#include <Foundation/NSSet.h>
+#include <Foundation/NSUserDefaults.h>
+#include <Foundation/NSValue.h>
+
 #include <AppKit/NSTableView.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSCell.h>
 #include <AppKit/NSClipView.h>
 #include <AppKit/NSColor.h>
 #include <AppKit/NSEvent.h>
+#include <AppKit/NSImage.h>
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSScroller.h>
 #include <AppKit/NSTableColumn.h>

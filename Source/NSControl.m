@@ -29,6 +29,7 @@
 
 #include <gnustep/gui/config.h>
 
+#include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
 #include <AppKit/NSControl.h>
 #include <AppKit/NSColor.h>

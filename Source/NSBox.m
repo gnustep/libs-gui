@@ -27,6 +27,7 @@
 
 #include <gnustep/gui/config.h>
 #include <Foundation/NSArray.h>
+#include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSString.h>
 

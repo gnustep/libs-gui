@@ -26,6 +26,9 @@
 
 #include <Foundation/NSString.h>
 #include <Foundation/NSArray.h>
+#include <Foundation/NSRunLoop.h>
+#include <Foundation/NSException.h>
+#include <Foundation/NSAutoreleasePool.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSBox.h>
 #include <AppKit/NSBrowser.h>

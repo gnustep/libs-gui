@@ -31,6 +31,7 @@
 #include <AppKit/NSComboBox.h>
 #include <AppKit/NSComboBoxCell.h>
 #include <AppKit/NSGraphicsContext.h>
+#include <AppKit/NSImage.h>
 #include <AppKit/NSScreen.h>
 
 #include "GSComboSupport.h"

@@ -35,6 +35,7 @@
 #include <Foundation/NSArray.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSException.h>
+#include <Foundation/NSDebug.h>
 
 #include <AppKit/AppKitExceptions.h>
 #include <AppKit/NSButtonCell.h>

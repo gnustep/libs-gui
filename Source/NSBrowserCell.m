@@ -29,6 +29,8 @@
 
 #include <gnustep/gui/config.h>
 
+#include <Foundation/NSUserDefaults.h>
+
 #include <AppKit/NSBrowserCell.h>
 #include <AppKit/NSColor.h>
 #include <AppKit/NSFont.h>

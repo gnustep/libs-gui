@@ -31,6 +31,7 @@
 
 #include <Foundation/NSDate.h>
 #include <Foundation/NSRunLoop.h>
+#include <Foundation/NSDebug.h>
 
 #include <AppKit/NSScroller.h>
 #include <AppKit/NSScrollView.h>

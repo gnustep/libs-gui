@@ -47,6 +47,10 @@
 #include <AppKit/NSWorkspace.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSFileManager.h>
+#include <Foundation/NSUserDefaults.h>
+#include <Foundation/NSURL.h>
+#include <Foundation/NSAutoreleasePool.h>
+#include <Foundation/NSNotification.h>
 #include <Foundation/NSPathUtilities.h>
 
 #define _SAVE_PANEL_X_PAD	5

@@ -32,6 +32,10 @@
 
 #include <gnustep/gui/config.h>
 
+#include <Foundation/NSDebug.h>
+#include <Foundation/NSRunLoop.h>
+#include <Foundation/NSScanner.h>
+#include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSArray.h>

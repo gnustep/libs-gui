@@ -46,6 +46,7 @@
 #include <Foundation/NSPortNameServer.h>
 #include <Foundation/NSTask.h>
 #include <Foundation/NSObjCRuntime.h>
+#include <Foundation/NSInvocation.h>
 
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSPasteboard.h>

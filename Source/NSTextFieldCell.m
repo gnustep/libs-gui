@@ -28,6 +28,7 @@
 */ 
 
 #include <gnustep/gui/config.h>
+#include <Foundation/NSNotification.h>
 #include <AppKit/NSColor.h>
 #include <AppKit/NSFont.h>
 #include <AppKit/NSGraphics.h>

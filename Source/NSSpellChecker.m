@@ -38,6 +38,7 @@
 #include <Foundation/NSUtilities.h>
 #include <Foundation/NSValue.h>
 #include <AppKit/NSNibLoading.h>
+#include <AppKit/NSImage.h>
 #include <AppKit/NSSpellChecker.h>
 #include <AppKit/NSSpellServer.h>
 #include <AppKit/GSServicesManager.h>

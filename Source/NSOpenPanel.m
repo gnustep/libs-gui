@@ -42,6 +42,9 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSException.h>
+#include <Foundation/NSFileManager.h>
+#include <Foundation/NSNotification.h>
+#include <Foundation/NSURL.h>
 #include <AppKit/GMArchiver.h>
 #include <AppKit/IMLoading.h>
 #include <AppKit/NSApplication.h>

@@ -25,6 +25,7 @@
 
 #include <gnustep/gui/config.h>
 
+#include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
 #include <AppKit/NSStepper.h>
 #include <AppKit/NSControl.h>

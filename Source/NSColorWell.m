@@ -37,6 +37,7 @@
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSWindow.h>
+#include <Foundation/NSDebug.h>
 #include <Foundation/NSNotification.h>
 
 static NSString *GSColorWellDidBecomeExclusiveNotification =

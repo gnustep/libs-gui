@@ -29,6 +29,8 @@
 */
 
 #include <Foundation/NSArray.h>
+#include <Foundation/NSDebug.h>
+#include <Foundation/NSRunLoop.h>
 #include <AppKit/NSTableHeaderCell.h>
 #include <AppKit/NSTableHeaderView.h>
 #include <AppKit/NSTableColumn.h>

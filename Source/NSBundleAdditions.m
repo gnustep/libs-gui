@@ -34,9 +34,12 @@
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSData.h>
 #include <Foundation/NSDictionary.h>
+#include <Foundation/NSDebug.h>
 #include <Foundation/NSEnumerator.h>
+#include <Foundation/NSException.h>
 #include <Foundation/NSInvocation.h>
 #include <Foundation/NSObjCRuntime.h>
+#include <Foundation/NSPathUtilities.h>
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSUserDefaults.h>

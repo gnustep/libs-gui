@@ -52,6 +52,7 @@
 #include <AppKit/NSParagraphStyle.h>
 #include <AppKit/NSMenu.h>
 #include <AppKit/PSOperators.h>
+#include <AppKit/NSAttributedString.h>
 
 static Class	colorClass;
 static Class	cellClass;

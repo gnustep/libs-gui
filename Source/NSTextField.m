@@ -34,6 +34,7 @@
 #include <Foundation/NSFormatter.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSString.h>
+#include <Foundation/NSValue.h>
 
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSCursor.h>

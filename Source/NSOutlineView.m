@@ -25,25 +25,31 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#import <AppKit/NSOutlineView.h>
-#import <Foundation/NSNotification.h>
-#import <AppKit/NSApplication.h>
-#import <AppKit/NSCell.h>
-#import <AppKit/NSFont.h>
-#import <AppKit/NSClipView.h>
-#import <AppKit/NSColor.h>
-#import <AppKit/NSEvent.h>
-#import <AppKit/NSGraphics.h>
-#import <AppKit/NSScroller.h>
-#import <AppKit/NSTableColumn.h>
-#import <AppKit/NSTableHeaderView.h>
-#import <AppKit/NSText.h>
-#import <AppKit/NSTextFieldCell.h>
-#import <AppKit/NSWindow.h>
-#import <AppKit/PSOperators.h>
-#import <AppKit/NSCachedImageRep.h>
-#import <Foundation/NSArray.h>
-#import <Foundation/NSMapTable.h>
+#include <AppKit/NSOutlineView.h>
+#include <Foundation/NSNotification.h>
+#include <Foundation/NSNull.h>
+#include <Foundation/NSValue.h>
+#include <Foundation/NSException.h>
+#include <Foundation/NSUserDefaults.h>
+#include <Foundation/NSArray.h>
+#include <Foundation/NSMapTable.h>
+#include <AppKit/NSApplication.h>
+#include <AppKit/NSCell.h>
+#include <AppKit/NSFont.h>
+#include <AppKit/NSClipView.h>
+#include <AppKit/NSColor.h>
+#include <AppKit/NSEvent.h>
+#include <AppKit/NSGraphics.h>
+#include <AppKit/NSScroller.h>
+#include <AppKit/NSImage.h>
+#include <AppKit/NSTableColumn.h>
+#include <AppKit/NSTableHeaderView.h>
+#include <AppKit/NSText.h>
+#include <AppKit/NSTextFieldCell.h>
+#include <AppKit/NSWindow.h>
+#include <AppKit/PSOperators.h>
+#include <AppKit/NSCachedImageRep.h>
+
 
 static NSNotificationCenter *nc = nil;
 static const int current_version = 1;
