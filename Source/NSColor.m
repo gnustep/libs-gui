@@ -1473,7 +1473,7 @@ NSColor* systemColorWithName(NSString *name)
 
 	      V = (r > g ? r : g);
 	      V = (b > V ? b : V);
-	      Temp = (r > g ? r : g);
+	      Temp = (r < g ? r : g);
 	      Temp = (b < Temp ? b : Temp);
 	      diff = V - Temp;
 	      if (V == r)
