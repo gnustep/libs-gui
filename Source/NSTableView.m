@@ -26,21 +26,21 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#import <AppKit/NSTableView.h>
-#import <AppKit/NSApplication.h>
-#import <AppKit/NSCell.h>
-#import <AppKit/NSClipView.h>
-#import <AppKit/NSColor.h>
-#import <AppKit/NSEvent.h>
-#import <AppKit/NSGraphics.h>
-#import <AppKit/NSScroller.h>
-#import <AppKit/NSTableColumn.h>
-#import <AppKit/NSTableHeaderView.h>
-#import <AppKit/NSText.h>
-#import <AppKit/NSTextFieldCell.h>
-#import <AppKit/NSWindow.h>
-#import <AppKit/PSOperators.h>
-#import <AppKit/NSCachedImageRep.h>
+#include <AppKit/NSTableView.h>
+#include <AppKit/NSApplication.h>
+#include <AppKit/NSCell.h>
+#include <AppKit/NSClipView.h>
+#include <AppKit/NSColor.h>
+#include <AppKit/NSEvent.h>
+#include <AppKit/NSGraphics.h>
+#include <AppKit/NSScroller.h>
+#include <AppKit/NSTableColumn.h>
+#include <AppKit/NSTableHeaderView.h>
+#include <AppKit/NSText.h>
+#include <AppKit/NSTextFieldCell.h>
+#include <AppKit/NSWindow.h>
+#include <AppKit/PSOperators.h>
+#include <AppKit/NSCachedImageRep.h>
 
 #include <math.h>
 static NSNotificationCenter *nc = nil;
