@@ -882,10 +882,19 @@ static  NSMapTable              *mimeMap = NULL;
 
 /**
  * <p>Sets the owner of the pasteboard to be newOwner and declares newTypes
- * as the types of data supported by it.
+ * as the types of data supported by it.<br />
+ * This invalidates existing data in the pasteboard (except where the GNUstep
+ * -setHistory: extension allows multi-version data to be held).
  * </p>
- * <p>Returns the new change count for the pasteboard, or zero if an error
- * occurs.
+ * <p>The value of newOwner may be nil, but if it is, data should
+ * immediately be written to the pasteboard for all the value in newTypes
+ * as a nil owner cannot be used for lazy supply of data.
+ * </p>
+ * <p>This increments the change count for the pasteboard and the new
+ * count is returned, or zero is returned if an error occurs.<br />
+ * Where -setChangeCount: has been used, the highest count to date
+ * is incremented and returned, rather than the last value specified
+ * by the -setChangeCount: method.
  * </p>
  */
 - (int) declareTypes: (NSArray*)newTypes
@@ -928,7 +937,8 @@ static  NSMapTable              *mimeMap = NULL;
 /**
  * <p>Writes data of type dataType to the pasteboard server so that other
  * applications can read it.  The dataType must be one of the types
- * previously declared for the pasteboard.
+ * previously declared for the pasteboard.<br />
+ * All the other methods for writing data to the pasteboard call this one.
  * </p>
  * <p>Returns YES on success, NO if the data could not be written for some
  * reason.
@@ -957,8 +967,12 @@ static  NSMapTable              *mimeMap = NULL;
 }
 
 /**
- * Serialises the data in the supplied property list and writes it to the
+ * <p>Serialises the data in the supplied property list and writes it to the
  * pasteboard server using the -setData:forType: method.
+ * </p>
+ * <p>Data written using this method can be read by -propertyListForType:
+ * or, of it was a simple string, by -stringForType:
+ * </p>
  */
 - (BOOL) setPropertyList: (id)propertyList
 		 forType: (NSString*)dataType
@@ -969,8 +983,12 @@ static  NSMapTable              *mimeMap = NULL;
 }
 
 /**
- * Writes  string it to the pasteboard server using the
+ * <p>Writes  string it to the pasteboard server using the
  * -setPropertyList:forType: method.
+ * </p>
+ * <p>The data may subsequently be read from the reciver using the
+ * -stringForType: or -propertyListForType: method.
+ * </p>
  */
 - (BOOL) setString: (NSString*)string
 	   forType: (NSString*)dataType
@@ -979,10 +997,15 @@ static  NSMapTable              *mimeMap = NULL;
 }
 
 /**
- * Writes the contents of the file filename to the pasteboard server
+ * <p>Writes the contents of the file filename to the pasteboard server
  * after declaring the type NSFileContentsPboardType as well as a type
  * based on the file extension (given by the NSCreateFileContentsPboardType()
- * function) if there is one.
+ * function) if those types have not already been declared.<br />
+ * If the filename has no extension, only NSFileContentsPboardType is used.
+ * </p>
+ * <p>Data written to a pasteboard by this method should be read using
+ * the -readFileContentsType:toFile: or -readFileWrapper method.
+ * </p>
  */
 - (BOOL) writeFileContents: (NSString*)filename
 {
@@ -1004,9 +1027,12 @@ static  NSMapTable              *mimeMap = NULL;
     {
       types = [NSArray arrayWithObject: NSFileContentsPboardType];
     }
-  if ([self declareTypes: types owner: owner] == 0)
+  if ([[self types] isEqual: types] == NO)
     {
-      return NO;	// Unable to declare types.
+      if ([self declareTypes: types owner: owner] == 0)
+	{
+	  return NO;	// Unable to declare types.
+	}
     }
   NS_DURING
     {
@@ -1028,9 +1054,13 @@ static  NSMapTable              *mimeMap = NULL;
 /**
  * <p>Writes the contents of the file wrapper to the pasteboard server
  * after declaring the type NSFileContentsPboardType as well as a type
- * based on the file extension of the wrappers preferred filename.
+ * based on the file extension of the wrappers preferred filename if 
+ * those types have not already been declared.
  * </p>
  * <p>Raises an exception if there is no preferred filename.
+ * </p>
+ * <p>Data written to a pasteboard by this method should be read using
+ * the -readFileContentsType:toFile: or -readFileWrapper method.
  * </p>
  */
 - (BOOL) writeFileWrapper: (NSFileWrapper *)wrapper
@@ -1057,9 +1087,12 @@ static  NSMapTable              *mimeMap = NULL;
     {
       types = [NSArray arrayWithObject: NSFileContentsPboardType];
     }
-  if ([self declareTypes: types owner: owner] == 0)
+  if ([[self types] isEqual: types] == NO)
     {
-      return NO;	// Unable to declare types.
+      if ([self declareTypes: types owner: owner] == 0)
+	{
+	  return NO;	// Unable to declare types.
+	}
     }
   NS_DURING
     {
@@ -1191,8 +1224,12 @@ static  NSMapTable              *mimeMap = NULL;
 }
 
 /**
- * Obtains data of the specified dataType from the pasteboard, deserializes
+ * <p>Obtains data of the specified dataType from the pasteboard, deserializes
  * it to the specified filename and returns the file name (or nil on failure).
+ * </p>
+ * <p>This method should only be used to read data written by
+ * the -writeFileContents: or -writeFileWrapper method.
+ * </p>
  */
 - (NSString*) readFileContentsType: (NSString*)type
 			    toFile: (NSString*)filename
@@ -1223,8 +1260,12 @@ static  NSMapTable              *mimeMap = NULL;
 }
 
 /**
- * Obtains data of the specified dataType from the pasteboard, deserializes
+ * <p>Obtains data of the specified dataType from the pasteboard, deserializes
  * it and returns the resulting file wrapper (or nil).
+ * </p>
+ * <p>This method should only be used to read data written by
+ * the -writeFileContents: or -writeFileWrapper method.
+ * </p>
  */
 - (NSFileWrapper*) readFileWrapper
 {
@@ -1238,8 +1279,12 @@ static  NSMapTable              *mimeMap = NULL;
 }
 
 /**
- * Obtains data of the specified dataType from the pasteboard, deserializes
+ * <p>Obtains data of the specified dataType from the pasteboard, deserializes
  * it and returns the resulting string (or nil).
+ * </p>
+ * <p>The string should have been written using the -setString:forType: or
+ * -setPropertyList:forType: method.
+ * </p>
  */
 - (NSString*) stringForType: (NSString*)dataType
 {
@@ -1272,11 +1317,16 @@ static  NSMapTable              *mimeMap = NULL;
 @implementation NSPasteboard (GNUstepExtensions)
 
 /**
- * Once the -setChangeCount: message has been sent to an NSPasteboard
+ * <p>Once the -setChangeCount: message has been sent to an NSPasteboard
  * the object will gain an extra GNUstep behaviour - when geting data
  * from the pasteboard, the data need no longer be from the latest
  * version but may be a version from a previous representation with
  * the specified change count.
+ * </p>
+ * <p>The value of count must be one which has previously been returned
+ * by -declareTypes:owner: and should not be further in the past than
+ * specified by the -setHistory: method.
+ * </p>
  */
 - (void) setChangeCount: (int)count
 {
@@ -1413,6 +1463,7 @@ static  NSMapTable              *mimeMap = NULL;
  * [NSPasteboard-writeFileWrapper:] method.  Similarly, the data should
  * be read using the [NSPasteboard-readFileContentsType:toFile:] or
  * [NSPasteboard-readFileWrapper] method.
+ * </p>
  */
 NSString*
 NSCreateFileContentsPboardType(NSString *fileType)
