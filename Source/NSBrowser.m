@@ -1836,6 +1836,16 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   [self sendAction: _doubleAction to: [self target]];
 }
 
++ (void)initialize
+{
+  if (self == [NSBrowser class])
+    {
+      // Initial version
+      [self setVersion: 1];
+      scrollerWidth = [NSScroller scrollerWidth];
+    }
+}
+
 /*
  * Override superclass methods
  */
