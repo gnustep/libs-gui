@@ -54,9 +54,7 @@
 #include <AppKit/GSDisplayServer.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSDocumentController.h>
-#include <AppKit/NSPopUpButton.h>
 #include <AppKit/NSPasteboard.h>
-#include <AppKit/NSColorPanel.h>
 #include <AppKit/NSFontManager.h>
 #include <AppKit/NSPanel.h>
 #include <AppKit/NSEvent.h>
@@ -69,10 +67,7 @@
 #include <AppKit/NSWorkspace.h>
 #include <AppKit/GSServicesManager.h>
 #include <AppKit/NSNibLoading.h>
-#include <AppKit/IMLoading.h>
 #include <AppKit/NSPageLayout.h>
-#include <AppKit/NSDataLinkPanel.h>
-#include <AppKit/NSHelpManager.h>
 
 #include <AppKit/GSGuiPrivate.h>
 #include <AppKit/GSInfoPanel.h>
@@ -475,11 +470,28 @@ static NSCell* tileCell = nil;
     }
 }
 
+// Helper method
++ (void) invokeWithAutoreleasePool: (NSInvocation*) inv
+{
+  CREATE_AUTORELEASE_POOL(pool);
+
+  [inv invoke];
+  RELEASE(inv);
+  RELEASE(pool);
+}
+
 + (void) detachDrawingThread: (SEL)selector
 		    toTarget: (id)target
 		  withObject: (id)argument
 {
-  /* TODO: This is not fully defined by Apple.  */
+  NSInvocation *inv;
+
+  // This uses a GNUstep extension on NSInvocation
+  inv = [[NSInvocation alloc] initWithTarget: target 
+			      selector: selector, argument];
+  [NSThread detachNewThreadSelector: @selector(invokeWithAutoreleasePool:) 
+	    toTarget: self 
+	    withObject: inv];
 }
 
 /* 
@@ -1517,33 +1529,24 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
 /*
  * Sending action messages
  */
-- (BOOL) sendAction: (SEL)aSelector to: aTarget from: sender
+- (BOOL) sendAction: (SEL)aSelector to: (id)aTarget from: (id)sender
+{
+  id resp = [self targetForAction: aSelector to: aTarget from: sender];
+
+  if (resp)
+    {
+      [resp performSelector: aSelector withObject: sender];
+      return YES;
+    }
+
+  return NO;
+}
+
+- (id) targetForAction: (SEL)theAction to: (id)theTarget from: (id)sender
 {
   /*
    * If target responds to the selector then have it perform it.
    */
-  if (aTarget && [aTarget respondsToSelector: aSelector])
-    {
-      [aTarget performSelector: aSelector withObject: sender];
-      return YES;
-    }
-  else
-    {
-      id resp = [self targetForAction: aSelector];
-
-      if (resp)
-	{
-	  [resp performSelector: aSelector withObject: sender];
-	  return YES;
-	}
-    }
-  return NO;
-}
-
-- (id)targetForAction:(SEL)theAction to:(id)theTarget from:(id)sender
-{
-  // TODO: This is not fully documented, if it ever gets, we should
-  // call this in sendAction:to:from:
   if (theTarget && [theTarget respondsToSelector: theAction])
     {
       return theTarget;
@@ -1815,6 +1818,7 @@ delegate.
 
   if (flag)
     {
+      // FIXME This is not the order specified in the MacOSX spec
       unsigned	count = [window_list count];
 
       for (i = 0; i < count; i++)
@@ -1893,41 +1897,10 @@ delegate.
 /*
  * Showing Standard Panels
  */
-- (void) orderFrontColorPanel: sender
-{ 
-  NSColorPanel *colorPanel = [NSColorPanel sharedColorPanel];
-
-  if (colorPanel)
-    [colorPanel orderFront: nil];
-  else
-    NSBeep();
-}
-
-- (void) orderFrontDataLinkPanel: sender
-{
-  NSDataLinkPanel *dataLinkPanel = [NSDataLinkPanel sharedDataLinkPanel];
-
-  if (dataLinkPanel)
-    [dataLinkPanel orderFront: nil];
-  else
-    NSBeep();
-}
-
-- (void) orderFrontHelpPanel: sender
-{
-  // This is implemented in NSHelpManager.m
-  [self showHelp: sender];
-}
-
-- (void) runPageLayout: sender
-{
-  [[NSPageLayout pageLayout] runModal];
-}
-
-/* infoPanel, macosx API -- Deprecated */
+/* infoPanel, macosx API */
 - (void) orderFrontStandardAboutPanel: sender
 {
-  [self orderFrontStandardInfoPanel: sender];
+  [self orderFrontStandardAboutPanelWithOptions: nil];
 }
 
 - (void) orderFrontStandardAboutPanelWithOptions: (NSDictionary *)dictionary
@@ -2326,7 +2299,7 @@ delegate.
  */
 - (void) terminate: (id)sender
 {
-  BOOL	shouldTerminate = YES;
+  int	shouldTerminate = YES;
 
   if ([_delegate respondsToSelector: @selector(applicationShouldTerminate:)])
     {
@@ -2340,6 +2313,14 @@ delegate.
 			   cancellable:YES];
     }
 
+  if (shouldTerminate == NSTerminateNow)
+    {
+      [self replyToApplicationShouldTerminate: YES];
+    }
+}
+
+- (void) replyToApplicationShouldTerminate: (BOOL)shouldTerminate
+{
   if (shouldTerminate)
     {
       NSDictionary *userInfo;
@@ -2416,6 +2397,35 @@ delegate.
   SET_DELEGATE_NOTIFICATION(WillTerminate);
   SET_DELEGATE_NOTIFICATION(WillUnhide);
   SET_DELEGATE_NOTIFICATION(WillUpdate);
+}
+
+/*
+ * Methods for scripting
+ */
+- (NSArray *) orderedDocuments
+{
+  // FIXME
+  return nil;
+}
+
+- (NSArray *) orderedWindows;
+{
+  // FIXME
+  return [self windows];
+}
+
+/*
+ * Methods for user attention requests
+ */
+- (void) cancelUserAttentionRequest: (int)request;
+{
+  // FIXME
+}
+
+- (int) requestUserAttention: (NSRequestUserAttentionType)requestType;
+{
+  // FIXME
+  return 0;
 }
 
 /*
