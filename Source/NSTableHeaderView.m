@@ -34,6 +34,7 @@
 #include <AppKit/NSTableHeaderView.h>
 #include <AppKit/NSTableColumn.h>
 #include <AppKit/NSTableView.h>
+#include <AppKit/NSEvent.h>
 
 @implementation NSTableHeaderView
 {
@@ -170,7 +171,31 @@
 }
 -(void)mouseDown: (NSEvent*)event
 {
-  // TODO
+  NSPoint location = [event locationInWindow];
+  int clickCount;
+  int columnIndex;
+  
+  clickCount = [event clickCount];
+  
+  if (clickCount > 2)
+    {
+      return;
+    }
+  
+  location = [self convertPoint: location fromView: nil];
+  columnIndex = [self columnAtPoint: location];
+  if (columnIndex == -1)
+    {
+      return;  
+    }
+
+  if (clickCount == 2)
+    {
+      [_tableView _sendDoubleActionForColumn: columnIndex];
+      return;
+    }
+
+  // TODO - simple click events
   [super mouseDown: event];
 }
 @end
