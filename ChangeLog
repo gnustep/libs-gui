@@ -1,3 +1,9 @@
+2002-10-01  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWorkspace.m: ([-gtInfoForFile:application:type:])
+	Try to return a plain file type for directories which are openable
+	by some app.
+
 2002-10-01  Adam Fedor  <fedor@gnu.org>
 
 	* Tools/gsnd/portaudio/pa_unix_oss/pa_unix_oss.c

@@ -583,6 +583,31 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   return NO;
 }
 
+/**
+ * This method gets information about the file at fullPath and
+ * returns YES on success, NO if the named file could not be
+ * found.<br />
+ * On success, the name of the preferred application for opening
+ * the file is returned in *appName, or nil if there is no known
+ * application to open it.<br />
+ * The returned value in *type describes the file using one of
+ * the following constants.
+ * <deflist>
+ *   <term>NSPlainFileType</term>
+ *   <desc>
+ *     A plain file or a directory that some application
+ *     claims to be able to open like a file.
+ *   </desc>
+ *   <term>NSDirectoryFileType</term>
+ *   <desc>An untyped directory</desc>
+ *   <term>NSApplicationFileType</term>
+ *   <desc>A GNUstep application</desc>
+ *   <term>NSFilesystemFileType</term>
+ *   <desc>A file system mount point</desc>
+ *   <term>NSShellCommandFileType</term>
+ *   <desc>Executable shell command</desc>
+ * </deflist>
+ */
 - (BOOL) getInfoForFile: (NSString*)fullPath
 	    application: (NSString **)appName
 		   type: (NSString **)type
@@ -593,59 +618,63 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   NSString	*extension = [fullPath pathExtension];
 
   attributes = [fm fileAttributesAtPath: fullPath traverseLink: YES];
+
   if (attributes != nil)
     {
+      *appName = [self getBestAppInRole: nil forExtension: extension];
       fileType = [attributes fileType];
       if ([fileType isEqualToString: NSFileTypeRegular])
-        {
-          if ([attributes filePosixPermissions] & PosixExecutePermission)
-            {
-              *type = NSShellCommandFileType;
-              *appName = nil;
-            }
-          else
-            {
-              *type = NSPlainFileType;
-              *appName = [self getBestAppInRole: nil forExtension: extension];
-            }
-        }
+	{
+	  if ([attributes filePosixPermissions] & PosixExecutePermission)
+	    {
+	      *type = NSShellCommandFileType;
+	    }
+	  else
+	    {
+	      *type = NSPlainFileType;
+	    }
+	}
       else if ([fileType isEqualToString: NSFileTypeDirectory])
-        {
-          if ([extension isEqualToString: @"app"]
+	{
+	  if ([extension isEqualToString: @"app"]
 	    || [extension isEqualToString: @"debug"]
 	    || [extension isEqualToString: @"profile"])
-            {
-              *type = NSApplicationFileType;
-              *appName = nil;
-            }
-          else if ([extension isEqualToString: @"bundle"])
-            {
-              *type = NSPlainFileType;
-              *appName = nil;
-            }
-          // the idea here is that if the parent directory's fileSystemNumber
-          // differs, this must be a filesystem mount point
-          else if ([[fm fileAttributesAtPath:
+	    {
+	      *type = NSApplicationFileType;
+	    }
+	  else if ([extension isEqualToString: @"bundle"])
+	    {
+	      *type = NSPlainFileType;
+	    }
+	  else if (*appName != nil)
+	    {
+	      *type = NSPlainFileType;
+	    }
+	  /*
+	   * The idea here is that if the parent directory's
+	   * fileSystemNumber differs, this must be a filesystem
+	   * mount point.
+	   */
+	  else if ([[fm fileAttributesAtPath:
 	    [fullPath stringByDeletingLastPathComponent]
 	    traverseLink: YES] fileSystemNumber]
 	    != [attributes fileSystemNumber])
-            {
-              *type = NSFilesystemFileType;
-              *appName = nil;
-            }
-          else
-            {
-              *type = NSDirectoryFileType;
-              *appName = nil;
-            }
-        }
+	    {
+	      *type = NSFilesystemFileType;
+	    }
+	  else
+	    {
+	      *type = NSDirectoryFileType;
+	    }
+	}
       else
-        {
-          // this catches sockets, character special, block special, and
-          // unknown file types
-          *type = NSPlainFileType;
-          *appName = nil;
-        }
+	{
+	  /*
+	   * This catches sockets, character special, block special,
+	   * and unknown file types
+	   */
+	  *type = NSPlainFileType;
+	}
       return YES;
     }
   else
