@@ -79,8 +79,8 @@ static NSCharacterSet *invSelectionWordGranularitySet;
 @implementation _GNULineLayoutInfo
 
 + (_GNULineLayoutInfo *) lineLayoutWithRange: (NSRange)aRange
-		      rect: (NSRect)aRect
-		      usedRect: (NSRect)charRect
+					rect: (NSRect)aRect
+				    usedRect: (NSRect)charRect
 {
   _GNULineLayoutInfo *ret = AUTORELEASE([_GNULineLayoutInfo new]);
 
