@@ -62,88 +62,6 @@ typedef	struct {
 
 
 
-// _GSRunSearchKey is an internal class which serves as the foundation for
-// all our searching. This may not be an elegant way to go about this, so
-// if someone wants to optimize this out, please do.
-
-@interface _GSRunSearchKey : NSObject
-{
-@public
-  NSRange glyphRange;
-}
-@end
-
-@implementation _GSRunSearchKey
-- (id) init
-{
-  return [super init];
-}
-
-- (void) dealloc
-{
-  [super dealloc];
-}
-@end
-
-@interface GSGlyphLocation : _GSRunSearchKey
-{
-@public
-  NSPoint point;
-}
-@end
-
-@implementation GSGlyphLocation
-- (id) init
-{
-  return [super init];
-}
-
-- (void) dealloc
-{
-  [super dealloc];
-}
-@end
-
-@interface GSLineLayoutInfo : _GSRunSearchKey
-{
-@public
-  NSRect lineFragmentRect;
-  NSRect usedRect;
-}
-@end
-
-@implementation GSLineLayoutInfo
-- (id) init
-{
-  return [super init];
-}
-
-- (void) dealloc
-{
-  [super dealloc];
-}
-@end
-
-@interface GSTextContainerLayoutInfo : _GSRunSearchKey
-{
-@public
-  NSTextContainer	*textContainer;
-}
-@end
-
-@implementation GSTextContainerLayoutInfo
-- (id) init
-{
-  return [super init];
-}
-
-- (void) dealloc
-{
-  RELEASE (textContainer);
-  [super dealloc];
-}
-@end
-
 /*
  * We need a fast array that can store -
  * pointers, objects, glyphs (long) and attributes.
@@ -162,18 +80,6 @@ typedef	struct {
 #undef GSIArray
 #endif
 #include <base/GSIArray.h>
-
-static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
-{
-  if (((_GSRunSearchKey*)(i0.obj))->glyphRange.location
-    < ((_GSRunSearchKey*)(i1.obj))->glyphRange.location)
-    return NSOrderedAscending;
-  else if (((_GSRunSearchKey*)(i0.obj))->glyphRange.location
-    >= NSMaxRange(((_GSRunSearchKey*)(i1.obj))->glyphRange))
-    return NSOrderedDescending;
-  else
-    return NSOrderedSame;
-}
 
 /*
  * The glyph attributes within a chunk must be ordered by their offset fields,
@@ -649,166 +555,6 @@ _Sane(NSLayoutManager *lm)
 
 
 
-@interface GSRunStorage : NSObject
-{
-  unsigned int _count;
-  void *_runs;
-}
-
-- (void) insertObject: (id)anObject;
-- (void) insertObject: (id)anObject atIndex: (unsigned)theIndex;
-- (id) objectAtIndex: (unsigned)theIndex;
-- (unsigned) indexOfObject: (id)anObject;
-- (unsigned) indexOfObjectContainingLocation: (unsigned)aLocation;
-- (id) objectContainingLocation: (unsigned)aLocation;
-- (int) count;
-@end
-
-@implementation GSRunStorage
-- (id) init
-{
-  NSZone *z;
-
-  [super init];
-
-  z = [self zone];
-
-  _runs = NSZoneMalloc(z, sizeof(GSIArray_t));
-  GSIArrayInitWithZoneAndCapacity((GSIArray)_runs, z, 8);
-
-  return self;
-}
-
-- (void) insertObject: (id)anObject
-{
-  _GSRunSearchKey *aKey = [_GSRunSearchKey new];
-  _GSRunSearchKey *aObject = (_GSRunSearchKey*)anObject;
-  int position;
-
-  aKey->glyphRange.location = aObject->glyphRange.location;
-
-  position = GSIArrayInsertionPosition(_runs, (GSIArrayItem)aKey, aSort);
-
-//  NSLog(@"key: %d aObject: %d position: %d", aKey->glyphRange.location,
-//aObject->glyphRange.location, position);
-
-  if (position > 0)
-    {
-      _GSRunSearchKey *anKey = GSIArrayItemAtIndex(_runs, (unsigned)position - 1).obj;
-
-      RETAIN(anObject);
-      if (anKey->glyphRange.location == aObject->glyphRange.location)
-        {
-	  RELEASE(GSIArrayItemAtIndex(_runs, (unsigned)position-1).obj);
-	  GSIArraySetItemAtIndex(_runs, (GSIArrayItem)anObject, position-1);
-        }
-      else
-	{
-	  GSIArrayInsertItem(_runs, (GSIArrayItem)anObject, position);
-	}
-    }
-  else if (position == 0)
-    {
-      RETAIN(anObject);
-      GSIArrayInsertItem(_runs, (GSIArrayItem)anObject, position);
-    }
-  else
-    NSLog(@"dead. VERY DEAD DEAD DEAD DEAD.");
-
-//  NSLog(@"==> %d item(s)", GSIArrayCount(_runs));
-  RELEASE(aKey);
-}
-
-- (void) insertObject: (id)anObject
-	      atIndex: (unsigned)theIndex
-{
-  unsigned	position;
-
-  NSLog(@"insertObject: atIndex: called. %d item(s)", GSIArrayCount(_runs));
-  position = GSIArrayInsertionPosition(_runs, (GSIArrayItem)anObject, aSort);
-  RETAIN(anObject);
-  GSIArrayInsertItem(_runs, (GSIArrayItem)anObject, position);
-  NSLog(@"insertObject: atIndex: ended. %d item(s)", GSIArrayCount(_runs));
-}
-
-- (void) removeObjectAtIndex: (int)theIndex
-{
-  id	obj = GSIArrayItemAtIndex(_runs, (unsigned)theIndex).obj;
-
-  GSIArrayRemoveItemAtIndex(_runs, theIndex);
-  RELEASE(obj);
-}
-
-- (id) objectAtIndex: (unsigned)theIndex
-{
-  return GSIArrayItemAtIndex(_runs, (unsigned)theIndex).obj;
-}
-
-- (unsigned) indexOfObject: (id)anObject
-{
-  return NSNotFound;
-}
-
-- (unsigned) indexOfObjectContainingLocation: (unsigned)aLocation
-{
-  _GSRunSearchKey *aKey = [_GSRunSearchKey new];
-  int position;
-
-  aKey->glyphRange.location = aLocation;
-
-  position = GSIArrayInsertionPosition(_runs, (GSIArrayItem)aKey, aSort);
-
-  if (position >= 0 && position - 1 >= 0)
-    {
-      aKey = GSIArrayItemAtIndex(_runs, (unsigned)position - 1).obj;
-
-      if (NSLocationInRange(aLocation, aKey->glyphRange))
-        {
-	  RELEASE(aKey);
-	  return (position - 1);
-        }
-    }
-
-  RELEASE(aKey);
-  return -1;
-}
-
-- (id) objectContainingLocation: (unsigned)aLocation
-{
-  _GSRunSearchKey *aKey = [_GSRunSearchKey new];
-  int position;
-
-  aKey->glyphRange.location = aLocation;
-
-  position = GSIArrayInsertionPosition(_runs, (GSIArrayItem)aKey, aSort);
-  RELEASE(aKey);
-
-  if (position >= 0 && position - 1 >= 0)
-    {
-      aKey = GSIArrayItemAtIndex(_runs, (unsigned)position - 1).obj;
-
-      if (NSLocationInRange(aLocation, aKey->glyphRange))
-        {
-	  return aKey;
-        }
-    }
-
-  return nil;  
-}
-
-- (id) lastObject
-{
-  return GSIArrayItemAtIndex(_runs, GSIArrayCount(_runs) - 1).obj;
-}
-
-- (int) count
-{
-  return GSIArrayCount(_runs);
-}
-@end
-
-
-
 @interface NSLayoutManager (Private)
 
 - (void) _doLayout;
@@ -846,10 +592,6 @@ _Sane(NSLayoutManager *lm)
       _backgroundLayout = YES;
       _delegate = nil;
       _textContainers = [[NSMutableArray alloc] initWithCapacity: 2];
-
-      _containerRuns = [GSRunStorage new];
-      _fragmentRuns = [GSRunStorage new];
-      _locationRuns = [GSRunStorage new];
 
       /*
        * Initialise glyph storage and ivars to contain 'current' glyph
@@ -898,9 +640,6 @@ _Sane(NSLayoutManager *lm)
   NSZoneFree(NSDefaultMallocZone(), _glyphGaps);
 
   RELEASE (_textContainers);
-  RELEASE (_containerRuns);
-  RELEASE (_fragmentRuns);
-  RELEASE (_locationRuns);
 
   [super dealloc];
 }
@@ -908,10 +647,11 @@ _Sane(NSLayoutManager *lm)
 //
 // Setting the text storage
 //
-// The set method generally should not be called directly, but you may
-// want to override it.  Used to get and set the text storage.  The
-// set method is called by the NSTextStorage's
-// addTextStorageObserver/removeTextStorageObserver methods.
+
+/* The set method generally should not be called directly, but you may
+   want to override it.  Used to get and set the text storage.  The
+   set method is called by the NSTextStorage's
+   addTextStorageObserver/removeTextStorageObserver methods.  */
 - (void) setTextStorage: (NSTextStorage*)aTextStorage
 {
   unsigned length = [aTextStorage length];
@@ -933,21 +673,21 @@ _Sane(NSLayoutManager *lm)
   return _textStorage;
 }
 
-// This method should be used instead of the primitive -setTextStorage: 
-// if you need to replace a NSLayoutManager's NSTextStorage with a new 
-// one leaving the rest of the web intact.  This method deals with all 
-// the work of making sure the NSLayoutManager doesn't get deallocated 
-// and transferring all the NSLayoutManager s on the old NSTextStorage 
-// to the new one.
+/* This method should be used instead of the primitive
+   -setTextStorage: if you need to replace a NSLayoutManager's
+   NSTextStorage with a new one leaving the rest of the web intact.
+   This method deals with all the work of making sure the
+   NSLayoutManager doesn't get deallocated and transferring all the
+   NSLayoutManager s on the old NSTextStorage to the new one.  */
 - (void) replaceTextStorage: (NSTextStorage*)newTextStorage
 {
   NSArray		*layoutManagers = [_textStorage layoutManagers];
   NSEnumerator		*enumerator = [layoutManagers objectEnumerator];
   NSLayoutManager	*object;
 
-  // Remove layout managers from old NSTextStorage object and add them to the
-  // new one.  NSTextStorage's addLayoutManager invokes NSLayoutManager's
-  // setTextStorage method automatically, and that includes self.
+  /* Remove layout managers from old NSTextStorage object and add them to the
+     new one.  NSTextStorage's addLayoutManager invokes NSLayoutManager's
+     setTextStorage method automatically, and that includes self.  */
 
   while ((object = (NSLayoutManager*)[enumerator nextObject]) != nil)
     {
@@ -2207,12 +1947,7 @@ _Sane(self);
 - (void) setTextContainer: (NSTextContainer*)aTextContainer
 	    forGlyphRange: (NSRange)glyphRange
 {
-  GSTextContainerLayoutInfo	*theLine = [GSTextContainerLayoutInfo new];
-
-  theLine->glyphRange = glyphRange;
-  ASSIGN(theLine->textContainer, aTextContainer);
-  
-  [_containerRuns insertObject: theLine];
+  /* TODO */
 }
 
 // All of these methods can cause glyph generation AND layout.
@@ -2221,28 +1956,7 @@ _Sane(self);
 // -textContainerForGlyphAtIndex:effectiveRange:.
 - (NSRange) glyphRangeForTextContainer: (NSTextContainer*)aTextContainer
 {
-  int i;
-
-  NSLog(@"glyphRangeForTextContainer: called. There are %d
-textContainer(s) in containerRuns.", [_containerRuns count]);
-
-  for (i = 0; i < [_containerRuns count]; i++)
-    {
-      GSTextContainerLayoutInfo *aNewLine = [_containerRuns objectAtIndex: i];
-
-/*
-      NSLog(@"glyphRangeForTextContainer: (%d, %d)",
-      aNewLine->glyphRange.location, aNewLine->glyphRange.length); */
-
-      if ([aNewLine->textContainer isEqual: aTextContainer])
-        {
-/*
-	  NSLog(@"glyphRangeForWantedTextContainer: (%d, %d)",
-	  aNewLine->glyphRange.location, aNewLine->glyphRange.length); */
-	  return aNewLine->glyphRange;
-        }
-    }
-
+  /* TODO */
   return NSMakeRange(NSNotFound, 0);
 }
 
@@ -2253,23 +1967,8 @@ textContainer(s) in containerRuns.", [_containerRuns count]);
 - (NSTextContainer*) textContainerForGlyphAtIndex: (unsigned)glyphIndex
                                    effectiveRange: (NSRange*)effectiveRange
 {
-  GSTextContainerLayoutInfo	*theLine;
-
-  theLine = [_containerRuns objectContainingLocation: glyphIndex];
-  if (theLine)
-    {
-      if (effectiveRange)
-	{
-	  *effectiveRange = theLine->glyphRange;
-	}
-      return theLine->textContainer;
-    }
-  
-  if (effectiveRange)
-    {
-      *effectiveRange = NSMakeRange (NSNotFound, 0);
-    }
-  return nil;
+  /* TODO */
+  return [_textContainers objectAtIndex: 0];
 }
 
 //
@@ -2281,13 +1980,7 @@ textContainer(s) in containerRuns.", [_containerRuns count]);
 	       forGlyphRange: (NSRange)glyphRange
 		    usedRect: (NSRect)usedRect
 {
-  GSLineLayoutInfo *aNewLine = [GSLineLayoutInfo new];
-
-  aNewLine->glyphRange = glyphRange;
-  aNewLine->lineFragmentRect = fragmentRect;
-  aNewLine->usedRect = usedRect;
-
-  [_fragmentRuns insertObject: aNewLine];
+  /* TODO */
 }
 
 // Returns the rect for the line fragment in which the given glyph is
@@ -2297,22 +1990,7 @@ textContainer(s) in containerRuns.", [_containerRuns count]);
 - (NSRect) lineFragmentRectForGlyphAtIndex: (unsigned)glyphIndex
 			    effectiveRange: (NSRange*)lineFragmentRange
 {
-  GSLineLayoutInfo	*theLine;
-
-  theLine = [_fragmentRuns objectContainingLocation: glyphIndex];
-  if (theLine)
-    {
-      if (lineFragmentRange != NULL)
-	{
-	  *lineFragmentRange = theLine->glyphRange;
-	}
-      return theLine->lineFragmentRect;
-    }
-
-  if (lineFragmentRange != NULL)
-    {
-      *lineFragmentRange = NSMakeRange (NSNotFound, 0);
-    }
+  /* TODO */
   return NSZeroRect;
 }
 
@@ -2323,22 +2001,7 @@ textContainer(s) in containerRuns.", [_containerRuns count]);
 - (NSRect) lineFragmentUsedRectForGlyphAtIndex: (unsigned)glyphIndex
 				effectiveRange: (NSRange*)lineFragmentRange
 {
-  GSLineLayoutInfo	*theLine;
-
-  theLine = [_fragmentRuns objectContainingLocation: glyphIndex];
-  if (theLine)
-    {
-      if (lineFragmentRange != NULL)
-	{
-	  *lineFragmentRange = theLine->glyphRange;
-	}
-      return theLine->usedRect;
-    }
-
-  if (lineFragmentRange != NULL)
-    {
-      *lineFragmentRange = NSMakeRange (NSNotFound, 0);
-    }
+  /* TODO */
   return NSZeroRect;
 }
 
@@ -2352,21 +2015,25 @@ textContainer(s) in containerRuns.", [_containerRuns count]);
 			 usedRect: (NSRect)usedRect
 		    textContainer: (NSTextContainer*)aTextContainer
 {
+  /* TODO */
 }
 
 // Return info about the extra line fragment.
 - (NSRect) extraLineFragmentRect 
 {
+  /* TODO */
   return NSZeroRect;
 }
 
 - (NSRect) extraLineFragmentUsedRect 
 {
+  /* TODO */
   return NSZeroRect;
 }
 
 - (NSTextContainer*) extraLineFragmentTextContainer 
 {
+  /* TODO */
   return nil;
 }
 
@@ -2375,12 +2042,14 @@ textContainer(s) in containerRuns.", [_containerRuns count]);
 // currently laid into the container.  This causes no generation.
 - (NSRect)usedRectForTextContainer:(NSTextContainer *)container
 {
+  /* TODO */
   return NSZeroRect;
 }
 
 - (void)setAttachmentSize:(NSSize)attachmentSize 
 	    forGlyphRange:(NSRange)glyphRange
 {
+  /* TODO */
 }
 
 // Used to indicate that a particular glyph for some reason marks
@@ -2391,7 +2060,7 @@ textContainer(s) in containerRuns.", [_containerRuns count]);
 		     forGlyphAtIndex: (unsigned)glyphIndex
 {
   [self setIntAttribute: GSGlyphDrawsOutsideLineFragment
-		  value: 1
+	value: 1
 	forGlyphAtIndex: glyphIndex];
 }
 
@@ -2400,7 +2069,7 @@ textContainer(s) in containerRuns.", [_containerRuns count]);
 - (BOOL) drawsOutsideLineFragmentForGlyphAtIndex: (unsigned)glyphIndex
 {
   if ([self intAttribute: GSGlyphDrawsOutsideLineFragment
-	 forGlyphAtIndex: glyphIndex] == 1)
+	    forGlyphAtIndex: glyphIndex] == 1)
     {
       return YES;
     }
@@ -2422,12 +2091,7 @@ textContainer(s) in containerRuns.", [_containerRuns count]);
 - (void) setLocation: (NSPoint)aPoint
 forStartOfGlyphRange: (NSRange)glyphRange
 {
-  GSGlyphLocation *aNewLine = [GSGlyphLocation new];
-
-  aNewLine->glyphRange = glyphRange;
-  aNewLine->point = aPoint;
-
-  [_locationRuns insertObject: aNewLine];
+  /* TODO */
 }
 
 // Returns the location that the given glyph will draw at.  If this
@@ -2441,6 +2105,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
 // layout as needed.
 - (NSPoint) locationForGlyphAtIndex: (unsigned)glyphIndex
 {
+  /* TODO */
   return NSZeroPoint;
 }
 
@@ -2450,15 +2115,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
 // shown with a single postscript show operation.
 - (NSRange) rangeOfNominallySpacedGlyphsContainingIndex: (unsigned)glyphIndex
 {
-  GSLineLayoutInfo	*theLine;
-
-  theLine = [_locationRuns objectContainingLocation: glyphIndex];
-
-  if (theLine)
-    {
-      return theLine->glyphRange;
-    }
-
+  /* TODO */
   return NSMakeRange(NSNotFound, 0);
 }
 
@@ -2483,43 +2140,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
                        inTextContainer: (NSTextContainer*)aTextContainer
                              rectCount: (unsigned*)rectCount
 {
-/*
-  GSLineLayoutInfo *theLine = [GSLineLayoutInfo new];
-  int position, lastPosition;
-  int i, j = 0;
-
-  theLine->glyphRange.location = charRange.location;
-
-  position = GSIArrayInsertionPosition(lineFragments, (GSIArrayItem)theLine, aSort);
-
-  if (position < 0)
-    {
-      return NULL;
-    }
-
-  theLine->glyphRange.location = charRange.location + charRange.length;
-
-  lastPosition = GSIArrayInsertionPosition(lineFragments, (GSIArrayItem)theLine, aSort);
-
-  if (lastPosition > 0)
-    {
-      _cachedRectArray = NSZoneRealloc([self zone], _cachedRectArray,
-				(lastPosition - position) * sizeof(NSRect));
-
-      _cachedRectArrayCapacity = lastPosition - position;
-
-      for (i = position - 1; i < lastPosition - 1; i++)
-        {
-          GSLineLayoutInfo *aLine = GSIArrayItemAtIndex(lineFragments, i).obj;
-
-	  _cachedRectArray[j] = aLine->lineFragmentRect;
-	  j++;
-        }
-    }
-
-  (*rectCount) = (position - 1 + lastPosition - 1);
-  return _cachedRectArray;
-*/
+  /* TODO */
   return NULL;
 }
 
@@ -2528,6 +2149,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
                    inTextContainer: (NSTextContainer*)aTextContainer
                          rectCount: (unsigned*)rectCount
 {
+  /* TODO */
   return _cachedRectArray;
 }
 
@@ -2541,35 +2163,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
 - (NSRect) boundingRectForGlyphRange: (NSRange)glyphRange
 		     inTextContainer: (NSTextContainer*)aTextContainer
 {
-
-/* Returns a single bounding rectangle enclosing all glyphs and other
-marks drawn in aTextContainer for glyphRange, including glyphs that
-draw outside their line fragment rectangles and text attributes such
-as underlining. This method is useful for determining the area that
-needs to be redrawn when a range of glyphs changes. */
-/*
-  unsigned rectCount;
-  NSRect *rects = [self rectArrayForCharacterRange: [self glyphRangeForTextContainer: aTextContainer]
-		      withinSelectedCharacterRange: NSMakeRange(0,0)
-				   inTextContainer: aTextContainer
-					 rectCount: &rectCount];
-//  NSPoint aOrigin = [aTextContainer originPoint];
-  NSRect rRect = NSZeroRect;
-  int i;
-
-  for (i=0;i<rectCount;i++)
-    {
-      NSRect aRect = rects[i];
-
-      if (aRect.origin.y == rRect.size.height)
-        rRect.size.height += aRect.size.width;
-
-      if (rRect.size.width == aRect.origin.x)
-        rRect.size.width += aRect.size.width;
-    }
-
-  return rRect;
-*/
+  /* TODO */
   return NSZeroRect;
 }
 
@@ -2583,12 +2177,14 @@ needs to be redrawn when a range of glyphs changes. */
 - (NSRange) glyphRangeForBoundingRect: (NSRect)aRect
 		      inTextContainer: (NSTextContainer*)aTextContainer
 {
+  /* TODO */
   return NSMakeRange(0, 0);
 }
 
 - (NSRange) glyphRangeForBoundingRectWithoutAdditionalLayout: (NSRect)bounds
                            inTextContainer: (NSTextContainer*)aTextContainer
 {
+  /* TODO */
   return NSMakeRange(0, 0);
 }
 
@@ -2604,12 +2200,14 @@ needs to be redrawn when a range of glyphs changes. */
 		inTextContainer: (NSTextContainer*)aTextContainer
  fractionOfDistanceThroughGlyph: (float*)partialFraction
 {
+  /* TODO */
   return 0;
 }
 
 - (unsigned) glyphIndexForPoint: (NSPoint)aPoint 
 		inTextContainer: (NSTextContainer *)aTextContainer
 {
+  /* TODO */
   return [self glyphIndexForPoint: aPoint
 	       inTextContainer: aTextContainer
 	       fractionOfDistanceThroughGlyph: NULL];
@@ -2624,7 +2222,7 @@ needs to be redrawn when a range of glyphs changes. */
 	      forGlyphAtIndex: (unsigned)glyphIndex
 {
   [self setIntAttribute: GSGlyphIsNotShown
-		  value: 1
+	          value: 1
 	forGlyphAtIndex: glyphIndex];
 }
 
@@ -2689,10 +2287,14 @@ needs to be redrawn when a range of glyphs changes. */
 			   glyphIndex: (unsigned*)glyphIndex
 {
   if (charIndex)
-    *charIndex = [self firstUnlaidCharacterIndex];
-
+    {
+      *charIndex = [self firstUnlaidCharacterIndex];
+    }
+  
   if (glyphIndex)
-    *glyphIndex = [self firstUnlaidGlyphIndex];
+    {
+      *glyphIndex = [self firstUnlaidGlyphIndex];
+    }
 }
 
 - (unsigned int) firstUnlaidCharacterIndex
@@ -2733,16 +2335,22 @@ needs to be redrawn when a range of glyphs changes. */
 {
   NSFont *replaceFont;
 
-  if (_usesScreenFonts)
-    return originalFont;
+  if (! _usesScreenFonts)
+    {
+      return originalFont;
+    }
 
   // FIXME: Should check if any NSTextView is scaled or rotated
   replaceFont = [originalFont screenFont];
   
   if (replaceFont != nil)
-    return replaceFont;
+    {
+      return replaceFont;
+    }
   else
-    return originalFont;    
+    {
+      return originalFont;    
+    }
 }
 
 //
@@ -2759,6 +2367,7 @@ needs to be redrawn when a range of glyphs changes. */
                                     ruler: (NSRulerView*)aRulerView
                                   enabled: (BOOL)flag
 {
+  /* TODO */
   return NULL;
 }
 
@@ -2873,59 +2482,7 @@ needs to be redrawn when a range of glyphs changes. */
 - (void) drawGlyphsForGlyphRange: (NSRange)glyphRange
 			 atPoint: (NSPoint)containerOrigin
 {
-  int firstPosition, lastPosition, i;
-
-  for (i=0;i<[_fragmentRuns count];i++)
-    {
-/*
-      GSLineLayoutInfo *info = [_fragmentRuns objectAtIndex: i];
-
-      NSLog(@"i: %d glyphRange: (%d, %d) lineFragmentRect: (%f, %f) (%f, %f)",
-i,
-info->glyphRange.location,
-info->glyphRange.length,
-info->lineFragmentRect.origin.x,  
-info->lineFragmentRect.origin.y,    
-info->lineFragmentRect.size.width,  
-info->lineFragmentRect.size.height);
-*/
-    }
-
-  firstPosition = [_fragmentRuns indexOfObjectContainingLocation: glyphRange.location];
-  lastPosition = [_fragmentRuns 
-		     indexOfObjectContainingLocation: (glyphRange.location+glyphRange.length-3)];
-
-  NSLog(@"glyphRange: (%d, %d) position1: %d position2: %d",
-glyphRange.location, glyphRange.length, firstPosition, lastPosition);
-
-  if (firstPosition >= 0)
-    {
-      if (lastPosition == -1)
-        {
-          lastPosition = [_fragmentRuns count] - 1; // FIXME
-	  NSLog(@"fixed lastPosition: %d", lastPosition);
-        }
-
-      for (i = firstPosition; i <= lastPosition; i++)
-        {
-	  GSLineLayoutInfo *aLine = [_fragmentRuns objectAtIndex: i];
-	  NSRect aRect = aLine->lineFragmentRect;
-	  aRect.size.height -= 4;
-
-/*
-NSLog(@"drawRange: (%d, %d) inRect (%f, %f) (%f, %f)",
-aLine->glyphRange.location,
-aLine->glyphRange.length,
-aLine->lineFragmentRect.origin.x,
-aLine->lineFragmentRect.origin.y,
-aLine->lineFragmentRect.size.width,
-aLine->lineFragmentRect.size.height);
-
-          NSEraseRect (aRect);
-*/
-	  [_textStorage drawRange: aLine->glyphRange inRect: aLine->lineFragmentRect];
-        }
-    }
+  /* TODO */
 }
 
 - (void) drawUnderlineForGlyphRange: (NSRange)glyphRange
@@ -2935,6 +2492,7 @@ aLine->lineFragmentRect.size.height);
 	     lineFragmentGlyphRange: (NSRange)lineGlyphRange
 		    containerOrigin: (NSPoint)containerOrigin
 {
+  /* TODO */
 }
 
 // The first of these methods actually draws an appropriate underline
@@ -2957,6 +2515,7 @@ aLine->lineFragmentRect.size.height);
       lineFragmentGlyphRange: (NSRange)lineGlyphRange
 	     containerOrigin: (NSPoint)containerOrigin
 {
+  /* TODO */
 }
 
 //
