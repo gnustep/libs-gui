@@ -406,6 +406,8 @@
   NSRect	titleRect;
   NSSize	imageSize = {0, 0};
   NSColor	*backgroundColor = nil;
+  BOOL		flippedView = [control_view isFlipped];
+  NSCellImagePosition	ipos;
 
   // transparent buttons never draw
   if ([self isTransparent])
@@ -477,7 +479,20 @@
       [imageToDisplay setBackgroundColor: backgroundColor];
     }
 
-  switch ([self imagePosition])
+  ipos = [self imagePosition];
+  if (flippedView == YES)
+    {
+      if (ipos == NSImageAbove)
+	{
+	  ipos = NSImageBelow;
+	}
+      else if (ipos == NSImageBelow)
+	{
+	  ipos = NSImageAbove;
+	}
+    }
+
+  switch (ipos)
     {
       case NSNoImage: 
 	imageToDisplay = nil;
@@ -510,18 +525,28 @@
 	titleRect.size.height = cellFrame.size.height;
 	break;
 
-      case NSImageBelow: 
-	imageRect = cellFrame;
-	imageRect.size.height /= 2;
-	titleRect = imageRect;
-        titleRect.origin.y += titleRect.size.height;
+      case NSImageAbove: 
+	imageRect.origin.x = cellFrame.origin.x;
+	imageRect.origin.y = NSMaxY(cellFrame) - imageSize.height;
+	imageRect.size.width = cellFrame.size.width;
+	imageRect.size.height = imageSize.height;
+
+	titleRect.origin = cellFrame.origin;
+	titleRect.size.height = cellFrame.size.height - imageSize.height
+	  - yDist;
+	titleRect.size.width = cellFrame.size.width;
 	break;
 
-      case NSImageAbove: 
-	titleRect = cellFrame;
-	titleRect.size.height /= 2;
-	imageRect = titleRect;
-        imageRect.origin.y += imageRect.size.height;
+      case NSImageBelow: 
+	imageRect.origin = cellFrame.origin;
+	imageRect.size.width = cellFrame.size.width;
+	imageRect.size.height = imageSize.height;
+
+	titleRect.origin.x = cellFrame.origin.x;
+	titleRect.origin.y = imageSize.height + yDist;
+	titleRect.size.height = cellFrame.size.height - imageSize.height
+	  - yDist;
+	titleRect.size.width = cellFrame.size.width;
 	break;
 
       case NSImageOverlaps: 
@@ -541,8 +566,10 @@
        * Images are always drawn with their bottom-left corner at the origin
        * so we must adjust the position to take account of a flipped view.
        */
-      if ([control_view isFlipped])
-	position.y += size.height;
+      if (flippedView)
+	{
+	  position.y += size.height;
+	}
       [imageToDisplay compositeToPoint: position operation: NSCompositeCopy];
     }
   if (titleToDisplay != nil)
