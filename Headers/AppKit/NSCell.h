@@ -333,7 +333,12 @@ typedef enum _NSControlSize {
 - (unsigned int)mnemonicLocation;
 - (BOOL)refusesFirstResponder;
 - (void)setRefusesFirstResponder:(BOOL)flag;
-- (void)performClick:(id)sender;
+
+// deprecated method now in favor of performClickWithFrame:inView:
+- (void)performClick:(id)sender; 
+
+- (void)performClickWithFrame: (NSRect)cellFrame 
+                       inView: (NSView *)controlView;
 #endif
 
 //

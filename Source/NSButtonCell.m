@@ -1081,13 +1081,19 @@
   [(NSView *)[event userData] setNeedsDisplay: YES];
 }
 
-- (void) performClick: (id)sender
+/**
+ * Simulates a single mouse click on the button cell. This method overrides the
+ * cell method performClickWithFrame:inView: to add the possibility to play a sound
+ * associated with the click. 
+ */
+- (void) performClickWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
 {
   if (_sound != nil)
     {
       [_sound play];
     }
-  [super performClick: sender];
+    
+  [super performClickWithFrame: cellFrame inView: controlView];
 }
 
 /*

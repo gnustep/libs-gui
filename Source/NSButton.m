@@ -387,11 +387,6 @@ static id buttonCellClass = nil;
 // Handling Events and Action Messages
 //
 
-- (void) performClick: (id)sender
-{
-  [_cell performClick: sender];
-}
-
 - (BOOL) performKeyEquivalent: (NSEvent *)anEvent
 {
   if ([self isEnabled])

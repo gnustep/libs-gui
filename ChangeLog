@@ -1,5 +1,26 @@
 2004-04-02  Quentin Mathe <qmathe@club-internet.fr>
 
+        With the help of Fred Kiefer and Alexander Malmberg, the modifications
+	below are mainly introduced to fix the fact -[NSCell performClick:] 
+	doesn't work correctly when the cell frame is not identical to the control 
+	frame which is displaying it :
+        * Source/NSButton.m: Removed -performClick: method already present in
+	the superclass NSControl.
+	* Headers/AppKit/NSButton.h: Same.
+	* Source/NSButtonCell.m: Replaced -performClick: method by
+	-performClickWithFrame:inView: method which overrides new method with
+	the same name in the superclass NSCell.
+	* Headers/AppKit/NSButtonCell.h: Same
+	* Source/NSCell.m: Added a method -performClickWithFrame:inView:
+	to be used in place of -performClick: method which has been deprecated.
+	* Headers/AppKit/NSCell.h: Same
+	* Source/NSControl.m: Modified -performClick: method to use the new
+	NSCell method -performClickWithFrame:inView:.
+        * Source/NSPopUpButtonCell.m: Modified -performClickWithFrame:inView: to
+	override the new method with the same name in the superclass NSCell.
+
+2004-04-02  Quentin Mathe <qmathe@club-internet.fr>
+
         * Source/NSWindow+Toolbar.h: Moved into Headers/AppKit
 	* Headers/AppKit/AppKit.h: Include NSWindow+Toolbar.h now
 	* Source/GNUMakefile: Modified to reflect this change

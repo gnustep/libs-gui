@@ -183,7 +183,6 @@ typedef enum _NSGradientType {
 #ifndef STRICT_OPENSTEP
 - (void)mouseEntered:(NSEvent *)event;
 - (void)mouseExited:(NSEvent *)event;
-- (void)performClick:(id)sender;
 #endif
 
 @end

@@ -1143,41 +1143,57 @@ static NSColor	*shadowCol;
   _cell.refuses_first_responder = flag;
 }
 
+/**
+ * Simulates a single click in the cell (only works with controls which have
+ * no more than one cell). This method is deprecated,
+ * performClickWithFrame:inView: is the right method to use now.
+ */
 - (void) performClick: (id)sender
 {
-  SEL action = [self action];
   NSView *cv = [self controlView];
+
+  if (cv != nil) 
+    [self performClickWithFrame: [cv bounds] inView: cv];
+}
+
+/**
+ * Simulates a single click in the cell. The display of the cell with this event
+ * occurs in the area delimited by <var>cellFrame</var> within
+ * <var>controlView</var>.
+ */
+- (void) performClickWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
+{
+  SEL action = [self action];
 
   if(_cell.is_disabled == YES)
     {
       return;
     }
 
-  if (cv != nil)
+  if (controlView != nil)
     {  
-      NSRect   cvBounds = [cv bounds];
-      NSWindow *cvWin = [cv window];
+      NSWindow *cvWin = [controlView window];
 
-      [cv lockFocus];
+      [controlView lockFocus];
       
       [self setNextState];
-      [self highlight: YES withFrame: cvBounds inView: cv];
+      [self highlight: YES withFrame: cellFrame inView: controlView];
       [cvWin flushWindow];
       
       // Wait approx 1/10 seconds
       [[NSRunLoop currentRunLoop] 
 	runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.1]];
       
-      [self highlight: NO withFrame: cvBounds inView: cv];
+      [self highlight: NO withFrame: cellFrame inView: controlView];
       [cvWin flushWindow];
       
-      [cv unlockFocus];
+      [controlView unlockFocus];
 
       if (action)
 	{
 	  NS_DURING
 	    {
-	      [(NSControl*)cv sendAction: action to: [self target]];
+	      [(NSControl*)controlView sendAction: action to: [self target]];
 	    }
 	  NS_HANDLER
 	    {

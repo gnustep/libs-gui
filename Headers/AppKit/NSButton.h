@@ -122,7 +122,6 @@
 //
 // Handling Events and Action Messages 
 //
-- (void)performClick:(id)sender;
 - (BOOL)performKeyEquivalent:(NSEvent *)anEvent;
 
 //

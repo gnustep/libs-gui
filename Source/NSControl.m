@@ -509,9 +509,15 @@ static Class actionCellClass;
 /*
  * Activation
  */
+
+/**
+ * Simulates a single mouse click on the control. This method calls the cell's
+ * method performClickWithFrame:inView:. Take note that <var>sender</var> is not
+ * used. 
+ */
 - (void) performClick: (id)sender
 {
-  [_cell performClick: sender];
+  [_cell performClickWithFrame: [self bounds] inView: self];
 }
 
 - (BOOL)refusesFirstResponder

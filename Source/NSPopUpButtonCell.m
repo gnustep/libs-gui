@@ -633,48 +633,22 @@ static NSImage *_pbc_image[2];
   return NO;
 }
 
-// This method is called to simulate programmatically a click
-// [as NSCell's performClick:]
-// This method is not executed upon mouse down; rather, it should
-// simulate what would happen upon mouse down.  It should not start
-// any real mouse tracking.
-- (void) performClickWithFrame: (NSRect)frame
-			inView: (NSView *)controlView
-{
-  NSWindow *cvWin = [controlView window];
-
-  if(_cell.is_disabled == YES)
-    {
-      return;
-    }
-
-  [controlView lockFocus];
-      
-  [self setNextState];
-  [self highlight: YES withFrame: frame inView: controlView];
-  [cvWin flushWindow];
-      
-  // Wait approx 1/10 seconds
-  [[NSRunLoop currentRunLoop] 
-      runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.1]];
-      
-  [self highlight: NO withFrame: frame inView: controlView];
-  [cvWin flushWindow];
-      
-  [controlView unlockFocus];
-
+// This method is called to simulate programmatically a click by overriding 
+// -[NSCell performClickWithFrame:inView:]
+// This method is not executed upon mouse down; rather, it should simulate what
+// would happen upon mouse down.  It should not start any real mouse tracking.
+/**
+ * Simulates a single click in the pop up button cell (the display of the cell
+ * with this event occurs in the area delimited by <var>frame</var> in the view
+ * <var>controlView</var>) and displays the popup button cell menu attached to
+ * the view <var>controlView</var>, the menu width depends on the
+ * <var>frame</var> width value. 
+ */
+- (void) performClickWithFrame: (NSRect)frame inView: (NSView *)controlView
+{  
+  [super performClickWithFrame: frame inView: controlView];
+  
   [self attachPopUpWithFrame: frame inView: controlView];
-}
-
-- (void) performClick: (id)sender
-{
-  NSView *cv = [self controlView];
-
-  if (cv != nil)
-    {  
-      [self performClickWithFrame: [cv bounds]
-	    inView: cv];
-    }
 }
 
 // Arrow position for bezel style and borderless popups.
