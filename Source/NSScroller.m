@@ -510,7 +510,7 @@ static BOOL preCalcValues = NO;
   _hitPart = NSScrollerNoPart;
 }
 
-- (void)trackKnob: (NSEvent*)theEvent
+- (void) trackKnob: (NSEvent*)theEvent
 {
   unsigned int eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
 			  | NSLeftMouseDraggedMask | NSMouseMovedMask
@@ -519,6 +519,8 @@ static BOOL preCalcValues = NO;
   NSPoint point, apoint;
   float oldFloatValue = _floatValue;
   float floatValue;
+  float	xoffset = 0;
+  float	yoffset = 0;
   NSDate *theDistantFuture = [NSDate distantFuture];
   NSEventType eventType;
   NSRect knobRect = {{0,0},{0,0}};
@@ -526,6 +528,27 @@ static BOOL preCalcValues = NO;
 
   [self _preCalcParts];			// pre calc scroller parts
   preCalcValues = YES;
+  knobRect = [self rectForPart: NSScrollerKnob];
+
+  if (_hitPart == NSScrollerKnob)
+    {
+      apoint = [theEvent locationInWindow];
+      point = [self convertPoint: apoint fromView: nil];
+      if (_isHorizontal)
+	{
+	  if (point.x != knobRect.origin.x + knobRect.size.width/2)
+	    {
+	      xoffset = knobRect.origin.x + knobRect.size.width/2 - point.x;
+	    }
+	}
+      else
+	{
+	  if (point.y != knobRect.origin.y + knobRect.size.height/2)
+	    {
+	      yoffset = knobRect.origin.y  + knobRect.size.height/2 - point.y;
+	    }
+	}
+    }
 
   _hitPart = NSScrollerKnob;
   // set periodic events rate to achieve max of ~30fps
@@ -547,7 +570,9 @@ static BOOL preCalcValues = NO;
 	  if (periodCount == 6)
 	    apoint = [window mouseLocationOutsideOfEventStream];
 
-	  point = [self convertPoint:apoint fromView:nil];
+	  point = [self convertPoint: apoint fromView: nil];
+	  point.x += xoffset;
+	  point.y += yoffset;
 
 	  if (point.x != knobRect.origin.x || point.y != knobRect.origin.y)
 	    {
@@ -703,7 +728,7 @@ static BOOL preCalcValues = NO;
   NSRectFill(rect);
 }
 
-- (NSRect)rectForPart: (NSScrollerPart)partCode
+- (NSRect) rectForPart: (NSScrollerPart)partCode
 {
   NSRect scrollerFrame = frame;
   float x = 1, y = 1, width = 0, height = 0, floatValue;
