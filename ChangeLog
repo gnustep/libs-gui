@@ -1,3 +1,17 @@
+Wed Dec  5 10:55:13 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSClipView.m ([-setBackgroundColor:]): If the color is
+	changed, mark the clipview as needing redisplay.
+	([-setDrawsBackground:]): If the flag is changed, mark the
+	clipview as needing redisplay.
+	* Source/NSText.m ([-setBackgroundColor:]): Mark the text as
+	needing redisplay if the color is changed.  If we are not a field
+	editor, change the background color of the enclosing scrollview
+	too.
+	([-setDrawsBackground:]): Mark the text as needing redisplay if
+	the flag is changed.  If we are not a field editor, change the
+	flag for the enclosing scrollview too.
+	
 2001-12-02  Adam Fedor  <fedor@gnu.org>
 
 	* Model/GMAppKit.m ([NSMenuItem -initWithModelUnarchiver:]): Check
