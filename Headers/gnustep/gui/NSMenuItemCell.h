@@ -37,22 +37,20 @@ typedef void (*DrawingIMP)(id, SEL, NSRect, NSView*);
 
 @interface NSMenuItemCell : NSButtonCell <NSCopying, NSCoding>
 {
-  BOOL mcell_highlighted;
-  BOOL mcell_has_submenu;
-  NSMenuItem *mcell_item;
-  NSMenuView *mcell_menuView;
+  NSMenuItem *_menuItem;
+  NSMenuView *_menuView;
 
   // Cache
-  BOOL mcell_needs_sizing;
-  float mcell_imageWidth;
-  float mcell_titleWidth;
-  float mcell_keyEquivalentWidth;
-  float mcell_stateImageWidth;
-  float mcell_menuItemHeight;
+  BOOL _needs_sizing;
+  float _imageWidth;
+  float _titleWidth;
+  float _keyEquivalentWidth;
+  float _stateImageWidth;
+  float _menuItemHeight;
 
-  NSImage *mcell_imageToDisplay;
-  NSString *mcell_titleToDisplay;
-  NSSize mcell_imageSize;
+  NSImage *_imageToDisplay;
+  NSString *_titleToDisplay;
+  NSSize _imageSize;
 
   /* If we belong to a popupbutton, we display image on the extreme
      right */
@@ -64,9 +62,6 @@ typedef void (*DrawingIMP)(id, SEL, NSRect, NSView*);
 
 - (void)setHighlighted:(BOOL)flag;
 - (BOOL)isHighlighted;
-- (void)highlight:(BOOL)flag
-	withFrame:(NSRect)cellFrame
-	   inView:(NSView*)controlView;
 
 - (void)setMenuItem:(NSMenuItem *)item;
 - (NSMenuItem *)menuItem;
