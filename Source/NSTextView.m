@@ -1327,7 +1327,10 @@ incorrectly. */
     return;
 
   if (_tf.is_horizontally_resizable || _tf.is_vertically_resizable)
-    size = [_layoutManager usedRectForTextContainer: _textContainer].size;
+    {
+      NSRect r = [_layoutManager usedRectForTextContainer: _textContainer];
+      size = NSMakeSize(NSMaxX(r), NSMaxY(r));
+    }
   
   if (!_tf.is_horizontally_resizable)
     size.width = _bounds.size.width;
@@ -1353,8 +1356,8 @@ incorrectly. */
       [cv documentView] == self)
     {
       NSSize b = [cv bounds].size;
-      effectiveMinSize.width  = MIN(effectiveMinSize.width , b.width );
-      effectiveMinSize.height = MIN(effectiveMinSize.height, b.height);
+      effectiveMinSize.width  = MAX(effectiveMinSize.width , b.width );
+      effectiveMinSize.height = MAX(effectiveMinSize.height, b.height);
     }
 
   if (_tf.is_horizontally_resizable)
@@ -1378,7 +1381,7 @@ incorrectly. */
     {
       newSize.height = _frame.size.height;
     }
-  
+
   if (NSEqualSizes(_frame.size, newSize) == NO)
     {
       [self setFrameSize: newSize];
