@@ -43,7 +43,7 @@
 #define RETAIN(object)          [object retain]
 #endif
 
-#include <AppKit/GMArchiver.h>
+#include <gnustep/gui/GMArchiver.h>
 
 @interface GMClassInfo : NSObject
 {

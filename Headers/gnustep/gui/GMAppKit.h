@@ -27,7 +27,7 @@
 #define _GNUstep_H_GMAppKit
 
 #include <AppKit/AppKit.h>
-#import <AppKit/GMArchiver.h>
+#import <gnustep/gui/GMArchiver.h>
 
 @interface NSApplication (GMArchiverMethods) <ModelCoding>
 @end

@@ -25,7 +25,7 @@
 
 #import <Foundation/NSArray.h>
 #import <Foundation/NSException.h>
-#include "AppKit/GMAppKit.h"
+#include "gnustep/gui/GMAppKit.h"
 
 #ifndef AUTORELEASE
 #define AUTORELEASE(object)	[object autorelease]
@@ -965,12 +965,15 @@ void __dummy_GMAppKit_functionForLinking() {}
   [archiver encodeInt:      [self autoresizingMask]
              withName:      @"autoresizingMask"];
   
-  /* OUCH! This code crashes the translator; probably we interfere somehow with
-     the way NSPopUpButton is handled by the NeXT's NIB code. Sorry, the
-     popup buttons cannot be handled by the convertor! */
-#ifdef __APPLE__
-  NSLog(@"Cannot encode NSPopUpButton - please fix me");
-  [archiver encodeArray: [NSArray array] withName: @"itemArray"];
+#if 0 //def __APPLE__
+  {
+    int i;
+    NSMutableArray *array;
+    array = [NSMutableArray arrayWithCapacity: [self numberOfItems]];
+    for (i = 0; i < [self numberOfItems]; i++)
+      [array addObject: [self itemAtIndex: i]];
+    [archiver encodeArray: array withName: @"itemArray"];
+  }
 #else
   [archiver encodeArray:[self itemArray] withName:@"itemArray"];
 #endif

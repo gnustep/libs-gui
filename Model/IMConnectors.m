@@ -25,11 +25,13 @@
 
 #include <string.h>
 
+#ifndef NeXT_Foundation_LIBRARY
 #include <gnustep/base/GSObjCRuntime.h>
+#endif
 #include <Foundation/NSObjCRuntime.h>
 #include <AppKit/NSActionCell.h>
-#include <AppKit/GMArchiver.h>
-#include "AppKit/IMCustomObject.h"
+#include <gnustep/gui/GMArchiver.h>
+#include "gnustep/gui/IMCustomObject.h"
 #include "IMConnectors.h"
 
 @implementation IMConnector
@@ -69,6 +71,7 @@
 //    NSLog (@"%@: setting target to %@", _source, _destination);
       [_source setTarget:_destination];
     }
+#ifndef NeXT_Foundation_LIBRARY
   else
     {
       const char	*type;
@@ -78,14 +81,13 @@
       /*
        * Use the GNUstep additional function to set the instance
        * variable directly.
-       * FIXME - need some way to do this for libFoundation and
-       * Foundation based systems.
        */
       if (GSObjCFindVariable(_source, "target", &type, &size, &offset))
 	{
 	  GSObjCSetVariable(_source, offset, size, (void*)&_destination); 
 	}
     }
+#endif
 
   if ([_source respondsToSelector:@selector(setAction:)])
     {
@@ -93,6 +95,7 @@
 //	    _source, NSStringFromSelector(action));
       [_source setAction:action];
     }
+#ifndef NeXT_Foundation_LIBRARY
   else
     {
       const char	*type;
@@ -110,6 +113,7 @@
 	  GSObjCSetVariable(_source, offset, size, (void*)&action); 
 	}
     }
+#endif
 }
 
 @end /* IMControlConnector:IMConnector */
@@ -148,6 +152,7 @@
     {
       [_source performSelector:setSelector withObject:_destination];
     }
+#ifndef NeXT_Foundation_LIBRARY
   else
     {
       const char	*nam = [label cString];
@@ -166,6 +171,7 @@
 	  GSObjCSetVariable(_source, offset, size, (void*)&_destination); 
 	}
     }
+#endif
 }
 
 @end /* IMOutletConnector */

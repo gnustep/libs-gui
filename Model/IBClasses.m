@@ -28,7 +28,7 @@
 #import <Foundation/NSCoder.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSArray.h>
-#import <AppKit/GMArchiver.h>
+#import <gnustep/gui/GMArchiver.h>
 
 #ifdef __APPLE__
 #import <AppKit/NSNibConnector.h>
@@ -39,7 +39,7 @@
 #import "IBClasses.h"
 #import "Translator.h"
 #import "IMConnectors.h"
-#import "AppKit/IMCustomObject.h"
+#import "gnustep/gui/IMCustomObject.h"
 
 //#define DEBUG
 

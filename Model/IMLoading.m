@@ -28,9 +28,9 @@
 #import <Foundation/NSFileManager.h>
 #import <Foundation/NSPathUtilities.h>
 
-#include <AppKit/GMArchiver.h>
-#include "AppKit/IMLoading.h"
-#include "AppKit/IMCustomObject.h"
+#include "gnustep/gui/GMArchiver.h"
+#include "gnustep/gui/IMLoading.h"
+#include "gnustep/gui/IMCustomObject.h"
 
 /* For awakeFromNib */
 #include <AppKit/NSNibLoading.h>
