@@ -30,6 +30,8 @@
 #include <Foundation/Foundation.h>
 #include <AppKit/NSStringDrawing.h>
 #include <AppKit/AppKit.h>
+// For the encoding functions
+#include <base/Unicode.h>
 
 /*
  * A function called by NSApplication to ensure that this file is linked
@@ -40,16 +42,12 @@ GSStringDrawingDummyFunction()
 {
 }
 
-static NSCharacterSet	*whitespace;
 static NSCharacterSet	*newlines;
-static NSCharacterSet	*separators;
 static NSFont		*defFont;
 static NSParagraphStyle	*defStyle;
 static NSColor		*defFgCol;
 static NSColor		*defBgCol;
 static SEL		advSel = @selector(advancementForGlyph:);
-
-static BOOL (*isSepImp)(NSCharacterSet*, SEL, unichar);
 
 /*
  *	Thne 'checkInit()' function is called to ensure that any static
@@ -63,8 +61,9 @@ checkInit()
   if (beenHere == NO)
     {
       NSMutableCharacterSet	*ms;
+      NSCharacterSet	*whitespace;
 
-      whitespace = [[NSCharacterSet whitespaceCharacterSet] retain];
+      whitespace = RETAIN([NSCharacterSet whitespaceCharacterSet]);
 
       /*
        * Build a character set containing only newline characters.
@@ -72,21 +71,10 @@ checkInit()
       ms = [[NSCharacterSet whitespaceAndNewlineCharacterSet] mutableCopy];
       [ms formIntersectionWithCharacterSet: [whitespace invertedSet]];
       newlines = [ms copy];
-      [ms release];
-
-      /*
-       * Build a character set containing only word separators.
-       */
-      ms = [[NSCharacterSet punctuationCharacterSet] mutableCopy];
-      [ms formUnionWithCharacterSet: whitespace];
-      separators = [ms copy];
-      [ms release];
-
-      isSepImp = (BOOL (*)(NSCharacterSet*, SEL, unichar))
-	[separators methodForSelector: @selector(characterIsMember:)];
+      RELEASE(ms);
 
       defStyle = [NSParagraphStyle defaultParagraphStyle];
-      [defStyle retain];
+      RETAIN(defStyle);
       defBgCol = nil;
       beenHere = YES;
     }
@@ -99,341 +87,12 @@ checkInit()
   defFgCol = [NSColor textColor];
 }
 
-static inline BOOL
-isSeparator(unichar c)
-{
-  return (*isSepImp)(separators, @selector(characterIsMember:), c);
-}
-
-#define	ADVANCEMENT(X)	(*advImp)(font, advSel, (X))
-
 /*
- *	The 'sizeLine()' function is called to determine the size of a single
- *	line of text (specified by the 'range' argument) that may be part of
- *	a larger attributed string.
- *	If will also return the position of the baseline of the text within
- *	the bounding rectangle as an offset from the bottom of the rectangle.
- *	The 'line' range is shortened to indicate any line wrapping.
- */
-static NSSize
-sizeLine(NSAttributedString *str,
-	NSParagraphStyle *style,
-	NSRange *para,
-	BOOL first,
-	float *baseptr)
-{
-  unsigned	pos = para->location;
-  unsigned	end = pos + para->length;
-  unsigned	lastSepIndex;
-  float		lastSepOffset;
-  NSLineBreakMode lbm;
-  NSArray	*tabStops = [style tabStops];
-  unsigned	numTabs = [tabStops count];
-  unsigned	nextTab = 0;
-  NSSize	size = NSMakeSize(0, 0);
-  float		baseline = 0;
-  float		maxx;
-  NSFont	*oldFont = nil;
-  NSSize	(*advImp)(NSFont*, SEL, NSGlyph);
-
-  if (pos >= end)
-    return size;
-
-  /*
-   * Perform initial horizontal positioning
-   */
-  if (first)
-    size.width = [style firstLineHeadIndent];
-  else
-    size.width = [style headIndent];
-
-  /*
-   * Initialise possible linebreak points.
-   */
-  lbm = [style lineBreakMode];
-  lastSepIndex = 0;
-  lastSepOffset = size.width;
-
-  /*
-   * Determine the end of a line - use a very large value if the style does
-   * not give us an eol relative to our starting point.
-   */
-  maxx = [style tailIndent];
-  if (maxx <= 0.0)
-    maxx = 1.0E8;
-
-  while (pos < end)
-    {
-      NSFont		*font;
-      int		superscript;
-      int		ligature;
-      float		base;
-      float		kern;
-      NSNumber		*num;
-      NSRange		maxRange;
-      NSRange		range;
-      float		below;
-      float		above;
-
-      // Maximum range is up to end of line.
-      maxRange = NSMakeRange(pos, end - pos);
-
-      // Get font and range over which it applies.
-      font = (NSFont*)[str attribute: NSFontAttributeName
-			     atIndex: pos
-		      effectiveRange: &range];
-      if (font == nil)
-	font = defFont;
-      if (font != oldFont)
-	{
-	  oldFont = font;
-	  advImp = (NSSize (*)(NSFont*, SEL, NSGlyph))
-	    [font methodForSelector: advSel];
-	}
-      maxRange = NSIntersectionRange(maxRange, range);
-
-      // Get baseline offset and range over which it applies.
-      num = (NSNumber*)[str attribute: NSBaselineOffsetAttributeName 
-			      atIndex: pos
-		       effectiveRange: &range];
-      if (num == nil)
-	base = 0.0;
-      else
-	base = [num floatValue];
-      maxRange = NSIntersectionRange(maxRange, range);
-
-      // Get kern attribute and range over which it applies.
-      num = (NSNumber*)[str attribute: NSKernAttributeName 
-			      atIndex: pos
-		       effectiveRange: &range];
-      if (num == nil)
-	kern = 0.0;
-      else
-	kern = [num floatValue];
-      maxRange = NSIntersectionRange(maxRange, range);
-
-      // Get superscript and range over which it applies.
-      num = (NSNumber*)[str attribute: NSSuperscriptAttributeName 
-			      atIndex: pos
-		       effectiveRange: &range];
-      if (num == nil)
-	superscript = 0;
-      else
-	superscript = [num intValue];
-      maxRange = NSIntersectionRange(maxRange, range);
-
-      // Get ligature attribute and range over which it applies.
-      num = (NSNumber*)[str attribute: NSLigatureAttributeName 
-			      atIndex: pos
-		       effectiveRange: &range];
-      if (num == nil)
-	ligature = 1;
-      else
-	ligature = [num intValue];
-      maxRange = NSIntersectionRange(maxRange, range);
-
-      /*
-       * See if the height of the bounding rectangle needs to grow to fit
-       * the font for this text.
-       */
-      // FIXME - superscript should have some effect on height.
-
-      below = -([font descender]);
-      above = [font pointSize];
-      if (base > 0)
-	above += base;		// Character is above baseline.
-      else if (base < 0)
-	below -= base;		// Character is below baseline.
-      if (below > baseline)
-	baseline = below;
-      if (size.height < baseline + above)
-	size.height = baseline + above;
-
-      /*
-       * Now we add the widths of the characters.
-       */
-      // FIXME - ligature should have some effect on width.
-      range = maxRange;
-      if (range.length > 0)
-	{
-	  unichar	chars[range.length];
-	  unsigned	i = 0;
-	  float		width = 0;
-
-	  [[str string] getCharacters: chars range: range];
-	  while (i < range.length && width < maxx)
-	    {
-	      unsigned	tabIndex = i;
-
-	      while (tabIndex < range.length)
-		{
-		  if (chars[tabIndex] == '\t')
-		    break;
-		  tabIndex++;
-		}
-
-	      if (tabIndex == i)
-		{
-		  NSTextTab	*tab;
-
-		  /*
-		   *	Either advance to next tabstop or by a space if
-		   *	there are no more tabstops.
-		   */
-		  while (nextTab < numTabs)
-		    {
-		      tab = [tabStops objectAtIndex: nextTab];
-		      if ([tab location] > size.width)
-			break;
-		      nextTab++;
-		    }
-		  if (nextTab < numTabs)
-		    width = [tab location];
-		  else
-		    {
-		      NSSize	adv;
-
-		      adv = ADVANCEMENT(' ');
-		      width = size.width + adv.width;
-		    }
-		  if (width > maxx)
-		    break;
-		  /*
-		   * In case we need to word-wrap, we must record this
-		   * as a possible linebreak position.
-		   */
-		  if (lbm == NSLineBreakByWordWrapping)
-		    {
-		      lastSepIndex = pos + i;
-		      lastSepOffset = size.width;
-		    }
-		  size.width = width;
-		  i++;			// Point to next char.
-		}
-	      else
-		{
-		  while (i < tabIndex)
-		    {
-		      NSSize	adv;
-
-		      adv = ADVANCEMENT(chars[i]);
-		      width = size.width + adv.width + kern;
-		      if (width > maxx)
-			break;
-		      if (lbm == NSLineBreakByWordWrapping
-			&& isSeparator(chars[i]))
-			{
-			  lastSepIndex = pos + i;
-			  lastSepOffset = size.width;
-			}
-		      size.width = width;
-		      i++;
-		    }
-		}
-	    }
-
-	  if (width > maxx)
-	    {
-	      if (lbm == NSLineBreakByWordWrapping)
-		{
-		  unichar	c;
-
-		  /*
-		   * Word wrap - if the words are separated by whitespace
-		   * we discard the whitespace character - is this right?.
-		   */
-		  pos = lastSepIndex;
-		  size.width = lastSepOffset;
-		  c = [[str string] characterAtIndex: pos];
-		  if ([whitespace characterIsMember: c])
-		    pos++;
-		}
-	      else if (lbm == NSLineBreakByCharWrapping)
-		{
-		  /*
-		   * Simply do a linebreak at the current character position.
-		   */
-		  pos += i;
-		}
-	      else
-		{
-		  /*
-		   * Truncate line.
-		   */
-		  size.width = maxx;
-		  pos = end;
-		}
-		  
-	      break;
-	    }
-	  else
-	    {
-	      pos = NSMaxRange(range);	// Next position in string.
-	    }
-	}
-    }
-
-  /*
-   * Adjust the range 'para' to specify the characters in this line.
-   */
-  para->length = (pos - para->location);
-
-  if (baseptr)
-    *baseptr = baseline;
-  return size;
-}
-
-
-/*
- *	I know it's severely sub-optimal, but the NSString methods just
- *	use NSAttributes string to do the job.
- */
-@implementation NSString (NSStringDrawing)
-
-- (void) drawAtPoint: (NSPoint)point withAttributes: (NSDictionary *)attrs
-{
-  NSAttributedString	*a;
-
-  a = [NSAttributedString allocWithZone: NSDefaultMallocZone()];
-  [a initWithString: self attributes: attrs];
-  [a drawAtPoint: point];
-  [a release];
-}
-
-- (void) drawInRect: (NSRect)rect withAttributes: (NSDictionary *)attrs
-{
-  NSAttributedString	*a;
-
-  a = [NSAttributedString allocWithZone: NSDefaultMallocZone()];
-  [a initWithString: self attributes: attrs];
-  [a drawInRect: rect];
-  [a release];
-}
-
-- (NSSize) sizeWithAttributes: (NSDictionary *)attrs
-{
-  NSAttributedString	*a;
-  NSSize		s;
-
-  a = [NSAttributedString allocWithZone: NSDefaultMallocZone()];
-  [a initWithString: self attributes: attrs];
-  s = [a size];
-  [a release];
-  return s;
-}
-@end
-
-
-
-@implementation NSAttributedString (NSStringDrawing)
-
-/*
- * A GSGlyphInfo is usee to maintain information about a single glyph
+ * A GSGlyphInfo is used to maintain information about a single glyph
  */
 typedef struct {
   NSGlyph	glyph;		// The glyph to be drawn.
   NSSize	adv;		// How far to move to draw next glyph.
-  unsigned	pos;		// Position in attributed string.
 } GSGlyphInfo;
 
 /*
@@ -441,6 +100,7 @@ typedef struct {
  * array of GSGlyphInfo structures have been allocated to GSTextRuns
  */
 typedef struct {
+  unsigned	size;
   unsigned	used;
   GSGlyphInfo	*glyphs;
 } GSGlyphArray;
@@ -469,7 +129,6 @@ typedef struct GSTextRunStruct {
   int		superscript;
   float		base;
   float		kern;
-  float		ypos;
   int		ligature;
   struct GSTextRunStruct *last;
   struct GSTextRunStruct *next;
@@ -513,37 +172,58 @@ drawRun(GSTextRun *run, NSPoint origin, GSDrawInfo *draw)
     {
       char	buf[run->glyphCount + 1];
       unsigned	i;
+      NSStringEncoding enc = [run->font mostCompatibleStringEncoding];
 
-      for (i = 0; i < run->glyphCount; i++)
-	{
-	  buf[i] = (char)run->glyphs[i].glyph;
+      // glyph is an unicode char value
+      // if the font has non-standard encoding we need to remap it.
+      if ((enc != NSASCIIStringEncoding) && 
+	  (enc != NSUnicodeStringEncoding))
+        {
+	  // FIXME: This only works for 8-Bit characters
+	  for (i = 0; i < run->glyphCount; i++)
+	    {
+	      buf[i] = encode_unitochar(run->glyphs[i].glyph, enc);
+	    }
 	}
+      else 
+	  for (i = 0; i < run->glyphCount; i++)
+	    {
+	      buf[i] = run->glyphs[i].glyph;
+	    }
       buf[i] = '\0';
       DPSmoveto(draw->ctxt, origin.x, origin.y);
       DPSshow(draw->ctxt, buf);
-#ifdef XDPS_BACKEND_LIBRARY
-      /* FIXME: Hack to force DGS to flush the text */
-      DPSrectfill(draw->ctxt, 0, 0, 0.5, 0.5);
-#endif
     }
   else
     {
       char	buf[2];
       unsigned	i;
+      NSStringEncoding enc = [run->font mostCompatibleStringEncoding];
 
       buf[1] = '\0';
       for (i = 0; i < run->glyphCount; i++)
         {
-	  buf[0] = (char)run->glyphs[i].glyph;
+	  // glyph is an unicode char value
+	  // if the font has non-standard encoding we need to remap it.
+	  if ((enc != NSASCIIStringEncoding) && 
+	      (enc != NSUnicodeStringEncoding))
+	    {
+	      buf[0] = encode_unitochar(run->glyphs[i].glyph, enc);
+	    }
+	  else
+	    {
+	      buf[0] = (char)run->glyphs[i].glyph;
+	    }
 	  DPSmoveto(draw->ctxt, origin.x, origin.y);
 	  DPSshow(draw->ctxt, buf);
 	  origin.x += run->glyphs[i].adv.width;
 	}
-#ifdef XDPS_BACKEND_LIBRARY
-      /* FIXME: Hack to force DGS to flush the text */
-      DPSrectfill(draw->ctxt, 0, 0, 0.5, 0.5);
-#endif
     }
+
+#ifdef XDPS_BACKEND_LIBRARY
+  /* FIXME: Hack to force DGS to flush the text */
+  DPSrectfill(draw->ctxt, 0, 0, 0.5, 0.5);
+#endif
 
   if (run->underline)
     {
@@ -602,19 +282,15 @@ setupRun(GSTextRun *run, unsigned length, unichar *chars, unsigned pos,
   num = (NSNumber*)[attr objectForKey: NSSuperscriptAttributeName]; 
   if (num == nil)
     run->base = 0.0;
-    //run->superscript = 0;
   else
     // interprete as a baseline change without font change
     run->base = 3.0 * [num intValue];
-    //run->superscript = [num intValue];
 
   // Get baseline offset
   num = (NSNumber*)[attr objectForKey: NSBaselineOffsetAttributeName]; 
-  if (num == nil)
-      ; // Use value from superscript!
-    //run->base = 0.0;
-  else
+  if (num != nil)
     run->base = [num floatValue];
+  // Else, use value from superscript!
 
   // Get kern attribute
   num = (NSNumber*)[attr objectForKey: NSKernAttributeName]; 
@@ -641,7 +317,7 @@ setupRun(GSTextRun *run, unsigned length, unichar *chars, unsigned pos,
   else if (run->base < 0)
     below -= run->base;		// Character is below baseline.
   run->baseline = below;
-  run->height = run->baseline + above;
+  run->height = below + above;
 
   /*
    *	Get the characters for this run from the string and set up the
@@ -672,7 +348,6 @@ setupRun(GSTextRun *run, unsigned length, unichar *chars, unsigned pos,
 
 	      gi->glyph = (NSGlyph)chars[i];
 	      gi->adv = (*advImp)(font, advSel, gi->glyph);
-	      gi->pos = pos++;
 	      width += gi->adv.width;
 	    }
 	}
@@ -684,7 +359,6 @@ setupRun(GSTextRun *run, unsigned length, unichar *chars, unsigned pos,
 
 	      gi->glyph = (NSGlyph)chars[i];
 	      gi->adv = (*advImp)(font, advSel, gi->glyph);
-	      gi->pos = pos++;
 	      gi->adv.width += kern;
 	      width += gi->adv.width;
 	    }
@@ -727,7 +401,7 @@ drawChunk(GSTextChunk *chunk, NSPoint origin, GSDrawInfo *draw)
     {
       origin.y -= (chunk->height - chunk->baseline);
     }
-  while (run != 0)
+  while (run)
     {
       drawRun(run, origin, draw);
       origin.x += run->width;
@@ -1133,6 +807,30 @@ setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
        * FIXME - should check for line-break and handle long lines here.
        * If we break a line, we should return the first chunk of the next line.
        */
+/*
+      if (lastChunk->xpos + lastChunk->width > line->rmargin)
+      {
+	NSLineBreakMode lbm = line->lineBreakMode;  
+	unsigned pos;
+
+	if (lbm == NSLineBreakByWordWrapping)
+	  {
+	    // Get break position from string
+	    pos = [str lineBreakBeforeIndex: i
+			 withinRange: range];
+	  }
+	else if (lbm == NSLineBreakByCharWrapping)
+	  {
+	    // Simply do a linebreak at the current character position.
+	    pos = i;
+	  }
+	else
+	  {
+	    // Truncate line.
+	    pos = end;
+	  }
+      }
+*/
 
       /*
        * Now extend line width to add the new chunk and adjust the line
@@ -1156,6 +854,10 @@ setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
 
   return 0;
 }
+
+
+
+@implementation NSAttributedString (NSStringDrawing)
 
 - (void) drawAtPoint: (NSPoint)point
 {
@@ -1217,6 +919,7 @@ setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
 	    GSGlyphArray	garray;
 
 	    garray.used = 0;
+	    garray.size = line.length;
 	    garray.glyphs = info;
 
 	    setupLine(&current, self, line, &garray, style, YES);
@@ -1343,8 +1046,8 @@ setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
   return size;
 }
 
-
-#if 1
+// GNUstep extensions.
+// Are they off any use?
 - (NSSize) sizeRange: (NSRange) lineRange
 {
   return [[self attributedSubstringFromRange: lineRange] size];
@@ -1360,62 +1063,44 @@ setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
   [[self attributedSubstringFromRange: lineRange] drawInRect: aRect];
 }
 
-#else
-- (NSSize) sizeRange: (NSRange) lineRange
-{
-  NSRect retRect = NSZeroRect;
-  NSRange currRange = NSMakeRange (lineRange.location, 0);
-  NSPoint currPoint = NSMakePoint (0, 0);
-  NSString *string = [self string];
-  
+@end
 
-  for (; NSMaxRange (currRange) < NSMaxRange (lineRange);) // draw all "runs"
-    {
-      NSDictionary *attributes = [self attributesAtIndex: NSMaxRange(currRange) 
-				       longestEffectiveRange: &currRange 
-				       inRange: lineRange];
-      NSString *substring = [string substringWithRange: currRange];
-      NSRect sizeRect = NSMakeRect (currPoint.x, 0, 0, 0);
-      
-      sizeRect.size = [substring sizeWithAttributes: attributes];
-      retRect = NSUnionRect (retRect, sizeRect);
-      currPoint.x += sizeRect.size.width;
-      //<!> size attachments
-    } 
-  return retRect.size;
+
+/*
+ *	I know it's severely sub-optimal, but the NSString methods just
+ *	use NSAttributes string to do the job.
+ */
+@implementation NSString (NSStringDrawing)
+
+- (void) drawAtPoint: (NSPoint)point withAttributes: (NSDictionary *)attrs
+{
+  NSAttributedString	*a;
+
+  a = [[NSAttributedString allocWithZone: NSDefaultMallocZone()] 
+	  initWithString: self attributes: attrs];
+  [a drawAtPoint: point];
+  RELEASE(a);
 }
 
-- (void) drawRange: (NSRange) lineRange atPoint: (NSPoint) aPoint
+- (void) drawInRect: (NSRect)rect withAttributes: (NSDictionary *)attrs
 {
-  NSRange currRange = NSMakeRange (lineRange.location, 0);
-  NSPoint currPoint;
-  NSString *string = [self string];
-  
-  for (currPoint = aPoint; NSMaxRange (currRange) < NSMaxRange (lineRange);)
-    {
-      // draw all "runs"
-      NSDictionary *attributes = [self attributesAtIndex: NSMaxRange(currRange) 
-				       longestEffectiveRange: &currRange 
-				       inRange: lineRange];
-      NSString *substring = [string substringWithRange: currRange];
-      [substring drawAtPoint: currPoint withAttributes: attributes];
-      currPoint.x += [substring sizeWithAttributes: attributes].width;
-      //<!> draw attachments
-    }
+  NSAttributedString	*a;
+
+  a = [[NSAttributedString allocWithZone: NSDefaultMallocZone()]
+	  initWithString: self attributes: attrs];
+  [a drawInRect: rect];
+  RELEASE(a);
 }
 
-- (void) drawRange: (NSRange)aRange inRect: (NSRect)aRect
+- (NSSize) sizeWithAttributes: (NSDictionary *)attrs
 {
-  NSString *substring = [[self string] substringWithRange: aRange];
-  
-  [substring drawInRect: aRect
-	     withAttributes: [NSDictionary dictionaryWithObjectsAndKeys: 
-					     [NSFont systemFontOfSize: 12.0], 
-					     NSFontAttributeName,
-					     [NSColor blueColor], 
-					     NSForegroundColorAttributeName,
-					     nil]];
-}
-#endif
+  NSAttributedString	*a;
+  NSSize		s;
 
+  a = [[NSAttributedString allocWithZone: NSDefaultMallocZone()]
+	  initWithString: self attributes: attrs];
+  s = [a size];
+  RELEASE(a);
+  return s;
+}
 @end
