@@ -1,4 +1,4 @@
-/* 
+/* -*- C++ -*-
    NSSavePanel.m
 
    Standard save panel for saving files
@@ -41,6 +41,8 @@
 #include <AppKit/NSSavePanel.h>
 #include <AppKit/NSOpenPanel.h>
 #include <AppKit/NSBrowserCell.h>
+#include <AppKit/IMLoading.h>
+#include <extensions/GMArchiver.h>
 
 // toDo:	
 // - interactive directory creation in SavePanel
@@ -49,12 +51,38 @@
 //   files
 
 
-
+//
+// Fake class for gmodel
+//
 //
 // Class variables
 //
 static NSSavePanel *gnustep_gui_save_panel = nil;
 
+@interface _SavePanel : NSObject
+@end
+
+@implementation _SavePanel
+//
+// Model stuff
+//
+- (id)initWithModelUnarchiver :(GMUnarchiver*)unarchiver
+{
+    if (!gnustep_gui_save_panel)
+	gnustep_gui_save_panel = [unarchiver decodeObjectWithName:@"panel"];
+
+    return self;
+}
+
+- (void)encodeWithModelArchiver :(GMArchiver *)archiver
+{
+    if (gnustep_gui_save_panel)
+	[archiver encodeObject:gnustep_gui_save_panel withName:@"panel"];
+}
+
+@end
+
+// Save panel
 @implementation NSSavePanel
 
 //
@@ -63,7 +91,7 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 + (void)initialize
 {
   if (self == [NSSavePanel class])
-      [self setVersion:1];									// Initial version
+      [self setVersion:1];             //initial version
 }
 
 //
@@ -71,14 +99,18 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 //
 + (NSSavePanel *)savePanel
 {	
-	if(!gnustep_gui_save_panel)	
-    	{
-//      PanelLoader *pl = [PanelLoader panelLoader];
-//      gnustep_gui_save_panel = (NSSavePanel *)[pl loadPanel: @"NSSavePanel"];
-		gnustep_gui_save_panel = [[NSSavePanel alloc] init];
-		}
+    if(!gnustep_gui_save_panel)	{
+	if (![GMModel loadIMFile :
+	     @"/usr/GNUstep/Library/Model/SavePanel.gmodel"
+	     owner:[_SavePanel alloc]]) {
+	    fprintf(stderr, "Cannot open save panel model file\n");
+	    exit(1);
+	}
+    }
 
-	return gnustep_gui_save_panel;
+    //was it loaded?
+    NSLog(@"Savepanel: %@", [gnustep_gui_save_panel description]);
+    return gnustep_gui_save_panel;
 }
 
 //
@@ -188,36 +220,40 @@ NSString *standardizedPath=[path stringByStandardizingPath];
 //
 - (int)runModalForDirectory:(NSString *)path file:(NSString *)name
 {	
-int	ret;
+    int	ret;
 
-	[browser loadColumnZero];
-	[self setDirectory:path];
-	[browser setPath:[NSString stringWithFormat:@"%@/%@",
-						[self directory], name]];
-	[form setStringValue:name];
-	[self selectText:self];							// or should it be browser?
-	if([self class] == [NSOpenPanel class]) 
-		[okButton setEnabled:
-					([browser selectedCell] && [self canChooseDirectories]) ||  
-					[[browser selectedCell] isLeaf]];
-	[self makeKeyAndOrderFront:self];
-	ret = [[NSApplication sharedApplication] runModalForWindow:self];
-													// replace warning
-	if([self class] == [NSSavePanel class] && 
-			[[browser selectedCell] isLeaf] && ret == NSOKButton)
-		{	
-//		if(NSRunAlertPanel(@"Save",@"The file %@ in %@ exists. Replace it?", 
-//							@"Replace",@"Cancel",nil,[form stringValue], 
-//							[self directory]) == NSAlertAlternateReturn)
-			return NSCancelButton;
-		}
+    //[browser loadColumnZero];
+    [self setDirectory:path];
+    //[browser setPath:[NSString stringWithFormat:@"%@/%@",
+       //[self directory], name]];
+    //[form setStringValue:name];
+    [self selectText:self];	      // or should it be browser?
+/*
+    if([self class] == [NSOpenPanel class]) 
+	[okButton setEnabled:
+	      ([browser selectedCell] && [self canChooseDirectories]) ||  
+	             [[browser selectedCell] isLeaf]];
+*/
+    [self makeKeyAndOrderFront:self];
+    ret = [[NSApplication sharedApplication] runModalForWindow:self];
+    
+    // replace warning
+/*
+    if([self class] == [NSSavePanel class] && 
+       [[browser selectedCell] isLeaf] && ret == NSOKButton) {	
+	//if(NSRunAlertPanel(@"Save",@"The file %@ in %@ exists. Replace it?", 
+	//dafplace",@"Cancel",nil,[form stringValue], 
+	// [self directory]) == NSAlertAlternateReturn)
+	return NSCancelButton;
+    }
+*/
 
-	return ret;
+    return ret;
 }
 
 - (int)runModal
 {	
-	return [self runModalForDirectory:[self directory] file:@""];
+    return [self runModalForDirectory:[self directory] file:@""];
 }
 
 //
