@@ -95,45 +95,53 @@ _new_label (NSString *value)
 }
 /* After initialization, its size is the size it needs, just move it
    where we want it to show */
--initWithStringArray: (NSArray *)array
-		font: (NSFont *)font;
+- (id) initWithStringArray: (NSArray *)array
+		      font: (NSFont *)font;
 @end
 
 @implementation _GSLabelListView
 
--initWithStringArray: (NSArray *)array
-		font: (NSFont *)font
+- (id) initWithStringArray: (NSArray *)array
+		      font: (NSFont *)font
 {
-  int         count;
-  NSTextField *field;
-  int         i;
-  float       height = 2;
-  float       width = 0;
-  NSRect      r;
-
   self = [super init];
-
-  count = [array count];
-
-  for (i = 0; i < count; i++)
+  if (self != nil)
     {
-      if ([[array objectAtIndex: i] isKindOfClass: [NSString class]] == NO)
-	continue;
-      field = _new_label ([array objectAtIndex: i]);
-      [field setFont: font];
-      [field sizeToFit];
-      [field setAutoresizingMask: NSViewNotSizable];
-      r = [field frame];
-      r.origin.x = 0;
-      r.origin.y = height;
-      if (r.size.width > width)
-	width = r.size.width;
-      height += r.size.height + 2;
-      [field setFrame: r];
-      [self setFrameSize: NSMakeSize (width, height)];
-      [self addSubview: field];
+      unsigned int	count;
+      NSTextField	*field;
+      float		height = 2;
+      float		width = 0;
+      NSRect		r;
+
+      count = [array count];
+      /*
+       * We go through the array in reverse order, adding items from
+       * the bottom of the view working upwards.  This means that the
+       * order of strings in the array will appear orderd from top to
+       * bottom in the view.
+       */
+      while (count-- > 0)
+	{
+	  id	item = [array objectAtIndex: count];
+
+	  if ([item isKindOfClass: [NSString class]] == NO)
+	    continue;
+	  field = _new_label (item);
+	  [field setFont: font];
+	  [field sizeToFit];
+	  [field setAutoresizingMask: NSViewNotSizable];
+	  r = [field frame];
+	  r.origin.x = 0;
+	  r.origin.y = height;
+	  if (r.size.width > width)
+	    width = r.size.width;
+	  height += r.size.height + 2;
+	  [field setFrame: r];
+	  [self setFrameSize: NSMakeSize (width, height)];
+	  [self addSubview: field];
+	}
+      [self setFrameSize: NSMakeSize (width, height - 2)];
     }
-  [self setFrameSize: NSMakeSize (width, height - 2)];
   return self;
 }
 @end
@@ -369,8 +377,8 @@ _new_label (NSString *value)
   [authorTitleLabel setFont: smallFont];
   [authorTitleLabel sizeToFit];
 
-  authorsList = AUTORELEASE([[_GSLabelListView alloc] initWithStringArray: authors
-						      font: smallFont]);  
+  authorsList = AUTORELEASE([[_GSLabelListView alloc]
+    initWithStringArray: authors font: smallFont]);  
   
   if (url)
     {
