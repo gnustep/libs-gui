@@ -51,6 +51,65 @@
 static NSSavePanel *gnustep_gui_save_panel = nil;
 
 //
+// NSFileManager extensions
+//
+@interface NSFileManager (SavePanelExtensions)
+
+- (NSArray *) directoryContentsAtPath: (NSString *)path showHidden: (BOOL)flag;
+- (NSArray *) hiddenFilesAtPath: (NSString *)path;
+- (BOOL) fileExistsAtPath: (NSString *)path
+	      isDirectory: (BOOL *)flag1
+		isPackage: (BOOL *)flag2;
+
+@end
+
+@implementation NSFileManager (SavePanelExtensions)
+
+- (NSArray *) directoryContentsAtPath: (NSString *)path showHidden: (BOOL)flag
+{
+  NSArray *rawFiles = [self directoryContentsAtPath: path];
+  NSArray *hiddenFiles = [self hiddenFilesAtPath: path];
+  NSMutableArray *files = [NSMutableArray new];
+  NSEnumerator *enumerator = [rawFiles objectEnumerator];
+  NSString *filename;
+
+  if (flag || !hiddenFiles)
+    return rawFiles;
+
+  while ((filename = (NSString *)[enumerator nextObject]))
+    {
+      if ([hiddenFiles indexOfObject: filename] == NSNotFound)
+	[files addObject: filename];
+    }
+  return files;
+}
+
+- (NSArray *) hiddenFilesAtPath: (NSString *)path
+{
+  NSString *hiddenList = [path stringByAppendingPathComponent: @".hidden"];
+  NSString *hiddenFilesString = [NSString stringWithContentsOfFile: hiddenList];
+  return [hiddenFilesString componentsSeparatedByString: @"\n"];
+}
+
+- (BOOL) fileExistsAtPath: (NSString *)path
+	      isDirectory: (BOOL *)isDir
+		isPackage: (BOOL *)isPackage
+{
+  NSArray *extArray;
+
+  extArray = [NSArray arrayWithObjects:
+    @"app", @"bundle", @"debug", @"profile", nil];
+
+  if ([extArray indexOfObject: [path pathExtension]] == NSNotFound)
+    *isPackage = NO;
+  else
+    *isPackage = YES;
+  return [self fileExistsAtPath: path isDirectory: isDir];
+}
+
+@end /* NSFileManager (SavePanelExtensions) */
+
+//
 // NSSavePanel browser delegate methods
 //
 @implementation NSSavePanel (BrowserDelegate)
@@ -204,6 +263,8 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
   //  _form = [_formControl cellAtIndex: 0];
   //}
   _prompt = [[NSTextField alloc] initWithFrame: NSMakeRect (5, 38, 38, 18)];
+  [_prompt setSelectable: NO];
+  [_prompt setEditable: NO];
   [_prompt setEnabled: NO];
   [_prompt setBordered: NO];
   [_prompt setBezeled: NO];
@@ -537,7 +598,7 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
   if (path == nil || filename == nil)
     [NSException raise: NSInvalidArgumentException
 		format: @"NSSavePanel runModalForDirectory:file: "
-      @"does not accept nil arguments."];
+		 @"does not accept nil arguments."];
 
   // must display here so that...
   [self display];
@@ -639,63 +700,4 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 }
 
 @end /* NSSavePanel */
-
-//
-// NSFileManager extensions
-//
-@interface NSFileManager (SavePanelExtensions)
-
-- (NSArray *) directoryContentsAtPath: (NSString *)path showHidden: (BOOL)flag;
-- (NSArray *) hiddenFilesAtPath: (NSString *)path;
-- (BOOL) fileExistsAtPath: (NSString *)path
-	      isDirectory: (BOOL *)flag1
-		isPackage: (BOOL *)flag2;
-
-@end
-
-@implementation NSFileManager (SavePanelExtensions)
-
-- (NSArray *) directoryContentsAtPath: (NSString *)path showHidden: (BOOL)flag
-{
-  NSArray *rawFiles = [self directoryContentsAtPath: path];
-  NSArray *hiddenFiles = [self hiddenFilesAtPath: path];
-  NSMutableArray *files = [NSMutableArray new];
-  NSEnumerator *enumerator = [rawFiles objectEnumerator];
-  NSString *filename;
-
-  if (flag || !hiddenFiles)
-    return rawFiles;
-
-  while ((filename = (NSString *)[enumerator nextObject]))
-    {
-      if ([hiddenFiles indexOfObject: filename] == NSNotFound)
-	[files addObject: filename];
-    }
-  return files;
-}
-
-- (NSArray *) hiddenFilesAtPath: (NSString *)path
-{
-  NSString *hiddenList = [path stringByAppendingPathComponent: @".hidden"];
-  NSString *hiddenFilesString = [NSString stringWithContentsOfFile: hiddenList];
-  return [hiddenFilesString componentsSeparatedByString: @"\n"];
-}
-
-- (BOOL) fileExistsAtPath: (NSString *)path
-	      isDirectory: (BOOL *)isDir
-		isPackage: (BOOL *)isPackage
-{
-  NSArray *extArray;
-
-  extArray = [NSArray arrayWithObjects:
-    @"app", @"bundle", @"debug", @"profile", nil];
-
-  if ([extArray indexOfObject: [path pathExtension]] == NSNotFound)
-    *isPackage = NO;
-  else
-    *isPackage = YES;
-  return [self fileExistsAtPath: path isDirectory: isDir];
-}
-
-@end /* NSFileManager (SavePanelExtensions) */
 
