@@ -1,0 +1,22 @@
+/* NSApplication.m */
+
+"Critical Error in %@" = "Errore critico in %@";
+"Abort" = "Abortisci";
+"Ignore" = "Ignora";
+"Debug" = "Debugga";
+"Unable to load backend, aborting" = "Non è possibile caricare il backend, abortisco";
+"Can't init backend bundle" = "Non è possibile initializare il backend bundle";
+"Can't load backend bundle" = "Non è possibile caricare il backend bundle";
+"Can't find backend context" = "Non è possibile trovare il backend context";
+"Cannot allocate the application instance!\n"="Non è possibile allocare l'istanza dell'applicazione!\n";
+"Cannot load the main model file '%@'" = "Non è possibile caricare il model file principale '%@'";
+"Problem during launch app notification: %@" = "Problema durante il lancio dell'applicazione: %@";
+"Quit" = "Esci";
+
+/* Title of the Info Panel */
+"Info" = "Info"; 
+
+/* Title of Windows menu */
+"Windows" = "Finestre";
+
+"reported exception - %@" = "riportata una exception - %@";
