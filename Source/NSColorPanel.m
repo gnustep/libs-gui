@@ -50,22 +50,13 @@ static int _gs_gui_color_picker_mask = NSColorPanelAllModesMask;
 // FIXME: This should be NSWheelModeColorPanel 
 static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 
-@interface GSAppKitPanelController : NSObject
-{
-@public
-  id panel;
-}
-@end
-
-@implementation GSAppKitPanelController
-@end
-
 @interface NSColorPanel (PrivateMethods)
 - (void) _loadPickers;
 - (void) _loadPickerAtPath: (NSString *)path;
 - (void) _fixupMatrix;
 - (void) _setupPickers;
 - (void) _showNewPicker: (id)sender;
+- (id) _initWithoutGModel;
 @end
 
 @implementation NSColorPanel (PrivateMethods)
@@ -373,20 +364,9 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
       [_gs_gui_color_panel_lock lock];
       if (!_gs_gui_color_panel)
         {
-	  _gs_gui_color_panel = [[self alloc] _initWithoutGModel];
-/*
-          GSAppKitPanelController *panelCtrl = [GSAppKitPanelController new];
-
-          if ([GMModel loadIMFile:@"ColorPanel" owner:panelCtrl])
-            {
-              _gs_gui_color_panel = panelCtrl->panel;
-              [_gs_gui_color_panel _fixupMatrix];
-*/ 
-             [_gs_gui_color_panel _loadPickers];
-             [_gs_gui_color_panel _setupPickers];
-	     [_gs_gui_color_panel setMode: _gs_gui_color_picker_mode];
-             [_gs_gui_color_panel setShowsAlpha: ![NSColor ignoresAlpha]];
-//            }
+	  // Keep this two lines separated so the check in [init] works.
+	  _gs_gui_color_panel = [self alloc];
+	  [_gs_gui_color_panel init];
         }
       [_gs_gui_color_panel_lock unlock];
     }
@@ -435,6 +415,25 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 /*
  * Instance methods
  */
+
+- (id) init
+{
+  if (self != _gs_gui_color_panel)
+  {
+      RELEASE(self);
+      return _gs_gui_color_panel;
+  }
+
+  //  if (![NSBundle loadNibNamed: @"ColorPanel" owner: self]);
+  [self _initWithoutGModel];
+
+  [self _loadPickers];
+  [self _setupPickers];
+  [self setMode: _gs_gui_color_picker_mode];
+  [self setShowsAlpha: ![NSColor ignoresAlpha]];
+
+  return self;
+}
 
 - (void) dealloc
 {
