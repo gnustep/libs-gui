@@ -1,3 +1,10 @@
+Sun Aug 12 04:25:20 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSTextView.m ([-replaceCharactersInRange:withString:]):
+	If the textview supports rich text and the text storage is empty,
+	use the attributes from the typing attributes when inserting the
+	new string.
+
 Sun Aug 12 03:42:30 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSImage.m ([NSImage -setName:]): Fixed bug in last change
