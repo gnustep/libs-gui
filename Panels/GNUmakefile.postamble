@@ -38,6 +38,20 @@ ifneq ($(strip $(LOCALIZED_RESOURCE_FILES)),)
 	  done; \
 	done;)
 endif
+ifneq ($(strip $(LOCALIZED_RESOURCE_COMPONENTS)),)
+	@(echo "Copying localized components into system..."; \
+	for l in $(LANGUAGES); do \
+	  if [ ! -f $$l.lproj ]; then \
+	    $(MKDIRS) $(GNUSTEP_RESOURCES)/gnustep-gui/$$l.lproj; \
+	  fi; \
+	  for f in $(LOCALIZED_RESOURCE_COMPONENTS); do \
+	    if [ -d $$l.lproj/$$f ]; then \
+	      cp -r $$l.lproj/$$f $(GNUSTEP_RESOURCES)/gnustep-gui/$$l.lproj; \
+	      rm -rf $(GNUSTEP_RESOURCES)/gnustep-gui/$$l.lproj/$$f/CVS; \
+	    fi; \
+	  done; \
+	done;)
+endif
 
 # Things to do after uninstalling
 after-uninstall::

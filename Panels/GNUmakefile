@@ -35,8 +35,9 @@ include ../Version
 
 LANGUAGES = English
 
-LOCALIZED_RESOURCE_FILES = GSPrintPanel.gorm GSPageLayout.gorm \
-	SpellPanel.gmodel \
+LOCALIZED_RESOURCE_FILES = SpellPanel.gmodel
+
+LOCALIZED_RESOURCE_COMPONENTS = GSPrintPanel.gorm GSPageLayout.gorm \
 	GSDataLinkPanel.gorm
 
 -include GNUmakefile.preamble

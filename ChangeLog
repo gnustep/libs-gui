@@ -10,6 +10,8 @@
 	* Panels/English.proj: Replace GSPageLayout.gorm and 
 	GSPrintPanel.gorm with updated GOrm dirs. Make Options button 
 	non-continuous.
+	* Panels/GNUmakefile.postamble (after-install): Install the
+	gorm dirs.
 
 2003-07-19  Fred Kiefer <FredKiefer@gmx.de>
 
