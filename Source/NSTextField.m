@@ -125,8 +125,7 @@ static NSNotificationCenter *nc;
 	[_text_object selectAll: self];
       else
 	{
-	  NSText *t = [_window fieldEditor: YES 
-			      forObject: self];
+	  NSText *t = [_window fieldEditor: YES  forObject: self];
 	  int length;
 
 	  if ([t superview] != nil)
