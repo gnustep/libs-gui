@@ -854,7 +854,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 {
   id e, o;
 
-  if (![self autoresizesSubviews] && !is_rotated_from_base)
+  if ([self autoresizesSubviews] == NO || is_rotated_from_base == YES)
     return;
 
   e = [sub_views objectEnumerator];

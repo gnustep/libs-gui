@@ -56,15 +56,15 @@
   NSString *_columnTitle;
 }
 
-- (void)setIsLoaded:(BOOL)flag;
+- (void)setIsLoaded: (BOOL)flag;
 - (BOOL)isLoaded;
-- (void)setColumnScrollView:(id)aView;
+- (void)setColumnScrollView: (id)aView;
 - columnScrollView;
-- (void)setColumnMatrix:(id)aMatrix;
+- (void)setColumnMatrix: (id)aMatrix;
 - columnMatrix;
-- (void)setNumberOfRows:(int)num;
+- (void)setNumberOfRows: (int)num;
 - (int)numberOfRows;
-- (void)setColumnTitle:(NSString *)aString;
+- (void)setColumnTitle: (NSString *)aString;
 - (NSString *)columnTitle;
 - emptyView;
 
@@ -155,7 +155,7 @@
 //
 @interface NSBrowser (Private)
 - (void)_adjustMatrixOfColumn: (int)column;
-- (void)_adjustScrollerFrameOfColumn: (int)column force:(BOOL)flag;
+- (void)_adjustScrollerFrameOfColumn: (int)column force: (BOOL)flag;
 - (void)_adjustScrollerFrames: (BOOL)flag;
 - (void)_performLoadOfColumn: (int)column;
 - (void)_unloadFromColumn: (int)column;
@@ -270,10 +270,10 @@
   BOOL both = NO;
 
   if (![anObject respondsToSelector:
-		  @selector(browser: willDisplayCell:atRow:column:)])
+		  @selector(browser: willDisplayCell: atRow: column:)])
     [NSException raise: NSBrowserIllegalDelegateException
 		 format: @"Delegate does not respond to %s\n",
-		 "browser: willDisplayCell:atRow:column:"];
+		 "browser: willDisplayCell: atRow: column: "];
 
   if ([anObject respondsToSelector:
 		  @selector(browser: numberOfRowsInColumn:)])
@@ -283,7 +283,7 @@
     }
 
   if ([anObject respondsToSelector:
-		  @selector(browser: createRowsForColumn:inMatrix:)])
+		  @selector(browser:createRowsForColumn:inMatrix:)])
     {
       _passiveDelegate = NO;
 
@@ -298,14 +298,14 @@
   if (!flag)
     [NSException raise: NSBrowserIllegalDelegateException
 		 format: @"Delegate does not respond to %s or %s\n",
-		 "browser: numberOfRowsInColumn:",
-		 "browser: createRowsForColumn:inMatrix:"];
+		 "browser: numberOfRowsInColumn: ",
+		 "browser: createRowsForColumn: inMatrix: "];
 
   if (both)
     [NSException raise: NSBrowserIllegalDelegateException
 		 format: @"Delegate responds to both %s and %s\n",
-		 "browser: numberOfRowsInColumn:",
-		 "browser: createRowsForColumn:inMatrix:"];
+		 "browser: numberOfRowsInColumn: ",
+		 "browser: createRowsForColumn: inMatrix: "];
 
   [anObject retain];
   [_browserDelegate release];
@@ -586,7 +586,7 @@
 
   // Ask the delegate for the column title
   if ([_browserDelegate respondsToSelector:
-			  @selector(browser: titleOfColumn:)])
+			  @selector(browser:titleOfColumn:)])
     [self setTitle: [_browserDelegate browser: self
 				      titleOfColumn: column]
 	  ofColumn: column];
@@ -761,7 +761,7 @@
 
   // xxx Should we trigger an exception?
   if (![_browserDelegate respondsToSelector:
-			   @selector(browser: isColumnValid:)])
+			   @selector(browser:isColumnValid:)])
     return;
 
   // Loop through the visible columns
@@ -1014,7 +1014,7 @@
 
   // Ask delegate if selection is ok
   if ([_browserDelegate respondsToSelector:
-				@selector(browser: selectRow:inColumn:)])
+				@selector(browser:selectRow:inColumn:)])
     {
       int row = [sender selectedRow];
       shouldSelect = [_browserDelegate browser: self selectRow: row
@@ -1024,7 +1024,7 @@
     {
       // Try the other method
       if ([_browserDelegate respondsToSelector:
-			    @selector(browser: selectCellWithString:inColumn:)])
+			    @selector(browser:selectCellWithString:inColumn:)])
 	{
 	  id c = [sender selectedCell];
 	  shouldSelect = [_browserDelegate browser: self
@@ -1392,7 +1392,7 @@ NSRect mr;
 		}
 }
 
-- (void)_adjustScrollerFrameOfColumn: (int)column force:(BOOL)flag
+- (void)_adjustScrollerFrameOfColumn: (int)column force: (BOOL)flag
 {
   // Only if we've loaded the first column
   if ((_isLoaded) || (flag))
@@ -1554,12 +1554,11 @@ NSRect mr;
     }
 }
 
-- (void)setFrame: (NSRect)frameRect
+- (void) resizeSubviewsWithOldSize: (NSSize)oldSize
 {
-NSLog (@"NSBrowser setFrame ");
-  	[super setFrame: frameRect];
-	[self tile];								// recalc browser's elements
-	[self _adjustScrollerFrames: YES];			// adjust browser's matrix
+  [super resizeSubviewsWithOldSize: oldSize];
+  [self tile];
+  [self _adjustScrollerFrames: YES];
 }
 
 @end

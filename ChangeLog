@@ -1,3 +1,11 @@
+Mon Mar 15 10:15:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSView.m: ([-resizeWithOldSuperviewSize:]) Added fix so this
+	method is active at correct times - there was a logic error in the
+	original code.
+	* Source/NSBrowser.m: Removed ([-setFrame:]) and added an implementation
+	of ([-resizeSubviewsWithOldSize:]) such that autoresizing now works.
+
 1999-03-14  Adam Fedor  <fedor@gnu.org>
 
 	* Model/GNUmakefile: Add ifeq's for OpenStep 4.0 compilation
