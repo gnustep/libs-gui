@@ -46,6 +46,8 @@
   id _delegate;
   BOOL _caseSensitive; 
   NSMutableDictionary *_userDictionaries;
+  NSString *_currentLanguage;
+  NSArray *_ignoredWords;
 }
 
 // Checking in Your Service 

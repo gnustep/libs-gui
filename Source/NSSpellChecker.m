@@ -42,6 +42,7 @@
 #include <AppKit/NSSpellChecker.h>
 #include <AppKit/NSSpellServer.h>
 #include <AppKit/NSTextField.h>
+#include <AppKit/NSTextView.h>
 #include <AppKit/NSPopUpButton.h>
 #include <AppKit/IMLoading.h>
 #include <AppKit/GSServicesManager.h>
@@ -60,7 +61,7 @@ NSString *GSSpellServerName(NSString *checkerDictionary, NSString *language);
 @protocol NSSpellServerPrivateProtocol
 - (NSRange) _findMisspelledWordInString: (NSString *)stringToCheck
 			       language: (NSString *)language
-		    learnedDictionaries: (NSArray *)dictionaries
+			   ignoredWords: (NSArray *)ignoredWords
 			      wordCount: (int *)wordCount
 			      countOnly: (BOOL)countOnly;
 
@@ -180,7 +181,6 @@ static int __documentTag = 0;
 //
 + (int)uniqueSpellDocumentTag
 {
-  NSLog(@"returning unique spell document tag");
   return ++__documentTag;
 }
 
@@ -191,23 +191,26 @@ static int __documentTag = 0;
 - (id)_startServerForLanguage: (NSString *)language
 {
   id proxy = nil;
+  
   // Start the service for this language  
   proxy = [[NSApp _listener] _launchSpellCheckerForLanguage: language];
   
   if(proxy == nil)
     {
       NSLog(@"Failed to get the spellserver");
-      return nil;
     }
-  
-  // Retain the proxy, if we got the connection.
-  // Also make sure that we handle the death of the server
-  // correctly.
-  [[NSNotificationCenter defaultCenter]
-    addObserver: self
-    selector: @selector(_handleServerDeath:)
-    name: NSConnectionDidDieNotification
-    object: [(NSDistantObject *)proxy connectionForProxy]];
+  else
+    {
+      // remove any previous notifications we are observing.
+      [[NSNotificationCenter defaultCenter] removeObserver: self];
+      
+      // Make sure that we handle the death of the server correctly.
+      [[NSNotificationCenter defaultCenter]
+	addObserver: self
+	selector: @selector(_handleServerDeath:)
+	name: NSConnectionDidDieNotification
+	object: [(NSDistantObject *)proxy connectionForProxy]];
+    }
 
   return proxy;
 }
@@ -317,7 +320,7 @@ static int __documentTag = 0;
   NSRange r = NSMakeRange(0,0);
   r = [[self _serverProxy] _findMisspelledWordInString: aString
 			                      language: _language
-			           learnedDictionaries: nil
+			                  ignoredWords: nil
 			                     wordCount: &count
 			                     countOnly: YES];
   
@@ -329,12 +332,14 @@ static int __documentTag = 0;
 {
   int wordCount = 0;
   NSRange r = NSMakeRange(0,0);
+  id responder = [[[[NSApplication sharedApplication] mainWindow] contentView] documentView];
   
+  _currentTag = [responder spellCheckerDocumentTag];
   r = [self checkSpellingOfString: stringToCheck
   	               startingAt: startingOffset
 	                 language: _language
 	                     wrap: NO
-	   inSpellDocumentWithTag: 0
+	   inSpellDocumentWithTag: _currentTag
 	                wordCount: &wordCount];
 
   return r;
@@ -349,8 +354,7 @@ static int __documentTag = 0;
 {
   NSRange r = NSMakeRange(0,0);
   NSString *misspelledWord = nil;
-  NSArray *dictForTag = [self ignoredWordsInSpellDocumentWithTag: tag],
-    *suggestedWords = nil;
+  NSArray *dictForTag = [self ignoredWordsInSpellDocumentWithTag: tag];
   
   _currentTag = tag;
   // We have no string to work with
@@ -373,7 +377,7 @@ static int __documentTag = 0;
       NSString *substringToCheck = [stringToCheck substringFromIndex: startingOffset];
       r = [[self _serverProxy] _findMisspelledWordInString: substringToCheck
 			                          language: _language
-			               learnedDictionaries: dictForTag
+			                      ignoredWords: dictForTag
 			                         wordCount: wordCount
 			                         countOnly: NO];
       
@@ -391,15 +395,13 @@ static int __documentTag = 0;
 					      substringToIndex: startingOffset];
 	      r = [[self _serverProxy] _findMisspelledWordInString: firstHalfOfString
 				                          language: _language
-				               learnedDictionaries: dictForTag
+				                      ignoredWords: dictForTag
 				                         wordCount: wordCount
 				                         countOnly: NO];
 	    }
 	}
 
       misspelledWord = [stringToCheck substringFromRange: r];
-      //suggestedWords = [[self _serverProxy] _suggestGuessesForWord: misspelledWord
-      //			                inLanguage: _language];
     }
   NS_HANDLER
     {
@@ -455,7 +457,6 @@ inSpellDocumentWithTag:(int)tag
   NSNumber *key = [NSNumber numberWithInt: tag];
   NSMutableSet *words = [_ignoredWords objectForKey: key];
 
-  NSLog(@"Ignore: %@",wordToIgnore);
   if(![wordToIgnore isEqualToString: @""])
     {
       // If there is a dictionary add to it, if not create one.
@@ -469,8 +470,6 @@ inSpellDocumentWithTag:(int)tag
 	  [words addObject: wordToIgnore];
 	}
     }
-  NSLog(@"Words to ignore %@ for doc# %d", words, tag); 
-
 }
 
 // get the list of ignored words.
@@ -502,6 +501,21 @@ inSpellDocumentWithTag:(int)tag
   [self setWordFieldStringValue: word];
 }
 
+- _findNext: (id)sender
+{
+  BOOL processed = NO;
+  id responder = [[[[NSApplication sharedApplication] mainWindow] contentView] documentView];
+
+  processed = [responder tryToPerform: @selector(checkSpelling:)
+			 with: _spellPanel];
+  if(!processed)
+    {
+      NSLog(@"No responder found");
+    }
+
+  return self;
+}
+
 - _learn: (id)sender
 {
   NSString *word = [_wordField stringValue];
@@ -518,6 +532,8 @@ inSpellDocumentWithTag:(int)tag
       NSLog(@"%@",[localException reason]);
     }
   NS_ENDHANDLER
+
+  [self _findNext: sender];
 
   return self;
 }
@@ -540,6 +556,8 @@ inSpellDocumentWithTag:(int)tag
     }
   NS_ENDHANDLER
 
+  [self _findNext: sender];
+
   return self;
 }
 
@@ -555,6 +573,8 @@ inSpellDocumentWithTag:(int)tag
       NSLog(@"_ignore: No responder found");
     }
 
+  [self _findNext: sender];
+
   return self;
 }
 
@@ -562,21 +582,6 @@ inSpellDocumentWithTag:(int)tag
 {
   // Fill in the view...
   [self _populateAccessoryView];
-  return self;
-}
-
-- _findNext: (id)sender
-{
-  BOOL processed = NO;
-  id responder = [[[[NSApplication sharedApplication] mainWindow] contentView] documentView];
-
-  processed = [responder tryToPerform: @selector(checkSpelling:)
-			 with: _spellPanel];
-  if(!processed)
-    {
-      NSLog(@"Call to checkSpelling failed.  No responder found");
-    }
-
   return self;
 }
 
@@ -589,8 +594,9 @@ inSpellDocumentWithTag:(int)tag
 			         with: _wordField];
   if(!processed)
     {
-      NSLog(@"Call to changeSpelling failed.  No responder found");
+      NSLog(@"No responder found");
     }
+  [self _findNext: sender];
 
   return self;
 }
@@ -708,12 +714,10 @@ inSpellDocumentWithTag:(int)tag
 	   atRow: (int)row 
 	  column: (int)column
 {
-  NSLog(@"reached 1....");
 }
 
 - (BOOL) browser: (NSBrowser *)sender isColumnValid: (int)column
 {
-  NSLog(@"reached 3....");
   return NO;
 }
 @end

@@ -77,12 +77,27 @@ GSSpellServerName(NSString *vendor, NSString *language)
 // Non-private Instance methods
 - init
 {
+  NSArray *userLanguages = [NSUserDefaults userLanguages];  
+  NSString *currentLanguage = [userLanguages objectAtIndex: 0];
+
   [super init];
 
   _delegate = nil;
-  _userDictionaries = [NSMutableDictionary dictionary];
+  _ignoredWords = nil;
+  ASSIGN(_userDictionaries, [NSMutableDictionary dictionary]);
+  ASSIGN(_currentLanguage, currentLanguage);
+
+  RETAIN(_userDictionaries);
+  RETAIN(_currentLanguage);
 
   return self;
+}
+
+// Cleanup when deallocated
+- (void)dealloc
+{
+  RELEASE(_userDictionaries);
+  RELEASE(_currentLanguage);
 }
 
 // Checking in Your Service 
@@ -183,8 +198,6 @@ GSSpellServerName(NSString *vendor, NSString *language)
 	    }
 	}
     }
-
-  NSLog(@"Dictionary path = %@", path);  
   
   return path;
 }
@@ -216,11 +229,6 @@ GSSpellServerName(NSString *vendor, NSString *language)
 	  NSLog(@"Unable to find user dictionary at: %@", path);
 	}
     }
-  else
-    {
-      NSLog(@"User dictionary for language %@ already opened.",
-	    language);
-    }
 
   // successful in opening the desired dictionary..
   return words;
@@ -233,9 +241,8 @@ GSSpellServerName(NSString *vendor, NSString *language)
 {
   BOOL result = NO;
   NSString *dictWord = nil;
-  NSEnumerator *setEnumerator = nil, *dictEnumerator = nil;
+  NSEnumerator *setEnumerator = nil;
 
-  NSLog(@"Searching user dictionary");
   // Catch the odd cases before they start trouble later on...
   if(word == nil || dict == nil) 
     {
@@ -248,7 +255,7 @@ GSSpellServerName(NSString *vendor, NSString *language)
     }
 
   // Check the dictionary for the word...
-  dictEnumerator = [dict objectEnumerator];
+  setEnumerator = [dict objectEnumerator];
   while((dictWord = [setEnumerator nextObject]) && result == NO)
     {
       // If the case is important then uppercase both strings
@@ -265,6 +272,29 @@ GSSpellServerName(NSString *vendor, NSString *language)
 	  result = [word isEqualToString: dictWord];
 	}
     }
+
+  if(result == NO && _ignoredWords)
+    {
+      NSEnumerator *arrayEnumerator = [_ignoredWords objectEnumerator];
+      NSString *iword = nil;
+
+      while((iword = [arrayEnumerator nextObject]) && result == NO)
+	{
+	  // If the case is important then uppercase both strings
+	  // and compare, otherwise do the comparison.
+	  if(flag == NO)
+	    {
+	      NSString *upperWord = [word uppercaseString];
+	      NSString *upperIWord = [iword uppercaseString];
+	      
+	      result = [upperWord isEqualToString: upperIWord];
+	    }
+	  else
+	    {
+	      result = [word isEqualToString: iword];
+	    }
+	}      
+    }
   
   return result;
 }
@@ -273,9 +303,7 @@ GSSpellServerName(NSString *vendor, NSString *language)
 - (BOOL)isWordInUserDictionaries:(NSString *)word
 		   caseSensitive:(BOOL)flag
 {
-  NSArray *userLanguages = [NSUserDefaults userLanguages];  
-  NSString *currentLanguage = [userLanguages objectAtIndex: 0];
-  NSSet *userDict = [self _openUserDictionary: currentLanguage];
+  NSSet *userDict = [self _openUserDictionary: _currentLanguage];
   BOOL result = NO;
 
   if(userDict)
@@ -352,7 +380,7 @@ GSSpellServerName(NSString *vendor, NSString *language)
       NSLog(@"Call to delegate caused following exception: %@",
 	    [localException reason]);
     }
-  NS_ENDHANDLER
+  NS_ENDHANDLER 
 
   return [self _saveUserDictionary: language];
 }
@@ -360,29 +388,22 @@ GSSpellServerName(NSString *vendor, NSString *language)
 // Find a misspelled word
 - (NSRange)_findMisspelledWordInString: (NSString *)stringToCheck
 			      language: (NSString *)language
-		   learnedDictionaries: (NSArray *)dictionaries
+			  ignoredWords: (NSArray *)ignoredWords
 			     wordCount: (int *)wordCount
 			     countOnly: (BOOL)countOnly
 {
   NSRange r = NSMakeRange(0,0);
 
-  if(dictionaries != nil)
-    {
-      // Will put code here to check the user dictionary.
-    }
-  else
-    {
-      NSLog(@"No user dictionary to check");
-    }
-
   // Forward to delegate
   NS_DURING
     {
+      ASSIGN(_ignoredWords,ignoredWords); 
       r = [_delegate spellServer: self
-      findMisspelledWordInString: stringToCheck
-		        language: language
-		       wordCount: wordCount
-		       countOnly: countOnly];
+		     findMisspelledWordInString: stringToCheck
+		     language: language
+		     wordCount: wordCount
+		     countOnly: countOnly];
+      _ignoredWords = nil;
     }
   NS_HANDLER
     {
