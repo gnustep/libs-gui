@@ -37,23 +37,23 @@
 
 @interface NSTableHeaderView : NSView
 {
-  NSTableView* _tableView;
+  NSTableView *_tableView;
 }
 /*
  * Setting the table view 
  */
-- (void)setTableView: (NSTableView*)aTableView;
-- (NSTableView*)tableView;
+- (void) setTableView: (NSTableView*)aTableView;
+- (NSTableView*) tableView;
 /*
  * Checking altered columns 
  */
-- (int)draggedColumn;
-- (float)draggedDistance; 
-- (int)resizedColumn;
+- (int) draggedColumn;
+- (float) draggedDistance; 
+- (int) resizedColumn;
 /*
  * Utility methods 
  */
-- (int)columnAtPoint: (NSPoint)aPoint; 
-- (NSRect)headerRectOfColumn: (int)columnIndex;  
+- (int) columnAtPoint: (NSPoint)aPoint; 
+- (NSRect) headerRectOfColumn: (int)columnIndex;  
 @end
 #endif
