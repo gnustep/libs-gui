@@ -34,14 +34,14 @@
 @class NSString;
 
 // These are already defined in the DPSclient headers
-#ifndef HAVE_DPSCLIENT
+#ifndef HAVE_DPS_DPSCLIENT_H
 typedef void *DPSProgramEncoding;
 typedef void *DPSNameEncoding;
 typedef void *DPSTextProc;
 typedef void *DPSErrorProc;
 typedef void DPSBinObjSeqRec;
 typedef unsigned int DPSDefinedType;
-#endif /* HAVE_DPSCLIENT */
+#endif /* HAVE_DPS_DPSCLIENT_H */
 
 //
 // Backing Store Types

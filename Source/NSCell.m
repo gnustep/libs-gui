@@ -640,26 +640,42 @@
 	    // should be in the window coordinates, but is in the receiving
 	    // view's coordinate.
 	    location = [e locationInWindow];
-	    // point = [controlView convertPoint: location fromView: nil];
+	    point = [controlView convertPoint: location fromView: nil];
 	    NSDebugLog(@"NSCell location %f %f\n", location.x, location.y);
 	    NSDebugLog(@"NSCell point %f %f\n", point.x, point.y);
 
+	    // Point is not in cell
 	    if (![controlView mouse: point inRect: cellFrame])
 		{
 		    NSDebugLog(@"NSCell point not in cell frame\n");
-		    // If point not in cell then unhighlight cell
-		    [self highlight: NO withFrame: cellFrame 
-			  inView: controlView];
+		    // unhighlight cell is highlighted
+		    if (cell_highlighted)
+		      {
+			[self highlight: NO withFrame: cellFrame 
+			      inView: controlView];
+			[self drawWithFrame: cellFrame inView: controlView];
+		      }
 		    
 		    // Do we now return or keep tracking
 		    if ((![[self class] prefersTrackingUntilMouseUp]) 
-			|| (!flag))
+			&& (!flag))
 			{
 			    NSDebugLog(@"NSCell return immediately\n");
 			    done = YES;
 			    continue;
 			}
 		}
+	    else
+	      {
+		// Point is in cell
+		// highlight cell if not highlighted
+		if (!cell_highlighted)
+		  {
+		    [self highlight: YES withFrame: cellFrame 
+			  inView: controlView];
+		    //[self drawWithFrame: cellFrame inView: controlView];
+		  }
+	      }
 
 	    // should we continue tracking?
 	    if (![self continueTracking: last_point at: point

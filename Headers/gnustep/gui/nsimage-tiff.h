@@ -34,7 +34,7 @@
 #ifndef _GNUstep_H_tiff
 #define _GNUstep_H_tiff
 
-#ifdef HAVE_TIFF
+#ifdef HAVE_TIFF_H
 #include <tiffio.h>
 #else
 #define TIFF void

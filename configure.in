@@ -39,6 +39,11 @@ AC_PROG_RANLIB
 AC_LN_S
 
 #--------------------------------------------------------------------
+# Use a .h file with #define's, instead of -D command-line switches
+#--------------------------------------------------------------------
+AC_CONFIG_HEADER(Headers/gnustep/gui/config.h)
+
+#--------------------------------------------------------------------
 # Standard ANSI headers
 #--------------------------------------------------------------------
 AC_HEADER_STDC
@@ -46,26 +51,25 @@ AC_HEADER_STDC
 #--------------------------------------------------------------------
 # Look for the TIFF library
 #--------------------------------------------------------------------
-AC_CHECK_HEADERS(tiff.h, HAVE_TIFF=1, HAVE_TIFF=1)
+AC_CHECK_HEADERS(tiff.h)
 
-if test "x$HAVE_TIFF" = "x0"
+if test "x$ac_cv_header_tiff_h" != "xyes"
 then
-   echo You must have the TIFF library installed.
-   echo The most recent version "(v3.4)" should be available at:
+   echo You must have the TIFF Graphics library installed.
+   echo The most required version "(v3.4)" should be available at:
    echo
    echo ftp://ftp.sgi.com/graphics/tiff
    echo
    echo Configuration of the GNUstep GUI Library cannot continue.
    exit 1
 fi
-AC_SUBST(HAVE_TIFF)
 
 #--------------------------------------------------------------------
 # Look for the DPSClient library
 #--------------------------------------------------------------------
-AC_CHECK_HEADERS(DPS/dpsclient.h, HAVE_DPSCLIENT=1, HAVE_DPSCLIENT=0)
+AC_CHECK_HEADERS(DPS/dpsclient.h)
 
-if test "x$HAVE_DPSCLIENT" = "x0"
+if test "x$ac_cv_header_DPS_dpsclient_h" != "xyes"
 then
    echo You must have the DPSClient library installed.
    echo The most recent public release, patched for GNUstep,
@@ -75,12 +79,11 @@ then
    echo
    echo The most recent snapshot should be available at:
    echo
-   echo ftp://ftp.net-community.com/pub/GNUstep
+   echo ftp://alpha.gnu.ai.mit.edu/pub/gnustep
    echo
    echo Configuration of the GNUstep GUI Library cannot continue.
    exit 1
 fi
-AC_SUBST(HAVE_DPSCLIENT)
 
 #--------------------------------------------------------------------
 # Operating system configuration
@@ -91,5 +94,5 @@ AC_SUBST(config_include)
 #--------------------------------------------------------------------
 # Write the Makefiles and configuration files
 #--------------------------------------------------------------------
-AC_OUTPUT(Makefile Source/Makefile Testing/Makefile Headers/gnustep/gui/config.h Documentation/Makefile Images/Makefile)
+AC_OUTPUT(Makefile Source/Makefile Testing/Makefile Documentation/Makefile Images/Makefile)
 

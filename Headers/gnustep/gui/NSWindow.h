@@ -98,6 +98,7 @@ extern NSSize NSTokenSize;
   BOOL dynamic_depth_limit;
 
   BOOL cursor_rects_enabled;
+  BOOL cursor_rects_valid;
 
   BOOL visible;
   BOOL is_key;

@@ -74,6 +74,7 @@ enum {
   NSMutableArray *sub_views;
   id window;
   NSMutableArray *tracking_rects;
+  NSMutableArray *cursor_rects;
 
   BOOL is_flipped;
   BOOL is_rotated_from_base;
@@ -229,6 +230,7 @@ enum {
 - (void)removeCursorRect:(NSRect)aRect
 		  cursor:(NSCursor *)anObject;
 - (void)resetCursorRects;
+- (NSArray *)cursorRectangles;
 
 //
 // Assigning a Tag 

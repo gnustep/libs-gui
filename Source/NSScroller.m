@@ -29,6 +29,15 @@
 #include <Foundation/NSCoder.h>
 #include <AppKit/NSScroller.h>
 #include <AppKit/NSWindow.h>
+#include <AppKit/NSActionCell.h>
+#include <AppKit/NSApplication.h>
+#include <AppKit/NSImage.h>
+
+//
+// Class variables
+//
+static float gnustep_gui_scroller_width = 18;
+id gnustep_gui_nsscroller_class = nil;
 
 @implementation NSScroller
 
@@ -41,7 +50,23 @@
     {
       // Initial version
       [self setVersion:1];
+
+      // Set our cell class to NSButtonCell
+      [self setCellClass:[NSActionCell class]];
     }
+}
+
+//
+// Initializing the NSScroller Factory 
+//
++ (Class)cellClass
+{
+  return gnustep_gui_nsscroller_class;
+}
+
++ (void)setCellClass:(Class)classId
+{
+  gnustep_gui_nsscroller_class = classId;
 }
 
 //
@@ -49,34 +74,48 @@
 //
 + (float)scrollerWidth
 {
-  return 0;
+  return gnustep_gui_scroller_width;
 }
 
 //
 // Instance methods
 //
-- init
-{
-  return [self initWithFrame:NSZeroRect];
-}
-
 - initWithFrame:(NSRect)frameRect
 {
-  [super initWithFrame:frameRect];
-  if (frame.size.width > frame.size.height)
-    is_horizontal = YES;
+  // Determine if its horizontal or vertical
+  // then adjust the width to the standard
+  if (frameRect.size.width > frameRect.size.height)
+    {
+      is_horizontal = YES;
+      frameRect.size.height = gnustep_gui_scroller_width;
+    }
   else
-    is_horizontal = NO;
-  target = nil;
-  action = NULL;
+    {
+      is_horizontal = NO;
+      frameRect.size.width = gnustep_gui_scroller_width;
+    }
+
+  [super initWithFrame:frameRect];
+
+  // set our cell
+  [[self cell] release];
+  [self setCell:[[gnustep_gui_nsscroller_class alloc] init]];
+  [self selectCell: cell];
+
+  arrows_position = NSScrollerArrowsMaxEnd;
+  knob_proportion = 0.1;
+  hit_part = NSScrollerNoPart;
+  [self setFloatValue: 0];
+
   return self;
 }
+
 //
 // Laying out the NSScroller 
 //
 - (NSScrollArrowPosition)arrowsPosition
 {
-  return 0;
+  return arrows_position;
 }
 
 - (void)checkSpaceForParts
@@ -88,11 +127,13 @@
 }
 
 - (void)setArrowsPosition:(NSScrollArrowPosition)where
-{}
+{
+  arrows_position = where;
+}
 
 - (NSUsableScrollerParts)usableParts
 {
-  return 0;
+  return NSNoScrollerParts;
 }
 
 //
@@ -100,18 +141,31 @@
 //
 - (float)knobProportion
 {
-  return 0;
+  return knob_proportion;
 }
 
 - (void)setFloatValue:(float)aFloat
        knobProportion:(float)ratio
-{}
+{
+  [cell setFloatValue: aFloat];
+  knob_proportion = ratio;
+}
+
+- (void)setFloatValue:(float)aFloat
+{
+  if (aFloat < 0)
+    aFloat = 0;
+  if (aFloat > 1)
+    aFloat = 1;
+  [super setFloatValue: aFloat];
+}
 
 //
 // Displaying 
 //
 - (void)drawRect:(NSRect)rect
 {
+  [self drawParts];
 }
 
 - (void)drawArrow:(NSScrollerArrow)whichButton
@@ -122,7 +176,38 @@
 {}
 
 - (void)drawParts
-{}
+{
+  // Draw the bar
+  [self drawBar];
+
+  // Cache the arrow images
+  if (arrows_position != NSScrollerArrowsNone)
+    {
+      if (!increment_arrow)
+	{
+	  if (is_horizontal)
+	    increment_arrow = [NSImage imageNamed: @"common_ArrowLeft"];
+	  else
+	    increment_arrow = [NSImage imageNamed: @"common_ArrowUp"];
+	}
+      if (!decrement_arrow)
+	{
+	  if (is_horizontal)
+	    decrement_arrow = [NSImage imageNamed: @"common_ArrowRight"];
+	  else
+	    decrement_arrow = [NSImage imageNamed: @"common_ArrowDown"];
+	}
+
+      // Draw the arrows
+      [self drawArrow: NSScrollerIncrementArrow highlight: NO];
+      [self drawArrow: NSScrollerDecrementArrow highlight: NO];
+    }
+
+  // Draw the knob
+  if (!knob_dimple)
+    knob_dimple = [NSImage imageNamed: @"common_Dimple"];
+  [self drawKnob];
+}
 
 - (void)highlight:(BOOL)flag
 {}
@@ -132,19 +217,195 @@
 //
 - (NSScrollerPart)hitPart
 {
-  return 0;
+  return hit_part;
 }
 
 - (NSScrollerPart)testPart:(NSPoint)thePoint
 {
-  return 0;
+  NSScrollerPart the_part = NSScrollerNoPart;
+  NSRect partRect;
+
+  // Test hit on arrow buttons
+  if (arrows_position != NSScrollerArrowsNone)
+    {
+      partRect = [self boundsOfScrollerPart: NSScrollerIncrementLine];
+      if ([self mouse: thePoint inRect: partRect])
+	the_part = NSScrollerIncrementLine;
+      else
+	{
+	  partRect = [self boundsOfScrollerPart: NSScrollerDecrementLine];
+	  if ([self mouse: thePoint inRect: partRect])
+	    the_part = NSScrollerDecrementLine;
+	}
+    }
+
+  // If not on the arrow buttons
+  // then test the know area
+  if (the_part == NSScrollerNoPart)
+    {
+      partRect = [self boundsOfScrollerPart: NSScrollerKnob];
+      if ([self mouse: thePoint inRect: partRect])
+	the_part = NSScrollerKnob;
+      else
+	{
+	  partRect = [self boundsOfScrollerPart: NSScrollerKnobSlot];
+	  if ([self mouse: thePoint inRect: partRect])
+	    the_part = NSScrollerKnobSlot;
+	}
+    }
+
+  return the_part;
 }
 
 - (void)trackKnob:(NSEvent *)theEvent
-{}
+{
+  NSApplication *theApp = [NSApplication sharedApplication];
+  BOOL mouseUp, done;
+  NSEvent *e;
+
+  unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask |
+    NSMouseMovedMask | NSLeftMouseDraggedMask | NSRightMouseDraggedMask;
+  NSRect partRect = [self boundsOfScrollerPart: NSScrollerKnob];
+  NSPoint point = [self convertPoint: [theEvent locationInWindow] 
+			fromView: nil];
+  NSPoint last_point;
+  NSRect barRect = [self boundsOfScrollerPart: NSScrollerKnobSlot];
+  float pos;
+
+  // capture mouse
+  [[self window] captureMouse: self];
+
+  done = NO;
+  e = theEvent;
+  mouseUp = NO;
+  while (!done)
+    {
+      last_point = point;
+      e = [theApp nextEventMatchingMask:event_mask untilDate:nil 
+		  inMode:nil dequeue:YES];
+      point = [self convertPoint: [e locationInWindow] fromView: nil];
+
+      if (is_horizontal)
+	{
+	  pos = (point.x - barRect.origin.x) / barRect.size.width;
+	  [self setFloatValue: pos];
+	  [self lockFocus];
+	  [self drawBar];
+	  [self drawKnob];
+	  [self unlockFocus];
+	}
+      else
+	{
+	  pos = (point.y - barRect.origin.y) / barRect.size.height;
+	  [self setFloatValue: pos];
+	  [self lockFocus];
+	  [self drawBar];
+	  [self drawKnob];
+	  [self unlockFocus];
+	}
+
+      // Did the mouse go up?
+      if ([e type] == NSLeftMouseUp)
+	{
+	  mouseUp = YES;
+	  done = YES;
+	}
+    }
+
+  // Release mouse
+  [[self window] releaseMouse: self];
+
+  // Have the target perform the action
+  [self sendAction:[self action] to:[self target]];
+}
 
 - (void)trackScrollButtons:(NSEvent *)theEvent
-{}
+{
+  NSApplication *theApp = [NSApplication sharedApplication];
+  BOOL mouseUp, done;
+  NSEvent *e;
+  unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask |
+    NSMouseMovedMask | NSLeftMouseDraggedMask | NSRightMouseDraggedMask;
+
+  // capture mouse
+  [[self window] captureMouse: self];
+
+  done = NO;
+  e = theEvent;
+  while (!done)
+    {
+      mouseUp = [cell trackMouse: e inRect: bounds
+		      ofView:self untilMouseUp:YES];
+      e = [theApp currentEvent];
+
+      // If mouse went up then we are done
+      if ((mouseUp) || ([e type] == NSLeftMouseUp))
+	done = YES;
+      else
+	{
+	  NSDebugLog(@"NSScroller process another event\n");
+	  e = [theApp nextEventMatchingMask:event_mask untilDate:nil
+		      inMode:nil dequeue:YES];
+	}
+    }
+
+  // Release mouse
+  [[self window] releaseMouse: self];
+
+  // If the mouse went up in the button
+  if (mouseUp)
+    { 
+      // Set a new value
+
+      // Have the target perform the action
+      [self sendAction:[self action] to:[self target]];
+    }
+}
+
+//
+// Handling Events and Action Messages 
+//
+- (void)mouseDown:(NSEvent *)theEvent
+{
+  NSScrollerPart area;
+  NSPoint p = [self convertPoint: [theEvent locationInWindow] fromView: nil];
+
+  NSDebugLog(@"NSScroller mouseDown\n");
+
+  // If we are not enabled then ignore the mouse
+  if (![self isEnabled])
+    return;
+
+  // Test where the mouse down is
+  area = [self testPart: p];
+
+  // If we didn't hit anywhere on the scroller then ignore
+  if (area == NSScrollerNoPart)
+    return;
+
+  // Do we have the ALT key held down?
+  if ([theEvent modifierFlags] & NSAlternateKeyMask)
+    {
+      if (area == NSScrollerDecrementLine)
+	area = NSScrollerDecrementPage;
+      if (area == NSScrollerIncrementLine)
+	area = NSScrollerIncrementPage;
+    }
+  
+  // We must have hit a real part so record it
+  hit_part = area;
+
+  // Track the knob if that's where it hit
+  if ((hit_part == NSScrollerKnob) || (hit_part == NSScrollerKnobSlot))
+    [self trackKnob: theEvent];
+
+  // Track the scroll buttons if that's where it hit
+  if ((hit_part == NSScrollerDecrementPage) || 
+      (hit_part == NSScrollerDecrementLine) ||
+      (hit_part == NSScrollerIncrementPage) ||
+      (hit_part == NSScrollerIncrementLine))
+    [self trackScrollButtons: theEvent];
+}
 
 //
 // NSCoding protocol
@@ -154,13 +415,11 @@
   [super encodeWithCoder:aCoder];
 
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_horizontal];
-  [aCoder encodeValueOfObjCType: @encode(SEL) at: &action];
-#if 0
-  [aCoder encodeObjectReference: target withName: @"Target"];
-#else
-  [aCoder encodeConditionalObject:target];
-#endif
-  [aCoder encodeValuesOfObjCTypes: "ff", &percent, &cur_value];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &knob_proportion];
+  [aCoder encodeValueOfObjCType: @encode(NSScrollerPart) at: &hit_part];
+  [aCoder encodeValueOfObjCType: @encode(NSScrollArrowPosition)
+	  at: &arrows_position];
+  /* xxx What about the images? */
 }
 
 - initWithCoder:aDecoder
@@ -168,16 +427,48 @@
   [super initWithCoder:aDecoder];
 
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_horizontal];
-  [aDecoder decodeValueOfObjCType: @encode(SEL) at: &action];
-#if 0
-  [aDecoder decodeObjectAt: &target withName: NULL];
-#else
-  target = [aDecoder decodeObject];
-#endif
-  [aDecoder decodeValuesOfObjCTypes: "ff", &percent, &cur_value];
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &knob_proportion];
+  [aDecoder decodeValueOfObjCType: @encode(NSScrollerPart) at: &hit_part];
+  [aDecoder decodeValueOfObjCType: @encode(NSScrollArrowPosition)
+	    at: &arrows_position];
+  /* xxx What about the images? */
 
   return self;
 }
 
 @end
 
+//
+// Methods implemented by the backend
+//
+@implementation NSScroller (GNUstepBackend)
+
+- (void)drawBar
+{}
+
+- (NSRect)boundsOfScrollerPart:(NSScrollerPart)part
+{
+  return NSZeroRect;
+}
+
+- (BOOL)isPointInIncrementArrow:(NSPoint)aPoint
+{
+  return NO;
+}
+
+- (BOOL)isPointInDecrementArrow:(NSPoint)aPoint
+{
+  return NO;
+}
+
+- (BOOL)isPointInKnob:(NSPoint)aPoint
+{
+  return NO;
+}
+
+- (BOOL)isPointInBar:(NSPoint)aPoint
+{
+  return NO;
+}
+
+@end

@@ -1,3 +1,20 @@
+Tue Mar  4 17:04:16 1997  GNUstep Development  <gnustep@net-community.com>
+
+	* Reinstate NSCursor and NSColorWell changes that got lost.
+
+	* configure.in: Utilize config.h file instead of compiler defines.
+	* configure: Regenerate for configure.in changes.
+	* Headers/gnustep/dps/DPSOperators.h: Correct name.
+	* Headers/gnsutep/gui/Headers/TypesandConstants.h: Correct name.
+	* Headers/gnustep/gui/config.h.in: Correct names.
+	* Headers/gnustep/gui/nsimage-tiff.h: Correct name.
+
+	* Source/NSCell.m: Redraw cell when needed during tracking.
+	
+	* Initial NSScroller implementation.
+	* Headers/gnustep/gui/NSScroller.h: Likewise.
+	* Source/NSScroller.m: Likewise.
+
 Tue Mar  4 09:28:57 1997  GNUstep Development  <gnustep@net-community.com>
 
 	* Headers/gnustep/gui/NSEvent.h: Include needed header file.
@@ -57,6 +74,31 @@ Sat Feb 15 23:12:35 1997  Ovidiu Predescu <ovidiu@bx.logicnet.ro>
 	exception strings that don't belong elsewhere.
 	* Headers/gnustep/gui/NSNibLoading.h: Added category to NSBundle that
 	deals with nib loading.
+
+Wed Feb 12 14:14:47 1997  GNUstep Development  <gnustep@net-community.com>
+
+	* Initial implementation of NSCursor.
+	* Headers/gnustep/gui/NSCursor.h: Likewise.
+	* Source/NSCursor.m: Likewise.
+	* Headers/gnustep/gui/NSWindow.h: Implement cursor rectangles.
+	* Source/NSView.m: Likewise.
+	* Source/NSWindow.m: Likewise.
+	* Source/Makefile.in: Clean up variables
+	* Source/NSApplication.m: Fixes to event posting.  Unhide the
+	cursor when a mouse event occurs.
+	* Source/NSEvent.m: NSCursorUpdate events are implemented
+	as enter/exit events instead of other events.
+	* Headers/gnustep/gui/NSTextField.h: Add text field cursor.
+	* Source/NSTextField.m: Likewise.
+
+Thu Feb  6 19:31:54 1997  GNUstep Development  <gnustep@net-community.com>
+
+	* Fill out implementation of NSColorWell.
+	* Headers/gnustep/gui/NSColorWell.h: Add backend instance variable
+	and backend method.
+	* Source/NSColorWell.m: Initial implementation.
+	* NSView.m: Don't use -isKindOfClass: because it isn't working
+	as we expect with the backend classes doing a +poseAs:
 
 Mon Feb 10 17:23:06 1997  Ovidiu Predescu <ovidiu@bx.logicnet.ro>
 

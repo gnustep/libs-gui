@@ -38,6 +38,7 @@
 #include <AppKit/NSImage.h>
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSMenuCell.h>
+#include <AppKit/NSCursor.h>
 
 //
 // Class variables
@@ -269,7 +270,7 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
       e = [self nextEventMatchingMask:NSAnyEventMask untilDate:nil 
 		inMode:nil dequeue:YES];
       if (e)
-	[self postEvent:e atStart:YES];
+	[self sendEvent: e];
       else
 	{
 	  // Null event
@@ -446,7 +447,7 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
   if ([event_queue count])
     {
       j = [event_queue count];
-      for (i = j-1;i > 0; --i)
+      for (i = j-1;i >= 0; --i)
 	{
 	  e = [event_queue objectAtIndex: i];
 	  if ([self event: e matchMask: mask])
@@ -475,13 +476,32 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 	}
     }
 
+  // Unhide the cursor if necessary
+  {
+    NSEventType type;
+
+    // Only if we should unhide when mouse moves
+    if ([NSCursor isHiddenUntilMouseMoves])
+      {
+	// Make sure the event is a mouse event before unhiding
+	type = [e type];
+	if ((type == NSLeftMouseDown) || (type == NSLeftMouseUp)
+	    || (type == NSRightMouseDown) || (type == NSRightMouseUp)
+	    || (type == NSMouseMoved))
+	  [NSCursor unhide];
+      }
+  }
+
   [self setCurrentEvent: e];
   return e;
 }
 
 - (void)postEvent:(NSEvent *)event atStart:(BOOL)flag
 {
-  [self sendEvent:event];
+  if (flag)
+    [event_queue addObject: event];
+  else
+    [event_queue insertObject: event atIndex: 0];
 }
 
 //

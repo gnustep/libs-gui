@@ -27,6 +27,7 @@
 */ 
 
 #include <AppKit/NSColorWell.h>
+#include <AppKit/NSColor.h>
 
 @implementation NSColorWell
 
@@ -45,14 +46,30 @@
 //
 // Instance methods
 //
+- initWithFrame:(NSRect)frameRect
+{
+  [super initWithFrame: frameRect];
+
+  is_bordered = YES;
+  is_active = NO;
+  the_color = [NSColor blackColor];
+
+  return self;
+}
 
 //
 // Drawing
 //
 - (void)drawRect:(NSRect)rect
 {
-  // xxx Draw border
+  NSLog(@"NSColorWell drawRect: %f %f %f %f\n", rect.origin.x, rect.origin.y,
+	rect.size.width, rect.size.height);
 
+  // Draw border
+  if (is_bordered)
+    [self drawBorderRect: rect];
+
+  // Draw the color inside
   [self drawWellInside: rect];
 }
 
@@ -130,6 +147,17 @@
   [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &is_bordered];
 
   return self;
+}
+
+@end
+
+//
+// GNUstep backend methods
+//
+@implementation NSColorWell (GNUstepBackend)
+
+- (void)drawBorderRect:(NSRect)aRect
+{
 }
 
 @end

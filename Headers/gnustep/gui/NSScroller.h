@@ -66,10 +66,12 @@ extern const float NSScrollerWidth;
 {
   // Attributes
   BOOL is_horizontal;
-  SEL action;
-  id target;
-  float percent;
-  float cur_value;
+  float knob_proportion;
+  NSScrollerPart hit_part;
+  NSScrollArrowPosition arrows_position;
+  NSImage *increment_arrow;
+  NSImage *decrement_arrow;
+  NSImage *knob_dimple;
 
   // Reserved for back-end use
   void *be_scroll_reserved;
@@ -116,6 +118,20 @@ extern const float NSScrollerWidth;
 //
 - (void)encodeWithCoder:aCoder;
 - initWithCoder:aDecoder;
+
+@end
+
+//
+// Methods implemented by the backend
+//
+@interface NSScroller (GNUstepBackend)
+
+- (void)drawBar;
+- (NSRect)boundsOfScrollerPart:(NSScrollerPart)part;
+- (BOOL)isPointInIncrementArrow:(NSPoint)aPoint;
+- (BOOL)isPointInDecrementArrow:(NSPoint)aPoint;
+- (BOOL)isPointInKnob:(NSPoint)aPoint;
+- (BOOL)isPointInBar:(NSPoint)aPoint;
 
 @end
 

@@ -34,6 +34,7 @@
 @class NSNotification;
 @class NSColor;
 @class NSText;
+@class NSCursor;
 
 @interface NSTextField : NSControl <NSCoding>
 {
@@ -42,6 +43,7 @@
   id previous_text;
   id text_delegate;
   SEL error_action;
+  NSCursor *text_cursor;
 }
 
 //

@@ -30,6 +30,7 @@
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSTextFieldCell.h>
 #include <AppKit/NSApplication.h>
+#include <AppKit/NSCursor.h>
 
 //
 // class variables
@@ -82,6 +83,7 @@ static id MB_NSTEXTFIELDCELL_CLASS = nil;
   [[self cell] release];
   [self setCell:[[MB_NSTEXTFIELDCELL_CLASS alloc] init]];
   [cell setState:1];
+  text_cursor = [NSCursor IBeamCursor];
 
   return self;
 }
@@ -391,6 +393,14 @@ static id MB_NSTEXTFIELDCELL_CLASS = nil;
 - (BOOL)textShouldEndEditing:(NSText *)textObject
 {
   return YES;
+}
+
+//
+// Manage the cursor
+//
+- (void)resetCursorRects
+{
+  [self addCursorRect: bounds cursor: text_cursor];
 }
 
 //

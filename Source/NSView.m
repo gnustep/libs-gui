@@ -155,6 +155,9 @@ NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
   // Initialize tracking rectangle list
   tracking_rects = [NSMutableArray array];
 
+  // Initialize cursor rect list
+  cursor_rects = [NSMutableArray array];
+
   super_view = nil;
   window = nil;
   is_flipped = NO;
@@ -187,6 +190,11 @@ NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
   for (i = 0;i < j; ++i)
     [[tracking_rects objectAtIndex:i] release];
 
+  // Free the cursor rectangles
+  j = [cursor_rects count];
+  for (i = 0;i < j; ++i)
+    [[cursor_rects objectAtIndex:i] release];
+
   [super dealloc];
 }
 
@@ -196,8 +204,20 @@ NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
 - (void)addSubview:(NSView *)aView
 {
   // Not a NSView --then forget it
+  // xxx but NSView will really be the backend class
+  // so how do we check that its really a subclass of NSView
+  // and not of the backend class?
+#if 0
   if (![aView isKindOfClass:[NSView class]])
     {
+      return;
+    }
+#endif
+
+  // make sure we aren't making ourself a subview of ourself
+  if (self == aView)
+    {
+      NSLog(@"Attempt to make view a subview of itself\n");
       return;
     }
 
@@ -216,9 +236,14 @@ NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
 	relativeTo:(NSView *)otherView
 {
   // Not a NSView --then forget it
+  // xxx but NSView will really be the backend class
+  // so how do we check that its really a subclass of NSView
+  // and not of the backend class?
+#if 0
   if (![aView isKindOfClass:[NSView class]]) return;
+#endif
 
-	// retain the object
+  // retain the object
   [aView retain];
 
   // Add to our subview list
@@ -242,7 +267,12 @@ NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
 - (BOOL)isDescendantOf:(NSView *)aView
 {
   // Not a NSView --then forget it
+  // xxx but NSView will really be the backend class
+  // so how do we check that its really a subclass of NSView
+  // and not of the backend class?
+#if o
   if (![aView isKindOfClass:[NSView class]]) return NO;
+#endif
 
   // Quick check
   if (aView == self) return YES;
@@ -284,7 +314,12 @@ NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
   NSView *v;
 
   // Not a NSView --then forget it
+  // xxx but NSView will really be the backend class
+  // so how do we check that its really a subclass of NSView
+  // and not of the backend class?
+#if 0
   if (![newView isKindOfClass:[NSView class]]) return;
+#endif
 
   j = [sub_views count];
   for (i = 0;i < j; ++i)
@@ -322,7 +357,12 @@ NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
 - (void)setSuperview:(NSView *)superview
 {
   // Not a NSView --then forget it
+  // xxx but NSView will really be the backend class
+  // so how do we check that its really a subclass of NSView
+  // and not of the backend class?
+#if 0
   if (![superview isKindOfClass:[NSView class]]) return;
+#endif
 
   super_view = superview;
 }
@@ -811,19 +851,54 @@ NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
 //
 // Managing the Cursor 
 //
+// We utilize the tracking rectangle class
+// to also maintain the cursor rects
+//
 - (void)addCursorRect:(NSRect)aRect
 	       cursor:(NSCursor *)anObject
-{}
+{
+  TrackingRectangle *m;
+
+  m = [[TrackingRectangle alloc] initWithRect: aRect tag: 0 owner: anObject
+				 userData: NULL inside: YES];
+  [cursor_rects addObject:m];
+}
 
 - (void)discardCursorRects
-{}
+{
+  [cursor_rects removeAllObjects];
+}
 
 - (void)removeCursorRect:(NSRect)aRect
 		  cursor:(NSCursor *)anObject
-{}
+{
+  id e = [cursor_rects objectEnumerator];
+  TrackingRectangle *o;
+  NSCursor *c;
+  BOOL found = NO;
+
+  // Base remove test upon cursor object
+  o = [e nextObject];
+  while (o && (!found))
+    {
+      c = [o owner];
+      if (c == anObject)
+	found = YES;
+      else
+	o = [e nextObject];
+    }
+
+  if (found)
+    [cursor_rects removeObject: o];
+}
 
 - (void)resetCursorRects
 {}
+
+- (NSArray *)cursorRectangles
+{
+  return cursor_rects;
+}
 
 //
 // Assigning a Tag 

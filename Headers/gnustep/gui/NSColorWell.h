@@ -40,6 +40,9 @@
   NSColor *the_color;
   BOOL is_active;
   BOOL is_bordered;
+
+  // Reserved for back-end use
+  void *be_cwell_reserved;
 }
 
 //
@@ -72,6 +75,15 @@
 //
 - (void)encodeWithCoder:aCoder;
 - initWithCoder:aDecoder;
+
+@end
+
+//
+// GNUstep backend methods
+//
+@interface NSColorWell (GNUstepBackend)
+
+- (void)drawBorderRect:(NSRect)aRect;
 
 @end
 

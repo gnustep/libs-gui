@@ -38,6 +38,7 @@
 #include <AppKit/TrackingRectangle.h>
 #include <AppKit/NSSliderCell.h>
 #include <AppKit/NSScreen.h>
+#include <AppKit/NSCursor.h>
 
 // NSWindow notifications
 NSString *NSWindowDidBecomeKeyNotification = @"WindowDidBecomeKey";
@@ -179,6 +180,10 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
 
   // Next responder is the application
   [self setNextResponder:theApp];
+
+  // Cursor management
+  cursor_rects_enabled = YES;
+  cursor_rects_valid = NO;
 
   // Create our content view
   [self setContentView:[[NSView alloc] initWithFrame:frame]];
@@ -352,6 +357,9 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
   // We are the key window
   is_key = YES;
 
+  // Reset the cursor rects
+  [self resetCursorRects];
+
   // Post notification
   [nc postNotificationName: NSWindowDidBecomeKeyNotification object: self];
 }
@@ -473,6 +481,9 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
   is_key = NO;
+
+  // Discard the cursor rects
+  [self discardCursorRects];
 
   // Post notification
   [nc postNotificationName: NSWindowDidResignKeyNotification object: self];
@@ -719,8 +730,26 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
   cursor_rects_enabled = NO;
 }
 
+- (void)discardCursorRectsForView:(NSView *)theView
+{
+  NSArray *s;
+  id e;
+  NSView *v;
+
+  // Discard for the view
+  [theView discardCursorRects];
+
+  // Discard for the view's subviews
+  s = [theView subviews];
+  e = [s objectEnumerator];
+  while ((v = [e nextObject]))
+    [self discardCursorRectsForView: v];
+}
+
 - (void)discardCursorRects
-{}
+{
+  [self discardCursorRectsForView: content_view];
+}
 
 - (void)enableCursorRects
 {
@@ -728,10 +757,34 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
 }
 
 - (void)invalidateCursorRectsForView:(NSView *)aView
-{}
+{
+  cursor_rects_valid = NO;
+}
+
+- (void)resetCursorRectsForView:(NSView *)theView
+{
+  NSArray *s;
+  id e;
+  NSView *v;
+
+  // Reset the view
+  [theView resetCursorRects];
+
+  // Reset the view's subviews
+  s = [theView subviews];
+  e = [s objectEnumerator];
+  while ((v = [e nextObject]))
+    [self resetCursorRectsForView: v];
+}
 
 - (void)resetCursorRects
-{}
+{
+  // Tell all the views to reset their cursor rects
+  [self resetCursorRectsForView: content_view];
+
+  // Cursor rects are now valid
+  cursor_rects_valid = YES;
+}
 
 //
 // Handling user actions and events
@@ -931,27 +984,31 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
       // Mouse entered event
       if ((!last) && (now))
 	{
+	  id owner = [r owner];
 	  e = [NSEvent enterExitEventWithType:NSMouseEntered
 		       location:[theEvent locationInWindow] 
 		       modifierFlags:[theEvent modifierFlags]
 		       timestamp:0 windowNumber:[theEvent windowNumber]
 		       context:NULL eventNumber:0 
 		       trackingNumber:[r tag] userData:[r userData]];
-	  // Send the event to the view
-	  [theView mouseEntered:e];
+	  // Send the event to the owner
+	  if ([owner respondsToSelector:@selector(mouseEntered:)])
+	    [owner mouseEntered:e];
 	}
 
       // Mouse exited event
       if ((last) && (!now))
 	{
+	  id owner = [r owner];
 	  e = [NSEvent enterExitEventWithType:NSMouseExited
 		       location:[theEvent locationInWindow] 
 		       modifierFlags:[theEvent modifierFlags]
 		       timestamp:0 windowNumber:[theEvent windowNumber]
 		       context:NULL eventNumber:0 
 		       trackingNumber:[r tag] userData:[r userData]];
-	  // Send the event to the view
-	  [theView mouseExited:e];
+	  // Send the event to the owner
+	  if ([owner respondsToSelector:@selector(mouseExited:)])
+	    [owner mouseExited:e];
 	}
     }
 
@@ -961,12 +1018,81 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
     [self checkTrackingRectangles:[sb objectAtIndex:i] forEvent:theEvent];
 }
 
+- (void)checkCursorRectangles:(NSView *)theView forEvent:(NSEvent *)theEvent
+{
+  NSArray *tr = [theView cursorRectangles];
+  NSArray *sb = [theView subviews];
+  TrackingRectangle *r;
+  int i, j;
+  BOOL last, now;
+  NSEvent *e;
+  NSRect convRect;
+  NSPoint loc = [theEvent locationInWindow];
+
+  // Loop through cursor rectangles
+  j = [tr count];
+  for (i = 0;i < j; ++i)
+    {
+      // Convert cursor rectangle to window coordinates
+      r = (TrackingRectangle *)[tr objectAtIndex:i];
+      convRect = [r rectangle];
+      convRect = [theView convertRect: convRect toView: nil];
+      // Check mouse at last point
+      last = [theView mouse:last_point inRect: convRect];
+      // Check mouse at current point
+      now = [theView mouse: loc inRect: convRect];
+
+      // Mouse entered
+      if ((!last) && (now))
+	{
+	  // Post cursor update event
+	  e = [NSEvent enterExitEventWithType: NSCursorUpdate
+		       location: loc
+		       modifierFlags: [theEvent modifierFlags]
+		       timestamp: 0
+		       windowNumber: [theEvent windowNumber]
+		       context: [theEvent context]
+		       eventNumber: 0
+		       trackingNumber: (int)YES
+		       userData: (void *)r];
+	  [self postEvent: e atStart: YES];
+	}
+
+      // Mouse exited event
+      if ((last) && (!now))
+	{
+	  // Post cursor update event
+	  e = [NSEvent enterExitEventWithType: NSCursorUpdate
+		       location: loc
+		       modifierFlags: [theEvent modifierFlags]
+		       timestamp: 0
+		       windowNumber: [theEvent windowNumber]
+		       context: [theEvent context]
+		       eventNumber: 0
+		       trackingNumber: (int)NO
+		       userData: (void *)r];
+	  [self postEvent: e atStart: YES];
+	}
+    }
+
+  // Check the cursor rectangles for the subviews
+  j = [sb count];
+  for (i = 0;i < j; ++i)
+    [self checkCursorRectangles:[sb objectAtIndex:i] forEvent:theEvent];
+}
+
 - (void)sendEvent:(NSEvent *)theEvent
 {
+  // If the cursor rects are invalid
+  // Then discard and reset
+  if (!cursor_rects_valid)
+    {
+      [self discardCursorRects];
+      [self resetCursorRects];
+    }
 
   switch ([theEvent type])
     {
-
       //
       // Mouse events
       //
@@ -976,7 +1102,7 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
     case NSLeftMouseDown:
       {
 	NSView *v = [content_view hitTest:[theEvent locationInWindow]];
-	NSDebugLog([content_view description]);
+	NSDebugLog([v description]);
 	NSDebugLog(@"\n");
 	[v mouseDown:theEvent];
 	last_point = [theEvent locationInWindow];
@@ -1026,6 +1152,13 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
 	//   a tracking rectangle then we need to determine if we
 	//   should send a NSMouseEntered or NSMouseExited event
 	[self checkTrackingRectangles:content_view forEvent:theEvent];
+
+	// We need to go through all of the views, and any with
+	// a cursor rectangle then we need to determine if we
+	// should send a cursor update event
+	// We only do this if we are the key window
+	if ([self isKeyWindow])
+	  [self checkCursorRectangles: content_view forEvent: theEvent];
 
 	last_point = [theEvent locationInWindow];
 	break;
@@ -1098,6 +1231,20 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
       //
     case NSCursorUpdate:
       {
+	// Is it a mouse entered
+	if ([theEvent trackingNumber])
+	  {
+	    // push the cursor
+	    TrackingRectangle *r = (TrackingRectangle *)[theEvent userData];
+	    NSCursor *c = (NSCursor *)[r owner];
+	    [c push];
+	  }
+	else
+	  {
+	    // it is a mouse exited
+	    // so pop the cursor
+	    [NSCursor pop];
+	  }
 	break;
       }
     case NSPeriodic:

@@ -33,10 +33,11 @@
 
 #include <Foundation/NSGeometry.h>
 
-@config_include@
+/* Do we have the TIFF Graphics library */
+#undef HAVE_TIFF_H
 
-#define HAVE_TIFF @HAVE_TIFF@
-#define HAVE_DPSCLIENT @HAVE_DPSCLIENT@
+/* Do we have the DPS Client library? */
+#undef HAVE_DPS_DPSCLIENT_H
 
 #endif /* _GNUstep_H_AppKitConfig */
 

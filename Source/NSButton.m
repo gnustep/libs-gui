@@ -34,7 +34,7 @@
 //
 // class variables
 //
-static id MB_NSBUTTON_CLASS = nil;
+id gnustep_gui_nsbutton_class = nil;
 
 //
 // NSButton implementation
@@ -61,12 +61,12 @@ static id MB_NSBUTTON_CLASS = nil;
 //
 + (Class)cellClass
 {
-  return MB_NSBUTTON_CLASS;
+  return gnustep_gui_nsbutton_class;
 }
 
 + (void)setCellClass:(Class)classId
 {
-  MB_NSBUTTON_CLASS = classId;
+  gnustep_gui_nsbutton_class = classId;
 }
 
 //
@@ -86,7 +86,7 @@ static id MB_NSBUTTON_CLASS = nil;
 
   // set our cell
   [[self cell] release];
-  [self setCell:[[MB_NSBUTTON_CLASS alloc] init]];
+  [self setCell:[[gnustep_gui_nsbutton_class alloc] init]];
 
   return self;
 }
