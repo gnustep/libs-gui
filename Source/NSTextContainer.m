@@ -95,9 +95,17 @@
   return self;
 }
 
+- (void) dealloc
+{
+  RELEASE (_textView);
+  [super dealloc];
+}
+
 - (void) setLayoutManager: (NSLayoutManager*)aLayoutManager
 {
-  ASSIGN(_layoutManager, aLayoutManager);
+  /* The layout manager owns us - so he retains us and we don't retain 
+     him. */
+  _layoutManager = aLayoutManager;
 }
 
 - (NSLayoutManager*) layoutManager
@@ -144,7 +152,7 @@
 	  object: _textView];
     }
 
-  ASSIGN(_textView, aTextView);
+  ASSIGN (_textView, aTextView);
 
   if (aTextView != nil)
     {
