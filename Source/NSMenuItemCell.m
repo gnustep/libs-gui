@@ -271,7 +271,11 @@ static BOOL usesUserKeyEquivalents = YES;
     NSRectFill(floodRect);
   }
 
-  [[NSColor blackColor] set];
+  if ([self isEnabled])
+    [[NSColor blackColor] set];
+  else
+    [[NSColor grayColor] set];
+
   [[NSFont systemFontOfSize:12] set];
   DPSmoveto(ctxt, cellFrame.origin.x + 5, cellFrame.origin.y + 6);
   DPSshow(ctxt, [[self title] cString]);
