@@ -689,6 +689,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
                   menu = [[NSMenu alloc] initWithTitle: parentTitle];
                   [servicesMenu setSubmenu: menu
                                    forItem: item];
+                  [menu release];
                 }
               else
                 {
@@ -957,7 +958,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
 
 	  /*
 	   *	If there is no title mapping, this cell must be a
-	   *	submenu - so we chaeck the submenu cells.
+	   *	submenu - so we check the submenu cells.
 	   */
 	  if (title == nil && [[cell target] isKindOfClass: [NSMenu class]])
 	    {
@@ -984,9 +985,6 @@ static NSString         *disabledName = @".GNUstepDisabled";
 				[subMenuCells cellFrameAtRow: j]];
 		    }
 		}
-	      /* FIXME - only doing this here 'cos auto-display doesn't work */
-	      if ([subMenuCells needsDisplay])
-		[subMenuCells display];
 	    }
 	  else
 	    shouldBeEnabled = [self validateMenuItem: cell];
@@ -997,9 +995,6 @@ static NSString         *disabledName = @".GNUstepDisabled";
 	      [menuCells setNeedsDisplayInRect: [menuCells cellFrameAtRow: i]];
             }
         }
-	/* FIXME - only doing this here 'cos auto-display doesn't work */
-	if ([menuCells needsDisplay])
-	  [menuCells display];
     }
 }
 

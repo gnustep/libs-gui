@@ -286,11 +286,13 @@ NSAutoreleasePool* pool;
         if (e)
             [self sendEvent: e];
 
+        [listener updateServicesMenu];              // update (en/disable) the
+                                                    // services menu's items
+        [main_menu update];
+
         if (windows_need_update)                            // send an update message
             [self updateWindows];                   // to all visible windows
 
-        [listener updateServicesMenu];              // update (en/disable) the
-                                                    // services menu's items
         [pool release];
         }
     while (!app_should_quit);

@@ -440,13 +440,13 @@ static Class menuCellClass = nil;
 
 - (void)update
 {
-  // SUBCLASS to redisplay the menu
+  // SUBCLASS to redisplay the menu if necessary
 
   id cells;
   int i, count;
   id theApp = [NSApplication sharedApplication];
 
-  if (![[theApp mainMenu] autoenablesItems])
+  if (![self autoenablesItems])
     return;
 
   cells = [menuCells itemArray];
@@ -509,15 +509,11 @@ static Class menuCellClass = nil;
 	}
     }
 
-  /* Reenable displaying of menus */
-  [self setMenuChangedMessagesEnabled:YES];
-
   if (menuHasChanged)
     [self sizeToFit];
 
-  /* FIXME - only doing this here 'cos auto-display doesn't work */
-  if ([menuCells needsDisplay])
-    [menuCells display];
+  /* Reenable displaying of menus */
+  [self setMenuChangedMessagesEnabled:YES];
 }
 
 - (void) performActionForItem: (id <NSMenuItem>)cell
@@ -531,11 +527,11 @@ static Class menuCellClass = nil;
   nc = [NSNotificationCenter defaultCenter];
   d = [NSDictionary dictionaryWithObject: cell forKey: @"MenuItem"];
   [nc postNotificationName: NSMenuWillSendActionNotification
-				    object: self
-				  userInfo: d];
+                    object: self
+                  userInfo: d];
   [[NSApplication sharedApplication] sendAction: [cell action]
-										     to: [cell target]
-										   from: cell];
+                                             to: [cell target]
+                                           from: cell];
   [nc postNotificationName: NSMenuDidSendActionNotification
 				    object: self
 				  userInfo: d];

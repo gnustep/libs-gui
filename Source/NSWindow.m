@@ -193,9 +193,6 @@ NSRect cframe;
     cframe.size = frame.size;
     [self setContentView:[[[NSView alloc] initWithFrame:cframe] autorelease]];
 
-
-    [theApp addWindowsItem: self title: nil filename: NO];
-
     _flushRectangles = [[NSMutableArray alloc] initWithCapacity:10];
 
     NSDebugLog(@"NSWindow end of init\n");
@@ -304,9 +301,10 @@ NSView *wv;
     title = window_title;
   if ([title isEqual: represented_filename])
     isDoc = YES;
-  [[NSApplication sharedApplication] changeWindowsItem: self
-						 title: title
-					      filename: isDoc];
+  if (menu_exclude == NO)
+    [[NSApplication sharedApplication] changeWindowsItem: self
+                                                   title: title
+                                                filename: isDoc];
 }
 
 //
@@ -365,20 +363,25 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
 - (void)makeKeyAndOrderFront:sender
 {
-    [self makeKeyWindow];                           // Make self the key window
-    [self orderFront:sender];                       // order self to the front
+  [self makeKeyWindow];                           // Make self the key window
+  /*
+   * OPENSTEP makes a window the main window when it makes it the key window.
+   * So we do the same (though the documentation doesn't mention it).
+   */
+  [self makeMainWindow];
+  [self orderFront: sender];                      // order self to the front
 }
 
-- (void)makeKeyWindow
+- (void) makeKeyWindow
 {
-NSApplication *theApp = [NSApplication sharedApplication];
-                                                    // Can we become the key
-    if (![self canBecomeKeyWindow])                 // window?
-        return;
-                                                    // ask the current key
-    [[theApp keyWindow] resignKeyWindow];           // window to resign status
+  NSApplication *theApp = [NSApplication sharedApplication];
+                                                  // Can we become the key
+  if (![self canBecomeKeyWindow])                 // window?
+    return;
+                                                  // ask the current key
+  [[theApp keyWindow] resignKeyWindow];           // window to resign status
 
-    [self becomeKeyWindow];                         // become the key window
+  [self becomeKeyWindow];                         // become the key window
 }
 
 - (void)makeMainWindow
@@ -524,17 +527,16 @@ NSPoint basePoint;
         }
 }
 
-- (void)update
+- (void) update
 {
-NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
-    if (is_autodisplay && needs_display)                    // if autodisplay is
-        {                                               // enabled and window
-        [self displayIfNeeded];                         // display
-        [self flushWindowIfNeeded];
-        }
-
-    [nc postNotificationName: NSWindowDidUpdateNotification object: self];
+  if (is_autodisplay && needs_display)              // if autodisplay is
+    {                                               // enabled and window
+      [self displayIfNeeded];                       // display
+      [self flushWindowIfNeeded];
+    }
+  [nc postNotificationName: NSWindowDidUpdateNotification object: self];
 }
 
 - (void)flushWindowIfNeeded
@@ -1314,11 +1316,6 @@ id result = nil;
   [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &hides_on_deactivate];
   [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &accepts_mouse_moved];
 
-  // Register ourselves with the Application object
-  // +++ we shouldn't do this because coding may not be done?
-  //     better to do it in the awakeFromCoder method
-  theApp = [NSApplication sharedApplication];
-  [theApp addWindowsItem: self title: nil filename: NO];
   NSDebugLog(@"NSWindow: finish decoding\n");
 
   return self;

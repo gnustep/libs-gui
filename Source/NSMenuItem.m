@@ -72,17 +72,19 @@ static BOOL usesUserKeyEquivalents = YES;
   [super dealloc];
 }
 
-- (id)copyWithZone:(NSZone*)zone
+- (id) copyWithZone: (NSZone*)zone
 {
   NSMenuItem* copy = [super copyWithZone:zone];
 
   NSDebugLog (@"menu item '%@' copy", [self title]);
   copy->representedObject = [representedObject retain];
   copy->hasSubmenu = hasSubmenu;
-  if (hasSubmenu) {											// recursive call
-      id submenu = [target copyWithZone:zone];				// to create our
-      copy->target = [submenu retain];						// submenus
-  }	
+  if (hasSubmenu)
+    {
+							// recursive call
+      id submenu = [target copyWithZone: zone];
+      copy->target = submenu;
+    }	
 
   return copy;
 }

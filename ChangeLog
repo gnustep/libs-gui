@@ -1,3 +1,20 @@
+Tue Dec 22 12:30:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+        * Source/GSServicesManager.m: ([-rebuildServicesMenu:]) release submenu
+        once it's added to main menu.a  ([-update]) Don't force a display -
+        let the autodisplay mechanism do it.
+        * Source/NSMenu.m: ([-update]) Check to see if autoupdate is enabled
+        properly and don't force a redisplay unnecessarily.
+        * Source/NSApplication.m: ([-run]) update main menu items.
+        * Source/NSMenuItem.m: Fix memory leak when copying an item with a
+        submenu - the submenu was never released.
+        * Source/NSWindow.m: Don't add window to windows menu in
+        ([-initWithContentRect:styleMask:backing:defer:screen:]).
+        ([-setMiniwindowTitle:]) Don't change windows menu if excluded.
+        ([-makeKeyAndOrderFront:]) Make main window as well as key window.
+        ([-initWithCoder:]) Don't put in windows menu automatically.
+        * Source/NSpanel.m: Implemented ([canBecomeMainWindow]) to return NO.
+
 Sat Dec 19 01:26:06 1998  Matthias Klose  <doko@cs.tu-berlin.de>
 
         * Images/Makefile.postamble: Use macro MKDIRS.

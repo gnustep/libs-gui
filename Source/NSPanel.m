@@ -98,6 +98,11 @@
   return self;
 }
 
+- (BOOL) canBecomeKeyWindow
+{
+  return NO;
+}
+
 //
 // If we receive an escape, close.
 //
