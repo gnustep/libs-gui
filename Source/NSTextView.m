@@ -87,16 +87,6 @@ TODOs:
 think hard about insertion point management
 
 
-When should the typing attributes be changed? Docs imply that normally
-you don't touch them at all, you just change the attributes of the
-selection and the typing attributes will update automagically, but if
-the selection is empty, you should change the typing attributes instead.
-
-In a non-rich-text text view, I assume that the typing attributes always
-hold the attributes of the text. Will need to look over methods that deal
-with attributes to make sure this holds.
-
-
 How should resizing work? If the text view is set to track the used part
 of the text container, when does it actually update its size? Might need
 a new internal method called from NSLayoutManager when text has changed.
@@ -1983,7 +1973,9 @@ replacementString should be the string that will replace the affected range
 (disregarding attributes), or nil if only attributes are changed.
 
 If the affected range or replacement string can't be determined, pass in
-NSNotFound for the range's location and nil for the string
+NSNotFound for the range's location and nil for the string. (Ie. even if
+you know the range, you should pass in NSNotFound so the delegate can tell
+the difference between a pure attribute change and an unknown change.)
 
 
 TODO: What if the view isn't first responder? It should be impossible for

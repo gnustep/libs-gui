@@ -1,3 +1,9 @@
+2003-02-02 02:31  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSTextView.m, Source/NSTextView_actions.m: Clarify
+	comments about user attribute changing now that I've figured out
+	a way for it to work. Rewrite the actions to match.
+
 2003-02-02  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView.m
@@ -9,7 +15,7 @@
 	[setFrame:display:]. Use [NSScreen visibleFrame] here and in
 	[stringWithSavedFrame]. Implemented [cascadeTopLeftFromPoint:].
 	Removed unused and empty methods [performHide:] and [performUnhide:].
-	
+
 2003-02-01 15:09  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSTextView.m (-shouldChangeTextInRange:replacementString:):

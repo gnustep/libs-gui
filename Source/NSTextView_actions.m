@@ -66,6 +66,23 @@ All actions from NSResponder that make sense for a text view  should be
 implemented here, but this is _not_ the place to add new actions.
 
 
+When changing attributes, the range returned by
+rangeForUserCharacterAttributeChange or rangeForUserParagraphAttributeChange
+should be used. If the location is NSNotFound, nothing should be done (in
+particular, the typing attributes should _not_ be changed). Otherwise,
+-shouldChangeTextInRange:replacementString: should be called, and if it
+returns YES, the attributes of the range and the typing attributes should be
+changed, and -didChangeText should be called.
+
+In a non-rich-text text view, the typing attributes _must_always_ hold the
+attributes of the text. Thus, the typing attributes muse always be changed
+in the same way that the attributes of the text are changed.
+
+(TODO: Will need to look over methods that deal with attributes to make
+sure this holds.)
+
+
+
 Not all user actions are here. Exceptions:
 
   -toggleRuler:
@@ -109,6 +126,10 @@ send -shouldChangeTextInRange:replacementString: or -didChangeText.
 
 -(void) _illegalMovement: (int)textMovement;
 
+-(void) _changeAttribute: (NSString *)name
+		 inRange: (NSRange)r
+		   using: (id (*)(id))func;
+
 @end
 
 
@@ -146,69 +167,177 @@ send -shouldChangeTextInRange:replacementString: or -didChangeText.
   return;
 }
 
+
+-(void) _changeAttribute: (NSString *)name
+		 inRange: (NSRange)r
+		   using: (id (*)(id))func
+{
+  unsigned int i;
+  NSRange e, r2;
+  id current, new;
+
+  if (![self shouldChangeTextInRange: r  replacementString: nil])
+    return;
+
+  [_textStorage beginEditing];
+  for (i = r.location; i < NSMaxRange(r); )
+    {
+      current = [_textStorage attribute: name
+				atIndex: i
+			 effectiveRange: &e];
+
+      r2 = NSMakeRange(i, NSMaxRange(e) - i);
+      r2 = NSIntersectionRange(r2, r);
+      i = NSMaxRange(e);
+
+      new = func(current);
+      if (new != current)
+	{
+	  if (!new)
+	    {
+	      [_textStorage removeAttribute: name
+				      range: r2];
+	    }
+	  else
+	    {
+	      [_textStorage addAttribute: name
+				   value: new
+				   range: r2];
+	    }
+	}
+    }
+  [_textStorage endEditing];
+
+  current = [_layoutManager->_typingAttributes objectForKey: name];
+  new = func(current);
+  if (new != current)
+    {
+      if (!new)
+	{
+	  [_layoutManager->_typingAttributes removeObjectForKey: name];
+	}
+      else
+	{
+	  [_layoutManager->_typingAttributes setObject: new  forKey: name];
+	}
+    }
+
+  [self didChangeText];
+}
+
 @end
 
 
 @implementation NSTextView (user_actions)
 
+/* Helpers used with _changeAttribute:inRange:using:. */
+static NSNumber *int_minus_one(NSNumber *cur)
+{
+  int value;
+
+  if (cur)
+    value = [cur intValue] - 1;
+  else
+    value = -1;
+
+  if (value)
+    return [NSNumber numberWithInt: value];
+  else
+    return nil;
+}
+
+static NSNumber *int_plus_one(NSNumber *cur)
+{
+  int value;
+
+  if (cur)
+    value = [cur intValue] + 1;
+  else
+    value = 1;
+
+  if (value)
+    return [NSNumber numberWithInt: value];
+  else
+    return nil;
+}
+
+static NSNumber *float_minus_one(NSNumber *cur)
+{
+  float value;
+
+  if (cur)
+    value = [cur floatValue] - 1;
+  else
+    value = -1;
+
+  if (value)
+    return [NSNumber numberWithFloat: value];
+  else
+    return nil;
+}
+
+static NSNumber *float_plus_one(NSNumber *cur)
+{
+  int value;
+
+  if (cur)
+    value = [cur floatValue] + 1;
+  else
+    value = 1;
+
+  if (value)
+    return [NSNumber numberWithFloat: value];
+  else
+    return nil;
+}
+
+
 -(void) subscript: (id)sender
 {
-  NSNumber *value = [_layoutManager->_typingAttributes 
-		       objectForKey: NSSuperscriptAttributeName];
-  int sValue;
-  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+  NSRange r = [self rangeForUserCharacterAttributeChange];
 
-  if (aRange.location == NSNotFound)
+  if (r.location == NSNotFound)
     return;
 
-  if (aRange.length)
-    {
-      if (![self shouldChangeTextInRange: aRange
-		 replacementString: nil])
-	return;
-      [_textStorage beginEditing];
-      [_textStorage subscriptRange: aRange];
-      [_textStorage endEditing];
-      [self didChangeText];
-    }
-
-  // Set the typing attributes
-  if (value != nil)
-    sValue = [value intValue] - 1;
-  else
-    sValue = -1;
-  [_layoutManager->_typingAttributes setObject: [NSNumber numberWithInt: sValue]
-		     forKey: NSSuperscriptAttributeName];
+  [self _changeAttribute: NSSuperscriptAttributeName
+		 inRange: r
+		   using: int_minus_one];
 }
 
 -(void) superscript: (id)sender
 {
-  NSNumber *value = [_layoutManager->_typingAttributes 
-		       objectForKey: NSSuperscriptAttributeName];
-  int sValue;
-  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+  NSRange r = [self rangeForUserCharacterAttributeChange];
 
-  if (aRange.location == NSNotFound)
+  if (r.location == NSNotFound)
     return;
 
-  if (aRange.length)
-    {
-      if (![self shouldChangeTextInRange: aRange
-		 replacementString: nil])
-	return;
-      [_textStorage beginEditing];
-      [_textStorage superscriptRange: aRange];
-      [_textStorage endEditing];
-      [self didChangeText];
-    }
+  [self _changeAttribute: NSSuperscriptAttributeName
+		 inRange: r
+		   using: int_plus_one];
+}
 
-  // Set the typing attributes
-  if (value != nil)
-    sValue = [value intValue] + 1;
-  else
-    sValue = 1;
-  [_layoutManager->_typingAttributes setObject: [NSNumber numberWithInt: sValue]
-		     forKey: NSSuperscriptAttributeName];
+-(void) lowerBaseline: (id)sender
+{
+  NSRange r = [self rangeForUserCharacterAttributeChange];
+
+  if (r.location == NSNotFound)
+    return;
+
+  [self _changeAttribute: NSSuperscriptAttributeName
+		 inRange: r
+		   using: float_plus_one];
+}
+
+-(void) raiseBaseline: (id)sender
+{
+  NSRange r = [self rangeForUserCharacterAttributeChange];
+
+  if (r.location == NSNotFound)
+    return;
+
+  [self _changeAttribute: NSBaselineOffsetAttributeName
+		 inRange: r
+		   using: float_minus_one];
 }
 
 -(void) unscript: (id)sender
@@ -218,20 +347,26 @@ send -shouldChangeTextInRange:replacementString: or -didChangeText.
   if (aRange.location == NSNotFound)
     return;
 
+  if (![self shouldChangeTextInRange: aRange
+		   replacementString: nil])
+    return;
+
   if (aRange.length)
     {
-      if (![self shouldChangeTextInRange: aRange
-		 replacementString: nil])
-	return;
       [_textStorage beginEditing];
-      [_textStorage unscriptRange: aRange];
+      [_textStorage removeAttribute: NSSuperscriptAttributeName
+			      range: aRange];
+      [_textStorage removeAttribute: NSBaselineOffsetAttributeName
+			      range: aRange];
       [_textStorage endEditing];
-      [self didChangeText];
     }
 
-  // Set the typing attributes
   [_layoutManager->_typingAttributes removeObjectForKey: NSSuperscriptAttributeName];
+  [_layoutManager->_typingAttributes removeObjectForKey: NSBaselineOffsetAttributeName];
+
+  [self didChangeText];
 }
+
 
 -(void) underline: (id)sender
 {
@@ -264,81 +399,20 @@ send -shouldChangeTextInRange:replacementString: or -didChangeText.
       forKey: NSUnderlineStyleAttributeName];
 }
 
+
 -(void) useStandardKerning: (id)sender
 {
-  // rekern for selected range if rich text, else rekern entire document.
   NSRange aRange = [self rangeForUserCharacterAttributeChange];
 
   if (aRange.location == NSNotFound)
     return;
-  
   if (![self shouldChangeTextInRange: aRange
 	    replacementString: nil])
     return;
-  [_textStorage beginEditing];
+
   [_textStorage removeAttribute: NSKernAttributeName
 		range: aRange];
-  [_textStorage endEditing];
-  [self didChangeText];
-}
-
--(void) lowerBaseline: (id)sender
-{
-  id value;
-  float sValue;
-  NSRange effRange;
-  NSRange aRange = [self rangeForUserCharacterAttributeChange];
-
-  if (aRange.location == NSNotFound)
-    return;
-
-  if (![self shouldChangeTextInRange: aRange
-	    replacementString: nil])
-    return;
-  [_textStorage beginEditing];
-  // We take the value form the first character and use it for the whole range
-  value = [_textStorage attribute: NSBaselineOffsetAttributeName
-			atIndex: aRange.location
-			effectiveRange: &effRange];
-
-  if (value != nil)
-    sValue = [value floatValue] + 1.0;
-  else
-    sValue = 1.0;
-
-  [_textStorage addAttribute: NSBaselineOffsetAttributeName
-		value: [NSNumber numberWithFloat: sValue]
-		range: aRange];
-}
-
--(void) raiseBaseline: (id)sender
-{
-  id value;
-  float sValue;
-  NSRange effRange;
-  NSRange aRange = [self rangeForUserCharacterAttributeChange];
-
-  if (aRange.location == NSNotFound)
-    return;
-
-  if (![self shouldChangeTextInRange: aRange
-	    replacementString: nil])
-    return;
-  [_textStorage beginEditing];
-  // We take the value form the first character and use it for the whole range
-  value = [_textStorage attribute: NSBaselineOffsetAttributeName
-			atIndex: aRange.location
-			effectiveRange: &effRange];
-
-  if (value != nil)
-    sValue = [value floatValue] - 1.0;
-  else
-    sValue = -1.0;
-
-  [_textStorage addAttribute: NSBaselineOffsetAttributeName
-		value: [NSNumber numberWithFloat: sValue]
-		range: aRange];
-  [_textStorage endEditing];
+  [_layoutManager->_typingAttributes removeObjectForKey: NSKernAttributeName];
   [self didChangeText];
 }
 
@@ -348,54 +422,40 @@ send -shouldChangeTextInRange:replacementString: or -didChangeText.
 
   if (aRange.location == NSNotFound)
     return;
-  
   if (![self shouldChangeTextInRange: aRange
 	    replacementString: nil])
     return;
-  [_textStorage beginEditing];
+
   [_textStorage addAttribute: NSKernAttributeName
 		value: [NSNumber numberWithFloat: 0.0]
 		range: aRange];
-  [_textStorage endEditing];
+  [_layoutManager->_typingAttributes setObject: [NSNumber numberWithFloat: 0.0]
+    forKey: NSKernAttributeName];
   [self didChangeText];
 }
 
 -(void) loosenKerning: (id)sender
 {
-  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+  NSRange r = [self rangeForUserCharacterAttributeChange];
 
-  if (aRange.location == NSNotFound)
+  if (r.location == NSNotFound)
     return;
 
-  if (![self shouldChangeTextInRange: aRange
-	    replacementString: nil])
-    return;
-  [_textStorage beginEditing];
-  // FIXME: Should use the current kerning and work relative to point size
-  [_textStorage addAttribute: NSKernAttributeName
-		value: [NSNumber numberWithFloat: 1.0]
-		range: aRange];
-  [_textStorage endEditing];
-  [self didChangeText];
+  [self _changeAttribute: NSKernAttributeName
+		 inRange: r
+		   using: float_plus_one];
 }
 
 -(void) tightenKerning: (id)sender
 {
-  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+  NSRange r = [self rangeForUserCharacterAttributeChange];
 
-  if (aRange.location == NSNotFound)
+  if (r.location == NSNotFound)
     return;
 
-  if (![self shouldChangeTextInRange: aRange
-	    replacementString: nil])
-    return;
-  [_textStorage beginEditing];
-  // FIXME: Should use the current kerning and work relative to point size
-  [_textStorage addAttribute: NSKernAttributeName
-		value: [NSNumber numberWithFloat: -1.0]
-		range: aRange];
-  [_textStorage endEditing];
-  [self didChangeText];
+  [self _changeAttribute: NSKernAttributeName
+		 inRange: r
+		   using: float_minus_one];
 }
 
 -(void) useStandardLigatures: (id)sender
@@ -408,11 +468,11 @@ send -shouldChangeTextInRange:replacementString: or -didChangeText.
   if (![self shouldChangeTextInRange: aRange
 	    replacementString: nil])
     return;
-  [_textStorage beginEditing];
   [_textStorage addAttribute: NSLigatureAttributeName
 		value: [NSNumber numberWithInt: 1]
 		range: aRange];
-  [_textStorage endEditing];
+  [_layoutManager->_typingAttributes setObject: [NSNumber numberWithInt: 1]
+    forKey: NSLigatureAttributeName];
   [self didChangeText];
 }
 
@@ -426,11 +486,10 @@ send -shouldChangeTextInRange:replacementString: or -didChangeText.
   if (![self shouldChangeTextInRange: aRange
 	    replacementString: nil])
     return;
-  [_textStorage beginEditing];
-  [_textStorage addAttribute: NSLigatureAttributeName
-		value: [NSNumber numberWithInt: 0]
+    
+  [_textStorage removeAttribute: NSLigatureAttributeName
 		range: aRange];
-  [_textStorage endEditing];
+  [_layoutManager->_typingAttributes removeObjectForKey: NSLigatureAttributeName];
   [self didChangeText];
 }
 
@@ -444,11 +503,11 @@ send -shouldChangeTextInRange:replacementString: or -didChangeText.
   if (![self shouldChangeTextInRange: aRange
 	    replacementString: nil])
     return;
-  [_textStorage beginEditing];
   [_textStorage addAttribute: NSLigatureAttributeName
 		value: [NSNumber numberWithInt: 2]
 		range: aRange];
-  [_textStorage endEditing];
+  [_layoutManager->_typingAttributes setObject: [NSNumber numberWithInt: 2]
+    forKey: NSLigatureAttributeName];
   [self didChangeText];
 }
 
@@ -458,6 +517,7 @@ send -shouldChangeTextInRange:replacementString: or -didChangeText.
   NSLog(@"Method %s is not implemented for class %s",
 	"toggleTraditionalCharacterShape:", "NSTextView");
 }
+
 
 -(void) insertNewline: (id)sender
 {
@@ -491,6 +551,7 @@ send -shouldChangeTextInRange:replacementString: or -didChangeText.
 
   //[self insertText: @"\t"];
 }
+
 
 -(void) deleteForward: (id)sender
 {
@@ -576,6 +637,7 @@ send -shouldChangeTextInRange:replacementString: or -didChangeText.
      of deleted range */
   [self setSelectedRange: NSMakeRange (range.location, 0)];
 }
+
 
 -(void) moveUp: (id)sender
 {
@@ -1109,6 +1171,7 @@ send -shouldChangeTextInRange:replacementString: or -didChangeText.
 #endif
 }
 
+
 -(void) scrollLineDown: (id)sender
 {
   // TODO
@@ -1146,7 +1209,8 @@ send -shouldChangeTextInRange:replacementString: or -didChangeText.
     {
       NSRange aRange;
       NSRect ignored;
-      
+
+      /* TODO: broken. assumes glyph==character */
       ignored = [_layoutManager lineFragmentRectForGlyphAtIndex: 
 				  _layoutManager->_selected_range.location
 				effectiveRange: &aRange];
@@ -1154,6 +1218,7 @@ send -shouldChangeTextInRange:replacementString: or -didChangeText.
       [self setSelectedRange: aRange];
     }
 }
+
 
 /* The following method is bound to 'Control-t', and must work like
  * pressing 'Control-t' inside Emacs.  For example, say that I type
@@ -1201,6 +1266,7 @@ insertion point. (see also: miswart)
       [self didChangeText];
     }
 }
+
 
 -(void) delete: (id)sender
 {
