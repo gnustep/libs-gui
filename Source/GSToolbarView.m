@@ -130,6 +130,7 @@ static void initSystemExtensionsColors(void)
  */
 @interface GSToolbar (GNUstepPrivate)
 - (void) _build;
+- (void) _toolbarViewWillMoveToSuperview: (NSView *)newSuperview;
 
 // Accessors
 - (void) _setToolbarView: (GSToolbarView *)toolbarView;
@@ -158,6 +159,8 @@ static void initSystemExtensionsColors(void)
 - (NSArray *) _visibleBackViews;
 - (void) _setSizeMode: (NSToolbarSizeMode)sizeMode;
 - (NSToolbarSizeMode) _sizeMode;
+- (BOOL) _usesStandardBackgroundColor;
+- (void) _setUsesStandardBackgroundColor: (BOOL)standard;
 - (void) _setWillBeVisible: (BOOL)willBeVisible;
 - (BOOL) _willBeVisible;
 @end
@@ -172,8 +175,8 @@ static void initSystemExtensionsColors(void)
 // Accessors 
 - (NSMenu *) returnMenu; 
 
-// this method cannot be called "menu" otherwise it would override NSResponder
-// method with the same name
+// This method cannot be called "menu" otherwise it would override NSResponder
+// method with the same name.
 
 - (void) layout;
 - (void) setToolbar: (GSToolbar *)toolbar; 
@@ -185,7 +188,7 @@ static void initSystemExtensionsColors(void)
   NSImage *image = [NSImage imageNamed: @"common_ToolbarClippedItemsMark"];
   
   if ((self = [super initWithFrame: NSMakeRect(0, 0, _ClippedItemsViewWidth, 
-    100)]) != nil) // the correct height will be set by the layout method
+    100)]) != nil) // The correct height will be set by the layout method
     {
       [self setBordered: NO];
       [[self cell] setHighlightsBy: NSChangeGrayCellMask 
@@ -193,17 +196,11 @@ static void initSystemExtensionsColors(void)
       [self setAutoresizingMask: NSViewNotSizable];
       [self setImagePosition: NSImageOnly];
       [image setScalesWhenResized: YES];
-      //[image setSize: NSMakeSize(20, 20)];
+      // [image setSize: NSMakeSize(20, 20)];
       [self setImage: image];
       return self;
     }
   return nil;
-}
-
-- (void) dealloc
-{
-  RELEASE(_toolbar);
-  [super dealloc];
 }
 
 - (void) layout {
@@ -235,7 +232,7 @@ static void initSystemExtensionsColors(void)
 
 - (NSMenu *) returnMenu 
 {
-  // this method cannot be called "menu" otherwise it would
+  // This method cannot be called "menu" otherwise it would
   // override NSResponder method with the same name
   NSMenu *menu = [[NSMenu alloc] initWithTitle: @""];
   NSEnumerator *e;
@@ -269,7 +266,8 @@ static void initSystemExtensionsColors(void)
 
 - (void) setToolbar: (GSToolbar *)toolbar
 {
-  ASSIGN(_toolbar, toolbar);
+  // Don't do an ASSIGN here, the toolbar view retains us.
+  _toolbar = toolbar;
 }
 @end
 
@@ -318,7 +316,7 @@ static void initSystemExtensionsColors(void)
 	    toolbarViewHeight = _ToolbarViewSmallHeight;
 	    break;
 	  default:
-	    // raise exception
+	    // Raise exception
 	    toolbarViewHeight = 0;
 	}
   
@@ -356,8 +354,17 @@ static void initSystemExtensionsColors(void)
   return nil;
 }
 
+- (id) retain
+{
+  return [super retain];
+}
+
 - (void) dealloc
 {
+  NSLog(@"Toolbar view dealloc");
+  
+  [[NSNotificationCenter defaultCenter] removeObserver: self];
+  
   RELEASE(_toolbar);
   RELEASE(_clippedItemsMark);
   RELEASE(_clipView);
@@ -427,6 +434,14 @@ static void initSystemExtensionsColors(void)
   [self _reload];
 }
 
+- (void) viewWillMoveToSuperview: (NSView *)newSuperview
+{ 
+  [super viewWillMoveToSuperview: newSuperview];
+  
+  [_toolbar _toolbarViewWillMoveToSuperview: newSuperview]; 
+  // Allow to update the validation system which is window specific 
+}
+
 - (void) viewDidMoveToWindow
 { 
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
@@ -437,18 +452,8 @@ static void initSystemExtensionsColors(void)
   
   [nc removeObserver: self name: NSWindowDidResizeNotification object: nil];
   [nc addObserver: self selector: @selector(windowDidResize:) 
-                            name: NSWindowDidResizeNotification object: _window];
-  
-  [nc postNotificationName: @"GSViewDidMoveToWindow" object: self];
-}
-
-- (void) viewWillMoveToWindow: (NSWindow *)newWindow
-{
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-  
-  [super viewWillMoveToWindow: newWindow];
-  
-  [nc postNotificationName: @"GSViewWillMoveToWindow" object: self];
+                            name: NSWindowDidResizeNotification 
+			  object: _window];
 }
 
 // More methods... Accessors
@@ -484,7 +489,7 @@ static void initSystemExtensionsColors(void)
         rect.size.height = _ToolbarViewSmallHeight;
 	break;
       default:
-	; // invalid
+	; // Invalid
     }
   
   // Take in account the border
@@ -611,7 +616,7 @@ static void initSystemExtensionsColors(void)
   // We add each backView associated with an added toolbar item
   
   e = [backViews objectEnumerator];
- subviews = [_clipView subviews];
+  subviews = [_clipView subviews];
  
   while ((backView = [e nextObject]) != nil) 
   {
@@ -679,7 +684,7 @@ static void initSystemExtensionsColors(void)
 - (void) _setToolbar: (GSToolbar *)toolbar
 {
   if ([toolbar sizeMode] != _sizeMode)
-    ; // FIXME : raise exception here
+    ; // FIXME: Raise exception here
   
   [toolbar _setToolbarView: self]; // We set the toolbar view on the new toolbar
   [_toolbar _setToolbarView: nil]; // We unset the toolbar view from the previous toolbar    
@@ -763,8 +768,9 @@ static void initSystemExtensionsColors(void)
   return height;
 }
 
-// Will return the visible (not clipped) back views in the toolbar view even when the toolbar is not visible
-// May be should be renamed _notClippedBackViews method
+// Will return the visible (not clipped) back views in the toolbar view even
+// when the toolbar is not visible .
+// May be should be renamed _notClippedBackViews method.
 - (NSArray *) _visibleBackViews 
 {
   NSArray *items = [_toolbar items];
@@ -812,6 +818,11 @@ static void initSystemExtensionsColors(void)
 - (void) _setWillBeVisible: (BOOL)willBeVisible
 {
   _willBeVisible = willBeVisible;
+}
+
+- (BOOL) _usesStandardBackgroundColor
+{
+  return [BackgroundColor isEqual: [self standardBackgroundColor]];
 }
 
 - (void) _setUsesStandardBackgroundColor: (BOOL)standard

@@ -30,6 +30,7 @@
 
 #include <Foundation/NSObject.h>
 #include <Foundation/NSArray.h>
+#include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSNotification.h>
@@ -137,7 +138,8 @@ static const int current_version = 1;
 
 - (void) dealloc
 {
-
+  // NSLog(@"Dummy NSToolbar dealloc");
+  
   [super dealloc];
 }
 
@@ -188,7 +190,7 @@ static const int current_version = 1;
     { \
       if (toolbar != self && [self isMemberOfClass: [self class]]) \
         [toolbar signature]; \
-    }
+    } \
 
 - (void) _setDisplayMode: (NSToolbarDisplayMode)displayMode 
                broadcast: (BOOL)broadcast
@@ -247,40 +249,43 @@ static const int current_version = 1;
       }
 }
 
-// handle notifications
+// Notifications
 
 - (void) handleNotification: (NSNotification *)notification
 {
-  NSMutableArray *toolbars = [GSToolbar _toolbars];
-
   // We currently only worry about when our window closes.
-  // It's necessary to remove the toolbar which belongs to this
-  // window from the master list, so that it doesn't cause a
-  // memory leak.
-  [toolbars removeObjectIdenticalTo: self];
+  // It's necessary to set the _window ivar in master list to nil when it is
+  // closed, so that it doesn't cause a segmentation fault when we looks at
+  // _window ivar with KVC in -[NSWindow(Toolbar) toolbar].
+  [self _setWindow: nil];
+  
+  if ([_toolbarView superview] == nil)
+    RELEASE(_toolbarView); 
+  // We release the toolbar view in such case because NSWindow(Toolbar) retains
+  // it when its superview value is nil.
 }
 
 // Private Accessors
 
-- (void)_setWindow: (NSWindow *)window 
+- (void) _setWindow: (NSWindow *)window 
 {
-  if(_window != window)
+  if (_window != window)
     {
-      if(_window)
-	{
-	  [nc removeObserver: _window];
-	}
+      if (_window)
+        {
+          [nc removeObserver: self];
+        }
 
-      if(window)
-	{
-	  // watch for this window closing....
-	  [nc addObserver: self
-	      selector: @selector(handleNotification:)
-	      name: NSWindowWillCloseNotification
-	      object: window];
-	}
+      if (window)
+        {
+          // Watch for this window closing....
+          [nc addObserver: self
+              selector: @selector(handleNotification:)
+              name: NSWindowWillCloseNotification
+              object: window];
+        }
     }
-
+    
   // We don't do an ASSIGN because the toolbar view retains us.
   // call [NSWindow(Toolbar) setToolbar:] to set the toolbar window 
   _window = window; 

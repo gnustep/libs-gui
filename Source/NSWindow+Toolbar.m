@@ -27,7 +27,7 @@
 
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
-
+#include <Foundation/NSAutoreleasePool.h>
 #include "AppKit/NSWindow+Toolbar.h"
 #include "AppKit/NSView.h"
 #include "AppKit/NSToolbar.h"
@@ -98,7 +98,11 @@
   
   if (toolbar != nil && [toolbar isVisible])
   {
-    NSArray *subviews = [_contentView subviews];
+    NSArray *subviews = [_contentView subviews]; 
+    // Take in account this method call returns an array which is an
+    // autoreleased copy.
+    // By side effect, this increments the toolbar view retain count until the
+    // autorelease pool is cleared.
     NSView *subview;
     int i, n = [subviews count];
     GSToolbarView *toolbarView = [toolbar _toolbarView];
@@ -140,7 +144,7 @@
   return (index == NSNotFound) ? nil : [toolbars objectAtIndex: index];
 }
 
-// user oriented method
+// User oriented method
 - (void) setContentViewWithoutToolbar: (NSView *)contentViewWithoutToolbar 
 {
   NSToolbar *toolbar = [self toolbar];
@@ -160,7 +164,13 @@
 - (void) setToolbar: (NSToolbar*)toolbar
 {
   NSToolbar *lastToolbar = [self toolbar];
-  GSToolbarView *toolbarView = nil;											  
+  GSToolbarView *toolbarView = [toolbar _toolbarView];
+  
+  if (toolbarView != nil)
+    {
+      NSLog(@"Error: the new toolbar is still owned by a toolbar view");
+      return;
+    }										  
   
   if (lastToolbar != nil)
   {
@@ -178,18 +188,16 @@
     return;
   }
   
-  // -----
-  // ELSE
-  // -----
+  /*
+   * Else we do
+   */  
   
   // The window want to know which toolbar is binded
   
   [toolbar _setWindow : self];
   
-  // Instantiate or retrieve the toolbar view (we create this view when the toolbar hasn't such
-  // view)...
+  // Instantiate the toolbar view
   
-  toolbarView = [toolbar _toolbarView];
   if (toolbarView == nil)
   {
     toolbarView = [[GSToolbarView alloc] initWithFrame: NSMakeRect(0, 0, 
@@ -274,10 +282,10 @@
       contentViewWithoutToolbar = _contentView;
     
       // Switch the content view
-  
+      
       RETAIN(contentViewWithoutToolbar);
       [self setContentView: 
-        [[NSView alloc] initWithFrame: [_contentView frame]]];
+        AUTORELEASE([[NSView alloc] initWithFrame: [_contentView frame]])];
     
       // Resize the window
 
@@ -298,9 +306,9 @@
 	contentViewWithoutToolbarFrame.size.height, 
         contentViewWithoutToolbarFrame.size.width, 
 	newToolbarViewHeight)];
-
       [_contentView addSubview: toolbarView];
-    
+      RELEASE(toolbarView);
+      
       // Insert the previous content view 
 
       /* We want contentViewWithoutToolbarFrame at the origin of our new
@@ -319,7 +327,7 @@
       contentViewWithoutToolbar = [self contentViewWithoutToolbar];
     
       // Unplug the toolbar view
-    
+      RETAIN(toolbarView);
       [toolbarView removeFromSuperview];
     
       // Resize the window
@@ -339,9 +347,10 @@
       // Switch the content view
 
       RETAIN(contentViewWithoutToolbar); 
-      // because setContentView: will release the parent view (aka _contentView) and 
+      // Because setContentView: will release the parent view (aka _contentView) and 
       // their subviews and actually contentViewWithoutToolbar is a subview of _contentView
 
+      [contentViewWithoutToolbar removeFromSuperviewWithoutNeedingDisplay];
       [self setContentView: contentViewWithoutToolbar];
 
       RELEASE(contentViewWithoutToolbar);

@@ -1,3 +1,34 @@
+2004-07-07  Quentin Mathe <qmathe@club-internet.fr>
+        
+	* Source/GSToolbar.m: Fixed several segmentation faults which could
+	occur when windows with a toolbar have been closed and new similar
+	windows are initialized (bug #9535), rewritten validation support to
+	be more clearer and efficient, and the toolbar notifications now
+	correctly bundles the toolbar items in the notification dictionary
+	(Patch by Ludovic Marcotte).
+	* Source/GSToolbarView: 
+	* Source/NSToolbar.m:
+	* Source/NSWindow+Toolbar.m:
+	Related changes and lot of memory leaks fixed permitting to have now
+	the toolbar system properly deallocated when the toolbar is not anymore
+	retained by the user and the toolbar view.
+	Note: In order to observe the toolbar system being deallocated when you close
+	a window, you need to have the option "Window released when closed"
+	checked.
+	Actual retain logic is strictly : 
+	- Superview in the view hierachy retains toolbar view
+	- Toolbar view retains toolbar
+	- Toolbar view retains toolbar items view
+	- Toolbar retains toolbar items
+	And when a toolbar is based on NSToolbar class :
+	- Windows retains toolbar view.
+	* Source/NSView.m: Added a missing method call -viewWillMoveToSuperview:
+	in -removeSubview: method (this missing method is used by the toolbar
+	view).
+	* Headers/Additions/GNUstepGUI/GSToolbar.h:
+	* Headers/AppKit/NSToolbar.h:
+	Moved the _window ivar from GSToolbar class to NSToolbar class.
+
 2004-07-07 01:23  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSWindow+Toolbar.m: Properly convert window frames to

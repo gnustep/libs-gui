@@ -620,6 +620,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   [self willRemoveSubview: aView];
   aView->_super_view = nil;
   [aView viewWillMoveToWindow: nil];
+  [aView viewWillMoveToSuperview: nil];
   [aView setNextResponder: nil];
   RETAIN(aView);
   [_sub_views removeObjectIdenticalTo: aView];

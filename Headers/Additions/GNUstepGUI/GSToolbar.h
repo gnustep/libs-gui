@@ -79,7 +79,6 @@ APPKIT_EXPORT NSString *NSToolbarWillAddItemNotification;
   NSString *_selectedItemIdentifier;
   NSMutableArray *_items;
   GSToolbarView *_toolbarView;
-  NSWindow *_window;
   BOOL _build;
 }
 
