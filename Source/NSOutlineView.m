@@ -1327,7 +1327,7 @@ static int _levelForItem(NSOutlineView *outline,
 	item = nil;
       else
 	item = [self itemAtRow: i];
-      
+
       childIndex = j;
 
 
@@ -1339,6 +1339,14 @@ static int _levelForItem(NSOutlineView *outline,
     }
   else
     return NO;
+}
+
+- (BOOL) prepareForDragOperation: (id<NSDraggingInfo>)sender
+{
+  [self setNeedsDisplayInRect: oldDraggingRect];
+  [self displayIfNeeded];
+
+  return YES;
 }
 
 @end /* implementation of NSOutlineView */
