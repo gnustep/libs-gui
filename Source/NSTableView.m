@@ -41,11 +41,23 @@
 #include <AppKit/NSWindow.h>
 #include <AppKit/PSOperators.h>
 #include <AppKit/NSCachedImageRep.h>
+#include <AppKit/NSPasteboard.h>
+#include <AppKit/NSDragging.h>
+#include <AppKit/NSCustomImageRep.h>
 
 #include <math.h>
 static NSNotificationCenter *nc = nil;
 
 static const int currentVersion = 2;
+
+static NSRect oldDraggingRect;
+static int oldDropRow;
+static NSTableViewDropOperation oldDropOperation;
+static NSTableViewDropOperation currentDropOperation;
+static int currentDropRow;
+static int lastQuarterPosition;
+static unsigned currentDragOperation;
+
 
 #define ALLOWS_MULTIPLE (1)
 #define ALLOWS_EMPTY (1 << 1)
@@ -65,6 +77,10 @@ static const int currentVersion = 2;
 - (BOOL) _shouldSelectionChange;
 - (BOOL) _shouldEditTableColumn: (NSTableColumn *)tableColumn
 			    row: (int) rowIndex;
+
+- (BOOL) _writeRows: (NSArray *) rows
+       toPasteboard: (NSPasteboard *)pboard;
+- (BOOL) _isDraggingSource;
 @end
 
 
@@ -3808,7 +3824,7 @@ byExtendingSelection: (BOOL)flag
   if (_allowsEmptySelection == NO)
     return;
 
-  if ([self _shouldSelectionChange])
+  if ([self _shouldSelectionChange] == NO)
     {
       return;
     }
@@ -4106,6 +4122,7 @@ byExtendingSelection: (BOOL)flag
 - (void) mouseDown: (NSEvent *)theEvent
 {
   NSPoint location = [theEvent locationInWindow];
+  NSPoint initialLocation = [theEvent locationInWindow];
   NSTableColumn *tb;
   int clickCount;
   BOOL shouldEdit;
@@ -4151,6 +4168,7 @@ byExtendingSelection: (BOOL)flag
       id delegateIfItTakesPart;
       BOOL mouseUp = NO;
       BOOL done = NO;
+      BOOL draggingPossible = [self _isDraggingSource];
       NSRect visibleRect = [self convertRect: [self visibleRect]
 				 toView: nil];
       float minYVisible = NSMinY (visibleRect);
@@ -4308,8 +4326,49 @@ byExtendingSelection: (BOOL)flag
 	    case NSLeftMouseDown:
 	    case NSLeftMouseDragged:
 	      mouseLocationWin = [lastEvent locationInWindow]; 
-	      if ((mouseLocationWin.y > minYVisible) 
-		  && (mouseLocationWin.y < maxYVisible))
+	      if (draggingPossible == YES)
+		{
+		  //		  NSLog(@"draggingPossible");
+		  if (mouseLocationWin.y - initialLocation.y > 2
+		      || mouseLocationWin.y - initialLocation.y < -2)
+		    {
+		      draggingPossible = NO;
+		    }
+		  else if (mouseLocationWin.x - initialLocation.x >=4
+			   || mouseLocationWin.x - initialLocation.x <= -4)
+		    {
+		      NSPasteboard *pboard;
+		      //		      NSLog(@"start dragging");
+
+		      pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
+		      
+		      if ([self _writeRows: _selectedRows
+				toPasteboard: pboard] == YES)
+			{
+			  NSPoint p = NSZeroPoint;
+			  NSImage *dragImage =
+			    [self dragImageForRows: _selectedRows
+				  event: theEvent
+				  dragImageOffset: &p];
+
+			  [self dragImage: dragImage
+				at: NSZeroPoint
+				offset: NSMakeSize(0, 0)
+				event: theEvent
+				pasteboard: pboard
+				source: self
+				slideBack: YES];
+			  return;
+			}
+		      else
+			{
+			  //			  NSLog(@"dragging refused");
+			  draggingPossible = NO;
+			}
+		    }
+		}
+	      else if ((mouseLocationWin.y > minYVisible) 
+		       && (mouseLocationWin.y < maxYVisible))
 		// mouse dragged within table
 		{
 		  NSPoint mouseLocationView;
@@ -4372,7 +4431,10 @@ byExtendingSelection: (BOOL)flag
 		}
 	      break;
 	    case NSPeriodic:
-	      if (mouseUp == NO) // mouse below the table
+	      if (draggingPossible)
+		{
+		}
+	      else if (mouseUp == NO) // mouse below the table
 		{
 		  if (_currentRow >= _numberOfRows - 1)
 		    {
@@ -6187,18 +6249,36 @@ byExtendingSelection: (BOOL)flag
 			event: (NSEvent*)dragEvent
 	      dragImageOffset: (NSPoint*)dragImageOffset
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"dragImageForRows:event:dragImageOffset:", "NSTableView");
-  return nil;
+
+  NSImage *dragImage = [[NSImage alloc]
+			 initWithSize: NSMakeSize(8, 8)];
+
+  return dragImage;
 }
 
 - (void) setDropRow: (int)row
       dropOperation: (NSTableViewDropOperation)operation
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"setDropRow:dropOperation:", "NSTableView");
+  
+  if (row < 0)
+    {
+      currentDropRow = 0;
+    }
+  else if (operation == NSTableViewDropOn)
+    {
+      if (row >= _numberOfRows)
+	currentDropRow = _numberOfRows;
+    }
+  else if (row > _numberOfRows)
+    {
+      currentDropRow = _numberOfRows;
+    }
+  else
+    {
+      currentDropRow = row;
+    }
+  
+  currentDropOperation = operation;
 }
 
 - (void) setVerticalMotionCanBeginDrag: (BOOL)flag
@@ -6657,6 +6737,179 @@ byExtendingSelection: (BOOL)flag
 }
 
 
+- (unsigned int) draggingSourceOperationMaskForLocal: (BOOL) flag
+{
+  return (NSDragOperationAll);
+}
+
+
+- (unsigned int) draggingEntered: (id <NSDraggingInfo>) sender
+{
+  NSLog(@"draggingEntered");
+  currentDropRow = -1;
+  currentDropOperation = -1;
+  oldDropRow = -1;
+  lastQuarterPosition = -1;
+  oldDraggingRect = NSMakeRect(0.,0., 0., 0.);
+  currentDragOperation = NSDragOperationAll;
+  return currentDragOperation;
+}
+
+
+- (void) draggingExited: (id <NSDraggingInfo>) sender
+{
+  [self setNeedsDisplayInRect: oldDraggingRect];
+  [self displayIfNeeded];
+}
+
+- (unsigned int) draggingUpdated: (id <NSDraggingInfo>) sender
+{
+  NSPoint p = [sender draggingLocation];
+  NSRect newRect;
+  NSTableViewDropOperation operation = NSTableViewDropAbove;
+  int row;
+  p = [self convertPoint: p fromView: nil];
+  int quarterPosition = (p.y - _bounds.origin.y) / _rowHeight * 4.;
+  unsigned dragOperation;
+
+
+  if ((quarterPosition - oldDropRow * 4 <= 2) &&
+      (quarterPosition - oldDropRow * 4 >= -3) )
+    {
+      NSLog(@"nothing to do");
+      row = oldDropRow;
+    }
+  else
+    {
+      row = (quarterPosition + 2) / 4;
+    }
+
+  currentDropRow = row;
+  currentDropOperation = NSTableViewDropAbove;
+
+  dragOperation = [sender draggingSourceOperationMask];
+
+  if ((lastQuarterPosition != quarterPosition)
+      || (currentDragOperation != dragOperation))
+    {
+      currentDragOperation = dragOperation;
+      if ([_dataSource respondsToSelector: 
+			 @selector(tableView:validateDrop:proposedRow:proposedDropOperation:)])
+	{
+	  currentDragOperation = [_dataSource tableView: self
+					      validateDrop: sender
+					      proposedRow: currentDropRow
+					      proposedDropOperation: NSTableViewDropAbove];
+	}
+      
+      lastQuarterPosition = quarterPosition;
+      
+      if ((currentDropRow != oldDropRow) || (currentDropOperation != oldDropOperation))
+	{
+	  [self lockFocus];
+	  
+	  [self setNeedsDisplayInRect: oldDraggingRect];
+	  [self displayIfNeeded];
+	  
+	  [[NSColor darkGrayColor] set];
+      
+	  if (currentDropOperation == NSTableViewDropAbove)
+	    {
+	      if (currentDropRow == 0)
+		{
+		  newRect = NSMakeRect([self visibleRect].origin.x,
+				       currentDropRow * _rowHeight,
+				       [self visibleRect].size.width,
+				       3);
+		}
+	      else if (currentDropRow == _numberOfRows)
+		{
+		  newRect = NSMakeRect([self visibleRect].origin.x,
+				       currentDropRow * _rowHeight - 2,
+				       [self visibleRect].size.width,
+				       3);
+		}
+	      else
+		{
+		  newRect = NSMakeRect([self visibleRect].origin.x,
+				       currentDropRow * _rowHeight - 1,
+				       [self visibleRect].size.width,
+				       3);
+		}
+	      NSRectFill(newRect);
+	      oldDraggingRect = newRect;
+	    }
+	  else
+	    {
+	      newRect = [self frameOfCellAtColumn: 0
+			      row: currentDropRow];
+	      newRect.origin.x = _bounds.origin.x;
+	      newRect.size.width = _bounds.size.width + 2;
+	      newRect.origin.x -= _intercellSpacing.height / 2;
+	      newRect.size.height += _intercellSpacing.height;
+	      oldDraggingRect = newRect;
+	      oldDraggingRect.origin.y -= 1;
+	      oldDraggingRect.size.height += 2;
+
+	      newRect.size.height -= 1;
+
+	      newRect.origin.x += 3;
+	      newRect.size.width -= 3;
+		
+	      if (_drawsGrid)
+		{
+		  //newRect.origin.y += 1;
+		  //newRect.origin.x += 1;
+		  //newRect.size.width -= 2;
+		  newRect.size.height += 1;
+		}
+	      else
+		{
+		}
+
+	      NSFrameRectWithWidth(newRect, 2.0);
+	      //	      NSRectFill(newRect);
+
+	    }
+	  [_window flushWindow];
+	  
+	  [self unlockFocus];
+	  
+	  oldDropRow = currentDropRow;
+	  oldDropOperation = currentDropOperation;
+	}
+    }
+
+
+  return dragOperation;
+}
+
+- (BOOL) performDragOperation: (id<NSDraggingInfo>)sender
+{
+  NSLog(@"performDragOperation");
+  if ([_dataSource respondsToSelector: @selector(tableView:acceptDrop:row:dropOperation:)])
+    {
+      return [_dataSource tableView: self
+			  acceptDrop: sender
+			  row: currentDropRow
+			  dropOperation: currentDropOperation];
+    }
+  else
+    return NO;
+}
+- (BOOL) prepareForDragOperation: (id<NSDraggingInfo>)sender
+{
+  [self setNeedsDisplayInRect: oldDraggingRect];
+  [self displayIfNeeded];
+
+  return YES;
+}
+
+- (void) concludeDragOperation:(id <NSDraggingInfo>)sender
+{
+}
+
+
 /*
  * (NotificationRequestMethods)
  */
@@ -6757,4 +7010,24 @@ byExtendingSelection: (BOOL)flag
   return YES;
 }
 
+- (BOOL) _isDraggingSource
+{
+  return [_dataSource respondsToSelector:
+			@selector(tableView:writeRows:toPasteboard:)];
+}
+
+- (BOOL) _writeRows: (NSArray *) rows
+       toPasteboard: (NSPasteboard *)pboard
+{
+  if ([_dataSource respondsToSelector:
+		     @selector(tableView:writeRows:toPasteboard:)] == YES)
+    {
+      return [_dataSource tableView: self
+			  writeRows: rows
+			  toPasteboard: pboard];
+    }
+  return NO;
+}
+
 @end /* implementation of NSTableView */
+
