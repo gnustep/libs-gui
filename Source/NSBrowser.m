@@ -348,41 +348,41 @@ static NSTextFieldCell *titleCell;
 {
   id matrix;
   id cell;
+  BOOL didSelect;
 
-  if (column < 0 || column > _lastColumnLoaded)
-    return;
-
-  if (!(matrix = [self matrixInColumn: column]))
-    return;
-
-  if ((cell = [matrix cellAtRow: row column: 0]))
+  if ((matrix = [self matrixInColumn: column]) == nil)
     {
-      BOOL didSelect;
+      return;
+    }
 
-      if (column < _lastColumnLoaded)
-	{
-	  [self setLastColumn: column];
-	}
-      if (_allowsMultipleSelection == NO)
-	[matrix deselectAllCells];
+  if ((cell = [matrix cellAtRow: row column: 0]) == nil)
+    {
+      return;
+    }
 
+  [self setLastColumn: column];
+  
+  if (_allowsMultipleSelection == NO)
+    {
+      [matrix deselectAllCells];
+    }
+
+  if ([_browserDelegate respondsToSelector:
+                          @selector(browser:selectRow:inColumn:)])
+    {
+      didSelect = [_browserDelegate browser: self
+                                  selectRow: row
+                                   inColumn: column];
+    }
+  else
+    {
+      [matrix selectCellAtRow: row column: 0];
       didSelect = YES;
-      if ([_browserDelegate respondsToSelector:
-			      @selector(browser:selectRow:inColumn:)])
-	{
-	  didSelect = [_browserDelegate browser: self
-				      selectRow: row
-				       inColumn: column];
-	}
-      else
-	{
-	  [matrix selectCellAtRow: row column: 0];
-	}
+    }
 
-      if (didSelect && [cell isLeaf] == NO)
-	{
-	  [self addColumn];
-	}
+  if (didSelect && [cell isLeaf] == NO)
+    {
+      [self addColumn];
     }
 }
 
@@ -392,58 +392,37 @@ static NSTextFieldCell *titleCell;
 - (id) loadedCellAtRow: (int)row
 	       column: (int)column
 {
-  NSArray *columnCells;
-  id matrix;
-  int count = [_browserColumns count];
-  id aCell;
+  NSMatrix *matrix;
+  id cell;
 
-  // column range check
-  if (column >= count)
-    {
-      return nil;
-    }
-
-  if (!(matrix = [self matrixInColumn: column]))
-    {
-      return nil;
-    }
-
-  if (!(columnCells = [matrix cells]))
-    {
-      return nil;
-    }
-
-  count = [columnCells count];
-
-  // row range check
-  if (row >= count)
+  if ((matrix = [self matrixInColumn: column]) == nil)
     {
       return nil;
     }
 
   // Get the cell
-  if (!(aCell = [matrix cellAtRow: row column: 0]))
+  if ((cell = [matrix cellAtRow: row column: 0]) == nil)
     {
       return nil;
     }
 
   // Load if not already loaded
-  if ([aCell isLoaded])
+  if ([cell isLoaded])
     {
-      return aCell;
+      return cell;
     }
   else
     {
       if (_passiveDelegate || [_browserDelegate respondsToSelector: 
 		  @selector(browser:willDisplayCell:atRow:column:)])
 	{
-	  [_browserDelegate browser: self  willDisplayCell: aCell
+	  [_browserDelegate browser: self  willDisplayCell: cell
 			    atRow: row  column: column];
 	}
-      [aCell setLoaded: YES];
+      [cell setLoaded: YES];
     }
 
-  return aCell;
+  return cell;
 }
 
 /** Returns the matrix located in the column identified by index column. */
@@ -451,8 +430,7 @@ static NSTextFieldCell *titleCell;
 {
   NSBrowserColumn *bc;
 
-  // No column selected.
-  if (column == -1)
+  if (column < 0 || column > _lastColumnLoaded)
     {
       return nil;
     }
@@ -511,11 +489,11 @@ static NSTextFieldCell *titleCell;
  */
 - (BOOL) setPath: (NSString *)path
 {
-  NSArray	*subStrings;
-  unsigned	numberOfSubStrings;
-  unsigned	i, j;
-  int           column = _lastColumnLoaded;
-  BOOL		useDelegate = NO;
+  NSMutableArray *subStrings;
+  unsigned	  numberOfSubStrings;
+  unsigned	  indexOfSubStrings;
+  int             column;
+  BOOL		  useDelegate = NO;
 
   if ([_browserDelegate respondsToSelector:
     @selector(browser:selectCellWithString:inColumn:)])
@@ -524,69 +502,61 @@ static NSTextFieldCell *titleCell;
     }
 
   /*
+   * Ensure that our starting column is loaded.
+   */
+  if (_lastColumnLoaded < 0)
+    {
+      [self loadColumnZero];
+    }
+
+  /*
    * Decompose the path.
    */
-  subStrings = [path componentsSeparatedByString: _pathSeparator];
+  subStrings = [[path componentsSeparatedByString: _pathSeparator] mutableCopy];
+  [subStrings removeObject: @""];
   numberOfSubStrings = [subStrings count];
-  i = [subStrings indexOfObject: @""];
-  if (i != NSNotFound)
+  
+  if ([path hasPrefix: _pathSeparator])
     {
-      NSMutableArray	*subs = AUTORELEASE([subStrings mutableCopy]);
-
+      int i;
       /*
-       * If there is a leading empty component, the path began with a
-       * separator and is therefore absolute.  Otherwise it begins from
-       * the currently selected column.
+       * If the path begins with a separator, start at column 0.
+       * Otherwise start at the currently selected column.
        */
-      if (i == 0 && column > 0)
-	{
-	  column = 0;
-	}
 
-      [subs removeObject: @""];
-      subStrings = subs;
-      numberOfSubStrings = [subStrings count];
-
+      column = 0;
       /*
        * Optimisation. If there are columns loaded, it may be that the
        * specified path is already partially selected.  If this is the
        * case, we can avoid redrawing those columns.
        */
-      if (column == 0)
+      for (i = 0; i <= _lastColumnLoaded && i < numberOfSubStrings; i++)
         {
-	  int i;
+          NSString  *c = [[self selectedCellInColumn: i] stringValue];
 
-	  for (i = 0; i <= _lastColumnLoaded && numberOfSubStrings > 0; i++)
-	    {
-	      NSString	*c = [[self selectedCellInColumn: i] stringValue];
+          if ([c isEqualToString: [subStrings objectAtIndex: i]])
+            {
+              column = i;
+            }
+          else
+            {
+              break;
+            }
+        }
 
-	      if ([c isEqualToString: [subs objectAtIndex: 0]])
-	      	{
-		  [subs removeObjectAtIndex: 0];
-		  numberOfSubStrings--;
-		  column++;
-		}
-	    }
-	}
-    }
-
-  /*
-   * Ensure that our starting column is loaded.
-   */
-  if (column < 0)
-    {
-      column = 0;
-      [self loadColumnZero];
+      [self setLastColumn: column];
+      indexOfSubStrings = column;
     }
   else
     {
-      [self setLastColumn: column];
+      column = _lastColumnLoaded;
+      indexOfSubStrings = 0;
     }
 
   // cycle thru str's array created from path
-  for (i = 0; i < numberOfSubStrings; i++)
+  while (indexOfSubStrings < numberOfSubStrings)
     {
-      NSString		*aStr = [subStrings objectAtIndex: i];
+      NSString		*aStr = [subStrings objectAtIndex: indexOfSubStrings];
       NSBrowserColumn	*bc = [_browserColumns objectAtIndex: column];
       NSMatrix		*matrix = [bc columnMatrix];
       NSBrowserCell	*selectedCell = nil;
@@ -604,26 +574,30 @@ static NSTextFieldCell *titleCell;
 	}
       else
         {
-	  NSArray		*cells = [matrix cells];
-	  unsigned		numOfRows = [cells count];
+          unsigned numOfRows = [matrix numberOfRows];
+          int row;
 
 	  // find the cell in the browser matrix which is equal to aStr
-	  for (j = 0; j < numOfRows; j++)
+	  for (row = 0; row < numOfRows; row++)
 	    {
-	      selectedCell = [cells objectAtIndex: j];
-	      
+	      selectedCell = [matrix cellAtRow: row column: 0];
+
 	      if ([[selectedCell stringValue] isEqualToString: aStr])
 		{
-		  [matrix selectCellAtRow: j column: 0];
+		  [matrix selectCellAtRow: row column: 0];
 		  found = YES;
 		  break;
 		}
 	    }
 	}
 
-      // if unable to find a cell whose title matches aStr return NO
-      if (found == NO)
+      if (found)
+        {
+          indexOfSubStrings++;
+        }
+      else
 	{
+          // if unable to find a cell whose title matches aStr return NO
 	  NSDebugLLog (@"NSBrowser", 
 		       @"unable to find cell '%@' in column %d\n", 
 		      aStr, column);
@@ -641,9 +615,7 @@ static NSTextFieldCell *titleCell;
       column++;
     }
 
-  [self setNeedsDisplay: YES];
-  
-  if (i == numberOfSubStrings)
+  if (indexOfSubStrings == numberOfSubStrings)
     {
       return YES;
     }
@@ -889,7 +861,12 @@ static NSTextFieldCell *titleCell;
   int i, count, num;
   id bc, sc;
 
-  if (column <= -1)
+  if (column > _lastColumnLoaded)
+    {
+      return;
+    }
+    
+  if (column < 0)
     {
       column = -1;
       _isLoaded = NO;
@@ -912,13 +889,12 @@ static NSTextFieldCell *titleCell;
 	  if (sc)
 	    {
 	      [sc setDocumentView: nil];
-	      [sc setNeedsDisplay: YES];
 	    }
 	  [bc setIsLoaded: NO];
-	  [bc setColumnTitle: nil];
+          [self setTitle: nil ofColumn: i];
 	}
 
-      if (!_reusesColumns && i >= num)
+      if (!_reusesColumns && i > _lastVisibleColumn)
 	{
 	  [sc removeFromSuperview];
 	  [_browserColumns removeObject: bc];
@@ -927,16 +903,7 @@ static NSTextFieldCell *titleCell;
 	}
     }
   
-  // Scroll if needed.
-  if ((column < _lastVisibleColumn) && (_firstVisibleColumn > 0))
-    {
-      [self scrollColumnsLeftBy: _lastVisibleColumn - column];
-    }
-  else 
-    {
-      [self updateScroller];
-      [self _setColumnTitlesNeedDisplay];
-    }
+  [self scrollColumnToVisible:column];
 }
 
 /** Returns the index of the first visible column. */
@@ -1009,35 +976,23 @@ static NSTextFieldCell *titleCell;
   [self _setColumnTitlesNeedDisplay];
 }
 
-/** Reloads column if it is loaded; sets it as the last column. */
+/** Reloads column if it is loaded; sets it as the last column.
+    Reselects previously selected cells, if they remain. */
 - (void) reloadColumn: (int)column
 {
   NSArray *selectedCells;
+  NSEnumerator *selectedCellsEnumerator;
   NSMatrix *matrix;
-  int i, count, max;
-  int *selectedIndexes = NULL;
+  NSCell *cell;
 
-  // Make sure the column even exists
-  if (column > _lastColumnLoaded)
-    return;
-
-  // Save the index of the previously selected cells
   matrix = [self matrixInColumn: column];
-  selectedCells = [matrix selectedCells];
-  count = [selectedCells count];
-  if (count > 0)
+  if (matrix == nil)
     {
-      selectedIndexes = NSZoneMalloc (NSDefaultMallocZone (), 
-				      sizeof (int) * count);
-      for (i = 0; i < count; i++)
-	{
-	  NSCell *cell = [selectedCells objectAtIndex: i];
-	  int sRow, sColumn;
-	  
-	  [matrix getRow: &sRow  column: &sColumn  ofCell: cell];
-	  selectedIndexes[i] = sRow;
-	}
+      return;
     }
+    
+  // Get the previously selected cells
+  selectedCells = [[matrix selectedCells] copy];
   
   // Perform the data load
   [self _performLoadOfColumn: column];
@@ -1045,22 +1000,18 @@ static NSTextFieldCell *titleCell;
   [self setLastColumn: column];
 
   // Restore the selected cells
-  if (count > 0)
+  matrix = [self matrixInColumn: column];
+  selectedCellsEnumerator = [selectedCells objectEnumerator];
+  while ((cell = [selectedCellsEnumerator nextObject]) != nil)
     {
-      matrix = [self matrixInColumn: column];
-      max = [matrix numberOfRows];
-      for (i = 0; i < count; i++)
-	{
-	  // Abort when it stops making sense
-	  if (selectedIndexes[i] > max)
-	    {
-	      break;
-	    }
-	  
-	  [matrix selectCellAtRow: selectedIndexes[i]  column: 0];
-	}
-      NSZoneFree (NSDefaultMallocZone (), selectedIndexes);
+      int sRow, sColumn;
+
+      if ([matrix getRow: &sRow  column: &sColumn  ofCell: cell])
+        {
+          [matrix selectCellAtRow: sRow  column: sColumn];
+        }
     }
+  RELEASE(selectedCells);
 }
 
 
@@ -1344,11 +1295,6 @@ static NSTextFieldCell *titleCell;
 /** Scrolls to make the column at index column visible. */
 - (void) scrollColumnToVisible: (int)column
 {
-  // If there are not enough columns to scroll with
-  // then the column must be visible
-  if (_lastColumnLoaded + 1 <= [self numberOfVisibleColumns])
-    return;
-
   // If its the last visible column then we are there already
   if (_lastVisibleColumn < column)
     {
@@ -1728,6 +1674,9 @@ static NSTextFieldCell *titleCell;
       id bc, sc;
       id matrix;
 
+      // FIXME: in some cases the column is not loaded
+      while (i >= [_browserColumns count]) [self _createColumn];
+
       bc = [_browserColumns objectAtIndex: i];
 
       if (!(sc = [bc columnScrollView]))
@@ -1855,14 +1804,14 @@ static NSTextFieldCell *titleCell;
   NSMutableArray *selectedCells;
   NSEnumerator   *enumerator;
   NSBrowserCell  *cell;
-  int             row, column, aCount, selectedCellsCount;
+  int             column, aCount, selectedCellsCount;
 
   if ([sender class] != _browserMatrixClass)
     return;
 
   column = [self columnOfMatrix: sender];
   // If the matrix isn't ours then just return
-  if (column == -1)
+  if (column < 0 || column > _lastColumnLoaded)
     return;
 
   a = [sender selectedCells];
@@ -1881,19 +1830,16 @@ static NSTextFieldCell *titleCell;
 	}
     }
 
-  if ([selectedCells count] == 0)
+  if ([selectedCells count] == 0 && [sender selectedCell] != nil)
     [selectedCells addObject: [sender selectedCell]];
 
   selectedCellsCount = [selectedCells count];
 
   if (selectedCellsCount == 0)
     {
-      // If we should not select the cell
-      // then deselect it and return
+      // If we should not select the cell then deselect it
 
       [sender deselectAllCells];
-      RELEASE(selectedCells);
-      return;
     }
   else if (selectedCellsCount < aCount)
     {
@@ -1902,61 +1848,21 @@ static NSTextFieldCell *titleCell;
       enumerator = [selectedCells objectEnumerator];
       while ((cell = [enumerator nextObject]))
 	[sender selectCell: cell];
-
-      // FIXME: shouldn't be locking focus on another object
-      // probably all this loop is wrong, because deselectSelectedCell
-      // above may have changed array a.
-      [sender lockFocus];
-
-      enumerator = [a objectEnumerator];
-      while ((cell = [enumerator nextObject]))
-	{
-	  if ([selectedCells containsObject: cell] == NO)
-	    {
-	      if (![sender getRow: &row column: NULL ofCell: cell])
-		continue;
-
-	      if ([cell isHighlighted])
-		[sender highlightCell: NO atRow: row column: 0];
-	      else
-		[sender drawCellAtRow: row column: 0];
-	    }
-	}
-      [sender unlockFocus];
-      [self displayIfNeeded];
-      [_window flushWindow];
     }
 
-  if (selectedCellsCount > 0)
+  [self setLastColumn: column];
+  // Single selection
+  if (selectedCellsCount == 1)
     {
-      // Single selection
-      if (selectedCellsCount == 1)
-      	{
-      	  cell = [selectedCells objectAtIndex: 0];
-	  
-	  // If the cell is a leaf
-	  // then unload the columns after
-	  if ([cell isLeaf])
-	    [self setLastColumn: column];
-	  // The cell is not a leaf so we need to load a column
-	  else
-	    {
-	      int count = [_browserColumns count];
+      cell = [selectedCells objectAtIndex: 0];
 
-	      if (column < count - 1)
-		  [self setLastColumn: column];
-
-	      [self addColumn];
-	    }
-
-	  [sender scrollCellToVisibleAtRow: [sender selectedRow]
-		  column: column];
-	}
-      // Multiple selection
-      else
+      // If the cell is not a leaf we need to load a column
+      if (![cell isLeaf])
 	{
-	  [self setLastColumn: column];
+	  [self addColumn];
 	}
+
+      [sender scrollCellToVisibleAtRow: [sender selectedRow] column: 0];
     }
 
   // Send the action to target
@@ -2187,26 +2093,30 @@ static NSTextFieldCell *titleCell;
   if (_acceptsArrowKeys)
     {
       NSMatrix *matrix;
-      NSCell   *selectedCell;
-      int       selectedRow, selectedColumn;
+      int       selectedColumn;
 
-      selectedColumn = [self selectedColumn];
+      matrix = (NSMatrix *)[_window firstResponder];
+      selectedColumn = [self columnOfMatrix:matrix];
+      if (selectedColumn == -1)
+	{
+          selectedColumn = [self selectedColumn];
+	  matrix = [self matrixInColumn: selectedColumn];
+        }
       if (selectedColumn > 0)
 	{
-	  matrix = [self matrixInColumn: selectedColumn];
-	  selectedCell = [matrix selectedCell];
-	  selectedRow = [matrix selectedRow];
-
 	  [matrix deselectAllCells];
+          [matrix scrollCellToVisibleAtRow:0 column:0];
+	  [self setLastColumn: selectedColumn];
 
-	  if(selectedColumn+1 <= [self lastColumn])
-	    [self setLastColumn: selectedColumn];
-
-	  matrix = [self matrixInColumn: [self selectedColumn]];
+          selectedColumn--;
+          [self scrollColumnToVisible: selectedColumn];
+	  matrix = [self matrixInColumn: selectedColumn];
 	  [_window makeFirstResponder: matrix];
 
 	  if (_sendsActionOnArrowKeys == YES)
-	    [super sendAction: _action to: _target];
+            {
+	      [super sendAction: _action to: _target];
+            }
 	}
     }
 }
@@ -2216,44 +2126,53 @@ static NSTextFieldCell *titleCell;
   if (_acceptsArrowKeys)
     {
       NSMatrix *matrix;
-      BOOL      selectFirstRow = NO;
       int       selectedColumn;
 
-      selectedColumn = [self selectedColumn];
+      matrix = (NSMatrix *)[_window firstResponder];
+      selectedColumn = [self columnOfMatrix:matrix];
+      if (selectedColumn == -1)
+        {
+          selectedColumn = [self selectedColumn];
+          matrix = [self matrixInColumn: selectedColumn];
+        }
       if (selectedColumn == -1)
 	{
+          selectedColumn = 0;
 	  matrix = [self matrixInColumn: 0];
 
 	  if ([[matrix cells] count])
 	    {
 	      [matrix selectCellAtRow: 0 column: 0];
-	      [_window makeFirstResponder: matrix];
-	      [self doClick: matrix];
-	      selectedColumn = 0;
 	    }
 	}
       else
 	{
-	  matrix = [self matrixInColumn: selectedColumn];
-
+          // if there is one selected cell and it is a leaf, move right
+          // (column is already loaded)
 	  if (![[matrix selectedCell] isLeaf]
 	      && [[matrix selectedCells] count] == 1)
-	    selectFirstRow = YES;
+            {
+              selectedColumn++;
+	      matrix = [self matrixInColumn: selectedColumn];
+	      if ([[matrix cells] count] && [matrix selectedCell] == nil)
+	        {
+	          [matrix selectCellAtRow: 0 column: 0];
+	        }
+              // if selected cell is a leaf, we need to add a column
+              if (![[matrix selectedCell] isLeaf]
+                  && [[matrix selectedCells] count] == 1)
+                {  
+                  [self addColumn];
+                }
+            }
 	}
 
-      if(selectFirstRow == YES)
-	{
-	  matrix = [self matrixInColumn: [self lastColumn]];
-	  if ([[matrix cells] count])
-	    {
-	      [matrix selectCellAtRow: 0 column: 0];
-	      [_window makeFirstResponder: matrix];
-	      [self doClick: matrix];
-	    }
-	}
+      [_window makeFirstResponder: matrix];
 
       if (_sendsActionOnArrowKeys == YES)
-	[super sendAction: _action to: _target];
+        {
+	  [super sendAction: _action to: _target];
+        }
     }
 }
 
@@ -2745,6 +2664,11 @@ static NSTextFieldCell *titleCell;
 
   [sc setNeedsDisplay: YES];
   [bc setIsLoaded: YES];
+  
+  if (column > _lastColumnLoaded)
+    {
+      _lastColumnLoaded = column;
+    }
 
   /* Determine the height of a cell in the matrix, and set that as the 
      cellSize of the matrix.  */
@@ -2765,7 +2689,7 @@ static NSTextFieldCell *titleCell;
     [matrix setCellSize: ms];
   }
 
-  // Get the title even when untiteled, as this may change later.
+  // Get the title even when untitled, as this may change later.
   [self setTitle: [self _getTitleOfColumn: column] ofColumn: column];
 }
 

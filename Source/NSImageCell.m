@@ -64,6 +64,18 @@
     _original_image_size = NSMakeSize(1,1);
 }
 
+- (void)setObjectValue:(id)object
+{
+  if ([object isKindOfClass:[NSImage class]])
+    {
+      [self setImage: object];
+    }
+  else
+    {
+      [super setObjectValue: object];
+    }
+}
+
 //
 // Aligning and scaling the image
 //
