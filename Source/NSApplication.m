@@ -544,7 +544,7 @@ static NSCell* tileCell = nil;
   RELEASE(inv);
 }
 
-/* 
+/**
  * Return the shared application instance, creating one (of the
  * receiver class) if needed.  There is (and must always be) only a
  * single shared application instance for each application.  After the
@@ -655,7 +655,7 @@ static NSCell* tileCell = nil;
 }
 
 
-/* 
+/** 
  * This method initializes an NSApplication instance.  It sets the
  * shared application instance to be the receiver, and then connects
  * to the window server and performs the actual gui library
@@ -1044,6 +1044,10 @@ static NSCell* tileCell = nil;
 
 /*
  * Running the main event loop
+ */
+
+/**
+ * This method starts the main event loop of the application.
  */
 - (void) run
 {
@@ -1774,7 +1778,7 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
   return NO;
 }
 
-/*
+/**
 Sets the application's icon. Any windows that use the old application
 icon image as their mini window image will be updated to use the new
 image.
@@ -2171,11 +2175,18 @@ image.
 /*
  * Getting the main menu
  */
+
+/**
+ * Returns the main menu of the receiver.
+ */
 - (NSMenu*) mainMenu
 {
   return _main_menu;
 }
 
+/**
+ * Sets the main menu of the receiver
+ */ 
 - (void) setMainMenu: (NSMenu*)aMenu
 {
   if (_main_menu != nil && _main_menu != aMenu)
@@ -2416,6 +2427,10 @@ image.
     }
 }
 
+/**
+ * Sets the windows menu of the receiver.  The windows menu keeps track of all
+ * windows open in the application.
+ */
 - (void) setWindowsMenu: (NSMenu*)aMenu
 {
   if (_windows_menu == aMenu)
@@ -2477,6 +2492,10 @@ image.
 /*
  * Managing the Service menu
  */
+
+/**
+ * Accepts an array of sendTypes and an array of returnTypes.   
+ */
 - (void) registerServicesMenuSendTypes: (NSArray *)sendTypes
 			   returnTypes: (NSArray *)returnTypes
 {
@@ -2484,6 +2503,9 @@ image.
 		  returnTypes: returnTypes];
 }
 
+/**
+ * Return the services menu of the receiver.
+ */
 - (NSMenu *) servicesMenu
 {
   return [_listener servicesMenu];
@@ -2498,6 +2520,9 @@ image.
   return [_listener servicesProvider];
 }
 
+/**
+ * Sets the services menu for the receiver.
+ */
 - (void) setServicesMenu: (NSMenu *)aMenu
 {
   [_listener setServicesMenu: aMenu];
@@ -2537,8 +2562,8 @@ image.
     NSLog (_(@"reported exception - %@"), anException);
 }
 
-/*
- * Terminating the application
+/**
+ * Terminates the application.
  */
 - (void) terminate: (id)sender
 {
@@ -2561,6 +2586,9 @@ image.
     }
 }
 
+/**
+ * Perform the actual application termination.
+ */
 - (void) replyToApplicationShouldTerminate: (BOOL)shouldTerminate
 {
   if (shouldTerminate)
