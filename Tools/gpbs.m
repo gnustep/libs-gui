@@ -3,7 +3,7 @@
 
    GNUstep pasteboard server
 
-   Copyright (C) 1997 Free Software Foundation, Inc.
+   Copyright (C) 1997,1999 Free Software Foundation, Inc.
 
    Author:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: August 1997
@@ -41,7 +41,7 @@
 #include <Foundation/NSObjCRuntime.h>
 #include <AppKit/NSPasteboard.h>
 
-#include "PasteboardServer.h"
+#include <gnustep/gui/GSPasteboardServer.h>
 
 #include <signal.h>
 
@@ -482,7 +482,7 @@ NSMutableDictionary	*pasteboards = nil;
 
 
 
-@interface PasteboardObject: NSObject <PasteboardObject>
+@interface PasteboardObject: NSObject <GSPasteboardObj>
 {
   NSString	*name;
   int		nextCount;
@@ -836,19 +836,19 @@ NSMutableDictionary	*pasteboards = nil;
 
 
 
-@interface PasteboardServer : NSObject <PasteboardServer>
+@interface PasteboardServer : NSObject <GSPasteboardSvr>
 {
   NSMutableArray*   permenant;
 }
 - (NSConnection*) connection: ancestor didConnect: newConn;
 - connectionBecameInvalid: notification;
 
-- (id<PasteboardObject>) pasteboardByFilteringData: (NSData*)data
-					    ofType: (NSString*)type
-					    isFile: (BOOL)flag;
-- (id<PasteboardObject>) pasteboardByFilteringTypesInPasteboard: pb;
-- (id<PasteboardObject>) pasteboardWithName: (NSString*)name;
-- (id<PasteboardObject>) pasteboardWithUniqueName;
+- (id<GSPasteboardObj>) pasteboardByFilteringData: (NSData*)data
+					   ofType: (NSString*)type
+					   isFile: (BOOL)flag;
+- (id<GSPasteboardObj>) pasteboardByFilteringTypesInPasteboard: pb;
+- (id<GSPasteboardObj>) pasteboardWithName: (NSString*)name;
+- (id<GSPasteboardObj>) pasteboardWithUniqueName;
 - (NSArray*) typesFilterableTo: (NSString*)type;
 @end
 
@@ -911,26 +911,26 @@ NSMutableDictionary	*pasteboards = nil;
   return self;
 }
 
-- (id<PasteboardObject>) pasteboardByFilteringData: (NSData*)data
-					    ofType: (NSString*)type
-					    isFile: (BOOL)flag
+- (id<GSPasteboardObj>) pasteboardByFilteringData: (NSData*)data
+					   ofType: (NSString*)type
+					   isFile: (BOOL)flag
 {
   [self notImplemented: _cmd];
   return nil;
 }
 
-- (id<PasteboardObject>) pasteboardByFilteringTypesInPasteboard: pb
+- (id<GSPasteboardObj>) pasteboardByFilteringTypesInPasteboard: pb
 {
   [self notImplemented: _cmd];
   return nil;
 }
 
-- (id<PasteboardObject>) pasteboardWithName: (NSString*)name
+- (id<GSPasteboardObj>) pasteboardWithName: (NSString*)name
 {
   return [PasteboardObject pasteboardWithName: name];
 }
 
-- (id<PasteboardObject>) pasteboardWithUniqueName
+- (id<GSPasteboardObj>) pasteboardWithUniqueName
 {
   return [PasteboardObject pasteboardWithName: nil];
 }
