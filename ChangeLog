@@ -1,5 +1,11 @@
 2004-10-01  Adam Fedor  <fedor@gnu.org>
 
+	* Documentation/ReleaseNotes.gsdoc: Format fixes.
+	* Source/DocMakefile (before-clean, after-clean): Move obj out of the
+	way so it isn't removed when cleaning docs.
+
+2004-10-01  Adam Fedor  <fedor@gnu.org>
+
 	* Source/GNUmakefile.preamble: Add filter out flags for
 	compilation of some files on Solaris.
 

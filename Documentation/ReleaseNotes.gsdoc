@@ -41,8 +41,8 @@
 	      into a separate package (gnustep-ppd). There still
 	      exists a single Generic Postscript Printer PPD which
 	      should work in many cases for printing using the
-	      standard @samp{lpr} interface. In the future, a
-	      @samp{CUPS} interface should be available that provides
+	      standard <var>lpr</var> interface. In the future, a
+	      <var>CUPS</var> interface should be available that provides
 	      all the necessary printer information automatically. If
 	      you still want use of the PPD's, you must install the
 	      gnustep-ppd package, although this is not required for
