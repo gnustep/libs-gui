@@ -91,7 +91,7 @@ typedef struct GSHorizontalTypesetter_glyph_cache_s
 {
   /* These fields are filled in by the caching: */
   NSGlyph g;
-  int char_index;
+  unsigned int char_index;
 
   NSFont *font;
   struct
