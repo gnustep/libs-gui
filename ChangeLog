@@ -1,3 +1,7 @@
+Wed Sep  1 12:35:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* NSWorkspace.m: Attempted fix for locateApplicationBinary and tidied.
+
 Wed Sep  1  9:55:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	Added patches from n.pero@mi.flashnet.it to access ivars of
