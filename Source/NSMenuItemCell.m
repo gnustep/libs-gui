@@ -276,7 +276,7 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
       break;
 
     case NSImageRight:
-      cellFrame.origin.x  += _titleWidth + xDist;
+      cellFrame.origin.x  += _titleWidth + GSCellTextImageXDist;
       cellFrame.size.width = _imageWidth;
       break;
 
@@ -313,40 +313,40 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
 
 - (NSRect) titleRectForBounds:(NSRect)cellFrame
 {
-	// Calculate the image part of cell frame from NSMenuView
-	cellFrame.origin.x  += [_menuView imageAndTitleOffset];
-	cellFrame.size.width = [_menuView imageAndTitleWidth];
+  // Calculate the image part of cell frame from NSMenuView
+  cellFrame.origin.x  += [_menuView imageAndTitleOffset];
+  cellFrame.size.width = [_menuView imageAndTitleWidth];
 
-	switch (_cell.image_position)
-		{
-		case NSNoImage:
-		case NSImageOverlaps:
-			break;
+  switch (_cell.image_position)
+    {
+      case NSNoImage:
+      case NSImageOverlaps:
+	break;
 
-		case NSImageOnly: 
-			cellFrame = NSZeroRect;
-			break;
+      case NSImageOnly:
+	cellFrame = NSZeroRect;
+	break;
 
-		case NSImageLeft:
-			cellFrame.origin.x  += _imageWidth + xDist;
-			cellFrame.size.width = _titleWidth;
-			break;
+      case NSImageLeft:
+	cellFrame.origin.x  += _imageWidth + GSCellTextImageXDist;
+	cellFrame.size.width = _titleWidth;
+	break;
 
-		case NSImageRight: 
-			cellFrame.size.width = _titleWidth;
-			break;
+      case NSImageRight:
+	cellFrame.size.width = _titleWidth;
+	break;
 
-		case NSImageBelow:
-			cellFrame.size.height /= 2;
-			cellFrame.origin.y += cellFrame.size.height;
-			break;
+      case NSImageBelow:
+	cellFrame.size.height /= 2;
+	cellFrame.origin.y += cellFrame.size.height;
+	break;
 
-		case NSImageAbove: 
-			cellFrame.size.height /= 2;
-			break;
-		}
+      case NSImageAbove:
+	cellFrame.size.height /= 2;
+	break;
+    }
 
-	return cellFrame;
+  return cellFrame;
 }
 
 //

@@ -848,12 +848,12 @@
       titleToDisplay = [self attributedTitle];
     }
 
-  if (imageToDisplay)
+  if (imageToDisplay && ipos != NSNoImage)
     {
       imageSize = [imageToDisplay size];
     }
 
-  if (titleToDisplay && (ipos == NSImageAbove || ipos == NSImageBelow))
+  if (titleToDisplay && ipos != NSImageOnly)
     {
       titleSize = [titleToDisplay size];
     }
@@ -870,11 +870,28 @@
 	}
     }
   
+  /*
+  The size calculations here should be changed very carefully, and _must_ be
+  kept in sync with -cellSize. Changing the calculations to require more
+  space isn't OK; this breaks interfaces designed using the old sizes by
+  clipping away parts of the title.
+
+  The current size calculations ensure that for bordered or bezeled cells,
+  there's always at least a three point margin between the size returned by
+  -cellSize and the minimum size required not to clip text. (In other words,
+  the text can become three points wider (due to eg. font mismatches) before
+  you lose the last character.)
+  */
   switch (ipos)
     {
       case NSNoImage: 
 	imageToDisplay = nil;
 	titleRect = cellFrame;
+	if (titleSize.width + 6 <= titleRect.size.width)
+	  {
+	    titleRect.origin.x += 3;
+	    titleRect.size.width -= 6;
+	  }
 	break;
 
       case NSImageOnly: 
@@ -889,13 +906,14 @@
 	if (_cell.is_bordered || _cell.is_bezeled) 
 	  {
 	    imageRect.origin.x += 3;
-	    imageRect.size.height -= 2;
-	    imageRect.origin.y += 1;
 	  }
 	titleRect = imageRect;
-	titleRect.origin.x += imageSize.width + xDist;
-	titleRect.size.width = cellFrame.size.width - imageSize.width - xDist;
-        titleRect.size.width -= 3;
+	titleRect.origin.x += imageSize.width + GSCellTextImageXDist;
+	titleRect.size.width = NSMaxX(cellFrame) - titleRect.origin.x;
+	if (titleSize.width + 3 <= titleRect.size.width)
+	  {
+	    titleRect.size.width -= 3;
+	  }
 	break;
 
       case NSImageRight: 
@@ -906,14 +924,15 @@
 	if (_cell.is_bordered || _cell.is_bezeled) 
 	  {
 	    imageRect.origin.x -= 3;
-	    imageRect.size.height -= 2;
-	    imageRect.origin.y += 1;
 	  }
 	titleRect.origin = cellFrame.origin;
-	titleRect.size.width = cellFrame.size.width - imageSize.width - xDist;
+	titleRect.size.width = imageRect.origin.x - titleRect.origin.x - GSCellTextImageXDist;
 	titleRect.size.height = cellFrame.size.height;
-	titleRect.origin.x += 3;
-	titleRect.size.width -= 3;
+	if (titleSize.width + 3 <= titleRect.size.width)
+	  {
+	    titleRect.origin.x += 3;
+	    titleRect.size.width -= 3;
+	  }
 	break;
 
       case NSImageAbove: 
@@ -923,26 +942,24 @@
 	 * The drawing code below will then center the image in imageRect.
 	 */
 	titleRect.origin.x = cellFrame.origin.x;
-	titleRect.origin.y = cellFrame.origin.y;
+	titleRect.origin.y = cellFrame.origin.y + GSCellTextImageYDist;
 	titleRect.size.width = cellFrame.size.width;
 	titleRect.size.height = titleSize.height;
 
 	imageRect.origin.x = cellFrame.origin.x;
-	imageRect.origin.y = cellFrame.origin.y;
-	imageRect.origin.y += titleRect.size.height + yDist;
+	imageRect.origin.y = NSMaxY(titleRect);
 	imageRect.size.width = cellFrame.size.width;
-	imageRect.size.height = cellFrame.size.height;
-	imageRect.size.height -= titleSize.height + yDist;
+	imageRect.size.height = NSMaxY(cellFrame) - imageRect.origin.y;
 
 	if (_cell.is_bordered || _cell.is_bezeled) 
 	  {
-	    imageRect.origin.x += 3;
-	    imageRect.size.width -= 6;
-	    imageRect.size.height -= 1;
+	    imageRect.origin.y -= 1;
 	  }
-	titleRect.origin.x += 3;
-	titleRect.origin.y += 4;
-	titleRect.size.width -= 6;
+	if (titleSize.width + 6 <= titleRect.size.width)
+	  {
+	    titleRect.origin.x += 3;
+	    titleRect.size.width -= 6;
+	  }
 	break;
 
       case NSImageBelow: 
@@ -952,33 +969,34 @@
 	 * The drawing code below will then center the image in imageRect.
 	 */
 	titleRect.origin.x = cellFrame.origin.x;
-	titleRect.origin.y = cellFrame.origin.y + cellFrame.size.height;
-	titleRect.origin.y -= titleSize.height;
+	titleRect.origin.y = NSMaxY(cellFrame) - titleSize.height;
 	titleRect.size.width = cellFrame.size.width;
 	titleRect.size.height = titleSize.height;
 
 	imageRect.origin.x = cellFrame.origin.x;
 	imageRect.origin.y = cellFrame.origin.y;
 	imageRect.size.width = cellFrame.size.width;
-	imageRect.size.height = cellFrame.size.height;
-	imageRect.size.height -= titleSize.height + yDist;
+	imageRect.size.height = titleRect.origin.y - GSCellTextImageYDist - imageRect.origin.y;
 
 	if (_cell.is_bordered || _cell.is_bezeled) 
 	  {
-	    imageRect.size.width -= 6;
-	    imageRect.origin.x   += 3;
-	    imageRect.size.height -= 1;
-	    imageRect.origin.y    += 1;
+	    imageRect.origin.y += 1;
 	  }
-	titleRect.size.width -= 6;
-	titleRect.origin.x   += 3;
-	titleRect.size.height -= 4;
+	if (titleSize.width + 6 <= titleRect.size.width)
+	  {
+	    titleRect.origin.x += 3;
+	    titleRect.size.width -= 6;
+	  }
 	break;
 
       case NSImageOverlaps: 
-	titleRect = cellFrame;
 	imageRect = cellFrame;
-	// TODO: Add distance from border if needed
+	titleRect = cellFrame;
+	if (titleSize.width + 6 <= titleRect.size.width)
+	  {
+	    titleRect.origin.x += 3;
+	    titleRect.size.width -= 6;
+	  }
 	break;
     }
 
@@ -995,8 +1013,8 @@
       NSPoint position;
 
       size = [imageToDisplay size];
-      position.x = MAX(NSMidX(imageRect) - (size.width/2.),0.);
-      position.y = MAX(NSMidY(imageRect) - (size.height/2.),0.);
+      position.x = MAX(NSMidX(imageRect) - (size.width / 2.), 0.);
+      position.y = MAX(NSMidY(imageRect) - (size.height / 2.), 0.);
       /*
        * Images are always drawn with their bottom-left corner at the origin
        * so we must adjust the position to take account of a flipped view.
@@ -1027,7 +1045,7 @@
   if (_cell.shows_first_responder
       && [[controlView window] firstResponder] == controlView)
     {
-	NSDottedFrameRect(cellFrame);
+      NSDottedFrameRect(cellFrame);
     }
 }
 
@@ -1038,24 +1056,23 @@
   unsigned	mask;
   NSImage	*imageToDisplay;
   NSAttributedString	*titleToDisplay;
-  NSSize	imageSize;
-  NSSize	titleSize;
+  NSSize	imageSize = NSZeroSize;
+  NSSize	titleSize = NSZeroSize;
   
-  /* 
-   * The following code must be kept in sync with -drawInteriorWithFrame
-   */ 
+  /* The size calculations here must be kept in sync with
+  -drawInteriorWithFrame. */
+
   if (_cell.is_highlighted)
     {
       mask = _highlightsByMask;
+
+      if (_cell.state)
+	mask &= ~_showAltStateMask;
     }
   else if (_cell.state)
-    {
-      mask = _showAltStateMask;
-    }
+    mask = _showAltStateMask;
   else
-    {
-      mask = NSNoCellMask;
-    }
+    mask = NSNoCellMask;
   
   if (mask & NSContentsCellMask)
     {
@@ -1080,18 +1097,10 @@
     {
       imageSize = [imageToDisplay size];
     }
-  else
-    { 
-      imageSize = NSZeroSize;
-    }
 
   if (titleToDisplay != nil)
     {
       titleSize = [titleToDisplay size];
-    }
-  else
-    {
-      titleSize = NSZeroSize;
     }
   
   switch (_cell.image_position)
@@ -1106,57 +1115,39 @@
 	
       case NSImageLeft: 
       case NSImageRight: 
-	s.width = imageSize.width + titleSize.width + xDist;
-	if (imageSize.height > titleSize.height)
-	  s.height = imageSize.height;
-	else 
-	  s.height = titleSize.height;
+	s.width = imageSize.width + titleSize.width + GSCellTextImageXDist;
+	s.height = MAX(imageSize.height, titleSize.height);
 	break;
 	
       case NSImageBelow: 
       case NSImageAbove: 
-	if (imageSize.width > titleSize.width)
-	  s.width = imageSize.width;
-	else 
-	  s.width = titleSize.width;
-	s.height = imageSize.height + titleSize.height; // + yDist ??
+	s.width = MAX(imageSize.width, titleSize.width);
+	s.height = imageSize.height + titleSize.height + GSCellTextImageYDist;
 	break;
 	
       case NSImageOverlaps: 
-	if (imageSize.width > titleSize.width)
-	  s.width = imageSize.width;
-	else
-	  s.width = titleSize.width;
-	
-	if (imageSize.height > titleSize.height)
-	  s.height = imageSize.height;
-	else
-	  s.height = titleSize.height;
-
+	s.width = MAX(imageSize.width, titleSize.width);
+	s.height = MAX(imageSize.height, titleSize.height);
 	break;
     }
   
   // Get border size
   if (_cell.is_bordered)
     // Buttons only have three paths for border (NeXT looks)
-    borderSize = NSMakeSize (1.5, 1.5);
+    borderSize = NSMakeSize (3.0, 3.0);
   else
     borderSize = NSZeroSize;
 
-  if ((_cell.is_bordered || _cell.is_bezeled) 
-    && (_cell.image_position != NSImageOnly))
+  if ((_cell.is_bordered && (_cell.image_position != NSImageOnly))
+      || _cell.is_bezeled)
     {
-      borderSize.height += 1;
-      borderSize.width  += 3;
-
-      /* Add some more space because it looks better.  */
-      borderSize.height += 2;
-      borderSize.width  += 3;
+      borderSize.width += 6;
+      borderSize.height += 6;
     }
-  
+
   // Add border size
-  s.width += 2 * borderSize.width;
-  s.height += 2 * borderSize.height;
+  s.width += borderSize.width;
+  s.height += borderSize.height;
 
   return s;
 }

@@ -1,3 +1,14 @@
+2004-08-02 16:32  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/AppKit/NSCell.h, Source/NSMenuView.m: Rename xDist and
+	yDist to GSCellTextImageXDist and GSCellTextImageYDist.
+	* Source/NSMenuItemCell.m: Rename xDist and yDist.
+	(titleRectForBounds:): Reindent.
+	* Source/NSButtonCell.m (-drawInteriorWithFrame:inView:, -cellSize):
+	Adjust size calculations, make them more forgiving before clipping
+	text, and make -cellSize and -drawInteriorWithFrame:inView: match
+	each other again. Update xDist and yDist references.
+
 2004-08-01 14:55  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSStandardWindowDecorationView.m (-drawTitleBar): Fix

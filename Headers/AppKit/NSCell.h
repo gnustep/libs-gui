@@ -100,8 +100,8 @@ enum {
 };
 
 enum {
-  xDist = 2,	// horizontal distance between the text and image rects. 
-  yDist = 2	// vertical distance between the text and image rects. 
+  GSCellTextImageXDist = 2,	// horizontal distance between the text and image rects.
+  GSCellTextImageYDist = 2	// vertical distance between the text and image rects.
 };
 
 /* 

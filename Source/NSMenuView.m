@@ -555,7 +555,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
           
         case NSImageLeft: 
         case NSImageRight: 
-          anImageAndTitleWidth = anImageWidth + aTitleWidth + xDist;
+          anImageAndTitleWidth = anImageWidth + aTitleWidth + GSCellTextImageXDist;
           break;
           
         case NSImageBelow: 
