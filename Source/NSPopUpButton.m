@@ -287,12 +287,6 @@ Class _nspopupbuttonCellClass = 0;
   return [super resignFirstResponder];
 }
 
-- (void) resignKeyWindow
-{
-  [_cell dismissPopUp];
-  [super resignKeyWindow];
-}
-
 - (BOOL) performKeyEquivalent: (NSEvent*)theEvent
 {
   NSMenu *m = [self menu];
