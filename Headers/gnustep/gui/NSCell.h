@@ -112,7 +112,7 @@ enum {
   NSImage *_cell_image;
   NSFont *_cell_font;
   struct GSCellFlagsType { 
-    // total 28 bits.  4 bits left.
+    // total 30 bits.  2 bits left.
     unsigned is_highlighted:1;
     unsigned is_disabled:1;    
     unsigned is_editable:1;   
@@ -122,6 +122,8 @@ enum {
     unsigned is_selectable:1;
     unsigned is_continuous:1;
     unsigned float_autorange:1;
+    unsigned wraps:1;
+    unsigned allows_mixed_state:1;
     unsigned state:2;          // 3 values; 
     unsigned text_align:3;     // 5 values
     unsigned image_position:4; // 7 values
