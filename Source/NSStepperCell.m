@@ -48,7 +48,7 @@
 //
 - (id) init
 {
-  [self initTextCell: @"0"];
+  [self setIntValue: 0];
   [super setAlignment: NSRightTextAlignment];
   [super setWraps: NO];
   _autorepeat = YES;
@@ -60,15 +60,6 @@
   highlightDown = NO;
   return self;
 }
-
-- (id) initTextCell: (NSString *)aString
-{
-  [super initTextCell: aString];
-
-  return self;
-}
-
-
 
 - (double) maxValue
 {
@@ -256,30 +247,15 @@ inline void HighlightDownButton(NSRect aRect)
   PSstroke();
 }
 
-- (void)_drawText: (NSRect)aRect
-{
-  NSDrawWhiteBezel(aRect, NSZeroRect);
-  aRect.size.width -= 6;
-  aRect.size.height -= 4;
-  aRect.origin.x += 3;
-  aRect.origin.y += 2;
-  [super _drawText: _contents inFrame: aRect];
-}
-
 - (void) drawInteriorWithFrame: (NSRect)cellFrame
 			inView: (NSView*)controlView
 {
-  NSRect textFrame;
   NSRect upRect;
   NSRect downRect;
   NSRect twoButtons;
   NSGraphicsContext *ctxt;
   [controlView lockFocus];
   ctxt = GSCurrentContext();
-  textFrame = cellFrame;
-  textFrame.origin.y ++;
-  textFrame.size.height -= 2;
-  textFrame.size.width -= 18;
 
   {
     upRect = [self upButtonRectWithFrame: cellFrame];
@@ -309,7 +285,6 @@ inline void HighlightDownButton(NSRect aRect)
     }
   }
 
-  [self _drawText: textFrame];
   [controlView unlockFocus];
 }
 

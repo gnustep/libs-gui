@@ -178,6 +178,9 @@ id _nsstepperCellClass = nil;
   BOOL isDirectionUp;
   BOOL autorepeat = [_cell autorepeat];
 
+  if([_cell isEnabled] == NO)
+    return;
+
   if([event type] != NSLeftMouseDown)
     return;
 
@@ -325,6 +328,7 @@ id _nsstepperCellClass = nil;
       else
 	[_cell setDoubleValue: newValue];
     }
+  [self sendAction: [self action] to: [self target]];
 }
 
 - (void)_decrement
@@ -354,6 +358,7 @@ id _nsstepperCellClass = nil;
       else
 	[_cell setDoubleValue: newValue];
     }
+  [self sendAction: [self action] to: [self target]];
 }
 
 @end
