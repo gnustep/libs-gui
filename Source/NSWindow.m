@@ -2878,9 +2878,20 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 	break;
 
       case NSRightMouseDown:
-	v = [_contentView hitTest: [theEvent locationInWindow]];
-	[v rightMouseDown: theEvent];
-	_lastPoint = [theEvent locationInWindow];
+	{
+	  NSMenu *m;
+	  v = [_contentView hitTest: [theEvent locationInWindow]];
+	  m = [v menuForEvent: theEvent];
+	  if (m)
+	    {
+	      [m _rightMouseDisplay: theEvent];
+	    }
+	  else
+	    {
+	      [v rightMouseDown: theEvent];
+	    }
+	  _lastPoint = [theEvent locationInWindow];
+	}
 	break;
 
       case NSRightMouseUp:
