@@ -4313,15 +4313,17 @@ byExtendingSelection: (BOOL)flag
       int row = [_selectedRows lastIndex];
       
       /* Check that all selected rows are in the new range of rows */
-      if (row >= _numberOfRows)
+      if ((row != NSNotFound) && (row >= _numberOfRows))
         {
 	  [_selectedRows removeIndexesInRange: 
 			     NSMakeRange(_numberOfRows,  row - _numberOfRows)];
 	  if (_selectedRow >= _numberOfRows)
 	    {
-	      if ([_selectedRows count] > 0)
+	      row = [_selectedRows lastIndex];
+
+	      if (row != NSNotFound)
 		{
-		  _selectedRow = [_selectedRows lastIndex];
+		  _selectedRow = row;
 		}
 	      else
 		{

@@ -1,3 +1,8 @@
+2004-05-25  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableView.m: (-noteNumberOfRowsChanged)
+	Made save against [_selectedRows lastIndex] returning NSNotFound.
+	
 2004-05-23  Quentin Mathe <qmathe@lub-internet.fr>
 
         * Source/NSWindow.m: Added a method -_windowView which returns the root 
