@@ -517,13 +517,13 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 	    application: (NSString **)appName
 		   type: (NSString **)type
 {
-  NSFileManager *fm = [NSFileManager defaultManager];
-  NSDictionary *attributes;
-  NSString *fileType;
-  NSString *extension = [fullPath pathExtension];
+  NSFileManager	*fm = [NSFileManager defaultManager];
+  NSDictionary	*attributes;
+  NSString	*fileType;
+  NSString	*extension = [fullPath pathExtension];
 
   attributes = [fm fileAttributesAtPath: fullPath traverseLink: YES];
-  if (attributes)
+  if (attributes != nil)
     {
       fileType = [attributes fileType];
       if ([fileType isEqualToString: NSFileTypeRegular])
@@ -536,14 +536,14 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
           else
             {
               *type = NSPlainFileType;
-              *appName = [self getBestAppInRole:nil forExtension:extension];
+              *appName = [self getBestAppInRole: nil forExtension: extension];
             }
         }
-      else if([fileType isEqualToString: NSFileTypeDirectory])
+      else if ([fileType isEqualToString: NSFileTypeDirectory])
         {
           if ([extension isEqualToString: @"app"]
-              || [extension isEqualToString: @"debug"]
-              || [extension isEqualToString: @"profile"])
+	    || [extension isEqualToString: @"debug"]
+	    || [extension isEqualToString: @"profile"])
             {
               *type = NSApplicationFileType;
               *appName = nil;
@@ -556,9 +556,9 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
           // the idea here is that if the parent directory's fileSystemNumber
           // differs, this must be a filesystem mount point
           else if ([[fm fileAttributesAtPath:
-                       [fullPath stringByDeletingLastPathComponent]
-                                traverseLink:YES] fileSystemNumber]
-                     != [attributes fileSystemNumber])
+	    [fullPath stringByDeletingLastPathComponent]
+	    traverseLink: YES] fileSystemNumber]
+	    != [attributes fileSystemNumber])
             {
               *type = NSFilesystemFileType;
               *appName = nil;
@@ -579,7 +579,9 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
       return YES;
     }
   else
-    return NO;
+    {
+      return NO;
+    }
 }
 
 - (NSImage *) iconForFile: (NSString *)aPath
@@ -589,8 +591,8 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 
   if ([self isFilePackageAtPath: aPath])
     {
-      NSFileManager *mgr = [NSFileManager defaultManager];
-      NSString *iconPath = nil;
+      NSFileManager	*mgr = [NSFileManager defaultManager];
+      NSString		*iconPath = nil;
       
       if ([pathExtension isEqualToString: @"app"]
 	|| [pathExtension isEqualToString: @"debug"]
@@ -696,8 +698,9 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   static NSImage *multipleFiles = nil;
 
   if ([pathArray count] == 1)
-    return [self iconForFile: [pathArray objectAtIndex: 0]];
-
+    {
+      return [self iconForFile: [pathArray objectAtIndex: 0]];
+    }
   if (multipleFiles == nil)
     {
       // FIXME: Icon does not exist
@@ -748,8 +751,8 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   _fileSystemChanged = YES;
 }
 
-/*
- * Updating Registered Services and File Types
+/**
+ * Updates Registered Services and File Types
  */
 - (void) findApplications
 {
@@ -777,8 +780,9 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   task = [NSTask launchedTaskWithLaunchPath: path
 				  arguments: nil];
   if (task != nil)
-    [task waitUntilExit];
-
+    {
+      [task waitUntilExit];
+    }
   if ([mgr isReadableFileAtPath: extPrefPath] == YES)
     {
       data = [NSData dataWithContentsOfFile: extPrefPath];
@@ -814,6 +818,10 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   // FIXME
 }
 
+/**
+ * Calls -launchApplication:showIcon:autolaunch: with arguments set to
+ * show the icon but not set it up as an autolaunch.
+ */ 
 - (BOOL) launchApplication: (NSString *)appName
 {
   return [self launchApplication: appName
@@ -821,6 +829,9 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 		      autolaunch: NO];
 }
 
+/**
+ * Launches the specified application (unless it is alreeady running)
+ */
 - (BOOL) launchApplication: (NSString *)appName
 		  showIcon: (BOOL)showIcon
 	        autolaunch: (BOOL)autolaunch
@@ -841,16 +852,15 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
  */
 - (BOOL) unmountAndEjectDeviceAtPath: (NSString *)path
 {
-  NSDictionary  *userinfo;
-  NSTask *task;
-  BOOL flag = NO;
+  NSDictionary	*userinfo;
+  NSTask	*task;
+  BOOL		flag = NO;
 
   userinfo = [NSDictionary dictionaryWithObject: path
-			   forKey: @"NSDevicePath"];
-  [_workspaceCenter
-    postNotificationName: NSWorkspaceWillUnmountNotification
-    object: self
-    userInfo: userinfo];
+					 forKey: @"NSDevicePath"];
+  [_workspaceCenter postNotificationName: NSWorkspaceWillUnmountNotification
+				  object: self
+				userInfo: userinfo];
 
   // FIXME This is system specific
   task = [NSTask launchedTaskWithLaunchPath: @"eject"
@@ -859,17 +869,22 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
     {
       [task waitUntilExit];
       if ([task terminationStatus] != 0)
-	return NO;
+	{
+	  return NO;
+	}
       else
-	flag = YES;
+	{
+	  flag = YES;
+	}
     }
   else
-    return NO;
+    {
+      return NO;
+    }
 
-  [_workspaceCenter
-    postNotificationName: NSWorkspaceDidUnmountNotification
-    object: self
-    userInfo: userinfo];
+  [_workspaceCenter postNotificationName: NSWorkspaceDidUnmountNotification
+				  object: self
+				userInfo: userinfo];
   return flag;
 }
 
@@ -889,9 +904,9 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 
 - (NSArray *) mountedRemovableMedia
 {
-  NSArray *volumes = [self mountedLocalVolumePaths];
+  NSArray	*volumes = [self mountedLocalVolumePaths];
   NSMutableArray *names = [NSMutableArray arrayWithCapacity: [volumes count]];
-  int i;
+  unsigned	i;
 
   for (i = 0; i < [volumes count]; i++)
     {
@@ -916,22 +931,24 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   return names;
 }
 
-- (NSArray *)mountedLocalVolumePaths
+- (NSArray*) mountedLocalVolumePaths
 {
   // FIXME This is system specific
-  NSString *mtab = [NSString stringWithContentsOfFile: @"/etc/mtab"];
-  NSArray *mounts = [mtab componentsSeparatedByString: @"\n"];
+  NSString	*mtab = [NSString stringWithContentsOfFile: @"/etc/mtab"];
+  NSArray	*mounts = [mtab componentsSeparatedByString: @"\n"];
   NSMutableArray *names = [NSMutableArray arrayWithCapacity: [mounts count]];
-  int i;
+  unsigned int	i;
 
   for (i = 0; i < [mounts count]; i++)
     {
-      NSArray *parts = [[names objectAtIndex: i] componentsSeparatedByString: @" "];
-      NSString *type = [parts objectAtIndex: 2];
-      
-      if (![type isEqualToString: @"proc"] &&
-	  ![type isEqualToString: @"devpts"] &&
-	  ![type isEqualToString: @"shm"])
+      NSArray	*parts;
+      NSString	*type;
+
+      parts = [[names objectAtIndex: i] componentsSeparatedByString: @" "];
+      type = [parts objectAtIndex: 2];
+      if ([type isEqualToString: @"proc"] == NO
+	&& [type isEqualToString: @"devpts"] == NO
+	&& [type isEqualToString: @"shm"] == NO)
         {
 	  [names addObject: [parts objectAtIndex: 1]];
 	}
@@ -940,22 +957,26 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   return names;
 }
 
-/*
- * Notification Center
+/**
+ * Returns the workspace notification center
  */
 - (NSNotificationCenter *) notificationCenter
 {
   return _workspaceCenter;
 }
 
-/*
- * Tracking Changes to the User Defaults Database
+/**
+ * Simply makes a note that the user defaults database has changed.
  */
 - (void) noteUserDefaultsChanged
 {
   _userDefaultsChanged = YES;
 }
 
+/**
+ * Returns a flag to say if the defaults database has changed since
+ * the last time this method was called.
+ */
 - (BOOL) userDefaultsChanged
 {
   BOOL	hasChanged = _userDefaultsChanged;
@@ -964,8 +985,8 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   return hasChanged;
 }
 
-/*
- * Animating an Image	
+/**
+ * Animating an Image- slides it from one point on the screen to another.
  */
 - (void) slideImage: (NSImage *)image
 	       from: (NSPoint)fromPoint
@@ -987,35 +1008,28 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 
 @implementation	NSWorkspace (GNUstep)
 
+/**
+ * Returns the 'best' application to open a file with the specified extension
+ * using the given role.  If the role is nil then apps which can edit are
+ * preferred but viewers are also acceptable.  Uses a user preferred app
+ * or picks any good match.
+ */
 - (NSString*) getBestAppInRole: (NSString*)role
 		  forExtension: (NSString*)ext
 {
   NSString	*appName = nil;
 
-  if (extPreferences != nil)
+  if ([self _extension: ext role: role app: &appName andInfo: 0] == NO)
     {
-      NSDictionary	*inf;
-
-      inf = [extPreferences objectForKey: [ext lowercaseString]];
-      if (inf != nil)
-	{
-	  if (role == nil)
-	    {
-	      appName = [inf objectForKey: @"Editor"];
-	      if (appName == nil)
-		{
-		  appName = [inf objectForKey: @"Viewer"];
-		}
-	    }
-	  else
-	    {
-	      appName = [inf objectForKey: role];
-	    }
-	}
+      appName = nil;
     }
   return appName;
 }
 
+/**
+ * Returns the path set for the icon matching the image by
+ * -setBestIcon:forExtension:
+ */
 - (NSString*) getBestIconForExtension: (NSString*)ext
 {
   NSString	*iconPath = nil;
@@ -1033,21 +1047,25 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   return iconPath;
 }
 
+/**
+ * Gets the applications cache (generated by the make_services tool)
+ * and looks up the special entry that contains a dictionary of all
+ * file extensions recognised by GNUstep applications.  Then finds
+ * the dictionary of applications that can handle our file and
+ * returns it.
+ */
 - (NSDictionary*) infoForExtension: (NSString*)ext
 {
   NSDictionary  *map;
 
   ext = [ext lowercaseString];
-  /*
-   *    Get the applications cache (generated by the make_services tool)
-   *    and lookup the special entry that contains a dictionary of all
-   *    file extensions recognised by GNUstep applications.  Then find
-   *    the dictionary of applications that can handle our file.
-   */
   map = [applications objectForKey: @"GSExtensionsMap"];
   return [map objectForKey: ext];
 }
 
+/**
+ * Returns the application bundle for the named application.
+ */
 - (NSBundle*) bundleForApp: (NSString *)appName
 {
   NSString	*path;
@@ -1080,7 +1098,7 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   return [NSBundle bundleWithPath: path];
 }
 
-/*
+/**
  * Returns the application icon for the given app.
  * Or null if none defined or appName is not a valid application name.
  */
@@ -1103,8 +1121,9 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   return AUTORELEASE([[NSImage alloc] initWithContentsOfFile: iconPath]);
 }
 
-/*
- * Requires the path to an application wrapper as an argument.
+/**
+ * Requires the path to an application wrapper as an argument, and returns
+ * the full path to the executable.
  */
 - (NSString*) locateApplicationBinary: (NSString*)appName
 {
@@ -1150,6 +1169,10 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   return path;
 }
 
+/**
+ * Sets up a user preference  for which app should be used to open files
+ * of the specified extension.
+ */
 - (void) setBestApp: (NSString*)appName
 	     inRole: (NSString*)role
        forExtension: (NSString*)ext
@@ -1200,6 +1223,10 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   [data writeToFile: extPrefPath atomically: YES];
 }
 
+/**
+ * Sets up a user preference for which icon should be used to
+ * represent the specified file extension.
+ */
 - (void) setBestIcon: (NSString*)iconPath forExtension: (NSString*)ext
 {
   NSMutableDictionary	*map;
@@ -1234,7 +1261,7 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 - (NSImage*) _extIconForApp: (NSString *)appName info: (NSDictionary *)extInfo
 {
   NSDictionary	*typeInfo = [extInfo objectForKey: appName];
-  NSString *file = [typeInfo objectForKey: @"NSIcon"];
+  NSString	*file = [typeInfo objectForKey: @"NSIcon"];
 
   if (file)
     {
@@ -1321,7 +1348,9 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   NSImage	*icon = nil;
 
   if (ext == nil || [ext isEqualToString: @""])
-    return nil;
+    {
+      return nil;
+    }
   /*
    * extensions are case-insensitive - convert to lowercase.
    */
@@ -1393,7 +1422,9 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
        * Set the icon in the cache for next time.
        */
       if (icon != nil)
-	[_iconMap setObject: icon forKey: ext];
+	{
+	  [_iconMap setObject: icon forKey: ext];
+	}
     }
   return icon;
 }
@@ -1410,16 +1441,12 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   NSDictionary	*info;
 
   ext = [ext lowercaseString];
-  apps = [self infoForExtension: ext];
-  if (apps == nil || [apps count] == 0)
-    return NO;
 
   /*
    *	Look for the name of the preferred app in this role.
    *	A 'nil' roll is a wildcard - find the preferred Editor or Viewer.
    */
   prefs = [extPreferences objectForKey: ext];
-
   if (role == nil || [role isEqualToString: @"Editor"])
     {
       appName = [prefs objectForKey: @"Editor"];
@@ -1429,9 +1456,13 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 	  if (info != nil)
 	    {
 	      if (app != 0)
-		*app = appName;
+		{
+		  *app = appName;
+		}
 	      if (inf != 0)
-		*inf = info;
+		{
+		  *inf = info;
+		}
 	      return YES;
 	    }
 	}
@@ -1445,9 +1476,13 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 	  if (info != nil)
 	    {
 	      if (app != 0)
-		*app = appName;
+		{
+		  *app = appName;
+		}
 	      if (inf != 0)
-		*inf = info;
+		{
+		  *inf = info;
+		}
 	      return YES;
 	    }
 	}
@@ -1460,6 +1495,11 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
    * The 'NSRole' field specifies what the app can do with the file - if it
    * is missing, we assume an 'Editor' role.
    */
+  apps = [self infoForExtension: ext];
+  if (apps == nil || [apps count] == 0)
+    {
+      return NO;
+    }
   enumerator = [apps keyEnumerator];
 
   if (role == nil)
