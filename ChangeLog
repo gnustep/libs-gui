@@ -1,3 +1,9 @@
+1999-07-12  Michael Hanni  <mhanni@sprintmail.com>
+
+	* Source/NSMenu.m: added code to convert anything that conforms to
+	<NSMenuItem> into an NSMenuItemCell. Not tested, but should work.
+	Also fixed a small bug in -init, it was not returning.
+
 Mon Jul 12  5:40:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSOpenPanel.m: In ([-runModalForTypes:]) made change

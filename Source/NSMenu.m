@@ -61,7 +61,7 @@ static NSZone *menuZone = NULL;
 
 - (id)init
 {
-  [self initWithTitle:@"Menu"];
+  return [self initWithTitle:@"Menu"];
 }
 
 - (id)initWithTitle:(NSString *)aTitle
@@ -89,13 +89,37 @@ static NSZone *menuZone = NULL;
   return self;
 }
 
+/*
+ * - (void)insertItem:(id <NSMenuItem>)newItem
+ *            atIndex:(int)index
+ *
+ * This method has been modified to convert anything that conforms to the
+ * <NSMenuItem> Protocol into a NSMenuItemCell which will be added to the
+ * items array.
+ *
+ * Blame: Michael
+ */
+
 - (void)insertItem:(id <NSMenuItem>)newItem
 	   atIndex:(int)index
 {
-  if ([(NSMenuItemCell *)newItem isKindOfClass:[NSMenuItemCell class]])
-    [menu_items insertObject:newItem atIndex:index];
+  if ([newItem conformsToProtocol:@protocol(NSMenuItem)])
+    {
+      if ([newItem isKindOfClass:[NSMenuItemCell class]])
+        [menu_items insertObject:newItem atIndex:index];
+      else
+        {
+          [self insertItemWithTitle:[newItem title]
+			     action:[newItem action]
+		      keyEquivalent:[newItem keyEquivalent]
+			    atIndex:index];
+	  [(NSMenuItem *)newItem release];
+        }
+    }
   else
-    NSLog(@"You must use an NSMenuItemCell, or a derivative thereof.\n");
+    NSLog(@"You must use an object that conforms to NSMenuItem.\n");
+
+  menu_changed = YES;
 }
 
 - (id <NSMenuItem>)insertItemWithTitle:(NSString *)aString
@@ -117,13 +141,7 @@ static NSZone *menuZone = NULL;
 
 - (void)addItem:(id <NSMenuItem>)newItem
 {
-  // The spec says we call [self insertItem]; but why waste the overhead?
-  if ([(NSMenuItemCell *)newItem isKindOfClass:[NSMenuItemCell class]])
-    [menu_items insertObject:newItem atIndex:[menu_items count]];
-  else
-    NSLog(@"You must use an NSMenuItemCell, or a derivative thereof.\n");
-
-  menu_changed = YES;
+  [self insertItem:newItem atIndex:[menu_items count]];
 }
 
 - (id <NSMenuItem>)addItemWithTitle:(NSString *)aString
