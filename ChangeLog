@@ -1,3 +1,9 @@
+2002-02-01  Richard Frith-Macdonald  <rfm@gnu.org>
+
+	* Source/NSLayoutManager.m:
+	* Source/GSTextStorage.m: Use new GSI API from latest CVS base
+	* library.
+
 2002-01-31  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSCell.m

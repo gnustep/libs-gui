@@ -50,11 +50,12 @@
 
 #define		SANITY_CHECKS	0
 
-#define	GSI_MAP_RETAIN_KEY(X)	
-#define	GSI_MAP_RELEASE_KEY(X)	
-#define	GSI_MAP_RETAIN_VAL(X)	
-#define	GSI_MAP_RELEASE_VAL(X)	
-#define	GSI_MAP_EQUAL(X,Y)	[(X).obj isEqualToDictionary: (Y).obj]
+#define	GSI_NEW	1
+#define	GSI_MAP_RETAIN_KEY(M, X)	
+#define	GSI_MAP_RELEASE_KEY(M, X)	
+#define	GSI_MAP_RETAIN_VAL(M, X)	
+#define	GSI_MAP_RELEASE_VAL(M, X)	
+#define	GSI_MAP_EQUAL(M, X,Y)	[(X).obj isEqualToDictionary: (Y).obj]
 #define GSI_MAP_KTYPES	GSUNION_OBJ
 #define GSI_MAP_VTYPES	GSUNION_INT
 
@@ -111,7 +112,7 @@ unCacheAttributes(NSDictionary *attrs)
     {
       GSIMapNode     node;
 
-      node = GSIMapNodeForKeyInBucket(bucket, (GSIMapKey)attrs);
+      node = GSIMapNodeForKeyInBucket(&attrMap, bucket, (GSIMapKey)attrs);
       if (node != 0)
 	{
 	  if (--node->value.uint == 0)

@@ -149,7 +149,8 @@ typedef	struct {
  * pointers, objects, glyphs (long) and attributes.
  */
 #define GSI_ARRAY_TYPES		GSUNION_PTR|GSUNION_OBJ|GSUNION_LONG
-#define	GSI_ARRAY_EXTRA		GSGlyphAttrs
+#define	GSI_NEW	1
+#define	GSI_ARRAY_TYPE		GSGlyphAttrs
 
 /*
  * We handle retain/release explicitly, so we can use GSIArrays to hold
