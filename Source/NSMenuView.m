@@ -392,71 +392,71 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   return menuv_needsSizing;
 }
 
-- (void)sizeToFit
+- (void) sizeToFit
 {
-  int i;
-  int howMany = [menuv_itemCells count];
-  float howHigh = (howMany * cellSize.height);
-  float neededImageAndTitleWidth = [[NSFont boldSystemFontOfSize: 12]
-				     widthOfString: [menuv_menu title]] + 17;
-  float neededKeyEquivalentWidth = 0.;
-  float neededStateImageWidth = 0.;
-  float accumulatedOffset = 0.;
+  unsigned	i;
+  unsigned	howMany = [menuv_itemCells count];
+  float		howHigh = (howMany * cellSize.height);
+  float		neededImageAndTitleWidth = [[NSFont boldSystemFontOfSize: 12]
+				   widthOfString: [menuv_menu title]] + 17;
+  float		neededKeyEquivalentWidth = 0.;
+  float		neededStateImageWidth = 0.;
+  float		accumulatedOffset = 0.;
 
   // TODO: Optimize this loop.
   for (i = 0; i < howMany; i++)
-  {
-    float anImageAndTitleWidth;
-    float anImageWidth;
-    float aKeyEquivalentWidth;
-    float aStateImageWidth;
-    float aTitleWidth;
-    NSMenuItemCell *aCell = [menuv_itemCells objectAtIndex: i];
+    {
+      float		anImageAndTitleWidth;
+      float		anImageWidth;
+      float		aKeyEquivalentWidth;
+      float		aStateImageWidth;
+      float		aTitleWidth;
+      NSMenuItemCell	*aCell = [menuv_itemCells objectAtIndex: i];
 
-    // State image area.
-    aStateImageWidth = [aCell stateImageWidth];
+      // State image area.
+      aStateImageWidth = [aCell stateImageWidth];
 
-    if (aStateImageWidth > neededStateImageWidth)
-      neededStateImageWidth = aStateImageWidth;
+      if (aStateImageWidth > neededStateImageWidth)
+	neededStateImageWidth = aStateImageWidth;
 
-    // Image and title area.
-    aTitleWidth = [aCell titleWidth];
-    anImageWidth = [aCell imageWidth];
-    switch ([aCell imagePosition])
-      {
-      case NSNoImage:
-	anImageAndTitleWidth = aTitleWidth;
-	break;
+      // Image and title area.
+      aTitleWidth = [aCell titleWidth];
+      anImageWidth = [aCell imageWidth];
+      switch ([aCell imagePosition])
+	{
+	  case NSNoImage:
+	    anImageAndTitleWidth = aTitleWidth;
+	    break;
 
-      case NSImageOnly:
-	anImageAndTitleWidth = anImageWidth;
-	break;
+	  case NSImageOnly:
+	    anImageAndTitleWidth = anImageWidth;
+	    break;
 
-      case NSImageLeft:
-      case NSImageRight:
-	anImageAndTitleWidth = anImageWidth + aTitleWidth + xDist;
-	break;
+	  case NSImageLeft:
+	  case NSImageRight:
+	    anImageAndTitleWidth = anImageWidth + aTitleWidth + xDist;
+	    break;
 
-      case NSImageBelow:
-      case NSImageAbove:
-      case NSImageOverlaps:
-      default:
-	if (aTitleWidth > anImageWidth)
-	  anImageAndTitleWidth = aTitleWidth;
-	else
-	  anImageAndTitleWidth = anImageWidth;
-	break;
-      }
-    anImageAndTitleWidth += aStateImageWidth;
-    if (anImageAndTitleWidth > neededImageAndTitleWidth)
-      neededImageAndTitleWidth = anImageAndTitleWidth;
+	  case NSImageBelow:
+	  case NSImageAbove:
+	  case NSImageOverlaps:
+	  default:
+	    if (aTitleWidth > anImageWidth)
+	      anImageAndTitleWidth = aTitleWidth;
+	    else
+	      anImageAndTitleWidth = anImageWidth;
+	    break;
+	}
+      anImageAndTitleWidth += aStateImageWidth;
+      if (anImageAndTitleWidth > neededImageAndTitleWidth)
+	neededImageAndTitleWidth = anImageAndTitleWidth;
 
-    // Key equivalent area.
-    aKeyEquivalentWidth = [aCell keyEquivalentWidth];
+      // Key equivalent area.
+      aKeyEquivalentWidth = [aCell keyEquivalentWidth];
 
-    if (aKeyEquivalentWidth > neededKeyEquivalentWidth)
-      neededKeyEquivalentWidth = aKeyEquivalentWidth;
-  }
+      if (aKeyEquivalentWidth > neededKeyEquivalentWidth)
+	neededKeyEquivalentWidth = aKeyEquivalentWidth;
+    }
 
   // Cache the needed widths.
   menuv_stateImageWidth = neededStateImageWidth;
@@ -474,15 +474,15 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   // Calculate frame size.
 #if 0
   if (![menuv_menu _isBeholdenToPopUpButton])
-    cellSize.width = accumulatedOffset + 3; // Add the border width
 #endif
+    cellSize.width = accumulatedOffset + 3; // Add the border width
 
   [self setFrameSize: NSMakeSize(cellSize.width + 1, howHigh)];
 
   menuv_needsSizing = NO;
 }
 
-- (void)sizeToFitForPopUpButton
+- (void) sizeToFitForPopUpButton
 {
   int howHigh = ([menuv_items_link count] * cellSize.height);
 
