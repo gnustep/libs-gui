@@ -2852,16 +2852,18 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 	{
 	  BOOL	wasKey = _f.is_key;
 
-	  if ([NSApp isActive] == NO && self != [NSApp iconWindow])
-	    {
-	      [NSApp activateIgnoringOtherApps: YES];
-	    }
 	  if (_f.has_closed == NO)
 	    {
 	      v = [_contentView hitTest: [theEvent locationInWindow]];
 	      if (_f.is_key == NO)
 		{
 		  [self makeKeyAndOrderFront: self];
+		}
+	      /* Activate the app *after* making the receiver key, as app
+		 activation tries to make the previous key window key. */
+	      if ([NSApp isActive] == NO && self != [NSApp iconWindow])
+		{
+		  [NSApp activateIgnoringOtherApps: YES];
 		}
 	      if (_firstResponder != v)
 		{
@@ -3075,19 +3077,17 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 		{
 		  /* Window Manager just deminiaturized us */
 		  [self deminiaturize: self];
-		  //[self _didDeminiaturize: self];
 		}
-	      if ([NSApp isHidden])
+	      if ([NSApp modalWindow]
+		  && self != [NSApp modalWindow])
 		{
-		  /* This often occurs when hidding an app, since a bunch
-		     of windows get hidden at once, and the WM is searching
-		     for a window to take focus after each one gets 
-		     hidden. */
-		  NSDebugLLog(@"Focus", @"WM take focus while hiding");
+		  /* Ignore this request. We're in a modal loop and the
+		     user pressed on the title bar of another window. */
 		  break;
 		}
 	      if ([self canBecomeKeyWindow] == YES)
 		{
+		  NSDebugLLog(@"Focus", @"Making %d key", _windowNum);
 		  [self makeKeyWindow];
 		  [self makeMainWindow];
 		  [NSApp activateIgnoringOtherApps: YES];

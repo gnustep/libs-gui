@@ -1,3 +1,18 @@
+2003-11-19  Adam Fedor  <fedor@gnu.org>
+
+	* Window Focus fixes.
+	* Source/NSApplication.m (-activateIgnoringOtherApps:): Make
+	hidden_key key only if we have no key, make main key if neither,
+	make menu key as last resort.
+	(-deactivate): Resign main window.
+	(Patches from Benhur Stein <benhur@inf.ufsm.br>).
+	(-unhideWithoutActivation): Set hidden=no before ordering windows
+	to avoid possible recursive loops.
+	* Source/NSWindow.m (-sendEvent:)(NSLeftMouseDown): Activate app
+	after ordering window front.	
+	(-sendEvent:)(GSAppKitWindowFocusIn): Don't make ourselves key
+	if we're not the modal window. Remove check for app isHidden.
+
 2003-11-19 03:17  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSClipView.m (-autoscroll:): Reimplement correctly.

@@ -931,7 +931,7 @@ static NSCell* tileCell = nil;
 	  [[_inactive objectAtIndex: i] orderFrontRegardless];
 	}
       [_inactive removeAllObjects];
-      if (_hidden_key != nil
+      if ([self keyWindow] == nil && _hidden_key != nil
 	&& [[self windows] indexOfObjectIdenticalTo: _hidden_key] != NSNotFound)
 	{
 	  [_hidden_key makeKeyWindow];
@@ -949,8 +949,17 @@ static NSCell* tileCell = nil;
 	}
       else if ([self mainWindow] != nil)
 	{
-	  [[self mainWindow] orderFront: self];
+	  [[self mainWindow] makeKeyAndOrderFront: self];
 	}
+      else
+        {
+	  /* We need give input focus to some window otherwise we'll never get
+	     keyboard events. FIXME: doesn't work. */
+	  NSWindow *menu_window= [[self mainMenu] window];
+	  NSDebugLLog(@"Focus", @"No key on activation - make menu key");
+	  [GSServerForWindow(menu_window) setinputfocus: 
+			      [menu_window windowNumber]];
+        }
 
       [nc postNotificationName: NSApplicationDidBecomeActiveNotification
 			object: self];
@@ -975,6 +984,10 @@ static NSCell* tileCell = nil;
 	  _hidden_key = [self keyWindow];
 	  [_hidden_key resignKeyWindow];
 	}
+      // FIXME: main window is not saved for when the app is activated again.
+      // This is not a problem if it is also key, and I'm not sure if it
+      // is a problem at all. May be annoying in the case of workspace switch.
+      [[self mainWindow] resignMainWindow];
       for (i = 0; i < count; i++)
 	{
 	  NSModalSession theSession;
@@ -1496,13 +1509,11 @@ See -runModalForWindow:
 	  if (!theEvent)
 	    NSDebugLLog(@"NSEvent", @"NSEvent is nil!\n");
 	  if (type == NSMouseMoved)
-	    NSDebugLLog(@"NSMotionEvent", @"Send move (%d) to window %@", 
-			type, ((window != nil) ? [window description] 
-			       : @"No window"));
+	    NSDebugLLog(@"NSMotionEvent", @"Send move (%d) to window %d", 
+			type, [window windowNumber]);
 	  else
-	    NSDebugLLog(@"NSEvent", @"Send NSEvent type: %d to window %@", 
-			type, ((window != nil) ? [window description] 
-			       : @"No window"));
+	    NSDebugLLog(@"NSEvent", @"Send NSEvent type: %d to window %d", 
+			type, [window windowNumber]);
 	  if (window)
 	    [window sendEvent: theEvent];
 	  else if (type == NSRightMouseDown)
@@ -1884,6 +1895,11 @@ image.
       [nc postNotificationName: NSApplicationWillUnhideNotification
 			object: self];
 
+      /* Make sure we set this before ordering windows to avoid possible
+	 recursive loops (some methods window/backend methods check if
+	 the app is hidden before ordering a window).  */
+      _app_is_hidden = NO;
+
       count = [_hidden count];
       for (i = 0; i < count; i++)
 	{
@@ -1896,8 +1912,6 @@ image.
 	  [_hidden_key makeKeyAndOrderFront: self];
 	  _hidden_key = nil;
 	}
-
-      _app_is_hidden = NO;
 
       [nc postNotificationName: NSApplicationDidUnhideNotification
 			object: self];
