@@ -334,25 +334,35 @@ static NSMapTable* windowmaps = NULL;
 + (NSRect) contentRectForFrameRect: (NSRect)aRect
 			 styleMask: (unsigned int)aStyle
 {
+  // FIXME: The server should be asked for the border size
   return aRect;
 }
 
 + (NSRect) frameRectForContentRect: (NSRect)aRect
 			 styleMask: (unsigned int)aStyle
 {
+  // FIXME: The server should be asked for the border size
   return aRect;
 }
 
 + (NSRect) minFrameWidthWithTitle: (NSString *)aTitle
 			styleMask: (unsigned int)aStyle
 {
+  // FIXME: The server should be asked for the border size
   return NSZeroRect;
 }
 
 /* default Screen and window depth */
 + (NSWindowDepth) defaultDepthLimit
 {
+  // FIXME: This should come from the server
   return 8;
+}
+
++ (void)menuChanged:(NSMenu *)aMenu
+{
+  // FIXME: This method is for MS Windows only, does nothing 
+  // on other window systems 
 }
 
 /*
@@ -482,6 +492,7 @@ static NSMapTable* windowmaps = NULL;
      part a view is drawing in, so NSWindow only has to flush that portion */
   rectsBeingDrawn = RETAIN([NSMutableArray arrayWithCapacity: 10]);
 
+  // FIXME: If flag is YES, the creation of the window should be defered
   DPSwindow(context, NSMinX(contentRect), NSMinY(contentRect),
 	    NSWidth(contentRect), NSHeight(contentRect),
 	    bufferingType, &window_num);
@@ -611,7 +622,7 @@ static NSMapTable* windowmaps = NULL;
 
 - (NSDictionary *) deviceDescription
 {
-  return nil;
+  return [[self screen] deviceDescription];
 }
 
 - (int) gState
@@ -712,11 +723,14 @@ static NSMapTable* windowmaps = NULL;
 
 - (NSText *) fieldEditor: (BOOL)createFlag forObject: (id)anObject
 {
+  NSText *edit;
   /* ask delegate if it can provide a field editor */
-  if ([_delegate respondsToSelector:
-	    @selector(windowWillReturnFieldEditor:toObject:)])
-    return [_delegate windowWillReturnFieldEditor: self toObject: anObject];
-
+  if ((_delegate != anObject) && 
+      [_delegate respondsToSelector:
+		   @selector(windowWillReturnFieldEditor:toObject:)] && 
+      (edit = [_delegate windowWillReturnFieldEditor: self toObject: anObject]) != nil)
+    return edit;
+  
   /*
    * Each window has a global text field editor, if it doesn't exist create it
    * if create flag is set
@@ -752,6 +766,11 @@ static NSMapTable* windowmaps = NULL;
     {
       NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
+      [first_responder becomeFirstResponder];
+      if ((first_responder != self) && 
+	  [first_responder respondsToSelector: @selector(becomeKeyWindow)])
+	[first_responder becomeKeyWindow];
+
       _f.is_key = YES;
       DPSsetinputfocus(GSCurrentContext(), window_num);
       [self resetCursorRects];
@@ -772,12 +791,21 @@ static NSMapTable* windowmaps = NULL;
 
 - (BOOL) canBecomeKeyWindow
 {
-  return YES;
+  if ((NSResizableWindowMask | NSTitledWindowMask) & style_mask)
+    return YES;
+  else
+    return NO;
 }
 
 - (BOOL) canBecomeMainWindow
 {
-  return YES;
+  if (!_f.visible)
+    return NO;
+
+  if ((NSResizableWindowMask | NSTitledWindowMask) & style_mask)
+    return YES;
+  else
+    return NO;
 }
 
 - (BOOL) hidesOnDeactivate
@@ -1006,8 +1034,13 @@ static NSMapTable* windowmaps = NULL;
     {
       NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
+      // FIXME: This is in the documentation, but does not work
+      //if ((first_responder != nil) && (first_responder != self))
+      //[first_responder resignKeyWindow];
+
       _f.is_key = NO;
       [self discardCursorRects];
+
       [nc postNotificationName: NSWindowDidResignKeyNotification object: self];
     }
 }
@@ -1019,6 +1052,7 @@ static NSMapTable* windowmaps = NULL;
       NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
       _f.is_main = NO;
+
       [nc postNotificationName: NSWindowDidResignMainNotification object: self];
     }
 }
@@ -1041,6 +1075,7 @@ static NSMapTable* windowmaps = NULL;
  */
 - (NSPoint) cascadeTopLeftFromPoint: (NSPoint)topLeftPoint
 {
+  // FIXME: The implementation of this method is missing
   return NSZeroPoint;
 }
 
@@ -1057,6 +1092,7 @@ static NSMapTable* windowmaps = NULL;
 
 - (NSRect) constrainFrameRect: (NSRect)frameRect toScreen: screen
 {
+  // FIXME: The implementation of this method is missing
   return NSZeroRect;
 }
 
@@ -1179,6 +1215,17 @@ static NSMapTable* windowmaps = NULL;
 			 window_num);
 }
 
+- (NSSize) aspectRatio
+{
+  // FIXME: This method is missing
+  return NSMakeSize(1, 1); 
+}
+
+- (void) setAspectRatio: (NSSize)ratio
+{
+  // FIXME: This method is missing
+}
+
 /*
  * Converting coordinates
  */
@@ -1213,6 +1260,7 @@ static NSMapTable* windowmaps = NULL;
 - (void) display
 {
   _rFlags.needs_display = NO;
+  // FIXME: Is the first responder processing needed here?
   if ((!first_responder) || (first_responder == self))
     if (_initial_first_responder)
       [self makeFirstResponder: _initial_first_responder];
@@ -1374,6 +1422,21 @@ static NSMapTable* windowmaps = NULL;
   return _rFlags.needs_display;
 }
 
+- (void)cacheImageInRect:(NSRect)aRect
+{
+  // FIXME: This Method is missing
+}
+
+- (void)discardCachedImage
+{
+  // FIXME: This Method is missing
+}
+
+- (void)restoreCachedImage
+{
+  // FIXME: This Method is missing
+}
+
 - (void) useOptimizedDrawing: (BOOL)flag
 {
   _f.optimize_drawing = flag;
@@ -1389,6 +1452,7 @@ static NSMapTable* windowmaps = NULL;
 
 - (NSScreen *) deepestScreen
 {
+  // FIXME: We must check the screens the window is on
   return [NSScreen deepestScreen];
 }
 
@@ -1404,11 +1468,15 @@ static NSMapTable* windowmaps = NULL;
 
 - (NSScreen *) screen
 {
+  // FIXME: Works only if there is only one screen
   return [NSScreen mainScreen];
 }
 
 - (void) setDepthLimit: (NSWindowDepth)limit
 {
+  if (limit == 0)
+    limit = [[self class] defaultDepthLimit];
+
   depth_limit = limit;
 }
 
@@ -1551,8 +1619,8 @@ resetCursorRectsForView(NSView *theView)
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
   _f.is_miniaturized = NO;
+  // FIXME: Here seems to be something missing
 
-  [self performDeminiaturize: self];
   [nc postNotificationName: NSWindowDidDeminiaturizeNotification object: self];
 }
 
@@ -1568,21 +1636,37 @@ resetCursorRectsForView(NSView *theView)
 
 - (void) miniaturize: sender
 {
-  if ((style_mask & (NSIconWindowMask | NSMiniWindowMask)) == 0)
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  
+  [nc postNotificationName: NSWindowWillMiniaturizeNotification
+      object: self];
+  
+  /*
+   * Ensure that we have a miniwindow counterpart.
+   */
+  if (_counterpart == 0)
     {
-      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-
-      [nc postNotificationName: NSWindowWillMiniaturizeNotification
-			object: self];
-
-      [self performMiniaturize: self];
-      [nc postNotificationName: NSWindowDidMiniaturizeNotification
-			object: self];
+      NSWindow		*mini;
+      NSMiniWindowView	*v;
+      
+      mini = [[NSMiniWindow alloc]
+	       initWithContentRect: NSMakeRect(0,0,64,64)
+	       styleMask: NSMiniWindowMask
+	       backing: NSBackingStoreBuffered
+	       defer: NO];
+      mini->_counterpart = [self windowNumber];
+      _counterpart = [mini windowNumber];
+      v = [[NSMiniWindowView alloc] initWithFrame: NSMakeRect(0,0,64,64)];
+      [v setImage: [self miniwindowImage]];
+      [v setTitle: [self miniwindowTitle]];
+      [mini setContentView: v];
+      RELEASE(v);
     }
-  else
-    {
-      NSLog(@"Attempt to miniaturise miniwindow or iconwindow");
-    }
+  DPSminiwindow(GSCurrentContext(), window_num);
+  _f.is_miniaturized = YES;
+  
+  [nc postNotificationName: NSWindowDidMiniaturizeNotification
+      object: self];
 }
 
 - (void) performClose: sender
@@ -1622,6 +1706,7 @@ resetCursorRectsForView(NSView *theView)
 	}
     }
 
+  // FIXME: The button should be highlighted
   [self close];
 }
 
@@ -1634,40 +1719,20 @@ resetCursorRectsForView(NSView *theView)
 
 - (void) performMiniaturize: (id)sender
 {
-  if ((style_mask & (NSIconWindowMask | NSMiniWindowMask)) == 0)
+  if (!(style_mask & (NSIconWindowMask | NSMiniWindowMask)))
     {
-      /*
-       * Ensure that we have a miniwindow counterpart.
-       */
-      if (_counterpart == 0)
-	{
-	  NSWindow		*mini;
-	  NSMiniWindowView	*v;
-
-	  mini = [[NSMiniWindow alloc]
-	    initWithContentRect: NSMakeRect(0,0,64,64)
-		      styleMask: NSMiniWindowMask
-			backing: NSBackingStoreBuffered
-			  defer: NO];
-	  mini->_counterpart = [self windowNumber];
-	  _counterpart = [mini windowNumber];
-	  v = [[NSMiniWindowView alloc] initWithFrame: NSMakeRect(0,0,64,64)];
-	  [v setImage: [self miniwindowImage]];
-	  [v setTitle: [self miniwindowTitle]];
-	  [mini setContentView: v];
-	  RELEASE(v);
-	}
-      DPSminiwindow(GSCurrentContext(), window_num);
-      _f.is_miniaturized = YES;
+      // FIXME: The button should be highlighted
+      [self miniaturize: sender];
     }
   else
     {
-      NSLog(@"Attempt to miniaturise miniwindow or iconwindow");
+      NSBeep();
     }
 }
 
 - (int) resizeFlags
 {
+  // FIXME: The implementation is missing
   return 0;
 }
 
@@ -1737,7 +1802,13 @@ resetCursorRectsForView(NSView *theView)
     return NO;
 
   first_responder = aResponder;
-  [first_responder becomeFirstResponder];
+  if (![first_responder becomeFirstResponder])
+    {
+      first_responder = self;
+      [first_responder becomeFirstResponder];
+      return NO;
+    }
+
   return YES;
 }
 
@@ -1779,6 +1850,7 @@ resetCursorRectsForView(NSView *theView)
 	}
       return;
     }
+  // FIXME: The return key should trigger the default botton
 
   // Try to process the event as a key equivalent
   // without Command having being pressed
@@ -2370,6 +2442,7 @@ resetCursorRectsForView(NSView *theView)
 
 - (BOOL) tryToPerform: (SEL)anAction with: anObject
 {
+  // FIXME: On NO we should hand it on to the delegate
   return ([super tryToPerform: anAction with: anObject]);
 }
 
@@ -2545,6 +2618,7 @@ resetCursorRectsForView(NSView *theView)
 {
   id result = nil;
 
+  // FIXME: We should not forward this method if the delegate is a NSResponder
   if (_delegate && [_delegate respondsToSelector: _cmd])
     result = [_delegate validRequestorForSendType: sendType
 				      returnType: returnType];
@@ -2776,9 +2850,39 @@ resetCursorRectsForView(NSView *theView)
     (int)sRect.size.width, (int)sRect.size.height];
 }
 
+/*
+ * Printing and postscript
+ */
+- (NSData *) dataWithEPSInsideRect: (NSRect)rect
+{
+  // FIXME: The implementation of this method is missing
+  return nil;
+}
+
+- (void) fax: (id)sender
+{
+  // FIXME: This method is missing
+}
+
+- (void) print: (id)sender
+{
+  // FIXME: This method is missing
+}
+
+/*
+ * Zooming
+ */
+
+- (BOOL)isZoomed
+{
+  // FIXME: Method is missing  
+  return NO;
+}
+
 - (void) performZoom: (id)sender
 {
-  NSLog (@"[NSWindow performZoom:] not implemented yet");
+  // FIXME: We should check for the style and highlight the button
+  [self zoom: sender];
 }
 
 - (void) zoom: (id)sender
@@ -2788,18 +2892,29 @@ resetCursorRectsForView(NSView *theView)
 
 
 /*
- * Printing and postscript
+ * Default botton
  */
-- (NSData *) dataWithEPSInsideRect: (NSRect)rect
+
+- (NSButtonCell *)defaultButtonCell
 {
+  // FIXME: Method is missing
   return nil;
 }
 
-- (void) fax: (id)sender
-{}
+- (void)setDefaultButtonCell:(NSButtonCell *)aButtonCell
+{
+  // FIXME: Method is missing
+}
 
-- (void) print: (id)sender
-{}
+- (void)disableKeyEquivalentForDefaultButtonCell
+{
+  // FIXME: Method is missing
+}
+
+- (void)enableKeyEquivalentForDefaultButtonCell
+{
+  // FIXME: Method is missing
+}
 
 /*
  * Assigning a delegate
@@ -2839,6 +2954,7 @@ resetCursorRectsForView(NSView *theView)
   SET_DELEGATE_NOTIFICATION(WillMove);
 }
 
+#if 0
 /*
  * Implemented by the delegate
  */
@@ -2958,6 +3074,7 @@ resetCursorRectsForView(NSView *theView)
   if ([_delegate respondsToSelector: @selector(windowWillMove:)])
     return [_delegate windowWillMove: aNotification];
 }
+#endif
 
 /*
  * NSCoding protocol
@@ -3104,6 +3221,12 @@ resetCursorRectsForView(NSView *theView)
   interface_style = aStyle;
 }
 
+- (void *)windowHandle
+{
+  // FIXME: Should only be defined on MS Windows
+  return (void *) 0;
+}
+
 @end
 
 /*
@@ -3149,9 +3272,20 @@ resetCursorRectsForView(NSView *theView)
   _f.visible = flag;
 }
 
-- (void) performDeminiaturize: sender	  {}
-- (void) performHide: sender		  {}
-- (void) performUnhide: sender		  {}
+- (void) performDeminiaturize: sender
+{
+  [self deminiaturize: sender];
+}
+
+- (void) performHide: sender
+{
+  // FIXME: Implementation is missing
+}
+
+- (void) performUnhide: sender
+{
+  // FIXME: Implementation is missing
+}
 
 /*
  * Allow subclasses to init without the backend

@@ -1,3 +1,9 @@
+Sat Mar 04 06:57:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSWindow.m: Patch be Fred Kiefer - switch miniaturize and
+	performMiniatuize methods, make a few other methods conform to
+	MacOS-X spec exactly.
+
 Fri Mar 03 05:36:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSMenu.m:([NSMenuWindowTitleView -drawRect:]) fixed to draw
