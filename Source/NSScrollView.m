@@ -732,7 +732,28 @@ static float scrollerWidth;
       [cornerView setFrameOrigin: headerRect.origin];
     }
 
-  // FIXME: The Rulers should be positioned too
+  /* Now place the rulers.  */
+  if (_rulersVisible)
+    {
+      if (_hasHorizRuler)
+	{
+	  NSRect horizRulerRect;
+	  
+	  NSDivideRect (contentRect, &horizRulerRect, &contentRect,
+			[_horizRuler requiredThickness], topEdge);
+	  [_horizRuler setFrame: horizRulerRect];
+	}
+
+      if (_hasVertRuler)
+	{
+	  NSRect vertRulerRect;
+	  
+	  NSDivideRect (contentRect, &vertRulerRect, &contentRect,
+			[_vertRuler requiredThickness], NSMinXEdge);
+	  [_vertRuler setFrame: vertRulerRect];
+	}
+    }
+
   [_contentView setFrame: contentRect];
 }
 
