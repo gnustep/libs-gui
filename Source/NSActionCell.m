@@ -115,7 +115,7 @@ static Class controlClass;
 
 - (void) setEnabled: (BOOL)flag
 {
-  _cell.is_enabled = flag;
+  _cell.is_disabled = !flag;
   if (_control_view)
     if ([_control_view isKindOfClass: controlClass])
       [(NSControl *)_control_view updateCell: self];
