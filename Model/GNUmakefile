@@ -38,6 +38,7 @@ endif
 
 ifeq ($(BUILD_NIB2GMODEL), yes)
 TOOL_NAME = nib2gmodel
+ADDITIONAL_TOOL_LIBS += -lgmodel
 endif
 
 #APP_NAME = test
