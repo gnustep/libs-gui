@@ -1461,7 +1461,7 @@ many times.
   <p>
   If place is NSWindowAbove or NSWindowBelow and the application is
   hidden, the application is unhidden.
-  <p>
+  </p>
 */
 /*
   As a special undocumented case (for -orderFrontRegardless), if otherWin
