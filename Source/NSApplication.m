@@ -2119,7 +2119,10 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
   if (shouldTerminate)
     {
       NSDictionary	*userInfo;
+      NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
 
+      [nc postNotificationName: NSApplicationWillTerminateNotification
+	  object: self];
       app_should_quit = YES;
       /*
        * add dummy event to queue to assure loop cycles
@@ -2168,6 +2171,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
   SET_DELEGATE_NOTIFICATION(WillFinishLaunching);
   SET_DELEGATE_NOTIFICATION(WillHide);
   SET_DELEGATE_NOTIFICATION(WillResignActive);
+  SET_DELEGATE_NOTIFICATION(WillTerminate);
   SET_DELEGATE_NOTIFICATION(WillUnhide);
   SET_DELEGATE_NOTIFICATION(WillUpdate);
 }

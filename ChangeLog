@@ -1,3 +1,9 @@
+Tue Sep  5 03:04:41 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSApplication.m ([-terminate:]): Post
+	NSApplicationWillTerminateNotification.  ([-setDelegate:]):
+	Register the delegate for NSApplicationWillTerminateNotification.
+
 Tue Sep  5 00:31:50 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSClipView.m ([-encodeWithCoder:]), ([-initWithCoder:]):
