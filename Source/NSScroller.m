@@ -126,7 +126,7 @@ static NSColor *scrollBarColor = nil;
 
 - (void) setTarget: (id)target
 {
-  ASSIGN(_target, target);
+  _target = target;
 }
 
 - (id) target
@@ -172,6 +172,8 @@ static NSColor *scrollBarColor = nil;
   [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &_arrowsPosition];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isEnabled];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_target];
+  // Undo RETAIN by decoder
+  TEST_RELEASE(_target);
   [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
 
   [self drawParts];
