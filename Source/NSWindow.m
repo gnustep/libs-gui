@@ -2351,6 +2351,43 @@ resetCursorRectsForView(NSView *theView)
       autosave_name = name;
       [name release];
     }
+  else
+    {
+      NSUserDefaults	*defs;
+      NSString		*key;
+
+      /*
+       * Autosave name cleared - remove from defaults database.
+       */
+      defs = [NSUserDefaults standardUserDefaults];
+      if ([self isKindOfClass: [NSMenuWindow class]]) 
+	{
+	  id	dict;
+
+	  key = @"NSMenuLocations";
+	  dict = [defs objectForKey: key];
+	  if (dict == nil)
+	    {
+	      dict = [NSMutableDictionary dictionaryWithCapacity: 1];
+	    } 
+	  else if ([dict isKindOfClass: [NSDictionary class]] == NO)
+	    {
+	      NSLog(@"NSMenuLocations is not a dictionary - overwriting");
+	      dict = [NSMutableDictionary dictionaryWithCapacity: 1];
+	    }
+	  else
+	    {
+	      dict = AUTORELEASE([dict mutableCopy]);
+	    }
+	  [dict removeObjectForKey: name];
+	  [defs setObject: dict forKey: key];
+	}
+      else
+	{
+	  key = [NSString stringWithFormat: @"NSWindow Frame %@", name];
+	  [defs removeObjectForKey: key];
+	}
+    }
   [windowsLock unlock];
   return YES;
 }

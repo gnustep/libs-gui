@@ -1790,6 +1790,22 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   return NO;
 }
 
+- (NSScrollView*) enclosingScrollView
+{
+  id	aView = [self superview];
+
+  while (aView != nil)
+    {
+      if ([aView isKindOfClass: [NSScrollView class]])
+	{
+	  break;
+	}
+      aView = [aView superview];
+    }
+
+  return aView;
+}
+
 /*
  * Managing the Cursor
  *

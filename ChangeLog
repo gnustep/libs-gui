@@ -1,3 +1,14 @@
+Web Dec  1  8:27:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Applied and modified/rewrote patch by Jonathan Gapen
+	* Headers/gnustep/gui/NSImage.h: Moved excess BOOL ivar to _flags.
+	* Headers/NSView.h: Added -enclosingScrollView method and NSScrollView
+	class reference.
+	* Source/NSImage.m ([NSImage -setFlipped:]): Implemented.
+	([NSImage -isFlipped]): Implemented.
+	NOTE: NSImage not updated to respect flipped setting.
+	* Source/NSView.m ([NSView -enclosingScrollView]): Implemented.
+
 1999-11-30  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/NSBrowser.m: Add some ivars, removed others.

@@ -261,6 +261,16 @@ static NSDictionary* nsmapping = nil;
   return [nameDict objectForKey: aName];
 }
 
+- (BOOL) isFlipped
+{
+  return _flags.flipDraw;
+}
+
+- (void) setFlipped: (BOOL)flag
+{
+  _flags.flipDraw = flag;
+}
+
 // Designated initializer for nearly everything.
 - initWithSize: (NSSize)aSize
 {
@@ -540,7 +550,7 @@ static NSDictionary* nsmapping = nil;
   unsigned	i, count;
   GSRepData	*repd;
 
-  _syncLoad = NO;
+  _flags.syncLoad = NO;
   count = [_reps count];
   for (i = 0; i < count; i++) 
     {
@@ -744,7 +754,7 @@ static NSDictionary* nsmapping = nil;
   repd->fileName = [fileName retain];
   [_reps addObject: repd];
   [repd release];
-  _syncLoad = YES;
+  _flags.syncLoad = YES;
   return YES;
 }
 
@@ -761,7 +771,7 @@ static NSDictionary* nsmapping = nil;
   if (!imageRepArray)
     return;
 
-  if (_syncLoad)
+  if (_flags.syncLoad)
     [self _loadImageFilenames];
   count = [imageRepArray count];
   for (i = 0; i < count; i++)
@@ -838,7 +848,7 @@ static NSDictionary* nsmapping = nil;
     {
       if (![imageRep isKindOfClass: [NSCachedImageRep class]]) 
 	{
-	  GSRepData	*repd, *cached;
+	  GSRepData	*cached;
 	  int		depth;
 
 	  if (_flags.unboundedCacheDepth)
@@ -880,7 +890,7 @@ static NSDictionary* nsmapping = nil;
   unsigned	count;
 
   /* Make sure we have the images loaded in. */
-  if (_syncLoad)
+  if (_flags.syncLoad)
     [self _loadImageFilenames];
 
   count = [_reps count];
@@ -977,7 +987,7 @@ static NSDictionary* nsmapping = nil;
 
   if (!_repList)
     _repList = [[NSMutableArray alloc] init];
-  if (_syncLoad)
+  if (_flags.syncLoad)
     [self _loadImageFilenames];
   [_repList removeAllObjects];
   count = [_reps count];

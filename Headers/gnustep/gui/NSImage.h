@@ -44,34 +44,33 @@
 @class NSView;
 
 @interface NSImage : NSObject <NSCoding>
-
 {
   // Attributes
   NSString*	name;
   NSSize	_size;
   struct __imageFlags {
-    unsigned int        scalable:1;
-    unsigned int        dataRetained:1;
-    unsigned int        flipDraw:1;
-    unsigned int        uniqueWindow:1;
-    unsigned int        uniqueWasExplicitlySet:1;
-    unsigned int        sizeWasExplicitlySet:1;
-    unsigned int        builtIn:1;
-    unsigned int        needsToExpand:1;
-    unsigned int        useEPSOnResolutionMismatch:1;
-    unsigned int        colorMatchPreferred:1;
-    unsigned int        multipleResolutionMatching:1;
-    unsigned int        subImage:1;
-    unsigned int	    aSynch:1;
-    unsigned int	    archiveByName:1;
-    unsigned int        cacheSeparately:1;
-    unsigned int	    unboundedCacheDepth:1;
-  }                   _flags;
-  NSMutableArray*     _reps;
-  NSMutableArray*	_repList;
-  NSColor*	_color;
-  BOOL	_syncLoad;
-  NSView*	_lockedView;
+    unsigned	scalable:1;
+    unsigned	dataRetained:1;
+    unsigned	flipDraw:1;
+    unsigned	uniqueWindow:1;
+    unsigned	uniqueWasExplicitlySet:1;
+    unsigned	sizeWasExplicitlySet:1;
+    unsigned	builtIn:1;
+    unsigned	needsToExpand:1;
+    unsigned	useEPSOnResolutionMismatch:1;
+    unsigned	colorMatchPreferred:1;
+    unsigned	multipleResolutionMatching:1;
+    unsigned	subImage:1;
+    unsigned	aSynch:1;
+    unsigned	archiveByName:1;
+    unsigned	cacheSeparately:1;
+    unsigned	unboundedCacheDepth:1;
+    unsigned	syncLoad:1;
+  } _flags;
+  NSMutableArray	*_reps;
+  NSMutableArray	*_repList;
+  NSColor		*_color;
+  NSView	*_lockedView;
   id		delegate;
 }
 

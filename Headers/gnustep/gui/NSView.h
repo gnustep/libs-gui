@@ -47,6 +47,7 @@
 @class NSClipView;
 @class NSImage;
 @class NSCursor;
+@class NSScrollView;
 
 typedef int NSTrackingRectTag;
 
@@ -235,6 +236,7 @@ enum {
 //
 - (NSRect)adjustScroll:(NSRect)newVisible;
 - (BOOL)autoscroll:(NSEvent *)theEvent;
+- (NSScrollView*) enclosingScrollView;
 - (void)reflectScrolledClipView:(NSClipView *)aClipView;
 - (void)scrollClipView:(NSClipView *)aClipView
 	       toPoint:(NSPoint)aPoint;
