@@ -881,21 +881,47 @@ static NSMapTable* windowmaps = NULL;
  */
 - (NSPoint) convertBaseToScreen: (NSPoint)basePoint
 {
-  NSPoint screenPoint;
+  NSView	*wv = [content_view superview];
+  NSPoint	screenPoint;
 
   screenPoint.x = frame.origin.x + basePoint.x;
   screenPoint.y = frame.origin.y + basePoint.y;
 
+  /*
+   * Window coordiates are relative to the windowview - but the windowview
+   * may be offset from the windows position on the screen to allow for a
+   * title-bar and border, so we allow for that here.
+   */
+  if (wv != nil)
+    {
+      NSPoint	offset = [wv bounds].origin;
+
+      screenPoint.x += offset.x;
+      screenPoint.y += offset.y;
+    }
   return screenPoint;
 }
 
 - (NSPoint) convertScreenToBase: (NSPoint)screenPoint
 {
+  NSView	*wv = [content_view superview];
   NSPoint basePoint;
 
   basePoint.x = screenPoint.x - frame.origin.x;
   basePoint.y = screenPoint.y - frame.origin.y;
 
+  /*
+   * Window coordiates are relative to the windowview - but the windowview
+   * may be offset from the windows position on the screen to allow for a
+   * title-bar and border, so we allow for that here.
+   */
+  if (wv != nil)
+    {
+      NSPoint	offset = [wv bounds].origin;
+
+      basePoint.x -= offset.x;
+      basePoint.y -= offset.y;
+    }
   return basePoint;
 }
 

@@ -50,18 +50,11 @@
 #include <AppKit/GMArchiver.h>
 
 
-
-//*****************************************************************************
-//
-// 		NSPanel
-//
-//*****************************************************************************
-
 @implementation	NSPanel
 
-//
-// Class methods
-//
+/*
+ * Class methods
+ */
 + (void)initialize
 {
   if (self == [NSPanel class])
@@ -70,9 +63,9 @@
     }
 }
 
-//
-// Instance methods
-//
+/*
+ * Instance methods
+ */
 - (id) init
 {
   int style = NSTitledWindowMask | NSClosableWindowMask;
@@ -103,9 +96,9 @@
   return NO;
 }
 
-//
-// If we receive an escape, close.
-//
+/*
+ * If we receive an escape, close.
+ */
 - (void) keyDown: (NSEvent*)theEvent
 {
   if ([@"\e" isEqual: [theEvent charactersIgnoringModifiers]] &&
@@ -115,9 +108,9 @@
     [super keyDown: theEvent];
 }
 
-//
-// Determining the Panel's Behavior
-//
+/*
+ * Determining the Panel's Behavior
+ */
 - (BOOL) isFloatingPanel
 {
   return _isFloatingPanel;
@@ -148,9 +141,9 @@
   _becomesKeyOnlyIfNeeded = flag;
 }
 
-//
-// NSCoding protocol
-//
+/*
+ * NSCoding protocol
+ */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
@@ -164,12 +157,6 @@
 }
 
 @end /* NSPanel */
-
-//*****************************************************************************
-//
-// 		GSAlertPanel
-//
-//*****************************************************************************
 
 #define	PANX	362.0
 #define	PANY	161.0
@@ -204,9 +191,9 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
 
 @implementation	GSAlertPanel
 
-//
-// Class methods
-//
+/*
+ * Class methods
+ */
 + (void)initialize
 {
   if (self == [GSAlertPanel class])
@@ -501,12 +488,6 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
 
 @end /* GSAlertPanel */
 
-//*****************************************************************************
-//
-// 		Alert panel functions
-//
-//*****************************************************************************
-
 id
 NSGetAlertPanel(NSString *title,
 		NSString *msg,
@@ -536,11 +517,11 @@ NSGetAlertPanel(NSString *title,
 #else
 
       panel = [GSAlertPanel alloc];
-      panel = [panel initWithContentRect:NSMakeRect(0,0,PANX,PANY)
-					 styleMask: NSTitledWindowMask
-					 backing: NSBackingStoreRetained
-					 defer: YES
-					 screen: nil];
+      panel = [panel initWithContentRect: NSMakeRect(0, 0, PANX, PANY)
+			       styleMask: NSTitledWindowMask
+				 backing: NSBackingStoreRetained
+				   defer: YES
+				  screen: nil];
 
 #endif
     }
@@ -631,9 +612,9 @@ NSGetInformationalAlertPanel(NSString *title,
 void
 NSReleaseAlertPanel(id alertPanel)
 {
-  if (alertPanel != standardAlertPanel &&
-      alertPanel != informationalAlertPanel &&
-      alertPanel != criticalAlertPanel)
+  if (alertPanel != standardAlertPanel
+    && alertPanel != informationalAlertPanel
+    && alertPanel != criticalAlertPanel)
     [alertPanel release];
 }
 
@@ -692,7 +673,7 @@ NSRunCriticalAlertPanel(NSString *title,
 
   va_start (ap, otherButton);
   panel = NSGetCriticalAlertPanel(title, msg,
-		defaultButton, alternateButton, otherButton, ap);
+    defaultButton, alternateButton, otherButton, ap);
   va_end (ap);
 
   result = [panel runModal];
@@ -713,7 +694,7 @@ NSRunInformationalAlertPanel(NSString *title,
 
   va_start (ap, otherButton);
   panel = NSGetInformationalAlertPanel(title, msg,
-		defaultButton, alternateButton, otherButton, ap);
+    defaultButton, alternateButton, otherButton, ap);
   va_end (ap);
 
   result = [panel runModal];
@@ -774,7 +755,7 @@ NSRunLocalizedAlertPanel(NSString *table,
   else
     {
       panel = NSGetAlertPanel(title, message, defaultButton,
-			alternateButton, otherButton, ap);
+	alternateButton, otherButton, ap);
       standardAlertPanel = panel;
     }
 
