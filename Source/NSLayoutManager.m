@@ -906,26 +906,27 @@ _Sane(self);
    keep notifications in synch. */
 - (void) textContainerChangedTextView: (NSTextContainer*)aContainer
 {
-  /* It only makes sense if we have more than one text container */
-  if (_textContainersCount > 1)
+  unsigned index;
+  
+  index = [_textContainers indexOfObjectIdenticalTo: aContainer];
+  
+  if (index != NSNotFound)
     {
-      unsigned index;
-      
-      index = [_textContainers indexOfObjectIdenticalTo: aContainer];
-      
-      if (index != NSNotFound)
+      if (index == 0)
 	{
-	  if (index == 0)
+	  _firstTextView = [aContainer textView];
+	  
+	  /* It only makes sense to update the other text views if we
+             have more than one text container */
+	  if (_textContainersCount > 1)
 	    {
 	      /* It's the first text view.  Need to update everything. */
 	      int i;
-	      
-	      _firstTextView = [aContainer textView];
-	      
+
 	      for (i = 0; i < _textContainersCount; i++)
 		{
 		  NSTextView *tv;
-
+		  
 		  tv = [[_textContainers objectAtIndex: i] textView]; 
 		  [tv _updateMultipleTextViews];
 		}
