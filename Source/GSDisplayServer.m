@@ -559,7 +559,12 @@ GSCurrentServer(void)
 }
 
 /** Causes the window to be ordered onto or off the screen depending
-    on the value of op. The window is ordered relative to otherWin. */
+    on the value of op. The window is ordered relative to otherWin. 
+    The window will never be ordered in front of the current key/main
+    window except in the special case where otherWin is negative (This
+    is a special feature that [NSWindow-orderWindow:relativeTo:] uses
+    to place the window correctly).
+*/
 - (void) orderwindow: (int) op : (int) otherWin : (int) win
 {
   [self subclassResponsibility: _cmd];

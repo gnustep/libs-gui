@@ -1360,29 +1360,67 @@ many times.
   [self becomeMainWindow];
 }
 
+/**
+  Orders the window to the back of its level. Equivalent to
+  -orderWindow: NSWindowBelow relativeTo: 0.
+*/
 - (void) orderBack: (id)sender
 {
   [self orderWindow: NSWindowBelow relativeTo: 0];
 }
 
+/**
+  If the application is active, orders the window to the front in its
+  level. If the application is not active, the window is ordered in as
+  far forward as possible in its level without being ordered in front
+  of the key or main window of the currently active app. The current key
+  and main window status is not changed. Equivalent to -orderWindow:
+  NSWindowAbove relativeTo: 0.
+*/
 - (void) orderFront: (id)sender
-{
-  if ([NSApp isActive] == YES)
-    {
-      [self orderWindow: NSWindowAbove relativeTo: 0];
-    }
-}
-
-- (void) orderFrontRegardless
 {
   [self orderWindow: NSWindowAbove relativeTo: 0];
 }
 
+/**
+  Orders the window to the front in its level (even in front of the
+  key and main windows of the current app) regardless of whether the
+  app is current or not. This method should only be used in rare cases
+  where the app is cooperating with another app that is displaying
+  data for it.  The current key and main window status is not changed.
+*/
+- (void) orderFrontRegardless
+{
+  [self orderWindow: NSWindowAbove relativeTo: -1];
+}
+
+/**
+  Orders the window out from the screen. Equivalent to -orderWindow:
+  NSWindowOut relativeTo: 0.
+*/
 - (void) orderOut: (id)sender
 {
   [self orderWindow: NSWindowOut relativeTo: 0];
 }
 
+/**
+  <p> 
+  If place is NSWindowOut, removes the window from the screen. If
+  place is NSWindowAbove, places the window directly above otherWin,
+  or directly above all windows in its level if otherWin is 0.  If
+  place is NSWindowBelow, places the window directly below otherWin,
+  or directly below all windows in its level if otherWin is 0.
+  </p>
+  <p>
+  If place is NSWindowAbove or NSWindowBelow and the application is
+  hidden, the application is unhidden.
+  <p>
+*/
+/*
+  As a special undocumented case (for -orderFrontRegardless), if otherWin
+  is negative, then the backend should not try to keep the window below the
+  current key/main window
+*/
 - (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (int)otherWin
 {
   GSDisplayServer *srv = GSServerForWindow(self);
@@ -1434,6 +1472,14 @@ many times.
   else if (place != NSWindowOut)
     [_contentView displayIfNeeded];
 
+  /* The backend will keep us below the current key window unless we
+     force it not too */
+  if ((otherWin == 0 
+       || otherWin == [[NSApp keyWindow] windowNumber] 
+       || otherWin == [[NSApp mainWindow] windowNumber])
+      && [NSApp isActive])
+    otherWin = -1;
+    
   [srv orderwindow: place : otherWin : _windowNum];
   if (display)
     [self display];

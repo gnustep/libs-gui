@@ -1,3 +1,17 @@
+2004-01-10  Adam Fedor  <fedor@gnu.org>
+
+	* orderFront fixes
+	* Source/NSWindow.m (-orderFront:): Remove NSApp isActive
+	check.
+	(-orderFrontRegardless): Update for special case (otherWin=-1)
+	(-orderWindow:relativeTo:): Pass -1 for otherWin to backend
+	if we're the current app.
+
+	* Source/GSDisplayServer.m: Update documentations.
+
+	* Source/NSApplication.m (-changeWindowsItem:title:filename:): Revert
+	patch from 2003-10-20.
+
 2004-01-10 16:36  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSScrollView.m (-drawRect:): Indentation fixes after last

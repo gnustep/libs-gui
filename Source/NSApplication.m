@@ -2381,7 +2381,7 @@ image.
       i++;
     }
   item = [_windows_menu insertItemWithTitle: aString
-			action: @selector(deminiaturize:)
+			action: @selector(orderFront:)
 			keyEquivalent: @""
 			atIndex: i];
   [item setTarget: aWindow];
