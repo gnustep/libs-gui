@@ -132,6 +132,9 @@ therefore be stored in the NSLayoutManager to avoid problems.
   NSDictionary *_selectedTextAttributes; /* shared? */
   NSDictionary *_markedTextAttributes; /* shared? */
 
+  /* Range of marked text if any. */
+  NSRange _markedRange;
+
 
   /* shared by all text views attached to one NSTextStorage */
   int _spellCheckerDocumentTag;

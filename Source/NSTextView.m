@@ -56,6 +56,7 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSTimer.h>
 #include <Foundation/NSValue.h>
+#include <Foundation/NSUserDefaults.h>
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSClipView.h"
 #include "AppKit/NSColor.h"
@@ -76,6 +77,7 @@
 #include "AppKit/NSTextContainer.h"
 #include "AppKit/NSTextStorage.h"
 #include "AppKit/NSWindow.h"
+#include "AppKit/NSInputServer.h"
 
 
 /*
@@ -119,6 +121,11 @@ Interface for a bunch of internal methods that need to be cleaned up.
 //
 -(void) copySelection;
 -(void) pasteSelection;
+
+/* Create a temporary NSDictionary instance which specifies the attributes of
+   marked text based on the user default values NSMarkedTextAttribute and
+   NSMarkedTextColor. */
+- (NSDictionary *)_markedTextDefaultAttributes;
 @end
 
 
@@ -140,6 +147,9 @@ static NSNotificationCenter *notificationCenter;
 /* Default max. size. Don't change this without understanding and checking
 for roundoff issues. Whole points should be representable. */
 #define HUGE 1e7
+
+/* Constant used when there's no marked text  */
+static const NSRange _markedRangeNotMarked = { NSNotFound, 0 };
 
 
 /**** Synchronization stuff ****/
@@ -507,6 +517,9 @@ If a text view is added to an empty text network, it keeps its attributes.
 
   [container setTextView: self];
   [self invalidateTextContainerOrigin];
+
+  _markedRange = _markedRangeNotMarked;
+  [self setMarkedTextAttributes: [self _markedTextDefaultAttributes]];
 
   [self setPostsFrameChangedNotifications: YES];
   [notificationCenter addObserver: self
@@ -1563,6 +1576,7 @@ NSText. The implementation is among the selection handling methods and not
 here. */
 
 /* TODO: currently no support for marked text */
+/* Support for marked text has been under construction since 2004-05-10. */
 
 -(NSAttributedString *) attributedSubstringFromRange: (NSRange)theRange
 {
@@ -1601,25 +1615,117 @@ or add guards
 
 -(NSRange) markedRange
 {
-  return NSMakeRange(NSNotFound, 0);
+  return _markedRange;
 }
 
--(void) setMarkedText: (NSString *)aString  selectedRange: (NSRange)selRange
+-(void) setMarkedText: (NSString *)aString
+	selectedRange: (NSRange)selRange
 {
+  NSAttributedString *attrStr;
+
+  if (_tf.is_editable == NO || _layoutManager == nil)
+    {
+      return;
+    }
+  if (aString == nil || [aString isKindOfClass: [NSString class]] == NO)
+    {
+      return;
+    }
+
+  if ([aString isKindOfClass: [NSAttributedString class]] == NO)
+    {
+      attrStr =
+	[[NSAttributedString alloc] initWithString: aString
+					attributes: _markedTextAttributes];
+      if (attrStr == nil)
+	{
+	  return;
+	}
+      [attrStr autorelease];
+    }
+  else
+    {
+      attrStr = (NSAttributedString *)aString;
+    }
+
+  if ([self shouldChangeTextInRange: selRange
+		  replacementString: [attrStr string]] == NO)
+    {
+      return;
+    }
+
+  [_textStorage beginEditing];
+  if ([_textStorage length] == selRange.location)
+    {
+      NSRange r = NSMakeRange(selRange.location, 0);
+      int i;
+
+      for (i = 0; i < selRange.length; i++)
+	{
+	  [_textStorage replaceCharactersInRange: r
+				      withString: @" "];
+	}
+    }
+  [_textStorage replaceCharactersInRange: selRange
+		    withAttributedString: attrStr];
+  _markedRange = selRange;
+  [_textStorage endEditing];
+
+  [self didChangeText];
 }
 
 -(BOOL) hasMarkedText
 {
-  return NO;
+  /* By specification, this method returns NO if and only if
+     the location of marked text is NSNotFound _AND_ its length is 0. */
+  return !((_markedRange.location == _markedRangeNotMarked.location) &&
+	   (_markedRange.length == _markedRangeNotMarked.length));
 }
 
 -(void) unmarkText
 {
+  NSString		*str;
+  NSDictionary		*attr;
+  NSAttributedString	*attrStr;
+
+  if ([self hasMarkedText] == NO)
+    {
+      return;
+    }
+
+  str = [[self attributedSubstringFromRange: _markedRange] string];
+  attr = [NSDictionary dictionaryWithObjectsAndKeys:
+	    [NSColor textBackgroundColor], NSBackgroundColorAttributeName,
+	    [NSColor textColor], NSForegroundColorAttributeName,
+	    [NSNumber numberWithInt: 0], NSUnderlineStyleAttributeName,
+	    nil];
+  attrStr = [[NSAttributedString alloc] initWithString: str
+					    attributes: attr];
+  if (attrStr == nil)
+    {
+      return;
+    }
+  [attrStr autorelease];
+
+  if ([self shouldChangeTextInRange: _markedRange
+		  replacementString: [attrStr string]] == NO)
+    {
+      return;
+    }
+  [_textStorage replaceCharactersInRange: _markedRange
+		    withAttributedString: attrStr];
+  _markedRange = _markedRangeNotMarked;
+  [self didChangeText];
 }
 
 -(NSArray *) validAttributesForMarkedText
 {
-  return nil;
+  /* Since undeline is not supported yet (2004-05-10),
+     NSUnderlineStyleAttributeName is commented out. */
+  return [NSArray arrayWithObjects: NSForegroundColorAttributeName,
+                                    /* NSUnderlineStyleAttributeName, */
+				    NSBackgroundColorAttributeName,
+				    nil];
 }
 
 -(long int) conversationIdentifier
@@ -3958,6 +4064,34 @@ other than copy/paste or dragging. */
   NSPoint point, startPoint;
   unsigned startIndex;
 
+  if ([self hasMarkedText])
+    {
+      unsigned	i;
+      NSRect	r;
+      NSPoint	p;
+      BOOL	isInside;
+
+      isInside = NO;
+      p = [self convertPoint: [theEvent locationInWindow]
+		    fromView: nil];
+      i = _markedRange.location;
+      while (i < _markedRange.location + _markedRange.length)
+	{
+	  r = [self firstRectForCharacterRange: NSMakeRange(i, 1)];
+	  if ([self mouse: p inRect: r])
+	    {
+	      isInside = YES;
+	      break;
+	    }
+	  i++;
+	}
+      if (isInside == NO)
+	{
+	  [self unmarkText];
+	  return;
+	}
+    }
+
   /* If non selectable then ignore the mouse down. */
   if (_tf.is_selectable == NO)
     {
@@ -4286,7 +4420,129 @@ configuation! */
 	type: NSStringPboardType];
 }
 
+/* Heler method for _markedTextDefaultAttributes */
+- (NSColor *) _colorFromObject: (id)anObject
+{
+  if (anObject == nil)
+    {
+      return nil;
+    }
+  else if ([anObject isKindOfClass: [NSData class]])
+    {
+      /* TODO: Add support for a keyed archived object. */
+      NSColor *color = [NSUnarchiver unarchiveObjectWithData: anObject];
 
+      if ([color isKindOfClass: [NSColor class]])
+	{
+	  return color;
+	}
+      return nil;
+    }
+  else if ([anObject isKindOfClass: [NSString class]])
+    {
+      struct {
+	  NSString *key;
+	  SEL value;
+      } colorAndSel[] = {
+	    { @"black",		@selector(blackColor)	    },
+	    { @"blue",		@selector(blueColor)	    },
+	    { @"brown",		@selector(brownColor)	    },
+	    { @"clear",		@selector(clearColor)	    },
+	    { @"cyan",		@selector(cyanColor)	    },
+	    { @"darkGray",	@selector(darkGrayColor)    },
+	    { @"gray",		@selector(grayColor)	    },
+	    { @"green",		@selector(greenColor)	    },
+	    { @"lightGray",	@selector(lightGrayColor)   },
+	    { @"magenta",	@selector(magentaColor)	    },
+	    { @"orange",	@selector(orangeColor)	    },
+	    { @"purple",	@selector(purpleColor)	    },
+	    { @"red",		@selector(redColor)	    },
+	    { @"whiteColor",    @selector(whiteColor)	    },
+	    { @"yellowColor",   @selector(yellowColor)	    },
+      };
+      unsigned	i;
+      SEL	sel;
+
+      /* If the given string can be resolved to a factory selector on NSColor,
+         return an NSColor created by that factory selector. */
+      for (i = 0; i < sizeof(colorAndSel)/sizeof(colorAndSel[0]); i++)
+	{
+	  if ([anObject isEqualToString: colorAndSel[i].key])
+	    {
+	      sel = colorAndSel[i].value;
+	      if (sel)
+		{
+		  return [NSColor performSelector: sel];
+		}
+	    }
+	}
+
+      /* TODO: 
+	    (1) Extract the RGB components, if any, from anObject.
+	    (2) Instantiate an NSColor with the components.
+	    (3) Return it to the caller.
+         (Can't do it till the format is specified.) */
+      return nil;
+    }
+
+  return nil;
+}
+
+- (NSDictionary *) _markedTextDefaultAttributes
+{
+  NSUserDefaults	*defaults;
+  id			givenAttribute;
+  id			givenColor;
+  NSMutableDictionary	*attributes;
+  NSColor		*color;
+
+  attributes = [[[NSMutableDictionary alloc] initWithCapacity: 1] autorelease];
+  defaults	    = [NSUserDefaults standardUserDefaults];
+  givenAttribute    = [defaults objectForKey: @"NSMarkedTextAttribute"];
+  givenColor	    = [defaults objectForKey: @"NSMarkedTextColor"];
+
+  /* Set up default values */
+  [attributes setObject: [NSColor yellowColor]
+		 forKey: NSBackgroundColorAttributeName];
+  [attributes setObject: [NSColor textColor]
+		 forKey: NSForegroundColorAttributeName];
+  [attributes setObject: [NSNumber numberWithInt: 0] /* 0 -- no underline */
+		 forKey: NSUnderlineStyleAttributeName];
+
+  /* Override the default values as many as needed */
+  if ((color = [self _colorFromObject: givenAttribute]) != nil)
+    {
+      [attributes setObject: color
+		     forKey: NSBackgroundColorAttributeName];
+    }
+  else if ([givenAttribute isKindOfClass: [NSString class]])
+    {
+      if ([givenAttribute isEqualToString: @"Background"])
+	{
+	  if ((color = [self _colorFromObject: givenColor]) != nil)
+	    {
+	      [attributes setObject: color
+			     forKey: NSBackgroundColorAttributeName];
+	    }
+	}
+      else if ([givenAttribute isEqualToString: @"Underline"])
+	{
+	  NSNumber *style = [NSNumber numberWithInt: NSSingleUnderlineStyle];
+
+	  if ((color = [self _colorFromObject: givenColor]) != nil)
+	    {
+	      [attributes setObject: color
+			     forKey: NSForegroundColorAttributeName];
+	      [attributes setObject: [NSColor textBackgroundColor]
+			     forKey: NSBackgroundColorAttributeName];
+	    }
+	  [attributes setObject: style
+			 forKey: NSUnderlineStyleAttributeName];
+	}
+    }
+
+  return attributes;
+}
 
 @end
 
