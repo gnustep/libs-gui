@@ -2137,6 +2137,12 @@ image.
     }
 }
 
+/** Changes the Window menu item associated with aWindow to aString. If no
+    associated window item exists, one is created. If isFilename is YES, then
+    aString is assumed to be a filename representation the way
+    [NSWindow-setTitleWithRepresentedFilename:] would format it, otherwise
+    the string is displayed literally in the menu item.
+ */
 - (void) changeWindowsItem: (NSWindow*)aWindow
 		     title: (NSString*)aString
 		  filename: (BOOL)isFilename
@@ -2237,7 +2243,7 @@ image.
       i++;
     }
   item = [_windows_menu insertItemWithTitle: aString
-			action: @selector(makeKeyAndOrderFront:)
+			action: @selector(deminiaturize:)
 			keyEquivalent: @""
 			atIndex: i];
   [item setTarget: aWindow];

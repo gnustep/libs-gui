@@ -311,6 +311,7 @@ backgroundColorHint:(NSColor *)bg
 
 - (void) mouseExited: (NSEvent*)theEvent
 {
+  NSDebugLLog(@"NSCursor", @"Cursor mouseExited:");
   if (_is_set_on_mouse_exited == YES)
     {
       [self set];
