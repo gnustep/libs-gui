@@ -1,3 +1,10 @@
+2000-04-24  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Parser/*: Updated the parser to support more of the RTF
+	specification
+	* NSAttributedString.m: Use new parser
+	* NSText.m: Small improvements on formatting
+
 2000-04-23  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* GSTextStorage.m: Corrections in replaceCharactersInRange:withString:
