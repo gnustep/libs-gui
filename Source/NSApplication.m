@@ -691,7 +691,6 @@ static NSCell* tileCell = nil;
   NSUserDefaults	*defs = [NSUserDefaults standardUserDefaults];
   NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
   NSString		*filePath;
-  NSDictionary		*userInfo;
   NSArray		*windows_list;
   unsigned		count;
   unsigned		i;
@@ -827,18 +826,11 @@ static NSCell* tileCell = nil;
   [nc postNotificationName: NSApplicationDidFinishLaunchingNotification
 		    object: self];
 
-  userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-    [[NSProcessInfo processInfo] processName], @"NSApplicationName",
-    [[NSBundle mainBundle] bundlePath],        @"NSApplicationPath",
-    [NSNumber numberWithInt: [[NSProcessInfo processInfo] processIdentifier]], 
-                                             @"NSApplicationProcessIdentifier",
-    nil];
-
   NS_DURING
     [[workspace notificationCenter]
       postNotificationName: NSWorkspaceDidLaunchApplicationNotification
       object: workspace
-      userInfo: userInfo];
+      userInfo: [workspace activeApplication]];
   NS_HANDLER
     NSLog (_(@"Problem during launch app notification: %@"),
 	   [localException reason]);
@@ -2363,7 +2355,6 @@ image.
 {
   if (shouldTerminate)
     {
-      NSDictionary *userInfo;
       NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
 
       [nc postNotificationName: NSApplicationWillTerminateNotification
@@ -2377,13 +2368,10 @@ image.
       [[NSUserDefaults standardUserDefaults] synchronize];
 
       /* Tell the Workspace that we really did terminate.  */
-      userInfo = [NSDictionary dictionaryWithObject:
-	[[NSProcessInfo processInfo] processName] forKey: 
-				 @"NSApplicationName"];
       [[workspace notificationCenter]
         postNotificationName: NSWorkspaceDidTerminateApplicationNotification
 		      object: workspace
-		    userInfo: userInfo];
+		    userInfo: [workspace activeApplication]];
 
       /* Destroy the main run loop pool (this also destroys any nested
 	 pools which might have been created inside this one).  */
