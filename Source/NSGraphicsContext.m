@@ -652,8 +652,8 @@ NSGraphicsContext	*GSCurrentContext(void)
 /* ----------------------------------------------------------------------- */
 /* NSGraphics Ops */	
 /* ----------------------------------------------------------------------- */
-  methodTable.NSReadPixel_ =
-    GET_IMP(@selector(NSReadPixel:));
+  methodTable.GSReadRect_ =
+    GET_IMP(@selector(GSReadRect:));
 
   methodTable.NSBeep =
     GET_IMP(@selector(NSBeep));
@@ -1454,9 +1454,13 @@ NSGraphicsContext	*GSCurrentContext(void)
 /* NSGraphics Ops */	
 /* ----------------------------------------------------------------------- */
 @implementation NSGraphicsContext (NSGraphics)
-/** Read the Color at a Screen Position
+/** Read the data inside rect (defined in the current graphics state)
+    and return the information as a bitmap. The dictionary contains
+    the bitmap data plus various information about the size and format
+    of the data. The dictionary keys include ImageSize, ImageBPS,
+    ImageSPP, and ImageData.
 */
-- (NSColor *) NSReadPixel: (NSPoint) location
+- (NSDictionary *) GSReadRect: (NSRect) rect
 {
   [self subclassResponsibility: _cmd];
   return nil;

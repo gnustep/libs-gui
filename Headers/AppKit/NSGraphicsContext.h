@@ -373,7 +373,7 @@ APPKIT_EXPORT NSGraphicsContext	*GSCurrentContext(void);
 /* NSGraphics Ops */	
 /* ----------------------------------------------------------------------- */
 @interface NSGraphicsContext (NSGraphics) 
-- (NSColor *) NSReadPixel: (NSPoint) location;
+- (NSDictionary *) GSReadRect: (NSRect)rect;
 
 /* Soon to be obsolete */
 - (void) NSDrawBitmap: (NSRect) rect : (int) pixelsWide : (int) pixelsHigh

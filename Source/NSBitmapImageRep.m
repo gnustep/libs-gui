@@ -35,9 +35,11 @@
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSFileManager.h>
+#include <Foundation/NSValue.h>
 #include "AppKit/AppKitExceptions.h"
 #include "AppKit/NSBitmapImageRep.h"
 #include "AppKit/NSGraphics.h"
+#include "AppKit/NSGraphicsContext.h"
 #include "AppKit/NSPasteboard.h"
 #include "AppKit/NSView.h"
 #include "GSGuiPrivate.h"
@@ -224,11 +226,45 @@ static BOOL supports_lzw_compression = NO;
 
 - (id) initWithFocusedViewRect: (NSRect)rect
 {
-  // TODO
-  [self notImplemented: _cmd];
+  int bps, spp, alpha;
+  NSSize size;
+  NSString *space;
+  unsigned char *planes[4];
+  NSDictionary *dict;
 
-  RELEASE(self);
-  return nil;
+  dict = [GSCurrentContext() GSReadRect: rect];
+  if (dict == nil)
+    {
+      NSLog(@"NSBitmapImageRep initWithFocusedViewRect: failed");
+      RELEASE(self);
+      return nil;
+    }
+  _imageData = RETAIN([dict objectForKey: @"ImageData"]);
+  if (_imageData == nil)
+    {
+      NSLog(@"NSBitmapImageRep initWithFocusedViewRect: failed");
+      RELEASE(self);
+      return nil;
+    }
+  bps = [[dict objectForKey: @"ImageBPS"] intValue];
+  if (bps == 0)
+    bps = 8;
+  spp = [[dict objectForKey: @"ImageSPP"] intValue];
+  alpha = [[dict objectForKey: @"ImageAlpha"] intValue];
+  size = [[dict objectForKey: @"ImageSize"] sizeValue];
+  space = [dict objectForKey: @"ImageColorSpace"];
+  planes[0] = (unsigned char *)[_imageData mutableBytes];
+  self = [self initWithBitmapDataPlanes: planes
+		pixelsWide: size.width
+		pixelsHigh: size.height
+		bitsPerSample: bps
+		samplesPerPixel: spp
+	        hasAlpha: (alpha) ? YES : NO
+		isPlanar: NO
+		colorSpaceName: space
+		bytesPerRow: 0
+		bitsPerPixel: 0];
+  return self;
 }
 
 /** 

@@ -279,8 +279,8 @@ typedef struct {
 /* ----------------------------------------------------------------------- */
 /* NSGraphics Ops */	
 /* ----------------------------------------------------------------------- */
-  NSColor * (*NSReadPixel_)
-        (NSGraphicsContext*, SEL, NSPoint);
+  NSDictionary * (*GSReadRect_)
+        (NSGraphicsContext*, SEL, NSRect);
 
   void (*NSBeep)
         (NSGraphicsContext*, SEL);

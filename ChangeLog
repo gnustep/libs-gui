@@ -1,3 +1,12 @@
+2003-09-19  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/Additions/GNUstepGUI/GSMethodTable.h: Change NSReadPixel
+	to GSReadRect
+	* Headers/AppKit/NSGraphicsContext.h, Source/NSGraphicsContext.m: Idem.
+	* Headers/AppKit/NSGraphics.h (NSReadPixel): Move to...
+	* Source/Functions.m (NSReadPixel): here.
+	* Source/NSBitmapImageRep.m (-initWithFocusedViewRect:): Implement.
+	
 2003-09-16  Adam Fedor  <fedor@gnu.org>
 
 	* GNUmakefile (SUBPROJECTS): Don't build Documentation by default.

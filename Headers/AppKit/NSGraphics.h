@@ -138,13 +138,7 @@ APPKIT_EXPORT void NSDottedFrameRect(NSRect aRect);
 APPKIT_EXPORT void NSFrameRect(const NSRect aRect); 
 APPKIT_EXPORT void NSFrameRectWithWidth(const NSRect aRect, float frameWidth);
 
-static inline NSColor*
-NSReadPixel(NSPoint location)
-{
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  return (ctxt->methods->NSReadPixel_)
-    (ctxt, @selector(NSReadPixel:), location);
-}
+APPKIT_EXPORT NSColor* NSReadPixel(NSPoint location);
 
 APPKIT_EXPORT void NSCopyBitmapFromGState(int srcGstate, NSRect srcRect, 
 					  NSRect destRect);

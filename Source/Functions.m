@@ -301,8 +301,15 @@ NSPlanarFromDepth(NSWindowDepth depth)
 }
 
 /* Graphic Ops */
+NSColor* NSReadPixel(NSPoint location)
+{
+  NSLog(@"NSReadPixel not implemented");
+  return nil;
+}
+
 void NSCopyBitmapFromGState(int srcGstate, NSRect srcRect, NSRect destRect)
 {
+  NSLog(@"NSCopyBitmapFromGState not implemented");
 }
 
 void NSCopyBits(int srcGstate, NSRect srcRect, NSPoint destPoint)
