@@ -236,6 +236,10 @@ _selectionChange (NSTableView *tv, id delegate, int numberOfRows,
   _allowsEmptySelection = YES;
   _allowsMultipleSelection = NO;
   _allowsColumnSelection = YES;
+  _editedColumn = -1;
+  _editedRow = -1;
+  _selectedColumn = -1;
+  _selectedRow = -1;
   _headerView = [NSTableHeaderView new];
   [_headerView setFrameSize: NSMakeSize (frameRect.size.width, 22.0)];
   [_headerView setTableView: self];
