@@ -36,11 +36,14 @@
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSSet.h>
 
-#include <AppKit/NSPanel.h>
 #include <AppKit/NSBrowser.h>
+#include <AppKit/NSButton.h>
+#include <AppKit/NSForm.h>
+#include <AppKit/NSFormCell.h>
+#include <AppKit/NSPanel.h>
+#include <AppKit/NSTextField.h>
 
 @class NSString;
-@class NSView;
 
 enum {
   NSFileHandlingPanelImageButton,
@@ -56,15 +59,14 @@ enum {
 
 @interface NSSavePanel : NSPanel <NSCoding>
 {
-  id _accessoryView;
-  id _bottomView;
+  NSView* _accessoryView;
+  NSView* _bottomView;
   id _delegate;
-  id _browser;
-  id _form;
-  id _prompt;
-  id _okButton;
-  id _titleField;
-  id _topView;
+  NSBrowser* _browser;
+  NSForm* _form;
+  NSButton* _okButton;
+  NSTextField* _titleField;
+  NSView* _topView;
 
   NSSize _originalMinSize;
   NSSize _originalSize;
@@ -198,7 +200,6 @@ enum {
  * Methods Implemented by the Delegate 
  */
 @interface NSObject (NSSavePanelDelegate)
-
 /*
  * The NSSavePanel sends this message just before the end of a 
  * modal session for each file name displayed or selected 
@@ -216,7 +217,6 @@ enum {
 			with: (NSString *)filename2
 	       caseSensitive: (BOOL)caseSensitive;	 
 - (BOOL) panel: (id)sender shouldShowFilename: (NSString *)filename;
-
 @end
 
 #endif /* _GNUstep_H_NSSavePanel */
