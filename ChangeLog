@@ -1,3 +1,16 @@
+Wed Jun  2  4:10:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Added patches from jagapen@whitewater.chem.wisc.edu -
+	* Source/NSApplication.m: In setApplicationIconImage, invoke
+	([setName:@"NSApplicationIcon"]) on the appicon NSImage so gmodels
+	can use that name to get the appicon.
+	* Source/NSOpenPanel.m: Load the save panel gmodel as an NSOpenPanel
+	instead.  (Integrated from mGSTEP code.)
+	Raise an exception if the panel gmodel is not found.
+	Added +allocWithZone Removed some old code.
+	* Model/GMAppKit.m: Changed NSSavePanel code to support sub-classes
+	(i.e. NSOpenPanel). Encoding/decoding of titles for NSFormCell
+
 Tue Jun  1 18:20:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Headers/AppKit/NSResponder.h: New flag for dnd.

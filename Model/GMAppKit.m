@@ -1209,11 +1209,14 @@ void __dummy_GMAppKit_functionForLinking() {}
 			   @"backingType"];
     unsigned styleMask = [unarchiver decodeUnsignedIntWithName:@"styleMask"];
     NSRect aRect = [unarchiver decodeRectWithName:@"frame"];
-    NSSavePanel* panel = [[[NSSavePanel allocWithZone:[unarchiver objectZone]]
+    // Use [self class] here instead of NSSavePanel so as to invoke
+    // +allocWithZone on the correct (if any) sub-class
+    NSSavePanel* panel = [[[[self class] allocWithZone:[unarchiver objectZone]]
 			  initWithContentRect:aRect
 			  styleMask:styleMask backing:backingType defer:YES]
 			 autorelease];
 
+  NSDebugLLog(@"NSSavePanel", @"NSSavePanel +createObjectForModelUnarchiver");
     return panel;
 }
 
@@ -1443,3 +1446,22 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 @end /* NSTextFieldCell (GMArchiverMethods) */
 
+@implementation NSFormCell (GMArchiverMethods)
+
+- (void)encodeWithModelArchiver:(GMArchiver*)archiver
+{
+  [super encodeWithModelArchiver:archiver];
+
+  [archiver encodeString:[self title] withName:@"title"];
+}
+
+- (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
+{
+  self = [super initWithModelUnarchiver:unarchiver];
+
+  [self setTitle:[unarchiver decodeStringWithName:@"title"]];
+
+  return self;
+}
+
+@end /* NSFormCell (GMArchiverMethods) */

@@ -34,6 +34,10 @@
 #include <string.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSArray.h>
+#include <Foundation/NSException.h>
+#include <AppKit/GMArchiver.h>
+#include <AppKit/IMLoading.h>
+#include <AppKit/NSApplication.h>
 #include <AppKit/NSOpenPanel.h>
 
 /*
@@ -52,9 +56,9 @@ static NSOpenPanel *gnustep_gui_open_panel = nil;
 + (void) initialize
 {
   if (self == [NSOpenPanel class])
-    {
-      [self setVersion: 1];
-    }
+  {
+    [self setVersion: 1];
+  }
 }
 
 /*
@@ -63,11 +67,29 @@ static NSOpenPanel *gnustep_gui_open_panel = nil;
 + (NSOpenPanel *) openPanel
 {
   if (!gnustep_gui_open_panel)
+  {
+    [GMUnarchiver decodeClassName:@"NSSavePanel"
+                              asClassName:@"NSOpenPanel"];
+
+    if( ![GMModel loadIMFile:@"SavePanel" owner:NSApp] )
     {
-//      PanelLoader *pl = [PanelLoader panelLoader];
-//      gnustep_gui_open_panel = [pl loadPanel: @"NSOpenPanel"];
-      gnustep_gui_open_panel = [[NSOpenPanel alloc] init];
+      [NSException raise:NSGenericException
+                   format:@"Unable to load open panel model file"];
     }
+    [gnustep_gui_open_panel setTitle:@"Open"];
+
+    [GMUnarchiver decodeClassName:@"NSSavePanel"
+                              asClassName:@"NSSavePanel"];
+  }
+
+  return gnustep_gui_open_panel;
+}
+
++ (id)allocWithZone:(NSZone*)z
+{
+  NSDebugLLog(@"NSOpenPanel", @"NSOpenPanel +allocWithZone");
+  if( !gnustep_gui_open_panel)
+    gnustep_gui_open_panel = NSAllocateObject(self, 0, z);
 
   return gnustep_gui_open_panel;
 }

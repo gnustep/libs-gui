@@ -1034,6 +1034,8 @@ NSApplication	*NSApp = nil;
 // Set the app's icon
 - (void) setApplicationIconImage: (NSImage*)anImage
 {
+  [app_icon setName:nil];
+  [anImage setName:@"NSApplicationIcon"];
   ASSIGN(app_icon, anImage);
 }
 
