@@ -102,7 +102,6 @@ static NSImage *_pbc_image[2];
 
   if (item == _menuItem)
     {
-      [self setEnabled: [[self menuItem] isEnabled]];
       [[self controlView] setNeedsDisplay: YES];
     }
 }
@@ -417,14 +416,13 @@ static NSImage *_pbc_image[2];
       [_menuItem setImage: nil];
     }
 
-  [super setMenuItem: item];
-
+  //[super setMenuItem: item];
+  ASSIGN (_menuItem, item);
+ 
   if ([_menuItem image] == nil)
     {
       [_menuItem setImage: image];
     }
-
-  [self setEnabled: [_menuItem isEnabled]];
 }
 
 // Dealing with selection
@@ -871,6 +869,7 @@ static NSImage *_pbc_image[2];
 	  [anItem setOnStateImage: nil];
 	  [anItem setMixedStateImage: nil];
 	}
+      [self setEnabled: YES];
     }
 
   [self selectItem: selectedItem];
