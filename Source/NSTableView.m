@@ -6768,10 +6768,11 @@ byExtendingSelection: (BOOL)flag
   NSRect newRect;
   NSTableViewDropOperation operation = NSTableViewDropAbove;
   int row;
-  p = [self convertPoint: p fromView: nil];
-  int quarterPosition = (p.y - _bounds.origin.y) / _rowHeight * 4.;
+  int quarterPosition;
   unsigned dragOperation;
 
+  p = [self convertPoint: p fromView: nil];
+  quarterPosition = (p.y - _bounds.origin.y) / _rowHeight * 4.;
 
   if ((quarterPosition - oldDropRow * 4 <= 2) &&
       (quarterPosition - oldDropRow * 4 >= -3) )
