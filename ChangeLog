@@ -1,5 +1,11 @@
 2004-11-11  Adam Fedor  <fedor@gnu.org>
 
+	* Source/GSDragView.m ([GSDragView -_setCursor]): Initialize variable.
+	* Source/NSMatrix.m: Rename vaguely-named macro.
+	(Based on Path #3499 from Patrick Middleton).
+
+2004-11-11  Adam Fedor  <fedor@gnu.org>
+
 	* Version: Add numeric value for runtime versioning.
 	* Souce/GNUmakeifle: Add resource set install.
 	* Source/GNUmakefile.postamble (Info-gnustep.plist): New target.

@@ -423,6 +423,7 @@ static	GSDragView *sharedDragView = nil;
   
   name = nil;
   newCursor = nil;
+  iname = nil;
   switch (mask)
     {
     case NSDragOperationNone:

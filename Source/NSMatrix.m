@@ -73,7 +73,7 @@
 
 static NSNotificationCenter *nc;
 
-#define	STRICT	0
+#define	NSMATRIX_STRICT_CHECKING	0
 
 #ifdef MIN
 # undef MIN
@@ -379,7 +379,7 @@ static SEL getSel;
   if (column < 0)
     {
       column = 0;
-#if	STRICT == 0
+#if	NSMATRIX_STRICT_CHECKING == 0
       NSLog(@"insert negative column (%d) in matrix", column);
 #else
       [NSException raise: NSRangeException
@@ -468,7 +468,7 @@ static SEL getSel;
   if (row < 0)
     {
       row = 0;
-#if	STRICT == 0
+#if	NSMATRIX_STRICT_CHECKING == 0
       NSLog(@"insert negative row (%d) in matrix", row);
 #else
       [NSException raise: NSRangeException
@@ -649,7 +649,7 @@ static SEL getSel;
     }
   else
     {
-#if	STRICT == 0
+#if	NSMATRIX_STRICT_CHECKING == 0
       NSLog(@"remove non-existent column (%d) from matrix", column);
 #else
       [NSException raise: NSRangeException
@@ -695,7 +695,7 @@ static SEL getSel;
     }
   else
     {
-#if	STRICT == 0
+#if	NSMATRIX_STRICT_CHECKING == 0
       NSLog(@"remove non-existent row (%d) from matrix", row);
 #else
       [NSException raise: NSRangeException
@@ -3526,7 +3526,7 @@ static SEL getSel;
 //NSLog(@"%x - mr: %d mc:%d nr:%d nc:%d r:%d c:%d", (unsigned)self, _maxRows, _maxCols, _numRows, _numCols, row, col);
   if (row < 0)
     {
-#if	STRICT == 0
+#if	NSMATRIX_STRICT_CHECKING == 0
       NSLog(@"renew negative row (%d) in matrix", row);
 #else
       [NSException raise: NSRangeException
@@ -3536,7 +3536,7 @@ static SEL getSel;
     }
   if (col < 0)
     {
-#if	STRICT == 0
+#if	NSMATRIX_STRICT_CHECKING == 0
       NSLog(@"renew negative column (%d) in matrix", col);
 #else
       [NSException raise: NSRangeException
