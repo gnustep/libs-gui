@@ -142,15 +142,16 @@ typedef enum _NSControlSize {
     unsigned wraps: 1;
     unsigned text_align: 3; // 5 values
     unsigned is_selectable: 1;
-    unsigned is_continuous: 1;
     unsigned allows_mixed_state: 1;
     unsigned has_valid_object_value: 1;
     unsigned type: 2;           // 3 values
-    unsigned image_position: 4; // 7 values
+    unsigned image_position: 3; // 7 values
     unsigned entry_type: 4;     // 8 values
-    // 2 bits reserved for subclass use
+    // 4 bits reserved for subclass use
     unsigned subclass_bool_one: 1;
     unsigned subclass_bool_two: 1;
+    unsigned subclass_bool_three: 1;
+    unsigned subclass_bool_four: 1;
     /* This is not in the bitfield now (for simpler macosx compatibility) 
        but who knows in the future */
     int state; // 3 values but one negative
@@ -166,7 +167,9 @@ typedef enum _NSControlSize {
 //
 // Class methods
 // 
+#ifndef STRICT_OPENSTEP
 + (NSMenu *)defaultMenu;
+#endif
 + (BOOL) prefersTrackingUntilMouseUp;
 
 //
@@ -243,13 +246,17 @@ typedef enum _NSControlSize {
 - (void)setScrollable:(BOOL)flag;
 - (void)setWraps:(BOOL)flag;
 - (BOOL)wraps;
+- (NSText *)setUpFieldEditorAttributes:(NSText *)textObject;
+#ifndef STRICT_OPENSTEP
 - (void)setAttributedStringValue:(NSAttributedString *)attribStr;
 - (NSAttributedString *)attributedStringValue;
 - (void)setAllowsEditingTextAttributes:(BOOL)flag;
 - (BOOL)allowsEditingTextAttributes;
 - (void)setImportsGraphics:(BOOL)flag;
 - (BOOL)importsGraphics;
-- (NSText *)setUpFieldEditorAttributes:(NSText *)textObject;
+- (void)setTitle:(NSString *)aString;
+- (NSString *)title;
+#endif
 
 //
 // Target and Action 
@@ -277,8 +284,10 @@ typedef enum _NSControlSize {
 //
 // Formatting Data and Validating Input 
 //
+#ifndef STRICT_OPENSTEP
 - (void)setFormatter:(NSFormatter *)newFormatter;
 - (id)formatter;
+#endif
 - (int)entryType;
 - (BOOL)isEntryAcceptable:(NSString *)aString;
 - (void)setEntryType:(int)aType;
@@ -289,11 +298,13 @@ typedef enum _NSControlSize {
 //
 // Menu
 //
+#ifndef STRICT_OPENSTEP
 - (void)setMenu:(NSMenu *)aMenu;
 - (NSMenu *)menu;
 - (NSMenu *)menuForEvent:(NSEvent *)anEvent 
                   inRect:(NSRect)cellFrame 
                   ofView:(NSView *)aView;
+#endif
 
 //
 // Comparing to Another NSCell 
@@ -312,16 +323,18 @@ typedef enum _NSControlSize {
 // interface so methods referring to mnemonics do nothing -- they are
 // provided for compatibility only; please use key equivalents instead
 // in your GNUstep programs.
-- (BOOL)acceptsFirstResponder;                     // deprecated  
-- (void)setShowsFirstResponder:(BOOL)flag;         // does nothing
-- (BOOL)showsFirstResponder;                       // does nothing
-- (void)setTitleWithMnemonic:(NSString *)aString;  // does nothing
-- (NSString *)mnemonic;                            // does nothing
-- (void)setMnemonicLocation:(unsigned int)location;// does nothing
-- (unsigned int)mnemonicLocation;                  // does nothing
-- (BOOL)refusesFirstResponder;                     // deprecated  
-- (void)setRefusesFirstResponder:(BOOL)flag;       // deprecated  
-- (void)performClick:(id)sender;                   // good
+#ifndef STRICT_OPENSTEP
+- (BOOL)acceptsFirstResponder;
+- (void)setShowsFirstResponder:(BOOL)flag;
+- (BOOL)showsFirstResponder;
+- (void)setTitleWithMnemonic:(NSString *)aString;
+- (NSString *)mnemonic;
+- (void)setMnemonicLocation:(unsigned int)location;
+- (unsigned int)mnemonicLocation;
+- (BOOL)refusesFirstResponder;
+- (void)setRefusesFirstResponder:(BOOL)flag;
+- (void)performClick:(id)sender;
+#endif
 
 //
 // Interacting with Other NSCells 
@@ -378,12 +391,15 @@ typedef enum _NSControlSize {
 - (NSRect)drawingRectForBounds:(NSRect)theRect;
 - (NSRect)imageRectForBounds:(NSRect)theRect;
 - (NSRect)titleRectForBounds:(NSRect)theRect;
+#ifndef STRICT_OPENSTEP
+- (void)setControlSize:(NSControlSize)controlSize;
+- (NSControlSize)controlSize;
+#endif
 
 //
 // Displaying 
 //
 - (NSView *)controlView;
-
 - (void)drawInteriorWithFrame:(NSRect)cellFrame
 		       inView:(NSView *)controlView;
 - (void)drawWithFrame:(NSRect)cellFrame
@@ -392,7 +408,13 @@ typedef enum _NSControlSize {
 	withFrame:(NSRect)cellFrame
 	   inView:(NSView *)controlView;
 - (BOOL)isHighlighted;
+#ifndef STRICT_OPENSTEP
 - (void)setHighlighted: (BOOL) flag;
+- (NSColor*)highlightColorWithFrame:(NSRect)cellFrame
+			     inView:(NSView *)controlView;
+- (void)setControlTint:(NSControlTint)controlTint;
+- (NSControlTint)controlTint;
+#endif
 
 //
 // Editing Text 
@@ -402,21 +424,17 @@ typedef enum _NSControlSize {
 	       editor:(NSText *)textObject	
 	       delegate:(id)anObject	
 		event:(NSEvent *)theEvent;
-- (BOOL)sendsActionOnEndEditing;
-- (void)setSendsActionOnEndEditing:(BOOL)flag;
-- (void)endEditing:(NSText *)textObject;
 - (void)selectWithFrame:(NSRect)aRect
 		 inView:(NSView *)controlView	 
 		 editor:(NSText *)textObject	 
 		 delegate:(id)anObject	 
 		  start:(int)selStart	 
 		 length:(int)selLength;
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder: (NSCoder *)aCoder;
-- initWithCoder: (NSCoder *)aDecoder;
+- (void)endEditing:(NSText *)textObject;
+#ifndef STRICT_OPENSTEP
+- (BOOL)sendsActionOnEndEditing;
+- (void)setSendsActionOnEndEditing:(BOOL)flag;
+#endif
 
 @end
 
@@ -439,8 +457,6 @@ typedef enum _NSControlSize {
 //
 inline NSSize 
 _sizeForBorderType (NSBorderType aType);
-
-
 
 #endif // _GNUstep_H_NSCell
 
