@@ -100,6 +100,7 @@ static NSNotificationCenter *nc = nil;
 
 - (void) removeLayoutManager: (NSLayoutManager*)obj
 {
+  [obj setTextStorage: nil];
   [_layoutManagers removeObjectIdenticalTo: obj];
 }
 
