@@ -1,3 +1,7 @@
+2004-12-28 12:04 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSWindow.m: Correction for bug#11409.
+
 2004-12-23 05:38 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Images/MagnifyGlass.tiff: Added.  The NSColorPanel class uses

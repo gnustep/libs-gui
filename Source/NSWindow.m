@@ -4110,10 +4110,13 @@ resetCursorRectsForView(NSView *theView)
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       [self setAcceptsMouseMovedEvents: flag];
 
-      /* _miniaturizedImage has already been set by -_initDefaults. */
-      DESTROY(_miniaturizedImage);
-      [aDecoder decodeValueOfObjCType: @encode(id)
-				   at: &_miniaturizedImage];
+      /* If the image has been specified, use it, if not use the default. */
+      obj = [aDecoder decodeObject]; 
+      if(obj != nil)
+	{
+	  ASSIGN(_miniaturizedImage, obj);
+	}
+
       [aDecoder decodeValueOfObjCType: @encode(id)
 				   at: &_initialFirstResponder];
 
