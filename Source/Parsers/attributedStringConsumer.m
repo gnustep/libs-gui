@@ -225,7 +225,7 @@ readNSString (StringContext *ctxt)
 
 @implementation RTFConsumer
 
-+ (NSAttributedString*) parseRTFD: (NSFileWrapper *)wrapper
++ (NSAttributedString*) parseFile: (NSFileWrapper *)wrapper
 	       documentAttributes: (NSDictionary **)dict
 {
   RTFConsumer *consumer = [RTFConsumer new];
@@ -255,7 +255,7 @@ readNSString (StringContext *ctxt)
   return text;
 }
 
-+ (NSAttributedString*) parseRTF: (NSData *)rtfData 
++ (NSAttributedString*) parseData: (NSData *)rtfData 
 	      documentAttributes: (NSDictionary **)dict
 {
   RTFConsumer *consumer = [RTFConsumer new];
@@ -288,6 +288,30 @@ readNSString (StringContext *ctxt)
   RELEASE(result);
   RELEASE(documentAttributes);
   [super dealloc];
+}
+
+@end
+
+@implementation RTFDConsumer
+
++ (NSAttributedString*) parseFile: (NSFileWrapper *)wrapper
+	       documentAttributes: (NSDictionary **)dict
+{
+  return [super parseFile: wrapper
+		documentAttributes: dict];
+}
+
++ (NSAttributedString*) parseData: (NSData *)rtfData 
+	       documentAttributes: (NSDictionary **)dict
+{
+  NSAttributedString *str;
+  NSFileWrapper *wrapper = [[NSFileWrapper alloc] 
+			       initWithSerializedRepresentation: rtfData];
+
+  str = [self parseFile: wrapper documentAttributes: dict];
+  RELEASE (wrapper);
+
+  return str;
 }
 
 @end
