@@ -89,8 +89,8 @@
  *	provide additional data.
  */
 @protocol PasteboardCallback
-- (id)askOwner:(id)obj toProvideDataForType:(NSString*)type;
-- (id)askOwner:(id)obj toProvideDataForType:(NSString*)type andVersion:(int)v;
+- (void)pasteboard: (NSPasteboard*)pb provideDataForType:(NSString*)type;
+- (void)pasteboard: (NSPasteboard*)pb provideDataForType:(NSString*)type andVersion:(int)v;
 @end
 
 #endif // _GNUstep_H_PasteboardServer
