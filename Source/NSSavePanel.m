@@ -815,16 +815,14 @@ selectCellWithString: (NSString *)title
       ASSIGN (_directory, path);
       ASSIGN (_fullFileName, [path stringByAppendingPathComponent: title]);
       [[_form cellAtIndex: 0] setStringValue: title];
-      // [_form setNeedsDisplay: YES];
-      [_form display];
+      [_form setNeedsDisplay: YES];
     }
   else
     {
       ASSIGN (_directory, [path stringByAppendingPathComponent: title]);
       ASSIGN (_fullFileName, nil);
       [[_form cellAtIndex: 0] setStringValue: @""];
-      // [_form setNeedsDisplay: YES];
-      [_form display];
+      [_form setNeedsDisplay: YES];
     }
 
   return YES;
