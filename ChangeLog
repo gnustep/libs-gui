@@ -1,3 +1,19 @@
+2003-02-10 15:14  Alexander Malmberg <alexander@malmberg.org>
+
+	Based on patches from Jeff Teunissen:
+
+	* Source/NSWindow.m (GSAllWindows): Check that windowmaps isn't
+	NULL before calling NSAllMapTableValues.
+
+	* Source/NSScroller.m: Change size check so the knob and arrows are
+	visible until there's absolutely no space left for them. Draw the
+	knob slot with the window's background color when the knob isn't
+	visible for consistency with OPENSTEP.
+
+	* Source/NSApplication.m (-setApplicationIconImage:): Update all
+	windows that have the old app icon as their mini window image so they
+	use the new app icon.
+
 2003-02-10 15:09  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSLayoutManager.m, Source/NSLayoutManager.m,

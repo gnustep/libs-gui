@@ -4148,7 +4148,9 @@ void NSWindowList(int size, int list[])
 
 NSArray* GSAllWindows(void)
 {
-  return NSAllMapTableValues(windowmaps);
+  if (windowmaps)
+    return NSAllMapTableValues(windowmaps);
+  return nil;
 }
 
 NSWindow* GSWindowWithNumber(int num)

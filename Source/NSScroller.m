@@ -300,11 +300,10 @@ static NSColor *scrollBarColor = nil;
 {
   NSSize	frameSize = _frame.size;
   float		size = (_isHorizontal ? frameSize.width : frameSize.height);
-  float		scrollerWidth = [isa scrollerWidth];
 
   if (_arrowsPosition == NSScrollerArrowsNone)
     {
-      if (size >= scrollerWidth + 2)
+      if (size >= buttonsWidth + 3)
 	{
 	  _usableParts = NSAllScrollerParts;
 	}
@@ -315,11 +314,11 @@ static NSColor *scrollBarColor = nil;
     }
   else
     {
-      if (size >= 3 * scrollerWidth + 4)
+      if (size >= 4 /* spacing */ + 1 /* min. scroll area */ + buttonsWidth * 3)
 	{
 	  _usableParts = NSAllScrollerParts;
 	}
-      else if (size >= 2 * scrollerWidth + 3)
+      else if (size >= 3 /* spacing */ + buttonsWidth * 2)
 	{
 	  _usableParts = NSOnlyScrollerArrows;
 	}
@@ -820,7 +819,10 @@ static NSColor *scrollBarColor = nil;
       rect = [self rectForPart: NSScrollerKnobSlot];
     }
 
-  [scrollBarColor set];
+  if ((_usableParts == NSOnlyScrollerArrows) || (_usableParts == NSNoScrollerParts))
+    [[_window backgroundColor] set];
+  else
+    [scrollBarColor set];
   NSRectFill (rect);
 }
 
@@ -850,7 +852,7 @@ static NSColor *scrollBarColor = nil;
   float width, height;
   float buttonsSize = 2 * buttonsWidth + 2;
   NSUsableScrollerParts usableParts;
-										  /*
+  /*
    * If the scroller is disabled then the scroller buttons and the
    * knob are not displayed at all.
    */

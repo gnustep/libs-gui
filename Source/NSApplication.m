@@ -1645,16 +1645,35 @@ delegate.
   return NO;
 }
 
-// Set the app's icon
+/*
+Sets the application's icon. Any windows that use the old application
+icon image as their mini window image will be updated to use the new
+image.
+*/
 - (void) setApplicationIconImage: (NSImage*)anImage
 {
+  NSEnumerator	*iterator = [[self windows] objectEnumerator];
+  NSWindow	*current;
+  NSImage	*old_app_icon = _app_icon;
+
+  RETAIN(old_app_icon);
   [_app_icon setName: nil];
   [anImage setName: @"NSApplicationIcon"];
   ASSIGN(_app_icon, anImage);
+
   if (_app_icon_window != nil)
     {
       [[_app_icon_window contentView] setImage: anImage];
     }
+
+  // Swap the old image for the new one wherever it's used
+  while ((current = [iterator nextObject]) != nil)
+    {
+      if ([current miniwindowImage] == old_app_icon)
+	[current setMiniwindowImage: anImage],printf("update window %@\n",current);
+    }
+
+  DESTROY(old_app_icon);
 }
 
 - (NSImage*) applicationIconImage
@@ -2404,7 +2423,7 @@ delegate.
   return nil;
 }
 
-- (NSArray *) orderedWindows;
+- (NSArray *) orderedWindows
 {
   // FIXME
   return [self windows];
@@ -2413,12 +2432,12 @@ delegate.
 /*
  * Methods for user attention requests
  */
-- (void) cancelUserAttentionRequest: (int)request;
+- (void) cancelUserAttentionRequest: (int)request
 {
   // FIXME
 }
 
-- (int) requestUserAttention: (NSRequestUserAttentionType)requestType;
+- (int) requestUserAttention: (NSRequestUserAttentionType)requestType
 {
   // FIXME
   return 0;
