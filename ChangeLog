@@ -1,3 +1,29 @@
+2001-08-22  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSMenu.h
+	Made method [_rightMouseDisplay:] public.
+	* Headers/gnustep/gui/NSResponder.h
+	Added method [scrollWheel:].
+	* Source/NSResponder.m
+	Added dummy implementation of [scrollWheel:].
+	Moved menu display code in [rightMouseDown:] to NSApplication.
+	* Source/NSApplication.m
+	Implemented [rightMouseDown:] with code from NSResponder.
+	* Source/NSWindow.m
+	Cache the default notification center. In [sendEvent:] handle case
+	of NSScrollWheel event.
+	* Source/NSMenu.m
+	Removed class NSMenuWindow, use aconfigured NSPanel instead.
+	New method [_createWindow] to create this.
+	Removed unused ivars of NSMenuWindowTitleView and renamed the
+	methods. Corrected the create/retain logic of the button handling
+	methods, the old code kept on creating buttons which where never released.
+	[NSMenu _setTornOff:] now calls addCloseButton or releaseCloseButton.
+	Replaced [NSMenuWindowTitleView titleHeight] with inline function
+	title_height(). 
+	* Headers/gnustep/gui/NSTableView.h
+	Check in of this file was forgotten.
+	
 Tue Aug 21 19:38:00 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Headers/gnustep/gui/NSTableView.h: Added ivars for autosaving of
