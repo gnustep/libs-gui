@@ -1,3 +1,7 @@
+Tue Feb 29 07:04:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSFontManager.m: fixes and tiyups - mostly from Fred Keifer.
+
 Mon Feb 28 15:37:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Documentation/gsdoc: Added skeleton documentation for the
