@@ -381,6 +381,12 @@ static NSCell* tileCell = nil;
 {
   [tileCell drawWithFrame: NSMakeRect(0,0,64,64) inView: self];
   [dragCell drawWithFrame: NSMakeRect(8,8,48,48) inView: self];
+  if ([NSApp isHidden])
+    {
+      NSRectEdge mySides[] = {NSMinXEdge, NSMinYEdge, NSMaxXEdge, NSMaxYEdge};
+      float myGrays[] = {NSBlack, NSWhite, NSWhite, NSBlack};
+      NSDrawTiledRects(NSMakeRect(4, 4, 3, 2), rect, mySides, myGrays, 4);
+    }
 }
 
 - (id) initWithFrame: (NSRect)frame
@@ -477,8 +483,7 @@ static NSCell* tileCell = nil;
 
   if ([self lockFocusIfCanDraw])
     {
-      [tileCell drawWithFrame: NSMakeRect(0,0,64,64) inView: self];
-      [dragCell drawWithFrame: NSMakeRect(8,8,48,48) inView: self];
+      [self drawRect: NSMakeRect(0,0,64,64)];
       [self unlockFocus];
       [_window flushWindow];
     }
@@ -1859,6 +1864,7 @@ image.
 	  [win orderOut: self];
 	}
       _app_is_hidden = YES;
+      [[_app_icon_window contentView] setNeedsDisplay: YES];
 
       /*
        * On hiding we also deactivate the application which will make the menus
@@ -1920,6 +1926,7 @@ image.
 	  [_hidden_key makeKeyAndOrderFront: self];
 	  _hidden_key = nil;
 	}
+      [[_app_icon_window contentView] setNeedsDisplay: YES];
 
       [nc postNotificationName: NSApplicationDidUnhideNotification
 			object: self];

@@ -1,3 +1,11 @@
+2004-04-27  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSApplication.m ([NSAppIconView -drawRect:]): Draw dot when
+	hidden.
+	([NSAppIconView -setImage:]): Use -drawRect:
+	(-hide:,-unhideWithoutActivation:): Mark icon view as needing display.
+	(based on patch from Rafael Herzog).
+
 2004-04-27  Quentin mathe <qmathe@club-internet.fr>
        
         * Source/NSToolbarItem.m: Modified to have the action message sent by
