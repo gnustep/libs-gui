@@ -82,32 +82,26 @@ typedef struct {
 static int tiff_error_handler_set = 0;
 
 static void
-NSTiffError(const char *func, const char *msg, ...)
+NSTiffError(const char *func, const char *msg, va_list ap)
 {
   NSString *format;
-  va_list ap;
 
   format = [NSString stringWithFormat: @"Tiff Error (%s) %s", func, msg];
-  va_start (ap, msg);
   NSLogv (format, ap);
-  va_end (ap);
 }
 
 static void 
-NSTiffWarning(const char *func, const char *msg, ...)
+NSTiffWarning(const char *func, const char *msg, va_list ap)
 {
   NSString *format;
-  va_list ap;
 
   format = [NSString stringWithFormat: @"Tiff Warning (%s) %s", func, msg];
-  va_start (ap, msg);
   NSLogv (format, ap);
-  va_end (ap);
 }
 
 /* Client functions that provide reading/writing of data for libtiff */
 static tsize_t
-TiffHandleRead(thandle_t handle, tdata_t buf, toff_t count)
+TiffHandleRead(thandle_t handle, tdata_t buf, tsize_t count)
 {
   chandle_t* chand = (chandle_t *)handle;
   if (chand->position >= chand->size)
@@ -119,7 +113,7 @@ TiffHandleRead(thandle_t handle, tdata_t buf, toff_t count)
 }
 
 static tsize_t
-TiffHandleWrite(thandle_t handle, tdata_t buf, toff_t count)
+TiffHandleWrite(thandle_t handle, tdata_t buf, tsize_t count)
 {
   chandle_t* chand = (chandle_t *)handle;
   if (chand->mode == "r")
