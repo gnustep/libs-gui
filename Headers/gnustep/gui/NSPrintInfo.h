@@ -51,7 +51,7 @@ typedef enum _NSPrintingPaginationMode {
 
 @interface NSPrintInfo : NSObject <NSCoding>
 {
-  NSMutableDictionary *info;
+  NSMutableDictionary *_info;
 }
 
 //
