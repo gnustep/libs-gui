@@ -1,3 +1,12 @@
+Sun Mar 19 22:26:55 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Model/GMAppKit.m ([NSApplication -initWithModelUnarchiver:]): 
+	RETAIN the decoded windows.
+	* Source/NSClipView.m ([-viewFrameChanged:]): If the document view
+	does not cover all our area, fill the remaining space with
+	background color.
+	* Source/NSTableView.m ([-noteNumberOfRowsChanged]): Implemented.
+	
 2000-03-19  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTextStorage.m: ([setAttributes:range:]) make sure
