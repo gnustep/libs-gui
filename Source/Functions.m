@@ -41,11 +41,10 @@ char **NSArgv = NULL;
 int
 NSApplicationMain(int argc, const char **argv)
 {
-  NSAutoreleasePool	*pool;
   NSDictionary		*infoDict;
   NSString		*className;
   Class			appClass;
-
+  CREATE_AUTORELEASE_POOL(pool);
 #if LIB_FOUNDATION_LIBRARY
   extern char		**environ;
 
@@ -53,8 +52,6 @@ NSApplicationMain(int argc, const char **argv)
 				   count: argc
 			     environment: environ];
 #endif
-
-  pool = [NSAutoreleasePool new];
 
 #ifndef NX_CURRENT_COMPILER_RELEASE
   initialize_gnustep_backend();
@@ -66,12 +63,15 @@ NSApplicationMain(int argc, const char **argv)
 
   if (appClass == 0)
     {
+      NSLog(@"Bad application class '%@' specified", className);
       appClass = [NSApplication class];
     }
 
   [[appClass sharedApplication] run];
 
-  [pool release];
+  DESTROY(NSApp);
+
+  RELEASE(pool);
 
   return 0;
 }

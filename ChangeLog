@@ -1,4 +1,10 @@
-Fri Jan  7 18:37:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+Fri Jan  7 10:32:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/Functions.m: NSApplicationMain() added suggestions from
+	karl@nfox.com to destroy application before exit and log if the
+	info file contains an invalid class.
+
+Fri Jan  7  8:37:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSApplication.m: ([-finishLoading]) add support for loading
 	main nib.

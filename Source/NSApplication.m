@@ -277,7 +277,7 @@ static NSCell* tileCell = nil;
   NSAppIconView	*iv;
 
   if (app_icon == nil)
-    app_icon = [[NSImage imageNamed: @"GNUstep"] retain];
+    app_icon = RETAIN([NSImage imageNamed: @"GNUstep"]);
 
   _app_icon_window = [[NSIconWindow alloc] initWithContentRect: 
 					    NSMakeRect(0,0,64,64)
@@ -562,9 +562,9 @@ static NSCell* tileCell = nil;
     {
       if ([NSBundle loadNibNamed: mainModelFile owner: self] == NO)
 	{
-	  if (![GMModel loadIMFile: mainModelFile
-			     owner: [NSApplication sharedApplication]])
-	    NSLog (@"Cannot load the main model file '%@", mainModelFile);
+	  if ([GMModel loadIMFile: mainModelFile
+			    owner: self] == NO)
+	    NSLog (@"Cannot load the main model file '%@'", mainModelFile);
 	}
     }
 
