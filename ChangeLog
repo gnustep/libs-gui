@@ -1,11 +1,17 @@
 2003-12-01  Serg Stoyan <stoyan@on.com.ua>
 
+	* Headers/AppKit/NSButton.h: Add setHighlightsBy: and 
+	setShowsStateBy: methods.
+	* Source/NSButton.m: Implement setHighlightsBy: and setShowsStateBy:
+	methods
+	
 	* Source/NSPanel.m:
 	Removed TODO about message font size.
 	(-sendEvent:): Cast self when compared with iconWindow to omit
 	compiler warning.
 	(-_initWithoutGModel): Center title vertically relatively to image.
-	Some comments added.
+	Some comments added. Use NSButton's setHighlightsBy for default 
+	button of altert panel.
 	(-sizePanelToFit): Center message text horizontally.
 
 	* Images/common_ret.tiff: Edit to be more NeXTish.
