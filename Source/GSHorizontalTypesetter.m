@@ -1133,7 +1133,7 @@ NS_DURING
 	    }
 	  else
 	    {
-	      unsigned char chi;
+	      unsigned int chi;
 	      unichar ch;
 	      chi = [curLayoutManager characterRangeForGlyphRange: NSMakeRange(curGlyph - 1, 1)
 						 actualGlyphRange: NULL].location;

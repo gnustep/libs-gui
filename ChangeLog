@@ -1,3 +1,11 @@
+2003-03-03 16:17  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSHorizontalTypesetter.m (-layoutGlyphsInLayoutManager:
+	inTextContainer:startingAtGlyphIndex:previousLineFragmentRect:
+	nextGlyphIndex:numberOfLineFragments:): Change type of a variable
+	holding a character index to int (was char, would overflow and
+	break things).
+
 2003-03-03 14:52  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/GSTypesetter.h, Source/GSTypesetter.m: Removed
