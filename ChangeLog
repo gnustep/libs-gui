@@ -1,4 +1,8 @@
-2003-01-03  Ludovic Marcotte <ludovic@Sophos.ca>
+2004-01-03 23:36  Gregory John Casamento  <greg_casamento@yahoo.com>
+
+	* Source/GSNibTemplates.m: Removed some uneeded includes.
+	
+2004-01-03  Ludovic Marcotte <ludovic@Sophos.ca>
 
         * Source/NSOutlineView.m: Started to fix the DnD code.
           Modified -mouseDown: to not select the row when clicking
