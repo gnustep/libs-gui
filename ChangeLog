@@ -1,3 +1,10 @@
+2002-11-26 16:37  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/GSTypesetter.h, Source/GSTypesetter.m,
+	Source/GSHorizontalTypesetter.m: Remove
+	-baselineOffsetInLayoutManager:glyphIndex: method. Cleanups. Changed
+	to conform to coding standards.
+
 2002-11-26 16:29  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSLayoutManager.m: Changed to conform to coding

@@ -36,53 +36,45 @@
 @implementation GSTypesetter
 
 + (NSSize) printingAdjustmentsInLayoutManager: (GSLayoutManager *)layoutManager
-	forNominallySpacedGlyphRange: (NSRange)glyphRange
-	packedGlyphs: (const unsigned char *)glyphs
-	count: (unsigned)packedGlyphCount
+		 forNominallySpacedGlyphRange: (NSRange)glyphRange
+				 packedGlyphs: (const unsigned char *)glyphs
+					count: (unsigned)packedGlyphCount
 {
-	return NSMakeSize(0,0);
+  return NSMakeSize(0,0);
 }
 
 +(GSTypesetter *) sharedSystemTypesetter
 {
-	return [GSHorizontalTypesetter sharedInstance];
-}
-
-
--(float) baselineOffsetInLayoutManager: (GSLayoutManager *)layoutManager
-	glyphIndex: (unsigned int)glyphIndex
-{
-	[self subclassResponsibility: _cmd];
-	return 0.0;
+  return [GSHorizontalTypesetter sharedInstance];
 }
 
 
 -(NSFont *) fontForCharactersWithAttributes: (NSDictionary *)attributes
 {
-	NSFont *f=[attributes valueForKey: NSFontAttributeName];
-	if (!f)
-		f=[NSFont userFontOfSize: 0];
-	return f;
+  NSFont *f = [attributes valueForKey: NSFontAttributeName];
+  if (!f)
+    f = [NSFont userFontOfSize: 0];
+  return f;
 }
 
 
 -(int) layoutGlyphsInLayoutManager: (GSLayoutManager *)layoutManager
-	inTextContainer: (NSTextContainer *)textContainer
-	startingAtGlyphIndex: (unsigned int)glyphIndex
-	previousLineFragmentRect: (NSRect)previousLineFragRect
-	nextGlyphIndex: (unsigned int *)nextGlyphIndex
-	numberOfLineFragments: (unsigned int)howMany
+		   inTextContainer: (NSTextContainer *)textContainer
+	      startingAtGlyphIndex: (unsigned int)glyphIndex
+	  previousLineFragmentRect: (NSRect)previousLineFragRect
+		    nextGlyphIndex: (unsigned int *)nextGlyphIndex
+	     numberOfLineFragments: (unsigned int)howMany
 {
-	[self subclassResponsibility: _cmd];
-	return 0;
+  [self subclassResponsibility: _cmd];
+  return 0;
 }
 
 
 -(BOOL) relayoutGlyphsInLayoutManager: (GSLayoutManager *)layoutManager
-	glyphRange: (NSRange)glyphRange
-	lineFragmentRect: (NSRect *)lineFragRect
-	textContainer: (NSTextContainer **)textContainer
-	previousLineFragmentRect: (NSRect)previousLineFragRect
+			   glyphRange: (NSRange)glyphRange
+		     lineFragmentRect: (NSRect *)lineFragRect
+			textContainer: (NSTextContainer **)textContainer
+	     previousLineFragmentRect: (NSRect)previousLineFragRect
 {
 	return NO;
 }

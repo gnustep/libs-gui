@@ -49,25 +49,15 @@ done). */
 GSTypesetter's implementation returns NSMakeSize(0,0).
 */
 + (NSSize) printingAdjustmentsInLayoutManager: (GSLayoutManager *)layoutManager
-	forNominallySpacedGlyphRange: (NSRange)glyphRange
-	packedGlyphs: (const unsigned char *)glyphs
-	count: (unsigned)packedGlyphCount;
+		 forNominallySpacedGlyphRange: (NSRange)glyphRange
+				 packedGlyphs: (const unsigned char *)glyphs
+					count: (unsigned)packedGlyphCount;
 
 /*
 Returns a thread-safe shared GSTypesetter (a GSHorizontalTypesetter
 instance in practice, at least when this is done).
 */
 +(GSTypesetter *) sharedSystemTypesetter;
-
-
-/*
-Returns offset from bottom of line frag rect for the baseline of the glyph
-at glyphIndex. Used to draw underlines.
-
-Subclasses need to implement this method.
-*/
--(float) baselineOffsetInLayoutManager: (GSLayoutManager *)layoutManager
-	glyphIndex: (unsigned int)glyphIndex;
 
 
 /*
@@ -130,11 +120,11 @@ Subclasses need to implement this method.
 {Too much context?}
 */
 -(int) layoutGlyphsInLayoutManager: (GSLayoutManager *)layoutManager
-	inTextContainer: (NSTextContainer *)textContainer
-	startingAtGlyphIndex: (unsigned int)glyphIndex
-	previousLineFragmentRect: (NSRect)previousLineFragRect
-	nextGlyphIndex: (unsigned int *)nextGlyphIndex
-	numberOfLineFragments: (unsigned int)howMany;
+		   inTextContainer: (NSTextContainer *)textContainer
+	      startingAtGlyphIndex: (unsigned int)glyphIndex
+	  previousLineFragmentRect: (NSRect)previousLineFragRect
+		    nextGlyphIndex: (unsigned int *)nextGlyphIndex
+	     numberOfLineFragments: (unsigned int)howMany;
 
 
 /*
@@ -159,10 +149,10 @@ again.
 GSTypesetter's implementation returns NO.
 */
 -(BOOL) relayoutGlyphsInLayoutManager: (GSLayoutManager *)layoutManager
-	glyphRange: (NSRange)glyphRange
-	lineFragmentRect: (NSRect *)lineFragRect
-	textContainer: (NSTextContainer **)textContainer
-	previousLineFragmentRect: (NSRect)previousLineFragRect;
+			   glyphRange: (NSRange)glyphRange
+		     lineFragmentRect: (NSRect *)lineFragRect
+			textContainer: (NSTextContainer **)textContainer
+	     previousLineFragmentRect: (NSRect)previousLineFragRect;
 
 @end
 
