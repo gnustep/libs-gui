@@ -1,3 +1,40 @@
+Tue Jan 16 11:54:30 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSAffineTransform.m ([-getMatrixFromTransform:]): New
+	method to get quickly the matrix from another transform.
+	* Headers/gnustep/gui/NSAffineTransform.h: Added corresponding
+	declaration.
+	* Source/NSView.m ([-_rebuildCoordinates]): Use it to spare a
+	couple of method calls per invocation.
+
+	* Source/NSBrowser.m ([-pathToColumn:]): Bug fix - stop computing
+	path as soon as a column with no selected cells in it is found.
+	
+	* Headers/gnustep/gui/NSClipView.h: Added ivar to cache whether we
+	are opaque or not.
+	* Source/NSClipView.m ([-isOpaque]): Returne cached info.
+	([-setDrawsBackground:]), ([-setBackgroundColor:]): Update opaque
+	cache info.
+
+	* Source/NSClipView.m ([-setDocumentView:]): As a safety check,
+	update _rFlags.flipped_view before setting the bounds.
+	([-setBoundsOrigin:]): Use [self documentVisibleRect] to get the
+	document view area to be redrawn when redrawing everything.
+	* Source/NSScrollView.m ([-tile]): Removed reflectScrolledClipView
+	call in excess.
+	* Source/NSView.m ([-_rebuildCoordinates]): Use _frame.height, not
+	_bounds.height when flipping coordinates.
+
+	* Source/NSView.m: Cache the default notification center for
+        the whole class.
+
+	* Source/NSView.m ([-resizeWithOldSuperviewSize:]): Bug fix -
+	removed hackish code which manually attempted to `restore' bounds
+	after setFrame: updated them.  This fixes the rubbish drawn when
+	resizing a textview inside a scrollview - a bug which escaped
+	debugging attempts for more than one year I think.  I am glad it's
+	fixed now.
+	
 Tue Jan 16 11:47:58 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSMenu.m ([NSMenuWindowTitleView -drawRect:]): Fixed bug
