@@ -643,6 +643,7 @@ SANITY();
       if (info->attrs == attributes)
 	{
 	  unCacheAttributes(attributes);
+	  RELEASE(attributes);
 	}
       else
 	{
@@ -654,6 +655,7 @@ SANITY();
   else if (info->attrs == attributes)
     {
       unCacheAttributes(attributes);
+      RELEASE(attributes);
     }
   else
     {
