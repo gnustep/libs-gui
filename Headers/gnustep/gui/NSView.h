@@ -76,13 +76,13 @@ enum {
   NSMutableArray *tracking_rects;
   NSMutableArray *cursor_rects;
 
-  BOOL is_flipped;
   BOOL is_rotated_from_base;
   BOOL is_rotated_or_scaled_from_base;
   BOOL opaque;
   BOOL needs_display;
   BOOL disable_autodisplay;
   BOOL post_frame_changes;
+  BOOL post_bounds_changes;
   BOOL autoresize_subviews;
 
   // Reserved for back-end use
@@ -162,8 +162,10 @@ enum {
 //
 // Notifying Ancestor Views 
 //
-- (BOOL)postsFrameChangedNotifications;
 - (void)setPostsFrameChangedNotifications:(BOOL)flag;
+- (BOOL)postsFrameChangedNotifications;
+- (void)setPostsBoundsChangedNotifications:(BOOL)flag;
+- (BOOL)postsBoundsChangedNotifications;
 
 //
 // Resizing Subviews 
@@ -335,7 +337,8 @@ enum {
 @end
 
 /* Notifications */
-extern NSString *NSViewFrameChangedNotification;
-extern NSString *NSViewFocusChangedNotification;
+extern NSString *NSViewFrameDidChangeNotification;
+extern NSString *NSViewBoundsDidChangeNotification;
+extern NSString *NSViewFocusDidChangeNotification;
 
 #endif // _GNUstep_H_NSView

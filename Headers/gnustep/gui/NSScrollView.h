@@ -1,12 +1,13 @@
-/* 
+/*
    NSScrollView.h
 
-   A scrolling view to allow documents larger than screen to be shown
+   A view that allows you to scroll a document view that's too big to display
+   entirely on a window.
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
+   Author: Ovidiu Predescu <ovidiu@net-community.com>
+   Date: July 1997
    
    This file is part of the GNUstep GUI Library.
 
@@ -21,91 +22,105 @@
    Library General Public License for more details.
 
    You should have received a copy of the GNU Library General Public
-   License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/ 
+   License along with this library; if not, write to the Free
+   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
 
 #ifndef _GNUstep_H_NSScrollView
 #define _GNUstep_H_NSScrollView
 
 #include <AppKit/NSView.h>
 
-@class NSScroller;
 @class NSClipView;
+@class NSRulerView;
 @class NSColor;
 @class NSCursor;
+@class NSScroller;
 
-@interface NSScrollView : NSView <NSCoding>
+@interface NSScrollView : NSView
 {
-  // Attributes
+  NSClipView* _contentView;
+  NSScroller* _horizScroller;
+  NSScroller* _vertScroller;
+  NSRulerView* _horizRuler;
+  NSRulerView* _vertRuler;
+  float _lineScroll;
+  float _pageScroll;
+  NSBorderType _borderType;
+  BOOL _hasHorizScroller;
+  BOOL _hasVertScroller;
+  BOOL _hasHorizRuler;
+  BOOL _hasVertRuler;
+  BOOL _scrollsDynamically;
+  BOOL _rulersVisible;
 }
 
-//
-// Determining Component Sizes 
-//
+/* Calculating layout */
++ (NSSize)contentSizeForFrameSize:(NSSize)frameSize
+  hasHorizontalScroller:(BOOL)hFlag
+  hasVerticalScroller:(BOOL)vFlag
+  borderType:(NSBorderType)borderType;
++ (NSSize)frameSizeForContentSize:(NSSize)contentSize
+  hasHorizontalScroller:(BOOL)hFlag
+  hasVerticalScroller:(BOOL)vFlag
+  borderType:(NSBorderType)borderType;
+
+/* Determining component sizes */
 - (NSSize)contentSize;
 - (NSRect)documentVisibleRect;
 
-//
-// Laying Out the NSScrollView 
-//
-+ (NSSize)contentSizeForFrameSize:(NSSize)size
-	    hasHorizontalScroller:(BOOL)horizFlag
-	      hasVerticalScroller:(BOOL)vertFlag 
-		       borderType:(NSBorderType)aType;
-+ (NSSize)frameSizeForContentSize:(NSSize)size
-	    hasHorizontalScroller:(BOOL)horizFlag
-	      hasVerticalScroller:(BOOL)vertFlag 
-	    borderType:(NSBorderType)aType;
+/* Managing graphic attributes */
+- (void)setBackgroundColor:(NSColor*)aColor;
+- (NSColor*)backgroundColor;
+- (void)setBorderType:(NSBorderType)borderType;
+- (NSBorderType)borderType;
+
+/* Managing the scrolled views */
+- (void)setContentView:(NSClipView*)aView;
+- (NSClipView*)contentView;
+- (void)setDocumentView:(NSView*)aView;
+- (id)documentView;
+- (void)setDocumentCursor:(NSCursor*)aCursor;
+- (NSCursor*)documentCursor;
+
+/* Managing scrollers */
+- (void)setHorizontalScroller:(NSScroller*)aScroller;
+- (NSScroller*)horizontalScroller;
 - (void)setHasHorizontalScroller:(BOOL)flag;
 - (BOOL)hasHorizontalScroller;
+- (void)setVerticalScroller:(NSScroller*)aScroller;
+- (NSScroller*)verticalScroller;
 - (void)setHasVerticalScroller:(BOOL)flag;
 - (BOOL)hasVerticalScroller;
-- (void)tile;
-- (void)toggleRuler:(id)sender;
-- (BOOL)isRulerVisible;
 
-//
-// Managing Component Views 
-//
-- (void)setDocumentView:(NSView *)aView;
-- (id)documentView;
-- (void)setHorizontalScroller:(NSScroller *)anObject;
-- (NSScroller *)horizontalScroller;
-- (void)setVerticalScroller:(NSScroller *)anObject;
-- (NSScroller *)verticalScroller;
-- (void)reflectScrolledClipView:(NSClipView *)cView;
+/* Managing rulers */
++ (void)setRulerViewClass:(Class)aClass;
++ (Class)rulerViewClass;
+- (void)setHasHorizontalRuler:(BOOL)flag;
+- (BOOL)hasHorizontalRuler;
+- (void)setHorizontalRulerView:(NSRulerView*)aRulerView;
+- (NSRulerView*)horizontalRulerView;
+- (void)setHasVerticalRuler:(BOOL)flag;
+- (BOOL)hasVerticalRuler;
+- (void)setVerticalRulerView:(NSRulerView*)aRulerView;
+- (NSRulerView*)verticalRulerView;
+- (void)setRulersVisible:(BOOL)flag;
+- (BOOL)rulersVisible;
 
-//
-// Modifying Graphic Attributes 
-//
-- (void)setBorderType:(NSBorderType)aType;
-- (NSBorderType)borderType;
-- (void)setBackgroundColor:(NSColor *)color;
-- (NSColor *)backgroundColor;
-
-//
-// Setting Scrolling Behavior 
-//
+/* Setting scrolling behavior */
+- (void)setLineScroll:(float)aFloat;
 - (float)lineScroll;
+- (void)setPageScroll:(float)aFloat;
 - (float)pageScroll;
 - (void)setScrollsDynamically:(BOOL)flag;
 - (BOOL)scrollsDynamically;
-- (void)setLineScroll:(float)value;
-- (void)setPageScroll:(float)value;
 
-//
-// Managing the Cursor 
-//
-- (void)setDocumentCursor:(NSCursor *)anObject;
+/* Updating display after scrolling */
+- (void)reflectScrolledClipView:(NSClipView*)aClipView;
 
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
+/* Arranging components */
+- (void)tile;
 
 @end
 
-#endif // _GNUstep_H_NSScrollView
+#endif /* _GNUstep_H_NSScrollView */

@@ -51,7 +51,7 @@
 #ifdef MIN
 # undef MIN
 #endif
-# define MIN(a, b) \
+#define MIN(a, b) \
     ({typedef _ta = (a), _tb = (b);   \
 	_ta _a = (a); _tb _b = (b);     \
 	_a < _b ? _a : _b; })
@@ -59,7 +59,7 @@
 #ifdef MAX
 # undef MAX
 #endif
-# define MAX(a, b) \
+#define MAX(a, b) \
     ({typedef _ta = (a), _tb = (b);   \
 	_ta _a = (a); _tb _b = (b);     \
 	_a > _b ? _a : _b; })
@@ -67,7 +67,7 @@
 #ifdef ABS
 # undef ABS
 #endif
-# define ABS(x) \
+#define ABS(x) \
     ({typedef _tx = (x); \
       _tx _x = (x); \
       _x >= 0 ? _x : -_x; })

@@ -141,11 +141,15 @@ id gnustep_gui_nsbutton_class = nil;
 //
 - (void)getPeriodicDelay:(float *)delay
 		interval:(float *)interval
-{}
+{
+  [cell getPeriodicDelay:delay interval:interval];
+}
 
 - (void)setPeriodicDelay:(float)delay
 		interval:(float)interval
-{}
+{
+  [cell setPeriodicDelay:delay interval:interval];
+}
 
 //
 // Setting the Titles 

@@ -27,11 +27,13 @@
 */ 
 
 #include <Foundation/NSValue.h>
+
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSFont.h>
 #include <AppKit/NSView.h>
+#include <AppKit/NSControl.h>
 #include <AppKit/NSCell.h>
 #include <AppKit/NSEvent.h>
 
@@ -82,6 +84,7 @@
   cell_float_autorange = NO;
   cell_float_left = 0;
   cell_float_right = 0;
+  action_mask = NSLeftMouseUpMask;
   return self;
 }
 
@@ -523,7 +526,11 @@
 
 - (int)sendActionOn:(int)mask
 {
-  return 0;
+  unsigned int previousMask = action_mask;
+
+  action_mask = mask;
+
+  return previousMask;
 }
 
 - (void)setAction:(SEL)aSelector
@@ -532,6 +539,7 @@
 - (void)setContinuous:(BOOL)flag
 {
   cell_continuous = flag;
+  [self sendActionOn:(NSLeftMouseUpMask|NSPeriodicMask)];
 }
 
 - (void)setTarget:(id)anObject
@@ -582,7 +590,10 @@
 
 - (void)getPeriodicDelay:(float *)delay
 		interval:(float *)interval
-{}
+{
+  *delay = 0.0;
+  *interval = 0.05;
+}
 
 - (BOOL)startTrackingAt:(NSPoint)startPoint
 		 inView:(NSView *)controlView
@@ -606,117 +617,141 @@
 	    ofView:(NSView *)controlView
       untilMouseUp:(BOOL)flag
 {
-    NSApplication *theApp = [NSApplication sharedApplication];
-    NSEvent *e;
-    unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask |
-      NSMouseMovedMask | NSLeftMouseDraggedMask |
-      NSRightMouseDraggedMask;
-    NSPoint location = [theEvent locationInWindow];
-    NSPoint point = [controlView convertPoint: location fromView: nil];
-    NSPoint last_point;
-    BOOL done;
-    BOOL mouseWentUp;
+  NSApplication *theApp = [NSApplication sharedApplication];
+  unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask |
+    NSMouseMovedMask | NSLeftMouseDraggedMask | NSRightMouseDraggedMask;
+  NSPoint location = [theEvent locationInWindow];
+  NSPoint point = [controlView convertPoint: location fromView: nil];
+  float delay, interval;
+  id target = [self target];
+  SEL action = [self action];
+  NSPoint last_point;
+  BOOL done;
+  BOOL mouseWentUp;
 
-    NSDebugLog(@"NSCell start tracking\n");
-    NSDebugLog(@"NSCell tracking in rect %f %f %f %f\n", 
-	       cellFrame.origin.x, cellFrame.origin.y,
-	       cellFrame.size.width, cellFrame.size.height);
-    NSDebugLog(@"NSCell initial point %f %f\n", point.x, point.y);
+  NSDebugLog(@"NSCell start tracking\n");
+  NSDebugLog(@"NSCell tracking in rect %f %f %f %f\n", 
+	      cellFrame.origin.x, cellFrame.origin.y,
+	      cellFrame.size.width, cellFrame.size.height);
+  NSDebugLog(@"NSCell initial point %f %f\n", point.x, point.y);
 
-    if (![self startTrackingAt: point inView: controlView])
-	return NO;
+  if (![self startTrackingAt: point inView: controlView])
+    return NO;
 
-    // If point is in cellFrame then highlight the cell
-    if ([controlView mouse: point inRect: cellFrame])
-      {
-	[self highlight:YES withFrame:cellFrame inView:controlView];
+  // If point is in cellFrame then highlight the cell
+  if ([controlView mouse: point inRect: cellFrame]) {
+    [self highlight:YES withFrame:cellFrame inView:controlView];
+    [[controlView window] flushWindow];
+  }
+  else
+    return NO;
+
+  if ([theEvent type] == NSLeftMouseDown
+      && (action_mask & NSLeftMouseDownMask))
+    [(NSControl*)controlView sendAction:action to:target];
+
+  if (cell_continuous) {
+    [self getPeriodicDelay:&delay interval:&interval];
+    [NSEvent startPeriodicEventsAfterDelay:delay withPeriod:interval];
+    event_mask |= NSPeriodicMask;
+  }
+
+  // Get next mouse events until a mouse up is obtained
+  NSDebugLog(@"NSCell get mouse events\n");
+  mouseWentUp = NO;
+  done = NO;
+  while (!done) {
+    NSEventType eventType;
+    BOOL pointIsInCell;
+
+    last_point = point;
+    theEvent = [theApp nextEventMatchingMask:event_mask untilDate:nil 
+		inMode:NSEventTrackingRunLoopMode dequeue:YES];
+    eventType = [theEvent type];
+
+    if (eventType != NSPeriodic) {
+      location = [theEvent locationInWindow];
+      point = [controlView convertPoint: location fromView: nil];
+      NSDebugLog(@"NSCell location %f %f\n", location.x, location.y);
+      NSDebugLog(@"NSCell point %f %f\n", point.x, point.y);
+    }
+    else
+      NSDebugLog (@"got a periodic event");
+
+    // Point is not in cell
+    if (![controlView mouse: point inRect: cellFrame]) {
+      NSDebugLog(@"NSCell point not in cell frame\n");
+
+      pointIsInCell = NO;
+
+      // unhighlight cell is highlighted
+      if (cell_highlighted) {
+	[self highlight: NO withFrame: cellFrame 
+	      inView: controlView];
+	[self drawWithFrame: cellFrame inView: controlView];
 	[[controlView window] flushWindow];
       }
-    else
-	return NO;
+      
+      // Do we now return or keep tracking
+      if (!([[self class] prefersTrackingUntilMouseUp] && flag)) {
+	NSDebugLog(@"NSCell return immediately\n");
+	done = YES;
+      }
+    }
+    else {
+      // Point is in cell
+      pointIsInCell = YES;
 
-    // Get next mouse events until a mouse up is obtained
-    NSDebugLog(@"NSCell get mouse events\n");
-    mouseWentUp = NO;
-    done = NO;
-    while (!done)
-	{
-	    last_point = point;
-	    e = [theApp nextEventMatchingMask:event_mask untilDate:nil 
-			inMode:NSEventTrackingRunLoopMode dequeue:YES];
-	    location = [e locationInWindow];
-	    point = [controlView convertPoint: location fromView: nil];
-	    NSDebugLog(@"NSCell location %f %f\n", location.x, location.y);
-	    NSDebugLog(@"NSCell point %f %f\n", point.x, point.y);
+      // highlight cell if not highlighted
+      if (!cell_highlighted) {
+	[self highlight: YES withFrame: cellFrame 
+	      inView: controlView];
+	//[self drawWithFrame: cellFrame inView: controlView];
+	[[controlView window] flushWindow];
+      }
+    }
 
-	    // Point is not in cell
-	    if (![controlView mouse: point inRect: cellFrame])
-		{
-		    NSDebugLog(@"NSCell point not in cell frame\n");
-		    // unhighlight cell is highlighted
-		    if (cell_highlighted)
-		      {
-			[self highlight: NO withFrame: cellFrame 
-			      inView: controlView];
-			[self drawWithFrame: cellFrame inView: controlView];
-			[[controlView window] flushWindow];
-		      }
-		    
-		    // Do we now return or keep tracking
-		    if ((![[self class] prefersTrackingUntilMouseUp]) 
-			&& (!flag))
-			{
-			    NSDebugLog(@"NSCell return immediately\n");
-			    done = YES;
-			    continue;
-			}
-		}
-	    else
-	      {
-		// Point is in cell
-		// highlight cell if not highlighted
-		if (!cell_highlighted)
-		  {
-		    [self highlight: YES withFrame: cellFrame 
-			  inView: controlView];
-		    //[self drawWithFrame: cellFrame inView: controlView];
-		    [[controlView window] flushWindow];
-		  }
-	      }
+    // should we continue tracking?
+    if (![self continueTracking:last_point at:point inView:controlView]) {
+      NSDebugLog(@"NSCell stop tracking\n");
+      done = YES;
+    }
 
-	    // should we continue tracking?
-	    if (![self continueTracking: last_point at: point
-		      inView: controlView])
-		{
-		    NSDebugLog(@"NSCell stop tracking\n");
-		    done = YES;
-		    continue;
-		}
+    // Did the mouse go up?
+    if (eventType == NSLeftMouseUp) {
+      NSLog(@"NSCell mouse went up\n");
+      mouseWentUp = YES;
+      done = YES;
+      if ((action_mask & NSLeftMouseUpMask))
+	[(NSControl*)controlView sendAction:action to:target];
+    }
+    else {
+      if (pointIsInCell
+	  && ((eventType == NSLeftMouseDragged
+		&& (action_mask & NSLeftMouseDraggedMask))
+	      || ((eventType == NSPeriodic)
+		  && (action_mask & NSPeriodicMask))))
+	[(NSControl*)controlView sendAction:action to:target];
+    }
 
-	    // Did the mouse go up?
-	    if ([e type] == NSLeftMouseUp)
-		{
-		    NSDebugLog(@"NSCell mouse went up\n");
-		    mouseWentUp = YES;
-		    done = YES;
-		}
-	}
+  }
 
-    // Tell ourselves to stop tracking
-    [self stopTracking: last_point at: point
-	  inView: controlView mouseIsUp: mouseWentUp];
+  // Tell ourselves to stop tracking
+  [self stopTracking:last_point at:point
+	inView:controlView mouseIsUp:mouseWentUp];
 
-    // Return YES only if the mouse went up within the cell
-    if ((mouseWentUp) &&
-	([controlView mouse: point inRect: cellFrame]))
-	{
-	    NSDebugLog(@"NSCell mouse went up in cell\n");
-	    return YES;
-	}
+  if (cell_continuous)
+    [NSEvent stopPeriodicEvents];
 
-    // Otherwise return NO
-    NSDebugLog(@"NSCell mouse did not go up in cell\n");
-    return NO;
+  // Return YES only if the mouse went up within the cell
+  if (mouseWentUp && [controlView mouse: point inRect: cellFrame]) {
+    NSDebugLog(@"NSCell mouse went up in cell\n");
+    return YES;
+  }
+
+  // Otherwise return NO
+  NSDebugLog(@"NSCell mouse did not go up in cell\n");
+  return NO;
 }
 
 //

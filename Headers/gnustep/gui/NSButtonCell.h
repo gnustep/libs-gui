@@ -55,6 +55,8 @@ typedef enum _NSButtonType {
   BOOL transparent;
   unsigned int highlightsByMask;
   unsigned int showAltStateMask;
+  float delayInterval;
+  float repeatInterval;
 
   // Reserved for back-end use
   void *be_bc_reserved;

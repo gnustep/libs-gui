@@ -1,12 +1,12 @@
-/* 
+/*
    NSClipView.h
 
-   A clipped view
+   The class that contains the document view displayed by a NSScrollView.
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
+   Author: Ovidiu Predescu <ovidiu@net-community.com>
+   Date: July 1997
    
    This file is part of the GNUstep GUI Library.
 
@@ -21,10 +21,9 @@
    Library General Public License for more details.
 
    You should have received a copy of the GNU Library General Public
-   License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/ 
+   License along with this library; if not, write to the Free
+   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
 
 #ifndef _GNUstep_H_NSClipView
 #define _GNUstep_H_NSClipView
@@ -32,56 +31,68 @@
 #include <AppKit/NSView.h>
 
 @class NSNotification;
-
 @class NSCursor;
-@class NSEvent;
 @class NSColor;
 
-@interface NSClipView : NSView <NSCoding>
+@interface NSClipView : NSView
 {
-  // Attributes
+  NSView* _documentView;
+  NSCursor* _cursor;
+  NSColor* _backgroundColor;
+  BOOL _copiesOnScroll;
 }
 
-//
-// Managing the Document View 
-//
-- (NSRect)documentRect;
+/* Setting the document view */
+- (void)setDocumentView:(NSView*)aView;
 - (id)documentView;
-- (NSRect)documentVisibleRect;
-- (void)setDocumentView:(NSView *)aView;
 
-//
-// Setting the Cursor 
-//
-- (NSCursor *)documentCursor;
-- (void)setDocumentCursor:(NSCursor *)anObject;
-
-//
-// Setting the Background Color
-//
-- (NSColor *)backgroundColor;
-- (void)setBackgroundColor:(NSColor *)color;
-
-//
-// Scrolling 
-//
-- (BOOL)autoscroll:(NSEvent *)theEvent;
-- (NSPoint)constrainScrollPoint:(NSPoint)newOrigin;
-- (BOOL)copiesOnScroll;
+/* Scrolling */
 - (void)scrollToPoint:(NSPoint)newOrigin;
+- (BOOL)autoscroll:(NSEvent*)theEvent;
+- (NSPoint)constrainScrollPoint:(NSPoint)proposedNewOrigin;
+
+/* Determining scrolling efficiency */
 - (void)setCopiesOnScroll:(BOOL)flag;
+- (BOOL)copiesOnScroll;
 
-//
-// Responding to a Changed Frame
-//
-- (void)viewFrameChanged:(NSNotification *)notification;
+/* Getting the visible portion */
+- (NSRect)documentRect;
+- (NSRect)documentVisibleRect;
 
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
+/* Setting the document cursor */
+- (void)setDocumentCursor:(NSCursor*)aCursor;
+- (NSCursor*)documentCursor;
+
+/* Setting the background color */
+- (void)setBackgroundColor:(NSColor*)aColor;
+- (NSColor*)backgroundColor;
+
+/* Overridden NSView methods */
+- (BOOL)acceptsFirstResponder;
+- (BOOL)isFlipped;
+- (void)rotateByAngle:(float)angle;
+- (void)scaleUnitSquareToSize:(NSSize)newUnitSize;
+- (void)setBoundsOrigin:(NSPoint)aPoint;
+- (void)setBoundsRotation:(float)angle;
+- (void)setBoundsSize:(NSSize)aSize;
+- (void)setFrameSize:(NSSize)aSize;
+- (void)setFrameOrigin:(NSPoint)aPoint;
+- (void)setFrameRotation:(float)angle;
+- (void)translateOriginToPoint:(NSPoint)aPoint;
+- (void)viewBoundsChanged:(NSNotification*)aNotification;
+- (void)viewFrameChanged:(NSNotification*)aNotification;
 
 @end
 
-#endif // _GNUstep_H_NSClipView
+
+@interface NSClipView (SuperviewMethods)
+- (void)reflectScrolledClipView:(NSClipView*)aClipView;
+- (void)scrollClipView:(NSClipView*)aClipView toPoint:(NSPoint)newOrigin;
+@end
+
+
+@interface NSClipView (BackendMethods)
+- (void)_translateToPoint:(NSPoint)point oldPoint:(NSPoint)oldPoint;
+@end
+
+#endif /* _GNUstep_H_NSClipView */

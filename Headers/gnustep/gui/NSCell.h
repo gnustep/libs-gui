@@ -119,6 +119,7 @@ enum {
   NSView *control_view;
   NSSize cell_size;
   id represented_object;
+  unsigned int action_mask;
 }
 
 //

@@ -70,6 +70,8 @@
   [self setEnabled:YES];
   [self setTransparent:NO];
   [self setBordered:YES];
+  delayInterval = 0.4;
+  repeatInterval = 0.075;
   return self;
 }
 
@@ -81,6 +83,8 @@
   [self setEnabled:YES];
   [self setTransparent:NO];
   [self setBordered:YES];
+  delayInterval = 0.4;
+  repeatInterval = 0.075;
   return self;
 }
 
@@ -153,11 +157,18 @@
 //
 - (void)getPeriodicDelay:(float *)delay
 		interval:(float *)interval
-{}
+{
+  *delay = delayInterval;
+  *interval = repeatInterval;
+}
 
 - (void)setPeriodicDelay:(float)delay
 		interval:(float)interval
-{}
+{
+  delayInterval = delay;
+  repeatInterval = interval;
+  [self setContinuous:YES];
+}
 
 //
 // Setting the Key Equivalent 

@@ -5,8 +5,9 @@
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
+   Author: Ovidiu Predescu <ovidiu@net-community.com>
+   A completely rewritten version of the original source by Scott Christley.
+   Date: July 1997
    
    This file is part of the GNUstep GUI Library.
 
@@ -40,17 +41,17 @@ typedef enum _NSScrollArrowPosition {
 } NSScrollArrowPosition;
 
 typedef enum _NSScrollerPart {
-  NSScrollerNoPart,
+  NSScrollerNoPart = 0,
   NSScrollerDecrementPage,
   NSScrollerKnob,
   NSScrollerIncrementPage,
   NSScrollerDecrementLine,
   NSScrollerIncrementLine,
-  NSScrollerKnobSlot 
+  NSScrollerKnobSlot
 } NSScrollerPart;
 
 typedef enum _NSScrollerUsablePart {
-  NSNoScrollerParts,
+  NSNoScrollerParts = 0,
   NSOnlyScrollerArrows,
   NSAllScrollerParts  
 } NSUsableScrollerParts;
@@ -60,18 +61,17 @@ typedef enum _NSScrollerArrow {
   NSScrollerDecrementArrow
 } NSScrollerArrow;
 
-extern const float NSScrollerWidth;
-
 @interface NSScroller : NSControl <NSCoding>
 {
-  // Attributes
-  BOOL is_horizontal;
-  float knob_proportion;
-  NSScrollerPart hit_part;
-  NSScrollArrowPosition arrows_position;
-  NSImage *increment_arrow;
-  NSImage *decrement_arrow;
-  NSImage *knob_dimple;
+  float _floatValue;
+  float _knobProportion;
+  id _target;
+  SEL _action;
+  BOOL _isHorizontal;
+  BOOL _isEnabled;
+  NSScrollerPart _hitPart;
+  NSScrollArrowPosition _arrowsPosition;
+  NSUsableScrollerParts _usableParts;
 
   // Reserved for back-end use
   void *be_scroll_reserved;
@@ -101,9 +101,9 @@ extern const float NSScrollerWidth;
 //
 - (void)drawArrow:(NSScrollerArrow)whichButton
 	highlight:(BOOL)flag;
+- (void)drawKnobSlot;
 - (void)drawKnob;
 - (void)drawParts;
-- (void)highlight:(BOOL)flag;
 
 //
 // Handling Events 
@@ -113,25 +113,9 @@ extern const float NSScrollerWidth;
 - (void)trackKnob:(NSEvent *)theEvent;
 - (void)trackScrollButtons:(NSEvent *)theEvent;
 
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
-
-@end
-
-//
-// Methods implemented by the backend
-//
-@interface NSScroller (GNUstepBackend)
-
-- (void)drawBar;
-- (NSRect)boundsOfScrollerPart:(NSScrollerPart)part;
-- (BOOL)isPointInIncrementArrow:(NSPoint)aPoint;
-- (BOOL)isPointInDecrementArrow:(NSPoint)aPoint;
-- (BOOL)isPointInKnob:(NSPoint)aPoint;
-- (BOOL)isPointInBar:(NSPoint)aPoint;
+/* Other methods */
+- (void)setFrameSize:(NSSize)size;
+- (void)setEnabled:(BOOL)flag;
 
 @end
 

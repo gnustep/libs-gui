@@ -1,3 +1,26 @@
+Tue Aug  5 14:39:29 1997  Ovidiu Predescu <ovidiu@net-community.com>
+
+	* Images/common_ArrowLeftH.tiff: New file.
+	* Images/common_ArrowRightH.tiff: Likewise.
+	* Images/common_ArrowUpH.tiff: Likewise.
+	* Images/common_ArrowDownH.tiff: Likewise.
+	* Source/NSApplication.m (-nextEventMatchingMask:untilDate:inMode:
+	dequeue:): Do not pop-up the time events from the queue immediately
+	after -limitDateForMode: to avoid loosing the normal events.
+	* Source/NSCell.m: Handle sending action continuously while the user
+	tracks the mouse.
+	* Source/NSButtonCell.m: Likewise.
+	* Source/NSButton.m: Likewise.
+
+	Implementation of scroll views.
+	* Source/NSClipView.m: The initial implementation.
+	* Source/NSScrollView.m: Likewise.
+	* Source/NSScroller.m: Optimized to work with time events to gain speed
+	in user interaction.
+
+	* Source/NSView.m: Post notifications if needed when a frame or bound
+	change.
+
 Mon Aug 04 13:16:54 1997  Scott Christley  <scottc@ruth.net-community.com>
 
 	* Source/externs.m: New file.

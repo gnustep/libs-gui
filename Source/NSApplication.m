@@ -50,7 +50,6 @@ extern NSEvent *gnustep_gui_null_event;
 // Class variables
 //
 static BOOL gnustep_gui_app_is_in_dealloc;
-
 @implementation NSApplication
 
 //
@@ -421,12 +420,6 @@ static BOOL gnustep_gui_app_is_in_dealloc;
   // Not in queue so wait for next event
   while (!done) {
     NSDate* limitDate = [currentLoop limitDateForMode:mode];
-
-    /* -limitDateForMode: can fire timers and timer events can be quueued in
-       events queue so check for them. */
-    event = [self _eventMatchingMask:mask];
-    if (event)
-      break;
 
     if (!expiration)
       expiration = [NSDate distantFuture];

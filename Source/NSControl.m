@@ -353,7 +353,10 @@ static id MB_NSCONTROL_CELL_CLASS = nil;
 {
   NSApplication *theApp = [NSApplication sharedApplication];
 
-  return [theApp sendAction:theAction to:theTarget from:self];
+  if (theAction && theTarget)
+    return [theApp sendAction:theAction to:theTarget from:self];
+  else
+    return NO;
 }
 
 - (int)sendActionOn:(int)mask

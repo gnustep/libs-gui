@@ -1,12 +1,10 @@
-/* 
+/*
    NSClipView.m
-
-   Description...
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
+   Author: Ovidiu Predescu <ovidiu@net-community.com>
+   Date: July 1997
    
    This file is part of the GNUstep GUI Library.
 
@@ -21,113 +19,236 @@
    Library General Public License for more details.
 
    You should have received a copy of the GNU Library General Public
-   License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/ 
+   License along with this library; if not, write to the Free
+   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
+#include <Foundation/NSNotification.h>
 
 #include <AppKit/NSClipView.h>
+#include <AppKit/NSCursor.h>
+#include <AppKit/NSColor.h>
+#include <AppKit/NSWindow.h>
+#include <AppKit/NSGraphics.h>
+
+#define ASSIGN(a, b) \
+  [b retain]; \
+  [a release]; \
+  a = b;
+
+#ifdef MIN
+# undef MIN
+#endif
+#define MIN(a, b) \
+    ({typedef _ta = (a), _tb = (b);   \
+	_ta _a = (a); _tb _b = (b);     \
+	_a < _b ? _a : _b; })
+
+#ifdef MAX
+# undef MAX
+#endif
+#define MAX(a, b) \
+    ({typedef _ta = (a), _tb = (b);   \
+	_ta _a = (a); _tb _b = (b);     \
+	_a > _b ? _a : _b; })
 
 @implementation NSClipView
 
-//
-// Class methods
-//
-+ (void)initialize
+- init
 {
-  if (self == [NSClipView class])
-    {
-      // Initial version
-      [self setVersion:1];
-    }
+  [super init];
+  [self setAutoresizesSubviews:YES];
+  [self setBackgroundColor:[[self window] backgroundColor]];
+  return self;
 }
 
-//
-// Managing the Document View 
-//
+- (void)setDocumentView:(NSView*)aView
+{
+  if (_documentView)
+    [_documentView removeFromSuperview];
+
+  ASSIGN(_documentView, aView);
+  [self addSubview:_documentView];
+
+  /* Register to notifications sent by the document view */
+  [_documentView setPostsFrameChangedNotifications:YES];
+  [_documentView setPostsBoundsChangedNotifications:YES];
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+      selector:@selector(viewFrameChanged:)
+      name:NSViewFrameDidChangeNotification object:_documentView];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+      selector:@selector(viewBoundsChanged:)
+      name:NSViewBoundsDidChangeNotification object:_documentView];
+
+  /* TODO: invoke superview's reflectScrolledClipView:? */
+  [[self superview] reflectScrolledClipView:self];
+}
+
+- (void)resetCursorRects
+{
+  [self addCursorRect:[self bounds] cursor:_cursor];
+}
+
+- (void)scrollToPoint:(NSPoint)point
+{
+  NSPoint currentPoint = [self bounds].origin;
+
+  NSLog (@"scrollToPoint: current point (%f, %f), point (%f, %f)",
+	currentPoint.x, currentPoint.y,
+	point.x, point.y);
+
+  point = [self constrainScrollPoint:point];
+  [super setBoundsOrigin:point];
+  if (_copiesOnScroll)
+    /* TODO: move the visible portion of the document */;
+  else {
+    NSPoint frameOrigin = [_documentView frame].origin;
+    NSPoint newFrameOrigin;
+
+    newFrameOrigin.x = frameOrigin.x - (point.x - currentPoint.x);
+    newFrameOrigin.y = frameOrigin.y - (point.y - currentPoint.y);
+    [_documentView setPostsFrameChangedNotifications:NO];
+    [_documentView setFrameOrigin:newFrameOrigin];
+    [_documentView setPostsFrameChangedNotifications:YES];
+    [self display];
+    [[self window] flushWindow];
+  }
+}
+
+- (NSPoint)constrainScrollPoint:(NSPoint)proposedNewOrigin
+{
+  NSRect documentFrame = [self documentRect];
+  NSPoint new = proposedNewOrigin;
+
+  if (proposedNewOrigin.x < documentFrame.origin.x)
+    new.x = documentFrame.origin.x;
+  else if (proposedNewOrigin.x
+	   > documentFrame.size.width - bounds.size.width)
+    new.x = documentFrame.size.width - bounds.size.width;
+
+  if (proposedNewOrigin.y < documentFrame.origin.y)
+    new.y = documentFrame.origin.y;
+  else if (proposedNewOrigin.y
+	   > documentFrame.size.height - bounds.size.height)
+    new.y = documentFrame.size.height - bounds.size.height;
+
+  return new;
+}
+
 - (NSRect)documentRect
 {
-  return NSZeroRect;
-}
+  NSRect documentFrame = [_documentView frame];
+  NSRect clipViewBounds = [self bounds];
+  NSRect rect;
 
-- (id)documentView
-{
-  return nil;
+  rect.origin = documentFrame.origin;
+  rect.size.width = MAX(documentFrame.size.width, clipViewBounds.size.width);
+  rect.size.height = MAX(documentFrame.size.height,
+			 clipViewBounds.size.height);
+
+  return rect;
 }
 
 - (NSRect)documentVisibleRect
 {
-  return NSZeroRect;
+  NSRect documentBounds = [_documentView bounds];
+  NSRect clipViewBounds = [self bounds];
+  NSRect rect;
+
+  rect.origin = clipViewBounds.origin;
+  rect.size.width = MIN(documentBounds.size.width, clipViewBounds.size.width);
+  rect.size.height = MIN(documentBounds.size.height,
+			 clipViewBounds.size.height);
+
+  return rect;
 }
 
-- (void)setDocumentView:(NSView *)aView
+- (BOOL)autoscroll:(NSEvent*)theEvent
+{
+  return 0;
+}
+
+- (void)viewBoundsChanged:(NSNotification*)aNotification
+{
+  [[self superview] reflectScrolledClipView:self];
+}
+
+- (void)viewFrameChanged:(NSNotification*)aNotification
+{
+  [[self superview] reflectScrolledClipView:self];
+}
+
+- (void)scaleUnitSquareToSize:(NSSize)newUnitSize
+{
+  [super scaleUnitSquareToSize:newUnitSize];
+  [[self superview] reflectScrolledClipView:self];
+}
+
+- (void)setBoundsOrigin:(NSPoint)aPoint
+{
+  [super setBoundsOrigin:aPoint];
+  [[self superview] reflectScrolledClipView:self];
+}
+
+- (void)setBoundsSize:(NSSize)aSize
+{
+  [super setBoundsSize:aSize];
+  [[self superview] reflectScrolledClipView:self];
+}
+
+- (void)setFrameSize:(NSSize)aSize
+{
+  [super setFrameSize:aSize];
+  [[self superview] reflectScrolledClipView:self];
+}
+
+- (void)setFrameOrigin:(NSPoint)aPoint
+{
+  [super setFrameOrigin:aPoint];
+  [[self superview] reflectScrolledClipView:self];
+}
+
+- (void)setFrame:(NSRect)rect
+{
+  [super setFrame:rect];
+  [[self superview] reflectScrolledClipView:self];
+}
+
+- (void)translateOriginToPoint:(NSPoint)aPoint
+{
+  [super translateOriginToPoint:aPoint];
+  [[self superview] reflectScrolledClipView:self];
+}
+
+- (id)documentView				{ return _documentView; }
+- (void)setCopiesOnScroll:(BOOL)flag		{ _copiesOnScroll = flag; }
+- (BOOL)copiesOnScroll				{ return _copiesOnScroll; }
+- (void)setDocumentCursor:(NSCursor*)aCursor	{ ASSIGN(_cursor, aCursor); }
+- (NSCursor*)documentCursor			{ return _cursor; }
+- (NSColor*)backgroundColor			{ return _backgroundColor; }
+- (BOOL)isFlipped			{ return [_documentView isFlipped]; }
+- (BOOL)acceptsFirstResponder		{ return _documentView != nil; }
+
+- (void)setBackgroundColor:(NSColor*)aColor
+{
+  ASSIGN(_backgroundColor, aColor);
+}
+
+/* Disable rotation of clip view */
+- (void)rotateByAngle:(float)angle
 {}
 
-//
-// Setting the Cursor 
-//
-- (NSCursor *)documentCursor
-{
-  return nil;
-}
-
-- (void)setDocumentCursor:(NSCursor *)anObject
+- (void)setBoundsRotation:(float)angle
 {}
 
-//
-// Setting the Background Color
-//
-- (NSColor *)backgroundColor
-{
-  return nil;
-}
-
-- (void)setBackgroundColor:(NSColor *)color
+- (void)setFrameRotation:(float)angle
 {}
 
-//
-// Scrolling 
-//
-- (BOOL)autoscroll:(NSEvent *)theEvent
+/* Managing responder chain */
+- (BOOL)becomeFirstResponder
 {
-  return NO;
-}
-
-- (NSPoint)constrainScrollPoint:(NSPoint)newOrigin
-{
-  return NSZeroPoint;
-}
-
-- (BOOL)copiesOnScroll
-{
-  return NO;
-}
-
-- (void)scrollToPoint:(NSPoint)newOrigin
-{}
-
-- (void)setCopiesOnScroll:(BOOL)flag
-{}
-
-//
-// Responding to a Changed Frame
-//
-- (void)viewFrameChanged:(NSNotification *)notification
-{}
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder
-{
-  [super encodeWithCoder:aCoder];
-}
-
-- initWithCoder:aDecoder
-{
-  [super initWithCoder:aDecoder];
-
-  return self;
+  return [_documentView becomeFirstResponder];
 }
 
 @end

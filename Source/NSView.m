@@ -31,6 +31,8 @@
 #include <Foundation/NSThread.h>
 #include <Foundation/NSLock.h>
 #include <Foundation/NSArray.h>
+#include <Foundation/NSNotification.h>
+
 #include <AppKit/NSView.h>
 #include <AppKit/NSWindow.h>
 #include <gnustep/gui/TrackingRectangle.h>
@@ -159,7 +161,6 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
   super_view = nil;
   window = nil;
-  is_flipped = NO;
   is_rotated_from_base = NO;
   is_rotated_or_scaled_from_base = NO;
   opaque = YES;
@@ -351,7 +352,7 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 //
 - (float)frameRotation
 {
-  return 0;
+  return frame_rotation;
 }
 
 - (NSRect)frame
@@ -360,7 +361,11 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 }
 
 - (void)rotateByAngle:(float)angle
-{}
+{
+  if (post_bounds_changes)
+    [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSViewBoundsDidChangeNotification object:self];
+}
 
 - (void)setFrame:(NSRect)frameRect
 {
@@ -371,15 +376,26 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
   // Resize subviews
   [self resizeSubviewsWithOldSize: old_size];
+  if (post_frame_changes)
+    [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSViewFrameDidChangeNotification object:self];
 }
 
 - (void)setFrameOrigin:(NSPoint)newOrigin
 {
   frame.origin = newOrigin;
+  if (post_frame_changes)
+    [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSViewFrameDidChangeNotification object:self];
+
 }
 
 - (void)setFrameRotation:(float)angle
-{}
+{
+  if (post_frame_changes)
+    [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSViewFrameDidChangeNotification object:self];
+}
 
 - (void)setFrameSize:(NSSize)newSize
 {
@@ -390,6 +406,9 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
   // Resize subviews
   [self resizeSubviewsWithOldSize: old_size];
+  if (post_frame_changes)
+    [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSViewFrameDidChangeNotification object:self];
 }
 
 //
@@ -408,7 +427,7 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
 - (BOOL)isFlipped
 {
-  return is_flipped;
+  return NO;
 }
 
 - (BOOL)isRotatedFromBase
@@ -422,55 +441,53 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 }
 
 - (void)scaleUnitSquareToSize:(NSSize)newSize
-{}
+{
+  if (post_bounds_changes)
+    [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSViewBoundsDidChangeNotification object:self];
+}
 
 - (void)setBounds:(NSRect)aRect
 {
   bounds = aRect;
+  if (post_bounds_changes)
+    [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSViewBoundsDidChangeNotification object:self];
 }
 
 - (void)setBoundsOrigin:(NSPoint)newOrigin
 {
   bounds.origin = newOrigin;
+  if (post_bounds_changes)
+    [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSViewBoundsDidChangeNotification object:self];
 }
 
 - (void)setBoundsRotation:(float)angle
-{}
+{
+  if (post_bounds_changes)
+    [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSViewBoundsDidChangeNotification object:self];
+}
 
 - (void)setBoundsSize:(NSSize)newSize
 {
   bounds.size = newSize;
+  if (post_bounds_changes)
+    [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSViewBoundsDidChangeNotification object:self];
 }
 
 - (void)translateOriginToPoint:(NSPoint)point
-{}
+{
+  if (post_bounds_changes)
+    [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSViewBoundsDidChangeNotification object:self];
+}
 
 //
 // Converting Coordinates 
 //
-- (NSRect)convertRectToWindow:(NSRect)r
-{
-  NSRect f, t, a;
-  id s;
-
-  a = r;
-  f = [self frame];
-  s = [self superview];
-  // climb up the superview chain
-  while (s)
-    {
-      t = [s frame];
-      // translate frame
-      f.origin.x += t.origin.x;
-      f.origin.y += t.origin.y;
-      s = [s superview];
-    }
-  a.origin.x += f.origin.x;
-  a.origin.y += f.origin.y;
-
-  return a;
-}
-
 - (NSPoint)convertPointToWindow:(NSPoint)p
 {
   NSRect f, t;
@@ -479,6 +496,9 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
   a = p;
   f = [self frame];
+  if ([self isFlipped])
+    a.y = f.size.height - p.y;
+
   s = [self superview];
   // climb up the superview chain
   while (s)
@@ -486,11 +506,24 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
       t = [s frame];
       // translate frame
       f.origin.x += t.origin.x;
-      f.origin.y += t.origin.y;
+      if ([s isFlipped])
+	f.origin.y += t.size.height + t.origin.y;
+      else
+	f.origin.y += t.origin.y;
       s = [s superview];
     }
   a.x += f.origin.x;
   a.y += f.origin.y;
+
+  return a;
+}
+
+- (NSRect)convertRectToWindow:(NSRect)r
+{
+  NSRect a;
+
+  a.origin = [self convertPointToWindow:r.origin];
+  a.size = r.size;
 
   return a;
 }
@@ -615,6 +648,15 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
   post_frame_changes = flag;
 }
 
+- (void)setPostsBoundsChangedNotifications:(BOOL)flag
+{
+  post_bounds_changes = flag;
+}
+
+- (BOOL)postsBoundsChangedNotifications
+{
+  return post_bounds_changes;
+}
 
 //
 // Resizing Subviews 
@@ -799,6 +841,8 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
 - (BOOL)autoscroll:(NSEvent *)theEvent
 {
+  if (super_view)
+    return [super_view autoscroll:theEvent];
   return NO;
 }
 
@@ -1171,7 +1215,6 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
   [aCoder encodeConditionalObject:window];
 #endif
   [aCoder encodeObject: tracking_rects];
-  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &is_flipped];
   [aCoder encodeValueOfObjCType:@encode(BOOL) at: &is_rotated_from_base];
   [aCoder encodeValueOfObjCType:@encode(BOOL) 
 	  at: &is_rotated_or_scaled_from_base];
@@ -1205,7 +1248,6 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 #endif
 
   tracking_rects = [aDecoder decodeObject];
-  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &is_flipped];
   [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &is_rotated_from_base];
   [aDecoder decodeValueOfObjCType:@encode(BOOL) 
 	  at: &is_rotated_or_scaled_from_base];
