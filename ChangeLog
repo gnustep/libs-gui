@@ -1,3 +1,12 @@
+2003-08-22  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibTemplates.[hm]: Added new template classes to a new file
+	removed old templates and implemented GSClassSwapper, GSWindowTemplate,
+	GSViewTemplate and etc.. to act as stand-in object in the 
+	interface builder application.
+	* NSBundleAdditions.m: Removed old template classes and moved some
+	of the hiddle classes to GSNibTemplates for better organization.
+
 2003-08-20  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWindow.m

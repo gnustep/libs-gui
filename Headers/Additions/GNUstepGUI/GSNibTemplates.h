@@ -33,9 +33,17 @@
 #include <AppKit/NSText.h>
 #include <AppKit/NSTextView.h>
 #include <AppKit/NSControl.h>
-#include <AppKit/NSButton.h>
 
+// versions of the nib container and the templates.
 #define GNUSTEP_NIB_VERSION 0
+#define GSSWAPPER_VERSION   0
+#define GSWINDOWT_VERSION   0
+#define GSVIEWT_VERSION     0
+#define GSCONTROLT_VERSION  0
+#define GSTEXTT_VERSION     0
+#define GSTEXTVIEWT_VERSION 0
+#define GSMENUT_VERSION     0
+#define GSOBJECTT_VERSION   0
 
 @class	NSString;
 @class	NSDictionary;
@@ -58,6 +66,19 @@
 /*
  * Template classes
  */
+@protocol GSTemplate
+- (id) initWithObject: (id)object className: (NSString *)className superClassName: (NSString *)superClassName;
+- (void) setClassName: (NSString *)className;
+- (NSString *)className;
+@end
+
+@interface GSClassSwapper : NSObject <GSTemplate, NSCoding>
+{
+  id                   _object;
+  NSString            *_className;
+  Class                _superClass;
+}
+@end
 
 @interface GSNibItem : NSObject <NSCoding> 
 {
@@ -72,14 +93,54 @@
 }
 @end
 
-// templates
-@protocol GSTemplate
+@interface GSWindowTemplate : GSClassSwapper
+{
+  BOOL                 _deferFlag;
+}
+@end
+
+@interface GSViewTemplate : GSClassSwapper
+@end
+
+@interface GSTextTemplate : GSClassSwapper
+@end
+
+@interface GSTextViewTemplate : GSClassSwapper 
+@end
+
+@interface GSMenuTemplate : GSClassSwapper
+@end
+
+@interface GSControlTemplate : GSClassSwapper
+@end
+
+@interface GSObjectTemplate : GSClassSwapper
+@end
+
+@interface GSTemplateFactory : NSObject
++ (id) templateForObject: (id) object 
+	   withClassName: (NSString *)className
+      withSuperClassName: (NSString *)superClassName;
+@end
+
+/*
+  These templates are from the old system, which had some issues.  Currently I believe
+  that NSWindowTemplate was the only one seeing use, so it is the only one included.
+  if any more are needed they will be added back.   
+  
+  As these classes are deprecated, they should disappear from the gnustep distribution
+  in the next major release.
+*/
+
+// DO NOT USE.
+
+@protocol __DeprecatedTemplate__
 - (void) setClassName: (NSString *)className;
 - (NSString *)className;
 - (id) instantiateObject: (NSCoder *)coder;
 @end
 
-@interface NSWindowTemplate : NSWindow <GSTemplate>
+@interface NSWindowTemplate : NSWindow <__DeprecatedTemplate__>
 {
   NSString            *_className;
   NSString            *_parentClassName;
@@ -87,75 +148,4 @@
 }
 @end
 
-@interface NSViewTemplate : NSView <GSTemplate>
-{
-  NSString            *_className;
-  NSString            *_parentClassName;
-}
-@end
-
-@interface NSTextTemplate : NSText <GSTemplate>
-{
-  NSString            *_className;
-  NSString            *_parentClassName;
-}
-@end
-
-@interface NSTextViewTemplate : NSTextView <GSTemplate> 
-{
-  NSString            *_className;
-  NSString            *_parentClassName;
-}
-@end
-
-@interface NSMenuTemplate : NSMenu <GSTemplate>
-{
-  NSString            *_className;
-  NSString            *_parentClassName;
-}
-@end
-
-@interface NSControlTemplate : NSControl <GSTemplate>
-{
-  NSString            *_className;
-  NSString            *_parentClassName;
-  id                   _delegate;
-  id                   _dataSource;
-  BOOL                 _usesDataSource;
-}
-@end
-
-@interface NSButtonTemplate : NSButton <GSTemplate>
-{
-  NSString            *_className;
-  NSString            *_parentClassName;
-  NSButtonType         _buttonType;
-}
-@end
-
-@interface GSObjectData : NSObject
-{
-  NSMutableDictionary *dictionary;
-}
-
-- (void) setValuesFromObject: (id)object;
-- (void) restoreValuesToObject: (id)object;
-- (NSMutableDictionary *)dictionary;
-@end
-
-@interface GSClassSwapper : NSObject 
-{
-  NSString            *_className;
-  id                   _template;
-}
-- (NSString *) className;
-- (void) setClassName: (NSString *)name;
-- (id) template;
-- (void) setTemplate: (id)template;
-@end
-
-/*
-@interface GSStringProxy : NSString
-@end
-*/
 #endif /* _GNUstep_H_GSNibTemplates */
