@@ -1,4 +1,16 @@
-Thu Aug 31 00:30:15 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+2000-08-31  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSFont.h: 
+	Removed method -widths, as this is no longer needed.
+	* Headers/gnustep/gui/GSFontInfo.h: Removed ivar and method
+	widths. Changed ivar weigth to type int and added ivars traits and
+	mostCompatibleStringEncoding. 
+	* Source/NSFont.m: Removed method -widths 
+	* Source/GSFontInfo.m: Removed method -widths. Changed [weigth],
+	[mostCompatibleStringEncoding] and [traits] to return the ivars.
+	Set those in [init] to the default values.
+
+nThu Aug 31 00:30:15 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSSavePanel.m ([-_initWithoutGModel]): Fixed setting of
 	min size.  ([-_getOriginalSize]): Fixed getting content size.
