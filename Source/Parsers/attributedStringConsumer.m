@@ -788,12 +788,26 @@ void GSRTFaddDefaultColor (void *ctxt)
 
 void GSRTFcolorbg (void *ctxt, int color)
 {
-  ASSIGN(BGCOLOUR, [COLOURS objectAtIndex: color]);
+  if ([COLOURS count] <= color)
+    {
+      ASSIGN (BGCOLOUR, [NSColor whiteColor]);
+    }
+  else
+    {
+      ASSIGN (BGCOLOUR, [COLOURS objectAtIndex: color]);
+    }
 }
 
 void GSRTFcolorfg (void *ctxt, int color)
 {
-  ASSIGN(FGCOLOUR, [COLOURS objectAtIndex: color]);
+  if ([COLOURS count] <= color)
+    {
+      ASSIGN (FGCOLOUR, [NSColor blackColor]);
+    }
+  else
+    {
+      ASSIGN (FGCOLOUR, [COLOURS objectAtIndex: color]);
+    }
 }
 
 void GSRTFsubscript (void *ctxt, int script)
