@@ -66,11 +66,11 @@
   nc = [NSNotificationCenter defaultCenter];
   if (_documentView)
     {
-      [nc removeObserver: self name: nil object: _documentView];
+      [nc removeObserver: self  name: nil  object: _documentView];
       [_documentView removeFromSuperview];
     }
 
-  ASSIGN(_documentView, aView);
+  ASSIGN (_documentView, aView);
 
   if (_documentView)
     {
@@ -78,12 +78,21 @@
 
       [self addSubview: _documentView];
 
+      /* Call this before setting bounds origin ! */
+      _rFlags.flipped_view = [self isFlipped];
+
       df = [_documentView frame];
       [self setBoundsOrigin: df.origin];
+
       if ([aView respondsToSelector: @selector(backgroundColor)])
-	[self setBackgroundColor: [(id)aView backgroundColor]];
+	{
+	  [self setBackgroundColor: [(id)aView backgroundColor]];
+	}
+      
       if ([aView respondsToSelector: @selector(drawsBackground)])
-	[self setDrawsBackground: [(id)aView drawsBackground]];
+	{
+	  [self setDrawsBackground: [(id)aView drawsBackground]];
+	}
 
       /* Register for notifications sent by the document view */
       [_documentView setPostsFrameChangedNotifications: YES];
@@ -100,6 +109,8 @@
     }
 
   _rFlags.flipped_view = [self isFlipped];
+
+  /* TODO: Adjust the key view loop to include the new document view */
 
   [_super_view reflectScrolledClipView: self];
 }
@@ -122,7 +133,7 @@
 
   newBounds.origin = point;
 
-  if (NSEqualPoints(originalBounds.origin, newBounds.origin))
+  if (NSEqualPoints (originalBounds.origin, newBounds.origin))
     return;
 
   if (_documentView == nil)
@@ -140,7 +151,7 @@
 	  // no intersection -- docview should draw everything
 	  [super setBoundsOrigin: newBounds.origin];
 	  [_documentView setNeedsDisplayInRect: 
-	    [self convertRect: newBounds toView: _documentView]];
+			   [self documentVisibleRect]];
 	}
       else
 	{
@@ -211,7 +222,7 @@
       // dont copy anything -- docview draws it all
       [super setBoundsOrigin: newBounds.origin];
       [_documentView setNeedsDisplayInRect: 
-	[self convertRect: newBounds toView: _documentView]];
+		       [self documentVisibleRect]];
     }
 
   if ([NSView focusView] == _documentView)
@@ -283,8 +294,8 @@
     return NSZeroRect;
 
   documentBounds = [_documentView bounds];
-  clipViewBounds = [self convertRect: _bounds toView: _documentView];
-  rect = NSIntersectionRect(documentBounds, clipViewBounds);
+  clipViewBounds = [self convertRect: _bounds  toView: _documentView];
+  rect = NSIntersectionRect (documentBounds, clipViewBounds);
 
   return rect;
 }
@@ -389,7 +400,7 @@
 
 - (void) setDocumentCursor: (NSCursor*)aCursor
 {
-  ASSIGN(_cursor, aCursor);
+  ASSIGN (_cursor, aCursor);
 }
 
 - (NSCursor*) documentCursor
@@ -404,27 +415,42 @@
 
 - (void) setBackgroundColor: (NSColor*)aColor
 {
-  ASSIGN(_backgroundColor, aColor);
+  ASSIGN (_backgroundColor, aColor);
+
+  if (_drawsBackground == NO || _backgroundColor == nil
+      || [_backgroundColor alphaComponent] < 1.0)
+    {
+      _isOpaque = NO;
+    }
+  else
+    {
+      _isOpaque = YES;
+    }
 }
 
-- (void)setDrawsBackground:(BOOL)flag
+- (void) setDrawsBackground:(BOOL)flag
 {
   _drawsBackground = flag; 
+
+  if (_drawsBackground == NO || _backgroundColor == nil
+      || [_backgroundColor alphaComponent] < 1.0)
+    {
+      _isOpaque = NO;
+    }
+  else
+    {
+      _isOpaque = YES;
+    }
 }
 
-- (BOOL)drawsBackground
+- (BOOL) drawsBackground
 {
   return _drawsBackground;
 }
 
 - (BOOL) isOpaque
 {
-  if (_drawsBackground == NO
-      || _backgroundColor == nil
-      || [_backgroundColor alphaComponent] < 1.0)
-    return NO;
-  else
-    return YES;
+  return _isOpaque;
 }
 
 - (BOOL) isFlipped
