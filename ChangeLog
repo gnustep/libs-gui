@@ -1,3 +1,11 @@
+Sun Aug 12 05:46:32 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSBezierPath.m
+	([-appendBezierPathWithArcWithCenter:radius:startAngle:endAngle:
+	clockwise:]): If the bezier path had already some elements, draw a
+	line from the current point to the start point of the arc. (Patch
+	from Georg Fleischmann).
+
 Sun Aug 12 04:25:20 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSTextView.m ([-replaceCharactersInRange:withString:]):
