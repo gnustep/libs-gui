@@ -44,7 +44,7 @@ set_show_service_OBJC_FILES = set_show_service.m Functions.m
 
 example_OBJC_FILES = example.m Functions.m
 
--include GNUmakefile.preamble
+include GNUmakefile.preamble
 
 -include GNUmakefile.local
 
@@ -52,4 +52,4 @@ include $(GNUSTEP_MAKEFILES)/tool.make
 include $(GNUSTEP_MAKEFILES)/service.make
 
 -include GNUmakefile.local.service
--include GNUmakefile.postamble
+include GNUmakefile.postamble
