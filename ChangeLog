@@ -1,3 +1,10 @@
+2003-02-08 22:53  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSFontInfo.m (-defaultLineHeightForFont),
+	Source/GSHorizontalTypesetter.m (-layoutLineNewParagraph:): Improve
+	calculation of line height and make it match the baseline calculation
+	when typesetting.
+
 2003-02-08 22:29  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSWindow.m (-sendEvent:): On right mouse down, check if

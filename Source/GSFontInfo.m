@@ -342,8 +342,16 @@ static GSFontEnumerator *sharedEnumerator = nil;
 
 - (float) defaultLineHeightForFont
 {
-  // ascent plus descent plus some suitable linegap
-  return [self ascender] - [self descender] + ceil([self pointSize]/ 11.0);
+  /*
+  Generally, roman text is centered in the line disregarding the descender,
+  and the descender height is added above and below. Thus, the line height
+  should be ascender_height+2*descender_height. (Note that descender is
+  negative below the baseline.)
+
+  This calculation should match the baseline calculation in
+  GSHorizontalTypesetter, or text will look odd.
+  */
+  return [self ascender] - 2 * [self descender];
 }
 
 - (NSSize) advancementForGlyph: (NSGlyph)aGlyph

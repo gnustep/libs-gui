@@ -367,9 +367,13 @@ typedef struct
   (TODO (optimization): if we're dealing with a "simple rectangular
   text container", we should try to extend the existing line frag in place
   before jumping back to do all the expensive checking).
-
-  Normally, baseline==ascender.
   */
+
+  /*
+  This calculation should match the calculation in [GSFontInfo
+  -defaultLineHeightForFont], or text will look odd.
+  */
+#define COMPUTE_BASELINE  baseline = line_height - descender
 
   line_frag_t *line_frags = NULL;
   int num_line_frags = 0;
@@ -393,8 +397,6 @@ typedef struct
     line_height = [cache->font defaultLineHeightForFont];
     ascender = [cache->font ascender];
     descender = -[cache->font descender];
-
-#define COMPUTE_BASELINE  baseline = ascender
 
     COMPUTE_BASELINE;
 
