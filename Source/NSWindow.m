@@ -306,10 +306,10 @@ static NSMapTable* windowmaps = NULL;
   /* rectBeingDrawn is variable used to optimize flushing the backing store.
      It is set by NSGraphicsContext during a lockFocus to tell NSWindow what
      part a view is drawing in, so NSWindow only has to flush that portion */
-  rectsBeingDrawn = RETAIN([NSMutableArray arrayWithCapacity: 10]); 
+  rectsBeingDrawn = RETAIN([NSMutableArray arrayWithCapacity: 10]);
 
   DPSwindow(context, NSMinX(contentRect), NSMinY(contentRect),
-	    NSWidth(contentRect), NSHeight(contentRect), 
+	    NSWidth(contentRect), NSHeight(contentRect),
 	    bufferingType, &window_num);
   DPSstylewindow(context, aStyle, window_num);
   DPSsetwindowlevel(context, [self level], window_num);
@@ -490,13 +490,13 @@ static NSMapTable* windowmaps = NULL;
  */
 - (void) endEditingFor: (id)anObject
 {
-  NSText *t = [self fieldEditor: NO 
+  NSText *t = [self fieldEditor: NO
 		    forObject: anObject];
 
   if (t && (first_responder == t))
     {
-      [[NSNotificationCenter defaultCenter] 
-	postNotificationName: NSTextDidEndEditingNotification 
+      [[NSNotificationCenter defaultCenter]
+	postNotificationName: NSTextDidEndEditingNotification
 	object: t];
       [t setText: @""];
       [t setDelegate: nil];
@@ -533,9 +533,9 @@ static NSMapTable* windowmaps = NULL;
 {
   ASSIGN(_windowController, windowController);
 }
-   
+
 - (id) windowController
-{ 
+{
   return _windowController;
 }
 
@@ -754,7 +754,7 @@ static NSMapTable* windowmaps = NULL;
 		 performSelector: @selector(_handleWindowNeedsDisplay:)
 			  target: self
 			argument: nil
-			   order: 600000 
+			   order: 600000
 			   modes: [NSArray arrayWithObjects:
 					   NSDefaultRunLoopMode,
 					   NSModalPanelRunLoopMode,
@@ -956,7 +956,7 @@ static NSMapTable* windowmaps = NULL;
 - (void) setResizeIncrements: (NSSize)aSize
 {
   increments = aSize;
-  DPSsetresizeincrements(GSCurrentContext(), aSize.width, aSize.height, 
+  DPSsetresizeincrements(GSCurrentContext(), aSize.width, aSize.height,
 			 window_num);
 }
 
@@ -1079,11 +1079,11 @@ static NSMapTable* windowmaps = NULL;
   i = [rectsBeingDrawn count];
   while (i-- > 0)
     {
-      rectNeedingFlush = NSUnionRect(rectNeedingFlush, 
+      rectNeedingFlush = NSUnionRect(rectNeedingFlush,
        [[rectsBeingDrawn objectAtIndex: i] rectValue]);
     }
-  
-  DPSflushwindowrect(context, 
+
+  DPSflushwindowrect(context,
 		     NSMinX(rectNeedingFlush), NSMinY(rectNeedingFlush),
 		     NSWidth(rectNeedingFlush), NSHeight(rectNeedingFlush),
 		     window_num);
@@ -1486,7 +1486,7 @@ resetCursorRectsForView(NSView *theView)
 }
 
 - (void) setInitialFirstResponder: (NSView *)aView
-{ 
+{
   if ([aView isKindOfClass: viewClass])
     {
       if (_initial_first_responder)
@@ -1496,25 +1496,25 @@ resetCursorRectsForView(NSView *theView)
 }
 
 - (NSView *) initialFirstResponder
-{ 
+{
   return _initial_first_responder;
 }
 
 - (void) keyDown: (NSEvent *)theEvent
-{ 
+{
   unsigned int key_code = [theEvent keyCode];
 
   // If this is a TAB or TAB+SHIFT event, move to the next key view
-  if (key_code == 0x09) 
+  if (key_code == 0x09)
     {
       if ([theEvent modifierFlags] & NSShiftKeyMask)
 	[self selectPreviousKeyView: self];
       else
 	[self selectNextKeyView: self];
       return;
-    }    
-  
-  // If this is an ESC event, abort modal loop 
+    }
+
+  // If this is an ESC event, abort modal loop
   if (key_code == 0x1b)
     {
       NSApplication *app = [NSApplication sharedApplication];
@@ -1526,25 +1526,25 @@ resetCursorRectsForView(NSView *theView)
       return;
     }
 
-  // Try to process the event as a key equivalent 
+  // Try to process the event as a key equivalent
   // without Command having being pressed
   {
-    NSEvent *new_event 
-      =  [NSEvent keyEventWithType: [theEvent type] 
-		  location: NSZeroPoint 
+    NSEvent *new_event
+      =  [NSEvent keyEventWithType: [theEvent type]
+		  location: NSZeroPoint
 		  modifierFlags: ([theEvent modifierFlags] | NSCommandKeyMask)
-		  timestamp: [theEvent timestamp] 
+		  timestamp: [theEvent timestamp]
 		  windowNumber: [theEvent windowNumber]
-		  context: [theEvent context] 
+		  context: [theEvent context]
 		  characters: [theEvent characters]
-		  charactersIgnoringModifiers: [theEvent 
+		  charactersIgnoringModifiers: [theEvent
 						 charactersIgnoringModifiers]
 		  isARepeat: [theEvent isARepeat]
 		  keyCode: key_code];
     if ([self performKeyEquivalent: new_event])
       return;
   }
-  
+
   // Otherwise, pass the event up
   [super keyDown: theEvent];
 }
@@ -1919,7 +1919,7 @@ resetCursorRectsForView(NSView *theView)
       case NSMouseExited:				  // Mouse exited
 	break;
 
-      case NSKeyDown: 
+      case NSKeyDown:
 	/*
 	 * Save the first responder so that the key up goes to it and not a
 	 * possible new first responder.
@@ -2018,18 +2018,18 @@ resetCursorRectsForView(NSView *theView)
 	      dragInfo = [GSCurrentContext() _dragInfo];
 	      if (_lastDragView && _lastDragView != v && _f.accepts_drag)
 		{
-		  GSPerformVoidDragSelector(_lastDragView, 
+		  GSPerformVoidDragSelector(_lastDragView,
 				      @selector(draggingExited:), dragInfo);
 		}
 	      _f.accepts_drag = GSViewAcceptsDrag(v, dragInfo);
 	      if (_lastDragView != v && _f.accepts_drag)
 		{
-		  GSPerformDragSelector(v, @selector(draggingEntered:), 
+		  GSPerformDragSelector(v, @selector(draggingEntered:),
 				      dragInfo, action);
 		}
 	      else
 		{
-		  GSPerformDragSelector(v, @selector(draggingUpdated:), 
+		  GSPerformDragSelector(v, @selector(draggingUpdated:),
 				      dragInfo, action);
 		}
 	      e = [NSEvent otherEventWithType: NSAppKitDefined
@@ -2053,7 +2053,7 @@ resetCursorRectsForView(NSView *theView)
 	      dragInfo = [GSCurrentContext() _dragInfo];
 	      if (_lastDragView && _f.accepts_drag)
 		{
-		  GSPerformDragSelector(_lastDragView, 
+		  GSPerformDragSelector(_lastDragView,
 				      @selector(draggingExited:), dragInfo,
 				      action);
 		}
@@ -2063,19 +2063,19 @@ resetCursorRectsForView(NSView *theView)
 	      if (_lastDragView && _f.accepts_drag)
 		{
 	          dragInfo = [GSCurrentContext() _dragInfo];
-		  GSPerformDragSelector(_lastDragView, 
-					@selector(prepareForDragOperation:), 
+		  GSPerformDragSelector(_lastDragView,
+					@selector(prepareForDragOperation:),
 					dragInfo, action);
 		  if (action)
 		    {
-		      GSPerformDragSelector(_lastDragView, 
-					  @selector(performDragOperation:),  
+		      GSPerformDragSelector(_lastDragView,
+					  @selector(performDragOperation:),
 					  dragInfo, action);
 		    }
 		  if (action)
 		    {
-		      GSPerformVoidDragSelector(_lastDragView, 
-					  @selector(concludeDragOperation:),  
+		      GSPerformVoidDragSelector(_lastDragView,
+					  @selector(concludeDragOperation:),
 					  dragInfo);
 		    }
 		}
@@ -2101,7 +2101,7 @@ resetCursorRectsForView(NSView *theView)
 	}
 	break;
 
-      case NSPeriodic: 
+      case NSPeriodic:
       case NSSystemDefined:
       case NSApplicationDefined:
 	break;
@@ -2121,7 +2121,7 @@ resetCursorRectsForView(NSView *theView)
 - (void) selectKeyViewFollowingView: (NSView *)aView
 {
   NSView *theView = nil;
-  
+
   if ([aView isKindOfClass: viewClass])
     theView = [aView nextValidKeyView];
   if (theView)
@@ -2157,15 +2157,15 @@ resetCursorRectsForView(NSView *theView)
 - (void) selectNextKeyView: (id)sender
 {
   NSView *theView = nil;
-  
-  if ([first_responder isKindOfClass: viewClass])    
+
+  if ([first_responder isKindOfClass: viewClass])
     theView = [first_responder nextValidKeyView];
-  
+
   if ((theView == nil) && (_initial_first_responder))
     {
       if ([_initial_first_responder acceptsFirstResponder])
 	theView = _initial_first_responder;
-      else 
+      else
 	theView = [_initial_first_responder nextValidKeyView];
     }
 
@@ -2184,15 +2184,15 @@ resetCursorRectsForView(NSView *theView)
 - (void) selectPreviousKeyView: (id)sender
 {
   NSView *theView = nil;
-  
-  if ([first_responder isKindOfClass: viewClass])    
+
+  if ([first_responder isKindOfClass: viewClass])
     theView = [first_responder previousValidKeyView];
-  
+
   if ((theView == nil) && (_initial_first_responder))
     {
       if ([_initial_first_responder acceptsFirstResponder])
 	theView = _initial_first_responder;
-      else 
+      else
 	theView = [_initial_first_responder previousValidKeyView];
     }
 
@@ -2210,10 +2210,10 @@ resetCursorRectsForView(NSView *theView)
 
 // This is invoked by selectText: of some views (eg matrixes),
 // to know whether they have received it from the window, and
-// if so, in which direction is the selection moving (so that they know 
+// if so, in which direction is the selection moving (so that they know
 // if they should select the last or the first editable cell).
 - (NSSelectionDirection)keyViewSelectionDirection
-{ 
+{
   return _selection_direction;
 }
 
@@ -2322,7 +2322,7 @@ resetCursorRectsForView(NSView *theView)
   [windowsLock lock];
   defs = [NSUserDefaults standardUserDefaults];
   obj = [self stringWithSavedFrame];
-  if ([self isKindOfClass: [NSMenuWindow class]]) 
+  if ([self isKindOfClass: [NSMenuWindow class]])
     {
       id	dict;
 
@@ -2331,7 +2331,7 @@ resetCursorRectsForView(NSView *theView)
       if (dict == nil)
 	{
 	  dict = [NSMutableDictionary dictionaryWithCapacity: 1];
-	} 
+	}
       else if ([dict isKindOfClass: [NSDictionary class]] == NO)
 	{
 	  NSLog(@"NSMenuLocations default is not a dictionary - overwriting");
@@ -2392,7 +2392,7 @@ resetCursorRectsForView(NSView *theView)
        * Autosave name cleared - remove from defaults database.
        */
       defs = [NSUserDefaults standardUserDefaults];
-      if ([self isKindOfClass: [NSMenuWindow class]]) 
+      if ([self isKindOfClass: [NSMenuWindow class]])
 	{
 	  id	dict;
 
@@ -2401,7 +2401,7 @@ resetCursorRectsForView(NSView *theView)
 	  if (dict == nil)
 	    {
 	      dict = [NSMutableDictionary dictionaryWithCapacity: 1];
-	    } 
+	    }
 	  else if ([dict isKindOfClass: [NSDictionary class]] == NO)
 	    {
 	      NSLog(@"NSMenuLocations is not a dictionary - overwriting");
@@ -2545,7 +2545,7 @@ resetCursorRectsForView(NSView *theView)
 
   [windowsLock lock];
   defs = [NSUserDefaults standardUserDefaults];
-  if ([self isKindOfClass: [NSMenuWindow class]] == YES) 
+  if ([self isKindOfClass: [NSMenuWindow class]] == YES)
     {
       obj = [defs objectForKey: @"NSMenuLocations"];
       if (obj != nil)
@@ -2655,13 +2655,14 @@ resetCursorRectsForView(NSView *theView)
 {
   if ([_delegate respondsToSelector: @selector(windowShouldClose:)])
     {
-      BOOL ourReturn; 
+      BOOL ourReturn;
 
       ourReturn = [_delegate windowShouldClose: sender];
 
       if (ourReturn)
 	{
-	  ourReturn = [[_windowController document] shouldCloseWindowController: _windowController];
+	  ourReturn = [[_windowController document]
+	    shouldCloseWindowController: _windowController];
 	}
 
       return ourReturn;

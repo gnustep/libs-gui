@@ -190,11 +190,11 @@ static SEL getSel = @selector(objectAtIndex:);
   [self setFrame: frameRect];
 
   if ((numCols > 0) && (numRows > 0))
-    cellSize = NSMakeSize (frameRect.size.width/numCols, 
+    cellSize = NSMakeSize (frameRect.size.width/numCols,
 			   frameRect.size.height/numRows);
   else
-    cellSize = NSMakeSize (DEFAULT_CELL_WIDTH, DEFAULT_CELL_HEIGHT); 
-  
+    cellSize = NSMakeSize (DEFAULT_CELL_WIDTH, DEFAULT_CELL_HEIGHT);
+
   intercell = NSMakeSize(1, 1);
   _tabKeyTraversesCells = YES;
   [self setBackgroundColor: [NSColor controlBackgroundColor]];
@@ -800,7 +800,7 @@ static SEL getSel = @selector(objectAtIndex:);
 {
   if (!_selectedCell || (!allowsEmptySelection && (mode == NSRadioModeMatrix)))
     return;
-  
+
   selectedCells[_selectedRow][_selectedColumn] = NO;
   [_selectedCell setState: 0];
   _selectedCell = nil;
@@ -828,7 +828,7 @@ static SEL getSel = @selector(objectAtIndex:);
 	}
     }
 
-  [self display];
+  [self setNeedsDisplay: YES];
 }
 
 - (void) selectCellAtRow: (int)row column: (int)column
@@ -843,7 +843,7 @@ static SEL getSel = @selector(objectAtIndex:);
     {
       selectedCells[_selectedRow][_selectedColumn] = NO;
       [_selectedCell setState: 0];
-      [self setNeedsDisplayInRect: [self cellFrameAtRow: _selectedRow 
+      [self setNeedsDisplayInRect: [self cellFrameAtRow: _selectedRow
 					 column: _selectedColumn]];
     }
 
@@ -854,7 +854,7 @@ static SEL getSel = @selector(objectAtIndex:);
       _selectedColumn = column;
       selectedCells[row][column] = YES;
       [_selectedCell setState: 1];
-      
+
       [self setNeedsDisplayInRect: [self cellFrameAtRow: row column: column]];
     }
 }
@@ -1061,7 +1061,6 @@ static SEL getSel = @selector(objectAtIndex:);
 	     startIndex: selectx
 	       endIndex: selecty];
     }
-  [self display];
 }
 
 - (id) cellAtRow: (int)row
@@ -1122,12 +1121,12 @@ static SEL getSel = @selector(objectAtIndex:);
 
   if (window)
     s = [window keyViewSelectionDirection];
-  
+
   switch (s)
     {
       // window selecting backwards
     case NSSelectingPrevious:
-      [self _selectPreviousSelectableCellBeforeRow: numRows 
+      [self _selectPreviousSelectableCellBeforeRow: numRows
 	    column: numCols];
       break;
       // Window selecting forward
@@ -1149,7 +1148,7 @@ static SEL getSel = @selector(objectAtIndex:);
       break;
     }
 }
-      
+
 - (id) selectTextAtRow: (int)row column: (int)column
 {
   if (row < 0 || row >= numRows || column < 0 || column >= numCols)
@@ -1157,7 +1156,7 @@ static SEL getSel = @selector(objectAtIndex:);
 
   if ([cells[row][column] isSelectable] == NO)
     return nil;
-  
+
   if (_textObject)
     {
       if (_selectedCell == cells[row][column])
@@ -1171,16 +1170,16 @@ static SEL getSel = @selector(objectAtIndex:);
 	  [self abortEditing];
 	}
     }
-  
+
   // Now _textObject == nil
   {
-    NSText *t = [window fieldEditor: YES 
+    NSText *t = [window fieldEditor: YES
 			forObject: self];
-    
+
     if ([t superview] != nil)
       if ([t resignFirstResponder] == NO)
 	return nil;
-    
+
     _selectedCell = cells[row][column];
     _selectedRow = row;
     _selectedColumn = column;
@@ -1203,7 +1202,7 @@ static SEL getSel = @selector(objectAtIndex:);
 }
 
 - (id) nextText
-{  
+{
   return _nextKeyView;
 }
 
@@ -1216,8 +1215,8 @@ static SEL getSel = @selector(objectAtIndex:);
 {
   NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
   NSDictionary *d;
-  
-  d = [NSDictionary dictionaryWithObject:[aNotification object] 
+
+  d = [NSDictionary dictionaryWithObject:[aNotification object]
 		    forKey: @"NSFieldEditor"];
   [nc postNotificationName: NSControlTextDidBeginEditingNotification
       object: self
@@ -1228,8 +1227,8 @@ static SEL getSel = @selector(objectAtIndex:);
 {
   NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
   NSDictionary *d;
-  
-  d = [NSDictionary dictionaryWithObject: [aNotification object] 
+
+  d = [NSDictionary dictionaryWithObject: [aNotification object]
 		    forKey: @"NSFieldEditor"];
   [nc postNotificationName: NSControlTextDidChangeNotification
       object: self
@@ -1244,7 +1243,7 @@ static SEL getSel = @selector(objectAtIndex:);
 
   [self validateEditing];
 
-  d = [NSDictionary dictionaryWithObject: [aNotification object] 
+  d = [NSDictionary dictionaryWithObject: [aNotification object]
 		    forKey: @"NSFieldEditor"];
   [nc postNotificationName: NSControlTextDidEndEditingNotification
       object: self
@@ -1285,11 +1284,11 @@ static SEL getSel = @selector(objectAtIndex:);
 
 - (BOOL) textShouldBeginEditing: (NSText *)textObject
 {
-  if (_delegate && [_delegate respondsToSelector: 
+  if (_delegate && [_delegate respondsToSelector:
 				@selector(control:textShouldBeginEditing:)])
-    return [_delegate control: self 
+    return [_delegate control: self
 		      textShouldBeginEditing: textObject];
-  else 
+  else
     return YES;
 }
 
@@ -1300,11 +1299,11 @@ static SEL getSel = @selector(objectAtIndex:);
       [self sendAction: _errorAction to: [self target]];
       return NO;
     }
-  
-  if ([_delegate respondsToSelector: 
+
+  if ([_delegate respondsToSelector:
 		   @selector(control:textShouldEndEditing:)])
     {
-      if ([_delegate control: self 
+      if ([_delegate control: self
 		     textShouldEndEditing: aTextObject] == NO)
 	{
 	  NSBeep ();
@@ -1366,7 +1365,7 @@ static SEL getSel = @selector(objectAtIndex:);
     {
       for (j = 0; j < numCols; j++)
 	{
-	  tmpSize = [cells[i][j] cellSize];	  
+	  tmpSize = [cells[i][j] cellSize];
 	  if (tmpSize.width > newSize.width)
 	    newSize.width = tmpSize.width;
 	  if (tmpSize.height > newSize.height)
@@ -1569,7 +1568,7 @@ static SEL getSel = @selector(objectAtIndex:);
 {
   if (mode == NSListModeMatrix)
     return NO;
-  else 
+  else
     return YES;
 }
 
@@ -1719,12 +1718,12 @@ static SEL getSel = @selector(objectAtIndex:);
   NSApplication *app = [NSApplication sharedApplication];
   static MPoint anchor = {0, 0};
 
-  lastLocation = [self convertPoint: lastLocation 
+  lastLocation = [self convertPoint: lastLocation
 		       fromView: nil];
-  
+
   // If mouse down was on a selectable cell, start editing/selecting.
-  if([self getRow: &row 
-	   column: &column 
+  if([self getRow: &row
+	   column: &column
 	   forPoint: lastLocation])
     {
       if ([cells[row][column] isSelectable])
@@ -1744,7 +1743,7 @@ static SEL getSel = @selector(objectAtIndex:);
 	  _selectedRow = row;
 	  _selectedColumn = column;
 	  _textObject = [_selectedCell setUpFieldEditorAttributes: t];
-	  [_selectedCell editWithFrame: [self cellFrameAtRow: row 
+	  [_selectedCell editWithFrame: [self cellFrameAtRow: row
 					      column: column]
 			inView: self
 			editor: _textObject
@@ -1753,7 +1752,7 @@ static SEL getSel = @selector(objectAtIndex:);
 	  return;
 	}
     }
-  
+
   // Paranoia check -- _textObject should already be nil, since we
   // accept first responder, so NSWindow should have already given
   // us first responder status (thus already ending editing with _textObject).
@@ -1773,7 +1772,7 @@ static SEL getSel = @selector(objectAtIndex:);
     }
 
   if ((mode != NSTrackModeMatrix) && (mode != NSHighlightModeMatrix))
-    [NSEvent startPeriodicEventsAfterDelay: 0.05 
+    [NSEvent startPeriodicEventsAfterDelay: 0.05
 	     withPeriod: 0.05];
   ASSIGN(lastEvent, theEvent);
 
@@ -1785,20 +1784,20 @@ static SEL getSel = @selector(objectAtIndex:);
     {
       BOOL shouldProceedEvent = NO;
 
-      onCell = [self getRow: &row 
-		     column: &column 
+      onCell = [self getRow: &row
+		     column: &column
 		     forPoint: lastLocation];
       if (onCell)
 	{
-	  aCell = [self cellAtRow: row 
+	  aCell = [self cellAtRow: row
 			column: column];
-	  rect = [self cellFrameAtRow: row 
+	  rect = [self cellFrameAtRow: row
 		       column: column];
 	  if (aCell != previousCell)
 	    {
 	      switch (mode)
 		{
-		  case NSTrackModeMatrix: 
+		  case NSTrackModeMatrix:
 		    // in Track mode the cell should track the mouse
 		    // until the cursor either leaves the cellframe or
 		    // NSLeftMouseUp occurs
@@ -1812,7 +1811,7 @@ static SEL getSel = @selector(objectAtIndex:);
 		      done = YES;
 		    break;
 
-		  case NSHighlightModeMatrix: 
+		  case NSHighlightModeMatrix:
 		    // Highlight mode is like Track mode except that
 		    // the cell is lit before begins tracking and
 		    // unlit afterwards
@@ -1834,7 +1833,7 @@ static SEL getSel = @selector(objectAtIndex:);
 		    [window flushWindow];
 		    break;
 
-		  case NSRadioModeMatrix: 
+		  case NSRadioModeMatrix:
 		    // Radio mode allows no more than one cell to be selected
 		    if (previousCell == aCell)
 		      break;
@@ -1861,7 +1860,7 @@ static SEL getSel = @selector(objectAtIndex:);
 		    [window flushWindow];
 		    break;
 
-		  case NSListModeMatrix: 
+		  case NSListModeMatrix:
 		    // List mode allows multiple cells to be selected
 		    {
 		      unsigned modifiers = [lastEvent modifierFlags];
@@ -1928,7 +1927,7 @@ static SEL getSel = @selector(objectAtIndex:);
 				        dequeue: YES];
 	  switch ([theEvent type])
 	    {
-	      case NSPeriodic: 
+	      case NSPeriodic:
 		NSDebugLog(@"NSMatrix: got NSPeriodic event\n");
 		shouldProceedEvent = YES;
 		break;
@@ -1936,10 +1935,10 @@ static SEL getSel = @selector(objectAtIndex:);
 	      // Track and Highlight modes do not use
 	      // periodic events so we must break out
 	      // and check if the mouse is in a cell
-	      case NSLeftMouseUp: 
+	      case NSLeftMouseUp:
 		done = YES;
-	      case NSLeftMouseDown: 
-	      default: 
+	      case NSLeftMouseDown:
+	      default:
 		if ((mode == NSTrackModeMatrix)
 		  || (mode == NSHighlightModeMatrix))
 		  shouldProceedEvent = YES;
@@ -1955,14 +1954,14 @@ static SEL getSel = @selector(objectAtIndex:);
 
   switch (mode)
     {
-      case NSRadioModeMatrix: 
+      case NSRadioModeMatrix:
 	if (_selectedCell != nil)
 	  [_selectedCell highlight: NO withFrame: rect inView: self];
-      case NSListModeMatrix: 
+      case NSListModeMatrix:
 	[self setNeedsDisplayInRect: rect];
 	[window flushWindow];
-      case NSHighlightModeMatrix: 
-      case NSTrackModeMatrix: 
+      case NSHighlightModeMatrix:
+      case NSTrackModeMatrix:
 	break;
     }
 
@@ -2052,7 +2051,7 @@ static SEL getSel = @selector(objectAtIndex:);
       for (j = 0; j < numCols; j++)
 	{
 	  NSCell	*aCell = cells[i][j];
-	  
+
 	  [aCell resetCursorRect: [self cellFrameAtRow: i column: j]
 		 inView: self];
 	}
@@ -2088,7 +2087,7 @@ static SEL getSel = @selector(objectAtIndex:);
   cellClass = class;
   if (cellClass == nil)
     {
-      cellClass = defaultCellClass; 
+      cellClass = defaultCellClass;
     }
   cellNew = [cellClass methodForSelector: allocSel];
   cellInit = [cellClass instanceMethodForSelector: initSel];
@@ -2314,11 +2313,11 @@ static SEL getSel = @selector(objectAtIndex:);
   NSSize change;
   int nc = numCols;
   int nr = numRows;
-  
+
   [super resizeWithOldSuperviewSize: oldSize];
 
-  newBoundsSize = bounds.size; 
-  
+  newBoundsSize = bounds.size;
+
   change.height = newBoundsSize.height - oldBoundsSize.height;
   change.width = newBoundsSize.width - oldBoundsSize.width;
 
@@ -2329,8 +2328,9 @@ static SEL getSel = @selector(objectAtIndex:);
 	  if (nr <= 0) nr = 1;
 	  if (cellSize.height == 0)
 	    {
-	      cellSize.height = oldBoundsSize.height - ((nr - 1) * intercell.height);
-	      cellSize.height = cellSize.height / nr; 
+	      cellSize.height = oldBoundsSize.height
+		- ((nr - 1) * intercell.height);
+	      cellSize.height = cellSize.height / nr;
 	    }
 	  change.height = change.height / nr;
 	  cellSize.height += change.height;
@@ -2339,11 +2339,12 @@ static SEL getSel = @selector(objectAtIndex:);
 	}
       if (change.width != 0)
 	{
-	  if (nc <= 0) nc = 1;      
+	  if (nc <= 0) nc = 1;
 	  if (cellSize.width == 0)
 	    {
-	      cellSize.width = oldBoundsSize.width - ((nc - 1) * intercell.width);
-	      cellSize.width = cellSize.width / nc; 
+	      cellSize.width = oldBoundsSize.width
+		- ((nc - 1) * intercell.width);
+	      cellSize.width = cellSize.width / nc;
 	    }
 	  change.width = change.width / nc;
 	  cellSize.width += change.width;
@@ -2355,12 +2356,12 @@ static SEL getSel = @selector(objectAtIndex:);
     {
       if (change.height != 0)
 	{
-	  if (nr > 1) 
-	    {	
+	  if (nr > 1)
+	    {
 	      if (intercell.height == 0)
 		{
 		  intercell.height = oldBoundsSize.height - (nr * cellSize.height);
-		  intercell.height = intercell.height / (nr - 1); 
+		  intercell.height = intercell.height / (nr - 1);
 		}
 	      change.height = change.height / (nr - 1);
 	      intercell.height += change.height;
@@ -2370,18 +2371,18 @@ static SEL getSel = @selector(objectAtIndex:);
 	}
       if (change.width != 0)
 	{
-	  if (nc > 1) 
+	  if (nc > 1)
 	    {
 	      if (intercell.width == 0)
 		{
 		  intercell.width = oldBoundsSize.width - (nc * cellSize.width);
-		  intercell.width = intercell.width / (nc - 1); 
+		  intercell.width = intercell.width / (nc - 1);
 		}
 	      change.width = change.width / (nc - 1);
 	      intercell.width += change.width;
 	      if (intercell.width < 0)
 		intercell.width = 0;
-	    }      
+	    }
 	}
     }
   [self setNeedsDisplay: YES];
@@ -2414,7 +2415,7 @@ static SEL getSel = @selector(objectAtIndex:);
       _textObject = nil;
       return YES;
     }
-  else 
+  else
     return NO;
 }
 
@@ -2426,7 +2427,7 @@ static SEL getSel = @selector(objectAtIndex:);
     return nil;
 }
 
-- (void) validateEditing 
+- (void) validateEditing
 {
   if (_textObject)
     [_selectedCell setStringValue: [_textObject text]];
@@ -2480,7 +2481,7 @@ static SEL getSel = @selector(objectAtIndex:);
     }
 
   /*
-   * Update matrix dimension before we actually change it - so that 
+   * Update matrix dimension before we actually change it - so that
    * makeCellAtRow:column: diesn't think we are trying to make a cell
    * outside the array bounds.
    * Our implementation doesn't care, but a subclass might use
@@ -2633,17 +2634,19 @@ static SEL getSel = @selector(objectAtIndex:);
     }
   // Otherwise, make the big cycle.
   for (i = row + 1; i < numRows; i++)
-    for (j = 0; j < numCols; j++)
-      {
-	if ([cells[i][j] isSelectable])
-	  {
-	    _selectedCell = [self selectTextAtRow: i
-				  column: j];
-	    _selectedRow = i;
-	    _selectedColumn = j;
-	    return YES;
-	  }
-      }  
+    {
+      for (j = 0; j < numCols; j++)
+	{
+	  if ([cells[i][j] isSelectable])
+	    {
+	      _selectedCell = [self selectTextAtRow: i
+				    column: j];
+	      _selectedRow = i;
+	      _selectedColumn = j;
+	      return YES;
+	    }
+	}
+    }
   return NO;
 }
 -(BOOL) _selectPreviousSelectableCellBeforeRow: (int)row
@@ -2667,17 +2670,19 @@ static SEL getSel = @selector(objectAtIndex:);
     }
   // Otherwise, make the big cycle.
   for (i = row - 1; i > -1; i--)
-    for (j = numCols - 1; j > -1; j--)
-      {
-	if ([cells[i][j] isSelectable])
-	  {
-	    _selectedCell = [self selectTextAtRow: i
-				  column: j];
-	    _selectedRow = i;
-	    _selectedColumn = j;
-	    return YES;
-	  }
-      }  
+    {
+      for (j = numCols - 1; j > -1; j--)
+	{
+	  if ([cells[i][j] isSelectable])
+	    {
+	      _selectedCell = [self selectTextAtRow: i
+				    column: j];
+	      _selectedRow = i;
+	      _selectedColumn = j;
+	      return YES;
+	    }
+	}
+    }
   return NO;
 }
 @end

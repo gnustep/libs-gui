@@ -55,7 +55,7 @@
 #include <AppKit/NSScrollView.h>
 #include <AppKit/NSClipView.h>
 
-struct NSWindow_struct 
+struct NSWindow_struct
 {
   @defs(NSWindow)
 };
@@ -238,10 +238,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 {
   if (_nextKeyView)
     [_nextKeyView setPreviousKeyView: nil];
-  
+
   if (_previousKeyView)
      [_previousKeyView setNextKeyView: nil];
-     
+
   RELEASE(matrixToWindow);
   RELEASE(matrixFromWindow);
   RELEASE(frameMatrix);
@@ -615,7 +615,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   if (newSize.height < 0)
     {
       NSWarnMLog(@"given negative height", 0);
-      newSize.height = 0; 
+      newSize.height = 0;
     }
   if (coordinates_valid)
     (*invalidateImp)(self, invalidateSel);
@@ -1277,7 +1277,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       DPSgsave(ctxt);
       matrix = [self _matrixToWindow];
       [matrix concat];
-      
+
       /*
        * Clipping - set viewclip to the visible rectangle - which will never be
        * greater than the bounds of the view.
@@ -1327,7 +1327,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   if (flush)
     {
       rect = [[window_t->rectsBeingDrawn lastObject] rectValue];
-      window_t->rectNeedingFlush = 
+      window_t->rectNeedingFlush =
 	NSUnionRect(window_t->rectNeedingFlush, rect);
       window_t->_f.needs_flush = YES;
     }
@@ -1353,7 +1353,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     return NO;
 }
 
-- (void) display											
+- (void) display
 {
   if (window)
     {
@@ -1766,11 +1766,11 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       NSPoint	aPoint = vRect.origin;
       BOOL	shouldScroll = NO;
 
-      if (vRect.size.width == 0 && vRect.size.height == 0)			
+      if (vRect.size.width == 0 && vRect.size.height == 0)
 	return NO;
-      
-      if (!(NSMinX(vRect) <= NSMinX(aRect) 		
-	&& (NSMaxX(vRect) >= NSMaxX(aRect))))		
+
+      if (!(NSMinX(vRect) <= NSMinX(aRect)
+	&& (NSMaxX(vRect) >= NSMaxX(aRect))))
 	{
 	  shouldScroll = YES;
 	  if (aRect.origin.x < vRect.origin.x)
@@ -1784,8 +1784,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	    }
 	}
 
-      if (!(NSMinY(vRect) <= NSMinY(aRect) 
-	&& (NSMaxY(vRect) >= NSMaxY(aRect))))		
+      if (!(NSMinY(vRect) <= NSMinY(aRect)
+	&& (NSMaxY(vRect) >= NSMaxY(aRect))))
 	{
 	  shouldScroll = YES;
 	  if (aRect.origin.y < vRect.origin.y)
@@ -1982,7 +1982,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 		  NSView	*v;
 
 		  v = findByTag(array[i], aTag, &l);
-	    
+
 		  if (v != nil && l < level)
 		    {
 		      view = v;
@@ -2128,13 +2128,13 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       _nextKeyView = nil;
       return;
     }
-  
+
   if ([aView isKindOfClass: viewClass])
     {
-      // As an exception, we do not retain aView, to avoid retain loops 
-      // (the simplest being a view retaining and being retained 
-      // by another view), which prevents objects from being ever 
-      // deallocated.  To understand how we manage without retaining 
+      // As an exception, we do not retain aView, to avoid retain loops
+      // (the simplest being a view retaining and being retained
+      // by another view), which prevents objects from being ever
+      // deallocated.  To understand how we manage without retaining
       // _nextKeyView, see [NSView -dealloc].
       _nextKeyView = aView;
       if ([aView previousKeyView] != self)
@@ -2152,10 +2152,10 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   theView = _nextKeyView;
   while (1)
     {
-      if ([theView acceptsFirstResponder] || (theView == nil) 
+      if ([theView acceptsFirstResponder] || (theView == nil)
 	  || (theView == self))
 	return theView;
-      
+
       theView = [theView nextKeyView];
     }
 }
@@ -2166,7 +2166,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       _previousKeyView = nil;
       return;
     }
-  
+
   if ([aView isKindOfClass: viewClass])
     {
       _previousKeyView = aView;
@@ -2179,16 +2179,16 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   return _previousKeyView;
 }
 - (NSView *) previousValidKeyView
-{ 
+{
   NSView *theView;
 
   theView = _previousKeyView;
   while (1)
     {
-      if ([theView acceptsFirstResponder] || (theView == nil) 
+      if ([theView acceptsFirstResponder] || (theView == nil)
 	  || (theView == self))
 	return theView;
-      
+
       theView = [theView previousKeyView];
     }
 }
@@ -2434,7 +2434,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   NSRect	rect;
   NSEnumerator	*e;
   NSView	*sub;
-  NSArray	*subs;		
+  NSArray	*subs;
 
   self = [super initWithCoder: aDecoder];
 
