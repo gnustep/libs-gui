@@ -154,6 +154,14 @@ static Class controlClass;
   return [super intValue];
 }
 
+- (void) setObjectValue: (NSString*)anObject
+{
+  [super setObjectValue: anObject];
+  if (_control_view)
+    if ([_control_view isKindOfClass: controlClass])
+      [(NSControl *)_control_view updateCell: self];
+}
+
 - (void) setStringValue: (NSString*)aString
 {
   [super setStringValue: aString];

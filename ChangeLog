@@ -1,3 +1,7 @@
+2003-06-11  Dirk Latterman <dlatt@alqualonde.de>
+
+	* Source/NSActionCell.m (-setObjectValue:): Implemented.
+
 2003-06-11 15:34  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/GSFontInfo.h, Source/GSFontInfo.m: Add
