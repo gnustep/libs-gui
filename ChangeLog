@@ -1,3 +1,10 @@
+2001-01-13  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSTextStorage.m: Fixed bug initialising from an
+	empty attributed string, and fixed bug replacing characters in
+	range, when an attribute range location is the same s the location
+	of the replaced characters.
+
 Sat Jan 13 12:24:55 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSApplication.m (_NSAppKitUncaughtExceptionHandler):

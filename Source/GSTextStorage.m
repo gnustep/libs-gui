@@ -278,10 +278,14 @@ _setAttributesFrom(
   [_infoArray removeAllObjects];
 
   if (aRange.length <= 0)
-    return;
-
-  attr = [attributedString attributesAtIndex: aRange.location
-			      effectiveRange: &range];
+    {
+      attr = [NSDictionary dictionary];
+    }
+  else
+    {
+      attr = [attributedString attributesAtIndex: aRange.location
+				  effectiveRange: &range];
+    }
   attr = cacheAttributes(attr);
   info = NEWINFO(z, attr, 0);
   ADDOBJECT(info);
@@ -731,11 +735,11 @@ SANITY();
 	    }
 	}
       info->loc = NSMaxRange(range);
-SANITY();
     }
 
   moveLocations = [aString length] - range.length;
   if (effectiveRange.location == range.location
+    && effectiveRange.length == range.length
     && (moveLocations + range.length) == 0)
     {
       /*
@@ -748,7 +752,6 @@ SANITY();
       arraySize--;
     }
 
-SANITY();
   /*
    * Now adjust the positions of the ranges following the one we are using.
    */
