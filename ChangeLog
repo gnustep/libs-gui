@@ -1,3 +1,10 @@
+Thu Jun  1 21:50:34 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSScrollView.m ([NSScrollView -tile]): Fixed position of
+	corner view when there is no horizontal scrollview; fixed position
+	of parts when there is a header view but not a horizontal
+	scrollview.
+	
 2000-05-24 Georg Fleischmann <georg@vhf.de>
 
 	* gui/Model/GMAppKit.m
@@ -21,7 +28,7 @@
 
 2000-05-12 Georg Fleischmann
 
-        * gui/Model/GMAppKit.m
+	* Model/GMAppKit.m
         ([NSScrollView(GMArchiverMethods) -initWithModelUnarchiver:]):
         move unarchiving of backgroundColor behind documentView
 
