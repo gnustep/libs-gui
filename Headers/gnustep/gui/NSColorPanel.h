@@ -43,7 +43,28 @@
 @class NSColorList;
 @class NSEvent;
 
-@interface NSColorPanel : NSPanel <NSCoding>
+enum {
+  NSGrayModeColorPanel,
+  NSRGBModeColorPanel,
+  NSCMYKModeColorPanel,
+  NSHSBModeColorPanel,
+  NSCustomPaletteModeColorPanel,
+  NSColorListModeColorPanel,
+  NSWheelModeColorPanel 
+};
+
+enum {
+  NSColorPanelGrayModeMask = 1,
+  NSColorPanelRGBModeMask = 2,
+  NSColorPanelCMYKModeMask = 4,
+  NSColorPanelHSBModeMask = 8,
+  NSColorPanelCustomPaletteModeMask = 16,
+  NSColorPanelColorListModeMask = 32,
+  NSColorPanelWheelModeMask = 64,
+  NSColorPanelAllModesMask = 127 
+};
+
+@interface NSColorPanel : NSPanel
 {
   // Attributes
   NSView		*_topView;
@@ -52,17 +73,17 @@
   NSMatrix		*_pickerMatrix;
   NSBox			*_pickerBox;
   NSSlider		*_alphaSlider;
-  NSBox			*_accessoryBox;
-
   NSSplitView		*_splitView;
+  NSView		*_accessoryView;
 
-  NSMatrix		*_swatches;
+  //NSMatrix		*_swatches;
 
   NSMutableArray	*_pickers;
-  id<NSColorPickingCustom>	_currentPicker;
+  id<NSColorPickingCustom,NSColorPickingDefault> _currentPicker;
   id			_target;
   SEL			_action;
   BOOL			_isContinuous;
+  BOOL                  _showsAlpha;
 }
 
 //
@@ -99,15 +120,10 @@
 + (BOOL)dragColor:(NSColor *)aColor
 	withEvent:(NSEvent *)anEvent
 	 fromView:(NSView *)sourceView;
-- (float)alpha;
-- (NSColor *)color;
 - (void)setColor:(NSColor *)aColor;
 
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
+- (float)alpha;
+- (NSColor *)color;
 
 @end
 
