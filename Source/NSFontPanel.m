@@ -493,12 +493,6 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   [splitView addSubview: bottomSplit];
   RELEASE(bottomSplit);
 
-  /* NSSplitView is tricky so we use this little workaround to force
-     the sizes right. */
-  [topSplit setFrame: topSplitRect];
-  [bottomSplit setFrame: bottomSplitRect];
-  [splitView adjustSubviews];
-
   [splitView setDelegate: self];
 
   [topArea addSubview: splitView];
