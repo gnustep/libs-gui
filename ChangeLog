@@ -1,3 +1,11 @@
+2004-10-25  Quentin Mathe <qmathe@club-internet.fr>
+
+        * Source/NSWorkspace.m: Moved the code which looks for the application
+	icons in the method -iconForFile: to the method -appIconForApp:. As
+	a side effect, it fix the bug introduced by my last commit which caused
+	a nil exception when the application info.plist contains no NSIcon
+	entry.
+
 2004-10-24  Quentin Mathe <qmathe@club-internet.fr>
         
 	* Source/NSWorkspace.m (-appIconForApp:): Fixed code to be more

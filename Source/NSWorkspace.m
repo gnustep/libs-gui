@@ -813,56 +813,22 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	|| [pathExtension isEqualToString: @"debug"]
 	|| [pathExtension isEqualToString: @"profile"])
 	{
-	  NSBundle	*bundle;
-
-	  isApplication = YES;
-	  bundle = [NSBundle bundleWithPath: fullPath];
-	  iconPath = [[bundle infoDictionary] objectForKey: @"NSIcon"];
-	  if (iconPath && [iconPath isAbsolutePath] == NO)
+          isApplication = YES;
+	  
+	  image = [self appIconForApp: fullPath];
+	  
+	  if (image == nil)
 	    {
-	      NSString	*file = iconPath;
-
-	      iconPath = [bundle pathForImageResource: file];
-
 	      /*
-	       * If there is no icon in the Resources of the app, try
-	       * looking directly in the app wrapper.
-	       */
-	      if (iconPath == nil)
-		{
-		  iconPath = [fullPath stringByAppendingPathComponent: file];
-		  if ([mgr isReadableFileAtPath: iconPath] == NO)
-		    {
-		      iconPath = nil;
-		    }
-		}
-	    }
-	  /*
-	   *	If there is no icon specified in the Info.plist for app
-	   *	try 'wrapper/app.tiff'
-	   */
-	  if (iconPath == nil)
-	    {
-	      NSString	*str;
-
-	      str = [fullPath lastPathComponent];
-	      str = [str stringByDeletingPathExtension];
-	      iconPath = [fullPath stringByAppendingPathComponent: str];
-	      iconPath = [iconPath stringByAppendingPathExtension: @"tiff"];
-	      if ([mgr isReadableFileAtPath: iconPath] == NO)
-		{
-		  iconPath = nil;
-		  /*
-		   * Just use the appropriate icon for the path extension
-		   */
-		  image = [self _iconForExtension: pathExtension];
-		}
+               * Just use the appropriate icon for the path extension
+               */
+              return [self _iconForExtension: pathExtension];
 	    }
 	}
 
       /*
-       *	If we have no iconPath, try 'dir/.dir.tiff' as a
-       *	possible locations for the directory icon.
+       * If we have no iconPath, try 'dir/.dir.tiff' as a
+       * possible locations for the directory icon.
        */
       if (iconPath == nil)
 	{
@@ -1481,18 +1447,66 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
  */
 - (NSImage*) appIconForApp: (NSString*)appName
 {
-  NSBundle	*bundle = [self bundleForApp: appName];
-  NSString	*iconPath;
-
+  NSBundle *bundle;
+  NSImage *image = nil;
+  NSFileManager *mgr = [NSFileManager defaultManager];
+  NSString *iconPath = nil;
+  NSString *fullPath;
+  
+  fullPath = [self fullPathForApplication: appName];
+  bundle = [self bundleForApp: fullPath];
   if (bundle == nil)
     {
       return nil;
     }
-    
-  iconPath = [[bundle infoDictionary] objectForKey: @"NSIcon"];
-  iconPath = [bundle pathForImageResource: iconPath];
   
-  return [self _saveImageFor: iconPath];
+  iconPath = [[bundle infoDictionary] objectForKey: @"NSIcon"];
+  
+  if (iconPath && [iconPath isAbsolutePath] == NO)
+    {
+      NSString *file = iconPath;
+
+      iconPath = [bundle pathForImageResource: file];
+
+      /*
+       * If there is no icon in the Resources of the app, try
+       * looking directly in the app wrapper.
+       */
+      if (iconPath == nil)
+        {
+          iconPath = [fullPath stringByAppendingPathComponent: file];
+          if ([mgr isReadableFileAtPath: iconPath] == NO)
+            {
+              iconPath = nil;
+            }
+        }
+    }
+    
+  /*
+   * If there is no icon specified in the Info.plist for app
+   * try 'wrapper/app.tiff'
+   */
+  if (iconPath == nil)
+    {
+      NSString *str;
+
+      str = [fullPath lastPathComponent];
+      str = [str stringByDeletingPathExtension];
+      iconPath = [fullPath stringByAppendingPathComponent: str];
+      iconPath = [iconPath stringByAppendingPathExtension: @"tiff"];
+      
+      if ([mgr isReadableFileAtPath: iconPath] == NO)
+        {
+          iconPath = nil;
+        }
+    }
+  
+  if (iconPath != nil)
+    {
+      image = [self _saveImageFor: iconPath];
+    }
+  
+  return image;
 }
 
 /**
