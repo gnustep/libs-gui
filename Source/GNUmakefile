@@ -111,6 +111,8 @@ NSPrintOperation.m \
 NSPrintPanel.m \
 NSProgressIndicator.m \
 NSResponder.m \
+NSRulerMarker.m \
+NSRulerView.m \
 NSSavePanel.m \
 NSScreen.m \
 NSScroller.m \
