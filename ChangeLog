@@ -1,3 +1,8 @@
+Mon Feb  1 13:35:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/GSServicesManager.m: Replace call to getpid() with use of
+	globallyUniqueString as a unique process name.
+
 Fri Jan 29 15:32:48 1999  Adam Fedor  <fedor@ultra.doc.com>
 
 	* Documentation/todo.tmpl.texi: Update.
