@@ -697,6 +697,10 @@ static BOOL _gs_display_reading_progress = NO;
    */
   _OKButtonPressed = NO;
 
+  [self browser: _browser
+	selectCellWithString: [[_browser selectedCell] stringValue] 
+	inColumn: [_browser selectedColumn]];
+
   [NSApp runModalForWindow: self];
 
   if (_OKButtonPressed)

@@ -359,14 +359,6 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 
   if (_canChooseDirectories == NO)
     {
-      BOOL isDir;
-      NSString *file = [path stringByAppendingPathComponent: name];
-      
-      if (([[NSFileManager defaultManager] fileExistsAtPath: file
-					   isDirectory: &isDir] == NO) 
-	  || isDir)
-	[_okButton setEnabled: NO];
-
       if([_browser allowsMultipleSelection] == YES)
 	[_browser setAllowsBranchSelection:NO];
     }
