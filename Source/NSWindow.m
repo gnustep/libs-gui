@@ -94,12 +94,37 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 @end
 
 @implementation	NSWindow (GNUstepPrivate)
+
+/*
+This method handles all normal displaying. It is set to be run on each
+runloop iteration for each window that's on-screen. The performer is
+added then the window is ordered in and re-added each time it is run.
+If the window is ordered out, the performer is cancelled.
+
+The reason why this performer is always added, as opposed to adding it
+when display is needed and not re-adding it here, is that
+-setNeedsDisplay* might be called from a method invoked by
+-performSelector:target:argument:order:modes:, and if it is, the display
+needs to happen in the same runloop iteration, before blocking for
+events. If the performer were added in a call to another performer, it
+wouldn't be called until the next runloop iteration, ie. after the runloop
+has blocked and waited for events.
+*/
 - (void) _handleWindowNeedsDisplay: (id)bogus
 {
   if (_f.is_autodisplay && _rFlags.needs_display)
     {
       [self displayIfNeeded];
     }
+  [[NSRunLoop currentRunLoop]
+	 performSelector: @selector(_handleWindowNeedsDisplay:)
+		  target: self
+		argument: nil
+		   order: 600000
+		   modes: [NSArray arrayWithObjects:
+				   NSDefaultRunLoopMode,
+				   NSModalPanelRunLoopMode,
+				   NSEventTrackingRunLoopMode, nil]];
 }
 
 /* We get here if we were ordered out or miniaturized. In this case if
@@ -1921,26 +1946,8 @@ static NSNotificationCenter *nc = nil;
       _rFlags.needs_display = flag;
       if (flag)
 	{
+	  /* TODO: this call most likely shouldn't be here */
 	  [NSApp setWindowsNeedUpdate: YES];
-	  if (_f.visible && _f.has_opened)
-	    {
-	      [[NSRunLoop currentRunLoop]
-		 performSelector: @selector(_handleWindowNeedsDisplay:)
-			  target: self
-			argument: nil
-			   order: 600000 /*NSDisplayWindowRunLoopOrdering OS*/
-			   modes: [NSArray arrayWithObjects:
-					   NSDefaultRunLoopMode,
-					   NSModalPanelRunLoopMode,
-					   NSEventTrackingRunLoopMode, nil]];
-	    }
-	}
-      else
-	{
-	  [[NSRunLoop currentRunLoop]
-		 cancelPerformSelector: @selector(_handleWindowNeedsDisplay:)
-				target: self
-			      argument: nil];
 	}
     }
 }
