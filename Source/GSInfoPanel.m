@@ -74,7 +74,7 @@ _new_label (NSString *value)
 {
   NSTextField *t;
 
-  t = [[NSTextField new] autorelease];
+  t = AUTORELEASE([NSTextField new]);
   [t setStringValue: value];
   [t setDrawsBackground: NO];
   [t setEditable: NO];
@@ -332,26 +332,24 @@ _new_label (NSString *value)
    */
   f = NSZeroRect;
   f.size = [icon size];
-  iconButton = [[[NSButton alloc] initWithFrame: f] autorelease]; 
+  iconButton = AUTORELEASE([[NSButton alloc] initWithFrame: f]); 
   [iconButton setImage: icon];
   [iconButton setBordered: NO];
   [iconButton setEnabled: NO];
   [iconButton setImagePosition: NSImageOnly];
 
   nameLabel = _new_label (name);
-  [nameLabel setFont: [NSFont fontWithName: @"Helvetica-Bold"  size: 32]];
+  [nameLabel setFont: [NSFont boldSystemFontOfSize: 32]];
   [nameLabel sizeToFit];
 
   if (description)
     {
       descriptionLabel = _new_label (description);
-      [descriptionLabel setFont: [NSFont fontWithName: @"Helvetica-Bold"
-					 size: 14]];
+      [descriptionLabel setFont: [NSFont boldSystemFontOfSize: 14]];
       [descriptionLabel sizeToFit];
     }
 
-  //smallFont = [NSFont fontWithName: @"Helvetica-Narrow" size: 14];
-  smallFont = [NSFont fontWithName: @"Helvetica" size: 12];
+  smallFont = [NSFont systemFontOfSize: 12];
   
   versionLabel = _new_label (release);
   [versionLabel setFont: smallFont];
@@ -368,8 +366,8 @@ _new_label (NSString *value)
   [authorTitleLabel setFont: smallFont];
   [authorTitleLabel sizeToFit];
 
-  authorsList = [[[_GSLabelListView alloc] initWithStringArray: authors
-					   font: smallFont] autorelease];  
+  authorsList = AUTORELEASE([[_GSLabelListView alloc] initWithStringArray: authors
+						      font: smallFont]);  
   
   if (url)
     {
