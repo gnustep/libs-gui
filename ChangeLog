@@ -1,3 +1,10 @@
+Thu Dec 17 22:55:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* NSMenu.m: ([-update]) removed code to search responder chain -
+	get NSApplication to do it for us.
+	* NSApplication.m: Implemented more of the windows menu stuff.
+	Almost complete barring wierd glitches due to the menu implementation.
+
 1998-12-17  Matthias Klose  <doko@cs.tu-berlin.de>
 
         * {,*}/GNUmakefile: Include Version and GNUmakefile.local.

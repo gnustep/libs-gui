@@ -98,6 +98,7 @@ static NSString *NSAbortModalException = @"NSAbortModalException";
 
 
 @interface NSApplication (Private)
+- (BOOL) validateMenuItem: (id<NSMenuItem>)item;
 - (void) _windowWillClose: (NSNotification*)n;
 - (void) _windowWillOpen: (NSWindow*)win;
 @end
@@ -1338,14 +1339,15 @@ NSWindow *w;
   if ([aWindow isKindOfClass: [NSMenu class]])
     return;
 
-  /*
-   * If this was the first window then make it the main and key window.
-   */
-  if ([window_list count] == 1)
-    {
-      [aWindow becomeMainWindow];
-      [aWindow becomeKeyWindow];
-    }
+/*
+ * FIXME - the following five lines shouldn't be here - but the X stuff
+ * terminates if I take them out!
+ */
+if ([window_list count] == 1)
+  {
+    [aWindow becomeKeyWindow];
+    [aWindow becomeMainWindow];
+  }
 
   /*
    * Can't permit an untitled window in the window menu.
@@ -1376,6 +1378,7 @@ NSWindow *w;
           if ([item target] == aWindow)
             {
               [menu removeItem: item]; 
+	      windows_menu_count--;
               break;
             }
         }
@@ -1419,6 +1422,7 @@ NSWindow *w;
                             action: @selector(makeKeyAndOrderFront:)
                      keyEquivalent: @""
                            atIndex: i];
+  windows_menu_count++;
   [item setTarget: aWindow];
   [menu sizeToFit];
   [menu update];
@@ -1444,6 +1448,7 @@ NSWindow *w;
           if ([item target] == aWindow)
             {
               [menu removeItem: item]; 
+	      windows_menu_count--;
               [menu sizeToFit];
               [menu update];
               break;
@@ -1455,11 +1460,123 @@ NSWindow *w;
 - (void) setWindowsMenu: (NSMenu*)aMenu
 {
   if (windows_menu)
-    [main_menu setSubmenu: aMenu forItem: (id<NSMenuItem>)windows_menu];
+    {
+      NSMutableArray	*windows;
+      NSMenu	        *menu;
+      id		win;
+
+      menu = [self windowsMenu];
+      if (menu == aMenu)
+	return;
+
+      /*
+       * Remove all the windows from the old windows menu and store
+       * them in a temporary array for insertion into the new menu.
+       */
+      windows = [NSMutableArray arrayWithCapacity: windows_menu_count];
+      if (menu)
+	{
+	  NSArray   *itemArray;
+	  unsigned  count;
+	  unsigned  i;
+
+	  itemArray = [menu itemArray];
+	  count = [itemArray count];
+	  for (i = 0; i < count; i++)
+	    {
+	      id    item = [itemArray objectAtIndex: i];
+
+	      win = [item target];
+	      if ([win isKindOfClass: [NSWindow class]])
+		{
+		  [windows addObject: win];
+		  [menu removeItem: item]; 
+		  windows_menu_count--;
+		}
+	    }
+	}
+
+      /*
+       * Now use [-changeWindowsItem:title:filename:] to build the new menu.
+       */
+      windows_menu_count = 0;
+      [main_menu setSubmenu: aMenu forItem: (id<NSMenuItem>)windows_menu];
+      while ((win = [windows lastObject]) != nil)
+	{
+	  [self changeWindowsItem: win
+			    title: [win title]
+			 filename: [win representedFilename] != nil];
+	  [windows removeLastObject];
+	}
+      [aMenu sizeToFit];
+      [aMenu update];
+    }
 }
 
 - (void) updateWindowsItem: aWindow
 {
+  NSMenu        *menu;
+
+  menu = [self windowsMenu];
+  if (menu)
+    {
+      NSArray   *itemArray;
+      unsigned  count;
+      unsigned  i;
+
+      itemArray = [menu itemArray];
+      count = [itemArray count];
+      for (i = 0; i < count; i++)
+        {
+          id    item = [itemArray objectAtIndex: i];
+
+          if ([item target] == aWindow)
+            {
+	      NSCellImagePosition	oldPos = [item imagePosition];
+	      NSImage			*oldImage = [item image];
+	      BOOL			changed = NO;
+
+	      if ([aWindow representedFilename] == nil)
+		{
+		  if (oldPos != NSNoImage)
+		    {
+		      [item setImagePosition: NSNoImage];
+		      changed = YES;
+		    }
+		}
+	      else
+		{
+		  NSImage	*newImage = oldImage;
+
+		  if (oldPos != NSImageLeft)
+		    {
+		      [item setImagePosition: NSImageLeft];
+		      changed = YES;
+		    }
+		  if ([aWindow isDocumentEdited])
+		    {
+		      newImage = [NSImage imageNamed: @"common_CloseBroken"];
+		    }
+		  else
+		    {
+		      newImage = [NSImage imageNamed: @"common_Close"];
+		    }
+		  if (newImage != oldImage)
+		    {
+		      [item setImage: newImage];
+		      changed = YES;
+		    }
+		}
+	      if (changed)
+		{
+		  [item sizeToFit];
+		  [menu sizeToFit];
+		  [menu update];
+		}
+              break;
+            }
+        }
+    }
 }
 
 - (NSMenu*) windowsMenu
@@ -1715,7 +1832,7 @@ BOOL result = YES;
 
 + (void)setNullEvent:(NSEvent *)e
 {
-    ASSIGN(null_event, e);
+  ASSIGN(null_event, e);
 }
 
 + (NSEvent *)getNullEvent;
@@ -1734,6 +1851,28 @@ BOOL result = YES;
 @end /* NSApplication */
 
 @implementation NSApplication (Private)
+
+/*
+ * Method for automatically enabling or disabling menu items
+ * 'arrangeInFront:' is only valid if we have something in the windows menu.
+ */
+- (BOOL) validateMenuItem: (id<NSMenuItem>)item
+{
+  SEL	action = [item action];
+
+  if (action)
+    {
+      if (sel_eq(action, @selector(arrangeinFront:)))
+	{
+	  if (windows_menu_count)
+	    return YES;
+	}
+      else if ([self respondsToSelector: action])
+	return YES;
+    }
+  return NO;
+}
+
 - (void) _windowWillClose: (NSNotification*)n
 {
   NSWindow	*win = [n object];
