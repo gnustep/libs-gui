@@ -40,6 +40,7 @@
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSFormatter.h>
 #include <Foundation/NSRunLoop.h>
+#include "gnustep/base/GSCategories.h"
 
 #include <AppKit/AppKitExceptions.h>
 #include <AppKit/NSAttributedString.h>

@@ -36,6 +36,7 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSDebug.h>
+#include "gnustep/base/GSCategories.h"
 
 #include <AppKit/AppKitExceptions.h>
 #include <AppKit/NSApplication.h>

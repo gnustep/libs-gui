@@ -1,3 +1,8 @@
+2003-03-31  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSButtonCell.m, Source/NSCell.m, Source/NSMenuItem.m:
+	Add GSCategories.h
+
 2003-03-30 19:14  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSScroller.m (-trackKnob:): Wrap each iteration of the

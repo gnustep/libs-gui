@@ -32,6 +32,7 @@
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
+#include "gnustep/base/GSCategories.h"
 #include <AppKit/NSMenuItem.h>
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSImage.h>
