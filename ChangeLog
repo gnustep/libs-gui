@@ -1,3 +1,8 @@
+Fri Jan 22 20:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSView: Rewrote all the coordinate conversion methods to
+	take account of flipped views correctly.  Should be a major improvement.
+
 Thu Jan 21 10:05:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSColor.m: Fixed initWithCoder: - was decoding an ivar twice
