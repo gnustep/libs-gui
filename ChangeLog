@@ -4,6 +4,8 @@ Tue Nov 16  7:05:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 	up to date on exit.
 	* Source/NSWindow.m: various changes to sving window frame info.
 	Use top-left as window origin, and save in OPENSTEP format.
+	Include code to save NSMenuWindow locations exactly as in
+	MacOS-X also.
 
 Mon Nov 15 21:29:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
