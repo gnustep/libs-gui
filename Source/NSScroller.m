@@ -453,6 +453,10 @@ static NSColor *scrollBarColor = nil;
    */
   NSRect rect;
 
+  /* thePoint is in window's coordinate system; convert it to
+   * our own coordinate system.  */
+  thePoint = [self convertPoint: thePoint fromView: nil];
+
   if (thePoint.x <= 0 || thePoint.x >= _frame.size.width
     || thePoint.y <= 0 || thePoint.y >= _frame.size.height)
     return NSScrollerNoPart;
@@ -522,9 +526,7 @@ static NSColor *scrollBarColor = nil;
 
 - (void) mouseDown: (NSEvent*)theEvent
 {
-  NSPoint location = [self convertPoint: [theEvent locationInWindow]
-			       fromView: nil];
-
+  NSPoint location = [theEvent locationInWindow];
   _hitPart = [self testPart: location];
   [self _setTargetAndActionToCells];
 
@@ -533,7 +535,7 @@ static NSColor *scrollBarColor = nil;
       case NSScrollerIncrementLine:
       case NSScrollerDecrementLine:
 	/*
-	 * A hit on a scroller button should be a page meovement
+	 * A hit on a scroller button should be a page movement
 	 * if the alt key is pressed.
 	 */
 	if ([theEvent modifierFlags] & NSAlternateKeyMask)
@@ -560,8 +562,9 @@ static NSColor *scrollBarColor = nil;
 
       case NSScrollerKnobSlot:
 	{
-	  float floatValue = [self _floatValueForMousePoint: location];
-
+	  float floatValue = [self _floatValueForMousePoint: 
+				     [self convertPoint: location
+					   fromView: nil]];
 	  [self setFloatValue: floatValue];
 	  [self sendAction: _action to: _target];
 	  [self trackKnob: theEvent];
@@ -594,7 +597,7 @@ static NSColor *scrollBarColor = nil;
   knobRect = [self rectForPart: NSScrollerKnob];
 
   apoint = [theEvent locationInWindow];
-  point = [self convertPoint: apoint fromView: nil];
+  point = [self convertPoint: apoint  fromView: nil];
   if (_isHorizontal)
     {
       lastPosition = NSMidX(knobRect);
@@ -664,7 +667,6 @@ static NSColor *scrollBarColor = nil;
   NSApplication	*theApp = [NSApplication sharedApplication];
   unsigned int	eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask |
 			  NSLeftMouseDraggedMask | NSMouseMovedMask;
-  NSPoint	location;
   BOOL		shouldReturn = NO;
   id		theCell = nil;
   NSRect	rect;
@@ -672,12 +674,11 @@ static NSColor *scrollBarColor = nil;
   NSDebugLog (@"trackScrollButtons");
   do
     {
-      location = [self convertPoint: [theEvent locationInWindow]fromView: nil];
-      _hitPart = [self testPart: location];
+      _hitPart = [self testPart: [theEvent locationInWindow]];
       rect = [self rectForPart: _hitPart];
 
       /*
-       * A hit on a scroller button should be a page meovement
+       * A hit on a scroller button should be a page movement
        * if the alt key is pressed.
        */
       switch (_hitPart)
@@ -791,7 +792,8 @@ static NSColor *scrollBarColor = nil;
 	break;
     }
 
-  [theCell drawWithFrame: rect inView: self];
+  [theCell setHighlighted: flag];
+  [theCell drawWithFrame: rect  inView: self];
 }
 
 - (void) drawKnob
