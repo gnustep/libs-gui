@@ -37,6 +37,7 @@
 @class NSCell;
 @class NSMatrix;
 @class NSScroller;
+//@class NSBox;
 
 @interface NSBrowser : NSControl <NSCoding>
 {
@@ -55,8 +56,12 @@
   BOOL _separatesColumns;
   BOOL _takesTitleFromPreviousColumn;
   BOOL _isTitled;
+  
+  //NSBox *_horizontalScrollerBox;
   NSScroller *_horizontalScroller;
   BOOL _hasHorizontalScroller;
+  BOOL _skipUpdateScroller;
+
   BOOL _acceptsArrowKeys;
   BOOL _sendsActionOnArrowKeys;
   BOOL _passiveDelegate;

@@ -1237,6 +1237,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   struct NSWindow_struct *window_t;
   NSRect wrect;
 
+  NSAssert(window != nil, NSInternalInconsistencyException);
+
   [ctxt lockFocusView: self inRect: rect];
   wrect = [self convertRect: rect toView: nil];
   window_t = (struct NSWindow_struct *)window;
@@ -1299,6 +1301,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   NSRect        rect;
   struct	NSWindow_struct *window_t;
   NSGraphicsContext *ctxt = GSCurrentContext();
+
+  NSAssert(window != nil, NSInternalInconsistencyException);
 
   /* Restore our original gstate */
   DPSgrestore(ctxt);

@@ -1,3 +1,15 @@
+1999-11-30  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/gnustep/gui/NSBrowser.m: Add some ivars, removed others.
+	* Source/NSBrowser.m: Rewrite for better functionality.
+
+	* Source/NSBrowserCell.m (-drawInteriorWithFrame:inView): Check
+	to make sure we have a controlView.
+	* Source/NSCell.m: Likewise.
+	* Source/NSView.m (-lockFocusInRect:): Check to make sure
+	we have a window.
+	(patches from 	F. Wolff <wolff@cybercable.fr>).
+
 Tue Nov 30 19:44:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSWindow.m: Rewrote ([-encodeWithCoder:]) and

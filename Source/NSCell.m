@@ -704,6 +704,9 @@ static NSColor	*shadowCol;
 //
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
+  if (![controlView window])
+    return;
+
   cellFrame = [self drawingRectForBounds: cellFrame];
   [controlView lockFocus];
 
@@ -747,10 +750,11 @@ static NSColor	*shadowCol;
   [self setControlView: controlView];
 
   // do nothing if cell's frame rect is zero
-  if (NSIsEmptyRect(cellFrame))
+  if (NSIsEmptyRect(cellFrame) || ![controlView window])
     return;
 
   [controlView lockFocus];
+
   // draw the border if needed
   if ([self isBordered])
     {
@@ -1063,14 +1067,17 @@ static NSColor	*shadowCol;
 	    [(NSControl*)controlView sendAction: action to: target];
 	}
     }
+
   // Tell ourselves to stop tracking
   [self stopTracking: last_point
 		  at: point
 	      inView: controlView
 	   mouseIsUp: mouseWentUp];
 
+
   if (cell_continuous)
     [NSEvent stopPeriodicEvents];
+
   // Return YES only if the mouse went up within the cell
   if (mouseWentUp && [controlView mouse: point inRect: cellFrame])
     {

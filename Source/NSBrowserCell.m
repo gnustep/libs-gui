@@ -110,7 +110,7 @@ static NSFont *leafFont;
       // A GNUstep experimental feature
       if ([[NSUserDefaults standardUserDefaults] 
 	    boolForKey: @"GSBrowserCellFontify"])
-	{ 
+	{
 	  gsFontifyCells = YES;
 	  cellClass = [NSTextFieldCell class];
 	  //nonLeafColor = RETAIN ([colorClass colorWithCalibratedWhite: 0.222
@@ -315,6 +315,8 @@ static NSFont *leafFont;
   NSColor	*backColor;
 
   control_view = controlView;  // remember last view cell was drawn in
+  if (![controlView window])
+    return;
   [controlView lockFocus];
   if (cell_highlighted || cell_state)
     {
