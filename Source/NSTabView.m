@@ -227,6 +227,12 @@
     [self selectTabViewItem: [_items objectAtIndex: index]];
 }
 
+- (void) selectTabViewItemWithIdentifier:(id)identifier 
+{
+  int index = [self indexOfTabViewItemWithIdentifier: identifier];
+  [self selectTabViewItemAtIndex: index];
+}
+
 - (void) takeSelectedTabViewItemFromSender: (id)sender
 {
   int	index = -1;

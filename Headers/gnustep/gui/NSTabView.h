@@ -72,6 +72,7 @@ typedef enum {
 - (void)selectPreviousTabViewItem:(id)sender;
 - (void)selectTabViewItem:(NSTabViewItem *)tabViewItem;
 - (void)selectTabViewItemAtIndex:(int)index;
+- (void)selectTabViewItemWithIdentifier:(id)identifier;
 - (void)takeSelectedTabViewItemFromSender:(id)sender;
 - (NSTabViewItem*) selectedTabViewItem;
 
