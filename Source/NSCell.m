@@ -318,25 +318,25 @@ NSString* number_string = [[NSNumber numberWithInt:anInt] stringValue];
 	return nil;
 }
 
-- (void)editWithFrame:(NSRect)aRect
-			   inView:(NSView *)controlView
-			   editor:(NSText *)textObject
-			   delegate:(id)anObject
-			   event:(NSEvent *)theEvent
+- (void) editWithFrame: (NSRect)aRect
+		inView: (NSView *)controlView
+		editor: (NSText *)textObject
+	      delegate: (id)anObject
+		 event: (NSEvent *)theEvent
 {
-	if (cell_type != NSTextCellType)
-		return;
+  if (cell_type != NSTextCellType)
+    return;
 
-	[[controlView window] makeFirstResponder:textObject];
+  [controlView lockFocus];
+  [[controlView window] makeFirstResponder: textObject];
 
-	[textObject setFrame:aRect];
-	[textObject setText:[self stringValue]];
-	[textObject setDelegate:anObject];
-	[controlView addSubview:textObject];
-	[controlView lockFocus];
-	NSEraseRect(aRect);
-	[controlView unlockFocus];
-	[textObject display];
+  [textObject setText: [self stringValue]];
+  [textObject setDelegate: anObject];
+  [controlView addSubview: textObject];
+  [textObject setFrame: aRect];
+  NSEraseRect(aRect);
+  [textObject display];
+  [controlView unlockFocus];
 }
 
 /*
