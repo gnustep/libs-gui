@@ -907,7 +907,7 @@ for (i = 0; i < gbuf_len; i++) printf("   %3i : %04x\n", i, gbuf[i]); */
 
 -(void) setHyphenationFactor: (float)factor
 {
-  NSLog(@"Warning: (NSLayoutManager) %@ not implemented",__PRETTY_FUNCTION__);
+  NSLog(@"Warning: (NSLayoutManager) %s not implemented",__PRETTY_FUNCTION__);
 }
 
 
