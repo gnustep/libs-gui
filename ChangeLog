@@ -1,3 +1,7 @@
+1999-04-01  Adam Fedor  <fedor@gnu.org>
+
+	* Model/test.m (main): Change GSContext to NSGraphicContext
+
 Thu Apr  1 20:45:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSTextField.m: init with same default values as OPENSTEP
