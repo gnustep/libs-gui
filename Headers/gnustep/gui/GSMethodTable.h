@@ -379,6 +379,23 @@ typedef struct {
 	(NSGraphicsContext*, SEL, double, double, double, int*);
   void (*DPScapturegstate_)
 	(NSGraphicsContext*, SEL, int*);
+
+/*-------------------------------------------------------------------------*/
+/* Graphics Extensions Ops */
+/*-------------------------------------------------------------------------*/
+  void (*DPScomposite________)
+        (NSGraphicsContext*, SEL, float, float, float, float, int, float, float, int);
+  void (*DPScompositerect_____)
+        (NSGraphicsContext*, SEL, float, float, float, float, int);
+  void (*DPSdissolve________)
+        (NSGraphicsContext*, SEL, float, float, float, float, int, float, float, float);
+  void (*DPSreadimage)
+        (NSGraphicsContext*, SEL);
+  void (*DPSsetalpha_)
+        (NSGraphicsContext*, SEL, float);
+  void (*DPScurrentalpha_)
+        (NSGraphicsContext*, SEL, float*);
+
 /* ----------------------------------------------------------------------- */
 /* GNUstep Event and other I/O extensions */
 /* ----------------------------------------------------------------------- */

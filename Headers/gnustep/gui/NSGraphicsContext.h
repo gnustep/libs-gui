@@ -330,6 +330,17 @@ NSGraphicsContext	*GSCurrentContext();
 - (void) DPSsetrgbactual: (double)r : (double)g : (double)b : (int *)success ;
 - (void) DPScapturegstate: (int *)gst ;
 
+/*-------------------------------------------------------------------------*/
+/* Graphics Extensions Ops */
+/*-------------------------------------------------------------------------*/
+- (void) DPScomposite: (float)x : (float)y : (float)w : (float)h : (int)gstateNum : (float)dx : (float)dy : (int)op;
+- (void) DPScompositerect: (float)x : (float)y : (float)w : (float)h : (int)op;
+- (void) DPSdissolve: (float)x : (float)y : (float)w : (float)h : (int)gstateNum
+ : (float)dx : (float)dy : (float)delta;
+- (void) DPSreadimage;
+- (void) DPSsetalpha: (float)a;
+- (void) DPScurrentalpha: (float *)a;
+
 /* ----------------------------------------------------------------------- */
 /* GNUstep Event and other I/O extensions */
 /* ----------------------------------------------------------------------- */

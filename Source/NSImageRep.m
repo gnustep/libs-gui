@@ -35,13 +35,9 @@
 #include <AppKit/NSBitmapImageRep.h>
 #include <AppKit/NSEPSImageRep.h>
 #include <AppKit/NSPasteboard.h>
-
-/* Backend protocol - methods that must be implemented by the backend to
-   complete the class */
-@protocol NXImageRepBackend
-- (BOOL) drawAtPoint: (NSPoint)aPoint;
-- (BOOL) drawInRect: (NSRect)aRect;
-@end
+#include <AppKit/NSGraphicsContext.h>
+#include <AppKit/NSView.h>
+#include <AppKit/DPSOperators.h>
 
 static NSMutableArray*	imageReps = NULL;
 
@@ -284,23 +280,51 @@ static NSMutableArray*	imageReps = NULL;
 
 - (BOOL) drawAtPoint: (NSPoint)aPoint
 {
-  NSRect        r;
+  BOOL ok, reset;
+  NSGraphicsContext *ctxt;
 
-  if (aPoint.x == 0 && aPoint.y == 0)
-    return [self draw];
-  r.origin = aPoint;
-  r.size = size;
-  return [self drawInRect: r];
+  if (size.width == 0 && size.height == 0)
+    return NO;
+
+  NSDebugLLog(@"NSImage", @"Drawing at point %f %f\n", aPoint.x, aPoint.y);
+  reset = 0;
+  ctxt = GSCurrentContext();
+  if (aPoint.x != 0 || aPoint.y != 0)
+    {
+      if ([[ctxt focusView] isFlipped])
+	aPoint.y -= size.height;
+      DPSmatrix(ctxt); DPScurrentmatrix(ctxt);
+      DPStranslate(ctxt, aPoint.x, aPoint.y);
+      reset = 1;
+    }
+  ok = [self draw];
+  if (reset)
+    DPSsetmatrix(ctxt);
+  return ok;
 }
 
 - (BOOL) drawInRect: (NSRect)aRect
 {
-  float	x, y;
+  NSSize scale;
+  BOOL ok;
+  NSGraphicsContext *ctxt;
 
-  if (size.height == 0 || size.width == 0)
+  NSDebugLLog(@"NSImage", @"Drawing in rect (%f %f %f %f)\n", 
+	      NSMinX(aRect), NSMinY(aRect), NSWidth(aRect), NSHeight(aRect));
+  if (size.width == 0 && size.height == 0)
     return NO;
-/* FIXME - should scale and move as necessary. */
-  return NO;
+
+  ctxt = GSCurrentContext();
+  scale = NSMakeSize(NSWidth(aRect) / size.width, 
+		     NSHeight(aRect) / size.height);
+  if ([[ctxt focusView] isFlipped])
+    aRect.origin.y -= NSHeight(aRect);
+  DPSmatrix(ctxt); DPScurrentmatrix(ctxt);
+  DPStranslate(ctxt, NSMinX(aRect), NSMinY(aRect));
+  DPSscale(ctxt, scale.width, scale.height);
+  ok = [self draw];
+  DPSsetmatrix(ctxt);
+  return ok;
 }
 
 // Managing NSImageRep Subclasses

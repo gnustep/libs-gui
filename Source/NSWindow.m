@@ -1800,6 +1800,7 @@ static Class	responderClass;
   original_responder = nil;
   delegate = nil;
   window_num = 0;
+  gstate = 0;
   background_color = [[NSColor controlColor] retain];
   represented_filename = @"Window";
   miniaturized_title = @"Window";

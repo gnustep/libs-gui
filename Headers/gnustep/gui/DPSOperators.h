@@ -690,8 +690,32 @@ static inline void
 DPScapturegstate(GSCTXT *ctxt, int *gst)
 __attribute__((unused));
 
+/*-------------------------------------------------------------------------*/
+/* Graphics Extension Ops */
+/*-------------------------------------------------------------------------*/
+static inline void 
+DPScomposite(GSCTXT *ctxt, float x, float y, float w, float h, int gstateNum, float dx, float dy, int op)
+__attribute__((unused));
 
+static inline void 
+DPScompositerect(GSCTXT *ctxt, float x, float y, float w, float h, int op)
+__attribute__((unused));
 
+static inline void 
+DPSdissolve(GSCTXT *ctxt, float x, float y, float w, float h, int gstateNum, float dx, float dy, float delta)
+__attribute__((unused));
+
+static inline void 
+DPSreadimage(GSCTXT *ctxt)
+__attribute__((unused));
+
+static inline void 
+DPSsetalpha(GSCTXT *ctxt, float a)
+__attribute__((unused));
+
+static inline void 
+DPScurrentalpha(GSCTXT *ctxt, float *alpha)
+__attribute__((unused));
 
 /* ----------------------------------------------------------------------- */
 /* Color operations */
@@ -1827,6 +1851,51 @@ DPScapturegstate(GSCTXT *ctxt, int *gst)
 {
   (ctxt->methods->DPScapturegstate_)
     (ctxt, @selector(DPScapturegstate:), gst);
+}
+
+/*-------------------------------------------------------------------------*/
+/* Graphics Extensions Ops */
+/*-------------------------------------------------------------------------*/
+static inline void 
+DPScomposite(GSCTXT *ctxt, float x, float y, float w, float h, int gstateNum, float dx, float dy, int op)
+{
+  (ctxt->methods->DPScomposite________)
+    (ctxt, @selector(DPScomposite::::::::), x, y, w, h, gstateNum, dx, dy, op);
+}
+
+static inline void 
+DPScompositerect(GSCTXT *ctxt, float x, float y, float w, float h, int op)
+{
+  (ctxt->methods->DPScompositerect_____)
+    (ctxt, @selector(DPScompositerect:::::), x, y, w, h, op);
+}
+
+static inline void 
+DPSdissolve(GSCTXT *ctxt, float x, float y, float w, float h, int gstateNum, float dx, float dy, float delta)
+{
+  (ctxt->methods->DPSdissolve________)
+    (ctxt, @selector(DPSdissolve::::::::), x, y, w, h, gstateNum, dx, dy, delta);
+}
+
+static inline void 
+DPSreadimage(GSCTXT *ctxt)
+{
+  (ctxt->methods->DPSreadimage)
+    (ctxt, @selector(DPSreadimage));
+}
+
+static inline void 
+DPSsetalpha(GSCTXT *ctxt, float a)
+{
+  (ctxt->methods->DPSsetalpha_)
+    (ctxt, @selector(DPSsetalpha:), a);
+}
+
+static inline void 
+DPScurrentalpha(GSCTXT *ctxt, float *a)
+{
+  (ctxt->methods->DPScurrentalpha_)
+    (ctxt, @selector(DPScurrentalpha:), a);
 }
 
 /* ----------------------------------------------------------------------- */

@@ -1,3 +1,15 @@
+1999-05-18  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/gnustep/gui/DPSOperators: New graphics extensions
+	operators (composite, compositerect, disolve, etc).
+	* Headers/gnustep/gui/GSMethodTable.h: Likewise.
+	* Headers/gnustep/gui/NSGraphicsContext.h: Likewise.
+	* Headers/gnustep/gui/PSOperators.h: Likewise.
+	* Source/NSGraphicsContext.m: Likewise.
+
+	* Source/NSImageRep.m: (-drawAtPoint:): Implement using DPS
+	operators. (-drawInRect:): Likewise.
+	
 Sun May 16  8:15:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSView.m: Use new context lock/unlock operations.

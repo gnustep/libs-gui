@@ -619,6 +619,21 @@ struct NSWindow_struct
     GET_IMP(@selector(DPSsetrgbactual::::));
   methodTable.DPScapturegstate_ =
     GET_IMP(@selector(DPScapturegstate:));
+/*-------------------------------------------------------------------------*/
+/* Graphics Extension Ops */
+/*-------------------------------------------------------------------------*/
+  methodTable.DPScomposite________ = 
+    GET_IMP(@selector(DPScomposite::::::::));
+  methodTable.DPScompositerect_____ = 
+    GET_IMP(@selector(DPScompositerect:::::));
+  methodTable.DPSdissolve________ = 
+    GET_IMP(@selector(DPSdissolve::::::::));
+  methodTable.DPSreadimage = 
+    GET_IMP(@selector(DPSreadimage));
+  methodTable.DPSsetalpha_ = 
+    GET_IMP(@selector(DPSsetalpha:));
+  methodTable.DPScurrentalpha_ = 
+    GET_IMP(@selector(DPScurrentalpha:));
 
   mptr = NSZoneMalloc(_globalGSZone, sizeof(gsMethodTable));
   memcpy(mptr, &methodTable, sizeof(gsMethodTable));
@@ -1472,6 +1487,40 @@ struct NSWindow_struct
 }
 
 - (void) DPScapturegstate: (int *)gst
+{
+  [self subclassResponsibility: _cmd];
+}
+
+/*-------------------------------------------------------------------------*/
+/* Graphics Extension Ops */
+/*-------------------------------------------------------------------------*/
+- (void) DPScomposite: (float)x : (float)y : (float)w : (float)h : (int)gstateNum : (float)dx : (float)dy : (int)op
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPScompositerect: (float)x : (float)y : (float)w : (float)h : (int)op
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSdissolve: (float)x : (float)y : (float)w : (float)h : (int)gstateNum
+ : (float)dx : (float)dy : (float)delta
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSreadimage
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSsetalpha: (float)a
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPScurrentalpha: (float *)alpha
 {
   [self subclassResponsibility: _cmd];
 }

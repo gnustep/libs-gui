@@ -690,7 +690,33 @@ static inline void
 PScapturegstate(int *gst)
 __attribute__((unused));
 
+/*-------------------------------------------------------------------------*/
+/* Graphics Extension Ops */
+/*-------------------------------------------------------------------------*/
 
+static inline void 
+PScomposite(float x, float y, float w, float h, int gstateNum, float dx, float dy, int op)
+__attribute__((unused));
+
+static inline void 
+PScompositerect(float x, float y, float w, float h, int op)
+__attribute__((unused));
+
+static inline void 
+PSdissolve(float x, float y, float w, float h, int gstateNum, float dx, float dy, float delta)
+__attribute__((unused));
+
+static inline void 
+PSreadimage( void )
+__attribute__((unused));
+
+static inline void 
+PSsetalpha(float a)
+__attribute__((unused));
+
+static inline void 
+PScurrentalpha(float *a)
+__attribute__((unused));
 
 /* ----------------------------------------------------------------------- */
 /* Color operations */
@@ -1668,6 +1694,46 @@ static inline void
 PScapturegstate(int *gst)
 {
   DPScapturegstate(DEFCTXT, gst);
+}
+
+/*-------------------------------------------------------------------------*/
+/* Graphics Extension Ops */
+/*-------------------------------------------------------------------------*/
+
+static inline void 
+PScomposite(float x, float y, float w, float h, int gstateNum, float dx, float dy, int op)
+{
+  DPScomposite(DEFCTXT, x, y, w, h, gstateNum, dx, dy, op);
+}
+
+static inline void 
+PScompositerect(float x, float y, float w, float h, int op)
+{
+  DPScompositerect(DEFCTXT, x, y, w, h, op);
+}
+
+static inline void 
+PSdissolve(float x, float y, float w, float h, int gstateNum, float dx, float dy, float delta)
+{
+  DPSdissolve(DEFCTXT, x, y, w, h, gstateNum, dx, dy, delta);
+}
+
+static inline void 
+PSreadimage( void )
+{
+  DPSreadimage(DEFCTXT);
+}
+
+static inline void 
+PSsetalpha(float a)
+{
+  DPSsetalpha(DEFCTXT, a);
+}
+
+static inline void 
+PScurrentalpha(float *a)
+{
+  DPScurrentalpha(DEFCTXT, a);
 }
 
 /* ----------------------------------------------------------------------- */
