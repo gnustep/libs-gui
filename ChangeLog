@@ -1,3 +1,9 @@
+2003-02-10  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSBrowser.m: Rewrote and documented the ([-setPath:]) method
+	to fix the distinction between absolute and relative paths and to
+	improve performance somewhat.
+
 2003-02-10 15:14  Alexander Malmberg <alexander@malmberg.org>
 
 	Based on patches from Jeff Teunissen:

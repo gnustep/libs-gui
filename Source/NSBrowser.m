@@ -477,114 +477,178 @@ static NSTextFieldCell *titleCell;
   return [self pathToColumn: _lastColumnLoaded + 1];
 }
 
-/** Parses path and selects corresponding items in the NSBrowser columns. */
+/**
+ * <p>Parses path and selects corresponding items in the NSBrowser columns.
+ * </p>
+ * <p>This is the primary mechanism for programmatically updating the
+ * selection of a browser.  It should result in the browser cells
+ * corresponding to the components being selected, and the
+ * browser columns up to the end of path (and just beyond if the
+ * last selected cell's [NSBrowserCell-isLeaf] returns YES).<br />
+ * It does <em>not</em> result in the browsers action being sent to its
+ * target, just in a change to the browser selection and display.
+ * </p>
+ * <p>If path begins with the -pathSeparator then it is taken to be absolute
+ * and the first component in it is expected to denote a cell in column
+ * zero.  Otherwise it is taken to be relative to the currently selected
+ * column.
+ * </p>
+ * <p>Empty components (ie where a -pathSeparator occurs immediately
+ * after another or at the end of path) are simply ignored.
+ * </p>
+ * <p>The receivers delegate is asked to select each cell in turn
+ * using the -browser:selectCellWithString:inColumn: method (if it
+ * implements it).  If this call to the delegate returns NO then
+ * the attempt to set the path fails.<br />
+ * If the delegate does not implement the method, the browser attempts
+ * to locate and select the cell itsself, and the method fails if it
+ * is unable to locate the cell by matching its [NSCell-stringValue] with
+ * the component of the path.
+ * </p>
+ * <p>The method returns YES if path contains no components or if a cell
+ * corresponding to the path was found.  Otherwise it returns NO.
+ * </p>
+ */
 - (BOOL) setPath: (NSString *)path
 {
   NSArray	*subStrings;
-  NSString	*aStr;
   unsigned	numberOfSubStrings;
   unsigned	i, j;
-  int           column = 0;
-  BOOL	      	found = YES;
+  int           column = _lastColumnLoaded;
+  BOOL		useDelegate = NO;
 
-  // If that's all, return.
-  if (path == nil)
+  if ([_browserDelegate respondsToSelector:
+    @selector(browser:selectCellWithString:inColumn:)])
     {
-      [self setNeedsDisplay: YES];
-      return YES;
+      useDelegate = YES;
     }
 
-  // Otherwise, decompose the path.
+  /*
+   * Decompose the path.
+   */
   subStrings = [path componentsSeparatedByString: _pathSeparator];
   numberOfSubStrings = [subStrings count];
-
-  // Ignore a trailing void component. 
-  if (numberOfSubStrings > 0
-      && [[subStrings objectAtIndex: 0] isEqualToString: @""])
+  i = [subStrings indexOfObject: @""];
+  if (i != NSNotFound)
     {
-      numberOfSubStrings--;
+      NSMutableArray	*subs = AUTORELEASE([subStrings mutableCopy]);
 
-      if (numberOfSubStrings)
+      /*
+       * If there is a leading empty component, the path began with a
+       * separator and is therefore absolute.  Otherwise it begins from
+       * the currently selected column.
+       */
+      if (i == 0 && column > 0)
 	{
-	  NSRange theRange;
-
-	  theRange.location = 1;
-	  theRange.length = numberOfSubStrings;
-	  subStrings = [subStrings subarrayWithRange: theRange];
+	  column = 0;
 	}
 
-      [self loadColumnZero];
+      [subs removeObject: @""];
+      subStrings = subs;
+      numberOfSubStrings = [subStrings count];
+
+      /*
+       * Optimisation. If there are columns loaded, it may be that the
+       * specified path is already partially selected.  If this is the
+       * case, we can avoid redrawing those columns.
+       */
+      if (column == 0)
+        {
+	  for (i = 0; i <= _lastColumnLoaded && numberOfSubStrings > 0; i++)
+	    {
+	      NSString	*c = [[self selectedCellInColumn: i] stringValue];
+
+	      if ([c isEqualToString: [subs objectAtIndex: 0]])
+	      	{
+		  [subs removeObjectAtIndex: 0];
+		  numberOfSubStrings--;
+		  column++;
+		}
+	    }
+	}
     }
 
-  column = _lastColumnLoaded;
+  /*
+   * Ensure that our starting column is loaded.
+   */
   if (column < 0)
     {
       column = 0;
+      [self loadColumnZero];
+    }
+  else
+    {
+      [self setLastColumn: column];
     }
 
   // cycle thru str's array created from path
   for (i = 0; i < numberOfSubStrings; i++)
     {
-      NSBrowserColumn	*bc = [_browserColumns objectAtIndex: column + i];
+      NSString		*aStr = [subStrings objectAtIndex: i];
+      NSBrowserColumn	*bc = [_browserColumns objectAtIndex: column];
       NSMatrix		*matrix = [bc columnMatrix];
-      NSArray		*cells = [matrix cells];
-      unsigned		numOfRows = [cells count];
       NSBrowserCell	*selectedCell = nil;
-      
-      aStr = [subStrings objectAtIndex: i];
+      BOOL	      	found = NO;
 
-      if (![aStr isEqualToString: @""])
-	{
-	  found = NO;
+      if (useDelegate == YES)
+        {
+	  if ([_browserDelegate browser: self
+		   selectCellWithString: aStr
+			       inColumn: column])
+	    {
+	      found = YES;
+	      selectedCell = [matrix selectedCell];
+	    }
+	}
+      else
+        {
+	  NSArray		*cells = [matrix cells];
+	  unsigned		numOfRows = [cells count];
 
 	  // find the cell in the browser matrix which is equal to aStr
 	  for (j = 0; j < numOfRows; j++)
 	    {
-	      NSString	*cellString;
-	      
 	      selectedCell = [cells objectAtIndex: j];
-	      cellString = [selectedCell stringValue];
 	      
-	      if ([cellString isEqualToString: aStr])
+	      if ([[selectedCell stringValue] isEqualToString: aStr])
 		{
-		  if ([_browserDelegate respondsToSelector:
-			 @selector(browser:selectCellWithString:inColumn:)])
-		    {
-		      if ([_browserDelegate browser: self
-			       selectCellWithString: [selectedCell stringValue]
-					   inColumn: column+i])
-			{
-			  found = YES;
-			}
-		    }
-		  else
-		    {
-		      [matrix selectCellAtRow: j column: 0];
-		      found = YES;
-		    }
+		  [matrix selectCellAtRow: j column: 0];
+		  found = YES;
 		  break;
 		}
 	    }
-	  // if unable to find a cell whose title matches aStr return NO
-	  if (found == NO)
-	    {
-	      NSDebugLLog (@"NSBrowser", 
-			   @"unable to find cell '%@' in column %d\n", 
-			  aStr, column + i);
-	      break;
-	    }
-	  // if the cell is a leaf, we are finished setting the path
-	  if ([selectedCell isLeaf])
-	    break;
-	  
-	  // else, it is not a leaf: add a column to the browser for it
-	  [self addColumn];
 	}
+
+      // if unable to find a cell whose title matches aStr return NO
+      if (found == NO)
+	{
+	  NSDebugLLog (@"NSBrowser", 
+		       @"unable to find cell '%@' in column %d\n", 
+		      aStr, column);
+	  break;
+	}
+
+      // if the cell is a leaf, we are finished setting the path
+      if ([selectedCell isLeaf])
+        {
+	  break;
+	}
+      
+      // else, it is not a leaf: get a column in the browser for it
+      [self addColumn];
+      column++;
     }
 
   [self setNeedsDisplay: YES];
   
-  return found;
+  if (i == numberOfSubStrings)
+    {
+      return YES;
+    }
+  else
+    {
+      return NO;
+    }
 }
 
 /** Returns a string representing the path from the first column up to,
@@ -821,6 +885,7 @@ static NSTextFieldCell *titleCell;
     }
 
   _lastColumnLoaded = column;
+
   // Unloads columns.
   count = [_browserColumns count];
   num = [self numberOfVisibleColumns];
