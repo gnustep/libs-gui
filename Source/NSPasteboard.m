@@ -172,9 +172,23 @@ static  NSMapTable              *mimeMap = NULL;
 	}
       else
 	{
-	  static BOOL	recursion = NO;
+	  static BOOL		recursion = NO;
+	  static NSString	*cmd = nil;
+	  static NSArray	*args = nil;
 
-	  if (recursion)
+	  if (cmd == nil && recursion ==NO)
+	    {
+#ifdef GNUSTEP_BASE_LIBRARY
+	      cmd = RETAIN([[NSSearchPathForDirectoriesInDomains(
+		GSToolsDirectory, NSSystemDomainMask, YES) objectAtIndex: 0]
+		stringByAppendingPathComponent: @"gpbs"]);
+#else
+	      cmd = RETAIN([[@GNUSTEP_INSTALL_PREFIX 
+		stringByAppendingPathComponent: @"Tools"] 
+		stringByAppendingPathComponent: @"gpbs"]);
+#endif
+	    }
+	  if (recursion == YES || cmd == nil)
 	    {
 	      NSLog(@"Unable to contact pasteboard server - "
 		@"please ensure that gpbs is running for %@.", description);
@@ -182,29 +196,16 @@ static  NSMapTable              *mimeMap = NULL;
 	    }
 	  else
 	    {
-	      static NSString	*cmd = nil;
-	      static NSArray	*args = nil;
-
 	      NSLog(@"\nI couldn't contact the pasteboard server for %@ -\n"
 @"so I'm attempting to to start one - which will take a few seconds.\n"
-@"It is recommended that you start the pasteboard server (gpbs) either at\n"
-@"login or (better) when your computer is started up.\n", description);
-	      if (cmd == nil)
-	        {
-#ifdef GNUSTEP_BASE_LIBRARY
-		  cmd = RETAIN([[NSSearchPathForDirectoriesInDomains(
-		    GSToolsDirectory, NSSystemDomainMask, YES) objectAtIndex: 0]
-		    stringByAppendingPathComponent: @"gpbs"]);
-#else
-		  cmd = RETAIN([[@GNUSTEP_INSTALL_PREFIX 
-		    stringByAppendingPathComponent: @"Tools"] 
-		    stringByAppendingPathComponent: @"gpbs"]);
-#endif
-		  if ([host length] > 0)
-		    {
-		      args = [[NSArray alloc] initWithObjects:
-			@"-NSHost", host, nil];
-		    }
+@"Trying to launch gpbs from %@ or a machine/operating-system subdirectory.\n"
+@"It is recommended that you start the pasteboard server (gpbs) when\n"
+@"your windowing system is started up.\n", description,
+[cmd stringByDeletingLastPathComponent]);
+	      if ([host length] > 0)
+		{
+		  args = [[NSArray alloc] initWithObjects:
+		    @"-NSHost", host, nil];
 		}
 	      [NSTask launchedTaskWithLaunchPath: cmd arguments: args];
 	      [NSTimer scheduledTimerWithTimeInterval: 5.0

@@ -1,3 +1,7 @@
+2002-04-16  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSPasteboard.m: Improve logging on server startup.
+
 Tue Apr 16 11:55:30 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Tools/gpbs.m (main): Fixed typo in log message - use gpbs, not
