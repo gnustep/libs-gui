@@ -406,10 +406,6 @@ static NSNotificationCenter *nc;
   if (aRange.location == NSNotFound)
     return;
 
-  if ([self shouldChangeTextInRange: aRange  
-	    replacementString: aString] == NO)
-    return; 
- 
   [_textStorage beginEditing];
 
   if (_tf.is_rich_text  &&  [_textStorage length] == 0)
@@ -644,9 +640,6 @@ static NSNotificationCenter *nc;
 {
   if (font != nil)
     {
-      if (![self shouldChangeTextInRange: aRange  replacementString: nil])
-	return;
-
       [_textStorage beginEditing];
       [_textStorage addAttribute: NSFontAttributeName  value: font
 		    range: aRange];
@@ -691,20 +684,35 @@ static NSNotificationCenter *nc;
 
 - (void) alignCenter: (id)sender
 {
+  NSRange range = [self rangeForUserParagraphAttributeChange];
+
+  if ([self shouldChangeTextInRange: range replacementString: nil] == NO)
+    return;
+
   [self setAlignment: NSCenterTextAlignment
-	range: [self rangeForUserParagraphAttributeChange]];
+	range: range];   
 }
 
 - (void) alignLeft: (id)sender
 {
+  NSRange range = [self rangeForUserParagraphAttributeChange];
+
+  if ([self shouldChangeTextInRange: range replacementString: nil] == NO)
+    return;
+
   [self setAlignment: NSLeftTextAlignment
-	range: [self rangeForUserParagraphAttributeChange]];
+	range: range];   
 }
 
 - (void) alignRight: (id)sender
 {
+  NSRange range = [self rangeForUserParagraphAttributeChange];
+
+  if ([self shouldChangeTextInRange: range replacementString: nil] == NO)
+    return;
+
   [self setAlignment: NSRightTextAlignment
-	range: [self rangeForUserParagraphAttributeChange]];
+	range: range];   
 }
 
 /*
@@ -741,10 +749,6 @@ static NSNotificationCenter *nc;
   if (aRange.location == NSNotFound)
     return;
 
-  if (![self shouldChangeTextInRange: aRange  replacementString: nil])
-    {
-      return;
-    }
   [_textStorage beginEditing];
   if (color != nil)
     {
@@ -1849,8 +1853,13 @@ static NSNotificationCenter *nc;
 
 - (void) alignJustified: (id)sender
 {
+  NSRange range = [self rangeForUserParagraphAttributeChange];
+
+  if ([self shouldChangeTextInRange: range replacementString: nil] == NO)
+    return;
+
   [self setAlignment: NSJustifiedTextAlignment
-	range: [self rangeForUserParagraphAttributeChange]];   
+	range: range];   
 }
 
 - (void) changeColor: (id)sender
@@ -1859,6 +1868,9 @@ static NSNotificationCenter *nc;
   NSRange aRange = [self rangeForUserCharacterAttributeChange];
 
   if (aRange.location == NSNotFound)
+    return;
+
+  if ([self shouldChangeTextInRange: aRange replacementString: nil] == NO)
     return;
 
   // sets the color for the selected range.
@@ -1873,8 +1885,6 @@ static NSNotificationCenter *nc;
   if (range.location == NSNotFound)
     return;
 
-  if (![self shouldChangeTextInRange: range  replacementString: nil])
-    return;
   [_textStorage beginEditing];
   [_textStorage setAlignment: alignment range: range];
   [_textStorage endEditing];
@@ -1900,6 +1910,10 @@ static NSNotificationCenter *nc;
   if (insertRange.location == NSNotFound)
     return;
 
+  if ([self shouldChangeTextInRange: insertRange  
+	    replacementString: insertString] == NO)
+    return; 
+ 
   if (_tf.is_rich_text)
     {
       [self replaceRange: insertRange
@@ -3275,7 +3289,6 @@ afterString in order over charRange. */
   NSString *string;
   NSString *replacementString;
   unichar chars[2];
-  unichar tmp;
 
   /* Do nothing if we are at beginning of text.  */
   if (_selected_range.location < 2)
@@ -3283,21 +3296,19 @@ afterString in order over charRange. */
       return;
     }
 
+  /* Get the two Swapped chars.  */
+  string = [_textStorage string];
+  chars[1] = [string characterAtIndex: (_selected_range.location - 2)];
+  chars[0] = [string characterAtIndex: (_selected_range.location - 1)];
+
+  replacementString = [NSString stringWithCharacters: chars  length: 2];
   range = NSMakeRange (_selected_range.location - 2, 2);
 
-  /* Get the two chars.  */
-  string = [_textStorage string];
-  chars[0] = [string characterAtIndex: (_selected_range.location - 2)];
-  chars[1] = [string characterAtIndex: (_selected_range.location - 1)];
+  if ([self shouldChangeTextInRange: range replacementString: replacementString] == NO)
+    return;
 
-  /* Swap them.  */
-  tmp = chars[0];
-  chars[0] = chars[1];
-  chars[1] = tmp;
-  
   /* Replace the original chars with the swapped ones.  */
-  replacementString = [NSString stringWithCharacters: chars  length: 2];
-  [self replaceCharactersInRange: range  withString: replacementString];
+  [self replaceCharactersInRange: range withString: replacementString];
 }
 
 
@@ -4023,6 +4034,13 @@ shouldRemoveMarker: (NSRulerMarker*)marker
   the default types. Use the rangeForUserTextChange method to obtain
   the range of characters (if any) to be replaced by the new data.  */
 
+  // FIXME: This is perhaps the wrong place to call this method, as
+  // pasting might be allowed even for non editable text views. Also 
+  // the real parameters are still not know at this point in time.
+  if ([self shouldChangeTextInRange: NSMakeRange(NSNotFound, 0) 
+	    replacementString: nil] == NO)
+    return NO;
+
   if ([type isEqualToString: NSStringPboardType])
     {
       [self insertText: [pboard stringForType: NSStringPboardType]];
@@ -4435,10 +4453,6 @@ other than copy/paste or dragging. */
   if (aRange.location == NSNotFound)
     return;
 
-  if (![self shouldChangeTextInRange: aRange
-	     replacementString: [attrString string]])
-    return;
-
   [_textStorage beginEditing];
 
   if (_tf.is_rich_text)
@@ -4501,9 +4515,6 @@ other than copy/paste or dragging. */
   NSEnumerator *enumerator = [attributes keyEnumerator];
 
   if (aRange.location == NSNotFound)
-    return;
-  if (![self shouldChangeTextInRange: aRange
-	     replacementString: nil])
     return;
 	      
   [_textStorage beginEditing];
