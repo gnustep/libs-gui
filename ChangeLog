@@ -1,3 +1,13 @@
+2004-07-08  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSMovie.h:
+	* Source/NSMovie.m:
+	* Headers/AppKit/NSMovieView.h:
+	* Source/NSMovieView.m:
+	* Headers/AppKit/NSAlert.h:
+	* Source/NSAlert.m:
+	New MacOSX classes, implementation still empty.
+
 2004-07-08  Serg Stoyan <stoyan255@ukr.net>
 
 	* Images/common_ArrowDownH.tiff: added.

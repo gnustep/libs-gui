@@ -46,6 +46,7 @@ libgnustep-gui_C_FILES =
 libgnustep-gui_OBJC_FILES = Functions.m \
 NSActionCell.m \
 NSAffineTransform.m \
+NSAlert.m \
 NSApplication.m \
 NSAttributedString.m \
 NSBezierPath.m \
@@ -103,6 +104,8 @@ NSMenu.m \
 NSMenuView.m \
 NSMenuItem.m \
 NSMenuItemCell.m \
+NSMovie.m \
+NSMovieView.m \
 NSNib.m \
 NSOpenGLContext.m \
 NSOpenGLPixelFormat.m \
@@ -208,6 +211,7 @@ AppKitDefines.h \
 AppKitExceptions.h \
 NSActionCell.h \
 NSAffineTransform.h \
+NSAlert.h \
 NSApplication.h \
 NSBezierPath.h \
 NSBox.h \
@@ -259,6 +263,8 @@ NSMenu.h \
 NSMenuItem.h \
 NSMenuItemCell.h \
 NSMenuView.h \
+NSMovie.h \
+NSMovieView.h \
 NSOpenPanel.h \
 NSOpenGL.h \
 NSOpenGLView.h \
