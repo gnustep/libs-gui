@@ -9,6 +9,29 @@
 
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 
+@section Noteworthy changes in version @samp{0.7.5}
+
+@itemize @bullet
+@item Drag and drop and image sliding much improved.
+@item Better handling of remote startup/display.
+@item Some localization.
+@item Keybinding support.
+@item Text handling improvements.
+@item New gopen command (like MacOSX open command).
+@item Implemented simple pagination and printing of views.
+@item Support for rulers.
+@item Spell checking support.
+@item Blinking insertion point.
+@item New NSStepper class.
+@item Implemented NSOutlineView, NSSelection, NSInputManager.
+@item Near rewrite of Menu handling code.
+@item Gmodel code compiled as a separate bundle.
+@end itemize
+
+@c ====================================================================
+@c Keep the next line just below the list of changes in most recent version.
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.7.0}
 
 @itemize @bullet
@@ -19,10 +42,6 @@ The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSIO
 @item simpler, faster compilation and installation.
 @item NSColorWell works.
 @end itemize
-
-@c ====================================================================
-@c Keep the next line just below the list of changes in most recent version.
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.6.7}
 

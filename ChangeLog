@@ -1,3 +1,14 @@
+2002-01-24  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSBundleAdditions.m ([NSBundle
+	+loadNibFile:externalNameTable:withZone:]): If file extension is
+	nib, replace it with gmodel.
+
+	* Documentation/announce.texi: Update.
+	* Documentation/install.texi: Likewise.
+	* Documentation/news.texi: Likewise.
+	* Documentation/todo.texi: Likewise.
+
 2002-01-23  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSInterfaceStyle.m (NSInterfaceStyleForKey): Use default

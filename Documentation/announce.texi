@@ -60,14 +60,7 @@ the TIFF Graphics library version
 
 It also requires a FoundationKit library as specified by the OpenStep
 specification.  The FoundationKit libraries known to work are the GNUstep
-Base Library version @samp{@value{GNUSTEP-GUI-BASE}}.
-
-The @samp{.tar} file is compressed with GNU gzip.  Gzip can be obtained by
-anonymous ftp at any of the GNU archive sites.
-
-For info about FTP via email, send email to
-@email{ftpmail@@decwrl.dec.com} with no subject line, and two-line body
-with line one @samp{help} and line two @samp{quit}.
+Base Library.
 
 @section Where do I send bug reports?
 

@@ -235,7 +235,13 @@ Class gmodel_class(void)
   BOOL		loaded = NO;
   NSUnarchiver	*unarchiver = nil;
   NSString      *ext = [fileName pathExtension];
-  
+
+  if ([[fileName pathExtension] isEqual: @"nib"])
+    {
+      /* We can't read nibs, look for an equivalent gmodel file */
+      fileName = [fileName stringByDeletingPathExtension];
+      fileName = [fileName stringByAppendingPathExtension: @"gmodel"];
+    }
 
   // If the file to be read is a gmodel, use the GMModel method to
   // read it in and skip the dearchiving below.
