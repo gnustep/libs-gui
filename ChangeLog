@@ -1,3 +1,10 @@
+2005-04-03 14:53 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSCustomImageRep.m: Allow drawing if the delegate is
+	set since the size may not have been set as of yet.  This behavior
+	is consistent with that observed on OPENSTEP4.2/Mach.  This fix
+	corrects bug #12412.
+
 2005-04-03  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/AppKit/NSTextView.h: Keep track of whether we are acting

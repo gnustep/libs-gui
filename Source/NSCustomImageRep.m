@@ -26,8 +26,13 @@
    */ 
 
 #include "config.h"
-#include "AppKit/NSCustomImageRep.h"
 #include <Foundation/NSCoder.h>
+#include <Foundation/NSDebug.h>
+#include "AppKit/NSCustomImageRep.h"
+#include "AppKit/NSGraphicsContext.h"
+#include "AppKit/NSView.h"
+#include "AppKit/NSColor.h"
+#include "AppKit/DPSOperators.h"
 
 @implementation NSCustomImageRep
 
@@ -63,6 +68,76 @@
 {
   [_delegate performSelector: _selector withObject: self];
   return YES;
+}
+
+//
+// TODO: For both of the following methods we can extract the 
+// logic in the superclass to another method and call it here 
+// if the delegate is set from both places.
+//
+- (BOOL) drawAtPoint: (NSPoint)aPoint
+{
+  BOOL ok, reset;
+  NSGraphicsContext *ctxt;
+  NSAffineTransform *ctm = nil;
+
+  // if both are zero and the delegate isn't set, return no.
+  if (_size.width == 0 && _size.height == 0 && _delegate == nil)
+    return NO;
+
+  NSDebugLLog(@"NSImage", @"Drawing at point %f %f\n", aPoint.x, aPoint.y);
+  reset = 0;
+  ctxt = GSCurrentContext();
+  if (aPoint.x != 0 || aPoint.y != 0)
+    {
+      if ([[ctxt focusView] isFlipped])
+	aPoint.y -= _size.height;
+      ctm = GSCurrentCTM(ctxt);
+      DPStranslate(ctxt, aPoint.x, aPoint.y);
+      reset = 1;
+    }
+  ok = [self draw];
+  if (reset)
+    GSSetCTM(ctxt, ctm);
+  return ok;
+}
+
+- (BOOL) drawInRect: (NSRect)aRect
+{
+  NSSize scale;
+  BOOL ok;
+  NSGraphicsContext *ctxt;
+  NSAffineTransform *ctm;
+
+  NSDebugLLog(@"NSImage", @"Drawing in rect (%f %f %f %f)\n", 
+	      NSMinX(aRect), NSMinY(aRect), NSWidth(aRect), NSHeight(aRect));
+
+  // if both are zero and the delegate isn't set.
+  if (_size.width == 0 && _size.height == 0 && _delegate == nil)
+    return NO;
+
+  ctxt = GSCurrentContext();
+  
+  // if either is zero, don't scale at all.
+  if(_size.width == 0 || _size.height == 0)
+    {
+      scale = NSMakeSize(NSWidth(aRect), 
+			 NSHeight(aRect));
+    }
+  else
+    {
+      scale = NSMakeSize(NSWidth(aRect) / _size.width, 
+			 NSHeight(aRect) / _size.height);
+    }
+
+  if ([[ctxt focusView] isFlipped])
+    aRect.origin.y -= NSHeight(aRect);
+  ctm = GSCurrentCTM(ctxt);
+  DPStranslate(ctxt, NSMinX(aRect), NSMinY(aRect));
+  DPSscale(ctxt, scale.width, scale.height);
+  ok = [self draw];
+  GSSetCTM(ctxt, ctm);
+  return ok;
 }
 
 // NSCoding protocol
