@@ -110,6 +110,17 @@ typedef enum _NSSelectionAffinity {
   NSDictionary *_markedTextAttributes;
   NSSelectionGranularity _selectionGranularity;
 
+  /* Timer used to redraw the insertion point ... FIXME - think what 
+     happens with multiple textviews */
+  NSTimer *_insertionPointTimer;
+
+  /* Blinking of the insertion point is controlled by the following
+     ivar ...  it is YES during the little period in which the
+     insertion point should be drawn on screen, and NO during the
+     following little period in which the insertion point should not
+     be drawn */
+  BOOL _drawInsertionPointNow;
+
   /* Stores the insertion point rect - updated by
      updateInsertionPointStateAndRestartTimer: - we must make sure we
      call the method every time that the insertion point rect might
