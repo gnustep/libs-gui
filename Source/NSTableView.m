@@ -228,9 +228,9 @@
   
   if ([anObject respondsToSelector: sel_b] == NO) 
     {
-      [NSException 
-	raise: NSInternalInconsistencyException 
-	format: @"Data Source doesn't respond to tableView:objectValueForTableColumn:row:"];
+      [NSException raise: NSInternalInconsistencyException 
+		   format: @"Data Source doesn't respond to "
+		   @"tableView:objectValueForTableColumn:row:"];
     }
   
   ASSIGN (_dataSource, anObject);
