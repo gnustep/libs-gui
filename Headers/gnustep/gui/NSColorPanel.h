@@ -33,6 +33,7 @@
 #include <AppKit/NSPanel.h>
 #include <AppKit/NSColorList.h>
 #include <Foundation/NSCoder.h>
+#include <AppKit/NSApplication.h>
 
 @interface NSColorPanel : NSPanel <NSCoding>
 

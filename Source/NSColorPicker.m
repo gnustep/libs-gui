@@ -91,6 +91,12 @@
 {}
 
 //
+// Showing Opacity Controls
+//
+- (void)alphaControlAddedOrRemoved:(id)sender
+{}
+
+//
 // Responding to a Resized View 
 //
 - (void)viewSizeChanged:(id)sender

@@ -1,7 +1,7 @@
 /* 
    NSDataLinkManager.h
 
-   Description...
+   Manager of a NSDataLink
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 

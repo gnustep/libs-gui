@@ -573,4 +573,16 @@ NSString *NSTextDidChangeNotification;
   return self;
 }
 
+//
+// NSChangeSpelling protocol
+//
+- (void) changeSpelling:(id)sender
+{}
+
+//
+// NSIgnoreMisspelledWords protocol
+//
+- (void)ignoreSpelling:(id)sender
+{}
+
 @end

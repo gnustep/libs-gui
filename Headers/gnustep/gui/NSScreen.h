@@ -1,7 +1,7 @@
 /* 
    NSScreen.h
 
-   Description...
+   Class representing monitors
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 

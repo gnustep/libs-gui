@@ -64,7 +64,7 @@ float MB_SCREEN_MAXHEIGHT();
 @class NSWindow, NSPanel, NSView, NSMenu;
 @class NSSavePanel, NSOpenPanel, NSHelpPanel;
 @class NSClipView, NSScrollView, NSSplitView;
-@class NSText;
+@class NSText,NSCStringText;
 // Controls
 @class NSControl, NSButton, NSTextField, NSScroller, NSBox, NSForm, NSMatrix;
 @class NSPopUpButton, NSSlider, NSBrowser, NSForm;
@@ -90,12 +90,14 @@ float MB_SCREEN_MAXHEIGHT();
 #include <AppKit/NSButton.h>
 #include <AppKit/NSButtonCell.h>
 #include <AppKit/NSCachedImageRep.h>
+#include <AppKit/NSCStringText.h>
 #include <AppKit/NSCell.h>
 #include <AppKit/NSClipView.h>
 #include <AppKit/NSColor.h>
 #include <AppKit/NSColorList.h>
 #include <AppKit/NSColorPanel.h>
 #include <AppKit/NSColorPicker.h>
+#include <AppKit/NSColorPicking.h>
 #include <AppKit/NSColorWell.h>
 #include <AppKit/NSControl.h>
 #include <AppKit/NSCursor.h>
@@ -103,6 +105,7 @@ float MB_SCREEN_MAXHEIGHT();
 #include <AppKit/NSDataLink.h>
 #include <AppKit/NSDataLinkManager.h>
 #include <AppKit/NSDataLinkPanel.h>
+#include <AppKit/NSDragging.h>
 #include <AppKit/NSEPSImageRep.h>
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSFont.h>
@@ -116,6 +119,7 @@ float MB_SCREEN_MAXHEIGHT();
 #include <AppKit/NSMatrix.h>
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSMenuCell.h>
+#include <AppKit/NSNibLoading.h>
 #include <AppKit/NSOpenPanel.h>
 #include <AppKit/NSPageLayout.h>
 #include <AppKit/NSPanel.h>
@@ -134,6 +138,7 @@ float MB_SCREEN_MAXHEIGHT();
 #include <AppKit/NSSlider.h>
 #include <AppKit/NSSliderCell.h>
 #include <AppKit/NSSpellChecker.h>
+#include <AppKit/NSSpellProtocol.h>
 #include <AppKit/NSSpellServer.h>
 #include <AppKit/NSSplitView.h>
 #include <AppKit/NSText.h>

@@ -211,5 +211,14 @@
 
 @end
 
+@interface NSCoder (NSCoderAdditions)
+
+//
+// Converting an Archived NXColor to an NSColor
+//
+- (NSColor *)decodeNXColor;
+
+@end
+
 #endif // _GNUstep_H_NSColor
 

@@ -1,7 +1,7 @@
 /* 
    NSHelpPanel.h
 
-   Description...
+   Standard panel for showing help information
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
@@ -32,6 +32,7 @@
 #include <AppKit/stdappkit.h>
 #include <AppKit/NSPanel.h>
 #include <Foundation/NSCoder.h>
+#include <AppKit/NSApplication.h>
 
 @interface NSHelpPanel : NSPanel <NSCoding>
 

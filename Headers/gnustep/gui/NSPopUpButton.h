@@ -36,7 +36,7 @@
 #include <AppKit/NSFont.h>
 #include <Foundation/NSCoder.h>
 
-@interface NSPopUpButton : NSView <NSCoding>
+@interface NSPopUpButton : NSButton <NSCoding>
 
 {
   // Attributes

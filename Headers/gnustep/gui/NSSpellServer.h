@@ -1,7 +1,7 @@
 /* 
    NSSpellServer.h
 
-   Description...
+   Class to allow a spell checker to be available to other apps
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 

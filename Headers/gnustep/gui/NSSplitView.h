@@ -1,7 +1,7 @@
 /* 
    NSSplitView.h
 
-   Description...
+   Allows multiple views to share a region in a window
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 

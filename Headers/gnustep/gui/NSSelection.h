@@ -1,7 +1,7 @@
 /* 
    NSSelection.h
 
-   Description...
+   Class describing a selection in a document
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 

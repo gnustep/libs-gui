@@ -1,7 +1,7 @@
 /* 
    NSPrintOperation.h
 
-   Description...
+   Controls operations generating EPS or PS print jobs.
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 

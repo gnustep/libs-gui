@@ -1,7 +1,7 @@
 /* 
    NSDataLinkPanel.h
 
-   Description...
+   Standard panel for inspecting data links
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
@@ -33,6 +33,8 @@
 #include <AppKit/NSPanel.h>
 #include <AppKit/NSDataLink.h>
 #include <Foundation/NSCoder.h>
+#include <AppKit/NSApplication.h>
+
 
 @interface NSDataLinkPanel : NSPanel <NSCoding>
 

@@ -1,7 +1,7 @@
 /* 
    NSPrintInfo.h
 
-   Description...
+   Stores information used in printing
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 

@@ -1,7 +1,7 @@
 /* 
    NSPrintPanel.h
 
-   Description...
+   Standard panel to query users for info on a print job
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 

@@ -763,3 +763,18 @@ const float NSWhite = 1;
 }
 
 @end
+
+//
+// Implementation of the NSCoder additions
+//
+@implementation NSCoder (NSCoderAdditions)
+
+//
+// Converting an Archived NXColor to an NSColor
+//
+- (NSColor *)decodeNXColor
+{
+  return nil;
+}
+
+@end

@@ -113,4 +113,13 @@
 
 @end
 
+@interface NSObject (NSMenuActionResponder)
+
+//
+// Updating NSMenuCells
+//
+- (BOOL)validateCell:(id)aCell;
+
+@end
+
 #endif // _GNUstep_H_NSMenu

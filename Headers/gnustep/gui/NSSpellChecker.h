@@ -1,7 +1,7 @@
 /* 
    NSSpellChecker.h
 
-   Description...
+   Class which is interface to spell-checking service
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 

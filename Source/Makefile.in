@@ -94,6 +94,7 @@ gui/NSBrowserCell.h \
 gui/NSBundle.h \
 gui/NSButton.h \
 gui/NSButtonCell.h \
+gui/NSCStringText.h \
 gui/NSCachedImageRep.h \
 gui/NSCell.h \
 gui/NSClipView.h \
@@ -101,6 +102,7 @@ gui/NSColor.h \
 gui/NSColorList.h \
 gui/NSColorPanel.h \
 gui/NSColorPicker.h \
+gui/NSColorPicking.h \
 gui/NSColorWell.h \
 gui/NSControl.h \
 gui/NSCursor.h \
@@ -109,6 +111,7 @@ gui/NSCustomImageRep.h
 GNUSTEP2_HEADERS = gui/NSDataLink.h \
 gui/NSDataLinkManager.h \
 gui/NSDataLinkPanel.h \
+gui/NSDragging.h \
 gui/NSEPSImageRep.h \
 gui/NSEvent.h \
 gui/NSFont.h \
@@ -122,6 +125,7 @@ gui/NSImageRep.h \
 gui/NSMatrix.h \
 gui/NSMenu.h \
 gui/NSMenuCell.h \
+gui/NSNibLoading.h \
 gui/NSOpenPanel.h \
 gui/NSPageLayout.h \
 gui/NSPanel.h \
@@ -141,6 +145,7 @@ gui/NSSelection.h \
 gui/NSSlider.h \
 gui/NSSliderCell.h \
 gui/NSSpellChecker.h \
+gui/NSSpellProtocol.h \
 gui/NSSpellServer.h \
 gui/NSSplitView.h \
 gui/NSText.h \
@@ -177,8 +182,10 @@ NSBitmapImageRep$(oext) \
 NSBox$(oext) \
 NSBrowser$(oext) \
 NSBrowserCell$(oext) \
+NSBundle$(oext) \
 NSButton$(oext) \
 NSButtonCell$(oext) \
+NSCStringText$(oext) \
 NSCachedImageRep$(oext) \
 NSCell$(oext) \
 NSClipView$(oext) \

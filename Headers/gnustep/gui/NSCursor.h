@@ -1,7 +1,7 @@
 /* 
    NSCursor.h
 
-   Description...
+   Holds an image to use as a cursor
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 

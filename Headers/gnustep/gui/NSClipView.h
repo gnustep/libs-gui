@@ -1,7 +1,7 @@
 /* 
    NSClipView.h
 
-   Description...
+   A clipped view
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 

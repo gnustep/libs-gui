@@ -1,7 +1,7 @@
 /* 
    NSDataLink.h
 
-   Description...
+   Link between a source and dependent document
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 

@@ -1,7 +1,7 @@
 /* 
    NSBrowser.h
 
-   Description...
+   Control to display and select from hierarchal lists
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 

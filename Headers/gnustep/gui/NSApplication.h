@@ -43,6 +43,8 @@
 #include <DPSClient/NSDPSContext.h>
 #include <Foundation/NSNotification.h>
 
+@class NSPasteboard;
+
 @interface NSApplication : NSResponder <NSCoding>
 
 {
@@ -254,6 +256,15 @@
 
 // handle a non-translated event
 - (void)handleNullEvent;
+
+@end
+
+@interface NSObject (NSServicesRequests)
+
+// Pasteboard Read/Write
+- (BOOL)readSelectionFromPasteboard:(NSPasteboard *)pboard;
+- (BOOL)writeSelectionToPasteboard:(NSPasteboard *)pboard
+                             types:(NSArray *)types;
 
 @end
 

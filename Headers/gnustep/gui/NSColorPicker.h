@@ -1,7 +1,7 @@
 /* 
    NSColorPicker.h
 
-   Description...
+   Abstract superclass of custom color pickers
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
@@ -34,8 +34,9 @@
 #include <AppKit/NSImage.h>
 #include <AppKit/NSColorList.h>
 #include <AppKit/NSButtonCell.h>
+#include <AppKit/NSColorPicking.h>
 
-@interface NSColorPicker : NSObject
+@interface NSColorPicker : NSObject <NSColorPickingDefault>
 
 {
   // Attributes
@@ -69,6 +70,11 @@
 //
 - (void)attachColorList:(NSColorList *)colorList;
 - (void)detachColorList:(NSColorList *)colorList;
+
+//
+// Showing Opacity Controls
+//
+- (void)alphaControlAddedOrRemoved:(id)sender;
 
 //
 // Responding to a Resized View 

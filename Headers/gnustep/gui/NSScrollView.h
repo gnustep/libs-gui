@@ -1,7 +1,7 @@
 /* 
    NSScrollView.h
 
-   Description...
+   A scrolling view to allow documents larger than screen to be shown
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 

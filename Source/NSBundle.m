@@ -1,12 +1,12 @@
 /* 
-   NSBundle.h
+   NSBundle.m
 
-   Category of additional methods used by GUI Library.
+   Implementation of NSBundle Additions
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1997 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
+   Author:  Simon Frankau <sgf@frankau.demon.co.uk>
+   Date: 1997
    
    This file is part of the GNUstep GUI Library.
 
@@ -21,31 +21,31 @@
    Library General Public License for more details.
 
    You should have received a copy of the GNU Library General Public
-   License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+   License along with this library; if not, write to the Free
+   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */ 
 
-#ifndef _GNUstep_H_NSBundleAdditions
-#define _GNUstep_H_NSBundleAdditions
-
-#include <AppKit/stdappkit.h>
 #include <Foundation/NSBundle.h>
+#include <AppKit/NSBundle.h>
 
-@interface NSBundle (NSBundleAdditions)
+@implementation NSBundle (NSBundleAdditions)
 
-- (NSString *)pathForImageResource:(NSString *)name;
+- (NSString *)pathForImageResource:(NSString *)name
+{
+  return nil;
+}
 
 + (BOOL)loadNibFile:(NSString *)fileName
   externalNameTable:(NSDictionary *)context
-	   withZone:(NSZone *)zone;
+withZone:(NSZone *)zone
+{
+  return NO;
+}
 
 + (BOOL)loadNibNamed:(NSString *)aNibName
-	       owner:(id)owner;
+	       owner:(id)owner
+{
+  return NO;
+}
 
 @end
-
-#endif // _GNUstep_H_NSBundleAdditions
-
-
-

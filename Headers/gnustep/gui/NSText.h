@@ -32,10 +32,11 @@
 #include <AppKit/stdappkit.h>
 #include <AppKit/NSView.h>
 #include <AppKit/NSFont.h>
+#include <AppKit/NSSpellProtocol.h>
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSNotification.h>
 
-@interface NSText : NSView <NSCoding>
+@interface NSText : NSView <NSChangeSpelling,NSIgnoreMisspelledWords,NSCoding>
 
 {
   // Attributes
@@ -195,6 +196,16 @@
 //
 - (void)encodeWithCoder:aCoder;
 - initWithCoder:aDecoder;
+
+//
+// NSChangeSpelling protocol
+//
+- (void) changeSpelling:(id)sender;
+
+//
+// NSIgnoreMisspelledWords protocol
+//
+- (void)ignoreSpelling:(id)sender;
 
 @end
 

@@ -1,3 +1,24 @@
+Wed Jan 29 07:44:32 1997  Simon Frankau <sgf@frankau.demon.co.uk>
+
+	* Headers/gnustep/gui/NSCStringText.h: New file.
+	* Headers/gnustep/gui/NSDragging.h: New file.
+	* Headers/gnustep/gui/NSColorPicking.h: New file.
+	* Headers/gnustep/gui/NSNibLoading.h: New file.
+	* Headers/gnustep/gui/NSSpellProtocol.h: New file.
+	* Headers/gnustep/gui/AppKit.h: Include new files.
+	* Headers/gnustep/gui/Application.h: Add NSServicesRequests category.
+	* Headers/gnustep/gui/NSColor.h (-decodeNXColor:): New method.
+	* Headers/gnustep/gui/NSColorPicker.h (-alphaControlAddedOrRemoved:):
+	New method.
+	* Headers/gnustep/gui/NSMenu.h (-validateCell:): New method.
+	* Source/Makefile.in: Add new files.
+	* Source/NSBundle.m: New file.
+	* Source/NSCStringText.m: New file.
+	* SourceNSColor.m (-decodeNXColor:): New method.
+	* Source/NSColorPicker.m (-alphaControlAddedOrRemoved:):
+	New method.
+	* Source/NSText.m (-changeSpelling:, -ignoreSpelling:): New methods.
+
 Thu Jan 23 15:10:13 1997  Scott Christley  <scottc@net-community.com>
 
 	* Makefile.in (install): Don't force make of source.

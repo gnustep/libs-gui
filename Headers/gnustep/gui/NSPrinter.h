@@ -1,7 +1,7 @@
 /* 
    NSPrinter.h
 
-   Description...
+   Class representing a printer's or printer model's capabilities.
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 

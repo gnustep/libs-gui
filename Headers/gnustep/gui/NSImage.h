@@ -31,6 +31,7 @@
 
 #include <AppKit/stdappkit.h>
 #include <DPSClient/TypesandConstants.h>
+#include <AppKit/NSBundle.h>
 
 @class NSPasteboard;
 @class NSMutableArray;

@@ -1,7 +1,7 @@
 /* 
    NSPasteboard.h
 
-   Description...
+   Class to transfer data to and from the pasteboard server
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 

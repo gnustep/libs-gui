@@ -1,7 +1,7 @@
 /* 
    NSPageLayout.h
 
-   Description...
+   Standard panel for querying user about page layout info
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
@@ -33,6 +33,7 @@
 #include <AppKit/NSPanel.h>
 #include <AppKit/NSPrintInfo.h>
 #include <Foundation/NSCoder.h>
+#include <AppKit/NSApplication.h>
 
 @interface NSPageLayout : NSPanel <NSCoding>
 
