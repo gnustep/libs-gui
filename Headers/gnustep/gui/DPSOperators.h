@@ -1906,7 +1906,7 @@ DPSGetEvent(GSCTXT *ctxt, unsigned mask, NSDate* limit, NSString *mode)
 {
   return (ctxt->methods->DPSGetEventMatchingMask_beforeDate_inMode_dequeue_)
     (ctxt, @selector(DPSGetEventMatchingMask:beforeDate:inMode:dequeue:),
-    mask, limit, mode, NO);
+    mask, limit, mode, YES);
 }
 
 static inline NSEvent*
@@ -1914,7 +1914,7 @@ DPSPeekEvent(GSCTXT *ctxt, unsigned mask, NSDate* limit, NSString *mode)
 {
   return (ctxt->methods->DPSGetEventMatchingMask_beforeDate_inMode_dequeue_)
     (ctxt, @selector(DPSGetEventMatchingMask:beforeDate:inMode:dequeue:),
-    mask, limit, mode, YES);
+    mask, limit, mode, NO);
 }
 
 static inline void

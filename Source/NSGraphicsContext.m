@@ -634,6 +634,15 @@ struct NSWindow_struct
     GET_IMP(@selector(DPSsetalpha:));
   methodTable.DPScurrentalpha_ = 
     GET_IMP(@selector(DPScurrentalpha:));
+/* ----------------------------------------------------------------------- */
+/* GNUstep Event and other I/O extensions */
+/* ----------------------------------------------------------------------- */
+  methodTable.DPSGetEventMatchingMask_beforeDate_inMode_dequeue_ = 
+    GET_IMP(@selector(DPSGetEventMatchingMask:beforeDate:inMode:dequeue:));
+  methodTable.DPSDiscardEventsMatchingMask_beforeEvent_ = 
+    GET_IMP(@selector(DPSDiscardEventsMatchingMask:beforeEvent:));
+  methodTable.DPSPostEvent_atStart_ = 
+    GET_IMP(@selector(DPSPostEvent:atStart:));
 
   mptr = NSZoneMalloc(_globalGSZone, sizeof(gsMethodTable));
   memcpy(mptr, &methodTable, sizeof(gsMethodTable));

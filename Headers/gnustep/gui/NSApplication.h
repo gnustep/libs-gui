@@ -61,7 +61,6 @@ extern NSString *NSEventTrackingRunLoopMode;
 @interface NSApplication : NSResponder <NSCoding>
 {
   // Attributes
-  NSMutableArray *event_queue;
   NSEvent *current_event;
   NSModalSession session;
   id key_window;
@@ -261,19 +260,6 @@ extern NSString *NSEventTrackingRunLoopMode;
 //
 - (void)encodeWithCoder:aCoder;
 - initWithCoder:aDecoder;
-
-//
-// Backend methods
-//
-
-// the null event
-+ (void)setNullEvent:(NSEvent *)e;
-+ (NSEvent *)getNullEvent;
-
-/* Private methods */
-
-// Get next event
-- (void)_nextEvent;
 
 @end
 
