@@ -337,9 +337,9 @@ static int gethex(RTFscannerCtxt *lctxt)
 		if (isdigit(c1))
 		    c += c1 - '0';
 		else if (isupper(c1))
-		    c += c1 - 'A';
+		    c += c1 - 'A' + 10;
 		else
-		    c += c1 - 'a';
+		    c += c1 - 'a' + 10;
 	    }
       }
 
