@@ -96,7 +96,7 @@ static Class imageClass;
 
 - (void) dealloc
 {
-  NSDebugLog (@"NSMenuItem '%@' dealloc", [self title]);
+  NSDebugLog (@"NSMenuItem '%@' dealloc", _title);
 
   TEST_RELEASE(_title);
   TEST_RELEASE(_keyEquivalent);
@@ -155,13 +155,16 @@ static Class imageClass;
 - (void) setSubmenu: (NSMenu*)submenu
 {
   if ([submenu supermenu] != nil)
-    [NSException raise: NSInvalidArgumentException
-		format: @"submenu already has supermenu: "];
+    {
+      [NSException raise: NSInvalidArgumentException
+		   format: @"submenu (%@) already has supermenu (%@)",
+		   [submenu title], [[submenu supermenu] title]];
+    }
   ASSIGN(_submenu, submenu);
   if (submenu != nil)
     {
       [submenu setSupermenu: _menu];
-      [submenu setTitle: [self title]];
+      [submenu setTitle: _title];
     }
   [self setTarget: _menu];
   [self setAction: @selector(submenuAction:)];
@@ -409,7 +412,7 @@ static Class imageClass;
 {
   NSMenuItem *copy = (NSMenuItem*)NSCopyObject (self, 0, zone);
 
-  NSDebugLog (@"menu item '%@' copy", [self title]);
+  NSDebugLog (@"menu item '%@' copy", _title);
 
   // We reset the menu to nil to allow the reuse of the copy
   copy->_menu = nil;
