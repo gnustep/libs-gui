@@ -19,6 +19,51 @@
 	migrate to using a newer version of the library.
       </p>
       <section>
+	<heading>Version 0.9.5</heading>
+	<p>
+	</p>
+	  <deflist>
+	    <term>Interface version change</term>
+	    <desc>
+	    The interface version of the gui library has changed in
+	    this release.
+	    There is no single reason for this change. Arguably, it
+	    should have been done long ago. In the future the
+	    interface version will only change with releases that
+	    have a new minor version number (that's the second number in the
+	    release number). Applications, libraries and tools that
+	    wish to use this new version must be recompiled
+	    (otherwise, they'll use the older version of the library).
+	    </desc>
+	    <term>PPD's removed</term>
+	    <desc>
+	      All the PPD's have been removed from the gui library
+	      into a separate package (gnustep-ppd). There still
+	      exists a single Generic Postscript Printer PPD which
+	      should work in many cases for printing using the
+	      standard @samp{lpr} interface. In the future, a
+	      @samp{CUPS} interface should be available that provides
+	      all the necessary printer information automatically. If
+	      you still want use of the PPD's, you must install the
+	      gnustep-ppd package, although this is not required for
+	      use of gnustep-gui.
+	    </desc>
+	    <term>Printing framework</term>
+	    <desc>
+	      The printing framework was generalized to allow for
+	      various types of native printing systems. The lpr
+	      system is the only complete one, although CUPS printing
+	      is in the works. As such, the printing classes were
+	      revamped to handle this, and the actual system-specific
+	      code is loaded from a bundle.
+	    </desc>
+	    <term>NSScroller class size change</term>
+	    <desc>
+	      A new ivar was added to the NSScroller class.
+	    </desc>
+`	  </deflist>
+      </section>
+      <section>
 	<heading>Version 0.9.3</heading>
 	<p>
 	</p>
