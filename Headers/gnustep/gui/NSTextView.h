@@ -1,7 +1,7 @@
 /*                                                    -*-objc-*-
    NSTextView.h
 
-   Copyright (C) 1999, 2000 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
 
    Author: Fred Kiefer <FredKiefer@gmx.de>
    Date: September 2000
@@ -35,6 +35,7 @@
 #include <AppKit/NSTextAttachment.h>
 #include <AppKit/NSRulerView.h>
 #include <AppKit/NSRulerMarker.h>
+#include <AppKit/NSInputManager.h>
 
 @class NSTextContainer;
 @class NSTextStorage;
@@ -54,7 +55,7 @@ typedef enum _NSSelectionAffinity {
 } NSSelectionAffinity;
 #endif
 
-@interface NSTextView : NSText //<NSTextInput>
+@interface NSTextView : NSText <NSTextInput>
 {
   struct GSTextViewFlagsType {
     /* owns_text_network is YES if we have created the whole network
@@ -230,6 +231,7 @@ typedef enum _NSSelectionAffinity {
 - (void) useAllLigatures: (id)sender;
 - (void) raiseBaseline: (id)sender;
 - (void) lowerBaseline: (id)sender;
+- (void) toggleTraditionalCharacterShape: (id)sender;
 
 /*************************** Ruler support ***************************/
 
@@ -288,6 +290,14 @@ shouldRemoveMarker: (NSRulerMarker *)marker;
 - (NSArray *) acceptableDragTypes;
 - (void) updateDragTypeRegistration;
 
+- (NSImage *) dragImageForSelectionWithEvent: (NSEvent *)event
+				     origin: (NSPoint *)origin;
+- (unsigned int) dragOperationForDraggingInfo: (id <NSDraggingInfo>)dragInfo
+					 type: (NSString *)type;
+- (BOOL) dragSelectionWithEvent: (NSEvent *)event
+			 offset: (NSSize)mouseOffset
+		      slideBack: (BOOL)slideBack;
+
 - (NSRange) selectionRangeForProposedRange: (NSRange)proposedCharRange 
 			       granularity: (NSSelectionGranularity)gr;
 
@@ -330,6 +340,9 @@ shouldRemoveMarker: (NSRulerMarker *)marker;
 - (void) setUsesRuler: (BOOL)flag;
 
 - (int) spellCheckerDocumentTag;
+- (BOOL) isContinuousSpellCheckingEnabled;
+- (void) setContinuousSpellCheckingEnabled: (BOOL)flag;
+- (void) toggleContinuousSpellChecking: (id)sender;
 
 - (NSDictionary *) typingAttributes;
 - (void) setTypingAttributes: (NSDictionary *)attrs;
