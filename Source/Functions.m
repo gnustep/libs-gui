@@ -447,12 +447,12 @@ NSDrawButton(const NSRect aRect, const NSRect clipRect)
 void
 NSDrawGrayBezel(const NSRect aRect, const NSRect clipRect)
 {
-  NSRectEdge up_sides[] = {NSMinXEdge, NSMaxYEdge, NSMinXEdge, NSMaxYEdge, 
-			   NSMaxXEdge, NSMinYEdge, NSMaxXEdge, NSMinYEdge};
-  NSRectEdge down_sides[] = {NSMinXEdge, NSMinYEdge, NSMinXEdge, NSMinYEdge, 
-			     NSMaxXEdge, NSMaxYEdge, NSMaxXEdge, NSMaxYEdge};
-  float grays[] = {NSDarkGray, NSDarkGray, NSBlack, NSBlack, 
-		   NSWhite, NSWhite, NSLightGray, NSLightGray};
+  NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, NSMinXEdge, NSMaxYEdge,
+			   NSMaxXEdge, NSMinYEdge, NSMinXEdge, NSMaxYEdge};
+  NSRectEdge down_sides[] = {NSMaxXEdge, NSMaxYEdge, NSMinXEdge, NSMinYEdge,
+			     NSMaxXEdge, NSMaxYEdge, NSMinXEdge, NSMinYEdge};
+  float grays[] = {NSWhite, NSWhite, NSDarkGray, NSDarkGray,
+		   NSLightGray, NSLightGray, NSBlack, NSBlack};
   NSRect rect;
   NSGraphicsContext *ctxt = GSCurrentContext();
 
@@ -460,11 +460,19 @@ NSDrawGrayBezel(const NSRect aRect, const NSRect clipRect)
     {
       rect = NSDrawTiledRects(aRect, clipRect,
 			       down_sides, grays, 8);
+      // to give a really clean look we add 2 dark gray points
+      DPSsetgray(ctxt, NSDarkGray);
+      DPSrectfill(ctxt, NSMinX(aRect) + 1., NSMaxY(aRect) - 2., 1., 1.);
+      DPSrectfill(ctxt, NSMaxX(aRect) - 2., NSMinY(aRect) + 1., 1., 1.);
     }
   else
     {
       rect = NSDrawTiledRects(aRect, clipRect,
 			       up_sides, grays, 8);
+      // to give a really clean look we add 2 dark gray points
+      DPSsetgray(ctxt, NSDarkGray);
+      DPSrectfill(ctxt, NSMinX(aRect) + 1., NSMinY(aRect) + 1., 1., 1.);
+      DPSrectfill(ctxt, NSMaxX(aRect) - 2., NSMaxY(aRect) - 2., 1., 1.);
     }
 
   DPSsetgray(ctxt, NSLightGray);
@@ -503,12 +511,12 @@ NSDrawGroove(const NSRect aRect, const NSRect clipRect)
 void 
 NSDrawWhiteBezel(const NSRect aRect,  const NSRect clipRect)
 {
-  NSRectEdge up_sides[] = {NSMinXEdge, NSMaxYEdge, NSMinXEdge, NSMaxYEdge, 
-			   NSMaxXEdge, NSMinYEdge, NSMaxXEdge, NSMinYEdge};
-  NSRectEdge down_sides[] = {NSMinXEdge, NSMinYEdge, NSMinXEdge, NSMinYEdge, 
-			     NSMaxXEdge, NSMaxYEdge, NSMaxXEdge, NSMaxYEdge};
-  float grays[] = {NSDarkGray, NSDarkGray, NSDarkGray, NSDarkGray,
-		   NSWhite, NSWhite, NSLightGray, NSLightGray};
+  NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, NSMinXEdge, NSMaxYEdge, 
+  			   NSMaxXEdge, NSMinYEdge, NSMinXEdge, NSMaxYEdge};
+  NSRectEdge down_sides[] = {NSMaxXEdge, NSMaxYEdge, NSMinXEdge, NSMinYEdge, 
+  			     NSMaxXEdge, NSMaxYEdge, NSMinXEdge, NSMinYEdge};
+  float grays[] = {NSWhite, NSWhite, NSDarkGray, NSDarkGray,
+  		   NSLightGray, NSLightGray, NSDarkGray, NSDarkGray};
   NSRect rect;
   NSGraphicsContext *ctxt = GSCurrentContext();
 
