@@ -1,3 +1,8 @@
+2002-01-28  Willem Rein Oudshoorn  <woudshoo@xs4all.nl>
+
+	* gui/Source/NSImage.m ([NSImage -initWithSize:]): round the size down
+	([NSImage -setSize:]): round the size down
+
 Tue Jan 29 10:59:04 2002  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* GNUmakefile.postamble (configure): Rule removed.  It was causing
