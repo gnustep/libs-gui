@@ -29,7 +29,9 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#include <math.h>
 
+#include "AppKit/NSAffineTransform.h"
 #include "AppKit/NSLayoutManager.h"
 #include "AppKit/NSTextContainer.h"
 #include "AppKit/NSTextStorage.h"
@@ -83,6 +85,7 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
 {
   NSRange r;
   NSGraphicsContext *ctxt = GSCurrentContext();
+  NSAffineTransform *ctm = GSCurrentCTM(ctxt);
 
   init_string_drawing();
 
@@ -90,6 +93,16 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
 			     withString: @""];
 
   [textContainer setContainerSize: NSMakeSize(1e8, 1e8)];
+
+  if (ctm->matrix.m11 != 1.0 || ctm->matrix.m12 != 0.0 ||
+      ctm->matrix.m21 != 0.0 || fabs(ctm->matrix.m22) != 1.0)
+    {
+      [layoutManager setUsesScreenFonts: NO];
+    }
+  else
+    {
+      [layoutManager setUsesScreenFonts: YES];
+    }
 
   [textStorage replaceCharactersInRange: NSMakeRange(0, 0)
 		   withAttributedString: self];
@@ -132,6 +145,7 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
   BOOL need_clip;
   NSRect used;
   NSGraphicsContext *ctxt = GSCurrentContext();
+  NSAffineTransform *ctm = GSCurrentCTM(ctxt);
 
   init_string_drawing();
 
@@ -144,6 +158,16 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
   won't fit at all.
   */
   [textContainer setContainerSize: NSMakeSize(rect.size.width, 1e8)];
+
+  if (ctm->matrix.m11 != 1.0 || ctm->matrix.m12 != 0.0 ||
+      ctm->matrix.m21 != 0.0 || fabs(ctm->matrix.m22) != 1.0)
+    {
+      [layoutManager setUsesScreenFonts: NO];
+    }
+  else
+    {
+      [layoutManager setUsesScreenFonts: YES];
+    }
 
   [textStorage replaceCharactersInRange: NSMakeRange(0, 0)
 		   withAttributedString: self];
@@ -211,6 +235,7 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
 			     withString: @""];
 
   [textContainer setContainerSize: NSMakeSize(1e8, 1e8)];
+  [layoutManager setUsesScreenFonts: YES];
 
   [textStorage replaceCharactersInRange: NSMakeRange(0, 0)
 		   withAttributedString: self];

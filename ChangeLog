@@ -1,3 +1,10 @@
+2003-06-29 17:37  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSStringDrawing.m (-drawAtPoint:, -drawAtRect:, -size):
+	Automatically turn off screen fonts in the layout manager if the
+	ctm for the current context isn't the identity matrix (possibly
+	flipped vertically).
+
 2003-06-28  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Tools/make_services.m: Alter format of filter info.
