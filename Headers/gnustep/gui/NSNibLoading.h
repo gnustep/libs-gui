@@ -60,6 +60,9 @@
    externalNameTable: (NSDictionary *)context
 	    withZone: (NSZone *)zone;
 
+#ifndef	NO_GNUSTEP
+- (NSString *) pathForNibResource: (NSString *)fileName;
+#endif
 @end
 
 #ifndef	NO_GNUSTEP
