@@ -5,7 +5,7 @@
 
    Copyright (C) 2004 Free Software Foundation, Inc.
 
-   Author:  Quentin Mathé <qmathe@club-internet.fr>
+   Author:  Quentin Mathe <qmathe@club-internet.fr>
    Date: January 2004
 
    This file is part of the GNUstep GUI Library.

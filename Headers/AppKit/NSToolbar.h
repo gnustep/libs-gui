@@ -6,7 +6,8 @@
    Copyright (C) 2002 Free Software Foundation, Inc.
 
    Author:  Gregory John Casamento <greg_casamento@yahoo.com>,
-            Fabien Vallon <fabien.vallon@fr.alcove.com>
+            Fabien Vallon <fabien.vallon@fr.alcove.com>,
+	    Quentin Mathe <qmathe@club-internet.fr>
    Date: May 2002
    
    This file is part of the GNUstep GUI Library.
@@ -30,86 +31,20 @@
 #ifndef _GNUstep_H_NSToolbar
 #define _GNUstep_H_NSToolbar
 
-#include <Foundation/NSObject.h>
+#include "GNUstepGUI/GSToolbar.h"
 
-@class NSString;
-@class NSArray;
-@class NSMutableArray;
-@class NSDictionary;
-@class NSMutableDictionary;
-@class NSNotification;
-@class NSLock;
-@class NSToolbarItem;
-@class GSToolbarView;
-@class NSWindow;
-
-/*
- * Constants
- */
-typedef enum 
-{ 
-  NSToolbarDisplayModeDefault,
-  NSToolbarDisplayModeIconAndLabel,
-  NSToolbarDisplayModeIconOnly,
-  NSToolbarDisplayModeLabelOnly
-} NSToolbarDisplayMode;
-
-typedef enum 
-{ 
-  NSToolbarSizeModeDefault,
-  NSToolbarSizeModeRegular,
-  NSToolbarSizeModeSmall,
-} NSToolbarSizeMode;
-
-APPKIT_EXPORT NSString *NSToolbarDidRemoveItemNotification;
-APPKIT_EXPORT NSString *NSToolbarWillAddItemNotification;
-
-@interface NSToolbar : NSObject
+@interface NSToolbar : GSToolbar
 {
-  BOOL _allowsUserCustomization;
-  BOOL _autosavesConfiguration;
-  NSMutableDictionary *_configurationDictionary;
-  BOOL _customizationPaletteIsRunning;
-  id _delegate;
-  NSToolbarDisplayMode _displayMode;
-  NSString *_identifier;
   BOOL _visible;
-  NSMutableArray *_items;
-  GSToolbarView *_toolbarView;
-  NSWindow *_window;
-  BOOL _build;;
 }
 
-// Instance methods
-- (id) initWithIdentifier: (NSString*)identifier;
-
-- (void) insertItemWithItemIdentifier: (NSString*)itemIdentifier atIndex: (int)index;
-- (void) removeItemAtIndex: (int)index;
-- (void) runCustomizationPalette: (id)sender;
-
 // Accessors
-- (BOOL) allowsUserCustomization;
-- (BOOL) autosavesConfiguration;
-- (NSDictionary*) configurationDictionary;
-- (BOOL) customizationPaletteIsRunning;
-- (id) delegate;
 - (NSToolbarDisplayMode) displayMode;
-- (NSString*) identifier;
 - (BOOL) isVisible;
-- (NSArray*) items;
-- (NSString *) selectedItemIdentifier;
-- (NSArray*) visibleItems;
-- (void) setAllowsUserCustomization: (BOOL)flag;
-- (void) setAutosavesConfiguration: (BOOL)flag;
-- (void) setConfigurationFromDictionary: (NSDictionary*)configDict;
-- (void) setDelegate: (id)delegate;
 - (void) setDisplayMode: (NSToolbarDisplayMode)displayMode;
-- (void) setSelectedItemIdentifier: (NSString *) identifier;
 - (void) setSizeMode: (NSToolbarSizeMode)sizeMode;
 - (void) setVisible: (BOOL)shown;
 - (NSToolbarSizeMode) sizeMode;
-
-- (void) validateVisibleItems;
 
 @end /* interface of NSToolbar */
 
@@ -117,9 +52,6 @@ APPKIT_EXPORT NSString *NSToolbarWillAddItemNotification;
  * Methods Implemented by the Delegate
  */
 @interface NSObject (NSToolbarDelegate)
-// notification methods
-- (void) toolbarDidRemoveItem: (NSNotification*)aNotification;
-- (void) toolbarWillAddItem: (NSNotification*)aNotification;
 
 // delegate methods
 // required method

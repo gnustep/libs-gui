@@ -1,3 +1,18 @@
+2004-03-12  Quentin Mathe <qmathe@club-internet.fr>
+
+        * Source/GSToolbarView.m: Bug fixes related to clipped items and more
+	efficient code.
+	* Headers/Additions/GNUstepGUI/GSToolbarView.h: Minor changes.
+        * Source/NSToolbar.m: Refactored NSToolbar implementation, most part of
+	the code has moved to GSToolbar.
+        * Headers/AppKit/NSToolbar.h: Same.
+	* Source/GSToolbar.m: New class which implements functionnality for the
+	basic GNUstep toolbars with some bug fixes.
+        * Headers/Additions/GNUstepGUI/GSToolbar.h: Header for the new basic
+	GNUstep toolbar class.
+	* Source/NSWindow+Toolbar.m: Bug fixes.
+	* Source/NSWindow+Toolbar.h: Minor changes.
+
 2004-03-12 15:30  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSTableView.m (-mouseDown:): Send our action if we get

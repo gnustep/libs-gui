@@ -183,6 +183,7 @@ GSHorizontalTypesetter.m \
 GSNibTemplates.m \
 GSNibCompatibility.m \
 GSTitleView.m \
+GSToolbar.m \
 GSToolbarView.m
 
 # Turn off NSMenuItem warning that NSMenuItem conforms to <NSObject>,
@@ -346,6 +347,7 @@ GSLayoutManager.h \
 GSLayoutManager_internal.h \
 GSTypesetter.h \
 GSHorizontalTypesetter.h \
+GSToolbar.h \
 GSToolbarView.h \
 GSNibCompatibility.h \
 GSTitleView.h

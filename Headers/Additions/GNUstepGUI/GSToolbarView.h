@@ -6,7 +6,8 @@
    Copyright (C) 2002 Free Software Foundation, Inc.
 
    Author:  Gregory John Casamento <greg_casamento@yahoo.com>,
-            Fabien Vallon <fabien.vallon@fr.alcove.com>
+            Fabien Vallon <fabien.vallon@fr.alcove.com>,
+	    Quentin Mathe <qmathe@club-internet.fr>
    Date: May 2002
    
    This file is part of the GNUstep GUI Library.
@@ -34,7 +35,7 @@
 #include <Foundation/NSGeometry.h>
 
 @class NSMutableArray;
-@class NSToolbar;
+@class GSToolbar;
 @class NSToolbarItem;
 @class NSView;
 @class NSClipView;
@@ -71,9 +72,8 @@ static const int _ClippedItemsViewWidth = 28;
 
 @interface GSToolbarView : NSView
 {
-  NSToolbar *_toolbar;
+  GSToolbar *_toolbar;
   NSClipView *_clipView, *_clipViewForEditMode;
-  NSView *_loadedViewEdited;
   GSToolbarClippedItemsButton *_clippedItemsMark;
   NSMutableArray *_visibleBackViews;
   BOOL _willBeVisible;
@@ -83,8 +83,8 @@ static const int _ClippedItemsViewWidth = 28;
 - (id) initWithFrame: (NSRect)frame; 
 
 // Accessors
-- (NSToolbar *) toolbar;
-- (void) setToolbar: (NSToolbar *)toolbar;
+- (GSToolbar *) toolbar;
+- (void) setToolbar: (GSToolbar *)toolbar;
 - (unsigned int) borderMask;
 - (void) setBorderMask: (unsigned int)borderMask;
 
