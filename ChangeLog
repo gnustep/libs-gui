@@ -1,3 +1,14 @@
+Fri Feb 19 20:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSClipView.m: coordinate fixes.
+	* Source/NSScrollView.m: ditto
+	* Source/NSTextField.m: bugfix for redisplay
+	* Source/PSMatrix.m: minor tidyup
+	* Source/tiff.m: fix a warning
+	* Testing/GNUmakefile: fixup
+	* Testing/GNUmakefile.preamble: fixup
+	* Testing/testpb.m: incomplet attempt to get this linking properly
+
 Thu Feb 18 13:12:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Headers/AppKit/NSView.h: Listed all private methods allong with
