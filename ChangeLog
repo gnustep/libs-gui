@@ -1,3 +1,11 @@
+2004-01-12 Serg Stoyan <stoyan@on.com.ua>
+
+	* Source/GSTitleView.m:
+	(+height): return at least 23 pixels.
+	(-mouseDown:): Make submenu torn off only after mouse released and if
+	menu position changed(so submenu isn't made torn off just clicking on
+	the title).
+	
 2004-01-11 Serg Stoyan <stoyan@on.com.ua>
 
 	* Headers/Additions/GNUstepGUI/GSTitleView.h: new file.
