@@ -53,18 +53,18 @@
 
 @implementation NSButtonCell
 
-//
-// Class methods
-//
+/*
+ * Class methods
+ */
 + (void) initialize
 {
   if (self == [NSButtonCell class])
     [self setVersion: 1];
 }
 
-//
-// Instance methods
-//
+/*
+ * Instance methods
+ */
 - (id) _init
 {
   // Implicitly performed by allocation:
@@ -90,7 +90,7 @@
   return self;
 }
 
-- (id) initImageCell: (NSImage *)anImage
+- (id) initImageCell: (NSImage*)anImage
 {
   [super initImageCell: anImage];
 
@@ -99,7 +99,7 @@
   return [self _init];
 }
 
-- (id) initTextCell: (NSString *)aString
+- (id) initTextCell: (NSString*)aString
 {
   [super initTextCell: aString];
 
@@ -116,30 +116,30 @@
   [super dealloc];
 }
 
-//
-// Setting the Titles
-//
-- (NSString *) title								
+/*
+ * Setting the Titles
+ */
+- (NSString*) title								
 {
   return [self stringValue];
 }
 
-- (NSString *) alternateTitle					
+- (NSString*) alternateTitle					
 {
   return _altContents;
 }
 
-- (void) setFont: (NSFont *)fontObject		
+- (void) setFont: (NSFont*)fontObject		
 {
   [super setFont: fontObject];
 }
 
-- (void) setTitle: (NSString *)aString
+- (void) setTitle: (NSString*)aString
 {
   [self setStringValue: aString];
 }
 
-- (void) setAlternateTitle: (NSString *)aString
+- (void) setAlternateTitle: (NSString*)aString
 {
   NSString* string = [aString copy];
 
@@ -147,13 +147,13 @@
   [string release]; 
   if (_control_view)
     if ([_control_view isKindOfClass: [NSControl class]])
-      [(NSControl *)_control_view updateCell: self];
+      [(NSControl*)_control_view updateCell: self];
 }
 
-//
-// Setting the Images
-//
-- (NSImage *) alternateImage						
+/*
+ * Setting the Images
+ */
+- (NSImage*) alternateImage						
 {
   return _altImage;
 }
@@ -163,7 +163,7 @@
   return _cell.image_position;
 }
 
-- (void) setAlternateImage: (NSImage *)anImage
+- (void) setAlternateImage: (NSImage*)anImage
 {
   ASSIGN(_altImage, anImage);
 }
@@ -173,10 +173,10 @@
   _cell.image_position = aPosition;
 }
 
-//
-// Setting the Repeat Interval
-//
-- (void) getPeriodicDelay: (float *)delay interval: (float *)interval
+/*
+ * Setting the Repeat Interval
+ */
+- (void) getPeriodicDelay: (float*)delay interval: (float*)interval
 {
   *delay = _delayInterval;
   *interval = _repeatInterval;
@@ -188,9 +188,9 @@
   _repeatInterval = interval;
 }
 
-//
-// Setting the Key Equivalent
-//
+/*
+ * Setting the Key Equivalent
+ */
 - (NSString*) keyEquivalent
 {
   return _keyEquivalent;
@@ -230,9 +230,9 @@
   ASSIGN(_keyEquivalentFont, [NSFont fontWithName: fontName size: fontSize]);
 }
 
-//
-// Modifying Graphic Attributes
-//
+/*
+ * Modifying Graphic Attributes
+ */
 - (BOOL) isTransparent					
 {
   return _buttoncell_is_transparent;
@@ -245,16 +245,18 @@
 
 - (BOOL) isOpaque
 {
-  // MacOS-X says we should return !transparent && [self isBordered], 
-  // but that's wrong in our case, since if there is no border, 
-  // we draw the interior of the cell to fill completely the bounds.  
-  // They are likely to draw differently.
+  /*
+   * MacOS-X says we should return !transparent && [self isBordered], 
+   * but that's wrong in our case, since if there is no border, 
+   * we draw the interior of the cell to fill completely the bounds.  
+   * They are likely to draw differently.
+   */
   return !_buttoncell_is_transparent;
 }
 
-//
-// Modifying Graphic Attributes
-//
+/*
+ * Modifying Graphic Attributes
+ */
 - (int) highlightsBy						
 {
   return _highlightsByMask;
@@ -354,10 +356,10 @@
   return _cell.state;
 }
 
-//
-// Displaying
-//
-- (NSColor *) textColor
+/*
+ * Displaying
+ */
+- (NSColor*) textColor
 {
   if (_cell.is_disabled == YES)
     return [NSColor disabledControlTextColor];
@@ -490,10 +492,11 @@
       imageSize = [imageToDisplay size];
     }
 
-  if (titleToDisplay && (ipos == NSImageAbove || ipos == NSImageBelow)) {
-      titleSize =GSUtil_sizeOfMultilineStringWithFont(titleToDisplay,
-                                                      _cell_font);
-  }
+  if (titleToDisplay && (ipos == NSImageAbove || ipos == NSImageBelow))
+    {
+      titleSize
+	= GSUtil_sizeOfMultilineStringWithFont(titleToDisplay, _cell_font);
+    }
 
   if (flippedView == YES)
     {
@@ -524,11 +527,11 @@
 	imageRect.size.width = imageSize.width;
 	imageRect.size.height = cellFrame.size.height;
 	if (_cell.is_bordered || _cell.is_bezeled) 
-	    {
-	      imageRect.origin.x += 3;
-	      imageRect.size.height -= 2;
-	      imageRect.origin.y += 1;
-	    }
+	  {
+	    imageRect.origin.x += 3;
+	    imageRect.size.height -= 2;
+	    imageRect.origin.y += 1;
+	  }
 	titleRect = imageRect;
 	titleRect.origin.x += imageSize.width + xDist;
 	titleRect.size.width = cellFrame.size.width - imageSize.width - xDist;
@@ -544,11 +547,11 @@
 	imageRect.size.width = imageSize.width;
 	imageRect.size.height = cellFrame.size.height;
 	if (_cell.is_bordered || _cell.is_bezeled) 
-	    {
-	      imageRect.origin.x -= 3;
-	      imageRect.size.height -= 2;
-	      imageRect.origin.y += 1;
-	    }
+	  {
+	    imageRect.origin.x -= 3;
+	    imageRect.size.height -= 2;
+	    imageRect.origin.y += 1;
+	  }
 	titleRect.origin = cellFrame.origin;
 	titleRect.size.width = cellFrame.size.width - imageSize.width - xDist;
 	titleRect.size.height = cellFrame.size.height;
@@ -560,8 +563,11 @@
 	break;
 
       case NSImageAbove: 
-	/* In this case, imageRect is all the space we can allocate above the text. 
-	   The drawing code below will then center the image in imageRect. */
+	/*
+         * In this case, imageRect is all the space we can allocate
+	 * above the text. 
+	 * The drawing code below will then center the image in imageRect.
+	 */
 	titleRect.origin.x = cellFrame.origin.x;
 	titleRect.origin.y = cellFrame.origin.y;
 	titleRect.size.width = cellFrame.size.width;
@@ -587,8 +593,11 @@
 	break;
 
       case NSImageBelow: 
-	/* In this case, imageRect is all the space we can allocate below the text. 
-	   The drawing code below will then center the image in imageRect. */
+	/*
+	 * In this case, imageRect is all the space we can allocate
+	 * below the text. 
+	 * The drawing code below will then center the image in imageRect.
+	 */
 	titleRect.origin.x = cellFrame.origin.x;
 	titleRect.origin.y = cellFrame.origin.y + cellFrame.size.height;
 	titleRect.origin.y -= titleSize.height;
@@ -655,9 +664,9 @@
   NSSize	imageSize;
   NSSize	titleSize;
   
-  // 
-  // The following code must be kept in sync with -drawInteriorWithFrame
-  //
+  /* 
+   * The following code must be kept in sync with -drawInteriorWithFrame
+   */
   
   if (_cell.is_highlighted)
     mask = _highlightsByMask;
@@ -686,53 +695,56 @@
   else 
     imageSize = NSZeroSize;
   
-  if(titleToDisplay!=nil){
-      titleSize=GSUtil_sizeOfMultilineStringWithFont(titleToDisplay,
-                                                     _cell_font);
-  }else{
-      titleSize=NSZeroSize;
-  }
+  if (titleToDisplay != nil)
+    {
+      titleSize
+	= GSUtil_sizeOfMultilineStringWithFont(titleToDisplay, _cell_font);
+    }
+  else
+    {
+      titleSize = NSZeroSize;
+    }
   
   switch (_cell.image_position)
     {
-    case NSNoImage: 
-      s = titleSize;
-      break;
-      
-    case NSImageOnly: 
-      s = imageSize;
-      break;
-      
-    case NSImageLeft: 
-    case NSImageRight: 
-      s.width = imageSize.width + titleSize.width + xDist;
-      if (imageSize.height > titleSize.height)
-	s.height = imageSize.height;
-      else 
-	s.height = titleSize.height;
-      break;
-      
-    case NSImageBelow: 
-    case NSImageAbove: 
-      if (imageSize.width > titleSize.width)
-	s.width = imageSize.width;
-      else 
-	s.width = titleSize.width;
-      s.height = imageSize.height + titleSize.height; // + yDist ??
-      break;
-      
-    case NSImageOverlaps: 
-      if (imageSize.width > titleSize.width)
-	s.width = imageSize.width;
-      else
-	s.width = titleSize.width;
-      
-      if (imageSize.height > titleSize.height)
-	s.height = imageSize.height;
-      else
-	s.height = titleSize.height;
+      case NSNoImage: 
+	s = titleSize;
+	break;
+	
+      case NSImageOnly: 
+	s = imageSize;
+	break;
+	
+      case NSImageLeft: 
+      case NSImageRight: 
+	s.width = imageSize.width + titleSize.width + xDist;
+	if (imageSize.height > titleSize.height)
+	  s.height = imageSize.height;
+	else 
+	  s.height = titleSize.height;
+	break;
+	
+      case NSImageBelow: 
+      case NSImageAbove: 
+	if (imageSize.width > titleSize.width)
+	  s.width = imageSize.width;
+	else 
+	  s.width = titleSize.width;
+	s.height = imageSize.height + titleSize.height; // + yDist ??
+	break;
+	
+      case NSImageOverlaps: 
+	if (imageSize.width > titleSize.width)
+	  s.width = imageSize.width;
+	else
+	  s.width = titleSize.width;
+	
+	if (imageSize.height > titleSize.height)
+	  s.height = imageSize.height;
+	else
+	  s.height = titleSize.height;
 
-      break;
+	break;
     }
   
   // Get border size
@@ -743,7 +755,7 @@
     borderSize = NSZeroSize;
 
   if ((_cell.is_bordered || _cell.is_bezeled) 
-      && (_cell.image_position != NSImageOnly))
+    && (_cell.image_position != NSImageOnly))
     {
       borderSize.height += 1;
       borderSize.width  += 3;
@@ -760,9 +772,11 @@
 {
   if (_cell.is_bordered)
     {
-      // Special case:  Buttons have only three different paths for border.
-      // One white path at the top left corner, one black path at the
-      // bottom right and another in dark gray at the inner bottom right.
+      /*
+       * Special case:  Buttons have only three different paths for border.
+       * One white path at the top left corner, one black path at the
+       * bottom right and another in dark gray at the inner bottom right.
+       */
       float yDelta = [_control_view isFlipped] ? 1. : 2.;
       return NSMakeRect (theRect.origin.x + 1.,
 			 theRect.origin.y + yDelta,
@@ -773,9 +787,9 @@
     return theRect;
 }
 
-//
-// NSCopying protocol
-//
+/*
+ * NSCopying protocol
+ */
 - (id) copyWithZone: (NSZone*)zone
 {
   NSButtonCell	*c = [super copyWithZone: zone];
@@ -794,9 +808,9 @@
   return c;
 }
 
-//
-// NSCoding protocol
-//
+/*
+ * NSCoding protocol
+ */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   BOOL tmp;

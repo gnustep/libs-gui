@@ -42,9 +42,9 @@
 
 @implementation NSSplitView
 
-//
-// Instance methods
-//
+/*
+ * Instance methods
+ */
 - (id) initWithFrame: (NSRect)frameRect
 {
   if ((self = [super initWithFrame: frameRect]) != nil)
@@ -58,7 +58,8 @@
     }
   return self;
 }
-- (BOOL) acceptsFirstMouse: (NSEvent *)theEvent
+
+- (BOOL) acceptsFirstMouse: (NSEvent*)theEvent
 {
   return YES;
 }
@@ -115,7 +116,10 @@
 		r = [prev frame];
 	      else
 		{
-		  /* This happens if user pressed exactly on the top of the top subview */
+		  /*
+		   * This happens if user pressed exactly on the
+		   * top of the top subview
+		   */
 		  goto RETURN_LABEL;
 		}
 	      if (v)
@@ -138,7 +142,10 @@
 		r = [prev frame];
 	      else
 		{
-		  /* This happens if user pressed exactly on the left of the left subview */
+		  /*
+		   * This happens if user pressed exactly on the
+		   * left of the left subview
+		   */
 		  goto RETURN_LABEL;
 		}
 	      if (v)
@@ -413,14 +420,18 @@ RETURN_LABEL:
 
 - (float) dividerThickness 
 {
-  // You need to override this method in subclasses to change the
-  // dividerThickness (or, without need for subclassing, invoke
-  // setDimpleImage:resetDividerThickness:YES below)
+  /*
+   * You need to override this method in subclasses to change the
+   * dividerThickness (or, without need for subclassing, invoke
+   * setDimpleImage:resetDividerThickness:YES below)
+   */
   return 6;
 }
 
-// FIXME: Perhaps the following two should be removed and _dividerWidth 
-// should be used also for dragging?
+/*
+ * FIXME: Perhaps the following two should be removed and _dividerWidth 
+ * should be used also for dragging?
+ */
 - (float) draggedBarWidth //defaults to 8
 {
   return _draggedBarWidth;
@@ -430,7 +441,7 @@ RETURN_LABEL:
 {
   _draggedBarWidth = newWidth;
 }
-//
+
 static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 {
   NSPoint p;
@@ -471,7 +482,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   return _isVertical;
 }
 
-- (void) setDimpleImage: (NSImage *)anImage resetDividerThickness: (BOOL)flag
+- (void) setDimpleImage: (NSImage*)anImage resetDividerThickness: (BOOL)flag
 {
   ASSIGN(_dimpleImage, anImage);
 
@@ -589,9 +600,9 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   ASSIGN(_backgroundColor, aColor);
 }
 
-//
-// NSCoding protocol
-//
+/*
+ * NSCoding protocol
+ */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];

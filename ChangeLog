@@ -1,3 +1,9 @@
+Fri Mar 10 13:36:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSCell.m: fixed formatting to be consistent and conform
+	to GNU standards.
+	* Source/NSButtonCell.m: ditto.
+
 2000-03-10  Pascal J. Bourguignon  <pjb@imaginet.fr>
 
 	* Source/GSUtil.m 
@@ -5,7 +11,6 @@
 	A new file where to put utility functions used by the classes. For
 	now,  only   contains  the  GSUtil_sizeOfMultilineStringWithFont()
 	function.
-
 
 	* Source/NSCell.m 
 	* Source/NSButtonCell.m 
@@ -17,7 +22,6 @@
 	Updated    -[NSCell    _drawText:inFrame:]   and    -[NSButtonCell
 	drawInteriorWithFrame:inView:]   to   handle  properly   multiline
 	strings.
-
 
 	* Source/NSPanel.m
 
@@ -47,12 +51,10 @@
 	windows as high as the screen  would be centered at y=0 instead of
 	y=title bar height/2.
 
-
 	* Testing/NSPanelTest
 
 	Also, I've  added a NSPanelTest application  in core/Testing, that
 	will show how nice have become the Alert panels...
-
 
 
 Fri Mar 10 12:42:44 2000  Nicola Pero  <n.pero@mi.flashnet.it>

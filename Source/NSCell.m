@@ -103,7 +103,7 @@ static NSColor	*shadowCol;
     }
 }
 
-+ (NSMenu *)defaultMenu
++ (NSMenu*)defaultMenu
 {
   return nil;
 }
@@ -192,11 +192,13 @@ static NSColor	*shadowCol;
   // TODO
   return nil;
 }
-- (BOOL)hasValidObjectValue
+
+- (BOOL) hasValidObjectValue
 {
   // TODO
   return NO;
 }
+
 - (double) doubleValue
 {
   return [_contents doubleValue];
@@ -217,7 +219,7 @@ static NSColor	*shadowCol;
   return _contents;
 }
 
-- (void) setObjectValue:(id)object 
+- (void) setObjectValue: (id)object 
 {
   // TODO
 }
@@ -243,7 +245,7 @@ static NSColor	*shadowCol;
   ASSIGN(_contents, number_string);
 }
 
-- (void) setStringValue: (NSString *)aString
+- (void) setStringValue: (NSString*)aString
 {
   NSString	*string;
 
@@ -284,14 +286,14 @@ static NSColor	*shadowCol;
   _cell.type = aType;
   switch (_cell.type)
     {
-    case NSTextCellType:
-      ASSIGN(_cell_font, [fontClass userFontOfSize: 0]);
-      ASSIGN(_contents, @"title");
-      break;
-    case NSImageCellType:
-      TEST_RELEASE(_cell_image);
-      _cell_image = nil;
-      break;
+      case NSTextCellType:
+	ASSIGN(_cell_font, [fontClass userFontOfSize: 0]);
+	ASSIGN(_contents, @"title");
+	break;
+      case NSImageCellType:
+	TEST_RELEASE(_cell_image);
+	_cell_image = nil;
+	break;
     }
 }
 
@@ -368,38 +370,39 @@ static NSColor	*shadowCol;
 {
   return _cell.state;
 }
-- (BOOL)allowsMixedState
+
+- (BOOL) allowsMixedState
 {
   return _cell.allows_mixed_state;
 }
 
-- (void)setAllowsMixedState:(BOOL)flag
+- (void) setAllowsMixedState: (BOOL)flag
 {
   _cell.allows_mixed_state = flag;
 }
 
-- (int)nextState
+- (int) nextState
 {
   switch (_cell.state)
     {
-    case NSOnState:
-      return NSOffState;
-    case NSOffState:
-      if (_cell.allows_mixed_state)
-	{
-	  return NSMixedState;
-	}
-      else
-	{
-	  return NSOnState;
-	}
-    case NSMixedState:
-    default:
-      return NSOnState;
+      case NSOnState:
+	return NSOffState;
+      case NSOffState:
+	if (_cell.allows_mixed_state)
+	  {
+	    return NSMixedState;
+	  }
+	else
+	  {
+	    return NSOnState;
+	  }
+      case NSMixedState:
+      default:
+	return NSOnState;
     }
 }
 
-- (void)setNextState
+- (void) setNextState
 {
   [self setState: [self nextState]];
 }
@@ -447,7 +450,7 @@ static NSColor	*shadowCol;
   _cell.is_editable = flag;
 }
 
-- (void) setFont: (NSFont *)fontObject
+- (void) setFont: (NSFont*)fontObject
 {
   NSAssert(fontObject == nil || [fontObject isKindOfClass: fontClass],
     NSInvalidArgumentException);
@@ -484,34 +487,34 @@ static NSColor	*shadowCol;
   return _cell.wraps;
 }
 
-- (void)setAttributedStringValue:(NSAttributedString *)attribStr
+- (void) setAttributedStringValue: (NSAttributedString*)attribStr
 {
   //TODO
 }
 
-- (NSAttributedString *)attributedStringValue
+- (NSAttributedString*) attributedStringValue
 {
   //TODO
   return nil;
 }
 
-- (void)setAllowsEditingTextAttributes:(BOOL)flag
+- (void) setAllowsEditingTextAttributes: (BOOL)flag
 {
   //TODO
 }
 
-- (BOOL)allowsEditingTextAttributes
+- (BOOL) allowsEditingTextAttributes
 {
   //TODO
   return NO;
 }
 
-- (void)setImportsGraphics:(BOOL)flag
+- (void) setImportsGraphics: (BOOL)flag
 {
   //TODO
 }
 
-- (BOOL)importsGraphics
+- (BOOL) importsGraphics
 {
   //TODO
   return NO;
@@ -628,12 +631,12 @@ static NSColor	*shadowCol;
   _cell_float_right = rightDigits;
 }
 
-- (void)setFormatter:(NSFormatter *)newFormatter 
+- (void) setFormatter: (NSFormatter*)newFormatter 
 {
   //TODO
 }
 
-- (id)formatter
+- (id) formatter
 {
   //TODO
   return nil;
@@ -658,20 +661,20 @@ static NSColor	*shadowCol;
 /*
  * Menu
  */
-- (void)setMenu:(NSMenu *)aMenu 
+- (void) setMenu: (NSMenu*)aMenu 
 {
   //TODO
 }
 
-- (NSMenu *)menu
+- (NSMenu*) menu
 {
   //TODO
   return nil;
 }
 
-- (NSMenu *)menuForEvent:(NSEvent *)anEvent 
-		  inRect:(NSRect)cellFrame 
-		  ofView:(NSView *)aView
+- (NSMenu*) menuForEvent: (NSEvent*)anEvent 
+		  inRect: (NSRect)cellFrame 
+		  ofView: (NSView*)aView
 {
   // TODO
   return [self menu];
@@ -700,44 +703,44 @@ static NSColor	*shadowCol;
   return !_cell.is_disabled && ([self refusesFirstResponder] == NO);
 }
 
-- (void)setShowsFirstResponder:(BOOL)flag 
+- (void) setShowsFirstResponder: (BOOL)flag 
 {
 }
 
-- (BOOL)showsFirstResponder
+- (BOOL) showsFirstResponder
 {
   return NO;
 }
 
-- (void)setTitleWithMnemonic:(NSString *)aString
+- (void) setTitleWithMnemonic: (NSString*)aString
 {
   // Provided for compatibility only
 }
 
-- (NSString *)mnemonic
+- (NSString*) mnemonic
 {
   // provided for compatibility only
   return @"";
 }
 
-- (void)setMnemonicLocation:(unsigned int)location 
+- (void) setMnemonicLocation: (unsigned int)location 
 {
   // Provided for compatibility only
 }
 
-- (unsigned int)mnemonicLocation
+- (unsigned int) mnemonicLocation
 {
   // Provided for compatibiliy only
   return NSNotFound;
 }
 
-- (BOOL)refusesFirstResponder
+- (BOOL) refusesFirstResponder
 {
   // Approximate compatibility behaviour
   return _cell.is_disabled;
 }
 
-- (void)setRefusesFirstResponder:(BOOL)flag
+- (void) setRefusesFirstResponder: (BOOL)flag
 {
   // Approximate compatibility behaviour
   _cell.is_disabled = flag;
@@ -767,14 +770,14 @@ static NSColor	*shadowCol;
 	{
 	  NS_DURING
 	    {
-	      [(NSControl *)cv sendAction: action to: [self target]];
+	      [(NSControl*)cv sendAction: action to: [self target]];
 	    }
 	  NS_HANDLER
 	    {
 	      [localException raise];
 	    }
 	  NS_ENDHANDLER
-	    }
+	}
     }
   else  // We have no control view.  The best we can do is the following. 
     {
@@ -791,7 +794,7 @@ static NSColor	*shadowCol;
 	      [localException raise];
 	    }
 	  NS_ENDHANDLER
-	    }
+	}
     }
 }
 
@@ -841,7 +844,7 @@ static NSColor	*shadowCol;
  */
 - (BOOL) continueTracking: (NSPoint)lastPoint
 		       at: (NSPoint)currentPoint
-		   inView: (NSView *)controlView
+		   inView: (NSView*)controlView
 {
   return YES;
 }
@@ -852,13 +855,13 @@ static NSColor	*shadowCol;
   return 0;
 }
 
-- (void) getPeriodicDelay: (float *)delay interval: (float *)interval
+- (void) getPeriodicDelay: (float*)delay interval: (float*)interval
 {
   *delay = 0.1;
   *interval = 0.1;
 }
 
-- (BOOL) startTrackingAt: (NSPoint)startPoint inView: (NSView *)controlView
+- (BOOL) startTrackingAt: (NSPoint)startPoint inView: (NSView*)controlView
 {
   // If the point is in the view then yes start tracking
   if ([controlView mouse: startPoint inRect: [controlView bounds]])
@@ -869,14 +872,14 @@ static NSColor	*shadowCol;
 
 - (void) stopTracking: (NSPoint)lastPoint
 		   at: (NSPoint)stopPoint
-	       inView: (NSView *)controlView
+	       inView: (NSView*)controlView
 	    mouseIsUp: (BOOL)flag
 {
 }
 
-- (BOOL) trackMouse: (NSEvent *)theEvent
+- (BOOL) trackMouse: (NSEvent*)theEvent
 	     inRect: (NSRect)cellFrame
-	     ofView: (NSView *)controlView
+	     ofView: (NSView*)controlView
        untilMouseUp: (BOOL)flag
 {
   NSApplication	*theApp = [NSApplication sharedApplication];
@@ -1025,7 +1028,7 @@ static NSColor	*shadowCol;
 /*
  * Managing the Cursor
  */
-- (void) resetCursorRect: (NSRect)cellFrame inView: (NSView *)controlView
+- (void) resetCursorRect: (NSRect)cellFrame inView: (NSView*)controlView
 {
   if (_cell.type == NSTextCellType && _cell.is_disabled == NO
     && (_cell.is_selectable == YES || _cell.is_editable == YES))
@@ -1064,8 +1067,6 @@ static NSColor	*shadowCol;
 {
 }
 
-
-
 - (NSSize) cellSize
 {
   NSSize borderSize, s;
@@ -1088,23 +1089,25 @@ static NSColor	*shadowCol;
   // Get Content Size
   switch (_cell.type)
     {
-    case NSTextCellType:
-        s=GSUtil_sizeOfMultilineStringWithFont(_contents,_cell_font);
+      case NSTextCellType:
+        s = GSUtil_sizeOfMultilineStringWithFont(_contents, _cell_font);
         break;
-    case NSImageCellType:
-      if (_cell_image == nil)
-	{
-	  s = NSZeroSize;
-	}
-      else
-	{
-	  s = [_cell_image size];
-	}
-      break;
-    case NSNullCellType:
-      //  macosx instead returns a 'very big size' here; we return NSZeroSize
-      s = NSZeroSize;
-      break;
+
+      case NSImageCellType:
+	if (_cell_image == nil)
+	  {
+	    s = NSZeroSize;
+	  }
+	else
+	  {
+	    s = [_cell_image size];
+	  }
+	break;
+
+      case NSNullCellType:
+	//  macosx instead returns a 'very big size' here; we return NSZeroSize
+	s = NSZeroSize;
+	break;
     }
 
   // Add in border size
@@ -1136,7 +1139,7 @@ static NSColor	*shadowCol;
   else
     borderSize = NSZeroSize;
 
-  return NSInsetRect (theRect, borderSize.width, borderSize.height);
+  return NSInsetRect(theRect, borderSize.width, borderSize.height);
 }
 
 - (NSRect) imageRectForBounds: (NSRect)theRect
@@ -1183,7 +1186,7 @@ static NSColor	*shadowCol;
     return txtCol;
 }
 
-- (void) _drawText: (NSString *) title inFrame: (NSRect) cellFrame
+- (void) _drawText: (NSString*) title inFrame: (NSRect) cellFrame
 {
   NSColor	*textColor;
   float		titleWidth;
@@ -1266,10 +1269,10 @@ static NSColor	*shadowCol;
   [title drawInRect: cellFrame withAttributes: dict];
 }
 
-//
-// This drawing is minimal and with no background,
-// to make it easier for subclass to customize drawing. 
-//
+/*
+ * This drawing is minimal and with no background,
+ * to make it easier for subclass to customize drawing. 
+ */
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
   if (![controlView window])
@@ -1358,10 +1361,13 @@ static NSColor	*shadowCol;
   if (_cell.is_highlighted != lit)
     {
       _cell.is_highlighted = lit;
-      // NB: This has a visible effect only if subclasses override drawWithFrame:inView: 
-      // to draw something special when the cell is highlighted. 
-      // NSCell simply draws border+text/image and makes no highlighting, 
-      // for easier subclassing.
+      /*
+       * NB: This has a visible effect only if subclasses override
+       * drawWithFrame:inView: to draw something special when the
+       * cell is highlighted. 
+       * NSCell simply draws border+text/image and makes no highlighting, 
+       * for easier subclassing.
+       */
      [self drawWithFrame: cellFrame inView: controlView];
     }
 }
@@ -1370,13 +1376,13 @@ static NSColor	*shadowCol;
  * Editing Text
  */
 - (void) editWithFrame: (NSRect)aRect
-		inView: (NSView *)controlView
-		editor: (NSText *)textObject
+		inView: (NSView*)controlView
+		editor: (NSText*)textObject
 	      delegate: (id)anObject
-		 event: (NSEvent *)theEvent
+		 event: (NSEvent*)theEvent
 {
-  if (!controlView || !textObject || !_cell_font ||
-			(_cell.type != NSTextCellType))
+  if (!controlView || !textObject || !_cell_font
+    || (_cell.type != NSTextCellType))
     return;
 
   [textObject setFrame: [self titleRectForBounds: aRect]];
@@ -1397,14 +1403,14 @@ static NSColor	*shadowCol;
 }
 
 - (void) selectWithFrame: (NSRect)aRect
-		  inView: (NSView *)controlView
-		  editor: (NSText *)textObject
+		  inView: (NSView*)controlView
+		  editor: (NSText*)textObject
 		delegate: (id)anObject
 		   start: (int)selStart
 		  length: (int)selLength
 {
-  if (!controlView || !textObject || !_cell_font ||
-			(_cell.type != NSTextCellType))
+  if (!controlView || !textObject || !_cell_font
+    || (_cell.type != NSTextCellType))
     return;
 
   [textObject setFrame: [self titleRectForBounds: aRect]];
@@ -1416,13 +1422,13 @@ static NSColor	*shadowCol;
   [textObject display];
 }
 
-- (BOOL)sendsActionOnEndEditing
+- (BOOL) sendsActionOnEndEditing 
 {
   //TODO
   return NO;
 }
 
-- (void)setSendsActionOnEndEditing:(BOOL)flag
+- (void) setSendsActionOnEndEditing: (BOOL)flag
 {
   //TODO
 }
@@ -1566,13 +1572,13 @@ _sizeForBorderType (NSBorderType aType)
   // Returns the size of a border
   switch (aType)
     {
-    case NSLineBorder:
-      return NSMakeSize(1, 1);
-    case NSGrooveBorder:
-    case NSBezelBorder:
-      return NSMakeSize(2, 2);
-    case NSNoBorder: 
-    default:
-      return NSZeroSize;
+      case NSLineBorder:
+	return NSMakeSize(1, 1);
+      case NSGrooveBorder:
+      case NSBezelBorder:
+	return NSMakeSize(2, 2);
+      case NSNoBorder: 
+      default:
+	return NSZeroSize;
     }
 }
