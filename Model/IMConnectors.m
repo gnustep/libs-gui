@@ -25,20 +25,12 @@
 
 #include <string.h>
 
+#include <gnustep/base/GSObjCRuntime.h>
 #include <Foundation/NSObjCRuntime.h>
 #include <AppKit/NSActionCell.h>
 #include <AppKit/GMArchiver.h>
 #include "AppKit/IMCustomObject.h"
 #include "IMConnectors.h"
-
-#ifndef GNUSTEP_BASE_LIBRARY
-/* Define here so we can compile on OPENSTEP and MacOSX.
-although this function will never be used there */
-BOOL
-GSSetInstanceVariable(id obj, NSString *iVarName, const void *data)
-{
-}
-#endif
 
 @implementation IMConnector
 
@@ -79,7 +71,20 @@ GSSetInstanceVariable(id obj, NSString *iVarName, const void *data)
     }
   else
     {
-      GSSetInstanceVariable (_source, @"target", &_destination);
+      const char	*type;
+      unsigned int	size;
+      unsigned int	offset;
+
+      /*
+       * Use the GNUstep additional function to set the instance
+       * variable directly.
+       * FIXME - need some way to do this for libFoundation and
+       * Foundation based systems.
+       */
+      if (GSObjCFindVariable(_source, "target", &type, &size, &offset))
+	{
+	  GSObjCSetVariable(_source, offset, size, (void*)&_destination); 
+	}
     }
 
   if ([_source respondsToSelector:@selector(setAction:)])
@@ -90,7 +95,20 @@ GSSetInstanceVariable(id obj, NSString *iVarName, const void *data)
     }
   else
     {
-      GSSetInstanceVariable (_source, @"action", &action);
+      const char	*type;
+      unsigned int	size;
+      unsigned int	offset;
+
+      /*
+       * Use the GNUstep additional function to set the instance
+       * variable directly.
+       * FIXME - need some way to do this for libFoundation and
+       * Foundation based systems.
+       */
+      if (GSObjCFindVariable(_source, "action", &type, &size, &offset))
+	{
+	  GSObjCSetVariable(_source, offset, size, (void*)&action); 
+	}
     }
 }
 
@@ -132,7 +150,21 @@ GSSetInstanceVariable(id obj, NSString *iVarName, const void *data)
     }
   else
     {
-      GSSetInstanceVariable(_source, label, &_destination);
+      const char	*nam = [label cString];
+      const char	*type;
+      unsigned int	size;
+      unsigned int	offset;
+
+      /*
+       * Use the GNUstep additional function to set the instance
+       * variable directly.
+       * FIXME - need some way to do this for libFoundation and
+       * Foundation based systems.
+       */
+      if (GSObjCFindVariable(_source, nam, &type, &size, &offset))
+	{
+	  GSObjCSetVariable(_source, offset, size, (void*)&_destination); 
+	}
     }
 }
 

@@ -1,3 +1,7 @@
+2002-11-29  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Model/IMConnectors.m: Update ivar setting code.
+
 2002-11-27  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSBundleAdditions.m: Quick hack for setting ivars.
