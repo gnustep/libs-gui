@@ -78,6 +78,7 @@ extern NSSize NSTokenSize;
   NSRect frame;
   NSSize minimum_size;
   NSSize maximum_size;
+  NSSize increments;
   id content_view;
   id first_responder;
   id original_responder;
@@ -246,6 +247,7 @@ extern NSSize NSTokenSize;
 - (void)setFrameTopLeftPoint:(NSPoint)aPoint;
 - (void)setMinSize:(NSSize)aSize;
 - (void)setMaxSize:(NSSize)aSize;
+- (void)setResizeIncrements:(NSSize)aSize;
 
 //
 // Converting coordinates

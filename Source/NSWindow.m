@@ -62,141 +62,141 @@
 //
 // Class methods
 //
-+ (void)initialize
++ (void) initialize
 {
-    if (self == [NSWindow class])
-        {
-        NSDebugLog(@"Initialize NSWindow class\n");
-        [self setVersion:2];
-        }
+  if (self == [NSWindow class])
+    {
+      NSDebugLog(@"Initialize NSWindow class\n");
+      [self setVersion: 2];
+    }
 }
 
-+ (NSView *)_windowViewWithFrame:(NSRect)frameRect      // create the view at
++ (NSView *) _windowViewWithFrame: (NSRect)frameRect      // create the view at
 {                                                       // the root of window's
-    return nil;                                         // view heirarchy.
+  return nil;                                         // view heirarchy.
 }                                                       // (backend)
 
-+ (void)removeFrameUsingName:(NSString *)name
++ (void) removeFrameUsingName: (NSString *)name
 {                                                       // Saving and restoring
 }                                                       // the window's frame
 
-+ (NSRect)contentRectForFrameRect:(NSRect)aRect
-                        styleMask:(unsigned int)aStyle
-{                                                       // Computing frame and
-    return aRect;                                       // content rectangles
-}
-
-+ (NSRect)frameRectForContentRect:(NSRect)aRect
-                        styleMask:(unsigned int)aStyle
++ (NSRect) contentRectForFrameRect: (NSRect)aRect
+                         styleMask: (unsigned int)aStyle
 {
-    return aRect;
+  return aRect;
 }
 
-+ (NSRect)minFrameWidthWithTitle:(NSString *)aTitle
-                       styleMask:(unsigned int)aStyle
++ (NSRect) frameRectForContentRect: (NSRect)aRect
+                        styleMask: (unsigned int)aStyle
 {
-    return NSZeroRect;
+  return aRect;
 }
 
-+ (NSWindowDepth)defaultDepthLimit                      // default Screen and
++ (NSRect) minFrameWidthWithTitle: (NSString *)aTitle
+                       styleMask: (unsigned int)aStyle
+{
+  return NSZeroRect;
+}
+
++ (NSWindowDepth) defaultDepthLimit                      // default Screen and
 {                                                       // window depth
-    return 8;
+  return 8;
 }
 
 //
 // Instance methods
 //
-- init
+- (id) init
 {
-int style;
+  int style;
 
-    NSDebugLog(@"NSWindow -init\n");
-                                                            // default window
-    style = NSTitledWindowMask | NSClosableWindowMask       // style mask
-            | NSMiniaturizableWindowMask | NSResizableWindowMask;
+  NSDebugLog(@"NSWindow -init\n");
 
-    return [self initWithContentRect:NSZeroRect
-                 styleMask:style
-                 backing:NSBackingStoreBuffered
-                 defer:NO];
+  style = NSTitledWindowMask | NSClosableWindowMask
+	  | NSMiniaturizableWindowMask | NSResizableWindowMask;
+
+  return [self initWithContentRect: NSZeroRect
+			 styleMask: style
+			   backing: NSBackingStoreBuffered
+			     defer: NO];
 }
 
-- (void)dealloc
+- (void) dealloc
 {
-    if (content_view)
-        {
-        [[content_view superview] release];         // Release the window view
-        [content_view release];                     // Release the content view
-        }
+  if (content_view)
+    {
+      [[content_view superview] release];         // Release the window view
+      [content_view release];                     // Release the content view
+    }
 
-    if (_fieldEditor)
-        [_fieldEditor release];
-    [background_color release];
-    [represented_filename release];
-    [miniaturized_title release];
-    [miniaturized_image release];
-    [window_title release];
-    [_flushRectangles release];
+  if (_fieldEditor)
+    [_fieldEditor release];
+  [background_color release];
+  [represented_filename release];
+  [miniaturized_title release];
+  [miniaturized_image release];
+  [window_title release];
+  [_flushRectangles release];
 
-    [super dealloc];
+  [super dealloc];
 }
 
 //
 // Initializing and getting a new NSWindow object
 //
-- initWithContentRect:(NSRect)contentRect
-            styleMask:(unsigned int)aStyle
-            backing:(NSBackingStoreType)bufferingType
-            defer:(BOOL)flag
+- (id) initWithContentRect: (NSRect)contentRect
+		 styleMask: (unsigned int)aStyle
+		   backing: (NSBackingStoreType)bufferingType
+		     defer: (BOOL)flag
 {
-    NSDebugLog(@"NSWindow -initWithContentRect:\n");
+  NSDebugLog(@"NSWindow -initWithContentRect: \n");
 
-    return [self initWithContentRect:contentRect
-                 styleMask:aStyle
-                 backing:bufferingType
-                 defer:flag
-                 screen:nil];
+  return [self initWithContentRect: contentRect
+			 styleMask: aStyle
+			   backing: bufferingType
+			     defer: flag
+			    screen: nil];
 }
 
-- initWithContentRect:(NSRect)contentRect
-            styleMask:(unsigned int)aStyle
-            backing:(NSBackingStoreType)bufferingType
-            defer:(BOOL)flag
-            screen:aScreen
+- (id) initWithContentRect: (NSRect)contentRect
+		 styleMask: (unsigned int)aStyle
+		   backing: (NSBackingStoreType)bufferingType
+		     defer: (BOOL)flag
+                    screen: (NSScreen*)aScreen
 {
-NSApplication *theApp = [NSApplication sharedApplication];
-NSRect r = [[NSScreen mainScreen] frame];
-NSRect cframe;
+  NSApplication *theApp = [NSApplication sharedApplication];
+  NSRect r = [[NSScreen mainScreen] frame];
+  NSRect cframe;
 
-    NSDebugLog(@"NSWindow default initializer\n");
-    if (!theApp)
-        NSLog(@"No application!\n");
+  NSDebugLog(@"NSWindow default initializer\n");
+  if (!theApp)
+    NSLog(@"No application!\n");
 
-    NSDebugLog(@"NSWindow start of init\n");
+  NSDebugLog(@"NSWindow start of init\n");
                                                     // Initialize attributes
-    [self cleanInit];                               // and flags
+  [self cleanInit];                               // and flags
 
-    backing_type = bufferingType;
-    style_mask = aStyle;
+  backing_type = bufferingType;
+  style_mask = aStyle;
                                                     // Size the attributes
-    frame = [NSWindow frameRectForContentRect: contentRect styleMask: aStyle];
-    minimum_size = NSZeroSize;
-    maximum_size = r.size;
+  frame = [NSWindow frameRectForContentRect: contentRect styleMask: aStyle];
+  minimum_size = NSZeroSize;
+  maximum_size = r.size;
                                                     // Next responder is the
-    [self setNextResponder:theApp];                 // application
+  [self setNextResponder: theApp];                 // application
 
-    cursor_rects_enabled = YES;                     // Cursor management
-    cursor_rects_valid = NO;
+  cursor_rects_enabled = YES;                     // Cursor management
+  cursor_rects_valid = NO;
 
-    cframe.origin = NSZeroPoint;                    // Create the content view
-    cframe.size = frame.size;
-    [self setContentView:[[[NSView alloc] initWithFrame:cframe] autorelease]];
+  cframe.origin = NSZeroPoint;                    // Create the content view
+  cframe.size = frame.size;
+  [self setContentView: [[[NSView alloc] initWithFrame: cframe] autorelease]];
 
-    _flushRectangles = [[NSMutableArray alloc] initWithCapacity:10];
+  _flushRectangles = [[NSMutableArray alloc] initWithCapacity: 10];
 
-    NSDebugLog(@"NSWindow end of init\n");
+  NSDebugLog(@"NSWindow end of init\n");
 
-    return self;
+  return self;
 }
 
 //
@@ -204,7 +204,7 @@ NSRect cframe;
 //
 - contentView                               { return content_view; }
 
-- (void)setContentView:(NSView *)aView
+- (void) setContentView: (NSView *)aView
 {
   NSView *wv;
 
@@ -226,23 +226,31 @@ NSRect cframe;
   ASSIGN(content_view, aView);
 
   [content_view setFrame: [wv frame]];		    // Resize to fill window.
+  [content_view setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
   [wv addSubview: content_view];                    // Add to our window view
   NSAssert1 ([[wv subviews] count] == 1, @"window's view has %d  subviews!",
                 [[wv subviews] count]);
                                                     // Make self the view's
-  [content_view setNextResponder:self];             // next responder
+  [content_view setNextResponder: self];             // next responder
   [content_view setNeedsDisplay: YES];		    // Make sure we redraw.
 }
 
 //
 // Window graphics
 //
-- (NSColor *)backgroundColor                { return background_color; }
-- (NSString *)representedFilename           { return represented_filename; }
-
-- (void)setBackgroundColor:(NSColor *)color
+- (NSColor *) backgroundColor
 {
-    ASSIGN(background_color, color);
+  return background_color;
+}
+
+- (NSString *) representedFilename
+{
+  return represented_filename;
+}
+
+- (void) setBackgroundColor: (NSColor *)color
+{
+  ASSIGN(background_color, color);
 }
 
 - (void) setRepresentedFilename: (NSString*)aString
@@ -270,35 +278,75 @@ NSRect cframe;
   [self setTitle: aString];
 }
 
-- (unsigned int)styleMask                   { return style_mask; }
-- (NSString *)title                         { return window_title; }
+- (unsigned int) styleMask
+{
+  return style_mask;
+}
+
+- (NSString *) title
+{
+  return window_title;
+}
 
 //
 // Window device attributes
 //
-- (NSBackingStoreType)backingType           { return backing_type; }
-- (NSDictionary *)deviceDescription         { return nil; }
-- (int)gState                               { return 0; }
-- (BOOL)isOneShot                           { return is_one_shot; }
-
-- (void)setBackingType:(NSBackingStoreType)type
+- (NSBackingStoreType) backingType
 {
-    backing_type = type;
+  return backing_type;
 }
 
-- (void)setOneShot:(BOOL)flag               { is_one_shot = flag; }
-- (int)windowNumber                         { return window_num; }
-- (void)setWindowNumber:(int)windowNum      { window_num = windowNum; }
+- (NSDictionary *) deviceDescription
+{
+  return nil;
+}
+
+- (int) gState
+{
+  return 0;
+}
+
+- (BOOL) isOneShot
+{
+  return is_one_shot;
+}
+
+- (void) setBackingType: (NSBackingStoreType)type
+{
+  backing_type = type;
+}
+
+- (void) setOneShot: (BOOL)flag
+{
+  is_one_shot = flag;
+}
+
+- (int) windowNumber
+{
+  return window_num;
+}
+
+- (void) setWindowNumber: (int)windowNum
+{
+  window_num = windowNum;
+}
 
 //
 // The miniwindow
 //
-- (NSImage *)miniwindowImage                { return miniaturized_image; }
-- (NSString *)miniwindowTitle               { return miniaturized_title; }
-
-- (void)setMiniwindowImage:(NSImage *)image
+- (NSImage *) miniwindowImage
 {
-    ASSIGN(miniaturized_image, image);
+  return miniaturized_image;
+}
+
+- (NSString *) miniwindowTitle
+{
+  return miniaturized_title;
+}
+
+- (void) setMiniwindowImage: (NSImage *)image
+{
+  ASSIGN(miniaturized_image, image);
 }
 
 - (void) setMiniwindowTitle: (NSString*)title
@@ -319,58 +367,86 @@ NSRect cframe;
 //
 // The field editor
 //
-- (void)endEditingFor:anObject
+- (void) endEditingFor: (id)anObject
 {
 }
 
-- (NSText *)fieldEditor:(BOOL)createFlag forObject:anObject
+- (NSText *) fieldEditor: (BOOL)createFlag forObject: (id)anObject
 {                                                   // ask delegate if it can
-    if ([delegate respondsToSelector:               // provide a field editor
+  if ([delegate respondsToSelector:               // provide a field editor
             @selector(windowWillReturnFieldEditor:toObject:)])
-        return [delegate windowWillReturnFieldEditor:self toObject:anObject];
+    return [delegate windowWillReturnFieldEditor: self toObject: anObject];
 
-    if(!_fieldEditor && createFlag)                 // each window has a global
-        {                                           // text field editor, if it
-        _fieldEditor = [[NSText new] retain];       // doesn't exist create it
-        [_fieldEditor setFieldEditor:YES];          // if create flag is set
-        }
+  if(!_fieldEditor && createFlag)                 // each window has a global
+    {                                           // text field editor, if it
+      _fieldEditor = [[NSText new] retain];       // doesn't exist create it
+      [_fieldEditor setFieldEditor: YES];          // if create flag is set
+    }
 
-    return _fieldEditor;
+  return _fieldEditor;
 }
 
 //
 // Window status and ordering
 //
-- (void)becomeKeyWindow
+- (void) becomeKeyWindow
 {
-NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
-    is_key = YES;                                   // We are the key window
-
-    [self resetCursorRects];                        // Reset the cursor rects
-                                                        // Post notification
-    [nc postNotificationName: NSWindowDidBecomeKeyNotification object: self];
+  is_key = YES;
+  [self resetCursorRects];
+  [nc postNotificationName: NSWindowDidBecomeKeyNotification object: self];
 }
 
-- (void)becomeMainWindow
+- (void) becomeMainWindow
 {
-NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
-    is_main = YES;                                  // We are the main window
-                                                        // Post notification
-    [nc postNotificationName: NSWindowDidBecomeMainNotification object: self];
+  is_main = YES;
+  [nc postNotificationName: NSWindowDidBecomeMainNotification object: self];
 }
 
-- (BOOL)canBecomeKeyWindow                  { return YES; }
-- (BOOL)canBecomeMainWindow                 { return YES; }
-- (BOOL)hidesOnDeactivate                   { return hides_on_deactivate; }
-- (BOOL)isKeyWindow                         { return is_key; }
-- (BOOL)isMainWindow                        { return is_main; }
-- (BOOL)isMiniaturized                      { return is_miniaturized; }
-- (BOOL)isVisible                           { return visible; }
-- (int)level                                { return window_level; }
+- (BOOL) canBecomeKeyWindow
+{
+  return YES;
+}
 
-- (void)makeKeyAndOrderFront:sender
+- (BOOL) canBecomeMainWindow
+{
+  return YES;
+}
+
+- (BOOL) hidesOnDeactivate
+{
+  return hides_on_deactivate;
+}
+
+- (BOOL) isKeyWindow
+{
+  return is_key;
+}
+
+- (BOOL) isMainWindow
+{
+  return is_main;
+}
+
+- (BOOL) isMiniaturized
+{
+  return is_miniaturized;
+}
+
+- (BOOL) isVisible
+{
+  return visible;
+}
+
+- (int) level
+{
+  return window_level;
+}
+
+- (void) makeKeyAndOrderFront: (id)sender
 {
   [self makeKeyWindow];                           // Make self the key window
   /*
@@ -384,128 +460,164 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 - (void) makeKeyWindow
 {
   NSApplication *theApp = [NSApplication sharedApplication];
-                                                  // Can we become the key
-  if (![self canBecomeKeyWindow])                 // window?
+
+  if (![self canBecomeKeyWindow])
     return;
-                                                  // ask the current key
-  [[theApp keyWindow] resignKeyWindow];           // window to resign status
+  [[theApp keyWindow] resignKeyWindow];
 
-  [self becomeKeyWindow];                         // become the key window
+  [self becomeKeyWindow];
 }
 
-- (void)makeMainWindow
+- (void) makeMainWindow
 {
-NSApplication *theApp = [NSApplication sharedApplication];
-                                                    // Can we become the main
-    if (![self canBecomeMainWindow])                // window?
-        return;
-                                                    // ask the current main
-    [[theApp mainWindow] resignMainWindow];         // window to resign status
+  NSApplication *theApp = [NSApplication sharedApplication];
 
-    [self becomeMainWindow];                        // become the main window
+  if (![self canBecomeMainWindow])
+    return;
+  [[theApp mainWindow] resignMainWindow];
+  [self becomeMainWindow];
 }
 
-- (void)orderBack:sender                    {}      // implemented in back end
-- (void)orderFront:sender                   {}
-- (void)orderFrontRegardless                {}
-- (void)orderOut:sender                     {}
+- (void) orderBack: (id)sender
+{}      // implemented in back end
 
-- (void)orderWindow:(NSWindowOrderingMode)place relativeTo:(int)otherWin
+- (void) orderFront: (id)sender
+{}
+
+- (void) orderFrontRegardless
+{}
+
+- (void) orderOut: (id)sender
+{}
+
+- (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (int)otherWin
 {
 }
 
-- (void)resignKeyWindow
+- (void) resignKeyWindow
 {
-NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
-    is_key = NO;
-                                                    // Discard the cursor rects
-    [self discardCursorRects];
-                                                        // Post notification
-    [nc postNotificationName: NSWindowDidResignKeyNotification object: self];
+  is_key = NO;
+  [self discardCursorRects];
+  [nc postNotificationName: NSWindowDidResignKeyNotification object: self];
 }
 
-- (void)resignMainWindow
+- (void) resignMainWindow
 {
-NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
-    is_main = NO;
-                                                        // Post notification
-    [nc postNotificationName: NSWindowDidResignMainNotification object: self];
+  is_main = NO;
+  [nc postNotificationName: NSWindowDidResignMainNotification object: self];
 }
 
-- (void)setHidesOnDeactivate:(BOOL)flag     { hides_on_deactivate = flag; }
-- (void)setLevel:(int)newLevel              { window_level = newLevel; }
+- (void) setHidesOnDeactivate: (BOOL)flag
+{
+  hides_on_deactivate = flag;
+}
+
+- (void) setLevel: (int)newLevel
+{
+  window_level = newLevel;
+}
 
 //
 // Moving and resizing the window
 //
-- (NSPoint)cascadeTopLeftFromPoint:(NSPoint)topLeftPoint
+- (NSPoint) cascadeTopLeftFromPoint: (NSPoint)topLeftPoint
 {
-    return NSZeroPoint;
+  return NSZeroPoint;
 }
 
-- (void)center
+- (void) center
 {
-NSSize screenSize = [[NSScreen mainScreen] frame].size;
-NSPoint origin = frame.origin;                          // center the window
+  NSSize screenSize = [[NSScreen mainScreen] frame].size;
+  NSPoint origin = frame.origin;                          // center the window
                                                         // within it's screen
-    origin.x = (screenSize.width - frame.size.width) / 2;
-    origin.y = (screenSize.height - frame.size.height) / 2;
-    [self setFrameOrigin:origin];
+  origin.x = (screenSize.width - frame.size.width) / 2;
+  origin.y = (screenSize.height - frame.size.height) / 2;
+  [self setFrameOrigin: origin];
 }
 
-- (NSRect)constrainFrameRect:(NSRect)frameRect toScreen:screen
+- (NSRect) constrainFrameRect: (NSRect)frameRect toScreen: screen
 {
-    return NSZeroRect;
+  return NSZeroRect;
 }
 
-- (NSRect)frame                             { return frame; }
-- (NSSize)minSize                           { return minimum_size; }
-- (NSSize)maxSize                           { return maximum_size; }
-- (void)setContentSize:(NSSize)aSize        {}
-
-- (void)setFrame:(NSRect)frameRect display:(BOOL)flag
+- (NSRect) frame
 {
-NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-
-    frame = frameRect;
-                                                        // post notification
-    [nc postNotificationName: NSWindowDidResizeNotification object: self];
-
-    if (flag)                                           // display if requested
-        [self display];
+  return frame;
 }
 
-- (void)setFrameTopLeftPoint:(NSPoint)aPoint
+- (NSSize) minSize
+{
+  return minimum_size;
+}
+
+- (NSSize) maxSize
+{
+  return maximum_size;
+}
+
+- (void) setContentSize: (NSSize)aSize
+{}
+
+- (void) setFrame: (NSRect)frameRect display: (BOOL)flag
+{
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+
+  frame = frameRect;
+  [nc postNotificationName: NSWindowDidResizeNotification object: self];
+
+  if (flag)
+    [self display];
+}
+
+- (void) setFrameTopLeftPoint: (NSPoint)aPoint
 {
 }
 
-- (void)setFrameOrigin:(NSPoint)aPoint      { frame.origin = aPoint; }
-- (void)setMinSize:(NSSize)aSize            { minimum_size = aSize; }
-- (void)setMaxSize:(NSSize)aSize            { maximum_size = aSize; }
+- (void) setFrameOrigin: (NSPoint)aPoint
+{
+  frame.origin = aPoint;
+}
+
+- (void) setMinSize: (NSSize)aSize
+{
+  minimum_size = aSize;
+}
+
+- (void) setMaxSize: (NSSize)aSize
+{
+  maximum_size = aSize;
+}
+
+- (void) setResizeIncrements: (NSSize)aSize
+{
+  increments = aSize;
+}
 
 //
 // Converting coordinates
 //
-- (NSPoint)convertBaseToScreen:(NSPoint)basePoint
+- (NSPoint) convertBaseToScreen: (NSPoint)basePoint
 {
-NSPoint screenPoint;
+  NSPoint screenPoint;
 
-    screenPoint.x = frame.origin.x + basePoint.x;
-    screenPoint.y = frame.origin.y + basePoint.y;
+  screenPoint.x = frame.origin.x + basePoint.x;
+  screenPoint.y = frame.origin.y + basePoint.y;
 
-    return screenPoint;
+  return screenPoint;
 }
 
-- (NSPoint)convertScreenToBase:(NSPoint)screenPoint
+- (NSPoint) convertScreenToBase: (NSPoint)screenPoint
 {
-NSPoint basePoint;
+  NSPoint basePoint;
 
-    basePoint.x = screenPoint.x - frame.origin.x;
-    basePoint.y = screenPoint.y - frame.origin.y;
+  basePoint.x = screenPoint.x - frame.origin.x;
+  basePoint.y = screenPoint.y - frame.origin.y;
 
-    return basePoint;
+  return basePoint;
 }
 
 //
@@ -615,63 +727,96 @@ NSPoint basePoint;
     return NO;
 }
 
-- (NSScreen *)deepestScreen                 { return [NSScreen deepestScreen];}
-- (NSWindowDepth)depthLimit                 { return depth_limit; }
-- (BOOL)hasDynamicDepthLimit                { return dynamic_depth_limit; }
-- (NSScreen *)screen                        { return [NSScreen mainScreen]; }
-- (void)setDepthLimit:(NSWindowDepth)limit  { depth_limit = limit; }
-- (void)setDynamicDepthLimit:(BOOL)flag     { dynamic_depth_limit = flag; }
+- (NSScreen *) deepestScreen
+{
+  return [NSScreen deepestScreen];
+}
+
+- (NSWindowDepth) depthLimit
+{
+  return depth_limit;
+}
+
+- (BOOL) hasDynamicDepthLimit
+{
+  return dynamic_depth_limit;
+}
+
+- (NSScreen *) screen
+{
+  return [NSScreen mainScreen];
+}
+
+- (void) setDepthLimit: (NSWindowDepth)limit
+{
+  depth_limit = limit;
+}
+
+- (void) setDynamicDepthLimit: (BOOL)flag
+{
+  dynamic_depth_limit = flag;
+}
 
 //
 // Cursor management
 //
-- (BOOL)areCursorRectsEnabled               { return cursor_rects_enabled; }
-- (void)disableCursorRects                  { cursor_rects_enabled = NO; }
-
-- (void)discardCursorRectsForView:(NSView *)theView
+- (BOOL) areCursorRectsEnabled
 {
-NSArray *s;
-id e;
-NSView *v;
-                                                        // Discard cursor rects
-    [theView discardCursorRects];                       // for the view
-
-    s = [theView subviews];                             // Discard cursor rects
-    e = [s objectEnumerator];                           // for view's subviews
-    while ((v = [e nextObject]))
-        [self discardCursorRectsForView: v];
+  return cursor_rects_enabled;
 }
 
-- (void)discardCursorRects
+- (void) disableCursorRects
 {
-    [self discardCursorRectsForView: [content_view superview]];
+  cursor_rects_enabled = NO;
 }
 
-- (void)enableCursorRects                   { cursor_rects_enabled = YES; }
-
-- (void)invalidateCursorRectsForView:(NSView *)aView
+- (void) discardCursorRectsForView: (NSView *)theView
 {
-    cursor_rects_valid = NO;
+  NSArray *s;
+  id e;
+  NSView *v;
+
+  [theView discardCursorRects];
+
+  s = [theView subviews];
+  e = [s objectEnumerator];
+  while ((v = [e nextObject]))
+    [self discardCursorRectsForView: v];
 }
 
-- (void)resetCursorRectsForView:(NSView *)theView
+- (void) discardCursorRects
 {
-NSArray *s;
-id e;
-NSView *v;
-
-    [theView resetCursorRects];                 // Reset cursor rects for view
-
-    s = [theView subviews];                     // Reset cursor rects for the
-    e = [s objectEnumerator];                   // view's subviews
-    while ((v = [e nextObject]))
-        [self resetCursorRectsForView: v];
+  [self discardCursorRectsForView: [content_view superview]];
 }
 
-- (void)resetCursorRects                        // Tell all the views to reset
-{                                               // their cursor rects
-    [self resetCursorRectsForView: [content_view superview]];
-    cursor_rects_valid = YES;                   // Cursor rects are now valid
+- (void) enableCursorRects
+{
+  cursor_rects_enabled = YES;
+}
+
+- (void) invalidateCursorRectsForView: (NSView *)aView
+{
+  cursor_rects_valid = NO;
+}
+
+- (void) resetCursorRectsForView: (NSView *)theView
+{
+  NSArray *s;
+  id e;
+  NSView *v;
+
+  [theView resetCursorRects];                 // Reset cursor rects for view
+
+  s = [theView subviews];                     // Reset cursor rects for the
+  e = [s objectEnumerator];                   // view's subviews
+  while ((v = [e nextObject]))
+    [self resetCursorRectsForView: v];
+}
+
+- (void) resetCursorRects
+{
+  [self resetCursorRectsForView: [content_view superview]];
+  cursor_rects_valid = YES;
 }
 
 //
@@ -700,62 +845,70 @@ NSView *v;
     [self release];
 }
 
-- (void)deminiaturize:sender
+- (void) deminiaturize: sender
 {
-NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-                                                    // Set ivar flag to say we
-    is_miniaturized = NO;                           // are not miniaturized
-    visible = YES;
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
-    [self performDeminiaturize:self];
-                                                    // Notify window's delegate
-    [nc postNotificationName:NSWindowDidDeminiaturizeNotification object:self];
+  is_miniaturized = NO;
+  visible = YES;
+
+  [self performDeminiaturize: self];
+  [nc postNotificationName: NSWindowDidDeminiaturizeNotification object: self];
 }
 
-- (BOOL)isDocumentEdited                    { return is_edited; }
-- (BOOL)isReleasedWhenClosed                { return is_released_when_closed; }
+- (BOOL) isDocumentEdited                    { return is_edited; }
+- (BOOL) isReleasedWhenClosed                { return is_released_when_closed; }
 
-- (void)miniaturize:sender
+- (void) miniaturize: sender
 {
-NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-                                                    // Notify window's delegate
-    [nc postNotificationName:NSWindowWillMiniaturizeNotification object: self];
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
-    [self performMiniaturize:self];
-                                                    // Notify window's delegate
-    [nc postNotificationName: NSWindowDidMiniaturizeNotification object: self];
+  [nc postNotificationName: NSWindowWillMiniaturizeNotification object: self];
+
+  [self performMiniaturize: self];
+  [nc postNotificationName: NSWindowDidMiniaturizeNotification object: self];
 }
 
-- (void)performClose:sender
+- (void) performClose: sender
 {
-    if (!([self styleMask] & NSClosableWindowMask))
-        {                                           // self must have a close
-        NSBeep();                                   // button in order to be
-        return;                                     // closed
-        }
+  if (!([self styleMask] & NSClosableWindowMask))
+    {                                           // self must have a close
+      NSBeep();                                   // button in order to be
+      return;                                     // closed
+    }
 
-    if ([delegate respondsToSelector:@selector(windowShouldClose:)])
-        {                                           // if delegate responds to
-        if (![delegate windowShouldClose:self])     // windowShouldClose query
-            {                                       // it to see if it's ok to
-            NSBeep();                               // close the window
-            return;
-            }
-        }
-    else
-        {
-        if ([self respondsToSelector:@selector(windowShouldClose:)])
-            {                                       // else if self responds to
-            if (![self windowShouldClose:self])     // windowShouldClose query
-                {                                   // self to see if it's ok
-                NSBeep();                           // to close self
-                return;
-        }   }   }
+  if ([delegate respondsToSelector: @selector(windowShouldClose:)])
+    {                                           // if delegate responds to
+      if (![delegate windowShouldClose: self])     // windowShouldClose query
+	{                                       // it to see if it's ok to
+	  NSBeep();                               // close the window
+	  return;
+	}
+    }
+  else
+    {
+      if ([self respondsToSelector: @selector(windowShouldClose:)])
+	{                                       // else if self responds to
+	  if (![self windowShouldClose: self])     // windowShouldClose query
+	    {                                   // self to see if it's ok
+	      NSBeep();                           // to close self
+	      return;
+	    }
+	}
+    }
 
-    [self close];                                   // it's ok to close self
+  [self close];                                   // it's ok to close self
 }
 
-- (void)performMiniaturize:sender           { is_miniaturized = YES; }                                                  - (int)resizeFlags                          { return 0; }
+- (void) performMiniaturize: (id)sender
+{
+  is_miniaturized = YES;
+}
+
+- (int) resizeFlags
+{
+  return 0;
+}
 
 - (void) setDocumentEdited: (BOOL)flag
 {
@@ -769,24 +922,30 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
     }
 }
 
-- (void)setReleasedWhenClosed:(BOOL)flag    { is_released_when_closed = flag; }
+- (void) setReleasedWhenClosed: (BOOL)flag
+{
+  is_released_when_closed = flag;
+}
 
 //
 // Aiding event handling
 //
-- (BOOL)acceptsMouseMovedEvents             { return accepts_mouse_moved; }
-
-- (NSEvent *)currentEvent
+- (BOOL) acceptsMouseMovedEvents
 {
-    return [[NSApplication sharedApplication] currentEvent];
+  return accepts_mouse_moved;
 }
 
-- (void)discardEventsMatchingMask:(unsigned int)mask
-                      beforeEvent:(NSEvent *)lastEvent
+- (NSEvent *) currentEvent
 {
-NSApplication *theApp = [NSApplication sharedApplication];
+  return [[NSApplication sharedApplication] currentEvent];
+}
 
-    [theApp discardEventsMatchingMask:mask beforeEvent:lastEvent];
+- (void) discardEventsMatchingMask: (unsigned int)mask
+                       beforeEvent: (NSEvent *)lastEvent
+{
+  NSApplication *theApp = [NSApplication sharedApplication];
+
+  [theApp discardEventsMatchingMask: mask beforeEvent: lastEvent];
 }
 
 - (NSResponder*) firstResponder
@@ -801,145 +960,153 @@ NSApplication *theApp = [NSApplication sharedApplication];
 
 - (BOOL) makeFirstResponder: (NSResponder*)aResponder
 {
-    if (first_responder == aResponder)              // if responder is already
-        return YES;                                 // first responder return Y
+  if (first_responder == aResponder)
+    return YES;
 
-    if (![aResponder isKindOfClass:[NSResponder class]])
-        return NO;                                  // not a responder return N
+  if (![aResponder isKindOfClass: [NSResponder class]])
+    return NO;
 
-    if (![aResponder acceptsFirstResponder])        // does not accept status
-        return NO;                                  // of first responder ret N
-                                    // If there is a first responder tell it to
-                                    // resign. Make change only if it replies Y
-    if ((first_responder) && (![first_responder resignFirstResponder]))
-        return NO;
-                                                    // Make responder the first
-    first_responder = aResponder;                   // responder
+  if (![aResponder acceptsFirstResponder])
+    return NO;
 
-    [first_responder becomeFirstResponder];         // Notify responder that it
-                                                    // has become the first
-    return YES;                                     // responder
+  // If there is a first responder tell it to resign.
+  // Change only if it replies Y
+  if ((first_responder) && (![first_responder resignFirstResponder]))
+    return NO;
+
+  first_responder = aResponder;
+  [first_responder becomeFirstResponder];
+  return YES;
 }
 
-- (NSPoint)mouseLocationOutsideOfEventStream        // Return mouse location
-{                                                   // in reciever's base coord
-    return NSZeroPoint;                             // system, ignores event
-}                                                   // loop status (backend)
-
-- (NSEvent *)nextEventMatchingMask:(unsigned int)mask
+/* Return mouse location in reciever's base coord system, ignores event
+ * loop status (backend) */
+- (NSPoint) mouseLocationOutsideOfEventStream
 {
-    return [[NSApplication sharedApplication] nextEventMatchingMask:mask
-                                              untilDate:nil
-                                              inMode:NSEventTrackingRunLoopMode
-                                              dequeue:YES];
+  return NSZeroPoint;
 }
 
-- (NSEvent *)nextEventMatchingMask:(unsigned int)mask
-                         untilDate:(NSDate *)expiration
-                         inMode:(NSString *)mode
-                         dequeue:(BOOL)deqFlag
+- (NSEvent *) nextEventMatchingMask: (unsigned int)mask
 {
-    return [[NSApplication sharedApplication] nextEventMatchingMask:mask
-                                              untilDate:expiration
-                                              inMode:mode
-                                              dequeue:deqFlag];
+  return [[NSApplication sharedApplication] nextEventMatchingMask: mask
+                                              untilDate: nil
+                                              inMode: NSEventTrackingRunLoopMode
+                                              dequeue: YES];
 }
 
-- (void)postEvent:(NSEvent *)event atStart:(BOOL)flag
+- (NSEvent *) nextEventMatchingMask: (unsigned int)mask
+                          untilDate: (NSDate *)expiration
+			     inMode: (NSString *)mode
+			    dequeue: (BOOL)deqFlag
 {
-    [[NSApplication sharedApplication] postEvent:event atStart:flag];
+  return [[NSApplication sharedApplication] nextEventMatchingMask: mask
+					    untilDate: expiration
+					    inMode: mode
+					    dequeue: deqFlag];
 }
 
-- (void)setAcceptsMouseMovedEvents:(BOOL)flag
+- (void) postEvent: (NSEvent *)event atStart: (BOOL)flag
 {
-    accepts_mouse_moved = flag;
+  [[NSApplication sharedApplication] postEvent: event atStart: flag];
 }
 
-- (void)checkTrackingRectangles:(NSView *)theView forEvent:(NSEvent *)theEvent
+- (void) setAcceptsMouseMovedEvents: (BOOL)flag
 {
-NSArray *tr = [theView trackingRectangles];
-NSArray *sb = [theView subviews];
-GSTrackingRect *r;
-int i, j;
-BOOL last, now;
-NSEvent *e;
-
-    j = [tr count];                             // Loop through the tracking
-    for (i = 0;i < j; ++i)                      // rectangles
-        {
-        r = (GSTrackingRect *)[tr objectAtIndex:i];
-                                                // Check mouse at last point
-        last = [theView mouse:last_point inRect:[r rectangle]];
-                                                // Check mouse at current point
-        now = [theView mouse:[theEvent locationInWindow] inRect:[r rectangle]];
-
-        if ((!last) && (now))                           // Mouse entered event
-            {
-            id owner = [r owner];
-            e = [NSEvent enterExitEventWithType:NSMouseEntered
-                         location:[theEvent locationInWindow]
-                         modifierFlags:[theEvent modifierFlags]
-                         timestamp:0
-                         windowNumber:[theEvent windowNumber]
-                         context:NULL eventNumber:0
-                         trackingNumber:[r tag]
-                         userData:[r userData]];
-                                                // Send the event to the owner
-            if ([owner respondsToSelector:@selector(mouseEntered:)])
-                [owner mouseEntered:e];
-            }
-
-        if ((last) && (!now))                           // Mouse exited event
-            {
-            id owner = [r owner];
-            e = [NSEvent enterExitEventWithType:NSMouseExited
-                         location:[theEvent locationInWindow]
-                         modifierFlags:[theEvent modifierFlags]
-                         timestamp:0
-                         windowNumber:[theEvent windowNumber]
-                         context:NULL
-                         eventNumber:0
-                         trackingNumber:[r tag]
-                         userData:[r userData]];
-                                                // Send the event to the owner
-            if ([owner respondsToSelector:@selector(mouseExited:)])
-                [owner mouseExited:e];
-            }
-        }
-
-    j = [sb count];                             // Check tracking rectangles
-    for (i = 0;i < j; ++i)                      // for the subviews
-        [self checkTrackingRectangles:[sb objectAtIndex:i] forEvent:theEvent];
+  accepts_mouse_moved = flag;
 }
 
-- (void)checkCursorRectangles:(NSView *)theView forEvent:(NSEvent *)theEvent
+- (void) checkTrackingRectangles: (NSView *)theView
+			forEvent: (NSEvent *)theEvent
 {
-NSArray *tr = [theView cursorRectangles];
-NSArray *sb = [theView subviews];
-GSTrackingRect *r;
-int i, j;
-BOOL last, now;
-NSEvent *e;
-NSPoint loc = [theEvent locationInWindow];
-NSPoint lastPointConverted;
-NSPoint locationConverted;
-NSRect rect;
-                                            // Loop through cursor rectangles
-    j = [tr count];
-    for (i = 0;i < j; ++i)                          // Convert cursor rectangle
-        {                                           // to window coordinates
-        r = (GSTrackingRect *)[tr objectAtIndex:i];
+  NSArray *tr = [theView trackingRectangles];
+  NSArray *sb = [theView subviews];
+  GSTrackingRect *r;
+  unsigned i, j;
+  BOOL last, now;
+  NSEvent *e;
 
-        lastPointConverted = [theView convertPoint:last_point fromView:nil];
-        locationConverted = [theView convertPoint:loc fromView:nil];
+  j = [tr count];                             // Loop through the tracking
+  for (i = 0; i < j; ++i)                      // rectangles
+    {
+      r = (GSTrackingRect *)[tr objectAtIndex: i];
+      // Check mouse at last point
+      last = [theView mouse: last_point inRect: [r rectangle]];
+      // Check mouse at current point
+      now = [theView mouse: [theEvent locationInWindow] inRect: [r rectangle]];
 
-        rect = [r rectangle];                       // Check mouse's last point
-        last = [theView mouse:lastPointConverted inRect:rect];
-        now = [theView mouse:locationConverted inRect:rect];
-                                                            // Mouse entered
-        if ((!last) && (now))
-            {                                       // Post cursor update event
-            e = [NSEvent enterExitEventWithType: NSCursorUpdate
+      if ((!last) && (now))                           // Mouse entered event
+	{
+	  id owner = [r owner];
+
+	  if ([owner respondsToSelector: @selector(mouseEntered:)])
+	    {
+	      e = [NSEvent enterExitEventWithType: NSMouseEntered
+					 location: [theEvent locationInWindow]
+				    modifierFlags: [theEvent modifierFlags]
+					timestamp: 0
+				     windowNumber: [theEvent windowNumber]
+					  context: NULL
+				      eventNumber: 0
+				   trackingNumber: [r tag]
+					 userData: [r userData]];
+	      [owner mouseEntered: e];
+	    }
+	}
+
+      if ((last) && (!now))                           // Mouse exited event
+	{
+	  id owner = [r owner];
+
+	  if ([owner respondsToSelector: @selector(mouseExited:)])
+	    {
+	      e = [NSEvent enterExitEventWithType: NSMouseExited
+					 location: [theEvent locationInWindow]
+				    modifierFlags: [theEvent modifierFlags]
+				        timestamp: 0
+				     windowNumber: [theEvent windowNumber]
+					  context: NULL
+				      eventNumber: 0
+				   trackingNumber: [r tag]
+					 userData: [r userData]];
+	      [owner mouseExited: e];
+	    }
+	}
+    }
+
+  j = [sb count];                             // Check tracking rectangles
+  for (i = 0; i < j; ++i)                      // for the subviews
+    [self checkTrackingRectangles: [sb objectAtIndex: i] forEvent: theEvent];
+}
+
+- (void) checkCursorRectangles: (NSView *)theView forEvent: (NSEvent *)theEvent
+{
+  NSArray *tr = [theView cursorRectangles];
+  NSArray *sb = [theView subviews];
+  GSTrackingRect *r;
+  unsigned i, j;
+  BOOL last, now;
+  NSEvent *e;
+  NSPoint loc = [theEvent locationInWindow];
+  NSPoint lastPointConverted;
+  NSPoint locationConverted;
+  NSRect rect;
+
+  // Loop through cursor rectangles
+  j = [tr count];
+  for (i = 0; i < j; ++i)
+    {
+      r = (GSTrackingRect *)[tr objectAtIndex: i];
+
+      lastPointConverted = [theView convertPoint: last_point fromView: nil];
+      locationConverted = [theView convertPoint: loc fromView: nil];
+
+      rect = [r rectangle];                       // Check mouse's last point
+      last = [theView mouse: lastPointConverted inRect: rect];
+      now = [theView mouse: locationConverted inRect: rect];
+      // Mouse entered
+      if ((!last) && (now))
+	{
+	  e = [NSEvent enterExitEventWithType: NSCursorUpdate
                          location: loc
                          modifierFlags: [theEvent modifierFlags]
                          timestamp: 0
@@ -948,12 +1115,12 @@ NSRect rect;
                          eventNumber: 0
                          trackingNumber: (int)YES
                          userData: (void *)r];
-            [self postEvent: e atStart: YES];
-            }
-                                                            // Mouse exited
-        if ((last) && (!now))
-            {                                       // Post cursor update event
-            e = [NSEvent enterExitEventWithType: NSCursorUpdate
+	  [self postEvent: e atStart: YES];
+	}
+      // Mouse exited
+      if ((last) && (!now))
+	{
+	  e = [NSEvent enterExitEventWithType: NSCursorUpdate
                          location: loc
                          modifierFlags: [theEvent modifierFlags]
                          timestamp: 0
@@ -962,221 +1129,229 @@ NSRect rect;
                          eventNumber: 0
                          trackingNumber: (int)NO
                          userData: (void *)r];
-            [self postEvent: e atStart: YES];
-            }
-        }
-                                                    // Check cursor rectangles
-    j = [sb count];                                 // for the subviews
-    for (i = 0;i < j; ++i)
-        [self checkCursorRectangles:[sb objectAtIndex:i] forEvent:theEvent];
+	  [self postEvent: e atStart: YES];
+	}
+    }
+
+  // Check cursor rectangles for the subviews
+  j = [sb count];
+  for (i = 0; i < j; ++i)
+    [self checkCursorRectangles: [sb objectAtIndex: i] forEvent: theEvent];
 }
 
-- (void)sendEvent:(NSEvent *)theEvent
+- (void) sendEvent: (NSEvent *)theEvent
 {
-NSView *v;
+  NSView *v;
 
-    if (!cursor_rects_valid)                // If the cursor rects are invalid
-        {                                   // Then discard and reset
-        [self discardCursorRects];
-        [self resetCursorRects];
-        }
+  if (!cursor_rects_valid)                // If the cursor rects are invalid
+    {                                   // Then discard and reset
+      [self discardCursorRects];
+      [self resetCursorRects];
+    }
 
-    switch ([theEvent type])
-        {
-        case NSLeftMouseDown:                               // Left mouse down
-            v = [content_view hitTest:[theEvent locationInWindow]];
-            NSDebugLog([v description]);
-            NSDebugLog(@"\n");
-            if (first_responder != v)               // if hit view is not first
-                [self makeFirstResponder:v];        // responder ask it to be
-            [v mouseDown:theEvent];
-            last_point = [theEvent locationInWindow];
-            break;
+  switch ([theEvent type])
+    {
+      case NSLeftMouseDown:                               // Left mouse down
+	v = [content_view hitTest: [theEvent locationInWindow]];
+	NSDebugLog([v description]);
+	NSDebugLog(@"\n");
+	if (first_responder != v)               // if hit view is not first
+	  [self makeFirstResponder: v];        // responder ask it to be
+	[v mouseDown: theEvent];
+	last_point = [theEvent locationInWindow];
+	break;
 
-        case NSLeftMouseUp:                                 // Left mouse up
-            v = [content_view hitTest:[theEvent locationInWindow]];
-            [v mouseUp:theEvent];
-            last_point = [theEvent locationInWindow];
-            break;
+      case NSLeftMouseUp:                                 // Left mouse up
+	v = [content_view hitTest: [theEvent locationInWindow]];
+	[v mouseUp: theEvent];
+	last_point = [theEvent locationInWindow];
+	break;
 
-        case NSRightMouseDown:                              // Right mouse down
-            v = [content_view hitTest:[theEvent locationInWindow]];
-            [v rightMouseDown:theEvent];
-            last_point = [theEvent locationInWindow];
-            break;
+      case NSRightMouseDown:                              // Right mouse down
+	v = [content_view hitTest: [theEvent locationInWindow]];
+	[v rightMouseDown: theEvent];
+	last_point = [theEvent locationInWindow];
+	break;
 
-        case NSRightMouseUp:                                // Right mouse up
-            v = [content_view hitTest:[theEvent locationInWindow]];
-            [v rightMouseUp:theEvent];
-            last_point = [theEvent locationInWindow];
-            break;
+      case NSRightMouseUp:                                // Right mouse up
+	v = [content_view hitTest: [theEvent locationInWindow]];
+	[v rightMouseUp: theEvent];
+	last_point = [theEvent locationInWindow];
+	break;
 
-        case NSMouseMoved:                                  // Mouse moved
-            v = [content_view hitTest:[theEvent locationInWindow]];
-            [v mouseMoved:theEvent];    // First send the NSMouseMoved event
-                        // We need to go through all of the views, and any with
-                        // a tracking rectangle then we need to determine if we
-                        // should send a NSMouseEntered or NSMouseExited event
-            [self checkTrackingRectangles:content_view forEvent:theEvent];
-                        // We need to go through all of the views, and any with
-                        // a cursor rectangle then we need to determine if we
-                        // should send a cursor update event
-                        // We only do this if we are the key window
-            if (is_key)
-                [self checkCursorRectangles: content_view forEvent: theEvent];
+      case NSMouseMoved:                                  // Mouse moved
+	v = [content_view hitTest: [theEvent locationInWindow]];
+	[v mouseMoved: theEvent];    // First send the NSMouseMoved event
+		    // We need to go through all of the views, and any with
+		      // a tracking rectangle then we need to determine if we
+		      // should send a NSMouseEntered or NSMouseExited event
+	[self checkTrackingRectangles: content_view forEvent: theEvent];
+		      // We need to go through all of the views, and any with
+		      // a cursor rectangle then we need to determine if we
+		      // should send a cursor update event
+		      // We only do this if we are the key window
+	if (is_key)
+	  [self checkCursorRectangles: content_view forEvent: theEvent];
 
-            last_point = [theEvent locationInWindow];
-            break;
+	last_point = [theEvent locationInWindow];
+	break;
 
-        case NSLeftMouseDragged:                        // Left mouse dragged
-            last_point = [theEvent locationInWindow];
-            break;
+      case NSLeftMouseDragged:                        // Left mouse dragged
+	last_point = [theEvent locationInWindow];
+	break;
 
-        case NSRightMouseDragged:                       // Right mouse dragged
-            last_point = [theEvent locationInWindow];
-            break;
+      case NSRightMouseDragged:                       // Right mouse dragged
+	last_point = [theEvent locationInWindow];
+	break;
 
-        case NSMouseEntered:                                // Mouse entered
-        case NSMouseExited:                                 // Mouse exited
-            break;
+      case NSMouseEntered:                                // Mouse entered
+      case NSMouseExited:                                 // Mouse exited
+	break;
 
-        case NSKeyDown:
-            /*
-             * Save the first responder so that the key up goes to it and not a
-             * possible new first responder.
-             */
-            original_responder = first_responder;
-            [first_responder keyDown: theEvent];
-            break;
+      case NSKeyDown: 
+	/*
+	 * Save the first responder so that the key up goes to it and not a
+	 * possible new first responder.
+	 */
+	original_responder = first_responder;
+	[first_responder keyDown: theEvent];
+	break;
 
-        case NSKeyUp:                                           // Key up
-            if (original_responder)                     // send message to the
-                [original_responder keyUp:theEvent];    // object that got the
-            break;                                      // key down
+      case NSKeyUp:                                           // Key up
+	  if (original_responder)                     // send message to the
+	      [original_responder keyUp: theEvent];    // object that got the
+	  break;                                      // key down
 
-        case NSFlagsChanged:                                // Flags changed
-            break;
-
-        case NSCursorUpdate:                                // Cursor update
-	  {
-	    GSTrackingRect *r =(GSTrackingRect *)[theEvent userData];
-	    NSCursor *c = (NSCursor *)[r owner];
-
-            if ([theEvent trackingNumber])          // It's a mouse entered
-	      {
-		if (c && [c isSetOnMouseEntered])
-		  [c set];
-	      }
-            else                                    // it is a mouse exited
-	      {
-		if (c && [c isSetOnMouseExited])
-		  [c set];
-	      }
-	  }
+      case NSFlagsChanged:                                // Flags changed
 	  break;
 
-        case NSPeriodic:
-            break;
-        }
+      case NSCursorUpdate:                                // Cursor update
+	{
+	  GSTrackingRect *r =(GSTrackingRect *)[theEvent userData];
+	  NSCursor *c = (NSCursor *)[r owner];
+
+	  if ([theEvent trackingNumber])          // It's a mouse entered
+	    {
+	      if (c && [c isSetOnMouseEntered])
+		[c set];
+	    }
+	  else                                    // it is a mouse exited
+	    {
+	      if (c && [c isSetOnMouseExited])
+		[c set];
+	    }
+	}
+	break;
+
+      case NSPeriodic: 
+	break;
+    }
 }
 
-- (BOOL)tryToPerform:(SEL)anAction with:anObject
+- (BOOL) tryToPerform: (SEL)anAction with: anObject
 {
-    return ([super tryToPerform:anAction with:anObject]);
+  return ([super tryToPerform: anAction with: anObject]);
 }
 
-- (BOOL)worksWhenModal
+- (BOOL) worksWhenModal
 {
-    return NO;
+  return NO;
 }
 
 //
 // Dragging
 //
-- (void)dragImage:(NSImage *)anImage
-               at:(NSPoint)baseLocation
-               offset:(NSSize)initialOffset
-               event:(NSEvent *)event
-               pasteboard:(NSPasteboard *)pboard
-               source:sourceObject
-               slideBack:(BOOL)slideFlag
+- (void) dragImage: (NSImage *)anImage
+               at: (NSPoint)baseLocation
+               offset: (NSSize)initialOffset
+               event: (NSEvent *)event
+               pasteboard: (NSPasteboard *)pboard
+               source: sourceObject
+               slideBack: (BOOL)slideFlag
 {
 }
 
-- (void)registerForDraggedTypes:(NSArray *)newTypes
+- (void) registerForDraggedTypes: (NSArray *)newTypes
 {
 }
 
-- (void)unregisterDraggedTypes
+- (void) unregisterDraggedTypes
 {
 }
 
 //
 // Services and windows menu support
 //
-- (BOOL)isExcludedFromWindowsMenu
+- (BOOL) isExcludedFromWindowsMenu
 {
-    return menu_exclude;
+  return menu_exclude;
 }
 
-- (void)setExcludedFromWindowsMenu:(BOOL)flag
+- (void) setExcludedFromWindowsMenu: (BOOL)flag
 {
-    menu_exclude = flag;
+  menu_exclude = flag;
 }
 
-- validRequestorForSendType:(NSString *)sendType
-                 returnType:(NSString *)returnType
+- validRequestorForSendType: (NSString *)sendType
+                 returnType: (NSString *)returnType
 {
-id result = nil;
+  id result = nil;
 
-    if (delegate && [delegate respondsToSelector: _cmd])
-        result = [delegate validRequestorForSendType: sendType
-                           returnType: returnType];
+  if (delegate && [delegate respondsToSelector: _cmd])
+    result = [delegate validRequestorForSendType: sendType
+				      returnType: returnType];
 
-    if (result == nil)
-        result = [[NSApplication sharedApplication]
+  if (result == nil)
+    result = [[NSApplication sharedApplication]
                                  validRequestorForSendType: sendType
-                                 returnType: returnType];
-    return result;
+						returnType: returnType];
+  return result;
 }
 
 //
 // Saving and restoring the frame
 //
-- (NSString *)frameAutosaveName
+- (NSString *) frameAutosaveName
 {
-    return nil;
+  return nil;
 }
 
-- (void)saveFrameUsingName:(NSString *)name
-{
-}
-
-- (BOOL)setFrameAutosaveName:(NSString *)name
-{
-    return NO;
-}
-
-- (void)setFrameFromString:(NSString *)string
+- (void) saveFrameUsingName: (NSString *)name
 {
 }
 
-- (BOOL)setFrameUsingName:(NSString *)name
+- (BOOL) setFrameAutosaveName: (NSString *)name
 {
-    return NO;
+  return NO;
 }
 
-- (NSString *)stringWithSavedFrame
+- (void) setFrameFromString: (NSString *)string
 {
-    return nil;
+}
+
+- (BOOL) setFrameUsingName: (NSString *)name
+{
+  return NO;
+}
+
+- (NSString *) stringWithSavedFrame
+{
+  return nil;
 }
 
 //
 // Printing and postscript
 //
-- (NSData *)dataWithEPSInsideRect:(NSRect)rect  { return nil; }
-- (void)fax:sender                              {}
-- (void)print:sender                            {}
+- (NSData *) dataWithEPSInsideRect: (NSRect)rect
+{
+  return nil;
+}
+
+- (void) fax: (id)sender
+{}
+
+- (void) print: (id)sender
+{}
 
 //
 // Assigning a delegate
@@ -1195,10 +1370,10 @@ id result = nil;
   delegate = anObject;
 
 #define SET_DELEGATE_NOTIFICATION(notif_name) \
-  if ([delegate respondsToSelector:@selector(window##notif_name:)]) \
-    [nc addObserver:delegate \
-      selector:@selector(window##notif_name:) \
-      name:NSWindow##notif_name##Notification object:self]
+  if ([delegate respondsToSelector: @selector(window##notif_name:)]) \
+    [nc addObserver: delegate \
+      selector: @selector(window##notif_name:) \
+      name: NSWindow##notif_name##Notification object: self]
 
   SET_DELEGATE_NOTIFICATION(DidBecomeKey);
   SET_DELEGATE_NOTIFICATION(DidBecomeMain);
@@ -1219,109 +1394,109 @@ id result = nil;
 //
 // Implemented by the delegate
 //
-- (BOOL)windowShouldClose:sender
+- (BOOL) windowShouldClose: (id)sender
 {
-    if ([delegate respondsToSelector:@selector(windowShouldClose:)])
-        return [delegate windowShouldClose:sender];
-    else
-        return YES;
+  if ([delegate respondsToSelector: @selector(windowShouldClose:)])
+    return [delegate windowShouldClose: sender];
+  else
+    return YES;
 }
 
-- (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)frameSize
+- (NSSize) windowWillResize: (NSWindow *)sender toSize: (NSSize)frameSize
 {
-    if ([delegate respondsToSelector:@selector(windowWillResize:toSize:)])
-        return [delegate windowWillResize:sender toSize:frameSize];
-    else
-        return frameSize;
+  if ([delegate respondsToSelector: @selector(windowWillResize:toSize:)])
+    return [delegate windowWillResize: sender toSize: frameSize];
+  else
+    return frameSize;
 }
 
-- windowWillReturnFieldEditor:(NSWindow *)sender toObject:client
+- (id) windowWillReturnFieldEditor: (NSWindow *)sender toObject: client
 {
-    return nil;
+  return nil;
 }
 
-- (void)windowDidBecomeKey:(NSNotification *)aNotification
+- (void) windowDidBecomeKey: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(windowDidBecomeKey:)])
-    return [delegate windowDidBecomeKey:aNotification];
+  if ([delegate respondsToSelector: @selector(windowDidBecomeKey:)])
+    return [delegate windowDidBecomeKey: aNotification];
 }
 
-- (void)windowDidBecomeMain:(NSNotification *)aNotification
+- (void) windowDidBecomeMain: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(windowDidBecomeMain:)])
-    return [delegate windowDidBecomeMain:aNotification];
+  if ([delegate respondsToSelector: @selector(windowDidBecomeMain:)])
+    return [delegate windowDidBecomeMain: aNotification];
 }
 
-- (void)windowDidChangeScreen:(NSNotification *)aNotification
+- (void) windowDidChangeScreen: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(windowDidChangeScreen:)])
-    return [delegate windowDidChangeScreen:aNotification];
+  if ([delegate respondsToSelector: @selector(windowDidChangeScreen:)])
+    return [delegate windowDidChangeScreen: aNotification];
 }
 
-- (void)windowDidDeminiaturize:(NSNotification *)aNotification
+- (void) windowDidDeminiaturize: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(windowDidDeminiaturize:)])
-    return [delegate windowDidDeminiaturize:aNotification];
+  if ([delegate respondsToSelector: @selector(windowDidDeminiaturize:)])
+    return [delegate windowDidDeminiaturize: aNotification];
 }
 
-- (void)windowDidExpose:(NSNotification *)aNotification
+- (void) windowDidExpose: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(windowDidExpose:)])
-    return [delegate windowDidExpose:aNotification];
+  if ([delegate respondsToSelector: @selector(windowDidExpose:)])
+    return [delegate windowDidExpose: aNotification];
 }
 
-- (void)windowDidMiniaturize:(NSNotification *)aNotification
+- (void) windowDidMiniaturize: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(windowDidMiniaturize:)])
-    return [delegate windowDidMiniaturize:aNotification];
+  if ([delegate respondsToSelector: @selector(windowDidMiniaturize:)])
+    return [delegate windowDidMiniaturize: aNotification];
 }
 
-- (void)windowDidMove:(NSNotification *)aNotification
+- (void) windowDidMove: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(windowDidMove:)])
-    return [delegate windowDidMove:aNotification];
+  if ([delegate respondsToSelector: @selector(windowDidMove:)])
+    return [delegate windowDidMove: aNotification];
 }
 
-- (void)windowDidResignKey:(NSNotification *)aNotification
+- (void) windowDidResignKey: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(windowDidResignKey:)])
-    return [delegate windowDidResignKey:aNotification];
+  if ([delegate respondsToSelector: @selector(windowDidResignKey:)])
+    return [delegate windowDidResignKey: aNotification];
 }
 
-- (void)windowDidResignMain:(NSNotification *)aNotification
+- (void) windowDidResignMain: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(windowDidResignMain:)])
-    return [delegate windowDidResignMain:aNotification];
+  if ([delegate respondsToSelector: @selector(windowDidResignMain:)])
+    return [delegate windowDidResignMain: aNotification];
 }
 
-- (void)windowDidResize:(NSNotification *)aNotification
+- (void) windowDidResize: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(windowDidResize:)])
-    return [delegate windowDidResize:aNotification];
+  if ([delegate respondsToSelector: @selector(windowDidResize:)])
+    return [delegate windowDidResize: aNotification];
 }
 
-- (void)windowDidUpdate:(NSNotification *)aNotification
+- (void) windowDidUpdate: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(windowDidUpdate:)])
-    return [delegate windowDidUpdate:aNotification];
+  if ([delegate respondsToSelector: @selector(windowDidUpdate:)])
+    return [delegate windowDidUpdate: aNotification];
 }
 
-- (void)windowWillClose:(NSNotification *)aNotification
+- (void) windowWillClose: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(windowWillClose:)])
-    return [delegate windowWillClose:aNotification];
+  if ([delegate respondsToSelector: @selector(windowWillClose:)])
+    return [delegate windowWillClose: aNotification];
 }
 
-- (void)windowWillMiniaturize:(NSNotification *)aNotification
+- (void) windowWillMiniaturize: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(windowWillMiniaturize:)])
-    return [delegate windowWillMiniaturize:aNotification];
+  if ([delegate respondsToSelector: @selector(windowWillMiniaturize:)])
+    return [delegate windowWillMiniaturize: aNotification];
 }
 
-- (void)windowWillMove:(NSNotification *)aNotification
+- (void) windowWillMove: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(windowWillMove:)])
-    return [delegate windowWillMove:aNotification];
+  if ([delegate respondsToSelector: @selector(windowWillMove:)])
+    return [delegate windowWillMove: aNotification];
 }
 
 //
@@ -1421,21 +1596,22 @@ id result = nil;
 //
 @implementation NSWindow (GNUstepBackend)
 
-+ (NSWindow*)_windowWithTag:(int)windowNumber
++ (NSWindow*) _windowWithTag: (int)windowNumber
 {
-    return nil;
+  return nil;
 }
 
 //
 // Mouse capture/release
 //
-- (void)_captureMouse: sender           {}          // Do nothing, should be
-- (void)_releaseMouse: sender           {}          // implemented by back-end
-- (void)performDeminiaturize:sender     {}
-- (void)performHide:sender              {}
-- (void)performUnhide:sender            {}
+- (void) _captureMouse: sender           {}          // Do nothing, should be
+- (void) _releaseMouse: sender           {}          // implemented by back-end
 
-- (void)initDefaults                                // Allow subclasses to init
+- (void) performDeminiaturize: sender     {}
+- (void) performHide: sender              {}
+- (void) performUnhide: sender            {}
+
+- (void) initDefaults                                // Allow subclasses to init
 {                                                   // without the backend
     first_responder = nil;                          // class attempting to
     original_responder = nil;                       // create an actual window
@@ -1469,12 +1645,12 @@ id result = nil;
     accepts_mouse_moved = YES;
 }
 
-- cleanInit
+- (id) cleanInit
 {
-    [super init];
+  [super init];
 
-    [self initDefaults];
-    return self;
+  [self initDefaults];
+  return self;
 }
 
 @end
