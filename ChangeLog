@@ -1,5 +1,11 @@
 2004-07-08  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/GNUmakefile:
+	* Source/NSMovieView.m:
+	Added file forgotten in last commit.
+	
+2004-07-08  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSMovie.h:
 	* Source/NSMovie.m:
 	* Headers/AppKit/NSMovieView.h:
