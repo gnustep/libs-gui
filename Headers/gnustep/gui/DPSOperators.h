@@ -29,15 +29,8 @@
 #ifndef _GNUstep_H_DPSOperators
 #define _GNUstep_H_DPSOperators
 
-#include "config.h"
-
-// Use the DPSclient library if we have it
-#ifdef HAVE_DPS_DPSCLIENT_H
-
-#include <DPS/dpsclient.h>
-#include <DPS/psops.h>
-
-#else
+// Use alternate DPS definitions if we don't have a DPS library
+#if defined(HAVE_DPS_DPSCLIENT) && HAVE_DPS_DPSCLIENT_H == 0
 
 typedef void (*DPSTextProc)();
 typedef void (*DPSErrorProc)();
@@ -82,6 +75,11 @@ typedef struct {
     unsigned short length;
     DPSBinObjRec objects[1];
 } DPSBinObjSeqRec, *DPSBinObjSeq;
+
+#else
+
+#include <DPS/dpsclient.h>
+#include <DPS/psops.h>
 
 #endif /* HAVE_DPS_DPSCLIENT_H */
 

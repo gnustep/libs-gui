@@ -40,7 +40,8 @@
 
 # Additional flags to pass to the preprocessor
 GNUSTEP_INSTALL_LIBDIR=$(GNUSTEP_LIBRARIES_ROOT)
-ADDITIONAL_CPPFLAGS = -DGNUSTEP_INSTALL_LIBDIR=\"$(GNUSTEP_INSTALL_LIBDIR)\"
+ADDITIONAL_CPPFLAGS = -DGNUSTEP_INSTALL_LIBDIR=\"$(GNUSTEP_INSTALL_LIBDIR)\" \
+	${DPS_DEFINE}
 
 # Additional flags to pass to the Objective-C compiler
 ADDITIONAL_OBJCFLAGS = -g -Wall
@@ -49,8 +50,7 @@ ADDITIONAL_OBJCFLAGS = -g -Wall
 ADDITIONAL_CFLAGS = -g
 
 # Additional include directories the compiler should search
-ADDITIONAL_INCLUDE_DIRS = -I../Headers\
-	-I$(GNUSTEP_TARGET_CPU)/$(GNUSTEP_TARGET_OS)
+ADDITIONAL_INCLUDE_DIRS = -I../Headers
 
 # Additional LDFLAGS to pass to the linker
 ADDITIONAL_LDFLAGS = 

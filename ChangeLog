@@ -1,3 +1,9 @@
+Thu Sep  3 15:18:39 1998  Adam Fedor  <fedor@ultra.doc.com>
+
+	* Source/GNUmakefile.postamble: Don't move config.h
+	* Source/GNUmakefile.preamble: Don't include special config.h dir.
+	(ADDITONAL_CPPFLAGS): Add DPS_DEFINE.
+
 Thur Sept 3 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* NSMenuItem.m in copyWithZone: fixed bug which crashed menus two or more 	
