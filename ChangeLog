@@ -1,4 +1,4 @@
-2002-11-21  Fred Kiefer <FredKiefer@gmx.de>
+2002-11-24  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBezierPath.m
 	Corrected [GSBezierPath appendBezierPath:] to check the class of
