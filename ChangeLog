@@ -1,3 +1,9 @@
+Fri Feb  9 18:07:13 2001  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSTableView.m ([-noteNumberOfRowsChanged]): Fix for nil
+	superview on Solaris, where you can't assign 0 to structs
+	(solution suggested by Adam Fedor).
+	
 2001-02-08  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/gnustep/gui/NSWindow.h: Added a GNUstep specific window
