@@ -1,3 +1,10 @@
+2003-03-27  Michael Hanni  <michael@deviant-behavior.com>
+
+	* Source/NSPopUpButtonCell.m (drawWithFrame:inView:): added a call 
+        to the NSMenuItemCell's calcSize method to place the image 
+        correctly when we are making a temp item. Fixes regression 
+        prompted by changes on 2003-04-17.
+
 2003-03-27  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSFontInfo.m

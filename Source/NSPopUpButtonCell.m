@@ -536,6 +536,9 @@ static NSImage *_pbc_image[2];
        */
       [aCell setMenuView: [_menu menuRepresentation]];
 
+      /* We need to calc our size to get images placed correctly */
+      [aCell calcSize];
+
       RELEASE(anItem);
     }
 
