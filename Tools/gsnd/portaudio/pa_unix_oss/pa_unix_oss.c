@@ -548,10 +548,11 @@ static int PaHost_CanaryProc( PaHostSoundControl   *pahsc )
     GSRegisterCurrentThread(); /* SB20010904 */
 #endif
 
-    while( pahsc->pahsc_CanaryRun && ((result = usleep( WATCHDOG_INTERVAL_USEC )) == 0) )
-    { 
+    while( pahsc->pahsc_CanaryRun)
+      { 
+	usleep( WATCHDOG_INTERVAL_USEC );
         gettimeofday( &pahsc->pahsc_CanaryTime, NULL );
-    }
+      }
 
     DBUG(("PaHost_CanaryProc: exiting.\n"));
     
@@ -594,11 +595,12 @@ static PaError PaHost_WatchDogProc( PaHostSoundControl   *pahsc )
     
     /* Compare watchdog time with audio and canary thread times. */
     /* Sleep for a while or until thread cancelled. */
-    while( pahsc->pahsc_WatchDogRun && ((result = usleep( WATCHDOG_INTERVAL_USEC )) == 0) )
+    while( pahsc->pahsc_WatchDogRun)
     {
         int              delta;
         struct timeval   currentTime;
-        
+
+	usleep( WATCHDOG_INTERVAL_USEC );
         gettimeofday( &currentTime, NULL );
 
         /* If audio thread is not advancing, then lower its priority. */

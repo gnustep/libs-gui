@@ -1,3 +1,12 @@
+2002-10-01  Adam Fedor  <fedor@gnu.org>
+
+	* Tools/gsnd/portaudio/pa_unix_oss/pa_unix_oss.c
+	(PaHost_WatchDogProc): usleep can have a void return (Modified
+	patch from Charles Philip Chan).
+
+	* Source/NSBrowserCell.m (-drawInteriorWithFrame:inView:): 
+	Use NSCompositeSourceOver.
+
 Tue Oct  1 17:07:25 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/GSSimpleLayoutManager.h (_lineLayoutInformation): Renamed

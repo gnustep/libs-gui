@@ -269,7 +269,8 @@ static NSFont *_leafFont;
        */
       if ([controlView isFlipped])
 	image_rect.origin.y += image_rect.size.height;
-      [image compositeToPoint: image_rect.origin operation: NSCompositeCopy];
+      [image compositeToPoint: image_rect.origin 
+	     operation: NSCompositeSourceOver];
 
       title_rect.size.width -= image_rect.size.width + 8;	
     }
@@ -293,7 +294,7 @@ static NSFont *_leafFont;
       if ([controlView isFlipped])
 	position.y += size.height;
       [_alternateImage compositeToPoint: position 
-		       operation: NSCompositeCopy];
+		       operation: NSCompositeSourceOver];
     }
   else
     {
