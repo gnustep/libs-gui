@@ -27,10 +27,12 @@
 #ifndef _GNUstep_H_GSComboSupport
 #define _GNUstep_H_GSComboSupport
 
-#import <AppKit/NSBrowser.h>
-#import <AppKit/NSWindow.h>
+#include <AppKit/NSWindow.h>
 
-@class NSArray,NSComboBoxCell;
+@class NSArray;
+@class NSBrowser;
+@class NSComboBoxCell;
+@class NSMatrix;
 
 @interface GSComboWindow : NSWindow
 {
@@ -38,18 +40,13 @@
 
 @private;
    NSArray	*list;
-   id		_cell;
-   NSPoint	_point;
-   float	_width;
+   NSComboBoxCell *_cell;
    BOOL		_stopped;
-   BOOL		_shouldOrder;
-   BOOL		_shouldNotify;
 }
 
 + (GSComboWindow *)defaultPopUp;
 
 - (NSMatrix *)matrix;
-- (NSSize)popUpSize;
 - (NSSize)popUpCellSizeForPopUp:(NSComboBoxCell *)aCell;
 - (void)popUpCell:(NSComboBoxCell *)aCell
 	  popUpAt:(NSPoint)aPoint
@@ -57,9 +54,6 @@
 - (void)runModalPopUp;
 - (void)runLoop;
 
-@end
-
-@interface GSPopUpActionBrowser : NSBrowser
 @end
 
 #endif /* _GNUstep_H_GSComboSupport */

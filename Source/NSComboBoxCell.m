@@ -24,231 +24,526 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#import <AppKit/AppKit.h>
-#import "GSComboSupport.h"
+#include <Foundation/NSNotification.h>
+#include <Foundation/NSString.h>
+#include <Foundation/NSArray.h>
+#include <AppKit/NSApplication.h>
+#include <AppKit/NSButtonCell.h>
+#include <AppKit/NSComboBox.h>
+#include <AppKit/NSComboBoxCell.h>
+#include <AppKit/NSGraphicsContext.h>
+#include <AppKit/NSScreen.h>
+
+#include "GSComboSupport.h"
+
+static NSNotificationCenter *nc;
 
 @interface NSComboBoxCell(_Private_)
-- (void)_createButtonCell;
-- (void)_didClick:(id)sender;
-- (NSImage *)_buttonImage;
-- (GSComboWindow *)_popUp;
+- (NSArray *)_dataSourceObjectValues;
+- (void) _didClickInRect: (NSRect)cellFrame
+	   ofView: (NSView *)controlView;
+- (void) _didClick: (id)sender;
+- (GSComboWindow *) _popUp;
 @end
 
 @implementation NSComboBoxCell
 
-- (id)initTextCell:(NSString *)aString
+//
+// Class methods
+//
++ (void) initialize
 {
-   self = [super initTextCell:aString];
-
-   // Implicitly set by allocation:
-   //
-   //_delegate = nil;
-   //_dataSource = nil;
-   //_buttonCell = nil;
-   _popUpList = [[NSMutableArray alloc] init];
-   //_usesDataSource = NO;
-   //_completes = NO;
-   _visibleItems = 10;
-   _intercellSpacing = NSZeroSize;
-   _itemHeight = 14;
-
-   //_popView = nil;
-   //_canPop = NO;
-   _popRect = NSZeroRect;
-   //_mUpEvent = nil;
-   [self _createButtonCell];
-   return self;
+  if (self == [NSComboBoxCell class])
+    {
+      [self setVersion: 1];
+      nc = [NSNotificationCenter defaultCenter];
+    }
 }
 
-- (void)dealloc
+- (id) initTextCell: (NSString *)aString
 {
-   RELEASE(_delegate);
-   RELEASE(_dataSource);
-   RELEASE(_buttonCell);
-   RELEASE(_popUpList);
+  self = [super initTextCell: aString];
 
-   [super dealloc];
+  // Implicitly set by allocation:
+  //
+  //_dataSource = nil;
+  //_buttonCell = nil;
+  _popUpList = [[NSMutableArray alloc] init];
+  //_usesDataSource = NO;
+  //_completes = NO;
+  _hasVerticalScroller = YES;
+  _visibleItems = 10;
+  _intercellSpacing = NSMakeSize(3.0, 2.0);
+  _itemHeight = 16;
+  // The specification uses -1 as the flag for no selection,
+  // but we use NSNotFound to be consistent with other methods.
+  _selectedItem = NSNotFound;
+
+  _popRect = NSZeroRect;
+  //_mUpEvent = nil;
+  _buttonCell = [[NSButtonCell alloc] initImageCell: 
+					  [NSImage imageNamed: @"NSComboArrow"]];
+  [_buttonCell setImagePosition: NSImageOnly];
+  [_buttonCell setButtonType: NSMomentaryPushButton];
+  [_buttonCell setHighlightsBy: NSPushInCellMask];
+  [_buttonCell setBordered: YES];
+  // This never gets used.
+  [_buttonCell setTarget: self];
+  [_buttonCell setAction: @selector(_didClick:)];
+
+  return self;
 }
 
-- (BOOL)hasVerticalScroller { return _hasVerticalScroller; }
-- (void)setHasVerticalScroller:(BOOL)flag
+- (void) dealloc
 {
-   _hasVerticalScroller = flag;
+  TEST_RELEASE(_dataSource);
+  RELEASE(_buttonCell);
+  RELEASE(_popUpList);
+  
+  [super dealloc];
 }
 
-- (NSSize)intercellSpacing { return _intercellSpacing; }
-- (void)setIntercellSpacing:(NSSize)aSize
+- (BOOL) hasVerticalScroller { return _hasVerticalScroller; }
+- (void) setHasVerticalScroller: (BOOL)flag
 {
-   _intercellSpacing = aSize;
+  _hasVerticalScroller = flag;
 }
 
-- (float)itemHeight { return _itemHeight; }
-- (void)setItemHeight:(float)itemHeight
+- (NSSize) intercellSpacing { return _intercellSpacing; }
+- (void) setIntercellSpacing: (NSSize)aSize
 {
-   if (itemHeight > 14)
-      _itemHeight = itemHeight;
+  _intercellSpacing = aSize;
 }
 
-- (int)numberOfVisibleItems { return _visibleItems; }
-- (void)setNumberOfVisibleItems:(int)visibleItems
+- (float) itemHeight { return _itemHeight; }
+- (void) setItemHeight: (float)itemHeight
 {
-   if (_visibleItems > 10)
-      _visibleItems = visibleItems;
+  if (itemHeight > 14)
+    _itemHeight = itemHeight;
 }
 
-- (void)reloadData
+- (int) numberOfVisibleItems { return _visibleItems; }
+- (void) setNumberOfVisibleItems: (int)visibleItems
 {
+  if (_visibleItems > 10)
+    _visibleItems = visibleItems;
 }
 
-- (void)noteNumberOfItemsChanged
+- (void) reloadData
 {
+// TODO notify popup
 }
 
-- (BOOL)usesDataSource { return _usesDataSource; }
-- (void)setUsesDataSource:(BOOL)flag
+- (void) noteNumberOfItemsChanged
 {
-   _usesDataSource = flag;
+// TODO notify popup
 }
 
-- (void)scrollItemAtIndexToTop:(int)index
+- (BOOL) usesDataSource { return _usesDataSource; }
+- (void) setUsesDataSource: (BOOL)flag
 {
+  _usesDataSource = flag;
 }
 
-- (void)scrollItemAtIndexToVisible:(int)index
+- (void) scrollItemAtIndexToTop: (int)index
 {
+// TODO
 }
 
-- (void)selectItemAtIndex:(int)index
+- (void) scrollItemAtIndexToVisible: (int)index
 {
+// TODO
 }
 
-- (void)deselectItemAtIndex:(int)index
+- (void) selectItemAtIndex: (int)index
 {
+  _selectedItem = index;
+  // TODO: Notify popup
+  [nc postNotificationName: NSComboBoxSelectionDidChangeNotification
+      object: [self controlView]
+      userInfo: nil];
 }
 
-- (int)indexOfSelectedItem
+- (void) deselectItemAtIndex: (int)index
 {
-   return 0;
+  if (_selectedItem == index)
+  {
+    _selectedItem = NSNotFound;
+    // TODO: Notify popup
+    [nc postNotificationName: NSComboBoxSelectionDidChangeNotification
+	object: [self controlView]
+	userInfo: nil];
+  }
+}
+
+- (int) indexOfSelectedItem
+{
+  return _selectedItem;
 }
 
 - (int)numberOfItems
 {
-   SEL	selector;
-
-   if (_usesDataSource)
-   {
+  if (_usesDataSource)
+    {
       if (!_dataSource)
-	 NSLog(@"No DataSource Specified");
+	NSLog(@"ComboBox: No DataSource Specified");
       else
-      {
-	 if ([[self controlView] isKindOfClass:[NSComboBox class]])
-	 {
-	    selector = @selector(numberOfItemsInComboBox:);
-	    if ([_dataSource respondsToSelector:selector])
-	       return [_dataSource numberOfItemsInComboBox:
+        {
+	  if ([_dataSource respondsToSelector: @selector(numberOfItemsInComboBox:)])
+	    {
+	      return [_dataSource numberOfItemsInComboBox:
 				      (NSComboBox *)[self controlView]];
-	 }
-	 else
-	 {
-	    selector = @selector(numberOfItemsInComboBoxCell:);
-	    if ([_dataSource respondsToSelector:selector])
-	       return [_dataSource numberOfItemsInComboBoxCell:self];
-	 }
-      }
-   }
-   else
-      return [_popUpList count];
+	    }
+	  else
+	    {
+	      if ([_dataSource respondsToSelector: @selector(numberOfItemsInComboBoxCell:)])
+		return [_dataSource numberOfItemsInComboBoxCell: self];
+	    }
+	}
+    }
+  else
+    return [_popUpList count];
 	 
    return 0;
 }
 
-- (id)dataSource { return _dataSource; }
-- (void)setDataSource:(id)aSource
+- (id) dataSource { return _dataSource; }
+- (void) setDataSource: (id)aSource
 {
-   if (_dataSource != aSource)
+  if (!_usesDataSource)
+    NSLog(@"Method Invalid: ComboBox does not use dataSource");
+  else
+    ASSIGN(_dataSource, aSource);
+}
+
+- (void) addItemWithObjectValue: (id)object
+{
+  if (_usesDataSource)
+    NSLog(@"Method Invalid: ComboBox uses dataSource");
+  else
+    [_popUpList addObject: object];
+  [self reloadData];
+}
+
+- (void) addItemsWithObjectValues: (NSArray *)objects
+{
+  if (_usesDataSource)
+    NSLog(@"Method Invalid: ComboBox uses dataSource");
+  else
+    [_popUpList addObjectsFromArray: objects];
+  [self reloadData];
+}
+
+- (void) insertItemWithObjectValue: (id)object atIndex: (int)index
+{
+  if (_usesDataSource)
+    NSLog(@"Method Invalid: ComboBox uses dataSource");
+  else
+    [_popUpList insertObject: object atIndex: index];
+  [self reloadData];
+}
+
+- (void) removeItemWithObjectValue: (id)object
+{
+  if (_usesDataSource)
+    NSLog(@"Method Invalid: ComboBox uses dataSource");
+  else
+    [_popUpList removeObject: object];
+  [self reloadData];
+}
+
+- (void) removeItemAtIndex: (int)index
+{
+  if (_usesDataSource)
+    NSLog(@"Method Invalid: ComboBox uses dataSource");
+  else
+    [_popUpList removeObjectAtIndex: index];
+  [self reloadData];
+}
+
+- (void) removeAllItems
+{
+  if (_usesDataSource)
+    NSLog(@"Method Invalid: ComboBox uses dataSource");
+  else
+    [_popUpList removeAllObjects];
+  [self reloadData];
+}
+
+- (void) selectItemWithObjectValue: (id)object
+{
+ if (_usesDataSource)
+    NSLog(@"Method Invalid: ComboBox uses dataSource");
+ else
    {
-      [_dataSource release];
-      _dataSource = [aSource retain];
+     int i = [_popUpList indexOfObject: object];
+
+     if (i != NSNotFound)
+	 [self selectItemAtIndex: i];
    }
 }
 
-- (void)addItemWithObjectValue:(id)object
+- (id) itemObjectValueAtIndex: (int)index
 {
-   if (_usesDataSource)
+  if (_usesDataSource)
+    {
       NSLog(@"Method Invalid: ComboBox uses dataSource");
-   else
-      [_popUpList addObject:object];
+      return nil;
+    }
+  else
+    return [_popUpList objectAtIndex: index];
 }
 
-- (void)addItemsWithObjectValues:(NSArray *)objects
+- (id) objectValueOfSelectedItem
 {
-   if (_usesDataSource)
+  if (_usesDataSource)
+    {
       NSLog(@"Method Invalid: ComboBox uses dataSource");
-   else
-      [_popUpList addObjectsFromArray:objects];
+      return nil;
+    }
+  else
+    {
+      int index = [self indexOfSelectedItem];
+
+      if (index == NSNotFound)
+	return nil;
+      else
+	return [_popUpList objectAtIndex: index];
+    }
 }
 
-- (void)insertItemWithObjectValue:(id)object atIndex:(int)index
-{
-   if (_usesDataSource)
-      NSLog(@"Method Invalid: ComboBox uses dataSource");
-   else
-      [_popUpList insertObject:object atIndex:index];
-}
-
-- (void)removeItemWithObjectValue:(id)object
-{
-   if (_usesDataSource)
-      NSLog(@"Method Invalid: ComboBox uses dataSource");
-   else
-      [_popUpList removeObject:object];
-}
-
-- (void)removeItemAtIndex:(int)index
-{
-   if (_usesDataSource)
-      NSLog(@"Method Invalid: ComboBox uses dataSource");
-   else
-      [_popUpList removeObjectAtIndex:index];
-}
-
-- (void)removeAllItems
-{
-   if (_usesDataSource)
-      NSLog(@"Method Invalid: ComboBox uses dataSource");
-   else
-      [_popUpList removeAllObjects];
-}
-
-- (void)selectItemWithObjectValue:(id)object
-{
-   if (_usesDataSource)
-      NSLog(@"Method Invalid: ComboBox uses dataSource");
-}
-
-- (id)itemObjectValueAtIndex:(int)index
-{
-   if (_usesDataSource)
-      NSLog(@"Method Invalid: ComboBox uses dataSource");
-   return nil;
-}
-
-- (id)objectValueOfSelectedItem
-{
-   if (_usesDataSource)
-      NSLog(@"Method Invalid: ComboBox uses dataSource");
-   return nil;
-}
-
-- (int)indexOfItemWithObjectValue:(id)object
+- (int) indexOfItemWithObjectValue: (id)object
 {
    if (_usesDataSource)
    {
       NSLog(@"Method Invalid: ComboBox uses dataSource");
       return 0;
    }
-   return [_popUpList indexOfObject:object];
+   return [_popUpList indexOfObject: object];
 }
+
+- (NSArray *)objectValues
+{
+  if (_usesDataSource)
+    // FIXME: This should give a warning
+    return [self _dataSourceObjectValues];
+  return _popUpList;
+}
+
+// Text completion
+- (NSString *)completedString:(NSString *)substring
+{
+  if (_usesDataSource)
+    {
+      if (!_dataSource)
+	NSLog(@"ComboBox: No DataSource Specified");
+      else if ([_dataSource respondsToSelector: @selector(comboBox:completedString:)])
+        {
+	  return [_dataSource comboBox: (NSComboBox *)[self controlView] 
+			      completedString: substring];
+	}
+      else if ([_dataSource respondsToSelector: @selector(comboBoxCell:completedString:)])
+        {
+	  return [_dataSource comboBoxCell: self completedString: substring];
+	}
+    }
+  else
+  {
+    int i;
+
+    for (i = 0; i < [_popUpList count]; i++)
+      {
+	// FIXME: How to convert to a string?  
+	NSString *str = [[_popUpList objectAtIndex: i] description];
+
+	if ([str hasPrefix: substring])
+	  return str;
+      }
+  }
+  return substring;
+}
+
+- (void)setCompletes:(BOOL)completes
+{
+  _completes = completes;
+}
+
+- (BOOL)completes
+{
+  return _completes;
+}
+
+#define CBButtonWidth 18
+#define CBFrameWidth 2
+static inline NSRect 
+textCellFrameFromRect(NSRect cellRect)
+{
+  return NSMakeRect(NSMinX(cellRect),
+		    NSMinY(cellRect),
+		    NSWidth(cellRect)-CBButtonWidth,
+		    NSHeight(cellRect));
+}
+
+static inline NSRect 
+buttonCellFrameFromRect(NSRect cellRect)
+{
+  return NSMakeRect(NSMaxX(cellRect)-CBButtonWidth,
+		    NSMinY(cellRect)+CBFrameWidth,
+		    CBButtonWidth,
+		    NSHeight(cellRect)-(CBFrameWidth*2.0));
+}
+
+// Overridden
+- (void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
+{
+  if ([GSCurrentContext() isDrawingToScreen])
+    {
+      [super drawWithFrame: textCellFrameFromRect(cellFrame)
+	     inView: controlView];
+      [_buttonCell drawWithFrame: buttonCellFrameFromRect(cellFrame)
+		   inView: controlView];
+    }
+  else
+    [super drawWithFrame: cellFrame inView: controlView];
+}
+
+- (void) highlight: (BOOL)flag
+	 withFrame: (NSRect)cellFrame
+	    inView: (NSView *)controlView
+{
+  if ([GSCurrentContext() isDrawingToScreen])
+    {
+      [super highlight: flag
+	     withFrame: textCellFrameFromRect(cellFrame)
+	     inView: controlView];
+      [_buttonCell highlight: flag
+		   withFrame: buttonCellFrameFromRect(cellFrame)
+		   inView: controlView];
+    }
+  else
+    [super highlight: flag withFrame: cellFrame inView: controlView];
+}
+
+- (void) selectWithFrame: (NSRect)aRect 
+		  inView: (NSView *)controlView
+		  editor: (NSText *)textObj 
+		delegate: (id)anObject
+		   start: (int)selStart 
+		  length: (int)selLength
+{
+  [super selectWithFrame: textCellFrameFromRect(aRect)
+	 inView: controlView
+	 editor: textObj 
+	 delegate: anObject
+	 start: selStart 
+	 length: selLength];
+}
+
+- (void) editWithFrame: (NSRect)aRect 
+		inView: (NSView *)controlView
+		editor: (NSText *)textObj 
+	      delegate: (id)anObject
+		 event: (NSEvent *)theEvent
+{
+  [super editWithFrame: textCellFrameFromRect(aRect)
+	 inView: controlView
+	 editor: textObj 
+	 delegate: anObject
+	 event: theEvent];
+}
+
+- (BOOL) trackMouse: (NSEvent *)theEvent 
+	     inRect: (NSRect)cellFrame
+	     ofView: (NSView *)controlView 
+       untilMouseUp: (BOOL)flag
+{
+  NSEvent *nEvent;
+  BOOL 	rValue;
+  NSPoint point;
+
+  // Should this be set by NSActionCell ?
+  if (_control_view != controlView)
+    _control_view = controlView;
+
+  rValue = [super trackMouse: theEvent inRect: cellFrame
+		  ofView: controlView untilMouseUp: flag];
+
+  nEvent = [NSApp currentEvent];
+  if ([theEvent type] == NSLeftMouseDown &&
+      [nEvent type] == NSLeftMouseUp)
+    {
+      point = [controlView convertPoint: [theEvent locationInWindow]
+			   fromView: nil];
+      if (NSPointInRect(point, cellFrame))
+        {
+	  point = [controlView convertPoint: [nEvent locationInWindow]
+			       fromView: nil];
+	  if (NSPointInRect(point, buttonCellFrameFromRect(cellFrame)))
+//      [_buttonCell performClick: self];
+	    [self _didClickInRect: cellFrame ofView: controlView];
+	}
+    }
+  _mUpEvent = nEvent;
+  
+  return rValue;
+}
+
+- (void) resetCursorRect: (NSRect)cellFrame inView: (NSView *)controlView
+{
+   [super resetCursorRect: textCellFrameFromRect(cellFrame)
+	  inView: controlView];
+}
+
+- (void) setEnabled: (BOOL)flag
+{
+   [_buttonCell setEnabled: flag];
+   [super setEnabled: flag];
+}
+
+// NSCoding
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  [super encodeWithCoder: coder];
+
+  [coder encodeValueOfObjCType: @encode(id) at: &_buttonCell];
+  [coder encodeValueOfObjCType: @encode(id) at: &_popUpList];
+  [coder encodeValueOfObjCType: @encode(BOOL) at: &_usesDataSource];
+  [coder encodeValueOfObjCType: @encode(BOOL) at: &_hasVerticalScroller];
+  [coder encodeValueOfObjCType: @encode(BOOL) at: &_completes];
+  [coder encodeValueOfObjCType: @encode(BOOL) at: &_usesDataSource];
+  [coder encodeValueOfObjCType: @encode(int) at: &_visibleItems];
+  [coder encodeValueOfObjCType: @encode(NSSize) at: &_intercellSpacing];
+  [coder encodeValueOfObjCType: @encode(float) at: &_itemHeight];
+  [coder encodeValueOfObjCType: @encode(int) at: &_selectedItem];
+
+  if (_usesDataSource == YES)
+    [coder encodeValueOfObjCType: @encode(id) at: &_dataSource];      
+}
+
+- (id) initWithCoder: (NSCoder *)coder
+{
+  self = [super initWithCoder: coder];
+  
+  [coder decodeValueOfObjCType: @encode(id) at: &_buttonCell];
+  [coder decodeValueOfObjCType: @encode(id) at: &_popUpList];
+  [coder decodeValueOfObjCType: @encode(BOOL) at: &_usesDataSource];
+  [coder decodeValueOfObjCType: @encode(BOOL) at: &_hasVerticalScroller];
+  [coder decodeValueOfObjCType: @encode(BOOL) at: &_completes];
+  [coder decodeValueOfObjCType: @encode(BOOL) at: &_usesDataSource];
+  [coder decodeValueOfObjCType: @encode(int) at: &_visibleItems];
+  [coder decodeValueOfObjCType: @encode(NSSize) at: &_intercellSpacing];
+  [coder decodeValueOfObjCType: @encode(float) at: &_itemHeight];
+  [coder decodeValueOfObjCType: @encode(int) at: &_selectedItem];
+
+  if (_usesDataSource == YES)
+    [coder decodeValueOfObjCType: @encode(id) at: &_dataSource];      
+
+  return self;
+}
+
+@end
+
+@implementation NSComboBoxCell(_Private_)
 
 - (NSArray *)_dataSourceObjectValues
 {
@@ -290,260 +585,87 @@
    return array;
 }
 
-- (NSArray *)objectValues
+- (void) _didClickInRect: (NSRect)cellFrame
+		  ofView: (NSView *)controlView
 {
-   if (_usesDataSource)
-      return [self _dataSourceObjectValues];
-   return _popUpList;
+  // We can not use performClick: on the button cell here as 
+  // the button uses only part of the bounds of the control view.
+  NSWindow *cvWin = [controlView window];
+      
+  [_buttonCell highlight: YES 
+	       withFrame: buttonCellFrameFromRect(cellFrame) 
+	       inView: controlView];
+  [cvWin flushWindow];
+
+  _popRect = cellFrame;
+
+  [self _didClick: self];
+  _popRect = NSZeroRect;
+  
+  [_buttonCell highlight: NO 
+	       withFrame: buttonCellFrameFromRect(cellFrame) 
+	       inView: controlView];
+  [cvWin flushWindow];
 }
 
-// Text completion
-- (NSString *)completedString:(NSString *)substring
+- (void) _didClick: (id)sender
 {
-  // FIXME
-  return substring;
-}
+  NSSize size;
+  NSPoint point,oldPoint;
+  NSRect screenFrame;
+  NSView *popView = [self controlView];
 
-- (void)setCompletes:(BOOL)completes
-{
-  _completes = completes;
-}
+  if (_cell.is_disabled)
+    return;
 
-- (BOOL)completes
-{
-  return _completes;
-}
+  size = [[self _popUp] popUpCellSizeForPopUp: self];
+  if (size.width == 0 || size.height == 0)
+    return;
 
-- (void)performPopUsingSelector:(SEL)aSelector
-			 inRect:(NSRect)cellFrame
-			 ofView:(NSView *)controlView
-{
-   _canPop = YES;
-   _popRect = cellFrame;
-   _popView = [controlView retain];
-   [self performSelector:aSelector withObject:self];
-   [_popView release];
-   _popView = nil;
-   _canPop = NO;
-   _popRect = NSZeroRect;
-}
+  screenFrame = [[[popView window] screen] frame];
+  point = _popRect.origin;
+  if ([popView isFlipped])
+    point.y += NSHeight(_popRect);
+  point = [popView convertPoint: point toView: nil];
+  point.y -= 1.0;
+  point = [[popView window] convertBaseToScreen: point];
+  point.y -= size.height;
+  if (point.y < 0)
+    {
+      // Off screen, so move it.
+      oldPoint = point;
+      point = _popRect.origin;
+      if (![popView isFlipped])
+	  point.y += NSHeight(_popRect);
+      point = [popView convertPoint: point toView: nil];
+      point.y += 1.0;
+      point = [[popView window] convertBaseToScreen: point];
+      if (point.y > NSHeight(screenFrame))
+	  point = oldPoint;
+      
+      if (point.y + size.height > NSHeight(screenFrame))
+	  point.y = NSHeight(screenFrame) - size.height;
+    }
 
-#define CBButtonWidth 18
-#define CBFrameWidth 2
+  if (point.x + size.width > NSWidth(screenFrame))
+    point.x = NSWidth(screenFrame) - size.width;
+  if (point.x < 0.0)
+    point.x = 0.0;
 
-- (NSRect)textCellFrameFromRect:(NSRect)cellRect
-{
-   return NSMakeRect(NSMinX(cellRect),
-		     NSMinY(cellRect),
-		     NSWidth(cellRect)-CBButtonWidth,
-		     NSHeight(cellRect));
-}
+  [nc postNotificationName: NSComboBoxWillPopUpNotification
+      object: popView
+      userInfo: nil];
 
-- (NSRect)buttonCellFrameFromRect:(NSRect)cellRect
-{
-   return NSMakeRect(NSMaxX(cellRect)-CBButtonWidth,
-		     NSMinY(cellRect)+CBFrameWidth,
-		     CBButtonWidth,
-		     NSHeight(cellRect)-(CBFrameWidth*2.0));
-}
+  [[self _popUp] popUpCell: self popUpAt: point width: NSWidth(_popRect)];
 
-- (void)didClick:(NSEvent *)theEvent inRect:(NSRect)cellFrame
-	  ofView:(NSView *)controlView
-{
-   NSPoint	point;
-
-   point = [theEvent locationInWindow];
-   point = [controlView convertPoint:point fromView:nil];
-   if (NSPointInRect(point,[self buttonCellFrameFromRect:cellFrame]))
-   {
-      [_buttonCell setCellAttribute:NSCellHighlighted to:1];
-      [controlView displayRect:cellFrame];
-//       [[NSDPSContext currentContext] flush];
-//       [[controlView window] display];
-      [self performPopUsingSelector: @selector(_didClick:)
-	    inRect:cellFrame
-	    ofView:controlView];
-      [_buttonCell setCellAttribute:NSCellHighlighted to:0];
-      [controlView displayRect:cellFrame];
-//       [[NSDPSContext currentContext] flush];
-//       [[controlView window] display];
-   }
-}
-
-// Overridden
-- (void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
-{
-//    if ([[NSDPSContext currentContext] isDrawingToScreen])
-//    {
-   [super drawWithFrame:[self textCellFrameFromRect:cellFrame]
-	  inView:controlView];
-   [_buttonCell drawWithFrame:[self buttonCellFrameFromRect:cellFrame]
-		inView:controlView];
-//    }
-//    else
-//       [super drawWithFrame:cellFrame inView:controlView];
-}
-
-- (void)highlight:(BOOL)flag
-	withFrame:(NSRect)cellFrame
-	   inView:(NSView *)controlView
-{
-//    if ([[NSDPSContext currentContext] isDrawingToScreen])
-//    {
-      [super highlight:flag
-	     withFrame:[self textCellFrameFromRect:cellFrame]
-	     inView:controlView];
-      [_buttonCell highlight:flag
-		   withFrame:[self buttonCellFrameFromRect:cellFrame]
-		   inView:controlView];
-//    }
-//    else
-//       [super highlight:flag withFrame:cellFrame inView:controlView];
-}
-
-- (void)selectWithFrame:(NSRect)aRect inView:(NSView *)controlView
-		 editor:(NSText *)textObj delegate:(id)anObject
-		  start:(int)selStart length:(int)selLength
-{
-   [super selectWithFrame:[self textCellFrameFromRect:aRect]
-	  inView:controlView
-	  editor:textObj delegate:anObject
-	  start:selStart length:selLength];
-}
-
-- (void)editWithFrame:(NSRect)aRect inView:(NSView *)controlView
-	       editor:(NSText *)textObj delegate:(id)anObject
-		event:(NSEvent *)theEvent
-{
-   [super editWithFrame:[self textCellFrameFromRect:aRect]
-	  inView:controlView
-	  editor:textObj delegate:anObject
-	  event:theEvent];
-}
-
-- (BOOL)trackMouse:(NSEvent *)theEvent inRect:(NSRect)cellFrame
-	    ofView:(NSView *)controlView untilMouseUp:(BOOL)flag
-{
-   NSEvent	*nEvent;
-   BOOL		rValue;
-   NSPoint	point;
-
-   rValue = [super trackMouse:theEvent inRect:cellFrame
-		      ofView:controlView untilMouseUp:flag];
-
-   nEvent = [NSApp currentEvent];
-   if ([theEvent type] == NSLeftMouseDown &&
-       [nEvent type] == NSLeftMouseUp)
-   {
-      point = [controlView convertPoint:[theEvent locationInWindow]
-			   fromView:nil];
-      if (NSPointInRect(point,cellFrame))
-      {
-	 point = [controlView convertPoint:[nEvent locationInWindow]
-			      fromView:nil];
-	 if (NSPointInRect(point,cellFrame))
-	    [self didClick:nEvent inRect:cellFrame ofView:controlView];
-      }
-   }
-   _mUpEvent = nEvent;
-   return rValue;
-}
-
-- (void)resetCursorRect:(NSRect)cellFrame inView:(NSView *)controlView
-{
-   [super resetCursorRect:[self textCellFrameFromRect:cellFrame]
-	  inView:controlView];
-}
-
-- (void)setEnabled:(BOOL)flag
-{
-   [_buttonCell setEnabled:flag];
-   [super setEnabled:flag];
-}
-
-// NSCoding
-- (void)encodeWithCoder:(NSCoder *)coder
-{
-   [super encodeWithCoder:coder];
-}
-
-- (id)initWithCoder:(NSCoder *)coder
-{
-   return [super initWithCoder:coder];
-}
-
-@end
-
-@implementation NSComboBoxCell(_Private_)
-
-- (void)_createButtonCell
-{
-   NSImage	*image;
-
-   image = [self _buttonImage];
-   _buttonCell = [[NSButtonCell alloc] initImageCell:image];
-   [_buttonCell setImagePosition:NSImageOnly];
-   [_buttonCell setButtonType:NSMomentaryPushButton];
-   [_buttonCell setHighlightsBy:NSPushInCellMask];
-   [_buttonCell setBordered:YES];
-   [_buttonCell setTarget:self];
-   [_buttonCell setAction: @selector(_didClick:)];
-}
-
-- (void)_didClick:(id)sender
-{
-   NSSize	size;
-   NSPoint	point,oldPoint;
-
-   if (_cell.is_disabled)
-      return;
-
-   if (![self controlView])
-      _control_view = _popView;
-
-   size = [[self _popUp] popUpCellSizeForPopUp:self];
-   if (size.width == 0 || size.height == 0)
-      return;
-   point = _popRect.origin;
-   if ([_popView isFlipped])
-      point.y += NSHeight(_popRect);
-   point = [_popView convertPoint:point toView:nil];
-   point.y -= 1.0;
-   point = [[_popView window] convertBaseToScreen:point];
-   point.y -= size.height;
-   if (point.y >= 0)
-      goto popUp;
-
-   oldPoint = point;
-   point = _popRect.origin;
-   if (![_popView isFlipped])
-      point.y += NSHeight(_popRect);
-   point = [[_popView window] convertBaseToScreen:point];
-   if (point.y > NSHeight([[[_popView window] screen] frame]))
-      point = oldPoint;
-
-   if (point.y+size.height > NSHeight([[[_popView window] screen] frame]))
-      point.y = NSHeight([[[_popView window] screen] frame]) - size.height;
-
-  popUp:
-
-   if (point.x+size.width > NSWidth([[[_popView window] screen] frame]))
-      point.x = NSWidth([[[_popView window] screen] frame]) - size.width;
-   if (point.x < 0.0)
-      point.x = 0.0;
-
-   [[self _popUp] popUpCell:self popUpAt:point width:NSWidth(_popRect)];
-}
-
-- (NSImage *)_buttonImage
-{
-   return [NSImage imageNamed: @"NSComboArrow"];
+  [nc postNotificationName: NSComboBoxWillDismissNotification
+      object: popView
+      userInfo: nil];
 }
 
 - (NSEvent *)_mouseUpEvent
 {
    return _mUpEvent;
-   _mUpEvent = nil;
 }
 
 - (GSComboWindow *)_popUp

@@ -24,299 +24,275 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#import <AppKit/AppKit.h>
-#import "GSComboSupport.h"
+#include <Foundation/NSString.h>
+#include <Foundation/NSArray.h>
+#include <AppKit/NSApplication.h>
+#include <AppKit/NSBox.h>
+#include <AppKit/NSBrowser.h>
+#include <AppKit/NSBrowserCell.h>
+#include <AppKit/NSComboBox.h>
+#include <AppKit/NSComboBoxCell.h>
+#include <AppKit/NSMatrix.h>
+#include <AppKit/NSScroller.h>
+#include <AppKit/NSWindow.h>
+#include "GSComboSupport.h"
 
 @implementation GSComboWindow
 
-+ (GSComboWindow *)defaultPopUp
++ (GSComboWindow *) defaultPopUp
 {
-   static GSComboWindow	*gsWindow = nil;
+  static GSComboWindow *gsWindow = nil;
 
-   if (!gsWindow)
-      gsWindow = [[self alloc] initWithContentRect:NSMakeRect(0,0,100,100)
-			       styleMask:NSBorderlessWindowMask
-			       backing:NSBackingStoreBuffered
-			       defer:YES];
-   return gsWindow;
+  if (!gsWindow)
+    gsWindow = [[self alloc] initWithContentRect: NSMakeRect(0,0,100,100)
+			     styleMask: NSBorderlessWindowMask
+			     backing: NSBackingStoreNonretained //NSBackingStoreBuffered
+			     defer: YES];
+  return gsWindow;
 }
 
-- (id)initWithContentRect:(NSRect)contentRect
-		styleMask:(unsigned int)aStyle
-		  backing:(NSBackingStoreType)bufferingType
-		    defer:(BOOL)flag
+- (id) initWithContentRect: (NSRect)contentRect
+		 styleMask: (unsigned int)aStyle
+		   backing: (NSBackingStoreType)bufferingType
+		     defer: (BOOL)flag
 {
-   NSBox	*box;
+  NSBox *box;
    
-   self = [super initWithContentRect:contentRect
-		 styleMask:aStyle
-		 backing:bufferingType
-		 defer:flag];
-   box = [[[NSBox alloc] initWithFrame:NSMakeRect(0,0,100,100)] autorelease];
-   [box setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
-   [box setBorderType:NSLineBorder];
-   [box setTitlePosition:NSNoTitle];
-   [box setContentViewMargins:NSMakeSize(1,1)];
-   [box sizeToFit];
-   [self setContentView:box];
-   browser = [[[GSPopUpActionBrowser alloc]
-		 initWithFrame:NSMakeRect(0,0,100,100)] autorelease];
-   [browser setMaxVisibleColumns:1];
-   [browser setTitled:NO];
-   [browser setHasHorizontalScroller:NO];
-   [browser setTarget:self];
-   [browser setAction: @selector(selectItem:)];
-   [browser setDelegate:self];
-//    [browser setRefusesFirstResponder:YES];
-   [browser setAutoresizingMask:NSViewWidthSizable | NSViewWidthSizable];
-   [browser setAllowsEmptySelection:NO];
-   [browser setAllowsMultipleSelection:NO];
-   [box setContentView:browser];
-   return self;
+  self = [super initWithContentRect: contentRect
+		styleMask: aStyle
+		backing: bufferingType
+		defer: flag];
+  box = [[NSBox alloc] initWithFrame: contentRect];
+  [box setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+  [box setBorderType: NSLineBorder];
+  [box setTitlePosition: NSNoTitle];
+  [box setContentViewMargins: NSMakeSize(1,1)];
+  [box sizeToFit];
+  [self setContentView:box];
+  RELEASE(box);
+  browser = [[NSBrowser alloc] initWithFrame: contentRect];
+  [browser setMaxVisibleColumns: 1];
+  [browser setTitled: NO];
+  [browser setHasHorizontalScroller: NO];
+  [browser setTarget: self];
+  [browser setAction: @selector(selectItem:)];
+  [browser setDelegate: self];
+//    [browser setRefusesFirstResponder: YES];
+  [browser setAutoresizingMask: NSViewWidthSizable | NSViewWidthSizable];
+  [browser setAllowsEmptySelection: NO];
+  [browser setAllowsMultipleSelection: NO];
+  [box setContentView: browser];
+  RELEASE(browser);
+  
+  return self;
 }
 
 - (void)dealloc
 {
-   // Browser was not retained so don't release it
-   [super dealloc];
+  // Browser was not retained so don't release it
+  [super dealloc];
 }
 
-- (NSMatrix *)matrix { return [browser matrixInColumn:0]; }
+- (NSMatrix *) matrix { return [browser matrixInColumn:0]; }
 
-- (NSSize)popUpSize
+- (NSSize) popUpCellSizeForPopUp: (NSComboBoxCell *)aCell
 {
-   float	itemHeight;
-   float	cellSpacing;
+  NSSize size;
+  float itemHeight;
+  float cellSpacing;
 
-   if (!_cell)
-      return NSZeroSize;
-   
-   if (![_cell isKindOfClass:[NSComboBoxCell class]])
-      [NSEvent raise:@"GSComboWindow" format:@"Cell not a NSComboBoxCell"];
+  itemHeight = [aCell itemHeight];
+  cellSpacing = [aCell intercellSpacing].height;
+  
+  if (itemHeight <= 0)
+    itemHeight = [[self matrix] cellSize].height;
 
-   itemHeight = [_cell itemHeight];
-   cellSpacing = [_cell intercellSpacing].height;
+  if (cellSpacing <= 0)
+    cellSpacing = [[self matrix] intercellSpacing].height;
 
-   if (itemHeight <= 0)
-      itemHeight = [[self matrix] cellSize].height;
+  size = NSMakeSize(2.0 + [NSScroller scrollerWidth] + 100.0,
+		    2.0 + (itemHeight * [aCell numberOfVisibleItems]) +
+		    (cellSpacing * [aCell numberOfVisibleItems]));
+  size.height += 4.0;
+  size.width += 4.0;
 
-   if (cellSpacing <= 0)
-      cellSpacing = [[self matrix] intercellSpacing].height;
-   return NSMakeSize(2.0 + [NSScroller scrollerWidth] + 100.0,
-		     2.0 + (itemHeight * [_cell numberOfVisibleItems]) +
-		     (cellSpacing * [_cell numberOfVisibleItems]));
+  return size;
 }
 
-- (NSSize)popUpCellSizeForPopUp:(NSComboBoxCell *)aCell
+- (void) popUpCell: (NSComboBoxCell *)aCell
+	   popUpAt: (NSPoint)aPoint
+	     width: (float)aWidth
 {
-   NSSize	size;
+  NSRect rect;
    
-   _cell = aCell;
-   size = [self popUpSize];
-   size.height += 4.0;
-   size.width += 4.0;
-   _cell = nil;
-   return size;
-}
+  rect.size = [self popUpCellSizeForPopUp: aCell];
+  _cell = aCell;
 
-- (void)popUpCell:(NSComboBoxCell *)aCell
-	  popUpAt:(NSPoint)aPoint
-	    width:(float)aWidth
-{
-   NSRect	rect;
-   
-   rect.size = [self popUpCellSizeForPopUp:aCell];
-   _cell = aCell;
-   _width = aWidth;
-   _point = aPoint;
+  rect.size.width = aWidth;
+  rect.origin.x = aPoint.x;
+  rect.origin.y = aPoint.y;
+  [self setFrame: rect display: NO];
 
-   rect.size.width = _width;
-   rect.origin.x = _point.x;
-   rect.origin.y = _point.y;
-   
-   [self setFrame:rect display:NO];
-
-   [_cell reloadData];
-   [browser loadColumnZero];
-   
+  [browser loadColumnZero];
+  
 //    [self enableKeyEquivalentForDefaultButtonCell];
-   [self runModalPopUp];
+  [self runModalPopUp];
 
-   _cell = nil;
+  _cell = nil;
 }
 
-- (void)runModalPopUp
+- (void) runModalPopUp
 {
-   NSWindow	*onWindow;
-   NSEvent	*event;
-   NSException	*exception = nil;
+  NSWindow	*onWindow;
+  NSEvent	*event;
+  NSException	*exception = nil;
+  
+  onWindow = [[_cell controlView] window];
+  [self setLevel: [onWindow level]];
+  [self orderWindow: NSWindowAbove relativeTo: [onWindow windowNumber]];
 
-   onWindow = [[_cell controlView] window];
-   [self setLevel:[onWindow level]];
-   [self orderWindow:NSWindowAbove relativeTo:[onWindow windowNumber]];
-
-   while ((event = [NSApp nextEventMatchingMask:NSAnyEventMask
-			  untilDate:[NSDate dateWithTimeIntervalSinceNow:0]
-			  inMode:NSDefaultRunLoopMode
-			  dequeue:NO]))
-   {
+  while ((event = [NSApp nextEventMatchingMask: NSAnyEventMask
+			 untilDate: [NSDate dateWithTimeIntervalSinceNow: 0]
+			 inMode: NSDefaultRunLoopMode
+			 dequeue: NO]))
+    {
       if ([event type] == NSAppKitDefined ||
 	  [event type] == NSSystemDefined ||
 	  [event type] == NSApplicationDefined ||
 	  [event windowNumber] == [self windowNumber])
-	 break;
-      [NSApp nextEventMatchingMask:NSAnyEventMask
-	     untilDate:[NSDate distantFuture]
-	     inMode:NSDefaultRunLoopMode
-	     dequeue:YES];
-   }
+	break;
+      [NSApp nextEventMatchingMask: NSAnyEventMask
+	     untilDate: [NSDate distantFuture]
+	     inMode: NSDefaultRunLoopMode
+	     dequeue: YES];
+    }
 
-   [self makeKeyAndOrderFront:nil];
+  [self makeKeyAndOrderFront: nil];
 
-   _shouldOrder = YES;
+  NS_DURING
+    [self runLoop];
+  NS_HANDLER
+    exception = localException;
+  NS_ENDHANDLER;
 
-   NS_DURING
-      [self runLoop];
-   NS_HANDLER
-      exception = localException;
-   NS_ENDHANDLER;
-
-   if (onWindow && _shouldOrder)
-   {
+  if (onWindow)
+    {
       [onWindow makeKeyWindow];
       [onWindow orderFrontRegardless];
-   }
+    }
 
-   if ([self isVisible])
+  if ([self isVisible])
       [self orderOut:nil];
 
-   if (exception)
-      [exception raise];
+  if (exception)
+    [exception raise];
 }
 
-- (void)runLoop
+- (void) runLoop
 {
-   NSEvent		*event;
-   int			cnt;
-   NSAutoreleasePool	*pool;
-   BOOL			kDown;
-
-   cnt = 0;
-   pool = [[NSAutoreleasePool alloc] init];
-   _stopped = NO;
-   _shouldNotify = YES;
-   while (!_stopped)
-   {
+  NSEvent		*event;
+  int			cnt = 0;
+  BOOL			kDown;
+  CREATE_AUTORELEASE_POOL (pool);
+  
+  _stopped = NO;
+  while (!_stopped)
+    {
       kDown = NO;
       cnt++;
       if (cnt >= 5)
-      {
-	 [pool release];
-	 pool = [[NSAutoreleasePool alloc] init];
-	 cnt = 0;
-      }
-      event = [NSApp nextEventMatchingMask:NSAnyEventMask
-		     untilDate:[NSDate distantFuture]
-		     inMode:NSDefaultRunLoopMode
-		     dequeue:NO];
+        {
+	  RELEASE(pool);
+	  IF_NO_GC(pool = [[NSAutoreleasePool alloc] init]);
+	  cnt = 0;
+	}
+      event = [NSApp nextEventMatchingMask: NSAnyEventMask
+		     untilDate: [NSDate distantFuture]
+		     inMode: NSDefaultRunLoopMode
+		     dequeue: NO];
       if (event)
-      {
-	 if ([event type] == NSAppKitDefined ||
-	     [event type] == NSSystemDefined ||
-	     [event type] == NSApplicationDefined ||
-	     [event windowNumber] == [self windowNumber])
-	 {
-	    event = [NSApp nextEventMatchingMask:NSAnyEventMask
-			   untilDate:[NSDate distantFuture]
-			   inMode:NSDefaultRunLoopMode
-			   dequeue:YES];
-	    [NSApp sendEvent:event];
-	    if ([event type] == NSKeyDown)
-	       kDown = YES;
-	 }
-	 else if ([event type] == NSMouseMoved ||
-		  [event type] == NSLeftMouseDragged ||
-		  [event type] == NSMiddleMouseDragged ||
-		  [event type] == NSRightMouseDragged ||
-		  [event type] == NSMouseEntered ||
-		  [event type] == NSMouseExited ||
-		  [event type] == NSCursorUpdate)
-	 {
-	    event = [NSApp nextEventMatchingMask:NSAnyEventMask
-			   untilDate:[NSDate distantFuture]
-			   inMode:NSDefaultRunLoopMode
-			   dequeue:YES];
-	    [NSApp sendEvent:event];
-	 }
-	 else
-	    _stopped = YES;
-      }
-   }
-   _shouldNotify = NO;
-   if (kDown)
-      while ((event = [NSApp nextEventMatchingMask:NSAnyEventMask
+        {
+	  if ([event type] == NSAppKitDefined ||
+	      [event type] == NSSystemDefined ||
+	      [event type] == NSApplicationDefined ||
+	      [event windowNumber] == [self windowNumber])
+	    {
+	      event = [NSApp nextEventMatchingMask: NSAnyEventMask
+			     untilDate: [NSDate distantFuture]
+			     inMode: NSDefaultRunLoopMode
+			     dequeue: YES];
+	      [NSApp sendEvent: event];
+	      if ([event type] == NSKeyDown)
+		  kDown = YES;
+	    }
+	  else if ([event type] == NSMouseMoved ||
+		   [event type] == NSLeftMouseDragged ||
+		   [event type] == NSMiddleMouseDragged ||
+		   [event type] == NSRightMouseDragged ||
+		   [event type] == NSMouseEntered ||
+		   [event type] == NSMouseExited ||
+		   [event type] == NSCursorUpdate)
+	    {
+	      event = [NSApp nextEventMatchingMask:NSAnyEventMask
 			     untilDate:[NSDate distantFuture]
 			     inMode:NSDefaultRunLoopMode
-			     dequeue:NO]))
+			     dequeue:YES];
+	      [NSApp sendEvent:event];
+	    }
+	  else
+	    _stopped = YES;
+	}
+    }
+  if (kDown)
+    while ((event = [NSApp nextEventMatchingMask: NSAnyEventMask
+			   untilDate: [NSDate distantFuture]
+			   inMode: NSDefaultRunLoopMode
+			   dequeue: NO]))
       {
-	 if ([event windowNumber] != [self windowNumber])
-	    break;
-	 event = [NSApp nextEventMatchingMask:NSAnyEventMask
-			untilDate:[NSDate distantFuture]
-			inMode:NSDefaultRunLoopMode
-			dequeue:YES];
-	 [NSApp sendEvent:event];
-	 if ([event type] == NSKeyUp)
-	    break;
+	if ([event windowNumber] != [self windowNumber])
+	  break;
+	event = [NSApp nextEventMatchingMask:NSAnyEventMask
+		       untilDate:[NSDate distantFuture]
+		       inMode:NSDefaultRunLoopMode
+		       dequeue:YES];
+	[NSApp sendEvent:event];
+	if ([event type] == NSKeyUp)
+	  break;
       }
-   [pool release];
+  RELEASE(pool);
 }
 
-- (BOOL)canBecomeKeyWindow { return YES; }
-- (BOOL)worksWhenModal { return NO; }
+- (BOOL) canBecomeKeyWindow { return YES; }
+- (BOOL) worksWhenModal { return NO; }
 
 // Target/Action of Browser
-- (void)selectItem:(id)sender
+- (void) selectItem: (id)sender
 {
-   if (_cell && [_cell isKindOfClass:[NSComboBoxCell class]])
-   {
-      [_cell setStringValue:[[sender selectedCell] stringValue]];
+  if (_cell)
+    {
+      [_cell setStringValue: [[sender selectedCell] stringValue]];
       _stopped = YES;
-   }
+    }
 }
 
 // Browser Delegate Methods
-- (int)browser:(NSBrowser *)sender numberOfRowsInColumn:(int)column
+- (int) browser: (NSBrowser *)sender 
+numberOfRowsInColumn: (int)column
 {
-   if (!(_cell && [_cell isKindOfClass:[NSComboBoxCell class]]))
-      return 0;
-   [list release];
-   list = [[_cell objectValues] retain];
-   return [list count];
-   return 0;
+  if (!_cell)
+    return 0;
+
+  ASSIGN(list, [_cell objectValues]);
+  return [_cell numberOfItems];
 }
 
-- (void)browser:(NSBrowser *)sender willDisplayCell:(id)aCell
-	  atRow:(int)row column:(int)column
+- (void)browser: (NSBrowser *)sender 
+willDisplayCell: (id)aCell
+	  atRow: (int)row 
+	 column:(int)column
 {
-   [aCell setStringValue:[list objectAtIndex:row]];
-   [aCell setLeaf:YES];
-}
-
-@end
-
-@implementation GSPopUpActionBrowser
-
-- (BOOL)sendAction:(SEL)theAction to:(id)theTarget
-{
-   // This Jippo is there because the browser does not want to send
-   // the action if we came from a modal panel
-   if (theTarget && theAction && [theTarget respondsToSelector:theAction])
-   {
-      [theTarget performSelector:theAction withObject:self];
-      return YES;
-   }
-   return [super sendAction:theAction to:theTarget];
+  [aCell setStringValue: [list objectAtIndex:row]];
+  [aCell setLeaf: YES];
 }
 
 @end

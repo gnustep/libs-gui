@@ -27,14 +27,12 @@
 #ifndef _GNUstep_H_NSComboBoxCell
 #define _GNUstep_H_NSComboBoxCell
 
-#import <AppKit/NSTextFieldCell.h>
-#import <AppKit/NSTableView.h>
+#include <AppKit/NSTextFieldCell.h>
 
-@class NSButtonCell,NSScrollView;
+@class NSButtonCell, NSScrollView;
 
 @interface NSComboBoxCell : NSTextFieldCell
 {
-   id			_delegate;
    id			_dataSource;
    NSButtonCell		*_buttonCell;
    NSMutableArray	*_popUpList;
@@ -44,11 +42,9 @@
    int			_visibleItems;
    NSSize		_intercellSpacing;
    float		_itemHeight;
-
-   // Should be private but because of copying we can't
-   NSView		*_popView;
+   int                  _selectedItem;
+  
 @private;
-   BOOL			_canPop;
    NSRect		_popRect;
    NSEvent		*_mUpEvent;
 }
