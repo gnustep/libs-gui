@@ -1,3 +1,9 @@
+Tue Apr  9 22:28:12 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Patch by Alexander Malmberg <alexander@malmberg.org>:
+	* Source/NSScroller.m ([-setFloatValue:knobProportion:]): Make
+	sure we mark the scroller knob slot as needing redisplay.
+	
 2002-04-08  Ludovic Marcotte <ludovic@Sophos.ca>
 
 	* Source/NSMenuView.m (-dealloc): Modified the dealloc method
