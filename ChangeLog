@@ -1,3 +1,11 @@
+2003-01-28 20:02  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSHorizontalTypesetter: Set proper used rect for line frag
+	rects.
+
+	* Source/GSLayoutManager.m (-usedRectForTextContainer:): Return sane
+	value if there are no line frag rects in the text container.
+
 2003-01-28 17:55  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSLayoutManager.m (-layoutLineNewParagraph:): Try to make

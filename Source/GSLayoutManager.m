@@ -1813,6 +1813,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
     }
 
   [self _doLayoutToContainer: i];
+  used = NSZeroRect;
   for (i = 0, lf = tc->linefrags; i < tc->num_linefrags; i++, lf++)
     used = NSUnionRect(used, lf->used_rect);
   return used;
