@@ -86,6 +86,16 @@ id _nsbuttonCellClass = nil;
   [self setNeedsDisplay: YES];
 }
 
+- (void)setHighlightsBy:(int)aType
+{
+  [_cell setHighlightsBy:aType];
+}
+
+- (void)setShowsStateBy:(int)aType
+{
+  [_cell setShowsStateBy:aType];
+}
+
 //
 // Setting the State
 //

@@ -45,6 +45,10 @@
 // Setting the Button Type 
 //
 - (void)setButtonType:(NSButtonType)aType;
+#ifndef STRICT_OPENSTEP
+- (void)setHighlightsBy:(int)aType;
+- (void)setShowsStateBy:(int)aType;
+#endif
 
 //
 // Setting the State 
