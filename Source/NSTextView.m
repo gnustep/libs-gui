@@ -1925,15 +1925,14 @@ static NSNotificationCenter *nc;
 - (void) clickedOnLink: (id)link
 	       atIndex: (unsigned int)charIndex
 {
-  /* Notifies the delegate that the user clicked in a link at the
-     specified charIndex. The delegate may take any appropriate actions
-     to handle the click in its textView: clickedOnLink: atIndex:
-     method. */
-  if (_delegate != nil && 
-      [_delegate respondsToSelector: 
-		   @selector(textView:clickedOnLink:atIndex:)])
+  if (_delegate != nil)
     {
-      [_delegate textView: self clickedOnLink: link atIndex: charIndex];
+      SEL selector = @selector(textView:clickedOnLink:atIndex:);
+
+      if ([_delegate respondsToSelector: selector])
+	{
+	  [_delegate textView: self  clickedOnLink: link  atIndex: charIndex];
+	}
     }
 }
 
