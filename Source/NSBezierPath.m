@@ -828,103 +828,132 @@ static Class NSBezierPath_concrete_class = nil;
     [self lineToPoint: points[i]];
 }
 
-- (void)appendBezierPathWithOvalInRect:(NSRect)aRect
+- (void) appendBezierPathWithOvalInRect: (NSRect)aRect
 {
   [self appendBezierPath: [isa bezierPathWithOvalInRect: aRect]];
 }
 
-- (void)appendBezierPathWithArcWithCenter:(NSPoint)center  
-				   radius:(float)radius
-			       startAngle:(float)startAngle
-				 endAngle:(float)endAngle
-				clockwise:(BOOL)clockwise
+/* startAngle and endAngle are in degrees, counterclockwise, from the 
+   x axis */
+- (void) appendBezierPathWithArcWithCenter: (NSPoint)center  
+				    radius: (float)radius
+				startAngle: (float)startAngle
+				  endAngle: (float)endAngle
+				 clockwise: (BOOL)clockwise
 {
-  NSBezierPath *path = [isa bezierPath];
-  float strtangrd, endangrd, diff;
+  float startAngle_rad, endAngle_rad, diff;
   NSPoint p0, p1, p2, p3;
 
-  while(startAngle < 0)
+  while (startAngle < 0)
     startAngle = startAngle + 360;
-  while(startAngle > 360)
+  while (startAngle > 360)
     startAngle = startAngle - 360;
 
-  while(endAngle < 0)
+  while (endAngle < 0)
     endAngle = endAngle + 360;
-  while(endAngle > 360)
+  while (endAngle > 360)
     endAngle = endAngle - 360;
 
-  strtangrd = PI * startAngle / 180;
-  endangrd = PI * endAngle / 180;
+  /* Convert the angles to radians */
+  startAngle_rad = PI * startAngle / 180;
+  endAngle_rad = PI * endAngle / 180;
 
-  p0 = NSMakePoint(center.x + radius * cos(strtangrd), center.y + radius * sin(strtangrd));
-  [path moveToPoint: p0];
+  /* Start point */
+  p0 = NSMakePoint (center.x + radius * cos (startAngle_rad), 
+		    center.y + radius * sin (startAngle_rad));
+  [self moveToPoint: p0];
 
   if (clockwise)
     {
       diff = -PI / 2;
-      if (strtangrd < endangrd)
-	strtangrd += 2 * PI; 
+      if (startAngle_rad < endAngle_rad)
+	{
+	  startAngle_rad += 2 * PI; 
+	}
     }
   else
     {
       diff = PI / 2;
-      if (strtangrd > endangrd)
-	strtangrd -= 2 * PI; 
+      if (startAngle_rad > endAngle_rad)
+	{
+	  startAngle_rad -= 2 * PI; 
+	}
     }  
 
-  while (strtangrd > endangrd)
-  {
-      if (strtangrd + diff >= endangrd)
-        {
-	  float sin_sta = sin(strtangrd);
-	  float cos_sta = cos(strtangrd);
-
-	  // FIXME: Add a quarter circle, for clockwise the signs are not correct!
-	  p1 = NSMakePoint(center.x + radius * (cos_sta - KAPPA * sin_sta), 
-			   center.y + radius * (sin_sta + KAPPA * cos_sta));
-	  p2 = NSMakePoint(center.x + radius * (KAPPA * cos_sta -sin_sta),
-			   center.y + radius * (cos_sta + KAPPA * sin_sta));
-	  p3 = NSMakePoint(center.x + radius * (-sin_sta), 
-			   center.y + radius * cos_sta);  
-	  [path curveToPoint: p3 controlPoint1: p1 controlPoint2: p2];
-	  strtangrd += diff;
-	}
-      else
-        {
-	  float diff_ang = (endangrd - strtangrd) / 2;
-	  float cos_da = cos(diff_ang);
-	  float sin_da = sin(diff_ang);
-	  double x, y;
-	  float sin_sta = sin(strtangrd + diff_ang);
-	  float cos_sta = cos(strtangrd + diff_ang);
-
-	  x = (4 - cos_da) / 3;
-	  y = ((1- cos_da) * (cos_da - 3)) / (3 * sin_da);
-	  // FIXME: Add just the missing bit, for clockwise the signs are not correct!
-	  p1 = NSMakePoint(center.x + radius * (cos_sta * x - sin_sta * y),
-			   center.y + radius * (sin_sta * y + cos_sta * x));  
-	  p2 = NSMakePoint(center.x + radius * (cos_sta * x + sin_sta * y), 
-			   center.y + radius * (sin_sta * (-y) + cos_sta * x));  
-	  p3 = NSMakePoint(center.x + radius * cos(endangrd), 
-			   center.y + radius * sin(endangrd));
-	  [path curveToPoint: p3 controlPoint1: p1 controlPoint2: p2];
-	  break;
-	}
+  while ((clockwise) ? (startAngle_rad > endAngle_rad) 
+	 : (startAngle_rad < endAngle_rad))
+    {
+    /* Add a quarter circle */
+    if ((clockwise) ? (startAngle_rad + diff >= endAngle_rad) 
+	: (startAngle_rad + diff <= endAngle_rad))
+      {
+	float sin_start = sin (startAngle_rad);
+	float cos_start = cos (startAngle_rad);
+	float sign = (clockwise) ? -1.0 : 1.0;
+	
+	p1 = NSMakePoint (center.x 
+                           + radius * (cos_start - KAPPA * sin_start * sign), 
+			  center.y 
+                           + radius * (sin_start + KAPPA * cos_start * sign));
+	p2 = NSMakePoint (center.x 
+                           + radius * (-sin_start * sign + KAPPA * cos_start),
+			  center.y 
+                           + radius * (cos_start * sign + KAPPA * sin_start));
+	p3 = NSMakePoint (center.x + radius * (-sin_start * sign),
+			  center.y + radius *   cos_start * sign);
+	
+	[self curveToPoint: p3  controlPoint1: p1  controlPoint2: p2];
+	startAngle_rad += diff;
+      }
+    else
+      {
+	/* Add the missing bit
+	 * We require that the arc be less than a semicircle.
+	 * The arc may go either clockwise or counterclockwise.
+	 * The approximation is a very simple one: a single curve
+	 * whose middle two control points are a fraction F of the way
+	 * to the intersection of the tangents, where
+	 *      F = (4/3) / (1 + sqrt (1 + (d / r)^2))
+	 * where r is the radius and d is the distance from either tangent
+	 * point to the intersection of the tangents. This produces
+	 * a curve whose center point, as well as its ends, lies on
+	 * the desired arc.
+	 */
+	NSPoint ps = [self currentPoint];
+	/* tangent is the tangent of half the angle */
+	float tangent = tan ((endAngle_rad - startAngle_rad) / 2);
+	/* trad is the distance from either tangent point to the
+	   intersection of the tangents */
+	float trad = radius * tangent;
+	/* pt is the intersection of the tangents */
+	NSPoint pt = NSMakePoint (ps.x - trad * sin (startAngle_rad),
+				  ps.y + trad * cos (startAngle_rad));
+	/* This is F - in this expression we need to compute 
+	   (trad/radius)^2, which is simply tangent^2 */
+	float f = (4.0 / 3.0) / (1.0 + sqrt (1.0 +  (tangent * tangent)));
+	
+	p1 = NSMakePoint (ps.x + (pt.x - ps.x) * f, ps.y + (pt.y - ps.y) * f);
+	p3 = NSMakePoint(center.x + radius * cos (endAngle_rad),
+			 center.y + radius * sin (endAngle_rad));
+	p2 = NSMakePoint (p3.x + (pt.x - p3.x) * f, p3.y + (pt.y - p3.y) * f);
+	[self curveToPoint: p3  controlPoint1: p1  controlPoint2: p2];
+	break;
+      }
   }
 }
 
-- (void)appendBezierPathWithArcWithCenter:(NSPoint)center  
-				   radius:(float)radius
-			       startAngle:(float)startAngle
-				 endAngle:(float)endAngle
+- (void) appendBezierPathWithArcWithCenter: (NSPoint)center  
+				    radius: (float)radius
+				startAngle: (float)startAngle
+				  endAngle: (float)endAngle
 {
-  [self appendBezierPathWithArcWithCenter: center radius: radius
-	startAngle: startAngle endAngle: endAngle clockwise: NO];
+  [self appendBezierPathWithArcWithCenter: center  radius: radius
+	startAngle: startAngle  endAngle: endAngle  clockwise: NO];
 }
 
-- (void)appendBezierPathWithArcFromPoint:(NSPoint)point1
-				 toPoint:(NSPoint)point2
-				  radius:(float)radius
+- (void) appendBezierPathWithArcFromPoint: (NSPoint)point1
+				  toPoint: (NSPoint)point2
+				   radius: (float)radius
 {
   // TODO
 }
@@ -1326,9 +1355,9 @@ typedef struct _PathElement
   INVALIDATE_CACHE();
 }
 
-- (void)curveToPoint:(NSPoint)aPoint 
-		 controlPoint1:(NSPoint)controlPoint1
-		 controlPoint2:(NSPoint)controlPoint2
+- (void) curveToPoint: (NSPoint)aPoint 
+	controlPoint1: (NSPoint)controlPoint1
+	controlPoint2: (NSPoint)controlPoint2
 {
   PathElement elem;
   
@@ -1666,3 +1695,4 @@ static void flatten(NSPoint coeff[], float flatness, NSBezierPath *path)
       [path lineToPoint: coeff[3]];
     }
 }
+
