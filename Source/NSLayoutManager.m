@@ -2045,7 +2045,7 @@ no_soft_invalidation:
       */
       for (i = 0, tc = textcontainers; i < num_textcontainers; i++, tc++)
 	{
-	  for (j = 0, lf = tc->linefrags + j; j < tc->num_soft; j++, lf++)
+	  for (j = 0, lf = tc->linefrags + tc->num_linefrags; j < tc->num_soft; j++, lf++)
 	    {
 	      if (lf->points)
 		{
