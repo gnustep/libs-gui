@@ -182,7 +182,7 @@ static NSImage *_pbc_image[2];
 
 - (void) insertItemWithTitle: (NSString *)title atIndex: (int)index
 {
-  NSMenuItem *anItem = [NSMenuItem new];
+  NSMenuItem *anItem;
   NSMenuItemCell *aCell;
   int count = [_menu numberOfItems];
 
@@ -191,13 +191,11 @@ static NSImage *_pbc_image[2];
   if (index > count)
     index = count;
 
-  [anItem setTitle: title];
-  [anItem setTarget: nil];
-  [anItem setAction: NULL];
-
-  [_menu insertItem: anItem atIndex: index];
-
-  RELEASE(anItem);
+  anItem = [_menu insertItemWithTitle: title
+		  action: [self action]
+		  keyEquivalent: @""
+		  atIndex: index];
+  [anItem setTarget: [self target]];
 
   aCell = [[_menu menuRepresentation] menuItemCellForItemAtIndex: index];
   [aCell setBelongsToPopUpButton: YES];
