@@ -724,7 +724,10 @@
   [string getCharacters: buffer];
   resultData = [[NSMutableData alloc]
                                initWithCapacity: (int)(length * 1.2)];
-  
+
+  // We don't supply an ANSI representation for Unicode characters
+  [resultData appendBytes: "\\uc0 " length: 5];
+
   for (i = 0; i < length; i++)
     {
       unichar c;
