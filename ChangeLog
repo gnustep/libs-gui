@@ -1,7 +1,37 @@
+Sun Sep  3 21:20:25 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSSliderCell.m ([-init]): Create titleCell.
+	([-drawKnob]), ([-drawKnob:]): Access control_view ivar.
+
+Sun Sep  3 20:57:32 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSBrowser.m ([-drawRect:]): Simplifications; do not lock
+	focus before drawing scroller border.
+	* Source/NSScroller.m Cache scrollBarColor.  ([-drawRect:]): Only
+	redraw the interested parts using a little cache.
+	([-drawKnobSlot]): Cache rect.  ([-setFrameSize:]),
+	([-setFrame:]), ([-setArrowsPosition:]), ([-setEnabled:]):
+	Invalidate little cache.
+	* Headers/gnustep/gui/NSScroller.h: Added ivar for caching rects.
+	* Source/NSSlider.m (_floatValueForMousePoint): New inline
+	function replacing [-_floatValueForMousePointknobRect:].
+	([-trackKnob:knobRect:]), ([-mouseDown:]): Use the new inline
+	function.  ([-trackKnob:knobRect:]): Tiny caching.
+	([-mouseDown:]): Use flag for flipped.
+	* Source/NSTableView.m ([-drawRect:]): Only fill background in
+	rect argument.
+
+	* Source/NSBrowser.m ([-_performLoadOfColumn:]): Release matrix
+	sooner.
+	* Source/NSCell.m ([-dealloc]): Use NSDeallocateObject.
+	* Source/NSSavePanel.m ([-browser:createRowsForColumn:inMatrix:]):
+	Use an autorelease pool; avoid creating the column if it is void.
+	* Source/NSTableHeaderCell.m ([-drawWithFrame:inView:]): Fixed
+	typo: self, not super.
+
 2000-09-02  Fred Kiefer  <FredKiefer@gmx.de>
 
-	* Source/GSFontInfo.m: 
-	Added missing RETAINs.
+	* Source/GSFontInfo.m: Added missing RETAINs.
 	* Source/NSBrowser.m
 	* Source/NSFontPanel.m
 	* Source/NSLayoutManager.m
@@ -12,7 +42,7 @@
 	* Source/NSStringDrawing.m
 	* Source/NSTableHeaderCell.m
 	* Source/NSTabView.m
-	* Source/NSText.m
+	* Source/NSText.m: 
 	Changed system fonts of size 12 to 0. This will use Nicolas font
 	cache and keep font sizes consistent when changed.
 	
