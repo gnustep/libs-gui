@@ -1,3 +1,8 @@
+Thu Jan 30 04:39:47 2003  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSWindowController.m ([-dealloc]): Release the window, do
+	not autorelease it.
+
 Thu Jan 30 03:57:42 2003  Serg Stoyan <stoyan@hologr.com>
 	
 	* Source/NSMenuView.m ([-sizeToFit]): Removed the additional 17
