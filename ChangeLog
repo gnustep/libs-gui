@@ -1,3 +1,8 @@
+2003-06-24 01:05  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSTabViewItem.m (-drawLabel:inRect:): Update for change
+	in the behavior of -drawAtPoint:. Use -drawInRect: instead.
+
 2003-06-23 19:03  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSStringDrawing.m (-drawAtPoint:): Place the text correctly

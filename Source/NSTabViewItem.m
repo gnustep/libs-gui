@@ -155,7 +155,7 @@
 	   inRect:(NSRect)tabRect
 {
   NSGraphicsContext     *ctxt = GSCurrentContext();
-//  NSRect lRect;
+  NSRect lRect;
   NSRect fRect;
   NSDictionary *attr;
   NSString *string;
@@ -197,13 +197,9 @@
 			       [NSColor blackColor], NSForegroundColorAttributeName,
 			       nil];
 
-  // For some unclear reason, somehow connected with clipping,
-  // drawInRect does not work here. But drawAtPoint works fine.
-  [string drawAtPoint: NSMakePoint(tabRect.origin.x, NSMaxY(tabRect)) 
-	  withAttributes: attr];
-//  lRect = tabRect;
-//  lRect.origin.y += 3;
-//  [_label drawInRect: lRect withAttributes: attr];
+  lRect = tabRect;
+  lRect.origin.y += 3;
+  [string drawInRect: lRect withAttributes: attr];
   RELEASE(attr);
 
   DPSgrestore(ctxt);
