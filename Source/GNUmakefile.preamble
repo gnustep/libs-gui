@@ -76,7 +76,7 @@ ADDITIONAL_LIB_DIRS =
 #
 
 # Additional directories to be created during installation
-ADDITIONAL_INSTALL_DIRS = $(GNUSTEP_HEADERS)/gnustep/AppKit
+ADDITIONAL_INSTALL_DIRS = $(GNUSTEP_HEADERS)/AppKit
 
 # What are the libraries this library depends upon. This is needed for some
 # systems where building a shared library requires to pass to the linker
