@@ -24,7 +24,7 @@
 */
 
 #include <Foundation/NSRunLoop.h>
-
+#include "gnustep/gui/config.h"
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSSlider.h>
 #include <AppKit/NSSliderCell.h>

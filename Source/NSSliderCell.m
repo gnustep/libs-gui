@@ -24,7 +24,7 @@
 */
 
 #include <Foundation/NSString.h>
-
+#include "gnustep/gui/config.h"
 #include <AppKit/NSSliderCell.h>
 #include <AppKit/NSControl.h>
 #include <AppKit/NSImage.h>
