@@ -53,6 +53,7 @@
 #include <AppKit/NSParagraphStyle.h>
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSSpellChecker.h>
+#include <AppKit/NSScrollView.h>
 
 #include <AppKit/NSDragging.h>
 #include <AppKit/NSTextStorage.h>
@@ -208,12 +209,50 @@ static	Class	concrete;
 
 - (void) setBackgroundColor: (NSColor*)color
 {
-  ASSIGN (_background_color, color);
+  if (![_background_color isEqual: color])
+    {
+      ASSIGN (_background_color, color);
+      
+      [self setNeedsDisplay: YES];
+
+      if (!_tf.is_field_editor)
+	{
+	  /* If we are embedded in a scrollview, we might not be
+	     filling all the scrollview's area (a textview might
+	     resize itself dynamically in response to user input).  If
+	     this is the case, the scrollview is drawing the rest of
+	     the background - change that too.  */
+	  NSScrollView *sv = [self enclosingScrollView];
+	  
+	  if (sv != nil)
+	    {
+	      [sv setBackgroundColor: color];
+	    }
+	}
+    }
 }
+
+
 
 - (void) setDrawsBackground: (BOOL)flag
 {
-  _tf.draws_background = flag;
+  if (_tf.draws_background != flag)
+    {
+      _tf.draws_background = flag;
+
+      [self setNeedsDisplay: YES];
+
+      if (!_tf.is_field_editor)
+	{
+	  /* See comment in setBackgroundColor:.  */
+	  NSScrollView *sv = [self enclosingScrollView];
+	  
+	  if (sv != nil)
+	    {
+	      [sv setDrawsBackground: flag];
+	    }
+	}
+    }
 }
 
 /*
