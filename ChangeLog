@@ -1,3 +1,25 @@
+2001-08-11  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSImage.h
+	Added declaration of
+	[compositeToPoint:fromRect:operation:fraction:],
+	[compositeToPoint:operation:fraction:],
+	[drawAtPoint:fromRect:operation:fraction:] and
+	[drawInRect:fromRect:operation:fraction:]
+	* Source/NSImage.m
+	Dummy implementation of new methods.
+	[dissolveToPoint:fromRect:fraction:] Move the drawing rectangle
+	to the origin of the image rep before the intersection of the two
+	rects.
+	[TIFFRepresentationUsingCompression:factor:] and
+	[TIFFRepresentation] call method on NSBitmapImageRep.
+	List explicit flag settings in [init].
+	Moved background drawing to [drawRepresentation:inRect:].
+	Restructured [_doImageCache] and [_cacheForRep:].
+	* Source/NSBitmapImageRep.m
+	Implemented [TIFFRepresentationOfImageRepsInArray] and
+	[TIFFRepresentationOfImageRepsInArray:usingCompression:factor:]
+	
 Fri Aug 10 11:00:00 2001  Nicola Pero <n.pero@mi.flashnet.it>
 
 	* Source/Parsers/attributedStringConsumer.m (GSRTFcolorbg): set
