@@ -552,8 +552,7 @@ static NSNotificationCenter *nc = nil;
 /* default Screen and window depth */
 + (NSWindowDepth) defaultDepthLimit
 {
-  // FIXME: This should come from the server
-  return 8;
+  return [[NSScreen deepestScreen] depth];
 }
 
 + (void)menuChanged: (NSMenu*)aMenu
@@ -623,6 +622,7 @@ static NSNotificationCenter *nc = nil;
   TEST_RELEASE(_rectsBeingDrawn);
   TEST_RELEASE(_initialFirstResponder);
   TEST_RELEASE(_defaultButtonCell);
+  RELEASE(_screen);
 
   /*
    * FIXME This should not be necessary - the views should have removed
@@ -646,6 +646,7 @@ static NSNotificationCenter *nc = nil;
 
 - (void) _initBackendWindow: (NSRect)frame
 {
+  int screenNumber;
   id dragTypes;
   NSGraphicsContext *context = GSCurrentContext();
   GSDisplayServer *srv = GSCurrentServer();
@@ -662,9 +663,9 @@ static NSNotificationCenter *nc = nil;
       [srv removeDragTypes: dragTypes fromWindow: self];
     }
 
-  frame = [NSWindow contentRectForFrameRect: frame styleMask: _styleMask];
-
-  _windowNum = [srv window: frame : _backingType : _styleMask];
+  screenNumber = [[[_screen deviceDescription] objectForKey: @"NSScreenNumber"]
+		   intValue];
+  _windowNum = [srv window: frame : _backingType : _styleMask : screenNumber];
   [srv setwindowlevel: [self level] : _windowNum];
 
   // Set window in new _gstate
@@ -674,6 +675,7 @@ static NSNotificationCenter *nc = nil;
   DPSgrestore(context);
   NSMapInsert (windowmaps, (void*)_windowNum, self);
 
+  frame = [NSWindow contentRectForFrameRect: frame styleMask: _styleMask];
   if (NSIsEmptyRect([_wv frame]))
     {
       frame.origin = NSZeroPoint;
@@ -766,7 +768,7 @@ static NSNotificationCenter *nc = nil;
 		     defer: (BOOL)flag
 		    screen: (NSScreen*)aScreen
 {
-  NSRect		cframe;
+  NSRect  cframe;
 
   if (!NSApp)
     NSLog(@"No application!\n");
@@ -782,6 +784,10 @@ static NSNotificationCenter *nc = nil;
 
   _backingType = bufferingType;
   _styleMask = aStyle;
+  if (aScreen == nil)
+    aScreen = [NSScreen mainScreen];
+  ASSIGN(_screen, aScreen);
+  _depthLimit = [_screen depth];
   
   _frame = [NSWindow frameRectForContentRect: contentRect styleMask: aStyle];
   _minimumSize = NSMakeSize(_frame.size.width - contentRect.size.width + 1,
@@ -1890,7 +1896,7 @@ static NSNotificationCenter *nc = nil;
 
 - (BOOL) canStoreColor
 {
-  if (_depthLimit > 1)
+  if (NSNumberOfColorComponents(NSColorSpaceFromDepth(_depthLimit)) > 1)
     {
       return YES;
     }
@@ -1900,10 +1906,12 @@ static NSNotificationCenter *nc = nil;
     }
 }
 
+/** Returns the screen the window is on. Unlike (apparently) OpenStep
+    and MacOSX, GNUstep does not support windows being split across
+    multiple screens */
 - (NSScreen *) deepestScreen
 {
-  // FIXME: We must check the screens the window is on
-  return [NSScreen deepestScreen];
+  return [self screen];
 }
 
 - (NSWindowDepth) depthLimit
@@ -1916,10 +1924,10 @@ static NSNotificationCenter *nc = nil;
   return _f.dynamic_depth_limit;
 }
 
+/** Returns the screen the window is on. */
 - (NSScreen *) screen
 {
-  // FIXME: Works only if there is only one screen
-  return [NSScreen mainScreen];
+  return _screen;
 }
 
 - (void) setDepthLimit: (NSWindowDepth)limit
@@ -3909,7 +3917,7 @@ resetCursorRectsForView(NSView *theView)
   _lastPoint = NSZeroPoint;
   _windowLevel = NSNormalWindowLevel;
 
-  _depthLimit = 8;
+  _depthLimit = NSDefaultDepth;
   _disableFlushWindow = 0;
   _alphaValue = 0.0;
 

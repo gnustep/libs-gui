@@ -1,3 +1,21 @@
+2002-04-22  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/gnustep/gui/GSDisplayServer.h: Add attribute strings.
+	New window::: method.
+	* Headers/gnustep/gui/NSWindow.h: Add screen ivar plus some extra
+	reserved ivars.
+	* Source/GSDisplayServer.m: Add attribute strings.
+	(window::::): New
+	(window:::): Implement in terms of window::::
+	* Source/NSWindow.m: (defaultDepthLimit): Implement.
+	(dealloc): Release _screen.
+	(_initBackendWindow:): Interface change: pass frame rect to
+	window server window creation (not content rect). Pass screen number.
+	(initWithContentRect:...): Save screen, depthLimit;
+	(canStoreColor): Check depthLimit correctly.
+	(deepestScreen): Return screen.
+	(screen): Idem.
+
 Sun Apr 21 12:57:36 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Model/GMAppKit.m ([NSWindow -encodeWithModelArchiver:]): If not

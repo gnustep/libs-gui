@@ -37,7 +37,7 @@
 #include <AppKit/NSGraphicsContext.h>
 
 @class NSArray;
-@class NSDictionary;
+@class NSMutableDictionary;
 @class NSEvent;
 @class NSImage;
 @class NSMutableArray;
@@ -48,9 +48,14 @@
 APPKIT_DECLARE GSDisplayServer * GSServerForWindow(NSWindow *window);
 APPKIT_DECLARE GSDisplayServer * GSCurrentServer(void);
 
+/* Display attributes */
+APPKIT_DECLARE NSString * GSDisplayName;
+APPKIT_DECLARE NSString * GSDisplayNumber;
+APPKIT_DECLARE NSString * GSScreenNumber;
+
 @interface GSDisplayServer : NSObject
 {
-  NSDictionary		*server_info;
+  NSMutableDictionary	*server_info;
   NSMutableArray	*event_queue;
   NSMapTable		*drag_types;
 }
@@ -90,6 +95,8 @@ APPKIT_DECLARE GSDisplayServer * GSCurrentServer(void);
 @interface GSDisplayServer (WindowOps)
 - (void) _setWindowOwnedByServer: (int)win;
 - (int) window: (NSRect)frame : (NSBackingStoreType)type : (unsigned int)style;
+- (int) window: (NSRect)frame : (NSBackingStoreType)type : (unsigned int)style
+	      : (int)screen;
 - (void) termwindow: (int) win;
 - (void) stylewindow: (int) style : (int) win;
 - (void) windowbacking: (NSBackingStoreType)type : (int) win;

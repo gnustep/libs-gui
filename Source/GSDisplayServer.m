@@ -36,6 +36,11 @@
 #include <AppKit/NSWindow.h>
 #include <AppKit/GSDisplayServer.h>
 
+/* Display attributes */
+NSString * GSDisplayName = @"DisplayName";
+NSString * GSDisplayNumber = @"DisplayNumber";
+NSString * GSScreenNumber = @"ScreenNumber";
+
 /* The memory zone where all server objects are allocated from (Contexts
    are also allocated from this zone) */
 static NSZone *_globalGSZone = NULL;
@@ -135,9 +140,22 @@ GSCurrentServer(void)
     <p>Create a window server with attributes, which contains key/value
     pairs which describe the specifics of how the window server is to
     be initialized. Typically these values are specific to the
-    concrete implementation. Currently there are no standard set of
-    attributes defined for GSDisplayServer.</p>
-
+    concrete implementation. The current set of attributes that can be
+    used with GSDisplayServer is.
+   <list>
+     <item>GSDisplayName</item>,
+     <item>GSDisplayNumber</item>,
+     <item>GSScreenNumber</item>,
+   </list>
+   GSDisplayName is window server specific and shouldn't be used when
+   creating a GSDisplayServer (although you can retrieve the value with
+   the -attributes method). On X-Windows the value might be set to something
+   like "host:d.s" where host is the host name, d is the display number and
+   s is the screen number. GSDisplayNumber indicates the number of the
+   display to open. GSScreenNumber indicates the number of the screen to
+   display on. If not explicitly set, these attributes may be taked from
+   environment variables or from other operating specific information.
+   </p>
     <p>In almost all applications one would only create a
     single instance of a window server. Although it is possible, it is
     unlikely that you would need more than one window server (and you
@@ -189,7 +207,7 @@ GSCurrentServer(void)
 {
   [super init];
 
-  ASSIGN(server_info, attributes);
+  server_info = [attributes mutableCopy];
   event_queue = [[NSMutableArray allocWithZone: [self zone]]
 			initWithCapacity: 32];
   drag_types = NSCreateMapTable(NSIntMapKeyCallBacks,
@@ -377,10 +395,11 @@ GSCurrentServer(void)
 
 /**
    Returns an array of NSNumbers, where each number describes a screen
-   that is available on this display.
+   that is available on this display. The default screen is listed first.
  */
 - (NSArray *) screenList
 {
+  [self subclassResponsibility: _cmd];
   return nil;
 }
 
@@ -422,8 +441,23 @@ GSCurrentServer(void)
 
 /** Creates a window whose location and size is described by frame and
     whose backing store is described by type. This window is not
-    mapped to the screen by this call */
+    mapped to the screen by this call. Note that frame includes the title
+    bar and all other window decorations. In many cases the window
+    manager controls these aspects of the window. The actual drawable
+    area of the window may vary depending on the window manager involved.
+    Use -styleoffsets::::: to determine the extent of the window decorations.
+*/
 - (int) window: (NSRect)frame : (NSBackingStoreType)type : (unsigned int)style
+{
+  int sn = [[server_info objectForKey: GSScreenNumber] intValue];
+
+  return [self window: frame : type : style : sn];
+}
+
+/** Like window::: only there is an additional argument to specify which
+    screen the window will display on */
+- (int) window: (NSRect)frame : (NSBackingStoreType)type : (unsigned int)style
+	      : (int)screen
 {
   [self subclassResponsibility: _cmd];
   return 0;
@@ -471,8 +505,8 @@ GSCurrentServer(void)
 }
 
 
-/** Sets the window drawable for the current NSGraphicsContext,
-    typically by calling [NSGraphicsContext -DPSsetgcdrawable::::],
+/** Sets the window device information for the current NSGraphicsContext,
+    typically by calling [NSGraphicsContext -GSSetDevice:::],
     although depending on the concrete implmentation, more information
     than this may need to be exchanged. */
 - (void) windowdevice: (int) win

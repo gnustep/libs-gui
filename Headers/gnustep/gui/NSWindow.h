@@ -118,6 +118,8 @@ APPKIT_EXPORT NSSize NSTokenSize;
   int           _lastDragOperationMask;
   int           _windowNum;
   int           _gstate;
+  void          *_reserved_s;
+  NSScreen      *_screen;
   NSColor       *_backgroundColor;
   NSString      *_representedFilename;
   NSString      *_miniaturizedTitle;
@@ -168,6 +170,8 @@ APPKIT_EXPORT NSSize NSTokenSize;
   } _f;
  
   id _defaultButtonCell;
+  void          *_reserved_1;
+  void          *_reserved_2;
 }
 
 /*
