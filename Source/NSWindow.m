@@ -257,7 +257,7 @@ static NSRecursiveLock	*windowsLock;
   style_mask = aStyle;
 
   frame = [NSWindow frameRectForContentRect: contentRect styleMask: aStyle];
-  minimum_size = NSZeroSize;
+  minimum_size = NSMakeSize(1, 1);
   maximum_size = r.size;
 
   [self setNextResponder: NSApp];
@@ -677,11 +677,11 @@ static NSRecursiveLock	*windowsLock;
     {
       frameRect.size.height = maximum_size.height;
     }
-  if (minimum_size.width > 0 && frameRect.size.width < minimum_size.width)
+  if (frameRect.size.width < minimum_size.width)
     {
       frameRect.size.width = minimum_size.width;
     }
-  if (minimum_size.height > 0 && frameRect.size.height < minimum_size.height)
+  if (frameRect.size.height < minimum_size.height)
     {
       frameRect.size.height = minimum_size.height;
     }
@@ -725,6 +725,10 @@ static NSRecursiveLock	*windowsLock;
 
 - (void) setMinSize: (NSSize)aSize
 {
+  if (aSize.width < 1)
+    aSize.width = 1;
+  if (aSize.height < 1)
+    aSize.height = 1;
   minimum_size = aSize;
 }
 

@@ -4,6 +4,7 @@ Sun Jul 25 11:40:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 	([-replaceCharactersinRange:withString:]) to call
 	([-edited:range:changeInLength:) on completion.
 	* Source/NSTextStorage.m: likewise.
+	* Source/NSWindow.m: make minimum window size 1 by 1.
 
 1999-07-24  Michael Hanni  <mhanni@sprintmail.com>
 
