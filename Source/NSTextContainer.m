@@ -99,7 +99,15 @@
 
 - (void) dealloc
 {
-  RELEASE (_textView);
+  if (_textView != nil)
+    {
+      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+      [nc removeObserver: self
+	  name: NSViewFrameDidChangeNotification
+	  object: _textView];
+      
+      RELEASE (_textView);
+    }
   [super dealloc];
 }
 
