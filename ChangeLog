@@ -1,3 +1,9 @@
+Thu Sep  2 16:42:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* NSWorkspace.m: Trivial fix to pass app when opening files.
+	* GSServicesManager.m: Fix to send open commands to app delegate
+	rather than to application object itsself.
+
 Thu Sep  2 12:50:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* NSWorkspace.m: Fixes for locating icons in application resources.

@@ -81,6 +81,8 @@
    openFileWithoutUI: (NSString*)file;
 - (BOOL) application: (NSApplication*)theApp
 	openTempFile: (NSString*)file;
+- (BOOL) application: (NSApplication*)theApp
+	   printFile: (NSString*)file;
 - (void) performService: (NSString*)name
 	 withPasteboard: (NSPasteboard*)pb
 	       userData: (NSString*)ud
@@ -232,25 +234,41 @@ NSRegisterServicesProvider(id provider, NSString *name)
 - (BOOL) application: (NSApplication*)theApp
 	    openFile: (NSString*)file
 {
-  NSApplication	*app = [NSApplication sharedApplication];
+  id	del = [NSApp delegate];
 
-  return [app application: theApp openFile: file];
+  if ([del respondsToSelector: _cmd])
+    return [del application: theApp openFile: file];
+  return NO;
 }
 
 - (BOOL) application: (NSApplication*)theApp
    openFileWithoutUI: (NSString*)file
 {
-  NSApplication	*app = [NSApplication sharedApplication];
+  id	del = [NSApp delegate];
 
-  return [app application: theApp openFileWithoutUI: file];
+  if ([del respondsToSelector: _cmd])
+    return [del application: theApp openFileWithoutUI: file];
+  return NO;
 }
 
 - (BOOL) application: (NSApplication*)theApp
 	openTempFile: (NSString*)file
 {
-  NSApplication	*app = [NSApplication sharedApplication];
+  id	del = [NSApp delegate];
 
-  return [app application: theApp openTempFile: file];
+  if ([del respondsToSelector: _cmd])
+    return [del application: theApp openTempFile: file];
+  return NO;
+}
+
+- (BOOL) application: (NSApplication*)theApp
+	   printFile: (NSString*)file
+{
+  id	del = [NSApp delegate];
+
+  if ([del respondsToSelector: _cmd])
+    return [del application: theApp openFile: file];
+  return NO;
 }
 
 - (void) performService: (NSString*)name

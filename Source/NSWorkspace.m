@@ -521,7 +521,7 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
     andDeactivate: (BOOL)flag
 {
   NSString      *port = [appName stringByDeletingPathExtension];
-  id            app;
+  id            app = nil;
 
   /*
    *	Try to contact a running application.
@@ -567,9 +567,9 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
       NS_DURING
 	{
 	  if (flag == NO)
-	    [app application: nil openFileWithoutUI: fullPath];
+	    [app application: NSApp openFileWithoutUI: fullPath];
 	  else
-	    [app application: nil openFile: fullPath];
+	    [app application: NSApp openFile: fullPath];
 	}
       NS_HANDLER
 	{
