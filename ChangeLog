@@ -1,3 +1,10 @@
+Tue Dec  7  5:40:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Fixes by Jonathon Gapen -
+	* Source/NSButton.m: Use ([+cellClass]) to obtain cell class.
+	* Source/NSPopUpButton.m: Implement ([+setCellClass:]) and
+	([+cellClass])
+
 Mon Dec  6 13:32:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	Additional DPS operator for telling backend to mark a document
