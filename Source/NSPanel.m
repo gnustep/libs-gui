@@ -149,7 +149,7 @@ static NSString	*defaultTitle = @" ";
 
 - (void) setWorksWhenModal: (BOOL)flag
 {
-  _worksWhenModal =  flag;
+  _worksWhenModal = flag;
 }
 
 - (BOOL) becomesKeyOnlyIfNeeded
@@ -159,7 +159,7 @@ static NSString	*defaultTitle = @" ";
 
 - (void) setBecomesKeyOnlyIfNeeded: (BOOL)flag
 {
-  _becomesKeyOnlyIfNeeded =  flag;
+  _becomesKeyOnlyIfNeeded = flag;
 }
 
 /*
@@ -167,12 +167,28 @@ static NSString	*defaultTitle = @" ";
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
+  BOOL	flag;
+
   [super encodeWithCoder: aCoder];
+  flag = _becomesKeyOnlyIfNeeded;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _isFloatingPanel;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _worksWhenModal;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
+  BOOL	flag;
+
   [super initWithCoder: aDecoder];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  [self setBecomesKeyOnlyIfNeeded: flag];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  [self setFloatingPanel: flag];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  [self setWorksWhenModal: flag];
 
   return self;
 }
@@ -288,7 +304,6 @@ static NSString	*defaultTitle = @" ";
 static GSAlertPanel	*standardAlertPanel = nil;
 static GSAlertPanel	*informationalAlertPanel = nil;
 static GSAlertPanel	*criticalAlertPanel = nil;
-static GSAlertPanel	*gmodelAlertPanel = nil;
 
 @interface	GSAlertPanel: NSPanel
 {
@@ -301,15 +316,9 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
   NSScrollView	*scroll;
   int		result;
   BOOL          isGreen;  // we were unarchived and not resized.
-  //PJB: I removed the active flag. Please see the isActivePanel method below.
 }
 
-- (id) initWithContentRect: (NSRect)r
-		 styleMask: (unsigned)m
-		   backing: (NSBackingStoreType)b
-		     defer: (BOOL)d
-		    screen: (NSScreen*)s;
-- (id) initWithModelUnarchiver: (GMUnarchiver*)unarchiver;
+- (id) _initWithoutGModel;
 - (int) runModal;
 - (void) setTitle: (NSString*)title
 	  message: (NSString*)message
@@ -358,16 +367,16 @@ static const float ButtonMinWidth = 72.0;
     }
 }
 
-+ (id) createObjectForModelUnarchiver: (GMUnarchiver*)unarchiver
+- (id) init
 {
-  unsigned backingType = [unarchiver decodeUnsignedIntWithName:
-				       @"backingType"];
-  unsigned styleMask = [unarchiver decodeUnsignedIntWithName: @"styleMask"];
-  NSRect aRect = [unarchiver decodeRectWithName: @"frame"];
-  NSPanel* panel = AUTORELEASE([[GSAlertPanel allocWithZone:
-    [unarchiver objectZone]] initWithContentRect: aRect
-    styleMask: styleMask backing: backingType defer: YES]);
-  return panel;
+/*
+  if (![NSBundle loadNibNamed: @"AlertPanel" owner: self])
+    {
+      NSLog(@"cannot open alert panel model file\n");
+      return nil;
+    }
+ */
+  return [self _initWithoutGModel];
 }
 
 - (void) dealloc
@@ -394,18 +403,6 @@ static const float ButtonMinWidth = 72.0;
   [super dealloc];
 }
 
-- (void) encodeWithModelArchiver: (GMArchiver*)archiver
-{
-  [super encodeWithModelArchiver: archiver];
-  [archiver encodeSize: [self frame].size withName: @"OriginalSize"];
-  [archiver encodeObject: defButton withName: @"DefaultButton"];
-  [archiver encodeObject: altButton withName: @"AlternateButton"];
-  [archiver encodeObject: othButton withName: @"OtherButton"];
-  [archiver encodeObject: icoButton withName: @"IconButton"];
-  [archiver encodeObject: messageField withName: @"MessageField"];
-  [archiver encodeObject: titleField withName: @"TitleField"];
-}
-
 static NSScrollView*
 makeScrollViewWithRect(NSRect rect)
 {
@@ -421,7 +418,6 @@ makeScrollViewWithRect(NSRect rect)
   [scroll setPageScroll: lineHeight*10.0];
   return scroll;
 }
-
 
 - (NSButton*) _makeButtonWithRect: (NSRect)rect
 {
@@ -463,132 +459,106 @@ setControl(NSView* content, id control, NSString *title)
     }
 }
 
-- (id) initWithContentRect: (NSRect)r
-		 styleMask: (unsigned)m
-		   backing: (NSBackingStoreType)b
-		     defer: (BOOL)d
-		    screen: (NSScreen*)s
+- (id) _initWithoutGModel
 {
-  self = [super initWithContentRect: r
-			  styleMask: m
-			    backing: b
-			      defer: d
-			     screen: s];
-  if (self != nil)
-    {
-      NSRect	rect;
-      NSImage	*image;
-      NSBox	*box;
-      NSView	*content = [self contentView];
+  NSRect rect;
+  NSImage *image;
+  NSBox	*box;
+  NSView *content;
+  NSRect r = NSMakeRect(0.0, 0.0, WinMinWidth, WinMinHeight);
 
-      [self setTitle: @" "];
+  self = [self initWithContentRect: r
+	       styleMask: NSTitledWindowMask
+	       backing: NSBackingStoreRetained
+	       defer: YES
+	       screen: nil];
 
-      // we're an ATTENTION panel, therefore:
-      [self setHidesOnDeactivate: NO];
-      [self setBecomesKeyOnlyIfNeeded: NO];
+  if (self == nil)
+    return nil;
 
-      // First, the subviews that will be positioned automatically.
-      rect.size.height = IconSide;
-      rect.size.width = IconSide;
-      rect.origin.y = r.origin.y + r.size.height + IconBottom;
-      rect.origin.x = IconLeft;
-      icoButton = [[NSButton alloc] initWithFrame: rect];
-      [icoButton setAutoresizingMask: NSViewMaxXMargin|NSViewMinYMargin];
-      [icoButton setBordered: NO];
-      [icoButton setEnabled: NO];
-      [icoButton setImagePosition: NSImageOnly];
-      image = [[NSApplication sharedApplication] applicationIconImage];
-      [icoButton setImage: image];
-      [content addSubview: icoButton];
+  [self setTitle: @" "];
+  content = [self contentView];
+  
+  // we're an ATTENTION panel, therefore:
+  [self setHidesOnDeactivate: NO];
+  [self setBecomesKeyOnlyIfNeeded: NO];
+  
+  // First, the subviews that will be positioned automatically.
+  rect.size.height = IconSide;
+  rect.size.width = IconSide;
+  rect.origin.y = r.origin.y + r.size.height + IconBottom;
+  rect.origin.x = IconLeft;
+  icoButton = [[NSButton alloc] initWithFrame: rect];
+  [icoButton setAutoresizingMask: NSViewMaxXMargin|NSViewMinYMargin];
+  [icoButton setBordered: NO];
+  [icoButton setEnabled: NO];
+  [icoButton setImagePosition: NSImageOnly];
+  image = [[NSApplication sharedApplication] applicationIconImage];
+  [icoButton setImage: image];
+  [content addSubview: icoButton];
+  
+  rect.size.height = 20.0; // will be sized to fit anyway.
+  rect.size.width = 80.0;  // will be sized to fit anyway.
+  rect.origin.y = r.origin.y + r.size.height + IconBottom;
+  rect.origin.x = TitleLeft;
+  titleField = [[NSTextField alloc] initWithFrame: rect];
+  [titleField setAutoresizingMask: NSViewMinYMargin];
+  [titleField setEditable: NO];
+  [titleField setSelectable: YES];
+  [titleField setBezeled: NO];
+  [titleField setDrawsBackground: NO];
+  [titleField setStringValue: @""];
+  [titleField setFont: [NSFont systemFontOfSize: 18.0]];
+  
+  rect.size.height = LineHeight;
+  rect.size.width = r.size.width;
+  rect.origin.y = r.origin.y + r.size.height + LineBottom;
+  rect.origin.x = LineLeft;
+  box = [[NSBox alloc] initWithFrame: rect];
+  [box setAutoresizingMask: NSViewWidthSizable | NSViewMinYMargin];
+  [box setTitlePosition: NSNoTitle];
+  [box setBorderType: NSGrooveBorder];
+  [content addSubview: box];
+  RELEASE(box);
+  
+  // Then, make the subviews that'll be sized by sizePanelToFit;
+  rect.size.height = 20.0;
+  rect.size.width = 80.0;
+  rect.origin.y = 0.0;
+  rect.origin.x = 0.0;
+  
+  messageField = [[NSTextField alloc] initWithFrame: rect];
+  [messageField setEditable: NO];
+  [messageField setSelectable: YES];
+  /*
+    PJB:
+    How do you  want the user to report an error  message if it is
+    not selectable?  Any text visible on the  screen should always
+    be selectable for a copy-and-paste. Hence, setSelectable: YES.
+  */
+  [messageField setBezeled: NO];
+  [messageField setDrawsBackground: YES];
+  [messageField setBackgroundColor: [NSColor lightGrayColor]];
+  [messageField setAlignment: NSCenterTextAlignment];
+  [messageField setStringValue: @""];
+  [messageField setFont: MessageFont];
+  
+  defButton = [self _makeButtonWithRect: rect];
+  [defButton setKeyEquivalent: @"\r"];
+  [defButton setImagePosition: NSImageRight];
+  [defButton setImage: [NSImage imageNamed: @"common_ret"]];
+  [defButton setAlternateImage: [NSImage imageNamed: @"common_retH"]];
+  
+  altButton = [self _makeButtonWithRect: rect];
+  othButton = [self _makeButtonWithRect: rect];
+  
+  rect.size.height = 80.0;
+  scroll = makeScrollViewWithRect(rect);
+  
+  result = NSAlertErrorReturn;
+  isGreen = YES;
 
-
-      rect.size.height = 20.0; // will be sized to fit anyway.
-      rect.size.width = 80.0;  // will be sized to fit anyway.
-      rect.origin.y = r.origin.y + r.size.height + IconBottom;
-      rect.origin.x = TitleLeft;
-      titleField = [[NSTextField alloc] initWithFrame: rect];
-      [titleField setAutoresizingMask: NSViewMinYMargin];
-      [titleField setEditable: NO];
-      [titleField setSelectable: YES];
-      [titleField setBezeled: NO];
-      [titleField setDrawsBackground: NO];
-      [titleField setStringValue: @""];
-      [titleField setFont: [NSFont systemFontOfSize: 18.0]];
-
-      rect.size.height = LineHeight;
-      rect.size.width = r.size.width;
-      rect.origin.y = r.origin.y + r.size.height + LineBottom;
-      rect.origin.x = LineLeft;
-      box = [[NSBox alloc] initWithFrame: rect];
-      [box setAutoresizingMask: NSViewWidthSizable | NSViewMinYMargin];
-      [box setTitlePosition: NSNoTitle];
-      [box setBorderType: NSGrooveBorder];
-      [content addSubview: box];
-      RELEASE(box);
-
-      // Then, make the subviews that'll be sized by sizePanelToFit;
-
-      rect.size.height = 20.0;
-      rect.size.width = 80.0;
-      rect.origin.y = 0.0;
-      rect.origin.x = 0.0;
-
-      messageField = [[NSTextField alloc] initWithFrame: rect];
-      [messageField setEditable: NO];
-      [messageField setSelectable: YES];
-      /*
-	  PJB:
-	  How do you  want the user to report an error  message if it is
-	  not selectable?  Any text visible on the  screen should always
-	  be selectable for a copy-and-paste. Hence, setSelectable: YES.
-      */
-      [messageField setBezeled: NO];
-      [messageField setDrawsBackground: YES];
-      [messageField setBackgroundColor: [NSColor lightGrayColor]];
-      [messageField setAlignment: NSCenterTextAlignment];
-      [messageField setStringValue: @""];
-      [messageField setFont: MessageFont];
-
-      defButton = [self _makeButtonWithRect: rect];
-      [defButton setKeyEquivalent: @"\r"];
-      [defButton setImagePosition: NSImageRight];
-      [defButton setImage: [NSImage imageNamed: @"common_ret"]];
-      [defButton setAlternateImage: [NSImage imageNamed: @"common_retH"]];
-
-      altButton = [self _makeButtonWithRect: rect];
-      othButton = [self _makeButtonWithRect: rect];
-
-      rect.size.height = 80.0;
-      scroll = makeScrollViewWithRect(rect);
-
-      result = NSAlertErrorReturn;
-      isGreen = YES;
-    }
   return self;
-}
-
-
-- (id) initWithModelUnarchiver: (GMUnarchiver*)unarchiver
-{
-  self = [super initWithModelUnarchiver: unarchiver];
-  if (self != nil)
-    {
-      // TODO: Remove the following line when NSPanel archiver method will be implemented.
-      [self setBecomesKeyOnlyIfNeeded: NO];
-
-      (void)[unarchiver decodeSizeWithName: @"OriginalSize"];
-      defButton = RETAIN([unarchiver decodeObjectWithName: @"DefaultButton"]);
-      altButton = RETAIN([unarchiver decodeObjectWithName: @"AlternateButton"]);
-      othButton = RETAIN([unarchiver decodeObjectWithName: @"OtherButton"]);
-      icoButton = RETAIN([unarchiver decodeObjectWithName: @"IconButton"]);
-      messageField = RETAIN([unarchiver decodeObjectWithName: @"MessageField"]);
-      titleField = RETAIN([unarchiver decodeObjectWithName: @"TitleField"]);
-      scroll = makeScrollViewWithRect(NSMakeRect(0.0, 0.0, 80.0, 80.0));
-      result = NSAlertErrorReturn;
-      isGreen = YES;
-    }
-  gmodelAlertPanel = self;
-  return gmodelAlertPanel;
 }
 
 - (void) sizePanelToFit
@@ -853,7 +823,7 @@ setControl(NSView* content, id control, NSString *title)
       NSLog(@"alert panel buttonAction: from unknown sender - x%x\n",
 	(unsigned)sender);
     }
-  [[NSApplication sharedApplication] stopModal];
+  [NSApp stopModalWithCode: result];
 }
 
 - (int) result
@@ -863,7 +833,7 @@ setControl(NSView* content, id control, NSString *title)
 
 - (BOOL) isActivePanel
 {
-  return [[NSApplication sharedApplication]modalWindow] == self;
+  return [NSApp modalWindow] == self;
 }
 
 - (int) runModal
@@ -872,6 +842,7 @@ setControl(NSView* content, id control, NSString *title)
     {
       [self sizePanelToFit];
     }
+
   [NSApp runModalForWindow: self];
   [self orderOut: self];
   return result;
@@ -886,10 +857,13 @@ setControl(NSView* content, id control, NSString *title)
   NSView	*content = [self contentView];
 
   setControl(content, titleField, title);
-  // TODO: Remove the following line once NSView is corrected.
-  [scroll setDocumentView: nil];
-  [scroll removeFromSuperview];
-  [messageField removeFromSuperview];
+  if (useControl(scroll))
+    { 
+      // TODO: Remove the following line once NSView is corrected.
+      [scroll setDocumentView: nil];
+      [scroll removeFromSuperview];
+      [messageField removeFromSuperview];
+    }
   setControl(content, messageField, message);
   setControl(content, defButton, defaultButton);
   setControl(content, altButton, alternateButton);
@@ -961,6 +935,42 @@ setControl(NSView* content, id control, NSString *title)
 
 @end /* GSAlertPanel */
 
+@implementation GSAlertPanel (GMArchiverMethods)
+
+// Reuse createObjectForModelUnarchiver: from super class
+
+- (void) encodeWithModelArchiver: (GMArchiver*)archiver
+{
+  [super encodeWithModelArchiver: archiver];
+  [archiver encodeSize: [self frame].size withName: @"OriginalSize"];
+  [archiver encodeObject: defButton withName: @"DefaultButton"];
+  [archiver encodeObject: altButton withName: @"AlternateButton"];
+  [archiver encodeObject: othButton withName: @"OtherButton"];
+  [archiver encodeObject: icoButton withName: @"IconButton"];
+  [archiver encodeObject: messageField withName: @"MessageField"];
+  [archiver encodeObject: titleField withName: @"TitleField"];
+}
+
+- (id) initWithModelUnarchiver: (GMUnarchiver*)unarchiver
+{
+  self = [super initWithModelUnarchiver: unarchiver];
+  if (self != nil)
+    {
+      (void)[unarchiver decodeSizeWithName: @"OriginalSize"];
+      defButton = RETAIN([unarchiver decodeObjectWithName: @"DefaultButton"]);
+      altButton = RETAIN([unarchiver decodeObjectWithName: @"AlternateButton"]);
+      othButton = RETAIN([unarchiver decodeObjectWithName: @"OtherButton"]);
+      icoButton = RETAIN([unarchiver decodeObjectWithName: @"IconButton"]);
+      messageField = RETAIN([unarchiver decodeObjectWithName: @"MessageField"]);
+      titleField = RETAIN([unarchiver decodeObjectWithName: @"TitleField"]);
+      scroll = makeScrollViewWithRect(NSMakeRect(0.0, 0.0, 80.0, 80.0));
+      result = NSAlertErrorReturn;
+      isGreen = YES;
+    }
+  return self;
+}
+
+@end /* GSAlertPanel GMArchiverMethods */
 
 /*
   These functions may be called "recursively". For example, from a
@@ -970,7 +980,7 @@ setControl(NSView* content, id control, NSString *title)
   with, but which will be kept for future use.
 
 	   +---------+---------+---------+---------+---------+
-	   | std != 0  | std act | pan =std | pan=new | std=new |
+	   | std !=0 | std act | pan=std | pan=new | std=new |
 	   +---------+---------+---------+---------+---------+
      a:    |    F    |   N/A   |         |    X    |    X    |
 	   +---------+---------+---------+---------+---------+
@@ -981,28 +991,10 @@ setControl(NSView* content, id control, NSString *title)
 */
 
 
-#define NEW_PANEL [[GSAlertPanel alloc]                                   \
-        initWithContentRect: NSMakeRect(0.0, 0.0, WinMinWidth, WinMinHeight) \
-        styleMask: NSTitledWindowMask                                     \
-        backing: NSBackingStoreRetained                                   \
-        defer: YES                                                        \
-        screen: nil]
-
-/*
-  if (![GMModel loadIMFile: @"AlertPanel" owner: [GSAlertPanel alloc]])
-    {
-      NSLog(@"cannot open alert panel model file\n");
-      return nil;
-    }
- */
-
 /*
     TODO: Check if this discrepancy is wanted and needed.
           If not, we could merge these parameters, even
           for the alert panel, setting its window title to "Alert".
-
-
-
 */
 
 static GSAlertPanel*
@@ -1021,7 +1013,7 @@ getSomePanel(
     {
       if ([*instance isActivePanel])
 	{				// c:
-	  panel = NEW_PANEL;
+	  panel = [[GSAlertPanel alloc] init];
 	}
       else
 	{				// b:
@@ -1030,7 +1022,7 @@ getSomePanel(
     }
   else
     { 					// a:
-      panel = NEW_PANEL;
+      panel = [[GSAlertPanel alloc] init];
       *instance = panel;
     }
 
@@ -1266,7 +1258,30 @@ void NSBeginAlertSheet(NSString *title,
 		       void *contextInfo, 
 		       NSString *msg, ...)
 {
-// TODO
+  va_list	ap;
+  NSString	*message;
+  GSAlertPanel	*panel;
+
+  va_start(ap, msg);
+  message = [NSString stringWithFormat: msg arguments: ap];
+  va_end(ap);
+
+  if (defaultButton == nil)
+    {
+      defaultButton = @"OK";
+    }
+
+  panel = getSomePanel(&standardAlertPanel, defaultTitle, title, message,
+    defaultButton, alternateButton, otherButton);
+  
+  // FIXME: We should also change the button action to call endSheet:
+  [NSApp beginSheet: panel
+	 modalForWindow: docWindow
+	 modalDelegate: modalDelegate
+	 didEndSelector: didEndSelector
+	 contextInfo: contextInfo];
+  [panel close];
+  NSReleaseAlertPanel(panel);
 }
 
 void NSBeginCriticalAlertSheet(NSString *title, 
@@ -1280,7 +1295,25 @@ void NSBeginCriticalAlertSheet(NSString *title,
 			       void *contextInfo, 
 			       NSString *msg, ...)
 {
-// TODO
+  va_list	ap;
+  NSString	*message;
+  GSAlertPanel	*panel;
+
+  va_start(ap, msg);
+  message = [NSString stringWithFormat: msg arguments: ap];
+  va_end(ap);
+
+  panel = getSomePanel(&criticalAlertPanel, @"Critical", title, message,
+    defaultButton, alternateButton, otherButton);
+
+  // FIXME: We should also change the button action to call endSheet:
+  [NSApp beginSheet: panel
+	 modalForWindow: docWindow
+	 modalDelegate: modalDelegate
+	 didEndSelector: didEndSelector
+	 contextInfo: contextInfo];
+  [panel close];
+  NSReleaseAlertPanel(panel);
 }
 
 void NSBeginInformationalAlertSheet(NSString *title, 
@@ -1294,6 +1327,26 @@ void NSBeginInformationalAlertSheet(NSString *title,
 				    void *contextInfo, 
 				    NSString *msg, ...)
 {
-// TODO
+  va_list       ap;
+  NSString	*message;
+  GSAlertPanel	*panel;
+
+  va_start(ap, msg);
+  message = [NSString stringWithFormat: msg arguments: ap];
+  va_end(ap);
+
+  panel = getSomePanel(&informationalAlertPanel,
+		      @"Information",
+		      title, message,
+		      defaultButton, alternateButton, otherButton);
+
+  // FIXME: We should also change the button action to call endSheet:
+  [NSApp beginSheet: panel
+	 modalForWindow: docWindow
+	 modalDelegate: modalDelegate
+	 didEndSelector: didEndSelector
+	 contextInfo: contextInfo];
+  [panel close];
+  NSReleaseAlertPanel(panel);
 }
 
