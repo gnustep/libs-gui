@@ -1,3 +1,9 @@
+Thu Dec 21 00:19:54 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSTextView.m ([-scrollRangeToVisible:]): Bug fix: use
+	range argument, not selected range.
+	* Source/NSTextView.m: Access some ivars directly.
+	
 Wed Dec 20 19:39:21 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSText.m, Source/NSTextView.m: Most code from NSText was
