@@ -1,3 +1,16 @@
+2004-09-02  Quentin Mathe <qmathe@club-internet.fr>
+        
+	* Headers/AppKit/NSToolbarItem.h: Added GSMovableToolbarPboardType 
+	declaration.
+	* Source/NSToolbarItem.m: Added the toolbar items rearranging possibility by 
+	implementing the dragging source methods.
+	* Source/GSToolbar.m: Added or reworked some methods to support model updates
+	without direct view effects to manipulate the toolbar items when a dragging 
+	session happens.
+	* Source/GSToolbarView.m: Added the toolbar items rearranging possibility by 
+	implementing the dragging destination methods. And added a method to 
+	support the insertion index calculation based on the mouse location.
+
 2004-09-01  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSPrintInfo.m ([NSPrintInfo -paperSize]): Avoid returning

@@ -29,21 +29,26 @@
 */ 
 
 #include <Foundation/NSObject.h>
-#include <Foundation/NSString.h>
+#include <Foundation/NSArray.h>
 #include <Foundation/NSDebug.h>
-
+#include <Foundation/NSDictionary.h>
+#include <Foundation/NSException.h>
+#include <Foundation/NSString.h>
 #include "AppKit/NSApplication.h"
-#include "AppKit/NSToolbarItem.h"
-#include "AppKit/NSMenu.h"
-#include "AppKit/NSMenuItem.h"
-#include "AppKit/NSImage.h"
 #include "AppKit/NSButton.h"
 #include "AppKit/NSButtonCell.h"
-#include "AppKit/NSFont.h"
+#include "AppKit/NSDragging.h"
 #include "AppKit/NSEvent.h"
+#include "AppKit/NSFont.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSMenu.h"
+#include "AppKit/NSMenuItem.h"
 #include "AppKit/NSParagraphStyle.h"
+#include "AppKit/NSPasteboard.h"
+#include "AppKit/NSView.h"
 #include "GNUstepGUI/GSToolbar.h"
 #include "GNUstepGUI/GSToolbarView.h"
+#include "AppKit/NSToolbarItem.h"
 
 /*
  * Each NSToolbarItem object are coupled with a backView which is their representation 
@@ -83,8 +88,13 @@ static NSFont *NormalFont = nil; // See NSToolbarItem -initialize method
   
 static NSFont *SmallFont = nil;
 
+NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
+
 @interface GSToolbar (GNUstepPrivate)
 - (GSToolbarView *) _toolbarView;
+- (int) _indexOfItem: (NSToolbarItem *)item; // Used by drag setup
+
+- (void) _performRemoveItem: (NSToolbarItem *)item; // Used by drag setup
 @end
 
 @interface NSToolbarItem (GNUstepPrivate)
@@ -260,14 +270,78 @@ static NSFont *SmallFont = nil;
    
 }
 
+/*
+ * The code below should be kept in sync with GSToolbarBackView methods which have identical names
+ */
+ 
 - (void) mouseDown: (NSEvent *)event
 {
-  if ([_toolbarItem _selectable] && [self state])
-    return; // Abort in case the button is selectable and selected
-    // HACK: must be improved to handle drag event
-  
-  [super mouseDown: event];
+  if ([event modifierFlags] == NSCommandKeyMask)
+    {	  
+	  NSSize viewSize = [self frame].size;
+	  NSImage *image = [[NSImage alloc] initWithSize: viewSize];
+	  NSCell *cell = [self cell];
+	  NSPasteboard *pboard;
+	  GSToolbar *toolbar = [_toolbarItem toolbar];
+	  int index;
+	  
+	  AUTORELEASE(image);
+	    
+	  // Prepare the drag
+	  
+	  RETAIN(self); // We need to keep this view (aka self) to be able to draw the drag image.
+	  
+	  // Draw the drag content in an image
+	  
+	  // The code below is only partially supported by GNUstep, then NSImage needs to be improved
+	  [image lockFocus];
+      [cell setShowsFirstResponder: NO]; // To remove the dotted rect
+      [cell drawWithFrame: NSMakeRect(0, 0, viewSize.width, viewSize.height) inView: nil];
+      [cell setShowsFirstResponder: YES];
+	  [image unlockFocus];
+	  
+	  pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
+	  [pboard declareTypes: [NSArray arrayWithObject: GSMovableToolbarItemPboardType] owner: nil];
+	  index = [toolbar _indexOfItem: _toolbarItem];
+	  [pboard setString: [NSString stringWithFormat:@"%d", index] forType: GSMovableToolbarItemPboardType];
+	  
+	  [self dragImage: image 
+	               at: NSMakePoint(0.0, 0.0)
+		       offset: NSMakeSize(0.0, 0.0)
+		        event: event 
+	       pasteboard: pboard 
+	           source: self
+		    slideBack: NO];	  
+    }
+  else
+    {
+      [super mouseDown: event];
+    }
 }
+
+- (void) draggedImage: (NSImage *)dragImage beganAt: (NSPoint)location
+{
+  GSToolbar *toolbar = [_toolbarItem toolbar];
+  
+  RETAIN(_toolbarItem); 
+  // We retain the toolbar item to be able to have have it reinsered later by the dragging destination.
+  
+  [toolbar _performRemoveItem: _toolbarItem];
+}
+
+- (void) draggedImage: (NSImage *)dragImage endedAt: (NSPoint)location operation: (NSDragOperation)operation
+{
+  RELEASE(self); // The view is no more needed : no more drawing to do with it.
+}
+
+- (unsigned int) draggingSourceOperationMaskForLocal: (BOOL)isLocal
+{
+  return isLocal ? NSDragOperationGeneric : NSDragOperationNone;
+}
+
+/*
+ * End of the code to keep in sync
+ */
 
 - (BOOL) sendAction: (SEL)action to: (id)target
 { 
@@ -341,7 +415,6 @@ static NSFont *SmallFont = nil;
    * Please make sure the output remains always correct.
    */
   // We ignore aRect value
-
   [aString drawInRect: titleRect];
 }
 
@@ -593,6 +666,90 @@ static NSFont *SmallFont = nil;
     }
   DESTROY(attrStr);
 }
+
+- (NSView *) hitTest: (NSPoint)point
+{
+  NSEvent *event = [NSApp currentEvent];
+  
+  if ([self mouse: point inRect: [self frame]] 
+    && [event modifierFlags] == NSCommandKeyMask
+    && [event type] == NSLeftMouseDown)
+    {
+      return self;
+    }
+  else
+    {
+      return [super hitTest: point];
+    }
+}
+
+/*
+ * The code below should be kept in sync with GSToolbarButton methods which have identical names
+ */
+ 
+- (void) mouseDown: (NSEvent *)event
+{
+  if ([event modifierFlags] == NSCommandKeyMask)
+    {	  
+	  NSSize viewSize = [self frame].size;
+	  NSImage *image = [[NSImage alloc] initWithSize: viewSize];
+	  NSPasteboard *pboard;
+	  GSToolbar *toolbar = [_toolbarItem toolbar];
+	  int index;
+	  
+	  AUTORELEASE(image);
+	    
+	  // Prepare the drag
+	  
+	  RETAIN(self); // We need to keep this view (aka self) to be able to draw the drag image.
+	  
+	  // The code below is only partially supported by GNUstep, then NSImage needs to be improved
+	  [image lockFocus];
+      [self drawRect: NSMakeRect(0, 0, viewSize.width, viewSize.height)];
+	  [image unlockFocus];
+	  	  
+	  pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
+	  [pboard declareTypes: [NSArray arrayWithObject: GSMovableToolbarItemPboardType] owner: nil];
+	  index = [toolbar _indexOfItem: _toolbarItem];
+	  [pboard setString: [NSString stringWithFormat:@"%d", index] forType: GSMovableToolbarItemPboardType];
+	  
+	  [self dragImage: image 
+	               at: NSMakePoint(0.0, 0.0)
+		       offset: NSMakeSize(0.0, 0.0)
+		        event: event 
+	       pasteboard: pboard 
+	           source: self
+		    slideBack: NO];	  
+    }
+  else
+    {
+      [super mouseDown: event];
+    }
+}
+
+- (void) draggedImage: (NSImage *)dragImage beganAt: (NSPoint)location
+{
+  GSToolbar *toolbar = [_toolbarItem toolbar];
+  
+  RETAIN(_toolbarItem); 
+  // We retain the toolbar item to be able to have have it reinsered later by the dragging destination.
+  
+  [toolbar _performRemoveItem: _toolbarItem];
+}
+
+- (void) draggedImage: (NSImage *)dragImage endedAt: (NSPoint)location operation: (NSDragOperation)operation
+{
+  RELEASE(self); // The view is no more needed : no more drawing to do with it.
+}
+
+- (unsigned int) draggingSourceOperationMaskForLocal: (BOOL)isLocal
+{
+  return isLocal ? NSDragOperationGeneric : NSDragOperationNone;
+}
+
+/*
+ * End of the code to keep in sync
+ */
 
 - (NSToolbarItem *)toolbarItem
 {

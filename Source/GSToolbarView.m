@@ -29,19 +29,24 @@
 #include <Foundation/NSObject.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDictionary.h>
+#include <Foundation/NSException.h>
+#include <Foundation/NSNotification.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSString.h>
-#include "AppKit/NSToolbarItem.h"
 #include "AppKit/NSBezierPath.h"
 #include "AppKit/NSButton.h"
 #include "AppKit/NSClipView.h"
 #include "AppKit/NSColor.h"
 #include "AppKit/NSColorList.h"
+#include "AppKit/NSDragging.h"
 #include "AppKit/NSEvent.h"
 #include "AppKit/NSImage.h"
 #include "AppKit/NSMenu.h"
+#include "AppKit/NSPasteboard.h"
+#include "AppKit/NSToolbarItem.h" // It contains GSMovableToolbarItemPboardType declaration
 #include "AppKit/NSView.h"
 #include "AppKit/NSWindow.h"
+#include "GNUstepGUI/GSToolbar.h"
 #include "GNUstepGUI/GSToolbarView.h"
 
 typedef enum {
@@ -138,6 +143,12 @@ static void initSystemExtensionsColors(void)
  */
 @interface GSToolbar (GNUstepPrivate)
 - (void) _build;
+
+- (void) _concludeRemoveItem: (NSToolbarItem *)item atIndex: (int)index broadcast: (BOOL)broadcast;
+- (int) _indexOfItem: (NSToolbarItem *)item;
+- (void) _insertPassivelyItem: (NSToolbarItem *)item atIndex: (int)newIndex;
+- (void) _moveItemFromIndex: (int)index toIndex: (int)newIndex broadcast: (BOOL)broacast;
+
 - (void) _toolbarViewWillMoveToSuperview: (NSView *)newSuperview;
 
 // Accessors
@@ -155,12 +166,21 @@ static void initSystemExtensionsColors(void)
 - (BOOL) _isFlexibleSpace;
 @end
 
+@interface GSToolbarButton
+- (NSToolbarItem *) toolbarItem;
+@end
+
+@interface GSToolbarBackView
+- (NSToolbarItem *) toolbarItem;
+@end
+
 @interface GSToolbarView (GNUstepPrivate)
 - (void) _handleBackViewsFrame;
 - (void) _handleViewsVisibility;
 - (void) _reload;
 - (void) _setToolbar: (GSToolbar *)toolbar;
 - (void) _takeInAccountFlexibleSpaces;
+- (int) _insertionIndexAtPoint: (NSPoint)location;
 
 // Accessors
 - (float) _heightFromLayout;
@@ -188,6 +208,13 @@ static void initSystemExtensionsColors(void)
 
 - (void) layout;
 - (void) setToolbar: (GSToolbar *)toolbar; 
+@end
+
+@interface GSToolbarClipView : NSClipView
+{
+
+}
+
 @end
 
 @implementation GSToolbarClippedItemsButton
@@ -279,6 +306,14 @@ static void initSystemExtensionsColors(void)
 }
 @end
 
+// ---
+
+@implementation GSToolbarClipView
+
+// Nothing here
+
+@end
+
 // Implementation GSToolbarView
 
 @implementation GSToolbarView
@@ -314,19 +349,19 @@ static void initSystemExtensionsColors(void)
       
       switch (_sizeMode)
         {
-	  case NSToolbarSizeModeDefault:
-	    toolbarViewHeight = ToolbarViewDefaultHeight;
-	    break;
-	  case NSToolbarSizeModeRegular:
-	    toolbarViewHeight = ToolbarViewRegularHeight;
-	    break;
-	  case NSToolbarSizeModeSmall:
-	    toolbarViewHeight = ToolbarViewSmallHeight;
-	    break;
-	  default:
-	    // Raise exception
-	    toolbarViewHeight = 0;
-	}
+	      case NSToolbarSizeModeDefault:
+	        toolbarViewHeight = ToolbarViewDefaultHeight;
+	        break;
+	      case NSToolbarSizeModeRegular:
+	        toolbarViewHeight = ToolbarViewRegularHeight;
+	        break;
+	      case NSToolbarSizeModeSmall:
+	        toolbarViewHeight = ToolbarViewSmallHeight;
+	        break;
+	      default:
+	        // Raise exception
+	        toolbarViewHeight = 0;
+	    }
   
       [self setFrame: NSMakeRect(frame.origin.x, 
                                  frame.origin.y, 
@@ -335,7 +370,7 @@ static void initSystemExtensionsColors(void)
         
       // ---
                  
-      _clipView = [[NSClipView alloc] initWithFrame: NSMakeRect(0, 0, 100, 100)];
+      _clipView = [[GSToolbarClipView alloc] initWithFrame: NSMakeRect(0, 0, 100, 100)];
 
       [_clipView setAutoresizingMask: (NSViewWidthSizable |
         NSViewHeightSizable)];
@@ -355,6 +390,8 @@ static void initSystemExtensionsColors(void)
       // deallocated with the class when the application quits.
       
       // ---
+      
+     [self registerForDraggedTypes: [NSArray arrayWithObject: GSMovableToolbarItemPboardType]];
 
       return self;
     }
@@ -378,6 +415,68 @@ static void initSystemExtensionsColors(void)
   RELEASE(_clipView);
 
   [super dealloc];
+}
+
+// Dragging related methods
+
+- (NSDragOperation) draggingEntered: (id <NSDraggingInfo>)info
+{
+  if ([self _insertionIndexAtPoint: [info draggingLocation]] != NSNotFound);
+    {
+	  return NSDragOperationGeneric;
+	}
+	
+  return NSDragOperationNone;
+}
+
+- (NSDragOperation) draggingUpdated: (id <NSDraggingInfo>)info
+{
+  if ([self _insertionIndexAtPoint: [info draggingLocation]] != NSNotFound);
+    {
+	  return NSDragOperationGeneric;
+	}
+	
+  return NSDragOperationNone;
+}
+
+- (void) draggingEnded: (id <NSDraggingInfo>)info
+{
+  NSPasteboard *pboard = [info draggingPasteboard];
+  NSString *str = [pboard stringForType: [[pboard types] objectAtIndex: 0]];
+  int index = [str intValue];
+  GSToolbar *toolbar = [self toolbar];
+  
+  [toolbar _concludeRemoveItem: [[info draggingSource] toolbarItem] atIndex: index broadcast: YES];
+}
+
+- (void) draggingExited: (id <NSDraggingInfo>)info
+{
+  // Nothing to do
+}
+
+- (BOOL) prepareForDragOperation: (id <NSDraggingInfo>)info
+{
+  return YES;
+}
+
+- (BOOL) performDragOperation: (id <NSDraggingInfo>)info
+{
+  NSPasteboard *pboard = [info draggingPasteboard];
+  NSString *str = [pboard stringForType: [[pboard types] objectAtIndex: 0]];
+  int index = [str intValue];
+  GSToolbar *toolbar = [self toolbar];
+  NSToolbarItem *item = [[info draggingSource] toolbarItem];
+  int newIndex = [self _insertionIndexAtPoint: [info draggingLocation]]; // Calculate the index
+      
+  [toolbar _insertPassivelyItem:item atIndex: index];
+  RELEASE(item);
+  [toolbar _moveItemFromIndex: index toIndex: newIndex broadcast: YES]; 
+  return YES;
+}
+
+- (void) concludeDragOperation: (id <NSDraggingInfo>)info
+{
+  // Nothing to do currently
 }
 
 // More overrided methods
@@ -754,6 +853,25 @@ static void initSystemExtensionsColors(void)
     x += [backView frame].size.width;
   }
   
+}
+
+- (int) _insertionIndexAtPoint: (NSPoint)location
+{
+  id hitView = [self hitTest: location];
+  NSRect hitViewFrame = [hitView frame];;
+  int index;
+  
+  if ((hitView != nil)
+    & ([hitView isKindOfClass: [GSToolbarButton class]] 
+    || [hitView isKindOfClass: [GSToolbarBackView class]]))
+    {
+      index = [_toolbar _indexOfItem: [hitView toolbarItem]];
+      if (location.x - hitViewFrame.origin.x > hitViewFrame.size.width / 2)
+        index++;
+      
+      return index; 
+    }
+  return NSNotFound;
 }
 
 // Accessors private methods

@@ -32,18 +32,19 @@
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSException.h>
+#include <Foundation/NSKeyValueCoding.h>
 #include <Foundation/NSNotification.h>
+#include <Foundation/NSNull.h>
+#include <Foundation/NSRunLoop.h>
+#include <Foundation/NSString.h>
+#include <Foundation/NSTimer.h>
 #include <Foundation/NSUserDefaults.h>
 #include "AppKit/NSApplication.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSMenu.h"
+#include "AppKit/NSNibLoading.h"
 #include "AppKit/NSToolbarItem.h"
 #include "AppKit/NSView.h"
-#include "AppKit/NSClipView.h"
-#include "AppKit/NSButton.h"
-#include "AppKit/NSNibLoading.h"
-#include "AppKit/NSBezierPath.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSMenu.h"
-#include "AppKit/NSEvent.h"
 #include "AppKit/NSWindow.h"
 #include "AppKit/NSWindow+Toolbar.h"
 #include "GNUstepGUI/GSToolbarView.h"
@@ -482,9 +483,14 @@ static GSValidationCenter *vc;
 - (void) _setConfigurationFromDictionary: (NSDictionary *)configDict 
                                broadcast: (BOOL)broadcast;
 - (void) _setDelegate: (id)delegate broadcast: (BOOL)broadcast;
+- (void) _moveItemFromIndex: (int)index toIndex: (int)newIndex broadcast: (BOOL)broadcast;
 
 // Few other private methods
 - (void) _build;
+- (int) _indexOfItem: (NSToolbarItem *)item;
+- (void) _insertPassivelyItem: (NSToolbarItem *)item atIndex: (int)newIndex; 
+- (void) _performRemoveItem: (NSToolbarItem *)item;
+- (void) _concludeRemoveItem: (NSToolbarItem *)item atIndex: (int)index broadcast: (BOOL)broadcast;
 - (void) _loadConfig;
 - (NSToolbarItem *) _toolbarItemForIdentifier: (NSString *)itemIdent;
 - (GSToolbar *) _toolbarModel;
@@ -898,6 +904,23 @@ static GSValidationCenter *vc;
   _build = NO;
 }
 
+- (int) _indexOfItem: (NSToolbarItem *)item
+{
+  return [_items indexOfObjectIdenticalTo: item];
+}
+
+- (void) _insertPassivelyItem: (NSToolbarItem *)item atIndex: (int)newIndex
+{
+  if (![_items containsObject: item])
+    {
+      [_items insertObject: item atIndex: newIndex];
+    }
+  else
+    {
+      NSLog(@"Error: the toolbar already contains the item to insert.");
+    }
+}
+
 - (void) _loadConfig
 {
   if (_identifier != nil)
@@ -1034,15 +1057,25 @@ static GSValidationCenter *vc;
 
 - (void) _removeItemAtIndex: (int)index broadcast: (BOOL)broadcast
 {
-  id item;
+  id item = [_items objectAtIndex: index];
+  
+  RETAIN(item);
+  [self _performRemoveItem: item];
+  [self _concludeRemoveItem: item atIndex: index broadcast: broadcast];
+  RELEASE(item);
+}
 
-  item = RETAIN([_items objectAtIndex: index]);
-  [_items removeObjectAtIndex: index];
+- (void) _performRemoveItem: (NSToolbarItem *)item
+{
+  [_items removeObject: item];
   [_toolbarView _reload];
+}
+
+- (void) _concludeRemoveItem: (NSToolbarItem *)item atIndex: (int)index broadcast: (BOOL)broadcast
+{
   [nc postNotificationName: NSToolbarDidRemoveItemNotification
 	            object: self
 	          userInfo: [NSDictionary dictionaryWithObject: item  forKey: @"item"]];
-  RELEASE(item);
 
   if (broadcast) 
     {
@@ -1134,6 +1167,30 @@ static GSValidationCenter *vc;
     {
       TRANSMIT(_setDelegate: _delegate broadcast: NO);
     } 
+}
+
+- (void) _moveItemFromIndex: (int)index toIndex: (int)newIndex broadcast: (BOOL)broadcast
+{
+  id item;
+
+  item = RETAIN([_items objectAtIndex: index]);
+  [_items removeObjectAtIndex: index];
+  if (newIndex > [_items count] - 1)
+    {
+      [_items addObject: item];
+    }
+  else
+    {
+      [_items insertObject: item atIndex: newIndex];
+    }
+  [_toolbarView _reload];
+
+  RELEASE(item);
+
+  if (broadcast) 
+    {
+      TRANSMIT(_moveItemFromIndex: index toIndex: newIndex broadcast: NO);
+    }
 }
 
 // Private Accessors

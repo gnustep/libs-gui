@@ -141,4 +141,7 @@ APPKIT_EXPORT NSString *NSToolbarPrintItemIdentifier;
 - (BOOL) validateToolbarItem: (NSToolbarItem *)toolbarItem;
 @end
 
+// Extra private stuff
+extern NSString *GSMovableToolbarItemPboardType;
+
 #endif /* _GNUstep_H_NSToolbarItem */
