@@ -1,3 +1,14 @@
+2001-10-08  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSScreen.h
+	Added method [resetScreens].
+	* Source/NSScreen.m
+	Removed function _screenNumbers. Moved class method to front. Use
+	[screens] in method [mainScreen]. Cache screens in mehtod
+	[screens]. Use the context from NSApp instead of the current
+	context in all calls. In [deepestScreen] replace NSScreen by self.
+	Added method [resetScreens].
+	
 2001-10-06  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/NSPrintPanel.h: Define ivars.
@@ -18,7 +29,7 @@
 	* Model/GNUmakefile (libgmodel_BUNDLE_LIBS): New var.
 	(fix suggested by stephen@brandonitconsulting.co.uk).
 
-2001-09-28  Fred Kiefer <FredKiefer@gmx.de>
+2001-10-06  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Header/gnustep/gui/NSCell.h
 	Added enumerator NSControlSize.
