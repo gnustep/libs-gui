@@ -1330,18 +1330,23 @@ GSPerformService(NSString *serviceItem, NSPasteboard *pboard, BOOL isFilter)
   if (isFilter == YES)
     {
       service = [[manager filters] objectForKey: serviceItem]; 
+      if (service == nil)
+	{
+	  NSLog(@"No service matching '%@'", serviceItem);
+	  return NO;			/* No matching service.	*/
+	}
     }
   else
     {
       service = [[manager menuServices] objectForKey: serviceItem]; 
-    }
-  if (service == nil)
-    {
-      NSRunAlertPanel(nil,
-	@"No service matching '%@'",
-	@"Continue", nil, nil,
-	serviceItem);
-      return NO;			/* No matching service.	*/
+      if (service == nil)
+	{
+	  NSRunAlertPanel(nil,
+	    @"No service matching '%@'",
+	    @"Continue", nil, nil,
+	    serviceItem);
+	  return NO;			/* No matching service.	*/
+	}
     }
 
   port = [service objectForKey: @"NSPortName"];
@@ -1358,6 +1363,10 @@ GSPerformService(NSString *serviceItem, NSPasteboard *pboard, BOOL isFilter)
   appPath = [service objectForKey: @"ServicePath"];
   userData = [service objectForKey: @"NSUserData"];
   message = [service objectForKey: @"NSMessage"];
+  if (isFilter == YES && [message length] == 0)
+    {
+      message = [service objectForKey: @"NSFilter"];
+    }
   selName = [message stringByAppendingString: @":userData:error:"];
 
   /*
@@ -1367,10 +1376,17 @@ GSPerformService(NSString *serviceItem, NSPasteboard *pboard, BOOL isFilter)
   provider = GSContactApplication(appPath, port, finishBy);
   if (provider == nil)
     {
-      NSRunAlertPanel(nil,
-	@"Failed to contact service provider for '%@'",
-	@"Continue", nil, nil,
-	serviceItem);
+      if (isFilter == YES)
+	{
+	  NSLog(@"Failed to contact service provider for '%@'", serviceItem);
+	}
+      else
+	{
+	  NSRunAlertPanel(nil,
+	    @"Failed to contact service provider for '%@'",
+	    @"Continue", nil, nil,
+	    serviceItem);
+	}
       return NO;
     }
 
@@ -1406,10 +1422,18 @@ GSPerformService(NSString *serviceItem, NSPasteboard *pboard, BOOL isFilter)
 
   if (error != nil)
     {
-      NSRunAlertPanel(nil,
-	@"Failed to contact service provider for '%@': %@",
-        @"Continue", nil, nil,
-	serviceItem, error);
+      if (isFilter == YES)
+	{
+	  NSLog(@"Failed to contact service provider for '%@': %@",
+	    serviceItem, error);
+	}
+      else
+	{
+	  NSRunAlertPanel(nil,
+	    @"Failed to contact service provider for '%@': %@",
+	    @"Continue", nil, nil,
+	    serviceItem, error);
+	}
       return NO;
     }
 

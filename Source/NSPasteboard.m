@@ -971,7 +971,10 @@ static  NSMapTable              *mimeMap = NULL;
  * pasteboard server using the -setData:forType: method.
  * </p>
  * <p>Data written using this method can be read by -propertyListForType:
- * or, of it was a simple string, by -stringForType:
+ * or, if it was a simple string, by -stringForType:
+ * </p>
+ * <p>If the data is retrieved using -dataForType: then it needs to be
+ * deserialized into a property list.
  * </p>
  */
 - (BOOL) setPropertyList: (id)propertyList
@@ -989,6 +992,9 @@ static  NSMapTable              *mimeMap = NULL;
  * <p>The data may subsequently be read from the reciver using the
  * -stringForType: or -propertyListForType: method.
  * </p>
+ * <p>If the data is retrieved using -dataForType: then it needs to be
+ * deserialized into a property list.
+ * </p>
  */
 - (BOOL) setString: (NSString*)string
 	   forType: (NSString*)dataType
@@ -1005,6 +1011,9 @@ static  NSMapTable              *mimeMap = NULL;
  * </p>
  * <p>Data written to a pasteboard by this method should be read using
  * the -readFileContentsType:toFile: or -readFileWrapper method.
+ * </p>
+ * <p>If the data is retrieved using -dataForType: then it needs to be
+ * deserialized by the NSFileWrapper class.
  * </p>
  */
 - (BOOL) writeFileContents: (NSString*)filename
@@ -1061,6 +1070,9 @@ static  NSMapTable              *mimeMap = NULL;
  * </p>
  * <p>Data written to a pasteboard by this method should be read using
  * the -readFileContentsType:toFile: or -readFileWrapper method.
+ * </p>
+ * <p>If the data is retrieved using -dataForType: then it needs to be
+ * deserialized by the NSFileWrapper class.
  * </p>
  */
 - (BOOL) writeFileWrapper: (NSFileWrapper *)wrapper

@@ -1,3 +1,11 @@
+2003-06-28  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Tools/make_services.m: Alter format of filter info.
+	* Tools/example.m: Added an example filter.
+	* Tools/md5Digest.m: Example filter user.
+	* Source/GSServicesManager.m: tweak for filters.
+	* Source/NSPasteboard.m: more documentation
+
 2003-06-27  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSPasteboard.m: Documented all methods, fixed minor bugs

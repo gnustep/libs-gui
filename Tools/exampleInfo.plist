@@ -1,7 +1,7 @@
   NSServices = (
     {
       NSPortName = ExampleServices;
-      NSFilter = "md5";
+      NSFilter = md5;
       NSSendTypes = (
 	NSStringPboardType
       );

@@ -38,8 +38,7 @@
 int
 main(int argc, char** argv, char **env_c)
 {
-  NSAutoreleasePool *pool;
-  NSArray *arguments = nil;
+  CREATE_AUTORELEASE_POOL(pool);
   NSEnumerator *argEnumerator = nil;
   NSWorkspace *workspace = nil;
   NSFileManager *fm = nil;
@@ -56,14 +55,15 @@ main(int argc, char** argv, char **env_c)
 #ifdef GS_PASS_ARGUMENTS
   [NSProcessInfo initializeWithArguments:argv count:argc environment:env_c];
 #endif
-  pool = [NSAutoreleasePool new];
   argEnumerator = [[[NSProcessInfo processInfo] arguments] objectEnumerator];
   workspace = [NSWorkspace sharedWorkspace];
   fm = [NSFileManager defaultManager];
   
   // Default applications for opening unregistered file types....
-  editor = [[NSUserDefaults standardUserDefaults] stringForKey: @"GSDefaultEditor"];
-  terminal = [[NSUserDefaults standardUserDefaults] stringForKey: @"GSDefaultTerminal"];
+  editor = [[NSUserDefaults standardUserDefaults]
+    stringForKey: @"GSDefaultEditor"];
+  terminal = [[NSUserDefaults standardUserDefaults]
+    stringForKey: @"GSDefaultTerminal"];
 
   // Process options...
   application = [[NSUserDefaults standardUserDefaults] stringForKey: @"a"];
@@ -71,32 +71,34 @@ main(int argc, char** argv, char **env_c)
   filetoprint = [[NSUserDefaults standardUserDefaults] stringForKey: @"p"];
   nxhost = [[NSUserDefaults standardUserDefaults] stringForKey: @"NXHost"];
 
-  if(application)
+  if (application)
     {
       [workspace launchApplication: application];
     }
   
-  if(filetoopen)
+  if (filetoopen)
     {
       [workspace openFile: filetoopen];
     }
 
-  if(filetoprint)
+  if (filetoprint)
     {
       puts("Not implemented");
     }
 
-  if(nxhost)
+  if (nxhost)
     {
       puts("Not implemented");
     }
 
-  if(argc == 1)
+  if (argc == 1)
     {
       NSFileHandle *fh = [NSFileHandle fileHandleWithStandardInput];
       NSData *data = [fh readDataToEndOfFile];
-      NSString *tempFile = [NSTemporaryDirectory() stringByAppendingPathComponent: @"openfiletmp"];
-      NSNumber *processId = [NSNumber numberWithInt: [[NSProcessInfo processInfo] processIdentifier]];
+      NSString *tempFile = [NSTemporaryDirectory()
+	stringByAppendingPathComponent: @"openfiletmp"];
+      NSNumber *processId = [NSNumber numberWithInt:
+	[[NSProcessInfo processInfo] processIdentifier]];
 
       tempFile = [tempFile stringByAppendingString: [processId stringValue]];
       tempFile = [tempFile stringByAppendingString: @".txt"];
@@ -105,27 +107,26 @@ main(int argc, char** argv, char **env_c)
     }
 
   [argEnumerator nextObject]; // skip the first element, which is empty.
-  while((arg = [argEnumerator nextObject]) != nil)
+  while ((arg = [argEnumerator nextObject]) != nil)
     {
       NSString *ext = [arg pathExtension];
-      NSString *appName = nil;
       
-      if( [arg isEqualToString: @"-a"] )
+      if ([arg isEqualToString: @"-a"])
 	{
 	  // skip since this is handled above...
 	  arg = [argEnumerator nextObject];
 	}
-      else if( [arg isEqualToString: @"-o"] )
+      else if ([arg isEqualToString: @"-o"])
 	{
 	  // skip since this is handled above...
 	  arg = [argEnumerator nextObject];
 	}
-      else if( [arg isEqualToString: @"-p"] )
+      else if ([arg isEqualToString: @"-p"])
 	{
 	  // skip since this is handled above...
 	  arg = [argEnumerator nextObject];
 	}
-      else if( [arg isEqualToString: @"-NXHost"] )
+      else if ([arg isEqualToString: @"-NXHost"])
 	{
 	  // skip since this is handled above...
 	  arg = [argEnumerator nextObject];
@@ -133,54 +134,59 @@ main(int argc, char** argv, char **env_c)
       else // no option specified
 	{
 	  NS_DURING
-	    BOOL isDir = NO, exists = NO;
+	    {
+	      BOOL isDir = NO, exists = NO;
 
-	    exists = [fm fileExistsAtPath: arg isDirectory: &isDir];
-	    if( exists && !isDir && [fm isExecutableFileAtPath: arg] )
-	      {
-		[workspace openFile: arg withApplication: terminal];
-	      }
-	    else // no argument specified
-	      {
-		// First check to see if it's an application
-		if( [ext isEqualToString: @"app"] ||
-		    [ext isEqualToString: @"debug"] ||
-		    [ext isEqualToString: @"profile"] )
-		  {
-		    NSString *appName = 
-		      [[arg lastPathComponent] stringByDeletingPathExtension];
-		    NSString *executable = 
-		      [arg stringByAppendingPathComponent: appName];
-		    NSTask *task = nil;
-		    
-		    if([fm fileExistsAtPath: arg])
-		      {
-			if ([NSTask launchedTaskWithLaunchPath: executable 
-				    arguments: nil] == nil)
-			  {
-			    NSLog(@"Unable to launch: %@",arg);
-			  }
-		      }
-		    else
-		      {
-			[workspace launchApplication: arg];
-		      }
-		  }
-		else 
-		  if( ![workspace openFile: arg] )
+	      exists = [fm fileExistsAtPath: arg isDirectory: &isDir];
+	      if (exists && !isDir && [fm isExecutableFileAtPath: arg])
+		{
+		  [workspace openFile: arg withApplication: terminal];
+		}
+	      else // no argument specified
+		{
+		  // First check to see if it's an application
+		  if ([ext isEqualToString: @"app"] ||
+		      [ext isEqualToString: @"debug"] ||
+		      [ext isEqualToString: @"profile"])
 		    {
-		      // no recognized extension, 
-		      // run application indicated by environment var.	
-		      NSLog(@"Opening %@ with %@",arg,editor);
-		      [workspace openFile: arg withApplication: editor];
+		      NSString *appName = 
+			[[arg lastPathComponent] stringByDeletingPathExtension];
+		      NSString *executable = 
+			[arg stringByAppendingPathComponent: appName];
+		      
+		      if ([fm fileExistsAtPath: arg])
+			{
+			  if ([NSTask launchedTaskWithLaunchPath: executable 
+				      arguments: nil] == nil)
+			    {
+			      NSLog(@"Unable to launch: %@",arg);
+			    }
+			}
+		      else
+			{
+			  [workspace launchApplication: arg];
+			}
 		    }
-	      }
-	    NS_HANDLER
+		  else 
+		    {
+		      if (![workspace openFile: arg])
+			{
+			  // no recognized extension, 
+			  // run application indicated by environment var.	
+			  NSLog(@"Opening %@ with %@",arg,editor);
+			  [workspace openFile: arg withApplication: editor];
+			}
+		    }
+		}
+	    }
+	  NS_HANDLER
+	    {
 	      NSLog(@"Exception while attempting open file %@ - %@: %@",
 		    arg, [localException name], [localException reason]);
-	    NS_ENDHANDLER
-	      }
+	    }
+	  NS_ENDHANDLER
+	}
     }
-  [pool release];
+  RELEASE(pool);
   exit(EXIT_SUCCESS);
 }

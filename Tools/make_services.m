@@ -86,7 +86,7 @@ main(int argc, char** argv, char **env_c)
   proc = [NSProcessInfo processInfo];
   if (proc == nil)
     {
-      NSLog(@"unable to get process information!\n");
+      NSLog(@"unable to get process information!");
       [pool release];
       exit(EXIT_SUCCESS);
     }
@@ -141,12 +141,12 @@ main(int argc, char** argv, char **env_c)
 		    }
 		  else
 		    {
-		      NSLog(@"bad info - %@\n", file);
+		      NSLog(@"bad info - %@", file);
 		    }
 		}
 	      else
 		{
-		  NSLog(@"bad info - %@\n", file);
+		  NSLog(@"bad info - %@", file);
 		}
 	    }
 	  exit(EXIT_SUCCESS);
@@ -196,7 +196,7 @@ main(int argc, char** argv, char **env_c)
     {
       if ([mgr createDirectoryAtPath: usrRoot attributes: nil] == NO)
 	{
-	  NSLog(@"couldn't create %@\n", usrRoot);
+	  NSLog(@"couldn't create %@", usrRoot);
 	  [pool release];
 	  exit(EXIT_FAILURE);
 	}
@@ -209,7 +209,7 @@ main(int argc, char** argv, char **env_c)
     {
       if ([mgr createDirectoryAtPath: usrRoot attributes: nil] == NO)
 	{
-	  NSLog(@"couldn't create %@\n", usrRoot);
+	  NSLog(@"couldn't create %@", usrRoot);
 	  [pool release];
 	  exit(EXIT_FAILURE);
 	}
@@ -306,7 +306,7 @@ main(int argc, char** argv, char **env_c)
       data = [NSSerializer serializePropertyList: fullMap];
       if ([data writeToFile: str atomically: YES] == NO)
 	{
-	  NSLog(@"couldn't write %@\n", str);
+	  NSLog(@"couldn't write %@", str);
 	  [pool release];
 	  exit(EXIT_FAILURE);
 	}
@@ -329,7 +329,7 @@ main(int argc, char** argv, char **env_c)
       data = [NSSerializer serializePropertyList: applicationMap];
       if ([data writeToFile: str atomically: YES] == NO)
 	{
-	  NSLog(@"couldn't write %@\n", str);
+	  NSLog(@"couldn't write %@", str);
 	  [pool release];
 	  exit(EXIT_FAILURE);
 	}
@@ -358,7 +358,7 @@ static void addExtensionsForApplication(NSDictionary *info, NSString *app)
     {
       if ([o0 isKindOfClass: aClass] == NO)
         {
-          NSLog(@"bad app NSTypes (not an array) - %@\n", app);
+          NSLog(@"bad app NSTypes (not an array) - %@", app);
           return;
         }
       a0 = (NSArray*)o0;
@@ -372,7 +372,7 @@ static void addExtensionsForApplication(NSDictionary *info, NSString *app)
 
           if ([o1 isKindOfClass: dClass] == NO)
             {
-              NSLog(@"bad app NSTypes (type not a dictionary) - %@\n", app);
+              NSLog(@"bad app NSTypes (type not a dictionary) - %@", app);
               return;
             }
 	  /*
@@ -386,7 +386,7 @@ static void addExtensionsForApplication(NSDictionary *info, NSString *app)
             }
           if ([o1 isKindOfClass: aClass] == NO)
             {
-              NSLog(@"bad app NSType (extensions not an array) - %@\n", app);
+              NSLog(@"bad app NSType (extensions not an array) - %@", app);
               return;
             }
           a1 = (NSArray*)o1;
@@ -399,7 +399,7 @@ static void addExtensionsForApplication(NSDictionary *info, NSString *app)
               e = [[a1 objectAtIndex: j] lowercaseString];
 	      if ([e length] == 0)
 		{
-		  NSLog(@"Illegal (nul) extension ignored for - %@\n", app);
+		  NSLog(@"Illegal (nul) extension ignored for - %@", app);
 		  return;
 		}
               d = [extensionsMap objectForKey: e];
@@ -426,7 +426,7 @@ static void addExtensionsForApplication(NSDictionary *info, NSString *app)
         }
       if ([o0 isKindOfClass: dClass] == NO)
         {
-          NSLog(@"bad app NSExtensions (not a dictionary) - %@\n", app);
+          NSLog(@"bad app NSExtensions (not a dictionary) - %@", app);
           return;
         }
       extensions = (NSDictionary *) o0;
@@ -440,7 +440,8 @@ static void addExtensionsForApplication(NSDictionary *info, NSString *app)
 
           if ([tmp isKindOfClass: dClass] == NO)
 	    {
-	      NSLog(@"bad app NSExtensions (value isn't a dictionary) - %@\n", app);
+	      NSLog(@"bad app NSExtensions (value isn't a dictionary) - %@",
+		app);
               continue;
 	    }
           name = [[a0 objectAtIndex: i] lowercaseString];
@@ -496,7 +497,7 @@ scanDirectory(NSMutableDictionary *services, NSString *path)
                    * this name, we skip this one - the first one takes
                    * precedence.
                    */
-                  NSLog(@"duplicate app (%@) at '%@' and '%@'\n",
+                  NSLog(@"duplicate app (%@) at '%@' and '%@'",
 		    name, oldPath, newPath);
                   continue;
                 }
@@ -526,12 +527,12 @@ scanDirectory(NSMutableDictionary *services, NSString *path)
 		}
 	      else
 		{
-		  NSLog(@"bad app info - %@\n", newPath);
+		  NSLog(@"bad app info - %@", newPath);
 		}
 	    }
 	  else
 	    {
-	      NSLog(@"bad application - %@\n", newPath);
+	      NSLog(@"bad application - %@", newPath);
 	    }
 	}
       else if (ext != nil && [ext isEqualToString: @"service"])
@@ -560,17 +561,17 @@ scanDirectory(NSMutableDictionary *services, NSString *path)
 		    }
 		  else
 		    {
-		      NSLog(@"missing info - %@\n", newPath);
+		      NSLog(@"missing info - %@", newPath);
 		    }
 		}
 	      else
 		{
-		  NSLog(@"bad service info - %@\n", newPath);
+		  NSLog(@"bad service info - %@", newPath);
 		}
 	    }
 	  else
 	    {
-	      NSLog(@"bad services bundle - %@\n", newPath);
+	      NSLog(@"bad services bundle - %@", newPath);
 	    }
 	}
       else
@@ -631,7 +632,7 @@ scanDynamic(NSMutableDictionary *services, NSString *path)
 	}
       else
 	{
-	  NSLog(@"bad app info - %@\n", infPath);
+	  NSLog(@"bad app info - %@", infPath);
 	}
     }
   [arp release];
@@ -646,7 +647,7 @@ validateEntry(id svcs, NSString *path)
 
   if ([svcs isKindOfClass: aClass] == NO)
     {
-      NSLog(@"NSServices entry not an array - %@\n", path);
+      NSLog(@"NSServices entry not an array - %@", path);
       return nil;
     }
 
@@ -670,7 +671,7 @@ validateEntry(id svcs, NSString *path)
 	}
       else
 	{
-	  NSLog(@"NSServices entry %u not a dictionary - %@\n",
+	  NSLog(@"NSServices entry %u not a dictionary - %@",
 	    pos, path);
 	}
     }
@@ -722,7 +723,7 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
 
       if (type == nil)
 	{
-	  NSLog(@"NSServices entry %u spurious field (%@)- %@\n", pos, k, path);
+	  NSLog(@"NSServices entry %u spurious field (%@)- %@", pos, k, path);
 	}
       else
 	{
@@ -732,7 +733,7 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
 	      if ([obj isKindOfClass: sClass] == NO)
 		{
 		  NSLog(@"NSServices entry %u field %@ is not a string "
-		    @"- %@\n", pos, k, path);
+		    @"- %@", pos, k, path);
 		  return nil;
 		}
 	      [result setObject: obj forKey: k];
@@ -744,14 +745,14 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
 	      if ([obj isKindOfClass: aClass] == NO)
 		{
 		  NSLog(@"NSServices entry %u field %@ is not an array "
-		    @"- %@\n", pos, k, path);
+		    @"- %@", pos, k, path);
 		  return nil;
 		}
 	      a = (NSArray*)obj;
 	      if ([a count] == 0)
 		{
 		  NSLog(@"NSServices entry %u field %@ is an empty array "
-		    @"- %@\n", pos, k, path);
+		    @"- %@", pos, k, path);
 		}
 	      else
 		{
@@ -762,7 +763,7 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
 		      if ([[a objectAtIndex: i] isKindOfClass: sClass] == NO)
 			{
 			  NSLog(@"NSServices entry %u field %@ element %u is "
-			    @"not a string - %@\n", pos, k, i, path);
+			    @"not a string - %@", pos, k, i, path);
 			  return nil;
 			}
 		    }
@@ -776,14 +777,14 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
 	      if ([obj isKindOfClass: dClass] == NO)
 		{
 		  NSLog(@"NSServices entry %u field %@ is not a dictionary "
-		    @"- %@\n", pos, k, path);
+		    @"- %@", pos, k, path);
 		  return nil;
 		}
 	      d = (NSDictionary*)obj;
 	      if ([d objectForKey: @"default"] == nil)
 		{
 		  NSLog(@"NSServices entry %u field %@ has no default value "
-		    @"- %@\n", pos, k, path);
+		    @"- %@", pos, k, path);
 		}
 	      else
 		{
@@ -794,7 +795,7 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
 		      if ([obj isKindOfClass: sClass] == NO)
 			{
 			  NSLog(@"NSServices entry %u field %@ contains "
-			    @"non-string value - %@\n", pos, k, path);
+			    @"non-string value - %@", pos, k, path);
 			  return nil;
 			}
 		    }
@@ -812,7 +813,53 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
   /*
    *	Now check that we have the required fields for the service.
    */
-  if ((obj = [result objectForKey: @"NSMessage"]) != nil)
+  if ((obj = [result objectForKey: @"NSFilter"]) != nil)
+    {
+      NSDictionary	*inf;
+      NSString		*str;
+      NSArray		*snd;
+      NSArray		*ret;
+
+      str = [result objectForKey: @"NSInputMechanism"];
+      if (str)
+	{
+	  if ([str isEqualToString: @"NSUnixStdio"] == NO
+	    && [str isEqualToString: @"NSMapFile"] == NO
+	    && [str isEqualToString: @"NSIdentity"] == NO)
+	  {
+	    NSLog(@"NSServices entry %u bad input mechanism - %@", pos, path);
+	    return nil;
+	  }
+	}
+      else
+	{
+	  if ([result objectForKey: @"NSPortName"] == nil)
+	    {
+	      NSLog(@"NSServices entry %u NSPortName missing - %@", pos, path);
+	      return nil;
+	    }
+	}
+
+      snd = [result objectForKey: @"NSSendTypes"];
+      ret = [result objectForKey: @"NSReturnTypes"];
+      if (snd == nil || ret == nil)
+	{
+	  NSLog(@"NSServices entry %u types missing - %@", pos, path);
+	  return nil;
+	}
+
+      inf = [filterMap objectForKey: obj];
+      if (inf != nil)
+	{
+	  if (verbose)
+	    {
+	      NSLog(@"Ignoring duplicate %u in %@ -\n%@", pos, path, result);
+	    }
+	  return nil;
+	}
+      [filterMap setObject: result forKey: obj];
+    }
+  else if ((obj = [result objectForKey: @"NSMessage"]) != nil)
     {
       NSDictionary	*item;
       NSEnumerator	*e;
@@ -821,18 +868,18 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
 
       if ([result objectForKey: @"NSPortName"] == nil)
 	{
-	  NSLog(@"NSServices entry %u NSPortName missing - %@\n", pos, path);
+	  NSLog(@"NSServices entry %u NSPortName missing - %@", pos, path);
 	  return nil;
 	}
       if ([result objectForKey: @"NSSendTypes"] == nil &&
 	  [result objectForKey: @"NSReturnTypes"] == nil)
 	{
-	  NSLog(@"NSServices entry %u types missing - %@\n", pos, path);
+	  NSLog(@"NSServices entry %u types missing - %@", pos, path);
 	  return nil;
 	}
       if ((item = [result objectForKey: @"NSMenuItem"]) == nil)
 	{
-	  NSLog(@"NSServices entry %u NSMenuItem missing - %@\n", pos, path);
+	  NSLog(@"NSServices entry %u NSMenuItem missing - %@", pos, path);
 	  return nil;
 	}
 
@@ -862,74 +909,9 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
 	{
 	  if (verbose)
 	    {
-	      NSLog(@"Ignoring entry %u in %@ -\n%@\n", pos, path, result);
+	      NSLog(@"Ignoring entry %u in %@ -\n%@", pos, path, result);
 	    }
 	  return nil;	/* Ignore - already got service with this name	*/
-	}
-    }
-  else if ((obj = [result objectForKey: @"NSFilter"]) != nil)
-    {
-      NSString	*str;
-      NSArray	*snd;
-      NSArray	*ret;
-      unsigned	spos;
-      BOOL	used = NO;
-
-      str = [result objectForKey: @"NSInputMechanism"];
-      if (str)
-	{
-	  if ([str isEqualToString: @"NSUnixStdio"] == NO &&
-	      [str isEqualToString: @"NSMapFile"] == NO &&
-	      [str isEqualToString: @"NSIdentity"] == NO)
-	  {
-	    NSLog(@"NSServices entry %u bad input mechanism - %@\n", pos, path);
-	    return nil;
-	  }
-	}
-
-      snd = [result objectForKey: @"NSSendTypes"];
-      ret = [result objectForKey: @"NSReturnTypes"];
-      if (snd == nil || ret == nil)
-	{
-	  NSLog(@"NSServices entry %u types missing - %@\n", pos, path);
-	  return nil;
-	}
-
-      /*
-       *	For each send-type/return-type combination, see if we
-       *	already have a filter - if so - ignore this one.
-       */
-      spos = [snd count];
-      while (spos-- > 0)
-	{
-	  NSString		*stype = [snd objectAtIndex: spos];
-	  NSMutableDictionary	*sdict = [filterMap objectForKey: stype];
-	  unsigned		rpos;
-
-	  if (sdict == nil)
-	    {
-	      sdict = [NSMutableDictionary dictionaryWithCapacity: [snd count]];
-	      [filterMap setObject: sdict forKey: stype];
-	    }
-	  rpos = [ret count];
-	  while (rpos-- > 0)
-	    {
-	      NSString			*rtype = [ret objectAtIndex: rpos];
-
-	      if ([sdict objectForKey: rtype] == nil)
-		{
-		  [sdict setObject: result forKey: rtype];
-		  used = YES;
-		}
-	    }
-	}
-      if (used == NO)
-	{
-	  if (verbose)
-	    {
-	      NSLog(@"Ignoring entry %u in %@ -\n%@\n", pos, path, result);
-	    }
-	  return nil;	/* Ignore - already got filter for types.	*/
 	}
     }
   else if ((obj = [result objectForKey: @"NSPrintFilter"]) != nil)
@@ -941,7 +923,7 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
 
       if ((item = [result objectForKey: @"NSMenuItem"]) == nil)
 	{
-	  NSLog(@"NSServices entry %u NSMenuItem missing - %@\n", pos, path);
+	  NSLog(@"NSServices entry %u NSMenuItem missing - %@", pos, path);
 	  return nil;
 	}
       /*
@@ -970,7 +952,7 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
 	{
 	  if (verbose)
 	    {
-	      NSLog(@"Ignoring entry %u in %@ -\n%@\n", pos, path, result);
+	      NSLog(@"Ignoring entry %u in %@ -\n%@", pos, path, result);
 	    }
 	  return nil;	/* Ignore - already got filter with this name	*/
 	}
@@ -983,7 +965,7 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
 
       if ((item = [result objectForKey: @"NSLanguages"]) == nil)
 	{
-	  NSLog(@"NSServices entry %u NSLanguages missing - %@\n", pos, path);
+	  NSLog(@"NSServices entry %u NSLanguages missing - %@", pos, path);
 	  return nil;
 	}
       /*
@@ -1005,14 +987,14 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
 	{
 	  if (verbose)
 	    {
-	      NSLog(@"Ignoring entry %u in %@ -\n%@\n", pos, path, result);
+	      NSLog(@"Ignoring entry %u in %@ -\n%@", pos, path, result);
 	    }
 	  return nil;	/* Ignore - already got speller with language.	*/
 	}
     }
   else
     {
-      NSLog(@"NSServices entry %u unknown service/filter - %@\n", pos, path);
+      NSLog(@"NSServices entry %u unknown service/filter - %@", pos, path);
       return nil;
     }
   
