@@ -431,7 +431,14 @@ static NSCharacterSet *invSelectionWordGranularitySet;
   if (effectiveRange)
     *effectiveRange = NSMakeRange(0, [_textStorage length]);
 
-  return  [_textContainers objectAtIndex: 0];
+  if ([_textContainers count] == 0)
+    {
+      return nil;
+    }
+  else
+    {
+      return  [_textContainers objectAtIndex: 0];
+    }
 }
 
 - (void) setTextContainer: (NSTextContainer*)aTextContainer
