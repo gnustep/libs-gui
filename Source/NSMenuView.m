@@ -609,7 +609,7 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
     }
   else
     {
-      theRect.origin.x = _bounds.size.width - (_cellSize.width * (index + 1));
+      theRect.origin.x = _cellSize.width * index;
       theRect.origin.y = _leftBorderOffset;
     }
 
@@ -680,24 +680,36 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
   else
     submenuFrame = NSZeroRect;
 
-  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil)
-      == GSWindowMakerInterfaceStyle)
+  if (_horizontal == NO)
+    {
+      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil)
+	  == GSWindowMakerInterfaceStyle)
+        {
+	  NSRect aRect = [self rectOfItemAtIndex: 
+				   [_menu indexOfItemWithSubmenu: aSubmenu]];
+	  NSPoint subOrigin = [_window convertBaseToScreen: 
+					   NSMakePoint(aRect.origin.x,
+						       aRect.origin.y)];
+	  
+	  return NSMakePoint (NSMaxX(frame),
+			      subOrigin.y - NSHeight(submenuFrame) - 3 +
+			                    2*[NSMenuView menuBarHeight]);
+	}
+      else
+        {
+	  return NSMakePoint(NSMaxX(frame),
+			     NSMaxY(frame) - NSHeight(submenuFrame));
+	}
+    }
+  else 
     {
       NSRect aRect = [self rectOfItemAtIndex: 
-				[_menu indexOfItemWithSubmenu: aSubmenu]];
+			       [_menu indexOfItemWithSubmenu: aSubmenu]];
       NSPoint subOrigin = [_window convertBaseToScreen: 
-				      NSMakePoint(aRect.origin.x,
-						  aRect.origin.y)];
-
-      return NSMakePoint (frame.origin.x + frame.size.width,
-			  subOrigin.y - (submenuFrame.size.height + 3 -
-      					 2*[NSMenuView menuBarHeight]));
-    }
-  else
-    {
-      return NSMakePoint (frame.origin.x + frame.size.width,
-                          frame.origin.y + frame.size.height
-                          - submenuFrame.size.height);
+				       NSMakePoint(NSMinX(aRect),
+						   NSMaxY(aRect))];
+      return NSMakePoint(subOrigin.x, 
+			 subOrigin.y - NSHeight(submenuFrame));
     }
 }
 
