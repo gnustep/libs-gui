@@ -204,7 +204,7 @@
 	  <term>GraphicCompositing</term>
 	  <desc>
           <p>
-          A boolean value which defaults to <code>NO</code>. If set to
+          A boolean value which defaults to <code>YES</code>. If set to
           <code>YES</code>, then the application uses various tricks
           to get alpha colors to work when compositing images. This
           may slow down drawing of images, but it is generally

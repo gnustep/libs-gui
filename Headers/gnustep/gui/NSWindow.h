@@ -116,6 +116,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
   id            _delegate;
   id            _fieldEditor;
   id            _lastDragView;
+  int           _lastDragOperationMask;
   int           _windowNum;
   int           _gstate;
   NSColor       *_backgroundColor;

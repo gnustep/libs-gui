@@ -1,3 +1,18 @@
+2001-12-09  Willem Rein Oudshoorn  <woudshoo@xs4all.nl>
+
+	* Source/NSWindow.m (GSPerformVoidDragSelector): rewritten to not
+	rely on category on NSObject
+	(GSPerformDragSelector): rewritten to not rely on category on
+	NSObject
+	([NSWindow -sendEvent:]): fixed bug in handling of informal
+	draggingDestination protocol
+
+	* Headers/AppKit/NSWindow.h (NSCoding>): added instance variable
+	_lastDragOperationMask
+
+	* Source/GNUmakefile (libgnustep-gui_OBJC_FILES): Removed obsolete
+	NSObjectProtocols.m file
+
 Tue Dec 11 00:08:38 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSCell.m ([-setStringValue:]): Use a NSDebugMLLog to warn

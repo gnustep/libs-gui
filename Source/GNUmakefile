@@ -100,7 +100,6 @@ NSMenuItem.m \
 NSMenuItemCell.m \
 NSOpenPanel.m \
 NSOutlineView.m \
-NSObjectProtocols.m \
 NSPageLayout.m \
 NSPanel.m \
 NSParagraphStyle.m \

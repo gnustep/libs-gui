@@ -2742,17 +2742,41 @@ resetCursorRectsForView(NSView *theView)
 	      break;
 
 
-#define     GSPerformDragSelector(view, sel, info, action)		     \
-		if (view == _contentView && _delegate)			     \
-                  action = (int)[_delegate performSelector: sel withObject:   \
-					    info];			     \
-		else							     \
-		  action = (int)[view performSelector: sel withObject: info]
-#define     GSPerformVoidDragSelector(view, sel, info)			\
-		if (view == _contentView && _delegate)			\
-                  [_delegate performSelector: sel withObject: info];	\
-		else							\
-		  [view performSelector: sel withObject: info]
+#define     GSPerformDragSelector(view, sel, info, action) \
+                do {  \
+                    id target;  \
+		if (view == _contentView && _delegate) \
+                  { \
+                    target = _delegate; \
+                  } \
+                else \
+                  { \
+                    target= view; \
+                  } \
+                \
+                if ([target respondsToSelector: sel]) \
+                  { \
+                    action = (int)[target performSelector: sel withObject: info];   \
+                  } \
+                } while (0)
+
+#define     GSPerformVoidDragSelector(view, sel, info) \
+                do {  \
+                    id target;  \
+		if (view == _contentView && _delegate) \
+                  { \
+                    target = _delegate; \
+                  } \
+                else \
+                  { \
+                    target= view; \
+                  } \
+                \
+                if ([target respondsToSelector: sel]) \
+                  { \
+                    [target performSelector: sel withObject: info];   \
+                  } \
+                } while (0)
 
 	    case GSAppKitDraggingEnter:
 	    case GSAppKitDraggingUpdate:
@@ -2766,27 +2790,39 @@ resetCursorRectsForView(NSView *theView)
 				      @selector(draggingExited:), dragInfo);
 		}
 	      _f.accepts_drag = GSViewAcceptsDrag(v, dragInfo);
-	      if (_lastDragView != v && _f.accepts_drag)
-		{
-		  GSPerformDragSelector(v, @selector(draggingEntered:),
-				      dragInfo, action);
-		}
-	      else
-		{
-		  GSPerformDragSelector(v, @selector(draggingUpdated:),
-				      dragInfo, action);
-		}
-	      e = [NSEvent otherEventWithType: NSAppKitDefined
-			   location: [theEvent locationInWindow]
-			   modifierFlags: 0
-			   timestamp: 0
-			   windowNumber: _windowNum
-			   context: GSCurrentContext()
-			   subtype: GSAppKitDraggingStatus
-			   data1: [theEvent data1]
-			   data2: action];
-	      [GSCurrentContext() _postExternalEvent: e];
-	      _lastDragView = v;
+              if (_f.accepts_drag)
+                {
+                  if (_lastDragView != v)
+                    {
+                      action = NSDragOperationNone;
+                      GSPerformDragSelector(v, @selector(draggingEntered:),
+                                            dragInfo, action);
+                    }
+                  else  
+                    {
+                      action = _lastDragOperationMask;
+                      GSPerformDragSelector(v, @selector(draggingUpdated:),
+                                            dragInfo, action);
+                    }
+                }
+              else
+                {
+                  action = NSDragOperationNone;
+                }
+
+              e = [NSEvent otherEventWithType: NSAppKitDefined
+                           location: [theEvent locationInWindow]
+                           modifierFlags: 0
+                           timestamp: 0
+                           windowNumber: _windowNum
+                           context: GSCurrentContext()
+                           subtype: GSAppKitDraggingStatus
+                           data1: [theEvent data1]
+                           data2: action];
+
+              _lastDragOperationMask = action;
+              [GSCurrentContext() _postExternalEvent: e];
+              _lastDragView = v;
 	      break;
 
 	    case GSAppKitDraggingStatus:
@@ -2798,10 +2834,10 @@ resetCursorRectsForView(NSView *theView)
 	      dragInfo = [GSCurrentContext() _dragInfo];
 	      if (_lastDragView && _f.accepts_drag)
 		{
-		  GSPerformDragSelector(_lastDragView,
-				      @selector(draggingExited:), dragInfo,
-				      action);
+		  GSPerformVoidDragSelector(_lastDragView,
+                                            @selector(draggingExited:), dragInfo);
 		}
+              _lastDragOperationMask = NSDragOperationNone;
 	      _lastDragView = nil;
 	      break;
 
@@ -2809,11 +2845,14 @@ resetCursorRectsForView(NSView *theView)
 	      if (_lastDragView && _f.accepts_drag)
 		{
 	          dragInfo = [GSCurrentContext() _dragInfo];
-		  GSPerformDragSelector(_lastDragView,
+
+                  action = NO;
+                  GSPerformDragSelector(_lastDragView,
 					@selector(prepareForDragOperation:),
 					dragInfo, action);
 		  if (action)
 		    {
+                      action = NO;
 		      GSPerformDragSelector(_lastDragView,
 					  @selector(performDragOperation:),
 					  dragInfo, action);
@@ -2825,6 +2864,7 @@ resetCursorRectsForView(NSView *theView)
 					  dragInfo);
 		    }
 		}
+              _lastDragOperationMask = NSDragOperationNone;
 	      _lastDragView = nil;
 	      e = [NSEvent otherEventWithType: NSAppKitDefined
 			   location: [theEvent locationInWindow]
@@ -2839,6 +2879,7 @@ resetCursorRectsForView(NSView *theView)
 	      break;
 
 	    case GSAppKitDraggingFinished:
+              _lastDragOperationMask = NSDragOperationNone;
 	      _lastDragView = nil;
 	      NSDebugLLog(@"NSDragging",
 		@"Internal: dropped GSAppKitDraggingFinished event");
