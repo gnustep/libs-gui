@@ -118,8 +118,6 @@
 - (void) drawWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
 {
   NSDebugLLog(@"NSImageCell", @"NSImageCell -drawWithFrame");
-  // Save last view drawn to
-  [self setControlView: controlView];
 
   // do nothing if cell's frame rect is zero
   if (NSIsEmptyRect(cellFrame))
