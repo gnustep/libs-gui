@@ -37,18 +37,6 @@
 
 #include <AppKit/NSPrintInfo.h>
 
-#ifndef NSPrinterAdmin_PATH
-#define NSPrinterAdmin_PATH @GNUSTEP_INSTALL_LIBDIR @"/PrinterAdmin"
-#endif
-
-#ifndef NSPrintInfo_PAPERFILE
-#define NSPrintInfo_PAPERFILE @"PaperSizes"
-#endif
-
-#ifndef NSPrintInfo_DEFAULTSTABLE
-#define NSPrintInfo_DEFAULTSTABLE @"PrintDefaults"
-#endif
-
 #define NSNUMBER(val) [NSNumber numberWithInt: val]
 #define DICTSET(dict, obj, key) \
    [dict setObject: obj forKey: key]
@@ -386,11 +374,22 @@ NSDictionary *paperSizes = nil;
 + initPrintInfoDefaults
 {
   NSString *defPrinter, *str;
-  NSBundle *adminBundle;
   NSString *path;
   NSPrinter *printer;
-  adminBundle = [NSBundle bundleWithPath:NSPrinterAdmin_PATH];
-  path = [adminBundle pathForResource:NSPrintInfo_DEFAULTSTABLE ofType:nil];
+
+#ifdef GNUSTEP_BASE_LIBRARY
+  path = [NSBundle pathForGNUstepResource: @"PrintDefaults"
+				  ofType: nil
+				  inDirectory: @"PrinterAdmin"];
+#else
+  NSBundle *adminBundle;
+
+  adminBundle = [NSBundle bundleWithPath: @GNUSTEP_INSTALL_LIBDIR] 
+  path = [adminBundle pathForResource: @"PrintDefaults" 
+		      ofType: nil
+		      inDirectory: @"PrinterAdmin"];
+#endif
+
   defPrinter = nil;
   if (path != nil && [path length] != 0)
     {
