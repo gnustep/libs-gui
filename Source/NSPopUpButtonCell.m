@@ -600,18 +600,15 @@ static NSImage *_pbc_image[2];
   int flag;
   [super encodeWithCoder: aCoder];
 
+  [aCoder encodeObject: _menu];
   [aCoder encodeConditionalObject: _selectedItem];
   flag = _pbcFlags.pullsDown;
   [aCoder encodeValueOfObjCType: @encode(int) at: &flag];
   flag = _pbcFlags.preferredEdge;
   [aCoder encodeValueOfObjCType: @encode(int) at: &flag];
-  flag = _pbcFlags.menuIsAttached;
-  [aCoder encodeValueOfObjCType: @encode(int) at: &flag];
   flag = _pbcFlags.usesItemFromMenu;
   [aCoder encodeValueOfObjCType: @encode(int) at: &flag];
   flag = _pbcFlags.altersStateOfSelectedItem;
-  [aCoder encodeValueOfObjCType: @encode(int) at: &flag];
-  flag = _pbcFlags.decoding;
   [aCoder encodeValueOfObjCType: @encode(int) at: &flag];
   flag = _pbcFlags.arrowPosition;
   [aCoder encodeValueOfObjCType: @encode(int) at: &flag];
@@ -620,21 +617,18 @@ static NSImage *_pbc_image[2];
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   int flag;
-  [super initWithCoder: aDecoder];
 
+  self = [super initWithCoder: aDecoder];
+  _menu = [aDecoder decodeObject];
   _selectedItem = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
   _pbcFlags.pullsDown = flag;
   [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
   _pbcFlags.preferredEdge = flag;
   [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
-  _pbcFlags.menuIsAttached = flag;
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
   _pbcFlags.usesItemFromMenu = flag;
   [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
   _pbcFlags.altersStateOfSelectedItem = flag;
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
-  _pbcFlags.decoding = flag;
   [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
   _pbcFlags.arrowPosition = flag;
 

@@ -35,25 +35,13 @@
 
 #include <AppKit/NSButton.h>
 #include <AppKit/NSMenuItem.h>
-#include <AppKit/NSMenu.h>
 
 @class NSString;
 @class NSArray;
-@class NSMutableArray;
-@class NSMenuView;
-@class NSFont;
-@class NSMatrix;
 
-@interface NSPopUpButton : NSButton <NSCoding>
+
+@interface NSPopUpButton : NSButton
 {
-  NSMenu *popb_menu;
-  BOOL popb_pullsDown;
-  BOOL popb_autoenableItems;
-  int popb_selectedItem;
-
-  id pub_target;
-  SEL pub_action;
-  BOOL is_up;
 }
 
 //
@@ -96,10 +84,6 @@
 - (NSRectEdge)preferredEdge;
 - (void)setTitle:(NSString *)aString;
 - (void)synchronizeTitleAndSelectedItem;
-- (void)mouseDown:(NSEvent *)theEvent;
-
-- (id) initWithCoder: (NSCoder*)aDecoder;
-- (void) encodeWithCoder: (NSCoder*)aCoder;
 @end
 
 APPKIT_EXPORT NSString *NSPopUpButtonWillPopUpNotification;

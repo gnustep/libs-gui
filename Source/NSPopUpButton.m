@@ -28,15 +28,13 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/config.h>
-#import <Foundation/Foundation.h>
-#include <AppKit/NSMenu.h>
+#include <Foundation/Foundation.h>
 #include <AppKit/NSPopUpButton.h>
 #include <AppKit/NSPopUpButtonCell.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSMenu.h>
+#include <AppKit/NSMenuItem.h>
 #include <AppKit/NSMenuView.h>
-#include <AppKit/NSFont.h>
 
 /*
  * class variables
@@ -88,7 +86,7 @@ Class _nspopupbuttonCellClass = 0;
 - (id) initWithFrame: (NSRect)frameRect
 	   pullsDown: (BOOL)flag
 {
-  [super initWithFrame: frameRect];
+  self = [super initWithFrame: frameRect];
   [self setPullsDown: flag];
 
   return self;
@@ -145,15 +143,6 @@ Class _nspopupbuttonCellClass = 0;
 		     atIndex: index];
 
   [self synchronizeTitleAndSelectedItem];
-}
-
-- (BOOL) performKeyEquivalent: (NSEvent*)theEvent
-{
-  NSMenu	*m = [self menu];
-
-  if (m != nil)
-    return [m performKeyEquivalent: theEvent];
-  return NO;
 }
 
 - (void) removeAllItems
@@ -292,12 +281,6 @@ Class _nspopupbuttonCellClass = 0;
   [self setNeedsDisplay: YES];
 }
 
-- (void) sizeToFit
-{
-  [[popb_menu menuRepresentation] sizeToFit];
-  [super sizeToFit];
-}
-
 - (BOOL) resignFirstResponder
 {
   [_cell dismissPopUp];
@@ -311,19 +294,24 @@ Class _nspopupbuttonCellClass = 0;
   [super resignKeyWindow];
 }
 
+- (BOOL) performKeyEquivalent: (NSEvent*)theEvent
+{
+  NSMenu *m = [self menu];
+
+  if (m != nil)
+    return [m performKeyEquivalent: theEvent];
+  return NO;
+}
+
 - (void) mouseDown: (NSEvent*)theEvent
 { 
   NSMenuView *mr = [[_cell menu] menuRepresentation];
+  NSWindow   *menuWindow = [mr window];
   NSEvent    *e;
-  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
   NSPoint    p;
-  NSWindow  *menuWindow = [mr window];
 
   if ([self isEnabled] == NO)
     return;
-
-  [nc postNotificationName: NSPopUpButtonWillPopUpNotification
-      object: self];
 
   // Attach the popUp
   [_cell attachPopUpWithFrame: _bounds
@@ -339,21 +327,17 @@ Class _nspopupbuttonCellClass = 0;
 	       modifierFlags: [theEvent modifierFlags]
 	       timestamp: [theEvent timestamp]
 	       windowNumber: [menuWindow windowNumber]
-	       context: nil // TODO ? 
+	       context: [theEvent context]
 	       eventNumber: [theEvent eventNumber]
 	       clickCount: [theEvent clickCount] 
 	       pressure: [theEvent pressure]];
   [menuWindow sendEvent: e];
 
-  // Update our selected item
-  [self synchronizeTitleAndSelectedItem];
-  
   // Dismiss the popUp
   [_cell dismissPopUp];
 
-  // Send action to target
-  [super sendAction: [self action]
-		 to: [self target]];
+  // Update our selected item
+  [self synchronizeTitleAndSelectedItem];  
 }
 
 - (void) keyDown: (NSEvent*)theEvent
@@ -375,13 +359,12 @@ Class _nspopupbuttonCellClass = 0;
 	case NSCarriageReturnCharacter:
 	case ' ':
 	  {
-	    if ([[[_cell menu] window] isVisible] == NO)
+	    NSMenuView *menuView;
+
+	    menuView = [[_cell menu] menuRepresentation];
+	    if ([[menuView window] isVisible] == NO)
 	      {
 		int selectedIndex;
-
-		[[NSNotificationCenter defaultCenter]
-		  postNotificationName: NSPopUpButtonWillPopUpNotification
-		  object: self];
 
 		// Attach the popUp
 		[_cell attachPopUpWithFrame: _bounds
@@ -390,26 +373,18 @@ Class _nspopupbuttonCellClass = 0;
 		selectedIndex = [self indexOfSelectedItem];
 
 		if (selectedIndex > -1)
-		  [[[_cell menu] menuRepresentation]
-		    setHighlightedItemIndex: selectedIndex];
+		  [menuView setHighlightedItemIndex: selectedIndex];
 	      }
 	    else
 	      {
-		// Update our selected item
-		[self synchronizeTitleAndSelectedItem];
+		[[_cell menu] performActionForItemAtIndex: 
+				  [self indexOfSelectedItem]];
 
 		// Dismiss the popUp
 		[_cell dismissPopUp];
 
-		{
-		  id selectedItem = [self selectedItem];
-		  [NSApp sendAction: [selectedItem action] 
-			 to: [selectedItem target]
-			 from: selectedItem];
-		}
-
-		[super sendAction: [self action]
-		       to: [self target]];
+		// Update our selected item
+		[self synchronizeTitleAndSelectedItem];
 	      }
 	  }
 	  return;
@@ -464,59 +439,12 @@ Class _nspopupbuttonCellClass = 0;
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  int	i;
-  BOOL	f;
-  id	c;
-
-  /*
-   * Don't encode all the cell information!
-   */
-  c = RETAIN([self cell]);
   [super encodeWithCoder: aCoder];
-  [self setCell: c];
-  RELEASE(c);
-  f = [self pullsDown];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &f];
-  [aCoder encodeObject: [self itemArray]];
-  i = [self indexOfSelectedItem];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &i];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  NSArray	*dItems;
-  int		dSelected;
-  BOOL		dPull;
-  unsigned	i;
-  id		aCell;
-
-  [super initWithCoder: aDecoder];
-  /*
-   * Set a newly created cell.
-   */
-  aCell = [[[self class] cellClass] new];
-  [self setCell: aCell];
-  RELEASE(aCell);
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &dPull];
-  [self setPullsDown: dPull];
-  dItems = [aDecoder decodeObject];
-  for (i = 0; i < [dItems count]; i++)
-    {
-      NSMenuItem	*dItem = [dItems objectAtIndex: i];
-      NSMenuItem	*item;
-
-      [self addItemWithTitle: [dItem title]];
-      item = [self itemAtIndex: i];
-      [item setTarget: [dItem target]];
-      [item setAction: [dItem action]];
-      [item setEnabled: [dItem isEnabled]];
-      [item setTag: [dItem tag]];
-      [item setKeyEquivalent: [dItem keyEquivalent]];
-    }
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &dSelected];
-  [self selectItemAtIndex: dSelected];
-  [self synchronizeTitleAndSelectedItem];
-  return self;
+  return [super initWithCoder: aDecoder];
 }
 
 @end

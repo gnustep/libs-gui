@@ -1,3 +1,25 @@
+2001-09-28  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Header/gnustep/gui/NSPopupButton.h
+	Removed all ivars and cleaned up the rest.
+	* Source/NSPopupButton.m
+	Removed the specific coding code.
+	[mouseDown:] and [keyDown:] don't send notification, as this is
+	done by the cell. Also don't send our action, as the action of the
+	menu item is already send. Changed call order of [dismissPopUp]
+	and [synchronizeTitleAndSelectedItem].
+	In [keyDown:] send item action via [NSMenu performActionForItemAtIndex:]
+	* Header/gnustep/gui/NSPopupButtonCell.h
+	Removed unneeded ivars.
+	* Source/NSPopupButtonCell.m
+	In [encodeWithCoder:] and [initWithCoder:] also encode the menu.
+	* Testing
+	Removed this directory.
+	* Tools/Functions.m
+	Removed this file.
+	* Tools/GNUmakefile
+	Removed references to Functions.m
+	
 Wed Sep 26 23:04:57 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSFileWrapper.m 

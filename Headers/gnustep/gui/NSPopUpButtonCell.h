@@ -46,10 +46,8 @@ typedef enum {
   struct __pbcFlags {
       unsigned int pullsDown: 1;
       unsigned int preferredEdge: 3;
-      unsigned int menuIsAttached: 1;
       unsigned int usesItemFromMenu: 1;
       unsigned int altersStateOfSelectedItem: 1;
-      unsigned int decoding: 1;
       unsigned int arrowPosition: 2;
   } _pbcFlags;
 }

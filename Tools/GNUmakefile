@@ -39,11 +39,11 @@ TOOL_NAME = make_services set_show_service
 SERVICE_NAME = example GSspell
 
 # The source files to be compiled
-gpbs_OBJC_FILES = gpbs.m Functions.m
-make_services_OBJC_FILES = make_services.m Functions.m
-set_show_service_OBJC_FILES = set_show_service.m Functions.m
+gpbs_OBJC_FILES = gpbs.m 
+make_services_OBJC_FILES = make_services.m 
+set_show_service_OBJC_FILES = set_show_service.m 
 
-example_OBJC_FILES = example.m Functions.m
+example_OBJC_FILES = example.m 
 
 GSspell_OBJC_FILES = GSspell.m
 
