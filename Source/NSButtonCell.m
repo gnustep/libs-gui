@@ -3,7 +3,7 @@
 
    The button cell class
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996-1999 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
 	        Ovidiu Predescu <ovidiu@net-community.com>
@@ -11,6 +11,8 @@
    Author:  Felipe A. Rodriguez <far@ix.netcom.com>
    Date: August 1998
 
+   Modified: Richard Frith-Macdonald <richard@brainstorm.co.uk>
+   
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -53,48 +55,48 @@
 //
 // Class methods
 //
-+ (void)initialize
++ (void) initialize
 {
-	if (self == [NSButtonCell class])
-		[self setVersion:1];								// Initial version
+  if (self == [NSButtonCell class])
+    [self setVersion: 1];
 }
 
 //
 // Instance methods
 //
-- _init
+- (id) _init
 {
-	cell_enabled = YES;
-	transparent = NO;
-	cell_bordered = YES;
-	showAltStateMask = NSNoCellMask;	// configure as a NSMomentaryPushButton
-	highlightsByMask = NSPushInCellMask | NSChangeGrayCellMask;
-	delayInterval = 0.4;
-	repeatInterval = 0.075;
-	altContents = nil;
+  cell_enabled = YES;
+  transparent = NO;
+  cell_bordered = YES;
+  showAltStateMask = NSNoCellMask;	// configure as a NSMomentaryPushButton
+  highlightsByMask = NSPushInCellMask | NSChangeGrayCellMask;
+  delayInterval = 0.4;
+  repeatInterval = 0.075;
+  altContents = nil;
 
-	return self;
+  return self;
 }
 
-- init
+- (id) init
 {
-	[self initTextCell:@"Button"];
+  [self initTextCell: @"Button"];
 
-	return self;
+  return self;
 }
 
-- initImageCell:(NSImage *)anImage
+- (id) initImageCell: (NSImage *)anImage
 {
-	[super initImageCell:anImage];
+  [super initImageCell: anImage];
 
-	contents = nil;
+  contents = nil;
 
-	return [self _init];
+  return [self _init];
 }
 
-- initTextCell:(NSString *)aString
+- (id) initTextCell: (NSString *)aString
 {
-  [super initTextCell:aString];
+  [super initTextCell: aString];
 
   return [self _init];
 }
@@ -112,51 +114,73 @@
 //
 // Setting the Titles
 //
-- (NSString *)title								{ return [self stringValue]; }
-- (NSString *)alternateTitle					{ return altContents; }
-- (void)setFont:(NSFont *)fontObject			{ [super setFont:fontObject]; }
-
-- (void)setTitle:(NSString *)aString
+- (NSString *) title								
 {
-	[self setStringValue:aString];
-	[self setState:[self state]];						// update our state
+  return [self stringValue];
 }
 
-- (void)setAlternateTitle:(NSString *)aString
+- (NSString *) alternateTitle					
+{
+  return altContents;
+}
+
+- (void) setFont: (NSFont *)fontObject		
+{
+  [super setFont: fontObject];
+}
+
+- (void) setTitle: (NSString *)aString
+{
+  [self setStringValue: aString];
+  [self setState: [self state]];
+}
+
+- (void) setAlternateTitle: (NSString *)aString
 {
   NSString* _string = [aString copy];
 
   ASSIGN(altContents, _string);
   [_string release];
-  [self setState:[self state]];						// update our state
+  [self setState: [self state]];
 }
 
 //
 // Setting the Images
 //
-- (NSImage *)alternateImage						{ return altImage; }
-- (NSCellImagePosition)imagePosition			{ return image_position; }
-- (void)setAlternateImage:(NSImage *)anImage	{ ASSIGN(altImage, anImage); }
-
-- (void)setImagePosition:(NSCellImagePosition)aPosition
+- (NSImage *) alternateImage						
 {
-	image_position = aPosition;
+  return altImage;
+}
+
+- (NSCellImagePosition) imagePosition			
+{
+  return image_position;
+}
+
+- (void) setAlternateImage: (NSImage *)anImage
+{
+  ASSIGN(altImage, anImage);
+}
+
+- (void) setImagePosition: (NSCellImagePosition)aPosition
+{
+  image_position = aPosition;
 }
 
 //
 // Setting the Repeat Interval
 //
-- (void)getPeriodicDelay:(float *)delay interval:(float *)interval
+- (void) getPeriodicDelay: (float *)delay interval: (float *)interval
 {
-	*delay = delayInterval;
-	*interval = repeatInterval;
+  *delay = delayInterval;
+  *interval = repeatInterval;
 }
 
-- (void)setPeriodicDelay:(float)delay interval:(float)interval
+- (void) setPeriodicDelay: (float)delay interval: (float)interval
 {
-	delayInterval = delay;
-	repeatInterval = interval;
-	[self setContinuous:YES];
+  delayInterval = delay;
+  repeatInterval = interval;
+  [self setContinuous: YES];
 }
 
 - (void) performClick: (id)sender
@@ -225,10 +249,17 @@
 //
 // Modifying Graphic Attributes
 //
-- (BOOL)isTransparent					{ return transparent; }
-- (void)setTransparent:(BOOL)flag		{ transparent = flag; }
+- (BOOL) isTransparent					
+{
+  return transparent;
+}
 
-- (BOOL)isOpaque
+- (void) setTransparent: (BOOL)flag	
+{
+  transparent = flag;
+}
+
+- (BOOL) isOpaque
 {
 	return !transparent && [self isBordered];
 }
@@ -236,80 +267,118 @@
 //
 // Modifying Graphic Attributes
 //
-- (int)highlightsBy						{ return highlightsByMask; }
-- (void)setHighlightsBy:(int)mask		{ highlightsByMask = mask; }
-- (void)setShowsStateBy:(int)mask		{ showAltStateMask = mask; }
-
-
-- (void)setButtonType:(NSButtonType)buttonType
+- (int) highlightsBy						
 {
-  [super setType:buttonType];
-
-  switch (buttonType)
-	{
-    case NSMomentaryLight:
-      [self setHighlightsBy:NSChangeBackgroundCellMask];
-      [self setShowsStateBy:NSNoCellMask];
-      break;
-    case NSMomentaryPushButton:
-      [self setHighlightsBy:NSPushInCellMask | NSChangeGrayCellMask];
-      [self setShowsStateBy:NSNoCellMask];
-      break;
-    case NSMomentaryChangeButton:
-      [self setHighlightsBy:NSContentsCellMask];
-      [self setShowsStateBy:NSNoCellMask];
-      break;
-    case NSPushOnPushOffButton:
-      [self setHighlightsBy:NSPushInCellMask | NSChangeGrayCellMask];
-      [self setShowsStateBy:NSChangeBackgroundCellMask];
-      break;
-    case NSOnOffButton:
-      [self setHighlightsBy:NSChangeBackgroundCellMask];
-      [self setShowsStateBy:NSChangeBackgroundCellMask];
-      break;
-    case NSToggleButton:
-      [self setHighlightsBy:NSPushInCellMask | NSContentsCellMask];
-      [self setShowsStateBy:NSContentsCellMask];
-      break;
-    case NSSwitchButton:
-      [self setHighlightsBy:NSContentsCellMask];
-      [self setShowsStateBy:NSContentsCellMask];
-      [self setImage:[NSImage imageNamed:@"common_SwitchOff"]];
-      [self setAlternateImage:[NSImage imageNamed:@"common_SwitchOn"]];
-      [self setImagePosition:NSImageLeft];
-      [self setAlignment:NSLeftTextAlignment];
-      break;
-    case NSRadioButton:
-      [self setHighlightsBy:NSContentsCellMask];
-      [self setShowsStateBy:NSContentsCellMask];
-      [self setImage:[NSImage imageNamed:@"common_RadioOff"]];
-      [self setAlternateImage:[NSImage imageNamed:@"common_RadioOn"]];
-      [self setImagePosition:NSImageLeft];
-      [self setAlignment:NSLeftTextAlignment];
-      break;
-	}
-
-  // update our state
-  [self setState:[self state]];
+  return highlightsByMask;
 }
 
-- (int)showsStateBy						{ return showAltStateMask; }
-- (void)setIntValue:(int)anInt			{ [self setState:(anInt != 0)]; }
-- (void)setFloatValue:(float)aFloat		{ [self setState:(aFloat != 0)]; }
-- (void)setDoubleValue:(double)aDouble	{ [self setState:(aDouble != 0)]; }
-- (int)intValue							{ return [self state]; }
-- (float)floatValue						{ return [self state]; }
-- (double)doubleValue					{ return [self state]; }
+- (void) setHighlightsBy: (int)mask	
+{
+  highlightsByMask = mask;
+}
+
+- (void) setShowsStateBy: (int)mask	
+{
+  showAltStateMask = mask;
+}
+
+- (void) setButtonType: (NSButtonType)buttonType
+{
+  [super setType: buttonType];
+
+  switch (buttonType)
+    {
+      case NSMomentaryLight: 
+	[self setHighlightsBy: NSChangeBackgroundCellMask];
+	[self setShowsStateBy: NSNoCellMask];
+	break;
+      case NSMomentaryPushButton: 
+	[self setHighlightsBy: NSPushInCellMask | NSChangeGrayCellMask];
+	[self setShowsStateBy: NSNoCellMask];
+	break;
+      case NSMomentaryChangeButton: 
+	[self setHighlightsBy: NSContentsCellMask];
+	[self setShowsStateBy: NSNoCellMask];
+	break;
+      case NSPushOnPushOffButton: 
+	[self setHighlightsBy: NSPushInCellMask | NSChangeGrayCellMask];
+	[self setShowsStateBy: NSChangeBackgroundCellMask];
+	break;
+      case NSOnOffButton: 
+	[self setHighlightsBy: NSChangeBackgroundCellMask];
+	[self setShowsStateBy: NSChangeBackgroundCellMask];
+	break;
+      case NSToggleButton: 
+	[self setHighlightsBy: NSPushInCellMask | NSContentsCellMask];
+	[self setShowsStateBy: NSContentsCellMask];
+	break;
+      case NSSwitchButton: 
+	[self setHighlightsBy: NSContentsCellMask];
+	[self setShowsStateBy: NSContentsCellMask];
+	[self setImage: [NSImage imageNamed: @"common_SwitchOff"]];
+	[self setAlternateImage: [NSImage imageNamed: @"common_SwitchOn"]];
+	[self setImagePosition: NSImageLeft];
+	[self setAlignment: NSLeftTextAlignment];
+	break;
+      case NSRadioButton: 
+	[self setHighlightsBy: NSContentsCellMask];
+	[self setShowsStateBy: NSContentsCellMask];
+	[self setImage: [NSImage imageNamed: @"common_RadioOff"]];
+	[self setAlternateImage: [NSImage imageNamed: @"common_RadioOn"]];
+	[self setImagePosition: NSImageLeft];
+	[self setAlignment: NSLeftTextAlignment];
+	break;
+    }
+
+  [self setState: [self state]];
+}
+
+- (int) showsStateBy						
+{
+  return showAltStateMask;
+}
+
+- (void) setIntValue: (int)anInt		
+{
+  [self setState: (anInt != 0)];
+}
+
+- (void) setFloatValue: (float)aFloat	
+{
+  [self setState: (aFloat != 0)];
+}
+
+- (void) setDoubleValue: (double)aDouble
+{
+  [self setState: (aDouble != 0)];
+}
+
+- (int) intValue							
+{
+  return [self state];
+}
+
+- (float) floatValue						
+{
+  return [self state];
+}
+
+- (double) doubleValue					
+{
+  return [self state];
+}
 
 //
 // Displaying
 //
-- (NSColor *)textColor
+- (NSColor *) textColor
 {
+  if ([self isEnabled] == NO)
+    return [NSColor disabledControlTextColor];
   if (([self state] && ([self showsStateBy] & NSChangeGrayCellMask))
       || ([self isHighlighted] && ([self highlightsBy] & NSChangeGrayCellMask)))
-    return [NSColor lightGrayColor];
-  return [NSColor blackColor];
+    return [NSColor selectedControlTextColor];
+  return [NSColor controlTextColor];
 }
 
 - (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
@@ -365,7 +434,7 @@
     }
 
   // set cell's background color
-  [[NSColor colorWithCalibratedWhite:backgroundGray alpha:1.0] set];
+  [[NSColor colorWithCalibratedWhite: backgroundGray alpha: 1.0] set];
   NSRectFill(cellFrame);
 
   // Determine the image and the title that will be
@@ -386,7 +455,7 @@
       if (!imageToDisplay)
 	imageToDisplay = [self image];
       titleToDisplay = [self alternateTitle];
-      if (!titleToDisplay)
+      if (titleToDisplay == nil || [titleToDisplay isEqual: @""])
         titleToDisplay = [self title];
     }
   else
@@ -403,17 +472,17 @@
 
   switch ([self imagePosition])
     {
-      case NSNoImage:
+      case NSNoImage: 
 	 // draw title only
 	 [self _drawText: titleToDisplay inFrame: cellFrame];
 	 break;
 
-      case NSImageOnly:
+      case NSImageOnly: 
 	 // draw image only
 	 [self _drawImage: imageToDisplay inFrame: cellFrame];
 	 break;
 
-      case NSImageLeft:
+      case NSImageLeft: 
 	 // draw image to the left of the title
 	 rect.origin = cellFrame.origin;
 	 rect.size.width = imageSize.width;
@@ -426,13 +495,13 @@
 	 [self _drawText: titleToDisplay inFrame: rect];
 	 break;
 
-      case NSImageRight:
+      case NSImageRight: 
 	 // draw image to the right of the title
 	 rect.origin.x = NSMaxX (cellFrame) - imageSize.width;
 	 rect.origin.y = cellFrame.origin.y;
 	 rect.size.width = imageSize.width;
 	 rect.size.height = cellFrame.size.height;
-	 [self _drawImage:imageToDisplay inFrame:rect];
+	 [self _drawImage: imageToDisplay inFrame: rect];
 
 	 // draw title
 	 rect.origin = cellFrame.origin;
@@ -441,7 +510,7 @@
 	 [self _drawText: titleToDisplay inFrame: rect];
 	 break;
 
-      case NSImageBelow:
+      case NSImageBelow: 
 	 // draw image below title
 	 cellFrame.size.height /= 2;
 	 [self _drawImage: imageToDisplay inFrame: cellFrame];
@@ -449,7 +518,7 @@
 	 [self _drawText: titleToDisplay inFrame: cellFrame];
 	 break;
 
-      case NSImageAbove:
+      case NSImageAbove: 
 	 // draw image above title
 	 cellFrame.size.height /= 2;
 	 [self _drawText: titleToDisplay inFrame: cellFrame];
@@ -457,7 +526,7 @@
 	 [self _drawImage: imageToDisplay inFrame: cellFrame];
 	 break;
 
-      case NSImageOverlaps:
+      case NSImageOverlaps: 
 	 // draw title over the image
 	 [self _drawImage: imageToDisplay inFrame: cellFrame];
 	 [self _drawText: titleToDisplay inFrame: cellFrame];
@@ -489,7 +558,7 @@
 //
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [super encodeWithCoder:aCoder];
+  [super encodeWithCoder: aCoder];
 
   NSDebugLog(@"NSButtonCell: start encoding\n");
   [aCoder encodeObject: keyEquivalent];

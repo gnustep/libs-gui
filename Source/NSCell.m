@@ -541,9 +541,9 @@
 - (NSColor*) textColor
 {
   if ([self isEnabled])
-    return [NSColor blackColor];
+    return [NSColor controlTextColor];
   else
-    return [NSColor darkGrayColor];
+    return [NSColor disabledControlTextColor];
 }
 
 - (void) _drawText: (NSString *) title inFrame: (NSRect) cellFrame
