@@ -1,3 +1,8 @@
+2003-04-12  Serg Stoyan <stoyan@hologr.com>
+
+	* Source/NSPopUpButtonCell.m:
+	(removeAllItems): Leave item at index 0 with empty title.
+	
 2003-04-11  Michael Hanni  <michael@deviant-behavior.com>
 
 	* Source/NSApplication.m:
