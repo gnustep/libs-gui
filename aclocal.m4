@@ -164,6 +164,7 @@ dnl
 AC_REQUIRE([AC_PROG_CC])dnl
 AC_REQUIRE([AC_C_CROSS])dnl
 AC_MSG_CHECKING(for the Foundation library)
+OBJC_LIBS=
 AC_CACHE_VAL(ac_cv_foundation_library,
 [AC_LANG_SAVE[]dnl
 AC_LANG_OBJECTIVE_C[]
@@ -205,19 +206,19 @@ case "$FOUNDATION_LIBRARY" in
 	# restore the value of prefix
 	prefix=$old_prefix
 
-	LIBS="$LIBS -lFoundation_s"; 
+	OBJC_LIBS="-lFoundation_s"; 
 	AC_DEFINE(NeXT_foundation_LIBRARY);;
     libobjects)
-	LIBS="$LIBS -lobjects"
+	OBJC_LIBS="-lobjects"
 	AC_DEFINE(GNUSTEP_BASE_LIBRARY);;
     gnustep-base)
-	LIBS="$LIBS -lgnustep-base"
+	OBJC_LIBS="-lgnustep-base"
 	AC_DEFINE(GNUSTEP_BASE_LIBRARY);;
     libFoundation)
 	if test "$FOUNDATION_LIB" = ""; then
 	    FOUNDATION_LIB=Foundation
 	fi
-	LIBS="-l${FOUNDATION_LIB} $LIBS"
+	OBJC_LIBS="-l${FOUNDATION_LIB}"
 	AC_DEFINE(LIB_FOUNDATION_LIBRARY);;
     *)
 	AC_MSG_ERROR(Unknown $FOUNDATION_LIBRARY library!);;
@@ -246,13 +247,15 @@ AC_CACHE_VAL(ac_cv_objc_runtime,
   ], ac_cv_objc_runtime=NeXT, ac_cv_objc_runtime=unknown)
   if test $ac_cv_objc_runtime = unknown; then
     OBJC_RUNTIME_FLAG=-fgnu-runtime
-    LIBS="$LIBS -lobjc"
+    saved_LIBS=$LIBS
+    LIBS="$OBJC_LIBS -lobjc $LIBS"
     AC_TRY_LINK([#include <Foundation/NSString.h>
     #include <objc/objc-api.h>],
     [id class = objc_lookup_class("NSObject");
     id obj = [class alloc];
     puts([[obj description] cString]);
     ], ac_cv_objc_runtime=GNU, ac_cv_objc_runtime=unknown)
+    LIBS=$saved_LIBS
   fi
   AC_LANG_RESTORE[]
 fi
@@ -262,7 +265,7 @@ if test "`echo ${OBJC_RUNTIME} | tr a-z A-Z`" = "GNU"; then
   OBJC_RUNTIME=GNU
   OBJC_RUNTIME_FLAG=-fgnu-runtime
   ac_cv_objc_runtime=GNU
-  LIBS="$LIBS -lobjc"
+  OBJC_LIBS="$OBJC_LIBS -lobjc"
   AC_DEFINE(GNU_RUNTIME)
 elif test "`echo ${OBJC_RUNTIME} | tr a-z A-Z`" = "NEXT"; then
   OBJC_RUNTIME=NeXT
@@ -280,4 +283,5 @@ to specify some additional libraries needed to link an ObjC program, so please
 take a look in the config.log file to see the reason and try again.])
 fi
 AC_MSG_RESULT(${ac_cv_objc_runtime})
+LIBS="$OBJC_LIBS $LIBS"
 ])dnl

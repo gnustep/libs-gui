@@ -93,7 +93,9 @@ AC_SUBST(config_include)
 
 # Checking for some additional libraries we might need
 AC_CHECK_LIB(dl, dlopen)
-AC_CHECK_LIB(pthread, pthread_create)
+AC_CHECK_LIB(pcthread, pthread_create,
+	    ,
+	    AC_CHECK_LIB(pthread, pthread_create))
 AC_CHECK_LIB(m, sqrt)
 
 # Determine the Foundation library
