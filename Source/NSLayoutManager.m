@@ -33,6 +33,8 @@
 #include <AppKit/NSWindow.h>
 #include <Foundation/NSException.h>
 
+#define	glyphChunks	((GSIArray)_glyphChunks)
+
 /*
  * Glyph attributes known to the layout manager.
  */
@@ -254,6 +256,39 @@ GSDestroyGlyphChunk(GSGlyphChunk *chunk)
   NSZoneFree(NSDefaultMallocZone(), chunk);
 }
 
+static void
+GSDestroyChunks(GSIArray *where)
+{
+  if (*where != 0)
+    {
+      unsigned	i;
+
+      /*
+       * Release all glyph chunk information
+       */
+      i = GSIArrayCount(*where);
+      while (i-- > 0)
+	{
+	  GSGlyphChunk	*chunk;
+
+	  chunk = (GSGlyphChunk*)(GSIArrayItemAtIndex(*where, i).ptr);
+	  // FIXME GSRemoveGlyphChunk(glyphChunks, i);
+	  GSDestroyGlyphChunk(chunk);
+	}
+      GSIArrayEmpty(*where);
+      NSZoneFree(NSDefaultMallocZone(), *where);
+      *where = 0;
+    }
+}
+
+static void
+GSCreateChunks(GSIArray *where)
+{
+  GSDestroyChunks(where);
+  *where = NSZoneMalloc(NSDefaultMallocZone(), sizeof(GSIArray_t));
+  GSIArrayInitWithZoneAndCapacity(*where, NSDefaultMallocZone(), 8);
+}
+
 static inline unsigned
 GSCharIndexForGlyphInChunk(GSGlyphChunk *chunk, unsigned index)
 {
@@ -270,9 +305,17 @@ GSChunkForCharIndex(GSIArray chunks, unsigned charIndex)
   tmp.charIndex = charIndex;
   pos = GSIArrayInsertionPosition(chunks, (GSIArrayItem)(void*)&tmp,
     charIndexSort); 
-  // pos is the index of the next chunk *after* the one we want.
+  /*
+   * pos is the index of the next chunk *after* the one we want.
+   * if it is zero, we have an empty list - so we create the first chunk.
+   */
   if (pos == 0)
-    return 0;
+    {
+      GSGlyphChunk	*chunk = GSCreateGlyphChunk(0);
+
+      GSIArrayInsertItem(chunks, (GSIArrayItem)(void*)chunk, 0);
+      return chunk;
+    }
   pos--;
   return (GSGlyphChunk*)(GSIArrayItemAtIndex(chunks, pos).ptr);
 }
@@ -286,9 +329,17 @@ GSChunkForGlyphIndex(GSIArray chunks, unsigned glyphIndex)
   tmp.glyphIndex = glyphIndex;
   pos = GSIArrayInsertionPosition(chunks, (GSIArrayItem)(void*)&tmp,
     glyphIndexSort); 
-  // pos is the index of the next chunk *after* the one we want.
+  /*
+   * pos is the index of the next chunk *after* the one we want.
+   * if it is zero, we have an empty list - so we create the first chunk.
+   */
   if (pos == 0)
-    return 0;
+    {
+      GSGlyphChunk	*chunk = GSCreateGlyphChunk(0);
+
+      GSIArrayInsertItem(chunks, (GSIArrayItem)(void*)chunk, 0);
+      return chunk;
+    }
   pos--;
   return (GSGlyphChunk*)(GSIArrayItemAtIndex(chunks, pos).ptr);
 }
@@ -494,34 +545,13 @@ GSChunkForGlyphIndex(GSIArray chunks, unsigned glyphIndex)
   _fragmentRuns = [GSRunStorage new];
   _locationRuns = [GSRunStorage new];
 
-  _glyphChunks = NSZoneMalloc(NSDefaultMallocZone(), sizeof(GSIArray_t));
-  GSIArrayInitWithZoneAndCapacity((GSIArray)_glyphChunks,
-    NSDefaultMallocZone(), 8);
+  GSCreateChunks((GSIArray*)&_glyphChunks);
   return self;
 }
 
 - (void) dealloc
 {
-  if (_glyphChunks != 0)
-    {
-      unsigned	i;
-
-      /*
-       * Release all glyph chunk information
-       */
-      i = GSIArrayCount(_glyphChunks);
-      while (i-- > 0)
-	{
-	  GSGlyphChunk	*chunk;
-
-	  chunk = (GSGlyphChunk*)(GSIArrayItemAtIndex(_glyphChunks, i).ptr);
-	  // FIXME GSRemoveGlyphChunk((GSIArray)_glyphChunks, i);
-	  GSDestroyGlyphChunk(chunk);
-	}
-      GSIArrayEmpty(_glyphChunks);
-      NSZoneFree(NSDefaultMallocZone(), _glyphChunks);
-      _glyphChunks = 0;
-    }
+  GSDestroyChunks((GSIArray*)&_glyphChunks);
 
   RELEASE (_textContainers);
   RELEASE (_containerRuns);
@@ -567,19 +597,19 @@ GSChunkForGlyphIndex(GSIArray chunks, unsigned glyphIndex)
 // to the new one.
 - (void) replaceTextStorage: (NSTextStorage*)newTextStorage
 {
-  NSArray *layoutManagers = [_textStorage layoutManagers];
-  NSEnumerator *enumerator = [layoutManagers objectEnumerator];
-  NSLayoutManager *object;
+  NSArray		*layoutManagers = [_textStorage layoutManagers];
+  NSEnumerator		*enumerator = [layoutManagers objectEnumerator];
+  NSLayoutManager	*object;
 
   // Remove layout managers from old NSTextStorage object and add them to the
   // new one.  NSTextStorage's addLayoutManager invokes NSLayoutManager's
   // setTextStorage method automatically, and that includes self.
 
   while ((object = (NSLayoutManager*)[enumerator nextObject]) != nil)
-  {
-    [_textStorage removeLayoutManager: object];
-    [newTextStorage addLayoutManager: object];
-  }
+    {
+      [_textStorage removeLayoutManager: object];
+      [newTextStorage addLayoutManager: object];
+    }
 }
 
 /*
@@ -828,7 +858,7 @@ invalidatedRange.length);
 	atGlyphIndex: (unsigned)glyphIndex
       characterIndex: (unsigned)charIndex
 {
-  unsigned		chunkCount = GSIArrayCount(_glyphChunks);
+  unsigned		chunkCount = GSIArrayCount(glyphChunks);
   GSGlyphAttrs		attrs = { 0 };
   GSGlyphChunk		*chunk;
 
@@ -841,11 +871,12 @@ invalidatedRange.length);
       chunk = GSCreateGlyphChunk(charIndex);
       GSIArrayAddItem(&chunk->glyphs, (GSIArrayItem)aGlyph);
       GSIArrayAddItem(&chunk->attrs, (GSIArrayItem)attrs);
-      GSIArrayAddItem(_glyphChunks, (GSIArrayItem)(void*)chunk);
+      GSIArrayAddItem(glyphChunks, (GSIArrayItem)(void*)chunk);
     }
   else
     {
       unsigned		glyphCount;
+      unsigned		glyphOffset;
       unsigned		chunkIndex;
       GSGlyphChunk	tmpChunk;
       unsigned		pos;
@@ -855,26 +886,25 @@ invalidatedRange.length);
        * a glyphIndex less than or equal to the index we were given.
        */
       tmpChunk.glyphIndex = glyphIndex;
-      chunkIndex = GSIArrayInsertionPosition((GSIArray)_glyphChunks,
+      chunkIndex = GSIArrayInsertionPosition(glyphChunks,
 	(GSIArrayItem)(void*)&tmpChunk, glyphIndexSort); 
       chunkIndex--;
-      chunk = (GSGlyphChunk*)GSIArrayItemAtIndex((GSIArray)_glyphChunks,
-	chunkIndex).ptr;
+      chunk = (GSGlyphChunk*)GSIArrayItemAtIndex(glyphChunks, chunkIndex).ptr;
 
       /*
        * Check for the case where we have been given an index that's
        * beyond the end of the last chunk.
        */
       glyphCount = GSIArrayCount(&chunk->glyphs);
-      glyphIndex -= chunk->glyphIndex;
-      if (glyphIndex > glyphCount)
+      glyphOffset = glyphIndex - chunk->glyphIndex;
+      if (glyphOffset > glyphCount)
 	{
 	  [NSException raise: NSRangeException
 		      format: @"insertGlyph:glyphIndex:characterIndex: "
 			@"glyph index out of range"];
 	}
       
-      if (glyphIndex == 0)			// Before first glyph in chunk
+      if (glyphOffset == 0)			// Before first glyph in chunk
 	{
 	  if (chunk->charIndex < charIndex)
 	    {
@@ -887,7 +917,7 @@ invalidatedRange.length);
 	      GSGlyphChunk	*previous;
 	      unsigned		c;
 
-	      previous = (GSGlyphChunk*)GSIArrayItemAtIndex(_glyphChunks,
+	      previous = (GSGlyphChunk*)GSIArrayItemAtIndex(glyphChunks,
 		chunkIndex-1).ptr;
 	      c = GSIArrayCount(&previous->attrs);
 	      c = previous->charIndex
@@ -900,12 +930,12 @@ invalidatedRange.length);
 		}
 	    }
 	}
-      else if (glyphIndex == glyphCount)	// After last glyph in chunk
+      else if (glyphOffset == glyphCount)	// After last glyph in chunk
 	{
 	  unsigned	c;
 
 	  c = chunk->charIndex
-	    + (GSIArrayItemAtIndex(&chunk->attrs, glyphIndex-1).ext).offset;
+	    + (GSIArrayItemAtIndex(&chunk->attrs, glyphOffset-1).ext).offset;
 	  if (charIndex < c)
 	    {
 	      [NSException raise: NSRangeException
@@ -916,7 +946,7 @@ invalidatedRange.length);
 	    {
 	      GSGlyphChunk	*next;
 
-	      next = (GSGlyphChunk*)GSIArrayItemAtIndex(_glyphChunks,
+	      next = (GSGlyphChunk*)GSIArrayItemAtIndex(glyphChunks,
 		chunkIndex+1).ptr;
 	      if (next->charIndex < charIndex)
 		{
@@ -932,7 +962,7 @@ invalidatedRange.length);
 	  unsigned	p; 
 
 	  p = chunk->charIndex
-	    + (GSIArrayItemAtIndex(&chunk->attrs, glyphIndex-1).ext).offset;
+	    + (GSIArrayItemAtIndex(&chunk->attrs, glyphOffset-1).ext).offset;
 	  if (p > charIndex)
 	    {
 	      [NSException raise: NSRangeException
@@ -940,7 +970,7 @@ invalidatedRange.length);
 		@"character index less than that of previous glyph"];
 	    }
 	  n = chunk->charIndex
-	    + (GSIArrayItemAtIndex(&chunk->attrs, glyphIndex).ext).offset;
+	    + (GSIArrayItemAtIndex(&chunk->attrs, glyphOffset).ext).offset;
 	  if (n < charIndex)
 	    {
 	      [NSException raise: NSRangeException
@@ -950,31 +980,77 @@ invalidatedRange.length);
 	}
 
       /*
-       * Shall we add to the chunk or create a new one?
+       * Shall we add to the chunk or is it big enough already?
        */
-      if (glyphCount >= 200) // arbitrary
+      if (glyphCount > 100 && glyphCount+1 == GSIArrayCapacity(&chunk->glyphs))
 	{
-	  // chunk = GSSplitChunk(_glyphChunks, chunkIndex, glyphIndex);
-	  // chunkIndex++;
-	  // glyphIndex = 0;
+	  /*
+	   * Shall we split the chunk?
+	   */
+	  if (glyphCount == glyphOffset)
+	    {
+	      GSGlyphChunk	*newChunk = 0;
+
+	      /*
+	       * try to insert at the start of the next chunk if possible.
+	       */
+	      if (chunkIndex < chunkCount - 1)
+		{
+		  GSGlyphChunk	*next;
+
+		  next = (GSGlyphChunk*)GSIArrayItemAtIndex(glyphChunks,
+		    chunkIndex+1).ptr;
+		  if (GSIArrayCount(&next->glyphs)
+		    < GSIArrayCapacity(&next->glyphs))
+		    {
+		      newChunk = next;
+		    }
+		}
+	      if (newChunk == 0)
+		{
+		  /*
+		   * next chunk is too big - add a new one.
+		   */
+		  newChunk = GSCreateGlyphChunk(charIndex);
+		  GSIArrayInsertItem(glyphChunks, (GSIArrayItem)(void*)newChunk,
+		    chunkIndex+1);
+		}
+	      chunk = newChunk;
+	    }
+	  else
+	    {
+	      // chunk = GSSplitChunk(glyphChunks, chunkIndex, glyphOffset);
+	    }
+	  chunkIndex++;
+	  glyphOffset = 0;
 	}
 
-      if (glyphIndex == 0 && chunk->charIndex != charIndex)
+      /*
+       * Special handling for insertion at the start of a chunk - we
+       * need to update the index values for the chunk, and (possibly)
+       * the character offsets of every glyph in the chunk.
+       */
+      if (glyphOffset == 0)
 	{
-	  int		diff = chunk->charIndex - charIndex;
-
-	  /*
-	   * Changing character index of entire chunk.
-	   */
-	  for (pos = 0; pos < glyphCount; pos++)
+	  chunk->glyphIndex = glyphIndex;
+	  if (chunk->charIndex != charIndex)
 	    {
-	      GSGlyphAttrs	tmp;
+	      int		diff = chunk->charIndex - charIndex;
 
-	      tmp = GSIArrayItemAtIndex(&chunk->attrs, pos).ext;
-	      tmp.offset += diff;
-	      GSIArraySetItemAtIndex(&chunk->attrs, (GSIArrayItem)tmp, pos);
+	      /*
+	       * Changing character index of entire chunk.
+	       */
+	      for (pos = 0; pos < glyphCount; pos++)
+		{
+		  GSGlyphAttrs	tmp;
+
+		  tmp = GSIArrayItemAtIndex(&chunk->attrs, pos).ext;
+		  tmp.offset += diff;
+		  GSIArraySetItemAtIndex(&chunk->attrs, (GSIArrayItem)tmp, pos);
+		}
 	    }
 	}
+
       attrs.offset = charIndex - chunk->charIndex;
       GSIArrayAddItem(&chunk->glyphs, (GSIArrayItem)aGlyph);
       GSIArrayAddItem(&chunk->attrs, (GSIArrayItem)attrs);
@@ -985,8 +1061,7 @@ invalidatedRange.length);
        */
       for (pos = chunkIndex+1; pos < chunkCount; pos++)
 	{
-	  chunk = (GSGlyphChunk*)GSIArrayItemAtIndex((GSIArray)_glyphChunks,
-	    pos).ptr;
+	  chunk = (GSGlyphChunk*)GSIArrayItemAtIndex(glyphChunks, pos).ptr;
 	  chunk->glyphIndex++;
 	}
     }
@@ -1015,32 +1090,18 @@ invalidatedRange.length);
 - (NSGlyph) glyphAtIndex: (unsigned)index
 	    isValidIndex: (BOOL*)flag
 {
-  unsigned	numChunks;
-  unsigned	total = 0;
-  unsigned	i;
+  GSGlyphChunk	*chunk;
 
-  // FIXME - cheat by forcing all glyphs to be generated in -numberOfGlyphs.
-  if (index >= [self numberOfGlyphs])
+  chunk = GSChunkForGlyphIndex(glyphChunks, index);
+  while (chunk->glyphIndex + GSIArrayCount(&chunk->glyphs) < index)
     {
-      *flag = NO;
-      return NSNullGlyph;
+      break; // FIXME - should try to extend layout?
     }
-  numChunks = GSIArrayCount(_glyphChunks);
-  for (i = 0; i < numChunks; i++)
+  if (chunk->glyphIndex + GSIArrayCount(&chunk->glyphs) > index)
     {
-      GSGlyphChunk	*chunk;
-
-      chunk = (GSGlyphChunk*)GSIArrayItemAtIndex(_glyphChunks, i).ptr;
-      if (total + GSIArrayCount(&chunk->glyphs) > index)
-	{
-	  *flag = YES;
-	  index -= total;
-	  return (NSGlyph)GSIArrayItemAtIndex(&chunk->glyphs, index).ulng;
-	}
-      else
-	{
-	  total += GSIArrayCount(&chunk->glyphs);
-	}
+      *flag = YES;
+      index -= chunk->glyphIndex;
+      return (NSGlyph)GSIArrayItemAtIndex(&chunk->glyphs, index).ulng;
     }
   *flag = NO;
   return NSNullGlyph;
@@ -1053,20 +1114,22 @@ invalidatedRange.length);
 		   withGlyph: (NSGlyph)newGlyph
 {
   GSGlyphChunk	*chunk;
+  unsigned	glyphCount;
 
-  chunk = GSChunkForGlyphIndex((GSIArray)_glyphChunks, index);
-  if (chunk != 0)
+  chunk = GSChunkForGlyphIndex(glyphChunks, index);
+  glyphCount = GSIArrayCount(&chunk->glyphs);
+  if (glyphCount <= index)
     {
-      unsigned	glyphCount = GSIArrayCount(&chunk->glyphs);
-
-      index -= chunk->glyphIndex;
-      if (glyphCount > index)
-	{
-	  GSIArraySetItemAtIndex(&chunk->glyphs, (GSIArrayItem)newGlyph, index);
-	  return;
-	}
+      /*
+       * Force generation of glyphs from characters ... raises exception
+       * if the glyph index given is too large.
+       */
+      [self glyphAtIndex: index];
+      chunk = GSChunkForGlyphIndex(glyphChunks, index);
+      glyphCount = GSIArrayCount(&chunk->glyphs);
     }
-  // FIXME ... what to do on error?
+  index -= chunk->glyphIndex;
+  GSIArraySetItemAtIndex(&chunk->glyphs, (GSIArrayItem)newGlyph, index);
 }
 
 // This causes glyph generation similarly to asking for a single
@@ -1082,7 +1145,59 @@ invalidatedRange.length);
 - (unsigned) getGlyphs: (NSGlyph*)glyphArray
 		 range: (NSRange)glyphRange
 {
-  return (unsigned)0;
+  unsigned	packed = 0;
+  unsigned	toFetch = glyphRange.length;
+
+  if (toFetch > 0)
+    {
+      GSGlyphChunk	*chunk;
+      GSGlyphChunk	tmp;
+      unsigned		chunkIndex;
+      unsigned		pos;
+
+      /*
+       * Force generation of glyphs to fill range.
+       */
+      [self glyphAtIndex: NSMaxRange(glyphRange)-1];
+
+      /*
+       * Use binary search to locate the first chunk, and set pos to
+       * indicate the first glyph in the chunk that we are interested in.
+       */
+      tmp.glyphIndex = glyphRange.location;
+      chunkIndex = GSIArrayInsertionPosition(glyphChunks,
+	(GSIArrayItem)(void*)&tmp, glyphIndexSort); 
+      chunk = (GSGlyphChunk*)(GSIArrayItemAtIndex(glyphChunks,
+	--chunkIndex).ptr);
+      pos = glyphRange.location - chunk->glyphIndex;
+
+      /*
+       * Now return glyphs, excluding those 'not shown'
+       */
+      while (toFetch-- > 0)
+	{
+	  GSGlyphAttrs		attrs;
+
+	  attrs = GSIArrayItemAtIndex(&chunk->attrs, pos).ext;
+	  if (attrs.isNotShown == 0)
+	    {
+	      glyphArray[packed++]
+		= (NSGlyph)GSIArrayItemAtIndex(&chunk->glyphs, pos).ulng;
+	    }
+
+	  /*
+	   * Move on to next chunk if necessary.
+	   */
+	  if (++pos == GSIArrayCount(&chunk->glyphs))
+	    {
+	      chunk = (GSGlyphChunk*)(GSIArrayItemAtIndex(glyphChunks,
+		++chunkIndex).ptr);
+	      pos = 0;
+	    }
+	}
+    }
+  glyphArray[packed] = 0;
+  return packed;
 }
 
 // Removes all glyphs in the given range from the storage.
