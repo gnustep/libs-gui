@@ -1,3 +1,9 @@
+2002-04-18  Ludovic Marcotte <ludovic@Sophos.ca>
+
+	* Source/NSOutlineView.m and Headers/gnustep/gui/NSOutlineView.h:
+	Fixed some issues with the delegate methods. 
+
+
 Thu Apr 18 11:14:22 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/gnustep/gui/AppKitDefines.h (APPKIT_DECLARE): Updated
