@@ -1,3 +1,14 @@
+2001-01-03  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSFont.m: Minor optimisations - caching class and defaults.
+	Copy font name rather than just retaining - to ensure that it's
+	not a mutable string that gets changed.  Ensure that fonts are
+	encoded as the base class.
+	* Source/NSTextView.m:
+	([-setTypingAttributes:]) update font panel and ruler
+	([-readSelectionFromPasteboard:type:]) update typing attributes.
+	([-updateFontPanel]) use font info from typing attributes.
+
 2000-12-28  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSButtonCell.h:
