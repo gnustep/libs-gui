@@ -1,3 +1,18 @@
+2001-08-18  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSInputServer.h
+	Declaration of this class and of the protocols
+	NSInputServerMouseTracker and NSInputServiceProvider.
+	* Headers/gnustep/gui/NSInputManager.h
+	Declaration of this class and of the protocol NSTextInput.
+	* Source/NSInputServer.m
+	Dummy implementation.
+	* Source/NSInputManager.m
+	Dummy implementation.
+	* Source/GNUmake
+	Install NSInputServer.h + NSInputManager.h and compile
+	NSInputServer.m + NSInputManager.m.
+
 2001-08-15  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSImageRep.m
