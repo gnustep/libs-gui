@@ -1,3 +1,8 @@
+Sun Aug 27 19:11:59 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSTableView.m ([-initWithFrame:]): Bug fix in
+	initialization of selecting/editing ivars.
+
 Sat Aug 26 22:55:55 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSText.m: Cache the default notification center for the
