@@ -2,6 +2,11 @@
 
 	* Source/NSMenu.m: commented out code which did multiple menu
 	movement as it was breaking things. Need to rethink that.
+	* Headers/NSTableColumn.h
+        Headers/NSTableHeaderView.h  
+	Headers/NSTableHeaderCell.h 
+	Headers/NSTableView.h: added files.
+	* Source/GNUMakefile: compile in NSTable classes.
 
 1999-07-31  Michael Hanni  <mhanni@sprintmail.com>
 

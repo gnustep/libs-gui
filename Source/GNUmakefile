@@ -109,6 +109,10 @@ NSSplitView.m \
 NSStringDrawing.m \
 NSTabView.m \
 NSTabViewItem.m \
+NSTableColumn.m \
+NSTableHeaderView.m \
+NSTableHeaderCell.m \
+NSTableView.m \
 NSText.m \
 NSTextContainer.m \
 NSTextField.m \
@@ -212,6 +216,10 @@ AppKit/NSSplitView.h \
 AppKit/NSStringDrawing.h \
 AppKit/NSTabView.h \
 AppKit/NSTabViewItem.h \
+AppKit/NSTableColumn.m \
+AppKit/NSTableHeaderView.m \
+AppKit/NSTableHeaderCell.m  \
+AppKit/NSTableView.m \
 AppKit/NSText.h \
 AppKit/NSTextAttachment.h \
 AppKit/NSTextContainer.h \

@@ -1,4 +1,9 @@
+#include <AppKit/NSCell.h>
+#include <AppKit/NSColor.h>
+#include <AppKit/NSClipView.h>
 #include <AppKit/NSTableView.h>
+#include <AppKit/NSTableColumn.h>
+#include <AppKit/NSText.h>
 
 @implementation NSTableView
 - (id)initWithFrame:(NSRect)frameRect
@@ -138,7 +143,7 @@
 
 - (NSColor *)backgroundColor
 {
-  return aColor;
+  return tbv_backgroundColor;
 }
 
 - (void)addTableColumn:(NSTableColumn *)aColumn
@@ -168,6 +173,7 @@
 - (int)columnWithIdentifier:(id)anObject
 {
   int howMany = [tbv_columns count];
+  int i;
 
   for (i=0;i<howMany;i++)
     {
@@ -212,7 +218,7 @@
       [tbv_selectedColumns addObject:[NSNumber numberWithInt:columnIndex]];
       [[NSNotificationCenter defaultCenter]
 	postNotificationName: NSTableViewSelectionDidChangeNotification
-	object: self];
+	object: (id)self];
     }
 }
 
@@ -235,7 +241,7 @@
       [tbv_selectedRows addObject:[NSNumber numberWithInt:rowIndex]];
       [[NSNotificationCenter defaultCenter]
 	postNotificationName: NSTableViewSelectionDidChangeNotification
-	object: self];
+	object: (id)self];
     }
 }
 
@@ -244,7 +250,7 @@
   [tbv_selectedColumns removeObject:[NSNumber numberWithInt:columnIndex]];
   [[NSNotificationCenter defaultCenter]
     postNotificationName: NSTableViewSelectionDidChangeNotification
-    object: self];
+    object: (id)self];
 
 /* If the indicated column was the last column selected by the user, the
 column nearest it effectively becomes the last selected column. In case of
@@ -257,7 +263,7 @@ a tie, priority is given to the column on the left. */
   [tbv_selectedRows removeObject:[NSNumber numberWithInt:rowIndex]];
   [[NSNotificationCenter defaultCenter]
     postNotificationName: NSTableViewSelectionDidChangeNotification
-    object: self];
+    object: (id)self];
 
 /* If the indicated row was the last row selected by the user, the row
 nearest it effectively becomes the last selected row. In case of a tie,
@@ -310,7 +316,7 @@ priority is given to the row above. */
 
 - (NSEnumerator *)selectedRowEnumerator
 {
-  return [tbv_selecedRows objectEnumerator];
+  return [tbv_selectedRows objectEnumerator];
 }
 
 - (void)selectAll:(id)sender
@@ -425,23 +431,25 @@ object with the NSTableView as the text delegate. */
 
 //FIXME! 100 is a place keeper.
 
-  return NSMakeRect(0,(rowIndex - 1) * tabColRows, [self frame].width,
+  return NSMakeRect(0,(rowIndex - 1) * tabColRows, [self frame].size.width,
 		    tbv_rowHeight);
 }
 
 - (NSRange)columnsInRect:(NSRect)aRect
 {
   int howMany = [self numberOfColumns];
-  int location;
-  int length;
+  int location = 0;
+  int length = 0;
+  int i;
 
   if (aRect.size.width > 0 && aRect.size.height > 0)
     {
       for (i=0;i<howMany;i++)
         {
           NSRect tabRect = [self rectOfColumn:i];
+	  NSRect bRect = NSIntersectionRect(tabRect, aRect);
 
-	  if (NSIntersectionRect(tabRect, aRect)
+	  if (bRect.size.width > 0 && bRect.size.height > 0)
             {
 	      if (!location)
 	        location = i;
@@ -455,22 +463,25 @@ object with the NSTableView as the text delegate. */
 
       return NSMakeRange(location, length);
     }
+
   return NSMakeRange(0, 0);
 }
 
 - (NSRange)rowsInRect:(NSRect)aRect
 {
   int howMany = [self numberOfRows];
-  int location;
-  int length;
+  int location = 0;
+  int length = 0;
+  int i;
 
   if (aRect.size.width > 0 && aRect.size.height > 0)
     {
       for (i=0;i<howMany;i++)
         {
           NSRect tabRect = [self rectOfRow:i];
+	  NSRect bRect = NSIntersectionRect(tabRect, aRect);
 
-	  if (NSIntersectionRect(tabRect, aRect)
+	  if (bRect.size.width > 0 && bRect.size.height > 0)
             {
 	      if (!location)
 	        location = i;
@@ -490,10 +501,11 @@ object with the NSTableView as the text delegate. */
 - (int)columnAtPoint:(NSPoint)aPoint
 {
   int howMany = [tbv_columns count];
+  int i;
 
   for (i=0;i<howMany;i++)
     {
-      if (NSPointInRect([self rectOfColumn:i])
+      if (NSPointInRect(aPoint, [self rectOfColumn:i]))
         return i;
     }
 
@@ -504,12 +516,11 @@ object with the NSTableView as the text delegate. */
 - (int)rowAtPoint:(NSPoint)aPoint
 {
   int howMany = [self numberOfRows];
+  int i;
 
   for (i=0;i<howMany;i++)
     {
-      NSRect tabRect = [self rectOfRow:i];
-
-      if (NSPointInRect(aPoint, tabRect))
+      if (NSPointInRect(aPoint, [self rectOfRow:i]))
         return i;
     }
 
@@ -558,11 +569,12 @@ object with the NSTableView as the text delegate. */
        clipRect:(NSRect)clipRect
 {
   NSRange colsToDraw = [self columnsInRect:clipRect];
+  int i;
 
   for (i=0;i<colsToDraw.length;i++)
     {
       NSCell *aCell = [[tbv_columns objectAtIndex:i] dataCell];
-      NSRect *colRect = [self rectOfColumn:i];
+      NSRect colRect = [self rectOfColumn:i];
 
       colRect.size.height = tbv_rowHeight;
       colRect.origin.y = rowIndex * tbv_rowHeight;
@@ -570,11 +582,11 @@ object with the NSTableView as the text delegate. */
       if (i != 0)
         colRect.origin.y += tbv_interCellSpacing.height;
 
-      [delegate tableView:self willDisplayCell:aCell forTableColumn:i
+      [delegate tableView:self willDisplayCell:aCell forTableColumn:[tbv_columns objectAtIndex:i]
 	row:rowIndex];
 
-      [aCell setStringValue:[tbv_dataSource tableView: self
-			    objectValueForTableColumn: i
+      [aCell setStringValue:[tb_datasource tableView: self
+			    objectValueForTableColumn: [tbv_columns objectAtIndex:i]
 						  row: rowIndex]];
 
       [aCell drawWithFrame: colRect];
@@ -593,12 +605,12 @@ object with the NSTableView as the text delegate. */
 
 - (void)scrollRowToVisible:(int)rowIndex
 {
-  [[self superview] scrollToPoint:NSZeroPoint];
+  [(NSClipView *)[self superview] scrollToPoint:NSZeroPoint];
 }
 
 - (void)scrollColumnToVisible:(int)columnIndex
 {
-  [[self superview] scrollToPoint:NSZeroPoint];
+  [(NSClipView *)[self superview] scrollToPoint:NSZeroPoint];
 }
 
 - (BOOL)textShouldBeginEditing:(NSText *)textObject
@@ -622,19 +634,22 @@ object:self
 
 - (void)textDidChange:(NSNotification *)aNotification
 {
+/*
 NSControlTextDidChangeNotification
+*/
 }
 
 - (BOOL)textShouldEndEditing:(NSText *)textObject
 {
   if ([delegate respondsToSelector: @selector (control:textShouldEndEditing:)])
     {
-      return [delegate control: self control:textShouldEndEditing:
-	textObject];
+      return [delegate control: self textShouldEndEditing: textObject];
     }
 
+/*
   if (is new cell valid)
     return YES;
+*/
 
   return NO;
 }
@@ -650,8 +665,10 @@ information on this text delegate method. */
 
 }
 
-- (void)drawRect:(NSRect)rect 
+- (void)ydrawRect:(NSRect)rect 
 {
+  int i;
+
   for (i=0; i<[self numberOfRows]; i++)
     {
       // FIXME this isn't really the clipRect now is it.
@@ -659,3 +676,4 @@ information on this text delegate method. */
     }
 }
 @end
+

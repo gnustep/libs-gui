@@ -1,3 +1,5 @@
+#include <AppKit/NSTableHeaderView.h>
+
 @implementation NSTableHeaderView
 - (void)setTableView:(NSTableView *)aTableView
 {

@@ -1,3 +1,5 @@
+#include <AppKit/NSTableColumn.h>
+
 @implementation NSTableColumn
 - (id)initWithIdentifier:(id)anObject
 {
