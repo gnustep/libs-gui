@@ -1,3 +1,8 @@
+Mon Feb 25 13:58:49 2002  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSWindow.m ([-sendEvent:]): Hand the NSFlagsChanged event
+	to the _firstResponder flagsChanged: method.
+
 Mon Feb 25 13:04:12 2002  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSInputManager.m ([+describeKeyStroke:withModifiers:]):
