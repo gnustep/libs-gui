@@ -524,7 +524,17 @@ static BOOL _gs_display_reading_progress = NO;
   [[_form cellAtIndex: 0] setStringValue: filename];
   [_form setNeedsDisplay: YES];
 
-  return [NSApp runModalForWindow: self];
+  // We need to take care of the possibility of 
+  // the panel being aborted.  We return NSCancelButton 
+  // in that case.
+  _OKButtonPressed = NO;
+
+  [NSApp runModalForWindow: self];
+
+  if (_OKButtonPressed)
+    return NSOKButton;
+  else 
+    return NSCancelButton;
 }
 
 - (NSString *) directory
@@ -557,7 +567,7 @@ static BOOL _gs_display_reading_progress = NO;
 {
   _fullFileName = nil;
   _directory = nil;
-  [NSApp stopModalWithCode: NSCancelButton];
+  [NSApp stopModal];
   [self close];
 }
 
@@ -567,7 +577,8 @@ static BOOL _gs_display_reading_progress = NO;
     if (![_delegate panel:self isValidFilename: [self filename]])
       return;
 
-  [NSApp stopModalWithCode: NSOKButton];
+  _OKButtonPressed = YES;
+  [NSApp stopModal];
   [self close];
 }
 
