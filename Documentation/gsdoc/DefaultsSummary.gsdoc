@@ -184,12 +184,12 @@
 	  <term><em>System Colors</em></term>
 	  <desc>
           <p>
-          System colors may be set using the defaults system. System
-          colors are standard colors for drawing various GUI elements,
-          such as buttons, text, scroller, etc. The value is a
-          dictionary describing the color. The keys that can be
-          used for setting the system colors are described in the
-          documentation for NSColor.
+          System colors are standard colors for drawing various GUI elements,
+          such as buttons, text, scroller, etc. They can be set using
+	  the normal user defaults system. An NSColorList called
+	  "System"  is stored in the users's private color list
+	  directory. This color list can also be manipulated through the
+	  NSColorList class (typically through a preferences module).
           </p>
 	  </desc>
 	  <term><em>System Fonts</em></term>

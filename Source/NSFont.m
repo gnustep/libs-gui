@@ -50,6 +50,55 @@ static BOOL userFixedCacheNeedsRecomputing = NO;
 	     matrix: (const float*)fontMatrix;
 @end
 
+/**
+  <unit>
+  <heading>NSFont</heading>
+
+  <p>The NSFont class allows control of the fonts used for displaying
+  text anywhere on the screen. The primary methods for getting a
+  particular font are -fontWithName:matrix: and -fontWithName:size: which
+  take the name and size of a particular font and return the NSFont object
+  associated with that font. In addition there are several convenience
+  mathods which make it easier to get certain types of fonts. </p>
+  
+  <p>In particular, there are several methods to get the standard fonts
+  used by the Application to display text for a partiuclar purpose. See
+  the class methods listed below for more information. These default
+  fonts can be set using the user defaults system. The default
+  font names available are:
+  <list>
+    <item>NSBoldFont                Helvetica-Bold</item>
+    <item>NSControlContentFont      Helvetica</item>
+    <item>NSFont                    Helvetica (System Font)</item>
+    <item>NSLabelFont               Helvetica</item>
+    <item>NSMenuFont                Helvetica</item>
+    <item>NSMessageFont             Helvetica</item>
+    <item>NSPaletteFont             Helvetica-Bold</item>
+    <item>NSTitleBarFont            Helvetica-Bold</item>
+    <item>NSToolTipsFont            Helvetica</item>
+    <item>NSUserFixedPitchFont      Courier</item>
+    <item>NSUserFont                Helvetica</item>
+  </list>
+  The defualt sizes are:
+  <list>
+    <item>NSBoldFontSize            (none)</item>
+    <item>NSControlContentFontSize  (none)</item>
+    <item>NSFontSize                12 (System Font Size)</item>
+    <item>NSLabelFontSize           12</item>
+    <item>NSMenuFontSize            (none)</item>
+    <item>NSMessageFontSize         (none)</item>
+    <item>NSPaletteFontSize         (none)</item>
+    <item>NSSmallFontSize           9</item>
+    <item>NSTitleBarFontSize        (none)</item>
+    <item>NSToolTipsFontSize        (none)</item>
+    <item>NSUserFixedPitchFontSize  (none)</item>
+    <item>NSUserFontSize            (none)</item>
+  </list>
+  Font sizes list with (none) default to NSFontSize.
+  </p>
+
+  </unit> */
+  
 @implementation NSFont
 
 /* Class variables*/

@@ -1,3 +1,20 @@
+2002-07-05  Adam Fedor  <fedor@gnu.org>
+
+	* Images/common_ArrowDown.tiff: Transparency fix.
+	* Images/common_ArrowDownH.tiff: Idem.
+	* Images/common_ArrowLeft.tiff: Idem.
+	* Images/common_ArrowLeftH.tiff: Idem.
+	* Images/common_ArrowRight.tiff: Idem.
+	* Images/common_ArrowRightH.tiff: Idem.
+	* Images/common_ArrowUp.tiff: Idem.
+	* Images/common_ArrowUpH.tiff: Idem. (From deek@d2dc.net.)
+
+	* Source/NSFont.h: Add documentation.
+	* Source/NSImage.m (-compositeToPoint:fromRect:operation:): Log
+	exception.
+	(-dissolveToPoint:fromRect:fraction:): Idem.
+	* Documentation/gsdoc/DefaultsSummary.gsdoc: Update.
+
 2002-07-04  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSColor.m
