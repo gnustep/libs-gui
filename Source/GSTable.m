@@ -485,11 +485,11 @@
   unsigned int i;
   // YES if the whole GSTable needs an update
   BOOL tableNeedUpdate = NO;
-  NSSize oldFrameSize = frame.size;
+  NSSize oldFrameSize = [self frame].size;
   NSSize newFrameSize;
   
   [super resizeWithOldSuperviewSize: oldSize];
-  newFrameSize = frame.size; 
+  newFrameSize = [self frame].size; 
 
   //
   // Width
