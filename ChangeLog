@@ -1,3 +1,27 @@
+Tue Sep  3 15:24:41 1996  Adam Fedor  <fedor@pulse.Colorado.edu>
+
+	* NSBitmapImageRep.h: "Hide" instance variable names.  
+	* NSImageRep.h: Likewise.
+	* NSBitmapImageRep.m: Change all pertinent methods to use these new
+ 	names.
+	* NSImageRep.m: Likewise.
+	
+	* NSBitmapImageRep.m (-initWithBitmapDataPlanes:...): Alloc 
+	planes array and copy pointers into it.
+	(-dealloc]): Don't free image planes.
+	-bitmapData): retain image data. Alloc planes array if not 
+	already there. Fix typo.
+
+	* NSImage.m (extension): Get one copy of cString.
+	* NSImageRep.m (extension): Likewise.
+
+	* NSImage.m (-initWithSize:): Fix typo.
+	(iterate_reps_for_types): Use correct indices.
+
+	* NSImageRep.m (+initialize): Perform only if we are 
+	NSImageRep class.
+	(-imageRepsWithContentsOfFile:): Comment out non-working code.
+
 Tue Sep  3 13:47:52 1996  GNUstep Development  <gnustep@ocbi.com>
 
 	Create initial documentation set.

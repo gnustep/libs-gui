@@ -56,10 +56,12 @@ extension(NSString *name)
 #if 0
   return [name pathExtension];
 #else
+  const char* cname;
   char *s;
-    
-  s = strrchr([name cString], '.');
-  if (s > strrchr([name cString], '/'))
+
+  cname = [name cString];
+  s = strrchr(cname, '.');
+  if (s > strrchr(cname, '/'))
     return [NSString stringWithCString:s+1];
   else
     return nil;
@@ -72,9 +74,12 @@ extension(NSString *name)
 {
   /* While there are four imageRep subclasses, in practice, only two of
      them can load in data from an external source. */
-  imageReps = [[NSMutableArray alloc] initWithCapacity: 2];
-  [imageReps addObject: [NSBitmapImageRep class]];
-  [imageReps addObject: [NSEPSImageRep class]];
+  if (self == [NSImageRep class])
+    {
+      imageReps = [[NSMutableArray alloc] initWithCapacity: 2];
+      [imageReps addObject: [NSBitmapImageRep class]];
+      [imageReps addObject: [NSEPSImageRep class]];
+    }
 }
 
 // Creating an NSImageRep
@@ -104,23 +109,24 @@ extension(NSString *name)
   for (i = 0; i < count; i++)
     {
       Class rep = [imageReps objectAtIndex: i];
+#if 1
       if ([[rep imageFileTypes] indexOfObject: ext] != NSNotFound)
-	{
-	  NSData* data = [NSData dataWithContentsOfFile: filename];
-	  if ([rep class] == [NSBitmapImageRep class])
-	    [array addObject: [rep imageRepWithData: data]];
-	}
-#if 0
-      if ([rep respondsToSelector: @selector(imageFileTypes)]
-	  && [[rep imageFileTypes] indexOfObject: ext] != NSNotFound)
-	{
-	  NSData* data = [NSData dataWithContentsOfFile: filename];
-	  if ([rep respondsToSelector: @selector(imageRepsWithData:)])
-	    [array addObjectsFromArray: [rep imageRepsWithData: data]];
-	  else if ([rep respondsToSelector: @selector(imageRepWithData:)])
-	    [array addObject: [rep imageRepWithData: data]];
-	}
+#else
+	/* xxxFIXME: not implemented  in gcc-2.7.2 runtime. */
+        if ([rep respondsToSelector: @selector(imageFileTypes)]
+	    && [[rep imageFileTypes] indexOfObject: ext] != NSNotFound)
 #endif
+	  {
+	    NSData* data = [NSData dataWithContentsOfFile: filename];
+#if 0
+	    if ([rep respondsToSelector: @selector(imageRepsWithData:)])
+#endif
+	      [array addObjectsFromArray: [rep imageRepsWithData: data]];
+#if 0
+	    else if ([rep respondsToSelector: @selector(imageRepWithData:)])
+	      [array addObject: [rep imageRepWithData: data]];
+#endif
+	  }
     }
   return (NSArray *)array;
 }
@@ -163,7 +169,7 @@ extension(NSString *name)
 
 - (void) dealloc
 {
-  [colorSpace release];
+  [_colorSpace release];
   [super dealloc];
 }
 
@@ -223,7 +229,7 @@ extension(NSString *name)
 
 - (NSString *) colorSpaceName
 {
-  return colorSpace;
+  return _colorSpace;
 }
 
 - (BOOL) hasAlpha
@@ -258,8 +264,8 @@ extension(NSString *name)
 
 - (void) setColorSpaceName: (NSString *)aString
 {
-  [colorSpace autorelease];
-  colorSpace = [aString retain];
+  [_colorSpace autorelease];
+  _colorSpace = [aString retain];
 }
 
 - (void) setOpaque: (BOOL)flag
@@ -346,9 +352,11 @@ extension(NSString *name)
 + (void) registerImageRepClass: (Class)imageRepClass
 {
   [imageReps addObject: imageRepClass];
+  /*
   [[NSNotificationCenter defaultCenter] 
     postNotificationName: NSImageRepRegistryChangedNotification
     object: self];
+    */
 } 
 
 + (NSArray *) registeredImageRepClasses
@@ -369,7 +377,7 @@ extension(NSString *name)
 {
   [super encodeWithCoder: aCoder];
 
-  [aCoder encodeObject: colorSpace];
+  [aCoder encodeObject: _colorSpace];
   [aCoder encodeSize: size];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &hasAlpha];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &isOpaque];
@@ -382,7 +390,7 @@ extension(NSString *name)
 {
   self = [super initWithCoder: aDecoder];
 
-  colorSpace = [[aDecoder decodeObject] retain];
+  _colorSpace = [[aDecoder decodeObject] retain];
   size = [aDecoder decodeSize];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &hasAlpha];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &isOpaque];

@@ -85,10 +85,12 @@ _base_name(NSString *name)
 static NSString *
 extension(NSString *name)
 {
+  const char* cname;
   char *s;
     
-  s = strrchr([name cString], '.');
-  if (s > strrchr([name cString], '/'))
+  cname = [name cString];
+  s = strrchr(cname, '.');
+  if (s > strrchr(cname, '/'))
     return [NSString stringWithCString:s+1];
   else
     return nil;

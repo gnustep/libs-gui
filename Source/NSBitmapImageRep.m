@@ -163,18 +163,16 @@
 }
 
 /* This is the designated initializer */
-/* Note: It's unclear whether or not we own the data that is passed
-   to us here. Since the data is not of type "const", one could assume
-   that we do own it and that it should not be copied. I'm also assuming
-   we own the data that "planes" points to.  This is all a very hazardous
-   assumption. It's also harder to deal with. */
+/* Note: If data is actaully passed to us in planes, we DO NOT own this
+   data and we DO NOT copy it. Just assume that it will always be available.
+*/
 - (id) initWithBitmapDataPlanes: (unsigned char **)planes
 		pixelsWide: (int)width
 		pixelsHigh: (int)height
 		bitsPerSample: (int)bps
 		samplesPerPixel: (int)spp
 		hasAlpha: (BOOL)alpha
-		isPlanar: (BOOL)config
+		isPlanar: (BOOL)isPlanar
 		colorSpaceName: (NSString *)colorSpaceName
 		bytesPerRow: (int)rowBytes
 		bitsPerPixel: (int)pixelBits;
@@ -192,10 +190,10 @@
   bitsPerSample = bps;
   numColors     = spp;
   hasAlpha   = alpha;  
-  isPlanar   = isPlanar;
-  colorSpace = [colorSpaceName retain];
+  _isPlanar   = isPlanar;
+  _colorSpace = [colorSpaceName retain];
   if (!pixelBits)
-    pixelBits = bps * ((isPlanar) ? 1 : spp);
+    pixelBits = bps * ((_isPlanar) ? 1 : spp);
   bitsPerPixel            = pixelBits;
   if (!rowBytes) 
     rowBytes = ceil((float)width * bitsPerPixel / 8);
@@ -203,21 +201,18 @@
 
   if (planes) 
     {
-      freePlanes = YES;
-      imagePlanes = planes;
+      int i;
+      OBJC_MALLOC(imagePlanes, unsigned char*, MAX_PLANES);
+      for (i = 0; i < MAX_PLANES; i++)
+ 	imagePlanes[i] = NULL;
+      for (i = 0; i < ((_isPlanar) ? numColors : 1); i++)
+ 	imagePlanes[i] = planes[i];
     }
   return self;
 }
 
 - (void) dealloc
 {
-  if (imagePlanes && freePlanes)
-    {
-      int i;
-      for (i = 0; i < MAX_PLANES; i++)
-	if (imagePlanes[i])
-	  OBJC_FREE(imagePlanes[i]);
-    }
   OBJC_FREE(imagePlanes);
   [imageData release];
   [super dealloc];
@@ -271,12 +266,12 @@
 
 - (BOOL) isPlanar
 {
-  return isPlanar;
+  return _isPlanar;
 }
 
 - (int) numberOfPlanes
 {
-  return (isPlanar) ? numColors : 1;
+  return (_isPlanar) ? numColors : 1;
 }
 
 - (int) bytesPerPlane
@@ -307,11 +302,13 @@
       long length;
       unsigned char* bits;
       
-      length = numColors * bytesPerRow * _pixelsHigh * sizeof(unsigned char);
-      imageData = [NSMutableData dataWithCapacity: length];
-      OBJC_MALLOC(imagePlanes, unsigned char*, MAX_PLANES);
+      length = (long)numColors * bytesPerRow * _pixelsHigh 
+ 	* sizeof(unsigned char);
+      imageData = [[NSMutableData dataWithLength: length] retain];
+      if (!imagePlanes)
+ 	OBJC_MALLOC(imagePlanes, unsigned char*, MAX_PLANES);
       bits = [imageData mutableBytes];
-      if (isPlanar) 
+      if (_isPlanar) 
 	{
 	  for (i=1; i < numColors; i++) 
 	    imagePlanes[i] = bits + i*bytesPerRow * _pixelsHigh;
@@ -320,7 +317,7 @@
 	}
       else
 	{
-	  imagePlanes[1] = bits;
+	  imagePlanes[0] = bits;
 	  for (i= 1; i < MAX_PLANES; i++) 
 	    imagePlanes[i] = NULL;
 	}

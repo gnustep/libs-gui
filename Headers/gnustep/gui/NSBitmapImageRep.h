@@ -43,8 +43,7 @@
   unsigned int    numColors;
   unsigned int    bitsPerPixel;   
   unsigned short  compression;
-  BOOL            isPlanar;
-  BOOL            freePlanes;
+  BOOL            _isPlanar;
   unsigned char** imagePlanes;
   NSMutableData*  imageData;
 }

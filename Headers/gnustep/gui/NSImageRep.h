@@ -39,7 +39,7 @@
 
 {
   // Attributes
-  NSString* colorSpace;
+  NSString* _colorSpace;
   NSSize size;
   BOOL   hasAlpha;
   BOOL   isOpaque;
