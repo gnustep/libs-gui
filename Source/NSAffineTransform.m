@@ -273,9 +273,10 @@ static NSAffineTransformStruct identityTransform = {
 
 - (NSBezierPath*) transformBezierPath: (NSBezierPath*)aPath
 {
-  NSBezierPath *path = [aPath copyWithZone: [aPath zone]];
+  NSBezierPath *path = [aPath copy];
+
   [path transformUsingAffineTransform: self];
-  return path;
+  return AUTORELEASE(path);
 }
 
 - (NSPoint) transformPoint: (NSPoint)point
