@@ -88,13 +88,13 @@
 
   if (_isVertical)
     {
-      origin.x = 0;
-      origin.y = (_trackRect.size.height - size.height) * floatValue;
+      origin = _trackRect.origin;
+      origin.y += (_trackRect.size.height - size.height) * floatValue;
     }
   else
     {
-      origin.x = (_trackRect.size.width - size.width) * floatValue;
-      origin.y = 0;
+      origin = _trackRect.origin;
+      origin.x += (_trackRect.size.width - size.width) * floatValue;
     }
 
   return NSMakeRect (origin.x, origin.y, size.width, size.height); 
@@ -116,6 +116,11 @@
   NSImage* image;
   NSSize size;
 
+  if (_cell.is_bordered)
+    cellFrame = NSInsetRect(cellFrame, 1, 1);
+  else if (_cell.is_bezeled)
+    cellFrame = NSInsetRect(cellFrame, 2, 2);
+
   [controlView lockFocus];
   if (vertical != _isVertical) {
     if (vertical) {
@@ -135,10 +140,9 @@
 
   _trackRect = cellFrame;
 
+  [self drawBarInside: cellFrame flipped: [controlView isFlipped]];
   if (_titleCell)
     [_titleCell drawInteriorWithFrame: cellFrame inView: controlView];
-
-  [self drawBarInside: cellFrame flipped: [controlView isFlipped]];
   [self drawKnob];
   [controlView unlockFocus];
 }
