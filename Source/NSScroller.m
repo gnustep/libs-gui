@@ -477,9 +477,10 @@ PSMatrix* matrix;
 NSEventType eventType;
 NSRect knobRect = {{0,0},{0,0}};
 int periodCount = 0;								// allows a forced update
-NSArray* path = [self _pathBetweenSubview:self 
+NSMutableArray* path = [self _pathBetweenSubview:self 
 					  toSuperview:[window contentView]];
 
+    [path addObject: [window contentView]];
     matrix = [self _concatenateMatricesInReverseOrderFromPath:path];
     [matrix inverse];
 

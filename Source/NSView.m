@@ -514,104 +514,132 @@ float sx, sy;
 	return NSZeroRect;
 }
 
-- (PSMatrix*)_concatenateMatricesInReverseOrderFromPath:(NSArray*)viewsPath
+- (PSMatrix*) _concatenateMatricesInReverseOrderFromPath: (NSArray*)viewsPath
 {
-int i, count = [viewsPath count];
-PSMatrix* matrix = [[PSMatrix new] autorelease];
+  unsigned	i = [viewsPath count];
+  PSMatrix	*matrix = [[PSMatrix new] autorelease];
+  NSView	*parent;
+  BOOL		wasFlipped;
+  BOOL		isFlipped;
 
-	for (i = count - 1; i >= 0; i--) 
-		{
-		NSView* view = [viewsPath objectAtIndex:i];
-	
-		[matrix concatenateWith:view->frameMatrix];
-		[matrix concatenateWith:view->boundsMatrix];
-		}
+  if (i-- < 2)
+    return matrix;
+  parent = [viewsPath objectAtIndex: i];
+  wasFlipped = [parent isFlipped];
+  while (i-- > 0)
+    {
+      NSView	*view = [viewsPath objectAtIndex: i];
 
-	return matrix;
+      [matrix concatenateWith: view->frameMatrix];
+      isFlipped = [view isFlipped];
+      if (isFlipped != wasFlipped)
+	{
+	  PSMatrix	*flip = nil;
+	  float		vals[6] = { 1, 0, 0, -1, 0, 1 };
+
+	  vals[5] = parent->bounds.size.height;
+	  flip = [PSMatrix matrixFrom: vals];
+	  [matrix concatenateWith: flip];
+	}
+      [matrix concatenateWith: view->boundsMatrix];
+      parent = view;
+      wasFlipped = isFlipped;
+    }
+
+  return matrix;
 }
 
-- (NSArray*)_pathBetweenSubview:(NSView*)subview 
-					toSuperview:(NSView*)_superview
+- (NSMutableArray*) _pathBetweenSubview: (NSView*)subview 
+			    toSuperview: (NSView*)_superview
 {
-NSMutableArray* array = [NSMutableArray array];
-NSView* view = subview;
+  NSMutableArray	*array = [NSMutableArray array];
+  NSView		*view = subview;
 
-	while (view && view != _superview) 
-		{
-		[array addObject:view];
-		view = view->super_view;
-  		}
+  while (view && view != _superview) 
+    {
+      [array addObject:view];
+      view = view->super_view;
+    }
 
-	return array;
+  return array;
 }
 
-- (NSPoint)convertPoint:(NSPoint)aPoint fromView:(NSView*)aView
+- (NSPoint) convertPoint: (NSPoint)aPoint fromView: (NSView*)aView
 {
-NSPoint new;
-PSMatrix* matrix;
+  NSPoint	new;
+  PSMatrix	*matrix;
 
-	if (!aView)
-		aView = [window contentView];
+  if (!aView)
+    aView = [window contentView];
 
-	if ([self isDescendantOf:aView]) 
-		{
-		NSArray* path = [self _pathBetweenSubview:self toSuperview:aView];
+  if ([self isDescendantOf: aView]) 
+    {
+      NSMutableArray	*path;
 
-		matrix = [self _concatenateMatricesInReverseOrderFromPath:path];
-		[matrix inverse];
-		new = [matrix pointInMatrixSpace:aPoint];
-		}
-	else 
-		if ([aView isDescendantOf:self]) 
-			{
-			NSArray* path = [self _pathBetweenSubview:aView toSuperview:self];
+      path = [self _pathBetweenSubview: self toSuperview: aView];
+      [path addObject: aView];
+      matrix = [self _concatenateMatricesInReverseOrderFromPath:path];
+      [matrix inverse];
+      new = [matrix pointInMatrixSpace:aPoint];
+    }
+  else if ([aView isDescendantOf: self]) 
+    {
+      NSMutableArray	*path;
 
-			matrix = [self _concatenateMatricesInReverseOrderFromPath:path];
-			new = [matrix pointInMatrixSpace:aPoint];
-			}			// The views are not in the same hierarchy of views.
-		else 			// Convert the point to window from the other's view 
-			{			// coordinates and then to our view coordinates.
-			new = [aView convertPoint:aPoint toView:nil];
-			new = [self convertPoint:new fromView:nil];
-			}
+      path = [self _pathBetweenSubview: aView toSuperview: self];
+      [path addObject: self];
+      matrix = [self _concatenateMatricesInReverseOrderFromPath: path];
+      new = [matrix pointInMatrixSpace: aPoint];
+    }
+  else
+    {
+      new = [aView convertPoint: aPoint toView: nil];
+      new = [self convertPoint: new fromView: nil];
+    }
 
-	return new;
+  return new;
 }
 
-- (NSPoint)convertPoint:(NSPoint)aPoint toView:(NSView *)aView
+- (NSPoint) convertPoint: (NSPoint)aPoint toView: (NSView*)aView
 {
-	if (!aView)
-		aView = [window contentView];
+  if (!aView)
+    aView = [window contentView];
 
-	return [aView convertPoint:aPoint fromView:self];
+  return [aView convertPoint: aPoint fromView: self];
 }
 
-- (NSRect)convertRect:(NSRect)aRect fromView:(NSView *)aView
+- (NSRect) convertRect: (NSRect)aRect fromView: (NSView*)aView
 {
-NSRect r;
+  NSRect r;
 
-	if (aView && window != [aView window])				// Must belong to the 
-		return NSZeroRect;								// same window
+  /* Must belong to the same window	*/
+  if (aView && window != [aView window])
+    return NSZeroRect;
 
-	r = aRect;
-	r.origin = [self convertPoint:r.origin fromView:aView];
-	r.size = [self convertSize:r.size fromView:aView];
+  r = aRect;
+  r.origin = [self convertPoint: r.origin fromView: aView];
+  r.size = [self convertSize: r.size fromView: aView];
+  if ([aView isFlipped] != [self isFlipped])
+    r.origin.y -= r.size.height;
 
-	return r;
+  return r;
 }
 
-- (NSRect)convertRect:(NSRect)aRect toView:(NSView *)aView
+- (NSRect) convertRect: (NSRect)aRect toView: (NSView*)aView
 {
-NSRect r;
+  NSRect r;
 
-	if (aView && window != [aView window])				// Must belong to the 
-		return NSZeroRect;								// same window
+  /* Must belong to the same window	*/
+  if (aView && window != [aView window])
+    return NSZeroRect;
 
-	r = aRect;
-	r.origin = [self convertPoint:r.origin toView:aView];
-	r.size = [self convertSize:r.size toView:aView];
+  r = aRect;
+  r.origin = [self convertPoint: r.origin toView: aView];
+  r.size = [self convertSize: r.size toView: aView];
+  if ([aView isFlipped] != [self isFlipped])
+    r.origin.y -= r.size.height;
 
-	return r;
+  return r;
 }
 
 - (PSMatrix*)_concatenateBoundsMatricesInReverseOrderFromPath:(NSArray*)viewsPath
