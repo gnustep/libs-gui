@@ -57,7 +57,8 @@
   rectangle = aRect;
   tag = aTag;
   owner = anObject;
-  [owner retain];
+  if (owner)
+    [owner retain];
   user_data = theData;
   inside = flag;
   isValid = YES;
@@ -66,7 +67,8 @@
 
 - (void) dealloc
 {
-  [owner release];
+  if (owner)
+    [owner release];
   [super dealloc];
 }
 
@@ -105,8 +107,11 @@
   if (isValid)
     {
       isValid = NO;
-      [owner release];
-      owner = nil;
+      if (owner)
+	{
+	  [owner release];
+	  owner = nil;
+	}
     }
 }
 

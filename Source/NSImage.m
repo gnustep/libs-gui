@@ -209,7 +209,7 @@ static NSDictionary* nsmapping = nil;
 	      NSDebugLog(@"extension %s\n", [o cString]);
 	      path = [main pathForResource: the_name 
 		        ofType: o];
-	      if ([path length] != 0)
+	      if (path != nil && [path length] != 0)
 		break;
 	    }
 	}
@@ -237,7 +237,7 @@ static NSDictionary* nsmapping = nil;
 		  path = [system pathForResource: the_name
 					  ofType: o
 				     inDirectory: NSImage_PATH];
-		  if ([path length] != 0)
+		  if (path != nil && [path length] != 0)
 		    break;
 		}
 	    }
@@ -392,7 +392,8 @@ static NSDictionary* nsmapping = nil;
     return NO;
 
   [string retain];
-  [name release];
+  if (name)
+    [name release];
   name = string;
 
   [nameDict setObject: self forKey: name];
@@ -519,7 +520,8 @@ static NSDictionary* nsmapping = nil;
 {
   if (_color != aColor)
     {
-      [_color release];
+      if (_color)
+	[_color release];
       _color = [aColor retain];
     }
 }
