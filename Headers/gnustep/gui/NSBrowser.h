@@ -64,6 +64,12 @@
 
   BOOL _acceptsArrowKeys;
   BOOL _sendsActionOnArrowKeys;
+  BOOL _acceptsAlphaNumericalKeys;
+  BOOL _sendsActionOnAlphaNumericalKeys;
+  NSTimeInterval _lastKeyPressed;
+  NSString *_charBuffer;
+  int _alphaNumericalLastColumn;
+
   BOOL _passiveDelegate;
   id _browserDelegate;
   SEL _doubleAction;
@@ -231,6 +237,15 @@
 
 @end
 
+//
+// Controlling the alphanumerical keys behaviour
+//
+@interface NSBrowser (GNUstepExtensions)
+- (BOOL)acceptsAlphaNumericalKeys;
+- (void) setAcceptsAlphaNumericalKeys: (BOOL)flag;
+- (BOOL) sendsActionOnAlphaNumericalKeys;
+- (void) setSendsActionOnAlphaNumericalKeys: (BOOL)flag;
+@end
 
 //
 // Methods Implemented by the Delegate 

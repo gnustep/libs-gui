@@ -410,7 +410,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   if (!(matrix = [self matrixInColumn: column]))
     return;
 
-  if ((cell = [matrix cellAtRow: row column: column]))
+  if ((cell = [matrix cellAtRow: row column: 0]))
     {
       if (column < _lastColumnLoaded)
 	{
@@ -2164,7 +2164,11 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   _hasHorizontalScroller = YES;
   _isLoaded = NO;
   _acceptsArrowKeys = YES;
+  _acceptsAlphaNumericalKeys = YES;
+  _lastKeyPressed = 0.;
+  _charBuffer = nil;
   _sendsActionOnArrowKeys = YES;
+  _sendsActionOnAlphaNumericalKeys = YES;
   _browserDelegate = nil;
   _passiveDelegate = YES;
   _doubleAction = NULL;  
@@ -2208,6 +2212,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   RELEASE(_horizontalScroller);
   RELEASE(_browserColumns);
   RELEASE(_titleCell);
+  TEST_RELEASE(_charBuffer);
 
   [super dealloc];
 }
@@ -2450,6 +2455,92 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 	}
     }
 
+  if (_acceptsAlphaNumericalKeys && (character < 0xF700)
+       && ([characters length] > 0))
+    {
+      NSBrowserColumn *bc;
+      NSMatrix *matrix;
+      NSString *sv;
+      int i, n, s;
+      int selectedColumn;
+      SEL lcarcSel = @selector(loadedCellAtRow:column:);
+      IMP lcarc = [self methodForSelector: lcarcSel];
+      
+      selectedColumn = [self selectedColumn];
+      bc = [_browserColumns objectAtIndex: 
+			      selectedColumn];
+      matrix = [bc columnMatrix];
+      n = [matrix numberOfRows];
+      s = [matrix selectedRow];
+      
+      if (!_charBuffer)
+	{
+	  _charBuffer = [characters substringToIndex: 1];
+	  RETAIN(_charBuffer);
+	}
+      else
+	{
+	  if (([theEvent timestamp] - _lastKeyPressed < 2000.0)
+	      && (_alphaNumericalLastColumn == selectedColumn))
+	    {
+	      NSString *transition;
+	      transition = [_charBuffer 
+			     stringByAppendingString:
+			       [characters substringToIndex: 1]];
+	      RELEASE(_charBuffer);
+	      _charBuffer = transition;
+	      RETAIN(_charBuffer);
+	    }
+	  else
+	    {
+	      RELEASE(_charBuffer);
+	      _charBuffer = [characters substringToIndex: 1];
+	      RETAIN(_charBuffer);
+	    }
+	}
+
+      _alphaNumericalLastColumn = selectedColumn;
+      _lastKeyPressed = [theEvent timestamp];
+      
+      sv = [((*lcarc)(self, lcarcSel, s, selectedColumn))
+	     stringValue];
+
+      if (([sv length] > 0)
+	  && ([sv hasPrefix: _charBuffer]))
+	return;
+
+      for (i = s+1; i < n; i++)
+	{
+	  sv = [((*lcarc)(self, lcarcSel, i, selectedColumn))
+		 stringValue];
+	  if (([sv length] > 0)
+	      && ([sv hasPrefix: _charBuffer]))
+	    {
+	      [self selectRow: i
+		    inColumn: selectedColumn];	
+	      [matrix scrollCellToVisibleAtRow: i column: 0];
+	      [matrix performClick: self];
+	      return;
+	    }
+	}
+      for (i = 0; i < s; i++)
+	{
+	  sv = [((*lcarc)(self, lcarcSel, i, selectedColumn))
+		 stringValue];
+	  if (([sv length] > 0)
+	      && ([sv hasPrefix: _charBuffer]))
+	    {
+	      [self selectRow: i
+		    inColumn: selectedColumn];
+	      [matrix scrollCellToVisibleAtRow: i column: 0];
+	      [matrix performClick: self];
+	      return;
+	    }
+	}
+      
+      _lastKeyPressed = 0.;
+    }
+
   [super keyDown: theEvent];
 }
 
@@ -2523,7 +2614,53 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
 @end
 
+@implementation NSBrowser (GNUstepExtensions)
+////////////////////////////////////////////////////////////////////////////////
+// Setting the behavior of arrow keys
+////////////////////////////////////////////////////////////////////////////////
 
+
+
+// -------------------
+// Returns YES if the alphanumerical keys are enabled.
+//
+
+- (BOOL)acceptsAlphaNumericalKeys
+{
+  return _acceptsAlphaNumericalKeys;
+}
+
+// -------------------
+// Enables or disables the arrow keys as used for navigating within
+// and between browsers.
+//
+
+- (void) setAcceptsAlphaNumericalKeys: (BOOL)flag
+{
+  _acceptsAlphaNumericalKeys = flag;
+}
+
+// -------------------
+// Returns NO if pressing an arrow key only scrolls the browser, YES if
+// it also sends the action message specified by setAction:.
+//
+
+- (BOOL) sendsActionOnAlphaNumericalKeys
+{
+  return _sendsActionOnAlphaNumericalKeys;
+}
+
+// -------------------
+// Sets whether pressing an arrow key will cause the action message
+// to be sent (in addition to causing scrolling).
+//
+
+- (void) setSendsActionOnAlphaNumericalKeys: (BOOL)flag
+{
+  _sendsActionOnAlphaNumericalKeys = flag;
+}
+
+@end
 
 
 // #############################################################################
