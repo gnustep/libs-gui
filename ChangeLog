@@ -1,3 +1,8 @@
+2002-11-24 01:10  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSSpellChecker (-_launchSpellCheckerForLanguage:): Don't
+	pass the error message through printf expansion twice.
+
 2002-11-24 00:56  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSFontInfo.m (-defaultLineHeightForFont): Round the linegap
