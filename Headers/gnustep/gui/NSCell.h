@@ -38,6 +38,7 @@
 @class NSView;
 @class NSFont;
 @class NSText;
+@class NSFormatter;
 
 typedef enum _NSCellType {
   NSNullCellType,
@@ -115,7 +116,7 @@ enum {
   NSImage *_cell_image;
   NSFont *_cell_font;
   struct GSCellFlagsType { 
-    // total 28 bits.  4 bits left.
+    // total 29 bits.  3 bits left.
     unsigned is_highlighted:1;
     unsigned is_disabled:1;    
     unsigned is_editable:1;   
@@ -127,6 +128,7 @@ enum {
     unsigned float_autorange:1;
     unsigned wraps:1;
     unsigned allows_mixed_state:1;
+    unsigned has_valid_object_value:1;
     unsigned text_align:3;     // 5 values
     unsigned image_position:4; // 7 values
     unsigned type:4;           // 8 values (see NSButtonCell)
@@ -142,6 +144,8 @@ enum {
   unsigned int _cell_float_right;
   id _represented_object; 
   unsigned int _action_mask; 
+  NSFormatter *_formatter;
+  id _objectValue;
 }
 
 //
