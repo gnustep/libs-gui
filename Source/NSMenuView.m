@@ -506,17 +506,14 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 	float    neededKeyEquivalentWidth = 0.0;
 	float    neededStateImageWidth = 0.0;
 	float    accumulatedOffset = 0.0;
+	float    popupImageWidth = 0.0;
+	float    menuBarHeight = 0.0;
 
-	/* Set the necessary offset for the menuView. That is, how many pixels 
-	 * do we need for our left side border line. For regular menus this 
-	 * equals 1, for popups it is 0. 
-	 *
-	 * Why here? I could not think of a better place. I figure that everyone 
-	 * should sizeToFit their popup/menu before using it so we should get 
-	 * this set properly fairly early.
-	 */
-	if ([_menu _ownedByPopUp])
-		_leftBorderOffset = 0;
+	// Popup menu doesn't need title bar
+	if (![_menu _ownedByPopUp])
+		menuBarHeight = [[self class] menuBarHeight];
+	else
+		menuBarHeight += _leftBorderOffset;
 
 	// TODO: Optimize this loop.
 	for (i = 0; i < howMany; i++)
@@ -576,6 +573,10 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 
 		if (aKeyEquivalentWidth > neededKeyEquivalentWidth)
 			neededKeyEquivalentWidth = aKeyEquivalentWidth;
+
+		// Popup menu has only one item with nibble image
+		if (anImageWidth)
+			popupImageWidth = anImageWidth;
 	}
 
 	// Cache the needed widths.
@@ -621,11 +622,13 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 		// Add the border width: 1 for left, 2 for right sides
 		_cellSize.width = accumulatedOffset + 3;
 	}
+	else
+	{
+		_keyEqOffset = _cellSize.width - _keyEqWidth - popupImageWidth;
+	}
 
 	if (_horizontal == NO)
 	{
-		float menuBarHeight = [[self class] menuBarHeight];
-
 		[self setFrameSize: NSMakeSize(_cellSize.width + _leftBorderOffset, 
 				(howMany * _cellSize.height) + menuBarHeight)];
 		[_titleView setFrame: NSMakeRect (0, howMany * _cellSize.height,
@@ -842,65 +845,69 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 			    preferredEdge: (NSRectEdge)edge
 			popUpSelectedItem: (int)selectedItemIndex
 {
-  NSRect r;
-  NSRect cellFrame;
-  NSRect screenFrame;
-  int items = [_itemCells count];
+	NSRect r;
+	NSRect cellFrame;
+	NSRect screenFrame;
+	int items = [_itemCells count];
 
-  // Convert the screen rect to our view
-  cellFrame.size = screenRect.size;
-  cellFrame.origin = [_window convertScreenToBase: screenRect.origin];
-  cellFrame = [self convertRect: cellFrame fromView: nil];
+	[_titleView removeFromSuperview];
 
-  _cellSize = cellFrame.size;
-  [self sizeToFit];
+	// Convert the screen rect to our view
+	cellFrame.size = screenRect.size;
+	cellFrame.origin = [_window convertScreenToBase: screenRect.origin];
+	cellFrame = [self convertRect: cellFrame fromView: nil];
 
-  /*
-   * Compute the frame
-   */
-  screenFrame = screenRect;
-  if (items > 1)
-    {
-      float f;
+	_cellSize = cellFrame.size;
+	[self sizeToFit];
 
-      if (_horizontal == NO)
+	/*
+	 * Compute the frame
+	 */
+	screenFrame = screenRect;
+	if (items > 1)
 	{
-	    f = screenRect.size.height * (items - 1);
-	    screenFrame.size.height += f;
-	    screenFrame.origin.y -= f;
-	}
-      else
-        {
-	    f = screenRect.size.width * (items - 1);
-	    screenFrame.size.width += f;
-	}
-    }  
+		float f;
 
-  // Move the menu window to screen?
-  // TODO
+		if (_horizontal == NO)
+		{
+			f = screenRect.size.height * (items - 1);
+			screenFrame.size.height += f + _leftBorderOffset;
+			screenFrame.origin.y -= f;
+			screenFrame.size.width += _leftBorderOffset;
+			screenFrame.origin.x -= _leftBorderOffset;
+		}
+		else
+		{
+			f = screenRect.size.width * (items - 1);
+			screenFrame.size.width += f;
+		}
+	}  
 
-  // Compute position for popups, if needed
-  if (selectedItemIndex != -1) 
-    {
-      if (_horizontal == NO)
-        {
-	  screenFrame.origin.y += screenRect.size.height * selectedItemIndex;
+	// Move the menu window to screen?
+	// TODO
+
+	// Compute position for popups, if needed
+	if (selectedItemIndex != -1) 
+	{
+		if (_horizontal == NO)
+		{
+			screenFrame.origin.y += screenRect.size.height * selectedItemIndex;
+		}
+		else
+		{
+			screenFrame.origin.x -= screenRect.size.width * selectedItemIndex;
+		}
 	}
-      else
-        {
-	  screenFrame.origin.x -= screenRect.size.width * selectedItemIndex;
-	}
-    }
-  
-  // Get the frameRect
-  r = [NSWindow frameRectForContentRect: screenFrame
+
+	// Get the frameRect
+	r = [NSWindow frameRectForContentRect: screenFrame
 		styleMask: [_window styleMask]];
-  
-  // Update position,if needed, using the preferredEdge;
-  // TODO
 
-  // Set the window frame
-  [_window setFrame: r display: NO]; 
+	// Update position,if needed, using the preferredEdge;
+	// TODO
+
+	// Set the window frame
+	[_window setFrame: r display: NO]; 
 }
 
 /*
@@ -908,46 +915,27 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
  */
 - (void) drawRect: (NSRect)rect
 {
-  int    i;
-  int    howMany = [_itemCells count];
+	int        i;
+	int        howMany = [_itemCells count];
+	NSRectEdge sides[] = {NSMinXEdge, NSMaxYEdge};
+	float      grays[] = {NSDarkGray, NSDarkGray};
 
-  /* For popupButtons we do not want this dark line. */
+	// Draw the dark gray upper left lines.
+	NSDrawTiledRects(rect, rect, sides, grays, 2);
 
-  if (![_menu _ownedByPopUp])
-    {
-      NSGraphicsContext *ctxt = GSCurrentContext();
+	// Draw the menu cells.
+	for (i = 0; i < howMany; i++)
+	{
+		NSRect		aRect;
+		NSMenuItemCell	*aCell;
 
-      // Draw a dark gray line at the left of the menu item cells.
-      DPSgsave(ctxt);
-      DPSsetlinewidth(ctxt, 1);
-      DPSsetgray(ctxt, NSDarkGray);
-      if (_horizontal == NO)
-        {
-	  DPSmoveto(ctxt, NSMinX(_bounds), NSMinY(_bounds));
-	  DPSrlineto(ctxt, 0, _bounds.size.height);
-        }
-      else
-        {
-	  DPSmoveto(ctxt, NSMinX(_bounds), NSMaxY(_bounds));
-	  DPSrlineto(ctxt, _bounds.size.width, 0);
-        }
-      DPSstroke(ctxt);
-      DPSgrestore(ctxt);
-    }
-
-  // Draw the menu cells.
-  for (i = 0; i < howMany; i++)
-    {
-      NSRect		aRect;
-      NSMenuItemCell	*aCell;
-
-      aRect = [self rectOfItemAtIndex: i];
-      if (NSIntersectsRect(rect, aRect) == YES)
-        {
-          aCell = [_itemCells objectAtIndex: i];
-	  [aCell drawWithFrame: aRect inView: self];
-        }
-    }
+		aRect = [self rectOfItemAtIndex: i];
+		if (NSIntersectsRect(rect, aRect) == YES)
+		{
+			aCell = [_itemCells objectAtIndex: i];
+			[aCell drawWithFrame: aRect inView: self];
+		}
+	}
 }
 
 /*

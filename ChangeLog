@@ -1,3 +1,15 @@
+2003-03-20  Serg Stoyan <stoyan@on.com.ua>
+
+	* Source/NSMenuView.m 
+	(sizeToFit): Removed setting _leftBorderOffset to 0 for popup menus.
+	Set menuBarHeight to title view height only if it's not popup menu.
+	Added recalculation of key equivalent offset for popup menu.
+	(setWindowFrameForAttachingToRect:onScreen:preferredEdge:popUpSelectedItem:):
+	Remove title view. Take into account left top border while calculating 
+	screenFrame.
+	(drawRect:): Draw left top dark gray border for all types of menus with 
+	NSDrawTiledRects().
+	
 2003-03-19  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSMenu.h
