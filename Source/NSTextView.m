@@ -415,6 +415,7 @@ If a text view is added to an empty text network, it keeps its attributes.
 
   _minSize = NSMakeSize(0, 0);
   _maxSize = NSMakeSize(HUGE,HUGE);
+  _textContainerInset = NSMakeSize(2, 0);
 
   ASSIGN(_insertionPointColor, [NSColor textColor]);
   ASSIGN(_backgroundColor, [NSColor textBackgroundColor]);
@@ -437,6 +438,7 @@ If a text view is added to an empty text network, it keeps its attributes.
   _tf.smart_insert_delete = NO;
 
   [container setTextView: self];
+  [self invalidateTextContainerOrigin];
 
   return self;
 }
@@ -609,6 +611,7 @@ _tf.delegate_responds_to* */
     }
 
   [self _recacheDelegateResponses];
+  [self invalidateTextContainerOrigin];
 
   return self;
 }
@@ -896,6 +899,7 @@ to make sure syncing is handled properly in all cases.
   NSTEXTVIEW_SYNC;
   [self setHorizontallyResizable: NO]; /* TODO: why? */
   [self setVerticallyResizable: NO];
+  [self setTextContainerInset: NSMakeSize(0,0)]; /* TODO: this is kindof ugly */
   _tf.is_field_editor = flag;
 }
 

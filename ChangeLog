@@ -1,3 +1,8 @@
+2003-01-28 22:20  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSTextView.m (-initWithFrame:textContainer:): Make the
+	default text container inset (2,0).
+
 2003-01-28 20:02  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSHorizontalTypesetter: Set proper used rect for line frag
