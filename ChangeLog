@@ -1,3 +1,7 @@
+Thu Feb 28 16:47:58 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Tools/make_services.m: Use 'Applications' not 'Apps'.
+
 Thu Feb 28 16:02:09 2002  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/Functions.m: Never include NSCStringText.h.  Removed old
