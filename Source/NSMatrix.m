@@ -173,31 +173,12 @@ static SEL getSel = @selector(objectAtIndex:);
 	     numberOfColumns: 0];
 }
 
-- (id) initWithFrame: (NSRect)frameRect
+- (id) _privateFrame: (NSRect)frameRect
 	        mode: (int)aMode
-	   cellClass: (Class)class
-        numberOfRows: (int)rowsHigh
-     numberOfColumns: (int)colsWide
-{
-  self = [self initWithFrame: frameRect
-		        mode: aMode
-		   prototype: nil
-		numberOfRows: rowsHigh
-	     numberOfColumns: colsWide];
-  [self setCellClass: class];
-  return self;
-}
-
-- (id) initWithFrame: (NSRect)frameRect
-	        mode: (int)aMode
-	   prototype: (NSCell*)prototype
         numberOfRows: (int)rows
      numberOfColumns: (int)cols
 {
-  [super initWithFrame: frameRect];
-
   myZone = [self zone];
-  [self setPrototype: prototype];
   [self _renewRows: rows columns: cols rowSpace: 0 colSpace: 0];
   mode = aMode;
   [self setFrame: frameRect];
@@ -222,8 +203,37 @@ static SEL getSel = @selector(objectAtIndex:);
     {
       selectedRow = selectedColumn = 0;
     }
-
   return self;
+}
+
+- (id) initWithFrame: (NSRect)frameRect
+	        mode: (int)aMode
+	   cellClass: (Class)class
+        numberOfRows: (int)rowsHigh
+     numberOfColumns: (int)colsWide
+{
+  self = [super initWithFrame: frameRect];
+
+  [self setCellClass: class];
+  return [self _privateFrame: frameRect
+		        mode: aMode
+		numberOfRows: rowsHigh
+	     numberOfColumns: colsWide];
+}
+
+- (id) initWithFrame: (NSRect)frameRect
+	        mode: (int)aMode
+	   prototype: (NSCell*)prototype
+        numberOfRows: (int)rowsHigh
+     numberOfColumns: (int)colsWide
+{
+  self = [super initWithFrame: frameRect];
+
+  [self setPrototype: prototype];
+  return [self _privateFrame: frameRect
+		        mode: aMode
+		numberOfRows: rowsHigh
+	     numberOfColumns: colsWide];
 }
 
 - (void) dealloc
