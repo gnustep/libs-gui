@@ -1,3 +1,10 @@
+2000-11-06  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/GSSimpleLayoutManager.m: Get the fragmentRect used for
+	layout from the text container
+	* Source/NSText.m: In [setVerticallyResizable:] and
+	[setHorizontallyResizable:] set the size of the text conatainer.
+
 Mon Nov  6 17:02:27 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Documentation/GNUmakefile, Documentation/gsdoc/GNUmakefile:
