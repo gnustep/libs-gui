@@ -92,7 +92,7 @@ how it's supposed to work. It's functional and correct, but it isn't fast. */
   the last run so we can quickly get more information for the next glyph.
   */
   struct GSLayoutManager_glyph_run_s *cached_run;
-  int cached_pos, cached_cpos;
+  unsigned int cached_pos, cached_cpos;
 }
 
 
