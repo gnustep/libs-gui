@@ -84,6 +84,7 @@
 
 - (void)setDocument:(NSDocument *)document
 {
+  // FIXME - this is RETAINed and never RELEASEd ...
   ASSIGN(_document, document);
   [self _synchronizeWindowTitleWithDocumentName];
 }
