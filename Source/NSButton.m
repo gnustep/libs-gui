@@ -107,7 +107,7 @@ id _nsbuttonCellClass = nil;
 - (void) setState: (int)value
 {
   [_cell setState: value];
-  [self display];
+  [self setNeedsDisplay: YES];
 }
 
 - (int) state
@@ -128,7 +128,7 @@ id _nsbuttonCellClass = nil;
 - (void)setNextState
 {
   [_cell setNextState];
-  [self display];
+  [self setNeedsDisplay: YES];
 }
 
 //
