@@ -1,3 +1,14 @@
+1999-10-18  Lyndon Tremblay  <humasect@coolmail.com>
+
+	* Headers/gnustep/gui/NSSecureTextField.h: Added.
+	* Headers/gnustep/gui/NSTextField.h: Added method to share initialization
+	data with NSSecureTextField.
+	* Source/NSSecureTextField.m: Added, 90% done.
+	* Source/NSTextField.m ([-_initFieldWithFrame:cellClass:]): Added for shared
+	initialization code with NSSecureTextField.
+	* Images/common_Diamond.tiff: Added for NSSecureTextField's bullets.
+	* GNUmakefile: Added rules for NSSecureTextField's sources.
+
 Tue Oct 14  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	Sorry for having messed things up using the wrong modifier 
