@@ -45,8 +45,8 @@
   _minValue = 0;
   _maxValue = 1;
   _floatValue = 0;
-  [self setBordered: YES];
-  [self setBezeled: YES];
+  _cell.is_bordered = YES;
+  _cell.is_bezeled = YES;
 
   _knobCell = [NSCell new];
 
