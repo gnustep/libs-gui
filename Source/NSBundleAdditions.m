@@ -270,7 +270,7 @@ Class gmodel_class(void)
 		      owner: [context objectForKey: @"NSOwner"]];
     } 
 
-  NSLog(@"Loading Nib `%@'...\n", fileName);
+  NSDebugLog(@"Loading Nib `%@'...\n", fileName);
   NS_DURING
     {
       NSData	*data = [NSData dataWithContentsOfFile: fileName];

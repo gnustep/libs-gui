@@ -1,4 +1,9 @@
-Wed Jun  5 14:09:04 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+2002-06-06  Richard Frith-Macdonald <rfm@gnu.org>
+
+        * Source/NSBundleAdditions.m: patch by Jeff Teunissen to log loading
+	only as debug.
+
+WWed Jun  5 14:09:04 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/GSKeyBindingAction.h: Cleaned syntax of #endif to remove
 	compiler warnings.
