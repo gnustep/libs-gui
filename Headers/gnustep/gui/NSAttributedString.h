@@ -28,6 +28,8 @@
 #ifndef _GNUstep_H_NSAttributedString
 #define _GNUstep_H_NSAttributedString
 
+#ifndef	STRICT_OPENSTEP
+
 #include <Foundation/NSAttributedString.h>
 #include <Foundation/NSRange.h>
 #include <AppKit/NSFontManager.h>
@@ -113,6 +115,8 @@ enum
 	     options: (NSDictionary *)options
   documentAttributes: (NSDictionary**)documentAttributes;
 @end
+
+#endif
 
 #endif
 

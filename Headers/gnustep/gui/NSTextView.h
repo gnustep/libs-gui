@@ -537,6 +537,7 @@ for that text view has been invalidated.
 /* Note that all delegation messages come from the first text view of a
 layout manager. */
 
+#ifndef	STRICT_OPENSTEP
 @interface NSObject (NSTextViewDelegate)
 
 -(void) textView: (NSTextView *)textView
@@ -587,6 +588,7 @@ replacementString will be nil. */
 
 -(NSUndoManager *) undoManagerForTextView: (NSTextView *)view;
 @end
+#endif	// STRICT_OPENSTEP
 
 /* NSOldNotifyingTextView -> the old view, NSNewNotifyingTextView ->
 the new view.  The text view delegate is not automatically

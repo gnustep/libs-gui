@@ -1,3 +1,16 @@
+2003-04-05  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Headers/gnustep/gui/NSAttributedString.h:
+	* Headers/gnustep/gui/NSDocumentController.h:
+	* Headers/gnustep/gui/NSGraphicsContext.h:
+	* Headers/gnustep/gui/NSResponder.h:
+	* Headers/gnustep/gui/NSStringDrawing.h:
+	* Headers/gnustep/gui/NSTextView.h:
+	* Headers/gnustep/gui/NSWindow.h:
+	Fixes to allow compliation of apps with STRICT_OPENSTEP defined.
+	This does *NOT* mean I've checked that STRICT_OPENSTEP is defined
+	where it should be, just that I've stopped it preventing compilation.
+
 2003-03-28  Serg Stoyan  <stoyan@on.com.ua>
 
 	* Source/NSMenuView.m:

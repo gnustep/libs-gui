@@ -90,13 +90,11 @@ enum {
   NSMiniWindowMask = 128	/* GNUstep extension - miniwindows	*/
 };
 
-#ifndef STRICT_OPENSTEP
 typedef enum _NSSelectionDirection {
   NSDirectSelection,
   NSSelectingNext,
   NSSelectingPrevious
 } NSSelectionDirection;
-#endif
 
 APPKIT_EXPORT NSSize NSIconSize;
 APPKIT_EXPORT NSSize NSTokenSize;

@@ -32,6 +32,8 @@
 #ifndef _GNUstep_H_NSStringDrawing
 #define _GNUstep_H_NSStringDrawing
 
+#ifndef	STRICT_OPENSTEP
+
 #include <Foundation/NSString.h>
 #include <Foundation/NSAttributedString.h>
 #include <Foundation/NSGeometry.h>
@@ -52,5 +54,9 @@
 - (void) drawInRect: (NSRect)rect;
 
 @end
+
+#else
+@class NSAttributedString;
+#endif
 
 #endif /* _GNUstep_H_NSStringDrawing */

@@ -41,7 +41,11 @@
 
 @interface NSResponder : NSObject <NSCoding>
 {
+#ifdef  STRICT_OPENSTEP
+  int			_interface_style;
+#else
   NSInterfaceStyle	_interface_style;
+#endif
   NSResponder		*_next_responder;
   NSMenu                *_menu;  
   /*
@@ -146,8 +150,10 @@
  */
 - (NSInterfaceStyle) interfaceStyle;
 - (void) setInterfaceStyle: (NSInterfaceStyle)aStyle;
+#endif
 @end
 
+#ifndef	STRICT_OPENSTEP
 @interface NSResponder (OptionalActionMethods)
 - (void) capitalizeWord: (id)sender;
 - (void) centerSelectionInVisibleArea: (id)sender;

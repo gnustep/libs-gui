@@ -89,7 +89,12 @@ typedef enum _NSImageInterpolation
   NSImageInterpolationHigh
 } NSImageInterpolation;
 
-#ifndef	STRICT_OPENSTEP
+
+/*
+ * The following graphics context stuff is needed by inline functions,
+ * so it must always be available even when STRICT_OPENSTEP is defined.
+ */
+
 
 typedef enum _GSTextDrawingMode
 {
@@ -180,8 +185,9 @@ typedef enum _GSColorSpace
 
 @end
 
-#ifndef	NO_GNUSTEP
 APPKIT_EXPORT NSGraphicsContext	*GSCurrentContext(void);
+
+#ifndef	NO_GNUSTEP
 
 @interface NSGraphicsContext (GNUstep)
 + (void) setDefaultContextClass: (Class)defaultContextClass;
@@ -403,6 +409,4 @@ APPKIT_EXPORT NSString *GSBaseColorSpace;
 APPKIT_EXPORT NSString *GSColorSpaceColorTable;
 
 #endif /* _NSGraphicsContext_h_INCLUDE */
-
-#endif	/* STRICT_OPENSTEP	*/
 

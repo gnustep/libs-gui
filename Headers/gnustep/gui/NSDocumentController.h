@@ -28,6 +28,8 @@
 #ifndef _GNUstep_H_NSDocumentController
 #define _GNUstep_H_NSDocumentController
 
+#ifndef STRICT_OPENSTEP
+
 #include <Foundation/Foundation.h>
 #include <AppKit/NSNibDeclarations.h>
 #include <AppKit/NSUserInterfaceValidation.h>
@@ -116,6 +118,8 @@
 - (Class)documentClassForType:(NSString *)type;
 
 @end
+
+#endif // STRICT_OPENSTEP
 
 #endif // _GNUstep_H_NSDocumentController
 
