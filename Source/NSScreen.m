@@ -240,8 +240,8 @@ static NSMutableArray *screenArray = nil;
 	      forKey: NSDeviceSize];
 
   // Add the NSDeviceResolution dictionary item
-  screenResolution.width = 72;  // This is a fixed value for screens.
-  screenResolution.height = 72; // All screens I checked under OS4.2 report 72.
+  screenResolution = GSResolutionForScreen([NSApp context], 
+					   _screenNumber);
   [devDesc setObject: [NSValue valueWithSize: screenResolution]
 	      forKey: NSDeviceResolution];
 
