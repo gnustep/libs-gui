@@ -1,3 +1,9 @@
+2003-03-02  Ludovic Marcotte <ludovic@Sophos.ca>
+
+	* Source/NSComboBoxCell.m: Modified so that we no longer
+	retain the dataSource. This would create a retain loop and
+	prevent anything using it to be released properly.
+
 2003-03-01  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView_actions.m
