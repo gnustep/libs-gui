@@ -1,3 +1,25 @@
+2004-10-08 22:08  Chad Hardin  <cehardin@mac.com>
+
+	* Printing/GNUmakefile:  Now goes in and build GSCUPS (Work in progress!)
+	* Printing/GSCUPS/GNUmakefile: Added
+	* Printing/GSCUPS/GNUmakefile.postamble: Added
+	* Printing/GSCUPS/GNUmakefile.preamble: Added
+	* Printing/GSCUPS/GSCUPSPageLayout.h: Added
+	* Printing/GSCUPS/GSCUPSPageLayout.m: Added
+	* Printing/GSCUPS/GSCUPSPrincipalClass.h: Added
+	* Printing/GSCUPS/GSCUPSPrincipalClass.m: Added
+	* Printing/GSCUPS/GSCUPSPrintInfo.h: Added
+	* Printing/GSCUPS/GSCUPSPrintInfo.m: Added
+	* Printing/GSCUPS/GSCUPSPrintOperation.h: Added
+	* Printing/GSCUPS/GSCUPSPrintOperation.m: Added
+	* Printing/GSCUPS/GSCUPSPrintPanel.h: Added
+	* Printing/GSCUPS/GSCUPSPrintPanel.m: Added
+	* Printing/GSCUPS/GSCUPSPrinter.h: Added
+	* Printing/GSCUPS/GSCUPSPrinter.m: Added.  GSCUPS is a work in 
+	progress.  Some changes still need to be made to NSPrinter, 
+	NSPrinterInfo.   Additionally, NSPrintPanel needs to be improved
+	to take advantage of the new features that GSCUPS will provide.
+
 2004-10-08  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSFormCell.m: (-initWithCoder:):

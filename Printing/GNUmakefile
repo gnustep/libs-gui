@@ -40,7 +40,7 @@ SUBPROJECTS = \
 GSLPR 
 
 ifeq ($(BUILD_GSCUPS), YES)
-#SUBPROJECTS += GSCUPS
+SUBPROJECTS += GSCUPS
 endif
 
 include $(GNUSTEP_MAKEFILES)/aggregate.make
