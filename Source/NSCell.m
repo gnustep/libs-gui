@@ -109,23 +109,23 @@ static NSColor	*shadowCol;
  */
 - (id) _init
 {
-  cell_type = NSNullCellType;
-  cell_image = nil;
-  cell_font = nil;
-  image_position = NSNoImage;
-  cell_state = NO;
-  cell_highlighted = NO;
-  cell_enabled = YES;
-  cell_editable = NO;
-  cell_bordered = NO;
-  cell_bezeled = NO;
-  cell_scrollable = NO;
-  cell_selectable = NO;
-  cell_continuous = NO;
-  cell_float_autorange = NO;
-  cell_float_left = 0;
-  cell_float_right = 0;
-  action_mask = NSLeftMouseUpMask;
+  _cell_type = NSNullCellType;
+  _cell_image = nil;
+  _cell_font = nil;
+  _image_position = NSNoImage;
+  _cell_state = 0;
+  _cell.is_highlighted = NO;
+  _cell.is_enabled = YES;
+  _cell.is_editable = NO;
+  _cell.is_bordered = NO;
+  _cell.is_bezeled = NO;
+  _cell.is_scrollable = NO;
+  _cell.is_selectable = NO;
+  _cell.is_continuous = NO;
+  _cell.float_autorange = NO;
+  _cell_float_left = 0;
+  _cell_float_right = 0;
+  _action_mask = NSLeftMouseUpMask;
   return self;
 }
 
@@ -143,10 +143,10 @@ static NSColor	*shadowCol;
   NSAssert(anImage == nil || [anImage isKindOfClass: imageClass],
 	NSInvalidArgumentException);
 
-  cell_type = NSImageCellType;
-  cell_image = RETAIN(anImage);
-  image_position = NSImageOnly;
-  cell_font = RETAIN([fontClass userFontOfSize: 0]);
+  _cell_type = NSImageCellType;
+  _cell_image = RETAIN(anImage);
+  _image_position = NSImageOnly;
+  _cell_font = RETAIN([fontClass userFontOfSize: 0]);
 
   return self;
 }
@@ -157,22 +157,22 @@ static NSColor	*shadowCol;
 
   [self _init];
 
-  cell_font = RETAIN([fontClass userFontOfSize: 0]);
-  contents = RETAIN(aString);
-  cell_type = NSTextCellType;
-  text_align = NSCenterTextAlignment;
-  cell_float_autorange = YES;
-  cell_float_right = 6;
+  _cell_font = RETAIN([fontClass userFontOfSize: 0]);
+  _contents = RETAIN(aString);
+  _cell_type = NSTextCellType;
+  _text_align = NSCenterTextAlignment;
+  _cell.float_autorange = YES;
+  _cell_float_right = 6;
 
   return self;
 }
 
 - (void) dealloc
 {
-  TEST_RELEASE(contents);
-  TEST_RELEASE(cell_image);
-  TEST_RELEASE(cell_font);
-  TEST_RELEASE(represented_object);
+  TEST_RELEASE(_contents);
+  TEST_RELEASE(_cell_image);
+  TEST_RELEASE(_cell_font);
+  TEST_RELEASE(_represented_object);
 
   [super dealloc];
 }
@@ -189,26 +189,26 @@ static NSColor	*shadowCol;
   NSSize borderSize, s;
   
   // Get border size
-  if (cell_bordered)
-    borderSize = [cellClass sizeForBorderType: NSLineBorder];
-  else if (cell_bezeled)
-    borderSize = [cellClass sizeForBorderType: NSBezelBorder];
+  if (_cell.is_bordered)
+    borderSize = _sizeForBorderType (NSLineBorder);
+  else if (_cell.is_bezeled)
+    borderSize = _sizeForBorderType (NSBezelBorder);
   else
-    borderSize = [cellClass sizeForBorderType: NSNoBorder];
+    borderSize = NSZeroSize;
 
   // Get Content Size
-  switch (cell_type)
+  switch (_cell_type)
     {
     case NSTextCellType:
-      s = NSMakeSize([cell_font widthOfString: contents], 
-		     [cell_font pointSize]);
+      s = NSMakeSize([_cell_font widthOfString: _contents], 
+		     [_cell_font pointSize]);
       // If text, add in a distance between text and borders
       // otherwise the text will mess up with the borders
       s.width += 2 * xDist;
       s.height += 2 * yDist;
       break;
     case NSImageCellType:
-      s = [cell_image size];
+      s = [_cell_image size];
       break;
     case NSNullCellType:
       s = NSZeroSize;
@@ -233,12 +233,12 @@ static NSColor	*shadowCol;
   NSSize borderSize;
 
   // Get border size
-  if (cell_bordered)
-    borderSize = [cellClass sizeForBorderType: NSLineBorder];
-  else if (cell_bezeled)
-    borderSize = [cellClass sizeForBorderType: NSBezelBorder];
+  if (_cell.is_bordered)
+    borderSize = _sizeForBorderType (NSLineBorder);
+  else if (_cell.is_bezeled)
+    borderSize = _sizeForBorderType (NSBezelBorder);
   else
-    borderSize = [cellClass sizeForBorderType: NSNoBorder];
+    borderSize = NSZeroSize;
   
   return NSInsetRect (theRect, borderSize.width, borderSize.height);
 }
@@ -258,12 +258,12 @@ static NSColor	*shadowCol;
  */
 - (void) setType: (NSCellType)aType
 {
-  cell_type = aType;
+  _cell_type = aType;
 }
 
 - (NSCellType) type
 {
-  return cell_type;
+  return _cell_type;
 }
 
 /*
@@ -271,12 +271,12 @@ static NSColor	*shadowCol;
  */
 - (void) setState: (int)value
 {
-  cell_state = value;
+  _cell_state = value;
 }
 
 - (int) state
 {
-  return cell_state;
+  return _cell_state;
 }
 
 /*
@@ -284,12 +284,12 @@ static NSColor	*shadowCol;
  */
 - (BOOL) isEnabled
 {
-  return cell_enabled;
+  return _cell.is_enabled;
 }
 
 - (void) setEnabled: (BOOL)flag
 {
-  cell_enabled = flag;
+  _cell.is_enabled = flag;
 }
 
 /*
@@ -297,7 +297,7 @@ static NSColor	*shadowCol;
  */
 - (BOOL) acceptsFirstResponder
 {
-  return cell_enabled;
+  return _cell.is_enabled;
 }
 
 /*
@@ -305,7 +305,7 @@ static NSColor	*shadowCol;
  */
 - (NSImage*) image
 {
-  return cell_image;
+  return _cell_image;
 }
 
 - (void) setImage: (NSImage*)anImage
@@ -316,10 +316,9 @@ static NSColor	*shadowCol;
 		NSInvalidArgumentException);
     }
   
-  if (cell_type != NSImageCellType)
-    [self setType: NSImageCellType];    
+  _cell_type = NSImageCellType;    
   
-  ASSIGN(cell_image, anImage);
+  ASSIGN(_cell_image, anImage);
 }
 
 /*
@@ -327,60 +326,59 @@ static NSColor	*shadowCol;
  */
 - (double) doubleValue
 {
-  return [contents doubleValue];
+  return [_contents doubleValue];
 }
 
 - (float) floatValue
 {
-  return [contents floatValue];
+  return [_contents floatValue];
 }
 
 - (int) intValue
 {
-  return [contents intValue];
+  return [_contents intValue];
 }
 
 - (NSString*) stringValue
 {
-  return contents;
+  return _contents;
 }
 
 - (void) setDoubleValue: (double)aDouble
 {
   NSString* number_string = [[NSNumber numberWithDouble: aDouble] stringValue];
 
-  ASSIGN(contents, number_string);
+  ASSIGN(_contents, number_string);
 }
 
 - (void) setFloatValue: (float)aFloat
 {
   NSString* number_string = [[NSNumber numberWithFloat: aFloat] stringValue];
 
-  ASSIGN(contents, number_string);
+  ASSIGN(_contents, number_string);
 }
 
 - (void) setIntValue: (int)anInt
 {
   NSString* number_string = [[NSNumber numberWithInt: anInt] stringValue];
 
-  ASSIGN(contents, number_string);
+  ASSIGN(_contents, number_string);
 }
 
 - (void) setStringValue: (NSString *)aString
 {
-  NSString	*_string;
+  NSString	*string;
 
-  if (cell_type != NSTextCellType)
-    [self setType: NSTextCellType];
+  _cell_type = NSTextCellType;
 
   if (!aString)
-    _string = @"";
+    string = @"";
   else
-    _string = [aString copy];
+    string = [aString copy];
 
-  if (contents)
-    RELEASE(contents);
-  contents = _string;
+  if (_contents)
+    RELEASE(_contents);
+  _contents = string;
 }
 
 /*
@@ -411,32 +409,32 @@ static NSColor	*shadowCol;
  */
 - (NSTextAlignment) alignment
 {
-  return text_align;
+  return _text_align;
 }
 
 - (NSFont*) font
 {
-  return cell_font;
+  return _cell_font;
 }
 
 - (BOOL) isEditable
 {
-  return cell_editable;
+  return _cell.is_editable;
 }
 
 - (BOOL) isSelectable
 {
-  return cell_selectable || cell_editable;
+  return _cell.is_selectable || _cell.is_editable;
 }
 
 - (BOOL) isScrollable
 {
-  return cell_scrollable;
+  return _cell.is_scrollable;
 }
 
 - (void) setAlignment: (NSTextAlignment)mode
 {
-  text_align = mode;
+  _text_align = mode;
 }
 
 - (void) setEditable: (BOOL)flag
@@ -446,7 +444,7 @@ static NSColor	*shadowCol;
    *	so turning edit on also turns selectability on (until edit is turned
    *	off again).
    */
-  cell_editable = flag;
+  _cell.is_editable = flag;
 }
 
 - (void) setFont: (NSFont *)fontObject
@@ -454,24 +452,24 @@ static NSColor	*shadowCol;
   NSAssert(fontObject == nil || [fontObject isKindOfClass: fontClass],
     NSInvalidArgumentException);
 
-  ASSIGN(cell_font, fontObject);
+  ASSIGN(_cell_font, fontObject);
 }
 
 - (void) setSelectable: (BOOL)flag
 {
-  cell_selectable = flag;
+  _cell.is_selectable = flag;
 
   /*
    *	Making a cell unselectable also makes it uneditable until a
    *	setEditable re-enables it.
    */
   if (!flag)
-    cell_editable = NO;
+    _cell.is_editable = NO;
 }
 
 - (void) setScrollable: (BOOL)flag
 {
-  cell_scrollable = flag;
+  _cell.is_scrollable = flag;
 }
 
 - (void) setWraps: (BOOL)flag
@@ -488,15 +486,15 @@ static NSColor	*shadowCol;
  */
 - (NSText*) setUpFieldEditorAttributes: (NSText*)textObject
 {
-  if ([self isEnabled])
+  if (_cell.is_enabled)
     [textObject setTextColor: txtCol];
   else
     [textObject setTextColor: dtxtCol];
   
-  [textObject setFont: [self font]];
-  [textObject setAlignment: [self alignment]];
-  [textObject setEditable: [self isEditable]];
-  [textObject setSelectable: [self isSelectable]];
+  [textObject setFont: _cell_font];
+  [textObject setAlignment: _text_align];
+  [textObject setEditable: _cell.is_editable];
+  [textObject setSelectable: _cell.is_selectable || _cell.is_editable];
   return textObject;
 }
 
@@ -506,13 +504,13 @@ static NSColor	*shadowCol;
 	      delegate: (id)anObject
 		 event: (NSEvent *)theEvent
 {
-  if (!controlView || !textObject || !cell_font ||
-			(cell_type != NSTextCellType))
+  if (!controlView || !textObject || !_cell_font ||
+			(_cell_type != NSTextCellType))
     return;
 
   [textObject setFrame: [self drawingRectForBounds: aRect]];
   [controlView addSubview: textObject];  
-  [textObject setText: [self stringValue]];
+  [textObject setText: _contents];
   [textObject setDelegate: anObject];
   [[controlView window] makeFirstResponder: textObject];
   [textObject display];
@@ -534,13 +532,13 @@ static NSColor	*shadowCol;
 		   start: (int)selStart
 		  length: (int)selLength
 {
-  if (!controlView || !textObject || !cell_font ||
-			(cell_type != NSTextCellType))
+  if (!controlView || !textObject || !_cell_font ||
+			(_cell_type != NSTextCellType))
     return;
 
   [textObject setFrame: [self drawingRectForBounds: aRect]];
   [controlView addSubview: textObject];
-  [textObject setText: [self stringValue]];
+  [textObject setText: _contents];
   [textObject setSelectedRange: NSMakeRange (selStart, selLength)];
   [textObject setDelegate: anObject];
   [[controlView window] makeFirstResponder: textObject];
@@ -552,7 +550,7 @@ static NSColor	*shadowCol;
  */
 - (int) entryType
 {
-  return entry_type;
+  return _entry_type;
 }
 
 - (BOOL) isEntryAcceptable: (NSString*)aString
@@ -562,7 +560,7 @@ static NSColor	*shadowCol;
 
 - (void) setEntryType: (int)aType
 {
-  entry_type = aType;
+  _entry_type = aType;
 }
 
 /*
@@ -572,9 +570,9 @@ static NSColor	*shadowCol;
 			   left: (unsigned int)leftDigits
 			  right: (unsigned int)rightDigits
 {
-  cell_float_autorange = autoRange;
-  cell_float_left = leftDigits;
-  cell_float_right = rightDigits;
+  _cell.float_autorange = autoRange;
+  _cell_float_left = leftDigits;
+  _cell_float_right = rightDigits;
 }
 
 /*
@@ -582,12 +580,12 @@ static NSColor	*shadowCol;
  */
 - (BOOL) isBezeled
 {
-  return cell_bezeled;
+  return _cell.is_bezeled;
 }
 
 - (BOOL) isBordered
 {
-  return cell_bordered;
+  return _cell.is_bordered;
 }
 
 - (BOOL) isOpaque
@@ -597,16 +595,16 @@ static NSColor	*shadowCol;
 
 - (void) setBezeled: (BOOL)flag
 {
-  cell_bezeled = flag;
-  if (cell_bezeled)
-    cell_bordered = NO;
+  _cell.is_bezeled = flag;
+  if (_cell.is_bezeled)
+    _cell.is_bordered = NO;
 }
 
 - (void) setBordered: (BOOL)flag
 {
-  cell_bordered = flag;
-  if (cell_bordered)
-    cell_bezeled = NO;
+  _cell.is_bordered = flag;
+  if (_cell.is_bordered)
+    _cell.is_bezeled = NO;
 }
 
 /*
@@ -626,17 +624,17 @@ static NSColor	*shadowCol;
  */
 - (NSView*) controlView
 {
-  return control_view;
+  return _control_view;
 }
 
 - (void) setControlView: (NSView*)view
 {
-  control_view = view;
+  _control_view = view;
 }
 
 - (NSColor*) textColor
 {
-  if ([self isEnabled])
+  if (_cell.is_enabled)
     return txtCol;
   else
     return dtxtCol;
@@ -645,7 +643,6 @@ static NSColor	*shadowCol;
 - (void) _drawText: (NSString *) title inFrame: (NSRect) cellFrame
 {
   NSColor	*textColor;
-  NSFont	*font;
   float		titleWidth;
   float 	titleHeight;
   NSDictionary	*dict;
@@ -655,19 +652,18 @@ static NSColor	*shadowCol;
 
   textColor = [self textColor];
 
-  font = [self font];
-  if (!font)
+  if (!_cell_font)
     [NSException raise: NSInvalidArgumentException
         format: @"Request to draw a text cell but no font specified!"];
-  titleWidth = [font widthOfString: title];
-  titleHeight = [font pointSize] - [font descender];
+  titleWidth = [_cell_font widthOfString: title];
+  titleHeight = [_cell_font pointSize] - [_cell_font descender];
 
   // Determine the y position of the text
   cellFrame.origin.y = NSMidY (cellFrame) - titleHeight / 2;
   cellFrame.size.height = titleHeight;
 
   // Determine the x position of text
-  switch ([self alignment])
+  switch (_text_align)
     {
       // ignore the justified and natural alignments
       case NSLeftTextAlignment:
@@ -692,7 +688,7 @@ static NSColor	*shadowCol;
     }
 
   dict = [NSDictionary dictionaryWithObjectsAndKeys:
-		font, NSFontAttributeName,
+		_cell_font, NSFontAttributeName,
 		textColor, NSForegroundColorAttributeName,
 		nil];
   [title drawInRect: cellFrame withAttributes: dict];
@@ -710,19 +706,19 @@ static NSColor	*shadowCol;
   cellFrame = [self drawingRectForBounds: cellFrame];
   [controlView lockFocus];
 
-  switch ([self type])
+  switch (_cell_type)
     {
       case NSTextCellType:
-	 [self _drawText: [self stringValue] inFrame: cellFrame];
+	 [self _drawText: _contents inFrame: cellFrame];
 	 break;
 
       case NSImageCellType:
-	if (cell_image)
+	if (_cell_image)
 	  {
 	    NSSize size;
 	    NSPoint position;
 
-	    size = [cell_image size];
+	    size = [_cell_image size];
 	    position.x = MAX(NSMidX(cellFrame) - (size.width/2.),0.);
 	    position.y = MAX(NSMidY(cellFrame) - (size.height/2.),0.);
 	    /*
@@ -730,9 +726,9 @@ static NSColor	*shadowCol;
 	     * at the origin so we must adjust the position to take
 	     * account of a flipped view.
 	     */
-	    if ([control_view isFlipped])
+	    if ([controlView isFlipped])
 	      position.y += size.height;
-	    [cell_image compositeToPoint: position operation: NSCompositeCopy];
+	    [_cell_image compositeToPoint: position operation: NSCompositeCopy];
 	  }
 	 break;
 
@@ -756,12 +752,12 @@ static NSColor	*shadowCol;
   [controlView lockFocus];
 
   // draw the border if needed
-  if ([self isBordered])
+  if (_cell.is_bordered)
     {
       [shadowCol set];
       NSFrameRect(cellFrame);
     }
-  else if ([self isBezeled])
+  else if (_cell.is_bezeled)
     {
       NSDrawWhiteBezel(cellFrame, NSZeroRect);
     }
@@ -772,16 +768,16 @@ static NSColor	*shadowCol;
 
 - (BOOL) isHighlighted
 {
-  return cell_highlighted;
+  return _cell.is_highlighted;
 }
 
 - (void) highlight: (BOOL)lit
 	 withFrame: (NSRect)cellFrame
 	    inView: (NSView*)controlView
 {
-  if (cell_highlighted != lit)
+  if (_cell.is_highlighted != lit)
     {
-      cell_highlighted = lit;
+      _cell.is_highlighted = lit;
       [self drawWithFrame: cellFrame inView: controlView];
     }
 }
@@ -802,21 +798,21 @@ static NSColor	*shadowCol;
 
 - (BOOL) isContinuous
 {
-  return cell_continuous;
+  return _cell.is_continuous;
 }
 
 - (int) sendActionOn: (int)mask
 {
-  unsigned int previousMask = action_mask;
+  unsigned int previousMask = _action_mask;
 
-  action_mask = mask;
+  _action_mask = mask;
 
   return previousMask;
 }
 
 - (void) setContinuous: (BOOL)flag
 {
-  cell_continuous = flag;
+  _cell.is_continuous = flag;
   [self sendActionOn: (NSLeftMouseUpMask|NSPeriodicMask)];
 }
 
@@ -835,26 +831,26 @@ static NSColor	*shadowCol;
 {
   SEL action = [self action];
   
-  if (control_view)
+  if (_control_view)
     {  
-      NSRect   cvBounds = [control_view bounds];
-      NSWindow *cvWin = [control_view window];
+      NSRect   cvBounds = [_control_view bounds];
+      NSWindow *cvWin = [_control_view window];
 
-      [self highlight: YES withFrame: cvBounds inView: control_view];
+      [self highlight: YES withFrame: cvBounds inView: _control_view];
       [cvWin flushWindow];
 
       // Wait approx 1/10 seconds
       [[NSRunLoop currentRunLoop] 
 	runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.1]];
       
-      [self highlight: NO withFrame: cvBounds inView: control_view];
+      [self highlight: NO withFrame: cvBounds inView: _control_view];
       [cvWin flushWindow];
   
       if (action)
 	{
 	  NS_DURING
 	    {
-	      [(NSControl *)control_view sendAction: action to: [self target]];
+	      [(NSControl *)_control_view sendAction: action to: [self target]];
 	    }
 	  NS_HANDLER
 	    {
@@ -971,11 +967,11 @@ static NSColor	*shadowCol;
   if (![controlView mouse: point inRect: cellFrame])
     return NO;	// point is not in cell
 
-  if ((action_mask & NSLeftMouseDownMask)
+  if ((_action_mask & NSLeftMouseDownMask)
     && [theEvent type] == NSLeftMouseDown)
     [(NSControl*)controlView sendAction: action to: target];
 
-  if (cell_continuous)
+  if (_cell.is_continuous)
     {
       [self getPeriodicDelay: &delay interval: &interval];
       [NSEvent startPeriodicEventsAfterDelay: delay withPeriod: interval];
@@ -1054,16 +1050,16 @@ static NSColor	*shadowCol;
 	  NSDebugLog(@"NSCell mouse went up\n");
 	  mouseWentUp = YES;
 	  done = YES;
-          [self setState: ![self state]];
-	  if ((action_mask & NSLeftMouseUpMask))
+          [self setState: !_cell_state];
+	  if ((_action_mask & NSLeftMouseUpMask))
 	    [(NSControl*)controlView sendAction: action to: target];
 	}
       else
 	{
 	  if (pointIsInCell && ((eventType == NSLeftMouseDragged
-			  && (action_mask & NSLeftMouseDraggedMask))
+			  && (_action_mask & NSLeftMouseDraggedMask))
 			  || ((eventType == NSPeriodic)
-			  && (action_mask & NSPeriodicMask))))
+			  && (_action_mask & NSPeriodicMask))))
 	    [(NSControl*)controlView sendAction: action to: target];
 	}
     }
@@ -1075,7 +1071,7 @@ static NSColor	*shadowCol;
 	   mouseIsUp: mouseWentUp];
 
 
-  if (cell_continuous)
+  if (_cell.is_continuous)
     [NSEvent stopPeriodicEvents];
 
   // Return YES only if the mouse went up within the cell
@@ -1094,8 +1090,8 @@ static NSColor	*shadowCol;
  */
 - (void) resetCursorRect: (NSRect)cellFrame inView: (NSView *)controlView
 {
-  if (cell_type == NSTextCellType && cell_enabled == YES
-    && (cell_selectable == YES || cell_editable == YES))
+  if (_cell_type == NSTextCellType && _cell.is_enabled == YES
+    && (_cell.is_selectable == YES || _cell.is_editable == YES))
     {
       static NSCursor	*c = nil;
       NSRect	r;
@@ -1124,11 +1120,11 @@ static NSColor	*shadowCol;
   if ([otherCell isKindOfClass: cellClass] == NO)
     [NSException raise: NSBadComparisonException
 		format: @"NSCell comparison with non-NSCell"];
-  if (cell_type != NSTextCellType
-    || ((NSCell*)otherCell)->cell_type != NSTextCellType)
+  if (_cell_type != NSTextCellType
+    || ((NSCell*)otherCell)->_cell_type != NSTextCellType)
     [NSException raise: NSBadComparisonException
 		format: @"Comparison between non-text cells"];
-  return [contents compare: ((NSCell*)otherCell)->contents];
+  return [_contents compare: ((NSCell*)otherCell)->_contents];
 }
 
 /*
@@ -1136,40 +1132,40 @@ static NSColor	*shadowCol;
  */
 - (id) representedObject
 {
-  return represented_object;
+  return _represented_object;
 }
 
 - (void) setRepresentedObject: (id)anObject
 {
-  ASSIGN(represented_object, anObject);
+  ASSIGN(_represented_object, anObject);
 }
 
 - (id) copyWithZone: (NSZone*)zone
 {
   NSCell	*c = [[isa allocWithZone: zone] init];
 
-  c->contents = [contents copyWithZone: zone];
-  ASSIGN(c->cell_image, cell_image);
-  ASSIGN(c->cell_font, cell_font);
-  c->cell_state = cell_state;
-  c->cell_highlighted = cell_highlighted;
-  c->cell_enabled = cell_enabled;
-  c->cell_editable = cell_editable;
-  c->cell_bordered = cell_bordered;
-  c->cell_bezeled = cell_bezeled;
-  c->cell_scrollable = cell_scrollable;
-  c->cell_selectable = cell_selectable;
-  [c setContinuous: cell_continuous];
-  c->cell_float_autorange = cell_float_autorange;
-  c->cell_float_left = cell_float_left;
-  c->cell_float_right = cell_float_right;
-  c->image_position = image_position;
-  c->cell_type = cell_type;
-  c->text_align = text_align;
-  c->entry_type = entry_type;
-  c->control_view = control_view;
-  c->cell_size = cell_size;
-  [c setRepresentedObject: represented_object];
+  c->_contents = [_contents copyWithZone: zone];
+  ASSIGN(c->_cell_image, _cell_image);
+  ASSIGN(c->_cell_font, _cell_font);
+  c->_cell_state = _cell_state;
+  c->_cell.is_highlighted = _cell.is_highlighted;
+  c->_cell.is_enabled = _cell.is_enabled;
+  c->_cell.is_editable = _cell.is_editable;
+  c->_cell.is_bordered = _cell.is_bordered;
+  c->_cell.is_bezeled = _cell.is_bezeled;
+  c->_cell.is_scrollable = _cell.is_scrollable;
+  c->_cell.is_selectable = _cell.is_selectable;
+  [c setContinuous: _cell.is_continuous];
+  c->_cell.float_autorange = _cell.float_autorange;
+  c->_cell_float_left = _cell_float_left;
+  c->_cell_float_right = _cell_float_right;
+  c->_image_position = _image_position;
+  c->_cell_type = _cell_type;
+  c->_text_align = _text_align;
+  c->_entry_type = _entry_type;
+  c->_control_view = _control_view;
+  c->_cell_size = _cell_size;
+  [c setRepresentedObject: _represented_object];
 
   return c;
 }
@@ -1179,61 +1175,81 @@ static NSColor	*shadowCol;
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodeObject: contents];
-  [aCoder encodeObject: cell_image];
-  [aCoder encodeObject: cell_font];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &cell_state];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &cell_highlighted];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &cell_enabled];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &cell_editable];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &cell_bordered];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &cell_bezeled];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &cell_scrollable];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &cell_selectable];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &cell_continuous];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &cell_float_autorange];
-  [aCoder encodeValueOfObjCType: "I" at: &cell_float_left];
-  [aCoder encodeValueOfObjCType: "I" at: &cell_float_right];
-  [aCoder encodeValueOfObjCType: "I" at: &image_position];
-  [aCoder encodeValueOfObjCType: "i" at: &cell_type];
-  [aCoder encodeValueOfObjCType: @encode(NSTextAlignment) at: &text_align];
-  [aCoder encodeValueOfObjCType: "i" at: &entry_type];
-  [aCoder encodeConditionalObject: control_view];
+  BOOL flag;
+
+  [aCoder encodeObject: _contents];
+  [aCoder encodeObject: _cell_image];
+  [aCoder encodeObject: _cell_font];
+  [aCoder encodeValueOfObjCType: @encode(int) at: &_cell_state];
+  flag = _cell.is_highlighted;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _cell.is_enabled;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _cell.is_editable;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _cell.is_bordered;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _cell.is_bezeled;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _cell.is_scrollable;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _cell.is_selectable;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _cell.is_continuous;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _cell.float_autorange;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  [aCoder encodeValueOfObjCType: "I" at: &_cell_float_left];
+  [aCoder encodeValueOfObjCType: "I" at: &_cell_float_right];
+  [aCoder encodeValueOfObjCType: "I" at: &_image_position];
+  [aCoder encodeValueOfObjCType: "i" at: &_cell_type];
+  [aCoder encodeValueOfObjCType: @encode(NSTextAlignment) at: &_text_align];
+  [aCoder encodeValueOfObjCType: "i" at: &_entry_type];
+  [aCoder encodeConditionalObject: _control_view];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &contents];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &cell_image];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &cell_font];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &cell_state];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &cell_highlighted];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &cell_enabled];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &cell_editable];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &cell_bordered];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &cell_bezeled];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &cell_scrollable];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &cell_selectable];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &cell_continuous];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &cell_float_autorange];
-  [aDecoder decodeValueOfObjCType: "I" at: &cell_float_left];
-  [aDecoder decodeValueOfObjCType: "I" at: &cell_float_right];
-  [aDecoder decodeValueOfObjCType: "I" at: &image_position];
-  [aDecoder decodeValueOfObjCType: "i" at: &cell_type];
-  [aDecoder decodeValueOfObjCType: @encode(NSTextAlignment) at: &text_align];
-  [aDecoder decodeValueOfObjCType: "i" at: &entry_type];
-  control_view = [aDecoder decodeObject];
+  BOOL flag;
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_contents];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_cell_image];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_cell_font];
+  [aDecoder decodeValueOfObjCType: @encode(int) at: &_cell_state];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _cell.is_highlighted = flag;
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _cell.is_enabled = flag;
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _cell.is_editable = flag;
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _cell.is_bordered = flag;
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _cell.is_bezeled = flag;
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _cell.is_scrollable = flag;
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _cell.is_selectable = flag;
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _cell.is_continuous = flag;
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _cell.float_autorange = flag;
+  [aDecoder decodeValueOfObjCType: "I" at: &_cell_float_left];
+  [aDecoder decodeValueOfObjCType: "I" at: &_cell_float_right];
+  [aDecoder decodeValueOfObjCType: "I" at: &_image_position];
+  [aDecoder decodeValueOfObjCType: "i" at: &_cell_type];
+  [aDecoder decodeValueOfObjCType: @encode(NSTextAlignment) at: &_text_align];
+  [aDecoder decodeValueOfObjCType: "i" at: &_entry_type];
+  _control_view = [aDecoder decodeObject];
   return self;
 }
 
 @end
 
 /*
- * Methods the backend should implement
+ * Global function which should go somewhere else
  */
-@implementation NSCell (GNUstepBackend)
-
-+ (NSSize) sizeForBorderType: (NSBorderType)aType
+inline NSSize 
+_sizeForBorderType (NSBorderType aType)
 {
   // Returns the size of a border
   switch (aType)
@@ -1248,6 +1264,3 @@ static NSColor	*shadowCol;
         return NSZeroSize;
     }
 }
-
-@end
-
