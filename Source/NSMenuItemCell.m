@@ -248,54 +248,48 @@ static NSImage	*arrowImageH = nil;
 //
 - (NSRect) imageRectForBounds:(NSRect)cellFrame
 {
-  if (_mcell_belongs_to_popupbutton && _cell.image_position)
-    {
-      /* Special case: draw image on the extreme right [FIXME check the distance]*/
-      cellFrame.origin.x  += cellFrame.size.width - _imageWidth - 4;
-      cellFrame.size.width = _imageWidth;
-      return cellFrame;
-    }
+	if (_mcell_belongs_to_popupbutton && _cell.image_position)
+		{
+			/* Special case: draw image on the extreme right [FIXME check the distance]*/
+			cellFrame.origin.x  += cellFrame.size.width - _imageWidth - 4;
+			cellFrame.size.width = _imageWidth;
+			return cellFrame;
+		}
 
-  // Calculate the image part of cell frame from NSMenuView
-  cellFrame.origin.x  += [_menuView imageAndTitleOffset];
-  cellFrame.size.width = [_menuView imageAndTitleWidth];
-  /* If the state image has no width we do not add additional padding.  */
-  if ([_menuItem changesState]  &&  _stateImageWidth > 0)
-    {
-      cellFrame.origin.x += [_menuView stateImageWidth]
-	+ 2 * [_menuView horizontalEdgePadding];
-    }
+	// Calculate the image part of cell frame from NSMenuView
+	cellFrame.origin.x  += [_menuView imageAndTitleOffset];
+	cellFrame.size.width = [_menuView imageAndTitleWidth];
 
-  switch (_cell.image_position)
-    {
-      case NSNoImage: 
-	cellFrame = NSZeroRect;
-	break;
+	switch (_cell.image_position)
+		{
+		case NSNoImage: 
+			cellFrame = NSZeroRect;
+			break;
 
-      case NSImageOnly:
-      case NSImageOverlaps:
-	break;
+		case NSImageOnly:
+		case NSImageOverlaps:
+			break;
 
-      case NSImageLeft:
-	cellFrame.size.width = _imageWidth;
-	break;
+		case NSImageLeft:
+			cellFrame.size.width = _imageWidth;
+			break;
 
-      case NSImageRight:
-	cellFrame.origin.x  += _titleWidth + xDist;
-	cellFrame.size.width = _imageWidth;
-	break;
+		case NSImageRight:
+			cellFrame.origin.x  += _titleWidth + xDist;
+			cellFrame.size.width = _imageWidth;
+			break;
 
-      case NSImageBelow: 
-	cellFrame.size.height /= 2;
-	break;
+		case NSImageBelow: 
+			cellFrame.size.height /= 2;
+			break;
 
-      case NSImageAbove: 
-	cellFrame.size.height /= 2;
-        cellFrame.origin.y += cellFrame.size.height;
-	break;
-    }
+		case NSImageAbove: 
+			cellFrame.size.height /= 2;
+			cellFrame.origin.y += cellFrame.size.height;
+			break;
+		}
 
-  return cellFrame;
+	return cellFrame;
 }
 
 - (NSRect) keyEquivalentRectForBounds:(NSRect)cellFrame
@@ -318,46 +312,40 @@ static NSImage	*arrowImageH = nil;
 
 - (NSRect) titleRectForBounds:(NSRect)cellFrame
 {
-  // Calculate the image part of cell frame from NSMenuView
-  cellFrame.origin.x  += [_menuView imageAndTitleOffset];
-  cellFrame.size.width = [_menuView imageAndTitleWidth];
-  /* If the state image has no width we do not add additional padding.  */
-  if ([_menuItem changesState]  &&  _stateImageWidth > 0)
-    {
-      cellFrame.origin.x += [_menuView stateImageWidth]
-	+ 2 * [_menuView horizontalEdgePadding];
-    }
+	// Calculate the image part of cell frame from NSMenuView
+	cellFrame.origin.x  += [_menuView imageAndTitleOffset];
+	cellFrame.size.width = [_menuView imageAndTitleWidth];
 
-  switch (_cell.image_position)
-    {
-      case NSNoImage:
-      case NSImageOverlaps:
-	break;
+	switch (_cell.image_position)
+		{
+		case NSNoImage:
+		case NSImageOverlaps:
+			break;
 
-      case NSImageOnly: 
-	cellFrame = NSZeroRect;
-	break;
+		case NSImageOnly: 
+			cellFrame = NSZeroRect;
+			break;
 
-      case NSImageLeft:
-	cellFrame.origin.x  += _imageWidth + xDist;
-	cellFrame.size.width = _titleWidth;
-	break;
+		case NSImageLeft:
+			cellFrame.origin.x  += _imageWidth + xDist;
+			cellFrame.size.width = _titleWidth;
+			break;
 
-      case NSImageRight: 
-	cellFrame.size.width = _titleWidth;
-	break;
+		case NSImageRight: 
+			cellFrame.size.width = _titleWidth;
+			break;
 
-      case NSImageBelow:
-	cellFrame.size.height /= 2;
-	cellFrame.origin.y += cellFrame.size.height;
-	break;
+		case NSImageBelow:
+			cellFrame.size.height /= 2;
+			cellFrame.origin.y += cellFrame.size.height;
+			break;
 
-      case NSImageAbove: 
-	cellFrame.size.height /= 2;
-	break;
-    }
+		case NSImageAbove: 
+			cellFrame.size.height /= 2;
+			break;
+		}
 
-  return cellFrame;
+	return cellFrame;
 }
 
 //
