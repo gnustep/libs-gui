@@ -22,6 +22,9 @@
    Author: Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
    Date: September 2002
 
+   Extensive reworking: Alexander Malmberg <alexander@malmberg.org>
+   Date: December 2002 - February 2003
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -723,14 +726,40 @@ added to the selection (1,3).
        select: (BOOL)select
 {
   unsigned int cindex;
+  int new_direction;
+
+  if (direction == GSInsertionPointMoveUp ||
+      direction == GSInsertionPointMoveDown)
+    {
+      new_direction = 2;
+    }
+  else if (direction == GSInsertionPointMoveLeft ||
+	   direction == GSInsertionPointMoveRight)
+    {
+      new_direction = 1;
+    }
+  else
+    {
+      new_direction = 0;
+    }
 
   cindex = [self _movementOrigin];
+  if (new_direction != _currentInsertionPointMovementDirection ||
+      !new_direction)
+    {
+      _originalInsertionPointCharacterIndex = cindex;
+    }
+  
+
   cindex = [_layoutManager characterIndexMoving: direction
 	      fromCharacterIndex: cindex
-	      originalCharacterIndex: cindex /* TODO */
+	      originalCharacterIndex: _originalInsertionPointCharacterIndex
 	      distance: distance];
   [self _moveTo: cindex
 	 select: select];
+  /* Setting the selected range will clear out the current direction, but
+  not the index. Thus, we always set the direction here. */
+  _currentInsertionPointMovementDirection = new_direction;
 }
 
 

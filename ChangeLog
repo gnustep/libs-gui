@@ -1,3 +1,19 @@
+2003-02-14 17:47  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/NSTextView.h, Source/NSTextView.m,
+	Source/NSTextView_actions.m: Keep track of the original index of a
+	sequence of moves in one dimension. Pass it to the layout manager
+	when moving the insertion point to prevent drifting.
+
+	* Source/GSHorizontalTypesetter.m (-layoutLineNewParagraph:): Fix
+	an edge case in tab handling. Also, if tabs occur and the paragraph
+	style has no more tab stops, act as if there were tabs every 100
+	points.
+
+	* Source/NSLayoutManager.m (-characterIndexMoving:fromCharacterIndex:
+	originalCharacterIndex:distance:): When moving vertically, return the
+	index of the character nearest the target horizontally.
+
 2003-02-13 01:01  Alexander Malmberg <alexander@malmberg.org>
 
 	* TextConverters/RTF/rtfGrammer.y (rtfCharset): Treat unknown

@@ -185,39 +185,33 @@ therefore be stored in the NSLayoutManager to avoid problems.
      need to be recomputed <eg, relayout>. */
   NSRect _insertionPointRect;
 
-#if 0
-  /* This is used when you move the insertion point up or down.  The
-     system remembers the horizontal position of the insertion point
-     at the beginning of the process, and always tries to put the
-     insertion point in that horizontal position on each line when you
-     go up or down.  The memory of the horizontal position is changed
-     as soon as you do something different from moving the cursor
-     up/down. */
-  /* TODO: cursor movement needs to be worked out. The current methods
-  aren't good enough (eg. in a vertical layout, the original y position
-  should be preserved when moving left/right, but the original x position
-  is meaningless). A position (in the text container coordinate system)
-  based system won't work when moving through ligatures. A character based
-  system is better. A _originalCharacterIndex here should solve the problems;
-  a method:
+  /*
+  This is the character index a sequence of moves in one dimension (ie.
+  up/down or left/right) started at. It is passed to the layout manager
+  and is used when an NSTextView is deciding where to move. (Eg.
+  NSLayoutManager tries to maintain the original horizontal position when
+  moving up/down.)
+  */
+  unsigned int _originalInsertionPointCharacterIndex;
 
-    -(unsigned int) characterIndexMoving: (int)direction
-                                    from: (unsigned int)currentCharIndex
-                                original: (unsigned int)originalCharIndex
+  /*
+  0=no information (_originalInsertionPointCharacterIndex undefined)
+  1=horizontal
+  2=vertical
+  */
+  int _currentInsertionPointMovementDirection;
 
-  should be able to give proper behavior in all cases.
-
-  Need to figure out what "proper behavior" is when moving between two
+  /*
+  TODO:
+  Still need to figure out what "proper behavior" is when moving between two
   NSTextView:s, though.
   */
-  unsigned int _originalCharIndex;
-#endif
 }
 
 
 /* Returns the default typing attributes: black text, default paragraph
 style, default user font and size. */
-+(NSDictionary*) defaultTypingAttributes; /* GNUstep extension */
++(NSDictionary *) defaultTypingAttributes; /* GNUstep extension */
 
 
 /**** Initializing ****/

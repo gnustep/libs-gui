@@ -23,6 +23,9 @@
    Author: Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
    Date: September 2002
 
+   Extensive reworking: Alexander Malmberg <alexander@malmberg.org>
+   Date: December 2002 - February 2003
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -710,6 +713,8 @@ to this method from the text container or layout manager.
       _layoutManager->_original_selected_range.location = NSNotFound;
       _layoutManager->_selected_range = NSMakeRange(0,0);
     }
+
+  _currentInsertionPointMovementDirection = 0;
 
   [self _updateMultipleTextViews];
 }
@@ -2609,6 +2614,14 @@ afterString in order over charRange.
 
   /* Set the new selected range */
   _layoutManager->_selected_range = charRange;
+
+  /* Clear the remembered position and direction for insertion point
+  movement.
+
+  Note that we must _not_ clear the index. Many movement actions will
+  reset the direction to a valid value, and they assume that the index
+  remains unchanged here. */
+  _currentInsertionPointMovementDirection = 0;
 
   /* TODO: when and if to restart timer <and where to stop it before> */
   [self updateInsertionPointStateAndRestartTimer: !stillSelectingFlag];
