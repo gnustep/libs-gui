@@ -37,10 +37,6 @@ static Class fontInfoClass = Nil;
 
 static GSFontEnumerator *sharedEnumerator = nil;
 
-@interface NSFontManager (GNUstepBackend)
-- (BOOL) _includeFont: (NSString*)fontName;
-@end
-
 @implementation GSFontEnumerator
 
 + (void) setDefaultClass: (Class)defaultClass
@@ -48,95 +44,48 @@ static GSFontEnumerator *sharedEnumerator = nil;
   fontEnumeratorClass = defaultClass;
 }
 
-- initWithFontManager: manager
+- (id) init
 {
   [super init];
-  fontManager = manager;
+  [self enumerateFontsAndFamilies];
+
   return self;
 }
 
-+ sharedEnumeratorWithFontManager: manager
+- (void) dealloc
+{
+  RELEASE(allFontNames);
+  RELEASE(allFontFamilies);
+  [super dealloc];
+}
+
++ (GSFontEnumerator*) sharedEnumerator
 {
   if (!sharedEnumerator)
-    sharedEnumerator = [[fontEnumeratorClass alloc] 
-			        initWithFontManager: manager];
+    sharedEnumerator = [[fontEnumeratorClass alloc] init];
   return sharedEnumerator;
 }
 
-- (NSArray*) allFonts
+- (void) enumerateFontsAndFamilies
 {
+  // This method has to set up the ivars allFontNames and allFontFamilies
   [self subclassResponsibility: _cmd];
-  return nil;
 }
 
 - (NSArray*) availableFonts
 {
-  int		i;
-  NSArray	*fontsList;
-  NSMutableArray *fontNames;
-
-  fontsList = [self allFonts];
-  fontNames = [NSMutableArray arrayWithCapacity: [fontsList count]];
-
-  for (i = 0; i < [fontsList count]; i++)
-    {
-      GSFontInfo *font = (GSFontInfo*)[fontsList objectAtIndex: i];
-      NSString	 *name = [font fontName];
-      
-      if ([fontManager _includeFont: name])
-	[fontNames addObject: name];
-    }
-
-  return fontNames;
+  return allFontNames;
 }
 
 - (NSArray*) availableFontFamilies
 {
-  int		i;
-  NSArray	*fontsList;
-  NSMutableSet	*fontFamilies;
-
-  fontsList = [self allFonts];
-  fontFamilies = [NSMutableSet setWithCapacity: [fontsList count]];
-  for (i = 0; i < [fontsList count]; i++)
-    {
-      GSFontInfo *font = (GSFontInfo*)[fontsList objectAtIndex: i];
-
-      [fontFamilies addObject: [font familyName]];
-    }
-
-  return [fontFamilies allObjects];
+  return [[allFontFamilies allKeys] sortedArrayUsingSelector:
+    @selector(compare:)];
 }
 
 - (NSArray*) availableMembersOfFontFamily: (NSString*)family
 {
-  int i, j;
-  NSArray *fontFamilies = [self availableFontFamilies];
-  NSMutableArray *fontNames = [NSMutableArray array];
-  NSFontTraitMask traits;
-
-  for (i = 0; i < [fontFamilies count]; i++)
-    {
-      NSArray *fontDefs = [self availableMembersOfFontFamily: 
-				  [fontFamilies objectAtIndex: i]];
-      
-      for (j = 0; j < [fontDefs count]; j++)
-	{
-	  NSArray	*fontDef = [fontDefs objectAtIndex: j];
-
-	  traits = [[fontDef objectAtIndex: 3] unsignedIntValue];
-	  // Check if the font has exactly the given mask
-	  //if (traits == fontTraitMask)
-	    {
-	      NSString *name = [fontDef objectAtIndex: 0];
-	
-	      if ([fontManager _includeFont: name])
-		[fontNames addObject: name];
-	    }
-	}
-    }
-
-  return fontNames;
+  return [allFontFamilies objectForKey: family];
 }
 
 @end
