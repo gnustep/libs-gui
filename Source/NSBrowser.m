@@ -1037,7 +1037,6 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
 
   bc = [_browserColumns objectAtIndex: column];
-  
   if (bc == nil)
     {
       return;
@@ -2955,7 +2954,9 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 	  [matrix setIntercellSpacing:matrixIntercellSpace];
 	  [matrix setAllowsEmptySelection: _allowsEmptySelection];
 	  if (!_allowsMultipleSelection)
-	    [matrix setMode: NSRadioModeMatrix];
+	    {
+	      [matrix setMode: NSRadioModeMatrix];
+	    }
 	  [matrix setTarget: self];
 	  [matrix setAction: @selector(doClick:)];
 	  [matrix setDoubleAction: @selector(doDoubleClick:)];
@@ -2967,7 +2968,9 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
 	  // Now loop through the cells and load each one
 	  for (i = 0; i < n; i++)
-	    [self loadedCellAtRow: i column: column];
+	    {
+	      [self loadedCellAtRow: i column: column];
+	    }
 	}
     }
   else
@@ -2987,7 +2990,9 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 	  [matrix setIntercellSpacing:matrixIntercellSpace];
 	  [matrix setAllowsEmptySelection: _allowsEmptySelection];
 	  if (_allowsMultipleSelection)
-	    [matrix setMode: NSListModeMatrix];
+	    {
+	      [matrix setMode: NSListModeMatrix];
+	    }
 	  [matrix setTarget: self];
 	  [matrix setAction: @selector(doClick:)];
 	  [matrix setDoubleAction: @selector(doDoubleClick:)];
@@ -3027,7 +3032,9 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   for (i = column; i < count; ++i)
     {
       if (!(bc = [_browserColumns objectAtIndex: i]))
-      	continue;
+	{
+	  continue;
+	}
       if ([bc isLoaded])
 	{
 	  if (!(sc = [bc columnScrollView]))
@@ -3040,11 +3047,15 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
     }
   
   if (column == 0)
-    _isLoaded = NO;
+    {
+      _isLoaded = NO;
+    }
   
   // Scrolls if needed.
   if (column <= _lastVisibleColumn)
-    [self scrollColumnsLeftBy: _lastVisibleColumn - column + 1];
+    {
+      [self scrollColumnsLeftBy: _lastVisibleColumn - column + 1];
+    }
   [self updateScroller];
 }
 
@@ -3061,8 +3072,12 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 #endif
 
   for (i = _firstVisibleColumn; i <= _lastVisibleColumn; i++)
-    [[[_browserColumns objectAtIndex:i] columnScrollView] setNeedsDisplay:YES];
+    {
+      [[[_browserColumns objectAtIndex:i] columnScrollView] 
+	setNeedsDisplay:YES];
+    }
 }
+
 
 // -------------------
 // Marks all titles as needing to be redrawn.
@@ -3081,7 +3096,10 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   // Ask the delegate for the column title
   if ([_browserDelegate respondsToSelector: 
 			  @selector(browser:titleOfColumn:)])
-    return [_browserDelegate browser: self titleOfColumn: column];
+    {
+      return [_browserDelegate browser: self titleOfColumn: column];
+    }
+  
 
   // Check if we take title from previous column
   if (_takesTitleFromPreviousColumn)
@@ -3090,13 +3108,17 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
       
       // If first column then use the path separator
       if (column == 0)
-	return _pathSeparator;
-
+	{
+	  return _pathSeparator;
+	}
+      
       // Get the selected cell
       // Use its string value as the title
       // Only if it is not a leaf
       if(_allowsMultipleSelection == NO)
-	c = [self selectedCellInColumn: column - 1];
+	{
+	  c = [self selectedCellInColumn: column - 1];
+	}
       else
 	{
 	  NSMatrix *matrix;
@@ -3108,15 +3130,23 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 	  selectedCells = [matrix selectedCells];
 
 	  if([selectedCells count] == 1)
-	    c = [selectedCells objectAtIndex:0];
+	    {
+	      c = [selectedCells objectAtIndex:0];
+	    }
 	  else
-	    return @"";
+	    {
+	      return @"";
+	    }
 	}
 
       if ([c isLeaf])
-	return @"";
+	{
+	  return @"";
+	}
       else
-	return [c stringValue];
+	{ 
+	  return [c stringValue];
+	}
     }
   return @"";
 }
