@@ -1475,16 +1475,13 @@
 	  NSRect matrixRect = {{0, 0}, {100, 100}};
 	  int i;
 
-	  // If we are not reusing matrixes
-	  // then delete the old matrix and create a new one
-//	  [oldm release];											
-	  matrix = [[[_browserMatrixClass alloc]
-		     initWithFrame: matrixRect
-		     mode: NSListModeMatrix
-		     prototype: _browserCellPrototype
-		     numberOfRows: n
-		     numberOfColumns: 1]
-		     autorelease];
+	  matrix = [[[_browserMatrixClass alloc]		// create a new col matrix
+					initWithFrame: matrixRect
+					mode: NSListModeMatrix
+					prototype: _browserCellPrototype
+					numberOfRows: n
+					numberOfColumns: 1]
+					autorelease];
 	  [matrix setAllowsEmptySelection: _allowsEmptySelection];
 	  if (!_allowsMultipleSelection)
 	    [matrix setMode: NSRadioModeMatrix];
@@ -1492,7 +1489,7 @@
 	  [matrix setAction: @selector(doClick:)];
 	  [matrix setDoubleAction: @selector(doDoubleClick:)];
 
-	  [bc setColumnMatrix: matrix];
+	  [bc setColumnMatrix: matrix];		// set new col matrix and release old
 	  [sc setDocumentView: matrix];
 
 	  // Now loop through the cells and load each one
@@ -1512,16 +1509,13 @@
 	  id oldm = [bc columnMatrix];
 	  NSRect matrixRect = {{0, 0}, {100, 100}};
 
-	  // If we are not reusing matrixes
-	  // then delete the old matrix and create a new one
-//	  [oldm release];										
-	  matrix = [[[_browserMatrixClass alloc]
-		     initWithFrame: matrixRect
-		     mode: NSListModeMatrix
-		     prototype: _browserCellPrototype
-		     numberOfRows: 0
-		     numberOfColumns: 0]
-		     autorelease];
+	  matrix = [[[_browserMatrixClass alloc]		// create a new col matrix
+					initWithFrame: matrixRect
+					mode: NSListModeMatrix
+					prototype: _browserCellPrototype
+					numberOfRows: 0
+					numberOfColumns: 0]
+					autorelease];
 	  [matrix setAllowsEmptySelection: _allowsEmptySelection];
 	  if (!_allowsMultipleSelection)
 	    [matrix setMode: NSRadioModeMatrix];
@@ -1529,7 +1523,7 @@
 	  [matrix setAction: @selector(doClick:)];
 	  [matrix setDoubleAction: @selector(doDoubleClick:)];
 
-	  [bc setColumnMatrix: matrix];
+	  [bc setColumnMatrix: matrix];		// set new col matrix and release old
 	  [sc setDocumentView: matrix];
 
 	  // Tell the delegate to create the rows

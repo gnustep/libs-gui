@@ -1,3 +1,9 @@
+Tues July 14 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* Source/NSBrowser.m fixed bug where column matrix was getting released
+        twice in method _performLoadOfColumn.  
+	* NSCell.m:  isOpaque returns whether cell is bezeled per NS docs.
+
 Fri May 29 13:30:14 1998  Adam Fedor  <fedor@ultra.doc.com>
 
 	* Headers/gnustep/gui/AppKit.h: Include Foundation.h.

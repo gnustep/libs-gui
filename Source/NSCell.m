@@ -392,22 +392,22 @@
 //
 // Editing Text 
 //
-- (void)editWithFrame:(NSRect)aRect
-	       inView:(NSView *)controlView	
-	       editor:(NSText *)textObject	
-	     delegate:(id)anObject	
-		event:(NSEvent *)theEvent
+- (void)editWithFrame:(NSRect)aRect 
+			inView:(NSView *)controlView	
+			editor:(NSText *)textObject	
+			delegate:(id)anObject	
+			event:(NSEvent *)theEvent
 {}
 
 - (void)endEditing:(NSText *)textObject
 {}
 
 - (void)selectWithFrame:(NSRect)aRect
-		 inView:(NSView *)controlView	 
-		 editor:(NSText *)textObject	 
-	       delegate:(id)anObject	 
-		  start:(int)selStart	 
-		 length:(int)selLength
+			inView:(NSView *)controlView	 
+			editor:(NSText *)textObject	 
+			delegate:(id)anObject	 
+			start:(int)selStart	 
+			length:(int)selLength
 {}
 
 //
@@ -455,7 +455,7 @@
 
 - (BOOL)isOpaque
 {
-  return NO;
+  return cell_bezeled;
 }
 
 - (void)setBezeled:(BOOL)flag
