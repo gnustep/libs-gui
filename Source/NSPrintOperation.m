@@ -88,6 +88,10 @@ typedef struct _page_info_t {
 - (void) _endSheet;
 @end
 
+@interface NSView (NPrintOperationPrivate)
+- (void) _cleanupPrinting;
+@end
+
 // Subclass for the regular printing
 @interface GSPrintOperation: NSPrintOperation
 {
@@ -478,6 +482,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
     }
   NS_HANDLER
     {
+      [_view _cleanupPrinting];
       [NSGraphicsContext setCurrentContext: oldContext];
       NSRunAlertPanel(@"Error", @"Printing error: %@", 
 		      @"OK", NULL, NULL, localException);

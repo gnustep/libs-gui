@@ -1,3 +1,9 @@
+2002-04-06  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSView.m (-_cleanupPrinting): Private method to cleanup
+	after an exception.
+	* Source/NSPrintOperation.m (-_runOperation): Use it.
+
 2002-04-03  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Images/common_RightTabStop.tiff

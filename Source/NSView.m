@@ -3142,6 +3142,13 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   viewIsPrinting = nil;
 }
 
+/* An exception occured while printing. Clean up */
+- (void) _cleanupPrinting
+{
+  [self _invalidateCoordinates];
+  viewIsPrinting = nil;
+}  
+
 /*
  * NSCoding protocol
  */
