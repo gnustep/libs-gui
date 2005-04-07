@@ -1,3 +1,9 @@
+2005-04-08  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSView.m (-addSubview:positioned:relativeTo:): Don't
+	increase index for subview added at the end. Based on patch by
+	Matthias Hengartner <hengartner@ivt.baug.ethz.ch>.
+
 2005-04-03 14:53 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSCustomImageRep.m: Allow drawing if the delegate is

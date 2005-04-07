@@ -474,6 +474,11 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       else
 	index = [_sub_views count];
     }
+  else if (place != NSWindowBelow)
+    {
+      index += 1;
+    }
+
   RETAIN(aView);
   [aView removeFromSuperview];
   if (aView->_coordinates_valid)
@@ -483,10 +488,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   [aView viewWillMoveToWindow: _window];
   [aView viewWillMoveToSuperview: self];
   [aView setNextResponder: self];
-  if (place == NSWindowBelow)
-    [_sub_views insertObject: aView atIndex: index];
-  else
-    [_sub_views insertObject: aView atIndex: index+1];
+  [_sub_views insertObject: aView atIndex: index];
   _rFlags.has_subviews = 1;
   [aView resetCursorRects];
   [aView setNeedsDisplay: YES];
