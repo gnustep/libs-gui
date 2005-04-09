@@ -1,3 +1,8 @@
+2005-04-09  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSColor.m: Implemented most keyed encoding methods.
+	* Source/NSFont.m: Implemented simple keyed encoding.
+
 2005-04-08  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSView.m (-addSubview:positioned:relativeTo:): Don't

@@ -1083,17 +1083,41 @@ static BOOL flip_hack;
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodeValueOfObjCType: @encode(int) at: &role];
-
-  if (role == 0)
+  if ([aCoder allowsKeyedCoding])
     {
-      [aCoder encodeObject: fontName];
-      [aCoder encodeArrayOfObjCType: @encode(float)  count: 6  at: matrix];
-      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &matrixExplicitlySet];
+      [aCoder encodeObject: fontName forKey: @"NSName"];
+      [aCoder encodeInt: [self pointSize] forKey: @"NSSize"];
+      
+      switch (role >> 1)
+        {
+	  // FIXME: Many cases still missing
+	  case RoleControlContentFont:
+	    [aCoder encodeInt: 16 forKey: @"NSfFlags"];
+	    break;
+	  case RoleLabelFont:
+	    [aCoder encodeInt: 20 forKey: @"NSfFlags"];
+	    break;
+	  case RoleTitleBarFont:
+	    [aCoder encodeInt: 22 forKey: @"NSfFlags"];
+	    break;
+	  default:
+	    break;
+	}
     }
-  else if (role & 1)
+  else 
     {
-      [aCoder encodeValueOfObjCType: @encode(float) at: &matrix[0]];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &role];
+
+      if (role == 0)
+        {
+	  [aCoder encodeObject: fontName];
+	  [aCoder encodeArrayOfObjCType: @encode(float)  count: 6  at: matrix];
+	  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &matrixExplicitlySet];
+	}
+      else if (role & 1)
+        {
+	  [aCoder encodeValueOfObjCType: @encode(float) at: &matrix[0]];
+	}
     }
 }
 

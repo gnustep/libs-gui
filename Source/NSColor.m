@@ -1579,9 +1579,18 @@ systemColorWithName(NSString *name)
 //
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodeObject: [self colorSpaceName]];
-  [aCoder encodeObject: _catalog_name];
-  [aCoder encodeObject: _color_name];
+  if ([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeInt: 6 forKey: @"NSColorSpace"];
+      [aCoder encodeObject: _catalog_name forKey: @"NSCatalogName"];
+      [aCoder encodeObject: _color_name forKey: @"NSColorName"];
+    }
+  else 
+    {
+      [aCoder encodeObject: [self colorSpaceName]];
+      [aCoder encodeObject: _catalog_name];
+      [aCoder encodeObject: _color_name];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -1748,9 +1757,22 @@ systemColorWithName(NSString *name)
 //
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodeObject: [self colorSpaceName]];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_white_component];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_alpha_component];
+  if ([aCoder allowsKeyedCoding])
+    {
+      NSString *str;
+
+      // FIXME: Missing handling of alpha value
+      str = [[NSString alloc] initWithFormat: @"%f", _white_component];
+      [aCoder encodeInt: 3 forKey: @"NSColorSpace"];
+      [aCoder encodeBytes: [str cString] length: [str cStringLength] forKey: @"NSWhite"];
+      RELEASE(str);
+    }
+  else 
+    {
+      [aCoder encodeObject: [self colorSpaceName]];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_white_component];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_alpha_component];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -2032,12 +2054,19 @@ systemColorWithName(NSString *name)
 //
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodeObject: [self colorSpaceName]];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_cyan_component];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_magenta_component];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_yellow_component];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_black_component];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_alpha_component];
+  if ([aCoder allowsKeyedCoding])
+    {
+      // FIXME
+    }
+  else 
+    {
+      [aCoder encodeObject: [self colorSpaceName]];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_cyan_component];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_magenta_component];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_yellow_component];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_black_component];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_alpha_component];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -2269,14 +2298,28 @@ systemColorWithName(NSString *name)
 //
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodeObject: [self colorSpaceName]];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_red_component];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_green_component];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_blue_component];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_hue_component];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_saturation_component];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_brightness_component];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_alpha_component];
+  if ([aCoder allowsKeyedCoding])
+    {
+      NSString *str;
+
+      // FIXME: Missing handling of alpha value
+      str = [[NSString alloc] initWithFormat: @"%f %f %f", _red_component, 
+			      _green_component, _blue_component];
+      [aCoder encodeInt: 1 forKey: @"NSColorSpace"];
+      [aCoder encodeBytes: [str cString] length: [str cStringLength] forKey: @"NSRGB"];
+      RELEASE(str);
+    }
+  else 
+    {
+      [aCoder encodeObject: [self colorSpaceName]];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_red_component];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_green_component];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_blue_component];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_hue_component];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_saturation_component];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_brightness_component];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_alpha_component];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -2629,8 +2672,15 @@ systemColorWithName(NSString *name)
 //
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodeObject: [self colorSpaceName]];
-  [aCoder encodeObject: _pattern];
+  if ([aCoder allowsKeyedCoding])
+    {
+      // FIXME
+    }
+  else 
+    {
+      [aCoder encodeObject: [self colorSpaceName]];
+      [aCoder encodeObject: _pattern];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
