@@ -598,7 +598,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
     {
       NSDebugLog(@"Created template %@ -> %@",NSStringFromClass([self class]), className);
       ASSIGN(_object, object);
-      ASSIGN(_className, [className copy]);
+      ASSIGN(_className, className);
       NSAssert(![className isEqualToString: superClassName], NSInvalidArgumentException);
       _superClass = NSClassFromString(superClassName);
       if(_superClass == nil)
@@ -619,6 +619,13 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
       _object = nil;
     } 
   return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_object);
+  RELEASE(_className);
+  [super dealloc];
 }
 
 - (void) setClassName: (NSString *)name
@@ -990,6 +997,6 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 					       superClassName: superClassName];
 	}
     }
-  return template;
+  return AUTORELEASE(template);
 }
 @end
