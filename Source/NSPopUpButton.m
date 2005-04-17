@@ -335,22 +335,10 @@ this to return nil to indicate that we have no context menu.
        untilMouseUp: YES];
 }
 
-/* Private method which covers an obscure case where the user uses the
-   keyboard to open a popup, but subsequently uses the mouse to select
-   an item. We'll never know this was done (and thus cannot dismiss
-   the popUp) without getting this notification */
-- (void) _handleNotification: (NSNotification*)aNotification
-{
-  NSString      *name = [aNotification name];
-  if ([name isEqual: NSMenuDidSendActionNotification] == YES)
-    {
-      [_cell dismissPopUp];
-      [self synchronizeTitleAndSelectedItem];
-    }
-}
-
 - (void) keyDown: (NSEvent*)theEvent
 {
+  // FIXME: This method also handles the key events for the popup menu window,
+  // as menu windows cannot become key window.
   if ([self isEnabled])
     {
       NSString *characters = [theEvent characters];
@@ -381,26 +369,17 @@ this to return nil to indicate that we have no context menu.
 	    menuView = [[_cell menu] menuRepresentation];
 	    if ([[menuView window] isVisible] == NO)
 	      {
-
 		// Attach the popUp
 		[_cell attachPopUpWithFrame: _bounds
 		       inView: self];
-
-
-		selectedIndex = [self indexOfSelectedItem];
-		if (selectedIndex > -1)
-		  [menuView setHighlightedItemIndex: selectedIndex];
 	      }
 	    else
 	      {
 		selectedIndex = [menuView highlightedItemIndex];
-		[[_cell menu] performActionForItemAtIndex: selectedIndex];
-
-		// Dismiss the popUp
-		[_cell dismissPopUp];
-
-		// Update our selected item
-		[self synchronizeTitleAndSelectedItem];
+		if (selectedIndex > 0)
+		  {
+		    [[_cell menu] performActionForItemAtIndex: selectedIndex];
+		  }
 	      }
 	  }
 	  return;

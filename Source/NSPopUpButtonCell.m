@@ -542,6 +542,10 @@ static NSImage *_pbc_image[2];
     {
       [self setMenuItem: nil];
     }
+
+  if (_control_view)
+    if ([_control_view isKindOfClass: [NSControl class]])
+      [(NSControl *)_control_view updateCell: self];
 }
 
 // Title conveniences
@@ -598,6 +602,11 @@ static NSImage *_pbc_image[2];
   else 
     selectedItem = [self indexOfSelectedItem];
 
+  if (selectedItem > 0)
+    {
+      [mr setHighlightedItemIndex: selectedItem];
+    }
+
   // Ask the MenuView to attach the menu to this rect
   [mr setWindowFrameForAttachingToRect: cellFrame
       onScreen: [cvWin screen]
@@ -607,11 +616,7 @@ static NSImage *_pbc_image[2];
   // Last, display the window
   [[mr window] orderFrontRegardless];
 
-  /* This covers an obscure case where the user subsequently
-     uses the mouse to select an item. We'll never know
-     this was done (and thus cannot dismiss the popUp) without
-     getting this notification */
-  [nc addObserver: controlView
+  [nc addObserver: self
       selector: @selector(_handleNotification:)
       name: NSMenuDidSendActionNotification
       object: _menu];
@@ -621,10 +626,25 @@ static NSImage *_pbc_image[2];
 {
   NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
 
-  [nc removeObserver: [self controlView]
+  [nc removeObserver: self
       name: NSMenuDidSendActionNotification
       object: _menu];
   [_menu close];
+}
+
+/* Private method handles all cases after doing a selection from 
+   the popup menu. Especially the obscure case where the user uses the 
+   keyboard to open a popup, but subsequently uses the mouse to select
+   an item. We'll never know this was done (and thus cannot dismiss
+   the popUp) without getting this notification */
+- (void) _handleNotification: (NSNotification*)aNotification
+{
+  NSString      *name = [aNotification name];
+  if ([name isEqual: NSMenuDidSendActionNotification] == YES)
+    {
+      [self dismissPopUp];
+      [self synchronizeTitleAndSelectedItem];
+    }
 }
 
 - (BOOL) trackMouse: (NSEvent *)theEvent
@@ -636,8 +656,6 @@ static NSImage *_pbc_image[2];
   NSWindow   *menuWindow = [mr window];
   NSEvent    *e;
   NSPoint    p;
-  int        lastSelectedItem = [self indexOfSelectedItem];
-  int        highlightedItemIndex;
 
   if ([self isEnabled] == NO)
     return NO;
@@ -667,32 +685,6 @@ static NSImage *_pbc_image[2];
 	       clickCount: [theEvent clickCount] 
 	       pressure: [theEvent pressure]];
   [NSApp sendEvent: e];
-
-  // Get highlighted item index from cell because NSMenuView:
-  // - tells to NSPopUpButtonCell about current selected item index;
-  // - sets own selected item index to -1;
-  //
-  // So, at this point [mr highlightedItemIndex] always = -1
-  highlightedItemIndex = [self indexOfSelectedItem];
-
-  // Selection remains unchanged if selected item is disabled
-  // or mouse left menu (highlightedItemIndex == -1).
-  if ( highlightedItemIndex < 0
-       || highlightedItemIndex == lastSelectedItem
-       || [[self itemAtIndex: highlightedItemIndex] isEnabled] == NO)
-    {
-      [mr setHighlightedItemIndex: lastSelectedItem];
-    }
-  else
-    {
-      [mr setHighlightedItemIndex: highlightedItemIndex];
-    }
-
-  // Dismiss the popUp
-  [self dismissPopUp];
-
-  // Update our selected item
-  [self synchronizeTitleAndSelectedItem];  
 
   return NO;
 }

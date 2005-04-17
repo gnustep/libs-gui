@@ -1,5 +1,16 @@
 2005-04-17  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSPopupButton.m (-keyDown:) Removed unneeded code.
+	(-_handleNotification:): Moved method from here ...
+	* Source/NSPopupButtonCell.m: ... to here.
+	(-dismissPopUp, -attachPopUpWithFrame:inView:): Dis-/Connect self,
+	not the control view, with notification centre. Fixes bug #12680.
+	(-synchronizeTitleAndSelectedItem): Update the control view.
+	(-trackMouse:inRect:ofView:untilMouseUp:): Removed unneeded code.
+	(-attachPopUpWithFrame:inView:): Set the selected item to highlighted.
+	
+2005-04-17  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSColor.m: Implemented the missing keyed encoding methods.
 
 2005-04-11 10:24 Gregory John Casamento <greg_casamento@yahoo.com>
