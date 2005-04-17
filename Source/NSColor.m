@@ -1075,7 +1075,8 @@ systemColorWithName(NSString *name)
       int colorSpace = [aDecoder decodeIntForKey: @"NSColorSpace"];
 
       DESTROY(self);
-      if (colorSpace == 1)
+
+      if ((colorSpace == 1) || (colorSpace == 2))
         {
 	  unsigned length;
 	  const uint8_t *data;
@@ -1099,12 +1100,22 @@ systemColorWithName(NSString *name)
 	      RELEASE(str);
 	    }
 
-	  self = [NSColor colorWithCalibratedRed: red
-			  green: green
-			  blue: blue
-			  alpha: alpha];
+	  if (colorSpace == 1)
+	    {
+	      self = [NSColor colorWithCalibratedRed: red
+			      green: green
+			      blue: blue
+			      alpha: alpha];
+	    }
+	  else
+	    {
+	      self = [NSColor colorWithDeviceRed: red
+			      green: green
+			      blue: blue
+			      alpha: alpha];
+	    }
 	}
-      else if (colorSpace == 3)
+      else if ((colorSpace == 3) || (colorSpace == 4))
         {
 	  unsigned length;
 	  const uint8_t *data;
@@ -1124,7 +1135,47 @@ systemColorWithName(NSString *name)
 	      RELEASE(str);
 	    }
 	  
-	  self = [NSColor colorWithDeviceWhite: white
+	  if (colorSpace == 3)
+	    {
+	      self = [NSColor colorWithCalibratedWhite: white
+			      alpha: alpha];
+	    }
+	  else
+	    {
+	      self = [NSColor colorWithDeviceWhite: white
+			      alpha: alpha];
+	    }
+	}
+      else if (colorSpace == 5)
+        {
+	  unsigned length;
+	  const uint8_t *data;
+	  float cyan = 0.0;
+	  float yellow = 0.0;
+	  float magenta = 0.0;
+	  float black = 0.0;
+	  float alpha = 1.0;
+	  NSString *str;
+	  NSScanner *scanner;
+	  
+	  if ([aDecoder containsValueForKey: @"NSCYMK"])
+	    {
+	      data = [aDecoder decodeBytesForKey: @"NSCYMK"
+			     returnedLength: &length]; 
+	      str = [[NSString alloc] initWithCString: data length: length];
+	      scanner = [[NSScanner alloc] initWithString: str];
+	      [scanner scanFloat: &cyan];
+	      [scanner scanFloat: &yellow];
+	      [scanner scanFloat: &magenta];
+	      [scanner scanFloat: &black];
+	      RELEASE(scanner);
+	      RELEASE(str);
+	    }
+
+	  self = [NSColor colorWithDeviceCyan: cyan
+			  magenta: magenta
+			  yellow: yellow
+			  black: black
 			  alpha: alpha];
 	}
       else if (colorSpace == 6)
@@ -1135,6 +1186,12 @@ systemColorWithName(NSString *name)
 	  
 	  self = [NSColor colorWithCatalogName: catalog
 			  colorName: name];
+	}
+      else if (colorSpace == 10)
+        {
+	  NSImage *image = [aDecoder decodeObjectForKey: @"NSImage"];
+	  
+	  self = [NSColor colorWithPatternImage: image];
 	}
       
       return self;
@@ -1761,9 +1818,16 @@ systemColorWithName(NSString *name)
     {
       NSString *str;
 
+      if ([[self colorSpaceName] isEqualToString: NSCalibratedWhiteColorSpace])
+        {
+	  [aCoder encodeInt: 3 forKey: @"NSColorSpace"];
+	}
+      else
+        {
+	  [aCoder encodeInt: 4 forKey: @"NSColorSpace"];
+	}
       // FIXME: Missing handling of alpha value
       str = [[NSString alloc] initWithFormat: @"%f", _white_component];
-      [aCoder encodeInt: 3 forKey: @"NSColorSpace"];
       [aCoder encodeBytes: [str cString] length: [str cStringLength] forKey: @"NSWhite"];
       RELEASE(str);
     }
@@ -2056,7 +2120,14 @@ systemColorWithName(NSString *name)
 {
   if ([aCoder allowsKeyedCoding])
     {
-      // FIXME
+      NSString *str;
+
+      // FIXME: Missing handling of alpha value
+      [aCoder encodeInt: 5 forKey: @"NSColorSpace"];
+      str = [[NSString alloc] initWithFormat: @"%f %f %f %f", _cyan_component, 
+			      _magenta_component, _yellow_component, _black_component];
+      [aCoder encodeBytes: [str cString] length: [str cStringLength] forKey: @"NSCYMK"];
+      RELEASE(str);
     }
   else 
     {
@@ -2302,10 +2373,17 @@ systemColorWithName(NSString *name)
     {
       NSString *str;
 
+      if ([[self colorSpaceName] isEqualToString: NSCalibratedRGBColorSpace])
+        {
+	  [aCoder encodeInt: 1 forKey: @"NSColorSpace"];
+	}
+      else
+        {
+	  [aCoder encodeInt: 2 forKey: @"NSColorSpace"];
+	}
       // FIXME: Missing handling of alpha value
       str = [[NSString alloc] initWithFormat: @"%f %f %f", _red_component, 
 			      _green_component, _blue_component];
-      [aCoder encodeInt: 1 forKey: @"NSColorSpace"];
       [aCoder encodeBytes: [str cString] length: [str cStringLength] forKey: @"NSRGB"];
       RELEASE(str);
     }
@@ -2674,7 +2752,8 @@ systemColorWithName(NSString *name)
 {
   if ([aCoder allowsKeyedCoding])
     {
-      // FIXME
+      [aCoder encodeInt: 10 forKey: @"NSColorSpace"];
+      [aCoder encodeObject: _pattern forKey: @"NSImage"];
     }
   else 
     {
