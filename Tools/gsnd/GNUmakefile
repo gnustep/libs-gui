@@ -30,15 +30,7 @@ TOOL_NAME = gnustep_sndd
 # The source files to be compiled
 gnustep_sndd_OBJC_FILES = gsnd.m
 
-ifeq (mingw32, $(GNUSTEP_TARGET_OS))
-  gnustep_sndd_C_FILES = portaudio/pa_common/pa_lib.c \
-                 portaudio/pa_win_ds/dsound_wrapper.c \
-                 portaudio/pa_win_ds/pa_dsound.c
-else
-  gnustep_sndd_C_FILES = portaudio/pa_common/pa_lib.c \
-                 portaudio/pa_unix_oss/pa_unix_oss.c \
-                 portaudio/pa_common/pa_trace.c
-endif
+gnustep_sndd_TOOL_LIBS = -lportaudio
 
 -include GNUmakefile.preamble
 

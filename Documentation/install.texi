@@ -24,10 +24,21 @@ and in the gnustep-make package (which you should install first).
 
 You must have installed gnustep-base and gnustep-make 
 before building this library. Other external libraries that you should
-have installed include libtiff, libjpg, and libpng. Read the GNUstep-HOWTO
-for more information.
+have installed include:
 
-After installing this library, install gnustep-back.
+@itemize
+@item tiff (REQUIRED)
+@item jpeg (RECOMMENDED)
+@item png (RECOMMENDED)
+@item gif or ungif (OPTIONAL)
+@item aspell (OPTIONAL)
+@item cups (OPTIONAL)
+@item audiofile (OPTIONAL)
+@item portaudio (OPTIONAL)
+@end itemize
+
+Read the GNUstep-HOWTO for more information.  After installing this
+library, install gnustep-back.
 
 @node Configuration, Compilation, Introduction, Top
 @section Configuration

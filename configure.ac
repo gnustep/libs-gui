@@ -300,44 +300,19 @@ fi
 #--------------------------------------------------------------------
 # NSSound
 #--------------------------------------------------------------------
-do_enable_gsnd=yes
-case "$target_os" in
-  darwin*)   do_enable_gsnd=no;;
-  *)	     ;;
-esac
-
 AC_ARG_ENABLE(gsnd, 
   [  --disable-gsnd          Disable gsnd server],,
-  enable_gsnd=$do_enable_gsnd)
-audio_ok=no
+  enable_gsnd=yes)
 BUILD_GSND=
 
-AC_ARG_WITH(audiofile_library, 
-           [  --with-audiofile-library=DIR AUDIOFILE library file are in DIR], ,
-           with_audiofile_library=)
-AC_ARG_WITH(audiofile_include,  
-	[  --with-audiofile-include=DIR AUDIOFILE include files are in DIR], ,
-        with_audiofile_include=)
-
-if test -n "$with_audiofile_library"; then
-  with_audiofile_library="-L$with_audiofile_library"
-fi
-if test -n "$with_audiofile_include"; then
-  with_audiofile_include="-I$with_audiofile_include"
-fi
-
-CPPFLAGS="${with_audiofile_include} $CPPFLAGS"
-LDFLAGS="${with_audiofile_library} $LDFLAGS"
+AC_CHECK_LIB(portaudio, main, have_portaudio=yes, have_portaudio=no)
 AC_CHECK_LIB(audiofile, afGetVirtualFrameSize)
+AC_CHECK_HEADERS(audiofile.h)
 
-if test $ac_cv_lib_audiofile_afGetVirtualFrameSize = yes -a $enable_gsnd = yes; then
-  AC_CHECK_HEADERS(audiofile.h)
-  ADDITIONAL_INCLUDE_DIRS="$ADDITIONAL_INCLUDE_DIRS ${with_audiofile_include}"
-  ADDITIONAL_LIB_DIRS="$ADDITIONAL_LIB_DIRS ${with_audiofile_library}"
+if test $have_portaudio = yes -a $enable_gsnd = yes; then
   BUILD_GSND=gsnd
 fi
 AC_SUBST(BUILD_GSND)
-
 
 #--------------------------------------------------------------------
 # Find CUPS

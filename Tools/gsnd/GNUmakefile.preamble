@@ -21,7 +21,7 @@
 #ADDITIONAL_CFLAGS += 
 
 # Additional include directories the compiler should search
-ADDITIONAL_INCLUDE_DIRS += -Iportaudio/pa_common
+#ADDITIONAL_INCLUDE_DIRS +=
 
 # Additional LDFLAGS to pass to the linker
 #ADDITIONAL_LDFLAGS += 
@@ -30,11 +30,11 @@ ADDITIONAL_INCLUDE_DIRS += -Iportaudio/pa_common
 # ADDITIONAL_LIB_DIRS += -L../Source/$(GNUSTEP_OBJ_DIR)
 
 # Additional libraries when linking applications
-#ADDITIONAL_GUI_LIBS +=
+#ADDITIONAL_TOOL_LIBS +=
 
 #
 # Flags dealing with installing and uninstalling
 #
 
 # Additional directories to be created during installation
-ADDITIONAL_INSTALL_DIRS +=
+#ADDITIONAL_INSTALL_DIRS +=

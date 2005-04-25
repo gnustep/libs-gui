@@ -1,3 +1,10 @@
+2005-04-25  Adam Fedor  <fedor@gnu.org>
+
+	* configure.ac: Check for lib portaudio
+	* Tools/gsnd/GNUmakefile: Use lib portaudo.
+	* Tools/gsnd/portaudio: Remove portaudio files.
+	* Documentation/install.texi: Updates.
+
 2005-04-25 00:02 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibTemplates.m: [GSClassSwapper initWithObject:

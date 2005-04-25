@@ -866,8 +866,6 @@ Optional Packages:
   --with-jpeg-include=DIR JPEG include files are in DIR
   --with-tiff-library=DIR TIFF library file are in DIR
   --with-tiff-include=DIR TIFF include files are in DIR
-  --with-audiofile-library=DIR AUDIOFILE library file are in DIR
-  --with-audiofile-include=DIR AUDIOFILE include files are in DIR
 
 Some influential environment variables:
   CC          C compiler command
@@ -5638,48 +5636,84 @@ fi
 #--------------------------------------------------------------------
 # NSSound
 #--------------------------------------------------------------------
-do_enable_gsnd=yes
-case "$target_os" in
-  darwin*)   do_enable_gsnd=no;;
-  *)	     ;;
-esac
-
 # Check whether --enable-gsnd or --disable-gsnd was given.
 if test "${enable_gsnd+set}" = set; then
   enableval="$enable_gsnd"
 
 else
-  enable_gsnd=$do_enable_gsnd
+  enable_gsnd=yes
 fi;
 audio_ok=no
 BUILD_GSND=
 
 
-# Check whether --with-audiofile_library or --without-audiofile_library was given.
-if test "${with_audiofile_library+set}" = set; then
-  withval="$with_audiofile_library"
-
+echo "$as_me:$LINENO: checking for main in -lportaudio" >&5
+echo $ECHO_N "checking for main in -lportaudio... $ECHO_C" >&6
+if test "${ac_cv_lib_portaudio_main+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  with_audiofile_library=
-fi;
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lportaudio  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
 
-# Check whether --with-audiofile_include or --without-audiofile_include was given.
-if test "${with_audiofile_include+set}" = set; then
-  withval="$with_audiofile_include"
 
+int
+main ()
+{
+main ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_lib_portaudio_main=yes
 else
-  with_audiofile_include=
-fi;
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
 
-if test -n "$with_audiofile_library"; then
-  with_audiofile_library="-L$with_audiofile_library"
+ac_cv_lib_portaudio_main=no
 fi
-if test -n "$with_audiofile_include"; then
-  with_audiofile_include="-I$with_audiofile_include"
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+echo "$as_me:$LINENO: result: $ac_cv_lib_portaudio_main" >&5
+echo "${ECHO_T}$ac_cv_lib_portaudio_main" >&6
+if test $ac_cv_lib_portaudio_main = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBPORTAUDIO 1
+_ACEOF
+
+  LIBS="-lportaudio $LIBS"
+
 fi
 
-CPPFLAGS="${with_audiofile_include} $CPPFLAGS"
-LDFLAGS="${with_audiofile_library} $LDFLAGS"
 
 echo "$as_me:$LINENO: checking for afGetVirtualFrameSize in -laudiofile" >&5
 echo $ECHO_N "checking for afGetVirtualFrameSize in -laudiofile... $ECHO_C" >&6
@@ -5754,8 +5788,6 @@ _ACEOF
 
 fi
 
-
-if test $ac_cv_lib_audiofile_afGetVirtualFrameSize = yes -a $enable_gsnd = yes; then
 
 for ac_header in audiofile.h
 do
@@ -5906,11 +5938,10 @@ fi
 
 done
 
-  ADDITIONAL_INCLUDE_DIRS="$ADDITIONAL_INCLUDE_DIRS ${with_audiofile_include}"
-  ADDITIONAL_LIB_DIRS="$ADDITIONAL_LIB_DIRS ${with_audiofile_library}"
+
+if test $ac_cv_lib_portaudio_main = yes -a $enable_gsnd = yes; then
   BUILD_GSND=gsnd
 fi
-
 
 
 #--------------------------------------------------------------------
