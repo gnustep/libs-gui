@@ -599,7 +599,6 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
       NSDebugLog(@"Created template %@ -> %@",NSStringFromClass([self class]), className);
       ASSIGN(_object, object);
       ASSIGN(_className, className);
-      NSAssert(![className isEqualToString: superClassName], NSInvalidArgumentException);
       _superClass = NSClassFromString(superClassName);
       if(_superClass == nil)
 	{
@@ -951,9 +950,6 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
   id template = nil;
   if(object != nil)
     {
-      // NSData *objectData = nil;
-      // [archiver encodeRootObject: object];
-      // objectData = [archiver archiverData];
       if ([object isKindOfClass: [NSWindow class]])
 	{
 	  template = [[GSWindowTemplate alloc] initWithObject: object
@@ -990,8 +986,9 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 					     className: className 
 					     superClassName: superClassName];
 	}
-      else if ([object isKindOfClass: [NSObject class]]) // for gui elements derived from NSObject
+      else if ([object isKindOfClass: [NSObject class]]) 
 	{
+	  // for gui elements derived from NSObject
 	  template = [[GSObjectTemplate alloc] initWithObject: object
 					       className: className 
 					       superClassName: superClassName];
