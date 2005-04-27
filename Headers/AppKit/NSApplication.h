@@ -98,7 +98,8 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
   id			_listener;
   NSMenu		*_main_menu;
   NSMenu		*_windows_menu;
-  // 5 bits
+  // 6 bits
+  BOOL			_app_is_launched;
   BOOL			_app_is_running;
   BOOL			_app_is_active;
   BOOL			_app_is_hidden;

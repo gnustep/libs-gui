@@ -1,3 +1,9 @@
+2005-04-27 Adrian Robert <arobert@cogsci.ucsd.edu>
+	* Headers/AppKit/NSApplication.h: Add app_is_launched ivar.
+	* Source/NSApplication.m (-run): Only go through launch process
+	and call -finishLaunching on first call.
+	(-replyToApplicationShouldTerminate:) Unhide mouse on app exit.
+
 2005-04-25  Adam Fedor  <fedor@gnu.org>
 
 	* configure.ac: Check for lib portaudio

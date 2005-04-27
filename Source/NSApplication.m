@@ -1147,18 +1147,23 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 		   format: @"NSApp's run called recursively"];
     }
 
-  IF_NO_GC(_runLoopPool = [arpClass new]);
   /*
    *  Set this flag here in case the application is actually terminated
    *  inside -finishLaunching.
    */
   _app_is_running = YES;
 
-  [self finishLaunching];
+  if (_app_is_launched == NO)
+    {
+      _app_is_launched = YES;
+      IF_NO_GC(_runLoopPool = [arpClass new]);
 
-  [_listener updateServicesMenu];
-  [_main_menu update];
-  DESTROY(_runLoopPool);
+      [self finishLaunching];
+
+      [_listener updateServicesMenu];
+      [_main_menu update];
+      DESTROY(_runLoopPool);
+    }
  
   while (_app_is_running)
     {
@@ -2718,6 +2723,7 @@ image.
       _app_is_running = NO;
 
       [[self windows] makeObjectsPerformSelector: @selector(close)];
+      [NSCursor setHiddenUntilMouseMoves: NO];
       
       /* Store our user information.  */
       [[NSUserDefaults standardUserDefaults] synchronize];
