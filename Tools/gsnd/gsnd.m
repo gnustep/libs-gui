@@ -21,7 +21,7 @@
 */
 
 #include <Foundation/Foundation.h>
-#include "portaudio/pa_common/portaudio.h"
+#include <portaudio.h>
 #include <math.h>
 #include <unistd.h>
 #include <fcntl.h>

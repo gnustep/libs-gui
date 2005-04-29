@@ -48,6 +48,9 @@
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
 
+/* Define to 1 if you have the <portaudio.h> header file. */
+#undef HAVE_PORTAUDIO_H
+
 /* Define to 1 if you have the `rint' function. */
 #undef HAVE_RINT
 

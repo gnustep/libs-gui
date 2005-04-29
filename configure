@@ -5643,10 +5643,10 @@ if test "${enable_gsnd+set}" = set; then
 else
   enable_gsnd=yes
 fi;
-audio_ok=no
 BUILD_GSND=
 
-
+# This is only for gsnd, so don't add it to LIBS
+save_LIBS="$LIBS"
 echo "$as_me:$LINENO: checking for main in -lportaudio" >&5
 echo $ECHO_N "checking for main in -lportaudio... $ECHO_C" >&6
 if test "${ac_cv_lib_portaudio_main+set}" = set; then
@@ -5706,13 +5706,12 @@ fi
 echo "$as_me:$LINENO: result: $ac_cv_lib_portaudio_main" >&5
 echo "${ECHO_T}$ac_cv_lib_portaudio_main" >&6
 if test $ac_cv_lib_portaudio_main = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBPORTAUDIO 1
-_ACEOF
-
-  LIBS="-lportaudio $LIBS"
-
+  have_portaudio=yes
+else
+  have_portaudio=no
 fi
+
+LIBS="$save_LIBS"
 
 
 echo "$as_me:$LINENO: checking for afGetVirtualFrameSize in -laudiofile" >&5
@@ -5789,7 +5788,8 @@ _ACEOF
 fi
 
 
-for ac_header in audiofile.h
+
+for ac_header in portaudio.h audiofile.h
 do
 as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
 if eval "test \"\${$as_ac_Header+set}\" = set"; then
@@ -5939,7 +5939,7 @@ fi
 done
 
 
-if test $ac_cv_lib_portaudio_main = yes -a $enable_gsnd = yes; then
+if test $ac_cv_header_portaudio_h = yes -a $have_portaudio = yes -a $enable_gsnd = yes; then
   BUILD_GSND=gsnd
 fi
 

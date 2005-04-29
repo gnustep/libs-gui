@@ -305,11 +305,15 @@ AC_ARG_ENABLE(gsnd,
   enable_gsnd=yes)
 BUILD_GSND=
 
+# This is only for gsnd, so don't add it to LIBS
+save_LIBS="$LIBS"
 AC_CHECK_LIB(portaudio, main, have_portaudio=yes, have_portaudio=no)
-AC_CHECK_LIB(audiofile, afGetVirtualFrameSize)
-AC_CHECK_HEADERS(audiofile.h)
+LIBS="$save_LIBS"
 
-if test $have_portaudio = yes -a $enable_gsnd = yes; then
+AC_CHECK_LIB(audiofile, afGetVirtualFrameSize)
+AC_CHECK_HEADERS(portaudio.h audiofile.h)
+
+if test $ac_cv_header_portaudio_h = yes -a $have_portaudio = yes -a $enable_gsnd = yes; then
   BUILD_GSND=gsnd
 fi
 AC_SUBST(BUILD_GSND)
