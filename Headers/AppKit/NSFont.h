@@ -88,6 +88,14 @@ APPKIT_EXPORT const float *NSFontIdentityMatrix;
   -screenFont (and retained). For screen fonts, it's nil.
   */
   NSFont *cachedScreenFont;
+
+  /*
+  In the GNUstep implementation, fonts may encapsulate some rendering state
+  relating to view flipped state, therefore we generate a separate font for
+  this case.  We don't create it by default, unless -set is called in a
+  flipped context.
+  */
+  NSFont *cachedFlippedFont;
 }
 
 //

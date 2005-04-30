@@ -749,6 +749,7 @@ static void setNSFont(NSString *key, NSFont *font)
       fontInfo = RETAIN([GSFontInfo fontInfoForFontName: fontName
 						 matrix: fontMatrix
 					     screenFont: screen]);
+      cachedFlippedFont = placeHolder;
       if (!screenFont)
 	cachedScreenFont = placeHolder;
       if (fontInfo == nil)
@@ -789,6 +790,8 @@ static void setNSFont(NSString *key, NSFont *font)
       RELEASE(fontName);
     }
   TEST_RELEASE(fontInfo);
+  if (cachedFlippedFont != placeHolder)
+    DESTROY(cachedFlippedFont);
   if (cachedScreenFont != placeHolder)
     DESTROY(cachedScreenFont);
   [super dealloc];
@@ -849,14 +852,18 @@ static void setNSFont(NSString *key, NSFont *font)
 
 - (NSFont *)_flippedViewFont
 {
-  float fontMatrix[6];
-  memcpy(fontMatrix, matrix, sizeof(matrix));
-  fontMatrix[3] *= -1;
-  return AUTORELEASE([placeHolder initWithName: fontName
-			    matrix: fontMatrix
-			       fix: YES
-			screenFont: screenFont
-			      role: role]);
+  if (cachedFlippedFont == placeHolder)
+    {
+      float fontMatrix[6];
+      memcpy(fontMatrix, matrix, sizeof(matrix));
+      fontMatrix[3] *= -1;
+      cachedFlippedFont = [placeHolder initWithName: fontName
+                                             matrix: fontMatrix
+                                                fix: YES
+                                         screenFont: screenFont
+                                               role: role];
+    }
+  return AUTORELEASE(RETAIN(cachedFlippedFont));
 }
 
 static BOOL flip_hack;

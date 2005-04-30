@@ -1,9 +1,16 @@
+2005-04-30 Adrian Robert <arobert@cogsci.ucsd.edu>
+
+	* Headers/AppKit/NSFont.h: Add 'cachedFlippedFont' ivar.
+	* Source/NSFont.m: Cache font for drawing in flipped views in
+	manner analogous to font for screen drawing.
+
 2005-04-28  Adam Fedor  <fedor@gnu.org>
 
 	* configure.ac: More complete check for portaudio
 	* Tools/gsnd/gsnd.m: Fix portaudio include
 
 2005-04-27 Adrian Robert <arobert@cogsci.ucsd.edu>
+
 	* Headers/AppKit/NSApplication.h: Add app_is_launched ivar.
 	* Source/NSApplication.m (-run): Only go through launch process
 	and call -finishLaunching on first call.
