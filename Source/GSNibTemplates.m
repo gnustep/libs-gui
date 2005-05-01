@@ -742,7 +742,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 	    // if we are not in interface builder, call 
 	    // designated initializer per spec...
 	    contentView = [obj contentView];
-	    obj = [obj initWithContentRect: [obj frame]
+	    obj = [obj initWithContentRect: [contentView frame]
 		       styleMask: [obj styleMask]
 		       backing: [obj backingType]
 		       defer: _deferFlag];
