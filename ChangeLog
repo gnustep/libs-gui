@@ -1,3 +1,8 @@
+2005-05-01 17:09 Adrian Robert <arobert@cogsci.ucsd.edu>
+
+	* Source/GSNibTemplates.m: [GSWindowTemplate initWithCoder:]
+	changed so designated initializer is called with content frame.
+	
 2005-04-30 Adrian Robert <arobert@cogsci.ucsd.edu>
 
 	* Headers/AppKit/NSFont.h: Add 'cachedFlippedFont' ivar.
