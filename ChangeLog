@@ -1,3 +1,9 @@
+2005-05-02 23:45 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibTemplates.m: added condition to all of the templates
+	so that the designated init is not called when the className and
+	the superClass are equivalent.
+	
 2005-05-01 17:09 Adrian Robert <arobert@cogsci.ucsd.edu>
 
 	* Source/GSNibTemplates.m: [GSWindowTemplate initWithCoder:]

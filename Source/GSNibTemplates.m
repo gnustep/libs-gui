@@ -656,7 +656,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 	  if([self shouldSwapClass])
 	    {
 	      Class aClass = NSClassFromString(_className);
-	      if(aClass == 0)
+	      if(aClass == nil)
 		{
 		  [NSException raise: NSInternalInconsistencyException
 			       format: @"Unable to find class '%@', it is not linked into the application.", _className];
@@ -737,7 +737,10 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 
       if([self shouldSwapClass])
       {
-	if(GSGetMethod([obj class], @selector(initWithContentRect:styleMask:backing:defer:), YES, NO) != NULL)
+	// We should call the designated initializer when it is a custom subclass only.  If the
+	// class name and the encoded class are the same, it's usually not a custom class.
+	if(GSGetMethod([obj class], @selector(initWithContentRect:styleMask:backing:defer:), YES, NO) != NULL 
+	   && ![_className isEqualToString: NSStringFromClass(_superClass)])
 	  {
 	    // if we are not in interface builder, call 
 	    // designated initializer per spec...
@@ -779,7 +782,8 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
     {
       if([self shouldSwapClass])
       {
-	if(GSGetMethod([obj class],@selector(initWithFrame:), YES, NO) != NULL)
+	if(GSGetMethod([obj class],@selector(initWithFrame:), YES, NO) != NULL
+	   && ![_className isEqualToString: NSStringFromClass(_superClass)])
 	  {
 	    NSRect theFrame = [obj frame];
 	    obj =  [obj initWithFrame: theFrame];
@@ -808,7 +812,8 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
     {
       if([self shouldSwapClass])
       {
-	if(GSGetMethod([obj class],@selector(initWithFrame:), YES, NO) != NULL)
+	if(GSGetMethod([obj class],@selector(initWithFrame:), YES, NO) != NULL
+	   && ![_className isEqualToString: NSStringFromClass(_superClass)])
 	  {
 	    NSRect theFrame = [obj frame]; 
 	    obj = [obj initWithFrame: theFrame];
@@ -837,7 +842,8 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
     {
       if([self shouldSwapClass])
       {
-	if(GSGetMethod([obj class],@selector(initWithFrame:textContainer:), YES, NO) != NULL)
+	if(GSGetMethod([obj class],@selector(initWithFrame:textContainer:), YES, NO) != NULL
+	   && ![_className isEqualToString: NSStringFromClass(_superClass)])
 	  {
 	    NSRect theFrame = [obj frame];
 	    id textContainer = [obj textContainer];
@@ -928,7 +934,8 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
     {
       if([self shouldSwapClass])
       {
-	if(GSGetMethod([obj class],@selector(init), YES, NO) != NULL)
+	if(GSGetMethod([obj class],@selector(init), YES, NO) != NULL
+	   && ![_className isEqualToString: NSStringFromClass(_superClass)])
 	  {
 	    obj = [self init];
 	  }
