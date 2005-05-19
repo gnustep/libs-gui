@@ -1,3 +1,8 @@
+2005-05-19  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSImageCell.m (-setObjectValue:) Nil parameter now unsets
+	image. This resolves bug #13046.
+
 2005-05-02 23:45 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibTemplates.m: added condition to all of the templates

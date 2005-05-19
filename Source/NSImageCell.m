@@ -67,7 +67,7 @@
 
 - (void)setObjectValue:(id)object
 {
-  if ([object isKindOfClass:[NSImage class]])
+    if ((object == nil) || ([object isKindOfClass:[NSImage class]]))
     {
       [self setImage: object];
     }
