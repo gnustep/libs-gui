@@ -4247,5 +4247,10 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     }
 }
 
+- (BOOL) shouldBeTreatedAsInkEvent: (NSEvent *)theEvent
+{
+  return YES;
+}
+
 @end
 

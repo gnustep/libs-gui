@@ -3429,6 +3429,20 @@ resetCursorRectsForView(NSView *theView)
     }
 }
 
+- (BOOL) shouldBeTreatedAsInkEvent: (NSEvent *)theEvent
+{
+  NSView *v;
+
+  v = [_wv hitTest: [theEvent locationInWindow]];
+  if (![self isMainWindow])
+    {
+      return (v != _wv);
+    }
+  else
+    {
+      return [v shouldBeTreatedAsInkEvent: theEvent];
+    }
+}
 
 - (BOOL) tryToPerform: (SEL)anAction with: (id)anObject
 {

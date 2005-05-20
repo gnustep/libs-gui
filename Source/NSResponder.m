@@ -351,6 +351,11 @@
 	  [aCoder encodeObject: [self menu]
 		  forKey: @"NSMenu"];	  
 	}
+      if([self nextResponder] != nil)
+	{
+	  [aCoder encodeConditionalObject: [self nextResponder]
+		  forKey: @"NSNextResponder"];	  
+	}
     }
   else
     {
@@ -374,6 +379,11 @@
       if([aDecoder containsValueForKey: @"NSMenu"])
 	{
 	  obj = [aDecoder decodeObjectForKey: @"NSMenu"];
+	}
+
+      if([aDecoder containsValueForKey: @"NSNextResponder"])
+	{
+	  [self setNextResponder: [aDecoder decodeObjectForKey: @"NSNextResponder"]];
 	}
     }
   else
@@ -416,4 +426,10 @@
 {
   return nil;
 }
+
+- (BOOL) shouldBeTreatedAsInkEvent: (NSEvent *)theEvent
+{
+  return NO;
+}
+
 @end

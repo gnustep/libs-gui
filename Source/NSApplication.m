@@ -1633,6 +1633,11 @@ See -runModalForWindow:
   return _current_event;
 }
 
+- (BOOL) shouldBeTreatedAsInkEvent: (NSEvent *)theEvent
+{
+  return [[theEvent window] shouldBeTreatedAsInkEvent: theEvent];
+}
+
 - (void) discardEventsMatchingMask: (unsigned int)mask
 		       beforeEvent: (NSEvent *)lastEvent
 {

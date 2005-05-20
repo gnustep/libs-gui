@@ -1,3 +1,15 @@
+2005-05-20  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSResponder.h: Added new MacOSX methods.
+	* Source/NSResponder.m (-encodeWithCoder:, initWithCoder:) Handle
+	NSNextResponder for keyed encoding.
+	* Source/NSResponder.m
+	* Source/NSApplication.m
+	* Source/NSWindow.m
+	* Source/NSView.m
+	* Source/NSControl.m:
+	Implemented shouldBeTreatedAsInkEvent:.
+	
 2005-05-19  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSImageCell.m (-setObjectValue:) Nil parameter now unsets

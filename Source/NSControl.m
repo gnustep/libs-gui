@@ -687,6 +687,11 @@ static Class actionCellClass;
     [self sendAction: [self action] to: [self target]];
 }
 
+- (BOOL) shouldBeTreatedAsInkEvent: (NSEvent *)theEvent
+{
+  return NO;
+}
+
 - (void) resetCursorRects
 {
   [_cell resetCursorRect: _bounds inView: self];

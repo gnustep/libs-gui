@@ -169,6 +169,8 @@
  */
 - (NSInterfaceStyle) interfaceStyle;
 - (void) setInterfaceStyle: (NSInterfaceStyle)aStyle;
+
+- (BOOL) shouldBeTreatedAsInkEvent: (NSEvent *)theEvent;
 #endif
 @end
 
@@ -232,6 +234,13 @@
 - (void) transposeWords: (id)sender;
 - (void) uppercaseWord: (id)sender;
 - (void) yank: (id)sender;
+
+// New in MacOSX 10.3
+- (void) cancelOperation: (id)sender;
+- (void) deleteBackwardByDecomposingPreviousCharacter: (id)sender;
+- (void) moveLeftAndModifySelection: (id)sender;
+- (void) moveRightAndModifySelection: (id)sender;
+
 @end
 #endif
 
