@@ -31,6 +31,8 @@
 */
 
 #include "config.h"
+#include <math.h>
+#include <float.h>
 
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSRunLoop.h>
@@ -1687,21 +1689,90 @@ many times.
 	  display: (BOOL)displayFlag
 	  animate: (BOOL)animationFlag
 {
-  // TODO
+  if (animationFlag)
+    {
+      // time that the resize is expected to take in seconds
+      NSTimeInterval resizeTime;
+      // velocity
+      NSRect v;
+      // time parameter
+      float t;
+      float tdiff;
+	
+      v.origin.x = _frame.origin.x - frameRect.origin.x;
+      v.origin.y = _frame.origin.y - frameRect.origin.y;
+      v.size.width = _frame.size.width - frameRect.size.width;
+      v.size.height = _frame.size.height - frameRect.size.height;
+
+      resizeTime = [self animationResizeTime: frameRect];
+      tdiff = 0.1 / resizeTime;
+
+      [NSEvent startPeriodicEventsAfterDelay: 0 withPeriod: 0.02];
+      t = 1.0;
+      while (t > 0.0)
+        {
+          NSEvent *theEvent = [NSApp nextEventMatchingMask: NSPeriodicMask
+                                     untilDate: [NSDate distantFuture]
+                                     inMode: NSEventTrackingRunLoopMode
+                                     dequeue: YES];
+          
+          if ([theEvent type] == NSPeriodic)
+            {
+	      NSRect newFrame;
+	  
+	      t -= tdiff;
+	      if (t <= 0.0)
+	        {
+		  break;
+		}
+
+	      // move
+	      newFrame.origin.x = frameRect.origin.x + v.origin.x * t;
+	      newFrame.origin.y = frameRect.origin.y + v.origin.y * t;
+	      // strech
+	      newFrame.size.width = frameRect.size.width + v.size.width * t;
+	      newFrame.size.height = frameRect.size.height + v.size.height * t;
+
+	      [self setFrame: newFrame display: displayFlag];
+	    }
+	}
+      [NSEvent stopPeriodicEvents];
+    }
+
   [self setFrame: frameRect display: displayFlag];
 }
 
 - (NSTimeInterval) animationResizeTime: (NSRect)newFrame
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"animationResizeTime:", "NSWindow");
-  return 333;
+  static float resizeTime = 0;
+  float maxDiff;
+
+  if (resizeTime == 0)
+    {
+      NSNumber *num;
+      num = [[NSUserDefaults standardUserDefaults] objectForKey: @"NSWindowResizeTime"];
+      if (num != nil)
+        {
+	  resizeTime = [num floatValue];
+	}
+      else
+        {
+	  resizeTime = 0.20;
+	}
+    }
+
+  // Find the biggest difference
+  maxDiff = abs(newFrame.origin.x - _frame.origin.x);
+  maxDiff = MAX(maxDiff, newFrame.origin.y - _frame.origin.y);
+  maxDiff = MAX(maxDiff, newFrame.size.width - _frame.size.width);
+  maxDiff = MAX(maxDiff, newFrame.size.height - _frame.size.height);
+
+  return (maxDiff * resizeTime) / 150;
 }
 
 - (void) center
 {
-  NSSize screenSize = [[self screen] frame].size;
+  NSSize screenSize = [[self screen] visibleFrame].size;
   NSPoint origin = _frame.origin;
 
   origin.x = (screenSize.width - _frame.size.width) / 2;
@@ -1716,7 +1787,7 @@ many times.
  */
 - (NSRect) constrainFrameRect: (NSRect)frameRect toScreen: (NSScreen*)screen
 {
-  NSRect screenRect = [screen frame];
+  NSRect screenRect = [screen visibleFrame];
   float difference;
 
   /* Move top edge of the window inside the screen */
