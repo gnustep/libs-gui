@@ -1405,10 +1405,48 @@ void NSBeginInformationalAlertSheet(NSString *title,
   return _delegate;
 }
 
+- (void)_setupPanel
+{
+  GSAlertPanel *panel;
+  NSString *title;
+
+  panel = [[GSAlertPanel alloc] init];
+  _window = panel;
+
+  switch (_style)
+    {
+      case NSCriticalAlertStyle: 
+	  title = @"Critical";
+	  break;
+      case NSInformationalAlertStyle: 
+	  title = @"Information";
+	  break;
+      case NSWarningAlertStyle:
+      default:
+	  title = @"Alert";
+	  break;
+    }
+  [panel setTitle: title];
+  // FIXME: Should also set the icon
+  [panel setTitle: _informative_text
+	 message: _message_text
+	 def: [[_buttons objectAtIndex: 0] title]
+	 alt: [[_buttons objectAtIndex: 1] title]
+	 other: [[_buttons objectAtIndex: 2] title]];
+  [panel sizePanelToFit];
+}
+
 - (int)runModal
 {
-  // FIXME
-  return NSAlertFirstButtonReturn;
+  int result;
+
+  [self _setupPanel];
+  [NSApp runModalForWindow: _window];
+  [_window orderOut: self];
+  result = [(GSAlertPanel*)_window result];
+  DESTROY(_window);
+
+  return result;
 }
 
 - (void)beginSheetModalForWindow:(NSWindow *)window
@@ -1416,7 +1454,13 @@ void NSBeginInformationalAlertSheet(NSString *title,
 		  didEndSelector:(SEL)didEndSelector
 		     contextInfo:(void *)contextInfo
 {
-// FIXME
+  [self _setupPanel];
+  [NSApp beginSheet: _window
+     modalForWindow: window
+      modalDelegate: delegate
+     didEndSelector: didEndSelector
+	contextInfo: contextInfo];
+  DESTROY(_window);
 }
 
 - (id)window
