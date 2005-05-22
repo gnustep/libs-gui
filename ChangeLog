@@ -1,3 +1,10 @@
+2005-05-22  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSComboBox.m (-cellSize) Added simple implementation of
+	this method to get sizeToFit working.
+	(GSComboWindow -layoutWithComboBoxCell:) Don't subtract the width
+	of the scroller from the popup item size, increase the popup width instead.
+
 2005-05-20  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWindow.m (-center, -constrainFrameRect:toScreen:) Use

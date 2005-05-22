@@ -222,6 +222,7 @@ static GSComboWindow *gsWindow = nil;
   NSSize size;
   float itemHeight;
   float textCellWidth;
+  float popUpWidth;
   NSSize intercellSpacing;
   int num = [comboBoxCell numberOfItems];
   int max = [comboBoxCell numberOfVisibleItems];
@@ -248,12 +249,13 @@ static GSComboWindow *gsWindow = nil;
   textCellWidth = [comboBoxCell _textCellFrame].size.width;
   if ([comboBoxCell hasVerticalScroller])
     {
-      size.width = textCellWidth - [NSScroller scrollerWidth] - bsize.width;
+      popUpWidth = textCellWidth + [NSScroller scrollerWidth];
     }
   else 
     {
-      size.width = textCellWidth - bsize.width;
+      popUpWidth = textCellWidth;
     }
+  size.width = textCellWidth - bsize.width;
     
   if (size.width < 0)
     {
@@ -300,7 +302,7 @@ static GSComboWindow *gsWindow = nil;
   if (num > max)
     num = max;
    
-  [self setFrame: NSMakeRect(0, 0, textCellWidth, 
+  [self setFrame: NSMakeRect(0, 0, popUpWidth, 
      2 * bsize.height + (itemHeight + intercellSpacing.height) * (num - 1)
      + itemHeight) display: NO];
 }
@@ -1486,6 +1488,25 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 		inRect: _bounds
 	        ofView: self
           untilMouseUp: [[_cell class] prefersTrackingUntilMouseUp]] */
+}
+
+- (NSSize) cellSize
+{
+  NSSize textSize;
+  NSSize buttonSize;
+  NSSize mySize;
+
+  /* Simple version takes the size from text field. A more useful one could 
+     loop over the strings of the combo box and calculate the maximal width of 
+     all strings. */
+  textSize = [super cellSize];
+  // Or should we use the hard coded values from above here?
+  buttonSize = [_buttonCell cellSize];
+
+  mySize.height = MAX(textSize.height, buttonSize.height);
+  mySize.width = textSize.width + BorderSize + buttonSize.width;
+
+  return mySize;
 }
 
 - (void) drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
