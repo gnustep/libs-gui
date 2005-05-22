@@ -1757,14 +1757,7 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 
 - (void) display
 {
-  if (_window != nil)
-    {
-      if (_coordinates_valid == NO)
-	{
-	  [self _rebuildCoordinates];
-	}      
-      [self displayRect: _visibleRect];
-    }
+  [self displayRect: [self visibleRect]];
 }
 
 - (void) displayIfNeeded

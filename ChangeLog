@@ -1,5 +1,16 @@
 2005-05-22  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSView.m (-display) 
+	* Source/NSCell.m (-drawWithFrame:inView:) 
+	* Source/NSBrowserCell.m (-drawWithFrame:inView:) 
+	* Source/NSImageCell.m (-drawWithFrame:inView:) 
+	* Source/NSMenuItemCell.m (-drawWithFrame:inView:) 
+	* Source/NSTableHeaderCell.m (-drawWithFrame:inView:) 
+	Removed check for window existence. This should already have been
+	checked by a surrounding canDraw call. Fixes bug #13140.
+
+2005-05-22  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSComboBox.m (-cellSize) Added simple implementation of
 	this method to get sizeToFit working.
 	(GSComboWindow -layoutWithComboBoxCell:) Don't subtract the width

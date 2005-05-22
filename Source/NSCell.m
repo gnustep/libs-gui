@@ -1658,9 +1658,6 @@ static NSColor	*shadowCol;
  */
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  if (![controlView window])
-    return;
-
   cellFrame = [self drawingRectForBounds: cellFrame];
 
   //FIXME: Check if this is also neccessary for images,
@@ -1717,7 +1714,7 @@ static NSColor	*shadowCol;
 - (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
   // do nothing if cell's frame rect is zero
-  if (NSIsEmptyRect(cellFrame) || ![controlView window])
+  if (NSIsEmptyRect(cellFrame))
     return;
 
   // draw the border if needed

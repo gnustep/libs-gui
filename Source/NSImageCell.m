@@ -124,7 +124,7 @@
   NSDebugLLog(@"NSImageCell", @"NSImageCell -drawWithFrame");
 
   // do nothing if cell's frame rect is zero
-  if (NSIsEmptyRect(cellFrame) || ![controlView window])
+  if (NSIsEmptyRect(cellFrame))
     return;
   
   // draw the border if needed
@@ -215,7 +215,7 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
 
   NSDebugLLog(@"NSImageCell", @"NSImageCell drawInteriorWithFrame called");
 
-  if (![controlView window] || !_cell_image)
+  if (!_cell_image)
     return;
 
   // leave room for the frame

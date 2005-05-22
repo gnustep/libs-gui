@@ -503,10 +503,6 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
   if (NSIsEmptyRect(cellFrame))
     return;
 
-  // Do nothing if the window is deferred
-  if ([[controlView window] gState] == 0)
-    return;
-
   // Draw the border if needed
   [self drawBorderAndBackgroundWithFrame: cellFrame inView: controlView];
 

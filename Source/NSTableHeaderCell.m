@@ -59,7 +59,7 @@ static NSColor *clearCol = nil;
   NSRect interiorFrame = NSMakeRect (cellFrame.origin.x-1, cellFrame.origin.y-1, 
 				cellFrame.size.width+2, cellFrame.size.height+2);
 
-  if (NSIsEmptyRect (cellFrame) || ![controlView window])
+  if (NSIsEmptyRect (cellFrame))
     return;
 
   if (_cell.is_highlighted == YES)

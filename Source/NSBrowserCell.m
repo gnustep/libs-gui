@@ -235,10 +235,6 @@ static NSFont *_leafFont;
   NSColor	*backColor;
   NSWindow      *cvWin = [controlView window];
 
-
-  if (!cvWin)
-    return;
-
   if (_cell.is_highlighted || _cell.state)
     {
       backColor = [self highlightColorInView: controlView];
