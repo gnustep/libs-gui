@@ -1,3 +1,7 @@
+2005-05-25  Adam Fedor  <fedor@gnu.org>
+
+	* Update FSF Address.
+
 2005-05-23  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSAlert.m (-_setupPanel): New method. 
