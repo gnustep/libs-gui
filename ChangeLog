@@ -1,3 +1,11 @@
+2005-05-26  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableView.m (-mouseDown): Replaced use of
+	_sendsActionOn: with a check if the value did change
+	after the cell did track the mouse. Also use a copy of the cell,
+	that way other cells are not affected by changes in the tracked
+	cell. Patch based on code by Matt Rice <ratmice@yahoo.com>.
+
 2005-05-25  Adam Fedor  <fedor@gnu.org>
 
 	* Update FSF Address.

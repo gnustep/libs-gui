@@ -3100,12 +3100,11 @@ byExtendingSelection: (BOOL)flag
   if (_textObject)
     {
       [_editedCell endEditing: _textObject];
-      RELEASE (_editedCell);
+      DESTROY(_editedCell);
       [self setNeedsDisplayInRect: 
 	      [self frameOfCellAtColumn: _editedColumn row: _editedRow]];
       _editedRow = -1;
       _editedColumn = -1;
-      _editedCell = nil;
       _textObject = nil;
       return YES;
     }
@@ -3375,7 +3374,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
         {
 	  // It is OK to edit column.  Go on, do it.
 	  [self editColumn: _clickedColumn row: _clickedRow
-		withEvent: theEvent select: NO];
+		withEvent: theEvent select: YES];
 	}
     }
   else 
@@ -3449,81 +3448,58 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
       // let's sort the _selectedRows
       oldSelectedRows = [_selectedRows copy];
-
       mouseLocationView = location;
       lastEvent = theEvent;
+      
       if ([self mouse: mouseLocationView inRect: _bounds])
         {
 	  NSTableColumn *tb;
 	  NSCell *cell;
 	  NSRect cellFrame;
-	  int actionMaskForCurrentEvent;
-	  
-	  switch ([lastEvent type])
-	    {
-	    case NSLeftMouseDown:
-	      actionMaskForCurrentEvent = NSLeftMouseDownMask 
-		| NSLeftMouseUpMask 
-		| NSLeftMouseDraggedMask;
-	      break;
-	    case NSRightMouseDown:
-	      actionMaskForCurrentEvent = NSRightMouseDownMask
-		| NSRightMouseUpMask
-		| NSRightMouseDraggedMask;
-	      break;
-	    case NSOtherMouseDown:
-	      actionMaskForCurrentEvent = NSOtherMouseDownMask 
-		| NSOtherMouseUpMask 
-		| NSOtherMouseDraggedMask;
-	      break;
-	    default:
-	      /* Can't happen */
-	      actionMaskForCurrentEvent = -1;
-	      break;
-	    } 
-	    
+	  id originalValue;
+
 	  // Prepare the cell
 	  tb = [_tableColumns objectAtIndex: _clickedColumn];
-	  cell = [tb dataCellForRow: _clickedRow];
-	  if ([cell _sendsActionOn: actionMaskForCurrentEvent])
-	    {
-	      [cell setObjectValue: [self _objectValueForTableColumn: tb
-					  row: _clickedRow]];
-	      cellFrame = [self frameOfCellAtColumn: _clickedColumn 
+	  cell = [[tb dataCellForRow: _clickedRow] copy];
+	  originalValue = RETAIN([self _objectValueForTableColumn:tb row:_clickedRow]);
+	  [cell setObjectValue: originalValue]; 
+	  cellFrame = [self frameOfCellAtColumn: _clickedColumn 
 				row: _clickedRow];
-	      [cell setHighlighted: YES];
-	      [self setNeedsDisplayInRect: cellFrame];
-	      /* give delegate a chance to i.e set target */
-	      [self _willDisplayCell: cell
-		    forTableColumn: tb
-		    row: _clickedRow];
-	      if ([cell trackMouse: lastEvent
+          [cell setHighlighted: YES];
+	  [self setNeedsDisplayInRect: cellFrame];
+	  /* give delegate a chance to i.e set target */
+	  [self _willDisplayCell: cell
+		  forTableColumn: tb
+			     row: _clickedRow];
+	  if ([cell trackMouse: lastEvent
 			inRect: cellFrame
 			ofView: self
-			untilMouseUp: [[cell class] prefersTrackingUntilMouseUp]])
+		  untilMouseUp: [[cell class] prefersTrackingUntilMouseUp]])
+	    {
+	      id newValue = [cell objectValue];
+
+	      if ([tb isEditable] && ![originalValue isEqual: newValue])
 		{
-		  if ([tb isEditable])
-		    {
-		      [self _setObjectValue: [cell objectValue]
-			    forTableColumn: tb
-			    row: _clickedRow];
-		    } 
-		  done = YES;
-		  currentRow = _clickedRow;
-		  computeNewSelection(self,
-				      oldSelectedRows, 
-				      _selectedRows,
-				      originalRow,
-				      oldRow,
-				      currentRow,
-				      &_selectedRow,
-				      selectionMode);
-		}
-	      
-	      [cell setHighlighted: NO];
-	      [self setNeedsDisplayInRect: cellFrame];
-	      lastEvent = [NSApp currentEvent];
+		  [self _setObjectValue: newValue 
+		         forTableColumn: tb
+				    row: _clickedRow];
+		} 
+	      done = YES;
+	      currentRow = _clickedRow;
+	      computeNewSelection(self,
+				  oldSelectedRows, 
+				  _selectedRows,
+				  originalRow,
+				  oldRow,
+				  currentRow,
+				  &_selectedRow,
+				  selectionMode);
 	    }
+	  RELEASE(originalValue);    
+	  [cell setHighlighted: NO];
+	  RELEASE(cell);
+	  [self setNeedsDisplayInRect: cellFrame];
+	  lastEvent = [NSApp currentEvent];
 	}
 
       while (done != YES)
