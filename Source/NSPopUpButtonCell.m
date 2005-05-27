@@ -86,6 +86,12 @@ static NSImage *_pbc_image[2];
 - (void) dealloc
 {
   /* 
+   * The popup must be closed here, just in case the cell goes away 
+   * while the popup is still displayed. In that case the notification
+   * center would still send notifications to the deallocated cell.
+   */
+  [self dismissPopUp];
+  /* 
    * We don't use methods here to clean up the selected item, the menu
    * item and the menu as these methods internally update the menu,
    * which tries to access the target of the menu item (or of this cell). 

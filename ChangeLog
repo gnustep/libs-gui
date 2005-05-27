@@ -1,3 +1,9 @@
+2005-05-27  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPopupButton.m (-dealloc) Dismiss the popup. This is to
+	make sure the removed popup no longer gets notifications. may
+	happen when the cell gets deallocated without closing the popup.
+
 2005-05-26  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTableView.m (-mouseDown): Replaced use of
