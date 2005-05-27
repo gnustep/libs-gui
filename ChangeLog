@@ -1,3 +1,11 @@
+2005-05-27  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSAffineTransform.m (matrix_multiply): New function.
+	(appendTransform:, prependTransform:, rotateByRadians:, 
+	scaleBy:, scaleXBy:yBy:, translateXBy:yBy:, 
+	concatenateWithMatrix:): Use it.
+	(rotateByDegrees:) Use rotateByRadians:.  Fixes bug #13181.
+
 2005-05-27  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPopupButton.m (-dealloc) Dismiss the popup. This is to

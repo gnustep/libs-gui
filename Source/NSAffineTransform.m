@@ -57,6 +57,20 @@
 
 static const float pi = 3.1415926535897932384626434;
 
+/* Quick function to multiply two coordinate matrices. C = AB */
+static inline NSAffineTransformStruct 
+matrix_multiply (NSAffineTransformStruct MA, NSAffineTransformStruct MB)
+{
+  NSAffineTransformStruct MC;
+  MC.m11 = MA.m11 * MB.m11 + MA.m12 * MB.m21;
+  MC.m12 = MA.m11 * MB.m12 + MA.m12 * MB.m22;
+  MC.m21 = MA.m21 * MB.m11 + MA.m22 * MB.m21;
+  MC.m22 = MA.m21 * MB.m12 + MA.m22 * MB.m22;
+  MC.tX  = MA.tX * MB.m11 + MA.tY * MB.m21 + MB.tX;
+  MC.tY  = MA.tX * MB.m12 + MA.tY * MB.m22 + MB.tY;
+  return MC;
+}
+
 @implementation NSAffineTransform
 
 static NSAffineTransformStruct identityTransform = {
@@ -88,24 +102,14 @@ static NSAffineTransformStruct identityTransform = {
 }
 
 /**
- * Appends one transform matrix to another.  This is done by performing a
- * matrix multiplication of the receiver with aTransform.   The resulting
+ * Appends the transform matrix to the receiver.  This is done by performing a
+ * matrix multiplication of the receiver with aTransform so that aTransform
+ * is the first transform applied to the user coordinate. The new
  * matrix then replaces the receiver's matrix.
  */
 - (void) appendTransform: (NSAffineTransform*)aTransform
 {
-  float newA, newB, newC, newD, newTX, newTY;
-
-  newA = A * aTransform->A + B * aTransform->C;
-  newB = A * aTransform->B + B * aTransform->D;
-  newC = C * aTransform->A + D * aTransform->C;
-  newD = C * aTransform->B + D * aTransform->D;
-  newTX = TX * aTransform->A + TY * aTransform->C + aTransform->TX;
-  newTY = TX * aTransform->B + TY * aTransform->D + aTransform->TY;
-
-  A = newA; B = newB;
-  C = newC; D = newD;
-  TX = newTX; TY = newTY;
+  matrix = matrix_multiply(matrix, aTransform->matrix);
 }
 
 /**
@@ -178,57 +182,40 @@ static NSAffineTransformStruct identityTransform = {
   TX = newTX; TY = newTY;
 }
 
+/**
+ * Prepends the transform matrix to the receiver.  This is done by performing a
+ * matrix multiplication of the receiver with aTransform so that aTransform
+ * is the last transform applied to the user coordinate. The new
+ * matrix then replaces the receiver's matrix.
+ */
 - (void) prependTransform: (NSAffineTransform*)aTransform
 {
-  float newA, newB, newC, newD, newTX, newTY;
-
-  newA = aTransform->A * A + aTransform->B * C;
-  newB = aTransform->A * B + aTransform->B * D;
-  newC = aTransform->C * A + aTransform->D * C;
-  newD = aTransform->C * B + aTransform->D * D;
-  newTX = aTransform->TX * A + aTransform->TY * C + TX;
-  newTY = aTransform->TX * B + aTransform->TY * D + TY;
-
-  A = newA; B = newB;
-  C = newC; D = newD;
-  TX = newTX; TY = newTY;
+  matrix = matrix_multiply(aTransform->matrix, matrix);
 }
 
 /**
- * Applies the rotation specified by angle in degrees.   Points trasnformed
+ * Applies the rotation specified by angle in degrees.   Points transformed
  * with the transformation matrix of the receiver are rotated counter-clockwise 
  * by the number of degrees specified by angle.
  */
 - (void) rotateByDegrees: (float)angle
 {
-  float newA, newB, newC, newD;
-  float angleRad = pi * angle / 180;
-  float sine = sin (angleRad);
-  float cosine = cos (angleRad);
-
-  newA = A * cosine + C * sine;   newB = B * cosine + D * sine;
-  newC = -A * sine + C * cosine;  newD = -B * sine + D * cosine;
-
-  A = newA; B = newB;
-  C = newC; D = newD;
+  [self rotateByRadians: pi * angle / 180];
 }
 
 /**
- * Applies the rotation specified by angle in radians.   Points trasnformed
+ * Applies the rotation specified by angle in radians.   Points transformed
  * with the transformation matrix of the receiver are rotated counter-clockwise 
  * by the number of radians specified by angle.
  */
 - (void) rotateByRadians: (float)angleRad
 {
-  float newA, newB, newC, newD;
   float sine = sin (angleRad);
   float cosine = cos (angleRad);
-
-  newA = A * cosine + C * sine;   newB = B * cosine + D * sine;
-  newC = -A * sine + C * cosine;  newD = -B * sine + D * cosine;
-
-  A = newA; B = newB;
-  C = newC; D = newD;
+  NSAffineTransformStruct rotm;
+  rotm.m11 = cosine; rotm.m12 = sine; rotm.m21 = -sine; rotm.m22 = cosine;
+  rotm.tX = rotm.tY = 0;
+  matrix = matrix_multiply(rotm, matrix);
 }
 
 /**
@@ -237,8 +224,9 @@ static NSAffineTransformStruct identityTransform = {
  */
 - (void) scaleBy: (float)scale
 {
-  A *= scale; B *= scale;
-  C *= scale; D *= scale;
+  NSAffineTransformStruct scam = identityTransform;
+  scam.m11 = scale; scam.m22 = scale;
+  matrix = matrix_multiply(scam, matrix);
 }
 
 /**
@@ -247,8 +235,9 @@ static NSAffineTransformStruct identityTransform = {
  */
 - (void) scaleXBy: (float)scaleX yBy: (float)scaleY
 {
-  A *= scaleX; B *= scaleX;
-  C *= scaleY; D *= scaleY;
+  NSAffineTransformStruct scam = identityTransform;
+  scam.m11 = scaleX; scam.m22 = scaleY;
+  matrix = matrix_multiply(scam, matrix);
 }
 
 /**
@@ -338,8 +327,10 @@ static NSAffineTransformStruct identityTransform = {
  */
 - (void) translateXBy: (float)tranX  yBy: (float)tranY
 {
-  TX += tranX;
-  TY += tranY;
+  NSAffineTransformStruct tranm = identityTransform;
+  tranm.tX = tranX;
+  tranm.tY = tranY;
+  matrix = matrix_multiply(tranm, matrix);
 }
 
 - (id) copyWithZone: (NSZone*)zone
@@ -450,18 +441,14 @@ static NSAffineTransformStruct identityTransform = {
 
 - (void) concatenateWithMatrix: (const float[6])anotherMatrix
 {
-  float newA, newB, newC, newD, newTX, newTY;
-
-  newA = anotherMatrix[0] * A + anotherMatrix[1] * C;
-  newB = anotherMatrix[0] * B + anotherMatrix[1] * D;
-  newC = anotherMatrix[2] * A + anotherMatrix[3] * C;
-  newD = anotherMatrix[2] * B + anotherMatrix[3] * D;
-  newTX = anotherMatrix[4] * A + anotherMatrix[5] * C + TX;
-  newTY = anotherMatrix[4] * B + anotherMatrix[5] * D + TY;
-
-  A = newA; B = newB;
-  C = newC; D = newD;
-  TX = newTX; TY = newTY;
+  NSAffineTransformStruct amat;
+  amat.m11 = anotherMatrix[0];
+  amat.m12 = anotherMatrix[1];
+  amat.m21 = anotherMatrix[2];
+  amat.m22 = anotherMatrix[3];
+  amat.tX  = anotherMatrix[4];
+  amat.tY  = anotherMatrix[5];
+  matrix = matrix_multiply(amat, matrix);
 }
 
 - (void)inverse
