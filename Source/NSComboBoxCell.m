@@ -1603,7 +1603,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
           if (NSMouseInRect(location, buttonRect, isFlipped))
 	    {
 	      [_buttonCell setHighlighted: YES];
-	      [controlView setNeedsDisplay: YES];
+	      [controlView setNeedsDisplayInRect: cellFrame];
 		
 	      result = [_buttonCell trackMouse: e
 		                        inRect: buttonRect
@@ -1612,7 +1612,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
               isMouseUp = result;
 
 	      [_buttonCell setHighlighted: NO];
-	      [controlView setNeedsDisplay: YES];
+	      [controlView setNeedsDisplayInRect: cellFrame];
             }
 		
           if (isMouseUp == NO)

@@ -3460,7 +3460,8 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
 	  // Prepare the cell
 	  tb = [_tableColumns objectAtIndex: _clickedColumn];
-	  cell = [[tb dataCellForRow: _clickedRow] copy];
+	  // It is unclear, if we should copy the cell here, as we do on editing.
+	  cell = [tb dataCellForRow: _clickedRow];
 	  originalValue = RETAIN([self _objectValueForTableColumn:tb row:_clickedRow]);
 	  [cell setObjectValue: originalValue]; 
 	  cellFrame = [self frameOfCellAtColumn: _clickedColumn 
@@ -3497,7 +3498,6 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	    }
 	  RELEASE(originalValue);    
 	  [cell setHighlighted: NO];
-	  RELEASE(cell);
 	  [self setNeedsDisplayInRect: cellFrame];
 	  lastEvent = [NSApp currentEvent];
 	}

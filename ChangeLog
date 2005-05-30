@@ -1,3 +1,11 @@
+2005-05-30  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableView.m (-mouseDown): No longer copy the cell, as
+	this was causing trouble in GNUmail and Gworkspace.
+	* Source/NSComboBox.m (-trackMouse:inRect:ofView:untilMouseUp:): 
+	Only mark the cellframe as needing redraw.
+	Patch by Matt Rice <ratmice@yahoo.com>.
+
 2005-05-27  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSAffineTransform.m (matrix_multiply): New function.
