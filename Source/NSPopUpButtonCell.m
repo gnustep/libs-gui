@@ -90,7 +90,10 @@ static NSImage *_pbc_image[2];
    * while the popup is still displayed. In that case the notification
    * center would still send notifications to the deallocated cell.
    */
-  [self dismissPopUp];
+  if ([[_menu window] isVisible])
+    {
+      [self dismissPopUp];
+    }
   /* 
    * We don't use methods here to clean up the selected item, the menu
    * item and the menu as these methods internally update the menu,
