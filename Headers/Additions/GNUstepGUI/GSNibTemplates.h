@@ -52,7 +52,7 @@
 
 /** Window template autopositioning constants */
 enum {
-  GSWindowAutosizeNone = 0,
+  GSWindowAutoPositionNone = 0,
   GSWindowMinXMargin = 1,
   GSWindowMaxXMargin = 2,
   GSWindowMinYMargin = 4,

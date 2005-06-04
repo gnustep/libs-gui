@@ -1,3 +1,10 @@
+2005-06-04 08:11 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSNibTemplates.h: Minor update to
+	constant name.
+	* Source/GSNibTemplates.m: Use new constant name, and move call
+	to autoPositionWindow: outside of class name check.
+
 2005-06-04 07:36 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/Additions/GNUstepGUI/GSNibTemplates.h: Constants for new

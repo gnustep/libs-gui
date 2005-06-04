@@ -746,7 +746,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
   BOOL		changedOrigin = NO;
 
   // reposition the window on the screen.
-  if (_autoPositionMask == GSWindowAutosizeNone)
+  if (_autoPositionMask == GSWindowAutoPositionNone)
     return;
 
   /*
@@ -827,7 +827,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 	{
 	  // decode the defer flag...
 	  [coder decodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];      
-	  _autoPositionMask = GSWindowAutosizeNone;
+	  _autoPositionMask = GSWindowAutoPositionNone;
 	  _screenRect = [[_object screen] frame];
 	}
 
@@ -847,10 +847,10 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 	      
 	      // set the content view back
 	      [obj setContentView: contentView];
-
-	      // autoposition window
-	      [self autoPositionWindow: obj];
 	    }
+
+	  // autoposition window
+	  [self autoPositionWindow: obj];
 	}
       else
 	{
