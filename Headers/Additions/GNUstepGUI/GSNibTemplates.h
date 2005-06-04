@@ -37,7 +37,7 @@
 // versions of the nib container and the templates.
 #define GNUSTEP_NIB_VERSION 1
 #define GSSWAPPER_VERSION   0
-#define GSWINDOWT_VERSION   0
+#define GSWINDOWT_VERSION   1
 #define GSVIEWT_VERSION     0
 #define GSCONTROLT_VERSION  0
 #define GSTEXTT_VERSION     0
@@ -49,6 +49,15 @@
 @class	NSDictionary;
 @class	NSMutableDictionary;
 @class  NSMutableSet;
+
+/** Window template autopositioning constants */
+enum {
+  GSWindowAutosizeNone = 0,
+  GSWindowMinXMargin = 1,
+  GSWindowMaxXMargin = 2,
+  GSWindowMinYMargin = 4,
+  GSWindowMaxYMargin = 8
+};
 
 /*
  * This is the class that holds objects within a nib.
@@ -100,7 +109,15 @@
 @interface GSWindowTemplate : GSClassSwapper
 {
   BOOL                 _deferFlag;
+  unsigned int         _autoPositionMask;
+  NSRect               _screenRect;
 }
+// auto position the window.
+- (unsigned int) autoPositionMask;
+- (void) setAutoPositionMask: (unsigned int)flag;
+- (void) autoPositionWindow: (NSWindow *)window;
+
+// set attributes specific to the template.
 - (void) setDeferFlag: (BOOL)flag;
 - (BOOL) deferFlag;
 @end

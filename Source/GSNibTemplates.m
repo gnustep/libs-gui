@@ -50,6 +50,7 @@
 #include <AppKit/NSNibLoading.h>
 #include <AppKit/NSNibConnector.h>
 #include <AppKit/NSApplication.h>
+#include <AppKit/NSScreen.h>
 #include <GNUstepBase/GSObjCRuntime.h>
 #include <GNUstepGUI/GSNibTemplates.h>
 
@@ -629,7 +630,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 
 - (void) setClassName: (NSString *)name
 {
-  ASSIGN(_className, [name copy]);
+  ASSIGN(_className, name);
 }
 
 - (NSString *)className
@@ -714,6 +715,16 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
     }
 }
 
+- (unsigned int) autoPositionMask
+{
+  return _autoPositionMask;
+}
+
+- (void)setAutoPositionMask: (unsigned int)flag
+{
+  _autoPositionMask = flag;
+}
+
 - (BOOL)deferFlag
 {
   return _deferFlag;
@@ -724,36 +735,134 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
   _deferFlag = flag;
 }
 
+- (void) autoPositionWindow: (NSWindow *)window
+{
+  int		options = 0;
+  NSRect        currentScreenFrame = [[window screen] frame];
+  NSRect        windowFrame = [window frame];
+  NSPoint       origin  = windowFrame.origin;
+  NSSize	newSize = currentScreenFrame.size;
+  NSSize        oldSize = _screenRect.size;
+  BOOL		changedOrigin = NO;
+
+  // reposition the window on the screen.
+  if (_autoPositionMask == GSWindowAutosizeNone)
+    return;
+
+  /*
+   * determine if and how the X axis can be resized
+   */
+  if (_autoPositionMask & GSWindowMinXMargin)
+    options++;
+
+  if (_autoPositionMask & GSWindowMaxXMargin)
+    options++;
+
+  /*
+   * adjust the X axis if any X options are set in the mask
+   */
+  if (options > 0)
+    {
+      float change = newSize.width - oldSize.width;
+      float changePerOption = change / options;
+
+      if (_autoPositionMask & GSWindowMinXMargin)
+	{
+	  origin.x += changePerOption;
+	  changedOrigin = YES;
+	}
+    }
+
+  /*
+   * determine if and how the Y axis can be resized
+   */
+  options = 0;
+  if (_autoPositionMask & GSWindowMinYMargin)
+    options++;
+
+  if (_autoPositionMask & GSWindowMaxYMargin)
+    options++;
+
+  /*
+   * adjust the Y axis if any Y options are set in the mask
+   */
+  if (options > 0)
+    {
+      float change = newSize.height - oldSize.height;
+      float changePerOption = change / options;
+      
+      if (_autoPositionMask & (GSWindowMaxYMargin | GSWindowMinYMargin))
+	{
+	  if (_autoPositionMask & GSWindowMinYMargin)
+	    {
+	      origin.y += changePerOption;
+	      changedOrigin = YES;
+	    }
+	}
+    }
+  
+  // change the origin of the window.
+  if(changedOrigin)
+    {
+      [window setFrameOrigin: origin];
+    }
+}
+
 // NSCoding...
 - (id) initWithCoder: (NSCoder *)coder
 {
   id obj = [super initWithCoder: coder];
   if(obj != nil)
     {
-      NSView *contentView = nil;
+      int version = [coder versionForClassName: @"GSWindowTemplate"];
 
-      // decode the defer flag...
-      [coder decodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];      
+      if(version == GSWINDOWT_VERSION)
+	{
+	  // decode the defer flag...
+	  [coder decodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];      
+	  [coder decodeValueOfObjCType: @encode(unsigned int) at: &_autoPositionMask];
+	  _screenRect = [coder decodeRect];
+	}
+      else if(version == 0)
+	{
+	  // decode the defer flag...
+	  [coder decodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];      
+	  _autoPositionMask = GSWindowAutosizeNone;
+	  _screenRect = [[_object screen] frame];
+	}
 
       if([self shouldSwapClass])
-      {
-	// We should call the designated initializer when it is a custom subclass only.  If the
-	// class name and the encoded class are the same, it's usually not a custom class.
-	if(GSGetMethod([obj class], @selector(initWithContentRect:styleMask:backing:defer:), YES, NO) != NULL 
+	{
+	  if(GSGetMethod([obj class], @selector(initWithContentRect:styleMask:backing:defer:), YES, NO) != NULL
 	   && ![_className isEqualToString: NSStringFromClass(_superClass)])
-	  {
-	    // if we are not in interface builder, call 
-	    // designated initializer per spec...
-	    contentView = [obj contentView];
-	    obj = [obj initWithContentRect: [contentView frame]
-		       styleMask: [obj styleMask]
-		       backing: [obj backingType]
-		       defer: _deferFlag];
-	    
-	    // set the content view back
-	    [obj setContentView: contentView];
-	  }
-      }
+	    {
+	      NSView *contentView = [obj contentView];
+
+	      // if we are not in an interface builder, call 
+	      // designated initializer per spec...
+	      obj = [obj initWithContentRect: [contentView frame]
+			 styleMask: [obj styleMask]
+			 backing: [obj backingType]
+			 defer: _deferFlag];
+	      
+	      // set the content view back
+	      [obj setContentView: contentView];
+
+	      // autoposition window
+	      [self autoPositionWindow: obj];
+	    }
+	}
+      else
+	{
+	  //
+	  // Set all of the attributes into the object, if it 
+	  // responds to any of these methods.
+	  //
+	  if([obj respondsToSelector: @selector(setAutoPositionMask:)])
+	    {
+	      [obj setAutoPositionMask: [self autoPositionMask]];
+	    }
+	}
       RELEASE(self);
     }
   return obj;
@@ -761,8 +870,21 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
+  int version = [[self class] version];
+
   [super encodeWithCoder: coder];
-  [coder encodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];      
+
+  if(version == GSWINDOWT_VERSION)
+    {
+      _screenRect = [[_object screen] frame];  
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];
+      [coder encodeValueOfObjCType: @encode(unsigned int) at: &_autoPositionMask];
+      [coder encodeRect: _screenRect]; 
+    }
+  else if(version == 0)
+    {
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];
+    }
 }
 @end
 
@@ -874,7 +996,8 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
     {
       if([self shouldSwapClass])
       {
-	if(GSGetMethod([obj class],@selector(initWithTitle:), YES, NO) != NULL)
+	if(GSGetMethod([obj class],@selector(initWithTitle:), YES, NO) != NULL
+	   && ![_className isEqualToString: NSStringFromClass(_superClass)])
 	  {
 	    NSString *theTitle = [obj title]; 
 	    obj = [obj initWithTitle: theTitle];

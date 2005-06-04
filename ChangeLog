@@ -1,3 +1,12 @@
+2005-06-04 07:36 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSNibTemplates.h: Constants for new
+	autoposition scheme, declaration for setAutoPositionMask:,
+	autoPositionMask and autoPositionWindow: methods.
+	* Source/GSNibTemplates.m: Code in [GSWindowTemplate initWithCoder:]
+	to handle new version.  Also new method autoPositionWindow: to 
+	handle window placement.
+
 2005-05-30  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPopupButtonCell.m (-dealloc) Corrected previous fix to only
