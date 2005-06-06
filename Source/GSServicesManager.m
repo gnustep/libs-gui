@@ -60,7 +60,7 @@
 
 static GSServicesManager	*manager = nil;
 
-/*
+/**
  *	The GSListener class is for talking to other applications.
  *	It is a proxy with some dangerous methods implemented in a
  *	harmless manner to reduce the chances of a malicious app
@@ -156,7 +156,7 @@ NSRegisterServicesProvider(id provider, NSString *name)
   ASSIGN(providerName, name);
 }
 
-/*
+/**
  * The GSListener class exists as a proxy to forward messages to
  * service provider objects.  It implements very few methods and
  * those that it does implement are generally designed to defeat
@@ -407,7 +407,7 @@ NSRegisterServicesProvider(id provider, NSString *name)
 static NSString         *servicesName = @".GNUstepServices";
 static NSString         *disabledName = @".GNUstepDisabled";
 
-/*
+/**
  *      Create a new listener for this application.
  *      Uses NSRegisterServicesProvider() to register itsself as a service
  *      provider with the applications name so we can handle incoming
@@ -667,7 +667,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
   return NO;
 }
 
-/*
+/**
  *      Use tag in menu item to identify slot in menu titles array that
  *      contains the full title of the service.
  *      Return nil if this is not one of our service menu items.
@@ -958,7 +958,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
     }
 }
 
-/*
+/**
  *      Set up connection to listen for incoming service requests.
  */
 - (void) registerAsServiceProvider
@@ -1027,12 +1027,12 @@ static NSString         *disabledName = @".GNUstepDisabled";
     }
 }
 
-/*
+/**
  * Register send and return types that an object can handle - we keep
  * a note of all the possible combinations -
  * 'returnInfo' is a set of all the return types that can be handled
  * without a send.
- * 'combinations' is a dictionary of all send types, with the assciated
+ * 'combinations' is a dictionary of all send types, with the associated
  * values being sets of possible return types.
  */
 - (void) registerSendTypes: (NSArray *)sendTypes

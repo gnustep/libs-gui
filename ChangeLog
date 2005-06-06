@@ -1,3 +1,11 @@
+2005-06-06 Adrian Robert <arobert@cogsci.ucsd.edu>
+
+	* Headers/AppKit/NSApplication.h
+	* Headers/AppKit/NSEvent.h
+	* Source/GSServicesManager.m
+	* Source/NSApplication.m
+	* Source/NSFont.m: Filled in various GSdoc.
+
 2005-06-04 08:11 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/Additions/GNUstepGUI/GSNibTemplates.h: Minor update to

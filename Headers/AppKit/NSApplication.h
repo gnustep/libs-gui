@@ -331,12 +331,25 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 
 @end
 
+/**
+ * Informal protocol declaring methods for sending to and receiving from
+ * remote services providers.
+ */
 @interface NSObject (NSServicesRequests)
 
 /*
  * Pasteboard Read/Write
  */
+/**
+ * Request to transfer data from given pasteboard to selection (called when
+ * a called remote service has provided data to this pasteboard).
+ */
 - (BOOL) readSelectionFromPasteboard: (NSPasteboard*)pboard;
+
+/**
+ * Request to write selection data to given pasteboard (called when a called
+ * remote service is to be invoked).
+ */
 - (BOOL) writeSelectionToPasteboard: (NSPasteboard*)pboard
                               types: (NSArray*)types;
 
@@ -351,46 +364,182 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 - (void) _windowWillDealloc: (NSWindow *)window;
 @end
 
-/*
- * A formal protocol that duplicates the informal protocol for delegates.
+/**
+ * This is a formal protocol that duplicates the informal protocol for
+ * [NSApplication] delegates.  Your delegate does not need to implement the
+ * formal protocol; it is declared only for documentation purposes.  Your
+ * delegate should just implement the methods it needs to, which will allow
+ * <code>NSApp</code> to use default implementations in other cases.
  */
 @protocol	GSAppDelegateProtocol
+/**
+ * Sender app (not necessarily this application) requests application to open
+ * file without bringing up its normal UI, for programmatic manipulation.
+ * YES should be returned on success, NO on failure.
+ */
 - (BOOL) application: (NSApplication*)app
    openFileWithoutUI: (NSString*)filename;
+
+/**
+ * Sender requests application to open filename.
+ * YES should be returned on success, NO on failure.
+ */
 - (BOOL) application: (NSApplication*)app
 	    openFile: (NSString*)filename;
+
+/**
+ * Sender requests application to open a temporary file.  Responsibility
+ * for eventual deletion lies with this application.
+ * YES should be returned on success, NO on failure.
+ */
 - (BOOL) application: (NSApplication*)app
 	openTempFile: (NSString*)filename;
+
+/**
+ * Sender requests application to print filename.  This should generally be
+ * done without presenting a GUI to the user, unless default options are
+ * likely to be changed.
+ * YES should be returned on success, NO on failure.
+ */
 - (BOOL) application: (NSApplication *)theApplication 
            printFile:(NSString *)filename;
+
+/**
+ * Sender requests application to open a fresh document.
+ * YES should be returned on success, NO on failure.
+ */
 - (BOOL) applicationOpenUntitledFile: (NSApplication*)app;
+
+/**
+ * Sender will request application to open a fresh document, unless NO
+ * is returned here.
+ */
 - (BOOL) applicationShouldOpenUntitledFile:(NSApplication *)sender;
+
 #ifndef STRICT_OPENSTEP
+/**
+ * Sent from within the [NSApplication-terminate:].  If NO is returned
+ * termination will not proceed. 
+ */
 - (BOOL) applicationShouldTerminate: (id)sender;
 #else
+/**
+ * Sent from within the [NSApplication-terminate:].  If
+ * <code>NSTerminateNow</code> is returned, termination will proceed.  If
+ * <code>NSTerminateCancel</code> is returned, termination will NOT proceed.
+ * If <code>NSTerminateLater</code> is returned, termination will be halted,
+ * but the application should call
+ * [NSApplication-replyToApplicationShouldTerminate:] with a YES or NO.  (Used
+ * if confirmation windows, etc. need to be put up.)
+ */
 - (NSApplicationTerminateReply) applicationShouldTerminate: (NSApplication *)sender;
-#endif 
+#endif
+
+/**
+ * Invoked when the last window is closed in an application.  If YES is
+ * returned, -applicationShouldTerminate: is invoked.
+ */
 - (BOOL) applicationShouldTerminateAfterLastWindowClosed: (id)sender;
 
+/**
+ * Invoked on notification that application has become active.
+ */
 - (void) applicationDidBecomeActive: (NSNotification*)aNotification;
+
+/**
+ * Invoked on notification that application has finished launching
+ * ([NSApplication-finishLaunching] has completed, but no event dispatching
+ * has begun. 
+ */
 - (void) applicationDidFinishLaunching: (NSNotification*)aNotification;
+
+/**
+ * Invoked on notification that application has just been hidden.
+ */
 - (void) applicationDidHide: (NSNotification*)aNotification;
+
+/**
+ * Invoked on notification that application has just been deactivated.
+ */
 - (void) applicationDidResignActive: (NSNotification*)aNotification;
+
+/**
+ * Invoked on notification that application has just been unhidden.
+ */
 - (void) applicationDidUnhide: (NSNotification*)aNotification;
+
+/**
+ * Invoked on notification that application has updated its windows.
+ */
 - (void) applicationDidUpdate: (NSNotification*)aNotification;
+
+/**
+ * Invoked on notification that application will become active.
+ */
 - (void) applicationWillBecomeActive: (NSNotification*)aNotification;
+
+/**
+ * Invoked on notification that application will become active.
+ */
 - (void) applicationWillFinishLaunching: (NSNotification*)aNotification;
+
+/**
+ * Invoked on notification that application will be hidden.
+ */
 - (void) applicationWillHide: (NSNotification*)aNotification;
+
+/**
+ * Invoked on notification just before application resigns active status.
+ */
 - (void) applicationWillResignActive: (NSNotification*)aNotification;
+
+/**
+ * Invoked on notification just before application terminates.  (There is
+ * no opportunity to avert it now.)
+ */
 - (void) applicationWillTerminate:(NSNotification *)aNotification;
+
+/**
+ * Invoked on notification that application will be unhidden.
+ */
 - (void) applicationWillUnhide: (NSNotification*)aNotification;
+
+/**
+ * Invoked on notification that application will now update its windows.
+ * (See [NSApplication-updateWindows].
+ */
 - (void) applicationWillUpdate: (NSNotification*)aNotification;
+
 #ifndef STRICT_OPENSTEP
+/**
+ * Method called by scripting framework on OS X.  <em>Not implemented (sent)
+ * yet on GNUstep.</em>
+ */
 - (BOOL) application: (NSApplication *)sender 
   delegateHandlesKey: (NSString *)key;
+
+/**
+ * Method used on OS X to allow an application to override the standard menu
+ * obtained by right-clicking on the application's dock icon.  <em>Not sent
+ * yet in GNUstep.</em>
+ */
 - (NSMenu *) applicationDockMenu: (NSApplication *)sender;
+
+/**
+ * Method used on OS X to allow delegate to handle event when user clicks on
+ * dock icon of an already-open app.  If YES is returned, a default
+ * implementation executes (for example, to create a new untitled document);
+ * if NO is returned nothing is done (and you can handle it here in this
+ * method).  <em>Not sent yet under GNUstep.</em>
+ */
 - (BOOL) applicationShouldHandleReopen: (NSApplication *)theApplication 
 		   hasVisibleWindows: (BOOL)flag;
+
+/**
+ * Called on OS X when the resolution or other characteristics of the display
+ * have changed (through control panel operation, connecting a new monitor,
+ * etc.).  <em>Not implemented/sent yet under GNUstep.</em>
+ */
 - (void) applicationDidChangeScreenParameters: (NSNotification *)aNotification;
 #endif 
 @end

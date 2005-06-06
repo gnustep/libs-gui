@@ -1,6 +1,6 @@
 /** <title>NSApplication</title>
 
-   <abstract>The one and only application class</abstract>
+   <abstract>The one and only application class.</abstract>
 
    Copyright (C) 1996,1999 Free Software Foundation, Inc.
 
@@ -95,7 +95,7 @@ _NSAppKitUncaughtExceptionHandler (NSException *exception)
 
   /*
    * If there is no graphics context to run the alert panel in or
-   * its a sever error, use a non-graphical exception handler
+   * its a severe error, use a non-graphical exception handler
    */
   if (GSCurrentContext() == nil
     || [[exception name] isEqual: NSWindowServerCommunicationException]
@@ -571,6 +571,32 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 
 @end
 
+/**
+ * <p>Every graphical GNUstep application has exactly one instance of
+ * <code>NSApplication</code> (or a subclass) instantiated.  Usually this is
+ * created through the +sharedApplication method.  Once created, this instance
+ * is always accessible through the global variable '<code>NSApp</code>'.</p>
+ * 
+ * <p>The NSApplication instance manages the main run loop, dispatches
+ * events, and manages resources.  It sets up the connection to the window
+ * server and provides special methods for putting up "modal" (always on top)
+ * windows.</p>
+ *
+ * <p>Typically, -run is called by an application's <code>main</code> method
+ * after the NSApplication instance is created, which never returns.  However,
+ * applications needing to integrate other event loops may strategically call
+ * the -stop method, followed by -run later on.</p>
+ *
+ * <p>To avoid most common needs for subclassing, NSApplication allows you to
+ * specify a <em>delegate</em> that is messaged in particular situations.
+ * See -delegate , -setDelegate: , and [(GSAppDelegateProtocol)].</p>
+ *
+ * <p><strong>Subclassing</strong> should be a last resort, and delegate
+ * methods should be used in most cases.  However, subclassing is most
+ * frequently done to implement custom event loop management by overriding
+ * -run when the method described above is not sufficient, or to intercept
+ * events by overriding -sendEvent: .</p>
+ */
 @implementation NSApplication
 
 /*
@@ -614,6 +640,10 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   RELEASE(pool);
 }
 
+/**
+ * Calls [NSThread+detachNewThreadSelector:toTarget:withObject:] with the
+ * invocation wrapped by an autorelease pool.
+ */
 + (void) detachDrawingThread: (SEL)selector
 		    toTarget: (id)target
 		  withObject: (id)argument
@@ -630,38 +660,38 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 }
 
 /**
- * Return the shared application instance, creating one (of the
+ * <p>Return the shared application instance, creating one (of the
  * receiver class) if needed.  There is (and must always be) only a
  * single shared application instance for each application.  After the
  * shared application instance has been created, you can access it
- * directly via the global variable NSApp (but not before!).  When the
- * shared application instance is created, it is also automatically
- * initialized (that is, its -init method is called), which connects
- * to the window server and prepares the gui library for actual
- * operation.  For this reason, you must always call [NSApplication
- * sharedApplication] before using any functionality of the gui
+ * directly via the global variable <code>NSApp</code> (but not before!). When
+ * the shared application instance is created, it is also automatically
+ * initialized (that is, its <code>init</code> method is called), which
+ * connects to the window server and prepares the gui library for actual
+ * operation.  For this reason, you must always call <code>[NSApplication
+ * sharedApplication]</code> before using any functionality of the gui
  * library - so, normally, this should be one of the first commands in
- * your program (if you use NSApplicationMain(), this is automatically
- * done).
+ * your program (if you use <code>NSApplicationMain()</code>, this is
+ * automatically done).</p>
  *
- * The shared application instance is normally an instance of
+ * <p>The shared application instance is normally an instance of
  * NSApplication; but you can subclass NSApplication, and have an
  * instance of your own subclass be created and used as the shared
  * application instance.  If you want to get this result, you need to
  * make sure the first time you call +sharedApplication is on your
  * custom NSApplication subclass (rather than on NSApplication).
- * Putting [MyApplicationClass sharedApplication]; as the first
+ * Putting <code>[MyApplicationClass sharedApplication]</code>; as the first
  * command in your program is the recommended way. :-) If you use
- * NSApplicationMain(), it automatically creates the appropriate
+ * <code>NSApplicationMain()</code>, it automatically creates the appropriate
  * instance (which you can control by editing the info dictionary of
- * the application).
+ * the application).</p>
  *
- * It is not safe to call this method from multiple threads - it would
+ * <p>It is not safe to call this method from multiple threads - it would
  * be useless anyway since the whole library is not thread safe: there
  * must always be at most one thread using the gui library at a time.
  * (If you absolutely need to have multiple threads in your
  * application, make sure only one of them uses the gui [the 'drawing'
- * thread], and the other ones do not).
+ * thread], and the other ones do not).</p>
  */
 + (NSApplication *) sharedApplication
 {
@@ -758,7 +788,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
  * sharedApplication].
  *
  * If you call this method from your code (which we discourage you
- * from doing), it is /your/ responsibility to make sure it is called
+ * from doing), it is <em>your</em> responsibility to make sure it is called
  * only once (this is according to the openstep specification).  Since
  * +sharedApplication automatically calls this method, making also
  * sure it calls it only once, you definitely want to use
@@ -794,6 +824,18 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   return NSApp;
 }
 
+/**
+ * <p>Activates the application, sets the application icon, loads the main
+ * Nib file if <code>NSMainNibFile</code> is set in the application
+ * property list, posts an
+ * <code>NSApplicationWillFinishLaunchingNotification</code>, and takes care
+ * of a few other startup tasks, then posts
+ * <code>NSApplicationDidFinishLaunchingNotification</code>.
+ * If you override this method, be sure to call <em>super</em>.</p>
+ *
+ * <p>The -run method calls this the first time it is called, before starting
+ * the event loop for the first time.</p>
+ */
 - (void) finishLaunching
 {
   NSBundle		*mainBundle = [NSBundle mainBundle];
@@ -993,8 +1035,12 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   [super dealloc];
 }
 
-/*
- * Changing the active application
+/**
+ * Activate app unconditionally if flag is YES, otherwise only if no other app
+ * is active.  (<em><strong>Note:</strong> this is currently not implemented
+ * under GNUstep.  The app is always activated unconditionally.</em>)  Usually
+ * it is not necessary to manually call this method, except in some
+ * circumstances of interapplication communication.
  */
 - (void) activateIgnoringOtherApps: (BOOL)flag
 {
@@ -1056,6 +1102,10 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
     }
 }
 
+/**
+ * Forcefully deactivate the app, without activating another.  It is rarely
+ * necessary to use this method.
+ */
 - (void) deactivate
 {
   if (_app_is_active == YES)
@@ -1114,16 +1164,29 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
     }
 }
 
+/**
+ * Returns whether this app is the currently active GNUstep application.
+ * Note that on a GNUstep system, unlike OS X, it is possible for NO GNUstep
+ * app to be active.
+ */
 - (BOOL) isActive
 {
   return _app_is_active;
 }
 
+/**
+ * Cause all other apps to hide themselves.
+ * <em>Unimplemented under GNUstep.</em>
+ */
 - (void) hideOtherApplications: (id)sender
 {
   // FIXME Currently does nothing
 }
 
+/**
+ * Cause all apps including this one to unhide themselves.
+ * <em>Unimplemented under GNUstep.</em>
+ */
 - (void) unhideAllApplications: (id)sender
 {
   // FIXME Currently does nothing
@@ -1134,7 +1197,13 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
  */
 
 /**
- * This method starts the main event loop of the application.
+ * <p>This method first calls -finishLaunching (if this is the first time -run)
+ * has been called, then starts the main event loop of the application which
+ * continues until -terminate: or -stop: is called.</p>
+ *
+ * <p>At each iteration, at most one event is dispatched, the main and services
+ * menus are sent [NSMenu-update] messages, and -updateWindows is possibly
+ * called if this has been flagged as necessary.</p>
  */
 - (void) run
 {
@@ -1206,6 +1275,9 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   DESTROY (_runLoopPool);
 }
 
+/**
+ *  Returns whether the event loop managed by -run is currently active.
+ */
 - (BOOL) isRunning
 {
   return _app_is_running;
@@ -1213,6 +1285,14 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 
 /*
  * Running modal event loops
+ */
+
+/**
+ * Halts a currently running modal event loop started by -runModalForWindow:
+ * or -runModalSession: .  If you wish to halt the session in response to
+ * user interaction with the modal window, use -stopModalWithCode: or
+ * -stopModal instead; only use this to halt the loop from elsewhere, such as
+ * another thread.
  */
 - (void) abortModal
 {
@@ -1267,6 +1347,10 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   return theSession;
 }
 
+/**
+ * Clean up after a modal session has been run.  Called with theSession
+ * returned from a previous call to beginModalSessionForWindow: .
+ */
 - (void) endModalSession: (NSModalSession)theSession
 {
   NSModalSession	tmp = _session;
@@ -1308,8 +1392,8 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 /**
  * Starts modal event loop for given window, after calling
  * -beginModalSessionForWindow:.  Loop is broken only by stopModal: ,
- * -stopModalWithCode: , or -abortModal: , at which time -endModalSession:
- * is called.
+ * -stopModalWithCode: , or -abortModal , at which time -endModalSession:
+ * is called automatically.
  */
 - (int) runModalForWindow: (NSWindow*)theWindow
 {
@@ -1488,6 +1572,9 @@ See -runModalForWindow:
     return nil;
 }
 
+/**
+ * Stops the main run loop, as well as a modal session if it is running.
+ */
 - (void) stop: (id)sender
 {
   if (_session != 0)
@@ -1503,11 +1590,21 @@ See -runModalForWindow:
     }
 }
 
+/**
+ * Stops a running modal session causing -runModalForWindow: or
+ * -runModalSession: to return <code>NSRunStoppedResponse</code>.  Use this
+ * or -stopModalWithCode: to end a modal session in response to user input.
+ */
 - (void) stopModal
 {
   [self stopModalWithCode: NSRunStoppedResponse];
 }
 
+/**
+ * Stops a running modal session causing -runModalForWindow: or
+ * -runModalSession: to return the specified integer code.  Use this
+ * or -stopModal to end a modal session in response to user input.
+ */
 - (void) stopModalWithCode: (int)returnCode
 {
   if (_session == 0)
@@ -1523,6 +1620,13 @@ See -runModalForWindow:
   _session->runState = returnCode;
 }
 
+/**
+ * Put up a modal window centered relative to docWindow.  On OS X this is
+ * deprecated in favor of
+ * -beginSheet:modalForWindow:modalDelegate:didEndSelector:contextInfo: .
+ * <em>Not implemented under GNUstep.  Currently just centers window on the
+ * screen.</em>
+ */
 - (int) runModalForWindow: (NSWindow *)theWindow
 	relativeToWindow: (NSWindow *)docWindow
 {
@@ -1530,6 +1634,17 @@ See -runModalForWindow:
   return [self runModalForWindow: theWindow];
 }
 
+/**
+ * Put up a modal sheet sliding down from top of docWindow.  If modalDelegate
+ * is non-nil and responds to didEndSelector (this is optional), it is invoked
+ * after the session ends.  The selector should take three arguments:
+ * NSWindow *, int, void *.  It is passed the sheet window, the return code,
+ * and the contextInfo passed in here.
+
+ * <em>Under GNUstep, the sheet aspect is not implemented (just centers
+ * window on the screen), but modalDelegate didEndSelector is called if
+ * both non-nil.</em>
+ */
 - (void) beginSheet: (NSWindow *)sheet
      modalForWindow: (NSWindow *)docWindow
       modalDelegate: (id)modalDelegate
@@ -1552,12 +1667,18 @@ See -runModalForWindow:
     }
 }
 
+/**
+ *  Analogous to -stopModal for sheets.
+ */
 - (void) endSheet: (NSWindow *)sheet
 {
   // FIXME
   [self stopModal];
 }
 
+/**
+ *  Analogous to -stopModalWithCode: for sheets.
+ */
 - (void) endSheet: (NSWindow *)sheet
        returnCode: (int)returnCode
 {
@@ -1568,6 +1689,12 @@ See -runModalForWindow:
 
 /*
  * Getting, removing, and posting events
+ */
+
+/**
+ * Called by -run to dispatch events that are received according to AppKit's
+ * forwarding conventions.  You rarely need to invoke this directly.  If you
+ * want to synthesize an event for processing, call -postEvent:atStart: .
  */
 - (void) sendEvent: (NSEvent *)theEvent
 {
@@ -1628,22 +1755,38 @@ See -runModalForWindow:
     }
 }
 
+/**
+ * Returns the most recent event -run pulled off the event queue.
+ */
 - (NSEvent*) currentEvent
 {
   return _current_event;
 }
 
+/* Utility for pen-device input.  See NSResponder. */
 - (BOOL) shouldBeTreatedAsInkEvent: (NSEvent *)theEvent
 {
   return [[theEvent window] shouldBeTreatedAsInkEvent: theEvent];
 }
 
+/**
+ * Drop events matching mask from the queue, before but not including
+ * lastEvent.  The mask is a bitwise AND of event mask constants.
+ * See (EventType) .  Use <code>NSAnyEventMask</code> to discard everything
+ * up to lastEvent.
+ */
 - (void) discardEventsMatchingMask: (unsigned int)mask
 		       beforeEvent: (NSEvent *)lastEvent
 {
   DPSDiscardEvents(GSCurrentServer(), mask, lastEvent);
 }
 
+/**
+ * Return the next event matching mask from the queue, dequeuing if flag is
+ * YES.  Intervening events are NOT dequeued.  If no matching event is on the
+ * queue, will wait for one until expiration, returning nil if none found.
+ * See (EventType) for the list of masks.
+ */
 - (NSEvent*) nextEventMatchingMask: (unsigned int)mask
 			 untilDate: (NSDate*)expiration
 			    inMode: (NSString*)mode
@@ -1687,6 +1830,12 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
   return event;
 }
 
+/**
+ * Add an event to be processed by the app, either at end or at beginning
+ * (next up) if flag is YES.  This provides a way to provide synthetic input
+ * to an application, or, for whatever reason, to allow a real event to be
+ * re-dispatched.
+ */
 - (void) postEvent: (NSEvent *)event atStart: (BOOL)flag
 {
   DPSPostEvent(GSCurrentServer(), event, flag);
@@ -1751,7 +1900,7 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
  *   Returns the target object that will respond to aSelector, if any. The
  *   method first checks if any of the key window's first responders, the
  *   key window or its delegate responds. Next it checks the main window in
- *   the same way. Finally it checks the receiver (NSApplication) and it's
+ *   the same way. Finally it checks the receiver (NSApplication) and its
  *   delegate.
  * </p>
  */
@@ -1913,11 +2062,18 @@ image.
   DESTROY(old_app_icon);
 }
 
+/**
+ *  Returns the current icon be used for the application.
+ */
 - (NSImage*) applicationIconImage
 {
   return _app_icon;
 }
 
+/**
+ * Returns the actual window object being used to display the application
+ * icon (usually in the dock).
+ */
 - (NSWindow*) iconWindow
 {
   return _app_icon_window;
@@ -1925,6 +2081,15 @@ image.
 
 /*
  * Hiding and arranging windows
+ */
+
+/**
+ * Request this application to "hide" (unmap all windows from the screen
+ * except the icon window).  Posts
+ * <code>NSApplicationWillHideNotification</code> and
+ * <code>NSApplicationDidHideNotification</code>.  On OS X this activates
+ * the next app that is running, however on GNUstep this is up to the window
+ * manager.
  */
 - (void) hide: (id)sender
 {
@@ -1976,11 +2141,17 @@ image.
     }
 }
 
+/**
+ * Returns whether app is currently in hidden state.
+ */
 - (BOOL) isHidden
 {
   return _app_is_hidden;
 }
 
+/**
+ *  Unhides and activates this application.
+ */
 - (void) unhide: (id)sender
 {
   if (_app_is_hidden)
@@ -1997,6 +2168,9 @@ image.
     }
 }
 
+/**
+ * Unhides this app (displays its windows) but does not activate it.
+ */
 - (void) unhideWithoutActivation
 {
   if (_app_is_hidden == YES)
@@ -2031,6 +2205,10 @@ image.
     }
 }
 
+/**
+ * Arranges all app's windows in front by successively calling
+ * [NSWindow-orderFront:] on each window in the app's Windows menu.
+ */
 - (void) arrangeInFront: (id)sender
 {
   NSMenu	*menu;
@@ -2059,52 +2237,54 @@ image.
 /*
  * Managing windows
  */
+
+/**
+ * Returns current key window.  If this app is active, one window should be
+ * key.  If this app is not active, nil should be returned.  The key window
+ * is the one that will receive keyboard input.
+ */
 - (NSWindow*) keyWindow
 {
   return _key_window;
 }
 
+/**
+ * Returns current main window of this application.  There need not necessarily
+ * be a main window, even if app is active, and this should return nil if the
+ * app is inactive.
+ */
 - (NSWindow*) mainWindow
 {
   return _main_window;
 }
 
+/**
+ * Sends aSelector to each window, either in the app's internal window list
+ * (flag = NO) or their stacking order from front to back on the screen
+ * (flag = YES, <em>currently not implemented under GNUstep</em>).
+ */
 - (NSWindow*) makeWindowsPerform: (SEL)aSelector inOrder: (BOOL)flag
 {
   NSArray	*window_list = [self windows];
   unsigned	i;
 
-  if (flag)
+  // FIXME flag ignored
+  i = [window_list count];
+  while (i-- > 0)
     {
-      // FIXME This is not the order specified in the MacOSX spec
-      unsigned	count = [window_list count];
+      NSWindow *window = [window_list objectAtIndex: i];
 
-      for (i = 0; i < count; i++)
-	{
-	  NSWindow *window = [window_list objectAtIndex: i];
-
-	  if ([window performSelector: aSelector] != nil)
-	    {
-	      return window;
-	    }
-	}
-    }
-  else
-    {
-      i = [window_list count];
-      while (i-- > 0)
-	{
-	  NSWindow *window = [window_list objectAtIndex: i];
-
-	  if ([window performSelector: aSelector] != nil)
-	    {
-	      return window;
-	    }
-	}
+      if ([window performSelector: aSelector] != nil)
+        {
+          return window;
+        }
     }
   return nil;
 }
 
+/**
+ * Iconify all windows in the app.
+ */
 - (void) miniaturizeAll: sender
 {
   NSArray *window_list = [self windows];
@@ -2114,16 +2294,30 @@ image.
     [[window_list objectAtIndex: i] miniaturize: sender];
 }
 
+/**
+ * Prevent window reordering in response to most recent mouse down (useful to
+ * prevent raise-on-mouse-click).  <em>Not implemented under GNUstep.</em>
+ */
 - (void) preventWindowOrdering
 {
   //TODO
 }
 
+/**
+ * Set whether the main run loop will request all visible windows update
+ * themselves after the current or next event is processed.  (Update occurs
+ * after event dispatch in the loop.)
+ */
 - (void) setWindowsNeedUpdate: (BOOL)flag
 {
   _windows_need_update = flag;
 }
 
+/**
+ * Sends each of the app's visible windows an [NSWindow-update] message.
+ * This method is called once per iteration of the main run loop managed
+ * by -run .
+ */
 - (void) updateWindows
 {
   NSArray		*window_list = [self windows];
@@ -2142,11 +2336,18 @@ image.
   [nc postNotificationName: NSApplicationDidUpdateNotification object: self];
 }
 
+/**
+ *  Returns array of app's visible and invisible windows.
+ */
 - (NSArray*) windows
 {
   return GSAllWindows();
 }
 
+/**
+ * Returns window for windowNum.  Note the window number can be obtained for
+ * a window from [NSWindow-windowNumber].
+ */
 - (NSWindow *) windowWithWindowNumber: (int)windowNum
 {
   return GSWindowWithNumber(windowNum);
@@ -2155,6 +2356,7 @@ image.
 /*
  * Showing Standard Panels
  */
+
 /** Calls -orderFrontStandardAboutPanelWithOptions: with nil passed as
     the options dictionary.
 */
@@ -2163,7 +2365,7 @@ image.
   [self orderFrontStandardAboutPanelWithOptions: nil];
 }
 
-/** Calls -orderFrontStandardInfoPanelWithOptions:
+/** OS X compatibility: Calls -orderFrontStandardInfoPanelWithOptions: .
 */
 - (void) orderFrontStandardAboutPanelWithOptions: (NSDictionary *)dictionary
 {
@@ -2211,8 +2413,8 @@ image.
    <term>ApplicationIcon</term> 
    <desc> An image to be shown near the title.
    If not available, <file>Info-gnustep.plist</file> is searched for
-   <var>ApplicationIcon</var>; if this fails, [NSApp-applicationIconImage]
-   is used instead.  
+   <var>ApplicationIcon</var>; if this fails, NSApp's -applicationIconImage
+   method is used instead.  
    </desc>
 
    <term>ApplicationRelease</term> 
@@ -2238,7 +2440,7 @@ image.
    <term>Authors</term> 
    <desc> An array of strings, each one with the name
    of an author (eg, <var>[NSArray arrayWithObject: "Nicola Pero
-   &lt;n.peromi.flashnet.it&gt;"]</var>).  If not found,
+   &lt;n.pero\@mi.flashnet.it&gt;"]</var>).  If not found,
    <file>Info-gnustep.plist</file> is searched for <var>Authors</var>,
    if this fails, <var>"Unknown"</var> is displayed.
    </desc>
@@ -2292,7 +2494,8 @@ image.
 }
 
 /**
- * Sets the main menu of the receiver
+ * Sets the main menu of the receiver.  This is sent update messages by the
+ * main event loop.
  */ 
 - (void) setMainMenu: (NSMenu*)aMenu
 {
@@ -2314,6 +2517,9 @@ image.
     }
 }
 
+/*
+   Overrides to show transient version of main menu as in NeXTstep.
+*/
 - (void) rightMouseDown: (NSEvent*)theEvent
 {
   // On right mouse down display the main menu transient
@@ -2325,6 +2531,9 @@ image.
     [super rightMouseDown: theEvent];
 }
 
+/**
+ *  Here for compatibility with OS X, but currently a no-op.
+ */
 - (void) setAppleMenu: (NSMenu*)aMenu
 {
     //TODO: Unclear, what this should do.
@@ -2333,6 +2542,11 @@ image.
 /*
  * Managing the Windows menu
  */
+
+/**
+ * Adds an item to the app's Windows menu.  This is usually done automatically
+ * so you don't need to call this method.
+ */
 - (void) addWindowsItem: (NSWindow*)aWindow
 		  title: (NSString*)aString
 	       filename: (BOOL)isFilename
@@ -2340,6 +2554,10 @@ image.
   [self changeWindowsItem: aWindow  title: aString  filename: isFilename];
 }
 
+/**
+ * Removes an item from the app's Windows menu.  This is usually done
+ * automatically so you don't need to call this method.
+ */
 - (void) removeWindowsItem: (NSWindow*)aWindow
 {
   if (_windows_menu)
@@ -2362,6 +2580,8 @@ image.
     }
 }
 
+// this is an internal helper method for changeWindowsItem:title:filename
+// when window represents an editable document
 - (void) setImageForWindowsItem: (NSMenuItem *)item
 {
   NSImage *oldImage = [item image];
@@ -2511,6 +2731,10 @@ image.
   [self setImageForWindowsItem: item];
 }
 
+/**
+ * Update Windows menu item for aWindow, to reflect its edited status.  This
+ * is usually done automatically so you don't need to call this.
+ */
 - (void) updateWindowsItem: (NSWindow*)aWindow
 {
   NSMenu *menu;
@@ -2611,6 +2835,10 @@ image.
   }
 }
 
+/**
+ * Returns current Windows menu for the application (whose window contents are
+ * managed automatically by this class and NSWindow).
+ */
 - (NSMenu*) windowsMenu
 {
   return _windows_menu;
@@ -2621,7 +2849,11 @@ image.
  */
 
 /**
- * Accepts an array of sendTypes and an array of returnTypes.   
+ * Registers the types this application can send and receive over Services.
+ * sendTypes represents the pasteboard types this app can receive in Service
+ * invocation.  This is used to set up the services menu of this app -- an
+ * item is added for each registered service that can accept one of sendTypes
+ * or return one of returnTypes
  */
 - (void) registerServicesMenuSendTypes: (NSArray *)sendTypes
 			   returnTypes: (NSArray *)returnTypes
@@ -2648,7 +2880,9 @@ image.
 }
 
 /**
- * Sets the services menu for the receiver.
+ * Sets the services menu for the receiver.  This should be called, otherwise
+ * warnings will be generated by the main event loop, which is in charge of
+ * updating all menus, including the Services menu.
  */
 - (void) setServicesMenu: (NSMenu *)aMenu
 {
@@ -2666,23 +2900,36 @@ image.
   [_listener setServicesProvider: anObject];
 }
 
+/**
+ * Return an object capable of sending and receiving the specified sendType
+ * and returnType in a services interaction.  NSApp is generally the last
+ * responder to get this request, and the implementation passes it on to the
+ * delegate if it handles it and is not itself an [NSResponder], or returns
+ * nil otherwise.
+ */
 - (id) validRequestorForSendType: (NSString *)sendType
 		      returnType: (NSString *)returnType
 {
   if (_delegate != nil && ![_delegate isKindOfClass: [NSResponder class]]
     && [_delegate respondsToSelector:
-    @selector(validRequestorForSendType:returnType:)])
+                    @selector(validRequestorForSendType:returnType:)])
     return [_delegate validRequestorForSendType: sendType
 				     returnType: returnType];
 
   return nil;
 }
 
+/**
+ *  Returns the default drawing context for the app.
+ */
 - (NSGraphicsContext *) context
 {
   return _default_context;
 }
 
+/**
+ *  NSLogs an exception without raising it.
+ */
 - (void) reportException: (NSException *)anException
 {
   if (anException)
@@ -2690,7 +2937,10 @@ image.
 }
 
 /**
- * Terminates the application.
+ * Requests the application terminates the application.  First an
+ * -applicationShouldTerminate: message is sent to the delegate, and only if
+ * it returns YES (or <code>NSTerminateNow</code>) will termination be
+ * carried out.
  */
 - (void) terminate: (id)sender
 {
@@ -2711,10 +2961,16 @@ image.
     {
       [self replyToApplicationShouldTerminate: YES];
     }
+  /*
+     Don't need to do anything on NSTerminateLater, as long as user code
+     follows the contract (to call replyTo... later).
+  */
 }
 
 /**
- * Perform the actual application termination.
+ * Terminates the app if shouldTerminate is YES, otherwise does nothing.
+ * This should be called by user code if a delegate has returned
+ * <code>NSTerminateLater</code> to an -applicationShouldTerminate: message.
  */
 - (void) replyToApplicationShouldTerminate: (BOOL)shouldTerminate
 {
@@ -2762,7 +3018,7 @@ image.
 }
 
 /**
- * Returns the applications delegate, as set by the -setDelegate: method.<br />
+ * Returns the application's delegate, as set by the -setDelegate: method.<br/>
  * <p>The application delegate will automatically be sent various
  * notifications (as long as it implements the appropriate methods)
  * when application events occur.  The method to handle each of these
@@ -2790,19 +3046,26 @@ image.
  * as it implements the appropriate methods).
  * </p>
  * <list>
- *   <item>applicationShouldTerminateAfterLastWindowClosed:</item>
- *   <item>applicationShouldOpenUntitledFile:</item>
- *   <item>applicationOpenUntitledFile:</item>
- *   <item>applicationShouldTerminate:</item>
+ *   <item>application:shouldTerminateAfterLastWindowClosed:</item>
+ *   <item>application:shouldOpenUntitledFile:</item>
+ *   <item>application:openFile:</item>
+ *   <item>application:openFileWithoutUI:</item>
+ *   <item>application:openTempFile:</item>
+ *   <item>application:openUntitledFile:</item>
+ *   <item>application:shouldOpenUntitledFile:</item>
+ *   <item>application:printFile:</item>
+ *   <item>application:shouldTerminate:</item>
+ *   <item>application:shouldTerminateAfterLastWindowClosed:</item>
  * </list>
  * <p>The delegate is also called upon to respond to any actions which
  *   are not handled by a window, a window delgate, or by the application
- *   object itsself..  This is controlled by the -targetForAction: method. 
+ *   object itself.  This is controlled by the -targetForAction: method. 
  * </p>
  * <p>Finally, the application delegate is responsible for handling
  *   messages sent to the application from remote processes (see the
  *   section documenting distributed objects for [NSPasteboard]).
  * </p>
+ * <p>See -setDelegate: and [(GSAppDelegateProtocol)] for more information.</p>
  */
 - (id) delegate
 {
@@ -2816,6 +3079,7 @@ image.
  * stop it being the application delagate by calling this
  * method again with another object (or nil) as the argument.
  * </p>
+ * <p>See -delegate and [(GSAppDelegateProtocol)] for more information.</p>
  */
 - (void) setDelegate: (id)anObject
 {
@@ -2847,12 +3111,22 @@ image.
 /*
  * Methods for scripting
  */
+
+/**
+ * OS X scripting method to return document objects being handled by
+ * application.  <em>Not implemented yet under GNUstep.</em>
+ */
 - (NSArray *) orderedDocuments
 {
   // FIXME
   return nil;
 }
 
+/**
+ * OS X scripting method to return windows in front-to-back on-screen order.
+ * <em>The GNUstep implementation returns all the windows in an arbitrary
+ * order.</em>
+ */
 - (NSArray *) orderedWindows
 {
   // FIXME
@@ -2862,11 +3136,22 @@ image.
 /*
  * Methods for user attention requests
  */
+
+/**
+ * Cancels a request previously made through calling -requestUserAttention: .
+ * Note that request is cancelled automatically if user activates the app.
+ */
 - (void) cancelUserAttentionRequest: (int)request
 {
   // FIXME
 }
 
+/**
+ * Method that on OS X makes the icon jump in the doc.  Mercifully, this is
+ * unimplemented under GNUstep.  If it <em>were</em> implemented, requestType
+ * could be either <code>NSCriticalRequest</code> (bounce endlessly) or
+ * <code>NSInformationalRequest</code> (bounce for one second).
+ */
 - (int) requestUserAttention: (NSRequestUserAttentionType)requestType
 {
   // FIXME

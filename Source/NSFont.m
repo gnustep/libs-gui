@@ -455,7 +455,7 @@ static void setNSFont(NSString *key, NSFont *font)
 
 /** 
  * Return the default bold font for use in menus and heading in standard
- * gui components.  If fontSize is <= 0, the default
+ * gui components.  If fontSize is &lt;= 0, the default
  * size is used.<br />
  * This is deprecated in MacOSX
  */

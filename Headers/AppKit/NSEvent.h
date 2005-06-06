@@ -37,11 +37,40 @@
 @class NSWindow;
 @class NSGraphicsContext;
 
-/*
- * Enumerated type for events - order IS significant as ranges of values
- * are used for testing for valid event types.
+/**
+ * Enumeration of event types recognized within GNUstep GUI.  Each type has a
+ * corresponding mask that can be used when filtering for multiple types.  For
+ * example, the <code>NSLeftMouseDown</code> type has
+ * <code>NSLeftMouseDownMask</code> for its mask.  The special mask
+ * <code>NSAnyEventMask</code> matches any event.  The complete list of types
+ * is as follows:
+ * <example>
+  NSLeftMouseDown,
+  NSLeftMouseUp,
+  NSOtherMouseDown,
+  NSOtherMouseUp,
+  NSRightMouseDown,
+  NSRightMouseUp,
+  NSMouseMoved,
+  NSLeftMouseDragged,
+  NSOtherMouseDragged,
+  NSRightMouseDragged,
+  NSMouseEntered,
+  NSMouseExited,
+  NSKeyDown,
+  NSKeyUp,
+  NSFlagsChanged,
+  NSAppKitDefined,       // reserved
+  NSSystemDefined,       // reserved
+  NSApplicationDefined,  // available for custom use by apps
+  NSPeriodic,
+  NSCursorUpdate,
+  NSScrollWheel
+ </example>
  */
 typedef enum _NSEventType {
+  // Note - order IS significant as ranges of values
+  // are used for testing for valid event types.
   NSLeftMouseDown,
   NSLeftMouseUp,
   NSOtherMouseDown,
