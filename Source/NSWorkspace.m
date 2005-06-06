@@ -1215,25 +1215,29 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
 - (NSArray*) mountedRemovableMedia
 {
-  NSArray	*volumes = [self mountedLocalVolumePaths];
-  NSMutableArray *names = [NSMutableArray arrayWithCapacity: [volumes count]];
-  unsigned	i;
+  NSArray		*volumes;
+  NSMutableArray	*names;
+  unsigned		count;
+  unsigned		i;
 
-  for (i = 0; i < [volumes count]; i++)
+  volumes = [self mountedLocalVolumePaths];
+  count = [volumes count];
+  names = [NSMutableArray arrayWithCapacity: count];
+  for (i = 0; i < count; i++)
     {
-      BOOL removableFlag;
-      BOOL writableFlag;
-      BOOL unmountableFlag;
-      NSString *description;
-      NSString *fileSystemType;
-      NSString *name = [volumes objectAtIndex: i];
+      BOOL	removableFlag;
+      BOOL	writableFlag;
+      BOOL	unmountableFlag;
+      NSString	*description;
+      NSString	*fileSystemType;
+      NSString	*name = [volumes objectAtIndex: i];
 
       if ([self getFileSystemInfoForPath: name
-		isRemovable: &removableFlag
-		isWritable: &writableFlag
-		isUnmountable: &unmountableFlag
-		description: &description
-		type: &fileSystemType] && removableFlag)
+			     isRemovable: &removableFlag
+			      isWritable: &writableFlag
+			   isUnmountable: &unmountableFlag
+			     description: &description
+				    type: &fileSystemType] && removableFlag)
         {
 	  [names addObject: name];
 	}
@@ -1244,12 +1248,50 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
 - (NSArray*) mountedLocalVolumePaths
 {
+  NSMutableArray	*names;
+  NSFileManager		*mgr = [NSFileManager defaultManager];
+#ifdef	__MINGW__
+  unsigned		max = BUFSIZ;
+  unichar		buf[max];
+  unichar		*base = buf;
+  unichar		*ptr;
+  unichar		*end;
+  unsigned		len;
+
+  len = GetLogicalDriveStringsW(max-1, base);
+  while (len >= max)
+    {
+      base = NSZoneMalloc(NSDefaultMallocZone(), (len+1) * sizeof(unichar));
+      max = len;
+      len = GetLogicalDriveStringsW(max-1, base);
+    }
+  for (ptr = base; *ptr != 0; ptr = end + 1)
+    {
+      NSString	*path;
+
+      end = ptr;
+      while (*end != 0)
+	{
+	  end++;
+	}
+      len = (end - ptr) * sizeof(unichar);
+      path = [mgr stringWithFileSystemRepresentation: (char*)ptr length: len];
+      [names addObject: path];
+    }
+  if (base != buf)
+    {
+      NSZoneFree(NSDefaultMallocZone(), base);
+    }
+
+#else
+
   // FIXME This is system specific
   NSString	*mtab = [NSString stringWithContentsOfFile: @"/etc/mtab"];
   NSArray	*mounts = [mtab componentsSeparatedByString: @"\n"];
-  NSMutableArray *names = [NSMutableArray arrayWithCapacity: [mounts count]];
+  NSMutableArray *names;
   unsigned int	i;
 
+  names = [NSMutableArray arrayWithCapacity: [mounts count]];
   for (i = 0; i < [mounts count]; i++)
     {
       NSString  *mount = [mounts objectAtIndex: i];
@@ -1271,7 +1313,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
            }
         }
     }
-  
+#endif  
   return names;
 }
 
