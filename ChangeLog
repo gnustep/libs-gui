@@ -2,6 +2,9 @@
 
 	* Source/NSWorkspace.m: ([-mountedLocalVovumePaths]) implemented
 	for mingw as a listing of all device names.
+	Implement for unix using getmntent.
+	* configure.ac: add checks for getmntent variations.
+	Tested on debian, may need tweaks for others.
 
 2005-06-06 Adrian Robert <arobert@cogsci.ucsd.edu>
 

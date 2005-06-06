@@ -30,6 +30,17 @@
 */ 
 
 #include "config.h"
+
+#if	defined(HAVE_GETMNTENT) && defined (MNT_MEMB)
+#if	defined(HAVE_MNTENT_H)
+#include <mntent.h>
+#elif defined(HAVE_SYS_MNTENT_H)
+#include <sys/mntent.h>
+#else
+#undef	HAVE_GETMNTENT
+#endif
+#endif
+
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSHost.h>
@@ -1258,6 +1269,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   unichar		*end;
   unsigned		len;
 
+  names = [NSMutableArray arrayWithCapacity: 8];
   len = GetLogicalDriveStringsW(max-1, base);
   while (len >= max)
     {
@@ -1283,12 +1295,24 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
       NSZoneFree(NSDefaultMallocZone(), base);
     }
 
+#elif	defined(HAVE_GETMNTENT) && defined (MNT_MEMB)
+  FILE		*fptr = fopen("/etc/mtab", "r");
+  struct mntent	*m;
+
+  names = [NSMutableArray arrayWithCapacity: 8];
+  while ((m = getmntent(fptr)) != 0)
+    {
+      NSString	*path;
+
+      path = [mgr stringWithFileSystemRepresentation: m->MNT_MEMB
+					      length: strlen(m->MNT_MEMB)];
+      [names addObject: path];
+    }
 #else
 
   // FIXME This is system specific
   NSString	*mtab = [NSString stringWithContentsOfFile: @"/etc/mtab"];
   NSArray	*mounts = [mtab componentsSeparatedByString: @"\n"];
-  NSMutableArray *names;
   unsigned int	i;
 
   names = [NSMutableArray arrayWithCapacity: [mounts count]];
