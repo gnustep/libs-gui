@@ -65,7 +65,7 @@
 //
 - (void)animate:(id)sender;
 - (NSTimeInterval)animationDelay;
-- (void)setAnimimationDelay:(NSTimeInterval)delay;
+- (void)setAnimationDelay:(NSTimeInterval)delay;
 - (void)startAnimation:(id)sender;
 - (void)stopAnimation:(id)sender;
 - (BOOL)usesThreadedAnimation;

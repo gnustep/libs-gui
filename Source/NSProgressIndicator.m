@@ -80,7 +80,7 @@ static NSColor *fillColour = nil;
 }
 
 - (NSTimeInterval)animationDelay { return _animationDelay; }
-- (void)setAnimimationDelay:(NSTimeInterval)delay
+- (void)setAnimationDelay:(NSTimeInterval)delay
 {
   _animationDelay = delay;
 }
