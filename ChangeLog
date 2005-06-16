@@ -1,3 +1,8 @@
+2005-06-16  Fabien Vallon  <fabien@sonappart.net>
+
+	* Source/NSProgressIndicator.m: setAnimationDelay: fix typo
+	* Headers/AppKit/NSProgressIndicator: ditto
+
 2005-06-06  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: ([-mountedLocalVovumePaths]) implemented
