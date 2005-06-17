@@ -374,7 +374,7 @@ static NSImage *_pbc_image[2];
 
 - (void) setObjectValue: (id)object
 {
-  if ([object respondsTo: @selector(intValue)])
+  if ([object respondsToSelector: @selector(intValue)])
     {
       int i = [object intValue];
 	
