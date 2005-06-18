@@ -1420,13 +1420,14 @@ systemColorWithName(NSString *name)
 	  [scanner scanFloat: &b] &&
 	  [scanner isAtEnd])
 	{
+	  RELEASE(scanner);
 	  return [self colorWithCalibratedRed: r
 					green: g
 					 blue: b
 					alpha: 1.0];
 	}
 
-      DESTROY(scanner);
+      RELEASE(scanner);
     }
 
   return nil;
