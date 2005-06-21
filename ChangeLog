@@ -1,6 +1,14 @@
+2005-06-22  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenu.m (-setGeometry): Use [NSWindow
+	setFrameFromString:] when possible to position the menu windows
+	relative to the screen size.
+	(-isPartlyOffScreen_OFFSCREEN, -setGeometry, -shiftOnScreen) Use
+	current screen and visibleFrame of screen instead of frame. 
+
 2005-06-18  Fred Kiefer <FredKiefer@gmx.de>
 
-	* Source/NSColor.m(+colorFromString:): Make sure the scanner is
+	* Source/NSColor.m (+colorFromString:): Make sure the scanner is
 	always released. Fixes bug reported by Benhur Stein
 	<benhur.stein@gmail.com>.
 

@@ -1157,9 +1157,6 @@ static NSNotificationCenter *nc;
 
 @implementation NSMenu (GNUstepExtra)
 
-#define IS_OFFSCREEN(WINDOW) \
-  !(NSContainsRect([[NSScreen mainScreen] frame], [WINDOW frame]))
-
 - (void) setTornOff: (BOOL)flag
 {
   NSMenu	*supermenu;
@@ -1224,7 +1221,10 @@ static NSNotificationCenter *nc;
 
 - (BOOL) isPartlyOffScreen
 {
-  return IS_OFFSCREEN ([self window]);
+  NSWindow *window;
+
+  window = [self window];
+  return !NSContainsRect([[window screen] visibleFrame], [window frame]);
 }
 
 - (void) _performMenuClose: (id)sender
@@ -1326,19 +1326,14 @@ static NSNotificationCenter *nc;
 - (void) setGeometry
 {
   NSString       *key;
-  NSUserDefaults *defaults;
-  NSDictionary   *menuLocations;
-  NSString       *location;
-  
   NSPoint        origin;
-  NSScanner      *scanner;
-  int            value;
 
-  origin = NSMakePoint (0, [[NSScreen mainScreen] frame].size.height 
-      - [_aWindow frame].size.height);
-      
   if (nil != (key = [self _locationKey]))
     {
+      NSUserDefaults *defaults;
+      NSDictionary   *menuLocations;
+      NSString       *location;
+
       defaults = [NSUserDefaults standardUserDefaults];
       menuLocations = [defaults objectForKey: NSMenuLocationsKey];
 
@@ -1349,14 +1344,15 @@ static NSNotificationCenter *nc;
  
       if (location && [location isKindOfClass: [NSString class]])
         {
-          scanner = [NSScanner scannerWithString: location];
-          [scanner scanInt: &value];
-          origin.x = value;
-          [scanner scanInt: &value];
-          origin.y = value;
+	  [_aWindow setFrameFromString: location];
+	  [_bWindow setFrameFromString: location];
+	  return;
         }
     }
   
+  origin = NSMakePoint(0, [[_aWindow screen] visibleFrame].size.height 
+      - [_aWindow frame].size.height);
+      
   [_aWindow setFrameOrigin: origin];
   [_bWindow setFrameOrigin: origin];
 }
@@ -1479,7 +1475,7 @@ static NSNotificationCenter *nc;
 {
   NSWindow *theWindow = _transient ? _bWindow : _aWindow;
   NSRect    frameRect = [theWindow frame];
-  NSRect    screenRect = [[NSScreen mainScreen] frame];
+  NSRect    screenRect = [[theWindow screen] visibleFrame];
   NSPoint   vector    = {0.0, 0.0};
   BOOL      moveIt    = NO;
   
