@@ -34,73 +34,45 @@
 #include <AppKit/NSTextView.h>
 #include <AppKit/NSControl.h>
 #include <AppKit/NSButton.h>
+#include <GNUstepGUI/GSNibTemplates.h>
 
 /*
-  As these classes are deprecated, they should disappear from the gnustep 
-  distribution in the next major release.  They are for backwards compatibility
-  ONLY.
+  These classes are present for nib-level compatibility with Mac OS X.
 */
 
-// DO NOT USE.
-
-// templates
-@protocol __DeprecatedTemplate__
-- (void) setClassName: (NSString *)className;
+@protocol GSOSXTemplate
+- (id) initWithObject: (id)object className: (NSString *)className;
 - (NSString *)className;
-- (id) instantiateObject: (NSCoder *)coder;
+- (void)setClassName: (NSString *)className;
 @end
 
-@interface NSWindowTemplate : NSWindow <__DeprecatedTemplate__>
+@interface NSWindowTemplate : NSObject <GSOSXTemplate> 
 {
   NSString            *_className;
-  NSString            *_parentClassName;
   BOOL                 _deferFlag;
+  id                   _realObject;
+}
+- (BOOL) deferFlag;
+- (void) setDeferFlag: (BOOL)flag;
+@end
+
+@interface NSViewTemplate : NSView <GSOSXTemplate> 
+{
+  NSString            *_className;
+  id                   _realObject;
 }
 @end
 
-@interface NSViewTemplate : NSView <__DeprecatedTemplate__>
-{
-  NSString            *_className;
-  NSString            *_parentClassName;
-}
+@interface NSTextTemplate : NSViewTemplate
 @end
 
-@interface NSTextTemplate : NSText <__DeprecatedTemplate__>
-{
-  NSString            *_className;
-  NSString            *_parentClassName;
-}
+@interface NSTextViewTemplate : NSViewTemplate 
 @end
 
-@interface NSTextViewTemplate : NSTextView <__DeprecatedTemplate__> 
+@interface NSMenuTemplate : NSObject <GSOSXTemplate> 
 {
   NSString            *_className;
-  NSString            *_parentClassName;
-}
-@end
-
-@interface NSMenuTemplate : NSMenu <__DeprecatedTemplate__>
-{
-  NSString            *_className;
-  NSString            *_parentClassName;
-}
-@end
-
-@interface NSControlTemplate : NSControl <__DeprecatedTemplate__>
-{
-  NSString            *_className;
-  NSString            *_parentClassName;
-  id                   _delegate;
-  id                   _dataSource;
-  BOOL                 _usesDataSource;
-}
-@end
-
-@interface NSButtonTemplate : NSButton <__DeprecatedTemplate__>
-{
-  NSString            *_className;
-  NSString            *_parentClassName;
-  NSButtonType         _buttonType;
+  id                   _realObject;
 }
 @end
 #endif /* _GNUstep_H_GSNibCompatibility */

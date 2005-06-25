@@ -1,3 +1,10 @@
+2005-06-25 08:52 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h: Changes for
+	nib compatilibility.
+	* Source/GSNibCompatibility.m: Changes for nib compatbility.  Removed
+	old archiving code and updated keyed archiving code.
+
 2005-06-22  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenu.m (-setGeometry): Use [NSWindow
