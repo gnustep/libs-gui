@@ -872,7 +872,6 @@ static NSMutableDictionary *units = nil;
 - (void) dealloc
 {
   RELEASE(_unit);
-  RELEASE(_clientView);
   RELEASE(_accessoryView);
   RELEASE(_markers);
   RELEASE(_labelFormat);

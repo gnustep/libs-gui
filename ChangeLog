@@ -2,6 +2,8 @@
 
 	* Source/NSScrollView.m: ([-initWithFrame:) create a hidden horizontal
 	ruler for MacOS-X and OPENSTEP compatibility.  Fix bug #13310
+	* Source/NSRulerView.m: ([-dealloc]) Don't release _clientView as we
+	don't own it.  Fixes bug #13382
 
 2005-06-22  Fred Kiefer <FredKiefer@gmx.de>
 
