@@ -1,3 +1,8 @@
+2005-06-28  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSScrollView.m: ([-initWithFrame:) create a hidden horizontal
+	ruler for MacOS-X and OPENSTEP compatibility.  Fix bug #13310
+
 2005-06-22  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenu.m (-setGeometry): Use [NSWindow

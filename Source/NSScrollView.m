@@ -144,6 +144,8 @@ static float scrollerWidth;
   _vPageScroll = 10;
   _borderType = NSNoBorder;
   _scrollsDynamically = YES;
+  // For compatibility the ruler should be present but not visible.
+  [self setHasHorizontalRuler: YES];
   [self tile];
 
   return self;
