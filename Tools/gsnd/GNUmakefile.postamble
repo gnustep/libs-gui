@@ -3,6 +3,8 @@
 #
 #   Project specific makefile rules
 #
+#   Copyright (C) 2005 Free Software Foundation, Inc.
+#
 #   Uncomment the targets you want.
 #   The double colons (::) are important, do not make them single colons
 #   otherwise the normal makefile rules will not be performed.

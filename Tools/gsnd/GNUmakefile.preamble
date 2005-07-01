@@ -3,6 +3,8 @@
 #
 #   Project specific makefile variables, and additional
 #
+#   Copyright (C) 2005 Free Software Foundation, Inc.
+#
 #   Do not put any Makefile rules in this file, instead they should
 #   be put into Makefile.postamble.
 #

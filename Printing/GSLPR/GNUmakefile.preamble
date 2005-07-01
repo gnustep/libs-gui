@@ -1,3 +1,9 @@
+#
+# GNUmakefile.postamble
+#
+#  Copyright (C) 2004 Free Software Foundation, Inc.
+#
+
 # Additional flags to pass to the preprocessor
 ADDITIONAL_CPPFLAGS += 
 

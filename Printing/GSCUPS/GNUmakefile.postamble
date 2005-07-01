@@ -1,6 +1,8 @@
 #
 # GNUmakefile.postamble 
 #
+#  Copyright (C) 2004 Free Software Foundation, Inc.
+#
 
 # Things to do before compiling
 # before-all::

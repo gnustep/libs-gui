@@ -8,6 +8,7 @@
       <url url="http://www.gnustep.org/developers/whoiswho.html"/>
     </author>
     <version>$Revision$</version>
+    <copy>2005 Free Software Foundation, Inc.</copy>
     <date>$Date$</date>
   </head>
   <body>

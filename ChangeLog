@@ -1,3 +1,24 @@
+2005-07-01  Adam Fedor  <fedor@gnu.org>
+
+	* Documentation/Gui.gsdoc, 
+	Documentation/GuiAdditions.gsdoc, 
+	Documentation/ReleaseNotes.gsdoc, 
+	Documentation/gopen.1, Documentation/make_services.1, 
+	Documentation/General/OpenStepCompliance.gsdoc, 
+	Documentation/GuiUser/DefaultsSummary.gsdoc, 
+	Documentation/GuiUser/KeyboardSetup.gsdoc, 
+	Documentation/GuiUser/LanguageSetup.gsdoc, 
+	Model/Controller.h, Model/Controller.m, Model/test.m, 
+	PrinterTypes/GSProlog.ps,
+	Printing/GSCUPS/GNUmakefile.postamble, 
+	Printing/GSCUPS/GNUmakefile.preamble, 
+	Printing/GSLPR/GNUmakefile.postamble, 
+	Printing/GSLPR/GNUmakefile.preamble, 
+	Tools/GNUmakefile.postamble, 
+	Tools/GNUmakefile.preamble, Tools/wgetopt.h, 
+	Tools/gsnd/GNUmakefile.postamble, 
+	Tools/gsnd/GNUmakefile.preamble: Add/fix copyright/licenses.
+
 2005-07-01  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSApplication.m: (_NSAppKitUncaughtExceptionHandler)
