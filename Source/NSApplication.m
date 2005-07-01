@@ -136,6 +136,7 @@ _NSAppKitUncaughtExceptionHandler (NSException *exception)
   /* The user said to go on - more fun I guess - turn the AppKit
      exception handler on again */
   NSSetUncaughtExceptionHandler (_NSAppKitUncaughtExceptionHandler);
+  [NSApp run];	/* try entering the run loop again */
 }
 
 /* This is the bundle from where we load localization of messages.  */

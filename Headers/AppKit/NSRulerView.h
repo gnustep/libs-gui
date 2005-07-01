@@ -54,7 +54,7 @@ typedef enum {
 {
   GSRulerUnit *_unit;
   NSScrollView *_scrollView;
-  NSView *_clientView;
+  NSView *_clientView;		// Not retained
   NSView *_accessoryView;
   float _originOffset;
   NSMutableArray *_markers;

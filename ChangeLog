@@ -1,3 +1,10 @@
+2005-07-01  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSApplication.m: (_NSAppKitUncaughtExceptionHandler)
+	Call [NSApp run] to re-enter runloop if we are told to ignore
+	the exception.  Not sure this is right though ... probably
+	the option to ign ore should be removed.
+
 2005-06-28  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSScrollView.m: ([-initWithFrame:) create a hidden horizontal
