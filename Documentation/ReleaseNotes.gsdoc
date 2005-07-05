@@ -20,6 +20,35 @@
 	migrate to using a newer version of the library.
       </p>
       <section>
+	<heading>Version 0.10.0</heading>
+	<p>
+	    The interface version of the gui library has changed in
+	    this release.  Applications, libraries and tools that
+	    wish to use this new version must be recompiled
+	    (otherwise, they'll use the older version of the library).
+	</p>
+	  <deflist>
+	    <term>Nib window autopositioning</term>
+	    <desc>
+	    Nib loading has been improved to handle auto-positioning
+	    of windows.
+	    </desc>
+	    <term>NSFont</term>
+	    <desc>
+	    An ivar was added to NSFont to cache flipped fonts.
+	    </desc>
+	    <term>NSApplication</term>
+	    <desc>
+	    An ivar was added to track application launch.
+	    </desc>
+	    <term>Keyed Encoding</term>
+	    <desc>
+	    Work was done in many classes to support keyed
+	    encoding. It may not be fully implemented in every class, however.
+	    </desc>
+	  </deflist>
+      </section>
+      <section>
 	<heading>Version 0.9.5</heading>
 	<p>
 	</p>

@@ -9,6 +9,20 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.10.0}
+
+This release is binary incompatible with previous releases.
+The interface version of the library has changed so that apps, tools
+and libraries that use the base library need to be recompiled to use
+this new version.
+
+@itemize @bullet
+@item Nib loading supports window auto-positioning
+@item Keyed encoding is supported in many classes.
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.9.5}
 
 @itemize @bullet
@@ -18,8 +32,6 @@ The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSIO
 @item NSApplication -runModalSession behavior changed.
 @item You can find the GUI library's version using the Info.plist
 @end itemize
-
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.9.4}
 
