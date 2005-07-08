@@ -2743,7 +2743,7 @@ systemColorWithName(NSString *name)
 
 - (void) set
 {
-  // FIXME: We need another PS command for this
+  [GSCurrentContext() GSSetPatterColor: _pattern];
 }
 
 //

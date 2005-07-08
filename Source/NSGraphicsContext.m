@@ -770,6 +770,11 @@ NSGraphicsContext	*GSCurrentContext(void)
   [self subclassResponsibility: _cmd];
 }
 
+- (void) GSSetPatterColor: (NSImage*)image 
+{
+  [self subclassResponsibility: _cmd];
+}
+
 /**
    <p>Sets the colorspace for fill operations based on values in the supplied
    dictionary dict.</p>
@@ -1434,6 +1439,19 @@ NSGraphicsContext	*GSCurrentContext(void)
 
 - (void) DPSdissolve: (float)x : (float)y : (float)w : (float)h 
 		    : (int)gstateNum : (float)dx : (float)dy : (float)delta
+{
+  [self subclassResponsibility: _cmd];
+}
+
+/*
+  As currently not all backends support mixed composite and dissolve operations, 
+  this method is here to dispatch to the best suited one implemented
+ */
+- (void) GScomposite: (int)gstateNum
+	     toPoint: (NSPoint)aPoint
+	    fromRect: (NSRect)srcRect
+	   operation: (NSCompositingOperation)op
+	    fraction: (float)delta
 {
   [self subclassResponsibility: _cmd];
 }

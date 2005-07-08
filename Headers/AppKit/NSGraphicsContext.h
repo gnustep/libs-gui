@@ -233,6 +233,8 @@ APPKIT_EXPORT NSGraphicsContext	*GSCurrentContext(void);
 - (void) DPSsethsbcolor: (float)h : (float)s : (float)b;
 - (void) DPSsetrgbcolor: (float)r : (float)g : (float)b;
 
+- (void) GSSetPatterColor: (NSImage*)image;
+
 - (void) GSSetFillColorspace: (void *)spaceref;
 - (void) GSSetStrokeColorspace: (void *)spaceref;
 - (void) GSSetFillColor: (const float *)values;
@@ -359,6 +361,11 @@ APPKIT_EXPORT NSGraphicsContext	*GSCurrentContext(void);
 - (void) DPSdissolve: (float)x : (float)y : (float)w : (float)h 
 		    : (int)gstateNum : (float)dx : (float)dy : (float)delta;
 
+- (void) GScomposite: (int)gstateNum 
+             toPoint: (NSPoint)aPoint
+	    fromRect: (NSRect)srcRect
+	   operation: (NSCompositingOperation)op
+	    fraction: (float)delta;
 - (void) GSDrawImage: (NSRect)rect : (void *)imageref;
 
 /* ----------------------------------------------------------------------- */
