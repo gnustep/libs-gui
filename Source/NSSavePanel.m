@@ -1071,6 +1071,18 @@ selectCellWithString: (NSString*)title
       return;
     }
 
+  ASSIGN (_directory, [_browser pathToColumn:[_browser lastColumn]]);
+  filename = [[_form cellAtIndex: 0] stringValue];
+  if ([filename isAbsolutePath] == YES)
+    {
+      ASSIGN (_fullFileName, filename);
+    }
+  else
+    {
+      ASSIGN (_fullFileName, [_directory stringByAppendingPathComponent:
+				       filename]);
+    }
+
   if (_delegateHasUserEnteredFilename)
     {
       filename = [_delegate panel: self
@@ -1091,18 +1103,6 @@ selectCellWithString: (NSString*)title
 	  [_form selectTextAtIndex: 0];
 	  [_form setNeedsDisplay: YES];
 	}
-    }
-
-  ASSIGN (_directory, [_browser pathToColumn:[_browser lastColumn]]);
-  filename = [[_form cellAtIndex: 0] stringValue];
-  if ([filename isAbsolutePath] == YES)
-    {
-      ASSIGN (_fullFileName, filename);
-    }
-  else
-    {
-      ASSIGN (_fullFileName, [_directory stringByAppendingPathComponent:
-				       filename]);
     }
 
   filename = [_fullFileName stringByDeletingLastPathComponent];

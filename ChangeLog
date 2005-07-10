@@ -1,3 +1,9 @@
+2005-07-09 Adrian Robert <arobert@cogsci.ucsd.edu>
+
+	* Source/NSSavePanel.m (-ok:): Set _fullFileName before invoking
+	delegate -panel:userEnteredFilename:confirmed: so it is given the
+	current filename to process.
+
 2005-07-09  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSGraphicsContext.h,
