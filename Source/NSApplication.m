@@ -111,7 +111,7 @@ _NSAppKitUncaughtExceptionHandler (NSException *exception)
 	       [[NSProcessInfo processInfo] processName]],
      @"%@: %@", 
      _(@"Abort"), 
-     _(@"Ignore"),
+     nil,
 #ifdef DEBUG
      _(@"Debug"),
 #else
@@ -127,16 +127,11 @@ _NSAppKitUncaughtExceptionHandler (NSException *exception)
 	 library exception handler */
       [exception raise];
     }
-  else if (retVal == NSAlertOther)
+  else
     {
       /* Debug button: abort so we can trace the error in gdb */
       abort();
     }
-
-  /* The user said to go on - more fun I guess - turn the AppKit
-     exception handler on again */
-  NSSetUncaughtExceptionHandler (_NSAppKitUncaughtExceptionHandler);
-  [NSApp run];	/* try entering the run loop again */
 }
 
 /* This is the bundle from where we load localization of messages.  */
