@@ -72,6 +72,7 @@
 #include "GNUstepGUI/GSServicesManager.h"
 #include "GSGuiPrivate.h"
 #include "GNUstepGUI/GSInfoPanel.h"
+#include "GNUstepGUI/GSVersion.h"
 
 /* The -gui thread. See the comment in initialize_gnustep_backend. */
 NSThread *GSAppKitThread;
@@ -148,6 +149,87 @@ NSBundle *GSGuiBundle (void)
 + (void) initializeBackend;
 @end
 
+static NSString *
+gnustep_backend_path (NSString *dir, NSString *name)
+{
+  NSString *path;
+  NSEnumerator *benum;
+
+  NSDebugFLLog(@"BackendBundle", @"Looking for %@", name);
+  
+  /* Find the backend framework */
+  benum = [NSStandardLibraryPaths() objectEnumerator];
+  while ((path = [benum nextObject]))
+    {
+      path = [path stringByAppendingPathComponent: dir];
+      path = [path stringByAppendingPathComponent: name];
+      if ([[NSFileManager defaultManager] fileExistsAtPath: path])
+	{
+	  break;
+	}
+    }
+  return path;
+}
+
+/* Find and load the backend framework, if there is one. The name is
+   taken from a user default containing the name of the backend framework,
+   such as 'GNUstep-back', or simply 'back', or for historical reasons,
+   'libgnustep-back'.  */
+static NSString *
+gnustep_backend_framework (NSString *bundleName)
+{
+  if ( bundleName == nil )
+    bundleName = @"GNUstep_back.framework";
+  else
+    {
+      if ([bundleName hasPrefix: @"GNUstep-"])
+	bundleName = [bundleName stringByAppendingString: @".framework"];
+      else 
+	{
+	if  ([bundleName hasPrefix: @"libgnustep-"])
+	  {
+	    bundleName = [bundleName stringByDeletingPrefix: @"libgnustep-"];
+	  }
+	bundleName = [NSString stringWithFormat: @"GNUstep-%@.framework",
+			       bundleName];
+	} 
+    }
+
+  return gnustep_backend_path(@"Frameworks", bundleName);
+}
+
+/* Find and load the backend bundle, if there is one. The name is
+   taken from a user default containing the name of the backend bundle,
+   such as 'back', or for historical reasons, 'libgnustep-back'. New
+   versions may also have a version number associated with it.  */
+static NSString *
+gnustep_backend_bundle(NSString *bundleName)
+{
+  NSString *path, *bundleWithVersion;
+  int version = GNUSTEP_GUI_MAJOR_VERSION * 100 + GNUSTEP_GUI_MINOR_VERSION;
+  
+  if ( bundleName == nil )
+    bundleName = @"libgnustep-back";
+  else
+    {
+      if ([bundleName hasPrefix: @"libgnustep-"] == NO)
+	{
+	  bundleName = [NSString stringWithFormat: @"libgnustep-%@",
+				 bundleName];
+	} 
+    }
+  bundleWithVersion = [NSString stringWithFormat: @"%@-%03d.bundle",
+				bundleName, version];
+  bundleName = [bundleName stringByAppendingString: @".bundle"];
+  path = gnustep_backend_path(@"Bundles", bundleWithVersion);
+  if (path == nil)
+    {
+      NSLog(@"Did not find correct version of backend, falling back to std.");
+      path = gnustep_backend_path(@"Bundles", bundleName);
+    }
+  return path;
+}
+
 BOOL
 initialize_gnustep_backend(void)
 {
@@ -169,33 +251,23 @@ initialize_gnustep_backend(void)
 #ifdef BACKEND_BUNDLE
       {      
 	NSBundle *theBundle;
-	NSEnumerator *benum;
 	NSString *path, *bundleName;
 	NSUserDefaults	*defs = [NSUserDefaults standardUserDefaults];
 
 	/* What backend ? */
 	bundleName = [defs stringForKey: @"GSBackend"];
-	if ( bundleName == nil )
-	  bundleName = @"libgnustep-back.bundle";
-	else
-	  bundleName = [bundleName stringByAppendingString: @".bundle"];
-	NSDebugFLLog(@"BackendBundle", @"Looking for %@", bundleName);
-
-	/* Find the backend bundle */
-	benum = [NSStandardLibraryPaths() objectEnumerator];
-	while ((path = [benum nextObject]))
+	path = gnustep_backend_framework (bundleName);
+	if (path == nil)
 	  {
-	    path = [path stringByAppendingPathComponent: @"Bundles"];
-	    path = [path stringByAppendingPathComponent: bundleName];
-	    if ([[NSFileManager defaultManager] fileExistsAtPath: path])
-	      {
-		break;
-	      }
+	    NSDebugLLog(@"BackendBundle", @"Did not find backend framework.");
+	    path = gnustep_backend_bundle (bundleName);
 	  }
 
 	/* FIXME/TODO - update localized error messages.  */
 
 	/* Backend found ? */
+	if (bundleName == nil)
+	  bundleName = @"back";
 	NSCAssert1(path != nil, _(@"Unable to find backend %@"), bundleName);
 	NSDebugLog(@"Loading Backend from %@", path);
 	NSDebugFLLog(@"BackendBundle", @"Loading Backend from %@", path);

@@ -1,5 +1,11 @@
 2005-07-17  Adam Fedor  <fedor@gnu.org>
 
+	* Source/NSApplication.m (gnustep_backend_path,
+	gnustep_backend_framework, gnustep_backend_bundle): New functions.
+	(initialize_gnustep_backend): Support versioning of backend bundle.
+
+2005-07-17  Adam Fedor  <fedor@gnu.org>
+
 	* Documentation/Gui.gsdoc, Documentation/GuiAdditions.gsdoc
 	Documentation/ReleaseNotes.gsdoc, Documentation/readme.texi
 	Documentation/GuiUser/DefaultsSummary.gsdoc
