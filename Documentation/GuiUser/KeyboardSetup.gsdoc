@@ -11,9 +11,9 @@
       <email address="n.pero@mi.flashnet.it"/>
       <url url="http://www.gnustep.org/developers/whoiswho.html"/>
     </author>
-    <copy>2005 Free Software Foundation, Inc.</copy>
     <version>$Revision$</version>
     <date>$Date$</date>
+    <copy>2005 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
@@ -217,8 +217,7 @@
           will not work as expected, and the modifier may become "stuck".  If
           you experience such a problem, set the GNUstep back default
           <code>GSModifiersAreKeys</code> to <code>YES</code>.
-        <p>
-
+        </p>
 
       </section>
     </chapter>

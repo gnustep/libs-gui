@@ -600,7 +600,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   to handle
   removal of aView (and recursively, its children) from its window -
   performing tidyup by invalidating cursor rects etc.  </p> 
-  <standards><NotMacOS-X/><NotOpenStep/></standards>
 */
 - (void) removeSubview: (NSView*)aView
 {

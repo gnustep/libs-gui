@@ -1,3 +1,12 @@
+2005-07-17  Adam Fedor  <fedor@gnu.org>
+
+	* Documentation/Gui.gsdoc, Documentation/GuiAdditions.gsdoc
+	Documentation/ReleaseNotes.gsdoc, Documentation/readme.texi
+	Documentation/GuiUser/DefaultsSummary.gsdoc
+	Documentation/GuiUser/KeyboardSetup.gsdoc
+	Documentation/GuiUser/LanguageSetup.gsdoc, Source/NSView.m:
+	Fix some documentation errors.
+
 2005-07-12  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSApplication.m: (_NSAppKitUncaughtExceptionHandler)
