@@ -840,6 +840,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 
 	      // if we are not in an interface builder, call 
 	      // designated initializer per spec...
+	      RETAIN(contentView); // prevent view from being deallocated.
 	      obj = [obj initWithContentRect: [contentView frame]
 			 styleMask: [obj styleMask]
 			 backing: [obj backingType]
@@ -847,6 +848,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 	      
 	      // set the content view back
 	      [obj setContentView: contentView];
+	      RELEASE(contentView); // release view.
 	    }
 
 	  // autoposition window
