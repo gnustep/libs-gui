@@ -1,7 +1,19 @@
 NEWS
 ****
 
-The currently released version of the library is `0.9.5'.
+The currently released version of the library is `0.10.0'.
+
+Noteworthy changes in version `0.10.0'
+======================================
+
+This release is binary incompatible with previous releases.  The
+interface version of the library has changed so that apps, tools and
+libraries that use the base library need to be recompiled to use this
+new version.
+
+   * Nib loading supports window auto-positioning
+
+   * Keyed encoding is supported in many classes.
 
 Noteworthy changes in version `0.9.5'
 =====================================

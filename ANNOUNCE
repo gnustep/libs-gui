@@ -1,7 +1,7 @@
 ANNOUNCE
 ********
 
-This is version 0.9.5 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.10.0 of the GNUstep GUI library (`gnustep-gui').
 
 What is the GNUstep GUI Library?
 ================================
@@ -27,24 +27,23 @@ systems.
 GNUstep Base Library, the TIFF Graphics library, and a back-end
 component like the GNUstep 'Back' Backend.
 
-Noteworthy changes in version `0.9.5'
-=====================================
+Noteworthy changes in version `0.10.0'
+======================================
 
-   * Beginnings of CUPS interface were added.
+This release is binary incompatible with previous releases.  The
+interface version of the library has changed so that apps, tools and
+libraries that use the base library need to be recompiled to use this
+new version.
 
-   * Added new control colors and methods from 10.3 version of Cocoa.
+   * Nib loading supports window auto-positioning
 
-   * Added new font methods from 10.3 version of Cocoa.
-
-   * NSApplication -runModalSession behavior changed.
-
-   * You can find the GUI library's version using the Info.plist
+   * Keyed encoding is supported in many classes.
 
 Where can you get it?  How can you compile it?
 ==============================================
 
-The gstep-gui-0.9.5.tar.gz distribution file has been placed on
-`ftp.gnustep.org' in `pub/gnustep/core'.
+The gstep-gui-0.10.0.tar.gz distribution file has been placed at
+<ftp://ftp.gnustep.org/pub/gnustep/core>.
 
 Read the INSTALL file or the GNUstep-HOWTO for installation
 instructions.

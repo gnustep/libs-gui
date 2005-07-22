@@ -13,10 +13,26 @@ and in the gnustep-make package (which you should install first).
 
    You must have installed gnustep-base and gnustep-make before
 building this library. Other external libraries that you should have
-installed include libtiff, libjpg, and libpng. Read the GNUstep-HOWTO
-for more information.
+installed include:
 
-   After installing this library, install gnustep-back.
+   * tiff (REQUIRED)
+
+   * jpeg (RECOMMENDED)
+
+   * png (RECOMMENDED)
+
+   * gif or ungif (OPTIONAL)
+
+   * aspell (OPTIONAL)
+
+   * cups (OPTIONAL)
+
+   * audiofile (OPTIONAL)
+
+   * portaudio (OPTIONAL)
+
+   Read the GNUstep-HOWTO for more information.  After installing this
+library, install gnustep-back.
 
 Configuration
 =============

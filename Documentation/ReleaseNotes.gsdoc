@@ -46,6 +46,12 @@
 	    Work was done in many classes to support keyed
 	    encoding. It may not be fully implemented in every class, however.
 	    </desc>
+	    <term>Backend Versioning</term>
+	    <desc>
+	    The GUI library now looks for the backend bundle with the 
+	    corrent interface version. Thus there should not be any
+	    problems with the GUI using the wrong backend.
+	    </desc>
 	  </deflist>
       </section>
       <section>
