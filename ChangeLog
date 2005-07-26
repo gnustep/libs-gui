@@ -1,3 +1,8 @@
+2005-07-25 22:28 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSOutlineView.m: Make [NSOutlineView rowForItem:] return
+	-1 as per specs, instead of NSNotFound.
+
 2005-07-22  Adam Fedor  <fedor@gnu.org>
 
 	* Version 0.10.0

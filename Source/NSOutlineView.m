@@ -516,11 +516,13 @@ static NSImage *unexpandable  = nil;
 }
 
 /**
- * Returns the corresponding row in the outline view for the given item.
+ * Returns the corresponding row in the outline view for the given item.  Returns
+ * -1 if item is nil or not found.
  */
 - (int)rowForItem: (id)item
 {
-  return [_items indexOfObject: item];
+  int row = [_items indexOfObject: item];
+  return (row == NSNotFound) ? -1 : row;
 }
 
 /**
