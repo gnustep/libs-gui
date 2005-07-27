@@ -1,3 +1,11 @@
+2005-07-27  Adam Fedor  <fedor@gnu.org>
+
+	* Source/GNUmakefile.postamble (Info-gnustep.plist): Depend on 
+	../Version.
+
+	* Source/NSOutlineView.m ([NSOutlineView -rowForItem:]): Declare var
+	at beginning of block for gcc2 (Fixes Bug #13936).
+
 2005-07-25 22:28 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSOutlineView.m: Make [NSOutlineView rowForItem:] return

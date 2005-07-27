@@ -521,10 +521,11 @@ static NSImage *unexpandable  = nil;
  */
 - (int)rowForItem: (id)item
 {
+  int row;
   if(item == nil)
     return -1;
 
-  int row = [_items indexOfObject: item];
+  row = [_items indexOfObject: item];
   return (row == NSNotFound) ? -1 : row;
 }
 
