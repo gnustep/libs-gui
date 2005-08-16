@@ -103,7 +103,7 @@ static NSNotificationCenter *nc = nil;
   NSApplication	*app = [NSApplication sharedApplication];
   static NSRect	oldRect; //only one can be dragged at a time
   static BOOL	lit = NO;
-  NSPoint	p;
+  NSPoint	p, op;
   NSEvent	*e;
   NSRect	r, r1, bigRect, vis;
   id		v = nil, prev = nil;
@@ -525,6 +525,18 @@ static NSNotificationCenter *nc = nil;
     }
 
   [self unlockFocus];
+
+  // Divider position hasn't changed don't try to resize subviews  
+  if (_isVertical == YES && p.x == op.x)
+    {
+      [self setNeedsDisplay: YES];
+      return;
+    }
+  else if (p.y == op.y)   
+    {
+      [self setNeedsDisplay: YES];
+      return;
+    }
 
   [nc postNotificationName: NSSplitViewWillResizeSubviewsNotification
 		    object: self];
