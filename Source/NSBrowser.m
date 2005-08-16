@@ -1660,7 +1660,7 @@ static NSTextFieldCell *titleCell;
   if (_separatesColumns)
     frameWidth = _frame.size.width - ((columnCount - 1) * NSBR_COLUMN_SEP);
   else
-    frameWidth = _frame.size.width - (columnCount + (2 * bs.width));
+    frameWidth = _frame.size.width - ((columnCount - 1) + (2 * bs.width));
 
   _columnSize.width = (int)(frameWidth / (float)columnCount);
 
