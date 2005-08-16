@@ -694,6 +694,13 @@ static NSImage *_pbc_image[2];
 	       clickCount: [theEvent clickCount] 
 	       pressure: [theEvent pressure]];
   [NSApp sendEvent: e];
+  
+  // End of mouse tracking here -- dismiss popup
+  // No synchronization needed here
+  if ([[_menu window] isVisible])
+    {
+      [self dismissPopUp];
+    }
 
   return NO;
 }
