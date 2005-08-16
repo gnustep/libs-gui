@@ -251,6 +251,8 @@ gsnd_log (int prio)
 
 - (void)checkIsPlaying;
 
+- (void)closeStream;
+
 - (Snd *)cachedSoundWithName:(NSString *)aName;
 
 - (void)checkCachedSounds;
@@ -270,7 +272,7 @@ gsnd_log (int prio)
 
 
 SoundServer *gsnd = nil;
-PortAudioStream *pStream = NULL;
+PaStream *pStream = NULL;
 
 struct SoundServer_t {
 	@defs(SoundServer)
@@ -291,21 +293,20 @@ struct SoundServer_t {
 {
   self = [super init];
 	
-  if (self) 
-    {	
-      ASSIGN (name, [anobject name]);
-      ASSIGN (identifier, [anobject identifier]);		
-      data = [[anobject data] mutableCopy];
-      frameCount = [anobject frameCount];
-      rate = [anobject samplingRate];
-      startPos = 0;
-      endPos = 0;
-      posInBytes = 0;
-      playing = NO;
-      paused = NO;
-					
-      [self resampleWithFactor: (PLAY_RATE / rate)];
-    }
+  if (self) {	
+    ASSIGN (name, [anobject name]);
+    ASSIGN (identifier, [anobject identifier]);		
+    data = [[anobject data] mutableCopy];
+    frameCount = [anobject frameCount];
+    rate = [anobject samplingRate];
+    startPos = 0;
+    endPos = 0;
+    posInBytes = 0;
+    playing = NO;
+    paused = NO;
+
+    [self resampleWithFactor: (PLAY_RATE / rate)];
+  }
 	
   return self;
 }
@@ -463,14 +464,14 @@ struct SoundServer_t {
 @end
 
 
-@implementation SoundServer
-
 static int paCallback(void *inputBuffer,
                       void *outputBuffer,
-		      unsigned long framesPerBuffer,
-		      PaTimestamp outTime,
+		         unsigned long framesPerBuffer,
+		      const PaStreamCallbackTimeInfo *timeInfo,
+                   PaStreamCallbackFlags statusFlags,
                       void *userData)
 {
+  NSAutoreleasePool *pool;										
   NSData *data;
   long length;	
   int chunkLength;
@@ -479,8 +480,12 @@ static int paCallback(void *inputBuffer,
   gss16 *in;
   int i;
 	
-  CREATE_AUTORELEASE_POOL(pool);										
-								
+#ifdef GNUSTEP
+  GSRegisterCurrentThread();
+#endif
+    
+  pool = [[NSAutoreleasePool alloc] init];
+  
   data = serverPtr->soundData;
   length = [data length];	
 		
@@ -502,19 +507,8 @@ static int paCallback(void *inputBuffer,
   }
 
   if (retvalue == 1) {
-    PaError err;
-				
-    err = Pa_CloseStream(pStream);
-    if (err != paNoError) {
-      NSLog(@"PortAudio Pa_CloseStream error: %s", Pa_GetErrorText(err));			
-    }
-		
-    err = Pa_Terminate();	
-    if (err != paNoError) {
-      NSLog(@"PortAudio Pa_Terminate error: %s", Pa_GetErrorText(err));			
-    }
-		
-    [(SoundServer *)serverPtr stopAll];
+    [(SoundServer *)serverPtr performSelectorOnMainThread: @selector(closeStream)
+			            withObject: (SoundServer *)serverPtr waitUntilDone: NO];
   }
 
   serverPtr->isPlaying = !retvalue;
@@ -523,6 +517,9 @@ static int paCallback(void *inputBuffer,
 	
   return retvalue;
 }
+
+
+@implementation SoundServer
 
 - (void)dealloc
 {
@@ -539,7 +536,7 @@ static int paCallback(void *inputBuffer,
   if (self) {
     NSString *hostname;
     NSNumber *csize;
-
+		
     serverPtr = (struct SoundServer_t *)self;		
     nc = [NSNotificationCenter defaultCenter];
 
@@ -557,15 +554,17 @@ static int paCallback(void *inputBuffer,
     [conn setRootObject: self];
     [conn setDelegate: self];
     [nc addObserver: self
-	selector: @selector(connectionBecameInvalid:)
-	name: NSConnectionDidDieNotification object: (id)conn];
+	         selector: @selector(connectionBecameInvalid:)
+	             name: NSConnectionDidDieNotification 
+            object: (id)conn];
 
     hostname = [[NSUserDefaults standardUserDefaults] stringForKey: @"NSHost"];
+    
     if ([hostname length] == 0
-    	|| [[NSHost hostWithName: hostname] isEqual: [NSHost currentHost]] == YES) {
+    	  || [[NSHost hostWithName: hostname] isEqual: [NSHost currentHost]]) {
       if ([conn registerName: GSNDNAME] == NO) {
-	NSLog(@"Unable to register with name server.\n");
-	exit(1);
+	      NSLog(@"Unable to register with name server.\n");
+	      exit(1);
       }
     } else {
       NSHost *host = [NSHost hostWithName: hostname];
@@ -575,30 +574,30 @@ static int paCallback(void *inputBuffer,
       unsigned c;
 
       if (host == nil) {
-	NSLog(@"gsnd - unknown NSHost argument  ... %@ - quiting.", hostname);
-	exit(1);
+	      NSLog(@"gsnd - unknown NSHost argument  ... %@ - quiting.", hostname);
+	      exit(1);
       }
 
       a = [host names];
       c = [a count];
       while (c-- > 0) {
-	NSString *name = [a objectAtIndex: c];
+	      NSString *name = [a objectAtIndex: c];
 
-	name = [GSNDNAME stringByAppendingFormat: @"-%@", name];
-	if ([ns registerPort: port forName: name] == NO) {
-	}
+	      name = [GSNDNAME stringByAppendingFormat: @"-%@", name];
+	      if ([ns registerPort: port forName: name] == NO) {
+	      }
       }
 
       a = [host addresses];
       c = [a count];
       while (c-- > 0) {
-	NSString *name = [a objectAtIndex: c];
+	      NSString *name = [a objectAtIndex: c];
 
-	name = [GSNDNAME stringByAppendingFormat: @"-%@", name];
-	if ([ns registerPort: port forName: name] == NO) {
-	}
+	      name = [GSNDNAME stringByAppendingFormat: @"-%@", name];
+	      if ([ns registerPort: port forName: name] == NO) {
+	      }
       }
-    }
+    }    
   }
 		
   return self;
@@ -637,9 +636,9 @@ static int paCallback(void *inputBuffer,
       RELEASE (snd);
     } else {		
       if ([snd isPlaying] || [snd isPaused]) {
-	snd = [snd copy];
-	[sounds addObject: snd];
-	RELEASE (snd);
+	      snd = [snd copy];
+	      [sounds addObject: snd];
+	      RELEASE (snd);
       }					
       [snd reset];
       [snd setIdentifier: idendstr];					
@@ -744,39 +743,38 @@ static int paCallback(void *inputBuffer,
 {
   PaError err;
   int d = 0;
-		
+
   err = Pa_Initialize();
-  if(err != paNoError) {
-    NSLog(@"PortAudio error: %s", Pa_GetErrorText(err));
-  } else {
-    NSLog(@"Pa_Initialize");
-  }
 
+  if (err != paNoError) {
+    fprintf(stderr, "An error occured while using the portaudio stream\n");
+    fprintf(stderr, "Error number: %d\n", err );
+    fprintf(stderr, "Error message: %s\n", Pa_GetErrorText(err));
+
+    Pa_Terminate();
+    return;
+  }
+		  
   err = Pa_OpenDefaultStream(&pStream, 0, DEFAULT_CHANNELS, paInt16, 
-			     PLAY_RATE, BUFFER_SIZE_IN_FRAMES, 0, paCallback, &d);
+			     PLAY_RATE, BUFFER_SIZE_IN_FRAMES, (PaStreamCallback *)paCallback, &d);
 
-  if(err != paNoError) {
+  if (err == paNoError) {
+    err = Pa_StartStream(pStream);
+  
+    if (err == paNoError) {
+      Pa_Sleep(2);
+    } else {
+      NSLog(@"PortAudio Pa_StartStream error: %s", Pa_GetErrorText(err));
+    }
+    
+  } else {
     NSLog(@"PortAudio Pa_OpenDefaultStream error: %s", Pa_GetErrorText(err));
-  } else {
-    NSLog(@"Pa_OpenDefaultStream");
   }
-
-  err = Pa_StartStream(pStream);
-  if(err != paNoError) {
-    NSLog(@"PortAudio Pa_StartStream error: %s", Pa_GetErrorText(err));
-  } else {
-    NSLog(@"Pa_StartStream");
-  }
-
-  Pa_Sleep(2);
 }
 
 - (void)mixWithSound:(Snd *)snd
 {
-  if (isPlaying == NO) {
-    return;
-		
-  } else {
+  if (isPlaying) {
     NSData *snddata = [snd remainingData];
     long inFrameCount = (long)([snddata length] / FRAME_SIZE); 
     gss16 *in = (gss16 *)[snddata bytes];		
@@ -790,6 +788,7 @@ static int paCallback(void *inputBuffer,
     [snd setEndPos: posInBytes + (long)([snddata length] / FRAME_SIZE)];
 
     j = 0;	
+    
     for (i = posInBytes; i < frameCount; i++) {
       sum_l = out[i * 2] + in[j * 2];
       sum_r = out[i * 2 + 1] + in[j * 2 + 1];
@@ -799,11 +798,12 @@ static int paCallback(void *inputBuffer,
 									
       j++;
       if (j == inFrameCount) {
-	break;
+	      break;
       }
     }
 
     inPos = (j * FRAME_SIZE);	
+    
     if (inPos < ([snddata length] - 1)) {
       long remLength = [snddata length] - inPos;
       NSRange range = NSMakeRange(inPos, remLength);
@@ -818,10 +818,7 @@ static int paCallback(void *inputBuffer,
 
 - (void)unMixSound:(Snd *)snd
 {
-  if (isPlaying == NO) {
-    return;
-		
-  } else {
+  if (isPlaying) {
     int *in = (int *)[[snd data] bytes];		
     int *out = (int *)[soundData mutableBytes];
     long deleteFrom = [snd startPos] + [snd posInBytes];
@@ -833,10 +830,10 @@ static int paCallback(void *inputBuffer,
       out[i] -= in[j]; 				
       j++;
       if (j == deleteTo) {
-	break;
+	      break;
       }
     }
-  }
+  } 
 }
 
 - (void)updatePosition
@@ -853,7 +850,7 @@ static int paCallback(void *inputBuffer,
       [snd posInBytesAdd];
 			
       if (posInBytes == [snd endPos]) {
-	[snd reset];
+	      [snd reset];
       }
     }
   }
@@ -903,12 +900,41 @@ static int paCallback(void *inputBuffer,
   }
 }
 
+- (void)closeStream
+{
+  PaError err;
+
+  err = Pa_StopStream(pStream);
+
+  if (err != paNoError) {
+    NSLog(@"PortAudio Pa_StopStream error: %s", Pa_GetErrorText(err));	
+    return;		
+  }
+  
+  err = Pa_CloseStream(pStream);
+
+  if (err != paNoError) {
+    NSLog(@"PortAudio Pa_CloseStream error: %s", Pa_GetErrorText(err));
+    return;			
+  }
+
+  err = Pa_Terminate();	
+
+  if (err != paNoError) {
+    NSLog(@"PortAudio Pa_Terminate error: %s", Pa_GetErrorText(err));	
+    return;		
+  }
+
+  [self stopAll];
+}
+
 - (Snd *)cachedSoundWithName:(NSString *)aName
 {
   int i;
 			
   for (i = 0; i < [sounds count]; i++) {
     Snd *snd = [sounds objectAtIndex: i];	
+    
     if ([[snd name] isEqual: aName]) {
       return snd;
     }
@@ -932,12 +958,12 @@ static int paCallback(void *inputBuffer,
       Snd *snd1 = [sounds objectAtIndex: j];
 	
       if (([[snd1 name] isEqual: name]) && (snd0 != snd1)) {			
-	if (([snd1 isPaused] == NO) && ([snd1 isPlaying] == NO)) {
-	  [sounds removeObject: snd1];	
-	  count--;
-	  i--;
-	  j--;
-	}
+	      if (([snd1 isPaused] == NO) && ([snd1 isPlaying] == NO)) {
+	        [sounds removeObject: snd1];	
+	        count--;
+	        i--;
+	        j--;
+	      }
       }
     }
   }
@@ -953,13 +979,13 @@ static int paCallback(void *inputBuffer,
       Snd *snd = [sounds objectAtIndex: i];		
 	
       if (([snd isPlaying] == NO) && ([snd isPaused] == NO)) {
-	csize -= [[snd data] length];	
-	[sounds removeObject: snd];	
-	count--;
-	i--;
+	      csize -= [[snd data] length];	
+	      [sounds removeObject: snd];	
+	      count--;
+	      i--;
       }		
       if (csize <= maxCacheSize) {
-	break;
+	      break;
       }
     }
   }	
@@ -991,7 +1017,7 @@ static int paCallback(void *inputBuffer,
       NSString *sname = [snd name];
 				
       if ([sname isEqual: aName]) {
-	return snd;
+	      return snd;
       }
     }		
   }
@@ -1008,12 +1034,12 @@ static int paCallback(void *inputBuffer,
 }
 
 - (BOOL)connection:(NSConnection*)ancestor
-shouldMakeNewConnection:(NSConnection*)newConn;
+          shouldMakeNewConnection:(NSConnection*)newConn;
 {
   [nc addObserver: self
-      selector: @selector(connectionBecameInvalid:)
-      name: NSConnectionDidDieNotification
-      object: newConn];
+         selector: @selector(connectionBecameInvalid:)
+             name: NSConnectionDidDieNotification
+           object: newConn];
 
   [newConn setDelegate: self];
 
@@ -1034,95 +1060,80 @@ shouldMakeNewConnection:(NSConnection*)newConn;
 
 @end
 
-int 
-main(int argc, char** argv, char **env)
+int main(int argc, char** argv, char **env)
 {
-  int c;
   CREATE_AUTORELEASE_POOL(pool);
+  BOOL subtask = YES;
+  NSProcessInfo *pInfo;
+  NSMutableArray *args;
 
 #ifdef GS_PASS_ARGUMENTS
   [NSProcessInfo initializeWithArguments: argv count: argc environment: env];
 #endif
 
-#ifdef __MINGW__
-  {
-    char **a = malloc((argc+2) * sizeof(char*));
+  pInfo = [NSProcessInfo processInfo];
+  args = AUTORELEASE ([[pInfo arguments] mutableCopy]);
 
-    memcpy(a, argv, argc * sizeof(char*));
-    a[argc] = "--no-fork";
-    a[argc+1] = 0;
-    if (_spawnv(_P_NOWAIT, argv[0], a) == -1) {
-      fprintf(stderr, "gsnd - spawn failed - bye.\n");
-      exit(1);
-    }
-    exit(0);
-  }
-#else
-  is_daemon = 1;
-  switch (fork()) {
-  case -1:
-    NSLog(@"gsnd - fork failed - bye.\n");
-    exit(1);
-
-  case 0:
-#ifdef NeXT
-    setpgrp(0, getpid());
-#else
-    setsid();
-#endif
-    break;
-
-  default:
-    exit(0);
+  if ([[pInfo arguments] containsObject: @"--daemon"]) {
+    subtask = NO;
+    is_daemon = YES;
   }
 
-  /*
-   *	Ensure we don't have any open file descriptors which may refer
-   *	to sockets bound to ports we may try to use.
-   *
-   *	Use '/dev/null' for stdin and stdout.  Assume stderr is ok.
-   */
-  for (c = 0; c < FD_SETSIZE; c++)
-    {
-      if (is_daemon || (c != 2))
-	{
-	  (void)close(c);
-	}
-    }
-  if (open("/dev/null", O_RDONLY) != 0)
-    {
-      sprintf(ebuf, "failed to open stdin from /dev/null (%s)\n",
-	      strerror(errno));
-      gsnd_log(LOG_CRIT);
-      exit(EXIT_FAILURE);
-    }
-  if (open("/dev/null", O_WRONLY) != 1)
-    {
-      sprintf(ebuf, "failed to open stdout from /dev/null (%s)\n",
-	      strerror(errno));
-      gsnd_log(LOG_CRIT);
-      exit(EXIT_FAILURE);
-    }
-  if (is_daemon && open("/dev/null", O_WRONLY) != 2)
-    {
-      sprintf(ebuf, "failed to open stderr from /dev/null (%s)\n",
-	      strerror(errno));
-      gsnd_log(LOG_CRIT);
-      exit(EXIT_FAILURE);
-    }
-#endif 
+  if (subtask) {
+    NSFileHandle *null;
+    NSTask *t;
 
-  gsnd = [[SoundServer alloc] init];
+    t = [NSTask new];
+    
+    NS_DURING
+	    {
+	      [args removeObjectAtIndex: 0];
+	      [args addObject: @"--daemon"];
+	      [t setLaunchPath: [[NSBundle mainBundle] executablePath]];
+	      [t setArguments: args];
+	      [t setEnvironment: [pInfo environment]];
+	      null = [NSFileHandle fileHandleWithNullDevice];
+	      [t setStandardInput: null];
+	      [t setStandardOutput: null];
+	      [t setStandardError: null];
+	      [t launch];
+	      DESTROY(t);
+	    }
+    NS_HANDLER
+      {
+	      gsnd_log(LOG_CRIT);
+	      DESTROY(t);
+	    }
+    NS_ENDHANDLER
+  
+    exit(EXIT_FAILURE);
+  }
 
-  if (gsnd == nil) 
-    {
-      NSLog(@"Unable to create gsnd object.\n");
-      exit(1);
-    }
-	
-  [[NSRunLoop currentRunLoop] run];
   RELEASE(pool);
-  exit(0);
+
+  {
+#if GS_WITH_GC == 0
+    CREATE_AUTORELEASE_POOL(pool);
+#endif
+
+    gsnd = [[SoundServer alloc] init];
+
+    [[NSFileHandle fileHandleWithStandardInput] closeFile];
+    [[NSFileHandle fileHandleWithStandardOutput] closeFile];
+  #ifndef __MINGW__
+    [[NSFileHandle fileHandleWithStandardError] closeFile];
+  #endif
+
+    RELEASE (pool);
+  }
+
+  if (gsnd != nil) {
+    CREATE_AUTORELEASE_POOL(pool);
+    [[NSRunLoop currentRunLoop] run];
+    RELEASE(pool);
+  }
+	
+  exit(EXIT_SUCCESS);
 }
 
 
