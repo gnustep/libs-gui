@@ -1,3 +1,7 @@
+2005-08-17  Adam Fedor  <fedor@gnu.org>
+
+	* configure.ac: Check for v19 of portaudio.
+
 2005-08-17  Enrico Sersale  <enrico@dtedu.net>
 
 	* Tools/gsnd/gsnd.m: updated to use libportaudio v19.

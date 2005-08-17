@@ -34,7 +34,7 @@ have installed include:
 @item aspell (OPTIONAL)
 @item cups (OPTIONAL)
 @item audiofile (OPTIONAL)
-@item portaudio (OPTIONAL)
+@item portaudio, v19 which has several API changes previous version (OPTIONAL)
 @end itemize
 
 Read the GNUstep-HOWTO for more information.  After installing this

@@ -317,13 +317,21 @@ BUILD_GSND=
 
 # This is only for gsnd, so don't add it to LIBS
 save_LIBS="$LIBS"
-AC_CHECK_LIB(portaudio, main, have_portaudio=yes, have_portaudio=no)
+AC_CHECK_LIB(portaudio, Pa_OpenDefaultStream, have_portaudio=yes, have_portaudio=no)
 LIBS="$save_LIBS"
 
 AC_CHECK_LIB(audiofile, afGetVirtualFrameSize)
 AC_CHECK_HEADERS(portaudio.h audiofile.h)
 
-if test $ac_cv_header_portaudio_h = yes -a $have_portaudio = yes -a $enable_gsnd = yes; then
+AC_MSG_CHECKING(for portaudio version >= 19)
+have_portaudio19=no
+if test $ac_cv_header_portaudio_h = yes; then
+  AC_EGREP_HEADER(PaStreamCallback, portaudio.h,
+        have_portaudio19=yes, have_portaudio19=no)
+fi
+AC_MSG_RESULT($have_portaudio19)
+
+if test $have_portaudio19 = yes -a $have_portaudio = yes -a $enable_gsnd = yes; then
   BUILD_GSND=gsnd
 fi
 AC_SUBST(BUILD_GSND)
