@@ -296,6 +296,9 @@ static NSNotificationCenter *nc = nil;
     {
       constrainImp = (floatIMP)[_delegate methodForSelector: constrainSel];
     }
+    
+  // Save the old position
+  op = p;
 
   // user is moving the knob loop until left mouse up
   while ([e type] != NSLeftMouseUp)
