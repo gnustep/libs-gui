@@ -1,3 +1,9 @@
+2005-08-17  Enrico Sersale  <enrico@dtedu.net>
+
+	* Tools/gsnd/gsnd.m: updated to use libportaudio v19.
+
+	* Tools/gsnd/gsnd.m: in main(): uses NSTask to create a daemon.
+	
 2005-08-17  Serg Stoyan  <stoyan255@ukr.net>
 
 	* Source/NSBrowser.m: (tile): Fix calculating columns width for
