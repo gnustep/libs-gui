@@ -181,7 +181,7 @@ NSInterfaceStyleForKey(NSString *key, NSResponder *responder)
   NSUserDefaults	*defs;
   NSMapEnumerator	enumerator;
   NSString		*key;
-  NSInterfaceStyle	val;
+  void                  *val;
 
   defs = [NSUserDefaults standardUserDefaults];
 
@@ -215,7 +215,7 @@ NSInterfaceStyleForKey(NSString *key, NSResponder *responder)
 	    }
 	}
 
-      if (newStyle != val)
+      if (newStyle != ((NSInterfaceStyle)val))
 	{
 	  NSMapInsert(styleMap, (void*)key, (void*)newStyle);
 	}

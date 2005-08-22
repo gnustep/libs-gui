@@ -1,3 +1,11 @@
+2005-08-22 14:36 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSInterfaceStyle.m: -[GSInterfaceStyle
+	defaultsDidChange:] correction for val variable.  Previously
+	this was the enumerated type NSInterfaceStyle.  This caused
+	some alighnment issues on 64bit platforms.  I have also tested
+	this change on i386/Linux.
+
 2005-08-17  Adam Fedor  <fedor@gnu.org>
 
 	* configure.ac: Check for v19 of portaudio.
