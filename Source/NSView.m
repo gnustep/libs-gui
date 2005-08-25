@@ -197,6 +197,160 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 }
 
 
+/*
+ *	Private methods.
+ */
+
+
+/*
+ *	The [-_invalidateCoordinates] method marks the coordinate mapping
+ *	matrices (matrixFromWindow and _matrixToWindow) and the cached visible
+ *	rectangle as invalid.  It recursively invalidates the coordinates for
+ *	all subviews as well.
+ *	This method must be called whenever the size, shape or position of
+ *	the view is changed in any way.
+ */
+- (void) _invalidateCoordinates
+{
+  if (_coordinates_valid == YES)
+    {
+      unsigned	count;
+
+      _coordinates_valid = NO;
+      if (_rFlags.valid_rects != 0)
+	{
+	  [_window invalidateCursorRectsForView: self];
+	}
+      if (_rFlags.has_subviews)
+	{
+	  count = [_sub_views count];
+	  if (count > 0)
+	    {
+	      NSView*	array[count];
+	      unsigned	i;
+
+	      [_sub_views getObjects: array];
+	      for (i = 0; i < count; i++)
+		{
+		  NSView	*sub = array[i];
+
+		  if (sub->_coordinates_valid == YES)
+		    {
+		      (*invalidateImp)(sub, invalidateSel);
+		    }
+		}
+	    }
+	}
+      [self releaseGState];
+    }
+}
+
+/*
+ *	The [-_matrixFromWindow] method returns a matrix that can be used to
+ *	map coordinates in the windows coordinate system to coordinates in the
+ *	views coordinate system.  It rebuilds the mapping matrices and
+ *	visible rectangle cache if necessary.
+ *	All coordinate transformations use this matrix.
+ */
+- (NSAffineTransform*) _matrixFromWindow
+{
+  if (_coordinates_valid == NO)
+    {
+      [self _rebuildCoordinates];
+    }
+  return _matrixFromWindow;
+}
+
+/*
+ *	The [-_matrixToWindow] method returns a matrix that can be used to
+ *	map coordinates in the views coordinate system to coordinates in the
+ *	windows coordinate system.  It rebuilds the mapping matrices and
+ *	visible rectangle cache if necessary.
+ *	All coordinate transformations use this matrix.
+ */
+- (NSAffineTransform*) _matrixToWindow
+{
+  if (_coordinates_valid == NO)
+    {
+      [self _rebuildCoordinates];
+    }
+  return _matrixToWindow;
+}
+
+/*
+ *	The [-_rebuildCoordinates] method rebuilds the coordinate mapping
+ *	matrices (matrixFromWindow and _matrixToWindow) and the cached visible
+ *	rectangle if they have been invalidated.
+ */
+- (void) _rebuildCoordinates
+{
+  if (_coordinates_valid == NO)
+    {
+      _coordinates_valid = YES;
+      if (!_window)
+	{
+	  _visibleRect = NSZeroRect;
+	  [_matrixToWindow makeIdentityMatrix];
+	  [_matrixFromWindow makeIdentityMatrix];
+	}
+      if (!_super_view)
+	{
+	  _visibleRect = _bounds;
+	  [_matrixToWindow makeIdentityMatrix];
+	  [_matrixFromWindow makeIdentityMatrix];
+	}
+      else
+	{
+	  NSRect	superviewsVisibleRect;
+	  BOOL		wasFlipped = _super_view->_rFlags.flipped_view;
+	  NSAffineTransform	*pMatrix = [_super_view _matrixToWindow];
+
+	  [_matrixToWindow takeMatrixFromTransform: pMatrix];
+	  (*preImp)(_matrixToWindow, preSel, _frameMatrix);
+	  if (_rFlags.flipped_view != wasFlipped)
+	    {
+	      /*
+	       * The flipping process must result in a coordinate system that
+	       * exactly overlays the original.	 To do that, we must translate
+	       * the origin by the height of the view.
+	       */
+	      flip->matrix.tY = _frame.size.height;
+	      (*preImp)(_matrixToWindow, preSel, flip);
+	    }
+	  (*preImp)(_matrixToWindow, preSel, _boundsMatrix);
+	  [_matrixFromWindow takeMatrixFromTransform: _matrixToWindow];
+	  [_matrixFromWindow invert];
+
+	  superviewsVisibleRect = [self convertRect: [_super_view visibleRect]
+					   fromView: _super_view];
+
+	  _visibleRect = NSIntersectionRect(superviewsVisibleRect, _bounds);
+
+	}
+    }
+}
+
+- (void) _viewDidMoveToWindow
+{
+  [self viewDidMoveToWindow];
+  if (_rFlags.has_subviews)
+    {
+      unsigned	count = [_sub_views count];
+
+      if (count > 0)
+	{
+	  unsigned	i;
+	  NSView	*array[count];
+
+	  [_sub_views getObjects: array];
+	  for (i = 0; i < count; ++i)
+	    {
+	      [array[i] _viewDidMoveToWindow];
+	    }
+	}
+    }
+}
+
 
 /*
  * Class methods
@@ -439,7 +593,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   _rFlags.has_subviews = 1;
   [aView resetCursorRects];
   [aView setNeedsDisplay: YES];
-  [aView viewDidMoveToWindow];
+  [aView _viewDidMoveToWindow];
   [aView viewDidMoveToSuperview];
   [self didAddSubview: aView];
   RELEASE(aView);
@@ -492,7 +646,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   _rFlags.has_subviews = 1;
   [aView resetCursorRects];
   [aView setNeedsDisplay: YES];
-  [aView viewDidMoveToWindow];
+  [aView _viewDidMoveToWindow];
   [aView viewDidMoveToSuperview];
   [self didAddSubview: aView];
   RELEASE(aView);
@@ -626,7 +780,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   RETAIN(aView);
   [_sub_views removeObjectIdenticalTo: aView];
   [aView setNeedsDisplay: NO];
-  [aView viewDidMoveToWindow];
+  [aView _viewDidMoveToWindow];
   [aView viewDidMoveToSuperview];
   RELEASE(aView);
   if ([_sub_views count] == 0)
@@ -671,7 +825,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       _rFlags.has_subviews = 1;
       [newView resetCursorRects];
       [newView setNeedsDisplay: YES];
-      [newView viewDidMoveToWindow];
+      [newView _viewDidMoveToWindow];
       [newView viewDidMoveToSuperview];
       [self didAddSubview: newView];
       RELEASE(newView);
@@ -713,7 +867,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	  _rFlags.has_subviews = 1;
 	  [newView resetCursorRects];
 	  [newView setNeedsDisplay: YES];
-	  [newView viewDidMoveToWindow];
+	  [newView _viewDidMoveToWindow];
 	  [newView viewDidMoveToSuperview];
 	  [self didAddSubview: newView];
 	  RELEASE(newView);
@@ -796,24 +950,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 {}
 
 - (void) viewDidMoveToWindow
-{
-  if (_rFlags.has_subviews)
-    {
-      unsigned	count = [_sub_views count];
-
-      if (count > 0)
-	{
-	  unsigned	i;
-	  NSView	*array[count];
-
-	  [_sub_views getObjects: array];
-	  for (i = 0; i < count; ++i)
-	    {
-	      [array[i] viewDidMoveToWindow: newWindow];
-	    }
-	}
-    }
-}
+{}
 
 - (void) willRemoveSubview: (NSView *)subview
 {}
@@ -3904,7 +4041,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	  _rFlags.has_subviews = 1;
 	  [sub resetCursorRects];
 	  [sub setNeedsDisplay: YES];
-	  [sub viewDidMoveToWindow];
+	  [sub _viewDidMoveToWindow];
 	  [sub viewDidMoveToSuperview];
 	  [self didAddSubview: sub];
 	}
@@ -4105,139 +4242,6 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 - (NSString *) toolTip
 {
   return nil;
-}
-
-/*
- *	Private methods.
- */
-
-
-/*
- *	The [-_invalidateCoordinates] method marks the coordinate mapping
- *	matrices (matrixFromWindow and _matrixToWindow) and the cached visible
- *	rectangle as invalid.  It recursively invalidates the coordinates for
- *	all subviews as well.
- *	This method must be called whenever the size, shape or position of
- *	the view is changed in any way.
- */
-- (void) _invalidateCoordinates
-{
-  if (_coordinates_valid == YES)
-    {
-      unsigned	count;
-
-      _coordinates_valid = NO;
-      if (_rFlags.valid_rects != 0)
-	{
-	  [_window invalidateCursorRectsForView: self];
-	}
-      if (_rFlags.has_subviews)
-	{
-	  count = [_sub_views count];
-	  if (count > 0)
-	    {
-	      NSView*	array[count];
-	      unsigned	i;
-
-	      [_sub_views getObjects: array];
-	      for (i = 0; i < count; i++)
-		{
-		  NSView	*sub = array[i];
-
-		  if (sub->_coordinates_valid == YES)
-		    {
-		      (*invalidateImp)(sub, invalidateSel);
-		    }
-		}
-	    }
-	}
-      [self releaseGState];
-    }
-}
-
-/*
- *	The [-_matrixFromWindow] method returns a matrix that can be used to
- *	map coordinates in the windows coordinate system to coordinates in the
- *	views coordinate system.  It rebuilds the mapping matrices and
- *	visible rectangle cache if necessary.
- *	All coordinate transformations use this matrix.
- */
-- (NSAffineTransform*) _matrixFromWindow
-{
-  if (_coordinates_valid == NO)
-    {
-      [self _rebuildCoordinates];
-    }
-  return _matrixFromWindow;
-}
-
-/*
- *	The [-_matrixToWindow] method returns a matrix that can be used to
- *	map coordinates in the views coordinate system to coordinates in the
- *	windows coordinate system.  It rebuilds the mapping matrices and
- *	visible rectangle cache if necessary.
- *	All coordinate transformations use this matrix.
- */
-- (NSAffineTransform*) _matrixToWindow
-{
-  if (_coordinates_valid == NO)
-    {
-      [self _rebuildCoordinates];
-    }
-  return _matrixToWindow;
-}
-
-/*
- *	The [-_rebuildCoordinates] method rebuilds the coordinate mapping
- *	matrices (matrixFromWindow and _matrixToWindow) and the cached visible
- *	rectangle if they have been invalidated.
- */
-- (void) _rebuildCoordinates
-{
-  if (_coordinates_valid == NO)
-    {
-      _coordinates_valid = YES;
-      if (!_window)
-	{
-	  _visibleRect = NSZeroRect;
-	  [_matrixToWindow makeIdentityMatrix];
-	  [_matrixFromWindow makeIdentityMatrix];
-	}
-      if (!_super_view)
-	{
-	  _visibleRect = _bounds;
-	  [_matrixToWindow makeIdentityMatrix];
-	  [_matrixFromWindow makeIdentityMatrix];
-	}
-      else
-	{
-	  NSRect	superviewsVisibleRect;
-	  BOOL		wasFlipped = _super_view->_rFlags.flipped_view;
-	  NSAffineTransform	*pMatrix = [_super_view _matrixToWindow];
-
-	  [_matrixToWindow takeMatrixFromTransform: pMatrix];
-	  (*preImp)(_matrixToWindow, preSel, _frameMatrix);
-	  if (_rFlags.flipped_view != wasFlipped)
-	    {
-	      /*
-	       * The flipping process must result in a coordinate system that
-	       * exactly overlays the original.	 To do that, we must translate
-	       * the origin by the height of the view.
-	       */
-	      flip->matrix.tY = _frame.size.height;
-	      (*preImp)(_matrixToWindow, preSel, flip);
-	    }
-	  (*preImp)(_matrixToWindow, preSel, _boundsMatrix);
-	  [_matrixFromWindow takeMatrixFromTransform: _matrixToWindow];
-	  [_matrixFromWindow invert];
-
-	  superviewsVisibleRect = [self convertRect: [_super_view visibleRect]
-					   fromView: _super_view];
-
-	  _visibleRect = NSIntersectionRect(superviewsVisibleRect, _bounds);
-
-	}
-    }
 }
 
 - (void) rightMouseDown: (NSEvent *) theEvent

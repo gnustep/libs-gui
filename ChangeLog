@@ -1,7 +1,7 @@
 2005-08-25  Richard Frith-Macdonald <rfm@gnu.org>
 
-	* Source/NSView.m: ([viewDidMoveToWindow:]) Implemented to send to
-	subviews as it should.
+	* Source/NSView.m: ([_viewDidMoveToWindow]) Implemented and used to
+	send notification to subviews as we should.
 
 2005-08-22 14:36 Gregory John Casamento <greg_casamento@yahoo.com>
 
