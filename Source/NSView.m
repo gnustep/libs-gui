@@ -796,7 +796,24 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 {}
 
 - (void) viewDidMoveToWindow
-{}
+{
+  if (_rFlags.has_subviews)
+    {
+      unsigned	count = [_sub_views count];
+
+      if (count > 0)
+	{
+	  unsigned	i;
+	  NSView	*array[count];
+
+	  [_sub_views getObjects: array];
+	  for (i = 0; i < count; ++i)
+	    {
+	      [array[i] viewDidMoveToWindow: newWindow];
+	    }
+	}
+    }
+}
 
 - (void) willRemoveSubview: (NSView *)subview
 {}
