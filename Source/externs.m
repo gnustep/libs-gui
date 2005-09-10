@@ -145,7 +145,7 @@ NSString *NSControlTextDidChangeNotification =
 @"NSControlTextDidChangeNotification";
 
 // NSDataLink global strings
-NSString *NSDataLinkFileNameExtension = @"dlf";
+NSString *NSDataLinkFilenameExtension = @"dlf";
 
 // NSDrawer notifications
 NSString *NSDrawerDidCloseNotification =

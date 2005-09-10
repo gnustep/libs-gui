@@ -35,9 +35,6 @@
 #include "AppKit/NSSavePanel.h"
 #include "AppKit/NSSelection.h"
 
-// constants
-NSString *NSDataLinkFilenameExtension = @"dlink";
-
 @implementation NSDataLink
 
 //

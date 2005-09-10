@@ -29,8 +29,10 @@
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSEnumerator.h>
 #include <Foundation/NSArray.h>
+#include <Foundation/NSArchiver.h>
 #include <AppKit/NSDataLinkManager.h>
 #include <AppKit/NSDataLink.h>
+#include <AppKit/NSPasteboard.h>
 
 @interface NSDataLink (Private)
 - (void) setLastUpdateTime: (NSDate *)date;
@@ -158,13 +160,26 @@
 - (BOOL)addLinkAsMarker:(NSDataLink *)link
 		     at:(NSSelection *)selection
 {
-  return NO;
+  // FIXME: Marker?
+  return [self addLink: link at: selection];
 }
 
 - (NSDataLink *)addLinkPreviouslyAt:(NSSelection *)oldSelection
 		     fromPasteboard:(NSPasteboard *)pasteboard
                                  at:(NSSelection *)selection
 {
+  NSData *data = [pasteboard dataForType: NSDataLinkPboardType];
+  NSArray *links = [NSUnarchiver unarchiveObjectWithData: data];
+  NSEnumerator *en = [links objectEnumerator];
+  NSDataLink *link = nil;
+
+  while((link = [en nextObject]) != nil)
+    {
+	if([link destinationSelection] == oldSelection)
+	{	    
+	}
+    }
+
   return nil;
 }
 
@@ -197,26 +212,41 @@
 //
 - (void)noteDocumentClosed
 {
+    if([delegate respondsToSelector: @selector(dataLinkManagerCloseDocument:)])
+    {
+	[delegate dataLinkManagerCloseDocument: self];
+    }
 }
 
 - (void)noteDocumentEdited
 {
+    if([delegate respondsToSelector: @selector(dataLinkManagerDidEditLinks:)])
+    {
+	[delegate dataLinkManagerDidEditLinks: self];
+    }
 }
 
 - (void)noteDocumentReverted
 {
+    if([delegate respondsToSelector: @selector(dataLinkManagerDidEditLinks:)])
+    {
+	[delegate dataLinkManagerDidEditLinks: self];
+    }
 }
 
 - (void)noteDocumentSaved
 {
+    // implemented by subclass
 }
 
 - (void)noteDocumentSavedAs:(NSString *)path
 {
+    // implemented by subclass
 }
 
 - (void)noteDocumentSavedTo:(NSString *)path
 {
+    // implemented by subclass
 }
 
 //

@@ -1,3 +1,10 @@
+2005-09-10 17:02 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/externs.m: Added constants for data link.
+	* Source/NSDataLink.m: Removed NSDataLinkFilenameExtension constant.
+	* Source/NSDataLinkManager.m: Added implementation for 
+	addLinkAsMarker:at:, addLinkPreviouslyAt:fromPasteboard:at:.
+
 2005-09-10  Adam Fedor  <fedor@gnu.org>
 
 	* configure.ac: Check for libgib if libungif is not found.
