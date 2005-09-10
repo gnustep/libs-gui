@@ -232,8 +232,12 @@ if test "${enable_libgif}" = yes; then
   enable_ungif=no
 fi
 
+have_ungif=no
 if test "${enable_ungif}" = yes; then
   AC_CHECK_LIB(ungif, DGifOpen)
+  if test "${ac_cv_lib_ungif_DGifOpen}" = yes; then
+    have_ungif=yes
+  fi
 
   if test "${with_x}" != no && test "${ac_cv_lib_ungif_DGifOpen}" = no; then
     orig_CPPFLAGS="${CPPFLAGS}"
@@ -261,11 +265,12 @@ if test "${enable_ungif}" = yes; then
       AC_MSG_NOTICE([-gui will be linked against -lX11 to support ungif images])
       GRAPHIC_CFLAGS="-I${ac_x_includes} $GRAPHIC_CFLAGS"
       GRAPHIC_LFLAGS="-L${ac_x_libraries} $GRAPHIC_LFLAGS"
+      have_ungif=yes
     fi
   fi
 fi
 
-if test "${enable_libgif}" = yes; then
+if test "$have_ungif" = no -o "${enable_libgif}" = yes; then
   AC_CHECK_LIB(gif, DGifOpen)
 
   if test "${with_x}" != no && test "${ac_cv_lib_gif_DGifOpen}" = no; then
