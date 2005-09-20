@@ -20,6 +20,17 @@
 	migrate to using a newer version of the library.
       </p>
       <section>
+	<heading>Version 0.10.1</heading>
+	  <deflist>
+	    <term>Sound library</term>
+	    <desc>
+	    GNUstep now uses v19 of portaudio for the sound daemon. Version
+            v19 hasn't been officially released, but it is still used in
+	    several distributions (SuSE, etc) as v18 is very old.
+	    </desc>
+	  </deflist>
+      </section>
+      <section>
 	<heading>Version 0.10.0</heading>
 	<p>
 	    The interface version of the gui library has changed in

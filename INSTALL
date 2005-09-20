@@ -29,7 +29,8 @@ installed include:
 
    * audiofile (OPTIONAL)
 
-   * portaudio (OPTIONAL)
+   * portaudio, v19 which has several API changes previous version
+     (OPTIONAL)
 
    Read the GNUstep-HOWTO for more information.  After installing this
 library, install gnustep-back.

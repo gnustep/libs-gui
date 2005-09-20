@@ -9,6 +9,14 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.10.1}
+
+GNUstep now uses v19 of portaudio for the sound daemon. Version v19
+hasn't been officially released, but it is still used in several
+distributions (SuSE, etc) as v18 is very old.
+
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.10.0}
 
 This release is binary incompatible with previous releases.
@@ -20,8 +28,6 @@ this new version.
 @item Nib loading supports window auto-positioning
 @item Keyed encoding is supported in many classes.
 @end itemize
-
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.9.5}
 

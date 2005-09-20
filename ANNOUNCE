@@ -1,7 +1,7 @@
 ANNOUNCE
 ********
 
-This is version 0.10.0 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.10.1 of the GNUstep GUI library (`gnustep-gui').
 
 What is the GNUstep GUI Library?
 ================================
@@ -27,22 +27,17 @@ systems.
 GNUstep Base Library, the TIFF Graphics library, and a back-end
 component like the GNUstep 'Back' Backend.
 
-Noteworthy changes in version `0.10.0'
+Noteworthy changes in version `0.10.1'
 ======================================
 
-This release is binary incompatible with previous releases.  The
-interface version of the library has changed so that apps, tools and
-libraries that use the base library need to be recompiled to use this
-new version.
-
-   * Nib loading supports window auto-positioning
-
-   * Keyed encoding is supported in many classes.
+GNUstep now uses v19 of portaudio for the sound daemon. Version v19
+hasn't been officially released, but it is still used in several
+distributions (SuSE, etc) as v18 is very old.
 
 Where can you get it?  How can you compile it?
 ==============================================
 
-The gstep-gui-0.10.0.tar.gz distribution file has been placed at
+The gstep-gui-0.10.1.tar.gz distribution file has been placed at
 <ftp://ftp.gnustep.org/pub/gnustep/core>.
 
 Read the INSTALL file or the GNUstep-HOWTO for installation

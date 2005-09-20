@@ -1,7 +1,14 @@
 NEWS
 ****
 
-The currently released version of the library is `0.10.0'.
+The currently released version of the library is `0.10.1'.
+
+Noteworthy changes in version `0.10.1'
+======================================
+
+GNUstep now uses v19 of portaudio for the sound daemon. Version v19
+hasn't been officially released, but it is still used in several
+distributions (SuSE, etc) as v18 is very old.
 
 Noteworthy changes in version `0.10.0'
 ======================================
