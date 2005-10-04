@@ -277,28 +277,42 @@ static NSColor	*shadowCol;
   
   ASSIGN (_objectValue, object);
   
-  newContents = [_formatter stringForObjectValue: _objectValue];
-  if (newContents != nil)
+  if (_formatter == nil) 
     {
-      _cell.has_valid_object_value = YES;
-    }
-  else
-    {
-      if ((_formatter == nil) 
-	  && ([object isKindOfClass: [NSString class]] == YES))
+      if ([object isKindOfClass: [NSString class]] == YES)
 	{
-	  newContents = _objectValue;
+	  newContents = object;
+	  _cell.contents_is_attributed_string = NO;
 	  _cell.has_valid_object_value = YES;
 	}
+      if ([object isKindOfClass: [NSAttributedString class]] == YES)
+        {
+          newContents = object;
+          _cell.contents_is_attributed_string = YES;
+	  _cell.has_valid_object_value = YES;
+        }
       else
 	{
 	  newContents = [_objectValue description];
+	  _cell.contents_is_attributed_string = NO;
+	  _cell.has_valid_object_value = YES;
+	}
+  }
+  else
+    {
+      newContents = [_formatter stringForObjectValue: _objectValue];
+      _cell.contents_is_attributed_string = NO;
+      if (newContents != nil)
+        {
+	  _cell.has_valid_object_value = YES;
+	}
+      else
+        {
 	  _cell.has_valid_object_value = NO;
 	}
     }
-  
+
   ASSIGN (_contents, newContents);
-  _cell.contents_is_attributed_string = NO;
 }
 
 - (void) setDoubleValue: (double)aDouble
@@ -353,7 +367,8 @@ static NSColor	*shadowCol;
   if (_formatter == nil)
     {
       ASSIGN (_contents, string);
-      _cell.has_valid_object_value = NO;
+      ASSIGN (_objectValue, string);
+      _cell.has_valid_object_value = YES;
     }
   else
     {
@@ -361,7 +376,7 @@ static NSColor	*shadowCol;
       
       if ([_formatter getObjectValue: &newObjectValue 
 		      forString: string 
-		      errorDescription: NULL] == YES)
+		      errorDescription: NULL])
 	{
 	  [self setObjectValue: newObjectValue];
 	}

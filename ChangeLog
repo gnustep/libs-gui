@@ -1,3 +1,10 @@
+2005-10-05  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSCell.m (-setObjectValue:, -setStringValue:): When no
+	formatter is present, the object value is always valid. Also allow
+	attributed strings to be passed through. Based on patches by Saso
+	Kiselkov <diablos@manga.sk> and Andreas Hoeschler <ahoesch@smartsoft.de>.
+
 2005-09-19  Adam Fedor  <fedor@gnu.org>
 
 	* Version 0.10.1
