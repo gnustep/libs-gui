@@ -3065,7 +3065,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   /*
    * Set up 'previous' link in aView to point to us.
    */
-  GSIArraySetItemAtIndex(pKV(aView), (GSIArrayItem)self, 0);
+  GSIArraySetItemAtIndex(pKV(aView), (GSIArrayItem)((id)self), 0);
 
   /*
    * Tell our current 'next' view that we are no longer pointing to it.
@@ -3094,7 +3094,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   /*
    * Set up 'next' link to point to aView.
    */
-  GSIArraySetItemAtIndex(nKV(self), (GSIArrayItem)aView, 0);
+  GSIArraySetItemAtIndex(nKV(self), (GSIArrayItem)((id)aView), 0);
 }
 
 /**

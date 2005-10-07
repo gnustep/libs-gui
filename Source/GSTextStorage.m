@@ -86,7 +86,7 @@ cacheAttributes(NSDictionary *attrs)
   GSIMapNode	node;
 
   ALOCK();
-  node = GSIMapNodeForKey(&attrMap, (GSIMapKey)attrs);
+  node = GSIMapNodeForKey(&attrMap, (GSIMapKey)((id)attrs));
   if (node == 0)
     {
       /*
@@ -94,7 +94,7 @@ cacheAttributes(NSDictionary *attrs)
        * in an immutable dictionary that can safely be cached.
        */
       attrs = [[NSDictionary alloc] initWithDictionary: attrs copyItems: NO];
-      GSIMapAddPair(&attrMap, (GSIMapKey)attrs, (GSIMapVal)(unsigned)1);
+      GSIMapAddPair(&attrMap, (GSIMapKey)((id)attrs), (GSIMapVal)(unsigned)1);
     }
   else
     {
@@ -111,12 +111,12 @@ unCacheAttributes(NSDictionary *attrs)
   GSIMapBucket       bucket;
 
   ALOCK();
-  bucket = GSIMapBucketForKey(&attrMap, (GSIMapKey)attrs);
+  bucket = GSIMapBucketForKey(&attrMap, (GSIMapKey)((id)attrs));
   if (bucket != 0)
     {
       GSIMapNode     node;
 
-      node = GSIMapNodeForKeyInBucket(&attrMap, bucket, (GSIMapKey)attrs);
+      node = GSIMapNodeForKeyInBucket(&attrMap, bucket, (GSIMapKey)((id)attrs));
       if (node != 0)
 	{
 	  if (--node->value.uint == 0)
