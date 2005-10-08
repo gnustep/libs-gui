@@ -1,3 +1,17 @@
+2005-10-08  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWorkspace.m: Provide private method to post a notification
+	to the local workspace center, using the shared workspace app as the
+	notification object.  Fix handling of incoming notifications so that
+	they use the new method and are therefore posted locally with the
+	correct notification object.
+	* Source/GSServicesManager.m: Make applications respond to the
+	terminate: method sent from another app, but send a power off
+	notification first, on the assumption that a terminate sent by
+	a remote process is a power off or session manager shutdown or
+	some similar event indicating that the process is likely to be
+	forcably killed if it doesn't close down gracefully.
+
 2005-10-05  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSCell.m (-setObjectValue:, -setStringValue:): When no

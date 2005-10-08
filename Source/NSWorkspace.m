@@ -83,6 +83,7 @@ static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
   NSDistributedNotificationCenter	*remote;
 }
 - (void) _handleRemoteNotification: (NSNotification*)aNotification;
+- (void) _postLocal: (NSString*)name userInfo: (NSDictionary*)info;
 @end
 
 @implementation	_GSWorkspaceCenter
@@ -181,9 +182,22 @@ static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
  */
 - (void) _handleRemoteNotification: (NSNotification*)aNotification
 {
-  [super postNotification: aNotification];
+  [self _postLocal: [aNotification name]
+	  userInfo: [aNotification userInfo]];
 }
 
+/*
+ * Method allowing a notification to be posted locally.
+ */
+- (void) _postLocal: (NSString*)name userInfo: (NSDictionary*)info
+{
+  NSNotification	*aNotification;
+
+  aNotification = [NSNotification notificationWithName: name
+						object: self
+					      userInfo: info];
+  [super postNotification: aNotification];
+}
 @end
 
 

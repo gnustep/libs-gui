@@ -156,6 +156,11 @@ NSRegisterServicesProvider(id provider, NSString *name)
   ASSIGN(providerName, name);
 }
 
+
+@interface NSNotificationCenter (NSWorkspacePrivate)
+- (void) _postLocal: (NSString*)name userInfo: (NSDictionary*)info;
+@end
+
 /**
  * The GSListener class exists as a proxy to forward messages to
  * service provider objects.  It implements very few methods and
@@ -248,12 +253,25 @@ NSRegisterServicesProvider(id provider, NSString *name)
   SEL		aSel = [anInvocation selector];
   NSString      *selName = NSStringFromSelector(aSel);
 
-  /*
-   *    If the selector matches the correct form for a services request,
-   *    send the message to the services provider.
-   */
-  if ([selName hasSuffix: @":userData:error:"])
+  if ([selName isEqualToString: @"terminate:"])
     {
+      NSNotificationCenter	*c;
+
+      /*
+       * Send a power off notification before asking app to terminate.
+       */
+      c = [[NSWorkspace sharedWorkspace] notificationCenter];
+      [c _postLocal: NSWorkspaceWillPowerOffNotification userInfo: nil];
+
+      [anInvocation invokeWithTarget: NSApp];
+      return;
+    }
+  else if ([selName hasSuffix: @":userData:error:"])
+    {
+      /*
+       *    The selector matches the correct form for a services request,
+       *    so send the message to the services provider.
+       */
       if ([servicesProvider respondsToSelector: aSel] == YES)
 	{
 	  NSPasteboard	*pb;
@@ -329,7 +347,11 @@ NSRegisterServicesProvider(id provider, NSString *name)
   NSMethodSignature	*sig = nil;
   NSString      	*selName = NSStringFromSelector(aSelector);
 
-  if ([selName hasSuffix: @":userData:error:"])
+  if ([selName isEqualToString: @"terminate:"])
+    {
+      sig = [NSApp methodSignatureForSelector: aSelector];
+    }
+  else if ([selName hasSuffix: @":userData:error:"])
     {
       sig = [servicesProvider methodSignatureForSelector: aSelector];
     }
