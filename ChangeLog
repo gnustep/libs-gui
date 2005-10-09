@@ -6,6 +6,7 @@
 	the extra copies AppCopy1 AppCoppy2 etc.
 	* Source/NSWorkspace.m: Use advertised port name for the app name so
 	that other apps can contact it.
+	Implement ([-extendPowerOffBy:]) to ask workspace application.
 	* Tools/gclose.m: Triavial utility ... counterpart for gopen ...
 	close doen an application.
 	* Tools/GNUmakefile: build gclose

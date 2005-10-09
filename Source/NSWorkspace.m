@@ -1395,12 +1395,25 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 }
 
 /*
- * Requesting Additional Time before Power Off or Logout
+ * Requesting Additional Time before Power Off or Logout<br />
+ * Returns the amount of time actually granted (which may be less than
+ * requested).<br />
+ * Times are measured in milliseconds.
  */
 - (int) extendPowerOffBy: (int)requested
 {
-  // FIXME
-  return 0;
+  int	result = 0;
+  id	app = [self _workspaceApplication];
+
+  if (app != nil)
+    {
+      NS_DURING
+	result = [app extendPowerOffBy: requested];
+      NS_HANDLER
+	result = 0;
+      NS_ENDHANDLER
+    }
+  return result;
 }
 
 @end
