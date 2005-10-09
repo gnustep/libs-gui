@@ -1,3 +1,15 @@
+2005-10-09  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSServicesManager.m: Improve handling of port registration
+	to ensure each application listens on a weel known port and the port
+	name is readable.  If multiple copies of an app are running, name
+	the extra copies AppCopy1 AppCoppy2 etc.
+	* Source/NSWorkspace.m: Use advertised port name for the app name so
+	that other apps can contact it.
+	* Tools/gclose.m: Triavial utility ... counterpart for gopen ...
+	close doen an application.
+	* Tools/GNUmakefile: build gclose
+
 2005-10-08  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: Provide private method to post a notification

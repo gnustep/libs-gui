@@ -61,6 +61,7 @@
   NSMutableSet		*_allDisabled;
   NSMutableDictionary	*_allServices;
   NSTimer		*_timer;
+  NSString		*_port;
 }
 + (GSServicesManager*) newWithApplication: (NSApplication*)app;
 + (GSServicesManager*) manager;
@@ -78,6 +79,7 @@
 - (NSString*) item2title: (id<NSMenuItem>)item;
 - (void) loadServices;
 - (NSDictionary*) menuServices;
+- (NSString*) port;
 - (void) rebuildServices;
 - (void) rebuildServicesMenu;
 - (void) registerAsServiceProvider;

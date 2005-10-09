@@ -1153,9 +1153,10 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 - (NSDictionary*) activeApplication
 {
   NSProcessInfo *processInfo = [NSProcessInfo processInfo];
+  NSString	*appName = [[GSServicesManager manager] port];
 
   return [NSDictionary dictionaryWithObjectsAndKeys:
-    [processInfo processName], @"NSApplicationName",
+    appName, @"NSApplicationName",
     [[NSBundle mainBundle] bundlePath], @"NSApplicationPath",
     [NSNumber numberWithInt: [processInfo processIdentifier]], 
 		   @"NSApplicationProcessIdentifier",

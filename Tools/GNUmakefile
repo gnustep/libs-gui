@@ -29,10 +29,12 @@ include ../config.make
 include ../Version
 
 SUBPROJECTS = $(BUILD_GSND)
-TOOL_NAME = make_services set_show_service gopen
+TOOL_NAME = make_services set_show_service gopen gclose
 SERVICE_NAME = GSspell
 
 # The source files to be compiled
+gclose_OBJC_FILES = gclose.m
+
 gopen_OBJC_FILES = gopen.m
 
 make_services_OBJC_FILES = make_services.m 

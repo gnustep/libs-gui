@@ -120,38 +120,64 @@ NSUnregisterServicesProvider(NSString *name)
 void
 NSRegisterServicesProvider(id provider, NSString *name)
 {
+  NSPortNameServer	*ns;
+  id			namedPort;
+
+  if ([name length] == 0)
+    {
+      [NSException raise: NSInvalidArgumentException
+		  format: @"NSRegisterServicesProvider() no name provided"];
+    }
+  if (provider == nil)
+    {
+      [NSException raise: NSInvalidArgumentException
+		  format: @"NSRegisterServicesProvider() no provider"];
+    }
+  if (servicesProvider == provider && [providerName isEqual: name])
+    {
+      return;	// Already registered.
+    }
+
+  ns = [NSPortNameServer systemDefaultPortNameServer];
+  namedPort = [ns portForName: name];
+  if ([listenerConnection receivePort] == namedPort)
+    {
+      [ns removePortForName: name];
+      namedPort = nil;
+    }
+  if (namedPort != nil)
+    {
+      [NSException raise: NSInvalidArgumentException
+		  format: @"NSRegisterServicesProvider() %@ already in use",
+	name];
+    }
+
   if (listenerConnection != nil)
     {
-      /*
-       *	Ensure there is no previous listener and nothing else using
-       *	the given port name.
-       */
-      [[NSPortNameServer systemDefaultPortNameServer] removePortForName: name];
       [[NSNotificationCenter defaultCenter]
 	removeObserver: [GSListener class]
 		  name: NSConnectionDidDieNotification
 		object: listenerConnection];
       DESTROY(listenerConnection);
     }
-  if (name != nil && provider != nil)
+
+  listenerConnection = [NSConnection newRegisteringAtName: name
+    withRootObject: [GSListener listener]];
+  if (listenerConnection != nil)
     {
-      listenerConnection = [NSConnection newRegisteringAtName: name
-	withRootObject: [GSListener listener]];
-      if (listenerConnection != nil)
-	{
-	  RETAIN(listenerConnection);
-	  [[NSNotificationCenter defaultCenter]
-                    addObserver: [GSListener class]
-		       selector: @selector(connectionBecameInvalid:)
-			   name: NSConnectionDidDieNotification
-			 object: listenerConnection];
-	}
-      else
-	{
-	  [NSException raise: NSGenericException
-		      format: @"unable to register %@", name];
-	}
+      RETAIN(listenerConnection);
+      [[NSNotificationCenter defaultCenter]
+		addObserver: [GSListener class]
+		   selector: @selector(connectionBecameInvalid:)
+		       name: NSConnectionDidDieNotification
+		     object: listenerConnection];
     }
+  else
+    {
+      [NSException raise: NSGenericException
+		  format: @"unable to register %@", name];
+    }
+
   ASSIGN(servicesProvider, provider);
   ASSIGN(providerName, name);
 }
@@ -222,12 +248,15 @@ NSRegisterServicesProvider(id provider, NSString *name)
 
 + (void) setServicesProvider: (id)anObject
 {
-  NSString	*appName;
-
   if (servicesProvider != anObject)
     {
-      appName = [[NSProcessInfo processInfo] processName];
-      NSRegisterServicesProvider(anObject, appName);
+      NSString	*port = [[GSServicesManager manager] port];
+
+      if (port == nil)
+	{
+	  port = [[NSProcessInfo processInfo] processName];
+	}
+      NSRegisterServicesProvider(anObject, port);
     }
 }
 
@@ -446,7 +475,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
 	{
 	  manager->_application = app;
 	}
-      return manager;
+      return RETAIN(manager);
     }
 
   manager = [GSServicesManager alloc];
@@ -787,6 +816,16 @@ static NSString         *disabledName = @".GNUstepDisabled";
   return _title2info;
 }
 
+/**
+ * Returns the 'port' of this application ... this is the name the
+ * application is registered under so that other apps can connect to
+ * it to use any services it provides.
+ */
+- (NSString*) port
+{
+  return _port;
+}
+
 - (void) rebuildServices
 {
   NSDictionary          *services;
@@ -1006,47 +1045,89 @@ static NSString         *disabledName = @".GNUstepDisabled";
 	@"Application may already be running with this name",
 	@"Continue", @"Abort", @"Rename");
 
-      if (result == NSAlertDefaultReturn || result == NSAlertOtherReturn)
-        {
-          if (result == NSAlertOtherReturn)
-	    appName = [[NSProcessInfo processInfo] globallyUniqueString];
-
-          [[NSPortNameServer systemDefaultPortNameServer]
-	    removePortForName: appName];
-
-          NS_DURING
-            {
-              NSRegisterServicesProvider(self, appName);
-              registered = YES;
-            }
-          NS_HANDLER
-            {
-              registered = NO;
-              NSLog(@"Warning: Could not register application due to "
-                    @"exception: %@\n", [localException reason]);
-            }
-          NS_ENDHANDLER
+      if (result == NSAlertOtherReturn)
+	{
+	  unsigned	count = 0;
 
 	  /*
-	   *	Something is seriously wrong - we can't talk to the
-	   *	nameserver, so all interaction with the workspace manager
-	   *	and/or other applications will fail.
-	   *	Give the user a chance to keep on going anyway.
+	   * Try to rename self as a copy.
 	   */
+	  while (registered == NO && ++count < 100)
+	    {
+	      NSString	*tmp;
+
+	      tmp = [appName stringByAppendingFormat: @"Copy%d", count];
+	      NS_DURING
+		{
+		  NSRegisterServicesProvider(self, tmp);
+		  registered = YES;
+		  appName = tmp;
+		}
+	      NS_HANDLER
+		{
+		  registered = NO;
+		}
+	      NS_ENDHANDLER
+	    }
+	}
+
+      if (result == NSAlertDefaultReturn)
+	{
+	  id	app;
+
+	  /*
+	   * Try to terminate the other app and run using normal name.
+	   */
+	  app = [NSConnection rootProxyForConnectionWithRegisteredName: appName
+								  host: @""];
+	  NS_DURING
+	    {
+	      [app terminate: nil];
+	    }
+	  NS_HANDLER
+	    {
+	      /* maybe it terminated. */
+	    }
+	  NS_ENDHANDLER
+
+	  NS_DURING
+	    {
+	      NSRegisterServicesProvider(self, appName);
+	      registered = YES;
+	    }
+	  NS_HANDLER
+	    {
+	      registered = NO;
+	    }
+	  NS_ENDHANDLER
+	}
+
+      if (result == NSAlertDefaultReturn || result == NSAlertOtherReturn)
+        {
 	  if (registered == NO)
 	    {
+	      /*
+	       * Something is seriously wrong - we can't talk to the
+	       * nameserver, so all interaction with the workspace manager
+	       * and/or other applications will fail.
+	       * Give the user a chance to keep on going anyway.
+	       */
 	      result = NSRunAlertPanel(appName,
 		@"Unable to register application with ANY name",
 		@"Abort", @"Continue", nil);
-
 	      if (result == NSAlertDefaultReturn)
-		registered = YES;
+		{
+		  registered = YES;
+		}
 	    }
         }
 
       if (registered == NO)
-        [[NSApplication sharedApplication] terminate: self];
+	{
+	  [[NSApplication sharedApplication] terminate: self];
+	}
     }
+  ASSIGN(_port, appName);
 }
 
 /**
