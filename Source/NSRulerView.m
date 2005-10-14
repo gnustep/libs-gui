@@ -753,7 +753,7 @@ static NSMutableDictionary *units = nil;
         }
       else
         {
-	  labelPosition.x = baselineLocation + LABEL_MARK_SIZE + 4 - size.width;
+	  labelPosition.x = baselineLocation + _ruleThickness - size.width;
 	  labelPosition.y = labelLocation + 1;
         }
       [labelString drawAtPoint: labelPosition withAttributes: attr];

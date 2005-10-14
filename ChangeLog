@@ -1,3 +1,9 @@
+2005-10-14  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSRulerVeiw.m (-drawHashMarksAndLabelsInRect:): For
+	vertical rulers use ruler hickness to position labels. Patch by Saso
+	Kiselkov <diablos@manga.sk>.
+
 2005-10-09  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSServicesManager.m: Improve handling of port registration
