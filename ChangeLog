@@ -1,7 +1,12 @@
+2005-10-17  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSavePanel.m (-performDragOperation:): Set file name and
+	directory to allow dragging of files, not just directories.
+
 2005-10-14  Fred Kiefer <FredKiefer@gmx.de>
 
-	* Source/NSRulerVeiw.m (-drawHashMarksAndLabelsInRect:): For
-	vertical rulers use ruler hickness to position labels. Patch by Saso
+	* Source/NSRulerView.m (-drawHashMarksAndLabelsInRect:): For
+	vertical rulers use ruler thickness to position labels. Patch by Saso
 	Kiselkov <diablos@manga.sk>.
 
 2005-10-09  Richard Frith-Macdonald <rfm@gnu.org>
@@ -14,7 +19,8 @@
 	that other apps can contact it.
 	Implement ([-extendPowerOffBy:]) to ask workspace application.
 	* Tools/gclose.m: Triavial utility ... counterpart for gopen ...
-	close doen an application.
+	close doen an application.Saso
+	Kiselkov <diablos@manga.sk>
 	* Tools/GNUmakefile: build gclose
 
 2005-10-08  Richard Frith-Macdonald <rfm@gnu.org>

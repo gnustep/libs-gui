@@ -104,6 +104,7 @@ static BOOL _gs_display_reading_progress = NO;
     {
       return NSDragOperationNone;
     }
+
   return NSDragOperationAll;
 }
     
@@ -117,9 +118,23 @@ static BOOL _gs_display_reading_progress = NO;
   if ([types containsObject: NSFilenamesPboardType] == YES)
     {
       NSArray	*names = [dragPb propertyListForType: NSFilenamesPboardType];
-      NSString	*file = [names lastObject];
+      NSString	*file = [[names lastObject] stringByStandardizingPath];
+      BOOL isDir;
 
-      [self setDirectory: file];
+      if (file && 
+	  [_fm fileExistsAtPath: file isDirectory: &isDir] && 
+	  isDir)
+        {
+	  [self setDirectory: file];
+	}
+      else
+        {
+	  NSString *path = [file stringByDeletingLastPathComponent];
+	  NSString *filename = [file lastPathComponent];
+	  
+	  [self _setupForDirectory: path file: filename];
+	}
+
       return YES;
     }
   return NO;
