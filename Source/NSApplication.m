@@ -3020,9 +3020,12 @@ image.
     }
   else
     {
-      shouldTerminate = [[NSDocumentController sharedDocumentController] 
-			  reviewUnsavedDocumentsWithAlertTitle: _(@"Quit")
-			   cancellable:YES];
+      if ([NSDocumentController isDocumentBasedApplication])
+	{
+	  shouldTerminate = [[NSDocumentController sharedDocumentController] 
+				reviewUnsavedDocumentsWithAlertTitle: _(@"Quit")
+				cancellable:YES];
+	}
     }
 
   if (shouldTerminate == NSTerminateNow)

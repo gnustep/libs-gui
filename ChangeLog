@@ -1,3 +1,8 @@
+2005-10-18  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSApplication.m (-terminate:): Call NSDocumentControllers
+	review unsaved code only when this is a document based application.
+
 2005-10-17  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSSavePanel.m (-performDragOperation:): Set file name and
