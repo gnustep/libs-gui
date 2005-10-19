@@ -1090,8 +1090,9 @@ systemColorWithName(NSString *name)
 	  if ([aDecoder containsValueForKey: @"NSRGB"])
 	    {
 	      data = [aDecoder decodeBytesForKey: @"NSRGB"
-			     returnedLength: &length]; 
-	      str = [[NSString alloc] initWithCString: data length: length];
+			       returnedLength: &length]; 
+	      str = [[NSString alloc] initWithCString: (const char*)data 
+				      length: length];
 	      scanner = [[NSScanner alloc] initWithString: str];
 	      [scanner scanFloat: &red];
 	      [scanner scanFloat: &green];
@@ -1127,8 +1128,9 @@ systemColorWithName(NSString *name)
 	  if ([aDecoder containsValueForKey: @"NSWhite"])
 	    {
 	      data = [aDecoder decodeBytesForKey: @"NSWhite"
-			     returnedLength: &length]; 
-	      str = [[NSString alloc] initWithCString: data length: length];
+			       returnedLength: &length]; 
+	      str = [[NSString alloc] initWithCString: (const char*)data 
+				      length: length];
 	      scanner = [[NSScanner alloc] initWithString: str];
 	      [scanner scanFloat: &white];
 	      RELEASE(scanner);
@@ -1161,8 +1163,9 @@ systemColorWithName(NSString *name)
 	  if ([aDecoder containsValueForKey: @"NSCYMK"])
 	    {
 	      data = [aDecoder decodeBytesForKey: @"NSCYMK"
-			     returnedLength: &length]; 
-	      str = [[NSString alloc] initWithCString: data length: length];
+			       returnedLength: &length]; 
+	      str = [[NSString alloc] initWithCString: (const char*)data 
+				      length: length];
 	      scanner = [[NSScanner alloc] initWithString: str];
 	      [scanner scanFloat: &cyan];
 	      [scanner scanFloat: &yellow];
@@ -1829,7 +1832,9 @@ systemColorWithName(NSString *name)
 	}
       // FIXME: Missing handling of alpha value
       str = [[NSString alloc] initWithFormat: @"%f", _white_component];
-      [aCoder encodeBytes: [str cString] length: [str cStringLength] forKey: @"NSWhite"];
+      [aCoder encodeBytes: (const uint8_t*)[str cString] 
+	      length: [str cStringLength] 
+	      forKey: @"NSWhite"];
       RELEASE(str);
     }
   else 
@@ -2127,7 +2132,9 @@ systemColorWithName(NSString *name)
       [aCoder encodeInt: 5 forKey: @"NSColorSpace"];
       str = [[NSString alloc] initWithFormat: @"%f %f %f %f", _cyan_component, 
 			      _magenta_component, _yellow_component, _black_component];
-      [aCoder encodeBytes: [str cString] length: [str cStringLength] forKey: @"NSCYMK"];
+      [aCoder encodeBytes: (const uint8_t*)[str cString] 
+	      length: [str cStringLength] 
+	      forKey: @"NSCYMK"];
       RELEASE(str);
     }
   else 
@@ -2385,7 +2392,9 @@ systemColorWithName(NSString *name)
       // FIXME: Missing handling of alpha value
       str = [[NSString alloc] initWithFormat: @"%f %f %f", _red_component, 
 			      _green_component, _blue_component];
-      [aCoder encodeBytes: [str cString] length: [str cStringLength] forKey: @"NSRGB"];
+      [aCoder encodeBytes: (const uint8_t*)[str cString] 
+	      length: [str cStringLength] 
+	      forKey: @"NSRGB"];
       RELEASE(str);
     }
   else 

@@ -357,7 +357,7 @@
   NSGraphicsContext     *ctxt = GSCurrentContext();
   int			howMany = [_items count];
   int			i;
-  NSRect		previousRect;
+  NSRect		previousRect = NSMakeRect(0, 0, 0, 0);
   int			previousState = 0;
   NSRect		aRect = _bounds;
 

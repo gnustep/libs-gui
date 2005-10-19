@@ -1,3 +1,16 @@
+2005-10-20  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Header/NSInputManager.h
+	* Source/GSTitleView.m
+	* Source/NSColor.m
+	* Source/NSImageCell.m
+	* Source/NSResponder.m
+	* Source/NSSavePanel.m
+	* Source/NSTabView.m
+	* Source/NSTableHeaderView.m
+	* Source/NSMenuView.m
+	Removed compiler warnings from gcc 4.0.2.
+	
 2005-10-18  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSApplication.m (-terminate:): Call NSDocumentControllers

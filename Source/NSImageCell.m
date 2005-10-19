@@ -314,6 +314,7 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
   switch (_frameStyle)
     {
       case NSImageFrameNone:
+      default:
 	borderSize = NSZeroSize;
 	break;
       case NSImageFramePhoto:
@@ -344,18 +345,19 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
   // Get border size
   switch (_frameStyle)
     {
-    case NSImageFrameNone:
-      borderSize = NSZeroSize;
-      break;
-    case NSImageFramePhoto:
-      // what does this one look like? TODO (in sync with the rest of the code)
-      borderSize = _sizeForBorderType (NSNoBorder);
-      break;
-    case NSImageFrameGrayBezel:
-    case NSImageFrameGroove:
-    case NSImageFrameButton:
-      borderSize = _sizeForBorderType (NSBezelBorder); 
-      break;
+      case NSImageFrameNone:
+      default:
+	borderSize = NSZeroSize;
+	break;
+      case NSImageFramePhoto:
+	// what does this one look like? TODO (in sync with the rest of the code)
+	borderSize = _sizeForBorderType (NSNoBorder);
+	break;
+      case NSImageFrameGrayBezel:
+      case NSImageFrameGroove:
+      case NSImageFrameButton:
+	borderSize = _sizeForBorderType (NSBezelBorder); 
+	break;
     }
 
   return NSInsetRect (theRect, borderSize.width, borderSize.height);

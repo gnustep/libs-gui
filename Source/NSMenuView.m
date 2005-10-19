@@ -91,8 +91,8 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   return YES;
 }
 
-// We do not want to popup menus in this menu.
-- (id) menuForEvent: (NSEvent*) theEvent
+// We do not want to popup menus in this menu view.
+- (NSMenu *) menuForEvent: (NSEvent*) theEvent
 {
   NSDebugLLog (@"NSMenu", @"Query for menu in view");
   return nil;

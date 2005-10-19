@@ -60,7 +60,7 @@
 /*
  * Managing the next responder
  */
-- (id) nextResponder
+- (NSResponder*) nextResponder
 {
   return _next_responder;
 }

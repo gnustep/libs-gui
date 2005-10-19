@@ -133,8 +133,8 @@
 }
 + (NSInputManager *) currentInputManager;
 
-- (id) initWithName: (NSString *)inputServerName
-	       host: (NSString *)hostName;
+- (NSInputManager *) initWithName: (NSString *)inputServerName
+			     host: (NSString *)hostName;
 
 - (BOOL) handleMouseEvent: (NSEvent *)theMouseEvent;
 - (void) handleKeyboardEvents: (NSArray *)eventArray

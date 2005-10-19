@@ -351,7 +351,7 @@
 }
 
 // We do not need app menu over menu
-- (void) rightMouseDown: (NSEvent*)theEvent
+- (NSMenu *) rightMouseDown: (NSEvent*)theEvent
 {
 }
 

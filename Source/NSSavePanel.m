@@ -632,7 +632,7 @@ selectCellWithString: (NSString*)title
 }
 
 /** Returns the shared NSSavePanel instance */
-+ (id) savePanel
++ (NSSavePanel *) savePanel
 {
   if (_gs_gui_save_panel == nil)
     {

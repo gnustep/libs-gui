@@ -74,7 +74,7 @@
  */
 
 // TODO: Remove this method, if not really needed
-- (NSTableHeaderView*)initWithFrame:(NSRect)frameRect
+- (id)initWithFrame:(NSRect)frameRect
 {
   self = [super initWithFrame: frameRect];
   _tableView = nil;
