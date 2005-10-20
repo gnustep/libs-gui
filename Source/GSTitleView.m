@@ -351,12 +351,12 @@
 }
 
 // We do not need app menu over menu
-- (NSMenu *) rightMouseDown: (NSEvent*)theEvent
+- (void) rightMouseDown: (NSEvent*)theEvent
 {
 }
 
 // We do not want to popup menus in this menu.
-- (id) menuForEvent: (NSEvent*) theEvent
+- (NSMenu *) menuForEvent: (NSEvent*) theEvent
 {
   return nil;
 }

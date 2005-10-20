@@ -1,5 +1,10 @@
 2005-10-20  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/GSTitleView.m: Corrected last change the signature of
+	[rightMouseDown:] had been changed instead of [menuForEvent:].
+
+2005-10-20  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Header/NSInputManager.h
 	* Source/GSTitleView.m
 	* Source/NSColor.m
