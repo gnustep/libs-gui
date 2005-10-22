@@ -35,7 +35,8 @@
 #include	<Foundation/NSPathUtilities.h>
 #include	<Foundation/NSSerialization.h>
 
-static void scanDirectory(NSMutableDictionary *services, NSString *path);
+static void scanApplications(NSMutableDictionary *services, NSString *path);
+static void scanServices(NSMutableDictionary *services, NSString *path);
 static void scanDynamic(NSMutableDictionary *services, NSString *path);
 static NSMutableArray *validateEntry(id svcs, NSString* path);
 static NSMutableDictionary *validateService(NSDictionary *service, NSString* path, unsigned i);
@@ -56,6 +57,30 @@ static Class aClass;
 static Class dClass;
 static Class sClass;
 
+static BOOL CheckDirectory(NSString *path)
+{
+  NSFileManager	*mgr;
+  BOOL		isDir;
+
+  mgr = [NSFileManager defaultManager];
+  if (([mgr fileExistsAtPath: path isDirectory: &isDir] && isDir) == 0)
+    {
+      NSString	*parent;
+
+      parent = [path stringByDeletingLastPathComponent];
+      if ([parent length] < [path length]
+	&& CheckDirectory([parent stringByDeletingLastPathComponent]) == NO)
+	{
+	  return NO;
+	}
+      if ([mgr createDirectoryAtPath: path attributes: nil] == NO)
+	{
+	  return NO;
+	}
+    }
+  return YES;
+}
+
 int
 main(int argc, char** argv, char **env_c)
 {
@@ -65,21 +90,21 @@ main(int argc, char** argv, char **env_c)
   NSFileManager		*mgr;
   NSDictionary		*env;
   NSMutableDictionary	*services;
-  NSMutableArray	*roots;
   NSArray		*args;
-  NSArray		*locations;
   NSString		*usrRoot;
   NSString		*str;
   unsigned		index;
-  BOOL			isDir;
-  BOOL			usedPrefixes = NO;
   NSMutableDictionary	*fullMap;
   NSDictionary		*oldMap;
+  NSEnumerator		*enumerator;
+  NSString		*path;
 
 #ifdef GS_PASS_ARGUMENTS
   [NSProcessInfo initializeWithArguments:argv count:argc environment:env_c];
 #endif
   pool = [NSAutoreleasePool new];
+
+  mgr = [NSFileManager defaultManager];
 
   aClass = [NSArray class];
   dClass = [NSDictionary class];
@@ -161,105 +186,20 @@ main(int argc, char** argv, char **env_c)
 	}
     }
 
-  roots = [NSMutableArray arrayWithCapacity: 3];
-
-  /*
-   *	Set up an array of root paths from the prefix list if possible.
-   *	If we managed to get any paths, we set a flag so we know not to
-   *	get and add default values later.
-   */
-  str = [env objectForKey: @"GNUSTEP_PATHPREFIX_LIST"];
-  if (str != nil && [str isEqualToString: @""] == NO)
-    {
-      NSArray	*a = [str componentsSeparatedByString: @":"];
-      unsigned	index;
-
-      for (index = 0; index < [a count]; index++)
-	{
-	  str = [a objectAtIndex: index];
-	  if ([str isEqualToString: @""] == NO)
-	    {
-	      if ([roots containsObject: str] == NO)
-		{
-		  [roots addObject: str];
-		  usedPrefixes = YES;
-		}
-	    }
-	}
-    }
-
   services = [NSMutableDictionary dictionaryWithCapacity: 200];
 
   /*
-   *	Build a list of 'root' directories to search for applications.
-   *	Order is important - later duplicates of services are ignored.
-   *
-   *	Make sure that the users 'GNUstep/Services' directory exists.
+   *	Make sure that the users 'Services' directory exists.
    */
-  usrRoot = [NSSearchPathForDirectoriesInDomains(NSUserDirectory,
+  usrRoot = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
     NSUserDomainMask, YES) lastObject];
-
-  mgr = [NSFileManager defaultManager];
-  if (([mgr fileExistsAtPath: usrRoot isDirectory: &isDir] && isDir) == 0)
+  usrRoot = [usrRoot stringByAppendingPathComponent: @"Services"];
+  if (CheckDirectory(usrRoot) == NO)
     {
-      if ([mgr createDirectoryAtPath: usrRoot attributes: nil] == NO)
-	{
-	  if (verbose >= 0)
-	    NSLog(@"couldn't create %@", usrRoot);
-	  [pool release];
-	  exit(EXIT_FAILURE);
-	}
-    }
-
-  str = usrRoot;	/* Record for adding into roots array */
-
-  usrRoot = [str stringByAppendingPathComponent: @"Library/Services"];
-  if (([mgr fileExistsAtPath: usrRoot isDirectory: &isDir] && isDir) == 0)
-    {
-      if ([mgr createDirectoryAtPath: usrRoot attributes: nil] == NO)
-	{
-	  if (verbose >= 0)
-	    NSLog(@"couldn't create %@", usrRoot);
-	  [pool release];
-	  exit(EXIT_FAILURE);
-	}
-    }
-
-  if (usedPrefixes == NO)
-    {
-      /*
-       * Ensure that the user root (or default user root) is in the path.
-       */
-      if ([roots containsObject: str] == NO)
-	{
-	  [roots addObject: str];
-	}
-
-      /*
-       * Ensure that the local root (or default local root) is in the path.
-       */
-      str = [env objectForKey: @"GNUSTEP_LOCAL_ROOT"];
-      if (str == nil)
-	{
-	  str = @"/usr/GNUstep/Local";
-	}
-      if ([roots containsObject: str] == NO)
-	{
-	  [roots addObject: str];
-	}
-
-      /*
-       * Ensure that the system root (or default system root) is in the path.
-       */
-      str = [env objectForKey: @"GNUSTEP_SYSTEM_ROOT"];
-      if (str == nil)
-	{
-	  str = @"/usr/GNUstep";
-	}
-      if ([roots containsObject: str] == NO)
-	{
-	  [roots addObject: str];
-	}
+      if (verbose >= 0)
+	NSLog(@"couldn't create %@", usrRoot);
+      [pool release];
+      exit(EXIT_FAILURE);
     }
 
   /*
@@ -270,27 +210,24 @@ main(int argc, char** argv, char **env_c)
   scanDynamic(services, usrRoot);
 
   /*
-   *	List of directory names to search within each root directory
-   *	when looking for applications providing services.
+   *	Scan for application information in all standard locations.
    */
-  /* FIXME - Shouldn't this be asking to the gnustep-base library for
-   * the list of application directories rather than try build its own
-   * ? */
-  locations = [NSArray arrayWithObjects: @"Applications", 
-		       @"Library/Services", nil];
-
-  for (index = 0; index < [roots count]; index++)
+  enumerator = [NSSearchPathForDirectoriesInDomains(
+    NSAllApplicationsDirectory, NSAllDomainsMask, YES) objectEnumerator];
+  while ((path = [enumerator nextObject]) != nil)
     {
-      NSString		*root = [roots objectAtIndex: index];
-      unsigned		dirIndex;
+      scanApplications(services, path);
+    }
 
-      for (dirIndex = 0; dirIndex < [locations count]; dirIndex++)
-	{
-	  NSString	*loc = [locations objectAtIndex: dirIndex];
-	  NSString	*path = [root stringByAppendingPathComponent: loc];
-
-	  scanDirectory(services, path);
-	}
+  /*
+   *	Scan for service information in all standard locations.
+   */
+  enumerator = [NSSearchPathForDirectoriesInDomains(
+    NSAllLibrariesDirectory, NSAllDomainsMask, YES) objectEnumerator];
+  while ((path = [enumerator nextObject]) != nil)
+    {
+      scanServices(services,
+	[path stringByAppendingPathComponent: @"Services"]);
     }
 
   fullMap = [NSMutableDictionary dictionaryWithCapacity: 5];
@@ -606,6 +543,98 @@ scanDirectory(NSMutableDictionary *services, NSString *path)
 }
 
 static void
+scanApplications(NSMutableDictionary *services, NSString *path)
+{
+  NSFileManager		*mgr = [NSFileManager defaultManager];
+  NSAutoreleasePool	*arp = [NSAutoreleasePool new];
+  NSArray		*contents = [mgr directoryContentsAtPath: path];
+  unsigned		index;
+
+  for (index = 0; index < [contents count]; index++)
+    {
+      NSString	*name = [contents objectAtIndex: index];
+      NSString	*ext = [name pathExtension];
+      NSString	*newPath;
+      BOOL	isDir;
+
+      if (ext != nil
+	&& ([ext isEqualToString: @"app"] || [ext isEqualToString: @"debug"]
+	|| [ext isEqualToString: @"profile"]))
+	{
+	  newPath = [path stringByAppendingPathComponent: name];
+	  if ([mgr fileExistsAtPath: newPath isDirectory: &isDir] && isDir)
+	    {
+	      NSString		*oldPath;
+	      NSBundle		*bundle;
+	      NSDictionary	*info;
+
+	      /*
+	       *	All application paths are noted by name
+	       *	in the 'applicationMap' dictionary.
+	       */
+              if ((oldPath = [applicationMap objectForKey: name]) == nil)
+                {
+                  [applicationMap setObject: newPath forKey: name];
+                }
+              else
+                {
+                  /*
+                   * If we already have an entry for an application with
+                   * this name, we skip this one - the first one takes
+                   * precedence.
+                   */
+		  if (verbose >= 0)
+		    NSLog(@"duplicate app (%@) at '%@' and '%@'",
+			  name, oldPath, newPath);
+                  continue;
+                }
+
+	      bundle = [NSBundle bundleWithPath: newPath];
+	      info = [bundle infoDictionary];
+	      if (info)
+		{
+		  id	obj;
+
+		  /*
+		   * Load and validate any services definitions.
+		   */
+		  obj = [info objectForKey: @"NSServices"];
+		  if (obj)
+		    {
+		      NSMutableArray	*entry;
+
+		      entry = validateEntry(obj, newPath);
+		      if (entry)
+			{
+			  [services setObject: entry forKey: newPath];
+			}
+		    }
+
+		  addExtensionsForApplication(info, name);
+		}
+	      else if (verbose >= 0)
+		{
+		  NSLog(@"bad app info - %@", newPath);
+		}
+	    }
+	  else if (verbose >= 0)
+	    {
+	      NSLog(@"bad application - %@", newPath);
+	    }
+	}
+      else
+	{
+	  newPath = [path stringByAppendingPathComponent: name];
+	  if ([mgr fileExistsAtPath: newPath isDirectory: &isDir] && isDir)
+	    {
+	      scanApplications(services, newPath);
+	    }
+	}
+    }
+  [arp release];
+}
+
+static void
 scanDynamic(NSMutableDictionary *services, NSString *path)
 {
   NSFileManager		*mgr = [NSFileManager defaultManager];
@@ -652,6 +681,72 @@ scanDynamic(NSMutableDictionary *services, NSString *path)
       else if (verbose >= 0)
 	{
 	  NSLog(@"bad app info - %@", infPath);
+	}
+    }
+  [arp release];
+}
+
+static void
+scanServices(NSMutableDictionary *services, NSString *path)
+{
+  NSFileManager		*mgr = [NSFileManager defaultManager];
+  NSAutoreleasePool	*arp = [NSAutoreleasePool new];
+  NSArray		*contents = [mgr directoryContentsAtPath: path];
+  unsigned		index;
+
+  for (index = 0; index < [contents count]; index++)
+    {
+      NSString	*name = [contents objectAtIndex: index];
+      NSString	*ext = [name pathExtension];
+      NSString	*newPath;
+      BOOL	isDir;
+
+      if (ext != nil && [ext isEqualToString: @"service"])
+	{
+	  newPath = [path stringByAppendingPathComponent: name];
+	  if ([mgr fileExistsAtPath: newPath isDirectory: &isDir] && isDir)
+	    {
+	      NSBundle		*bundle;
+	      NSDictionary	*info;
+
+	      bundle = [NSBundle bundleWithPath: newPath];
+	      info = [bundle infoDictionary];
+	      if (info)
+		{
+		  id	svcs = [info objectForKey: @"NSServices"];
+
+		  if (svcs)
+		    {
+		      NSMutableArray	*entry;
+
+		      entry = validateEntry(svcs, newPath);
+		      if (entry)
+			{
+			  [services setObject: entry forKey: newPath];
+			}
+		    }
+		  else if (verbose >= 0)
+		    {
+		      NSLog(@"missing info - %@", newPath);
+		    }
+		}
+	      else if (verbose >= 0)
+		{
+		  NSLog(@"bad service info - %@", newPath);
+		}
+	    }
+	  else if (verbose >= 0)
+	    {
+	      NSLog(@"bad services bundle - %@", newPath);
+	    }
+	}
+      else
+	{
+	  newPath = [path stringByAppendingPathComponent: name];
+	  if ([mgr fileExistsAtPath: newPath isDirectory: &isDir] && isDir)
+	    {
+	      scanServices(services, newPath);
+	    }
 	}
     }
   [arp release];
