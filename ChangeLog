@@ -1,3 +1,8 @@
+2005-10-23  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWindow.m: ([setExcludedFromWindowsMenu:]) when a window
+	is excluded, remove it from the windows menu.  Fixes bug #14008
+
 2005-10-22  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Tools/make_services.m: Update to use

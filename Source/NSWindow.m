@@ -3678,26 +3678,23 @@ resetCursorRectsForView(NSView *theView)
   if (_f.menu_exclude != flag)
     {
       _f.menu_exclude = flag;
-      if (_f.has_opened == YES)
+      if (flag == YES)
 	{
-	  if (_f.menu_exclude == NO)
-	    {
-	      BOOL	isFileName;
-	      NSString *aString;
-              
-	      aString = [NSString stringWithFormat: @"%@  --  %@",
-                                [_representedFilename lastPathComponent],
-                      [_representedFilename stringByDeletingLastPathComponent]];
-              isFileName = [_windowTitle isEqual: aString];
+	  [NSApp removeWindowsItem: self];
+	}
+      else if (_f.has_opened == YES && flag == NO)
+	{
+	  BOOL	isFileName;
+	  NSString *aString;
+	  
+	  aString = [NSString stringWithFormat: @"%@  --  %@",
+			    [_representedFilename lastPathComponent],
+		  [_representedFilename stringByDeletingLastPathComponent]];
+	  isFileName = [_windowTitle isEqual: aString];
 
-	      [NSApp addWindowsItem: self
-			      title: _windowTitle
-			   filename: isFileName];
-	    }
-	  else
-	    {
-	      [NSApp removeWindowsItem: self];
-	    }
+	  [NSApp addWindowsItem: self
+			  title: _windowTitle
+		       filename: isFileName];
 	}
     }
 }
