@@ -443,9 +443,17 @@ static NSLock *_gnustep_color_list_lock = nil;
 
   if (path == nil || ([fm fileExistsAtPath: path isDirectory: &isDir] == NO))
     {
+      NSArray	*paths;
+
       // FIXME the standard path for saving color lists?
-      path = [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
-	NSUserDomainMask, YES) objectAtIndex: 0]
+      paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+	NSUserDomainMask, YES);
+      if ([paths count] == 0)
+	{
+	  NSLog (@"Failed to find Library directory for user");
+	  return NO;	// No directory to save to.
+	}
+      path = [[paths objectAtIndex: 0]
 	stringByAppendingPathComponent: @"Colors"]; 
       isDir = YES;
     }
@@ -496,7 +504,7 @@ static NSLock *_gnustep_color_list_lock = nil;
 	}
       else
 	{
-	  NSLog (@"Failed attemp to create directory %@", path);
+	  NSLog (@"Failed attempt to create directory %@", path);
 	}
     }
 
