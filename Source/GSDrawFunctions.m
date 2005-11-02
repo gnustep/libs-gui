@@ -50,6 +50,22 @@
 */ 
 @implementation GSDrawFunctions
 
+static id theTheme;
+
++ (id) theme 
+{
+  if (theTheme == nil)
+    {
+      theTheme = [GSDrawFunctions new];
+    }
+  return theTheme;
+}
+
++ (void) setTheme: (id) aTheme
+{
+  ASSIGN (theTheme, aTheme);
+}
+
 /** Draw a button border */
 + (NSRect) drawButton: (NSRect)border : (NSRect)clip
 {

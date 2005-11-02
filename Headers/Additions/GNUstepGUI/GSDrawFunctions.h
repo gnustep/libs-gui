@@ -35,6 +35,9 @@
 
 @interface GSDrawFunctions : NSObject
 
++ (id) theme;
++ (void) setTheme: (id)theme;
+
 + (NSRect) drawButton: (NSRect)border : (NSRect)clip;
 + (NSRect) drawDarkButton: (NSRect)border : (NSRect)clip;
 + (NSRect) drawDarkBezel: (NSRect)border : (NSRect)clip;

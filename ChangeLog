@@ -1,3 +1,9 @@
+2005-11-02  Nicolas Roard  <nicolas.roard@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSDrawFunctions.h,
+	* Source/GSDrawFunctions.m (+[theme],+[setTheme:]): New accessor 
+	methods.
+	
 2005-10-30  Adam Fedor  <fedor@gnu.org>
 
 	* Documentation/General/OpenStepCompliance.gsdoc: Updates.
