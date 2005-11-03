@@ -618,6 +618,9 @@ static NSTextFieldCell *titleCell;
       column++;
     }
 
+  // Clean up local memory usage
+  RELEASE(subStrings);
+
   if (indexOfSubStrings == numberOfSubStrings)
     {
       return YES;
