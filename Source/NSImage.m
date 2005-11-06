@@ -1363,10 +1363,8 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     {
       if ([GSCurrentContext() isDrawingToScreen] == YES)
         {
-          int screen = [[[GSCurrentServer() attributes] 
-			  objectForKey: GSScreenNumber] intValue];
-          deviceDescription = [[[NSScreen screens] objectAtIndex: screen] 
-				deviceDescription];
+	    // Take the device description from the current context.
+	    deviceDescription = [GSCurrentContext() attributes];
         }
       else if ([NSPrintOperation currentOperation])
         {

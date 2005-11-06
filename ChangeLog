@@ -1,3 +1,11 @@
+2005-11-06  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSImage.m (-bestRepresentationForDevice:): Get the device
+	description from the current context, not via NSScreen, as we
+	cannot be sure about the screen order.
+	* Source/NSApplication.m (-_init): Make sure the default context
+	has properly set attributes.
+
 2005-11-03  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBrowser.m (-setPath:): Corrected memory management bug 14901.

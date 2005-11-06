@@ -782,9 +782,10 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 - (void) _init
 {
   GSDisplayServer *srv;
+  NSDictionary *attributes;
   /* Initialization must be enclosed in an autorelease pool.  */
   CREATE_AUTORELEASE_POOL (_app_init_pool);
-
+ 
   /* 
    * Set NSApp as soon as possible, since other gui classes (which
    * we refer or use in this method) might be calling [NSApplication
@@ -804,8 +805,9 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   RETAIN(srv);
   [GSDisplayServer setCurrentServer: srv];
 
-  /* Create a default context.  */
-  _default_context = [NSGraphicsContext graphicsContextWithAttributes: nil];
+  /* Create a default context with the attributes of the main screen.  */
+  attributes = [[NSScreen mainScreen] deviceDescription];
+  _default_context = [NSGraphicsContext graphicsContextWithAttributes: attributes];
   RETAIN(_default_context);
   [NSGraphicsContext setCurrentContext: _default_context];
 
