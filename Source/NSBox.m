@@ -1,6 +1,7 @@
 /** <title>NSBox</title>
 
-   <abstract>Simple box view that can display a border and title</abstract>
+   <abstract>Simple box view that can display a border and title
+   </abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
@@ -44,6 +45,11 @@
 @interface NSBox (Private)
 - (NSRect) calcSizesAllowingNegative: (BOOL)aFlag;
 @end
+
+/**
+ * <p>EXPLAINS NSBox</p>
+ *<p> TODO : explains how is resized the rects ( margins etc... )  </p>
+*/
 
 @implementation NSBox
 
@@ -91,19 +97,29 @@
   [super dealloc];
 }
 
-//
-// Getting and Modifying the Border and Title 
-//
+/**
+ * <p>Returns the border retangle of the box</p>
+ */
 - (NSRect) borderRect
 {
   return _border_rect;
 }
 
+/**
+ * <p>Returns the border type. See NSBorderType for more informations</p>
+ * <p>See Also: -setBorderType:</p>
+ */
 - (NSBorderType) borderType
 {
   return _border_type;
 }
 
+/**
+ * <p>Sets the border type to aType, resizes the content view frame if needed,
+ *  and sends a -setNeedsDisplay: message. See NSBorderType for more
+ * informations</p>
+ *<p>See Also: -borderType</p>
+ */
 - (void) setBorderType: (NSBorderType)aType
 {
   if (_border_type != aType)
@@ -113,6 +129,13 @@
       [self setNeedsDisplay: YES];
     }
 }
+
+/**
+ * <p> Sets the title (cell) to aString, resizes the content view frame
+ * and send a -setNeedsDisplay: message.</p>
+ *<p>Warning: This method does not implement the Cocoa behaviour</p>
+ *<p>See Also: -title</p>
+ */ 
 
 // TODO: implement the macosx behaviour for setTitle:
 - (void) setTitle: (NSString *)aString
@@ -129,6 +152,11 @@
   [self setNeedsDisplay: YES];
 }
 
+/**
+ *<p>Sets the font of the title (cell) to fontObj, resizes 
+ * the content view frame if needed and sends a -setNeedsDisplay: message</p>
+ *<p>See Also: -titleFont</p>
+ */
 - (void) setTitleFont: (NSFont *)fontObj
 {
   [_cell setFont: fontObj];
@@ -136,6 +164,13 @@
   [self setNeedsDisplay: YES];
 }
 
+/**
+ *<p>Sets the  title (cell) position  to aPosition, resizes the content
+ *view frame if needed and sends a -setNeedsDisplay: message.
+ *See NSTitlePosition for more information</p>
+ *<p>See Also: -titlePosition</p>
+ *
+ */
 - (void) setTitlePosition: (NSTitlePosition)aPosition
 {
   if (_title_position != aPosition)
@@ -146,44 +181,78 @@
     }
 }
 
+/**
+ *<p>Returns the title (cell) string</p>
+ *<p>See Also: -setTitle:</p>
+ */
 - (NSString*) title
 {
   return [_cell stringValue];
 }
 
+/**
+ *<p>Returns the box title cell</p>
+ *
+ */
 - (id) titleCell
 {
   return _cell;
 }
 
+/**
+ *<p>Returns the the box title font</p>
+ *<p>See Also: -setTitleFont:</p>
+ */
 - (NSFont*) titleFont
 {
   return [_cell font];
 }
 
+/**
+ *<p>Returns the title position. See NSTitlePosition for more informations</p>
+ *<p>See Also: -setTitlePosition:</p>
+ */
 - (NSTitlePosition) titlePosition
 {
   return _title_position;
 }
 
+/**
+ *<p>Returns the title rectangle</p>
+ */
 - (NSRect) titleRect
 {
   return _title_rect;
 }
 
-//
-// Setting and Placing the Content View 
-//
+/**
+ *<p>Returns the content view. The content view is resized ....TODO...</p>
+ *<p>See Also: -setContentView:</p>
+ */
 - (id) contentView
 {
   return _content_view;
 }
 
+/**
+ *<p>Returns an NSSize containing the interior margins of the receiver. 
+ * An NSBox's content view margins are empty space that is subtracted 
+ * from the top, bottom, and sides as padding between the inside of the box
+ * and the frame of its content view</p>
+ *<p> See Also: -setContentViewMargins:</p>
+ */
 - (NSSize) contentViewMargins
 {
   return _offsets;
 }
 
+/**
+ *<p>Sets the content view to aView. The current content view is replaced
+ * by -replaceSubview:with:. So you should -retain the current
+ * view if you want to use it later. The contentView frame is resized if needed
+ * See -contentView to know  how the contentView frame is resized</p>
+ * <p>See Also: -contentView</p>
+ */
 - (void) setContentView: (NSView*)aView
 {
   if (aView)
@@ -194,6 +263,13 @@
     }
 }
 
+/**
+ *<p>Sets the margins size of the content view to offsetSize, resized the
+ *content view frame if needed and sends a -setNeedsDisplay message.
+ * See -contentView for more informations to know how the contentView frame 
+ *is resized</p>
+ *<p>See Also: -contentViewMargins</p>
+ */
 - (void) setContentViewMargins: (NSSize)offsetSize
 {
   NSAssert(offsetSize.width >= 0 && offsetSize.height >= 0,
@@ -213,11 +289,16 @@
   [super setFrame: frameRect];
   [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
 }
+
 - (void) setFrameSize: (NSSize)newSize
 {
   [super setFrameSize: newSize];
   [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
 }
+
+/**
+ *<p>TODO </p>
+ */
 - (void) setFrameFromContentFrame: (NSRect)contentFrame
 {
   // First calc the sizes to see how much we are off by
@@ -242,38 +323,47 @@
 
 -(NSSize) minimumSize
 {
-  NSRect r;
+  NSRect rect;
   NSSize borderSize = _sizeForBorderType (_border_type);
 
   if ([_content_view respondsToSelector: @selector(minimumSize)])
     {
-      r.size = [_content_view minimumSize];
+      rect.size = [_content_view minimumSize];
     }
   else
     {   
       NSArray *subviewArray = [_content_view subviews];
+
       if ([subviewArray count])
 	{
-	  id o, e = [subviewArray objectEnumerator];
-	  r = [[e nextObject] frame];
-	  // Loop through subviews and calculate rect to encompass all
-	  while ((o = [e nextObject]))
+	  id subview;
+	  NSEnumerator *enumerator;
+	  enumerator = [subviewArray objectEnumerator];
+	  
+	  rect = [[enumerator nextObject] frame];
+	  
+	  // Loop through subviews and calculate rect
+	  // to encompass all
+	  while ((subview = [enumerator nextObject]))
 	    {
-	      r = NSUnionRect(r, [o frame]);
+	      rect = NSUnionRect(rect, [subview frame]);
 	    }
 	}
       else // _content_view has no subviews
 	{
-	  r = NSZeroRect;
+	  rect = NSZeroRect;
 	}
     }
 
-  r.size = [self convertSize: r.size fromView: _content_view];
-  r.size.width += (2 * _offsets.width) + (2 * borderSize.width);
-  r.size.height += (2 * _offsets.height) + (2 * borderSize.height);
-  return r.size;
+  rect.size = [self convertSize: rect.size fromView:_content_view];
+  rect.size.width += (2 * _offsets.width) + (2 * borderSize.width);
+  rect.size.height += (2 * _offsets.height) + (2 * borderSize.height);
+  return rect.size;
 }
 
+/**
+ *<p>TODO</p>
+ */
 - (void) sizeToFit
 {
   NSRect f;
