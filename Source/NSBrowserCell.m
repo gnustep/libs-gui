@@ -52,6 +52,11 @@ static BOOL _gsFontifyCells = NO;
 static NSFont *_nonLeafFont;
 static NSFont *_leafFont;
 
+/**
+ *<p> TODO Description</p>
+ *<p>Explain _gsFontifyCells ....
+ *
+ */
 @implementation NSBrowserCell
 
 /*
@@ -81,14 +86,19 @@ static NSFont *_leafFont;
     }
 }
 
-/*
- * Accessing Graphic Attributes
+/**
+ *<p>Returns the default branch image. Currently, it's an arrow. </p>
+ *<p>See Also: +highlightedBranchImage </p>
  */
 + (NSImage*) branchImage
 {
   return _branch_image;
 }
 
+/**
+ *<p>Returns the default hightlited branch image</p>
+ *<p>See Also: +branchImage</p>
+ */
 + (NSImage*) highlightedBranchImage
 {
   return _highlight_image;
@@ -142,32 +152,50 @@ static NSFont *_leafFont;
   return c;
 }
 
-/*
- * Accessing Graphic Attributes
+/**
+ *<p>Returns the alternate image in the NSBrowserCell
+ * ( used when the cell is highlighted ) </p>
+ *<p>See Also: -setAlternateImage:</p>
  */
 - (NSImage*) alternateImage
 {
   return _alternateImage;
 }
 
+/**
+ *<p>Sets the altenate image ( used when the cell is highlighted )  to anImage 
+ *</p><p>See Also: -alternateImage</p>
+ */
 - (void) setAlternateImage: (NSImage *)anImage
 {
   ASSIGN(_alternateImage, anImage);
 }
 
+/**
+ *<p>TODO</p>
+ */
 - (NSColor *)highlightColorInView: (NSView *)controlView
 {
   return [_colorClass selectedControlColor];
 }
 
-/*
- * Placing in the Browser Hierarchy
+/**
+ * <p>Returns whether the browserCell is a leaf. A leaf cell has usually no 
+ * image. This method is used by NSBrowser in several methods, for example
+ * to know if a column should be added; when the user selects a browser cell
+ * (a branch or a leaf)</p>
+ * <p>See Also: -setLeaf: TODO more NSBrowser references</p>
  */
 - (BOOL) isLeaf
 {
   return _browsercell_is_leaf;
 }
 
+/**
+ *<p>Sets whether the cell is a leaf. This method is usally used in the 
+ * NSBrowser delegate methods</p>
+ *<p>See Also: -isLeaf</p>
+ */
 - (void) setLeaf: (BOOL)flag
 {
   if (_browsercell_is_leaf == flag)
@@ -188,21 +216,28 @@ static NSFont *_leafFont;
     }
 }
 
-/*
- * Determining Loaded Status
+/**
+ * <p> TODO</p>
+ * <p>See Also: -setLoaded:</p>
  */
 - (BOOL) isLoaded
 {
   return _browsercell_is_loaded;
 }
 
+/**
+ *<p>TODO </p>
+ *<p>See Also: -isLoaded</p>
+ *
+ */
 - (void) setLoaded: (BOOL)flag
 {
   _browsercell_is_loaded = flag;
 }
 
-/*
- * Setting State
+/**
+ *<p>Unhighlights the cell and sets the cell's state to NO</p>
+ *<p>See Also: -set</p>
  */
 - (void) reset
 {
@@ -210,6 +245,10 @@ static NSFont *_leafFont;
   _cell.state = NO;
 }
 
+/**
+ *<p>Highlights the cell and sets the cell's state to YES</p>
+ *<p>See Also: -reset</p>
+ */
 - (void) set
 {
   _cell.is_highlighted = YES;
