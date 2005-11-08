@@ -213,17 +213,18 @@ static NSTextFieldCell *titleCell;
 //
 @implementation NSBrowser
 
-/** Returns the NSBrowserCell class (regardless of whether a 
-    setCellClass: message has been sent to a particular instance). This
-    method is not meant to be used by applications.
-*/
+/** <p>Returns the NSBrowserCell class (regardless of whether a 
+    -setCellClass: message has been sent to a particular instance). This
+    method is not meant to be used by applications.</p>
+    <p>See Also: -setCellClass: </p> */
 
 + (Class) cellClass
 {
   return [NSBrowserCell class];
 }
 
-/** Sets the class of NSCell used in the columns of the NSBrowser. */
+/** <p>Sets the class of NSCell used in the columns of the NSBrowser.</p>
+ * <p>See Also: -setCellPrototype: -cellPrototype +cellClass</p> */
 - (void) setCellClass: (Class)classId
 {
   NSCell *aCell;
@@ -234,27 +235,29 @@ static NSTextFieldCell *titleCell;
   RELEASE(aCell);
 }
 
-/** Returns the NSBrowser's prototype NSCell instance.*/
+/** <p>Returns the NSBrowser's prototype NSCell instance.</p>
+    <p>See Also: -setCellPrototype:</p>*/
 - (id) cellPrototype
 {
   return _browserCellPrototype;
 }
 
-/** Sets the NSCell instance copied to display items in the columns of
-    NSBrowser. */
+/** <p>Sets the NSCell instance copied to display items in the columns of
+    NSBrowser.</p><p>See Also: -cellPrototype</p> */
 - (void) setCellPrototype: (NSCell *)aCell
 {
   ASSIGN(_browserCellPrototype, aCell);
 }
 
-/** Returns the class of NSMatrix used in the NSBrowser's columns. */
+/** <p>Returns the class of NSMatrix used in the NSBrowser's columns.</p>
+ * <p>See Also: -setMatrixClass:</p> */
 - (Class) matrixClass
 {
   return _browserMatrixClass;
 }
 
-/** Sets the matrix class (NSMatrix or an NSMatrix subclass) used in the
-    NSBrowser's columns. */
+/** <p>Sets the matrix class (NSMatrix or an NSMatrix subclass) used in the
+    NSBrowser's columns.</p><p>See Also: -matrixClass</p> */
 - (void) setMatrixClass: (Class)classId
 {
   _browserMatrixClass = classId;
@@ -264,7 +267,9 @@ static NSTextFieldCell *titleCell;
  * Getting matrices, cells, and rows
  */
 
-/** Returns the last (rightmost and lowest) selected NSCell. */
+/** <p>Returns the last (rightmost and lowest) selected NSCell. Returns nil if
+ * no cell is selected</p>
+ *<p>See Also: -selectedCells -selectedCellInColumn:</p>*/
 - (id) selectedCell
 {
   int i;
@@ -284,7 +289,9 @@ static NSTextFieldCell *titleCell;
   return [matrix selectedCell];
 }
 
-/** Returns the last (lowest) NSCell that's selected in column. */
+/** <p>Returns the last (lowest) NSCell that's selected in column. 
+ *Returns nil if no cell is selected</p><p>See Also: -selectedCell 
+ * -selectedCells</p> */
 - (id) selectedCellInColumn: (int)column
 {
   id matrix;
@@ -297,7 +304,9 @@ static NSTextFieldCell *titleCell;
   return [matrix selectedCell];
 }
 
-/** Returns all cells selected in the rightmost column. */
+/** <p>Returns a NSArray of selected cells in the rightmost column. Returns
+ *nil if no cell is selected</p><p>See Also: -selectedCell
+ -selectedCellInColumn: </p>*/
 - (NSArray *) selectedCells
 {
   int i;
@@ -727,7 +736,7 @@ static NSTextFieldCell *titleCell;
   return bc;
 }
 
-/** Adds a column to the right of the last column. */
+/** Adds a column to the right of the last column.*/
 - (void) addColumn
 {
   int i;
@@ -1025,39 +1034,43 @@ static NSTextFieldCell *titleCell;
  * Setting selection characteristics
  */
 
-/** Returns whether the user can select branch items when multiple selection
-    is enabled. */
+/**<p> Returns whether the user can select branch items when multiple selection
+    is enabled.</p><p>See Also: -setAllowsBranchSelection:</p> */
 - (BOOL) allowsBranchSelection
 {
   return _allowsBranchSelection;
 }
 
-/** Sets whether the user can select branch items when multiple selection
-    is enabled. */
+/** <p>Sets whether the user can select branch items when multiple selection
+    is enabled.</p><p>See Also: -allowsBranchSelection</p> */
 - (void) setAllowsBranchSelection: (BOOL)flag
 {
   _allowsBranchSelection = flag;
 }
 
-/** Returns whether there can be nothing selected. */
+/** <p>Returns whether there can be nothing selected.</p>
+ <p>See Also: -setAllowsEmptySelection:</p> */
 - (BOOL) allowsEmptySelection
 {
   return _allowsEmptySelection;
 }
 
-/** Sets whether there can be nothing selected. */
+/** <p>Sets whether there can be nothing selected.</p>
+ <p>See Also: -allowsEmptySelection </p>*/
 - (void) setAllowsEmptySelection: (BOOL)flag
 {
   _allowsEmptySelection = flag;
 }
 
-/** Returns whether the user can select multiple items. */
+/** <p>Returns whether the user can select multiple items.</p>
+ <p>See Also: -allowsMultipleSelection</p> */
 - (BOOL) allowsMultipleSelection
 {
   return _allowsMultipleSelection;
 }
 
-/** Sets whether the user can select multiple items. */
+/** <p>Sets whether the user can select multiple items.</p>
+ <p>See Also: -allowsMultipleSelection</p> */
 - (void) setAllowsMultipleSelection: (BOOL)flag
 {
   _allowsMultipleSelection = flag;
@@ -1068,27 +1081,30 @@ static NSTextFieldCell *titleCell;
  * Setting column characteristics
  */
 
-/** Returns YES if NSMatrix objects aren't freed when their columns
-    are unloaded. */
+/** <p>Returns YES if NSMatrix objects aren't freed when their columns
+    are unloaded.</p><p>See Also: -setReusesColumns:</p> */
 - (BOOL) reusesColumns
 {
   return _reusesColumns;
 }
 
-/** If flag is YES, prevents NSMatrix objects from being freed when
-    their columns are unloaded, so they can be reused. */
+/** <p>If flag is YES, prevents NSMatrix objects from being freed when
+    their columns are unloaded, so they can be reused.</p>
+    <p>See Also: -reusesColumns </p>*/
 - (void) setReusesColumns: (BOOL)flag
 {
   _reusesColumns = flag;
 }
 
-/** Returns the maximum number of visible columns. */
+/** <p>Returns the maximum number of visible columns.</p>
+ <p>See Also: -setMaxVisibleColumns:</p> */
 - (int) maxVisibleColumns
 {
   return _maxVisibleColumns;
 }
 
-/** Sets the maximum number of columns displayed. */
+/** <p>Sets the maximum number of columns displayed.</p>
+    <p>See Also: -maxVisibleColumns</p> */
 - (void) setMaxVisibleColumns: (int)columnCount
 {
   if ((columnCount < 1) || (_maxVisibleColumns == columnCount))
@@ -1125,13 +1141,15 @@ static NSTextFieldCell *titleCell;
   [self tile];
 }
 
-/** Returns whether columns are separated by bezeled borders. */
+/** <p>Returns whether columns are separated by bezeled borders.</p>
+    <p>See Also: -setSeparatesColumns:</p> */
 - (BOOL) separatesColumns
 {
   return _separatesColumns;
 }
 
-/** Sets whether to separate columns with bezeled borders. */
+/** <p>Sets whether to separate columns with bezeled borders.</p>
+ <p>See Also: -separatesColumns</p>*/
 - (void) setSeparatesColumns: (BOOL)flag
 {
   NSBrowserColumn *bc;
@@ -1207,13 +1225,15 @@ static NSTextFieldCell *titleCell;
   [self setNeedsDisplayInRect: [self titleFrameOfColumn: column]];
 }
 
-/** Returns whether columns display titles. */
+/** <p> Returns whether columns display titles.</p>
+    <p>See Also: -setTitled: </p>*/
 - (BOOL) isTitled
 {
   return _isTitled;
 }
 
-/** Sets whether columns display titles. */
+/** <p>Sets whether columns display titles.</p>
+    <p>See Also: -isTitled</p> */
 - (void) setTitled: (BOOL)flag
 {
   if (_isTitled == flag || !_separatesColumns)
@@ -1444,13 +1464,15 @@ static NSTextFieldCell *titleCell;
  * Showing a horizontal scroller
  */
 
-/** Returns whether an NSScroller is used to scroll horizontally. */
+/** <p>Returns whether an NSScroller is used to scroll horizontally.</p>
+ <p>See Also: -setHasHorizontalScroller:</p> */
 - (BOOL) hasHorizontalScroller
 {
   return _hasHorizontalScroller;
 }
 
-/** Sets whether an NSScroller is used to scroll horizontally. */
+/** <p>Sets whether an NSScroller is used to scroll horizontally.</p>
+ <p>See Also: -hasHorizontalScroller</p> */
 - (void) setHasHorizontalScroller: (BOOL)flag
 {
   if (_hasHorizontalScroller != flag)
@@ -1470,14 +1492,15 @@ static NSTextFieldCell *titleCell;
  * Setting the behavior of arrow keys
  */
 
-/** Returns YES if the arrow keys are enabled. */
+/** <p>Returns YES if the arrow keys are enabled.</p>
+    <p>See Also: -setAcceptsArrowKeys:</p> */
 - (BOOL) acceptsArrowKeys
 {
   return _acceptsArrowKeys;
 }
 
-/** Enables or disables the arrow keys as used for navigating within
-    and between browsers. */
+/** <p>Enables or disables the arrow keys as used for navigating within
+    and between browsers.</p><p>See Also: -acceptsArrowKeys</p> */
 - (void) setAcceptsArrowKeys: (BOOL)flag
 {
   _acceptsArrowKeys = flag;
@@ -1490,8 +1513,9 @@ static NSTextFieldCell *titleCell;
   return _sendsActionOnArrowKeys;
 }
 
-/** Sets whether pressing an arrow key will cause the action message
- to be sent (in addition to causing scrolling). */
+/** <p>Sets whether pressing an arrow key will cause the action message
+ to be sent (in addition to causing scrolling).</p><p>See Also: 
+ -sendsActionOnArrowKeys</p>*/
 - (void) setSendsActionOnArrowKeys: (BOOL)flag
 {
   _sendsActionOnArrowKeys = flag;
@@ -1721,21 +1745,23 @@ static NSTextFieldCell *titleCell;
  * Setting the delegate
  */
 
-/** Returns the NSBrowser's delegate. */
+/** <p>Returns the NSBrowser's delegate.</p>
+ *<p>See Also: -setDelegate:</p> */
 - (id) delegate
 {
   return _browserDelegate;
 }
 
 /**
- * Sets the delegate of the receiver.
+ * <p>Sets the delegate of the receiver.
  * If not nil, the delegate must either be passive and respond to
  * [NSObject-browser:numberOfRowsInColumn:] or be active and respond to
  * [NSObject-browser:createRowsForColumn:inMatrix:] but not both.  
  * If the delegate is active it must also respond to
  * [NSObject-browser:willDisplayCell:atRow:column:].  
  * If the delegate is not nil but does not meet these conditions,
- * an NSBrowserIllegalDelegateException will be raised.
+ * an NSBrowserIllegalDelegateException will be raised.</p>
+ *<p>See Also: -delegate</p>
  */
 - (void) setDelegate: (id)anObject
 {
@@ -1792,13 +1818,15 @@ static NSTextFieldCell *titleCell;
  * Target and action
  */
 
-/** Returns the NSBrowser's double-click action method. */
+/** <p>Returns the NSBrowser's double-click action method.</p>
+ *<p>See Also: -setDoubleAction: </p> */
 - (SEL) doubleAction
 {
   return _doubleAction;
 }
 
-/** Sets the NSBrowser's double-click action to aSelector. */
+/**<p> Sets the NSBrowser's double-click action to aSelector.</p>
+ *<p>See Also: -doubleAction</p> */
 - (void) setDoubleAction: (SEL)aSelector
 {
   _doubleAction = aSelector;
