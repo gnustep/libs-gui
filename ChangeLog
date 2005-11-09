@@ -1,6 +1,10 @@
+2005-11-09  fabien  <fabien@sonappart.net>
+
+	* Source/NSCell.m : Improved documentation
+
 2005-11-08  fabien  <fabien@sonappart.net>
 
-	* Source/NSBox.m : Improve documentation
+	* Source/NSBox.m : Improved documentation
 	* Source/NSBrowser.m :  Ditto
 	* Source/NSBrowserCell.m : Ditto
 	* Source/NSButton.m : Ditto
