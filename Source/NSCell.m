@@ -86,6 +86,10 @@ static NSColor	*shadowCol;
 @end
 
 
+/**
+ *<p> TODO Desctiption</p>
+ */
+
 @implementation NSCell
 
 /*
@@ -118,6 +122,9 @@ static NSColor	*shadowCol;
   return nil;
 }
 
+/**<p>TODO. This class method returns NO. This method is override by subclasses
+   </p>
+ */
 + (BOOL) prefersTrackingUntilMouseUp
 {
   return NO;
@@ -131,6 +138,10 @@ static NSColor	*shadowCol;
   return [self initTextCell: @""];
 }
 
+/**<p>Initialize an NSCell with anImage. This method  sets the image position
+   to NSImageOnly and the cell's type to NSImageCellType.</p>
+   <p>See Also: -initTextCell: </p>
+ */
 - (id) initImageCell: (NSImage*)anImage
 {
   _cell.type = NSImageCellType;
@@ -160,7 +171,10 @@ static NSColor	*shadowCol;
 
   return self;
 }
-
+/**<p>Initialize a new NSCell aString. 
+ * This method sets the cell's type to NSTextCellType.</p>
+ *<p>See Also: -initImageCell: </p>
+ */
 - (id) initTextCell: (NSString*)aString
 {
   _cell.type = NSTextCellType;
@@ -219,6 +233,9 @@ static NSColor	*shadowCol;
   return _cell.has_valid_object_value;
 }
 
+/**<p>Returns the NSCell's value as a double. </p>
+ *<p>See Also: -setDoubleValue: </p>
+ */
 - (double) doubleValue
 {
   if ((_cell.has_valid_object_value == YES) &&
@@ -232,6 +249,9 @@ static NSColor	*shadowCol;
     }
 }
 
+/**<p>Returns the cell's value as a float. </p>
+ *<p>See Also: -setFloatValue: </p>
+ */
 - (float) floatValue
 {
   if ((_cell.has_valid_object_value == YES) &&
@@ -245,6 +265,9 @@ static NSColor	*shadowCol;
     }
 }
 
+/**<p>Returns the cell's value as an int. </p>
+ *<p>See Also: -setIntValue:</p>
+ */
 - (int) intValue
 {
   if ((_cell.has_valid_object_value == YES) &&
@@ -258,6 +281,9 @@ static NSColor	*shadowCol;
     }
 }
 
+/**<p>Returns the cell's value as a NSString.</p>
+ *<p>See Also: -setStringValue: </p>
+ */
 - (NSString*) stringValue
 {
   if (_cell.contents_is_attributed_string == NO)
@@ -315,6 +341,10 @@ static NSColor	*shadowCol;
   ASSIGN (_contents, newContents);
 }
 
+
+/**<p>Sets the NSCell's value to aDouble.</p>
+ *<p>See Also: -doubleValue</p> 
+ */
 - (void) setDoubleValue: (double)aDouble
 {
   NSNumber *number;
@@ -325,6 +355,11 @@ static NSColor	*shadowCol;
   [self setObjectValue: number];
 }
 
+/**
+ *<p>Sets the NSCell's value to a aFloat. This used for example in 
+ NSSliderCell</p>
+ *<p>See Also: -floatValue</p> 
+ */
 - (void) setFloatValue: (float)aFloat
 {
   NSNumber *number;
@@ -336,6 +371,11 @@ static NSColor	*shadowCol;
   [self setObjectValue: number];
 }
 
+
+/**
+ *<p>Sets the NSCell's value to anInt.</p>
+ *<p>See Also: -intValue</p> 
+ */
 - (void) setIntValue: (int)anInt
 {
   NSNumber *number;
@@ -346,6 +386,10 @@ static NSColor	*shadowCol;
   [self setObjectValue: number];
 }
 
+/**<p>Sets the cell's value to a NSString. 
+   The NSCell's type is set to NSTextCellType if needed</p>
+   <p>See Also: -stringValue</p> 
+ */
 - (void) setStringValue: (NSString*)aString
 {
   NSString *string = aString;
@@ -388,8 +432,8 @@ static NSColor	*shadowCol;
     }
 }
 
-/*
- * Setting Parameters
+/**<p>Returns some NSCell's attributes for the specified NSCellAttribute</p>
+ *<p>See Also: -setCellAttribute:to:</p>
  */
 - (int) cellAttribute: (NSCellAttribute)aParameter
 {
@@ -436,6 +480,10 @@ static NSColor	*shadowCol;
   return 0;
 }
 
+
+/**<p>TODO</p>
+ *<p>See Also: -cellAttribute:</p>
+ */
 - (void) setCellAttribute: (NSCellAttribute)aParameter  to: (int)value
 {
   switch (aParameter)
@@ -550,8 +598,9 @@ static NSColor	*shadowCol;
     }
 }
 
-/*
- * Setting the NSCell's Type
+/**<p>Set the NSCell's type. </p>
+   <p>TODO more doc about the implementation </p>
+ *<p>See Also: -type</p>
  */
 - (void) setType: (NSCellType)aType
 {
@@ -580,6 +629,13 @@ static NSColor	*shadowCol;
     }
 }
 
+/**
+ *<p>Returns the cell's type. it returns NSNullCellType if the
+ * cell's type flag is set to NSImageCellType and if the cell's image 
+ * is nil</p>
+ *<p>See Also -setType:</p>
+ *
+ */
 - (NSCellType) type
 {
   if (_cell.type == NSImageCellType && _cell_image == nil)
@@ -588,37 +644,53 @@ static NSColor	*shadowCol;
   return _cell.type;
 }
 
-/*
- * Enabling and Disabling the NSCell
+
+/**<p>Returns whether the NSCell can respond to mouse events.</p>
+ *<p>See Also: -setEnabled:</p>
  */
 - (BOOL) isEnabled
 {
   return !_cell.is_disabled;
 }
 
+/**<p>Sets whether the NSCell can respond to mouse events</p>
+ <p>See Also: -isEnabled</p>
+ */
 - (void) setEnabled: (BOOL)flag
 {
   _cell.is_disabled = !flag;  
 }
 
-/*
- * Modifying Graphic Attributes
+/**<p>Returns whether the NSCell has a bezeled border. By default a NSCell
+   has no bezeled border</p>
+ <p>See Also: -setBezeled:</p>
  */
 - (BOOL) isBezeled
 {
   return _cell.is_bezeled;
 }
 
+/**<p>Returns whether the NSCell has a border. By default a NSCell has 
+   border</p>
+ <p>See Also: -setBordered: -setBezeled: -isBezeled</p>
+ */
 - (BOOL) isBordered
 {
   return _cell.is_bordered;
 }
 
+/**<p>Returns whether the cell is opaque. Return NO by default</p>
+ */
 - (BOOL) isOpaque
 {
   return NO;
 }
 
+/**<p>Sets whether the cell has a bezeled border. 
+ If the cell has a bezeled border, the bordered  flag is turn off.
+ By default a NSCell has no bezeled border</p>
+ <p>See Also: -isBezeled -setBordered: -isBordered</p>
+ */
 - (void) setBezeled: (BOOL)flag
 {
   _cell.is_bezeled = flag;
@@ -628,6 +700,10 @@ static NSColor	*shadowCol;
     }
 }
 
+/**<p>Sets whether the cell has a border.  If the cell has a border, 
+ the bezeled flag is turn off. By default a NSCell has no border</p>
+ <p>See Also: -isBordered -setBezeled: -isBezeled</p>
+ */
 - (void) setBordered: (BOOL)flag
 {
   _cell.is_bordered = flag;
@@ -637,9 +713,10 @@ static NSColor	*shadowCol;
     }
 }
 
-
-/*
- * Setting the NSCell's State
+/**<p>Sets the NSCell's state.  Please use always symbolic constants when
+   calling this method. The integer values could be changed in the this
+   implementation. ( Currently they match the Cocoa values but they are
+   quite strange )</p> <p>See Also: -state</p>
  */
 - (void) setState: (int)value
 {
@@ -663,6 +740,9 @@ static NSColor	*shadowCol;
     }
 }
 
+/**<p>Returns the cell's state</p>
+ *<p>See Also: -setState: </p>
+ */
 - (int) state
 {
   return _cell.state;
@@ -714,40 +794,61 @@ static NSColor	*shadowCol;
   [self setState: [self nextState]];
 }
 
-/*
- * Modifying Text Attributes
+/**<p>Returns the alignment of the text used in the NSCell. See NSTextAlignment
+ for more information. By default the text alignment is 
+ NSJustifiedTextAlignment</p>
+ <p>See Also: -setAlignment:</p>
  */
 - (NSTextAlignment) alignment
 {
   return _cell.text_align;
 }
 
+/** <p>Returns the font of the text used in the cell</p>
+    <p>See Also: -setFont:</p>
+ */
 - (NSFont*) font
 {
   return _font;
 }
 
+/**<p>Returns whether the cell is editable. By default a NSCell is not editable
+   </p><p>See Also: -setEditable:</p>
+ */
 - (BOOL) isEditable
 {
   return _cell.is_editable;
 }
 
+/**<p>Returns whether the cell is selectable. This method will returns YES if 
+   the cell is selectable or editable. NO otherwise</p>
+   <p>See Also: -setSelectable: -isEditable -setEditable: </p>
+ */
 - (BOOL) isSelectable
 {
   return _cell.is_selectable || _cell.is_editable;
 }
 
+/**<p>Returns whether the NSCell is scrollable. By default NO</p>
+   <p>See Also: -setScrollable:</p>
+ */
 - (BOOL) isScrollable
 {
   return _cell.is_scrollable;
 }
 
+/**<p>Sets the alignment of the text</p>
+ <p>See Also: -alignment </p>
+ */
 - (void) setAlignment: (NSTextAlignment)mode
 {
   // This does not have any influence on attributed strings
   _cell.text_align = mode;
 }
 
+/**<p>Sets whether the NSCell's text is editable. </p>
+ <p>See Also: -isEditable -setSelectable: -isSelectable</p>
+*/
 - (void) setEditable: (BOOL)flag
 {
   /*
@@ -758,6 +859,9 @@ static NSColor	*shadowCol;
   _cell.is_editable = flag;
 }
 
+/**<p>Sets the text font. The NSCell's type is set to NSTextCellType if needed
+   </p><p>See Also: -font -setType: -type</p>
+ */
 - (void) setFont: (NSFont*)fontObject
 {
   if (_cell.type != NSTextCellType)
@@ -769,18 +873,22 @@ static NSColor	*shadowCol;
   ASSIGN (_font, fontObject);
 }
 
+/**<p>Set whether the cell selectable. Making a cell unselectable also
+ * makes it uneditable until a -setEditable: re-enables it.</p>
+ *<p>See Also: -isSelectable -setEditable: -isEditable</p>
+ */
 - (void) setSelectable: (BOOL)flag
 {
   _cell.is_selectable = flag;
 
-  /*
-   *	Making a cell unselectable also makes it uneditable until a
-   *	setEditable re-enables it.
-   */
   if (!flag)
     _cell.is_editable = NO;
 }
 
+/**<p>Sets whether the NCell is scrollable. By default a NSCell is not
+   scrollable</p>
+ *<p>See Also: -isSelectable</p>
+ */
 - (void) setScrollable: (BOOL)flag
 {
   _cell.is_scrollable = flag;
@@ -919,37 +1027,57 @@ static NSColor	*shadowCol;
   [self setStringValue: aString];
 }
 
-/*
- * Target and Action
+/**<p>Returns the action selector, This method returns NULL by default.
+  It is usally implemented by subclasses</p>
+ <p>See Also: -setAction: -setTarget: -target</p>
  */
 - (SEL) action
 {
   return NULL;
 }
 
+/** <p>Sets the action selector. This method is implement by subclasses. 
+ By default raises a NSInternalInconsistencyException</p>
+ <p>See Also: -action -setTarget: -target</p>
+*/
 - (void) setAction: (SEL)aSelector
 {
   [NSException raise: NSInternalInconsistencyException
 	      format: @"attempt to set an action in an NSCell"];
 }
 
+/**<p>Sets the target object. This method is implemented by sublclasses.
+   By default raises a NSInternalInconsistencyException</p>
+   <p>See Also: -target -setAction: -action</p>
+ */
 - (void) setTarget: (id)anObject
 {
   [NSException raise: NSInternalInconsistencyException
 	      format: @"attempt to set a target in an NSCell"];
 }
 
+/**<p>Returns the target object. This method is implemented by sublclasses.
+  By default returns nil</p><p>See Also: -setTarget: -setAction: -action</p>
+ */
 - (id) target
 {
   return nil;
 }
 
+/** <p>Returns whether the cell can continuously send action. Some sublcass
+ should redefine this method with NSLeftMouseDraggedMask</p>
+ <p>See Also: -setContinuous:</p>
+ */
 - (BOOL) isContinuous
 {
   // Some subclasses should redefine this with NSLeftMouseDraggedMask
   return (_action_mask & NSPeriodicMask) != 0;
 }
 
+/**<p>Sets whether the cell can continuously send action. Some sublcass
+  should redefine this method with NSLeftMouseDraggedMask</p>
+ *<p>See Also: -isContinuous</p>
+ */
 - (void) setContinuous: (BOOL)flag
 {
   // Some subclasses should redefine this with NSLeftMouseDraggedMask
@@ -963,6 +1091,8 @@ static NSColor	*shadowCol;
     }
 }
 
+/**<p>TODO Explain</p>
+ */
 - (int) sendActionOn: (int)mask
 {
   unsigned int previousMask = _action_mask;
@@ -972,8 +1102,9 @@ static NSColor	*shadowCol;
   return previousMask;
 }
 
-/*
- * Setting the Image
+/**<p>Returns the NSCell's image.If the cell's type is NSImageCellType,
+ * returns nil otherwise.</p>
+ *<p>See Also: -setImage: -setType: -type</p>
  */
 - (NSImage*) image
 {
@@ -985,6 +1116,12 @@ static NSColor	*shadowCol;
     return nil;
 }
 
+/**<p>Sets the NSCell's image to anImage. This method sets the cell's type 
+   to NSImageCellType if needed. Raises an NSInvalidArgumentException if
+   the anImage is not an NSImage (sub)class. The new image is retained and the
+   old one is released</p>
+ *<p>See Also: -image</p>
+ */
 - (void) setImage: (NSImage*)anImage
 {
   if (anImage) 
@@ -1001,8 +1138,9 @@ static NSColor	*shadowCol;
   ASSIGN (_cell_image, anImage);
 }
 
-/*
- * Assigning a Tag
+/** <p>Assigns a tag to the NCell. This method is implemented by subclasses.
+    By default it raises an NSInvalidArgumentException.</p>
+    <p>See Also: -tag</p>
  */
 - (void) setTag: (int)anInt
 {
@@ -1010,6 +1148,9 @@ static NSColor	*shadowCol;
 	      format: @"attempt to set a tag in an NSCell"];
 }
 
+/**<p>Returns the cell's tag. This method is implemented by subclasses.
+ By default it returns -1 </p> <p>See Also: -setTag:</p>
+ */
 - (int) tag
 {
   return -1;
@@ -1035,11 +1176,15 @@ static NSColor	*shadowCol;
   return _formatter;
 }
 
+/**<p> TODO</p>
+ */
 - (int) entryType
 {
   return _cell.entry_type;
 }
 
+/** <p>TODO</p>
+ */
 - (void) setEntryType: (int)aType
 {
   [self setType: NSTextCellType];
@@ -1184,7 +1329,8 @@ static NSColor	*shadowCol;
 }
 
 /**
- * Simulates a single click in the cell. The display of the cell with this event
+ * Simulates a single click in the cell.
+ * The display of the cell with this event
  * occurs in the area delimited by <var>cellFrame</var> within
  * <var>controlView</var>.
  */
@@ -1258,34 +1404,50 @@ static NSColor	*shadowCol;
   [self setObjectValue: [sender objectValue]];
 }
 
+/** <p>Sets NSCell's double value to sender's double value</p>
+    <p>See Also: -setDoubleValue:</p>
+ */
 - (void) takeDoubleValueFrom: (id)sender
 {
   [self setDoubleValue: [sender doubleValue]];
 }
 
+/** <p>Sets NSCell's float value to sender's float value</p>
+    <p>See Also: -setFloatValue:</p>
+ */
 - (void) takeFloatValueFrom: (id)sender
 {
   [self setFloatValue: [sender floatValue]];
 }
 
+/** <p>Sets NSCell's int value to sender's int value</p>
+    <p>See Also: -setIntValue:</p>
+ */
 - (void) takeIntValueFrom: (id)sender
 {
   [self setIntValue: [sender intValue]];
 }
 
+/** <p>Sets NSCell's NSString value to sender's NSSting value</p>
+    <p>See Also: -setStringValue:</p>
+ */
 - (void) takeStringValueFrom: (id)sender
 {
   [self setStringValue: [sender stringValue]];
 }
 
-/*
- * Using the NSCell to Represent an Object
+/** <p>Returns the NSCell's represented object</p>
+    <p>See Also: -setRepresentedObject:</p>
  */
 - (id) representedObject
 {
   return _represented_object;
 }
 
+/** <p>Sets the NSCell's represented object to anObject. anObject will 
+    be retain.</p>
+    <p>See Also: -representedObject</p>
+ */
 - (void) setRepresentedObject: (id)anObject
 {
   /* Ahm - not nice - the RETAIN here could cause retain cycles - anyway. */
@@ -1480,8 +1642,7 @@ static NSColor	*shadowCol;
   return NO;				// Otherwise return NO
 }
 
-/*
- * Managing the Cursor
+/** <p>TODO</p>
  */
 - (void) resetCursorRect: (NSRect)cellFrame inView: (NSView*)controlView
 {
@@ -1507,21 +1668,31 @@ static NSColor	*shadowCol;
     }
 }
 
-/*
- * Handling Keyboard Alternatives
+/**<p>Returns the key equivalent. This method is implemented by subclasses.
+ *By default it return an empty NSString. </p>
  */
 - (NSString*) keyEquivalent
 {
   return @"";
 }
 
-/*
- * Determining Component Sizes
+/**<p>Does nothing. This method is used by subclasses to recalculate sizes</p>
+ * <p>It is usally called by a NSControl object ( [NSControl-calcSize] )</p>
  */
 - (void) calcDrawInfo: (NSRect)aRect
 {
 }
 
+/**<p>Returns the minimun size needed to display the NSCell.
+   This size is calculate by adding : </p>
+   <p>- the borders (plain or bezeled) size</p>
+   <p>- the spacing between the border and inside the cell</p>
+   <p>- the TODO ... if the cell is type  of NSTextCellType 
+   or the image size if the cell has a NSImageCellType type.</p>
+   <p>This method  returns NSZeroSize if the cell has a NSNullCellType type
+   (  Cocoa returns a very big size instead ).
+   </p>
+ */
 - (NSSize) cellSize
 {
   NSSize borderSize, s;
@@ -1585,6 +1756,9 @@ static NSColor	*shadowCol;
   return s;
 }
 
+/**<p>TODO. Currently the GNUstep implementation returns -cellSize</p>
+   <p>See Also: -cellSize</p>
+ */
 - (NSSize) cellSizeForBounds: (NSRect)aRect
 {
   if (_cell.type == NSTextCellType)
@@ -1595,6 +1769,8 @@ static NSColor	*shadowCol;
   return [self cellSize];
 }
 
+/**<p>TODO</p>
+ */
 - (NSRect) drawingRectForBounds: (NSRect)theRect
 {
   NSSize borderSize;
@@ -1610,11 +1786,15 @@ static NSColor	*shadowCol;
   return NSInsetRect(theRect, borderSize.width, borderSize.height);
 }
 
+/**<p>The GNUstep implementation returns -drawingRectForBounds:</p>
+ */
 - (NSRect) imageRectForBounds: (NSRect)theRect
 {
   return [self drawingRectForBounds: theRect];
 }
 
+/** <p>TODO</p>
+ */
 - (NSRect) titleRectForBounds: (NSRect)theRect
 {
   if (_cell.type == NSTextCellType)
@@ -1659,17 +1839,16 @@ static NSColor	*shadowCol;
   return NSDefaultControlTint;
 }
 
-/*
- * Displaying
+/**<p>TODO. This method is used by subclass</p>
  */
 - (NSView*) controlView
 {
   return nil;
 }
 
-/*
- * This drawing is minimal and with no background,
- * to make it easier for subclass to customize drawing. 
+/**
+ * <p>This drawing is minimal and with no background,
+ * to make it easier for subclass to customize drawing. </p>
  */
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
@@ -1726,6 +1905,8 @@ static NSColor	*shadowCol;
   // prettyfying
 }
 
+/**<p>Draws the the cell in <var>controlView</var></p>
+ */
 - (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
   // do nothing if cell's frame rect is zero
@@ -1751,10 +1932,17 @@ static NSColor	*shadowCol;
   _cell.is_highlighted = flag;
 }
 
+/**
+ *<p>Returns whether the cell is highlighted. By default NO</p>
+ */
 - (BOOL) isHighlighted
 {
   return _cell.is_highlighted;
 }
+
+/**
+ *<p>TODO explain</p>
+ */
 
 - (void) highlight: (BOOL)lit
 	 withFrame: (NSRect)cellFrame
@@ -1821,6 +2009,8 @@ static NSColor	*shadowCol;
 /*
  * Editing Text
  */
+/** <p> TODO </p>
+ */
 - (void) editWithFrame: (NSRect)aRect
 		inView: (NSView*)controlView
 		editor: (NSText*)textObject
@@ -1868,16 +2058,22 @@ static NSColor	*shadowCol;
     }
 }
 
+/**<p>Ends any text editing. This method sets the text object's delegate 
+   to nil, and remove the NSClipView and the text object used for editing</p>
+ <p>See Also:  -editWithFrame:inView:editor:delegate:event:</p>
+ */
 - (void) endEditing: (NSText*)textObject
 {
-  NSClipView *cv;
+  NSClipView *clipView;
 
   [textObject setDelegate: nil];
-  cv = (NSClipView*)[textObject superview];
+  clipView = (NSClipView*)[textObject superview];
   [textObject removeFromSuperview];
-  [cv removeFromSuperview];
+  [clipView removeFromSuperview];
 }
 
+/** <p> TODO </p>
+ */
 - (void) selectWithFrame: (NSRect)aRect
 		  inView: (NSView*)controlView
 		  editor: (NSText*)textObject
