@@ -1,3 +1,7 @@
+2005-11-15  fabien  <fabien@sonappart.net>
+
+	* Source/NSColor.m : Improved documentation, various cleanups.
+
 2005-11-09  fabien  <fabien@sonappart.net>
 
 	* Source/NSCell.m : Improved documentation

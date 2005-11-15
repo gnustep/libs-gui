@@ -230,28 +230,28 @@ void initSystemColors(void)
     }
 
     {
-      NSEnumerator *e;
-      NSString *r;
+      NSEnumerator *enumerator;
+      NSString *key;
       BOOL changed = NO;
 
       // Set up default system colors
 
-      e = [colorStrings keyEnumerator];
+      enumerator = [colorStrings keyEnumerator];
   
-      while ((r = (NSString *)[e nextObject])) 
+      while ((key = (NSString *)[enumerator nextObject])) 
 	{
-	  NSString *cs;
-	  NSColor *c;
+	  NSString *aColorString;
+	  NSColor *color;
 
-	  if ([systemColors colorWithKey: r])
+	  if ([systemColors colorWithKey: key])
 	    continue;
 
-	  cs = [colorStrings objectForKey: r];
-	  c = [NSColorClass colorFromString: cs];
+	  aColorString = [colorStrings objectForKey: key];
+	  color = [NSColorClass colorFromString: aColorString];
 
-	  NSCAssert1(c, @"couldn't get default system color %@", r);
+	  NSCAssert1(color, @"couldn't get default system color %@", key);
 
-	  [systemColors setColor: c forKey: r];
+	  [systemColors setColor: color forKey: key];
 
 	  changed = YES;
 	}
@@ -278,6 +278,10 @@ systemColorWithName(NSString *name)
   return col;
 }
 
+/**
+ *<p>TODO NSColor description</p>
+ *
+ */
 @implementation NSColor
 
 //
@@ -308,124 +312,155 @@ systemColorWithName(NSString *name)
     }
 }
 
-//
-// Creating an NSColor from Component Values
-//
+/**<p>Creates and returns a new NSColor in a NSCalibratedRGBColorSpace space 
+   name, with hue, saturation, brightness and alpha as specified. Valid values
+   are the range 0.0 to 1.0. Out of range values will be clipped.</p>
+*/
 + (NSColor*) colorWithCalibratedHue: (float)hue
 			 saturation: (float)saturation
 			 brightness: (float)brightness
 			      alpha: (float)alpha
 {
-  id c;
+  id color;
 
-  c = [GSCalibratedRGBColor allocWithZone: NSDefaultMallocZone()];
-  c = [c initWithCalibratedHue: hue
-		    saturation: saturation
-		    brightness: brightness
-			 alpha: alpha];
+  color = [GSCalibratedRGBColor allocWithZone: NSDefaultMallocZone()];
+  color = [color initWithCalibratedHue: hue
+		 saturation: saturation
+		 brightness: brightness
+		 alpha: alpha];
 
-  return AUTORELEASE(c);
+  return AUTORELEASE(color);
 }
 
+
+/**<p>Creates and returns a new NSColor in a NSCalibratedRGBColorSpace space 
+   name, with red, green, blue and alpha as specified. Valid values
+   are the range 0.0 to 1.0. Out of range values will be clipped.</p>
+*/
 + (NSColor*) colorWithCalibratedRed: (float)red
 			      green: (float)green
 			       blue: (float)blue
 			      alpha: (float)alpha
 {
-  id c;
+  id color;
 
-  c = [GSCalibratedRGBColor allocWithZone: NSDefaultMallocZone()];
-  c = [c initWithCalibratedRed: red
-			 green: green
-			  blue: blue
-			 alpha: alpha];
-  return AUTORELEASE(c);
+  color = [GSCalibratedRGBColor allocWithZone: NSDefaultMallocZone()];
+  color = [color initWithCalibratedRed: red
+		 green: green
+		 blue: blue
+		 alpha: alpha];
+  return AUTORELEASE(color);
 }
 
+
+/**<p>Creates and returns a new NSColor in a NSCalibratedWhiteColorSpace space 
+   name, with red, green, blue and alpha as specified. Valid values
+   are the range 0.0 to 1.0. Out of range values will be clipped.</p>
+*/
 + (NSColor*) colorWithCalibratedWhite: (float)white
 				alpha: (float)alpha
 {
-  id c;
+  id color;
 
-  c = [GSCalibratedWhiteColor allocWithZone: NSDefaultMallocZone()] ;
-  c = [c initWithCalibratedWhite: white
-			   alpha: alpha];
+  color = [GSCalibratedWhiteColor allocWithZone: NSDefaultMallocZone()] ;
+  color = [color initWithCalibratedWhite: white
+		 alpha: alpha];
 
-  return AUTORELEASE(c);
+  return AUTORELEASE(color);
 }
 
+/**
+ * <p> TODO </p>
+ */
 + (NSColor*) colorWithCatalogName: (NSString *)listName
 			colorName: (NSString *)colorName
 {
-  id c;
+  id color;
 
-  c = [GSNamedColor allocWithZone: NSDefaultMallocZone()] ;
-  c = [c initWithCatalogName: listName
-		   colorName: colorName];
+  color = [GSNamedColor allocWithZone: NSDefaultMallocZone()] ;
+  color = [color initWithCatalogName: listName
+		 colorName: colorName];
 
-  return AUTORELEASE(c);
+  return AUTORELEASE(color);
 }
 
+/**<p>Creates and returns a new NSColor in a NSDeviceCMYKColorSpace space 
+   name, with cyan, magenta, yellow, black and alpha as specified. Valid values
+   are the range 0.0 to 1.0. Out of range values will be clipped.</p>
+*/
 + (NSColor*) colorWithDeviceCyan: (float)cyan
 			 magenta: (float)magenta
 			  yellow: (float)yellow
 			   black: (float)black
 			   alpha: (float)alpha
 {
-  id c;
+  id color;
 
-  c = [GSDeviceCMYKColor allocWithZone: NSDefaultMallocZone()];
-  c = [c initWithDeviceCyan: cyan
-		    magenta: magenta
-		     yellow: yellow
-		      black: black
-		      alpha: alpha];
+  color = [GSDeviceCMYKColor allocWithZone: NSDefaultMallocZone()];
+  color = [color initWithDeviceCyan: cyan
+		 magenta: magenta
+		 yellow: yellow
+		 black: black
+		 alpha: alpha];
 
-  return AUTORELEASE(c);
+  return AUTORELEASE(color);
 }
 
+
+/**<p>Creates and returns a new NSColor in a NSDeviceCMYKColorSpace space 
+   name, with hue, saturation, brightness and alpha as specified. Valid values
+   are the range 0.0 to 1.0. Out of range values will be clipped.</p>
+*/
 + (NSColor*) colorWithDeviceHue: (float)hue
 		     saturation: (float)saturation
 		     brightness: (float)brightness
 			  alpha: (float)alpha
 {
-  id c;
+  id color;
 
-  c = [GSDeviceRGBColor allocWithZone: NSDefaultMallocZone()];
-  c = [c initWithDeviceHue: hue
-		saturation: saturation
-		brightness: brightness
-		     alpha: alpha];
+  color = [GSDeviceRGBColor allocWithZone: NSDefaultMallocZone()];
+  color = [color initWithDeviceHue: hue
+		 saturation: saturation
+		 brightness: brightness
+		 alpha: alpha];
 
-  return AUTORELEASE(c);
+  return AUTORELEASE(color);
 }
 
+/**<p>Creates and returns a new NSColor in a NSDeviceCMYKColorSpace space 
+   name, with red, green, blue and alpha as specified. Valid values
+   are the range 0.0 to 1.0. Out of range values will be clipped.</p>
+*/
 + (NSColor*) colorWithDeviceRed: (float)red
 			  green: (float)green
 			   blue: (float)blue
 			  alpha: (float)alpha
 {
-  id c;
+  id color;
 
-  c = [GSDeviceRGBColor allocWithZone: NSDefaultMallocZone()];
-  c = [c initWithDeviceRed: red
-		     green: green
-		      blue: blue
-		     alpha: alpha];
+  color = [GSDeviceRGBColor allocWithZone: NSDefaultMallocZone()];
+  color = [color initWithDeviceRed: red
+		 green: green
+		 blue: blue
+		 alpha: alpha];
 
-  return AUTORELEASE(c);
+  return AUTORELEASE(color);
 }
 
+/**<p>Creates and returns a new NSColor in a  NSDeviceWhiteColorSpace space 
+   name, with red, green, blue and alpha as specified. Valid values
+   are the range 0.0 to 1.0. Out of range values will be clipped.</p>
+*/
 + (NSColor*) colorWithDeviceWhite: (float)white
 			    alpha: (float)alpha
 {
-  id c;
+  id color;
 
-  c = [GSDeviceWhiteColor allocWithZone: NSDefaultMallocZone()];
-  c = [c initWithDeviceWhite: white
-		alpha: alpha];
+  color = [GSDeviceWhiteColor allocWithZone: NSDefaultMallocZone()];
+  color = [color initWithDeviceWhite: white
+		 alpha: alpha];
 
-  return AUTORELEASE(c);
+  return AUTORELEASE(color);
 }
 
 + (NSColor*) colorForControlTint: (NSControlTint)controlTint
@@ -436,22 +471,29 @@ systemColorWithName(NSString *name)
 
 + (NSColor*) colorWithPatternImage: (NSImage*)image
 {
-  id c;
+  id color;
 
-  c = [GSPatternColor allocWithZone: NSDefaultMallocZone()];
-  c = [c initWithPatternImage: image];
+  color = [GSPatternColor allocWithZone: NSDefaultMallocZone()];
+  color = [color initWithPatternImage: image];
 
-  return AUTORELEASE(c);
+  return AUTORELEASE(color);
 }
 
-//
-// Creating an NSColor With Preset Components
-//
+
+/**<p>Returns a NSColor in a NSCalibratedWhiteColorSpace space name.
+  with white and alpha values set as NSBlack and 1.0 respectively </p>
+  <p>See Also : +colorWithCalibratedWhite:alpha:</p>
+*/
 + (NSColor*) blackColor
 {
   return [self colorWithCalibratedWhite: NSBlack alpha: 1.0];
 }
 
+
+/**<p>Returns an NSColor in a  NSCalibratedRGBColorSpace space name.
+  with red, green, blue and alpha values set as 0.0, 0.0, 1.0 and 1.0
+  respectively </p><p>See Also : +colorWithCalibratedRed:green:blue:alpha:</p>
+*/
 + (NSColor*) blueColor
 {
   return [self colorWithCalibratedRed: 0.0
@@ -460,6 +502,10 @@ systemColorWithName(NSString *name)
 			        alpha: 1.0];
 }
 
+/**<p>Returns a NSColor in a NSCalibratedRGBColorSpace space name.
+  with red, green, blue and alpha values set as 0.6, 0.4, 0.2 and 1.0
+  respectively </p><p>See Also: +colorWithCalibratedRed:green:blue:alpha:</p>
+*/
 + (NSColor*) brownColor
 {
   return [self colorWithCalibratedRed: 0.6
@@ -468,11 +514,20 @@ systemColorWithName(NSString *name)
 			        alpha: 1.0];
 }
 
+/**<p>Returns a NSColor in a NSCalibratedWhiteColorSpace space name.
+  with white and alpha values set as 0.0 and 1.0 respectively </p>
+  <p>See Also : +colorWithCalibratedWhite:alpha:</p>
+*/
 + (NSColor*) clearColor
 {
   return [self colorWithCalibratedWhite: 0.0 alpha: 0.0];
 }
 
+
+/**<p>Returns a NSColor in a NSCalibratedRGBColorSpace space name.
+  with red, green, blue and alpha values set as 0.0, 1.0, 1.0 and 1.0
+  respectively </p><p>See Also : +colorWithCalibratedRed:green:blue:alpha:</p>
+*/
 + (NSColor*) cyanColor
 {
   return [self colorWithCalibratedRed: 0.0
@@ -481,16 +536,28 @@ systemColorWithName(NSString *name)
 			        alpha: 1.0];
 }
 
+/**<p>Returns a NSColor in a NSCalibratedWhiteColorSpace space name.
+  with white and alpha values set as NSDarkGray and 1.0 respectively </p>
+  <p>See Also : +colorWithCalibratedWhite:alpha:</p>
+*/
 + (NSColor*) darkGrayColor
 {
   return [self colorWithCalibratedWhite: NSDarkGray alpha: 1.0];
 }
 
+/**<p>Returns a NSColor in a NSCalibratedWhiteColorSpace space name.
+  with white and alpha values set as NSGray and 1.0 respectively </p>
+  <p>See Also: +colorWithCalibratedWhite:alpha:</p>
+*/
 + (NSColor*) grayColor
 {
   return [self colorWithCalibratedWhite: NSGray alpha: 1.0];
 }
 
+/**<p>Returns a NSColor in a  NSCalibratedRGBColorSpace space name.
+  with red, green, blue and alpha values set as 0.0, 1.0, 0.0 and 1.0
+  respectively </p><p>See Also: +colorWithCalibratedRed:green:blue:alpha:</p>
+*/
 + (NSColor*) greenColor
 {
   return [self colorWithCalibratedRed: 0.0
@@ -499,11 +566,19 @@ systemColorWithName(NSString *name)
 			        alpha: 1.0];
 }
 
+/**<p>Returns a NSColor in a NSCalibratedWhiteColorSpace space name.
+  with white and alpha values set as NSLightGray and 1.0 respectively </p>
+  <p>See Also : +colorWithCalibratedRed:green:blue:alpha:</p>
+*/
 + (NSColor*) lightGrayColor
 {
   return [self colorWithCalibratedWhite: NSLightGray alpha: 1];
 }
 
+/**<p>Returns a NSColor in a NSCalibratedRGBColorSpace space name.
+  with red, green, blue and alpha values set as 1.0, 0.0, 1.0 and 1.0
+  respectively </p><p>See Also : +colorWithCalibratedRed:green:blue:alpha:</p>
+*/
 + (NSColor*) magentaColor
 {
   return [self colorWithCalibratedRed: 1.0
@@ -512,6 +587,11 @@ systemColorWithName(NSString *name)
 			        alpha: 1.0];
 }
 
+
+/**<p>Returns a NSColor in a NSCalibratedRGBColorSpace space name.
+  with red, green, blue and alpha values set as 1.0, 0.5, 0.0 and 1.0
+  respectively </p><p>See Also: +colorWithCalibratedRed:green:blue:alpha:</p>
+*/
 + (NSColor*) orangeColor
 {
   return [self colorWithCalibratedRed: 1.0
@@ -520,6 +600,11 @@ systemColorWithName(NSString *name)
 			        alpha: 1.0];
 }
 
+
+/**<p>Returns a NSColor in a NSCalibratedRGBColorSpace space name.
+  with red, green, blue and alpha values set as 0.5, 0.0, 0.5 and 1.0
+  respectively </p><p>See Also : +colorWithCalibratedRed:green:blue:alpha:</p>
+*/
 + (NSColor*) purpleColor
 {
   return [self colorWithCalibratedRed: 0.5
@@ -528,6 +613,11 @@ systemColorWithName(NSString *name)
 			        alpha: 1.0];
 }
 
+
+/**<p>Returns a NSColor in a NSCalibratedRGBColorSpace space name.
+  with red, green, blue and alpha values set as 1.0, 0.0, 0.0 and 1.0
+  respectively </p><p>See Also: +colorWithCalibratedRed:green:blue:alpha:</p>
+*/
 + (NSColor*) redColor
 {
   return [self colorWithCalibratedRed: 1.0
@@ -536,11 +626,20 @@ systemColorWithName(NSString *name)
 			        alpha: 1.0];
 }
 
+/**<p>Returns a NSColor in a NSCalibratedWhiteColorSpace space name.
+  with white and alpha values set as NSWhite and 1.0 respectively </p>
+  <p>See Also : +colorWithCalibratedWhite:alpha:</p>
+*/
 + (NSColor*) whiteColor
 {
   return [self colorWithCalibratedWhite: NSWhite alpha: 1.0];
 }
 
+
+/**<p>Returns a NSColor in a NSCalibratedRGBColorSpace space name.
+  with red, green, blue and alpha values set as 1.0, 0.0, 0.0 and 1.0
+  respectively </p><p>See Also : +colorWithCalibratedRed:green:blue:alpha:</p>
+*/
 + (NSColor*) yellowColor
 {
   return [self colorWithCalibratedRed: 1.0
@@ -549,29 +648,34 @@ systemColorWithName(NSString *name)
 			        alpha: 1.0];
 }
 
-//
-// Ignoring Alpha Components
-//
+
+/** TODO
+ *<p>See Also: +setIgnoresAlpha:</p>
+ */
 + (BOOL) ignoresAlpha
 {
   return gnustep_gui_ignores_alpha;
 }
 
+/** TODO
+ *<p>See Also: +ignoresAlpha:</p>
+ */
 + (void) setIgnoresAlpha: (BOOL)flag
 {
   gnustep_gui_ignores_alpha = flag;
 }
 
-//
-// Copying and Pasting
-//
+/**<p>Returns the NSColor on the NSPasteboard pasteBoard
+   or nil if it does not exists.</p><p>See Also: -writeToPasteboard:</p>
+ */
 + (NSColor*) colorFromPasteboard: (NSPasteboard *)pasteBoard
 {
-  NSData *d = [pasteBoard dataForType: NSColorPboardType];
+  NSData *colorData = [pasteBoard dataForType: NSColorPboardType];
 
   // FIXME: This should better use the description format
-  if (d != nil)
-    return [NSUnarchiver unarchiveObjectWithData: d];
+  if (colorData != nil)
+    return [NSUnarchiver unarchiveObjectWithData: colorData];
+
   return nil;
 }
 
@@ -762,9 +866,11 @@ systemColorWithName(NSString *name)
   return nil;
 }
 
-//
-// Retrieving a Set of Components
-//
+/**
+ *<p>Returns CYMK and alpha values.
+ * GNUstep implemenation raise an NSInternalInconsistencyException</p>
+ *
+ */
 - (void) getCyan: (float*)cyan
 	 magenta: (float*)magenta
 	  yellow: (float*)yellow
@@ -813,9 +919,8 @@ systemColorWithName(NSString *name)
     }
 }
 
-//
-// Retrieving Individual Components
-//
+/** <p>Returns the alpha component ( 1.0 by default ) </p>
+ */
 - (float) alphaComponent
 {
   return 1.0;
@@ -1028,16 +1133,17 @@ systemColorWithName(NSString *name)
 			        ofColor: [NSColorClass shadowColor]];
 }
 
-//
-// Copying and Pasting
-//
+/**<p>Writes the NSColor into the NSPasteboard specified by pasteBoard</p>
+ * <p>See Also: +colorFromPasteboard: </p>
+ */
 - (void) writeToPasteboard: (NSPasteboard *)pasteBoard
 {
   // FIXME: We should better use the description
-  NSData *d = [NSArchiver archivedDataWithRootObject: self];
+  NSData *colorData = [NSArchiver archivedDataWithRootObject: self];
 
-  if (d != nil)
-    [pasteBoard setData: d forType: NSColorPboardType];
+  if (colorData != nil)
+    [pasteBoard setData: colorData
+		forType: NSColorPboardType];
 }
 
 //
