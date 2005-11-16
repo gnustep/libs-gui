@@ -271,12 +271,12 @@ Class gmodel_class(void)
       NSFileManager	*mgr = [NSFileManager defaultManager];
       BOOL              isDir = NO;
 
-      if([mgr fileExistsAtPath: fileName isDirectory: &isDir])
+      if ([mgr fileExistsAtPath: fileName isDirectory: &isDir])
 	{
 	  NSData	*data = nil;
 	  
 	  // if the data is in a directory, then load from objects.gorm in the directory
-	  if(isDir == NO)
+	  if (isDir == NO)
 	    {
 	      data = [NSData dataWithContentsOfFile: fileName];
 	      NSDebugLog(@"Loaded data from file...");
@@ -420,7 +420,7 @@ Class gmodel_class(void)
       else
 	{
 	  path = [rootPath stringByAppendingPathExtension: ext];
-	  if([mgr isReadableFileAtPath: path])
+	  if ([mgr isReadableFileAtPath: path])
 	    {
 	      return path;
 	    }

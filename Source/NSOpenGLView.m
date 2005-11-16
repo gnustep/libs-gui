@@ -107,7 +107,7 @@
 */
 - (NSOpenGLContext*)openGLContext
 {
-  if ( glcontext == nil )
+  if (glcontext == nil)
     {
       glcontext = [[NSOpenGLContext alloc] initWithFormat: pixel_format
 				 shareContext: nil];
@@ -181,12 +181,12 @@
 - (void) lockFocusInRect: (NSRect) aRect
 {
   [super lockFocusInRect: aRect];
-  if ( !glcontext )
+  if (!glcontext)
     {
       [self openGLContext];
       NSAssert(glcontext, NSInternalInconsistencyException);
     }
-  if ( attached == NO && glcontext != nil )
+  if (attached == NO && glcontext != nil)
     {
       NSDebugMLLog(@"GL", @"Attaching context to the view");
       [glcontext setView: self];

@@ -886,18 +886,18 @@ static SEL getSel;
 	{
 	  if (_cells[i][j] == aCell)
 	    {
-	      if(row)
+	      if (row)
 		*row = i;
-	      if(column)
+	      if (column)
 		*column = j;
 	      return YES;
 	    }
 	}
     }
 
-  if(row)
+  if (row)
     *row = -1;
-  if(column)
+  if (column)
     *column = -1;
 
   return NO;
@@ -1465,7 +1465,7 @@ static SEL getSel;
     {
       return nil;
     }
-  else if(_cells != 0)
+  else if (_cells != 0)
     {
       return _cells[_dottedRow][_dottedColumn];
     }
@@ -1607,7 +1607,7 @@ static SEL getSel;
 	case NSTabTextMovement:
 	  if (_tabKeyTraversesCells)
 	    {
-	      if([self _selectNextSelectableCellAfterRow: _selectedRow
+	      if ([self _selectNextSelectableCellAfterRow: _selectedRow
 		       column: _selectedColumn])
 		break;
 	    }
@@ -1617,7 +1617,7 @@ static SEL getSel;
 	    {
 	      if (_tabKeyTraversesCells)
 		{
-		  if([self _selectNextSelectableCellAfterRow: -1
+		  if ([self _selectNextSelectableCellAfterRow: -1
 			   column: -1])
 		    break;
 		}
@@ -1627,7 +1627,7 @@ static SEL getSel;
 	case NSBacktabTextMovement:
 	  if (_tabKeyTraversesCells)
 	    {
-	      if([self _selectPreviousSelectableCellBeforeRow: _selectedRow
+	      if ([self _selectPreviousSelectableCellBeforeRow: _selectedRow
 		       column: _selectedColumn])
 		break;
 	    }
@@ -1637,7 +1637,7 @@ static SEL getSel;
 	    {
 	      if (_tabKeyTraversesCells)
 		{
-		  if([self _selectPreviousSelectableCellBeforeRow: _numRows
+		  if ([self _selectPreviousSelectableCellBeforeRow: _numRows
 			   column: _numCols])
 		    break;
 		}
@@ -3384,13 +3384,13 @@ static SEL getSel;
 	{
 	  if ([theEvent modifierFlags] & NSShiftKeyMask)
 	    {
-	      if([self _selectNextSelectableCellAfterRow: _selectedRow
+	      if ([self _selectNextSelectableCellAfterRow: _selectedRow
 		       column: _selectedColumn])
 		return;
 	    }
 	  else
 	    {
-	      if([self _selectPreviousSelectableCellBeforeRow: _selectedRow
+	      if ([self _selectPreviousSelectableCellBeforeRow: _selectedRow
 		       column: _selectedColumn])
 		return;
 	    }

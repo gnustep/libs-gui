@@ -57,7 +57,7 @@
 //
 - (id)initLinkedToFile:(NSString *)filename
 {
-  if((self = [self init]) != nil)
+  if ((self = [self init]) != nil)
     {
       NSData *data = [NSData dataWithBytes: [filename cString] length: [filename cStringLength]];
       NSSelection *selection = [NSSelection selectionWithDescriptionData: data];
@@ -70,7 +70,7 @@
 			managedBy:(NSDataLinkManager *)linkManager
 		  supportingTypes:(NSArray *)newTypes
 {
-  if((self = [self init]) != nil)
+  if ((self = [self init]) != nil)
     {
       ASSIGN(sourceSelection,selection);
       ASSIGN(sourceManager,linkManager);
@@ -130,7 +130,7 @@
 {
   NSString *path = filename;
 
-  if([[path pathExtension] isEqual: NSDataLinkFilenameExtension] == NO)
+  if ([[path pathExtension] isEqual: NSDataLinkFilenameExtension] == NO)
     {
       path = [filename stringByAppendingPathExtension: NSDataLinkFilenameExtension];
     }
@@ -225,12 +225,12 @@
   // circumstances a link cannot be broken, so this method 
   // always returns YES.
 
-  if([srcDelegate respondsToSelector: @selector(dataLinkManager:didBreakLink:)])
+  if ([srcDelegate respondsToSelector: @selector(dataLinkManager:didBreakLink:)])
     {
       [srcDelegate dataLinkManager: sourceManager didBreakLink: self];
     }
 
-  if([dstDelegate respondsToSelector: @selector(dataLinkManager:didBreakLink:)])
+  if ([dstDelegate respondsToSelector: @selector(dataLinkManager:didBreakLink:)])
     {
       [dstDelegate dataLinkManager: destinationManager didBreakLink: self];
     }
@@ -242,7 +242,7 @@
 {
   _flags.isDirty = YES;
 
-  if(updateMode != NSUpdateNever)
+  if (updateMode != NSUpdateNever)
     {
       [sourceManager noteDocumentEdited];
     }
@@ -304,7 +304,7 @@
 {
   int version = [aCoder versionForClassName: @"NSDataLink"];
 
-  if(version == 0)
+  if (version == 0)
     {
       BOOL flag = NO;
 

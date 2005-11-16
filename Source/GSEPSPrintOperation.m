@@ -73,7 +73,7 @@
 		               [[NSProcessInfo processInfo] globallyUniqueString]];
            
   _path = [_path stringByAppendingPathExtension: @"ps"];
-  RETAIN( _path ); 
+  RETAIN(_path); 
   return self;
 }
 

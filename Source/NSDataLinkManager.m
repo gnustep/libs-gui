@@ -106,7 +106,7 @@
 {
   self = [super init];
 
-  if(self != nil)
+  if (self != nil)
     {
       ASSIGN(delegate,anObject);
       filename = nil;
@@ -124,7 +124,7 @@
 {
   self = [super init];
 
-  if(self != nil)
+  if (self != nil)
     {
       ASSIGN(delegate,anObject);
       ASSIGN(filename,path);
@@ -148,7 +148,7 @@
   [link setDestinationSelection: selection];
   [link setDestinationManager: self];
 
-  if([destinationLinks containsObject: link] == NO)
+  if ([destinationLinks containsObject: link] == NO)
     {
       [destinationLinks addObject: link];
       result = YES;
@@ -173,9 +173,9 @@
   NSEnumerator *en = [links objectEnumerator];
   NSDataLink *link = nil;
 
-  while((link = [en nextObject]) != nil)
+  while ((link = [en nextObject]) != nil)
     {
-	if([link destinationSelection] == oldSelection)
+	if ([link destinationSelection] == oldSelection)
 	{	    
 	}
     }
@@ -189,7 +189,7 @@
   NSEnumerator *en = [allLinks objectEnumerator];
   id obj = nil;
 
-  while((obj = [en nextObject]) != nil)
+  while ((obj = [en nextObject]) != nil)
     {
       [obj break];
     }
@@ -201,7 +201,7 @@
   NSEnumerator *en = [allLinks objectEnumerator];
   id obj = nil;
 
-  while((obj = [en nextObject]) != nil)
+  while ((obj = [en nextObject]) != nil)
     {
       [obj writeToPasteboard: pasteboard];
     }
@@ -212,7 +212,7 @@
 //
 - (void)noteDocumentClosed
 {
-    if([delegate respondsToSelector: @selector(dataLinkManagerCloseDocument:)])
+    if ([delegate respondsToSelector: @selector(dataLinkManagerCloseDocument:)])
     {
 	[delegate dataLinkManagerCloseDocument: self];
     }
@@ -220,7 +220,7 @@
 
 - (void)noteDocumentEdited
 {
-    if([delegate respondsToSelector: @selector(dataLinkManagerDidEditLinks:)])
+    if ([delegate respondsToSelector: @selector(dataLinkManagerDidEditLinks:)])
     {
 	[delegate dataLinkManagerDidEditLinks: self];
     }
@@ -228,7 +228,7 @@
 
 - (void)noteDocumentReverted
 {
-    if([delegate respondsToSelector: @selector(dataLinkManagerDidEditLinks:)])
+    if ([delegate respondsToSelector: @selector(dataLinkManagerDidEditLinks:)])
     {
 	[delegate dataLinkManagerDidEditLinks: self];
     }
@@ -305,9 +305,9 @@
   NSEnumerator *en = [self destinationLinkEnumerator];
   id obj = nil;
 
-  while((obj = [en nextObject]) != nil)
+  while ((obj = [en nextObject]) != nil)
     {
-      if([obj destinationSelection] == destSel)
+      if ([obj destinationSelection] == destSel)
 	{
 	  break;
 	}
@@ -351,7 +351,7 @@
 {
   int version = [aCoder versionForClassName: @"NSDataLinkManager"];
 
-  if(version == 0)
+  if (version == 0)
     {
       BOOL flag = NO;
       

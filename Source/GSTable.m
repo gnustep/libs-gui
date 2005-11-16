@@ -189,7 +189,7 @@
   
   borderChange = aBorder - _minXBorder; 
   
-  for(i = 0; i < _numberOfColumns; i++)
+  for (i = 0; i < _numberOfColumns; i++)
     {
       _columnXOrigin[i] += borderChange;
       [self _updateColumnOrigin: i];
@@ -229,7 +229,7 @@
   
   borderChange = aBorder - _minYBorder; 
   
-  for(i = 0; i < _numberOfRows; i++)
+  for (i = 0; i < _numberOfRows; i++)
     {
       _rowYOrigin[i] += borderChange;
       [self _updateRowOrigin: i];

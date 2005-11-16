@@ -142,10 +142,10 @@ void quick_sort_internal(columnSorting *data, int p, int r)
 	int i = p - 1;
 	int j = r + 1;
 	columnSorting exchange;
-	while(1)
+	while (1)
 	  {
 	    j--;
-	    for(; 
+	    for (; 
 		(data[j].width > x)
 		  || ((data[j].width == x) 
 		      && (data[j].isMax == YES)
@@ -154,14 +154,14 @@ void quick_sort_internal(columnSorting *data, int p, int r)
 	      ;
 
 	    i++;
-	    for(;
+	    for (;
 		(data[i].width < x)
 		  || ((data[i].width == x) 
 		      && (data[i].isMax == NO)
 		      && (y == YES));
 		i++)
 	      ;
-	    if ( i < j )
+	    if (i < j)
 	      {
 		exchange = data[j];
 		data[j] = data[i];
@@ -572,10 +572,10 @@ static void computeNewSelection
 
 	}
     }
-  else if (   (selectionMode & ALLOWS_MULTIPLE)
+  else if ((selectionMode & ALLOWS_MULTIPLE)
 	   && ((selectionMode & SHIFT_DOWN) == 0)
 	   && (selectionMode & ALLOWS_EMPTY)
-	      )
+	)
     // ic, sr : ok
     // new multiple selection (empty possible)
     {
@@ -804,7 +804,7 @@ static void computeNewSelection
 	    && ((selectionMode & SHIFT_DOWN) == 0)
 	    && ((selectionMode & ALLOWS_EMPTY) == 0)
 	    && ((selectionMode & ADDING_ROW) == 0))
-	   )
+	)
     {
       if (_oldRow == -1)
 	{
@@ -1297,7 +1297,7 @@ static void computeNewSelection
 		      notified = YES;
 		    }
 		}
-	      if (   notified 
+	      if (notified 
 		  && (*_selectedRow >= _originalRow)
 		  && (*_selectedRow <= _currentRow))
 		{
@@ -1323,7 +1323,7 @@ static void computeNewSelection
 		      notified = YES;
 		    }
 		}
-	      if (   notified 
+	      if (notified 
 		  && (*_selectedRow >= _originalRow)
 		  && (*_selectedRow <= _currentRow))
 		{
@@ -1364,7 +1364,7 @@ static void computeNewSelection
 			}
 		    }
 
-		  if (   notified 
+		  if (notified 
 		      && (*_selectedRow > _oldRow)
 		      && (*_selectedRow <= _currentRow))
 		    {
@@ -1422,7 +1422,7 @@ static void computeNewSelection
 			}
 		    }
 
-		  if (   notified 
+		  if (notified 
 		      && (*_selectedRow < _oldRow)
 		      && (*_selectedRow >= _currentRow))
 		    {
@@ -1499,7 +1499,7 @@ static void computeNewSelection
 		  }
 	      }
 
-	      if (   notified 
+	      if (notified 
 		  && (*_selectedRow > _oldRow)
 		  && (*_selectedRow <= _currentRow))
 		{
@@ -1551,7 +1551,7 @@ static void computeNewSelection
 		  }
 	      }
 
-	      if (   notified 
+	      if (notified 
 		  && (*_selectedRow > _oldRow)
 		  && (*_selectedRow <= _currentRow))
 		{
@@ -1597,7 +1597,7 @@ static void computeNewSelection
 		      count--;
 		    }
 		}
-	      if (   notified 
+	      if (notified 
 		  && (*_selectedRow >= _originalRow)
 		  && (*_selectedRow <= _currentRow))
 		{
@@ -1625,7 +1625,7 @@ static void computeNewSelection
 		      count--;
 		    }
 		}
-	      if (   notified 
+	      if (notified 
 		  && (*_selectedRow >= _originalRow)
 		  && (*_selectedRow <= _currentRow))
 		{
@@ -1668,7 +1668,7 @@ static void computeNewSelection
 			}
 		    }
 
-		  if (   notified 
+		  if (notified 
 		      && (*_selectedRow > _oldRow)
 		      && (*_selectedRow <= _currentRow))
 		    {
@@ -1728,7 +1728,7 @@ static void computeNewSelection
 			}
 		    }
 
-		  if (   notified 
+		  if (notified 
 		      && (*_selectedRow < _oldRow)
 		      && (*_selectedRow >= _currentRow))
 		    {
@@ -1806,7 +1806,7 @@ static void computeNewSelection
 		  }
 	      }
 
-	      if (   notified 
+	      if (notified 
 		  && (*_selectedRow > _oldRow)
 		  && (*_selectedRow <= _currentRow))
 		{
@@ -1859,7 +1859,7 @@ static void computeNewSelection
 		  }
 	      }
 
-	      if (   notified 
+	      if (notified 
 		  && (*_selectedRow > _oldRow)
 		  && (*_selectedRow <= _currentRow))
 		{
@@ -4104,7 +4104,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		  remainingWidth -= 
 		    (nextPoint - previousPoint) * numberOfCurrentColumns;
 
-		  for(j = 0; j < _numberOfColumns; j++)
+		  for (j = 0; j < _numberOfColumns; j++)
 		    {
 		      if (minWidth[j] <= previousPoint
 			  && maxWidth[j] >= nextPoint)
@@ -4125,7 +4125,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		  int remainder = remainingInt - quotient * numberOfCurrentColumns;
 		  int oldRemainder = remainder;
 
-		  for(j = _numberOfColumns - 1; j >= 0; j--)
+		  for (j = _numberOfColumns - 1; j >= 0; j--)
 		    {
 		      if (minWidth[j] <= previousPoint
 			  && maxWidth[j] >= nextPoint)
@@ -4142,7 +4142,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		  while (oldRemainder > remainder && remainder > 0)
 		    {
 		      oldRemainder = remainder;
-		      for(j = 0; j < _numberOfColumns; j++)
+		      for (j = 0; j < _numberOfColumns; j++)
 			{
 			  if (minWidth[j] <= previousPoint
 			      && maxWidth[j] >= nextPoint)
@@ -4865,14 +4865,14 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	  // Send action ?
 	  break;
 	case NSTabTextMovement:
-	  if([self _editNextEditableCellAfterRow: row  column: column] == YES)
+	  if ([self _editNextEditableCellAfterRow: row  column: column] == YES)
 	    {
 	      break;
 	    }
 	  [_window selectKeyViewFollowingView: self];
 	  break;
 	case NSBacktabTextMovement:
-	  if([self _editPreviousEditableCellBeforeRow: row  column: column] == YES)
+	  if ([self _editPreviousEditableCellBeforeRow: row  column: column] == YES)
 	    {
 	      break;
 	    }
@@ -5478,7 +5478,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 				  fromView: _super_view].size.width;
       float table_width = 0;
 
-      if(_numberOfColumns > 0)
+      if (_numberOfColumns > 0)
         {
           table_width = 
             _columnOrigins[_numberOfColumns - 1] +
@@ -5496,20 +5496,20 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	NSLog(@"_superview_width %f", _superview_width);
       */
 
-      if ( table_width - _superview_width <= 0.001
-	   && table_width - _superview_width >= -0.001 )
+      if (table_width - _superview_width <= 0.001
+	   && table_width - _superview_width >= -0.001)
 	{
 	  // the last column had been sized to fit
 	  [self sizeToFit];
 	}
-      else if ( table_width <= _superview_width
-		&& table_width >= visible_width )
+      else if (table_width <= _superview_width
+		&& table_width >= visible_width)
 	{
 	  // the tableView was too small and is now too large
 	  [self sizeToFit];
 	}
       else if (table_width >= _superview_width
-	       && table_width <= visible_width )
+	       && table_width <= visible_width)
 	{
 	  // the tableView was too large and is now too small
 	  if (_numberOfColumns > 0)
@@ -5524,7 +5524,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 				  fromView: _super_view].size.width;
       float table_width = 0;
 
-      if(_numberOfColumns > 0)
+      if (_numberOfColumns > 0)
         {
           table_width = 
             _columnOrigins[_numberOfColumns - 1] +
@@ -5542,20 +5542,20 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	NSLog(@"_superview_width %f", _superview_width);
       */
 
-      if ( table_width - _superview_width <= 0.001
-	   && table_width - _superview_width >= -0.001 )
+      if (table_width - _superview_width <= 0.001
+	   && table_width - _superview_width >= -0.001)
 	{
 	  // the last column had been sized to fit
 	  [self sizeLastColumnToFit];
 	}
-      else if ( table_width <= _superview_width
-		&& table_width >= visible_width )
+      else if (table_width <= _superview_width
+		&& table_width >= visible_width)
 	{
 	  // the tableView was too small and is now too large
 	  [self sizeLastColumnToFit];
 	}
       else if (table_width >= _superview_width
-	       && table_width <= visible_width )
+	       && table_width <= visible_width)
 	{
 	  // the tableView was too large and is now too small
 	  if (_numberOfColumns > 0)
@@ -5624,7 +5624,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
   quarterPosition = (p.y - _bounds.origin.y) / _rowHeight * 4.;
 
   if ((quarterPosition - oldDropRow * 4 <= 2) &&
-      (quarterPosition - oldDropRow * 4 >= -3) )
+      (quarterPosition - oldDropRow * 4 >= -3))
     {
       row = oldDropRow;
     }
@@ -5634,7 +5634,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
     }
 
   // Are we in the two middle quarters of the row? Use TableViewDropOn
-  if(positionInRow > _rowHeight/4 && positionInRow <= (3*_rowHeight)/4)
+  if (positionInRow > _rowHeight/4 && positionInRow <= (3*_rowHeight)/4)
     {
       currentDropRow  = (int)(p.y - _bounds.origin.y) / (int)_rowHeight;
       currentDropOperation = NSTableViewDropOn;
@@ -5906,7 +5906,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 {
   id result = nil;
 
-  if([_dataSource respondsToSelector:
+  if ([_dataSource respondsToSelector:
 		    @selector(tableView:objectValueForTableColumn:row:)])
     {
       result = [_dataSource tableView: self
@@ -5921,7 +5921,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	  forTableColumn: (NSTableColumn *)tb
 		     row: (int) index
 {
-  if([_dataSource respondsToSelector:
+  if ([_dataSource respondsToSelector:
 		    @selector(tableView:setObjectValue:forTableColumn:row:)])
     {
       [_dataSource tableView: self

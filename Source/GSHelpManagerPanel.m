@@ -40,7 +40,7 @@ static GSHelpManagerPanel* _GSsharedGSHelpPanel;
 
 + (id) sharedHelpManagerPanel
 {
-  if(!_GSsharedGSHelpPanel)
+  if (!_GSsharedGSHelpPanel)
     _GSsharedGSHelpPanel = [[GSHelpManagerPanel alloc] init];
 
   return _GSsharedGSHelpPanel;

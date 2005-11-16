@@ -715,8 +715,8 @@ static NSColor	*shadowCol;
 
 /**<p>Sets the NSCell's state.  Please use always symbolic constants when
    calling this method. The integer values could be changed in the this
-   implementation. ( Currently they match the Cocoa values but they are
-   quite strange )</p> <p>See Also: -state</p>
+   implementation. (Currently they match the Cocoa values but they are
+   quite strange)</p> <p>See Also: -state</p>
  */
 - (void) setState: (int)value
 {
@@ -1338,7 +1338,7 @@ static NSColor	*shadowCol;
 {
   SEL action = [self action];
 
-  if(_cell.is_disabled == YES)
+  if (_cell.is_disabled == YES)
     {
       return;
     }
@@ -1677,7 +1677,7 @@ static NSColor	*shadowCol;
 }
 
 /**<p>Does nothing. This method is used by subclasses to recalculate sizes</p>
- * <p>It is usally called by a NSControl object ( [NSControl-calcSize] )</p>
+ * <p>It is usally called by a NSControl object ([NSControl-calcSize])</p>
  */
 - (void) calcDrawInfo: (NSRect)aRect
 {
@@ -1690,7 +1690,7 @@ static NSColor	*shadowCol;
    <p>- the TODO ... if the cell is type  of NSTextCellType 
    or the image size if the cell has a NSImageCellType type.</p>
    <p>This method  returns NSZeroSize if the cell has a NSNullCellType type
-   (  Cocoa returns a very big size instead ).
+   (Cocoa returns a very big size instead).
    </p>
  */
 - (NSSize) cellSize

@@ -589,13 +589,13 @@
     }
   else if (sel_eq(action, @selector(undo:)))
     {
-      if(_undoManager == nil)
+      if (_undoManager == nil)
 	{
 	  result = NO;
 	}
       else
 	{
-	  if([_undoManager canUndo])
+	  if ([_undoManager canUndo])
 	    {
 	      [anItem setTitle: [_undoManager undoMenuItemTitle]];
 	      result = YES;
@@ -609,13 +609,13 @@
     }
   else if (sel_eq(action, @selector(redo:)))
     {
-      if(_undoManager == nil)
+      if (_undoManager == nil)
 	{
 	  result = NO;
 	}
       else
 	{
-	  if([_undoManager canRedo])
+	  if ([_undoManager canRedo])
 	    {
 	      [anItem setTitle: [_undoManager redoMenuItemTitle]];
 	      result = YES;

@@ -172,10 +172,10 @@ id _nsstepperCellClass = nil;
   BOOL isDirectionUp;
   BOOL autorepeat = [_cell autorepeat];
 
-  if([_cell isEnabled] == NO)
+  if ([_cell isEnabled] == NO)
     return;
 
-  if([event type] != NSLeftMouseDown)
+  if ([event type] != NSLeftMouseDown)
     return;
 
   upRect = [_cell upButtonRectWithFrame: _bounds];
@@ -232,7 +232,7 @@ id _nsstepperCellClass = nil;
 		   untilDate: farAway
 		   inMode: NSEventTrackingRunLoopMode
 		   dequeue: YES];
-    while([event type] != NSLeftMouseUp)
+    while ([event type] != NSLeftMouseUp)
       {
 	if ([event type] == NSPeriodic)
 	  {

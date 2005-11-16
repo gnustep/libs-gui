@@ -91,7 +91,7 @@ typedef struct _PathElement
 
 + (void)initialize
 {
-  if(self == [NSBezierPath class])
+  if (self == [NSBezierPath class])
     NSBezierPath_concrete_class = [GSBezierPath class];
 }
 
@@ -277,7 +277,7 @@ typedef struct _PathElement
 
 - (void) dealloc
 {
-  if(_cacheImage != nil)
+  if (_cacheImage != nil)
     RELEASE(_cacheImage);
 
   if (_dash_pattern != NULL)
@@ -470,13 +470,13 @@ typedef struct _PathElement
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
   
-  if(_cachesBezierPath) 
+  if (_cachesBezierPath) 
     {
       NSRect bounds = [self bounds];
       NSPoint origin = bounds.origin;
 
       // FIXME: I don't see how this should work with color changes
-      if(_cacheImage == nil) 
+      if (_cacheImage == nil) 
         {
 	  _cacheImage = [[NSImage alloc] initWithSize: bounds.size];
 	  [_cacheImage lockFocus];
@@ -498,19 +498,19 @@ typedef struct _PathElement
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
 
-  if(_cachesBezierPath) 
+  if (_cachesBezierPath) 
     {
       NSRect bounds = [self bounds];
       NSPoint origin = bounds.origin;
 
       // FIXME: I don't see how this should work with color changes
-      if(_cacheImage == nil) 
+      if (_cacheImage == nil) 
         {
 	  _cacheImage = [[NSImage alloc] initWithSize: bounds.size];
 	  [_cacheImage lockFocus];
 	  DPStranslate(ctxt, -origin.x, -origin.y);
 	  [ctxt GSSendBezierPath: self];
-	  if([self windingRule] == NSNonZeroWindingRule)
+	  if ([self windingRule] == NSNonZeroWindingRule)
 	    DPSfill(ctxt);
 	  else
 	    DPSeofill(ctxt);
@@ -521,7 +521,7 @@ typedef struct _PathElement
   else 
     {
       [ctxt GSSendBezierPath: self];
-      if([self windingRule] == NSNonZeroWindingRule)
+      if ([self windingRule] == NSNonZeroWindingRule)
 	DPSfill(ctxt);
       else
 	DPSeofill(ctxt);
@@ -533,7 +533,7 @@ typedef struct _PathElement
   NSGraphicsContext *ctxt = GSCurrentContext();
   
   [ctxt GSSendBezierPath: self];
-  if([self windingRule] == NSNonZeroWindingRule)
+  if ([self windingRule] == NSNonZeroWindingRule)
     DPSclip(ctxt);
   else
     DPSeoclip(ctxt);
@@ -545,7 +545,7 @@ typedef struct _PathElement
   
   DPSinitclip(ctxt);
   [ctxt GSSendBezierPath: self];
-  if([self windingRule] == NSNonZeroWindingRule)
+  if ([self windingRule] == NSNonZeroWindingRule)
     DPSclip(ctxt);
   else
     DPSeoclip(ctxt);
@@ -569,7 +569,7 @@ typedef struct _PathElement
   last_p = NSZeroPoint;
 
   count = [self elementCount];
-  for(i = 0; i < count; i++) 
+  for (i = 0; i < count; i++) 
     {
       type = [self elementAtIndex: i associatedPoints: pts];
       switch(type) 
@@ -627,7 +627,7 @@ typedef struct _PathElement
 
   last_type = NSMoveToBezierPathElement;
   count = [self elementCount];
-  for(i = count - 1; i >= 0; i--) 
+  for (i = count - 1; i >= 0; i--) 
     {
       type = [self elementAtIndex: i associatedPoints: pts];
       switch(type) 
@@ -702,7 +702,7 @@ typedef struct _PathElement
   int i, count;
 
   count = [self elementCount];
-  for(i = 0; i < count; i++) 
+  for (i = 0; i < count; i++) 
     {
       type = [self elementAtIndex: i associatedPoints: pts];
       switch(type) 
@@ -1491,7 +1491,7 @@ static int winding_curve(double_point from, double_point to, double_point c1,
 {
   int sum;
 
-  if(![self elementCount])
+  if (![self elementCount])
     return NO;
 
   if (!NSPointInRect(point, [self bounds]))
@@ -1529,7 +1529,7 @@ static int winding_curve(double_point from, double_point to, double_point c1,
 {
   _cachesBezierPath = flag;
 
-  if(!flag)
+  if (!flag)
     INVALIDATE_CACHE();
 }
 
@@ -1556,7 +1556,7 @@ static int winding_curve(double_point from, double_point to, double_point c1,
   count = [self elementCount];
   [aCoder encodeValueOfObjCType: @encode(int) at: &count];
   
-  for(i = 0; i < count; i++) 
+  for (i = 0; i < count; i++) 
     {
       type = [self elementAtIndex: i associatedPoints: pts];
       [aCoder encodeValueOfObjCType: @encode(NSBezierPathElement) at: &type];
@@ -1603,7 +1603,7 @@ static int winding_curve(double_point from, double_point to, double_point c1,
 
   [aCoder decodeValueOfObjCType: @encode(int) at: &count];
 
-  for(i = 0; i < count; i++) 
+  for (i = 0; i < count; i++) 
     {
       [aCoder decodeValueOfObjCType: @encode(NSBezierPathElement) at: &type];
       switch(type) 
@@ -1639,7 +1639,7 @@ static int winding_curve(double_point from, double_point to, double_point c1,
 {
   NSBezierPath *path = (NSBezierPath*)NSCopyObject (self, 0, zone);
 
-  if(_cachesBezierPath && _cacheImage)
+  if (_cachesBezierPath && _cacheImage)
       path->_cacheImage = [_cacheImage copy];
 
   if (_dash_pattern != NULL)
@@ -1900,11 +1900,11 @@ static NSPoint point_on_curve(double t, NSPoint a, NSPoint b, NSPoint c,
 	
   if (points != NULL) 
     {
-      if(type == NSMoveToBezierPathElement || type == NSLineToBezierPathElement) 
+      if (type == NSMoveToBezierPathElement || type == NSLineToBezierPathElement) 
         {
 	  points[0] = elm.points[0];
 	} 
-      else if(type == NSCurveToBezierPathElement) 
+      else if (type == NSCurveToBezierPathElement) 
         {
 	  points[0] = elm.points[0];
 	  points[1] = elm.points[1];
@@ -1964,7 +1964,7 @@ static NSPoint point_on_curve(double t, NSPoint a, NSPoint b, NSPoint c,
       [transform methodForSelector: transformPointSel];
 
   count = GSIArrayCount(pathElements);
-  for(i = 0; i < count; i++) 
+  for (i = 0; i < count; i++) 
     {
       type = elments[i].type;
       switch(type) 

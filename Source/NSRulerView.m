@@ -466,7 +466,7 @@ static NSMutableDictionary *units = nil;
   /* test markers in reverse order so that markers drawn on top
      are tested before those underneath */
   markerEnum = [_markers reverseObjectEnumerator];
-  while ( (marker = [markerEnum nextObject]) != nil)
+  while ((marker = [markerEnum nextObject]) != nil)
     {
       if (NSMouseInRect (point, [marker imageRectInRuler], flipped))
         {

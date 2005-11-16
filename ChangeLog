@@ -1,3 +1,67 @@
+2005-11-16  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSEPSPrintOperation.m:
+	* Source/GSHelpManagerPanel.m:
+	* Source/GSHorizontalTypesetter.m:
+	* Source/GSLayoutManager.m:
+	* Source/GSNibCompatibility.m:
+	* Source/GSNibTemplates.m:
+	* Source/GSPDFPrintOperation.m:
+	* Source/GSPrintOperation.m:
+	* Source/GSPrinting.m:
+	* Source/GSSlideView.m:
+	* Source/GSTable.m:
+	* Source/GSToolbar.m:
+	* Source/NSAlert.m:
+	* Source/NSApplication.m:
+	* Source/NSBezierPath.m:
+	* Source/NSBitmapImageRep+PNM.m:
+	* Source/NSBox.m:
+	* Source/NSBrowser.m:
+	* Source/NSBrowserCell.m:
+	* Source/NSBundleAdditions.m:
+	* Source/NSCell.m:
+	* Source/NSColor.m:
+	* Source/NSColorList.m:
+	* Source/NSColorWell.m:
+	* Source/NSCustomImageRep.m:
+	* Source/NSDataLink.m:
+	* Source/NSDataLinkManager.m:
+	* Source/NSDataLinkPanel.m:
+	* Source/NSDocument.m:
+	* Source/NSForm.m:
+	* Source/NSGraphicsContext.m:
+	* Source/NSHelpManager.m:
+	* Source/NSImage.m:
+	* Source/NSLayoutManager.m:
+	* Source/NSMatrix.m:
+	* Source/NSNib.m:
+	* Source/NSOpenGLPixelFormat.m:
+	* Source/NSOpenGLView.m:
+	* Source/NSOutlineView.m:
+	* Source/NSPageLayout.m:
+	* Source/NSPrintInfo.m:
+	* Source/NSPrintOperation.m:
+	* Source/NSPrintPanel.m:
+	* Source/NSPrinter.m:
+	* Source/NSResponder.m:
+	* Source/NSRulerView.m:
+	* Source/NSSelection.m:
+	* Source/NSSpellChecker.m:
+	* Source/NSSpellServer.m:
+	* Source/NSSplitView.m:
+	* Source/NSStepper.m:
+	* Source/NSTabView.m:
+	* Source/NSTableView.m:
+	* Source/NSTextView.m:
+	* Source/NSTextView_actions.m:
+	* Source/NSToolbarItem.m:
+	* Source/NSView.m:
+	* Source/NSWindow.m:
+	* Source/NSWorkspace.m:
+	Fix some common coding style violations ... should have no effect
+	other than improving readability.
+
 2005-11-15  fabien  <fabien@sonappart.net>
 
 	* Source/NSColor.m : Improved documentation, various cleanups.

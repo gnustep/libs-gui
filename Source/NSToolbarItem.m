@@ -1144,7 +1144,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 - (BOOL) isEnabled
 {
-  if(_flags._isEnabled)
+  if (_flags._isEnabled)
     {
       return [(id)_backView isEnabled];
     }
@@ -1153,7 +1153,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 - (NSImage *)image
 {
-  if(_flags._image)
+  if (_flags._image)
     {
       return _image;
     }
@@ -1203,7 +1203,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 - (void) setAction: (SEL)action
 {
-  if(_flags._setAction)
+  if (_flags._setAction)
     {
       if ([_backView isKindOfClass: [GSToolbarButton class]])
         [(GSToolbarButton *)_backView setToolbarItemAction: action];
@@ -1221,13 +1221,13 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 - (void) setEnabled: (BOOL)enabled
 {
-  if(_flags._setEnabled)
+  if (_flags._setEnabled)
     [(id)_backView setEnabled: enabled];
 }
 
 - (void) setImage: (NSImage *)image
 {
-  if(_flags._setImage)
+  if (_flags._setImage)
     {  
       ASSIGN(_image, image);  
       
@@ -1273,13 +1273,13 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 - (void) setTag: (int)tag
 {
-  if(_flags._tag)
+  if (_flags._tag)
     _tag = tag;
 }
 
 - (void) setTarget: (id)target
 {
-   if(_flags._target)
+   if (_flags._target)
      {
        if ([_backView isKindOfClass: [NSButton class]])
          [(NSButton *)_backView setTarget: target];
@@ -1332,7 +1332,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 - (int) tag
 {
-  if(_flags._tag)
+  if (_flags._tag)
     return _tag;
 
   return 0;
@@ -1463,7 +1463,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 // NSValidatedUserInterfaceItem protocol
 - (SEL) action
 {
-  if(_flags._action)
+  if (_flags._action)
     {
       if ([_backView isKindOfClass: [GSToolbarButton class]])
         return [(GSToolbarButton *)_backView toolbarItemAction];
@@ -1473,7 +1473,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 - (id) target
 {
-  if(_flags._target)
+  if (_flags._target)
     {
       if ([_backView isKindOfClass: [NSButton class]])
         return [(NSButton *)_backView target];

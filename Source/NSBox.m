@@ -48,7 +48,7 @@
 
 /**
  * <p>EXPLAINS NSBox</p>
- *<p> TODO : explains how is resized the rects ( margins etc... )  </p>
+ *<p> TODO : explains how is resized the rects (margins etc...)  </p>
 */
 
 @implementation NSBox

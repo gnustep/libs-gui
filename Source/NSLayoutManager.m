@@ -137,7 +137,7 @@ first. Remaining cases, highest priority first:
     int lo, hi, mid; \
 \
     lf = tc->linefrags; \
-    for (lo = 0, hi = tc->num_linefrags - 1; lo < hi; ) \
+    for (lo = 0, hi = tc->num_linefrags - 1; lo < hi;) \
       { \
 	mid = (lo + hi) / 2; \
 	if (lf[mid].pos > glyph) \
@@ -472,7 +472,7 @@ line frag rect. */
   /* Find first glyph in bounds. */
 
   /* Find right "line", ie. the first "line" not above bounds. */
-  for (low = 0, high = tc->num_linefrags - 1; low < high; )
+  for (low = 0, high = tc->num_linefrags - 1; low < high;)
     {
       mid = (low + high) / 2;
       lf = &tc->linefrags[mid];
@@ -507,7 +507,7 @@ line frag rect. */
   /* Find last glyph in bounds. */
 
   /* Find right "line", ie. last "line" not below bounds. */
-  for (low = 0, high = tc->num_linefrags - 1; low < high; )
+  for (low = 0, high = tc->num_linefrags - 1; low < high;)
     {
       mid = (low + high) / 2;
       lf = &tc->linefrags[mid];
@@ -693,7 +693,7 @@ anything visible
       prev = lp->p.x;
 
       last_visible = lf->pos;
-      for (j = lp->pos - glyph_pos; j + glyph_pos < lp->pos + lp->length; )
+      for (j = lp->pos - glyph_pos; j + glyph_pos < lp->pos + lp->length;)
 	{
 	  if (r->glyphs[j].isNotShown || r->glyphs[j].g == NSControlGlyph ||
 	      !r->glyphs[j].g)

@@ -162,7 +162,7 @@ static int __documentTag = 0;
 + (NSSpellChecker *)sharedSpellChecker
 {
   // Create the shared instance.
-  if(__sharedSpellChecker == nil)
+  if (__sharedSpellChecker == nil)
     {
       __sharedSpellChecker = [[NSSpellChecker alloc] init];
     }
@@ -195,7 +195,7 @@ static int __documentTag = 0;
   // Start the service for this language  
   proxy = [[NSApp _listener] _launchSpellCheckerForLanguage: language];
   
-  if(proxy == nil)
+  if (proxy == nil)
     {
       NSLog(@"Failed to get the spellserver");
     }
@@ -217,12 +217,12 @@ static int __documentTag = 0;
 
 - (id)_serverProxy
 {
-  if(_serverProxy == nil)
+  if (_serverProxy == nil)
     {
       // Start the server and retain the reference to the
       // proxy.
       id<NSSpellServerPrivateProtocol> proxy = [self _startServerForLanguage: _language];
-      if(proxy != nil)
+      if (proxy != nil)
 	{
 	  _serverProxy = proxy;
 	  RETAIN(_serverProxy);
@@ -271,7 +271,7 @@ static int __documentTag = 0;
   // Load the gmodel file
   panel = [GSGuiBundle() pathForResource: @"GSSpellPanel" ofType: @"gorm"
 		      inDirectory: nil];
-  if(![NSBundle loadNibFile: panel
+  if (![NSBundle loadNibFile: panel
 	  externalNameTable: [NSDictionary dictionaryWithObject: self forKey: @"NSOwner"]
 	           withZone: [self zone]])
     {
@@ -357,13 +357,13 @@ static int __documentTag = 0;
   
   _currentTag = tag;
   // We have no string to work with
-  if(stringToCheck == nil)
+  if (stringToCheck == nil)
     {
       return NSMakeRange(0,0);
     }
   else
     // The string is zero length
-    if([stringToCheck length] == 0)
+    if ([stringToCheck length] == 0)
       {
 	return NSMakeRange(0,0);
       }
@@ -385,14 +385,14 @@ static int __documentTag = 0;
 		 wordCount: wordCount
 		 countOnly: NO];
       
-      if(r.length != 0)
+      if (r.length != 0)
 	{
 	  // Adjust results relative to the original string
 	  r.location += startingOffset;
 	}
       else
 	{
-	  if(wrapFlag)
+	  if (wrapFlag)
 	    {
 	      // Check the second half of the string
 	      NSString *firstHalfOfString = [stringToCheck 
@@ -449,7 +449,7 @@ static int __documentTag = 0;
   BOOL result = NO;
 
   index = [_dictionaryPulldown indexOfItemWithTitle: aLanguage];
-  if(index != -1)
+  if (index != -1)
     {
       [_dictionaryPulldown selectItemAtIndex: index];
       result = YES;
@@ -477,10 +477,10 @@ inSpellDocumentWithTag:(int)tag
   NSNumber *key = [NSNumber numberWithInt: tag];
   NSMutableSet *words = [_ignoredWords objectForKey: key];
 
-  if(![wordToIgnore isEqualToString: @""])
+  if (![wordToIgnore isEqualToString: @""])
     {
       // If there is a dictionary add to it, if not create one.
-      if(words == nil)
+      if (words == nil)
 	{
 	  words = [NSMutableSet setWithObject: wordToIgnore];
 	  [_ignoredWords setObject: words forKey: key];
@@ -536,7 +536,7 @@ inSpellDocumentWithTag:(int)tag
 			  to: nil 
 			  from: _spellPanel];
 
-  if(!processed)
+  if (!processed)
     {
       NSLog(@"No responder found");
     }
@@ -595,7 +595,7 @@ inSpellDocumentWithTag:(int)tag
 			  to: nil 
 			  from: _wordField];
 
-  if(!processed)
+  if (!processed)
     {
       NSLog(@"_ignore: No responder found");
     }
@@ -618,7 +618,7 @@ inSpellDocumentWithTag:(int)tag
 			  to: nil 
 			  from: _wordField];
 
-  if(!processed)
+  if (!processed)
     {
       NSLog(@"No responder found");
     }
@@ -634,11 +634,11 @@ inSpellDocumentWithTag:(int)tag
 
   // Start the service for this language  
   language = [_dictionaryPulldown stringValue];
-  if(![language isEqualToString: _language])
+  if (![language isEqualToString: _language])
     {
       NSLog(@"Language = %@",language);
       proxy = [self _startServerForLanguage: language];
-      if(proxy != nil)
+      if (proxy != nil)
 	{
 	  ASSIGN(_language, language);
 	  ASSIGN(_serverProxy, proxy);
@@ -716,7 +716,7 @@ inSpellDocumentWithTag:(int)tag
   NSBrowserCell *cell= nil;
   int i = 0;
 
-  while((word = [e nextObject]) != nil)
+  while ((word = [e nextObject]) != nil)
     {
       [matrix insertRow: i withCells: nil];
       cell = [matrix cellAtRow: i column: 0];

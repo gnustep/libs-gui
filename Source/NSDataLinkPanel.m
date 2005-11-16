@@ -47,7 +47,7 @@ static NSDataLinkPanel *_sharedDataLinkPanel;
   NSString *panelPath;
   NSDictionary *table;
 
-  if((self = [super init]) != nil)
+  if ((self = [super init]) != nil)
     {
       panelPath = [GSGuiBundle() pathForResource: @"GSDataLinkPanel" 
 			      ofType: @"gorm"
@@ -113,7 +113,7 @@ static NSDataLinkPanel *_sharedDataLinkPanel;
  */
 + (NSDataLinkPanel *)sharedDataLinkPanel
 {
-  if(_sharedDataLinkPanel == nil)
+  if (_sharedDataLinkPanel == nil)
     {
       id controller = [[GSDataLinkPanelController alloc] init];
       _sharedDataLinkPanel = [controller panel];

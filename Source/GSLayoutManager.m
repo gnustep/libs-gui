@@ -97,7 +97,7 @@ Private method used internally by GSLayoutManager for sanity checking.
   r->font = [r->font retain];
 }
 
--(void ) _run_free_attributes: (glyph_run_t *)r
+-(void) _run_free_attributes: (glyph_run_t *)r
 {
   [r->font release];
 }

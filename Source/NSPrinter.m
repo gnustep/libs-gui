@@ -121,7 +121,7 @@ static NSMutableDictionary* printerCache;
       // Initial version
       [self setVersion:1];
     }
-  printerCache = RETAIN( [NSMutableDictionary dictionary] );
+  printerCache = RETAIN([NSMutableDictionary dictionary]);
 }
 
 /** Load the appropriate bundle for the Printer
@@ -133,7 +133,7 @@ static NSMutableDictionary* printerCache;
 
   principalClass = [[GSPrinting printingBundle] principalClass];
 
-  if( principalClass == nil )
+  if (principalClass == nil)
     return nil;
 	
   return [[principalClass printerClass] allocWithZone: zone];
@@ -152,23 +152,23 @@ static NSMutableDictionary* printerCache;
   //First, the cache has to be managed.
   //Take into account any deleted printers.
   keyEnum = [[printerCache allKeys] objectEnumerator];
-  while( (key = [keyEnum nextObject]) )
+  while ((key = [keyEnum nextObject]))
     {
       NSEnumerator *namesEnum;
       NSString *validName;
       BOOL stillValid = NO;
 
       namesEnum = [[self printerNames] objectEnumerator];
-      while( (validName = [namesEnum nextObject]) )
+      while ((validName = [namesEnum nextObject]))
         {
-          if( [validName isEqualToString: key] )
+          if ([validName isEqualToString: key])
             {
               stillValid = YES;
               break;
             }
         }
       
-      if( stillValid == NO )
+      if (stillValid == NO)
         {
           [printerCache removeObjectForKey: key];
         }
@@ -176,7 +176,7 @@ static NSMutableDictionary* printerCache;
 
   printer = [printerCache objectForKey: name];
 
-  if( printer )
+  if (printer)
     {
       return printer;
     }
@@ -186,12 +186,12 @@ static NSMutableDictionary* printerCache;
 
       principalClass = [[GSPrinting printingBundle] principalClass];
 
-      if( principalClass == nil )
+      if (principalClass == nil)
         return nil;
     
       printer =  [[principalClass printerClass] printerWithName: name];
 
-      if( printer )
+      if (printer)
         {
           [printerCache setObject: printer
                            forKey: name];
@@ -225,13 +225,13 @@ static NSMutableDictionary* printerCache;
   
   printerNamesEnum = [[self printerNames] objectEnumerator];
   
-  while( (printerName = [printerNamesEnum nextObject]) )
+  while ((printerName = [printerNamesEnum nextObject]))
     {
       NSPrinter *printer;
 
       printer = [self printerWithName: printerName];
 
-      if( [[printer type] isEqualToString: type] )
+      if ([[printer type] isEqualToString: type])
         {
           return printer;
         }
@@ -246,7 +246,7 @@ static NSMutableDictionary* printerCache;
 
   principalClass = [[GSPrinting printingBundle] principalClass];
 
-  if( principalClass == nil )
+  if (principalClass == nil)
     return nil;
     
   return  [[principalClass printerClass] printerNames];
@@ -265,7 +265,7 @@ static NSMutableDictionary* printerCache;
   
   printerNamesEnum = [[self printerNames] objectEnumerator];
   
-  while( (printerName = [printerNamesEnum nextObject]) )
+  while ((printerName = [printerNamesEnum nextObject]))
     {
       printer = [self printerWithName: printerName];
       
@@ -319,12 +319,12 @@ static NSMutableDictionary* printerCache;
 
   protocols = [NSScanner scannerWithString: result];
 
-  while( ![protocols isAtEnd] )
+  while (![protocols isAtEnd])
     {
       [protocols scanUpToCharactersFromSet: [NSCharacterSet whitespaceCharacterSet]
                                 intoString: &result];
 
-      if ( [result isEqual:@"BCP"] )
+      if ([result isEqual:@"BCP"])
 	  return YES;
     }
 
@@ -383,7 +383,7 @@ static NSMutableDictionary* printerCache;
   if (!result)
       return NO;
   
-  if ( [result caseInsensitiveCompare: @"REVERSE"] == NSOrderedSame)
+  if ([result caseInsensitiveCompare: @"REVERSE"] == NSOrderedSame)
     return YES;
   else
     return NO;
@@ -415,7 +415,7 @@ static NSMutableDictionary* printerCache;
 
   result = [NSMutableDictionary dictionary];
   
-  if( [self isKey: @"DefaultResolution" 
+  if ([self isKey: @"DefaultResolution" 
           inTable:@"PPD"])
     {
       int dpi = [self intForKey: @"DefaultResolution" 
@@ -425,7 +425,7 @@ static NSMutableDictionary* printerCache;
                 forKey: NSDeviceResolution];
     }
 
-  if( [self isKey: @"ColorDevice" 
+  if ([self isKey: @"ColorDevice" 
           inTable: @"PPD"])
     {
       BOOL color = [self booleanForKey: @"ColorDevice" 
@@ -434,7 +434,7 @@ static NSMutableDictionary* printerCache;
       // FIXME: Should NSDeviceWhiteColorSpace be NSDeviceBlackColorSpace?
       // FIXME #2: Are they calibrated?
       // Basically I'm not sure which color spaces should be used...
-      if( color == YES )
+      if (color == YES)
         {
           [result setObject: NSDeviceCMYKColorSpace
                      forKey: NSDeviceColorSpaceName];
@@ -446,8 +446,8 @@ static NSMutableDictionary* printerCache;
         }
     }
 
-  if( [self isKey: @"DefaultBitsPerPixel" 
-          inTable: @"PPD"] )
+  if ([self isKey: @"DefaultBitsPerPixel" 
+          inTable: @"PPD"])
     {
       int bits = [self intForKey: @"DefaultBitsPerPixel" 
                          inTable: @"PPD"];
@@ -456,13 +456,13 @@ static NSMutableDictionary* printerCache;
                  forKey: NSDeviceBitsPerSample];
     }
 
-  if( [self isKey: @"DefaultPageSize"
-          inTable: @"PPD"] )
+  if ([self isKey: @"DefaultPageSize"
+          inTable: @"PPD"])
     {
       NSString* defaultPageSize = [self stringForKey: @"DefaultPageSize"
                                              inTable: @"PPD"];
 
-      if( defaultPageSize )
+      if (defaultPageSize)
         {
           NSSize paperSize = [self pageSizeForPaper: defaultPageSize];
 
@@ -567,7 +567,7 @@ static NSMutableDictionary* printerCache;
   results = [self stringListForKey: key
                            inTable: table];
 
-  if( results == nil)
+  if (results == nil)
     return nil;
 
   return [results objectAtIndex: 0];
@@ -584,7 +584,7 @@ static NSMutableDictionary* printerCache;
 
   tableObj = [_tables objectForKey: table ];
 
-  if( tableObj == nil )
+  if (tableObj == nil)
     {
       [NSException raise: NSGenericException
          format: @"Could not find table %@", table];
@@ -610,7 +610,7 @@ static NSMutableDictionary* printerCache;
   // Select correct table
   tableObj = [_tables objectForKey: table];
 
-  if( tableObj == nil )
+  if (tableObj == nil)
       return NSPrinterTableNotFound;
   else
       return NSPrinterTableOK;
@@ -627,7 +627,7 @@ static NSMutableDictionary* printerCache;
   // Select correct table
   tableObj = [_tables objectForKey: table];
 
-  if( tableObj == nil )
+  if (tableObj == nil)
     {
       [NSException raise: NSGenericException
          format: @"Could not find table %@", table];
@@ -635,7 +635,7 @@ static NSMutableDictionary* printerCache;
     }
 
   // And check it
-  if ( [tableObj objectForKey: key] == nil)
+  if ([tableObj objectForKey: key] == nil)
     return NO;
   else
     return YES;
@@ -690,7 +690,7 @@ static NSMutableDictionary* printerCache;
   ASSIGN(_printerHost, host);
   ASSIGN(_printerNote, note);
   
-  _tables = RETAIN( [NSMutableDictionary dictionary] );
+  _tables = RETAIN([NSMutableDictionary dictionary]);
 
   return self;
 }
@@ -723,28 +723,28 @@ static NSMutableDictionary* printerCache;
   NSMutableArray* valArray;
 
   //make sure the class variables for scanning are created
-  if( !newlineSet)
+  if (!newlineSet)
     {
       newlineSet = [NSCharacterSet characterSetWithCharactersInString: @"\n\r"];
-      RETAIN( newlineSet );
+      RETAIN(newlineSet);
     }
 
-  if( !keyEndSet )
+  if (!keyEndSet)
     {
       keyEndSet = [NSCharacterSet characterSetWithCharactersInString: @"\n\r\t: "];
-      RETAIN( keyEndSet );
+      RETAIN(keyEndSet);
     }
 
-  if( !optKeyEndSet )
+  if (!optKeyEndSet)
     {
       optKeyEndSet = [NSCharacterSet characterSetWithCharactersInString: @"\n\r:/"];
-      RETAIN( optKeyEndSet );
+      RETAIN(optKeyEndSet);
     }
 
-  if( !valueEndSet )
+  if (!valueEndSet)
     {
       valueEndSet = [NSCharacterSet characterSetWithCharactersInString: @"\n\r/"];
-      RETAIN( valueEndSet );
+      RETAIN(valueEndSet);
     }
 
 
@@ -786,24 +786,24 @@ static NSMutableDictionary* printerCache;
 
   // Search the PPD dictionary for symbolvalues and substitute them.
   objEnum = [[_tables objectForKey: @"PPD"] objectEnumerator];
-  while( (valArray = [objEnum nextObject]) )
+  while ((valArray = [objEnum nextObject]))
     {
       NSString *oldValue;
       NSString *newValue;
       int i, max;
 
       max = [valArray count];
-      for( i=0 ; i < max ; i++ )
+      for (i=0 ; i < max ; i++)
         {
           oldValue = [valArray objectAtIndex: i];
-          if(     [oldValue isKindOfClass: [NSString class]] 
+          if ([oldValue isKindOfClass: [NSString class]] 
               && ![oldValue isEqual: @""] 
               &&  [[oldValue substringToIndex: 1] isEqual: @"^"])
               {
                 newValue = [ppdSymbolValues
                              objectForKey: [oldValue substringFromIndex: 1]];
 
-	            if( !newValue )
+	            if (!newValue)
                     {
                       [NSException raise: NSPPDParseException
                        format: @"Unknown symbol value, ^%@ in PPD file %@.ppd",
@@ -837,10 +837,10 @@ static NSMutableDictionary* printerCache;
                   @"PPD-Adobe",
                   nil] objectEnumerator];
 
-  while( (checkVal = [objEnum nextObject]) )
+  while ((checkVal = [objEnum nextObject]))
     {
-      if( ![self isKey: checkVal 
-               inTable: @"PPD"] )
+      if (![self isKey: checkVal 
+               inTable: @"PPD"])
         {
           [NSException raise:NSPPDParseException
            format:@"Required keyword *%@ not found in PPD file %@.ppd",
@@ -850,7 +850,7 @@ static NSMutableDictionary* printerCache;
   */
 
   // Release the local autoreleasePool
-  RELEASE( subpool );
+  RELEASE(subpool);
 
 
 //Sometimes it's good to see the tables...
@@ -914,7 +914,7 @@ static NSMutableDictionary* printerCache;
   [ppdData setCharactersToBeSkipped: [NSCharacterSet whitespaceCharacterSet]];
   
   // Main processing starts here...
-  while( YES )  //Only check for the end after accounting for whitespace
+  while (YES)  //Only check for the end after accounting for whitespace
     {
       // Get to the start of a new keyword, skipping blank lines
       [ppdData scanCharactersFromSet: 
@@ -922,12 +922,12 @@ static NSMutableDictionary* printerCache;
                           intoString: NULL];
     
       //this could be the end...
-      if( [ppdData isAtEnd] )
+      if ([ppdData isAtEnd])
         break;
         
       // All new entries should starts '*'
-      if( ![ppdData scanString: @"*" 
-                    intoString: NULL] )
+      if (![ppdData scanString: @"*" 
+                    intoString: NULL])
         {
           [NSException raise: NSPPDParseException
                       format: @"Line not starting with * in PPD file %@", 
@@ -935,7 +935,7 @@ static NSMutableDictionary* printerCache;
         }
 
       // Skip lines starting '*%', '*End', '*SymbolLength', or '*SymbolEnd'
-      if (   [ppdData scanString: @"%" 
+      if ([ppdData scanString: @"%" 
                       intoString: NULL]
           || [ppdData scanString: @"End" //if we get this there is problem, yes?
                       intoString: NULL]
@@ -954,24 +954,24 @@ static NSMutableDictionary* printerCache;
                               intoString: &keyword];
       
       // Loop if there is no value section, these keywords are ignored
-      if( [ppdData scanCharactersFromSet: newlineSet 
-                              intoString: NULL] )
+      if ([ppdData scanCharactersFromSet: newlineSet 
+                              intoString: NULL])
         {
           continue;
         }
         
       // Add the line to the relevant table
-      if( [keyword isEqual: @"OrderDependency"] )
+      if ([keyword isEqual: @"OrderDependency"])
         {
           [self addPPDOrderDependency: ppdData
                           withPPDPath: ppdPath];
         }
-      else if( [keyword isEqual: @"UIConstraints"] )
+      else if ([keyword isEqual: @"UIConstraints"])
         {
           [self addPPDUIConstraint: ppdData
                        withPPDPath: ppdPath];
         }
-      else if( [keyword isEqual: @"Include"] )
+      else if ([keyword isEqual: @"Include"])
         {
           NSFileManager *fileManager;
           NSString *fileName = nil;
@@ -993,16 +993,16 @@ static NSMutableDictionary* printerCache;
                    intoString: NULL];
 
           //the fileName could be an absolute path or just a filename.
-          if( [fileManager fileExistsAtPath: fileName] )
+          if ([fileManager fileExistsAtPath: fileName])
             {
               //it was absolute, we are done
               path = fileName;
             }
           //it was not absolute.  Check to see if it exists in the 
           //directory of this ppd
-          else if( [fileManager fileExistsAtPath: 
+          else if ([fileManager fileExistsAtPath: 
                      [[ppdPath stringByDeletingLastPathComponent] 
-                       stringByAppendingPathComponent: fileName] ] )
+                       stringByAppendingPathComponent: fileName] ])
             {
               path = [[ppdPath stringByDeletingLastPathComponent] 
                       stringByAppendingPathComponent: fileName];
@@ -1022,7 +1022,7 @@ static NSMutableDictionary* printerCache;
           NSString *symbolName;
           NSString *symbolVal;
 
-          if( ![ppdData scanString: @"^" 
+          if (![ppdData scanString: @"^" 
                         intoString: NULL])
             {
               [NSException raise: NSPPDParseException
@@ -1043,7 +1043,7 @@ static NSMutableDictionary* printerCache;
           [ppdData scanUpToString: @"\""          /*"*/
                        intoString: &symbolVal];
                  
-          if ( !symbolVal )
+          if (!symbolVal)
             symbolVal = @"";
       
           [ppdData scanString: @"\""             /*"*/
@@ -1096,7 +1096,7 @@ static NSMutableDictionary* printerCache;
   [ppdData scanUpToCharactersFromSet: optKeyEndSet 
                           intoString: &optionKeyword];
 
-  if( [ppdData scanCharactersFromSet: newlineSet 
+  if ([ppdData scanCharactersFromSet: newlineSet 
                           intoString: NULL])
     {
       [NSException raise: NSPPDParseException
@@ -1104,8 +1104,8 @@ static NSMutableDictionary* printerCache;
        ppdPath];
     }
 
-  if( [ppdData scanString: @"/" 
-               intoString: NULL] )
+  if ([ppdData scanString: @"/" 
+               intoString: NULL])
     {
       // Option keyword translation exists - scan it
       [ppdData scanUpToString: @":" 
@@ -1118,13 +1118,13 @@ static NSMutableDictionary* printerCache;
   // Read the value part
   // Values starting with a " are read until the second ", ignoring \n etc.
   
-  if( [ppdData scanString: @"\""             /*"*/
-               intoString: NULL] )
+  if ([ppdData scanString: @"\""             /*"*/
+               intoString: NULL])
     {
       [ppdData scanUpToString: @"\""         /*"*/
                    intoString: &value];
                    
-      if ( !value )
+      if (!value)
         value = @"";
         
       [ppdData scanString: @"\""             /*"*/
@@ -1132,7 +1132,7 @@ static NSMutableDictionary* printerCache;
                
       // It is a QuotedValue if it's in quotes, and there is no option
       // key, or the main key is a *JCL keyword
-      if ( !optionKeyword || [[mainKeyword substringToIndex:3]
+      if (!optionKeyword || [[mainKeyword substringToIndex:3]
                                isEqualToString: @"JCL"])
         {
           value = [self interpretQuotedValue: value];
@@ -1145,8 +1145,8 @@ static NSMutableDictionary* printerCache;
                               intoString: &value];
     }
   // If there is a value translation, scan it
-  if( [ppdData scanString: @"/" 
-               intoString: NULL] )
+  if ([ppdData scanString: @"/" 
+               intoString: NULL])
     {
       [ppdData scanUpToCharactersFromSet: newlineSet
                               intoString: &valueTranslation];
@@ -1165,15 +1165,15 @@ static NSMutableDictionary* printerCache;
   // If a keyword is read twice, 'first instance is correct', according to
   // the standard.
   // Finally, add the strings to the tables
-  if( optionKeyword )
+  if (optionKeyword)
     {
       NSString *mainAndOptionKeyword;
 
       mainAndOptionKeyword=[mainKeyword stringByAppendingFormat: @"/%@",
                             optionKeyword];
                
-      if( [self isKey: mainAndOptionKeyword 
-              inTable: @"PPD"] )
+      if ([self isKey: mainAndOptionKeyword 
+              inTable: @"PPD"])
         {
           return;
         }
@@ -1190,7 +1190,7 @@ static NSMutableDictionary* printerCache;
       // option keywords.
       // This is done by making the first item in the array an empty
       // string, which will be skipped by stringListForKey:, if necessary
-      if( ![[_tables objectForKey: @"PPD"] objectForKey: mainKeyword] )
+      if (![[_tables objectForKey: @"PPD"] objectForKey: mainKeyword])
         {
           [self addString: @"" 
                    forKey: mainKeyword 
@@ -1213,9 +1213,9 @@ static NSMutableDictionary* printerCache;
     }
   else
     {
-      if( [self isKey: mainKeyword 
+      if ([self isKey: mainKeyword 
               inTable: @"PPD"] && 
-         ![repKeys containsObject: mainKeyword] )
+         ![repKeys containsObject: mainKeyword])
         {
           return;
         }
@@ -1237,8 +1237,8 @@ static NSMutableDictionary* printerCache;
   NSString* optionKey2 = nil;
 
   // UIConstraint should have no option keyword
-  if( ![constraint scanString: @":" 
-                   intoString: NULL] )
+  if (![constraint scanString: @":" 
+                   intoString: NULL])
     {
       [NSException raise:NSPPDParseException
        format:@"UIConstraints has option keyword in PPD File %@",
@@ -1253,8 +1253,8 @@ static NSMutableDictionary* printerCache;
   [constraint scanUpToCharactersFromSet: [NSCharacterSet whitespaceCharacterSet]
                              intoString: &mainKey1];
 
-  if( ![constraint scanString: @"*" 
-                   intoString: NULL] )
+  if (![constraint scanString: @"*" 
+                   intoString: NULL])
     {
       [constraint scanUpToCharactersFromSet: [NSCharacterSet whitespaceCharacterSet]
 		                     intoString: &optionKey1];
@@ -1268,7 +1268,7 @@ static NSMutableDictionary* printerCache;
               [NSCharacterSet whitespaceAndNewlineCharacterSet]
                              intoString: &mainKey2];
                             
-  if( ![constraint scanCharactersFromSet: newlineSet 
+  if (![constraint scanCharactersFromSet: newlineSet 
                               intoString: NULL])
     {
       [constraint scanUpToCharactersFromSet: 
@@ -1281,7 +1281,7 @@ static NSMutableDictionary* printerCache;
     }
 
   // Add to table
-  if( optionKey1 )
+  if (optionKey1)
     mainKey1 = [mainKey1 stringByAppendingFormat: @"/%@", optionKey1];
     
   [self addString: mainKey2
@@ -1305,7 +1305,7 @@ static NSMutableDictionary* printerCache;
   NSString *optionKeyword = nil;
 
   // Order dependency should have no option keyword
-  if( ![dependency scanString: @":" 
+  if (![dependency scanString: @":" 
                    intoString: NULL])
     {
       [NSException raise: NSPPDParseException
@@ -1326,7 +1326,7 @@ static NSMutableDictionary* printerCache;
               [NSCharacterSet whitespaceAndNewlineCharacterSet]
                              intoString: &keyword];
                             
-  if( ![dependency scanCharactersFromSet: newlineSet 
+  if (![dependency scanCharactersFromSet: newlineSet 
                               intoString: NULL])
     {
       // Optional keyword exists
@@ -1340,7 +1340,7 @@ static NSMutableDictionary* printerCache;
                          intoString: NULL];
                          
   // Add to table
-  if(optionKeyword)
+  if (optionKeyword)
     keyword = [keyword stringByAppendingFormat: @"/%@", optionKeyword];
     
   [self addString: realValue 
@@ -1366,14 +1366,14 @@ static NSMutableDictionary* printerCache;
            forKey: key 
           inTable: @"PPD"];
 
-  if(valueTranslation)
+  if (valueTranslation)
     {
       [self addString: valueTranslation 
                forKey: key
               inTable: @"PPDArgumentTranslation"];
     }
 
-  if(optionTranslation)
+  if (optionTranslation)
     {
       [self addString: optionTranslation 
                forKey: key
@@ -1396,12 +1396,12 @@ static NSMutableDictionary* printerCache;
 
   tableObj = [_tables objectForKey: table];
 
-  if( tableObj == nil )
-      NSDebugMLLog( @"GSPrinting", @"Could not find table %@!", table);
+  if (tableObj == nil)
+      NSDebugMLLog(@"GSPrinting", @"Could not find table %@!", table);
 
   array = (NSMutableArray*)[tableObj objectForKey:key];
 
-  if( array == nil ) //it does not exist, create it
+  if (array == nil) //it does not exist, create it
     {
       array = [NSMutableArray array];
       [tableObj setObject: array
@@ -1428,22 +1428,22 @@ static NSMutableDictionary* printerCache;
 
   // Don't bother unless there's something to convert
   range = [qString rangeOfString: @"<"];
-  if( !range.length )
+  if (!range.length)
     return qString;
 
   scanner = [NSScanner scannerWithString: qString];
   emptySet = [NSCharacterSet characterSetWithCharactersInString: @""];
   [scanner setCharactersToBeSkipped: emptySet];  
 
-  if( ![scanner scanUpToString: @"<" 
-                    intoString: &value] )
+  if (![scanner scanUpToString: @"<" 
+                    intoString: &value])
     {
       value = [NSString string];
     }
 
   stringLength = [qString length];
 
-  while ( ![scanner isAtEnd] ) 
+  while (![scanner isAtEnd]) 
     {
       [scanner scanString: @"<" 
                intoString: NULL];
@@ -1451,11 +1451,11 @@ static NSMutableDictionary* printerCache;
     [scanner scanCharactersFromSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]
                         intoString: NULL];
 
-    while( ![scanner scanString: @">" 
+    while (![scanner scanString: @">" 
                      intoString: NULL])
       {
         location = [scanner scanLocation];
-        if( location+2 > stringLength )
+        if (location+2 > stringLength)
           {
 	      [NSException raise: NSPPDParseException
                         format: @"Badly formatted hexadecimal substring in \
@@ -1472,7 +1472,7 @@ static NSMutableDictionary* printerCache;
                             intoString: NULL];
       }
 
-    if([scanner scanUpToString:@"<" intoString:&part])
+    if ([scanner scanUpToString:@"<" intoString:&part])
       {
         value = [value stringByAppendingString: part];
       }

@@ -661,7 +661,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   unsigned i;
 
   i = [_reps count];
-  while(i--) 
+  while (i--) 
     {
       GSRepData	*repd;
 

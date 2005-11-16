@@ -131,7 +131,7 @@ static Class defaultCellClass = nil;
   
   [[NSNotificationCenter defaultCenter]
     addObserver: self
-    selector: @selector(_setTitleWidthNeedsUpdate: )
+    selector: @selector(_setTitleWidthNeedsUpdate:)
     name: _NSFormCellDidChangeTitleWidthNotification
     object: newCell];
 }

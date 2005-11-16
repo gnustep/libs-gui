@@ -49,7 +49,7 @@ GSSpellServerName(NSString *vendor, NSString *language)
 {
   NSString *serverName = nil;
   
-  if(language == nil || vendor == nil) 
+  if (language == nil || vendor == nil) 
     {
       return nil;
     }
@@ -111,13 +111,13 @@ GSSpellServerName(NSString *vendor, NSString *language)
   NSConnection *connection = nil;
   BOOL result = NO;
 
-  if(serverName == nil)
+  if (serverName == nil)
     {
       return NO;
     }
 
   connection = [[NSConnection alloc] init];
-  if(connection)
+  if (connection)
     {
       RETAIN(connection);
       [connection setRootObject: self];
@@ -188,12 +188,12 @@ GSSpellServerName(NSString *vendor, NSString *language)
       
       if (![mgr fileExistsAtPath: path ])
 	{
-	  if([mgr fileExistsAtPath: dirPath])
+	  if ([mgr fileExistsAtPath: dirPath])
 	    {
 	      // The directory exists create the file.
 	      NSArray *emptyDict = [NSArray array];
 
-	      if(![emptyDict writeToFile: path atomically: YES])
+	      if (![emptyDict writeToFile: path atomically: YES])
 		{
 		  NSLog(@"Failed to create %@",path);
 		  path = nil;
@@ -202,12 +202,12 @@ GSSpellServerName(NSString *vendor, NSString *language)
 	  else
 	    {
 	      // The directory does not exist create it.
-	      if([mgr createDirectoryAtPath: dirPath attributes: nil])
+	      if ([mgr createDirectoryAtPath: dirPath attributes: nil])
 		{
 		  // Directory created. Now create the empty file.
 		  NSArray *emptyDict = [NSArray array];
 		  
-		  if(![emptyDict writeToFile: path atomically: YES])
+		  if (![emptyDict writeToFile: path atomically: YES])
 		    {
 		      NSLog(@"Failed to create %@",path);
 		      path = nil;
@@ -232,12 +232,12 @@ GSSpellServerName(NSString *vendor, NSString *language)
   NSString *path = nil;
   NSMutableSet *words = nil;
 
-  if((words = [_userDictionaries objectForKey: language]) == nil)
+  if ((words = [_userDictionaries objectForKey: language]) == nil)
     {
-      if((path = [self _pathToDictionary: language]) != nil)
+      if ((path = [self _pathToDictionary: language]) != nil)
 	{
 	  NSArray *wordarray = [NSArray arrayWithContentsOfFile: path];
-	  if(wordarray == nil)
+	  if (wordarray == nil)
 	    {
 	      NSLog(@"Unable to load user dictionary from path %@",path);
 	    }
@@ -268,23 +268,23 @@ GSSpellServerName(NSString *vendor, NSString *language)
   NSEnumerator *setEnumerator = nil;
 
   // Catch the odd cases before they start trouble later on...
-  if(word == nil || dict == nil) 
+  if (word == nil || dict == nil) 
     {
       return NO; // avoid checking, if NIL.
     }
 
-  if([word length] == 0 || [dict count] == 0) 
+  if ([word length] == 0 || [dict count] == 0) 
     {
       return NO; // avoid checking, if has no length. 
     }
 
   // Check the dictionary for the word...
   setEnumerator = [dict objectEnumerator];
-  while((dictWord = [setEnumerator nextObject]) && result == NO)
+  while ((dictWord = [setEnumerator nextObject]) && result == NO)
     {
       // If the case is important then uppercase both strings
       // and compare, otherwise do the comparison.
-      if(flag == NO)
+      if (flag == NO)
 	{
 	  NSString *upperWord = [word uppercaseString];
 	  NSString *upperDictWord = [dictWord uppercaseString];
@@ -297,16 +297,16 @@ GSSpellServerName(NSString *vendor, NSString *language)
 	}
     }
 
-  if(result == NO && _ignoredWords)
+  if (result == NO && _ignoredWords)
     {
       NSEnumerator *arrayEnumerator = [_ignoredWords objectEnumerator];
       NSString *iword = nil;
 
-      while((iword = [arrayEnumerator nextObject]) && result == NO)
+      while ((iword = [arrayEnumerator nextObject]) && result == NO)
 	{
 	  // If the case is important then uppercase both strings
 	  // and compare, otherwise do the comparison.
-	  if(flag == NO)
+	  if (flag == NO)
 	    {
 	      NSString *upperWord = [word uppercaseString];
 	      NSString *upperIWord = [iword uppercaseString];
@@ -334,7 +334,7 @@ is a set of words learned by the spell service for that particular user.
   NSSet *userDict = [self _openUserDictionary: _currentLanguage];
   BOOL result = NO;
 
-  if(userDict)
+  if (userDict)
     {
       result = [self _isWord: word
 	        inDictionary: userDict
@@ -349,10 +349,10 @@ is a set of words learned by the spell service for that particular user.
 {
   NSString *path = nil;
 
-  if((path = [self _pathToDictionary: language]) != nil)
+  if ((path = [self _pathToDictionary: language]) != nil)
     {
       NSMutableSet *set = [_userDictionaries objectForKey: language];      
-      if(![[set allObjects] writeToFile: path atomically: YES])
+      if (![[set allObjects] writeToFile: path atomically: YES])
 	{
 	  NSLog(@"Unable to save dictionary to path %@",path);
 	  return NO;

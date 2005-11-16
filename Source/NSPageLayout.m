@@ -232,7 +232,7 @@ enum {
 
   principalClass = [[GSPrinting printingBundle] principalClass];
 
-  if( principalClass == nil )
+  if (principalClass == nil)
     return nil;
 	
   return [[principalClass pageLayoutClass] allocWithZone: zone];
@@ -481,13 +481,13 @@ enum {
     
     customPapers = [globalDomain objectForKey: @"GSPageLayoutCustomPaperSizes"];
     
-    if( customPapers )
+    if (customPapers)
       {
         customPapers = [customPapers mutableCopy];
       }
     else
       {
-        customPapers = RETAIN( [NSMutableDictionary dictionary] );
+        customPapers = RETAIN([NSMutableDictionary dictionary]);
       }
   } 
 
@@ -499,7 +499,7 @@ enum {
   //an ivar.
   {
     int n;
-    for( n = 100; n <= 105; n++ )
+    for (n = 100; n <= 105; n++)
       {
         NSTextField *textField;
         textField = [[[tabView tabViewItemAtIndex:1] view] viewWithTag: n];
@@ -522,8 +522,8 @@ enum {
 
 -(void) dealloc
 {
-  RELEASE( customPapers );
-  RELEASE( measurementString );
+  RELEASE(customPapers);
+  RELEASE(measurementString);
 
   [super release];
 }
@@ -576,7 +576,7 @@ enum {
 
 -(void) paperRadioMatrixClicked: (id) sender
 {
-  if( [sender selectedRow] == 0) //Standard Paper Sizes
+  if ([sender selectedRow] == 0) //Standard Paper Sizes
     {
       [customPaperSizePopUp   setEnabled: NO];
       [standardPaperSizePopUp setEnabled: YES];
@@ -616,29 +616,29 @@ enum {
   string = [defaults objectForKey: @"NSMeasurementUnit"];
   NSLog(@"NSMeasurementUnit is %@", string);
 
-  if( string == nil ) //default to cm, most of the world is metric...
+  if (string == nil) //default to cm, most of the world is metric...
     {
       measurementString = @"cm";
       factorValue = 2.54/72.0;
     }
   else
     {
-      if( [string caseInsensitiveCompare: @"CENTIMETERS"] == NSOrderedSame )
+      if ([string caseInsensitiveCompare: @"CENTIMETERS"] == NSOrderedSame)
         {
           measurementString = @"cm";
           factorValue = 2.54/72.0;
         }
-      else if( [string caseInsensitiveCompare: @"INCHES"] == NSOrderedSame )
+      else if ([string caseInsensitiveCompare: @"INCHES"] == NSOrderedSame)
         {
           measurementString = @"in";
           factorValue = 1.0/72.0;
         }
-      else if( [string caseInsensitiveCompare: @"POINTS"] == NSOrderedSame )
+      else if ([string caseInsensitiveCompare: @"POINTS"] == NSOrderedSame)
         {
           measurementString = @"pt";
           factorValue = 1.0;
         }
-      else if( [string caseInsensitiveCompare: @"PICAS"] == NSOrderedSame )
+      else if ([string caseInsensitiveCompare: @"PICAS"] == NSOrderedSame)
         {
           measurementString = @"pi";
           factorValue = 1.0/12.0;
@@ -668,7 +668,7 @@ enum {
   printer = [NSPrinter printerWithName: [printerPopUp titleOfSelectedItem]];
 
   //Get the paper name and size
-  if( [paperRadioMatrix selectedRow] == 0) //Standard Papers
+  if ([paperRadioMatrix selectedRow] == 0) //Standard Papers
     {
       paperName = [standardPaperSizePopUp titleOfSelectedItem];
       paperSize = [printer pageSizeForPaper: paperName];
@@ -715,7 +715,7 @@ enum {
 
 -(void) setPrintInfo:(NSPrintInfo*)printInfo
 {
-  ASSIGN( _printInfo, printInfo);
+  ASSIGN(_printInfo, printInfo);
 }
 
 -(NSView*) accessoryView
@@ -725,7 +725,7 @@ enum {
 
 -(void) setAccessoryView:(NSView*)accessoryView
 {
-  ASSIGN( _accessoryView, accessoryView);
+  ASSIGN(_accessoryView, accessoryView);
 }
 
 
@@ -744,7 +744,7 @@ enum {
   
   //Fill in the printers
   printerNames = [NSPrinter printerNames];
-  if( [printerNames count] == 0 )  //NO PRINTERS
+  if ([printerNames count] == 0)  //NO PRINTERS
     {
       [printerPopUp addItemWithTitle: @"(none)"];
       [printerPopUp setEnabled: NO];
@@ -786,7 +786,7 @@ enum {
   NSString *paperName;
   NSNumber *scaleNumber; 
 
-  NSLog( @"readPrintInfo: %@", [[_printInfo dictionary] description]);
+  NSLog(@"readPrintInfo: %@", [[_printInfo dictionary] description]);
 
   printer = [_printInfo printer];
 
@@ -795,15 +795,15 @@ enum {
   //set the paper.  Try to set the custom paper first.
   paperName = [_printInfo paperName];
 
-  if(([customPaperSizePopUp isEnabled] == YES) &&
-     ([customPaperSizePopUp indexOfItemWithTitle: paperName] != -1 ))
+  if (([customPaperSizePopUp isEnabled] == YES) &&
+     ([customPaperSizePopUp indexOfItemWithTitle: paperName] != -1))
     {
       [paperRadioMatrix selectCellAtRow: 1
                                  column: 0];
 
       [customPaperSizePopUp selectItemWithTitle: paperName]; 
     }
-  else if( [standardPaperSizePopUp isEnabled] == YES)
+  else if ([standardPaperSizePopUp isEnabled] == YES)
     {
       [paperRadioMatrix selectCellAtRow: 0
                                  column: 0];
@@ -812,7 +812,7 @@ enum {
     }
 
   //set the orientation
-  if( [_printInfo orientation] == NSPortraitOrientation)
+  if ([_printInfo orientation] == NSPortraitOrientation)
     {
       [paperOrientationMatrix selectCellAtRow: 0 
                                        column: 0];
@@ -846,7 +846,7 @@ enum {
   NSNumber *scaleNumber;
 
   //Write printer object
-  if( [printerPopUp isEnabled] == NO) //NO PRINTERS
+  if ([printerPopUp isEnabled] == NO) //NO PRINTERS
     {
       printer = nil;
     }
@@ -857,13 +857,13 @@ enum {
   [_printInfo setPrinter: printer];
 
   //write paper name
-  if(([paperRadioMatrix selectedRow] == 0) &&
+  if (([paperRadioMatrix selectedRow] == 0) &&
      ([standardPaperSizePopUp isEnabled] == YES)) //standard paper sizes
     {
       paperName = [standardPaperSizePopUp titleOfSelectedItem];
       [_printInfo setPaperName: paperName];
     }
-  else if(([paperRadioMatrix selectedRow] == 1) &&
+  else if (([paperRadioMatrix selectedRow] == 1) &&
      ([customPaperSizePopUp isEnabled] == YES)) //custom paper size
     {
      NSDictionary *customPaper;
@@ -896,7 +896,7 @@ enum {
     }
   
   //Write orientation
-  if( [paperOrientationMatrix selectedColumn] == 0)
+  if ([paperOrientationMatrix selectedColumn] == 0)
     {
       [_printInfo setOrientation: NSPortraitOrientation];
     }
@@ -910,7 +910,7 @@ enum {
   [[_printInfo dictionary] setObject: scaleNumber
                               forKey: NSPrintScalingFactor];
 
-  NSLog( @"writePrintInfo: %@", [[_printInfo dictionary] description]);
+  NSLog(@"writePrintInfo: %@", [[_printInfo dictionary] description]);
 }
 
 
@@ -943,7 +943,7 @@ enum {
 //NSTableView datasource handlers
 -(int) numberOfRowsInTableView:(NSTableView*) tableView
 {
-  if( tableView == customPaperTableView)
+  if (tableView == customPaperTableView)
     {
       return [customPapers count];
     }
@@ -958,16 +958,16 @@ enum {
       objectValueForTableColumn: (NSTableColumn*) tableColumn
                             row: (int) index
 {
-  if( tableView == customPaperTableView)
+  if (tableView == customPaperTableView)
     {
       
       return [[customPapers allKeys] objectAtIndex: index];
     }
   else  //summaryTableView
     {
-      if( tableColumn == summarySettingColumn )
+      if (tableColumn == summarySettingColumn)
         {
-          switch( index )
+          switch(index)
             {
               case 0:  return @"Name";
               case 1:  return @"Dimensions";
@@ -991,7 +991,7 @@ enum {
           printerName = [printerPopUp titleOfSelectedItem];
           printer = [NSPrinter printerWithName: printerName];
 
-          if( [paperRadioMatrix selectedRow] == 0 ) //standard papers
+          if ([paperRadioMatrix selectedRow] == 0) //standard papers
             {
               NSRect imageRect;
               NSSize paperSize;
@@ -1017,14 +1017,14 @@ enum {
               rightMargin  = [[customPapers objectForKey: @"RightMargin"]
                                doubleValue];
             }
-          switch( index )
+          switch(index)
             {    
               case 0:  
                 return paperName;
               case 1:
                 return [dimensionsTextField stringValue];
               case 2:
-                if( [paperOrientationMatrix selectedColumn] == 0)
+                if ([paperOrientationMatrix selectedColumn] == 0)
                   {
                     return @"Portrait";
                   }
@@ -1058,7 +1058,7 @@ enum {
 -(void)          tabView: (NSTabView*) tabView
    willSelectTabViewItem: (NSTabViewItem*) tabViewItem
 {
-  if( tabViewItem == summaryTabViewItem )
+  if (tabViewItem == summaryTabViewItem)
     {
       [summaryTableView sizeToFit];
     }
@@ -1109,7 +1109,7 @@ enum {
   //Figure out if we we should scale according to the
   //the width or the height
   //
-  if( _paperSize.width >= _paperSize.height)
+  if (_paperSize.width >= _paperSize.height)
     {
       ratio = _paperSize.height/ _paperSize.width;
       width  = bounds.size.width;
@@ -1132,7 +1132,7 @@ enum {
   paper.size.height = height;
   
   shadow = paper;
-  if( [self isFlipped] == NO)
+  if ([self isFlipped] == NO)
     shadow.origin.y -= 2;
   else
     shadow.origin.y += 2;
@@ -1152,7 +1152,7 @@ enum {
   [NSBezierPath strokeRect: paper];
 
   //Draw the margins?
-  if( _drawsMargins == YES )
+  if (_drawsMargins == YES)
     {
       NSRect margins;
       double scale;

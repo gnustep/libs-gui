@@ -497,7 +497,7 @@ static NSLock *_gnustep_color_list_lock = nil;
    */
   if (path_is_standard && ([fm fileExistsAtPath: path] == NO))
     {
-      if([fm createDirectoryAtPath: path 
+      if ([fm createDirectoryAtPath: path 
 			attributes: nil])
 	{
 	  NSLog (@"Created standard directory %@", path);

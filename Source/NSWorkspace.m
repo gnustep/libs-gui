@@ -305,13 +305,13 @@ static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
  *   NSTypes = (
  *     {
  *       NSIcon = "tiff.tiff";
- *       NSUnixExtensions = ( tiff, tif );
+ *       NSUnixExtensions = (tiff, tif);
  *     },
  *     {
  *       NSIcon = "xbm.tiff";
- *       NSUnixExtensions = ( xbm );
+ *       NSUnixExtensions = (xbm);
  *     }
- *   );
+ *);
  * }
  * </example>
  */

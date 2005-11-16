@@ -85,7 +85,7 @@ static NSPrintPanel *shared_instance;
 
   principalClass = [[GSPrinting printingBundle] principalClass];
 
-  if( principalClass == nil )
+  if (principalClass == nil)
     return nil;
 	
   return [[principalClass printPanelClass] allocWithZone: zone];
@@ -273,7 +273,7 @@ static NSPrintPanel *shared_instance;
     {
       _picked = NSPPPreviewButton;
     }
-  else if (tag ==NSFaxButton )
+  else if (tag ==NSFaxButton)
     {
       _picked = NSFaxButton;
       NSRunAlertPanel(@"Sorry", @"Faxing of print file not implemented", 

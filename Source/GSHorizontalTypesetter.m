@@ -258,7 +258,7 @@ including gi will have been cached.
       if (g->g == NSControlGlyph)
 	return gi + cache_base;
       ch = [str characterAtIndex: g->char_index];
-      if (ch == 0x20 || ch == 0x0a || ch == 0x0d /* TODO: paragraph/line separator */ )
+      if (ch == 0x20 || ch == 0x0a || ch == 0x0d /* TODO: paragraph/line separator */)
 	{
 	  g->dont_show = YES;
 	  if (gi > 0)

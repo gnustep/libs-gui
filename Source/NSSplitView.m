@@ -514,7 +514,7 @@ static NSNotificationCenter *nc = nil;
 			  inMode: NSEventTrackingRunLoopMode
 			  dequeue: YES];
 	      }
-	    while(ee != nil);
+	    while (ee != nil);
 	  }
       }
       
@@ -883,7 +883,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 #define SET_DELEGATE_NOTIFICATION(notif_name) \
   if ([_delegate respondsToSelector: @selector(splitView##notif_name:)]) \
     [nc addObserver: _delegate \
-	   selector: @selector(splitView##notif_name: ) \
+	   selector: @selector(splitView##notif_name:) \
 	       name: NSSplitView##notif_name##Notification \
 	     object: self]
 

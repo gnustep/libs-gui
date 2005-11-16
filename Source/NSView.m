@@ -892,7 +892,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 /**
  * Notifies the receiver that it will now be a view of newWindow.
  * Note, this method is also used when removing a view from a window
- * (in which case, newWindow is nil ) to let all the subviews know
+ * (in which case, newWindow is nil) to let all the subviews know
  * that they have also been removed from the window.
  */
 - (void) viewWillMoveToWindow: (NSWindow*)newWindow
@@ -3884,7 +3884,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       int vFlags = 0;
 
@@ -3902,13 +3902,13 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       vFlags = _autoresizingMask;
 
       // add the autoresize flag.
-      if(_autoresizes_subviews)
+      if (_autoresizes_subviews)
 	{
 	  vFlags |= 0x100;
 	}
 
       // add the hidden flag
-      if(_is_hidden)
+      if (_is_hidden)
 	{
 	  vFlags |= 0x80000000;
 	}

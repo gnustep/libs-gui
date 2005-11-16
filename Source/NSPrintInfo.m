@@ -84,7 +84,7 @@ static NSPrintInfo *sharedPrintInfo = nil;
 
   principalClass = [[GSPrinting printingBundle] principalClass];
 
-  if( principalClass == nil )
+  if (principalClass == nil)
     return nil;
 	
   return [[principalClass printInfoClass] allocWithZone: zone];
@@ -124,7 +124,7 @@ static NSPrintInfo *sharedPrintInfo = nil;
 
   principalClass = [[GSPrinting printingBundle] principalClass];
 
-  if( principalClass == nil )
+  if (principalClass == nil)
     return nil;
 	
   return [[principalClass printInfoClass] defaultPrinter];
@@ -136,7 +136,7 @@ static NSPrintInfo *sharedPrintInfo = nil;
 
   principalClass = [[GSPrinting printingBundle] principalClass];
 
-  if( principalClass == nil )
+  if (principalClass == nil)
     return;
 	
   [[principalClass printInfoClass] setDefaultPrinter: printer];
@@ -195,18 +195,18 @@ static NSPrintInfo *sharedPrintInfo = nil;
 
   
   
-  if( aDict != nil )
+  if (aDict != nil)
     {
       [_info addEntriesFromDictionary: aDict];
   
-      if([[_info objectForKey: NSPrintPrinter] isKindOfClass: [NSString class]])
+      if ([[_info objectForKey: NSPrintPrinter] isKindOfClass: [NSString class]])
         {
           NSString *printerName;
       
           printerName = [_info objectForKey: NSPrintPrinter];
           printer = [NSPrinter printerWithName: printerName];
           
-          if( printer )
+          if (printer)
               [self setPrinter: printer];
           else
               [_info removeObjectForKey: NSPrintPrinter];
@@ -456,7 +456,7 @@ static NSPrintInfo *sharedPrintInfo = nil;
   printerName = [_info objectForKey: NSPrintPrinter];
   printer = [NSPrinter printerWithName: printerName];
   
-  if( printer )
+  if (printer)
     [self setPrinter: printer];
   else
     [_info removeObjectForKey: NSPrintPrinter]; 

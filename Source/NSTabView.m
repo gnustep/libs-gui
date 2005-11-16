@@ -667,7 +667,7 @@
     {
       NSTabViewItem *anItem = [_items objectAtIndex: i];
 
-      if(NSPointInRect(point,[anItem _tabRect]))
+      if (NSPointInRect(point,[anItem _tabRect]))
 	return anItem;
     }
 

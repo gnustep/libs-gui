@@ -53,7 +53,7 @@
 {
   Class glPixelFormatClass = [GSCurrentServer() glPixelFormatClass];
 
-  if ( glPixelFormatClass == nil )
+  if (glPixelFormatClass == nil)
     {
       NSWarnMLog(@"Backend doesn't have any glPixelFormatClass");
       return nil;
@@ -67,7 +67,7 @@
 
 // + (void) initialize
 // {
-//   if ( self == [NSOpenGLPixelFormat class] )
+//   if (self == [NSOpenGLPixelFormat class])
 //     {
 //       temp = (GSGLPixelFormat *) NSAllocateObject([GSGLPixelFormat class], 0, 
 // 						  NSDefaultMallocZone());
@@ -77,7 +77,7 @@
 + allocWithZone: (NSZone *) z
 {
   Class c = [self _classPixelFormat];
-  if ( c )
+  if (c)
     return NSAllocateObject(c, 0, z);
   else
     return nil;

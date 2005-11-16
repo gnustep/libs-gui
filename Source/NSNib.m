@@ -67,10 +67,10 @@
   ASSIGN(newFileName, fileName);
 
   // detect if it's a directory or not...
-  if([mgr fileExistsAtPath: fileName isDirectory: &isDir])
+  if ([mgr fileExistsAtPath: fileName isDirectory: &isDir])
     {
       // if the data is in a directory, then load from objects.gorm in the directory
-      if(isDir == YES)
+      if (isDir == YES)
 	{
 	  newFileName = [fileName stringByAppendingPathComponent: @"objects.gorm"];
 	}
@@ -115,7 +115,7 @@
 {
   NSMutableDictionary *ctx = nil;
 
-  if(dict != nil)
+  if (dict != nil)
     {
       id obj = nil;
 
@@ -124,7 +124,7 @@
 
       // remove and set the owner...
       obj = [ctx objectForKey: @"NSNibOwner"];
-      if(obj != nil)
+      if (obj != nil)
 	{
 	  [ctx removeObjectForKey: @"NSNibOwner"];
 	  [ctx setObject: obj forKey: @"NSOwner"];
@@ -132,7 +132,7 @@
 
       // Remove and set the top level objects...
       obj = [ctx objectForKey: @"NSNibTopLevelObjects"];
-      if(obj != nil)
+      if (obj != nil)
 	{
 	  [ctx removeObjectForKey: @"NSNibTopLevelObjects"];
 	  [ctx setObject: obj forKey: @"NSTopLevelObjects"];
@@ -151,7 +151,7 @@
  */
 - (id)initWithContentsOfURL: (NSURL *)nibFileURL
 {
-  if((self = [super init]) != nil)
+  if ((self = [super init]) != nil)
     {
       // load the nib data into memory...
       _nibData = [NSData dataWithContentsOfURL: nibFileURL];
@@ -166,12 +166,12 @@
  */
 - (id)initWithNibNamed: (NSString *)nibNamed bundle: (NSBundle *)bundle
 {
-  if((self = [super init]) != nil)
+  if ((self = [super init]) != nil)
     {
       NSString *bundlePath = nil;
       NSString *fileName = nil;
 
-      if(bundle == nil)
+      if (bundle == nil)
 	{
 	  bundle = [NSBundle mainBundle];
 	}
@@ -265,7 +265,7 @@
   // add the necessary things to the table...
   [externalNameTable setObject: owner forKey: @"NSNibOwner"];
 
-  if(topLevelObjects != 0)
+  if (topLevelObjects != 0)
     {
       *topLevelObjects = [NSMutableArray array];
       [externalNameTable setObject: *topLevelObjects forKey: @"NSNibTopLevelObjects"];
@@ -276,7 +276,7 @@
 
 - (id) initWithCoder: (NSCoder *)coder
 {
-  if((self = [super init]) != nil)
+  if ((self = [super init]) != nil)
     {
       [coder decodeValueOfObjCType: @encode(id)
 	     at: &_nibData];

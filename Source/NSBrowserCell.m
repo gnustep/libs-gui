@@ -154,7 +154,7 @@ static NSFont *_leafFont;
 
 /**
  *<p>Returns the alternate image in the NSBrowserCell
- * ( used when the cell is highlighted ) </p>
+ * (used when the cell is highlighted) </p>
  *<p>See Also: -setAlternateImage:</p>
  */
 - (NSImage*) alternateImage
@@ -163,7 +163,7 @@ static NSFont *_leafFont;
 }
 
 /**
- *<p>Sets the altenate image ( used when the cell is highlighted )  to anImage 
+ *<p>Sets the altenate image (used when the cell is highlighted)  to anImage 
  *</p><p>See Also: -alternateImage</p>
  */
 - (void) setAlternateImage: (NSImage *)anImage

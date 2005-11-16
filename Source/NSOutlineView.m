@@ -165,7 +165,7 @@ static NSImage *unexpandable  = nil;
   NSFreeMapTable(_itemDict);
   NSFreeMapTable(_levelOfItems);
 
-  if(_autosaveExpandedItems)
+  if (_autosaveExpandedItems)
     {
       // notify when an item expands...
       [nc removeObserver: self
@@ -218,12 +218,12 @@ static NSImage *unexpandable  = nil;
   const SEL shouldSelector = @selector(outlineView:shouldCollapseItem:);
   BOOL canCollapse = YES;
 
-  if([_delegate respondsToSelector: shouldSelector])
+  if ([_delegate respondsToSelector: shouldSelector])
     {
       canCollapse = [_delegate outlineView: self shouldCollapseItem: item];
     }
 
-  if([self isExpandable: item] && [self isItemExpanded: item] && canCollapse)
+  if ([self isExpandable: item] && [self isItemExpanded: item] && canCollapse)
     {
       NSMutableDictionary *infoDict = [NSMutableDictionary dictionary];
       unsigned int row;
@@ -258,7 +258,7 @@ static NSImage *unexpandable  = nil;
 	  userInfo: infoDict];
       
       // recursively find all children and call this method to open them.
-      if(collapseChildren) // collapse all
+      if (collapseChildren) // collapse all
 	{
 	  NSMutableArray *allChildren = nil;
 	  int numchild = 0;
@@ -268,11 +268,11 @@ static NSImage *unexpandable  = nil;
 	  allChildren = NSMapGet(_itemDict, sitem);
 	  numchild = [allChildren count];
 
-	  for(index = 0;index < numchild;index++)
+	  for (index = 0;index < numchild;index++)
 	    {
 	      id child = [allChildren objectAtIndex: index];
 
-	      if([self isExpandable: child])
+	      if ([self isExpandable: child])
 		{
 		  [self collapseItem: child collapseChildren: collapseChildren];
 		}
@@ -303,16 +303,16 @@ static NSImage *unexpandable  = nil;
   const SEL shouldExpandSelector = @selector(outlineView:shouldExpandItem:);
   BOOL canExpand = YES;
 
-  if([_delegate respondsToSelector: shouldExpandSelector])
+  if ([_delegate respondsToSelector: shouldExpandSelector])
     {
       canExpand = [_delegate outlineView: self shouldExpandItem: item];
     }
 
   // if the item is expandable
-  if([self isExpandable: item])
+  if ([self isExpandable: item])
     {
       // if it is not already expanded and it can be expanded, then expand
-      if(![self isItemExpanded: item] && canExpand)
+      if (![self isItemExpanded: item] && canExpand)
 	{
 	  NSMutableDictionary *infoDict = [NSMutableDictionary dictionary];
 	  unsigned int row;
@@ -349,7 +349,7 @@ static NSImage *unexpandable  = nil;
 	}
 
       // recursively find all children and call this method to open them.
-      if(expandChildren) // expand all
+      if (expandChildren) // expand all
 	{
 	  NSMutableArray *allChildren = nil;
 	  int numchild = 0;
@@ -359,11 +359,11 @@ static NSImage *unexpandable  = nil;
 	  allChildren = NSMapGet(_itemDict, sitem);
 	  numchild = [allChildren count];
 
-	  for(index = 0;index < numchild;index++)
+	  for (index = 0;index < numchild;index++)
 	    {
 	      id child = [allChildren objectAtIndex: index];
 
-	      if([self isExpandable: child])
+	      if ([self isExpandable: child])
 		{
 		  [self expandItem: child expandChildren: expandChildren];
 		}
@@ -407,7 +407,7 @@ static NSImage *unexpandable  = nil;
  */
 - (BOOL)isItemExpanded: (id)item
 {
-  if(item == nil)
+  if (item == nil)
       return YES;
 
   // Check the array to determine if it is expanded.
@@ -427,7 +427,7 @@ static NSImage *unexpandable  = nil;
  */
 - (int)levelForItem: (id)item
 {
-  if(item != nil)
+  if (item != nil)
     {
       id object = NSMapGet(_levelOfItems, item);
       return [object intValue];
@@ -522,7 +522,7 @@ static NSImage *unexpandable  = nil;
 - (int)rowForItem: (id)item
 {
   int row;
-  if(item == nil)
+  if (item == nil)
     return -1;
 
   row = [_items indexOfObject: item];
@@ -546,13 +546,13 @@ static NSImage *unexpandable  = nil;
  */
 - (void)setAutosaveExpandedItems: (BOOL)flag
 {
-  if(flag == _autosaveExpandedItems)
+  if (flag == _autosaveExpandedItems)
     {
       return;
     }
 
   _autosaveExpandedItems = flag;
-  if(flag)
+  if (flag)
     {
       [self _autoloadExpandedItems];
       // notify when an item expands...
@@ -693,17 +693,17 @@ static NSImage *unexpandable  = nil;
 - (void) reloadData
 {
   // release the old array
-  if(_items != nil)
+  if (_items != nil)
     {
       RELEASE(_items); 
     }
 
-  if(_itemDict != NULL)
+  if (_itemDict != NULL)
     {
       NSFreeMapTable(_itemDict);
     }
 
-  if(_levelOfItems != NULL)
+  if (_levelOfItems != NULL)
     {
       NSFreeMapTable(_levelOfItems);
     }
@@ -859,7 +859,7 @@ static NSImage *unexpandable  = nil;
   /* Using columnAtPoint: here would make it called twice per row per drawn 
      rect - so we avoid it and do it natively */
 
-  if(rowIndex >= _numberOfRows)
+  if (rowIndex >= _numberOfRows)
     {
       return;
     }
@@ -906,7 +906,7 @@ static NSImage *unexpandable  = nil;
 	  drawingRect = [self frameOfCellAtColumn: i
 			      row: rowIndex];
 
-	  if(tb == _outlineTableColumn)
+	  if (tb == _outlineTableColumn)
 	    {
 	      NSImage *image = nil;
 	      int level = 0;
@@ -914,7 +914,7 @@ static NSImage *unexpandable  = nil;
 	      // float originalWidth = drawingRect.size.width;
 
 	      // display the correct arrow...
-	      if([self isItemExpanded: item])
+	      if ([self isItemExpanded: item])
 		{
 		  image = expanded;
 		}
@@ -923,7 +923,7 @@ static NSImage *unexpandable  = nil;
 		  image = collapsed;
 		}
 
-	      if(![self isExpandable: item])
+	      if (![self isExpandable: item])
 		{
 		  image = unexpandable;
 		}
@@ -932,7 +932,7 @@ static NSImage *unexpandable  = nil;
 	      indentationFactor = _indentationPerLevel * level;
 	      imageCell = [[NSCell alloc] initImageCell: image];
 
-	      if(_indentationMarkerFollowsCell)
+	      if (_indentationMarkerFollowsCell)
 		{
 		  imageRect.origin.x = drawingRect.origin.x + indentationFactor;
 		  imageRect.origin.y = drawingRect.origin.y;
@@ -952,7 +952,7 @@ static NSImage *unexpandable  = nil;
 		}
 	      
 	      /* Do not indent if the delegate set the image to nil. */
-	      if ( [imageCell image] )
+	      if ([imageCell image])
 		{
 		  imageRect.size.width = [image size].width;
 		  imageRect.size.height = [image size].height;
@@ -978,17 +978,17 @@ static NSImage *unexpandable  = nil;
 {
   int index = 0;
 
-  if(_autoResizesOutlineColumn)
+  if (_autoResizesOutlineColumn)
     {
       float widest = 0;
-      for(index = 0;index < _numberOfRows; index++)
+      for (index = 0;index < _numberOfRows; index++)
 	{
 	  float offset = [self levelForRow: index] * 
 	    [self indentationPerLevel];
 	  NSRect drawingRect = [self frameOfCellAtColumn: 0
 				     row: index];
 	  float length = drawingRect.size.width + offset;
-	  if(widest < length) widest = length;
+	  if (widest < length) widest = length;
 	}
       // [_outlineTableColumn setWidth: widest];
     }
@@ -1063,7 +1063,7 @@ static NSImage *unexpandable  = nil;
 
 
   if ((verticalQuarterPosition - oldProposedDropRow * 4 <= 2) &&
-      (verticalQuarterPosition - oldProposedDropRow * 4 >= -3) )
+      (verticalQuarterPosition - oldProposedDropRow * 4 >= -3))
     {
       row = oldProposedDropRow;
     }
@@ -1129,7 +1129,7 @@ static NSImage *unexpandable  = nil;
 	int i;
 	int j = 0;
 	int lvl;
-	for ( i = row - 1; i >= 0; i-- )
+	for (i = row - 1; i >= 0; i--)
 	  {
 	    lvl = [self levelForRow: i];
 	    if (lvl == level - 1)
@@ -1268,7 +1268,7 @@ static NSImage *unexpandable  = nil;
 	{
 	  int lvl, i, j = 0;
 	  
-	  for ( i = currentDropRow - 1; i >= 0; i-- )
+	  for (i = currentDropRow - 1; i >= 0; i--)
 	    {
 	      lvl = [self levelForRow: i];
 	      if (lvl == currentDropLevel - 1)
@@ -1410,7 +1410,7 @@ static NSImage *unexpandable  = nil;
   _textObject = [_editedCell setUpFieldEditorAttributes: t];
 
   // determine which image to use...
-  if([self isItemExpanded: item])
+  if ([self isItemExpanded: item])
     {
       image = expanded;
     }
@@ -1419,7 +1419,7 @@ static NSImage *unexpandable  = nil;
       image = collapsed;
     }
 
-  if(![self isExpandable: item])
+  if (![self isExpandable: item])
     {
       image = unexpandable;
     }
@@ -1428,7 +1428,7 @@ static NSImage *unexpandable  = nil;
 
   [self lockFocus];
 
-  if(tb == [self outlineTableColumn])
+  if (tb == [self outlineTableColumn])
     {
       level = [self levelForItem: item];
       indentationFactor = _indentationPerLevel * level;
@@ -1437,7 +1437,7 @@ static NSImage *unexpandable  = nil;
 
       // create the image cell..
       imageCell = [[NSCell alloc] initImageCell: image];
-      if(_indentationMarkerFollowsCell)
+      if (_indentationMarkerFollowsCell)
 	{
 	  imageRect.origin.x = drawingRect.origin.x + indentationFactor;
 	  imageRect.origin.y = drawingRect.origin.y;
@@ -1606,7 +1606,7 @@ static NSImage *unexpandable  = nil;
   NSMutableArray *itemArray = [NSMutableArray
 				arrayWithCapacity: count];
 
-  for ( i = 0; i < count; i++ )
+  for (i = 0; i < count; i++)
     {
       [itemArray addObject: 
 		   [self itemAtRow: 
@@ -1634,7 +1634,7 @@ static NSImage *unexpandable  = nil;
 {
   id result = nil;
 
-  if([_dataSource respondsToSelector:
+  if ([_dataSource respondsToSelector:
 		    @selector(outlineView:objectValueForTableColumn:byItem:)])
     {
       id item = [self itemAtRow: index];
@@ -1651,7 +1651,7 @@ static NSImage *unexpandable  = nil;
 	  forTableColumn: (NSTableColumn *)tb
 		     row: (int) index
 {
-  if([_dataSource respondsToSelector:
+  if ([_dataSource respondsToSelector:
 		    @selector(outlineView:setObjectValue:forTableColumn:byItem:)])
     {
       id item = [self itemAtRow: index];
@@ -1723,7 +1723,7 @@ static NSImage *unexpandable  = nil;
       id anitem = [anarray objectAtIndex: i];
 
       // Only collect the children if the item is expanded
-      if([self isItemExpanded: startitem])
+      if ([self isItemExpanded: startitem])
 	{
 	  [allChildren addObject: anitem];
 	}
@@ -1772,14 +1772,14 @@ static NSImage *unexpandable  = nil;
   numchildren = [removeAll count];
 
   // close the item...
-  if(item != nil)
+  if (item != nil)
     {
       [_expandedItems removeObject: item];
     }
 
   // For the close method it doesn't matter what order they are 
   // removed in.
-  for(i=0; i < numchildren; i++)
+  for (i=0; i < numchildren; i++)
     {
       id child = [removeAll objectAtIndex: i];
       [_items removeObject: child];
@@ -1798,13 +1798,13 @@ static NSImage *unexpandable  = nil;
   numchildren = [object count];
   
   // open the item...
-  if(item != nil)
+  if (item != nil)
     {
       [_expandedItems addObject: item];
     }
 
   insertionPoint = [_items indexOfObject: item];
-  if(insertionPoint == NSNotFound)
+  if (insertionPoint == NSNotFound)
     {
       insertionPoint = 0;
     }
@@ -1813,20 +1813,20 @@ static NSImage *unexpandable  = nil;
       insertionPoint++;
     }
 
-  for(i=numchildren-1; i >= 0; i--)
+  for (i=numchildren-1; i >= 0; i--)
     {
       id obj = NSMapGet(_itemDict, sitem);
       id child = [obj objectAtIndex: i];
 
       // Add all of the children...
-      if([self isItemExpanded: child])
+      if ([self isItemExpanded: child])
 	{
 	  NSMutableArray *insertAll = [NSMutableArray array];
 	  int i = 0, numitems = 0;
 
 	  [self _collectItemsStartingWith: child into: insertAll];
 	  numitems = [insertAll count];
- 	  for(i = numitems-1; i >= 0; i--)
+ 	  for (i = numitems-1; i >= 0; i--)
 	    {
 	      [_items insertObject: [insertAll objectAtIndex: i]
 		      atIndex: insertionPoint];

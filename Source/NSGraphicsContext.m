@@ -1351,7 +1351,7 @@ NSGraphicsContext	*GSCurrentContext(void)
   DPSsetdash(self, pattern, count, phase);
 
   count = [path elementCount];
-  for(i = 0; i < count; i++) 
+  for (i = 0; i < count; i++) 
     {
       type = [path elementAtIndex: i associatedPoints: pts];
       switch(type) 

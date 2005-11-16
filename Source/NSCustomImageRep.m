@@ -119,7 +119,7 @@
   ctxt = GSCurrentContext();
   
   // if either is zero, don't scale at all.
-  if(_size.width == 0 || _size.height == 0)
+  if (_size.width == 0 || _size.height == 0)
     {
       scale = NSMakeSize(NSWidth(aRect), 
 			 NSHeight(aRect));

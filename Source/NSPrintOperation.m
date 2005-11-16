@@ -879,7 +879,7 @@ scaleRect(NSRect rect, double scale)
     {
       viewPageRange = NSMakeRange(1, (info.xpages * info.ypages));
     }
-  [dict setObject: NSNUMBER(NSMaxRange(viewPageRange) )
+  [dict setObject: NSNUMBER(NSMaxRange(viewPageRange))
 	   forKey: @"NSPrintTotalPages"];
   if (allPages == YES)
     {
@@ -986,7 +986,7 @@ scaleRect(NSRect rect, double scale)
     } /* Print each page */
   
   /* Make sure we end the sheet */
-  if ( info.nup > 1 && (info.last - info.first) % info.nup != info.nup - 1 )
+  if (info.nup > 1 && (info.last - info.first) % info.nup != info.nup - 1)
     {
       [_view drawSheetBorderWithSize: info.paperBounds.size];
       [_view _endSheet];
@@ -1082,7 +1082,7 @@ scaleRect(NSRect rect, double scale)
   [self endPage];
 
   /* End a physical page */
-  if ( ((currentPage - info.first) % info.nup == info.nup-1) )
+  if (((currentPage - info.first) % info.nup == info.nup-1))
     {
       [self drawSheetBorderWithSize: info.paperBounds.size];
       [self _endSheet];

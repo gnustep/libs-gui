@@ -180,7 +180,7 @@
 
 - (void) helpRequested: (NSEvent*)theEvent
 {
-  if(![[NSHelpManager sharedHelpManager]
+  if (![[NSHelpManager sharedHelpManager]
 	showContextHelpForObject: self
 	locationHint: [theEvent locationInWindow]])
     if (_next_responder)
@@ -338,20 +338,20 @@
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
-      if(_interface_style != NSNoInterfaceStyle)
+      if (_interface_style != NSNoInterfaceStyle)
 	{
 	  [aCoder encodeInt: _interface_style
 		  forKey: @"NSInterfaceStyle"];
 	}
 
-      if([self menu] != nil)
+      if ([self menu] != nil)
 	{
 	  [aCoder encodeObject: [self menu]
 		  forKey: @"NSMenu"];	  
 	}
-      if([self nextResponder] != nil)
+      if ([self nextResponder] != nil)
 	{
 	  [aCoder encodeConditionalObject: [self nextResponder]
 		  forKey: @"NSNextResponder"];	  
@@ -369,19 +369,19 @@
 {
   id obj = nil;
 
-  if([aDecoder allowsKeyedCoding])
+  if ([aDecoder allowsKeyedCoding])
     {
-      if([aDecoder containsValueForKey: @"NSInterfaceStyle"])
+      if ([aDecoder containsValueForKey: @"NSInterfaceStyle"])
 	{
 	  _interface_style = [aDecoder decodeIntForKey: @"NSInterfaceStyle"];
 	}
 
-      if([aDecoder containsValueForKey: @"NSMenu"])
+      if ([aDecoder containsValueForKey: @"NSMenu"])
 	{
 	  obj = [aDecoder decodeObjectForKey: @"NSMenu"];
 	}
 
-      if([aDecoder containsValueForKey: @"NSNextResponder"])
+      if ([aDecoder containsValueForKey: @"NSNextResponder"])
 	{
 	  [self setNextResponder: [aDecoder decodeObjectForKey: @"NSNextResponder"]];
 	}

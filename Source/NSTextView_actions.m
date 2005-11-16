@@ -174,7 +174,7 @@ send -shouldChangeTextInRange:replacementString: or -didChangeText.
     return;
 
   [_textStorage beginEditing];
-  for (i = r.location; i < NSMaxRange(r); )
+  for (i = r.location; i < NSMaxRange(r);)
     {
       current = [_textStorage attribute: name
 				atIndex: i

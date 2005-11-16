@@ -289,7 +289,7 @@ makeScrollViewWithRect(NSRect rect)
   [button setButtonType: NSMomentaryPushButton];
   [button setTitle: @""];
   [button setTarget: self];
-  [button setAction: @selector(buttonAction: )];
+  [button setAction: @selector(buttonAction:)];
   [button setFont: [NSFont systemFontOfSize: 0]];
   return button;
 }
@@ -1334,7 +1334,7 @@ void NSBeginInformationalAlertSheet(NSString *title,
   [button setAutoresizingMask: NSViewMinXMargin | NSViewMaxYMargin];
   [button setButtonType: NSMomentaryPushButton];
   [button setTarget: self];
-  [button setAction: @selector(buttonAction: )];
+  [button setAction: @selector(buttonAction:)];
   [button setFont: [NSFont systemFontOfSize: 0]];
   if (count == 0)
     {

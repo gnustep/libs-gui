@@ -197,9 +197,9 @@ Helpers are here, the actual methods are in the main implementation. */
 
 
 #define SET_DELEGATE_NOTIFICATION(notif_name) \
-  if ([_delegate respondsToSelector: @selector(text##notif_name: )]) \
+  if ([_delegate respondsToSelector: @selector(text##notif_name:)]) \
     [notificationCenter addObserver: _delegate \
-           selector: @selector(text##notif_name: ) \
+           selector: @selector(text##notif_name:) \
                name: NSText##notif_name##Notification \
              object: _notifObject]
 
@@ -1534,7 +1534,7 @@ before this TODO can be removed
       [cv documentView] == self)
     {
       NSSize b = [cv bounds].size;
-      effectiveMinSize.width  = MAX(effectiveMinSize.width , b.width );
+      effectiveMinSize.width  = MAX(effectiveMinSize.width , b.width);
       effectiveMinSize.height = MAX(effectiveMinSize.height, b.height);
     }
 

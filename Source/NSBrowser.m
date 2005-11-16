@@ -1863,7 +1863,7 @@ static NSTextFieldCell *titleCell;
     
   a = [sender selectedCells];
   aCount = [a count];
-  if(aCount == 0)
+  if (aCount == 0)
     return;
 
   selectedCells = [a mutableCopy];
@@ -2277,7 +2277,7 @@ static NSTextFieldCell *titleCell;
       IMP lcarc = [self methodForSelector: lcarcSel];
 
       selectedColumn = [self selectedColumn];
-      if(selectedColumn != -1)
+      if (selectedColumn != -1)
 	{
 	  matrix = [self matrixInColumn: selectedColumn];
 	  n = [matrix numberOfRows];
@@ -2828,7 +2828,7 @@ static NSTextFieldCell *titleCell;
       // Get the selected cell
       // Use its string value as the title
       // Only if it is not a leaf
-      if(_allowsMultipleSelection == NO)
+      if (_allowsMultipleSelection == NO)
 	{
 	  c = [self selectedCellInColumn: column - 1];
 	}
@@ -2842,7 +2842,7 @@ static NSTextFieldCell *titleCell;
 
 	  selectedCells = [matrix selectedCells];
 
-	  if([selectedCells count] == 1)
+	  if ([selectedCells count] == 1)
 	    {
 	      c = [selectedCells objectAtIndex:0];
 	    }

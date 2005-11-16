@@ -281,7 +281,7 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
   // OPENSTEP 4.2 and OSX behavior indicates that the colorwell doesn't
   // work when the widget is marked as disabled.
   //
-  if([self isEnabled])
+  if ([self isEnabled])
     {
       NSPoint point = [self convertPoint: [theEvent locationInWindow]
                             fromView: nil];

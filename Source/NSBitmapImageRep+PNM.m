@@ -56,7 +56,7 @@
   do									\
     {									\
       char *p = buffer;							\
-      while ( *ptr != '\n' && *ptr != '\r' && (ptr-bytes) < length)	\
+      while (*ptr != '\n' && *ptr != '\r' && (ptr-bytes) < length)	\
 	{								\
 	  *p++ = *ptr++;						\
 	  if (p == &buffer[sizeof(buffer)])				\
@@ -117,7 +117,7 @@
 	       bytesPerRow: 0
 	       bitsPerPixel: 0];
 
-  if ([self bytesPerRow] * ysize > (length - (ptr - bytes)) )
+  if ([self bytesPerRow] * ysize > (length - (ptr - bytes)))
     ERRMSG(@"Invalid PNM file (short data)");
   pchar = [self bitmapData];
   if (levels < 256)

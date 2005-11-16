@@ -4199,7 +4199,7 @@ resetCursorRectsForView(NSView *theView)
 
       /* If the image has been specified, use it, if not use the default. */
       obj = [aDecoder decodeObject]; 
-      if(obj != nil)
+      if (obj != nil)
 	{
 	  ASSIGN(_miniaturizedImage, obj);
 	}

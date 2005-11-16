@@ -64,7 +64,7 @@ static NSBundle *printingBundle = nil;
     
   libraryPathsEnumerator = [NSStandardLibraryPaths() objectEnumerator];
     
-  while( (path = [libraryPathsEnumerator nextObject]) )
+  while ((path = [libraryPathsEnumerator nextObject]))
     {
       path = [path stringByAppendingPathComponent: @"Bundles"];
       path = [path stringByAppendingPathComponent: @"GSPrinting"];
@@ -75,7 +75,7 @@ static NSBundle *printingBundle = nil;
           NSBundle *bundle;
 	    
           bundle = [NSBundle bundleWithPath: path];
-          if( [bundle load] == NO )
+          if ([bundle load] == NO)
             {
               NSDebugLLog(@"GSPrinting", @"Error loading printing bundle at %@", 
                           path);
@@ -83,7 +83,7 @@ static NSBundle *printingBundle = nil;
             }
 	    
           //one last check to make sure the principle class can be loaded
-          if( [bundle principalClass] == Nil)
+          if ([bundle principalClass] == Nil)
             {
               NSDebugLLog(@"GSPrinting", 
                           @"Error loading principal class from printing bundle at %@", 
@@ -108,13 +108,13 @@ static NSBundle *printingBundle = nil;
 {
   NSBundle *bundle;
     
-  if( (bundle = [GSPrinting loadPrintingBundle: @"GSCUPS"]) )
+  if ((bundle = [GSPrinting loadPrintingBundle: @"GSCUPS"]))
     return bundle;
 	
-  if( (bundle = [GSPrinting loadPrintingBundle: @"GSLPR"]) )
+  if ((bundle = [GSPrinting loadPrintingBundle: @"GSLPR"]))
     return bundle;
 	
-  if( (bundle = [GSPrinting loadPrintingBundle: @"GSWin32"]) )
+  if ((bundle = [GSPrinting loadPrintingBundle: @"GSWin32"]))
     return bundle;
 	
   return nil;
@@ -127,7 +127,7 @@ static NSBundle *printingBundle = nil;
   NSString *defaultBundleName;
   NSBundle *bundle;
     
-  if( printingBundle )
+  if (printingBundle)
     {
       return printingBundle;
     }
@@ -138,20 +138,20 @@ static NSBundle *printingBundle = nil;
                                        stringForKey: @"GSPrinting"];
     
   /*Which Printing Bundle?*/
-  if( defaultBundleName == nil )
+  if (defaultBundleName == nil)
     {
       NSDebugLLog(@"GSPrinting", 
 	     @"User did not set a printing bundle, trying till something works");
 	     
       bundle = [GSPrinting loadAnyWorkingPrintingBundle];
-      if( bundle == nil )
+      if (bundle == nil)
         {
           NSDebugLLog(@"GSPrinting", 
                       @"Could not load any working printing bundle");
 			    
           NSRunAlertPanel(@"GNUstep Printing Backend System", 
            @"Could not open any working printing bundle.  Printing will not work.", 
-           @"Ok", NULL, NULL );
+           @"Ok", NULL, NULL);
 	     
           return nil;
 	  }
@@ -164,7 +164,7 @@ static NSBundle *printingBundle = nil;
     
       bundle = [GSPrinting loadPrintingBundle: defaultBundleName];
     
-      if( bundle == nil )
+      if (bundle == nil)
 	  {
           NSDebugLLog(@"GSPrinting", 
           @"User set %@ as the printing bundle but that did not work.\
@@ -172,13 +172,13 @@ static NSBundle *printingBundle = nil;
           defaultBundleName);
 	    
           bundle = [GSPrinting loadAnyWorkingPrintingBundle];
-          if( bundle == nil )
+          if (bundle == nil)
             {
               NSDebugLLog(@"GSPrinting", 
                           @"Could not load any working printing bundle");
               NSRunAlertPanel(@"GNUstep Printing Backend System", 
                @"Could not open any working printing bundle.  Printing will not work.", 
-               @"Ok", NULL, NULL );
+               @"Ok", NULL, NULL);
               return nil;
             }
           else
@@ -190,7 +190,7 @@ static NSBundle *printingBundle = nil;
                      defaultBundleName, [[bundle bundlePath] lastPathComponent]];
 			   
               NSRunAlertPanel(@"GNUstep Printing Backend System", 
-		                  msg, @"Ok", NULL, NULL );
+		                  msg, @"Ok", NULL, NULL);
             }
         }
     }

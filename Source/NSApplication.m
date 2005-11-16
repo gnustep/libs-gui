@@ -178,7 +178,7 @@ gnustep_backend_path (NSString *dir, NSString *name)
 static NSString *
 gnustep_backend_framework (NSString *bundleName)
 {
-  if ( bundleName == nil )
+  if (bundleName == nil)
     bundleName = @"GNUstep_back.framework";
   else
     {
@@ -208,7 +208,7 @@ gnustep_backend_bundle(NSString *bundleName)
   NSString *path, *bundleWithVersion;
   int version = GNUSTEP_GUI_MAJOR_VERSION * 100 + GNUSTEP_GUI_MINOR_VERSION;
   
-  if ( bundleName == nil )
+  if (bundleName == nil)
     bundleName = @"libgnustep-back";
   else
     {

@@ -48,12 +48,12 @@
     RETAIN([NSDictionary dictionaryWithContentsOfFile: 
 			     [self pathForResource: @"Help" ofType: @"plist"]]);
 
-  if(contextHelp)
+  if (contextHelp)
     {
       helpFile = [contextHelp objectForKey: key];
     }
 
-  if(helpFile)
+  if (helpFile)
     {
       return [NSUnarchiver unarchiveObjectWithData:
 			     [helpFile objectForKey: @"NSHelpRTFContents"]];
@@ -83,7 +83,7 @@
 
   help = [info objectForKey: @"GSHelpContentsFile"];
 
-  if(!help)
+  if (!help)
     {
       help = [info objectForKey: @"NSExecutable"];
       // If there's no specification, we look for a file named "appname.rtf"
@@ -176,9 +176,9 @@ static BOOL _gnu_contextHelpActive = NO;
   // their context help is.
      
   id hc = NSMapGet(contextHelpTopics, object);
-  if(hc)
+  if (hc)
     {
-      if(![hc isKindOfClass: [NSAttributedString class]])
+      if (![hc isKindOfClass: [NSAttributedString class]])
 	{
 	  hc = [[NSBundle mainBundle] contextHelpForKey: hc];
 	  /* We store the retrieved value, or remove the key from

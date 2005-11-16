@@ -109,7 +109,7 @@ typedef enum
 //
 + (NSSelection *)allSelection
 {
-  if(!_sharedAllSelection)
+  if (!_sharedAllSelection)
     {
       _sharedAllSelection =
 	[NSSelection _wellKnownSelection: "GNUstep All selection marker"];
@@ -120,7 +120,7 @@ typedef enum
 
 + (NSSelection *)currentSelection
 {
-  if(!_sharedCurrentSelection)
+  if (!_sharedCurrentSelection)
     {
       _sharedCurrentSelection =
 	[NSSelection _wellKnownSelection: "GNUstep Current selection marker"];
@@ -131,7 +131,7 @@ typedef enum
 
 + (NSSelection *)emptySelection
 {
-  if(!_sharedEmptySelection)
+  if (!_sharedEmptySelection)
     {
       _sharedEmptySelection =
 	[NSSelection _wellKnownSelection: "GNUstep Empty selection marker"];
@@ -230,7 +230,7 @@ typedef enum
 	    at: _descriptionData];
 
   // if it's a well known selection then determine which one it is.
-  if(_isWellKnownSelection)
+  if (_isWellKnownSelection)
     {
       switch(_selectionType)
 	{

@@ -919,7 +919,7 @@ systemColorWithName(NSString *name)
     }
 }
 
-/** <p>Returns the alpha component ( 1.0 by default ) </p>
+/** <p>Returns the alpha component (1.0 by default) </p>
  */
 - (float) alphaComponent
 {

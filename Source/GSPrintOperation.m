@@ -70,7 +70,7 @@
 
   principalClass = [[GSPrinting printingBundle] principalClass];
 
-  if( principalClass == nil )
+  if (principalClass == nil)
     return nil;
 	
   return [[principalClass gsPrintOperationClass] allocWithZone: zone];
@@ -158,7 +158,7 @@
 
   /* We can't remove the temp file because the previewer might still be
      using it, perhaps the printer is also?
-  if ( _path )
+  if (_path)
     {
       [[NSFileManager defaultManager] removeFileAtPath: _path
                                                handler: nil];

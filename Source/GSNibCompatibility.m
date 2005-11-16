@@ -160,7 +160,7 @@
 
 - (id) awakeAfterUsingCoder: (NSCoder *)coder
 {
-  if([self respondsToSelector: @selector(isInInterfaceBuilder)])
+  if ([self respondsToSelector: @selector(isInInterfaceBuilder)])
     {
       // if we live in the interface builder, give them an instance of
       // the parent, not the child..
@@ -278,7 +278,7 @@
 
 - (id) awakeAfterUsingCoder: (NSCoder *)coder
 {
-  if([self respondsToSelector: @selector(isInInterfaceBuilder)])
+  if ([self respondsToSelector: @selector(isInInterfaceBuilder)])
     {
       // if we live in the interface builder, give them an instance of
       // the parent, not the child..
@@ -374,7 +374,7 @@
 
 - (id) awakeAfterUsingCoder: (NSCoder *)coder
 {
-  if([self respondsToSelector: @selector(isInInterfaceBuilder)])
+  if ([self respondsToSelector: @selector(isInInterfaceBuilder)])
     {
       // if we live in the interface builder, give them an instance of
       // the parent, not the child..
@@ -478,7 +478,7 @@
 
 - (id) awakeAfterUsingCoder: (NSCoder *)coder
 {
-  if([self respondsToSelector: @selector(isInInterfaceBuilder)])
+  if ([self respondsToSelector: @selector(isInInterfaceBuilder)])
     {
       // if we live in the interface builder, give them an instance of
       // the parent, not the child..
@@ -578,7 +578,7 @@
 
 - (id) awakeAfterUsingCoder: (NSCoder *)coder
 {
-  if([self respondsToSelector: @selector(isInInterfaceBuilder)])
+  if ([self respondsToSelector: @selector(isInInterfaceBuilder)])
     {
       // if we live in the interface builder, give them an instance of
       // the parent, not the child..
@@ -679,7 +679,7 @@
 
 - (id) awakeAfterUsingCoder: (NSCoder *)coder
 {
-  if([self respondsToSelector: @selector(isInInterfaceBuilder)])
+  if ([self respondsToSelector: @selector(isInInterfaceBuilder)])
     {
       // if we live in the interface builder, give them an instance of
       // the parent, not the child..
@@ -719,15 +719,15 @@
   [obj setContinuous: [self isContinuous]];
 
   // since only some controls have delegates, we need to test
-  if([obj respondsToSelector: @selector(setDelegate:)])
+  if ([obj respondsToSelector: @selector(setDelegate:)])
       [obj setDelegate: _delegate];
 
   // since only some controls have data sources, we need to test
-  if([obj respondsToSelector: @selector(setDataSource:)])
+  if ([obj respondsToSelector: @selector(setDataSource:)])
       [obj setDataSource: _dataSource];
 
   // since only some controls have data sources, we need to test
-  if([obj respondsToSelector: @selector(setUsesDataSource:)])
+  if ([obj respondsToSelector: @selector(setUsesDataSource:)])
       [obj setUsesDataSource: _usesDataSource];
 
   RELEASE(self);
@@ -802,7 +802,7 @@
 
 - (id) awakeAfterUsingCoder: (NSCoder *)coder
 {
-  if([self respondsToSelector: @selector(isInInterfaceBuilder)])
+  if ([self respondsToSelector: @selector(isInInterfaceBuilder)])
     {
       // if we live in the interface builder, give them an instance of
       // the parent, not the child..

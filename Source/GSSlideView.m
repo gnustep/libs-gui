@@ -81,7 +81,7 @@
 
       [NSEvent startPeriodicEventsAfterDelay: SLIDE_TIME_STEP 
 	       withPeriod: SLIDE_TIME_STEP];
-      while(steps--)
+      while (steps--)
         {
 	  NSEvent *theEvent = [NSApp nextEventMatchingMask: NSPeriodicMask
 				     untilDate: [NSDate distantFuture]

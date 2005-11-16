@@ -681,7 +681,7 @@ static GSValidationCenter *vc;
   _customizationPaletteIsRunning = 
     [NSBundle loadNibNamed: @"GSToolbarCustomizationPalette" owner: self];
 
-  if(!_customizationPaletteIsRunning)
+  if (!_customizationPaletteIsRunning)
     {
       NSLog(@"Failed to load gorm for GSToolbarCustomizationPalette");
     }
@@ -692,7 +692,7 @@ static GSValidationCenter *vc;
   NSEnumerator *e = [[self visibleItems]  objectEnumerator];
   NSToolbarItem *item = nil;
 
-  while((item = [e nextObject]) != nil)
+  while ((item = [e nextObject]) != nil)
     {
       [item validate];
     }
@@ -985,7 +985,7 @@ static GSValidationCenter *vc;
 {
   NSToolbarItem *item = nil;
   
-  if([itemIdent isEqual: NSToolbarSeparatorItemIdentifier] ||
+  if ([itemIdent isEqual: NSToolbarSeparatorItemIdentifier] ||
      [itemIdent isEqual: NSToolbarSpaceItemIdentifier] ||
      [itemIdent isEqual: NSToolbarFlexibleSpaceItemIdentifier] ||
      [itemIdent isEqual: NSToolbarShowColorsItemIdentifier] ||
@@ -1031,7 +1031,7 @@ static GSValidationCenter *vc;
   
   allowedItems = [_delegate toolbarAllowedItemIdentifiers: self];
   
-  if([allowedItems containsObject: itemIdentifier])
+  if ([allowedItems containsObject: itemIdentifier])
     {
       item = [self _toolbarItemForIdentifier: itemIdentifier];
       if (item == nil)
@@ -1140,7 +1140,7 @@ static GSValidationCenter *vc;
 
 - (void) _setDelegate: (id)delegate broadcast: (BOOL)broadcast
 {   
-  //if(_delegate)
+  //if (_delegate)
   //  [nc removeObserver: _delegate name: nil object: self];
 
   if (_delegate == delegate)
