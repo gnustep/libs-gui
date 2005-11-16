@@ -71,6 +71,11 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
   return _action;
 }
 
+/**<p>Activates the NSColorWell and displays the NSColorPanel with the current
+   NSColorWell's color. 
+   If exclusive is YES other NSColorWells are desacivate (through notification)
+   </p><p>See Also: -deactivate</p>
+ */
 - (void) activate: (BOOL)exclusive
 {
   NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
@@ -100,11 +105,18 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
   [self setNeedsDisplay: YES];
 }
 
+/**<p> Returns the current NSColor of the NSColorWell</p>
+   <p> See Also: -setColor:</p>
+ */
 - (NSColor *) color
 {
   return _the_color;
 }
 
+/** <p>Desactivates the NSColorWell and marks self for display.
+    It is usally call from an observer, when another NSColorWell is 
+    activate</p><p>See Also: -activate:</p>
+ */
 - (void) deactivate
 {
   _is_active = NO;
@@ -260,11 +272,17 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
   return self;
 }
 
+/** <p>Returns whether the NSColorWell is active</p>
+    <p>See Also: -activate: -deactivate</p>
+ */
 - (BOOL) isActive
 {
   return _is_active;
 }
 
+/** <p>Returns whether the NSColorWell has border</p>
+    <p>See Also: -setBordered:</p>
+ */
 - (BOOL) isBordered
 {
   return _is_bordered;
@@ -322,12 +340,19 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
   _action = action;
 }
 
+/**<p>Sets whether the NSColorWell has border and marks self for display</p>
+   <p>See Also: -isBordered</p>
+ */
 - (void) setBordered: (BOOL)bordered
 {
   _is_bordered = bordered;
   [self setNeedsDisplay: YES];
 }
 
+/** <p>Sets the NSColorWell to color. Sets the NSColorPanel if active,
+    notify the target of color change and marks self to display</p>
+    <p>See Also: -color</p>
+ */
 - (void) setColor: (NSColor *)color
 {
   ASSIGN(_the_color, color);

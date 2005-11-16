@@ -363,6 +363,8 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 
 @end
 
+/**<p>TODO Description</p>
+ */
 @implementation NSColorPanel
 
 /*
@@ -378,6 +380,8 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
     }
 }
 
+/**<p>Creates ( if needed ) and returns the shared NSColorPanel</p>
+ */
 + (NSColorPanel *)sharedColorPanel
 {
   if (_gs_gui_color_panel == nil)
@@ -395,6 +399,8 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
   return _gs_gui_color_panel;
 }
 
+/** <p>Returns whether the NSColorPanel has been already created</p>
+ */
 + (BOOL) sharedColorPanelExists
 {
   return (_gs_gui_color_panel == nil) ? NO : YES;
@@ -478,16 +484,26 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
   [super dealloc];
 }
 
+/** <p>Returns the NSColorPanel's accessory view if it exists, 
+    nil otherwise</p><p>See Also: -setAccessoryView:</p>    
+ */
 - (NSView *) accessoryView
 {
   return _accessoryView;
 }
 
+/** <p> Returns whether the NSColorPanel continuously sends the action message.
+    The default is ... </p><p>See Also: -setContinuous:-setAction: -setTarget:
+    </p>
+ */
 - (BOOL) isContinuous
 {
   return _isContinuous;
 }
 
+/** <p> Returns the current mode of the NSColorPanel.</p>
+    <p>See Also: -setMode:</p>
+ */
 - (int) mode
 {
   if (_currentPicker != nil)
@@ -496,6 +512,11 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
     return 0;
 }
 
+/**<p> Sets the accessoryView to a view. The old view ( if exists ) will be 
+    remove ( and release ). You need to retain it if you want to use
+    it later</p>
+    <p>See Also: -accessoryView</p>
+ */
 - (void) setAccessoryView: (NSView *)aView
 {
   if (_accessoryView == aView)
@@ -512,11 +533,17 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
   _action = aSelector;
 }
 
+/** <p>Sets whether the NSColorPanel sends continuously action messages</p>
+    <p>See Also: -isContinuous</p>
+ */
 - (void) setContinuous: (BOOL)flag
 {
   _isContinuous = flag;
 }
 
+/** <p>Set the NSColorPanel mode to mode. TODO more about _pickers</p>
+    <p>See Also: -mode</p>
+ */
 - (void) setMode: (int)mode
 {
   int i, count;
@@ -605,11 +632,18 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
     return 1.0;
 }
 
+/** <p>Returns the current NSColor displayed by the NSColorPanel</p>
+    <p>See Also : -setColor:</p>
+ */
 - (NSColor *) color
 {
   return [_colorWell color];
 }
 
+/** <p>Sets the NSColor displayed to aColor. This method post a
+    NSColorPanelColorChangedNotification notification</p>
+    <p>See Also: -color</p>
+*/
 - (void) setColor: (NSColor *)aColor
 {
   [_colorWell setColor: aColor];
