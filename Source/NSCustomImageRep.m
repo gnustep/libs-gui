@@ -34,12 +34,18 @@
 #include "AppKit/NSColor.h"
 #include "AppKit/DPSOperators.h"
 
+/** <p>TODO : Desciption</p>
+ */
 @implementation NSCustomImageRep
 
+/** Initializes a new NSCustomImageRep with .When a -draw message is recieved
+    it send aSelector message to the delegate anObject.
+ */
 - (id) initWithDrawSelector: (SEL)aSelector
 		   delegate: (id)anObject
 {
-  [super init];
+  if ( ! ( self = [super init] ) ) 
+    return nil;
 
   /* WARNING: Retaining the delegate may or may not create a cyclic graph */
   _delegate = RETAIN(anObject);
@@ -53,12 +59,17 @@
   [super dealloc];
 }
 
-// Identifying the Object 
+/** <p>Returns the NSCustomImageRep's delegate</p>
+    <p>See Also: -initWithDrawSelector:delegate:</p>
+ */
 - (id) delegate
 {
   return _delegate;
 }
 
+/**<p>Returns the draw method selector sent to the delegate when
+   NSCustomImageRep recieved a -draw message</p>
+ */
 - (SEL) drawSelector
 {
   return _selector;
