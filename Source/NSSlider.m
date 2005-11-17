@@ -152,17 +152,15 @@ static Class cellClass;
   return self;
 }
 
-/** 
-  Returns the value by which the slider will be incremented if the
-  user holds down the ALT key. */
+/**<p>Returns the value by which the slider will be incremented if the
+  user holds down the ALT key.</p><p>See Also: -setAltIncrementValue:</p> */
 - (double) altIncrementValue
 {
   return [_cell altIncrementValue];
 }
 
-/**
-  Returns the image drawn in the slider's track.  Returns
-  <code>nil</code> if this has not been set.  */
+/**<p>  Returns the image drawn in the slider's track.  Returns
+  <code>nil</code> if this has not been set. </p><p>See Also: -setImage:</p> */
 - (NSImage *) image
 {
   return [_cell image];
@@ -186,101 +184,118 @@ static Class cellClass;
   return [_cell knobThickness];
 }
 
-/**
-  Sets the value by which the slider will be incremented, when the
-  ALT key is held down, to <var>increment</var>. */
+/**<p> Sets the value by which the slider will be incremented, when the
+  ALT key is held down, to <var>increment</var>.</p>
+  <p>See Also: -altIncrementValue</p>
+*/
 - (void) setAltIncrementValue: (double)increment
 {
   [_cell setAltIncrementValue: increment];
 }
 
-/** Sets the image to be displayed in the slider's track to <var>barImage</var>.
+/** <p>Sets the image to be displayed in the slider's track
+    to <var>barImage</var>.</p><p>See Also: -image</p>
  */
 - (void) setImage: (NSImage *)backgroundImage
 {
   [_cell setImage: backgroundImage];
 }
 
-/** 
-  Sets the thickness of the knob to <var>thickness</var>, in pixels.
+/**<p>Sets the thickness of the knob to <var>aFloat</var>, in pixels.
   This value sets the amount of space which the knob takes up in the
-  slider's track.  */
+  slider's track.</p><p>See Also: -knobThickness</p> 
+ */
 - (void) setKnobThickness: (float)aFloat
 {
   [_cell setKnobThickness: aFloat];
 }
 
-/**
-  Sets the title of the slider to <var>barTitle</var>.  This title is displayed 
-  on the slider's track, behind the knob.
+/** <p>Sets the title of the slider to <var>aString</var>.  
+    This title is displayed  on the slider's track, behind the knob.</p>
+    <p>See Also: -title</p>
 */
 - (void) setTitle: (NSString *)aString
 {
   [_cell setTitle: aString];
 }
 
-/** Sets the cell used to draw the title to <var>titleCell</var>. */
+/** <p>Sets the cell used to draw the title to <var>aCell</var>.</p>
+ <p>See Also: -titleCell</p>*/
 - (void) setTitleCell: (NSCell *)aCell
 {
   [_cell setTitleCell: aCell];
 }
 
-/** Sets the colour with which the title will be drawn to <var>color</var>. */
+/** <p>Sets the colour with which the title will be drawn to
+    <var>aColor</var>.</p><p>See Also -titleColor</p>
+*/
 - (void) setTitleColor: (NSColor *)aColor
 {
   [_cell setTitleColor: aColor];
 }
 
-/** Sets the font with which the title will be drawm to <var>font</var>. */
+/** <p>Sets the font with which the title will be drawm to 
+    <var>fontObject</var>.</p>
+ <p>See Also: -titleFont</p>*/
 - (void) setTitleFont: (NSFont *)fontObject
 {
   [_cell setTitleFont: fontObject];
 }
 
-/** Returns the title of the slider as an <code>NSString</code>. */
+/** <p>Returns the title of the slider as an <code>NSString</code>.</p>
+ <p>See Also: -setTitle:</p>*/
 - (NSString *) title
 {
   return [_cell title];
 }
 
-/** Returns the cell used to draw the title. */
+/** <p>Returns the cell used to draw the title.</p>
+    <p>See Also: -setTitleCell:</p> 
+*/
 - (id) titleCell
 {
   return [_cell titleCell];
 }
 
-/** Returns the colour used to draw the title. */
+/** <p>Returns the colour used to draw the title.</p>
+ <p>See Also: -setTitleColor:</p>*/
 - (NSColor *) titleColor
 {
   return [_cell titleColor];
 }
 
-/** Returns the font used to draw the title. */
+/**<p> Returns the font used to draw the title.</p>
+   <p>See Also: -setTitleFont:</p> */
 - (NSFont *) titleFont
 {
   return [_cell titleFont];
 }
 
-/** Returns the maximum value that the slider represents. */
+/** <p>Returns the maximum value that the slider represents.</p>
+ <p>See Also: -setMaxValue:</p>*/
 - (double) maxValue
 {
   return [_cell maxValue];
 }
 
-/** Returns the minimum value that the slider represents. */
+/** <p>Returns the minimum value that the slider represents.</p>
+ <p>See Also: -setMinValue:</p>
+*/
 - (double) minValue
 {
   return [_cell minValue];
 }
 
-/**
-   Sets the maximum value that the sliders represents to <var>maxValue</var>. */
+/**<p> Sets the maximum value that the sliders represents to
+   <var>aDouble</var>.</p><p>See Also: -maxValue</p>
+*/
 - (void) setMaxValue: (double)aDouble
 {
   [_cell setMaxValue: aDouble];
 }
 
-/** Sets the minimum value that the slider represents to <var>minValue</var>. */
+/**<p> Sets the minimum value that the slider represents to
+   <var>aDouble</var>. </p> <p>See Also: -minValue</p>*/
 - (void) setMinValue: (double)aDouble
 {
   [_cell setMinValue: aDouble];
