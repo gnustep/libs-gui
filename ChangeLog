@@ -1,3 +1,7 @@
+2005-11-17  fabien  <fabien@sonappart.net>
+
+	* Source/NSControl.m : Improved documentation 
+
 2005-11-16  fabien  <fabien@sonappart.net>
 
 	* Source/NSColorPanel.m : Improved documentation

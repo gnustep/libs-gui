@@ -48,6 +48,9 @@ static Class usedCellClass;
 static Class cellClass;
 static Class actionCellClass;
 
+/**<p>TODO Description</p>
+ */
+
 @implementation NSControl
 
 /*
@@ -77,8 +80,8 @@ static Class actionCellClass;
   usedCellClass = factoryId ? factoryId : cellClass;
 }
 
-/*
- * Instance methods
+/** <p>Initializes a new NSControl into the frame frameRect and create
+    a new NSCell</p><p>See Also: -setCell:</p> 
  */
 - (id) initWithFrame: (NSRect)frameRect
 {
@@ -98,14 +101,17 @@ static Class actionCellClass;
   [super dealloc];
 }
 
-/*
- * Setting the Control's Cell
+/** <p>Returns the NSControl's cell</p><p>See Also: -setCell:</p> 
  */
 - (id) cell
 {
   return _cell;
 }
 
+/** <p>Sets the NSControl's cell to aCell, Raises an NSInvalidArgumentException
+    exception if aCell is nil or if it is not a cell class</p>
+    <p>See Also: -cell</p> 
+ */
 - (void) setCell: (NSCell *)aCell
 {
   if (aCell != nil && [aCell isKindOfClass: cellClass] == NO)
@@ -115,14 +121,18 @@ static Class actionCellClass;
   ASSIGN(_cell, aCell);
 }
 
-/*
- * Enabling and Disabling the Control
+/**<p>Returns whether the selected cell of the NSControl is enabled</p>
+ <p>See Also: -setEnabled:</p>
  */
 - (BOOL) isEnabled
 {
   return [[self selectedCell] isEnabled];
 }
 
+/**<p>Sets whether the NSControl's selected cell is enabled.
+   If flag is NO, this method abort the editing. This method marks self for
+   display</p><p>See Also: -isEnabled</p>
+ */
 - (void) setEnabled: (BOOL)flag
 {
   [[self selectedCell] setEnabled: flag];
@@ -131,14 +141,16 @@ static Class actionCellClass;
   [self setNeedsDisplay: YES];
 }
 
-/*
- * Identifying the Selected Cell
+/** <p>Returns the NSControl's selected cell</p>
  */
 - (id) selectedCell
 {
   return _cell;
 }
 
+/** <p>Returns the tag of the NSControl's selected cell (if exists).
+    -1 otherwise</p><p>See Also: [NSCell-tag]</p>
+ */
 - (int) selectedTag
 {
   NSCell *selected = [self selectedCell];
@@ -149,8 +161,8 @@ static Class actionCellClass;
     return [selected tag];
 }
 
-/*
- * Setting the Control's Value
+/** <p>Returns the value if the NSControl's selected cell as double</p>
+    <p>See Also: [NSCell-doubleValue]</p>
  */
 - (double) doubleValue
 {
@@ -158,16 +170,25 @@ static Class actionCellClass;
   return [[self selectedCell] doubleValue];
 }
 
+/** <p>Returns the value if the NSControl's selected cell as float</p>
+    <p>See Also: [NSCell-floatValue]</p>
+ */
 - (float) floatValue
 {
   return [[self selectedCell] floatValue];
 }
 
+/** <p>Returns the value if the NSControl's selected cell as int</p>
+    <p>See Also: [NSCell-intValue]</p>
+ */
 - (int) intValue
 {
   return [[self selectedCell] intValue];
 }
 
+/** <p>Returns the value if the NSControl's selected cell as NSString</p>
+    <p>See Also: [NSCell-stringValue]</p>
+ */
 - (NSString *) stringValue
 {
   return [[self selectedCell] stringValue];
@@ -178,6 +199,10 @@ static Class actionCellClass;
   return [[self selectedCell] objectValue];
 }
 
+/** <p>Sets the value if the NSControl's selected cell to double.
+    If the selected cell is an action cell, it marks self for display.</p>
+    <p>See Also: -doubleValue [NSCell-setDoubleValue:]</p>
+ */
 - (void) setDoubleValue: (double)aDouble
 {
   NSCell *selected = [self selectedCell];
@@ -193,6 +218,10 @@ static Class actionCellClass;
     }
 }
 
+/** <p>Sets the value if the NSControl's selected cell to float.
+    If the selected cell is an action cell, it marks self for display.</p>
+    <p>See Also: -floatValue [NSCell-setFloatValue:]</p>
+ */
 - (void) setFloatValue: (float)aFloat
 {
   NSCell *selected = [self selectedCell];
@@ -208,6 +237,10 @@ static Class actionCellClass;
     }
 }
 
+/** <p>Sets the value if the NSControl's selected cell to int.
+    If the selected cell is an action cell, it marks self for display.</p>
+    <p>See Also: -intValue [NSCell-setIntValue:]</p>
+ */
 - (void) setIntValue: (int)anInt
 {
   NSCell *selected = [self selectedCell];
@@ -223,6 +256,10 @@ static Class actionCellClass;
     }
 }
 
+/** <p>Sets the value if the NSControl's selected cell to NSString.
+    If the selected cell is an action cell, it marks self for display.</p>
+    <p>See Also: stringValue [NSCell-setStringValue:]</p>
+ */
 - (void) setStringValue: (NSString *)aString
 {
   NSCell *selected = [self selectedCell];
@@ -253,6 +290,8 @@ static Class actionCellClass;
     }
 }
 
+/** <p>Marks self for display</p>
+*/
 - (void) setNeedsDisplay
 {
   [super setNeedsDisplay: YES];
@@ -291,8 +330,9 @@ static Class actionCellClass;
   [self setNeedsDisplay: YES];
 }
 
-/*
- * Formatting Text
+/**<p>Returns the alignment of the text in the NSControl's cell.
+   Returns NSNaturalTextAlignment if the cell does not exists</p>
+   <p>See Also: -setAlignment: </p>
  */
 - (NSTextAlignment) alignment
 {
@@ -302,6 +342,10 @@ static Class actionCellClass;
     return NSNaturalTextAlignment;
 }
 
+/**<p>Returns the font of the text in the NSControl's cell.
+   Returns nil if the cell does not exists</p>
+   <p>See Also: -setFont: </p>
+ */
 - (NSFont *) font
 {
   if (_cell)
@@ -310,6 +354,10 @@ static Class actionCellClass;
     return nil;
 }
 
+/**<p>Sets the alignment of the text in the NSControl's cell.
+   This method abort the editing and  marks self for display if the cell 
+   is an NSActionCell</p><p>See Also: -alignment </p>
+ */
 - (void) setAlignment: (NSTextAlignment)mode
 {
   if (_cell)
@@ -322,6 +370,9 @@ static Class actionCellClass;
     }
 }
 
+/**<p>Sets the font of the text in the NSControl's cell.</p>
+   <p>See Also: -font </p>
+ */
 - (void) setFont: (NSFont *)fontObject
 {
   if (_cell)
@@ -361,56 +412,60 @@ static Class actionCellClass;
   return [_cell formatter];
 }
 
-/*
- * Managing the Field Editor
+/**<p>Sends an [NSCell-endEditing:] message to the current  object used to
+   edit the NSControl. Returns NO if the the currentEditor does not exists, 
+   YES otherwise.</p>   
  */
 - (BOOL) abortEditing
 {
-  NSText *t;
+  NSText *text;
 
-  t = [self currentEditor];
-  if (t == nil)
+  text = [self currentEditor];
+  if (text == nil)
     {
       return NO;
     }
 
-  [[self selectedCell] endEditing: t];
+  [[self selectedCell] endEditing: text];
   return YES;
 }
+
 
 - (NSText *) currentEditor
 {
   if (_cell != nil)
     {
-      NSText *t;
+      NSText *text;
 
-      t = [_window fieldEditor: NO forObject: self];
-      if (([t delegate] == self) && ([_window firstResponder] == t))
+      text = [_window fieldEditor: NO forObject: self];
+      if (([text delegate] == self) && ([_window firstResponder] == text))
         {
-	  return t;
+	  return text;
 	}
     }
 
   return nil;
 }
 
+/**
+ */
 - (void) validateEditing
 {
-  NSText *t;
+  NSText *text;
 
-  t = [self currentEditor];
-  if (t == nil)
+  text = [self currentEditor];
+  if (text == nil)
     {
       return;
     }
 
-  if ([t isRichText])
+  if ([text isRichText])
     {
       NSAttributedString *attr;
       NSTextStorage *storage;
       int len;
       
-      storage = [(NSTextView*)t textStorage];
+      storage = [(NSTextView*)text textStorage];
       len = [storage length];
       attr = [storage attributedSubstringFromRange: NSMakeRange(0, len)];
       [[self selectedCell] setAttributedStringValue: attr];
@@ -419,26 +474,28 @@ static Class actionCellClass;
     {
       NSString *string;
 
-      string = AUTORELEASE([[t string] copy]);
+      string = AUTORELEASE([[text string] copy]);
       [[self selectedCell] setStringValue: string];
     }
 }
 
-/*
- * Resizing the Control
+/**<p>Recalculates the internal size by sending [NSCell-calcDrawInfo:] 
+   to the cell.</p>
  */
 - (void) calcSize
 {
   [_cell calcDrawInfo: [self bounds]];
 }
 
+/**<p>Resizes the NSControl to fits the NSControl's cell size</p> 
+  <p>See Also: [NSCell-cellSize]</p>
+ */
 - (void) sizeToFit
 {
   [self setFrameSize: [_cell cellSize]];
 }
 
-/*
- * Displaying the Control and Cell
+/** <p>Returns whether the NSControl's cell is opaque</p>
  */
 - (BOOL) isOpaque
 {
@@ -467,6 +524,8 @@ static Class actionCellClass;
     }
 }
 
+/** <p>Selects aCell if it's the NSControl's cell</p>
+ */
 - (void) selectCell: (NSCell *)aCell
 {
   if (_cell == aCell)
@@ -476,24 +535,33 @@ static Class actionCellClass;
     }
 }
 
+
+/** <p>Marks self for display</p>
+ */
 - (void) updateCell: (NSCell *)aCell
 {
   [self setNeedsDisplay: YES];
 }
 
+/** <p>Marks self for display</p>
+ */
 - (void) updateCellInside: (NSCell *)aCell
 {
   [self setNeedsDisplay: YES];
 }
 
-/*
- * Target and Action
+/** <p>Returns the NSControl's cell action method</p>
+    <p>See Also: -setAction: [NSCell-action] </p>
  */
 - (SEL) action
 {
   return [_cell action];
 }
 
+/** <p>Returns whether the NSControl's cell can continuously sends its action
+    message</p>
+    <p>See Also: -setContinuous: [NSCell-isContinuous] </p>
+ */
 - (BOOL) isContinuous
 {
   return [_cell isContinuous];
@@ -512,21 +580,33 @@ static Class actionCellClass;
   return [_cell sendActionOn: mask];
 }
 
+/**<p>Sets the NSControl's cell action method</p>
+   <p>See Also: -action [NSCell-setAction:]</p>
+*/
 - (void) setAction: (SEL)aSelector
 {
   [_cell setAction: aSelector];
 }
 
+/** <p>Sets whether the NSControl's cell can continuously sends its action 
+    message</p><p>See Also: -isContinuous [NSCell-setContinuous:]</p>
+*/ 
 - (void) setContinuous: (BOOL)flag
 {
   [_cell setContinuous: flag];
 }
 
+/** <p>Sets the target object of the NSControl's cell to anObject</p>
+    <p>See Also: -target [NSCell-setTarget:]</p>
+ */
 - (void) setTarget: (id)anObject
 {
   [_cell setTarget: anObject];
 }
 
+/**<p>Returns the target object of the NSControl's cell</p>
+   <p>See Also: -setTarget: [NSCell-target]</p>
+ */
 - (id) target
 {
   return [_cell target];
@@ -562,7 +642,7 @@ static Class actionCellClass;
   return [selected attributedStringValue];
 }
 
-/*
+/** 
  * Assigning a Tag
  */
 - (void) setTag: (int)anInt
