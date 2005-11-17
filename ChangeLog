@@ -2,6 +2,7 @@
 
 	* Source/NSControl.m : Improved documentation 
 	* Source/NSCustomImageRep.m : Improved documentation 
+	* Source/NSFontPanel.m : Improved documentation
 
 2005-11-16  fabien  <fabien@sonappart.net>
 

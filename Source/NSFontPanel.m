@@ -111,8 +111,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
     }
 }
 
-/*
- * Creating an NSFontPanel 
+/** <p>Creates ( if needed ) and returns the shared NSFontPanel</p> 
  */
 + (NSFontPanel*) sharedFontPanel
 {
@@ -156,8 +155,8 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   [super dealloc];
 }
 
-/*
- * Enabling
+/** <p>Returns whether the "set" button is enabled</p>
+    <p>See Also: -setEnabled:</p>
  */
 - (BOOL) isEnabled
 {
@@ -166,6 +165,9 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   return [setButton isEnabled];
 }
 
+/**<p>Sets whether the "set" button is enabled</p>
+   <p>See Also: -isEnabled</p>
+ */
 - (void) setEnabled: (BOOL)flag
 {
   NSButton *setButton = [[self contentView] viewWithTag: NSFPSetButton];
@@ -213,8 +215,8 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 	isMultiple: [fm isMultiple]];
 }
 
-/*
- * Setting the Font 
+/**  <p> TODO </p>
+ * 
  */
 - (void) setPanelFont: (NSFont *)fontObject
 	   isMultiple: (BOOL)flag
@@ -331,30 +333,17 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   return YES;
 }
 
-/*
- * Configuring the NSFontPanel 
+/** <p>Returns the NSFontPanel's accessory view</p>
+    <p>See Also: -setAccessoryView:</p>
  */
 - (NSView*) accessoryView
 {
   return _accessoryView;
 }
 
-/*
-- (void) setAccessoryView: (NSView*)aView
-{
-
-  // FIXME: We have to resize
-  // Perhaps we could copy the code from NSSavePanel over to here
-  if (_accessoryView != nil)
-    {
-      [_accessoryView removeFromSuperview];
-    }
-
-  ASSIGN(_accessoryView, aView);
-  [[self contentView] addSubview: aView];
-}
-*/
-
+/** <p>Adds the NSFontPanel's accessory view</p>
+    <p>See Also: -accessoryView</p>
+ */
 - (void) setAccessoryView: (NSView*)aView
 {
   NSRect accessoryViewFrame, bottomFrame;
