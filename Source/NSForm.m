@@ -89,11 +89,19 @@ static Class defaultCellClass = nil;
   return self;
 }
 
+/** <p>Adds a new entry with title as its title at the end of the NSForm
+    and returns the NSFormCell</p>
+    <p>See Also: -insertEntry:atIndex:</p>
+ */
 - (NSFormCell*) addEntry: (NSString*)title
 {
   return [self insertEntry: title atIndex: [self numberOfRows]];
 }
 
+/** <p>Inserts a new entry with title as its title at the index index of
+    the NSForm and returns the NSFormCell.</p>
+    <p>See Also: -insertEntry:atIndex:</p>
+ */
 - (NSFormCell*) insertEntry: (NSString*)title
 		    atIndex: (int)index
 {
@@ -106,6 +114,9 @@ static Class defaultCellClass = nil;
   return new_cell;
 }
 
+/** <p>Removes the entry at index index. </p>
+    <p>See Also: -insertEntry:atIndex:</p>
+ */
 - (void) removeEntryAtIndex: (int)index
 {
   [[NSNotificationCenter defaultCenter] 
@@ -146,6 +157,8 @@ static Class defaultCellClass = nil;
   [super dealloc];
 }
 
+/** <p>Sets whether then NSForm's entries have bezeled border</p>
+ */
 - (void) setBezeled: (BOOL)flag
 {
   int i, count = [self numberOfRows];
@@ -157,6 +170,8 @@ static Class defaultCellClass = nil;
     [[self cellAtRow: i column: 0] setBezeled: flag];
 }
 
+/** <p>Sets whether then NSForm's entries have border</p>
+ */
 - (void) setBordered: (BOOL)flag
 {
   int i, count = [self numberOfRows];
@@ -168,6 +183,8 @@ static Class defaultCellClass = nil;
     [[self cellAtRow: i column: 0] setBordered: flag];
 }
 
+/**<p>Sets the width of all entries to width</p> 
+ */
 - (void) setEntryWidth: (float)width
 {
   NSSize size = [self cellSize];
@@ -176,6 +193,8 @@ static Class defaultCellClass = nil;
   [self setCellSize: size];
 }
 
+/** <p>Sets the spacing between all entries to spacing</p>
+ */
 - (void) setInterlineSpacing: (float)spacing
 {
   [self setIntercellSpacing: NSMakeSize(0, spacing)];
@@ -184,6 +203,9 @@ static Class defaultCellClass = nil;
 /* For the title attributes we use the corresponding attributes from the cell.
    For the text attributes we use instead the attributes inherited from the
    NSCell class. */
+/** <p>Sets the text alignment of the title to aMode for all entries</p> 
+    <p>See Also: -setTextAlignment:</p>
+ */
 - (void) setTitleAlignment: (NSTextAlignment)aMode
 {
   int i, count = [self numberOfRows];
@@ -195,6 +217,9 @@ static Class defaultCellClass = nil;
     [[self cellAtRow: i column: 0] setTitleAlignment: aMode];
 }
 
+/** <p>Sets the text alignment to aMode for all entries</p> 
+    <p>See Also: -setTitleAlignment:</p>
+ */
 - (void) setTextAlignment: (int)aMode
 {
   int i, count = [self numberOfRows];
@@ -206,6 +231,9 @@ static Class defaultCellClass = nil;
     [[self cellAtRow: i column: 0] setAlignment: aMode];
 }
 
+/** <p>Sets the text font of the title to fontObject for all entries</p>
+    <p>See Also: -setTextFont:</p>
+ */
 - (void) setTitleFont: (NSFont*)fontObject
 {
   int i, count = [self numberOfRows];
@@ -217,6 +245,9 @@ static Class defaultCellClass = nil;
     [[self cellAtRow: i column: 0] setTitleFont: fontObject];
 }
 
+/** <p>Sets the text font to fontObject for all entries</p>
+    <p>See Also: -setTitleFont:</p>
+ */
 - (void) setTextFont: (NSFont*)fontObject
 {
   int i, count = [self numberOfRows];
@@ -228,6 +259,9 @@ static Class defaultCellClass = nil;
     [[self cellAtRow: i column: 0] setFont: fontObject];
 }
 
+/**<p>Returns the index of the entry specified by aTag or -1 if aTag is not 
+   found in entries</p>
+ */
 - (int) indexOfCellWithTag: (int)aTag
 {
   int i, count = [self numberOfRows];
@@ -238,11 +272,15 @@ static Class defaultCellClass = nil;
   return -1;
 }
 
+/**<p>Returns the index of the current selected entry</p>
+ */
 - (int) indexOfSelectedItem
 {
   return [self selectedRow];
 }
 
+/**<p>Returns the NSFormCell at index index</p>
+ */
 - (id) cellAtIndex: (int)index
 {
   return [self cellAtRow: index column: 0];
