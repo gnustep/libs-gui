@@ -101,8 +101,7 @@ DEFINE_RINT_IF_MISSING
   return YES;
 }
 
-/** 
-  <p>Draws the slider's track, not including the bezel, in <var>aRect</var>
+/** <p>Draws the slider's track, not including the bezel, in <var>aRect</var>
   <var>flipped</var> indicates whether the control view has a flipped 
    coordinate system.</p>
 
@@ -114,8 +113,7 @@ DEFINE_RINT_IF_MISSING
   NSRectFill(rect);
 }
 
-/**
-  <p>Returns the rect in which to draw the knob, based on the
+/**<p>Returns the rect in which to draw the knob, based on the
   coordinate system of the NSSlider or NSMatrix this NSSliderCell is
   associated with.  <var>flipped</var> indicates whether or not that
   coordinate system is flipped, which can be determined by sending the
@@ -154,26 +152,26 @@ DEFINE_RINT_IF_MISSING
   return NSMakeRect (origin.x, origin.y, size.width, size.height); 
 }
 
-/**
-  <p>Calculates the rect in which to draw the knob, then calls
+/** <p>Calculates the rect in which to draw the knob, then calls
   <code>drawKnob:</code> Before calling this method, a
   <code>lockFocus</code> message must be sent to the cell's control
   view.</p>
 
   <p>When subclassing NSSliderCell, do not override this method.
-  Override <code>drawKnob:</code> instead.</p> */
+  Override <code>drawKnob:</code> instead.</p> <p>See Also: -drawKnob:</p>
+*/
 - (void) drawKnob
 {
   [self drawKnob: [self knobRectFlipped: [_control_view isFlipped]]];
 }
 
-/**
-  <p>Draws the knob in <var>knobRect</var>.  Before calling this
+/**<p>Draws the knob in <var>knobRect</var>.  Before calling this
   method, a <code>lockFocus</code> message must be sent to the cell's
   control view.</p>
 
   <p>Do not call this method directly.  It is included for subclassing
-  only.</p> */
+  only.</p> <p>See Also: -drawKnob</p>
+*/
 - (void) drawKnob: (NSRect)knobRect
 {
   [_knobCell drawInteriorWithFrame: knobRect inView: _control_view];
@@ -225,9 +223,10 @@ DEFINE_RINT_IF_MISSING
   return YES;
 }
 
-/**
-  Returns the thickness of the slider's knob.  This value is in
-  pixels, and is the size of the knob along the slider's track. */
+/**<p> Returns the thickness of the slider's knob.  This value is in
+  pixels, and is the size of the knob along the slider's track.</p>
+  <p>See Also: -setKnobThickness:</p>
+*/
 - (float) knobThickness
 {
   NSImage	*image = [_knobCell image];
@@ -236,10 +235,10 @@ DEFINE_RINT_IF_MISSING
   return _isVertical ? size.height : size.width;
 }
 
-/**
-  Sets the thickness of the knob to <var>thickness</var>, in pixels.
+/**<p>Sets the thickness of the knob to <var>thickness</var>, in pixels.
   This value sets the amount of space which the knob takes up in the
-  slider's track.  */
+  slider's track.</p><p>See Also: -knobThickness</p> 
+ */
 - (void) setKnobThickness: (float)thickness
 {
   NSImage	*image = [_knobCell image];
@@ -259,90 +258,106 @@ DEFINE_RINT_IF_MISSING
     }
 }
 
-/** Sets the value by which the slider will be be incremented when with the
-    ALT key down to <var>increment</var>. */
+/**<p> Sets the value by which the slider will be be incremented when with the
+    ALT key down to <var>increment</var>.</p>
+    <p>See Also: -altIncrementValue</p> 
+*/
 - (void) setAltIncrementValue: (double)increment
 {
   _altIncrementValue = increment;
 }
 
-/**
-  Sets the minimum value that the sliders represents to <var>maxValue</var>.
+/**<p> Sets the minimum value that the sliders represents to
+   <var>maxValue</var>.</p><p>See Also: -minValue</p>
 */
 - (void) setMinValue: (double)aDouble
 {
   _minValue = aDouble;
 }
 
-/** 
-  Sets the maximum value that the sliders represents to <var>maxValue</var>.
+/** <p>Sets the maximum value that the sliders represents to 
+    <var>maxValue</var>.</p><p>See Also: -maxValue</p>
 */
 - (void) setMaxValue: (double)aDouble
 {
   _maxValue = aDouble;
 }
 
-/** Returns the cell used to draw the title. */
+/**<p>Returns the cell used to draw the title.</p>
+   <p>See Also: -setTitleCell:</p> */
 - (id) titleCell
 {
   return _titleCell;
 }
 
-/** Returns the colour used to draw the title. */
+/**<p>Returns the colour used to draw the title.</p>
+   <p>See Also: -setTitleColor:</p> 
+*/
 - (NSColor*) titleColor
 {
   return [_titleCell textColor];
 }
 
-/** Returns the font used to draw the title. */
+/**<p>Returns the font used to draw the title.</p>
+   <p>See Also: -setTitleFont:</p>
+*/
 - (NSFont*) titleFont
 {
   return [_titleCell font];
 }
 
-/**
-  Sets the title of the slider to <var>barTitle</var>.  This title is
-  displayed on the slider's track, behind the knob.  */
+/**<p>Sets the title of the slider to <var>barTitle</var>.  This title is
+  displayed on the slider's track, behind the knob.</p>
+  <p>See Also: -title</p>*/
 - (void) setTitle: (NSString*)title
 {
   [_titleCell setStringValue: title];
 }
 
+/**<p>Returns the title of the slider. This title is
+  displayed on the slider's track, behind the knob.</p>
+  <p>See Also: -setTitle:</p>
+*/
 - (NSString*) title
 {
   return [_titleCell stringValue];
 }
 
-/** Sets the cell used to draw the title to <var>titleCell</var>. */
+/**<p>Sets the cell used to draw the title to <var>titleCell</var>.</p>
+   <p>See Also: -titleCell</p>*/
 - (void) setTitleCell: (NSCell*)aCell
 {
   ASSIGN(_titleCell, aCell);
 }
 
-/** Sets the colour with which the title will be drawn to <var>color</var>. */
+/**<p>Sets the colour with which the title will be drawn to <var>color</var>.
+   </p><p>See Also: -titleColor</p>
+*/
 - (void) setTitleColor: (NSColor*)color
 {
   [_titleCell setTextColor: color];
 }
 
-/** Sets the font with which the title will be drawm to <var>font</var>. */
+/**<p> Sets the font with which the title will be drawm to <var>font</var>.
+ </p><p>See Also: -titleFont</p>
+*/
 - (void) setTitleFont: (NSFont*)font
 {
   [_titleCell setFont: font];
 }
 
-/**
-  Returns whether or not the slider is vertical.  If, for some
+/**Returns whether or not the slider is vertical.  If, for some
   reason, this cannot be determined, for such reasons as the slider is
   not yet displayed, this method returns -1.  Generally, a slider is
-  considered vertical if its height is greater than its width. */
+  considered vertical if its height is greater than its width. 
+*/
 - (int) isVertical
 {
   return _isVertical;
 }
 
-/** Returns the value by which the slider is incremented when the user
-    holds down the ALT key.  
+/**<p>Returns the value by which the slider is incremented when the user
+    holds down the ALT key.</p><p>See Also: -setAltIncrementValue:</p>  
 */
 - (double) altIncrementValue
 {
@@ -368,13 +383,17 @@ DEFINE_RINT_IF_MISSING
   return _trackRect;
 }
 
-/** Returns the minimum value that the slider represents. */
+/** <p>Returns the minimum value that the slider represents.</p>
+    <p>See Also: -setMinValue:</p>
+*/
 - (double) minValue
 {
   return _minValue;
 }
 
-/** Returns the maximum value that the slider represents. */
+/**<p>Returns the maximum value that the slider represents.</p>
+   <p>See Also: -setMaxValue:</p>
+*/
 - (double) maxValue
 {
   return _maxValue;
