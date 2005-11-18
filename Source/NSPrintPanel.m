@@ -91,7 +91,8 @@ static NSPrintPanel *shared_instance;
   return [[principalClass printPanelClass] allocWithZone: zone];
 }
 
-/** Creates and returns a shared instance of the NSPrintPanel panel.
+/** Creates ( if needed) and returns a shared instance of the
+    NSPrintPanel panel.
  */
 + (NSPrintPanel *)printPanel
 {
@@ -189,14 +190,16 @@ static NSPrintPanel *shared_instance;
 //
 // Customizing the Panel 
 //
-/** Set the accessory view for the print panel 
+/** <p>Sets the accessory view for the print panel to aView</p>
+    <p>See Also: -accessoryView</p>
  */
 - (void)setAccessoryView:(NSView *)aView
 {
   ASSIGN(_accessoryView, aView);
 }
 
-/** Returns the accessory view for the print panel 
+/** <p>Returns the accessory view for the print panel </p>
+    <p>See Also: -setAccessoryView:</p>
  */
 - (NSView *)accessoryView
 {
