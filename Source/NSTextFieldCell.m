@@ -128,11 +128,18 @@ static NSColor	*txtCol;
       [(NSControl *)_control_view updateCell: self];
 }
 
+/** <p>Returns the color used to draw the background</p>
+    <p>See Also: -setBackgroundColor:</p>
+ */
 - (NSColor *) backgroundColor
 {
   return _background_color;
 }
 
+
+/** <p>Sets whether the NSTextFieldCell draw its background color</p>
+    <p>See Also: -drawsBackground</p>
+ */
 - (void) setDrawsBackground: (BOOL)flag
 {
   _textfieldcell_draws_background = flag;
@@ -142,11 +149,17 @@ static NSColor	*txtCol;
       [(NSControl *)_control_view updateCell: self];
 }
 
+/** <p>Returns whether the NSTextFieldCell draw its background color</p>
+    <p>See Also: -setBackgroundColor:</p>
+ */
 - (BOOL) drawsBackground
 {
   return _textfieldcell_draws_background;
 }
 
+/** <p>Sets the text color to aColor</p>
+    <p>See Also: -textColor</p>
+ */
 - (void) setTextColor: (NSColor *)aColor
 {
   ASSIGN (_text_color, aColor);
@@ -155,6 +168,9 @@ static NSColor	*txtCol;
       [(NSControl *)_control_view updateCell: self];
 }
 
+/** <p>Returns the text color</p>
+    <p>See Also: -setTextColor:</p>
+ */
 - (NSColor *) textColor
 {
   return _text_color;

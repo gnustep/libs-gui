@@ -1,6 +1,10 @@
 2005-11-18  fabien  <fabien@sonappart.net>
 
 	* Source/NSSliderCell.m: Improved documentation
+	* Source/NSTextField.m: Improved documentation
+	* Source/NSTextFieldCell.m: Improved documentation
+	* Source/NSSavePanel.m: Improved documentation
+	* Source/NSOpenPanel.m: Improved documentation
 
 2005-11-17  fabien  <fabien@sonappart.net>
 

@@ -105,19 +105,25 @@ static Class textFieldCellClass;
   [super dealloc];
 }
 
-//
-// Setting User Access to Text
-//
+/** <p>Returns whether the NSTextField is editable</p>
+    <p>See Also: -setEditable:</p>
+*/
 - (BOOL) isEditable
 {
   return [_cell isEditable];
 }
 
+/** <p>Returns whether the NSTextField is selectable</p>
+    <p>See Also: -setSelectable:</p>
+*/
 - (BOOL) isSelectable
 {
   return [_cell isSelectable];
 }
 
+/** <p>Sets whether the NSTextField is editable</p>
+    <p>See Also: -isEditable</p>
+*/
 - (void) setEditable: (BOOL)flag
 {
   [_cell setEditable: flag];
@@ -125,6 +131,9 @@ static Class textFieldCellClass;
     [_text_object setEditable: flag];
 }
 
+/** <p>Sets whether the NSTextField is selectable</p>
+    <p>See Also: -isSelectable</p>
+*/
 - (void) setSelectable: (BOOL)flag
 {
   [_cell setSelectable: flag];
@@ -132,9 +141,8 @@ static Class textFieldCellClass;
     [_text_object setSelectable: flag];
 }
 
-//
-// Editing Text
-//
+/**<p>Selects all the text inot the NSTextField if it's selectable.</p>
+ */
 - (void) selectText: (id)sender
 {
   if ([self isSelectable] && (_super_view != nil))
@@ -143,18 +151,18 @@ static Class textFieldCellClass;
 	[_text_object selectAll: self];
       else
 	{
-	  NSText *t = [_window fieldEditor: YES  forObject: self];
+	  NSText *text = [_window fieldEditor: YES  forObject: self];
 	  int length;
 
-	  if ([t superview] != nil)
-	    if ([t resignFirstResponder] == NO)
+	  if ([text superview] != nil)
+	    if ([text resignFirstResponder] == NO)
 	      return;
 	  
 	  //  [NSCursor hide];
 	  /* [self stringValue] generates a call to validateEditing 
 	     so we need to call it before setting up the _text_object */
 	  length = [[self stringValue] length];
-	  _text_object = [_cell setUpFieldEditorAttributes: t];
+	  _text_object = [_cell setUpFieldEditorAttributes: text];
 	  [_cell selectWithFrame: _bounds
 		 inView: self
 		 editor: _text_object
@@ -188,9 +196,9 @@ static Class textFieldCellClass;
   [self setPreviousKeyView: anObject];
 }
 
-//
-// Assigning a Delegate
-//
+/** <p>Sets the delegate to anObject</p>
+    <p>See Also: -delegate</p>
+*/
 - (void) setDelegate: (id)anObject
 {
   if (_delegate)
@@ -208,59 +216,89 @@ static Class textFieldCellClass;
   SET_DELEGATE_NOTIFICATION(DidChange);
 }
 
+/** <p>Returns the delegate object</p>
+    <p>See Also: -setDelegate:</p>
+*/
 - (id) delegate
 {
   return _delegate;
 }
 
-//
-// Modifying Graphic Attributes
-//
+/** <p>Sets the color used to draw the background</p>
+    <p>See Also: -backgroundColor</p>
+ */
 - (void) setBackgroundColor: (NSColor *)aColor
 {
   [_cell setBackgroundColor: aColor];
 }
 
+/** <p>Returns the color used to draw the background</p>
+    <p>See Also: -setBackgroundColor:</p>
+ */
 - (NSColor *) backgroundColor
 {
   return [_cell backgroundColor];
 }
 
+/** <p>Returns whether the NSTextField draws the background</p>
+    <p>See Also: -setDrawsBackground:</p>
+ */
 - (BOOL) drawsBackground
 {
   return [_cell drawsBackground];
 }
 
+/** <p>Returns whether the NSTextField's cell has bezeled border</p>
+    <p>See Also: -setBezeled:</p>
+ */
 - (BOOL) isBezeled
 {
   return [_cell isBezeled];
 }
 
+/** <p>Returns whether the NSTextField's cell has border</p>
+    <p>See Also: -setBordered:</p>
+ */
 - (BOOL) isBordered
 {
   return [_cell isBordered];
 }
 
+/** <p>Sets whether the NSTextField's cell has bezeled border</p>
+    <p>See Also: -isBezeled</p>
+ */
 - (void) setBezeled: (BOOL)flag
 {
   [_cell setBezeled: flag];
 }
 
+/** <p>Sets whether the NSTextField's cell has border</p>
+    <p>See Also: -isBordered</p>
+ */
 - (void) setBordered: (BOOL)flag
 {
   [_cell setBordered: flag];
 }
 
+/** <p>Sets whether the NSTextField draws the background</p>
+    <p>See Also: -drawsBackground</p>
+ */
 - (void) setDrawsBackground: (BOOL)flag
 {
   [_cell setDrawsBackground: flag];
 }
 
+/** <p>Sets the  color with which the text will be draw to aColor</p>
+    <p>See Also: -textColor</p>
+ */
 - (void) setTextColor: (NSColor *)aColor
 {
   [_cell setTextColor: aColor];
 }
 
+/** <p>Returns the colour used to draw the text.</p>
+    <p>See Also: -setTextColor:</p>
+ */
 - (NSColor *) textColor
 {
   return [_cell textColor];

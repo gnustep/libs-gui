@@ -255,10 +255,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
   }
 }
 
-/*
- * Accessing the NSOpenPanel shared instance
- */
-/** Returns the shared NSOpenPanel instance */
+/**<p> Creates ( if needed ) and returns the shared NSOpenPanel instance</p> */
 + (NSOpenPanel *) openPanel
 {
   if (!_gs_gui_open_panel)
@@ -290,47 +287,62 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 /*
  * Filtering Files
  */
-/** Allows the user to select multiple files if flag is YES. */
+/**<p> Allows the user to select multiple files if flag is YES.
+   The default behavior is not to allow multiple selections</p>
+ <p>See Also: -allowsMultipleSelection</p>
+*/
 - (void) setAllowsMultipleSelection: (BOOL)flag
 {
   [_browser setAllowsMultipleSelection: flag];
 }
 
-/** Returns YES if the user is allowed to select multiple files. The
-    default behavior is not to allow mutiple selections. */
+/**<p>Returns YES if the user is allowed to select multiple files. The
+    default behavior is not to allow mutiple selections.</p>
+    <p>See Also: -setAllowsMultipleSelection:</p>
+*/
 - (BOOL) allowsMultipleSelection
 {
   return [_browser allowsMultipleSelection];
 }
 
-/** Allows the user to choose directories if flag is YES. */
+/** <p>Allows the user to choose directories if flag is YES. The default 
+    behavior is to allow choosing directories.</p>
+    <p>See Also: -canChooseDirectories</p>
+*/
 - (void) setCanChooseDirectories: (BOOL)flag
 {
   _canChooseDirectories = flag;
   [_browser setAllowsBranchSelection: flag];
 }
 
-/** Returns YES if the user is allowed to choose directories  The
-    default behavior is to allow choosing directories. */
+/** <p>Returns YES if the user is allowed to choose directories  The
+    default behavior is to allow choosing directories.</p>
+    <p>See Also: -setCanChooseDirectories:</p>
+ */
 - (BOOL) canChooseDirectories
 {
   return _canChooseDirectories;
 }
 
-/** Allows the user to choose files if flag is YES */
+/** <p>Allows the user to choose files if flag is YES.The default behavior it
+    to allow choosing files. <p>See Also: -canChooseFiles</p>
+*/
 - (void) setCanChooseFiles: (BOOL)flag
 {
   _canChooseFiles = flag;
 }
 
-/** Returns YES if the user is allowed to choose files.  The
-    default behavior it to allow choosing files.  */
+/**<p>Returns YES if the user is allowed to choose files.  The
+    default behavior it to allow choosing files.</p>
+    <p>See Also: -setCanChooseFiles:</p>
+*/
 - (BOOL) canChooseFiles
 {
   return _canChooseFiles;
 }
 
-/** Returns the absolute path of the file selected by the user.  */
+/** <p>Returns the absolute path of the file selected by the user.</p>
+*/
 - (NSString*) filename
 {
   NSArray *ret;
@@ -343,9 +355,9 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
     return nil;
 }
 
-/** Returns an array containing the absolute paths (as NSString
- objects) of the selected files and directories.  If multiple
- selections aren't allowed, the array contains a single name.
+/** <p>Returns an array containing the absolute paths (as NSString
+    objects) of the selected files and directories.  If multiple
+    selections aren't allowed, the array contains a single name.</p>
 */
 - (NSArray *) filenames
 {
@@ -408,8 +420,9 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 /*
  * Running the NSOpenPanel
  */
-/** Displays the open panel in a modal session, filtering for
-    files that have the specified types 
+/** <p>Displays the open panel in a modal session, filtering for
+    files that have the specified types </p>
+    <p>See Also: -runModalForDirectory:file:types:</p>
 */
 - (int) runModalForTypes: (NSArray *)fileTypes
 {
@@ -418,10 +431,11 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 			      types: fileTypes];
 }
 
-/** Displays the open panel in a modal session, with the directory
+/** <p>Displays the open panel in a modal session, with the directory
     path shown and file name (if any) selected. Files are filtered for the
     specified types. If the directory is nil, then the directory shown in 
-    the open panel is the last directory selected.
+    the open panel is the last directory selected.</p>
+    <p>See Also: -runModalForTypes:</p>
 */
 - (int) runModalForDirectory: (NSString *)path
 			file: (NSString *)name
