@@ -325,7 +325,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 }
 
 /** <p>Allows the user to choose files if flag is YES.The default behavior it
-    to allow choosing files. <p>See Also: -canChooseFiles</p>
+    to allow choosing files. </p><p>See Also: -canChooseFiles</p>
 */
 - (void) setCanChooseFiles: (BOOL)flag
 {
