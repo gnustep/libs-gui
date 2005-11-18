@@ -54,7 +54,7 @@ static NSFont *_leafFont;
 
 /**
  *<p> TODO Description</p>
- *<p>Explain _gsFontifyCells ....
+ *<p>Explain _gsFontifyCells ....</p>
  *
  */
 @implementation NSBrowserCell
@@ -86,8 +86,7 @@ static NSFont *_leafFont;
     }
 }
 
-/**
- *<p>Returns the default branch image. Currently, it's an arrow. </p>
+/**<p>Returns the default branch image. Currently, it's an arrow. </p>
  *<p>See Also: +highlightedBranchImage </p>
  */
 + (NSImage*) branchImage
@@ -95,8 +94,7 @@ static NSFont *_leafFont;
   return _branch_image;
 }
 
-/**
- *<p>Returns the default hightlited branch image</p>
+/**<p>Returns the default hightlited branch image</p>
  *<p>See Also: +branchImage</p>
  */
 + (NSImage*) highlightedBranchImage
@@ -152,8 +150,7 @@ static NSFont *_leafFont;
   return c;
 }
 
-/**
- *<p>Returns the alternate image in the NSBrowserCell
+/**<p>Returns the alternate image in the NSBrowserCell
  * (used when the cell is highlighted) </p>
  *<p>See Also: -setAlternateImage:</p>
  */
@@ -162,8 +159,7 @@ static NSFont *_leafFont;
   return _alternateImage;
 }
 
-/**
- *<p>Sets the altenate image (used when the cell is highlighted)  to anImage 
+/**<p>Sets the altenate image (used when the cell is highlighted)  to anImage 
  *</p><p>See Also: -alternateImage</p>
  */
 - (void) setAlternateImage: (NSImage *)anImage
@@ -179,21 +175,19 @@ static NSFont *_leafFont;
   return [_colorClass selectedControlColor];
 }
 
-/**
- * <p>Returns whether the browserCell is a leaf. A leaf cell has usually no 
+/**<p>Returns whether the browserCell is a leaf. A leaf cell has usually no 
  * image. This method is used by NSBrowser in several methods, for example
  * to know if a column should be added; when the user selects a browser cell
  * (a branch or a leaf)</p>
- * <p>See Also: -setLeaf: TODO more NSBrowser references</p>
+ * <p>See Also: -setLeaf: </p>
  */
 - (BOOL) isLeaf
 {
   return _browsercell_is_leaf;
 }
 
-/**
- *<p>Sets whether the cell is a leaf. This method is usally used in the 
- * NSBrowser delegate methods</p>
+/**<p>Sets whether the cell is a leaf. This method is usally used in the 
+ * NSBrowser's delegate methods</p>
  *<p>See Also: -isLeaf</p>
  */
 - (void) setLeaf: (BOOL)flag
@@ -245,8 +239,7 @@ static NSFont *_leafFont;
   _cell.state = NO;
 }
 
-/**
- *<p>Highlights the cell and sets the cell's state to YES</p>
+/**<p>Highlights the cell and sets the cell's state to YES</p>
  *<p>See Also: -reset</p>
  */
 - (void) set
