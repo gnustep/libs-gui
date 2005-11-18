@@ -50,7 +50,6 @@
  * <p>EXPLAINS NSBox</p>
  *<p> TODO : explains how is resized the rects (margins etc...)  </p>
 */
-
 @implementation NSBox
 
 //
@@ -105,20 +104,19 @@
   return _border_rect;
 }
 
-/**
- * <p>Returns the border type. See NSBorderType for more informations</p>
- * <p>See Also: -setBorderType:</p>
+/**<p>Returns the border type. See <ref type="type" id="NSBorderType"> 
+   NSBorderType</ref> for more informations. The default border type is
+    NSGrooveBorder</p><p>See Also: -setBorderType:</p>
  */
 - (NSBorderType) borderType
 {
   return _border_type;
 }
 
-/**
- * <p>Sets the border type to aType, resizes the content view frame if needed,
- *  and sends a -setNeedsDisplay: message. See NSBorderType for more
- * informations</p>
- *<p>See Also: -borderType</p>
+/**<p>Sets the border type to aType, resizes the content view frame if needed,
+   and marks self for display. See <ref type="type" id="NSBorderType"> 
+   NSBorderType</ref> for more informations. The default boder type is 
+   NSGrooveBorder.</p><p>See Also: -borderType</p>
  */
 - (void) setBorderType: (NSBorderType)aType
 {
@@ -130,16 +128,14 @@
     }
 }
 
-/**
- * <p> Sets the title (cell) to aString, resizes the content view frame
- * and send a -setNeedsDisplay: message.</p>
- *<p>Warning: This method does not implement the Cocoa behaviour</p>
- *<p>See Also: -title</p>
+/** <p> Sets the title cell to aString, resizes the content view frame
+  and marks self for display.</p>
+ <p>Warning: This method does not implement the Cocoa behaviour</p>
+ <p>See Also: -title</p>
  */ 
-
-// TODO: implement the macosx behaviour for setTitle:
 - (void) setTitle: (NSString *)aString
 {
+  // TODO: implement the macosx behaviour for setTitle:
   [_cell setStringValue: aString];
   [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
   [self setNeedsDisplay: YES];
@@ -153,8 +149,8 @@
 }
 
 /**
- *<p>Sets the font of the title (cell) to fontObj, resizes 
- * the content view frame if needed and sends a -setNeedsDisplay: message</p>
+ *<p>Sets the font of the title cell to fontObj, resizes 
+ * the content view frame if needed and marks self for display.</p>
  *<p>See Also: -titleFont</p>
  */
 - (void) setTitleFont: (NSFont *)fontObj
@@ -164,12 +160,10 @@
   [self setNeedsDisplay: YES];
 }
 
-/**
- *<p>Sets the  title (cell) position  to aPosition, resizes the content
- *view frame if needed and sends a -setNeedsDisplay: message.
- *See NSTitlePosition for more information</p>
- *<p>See Also: -titlePosition</p>
- *
+/**<p>Sets the  title cell position  to aPosition, resizes the content
+ *view frame and marks self for display. See <ref type="type" 
+ id="NSTitlePosition">NSTitlePosition</ref> for more information.
+ The default postion is NSAtTop.</p> <p>See Also: -titlePosition</p>
  */
 - (void) setTitlePosition: (NSTitlePosition)aPosition
 {
@@ -181,8 +175,7 @@
     }
 }
 
-/**
- *<p>Returns the title (cell) string</p>
+/**<p>Returns the title cell string value</p>
  *<p>See Also: -setTitle:</p>
  */
 - (NSString*) title
@@ -199,8 +192,7 @@
   return _cell;
 }
 
-/**
- *<p>Returns the the box title font</p>
+/**<p>Returns the title cell font</p>
  *<p>See Also: -setTitleFont:</p>
  */
 - (NSFont*) titleFont
@@ -208,9 +200,9 @@
   return [_cell font];
 }
 
-/**
- *<p>Returns the title position. See NSTitlePosition for more informations</p>
- *<p>See Also: -setTitlePosition:</p>
+/**<p>Returns the title position. See <ref type="type" id="NSTitlePosition">
+   NSTitlePosition</ref> for more information. The default position is NSAtTop.
+   </p><p>See Also: -setTitlePosition:</p>
  */
 - (NSTitlePosition) titlePosition
 {
@@ -234,12 +226,11 @@
   return _content_view;
 }
 
-/**
- *<p>Returns an NSSize containing the interior margins of the receiver. 
- * An NSBox's content view margins are empty space that is subtracted 
- * from the top, bottom, and sides as padding between the inside of the box
- * and the frame of its content view</p>
- *<p> See Also: -setContentViewMargins:</p>
+/**<p>Returns an NSSize containing the interior margins of the receiver. 
+  An NSBox's content view margins are empty space that is subtracted 
+  from the top, bottom, and sides as padding between the inside of the box
+  and the frame of its content view</p>
+ <p> See Also: -setContentViewMargins:</p>
  */
 - (NSSize) contentViewMargins
 {
@@ -263,12 +254,11 @@
     }
 }
 
-/**
- *<p>Sets the margins size of the content view to offsetSize, resized the
- *content view frame if needed and sends a -setNeedsDisplay message.
- * See -contentView for more informations to know how the contentView frame 
- *is resized</p>
- *<p>See Also: -contentViewMargins</p>
+/**<p>Sets the NSSize containing the interior margins to offsetSize. 
+  An NSBox's content view margins are empty space that is subtracted 
+  from the top, bottom, and sides as padding between the inside of the box
+  and the frame of its content view</p>
+ <p> See Also: -contentViewMargins</p>
  */
 - (void) setContentViewMargins: (NSSize)offsetSize
 {

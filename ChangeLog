@@ -6,6 +6,9 @@
 	* Source/NSSavePanel.m: Improved documentation
 	* Source/NSOpenPanel.m: Improved documentation
 	* Source/NSApplication.m: Improved documentation
+	* Source/NSBitmapImageRep.m: Improved documentation
+	* Source/NSBox.m: Improved documentation
+	
 
 2005-11-17  fabien  <fabien@sonappart.net>
 
