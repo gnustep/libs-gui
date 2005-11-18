@@ -5,6 +5,7 @@
 	* Source/NSTextFieldCell.m: Improved documentation
 	* Source/NSSavePanel.m: Improved documentation
 	* Source/NSOpenPanel.m: Improved documentation
+	* Source/NSApplication.m: Improved documentation
 
 2005-11-17  fabien  <fabien@sonappart.net>
 
