@@ -162,9 +162,10 @@ static BOOL supports_lzw_compression = NO;
   return types;
 }
 
-/** Returns a newly allocated NSBitmapImageRep object representing the
-    image stored in imageData.  If the image data contains more than one
-    image, the first one is choosen.  */
+/** <p>Returns a newly allocated NSBitmapImageRep object representing the
+    image stored in imageData. If the image data contains more than one
+    image, the first one is choosen.</p><p>See Also: +imageRepWithData:</p>  
+*/
 + (id) imageRepWithData: (NSData *)imageData
 {
   NSArray* array;
@@ -177,8 +178,10 @@ static BOOL supports_lzw_compression = NO;
   return nil;
 }
 
-/** Returns an array containing newly allocated NSBitmapImageRep
-    objects representing the images stored in imageData.  */
+/**<p>Returns an array containing newly allocated NSBitmapImageRep
+    objects representing the images stored in imageData.</p>
+    <p>See Also: +imageRepWithData:</p>
+*/
 + (NSArray*) imageRepsWithData: (NSData *)imageData
 {
   int		 i, images;
