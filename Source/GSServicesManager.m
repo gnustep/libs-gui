@@ -1419,6 +1419,10 @@ static NSString         *disabledName = @".GNUstepDisabled";
  * it will be inferred from appName ... by convention, applications
  * use their own name (minus any path or extension) for this.
  * </p>
+ * <p>If appName is nil or cannot be launched, this attempts to locate any
+ * application in a standard location whose name matches port and launch
+ * that application.
+ * </p>
  * <p>The value of expire provides a timeout in case the application cannot
  * be contacted promptly.  If it is omitted, a thirty second timeout is
  * used.
@@ -1456,9 +1460,14 @@ GSContactApplication(NSString *appName, NSString *port, NSDate *expire)
     }
   if (app == nil)
     {
-      if ([[NSWorkspace sharedWorkspace] launchApplication: appName] == NO)
+      if (appName == nil
+	|| [[NSWorkspace sharedWorkspace] launchApplication: appName] == NO)
 	{
-	  return nil;		/* Unable to launch.	*/
+          if (port == nil
+	    || [[NSWorkspace sharedWorkspace] launchApplication: port] == NO)
+	    {
+	      return nil;		/* Unable to launch.	*/
+	    }
 	}
 
       NS_DURING

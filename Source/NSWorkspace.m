@@ -1301,8 +1301,8 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	{
 	  end++;
 	}
-      len = (end - ptr) * sizeof(unichar);
-      path = [mgr stringWithFileSystemRepresentation: (char*)ptr length: len];
+      len = (end - ptr);
+      path = [mgr stringWithFileSystemRepresentation: ptr length: len];
       [names addObject: path];
     }
   if (base != buf)

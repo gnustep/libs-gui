@@ -1,3 +1,9 @@
+2005-11-20  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSServicesManager.m: GSContactApplication()
+	Fix bug launching application ... if it's not available in the
+	services bundle, locate application by name (from the port).
+
 2005-11-18  fabien  <fabien@sonappart.net>
 
 	* Source/NSSliderCell.m: Improved documentation
