@@ -1,3 +1,10 @@
+2005-11-21  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSPasteboard.m: Turn off warning message about launching
+	gpbs ... now that we use host-local connections and expect the
+	pastebaord server to be private to the user, there is no real reason
+	why it shouldn't be routinely launched on demand.
+
 2005-11-20  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSServicesManager.m: GSContactApplication()

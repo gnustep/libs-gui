@@ -1991,17 +1991,16 @@ static  NSMapTable              *mimeMap = NULL;
 	    }
 	  else
 	    {
-	      NSDistributedNotificationCenter *nc;
+	      NSNotificationCenter *nc;
 	      NSMutableArray *startIndicator;
 	      NSArray *args = nil;
 	      NSDate *timeoutDate;
 
-	      NSLog(@"\nI couldn't contact the pasteboard server for %@ -\n"
+	      NSDebugLLog(@"NSPasteboard",
+@"\nI couldn't contact the pasteboard server for %@ -\n"
 @"so I'm attempting to start one - which might take a few seconds.\n"
-@"Trying to launch gpbs from %@ or a machine/operating-system subdirectory.\n"
-@"It is recommended that you start the pasteboard server (gpbs) when\n"
-@"your windowing system is started up.\n", description,
-[cmd stringByDeletingLastPathComponent]);
+@"Trying to launch gpbs from %@ or a machine/operating-system subdirectory.\n",
+description, [cmd stringByDeletingLastPathComponent]);
 
 	      if ([host length] > 0)
 		{
