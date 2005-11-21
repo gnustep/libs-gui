@@ -481,7 +481,7 @@ systemColorWithName(NSString *name)
 
 
 /**<p>Returns a NSColor in a NSCalibratedWhiteColorSpace space name.
-  with white and alpha values set as NSBlack and 1.0 respectively </p>
+  with white and alpha values set as NSBlack and 1.0 respectively.</p>
   <p>See Also : +colorWithCalibratedWhite:alpha:</p>
 */
 + (NSColor*) blackColor
@@ -492,7 +492,7 @@ systemColorWithName(NSString *name)
 
 /**<p>Returns an NSColor in a  NSCalibratedRGBColorSpace space name.
   with red, green, blue and alpha values set as 0.0, 0.0, 1.0 and 1.0
-  respectively </p><p>See Also : +colorWithCalibratedRed:green:blue:alpha:</p>
+  respectively.</p><p>See Also : +colorWithCalibratedRed:green:blue:alpha:</p>
 */
 + (NSColor*) blueColor
 {
@@ -504,7 +504,7 @@ systemColorWithName(NSString *name)
 
 /**<p>Returns a NSColor in a NSCalibratedRGBColorSpace space name.
   with red, green, blue and alpha values set as 0.6, 0.4, 0.2 and 1.0
-  respectively </p><p>See Also: +colorWithCalibratedRed:green:blue:alpha:</p>
+  respectively.</p><p>See Also: +colorWithCalibratedRed:green:blue:alpha:</p>
 */
 + (NSColor*) brownColor
 {
@@ -515,7 +515,7 @@ systemColorWithName(NSString *name)
 }
 
 /**<p>Returns a NSColor in a NSCalibratedWhiteColorSpace space name.
-  with white and alpha values set as 0.0 and 1.0 respectively </p>
+  with white and alpha values set as 0.0 and 1.0 respectively.</p>
   <p>See Also : +colorWithCalibratedWhite:alpha:</p>
 */
 + (NSColor*) clearColor
@@ -526,7 +526,7 @@ systemColorWithName(NSString *name)
 
 /**<p>Returns a NSColor in a NSCalibratedRGBColorSpace space name.
   with red, green, blue and alpha values set as 0.0, 1.0, 1.0 and 1.0
-  respectively </p><p>See Also : +colorWithCalibratedRed:green:blue:alpha:</p>
+  respectively.</p><p>See Also : +colorWithCalibratedRed:green:blue:alpha:</p>
 */
 + (NSColor*) cyanColor
 {
@@ -537,7 +537,7 @@ systemColorWithName(NSString *name)
 }
 
 /**<p>Returns a NSColor in a NSCalibratedWhiteColorSpace space name.
-  with white and alpha values set as NSDarkGray and 1.0 respectively </p>
+  with white and alpha values set as NSDarkGray and 1.0 respectively. </p>
   <p>See Also : +colorWithCalibratedWhite:alpha:</p>
 */
 + (NSColor*) darkGrayColor
@@ -546,7 +546,7 @@ systemColorWithName(NSString *name)
 }
 
 /**<p>Returns a NSColor in a NSCalibratedWhiteColorSpace space name.
-  with white and alpha values set as NSGray and 1.0 respectively </p>
+  with white and alpha values set as NSGray and 1.0 respectively. </p>
   <p>See Also: +colorWithCalibratedWhite:alpha:</p>
 */
 + (NSColor*) grayColor
@@ -577,7 +577,7 @@ systemColorWithName(NSString *name)
 
 /**<p>Returns a NSColor in a NSCalibratedRGBColorSpace space name.
   with red, green, blue and alpha values set as 1.0, 0.0, 1.0 and 1.0
-  respectively </p><p>See Also : +colorWithCalibratedRed:green:blue:alpha:</p>
+  respectively.</p><p>See Also : +colorWithCalibratedRed:green:blue:alpha:</p>
 */
 + (NSColor*) magentaColor
 {
@@ -590,7 +590,7 @@ systemColorWithName(NSString *name)
 
 /**<p>Returns a NSColor in a NSCalibratedRGBColorSpace space name.
   with red, green, blue and alpha values set as 1.0, 0.5, 0.0 and 1.0
-  respectively </p><p>See Also: +colorWithCalibratedRed:green:blue:alpha:</p>
+  respectively.</p><p>See Also: +colorWithCalibratedRed:green:blue:alpha:</p>
 */
 + (NSColor*) orangeColor
 {
@@ -603,7 +603,7 @@ systemColorWithName(NSString *name)
 
 /**<p>Returns a NSColor in a NSCalibratedRGBColorSpace space name.
   with red, green, blue and alpha values set as 0.5, 0.0, 0.5 and 1.0
-  respectively </p><p>See Also : +colorWithCalibratedRed:green:blue:alpha:</p>
+  respectively.</p><p>See Also : +colorWithCalibratedRed:green:blue:alpha:</p>
 */
 + (NSColor*) purpleColor
 {
@@ -627,7 +627,7 @@ systemColorWithName(NSString *name)
 }
 
 /**<p>Returns a NSColor in a NSCalibratedWhiteColorSpace space name.
-  with white and alpha values set as NSWhite and 1.0 respectively </p>
+  with white and alpha values set as NSWhite and 1.0 respectively. </p>
   <p>See Also : +colorWithCalibratedWhite:alpha:</p>
 */
 + (NSColor*) whiteColor
@@ -638,7 +638,7 @@ systemColorWithName(NSString *name)
 
 /**<p>Returns a NSColor in a NSCalibratedRGBColorSpace space name.
   with red, green, blue and alpha values set as 1.0, 0.0, 0.0 and 1.0
-  respectively </p><p>See Also : +colorWithCalibratedRed:green:blue:alpha:</p>
+  respectively.</p><p>See Also : +colorWithCalibratedRed:green:blue:alpha:</p>
 */
 + (NSColor*) yellowColor
 {
@@ -658,7 +658,7 @@ systemColorWithName(NSString *name)
 }
 
 /** TODO
- *<p>See Also: +ignoresAlpha:</p>
+ *<p>See Also: +ignoresAlpha</p>
  */
 + (void) setIgnoresAlpha: (BOOL)flag
 {
