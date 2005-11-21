@@ -116,6 +116,11 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
   [super dealloc];
 }
 
+
+/**<p>Sets aView the NSClipView's document view to <var>aView</var>
+   .TODO explain notifications ... </p>
+   <p>See Also: -documentView</p>
+ */
 - (void) setDocumentView: (NSView*)aView
 {
   NSNotificationCenter	*nc;
@@ -362,6 +367,9 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
   [_super_view reflectScrolledClipView: self];
 }
 
+/**
+ *<p>TODO</p>
+ */
 - (NSPoint) constrainScrollPoint: (NSPoint)proposedNewOrigin
 {
   NSRect	documentFrame;
@@ -431,6 +439,9 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
   return new;
 }
 
+/**<p>Returns the document rectangle.</p>
+   <p>See Also: -documentVisibleRect </p>
+ */
 - (NSRect) documentRect
 {
   NSRect documentFrame;
@@ -451,6 +462,9 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
   return rect;
 }
 
+/**<p>Returns the document visible rectangle</p>
+ <p>See Also: -documentRect </p>
+ */
 - (NSRect) documentVisibleRect
 {
   NSRect documentBounds;
@@ -478,6 +492,8 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
     }
 }
 
+/**<p>Scrolls in response to mouse-dragged events.</p>
+ */
 - (BOOL) autoscroll: (NSEvent*)theEvent
 {
   NSPoint new;
@@ -524,6 +540,9 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
   [_super_view reflectScrolledClipView: self];
 }
 
+/**<p>Used when the document view frame notify its change.
+   ( with NSViewFrameDidChangeNotification )</p>
+ */
 - (void) viewFrameChanged: (NSNotification*)aNotification
 {
   [self setBoundsOrigin: [self constrainScrollPoint: _bounds.origin]];
@@ -579,6 +598,10 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
   [_super_view reflectScrolledClipView: self];
 }
 
+/**
+ *<p>Returns the NSClipView's document view</p>
+ *<p>See Also: -setDocumentView: </p>
+ */
 - (id) documentView
 {
   return _documentView;
@@ -594,21 +617,34 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
   return _copiesOnScroll;
 }
 
+/**<p>Sets the cursor for the document view to <var>aCursor</var></p>
+ <p>See Also: -documentCursor</p>
+ */
 - (void) setDocumentCursor: (NSCursor*)aCursor
 {
   ASSIGN (_cursor, aCursor);
 }
 
+/**<p>Returns the cursor of the document view</p>
+   <p>See Also: -setDocumentCursor: </p>
+*/
 - (NSCursor*) documentCursor
 {
   return _cursor;
 }
 
+/**<p>Returns the NSClipView's background color</p>
+   <p>See Also: -setBackgroundColor:</p>
+ */
 - (NSColor*) backgroundColor
 {
   return _backgroundColor;
 }
 
+/**<p>Sets the NSClipView's background color to <var>aColor</var> and marks
+   self for display. Sets the opaque flag to if needed</p> 
+   <p>See Also: -backgroundColor [NSView-isOpaque]</p>
+ */
 - (void) setBackgroundColor: (NSColor*)aColor
 {
   if (![_backgroundColor isEqual: aColor])
