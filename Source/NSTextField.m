@@ -627,6 +627,20 @@ static Class textFieldCellClass;
   return YES;
 }
 
+- (BOOL)textView: (NSTextView*)textView doCommandBySelector: (SEL)command
+{
+  if (_delegate && 
+      [_delegate respondsToSelector: @selector(control:textView:doCommandBySelector:)])
+    {
+      return [_delegate control: self 
+			textView: textView 
+			doCommandBySelector: command];
+    }
+
+   return NO;
+}
+
+
 //
 // Rich Text
 //

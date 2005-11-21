@@ -1,3 +1,10 @@
+2005-11-21  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSliderCell.m (-drawInteriorWithFrame:inView:): Allow
+	the knob image to resize. Patch by Georg Fleischmann <georg@vhf.de>
+	* Source/NSTextField: (textView:doCommandBySelector:) new method
+	to pass on the request to the delegate, if possible.
+
 2005-11-21  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSPasteboard.m: Turn off warning message about launching

@@ -191,16 +191,17 @@ DEFINE_RINT_IF_MISSING
 	{
 	  image = [NSImage imageNamed: @"common_SliderVert"];
 	  size = [image size];
-	  [_knobCell setImage: image];
+	  [image setScalesWhenResized:YES];
 	  [image setSize: NSMakeSize (cellFrame.size.width, size.height)];
 	}
       else
 	{
 	  image = [NSImage imageNamed: @"common_SliderHoriz"];
 	  size = [image size];
-	  [_knobCell setImage: image];
+	  [image setScalesWhenResized:YES];
 	  [image setSize: NSMakeSize (size.width, cellFrame.size.height)];
 	}
+      [_knobCell setImage: image];
     }
   _isVertical = vertical;
 
