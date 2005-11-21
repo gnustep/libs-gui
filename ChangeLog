@@ -1,3 +1,9 @@
+2005-11-21  fabien  <fabien@sonappart.net>
+
+	* Source/NSButton.m : Improved documentation
+	* Source/NSButtonCell.m : Improved documentation
+	* Source/NSCachedImageRep.m : Improved documentation
+
 2005-11-21  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSSliderCell.m (-drawInteriorWithFrame:inView:): Allow
