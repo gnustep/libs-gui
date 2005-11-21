@@ -380,7 +380,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
     }
 }
 
-/**<p>Creates ( if needed ) and returns the shared NSColorPanel</p>
+/**<p>Creates ( if needed ) and returns the shared NSColorPanel.</p>
  */
 + (NSColorPanel *)sharedColorPanel
 {
@@ -399,7 +399,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
   return _gs_gui_color_panel;
 }
 
-/** <p>Returns whether the NSColorPanel has been already created</p>
+/** <p>Returns whether the NSColorPanel has been already created.</p>
  */
 + (BOOL) sharedColorPanelExists
 {
@@ -485,16 +485,15 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 }
 
 /** <p>Returns the NSColorPanel's accessory view if it exists, 
-    nil otherwise</p><p>See Also: -setAccessoryView:</p>    
+    nil otherwise.</p><p>See Also: -setAccessoryView:</p>    
  */
 - (NSView *) accessoryView
 {
   return _accessoryView;
 }
 
-/** <p> Returns whether the NSColorPanel continuously sends the action message.
-    The default is ... </p><p>See Also: -setContinuous:-setAction: -setTarget:
-    </p>
+/** <p> Returns whether the NSColorPanel continuously sends its action message.
+    </p><p>See Also: -setContinuous:-setAction: -setTarget: </p>
  */
 - (BOOL) isContinuous
 {
@@ -528,6 +527,11 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
   [_splitView addSubview: _accessoryView];
 }
 
+/**<p>Sets the NSColorPanl action method to <var>aSelector</var> The
+   action message is usally send in -setColor:, when the picker is updated,
+   when a new picker is show, when the alpha is changed or when one of the
+   color well at the bottom is selected</p>
+ */
 - (void) setAction: (SEL)aSelector
 {
   _action = aSelector;
@@ -564,6 +568,9 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
     }
 }
 
+/** <p>Sets whether the NSColorPanel shows alpha values and the alpha
+    slider</p><p>See Also: -showsAlpha</p>
+ */
 - (void) setShowsAlpha: (BOOL)flag
 {
   if (flag == _showsAlpha)
@@ -596,11 +603,16 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
   [_topView setNeedsDisplay: YES];
 }
 
+/** <p>Sets the target object to <var>anObject</var></p>
+ */
 - (void) setTarget: (id)anObject
 {
   _target = anObject;
 }
 
+/** <p>Returns whether the NSColorPanel shows alpha values and the alpha
+    slider</p><p>See Also: -setShowsAlpha:</p>
+ */
 - (BOOL) showsAlpha
 {
   return _showsAlpha;
