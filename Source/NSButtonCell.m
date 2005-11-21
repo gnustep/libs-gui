@@ -129,31 +129,35 @@
   [super dealloc];
 }
 
-
+/** 
+ *<p>The GNUstep implementation does nothing here
+ *  (to match the Mac OS X behavior) because with
+ * NSButtonCell GNUstep implementation the cell type is bound to the image
+ * position. We implemented this behavior because it permits to have
+ * -setFont: -setTitle -setImage: methods which are symetrical by not altering
+ * directly the cell type and to validate the fact that the cell type is more
+ * characterized by the potential visibility of the image (which is under the
+ * control of the method -setImagePosition:) than by the value of the image
+ * ivar itself (related to -setImage: method).  
+ * On Mac OS X, the NSButtonCell cell type is NSTextCellType by default or
+ * NSImageCellType if the initialization has been done with -initImageCell:,
+ * it should be noted that the cell type never changes later.</p>
+ */
 - (void) setType: (NSCellType)aType
 {
-  /* We do nothing here (we match the Mac OS X behavior) because with
-   * NSButtonCell GNUstep implementation the cell type is bound to the image
-   * position. We implemented this behavior because it permits to have
-   * -setFont: -setTitle -setImage: methods which are symetrical by not altering
-   * directly the cell type and to validate the fact that the cell type is more
-   * characterized by the potential visibility of the image (which is under the
-   * control of the method -setImagePosition:) than by the value of the image
-   * ivar itself (related to -setImage: method).  
-   * On Mac OS X, the NSButtonCell cell type is NSTextCellType by default or
-   * NSImageCellType if the initialization has been done with -initImageCell:,
-   * it should be noted that the cell type never changes later.
-   */
 }
 
-/*
- * Setting the Titles
+/** <p>Returns the NSButtonCell's title</p>
+    <p>See Also: -setTitle: [NSCell-stringValue]</p>
  */
 - (NSString*) title
 {
   return [self stringValue];
 }
 
+/** <p>Returns the NSButtonCell's alternate title ( used when highlighted )</p>
+    <p>See Also: -setAlternateTitle:</p>
+ */
 - (NSString*) alternateTitle
 {
   return _altContents;
@@ -265,11 +269,18 @@
     }
 }
 
+/** <p>Sets the NSButtonCell's title to <var>aString</var></p>
+    <p>See Also: -title [NSCell-setStringValue:]</p>
+ */
 - (void) setTitle: (NSString*)aString
 {
   [self setStringValue: aString];
 }
 
+/** <p>Sets the NSButtonCell's alternate title ( used when highlighted ) 
+    to <var>aString</var> and update the cell if it contains 
+    a NSControl view</p><p>See Also: -alternateTitle</p>
+ */
 - (void) setAlternateTitle: (NSString*)aString
 {
   ASSIGNCOPY(_altContents, aString);
@@ -350,14 +361,18 @@
   [self setAlternateMnemonicLocation: location];
 }
 
-/*
- * Setting the Images
+/**<p>Returns the NSButtonCell's alternate image</p>
+   <p>See Also: -setAlternateImage:</p> 
  */
 - (NSImage*) alternateImage
 {
   return _altImage;
 }
 
+/** <p>Returns the NSButtonCell's image position. See <ref type="type" 
+    id="NSCellImagePosition">NSCellImagePosition</ref> for more informations.
+    </p><p>See Also: -setImagePosition:</p>
+ */
 - (NSCellImagePosition) imagePosition
 {
   return _cell.image_position;
@@ -384,6 +399,12 @@
   ASSIGN(_altImage, anImage);
 }
 
+/**<p>Sets the image position. The GNUstep implementation depends only on 
+ *the image position. If the image position is set to NSNoImage
+ * then the type is set to NSTextCellType, to NSImageCellType otherwise</p>
+ *<p>See Also: -imagePosition</p>
+ *
+ */
 - (void) setImagePosition: (NSCellImagePosition)aPosition
 {
   _cell.image_position = aPosition;
@@ -416,14 +437,19 @@
   _repeatInterval = interval;
 }
 
-/*
- * Setting the Key Equivalent
+/**<p>Returns the key equivalent. 
+   The key equivalent is used into the [NSButton-performKeyEquivalent:] method
+   ( subclass of NSResponder ) </p>
+   <p>See Also: -setKeyEquivalent: [NSButton-performKeyEquivalent:]</p>
  */
 - (NSString*) keyEquivalent
 {
   return _keyEquivalent;
 }
 
+/**<p>Returns the NSFont of the key equivalent ( TODO explain )</p>
+ *<p>See Also: -setKeyEquivalentFont:</p>
+ */
 - (NSFont*) keyEquivalentFont
 {
   return _keyEquivalentFont;
@@ -434,16 +460,29 @@
   return _keyEquivalentModifierMask;
 }
 
+/**<p>Sets the key equivalent.The key equivalent is used into the
+  [NSButton-performKeyEquivalent:] method ( subclass of NSResponder )</p>
+ <p>See Also: -keyEquivalent -setKeyEquivalentModifierMask:
+ -keyEquivalentModifierMask</p>
+*/
 - (void) setKeyEquivalent: (NSString*)key
 {
   ASSIGNCOPY(_keyEquivalent, key);
 }
 
+/**<p>Sets the mask ( modifier key ) for the keyEquivalent.The key equivalent 
+ *is used into the [NSButton-performKeyEquivalent:] method 
+ *( subclass of NSResponder )</p>
+ *<p>See Also: -keyEquivalentModifierMask keyEquivalent -setKeyEquivalent:</p>
+ */
 - (void) setKeyEquivalentModifierMask: (unsigned int)mask
 {
   _keyEquivalentModifierMask = mask;
 }
 
+/**<p>Sets the NSFont of the key equivalent. TODO explain </p>
+ *<p>See Also: -keyEquivalentFont</p>
+ */
 - (void) setKeyEquivalentFont: (NSFont*)fontObj
 {
   ASSIGN(_keyEquivalentFont, fontObj);
@@ -454,19 +493,25 @@
   ASSIGN(_keyEquivalentFont, [NSFont fontWithName: fontName size: fontSize]);
 }
 
-/*
- * Modifying Graphic Attributes
+/**<p>Returns whether the button cell is transparent </p>
+ *<p>See Also: -setTransparent:</p>
  */
 - (BOOL) isTransparent
 {
   return _buttoncell_is_transparent;
 }
 
+/**<p>Sets whether the button cell is transparent</p>
+ *<p>See Also: -isTransparent </p>
+ */
 - (void) setTransparent: (BOOL)flag
 {
   _buttoncell_is_transparent = flag;
 }
 
+/**<p>Returns whether the NSButtonCell is opaque. Returns YES if the button 
+   cell is not transparent and if the cell is bordered. NO otherwise</p>
+ */
 - (BOOL) isOpaque
 {
   return !_buttoncell_is_transparent && _cell.is_bordered;

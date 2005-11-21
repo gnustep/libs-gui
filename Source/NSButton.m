@@ -58,7 +58,7 @@ static id buttonCellClass = nil;
 //
 // Initializing the NSButton Factory
 //
-/**
+/** Returns 
    
  */
 + (Class) cellClass
@@ -80,9 +80,10 @@ static id buttonCellClass = nil;
   return YES;
 }
 
-//
-// Setting the Button Type
-//
+/** <p>Sets the NSButtonCell's type to <var>aType</var> and marks self for
+    display.See <ref type="type" id="NSButtonType">NSButtonType</ref> for more
+    informations.</p>
+ */
 - (void) setButtonType: (NSButtonType)aType
 {
   [_cell setButtonType: aType];
@@ -117,8 +118,9 @@ static id buttonCellClass = nil;
   [self setState: (aDouble != 0)];
 }
 
-/** <p>Sets the NSButtonCell's state to value and marks self for display</p>
-   <p>See Also: -state</p>  */
+/**<p>Sets the NSButtonCell's state to <var>value</var> and marks
+   self for display.</p><p>See Also: -state</p> 
+ */
 - (void) setState: (int)value
 {
   [_cell setState: value];
@@ -142,6 +144,9 @@ static id buttonCellClass = nil;
   [_cell setAllowsMixedState: flag];
 }
 
+/**<p>Sets the NSButtonCell to the next state and marks self for display.</p>
+   <p>See Also: [NSButtonCell-setNextState]</p>
+ */
 - (void)setNextState
 {
   [_cell setNextState];
@@ -163,18 +168,16 @@ static id buttonCellClass = nil;
   [_cell setPeriodicDelay: delay interval: interval];
 }
 
-//
-// Setting the Titles
-//
-/** <p>Returns the NSButtonCell's title</p><p>See Also: -setAlternateTitle:</p>
+/**<p>Returns the NSButtonCell's alternate title</p>
+   <p>See Also: -setAlternateTitle:</p>
  */
 - (NSString *) alternateTitle
 {
   return [_cell alternateTitle];
 }
 
-/** <p>Sets the NSButtonCell's alternateTitle to aString and marks the view
-    for display</p><p>See Also: -alternateTitle</p>
+/**<p>Sets the NSButtonCell's alternateTitle to aString and marks self
+   for display</p><p>See Also: -alternateTitle</p>
  */
 - (void) setAlternateTitle: (NSString *)aString
 {
@@ -182,8 +185,8 @@ static id buttonCellClass = nil;
   [self setNeedsDisplay: YES];
 }
 
-/** <p>Sets the NSButtonCell's title to aString and marks the view for display
-    </p><p>See Also: -title</p>
+/**<p>Sets the NSButtonCell's title to aString and marks self for display
+   </p><p>See Also: -title</p>
  */
 - (void) setTitle: (NSString *)aString
 {
@@ -229,7 +232,7 @@ static id buttonCellClass = nil;
 //
 // Setting the Images
 //
-/** <p>Returns the NSButtonCell's alternate image</p>
+/** <p>Returns the NSButtonCell's alternate image.</p>
     <p>See Also: -setAlternateImage:</p> 
 */
 - (NSImage *) alternateImage
@@ -238,17 +241,18 @@ static id buttonCellClass = nil;
 }
 
 /** <p>Returns the NSButtonCell's image</p>
-    <p>See Also: -setImage:</p> */
+    <p>See Also: -setImage:</p> 
+*/
 - (NSImage *) image
 {
   return [_cell image];
 }
 
 /** <p>Returns the position of the NSButtonCell's image. See 
-    NSCellImagePosition for more informations </p>
+    <ref type="type" id="NSCellImagePosition">NSCellImagePosition</ref>
+    for more informations. </p>
     <p>See Also: -setImagePosition:</p> 
 */
-
 - (NSCellImagePosition) imagePosition
 {
   return [_cell imagePosition];
@@ -264,7 +268,7 @@ static id buttonCellClass = nil;
 }
 
 /** <p>Sets the NSButtonCell's image to anImage and marks self
-    for display</p><p>See Also: -image </p>
+    for display.</p><p>See Also: -image </p>
 */
 - (void) setImage: (NSImage *)anImage
 {
@@ -273,7 +277,9 @@ static id buttonCellClass = nil;
 }
 
 /** <p>Sets the postion of the NSButtonCell's image to aPosition
-    and marks self for display</p><p>See Also: -imagePosition </p>
+    and marks self for display. See <ref type="type" id="NSCellImagePosition">
+    NSCellImagePosition</ref>for more informations.</p>
+    <p>See Also: -imagePosition </p>
 */
 - (void) setImagePosition: (NSCellImagePosition)aPosition
 {
@@ -284,24 +290,25 @@ static id buttonCellClass = nil;
 //
 // Modifying Graphic Attributes
 //
-/** <p>Returns whether the NSButtonCell has border</p>
-    <p>See Also: -setBordered:</p>
+/** <p>Returns whether the NSButton's cell has border. 
+    </p><p>See Also: -setBordered:</p>
 */
 - (BOOL) isBordered
 {
   return [_cell isBordered];
 }
 
-/** <p>Returns whether the NSButtonCell is transparent</p>
-    <p>See Also: -setBordered:</p>
+/** <p>Returns whether the NSButton's cell is transparent</p>
+    <p>See Also: -setTransparent:</p>
 */
 - (BOOL) isTransparent
 {
   return [_cell isTransparent];
 }
 
-/** <p>Sets whether the NSButtonCell has border and marks self for 
-    display</p><p>See Also: -isBordered</p>
+/** <p>Sets whether the NSButton's cell has border and marks self for 
+    display.</p>
+    <p>See Also: -isBordered</p>
 */
 - (void) setBordered: (BOOL)flag
 {
@@ -309,7 +316,7 @@ static id buttonCellClass = nil;
   [self setNeedsDisplay: YES];
 }
 
-/** <p>Sets whether the NSButtonCell is transparent and marks self for 
+/** <p>Sets whether the NSButton's cell is transparent and marks self for 
     display</p><p>See Also: -isTransparent</p>
 */
 - (void) setTransparent: (BOOL)flag
@@ -318,18 +325,18 @@ static id buttonCellClass = nil;
   [self setNeedsDisplay: YES];
 }
 
-/** <p>Returns the style of the NSButtonCell's bezeled border. See NSBezelStyle
-    for more informations</p>
-    <p>See Also: -setBezelStyle:</p>
+/** <p>Returns the style of the NSButtonCell's bezeled border. 
+    See <ref type="type" id="NSBezelStyle">NSBezelStyle</ref> for more
+    informations</p><p>See Also: -setBezelStyle:</p>
 */
 - (NSBezelStyle)bezelStyle
 {
   return [_cell bezelStyle];
 }
 
-/** <p>Sets the style of the NSButtonCell's bezeled border and marks self for
-    display. See NSBezelStyle for more informations</p>
-    <p>See Also: -bezelStyle</p>
+/**<p>Sets the style of the NSButtonCell's bezeled border and marks self for
+   display. See <ref type="type" id="NSBezelStyle">NSBezelStyle</ref>
+   for more informations</p> <p>See Also: -bezelStyle</p>
 */
 - (void)setBezelStyle:(NSBezelStyle)bezelStyle
 {
@@ -361,9 +368,8 @@ static id buttonCellClass = nil;
 //
 // Setting the Key Equivalent
 //
-/** <p>Returns the NSButtonCell's key equivalent. This is used in
-   -performKeyEquivalent: ... TODO</p>
-   <p>See Also: -setKeyEquivalent:</p>
+/**<p>Returns the NSButtonCell's key equivalent. This is used in
+   -performKeyEquivalent: ... TODO</p><p>See Also: -setKeyEquivalent:</p>
  */
 - (NSString*) keyEquivalent
 {
@@ -380,8 +386,7 @@ static id buttonCellClass = nil;
 }
 
 /** <p>Sets the NSButtonCell's key equivalent.This is used in
-   -performKeyEquivalent: ... TODO</p>
-   <p>See Also: -keyEquivalent</p>
+    -performKeyEquivalent: </p> <p>See Also: -keyEquivalent</p>
 */
 - (void) setKeyEquivalent: (NSString*)aKeyEquivalent
 {
@@ -389,7 +394,7 @@ static id buttonCellClass = nil;
 }
 
 /** <p>Sets the modifier mask of the NSButtonCell's key equivalent.
-    This is used in   -performKeyEquivalent: ... TODO</p>
+    This is used in -performKeyEquivalent:</p>
    <p>See Also: -keyEquivalentModifierMask</p>
 */
 - (void) setKeyEquivalentModifierMask: (unsigned int)mask
