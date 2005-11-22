@@ -111,7 +111,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
     }
 }
 
-/** <p>Creates ( if needed ) and returns the shared NSFontPanel</p> 
+/** <p>Creates ( if needed ) and returns the shared NSFontPanel.</p> 
  */
 + (NSFontPanel*) sharedFontPanel
 {
@@ -155,7 +155,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   [super dealloc];
 }
 
-/** <p>Returns whether the "set" button is enabled</p>
+/** <p>Returns whether the "set" button is enabled.</p>
     <p>See Also: -setEnabled:</p>
  */
 - (BOOL) isEnabled
@@ -165,7 +165,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   return [setButton isEnabled];
 }
 
-/**<p>Sets whether the "set" button is enabled</p>
+/**<p>Sets whether the "set" button is enabled.</p>
    <p>See Also: -isEnabled</p>
  */
 - (void) setEnabled: (BOOL)flag
@@ -215,8 +215,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 	isMultiple: [fm isMultiple]];
 }
 
-/**  <p> TODO </p>
- * 
+/**<p> TODO </p>
  */
 - (void) setPanelFont: (NSFont *)fontObject
 	   isMultiple: (BOOL)flag
@@ -325,15 +324,14 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   return newFont;
 }
 
-/*
- * Works in modal loops
+/**<p>Overides the NSPanel/NSWindow method to always returns YES</p>
  */
 - (BOOL) worksWhenModal
 {
   return YES;
 }
 
-/** <p>Returns the NSFontPanel's accessory view</p>
+/** <p>Returns the NSFontPanel's accessory view.</p>
     <p>See Also: -setAccessoryView:</p>
  */
 - (NSView*) accessoryView
@@ -341,7 +339,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   return _accessoryView;
 }
 
-/** <p>Adds the NSFontPanel's accessory view</p>
+/** <p>Sets the NSFontPanel's accessory view to <var>aView</var></p>
     <p>See Also: -accessoryView</p>
  */
 - (void) setAccessoryView: (NSView*)aView
