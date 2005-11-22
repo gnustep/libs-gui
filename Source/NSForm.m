@@ -80,7 +80,7 @@ static Class defaultCellClass = nil;
      numberOfColumns: (int)colsWide
 {
   self = [super initWithFrame: (NSRect)frameRect
-			 mode: (int)aMode
+		 mode: (int)aMode
 		    prototype: (NSCell*)prototype
 		 numberOfRows: (int)rowsHigh
 	      numberOfColumns: (int)colsWide];
@@ -90,8 +90,8 @@ static Class defaultCellClass = nil;
 }
 
 /** <p>Adds a new entry with title as its title at the end of the NSForm
-    and returns the NSFormCell</p>
-    <p>See Also: -insertEntry:atIndex:</p>
+    and returns the NSFormCell.</p><p>See Also: -insertEntry:atIndex:
+    -removeEntryAtIndex:</p>
  */
 - (NSFormCell*) addEntry: (NSString*)title
 {
@@ -100,7 +100,7 @@ static Class defaultCellClass = nil;
 
 /** <p>Inserts a new entry with title as its title at the index index of
     the NSForm and returns the NSFormCell.</p>
-    <p>See Also: -insertEntry:atIndex:</p>
+    <p>See Also: -addEntry: -removeEntryAtIndex:</p>
  */
 - (NSFormCell*) insertEntry: (NSString*)title
 		    atIndex: (int)index
@@ -115,7 +115,7 @@ static Class defaultCellClass = nil;
 }
 
 /** <p>Removes the entry at index index. </p>
-    <p>See Also: -insertEntry:atIndex:</p>
+    <p>See Also: -insertEntry:atIndex: -addEntry:</p>
  */
 - (void) removeEntryAtIndex: (int)index
 {
@@ -157,7 +157,8 @@ static Class defaultCellClass = nil;
   [super dealloc];
 }
 
-/** <p>Sets whether then NSForm's entries have bezeled border</p>
+/** <p>Sets whether then NSForm's entries have bezeled border.</p>
+    <p>See Also: [NSCell-setBezeled:]</p>
  */
 - (void) setBezeled: (BOOL)flag
 {
@@ -171,6 +172,7 @@ static Class defaultCellClass = nil;
 }
 
 /** <p>Sets whether then NSForm's entries have border</p>
+    <p>See Also: [NSCell-setBordered:]</p>
  */
 - (void) setBordered: (BOOL)flag
 {
@@ -184,6 +186,7 @@ static Class defaultCellClass = nil;
 }
 
 /**<p>Sets the width of all entries to width</p> 
+   <p>See Also: [NSMatrix-setCellSize:]</p>
  */
 - (void) setEntryWidth: (float)width
 {
@@ -193,7 +196,8 @@ static Class defaultCellClass = nil;
   [self setCellSize: size];
 }
 
-/** <p>Sets the spacing between all entries to spacing</p>
+/** <p>Sets the spacing between all entries to spacing. By default
+    the spacing is 4.</p><p>See Also: [NSMatrix-setIntercellSpacing:]</p>
  */
 - (void) setInterlineSpacing: (float)spacing
 {
@@ -203,8 +207,11 @@ static Class defaultCellClass = nil;
 /* For the title attributes we use the corresponding attributes from the cell.
    For the text attributes we use instead the attributes inherited from the
    NSCell class. */
-/** <p>Sets the text alignment of the title to aMode for all entries</p> 
-    <p>See Also: -setTextAlignment:</p>
+
+/** <p>Sets the text alignment of the title to aMode for all entries.
+    See <ref type="type" id="NSTextAlignment">NSTextAlignment</ref> for more
+    informations. The default title alignment is NSLeftTextAlignment</p> 
+    <p>See Also:  [NSFormCell-setTitleAlignment:] -setTextAlignment: </p>
  */
 - (void) setTitleAlignment: (NSTextAlignment)aMode
 {
@@ -217,8 +224,10 @@ static Class defaultCellClass = nil;
     [[self cellAtRow: i column: 0] setTitleAlignment: aMode];
 }
 
-/** <p>Sets the text alignment to aMode for all entries</p> 
-    <p>See Also: -setTitleAlignment:</p>
+/** <p>Sets the text alignment to aMode for all entries. See
+    <ref type="type" id="NSTextAlignment">NSTextAlignment</ref> for more
+    informations. The default text alignment is NSRightTextAlignment</p> 
+    <p>See Also: -setTitleAlignment: [NSCell-setAlignment:]</p>
  */
 - (void) setTextAlignment: (int)aMode
 {
@@ -232,7 +241,7 @@ static Class defaultCellClass = nil;
 }
 
 /** <p>Sets the text font of the title to fontObject for all entries</p>
-    <p>See Also: -setTextFont:</p>
+    <p>See Also: [NSFormCell-setTitleFont:] -setTextFont:</p>
  */
 - (void) setTitleFont: (NSFont*)fontObject
 {
@@ -246,7 +255,7 @@ static Class defaultCellClass = nil;
 }
 
 /** <p>Sets the text font to fontObject for all entries</p>
-    <p>See Also: -setTitleFont:</p>
+    <p>See Also: [NSCell-setFont:] -setTitleFont:</p>
  */
 - (void) setTextFont: (NSFont*)fontObject
 {
@@ -260,7 +269,7 @@ static Class defaultCellClass = nil;
 }
 
 /**<p>Returns the index of the entry specified by aTag or -1 if aTag is not 
-   found in entries</p>
+   found in entries.</p><p>See Also: [NSMatrix-cellAtRow:column:]</p>
  */
 - (int) indexOfCellWithTag: (int)aTag
 {
@@ -272,14 +281,16 @@ static Class defaultCellClass = nil;
   return -1;
 }
 
-/**<p>Returns the index of the current selected entry</p>
+/**<p>Returns the index of the current selected entry.</p>
+   <p>[NSMatrix-selectedRow]</p>
  */
 - (int) indexOfSelectedItem
 {
   return [self selectedRow];
 }
 
-/**<p>Returns the NSFormCell at index index</p>
+/**<p>Returns the NSFormCell at index <var>index</var></p>
+   <p>See Also: [NSMatrix-cellAtRow:column:]</p>
  */
 - (id) cellAtIndex: (int)index
 {
@@ -331,6 +342,10 @@ static Class defaultCellClass = nil;
   [super drawRect: rect];
 }
 
+/** <p>Draws the NSFormCell at the specified index</p>
+    <p>See Also: -cellAtIndex: [NSCell-drawWithFrame:inView:]
+    [NSMatrix-cellFrameAtRow:column:]</p>
+ */
 - (void) drawCellAtIndex: (int)index
 {
   id theCell = [self cellAtIndex: index];
@@ -344,6 +359,9 @@ static Class defaultCellClass = nil;
   [self drawCellAtIndex: row];
 }
 
+/** <p>Selects the text in the entry specified by index.</p>
+    <p>[NSMatrix-selectTextAtRow:column:]</p>
+ */
 - (void) selectTextAtIndex: (int)index
 {
   [self selectTextAtRow: index column: 0];
