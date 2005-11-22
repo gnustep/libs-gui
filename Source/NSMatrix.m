@@ -151,6 +151,9 @@ enum {
   DEFAULT_CELL_WIDTH = 100
 };
 
+/** <p>TODO documentation</p>
+ */
+
 @implementation NSMatrix
 
 /* Class variables */
@@ -203,6 +206,11 @@ static SEL getSel;
 	     numberOfColumns: 0];
 }
 
+/** <p>Initializes and returns a NSMatrix in frame frameRect.
+    By default the matrix has no row and no column, the NSMatrix's mode is
+    NSRadioModeMatrix and the cell class is a NSActionCell class.</p><p>See
+    Also: -initWithFrame:mode:cellClass:numberOfRows:numberOfColumns:</p>
+ */
 - (id) initWithFrame: (NSRect)frameRect
 {
   return [self initWithFrame: frameRect
@@ -279,13 +287,20 @@ static SEL getSel;
   return self;
 }
 
+/**<p>Initializes and returns a new NSMatrix in the specified frame frameRect.
+   The <ref type="type" id="NSMatrixMode">NSMatrixMode</ref> is specified
+   by mode, the cell class used specified by classId and the number of rows
+   and columns specified by rowsHigh and colsWide respectively</p><p>See Also:
+   -initWithFrame:mode:prototype:numberOfRows:numberOfColumns:</p> 
+ */
 - (id) initWithFrame: (NSRect)frameRect
 	        mode: (int)aMode
 	   cellClass: (Class)classId
         numberOfRows: (int)rowsHigh
      numberOfColumns: (int)colsWide
 {
-  self = [super initWithFrame: frameRect];
+  if ( ! ( self = [super initWithFrame: frameRect] ) )
+    return nil;
 
   [self setCellClass: classId];
   return [self _privateFrame: frameRect
@@ -294,13 +309,20 @@ static SEL getSel;
 	     numberOfColumns: colsWide];
 }
 
+/**<p>Initializes and returns a new NSMatrix in the specified frame frameRect.
+   The <ref type="type" id="NSMatrixMode">NSMatrixMode</ref> is specified
+   by mode, the cell used specified by aCell and the number of rows
+   and columns specified by rowsHigh and colsWide respectively</p><p>See Also:
+   -initWithFrame:mode:prototype:numberOfRows:numberOfColumns:</p> 
+ */
 - (id) initWithFrame: (NSRect)frameRect
 	        mode: (int)aMode
 	   prototype: (NSCell*)aCell
         numberOfRows: (int)rowsHigh
      numberOfColumns: (int)colsWide
 {
-  self = [super initWithFrame: frameRect];
+  if (! ( self = [super initWithFrame: frameRect] ) )
+    return nil;
 
   [self setPrototype: aCell];
   return [self _privateFrame: frameRect
@@ -346,31 +368,49 @@ static SEL getSel;
   [super dealloc];
 }
 
+/**<p>Inserts a new column after the current last column.</p>
+   <p>See Also: -insertColumn:withCells: </p>
+ */
 - (void) addColumn
 {
   [self insertColumn: _numCols withCells: nil];
 }
 
+/**<p>Inserts a new column of cells specified by cellArray after the current
+   last column.</p><p>See Also: -insertColumn:withCells: </p>
+ */
 - (void) addColumnWithCells: (NSArray*)cellArray
 {
   [self insertColumn: _numCols withCells: cellArray];
 }
 
+/**<p>Inserts a new row after the current last row.</p>
+   <p>See Also: -insertRow:withCells: </p>
+ */
 - (void) addRow
 {
   [self insertRow: _numRows withCells: nil];
 }
 
+/**<p>Inserts a new row of cells specified by cellArray
+   after the current last row.</p><p>See Also: -insertRow:withCells: </p>
+ */
 - (void) addRowWithCells: (NSArray*)cellArray
 {
   [self insertRow: _numRows withCells: cellArray];
 }
 
+/**<p>Inserts a new column at the specified column column.</p>
+   <p>See Also: -insertColumn:withCells:</p> 
+ */
 - (void) insertColumn: (int)column
 {
   [self insertColumn: column withCells: nil];
 }
 
+/**<p>Inserts a new column of cells ( specified by cellArray)at the specified
+   column column.</p>
+ */
 - (void) insertColumn: (int)column withCells: (NSArray*)cellArray
 {
   int	count = [cellArray count];
@@ -567,6 +607,9 @@ static SEL getSel;
   return aCell;
 }
 
+/** <p>Returns the rectangle of the cell at row <var>row</var> and column
+    <var>column</var></p>
+ */
 - (NSRect) cellFrameAtRow: (int)row
 		   column: (int)column
 {
@@ -586,6 +629,9 @@ static SEL getSel;
   return rect;
 }
 
+/**<p>Gets the number of rows and columns of the NSMatrix</p>
+   <p>See Also: -numberOfColumns -numberOfRows</p>
+ */
 - (void) getNumberOfRows: (int*)rowCount
 		 columns: (int*)columnCount
 {
@@ -726,6 +772,10 @@ static SEL getSel;
   [self sizeToCells];
 }
 
+/** <p>Sets space size between cells to aSize and resizes the matrix to
+    fits the new cells spacing.</p>
+    <p>See Also: -intercellSpacing -sizeToCells</p>
+ */
 - (void) setIntercellSpacing: (NSSize)aSize
 {
   _intercell = aSize;
@@ -794,6 +844,10 @@ static SEL getSel;
     }
 }
 
+/** <p>Gets the row and the column of the NSMatrix correponding to the 
+    specified NSPoint aPoint. Returns YES if aPoint is within the NSMatrix,
+    NO otherwise</p>
+ */ 
 - (BOOL) getRow: (int*)row
 	 column: (int*)column
        forPoint: (NSPoint)aPoint
@@ -872,6 +926,10 @@ static SEL getSel;
   return YES;
 }
 
+/** <p>Gets the row and the column of the NSMatrix correponding to the 
+    specified NSCell aCell. Returns YES if aCell is in the NSMatrix,
+    NO otherwise</p>
+ */ 
 - (BOOL) getRow: (int*)row
 	 column: (int*)column
 	 ofCell: (NSCell*)aCell
@@ -902,7 +960,10 @@ static SEL getSel;
 
   return NO;
 }
-
+/** <p>Sets the state of the cell at row <var>row</var> and <var>column</var>
+    to value. If the NSMatrix's mode is NSRadioModeMatrix it deselect
+    the cell currently selected if needed ( TODO ?).</p>
+ */
 - (void) setState: (int)value
 	    atRow: (int)row
 	   column: (int)column
@@ -942,6 +1003,10 @@ static SEL getSel;
   [self setNeedsDisplayInRect: [self cellFrameAtRow: row column: column]];
 }
 
+/**<p>Deselects all NSMatrix's cells. Does nothing if the NSMatrix's mode
+   is NSRadioModeMatrix and if it does not allows empty selection</p>
+   <p>See Also: -mode -allowsEmptySelection -setNeedsDisplayInRect:</p>
+ */
 - (void) deselectAllCells
 {
   int		i;
@@ -981,6 +1046,9 @@ static SEL getSel;
   _selectedColumn = -1;
 }
 
+/**<p>Deselects the selected cell.Does nothing if the NSMatrix's mode
+   is NSRadioModeMatrix and if it does not allows empty selection</p>
+ */
 - (void) deselectSelectedCell
 {
   int i,j;
@@ -1009,6 +1077,10 @@ static SEL getSel;
   _selectedColumn = -1;
 }
 
+/**<p>Selects all the cells and marks self for display. Does nothing if the
+   NSMatrix's mode is NSRadioModeMatrix</p><p>See Also:
+   -selectCellAtRow:column: -selectCell:</p>   
+ */
 - (void) selectAll: (id)sender
 {
   int i, j;
@@ -1106,6 +1178,11 @@ static SEL getSel;
     }
 }
 
+/** <p>Selects the cell and the text inside at row <var>row</var> 
+    and column <var>column</var>. If row or column is -1 it deselects all
+    the cells.</p>
+    <p>See Also: -deselectSelectedCell -selectTextAtRow:column:</p>    
+ */
 - (void) selectCellAtRow: (int)row column: (int)column
 {
   NSCell	*aCell;
@@ -1125,6 +1202,11 @@ static SEL getSel;
     }
 }
 
+/**<p>Selects the cell (and the text inside) with tag <var>anInt</var>.
+   Return YES if the NSMatrix contains a cell with tag <var>anInt</var>,
+   NO otherwise.</p><p>See Also: -deselectSelectedCell
+   -selectTextAtRow:column:</p>
+ */
 - (BOOL) selectCellWithTag: (int)anInt
 {
   id	aCell;
@@ -1148,6 +1230,8 @@ static SEL getSel;
   return NO;
 }
 
+/**<p>Returns an array of the selected cells</p>
+ */
 - (NSArray*) selectedCells
 {
   NSMutableArray	*array = [NSMutableArray array];
@@ -1318,6 +1402,10 @@ static SEL getSel;
   }
 }
 
+/**<p>Returns the cell at row <var>row</var> and column <var>column</var>
+   Returns nil if the <var>row</var> or <var>column</var> are out of
+   range</p>    
+ */
 - (id) cellAtRow: (int)row
 	  column: (int)column
 {
@@ -1326,6 +1414,9 @@ static SEL getSel;
   return _cells[row][column];
 }
 
+/**<p>Returns the cell with tag <var>anInt</var>
+   Returns nil if no cell has a tag <var>anInt</var></p>    
+ */
 - (id) cellWithTag: (int)anInt
 {
   int	i = _numRows;
@@ -1347,6 +1438,8 @@ static SEL getSel;
   return nil;
 }
 
+/** <p>Returns an array of the NSMatrix's cells</p>
+ */
 - (NSArray*) cells
 {
   NSMutableArray	*c;
@@ -1366,6 +1459,7 @@ static SEL getSel;
     }
   return c;
 }
+
 
 - (void) selectText: (id)sender
 {
@@ -2651,16 +2745,30 @@ static SEL getSel;
   return self;
 }
 
+/** <p>Sets the NSMatrix's mode to aMode. See <ref type="type" 
+    id="NSMatrixMode">NSMatrixMode</ref> for more informations. By default
+    the mode is <ref type="type" id="NSMatrixMode">NSRadioModeMatrix</ref>.
+    </p><p>See Also: -setMode:</p>
+ */
 - (void) setMode: (NSMatrixMode)aMode
 {
   _mode = aMode;
 }
 
+/** <p>Returns the NSMatrix's mode. See <ref type="type" id="NSMatrixMode">
+    NSMatrixMode</ref> for more informations. By default the mode
+    is <ref type="type" id="NSMatrixMode">NSRadioModeMatrix</ref>.</p>
+    <p>See Also: -setMode:</p>
+ */
 - (NSMatrixMode) mode
 {
   return _mode;
 }
 
+/** <p>Sets the cell class used by the NSMatrix when it creates new cells 
+    to classId. The default cell class is a NSActionCell class</p>
+    <p>See Also: -cellClass -setPrototype: -prototype</p>
+ */
 - (void) setCellClass: (Class)classId
 {
   _cellClass = classId;
@@ -2673,11 +2781,19 @@ static SEL getSel;
   DESTROY(_cellPrototype);
 }
 
+/** <p>Returns the cell class used by the NSMatrix when it creates new cells. 
+    The default cell class  is a NSActionCell class</p>
+    <p>See Also: -setCellClass: -setPrototype: -prototype</p>
+ */
 - (Class) cellClass
 {
   return _cellClass;
 }
 
+/**<p>Sets the  prototype cell used by the NSMatrix when it creates new cells
+   to aCell. The default cell is  NSActionCell</p>
+    <p>See Also: -cellClass -setPrototype: -prototype</p>
+ */
 - (void) setPrototype: (NSCell*)aCell
 {
   ASSIGN(_cellPrototype, aCell);
@@ -2693,11 +2809,18 @@ static SEL getSel;
     }
 }
 
+/**<p>Returns the  prototype cell used by the NSMatrix when it creates new
+   cells. The default cell is  NSActionCell</p>
+    <p>See Also: -cellClass -setPrototype: -prototype</p>
+ */
 - (id) prototype
 {
   return _cellPrototype;
 }
 
+/**<p>Returns the size of the NSMatrix's cells</p>
+   <p>See Also: -setCellSize:</p>
+ */
 - (NSSize) cellSize
 {
   return _cellSize;
@@ -2708,23 +2831,44 @@ static SEL getSel;
   return _intercell;
 }
 
+/** <p>Sets the background color to <var>aColor</var> and marks self for
+    display. The background color is used to display the NSMatrix color 
+    ( the space between the cells), not the cells ( uses 
+    -setCellBackgroundColor: for that)</p><p>See Also: -backgroundColor
+    -setCellBackgroundColor: -cellBackgroundColor -drawsBackground 
+    -setDrawsBackground:</p>
+ */
 - (void) setBackgroundColor: (NSColor*)aColor
 {
   ASSIGN(_backgroundColor, aColor);
   [self setNeedsDisplay: YES];
 }
 
+/** <p>Returns the background color The background color is used to display 
+    the NSMatrix color ( the space between the cells), not the cells ( uses 
+    -setCellBackgroundColor: for that)</p> <p>See Also: -setBackgroundColor:
+    -setCellBackgroundColor: -cellBackgroundColor -drawsBackground 
+    -setDrawsBackground:</p>
+ */
 - (NSColor*) backgroundColor
 {
   return _backgroundColor;
 }
 
+/** <p>Sets the background color of the NSMatrix's cells to <var>aColor</var> 
+    and marks self for display. </p><p>See Also: -cellBackgroundColor
+    -backgroundColor -setBackgroundColor: -setDrawsCellBackground: 
+    -drawsCellBackground</p>
+ */
 - (void) setCellBackgroundColor: (NSColor*)aColor
 {
   ASSIGN(_cellBackgroundColor, aColor);
   [self setNeedsDisplay: YES];
 }
 
+/** <p>Returns the background color of the NSMatrix's cells.</p><p>See Also:
+    -setCellBackgroundColor:  -backgroundColor -setBackgroundColor: </p>
+ */
 - (NSColor*) cellBackgroundColor
 {
   return _cellBackgroundColor;
@@ -2804,15 +2948,19 @@ static SEL getSel;
   return _errorAction;
 }
 
-/**
- * Sets a flag to indicate whether the matrix should permit empty selections
- * or should force one or mor cells to be selected at all times.
+/**<p> Sets a flag to indicate whether the matrix should permit empty
+   selections or should force one or mor cells to be selected at all times.
+   </p><p>See Also: -allowsEmptySelection</p>
  */
 - (void) setAllowsEmptySelection: (BOOL)flag
 {
   _allowsEmptySelection = flag;
 }
 
+/**<p>Returns whether the matrix should permit empty selections or should
+   force one or mor cells to be selected at all times.</p>
+   <p>See Also: -setAllowsEmptySelection:</p>
+ */
 - (BOOL) allowsEmptySelection
 {
   return _allowsEmptySelection;
@@ -2823,25 +2971,33 @@ static SEL getSel;
   _selectionByRect = flag;
 }
 
+/** 
+ */
 - (BOOL) isSelectionByRect
 {
   return _selectionByRect;
 }
 
+/** <p>Sets whether the NSMatrix draws its background and marks self for
+    display.</p>
+    <p>See Also: -drawsBackground -setDrawsCellBackground:</p>
+ */
 - (void) setDrawsBackground: (BOOL)flag
 {
   _drawsBackground = flag;
   [self setNeedsDisplay: YES];
 }
 
+/** <p>Returns whether the NSMatrix draws its background</p>
+    <p>See Also: -setDrawsBackground: -drawsCellBackground</p>
+ */
 - (BOOL) drawsBackground
 {
   return _drawsBackground;
 }
 
-/**
- * Set a flag to say whether the matrix will draw call backgrounds (YES)
- * or expect the cell to do it itsself (NO).
+/**<p>Sets whether the NSMatrix draws cells backgrounds and marks self for
+   display</p><p>See Also: -drawsCellBackground -setDrawsBackground:</p>
  */
 - (void) setDrawsCellBackground: (BOOL)flag
 {
@@ -2849,6 +3005,9 @@ static SEL getSel;
   [self setNeedsDisplay: YES];
 }
 
+/**<p>Returns whether the NSMatrix draws cells backgrounds</p>
+   <p>See Also: -setDrawsCellBackground: -drawsBackground</p>
+ */
 - (BOOL) drawsCellBackground
 {
   return _drawsCellBackground;

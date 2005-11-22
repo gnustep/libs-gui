@@ -6,6 +6,8 @@
 	* Source/NSFontPanel.m : Improved documentation
 	* Source/NSForm.m : Improved documentation
 	* Source/NSFormCell.m : Improved documentation
+	* Source/NSImage.m : Improved documentation
+	* Source/NSMatrix.m : Improved documentation
 
 2005-11-21  fabien  <fabien@sonappart.net>
 
