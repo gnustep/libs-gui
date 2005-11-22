@@ -2,6 +2,7 @@
 
 	* Source/NSCell.m : Improved documentation
 	* Source/NSControl.m : Improved documentation
+	* Source/NSCustomImageRep.m : Improved documentation
 
 2005-11-21  fabien  <fabien@sonappart.net>
 

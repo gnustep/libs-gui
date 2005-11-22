@@ -38,8 +38,9 @@
  */
 @implementation NSCustomImageRep
 
-/** Initializes a new NSCustomImageRep with .When a -draw message is recieved
-    it send aSelector message to the delegate anObject.
+/**<p> Initializes a new NSCustomImageRep with. When a -draw message is
+   recieved it send aSelector message to the delegate anObject.</p>
+   <p>See Also: -delegate -drawSelector [NSImageRep-draw]</p>
  */
 - (id) initWithDrawSelector: (SEL)aSelector
 		   delegate: (id)anObject
@@ -59,7 +60,7 @@
   [super dealloc];
 }
 
-/** <p>Returns the NSCustomImageRep's delegate</p>
+/** <p>Returns the NSCustomImageRep's delegate.</p>
     <p>See Also: -initWithDrawSelector:delegate:</p>
  */
 - (id) delegate
@@ -67,8 +68,9 @@
   return _delegate;
 }
 
-/**<p>Returns the draw method selector sent to the delegate when
-   NSCustomImageRep recieved a -draw message</p>
+/**<p>Returns the draw method sent to the delegate when NSCustomImageRep 
+   recieved a -draw message.</p>
+   <p>See Also: -initWithDrawSelector:delegate: [NSImageRep-draw]</p>
  */
 - (SEL) drawSelector
 {
