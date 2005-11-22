@@ -1401,7 +1401,7 @@ static NSColor	*shadowCol;
   [self setObjectValue: [sender objectValue]];
 }
 
-/** <p>Sets NSCell's double value to sender's double value</p>
+/** <p>Sets the NSCell's double value to sender's double value</p>
     <p>See Also: -setDoubleValue:</p>
  */
 - (void) takeDoubleValueFrom: (id)sender
@@ -1409,7 +1409,7 @@ static NSColor	*shadowCol;
   [self setDoubleValue: [sender doubleValue]];
 }
 
-/** <p>Sets NSCell's float value to sender's float value</p>
+/** <p>Sets the NSCell's float value to sender's float value</p>
     <p>See Also: -setFloatValue:</p>
  */
 - (void) takeFloatValueFrom: (id)sender
@@ -1417,7 +1417,7 @@ static NSColor	*shadowCol;
   [self setFloatValue: [sender floatValue]];
 }
 
-/** <p>Sets NSCell's int value to sender's int value</p>
+/** <p>Sets the NSCell's int value to sender's int value</p>
     <p>See Also: -setIntValue:</p>
  */
 - (void) takeIntValueFrom: (id)sender
@@ -1425,7 +1425,7 @@ static NSColor	*shadowCol;
   [self setIntValue: [sender intValue]];
 }
 
-/** <p>Sets NSCell's NSString value to sender's NSSting value</p>
+/** <p>Sets the NSCell's NSString value to sender's NSSting value</p>
     <p>See Also: -setStringValue:</p>
  */
 - (void) takeStringValueFrom: (id)sender

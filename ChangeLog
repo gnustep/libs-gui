@@ -1,3 +1,8 @@
+2005-11-22  fabien  <fabien@sonappart.net>
+
+	* Source/NSCell.m : Improved documentation
+	* Source/NSControl.m : Improved documentation
+
 2005-11-21  fabien  <fabien@sonappart.net>
 
 	* Source/NSButton.m : Improved documentation
