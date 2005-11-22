@@ -5,6 +5,7 @@
 	* Source/NSCustomImageRep.m : Improved documentation
 	* Source/NSFontPanel.m : Improved documentation
 	* Source/NSForm.m : Improved documentation
+	* Source/NSFormCell.m : Improved documentation
 
 2005-11-21  fabien  <fabien@sonappart.net>
 

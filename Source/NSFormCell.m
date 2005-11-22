@@ -72,7 +72,9 @@ static NSColor	*shadowCol;
   return [self initTextCell: @"Field:"];
 }
 
-/** <p>Initializes and returns new NSFormCell with aString as its title</p>
+/** <p>Initializes and returns new NSFormCell with aString as its title and
+    the text cell with an empty NSString.</p>
+    <p>See Also: [NSCell-initTextCell:]</p>
  */
 - (id) initTextCell: (NSString *)aString
 {
@@ -96,8 +98,9 @@ static NSColor	*shadowCol;
   [super dealloc];
 }
 
-/** <p> Returns whether the NSFormCell is Opaque. Returns YES if 
+/** <p>Returns whether the NSFormCell is Opaque. Returns YES if 
     the textCell and the title cell are both Opaque, NO otherwise</p>
+    <p>See Also: [NSCell-isOpaque]</p>
  */
 - (BOOL)isOpaque
 {
@@ -119,7 +122,7 @@ static NSColor	*shadowCol;
 }
 
 /** <p> Sets the NSFormCell title to aString. 
-    TODO =>   _formcell_auto_title_width / Update the control(s)</p>
+    TODO => _formcell_auto_title_width / Update the control(s)</p>
  */
 - (void)setTitle: (NSString*)aString
 {
@@ -151,16 +154,17 @@ static NSColor	*shadowCol;
 }
 
 /** <p>Sets the text alignment of the NSFormCell's title to mode.
-     NSRightTextAlignment by default. See NSTextAlignment for more information
-     </p><p>See Also: -titleAlignment</p>
+     NSRightTextAlignment by default. See <ref type="type" 
+     id="NSTextAlignment">NSTextAlignment</ref> for more informations.
+     </p><p>See Also: -titleAlignment [NSCell-setAlignment:]</p>
  */
 - (void)setTitleAlignment:(NSTextAlignment)mode
 {
   [_titleCell setAlignment: mode];
 }
 
-/** <p>Set text font of the NSFormCell's title to fontObject.</p>
-    <p>See Also: -titleFont</p>
+/** <p>Set the text font of the NSFormCell's title to fontObject.</p>
+    <p>See Also: -titleFont [NSCell-setFont:]</p>
  */
 - (void)setTitleFont: (NSFont*)fontObject
 {
@@ -204,7 +208,8 @@ static NSColor	*shadowCol;
   return [_titleCell attributedStringValue];
 }
 
-/** <p>Returns the NSFormCell's title</p><p>See Also: -setTitle:</p>
+/** <p>Returns the NSFormCell's title.</p>
+    <p>See Also: -setTitle: [NSCell-stringValue]</p>
  */
 - (NSString*)title
 {
@@ -221,7 +226,7 @@ static NSColor	*shadowCol;
 }
 
 /** <p>Returns the text font of the NSFormCell's title</p>
-    <p>See Also: -setTitleFont:</p>
+    <p>See Also: -setTitleFont: [NSCell-font]</p>
  */
 - (NSFont*)titleFont
 {
