@@ -50,13 +50,14 @@
 */ 
 @implementation GSDrawFunctions
 
-static id theTheme;
+static id theTheme = nil;
+
 
 + (id) theme 
 {
   if (theTheme == nil)
     {
-      theTheme = [GSDrawFunctions new];
+      theTheme = [self new];
     }
   return theTheme;
 }
@@ -66,8 +67,66 @@ static id theTheme;
   ASSIGN (theTheme, aTheme);
 }
 
-/** Draw a button border */
+/** Tell current theme to draw a button border */
 + (NSRect) drawButton: (NSRect)border : (NSRect)clip
+{
+  return [[self theme] drawButton: border : clip];
+}
+
+/** Tell current theme to draw a "dark" button border (used in tableviews) */
++ (NSRect) drawDarkButton: (NSRect)border : (NSRect)clip
+{
+  return [[self theme] drawDarkButton: border : clip];
+}
+
+/** Tell current theme to draw a dark bezel border */
++ (NSRect) drawDarkBezel: (NSRect)border : (NSRect)clip
+{
+  return [[self theme] drawDarkBezel: border : clip];
+}
+
+/** Tell current theme to draw a light bezel border */
++ (NSRect) drawLightBezel: (NSRect)border : (NSRect)clip
+{
+  return [[self theme] drawLightBezel: border : clip];
+}
+
+/** Tell current theme to draw a white bezel border */
++ (NSRect) drawWhiteBezel: (NSRect)border : (NSRect)clip
+{
+  return [[self theme] drawWhiteBezel: border : clip];
+}
+
+/** Tell current theme to draw a grey bezel border */
++ (NSRect) drawGrayBezel: (NSRect)border : (NSRect)clip
+{
+  return [[self theme] drawGrayBezel: border : clip];
+}
+
+/** Tell current theme to draw a groove border */
++ (NSRect) drawGroove: (NSRect)border : (NSRect)clip
+{
+  return [[self theme] drawGroove: border : clip];
+}
+
+/** Tell current theme to draw a frame photo border.  Used in NSImageView.   */
++ (NSRect) drawFramePhoto: (NSRect)border : (NSRect)clip
+{
+  return [[self theme] drawFramePhoto: border : clip];
+}
+
+/** Tell current theme to draw a gradient border. */
++ (NSRect) drawGradientBorder: (NSGradientType)gradientType 
+		       inRect: (NSRect)border 
+		     withClip: (NSRect)clip
+{
+  return [[self theme] drawGradientBorder: gradientType
+				   inRect: border
+				 withClip: clip];
+}
+
+
+- (NSRect) drawButton: (NSRect)border : (NSRect)clip
 {
   NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, 
 			   NSMinXEdge, NSMaxYEdge, 
@@ -93,7 +152,7 @@ static id theTheme;
 }
 
 /** Draw a "dark" button border (used in tableviews) */
-+ (NSRect) drawDarkButton: (NSRect)border : (NSRect)clip
+- (NSRect) drawDarkButton: (NSRect)border : (NSRect)clip
 {
   NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, 
 			   NSMinXEdge, NSMaxYEdge}; 
@@ -115,7 +174,7 @@ static id theTheme;
 }
 
 /** Draw a dark bezel border */
-+ (NSRect) drawDarkBezel: (NSRect)border : (NSRect)clip
+- (NSRect) drawDarkBezel: (NSRect)border : (NSRect)clip
 {
   NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, NSMinXEdge, NSMaxYEdge,
 			   NSMinXEdge, NSMaxYEdge, NSMaxXEdge, NSMinYEdge};
@@ -150,7 +209,7 @@ static id theTheme;
 }
 
 /** Draw a light bezel border */
-+ (NSRect) drawLightBezel: (NSRect)border : (NSRect)clip
+- (NSRect) drawLightBezel: (NSRect)border : (NSRect)clip
 {
   NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, NSMinXEdge, NSMaxYEdge, 
   			   NSMaxXEdge, NSMinYEdge, NSMinXEdge, NSMaxYEdge};
@@ -174,7 +233,7 @@ static id theTheme;
 }
 
 /** Draw a white bezel border */
-+ (NSRect) drawWhiteBezel: (NSRect)border : (NSRect)clip
+- (NSRect) drawWhiteBezel: (NSRect)border : (NSRect)clip
 {
   NSRectEdge up_sides[] = {NSMaxYEdge, NSMaxXEdge, NSMinYEdge, NSMinXEdge,
   			   NSMaxYEdge, NSMaxXEdge, NSMinYEdge, NSMinXEdge};
@@ -198,7 +257,7 @@ static id theTheme;
 }
 
 /** Draw a grey bezel border */
-+ (NSRect) drawGrayBezel: (NSRect)border : (NSRect)clip
+- (NSRect) drawGrayBezel: (NSRect)border : (NSRect)clip
 {
   NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, NSMinXEdge, NSMaxYEdge,
 			   NSMaxXEdge, NSMinYEdge, NSMinXEdge, NSMaxYEdge};
@@ -231,7 +290,7 @@ static id theTheme;
 }
 
 /** Draw a groove border */
-+ (NSRect) drawGroove: (NSRect)border : (NSRect)clip
+- (NSRect) drawGroove: (NSRect)border : (NSRect)clip
 {
   // go clockwise from the top twice -- makes the groove come out right
   NSRectEdge up_sides[] = {NSMaxYEdge, NSMaxXEdge, NSMinYEdge, NSMinXEdge,
@@ -255,7 +314,7 @@ static id theTheme;
 }
 
 /** Draw a frame photo border.  Used in NSImageView.   */
-+ (NSRect) drawFramePhoto: (NSRect)border : (NSRect)clip
+- (NSRect) drawFramePhoto: (NSRect)border : (NSRect)clip
 {
   NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, 
 			   NSMinXEdge, NSMaxYEdge, 
@@ -280,7 +339,7 @@ static id theTheme;
 }
 
 /** Draw a gradient border. */
-+ (NSRect) drawGradientBorder: (NSGradientType)gradientType 
+- (NSRect) drawGradientBorder: (NSGradientType)gradientType 
 		       inRect: (NSRect)border 
 		     withClip: (NSRect)clip
 {

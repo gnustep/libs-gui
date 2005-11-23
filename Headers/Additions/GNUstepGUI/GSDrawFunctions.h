@@ -51,6 +51,19 @@
            inRect: (NSRect)border 
            withClip: (NSRect)clip;
 
+- (NSRect) drawButton: (NSRect)border : (NSRect)clip;
+- (NSRect) drawDarkButton: (NSRect)border : (NSRect)clip;
+- (NSRect) drawDarkBezel: (NSRect)border : (NSRect)clip;
+- (NSRect) drawLightBezel: (NSRect)border : (NSRect)clip;
+- (NSRect) drawGrayBezel: (NSRect)border : (NSRect)clip;
+- (NSRect) drawWhiteBezel: (NSRect)border : (NSRect)clip;
+- (NSRect) drawGroove: (NSRect)border : (NSRect)clip;
+- (NSRect) drawFramePhoto: (NSRect)border : (NSRect)clip;
+
+- (NSRect) drawGradientBorder: (NSGradientType)gradientType 
+           inRect: (NSRect)border 
+           withClip: (NSRect)clip;
+
 @end
 
 #endif /* _GNUstep_H_GSDrawFunctions */

@@ -1,3 +1,9 @@
+2005-11-22  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Headers/Additions/GNUstepGUI/GSDrawFunctions.h:
+	* Source/GSDrawFunctions.h:
+	Make drawing methods go via theme engine.
+
 2005-11-22  fabien  <fabien@sonappart.net>
 
 	* Source/NSCell.m : Improved documentation
