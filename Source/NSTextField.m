@@ -105,24 +105,26 @@ static Class textFieldCellClass;
   [super dealloc];
 }
 
-/** <p>Returns whether the NSTextField is editable</p>
-    <p>See Also: -setEditable:</p>
+/** <p>Returns whether the NSTextField is editable. By default a NSTextField
+    is not editable.</p>
+    <p>See Also: -setEditable: [NSCell-isEditable]</p>
 */
 - (BOOL) isEditable
 {
   return [_cell isEditable];
 }
 
-/** <p>Returns whether the NSTextField is selectable</p>
-    <p>See Also: -setSelectable:</p>
+/** <p>Returns whether the NSTextField is selectable.</p>
+    <p>See Also: -setSelectable: [NSCell-isSelectable]</p>
 */
 - (BOOL) isSelectable
 {
   return [_cell isSelectable];
 }
 
-/** <p>Sets whether the NSTextField is editable</p>
-    <p>See Also: -isEditable</p>
+/** <p>Sets whether the NSTextField's cell and the NSText object is editable.
+    By default a NSTextField is not editable.</p>
+    <p>See Also: -isEditable [NSCell-setEditable:] [NSText-setEditable:]</p>
 */
 - (void) setEditable: (BOOL)flag
 {
@@ -131,8 +133,9 @@ static Class textFieldCellClass;
     [_text_object setEditable: flag];
 }
 
-/** <p>Sets whether the NSTextField is selectable</p>
-    <p>See Also: -isSelectable</p>
+/** <p>Sets whether the NSTextField's cell and the NSText object
+    is selectable.</p><p>See Also: -isSelectable 
+    [NSTextFieldCell-setSelectable:] [NSText-setSelectable:]</p>
 */
 - (void) setSelectable: (BOOL)flag
 {
@@ -141,7 +144,7 @@ static Class textFieldCellClass;
     [_text_object setSelectable: flag];
 }
 
-/**<p>Selects all the text inot the NSTextField if it's selectable.</p>
+/**<p>Selects all the text of the NSTextField if it's selectable.</p>
  */
 - (void) selectText: (id)sender
 {
@@ -173,30 +176,41 @@ static Class textFieldCellClass;
     }
 }
 
-//
-// Setting Tab Key Behavior
-//
+/**<p>Returns the object selected when the user presses the TAB key.</p>
+   <p>See Also: -setNextText: [NSView-nextKeyView]</p>
+ */
 - (id) nextText
 {
   return [self nextKeyView];
 }
 
+/**<p>Returns the object selected when the user presses the Shift-TAB key.</p>
+   <p>See Also: -setPreviousText: [NSView-previousKeyView]</p>
+ */
 - (id) previousText
 {
   return [self previousKeyView];
 }
 
+/**<p>Sets the object selected when the user presses the TAB key to
+   <var>anObject</var>.</p>
+   <p>See Also: -nextText [NSView-setNextKeyView:]</p>
+ */
 - (void) setNextText: (id)anObject
 {
   [self setNextKeyView: anObject];
 }
 
+/**<p>Sets the object selected when the user presses the shift-TAB key to
+   <var>anObject</var>.</p>
+   <p>See Also: -previousText [NSView-setPreviousKeyView:]</p>
+ */
 - (void) setPreviousText: (id)anObject
 {
   [self setPreviousKeyView: anObject];
 }
 
-/** <p>Sets the delegate to anObject</p>
+/** <p>Sets the delegate to <var>anObject</var>.</p>
     <p>See Also: -delegate</p>
 */
 - (void) setDelegate: (id)anObject
@@ -216,7 +230,7 @@ static Class textFieldCellClass;
   SET_DELEGATE_NOTIFICATION(DidChange);
 }
 
-/** <p>Returns the delegate object</p>
+/** <p>Returns the delegate object.</p>
     <p>See Also: -setDelegate:</p>
 */
 - (id) delegate
@@ -224,72 +238,74 @@ static Class textFieldCellClass;
   return _delegate;
 }
 
-/** <p>Sets the color used to draw the background</p>
-    <p>See Also: -backgroundColor</p>
+/**<p>Sets the color used to draw the background to <var>aColor</var>.</p>
+   <p>See Also: -backgroundColor -setDrawsBackground: -drawsBackground
+   [NSTextFieldCell-setBackgroundColor:]</p>
  */
 - (void) setBackgroundColor: (NSColor *)aColor
 {
   [_cell setBackgroundColor: aColor];
 }
 
-/** <p>Returns the color used to draw the background</p>
-    <p>See Also: -setBackgroundColor:</p>
+/** <p>Returns the color used to draw the background.</p>
+    <p>See Also: -setBackgroundColor: setDrawsBackground: -drawsBackground
+    [NSTextFieldCell-backgroundColor]</p>
  */
 - (NSColor *) backgroundColor
 {
   return [_cell backgroundColor];
 }
 
-/** <p>Returns whether the NSTextField draws the background</p>
-    <p>See Also: -setDrawsBackground:</p>
+/** <p>Returns whether the NSTextField draws the background. By default NO.</p>
+    <p>See Also: -setDrawsBackground: [NSTextFieldCell-drawsBackground]</p>
  */
 - (BOOL) drawsBackground
 {
   return [_cell drawsBackground];
 }
 
-/** <p>Returns whether the NSTextField's cell has bezeled border</p>
-    <p>See Also: -setBezeled:</p>
+/** <p>Returns whether the NSTextField's cell has bezeled border.</p>
+    <p>See Also: -setBezeled: [NSTextFieldCell-isBezeled]</p>
  */
 - (BOOL) isBezeled
 {
   return [_cell isBezeled];
 }
 
-/** <p>Returns whether the NSTextField's cell has border</p>
-    <p>See Also: -setBordered:</p>
+/** <p>Returns whether the NSTextField's cell has border.</p>
+    <p>See Also: -setBordered: [NSTextFieldCell-isBordered]</p>
  */
 - (BOOL) isBordered
 {
   return [_cell isBordered];
 }
 
-/** <p>Sets whether the NSTextField's cell has bezeled border</p>
-    <p>See Also: -isBezeled</p>
+/** <p>Sets whether the NSTextField's cell has bezeled border.</p>
+    <p>See Also: -isBezeled [NSTextFieldCell-setBezeled:]</p>
  */
 - (void) setBezeled: (BOOL)flag
 {
   [_cell setBezeled: flag];
 }
 
-/** <p>Sets whether the NSTextField's cell has border</p>
-    <p>See Also: -isBordered</p>
+/** <p>Sets whether the NSTextField's cell has border.</p>
+    <p>See Also: -isBordered [NSTextFieldCell-setBordered:]</p>
  */
 - (void) setBordered: (BOOL)flag
 {
   [_cell setBordered: flag];
 }
 
-/** <p>Sets whether the NSTextField draws the background</p>
-    <p>See Also: -drawsBackground</p>
+/** <p>Sets whether the NSTextField draws the background. By default NO.</p>
+    <p>See Also: -drawsBackground [NSTextFieldCell-setDrawsBackground:]</p>
  */
 - (void) setDrawsBackground: (BOOL)flag
 {
   [_cell setDrawsBackground: flag];
 }
 
-/** <p>Sets the  color with which the text will be draw to aColor</p>
-    <p>See Also: -textColor</p>
+/** <p>Sets the  color with which the text will be draw to aColor.</p>
+    <p>See Also: -textColor [NSTextFieldCell-setTextColor:]</p>
  */
 - (void) setTextColor: (NSColor *)aColor
 {
@@ -297,7 +313,7 @@ static Class textFieldCellClass;
 }
 
 /** <p>Returns the colour used to draw the text.</p>
-    <p>See Also: -setTextColor:</p>
+    <p>See Also: -setTextColor: [NSTextFieldCell-textColor]</p>
  */
 - (NSColor *) textColor
 {
@@ -379,6 +395,11 @@ static Class textFieldCellClass;
   return [self isEditable];
 }
 
+/** <p>Returns whether the NSTextField accepts to be the first responder.
+    This method returns YES if the NSTextField is selectable and if
+    there is no NSText object</p><p>See Also: -becomeFirstResponder 
+    -isSelectable [NSView-acceptsFirstResponder]</p>
+ */
 - (BOOL) acceptsFirstResponder
 {
   // we do not accept first responder if there is already a 
@@ -464,15 +485,20 @@ static Class textFieldCellClass;
     }
 }
 
+/**<p>Posts a NSControlTextDidBeginEditingNotification notification with object
+   self and a NSDictionary containing the NSFieldEditor for key
+   as user Info</p>
+*/
 - (void) textDidBeginEditing: (NSNotification *)aNotification
 {
-  NSDictionary *d;
+  NSDictionary *notifDict;
   
-  d = [NSDictionary dictionaryWithObject:[aNotification object] 
-		    forKey: @"NSFieldEditor"];
+  notifDict = [NSDictionary dictionaryWithObject:[aNotification object] 
+			    forKey: @"NSFieldEditor"];
+
   [nc postNotificationName: NSControlTextDidBeginEditingNotification
       object: self
-      userInfo: d];
+      userInfo: notifDict];
 }
 
 - (void) textDidChange: (NSNotification *)aNotification

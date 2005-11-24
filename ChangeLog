@@ -6,6 +6,7 @@
 	* Source/NSPopUpButton.m: Improved documentation
 	* Source/NSSavePanel.m: Improved documentation
 	* Source/NSScrollView.m: Improved documentation
+	* Source/NSTexField.m: Improved documentation
 
 2005-11-22  Richard Frith-Macdonald <rfm@gnu.org>
 
