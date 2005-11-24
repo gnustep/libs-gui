@@ -453,50 +453,47 @@ static void setNSFont(NSString *key, NSFont *font)
 
 /* Getting the preferred user fonts.  */
 
-/** 
- * Return the default bold font for use in menus and heading in standard
- * gui components.  If fontSize is &lt;= 0, the default
- * size is used.<br />
- * This is deprecated in MacOSX
+/**<p>Returns the default bold font for use in menus and heading in standard
+  gui components.  If fontSize is &lt;= 0, the default
+  size is used.</p><p>See Also: +fontWithName:size:</p>
  */
 + (NSFont*) boldSystemFontOfSize: (float)fontSize
 {
   return getNSFont(fontSize, RoleBoldSystemFont);
 }
 
-/** 
- * Return the default font for use in menus and heading in standard
- * gui components.  If fontSize is <= 0, the default
- * size is used.<br />
- * This is deprecated in MacOSX
+/**<p> Returns the default font for use in menus and heading in standard
+   gui components.  If fontSize is &lt;= 0, the default
+   size is used.</p><p>See Also: +boldSystemFontOfSize: userFontOfSize:
+   userFixedPitchFontOfSize: +fontWithName:size:</p>
  */
 + (NSFont*) systemFontOfSize: (float)fontSize
 {
   return getNSFont(fontSize, RoleSystemFont);
 }
 
-/** 
- * Return the default fixed pitch font for use in locations other
- * than standard gui components.  If fontSize is <= 0, the default
- * size is used.
+/**<p>Returns the default fixed pitch font for use in locations other
+   than standard gui components.  If fontSize is &lt;= 0, the default
+   size is used.</p><p>See Also: +setUserFixedPitchFont: +userFontOfSize: 
+   +boldSystemFontOfSize: +systemFontOfSize: +fontWithName:size:</p>
  */
 + (NSFont*) userFixedPitchFontOfSize: (float)fontSize
 {
   return getNSFont(fontSize, RoleUserFixedPitchFont);
 }
 
-/** 
- * Return the default font for use in locations other
- * than standard gui components.  If fontSize is <= 0, the default
- * size is used.
+/**<p> Returns the default font for use in locations other
+  than standard gui components.  If fontSize is &lt;= 0, the default
+  size is used.</p><p>See Also: +setUserFont: +boldSystemFontOfSize: 
+  systemFontOfSize: userFixedPitchFontOfSize: +fontWithName:size:</p>
  */
 + (NSFont*) userFontOfSize: (float)fontSize
 {
   return getNSFont(fontSize, RoleUserFont);
 }
 
-/** 
- * Return an array of the names of preferred fonts.
+/**<p>Returns an array of the names of preferred fonts.</p>
+   <p>See Also: +setPreferredFontNames:</p>
  */
 + (NSArray*) preferredFontNames
 {
@@ -515,6 +512,9 @@ static void setNSFont(NSString *key, NSFont *font)
   setNSFont (@"NSUserFont", aFont);
 }
 
+/** <p>Sets an array of the names of preferred fonts to fontsNames/</p>
+    <p>See Also: +preferredFontNames</p>
+ */
 + (void) setPreferredFontNames: (NSArray*)fontNames
 {
   ASSIGN(_preferredFonts, fontNames);
@@ -624,13 +624,13 @@ static void setNSFont(NSString *key, NSFont *font)
     }
 }
 
-/**
- * Returns an autoreleased font with name aFontName and matrix fontMatrix.<br />
- * The fontMatrix is a standard size element matrix as used in PostScript
- * to describe the scaling of the font, typically it just includes
- * the font size as [fontSize 0 0 fontSize 0 0].  You can use the constant
- * NSFontIdentityMatrix in place of [1 0 0 1 0 0]. If NSFontIdentityMatrix, 
- * then the font will automatically flip itself when set in a flipped view.
+/** <p>Returns an autoreleased font with name aFontName and matrix fontMatrix
+    .</p><p>The fontMatrix is a standard size element matrix as used in
+    PostScript to describe the scaling of the font, typically it just includes
+    the font size as [fontSize 0 0 fontSize 0 0]. You can use the constant
+    NSFontIdentityMatrix in place of [1 0 0 1 0 0]. If NSFontIdentityMatrix, 
+    then the font will automatically flip itself when set in a flipped view.
+    </p>
  */
 + (NSFont*) fontWithName: (NSString*)aFontName 
 		  matrix: (const float*)fontMatrix
@@ -652,10 +652,9 @@ static void setNSFont(NSString *key, NSFont *font)
   return AUTORELEASE(font);
 }
 
-/**
- * Returns an autoreleased font with name aFontName and size fontSize.<br />
- * Fonts created using this method will automatically flip themselves
- * when set in a flipped view.
+/**<p> Returns an autoreleased font with name aFontName and size fontSize.</p>
+ * <p>Fonts created using this method will automatically flip themselves
+ * when set in a flipped view.</p>
  */
 + (NSFont*) fontWithName: (NSString*)aFontName
 		    size: (float)fontSize
@@ -691,6 +690,8 @@ static void setNSFont(NSString *key, NSFont *font)
   return AUTORELEASE(font);
 }
 
+/**
+ */
 + (void) useFont: (NSString*)aFontName
 {
   [GSCurrentContext() useFont: aFontName];
@@ -894,21 +895,63 @@ static BOOL flip_hack;
 //
 // Querying the Font
 //
-- (float) pointSize		{ return [fontInfo pointSize]; }
-- (NSString*) fontName		{ return fontName; }
-- (const float*) matrix		{ return matrix; }
+- (float) pointSize 
+{ 
+  return [fontInfo pointSize]; 
+}
 
-- (NSString*) encodingScheme	{ return [fontInfo encodingScheme]; }
-- (NSString*) familyName	{ return [fontInfo familyName]; }
-- (NSRect) boundingRectForFont	{ return [fontInfo boundingRectForFont]; }
-- (BOOL) isFixedPitch		{ return [fontInfo isFixedPitch]; }
-- (BOOL) isBaseFont		{ return [fontInfo isBaseFont]; }
+- (NSString*) fontName
+{ 
+  return fontName; 
+}
+
+- (const float*) matrix		
+{ 
+  return matrix; 
+}
+
+- (NSString*) encodingScheme
+{
+  return [fontInfo encodingScheme]; 
+}
+
+- (NSString*) familyName
+{ 
+  return [fontInfo familyName]; 
+}
+
+- (NSRect) boundingRectForFont	
+{
+  return [fontInfo boundingRectForFont]; 
+}
+
+- (BOOL) isFixedPitch
+{
+  return [fontInfo isFixedPitch]; 
+}
+
+- (BOOL) isBaseFont
+{
+  return [fontInfo isBaseFont]; 
+}
 
 /* Usually the display name of font is the font name.*/
-- (NSString*) displayName	{ return fontName; }
+- (NSString*) displayName
+{
+  return fontName; 
+}
 
-- (NSDictionary*) afmDictionary	{ return [fontInfo afmDictionary]; }
-- (NSString*) afmFileContents	{ return [fontInfo afmFileContents]; }
+- (NSDictionary*) afmDictionary
+{ 
+  return [fontInfo afmDictionary]; 
+}
+
+/**<p>This method returns nil in the GNUstep implementation</p>
+ */
+- (NSString*) afmFileContents
+{ 
+  return [fontInfo afmFileContents]; 
+}
 
 - (NSFont*) printerFont
 {
@@ -920,6 +963,7 @@ static BOOL flip_hack;
 			screenFont: NO
 			      role: role]);
 }
+
 - (NSFont*) screenFont
 {
   if (screenFont)
