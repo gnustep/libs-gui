@@ -631,7 +631,7 @@ selectCellWithString: (NSString*)title
     }
 }
 
-/** <p>Creates ( if needed) and returns the shared NSSavePanel instance</p>
+/**<p>Creates ( if needed) and returns the shared NSSavePanel instance.</p>
  */
 + (NSSavePanel *) savePanel
 {
@@ -1070,7 +1070,7 @@ selectCellWithString: (NSString*)title
   [self close];
 }
 
-/**<p>Invoked by the "OK" button. TODO </p>
+/**<p>Invoked by the "OK" button.</p>
  *<p>See Also: -cancel:</p>
  */
 - (void) ok: (id)sender
