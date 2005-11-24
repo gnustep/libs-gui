@@ -1590,22 +1590,25 @@ static SEL getSel;
   return [self previousKeyView];
 }
 
+/**
+ */
 - (void) textDidBeginEditing: (NSNotification *)aNotification
 {
-  NSMutableDictionary *d;
+  NSMutableDictionary *dict;
 
-  d = [[NSMutableDictionary alloc] initWithDictionary: 
-				     [aNotification userInfo]];
-  AUTORELEASE (d);
-  [d setObject: [aNotification object] forKey: @"NSFieldEditor"];
+  dict = [[NSMutableDictionary alloc] initWithDictionary: 
+					[aNotification userInfo]];
+  AUTORELEASE (dict);
+  [dict setObject: [aNotification object] forKey: @"NSFieldEditor"];
+
   [nc postNotificationName: NSControlTextDidBeginEditingNotification
       object: self
-      userInfo: d];
+      userInfo: dict];
 }
 
 - (void) textDidChange: (NSNotification *)aNotification
 {
-  NSMutableDictionary *d;
+  NSMutableDictionary *dict;
   NSFormatter *formatter;
 
   // MacOS-X asks us to inform the cell if possible.
@@ -1613,14 +1616,14 @@ static SEL getSel;
 						 @selector(textDidChange:)])
     [_selectedCell textDidChange: aNotification];
 
-  d = [[NSMutableDictionary alloc] initWithDictionary: 
+  dict = [[NSMutableDictionary alloc] initWithDictionary: 
 				     [aNotification userInfo]];
-  AUTORELEASE (d);
-  [d setObject: [aNotification object] forKey: @"NSFieldEditor"];
+  AUTORELEASE (dict);
+  [dict setObject: [aNotification object] forKey: @"NSFieldEditor"];
 
   [nc postNotificationName: NSControlTextDidChangeNotification
       object: self
-      userInfo: d];
+      userInfo: dict];
 
   formatter = [_cell formatter];
   if (formatter != nil)
@@ -1979,6 +1982,10 @@ static SEL getSel;
     }
 }
 
+/**<p>Draws the cell at row <var>row</var> and column <var>column</var></p>
+   <p>See Also: [NSCell-drawWithFrame:inView:] -setDrawsCellBackground:
+   -drawsCellBackground</p>
+ */
 - (void) drawCellAtRow: (int)row column: (int)column
 {
   NSCell *aCell = [self cellAtRow: row column: column];
@@ -2024,6 +2031,10 @@ static SEL getSel;
     }
 }
 
+/** <p>(Un)Highlights the cell (if exists ) at row at row <var>row</var> 
+    and column <var>column</var>. and maks the cell rect for display.</p>
+    <p>See Also: -setNeedsDisplayInRect: [NSCell-setHighlighted:]</p>
+ */
 - (void) highlightCell: (BOOL)flag atRow: (int)row column: (int)column
 {
   NSCell	*aCell = [self cellAtRow: row column: column];
@@ -2035,6 +2046,12 @@ static SEL getSel;
     }
 }
 
+/**<p>Sends the cell action, if a NSMatrix's cell is selected 
+   and enabled, sends the NSMatrix action otherwise. Returns YES if
+   the action is succesfully sent. NO if a cell is selected but not enabled
+   or if an action can not be sent.</p>
+   <p>See Also: -sendAction:to: -selectedCell</p>   
+ */
 - (BOOL) sendAction
 {
   if (_selectedCell)
@@ -2113,6 +2130,8 @@ static SEL getSel;
     }
 }
 
+/** 
+ */
 - (void) sendDoubleAction
 {
   if ([_selectedCell isEnabled] == NO)
@@ -2922,17 +2941,20 @@ static SEL getSel;
   return _action;
 }
 
-/**
- * Sets the message to send when a double click occurs.<br />
- * NB: In GNUstep the following method does *not* set 
- * ignoresMultiClick to NO as in the MacOS-X spec.<br />
- * It simply sets the doubleAction, as in OpenStep spec.
+/** <p>Sets the message to send when a double click occurs.
+    NB: In GNUstep the following method does *not* set 
+    ignoresMultiClick to NO as in the MacOS-X spec.
+    It simply sets the doubleAction, as in OpenStep spec.</p>
+    <p>-doubleAction</p> 
  */
 - (void) setDoubleAction: (SEL)aSelector
 {
   _doubleAction = aSelector;
 }
 
+/** <p>Returns the action method, used when the user double clicks</p>
+    <p>See Also: -setDoubleAction:</p>
+ */
 - (SEL) doubleAction
 {
   return _doubleAction;
@@ -3013,11 +3035,17 @@ static SEL getSel;
   return _drawsCellBackground;
 }
 
+/** <p>Sets whether the NSMatrix resizes its cells automatically</p>
+    <p>See Also: -autosizesCells</p>
+ */
 - (void) setAutosizesCells: (BOOL)flag
 {
   _autosizesCells = flag;
 }
 
+/** <p>Returns whether the NSMatrix resizes its cells automatically</p>
+    <p>See Also: -autosizesCells</p>
+ */
 - (BOOL) autosizesCells
 {
   return _autosizesCells;

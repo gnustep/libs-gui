@@ -255,7 +255,8 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
   }
 }
 
-/**<p> Creates ( if needed ) and returns the shared NSOpenPanel instance</p> */
+/**<p>Creates ( if needed ) and returns the shared NSOpenPanel instance.</p> 
+*/
 + (NSOpenPanel *) openPanel
 {
   if (!_gs_gui_open_panel)
@@ -288,8 +289,8 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
  * Filtering Files
  */
 /**<p> Allows the user to select multiple files if flag is YES.
-   The default behavior is not to allow multiple selections</p>
- <p>See Also: -allowsMultipleSelection</p>
+   The default behavior is not to allow multiple selections</p><p>See Also:
+   -allowsMultipleSelection [NSBrowser-setAllowsMultipleSelection:]</p>
 */
 - (void) setAllowsMultipleSelection: (BOOL)flag
 {
@@ -297,17 +298,17 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 }
 
 /**<p>Returns YES if the user is allowed to select multiple files. The
-    default behavior is not to allow mutiple selections.</p>
-    <p>See Also: -setAllowsMultipleSelection:</p>
+   default behavior is not to allow mutiple selections.</p><p>See Also:
+   -setAllowsMultipleSelection: [NSBrowser-allowsMultipleSelection]</p>
 */
 - (BOOL) allowsMultipleSelection
 {
   return [_browser allowsMultipleSelection];
 }
 
-/** <p>Allows the user to choose directories if flag is YES. The default 
-    behavior is to allow choosing directories.</p>
-    <p>See Also: -canChooseDirectories</p>
+/**<p>Allows the user to choose directories if flag is YES. The default 
+   behavior is to allow choosing directories.</p>
+   <p>See Also: -canChooseDirectories [NSBrowser-setAllowsBranchSelection:]</p>
 */
 - (void) setCanChooseDirectories: (BOOL)flag
 {
@@ -355,9 +356,9 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
     return nil;
 }
 
-/** <p>Returns an array containing the absolute paths (as NSString
-    objects) of the selected files and directories.  If multiple
-    selections aren't allowed, the array contains a single name.</p>
+/**<p>Returns an array containing the absolute paths (as NSString
+   objects) of the selected files and directories.  If multiple
+   selections aren't allowed, the array contains a single name.</p>
 */
 - (NSArray *) filenames
 {
@@ -420,9 +421,9 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 /*
  * Running the NSOpenPanel
  */
-/** <p>Displays the open panel in a modal session, filtering for
-    files that have the specified types </p>
-    <p>See Also: -runModalForDirectory:file:types:</p>
+/**<p>Displays the open panel in a modal session, filtering for
+   files that have the specified types </p>
+   <p>See Also: -runModalForDirectory:file:types:</p>
 */
 - (int) runModalForTypes: (NSArray *)fileTypes
 {
