@@ -1033,26 +1033,40 @@ static float scrollerWidth;
   return _borderType;
 }
 
+/** <p>Returns whether the NSScrollView has a horizontal ruler</p>
+    <p>See Also: -setHasHorizontalRuler:</p>
+ */
 - (BOOL) hasHorizontalRuler
 {
   return _hasHorizRuler;
 }
 
+/** <p>Returns whether the NSScrollView has a horizontal scroller</p>
+    <p>See Also: -setHasHorizontalScroller:</p>
+ */
 - (BOOL) hasHorizontalScroller
 {
   return _hasHorizScroller;
 }
 
+/** <p>Returns whether the NSScrollView has a vertical ruler</p>
+    <p>See Also: -setHasVerticalRuler:</p>
+ */
 - (BOOL) hasVerticalRuler
 {
   return _hasVertRuler;
 }
 
+/** <p>Returns whether the NSScrollView has a vertical scroller</p>
+    <p>See Also: -setHasVerticalScroller:</p>
+ */
 - (BOOL) hasVerticalScroller
 {
   return _hasVertScroller;
 }
 
+/**<p>Returns the size of the NSScrollView's content view</p>
+ */
 - (NSSize) contentSize
 {
   return [_contentView bounds].size;
