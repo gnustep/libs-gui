@@ -82,10 +82,16 @@ Class _nspopupbuttonCellClass = 0;
   return [self initWithFrame: frameRect pullsDown: NO];
 }
 
+/** <p>Initialize and returns a new NSPopUpButton into the frame frameRect
+    and specified by flag if the NSPopUpButton is a pull-down list</p>
+    <p>See Also: -setPullsDown: [NSView-initWithFrame:]</p>
+ */
 - (id) initWithFrame: (NSRect)frameRect
 	   pullsDown: (BOOL)flag
 {
-  self = [super initWithFrame: frameRect];
+  if ( ! ( self = [super initWithFrame: frameRect] ) )
+    return nil;
+  
   [self setPullsDown: flag];
 
   return self;
@@ -113,11 +119,19 @@ this to return nil to indicate that we have no context menu.
   return [_cell menu];
 }
 
+/**<p>Sets whether the NSPopUpButton's cell has a pulls-down list ( YES ) 
+   or a pop-up list (NO)  </p> <p>See Also: -pullsDown 
+   [NSPopUpButtonCell-setPullsDown:]</p>
+*/
+
 - (void) setPullsDown: (BOOL)flag
 {
   [_cell setPullsDown: flag];
 }
-
+/** <p>Returns whether the NSPopUpButton's cell has a pulls-down list ( YES ) 
+    or a pop-up list (NO) </p> 
+    <p>See Also: -setPullsDown: [NSPopUpButtonCell-pullsDown]</p>
+ */
 - (BOOL) pullsDown
 {
   return [_cell pullsDown];
@@ -133,6 +147,11 @@ this to return nil to indicate that we have no context menu.
   return [_cell autoenablesItems];
 }
 
+/** <p>Inserts a new item with title as its title at the end of the list and
+    synchronizes the NSPopUpButton's title with the title of the selected item.
+    </p><p>See Also: [NSPopUpButtonCell-addItemWithTitle:]
+    -synchronizeTitleAndSelectedItem</p>
+ */
 - (void) addItemWithTitle: (NSString *)title
 {
   [_cell addItemWithTitle: title];
@@ -140,6 +159,11 @@ this to return nil to indicate that we have no context menu.
   [self synchronizeTitleAndSelectedItem];
 }
 
+/** <p>Inserts a new list of items with titles as titles at the end of the list
+    and synchronizes the NSPopUpButton's title with the title of the selected
+    item.</p><p>See Also: [NSPopUpButtonCell-addItemsWithTitles:] 
+    -synchronizeTitleAndSelectedItem</p>
+ */
 - (void) addItemsWithTitles: (NSArray*)itemTitles
 {
   [_cell addItemsWithTitles: itemTitles];
@@ -147,6 +171,11 @@ this to return nil to indicate that we have no context menu.
   [self synchronizeTitleAndSelectedItem];
 }
 
+/** <p>Inserts a new item with title as its title at the specified index 
+    and synchronizes the NSPopUpButton's title with the title of the selected
+    item.</p><p>See Also: [NSPopUpButtonCell-insertItemWithTitle:atIndex:] 
+    -synchronizeTitleAndSelectedItem</p>
+ */
 - (void) insertItemWithTitle: (NSString*)title
 		     atIndex: (int)index
 {
@@ -156,6 +185,11 @@ this to return nil to indicate that we have no context menu.
   [self synchronizeTitleAndSelectedItem];
 }
 
+/** <p>Removes all items from the item list and synchronizes the 
+    NSPopUpButton's title with the title of the selected</p>
+    <p>See Also: [NSPopUpButtonCell-removeAllItems] -removeItemWithTitle:
+    -synchronizeTitleAndSelectedItem</p>
+*/
 - (void) removeAllItems
 {
   [_cell removeAllItems];
@@ -163,6 +197,11 @@ this to return nil to indicate that we have no context menu.
   [self synchronizeTitleAndSelectedItem];
 }
 
+/** <p>Removes the item specified with title as its title from the item list
+    and synchronizes the NSPopUpButton's title with the title of the selected
+    </p><p>See Also: [NSPopUpButtonCell-removeItemWithTitle:] 
+    -removeAllItems -removeItemAtIndex: -synchronizeTitleAndSelectedItem</p>
+*/
 - (void) removeItemWithTitle: (NSString*)title
 {
   [_cell removeItemWithTitle: title];
@@ -170,6 +209,11 @@ this to return nil to indicate that we have no context menu.
   [self synchronizeTitleAndSelectedItem];
 }
 
+/** <p>Removes the item at the specified index index from the item list
+    and synchronizes the NSPopUpButton's title with the title of the selected
+    </p><p>See Also: [NSPopUpButtonCell-removeItemAtIndex:] 
+    -removeAllItems -removeItemWithTitle: -synchronizeTitleAndSelectedItem</p>
+*/
 - (void) removeItemAtIndex: (int)index
 {
   [_cell removeItemAtIndex: index];
@@ -177,16 +221,25 @@ this to return nil to indicate that we have no context menu.
   [self synchronizeTitleAndSelectedItem];
 }
 
+/** <p>Returns the selected item</p>
+    <p>See Also: [NSPopUpButtonCell-selectedItem]</p>    
+ */
 - (id <NSMenuItem>) selectedItem
 {
   return [_cell selectedItem];
 }
 
+/** <p>Returns the title of the selected item</p>
+    <p>See Also: [NSPopUpButtonCell-titleOfSelectedItem]</p>    
+ */
 - (NSString*) titleOfSelectedItem
 {
   return [_cell titleOfSelectedItem];
 }
 
+/**<p>Returns the index of the selected item</p>
+   <p>See Also: [NSPopUpButtonCell-indexOfSelectedItem]</p>
+ */
 - (int) indexOfSelectedItem
 {
   return [_cell indexOfSelectedItem];
@@ -198,18 +251,30 @@ this to return nil to indicate that we have no context menu.
   [self synchronizeTitleAndSelectedItem];
 }
 
+/**<p>Select the item at index <var>index</var> and synchronizes the
+   NSPopUpButton's title with the title of the selected</p><p>See Also: 
+   [NSPopUpButtonCell-selectItemAtIndex:] -synchronizeTitleAndSelectedItem</p>
+ */
 - (void) selectItemAtIndex: (int)index
 {
   [_cell selectItemAtIndex: index];
   [self synchronizeTitleAndSelectedItem];
 }
 
+/**<p>Select the item with title <var>title</var> and synchronizes the
+   NSPopUpButton's title with the title of the selected</p><p>See Also: 
+   [NSPopUpButtonCell-selectItemWithTitle:]
+   -synchronizeTitleAndSelectedItem</p>
+ */
 - (void) selectItemWithTitle: (NSString*)title
 {
   [_cell selectItemWithTitle: title];
   [self synchronizeTitleAndSelectedItem];
 }
 
+/** <p>Returns the number of items in the item list</p>
+    <p>See Also: [NSPopUpButtonCell-numberOfItems]</p>
+ */
 - (int) numberOfItems
 {
   return [_cell numberOfItems];
@@ -220,26 +285,37 @@ this to return nil to indicate that we have no context menu.
   return [_cell itemArray];
 }
 
+/**<p>Returns the NSMenuItem at index index or nil if index is out of
+   range</p><p>See Also: [NSPopUpButtonCell-itemAtIndex:] </p>
+ */
 - (id <NSMenuItem>) itemAtIndex: (int)index
 {
   return [_cell itemAtIndex: index];
 }
 
+/** <p>Returns the item's title at index <var>index</var></p>
+ */
 - (NSString*) itemTitleAtIndex: (int)index
 {
   return [_cell itemTitleAtIndex: index];
 }
 
+/**<p>Returns an array containing the items's titles</p>
+ */
 - (NSArray*) itemTitles
 {
   return [_cell itemTitles];
 }
 
+/**<p>Returns the NSMenuItem with title as its title</p>
+ */
 - (id <NSMenuItem>) itemWithTitle: (NSString*)title
 {
   return [_cell itemWithTitle: title];
 }
 
+/**<p> Returns the last NSMenuItem of the list</p>
+ */
 - (id <NSMenuItem>) lastItem
 {
   return [_cell lastItem];
@@ -250,11 +326,21 @@ this to return nil to indicate that we have no context menu.
   return [_cell indexOfItem: anObject];
 }
 
+/**<p>Returns the index of the item with tag as its tag. Returns -1
+   if the cell is not found</p><p>See Also: 
+   [NSPopUpButtonCell-indexOfItemWithTag:] -indexOfItemWithTitle:
+   -indexOfItemWithRepresentedObject:</p>
+*/
 - (int) indexOfItemWithTag: (int)tag
 {
   return [_cell indexOfItemWithTag: tag];
 }
 
+/**<p>Returns the index of the item with title as its title. Returns -1
+   if the cell is not found</p><p>See Also: 
+   [NSPopUpButtonCell-indexOfItemWithTitle:] -indexOfItemWithTag:
+   -indexOfItemWithRepresentedObject:</p>
+*/
 - (int) indexOfItemWithTitle: (NSString*)title
 {
   return [_cell indexOfItemWithTitle: title];

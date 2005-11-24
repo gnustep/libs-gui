@@ -3,6 +3,7 @@
 	* Source/NSMatrix.m: Improved documentation, various cleanups
 	* Source/NSOpenPanel.m: Improved documentation
 	* Source/NSPageLayout.m: Improved documentation
+	* Source/NSPopUpButton.m: Improved documentation
 
 2005-11-22  Richard Frith-Macdonald <rfm@gnu.org>
 
