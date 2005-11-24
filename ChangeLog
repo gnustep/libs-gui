@@ -8,6 +8,8 @@
 	* Source/NSScrollView.m: Improved documentation
 	* Source/NSTexField.m: Improved documentation	
 	* Source/NSFont.m: Improved documentation, various cleanups
+	* Source/NSImage.m: Improved documentation, various cleanups
+	* Source/NSScroller.m: Improved documentation, various cleanups
 
 2005-11-22  Richard Frith-Macdonald <rfm@gnu.org>
 

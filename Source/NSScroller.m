@@ -42,7 +42,8 @@
 #include "AppKit/NSColor.h"
 #include "AppKit/NSGraphics.h"
 
-
+/**<p>TODO Description</p>
+ */
 @implementation NSScroller
 
 /*
@@ -73,9 +74,9 @@ static NSColor *scrollBarColor = nil;
     }
 }
 
-/**
- *  Subclasses can override this to provide different scrollbar width.  But
- *  you may need to also override -drawParts .
+/**<p>Returns the NSScroller's width. By default 18.</p>
+   <p>Subclasses can override this to provide different scrollbar width.  But
+   you may need to also override -drawParts .</p>
  */
 + (float) scrollerWidth
 {
@@ -97,6 +98,15 @@ static NSColor *scrollBarColor = nil;
   return NO;
 }
 
+/** <p>Returns the position of the NSScroller's arrows used for scrolling 
+    By default the arrow position is set to <ref type="type" 
+    id="NSScrollArrowPosition">NSScrollerArrowsMinEnd</ref> if the 
+    scrolletr is a horizontal scroller and <ref type="type" 
+    id="NSScrollArrowPosition">NSScrollerArrowsMaxEnd</ref> if the scroller
+    is a vertical scroller. See <ref type="type" id="NSScrollArrowPosition">
+    NSScrollArrowPosition</ref> for more informations.</p>
+    <p>See Also: -arrowsPosition</p>
+ */
 - (NSScrollArrowPosition) arrowsPosition
 {
   return _arrowsPosition;
@@ -107,11 +117,18 @@ static NSColor *scrollBarColor = nil;
   return _usableParts;
 }
 
+/**<p>Returns a float value ( between 0.0 and 1.0 ) indicating the ratio
+   between the NSScroller length and the knob length</p>
+ */
 - (float) knobProportion
 {
   return _knobProportion;
 }
 
+/**<p>Returns the part of the NSScroller that have been hit ( mouse down )
+   See <ref type="type" id="NSScrollerPart">NSScrollerPart</ref> for more 
+   information </p><p>See Also: -highlight: [NSResponder-mouseDown:]</p>
+ */
 - (NSScrollerPart) hitPart
 {
   return _hitPart;
@@ -390,6 +407,15 @@ static NSColor *scrollBarColor = nil;
   [self setNeedsDisplay: YES];
 }
 
+/** <p>Sets the position of the NSScroller arrows used for scrolling to 
+    <var>where</var> and marks self for display. By default the arrow position
+    is set to <ref type="type" id="NSScrollArrowPosition">
+    NSScrollerArrowsMinEnd</ref> if the scroller is a horizontal scroller
+    and <ref type="type" id="NSScrollArrowPosition">NSScrollerArrowsMaxEnd
+    </ref> if the scroller is a vertical scroller. See <ref type="type"
+    id="NSScrollArrowPosition">NSScrollArrowPosition</ref> for more
+    informations.</p><p>See Also: -arrowsPosition</p>
+ */
 - (void) setArrowsPosition: (NSScrollArrowPosition)where
 {
   if (_arrowsPosition == where)
@@ -515,6 +541,10 @@ static NSColor *scrollBarColor = nil;
   [self setNeedsDisplay: YES];
 }
 
+/**<p>Returns the NSScroller's part under the point <var>thePoint</var>.
+   See <ref type="type" id="NSScrollerPart">NSScrollerPart</ref> for more 
+   informations</p>   
+ */
 - (NSScrollerPart)testPart: (NSPoint)thePoint
 {
   /*
@@ -856,6 +886,12 @@ static NSColor *scrollBarColor = nil;
     }
 }
 
+/**<p>(Un)Highlight the button specified by <var>whichButton</var>.
+   <var>whichButton</var> should be <ref type="type" id="NSScrollerArrow">
+   NSScrollerDecrementArrow</ref> or <ref type="type" id="NSScrollerArrow">
+   NSScrollerIncrementArrow</ref></p>
+   <p>See Also: [NSCell-setHighlighted:] [NSCell-drawWithFrame:inView:]</p>
+ */
 - (void) drawArrow: (NSScrollerArrow)whichButton highlight: (BOOL)flag
 {
   NSRect rect = [self rectForPart: (whichButton == NSScrollerIncrementArrow
@@ -880,6 +916,8 @@ static NSColor *scrollBarColor = nil;
   [theCell drawWithFrame: rect  inView: self];
 }
 
+/**<p>Draws the knob</p>
+ */
 - (void) drawKnob
 {
   [knobCell drawWithFrame: [self rectForPart: NSScrollerKnob] inView: self];
@@ -898,6 +936,9 @@ static NSColor *scrollBarColor = nil;
   NSRectFill (rect);
 }
 
+/**<p>Highlights the button whose under the mouse. Does nothing if the mouse
+   is not under a button</p><p>See Also: -drawArrow:highlight:</p>
+ */
 - (void) highlight: (BOOL)flag
 {
   switch (_hitPart)
@@ -917,6 +958,8 @@ static NSColor *scrollBarColor = nil;
     }
 }
 
+/**
+ */
 - (NSRect) rectForPart: (NSScrollerPart)partCode
 {
   NSRect scrollerFrame = _frame;
