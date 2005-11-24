@@ -239,7 +239,8 @@ enum {
 }
 
 
-/** Creates and returns a shared instance of the NSPageLayout panel.
+/** Creates ( if needed )  and returns a shared instance of the
+    NSPageLayout panel.
  */
 + (NSPageLayout *)pageLayout
 {
@@ -256,18 +257,20 @@ enum {
 //
 // Running the Panel 
 //
-/** Display the Page Layout panel in a modal loop. Saves any aquired 
+/** <p>Display the Page Layout panel in a modal loop. Saves any aquired 
    information in the shared NSPrintInfo object. Returns NSCancelButton 
-   if the user clicks the Cancel button or NSOKButton otherwise.
+   if the user clicks the Cancel button or NSOKButton otherwise.</p>
+   <p>See Also: -runModalWithPrintInfo:</p>
 */
 - (int)runModal
 {
   return [self runModalWithPrintInfo: [NSPrintInfo sharedPrintInfo]];
 }
 
-/** Display the Page Layout panel in a modal loop. Saves any aquired 
+/** <p>Displays the Page Layout panel in a modal loop. Saves any aquired 
    information in the indicated NSPrintInfo object. Returns NSCancelButton 
-   if the user clicks the Cancel button or NSOKButton otherwise.
+   if the user clicks the Cancel button or NSOKButton otherwise.</p>
+   <p>See Also: -runModal</p>
 */
 - (int)runModalWithPrintInfo:(NSPrintInfo *)printInfo
 {
@@ -302,20 +305,21 @@ enum {
 //
 // Customizing the Panel 
 //
-/** Returns the accessory view for the page layout panel 
+/**<p> Returns the accessory view for the page layout panel.</p>
+   <p>See Also: -setAccessoryView:</p>
  */
 - (NSView *)accessoryView
 {
   return [_controller accessoryView];
 }
 
-/** Set the accessory view for the page layout panel 
+/** <p>Sets the accessory view for the page layout panel</p>
+    <p>See Also: -accessoryView</p>
  */
 - (void)setAccessoryView:(NSView *)aView
 {
   [_controller setAccessoryView: aView];
 }
-
 
 
 /** This method has been depreciated. It doesn't do anything useful.
@@ -373,15 +377,16 @@ enum {
   return [_controller printInfo];
 }
 
-/** Updates the receiver panel with information from its NSPrintInfo object
+/** <p>Updates the receiver panel with information from its NSPrintInfo object.
+    </p><p>See Also: -writePrintInfo</p>
  */
 - (void)readPrintInfo
 {
   [_controller readPrintInfo];
 }
 
-/** Writes any layout information set by the user to the receiver's
-    NSPrintInfo object
+/** <p>Writes any layout information set by the user to the receiver's
+    NSPrintInfo object</p><p>See Also: -readPrintInfo</p>
 */
 - (void)writePrintInfo
 {
