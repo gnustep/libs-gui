@@ -46,9 +46,7 @@
 - (NSRect) calcSizesAllowingNegative: (BOOL)aFlag;
 @end
 
-/**
- * <p>EXPLAINS NSBox</p>
- *<p> TODO : explains how is resized the rects (margins etc...)  </p>
+/**<p> TODO : Description</p>
 */
 @implementation NSBox
 
@@ -96,27 +94,28 @@
   [super dealloc];
 }
 
-/**
- * <p>Returns the border retangle of the box</p>
+/**<p>Returns the border rectangle of the box.</p>
  */
 - (NSRect) borderRect
 {
   return _border_rect;
 }
 
-/**<p>Returns the border type. See <ref type="type" id="NSBorderType"> 
-   NSBorderType</ref> for more informations. The default border type is
-    NSGrooveBorder</p><p>See Also: -setBorderType:</p>
+/**<p>Returns the NSBox's border type. See <ref type="type" id="NSBorderType"> 
+   NSBorderType</ref>  for more information. The default border type is
+   <ref type="type" id="NSBorderType">NSGrooveBorder</ref>.</p>
+   <p>See Also: -setBorderType:</p>
  */
 - (NSBorderType) borderType
 {
   return _border_type;
 }
 
-/**<p>Sets the border type to aType, resizes the content view frame if needed,
-   and marks self for display. See <ref type="type" id="NSBorderType"> 
-   NSBorderType</ref> for more informations. The default boder type is 
-   NSGrooveBorder.</p><p>See Also: -borderType</p>
+/**<p>Sets the border type to <var>aType</var>, resizes the content view frame
+   if needed, and marks self for display. See <ref type="type" 
+   id="NSBorderType">NSBorderType</ref> for more informations The default
+   boder type is <ref type="type" id="NSBorderType">NSGrooveBorder</ref>.</p>
+   <p>See Also: -borderType</p>
  */
 - (void) setBorderType: (NSBorderType)aType
 {
@@ -128,10 +127,10 @@
     }
 }
 
-/** <p> Sets the title cell to aString, resizes the content view frame
-  and marks self for display.</p>
- <p>Warning: This method does not implement the Cocoa behaviour</p>
- <p>See Also: -title</p>
+/**<p>Sets the title cell to <var>aString</var>, resizes the content
+   view frame if needed and marks self for display.</p>
+   <p>Warning: This method does not implement the Cocoa behaviour</p>
+   <p>See Also: -title [NSCell-setStringValue:]</p>
  */ 
 - (void) setTitle: (NSString *)aString
 {
@@ -148,10 +147,9 @@
   [self setNeedsDisplay: YES];
 }
 
-/**
- *<p>Sets the font of the title cell to fontObj, resizes 
+/**<p>Sets the title cell font to <var>fontObj</var>, resizes 
  * the content view frame if needed and marks self for display.</p>
- *<p>See Also: -titleFont</p>
+ *<p>See Also: -titleFont [NSCell-setFont:]</p>
  */
 - (void) setTitleFont: (NSFont *)fontObj
 {
@@ -160,10 +158,12 @@
   [self setNeedsDisplay: YES];
 }
 
-/**<p>Sets the  title cell position  to aPosition, resizes the content
- *view frame and marks self for display. See <ref type="type" 
- id="NSTitlePosition">NSTitlePosition</ref> for more information.
- The default postion is NSAtTop.</p> <p>See Also: -titlePosition</p>
+/**<p>Sets the title cell position to <var>aPosition</var>, resizes the
+   content view frame if needed and marks self for display.
+   See <ref type="type" id="NSTitlePosition">NSTitlePosition</ref> for more
+   information. The default position is <ref type="type" id="NSTitlePosition">
+   NSAtTop</ref>.</p>
+   <p>See Also: -titlePosition</p>
  */
 - (void) setTitlePosition: (NSTitlePosition)aPosition
 {
@@ -175,25 +175,23 @@
     }
 }
 
-/**<p>Returns the title cell string value</p>
- *<p>See Also: -setTitle:</p>
+/**<p>Returns title cell string value.</p>
+ *<p>See Also: -setTitle: [NSCell-stringValue]</p>
  */
 - (NSString*) title
 {
   return [_cell stringValue];
 }
 
-/**
- *<p>Returns the box title cell</p>
- *
+/**<p>Returns the title cell</p>
  */
 - (id) titleCell
 {
   return _cell;
 }
 
-/**<p>Returns the title cell font</p>
- *<p>See Also: -setTitleFont:</p>
+/**<p>Returns the title cell font.</p>
+ *<p>See Also: -setTitleFont: [NSCell-font]</p>
  */
 - (NSFont*) titleFont
 {
@@ -201,25 +199,25 @@
 }
 
 /**<p>Returns the title position. See <ref type="type" id="NSTitlePosition">
-   NSTitlePosition</ref> for more information. The default position is NSAtTop.
-   </p><p>See Also: -setTitlePosition:</p>
+   NSTitlePosition</ref> for more information. The default position is 
+   <ref type="type" id="NSTitlePosition">NSAtTop</ref></p>
+   <p>See Also: -setTitlePosition:</p>
  */
 - (NSTitlePosition) titlePosition
 {
   return _title_position;
 }
 
-/**
- *<p>Returns the title rectangle</p>
+/**<p>Returns the title rectangle</p>
  */
 - (NSRect) titleRect
 {
   return _title_rect;
 }
 
-/**
- *<p>Returns the content view. The content view is resized ....TODO...</p>
- *<p>See Also: -setContentView:</p>
+/**<p>Returns the NSBox's content view. The content view is created as NSView
+   when the box is initialized. The contentView is resizes when needed.</p>
+   <p>See Also: -setContentView:</p>
  */
 - (id) contentView
 {
@@ -229,20 +227,18 @@
 /**<p>Returns an NSSize containing the interior margins of the receiver. 
   An NSBox's content view margins are empty space that is subtracted 
   from the top, bottom, and sides as padding between the inside of the box
-  and the frame of its content view</p>
- <p> See Also: -setContentViewMargins:</p>
+  and the frame of its content view.</p>
+  <p>See Also: -setContentViewMargins:</p>
  */
 - (NSSize) contentViewMargins
 {
   return _offsets;
 }
 
-/**
- *<p>Sets the content view to aView. The current content view is replaced
- * by -replaceSubview:with:. So you should -retain the current
- * view if you want to use it later. The contentView frame is resized if needed
- * See -contentView to know  how the contentView frame is resized</p>
- * <p>See Also: -contentView</p>
+/**<p>Sets the content view to aView. The current content view is replaced
+   by -replaceSubview:with:. So you should -retain the current
+   view if you want to use it later. The contentView frame is resized if 
+   needed.</p><p>See Also: -contentView</p>
  */
 - (void) setContentView: (NSView*)aView
 {
@@ -258,7 +254,7 @@
   An NSBox's content view margins are empty space that is subtracted 
   from the top, bottom, and sides as padding between the inside of the box
   and the frame of its content view</p>
- <p> See Also: -contentViewMargins</p>
+  <p> See Also: -contentViewMargins</p>
  */
 - (void) setContentViewMargins: (NSSize)offsetSize
 {
@@ -286,8 +282,8 @@
   [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
 }
 
-/**
- *<p>TODO </p>
+/**<p>Resizes the NSBox to fit the content view frame 
+   <var>contentFrame</var>.</p>
  */
 - (void) setFrameFromContentFrame: (NSRect)contentFrame
 {
@@ -299,7 +295,7 @@
 	@"illegal content frame supplied");
 
   if (_super_view)
-    r = [_super_view convertRect: r fromView: self];
+    r = [_super_view convertRect:r fromView: self];
   
   // Add the difference to the frame
   f.size.width = f.size.width + (contentFrame.size.width - r.size.width);
@@ -351,8 +347,7 @@
   return rect.size;
 }
 
-/**
- *<p>TODO</p>
+/**<p>Resizes the NSBox and its content view to fit its subviews.</p>
  */
 - (void) sizeToFit
 {
