@@ -39,7 +39,7 @@
 static id buttonCellClass = nil;
 
 /**
- NSButton implementation
+   TODO Description
 */
 @implementation NSButton
 
@@ -156,9 +156,9 @@ static id buttonCellClass = nil;
 
 /** <p>Gets the NSButtonCell's <var>delay</var> and the <var>interval</var>
     parameters used when NSButton sends continouly action messages.
-    By default <var>delay</var> is 0.4 and <var>interval</var> is 0.075</p>
+    By default <var>delay</var> is 0.4 and <var>interval</var> is 0.075.</p>
     <p>See Also: [NSButtonCell-getPeriodicDelay:interval:] 
-    -setPeriodicDelay:interval: 
+    -setPeriodicDelay:interval:
     [NSCell-trackMouse:inRect:ofView:untilMouseUp:]</p>
  */
 - (void) getPeriodicDelay: (float *)delay
@@ -169,7 +169,7 @@ static id buttonCellClass = nil;
 
 /** <p>Sets the NSButtonCell's  <var>delay</var> and <var>interval</var> 
     parameters used when NSButton sends continouly action messages.
-    By default <var>delay</var> is 0.4 and <var>interval</var> is 0.075</p>
+    By default <var>delay</var> is 0.4 and <var>interval</var> is 0.075.</p>
     <p>See Also: [NSButtonCell-setPeriodicDelay:interval:] 
     -getPeriodicDelay:interval: 
     [NSCell-trackMouse:inRect:ofView:untilMouseUp:]</p>
@@ -181,7 +181,7 @@ static id buttonCellClass = nil;
 }
 
 /**<p>Returns the NSButtonCell's alternate title.</p>
-   <p>See Also: -setAlternateTitle:</p>
+   <p>See Also: -setAlternateTitle: [NSButtonCell-alternateTitle]</p>
  */
 - (NSString *) alternateTitle
 {
@@ -189,7 +189,7 @@ static id buttonCellClass = nil;
 }
 
 /**<p>Sets the NSButtonCell's alternateTitle to <var>aString</var> and marks
-   self for display</p><p>See Also: -alternateTitle</p>
+   self for display.</p><p>See Also: -alternateTitle</p>
  */
 - (void) setAlternateTitle: (NSString *)aString
 {
@@ -198,7 +198,7 @@ static id buttonCellClass = nil;
 }
 
 /**<p>Sets the NSButtonCell's title to <var>aString</var> and marks self for
-   display</p><p>See Also: -title</p>
+   display.</p><p>See Also: -title</p>
  */
 - (void) setTitle: (NSString *)aString
 {
@@ -206,7 +206,7 @@ static id buttonCellClass = nil;
   [self setNeedsDisplay: YES];
 }
 
-/** <p>Returns the NSButtonCell's title</p>
+/** <p>Returns the NSButtonCell's title.</p>
     <p>See Also: [NSButtonCell-title] -setTitle:</p>
  */
 - (NSString *) title
@@ -253,8 +253,8 @@ static id buttonCellClass = nil;
   return [_cell alternateImage];
 }
 
-/** <p>Returns the NSButtonCell's image</p>
-    <p>See Also: -setImage:</p> 
+/** <p>Returns the NSButtonCell's image.</p>
+    <p>See Also: -setImage: [NSButtonCell-image]</p> 
 */
 - (NSImage *) image
 {
@@ -263,7 +263,7 @@ static id buttonCellClass = nil;
 
 /** <p>Returns the position of the NSButtonCell's image. See 
     <ref type="type" id="NSCellImagePosition">NSCellImagePosition</ref>
-    for more informations</p>
+    for more information.</p>
     <p>See Also: -setImagePosition: [NSButtonCell-imagePosition]</p> 
 */
 - (NSCellImagePosition) imagePosition
@@ -292,7 +292,7 @@ static id buttonCellClass = nil;
 
 /** <p>Sets the postion of the NSButtonCell's image to <var>aPosition</var>
     and marks self for display. See <ref type="type" id="NSCellImagePosition">
-    NSCellImagePosition</ref>for more informations.</p>
+    NSCellImagePosition</ref>for more information.</p>
     <p>See Also: -imagePosition [NSButtonCell-setImagePosition:] </p>
 */
 - (void) setImagePosition: (NSCellImagePosition)aPosition
@@ -372,7 +372,7 @@ static id buttonCellClass = nil;
 //
 // Displaying
 //
-/** <p>(Un)Highlights the NSButtonCell</p>
+/** <p>(Un)Highlights the NSButtonCell.</p>
     <p>See Also: [NSButtonCell-highlight:withFrame:inView:]</p>
  */
 - (void) highlight: (BOOL)flag
@@ -492,7 +492,14 @@ static id buttonCellClass = nil;
 //
 // Handling Events and Action Messages
 //
-/** TODO 
+/**<p>Simulates the click of the button if the key equivalent and 
+   its modifier mask match the event <var>anEvent</var>.
+   By default the key modifier mask is NSCommandKeyMask and there is no
+   key equivalent</p>
+   <p>See Also: -keyEquivalent -keyEquivalentModifierMask 
+   [NSControl-performClick:]
+   [NSEvent-charactersIgnoringModifiers] [NSEvent-modifierFlags]</p>
+
  */
 - (BOOL) performKeyEquivalent: (NSEvent *)anEvent
 {
