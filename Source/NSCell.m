@@ -599,11 +599,11 @@ static NSColor	*shadowCol;
     }
 }
 
-/**<p>Set the NSCell's type. See 
-   <ref type="type" id="NSCellType">NSCellType</p>.
+/**<p>Set the NSCell's type. See
+   <ref type="type" id="NSCellType">NSCellType</ref></p>.
    <p>If the cell is set to NSTextCellType, the cell is given a default 
    title and is reset to the default system font.</p>
-   *<p>See Also: -type</p>
+   <p>See Also: -type</p>
 */
 - (void) setType: (NSCellType)aType
 {
