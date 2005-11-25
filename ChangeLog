@@ -2,6 +2,7 @@
 
 	* Source/NSBox.m: Improved documentation
 	* Source/NSCell.m: Documentation : closed the ref tag for -setType:
+	* Source/NSBrowser.m: Improved documentation, various cleanups.
 	
 2005-11-24 12:33 Gregory John Casamento <greg_casamento@yahoo.com>
 
