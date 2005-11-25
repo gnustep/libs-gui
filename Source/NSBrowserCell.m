@@ -52,10 +52,7 @@ static BOOL _gsFontifyCells = NO;
 static NSFont *_nonLeafFont;
 static NSFont *_leafFont;
 
-/**
- *<p> TODO Description</p>
- *<p>Explain _gsFontifyCells ....</p>
- *
+/**<p> TODO Description</p>
  */
 @implementation NSBrowserCell
 
@@ -151,8 +148,8 @@ static NSFont *_leafFont;
 }
 
 /**<p>Returns the alternate image in the NSBrowserCell
- * (used when the cell is highlighted) </p>
- *<p>See Also: -setAlternateImage:</p>
+   (used when the cell is highlighted) </p>
+   <p>See Also: -setAlternateImage:</p>
  */
 - (NSImage*) alternateImage
 {
@@ -167,9 +164,6 @@ static NSFont *_leafFont;
   ASSIGN(_alternateImage, anImage);
 }
 
-/**
- *<p>TODO</p>
- */
 - (NSColor *)highlightColorInView: (NSView *)controlView
 {
   return [_colorClass selectedControlColor];
@@ -210,19 +204,17 @@ static NSFont *_leafFont;
     }
 }
 
-/**
- * <p> TODO</p>
- * <p>See Also: -setLoaded:</p>
+/**<p>Returns whether the NSBrowseCell state is set and is ready for 
+   display</p> <p>See Also: -setLoaded:</p>
  */
 - (BOOL) isLoaded
 {
   return _browsercell_is_loaded;
 }
 
-/**
- *<p>TODO </p>
- *<p>See Also: -isLoaded</p>
- *
+
+/**<p>Sets whether the NSBrowseCell state is set and is ready for display</p>
+ * <p>See Also: -isLoaded </p>
  */
 - (void) setLoaded: (BOOL)flag
 {
