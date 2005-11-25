@@ -61,6 +61,8 @@
   isFlipped: (BOOL)flipped;
 @end
 
+/**<p> TODO Description</p>
+ */
 @implementation NSButtonCell
 
 /*
@@ -147,7 +149,7 @@
 {
 }
 
-/** <p>Returns the NSButtonCell's title</p>
+/** <p>Returns the NSButtonCell's title.</p>
     <p>See Also: -setTitle: [NSCell-stringValue]</p>
  */
 - (NSString*) title
@@ -155,8 +157,8 @@
   return [self stringValue];
 }
 
-/** <p>Returns the NSButtonCell's alternate title ( used when highlighted )</p>
-    <p>See Also: -setAlternateTitle:</p>
+/** <p>Returns the NSButtonCell's alternate title ( used when highlighted ).
+    </p><p>See Also: -setAlternateTitle:</p>
  */
 - (NSString*) alternateTitle
 {
@@ -256,11 +258,17 @@
     }
 }
 
+/** <p>Sets the NSButtonCell's font to <var>fontObject</var>.
+    The key equivalent font size is changed to match the <var>fontObject</var>
+    if needed.</p><p>See Also: [NSCell-font] -keyEquivalentFont 
+    -setKeyEquivalentFont: -setKeyEquivalentFont:size:</p>
+ */
 - (void) setFont: (NSFont*)fontObject
 {
   int size;
 
   [super setFont: fontObject];
+
   if ((_keyEquivalentFont != nil) && (fontObject != nil) && 
       ((size = [fontObject pointSize]) != [_keyEquivalentFont pointSize]))
     {
@@ -269,17 +277,17 @@
     }
 }
 
-/** <p>Sets the NSButtonCell's title to <var>aString</var></p>
-    <p>See Also: -title [NSCell-setStringValue:]</p>
+/**<p>Sets the NSButtonCell's title to <var>aString</var>.</p>
+   <p>See Also: -title [NSCell-setStringValue:]</p>
  */
 - (void) setTitle: (NSString*)aString
 {
   [self setStringValue: aString];
 }
 
-/** <p>Sets the NSButtonCell's alternate title ( used when highlighted ) 
-    to <var>aString</var> and update the cell if it contains 
-    a NSControl view</p><p>See Also: -alternateTitle</p>
+/**<p>Sets the NSButtonCell's alternate title ( used when highlighted ) 
+   to <var>aString</var> and update the cell if it contains 
+   a NSControl view.</p><p>See Also: -alternateTitle</p>
  */
 - (void) setAlternateTitle: (NSString*)aString
 {
@@ -361,7 +369,7 @@
   [self setAlternateMnemonicLocation: location];
 }
 
-/**<p>Returns the NSButtonCell's alternate image</p>
+/**<p>Returns the NSButtonCell's alternate image.</p>
    <p>See Also: -setAlternateImage:</p> 
  */
 - (NSImage*) alternateImage
@@ -370,7 +378,7 @@
 }
 
 /** <p>Returns the NSButtonCell's image position. See <ref type="type" 
-    id="NSCellImagePosition">NSCellImagePosition</ref> for more informations.
+    id="NSCellImagePosition">NSCellImagePosition</ref> for more information.
     </p><p>See Also: -setImagePosition:</p>
  */
 - (NSCellImagePosition) imagePosition
@@ -394,17 +402,21 @@
   ASSIGN (_cell_image, anImage);
 }
 
+/**<p>Sets the NSButtonCell's alternate image to <var>anImage</var>.</p>
+   <p>See Also: -alternateImage</p>
+ */
 - (void) setAlternateImage: (NSImage*)anImage
 {
   ASSIGN(_altImage, anImage);
 }
 
 /**<p>Sets the image position. The GNUstep implementation depends only on 
- *the image position. If the image position is set to NSNoImage
- * then the type is set to NSTextCellType, to NSImageCellType otherwise</p>
- *<p>See Also: -imagePosition</p>
- *
- */
+   the image position. If the image position is set to <ref type="type"
+   id="NSCellImagePosition">NSNoImage</ref> then the type is set to
+   <ref type="type" id="NSCellImagePosition">NSTextCellType</ref>, to
+   <ref type="type" id="NSCellImagePosition">NSImageCellType</ref> otherwise
+   </p><p>See Also: -imagePosition</p>
+*/
 - (void) setImagePosition: (NSCellImagePosition)aPosition
 {
   _cell.image_position = aPosition;
@@ -422,8 +434,11 @@
     }
 }
 
-/*
- * Setting the Repeat Interval
+/**<p>Gets the NSButtonCell's <var>delay</var> and the <var>interval</var>
+   parameters used when NSButton sends continouly action messages.
+   By default <var>delay</var> is 0.4 and <var>interval</var> is 0.075.</p>
+   <p>See Also: -setPeriodicDelay:interval:
+   [NSCell-trackMouse:inRect:ofView:untilMouseUp:]</p>
  */
 - (void) getPeriodicDelay: (float*)delay interval: (float*)interval
 {
@@ -431,23 +446,31 @@
   *interval = _repeatInterval;
 }
 
+/** <p>Sets the NSButtonCell's  <var>delay</var> and <var>interval</var> 
+    parameters used when NSButton sends continouly action messages.
+    By default <var>delay</var> is 0.4 and <var>interval</var> is 0.075.</p>
+    <p>See Also: -getPeriodicDelay:interval: 
+    [NSCell-trackMouse:inRect:ofView:untilMouseUp:]</p>
+ */
 - (void) setPeriodicDelay: (float)delay interval: (float)interval
 {
   _delayInterval = delay;
   _repeatInterval = interval;
 }
 
-/**<p>Returns the key equivalent. 
-   The key equivalent is used into the [NSButton-performKeyEquivalent:] method
-   ( subclass of NSResponder ) </p>
-   <p>See Also: -setKeyEquivalent: [NSButton-performKeyEquivalent:]</p>
+/**<p>Returns the NSButtonCell's key equivalent. The key equivalent and its
+   modifier mask are used to simulate the click of the button in
+   [NSButton-performKeyEquivalent:]. Returns an empty string if no key
+   equivalent is defined. By default NSButtonCell hasn't key equivalent.</p>
+   <p>See Also: -setKeyEquivalent: [NSButton-performKeyEquivalent:]
+   -keyEquivalentModifierMask [NSButtonCell-keyEquivalent]</p>
  */
 - (NSString*) keyEquivalent
 {
   return _keyEquivalent;
 }
 
-/**<p>Returns the NSFont of the key equivalent ( TODO explain )</p>
+/**<p>Returns the NSFont of the key equivalent.</p>
  *<p>See Also: -setKeyEquivalentFont:</p>
  */
 - (NSFont*) keyEquivalentFont
@@ -455,54 +478,67 @@
   return _keyEquivalentFont;
 }
 
+/** <p>Returns the modifier mask of the NSButtonCell's key equivalent. 
+    The key equivalent and its modifier mask are used to simulate the click
+    of the button in  [NSButton-performKeyEquivalent:]. The default mask is 
+    NSCommandKeyMask.</p><p>See Also: -setKeyEquivalentModifierMask:
+    -keyEquivalent [NSButton-performKeyEquivalent:]</p>
+ */
 - (unsigned int) keyEquivalentModifierMask
 {
   return _keyEquivalentModifierMask;
 }
 
-/**<p>Sets the key equivalent.The key equivalent is used into the
-  [NSButton-performKeyEquivalent:] method ( subclass of NSResponder )</p>
- <p>See Also: -keyEquivalent -setKeyEquivalentModifierMask:
- -keyEquivalentModifierMask</p>
+/** <p>Sets the NSButtonCell's key equivalent to <var>key</var>. The key
+    equivalent and its modifier mask are used to simulate the click
+    of the button in  [NSButton-performKeyEquivalent:]. By default NSButton
+    hasn't   key equivalent.</p><p>See Also: -keyEquivalent 
+    -setKeyEquivalentModifierMask: [NSButton-performKeyEquivalent:]</p>
 */
 - (void) setKeyEquivalent: (NSString*)key
 {
   ASSIGNCOPY(_keyEquivalent, key);
 }
 
-/**<p>Sets the mask ( modifier key ) for the keyEquivalent.The key equivalent 
- *is used into the [NSButton-performKeyEquivalent:] method 
- *( subclass of NSResponder )</p>
- *<p>See Also: -keyEquivalentModifierMask keyEquivalent -setKeyEquivalent:</p>
- */
+/** <p>Sets the modifier mask of the NSButtonCell's key equivalent to
+    <var>mask</var>. The key equivalent and its modifier mask are used to
+    simulate the click of the button in [NSButton-performKeyEquivalent:]. 
+    By default the mask is NSCommandKeyMask.</p>
+    <p>See Also: -keyEquivalentModifierMask  
+    -setKeyEquivalent: [NSButton-performKeyEquivalent:]</p>
+*/
 - (void) setKeyEquivalentModifierMask: (unsigned int)mask
 {
   _keyEquivalentModifierMask = mask;
 }
 
-/**<p>Sets the NSFont of the key equivalent. TODO explain </p>
- *<p>See Also: -keyEquivalentFont</p>
+/**<p>Sets the NSFont of the key equivalent to <var>fontObject</var>.</p>
+ *<p>See Also: -keyEquivalentFont -setFont:</p>
  */
 - (void) setKeyEquivalentFont: (NSFont*)fontObj
 {
   ASSIGN(_keyEquivalentFont, fontObj);
 }
 
+/**<p>Sets the NSFont with size <var>fontSize</var> of the key equivalent 
+   to <var>fontName</var>.</p>
+   <p>See Also: -keyEquivalentFont -setKeyEquivalentFont: -setFont:</p>
+ */
 - (void) setKeyEquivalentFont: (NSString*)fontName size: (float)fontSize
 {
   ASSIGN(_keyEquivalentFont, [NSFont fontWithName: fontName size: fontSize]);
 }
 
-/**<p>Returns whether the button cell is transparent </p>
- *<p>See Also: -setTransparent:</p>
+/**<p>Returns whether the button cell is transparent.</p>
+   <p>See Also: -setTransparent:</p>
  */
 - (BOOL) isTransparent
 {
   return _buttoncell_is_transparent;
 }
 
-/**<p>Sets whether the button cell is transparent</p>
- *<p>See Also: -isTransparent </p>
+/**<p>Sets whether the button cell is transparent.</p>
+   <p>See Also: -isTransparent </p>
  */
 - (void) setTransparent: (BOOL)flag
 {
@@ -563,14 +599,21 @@
   _image_dims_when_disabled = flag;
 }
 
-/*
- * Modifying Graphic Attributes
+/**<p>Returns a mask describing how the button cell is highlighted : </p>
+   <p> NSNoCellMask, NSContentsCellMask,NSPushInCellMask,NSChangeGrayCellMask,
+   NSChangeBackgroundCellMask</p>
+   <p>See Also : -setHighlightsBy:</p>
  */
 - (int) highlightsBy
 {
   return _highlightsByMask;
 }
 
+/**<p>Sets a mask describing how the button cell is highlighted :  </p>
+   <p> NSNoCellMask, NSContentsCellMask,NSPushInCellMask,NSChangeGrayCellMask,
+   NSChangeBackgroundCellMask</p>
+   <p>See Also : -highlightsBy</p>
+ */
 - (void) setHighlightsBy: (int)mask
 {
   _highlightsByMask = mask;
@@ -1282,10 +1325,9 @@
   [(NSView *)[event userData] setNeedsDisplay: YES];
 }
 
-/**
- * Simulates a single mouse click on the button cell. This method overrides the
- * cell method performClickWithFrame:inView: to add the possibility to play a sound
- * associated with the click. 
+/**Simulates a single mouse click on the button cell. This method overrides the
+  cell method performClickWithFrame:inView: to add the possibility to
+  play a sound associated with the click. 
  */
 - (void) performClickWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
 {

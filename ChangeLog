@@ -5,6 +5,7 @@
 	* Source/NSBrowser.m: Improved documentation, various cleanups.
 	* Source/NSBrowserCell.m: Improved documentation.
 	* Source/NSButton.m: Improved documentation.
+	* Source/NSButtonCell.m: Improved documentation.
 	
 2005-11-24 12:33 Gregory John Casamento <greg_casamento@yahoo.com>
 
