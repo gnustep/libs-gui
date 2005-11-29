@@ -473,7 +473,10 @@ static Class textFieldCellClass;
 	    }
 	  else
 	    {
-	      if ([_delegate control: self 
+	      SEL sel = @selector(control:didFailToFormatString:errorDescription:);
+
+	      if ([_delegate respondsToSelector: sel] && 
+		  [_delegate control: self 
 			     didFailToFormatString: string 
 			     errorDescription: error] == YES)
 		{
@@ -532,9 +535,14 @@ static Class textFieldCellClass;
 
       if (wasAccepted == NO)
 	{
-	  [_delegate control:self 
-		     didFailToValidatePartialString: partialString 
-		     errorDescription: error];
+	  SEL sel = @selector(control:didFailToValidatePartialString:errorDescription:);
+	  
+	  if ([_delegate respondsToSelector: sel])
+	    {
+	      [_delegate control: self 
+			 didFailToValidatePartialString: partialString 
+			 errorDescription: error];
+	    }
 	}
 
       if (newString != nil)

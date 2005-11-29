@@ -318,7 +318,17 @@
 
 - (NSSize) minimumSize
 {
-  return NSZeroSize;
+  switch (_type)
+    {
+      case NSTopTabsBezelBorder:
+	return NSMakeSize(2, 19.5);
+      case NSNoTabsBezelBorder:
+	return NSMakeSize(2, 3);
+      case NSBottomTabsBezelBorder:
+	return NSMakeSize(2, 16);
+      default:
+	return NSZeroSize;
+    }
 }
 
 - (NSRect) contentRect
