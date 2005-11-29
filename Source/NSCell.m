@@ -122,8 +122,8 @@ static NSColor	*shadowCol;
   return nil;
 }
 
-/**<p>TODO. This class method returns NO. This method is override by subclasses
-   </p>
+/**<p>This class method returns NO. This method should be overrided by 
+   subclasses.</p>
  */
 + (BOOL) prefersTrackingUntilMouseUp
 {
@@ -138,9 +138,11 @@ static NSColor	*shadowCol;
   return [self initTextCell: @""];
 }
 
-/**<p>Initialize and returns a new NSCell with a NSImage <var>anImage</var>. 
-   This method sets the image position to NSImageOnly and the cell's type 
-   to NSImageCellType.</p><p>See Also: -initTextCell: </p>
+/**<p>Initializes and returns a new NSCell with a NSImage <var>anImage</var>. 
+   This method sets the image position to <ref type="type" 
+   id="NSCellImagePosition">NSImageOnly</ref> and the cell's type to
+   <ref type="type" id="NSCellType">NSImageCellType</ref>.</p>
+   <p>See Also: -initTextCell: </p>
  */
 - (id) initImageCell: (NSImage*)anImage
 {
@@ -171,8 +173,9 @@ static NSColor	*shadowCol;
 
   return self;
 }
-/**<p>Initialize and returns a new NSCell with a NSString aString. 
-   This method sets the cell's type to NSTextCellType.</p>
+/**<p>Initializes and returns a new NSCell with a NSString aString. 
+   This method sets the cell's type to <ref type="type" id="NSCellType">
+   NSTextCellType</ref>.</p>
    <p>See Also: -initImageCell: </p>
  */
 - (id) initTextCell: (NSString*)aString
@@ -434,7 +437,7 @@ static NSColor	*shadowCol;
 
 /**<p>Returns some NSCell's attributes for the specified <ref type="type"
    id="NSCellAttribute">NSCellAttribute</ref></p>
- *<p>See Also: -setCellAttribute:to:</p>
+   <p>See Also: -setCellAttribute:to:</p>
  */
 - (int) cellAttribute: (NSCellAttribute)aParameter
 {
@@ -599,10 +602,9 @@ static NSColor	*shadowCol;
     }
 }
 
-/**<p>Set the NSCell's type. See
-   <ref type="type" id="NSCellType">NSCellType</ref></p>.
-   <p>If the cell is set to NSTextCellType, the cell is given a default 
-   title and is reset to the default system font.</p>
+/**<p>Sets the NSCell's type. See <ref type="type" id="NSCellType">NSCellType
+   </ref>.If the cell is set to NSTextCellType, the cell is given
+   a default title and is reset to the default system font.</p>
    <p>See Also: -type</p>
 */
 - (void) setType: (NSCellType)aType
@@ -635,7 +637,7 @@ static NSColor	*shadowCol;
 /**<p>Returns the cell's type. Returns NSNullCellType if the
   cell's type flag is set to NSImageCellType and if the cell's image 
   is nil. See <ref type="type" id="NSCellType">NSCellType</ref> for more 
-  informations.</p><p>See Also -setType:</p>
+  information.</p><p>See Also -setType:</p>
  */
 - (NSCellType) type
 {
@@ -795,7 +797,8 @@ static NSColor	*shadowCol;
 
 /**<p>Returns the alignment of the text used in the NSCell. See 
    <ref type="type" id="NSTextAlignment">NSTextAlignment</ref> for more
-   informations. By default the text alignment is NSJustifiedTextAlignment</p>
+   informations. By default the text alignment is <ref type="type" 
+   id="NSTextAlignment">NSJustifiedTextAlignment</ref></p>
    <p>See Also: -setAlignment:</p>
  */
 - (NSTextAlignment) alignment
@@ -1063,9 +1066,8 @@ static NSColor	*shadowCol;
   return nil;
 }
 
-/**<p>Returns whether the cell can continuously send its action messages.
-   Some subclasses should redefine this method with NSLeftMouseDraggedMask</p>
- <p>See Also: -setContinuous:</p>
+/**<p>Returns whether the cell can continuously send its action messages.</p>
+   <p>See Also: -setContinuous:</p>
  */
 - (BOOL) isContinuous
 {
@@ -1073,8 +1075,7 @@ static NSColor	*shadowCol;
   return (_action_mask & NSPeriodicMask) != 0;
 }
 
-/**<p>Sets whether the cell can continuously send its action messages. 
-   Some subclasses should redefine this method with NSLeftMouseDraggedMask</p>
+/**<p>Sets whether the cell can continuously send its action messages.</p>
  *<p>See Also: -isContinuous</p>
  */
 - (void) setContinuous: (BOOL)flag
@@ -1101,7 +1102,8 @@ static NSColor	*shadowCol;
   return previousMask;
 }
 
-/**<p>Returns the NSCell's image if the NSCell's type is NSImageCellType,
+/**<p>Returns the NSCell's image if the NSCell's type is <ref type="type" 
+   id="NSCellType">NSImageCellType</ref>,
    returns nil otherwise.</p>
    <p>See Also: -setImage: -setType: -type</p>
  */
@@ -1118,8 +1120,7 @@ static NSColor	*shadowCol;
 /**<p>Sets the NSCell's image to anImage. This method sets the cell's type 
    to NSImageCellType if needed. Raises an NSInvalidArgumentException if
    the anImage is not an NSImage (sub)class. The new image is retained and the
-   old one is released</p>
- *<p>See Also: -image</p>
+   old one is released</p><p>See Also: -image</p>
  */
 - (void) setImage: (NSImage*)anImage
 {
@@ -1452,8 +1453,10 @@ static NSColor	*shadowCol;
   ASSIGN (_represented_object, anObject);
 }
 
-/*
- * Tracking the Mouse
+/** <p>Returns YES. Subclasses should overrided this method if you want
+    stop tracking the mouse. This method is call in the
+    -trackMouse:inRect:ofView:untilMouseUp: main loop.</p>
+    <p>See Also: -trackMouse:inRect:ofView:untilMouseUp:</p>
  */
 - (BOOL) continueTracking: (NSPoint)lastPoint
 		       at: (NSPoint)currentPoint
@@ -1462,17 +1465,33 @@ static NSColor	*shadowCol;
   return YES;
 }
 
+/**<p>Returns the mouse flags. This flags are usally sets in 
+   the -trackMouse:inRect:ofView:untilMouseUp: method</p>
+ */
 - (int) mouseDownFlags
 { 
   return _mouse_down_flags;
 }
 
+/**<p>Gets the NSCell's <var>delay</var> and the <var>interval</var>
+   parameters used when NSCell sends continouly action messages.
+   The NSCell implementation sets both <var>delay</var> and <var>interval</var>
+   to 0.1.</p>
+   <p>See Also: -trackMouse:inRect:ofView:untilMouseUp:</p>
+ */
 - (void) getPeriodicDelay: (float*)delay interval: (float*)interval
 {
   *delay = 0.1;
   *interval = 0.1;
 }
 
+/**<p>Returns whether tracking starts. The NSCell implementation
+   returns YES when the <var>startPoint</var> is into the control view
+   retangle, NO otherwise. This method is call at the early stage of
+   -trackMouse:inRect:ofView:untilMouseUp:</p><p>See Also:
+   [NSView-mouse:inRect:] -trackMouse:inRect:ofView:untilMouseUp:
+   </p>
+ */
 - (BOOL) startTrackingAt: (NSPoint)startPoint inView: (NSView*)controlView
 {
   // If the point is in the view then yes start tracking
@@ -1482,6 +1501,8 @@ static NSColor	*shadowCol;
     return NO;
 }
 
+/**<p>TODO</p>
+ */
 - (void) stopTracking: (NSPoint)lastPoint
 		   at: (NSPoint)stopPoint
 	       inView: (NSView*)controlView
@@ -1647,14 +1668,14 @@ static NSColor	*shadowCol;
   if (_cell.type == NSTextCellType && _cell.is_disabled == NO
     && (_cell.is_selectable == YES || _cell.is_editable == YES))
     {
-      static NSCursor	*c = nil;
-      NSRect	r;
+      static NSCursor	*cursor = nil;
+      NSRect	rect;
 
-      if (c == nil)
+      if (cursor== nil)
 	{
-	  c = RETAIN([NSCursor IBeamCursor]);
+	  cursor = RETAIN([NSCursor IBeamCursor]);
 	}
-      r = NSIntersectionRect(cellFrame, [controlView visibleRect]);
+      rect = NSIntersectionRect(cellFrame, [controlView visibleRect]);
       /*
        * Here we depend on an undocumented feature of NSCursor which may or
        * may not exist in OPENSTEP or MacOS-X ...
@@ -1662,7 +1683,7 @@ static NSColor	*shadowCol;
        * either entry to or exit from the view, we push it on entry and
        * pop it from the cursor stack on exit.
        */
-      [controlView addCursorRect: r cursor: c];
+      [controlView addCursorRect: rect cursor: cursor];
     }
 }
 
@@ -1675,7 +1696,8 @@ static NSColor	*shadowCol;
 }
 
 /**<p>Does nothing. This method is used by subclasses to recalculate sizes</p>
- * <p>It is usally called from a NSControl object ([NSControl-calcSize])</p>
+   <p>It is usally called from a NSControl object</p>
+   <p>See Also: [NSControl-calcSize]</p>
  */
 - (void) calcDrawInfo: (NSRect)aRect
 {
@@ -1839,8 +1861,8 @@ static NSColor	*shadowCol;
   return NSDefaultControlTint;
 }
 
-/**<p>This method is used by subclass to specified the control view.
-   This method returns nil</p>
+/**<p>This method is used by subclasses to specified the control view.
+   This method returns nil.</p>
  */
 - (NSView*) controlView
 {
@@ -1927,13 +1949,16 @@ static NSColor	*shadowCol;
   [self drawInteriorWithFrame: cellFrame inView: controlView];
 }
 
+/**<p>Sets whether the NSCell is highlighted.</p>
+   <p>See Also: -isHighlighted</p>
+ */
 - (void) setHighlighted: (BOOL) flag
 {
   _cell.is_highlighted = flag;
 }
 
-/**
- *<p>Returns whether the cell is highlighted. By default NO</p>
+/**<p>Returns whether the cell is highlighted. By default NO</p>
+   <p>See Also: -setHighlighted:</p>
  */
 - (BOOL) isHighlighted
 {
@@ -2009,7 +2034,9 @@ static NSColor	*shadowCol;
 /*
  * Editing Text
  */
-/** <p> TODO </p>
+/** <p>.This method does nothing if a the <var>controlView</var> is nil,
+    if text object does not exist or if the cell's type is not <ref type="type"
+    id="NSCellType">NSTextCellType</ref></p>
  */
 - (void) editWithFrame: (NSRect)aRect
 		inView: (NSView*)controlView
@@ -2072,7 +2099,9 @@ static NSColor	*shadowCol;
   [clipView removeFromSuperview];
 }
 
-/** <p> TODO </p>
+/** <p> TODO.This method does nothing if a the <var>controlView</var> is nil,
+    if text object does not exist or if the cell's type is not <ref type="type"
+    id="NSCellType">NSTextCellType</ref> </p>
  */
 - (void) selectWithFrame: (NSRect)aRect
 		  inView: (NSView*)controlView

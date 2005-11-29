@@ -68,7 +68,7 @@
 @implementation NSCachedImageRep
 
 /** <p>Initializes and returns a new NSCachedImageRep with size 
-    and depth specified by <var>aSize</var> and <var>aDepth</var> recpectivly.
+    and depth specified by <var>aSize</var> and <var>aDepth</var> respectively.
     If seperate is YES,  the image will gets its own unique cache without 
     sharing it with other images. </p>
  */
@@ -91,12 +91,14 @@
   RELEASE(win);
   [self setAlpha: alpha];
   [self setBitsPerSample: NSBitsPerSampleFromDepth(aDepth)];
+
   return self;
 }
 
 /** <p>Initializes and returns a new NSCachedImageRep into a NSWindow 
     <var>aWindow</var>. The image will be draw into the rectange aRect of
-    this window. aWindow is retained</p>
+    this window. aWindow is retained.</p>
+    <p>See Also: -rect -window</p>
  */
 - (id) initWithWindow: (NSWindow *)aWindow rect: (NSRect)aRect
 {
@@ -138,14 +140,16 @@
   [super dealloc];
 }
 
-/** <p>Returns the rectangle where the image is cached</p>
+/** <p>Returns the rectangle where the image is cached.</p>
+    <p>See Also: -initWithWindow:rect:</p>
  */
 - (NSRect) rect
 {
   return _rect;
 }
 
-/** <p>Returns the NSWindow where the image is cached</p>
+/** <p>Returns the NSWindow where the image is cached.</p>
+    <p>See Also: -initWithWindow:rect:</p>
  */
 - (NSWindow *) window
 {

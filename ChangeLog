@@ -1,3 +1,8 @@
+2005-11-29  Fabien VALLON  <fabien@sonappart.net>
+
+	* Source/NSCachedImageRep.m : Improved documentation
+	* Source/NSCell.m : Improved documentation
+
 2005-11-29  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTabView.m (-minimumSize): Filled in some code.
