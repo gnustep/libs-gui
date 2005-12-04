@@ -324,6 +324,12 @@ NSRegisterServicesProvider(id provider, NSString *name)
     {
       id	delegate = [[NSApplication sharedApplication] delegate];
 
+      if ([selName isEqualToString: @"activateIgnoringOtherApps:"])
+	{
+	  [anInvocation invokeWithTarget: NSApp];
+	  return;
+	}
+
       if ([selName hasPrefix: @"application:"] == YES)
 	{
 	  if ([delegate respondsToSelector: aSel] == YES)
@@ -1041,9 +1047,27 @@ static NSString         *disabledName = @".GNUstepDisabled";
 
   if (registered == NO)
     {
-      int result = NSRunAlertPanel(appName,
-	@"Application may already be running with this name",
-	@"Continue", @"Abort", @"Rename");
+      NSUserDefaults	*defs = [NSUserDefaults standardUserDefaults];
+      NSString		*def = [defs objectForKey: @"NSUseRunningCopy"];
+      int		result;
+
+      if (def != nil)
+        {
+	  if ([def boolValue] == YES)
+	    {
+	      result = NSAlertOtherReturn;
+	    }
+	  else
+	    {
+	      result = NSAlertAlternateReturn;
+	    }
+        }
+      else
+	{
+	  result = NSRunAlertPanel(appName,
+	    @"Application may already be running with this name",
+	    @"Continue", @"Abort", @"Rename");
+        }
 
       if (result == NSAlertOtherReturn)
 	{
@@ -1100,6 +1124,27 @@ static NSString         *disabledName = @".GNUstepDisabled";
 	      registered = NO;
 	    }
 	  NS_ENDHANDLER
+	}
+
+      if (result == NSAlertAlternateReturn)
+	{
+	  id	app;
+
+	  /*
+	   * Try to activate the other app and terminate self.
+	   */
+	  app = [NSConnection rootProxyForConnectionWithRegisteredName: appName
+								  host: @""];
+	  NS_DURING
+	    {
+	      [app activateIgnoringOtherApps: YES];
+	    }
+	  NS_HANDLER
+	    {
+	      /* maybe it terminated. */
+	    }
+	  NS_ENDHANDLER
+	  registered = NO;
 	}
 
       if (result == NSAlertDefaultReturn || result == NSAlertOtherReturn)
