@@ -74,7 +74,7 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
 /**<p>Activates the NSColorWell and displays the NSColorPanel with the current
    NSColorWell's color. The NSColorWell can take color from the NSColorPanel.
    If exclusive is YES other NSColorWells are desacivated
-   (through notifications)</p><p>See Also: -deactivate</p>
+   (through notifications).</p><p>See Also: -deactivate</p>
  */
 - (void) activate: (BOOL)exclusive
 {
@@ -220,6 +220,9 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
   [self drawWellInside: NSIntersectionRect(aRect, clipRect)];
 }
 
+/**<p>Draws the NSColorWell inside the rectangle <var>insideRect</var>.</p>
+   <p>See Also: [NSColor-drawSwatchInRect:]</p>
+ */
 - (void) drawWellInside: (NSRect)insideRect
 {
   if (NSIsEmptyRect(insideRect))
@@ -351,7 +354,7 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
 }
 
 /** <p>Sets the NSColorWell to color. Sets the NSColorPanel if active,
-    notify the target of color change and marks self to display</p>
+    notify the target that the color changed and marks self for display.</p>
     <p>See Also: -color</p>
  */
 - (void) setColor: (NSColor *)color
@@ -379,7 +382,8 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
   _target = target;
 }
 
-/** <p>Sets the NSColorWell's color to the sender color</p>
+/** <p>Sets the NSColorWell's color to the sender color.</p>
+    <p>See Also: -setColor: </p>
  */
 - (void) takeColorFrom: (id)sender
 {

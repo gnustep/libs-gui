@@ -3,6 +3,7 @@
 	* Source/NSColorPanel.m: Improved documentation, various cleanups
 	* Source/NSColor.m: Improved documentation
 	* Source/NSClipView.m: Improved documentation
+	* Source/NSColorWell.m: Improved documentation
 
 2005-12-04  Richard Frith-Macdonald <rfm@gnu.org>
 
