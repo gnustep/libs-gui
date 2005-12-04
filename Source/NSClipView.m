@@ -118,7 +118,7 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 
 
 /**<p>Sets aView the NSClipView's document view to <var>aView</var>
-   .TODO explain notifications ... </p>
+   </p>
    <p>See Also: -documentView</p>
  */
 - (void) setDocumentView: (NSView*)aView
@@ -368,7 +368,7 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 }
 
 /**
- *<p>TODO</p>
+ *<p></p>
  */
 - (NSPoint) constrainScrollPoint: (NSPoint)proposedNewOrigin
 {
@@ -462,8 +462,9 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
   return rect;
 }
 
-/**<p>Returns the document visible rectangle</p>
- <p>See Also: -documentRect </p>
+/**<p>Returns the document visible rectangle. Returns NSZeroRect if the 
+   document view does not exists.</p>
+ <p>See Also: -documentRect [NSView-convertRect:toView:]</p>
  */
 - (NSRect) documentVisibleRect
 {
@@ -492,7 +493,7 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
     }
 }
 
-/**<p>Scrolls in response to mouse-dragged events.</p>
+/**<p>Scrolls in response to mouse-dragged events. </p>
  */
 - (BOOL) autoscroll: (NSEvent*)theEvent
 {
@@ -599,7 +600,7 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 }
 
 /**
- *<p>Returns the NSClipView's document view</p>
+ *<p>Returns the NSClipView's document view.</p>
  *<p>See Also: -setDocumentView: </p>
  */
 - (id) documentView
@@ -607,11 +608,15 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
   return _documentView;
 }
 
+/**
+ */
 - (void) setCopiesOnScroll: (BOOL)flag
 {
   _copiesOnScroll = flag;
 }
 
+/**
+ */
 - (BOOL) copiesOnScroll
 {
   return _copiesOnScroll;
@@ -642,7 +647,10 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 }
 
 /**<p>Sets the NSClipView's background color to <var>aColor</var> and marks
-   self for display. Sets the opaque flag to if needed</p> 
+   self for display. Sets the opaque flag if needed ( to YES if the
+   NSClipView does not draw its background, if the background color
+   is nil or if the background color alpha component is less than 1.0 , NO
+   otherwise) </p> 
    <p>See Also: -backgroundColor [NSView-isOpaque]</p>
  */
 - (void) setBackgroundColor: (NSColor*)aColor

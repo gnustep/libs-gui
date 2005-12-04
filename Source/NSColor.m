@@ -649,7 +649,7 @@ systemColorWithName(NSString *name)
 }
 
 
-/** TODO
+/** Returns whether TODO
  *<p>See Also: +setIgnoresAlpha:</p>
  */
 + (BOOL) ignoresAlpha
@@ -866,10 +866,9 @@ systemColorWithName(NSString *name)
   return nil;
 }
 
-/**
- *<p>Returns CYMK and alpha values.
- * GNUstep implemenation raise an NSInternalInconsistencyException</p>
- *
+/**<p>Gets the cyan, magenta, yellow,black and alpha values from the NSColor.
+ Raises a NSInternalInconsistencyException if the NSColor is not a CYMK color
+ </p>
  */
 - (void) getCyan: (float*)cyan
 	 magenta: (float*)magenta
@@ -881,6 +880,10 @@ systemColorWithName(NSString *name)
     format: @"Called getCyan:magenta:yellow:black:alpha: on non-CMYK colour"];
 }
 
+/**<p>Gets the hue, saturation, brightness and alpha values from the NSColor.
+ Raises a NSInternalInconsistencyException if the NSColor is not a RGB color
+ </p>
+ */
 - (void) getHue: (float*)hue
      saturation: (float*)saturation
      brightness: (float*)brightness
@@ -890,7 +893,11 @@ systemColorWithName(NSString *name)
     format: @"Called getHue:saturation:brightness:alpha: on non-RGB colour"];
 }
 
-- (void) getRed: (float*)red
+/**<p>Gets the red, green, blue and alpha values from the NSColor.
+ Raises a NSInternalInconsistencyException if the NSColor is not a RGB color
+ </p>
+ */
+-(void) getRed: (float*)red
 	  green: (float*)green
 	   blue: (float*)blue
 	  alpha: (float*)alpha
@@ -899,6 +906,10 @@ systemColorWithName(NSString *name)
 	      format: @"Called getRed:green:blue:alpha: on non-RGB colour"];
 }
 
+/**<p>Gets the white alpha values from the NSColor.
+ Raises a NSInternalInconsistencyException if the NSColor is not a 
+ greyscale color</p>
+ */
 - (void) getWhite: (float*)white
 	    alpha: (float*)alpha
 {
@@ -919,13 +930,16 @@ systemColorWithName(NSString *name)
     }
 }
 
-/** <p>Returns the alpha component (1.0 by default) </p>
+/** <p>Returns the alpha component. </p>
  */
 - (float) alphaComponent
 {
   return 1.0;
 }
 
+/** <p>Returns the black component. Raises a NSInternalInconsistencyException
+    if NSColor is not a CMYK color.</p>
+ */
 - (float) blackComponent
 {
   [NSException raise: NSInternalInconsistencyException
@@ -933,6 +947,9 @@ systemColorWithName(NSString *name)
   return 0.0;
 }
 
+/** <p>Returns the blue component. Raises a NSInternalInconsistencyException
+    if NSColor is not a RGB color.</p>
+ */
 - (float) blueComponent
 {
   [NSException raise: NSInternalInconsistencyException
@@ -940,6 +957,9 @@ systemColorWithName(NSString *name)
   return 0.0;
 }
 
+/** <p>Returns the brightness component. Raises a 
+    NSInternalInconsistencyException if NSColor space is not a RGB color</p>
+*/
 - (float) brightnessComponent
 {
   [NSException raise: NSInternalInconsistencyException
@@ -961,6 +981,9 @@ systemColorWithName(NSString *name)
   return nil;
 }
 
+/** <p>Returns the cyan component. Raises a  NSInternalInconsistencyException 
+    if NSColor is not a CYMK color</p>
+*/
 - (float) cyanComponent
 {
   [NSException raise: NSInternalInconsistencyException
@@ -968,6 +991,9 @@ systemColorWithName(NSString *name)
   return 0.0;
 }
 
+/** <p>Returns the green component. Raises a  NSInternalInconsistencyException 
+    if NSColor is not a RGB color</p>
+*/
 - (float) greenComponent
 {
   [NSException raise: NSInternalInconsistencyException
@@ -975,6 +1001,9 @@ systemColorWithName(NSString *name)
   return 0.0;
 }
 
+/** <p>Returns the hue component. Raises a  NSInternalInconsistencyException 
+    if NSColor is not a RGB color</p>
+*/
 - (float) hueComponent
 {
   [NSException raise: NSInternalInconsistencyException
@@ -996,6 +1025,9 @@ systemColorWithName(NSString *name)
   return nil;
 }
 
+/** <p>Returns the magenta component. Raises a  
+    NSInternalInconsistencyException  if NSColor is not a CMYK color</p>
+*/
 - (float) magentaComponent
 {
   [NSException raise: NSInternalInconsistencyException
@@ -1003,6 +1035,9 @@ systemColorWithName(NSString *name)
   return 0.0;
 }
 
+/** <p>Returns the red component. Raises a NSInternalInconsistencyException  
+    if NSColor is not a RGB color</p>
+*/
 - (float) redComponent
 {
   [NSException raise: NSInternalInconsistencyException
@@ -1010,6 +1045,9 @@ systemColorWithName(NSString *name)
   return 0.0;
 }
 
+/** <p>Returns the saturation component. Raises a
+    NSInternalInconsistencyException if NSColor is not a RGB color</p>
+*/
 - (float) saturationComponent
 {
   [NSException raise: NSInternalInconsistencyException
@@ -1017,6 +1055,9 @@ systemColorWithName(NSString *name)
   return 0.0;
 }
 
+/** <p>Returns the white component. Raises a NSInternalInconsistencyException  
+    if NSColor is not a grayscale color</p>
+*/
 - (float) whiteComponent
 {
   [NSException raise: NSInternalInconsistencyException
@@ -1031,6 +1072,9 @@ systemColorWithName(NSString *name)
   return nil;
 }
 
+/** <p>Returns the yellow component. Raises a NSInternalInconsistencyException
+    if NSColor is not a RGB color</p>
+*/
 - (float) yellowComponent
 {
   [NSException raise: NSInternalInconsistencyException

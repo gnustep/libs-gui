@@ -411,32 +411,40 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
   _gs_gui_color_picker_mask = mask;
 }
 
+/**
+ */
 + (void) setPickerMode: (int)mode
 {
   _gs_gui_color_picker_mode = mode;
 }
 
+/**<p>Drags <var>aColor</var> frome <var>sourceView</var> at the location
+   give by the event <var>anEvent</var> ( [NSView-convertPoint:fromView:] ).
+   The type declare into the pasteboard is NSColorPboardType</p>
+   <p>See Also: [NSView-convertPoint:fromView:] 
+   [NSView-dragImage:at:offset:event:pasteboard:source:slideBack:</p>
+ */
 + (BOOL) dragColor: (NSColor *)aColor
 	 withEvent: (NSEvent *)anEvent
 	  fromView: (NSView *)sourceView
 {
   NSPasteboard	*pb = [NSPasteboard pasteboardWithName: NSDragPboard];
   NSImage	*image = [NSImage imageNamed: @"common_ColorSwatch"];
-  NSSize	s;
-  NSPoint	p;
+  NSSize	size;
+  NSPoint	point;
 
   [pb declareTypes: [NSArray arrayWithObjects: NSColorPboardType, nil]
-             owner: aColor];
+      owner: aColor];
   [aColor writeToPasteboard: pb];
   [image setBackgroundColor: aColor];
 
-  s = [image size];
-  p = [sourceView convertPoint: [anEvent locationInWindow] fromView: nil];
-  p.x -= s.width/2;
-  p.y -= s.width/2;
+  size = [image size];
+  point = [sourceView convertPoint: [anEvent locationInWindow] fromView: nil];
+  point.x -= size.width/2;
+  point.y -= size.width/2;
 
   [sourceView dragImage: image
-                     at: p
+                     at: point
                  offset: NSMakeSize(0,0)
                   event: anEvent
              pasteboard: pb
@@ -530,7 +538,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 /**<p>Sets the NSColorPanl action method to <var>aSelector</var> The
    action message is usally send in -setColor:, when the picker is updated,
    when a new picker is show, when the alpha is changed or when one of the
-   color well at the bottom is selected</p>
+   color well at the bottom is selected.</p>
  */
 - (void) setAction: (SEL)aSelector
 {
@@ -545,7 +553,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
   _isContinuous = flag;
 }
 
-/** <p>Set the NSColorPanel mode to mode. TODO more about _pickers</p>
+/** <p>Set the NSColorPanel mode to <var>mode</var>.</p>
     <p>See Also: -mode</p>
  */
 - (void) setMode: (int)mode
@@ -569,7 +577,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 }
 
 /** <p>Sets whether the NSColorPanel shows alpha values and the alpha
-    slider</p><p>See Also: -showsAlpha</p>
+    slider.</p><p>See Also: -showsAlpha</p>
  */
 - (void) setShowsAlpha: (BOOL)flag
 {
@@ -633,9 +641,10 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
                             withObject: aColorList];
 }
 
-//
-// Setting Color
-//
+/** <p>Returns the alpha value of the NSColorPanel. Returns
+    1.0 if the NSColorPanel does not show alpha</p>
+    <p>See Also: -showsAlpha -setShowsAlpha:</p>    
+ */
 - (float) alpha
 {
   if ([self showsAlpha])
@@ -644,7 +653,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
     return 1.0;
 }
 
-/** <p>Returns the current NSColor displayed by the NSColorPanel</p>
+/** <p>Returns the current NSColor displayed by the NSColorPanel.</p>
     <p>See Also : -setColor:</p>
  */
 - (NSColor *) color
@@ -653,8 +662,9 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 }
 
 /** <p>Sets the NSColor displayed to aColor. This method post a
-    NSColorPanelColorChangedNotification notification</p>
-    <p>See Also: -color</p>
+    NSColorPanelColorChangedNotification notification if needed.</p>
+    <p>See Also: -color [NSColorWell-setColor:]
+    </p>
 */
 - (void) setColor: (NSColor *)aColor
 {
