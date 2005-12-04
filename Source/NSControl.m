@@ -67,14 +67,17 @@ static Class actionCellClass;
     }
 }
 
-/*
- * Setting the Control's Cell
+/**<p> Returns the cell Class used by NSControl. Used by subclasses.</p>
+   <p>See Also: +setCellClass:</p>    
  */
 + (Class) cellClass
 {
   return usedCellClass;
 }
 
+/**<p> Sets the cell Class used by NSControl to <var>factoryId</var>.
+   Used by subclasses.</p> <p>See Also: +setCellClass:</p>    
+ */
 + (void) setCellClass: (Class)factoryId
 {
   usedCellClass = factoryId ? factoryId : cellClass;
@@ -164,7 +167,7 @@ static Class actionCellClass;
 
 /** <p>Returns the value of the NSControl's selected cell as double.</p>
     <p>See Also:  -setDoubleValue: [NSCell-doubleValue] -intValue -floatValue
-    doubleValue stringValue</p>
+    -doubleValue -stringValue</p>
  */
 - (double) doubleValue
 {
@@ -174,7 +177,7 @@ static Class actionCellClass;
 
 /** <p>Returns the value of the NSControl's selected cell as float.</p>
     <p>See Also: -setFloatValue: [NSCell-floatValue] -intValue -stringValue
-    doubleValue</p>
+    -doubleValue</p>
  */
 - (float) floatValue
 {
@@ -306,7 +309,7 @@ static Class actionCellClass;
   [super setNeedsDisplay: YES];
 }
 
-/**<p>Sets the NSControl's selected cell to the sender's double value</p>
+/**<p>Sets the NSControl's selected cell to the sender's double value.</p>
    <p>See Also: [NSCell-takeDoubleValueFrom:] -takeFloatValueFrom: 
    takeIntValueFrom: takeStringValueFrom:</p> 
 */
@@ -316,9 +319,9 @@ static Class actionCellClass;
   [self setNeedsDisplay: YES];
 }
 
-/**<p>Sets the NSControl's selected cell to the sender's float value</p>
+/**<p>Sets the NSControl's selected cell to the sender's float value.</p>
    <p>See Also: [NSCell-takeDoubleValueFrom:] -takeDoubleValueFrom: 
-   takeIntValueFrom: takeStringValueFrom:</p> 
+   -takeIntValueFrom: -takeStringValueFrom:</p> 
 */
 - (void) takeFloatValueFrom: (id)sender
 {
@@ -326,9 +329,9 @@ static Class actionCellClass;
   [self setNeedsDisplay: YES];
 }
 
-/**<p>Sets the NSControl's selected cell to the sender's float int</p>
+/**<p>Sets the NSControl's selected cell to the sender's float int.</p>
    <p>See Also: [NSCell-takeDoubleValueFrom:] -takeDoubleValueFrom: 
-   takeFloatValueFrom: takeStringValueFrom:</p> 
+   -takeFloatValueFrom: -takeStringValueFrom:</p> 
 */
 - (void) takeIntValueFrom: (id)sender
 {
@@ -342,9 +345,9 @@ static Class actionCellClass;
   [self setNeedsDisplay: YES];
 }
 
-/**<p>Sets the NSControl's selected cell to the sender's float int</p>
+/**<p>Sets the NSControl's selected cell to the sender's float int.</p>
    <p>See Also: [NSCell-takeDoubleValueFrom:] -takeDoubleValueFrom: 
-   takeFloatValueFrom: takeIntValueFrom:</p> 
+   -takeFloatValueFrom: -takeIntValueFrom:</p> 
 */
 - (void) takeStringValueFrom: (id)sender
 {
@@ -395,7 +398,7 @@ static Class actionCellClass;
 }
 
 /**<p>Sets the font of the text in the NSControl's cell and the
-   editor object (if exists) to fontObject</p>
+   editor object (if exists) to fontObject.</p>
    <p>See Also: -font [NSCell-setFont:] -currentEditor</p>
  */
 - (void) setFont: (NSFont *)fontObject
@@ -513,7 +516,7 @@ static Class actionCellClass;
   [_cell calcDrawInfo: [self bounds]];
 }
 
-/**<p>Resizes the NSControl to fits the NSControl's cell size</p> 
+/**<p>Resizes the NSControl to fits the NSControl's cell size.</p> 
   <p>See Also: [NSCell-cellSize]</p>
  */
 - (void) sizeToFit
@@ -598,6 +601,12 @@ static Class actionCellClass;
   return [_cell isContinuous];
 }
 
+/**<p>Asks the NSApplication to send an action <var>theAction</var> 
+   with <var>theTarget</var> as target to NSControl.
+   Returns NO if <var>theAction</var> is nil or if NSApplication can 
+   not send the action.</p>
+   <p>See Also: [NSApplication-sendAction:to:from:]</p>
+ */
 - (BOOL) sendAction: (SEL)theAction to: (id)theTarget
 {
   if (theAction)
@@ -680,6 +689,9 @@ static Class actionCellClass;
   _tag = anInt;
 }
 
+/**<p>Returns the NSControl tag</p>
+   <p>See Also: -setTag:</p>
+ */
 - (int) tag
 {
   return _tag;
@@ -714,7 +726,8 @@ static Class actionCellClass;
   return [[self selectedCell] acceptsFirstResponder];
 }
 
-/** 
+/** <p>This method is invoked when the user click into the NSControl.</p>
+    
  * 
  */
 - (void) mouseDown: (NSEvent *)theEvent
