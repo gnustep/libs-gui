@@ -1048,28 +1048,27 @@ static NSString         *disabledName = @".GNUstepDisabled";
   if (registered == NO)
     {
       NSUserDefaults	*defs = [NSUserDefaults standardUserDefaults];
-      NSString		*def = [defs objectForKey: @"NSUseRunningCopy"];
-      int		result;
+      if ([defs boolForKey: @"NSUseRunningCopy"] == YES)
+	{
+	  id	app;
 
-      if (def != nil)
-        {
-	  if ([def boolValue] == YES)
+	  /*
+	   * Try to activate the other app and terminate self.
+	   */
+	  app = [NSConnection rootProxyForConnectionWithRegisteredName: appName
+								  host: @""];
+	  NS_DURING
 	    {
-	      result = NSAlertOtherReturn;
+	      [app activateIgnoringOtherApps: YES];
 	    }
-	  else
+	  NS_HANDLER
 	    {
-	      result = NSAlertAlternateReturn;
+	      /* maybe it terminated. */
 	    }
+	  NS_ENDHANDLER
+	  registered = NO;
         }
       else
-	{
-	  result = NSRunAlertPanel(appName,
-	    @"Application may already be running with this name",
-	    @"Continue", @"Abort", @"Rename");
-        }
-
-      if (result == NSAlertOtherReturn)
 	{
 	  unsigned	count = 0;
 
@@ -1093,64 +1092,10 @@ static NSString         *disabledName = @".GNUstepDisabled";
 		}
 	      NS_ENDHANDLER
 	    }
-	}
-
-      if (result == NSAlertDefaultReturn)
-	{
-	  id	app;
-
-	  /*
-	   * Try to terminate the other app and run using normal name.
-	   */
-	  app = [NSConnection rootProxyForConnectionWithRegisteredName: appName
-								  host: @""];
-	  NS_DURING
-	    {
-	      [app terminate: nil];
-	    }
-	  NS_HANDLER
-	    {
-	      /* maybe it terminated. */
-	    }
-	  NS_ENDHANDLER
-
-	  NS_DURING
-	    {
-	      NSRegisterServicesProvider(self, appName);
-	      registered = YES;
-	    }
-	  NS_HANDLER
-	    {
-	      registered = NO;
-	    }
-	  NS_ENDHANDLER
-	}
-
-      if (result == NSAlertAlternateReturn)
-	{
-	  id	app;
-
-	  /*
-	   * Try to activate the other app and terminate self.
-	   */
-	  app = [NSConnection rootProxyForConnectionWithRegisteredName: appName
-								  host: @""];
-	  NS_DURING
-	    {
-	      [app activateIgnoringOtherApps: YES];
-	    }
-	  NS_HANDLER
-	    {
-	      /* maybe it terminated. */
-	    }
-	  NS_ENDHANDLER
-	  registered = NO;
-	}
-
-      if (result == NSAlertDefaultReturn || result == NSAlertOtherReturn)
-        {
 	  if (registered == NO)
 	    {
+	      int	result;
+
 	      /*
 	       * Something is seriously wrong - we can't talk to the
 	       * nameserver, so all interaction with the workspace manager
