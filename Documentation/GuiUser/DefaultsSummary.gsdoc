@@ -245,6 +245,18 @@
           "coming from".  Default is "NO".
           </p>
 	  </desc>
+	  <term>NSUseRunningCopy</term>
+	  <desc>
+          <p>
+          This determines the behavior of an applicationms when a second copy
+	  is started up.<br />
+	  If set to YES the newly started copy makes the process which is
+	  already running active, then terminates itsself.<br />
+	  If set to NO, the newly started copy runs, but has a different
+	  name (so it cannot be contacted to provide services for other
+	  applications).
+          </p>
+	  </desc>
 	  <term><em>System Colors</em></term>
 	  <desc>
           <p>
