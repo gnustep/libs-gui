@@ -1,6 +1,7 @@
 2005-12-05  fabien  <fabien@sonappart.net>
 
 	* Source/NSCursor.m: Improved documentation
+	* Source/NSFontManager.m: Improved documentation
 
 2005-12-04  Fabien VALLON  <fabien@sonappart.net>
 

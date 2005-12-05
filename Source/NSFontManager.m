@@ -68,19 +68,30 @@ static Class		fontPanelClass = Nil;
     }
 }
 
-/*
- * Managing the FontManager
+/**<p>Sets the class used to create the NSFontManager to <var>aClass</var>.
+   By default it is a NSFontManager class. You can change this behavour by
+   implementing your own class ( a subclass of NSFontManager ) </p>
+   <p>This class is init into +sharedFontManager</p>
+   <p>See Also: +sharedFontManager</p>
  */
 + (void) setFontManagerFactory: (Class)aClass
 {
   fontManagerClass = aClass;
 }
 
+/**<p>Sets the class used to create a NSFontPanel. If you want to use
+   a custom class it should be NSFontPanel subclass</p>
+   <p>See Also: -fontPanel:</p>
+ */
 + (void) setFontPanelFactory: (Class)aClass
 {
   fontPanelClass = aClass;
 }
 
+/**<p>Creates ( if needed ) and returns the NSFontManager shared instance.
+   This method init the font manager class defined in +setFontManagerFactory:
+   ( it is usally a NSFontManager class ) </p>
+ */
 + (NSFontManager*) sharedFontManager
 {
   if (!sharedFontManager)
@@ -117,8 +128,7 @@ static Class		fontPanelClass = Nil;
   [super dealloc];
 }
 
-/*
- * information on available fonts
+/**<p>Returns an array of available fonts.</p>
  */
 - (NSArray*) availableFonts
 {
@@ -168,10 +178,8 @@ static Class		fontPanelClass = Nil;
   return [NSString stringWithFormat: @"%@-%@", family, face];
 }
 
-//
-// Selecting fonts
-//
-
+/**
+ */
 - (void) setSelectedFont: (NSFont*)fontObject
 	      isMultiple: (BOOL)flag
 {
@@ -248,11 +256,16 @@ static Class		fontPanelClass = Nil;
     }
 }
 
+/**<p>Returns the selected font</p>
+   <p>See Also: -setSelectedFont:isMultiple:</p>
+ */
 - (NSFont*) selectedFont
 {
   return _selectedFont;
 }
 
+/**<p>Returns whether the current selection contains multiple fonts</p>
+ */
 - (BOOL) isMultiple
 {
   return _multiple;
@@ -331,8 +344,11 @@ static Class		fontPanelClass = Nil;
     }
 }
 
-/*
- * Automatic font conversion
+/**<p>Converts the NSFont <var>fontObject</var> according to user changes
+   in the Font panel or the font menu</p>
+   <p>See Also: -addFontTrait: -removeFontTrait: -modifyFont: 
+   -modifyFontViaPanel: -convertFont:toHaveTrait: -convertFont:toNotHaveTrait:
+   -convertFont:toSize: -convertFont:toFamily: -convertWeight:ofFont:</p>
  */
 - (NSFont*) convertFont: (NSFont*)fontObject
 {
@@ -398,10 +414,6 @@ static Class		fontPanelClass = Nil;
   return newFont;
 }
 
-
-/*
- * Converting Fonts
- */
 
 - (NSFont*) convertFont: (NSFont*)fontObject
 	       toFamily: (NSString*)family
@@ -746,6 +758,8 @@ static Class		fontPanelClass = Nil;
   return [[aFont fontInfo] traits];
 }
 
+/**<p>Returns the weight of the NSFont <var>fontObject</var></p>
+ */
 - (int) weightOfFont: (NSFont*)fontObject
 {
   return [[fontObject fontInfo] weight];
@@ -786,9 +800,8 @@ static Class		fontPanelClass = Nil;
   return NO;
 }
 
-//
-// Enabling
-//
+/**<p>Returns whether the NSFontPanel is enabled ( if exists )</p> 
+ */
 - (BOOL) isEnabled
 {
   if (fontPanel != nil)
@@ -799,6 +812,9 @@ static Class		fontPanelClass = Nil;
     return NO;
 }
 
+/**<p>Enables/disables the NSFontPanel and the font menu ( if they exist )</p> 
+   <p>See Also: -isEnabled</p>
+ */
 - (void) setEnabled: (BOOL)flag
 {
   int i;
@@ -815,9 +831,9 @@ static Class		fontPanelClass = Nil;
     [fontPanel setEnabled: flag];
 }
 
-//
-// Font menu
-//
+/**<p>Returns the font menu, creates it (if needed ) if <var>create</var> 
+   is YES.</p><p>See Also: -setFontMenu:</p>
+ */
 - (NSMenu*) fontMenu: (BOOL)create
 {
   if (create && _fontMenu == nil)
@@ -880,13 +896,18 @@ static Class		fontPanelClass = Nil;
   return _fontMenu;
 }
 
+/**<p>Sets the font menu to <var>newMenu</var></p>
+   <p>See Also: -fontMenu:</p>
+ */
 - (void) setFontMenu: (NSMenu*)newMenu
 {
   ASSIGN(_fontMenu, newMenu); 
 }
 
-// Font panel
-
+/**<p>Returns the NSFontPanel, creates it ( if needed ) if <var>create</var>
+   is YES.</p>
+   <p>See Also: +setFontPanelFactory:</p>
+ */
 - (NSFontPanel*) fontPanel: (BOOL)create
 {
   if ((fontPanel == nil) && (create))
@@ -903,27 +924,31 @@ static Class		fontPanelClass = Nil;
   [fontPanel orderFront: sender];
 }
 
-/*
- * Assigning a Delegate
+/**<p>Returns the NSFontManager's delegate</p>
  */
 - (id) delegate
 {
   return _delegate;
 }
 
+/**<p>Sets the NSFontManager's delegate to <var>anObject</var></p>
+ */
 - (void) setDelegate: (id)anObject
 {
   _delegate = anObject;
 }
 
-/*
- * Setting and Getting Parameters
+/** <p>Returns the action sents by the NSFontManager.</p>
+    <p>See Also: -setAction:</p>
  */
 - (SEL) action
 {
   return _action;
 }
 
+/** <p>Sents the action sents by the NSFontManager to <var>aSelector</var>.</p>
+    <p>See Also: -action</p>
+ */
 - (void) setAction: (SEL)aSelector
 {
   _action = aSelector;
