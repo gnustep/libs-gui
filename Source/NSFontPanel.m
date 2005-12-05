@@ -215,8 +215,6 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 	isMultiple: [fm isMultiple]];
 }
 
-/**<p> TODO </p>
- */
 - (void) setPanelFont: (NSFont *)fontObject
 	   isMultiple: (BOOL)flag
 {
@@ -296,8 +294,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
     }
 }
 
-/*
- * Converting
+/**<p>Converts the NSFont <var>fontObject</var></p>
  */
 - (NSFont *) panelConvertFont: (NSFont *)fontObject
 {
