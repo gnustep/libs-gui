@@ -1,3 +1,7 @@
+2005-12-05  fabien  <fabien@sonappart.net>
+
+	* Source/NSCursor.m: Improved documentation
+
 2005-12-04  Fabien VALLON  <fabien@sonappart.net>
 
 	* Source/NSColorPanel.m: Improved documentation, various cleanups

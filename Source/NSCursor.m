@@ -121,14 +121,16 @@ static NSMutableDictionary *cursorDict = nil;
   _cid = c;
 }
 
-/*
- * Setting the Cursor
+/**<p>Hides the current cursor.</p>
  */
 + (void) hide
 {
   [GSCurrentServer() hidecursor];
 }
 
+/**<p>Pops the cursor off the top of the stack and makes the previous one
+   as the current cursor.</p>
+ */
 + (void) pop
 {
   /*
@@ -144,6 +146,8 @@ static NSMutableDictionary *cursorDict = nil;
     }
 }
 
+/**<p>Hides the cursor if <var>flag</var> is YES. Unhides it if NO</p>
+ */
 + (void) setHiddenUntilMouseMoves: (BOOL)flag
 {
   if (flag)
@@ -157,11 +161,16 @@ static NSMutableDictionary *cursorDict = nil;
   gnustep_gui_hidden_until_move = flag;
 }
 
+/**<p>Returns whther the cursor is hidden until mouse moves</p>
+ */
 + (BOOL) isHiddenUntilMouseMoves
 {
   return gnustep_gui_hidden_until_move;
 }
 
+/**<p>Shows the NSCursor.</p>
+   <p>See Also: +hide</p>
+ */
 + (void) unhide
 {
   [GSCurrentServer() showcursor];
@@ -199,11 +208,15 @@ NSCursor *getStandardCursor(NSString *name, int style)
   return cursor;
 }
 
+/**<p>Returns an arrow cursor.</p>
+ */
 + (NSCursor*) arrowCursor
 {
   return getStandardCursor(@"GSArrowCursor", GSArrowCursor);
 }
 
+/**<p>Returns an I-beam cursor.</p>
+ */
 + (NSCursor*) IBeamCursor
 {
   return getStandardCursor(@"GSIBeamCursor", GSIBeamCursor);
@@ -264,6 +277,8 @@ NSCursor *getStandardCursor(NSString *name, int style)
   return getStandardCursor(@"GSResizeUpDownCursor", GSResizeUpDownCursor);
 }
 
+/**<p>Returns the current cursor.</p>
+ */
 + (NSCursor*) currentCursor
 {
   return gnustep_gui_current_cursor;
@@ -296,12 +311,20 @@ NSCursor *getStandardCursor(NSString *name, int style)
   return [self initWithImage: nil hotSpot: NSMakePoint(0,15)];
 }
 
+/**<p>Initializes and returns a new NSCursor with a NSImage <var>newImage</var>
+   and a hot spot point with x=0 and y=15.</p>
+   <p>See Also: -initWithImage:hotSpot:</p>
+ */
 - (id) initWithImage: (NSImage *)newImage
 {
   return [self initWithImage: newImage
 		     hotSpot: NSMakePoint(0,15)];
 }
 
+/**<p>Initializes and returns a new NSCursor with a NSImage <var>newImage</var>
+   and the hot spot to <var>hotSpot</var>.</p>
+   <p>See Also: -initWithImage: -setImage:</p>
+ */
 - (id) initWithImage: (NSImage *)newImage hotSpot: (NSPoint)hotSpot
 {
   //_is_set_on_mouse_entered = NO;
@@ -335,8 +358,8 @@ backgroundColorHint:(NSColor *)bg
   RELEASE (_cursor_image);
   [super dealloc];
 }
-/*
- * Defining the Cursor
+
+/**<p>Returns the hot spot point of the NSCursor</p>
  */
 - (NSPoint) hotSpot
 {
@@ -344,37 +367,52 @@ backgroundColorHint:(NSColor *)bg
   return _hot_spot;
 }
 
+/**<p>Returns the image of the NSCursor</p>
+ */
 - (NSImage*) image
 {
   // FIXME: This wont work for the standard cursor
   return _cursor_image;
 }
 
+/**<p>Sets the hot spot point of the NSCursor to <var>spot</var></p>
+ */
 - (void) setHotSpot: (NSPoint)spot
 {
   _hot_spot = spot;
   [self _computeCid];
 }
 
+/**<p>Sets <var>newImage</var> the image of the NSCursor</p>
+ */
 - (void) setImage: (NSImage *)newImage
 {
   ASSIGN(_cursor_image, newImage);
   [self _computeCid];
 }
 
-/*
- * Setting the Cursor
+/** <p>Returns whether if the cursor is set on -mouseEntered:.
+    </p><p>See Also: -setOnMouseEntered: -mouseEntered: -set 
+    -isSetOnMouseExited</p> 
  */
 - (BOOL) isSetOnMouseEntered
 {
   return _is_set_on_mouse_entered;
 }
 
+/** <p>Returns whether if the cursor is push on -mouseExited:.
+    </p><p>See Also: -setOnMouseEntered: -mouseExited: -set 
+    -isSetOnMouseEntered</p>
+ */
 - (BOOL) isSetOnMouseExited
 {
   return _is_set_on_mouse_exited;
 }
 
+/**<p>Sets the cursor if -isSetOnMouseEntered is YES or pushs the cursor
+   if -isSetOnMouseExited is NO</p>
+   <p>See Also: -isSetOnMouseEntered -isSetOnMouseExited</p>
+ */
 - (void) mouseEntered: (NSEvent*)theEvent
 {
   if (_is_set_on_mouse_entered == YES)
@@ -391,6 +429,10 @@ backgroundColorHint:(NSColor *)bg
     }
 }
 
+/**<p>Sets the cursor if -isSetOnMouseExited is YES or pops the cursor
+   if -isSetOnMouseEntered is NO</p>
+   <p>See Also: -isSetOnMouseExited -isSetOnMouseEntered </p>
+ */
 - (void) mouseExited: (NSEvent*)theEvent
 {
   NSDebugLLog(@"NSCursor", @"Cursor mouseExited:");
@@ -408,11 +450,17 @@ backgroundColorHint:(NSColor *)bg
     }
 }
 
+/**<p>Pops the cursor off the top of the stack and makes the previous
+   the current cursor.</p>
+ */
 - (void) pop
 {
   [NSCursor_class pop];
 }
 
+/**<p>Adds the NSCursor into the cursor stack and makes it the current 
+   cursor.</p><p>See Also: -pop -set</p>
+ */
 - (void) push
 {
   [gnustep_gui_cursor_stack addObject: self];
@@ -420,6 +468,8 @@ backgroundColorHint:(NSColor *)bg
   NSDebugLLog(@"NSCursor", @"Cursor push %p", _cid);
 }
 
+/**<p>Sets the NSCursor as the current cursor.</p>
+ */
 - (void) set
 {
   gnustep_gui_current_cursor = self;
@@ -429,11 +479,17 @@ backgroundColorHint:(NSColor *)bg
     }
 }
 
+/** <p>Sets whether if the cursor is set on -mouseEntered:.
+    </p><p>See Also: -isSetOnMouseEntered -mouseEntered: -set</p> 
+ */
 - (void) setOnMouseEntered: (BOOL)flag
 {
   _is_set_on_mouse_entered = flag;
 }
 
+/** <p>Sets whether if the cursor is push on -mouseExited:.
+    </p><p>See Also: -isSetOnMouseExited -mouseExited: -set</p>
+ */
 - (void) setOnMouseExited: (BOOL)flag
 {
   _is_set_on_mouse_exited = flag;
