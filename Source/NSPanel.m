@@ -89,14 +89,19 @@
     [super keyDown: theEvent];
 }
 
-/*
- * Determining the Panel's Behavior
+/**<p>Returns whether the NSPanel is a floating panel, e.g. the window level
+   is NSFloatingWindowLevel instead of NSNormalWindowLevel.</p>
+   <p>See Also:  -setFloatingPanel: </p>
  */
 - (BOOL) isFloatingPanel
 {
   return _isFloatingPanel;
 }
 
+/**<p>Sets whether the NSPanel is a floating panel, e.g. the window level
+   is NSFloatingWindowLevel instead of NSNormalWindowLevel.</p>
+   <p>See Also:  -isFloatingPanel [NSWindow-setLevel:]</p>
+ */
 - (void) setFloatingPanel: (BOOL)flag
 {
   if (_isFloatingPanel != flag)
@@ -113,21 +118,38 @@
     }
 }
 
+/**<p>Returns whether the NSPanel can receive events when another window/panel
+   runs modally.</p><p>See Also: -setWorksWhenModal:
+   [NSApplication-runModalSession:]</p>
+ */
 - (BOOL) worksWhenModal
 {
   return _worksWhenModal;
 }
 
+/**<p>Sets whether the NSPanel can receive events when another window/panel
+   runs modally.</p>See Also: -worksWhenModal [NSApplication-runModalSession:]
+ */
 - (void) setWorksWhenModal: (BOOL)flag
 {
   _worksWhenModal = flag;
 }
 
+/**<p>Returns whether if the NSPanel becomes key window only when a view
+   require to be the first responder.</p>
+   <p>See Also: -setBecomesKeyOnlyIfNeeded: [NSView-needsPanelToBecomeKey]
+   [NSWindow-sendEvent:]</p>
+ */
 - (BOOL) becomesKeyOnlyIfNeeded
 {
   return _becomesKeyOnlyIfNeeded;
 }
 
+/**<p>Sets whether if the NSPanel becomes key window only when a view
+   require to be the first responder.</p>
+   <p>See Also: -setBecomesKeyOnlyIfNeeded: [NSView-needsPanelToBecomeKey]
+   [NSWindow-sendEvent:]</p>
+ */
 - (void) setBecomesKeyOnlyIfNeeded: (BOOL)flag
 {
   _becomesKeyOnlyIfNeeded = flag;
