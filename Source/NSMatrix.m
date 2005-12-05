@@ -185,11 +185,17 @@ static SEL getSel;
     }
 }
 
+/**<p>Returns the cell class used to create cells. By default it is a
+   NSActionCell class</p><p>See Also: +setCellClass:</p>
+ */
 + (Class) cellClass
 {
   return defaultCellClass;
 }
 
+/**<p>Sets the cell class used to create cells to <var>classId</var>.
+   By default it is a NSActionCell class</p><p>See Also: +setCellClass:</p>
+ */
 + (void) setCellClass: (Class)classId
 {
   defaultCellClass = classId;
@@ -400,7 +406,7 @@ static SEL getSel;
   [self insertRow: _numRows withCells: cellArray];
 }
 
-/**<p>Inserts a new column at the specified column column.</p>
+/**<p>Inserts a new column at the specified column <var>column</var>.</p>
    <p>See Also: -insertColumn:withCells:</p> 
  */
 - (void) insertColumn: (int)column
@@ -408,8 +414,10 @@ static SEL getSel;
   [self insertColumn: column withCells: nil];
 }
 
-/**<p>Inserts a new column of cells ( specified by cellArray)at the specified
-   column column.</p>
+/**<p>Inserts a new column of cells ( specified by <var>cellArray</var>) 
+   at the specified column <var>column</var>. This method can grows
+   the matrix as necessay if needed</p>
+   <p>See Also: -insertColumn:</p>
  */
 - (void) insertColumn: (int)column withCells: (NSArray*)cellArray
 {
@@ -495,11 +503,19 @@ static SEL getSel;
     [self selectCellAtRow: 0 column: 0];
 }
 
+/**<p>Inserts a new row at index <var>row</var>.</p>
+   <p>See Also: -insertRow:withCells: </p>
+ */
 - (void) insertRow: (int)row
 {
   [self insertRow: row withCells: nil];
 }
 
+/**<p>Inserts a new row of cells ( specified by <var>cellArray</var>) 
+   at the specified row <var>row</var>. This method can grows
+   the matrix as necessay if needed</p>
+   <p>See Also: -insertColumn:</p>
+ */
 - (void) insertRow: (int)row withCells: (NSArray*)cellArray
 {
   int	count = [cellArray count];
@@ -580,6 +596,9 @@ static SEL getSel;
     }
 }
 
+/**<p>Makes and returns new cell at row <var>row</var> and 
+   column <var>column</var>.</p>
+ */
 - (NSCell*) makeCellAtRow: (int)row
 		   column: (int)column
 {
@@ -639,6 +658,11 @@ static SEL getSel;
   *columnCount = _numCols;
 }
 
+/**<p>Replaces the NSMatrix's cell at row <var>row</var> and column <var>
+   column</var> by <var>newCell</var> and mark for display the new cell.
+   Raises a NSRangeException if the <var>row</var> or <var>column</var>
+   are out of range.</p>
+ */
 - (void) putCell: (NSCell*)newCell
 	   atRow: (int)row
 	  column: (int)column
@@ -660,6 +684,9 @@ static SEL getSel;
   [self setNeedsDisplayInRect: [self cellFrameAtRow: row column: column]];
 }
 
+/**<p>Removes the NSMatrix's column at index <var>column</var></p>
+   <p>See Also: -removeRow:</p>
+ */
 - (void) removeColumn: (int)column
 {
   if (column >= 0 && column < _numCols)
@@ -709,6 +736,10 @@ static SEL getSel;
     }
 }
 
+
+/**<p>Removes the NSMatrix's row at index <var>row</var></p>
+   <p>See Also: -removeColumn:</p>
+ */
 - (void) removeRow: (int)row
 {
   if (row >= 0 && row < _numRows)
@@ -772,7 +803,7 @@ static SEL getSel;
   [self sizeToCells];
 }
 
-/** <p>Sets space size between cells to aSize and resizes the matrix to
+/** <p>Sets the space size between cells to aSize and resizes the matrix to
     fits the new cells spacing.</p>
     <p>See Also: -intercellSpacing -sizeToCells</p>
  */
@@ -960,9 +991,10 @@ static SEL getSel;
 
   return NO;
 }
+
 /** <p>Sets the state of the cell at row <var>row</var> and <var>column</var>
-    to value. If the NSMatrix's mode is NSRadioModeMatrix it deselect
-    the cell currently selected if needed ( TODO ?).</p>
+    to value. If the NSMatrix's mode is NSRadioModeMatrix it deselects
+    the cell currently selected if needed.</p>
  */
 - (void) setState: (int)value
 	    atRow: (int)row
@@ -1461,6 +1493,7 @@ static SEL getSel;
 }
 
 
+
 - (void) selectText: (id)sender
 {
   // Attention, we are *not* doing what MacOS-X does.
@@ -1501,6 +1534,12 @@ static SEL getSel;
     }
 }
 
+/**<p>Select the text of the cell at row <var>row</var> and column 
+   <var>column</var>. The cell is selected if and only if the cell 
+   is selectable ( MacOSX select it if the cell is editable ). This 
+   methods returns the selected cell if exists and selectable,
+   nil otherwise</p>   
+ */
 - (id) selectTextAtRow: (int)row column: (int)column
 {
   if (row < 0 || row >= _numRows || column < 0 || column >= _numCols)
@@ -1529,19 +1568,19 @@ static SEL getSel;
 
   // Now _textObject == nil
   {
-    NSText *t = [_window fieldEditor: YES
+    NSText *text = [_window fieldEditor: YES
 			forObject: self];
     int length;
 
-    if ([t superview] != nil)
-      if ([t resignFirstResponder] == NO)
+    if ([text superview] != nil)
+      if ([text resignFirstResponder] == NO)
 	return nil;
 
     [self _selectCell: _cells[row][column] atRow: row column: column];
 
     /* See comment in NSTextField */
     length = [[_selectedCell stringValue] length];
-    _textObject = [_selectedCell setUpFieldEditorAttributes: t];
+    _textObject = [_selectedCell setUpFieldEditorAttributes: text];
     [_selectedCell selectWithFrame: [self cellFrameAtRow: _selectedRow
 					  column: _selectedColumn]
 		   inView: self
@@ -1580,18 +1619,27 @@ static SEL getSel;
     }
 }
 
+/**<p>Returns the next key view</p>
+   <p>See Also: -setNextText: [NSView-nextKeyView]</p>
+ */
 - (id) nextText
 {
   return [self nextKeyView];
 }
 
+/**<p>Returns the previous key view</p>
+   <p>See Also: -setPreviousText: [NSView-previousKeyView]</p>
+ */
 - (id) previousText
 {
   return [self previousKeyView];
 }
 
-/**
- */
+/**<p>Invokes when the text cell starts to be editing.This methods posts 
+   a NSControlTextDidBeginEditingNotification with a dictionary containing 
+   the NSFieldEditor as user info </p><p>See Also:
+   [NSNotificationCenter-postNotificationName:object:userInfo:]</p>
+*/
 - (void) textDidBeginEditing: (NSNotification *)aNotification
 {
   NSMutableDictionary *dict;
@@ -1606,6 +1654,11 @@ static SEL getSel;
       userInfo: dict];
 }
 
+/**<p>Invokes when the text cell is changed. This methods posts a 
+   NSControlTextDidChangeNotification with a dictionary containing the
+   NSFieldEditor as user info </p><p>See Also: 
+   [NSNotificationCenter-postNotificationName:object:userInfo:]</p>
+*/
 - (void) textDidChange: (NSNotification *)aNotification
 {
   NSMutableDictionary *dict;
@@ -1668,9 +1721,14 @@ static SEL getSel;
     }
 }
 
+/**<p>Invokes when the text cell is changed.
+   This methods posts a NSControlTextDidEndEditingNotification
+   a dictionary containing the NSFieldEditor as user info </p><p>See Also:
+   [NSNotificationCenter-postNotificationName:object:userInfo:]</p>
+*/
 - (void) textDidEndEditing: (NSNotification *)aNotification
 {
-  NSMutableDictionary *d;
+  NSMutableDictionary *dict;
   id textMovement;
 
   [self validateEditing];
@@ -1678,13 +1736,14 @@ static SEL getSel;
   [_selectedCell endEditing: [aNotification object]];
   _textObject = nil;
 
-  d = [[NSMutableDictionary alloc] initWithDictionary: 
-				     [aNotification userInfo]];
-  AUTORELEASE (d);
-  [d setObject: [aNotification object] forKey: @"NSFieldEditor"];
+  dict = [[NSMutableDictionary alloc] initWithDictionary: 
+					[aNotification userInfo]];
+  AUTORELEASE (dict);
+  [dict setObject: [aNotification object] forKey: @"NSFieldEditor"];
+
   [nc postNotificationName: NSControlTextDidEndEditingNotification
       object: self
-      userInfo: d];
+      userInfo: dict];
 
   textMovement = [[aNotification userInfo] objectForKey: @"NSTextMovement"];
   if (textMovement)
@@ -1745,6 +1804,10 @@ static SEL getSel;
     }
 }
 
+/**<p>Asks to the delegate (if it implements -control:textShouldBeginEditing: )
+   if the text should be edit. Returns YES if the delegate does not implement
+   this method</p>   
+ */
 - (BOOL) textShouldBeginEditing: (NSText*)aTextObject
 {
   if (_delegate && [_delegate respondsToSelector:
@@ -1807,11 +1870,17 @@ static SEL getSel;
   _tabKeyTraversesCells = flag;
 }
 
+/**<p>Sets the next key view to <var>anObject</var></p>
+   <p>See Also: -nextText [NSView-setNextKeyView:</p>
+ */
 - (void) setNextText: (id)anObject
 {
   [self setNextKeyView: anObject];
 }
 
+/**<p>Sets the previous key view to <var>anObject</var></p>
+   <p>See Also: -previousText [NSView-setPreviousKeyView:</p>
+ */
 - (void) setPreviousText: (id)anObject
 {
   [self setPreviousKeyView: anObject];
@@ -1886,6 +1955,10 @@ static SEL getSel;
   [self setCellSize: newSize];
 }
 
+/**<p>Scrolls the NSMatrix to make the cell at row <var>row</var> and column
+   <var>column</var> visible</p>
+   <p>See Also: -scrollRectToVisible: -cellFrameAtRow:column:</p>
+ */
 - (void) scrollCellToVisibleAtRow: (int)row
 			   column: (int)column
 {
@@ -2143,6 +2216,10 @@ static SEL getSel;
     [self sendAction];
 }
 
+/**<p>Returns NO if the NSMatrix's mode is <ref type="type" id="NSMatrixMode">
+   NSListModeMatrix</ref>,  YES otherwise.</p>
+   <p>See Also: -setMode: -mode</p>
+ */
 - (BOOL) acceptsFirstMouse: (NSEvent*)theEvent
 {
   if (_mode == NSListModeMatrix)
@@ -2498,6 +2575,10 @@ static SEL getSel;
   [self setNeedsDisplayInRect: rect];
 }
 
+/**<p>Simulates a mouse click for the first cell with the corresponding
+   key Equivalent.</p>
+   <p>See Also: [NSCell-keyEquivalent]</p>
+ */
 - (BOOL) performKeyEquivalent: (NSEvent*)theEvent
 {
   NSString	*key = [theEvent charactersIgnoringModifiers];
@@ -2845,6 +2926,9 @@ static SEL getSel;
   return _cellSize;
 }
 
+/** <p>Returns the space size between cells.</p>
+    <p>See Also: -setIntercellSpacing:</p>
+ */
 - (NSSize) intercellSpacing
 {
   return _intercell;
@@ -2893,6 +2977,10 @@ static SEL getSel;
   return _cellBackgroundColor;
 }
 
+/**<p>Sets the delegate to <var>anObject</var>. The delegate is used 
+   when editing a cell</p><p>See Also: -delegate -textDidEndEditing:
+   -textDidBeginEditing: -textDidChange:</p>
+ */
 - (void) setDelegate: (id)anObject
 {
   if (_delegate)
@@ -2913,6 +3001,11 @@ static SEL getSel;
     }
 }
 
+
+/**<p>Returns the NSMatrix's delegate. delegate is used when editing a cell</p>
+   <p>See Also: -setDelegate: -textDidEndEditing:  -textDidBeginEditing: 
+   -textDidChange:</p>
+ */
 - (id) delegate
 {
   return _delegate;
@@ -2960,11 +3053,21 @@ static SEL getSel;
   return _doubleAction;
 }
 
+/**<p>Sets the error action method to <var>aSelector</var>. This error method
+   is used when in -textShouldEndEditing: if the selected cell doe not
+   have a valid text object</p>
+   <p>See Also: -errorAction</p>
+ */
 - (void) setErrorAction: (SEL)aSelector
 {
   _errorAction = aSelector;
 }
 
+/**<p>Returns the error action method to <var>aSelector</var>This error method
+   is used when in -textShouldEndEditing: if the selected cell doe not
+   have a valid text object</p>
+   <p>See Also: -setErrorAction:</p>
+ */
 - (SEL) errorAction
 {
   return _errorAction;
@@ -3056,11 +3159,17 @@ static SEL getSel;
   return _autoscroll;
 }
 
+/**<p>Returns the number of rows of the NSMatrix</p>
+   <p>See Also: -numberOfColumns</p>
+ */
 - (int) numberOfRows
 {
   return _numRows;
 }
 
+/**<p>Returns the number of columns of the NSMatrix</p>
+   <p>See Also: -numberOfRows</p>
+ */
 - (int) numberOfColumns
 {
   return _numCols;
@@ -3071,11 +3180,18 @@ static SEL getSel;
   return _selectedCell;
 }
 
+/**<p>Returns the column number of the selected cell or -1 
+   if no cell is selected</p><p>See Also: -selectedRow -selectedCell</p>
+ */
 - (int) selectedColumn
 {
   return _selectedColumn;
 }
 
+
+/**<p>Returns the row number of the selected cell or -1 
+   if no cell is selected</p><p>See Also: -selectedColumn -selectedCell</p>
+ */
 - (int) selectedRow
 {
   return _selectedRow;
