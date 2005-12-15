@@ -236,7 +236,8 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
   attrStr = [[NSAttributedString alloc] initWithString: label attributes: attr];
       
   textWidth = [attrStr size].width + 2 * InsetItemTextX;
-  if (layoutedWidth != -1 && textWidth > layoutedWidth) 
+  if ([[_toolbarItem toolbar] displayMode] != NSToolbarDisplayModeIconOnly 
+    && layoutedWidth != -1 && textWidth > layoutedWidth) 
      layoutedWidth = textWidth;
      
   // Adjust the layout in accordance with NSToolbarDisplayMode
@@ -252,7 +253,6 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
       case NSToolbarDisplayModeIconOnly:
         [self setImagePosition: NSImageOnly];
         layoutedHeight -= [attrStr size].height + InsetItemTextY;
-	layoutedWidth -= [attrStr size].height + InsetItemTextY;
 	break;
       case NSToolbarDisplayModeLabelOnly:
         [self setImagePosition: NSNoImage];
@@ -1019,7 +1019,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
       // GNUstep predefined toolbar items
        
       if ([itemIdentifier isEqualToString: @"NSToolbarSeparatorItemIdentifier"] 
-        && ![self isKindOfClass:[GSToolbarSeparatorItem class]] == NO)
+        && [self isKindOfClass:[GSToolbarSeparatorItem class]] == NO)
         {
           [self release];
           self = [[GSToolbarSeparatorItem alloc] 

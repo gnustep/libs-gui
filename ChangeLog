@@ -1,3 +1,16 @@
+2005-12-15  Quentin Mathe <qmathe@club-internet.fr>
+
+    * Source/NSToolbarItem.m: 
+    (-[GSToolbarButton layout]): Don't set button based items width to their
+    label width when NSToolbarDisplayModeIconOnly is active (based on patch
+    by Wolfgang Sourdeau, partial fix for bug #15112). Removed superfuous code
+    which substracted label height to button width in
+    NSToolbarDisplayModeIconOnly case.
+    (-initWithItemIdentifier:): Removed logical operator 'not' wrongly used
+    with GSToolbarSeparatorItemIdentifier class identity test, it
+    prevented any separator items to be inited therefore used (patch by
+    Wolfgang Sourdeau, partial fix for bug #15112).
+
 2005-12-05  fabien  <fabien@sonappart.net>
 
 	* Source/NSCursor.m: Improved documentation
