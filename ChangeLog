@@ -1,3 +1,7 @@
+2005-12-22  Adam Fedor  <fedor@gnu.org>
+
+	* Version 0.10.2
+
 2005-12-15  Quentin Mathe <qmathe@club-internet.fr>
 
     * Source/NSToolbarItem.m: 
@@ -299,7 +303,7 @@
 2005-10-09  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSServicesManager.m: Improve handling of port registration
-	to ensure each application listens on a weel known port and the port
+	to ensure each application listens on a well known port and the port
 	name is readable.  If multiple copies of an app are running, name
 	the extra copies AppCopy1 AppCoppy2 etc.
 	* Source/NSWorkspace.m: Use advertised port name for the app name so

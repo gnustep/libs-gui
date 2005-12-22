@@ -2,7 +2,7 @@
 # Compatible with Bourne shell syntax, so it can included there too.
 
 # The gcc version required to compile the library.
-GNUSTEP_GUI_GCC=2.8.0
+GNUSTEP_GUI_GCC=2.9.5
 
 # Versions for libraries that gnustep-gui is dependent upon
 GNUSTEP_GUI_BASE=1.11.0
@@ -11,9 +11,9 @@ GNUSTEP_GUI_LIBTIFF=3.4
 # The version number of this release.
 GNUSTEP_GUI_MAJOR_VERSION=0
 GNUSTEP_GUI_MINOR_VERSION=10
-GNUSTEP_GUI_SUBMINOR_VERSION=1
+GNUSTEP_GUI_SUBMINOR_VERSION=2
 # numeric value should match above
-VERSION_NUMBER=010.1
+VERSION_NUMBER=010.2
 GNUSTEP_GUI_VERSION=${GNUSTEP_GUI_MAJOR_VERSION}.${GNUSTEP_GUI_MINOR_VERSION}.${GNUSTEP_GUI_SUBMINOR_VERSION}
 VERSION=${GNUSTEP_GUI_VERSION}
 

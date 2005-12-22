@@ -1,8 +1,8 @@
-TODO
-****
+1 TODO
+******
 
-Bugs in the GUI library
-=======================
+1.1 Bugs in the GUI library
+===========================
 
    * There have been a lot of improvements in the NSText code, but is
      particularly complex. It is somewhat usable though.  We hope to

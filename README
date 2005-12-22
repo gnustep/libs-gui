@@ -1,5 +1,5 @@
-README
-******
+1 README
+********
 
 The GNUstep gui library is a library of graphical user interface classes
 written completely in the Objective-C language; the classes are based
@@ -8,8 +8,8 @@ classes include graphical objects such as buttons, text fields, popup
 lists, browser lists, and windows; there are also many associated
 classes for handling events, colors, fonts, pasteboards and images.
 
-Initial reading
-===============
+1.1 Initial reading
+===================
 
    * The file `ANNOUNCE' contains a very brief overview of the library.
      It also tells you where to get the most recent version.
@@ -18,8 +18,8 @@ Initial reading
 
    * The file `INSTALL' gives instructions for installing the library.
 
-License
-=======
+1.2 License
+===========
 
 The GNUstep libraries and library resources are covered under the GNU
 Lesser Public License.  This means you can use these libraries in any
@@ -35,8 +35,8 @@ you cannot charge a fee, other than distribution fees, for others to
 use the program. You should read the COPYING file for more information.
 All files in the `Tools' directory are covered under the GPL.
 
-How can you help?
-=================
+1.3 How can you help?
+=====================
 
    * Give us feedback!  Tell us what you like; tell us what you think
      could be better.  Send bug reports to <bug-gnustep@gnu.org>.

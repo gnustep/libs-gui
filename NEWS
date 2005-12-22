@@ -1,17 +1,22 @@
-NEWS
-****
+1 NEWS
+******
 
-The currently released version of the library is `0.10.1'.
+The currently released version of the library is `0.10.2'.
 
-Noteworthy changes in version `0.10.1'
-======================================
+1.1 Noteworthy changes in version `0.10.2'
+==========================================
+
+Mostly bug fixes.
+
+1.2 Noteworthy changes in version `0.10.1'
+==========================================
 
 GNUstep now uses v19 of portaudio for the sound daemon. Version v19
 hasn't been officially released, but it is still used in several
 distributions (SuSE, etc) as v18 is very old.
 
-Noteworthy changes in version `0.10.0'
-======================================
+1.3 Noteworthy changes in version `0.10.0'
+==========================================
 
 This release is binary incompatible with previous releases.  The
 interface version of the library has changed so that apps, tools and
@@ -22,8 +27,8 @@ new version.
 
    * Keyed encoding is supported in many classes.
 
-Noteworthy changes in version `0.9.5'
-=====================================
+1.4 Noteworthy changes in version `0.9.5'
+=========================================
 
    * Beginnings of CUPS interface were added.
 
@@ -35,8 +40,8 @@ Noteworthy changes in version `0.9.5'
 
    * You can find the GUI library's version using the Info.plist
 
-Noteworthy changes in version `0.9.4'
-=====================================
+1.5 Noteworthy changes in version `0.9.4'
+=========================================
 
    * The printing classes have been completely reorganized to
      accommodate different native printing systems (Thanks to Chad
@@ -50,8 +55,8 @@ Noteworthy changes in version `0.9.4'
 
    * Some improvement of NSDataLink classes.
 
-Noteworthy changes in version `0.9.3'
-=====================================
+1.6 Noteworthy changes in version `0.9.3'
+=========================================
 
    * Spell checker reimplemented using libaspell
 
@@ -62,8 +67,8 @@ Noteworthy changes in version `0.9.3'
    * Binary incompatibilites from ivar additions in NSView and
      subclasses.
 
-Noteworthy changes in version `0.9.2'
-=====================================
+1.7 Noteworthy changes in version `0.9.2'
+=========================================
 
    * Working NSToolbar implementation
 
@@ -81,23 +86,23 @@ Noteworthy changes in version `0.9.2'
 
    * Much improved loading of gorm files
 
-Noteworthy changes in version `0.9.1'
-=====================================
+1.8 Noteworthy changes in version `0.9.1'
+=========================================
 
    * NSWindow - DnD works on whole window and events are propogated up
      to first DnD aware view.
 
    * Absolute paths and DnD works in OpenPanels.
 
-Noteworthy changes in version `0.9.0'
-=====================================
+1.9 Noteworthy changes in version `0.9.0'
+=========================================
 
 Improvements in various classes, include NSPopUpButton,
 NSBitmapImageRep, NSMenu, NSToolbar. Added support for thumbnail images
 in NSWorkspace.
 
-Noteworthy changes in version `0.8.9'
-=====================================
+1.10 Noteworthy changes in version `0.8.9'
+==========================================
 
 Note that many headers have moved to new locations (both in the package
 and when installed), so it is possible, although not likely that some
@@ -105,15 +110,15 @@ applications may not compile because they cannot find the right header.
 
    * New Language Setup documentation.
 
-Noteworthy changes in version `0.8.8'
-=====================================
+1.11 Noteworthy changes in version `0.8.8'
+==========================================
 
    * Updated LanguageSetup documentation
 
    * Improved RTF reader (unicode support, etc).
 
-Noteworthy changes in version `0.8.7'
-=====================================
+1.12 Noteworthy changes in version `0.8.7'
+==========================================
 
    * NSBezierPath glyph methods implemented (depends on backend).
 
@@ -122,8 +127,8 @@ Noteworthy changes in version `0.8.7'
    * Added default to load user-defined bundles (GSAppKitUserBundles
      default).
 
-Noteworthy changes in version `0.8.6'
-=====================================
+1.13 Noteworthy changes in version `0.8.6'
+==========================================
 
 Updated to install in new locations based on changes in gnustep-make
 1.7.0.
@@ -134,13 +139,13 @@ Updated to install in new locations based on changes in gnustep-make
 
    * Lots of menu improvements.
 
-Noteworthy changes in version `0.8.5'
-=====================================
+1.14 Noteworthy changes in version `0.8.5'
+==========================================
 
 Bug fixes. NSStringDrawing now uses text system implementation.
 
-Noteworthy changes in version `0.8.4'
-=====================================
+1.15 Noteworthy changes in version `0.8.4'
+==========================================
 
 This release features a brand new text and layout system thanks to
 Alexander Malmberg. Other improvements include:
@@ -153,8 +158,8 @@ Alexander Malmberg. Other improvements include:
 
    * NSToolbar partially implemented.
 
-Noteworthy changes in version `0.8.3'
-=====================================
+1.16 Noteworthy changes in version `0.8.3'
+==========================================
 
    * Additions for Gorm support.
 
@@ -170,8 +175,8 @@ Noteworthy changes in version `0.8.3'
 
    * Key view handling rewritten.
 
-Noteworthy changes in version `0.8.2'
-=====================================
+1.17 Noteworthy changes in version `0.8.2'
+==========================================
 
    * Handle fonts that aren't found better.
 
@@ -187,8 +192,8 @@ Noteworthy changes in version `0.8.2'
 
    * Fix firstResponder status in text fields.
 
-Noteworthy changes in version `0.8.1'
-=====================================
+1.18 Noteworthy changes in version `0.8.1'
+==========================================
 
    * Handle scaled curves correctly.
 
@@ -200,11 +205,11 @@ Noteworthy changes in version `0.8.1'
 
    * Spell checker starts correctly now.
 
-Noteworthy changes in version `0.8.0'
-=====================================
+1.19 Noteworthy changes in version `0.8.0'
+==========================================
 
-Noteworthy changes in version `0.7.9'
-=====================================
+1.20 Noteworthy changes in version `0.7.9'
+==========================================
 
    * NSTableView, NSOutlineView improvements.
 
@@ -212,15 +217,15 @@ Noteworthy changes in version `0.7.9'
 
    * Skeleton implementation of NSToolBar
 
-Noteworthy changes in version `0.7.8'
-=====================================
+1.21 Noteworthy changes in version `0.7.8'
+==========================================
 
    * Wheel color picker, standard color picker (bundles) added.
 
    * System colors now use named colors. Easier configuration
 
-Noteworthy changes in version `0.7.7'
-=====================================
+1.22 Noteworthy changes in version `0.7.7'
+==========================================
 
 The graphics/window interface was completely revamped. Window functions
 were split into a separate class, GSDisplayServer, and many PS and DPS
@@ -243,8 +248,8 @@ computers, although it is in a very alpha state.
 
    * NSOutlineView much improved.
 
-Noteworthy changes in version `0.7.6'
-=====================================
+1.23 Noteworthy changes in version `0.7.6'
+==========================================
 
    * NSOutlineView implemented.
 
@@ -256,8 +261,8 @@ Noteworthy changes in version `0.7.6'
 
    * Memory panel available from Info Panel.
 
-Noteworthy changes in version `0.7.5'
-=====================================
+1.24 Noteworthy changes in version `0.7.5'
+==========================================
 
    * Drag and drop and image sliding much improved.
 
@@ -287,8 +292,8 @@ Noteworthy changes in version `0.7.5'
 
    * Gmodel code compiled as a separate bundle.
 
-Noteworthy changes in version `0.7.0'
-=====================================
+1.25 Noteworthy changes in version `0.7.0'
+==========================================
 
    * Much improvement in NSBrowser, NSMatrix, NSPopUpButton, combo
      boxes.
@@ -303,8 +308,8 @@ Noteworthy changes in version `0.7.0'
 
    * NSColorWell works.
 
-Noteworthy changes in version `0.6.7'
-=====================================
+1.26 Noteworthy changes in version `0.6.7'
+==========================================
 
    * App Icons can support documents dropped using DnD.
 
@@ -330,8 +335,8 @@ Noteworthy changes in version `0.6.7'
 
    * Support middle mouse button.
 
-Noteworthy changes in version `0.6.6'
-=====================================
+1.27 Noteworthy changes in version `0.6.6'
+==========================================
 
    * Window hints for motif and generic window managers.
 
@@ -367,8 +372,8 @@ however, that the xdps backend is still considered experimental and you
 may have to deal with many problems in order to get it working. We
 recommend sticking with the xgps backend (the default) for now.
 
-Noteworthy changes in version `0.6.5'
-=====================================
+1.28 Noteworthy changes in version `0.6.5'
+==========================================
 
 Many of the basic GUI classes have been vastly improved or rewritten,
 thanks to Nicola Pero  <n.pero@mi.flashnet.it> and many others.
@@ -401,8 +406,8 @@ thanks to Nicola Pero  <n.pero@mi.flashnet.it> and many others.
 been written, thanks to Richard Frith-Macdonald
 <richard@brainstorm.co.uk>
 
-Noteworthy changes in version `0.6.0'
-=====================================
+1.29 Noteworthy changes in version `0.6.0'
+==========================================
 
 A Huge amount of progress, although a lot still needs to be done. It's
 usable for a large base of moderately simple apps. Several NeXT/OpenStep
@@ -432,8 +437,8 @@ apps and libraries have been ported with little changes.
 
    * Several fixes that at least double the speed of the gui.
 
-Noteworthy changes in version `0.5.5'
-=====================================
+1.30 Noteworthy changes in version `0.5.5'
+==========================================
 
 Too extensive to list.
 
@@ -441,8 +446,8 @@ Too extensive to list.
      cleanup of coordinate conversion code, etc.
 
 
-Noteworthy changes in version `0.5.0'
-=====================================
+1.31 Noteworthy changes in version `0.5.0'
+==========================================
 
    * NSBrowser and NSBrowserCell have been implemented.  There is one
      odd display artifact; lists which are smaller than the browser
@@ -491,8 +496,8 @@ Noteworthy changes in version `0.5.0'
    * Several cleanups and as usual, many bug fixes.
 
 
-Noteworthy changes in version `0.3.0'
-=====================================
+1.32 Noteworthy changes in version `0.3.0'
+==========================================
 
    * Completely reworked the menu class. The NSMenu class is now
      inherited from NSObject and using the new implementation menus
@@ -523,8 +528,8 @@ Noteworthy changes in version `0.3.0'
      implement the NSCopying protocol and many others.
 
 
-Noteworthy changes in version `0.2.0'
-=====================================
+1.33 Noteworthy changes in version `0.2.0'
+==========================================
 
    * Additional NSImage and NSImageRep class work.  Incorporated common
      images for use with controls that were designed by Andrew Lindesay.
@@ -558,8 +563,8 @@ Noteworthy changes in version `0.2.0'
    * Many bug fixes and minor enhancements.
 
 
-Noteworthy changes in version `0.1.1'
-=====================================
+1.34 Noteworthy changes in version `0.1.1'
+==========================================
 
    * Almost complete implementation of the PXKMenu and PXKMenuCell
      classes.
@@ -582,8 +587,8 @@ Noteworthy changes in version `0.1.1'
      manipulating tiff files and images.
 
 
-Noteworthy changes in version `0.1.0'
-=====================================
+1.35 Noteworthy changes in version `0.1.0'
+==========================================
 
    * Integration of the GNUstep X/DPS GUI Backend.  This has finally
      produced a set of core code with can display on X/Windows.  Much

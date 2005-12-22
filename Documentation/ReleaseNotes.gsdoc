@@ -20,6 +20,17 @@
 	migrate to using a newer version of the library.
       </p>
       <section>
+	<heading>Version 0.10.2</heading>
+	  <deflist>
+	    <term>Power Off</term>
+	    <desc>
+	    The notification center posts a power off notification before
+	    sending a terminate: method sent from another app on the assumption
+	    that the terminate: is from a session manager.
+	    </desc>
+	  </deflist>
+      </section>
+      <section>
 	<heading>Version 0.10.1</heading>
 	  <deflist>
 	    <term>Sound library</term>
