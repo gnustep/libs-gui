@@ -57,16 +57,10 @@
 #include <GNUstepBase/GSObjCRuntime.h>
 #include <GNUstepGUI/GSNibCompatibility.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////
-////////////////// DEPRECATED TEMPLATES ----- THESE SHOULD NOT BE USED  //////////////////
-//////////////////////////////////////////////////////////////////////////////////////////
-
 /*
   As these classes are deprecated, they should disappear from the gnustep distribution
   in the next major release.
 */
-
-#define DEPRECATION_WARNING NSLog(@"WARNING: Attempt to encode/decode an deprecated template.  Please update the .gorm.  Load the gorm file in Gorm.app and resave to update it.")
 
 @implementation NSWindowTemplate
 + (void) initialize
@@ -79,141 +73,205 @@
 
 - (void) dealloc
 {
-  RELEASE(_parentClassName);
-  RELEASE(_className);
+  RELEASE(_title);
+  RELEASE(_viewClass);
+  RELEASE(_windowClass);
+  RELEASE(_view);
+  RELEASE(_title);
   [super dealloc];
-}
-
-- init
-{
-  [super init];
-
-  // Start initially with the highest level class
-  ASSIGN(_className, NSStringFromClass([super class]));
-  ASSIGN(_parentClassName, NSStringFromClass([super class]));
-
-  // defer flag
-  _deferFlag = NO;
-
-  return self;
 }
 
 - (id) initWithCoder: (NSCoder *)aDecoder
 {
-    /**/
   if ([aDecoder allowsKeyedCoding])
     {
-      //NSRect screenRect = [aDecoder decodeRectForKey: @"NSScreenRect"];
-      NSRect windowRect = [aDecoder decodeRectForKey: @"NSWindowRect"];
-      //NSString *viewClass = [aDecoder decodeObjectForKey: @"NSViewClass"];
-      NSString *windowClass = [aDecoder decodeObjectForKey: @"NSWindowClass"];
-      int style = [aDecoder decodeIntForKey: @"NSWindowStyleMask"];
-      int backing = [aDecoder decodeIntForKey: @"NSWindowBacking"];
-      
-      ASSIGN(_className, windowClass);
-      self = [self initWithContentRect: windowRect
-			     styleMask: style
-			       backing: backing
-				 defer: NO
-				screen: nil];
-
+      if ([aDecoder containsValueForKey: @"NSViewClass"])
+        {
+	  _viewClass = RETAIN([aDecoder decodeObjectForKey: @"NSViewClass"]);
+	}
+      if ([aDecoder containsValueForKey: @"NSWindowClass"])
+        {
+	  _windowClass = RETAIN([aDecoder decodeObjectForKey: @"NSWindowClass"]);
+	}
+      if ([aDecoder containsValueForKey: @"NSWindowStyleMask"])
+        {
+	  _interfaceStyle = [aDecoder decodeIntForKey: @"NSWindowStyleMask"];
+	}
+      if([aDecoder containsValueForKey: @"NSWindowBacking"])
+	{
+	  _backingStoreType = [aDecoder decodeIntForKey: @"NSWindowBacking"];
+	}
       if ([aDecoder containsValueForKey: @"NSWindowView"])
         {
-	    [self setContentView: 
-		      [aDecoder decodeObjectForKey: @"NSWindowView"]];	  
+	  _view = RETAIN([aDecoder decodeObjectForKey: @"NSWindowView"]);
 	}
       if ([aDecoder containsValueForKey: @"NSWTFlags"])
         {
-	  //int flags = [aDecoder decodeIntForKey: @"NSWTFlags"];
+	  _flags = [aDecoder decodeIntForKey: @"NSWTFlags"];
 	}
       if ([aDecoder containsValueForKey: @"NSMinSize"])
         {
-	  NSSize minSize = [aDecoder decodeSizeForKey: @"NSMinSize"];
-	  [self setMinSize: minSize];
+	  _minSize = [aDecoder decodeSizeForKey: @"NSMinSize"];
 	}
       if ([aDecoder containsValueForKey: @"NSMaxSize"])
         {
-	  NSSize maxSize = [aDecoder decodeSizeForKey: @"NSMaxSize"];
-	  [self setMaxSize: maxSize];
+	  _maxSize = [aDecoder decodeSizeForKey: @"NSMaxSize"];
 	}
       if ([aDecoder containsValueForKey: @"NSWindowTitle"])
         {
-	  [self setTitle: [aDecoder decodeObjectForKey: @"NSWindowTitle"]];
+	  _title = RETAIN([aDecoder decodeObjectForKey: @"NSWindowTitle"]);
 	}
-
-      return self;
     }
-  else
-    {
-      DEPRECATION_WARNING;
-      [aDecoder decodeValueOfObjCType: @encode(id) at: &_className];  
-      [aDecoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];  
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];  
-      return [super initWithCoder: aDecoder];
-    }
+  return self;
 }
 
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
-  DEPRECATION_WARNING;
-}
-
-- (id) awakeAfterUsingCoder: (NSCoder *)coder
-{
-  if ([self respondsToSelector: @selector(isInInterfaceBuilder)])
+  if ([aCoder allowsKeyedCoding])
     {
-      // if we live in the interface builder, give them an instance of
-      // the parent, not the child..
-      [self setClassName: _parentClassName];
     }
-  
-  return [self instantiateObject: coder];
 }
 
-- (id) instantiateObject: (NSCoder *)coder
+- (id) nibInstantiate
 {
-  id obj = nil;
-  Class aClass = NSClassFromString(_className);      
+  Class aClass = NSClassFromString(_windowClass);      
   
   if (aClass == nil)
     {
 	[NSException raise: NSInternalInconsistencyException
-		     format: @"Unable to find class '%@'", _className];
+		     format: @"Unable to find class '%@'", _windowClass];
     }
   
-  obj = [[aClass allocWithZone: [self zone]] 
-	    initWithContentRect: [self frame]
-	    styleMask: [self styleMask]
-	    backing: [self backingType]
-	    defer: _deferFlag];
-    
-  // fill in actual object from template
-  [obj setBackgroundColor: [self backgroundColor]];
-  [(NSWindow*)obj setContentView: [self contentView]];
-  [obj setFrameAutosaveName: [self frameAutosaveName]];
-  [obj setHidesOnDeactivate: [self hidesOnDeactivate]];
-  [obj setInitialFirstResponder: [self initialFirstResponder]];
-  [obj setAutodisplay: [self isAutodisplay]];
-  [obj setReleasedWhenClosed: [self isReleasedWhenClosed]];
-  [obj _setVisible: [self isVisible]];
-  [obj setTitle: [self title]];
-  [obj setFrame: [self frame] display: NO];
-  
-  RELEASE(self);
-  RETAIN(obj);
+  _realObject = [[aClass allocWithZone: NSDefaultMallocZone()]
+		  initWithContentRect: _windowRect
+		  styleMask: _interfaceStyle
+		  backing: _backingStoreType
+		  defer: _deferFlag
+		  screen: nil];
 
-  return obj;
+  // reset attributes...
+  [_realObject setContentView: _view];
+  [_realObject setMinSize: _minSize];
+  [_realObject setMaxSize: _maxSize];
+  [_realObject setTitle: _title];
+
+  return _realObject;
 }
 
 // setters and getters
+- (void) setBackingStoreType: (NSBackingStoreType)type
+{
+  _backingStoreType = type;
+}
+
+- (NSBackingStoreType) backingStoreType
+{
+  return _backingStoreType;
+}
+
+- (void) setDeferred: (BOOL)flag
+{
+  _deferFlag = flag;
+}
+
+- (BOOL) isDeferred
+{
+  return _deferFlag;
+}
+
+- (void) setMaxSize: (NSSize)maxSize
+{
+  _maxSize = maxSize;
+}
+
+- (NSSize) maxSize
+{
+  return _maxSize;
+}
+
+- (void) setMinSize: (NSSize)minSize
+{
+  _minSize = minSize;
+}
+
+- (NSSize) minSize
+{
+  return _minSize;
+}
+
+- (void) setInterfaceStyle: (unsigned)style
+{
+  _interfaceStyle = style;
+}
+
+- (unsigned) interfaceStyle
+{
+  return _interfaceStyle;
+}
+
+- (void) setTitle: (NSString *) title
+{
+  ASSIGN(_title, title);
+}
+
+- (NSString *)title;
+{
+  return _title;
+}
+
+- (void) setViewClass: (NSString *)viewClass
+{
+  ASSIGN(_viewClass,viewClass);
+}
+
+- (NSString *)viewClass
+{
+  return _viewClass;
+}
+
+- (void) setWindowRect: (NSRect)rect
+{
+  _windowRect = rect;
+}
+
+- (NSRect)windowRect
+{
+  return _windowRect;
+}
+
+- (void) setScreenRect: (NSRect)rect
+{
+  _screenRect = rect;
+}
+
+- (NSRect) screenRect
+{
+  return _screenRect;
+}
+
+- (id) realObject
+{
+  return _realObject;
+}
+
+- (void) setView: (id)view
+{
+  ASSIGN(_view,view);
+}
+
+- (id) view
+{
+  return _view;
+}
+
 - (void) setClassName: (NSString *)name
 {
-  ASSIGN(_className, name);
+  ASSIGN(_windowClass, name);
 }
 
 - (NSString *)className
 {
-  return _className;
+  return _windowClass;
 }
 
 - (BOOL)deferFlag
@@ -237,61 +295,18 @@
     }
 }
 
-- (void) dealloc
-{
-  RELEASE(_parentClassName);
-  RELEASE(_className);
-  [super dealloc];
-}
-
-- initWithFrame: (NSRect)frame
-{
-  // Start initially with the highest level class
-  ASSIGN(_className, NSStringFromClass([super class]));
-  ASSIGN(_parentClassName, NSStringFromClass([super class]));
-  [super initWithFrame: frame];
-
-  return self;
-}
-
-- init
-{
-  // Start initially with the highest level class
-  [super init];
-  ASSIGN(_className, NSStringFromClass([super class]));
-  ASSIGN(_parentClassName, NSStringFromClass([super class]));
-  return self;
-}
-
 - (id) initWithCoder: (NSCoder *)aCoder
 {
-  DEPRECATION_WARNING;
-  [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
-  [aCoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];
-  return [super initWithCoder: aCoder];
+  return nil;
 }
 
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
-  DEPRECATION_WARNING;
 }
 
-- (id) awakeAfterUsingCoder: (NSCoder *)coder
-{
-  if ([self respondsToSelector: @selector(isInInterfaceBuilder)])
-    {
-      // if we live in the interface builder, give them an instance of
-      // the parent, not the child..
-      [self setClassName: _parentClassName];
-    }
-  return [self instantiateObject: coder];
-}
-
-- (id) instantiateObject: (NSCoder *)coder
+- (id) nibInstantiate
 {
   Class       aClass = NSClassFromString(_className);
-  NSRect theFrame = [self frame];
-  id obj = nil;
 
   if (aClass == nil)
     {
@@ -299,16 +314,9 @@
 		   format: @"Unable to find class '%@'", _className];
     }
 
-  obj =  [[aClass allocWithZone: NSDefaultMallocZone()]
-	   initWithFrame: theFrame];
-
-  // set the attributes for the view
-  [obj setBounds: [self bounds]];
-  
-  RELEASE(self);
-  RETAIN(obj);
-
-  return obj;
+  _realObject =  [[aClass allocWithZone: NSDefaultMallocZone()]
+		   initWithFrame: _frame];
+  return _realObject;
 }
 
 // setters and getters
@@ -322,6 +330,10 @@
   return _className;
 }
 
+- (id) realObject
+{
+  return _realObject;
+}
 @end
 
 // Template for any classes which derive from NSText
@@ -334,99 +346,20 @@
     }
 }
 
-- (void) dealloc
-{
-  RELEASE(_parentClassName);
-  RELEASE(_className);
-  [super dealloc];
-}
-
 - initWithFrame: (NSRect)frame
 {
-  // Start initially with the highest level class
-  ASSIGN(_className, NSStringFromClass([super class]));
-  ASSIGN(_parentClassName, NSStringFromClass([super class]));
-  [super initWithFrame: frame];
-  return self;
-}
-
-- init
-{
-  // Start initially with the highest level class
-  [super init];
-  ASSIGN(_className, NSStringFromClass([super class]));
-  ASSIGN(_parentClassName, NSStringFromClass([super class]));
   return self;
 }
 
 - (id) initWithCoder: (NSCoder *)aCoder
 {
-  DEPRECATION_WARNING;
-  [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
-  [aCoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];  
-  return [super initWithCoder: aCoder];
+  return nil;
 }
 
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
-  DEPRECATION_WARNING;
 }
 
-- (id) awakeAfterUsingCoder: (NSCoder *)coder
-{
-  if ([self respondsToSelector: @selector(isInInterfaceBuilder)])
-    {
-      // if we live in the interface builder, give them an instance of
-      // the parent, not the child..
-      [self setClassName: _parentClassName];
-    }
-  return [self instantiateObject: coder];
-}
-
-- (id) instantiateObject: (NSCoder *)coder
-{
-  Class  aClass = NSClassFromString(_className);
-  NSRect theFrame = [self frame];
-  id     obj = nil;
-
-  if (aClass == nil)
-    {
-      [NSException raise: NSInternalInconsistencyException
-		   format: @"Unable to find class '%@'", _className];
-    }
-
-  obj = [[aClass allocWithZone: NSDefaultMallocZone()]
-	  initWithFrame: theFrame];
-
-  // set the attributes for the view
-  [obj setBounds: [self bounds]];
-
-  // set the attributes for text
-  [obj setBackgroundColor: [self backgroundColor]];
-  [obj setDrawsBackground: [self drawsBackground]];
-  [obj setEditable: [self isEditable]];
-  [obj setSelectable: [self isSelectable]];
-  [obj setFieldEditor: [self isFieldEditor]];
-  [obj setRichText: [self isRichText]];
-  [obj setImportsGraphics: [self importsGraphics]];
-  [obj setDelegate: [self delegate]];
-
-  RELEASE(self);
-  RETAIN(obj);
-
-  return obj;
-}
-
-// accessor methods
-- (void) setClassName: (NSString *)name
-{
-  ASSIGN(_className, name);
-}
-
-- (NSString *)className
-{
-  return _className;
-}
 @end
 
 // Template for any classes which derive from NSTextView
@@ -439,102 +372,15 @@
     }
 }
 
-- (void) dealloc
-{
-  RELEASE(_parentClassName);
-  RELEASE(_className);
-  [super dealloc];
-}
-
-- initWithFrame: (NSRect)frame
-{
-  // Start initially with the highest level class
-  ASSIGN(_className, NSStringFromClass([super class]));
-  ASSIGN(_parentClassName, NSStringFromClass([super class]));
-  [super initWithFrame: frame];
-  return self;
-}
-
-- init
-{
-  [super init];
-  ASSIGN(_className, NSStringFromClass([super class]));
-  ASSIGN(_parentClassName, NSStringFromClass([super class]));
-  return self;
-}
-
 - (id) initWithCoder: (NSCoder *)aCoder
 {
-  DEPRECATION_WARNING;
-  [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
-  [aCoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];  
-  return [super initWithCoder: aCoder];
+  return nil;
 }
 
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
-  DEPRECATION_WARNING;
 }
 
-- (id) awakeAfterUsingCoder: (NSCoder *)coder
-{
-  if ([self respondsToSelector: @selector(isInInterfaceBuilder)])
-    {
-      // if we live in the interface builder, give them an instance of
-      // the parent, not the child..
-      [self setClassName: _parentClassName];
-    }
-  return [self instantiateObject: coder];
-}
-
-- (id) instantiateObject: (NSCoder *)coder
-{
-  Class  aClass = NSClassFromString(_className);
-  NSRect theFrame = [self frame];
-  id     obj = nil;
-
-  if (aClass == nil)
-    {
-      [NSException raise: NSInternalInconsistencyException
-		   format: @"Unable to find class '%@'", _className];
-    }
-
-  obj = [[aClass allocWithZone: NSDefaultMallocZone()]
-	  initWithFrame: theFrame];
-
-  // set the attributes for the view
-  [obj setBounds: [self bounds]];
-
-  // set the attributes for text
-  [obj setBackgroundColor: [self backgroundColor]];
-  [obj setDrawsBackground: [self drawsBackground]];
-  [obj setEditable: [self isEditable]];
-  [obj setSelectable: [self isSelectable]];
-  [obj setFieldEditor: [self isFieldEditor]];
-  [obj setRichText: [self isRichText]];
-  [obj setImportsGraphics: [self importsGraphics]];
-  [obj setDelegate: [self delegate]];
-
-  // text view
-  [obj setRulerVisible: [self isRulerVisible]];
-  [obj setInsertionPointColor: [self insertionPointColor]];
-
-  RELEASE(self);
-  RETAIN(obj);
-
-  return obj;
-}
-
-// accessors
-- (void) setClassName: (NSString *)name
-{
-  ASSIGN(_className, name);
-}
-
-- (NSString *)className
-{
-  return _className;
-}
 @end
 
 // Template for any classes which derive from NSMenu.
@@ -547,48 +393,18 @@
     }
 }
 
-- (void) dealloc
-{
-  RELEASE(_parentClassName);
-  RELEASE(_className);
-  [super dealloc];
-}
-
-- init
-{
-  [super init];
-  // Start initially with the highest level class
-  ASSIGN(_className, NSStringFromClass([super class]));
-  ASSIGN(_parentClassName, NSStringFromClass([super class]));
-  return self;
-}
-
 - (id) initWithCoder: (NSCoder *)aCoder
 {
-  DEPRECATION_WARNING;
-  [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
-  [aCoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];  
-  return [super initWithCoder: aCoder];
+  return nil;
 }
 
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
-  DEPRECATION_WARNING;
 }
 
-- (id) awakeAfterUsingCoder: (NSCoder *)coder
+- (id) nibInstantiate
 {
-  if ([self respondsToSelector: @selector(isInInterfaceBuilder)])
-    {
-      // if we live in the interface builder, give them an instance of
-      // the parent, not the child..
-      [self setClassName: _parentClassName];
-    }
-  return [self instantiateObject: coder];
-}
-
-- (id) instantiateObject: (NSCoder *)coder
-{
+  /*
   Class       aClass = NSClassFromString(_className);
   id          obj = nil;
 
@@ -608,265 +424,87 @@
   RETAIN(obj);
 
   return obj;
+  */
+  return nil;
 }
 
-// accessors
-- (void) setClassName: (NSString *)name
+- (void) setClassName: (NSString *)className
 {
-  ASSIGN(_className, name);
-  RETAIN(_className);
-
+  ASSIGN(_menuClass, className);
 }
 
 - (NSString *)className
 {
-  return _className;
+  return _menuClass;
+}
+
+- (id) realObject
+{
+  return _realObject;
 }
 @end
 
-
-// Template for any classes which derive from NSControl
-@implementation NSControlTemplate
-+ (void) initialize
+@implementation NSIBObjectData
+- (id)instantiateObject: (id)obj
 {
-  if (self == [NSControlTemplate class]) 
+  return nil;
+}
+
+- (void) nibInstantiateWithOwner: (id)owner
+{
+}
+
+- (void) nibInstantiateWithOwner: (id)owner topLevelObjects: (id)toplevel
+{
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  if([coder allowsKeyedCoding])
     {
-      [self setVersion: 0];
+      NSArray *accessibilityOidsKeys = (NSArray *)NSAllMapTableKeys(_accessibilityOids);
+      NSArray *accessibilityOidsValues = (NSArray *)NSAllMapTableValues(_accessibilityOids);
+      NSArray *classKeys = (NSArray *)NSAllMapTableKeys(_classes);
+      NSArray *classValues = (NSArray *)NSAllMapTableValues(_classes);
+      NSArray *nameKeys = (NSArray *)NSAllMapTableKeys(_names);
+      NSArray *nameValues = (NSArray *)NSAllMapTableValues(_names);
+      NSArray *objectsKeys = (NSArray *)NSAllMapTableKeys(_objects);
+      NSArray *objectsValues = (NSArray *)NSAllMapTableValues(_objects);
+      NSArray *oidsKeys = (NSArray *)NSAllMapTableKeys(_oids);
+      NSArray *oidsValues = (NSArray *)NSAllMapTableValues(_oids);
+
+      [coder encodeObject: (id)_accessibilityConnectors forKey: @"NSAccessibilityConnectors"];
+      [coder encodeObject: (id) accessibilityOidsKeys forKey: @"NSAccessibilityOidsKeys"];
+      [coder encodeObject: (id) accessibilityOidsValues forKey: @"NSAccessibilityOidsValues"];
+      [coder encodeObject: (id) classKeys forKey: @"NSClassesKeys"];
+      [coder encodeObject: (id) classValues forKey: @"NSClassesValues"];
+      [coder encodeObject: (id) nameKeys forKey: @"NSNamesKeys"];
+      [coder encodeObject: (id) nameValues forKey: @"NSNamesValues"];
+      [coder encodeObject: (id) objectsKeys forKey: @"NSObjectsKeys"];
+      [coder encodeObject: (id) objectsValues forKey: @"NSObjectsValues"];
+      [coder encodeObject: (id) oidsKeys forKey: @"NSOidsKeys"];
+      [coder encodeObject: (id) oidsValues forKey: @"NSOidsValues"];
+      [coder encodeObject: (id) _connections forKey: @"NSConnections"];
+      [coder encodeObject: (id) _fontManager forKey: @"NSFontManager"];
+      [coder encodeObject: (id) _framework forKey: @"NSFramework"];
+      [coder encodeObject: (id) _visibleWindows forKey: @"NSVisibleWindows"];
+      [coder encodeInt: _nextOid forKey: @"NSNextOid"];
+      [coder encodeObject: (id) _root forKey: @"NSRoot"];
     }
 }
 
-- (void) dealloc
+- (id) initWithCoder: (NSCoder *)coder
 {
-  RELEASE(_parentClassName);
-  RELEASE(_className);
-  [super dealloc];
-}
-
-- initWithFrame: (NSRect)frame
-{
-  // Start initially with the highest level class
-  ASSIGN(_className, NSStringFromClass([super class]));
-  ASSIGN(_parentClassName, NSStringFromClass([super class]));
-  [super initWithFrame: frame];
-
   return self;
 }
 
-- init
+- (void) setRoot: (id) root
 {
-  // Start initially with the highest level class
-  [super init];
-  ASSIGN(_className, NSStringFromClass([super class]));
-  ASSIGN(_parentClassName, NSStringFromClass([super class]));
-  return self;
+  ASSIGN(_root, root);
 }
 
-- (id) initWithCoder: (NSCoder *)aCoder
+- (id) root
 {
-  DEPRECATION_WARNING;
-  [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
-  [aCoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];  
-  [aCoder decodeValueOfObjCType: @encode(id) at: &_delegate];  
-  [aCoder decodeValueOfObjCType: @encode(id) at: &_dataSource];  
-  [aCoder decodeValueOfObjCType: @encode(BOOL) at: &_usesDataSource];  
-  return [super initWithCoder: aCoder];
-}
-
-- (void) encodeWithCoder: (NSCoder *)aCoder
-{
-  DEPRECATION_WARNING;
-}
-
-- (id) awakeAfterUsingCoder: (NSCoder *)coder
-{
-  if ([self respondsToSelector: @selector(isInInterfaceBuilder)])
-    {
-      // if we live in the interface builder, give them an instance of
-      // the parent, not the child..
-      [self setClassName: _parentClassName];
-    }
-  return [self instantiateObject: coder];
-}
-
-- (id) instantiateObject: (NSCoder *)coder
-{
-  Class       aClass = NSClassFromString(_className);
-  NSRect theFrame = [self frame];
-  id obj = nil;
-
-  if (aClass == nil)
-    {
-      [NSException raise: NSInternalInconsistencyException
-		   format: @"Unable to find class '%@'", _className];
-    }
-
-  obj =  [[aClass allocWithZone: NSDefaultMallocZone()]
-	   initWithFrame: theFrame];
-
-  // set the attributes for the view
-  [obj setBounds: [self bounds]];
-
-  // set the attributes for the control
-  [obj setDoubleValue: [self doubleValue]];
-  [obj setFloatValue: [self floatValue]];
-  [obj setIntValue: [self intValue]];
-  [obj setObjectValue: [self objectValue]];
-  [obj setStringValue: [self stringValue]];
-  [obj setTag: [self tag]];
-  [obj setFont: [self font]];
-  [obj setAlignment: [self alignment]];
-  [obj setEnabled: [self isEnabled]];
-  [obj setContinuous: [self isContinuous]];
-
-  // since only some controls have delegates, we need to test
-  if ([obj respondsToSelector: @selector(setDelegate:)])
-      [obj setDelegate: _delegate];
-
-  // since only some controls have data sources, we need to test
-  if ([obj respondsToSelector: @selector(setDataSource:)])
-      [obj setDataSource: _dataSource];
-
-  // since only some controls have data sources, we need to test
-  if ([obj respondsToSelector: @selector(setUsesDataSource:)])
-      [obj setUsesDataSource: _usesDataSource];
-
-  RELEASE(self);
-  RETAIN(obj);
-
-  return obj;
-}
-
-// accessors
-- (void) setClassName: (NSString *)name
-{
-  ASSIGN(_className, name);
-}
-
-- (NSString *)className
-{
-  return _className;
-}
-@end
-
-// Template for any classes which derive from NSButton
-@implementation NSButtonTemplate
-+ (void) initialize
-{
-  if (self == [NSButtonTemplate class]) 
-    {
-      [self setVersion: 0];
-    }
-}
-
-- (void) dealloc
-{
-  RELEASE(_parentClassName);
-  RELEASE(_className);
-  [super dealloc];
-}
-
-- initWithFrame: (NSRect)frame
-{
-  // Start initially with the highest level class
-  ASSIGN(_className, NSStringFromClass([super class]));
-  ASSIGN(_parentClassName, NSStringFromClass([super class]));
-  _buttonType = NSMomentaryLightButton;
-  [super initWithFrame: frame];
-  
-  return self;
-}
-
-- init
-{
-  // Start initially with the highest level class
-  [super init];
-  ASSIGN(_className, NSStringFromClass([super class]));
-  ASSIGN(_parentClassName, NSStringFromClass([super class]));
-  _buttonType = NSMomentaryLightButton;
-  return self;
-}
-
-- (id) initWithCoder: (NSCoder *)aCoder
-{
-  DEPRECATION_WARNING;
-  [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
-  [aCoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];  
-  [aCoder decodeValueOfObjCType: @encode(int) at: &_buttonType];  
-  return [super initWithCoder: aCoder];
-}
-
-- (void) encodeWithCoder: (NSCoder *)aCoder
-{
-  DEPRECATION_WARNING;
-}
-
-- (id) awakeAfterUsingCoder: (NSCoder *)coder
-{
-  if ([self respondsToSelector: @selector(isInInterfaceBuilder)])
-    {
-      // if we live in the interface builder, give them an instance of
-      // the parent, not the child..
-      [self setClassName: _parentClassName];
-    }
-  return [self instantiateObject: coder];
-}
-
-- (id) instantiateObject: (NSCoder *)coder
-{
-  Class       aClass = NSClassFromString(_className);
-  NSRect theFrame = [self frame];
-  id obj = nil;
-
-  if (aClass == nil)
-    {
-      [NSException raise: NSInternalInconsistencyException
-		   format: @"Unable to find class '%@'", _className];
-    }
-
-  obj =  [[aClass allocWithZone: NSDefaultMallocZone()]
-	   initWithFrame: theFrame];
-
-  // set the attributes for the view
-  [obj setBounds: [self bounds]];
-
-  // set the attributes for the control
-  [obj setDoubleValue: [self doubleValue]];
-  [obj setFloatValue: [self floatValue]];
-  [obj setIntValue: [self intValue]];
-  [obj setObjectValue: [self objectValue]];
-  [obj setStringValue: [self stringValue]];
-  [obj setTag: [self tag]];
-  [obj setFont: [self font]];
-  [obj setAlignment: [self alignment]];
-  [obj setEnabled: [self isEnabled]];
-  [obj setContinuous: [self isContinuous]];
-
-  // button
-  [obj setButtonType: _buttonType];
-  [obj setBezelStyle: [self bezelStyle]];
-  [obj setBordered: [self isBordered]];
-  [obj setAllowsMixedState: [self allowsMixedState]];
-  [obj setTitle: [self title]];
-  [obj setAlternateTitle: [self alternateTitle]];
-  [obj setImage: [self image]];
-  [obj setAlternateImage: [self alternateImage]];
-  [obj setImagePosition: [self imagePosition]];
-  [obj setKeyEquivalent: [self keyEquivalent]];
-
-  RELEASE(self);
-  RETAIN(obj);
-
-  return obj;
-}
-
-// accessors
-- (void) setClassName: (NSString *)name
-{
-  ASSIGN(_className, name);
-}
-
-- (NSString *)className
-{
-  return _className;
+  return _root;
 }
 @end

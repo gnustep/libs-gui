@@ -1,3 +1,9 @@
+2005-12-27 20:51 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h:
+	* Source/GSNibCompatibility.m: Addition of classes for true OSX nib
+	compatibility.
+
 2005-12-22  Adam Fedor  <fedor@gnu.org>
 
 	* Version 0.10.2
