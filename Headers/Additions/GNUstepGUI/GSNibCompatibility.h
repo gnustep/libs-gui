@@ -124,6 +124,33 @@
 }
 @end
 
+@interface NSCustomObject : NSObject <NSCoding>
+{
+  NSString *_className;
+}
+- (void) setClassName: (NSString *)name;
+- (NSString *)className;
+@end
+
+@interface NSCustomView : NSView
+{
+  NSString *_className;
+}
+- (void) setClassName: (NSString *)name;
+- (NSString *)className;
+@end
+
+@interface NSClassSwapper : NSObject <NSCoding>
+{
+  NSString *_className;
+  id _template;
+}
+- (void) setTemplate: (id)temp;
+- (id) template;
+- (void) setClassName: (NSString *)className;
+- (NSString *)className;
+@end
+
 @interface NSIBObjectData : NSObject <NSCoding>
 {
   id              _root;

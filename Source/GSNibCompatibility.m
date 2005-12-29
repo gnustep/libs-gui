@@ -1,15 +1,8 @@
 /** <title>GSNibCompatibility</title>
 
    <abstract>
-   These are the old template classes which were used in older .gorm files.
-   All of these classes are deprecated and should not be used directly. 
-   They will be removed from the GUI library in the next few versions as
-   they need to be phased out gradually.
-   <p/>
-   If you have any older .gorm files which were created using custom classes, 
-   you should load them into Gorm and save them so that they will use the new
-   system.   Updating the .gorm files should be as easy as that.   These
-   classes are included ONLY for backwards compatibility.
+   These are templates for use with OSX Nib files.  These classes are the
+   templates and other things which are needed for reading/writing nib files.
    </abstract>
 
    Copyright (C) 1997, 1999 Free Software Foundation, Inc.
@@ -444,6 +437,101 @@
 }
 @end
 
+@implementation NSCustomObject
+- (void) setClassName: (NSString *)name
+{
+  ASSIGN(_className, name);
+}
+
+- (NSString *)className
+{
+  return _className;
+}
+
+- (id) initWithCoder: (NSCoder *)coder
+{
+  Class aClass;
+  _className = [coder decodeObjectForKey: @"NSClassName"];
+  aClass = NSClassFromString(_className);
+  if(aClass == nil)
+    {
+	[NSException raise: NSInternalInconsistencyException
+		     format: @"Unable to find class '%@'", _className];
+    }
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  [coder encodeObject: (id)_className forKey: @"NSClassName"];
+}
+@end
+
+@implementation NSCustomView
+- (void) setClassName: (NSString *)name
+{
+  ASSIGN(_className, name);
+}
+
+- (NSString *)className
+{
+  return _className;
+}
+
+- (id) initWithCoder: (NSCoder *)coder
+{
+  self = [super initWithCoder: coder];
+  if(self != nil)
+    {
+      Class aClass;
+      _className = [coder decodeObjectForKey: @"NSClassName"];
+      aClass = NSClassFromString(_className);
+      if(aClass == nil)
+	{
+	  [NSException raise: NSInternalInconsistencyException
+		       format: @"Unable to find class '%@'", _className];
+	}
+    }
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  [coder encodeObject: (id)_className forKey: @"NSClassName"];
+}
+@end
+
+@implementation NSClassSwapper
+- (void) setTemplate: (id)temp
+{
+  ASSIGN(_template, temp);
+}
+
+- (id) template
+{
+  return _template;
+}
+
+- (void) setClassName: (NSString *)className
+{
+  ASSIGN(_className, className);
+}
+
+- (NSString *)className
+{
+  return _className;
+}
+
+- (id) initWithCoder: (NSCoder *)coder
+{
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+}
+@end
+
 @implementation NSIBObjectData
 - (id)instantiateObject: (id)obj
 {
@@ -495,6 +583,30 @@
 
 - (id) initWithCoder: (NSCoder *)coder
 {
+  if([coder allowsKeyedCoding])
+    {
+      NSMutableArray *accessibilityOidsKeys = (NSMutableArray *)
+	[coder decodeObjectForKey: @"NSAccessibilityOidsKeys"];
+      NSMutableArray *accessibilityOidsValues = (NSMutableArray *)
+	[coder decodeObjectForKey: @"NSAccessibilityOidsValues"];      
+      NSMutableArray *classKeys = (NSMutableArray *)[coder decodeObjectForKey: @"NSClassesKeys"];
+      NSMutableArray *classValues = (NSMutableArray *)[coder decodeObjectForKey: @"NSClassesValues"];
+      NSMutableArray *nameKeys = (NSMutableArray *)[coder decodeObjectForKey: @"NSNamesKeys"];
+      NSMutableArray *nameValues = (NSMutableArray *)[coder decodeObjectForKey: @"NSNamesValues"];
+      NSMutableArray *objectsKeys = (NSMutableArray *)[coder decodeObjectForKey: @"NSObjectsKeys"];
+      NSMutableArray *objectsValues = (NSMutableArray *)[coder decodeObjectForKey: @"NSObjectsValues"];
+      NSMutableArray *oidsKeys = (NSMutableArray *)[coder decodeObjectForKey: @"NSOidsKeys"];
+      NSMutableArray *oidsValues = (NSMutableArray *)[coder decodeObjectForKey: @"NSOidsValues"];
+      
+      _accessibilityConnectors = (NSMutableArray *)[coder decodeObjectForKey: @"NSAccessibilityConnectors"];
+      _connections = [coder decodeObjectForKey: @"NSConnections"];
+      _fontManager = [coder decodeObjectForKey: @"NSFontManager"];
+      _framework = [coder decodeObjectForKey: @"NSFramework"];
+      _visibleWindows = [coder decodeObjectForKey: @"NSVisibleWindows"];
+      _nextOid = [coder decodeIntForKey: @"NSNextOid"];
+      _root = [coder decodeObjectForKey: @"NSRoot"];
+    }
+
   return self;
 }
 
