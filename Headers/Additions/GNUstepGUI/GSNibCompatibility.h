@@ -134,10 +134,15 @@
 
 @interface NSCustomView : NSView
 {
+  NSString *_extension;
   NSString *_className;
+  NSView *_view;
 }
 - (void) setClassName: (NSString *)name;
 - (NSString *)className;
+- (void) setExtension: (NSString *)view;
+- (NSString *)extension;
+- (id)nibInstantiate;
 @end
 
 @interface NSClassSwapper : NSObject <NSCoding>

@@ -477,6 +477,20 @@
 {
   return _className;
 }
+- (void) setExtension: (NSString *)ext;
+{
+  ASSIGN(_extension, ext);
+}
+
+- (NSString *)extension
+{
+  return _extension;
+}
+
+- (id)nibInstantiate
+{
+  return self;
+}
 
 - (id) initWithCoder: (NSCoder *)coder
 {
