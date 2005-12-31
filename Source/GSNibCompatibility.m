@@ -599,23 +599,65 @@
     }
 }
 
+- (void) _buildMap: (NSMapTable *)mapTable 
+	  withKeys: (NSArray *)keys 
+	 andValues: (NSArray *)values
+{
+  NSEnumerator *ken = [keys objectEnumerator];
+  NSEnumerator *ven = [values objectEnumerator];
+  id key = nil;
+  id value = nil;
+  
+  while((key = [ken nextObject]) != nil && (value = [ven nextObject]) != nil)
+    {
+      NSMapInsert(mapTable, key, value);
+    }
+}
+
 - (id) initWithCoder: (NSCoder *)coder
 {
   if([coder allowsKeyedCoding])
     {
-      NSMutableArray *accessibilityOidsKeys = (NSMutableArray *)
+      NSArray *accessibilityOidsKeys = (NSArray *)
 	[coder decodeObjectForKey: @"NSAccessibilityOidsKeys"];
-      NSMutableArray *accessibilityOidsValues = (NSMutableArray *)
+      NSArray *accessibilityOidsValues = (NSArray *)
 	[coder decodeObjectForKey: @"NSAccessibilityOidsValues"];      
-      NSMutableArray *classKeys = (NSMutableArray *)[coder decodeObjectForKey: @"NSClassesKeys"];
-      NSMutableArray *classValues = (NSMutableArray *)[coder decodeObjectForKey: @"NSClassesValues"];
-      NSMutableArray *nameKeys = (NSMutableArray *)[coder decodeObjectForKey: @"NSNamesKeys"];
-      NSMutableArray *nameValues = (NSMutableArray *)[coder decodeObjectForKey: @"NSNamesValues"];
-      NSMutableArray *objectsKeys = (NSMutableArray *)[coder decodeObjectForKey: @"NSObjectsKeys"];
-      NSMutableArray *objectsValues = (NSMutableArray *)[coder decodeObjectForKey: @"NSObjectsValues"];
-      NSMutableArray *oidsKeys = (NSMutableArray *)[coder decodeObjectForKey: @"NSOidsKeys"];
-      NSMutableArray *oidsValues = (NSMutableArray *)[coder decodeObjectForKey: @"NSOidsValues"];
+      NSArray *classKeys = (NSArray *)
+	[coder decodeObjectForKey: @"NSClassesKeys"];
+      NSArray *classValues = (NSArray *)
+	[coder decodeObjectForKey: @"NSClassesValues"];
+      NSArray *nameKeys = (NSArray *)
+	[coder decodeObjectForKey: @"NSNamesKeys"];
+      NSArray *nameValues = (NSArray *)
+	[coder decodeObjectForKey: @"NSNamesValues"];
+      NSArray *objectsKeys = (NSArray *)
+	[coder decodeObjectForKey: @"NSObjectsKeys"];
+      NSArray *objectsValues = (NSArray *)
+	[coder decodeObjectForKey: @"NSObjectsValues"];
+      NSArray *oidsKeys = (NSArray *)
+	[coder decodeObjectForKey: @"NSOidsKeys"];
+      NSArray *oidsValues = (NSArray *)
+	[coder decodeObjectForKey: @"NSOidsValues"];
+
+      // instantiate the maps..
+      _objects = NSCreateMapTable(NSObjectMapKeyCallBacks,
+				  NSObjectMapValueCallBacks, 2);
+      _names = NSCreateMapTable(NSObjectMapKeyCallBacks,
+				NSObjectMapValueCallBacks, 2);
+      _oids = NSCreateMapTable(NSObjectMapKeyCallBacks,
+			       NSObjectMapValueCallBacks, 2);
+      _classes = NSCreateMapTable(NSObjectMapKeyCallBacks,
+				  NSObjectMapValueCallBacks, 2);
+      _accessibilityOids = NSCreateMapTable(NSObjectMapKeyCallBacks,
+					    NSObjectMapValueCallBacks, 2);
       
+      // fill in the maps...
+      [self _buildMap: _accessibilityOids withKeys: accessibilityOidsKeys andValues: accessibilityOidsValues];
+      [self _buildMap: _classes withKeys: classKeys andValues: classValues];
+      [self _buildMap: _names withKeys: nameKeys andValues: nameValues];
+      [self _buildMap: _objects withKeys: objectsKeys andValues: objectsValues];
+      [self _buildMap: _oids withKeys: oidsKeys andValues: oidsValues];
+
       _accessibilityConnectors = (NSMutableArray *)[coder decodeObjectForKey: @"NSAccessibilityConnectors"];
       _connections = [coder decodeObjectForKey: @"NSConnections"];
       _fontManager = [coder decodeObjectForKey: @"NSFontManager"];
