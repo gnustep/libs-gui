@@ -1,3 +1,15 @@
+2005-12-31 01:31 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GNUmakefile: Added new classes.
+	* Source/NSBundleAdditions.m: Changes to use new model loader
+	factory and loaders.
+	* Source/GSModelLoaderFactory.h 
+	* Source/GSModelLoaderFactory.m: Handles model loading in 
+	dynamic way.  Allows registration of additional classes to 
+	handle loading of guis.
+	* Source/GSGormLoader.m: Loader for .gorm files.
+	* Source/GSGModelLoader.m: Loader for .gmodel files.
+	
 2005-12-30 00:49 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h
