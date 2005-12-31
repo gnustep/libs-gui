@@ -560,6 +560,10 @@
 {
 }
 
+- (void) awakeWithContext: (NSDictionary *)context
+{
+}
+
 - (void) encodeWithCoder: (NSCoder *)coder
 {
   if([coder allowsKeyedCoding])

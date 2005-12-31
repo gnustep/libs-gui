@@ -29,12 +29,12 @@
 #include <AppKit/AppKit.h>
 
 #include "GNUstepGUI/GSModelLoaderFactory.h"
-#include "GNUstepGUI/GSNibTemplates.h"
+#include "GNUstepGUI/GSNibCompatibility.h"
 
-@interface GSGormLoader : GSModelLoader
+@interface GSNibLoader : GSModelLoader
 @end
 
-@implementation GSGormLoader
+@implementation GSNibLoader
 + (void) initialize
 {
   // should do something...
@@ -42,7 +42,7 @@
 
 + (NSString *)type
 {
-  return @"gorm";
+  return @"nib";
 }
 
 - (BOOL) loadModelFile: (NSString *)fileName
@@ -52,7 +52,7 @@
   BOOL		loaded = NO;
   NSUnarchiver	*unarchiver = nil;
 
-  NSDebugLog(@"Loading Gorm `%@'...\n", fileName);
+  NSDebugLog(@"Loading Nib `%@'...\n", fileName);
   NS_DURING
     {
       NSFileManager	*mgr = [NSFileManager defaultManager];
@@ -70,14 +70,14 @@
 	    }
 	  else
 	    {
-	      NSString *newFileName = [fileName stringByAppendingPathComponent: @"objects.gorm"];
+	      NSString *newFileName = [fileName stringByAppendingPathComponent: @"keyedobjects.nib"];
 	      data = [NSData dataWithContentsOfFile: newFileName];
 	      NSDebugLog(@"Loaded data from %@...",newFileName);
 	    }
 
 	  if (data != nil)
 	    {
-	      unarchiver = [[NSUnarchiver alloc] initForReadingWithData: data];
+	      unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData: data];
 	      if (unarchiver != nil)
 		{
 		  id obj;
@@ -87,7 +87,7 @@
 		  obj = [unarchiver decodeObject];
 		  if (obj != nil)
 		    {
-		      if ([obj isKindOfClass: [GSNibContainer class]])
+		      if ([obj isKindOfClass: [NSIBObjectData class]])
 			{
 			  NSDebugLog(@"Calling awakeWithContext");
 			  [obj awakeWithContext: context];
@@ -95,7 +95,7 @@
 			}
 		      else
 			{
-			  NSLog(@"Gorm '%@' without container object!", fileName);
+			  NSLog(@"Nib '%@' without container object!", fileName);
 			}
 		    }
 		  RELEASE(unarchiver);
@@ -112,7 +112,7 @@
 
   if (loaded == NO)
     {
-      NSLog(@"Failed to load Gorm\n");
+      NSLog(@"Failed to load Nib\n");
     }
   return loaded;
 }

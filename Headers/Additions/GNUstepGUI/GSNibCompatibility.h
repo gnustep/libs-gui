@@ -174,7 +174,8 @@
   NSMutableArray *_accessibilityConnectors;
   NSMapTable     *_accessibilityOids;
 }
-- (id)instantiateObject: (id)obj;
+- (void) awakeWithContext: (NSDictionary *)context;
+- (id) instantiateObject: (id)obj;
 - (void) nibInstantiateWithOwner: (id)owner;
 - (void) nibInstantiateWithOwner: (id)owner topLevelObjects: (id)toplevel;
 @end
