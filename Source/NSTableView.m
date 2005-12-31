@@ -3460,8 +3460,10 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
 	  // Prepare the cell
 	  tb = [_tableColumns objectAtIndex: _clickedColumn];
-	  // It is unclear, if we should copy the cell here, as we do on editing.
-	  cell = [tb dataCellForRow: _clickedRow];
+	  /* we should copy the cell here, as we do on editing.
+	     otherwise validation on a cell being edited could
+	     cause the cell we are selecting to get it's objectValue */
+	  cell = [[tb dataCellForRow: _clickedRow] copy];
 	  originalValue = RETAIN([self _objectValueForTableColumn:tb row:_clickedRow]);
 	  [cell setObjectValue: originalValue]; 
 	  cellFrame = [self frameOfCellAtColumn: _clickedColumn 
@@ -3479,7 +3481,8 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	    {
 	      id newValue = [cell objectValue];
 
-	      if ([tb isEditable] && ![originalValue isEqual: newValue])
+	      if ([tb isEditable] && originalValue != newValue
+		  && ![originalValue isEqual: newValue])
 		{
 		  [self _setObjectValue: newValue 
 		         forTableColumn: tb
@@ -3498,6 +3501,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	    }
 	  RELEASE(originalValue);    
 	  [cell setHighlighted: NO];
+	  RELEASE(cell);
 	  [self setNeedsDisplayInRect: cellFrame];
 	  lastEvent = [NSApp currentEvent];
 	}

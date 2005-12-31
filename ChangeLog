@@ -1,3 +1,10 @@
+2005-12-31  Matt Rice  <ratmice@yahoo.com>
+
+	* Source/NSTableView.m (-mouseDown:): Copy the selected cell before
+	tracking mouse, add comment. (patch previously reverted 2005-05-30)
+	(-mouseDown:): Check for pointer equality in addition to isEqual:
+	which doesn't work with nil. (fix for bug #15316)
+	
 2005-12-22  Adam Fedor  <fedor@gnu.org>
 
 	* Version 0.10.2
