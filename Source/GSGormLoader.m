@@ -31,14 +31,18 @@
 #include "GNUstepGUI/GSModelLoaderFactory.h"
 #include "GNUstepGUI/GSNibTemplates.h"
 
-@interface GSGormLoader : NSObject <GSModelLoader>
+@interface GSGormLoader : GSModelLoader
 @end
 
 @implementation GSGormLoader
 + (void) initialize
 {
-  // register for the .gorm type.
-  // [GSModelLoaderFactory registerModelLoaderClass: @"GSGormLoader" forType: @"gorm"];
+  // should do something...
+}
+
++ (NSString *)type
+{
+  return @"gorm";
 }
 
 - (BOOL) loadModelFile: (NSString *)fileName

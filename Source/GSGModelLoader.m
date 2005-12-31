@@ -63,14 +63,18 @@ Class gmodel_class(void)
   return gmclass;
 }
 
-@interface GSGModelLoader : NSObject <GSModelLoader>
+@interface GSGModelLoader : GSModelLoader
 @end
 
 @implementation GSGModelLoader
 + (void) initialize
 {
-  // register for the .gorm type.
-  // [GSModelLoaderFactory registerModelLoaderClass: @"GSGModelLoader" forType: @"gmodel"];
+  // register for the gmodel type.
+}
+
++ (NSString *) type
+{
+  return @"gmodel";
 }
 
 - (BOOL) loadModelFile: (NSString *)fileName

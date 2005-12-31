@@ -30,18 +30,19 @@
 
 #include <Foundation/Foundation.h>
 
-@protocol GSModelLoader
+@interface GSModelLoader : NSObject
++ (NSString *) type;
 - (BOOL) loadModelFile: (NSString *)fileName
      externalNameTable: (NSDictionary *)context
               withZone: (NSZone *)zone;
 @end
 
 @interface GSModelLoaderFactory : NSObject
-+ (void) registerModelLoaderClass: (NSString *)aClass forType: (NSString *)type;
-+ (NSString *)classForType: (NSString *)type;
++ (void) registerModelLoaderClass: (Class)aClass;
++ (Class)classForType: (NSString *)type;
 + (NSString *) supportedModelFileAtPath: (NSString *)modelPath;
-+ (id<GSModelLoader>)modelLoaderForFileType: (NSString *)type;
-+ (id<GSModelLoader>)modelLoaderForFileName: (NSString *)modelPath;
++ (GSModelLoader *)modelLoaderForFileType: (NSString *)type;
++ (GSModelLoader *)modelLoaderForFileName: (NSString *)modelPath;
 @end
 
 #endif

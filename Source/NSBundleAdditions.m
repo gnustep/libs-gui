@@ -203,9 +203,7 @@
    externalNameTable: (NSDictionary*)context
 	    withZone: (NSZone*)zone
 {
-  id loader = [GSModelLoaderFactory modelLoaderForFileName: fileName];
-
-  AUTORELEASE(loader);
+  GSModelLoader *loader = AUTORELEASE([GSModelLoaderFactory modelLoaderForFileName: fileName]);
   BOOL loaded = [loader loadModelFile: fileName
 			externalNameTable: context
 			withZone: zone];

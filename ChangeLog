@@ -1,3 +1,15 @@
+2005-12-31 11:49 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSModelLoaderFactory.h: Removed
+	protocol.
+	* Source/GSGModelLoader.m:
+	* Source/GSGormLoader.m: Removed initialize method
+	* Source/GSModelLoaderFactory.m: Renamed 
+	abstract class to GSModelLoader.  Added code
+	in initialize to register all subclasses of GSModelLoader.
+	* Source/NSBundleAdditions.m: Make changes to use new abstract
+	class name.
+
 2005-12-31 01:31 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GNUmakefile: Added new classes.

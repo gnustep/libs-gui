@@ -28,28 +28,50 @@
 #include <Foundation/Foundation.h>
 #include <AppKit/AppKit.h>
 #include "GNUstepGUI/GSModelLoaderFactory.h"
+#include "GNUstepBase/GSObjCRuntime.h"
+
+@implementation GSModelLoader
++ (NSString *) type
+{
+  return nil;
+}
+
+- (BOOL) loadModelFile: (NSString *)fileName
+     externalNameTable: (NSDictionary *)context
+              withZone: (NSZone *)zone
+{
+  [NSException raise: NSInternalInconsistencyException
+	       format: @"Abstract model loader."];
+  return NO;
+}
+@end
 
 static NSMutableDictionary *_modelMap = nil;
 
 @implementation GSModelLoaderFactory
 + (void) initialize
 {
-  // load these, since we know about them.
-  [GSModelLoaderFactory registerModelLoaderClass: @"GSGormLoader" forType: @"gorm"];
-  [GSModelLoaderFactory registerModelLoaderClass: @"GSGModelLoader" forType: @"gmodel"];
+  NSArray *classes = GSObjCAllSubclassesOfClass([GSModelLoader class]);
+  NSEnumerator *en = [classes objectEnumerator];
+  Class cls = nil;
+  
+  while((cls = [en nextObject]) != nil)
+    {
+      [self registerModelLoaderClass: cls];
+    }
 }
 
-+ (void) registerModelLoaderClass: (NSString *)aClass forType: (NSString *)type
++ (void) registerModelLoaderClass: (Class)aClass
 {
   if(_modelMap == nil)
     {
       _modelMap = [[NSMutableDictionary alloc] initWithCapacity: 5];
     }
 
-  [_modelMap setObject: aClass forKey: type];
+  [_modelMap setObject: aClass forKey: [aClass type]];
 }
 
-+ (NSString *)classForType: (NSString *)type
++ (Class)classForType: (NSString *)type
 {
   return [_modelMap objectForKey: type];
 }
@@ -84,11 +106,10 @@ static NSMutableDictionary *_modelMap = nil;
   return result;
 }
 
-+ (id<GSModelLoader>)modelLoaderForFileType: (NSString *)type
++ (GSModelLoader *)modelLoaderForFileType: (NSString *)type
 {
-  NSString *className = [GSModelLoaderFactory classForType: type];
-  Class aClass = NSClassFromString(className);
-  id<GSModelLoader> loader = nil;
+  Class aClass = [GSModelLoaderFactory classForType: type];
+  GSModelLoader *loader = nil;
 
   if(aClass != nil)
     {
@@ -98,16 +119,16 @@ static NSMutableDictionary *_modelMap = nil;
   else
     {
       [NSException raise: NSInternalInconsistencyException
-		   format: @"Unable to find model loader class '%@'", className];
+		   format: @"Unable to find model loader class."];
     }
 
   return loader;
 }
 
-+ (id<GSModelLoader>)modelLoaderForFileName: (NSString *)modelPath
++ (GSModelLoader *)modelLoaderForFileName: (NSString *)modelPath
 {
   NSString *path = [GSModelLoaderFactory supportedModelFileAtPath: modelPath];
-  id<GSModelLoader> result = nil;
+  GSModelLoader *result = nil;
 
   if(path != nil)
     {
