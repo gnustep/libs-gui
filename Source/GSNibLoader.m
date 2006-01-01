@@ -89,7 +89,7 @@
 		  
 		  NSDebugLog(@"Invoking unarchiver");
 		  [unarchiver setObjectZone: zone];
-		  obj = [unarchiver decodeObject];
+		  obj = [unarchiver decodeObjectForKey: @"IB.objectdata"];
 		  if (obj != nil)
 		    {
 		      if ([obj isKindOfClass: [NSIBObjectData class]])

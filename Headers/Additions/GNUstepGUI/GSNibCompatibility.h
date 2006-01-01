@@ -145,6 +145,18 @@
 - (id)nibInstantiate;
 @end
 
+@interface NSCustomResource : NSObject <NSCoding>
+{
+  NSString *_className;
+  NSString *_resourceName;
+}
+- (void) setClassName: (NSString *)className;
+- (NSString *)className;
+- (void) setResourceName: (NSString *)view;
+- (NSString *)resourceName;
+- (id)nibInstantiate;
+@end
+
 @interface NSClassSwapper : NSObject <NSCoding>
 {
   NSString *_className;

@@ -1,3 +1,11 @@
+2006-01-01 14:36 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h: Added
+	NSCustomResource.
+	* Source/GSNibCompatibility.m: Added NSCustomResource.
+	* Source/GSNibLoader.m: Calls keyed archiver with "IB.objectdata"
+	key.
+	
 2006-01-01 09:27 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/Additions/GNUstepGUI/GSModelLoaderFactory.h: Added

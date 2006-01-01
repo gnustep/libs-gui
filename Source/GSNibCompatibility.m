@@ -516,6 +516,69 @@
 }
 @end
 
+@implementation NSCustomResource
+- (void) setClassName: (NSString *)className
+{
+  ASSIGN(_className, className);
+}
+
+- (NSString *)className
+{
+  return _className;
+}
+
+- (void) setResourceName: (NSString *)resourceName
+{
+  ASSIGN(_resourceName, resourceName);
+}
+
+- (NSString *)resourceName
+{
+  return _resourceName;
+}
+
+- (id)nibInstantiate
+{
+  return self;
+}
+
+- (id) initWithCoder: (NSCoder *)coder
+{
+  id realObject = nil;
+  if([coder allowsKeyedCoding])
+    {
+      ASSIGN(_className, [coder decodeObjectForKey: @"NSClassName"]);
+      ASSIGN(_resourceName, [coder decodeObjectForKey: @"NSResourceName"]);
+
+      // this is a hack, but for now it should do.
+      if([_className isEqual: @"NSSound"])
+	{
+	  realObject = [NSSound soundNamed: _resourceName];
+	}
+      else if([_className isEqual: @"NSImage"])
+	{
+	  realObject = [NSImage imageNamed: _resourceName];
+	}
+
+      // if an object has been substituted, then release the placeholder.
+      if(realObject != nil)
+	{
+	  RELEASE(self);
+	}
+    }
+  return realObject;
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  if([coder allowsKeyedCoding])
+    {
+      [coder encodeObject: (id)_className forKey: @"NSClassName"];
+      [coder encodeObject: (id)_resourceName forKey: @"NSResourceName"];
+    }
+}
+@end
+
 @implementation NSClassSwapper
 - (void) setTemplate: (id)temp
 {
@@ -539,6 +602,9 @@
 
 - (id) initWithCoder: (NSCoder *)coder
 {
+  if([coder allowsKeyedCoding])
+    {
+    }
   return self;
 }
 
@@ -596,11 +662,11 @@
       [coder encodeObject: (id) oidsKeys forKey: @"NSOidsKeys"];
       [coder encodeObject: (id) oidsValues forKey: @"NSOidsValues"];
       [coder encodeObject: (id) _connections forKey: @"NSConnections"];
-      [coder encodeObject: (id) _fontManager forKey: @"NSFontManager"];
-      [coder encodeObject: (id) _framework forKey: @"NSFramework"];
+      [coder encodeConditionalObject: (id) _fontManager forKey: @"NSFontManager"];
+      [coder encodeConditionalObject: (id) _framework forKey: @"NSFramework"];
       [coder encodeObject: (id) _visibleWindows forKey: @"NSVisibleWindows"];
       [coder encodeInt: _nextOid forKey: @"NSNextOid"];
-      [coder encodeObject: (id) _root forKey: @"NSRoot"];
+      [coder encodeConditionalObject: (id) _root forKey: @"NSRoot"];
     }
 }
 
@@ -664,15 +730,62 @@
       [self _buildMap: _oids withKeys: oidsKeys andValues: oidsValues];
 
       ASSIGN(_accessibilityConnectors, (NSMutableArray *)[coder decodeObjectForKey: @"NSAccessibilityConnectors"]);
-      ASSIGN(_connections, [coder decodeObjectForKey: @"NSConnections"]);
+      ASSIGN(_connections,  (NSMutableArray *)[coder decodeObjectForKey: @"NSConnections"]);
       ASSIGN(_fontManager, [coder decodeObjectForKey: @"NSFontManager"]);
       ASSIGN(_framework, [coder decodeObjectForKey: @"NSFramework"]);
-      ASSIGN(_visibleWindows, [coder decodeObjectForKey: @"NSVisibleWindows"]);
+      ASSIGN(_visibleWindows,  (NSMutableArray *)[coder decodeObjectForKey: @"NSVisibleWindows"]);
       ASSIGN(_root, [coder decodeObjectForKey: @"NSRoot"]);
       _nextOid = [coder decodeIntForKey: @"NSNextOid"];
     }
 
   return self;
+}
+
+- (id) init
+{
+  if((self = [super init]) != nil)
+    {
+      // instantiate the maps..
+      _objects = NSCreateMapTable(NSObjectMapKeyCallBacks,
+				  NSObjectMapValueCallBacks, 2);
+      _names = NSCreateMapTable(NSObjectMapKeyCallBacks,
+				NSObjectMapValueCallBacks, 2);
+      _oids = NSCreateMapTable(NSObjectMapKeyCallBacks,
+			       NSObjectMapValueCallBacks, 2);
+      _classes = NSCreateMapTable(NSObjectMapKeyCallBacks,
+				  NSObjectMapValueCallBacks, 2);
+      _accessibilityOids = NSCreateMapTable(NSObjectMapKeyCallBacks,
+					    NSObjectMapValueCallBacks, 2);  
+
+      // initialize the objects...
+      _accessibilityConnectors = [[NSMutableArray alloc] init];
+      _connections = [[NSMutableArray alloc] init];
+      _visibleWindows = [[NSMutableArray alloc] init];
+      _framework = nil;
+      _fontManager = nil;
+      _root = nil;
+      _nextOid = -1;
+    }
+  return self;
+}
+
+- (void) dealloc
+{
+  // free the maps.
+  NSFreeMapTable(_objects);
+  NSFreeMapTable(_names);
+  NSFreeMapTable(_oids);
+  NSFreeMapTable(_classes);
+  NSFreeMapTable(_accessibilityOids);
+
+  // free other objects.
+  RELEASE(_accessibilityConnectors);
+  RELEASE(_connections);
+  RELEASE(_fontManager);
+  RELEASE(_framework);
+  RELEASE(_visibleWindows);
+  RELEASE(_root);
+  [super dealloc];
 }
 
 - (void) setRoot: (id) root
