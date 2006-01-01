@@ -36,6 +36,11 @@
   return nil;
 }
 
++ (float) priority
+{
+  return 0.0;
+}
+
 - (BOOL) loadModelFile: (NSString *)fileName
      externalNameTable: (NSDictionary *)context
               withZone: (NSZone *)zone
@@ -44,6 +49,22 @@
 	       format: @"Abstract model loader."];
   return NO;
 }
+
++ (NSComparisonResult) _comparePriority: (Class)loader
+{
+  NSComparisonResult result = NSOrderedSame;
+
+  if([self priority] < [loader priority])
+    {
+      result = NSOrderedAscending;
+    }
+  if([self priority] > [loader priority])
+    {
+      result = NSOrderedDescending;
+    }
+
+  return result;
+} 
 @end
 
 static NSMutableDictionary *_modelMap = nil;
@@ -78,17 +99,20 @@ static NSMutableDictionary *_modelMap = nil;
 
 + (NSString *) supportedModelFileAtPath: (NSString *)modelPath
 {
-  NSEnumerator *ken = [_modelMap keyEnumerator];
-  NSString *type = nil;
   NSString *result = nil;
   NSFileManager	*mgr = [NSFileManager defaultManager];
   NSString *ext = [modelPath pathExtension];
 
   if([ext isEqual: @""])
     {
-      while((type = [ken nextObject]) != nil && result == NO)
+      NSArray *objectArray = [_modelMap allValues];
+      NSArray *sortedArray = [objectArray sortedArrayUsingSelector: @selector(_comparePriority:)];
+      NSEnumerator *oen = [sortedArray objectEnumerator];
+      Class cls = nil;
+
+      while((cls = [oen nextObject]) != nil && result == NO)
 	{
-	  NSString *path = [modelPath stringByAppendingPathExtension: type];
+	  NSString *path = [modelPath stringByAppendingPathExtension: [cls type]];
 	  if([mgr isReadableFileAtPath: path])
 	    {
 	      result = path;
@@ -113,8 +137,7 @@ static NSMutableDictionary *_modelMap = nil;
 
   if(aClass != nil)
     {
-      // it is up to the class which uses the loader to release it.
-      loader = [[aClass alloc] init];
+      loader = AUTORELEASE([[aClass alloc] init]);
     }
   else
     {

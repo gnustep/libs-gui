@@ -70,9 +70,18 @@
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodeObject: _src];
-  [aCoder encodeObject: _dst];
-  [aCoder encodeObject: _tag];
+  if ([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeObject: _src forKey: @"NSSource"];
+      [aCoder encodeObject: _dst forKey: @"NSDestination"];
+      [aCoder encodeObject: _tag forKey: @"NSLabel"];
+    }
+  else
+    {
+      [aCoder encodeObject: _src];
+      [aCoder encodeObject: _dst];
+      [aCoder encodeObject: _tag];
+    }
 }
 
 - (void) establishConnection
@@ -203,7 +212,7 @@
    externalNameTable: (NSDictionary*)context
 	    withZone: (NSZone*)zone
 {
-  GSModelLoader *loader = AUTORELEASE([GSModelLoaderFactory modelLoaderForFileName: fileName]);
+  GSModelLoader *loader = [GSModelLoaderFactory modelLoaderForFileName: fileName];
   BOOL loaded = [loader loadModelFile: fileName
 			externalNameTable: context
 			withZone: zone];

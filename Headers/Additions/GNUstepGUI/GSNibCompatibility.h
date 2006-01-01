@@ -177,7 +177,7 @@
 - (void) awakeWithContext: (NSDictionary *)context;
 - (id) instantiateObject: (id)obj;
 - (void) nibInstantiateWithOwner: (id)owner;
-- (void) nibInstantiateWithOwner: (id)owner topLevelObjects: (id)toplevel;
+- (void) nibInstantiateWithOwner: (id)owner topLevelObjects: (NSMutableArray *)toplevel;
 @end
 
 #endif /* _GNUstep_H_GSNibCompatibility */

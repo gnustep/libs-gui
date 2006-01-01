@@ -45,6 +45,11 @@
   return @"gorm";
 }
 
++ (float) priority
+{
+  return 1.0;
+}
+
 - (BOOL) loadModelFile: (NSString *)fileName
      externalNameTable: (NSDictionary *)context
               withZone: (NSZone *)zone;

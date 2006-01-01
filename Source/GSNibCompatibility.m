@@ -498,6 +498,7 @@
   if(self != nil)
     {
       Class aClass;
+
       _className = [coder decodeObjectForKey: @"NSClassName"];
       aClass = NSClassFromString(_className);
       if(aClass == nil)
@@ -554,14 +555,18 @@
 
 - (void) nibInstantiateWithOwner: (id)owner
 {
+  [self nibInstantiateWithOwner: owner topLevelObjects: nil];
 }
 
-- (void) nibInstantiateWithOwner: (id)owner topLevelObjects: (id)toplevel
+- (void) nibInstantiateWithOwner: (id)owner topLevelObjects: (NSMutableArray *)topLevelObjects
 {
 }
 
 - (void) awakeWithContext: (NSDictionary *)context
 {
+  NSMutableArray *topLevelObjects = [context objectForKey: @"NSTopLevelObjects"];
+  id owner = [context objectForKey: @"NSOwner"];
+  [self nibInstantiateWithOwner: owner topLevelObjects: topLevelObjects];
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
@@ -658,13 +663,13 @@
       [self _buildMap: _objects withKeys: objectsKeys andValues: objectsValues];
       [self _buildMap: _oids withKeys: oidsKeys andValues: oidsValues];
 
-      _accessibilityConnectors = (NSMutableArray *)[coder decodeObjectForKey: @"NSAccessibilityConnectors"];
-      _connections = [coder decodeObjectForKey: @"NSConnections"];
-      _fontManager = [coder decodeObjectForKey: @"NSFontManager"];
-      _framework = [coder decodeObjectForKey: @"NSFramework"];
-      _visibleWindows = [coder decodeObjectForKey: @"NSVisibleWindows"];
+      ASSIGN(_accessibilityConnectors, (NSMutableArray *)[coder decodeObjectForKey: @"NSAccessibilityConnectors"]);
+      ASSIGN(_connections, [coder decodeObjectForKey: @"NSConnections"]);
+      ASSIGN(_fontManager, [coder decodeObjectForKey: @"NSFontManager"]);
+      ASSIGN(_framework, [coder decodeObjectForKey: @"NSFramework"]);
+      ASSIGN(_visibleWindows, [coder decodeObjectForKey: @"NSVisibleWindows"]);
+      ASSIGN(_root, [coder decodeObjectForKey: @"NSRoot"]);
       _nextOid = [coder decodeIntForKey: @"NSNextOid"];
-      _root = [coder decodeObjectForKey: @"NSRoot"];
     }
 
   return self;

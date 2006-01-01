@@ -1,3 +1,17 @@
+2006-01-01 09:27 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSModelLoaderFactory.h: Added
+	declaration for priority method.
+	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h: Added
+	awakeWithContext method.
+	* Source/GSGModelLoader.m: Added priority method.
+	* Source/GSGormLoader.m: Added priority method
+	* Source/GSModelLoaderFactory.m: Implemented sorting by priority
+	* Source/GSNibCompatibility.m: use ASSIGN in initWithCoder:
+	* Source/GSNibLoader.m: Added priority method
+	* Source/NSBundleAdditions.m: Removed AUTORELEASE, since the
+	loader itself is autoreleased by the factory.
+
 2005-12-31 17:25 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibCompatibility.m: Added code to properly initialize the

@@ -45,6 +45,11 @@
   return @"nib";
 }
 
++ (float) priority
+{
+  return 3.0;
+}
+
 - (BOOL) loadModelFile: (NSString *)fileName
      externalNameTable: (NSDictionary *)context
               withZone: (NSZone *)zone;

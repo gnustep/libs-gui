@@ -32,6 +32,7 @@
 
 @interface GSModelLoader : NSObject
 + (NSString *) type;
++ (float) priority;
 - (BOOL) loadModelFile: (NSString *)fileName
      externalNameTable: (NSDictionary *)context
               withZone: (NSZone *)zone;

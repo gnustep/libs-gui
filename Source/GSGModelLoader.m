@@ -77,6 +77,11 @@ Class gmodel_class(void)
   return @"gmodel";
 }
 
++ (float) priority
+{
+  return 2.0;
+}
+
 - (BOOL) loadModelFile: (NSString *)fileName
      externalNameTable: (NSDictionary *)context
               withZone: (NSZone *)zone;
