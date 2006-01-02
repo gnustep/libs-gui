@@ -1,3 +1,12 @@
+2006-01-01 21:02 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSInstantiator.h: Protocol and
+	private method for instantiation.
+	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h: Added new header
+	* Source/GNUmakefile: Added new header to makefile.
+	* Source/GSNibCompatibility.m: Added nibInstantiation support.
+	* Source/NSBundleAdditions.m: Addition of instantiateWithInstantiator:
+
 2006-01-01 14:36 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h: Added

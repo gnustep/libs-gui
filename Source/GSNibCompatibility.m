@@ -49,6 +49,7 @@
 #include "AppKit/AppKit.h"
 #include <GNUstepBase/GSObjCRuntime.h>
 #include <GNUstepGUI/GSNibCompatibility.h>
+#include <GNUstepGUI/GSInstantiator.h>
 
 /*
   As these classes are deprecated, they should disappear from the gnustep distribution
@@ -110,6 +111,10 @@
         {
 	  _maxSize = [aDecoder decodeSizeForKey: @"NSMaxSize"];
 	}
+      if ([aDecoder containsValueForKey: @"NSWindowRect"])
+        {
+	  _windowRect = [aDecoder decodeRectForKey: @"NSWindowRect"];
+	}
       if ([aDecoder containsValueForKey: @"NSWindowTitle"])
         {
 	  _title = RETAIN([aDecoder decodeObjectForKey: @"NSWindowTitle"]);
@@ -127,27 +132,41 @@
 
 - (id) nibInstantiate
 {
-  Class aClass = NSClassFromString(_windowClass);      
-  
-  if (aClass == nil)
+  if(_realObject == nil)
     {
-	[NSException raise: NSInternalInconsistencyException
-		     format: @"Unable to find class '%@'", _windowClass];
-    }
-  
-  _realObject = [[aClass allocWithZone: NSDefaultMallocZone()]
-		  initWithContentRect: _windowRect
-		  styleMask: _interfaceStyle
-		  backing: _backingStoreType
-		  defer: _deferFlag
-		  screen: nil];
-
-  // reset attributes...
-  [_realObject setContentView: _view];
-  [_realObject setMinSize: _minSize];
-  [_realObject setMaxSize: _maxSize];
-  [_realObject setTitle: _title];
-
+      Class aClass = NSClassFromString(_windowClass);      
+      NSEnumerator *en;
+      id v = nil;
+      
+      if (aClass == nil)
+	{
+	  [NSException raise: NSInternalInconsistencyException
+		       format: @"Unable to find class '%@'", _windowClass];
+	}
+      
+      _realObject = [[aClass allocWithZone: NSDefaultMallocZone()]
+		      initWithContentRect: _windowRect
+		      styleMask: _interfaceStyle
+		      backing: _backingStoreType
+		      defer: _deferFlag
+		      screen: nil];
+      
+      // reset attributes...
+      [_realObject setContentView: _view];
+      [_realObject setMinSize: _minSize];
+      [_realObject setMaxSize: _maxSize];
+      [_realObject setTitle: _title];
+      
+      // swap out any views which need to be swapped...
+      en = [[[_realObject contentView] subviews] objectEnumerator];
+      while((v = [en nextObject]) != nil)
+	{
+	  if([v respondsToSelector: @selector(nibInstantiate)])
+	    {
+	      [v nibInstantiate];
+	    }
+	}
+    } 
   return _realObject;
 }
 
@@ -448,22 +467,59 @@
   return _className;
 }
 
+- (void) setExtension: (NSString *)name
+{
+  ASSIGN(_extension, name);
+}
+
+- (NSString *)extension
+{
+  return _extension;
+}
+
+- (void) setObject: (id)obj
+{
+  ASSIGN(_object, obj);
+}
+
+- (id) object
+{
+  return _object;
+}
+
 - (id) initWithCoder: (NSCoder *)coder
 {
-  Class aClass;
-  _className = [coder decodeObjectForKey: @"NSClassName"];
-  aClass = NSClassFromString(_className);
-  if(aClass == nil)
+  if([coder allowsKeyedCoding])
     {
-	[NSException raise: NSInternalInconsistencyException
-		     format: @"Unable to find class '%@'", _className];
+      ASSIGN(_className, [coder decodeObjectForKey: @"NSClassName"]);
+      ASSIGN(_className, [coder decodeObjectForKey: @"NSExtension"]);
     }
   return self;
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
-  [coder encodeObject: (id)_className forKey: @"NSClassName"];
+  if([coder allowsKeyedCoding])
+    {
+      [coder encodeObject: (id)_className forKey: @"NSClassName"];
+      [coder encodeConditionalObject: (id)_extension forKey: @"NSExtension"];
+    }
+}
+
+- (id) nibInstantiate
+{
+  if(_object == nil)
+    {
+      Class aClass = NSClassFromString(_className);
+      if(aClass == nil)
+	{
+	  [NSException raise: NSInternalInconsistencyException
+		       format: @"Unable to find class '%@'", _className];
+	}
+      
+      _object = [[aClass allocWithZone: NSDefaultMallocZone()] init];
+    }
+  return _object;
 }
 @end
 
@@ -487,9 +543,29 @@
   return _extension;
 }
 
+- (NSView *) superview
+{
+  return _superview;
+}
+
 - (id)nibInstantiate
 {
-  return self;
+  if(_view == nil)
+    {
+      Class aClass = NSClassFromString(_className);
+      if(aClass == nil)
+	{
+	  [NSException raise: NSInternalInconsistencyException
+		       format: @"Unable to find class '%@'", _className];
+	}
+      else
+	{
+	  _view = [[aClass allocWithZone: NSDefaultMallocZone()] initWithFrame: [self frame]];
+	  [_superview replaceSubview: self with: _view]; // replace the old view...
+	}
+    }
+
+  return _view;
 }
 
 - (id) initWithCoder: (NSCoder *)coder
@@ -497,14 +573,10 @@
   self = [super initWithCoder: coder];
   if(self != nil)
     {
-      Class aClass;
-
-      _className = [coder decodeObjectForKey: @"NSClassName"];
-      aClass = NSClassFromString(_className);
-      if(aClass == nil)
+      if([coder allowsKeyedCoding])
 	{
-	  [NSException raise: NSInternalInconsistencyException
-		       format: @"Unable to find class '%@'", _className];
+	  _className = [coder decodeObjectForKey: @"NSClassName"];
+	  _superview = [coder decodeObjectForKey: @"NSSuperview"];
 	}
     }
   return self;
@@ -512,7 +584,11 @@
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
-  [coder encodeObject: (id)_className forKey: @"NSClassName"];
+  if([coder allowsKeyedCoding])
+    {
+      [coder encodeObject: (id)_className forKey: @"NSClassName"];
+      [coder encodeObject: (id)_className forKey: @"NSSuperview"];
+    }
 }
 @end
 
@@ -616,7 +692,17 @@
 @implementation NSIBObjectData
 - (id)instantiateObject: (id)obj
 {
-  return nil;
+  id newObject = obj;
+  if([obj respondsToSelector: @selector(nibInstantiate)])
+    {
+      newObject = [obj nibInstantiate];
+      if([newObject respondsToSelector: @selector(awakeFromNib)])
+	{
+	  // awaken the object.
+	  [newObject awakeFromNib];
+	}
+    }
+  return newObject;
 }
 
 - (void) nibInstantiateWithOwner: (id)owner
@@ -626,6 +712,33 @@
 
 - (void) nibInstantiateWithOwner: (id)owner topLevelObjects: (NSMutableArray *)topLevelObjects
 {
+  NSEnumerator *en = [_connections objectEnumerator];
+  id obj = nil;
+  id menu = nil;
+
+  // replace the owner with the actual instance provided.
+  [_root setObject: owner];
+  
+  // iterate over connections, instantiate, and then establish them.
+  while((obj = [en nextObject]) != nil)
+    {
+      if([obj respondsToSelector: @selector(instantiateWithInstantiator:)])
+	{
+	  [obj instantiateWithInstantiator: self];
+	  [obj establishConnection];
+	}
+    }
+
+  en = [_visibleWindows objectEnumerator];
+  while((obj = [en nextObject]) != nil)
+    {
+      id w = [self instantiateObject: obj];
+      [w orderFront: self];
+    }
+
+  menu = [self objectForName: @"MainMenu"];
+  menu = [self instantiateObject: menu];
+  [NSApp setMainMenu: menu];
 }
 
 - (void) awakeWithContext: (NSDictionary *)context
@@ -633,6 +746,24 @@
   NSMutableArray *topLevelObjects = [context objectForKey: @"NSTopLevelObjects"];
   id owner = [context objectForKey: @"NSOwner"];
   [self nibInstantiateWithOwner: owner topLevelObjects: topLevelObjects];
+}
+
+- (id) objectForName: (NSString *)name
+{
+  NSArray *nameKeys = (NSArray *)NSAllMapTableKeys(_names);
+  NSArray *nameValues = (NSArray *)NSAllMapTableValues(_names);
+  int i = [nameValues indexOfObject: name];
+  id result = [nameKeys objectAtIndex: i];
+  return result;
+}
+
+- (NSString *) nameForObject: (id)obj
+{
+  NSArray *nameKeys = (NSArray *)NSAllMapTableKeys(_names);
+  NSArray *nameValues = (NSArray *)NSAllMapTableValues(_names);
+  int i = [nameKeys indexOfObject: obj];
+  NSString *result = [nameValues objectAtIndex: i];
+  return result;
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder

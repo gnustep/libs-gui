@@ -39,6 +39,7 @@
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSResponder.h>
 #include <AppKit/NSEvent.h>
+#include "GNUstepGUI/GSInstantiator.h"
 
 // templates
 @protocol OSXNibTemplate
@@ -122,20 +123,30 @@
   BOOL                 _isFontMenu;
   NSInterfaceStyle     _interfaceStyle;
 }
+- (void) setClassName: (NSString *)name;
+- (NSString *)className;
+- (id)nibInstantiate;
 @end
 
 @interface NSCustomObject : NSObject <NSCoding>
 {
   NSString *_className;
+  NSString *_extension;
+  id _object;
 }
 - (void) setClassName: (NSString *)name;
 - (NSString *)className;
+- (void) setExtension: (NSString *)ext;
+- (NSString *)extension;
+- (void) setObject: (id)obj;
+- (id)object;
 @end
 
 @interface NSCustomView : NSView
 {
-  NSString *_extension;
   NSString *_className;
+  NSString *_extension;
+  NSView *_superview;
   NSView *_view;
 }
 - (void) setClassName: (NSString *)name;
@@ -168,7 +179,7 @@
 - (NSString *)className;
 @end
 
-@interface NSIBObjectData : NSObject <NSCoding>
+@interface NSIBObjectData : NSObject <NSCoding, GSInstantiator>
 {
   id              _root;
   NSMapTable     *_objects;
@@ -190,6 +201,8 @@
 - (id) instantiateObject: (id)obj;
 - (void) nibInstantiateWithOwner: (id)owner;
 - (void) nibInstantiateWithOwner: (id)owner topLevelObjects: (NSMutableArray *)toplevel;
+- (id) objectForName: (NSString *)name;
+- (NSString *) nameForObject: (id)name;
 @end
 
 #endif /* _GNUstep_H_GSNibCompatibility */

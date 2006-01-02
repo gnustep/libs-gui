@@ -47,10 +47,10 @@
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSKeyValueCoding.h>
 #include <Foundation/NSNotification.h>
+#include <AppKit/NSControl.h>
 #include "AppKit/NSNibConnector.h"
 #include "AppKit/NSNibLoading.h"
-#include "GNUstepGUI/GSNibTemplates.h"
-#include "GNUstepGUI/IMLoading.h"
+#include "GNUstepGUI/GSInstantiator.h"
 #include "GNUstepGUI/GSModelLoaderFactory.h"
 
 @implementation	NSNibConnector
@@ -154,6 +154,12 @@
 			     [self destination],
 			     [self label]];
   return desc;
+}
+
+- (void) instantiateWithInstantiator: (id<GSInstantiator>)instantiator
+{
+  _src = [instantiator instantiateObject: _src];
+  _dst = [instantiator instantiateObject: _dst];
 }
 
 @end
