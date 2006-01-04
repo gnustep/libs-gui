@@ -1,3 +1,9 @@
+2006-01-04  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSliderCell.m (-knobRectFlipped,-knobThickness
+	-drawInteriorWithFrame:inView:, -setKnobThickness:): Protect against knob
+	image being nil. Fixes Solaris problem reported by <ubossx@gmail.com>.
+
 2005-12-31  Matt Rice  <ratmice@yahoo.com>
 
 	* Source/NSTableView.m (-mouseDown:): Copy the selected cell before
