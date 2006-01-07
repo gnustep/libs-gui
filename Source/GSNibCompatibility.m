@@ -51,11 +51,6 @@
 #include <GNUstepGUI/GSNibCompatibility.h>
 #include <GNUstepGUI/GSInstantiator.h>
 
-/*
-  As these classes are deprecated, they should disappear from the gnustep distribution
-  in the next major release.
-*/
-
 @implementation NSWindowTemplate
 + (void) initialize
 {
@@ -81,11 +76,11 @@
     {
       if ([aDecoder containsValueForKey: @"NSViewClass"])
         {
-	  _viewClass = RETAIN([aDecoder decodeObjectForKey: @"NSViewClass"]);
+	  ASSIGN(_viewClass, [aDecoder decodeObjectForKey: @"NSViewClass"]);
 	}
       if ([aDecoder containsValueForKey: @"NSWindowClass"])
         {
-	  _windowClass = RETAIN([aDecoder decodeObjectForKey: @"NSWindowClass"]);
+	  ASSIGN(_windowClass, [aDecoder decodeObjectForKey: @"NSWindowClass"]);
 	}
       if ([aDecoder containsValueForKey: @"NSWindowStyleMask"])
         {
@@ -97,7 +92,7 @@
 	}
       if ([aDecoder containsValueForKey: @"NSWindowView"])
         {
-	  _view = RETAIN([aDecoder decodeObjectForKey: @"NSWindowView"]);
+	  ASSIGN(_view, [aDecoder decodeObjectForKey: @"NSWindowView"]);
 	}
       if ([aDecoder containsValueForKey: @"NSWTFlags"])
         {
@@ -117,7 +112,7 @@
 	}
       if ([aDecoder containsValueForKey: @"NSWindowTitle"])
         {
-	  _title = RETAIN([aDecoder decodeObjectForKey: @"NSWindowTitle"]);
+	  ASSIGN(_title, [aDecoder decodeObjectForKey: @"NSWindowTitle"]);
 	}
     }
   return self;
@@ -127,6 +122,16 @@
 {
   if ([aCoder allowsKeyedCoding])
     {
+      [aCoder encodeObject: _viewClass forKey: @"NSViewClass"];
+      [aCoder encodeObject: _windowClass forKey: @"NSWindowClass"];
+      [aCoder encodeInt: _interfaceStyle forKey: @"NSWindowStyleMask"];
+      [aCoder encodeInt: _backingStoreType forKey: @"NSWindowBacking"];
+      [aCoder encodeObject: _view forKey: @"NSWindowView"];
+      [aCoder encodeInt: _flags forKey: @"NSWTFlags"];
+      [aCoder encodeSize: _minSize forKey: @"NSMinSize"];
+      [aCoder encodeSize: _maxSize forKey: @"NSMaxSize"];
+      [aCoder encodeRect: _windowRect forKey: @"NSWindowRect"];
+      [aCoder encodeObject: _title forKey: @"NSWindowTitle"];
     }
 }
 
@@ -416,27 +421,6 @@
 
 - (id) nibInstantiate
 {
-  /*
-  Class       aClass = NSClassFromString(_className);
-  id          obj = nil;
-
-  if (aClass == nil)
-    {
-      [NSException raise: NSInternalInconsistencyException
-		   format: @"Unable to find class '%@'", _className];
-    }
-
-  obj = [[aClass allocWithZone: NSDefaultMallocZone()] init];
-
-  // copy attributes
-  [obj setAutoenablesItems: [self autoenablesItems]];
-  [obj setTitle: [self title]];
-
-  RELEASE(self);
-  RETAIN(obj);
-
-  return obj;
-  */
   return nil;
 }
 
@@ -676,12 +660,61 @@
   return _className;
 }
 
+- (BOOL) isInInterfaceBuilder
+{
+  return NO;
+}
+
 - (id) initWithCoder: (NSCoder *)coder
 {
+  id o = self;
   if([coder allowsKeyedCoding])
     {
+      NSString *originalClassName;
+      NSString *classToUse;
+      Class aClass;
+      id superview;
+
+      ASSIGN(_className, [coder decodeObjectForKey: @"NSClassName"]);
+      originalClassName = [coder decodeObjectForKey: @"NSOriginalClassName"];
+
+      if([self isInInterfaceBuilder] == NO)
+	{
+	  classToUse = _className;
+	}
+      else
+	{
+	  classToUse = originalClassName;
+	}
+
+      aClass = NSClassFromString(classToUse);
+      if(aClass == nil)
+	{
+	  [NSException raise: NSInternalInconsistencyException
+		       format: @"NSClassSwapper unable to find class '%@'", _className];
+	}
+      else
+	{
+	  // instantiate the template...
+	  _template = [aClass allocWithZone: NSDefaultMallocZone()]; 
+	  _template = [_template initWithCoder: coder];
+	  superview = [coder decodeObjectForKey: @"NSSuperview"];
+	  [superview addSubview: _template];
+	}
     }
-  return self;
+  
+  // if we're not in interface builder, return the template. 
+  if([self isInInterfaceBuilder] == NO)
+    {
+      o = _template;
+    }
+  
+  return o;
+}
+
+- (void) forwardInvocation: (NSInvocation *)inv
+{
+  [inv invokeWithTarget: _template];
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
@@ -895,7 +928,7 @@
       _framework = nil;
       _fontManager = nil;
       _root = nil;
-      _nextOid = -1;
+      _nextOid = 0;
     }
   return self;
 }
