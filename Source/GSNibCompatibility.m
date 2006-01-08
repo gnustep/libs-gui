@@ -8,7 +8,7 @@
    Copyright (C) 1997, 1999 Free Software Foundation, Inc.
 
    Author: Gregory John Casamento
-   Date: Oct 2003
+   Date: 2003, 2005
 
    This file is part of the GNUstep GUI Library.
 
@@ -712,13 +712,14 @@
   return o;
 }
 
-- (void) forwardInvocation: (NSInvocation *)inv
-{
-  [inv invokeWithTarget: _template];
-}
-
 - (void) encodeWithCoder: (NSCoder *)coder
 {
+  if([coder allowsKeyedCoding])
+    {
+      NSString *originalClassName = NSStringFromClass(_template);
+      [coder encodeObject: (id)_className forKey: @"NSClassName"];
+      [coder encodeObject: (id)originalClassName forKey: @"NSOriginalClassName"];
+    }
 }
 @end
 

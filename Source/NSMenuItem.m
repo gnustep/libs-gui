@@ -436,22 +436,39 @@ static Class imageClass;
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodeObject: _title];
-  [aCoder encodeObject: _keyEquivalent];
-  [aCoder encodeValueOfObjCType: "I" at: &_keyEquivalentModifierMask];
-  [aCoder encodeValueOfObjCType: "I" at: &_mnemonicLocation];
-  [aCoder encodeValueOfObjCType: "i" at: &_state];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_enabled];
-  [aCoder encodeObject: _image];
-  [aCoder encodeObject: _onStateImage];
-  [aCoder encodeObject: _offStateImage];
-  [aCoder encodeObject: _mixedStateImage];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_changesState];
-  [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
-  [aCoder encodeValueOfObjCType: "i" at: &_tag];
-  [aCoder encodeConditionalObject: _representedObject];
-  [aCoder encodeObject: _submenu];
-  [aCoder encodeConditionalObject: _target];
+  if ([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeObject: _title forKey: @"NSTitle"];
+      [aCoder encodeObject: NSStringFromSelector(_action) forKey: @"NSAction"];
+      [aCoder encodeObject: _keyEquivalent forKey: @"NSKeyEquiv"];
+      [aCoder encodeObject: _onStateImage forKey: @"NSOnImage"];
+      [aCoder encodeObject: _offStateImage forKey: @"NSOffImage"]; // ???????
+      [aCoder encodeObject: _mixedStateImage forKey: @"NSMixedImage"]; 
+      [aCoder encodeObject: _target forKey: @"NSTarget"]; 
+      [aCoder encodeObject: _menu forKey: @"NSMenu"];
+      [aCoder encodeInt: _keyEquivalentModifierMask forKey: @"NSKeyEquivModMask"];
+      [aCoder encodeInt: _mnemonicLocation forKey: @"NSMnemonicLoc"];
+      [aCoder encodeInt: _state forKey: @"NSState"];
+    }
+  else
+    {
+      [aCoder encodeObject: _title];
+      [aCoder encodeObject: _keyEquivalent];
+      [aCoder encodeValueOfObjCType: "I" at: &_keyEquivalentModifierMask];
+      [aCoder encodeValueOfObjCType: "I" at: &_mnemonicLocation];
+      [aCoder encodeValueOfObjCType: "i" at: &_state];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_enabled];
+      [aCoder encodeObject: _image];
+      [aCoder encodeObject: _onStateImage];
+      [aCoder encodeObject: _offStateImage];
+      [aCoder encodeObject: _mixedStateImage];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_changesState];
+      [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
+      [aCoder encodeValueOfObjCType: "i" at: &_tag];
+      [aCoder encodeConditionalObject: _representedObject];
+      [aCoder encodeObject: _submenu];
+      [aCoder encodeConditionalObject: _target];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -461,10 +478,10 @@ static Class imageClass;
       NSString *title = [aDecoder decodeObjectForKey: @"NSTitle"];
       NSString *action = [aDecoder decodeObjectForKey: @"NSAction"];
       NSString *key = [aDecoder decodeObjectForKey: @"NSKeyEquiv"];
-      //NSMenu *menu = [aDecoder decodeObjectForKey: @"NSMenu"];
       NSImage *mixedImage = [aDecoder decodeObjectForKey: @"NSMixedImage"];
       NSImage *onImage = [aDecoder decodeObjectForKey: @"NSOnImage"];
-       id target = [aDecoder decodeObjectForKey: @"NSTarget"];
+      id target = [aDecoder decodeObjectForKey: @"NSTarget"];
+      NSMenu *menu = [aDecoder decodeObjectForKey: @"NSMenu"];
 
       self = [self initWithTitle: title
 		   action: NSSelectorFromString(action)
@@ -475,7 +492,8 @@ static Class imageClass;
 
       if ([aDecoder containsValueForKey: @"NSKeyEquivModMask"])
         {
-	    //int keyMask = [aDecoder decodeIntForKey: @"NSKeyEquivModMask"];
+	  int keyMask = [aDecoder decodeIntForKey: @"NSKeyEquivModMask"];
+	  [self setKeyEquivalentModifierMask: keyMask];
 	}
       if ([aDecoder containsValueForKey: @"NSMnemonicLoc"])
         {
@@ -485,7 +503,6 @@ static Class imageClass;
       if ([aDecoder containsValueForKey: @"NSState"])
         {
 	  int state = [aDecoder decodeIntForKey: @"NSState"];
-
 	  [self setState: state];
 	}
     }
