@@ -1955,7 +1955,7 @@ _isCellEditable (id delegate, NSArray *tableColumns,
   self = [super initWithFrame: frameRect];
   _drawsGrid        = YES;
   _rowHeight        = 16.0;
-  _intercellSpacing = NSMakeSize (2.0, 3.0);
+  _intercellSpacing = NSMakeSize (5.0, 2.0);
   ASSIGN (_gridColor, [NSColor gridColor]); 
   ASSIGN (_backgroundColor, [NSColor controlBackgroundColor]); 
   ASSIGN (_tableColumns, [NSMutableArray array]);
