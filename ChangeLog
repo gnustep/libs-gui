@@ -1,3 +1,8 @@
+2006-01-08 14:01 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSMenuItem.m: initWithCoder: added code to decode
+	NSSubmenu key so that menus are properly constructed.
+
 2006-01-08 13:53 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibCompatibility.m: Removed forwardInvocation from

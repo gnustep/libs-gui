@@ -446,6 +446,7 @@ static Class imageClass;
       [aCoder encodeObject: _mixedStateImage forKey: @"NSMixedImage"]; 
       [aCoder encodeObject: _target forKey: @"NSTarget"]; 
       [aCoder encodeObject: _menu forKey: @"NSMenu"];
+      [aCoder encodeObject: _submenu forKey: @"NSSubmenu"];
       [aCoder encodeInt: _keyEquivalentModifierMask forKey: @"NSKeyEquivModMask"];
       [aCoder encodeInt: _mnemonicLocation forKey: @"NSMnemonicLoc"];
       [aCoder encodeInt: _state forKey: @"NSState"];
@@ -482,6 +483,7 @@ static Class imageClass;
       NSImage *onImage = [aDecoder decodeObjectForKey: @"NSOnImage"];
       id target = [aDecoder decodeObjectForKey: @"NSTarget"];
       NSMenu *menu = [aDecoder decodeObjectForKey: @"NSMenu"];
+      NSMenu *submenu = [aDecoder decodeObjectForKey: @"NSSubmenu"];
 
       self = [self initWithTitle: title
 		   action: NSSelectorFromString(action)
@@ -489,6 +491,7 @@ static Class imageClass;
       [self setTarget: target];
       [self setMixedStateImage: mixedImage];
       [self setOnStateImage: onImage];
+      [self setSubmenu: submenu];
 
       if ([aDecoder containsValueForKey: @"NSKeyEquivModMask"])
         {
