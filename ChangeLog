@@ -1,3 +1,9 @@
+2006-01-10 00:12 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Rearranged order of unarchiving in
+	[NSIBObjectData initWithCoder:].
+	* Source/NSView.m: Added "NSSuperview" to encodeWithCoder:
+
 2006-01-09 19:38 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibCompatibility.m: Rearrange order of unarchiving

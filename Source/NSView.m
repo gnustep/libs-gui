@@ -3915,6 +3915,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       
       [aCoder encodeInt: vFlags 
 	      forKey: @"NSvFlags"];
+
+      [aCoder encodeObject: _super_view forKey: @"NSSuperview"];
     }
   else
     {

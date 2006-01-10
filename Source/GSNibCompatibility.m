@@ -639,6 +639,10 @@
 }
 @end
 
+@interface NSKeyedUnarchiver (NSClassSwapperPrivate)
+- (BOOL) replaceObject: (id)oldObj withObject: (id)newObj;
+@end
+
 @implementation NSClassSwapper
 - (void) setTemplate: (id)temp
 {
@@ -673,7 +677,9 @@
       [NSException raise: NSInternalInconsistencyException
 		   format: @"NSClassSwapper unable to find class '%@'", _className];
     }
-  _template = [[aClass allocWithZone: NSDefaultMallocZone()] initWithCoder: coder];
+  _template = [aClass allocWithZone: NSDefaultMallocZone()];
+  [(NSKeyedUnarchiver *)coder replaceObject: self withObject: _template];
+  _template = [_template initWithCoder: coder];
 }
 
 - (id) initWithCoder: (NSCoder *)coder
@@ -836,45 +842,6 @@
 {
   if([coder allowsKeyedCoding])
     {
-      NSArray *objectsKeys = (NSArray *)
-	[coder decodeObjectForKey: @"NSObjectsKeys"];
-      NSArray *objectsValues = (NSArray *)
-	[coder decodeObjectForKey: @"NSObjectsValues"];
-      NSArray *nameKeys = (NSArray *)
-	[coder decodeObjectForKey: @"NSNamesKeys"];
-      NSArray *nameValues = (NSArray *)
-	[coder decodeObjectForKey: @"NSNamesValues"];
-      NSArray *oidsKeys = (NSArray *)
-	[coder decodeObjectForKey: @"NSOidsKeys"];
-      NSArray *oidsValues = (NSArray *)
-	[coder decodeObjectForKey: @"NSOidsValues"];
-      NSArray *classKeys = (NSArray *)
-	[coder decodeObjectForKey: @"NSClassesKeys"];
-      NSArray *classValues = (NSArray *)
-	[coder decodeObjectForKey: @"NSClassesValues"];
-      NSArray *accessibilityOidsKeys = (NSArray *)
-	[coder decodeObjectForKey: @"NSAccessibilityOidsKeys"];
-      NSArray *accessibilityOidsValues = (NSArray *)
-	[coder decodeObjectForKey: @"NSAccessibilityOidsValues"];      
-
-      // instantiate the maps..
-      _objects = NSCreateMapTable(NSObjectMapKeyCallBacks,
-				  NSObjectMapValueCallBacks, 2);
-      _names = NSCreateMapTable(NSObjectMapKeyCallBacks,
-				NSObjectMapValueCallBacks, 2);
-      _oids = NSCreateMapTable(NSObjectMapKeyCallBacks,
-			       NSObjectMapValueCallBacks, 2);
-      _classes = NSCreateMapTable(NSObjectMapKeyCallBacks,
-				  NSObjectMapValueCallBacks, 2);
-      _accessibilityOids = NSCreateMapTable(NSObjectMapKeyCallBacks,
-					    NSObjectMapValueCallBacks, 2);
-      
-      // fill in the maps...
-      [self _buildMap: _accessibilityOids withKeys: accessibilityOidsKeys andValues: accessibilityOidsValues];
-      [self _buildMap: _classes withKeys: classKeys andValues: classValues];
-      [self _buildMap: _names withKeys: nameKeys andValues: nameValues];
-      [self _buildMap: _objects withKeys: objectsKeys andValues: objectsValues];
-      [self _buildMap: _oids withKeys: oidsKeys andValues: oidsValues];
 
       ASSIGN(_accessibilityConnectors, (NSMutableArray *)[coder decodeObjectForKey: @"NSAccessibilityConnectors"]);
       ASSIGN(_connections,  (NSMutableArray *)[coder decodeObjectForKey: @"NSConnections"]);
@@ -883,8 +850,50 @@
       ASSIGN(_visibleWindows,  (NSMutableArray *)[coder decodeObjectForKey: @"NSVisibleWindows"]);
       ASSIGN(_root, [coder decodeObjectForKey: @"NSRoot"]);
       _nextOid = [coder decodeIntForKey: @"NSNextOid"];
-    }
 
+      {
+	NSArray *objectsKeys = (NSArray *)
+	  [coder decodeObjectForKey: @"NSObjectsKeys"];
+	NSArray *objectsValues = (NSArray *)
+	  [coder decodeObjectForKey: @"NSObjectsValues"];
+	NSArray *nameKeys = (NSArray *)
+	  [coder decodeObjectForKey: @"NSNamesKeys"];
+	NSArray *nameValues = (NSArray *)
+	  [coder decodeObjectForKey: @"NSNamesValues"];
+	NSArray *oidsKeys = (NSArray *)
+	  [coder decodeObjectForKey: @"NSOidsKeys"];
+	NSArray *oidsValues = (NSArray *)
+	  [coder decodeObjectForKey: @"NSOidsValues"];
+	NSArray *classKeys = (NSArray *)
+	  [coder decodeObjectForKey: @"NSClassesKeys"];
+	NSArray *classValues = (NSArray *)
+	  [coder decodeObjectForKey: @"NSClassesValues"];
+	NSArray *accessibilityOidsKeys = (NSArray *)
+	  [coder decodeObjectForKey: @"NSAccessibilityOidsKeys"];
+	NSArray *accessibilityOidsValues = (NSArray *)
+	  [coder decodeObjectForKey: @"NSAccessibilityOidsValues"];      
+	
+	// instantiate the maps..
+	_objects = NSCreateMapTable(NSObjectMapKeyCallBacks,
+				    NSObjectMapValueCallBacks, 2);
+	_names = NSCreateMapTable(NSObjectMapKeyCallBacks,
+				  NSObjectMapValueCallBacks, 2);
+	_oids = NSCreateMapTable(NSObjectMapKeyCallBacks,
+				 NSObjectMapValueCallBacks, 2);
+	_classes = NSCreateMapTable(NSObjectMapKeyCallBacks,
+				    NSObjectMapValueCallBacks, 2);
+	_accessibilityOids = NSCreateMapTable(NSObjectMapKeyCallBacks,
+					      NSObjectMapValueCallBacks, 2);
+	
+	// fill in the maps...
+	[self _buildMap: _accessibilityOids withKeys: accessibilityOidsKeys andValues: accessibilityOidsValues];
+	[self _buildMap: _classes withKeys: classKeys andValues: classValues];
+	[self _buildMap: _names withKeys: nameKeys andValues: nameValues];
+	[self _buildMap: _objects withKeys: objectsKeys andValues: objectsValues];
+	[self _buildMap: _oids withKeys: oidsKeys andValues: oidsValues];
+      }
+    }
+ 
   return self;
 }
 
