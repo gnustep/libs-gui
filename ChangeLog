@@ -1,3 +1,11 @@
+2006-01-09 19:38 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Rearrange order of unarchiving
+	in [NSIBObjectData initWithCoder:] so that NSClassSwapper unarchives
+	and replaces itself correctly.
+	* Source/NSView.m: Move subview initialization to after
+	the decoding section for both keyed/serial archiving in initWithCoder:
+
 2006-01-08 14:01 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSMenuItem.m: initWithCoder: added code to decode

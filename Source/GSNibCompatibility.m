@@ -660,56 +660,38 @@
   return _className;
 }
 
-- (BOOL) isInInterfaceBuilder
++ (BOOL) isInInterfaceBuilder
 {
   return NO;
 }
 
+- (void) instantiateRealObject: (NSCoder *)coder
+{
+  Class aClass = NSClassFromString(_className);
+  if(aClass == nil)
+    {
+      [NSException raise: NSInternalInconsistencyException
+		   format: @"NSClassSwapper unable to find class '%@'", _className];
+    }
+  _template = [[aClass allocWithZone: NSDefaultMallocZone()] initWithCoder: coder];
+}
+
 - (id) initWithCoder: (NSCoder *)coder
 {
-  id o = self;
   if([coder allowsKeyedCoding])
     {
-      NSString *originalClassName;
-      NSString *classToUse;
-      Class aClass;
-      id superview;
-
-      ASSIGN(_className, [coder decodeObjectForKey: @"NSClassName"]);
-      originalClassName = [coder decodeObjectForKey: @"NSOriginalClassName"];
-
-      if([self isInInterfaceBuilder] == NO)
+      if([NSClassSwapper isInInterfaceBuilder] == YES)
 	{
-	  classToUse = _className;
+	  ASSIGN(_className, [coder decodeObjectForKey: @"NSOriginalClassName"]);
 	}
       else
 	{
-	  classToUse = originalClassName;
+	  ASSIGN(_className, [coder decodeObjectForKey: @"NSClassName"]);  
 	}
-
-      aClass = NSClassFromString(classToUse);
-      if(aClass == nil)
-	{
-	  [NSException raise: NSInternalInconsistencyException
-		       format: @"NSClassSwapper unable to find class '%@'", _className];
-	}
-      else
-	{
-	  // instantiate the template...
-	  _template = [aClass allocWithZone: NSDefaultMallocZone()]; 
-	  _template = [_template initWithCoder: coder];
-	  superview = [coder decodeObjectForKey: @"NSSuperview"];
-	  [superview addSubview: _template];
-	}
+      // build the real object...
+      [self instantiateRealObject: coder];
     }
-  
-  // if we're not in interface builder, return the template. 
-  if([self isInInterfaceBuilder] == NO)
-    {
-      o = _template;
-    }
-  
-  return o;
+  return _template;
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
@@ -854,26 +836,26 @@
 {
   if([coder allowsKeyedCoding])
     {
-      NSArray *accessibilityOidsKeys = (NSArray *)
-	[coder decodeObjectForKey: @"NSAccessibilityOidsKeys"];
-      NSArray *accessibilityOidsValues = (NSArray *)
-	[coder decodeObjectForKey: @"NSAccessibilityOidsValues"];      
-      NSArray *classKeys = (NSArray *)
-	[coder decodeObjectForKey: @"NSClassesKeys"];
-      NSArray *classValues = (NSArray *)
-	[coder decodeObjectForKey: @"NSClassesValues"];
-      NSArray *nameKeys = (NSArray *)
-	[coder decodeObjectForKey: @"NSNamesKeys"];
-      NSArray *nameValues = (NSArray *)
-	[coder decodeObjectForKey: @"NSNamesValues"];
       NSArray *objectsKeys = (NSArray *)
 	[coder decodeObjectForKey: @"NSObjectsKeys"];
       NSArray *objectsValues = (NSArray *)
 	[coder decodeObjectForKey: @"NSObjectsValues"];
+      NSArray *nameKeys = (NSArray *)
+	[coder decodeObjectForKey: @"NSNamesKeys"];
+      NSArray *nameValues = (NSArray *)
+	[coder decodeObjectForKey: @"NSNamesValues"];
       NSArray *oidsKeys = (NSArray *)
 	[coder decodeObjectForKey: @"NSOidsKeys"];
       NSArray *oidsValues = (NSArray *)
 	[coder decodeObjectForKey: @"NSOidsValues"];
+      NSArray *classKeys = (NSArray *)
+	[coder decodeObjectForKey: @"NSClassesKeys"];
+      NSArray *classValues = (NSArray *)
+	[coder decodeObjectForKey: @"NSClassesValues"];
+      NSArray *accessibilityOidsKeys = (NSArray *)
+	[coder decodeObjectForKey: @"NSAccessibilityOidsKeys"];
+      NSArray *accessibilityOidsValues = (NSArray *)
+	[coder decodeObjectForKey: @"NSAccessibilityOidsValues"];      
 
       // instantiate the maps..
       _objects = NSCreateMapTable(NSObjectMapKeyCallBacks,
