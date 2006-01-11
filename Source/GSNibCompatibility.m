@@ -312,27 +312,44 @@
     }
 }
 
-- (id) initWithCoder: (NSCoder *)aCoder
+- (id) initWithCoder: (NSCoder *)coder
 {
-  return nil;
-}
-
-- (void) encodeWithCoder: (NSCoder *)aCoder
-{
-}
-
-- (id) nibInstantiate
-{
-  Class       aClass = NSClassFromString(_className);
-
-  if (aClass == nil)
+  self = [super initWithCoder: coder];
+  if(self != nil)
     {
-      [NSException raise: NSInternalInconsistencyException
-		   format: @"Unable to find class '%@'", _className];
+      if([coder allowsKeyedCoding])
+	{
+	  _className = [coder decodeObjectForKey: @"NSClassName"];
+	}
+    }
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  if([coder allowsKeyedCoding])
+    {
+      [coder encodeObject: (id)_className forKey: @"NSClassName"];
+    }
+}
+
+- (id)nibInstantiate
+{
+  if(_realObject == nil)
+    {
+      Class aClass = NSClassFromString(_className);
+      if(aClass == nil)
+	{
+	  [NSException raise: NSInternalInconsistencyException
+		       format: @"Unable to find class '%@'", _className];
+	}
+      else
+	{
+	  _realObject = [[aClass allocWithZone: NSDefaultMallocZone()] initWithFrame: [self frame]];
+	  [[self superview] replaceSubview: self with: _realObject]; // replace the old view...
+	}
     }
 
-  _realObject =  [[aClass allocWithZone: NSDefaultMallocZone()]
-		   initWithFrame: _frame];
   return _realObject;
 }
 
@@ -362,21 +379,6 @@
       [self setVersion: 0];
     }
 }
-
-- initWithFrame: (NSRect)frame
-{
-  return self;
-}
-
-- (id) initWithCoder: (NSCoder *)aCoder
-{
-  return nil;
-}
-
-- (void) encodeWithCoder: (NSCoder *)aCoder
-{
-}
-
 @end
 
 // Template for any classes which derive from NSTextView
@@ -389,15 +391,25 @@
     }
 }
 
-- (id) initWithCoder: (NSCoder *)aCoder
+- (id)nibInstantiate
 {
-  return nil;
-}
+  if(_realObject == nil)
+    {
+      Class aClass = NSClassFromString(_className);
+      if(aClass == nil)
+	{
+	  [NSException raise: NSInternalInconsistencyException
+		       format: @"Unable to find class '%@'", _className];
+	}
+      else
+	{
+	  _realObject = [[aClass allocWithZone: NSDefaultMallocZone()] initWithFrame: [self frame]];
+	  [[self superview] replaceSubview: self with: _realObject]; // replace the old view...
+	}
+    }
 
-- (void) encodeWithCoder: (NSCoder *)aCoder
-{
+  return _realObject;
 }
-
 @end
 
 // Template for any classes which derive from NSMenu.
@@ -527,11 +539,6 @@
   return _extension;
 }
 
-- (NSView *) superview
-{
-  return _superview;
-}
-
 - (id)nibInstantiate
 {
   if(_view == nil)
@@ -545,7 +552,7 @@
       else
 	{
 	  _view = [[aClass allocWithZone: NSDefaultMallocZone()] initWithFrame: [self frame]];
-	  [_superview replaceSubview: self with: _view]; // replace the old view...
+	  [[self superview] replaceSubview: self with: _view]; // replace the old view...
 	}
     }
 
@@ -560,7 +567,6 @@
       if([coder allowsKeyedCoding])
 	{
 	  _className = [coder decodeObjectForKey: @"NSClassName"];
-	  _superview = [coder decodeObjectForKey: @"NSSuperview"];
 	}
     }
   return self;
@@ -571,7 +577,6 @@
   if([coder allowsKeyedCoding])
     {
       [coder encodeObject: (id)_className forKey: @"NSClassName"];
-      [coder encodeObject: (id)_className forKey: @"NSSuperview"];
     }
 }
 @end
@@ -953,4 +958,17 @@
 {
   return _root;
 }
+@end
+
+// dummy/placeholder classes.
+@interface NSButtonImageSource : NSObject
+@end
+
+@implementation NSButtonImageSource
+@end
+
+@interface _NSCornerView : NSView
+@end
+
+@implementation _NSCornerView
 @end
