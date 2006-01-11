@@ -573,6 +573,7 @@ DEFINE_RINT_IF_MISSING
       [coder encodeFloat: _minValue forKey: @"NSMinValue"];
       [coder encodeFloat: _maxValue forKey: @"NSMaxValue"];
       [coder encodeFloat: _altIncrementValue forKey: @"NSAltIncValue"];
+      [coder encodeFloat: _minValue forKey: @"NSValue"]; // encoded for compatibility
     }
   else
     {

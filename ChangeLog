@@ -1,3 +1,8 @@
+2006-01-11 01:26 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSSliderCell.m: Encode NSValue for compatibility with
+	Cocoa.
+
 2006-01-11 01:02 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibCompatibility.m: Changes to NSViewTemplate.
