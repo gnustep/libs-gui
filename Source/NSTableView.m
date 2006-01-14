@@ -5134,7 +5134,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	vFlags |= 4;
 
       if([self allowsColumnResizing])
-	vFlags |= 8;
+	vFlags |= 16;
 
       if([self allowsColumnReordering])
 	vFlags |= 32;
@@ -5230,7 +5230,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	  BOOL columnSelection   = ((1 & vFlags) > 0);
 	  BOOL multipleSelection = ((2 & vFlags) > 0);
 	  BOOL emptySelection    = ((4 & vFlags) > 0);
-	  BOOL columnResizing    = ((8 & vFlags) > 0);
+	  BOOL columnResizing    = ((16 & vFlags) > 0);
 	  BOOL columnOrdering    = ((32 & vFlags) > 0);
 
 	  [self setAllowsColumnSelection: columnSelection];
