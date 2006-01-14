@@ -1,3 +1,9 @@
+2006-01-14 08:29 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: [NSIBObjectData objectForName:] return 
+	nil, if the object is not in the array.
+	* Source/NSTableView.m: implement decoding of flags in initWithCoder:
+
 2006-01-13 00:29 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSColorWell.m: Added keyed coding support in initWithCoder:

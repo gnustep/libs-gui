@@ -764,8 +764,11 @@
     }
 
   menu = [self objectForName: @"MainMenu"];
-  menu = [self instantiateObject: menu];
-  [NSApp setMainMenu: menu];
+  if(menu != nil)
+    {
+      menu = [self instantiateObject: menu];
+      [NSApp setMainMenu: menu];
+    }
 }
 
 - (void) awakeWithContext: (NSDictionary *)context
@@ -780,7 +783,13 @@
   NSArray *nameKeys = (NSArray *)NSAllMapTableKeys(_names);
   NSArray *nameValues = (NSArray *)NSAllMapTableValues(_names);
   int i = [nameValues indexOfObject: name];
-  id result = [nameKeys objectAtIndex: i];
+  id result = nil;
+
+  if(i != NSNotFound)
+    {
+      result = [nameKeys objectAtIndex: i];
+    }
+
   return result;
 }
 

@@ -5108,30 +5108,35 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 {
   [super encodeWithCoder: aCoder];
 
-  [aCoder encodeConditionalObject: _dataSource];
-  [aCoder encodeObject: _tableColumns];
-  [aCoder encodeObject: _gridColor];
-  [aCoder encodeObject: _backgroundColor];
-  [aCoder encodeObject: _headerView];
-  [aCoder encodeObject: _cornerView];
-  [aCoder encodeConditionalObject: _delegate];
-  [aCoder encodeConditionalObject: _target];
-
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_numberOfRows];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_numberOfColumns];
-
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_drawsGrid];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_rowHeight];
-  [aCoder encodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
-  [aCoder encodeSize: _intercellSpacing];
-
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsMultipleSelection];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsEmptySelection];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnSelection];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnResizing];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnReordering];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autoresizesAllColumnsToFit];
-
+  if ([aCoder allowsKeyedCoding])
+    {
+    }
+  else
+    {
+      [aCoder encodeConditionalObject: _dataSource];
+      [aCoder encodeObject: _tableColumns];
+      [aCoder encodeObject: _gridColor];
+      [aCoder encodeObject: _backgroundColor];
+      [aCoder encodeObject: _headerView];
+      [aCoder encodeObject: _cornerView];
+      [aCoder encodeConditionalObject: _delegate];
+      [aCoder encodeConditionalObject: _target];
+      
+      [aCoder encodeValueOfObjCType: @encode(int) at: &_numberOfRows];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &_numberOfColumns];
+      
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_drawsGrid];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_rowHeight];
+      [aCoder encodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
+      [aCoder encodeSize: _intercellSpacing];
+      
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsMultipleSelection];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsEmptySelection];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnSelection];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnResizing];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnReordering];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autoresizesAllColumnsToFit];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -5185,8 +5190,19 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
       if ([aDecoder containsValueForKey: @"NSTvFlags"])
         {
-	  //int vFlags = [aDecoder decodeIntForKey: @"NSTvFlags"];
-	  // FIXME set the flags
+	  unsigned int raw = [aDecoder decodeIntForKey: @"NSTvFlags"];
+	  unsigned int vFlags = (raw >> 26); // filter out settings not pertinent to us.
+	  BOOL columnSelection   = ((1 & vFlags) > 0);
+	  BOOL multipleSelection = ((2 & vFlags) > 0);
+	  BOOL emptySelection    = ((4 & vFlags) > 0);
+	  BOOL columnResizing    = ((8 & vFlags) > 0);
+	  BOOL columnOrdering    = ((32 & vFlags) > 0);
+
+	  [self setAllowsEmptySelection: emptySelection];
+	  [self setAllowsMultipleSelection: multipleSelection];
+	  [self setAllowsColumnSelection: columnSelection];
+	  [self setAllowsColumnReordering: columnOrdering];
+	  [self setAllowsColumnResizing: columnResizing];	  
 	}
     }
   else
