@@ -1,3 +1,7 @@
+2006-01-14  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWindow.m: minor fixups for 64bit cpu support.
+
 2006-01-09 06:25 Gregory John Casamento <greg_casamento@yahoo.com>
 	
 	* Source/NSNib.m: Correction for bug#15348.  Removed uneeded
