@@ -5110,6 +5110,41 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
   if ([aCoder allowsKeyedCoding])
     {
+      unsigned int vFlags = 0; // (raw >> 26); // filter out settings not pertinent to us.
+      NSSize intercellSpacing = [self intercellSpacing];
+
+      [aCoder encodeObject: [self dataSource] forKey: @"NSDataSource"];
+      [aCoder encodeObject: [self delegate] forKey: @"NSDelegate"];
+      [aCoder encodeObject: [self target] forKey: @"NSTarget"];
+      [aCoder encodeObject: NSStringFromSelector([self action]) forKey: @"NSAction"];
+      [aCoder encodeObject: [self backgroundColor] forKey: @"NSBackgroundColor"];
+      [aCoder encodeObject: [self gridColor] forKey: @"NSGridColor"];
+      [aCoder encodeFloat: intercellSpacing.height forKey: @"NSIntercellSpacingHeight"];
+      [aCoder encodeFloat: intercellSpacing.width forKey: @"NSIntercellSpacingWidth"];
+      [aCoder encodeFloat: [self rowHeight] forKey: @"NSRowHeight"];
+      [aCoder encodeObject: [self tableColumns] forKey: @"NSTableColumns"];
+      
+      if([self allowsColumnSelection])
+	vFlags |= 1;
+
+      if([self allowsMultipleSelection])
+	vFlags |= 2;
+
+      if([self allowsEmptySelection])
+	vFlags |= 4;
+
+      if([self allowsColumnResizing])
+	vFlags |= 8;
+
+      if([self allowsColumnReordering])
+	vFlags |= 32;
+
+      // shift...
+      vFlags = vFlags << 26;
+      vFlags |= 0x2400000; // add the constant...
+
+      // encode..
+      [aCoder encodeInt: vFlags forKey: @"NSTvFlags"];
     }
   else
     {
@@ -5198,11 +5233,11 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	  BOOL columnResizing    = ((8 & vFlags) > 0);
 	  BOOL columnOrdering    = ((32 & vFlags) > 0);
 
-	  [self setAllowsEmptySelection: emptySelection];
-	  [self setAllowsMultipleSelection: multipleSelection];
 	  [self setAllowsColumnSelection: columnSelection];
-	  [self setAllowsColumnReordering: columnOrdering];
+	  [self setAllowsMultipleSelection: multipleSelection];
+	  [self setAllowsEmptySelection: emptySelection];
 	  [self setAllowsColumnResizing: columnResizing];	  
+	  [self setAllowsColumnReordering: columnOrdering];
 	}
     }
   else
