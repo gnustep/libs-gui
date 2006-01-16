@@ -37,6 +37,7 @@
 #include <Foundation/NSSet.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSValue.h>
+#include <Foundation/NSKeyedArchiver.h>
 
 #include "AppKit/NSTableView.h"
 #include "AppKit/NSApplication.h"
@@ -79,7 +80,6 @@ static unsigned currentDragOperation;
 #define SHIFT_DOWN (1 << 2)
 #define CONTROL_DOWN (1 << 3)
 #define ADDING_ROW (1 << 4)
-
 
 @interface NSTableView (NotificationRequestMethods)
 - (void) _postSelectionIsChangingNotification;
@@ -5185,6 +5185,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       NSEnumerator *e;
       NSTableColumn *col;
 
+      [(NSKeyedUnarchiver *)aDecoder setClass: [GSTableCornerView class] forClassName: @"_NSCornerView"];
       [self setDataSource: [aDecoder decodeObjectForKey: @"NSDataSource"]];
       [self setDelegate: [aDecoder decodeObjectForKey: @"NSDelegate"]];
 
@@ -5216,6 +5217,18 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	  [self setRowHeight: [aDecoder decodeFloatForKey: @"NSRowHeight"]];
 	}
 
+      if ([aDecoder containsValueForKey: @"NSHeaderView"])
+	{
+	  ASSIGN(_headerView, [aDecoder decodeObjectForKey: @"NSHeaderView"]);
+	  [_headerView setTableView: self];
+	}
+
+      if ([aDecoder containsValueForKey: @"NSCornerView"])
+	{
+	  ASSIGN(_cornerView, [aDecoder decodeObjectForKey: @"NSCornerView"]);
+	}
+
+      // get the table columns...
       columns = [aDecoder decodeObjectForKey: @"NSTableColumns"];
       e = [columns objectEnumerator];
       while ((col = [e nextObject]) != nil)
@@ -5230,12 +5243,14 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	  BOOL columnSelection   = ((1 & vFlags) > 0);
 	  BOOL multipleSelection = ((2 & vFlags) > 0);
 	  BOOL emptySelection    = ((4 & vFlags) > 0);
+	  BOOL drawsGrid         = ((8 & vFlags) > 0);
 	  BOOL columnResizing    = ((16 & vFlags) > 0);
 	  BOOL columnOrdering    = ((32 & vFlags) > 0);
 
 	  [self setAllowsColumnSelection: columnSelection];
 	  [self setAllowsMultipleSelection: multipleSelection];
 	  [self setAllowsEmptySelection: emptySelection];
+	  [self setDrawsGrid: drawsGrid];
 	  [self setAllowsColumnResizing: columnResizing];	  
 	  [self setAllowsColumnReordering: columnOrdering];
 	}

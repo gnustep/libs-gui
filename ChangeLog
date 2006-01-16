@@ -1,3 +1,12 @@
+2006-01-16 00:58 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Minor changes in initWithCoder:
+	* Source/NSClipView.m: Added logic to check flags in initWithCoder:
+	* Source/NSOutlineView.m: Added initial changes for keyed coding.
+	* Source/NSScrollView.m: Added logic to check flags.
+	* Source/NSTableView.m: Added logic to check for old grid flag in
+	initWithCoder:
+
 2006-01-14 09:28 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSTableView.m: Corrected bits used for columnResizing
