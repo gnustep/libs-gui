@@ -1,3 +1,16 @@
+2006-01-22  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPopupButtonCell.m (-synchronizeTitleAndSelectedItem):
+	Only select an item if one is highlighted.
+	* Source/Functions.m: NSFrameRectWithWidthUsingOperation() new
+	function from Cocoa. NSFrameRectWithWidth() different
+	implementation, no longer using stroke.
+
+2006-01-20  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableHeaderCell.m: Simplified code by letting
+	the super classes do their job.
+
 2006-01-14  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWindow.m: minor fixups for 64bit cpu support.
