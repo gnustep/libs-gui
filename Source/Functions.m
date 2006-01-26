@@ -474,14 +474,32 @@ void NSFrameRect(const NSRect aRect)
 
 void NSFrameRectWithWidth(const NSRect aRect, float frameWidth)
 {
-  float width;
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  DPScurrentlinewidth(ctxt, &width);
-  DPSsetlinewidth(ctxt, frameWidth);
-  DPSrectstroke(ctxt,  NSMinX(aRect) + frameWidth / 2.0,
-		NSMinY(aRect) + frameWidth / 2.0,
-		NSWidth(aRect) - frameWidth, NSHeight(aRect) - frameWidth);
-  DPSsetlinewidth(ctxt, width);
+  NSRectEdge sides[] = {NSMaxXEdge, NSMinYEdge, NSMinXEdge, NSMaxYEdge};
+  NSRect remainder = aRect;
+  NSRect rects[4];
+  int i;
+
+  for (i = 0; i < 4; i++) 
+    {
+      NSDivideRect(remainder, &rects[i], &remainder, frameWidth, sides[i]);
+    }
+  NSRectFillList(rects, 4);
+}
+
+void 
+NSFrameRectWithWidthUsingOperation(NSRect aRect, float frameWidth, 
+				   NSCompositingOperation op)
+{
+  NSRectEdge sides[] = {NSMaxXEdge, NSMinYEdge, NSMinXEdge, NSMaxYEdge};
+  NSRect remainder = aRect;
+  NSRect rects[4];
+  int i;
+
+  for (i = 0; i < 4; i++) 
+    {
+      NSDivideRect(remainder, &rects[i], &remainder, frameWidth, sides[i]);
+    }
+  NSRectFillListUsingOperation(rects, 4, op);
 }
 
 NSRect 

@@ -136,7 +136,14 @@ DEFINE_RINT_IF_MISSING
 
   floatValue = (floatValue - _minValue) / (_maxValue - _minValue);
 
-  size = [image size];
+  if (image != nil)
+    {
+      size = [image size];
+    }
+  else
+    {
+      size = NSZeroSize;
+    }
 
   if (_isVertical == YES)
     {
@@ -190,16 +197,22 @@ DEFINE_RINT_IF_MISSING
       if (vertical == YES)
 	{
 	  image = [NSImage imageNamed: @"common_SliderVert"];
-	  size = [image size];
-	  [image setScalesWhenResized:YES];
-	  [image setSize: NSMakeSize (cellFrame.size.width, size.height)];
+	  if (image != nil)
+	    {
+	      size = [image size];
+	      [image setScalesWhenResized: YES];
+	      [image setSize: NSMakeSize(cellFrame.size.width, size.height)];
+	    }
 	}
       else
 	{
 	  image = [NSImage imageNamed: @"common_SliderHoriz"];
-	  size = [image size];
-	  [image setScalesWhenResized:YES];
-	  [image setSize: NSMakeSize (size.width, cellFrame.size.height)];
+	  if (image != nil)
+	    {
+	      size = [image size];
+	      [image setScalesWhenResized: YES];
+	      [image setSize: NSMakeSize(size.width, cellFrame.size.height)];
+	    }
 	}
       [_knobCell setImage: image];
     }
@@ -230,8 +243,17 @@ DEFINE_RINT_IF_MISSING
 */
 - (float) knobThickness
 {
-  NSImage	*image = [_knobCell image];
-  NSSize	size = [image size];
+  NSImage *image = [_knobCell image];
+  NSSize size;
+
+  if (image != nil)
+    {
+      size = [image size];
+    }
+  else 
+    {
+	return 0;
+    }
 
   return _isVertical ? size.height : size.width;
 }
@@ -242,8 +264,17 @@ DEFINE_RINT_IF_MISSING
  */
 - (void) setKnobThickness: (float)thickness
 {
-  NSImage	*image = [_knobCell image];
-  NSSize	size = [image size];
+  NSImage *image = [_knobCell image];
+  NSSize size;
+
+  if (image != nil)
+    {
+      size = [image size];
+    }
+  else 
+    {
+      return;
+    }
 
   if (_isVertical == YES)
     size.height = thickness;

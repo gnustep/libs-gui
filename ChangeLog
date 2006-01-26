@@ -157,6 +157,46 @@
 	* Source/GSNibCompatibility.m: Addition of classes for true OSX nib
 	compatibility.
 
+2006-01-22  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPopupButtonCell.m (-synchronizeTitleAndSelectedItem):
+	Only select an item if one is highlighted.
+	* Source/Functions.m: NSFrameRectWithWidthUsingOperation() new
+	function from Cocoa. NSFrameRectWithWidth() different
+	implementation, no longer using stroke.
+
+2006-01-20  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableHeaderCell.m: Simplified code by letting
+	the super classes do their job.
+
+2006-01-14  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWindow.m: minor fixups for 64bit cpu support.
+
+2006-01-09 06:25 Gregory John Casamento <greg_casamento@yahoo.com>
+	
+	* Source/NSNib.m: Correction for bug#15348.  Removed uneeded
+	append in initWithNibNamed:
+
+2006-01-08  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableView.m (-initWithFrame:) Use different intercell
+	spacing. Patch by Andreas Höschler <ahoesch@smartsoft.de>.
+
+2006-01-04  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSliderCell.m (-knobRectFlipped,-knobThickness
+	-drawInteriorWithFrame:inView:, -setKnobThickness:): Protect against knob
+	image being nil. Fixes Solaris problem reported by <ubossx@gmail.com>.
+
+2005-12-31  Matt Rice  <ratmice@yahoo.com>
+
+	* Source/NSTableView.m (-mouseDown:): Copy the selected cell before
+	tracking mouse, add comment. (patch previously reverted 2005-05-30)
+	(-mouseDown:): Check for pointer equality in addition to isEqual:
+	which doesn't work with nil. (fix for bug #15316)
+	
 2005-12-22  Adam Fedor  <fedor@gnu.org>
 
 	* Version 0.10.2

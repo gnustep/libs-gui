@@ -531,12 +531,19 @@ static NSImage *_pbc_image[2];
     {
       index = [[_menu menuRepresentation] highlightedItemIndex];
 
-      if (index < 0)
-	index = [self indexOfSelectedItem];
-      if (index < 0)
-	index = 0;
-
-      [self selectItemAtIndex: index];
+      if (index < 0) 
+        {
+	  // If no item is highighted, display the selected one ...
+	  index = [self indexOfSelectedItem];
+	  // ... if there is nown, then the first one, but don't select it.
+	  if (index < 0)
+	    index = 0;
+	}
+      else 
+        {
+	  // Selected the highlighted item
+	  [self selectItemAtIndex: index];
+	}
     }
 
   if ((index >= 0)  && ([_menu numberOfItems] > index))

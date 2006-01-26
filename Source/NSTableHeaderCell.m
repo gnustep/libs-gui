@@ -26,135 +26,69 @@
 #include "AppKit/NSTableHeaderCell.h"
 #include "AppKit/NSColor.h"
 #include "AppKit/NSFont.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/DPSOperators.h"
 #include "GNUstepGUI/GSDrawFunctions.h"
-
-// Cache the colors
-static NSColor *bgCol;
-static NSColor *hbgCol;
-static NSColor *clearCol = nil;
 
 @implementation NSTableHeaderCell
 {
 }
+
 // Default appearance of NSTableHeaderCell
 - (id) initTextCell: (NSString *)aString
 {
   [super initTextCell: aString];
 
-  [self  setAlignment: NSCenterTextAlignment];
-  ASSIGN (_text_color, [NSColor windowFrameTextColor]);
+  [self setAlignment: NSCenterTextAlignment];
+  [self setTextColor: [NSColor windowFrameTextColor]];
   [self setBackgroundColor: [NSColor controlShadowColor]];
+  [self setDrawsBackground: YES];
   [self setFont: [NSFont titleBarFontOfSize: 0]];
+  // This is not exactly true 
   _cell.is_bezeled = YES;
-  _textfieldcell_draws_background = YES;
 
   return self;
 }
+
+- (NSRect) drawingRectForBounds: (NSRect)theRect
+{
+  NSSize borderSize;
+
+  // This adjustment must match the drawn border
+  borderSize = NSMakeSize(1, 1);
+
+  return NSInsetRect(theRect, borderSize.width, borderSize.height);
+}
+
 - (void) drawWithFrame: (NSRect)cellFrame
 		inView: (NSView *)controlView
 {
-  NSRect interiorFrame = NSMakeRect (cellFrame.origin.x-1, cellFrame.origin.y-1, 
-				cellFrame.size.width+2, cellFrame.size.height+2);
-
-  if (NSIsEmptyRect (cellFrame))
+  if (NSIsEmptyRect(cellFrame))
     return;
 
   if (_cell.is_highlighted == YES)
     {
-	[GSDrawFunctions drawButton: cellFrame :cellFrame];
+      [GSDrawFunctions drawButton: cellFrame : cellFrame];
     }
   else
     {
-	[GSDrawFunctions drawDarkButton: cellFrame :cellFrame];
+      [GSDrawFunctions drawDarkButton: cellFrame : cellFrame];
     }
 
-  [self drawInteriorWithFrame: interiorFrame inView: controlView];
+  [self drawInteriorWithFrame: cellFrame inView: controlView];
 }
 
-- (NSColor *)textColor
-{
-  if (_cell.is_highlighted)
-    {
-      return [NSColor controlTextColor];
-    }
-  else
-    {
-      return [NSColor windowFrameTextColor];
-    }
-}
-
-// Override drawInteriorWithFrame:inView: to be able 
-// to display images as NSCell does
-- (void) drawInteriorWithFrame: (NSRect)cellFrame 
-			inView: (NSView*)controlView
-{
-  switch (_cell.type)
-    {
-    case NSTextCellType:
-      [super drawInteriorWithFrame: cellFrame inView: controlView];
-      break;
-      
-    case NSImageCellType:
-      //
-      // Taken (with modifications) from NSCell
-      //
-
-      // Initialize static colors if needed
-      if (clearCol == nil)
-	{
-	  bgCol = RETAIN([NSColor controlShadowColor]);
-	  hbgCol = RETAIN([NSColor controlHighlightColor]);
-	  clearCol = RETAIN([NSColor clearColor]);
-	}
-      // Prepare to draw
-      cellFrame = [self drawingRectForBounds: cellFrame];
-      // Deal with the background
-      if ([self isOpaque])
-	{
-	  NSColor *bg;
-	  
-	  if (_cell.is_highlighted)
-	    bg = hbgCol;
-	  else
-	    bg = bgCol;
-	  [bg set];
-	  NSRectFill (cellFrame);
-	}
-      // Draw the image
-      if (_cell_image)
-	{
-	  NSSize size;
-	  NSPoint position;
-	  
-	  size = [_cell_image size];
-	  position.x = MAX (NSMidX (cellFrame) - (size.width/2.), 0.);
-	  position.y = MAX (NSMidY (cellFrame) - (size.height/2.), 0.);
-	  if ([controlView isFlipped])
-	    position.y += size.height;
-	  [_cell_image compositeToPoint: position operation: NSCompositeSourceOver];
-	}
-      // End the drawing
-      break;
-      
-    case NSNullCellType:
-      break;
-    }
-}
-
-- (void)setHighlighted: (BOOL) flag
+- (void) setHighlighted: (BOOL)flag
 {
   _cell.is_highlighted = flag;
   
   if (flag == YES)
     {
       [self setBackgroundColor: [NSColor controlHighlightColor]];
+      [self setTextColor: [NSColor controlTextColor]];
     }
   else
     {
       [self setBackgroundColor: [NSColor controlShadowColor]];
+      [self setTextColor: [NSColor windowFrameTextColor]];
     }
 }
 
