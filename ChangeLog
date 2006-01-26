@@ -1,3 +1,202 @@
+2006-01-16 00:58 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Minor changes in initWithCoder:
+	* Source/NSClipView.m: Added logic to check flags in initWithCoder:
+	* Source/NSOutlineView.m: Added initial changes for keyed coding.
+	* Source/NSScrollView.m: Added logic to check flags.
+	* Source/NSTableView.m: Added logic to check for old grid flag in
+	initWithCoder:
+
+2006-01-14 09:28 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSTableView.m: Corrected bits used for columnResizing
+	flag in initWithCoder: and encodeWithCoder:
+
+2006-01-14 08:58 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSTableView.m: Implemented encodeWithCoder: for NSTableView.
+
+2006-01-14 08:29 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: [NSIBObjectData objectForName:] return 
+	nil, if the object is not in the array.
+	* Source/NSTableView.m: implement decoding of flags in initWithCoder:
+
+2006-01-13 00:29 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSColorWell.m: Added keyed coding support in initWithCoder:
+	and encodeWithCoder:
+
+2006-01-11 01:26 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSSliderCell.m: Encode NSValue for compatibility with
+	Cocoa.
+
+2006-01-11 01:02 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Changes to NSViewTemplate.
+	* Source/NSSliderCell.m: Addition of code to handle slider to both
+	initWithCoder: and encodeWithCoder:
+	* Source/NSTextField.m: Removed unecessary empty
+	if conditional.
+
+2006-01-10 00:12 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Rearranged order of unarchiving in
+	[NSIBObjectData initWithCoder:].
+	* Source/NSView.m: Added "NSSuperview" to encodeWithCoder:
+
+2006-01-09 19:38 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Rearrange order of unarchiving
+	in [NSIBObjectData initWithCoder:] so that NSClassSwapper unarchives
+	and replaces itself correctly.
+	* Source/NSView.m: Move subview initialization to after
+	the decoding section for both keyed/serial archiving in initWithCoder:
+
+2006-01-08 14:01 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSMenuItem.m: initWithCoder: added code to decode
+	NSSubmenu key so that menus are properly constructed.
+
+2006-01-08 13:53 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Removed forwardInvocation from
+	NSClassSwapper.
+	* Source/NSMenuItem.m: Added implementation of keyed coding
+	to NSMenu initWithCoder:
+
+2006-01-07 10:38 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Encoding for NSIBObjectData, and
+	for NSWindowTemplate.  Implementation of NSClassSwapper.
+
+2006-01-01 21:02 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSInstantiator.h: Protocol and
+	private method for instantiation.
+	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h: Added new header
+	* Source/GNUmakefile: Added new header to makefile.
+	* Source/GSNibCompatibility.m: Added nibInstantiation support.
+	* Source/NSBundleAdditions.m: Addition of instantiateWithInstantiator:
+
+2006-01-01 14:36 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h: Added
+	NSCustomResource.
+	* Source/GSNibCompatibility.m: Added NSCustomResource.
+	* Source/GSNibLoader.m: Calls keyed archiver with "IB.objectdata"
+	key.
+	
+2006-01-01 09:27 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSModelLoaderFactory.h: Added
+	declaration for priority method.
+	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h: Added
+	awakeWithContext method.
+	* Source/GSGModelLoader.m: Added priority method.
+	* Source/GSGormLoader.m: Added priority method
+	* Source/GSModelLoaderFactory.m: Implemented sorting by priority
+	* Source/GSNibCompatibility.m: use ASSIGN in initWithCoder:
+	* Source/GSNibLoader.m: Added priority method
+	* Source/NSBundleAdditions.m: Removed AUTORELEASE, since the
+	loader itself is autoreleased by the factory.
+
+2005-12-31 17:25 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Added code to properly initialize the
+	maptables.
+
+2005-12-31 16:10 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h:
+	Added awakeWithContext:
+	* Source/GNUmakefile: Added GSNibLoader.m
+	* Source/GSGormLoader.m: Changed some log output
+	* Source/GSNibCompatibility.m: Added awakeWithContext:
+	* Source/GSNibLoader.m: Loader for .nib files.
+
+2005-12-31 11:49 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSModelLoaderFactory.h: Removed
+	protocol.
+	* Source/GSGModelLoader.m:
+	* Source/GSGormLoader.m: Removed initialize method
+	* Source/GSModelLoaderFactory.m: Renamed 
+	abstract class to GSModelLoader.  Added code
+	in initialize to register all subclasses of GSModelLoader.
+	* Source/NSBundleAdditions.m: Make changes to use new abstract
+	class name.
+
+2005-12-31 01:31 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GNUmakefile: Added new classes.
+	* Source/NSBundleAdditions.m: Changes to use new model loader
+	factory and loaders.
+	* Source/GSModelLoaderFactory.h 
+	* Source/GSModelLoaderFactory.m: Handles model loading in 
+	dynamic way.  Allows registration of additional classes to 
+	handle loading of guis.
+	* Source/GSGormLoader.m: Loader for .gorm files.
+	* Source/GSGModelLoader.m: Loader for .gmodel files.
+	
+2005-12-30 00:49 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h
+	* Source/GSNibCompatibility.m: NSCustomView changes.
+
+2005-12-29 00:39 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h
+	* Source/GSNibCompatibility.m: NSClassSwapper, NSCustomView, and 
+	NSCustomObject.
+
+2005-12-27 20:51 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h:
+	* Source/GSNibCompatibility.m: Addition of classes for true OSX nib
+	compatibility.
+
+2006-01-22  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPopupButtonCell.m (-synchronizeTitleAndSelectedItem):
+	Only select an item if one is highlighted.
+	* Source/Functions.m: NSFrameRectWithWidthUsingOperation() new
+	function from Cocoa. NSFrameRectWithWidth() different
+	implementation, no longer using stroke.
+
+2006-01-20  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableHeaderCell.m: Simplified code by letting
+	the super classes do their job.
+
+2006-01-14  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWindow.m: minor fixups for 64bit cpu support.
+
+2006-01-09 06:25 Gregory John Casamento <greg_casamento@yahoo.com>
+	
+	* Source/NSNib.m: Correction for bug#15348.  Removed uneeded
+	append in initWithNibNamed:
+
+2006-01-08  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableView.m (-initWithFrame:) Use different intercell
+	spacing. Patch by Andreas Höschler <ahoesch@smartsoft.de>.
+
+2006-01-04  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSliderCell.m (-knobRectFlipped,-knobThickness
+	-drawInteriorWithFrame:inView:, -setKnobThickness:): Protect against knob
+	image being nil. Fixes Solaris problem reported by <ubossx@gmail.com>.
+
+2005-12-31  Matt Rice  <ratmice@yahoo.com>
+
+	* Source/NSTableView.m (-mouseDown:): Copy the selected cell before
+	tracking mouse, add comment. (patch previously reverted 2005-05-30)
+	(-mouseDown:): Check for pointer equality in addition to isEqual:
+	which doesn't work with nil. (fix for bug #15316)
+	
 2005-12-22  Adam Fedor  <fedor@gnu.org>
 
 	* Version 0.10.2

@@ -37,6 +37,7 @@
 #include <Foundation/NSSet.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSValue.h>
+#include <Foundation/NSKeyedArchiver.h>
 
 #include "AppKit/NSTableView.h"
 #include "AppKit/NSApplication.h"
@@ -79,7 +80,6 @@ static unsigned currentDragOperation;
 #define SHIFT_DOWN (1 << 2)
 #define CONTROL_DOWN (1 << 3)
 #define ADDING_ROW (1 << 4)
-
 
 @interface NSTableView (NotificationRequestMethods)
 - (void) _postSelectionIsChangingNotification;
@@ -1955,7 +1955,7 @@ _isCellEditable (id delegate, NSArray *tableColumns,
   self = [super initWithFrame: frameRect];
   _drawsGrid        = YES;
   _rowHeight        = 16.0;
-  _intercellSpacing = NSMakeSize (2.0, 3.0);
+  _intercellSpacing = NSMakeSize (5.0, 2.0);
   ASSIGN (_gridColor, [NSColor gridColor]); 
   ASSIGN (_backgroundColor, [NSColor controlBackgroundColor]); 
   ASSIGN (_tableColumns, [NSMutableArray array]);
@@ -3460,8 +3460,10 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
 	  // Prepare the cell
 	  tb = [_tableColumns objectAtIndex: _clickedColumn];
-	  // It is unclear, if we should copy the cell here, as we do on editing.
-	  cell = [tb dataCellForRow: _clickedRow];
+	  /* we should copy the cell here, as we do on editing.
+	     otherwise validation on a cell being edited could
+	     cause the cell we are selecting to get it's objectValue */
+	  cell = [[tb dataCellForRow: _clickedRow] copy];
 	  originalValue = RETAIN([self _objectValueForTableColumn:tb row:_clickedRow]);
 	  [cell setObjectValue: originalValue]; 
 	  cellFrame = [self frameOfCellAtColumn: _clickedColumn 
@@ -3479,7 +3481,8 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	    {
 	      id newValue = [cell objectValue];
 
-	      if ([tb isEditable] && ![originalValue isEqual: newValue])
+	      if ([tb isEditable] && originalValue != newValue
+		  && ![originalValue isEqual: newValue])
 		{
 		  [self _setObjectValue: newValue 
 		         forTableColumn: tb
@@ -3498,6 +3501,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	    }
 	  RELEASE(originalValue);    
 	  [cell setHighlighted: NO];
+	  RELEASE(cell);
 	  [self setNeedsDisplayInRect: cellFrame];
 	  lastEvent = [NSApp currentEvent];
 	}
@@ -5108,30 +5112,70 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 {
   [super encodeWithCoder: aCoder];
 
-  [aCoder encodeConditionalObject: _dataSource];
-  [aCoder encodeObject: _tableColumns];
-  [aCoder encodeObject: _gridColor];
-  [aCoder encodeObject: _backgroundColor];
-  [aCoder encodeObject: _headerView];
-  [aCoder encodeObject: _cornerView];
-  [aCoder encodeConditionalObject: _delegate];
-  [aCoder encodeConditionalObject: _target];
+  if ([aCoder allowsKeyedCoding])
+    {
+      unsigned int vFlags = 0; // (raw >> 26); // filter out settings not pertinent to us.
+      NSSize intercellSpacing = [self intercellSpacing];
 
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_numberOfRows];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_numberOfColumns];
+      [aCoder encodeObject: [self dataSource] forKey: @"NSDataSource"];
+      [aCoder encodeObject: [self delegate] forKey: @"NSDelegate"];
+      [aCoder encodeObject: [self target] forKey: @"NSTarget"];
+      [aCoder encodeObject: NSStringFromSelector([self action]) forKey: @"NSAction"];
+      [aCoder encodeObject: [self backgroundColor] forKey: @"NSBackgroundColor"];
+      [aCoder encodeObject: [self gridColor] forKey: @"NSGridColor"];
+      [aCoder encodeFloat: intercellSpacing.height forKey: @"NSIntercellSpacingHeight"];
+      [aCoder encodeFloat: intercellSpacing.width forKey: @"NSIntercellSpacingWidth"];
+      [aCoder encodeFloat: [self rowHeight] forKey: @"NSRowHeight"];
+      [aCoder encodeObject: [self tableColumns] forKey: @"NSTableColumns"];
+      
+      if([self allowsColumnSelection])
+	vFlags |= 1;
 
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_drawsGrid];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_rowHeight];
-  [aCoder encodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
-  [aCoder encodeSize: _intercellSpacing];
+      if([self allowsMultipleSelection])
+	vFlags |= 2;
 
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsMultipleSelection];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsEmptySelection];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnSelection];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnResizing];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnReordering];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autoresizesAllColumnsToFit];
+      if([self allowsEmptySelection])
+	vFlags |= 4;
 
+      if([self allowsColumnResizing])
+	vFlags |= 16;
+
+      if([self allowsColumnReordering])
+	vFlags |= 32;
+
+      // shift...
+      vFlags = vFlags << 26;
+      vFlags |= 0x2400000; // add the constant...
+
+      // encode..
+      [aCoder encodeInt: vFlags forKey: @"NSTvFlags"];
+    }
+  else
+    {
+      [aCoder encodeConditionalObject: _dataSource];
+      [aCoder encodeObject: _tableColumns];
+      [aCoder encodeObject: _gridColor];
+      [aCoder encodeObject: _backgroundColor];
+      [aCoder encodeObject: _headerView];
+      [aCoder encodeObject: _cornerView];
+      [aCoder encodeConditionalObject: _delegate];
+      [aCoder encodeConditionalObject: _target];
+      
+      [aCoder encodeValueOfObjCType: @encode(int) at: &_numberOfRows];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &_numberOfColumns];
+      
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_drawsGrid];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_rowHeight];
+      [aCoder encodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
+      [aCoder encodeSize: _intercellSpacing];
+      
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsMultipleSelection];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsEmptySelection];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnSelection];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnResizing];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnReordering];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autoresizesAllColumnsToFit];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -5145,6 +5189,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       NSEnumerator *e;
       NSTableColumn *col;
 
+      [(NSKeyedUnarchiver *)aDecoder setClass: [GSTableCornerView class] forClassName: @"_NSCornerView"];
       [self setDataSource: [aDecoder decodeObjectForKey: @"NSDataSource"]];
       [self setDelegate: [aDecoder decodeObjectForKey: @"NSDelegate"]];
 
@@ -5176,6 +5221,18 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	  [self setRowHeight: [aDecoder decodeFloatForKey: @"NSRowHeight"]];
 	}
 
+      if ([aDecoder containsValueForKey: @"NSHeaderView"])
+	{
+	  ASSIGN(_headerView, [aDecoder decodeObjectForKey: @"NSHeaderView"]);
+	  [_headerView setTableView: self];
+	}
+
+      if ([aDecoder containsValueForKey: @"NSCornerView"])
+	{
+	  ASSIGN(_cornerView, [aDecoder decodeObjectForKey: @"NSCornerView"]);
+	}
+
+      // get the table columns...
       columns = [aDecoder decodeObjectForKey: @"NSTableColumns"];
       e = [columns objectEnumerator];
       while ((col = [e nextObject]) != nil)
@@ -5185,8 +5242,21 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
       if ([aDecoder containsValueForKey: @"NSTvFlags"])
         {
-	  //int vFlags = [aDecoder decodeIntForKey: @"NSTvFlags"];
-	  // FIXME set the flags
+	  unsigned int raw = [aDecoder decodeIntForKey: @"NSTvFlags"];
+	  unsigned int vFlags = (raw >> 26); // filter out settings not pertinent to us.
+	  BOOL columnSelection   = ((1 & vFlags) > 0);
+	  BOOL multipleSelection = ((2 & vFlags) > 0);
+	  BOOL emptySelection    = ((4 & vFlags) > 0);
+	  BOOL drawsGrid         = ((8 & vFlags) > 0);
+	  BOOL columnResizing    = ((16 & vFlags) > 0);
+	  BOOL columnOrdering    = ((32 & vFlags) > 0);
+
+	  [self setAllowsColumnSelection: columnSelection];
+	  [self setAllowsMultipleSelection: multipleSelection];
+	  [self setAllowsEmptySelection: emptySelection];
+	  [self setDrawsGrid: drawsGrid];
+	  [self setAllowsColumnResizing: columnResizing];	  
+	  [self setAllowsColumnReordering: columnOrdering];
 	}
     }
   else

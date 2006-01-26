@@ -35,72 +35,174 @@
 #include <AppKit/NSControl.h>
 #include <AppKit/NSButton.h>
 
-/*
-  As these classes are deprecated, they should disappear from the gnustep 
-  distribution in the next major release.  They are for backwards compatibility
-  ONLY.
-*/
-
-// DO NOT USE.
+#include <AppKit/NSGraphicsContext.h>
+#include <AppKit/NSGraphics.h>
+#include <AppKit/NSResponder.h>
+#include <AppKit/NSEvent.h>
+#include "GNUstepGUI/GSInstantiator.h"
 
 // templates
-@protocol __DeprecatedTemplate__
+@protocol OSXNibTemplate
 - (void) setClassName: (NSString *)className;
 - (NSString *)className;
-- (id) instantiateObject: (NSCoder *)coder;
+- (id) realObject;
 @end
 
-@interface NSWindowTemplate : NSWindow <__DeprecatedTemplate__>
+/**
+ * This class acts as a placeholder for the window.  It doesn't derive from
+ * NSWindow for two reasons. First, it shouldn't instantiate a window immediately
+ * when it's unarchived and second, it holds certain attributes (but doesn't set them
+ * on the window, when the window is being edited in the application builder.
+ */
+@interface NSWindowTemplate : NSObject <OSXNibTemplate, NSCoding>
 {
-  NSString            *_className;
-  NSString            *_parentClassName;
+  NSBackingStoreType   _backingStoreType;
   BOOL                 _deferFlag;
+  NSSize               _maxSize;
+  NSSize               _minSize;
+  unsigned             _interfaceStyle;
+  NSString            *_title;
+  NSString            *_viewClass;
+  NSString            *_windowClass;
+  NSRect               _windowRect;
+  NSRect               _screenRect;
+  id                   _realObject;
+  id                   _view;
+  unsigned             _flags;
+}
+- (void) setBackingStoreType: (NSBackingStoreType)type;
+- (NSBackingStoreType) backingStoreType;
+- (void) setDeferred: (BOOL)flag;
+- (BOOL) isDeferred;
+- (void) setMaxSize: (NSSize)maxSize;
+- (NSSize) maxSize;
+- (void) setMinSize: (NSSize)minSize;
+- (NSSize) minSize;
+- (void) setInterfaceStyle: (unsigned)sty;
+- (unsigned) interfaceStyle;
+- (void) setTitle: (NSString *) title;
+- (NSString *)title;
+- (void) setViewClass: (NSString *)viewClass;
+- (NSString *)viewClass;
+- (void) setWindowRect: (NSRect)rect;
+- (NSRect)windowRect;
+- (void) setScreenRect: (NSRect)rect;
+- (NSRect) screenRect;
+- (id) realObject;
+- (void) setView: (id)view;
+- (id) view;
+@end
+
+@interface NSViewTemplate : NSView <OSXNibTemplate, NSCoding>
+{
+  NSString            *_className;
+  id                   _realObject;
+  NSRect               _frame;
 }
 @end
 
-@interface NSViewTemplate : NSView <__DeprecatedTemplate__>
+@interface NSTextTemplate : NSViewTemplate
 {
-  NSString            *_className;
-  NSString            *_parentClassName;
 }
 @end
 
-@interface NSTextTemplate : NSText <__DeprecatedTemplate__>
+@interface NSTextViewTemplate : NSViewTemplate
 {
-  NSString            *_className;
-  NSString            *_parentClassName;
 }
 @end
 
-@interface NSTextViewTemplate : NSTextView <__DeprecatedTemplate__> 
+@interface NSMenuTemplate : NSObject <OSXNibTemplate, NSCoding>
 {
-  NSString            *_className;
-  NSString            *_parentClassName;
+  NSString            *_menuClass;
+  NSString            *_title;
+  id                   _realObject;
+  id                   _parentMenu;
+  NSPoint              _location;
+  BOOL                 _isWindowsMenu;
+  BOOL                 _isServicesMenu;
+  BOOL                 _isFontMenu;
+  NSInterfaceStyle     _interfaceStyle;
 }
+- (void) setClassName: (NSString *)name;
+- (NSString *)className;
+- (id)nibInstantiate;
 @end
 
-@interface NSMenuTemplate : NSMenu <__DeprecatedTemplate__>
+@interface NSCustomObject : NSObject <NSCoding>
 {
-  NSString            *_className;
-  NSString            *_parentClassName;
+  NSString *_className;
+  NSString *_extension;
+  id _object;
 }
+- (void) setClassName: (NSString *)name;
+- (NSString *)className;
+- (void) setExtension: (NSString *)ext;
+- (NSString *)extension;
+- (void) setObject: (id)obj;
+- (id)object;
 @end
 
-@interface NSControlTemplate : NSControl <__DeprecatedTemplate__>
+@interface NSCustomView : NSView
 {
-  NSString            *_className;
-  NSString            *_parentClassName;
-  id                   _delegate;
-  id                   _dataSource;
-  BOOL                 _usesDataSource;
+  NSString *_className;
+  NSString *_extension;
+  NSView *_superview;
+  NSView *_view;
 }
+- (void) setClassName: (NSString *)name;
+- (NSString *)className;
+- (void) setExtension: (NSString *)view;
+- (NSString *)extension;
+- (id)nibInstantiate;
 @end
 
-@interface NSButtonTemplate : NSButton <__DeprecatedTemplate__>
+@interface NSCustomResource : NSObject <NSCoding>
 {
-  NSString            *_className;
-  NSString            *_parentClassName;
-  NSButtonType         _buttonType;
+  NSString *_className;
+  NSString *_resourceName;
 }
+- (void) setClassName: (NSString *)className;
+- (NSString *)className;
+- (void) setResourceName: (NSString *)view;
+- (NSString *)resourceName;
+- (id)nibInstantiate;
 @end
+
+@interface NSClassSwapper : NSObject <NSCoding>
+{
+  NSString *_className;
+  id _template;
+}
+- (void) setTemplate: (id)temp;
+- (id) template;
+- (void) setClassName: (NSString *)className;
+- (NSString *)className;
+@end
+
+@interface NSIBObjectData : NSObject <NSCoding, GSInstantiator>
+{
+  id              _root;
+  NSMapTable     *_objects;
+  NSMapTable     *_names;
+  NSMapTable     *_oids;
+  NSMapTable     *_classes;
+  NSMapTable     *_instantiatedObjs;
+  NSMutableSet   *_visibleWindows;
+  NSMutableArray *_connections;
+  id              _firstResponder;
+  id              _fontManager;
+  NSString       *_framework;
+  id              _document;
+  unsigned        _nextOid;
+  NSMutableArray *_accessibilityConnectors;
+  NSMapTable     *_accessibilityOids;
+}
+- (void) awakeWithContext: (NSDictionary *)context;
+- (id) instantiateObject: (id)obj;
+- (void) nibInstantiateWithOwner: (id)owner;
+- (void) nibInstantiateWithOwner: (id)owner topLevelObjects: (NSMutableArray *)toplevel;
+- (id) objectForName: (NSString *)name;
+- (NSString *) nameForObject: (id)name;
+@end
+
 #endif /* _GNUstep_H_GSNibCompatibility */

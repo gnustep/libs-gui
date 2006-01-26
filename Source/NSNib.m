@@ -168,7 +168,6 @@
 {
   if ((self = [super init]) != nil)
     {
-      NSString *bundlePath = nil;
       NSString *fileName = nil;
 
       if (bundle == nil)
@@ -177,8 +176,7 @@
 	}
 
       // initialize the bundle...
-      bundlePath = [bundle pathForNibResource: nibNamed];
-      fileName = [bundlePath stringByAppendingPathComponent: nibNamed];
+      fileName = [bundle pathForNibResource: nibNamed];
 
       // load the nib data into memory...
       [self _readNibData: fileName];

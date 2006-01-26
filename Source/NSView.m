@@ -3915,6 +3915,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       
       [aCoder encodeInt: vFlags 
 	      forKey: @"NSvFlags"];
+
+      [aCoder encodeObject: _super_view forKey: @"NSSuperview"];
     }
   else
     {
@@ -3938,6 +3940,10 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
+  NSEnumerator *e;
+  NSView	*sub;
+  NSArray	*subs;
+
   // decode the superclass...
   [super initWithCoder: aDecoder];
 
@@ -3951,7 +3957,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     {
       NSView *prevKeyView = [aDecoder decodeObjectForKey: @"NSPreviousKeyView"];
       NSView *nextKeyView = [aDecoder decodeObjectForKey: @"NSNextKeyView"];
-      NSArray *subViews = [aDecoder decodeObjectForKey: @"NSSubviews"];
+      subs = [aDecoder decodeObjectForKey: @"NSSubviews"];
       
       if ([aDecoder containsValueForKey: @"NSFrame"])
 	{
@@ -3960,16 +3966,6 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	}
       self = [self initWithFrame: _frame];
       
-      if (subViews != nil)
-	{
-	  NSEnumerator *enumerator = [subViews objectEnumerator];
-	  NSView *sub;
-	  
-	  while ((sub = [enumerator nextObject]) != nil)
-	    {
-	      [self addSubview: sub];
-	    }
-	}
       if (nextKeyView != nil)
 	{
 	  [self setNextKeyView: nextKeyView];
@@ -3992,9 +3988,6 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   else
     {
       NSRect	rect;
-      NSEnumerator *e;
-      NSView	*sub;
-      NSArray	*subs;
       
       NSDebugLLog(@"NSView", @"NSView: start decoding\n");
 
@@ -4029,25 +4022,27 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       [[aDecoder decodeObject] setNextKeyView: self];
       
       [aDecoder decodeValueOfObjCType: @encode(id) at: &subs];
-      e = [subs objectEnumerator];
-      while ((sub = [e nextObject]) != nil)
-	{
-	  NSAssert(sub->_window == nil, NSInternalInconsistencyException);
-	  NSAssert(sub->_super_view == nil, NSInternalInconsistencyException);
-	  [sub viewWillMoveToWindow: _window];
-	  [sub viewWillMoveToSuperview: self];
-	  [sub setNextResponder: self];
-	  [_sub_views addObject: sub];
-	  _rFlags.has_subviews = 1;
-	  [sub resetCursorRects];
-	  [sub setNeedsDisplay: YES];
-	  [sub _viewDidMoveToWindow];
-	  [sub viewDidMoveToSuperview];
-	  [self didAddSubview: sub];
-	}
-      RELEASE(subs);
       NSDebugLLog(@"NSView", @"NSView: finish decoding\n");
     }
+
+  // iterate over subviews and put them into the view...
+  e = [subs objectEnumerator];
+  while ((sub = [e nextObject]) != nil)
+    {
+      NSAssert([sub window] == nil, NSInternalInconsistencyException);
+      NSAssert([sub superview] == nil, NSInternalInconsistencyException);
+      [sub viewWillMoveToWindow: _window];
+      [sub viewWillMoveToSuperview: self];
+      [sub setNextResponder: self];
+      [_sub_views addObject: sub];
+      _rFlags.has_subviews = 1;
+      [sub resetCursorRects];
+      [sub setNeedsDisplay: YES];
+      [sub _viewDidMoveToWindow];
+      [sub viewDidMoveToSuperview];
+      [self didAddSubview: sub];
+    }
+  RELEASE(subs);
         
   return self;
 }

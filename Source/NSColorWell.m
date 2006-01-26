@@ -235,11 +235,22 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-  [aCoder encodeObject: _the_color];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_is_active];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_is_bordered];
-  [aCoder encodeConditionalObject: _target];
-  [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
+  if([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeObject: _the_color forKey: @"NSColor"];
+      // [aCoder encodeBool: _is_active forKey: @"NSEnabled"];
+      [aCoder encodeBool: _is_bordered forKey: @"NSIsBordered"];
+      [aCoder encodeConditionalObject: _target forKey: @"NSTarget"];
+      [aCoder encodeConditionalObject: NSStringFromSelector(_action) forKey: @"NSAction"];
+    }
+  else
+    {
+      [aCoder encodeObject: _the_color];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_is_active];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_is_bordered];
+      [aCoder encodeConditionalObject: _target];
+      [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -247,15 +258,31 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
   self = [super initWithCoder: aDecoder];
   if (self != nil)
     {
-      [aDecoder decodeValueOfObjCType: @encode(id) at: &_the_color];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_active];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_bordered];
-      [aDecoder decodeValueOfObjCType: @encode(id) at: &_target];
-      // Undo RETAIN by decoder
-      TEST_RELEASE(_target);
-      [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
-      [self registerForDraggedTypes:
-	[NSArray arrayWithObjects: NSColorPboardType, nil]];
+      if([aDecoder allowsKeyedCoding])
+	{
+	  NSString *action;
+
+	  ASSIGN(_the_color, [aDecoder decodeObjectForKey: @"NSColor"]);
+	  // _is_active =  [aDecoder decodeBoolForKey: @"NSEnabled"];
+	  _is_bordered = [aDecoder decodeBoolForKey: @"NSIsBordered"];
+	  _target = [aDecoder decodeObjectForKey: @"NSTarget"];
+	  action = [aDecoder decodeObjectForKey: @"NSAction"];
+	  _action = NSSelectorFromString(action);
+	  [self registerForDraggedTypes:
+		  [NSArray arrayWithObjects: NSColorPboardType, nil]];
+	}
+      else
+	{
+	  [aDecoder decodeValueOfObjCType: @encode(id) at: &_the_color];
+	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_active];
+	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_bordered];
+	  [aDecoder decodeValueOfObjCType: @encode(id) at: &_target];
+	  // Undo RETAIN by decoder
+	  TEST_RELEASE(_target);
+	  [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
+	  [self registerForDraggedTypes:
+		  [NSArray arrayWithObjects: NSColorPboardType, nil]];
+	}
     }
   return self;
 }

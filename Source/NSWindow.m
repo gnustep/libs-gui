@@ -695,7 +695,7 @@ many times.
     {
       [_wv setWindowNumber: 0];
       [GSServerForWindow(self) termwindow: _windowNum];
-      NSMapRemove(windowmaps, (void*)_windowNum);
+      NSMapRemove(windowmaps, (void*)(intptr_t)_windowNum);
       _windowNum = 0;
     }
 }
@@ -792,7 +792,7 @@ many times.
 	       : _styleMask
 	       : screenNumber];
   [srv setwindowlevel: [self level] : _windowNum];
-  NSMapInsert (windowmaps, (void*)_windowNum, self);
+  NSMapInsert (windowmaps, (void*)(intptr_t)_windowNum, self);
 
   // Set window in new _gstate
   DPSgsave(context);
@@ -3330,8 +3330,8 @@ resetCursorRectsForView(NSView *theView)
 		  \
 		  if ([target respondsToSelector: sel]) \
 		    { \
-		      action = (int)[target performSelector: sel \
-						 withObject: info];   \
+		      action = (intptr_t)[target performSelector: sel \
+						      withObject: info]; \
 		    } \
                 }
 
@@ -4240,7 +4240,7 @@ resetCursorRectsForView(NSView *theView)
 - (void *) windowHandle
 {
   // Should only be defined on MS Windows
-  return (void *)_windowNum;
+  return (void *)(intptr_t)_windowNum;
 }
 @end
 
@@ -4344,13 +4344,13 @@ void NSCountWindows(int *count)
 void NSWindowList(int size, int list[])
 {
   NSMapEnumerator	me = NSEnumerateMapTable(windowmaps);
-  int			num;
+  void			*key;
   id			win;
   int			i = 0;
 
-  while (i < size && NSNextMapEnumeratorPair(&me, (void*)&num, (void*)&win))
+  while (i < size && NSNextMapEnumeratorPair(&me, &key, (void*)&win))
     {
-      list[i++] = num;
+      list[i++] = (intptr_t)key;
     }
 /* FIXME - the list produced should be in window stacking order */
 }
@@ -4364,5 +4364,5 @@ NSArray* GSAllWindows(void)
 
 NSWindow* GSWindowWithNumber(int num)
 {
-  return (NSWindow*)NSMapGet(windowmaps, (void*)num);
+  return (NSWindow*)NSMapGet(windowmaps, (void*)(intptr_t)num);
 }
