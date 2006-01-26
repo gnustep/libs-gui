@@ -97,7 +97,6 @@
 {
   NSString            *_className;
   id                   _realObject;
-  NSRect               _frame;
 }
 @end
 

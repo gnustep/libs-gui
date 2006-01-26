@@ -89,7 +89,7 @@ static NSMutableDictionary *_modelMap = nil;
       _modelMap = [[NSMutableDictionary alloc] initWithCapacity: 5];
     }
 
-  [_modelMap setObject: aClass forKey: [aClass type]];
+  [_modelMap setObject: aClass forKey: (NSString *)[aClass type]];
 }
 
 + (Class)classForType: (NSString *)type
@@ -112,7 +112,7 @@ static NSMutableDictionary *_modelMap = nil;
 
       while((cls = [oen nextObject]) != nil && result == NO)
 	{
-	  NSString *path = [modelPath stringByAppendingPathExtension: [cls type]];
+	  NSString *path = [modelPath stringByAppendingPathExtension: (NSString *)[cls type]];
 	  if([mgr isReadableFileAtPath: path])
 	    {
 	      result = path;
