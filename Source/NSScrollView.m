@@ -1240,7 +1240,7 @@ static float scrollerWidth;
       
       if (content != nil)
         {
-	  [self setDocumentView: [content documentView]];
+	  // [self setDocumentView: [content documentView]];
 	}
       if (hScroller != nil)
         {
