@@ -55,6 +55,7 @@
 #include <Foundation/NSDistributedNotificationCenter.h>
 #include <Foundation/NSConnection.h>
 #include <Foundation/NSDebug.h>
+#include <Foundation/NSThread.h>
 #include <Foundation/NSURL.h>
 #include <Foundation/NSValue.h>
 #include "AppKit/NSWorkspace.h"
@@ -106,6 +107,11 @@ static id GSLaunched(NSNotification *notification, BOOL active)
     }
   if ([lock tryLock] == NO)
     {
+      unsigned	sleeps = 0;
+
+      /*
+       * If the lock is really old ... assume the app has died and break it.
+       */
       if ([[lock lockDate] timeIntervalSinceNow] < -20.0)
         {
 	  NS_DURING
@@ -118,7 +124,19 @@ static id GSLaunched(NSNotification *notification, BOOL active)
 	    }
 	  NS_ENDHANDLER
         }
-      if ([lock tryLock] == NO)
+      /*
+       * Retry locking several times if necessary before giving up.
+       */
+      for (sleeps = 0; sleeps < 10; sleeps++)
+	{
+	  if ([lock tryLock] == YES)
+	    {
+	      break;
+	    }
+	  sleeps++;
+	  [NSThread sleepUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.1]];
+	}
+      if (sleeps >= 10)
         {
           NSLog(@"Unable to obtain lock %@", lock);
           return nil;
@@ -681,6 +699,22 @@ static NSString			*_rootPath = @"/";
 {
   id app;
 
+  NS_DURING
+    {
+      if ((app = [self _workspaceApplication]) != nil)
+	{
+	  BOOL	result;
+
+	  result = [app openFile: fullPath
+		 withApplication: appName
+		   andDeactivate: flag];
+	  NS_VALRETURN(result);
+	}
+    }
+  NS_HANDLER
+    // workspace manager problem ... fall through to default code
+  NS_ENDHANDLER
+
   if (appName == nil)
     {
       NSString *ext = [fullPath pathExtension];
@@ -731,8 +765,23 @@ static NSString			*_rootPath = @"/";
 {
   id app;
   NSString *appName;
-  NSString *ext = [fullPath pathExtension];
-  
+  NSString *ext;
+
+  NS_DURING
+    {
+      if ((app = [self _workspaceApplication]) != nil)
+	{
+	  BOOL	result;
+
+	  result = [app openTempFile: fullPath];
+	  NS_VALRETURN(result);
+	}
+    }
+  NS_HANDLER
+    // workspace manager problem ... fall through to default code
+  NS_ENDHANDLER
+
+  ext = [fullPath pathExtension];
   if ([self _extension: ext role: nil app: &appName] == NO)
     {
       NSWarnLog(@"No known applications for file extension '%@'", ext);
@@ -787,38 +836,50 @@ static NSString			*_rootPath = @"/";
 		        files: (NSArray*)files
 			  tag: (int*)tag
 {
-  id app = [self _workspaceApplication];
+  id app;
 
-  if (app == nil)
+  NS_DURING
     {
-      return NO;
+      if ((app = [self _workspaceApplication]) != nil)
+	{
+	  BOOL	result;
+
+	  result = [app performFileOperation: operation
+				      source: source
+				 destination: destination
+				       files: files
+					 tag: tag];
+	  NS_VALRETURN(result);
+	}
     }
-  else
-    {
-      // Send the request on to the Workspace application
-      return [app performFileOperation: operation
-				source: source
-			   destination: destination
-				 files: files
-				   tag: tag];
-    }
+  NS_HANDLER
+    // workspace manager problem ... fall through to default code
+  NS_ENDHANDLER
+
+  return NO;
 }
 
 - (BOOL) selectFile: (NSString*)fullPath
 inFileViewerRootedAtPath: (NSString*)rootFullpath
 {
-  id app = [self _workspaceApplication];
+  id app;
 
-  if (app == nil)
+  NS_DURING
     {
-      return NO;
+      if ((app = [self _workspaceApplication]) != nil)
+	{
+	  BOOL	result;
+
+	  result = [app selectFile: fullPath
+	  inFileViewerRootedAtPath: rootFullpath];
+	  NS_VALRETURN(result);
+	}
     }
-  else
-    {
-      // Send the request on to the Workspace application
-      return [app selectFile: fullPath
-	inFileViewerRootedAtPath: rootFullpath];
-    }
+  NS_HANDLER
+    // workspace manager problem ... fall through to default code
+  NS_ENDHANDLER
+
+  return NO;
 }
 
 /**
@@ -1305,7 +1366,23 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 		  showIcon: (BOOL)showIcon
 	        autolaunch: (BOOL)autolaunch
 {
-  id app;
+  id 	app;
+
+  NS_DURING
+    {
+      if ((app = [self _workspaceApplication]) != nil)
+	{
+	  BOOL	result;
+
+	  result = [app launchApplication: appName
+	   			 showIcon: showIcon
+			       autolaunch: autolaunch];
+	  NS_VALRETURN(result);
+	}
+    }
+  NS_HANDLER
+    // workspace manager problem ... fall through to default code
+  NS_ENDHANDLER
 
   app = [self _connectApplication: appName];
   if (app == nil)
@@ -1334,6 +1411,22 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
  */
 - (NSDictionary*) activeApplication
 {
+  id	app;
+
+  NS_DURING
+    {
+      if ((app = [self _workspaceApplication]) != nil)
+	{
+	  NSDictionary	*result;
+
+	  result = [app activeApplication];
+	  NS_VALRETURN(result);
+	}
+    }
+  NS_HANDLER
+    // workspace manager problem ... fall through to default code
+  NS_ENDHANDLER
+
   return GSLaunched(nil, YES);
 }
 
@@ -1345,6 +1438,22 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
  */
 - (NSArray*) launchedApplications
 {
+  id	app;
+
+  NS_DURING
+    {
+      if ((app = [self _workspaceApplication]) != nil)
+	{
+	  NSArray	*result;
+
+	  result = [app launchedApplications];
+	  NS_VALRETURN(result);
+	}
+    }
+  NS_HANDLER
+    // workspace manager problem ... fall through to default code
+  NS_ENDHANDLER
+
   return GSLaunched(nil, NO);
 }
 
@@ -1566,18 +1675,23 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
  */
 - (int) extendPowerOffBy: (int)requested
 {
-  int	result = 0;
-  id	app = [self _workspaceApplication];
+  id	app;
 
-  if (app != nil)
+  NS_DURING
     {
-      NS_DURING
-	result = [app extendPowerOffBy: requested];
-      NS_HANDLER
-	result = 0;
-      NS_ENDHANDLER
+      if ((app = [self _workspaceApplication]) != nil)
+	{
+	  int	result;
+
+	  result = [app extendPowerOffBy: requested];
+	  NS_VALRETURN(result);
+	}
     }
-  return result;
+  NS_HANDLER
+    // workspace manager problem ... fall through to default code
+  NS_ENDHANDLER
+
+  return 0;
 }
 
 @end
@@ -2417,15 +2531,34 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
 - (id) _workspaceApplication
 {
-  NSUserDefaults	*defs = [NSUserDefaults standardUserDefaults];
-  NSString		*appName;
-  id			app;
+  static NSUserDefaults		*defs = nil;
+  static GSServicesManager	*smgr = nil;
+  NSString			*appName;
+  NSString			*myName;
+  id				app;
 
+  if (defs == nil)
+    {
+      defs = RETAIN([NSUserDefaults standardUserDefaults]);
+    }
+  if (smgr == nil)
+    {
+      smgr = RETAIN([GSServicesManager manager]);
+    }
   /* What Workspace application? */
   appName = [defs stringForKey: @"GSWorkspaceApplication"];
   if (appName == nil)
     {
       appName = @"GWorkspace";
+    }
+  /*
+   * If this app is the workspace app, there is no sense contacting
+   * it as it would cause recursion ... so we return nil.
+   */
+  myName = [smgr port];
+  if ([appName isEqual: myName] == YES)
+    {
+      return nil;
     }
 
   app = [self _connectApplication: appName];
