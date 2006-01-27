@@ -24,6 +24,7 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSException.h>
+#include <Foundation/NSPropertyList.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSWorkspace.h>
 
@@ -42,6 +43,17 @@ main(int argc, char** argv, char **env_c)
   
   workspace = [NSWorkspace sharedWorkspace];
   launched = [workspace launchedApplications];
+
+  /*
+   * Hack ... if the array is from a workspace application it may actually
+   * be a proxy, and if we terminate that application the proxy will become
+   * invalid while we are iterating through the array.  To avoid that
+   * problem we serialize the array into an NSData object and deserialize
+   * that into local memory.
+   */
+  launched = [NSPropertyListSerialization propertyListFromData:
+    [NSPropertyListSerialization dataFromPropertyList: launched format: NSPropertyListBinaryFormat_v1_0 errorDescription: 0] mutabilityOption: NSPropertyListImmutable format: 0 errorDescription: 0];
+
   enumerator = [launched objectEnumerator];
   while ((info = [enumerator nextObject]) != nil)
     {
