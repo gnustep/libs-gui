@@ -79,24 +79,22 @@ static NSImage	*unknownTool = nil;
 
 static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
 
-static NSArray	*GSLaunched(NSDictionary *info, NSString *mode)
+/*
+ * Depending on the 'active' flag this returns either the currently
+ * active application or an array containing all launched apps.<br />
+ * The 'notification' argument is either nil (simply query on disk
+ * database) or a notification containing information to be used to
+ * update the database.
+ */
+static id GSLaunched(NSNotification *notification, BOOL active)
 {
   static NSString		*path = nil;
   static NSDistributedLock	*lock = nil;
-  NSMutableArray		*apps = nil;
-  BOOL	toBecomeActive;
-  BOOL	toResignActive;
-  BOOL	toLaunch;
-  BOOL	toTerminate;
-
-  toBecomeActive = [mode isEqualToString:
-    NSApplicationDidBecomeActiveNotification];
-  toResignActive = [mode isEqualToString:
-    NSApplicationDidResignActiveNotification];
-  toLaunch = [mode isEqualToString:
-    NSWorkspaceDidLaunchApplicationNotification];
-  toTerminate = [mode isEqualToString:
-    NSWorkspaceDidTerminateApplicationNotification];
+  NSDictionary			*info = [notification userInfo];
+  NSString			*mode = [notification name];
+  NSMutableDictionary		*file = nil;
+  NSDictionary			*apps = nil;
+  BOOL				modified = NO;
 
   if (path == nil)
     {
@@ -129,71 +127,96 @@ static NSArray	*GSLaunched(NSDictionary *info, NSString *mode)
 
   if ([[NSFileManager defaultManager] isReadableFileAtPath: path] == YES)
     {
-      apps = [NSMutableArray arrayWithContentsOfFile: path];
+      file = [NSMutableDictionary dictionaryWithContentsOfFile: path];
     }
+  if (file == nil)
+    {
+      file = [NSMutableDictionary dictionaryWithCapacity: 2];
+    }
+  apps = [file objectForKey: @"GSLaunched"];
   if (apps == nil)
     {
-      apps = [NSMutableArray arrayWithCapacity: 1];
+      apps = [NSDictionary new];
+      [file setObject: apps forKey: @"GSLaunched"];
+      RELEASE(apps);
     }
 
   if (info != nil)
     {
-      NSString	*name = [info objectForKey: @"NSApplicationName"];
-      unsigned	i = [apps count];
-      BOOL	modified = NO;
-      BOOL	wasActive = NO;
+      NSString		*name = [info objectForKey: @"NSApplicationName"];
+      NSDictionary	*oldInfo = [apps objectForKey: name];
 
-      while (i-- > 0)
+      if ([mode isEqualToString:
+	NSApplicationDidResignActiveNotification] == YES
+	|| [mode isEqualToString:
+	  NSWorkspaceDidTerminateApplicationNotification] == YES)
 	{
-	  NSDictionary	*oldInfo;
-	  NSString	*oldName;
-
-	  oldInfo = [apps objectAtIndex: i];
-	  oldName = [oldInfo objectForKey: @"NSApplicationName"];
-
-	  if ([name isEqualToString: oldName] == YES)
+	  if ([name isEqual: [file objectForKey: @"GSActive"]] == YES)
 	    {
-	      if ([oldInfo objectForKey:  @"GSApplicationActive"] != nil)
-		{
-		  wasActive = YES;
-		}
-	      [apps removeObjectAtIndex: i];
+	      [file removeObjectForKey: @"GSActive"];
 	      modified = YES;
 	    }
-	  else if (toBecomeActive == YES
-	    && [oldInfo objectForKey: @"GSApplicationActive"] != nil)
+	}
+      else if ([mode isEqualToString:
+	NSApplicationDidBecomeActiveNotification] == YES)
+	{
+	  if ([name isEqual: [file objectForKey: @"GSActive"]] == NO)
 	    {
-	      NSMutableDictionary	*m = [oldInfo mutableCopy];
+	      [file setObject: name forKey: @"GSActive"];
+	      modified = YES;
+	    }
+	}
 
-	      [m removeObjectForKey: @"GSApplicationActive"];
-	      [apps replaceObjectAtIndex: i withObject: m];
+      if ([mode isEqualToString:
+	NSWorkspaceDidTerminateApplicationNotification] == YES)
+	{
+	  if (oldInfo != nil)
+	    {
+	      NSMutableDictionary	*m = [apps mutableCopy];
+
+	      [m removeObjectForKey: name];
+	      [file setObject: m forKey: @"GSLaunched"];
+	      apps = m;
 	      RELEASE(m);
 	      modified = YES;
 	    }
 	}
-
-      if (toTerminate == NO)
+      else if ([mode isEqualToString:
+	NSApplicationDidResignActiveNotification] == NO)
 	{
-	  if (toBecomeActive == YES
-	    || (toResignActive == NO && wasActive == YES))
+	  if ([info isEqual: oldInfo] == NO)
 	    {
-	      NSMutableDictionary	*m = [info mutableCopy];
+	      NSMutableDictionary	*m = [apps mutableCopy];
 
-	      [m setObject: @"YES" forKey: @"GSApplicationActive"];
-	      info = AUTORELEASE(m);
+	      [m setObject: info forKey: name];
+	      [file setObject: m forKey: @"GSLaunched"];
+	      apps = m;
+	      RELEASE(m);
+	      modified = YES;
 	    }
-	  [apps addObject: info];
-	  modified = YES;
 	}
+    }
 
-      if (modified == YES)
-	{
-	  [apps writeToFile: path atomically: YES];
-	}
+  if (modified == YES)
+    {
+      [file writeToFile: path atomically: YES];
     }
   [lock unlock];
 
-  return apps;
+  if (active == YES)
+    {
+      NSString	*activeName = [file objectForKey: @"GSActive"];
+
+      if (activeName == nil)
+	{
+	  return nil;
+	}
+      return [apps objectForKey: activeName];
+    }
+  else
+    {
+      return [[file objectForKey: @"GSLaunched"] allValues];
+    }
 }
 
 @interface	_GSWorkspaceCenter: NSNotificationCenter
@@ -276,13 +299,10 @@ static NSArray	*GSLaunched(NSDictionary *info, NSString *mode)
   NSString		*name = [aNotification name];
   NSDictionary		*info = [aNotification userInfo];
 
-  if ([name isEqual: NSWorkspaceDidTerminateApplicationNotification] == YES)
+  if ([name isEqual: NSWorkspaceDidTerminateApplicationNotification] == YES
+    || [name isEqual: NSWorkspaceDidLaunchApplicationNotification] == YES)
     {
-      GSLaunched(info, name);
-    }
-  if ([name isEqual: NSWorkspaceDidLaunchApplicationNotification] == YES)
-    {
-      GSLaunched(info, name);
+      GSLaunched(aNotification, YES);
     }
 
   rem = [NSNotification notificationWithName: name
@@ -332,7 +352,7 @@ static NSArray	*GSLaunched(NSDictionary *info, NSString *mode)
   if ([name isEqualToString: NSApplicationDidBecomeActiveNotification] == YES
     || [name isEqualToString: NSApplicationDidResignActiveNotification] == YES)
     {
-      GSLaunched([aNotification userInfo], name);
+      GSLaunched(aNotification, YES);
     }
 }
 
@@ -1309,39 +1329,12 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 /**
  * Returns a description of the currently active application, containing
  * the name (NSApplicationName), path (NSApplicationPath) and process
- * identifier (NSApplicationProcessIdentifier).
+ * identifier (NSApplicationProcessIdentifier).<br />
+ * Returns nil if there is no known active application.
  */
 - (NSDictionary*) activeApplication
 {
-  NSProcessInfo *processInfo;
-  NSString	*appName;
-  NSArray	*apps = GSLaunched(nil, nil);
-  unsigned	i = [apps count];
-
-  /*
-   * Try to find actrive app in launched applications.
-   */
-  while (i-- > 0)
-    {
-      NSDictionary	*info = [apps objectAtIndex: i];
-
-      if ([info objectForKey: @"GSApplicationActive"] != nil)
-	{
-	  return info;
-	}
-    }
-
-  /*
-   * Should never get here ... but assume this is the active app.
-   */
-  processInfo = [NSProcessInfo processInfo];
-  appName = [[GSServicesManager manager] port];
-  return [NSDictionary dictionaryWithObjectsAndKeys:
-    appName, @"NSApplicationName",
-    [[NSBundle mainBundle] bundlePath], @"NSApplicationPath",
-    [NSNumber numberWithInt: [processInfo processIdentifier]], 
-		   @"NSApplicationProcessIdentifier",
-    nil];
+  return GSLaunched(nil, YES);
 }
 
 /**
@@ -1352,7 +1345,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
  */
 - (NSArray*) launchedApplications
 {
-  return GSLaunched(nil, nil);
+  return GSLaunched(nil, NO);
 }
 
 /*
