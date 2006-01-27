@@ -7,6 +7,11 @@
 	workspace manager process to do it.
 	Try to be consistent about asking workspace manager application to
 	perform tasks for us if it exists.
+	* Tools/gscloseall.m: Test tool to iterate through launched apps and
+	terminate them all.
+	* Tools/GNUmakefile:
+	* Tools/GNUmakefile.preamble:
+	Build new utility.
 
 2006-01-22  Fred Kiefer <FredKiefer@gmx.de>
 
