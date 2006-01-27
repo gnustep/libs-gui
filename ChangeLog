@@ -1,3 +1,11 @@
+2006-01-27  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSApplication.m: pass more informative user info in
+	notifications.
+	* Source/NSWorkspace.m: implement filesystem based fallback mechanisms
+	for tracking launched and active appplications when there is no
+	workspace manager process to do it.
+
 2006-01-22  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPopupButtonCell.m (-synchronizeTitleAndSelectedItem):

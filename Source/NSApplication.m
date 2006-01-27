@@ -341,6 +341,7 @@ struct _NSModalSession {
 
 @interface NSApplication (Private)
 - _appIconInit;
+- (NSDictionary*) _notificationUserInfo;
 - (void) _openDocument: (NSString*)name;
 - (void) _windowDidBecomeKey: (NSNotification*) notification;
 - (void) _windowDidBecomeMain: (NSNotification*) notification;
@@ -913,7 +914,6 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   NSString		*mainModelFile;
   NSString		*appIconFile;
   NSUserDefaults	*defs = [NSUserDefaults standardUserDefaults];
-  NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
   NSString		*filePath;
   NSArray		*windows_list;
   unsigned		count;
@@ -1039,11 +1039,11 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
       [self terminate: self];
     }
   else if (![defs boolForKey: @"autolaunch"]
-	   && [_delegate respondsToSelector:
-		@selector(applicationShouldOpenUntitledFile:)]
-	   && ([_delegate applicationShouldOpenUntitledFile: self])
-	   && [_delegate respondsToSelector:
-		@selector(applicationOpenUntitledFile:)])
+    && [_delegate respondsToSelector:
+      @selector(applicationShouldOpenUntitledFile:)]
+    && ([_delegate applicationShouldOpenUntitledFile: self])
+    && [_delegate respondsToSelector:
+      @selector(applicationOpenUntitledFile:)])
     {
       [_delegate applicationOpenUntitledFile: self];
     }
@@ -1053,14 +1053,21 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 		    object: self];
 
   NS_DURING
-    [[workspace notificationCenter]
-      postNotificationName: NSWorkspaceDidLaunchApplicationNotification
-      object: workspace
-      userInfo: [workspace activeApplication]];
+    {
+      NSWorkspace	*workspace;
+
+      workspace = [NSWorkspace sharedWorkspace];
+      [[workspace notificationCenter]
+	postNotificationName: NSWorkspaceDidLaunchApplicationNotification
+	object: workspace
+	userInfo: [self _notificationUserInfo]];
+    }
   NS_HANDLER
-    NSLog (_(@"Problem during launch app notification: %@"),
-	   [localException reason]);
-    [localException raise];
+    {
+      NSLog (_(@"Problem during launch app notification: %@"),
+	 [localException reason]);
+      [localException raise];
+    }
   NS_ENDHANDLER
 }
 
@@ -1168,7 +1175,8 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
         }
 
       [nc postNotificationName: NSApplicationDidBecomeActiveNotification
-			object: self];
+			object: self
+		      userInfo: [self _notificationUserInfo]];
     }
 }
 
@@ -1230,7 +1238,8 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 	}
 
       [nc postNotificationName: NSApplicationDidResignActiveNotification
-			object: self];
+			object: self
+		      userInfo: [self _notificationUserInfo]];
     }
 }
 
@@ -3046,7 +3055,7 @@ image.</p><p>See Also: -applicationIconImage</p>
 {
   if (shouldTerminate)
     {
-      NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
+      NSWorkspace	*workspace = [NSWorkspace sharedWorkspace];
 
       [nc postNotificationName: NSApplicationWillTerminateNotification
 	  object: self];
@@ -3063,7 +3072,7 @@ image.</p><p>See Also: -applicationIconImage</p>
       [[workspace notificationCenter]
         postNotificationName: NSWorkspaceDidTerminateApplicationNotification
 		      object: workspace
-		    userInfo: [workspace activeApplication]];
+		    userInfo: [self _notificationUserInfo]];
 
       /* Destroy the main run loop pool (this also destroys any nested
 	 pools which might have been created inside this one).  */
@@ -3284,6 +3293,21 @@ image.</p><p>See Also: -applicationIconImage</p>
 
   [_app_icon_window orderFrontRegardless];
   return self;
+}
+
+- (NSDictionary*) _notificationUserInfo
+{
+  NSNumber	*processIdentifier;
+  NSDictionary	*userInfo;
+
+  processIdentifier = [NSNumber numberWithInt:
+    [[NSProcessInfo processInfo] processIdentifier]];
+  userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+    [(GSServicesManager*)_listener port], @"NSApplicationName",
+    [[NSBundle mainBundle] bundlePath], @"NSApplicationPath",
+    processIdentifier, @"NSApplicationPprocessIdentifier",
+    nil];
+  return userInfo;
 }
 
 - (void) _openDocument: (NSString*)filePath

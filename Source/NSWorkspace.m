@@ -45,6 +45,7 @@
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSHost.h>
 #include <Foundation/NSLock.h>
+#include <Foundation/NSDistributedLock.h>
 #include <Foundation/NSPathUtilities.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSTask.h>
@@ -78,10 +79,128 @@ static NSImage	*unknownTool = nil;
 
 static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
 
+static NSArray	*GSLaunched(NSDictionary *info, NSString *mode)
+{
+  static NSString		*path = nil;
+  static NSDistributedLock	*lock = nil;
+  NSMutableArray		*apps = nil;
+  BOOL	toBecomeActive;
+  BOOL	toResignActive;
+  BOOL	toLaunch;
+  BOOL	toTerminate;
+
+  toBecomeActive = [mode isEqualToString:
+    NSApplicationDidBecomeActiveNotification];
+  toResignActive = [mode isEqualToString:
+    NSApplicationDidResignActiveNotification];
+  toLaunch = [mode isEqualToString:
+    NSWorkspaceDidLaunchApplicationNotification];
+  toTerminate = [mode isEqualToString:
+    NSWorkspaceDidTerminateApplicationNotification];
+
+  if (path == nil)
+    {
+      path = [NSTemporaryDirectory()
+	stringByAppendingPathComponent: @"GSLaunchedApplications"];
+      RETAIN(path);
+      lock = [[NSDistributedLock alloc] initWithPath:
+	[path stringByAppendingPathExtension: @"lock"]];
+    }
+  if ([lock tryLock] == NO)
+    {
+      if ([[lock lockDate] timeIntervalSinceNow] < -20.0)
+        {
+	  NS_DURING
+	    {
+	      [lock breakLock];
+	    }
+	  NS_HANDLER
+	    {
+              NSLog(@"Unable to break lock %@ ... %@", lock, localException);
+	    }
+	  NS_ENDHANDLER
+        }
+      if ([lock tryLock] == NO)
+        {
+          NSLog(@"Unable to obtain lock %@", lock);
+          return nil;
+	}
+    }
+
+  if ([[NSFileManager defaultManager] isReadableFileAtPath: path] == YES)
+    {
+      apps = [NSMutableArray arrayWithContentsOfFile: path];
+    }
+  if (apps == nil)
+    {
+      apps = [NSMutableArray arrayWithCapacity: 1];
+    }
+
+  if (info != nil)
+    {
+      NSString	*name = [info objectForKey: @"NSApplicationName"];
+      unsigned	i = [apps count];
+      BOOL	modified = NO;
+      BOOL	wasActive = NO;
+
+      while (i-- > 0)
+	{
+	  NSDictionary	*oldInfo;
+	  NSString	*oldName;
+
+	  oldInfo = [apps objectAtIndex: i];
+	  oldName = [oldInfo objectForKey: @"NSApplicationName"];
+
+	  if ([name isEqualToString: oldName] == YES)
+	    {
+	      if ([oldInfo objectForKey:  @"GSApplicationActive"] != nil)
+		{
+		  wasActive = YES;
+		}
+	      [apps removeObjectAtIndex: i];
+	      modified = YES;
+	    }
+	  else if (toBecomeActive == YES
+	    && [oldInfo objectForKey: @"GSApplicationActive"] != nil)
+	    {
+	      NSMutableDictionary	*m = [oldInfo mutableCopy];
+
+	      [m removeObjectForKey: @"GSApplicationActive"];
+	      [apps replaceObjectAtIndex: i withObject: m];
+	      RELEASE(m);
+	      modified = YES;
+	    }
+	}
+
+      if (toTerminate == NO)
+	{
+	  if (toBecomeActive == YES
+	    || (toResignActive == NO && wasActive == YES))
+	    {
+	      NSMutableDictionary	*m = [info mutableCopy];
+
+	      [m setObject: @"YES" forKey: @"GSApplicationActive"];
+	      info = AUTORELEASE(m);
+	    }
+	  [apps addObject: info];
+	  modified = YES;
+	}
+
+      if (modified == YES)
+	{
+	  [apps writeToFile: path atomically: YES];
+	}
+    }
+  [lock unlock];
+
+  return apps;
+}
+
 @interface	_GSWorkspaceCenter: NSNotificationCenter
 {
   NSDistributedNotificationCenter	*remote;
 }
+- (void) _handleApplicationNotification: (NSNotification*)aNotification;
 - (void) _handleRemoteNotification: (NSNotification*)aNotification;
 - (void) _postLocal: (NSString*)name userInfo: (NSDictionary*)info;
 @end
@@ -90,6 +209,14 @@ static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
 
 - (void) dealloc
 {
+  [[NSNotificationCenter defaultCenter]
+    removeObserver: self
+    name: NSApplicationDidBecomeActiveNotification
+    object: nil];
+  [[NSNotificationCenter defaultCenter]
+    removeObserver: self
+    name: NSApplicationDidResignActiveNotification
+    object: nil];
   [remote removeObserver: self name: nil object: GSWorkspaceNotification];
   RELEASE(remote);
   [super dealloc];
@@ -100,6 +227,17 @@ static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
   self = [super init];
   if (self != nil)
     {
+      [[NSNotificationCenter defaultCenter]
+	addObserver: self
+	   selector: @selector(_handleApplicationNotification:)
+	       name: NSApplicationDidResignActiveNotification
+	     object: nil];
+      [[NSNotificationCenter defaultCenter]
+	addObserver: self
+	   selector: @selector(_handleApplicationNotification:)
+	       name: NSApplicationDidBecomeActiveNotification
+	     object: nil];
+
       remote = RETAIN([NSDistributedNotificationCenter defaultCenter]);
       NS_DURING
 	{
@@ -135,10 +273,21 @@ static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
 - (void) postNotification: (NSNotification*)aNotification
 {
   NSNotification	*rem;
+  NSString		*name = [aNotification name];
+  NSDictionary		*info = [aNotification userInfo];
 
-  rem = [NSNotification notificationWithName: [aNotification name]
+  if ([name isEqual: NSWorkspaceDidTerminateApplicationNotification] == YES)
+    {
+      GSLaunched(info, name);
+    }
+  if ([name isEqual: NSWorkspaceDidLaunchApplicationNotification] == YES)
+    {
+      GSLaunched(info, name);
+    }
+
+  rem = [NSNotification notificationWithName: name
 				      object: GSWorkspaceNotification
-				    userInfo: [aNotification userInfo]];
+				    userInfo: info];
   NS_DURING
     {
       [remote postNotification: rem];
@@ -174,6 +323,17 @@ static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
   [self postNotification: [NSNotification notificationWithName: name
 							object: object
 						      userInfo: info]];
+}
+
+- (void) _handleApplicationNotification: (NSNotification*)aNotification
+{
+  NSString	*name = [aNotification name];
+
+  if ([name isEqualToString: NSApplicationDidBecomeActiveNotification] == YES
+    || [name isEqualToString: NSApplicationDidResignActiveNotification] == YES)
+    {
+      GSLaunched([aNotification userInfo], name);
+    }
 }
 
 /*
@@ -215,7 +375,8 @@ static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
 
 // application communication
 - (BOOL) _launchApplication: (NSString*)appName
-		  arguments: (NSArray*)args;
+		  arguments: (NSArray*)args
+		    locally: (BOOL)locally;
 - (id) _connectApplication: (NSString*)appName;
 - (id) _workspaceApplication;
 
@@ -517,7 +678,7 @@ static NSString			*_rootPath = @"/";
       NSArray *args;
 
       args = [NSArray arrayWithObjects: @"-GSFilePath", fullPath, nil];
-      return [self _launchApplication: appName arguments: args];
+      return [self _launchApplication: appName arguments: args locally: NO];
     }
   else
     {
@@ -564,7 +725,7 @@ static NSString			*_rootPath = @"/";
       NSArray *args;
 
       args = [NSArray arrayWithObjects: @"-GSTempPath", fullPath, nil];
-      return [self _launchApplication: appName arguments: args];
+      return [self _launchApplication: appName arguments: args locally: NO];
     }
   else
     {
@@ -1135,7 +1296,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	{
 	  args = [NSArray arrayWithObjects: @"-autolaunch", @"YES", nil];
 	}
-      return [self _launchApplication: appName arguments: args];
+      return [self _launchApplication: appName arguments: args locally: NO];
     }
   else
     {
@@ -1152,9 +1313,29 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
  */
 - (NSDictionary*) activeApplication
 {
-  NSProcessInfo *processInfo = [NSProcessInfo processInfo];
-  NSString	*appName = [[GSServicesManager manager] port];
+  NSProcessInfo *processInfo;
+  NSString	*appName;
+  NSArray	*apps = GSLaunched(nil, nil);
+  unsigned	i = [apps count];
 
+  /*
+   * Try to find actrive app in launched applications.
+   */
+  while (i-- > 0)
+    {
+      NSDictionary	*info = [apps objectAtIndex: i];
+
+      if ([info objectForKey: @"GSApplicationActive"] != nil)
+	{
+	  return info;
+	}
+    }
+
+  /*
+   * Should never get here ... but assume this is the active app.
+   */
+  processInfo = [NSProcessInfo processInfo];
+  appName = [[GSServicesManager manager] port];
   return [NSDictionary dictionaryWithObjectsAndKeys:
     appName, @"NSApplicationName",
     [[NSBundle mainBundle] bundlePath], @"NSApplicationPath",
@@ -1164,24 +1345,14 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 }
 
 /**
- * Returns an array listing all the applications know to have been
- * launched.
+ * Returns an array listing all the applications known to have been
+ * launched.  Each entry in the array is a dictionary providing
+ * the name, path and process identfier of an application.<br />
+ * NB. The contents of this array are not guaranteed to be up to date.
  */
 - (NSArray*) launchedApplications
 {
-  NSDictionary		*dict;
-  NSString		*app;
-  NSMutableArray	*apps = [NSMutableArray array];
-  NSEnumerator		*enumerator = [_launched keyEnumerator];
-
-  while ((app = [enumerator nextObject]) != nil)
-    {
-      dict = [NSDictionary dictionaryWithObject: app
-					 forKey: @"NSApplicationName"];
-      [apps addObject: dict];
-    }
-  
-  return apps;
+  return GSLaunched(nil, nil);
 }
 
 /*
@@ -2071,19 +2242,21 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 }
 
 /**
- * Launch an application ... if there is a workspace application, ask it
- * to perform the launch for us.  Otherwise we try to launch the app
- * ourself as long as it is on the same host as we are.
+ * Launch an application ... if there is a workspace application and
+ * we have not been specifically asked to launch locally, ask the
+ * workspace application to perform the launch for us.
+ * Otherwise we try to launch the app ourself as long as it is on
+ * the same host as we are.
  */
 - (BOOL) _launchApplication: (NSString*)appName
 		  arguments: (NSArray*)args
+		    locally: (BOOL)locally
 {
-  id	app = nil;
+  id	app;
 
-  // app = [self _workspaceApplication];
-  if (app != nil)
+  if (locally == NO && (app = [self _workspaceApplication]) != nil)
     {
-      return [app _launchApplication: appName arguments: args];
+      return [app _launchApplication: appName arguments: args locally: YES];
     }
   else
     {
@@ -2267,10 +2440,6 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
     {
       NSString	*host;
 
-      /**
-       * We don't use -_launchApplication:arguents: here as that method
-       * calls -_workspaceApplication, and would cause recursion.
-       */
       host = [[NSUserDefaults standardUserDefaults] stringForKey: @"NSHost"];
       if (host == nil)
 	{
@@ -2293,7 +2462,9 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
        */
       if ([host isEqual: @""] == YES)
 	{
-	  if ([self _launchApplication: appName arguments: nil] == YES)
+	  if ([self _launchApplication: appName
+			     arguments: nil
+			       locally: YES] == YES)
 	    {
 	      app = [self _connectApplication: appName];
 	    }
