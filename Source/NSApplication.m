@@ -3305,7 +3305,7 @@ image.</p><p>See Also: -applicationIconImage</p>
   userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
     [(GSServicesManager*)_listener port], @"NSApplicationName",
     [[NSBundle mainBundle] bundlePath], @"NSApplicationPath",
-    processIdentifier, @"NSApplicationPprocessIdentifier",
+    processIdentifier, @"NSApplicationProcessIdentifier",
     nil];
   return userInfo;
 }
