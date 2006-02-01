@@ -1179,10 +1179,10 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
       [nc postNotificationName: NSApplicationDidBecomeActiveNotification
 			object: self
 		      userInfo: info];
-      nc = [[NSWorkspace sharedWorkspace] notificationCenter];
-      [nc postNotificationName: NSApplicationDidBecomeActiveNotification
-			object: [NSWorkspace sharedWorkspace]
-		      userInfo: info];
+      [[[NSWorkspace sharedWorkspace] notificationCenter]
+	postNotificationName: NSApplicationDidBecomeActiveNotification
+		      object: [NSWorkspace sharedWorkspace]
+		    userInfo: info];
     }
 }
 
@@ -1248,10 +1248,10 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
       [nc postNotificationName: NSApplicationDidResignActiveNotification
 			object: self
 		      userInfo: info];
-      nc = [[NSWorkspace sharedWorkspace] notificationCenter];
-      [nc postNotificationName: NSApplicationDidResignActiveNotification
-			object: [NSWorkspace sharedWorkspace]
-		      userInfo: info];
+      [[[NSWorkspace sharedWorkspace] notificationCenter]
+        postNotificationName: NSApplicationDidResignActiveNotification
+		      object: [NSWorkspace sharedWorkspace]
+		    userInfo: info];
     }
 }
 
