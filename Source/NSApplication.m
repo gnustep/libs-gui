@@ -1124,8 +1124,9 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   // TODO: Currently the flag is ignored
   if (_app_is_active == NO)
     {
-      unsigned			count;
-      unsigned			i;
+      unsigned		count;
+      unsigned		i;
+      NSDictionary	*info;
 
      /*
        * Menus should observe this notification in order to make themselves
@@ -1174,9 +1175,14 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 			      [menu_window windowNumber]];
         }
 
+      info = [self _notificationUserInfo];
       [nc postNotificationName: NSApplicationDidBecomeActiveNotification
 			object: self
-		      userInfo: [self _notificationUserInfo]];
+		      userInfo: info];
+      nc = [[NSWorkspace sharedWorkspace] notificationCenter];
+      [nc postNotificationName: NSApplicationDidBecomeActiveNotification
+			object: [NSWorkspace sharedWorkspace]
+		      userInfo: info];
     }
 }
 
@@ -1188,9 +1194,10 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 {
   if (_app_is_active == YES)
     {
-      NSArray			*windows_list = [self windows]; 
-      unsigned			count = [windows_list count];
-      unsigned			i;
+      NSArray		*windows_list = [self windows]; 
+      unsigned		count = [windows_list count];
+      unsigned		i;
+      NSDictionary	*info;
 
       [nc postNotificationName: NSApplicationWillResignActiveNotification
 			object: self];
@@ -1237,9 +1244,14 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 	    }
 	}
 
+      info = [self _notificationUserInfo];
       [nc postNotificationName: NSApplicationDidResignActiveNotification
 			object: self
-		      userInfo: [self _notificationUserInfo]];
+		      userInfo: info];
+      nc = [[NSWorkspace sharedWorkspace] notificationCenter];
+      [nc postNotificationName: NSApplicationDidResignActiveNotification
+			object: [NSWorkspace sharedWorkspace]
+		      userInfo: info];
     }
 }
 

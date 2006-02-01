@@ -1,3 +1,12 @@
+2006-02-01  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSApplication.m: Send activation/deactivation notifications
+	to workspace center too ... so workspace manager will know about it.
+	* Source/NSWorkspace.m: Change internal method to launch applications
+	so that it never asks the workspace manager to do it ... that should
+	be handled by the public methods instead.  Simplify a little to take
+	advantage of change to NSApplication.
+
 2006-01-27  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSApplication.m: pass more informative user info in

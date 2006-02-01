@@ -241,7 +241,6 @@ static id GSLaunched(NSNotification *notification, BOOL active)
 {
   NSDistributedNotificationCenter	*remote;
 }
-- (void) _handleApplicationNotification: (NSNotification*)aNotification;
 - (void) _handleRemoteNotification: (NSNotification*)aNotification;
 - (void) _postLocal: (NSString*)name userInfo: (NSDictionary*)info;
 @end
@@ -250,14 +249,6 @@ static id GSLaunched(NSNotification *notification, BOOL active)
 
 - (void) dealloc
 {
-  [[NSNotificationCenter defaultCenter]
-    removeObserver: self
-    name: NSApplicationDidBecomeActiveNotification
-    object: nil];
-  [[NSNotificationCenter defaultCenter]
-    removeObserver: self
-    name: NSApplicationDidResignActiveNotification
-    object: nil];
   [remote removeObserver: self name: nil object: GSWorkspaceNotification];
   RELEASE(remote);
   [super dealloc];
@@ -268,17 +259,6 @@ static id GSLaunched(NSNotification *notification, BOOL active)
   self = [super init];
   if (self != nil)
     {
-      [[NSNotificationCenter defaultCenter]
-	addObserver: self
-	   selector: @selector(_handleApplicationNotification:)
-	       name: NSApplicationDidResignActiveNotification
-	     object: nil];
-      [[NSNotificationCenter defaultCenter]
-	addObserver: self
-	   selector: @selector(_handleApplicationNotification:)
-	       name: NSApplicationDidBecomeActiveNotification
-	     object: nil];
-
       remote = RETAIN([NSDistributedNotificationCenter defaultCenter]);
       NS_DURING
 	{
@@ -318,7 +298,9 @@ static id GSLaunched(NSNotification *notification, BOOL active)
   NSDictionary		*info = [aNotification userInfo];
 
   if ([name isEqual: NSWorkspaceDidTerminateApplicationNotification] == YES
-    || [name isEqual: NSWorkspaceDidLaunchApplicationNotification] == YES)
+    || [name isEqual: NSWorkspaceDidLaunchApplicationNotification] == YES
+    || [name isEqualToString: NSApplicationDidBecomeActiveNotification] == YES
+    || [name isEqualToString: NSApplicationDidResignActiveNotification] == YES)
     {
       GSLaunched(aNotification, YES);
     }
@@ -363,17 +345,6 @@ static id GSLaunched(NSNotification *notification, BOOL active)
 						      userInfo: info]];
 }
 
-- (void) _handleApplicationNotification: (NSNotification*)aNotification
-{
-  NSString	*name = [aNotification name];
-
-  if ([name isEqualToString: NSApplicationDidBecomeActiveNotification] == YES
-    || [name isEqualToString: NSApplicationDidResignActiveNotification] == YES)
-    {
-      GSLaunched(aNotification, YES);
-    }
-}
-
 /*
  * Forward a notification from a remote application to observers in this
  * application.
@@ -413,8 +384,7 @@ static id GSLaunched(NSNotification *notification, BOOL active)
 
 // application communication
 - (BOOL) _launchApplication: (NSString*)appName
-		  arguments: (NSArray*)args
-		    locally: (BOOL)locally;
+		  arguments: (NSArray*)args;
 - (id) _connectApplication: (NSString*)appName;
 - (id) _workspaceApplication;
 
@@ -732,7 +702,7 @@ static NSString			*_rootPath = @"/";
       NSArray *args;
 
       args = [NSArray arrayWithObjects: @"-GSFilePath", fullPath, nil];
-      return [self _launchApplication: appName arguments: args locally: NO];
+      return [self _launchApplication: appName arguments: args];
     }
   else
     {
@@ -794,7 +764,7 @@ static NSString			*_rootPath = @"/";
       NSArray *args;
 
       args = [NSArray arrayWithObjects: @"-GSTempPath", fullPath, nil];
-      return [self _launchApplication: appName arguments: args locally: NO];
+      return [self _launchApplication: appName arguments: args];
     }
   else
     {
@@ -1393,7 +1363,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	{
 	  args = [NSArray arrayWithObjects: @"-autolaunch", @"YES", nil];
 	}
-      return [self _launchApplication: appName arguments: args locally: NO];
+      return [self _launchApplication: appName arguments: args];
     }
   else
     {
@@ -2349,91 +2319,81 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 }
 
 /**
- * Launch an application ... if there is a workspace application and
- * we have not been specifically asked to launch locally, ask the
- * workspace application to perform the launch for us.
- * Otherwise we try to launch the app ourself as long as it is on
- * the same host as we are.
+ * Launch an application locally (ie without reference to the workspace
+ * manager application).  We should only call this method when we want
+ * the application launched by this process, either because what we are
+ * launching IS the workspace manager, or because we have tried to get
+ * the workspace manager to do the job and been unable to do so.
  */
 - (BOOL) _launchApplication: (NSString*)appName
 		  arguments: (NSArray*)args
-		    locally: (BOOL)locally
 {
-  id	app;
+  NSTask	*task;
+  NSString	*path;
+  NSDictionary	*userinfo;
+  NSString	*host;
 
-  if (locally == NO && (app = [self _workspaceApplication]) != nil)
+  path = [self locateApplicationBinary: appName];
+  if (path == nil)
     {
-      return [app _launchApplication: appName arguments: args locally: YES];
+      return NO;
     }
-  else
+
+  /*
+   * Try to ensure that apps we launch display in this workspace
+   * ie they have the same -NSHost specification.
+   */
+  host = [[NSUserDefaults standardUserDefaults] stringForKey: @"NSHost"];
+  if (host != nil)
     {
-      NSTask		*task;
-      NSString		*path;
-      NSDictionary	*userinfo;
-      NSString		*host;
+      NSHost	*h;
 
-      path = [self locateApplicationBinary: appName];
-      if (path == nil)
+      h = [NSHost hostWithName: host];
+      if ([h isEqual: [NSHost currentHost]] == NO)
 	{
-	  return NO;
-	}
-
-      /*
-       * Try to ensure that apps we launch display in this workspace
-       * ie they have the same -NSHost specification.
-       */
-      host = [[NSUserDefaults standardUserDefaults] stringForKey: @"NSHost"];
-      if (host != nil)
-	{
-	  NSHost	*h;
-
-	  h = [NSHost hostWithName: host];
-	  if ([h isEqual: [NSHost currentHost]] == NO)
+	  if ([args containsObject: @"-NSHost"] == NO)
 	    {
-	      if ([args containsObject: @"-NSHost"] == NO)
-		{
-		  NSMutableArray	*a;
+	      NSMutableArray	*a;
 
-		  if (args == nil)
-		    {
-		      a = [NSMutableArray arrayWithCapacity: 2];
-		    }
-		  else
-		    {
-		      a = AUTORELEASE([args mutableCopy]);
-		    }
-		  [a insertObject: @"-NSHost" atIndex: 0];
-		  [a insertObject: host atIndex: 1];
-		  args = a;
+	      if (args == nil)
+		{
+		  a = [NSMutableArray arrayWithCapacity: 2];
 		}
+	      else
+		{
+		  a = AUTORELEASE([args mutableCopy]);
+		}
+	      [a insertObject: @"-NSHost" atIndex: 0];
+	      [a insertObject: host atIndex: 1];
+	      args = a;
 	    }
 	}
-      /*
-       * App being launched, send
-       * NSWorkspaceWillLaunchApplicationNotification
-       */
-      userinfo = [NSDictionary dictionaryWithObjectsAndKeys:
-	[[appName lastPathComponent] stringByDeletingPathExtension], 
-			       @"NSApplicationName",
-	appName, @"NSApplicationPath",
-	nil];
-      [_workspaceCenter
-	postNotificationName: NSWorkspaceWillLaunchApplicationNotification
-	object: self
-	userInfo: userinfo];
-
-      task = [NSTask launchedTaskWithLaunchPath: path arguments: args];
-      if (task == nil)
-	{
-	  return NO;
-	}
-      /*
-       * The NSWorkspaceDidLaunchApplicationNotification will be
-       * sent by the started application itself.
-       */
-      [_launched setObject: task forKey: appName];
-      return YES;
     }
+  /*
+   * App being launched, send
+   * NSWorkspaceWillLaunchApplicationNotification
+   */
+  userinfo = [NSDictionary dictionaryWithObjectsAndKeys:
+    [[appName lastPathComponent] stringByDeletingPathExtension], 
+			   @"NSApplicationName",
+    appName, @"NSApplicationPath",
+    nil];
+  [_workspaceCenter
+    postNotificationName: NSWorkspaceWillLaunchApplicationNotification
+    object: self
+    userInfo: userinfo];
+
+  task = [NSTask launchedTaskWithLaunchPath: path arguments: args];
+  if (task == nil)
+    {
+      return NO;
+    }
+  /*
+   * The NSWorkspaceDidLaunchApplicationNotification will be
+   * sent by the started application itself.
+   */
+  [_launched setObject: task forKey: appName];
+  return YES;
 }
 
 - (id) _connectApplication: (NSString*)appName
@@ -2589,8 +2549,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
       if ([host isEqual: @""] == YES)
 	{
 	  if ([self _launchApplication: appName
-			     arguments: nil
-			       locally: YES] == YES)
+			     arguments: nil] == YES)
 	    {
 	      app = [self _connectApplication: appName];
 	    }
