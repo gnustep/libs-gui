@@ -288,15 +288,15 @@
   [aCoder encodeValueOfObjCType: @encode(id)  at: &types];
 
   // flags...
-  flag = _flags.appVerifies;
+  flag = (_flags.appVerifies ? YES : NO);
   [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
-  flag = _flags.canUpdateContinuously;
+  flag = (_flags.canUpdateContinuously ? YES : NO);
   [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
-  flag = _flags.isDirty;
+  flag = (_flags.isDirty ? YES : NO);
   [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
-  flag = _flags.willOpenSource;
+  flag = (_flags.willOpenSource ? YES : NO);
   [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
-  flag = _flags.willUpdate;
+  flag = (_flags.willUpdate ? YES : NO);
   [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
 }
 

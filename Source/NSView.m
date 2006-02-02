@@ -4108,7 +4108,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (BOOL) needsDisplay
 {
-  return _rFlags.needs_display;
+  return (_rFlags.needs_display ? YES : NO);
 }
 
 - (int) tag

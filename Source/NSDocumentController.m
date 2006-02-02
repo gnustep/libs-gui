@@ -188,7 +188,7 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
 
 - (BOOL) shouldCreateUI
 {
-  return _controllerFlags.shouldCreateUI;
+  return (_controllerFlags.shouldCreateUI ? YES : NO);
 }
 
 - (void) setShouldCreateUI: (BOOL)flag

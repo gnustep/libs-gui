@@ -207,7 +207,7 @@
 
 - (BOOL) shouldCloseDocument
 {
-  return _wcFlags.shouldCloseDocument;
+  return (_wcFlags.shouldCloseDocument ? YES : NO);
 }
 
 - (void) setShouldCascadeWindows: (BOOL)flag
@@ -217,7 +217,7 @@
 
 - (BOOL) shouldCascadeWindows
 {
-  return _wcFlags.shouldCascade;
+  return (_wcFlags.shouldCascade ? YES : NO);
 }
 
 - (void) close
@@ -375,7 +375,7 @@
 
 - (BOOL) isWindowLoaded
 {
-  return _wcFlags.nibIsLoaded;
+  return (_wcFlags.nibIsLoaded ? YES : NO);
 }
 
 - (void) windowDidLoad

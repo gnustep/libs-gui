@@ -259,7 +259,7 @@
 
 - (BOOL)delegateVerifiesLinks
 {
-  return _flags.delegateVerifiesLinks;
+  return (_flags.delegateVerifiesLinks ? YES : NO);
 }
 
 - (NSString *)filename
@@ -269,12 +269,12 @@
 
 - (BOOL)interactsWithUser
 {
-  return _flags.interactsWithUser;
+  return (_flags.interactsWithUser ? YES : NO);
 }
 
 - (BOOL)isEdited
 {
-  return _flags.isEdited;
+  return (_flags.isEdited ? YES : NO);
 }
 
 - (void)setDelegateVerifiesLinks:(BOOL)flag
@@ -292,7 +292,7 @@
 //
 - (BOOL)areLinkOutlinesVisible
 {
-  return _flags.areLinkOutlinesVisible;
+  return (_flags.areLinkOutlinesVisible ? YES : NO);
 }
 
 - (NSEnumerator *)destinationLinkEnumerator
@@ -337,13 +337,13 @@
   [aCoder encodeValueOfObjCType: @encode(id)  at: &sourceLinks];
   [aCoder encodeValueOfObjCType: @encode(id)  at: &destinationLinks];
 
-  flag = _flags.areLinkOutlinesVisible;
+  flag = (_flags.areLinkOutlinesVisible ? YES : NO);
   [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
-  flag = _flags.delegateVerifiesLinks;
+  flag = (_flags.delegateVerifiesLinks ? YES : NO);
   [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
-  flag = _flags.interactsWithUser;
+  flag = (_flags.interactsWithUser ? YES : NO);
   [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
-  flag = _flags.isEdited;
+  flag = (_flags.isEdited ? YES : NO);
   [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
 }
 
