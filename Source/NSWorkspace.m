@@ -2485,6 +2485,19 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	  RELEASE(limit);
 	}
     }
+  if (app == nil && port != nil && [host isEqual: @""] == YES)
+    {
+      /*
+       * The application is not running on this host ... fake a termination
+       * notification for it and use that to remove it from the on-disk
+       * list of launched applications.
+       */
+      GSLaunched([NSNotification
+	notificationWithName: NSWorkspaceDidTerminateApplicationNotification
+	object: self
+	userInfo: [NSDictionary dictionaryWithObject: port
+	  forKey: @"NSApplicationName"]], NO);
+    }
   TEST_RELEASE(when);
   return app;
 }

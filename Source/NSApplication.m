@@ -77,6 +77,12 @@
 /* The -gui thread. See the comment in initialize_gnustep_backend. */
 NSThread *GSAppKitThread;
 
+/* Notifications used to implement hide and unhide functionality. */
+static NSString	*GSHideOtherApplicationsNotification
+  = @"GSHideOtherApplicationsNotification";
+static NSString	*GSUnhideAllApplicationsNotification
+  = @"GSUnhideAllApplicationsNotification";
+
 /*
  * Base library exception handler
  */
@@ -347,6 +353,7 @@ struct _NSModalSession {
 - (void) _windowDidBecomeMain: (NSNotification*) notification;
 - (void) _windowDidResignKey: (NSNotification*) notification;
 - (void) _windowWillClose: (NSNotification*) notification;
+- (void) _workspaceNotification: (NSNotification*) notification;
 @end
 
 @interface NSIconWindow : NSWindow
@@ -1014,6 +1021,14 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   [nc addObserver: self selector: @selector(_windowDidResignMain:)
       name: NSWindowDidResignMainNotification object: nil];
 
+  /* register as observer for hide/unhide notifications */
+  [[[NSWorkspace sharedWorkspace] notificationCenter]
+    addObserver: self selector: @selector(_workspaceNotification:)
+      name: GSHideOtherApplicationsNotification object: nil];
+  [[[NSWorkspace sharedWorkspace] notificationCenter]
+    addObserver: self selector: @selector(_workspaceNotification:)
+      name: GSUnhideAllApplicationsNotification object: nil];
+
   [self activateIgnoringOtherApps: YES];
 
   /* Instantiate the NSDocumentController if we are a doc-based app */
@@ -1054,12 +1069,9 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 
   NS_DURING
     {
-      NSWorkspace	*workspace;
-
-      workspace = [NSWorkspace sharedWorkspace];
-      [[workspace notificationCenter]
+      [[[NSWorkspace sharedWorkspace] notificationCenter]
 	postNotificationName: NSWorkspaceDidLaunchApplicationNotification
-	object: workspace
+	object: [NSWorkspace sharedWorkspace]
 	userInfo: [self _notificationUserInfo]];
     }
   NS_HANDLER
@@ -1075,6 +1087,8 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 {
   GSDisplayServer *srv = GSServerForWindow(_app_icon_window);
 
+  [[[NSWorkspace sharedWorkspace] notificationCenter]
+    removeObserver: self];
   [nc removeObserver: self];
 
   RELEASE(_hidden);
@@ -1222,6 +1236,10 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 	    {
 	      continue;		/* Already invisible	*/
 	    }
+	  if ([win canHide] == NO)
+	    {
+	      continue;		/* Can't be hidden	*/
+	    }
 	  if (win == _app_icon_window)
 	    {
 	      continue;		/* can't hide the app icon.	*/
@@ -1267,20 +1285,24 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 
 /**
  * Cause all other apps to hide themselves.
- * <em>Unimplemented under GNUstep.</em>
  */
 - (void) hideOtherApplications: (id)sender
 {
-  // FIXME Currently does nothing
+  [[[NSWorkspace sharedWorkspace] notificationCenter]
+    postNotificationName: GSHideOtherApplicationsNotification
+		  object: [NSWorkspace sharedWorkspace]
+		userInfo: [self _notificationUserInfo]];
 }
 
 /**
  * Cause all apps including this one to unhide themselves.
- * <em>Unimplemented under GNUstep.</em>
  */
 - (void) unhideAllApplications: (id)sender
 {
-  // FIXME Currently does nothing
+  [[[NSWorkspace sharedWorkspace] notificationCenter]
+    postNotificationName: GSUnhideAllApplicationsNotification
+		  object: [NSWorkspace sharedWorkspace]
+		userInfo: [self _notificationUserInfo]];
 }
 
 /*
@@ -2227,6 +2249,10 @@ image.</p><p>See Also: -applicationIconImage</p>
 
       [nc postNotificationName: NSApplicationDidHideNotification
 			object: self];
+      [[[NSWorkspace sharedWorkspace] notificationCenter]
+        postNotificationName: NSApplicationDidHideNotification
+		      object: [NSWorkspace sharedWorkspace]
+		    userInfo: [self _notificationUserInfo]];
     }
 }
 
@@ -2291,6 +2317,10 @@ image.</p><p>See Also: -applicationIconImage</p>
 
       [nc postNotificationName: NSApplicationDidUnhideNotification
 			object: self];
+      [[[NSWorkspace sharedWorkspace] notificationCenter]
+        postNotificationName: NSApplicationDidUnhideNotification
+		      object: [NSWorkspace sharedWorkspace]
+		    userInfo: [self _notificationUserInfo]];
     }
 }
 
@@ -3067,8 +3097,6 @@ image.</p><p>See Also: -applicationIconImage</p>
 {
   if (shouldTerminate)
     {
-      NSWorkspace	*workspace = [NSWorkspace sharedWorkspace];
-
       [nc postNotificationName: NSApplicationWillTerminateNotification
 	  object: self];
       
@@ -3081,9 +3109,9 @@ image.</p><p>See Also: -applicationIconImage</p>
       [[NSUserDefaults standardUserDefaults] synchronize];
 
       /* Tell the Workspace that we really did terminate.  */
-      [[workspace notificationCenter]
+      [[[NSWorkspace sharedWorkspace] notificationCenter]
         postNotificationName: NSWorkspaceDidTerminateApplicationNotification
-		      object: workspace
+		      object: [NSWorkspace sharedWorkspace]
 		    userInfo: [self _notificationUserInfo]];
 
       /* Destroy the main run loop pool (this also destroys any nested
@@ -3524,6 +3552,29 @@ image.</p><p>See Also: -applicationIconImage</p>
 		    }
 		}
 	    }
+	}
+    }
+}
+
+- (void) _workspaceNotification: (NSNotification*) notification
+{
+  NSString	*name = [notification name];
+  NSDictionary	*info = [notification userInfo];
+
+  /*
+   * Handle hiding and unhiding of this app if necessary.
+   */
+  if ([name isEqualToString: GSUnhideAllApplicationsNotification] == YES)
+    {
+      [self unhideWithoutActivation];
+    }
+  else if ([name isEqualToString: GSHideOtherApplicationsNotification] == YES)
+    {
+      NSString	*port = [info objectForKey: @"NSApplicationName"];
+
+      if ([port isEqual: [[GSServicesManager manager] port]] == NO)
+	{
+	  [self hide: self];
 	}
     }
 }

@@ -1,3 +1,13 @@
+2006-02-02  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWorkspace.m: remove an app from list of launched apps if
+	we can't contact it.
+	* Source/NSApplication.m: ([hideOtherApplications:]) implemented.
+	([unhideAllApplications:]) implemented.
+	Send did hide and did unhide notifications to the workspace center
+	so the workspace manager knows about them.
+	Honor the NSWindow-canHide method when deactivating apps.
+
 2006-02-01  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSApplication.m: Send activation/deactivation notifications
