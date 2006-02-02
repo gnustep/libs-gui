@@ -7,6 +7,8 @@
 	Send did hide and did unhide notifications to the workspace center
 	so the workspace manager knows about them.
 	Honor the NSWindow-canHide method when deactivating apps.
+	* Source/NSWindow.m: Fix accessor methods which return a BOOL to
+	do the right thing when they are accessing a bit in a bitfield.
 
 2006-02-01  Richard Frith-Macdonald <rfm@gnu.org>
 
