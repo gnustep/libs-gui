@@ -94,6 +94,7 @@ static id GSLaunched(NSNotification *notification, BOOL active)
   NSDictionary			*info = [notification userInfo];
   NSString			*mode = [notification name];
   NSMutableDictionary		*file = nil;
+  NSString			*name;
   NSDictionary			*apps = nil;
   BOOL				modified = NO;
 
@@ -159,9 +160,9 @@ static id GSLaunched(NSNotification *notification, BOOL active)
       RELEASE(apps);
     }
 
-  if (info != nil)
+  if (info != nil
+    && (name = [info objectForKey: @"NSApplicationName"]) != nil)
     {
-      NSString		*name = [info objectForKey: @"NSApplicationName"];
       NSDictionary	*oldInfo = [apps objectForKey: name];
 
       if ([mode isEqualToString:

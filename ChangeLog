@@ -1,3 +1,9 @@
+2006-02-03  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWorkspace.m: In GSLaunched() be more defensive and don't
+	assume that the values which should be present in the notification
+	userinfo dictionry really are there.
+
 2006-02-02  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: remove an app from list of launched apps if
@@ -16,6 +22,9 @@
 	* Source/NSDataLink.m: ditto
 	* Source/NSView.m: ditto
 	* Source/NSDocument.m: ditto
+	Are these changes nneded?  The compiler seemed to be casting bitfield
+	values to char as  things other than 1 or 0 ... but I was tired when
+	looking at this and it seems unlikely.
 
 2006-02-01  Richard Frith-Macdonald <rfm@gnu.org>
 
