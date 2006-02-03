@@ -3337,16 +3337,46 @@ image.</p><p>See Also: -applicationIconImage</p>
 
 - (NSDictionary*) _notificationUserInfo
 {
+  NSString	*path;
+  NSString	*port;
   NSNumber	*processIdentifier;
   NSDictionary	*userInfo;
 
   processIdentifier = [NSNumber numberWithInt:
     [[NSProcessInfo processInfo] processIdentifier]];
-  userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-    [(GSServicesManager*)_listener port], @"NSApplicationName",
-    [[NSBundle mainBundle] bundlePath], @"NSApplicationPath",
-    processIdentifier, @"NSApplicationProcessIdentifier",
-    nil];
+  port = [(GSServicesManager*)_listener port];
+  path = [[NSBundle mainBundle] bundlePath];
+  if (port == nil)
+    {
+      if (path == nil)
+	{
+	  userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+	    processIdentifier, @"NSApplicationProcessIdentifier",
+	    nil];
+	}
+      else
+	{
+	  userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+	    path, @"NSApplicationPath",
+	    processIdentifier, @"NSApplicationProcessIdentifier",
+	    nil];
+	}
+    }
+  else if (path == nil)
+    {
+      userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+	port, @"NSApplicationName",
+	processIdentifier, @"NSApplicationProcessIdentifier",
+	nil];
+    }
+  else
+    {
+      userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+	port, @"NSApplicationName",
+	path, @"NSApplicationPath",
+	processIdentifier, @"NSApplicationProcessIdentifier",
+	nil];
+    }
   return userInfo;
 }
 

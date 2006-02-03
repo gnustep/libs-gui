@@ -3,6 +3,8 @@
 	* Source/NSWorkspace.m: In GSLaunched() be more defensive and don't
 	assume that the values which should be present in the notification
 	userinfo dictionry really are there.
+	* Source/NSApplication.m: Code more defensively setting up
+	notification info.
 
 2006-02-02  Richard Frith-Macdonald <rfm@gnu.org>
 
