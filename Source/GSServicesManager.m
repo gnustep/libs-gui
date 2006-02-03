@@ -275,31 +275,33 @@ NSRegisterServicesProvider(id provider, NSString *name)
 }
 
 /**
- * Selectively forwards those messages which are known to be safe.
+ * Selectively forwards those messages which are thought to be safe,
+ * and perform any special operations we need for workspace management
+ * etc.
  */
 - (void) forwardInvocation: (NSInvocation*)anInvocation
 {
   SEL		aSel = [anInvocation selector];
   NSString      *selName = NSStringFromSelector(aSel);
+  id		target = nil;
+  id		delegate;
 
-  if ([selName isEqualToString: @"terminate:"])
+  /*
+   * We never permit remote processes to call private methods in this
+   * application.
+   */
+  if ([selName hasPrefix: @"_"] == YES)
     {
-      NSNotificationCenter	*c;
-
-      /*
-       * Send a power off notification before asking app to terminate.
-       */
-      c = [[NSWorkspace sharedWorkspace] notificationCenter];
-      [c _postLocal: NSWorkspaceWillPowerOffNotification userInfo: nil];
-
-      [anInvocation invokeWithTarget: NSApp];
-      return;
+      [NSException raise: NSGenericException
+		  format: @"method  name '%@' private in '%@'",
+	selName, [manager port]];
     }
-  else if ([selName hasSuffix: @":userData:error:"])
+
+  if ([selName hasSuffix: @":userData:error:"] == YES)
     {
       /*
-       *    The selector matches the correct form for a services request,
-       *    so send the message to the services provider.
+       * The selector matches the correct form for a services request,
+       * so we send the message to the services provider.
        */
       if ([servicesProvider respondsToSelector: aSel] == YES)
 	{
@@ -315,59 +317,85 @@ NSRegisterServicesProvider(id provider, NSString *name)
 	  [anInvocation getArgument: (void*)&pb atIndex: 2];
 	  pb = [NSPasteboard pasteboardWithName: [pb name]];
 	  [anInvocation setArgument: (void*)&pb atIndex: 2];
-
 	  [anInvocation invokeWithTarget: servicesProvider];
 	  return;
 	}
+      [NSException raise: NSGenericException
+		  format: @"service request '%@' not implemented in '%@'",
+	selName, [manager port]];
+    }
+
+  delegate = [[NSApplication sharedApplication] delegate];
+
+  /*
+   * We assume that messages of the form 'application:...' are all
+   * safe and do mnot need to be listed in GSPermittedMessages.
+   * They can be handled either by the application delegate or by
+   * the shared GSServicesManager instance.
+   */
+  if ([selName hasPrefix: @"application:"] == YES)
+    {
+      if ([delegate respondsToSelector: aSel] == YES)
+	{
+	  target = delegate;
+	}
+      else if ([manager respondsToSelector: aSel] == YES)
+	{
+	  target = manager;
+	}
+    }
+
+  if (target == nil)
+    {
+      NSArray	*messages;
+ 
+      /*
+       * Unless the message was of a format assumed to be safe,
+       * we must check it against the GSPermittedMessages array
+       * to see if the app allows it to be sent from a remote
+       * process.
+       */
+      messages = [[NSUserDefaults standardUserDefaults] arrayForKey:
+	@"GSPermittedMessages"];
+      if (messages != nil && [messages containsObject: selName] == NO)
+	{
+	  [NSException raise: NSGenericException
+		      format: @"method '%@' not in GSPermittedMessages in '%@'",
+	    selName, [manager port]];
+	}
+      if ([delegate respondsToSelector: aSel] == YES)
+	{
+	  target = delegate;
+	}
+      else if ([NSApp respondsToSelector: aSel] == YES)
+	{
+	  target = NSApp;
+	}
+    }
+
+  if (target == nil)
+    {
+      [NSException raise: NSGenericException
+		  format: @"method '%@' not implemented in '%@'",
+	selName, [manager port]];
     }
   else
     {
-      id	delegate = [[NSApplication sharedApplication] delegate];
-
-      if ([selName isEqualToString: @"activateIgnoringOtherApps:"])
+      if ([selName isEqualToString: @"terminate:"])
 	{
-	  [anInvocation invokeWithTarget: NSApp];
-	  return;
+	  NSNotificationCenter	*c;
+
+	  /*
+	   * We handle the terminate: message as a special case, sending
+	   * a power off notification before allowing it to be processed
+	   * as normal.
+	   */
+	  c = [[NSWorkspace sharedWorkspace] notificationCenter];
+	  [c _postLocal: NSWorkspaceWillPowerOffNotification userInfo: nil];
 	}
 
-      if ([selName hasPrefix: @"application:"] == YES)
-	{
-	  if ([delegate respondsToSelector: aSel] == YES)
-	    {
-	      [anInvocation invokeWithTarget: delegate];
-	      return;
-	    }
-	  else if ([manager respondsToSelector: aSel] == YES)
-	    {
-	      [anInvocation invokeWithTarget: manager];
-	      return;
-	    }
-	}
-      else
-	{
-	  if ([delegate respondsToSelector: aSel] == YES)
-	    {
-	      NSArray	*messages;
-
-	      messages = [[NSUserDefaults standardUserDefaults] arrayForKey:
-		@"GSPermittedMessages"];
-	      if (messages != nil)
-		{
-		  if ([messages containsObject: selName] == YES)
-		    {
-		      [anInvocation invokeWithTarget: delegate];
-		    }
-		}
-	      else
-		{
-		  [anInvocation invokeWithTarget: delegate];
-		}
-	      return;
-	    }
-	}
+      [anInvocation invokeWithTarget: target];
     }
-  [NSException raise: NSGenericException
-	      format: @"method %@ not implemented", selName];
 }
 
 /**

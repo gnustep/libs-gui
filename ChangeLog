@@ -5,6 +5,8 @@
 	userinfo dictionry really are there.
 	* Source/NSApplication.m: Code more defensively setting up
 	notification info.
+	* Source/GSServicesManager.m: Improve handling of incoming messages,
+	prohibit remote processes from calling private methods.
 	* Source/NSWindow.m:
 	* Source/NSWindowController.m:
 	* Source/NSDataLinkManager.m:
