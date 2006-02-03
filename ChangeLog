@@ -1,5 +1,14 @@
 2006-02-03  Quentin Mathe <qmathe@club-internet.fr>
 
+    * Source/NSToolbarItem.m (-[GSToolbarButtonCell setImagePosition:]): 
+    New method to override NSButtonCell behavior. It should be the last commit
+    needed to correct bug #15112 (reported by Wolfgang Sourdeau). Precisely it
+    eliminates the default title set with separator or space toolbar
+    items and the image release with toolbar items which include one (both
+    issues occurs when NSToolbarDisplayModeLabelnOnly is set).
+
+2006-02-03  Quentin Mathe <qmathe@club-internet.fr>
+
     * Source/NSButtonCell.m (-setImagePosition:): Fixed the title lost (reset to
     the default one) which was wrongly occuring when the image position is
     switched to 'NSNoImage' (partial fix for bug #15112, based on an NSCell
