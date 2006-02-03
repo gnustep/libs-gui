@@ -277,7 +277,9 @@ NSRegisterServicesProvider(id provider, NSString *name)
 /**
  * Selectively forwards those messages which are thought to be safe,
  * and perform any special operations we need for workspace management
- * etc.
+ * etc.<br />
+ * The logic in this method <strong>must</strong> match that in 
+ * methodSignatureForSelector:
  */
 - (void) forwardInvocation: (NSInvocation*)anInvocation
 {
@@ -293,7 +295,7 @@ NSRegisterServicesProvider(id provider, NSString *name)
   if ([selName hasPrefix: @"_"] == YES)
     {
       [NSException raise: NSGenericException
-		  format: @"method  name '%@' private in '%@'",
+		  format: @"method name '%@' private in '%@'",
 	selName, [manager port]];
     }
 
@@ -403,54 +405,51 @@ NSRegisterServicesProvider(id provider, NSString *name)
  * to see if it's a standard service message or standard application
  * message.<br />
  * If the message is non-standard, it can be checked against a list
- * of messages specified by the GSPermittedMessages user default.
+ * of messages specified by the GSPermittedMessages user default.<br />
+ * The logic in this method <strong>must</strong> match that in 
+ * forwardInvocation:
  */
 - (NSMethodSignature*) methodSignatureForSelector: (SEL)aSelector
 {
   NSMethodSignature	*sig = nil;
   NSString      	*selName = NSStringFromSelector(aSelector);
+  id			delegate; 
 
-  if ([selName isEqualToString: @"terminate:"])
+  if ([selName hasSuffix: @":userData:error:"])
     {
-      sig = [NSApp methodSignatureForSelector: aSelector];
+      return [servicesProvider methodSignatureForSelector: aSelector];
     }
-  else if ([selName hasSuffix: @":userData:error:"])
-    {
-      sig = [servicesProvider methodSignatureForSelector: aSelector];
-    }
-  else
-    {
-      id	delegate = [[NSApplication sharedApplication] delegate];
 
-      if ([selName hasPrefix: @"application:"] == YES)
+  delegate = [[NSApplication sharedApplication] delegate];
+  if ([selName hasPrefix: @"application:"] == YES)
+    {
+      if ([delegate respondsToSelector: aSelector] == YES)
 	{
-	  if ([delegate respondsToSelector: aSelector] == YES)
-	    {
-	      sig = [delegate methodSignatureForSelector: aSelector];
-	    }
-	  else
-	    {
-	      sig = [manager methodSignatureForSelector: aSelector];
-	    }
+	  sig = [delegate methodSignatureForSelector: aSelector];
 	}
-      else
+      else if ([manager respondsToSelector: aSelector] == YES)
 	{
-	  NSArray	*messages;
+	  sig = [manager methodSignatureForSelector: aSelector];
+	}
+    }
 
-	  messages = [[NSUserDefaults standardUserDefaults] arrayForKey:
-	    @"GSPermittedMessages"];
+  if (sig == nil)
+    {
+      NSArray	*messages;
 
-	  if (messages != nil)
-	    {
-	      if ([messages containsObject: selName] == YES)
-		{
-		  sig = [delegate methodSignatureForSelector: aSelector];
-		}
-	    }
-	  else
-	    {
-	      sig = [delegate methodSignatureForSelector: aSelector];
-	    }
+      messages = [[NSUserDefaults standardUserDefaults] arrayForKey:
+	@"GSPermittedMessages"];
+      if (messages != nil && [messages containsObject: selName] == NO)
+	{
+	  return nil;
+	}
+      if ([delegate respondsToSelector: aSelector] == YES)
+	{
+	  sig = [delegate methodSignatureForSelector: aSelector];
+	}
+      else if ([NSApp respondsToSelector: aSelector] == YES)
+	{
+	  sig = [NSApp methodSignatureForSelector: aSelector];
 	}
     }
   return sig;
