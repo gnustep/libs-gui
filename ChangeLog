@@ -1,3 +1,10 @@
+2006-02-03  Quentin Mathe <qmathe@club-internet.fr>
+
+    * Source/NSButtonCell.m (-setImagePosition:): Fixed the title lost (reset to
+    the default one) which was wrongly occuring when the image position is
+    switched to 'NSNoImage' (partial fix for bug #15112, based on an NSCell
+    patch by Wolfgang Sourdeau).
+
 2006-02-03  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: In GSLaunched() be more defensive and don't
