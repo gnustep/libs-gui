@@ -2226,6 +2226,10 @@ image.</p><p>See Also: -applicationIconImage</p>
 	    {
 	      continue;		/* Already invisible	*/
 	    }
+	  if ([win canHide] == NO)
+	    {
+	      continue;		/* Not hideable	*/
+	    }
 	  if (win == _app_icon_window)
 	    {
 	      continue;		/* can't hide the app icon.	*/
