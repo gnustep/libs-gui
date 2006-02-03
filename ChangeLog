@@ -5,6 +5,16 @@
 	userinfo dictionry really are there.
 	* Source/NSApplication.m: Code more defensively setting up
 	notification info.
+	* Source/NSWindow.m:
+	* Source/NSWindowController.m:
+	* Source/NSDataLinkManager.m:
+	* Source/NSTextView.m:
+	* Source/NSDocumentController.m:
+	* Source/NSDataLink.m:
+	* Source/NSView.m:
+	* Source/NSDocument.m:
+	Revert harmless but stupid changes made last night when I was too
+	tired.
 
 2006-02-02  Richard Frith-Macdonald <rfm@gnu.org>
 

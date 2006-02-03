@@ -1103,7 +1103,7 @@ many times.
 
 - (BOOL) hasShadow
 {
-  return (_f.has_shadow ? YES : NO);
+  return _f.has_shadow;
 }
 
 - (void) setAlphaValue: (float)windowAlpha
@@ -1128,7 +1128,7 @@ many times.
 
 - (BOOL) isOpaque
 {
-  return (_f.is_opaque ? YES : NO);
+  return _f.is_opaque;
 }
 
 /*
@@ -1153,7 +1153,7 @@ many times.
 
 - (BOOL) isOneShot
 {
-  return (_f.is_one_shot ? YES : NO);
+  return _f.is_one_shot;
 }
 
 - (void) setBackingType: (NSBackingStoreType)type
@@ -1363,7 +1363,7 @@ many times.
 
 - (BOOL) hidesOnDeactivate
 {
-  return (_f.hides_on_deactivate ? YES : NO);
+  return _f.hides_on_deactivate;
 }
 
 - (void) setCanHide: (BOOL)flag
@@ -1373,27 +1373,27 @@ many times.
 
 - (BOOL) canHide
 {
-  return (_f.can_hide ? YES : NO);
+  return _f.can_hide;
 }
 
 - (BOOL) isKeyWindow
 {
-  return (_f.is_key ? YES : NO);
+  return _f.is_key;
 }
 
 - (BOOL) isMainWindow
 {
-  return (_f.is_main ? YES : NO);
+  return _f.is_main;
 }
 
 - (BOOL) isMiniaturized
 {
-  return (_f.is_miniaturized ? YES : NO);
+  return _f.is_miniaturized;
 }
 
 - (BOOL) isVisible
 {
-  return (_f.visible ? YES : NO);
+  return _f.visible;
 }
 
 - (int) level
@@ -2112,7 +2112,7 @@ many times.
 
 - (BOOL) isAutodisplay
 {
-  return (_f.is_autodisplay ? YES : NO);
+  return _f.is_autodisplay;
 }
 
 - (BOOL) isFlushWindowDisabled
@@ -2140,7 +2140,7 @@ many times.
 
 - (BOOL) viewsNeedDisplay
 {
-  return (_rFlags.needs_display ? YES : NO);
+  return _rFlags.needs_display;
 }
 
 - (void) cacheImageInRect: (NSRect)aRect
@@ -2217,7 +2217,7 @@ many times.
 
 - (BOOL) hasDynamicDepthLimit
 {
-  return (_f.dynamic_depth_limit ? YES : NO);
+  return _f.dynamic_depth_limit;
 }
 
 /** Returns the screen the window is on. */
@@ -2246,7 +2246,7 @@ many times.
  */
 - (BOOL) areCursorRectsEnabled
 {
-  return (_f.cursor_rects_enabled ? YES : NO);
+  return _f.cursor_rects_enabled;
 }
 
 - (void) disableCursorRects
@@ -2407,12 +2407,12 @@ resetCursorRectsForView(NSView *theView)
 
 - (BOOL) isDocumentEdited
 {
-  return (_f.is_edited ? YES : NO);
+  return _f.is_edited;
 }
 
 - (BOOL) isReleasedWhenClosed
 {
-  return (_f.is_released_when_closed ? YES : NO);
+  return _f.is_released_when_closed;
 }
 
 /**
@@ -2592,7 +2592,7 @@ resetCursorRectsForView(NSView *theView)
  */
 - (BOOL) acceptsMouseMovedEvents
 {
-  return (_f.accepts_mouse_moved ? YES : NO);
+  return _f.accepts_mouse_moved;
 }
 
 - (NSEvent*) currentEvent
@@ -3670,7 +3670,7 @@ resetCursorRectsForView(NSView *theView)
  */
 - (BOOL) isExcludedFromWindowsMenu
 {
-  return (_f.menu_exclude ? YES : NO);
+  return _f.menu_exclude;
 }
 
 - (void) setExcludedFromWindowsMenu: (BOOL)flag

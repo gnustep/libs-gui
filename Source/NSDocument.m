@@ -916,7 +916,7 @@
 
 - (BOOL)hasUndoManager
 {
-  return (_docFlags.hasUndoManager ? YES : NO);
+  return _docFlags.hasUndoManager;
 }
 
 - (void)setHasUndoManager: (BOOL)flag
