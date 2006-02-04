@@ -80,6 +80,7 @@
 {
   NSMutableArray *_itemCells;
   BOOL           _horizontal;
+  char		 _pad1[3];
   NSFont         *_font;
   int            _highlightedItemIndex;
   float          _horizontalEdgePad;
@@ -90,6 +91,7 @@
   float          _keyEqOffset;
   float          _keyEqWidth;
   BOOL           _needsSizing;
+  char		 _pad2[3];
   NSSize         _cellSize;
 
 @private

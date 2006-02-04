@@ -142,6 +142,11 @@ static NSNotificationCenter *nc;
 
 - (NSString*) _locationKey
 {
+  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil)
+    == NSMacintoshInterfaceStyle)
+    {
+      return nil;
+    }
   if (_superMenu == nil)
     {
       if ([NSApp mainMenu] == self)
@@ -197,61 +202,182 @@ static NSNotificationCenter *nc;
     forModes:  [NSArray arrayWithObject: NSDefaultRunLoopMode]];
 }
 
+- (void) _organizeMenu
+{
+  if (_horizontal == YES)
+    {
+      NSString	*title = [[NSProcessInfo processInfo] processName];
+      NSMenu	*appMenu = [[self itemWithTitle: title] submenu];
+
+      if (![self isEqual: [NSApp mainMenu]])
+	return;
+
+      if (appMenu == nil)
+	{
+	  int i;
+	  NSMutableArray *itemsToMove = [NSMutableArray new];
+	  NSMenuItem *appItem;
+	  NSImage *ti = [[NSApp applicationIconImage] copy];
+	  float bar = [NSMenuView menuBarHeight] - 4;
+
+	  appMenu = [NSMenu new];
+
+	  for (i = 0; i < [_items count]; i++)
+	    {
+	      NSMenuItem *anItem = [_items objectAtIndex: i];
+	      NSString *title = [anItem title];
+
+	      if (![anItem submenu])
+		{
+		  [itemsToMove addObject: anItem];
+		}
+
+	      if ([title isEqual: NSLocalizedString (@"Info",
+					       @"Info")])
+		{
+		  [itemsToMove addObject: anItem];
+		}
+	    }
+
+	  for (i = 0; i < [itemsToMove count]; i++)
+	    {
+	      [self removeItem: [itemsToMove objectAtIndex: i]];
+	      [appMenu addItem: [itemsToMove objectAtIndex: i]];
+	    }
+
+	  [self insertItemWithTitle: [[NSProcessInfo processInfo] processName]
+			     action: NULL
+		      keyEquivalent: @"" 
+			    atIndex: 0];
+	  appItem = (NSMenuItem *)[self itemWithTitle: title];
+
+	  if (!ti)
+	    ti = [[NSImage imageNamed: @"GNUstep.tiff"] copy];
+
+	  [ti setScalesWhenResized: YES];
+	  [ti setSize: NSMakeSize(bar, bar)];
+	  [appItem setImage: ti];
+	  RELEASE (ti);
+
+	  [self setSubmenu: appMenu forItem: appItem];
+
+	  [itemsToMove release];
+	}
+      else
+	{
+	  int i;
+	  NSMutableArray *itemsToMove = [NSMutableArray new];
+	  NSMenuItem *appItem = [self itemWithTitle: [[NSProcessInfo processInfo] processName]];
+	  int index = [self indexOfItem: appItem];
+	  NSImage *ti = [[NSApp applicationIconImage] copy];
+	  float bar = [NSMenuView menuBarHeight] - 4;
+
+	  if (!ti)
+	    ti = [[NSImage imageNamed: @"GNUstep.tiff"] copy];
+
+	  [ti setScalesWhenResized: YES];
+	  [ti setSize: NSMakeSize(bar, bar)];
+	  [appItem setImage: ti];
+	  RELEASE (ti);
+
+	  if (index != 0)
+	    {
+	      RETAIN (appItem);
+	      [self removeItemAtIndex: index];
+	      [self insertItem: appItem atIndex: 0];
+	      RELEASE (appItem);
+	    }
+
+	  for (i = 0; i < [_items count]; i++)
+	    {
+	      NSMenuItem *anItem = [_items objectAtIndex: i];
+	      NSString *title = [anItem title];
+
+	      if (![anItem submenu])
+		{
+		  [itemsToMove addObject: anItem];
+		}
+
+	      if ([title isEqual: NSLocalizedString (@"Info",
+					       @"Info")])
+		{
+		  [itemsToMove addObject: anItem];
+		}
+	    }
+
+	  for (i = 0; i < [itemsToMove count]; i++)
+	    {
+	      [self removeItem: [itemsToMove objectAtIndex: i]];
+	      [appMenu addItem: [itemsToMove objectAtIndex: i]];
+	    }
+
+	  [itemsToMove release];
+	}
+    }
+}
+
 /**
    Save the current menu position in the standard user defaults
 */
 - (void) _updateUserDefaults: (id) notification
 {
-  NSString *key;
-
-  NSDebugLLog (@"NSMenu", @"Synchronizing user defaults");
-  key = [self _locationKey];
-  if (key != nil)
+  if (_horizontal == NO)
     {
-      NSUserDefaults		*defaults;
-      NSMutableDictionary	*menuLocations;
-      NSString			*locString;
+      NSString *key;
 
-      defaults = [NSUserDefaults standardUserDefaults];
-      menuLocations = [defaults objectForKey: NSMenuLocationsKey];
-      if ([menuLocations isKindOfClass: [NSDictionary class]])
-	menuLocations = [menuLocations mutableCopy];
-      else
-	menuLocations = nil;
+      NSDebugLLog (@"NSMenu", @"Synchronizing user defaults");
+      key = [self _locationKey];
+      if (key != nil)
+	{
+	  NSUserDefaults	*defaults;
+	  NSMutableDictionary	*menuLocations;
+	  NSString		*locString;
 
-      if ([_aWindow isVisible]
-	&& ([self isTornOff] || ([NSApp mainMenu] == self)))
-        {
-          if (menuLocations == nil)
-            {
-              menuLocations = AUTORELEASE([[NSMutableDictionary alloc]
-		initWithCapacity: 2]);
-            }
-          locString = [[self window] stringWithSavedFrame];
-          [menuLocations setObject: locString forKey: key];
-        }
-      else
-        {
-          [menuLocations removeObjectForKey: key];
-        }
+	  defaults = [NSUserDefaults standardUserDefaults];
+	  menuLocations = [defaults objectForKey: NSMenuLocationsKey];
+	  if ([menuLocations isKindOfClass: [NSDictionary class]])
+	    menuLocations = [menuLocations mutableCopy];
+	  else
+	    menuLocations = nil;
 
-      if ([menuLocations count] > 0)
-        {
-          [defaults setObject: menuLocations forKey: NSMenuLocationsKey];
-        }
-      else
-        {
-          [defaults removeObjectForKey: NSMenuLocationsKey];
-        }
-      [defaults synchronize];
+	  if ([_aWindow isVisible]
+	    && ([self isTornOff] || ([NSApp mainMenu] == self)))
+	    {
+	      if (menuLocations == nil)
+		{
+		  menuLocations = AUTORELEASE([[NSMutableDictionary alloc]
+		    initWithCapacity: 2]);
+		}
+	      locString = [[self window] stringWithSavedFrame];
+	      [menuLocations setObject: locString forKey: key];
+	    }
+	  else
+	    {
+	      [menuLocations removeObjectForKey: key];
+	    }
+
+	  if ([menuLocations count] > 0)
+	    {
+	      [defaults setObject: menuLocations
+			   forKey: NSMenuLocationsKey];
+	    }
+	  else
+	    {
+	      [defaults removeObjectForKey: NSMenuLocationsKey];
+	    }
+	  [defaults synchronize];
+	}
     }
 }
 
 - (void) _rightMouseDisplay: (NSEvent*)theEvent
 {
-  [self displayTransient];
-  [_view mouseDown: theEvent];
-  [self closeTransient];
+  if (_horizontal == NO)
+    {
+      [self displayTransient];
+      [_view mouseDown: theEvent];
+      [self closeTransient];
+    }
 }
 
 @end
@@ -875,7 +1001,7 @@ static NSNotificationCenter *nc;
   if (![item isEnabled])
     return;
 
-  // Send the actual action and the estipulated notifications.
+  // Send the actual action and the stipulated notifications.
   d = [NSDictionary dictionaryWithObject: item forKey: @"MenuItem"];
   [nc postNotificationName: NSMenuWillSendActionNotification
                     object: self
@@ -938,6 +1064,8 @@ static NSNotificationCenter *nc;
       NSLog(@"You must use an NSMenuView, or a derivative thereof.\n");
       return;
     }
+
+  _horizontal = [menuRep isHorizontal];
 
   if (_view == menuRep)
     {
@@ -1177,6 +1305,11 @@ static NSNotificationCenter *nc;
 
 - (void) _showTornOffMenuIfAny: (NSNotification*)notification
 {
+  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil)
+    == NSMacintoshInterfaceStyle)
+    {
+      return;
+    }
   if ([NSApp mainMenu] != self)
     {
       NSString		*key;
@@ -1325,36 +1458,47 @@ static NSNotificationCenter *nc;
 
 - (void) setGeometry
 {
-  NSString       *key;
   NSPoint        origin;
 
-  if (nil != (key = [self _locationKey]))
+  if (_horizontal == YES)
     {
-      NSUserDefaults *defaults;
-      NSDictionary   *menuLocations;
-      NSString       *location;
-
-      defaults = [NSUserDefaults standardUserDefaults];
-      menuLocations = [defaults objectForKey: NSMenuLocationsKey];
-
-      if ([menuLocations isKindOfClass: [NSDictionary class]])
-	location = [menuLocations objectForKey: key];
-      else
-	location = nil;
- 
-      if (location && [location isKindOfClass: [NSString class]])
-        {
-	  [_aWindow setFrameFromString: location];
-	  [_bWindow setFrameFromString: location];
-	  return;
-        }
+      origin = NSMakePoint (0, [[NSScreen mainScreen] frame].size.height
+	- [_aWindow frame].size.height);
+      [_aWindow setFrameOrigin: origin];
+      [_bWindow setFrameOrigin: origin];
     }
-  
-  origin = NSMakePoint(0, [[_aWindow screen] visibleFrame].size.height 
-      - [_aWindow frame].size.height);
+  else
+    {
+      NSString       *key;
+
+      if (nil != (key = [self _locationKey]))
+	{
+	  NSUserDefaults *defaults;
+	  NSDictionary   *menuLocations;
+	  NSString       *location;
+
+	  defaults = [NSUserDefaults standardUserDefaults];
+	  menuLocations = [defaults objectForKey: NSMenuLocationsKey];
+
+	  if ([menuLocations isKindOfClass: [NSDictionary class]])
+	    location = [menuLocations objectForKey: key];
+	  else
+	    location = nil;
+     
+	  if (location && [location isKindOfClass: [NSString class]])
+	    {
+	      [_aWindow setFrameFromString: location];
+	      [_bWindow setFrameFromString: location];
+	      return;
+	    }
+	}
       
-  [_aWindow setFrameOrigin: origin];
-  [_bWindow setFrameOrigin: origin];
+      origin = NSMakePoint(0, [[_aWindow screen] visibleFrame].size.height 
+	  - [_aWindow frame].size.height);
+	  
+      [_aWindow setFrameOrigin: origin];
+      [_bWindow setFrameOrigin: origin];
+    }
 }
 
 - (void) close
@@ -1479,6 +1623,10 @@ static NSNotificationCenter *nc;
   NSPoint   vector    = {0.0, 0.0};
   BOOL      moveIt    = NO;
   
+  // If we are the main menu forget about moving.
+  if ([self isEqual: [NSApp mainMenu]])
+    return;
+
   // 1 - determine the amount we need to shift in the y direction.
   if (NSMinY (frameRect) < 0)
     {
@@ -1509,23 +1657,33 @@ static NSNotificationCenter *nc;
   
   if (moveIt)
     {
-      NSMenu  *candidateMenu;
-      NSMenu  *masterMenu;
       NSPoint  masterLocation;
       NSPoint  destinationPoint;
       
-      // Look for the "master" menu, i.e. the one to move from.
-      for (candidateMenu = masterMenu = self;
-           (candidateMenu = masterMenu->_superMenu)
-             && (!masterMenu->_is_tornoff
-                 || masterMenu->_transient);
-           masterMenu = candidateMenu);
-      
-      masterLocation = [[masterMenu window] frame].origin;
-      destinationPoint.x = masterLocation.x + vector.x;
-      destinationPoint.y = masterLocation.y + vector.y;
-      
-      [masterMenu nestedSetFrameOrigin: destinationPoint];
+      if (_horizontal)
+        {
+	  masterLocation = [[self window] frame].origin;
+	  destinationPoint.x = masterLocation.x + vector.x;
+	  destinationPoint.y = masterLocation.y + vector.y;
+          [self nestedSetFrameOrigin: destinationPoint];
+	}
+      else
+	{
+	  NSMenu  *candidateMenu;
+	  NSMenu  *masterMenu;
+
+	  // Look for the "master" menu, i.e. the one to move from.
+	  for (candidateMenu = masterMenu = self;
+	       (candidateMenu = masterMenu->_superMenu)
+		 && (!masterMenu->_is_tornoff
+		     || masterMenu->_transient);
+	       masterMenu = candidateMenu);
+	  
+	  masterLocation = [[masterMenu window] frame].origin;
+	  destinationPoint.x = masterLocation.x + vector.x;
+	  destinationPoint.y = masterLocation.y + vector.y;
+          [masterMenu nestedSetFrameOrigin: destinationPoint];
+	}
     }
 }
 

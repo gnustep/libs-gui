@@ -363,6 +363,10 @@ struct _NSModalSession {
 - (void) setImage: (NSImage *)anImage;
 @end
 
+@interface NSMenu (HorizontalPrivate)
+- (void) _organizeMenu;
+@end
+
 /*
  * Class variables
  */
@@ -2159,6 +2163,8 @@ image.</p><p>See Also: -applicationIconImage</p>
   [anImage setName: @"NSApplicationIcon"];
   ASSIGN(_app_icon, anImage);
 
+  [_main_menu _organizeMenu];
+
   if (_app_icon_window != nil)
     {
       [(NSAppIconView *)[_app_icon_window contentView] setImage: anImage];
@@ -2637,6 +2643,23 @@ image.</p><p>See Also: -applicationIconImage</p>
   if (_main_menu != nil)
     {
       [_main_menu setMain: YES];
+    }
+
+  /*
+   * If necessary,. rebuild menu for macintosh (horizontal) style
+   */
+  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil)
+    == NSMacintoshInterfaceStyle)
+    {
+      NSMenuView *rep = [[NSMenuView alloc] initWithFrame: NSZeroRect];
+
+      [rep setHorizontal: YES];
+      [_main_menu setMenuRepresentation: rep];
+      RELEASE(rep);
+      [_main_menu _organizeMenu];
+      [[_main_menu window] setTitle: [[NSProcessInfo processInfo] processName]];
+      [[_main_menu window] setLevel: NSMainMenuWindowLevel];
+      [_main_menu setGeometry];
     }
 }
 

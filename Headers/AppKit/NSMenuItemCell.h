@@ -42,6 +42,9 @@ typedef void (*DrawingIMP)(id, SEL, NSRect, NSView*);
 
   // Cache
   BOOL _needs_sizing;
+  BOOL _horizontalMenu;
+  char _pad1[2];
+
   float _imageWidth;
   float _titleWidth;
   float _keyEquivalentWidth;
@@ -55,6 +58,7 @@ typedef void (*DrawingIMP)(id, SEL, NSRect, NSView*);
   /* If we belong to a popupbutton, we display image on the extreme
      right */
   BOOL _mcell_belongs_to_popupbutton;
+  char _pad2[3];
 
 @private
   NSColor *_backgroundColor;

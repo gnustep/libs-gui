@@ -381,6 +381,8 @@ The displayed menus on the screen have the following structure:
   // GNUstepExtra category
   NSPopUpButtonCell *_popUpButtonCell;
   BOOL _transient;
+  BOOL _horizontal;
+  char _pad1[2];
 
 @private
   NSWindow *_aWindow;

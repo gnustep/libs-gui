@@ -41,6 +41,7 @@
 #include "AppKit/NSMenu.h"
 #include "AppKit/NSMenuItemCell.h"
 #include "AppKit/NSMenuView.h"
+#include "AppKit/NSParagraphStyle.h"
 #include "GNUstepGUI/GSDrawFunctions.h"
 
 
@@ -88,7 +89,7 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
   return _cell.is_highlighted;
 }
 
-- (void) setMenuItem:(NSMenuItem *)item
+- (void) setMenuItem: (NSMenuItem *)item
 {
   ASSIGN (_menuItem, item);
   [self setEnabled: [_menuItem isEnabled]];
@@ -99,10 +100,23 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
   return _menuItem;
 }
 
-- (void) setMenuView:(NSMenuView *)menuView
+- (void) setMenuView: (NSMenuView *)menuView
 {
   /* The menu view is retaining us, we should not retain it.  */
   _menuView = menuView;
+  /*
+   * Determine whether we have horizontal or vertical layout and adjust.
+   */
+  if ([_menuView isHorizontal])
+    {
+      _horizontalMenu = YES;
+      [self setAlignment: NSCenterTextAlignment];
+    }
+  else
+    {
+      _horizontalMenu = NO;
+      [self setAlignment: NSLeftTextAlignment];
+    }
 }
 
 - (NSMenuView *) menuView
@@ -249,47 +263,81 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
 //
 - (NSRect) imageRectForBounds:(NSRect)cellFrame
 {
-  if (_mcell_belongs_to_popupbutton && _cell.image_position)
+  if (_horizontalMenu == YES)
     {
-      // Special case: draw image on the extreme right 
-      cellFrame.origin.x  += cellFrame.size.width - _imageWidth - 4;
-      cellFrame.size.width = _imageWidth;
-      return cellFrame;
+      switch (_cell.image_position)
+	{
+	  case NSNoImage:
+	    cellFrame = NSZeroRect;
+	    break;
+	    
+	  case NSImageOnly:
+	  case NSImageOverlaps:
+	    break;
+	    
+	  case NSImageLeft:
+	    cellFrame.origin.x  += 4.; // _horizontalEdgePad
+	    cellFrame.size.width = _imageWidth;
+	    break;
+	
+	  case NSImageRight:
+	    cellFrame.origin.x  += _titleWidth;
+	    cellFrame.size.width = _imageWidth;
+	    break;
+	   
+	  case NSImageBelow:
+	    cellFrame.size.height /= 2;
+	    break;
+	    
+	  case NSImageAbove:
+	    cellFrame.size.height /= 2;
+	    cellFrame.origin.y += cellFrame.size.height;
+	    break;
+	}
     }
-
-  // Calculate the image part of cell frame from NSMenuView
-  cellFrame.origin.x  += [_menuView imageAndTitleOffset];
-  cellFrame.size.width = [_menuView imageAndTitleWidth];
-
-  switch (_cell.image_position)
+  else
     {
-    case NSNoImage: 
-      cellFrame = NSZeroRect;
-      break;
+      if (_mcell_belongs_to_popupbutton && _cell.image_position)
+	{
+	  // Special case: draw image on the extreme right 
+	  cellFrame.origin.x  += cellFrame.size.width - _imageWidth - 4;
+	  cellFrame.size.width = _imageWidth;
+	  return cellFrame;
+	}
 
-    case NSImageOnly:
-    case NSImageOverlaps:
-      break;
+      // Calculate the image part of cell frame from NSMenuView
+      cellFrame.origin.x  += [_menuView imageAndTitleOffset];
+      cellFrame.size.width = [_menuView imageAndTitleWidth];
 
-    case NSImageLeft:
-      cellFrame.size.width = _imageWidth;
-      break;
+      switch (_cell.image_position)
+	{
+	  case NSNoImage: 
+	    cellFrame = NSZeroRect;
+	    break;
 
-    case NSImageRight:
-      cellFrame.origin.x  += _titleWidth + GSCellTextImageXDist;
-      cellFrame.size.width = _imageWidth;
-      break;
+	  case NSImageOnly:
+	  case NSImageOverlaps:
+	    break;
 
-    case NSImageBelow: 
-      cellFrame.size.height /= 2;
-      break;
+	  case NSImageLeft:
+	    cellFrame.size.width = _imageWidth;
+	    break;
 
-    case NSImageAbove: 
-      cellFrame.size.height /= 2;
-      cellFrame.origin.y += cellFrame.size.height;
-      break;
+	  case NSImageRight:
+	    cellFrame.origin.x  += _titleWidth + GSCellTextImageXDist;
+	    cellFrame.size.width = _imageWidth;
+	    break;
+
+	  case NSImageBelow: 
+	    cellFrame.size.height /= 2;
+	    break;
+
+	  case NSImageAbove: 
+	    cellFrame.size.height /= 2;
+	    cellFrame.origin.y += cellFrame.size.height;
+	    break;
+	}
     }
-
   return cellFrame;
 }
 
@@ -313,39 +361,76 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
 
 - (NSRect) titleRectForBounds:(NSRect)cellFrame
 {
-  // Calculate the image part of cell frame from NSMenuView
-  cellFrame.origin.x  += [_menuView imageAndTitleOffset];
-  cellFrame.size.width = [_menuView imageAndTitleWidth];
-
-  switch (_cell.image_position)
+  if (_horizontalMenu == YES)
     {
-      case NSNoImage:
-      case NSImageOverlaps:
-	break;
+      /* This adjust will center us within the menubar. */
 
-      case NSImageOnly:
-	cellFrame = NSZeroRect;
-	break;
+      cellFrame.size.height -= 2;
 
-      case NSImageLeft:
-	cellFrame.origin.x  += _imageWidth + GSCellTextImageXDist;
-	cellFrame.size.width = _titleWidth;
-	break;
+      switch (_cell.image_position)
+	{
+	  case NSNoImage:
+	  case NSImageOverlaps:
+	    break;
+      
+	  case NSImageOnly:
+	    cellFrame = NSZeroRect;
+	    break;
+	
+	  case NSImageLeft:
+	    cellFrame.origin.x  += _imageWidth + GSCellTextImageXDist + 4;
+	    cellFrame.size.width = _titleWidth;
+	    break;
+	    
+	  case NSImageRight:
+	    cellFrame.size.width = _titleWidth;
+	    break;
+		     
+	  case NSImageBelow:
+	    cellFrame.size.height /= 2;
+	    cellFrame.origin.y += cellFrame.size.height;
+	    break;
 
-      case NSImageRight:
-	cellFrame.size.width = _titleWidth;
-	break;
-
-      case NSImageBelow:
-	cellFrame.size.height /= 2;
-	cellFrame.origin.y += cellFrame.size.height;
-	break;
-
-      case NSImageAbove:
-	cellFrame.size.height /= 2;
-	break;
+	  case NSImageAbove:
+	    cellFrame.size.height /= 2;
+	    break;
+	}
     }
+  else
+    {
+      // Calculate the image part of cell frame from NSMenuView
+      cellFrame.origin.x  += [_menuView imageAndTitleOffset];
+      cellFrame.size.width = [_menuView imageAndTitleWidth];
 
+      switch (_cell.image_position)
+	{
+	  case NSNoImage:
+	  case NSImageOverlaps:
+	    break;
+
+	  case NSImageOnly:
+	    cellFrame = NSZeroRect;
+	    break;
+
+	  case NSImageLeft:
+	    cellFrame.origin.x  += _imageWidth + GSCellTextImageXDist;
+	    cellFrame.size.width = _titleWidth;
+	    break;
+
+	  case NSImageRight:
+	    cellFrame.size.width = _titleWidth;
+	    break;
+
+	  case NSImageBelow:
+	    cellFrame.size.height /= 2;
+	    cellFrame.origin.y += cellFrame.size.height;
+	    break;
+
+	  case NSImageAbove:
+	    cellFrame.size.height /= 2;
+	    break;
+	}
+    }
   return cellFrame;
 }
 
@@ -355,6 +440,9 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
 - (void) drawBorderAndBackgroundWithFrame: (NSRect)cellFrame
 				  inView: (NSView *)controlView
 {
+  if (_horizontalMenu == YES)
+    return;
+
   if (!_cell.is_bordered)
     return;
 
@@ -485,8 +573,35 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
 - (void) drawTitleWithFrame:(NSRect)cellFrame
 		    inView:(NSView *)controlView
 {
-  [self _drawText: [_menuItem title]
-	  inFrame: [self titleRectForBounds: cellFrame]];
+  if (_horizontalMenu == YES)
+    {
+      id value = [NSMutableParagraphStyle defaultParagraphStyle];
+      NSDictionary *attr;
+      NSRect cf = [self titleRectForBounds: cellFrame];
+
+      if (!_imageWidth)
+	[value setAlignment: NSCenterTextAlignment];
+
+      attr = [[NSDictionary alloc] initWithObjectsAndKeys:
+	value, NSParagraphStyleAttributeName,
+	_font, NSFontAttributeName,
+	[NSColor controlTextColor], NSForegroundColorAttributeName,
+	nil];
+
+      if ([_menuItem isEnabled])
+	_cell.is_disabled = NO;
+      else
+	_cell.is_disabled = YES;
+
+      [[_menuItem title] drawInRect: cf withAttributes: attr];
+
+      RELEASE(attr);
+    }
+  else
+    {
+      [self _drawText: [_menuItem title]
+	      inFrame: [self titleRectForBounds: cellFrame]];
+    }
 }
 
 - (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
@@ -517,87 +632,164 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
   if (_buttoncell_is_transparent)
     return;
 
-  cellFrame = [self drawingRectForBounds: cellFrame];
-
-  if (_cell.is_highlighted)
+  if (_horizontalMenu == YES)
     {
-      mask = _highlightsByMask;
+      NSColor *backgroundColor = nil;
 
-      if (_cell.state)
-	mask &= ~_showAltStateMask;
+      cellFrame = [self drawingRectForBounds: cellFrame];
+
+      if (_cell.is_highlighted)
+	{
+	  mask = _highlightsByMask;
+
+	  if (_cell.state)
+	    mask &= ~_showAltStateMask;
+	}
+      else if (_cell.state)
+	mask = _showAltStateMask;
+      else
+	mask = NSNoCellMask;
+
+      /* 
+       * Determine the background color and cache it in an ivar so that the
+       * low-level drawing methods don't need to do it again.
+       */
+      if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
+	{
+	  backgroundColor = [NSColor selectedMenuItemColor];
+	}
+      if (backgroundColor == nil)
+	backgroundColor = [NSColor controlBackgroundColor];
+
+      // Set cell's background color
+      [backgroundColor set];
+      NSRectFill(cellFrame);
+      if (mask & NSContentsCellMask)
+	{
+	  _imageToDisplay = _altImage;
+	  if (!_imageToDisplay)
+	    _imageToDisplay = [_menuItem image];
+	  _titleToDisplay = _altContents;
+	  if (_titleToDisplay == nil || [_titleToDisplay isEqual: @""])
+	    _titleToDisplay = [_menuItem title];
+	}
+      else
+	{
+	  _imageToDisplay = [_menuItem image];
+	  _titleToDisplay = [_menuItem title];
+	}
+       
+      if (_imageToDisplay)
+	{
+	  _imageWidth = [_imageToDisplay size].width;
+	  [self setImagePosition: NSImageLeft];
+	}
+	  
+      // Draw the image
+      if (_imageWidth > 0)
+	[self drawImageWithFrame: cellFrame inView: controlView];
+	 
+      // Draw the title
+      if (_titleWidth > 0)
+	[self drawTitleWithFrame: cellFrame inView: controlView];
     }
-  else if (_cell.state)
-    mask = _showAltStateMask;
   else
-    mask = NSNoCellMask;
-
-  // pushed in buttons contents are displaced to the bottom right 1px
-  if (_cell.is_bordered && (mask & NSPushInCellMask))
     {
-      cellFrame = NSOffsetRect(cellFrame, 1., [controlView isFlipped] ? 1. : -1.);
+      cellFrame = [self drawingRectForBounds: cellFrame];
+
+      if (_cell.is_highlighted)
+	{
+	  mask = _highlightsByMask;
+
+	  if (_cell.state)
+	    mask &= ~_showAltStateMask;
+	}
+      else if (_cell.state)
+	mask = _showAltStateMask;
+      else
+	mask = NSNoCellMask;
+
+      // pushed in buttons contents are displaced to the bottom right 1px
+      if (_cell.is_bordered && (mask & NSPushInCellMask))
+	{
+	  cellFrame = NSOffsetRect(cellFrame, 1., [controlView isFlipped] ? 1. : -1.);
+	}
+
+      /*
+       * Determine the background color and cache it in an ivar so that the
+       * low-level drawing methods don't need to do it again.
+       */
+      if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
+	{
+	  _backgroundColor = [NSColor selectedMenuItemColor];
+	}
+      if (_backgroundColor == nil)
+	_backgroundColor = [NSColor controlBackgroundColor];
+
+      // Set cell's background color
+      [_backgroundColor set];
+      NSRectFill(cellFrame);
+
+      /*
+       * Determine the image and the title that will be
+       * displayed. If the NSContentsCellMask is set the
+       * image and title are swapped only if state is 1 or
+       * if highlighting is set (when a button is pushed it's
+       * content is changed to the face of reversed state).
+       * The results are saved in two ivars for use in other
+       * drawing methods.
+       */
+      if (mask & NSContentsCellMask)
+	{
+	  _imageToDisplay = _altImage;
+	  if (!_imageToDisplay)
+	    _imageToDisplay = [_menuItem image];
+	  _titleToDisplay = _altContents;
+	  if (_titleToDisplay == nil || [_titleToDisplay isEqual: @""])
+	    _titleToDisplay = [_menuItem title];
+	}
+      else
+	{
+	  _imageToDisplay = [_menuItem image];
+	  _titleToDisplay = [_menuItem title];
+	}
+
+      if (_imageToDisplay)
+	{
+	  _imageWidth = [_imageToDisplay size].width;
+	}
+
+      // Draw the state image
+      if (_stateImageWidth > 0)
+	[self drawStateImageWithFrame: cellFrame inView: controlView];
+
+      // Draw the image
+      if (_imageWidth > 0)
+	[self drawImageWithFrame: cellFrame inView: controlView];
+
+      // Draw the title
+      if (_titleWidth > 0)
+	[self drawTitleWithFrame: cellFrame inView: controlView];
+
+      // Draw the key equivalent
+      if (_keyEquivalentWidth > 0)
+	[self drawKeyEquivalentWithFrame: cellFrame inView: controlView];
+
+      _backgroundColor = nil;
     }
+}
 
-  /*
-   * Determine the background color and cache it in an ivar so that the
-   * low-level drawing methods don't need to do it again.
-   */
-  if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
+- (NSRect) drawingRectForBounds: (NSRect)theRect
+{
+  if (_horizontalMenu == YES)
     {
-      _backgroundColor = [NSColor selectedMenuItemColor];
-    }
-  if (_backgroundColor == nil)
-    _backgroundColor = [NSColor controlBackgroundColor];
-
-  // Set cell's background color
-  [_backgroundColor set];
-  NSRectFill(cellFrame);
-
-  /*
-   * Determine the image and the title that will be
-   * displayed. If the NSContentsCellMask is set the
-   * image and title are swapped only if state is 1 or
-   * if highlighting is set (when a button is pushed it's
-   * content is changed to the face of reversed state).
-   * The results are saved in two ivars for use in other
-   * drawing methods.
-   */
-  if (mask & NSContentsCellMask)
-    {
-      _imageToDisplay = _altImage;
-      if (!_imageToDisplay)
-	_imageToDisplay = [_menuItem image];
-      _titleToDisplay = _altContents;
-      if (_titleToDisplay == nil || [_titleToDisplay isEqual: @""])
-        _titleToDisplay = [_menuItem title];
+      return NSMakeRect (theRect.origin.x, theRect.origin.y + 2,
+	theRect.size.width, theRect.size.height - 2);
     }
   else
     {
-      _imageToDisplay = [_menuItem image];
-      _titleToDisplay = [_menuItem title];
+      return [super drawingRectForBounds: theRect];
     }
-
-  if (_imageToDisplay)
-    {
-      _imageWidth = [_imageToDisplay size].width;
-    }
-
-  // Draw the state image
-  if (_stateImageWidth > 0)
-    [self drawStateImageWithFrame: cellFrame inView: controlView];
-
-  // Draw the image
-  if (_imageWidth > 0)
-    [self drawImageWithFrame: cellFrame inView: controlView];
-
-  // Draw the title
-  if (_titleWidth > 0)
-    [self drawTitleWithFrame: cellFrame inView: controlView];
-
-  // Draw the key equivalent
-  if (_keyEquivalentWidth > 0)
-    [self drawKeyEquivalentWithFrame: cellFrame inView: controlView];
-
-  _backgroundColor = nil;
 }
 
 //

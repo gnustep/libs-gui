@@ -1,3 +1,18 @@
+2006-02-04  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSMenu.m:
+	* Source/NSApplication.m:
+	* Source/NSMenuItemCell.m:
+	* Source/NSMenuView.m:
+	* Headers/AppKit/NSMenuView.h:
+	* Headers/AppKit/NSMenu.h:
+	* Headers/AppKit/NSMenuItemCell.h:
+	Add support for horizontal main menu (as in MacOS-X) very heavily
+	based on the WildMenus bundle by Michael Hanni, but any errors in
+	the integration are entirely mine.
+	Horizontal menus are activated by setting the 'NSMenuInterfaceStyle'
+	user default to 'NSMacintoshInterfaceStyle'.
+
 2006-02-03  Quentin Mathe <qmathe@club-internet.fr>
 
     * Source/NSToolbarItem.m (-[GSToolbarButtonCell setImagePosition:]): 
