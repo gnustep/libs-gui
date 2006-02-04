@@ -1439,7 +1439,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
     && [_attachedMenu attachedMenu] != nil && [_attachedMenu attachedMenu] ==
     [[_items_link objectAtIndex: indexOfActionToExecute] submenu])
     {
-      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil)
+      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self)
 	== NSMacintoshInterfaceStyle)
 	{
 	  /*
@@ -1457,7 +1457,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
       return NO;
     }
 
-  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil)
+  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self)
     == NSMacintoshInterfaceStyle)
     {
       NSMenu	*tmp = _attachedMenu;
