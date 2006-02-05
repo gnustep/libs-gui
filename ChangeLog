@@ -5,6 +5,9 @@
 	* Source/NSMenuItemCell.m:
 	* Headers/AppKit/NSMenuItemCell.h:
 	Tidyups suggested by Fred. More ideas welcome.
+	* Source/NSMenuView.m: When tracking mouse for horizontal MacOS-X
+	style menu, ignore an immediate mouse up and continue tracking until
+	something is clicked on.  This is the behavior of MacOS-X and windows.
 
 2006-02-04  Richard Frith-Macdonald <rfm@gnu.org>
 

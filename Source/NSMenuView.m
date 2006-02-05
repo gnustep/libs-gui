@@ -1181,8 +1181,10 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   NSPoint	lastLocation = {0,0};
   BOOL		justAttachedNewSubmenu = NO;
   BOOL          subMenusNeedRemoving = YES;
+  BOOL		shouldFinish = YES;
   int		delayCount = 0;
   int           indexOfActionToExecute = -1;
+  int		firstIndex = -1;
   NSEvent	*original;
   NSEventType	type;
   NSEventType	end;
@@ -1201,26 +1203,41 @@ _addLeftBorderOffsetToRect(NSRect aRect)
     {
       end = NSRightMouseUp;
       eventMask |= NSRightMouseUpMask | NSRightMouseDraggedMask;
+      eventMask |= NSRightMouseDownMask;
     }
   else if (type == NSOtherMouseDown || type == NSOtherMouseDragged)
     {
       end = NSOtherMouseUp;
       eventMask |= NSOtherMouseUpMask | NSOtherMouseDraggedMask;
+      eventMask |= NSOtherMouseDownMask;
     }
   else if (type == NSLeftMouseDown || type == NSLeftMouseDragged)
     {
       end = NSLeftMouseUp;
       eventMask |= NSLeftMouseUpMask | NSLeftMouseDraggedMask;
+      eventMask |= NSLeftMouseDownMask;
     }
   else
     {
       NSLog (@"Unexpected event: %d during event tracking in NSMenuView", type);
       end = NSLeftMouseUp;
       eventMask |= NSLeftMouseUpMask | NSLeftMouseDraggedMask;
+      eventMask |= NSLeftMouseDownMask;
     }
 
+  if ([self isHorizontal] == YES)
+    {
+      /*
+       * Ignore the first mouse up if nothing interesting has happened.
+       */
+      shouldFinish = NO;
+    }
   do
     {
+      if (type == end)
+        {
+	  shouldFinish = YES;
+        }
       if (type == NSPeriodic || event == original)
         {
           NSPoint	location;
@@ -1228,6 +1245,15 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
           location     = [_window mouseLocationOutsideOfEventStream];
           index        = [self indexOfItemAtPoint: location];
+
+	  if (event == original)
+	    {
+	      firstIndex = index;
+	    }
+	  if (index != firstIndex)
+	    {
+	      shouldFinish = YES;
+	    }
 
           /*
            * 1 - if menus is only partly visible and the mouse is at the
@@ -1242,8 +1268,8 @@ _addLeftBorderOffsetToRect(NSRect aRect)
                * GNUstep screen coordinates start with 1.
                */
               if (pointerLoc.x == 0 || pointerLoc.y == 1
-                  || pointerLoc.x == [[_window screen] frame].size.width - 1
-                  || pointerLoc.y == [[_window screen] frame].size.height)
+		|| pointerLoc.x == [[_window screen] frame].size.width - 1
+		|| pointerLoc.y == [[_window screen] frame].size.height)
                 [_attachedMenu shiftOnScreen];
             }
 
@@ -1253,7 +1279,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
            * flag to NO.
            */
           if (justAttachedNewSubmenu && index != -1
-              && index != _highlightedItemIndex)
+	    && index != _highlightedItemIndex)
             { 
               if (location.x - lastLocation.x > MOVE_THRESHOLD_DELTA)
                 {
@@ -1292,19 +1318,18 @@ _addLeftBorderOffsetToRect(NSRect aRect)
                */
               candidateMenu = [_attachedMenu supermenu];
               while (candidateMenu  
-                     && !NSMouseInRect (locationInScreenCoordinates, 
-                                        [[candidateMenu window] frame], 
-                                        NO) // not found yet
-                     && (! ([candidateMenu isTornOff] 
-                            && ![candidateMenu isTransient]))  // no root of display tree
-                     && [candidateMenu isAttached]) // has displayed parent
+		&& !NSMouseInRect (locationInScreenCoordinates, 
+		  [[candidateMenu window] frame], NO) // not found yet
+		&& (! ([candidateMenu isTornOff] 
+		  && ![candidateMenu isTransient]))  // no root of display tree
+		&& [candidateMenu isAttached]) // has displayed parent
                 {
                   candidateMenu = [candidateMenu supermenu];
                 }
 
               if (candidateMenu != nil
-                  && NSMouseInRect (locationInScreenCoordinates,
-                                    [[candidateMenu window] frame], NO))
+		&& NSMouseInRect (locationInScreenCoordinates,
+		  [[candidateMenu window] frame], NO))
                 {
 		  BOOL	candidateMenuResult;
 
@@ -1328,8 +1353,8 @@ _addLeftBorderOffsetToRect(NSRect aRect)
               // 3b - Check if we enter the attached submenu
               windowUnderMouse = [[_attachedMenu attachedMenu] window];
               if (windowUnderMouse != nil
-                  && NSMouseInRect (locationInScreenCoordinates,
-                                    [windowUnderMouse frame], NO))
+		&& NSMouseInRect (locationInScreenCoordinates,
+		  [windowUnderMouse frame], NO))
                 {
                   BOOL wasTransient = [_attachedMenu isTransient];
                   BOOL subMenuResult;
@@ -1371,7 +1396,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
         dequeue: YES];
       type = [event type];
     }
-  while (type != end);
+  while (type != end || shouldFinish == NO);
 
   /*
    * Ok, we released the mouse
@@ -1439,6 +1464,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
     && [_attachedMenu attachedMenu] != nil && [_attachedMenu attachedMenu] ==
     [[_items_link objectAtIndex: indexOfActionToExecute] submenu])
     {
+#if 1
       if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self)
 	== NSMacintoshInterfaceStyle)
 	{
@@ -1449,6 +1475,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 	   */
           subMenusNeedRemoving = YES;
 	}
+#endif
       if (subMenusNeedRemoving)
         {
           [self detachSubmenu];
