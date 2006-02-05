@@ -1585,6 +1585,7 @@ static NSNotificationCenter *nc;
 
 	  [rep setHorizontal: YES];
 	  [self setMenuRepresentation: rep];
+	  [self _organizeMenu];
 	  RELEASE(rep);
 	}
       [[self window] setTitle: [[NSProcessInfo processInfo] processName]];
