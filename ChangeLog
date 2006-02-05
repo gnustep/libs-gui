@@ -3,6 +3,14 @@
 	* Source/NSMenu.m:
 	* Source/NSApplication.m:
 	* Source/NSMenuItemCell.m:
+	* Headers/AppKit/NSMenuItemCell.h:
+	Tidyups suggested by Fred. More ideas welcome.
+
+2006-02-04  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSMenu.m:
+	* Source/NSApplication.m:
+	* Source/NSMenuItemCell.m:
 	* Source/NSMenuView.m:
 	* Headers/AppKit/NSMenuView.h:
 	* Headers/AppKit/NSMenu.h:

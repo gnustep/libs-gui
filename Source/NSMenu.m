@@ -1575,8 +1575,18 @@ static NSNotificationCenter *nc;
 {
   if (isMain)
     {
-      // Set the title of the window.
-      // This wont be displayed, but the window manager may need it.
+      /*
+       * If necessary,. rebuild menu for macintosh (horizontal) style
+       */
+      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil)
+	== NSMacintoshInterfaceStyle)
+	{
+	  NSMenuView *rep = [[NSMenuView alloc] initWithFrame: NSZeroRect];
+
+	  [rep setHorizontal: YES];
+	  [self setMenuRepresentation: rep];
+	  RELEASE(rep);
+	}
       [[self window] setTitle: [[NSProcessInfo processInfo] processName]];
       [[self window] setLevel: NSMainMenuWindowLevel];
       [self setGeometry];

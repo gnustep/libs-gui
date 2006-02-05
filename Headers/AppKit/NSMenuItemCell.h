@@ -42,8 +42,7 @@ typedef void (*DrawingIMP)(id, SEL, NSRect, NSView*);
 
   // Cache
   BOOL _needs_sizing;
-  BOOL _horizontalMenu;
-  char _pad1[2];
+  char _pad1[3];
 
   float _imageWidth;
   float _titleWidth;

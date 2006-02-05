@@ -107,14 +107,12 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
   /*
    * Determine whether we have horizontal or vertical layout and adjust.
    */
-  if ([_menuView isHorizontal])
+  if ([_menuView isHorizontal] == YES)
     {
-      _horizontalMenu = YES;
       [self setAlignment: NSCenterTextAlignment];
     }
   else
     {
-      _horizontalMenu = NO;
       [self setAlignment: NSLeftTextAlignment];
     }
 }
@@ -263,7 +261,7 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
 //
 - (NSRect) imageRectForBounds:(NSRect)cellFrame
 {
-  if (_horizontalMenu == YES)
+  if ([_menuView isHorizontal] == YES)
     {
       switch (_cell.image_position)
 	{
@@ -361,7 +359,7 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
 
 - (NSRect) titleRectForBounds:(NSRect)cellFrame
 {
-  if (_horizontalMenu == YES)
+  if ([_menuView isHorizontal] == YES)
     {
       /* This adjust will center us within the menubar. */
 
@@ -440,7 +438,7 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
 - (void) drawBorderAndBackgroundWithFrame: (NSRect)cellFrame
 				  inView: (NSView *)controlView
 {
-  if (_horizontalMenu == YES)
+  if ([_menuView isHorizontal] == YES)
     return;
 
   if (!_cell.is_bordered)
@@ -573,7 +571,7 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
 - (void) drawTitleWithFrame:(NSRect)cellFrame
 		    inView:(NSView *)controlView
 {
-  if (_horizontalMenu == YES)
+  if ([_menuView isHorizontal] == YES)
     {
       id value = [NSMutableParagraphStyle defaultParagraphStyle];
       NSDictionary *attr;
@@ -632,7 +630,7 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
   if (_buttoncell_is_transparent)
     return;
 
-  if (_horizontalMenu == YES)
+  if ([_menuView isHorizontal] == YES)
     {
       NSColor *backgroundColor = nil;
 
@@ -781,7 +779,7 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
 
 - (NSRect) drawingRectForBounds: (NSRect)theRect
 {
-  if (_horizontalMenu == YES)
+  if ([_menuView isHorizontal] == YES)
     {
       return NSMakeRect (theRect.origin.x, theRect.origin.y + 2,
 	theRect.size.width, theRect.size.height - 2);
