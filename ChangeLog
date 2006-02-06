@@ -11,6 +11,7 @@
 	* Source/NSMenuView.m: ([-sizeToFit]) Fix bug #15631
 	([-locationForSubmenu:]) for horizontal root menus, make successive
 	submenus be positioned with top left corner next to item in parent.
+	* Source/NSApplication.m: Pass info in hide/unhide notifications.
 
 2006-02-04  Richard Frith-Macdonald <rfm@gnu.org>
 

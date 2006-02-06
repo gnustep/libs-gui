@@ -2212,9 +2212,10 @@ image.</p><p>See Also: -applicationIconImage</p>
 {
   if (_app_is_hidden == NO)
     {
-      NSArray			*windows_list = [self windows]; 
-      unsigned			count = [windows_list count];
-      unsigned			i;
+      NSArray		*windows_list = [self windows]; 
+      unsigned		count = [windows_list count];
+      NSDictionary	*info;
+      unsigned		i;
 
       [nc postNotificationName: NSApplicationWillHideNotification
 			object: self];
@@ -2257,12 +2258,14 @@ image.</p><p>See Also: -applicationIconImage</p>
       [self deactivate];
       _unhide_on_activation = YES;
 
+      info = [self _notificationUserInfo];
       [nc postNotificationName: NSApplicationDidHideNotification
-			object: self];
+			object: self
+		      userInfo: info];
       [[[NSWorkspace sharedWorkspace] notificationCenter]
         postNotificationName: NSApplicationDidHideNotification
 		      object: [NSWorkspace sharedWorkspace]
-		    userInfo: [self _notificationUserInfo]];
+		    userInfo: info];
     }
 }
 
@@ -2300,8 +2303,9 @@ image.</p><p>See Also: -applicationIconImage</p>
 {
   if (_app_is_hidden == YES)
     {
-      unsigned			count;
-      unsigned			i;
+      NSDictionary	*info;
+      unsigned		count;
+      unsigned		i;
 
       [nc postNotificationName: NSApplicationWillUnhideNotification
 			object: self];
@@ -2325,12 +2329,14 @@ image.</p><p>See Also: -applicationIconImage</p>
 	}
       [[_app_icon_window contentView] setNeedsDisplay: YES];
 
+      info = [self _notificationUserInfo];
       [nc postNotificationName: NSApplicationDidUnhideNotification
-			object: self];
+			object: self
+		      userInfo: info];
       [[[NSWorkspace sharedWorkspace] notificationCenter]
         postNotificationName: NSApplicationDidUnhideNotification
 		      object: [NSWorkspace sharedWorkspace]
-		    userInfo: [self _notificationUserInfo]];
+		    userInfo: info];
     }
 }
 
