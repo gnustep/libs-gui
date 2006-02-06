@@ -73,6 +73,24 @@ static NSMapTable	*viewInfo = 0;
 /* A menu's title is an instance of this class */
 @class NSButton;
 
+@interface NSMenuView (Private)
+- (BOOL) _rootIsHorizontal;
+@end
+
+@implementation NSMenuView (Private)
+- (BOOL) _rootIsHorizontal
+{
+  NSMenu	*m = _attachedMenu;
+
+  /* Determine root menu of this menu hierarchy */
+  while ([m supermenu] != nil)
+    {
+      m = [m supermenu];
+    }
+  return [[m menuRepresentation] isHorizontal];
+}
+@end
+
 @implementation NSMenuView
 
 static NSRect
@@ -642,22 +660,24 @@ _addLeftBorderOffsetToRect(NSRect aRect)
       // Popup menu doesn't need title bar
       if (![_attachedMenu _ownedByPopUp] && _titleView)
 	{
-	  if ([_attachedMenu supermenu] != nil)
+	  NSMenu	*m = [_attachedMenu supermenu];
+	  NSMenuView	*r = [m menuRepresentation];
+
+	  neededImageAndTitleWidth = [_titleView titleSize].width;
+	  if (r != nil && [r isHorizontal] == YES)
 	    {
 	      NSMenuItemCell *msr;
 
-	      msr = [[[_attachedMenu supermenu] menuRepresentation] 
-		menuItemCellForItemAtIndex:
-		  [[_attachedMenu supermenu] indexOfItemWithTitle:
-		  [_attachedMenu title]]];
+	      msr = [r menuItemCellForItemAtIndex:
+		[m indexOfItemWithTitle: [_attachedMenu title]]];
 	      neededImageAndTitleWidth
-		+= [msr titleWidth] + GSCellTextImageXDist;
+		= [msr titleWidth] + GSCellTextImageXDist;
 	    }
 
 	  if (_titleView)
 	    menuBarHeight = [[self class] menuBarHeight];
 	  else
-	    menuBarHeight += 3; // 2 on bottom, 1 on top
+	    menuBarHeight += _leftBorderOffset;
 	}
       else
 	{
@@ -784,21 +804,11 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 	  _keyEqOffset = _cellSize.width - _keyEqWidth - popupImageWidth;
 	}
 
-      if (_horizontal == NO)
-	{
-	  [self setFrameSize: NSMakeSize(_cellSize.width + _leftBorderOffset, 
-					 (howMany * _cellSize.height) 
-					 + menuBarHeight)];
-	  [_titleView setFrame: NSMakeRect (0, howMany * _cellSize.height,
-					    NSWidth (_bounds), menuBarHeight)];
-	}
-      else
-	{
-	  [self setFrameSize: NSMakeSize(((howMany + 1) * _cellSize.width), 
-	     _cellSize.height + _leftBorderOffset)];
-	  [_titleView setFrame: NSMakeRect (0, 0,
-	    _cellSize.width, _cellSize.height + 1)];
-	}
+      [self setFrameSize: NSMakeSize(_cellSize.width + _leftBorderOffset, 
+				     (howMany * _cellSize.height) 
+				     + menuBarHeight)];
+      [_titleView setFrame: NSMakeRect (0, howMany * _cellSize.height,
+					NSWidth (_bounds), menuBarHeight)];
       
       _needsSizing = NO;
     }
@@ -984,6 +994,16 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 	  return NSMakePoint (NSMaxX(frame),
 	    subOrigin.y - NSHeight(submenuFrame) - 3 +
 	    2*[NSMenuView menuBarHeight]);
+	}
+      else if ([self _rootIsHorizontal] == YES)
+	{
+	  NSRect aRect = [self rectOfItemAtIndex:
+            [_attachedMenu indexOfItemWithSubmenu: aSubmenu]];
+	  NSPoint subOrigin = [_window convertBaseToScreen:
+            NSMakePoint(aRect.origin.x, aRect.origin.y)];
+    
+	  return NSMakePoint (NSMaxX(frame),
+	    subOrigin.y - NSHeight(submenuFrame) + aRect.size.height);
 	}
       else
 	{
