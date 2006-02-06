@@ -367,6 +367,12 @@ static NSImage *_pbc_image[2];
   return [_menu itemAtIndex: end];
 }
 
+/*
+  The Cocoa specification has this method as 
+  - (id <NSCopying>) objectValue
+  but this gives a conflict with the NSCell declaration of this method, which is
+  - (id) objectValue
+ */
 - (id <NSCopying>) objectValue
 {
   return [NSNumber numberWithInt: [self indexOfSelectedItem]];
@@ -533,11 +539,8 @@ static NSImage *_pbc_image[2];
 
       if (index < 0) 
         {
-	  // If no item is highighted, display the selected one ...
+	  // If no item is highighted, display the selected one, if there is one.
 	  index = [self indexOfSelectedItem];
-	  // ... if there is nown, then the first one, but don't select it.
-	  if (index < 0)
-	    index = 0;
 	}
       else 
         {

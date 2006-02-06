@@ -1,3 +1,11 @@
+2006-02-06  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMatrix.m (-deselectAllCells): Allow empty selection,
+	when there are no cells. Patch by Georg Fleischmann <georg@vhf.de>.
+	* Source/NSPopupButtonCell.m (-synchronizeTitleAndSelectedItem):
+	Don't set selection index to 0, if apopup button doesn't have a
+	selection. Patch by Andreas Höschler <ahoesch@smartsoft.de>.
+
 2006-02-05  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSMenuView.m: ([-sizeToFit]) Fix bug #15631
