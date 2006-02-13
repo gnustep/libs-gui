@@ -426,7 +426,28 @@
     
   if (_cell.image_position == NSNoImage)
     {
-      [super setType: NSTextCellType];
+      /* NOTE: If we always call -setType: on superclass, the cell _content will
+         be reset each time. When we alter a button displaying both an image and
+         a title, by just calling -setImagePosition: with 'NSNoImage' value,
+         the current title is reset to NSCell default one. That's why we have to
+         set cell type ourself when a custom title (or attributed title) is
+         already in use. 
+         Take note that [self title] is able to return the attributed title in
+         NSString form.
+         We precisely match Mac OS X behavior currently. That means... When you
+         switch from 'NSNoImage' option to another one, the title will be the
+         one in use before you switched to 'NSNoImage'. The reverse with the
+         image isn't true, when you switch to 'NSNoImage' option, the current
+         image is lost (image value being reset to nil).
+      */
+      if ([self title] == nil || [[self title] isEqualToString: @""])
+        {
+          [super setType: NSTextCellType];
+        }
+      else
+        { 
+          _cell.type = NSTextCellType;
+        }
     }
   else
     {

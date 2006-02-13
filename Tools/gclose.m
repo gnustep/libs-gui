@@ -1,5 +1,4 @@
-/* This tool opens the appropriate application from the command line
-   based on what type of file is being accessed. 
+/* This tool terminates a named application from the command line
 
    Copyright (C) 2001 Free Software Foundation, Inc.
 

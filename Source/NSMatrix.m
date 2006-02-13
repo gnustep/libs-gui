@@ -1036,14 +1036,17 @@ static SEL getSel;
 }
 
 /**<p>Deselects all NSMatrix's cells. Does nothing if the NSMatrix's mode
-   is NSRadioModeMatrix and if it does not allows empty selection</p>
+   is NSRadioModeMatrix and if it does not allows empty selection.
+   Except for the case, when there are no cells left at all. Then the 
+   selection is always cleared.</p>
    <p>See Also: -mode -allowsEmptySelection -setNeedsDisplayInRect:</p>
  */
 - (void) deselectAllCells
 {
   int		i;
 
-  if (!_allowsEmptySelection && _mode == NSRadioModeMatrix)
+  if (_numRows > 0 && _numCols > 0 &&
+      !_allowsEmptySelection && _mode == NSRadioModeMatrix)
     return;
 
   for (i = 0; i < _numRows; i++)

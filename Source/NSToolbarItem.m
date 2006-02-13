@@ -393,6 +393,25 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 @implementation GSToolbarButtonCell
 
+/* Overriden NSButtonCell method to handle cell type in a basic way which avoids
+   to lose image or empty title on new image position (when this involves a cell
+   type switch) and the need to reset it. That would happen in GSToolbarButton
+   -layout method (on toolbar display mode switch).
+   Note that empty title are used with space or separator toolbar items. */
+- (void) setImagePosition: (NSCellImagePosition)aPosition
+{
+  _cell.image_position = aPosition;
+
+  if (_cell.image_position == NSNoImage)
+    {
+      _cell.type = NSTextCellType;
+    }
+  else
+    {
+      _cell.type = NSImageCellType;
+    }
+}
+
 // Overriden NSButtonCell method
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {

@@ -77,6 +77,12 @@
 /* The -gui thread. See the comment in initialize_gnustep_backend. */
 NSThread *GSAppKitThread;
 
+/* Notifications used to implement hide and unhide functionality. */
+static NSString	*GSHideOtherApplicationsNotification
+  = @"GSHideOtherApplicationsNotification";
+static NSString	*GSUnhideAllApplicationsNotification
+  = @"GSUnhideAllApplicationsNotification";
+
 /*
  * Base library exception handler
  */
@@ -341,11 +347,13 @@ struct _NSModalSession {
 
 @interface NSApplication (Private)
 - _appIconInit;
+- (NSDictionary*) _notificationUserInfo;
 - (void) _openDocument: (NSString*)name;
 - (void) _windowDidBecomeKey: (NSNotification*) notification;
 - (void) _windowDidBecomeMain: (NSNotification*) notification;
 - (void) _windowDidResignKey: (NSNotification*) notification;
 - (void) _windowWillClose: (NSNotification*) notification;
+- (void) _workspaceNotification: (NSNotification*) notification;
 @end
 
 @interface NSIconWindow : NSWindow
@@ -353,6 +361,10 @@ struct _NSModalSession {
 
 @interface NSAppIconView : NSView
 - (void) setImage: (NSImage *)anImage;
+@end
+
+@interface NSMenu (HorizontalPrivate)
+- (void) _organizeMenu;
 @end
 
 /*
@@ -913,7 +925,6 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   NSString		*mainModelFile;
   NSString		*appIconFile;
   NSUserDefaults	*defs = [NSUserDefaults standardUserDefaults];
-  NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
   NSString		*filePath;
   NSArray		*windows_list;
   unsigned		count;
@@ -1014,6 +1025,14 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   [nc addObserver: self selector: @selector(_windowDidResignMain:)
       name: NSWindowDidResignMainNotification object: nil];
 
+  /* register as observer for hide/unhide notifications */
+  [[[NSWorkspace sharedWorkspace] notificationCenter]
+    addObserver: self selector: @selector(_workspaceNotification:)
+      name: GSHideOtherApplicationsNotification object: nil];
+  [[[NSWorkspace sharedWorkspace] notificationCenter]
+    addObserver: self selector: @selector(_workspaceNotification:)
+      name: GSUnhideAllApplicationsNotification object: nil];
+
   [self activateIgnoringOtherApps: YES];
 
   /* Instantiate the NSDocumentController if we are a doc-based app */
@@ -1039,11 +1058,11 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
       [self terminate: self];
     }
   else if (![defs boolForKey: @"autolaunch"]
-	   && [_delegate respondsToSelector:
-		@selector(applicationShouldOpenUntitledFile:)]
-	   && ([_delegate applicationShouldOpenUntitledFile: self])
-	   && [_delegate respondsToSelector:
-		@selector(applicationOpenUntitledFile:)])
+    && [_delegate respondsToSelector:
+      @selector(applicationShouldOpenUntitledFile:)]
+    && ([_delegate applicationShouldOpenUntitledFile: self])
+    && [_delegate respondsToSelector:
+      @selector(applicationOpenUntitledFile:)])
     {
       [_delegate applicationOpenUntitledFile: self];
     }
@@ -1053,14 +1072,18 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 		    object: self];
 
   NS_DURING
-    [[workspace notificationCenter]
-      postNotificationName: NSWorkspaceDidLaunchApplicationNotification
-      object: workspace
-      userInfo: [workspace activeApplication]];
+    {
+      [[[NSWorkspace sharedWorkspace] notificationCenter]
+	postNotificationName: NSWorkspaceDidLaunchApplicationNotification
+	object: [NSWorkspace sharedWorkspace]
+	userInfo: [self _notificationUserInfo]];
+    }
   NS_HANDLER
-    NSLog (_(@"Problem during launch app notification: %@"),
-	   [localException reason]);
-    [localException raise];
+    {
+      NSLog (_(@"Problem during launch app notification: %@"),
+	 [localException reason]);
+      [localException raise];
+    }
   NS_ENDHANDLER
 }
 
@@ -1068,6 +1091,8 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 {
   GSDisplayServer *srv = GSServerForWindow(_app_icon_window);
 
+  [[[NSWorkspace sharedWorkspace] notificationCenter]
+    removeObserver: self];
   [nc removeObserver: self];
 
   RELEASE(_hidden);
@@ -1117,8 +1142,9 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   // TODO: Currently the flag is ignored
   if (_app_is_active == NO)
     {
-      unsigned			count;
-      unsigned			i;
+      unsigned		count;
+      unsigned		i;
+      NSDictionary	*info;
 
      /*
        * Menus should observe this notification in order to make themselves
@@ -1167,8 +1193,14 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 			      [menu_window windowNumber]];
         }
 
+      info = [self _notificationUserInfo];
       [nc postNotificationName: NSApplicationDidBecomeActiveNotification
-			object: self];
+			object: self
+		      userInfo: info];
+      [[[NSWorkspace sharedWorkspace] notificationCenter]
+	postNotificationName: NSApplicationDidBecomeActiveNotification
+		      object: [NSWorkspace sharedWorkspace]
+		    userInfo: info];
     }
 }
 
@@ -1180,9 +1212,10 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 {
   if (_app_is_active == YES)
     {
-      NSArray			*windows_list = [self windows]; 
-      unsigned			count = [windows_list count];
-      unsigned			i;
+      NSArray		*windows_list = [self windows]; 
+      unsigned		count = [windows_list count];
+      unsigned		i;
+      NSDictionary	*info;
 
       [nc postNotificationName: NSApplicationWillResignActiveNotification
 			object: self];
@@ -1207,6 +1240,10 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 	    {
 	      continue;		/* Already invisible	*/
 	    }
+	  if ([win canHide] == NO)
+	    {
+	      continue;		/* Can't be hidden	*/
+	    }
 	  if (win == _app_icon_window)
 	    {
 	      continue;		/* can't hide the app icon.	*/
@@ -1229,8 +1266,14 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 	    }
 	}
 
+      info = [self _notificationUserInfo];
       [nc postNotificationName: NSApplicationDidResignActiveNotification
-			object: self];
+			object: self
+		      userInfo: info];
+      [[[NSWorkspace sharedWorkspace] notificationCenter]
+        postNotificationName: NSApplicationDidResignActiveNotification
+		      object: [NSWorkspace sharedWorkspace]
+		    userInfo: info];
     }
 }
 
@@ -1246,20 +1289,24 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 
 /**
  * Cause all other apps to hide themselves.
- * <em>Unimplemented under GNUstep.</em>
  */
 - (void) hideOtherApplications: (id)sender
 {
-  // FIXME Currently does nothing
+  [[[NSWorkspace sharedWorkspace] notificationCenter]
+    postNotificationName: GSHideOtherApplicationsNotification
+		  object: [NSWorkspace sharedWorkspace]
+		userInfo: [self _notificationUserInfo]];
 }
 
 /**
  * Cause all apps including this one to unhide themselves.
- * <em>Unimplemented under GNUstep.</em>
  */
 - (void) unhideAllApplications: (id)sender
 {
-  // FIXME Currently does nothing
+  [[[NSWorkspace sharedWorkspace] notificationCenter]
+    postNotificationName: GSUnhideAllApplicationsNotification
+		  object: [NSWorkspace sharedWorkspace]
+		userInfo: [self _notificationUserInfo]];
 }
 
 /*
@@ -2116,6 +2163,8 @@ image.</p><p>See Also: -applicationIconImage</p>
   [anImage setName: @"NSApplicationIcon"];
   ASSIGN(_app_icon, anImage);
 
+  [_main_menu _organizeMenu];	// Let horizontal menu change icon
+
   if (_app_icon_window != nil)
     {
       [(NSAppIconView *)[_app_icon_window contentView] setImage: anImage];
@@ -2163,9 +2212,10 @@ image.</p><p>See Also: -applicationIconImage</p>
 {
   if (_app_is_hidden == NO)
     {
-      NSArray			*windows_list = [self windows]; 
-      unsigned			count = [windows_list count];
-      unsigned			i;
+      NSArray		*windows_list = [self windows]; 
+      unsigned		count = [windows_list count];
+      NSDictionary	*info;
+      unsigned		i;
 
       [nc postNotificationName: NSApplicationWillHideNotification
 			object: self];
@@ -2182,6 +2232,10 @@ image.</p><p>See Also: -applicationIconImage</p>
 	  if ([win isVisible] == NO)
 	    {
 	      continue;		/* Already invisible	*/
+	    }
+	  if ([win canHide] == NO)
+	    {
+	      continue;		/* Not hideable	*/
 	    }
 	  if (win == _app_icon_window)
 	    {
@@ -2204,8 +2258,14 @@ image.</p><p>See Also: -applicationIconImage</p>
       [self deactivate];
       _unhide_on_activation = YES;
 
+      info = [self _notificationUserInfo];
       [nc postNotificationName: NSApplicationDidHideNotification
-			object: self];
+			object: self
+		      userInfo: info];
+      [[[NSWorkspace sharedWorkspace] notificationCenter]
+        postNotificationName: NSApplicationDidHideNotification
+		      object: [NSWorkspace sharedWorkspace]
+		    userInfo: info];
     }
 }
 
@@ -2243,8 +2303,9 @@ image.</p><p>See Also: -applicationIconImage</p>
 {
   if (_app_is_hidden == YES)
     {
-      unsigned			count;
-      unsigned			i;
+      NSDictionary	*info;
+      unsigned		count;
+      unsigned		i;
 
       [nc postNotificationName: NSApplicationWillUnhideNotification
 			object: self];
@@ -2268,8 +2329,14 @@ image.</p><p>See Also: -applicationIconImage</p>
 	}
       [[_app_icon_window contentView] setNeedsDisplay: YES];
 
+      info = [self _notificationUserInfo];
       [nc postNotificationName: NSApplicationDidUnhideNotification
-			object: self];
+			object: self
+		      userInfo: info];
+      [[[NSWorkspace sharedWorkspace] notificationCenter]
+        postNotificationName: NSApplicationDidUnhideNotification
+		      object: [NSWorkspace sharedWorkspace]
+		    userInfo: info];
     }
 }
 
@@ -3046,8 +3113,6 @@ image.</p><p>See Also: -applicationIconImage</p>
 {
   if (shouldTerminate)
     {
-      NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
-
       [nc postNotificationName: NSApplicationWillTerminateNotification
 	  object: self];
       
@@ -3060,10 +3125,10 @@ image.</p><p>See Also: -applicationIconImage</p>
       [[NSUserDefaults standardUserDefaults] synchronize];
 
       /* Tell the Workspace that we really did terminate.  */
-      [[workspace notificationCenter]
+      [[[NSWorkspace sharedWorkspace] notificationCenter]
         postNotificationName: NSWorkspaceDidTerminateApplicationNotification
-		      object: workspace
-		    userInfo: [workspace activeApplication]];
+		      object: [NSWorkspace sharedWorkspace]
+		    userInfo: [self _notificationUserInfo]];
 
       /* Destroy the main run loop pool (this also destroys any nested
 	 pools which might have been created inside this one).  */
@@ -3286,6 +3351,51 @@ image.</p><p>See Also: -applicationIconImage</p>
   return self;
 }
 
+- (NSDictionary*) _notificationUserInfo
+{
+  NSString	*path;
+  NSString	*port;
+  NSNumber	*processIdentifier;
+  NSDictionary	*userInfo;
+
+  processIdentifier = [NSNumber numberWithInt:
+    [[NSProcessInfo processInfo] processIdentifier]];
+  port = [(GSServicesManager*)_listener port];
+  path = [[NSBundle mainBundle] bundlePath];
+  if (port == nil)
+    {
+      if (path == nil)
+	{
+	  userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+	    processIdentifier, @"NSApplicationProcessIdentifier",
+	    nil];
+	}
+      else
+	{
+	  userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+	    path, @"NSApplicationPath",
+	    processIdentifier, @"NSApplicationProcessIdentifier",
+	    nil];
+	}
+    }
+  else if (path == nil)
+    {
+      userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+	port, @"NSApplicationName",
+	processIdentifier, @"NSApplicationProcessIdentifier",
+	nil];
+    }
+  else
+    {
+      userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+	port, @"NSApplicationName",
+	path, @"NSApplicationPath",
+	processIdentifier, @"NSApplicationProcessIdentifier",
+	nil];
+    }
+  return userInfo;
+}
+
 - (void) _openDocument: (NSString*)filePath
 {
   [_listener application: self openFile: filePath];
@@ -3488,6 +3598,29 @@ image.</p><p>See Also: -applicationIconImage</p>
 		    }
 		}
 	    }
+	}
+    }
+}
+
+- (void) _workspaceNotification: (NSNotification*) notification
+{
+  NSString	*name = [notification name];
+  NSDictionary	*info = [notification userInfo];
+
+  /*
+   * Handle hiding and unhiding of this app if necessary.
+   */
+  if ([name isEqualToString: GSUnhideAllApplicationsNotification] == YES)
+    {
+      [self unhideWithoutActivation];
+    }
+  else if ([name isEqualToString: GSHideOtherApplicationsNotification] == YES)
+    {
+      NSString	*port = [info objectForKey: @"NSApplicationName"];
+
+      if ([port isEqual: [[GSServicesManager manager] port]] == NO)
+	{
+	  [self hide: self];
 	}
     }
 }

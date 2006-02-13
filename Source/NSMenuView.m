@@ -42,6 +42,27 @@
 
 #include "GNUstepGUI/GSTitleView.h"
 
+#include <Foundation/Foundation.h>
+
+typedef struct _GSCellRect {
+	  NSRect rect;
+} GSCellRect;
+
+#define GSI_ARRAY_TYPES         0
+#define GSI_ARRAY_TYPE          GSCellRect
+
+#define GSI_ARRAY_NO_RETAIN
+#define GSI_ARRAY_NO_RELEASE
+
+#ifdef GSIArray
+#undef GSIArray
+#endif
+#include <GNUstepBase/GSIArray.h>
+
+static NSMapTable	*viewInfo = 0;
+
+#define	cellRects	((GSIArray)NSMapGet(viewInfo, self))
+
 /*
   NSMenuView contains:
 
@@ -51,6 +72,24 @@
 
 /* A menu's title is an instance of this class */
 @class NSButton;
+
+@interface NSMenuView (Private)
+- (BOOL) _rootIsHorizontal;
+@end
+
+@implementation NSMenuView (Private)
+- (BOOL) _rootIsHorizontal
+{
+  NSMenu	*m = _attachedMenu;
+
+  /* Determine root menu of this menu hierarchy */
+  while ([m supermenu] != nil)
+    {
+      m = [m supermenu];
+    }
+  return [[m menuRepresentation] isHorizontal];
+}
+@end
 
 @implementation NSMenuView
 
@@ -66,6 +105,16 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 /*
  * Class methods.
  */
+
++ (void) initialize
+{
+  if (viewInfo == 0)
+    {
+      viewInfo = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
+	NSNonOwnedPointerMapValueCallBacks, 20);
+    }
+}
+
 + (float) menuBarHeight
 {
   static float height = 0.0;
@@ -121,7 +170,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   return self;
 }
 
-- (id)initAsTearOff
+- (id) initAsTearOff
 {
   [self initWithFrame: NSZeroRect];
 	
@@ -147,6 +196,20 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
   RELEASE(_itemCells);
   RELEASE(_font);
+
+  /*
+   * Get rid of any cached cell rects.
+   */
+  {
+  GSIArray	a = NSMapGet(viewInfo, self);
+
+  if (a != 0)
+    {
+      GSIArrayEmpty(a);
+      NSZoneFree(NSDefaultMallocZone(), a);
+      NSMapRemove(viewInfo, self);
+    }
+  }
 
   [super dealloc];
 }
@@ -191,6 +254,24 @@ _addLeftBorderOffsetToRect(NSRect aRect)
       
       [self update];
     }
+  if (_horizontal)
+    {
+      unsigned	count = [[[self menu] itemArray] count];
+      unsigned	i;
+
+      for (i = 0; i < count; i++)
+	{
+	  NSNumber	*n = [NSNumber numberWithInt: i];
+	  NSDictionary	*d;
+
+	  d = [NSDictionary dictionaryWithObject: n forKey: @"NSMenuItemIndex"];
+
+	  [self itemAdded: [NSNotification
+	    notificationWithName: NSMenuDidAddItemNotification
+	    object: self
+	    userInfo: d]];
+	}
+    }
 }
 
 - (NSMenu*) menu
@@ -200,6 +281,25 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
 - (void) setHorizontal: (BOOL)flag
 {
+  if (flag == YES && _horizontal == NO)
+    {
+      GSIArray	a = NSZoneMalloc(NSDefaultMallocZone(), sizeof(GSIArray_t));
+
+      GSIArrayInitWithZoneAndCapacity(a, NSDefaultMallocZone(), 8);
+      NSMapInsert(viewInfo, self, a);
+    }
+  else if (flag == NO && _horizontal == YES)
+    {
+      GSIArray	a = NSMapGet(viewInfo, self);
+
+      if (a != 0)
+	{
+	  GSIArrayEmpty(a);
+	  NSZoneFree(NSDefaultMallocZone(), a);
+	  NSMapRemove(viewInfo, self);
+	}
+    }
+
   _horizontal = flag;
 }
 
@@ -346,6 +446,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   id          aCell  = [NSMenuItemCell new];
   int wasHighlighted = _highlightedItemIndex;
 
+  // FIXME do we need to differentiate between popups and non popups
   [aCell setMenuItem: anItem];
   [aCell setMenuView: self];
   [aCell setFont: _font];
@@ -458,36 +559,44 @@ _addLeftBorderOffsetToRect(NSRect aRect)
  */
 - (void) update
 {
-  NSDebugLLog (@"NSMenu", @"update called on menu view");
-
-  if (![_attachedMenu _ownedByPopUp] && !_titleView)
+  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self)
+    == NSMacintoshInterfaceStyle)
     {
-      // Add title view. If this menu not owned by popup
-      _titleView = [[GSTitleView alloc] initWithOwner:_attachedMenu];
-      [self addSubview: _titleView];
-      RELEASE(_titleView);
-    }
-  else if ([_attachedMenu _ownedByPopUp] && _titleView)
-    {
-      // Remove title view if this menu owned by popup
-      [_titleView removeFromSuperview];
-      _titleView = nil;
-    }
-
-  // Resize it anyway.
-  [self sizeToFit];
-
-  // Just quit here if we are a popup.
-  if ([_attachedMenu _ownedByPopUp])
-    return;
-  
-  if ([_attachedMenu isTornOff] && ![_attachedMenu isTransient])
-    {
-      [_titleView addCloseButtonWithAction:@selector(_performMenuClose:)];
+      [self sizeToFit];
     }
   else
     {
-      [_titleView removeCloseButton];
+      NSDebugLLog (@"NSMenu", @"update called on menu view");
+
+      /*
+       * Ensure that a title view exists only if needed.
+       */
+      if (![_attachedMenu _ownedByPopUp] && !_titleView)
+	{
+	  _titleView = [[GSTitleView alloc] initWithOwner:_attachedMenu];
+	  [self addSubview: _titleView];
+	  RELEASE(_titleView);
+	}
+      else if ([_attachedMenu _ownedByPopUp] && _titleView)
+	{
+	  [_titleView removeFromSuperview];
+	  _titleView = nil;
+	}
+
+      [self sizeToFit];
+
+      if ([_attachedMenu _ownedByPopUp] == NO)
+	{
+	  if ([_attachedMenu isTornOff] && ![_attachedMenu isTransient])
+	    {
+	      [_titleView
+		addCloseButtonWithAction: @selector(_performMenuClose:)];
+	    }
+	  else
+	    {
+	      [_titleView removeCloseButton];
+	    }
+	}
     }
 }
 
@@ -503,163 +612,206 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
 - (void) sizeToFit
 {
-  unsigned i;
-  unsigned howMany = [_itemCells count];
-  unsigned wideTitleView = 1;
-  float    neededImageAndTitleWidth = 0.0;
-  float    neededKeyEquivalentWidth = 0.0;
-  float    neededStateImageWidth = 0.0;
-  float    accumulatedOffset = 0.0;
-  float    popupImageWidth = 0.0;
-  float    menuBarHeight = 0.0;
-
-  // Popup menu doesn't need title bar
-  if (![_attachedMenu _ownedByPopUp] && _titleView)
+  if (_horizontal == YES)
     {
-      menuBarHeight = [[self class] menuBarHeight];
-      neededImageAndTitleWidth = [_titleView titleSize].width;
+      unsigned i;
+      unsigned howMany = [_itemCells count];
+      float currentX = 8;
+      NSRect scRect = [[NSScreen mainScreen] frame];
+
+      GSIArrayRemoveAllItems(cellRects);
+
+      scRect.size.height = [NSMenuView menuBarHeight];
+      [self setFrameSize: scRect.size];
+      _cellSize.height = scRect.size.height;
+
+      for (i = 0; i < howMany; i++)
+	{
+      	  GSCellRect elem;
+      	  NSMenuItemCell *aCell = [_itemCells objectAtIndex: i];
+	  float titleWidth = [aCell titleWidth];
+
+	  if ([aCell imageWidth])
+	    {
+	      titleWidth += [aCell imageWidth] + GSCellTextImageXDist;
+	    }
+
+	  elem.rect = NSMakeRect (currentX,
+			     0,
+			     (titleWidth + (2 * _horizontalEdgePad)),
+			     _cellSize.height);
+  	  GSIArrayAddItem(cellRects, (GSIArrayItem)elem);
+
+	  currentX += titleWidth + (2 * _horizontalEdgePad);
+	}
     }
   else
     {
-      menuBarHeight += _leftBorderOffset;
-    }
-  
-  for (i = 0; i < howMany; i++)
-    {
-      float aStateImageWidth;
-      float aTitleWidth;
-      float anImageWidth;
-      float anImageAndTitleWidth;
-      float aKeyEquivalentWidth;
-      NSMenuItemCell *aCell = [_itemCells objectAtIndex: i];
-      
-      // State image area.
-      aStateImageWidth = [aCell stateImageWidth];
-      
-      // Title and Image area.
-      aTitleWidth = [aCell titleWidth];
-      anImageWidth = [aCell imageWidth];
-      
-      // Key equivalent area.
-      aKeyEquivalentWidth = [aCell keyEquivalentWidth];
-      
-      switch ([aCell imagePosition])
-        {
-        case NSNoImage: 
-          anImageAndTitleWidth = aTitleWidth;
-          break;
-          
-        case NSImageOnly: 
-          anImageAndTitleWidth = anImageWidth;
-          break;
-          
-        case NSImageLeft: 
-        case NSImageRight: 
-          anImageAndTitleWidth = anImageWidth + aTitleWidth + GSCellTextImageXDist;
-          break;
-          
-        case NSImageBelow: 
-        case NSImageAbove: 
-        case NSImageOverlaps: 
-        default: 
-          if (aTitleWidth > anImageWidth)
-            anImageAndTitleWidth = aTitleWidth;
-          else
-            anImageAndTitleWidth = anImageWidth;
-          break;
-        }
-      
-      if (aStateImageWidth > neededStateImageWidth)
-        neededStateImageWidth = aStateImageWidth;
-      
-      if (anImageAndTitleWidth > neededImageAndTitleWidth)
-        neededImageAndTitleWidth = anImageAndTitleWidth;
-		
-      if (aKeyEquivalentWidth > neededKeyEquivalentWidth)
-        neededKeyEquivalentWidth = aKeyEquivalentWidth;
-      
-      // Title view width less than item's left part width
-      if ((anImageAndTitleWidth + aStateImageWidth) 
-          > neededImageAndTitleWidth)
-        wideTitleView = 0;
-      
-      // Popup menu has only one item with nibble or arrow image
-      if (anImageWidth)
-        popupImageWidth = anImageWidth;
-    }
-  
-  // Cache the needed widths.
-  _stateImageWidth = neededStateImageWidth;
-  _imageAndTitleWidth = neededImageAndTitleWidth;
-  _keyEqWidth = neededKeyEquivalentWidth;
-  
-  accumulatedOffset = _horizontalEdgePad;
-  if (howMany)
-    {
-      // Calculate the offsets and cache them.
-      if (neededStateImageWidth)
-        {
-          _stateImageOffset = accumulatedOffset;
-          accumulatedOffset += neededStateImageWidth += _horizontalEdgePad;
-        }
-      
-      if (neededImageAndTitleWidth)
-        {
-          _imageAndTitleOffset = accumulatedOffset;
-          accumulatedOffset += neededImageAndTitleWidth;
-        }
-      
-      if (wideTitleView)
-        {
-          _keyEqOffset = accumulatedOffset = neededImageAndTitleWidth
-            + (3 * _horizontalEdgePad);
-        }
+      unsigned i;
+      unsigned howMany = [_itemCells count];
+      unsigned wideTitleView = 1;
+      float    neededImageAndTitleWidth = 0.0;
+      float    neededKeyEquivalentWidth = 0.0;
+      float    neededStateImageWidth = 0.0;
+      float    accumulatedOffset = 0.0;
+      float    popupImageWidth = 0.0;
+      float    menuBarHeight = 0.0;
+
+      // Popup menu doesn't need title bar
+      if (![_attachedMenu _ownedByPopUp] && _titleView)
+	{
+	  NSMenu	*m = [_attachedMenu supermenu];
+	  NSMenuView	*r = [m menuRepresentation];
+
+	  neededImageAndTitleWidth = [_titleView titleSize].width;
+	  if (r != nil && [r isHorizontal] == YES)
+	    {
+	      NSMenuItemCell *msr;
+
+	      msr = [r menuItemCellForItemAtIndex:
+		[m indexOfItemWithTitle: [_attachedMenu title]]];
+	      neededImageAndTitleWidth
+		= [msr titleWidth] + GSCellTextImageXDist;
+	    }
+
+	  if (_titleView)
+	    menuBarHeight = [[self class] menuBarHeight];
+	  else
+	    menuBarHeight += _leftBorderOffset;
+	}
       else
-        {
-          _keyEqOffset = accumulatedOffset += (2 * _horizontalEdgePad);
-        }
-      accumulatedOffset += neededKeyEquivalentWidth + _horizontalEdgePad; 
+	{
+	  menuBarHeight += _leftBorderOffset;
+	}
       
-      if ([_attachedMenu supermenu] != nil && neededKeyEquivalentWidth < 8)
-        {
-          accumulatedOffset += 8 - neededKeyEquivalentWidth;
-        }
-    }
-  else
-    {
-      accumulatedOffset += neededImageAndTitleWidth + 3 + 2;
-      if ([_attachedMenu supermenu] != nil)
-        accumulatedOffset += 15;
-    }
-  
-  // Calculate frame size.
-  if (![_attachedMenu _ownedByPopUp])
-    {
-      // Add the border width: 1 for left, 2 for right sides
-      _cellSize.width = accumulatedOffset + 3;
-    }
-  else
-    {
-      _keyEqOffset = _cellSize.width - _keyEqWidth - popupImageWidth;
-    }
+      for (i = 0; i < howMany; i++)
+	{
+	  float aStateImageWidth;
+	  float aTitleWidth;
+	  float anImageWidth;
+	  float anImageAndTitleWidth;
+	  float aKeyEquivalentWidth;
+	  NSMenuItemCell *aCell = [_itemCells objectAtIndex: i];
+	  
+	  // State image area.
+	  aStateImageWidth = [aCell stateImageWidth];
+	  
+	  // Title and Image area.
+	  aTitleWidth = [aCell titleWidth];
+	  anImageWidth = [aCell imageWidth];
+	  
+	  // Key equivalent area.
+	  aKeyEquivalentWidth = [aCell keyEquivalentWidth];
+	  
+	  switch ([aCell imagePosition])
+	    {
+	      case NSNoImage: 
+		anImageAndTitleWidth = aTitleWidth;
+		break;
+		
+	      case NSImageOnly: 
+		anImageAndTitleWidth = anImageWidth;
+		break;
+		
+	      case NSImageLeft: 
+	      case NSImageRight: 
+		anImageAndTitleWidth
+		  = anImageWidth + aTitleWidth + GSCellTextImageXDist;
+		break;
+		
+	      case NSImageBelow: 
+	      case NSImageAbove: 
+	      case NSImageOverlaps: 
+	      default: 
+		if (aTitleWidth > anImageWidth)
+		  anImageAndTitleWidth = aTitleWidth;
+		else
+		  anImageAndTitleWidth = anImageWidth;
+		break;
+	    }
+	  
+	  if (aStateImageWidth > neededStateImageWidth)
+	    neededStateImageWidth = aStateImageWidth;
+	  
+	  if (anImageAndTitleWidth > neededImageAndTitleWidth)
+	    neededImageAndTitleWidth = anImageAndTitleWidth;
+		    
+	  if (aKeyEquivalentWidth > neededKeyEquivalentWidth)
+	    neededKeyEquivalentWidth = aKeyEquivalentWidth;
+	  
+	  // Title view width less than item's left part width
+	  if ((anImageAndTitleWidth + aStateImageWidth) 
+	      > neededImageAndTitleWidth)
+	    wideTitleView = 0;
+	  
+	  // Popup menu has only one item with nibble or arrow image
+	  if (anImageWidth)
+	    popupImageWidth = anImageWidth;
+	}
+      
+      // Cache the needed widths.
+      _stateImageWidth = neededStateImageWidth;
+      _imageAndTitleWidth = neededImageAndTitleWidth;
+      _keyEqWidth = neededKeyEquivalentWidth;
+      
+      accumulatedOffset = _horizontalEdgePad;
+      if (howMany)
+	{
+	  // Calculate the offsets and cache them.
+	  if (neededStateImageWidth)
+	    {
+	      _stateImageOffset = accumulatedOffset;
+	      accumulatedOffset += neededStateImageWidth += _horizontalEdgePad;
+	    }
+	  
+	  if (neededImageAndTitleWidth)
+	    {
+	      _imageAndTitleOffset = accumulatedOffset;
+	      accumulatedOffset += neededImageAndTitleWidth;
+	    }
+	  
+	  if (wideTitleView)
+	    {
+	      _keyEqOffset = accumulatedOffset = neededImageAndTitleWidth
+		+ (3 * _horizontalEdgePad);
+	    }
+	  else
+	    {
+	      _keyEqOffset = accumulatedOffset += (2 * _horizontalEdgePad);
+	    }
+	  accumulatedOffset += neededKeyEquivalentWidth + _horizontalEdgePad; 
+	  
+	  if ([_attachedMenu supermenu] != nil && neededKeyEquivalentWidth < 8)
+	    {
+	      accumulatedOffset += 8 - neededKeyEquivalentWidth;
+	    }
+	}
+      else
+	{
+	  accumulatedOffset += neededImageAndTitleWidth + 3 + 2;
+	  if ([_attachedMenu supermenu] != nil)
+	    accumulatedOffset += 15;
+	}
+      
+      // Calculate frame size.
+      if (![_attachedMenu _ownedByPopUp])
+	{
+	  // Add the border width: 1 for left, 2 for right sides
+	  _cellSize.width = accumulatedOffset + 3;
+	}
+      else
+	{
+	  _keyEqOffset = _cellSize.width - _keyEqWidth - popupImageWidth;
+	}
 
-  if (_horizontal == NO)
-    {
       [self setFrameSize: NSMakeSize(_cellSize.width + _leftBorderOffset, 
 				     (howMany * _cellSize.height) 
 				     + menuBarHeight)];
       [_titleView setFrame: NSMakeRect (0, howMany * _cellSize.height,
 					NSWidth (_bounds), menuBarHeight)];
+      
+      _needsSizing = NO;
     }
-  else
-    {
-      [self setFrameSize: NSMakeSize(((howMany + 1) * _cellSize.width), 
-				     _cellSize.height + _leftBorderOffset)];
-      [_titleView setFrame: NSMakeRect (0, 0,
-					_cellSize.width, _cellSize.height + 1)];
-    }
-  
-  _needsSizing = NO;
 }
 
 - (float) stateImageOffset
@@ -730,33 +882,62 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
 - (NSRect) rectOfItemAtIndex: (int)index
 {
-  NSRect theRect;
-
-  if (_needsSizing == YES)
+  if (_horizontal == YES)
     {
-      [self sizeToFit];
-    }
+      GSCellRect aRect;
 
-  /* Fiddle with the origin so that the item rect is shifted 1 pixel over 
-   * so we do not draw on the heavy line at origin.x = 0.
-   */
-  if (_horizontal == NO)
-    {
-      theRect.origin.y = _cellSize.height * ([_itemCells count] - index - 1);
-      theRect.origin.x = _leftBorderOffset;
+      if (_needsSizing == YES)
+	{
+	  [self sizeToFit];
+	} 
+
+      aRect = GSIArrayItemAtIndex(cellRects, index).ext;
+
+      /* FIXME: handle vertical case? */
+
+      return aRect.rect;
     }
   else
     {
-      theRect.origin.x = _cellSize.width * (index + 1);
-      theRect.origin.y = 0;
-    }
-  theRect.size = _cellSize;
+      NSRect theRect;
 
-  /* NOTE: This returns the correct NSRect for drawing cells, but nothing 
-   * else (unless we are a popup). This rect will have to be modified for 
-   * event calculation, etc..
-   */
-  return theRect;
+      if (_needsSizing == YES)
+	{
+	  [self sizeToFit];
+	}
+
+      /* Fiddle with the origin so that the item rect is shifted 1 pixel over 
+       * so we do not draw on the heavy line at origin.x = 0.
+       */
+      if (_horizontal == NO)
+	{
+	  if (![_attachedMenu _ownedByPopUp])
+	    {
+	      theRect.origin.y
+		= 2 + (_cellSize.height * ([_itemCells count] - index - 1));
+	      theRect.origin.x = 1;
+	      theRect.size.width -= 2;
+	    }
+	  else
+	    {
+	      theRect.origin.y
+		= _cellSize.height * ([_itemCells count] - index - 1);
+	      theRect.origin.x = _leftBorderOffset;
+	    }
+	}
+      else
+	{
+	  theRect.origin.x = _cellSize.width * (index + 1);
+	  theRect.origin.y = 0;
+	}
+      theRect.size = _cellSize;
+
+      /* NOTE: This returns the correct NSRect for drawing cells, but nothing 
+       * else (unless we are a popup). This rect will have to be modified for 
+       * event calculation, etc..
+       */
+      return theRect;
+    }
 }
 
 - (int) indexOfItemAtPoint: (NSPoint)point
@@ -811,13 +992,23 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 	    NSMakePoint(aRect.origin.x, aRect.origin.y)];
 
 	  return NSMakePoint (NSMaxX(frame),
-			      subOrigin.y - NSHeight(submenuFrame) - 3 +
-			      2*[NSMenuView menuBarHeight]);
+	    subOrigin.y - NSHeight(submenuFrame) - 3 +
+	    2*[NSMenuView menuBarHeight]);
+	}
+      else if ([self _rootIsHorizontal] == YES)
+	{
+	  NSRect aRect = [self rectOfItemAtIndex:
+            [_attachedMenu indexOfItemWithSubmenu: aSubmenu]];
+	  NSPoint subOrigin = [_window convertBaseToScreen:
+            NSMakePoint(aRect.origin.x, aRect.origin.y)];
+    
+	  return NSMakePoint (NSMaxX(frame),
+	    subOrigin.y - NSHeight(submenuFrame) + aRect.size.height);
 	}
       else
 	{
 	  return NSMakePoint(NSMaxX(frame),
-			     NSMaxY(frame) - NSHeight(submenuFrame));
+	    NSMaxY(frame) - NSHeight(submenuFrame));
 	}
     }
   else
@@ -915,11 +1106,29 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 {
   int        i;
   int        howMany = [_itemCells count];
-  NSRectEdge sides[] = {NSMinXEdge, NSMaxYEdge};
+  NSRectEdge sides[2]; 
   float      grays[] = {NSDarkGray, NSDarkGray};
 
-  // Draw the dark gray upper left lines.
-  NSDrawTiledRects(rect, rect, sides, grays, 2);
+  if (_horizontal == YES)
+    {
+      sides[0] = NSMinYEdge;
+      sides[1] = NSMinYEdge;
+      NSDrawTiledRects(_bounds, rect, sides, grays, 2);
+    }
+  else
+    {
+      if (![_attachedMenu _ownedByPopUp])
+	{
+	  NSDrawButton (_bounds, rect);
+	}
+      else
+	{
+	  sides[0] = NSMinXEdge;
+	  sides[1] = NSMaxYEdge;
+	  // Draw the dark gray upper left lines.
+	  NSDrawTiledRects(_bounds, rect, sides, grays, 2);
+	}
+    }
   
   // Draw the menu cells.
   for (i = 0; i < howMany; i++)
@@ -992,8 +1201,10 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   NSPoint	lastLocation = {0,0};
   BOOL		justAttachedNewSubmenu = NO;
   BOOL          subMenusNeedRemoving = YES;
+  BOOL		shouldFinish = YES;
   int		delayCount = 0;
   int           indexOfActionToExecute = -1;
+  int		firstIndex = -1;
   NSEvent	*original;
   NSEventType	type;
   NSEventType	end;
@@ -1012,26 +1223,41 @@ _addLeftBorderOffsetToRect(NSRect aRect)
     {
       end = NSRightMouseUp;
       eventMask |= NSRightMouseUpMask | NSRightMouseDraggedMask;
+      eventMask |= NSRightMouseDownMask;
     }
   else if (type == NSOtherMouseDown || type == NSOtherMouseDragged)
     {
       end = NSOtherMouseUp;
       eventMask |= NSOtherMouseUpMask | NSOtherMouseDraggedMask;
+      eventMask |= NSOtherMouseDownMask;
     }
   else if (type == NSLeftMouseDown || type == NSLeftMouseDragged)
     {
       end = NSLeftMouseUp;
       eventMask |= NSLeftMouseUpMask | NSLeftMouseDraggedMask;
+      eventMask |= NSLeftMouseDownMask;
     }
   else
     {
       NSLog (@"Unexpected event: %d during event tracking in NSMenuView", type);
       end = NSLeftMouseUp;
       eventMask |= NSLeftMouseUpMask | NSLeftMouseDraggedMask;
+      eventMask |= NSLeftMouseDownMask;
     }
 
+  if ([self isHorizontal] == YES)
+    {
+      /*
+       * Ignore the first mouse up if nothing interesting has happened.
+       */
+      shouldFinish = NO;
+    }
   do
     {
+      if (type == end)
+        {
+	  shouldFinish = YES;
+        }
       if (type == NSPeriodic || event == original)
         {
           NSPoint	location;
@@ -1039,6 +1265,15 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
           location     = [_window mouseLocationOutsideOfEventStream];
           index        = [self indexOfItemAtPoint: location];
+
+	  if (event == original)
+	    {
+	      firstIndex = index;
+	    }
+	  if (index != firstIndex)
+	    {
+	      shouldFinish = YES;
+	    }
 
           /*
            * 1 - if menus is only partly visible and the mouse is at the
@@ -1053,8 +1288,8 @@ _addLeftBorderOffsetToRect(NSRect aRect)
                * GNUstep screen coordinates start with 1.
                */
               if (pointerLoc.x == 0 || pointerLoc.y == 1
-                  || pointerLoc.x == [[_window screen] frame].size.width - 1
-                  || pointerLoc.y == [[_window screen] frame].size.height)
+		|| pointerLoc.x == [[_window screen] frame].size.width - 1
+		|| pointerLoc.y == [[_window screen] frame].size.height)
                 [_attachedMenu shiftOnScreen];
             }
 
@@ -1064,7 +1299,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
            * flag to NO.
            */
           if (justAttachedNewSubmenu && index != -1
-              && index != _highlightedItemIndex)
+	    && index != _highlightedItemIndex)
             { 
               if (location.x - lastLocation.x > MOVE_THRESHOLD_DELTA)
                 {
@@ -1103,20 +1338,21 @@ _addLeftBorderOffsetToRect(NSRect aRect)
                */
               candidateMenu = [_attachedMenu supermenu];
               while (candidateMenu  
-                     && !NSMouseInRect (locationInScreenCoordinates, 
-                                        [[candidateMenu window] frame], 
-                                        NO) // not found yet
-                     && (! ([candidateMenu isTornOff] 
-                            && ![candidateMenu isTransient]))  // no root of display tree
-                     && [candidateMenu isAttached]) // has displayed parent
+		&& !NSMouseInRect (locationInScreenCoordinates, 
+		  [[candidateMenu window] frame], NO) // not found yet
+		&& (! ([candidateMenu isTornOff] 
+		  && ![candidateMenu isTransient]))  // no root of display tree
+		&& [candidateMenu isAttached]) // has displayed parent
                 {
                   candidateMenu = [candidateMenu supermenu];
                 }
 
               if (candidateMenu != nil
-                  && NSMouseInRect (locationInScreenCoordinates,
-                                    [[candidateMenu window] frame], NO))
+		&& NSMouseInRect (locationInScreenCoordinates,
+		  [[candidateMenu window] frame], NO))
                 {
+		  BOOL	candidateMenuResult;
+
                   // The call to fetch attachedMenu is not needed. But putting
                   // it here avoids flicker when we go back to an ancestor 
 		  // menu and the attached menu is already correct.
@@ -1129,22 +1365,24 @@ _addLeftBorderOffsetToRect(NSRect aRect)
                   [[[candidateMenu attachedMenu] menuRepresentation]
                     setHighlightedItemIndex: -1];
                   
-                  return [[candidateMenu menuRepresentation]
+                  candidateMenuResult = [[candidateMenu menuRepresentation]
                            trackWithEvent: original];
+		  return candidateMenuResult;
                 }
 
               // 3b - Check if we enter the attached submenu
               windowUnderMouse = [[_attachedMenu attachedMenu] window];
               if (windowUnderMouse != nil
-                  && NSMouseInRect (locationInScreenCoordinates,
-                                    [windowUnderMouse frame], NO))
+		&& NSMouseInRect (locationInScreenCoordinates,
+		  [windowUnderMouse frame], NO))
                 {
                   BOOL wasTransient = [_attachedMenu isTransient];
                   BOOL subMenuResult;
 
                   subMenuResult
                     = [[self attachedMenuView] trackWithEvent: original];
-                  if (subMenuResult && wasTransient == [_attachedMenu isTransient])
+                  if (subMenuResult
+		    && wasTransient == [_attachedMenu isTransient])
                     {
                       [self detachSubmenu];
                     }
@@ -1178,7 +1416,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
         dequeue: YES];
       type = [event type];
     }
-  while (type != end);
+  while (type != end || shouldFinish == NO);
 
   /*
    * Ok, we released the mouse
@@ -1223,8 +1461,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
           currentMenu = [currentMenu attachedMenu];
         }
 
-      while ([currentMenu isTransient] &&
-             [currentMenu supermenu])
+      while ([currentMenu isTransient] && [currentMenu supermenu])
         {
           currentMenu = [currentMenu supermenu];
         }
@@ -1244,15 +1481,43 @@ _addLeftBorderOffsetToRect(NSRect aRect)
     }
 
   if (indexOfActionToExecute >= 0
-      && [_attachedMenu attachedMenu] != nil && [_attachedMenu attachedMenu] ==
-      [[_items_link objectAtIndex: indexOfActionToExecute] submenu])
+    && [_attachedMenu attachedMenu] != nil && [_attachedMenu attachedMenu] ==
+    [[_items_link objectAtIndex: indexOfActionToExecute] submenu])
     {
+#if 1
+      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self)
+	== NSMacintoshInterfaceStyle)
+	{
+	  /*
+	   * FIXME ... always remove submenus in mac mode ... this is not
+	   * quite the way the mac behaves, but it's closer than the normal
+	   * behavior.
+	   */
+          subMenusNeedRemoving = YES;
+	}
+#endif
       if (subMenusNeedRemoving)
         {
           [self detachSubmenu];
         }
       // Clicked on a submenu.
       return NO;
+    }
+
+  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self)
+    == NSMacintoshInterfaceStyle)
+    {
+      NSMenu	*tmp = _attachedMenu;
+
+      do
+	{
+	  if ([tmp isEqual: [NSApp mainMenu]] == NO)
+	    {
+	      [tmp close];
+	    }
+	  tmp = [tmp supermenu];
+	}
+      while (tmp != nil);
     }
 
   [_attachedMenu performActionForItemAtIndex: indexOfActionToExecute];
