@@ -70,50 +70,56 @@
   [super dealloc];
 }
 
-- (id) initWithCoder: (NSCoder *)aDecoder
+- (id) initWithCoder: (NSCoder *)coder
 {
-  if ([aDecoder allowsKeyedCoding])
+  if ([coder allowsKeyedCoding])
     {
-      if ([aDecoder containsValueForKey: @"NSViewClass"])
+      if ([coder containsValueForKey: @"NSViewClass"])
         {
-	  ASSIGN(_viewClass, [aDecoder decodeObjectForKey: @"NSViewClass"]);
+	  ASSIGN(_viewClass, [coder decodeObjectForKey: @"NSViewClass"]);
 	}
-      if ([aDecoder containsValueForKey: @"NSWindowClass"])
+      if ([coder containsValueForKey: @"NSWindowClass"])
         {
-	  ASSIGN(_windowClass, [aDecoder decodeObjectForKey: @"NSWindowClass"]);
+	  ASSIGN(_windowClass, [coder decodeObjectForKey: @"NSWindowClass"]);
 	}
-      if ([aDecoder containsValueForKey: @"NSWindowStyleMask"])
+      if ([coder containsValueForKey: @"NSWindowStyleMask"])
         {
-	  _interfaceStyle = [aDecoder decodeIntForKey: @"NSWindowStyleMask"];
+	  _interfaceStyle = [coder decodeIntForKey: @"NSWindowStyleMask"];
 	}
-      if([aDecoder containsValueForKey: @"NSWindowBacking"])
+      if([coder containsValueForKey: @"NSWindowBacking"])
 	{
-	  _backingStoreType = [aDecoder decodeIntForKey: @"NSWindowBacking"];
+	  _backingStoreType = [coder decodeIntForKey: @"NSWindowBacking"];
 	}
-      if ([aDecoder containsValueForKey: @"NSWindowView"])
+      if ([coder containsValueForKey: @"NSWindowView"])
         {
-	  ASSIGN(_view, [aDecoder decodeObjectForKey: @"NSWindowView"]);
+	  ASSIGN(_view, [coder decodeObjectForKey: @"NSWindowView"]);
 	}
-      if ([aDecoder containsValueForKey: @"NSWTFlags"])
+      if ([coder containsValueForKey: @"NSWTFlags"])
         {
-	  _flags = [aDecoder decodeIntForKey: @"NSWTFlags"];
+	  _flags = [coder decodeIntForKey: @"NSWTFlags"];
 	}
-      if ([aDecoder containsValueForKey: @"NSMinSize"])
+      if ([coder containsValueForKey: @"NSMinSize"])
         {
-	  _minSize = [aDecoder decodeSizeForKey: @"NSMinSize"];
+	  _minSize = [coder decodeSizeForKey: @"NSMinSize"];
 	}
-      if ([aDecoder containsValueForKey: @"NSMaxSize"])
+      if ([coder containsValueForKey: @"NSMaxSize"])
         {
-	  _maxSize = [aDecoder decodeSizeForKey: @"NSMaxSize"];
+	  _maxSize = [coder decodeSizeForKey: @"NSMaxSize"];
 	}
-      if ([aDecoder containsValueForKey: @"NSWindowRect"])
+      if ([coder containsValueForKey: @"NSWindowRect"])
         {
-	  _windowRect = [aDecoder decodeRectForKey: @"NSWindowRect"];
+	  _windowRect = [coder decodeRectForKey: @"NSWindowRect"];
 	}
-      if ([aDecoder containsValueForKey: @"NSWindowTitle"])
+      if ([coder containsValueForKey: @"NSWindowTitle"])
         {
-	  ASSIGN(_title, [aDecoder decodeObjectForKey: @"NSWindowTitle"]);
+	  ASSIGN(_title, [coder decodeObjectForKey: @"NSWindowTitle"]);
 	}
+    }
+  else
+    {
+      [NSException raise: NSInternalInconsistencyException 
+		   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+		   NSStringFromClass([coder class])];
     }
   return self;
 }
@@ -322,6 +328,12 @@
 	  _className = [coder decodeObjectForKey: @"NSClassName"];
 	}
     }
+  else
+    {
+      [NSException raise: NSInternalInconsistencyException 
+		   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+		   NSStringFromClass([coder class])];
+    }
   return self;
 }
 
@@ -490,6 +502,12 @@
       ASSIGN(_className, [coder decodeObjectForKey: @"NSClassName"]);
       ASSIGN(_extension, [coder decodeObjectForKey: @"NSExtension"]);
     }
+  else
+    {
+      [NSException raise: NSInternalInconsistencyException 
+		   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+		   NSStringFromClass([coder class])];
+    }
   return self;
 }
 
@@ -631,6 +649,13 @@
 	  RELEASE(self);
 	}
     }
+  else
+    {
+      [NSException raise: NSInternalInconsistencyException 
+		   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+		   NSStringFromClass([coder class])];
+    }
+
   return realObject;
 }
 
@@ -702,6 +727,13 @@
       // build the real object...
       [self instantiateRealObject: coder];
     }
+  else
+    {
+      [NSException raise: NSInternalInconsistencyException 
+		   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+		   NSStringFromClass([coder class])];
+    }
+
   return _template;
 }
 
@@ -905,6 +937,12 @@
 	[self _buildMap: _objects withKeys: objectsKeys andValues: objectsValues];
 	[self _buildMap: _oids withKeys: oidsKeys andValues: oidsValues];
       }
+    }
+  else
+    {
+      [NSException raise: NSInternalInconsistencyException 
+		   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+		   NSStringFromClass([coder class])];
     }
  
   return self;

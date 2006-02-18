@@ -1,3 +1,9 @@
+2006-02-18 08:36 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Changed aDecoder to coder in
+	NSIBObjectData encoderWithCoder: also added code to throw an
+	exception if a coder does not support keyed coding.
+
 2006-01-26 00:01 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSScrollView.m: Temporary fix to scrollview.
