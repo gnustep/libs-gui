@@ -153,7 +153,7 @@
   
   defaults = [NSUserDefaults standardUserDefaults];
 
-  printers = [defaults objectForKey: @"GSLPRPrinters"];
+  printers = [defaults dictionaryForKey: @"GSLPRPrinters"];
 
   if (!printers) //Not set, make a default printer because we are nice.
     {
@@ -184,6 +184,9 @@
 
       [(NSMutableDictionary*)printers setObject: printerEntry
                                          forKey: @"Unnamed"];
+
+      [defaults setObject: printers forKey: @"GSLPRPrinters"];
+      [defaults synchronize];
 
       if (!didWarn)
 	{
