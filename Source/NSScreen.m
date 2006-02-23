@@ -302,7 +302,7 @@ static NSMutableArray *screenArray = nil;
 {
   NSRect visFrame = _frame;
 
-  switch (NSInterfaceStyleForKey(@"NSIntefaceStyle", nil))
+  switch (NSInterfaceStyleForKey(@"NSInterfaceStyle", nil))
     {
       case NSMacintoshInterfaceStyle:
 	// What is the size of the Mac menubar?
