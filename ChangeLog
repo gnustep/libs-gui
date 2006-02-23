@@ -1,3 +1,11 @@
+2006-02-24  Quentin Mathe <qmathe@club-internet.fr>
+
+    * Source/GSToolbar.m: Fixed mismatched method return type between
+    header and implementation.
+    * Source/GSToolbarView.m: Updated code to reference some external classes
+    lazily with NSClassFromString.
+    These fixes avoids some compiler warnings.
+
 2006-02-22 23:03 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSScreen.m: Correction for visibleFrame, spelling of
@@ -7,7 +15,7 @@
 
 	* Source/GSPrintOperation.m: trap exceptions launching previwer
 	* Documentation/GuiUser/DefaultsSuppary.gsdoc: mention GSLPRPrinters
-	* Printing/GSLPR/GSLPRPrinter,m: If we set up default printer
+	* Printing/GSLPR/GSLPRPrinter.m: If we set up default printer
 	config because there was nothing in the user defaults system, save the
 	new config so we don't have to do it again next time.
 

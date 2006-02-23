@@ -140,7 +140,7 @@ static GSValidationCenter *vc;
   NSMutableArray *_vobjs;
 }
 
-+ (id) sharedValidationCenter;
++ (GSValidationCenter *) sharedValidationCenter;
 
 - (NSArray *) observersWindow: (NSWindow *)window;
 - (void) addObserver: (id)observer window: (NSWindow *)window;
