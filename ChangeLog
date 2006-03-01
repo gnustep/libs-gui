@@ -1,10 +1,16 @@
+2006-03-01  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSMenuView.m: ([-rectOfItemAtIndex:]) Fix bug #15934 by
+	removing some bogus code left over from incorporating horizontal
+	menu.
+
 2006-02-24  Quentin Mathe <qmathe@club-internet.fr>
 
-    * Source/GSToolbar.m: Fixed mismatched method return type between
-    header and implementation.
-    * Source/GSToolbarView.m: Updated code to reference some external classes
-    lazily with NSClassFromString.
-    These fixes avoids some compiler warnings.
+	* Source/GSToolbar.m: Fixed mismatched method return type between
+	header and implementation.
+	* Source/GSToolbarView.m: Updated code to reference some external
+	classes lazily with NSClassFromString.
+	These fixes avoids some compiler warnings.
 
 2006-02-22 23:03 Gregory John Casamento <greg_casamento@yahoo.com>
 

@@ -911,19 +911,9 @@ _addLeftBorderOffsetToRect(NSRect aRect)
        */
       if (_horizontal == NO)
 	{
-	  if (![_attachedMenu _ownedByPopUp])
-	    {
-	      theRect.origin.y
-		= 2 + (_cellSize.height * ([_itemCells count] - index - 1));
-	      theRect.origin.x = 1;
-	      theRect.size.width -= 2;
-	    }
-	  else
-	    {
-	      theRect.origin.y
-		= _cellSize.height * ([_itemCells count] - index - 1);
-	      theRect.origin.x = _leftBorderOffset;
-	    }
+	  theRect.origin.y
+	    = _cellSize.height * ([_itemCells count] - index - 1);
+	  theRect.origin.x = _leftBorderOffset;
 	}
       else
 	{
