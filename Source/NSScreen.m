@@ -31,6 +31,8 @@
 #include "AppKit/NSScreen.h"
 #include "AppKit/NSInterfaceStyle.h"
 #include "AppKit/NSGraphicsContext.h"
+#include "AppKit/NSWindow.h"
+#include "AppKit/NSMenu.h"
 #include "AppKit/AppKitExceptions.h"
 #include "GNUstepGUI/GSDisplayServer.h"
 
@@ -302,22 +304,38 @@ static NSMutableArray *screenArray = nil;
 {
   NSRect visFrame = _frame;
 
-  switch (NSInterfaceStyleForKey(@"NSInterfaceStyle", nil))
+  switch (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil))
     {
       case NSMacintoshInterfaceStyle:
-	// What is the size of the Mac menubar?
-	visFrame.size.height -= 25;
-	return visFrame;
+	if ([NSApp mainMenu] != nil)
+	  {
+	    float menuHeight = [[[NSApp mainMenu] window] frame].size.height;
+
+	    visFrame.size.height -= menuHeight;
+	  }
+	break;
+
       case GSWindowMakerInterfaceStyle:
       case NSNextStepInterfaceStyle:
-	visFrame.size.width -= 64;
-	return visFrame;
+	/* FIXME: Menu width will vary from app to app and  there is no
+	 * fixed position for the menu ... should we be making room for
+	 * a menu top left, or something else?
+	 */
+#if 0
+	if ([NSApp mainMenu] != nil)
+	  {
+	    float menuWidth = [[[NSApp mainMenu] window] frame].size.width;
+
+	    visFrame.size.width -= menuWidth;
+	    visFrame.origin.x += menuWidth;
+	  }
+#endif
+	break;
       
-      case NSWindows95InterfaceStyle:
-      case NSNoInterfaceStyle:
       default:
-	return _frame;
+	break;
     }
+  return visFrame;
 }
 
 /** Returns the screen number */

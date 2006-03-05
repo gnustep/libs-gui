@@ -59,18 +59,18 @@
 /*
   Drawing related:
 
-              NSMenu superMenu   (if not root menu, the parent meu)
-                ^
-                |
-                |    +------------------> NSMenuView view  (content, draws the menu items)
-                |    |
-              NSMenu +----------+-------> NSMenuPanel A    (regular window, torn off window)
-                |    |          `-------> NSMenuPanel B    (transient window)
-                |    |           
-                |    +------------------> NSString title   (title)
-                |
-                v
-              NSMenu attachedMenu  (the menu that is attached to this one, during navigation)
+  NSMenu superMenu   (if not root menu, the parent meu)
+    ^
+    |
+    |    +------------------> NSMenuView view  (content, draws the menu items)
+    |    |
+  NSMenu +----------+-------> NSMenuPanel A    (regular window, torn off window)
+    |    |          `-------> NSMenuPanel B    (transient window)
+    |    |           
+    |    +------------------> NSString title   (title)
+    |
+    v
+  NSMenu attachedMenu  (the menu attached to this one, during navigation)
               
 
 
