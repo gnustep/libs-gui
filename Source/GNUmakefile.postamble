@@ -58,6 +58,10 @@ after-install::
 	for file in $(APPKIT_HEADERS); do \
 	  $(INSTALL_DATA) ../Headers/AppKit/$$file \
 	  $(GNUSTEP_HEADERS)/AppKit/$$file ; \
+	done; \
+	for file in $(COCOA_HEADERS); do \
+	  $(INSTALL_DATA) ../Headers/Cocoa/$$file \
+	  $(GNUSTEP_HEADERS)/Cocoa/$$file ; \
 	done
 
 #
@@ -68,6 +72,9 @@ after-install::
 after-uninstall::
 	for file in $(APPKIT_HEADERS); do \
 	  rm -f $(GNUSTEP_HEADERS)/AppKit/$$file ; \
+	done; \
+	for file in $(COCOA_HEADERS); do \
+	  rm -f $(GNUSTEP_HEADERS)/Cocoa/$$file ; \
 	done
 
 # Things to do before cleaning

@@ -213,6 +213,9 @@ endif
 libgnustep-gui_HEADER_FILES_DIR = ../Headers/Additions/GNUstepGUI
 libgnustep-gui_HEADER_FILES_INSTALL_DIR = /GNUstepGUI
 
+COCOA_HEADERS = \
+Cocoa.h 
+
 APPKIT_HEADERS = \
 AppKit.h \
 AppKitDefines.h \
@@ -380,7 +383,8 @@ GSPDFPrintOperation.h
 libgnustep-gui_HEADER_FILES = ${GUI_HEADERS}
 
 HEADERS_INSTALL = ${APPKIT_HEADERS} \
-                  ${GUI_HEADERS}
+                  ${GUI_HEADERS} \
+                  ${COCOA_HEADERS}
 
 # Resources
 RESOURCE_SET_NAME = libgui-resources
