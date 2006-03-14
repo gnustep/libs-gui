@@ -7,7 +7,7 @@
       <email address="fedor@gnu.org"/>
       <url url="http://www.gnustep.org/developers/whoiswho.html"/>
     </author>
-    <version>$Revision$</version>
+    <version>$Revision: 22201 $</version>
     <date>$Date$</date>
     <copy>2005 Free Software Foundation, Inc.</copy>
   </head>
@@ -19,6 +19,24 @@
 	changes and other information that might help developers and users
 	migrate to using a newer version of the library.
       </p>
+      <section>
+	<heading>Version 0.10.3</heading>
+	  <deflist>
+	    <term>Horizontal menus</term>
+	    <desc>
+	    Horizontal (mac)-style menus should now work. Horizontal
+	    menus are activated by setting the 'NSMenuInterfaceStyle' user
+	    default to 'NSMacintoshInterfaceStyle'.
+	    </desc>
+	    <term>Active applications</term>
+	    <desc>
+	    Better support for tracking active applications was
+	    added. Normally a workspace manager should handle this,
+	    but the GUI library can handle it on its own if it is not
+	    handled any other way.
+	    </desc>
+	  </deflist>
+      </section>
       <section>
 	<heading>Version 0.10.2</heading>
 	  <deflist>

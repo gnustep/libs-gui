@@ -9,11 +9,18 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.10.3}
+
+@itemize @bullet
+@item Horizontal menus now work
+@item Better support for tracking active applications.
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.10.2}
 
 Mostly bug fixes.
-
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.10.1}
 
