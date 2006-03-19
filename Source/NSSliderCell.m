@@ -181,6 +181,10 @@ DEFINE_RINT_IF_MISSING
 */
 - (void) drawKnob: (NSRect)knobRect
 {
+  NSColor* knobBackgroundColor = [NSColor controlBackgroundColor];
+  [knobBackgroundColor set];
+  NSRectFill (knobRect);
+  
   [_knobCell drawInteriorWithFrame: knobRect inView: _control_view];
 }
 
