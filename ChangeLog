@@ -1,3 +1,30 @@
+2006-03-19  Nicolas Roard <nicolas@roard.com>
+
+	* Source/NSSliderCell.m:
+	* Source/NSTabView.m:
+	* Images/common_SliderHoriz.tiff:
+	* Images/common_SliderVert.tiff:
+	* Images/common_SwitchOff.tiff:
+	* Images/common_SwitchOn.tiff:
+	* Images/common_TabDownSelectedLeft.tiff:
+	* Images/common_TabDownSelectedRight.tiff:
+	* Images/common_TabDownSelectedToUnSelectedJunction.tiff:
+	* Images/common_TabDownUnSelectedJunction.tiff:
+	* Images/common_TabDownUnSelectedLeft.tiff:
+	* Images/common_TabDownUnSelectedRight.tiff:
+	* Images/common_TabDownUnSelectedToSelectedJunction.tiff:
+	* Images/common_TabSelectedLeft.tiff:
+	* Images/common_TabSelectedRight.tiff:
+	* Images/common_TabSelectedToUnSelectedJunction.tiff:
+	* Images/common_TabUnSelectedJunction.tiff:
+	* Images/common_TabUnSelectedLeft.tiff:
+	* Images/common_TabUnSelectedRight.tiff:
+	* Images/common_TabUnSelectToSelectedJunction.tiff:
+	Updated images for the sliders, tabviews and switch buttons. They are
+	now transparent; the background is thus filled in the code using [NSColor controlBackgroundColor]. 
+	That way the current color scheme is followed. 
+	Thanks to Ingolf Jandt <i.jandt@web.de> for the images.
+
 2006-03-13  Adam Fedor  <fedor@gnu.org>
 
 	* Version 0.10.3
