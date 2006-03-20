@@ -882,14 +882,14 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
 - (NSRect) rectOfItemAtIndex: (int)index
 {
+  if (_needsSizing == YES)
+    {
+      [self sizeToFit];
+    } 
+
   if (_horizontal == YES)
     {
       GSCellRect aRect;
-
-      if (_needsSizing == YES)
-	{
-	  [self sizeToFit];
-	} 
 
       aRect = GSIArrayItemAtIndex(cellRects, index).ext;
 
@@ -901,25 +901,12 @@ _addLeftBorderOffsetToRect(NSRect aRect)
     {
       NSRect theRect;
 
-      if (_needsSizing == YES)
-	{
-	  [self sizeToFit];
-	}
-
       /* Fiddle with the origin so that the item rect is shifted 1 pixel over 
        * so we do not draw on the heavy line at origin.x = 0.
        */
-      if (_horizontal == NO)
-	{
-	  theRect.origin.y
-	    = _cellSize.height * ([_itemCells count] - index - 1);
-	  theRect.origin.x = _leftBorderOffset;
-	}
-      else
-	{
-	  theRect.origin.x = _cellSize.width * (index + 1);
-	  theRect.origin.y = 0;
-	}
+      theRect.origin.y
+	= _cellSize.height * ([_itemCells count] - index - 1);
+      theRect.origin.x = _leftBorderOffset;
       theRect.size = _cellSize;
 
       /* NOTE: This returns the correct NSRect for drawing cells, but nothing 
