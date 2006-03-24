@@ -1,3 +1,13 @@
+2006-03-24  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSStepperCell.m: Rewrote all button drawing functions to
+	use new helper function DrawLightButton to honour colour settings.
+	Based on patch idea by Ingolf Jandt <i.jandt@web.de>.
+	* Source/NSStepperCell.m (-highlight:upButton:withFrame:inView:):
+	Simplified to use [drawWithFrame:inView:].
+	* Source/NSColorPanel.m (-_initWithoutGModel): Enable colour wells
+	in bottom list.
+
 2006-03-20  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSMenuView.m: ([-rectOfItemAtIndex:]) remove unused code and
