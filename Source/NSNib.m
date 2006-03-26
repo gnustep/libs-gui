@@ -161,8 +161,8 @@
 
 /**
  * Load the nib indicated by <code>nibNamed</code>.  If the <code>bundle</code>
- * argument is <code>nil</code>, then the main bundle is used to resolve the path,
- * otherwise the bundle which is supplied will be used.
+ * argument is <code>nil</code>, then the main bundle is used to resolve 
+ * the path, otherwise the bundle which is supplied will be used.
  */
 - (id)initWithNibNamed: (NSString *)nibNamed bundle: (NSBundle *)bundle
 {
@@ -185,8 +185,9 @@
 }
 
 /**
- * This is a GNUstep specific method.  This method is used when the caller wants the
- * objects instantiated in the nib to be stored in the given <code>zone</code>.
+ * This is a GNUstep specific method.  This method is used when the caller 
+ * wants the objects instantiated in the nib to be stored in the given 
+ * <code>zone</code>.
  */
 - (BOOL)instantiateNibWithExternalNameTable: (NSDictionary *)externalNameTable
 				   withZone: (NSZone *)zone

@@ -51,18 +51,29 @@ static NSImage *_pbc_image[2];
     }
 }
 
+// Initialization
+/**
+ * Initialize a blank cell.
+ */
 - (id) init
 {
   return [self initTextCell: @"" pullsDown: NO];
 }
 
+/**
+ * Initialize with stringValue.
+ */
 - (id) initTextCell: (NSString *)stringValue
 {
   return [self initTextCell: stringValue pullsDown: NO];
 }
 
+/**
+ * Initialize with stringValue and pullDown.  If pullDown is YES, the
+ * reciever will be a pulldown button.
+ */
 - (id) initTextCell: (NSString *)stringValue
-	  pullsDown: (BOOL)pullDown
+	  pullsDown: (BOOL)flag
 {
   NSMenu *menu;
 
@@ -72,7 +83,7 @@ static NSImage *_pbc_image[2];
   [self setMenu: menu];
   RELEASE(menu);
 
-  [self setPullsDown: pullDown];
+  [self setPullsDown: flag];
   _pbcFlags.usesItemFromMenu = YES;
 
   if ([stringValue length] > 0)
@@ -106,6 +117,10 @@ static NSImage *_pbc_image[2];
   [super dealloc];
 }
 
+// Getters and setters.
+/**
+ * Set the menu for the popup.
+ */ 
 - (void) setMenu: (NSMenu *)menu
 {
   if (_menu == menu)
@@ -132,12 +147,17 @@ static NSImage *_pbc_image[2];
     }
 }
 
+/**
+ * Return the menu for the popup.
+ */
 - (NSMenu *) menu
 {
   return _menu;
 }
 
-// Behaviour settings
+/**
+ * Returns YES, if this is a pull-down 
+ */
 - (void) setPullsDown: (BOOL)flag
 {
   NSMenuItem *item = _menuItem;
@@ -162,51 +182,69 @@ static NSImage *_pbc_image[2];
   [self setMenuItem: item];
 }
 
+/**
+ * Returns YES, if this is a pull-down 
+ */
 - (BOOL) pullsDown
 {
   return _pbcFlags.pullsDown;
 }
 
+/**
+ * Set to YES, if the items are to be autoenabled.
+ */
 - (void) setAutoenablesItems: (BOOL)flag
 {
   [_menu setAutoenablesItems: flag];  
 }
 
+/**
+ * Returns YES, if the items are autoenabled.
+ */
 - (BOOL) autoenablesItems
 {
   return [_menu autoenablesItems];
 }
 
-// The preferred edge is used for pull down menus and for popups under 
-// severe screen position restrictions.  It indicates what edge of the
-// cell the menu should pop out from.
-- (void) setPreferredEdge: (NSRectEdge)edge
+/**
+ * Set the preferred edge as described by edge.  This is used
+ * to determine the edge which will open the popup when the screen
+ * is small.
+ */
+- (void) setPreferredEdge: (NSRectEdge)preferredEdge
 {
-  _pbcFlags.preferredEdge = edge;
+  _pbcFlags.preferredEdge = preferredEdge;
 }
 
+/**
+ * Return the preferred edge.
+ */
 - (NSRectEdge) preferredEdge
 {
   return _pbcFlags.preferredEdge;
 }
 
-// If YES (the default) the popup button will display an item from the
-// menu.  This will be the selected item for a popup or the first item for
-// a pull-down.  If this is NO, then the menu item set with -setMenuItem: 
-// is always displayed.  This can be useful for a popup button that is an
-// icon button that pops up a menu full of textual items, for example.
+/**
+ * Set to YES, if the reciever should use a menu item for its title. YES
+ * is the default.
+ */ 
 - (void) setUsesItemFromMenu: (BOOL)flag
 {
   _pbcFlags.usesItemFromMenu = flag;
 }
 
+/**
+ * Returns YES, if the reciever uses a menu item for its title.
+ */
 - (BOOL) usesItemFromMenu
 {
   return _pbcFlags.usesItemFromMenu;
 }
 
-// If YES (the default for popups) then the selected item gets its state
-// set to NSOnState. If NO the items in the menu are left alone.
+/**
+ * Return YES, if the reciever changes the state of the item chosen by
+ * the user.
+ */
 - (void) setAltersStateOfSelectedItem: (BOOL)flag
 {
   id <NSMenuItem> selectedItem = [self selectedItem];
@@ -223,29 +261,61 @@ static NSImage *_pbc_image[2];
   _pbcFlags.altersStateOfSelectedItem = flag;
 }
 
+
+/**
+ * Return YES, if the reciever changes the state of the item chosen by
+ * the user.
+ */
 - (BOOL) altersStateOfSelectedItem
 {
   return _pbcFlags.altersStateOfSelectedItem;
 }
 
-// Adding and removing items
+/**
+ * Returns the current arrow position of the reciever.
+ */
+- (NSPopUpArrowPosition) arrowPosition
+{
+  return _pbcFlags.arrowPosition;
+}
+
+/**
+ * Sets the current arrow position of the reciever.
+ */
+- (void) setArrowPosition: (NSPopUpArrowPosition)pos
+{
+  _pbcFlags.arrowPosition = pos;
+}
+
+// Item management
+/**
+ * Add an item to the popup with title.
+ */
 - (void) addItemWithTitle: (NSString *)title
 {
   [self insertItemWithTitle: title
 	atIndex: [_menu numberOfItems]];
 }
 
-- (void) addItemsWithTitles: (NSArray *)itemTitles
+/**
+ * Add a number of items to the reciever using the provided itemTitles array.
+ */
+- (void) addItemsWithTitles: (NSArray *)titles
 {
-  unsigned	c = [itemTitles count];
+  unsigned	c = [titles count];
   unsigned	i;
 
   for (i = 0; i < c; i++)
     {
-      [self addItemWithTitle: [itemTitles objectAtIndex: i]];
+      [self addItemWithTitle: [titles objectAtIndex: i]];
     }
 }
 
+/**
+ * Adds an item with the given title at index.  If an item already exists at
+ * index, it, and all items after it are advanced one position.  Index needs
+ * to be within the valid range for the array of items in the popup button.
+ */
 - (void) insertItemWithTitle: (NSString *)title atIndex: (int)index
 {
   id <NSMenuItem> anItem;
@@ -280,11 +350,18 @@ static NSImage *_pbc_image[2];
   //[anItem setTarget: [self target]];
 }
 
+/**
+ * Remove a given item based on its title.
+ */    
 - (void) removeItemWithTitle: (NSString *)title
 {
   [self removeItemAtIndex: [self indexOfItemWithTitle: title]];
 }
 
+/**
+ * Remove a given item based on its index, must be a valid index within the
+ * range for the item array of this popup.
+ */
 - (void) removeItemAtIndex: (int)index
 {
   if (index == [self indexOfSelectedItem])
@@ -295,6 +372,9 @@ static NSImage *_pbc_image[2];
   [_menu removeItemAtIndex: index];
 }
 
+/**
+ * Purges all items from the popup.
+ */
 - (void) removeAllItems
 {
   [self selectItem: nil];
@@ -305,42 +385,67 @@ static NSImage *_pbc_image[2];
     }
 }
 
-// Accessing the items
+// Referencing items...
+/**
+ * Item array of the reciever.
+ */
 - (NSArray *) itemArray
 {
   return [_menu itemArray];
 }
 
+/**
+ * Number of items in the reciever.
+ */
 - (int) numberOfItems
 {
   return [_menu numberOfItems];
 }
 
+/**
+ * Return the index of item in the item array of the reciever.
+ */
 - (int) indexOfItem: (id <NSMenuItem>)item
 {
   return [_menu indexOfItem: item];
 }
 
+/**
+ * Return index of the item with the given title.
+ */
 - (int) indexOfItemWithTitle: (NSString *)title
 {
   return [_menu indexOfItemWithTitle: title];
 }
 
-- (int) indexOfItemWithTag: (int)aTag
+/**
+ * Return index of the item with a tag equal to aTag.
+ */
+- (int) indexOfItemWithTag: (int)tag
 {
-  return [_menu indexOfItemWithTag: aTag];
+  return [_menu indexOfItemWithTag: tag];
 }
 
+/**
+ * Index of the item whose menu item's representedObject is equal to obj.
+ */
 - (int) indexOfItemWithRepresentedObject: (id)obj
 {
   return [_menu indexOfItemWithRepresentedObject: obj];
 }
 
+/**
+ * Index of the item in the reciever whose target and action
+ * are equal to aTarget and actionSelector.
+ */
 - (int) indexOfItemWithTarget: (id)aTarget andAction: (SEL)actionSelector
 {
   return [_menu indexOfItemWithTarget: aTarget andAction: actionSelector];
 }
 
+/**
+ * Return the item at index.
+ */ 
 - (id <NSMenuItem>) itemAtIndex: (int)index
 {
   if ((index >= 0) && (index < [_menu numberOfItems]))
@@ -353,11 +458,17 @@ static NSImage *_pbc_image[2];
     }
 }
 
+/**
+ * Return the item with title.
+ */
 - (id <NSMenuItem>) itemWithTitle: (NSString *)title
 {
   return [_menu itemWithTitle: title];
 }
 
+/**
+ * Return the item listed last in the reciever.
+ */
 - (id <NSMenuItem>) lastItem
 {
   int	end = [_menu numberOfItems] - 1;
@@ -368,9 +479,11 @@ static NSImage *_pbc_image[2];
 }
 
 /*
-  The Cocoa specification has this method as 
+  The Cocoa specification has this method as: 
   - (id <NSCopying>) objectValue
-  but this gives a conflict with the NSCell declaration of this method, which is
+
+  But this gives a conflict with the NSCell declaration of this method, 
+  which is: 
   - (id) objectValue
  */
 - (id <NSCopying>) objectValue
@@ -428,7 +541,6 @@ static NSImage *_pbc_image[2];
     }
 }
 
-// Dealing with selection
 - (void) selectItem: (id <NSMenuItem>)item
 {
   if (_selectedItem == item)
@@ -567,12 +679,19 @@ static NSImage *_pbc_image[2];
       [(NSControl *)_control_view updateCell: self];
 }
 
-// Title conveniences
+
+// Title management
+/**
+ * Set item title at the given index in the reciever.
+ */
 - (NSString *) itemTitleAtIndex: (int)index
 {
   return [[self itemAtIndex: index] title];
 }
 
+/**
+ * Returns an array containing all of the current item titles.
+ */ 
 - (NSArray *) itemTitles
 {
   unsigned		count = [_menu numberOfItems];
@@ -588,6 +707,9 @@ static NSImage *_pbc_image[2];
   return [NSArray arrayWithObjects: items count: count];
 }
 
+/**
+ * Returns the title of the currently selected item in the reciever.
+ */
 - (NSString *) titleOfSelectedItem
 {
   id <NSMenuItem> item = [self selectedItem];
@@ -598,6 +720,9 @@ static NSImage *_pbc_image[2];
     return @"";
 }
 
+/**
+ * Attach popup
+ */
 - (void) attachPopUpWithFrame: (NSRect)cellFrame
 		       inView: (NSView *)controlView
 {
@@ -641,6 +766,9 @@ static NSImage *_pbc_image[2];
       object: _menu];
 }
 
+/**
+ * Dismiss the reciever.
+ */ 
 - (void) dismissPopUp
 {
   NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
@@ -715,33 +843,14 @@ static NSImage *_pbc_image[2];
   return NO;
 }
 
-// This method is called to simulate programmatically a click by overriding 
-// -[NSCell performClickWithFrame:inView:]
-// This method is not executed upon mouse down; rather, it should simulate what
-// would happen upon mouse down.  It should not start any real mouse tracking.
 /**
- * Simulates a single click in the pop up button cell (the display of the cell
- * with this event occurs in the area delimited by <var>frame</var> in the view
- * <var>controlView</var>) and displays the popup button cell menu attached to
- * the view <var>controlView</var>, the menu width depends on the
- * <var>frame</var> width value. 
+ * Perform the click operation with the given frame and controlView.
  */
 - (void) performClickWithFrame: (NSRect)frame inView: (NSView *)controlView
 {  
   [super performClickWithFrame: frame inView: controlView];
   
   [self attachPopUpWithFrame: frame inView: controlView];
-}
-
-// Arrow position for bezel style and borderless popups.
-- (NSPopUpArrowPosition) arrowPosition
-{
-  return _pbcFlags.arrowPosition;
-}
-
-- (void) setArrowPosition: (NSPopUpArrowPosition)position
-{
-  _pbcFlags.arrowPosition = position;
 }
 
 /*

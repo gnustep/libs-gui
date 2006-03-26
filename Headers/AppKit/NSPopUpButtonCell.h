@@ -29,15 +29,17 @@
 #ifndef _GNUstep_H_NSPopUpButtonCell
 #define _GNUstep_H_NSPopUpButtonCell
 
-#include <AppKit/NSMenuItemCell.h>
 #include <AppKit/NSMenuItem.h>
+#include <AppKit/NSMenuItemCell.h>
+
+APPKIT_EXPORT NSString*NSPopUpButtonCellWillPopUpNotification;
 
 @class NSMenu;
 
 typedef enum {
-    NSPopUpNoArrow = 0,
-    NSPopUpArrowAtCenter = 1,
-    NSPopUpArrowAtBottom = 2,
+  NSPopUpNoArrow = 0,
+  NSPopUpArrowAtCenter = 1,
+  NSPopUpArrowAtBottom = 2
 } NSPopUpArrowPosition;
 
 @interface NSPopUpButtonCell : NSMenuItemCell
@@ -52,80 +54,243 @@ typedef enum {
   } _pbcFlags;
 }
 
-- (id) initTextCell: (NSString*)stringValue pullsDown: (BOOL)pullDown;
+// Initialization
+/**
+ * Initialize with stringValue and pullDown.  If pullDown is YES, the
+ * reciever will be a pulldown button.
+ */
+- (id) initTextCell: (NSString*)stringValue pullsDown: (BOOL)flag;
 
-// Overrides behavior of NSCell.  This is the menu for the popup, not a 
-// context menu.  PopUpButtonCells do not have context menus.
+// Selection processing
+/**
+ * The currently selected item in the reciever.
+ */
+- (id <NSMenuItem>) selectedItem;
+
+/** 
+ * Index of the currently selected item in the reciever.
+ */
+- (int) indexOfSelectedItem;
+
+/**
+ * Synchronizes the title and the selected item.  This sets
+ * the selected item to the title of the reciever.
+ */
+- (void) synchronizeTitleAndSelectedItem;
+
+/**
+ * Select item in the reciever.
+ */
+- (void) selectItem: (id <NSMenuItem>)item;
+
+/**
+ * Select item at the given index.
+ */
+- (void) selectItemAtIndex: (int)index;
+
+/**
+ * Select the item with the given title.
+ */
+- (void) selectItemWithTitle: (NSString*)title;
+
+/**
+ * Set title to aString.
+ */
+- (void) setTitle: (NSString*)aString;
+
+// Getters and setters.
+/**
+ * Set the menu for the popup.
+ */ 
 - (void) setMenu: (NSMenu*)menu;
+
+/**
+ * Return the menu for the popup.
+ */
 - (NSMenu*) menu;
 
-// Behavior settings
+/**
+ * Set to YES to make the popup button a pull-down style control.
+ */
 - (void) setPullsDown: (BOOL)flag;
+
+/**
+ * Returns YES, if this is a pull-down 
+ */
 - (BOOL) pullsDown;
 
+/**
+ * Set to YES, if the items are to be autoenabled.
+ */
 - (void) setAutoenablesItems: (BOOL)flag;
+
+/**
+ * Returns YES, if the items are autoenabled.
+ */
 - (BOOL) autoenablesItems;
 
-- (void) setPreferredEdge: (NSRectEdge)edge;
+/**
+ * Set the preferred edge as described by edge.  This is used
+ * to determine the edge which will open the popup when the screen
+ * is small.
+ */
+- (void) setPreferredEdge: (NSRectEdge)preferredEdge;
+
+/**
+ * Return the preferred edge.
+ */
 - (NSRectEdge) preferredEdge;
 
+/**
+ * Set to YES, if the reciever should use a menu item for its title. YES
+ * is the default.
+ */ 
 - (void) setUsesItemFromMenu: (BOOL)flag;
+
+/**
+ * Returns YES, if the reciever uses a menu item for its title.
+ */
 - (BOOL) usesItemFromMenu;
 
+/**
+ * Set to YES, if the state of the menu item selected in the reciever
+ * should be changed when it's selected.
+ */
 - (void) setAltersStateOfSelectedItem: (BOOL)flag;
+
+/**
+ * Return YES, if the reciever changes the state of the item chosen by
+ * the user.
+ */
 - (BOOL) altersStateOfSelectedItem;
 
-// Adding and removing items
-- (void) addItemWithTitle: (NSString*)title;
-- (void) addItemsWithTitles: (NSArray*)itemTitles;
-- (void) insertItemWithTitle: (NSString*)title atIndex: (int)index;
-        
-- (void) removeItemWithTitle: (NSString*)title;
-- (void) removeItemAtIndex: (int)index; 
-- (void) removeAllItems;
-        
+/**
+ * Returns the current arrow position of the reciever.
+ */ 
+- (NSPopUpArrowPosition) arrowPosition;
 
-// Accessing the items
+/**
+ * Sets the current arrow position of the reciever.
+ */
+- (void) setArrowPosition: (NSPopUpArrowPosition)pos;
+
+// Item management
+/**
+ * Add an item to the popup with title.
+ */
+- (void) addItemWithTitle: (NSString*)title;
+
+/**
+ * Add a number of items to the reciever using the provided itemTitles array.
+ */
+- (void) addItemsWithTitles: (NSArray*)titles;
+
+/**
+ * Adds an item with the given title at index.  If an item already exists at
+ * index, it, and all items after it are advanced one position.  Index needs
+ * to be within the valid range for the array of items in the popup button.
+ */
+- (void) insertItemWithTitle: (NSString*)title atIndex: (int)index;
+
+/**
+ * Remove a given item based on its title.
+ */        
+- (void) removeItemWithTitle: (NSString*)title;
+
+/**
+ * Remove a given item based on its index, must be a valid index within the
+ * range for the item array of this popup.
+ */
+- (void) removeItemAtIndex: (int)index; 
+
+/**
+ * Purges all items from the popup.
+ */
+- (void) removeAllItems;
+    
+// Referencing items...
+/**
+ * Item array of the reciever.
+ */ 
 - (NSArray*) itemArray;
+
+/**
+ * Number of items in the reciever.
+ */
 - (int) numberOfItems;
  
-- (int) indexOfItem: (id <NSMenuItem>)item;
+/**
+ * Return the index of item in the item array of the reciever.
+ */
+- (int) indexOfItem: (id<NSMenuItem>)item;
+
+/**
+ * Return index of the item with the given title.
+ */
 - (int) indexOfItemWithTitle: (NSString*)title;
-- (int) indexOfItemWithTag: (int)aTag;
+
+/**
+ * Return index of the item with a tag equal to aTag.
+ */
+- (int) indexOfItemWithTag: (int)tag;
+
+/**
+ * Index of the item whose menu item's representedObject is equal to obj.
+ */
 - (int) indexOfItemWithRepresentedObject: (id)obj;
+
+/**
+ * Index of the item in the reciever whose target and action
+ * are equal to aTarget and actionSelector.
+ */
 - (int) indexOfItemWithTarget: (id)aTarget andAction: (SEL)actionSelector;
 
+/**
+ * Return the item at index.
+ */ 
 - (id <NSMenuItem>) itemAtIndex: (int)index;
+
+/**
+ * Return the item with title.
+ */
 - (id <NSMenuItem>) itemWithTitle: (NSString*)title;
+
+/**
+ * Return the item listed last in the reciever.
+ */
 - (id <NSMenuItem>) lastItem;
 
 
-// Dealing with selection
-- (void) selectItem: (id <NSMenuItem>)item;
-- (void) selectItemAtIndex: (int)index;
-- (void) selectItemWithTitle: (NSString*)title;
-- (void) setTitle: (NSString*)aString;
-
-- (id <NSMenuItem>) selectedItem;
-- (int) indexOfSelectedItem;
-- (void) synchronizeTitleAndSelectedItem;
-
-    
-// Title conveniences
+// Title management
+/**
+ * Set item title at the given index in the reciever.
+ */ 
 - (NSString*) itemTitleAtIndex: (int)index;
+
+/**
+ * Returns an array containing all of the current item titles.
+ */ 
 - (NSArray*) itemTitles;
+
+/**
+ * Returns the title of the currently selected item in the reciever.
+ */
 - (NSString*) titleOfSelectedItem;
 
+/**
+ * Attach popup
+ */
 - (void) attachPopUpWithFrame: (NSRect)cellFrame inView: (NSView*)controlView;
+
+/**
+ * Dismiss the reciever.
+ */ 
 - (void) dismissPopUp;
+
+/**
+ * Perform the click operation with the given frame and controlView.
+ */
 - (void) performClickWithFrame: (NSRect)frame inView: (NSView*)controlView;
-
-// Arrow position for bezel style and borderless popups.
-- (NSPopUpArrowPosition) arrowPosition;
-- (void) setArrowPosition: (NSPopUpArrowPosition)position;
 @end    
-
-/* Notifications */ 
-APPKIT_EXPORT NSString*NSPopUpButtonCellWillPopUpNotification;
 
 #endif // _GNUstep_H_NSPopUpButtonCell

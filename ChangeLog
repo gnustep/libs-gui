@@ -1,3 +1,10 @@
+2006-03-26 12:52 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/AppKit/NSPopUpButtonCell.h: Refactored header, 
+	added documentation
+	* Source/NSNib.m: Added documentation.
+	* Source/NSPopUpButtonCell.m: Improved documentation.
+
 2006-03-26  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSSearchFieldCell.h:
