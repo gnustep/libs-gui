@@ -129,6 +129,8 @@ NSResponder.m \
 NSRulerMarker.m \
 NSRulerView.m \
 NSSavePanel.m \
+NSSearchField.m \
+NSSearchFieldCell.m \
 NSScreen.m \
 NSScroller.m \
 NSScrollView.m \

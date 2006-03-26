@@ -1,3 +1,13 @@
+2006-03-26  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSSearchFieldCell.h:
+	* Headers/AppKit/NSSearchField.h:
+	* Source/NSSearchField.m:
+	* Source/NSSearchFieldCell.m: Added headers and basic
+	implementation for these classes based on code by 
+	Nikolaus Schaller <hns@computer.org>.
+	* Source/GNUmakefile: Handle these new classes.
+
 2006-03-24  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSStepperCell.m: Rewrote all button drawing functions to
