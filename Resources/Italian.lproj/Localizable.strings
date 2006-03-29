@@ -1,108 +1,227 @@
 /* Translator: Nicola Pero <nicola@brainstorm.co.uk>
  * Date: September 2002
+ * Translator: Maurizio Boriani <baux@gnu.org>
+ * Date: April 2006
  */
 
 /***
 Italian.lproj/Localizable.strings
-updated by make_strings 2002-09-25 03:20:19 +0100
+updated by make_strings 2006-03-25 13:23:09 +0100
 add comments above this one
 ***/
 
 
 /*** Keys found in multiple places ***/
 
-/* File: ../Source/NSDocument.m:87 */
-/* File: ../Source/NSDocument.m:108 */
-"Load failed" = "Caricamento non riuscito";
-
-/* File: ../Source/NSDocument.m:254 */
-/* File: ../Source/NSDocument.m:476 */
-/* File: ../Source/NSDocument.m:601 */
+/* File: ../Source/NSDocument.m:283 */
+/* File: ../Source/NSDocument.m:510 */
+/* File: ../Source/NSDocument.m:694 */
+/* File: ../Source/NSSavePanel.m:1135 */
+/* Flag: untranslated */
+/* File: ../Source/NSSavePanel.m:1145 */
+/* Flag: untranslated */
+/* File: ../Source/NSSavePanel.m:1156 */
+/* Flag: untranslated */
+/* File: ../Source/NSSavePanel.m:1167 */
+/* Flag: untranslated */
 "Save" = "Salva";
 
-/* File: ../Source/NSDocument.m:254 */
-/* File: ../Source/NSDocument.m:601 */
-/* File: ../Source/NSDocument.m:703 */
+/* File: ../Source/NSDocument.m:283 */
+/* File: ../Source/NSDocument.m:694 */
+/* File: ../Source/NSDocument.m:825 */
+/* File: ../Source/NSDocumentController.m:487 */
+/* Flag: untranslated */
+/* File: ../Source/NSSavePanel.m:1169 */
+/* Flag: untranslated */
 "Cancel" = "Cancella";
 
-/* File: ../Source/NSDocument.m:701 */
-/* File: ../Source/NSDocument.m:703 */
-"Revert" = "Ritorna a com'era prima";
+/* File: ../Source/NSDocument.m:506 */
+/* File: ../Source/NSSavePanel.m:855 */
+/* Flag: untranslated */
+"Save As" = "Salva con nome";
+
+/* File: ../Source/NSApplication.m:2615 */
+/* Comment: Title of the Info Panel */
+/* File: ../Source/NSMenu.m:236 */
+/* Comment: Info */
+/* Flag: untranslated */
+/* File: ../Source/NSMenu.m:302 */
+/* Comment: Info */
+/* Flag: untranslated */
+"Info" = "Info";
+
+/* File: ../Source/NSApplication.m:3092 */
+/* File: ../Source/NSDocumentController.m:558 */
+/* Flag: untranslated */
+"Quit" = "Esci";
+
+/* File: ../Source/GSPrintOperation.m:158 */
+/* Flag: untranslated */
+/* File: ../Source/NSSavePanel.m:1147 */
+/* Flag: untranslated */
+/* File: ../Source/NSSavePanel.m:1158 */
+/* Flag: untranslated */
+"Dismiss" = "Dismetti";
 
 
 /*** Unmatched/untranslated keys ***/
 
-/* File: ../Source/NSDocument.m:88 */
-"Could not load file %@." = "Non è stato possibile caricare il file %@.";
+/* File: ../Source/GSPrintOperation.m:156 */
+/* Flag: untranslated */
+"Preview" = "Anteprima";
 
-/* File: ../Source/NSDocument.m:109 */
-"Could not load URL %@." = "Non è stato possibile caricare lo URL %@.";
+/* File: ../Source/GSPrintOperation.m:157 */
+/* Flag: untranslated */
+"Problem running the preview application '%@' perhaps you need to set your NSPreviewApp user default"
+= "Errore nell'esecuzione dell'applicazione Anteprima '%@' Dovresti settare l'applicativo predefinito in NSPreviewApp defaults";
 
-/* File: ../Source/NSDocument.m:252 */
-"Close" = "Chiudi";
+/* File: ../Source/NSAlert.m:1264 */
+/* Flag: untranslated */
+"OK" = "OK";
 
-/* File: ../Source/NSDocument.m:253 */
-"%@ has changed.  Save?" = "%@ è cambiato.  Lo devo salvare?";
+/* File: ../Source/NSApplication.m:110 */
+/* Flag: unmatched */
+"Ignore" = "Ignora";
 
-/* File: ../Source/NSDocument.m:254 */
-"Don't Save" = "Non salvare";
+/* File: ../Source/NSBitmapImageRep.m:831 */
+/* Flag: untranslated */
+"No Compression" = "Non compresso";
 
-/* File: ../Source/NSDocument.m:336 */
-"Untitled-%d" = "Senza-Titolo-%d";
+/* File: ../Source/NSBitmapImageRep.m:832 */
+/* Flag: untranslated */
+"CCITTFAX3 Compression" = "Compressione CCITTFAX3";
 
-/* File: ../Source/NSDocument.m:477 */
-"Save As" = "Salva con nome";
+/* File: ../Source/NSBitmapImageRep.m:833 */
+/* Flag: untranslated */
+"CCITTFAX4 Compression" = "Compressione CCITTFAX4";
 
-/* File: ../Source/NSDocument.m:478 */
-"Save To" = "Salva in";
+/* File: ../Source/NSBitmapImageRep.m:834 */
+/* Flag: untranslated */
+"LZW Compression" = "Compressione LZW";
 
-/* File: ../Source/NSDocument.m:599 */
-"File Error" = "Errore con un file";
+/* File: ../Source/NSBitmapImageRep.m:835 */
+/* Flag: untranslated */
+"JPEG Compression" = "Compressione JPEG";
 
-/* File: ../Source/NSDocument.m:600 */
-"Can't create backup file.  Save anyways?"
-= "Non si può create un file di backup.  Lo devo salvare lo stesso?";
+/* File: ../Source/NSBitmapImageRep.m:836 */
+/* Flag: untranslated */
+"NEXT Compression" = "Compressione NEXT";
 
-/* File: ../Source/NSDocument.m:702 */
-"%@ has been edited.  Are you sure you want to undo changes?"
-= "%@ è stato modificato.  Sei sicuro che vuoi annullare i cambiamenti?";
+/* File: ../Source/NSBitmapImageRep.m:837 */
+/* Flag: untranslated */
+"PackBits Compression" = "Compressione PackBits";
+
+/* File: ../Source/NSBitmapImageRep.m:838 */
+/* Flag: untranslated */
+"Old JPEG Compression" = "Vecchia compressione JPEG";
+
+/* File: ../Source/NSDocumentController.m:499 */
+/* Flag: untranslated */
+"You have unsaved documents" = "Ci sono documenti non salvati";
+
+/* File: ../Source/NSDocumentController.m:500 */
+/* Flag: untranslated */
+"Review Unsaved" = "Rivisita documenti non salvati";
+
+/* File: ../Source/NSDocumentController.m:502 */
+/* Flag: untranslated */
+"Quit Anyways" = "Esci comunque";
+
+/* File: ../Source/NSDocumentController.m:565 */
+/* Flag: untranslated */
+"Power Off" = "Spegni";
+
+/* File: ../Source/NSSavePanel.m:1136 */
+/* Flag: untranslated */
+"The directory '%@' does not exist, do you want to create it?"
+= "La directory '%@' non esiste, la vuoi creare?";
+
+/* File: ../Source/NSSavePanel.m:1137 */
+/* Flag: untranslated */
+"Yes" = "Si";
+
+/* File: ../Source/NSSavePanel.m:1137 */
+/* Flag: untranslated */
+"No" = "No";
+
+/* File: ../Source/NSSavePanel.m:1146 */
+/* Flag: untranslated */
+"The directory '%@' could not be created."
+= "La directory '%@' non puo' essere creata.";
+
+/* File: ../Source/NSSavePanel.m:1157 */
+/* Flag: untranslated */
+"The path '%@' is not a directory." = "Il percorso non '%@' non e' una directory."
+
+/* File: ../Source/NSSavePanel.m:1168 */
+/* Flag: untranslated */
+"The file '%@' in '%@' exists. Replace it?"
+= "Il file '%@' in '%@' esiste. Vuoi sostituirlo?";
+
+/* File: ../Source/NSSavePanel.m:1169 */
+/* Flag: untranslated */
+"Replace" = "Sostituisci";
 
 
 /*** Strings from ../Source/NSApplication.m ***/
-/* File: ../Source/NSApplication.m:109 */
-"Abort" = "Abortisci";
-/* File: ../Source/NSApplication.m:209 */
+/* File: ../Source/NSApplication.m:120 */
+"Abort" = "Interrompi";
+/* File: ../Source/NSApplication.m:296 */
 "Backend at path %@ doesn't contain the GSBackend class"
 = "Il backend a %@ non contiene la classe GSBackend";
-/* File: ../Source/NSApplication.m:198 */
+/* File: ../Source/NSApplication.m:284 */
 "Can't create NSBundle object for backend at path %@"
 = "Non si riesce a creare l'oggetto NSBundle per il backend a %@";
-/* File: ../Source/NSApplication.m:217 */
+/* File: ../Source/NSApplication.m:304 */
 "Can't find backend context" = "Non è possibile trovare il backend context";
-/* File: ../Source/NSApplication.m:203 */
+/* File: ../Source/NSApplication.m:289 */
 "Can't load object file from backend at path %@"
 = "Non si riesce a caricare il file oggetto dal backend a %@";
-/* File: ../Source/NSApplication.m:686 */
+/* File: ../Source/NSApplication.m:951 */
 "Cannot load the main model file '%@'"
 = "Non è possibile caricare il model file principale '%@'";
-/* File: ../Source/NSApplication.m:106 */
+/* File: ../Source/NSApplication.m:117 */
 "Critical Error in %@" = "Errore critico in %@";
-/* File: ../Source/NSApplication.m:112 */
+/* File: ../Source/NSApplication.m:123 */
 "Debug" = "Debugga";
-/* File: ../Source/NSApplication.m:110 */
-"Ignore" = "Ignora";
-/* File: ../Source/NSApplication.m:1926 */
-/* Comment: Title of the Info Panel */
-"Info" = "Info";
-/* File: ../Source/NSApplication.m:812 */
+/* File: ../Source/NSApplication.m:1083 */
 "Problem during launch app notification: %@"
 = "Problema durante il lancio dell'applicazione: %@";
-/* File: ../Source/NSApplication.m:2314 */
-"Quit" = "Esci";
-/* File: ../Source/NSApplication.m:191 */
+/* File: ../Source/NSApplication.m:277 */
 "Unable to find backend %@" = "Non si riesce a trovare il backend %@";
-/* File: ../Source/NSApplication.m:595 */
+/* File: ../Source/NSApplication.m:897 */
 "[NSApplication -init] called more than once"
 = "[NSApplication -init] chiamata più di una volta";
-/* File: ../Source/NSApplication.m:2297 */
+/* File: ../Source/NSApplication.m:3070 */
 "reported exception - %@" = "riportata una exception - %@";
+
+
+/*** Strings from ../Source/NSDocument.m ***/
+/* File: ../Source/NSDocument.m:824 */
+"%@ has been edited.  Are you sure you want to undo changes?"
+= "%@ è stato modificato.  Sei sicuro che vuoi annullare i cambiamenti?";
+/* File: ../Source/NSDocument.m:282 */
+"%@ has changed.  Save?" = "%@ è cambiato. Salvare?";
+/* File: ../Source/NSDocument.m:693 */
+"Can't create backup file.  Save anyways?"
+= "Non si può create un file di backup. Lo devo salvare lo stesso?";
+/* File: ../Source/NSDocument.m:281 */
+"Close" = "Chiudi";
+/* File: ../Source/NSDocument.m:129 */
+"Could not load URL %@." = "Non è stato possibile caricare lo URL %@.";
+/* File: ../Source/NSDocument.m:103 */
+"Could not load file %@." = "Non è stato possibile caricare il file %@.";
+/* File: ../Source/NSDocument.m:283 */
+"Don't Save" = "Non salvare";
+/* File: ../Source/NSDocument.m:692 */
+"File Error" = "Errore con un file";
+/* File: ../Source/NSDocument.m:102 */
+/* File: ../Source/NSDocument.m:128 */
+"Load failed" = "Caricamento non riuscito";
+/* File: ../Source/NSDocument.m:825 */
+/* File: ../Source/NSDocument.m:823 */
+"Revert" = "Ritorna a com'era prima";
+/* File: ../Source/NSDocument.m:507 */
+"Save To" = "Salva in";
+/* File: ../Source/NSDocument.m:361 */
+"Untitled-%d" = "Senza-Titolo-%d";

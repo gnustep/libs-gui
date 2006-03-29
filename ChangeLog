@@ -1,3 +1,8 @@
+2006-03-26  Maurizio Boriani  <baux@gnu.org>
+
+	* Resources/Italian.lproj/Localizable.string: Add missing translations.
+	* Resources/Lojban.lproj/Localizable.string: New, lojban strings traslation.
+
 2006-03-28 20:21 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Tools/gopen.m: Added back code in to launch the application properly
