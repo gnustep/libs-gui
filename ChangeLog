@@ -2,6 +2,8 @@
 
 	* Source/GSMemoryPanel.m: Extend to allow snapshots of the memory
 	to be taken so we can compare memory at different points in time.
+	Simplify code and fix bug where re-ordering sort in table would
+	also change table contents.
 
 2006-03-26  Maurizio Boriani  <baux@gnu.org>
 

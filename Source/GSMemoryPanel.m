@@ -184,6 +184,8 @@ static GSMemoryPanel *sharedGSMemoryPanel = nil;
   /* Activate debugging of allocation. */
   GSDebugAllocationActive (YES);
 
+  orderingBy = @selector(compareByCount:); 
+  array = [NSMutableArray new];
   hbox = [GSHbox new];
   [hbox setDefaultMinXMargin: 5];
   [hbox setBorder: 5];
@@ -219,9 +221,6 @@ static GSMemoryPanel *sharedGSMemoryPanel = nil;
   [hbox addView: button];
   RELEASE (button);
   
-  /* Ordering by number of objects by default */
-  orderingBy = OrderByCount;
-
   classColumn = [[NSTableColumn alloc] initWithIdentifier: @"Class"];
   [classColumn setEditable: NO];
   [[classColumn headerCell] setStringValue: @"Class Name"];
@@ -296,40 +295,37 @@ static GSMemoryPanel *sharedGSMemoryPanel = nil;
 
 - (void) dealloc
 {
-  RELEASE(classArray);
-  RELEASE(countArray);
-  RELEASE(totalArray);
-  RELEASE(peakArray);
-
+  RELEASE(array);
   [super dealloc];
 }
 
 - (int) numberOfRowsInTableView: (NSTableView *)aTableView
 {
-  return [countArray count];
+  return [array count];
 }
 
 - (id)           tableView: (NSTableView *)aTableView 
  objectValueForTableColumn: (NSTableColumn *)aTableColumn 
 		       row:(int)rowIndex
 {
+  GSMemoryPanelEntry *entry = [array objectAtIndex: rowIndex];
   id identifier = [aTableColumn identifier];
 
   if ([identifier isEqual: @"Class"])
     {
-      return [classArray objectAtIndex: rowIndex];
+      return [entry string];
     }
   else if ([identifier isEqual: @"Count"])
     {
-      return [countArray objectAtIndex: rowIndex];
+      return [entry count];
     }
   else if ([identifier isEqual: @"Total"])
     {
-      return [totalArray objectAtIndex: rowIndex];
+      return [entry total];
     }
   else if ([identifier isEqual: @"Peak"])
     {
-      return [peakArray objectAtIndex: rowIndex];
+      return [entry peak];
     }
 
   NSLog (@"Hi, I am a bug in your table view");
@@ -354,20 +350,13 @@ static GSMemoryPanel *sharedGSMemoryPanel = nil;
 {
   Class *classList = GSDebugAllocationClassList ();
   Class *pointer;
-  NSMutableArray *array = [NSMutableArray new];
-  NSArray *array_imm;
-  SEL orderSel = NULL;
   GSMemoryPanelEntry *entry;
   int i, count, total, peak;
   NSString *className;
-  NSMutableArray *classes = [NSMutableArray new];
-  NSMutableArray *counts = [NSMutableArray new];
-  NSMutableArray *totals = [NSMutableArray new];
-  NSMutableArray *peaks = [NSMutableArray new];
 
   pointer = classList;
   i = 0;
-
+  [array removeAllObjects];
   while (pointer[i] != NULL)
     {
       className = NSStringFromClass (pointer[i]);
@@ -385,46 +374,7 @@ static GSMemoryPanel *sharedGSMemoryPanel = nil;
     }
   NSZoneFree(NSDefaultMallocZone(), classList);
 
-  switch (orderingBy)
-    {
-    case (OrderByClassName): 
-      orderSel = @selector(compareByClassName:); 
-      break;
-    case (OrderByCount): 
-      orderSel = @selector(compareByCount:);
-      break;
-    case (OrderByTotal): 
-      orderSel = @selector(compareByTotal:);
-      break;
-    case (OrderByPeak): 
-      orderSel = @selector(compareByPeak:);
-      break;
-    }
-  
-  array_imm = [array sortedArrayUsingSelector: orderSel];
-  RELEASE (array);
-
-  count = [array_imm count];
-  for (i = 0; i < count; i++)
-    {
-      entry = [array_imm objectAtIndex: i];
-      [counts addObject: [entry count]];
-      [totals addObject: [entry total]];
-      [peaks addObject: [entry peak]];
-      [classes addObject: [entry string]];
-    }
-
-  ASSIGN (classArray, classes);
-  RELEASE (classes);
-
-  ASSIGN (countArray, counts);
-  RELEASE (counts);
-
-  ASSIGN (totalArray, totals);
-  RELEASE (totals);
-
-  ASSIGN (peakArray, peaks);
-  RELEASE (peaks);
+  [array sortUsingSelector: orderingBy];
 
   [table reloadData];
 }
@@ -434,7 +384,7 @@ static GSMemoryPanel *sharedGSMemoryPanel = nil;
   int selectedColumn = [table clickedColumn];
   NSArray *tableColumns = [table tableColumns];
   id identifier;
-  int newOrderingBy = 0;
+  SEL newOrderingBy = @selector(compareByCount:); 
 
   if (selectedColumn == -1)
     {
@@ -446,19 +396,19 @@ static GSMemoryPanel *sharedGSMemoryPanel = nil;
 
   if ([identifier isEqual: @"Class"])
     {
-      newOrderingBy = OrderByClassName;
+      newOrderingBy = @selector(compareByClassName:); 
     }
   else if ([identifier isEqual: @"Count"])
     {
-      newOrderingBy = OrderByCount;
+      newOrderingBy = @selector(compareByCount:); 
     }
   else if ([identifier isEqual: @"Total"])
     {
-      newOrderingBy = OrderByTotal;
+      newOrderingBy = @selector(compareByTotal:); 
     }
   else if ([identifier isEqual: @"Peak"])
     {
-      newOrderingBy = OrderByPeak;
+      newOrderingBy = @selector(compareByPeak:); 
     }
 
   if (newOrderingBy == orderingBy)
@@ -468,7 +418,8 @@ static GSMemoryPanel *sharedGSMemoryPanel = nil;
   else
     {
       orderingBy = newOrderingBy;
-      [self update: self];
+      [array sortUsingSelector: orderingBy];
+      [table reloadData];
     }
 }
 

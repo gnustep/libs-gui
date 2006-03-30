@@ -39,13 +39,10 @@
 @interface GSMemoryPanel: NSPanel
 {
   NSTableView *table;
-  NSMutableArray *classArray;
-  NSMutableArray *countArray;
-  NSMutableArray *totalArray;
-  NSMutableArray *peakArray;
+  NSMutableArray *array;
   /* Are we ordering by class name, or by count or total or peak number 
      of instances ? */
-  int orderingBy;
+  SEL orderingBy;
 }
 + (id) sharedMemoryPanel;
 
