@@ -184,6 +184,11 @@ static GSMemoryPanel *sharedGSMemoryPanel = nil;
   /* Activate debugging of allocation. */
   GSDebugAllocationActive (YES);
 
+  hbox = [GSHbox new];
+  [hbox setDefaultMinXMargin: 5];
+  [hbox setBorder: 5];
+  [hbox setAutoresizingMask: NSViewWidthSizable];
+
   /* Button updating the table.  */
   button = [NSButton new]; 
   [button setBordered: YES];
@@ -192,13 +197,25 @@ static GSMemoryPanel *sharedGSMemoryPanel = nil;
   [button setImagePosition: NSNoImage]; 
   [button setTarget: self];
   [button setAction: @selector(update:)];
+  [button setAutoresizingMask: NSViewMaxXMargin];
+  [button sizeToFit];
+  [button setTag: 1];
+
+  [hbox addView: button];
+  RELEASE (button);
+  
+  /* Button taking snapshot of the table.  */
+  button = [NSButton new]; 
+  [button setBordered: YES];
+  [button setButtonType: NSMomentaryPushButton];
+  [button setTitle:  @"Snapshot"];
+  [button setImagePosition: NSNoImage]; 
+  [button setTarget: self];
+  [button setAction: @selector(snapshot:)];
   [button setAutoresizingMask: NSViewMinXMargin];
   [button sizeToFit];
+  [button setTag: 2];
 
-  hbox = [GSHbox new];
-  [hbox setDefaultMinXMargin: 5];
-  [hbox setBorder: 5];
-  [hbox setAutoresizingMask: NSViewWidthSizable];
   [hbox addView: button];
   RELEASE (button);
   
@@ -279,7 +296,6 @@ static GSMemoryPanel *sharedGSMemoryPanel = nil;
 
 - (void) dealloc
 {
-  RELEASE(table);
   RELEASE(classArray);
   RELEASE(countArray);
   RELEASE(totalArray);
@@ -319,6 +335,19 @@ static GSMemoryPanel *sharedGSMemoryPanel = nil;
   NSLog (@"Hi, I am a bug in your table view");
 
   return @"";
+}
+
+- (void) snapshot: (id)sender
+{
+  GSMemoryPanel		*snapshot = [GSMemoryPanel new];
+
+  [snapshot setTitle:
+    [NSString stringWithFormat: @"Memory Snapshot at %@", [NSDate date]]];
+  [[[snapshot contentView] viewWithTag: 1] removeFromSuperview];
+  [[[snapshot contentView] viewWithTag: 2] removeFromSuperview];
+  [snapshot setReleasedWhenClosed: YES];
+  [snapshot makeKeyAndOrderFront: self];
+  [snapshot update: self];
 }
 
 - (void) update: (id)sender
@@ -412,7 +441,8 @@ static GSMemoryPanel *sharedGSMemoryPanel = nil;
       return;
     }
 
-  identifier = [[tableColumns objectAtIndex: selectedColumn] identifier];
+  identifier
+    = [(NSTableColumn*)[tableColumns objectAtIndex: selectedColumn] identifier];
 
   if ([identifier isEqual: @"Class"])
     {

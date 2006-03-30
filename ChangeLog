@@ -1,7 +1,13 @@
+2006-03-30  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSMemoryPanel.m: Extend to allow snapshots of the memory
+	to be taken so we can compare memory at different points in time.
+
 2006-03-26  Maurizio Boriani  <baux@gnu.org>
 
 	* Resources/Italian.lproj/Localizable.string: Add missing translations.
-	* Resources/Lojban.lproj/Localizable.string: New, lojban strings traslation.
+	* Resources/Lojban.lproj/Localizable.string: New, lojban strings
+	translation.
 
 2006-03-28 20:21 Gregory John Casamento <greg_casamento@yahoo.com>
 
