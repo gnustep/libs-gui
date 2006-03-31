@@ -1635,7 +1635,7 @@ static NSNotificationCenter *nc;
   BOOL      moveIt    = NO;
   
   // If we are the main menu forget about moving.
-  if ([self isEqual: [NSApp mainMenu]])
+  if ([self isEqual: [NSApp mainMenu]] && !_transient)
     return;
 
   // 1 - determine the amount we need to shift in the y direction.

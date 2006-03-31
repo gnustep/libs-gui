@@ -2,6 +2,8 @@
 
 	* Source/NSMenuView.m: ([-rectOfItemAtIndex:]) fixup origin of
 	rectangle to avoid overwriting dark line at left of menu.
+	* Source/NSMenu.m: make transient main menu shitf on screen.
+	fix bug #15935
 
 2006-03-30  Richard Frith-Macdonald <rfm@gnu.org>
 
