@@ -901,13 +901,15 @@ _addLeftBorderOffsetToRect(NSRect aRect)
     {
       NSRect theRect;
 
-      /* Fiddle with the origin so that the item rect is shifted 1 pixel over 
-       * so we do not draw on the heavy line at origin.x = 0.
-       */
       theRect.origin.y
 	= _cellSize.height * ([_itemCells count] - index - 1);
       theRect.origin.x = _leftBorderOffset;
       theRect.size = _cellSize;
+
+      /* Fiddle with the origin so that the item rect is shifted 1 pixel over 
+       * so we do not draw on the heavy line at origin.x = 0.
+       */
+      theRect.origin.x++;
 
       /* NOTE: This returns the correct NSRect for drawing cells, but nothing 
        * else (unless we are a popup). This rect will have to be modified for 
