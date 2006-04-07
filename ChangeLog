@@ -1,3 +1,7 @@
+2006-04-06  Adam Fedor  <fedor@gnu.org>
+
+	* Tools/gcloseall.m: Include NSProcessInfo.h. Fixes bug #16212.
+
 2006-03-31  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSMenuView.m: ([-rectOfItemAtIndex:]) fixup origin of
