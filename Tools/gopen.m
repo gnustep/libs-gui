@@ -126,22 +126,9 @@ main(int argc, char** argv, char **env_c)
     {
       NSString *ext = [arg pathExtension];
       
-      if ([arg isEqualToString: @"-a"])
-	{
-	  // skip since this is handled above...
-	  arg = [argEnumerator nextObject];
-	}
-      else if ([arg isEqualToString: @"-o"])
-	{
-	  // skip since this is handled above...
-	  arg = [argEnumerator nextObject];
-	}
-      else if ([arg isEqualToString: @"-p"])
-	{
-	  // skip since this is handled above...
-	  arg = [argEnumerator nextObject];
-	}
-      else if ([arg isEqualToString: @"-NXHost"])
+      if ([arg isEqualToString: @"-a"] || 
+	  [arg isEqualToString: @"-o"] || 
+	  [arg isEqualToString: @"-NXHost"])
 	{
 	  // skip since this is handled above...
 	  arg = [argEnumerator nextObject];
