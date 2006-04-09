@@ -1519,8 +1519,8 @@ many times.
          don't constrain if we are merely unhidding the window or if it's
          already visible and is just being reordered. */
       if ((_styleMask & NSTitledWindowMask)
-	  && [NSApp isHidden] == NO
-	  && _f.visible == NO)
+	&& [NSApp isHidden] == NO
+	&& _f.visible == NO)
 	{
 	  NSRect nframe = [self constrainFrameRect: _frame
 				          toScreen: [self screen]];
@@ -1750,7 +1750,8 @@ many times.
   if (resizeTime == 0)
     {
       NSNumber *num;
-      num = [[NSUserDefaults standardUserDefaults] objectForKey: @"NSWindowResizeTime"];
+      num = [[NSUserDefaults standardUserDefaults]
+        objectForKey: @"NSWindowResizeTime"];
       if (num != nil)
         {
 	  resizeTime = [num floatValue];
@@ -3895,7 +3896,7 @@ resetCursorRectsForView(NSView *theView)
 }
 
 - (BOOL) setFrameUsingName: (NSString *)name
-		    force: (BOOL)force
+		     force: (BOOL)force
 {
   // FIXME
   return [self setFrameUsingName: name];
@@ -3980,10 +3981,10 @@ resetCursorRectsForView(NSView *theView)
   maxRect = [self constrainFrameRect: maxRect toScreen: [self screen]];
 
   // Compare the new frame with the current one
-  if ((abs(NSMaxX(maxRect) - NSMaxX(_frame)) < DIST) &&
-      (abs(NSMaxY(maxRect) - NSMaxY(_frame)) < DIST) &&
-      (abs(NSMinX(maxRect) - NSMinX(_frame)) < DIST) &&
-      (abs(NSMinY(maxRect) - NSMinY(_frame)) < DIST))
+  if ((abs(NSMaxX(maxRect) - NSMaxX(_frame)) < DIST)
+    && (abs(NSMaxY(maxRect) - NSMaxY(_frame)) < DIST)
+    && (abs(NSMinX(maxRect) - NSMinX(_frame)) < DIST)
+    && (abs(NSMinY(maxRect) - NSMinY(_frame)) < DIST))
     {
       // Already in zoomed mode, reset user frame, if stored
       if (_autosaveName != nil)

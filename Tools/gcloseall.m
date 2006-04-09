@@ -25,6 +25,7 @@
 #include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSPropertyList.h>
+#include <Foundation/NSProcessInfo.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSWorkspace.h>
 

@@ -176,6 +176,143 @@
 	* Source/GSNibCompatibility.m: Addition of classes for true OSX nib
 	compatibility.
 
+=======
+2006-04-06  Adam Fedor  <fedor@gnu.org>
+
+	* Tools/gcloseall.m: Include NSProcessInfo.h. Fixes bug #16212.
+
+2006-03-31  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSMenuView.m: ([-rectOfItemAtIndex:]) fixup origin of
+	rectangle to avoid overwriting dark line at left of menu.
+	* Source/NSMenu.m: make transient main menu shitf on screen.
+	fix bug #15935
+
+2006-03-30  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSMemoryPanel.m: Extend to allow snapshots of the memory
+	to be taken so we can compare memory at different points in time.
+	Simplify code and fix bug where re-ordering sort in table would
+	also change table contents.
+
+2006-03-26  Maurizio Boriani  <baux@gnu.org>
+
+	* Resources/Italian.lproj/Localizable.string: Add missing translations.
+	* Resources/Lojban.lproj/Localizable.string: New, lojban strings
+	translation.
+
+2006-03-28 20:21 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Tools/gopen.m: Added back code in to launch the application properly
+	with the -a option.
+
+2006-03-26 12:52 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/AppKit/NSPopUpButtonCell.h: Refactored header, 
+	added documentation
+	* Source/NSNib.m: Added documentation.
+	* Source/NSPopUpButtonCell.m: Improved documentation.
+
+2006-03-26  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSSearchFieldCell.h:
+	* Headers/AppKit/NSSearchField.h:
+	* Source/NSSearchField.m:
+	* Source/NSSearchFieldCell.m: Added headers and basic
+	implementation for these classes based on code by 
+	Nikolaus Schaller <hns@computer.org>.
+	* Source/GNUmakefile: Handle these new classes.
+
+2006-03-24  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSStepperCell.m: Rewrote all button drawing functions to
+	use new helper function DrawLightButton to honour colour settings.
+	Based on patch idea by Ingolf Jandt <i.jandt@web.de>.
+	* Source/NSStepperCell.m (-highlight:upButton:withFrame:inView:):
+	Simplified to use [drawWithFrame:inView:].
+	* Source/NSColorPanel.m (-_initWithoutGModel): Enable colour wells
+	in bottom list.
+
+2006-03-20  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSMenuView.m: ([-rectOfItemAtIndex:]) remove unused code and
+	tidy a bit (problem pointed out by Matt Rice).
+
+2006-03-19  Nicolas Roard <nicolas@roard.com>
+
+	* Source/NSSliderCell.m:
+	* Source/NSTabView.m:
+	* Images/common_SliderHoriz.tiff:
+	* Images/common_SliderVert.tiff:
+	* Images/common_SwitchOff.tiff:
+	* Images/common_SwitchOn.tiff:
+	* Images/common_TabDownSelectedLeft.tiff:
+	* Images/common_TabDownSelectedRight.tiff:
+	* Images/common_TabDownSelectedToUnSelectedJunction.tiff:
+	* Images/common_TabDownUnSelectedJunction.tiff:
+	* Images/common_TabDownUnSelectedLeft.tiff:
+	* Images/common_TabDownUnSelectedRight.tiff:
+	* Images/common_TabDownUnSelectedToSelectedJunction.tiff:
+	* Images/common_TabSelectedLeft.tiff:
+	* Images/common_TabSelectedRight.tiff:
+	* Images/common_TabSelectedToUnSelectedJunction.tiff:
+	* Images/common_TabUnSelectedJunction.tiff:
+	* Images/common_TabUnSelectedLeft.tiff:
+	* Images/common_TabUnSelectedRight.tiff:
+	* Images/common_TabUnSelectToSelectedJunction.tiff:
+	Updated images for the sliders, tabviews and switch buttons. They are
+	now transparent; the background is thus filled in the code using [NSColor controlBackgroundColor]. 
+	That way the current color scheme is followed. 
+	Thanks to Ingolf Jandt <i.jandt@web.de> for the images.
+
+2006-03-13  Adam Fedor  <fedor@gnu.org>
+
+	* Version 0.10.3
+
+2006-03-12  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GNUmakefile:
+	* Source/GNUmakefile.preamble:
+	* Source/GNUmakefile.postamble: 
+	Install header file Cocoa.h.
+	
+2006-03-08  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSServicesManager.m: avoid use of deprecated method.
+
+2006-03-05  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSScreen.m: ([-visibleFrame]) fix to work when using
+	mac style horizontal menu.
+
+2006-03-01  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSMenuView.m: ([-rectOfItemAtIndex:]) Fix bug #15934 by
+	removing some bogus code left over from incorporating horizontal
+	menu.
+
+2006-02-24  Quentin Mathe <qmathe@club-internet.fr>
+
+	* Source/GSToolbar.m: Fixed mismatched method return type between
+	header and implementation.
+	* Source/GSToolbarView.m: Updated code to reference some external
+	classes lazily with NSClassFromString.
+	These fixes avoids some compiler warnings.
+
+2006-02-22 23:03 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSScreen.m: Correction for visibleFrame, spelling of
+	NSInterfaceStyle was incorrect.
+
+2006-02-22  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSPrintOperation.m: trap exceptions launching previwer
+	* Documentation/GuiUser/DefaultsSuppary.gsdoc: mention GSLPRPrinters
+	* Printing/GSLPR/GSLPRPrinter.m: If we set up default printer
+	config because there was nothing in the user defaults system, save the
+	new config so we don't have to do it again next time.
+
+>>>>>>> .merge-right.r22751
 2006-02-06  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMatrix.m (-deselectAllCells): Allow empty selection,

@@ -59,18 +59,18 @@
 /*
   Drawing related:
 
-              NSMenu superMenu   (if not root menu, the parent meu)
-                ^
-                |
-                |    +------------------> NSMenuView view  (content, draws the menu items)
-                |    |
-              NSMenu +----------+-------> NSMenuPanel A    (regular window, torn off window)
-                |    |          `-------> NSMenuPanel B    (transient window)
-                |    |           
-                |    +------------------> NSString title   (title)
-                |
-                v
-              NSMenu attachedMenu  (the menu that is attached to this one, during navigation)
+  NSMenu superMenu   (if not root menu, the parent meu)
+    ^
+    |
+    |    +------------------> NSMenuView view  (content, draws the menu items)
+    |    |
+  NSMenu +----------+-------> NSMenuPanel A    (regular window, torn off window)
+    |    |          `-------> NSMenuPanel B    (transient window)
+    |    |           
+    |    +------------------> NSString title   (title)
+    |
+    v
+  NSMenu attachedMenu  (the menu attached to this one, during navigation)
               
 
 
@@ -1635,7 +1635,7 @@ static NSNotificationCenter *nc;
   BOOL      moveIt    = NO;
   
   // If we are the main menu forget about moving.
-  if ([self isEqual: [NSApp mainMenu]])
+  if ([self isEqual: [NSApp mainMenu]] && !_transient)
     return;
 
   // 1 - determine the amount we need to shift in the y direction.

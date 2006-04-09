@@ -161,8 +161,14 @@ NSRegisterServicesProvider(id provider, NSString *name)
       DESTROY(listenerConnection);
     }
 
-  listenerConnection = [NSConnection newRegisteringAtName: name
-    withRootObject: [GSListener listener]];
+  listenerConnection = [[NSConnection alloc]
+    initWithReceivePort: [NSPort port] sendPort: nil];
+  [listenerConnection setRootObject: [GSListener listener]];
+  if ([listenerConnection registerName: name] == NO)
+    {
+      DESTROY(listenerConnection);
+    }
+
   if (listenerConnection != nil)
     {
       RETAIN(listenerConnection);

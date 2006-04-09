@@ -85,7 +85,7 @@ main(int argc, char** argv, char **env_c)
   if (application)
     {
       // Don't start the application itself but use it for file opening. 
-      //      [workspace launchApplication: application];
+      [workspace launchApplication: application];
     }
   
   if (filetoopen)

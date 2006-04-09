@@ -32,6 +32,7 @@
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSStepperCell.h"
 #include "AppKit/NSText.h"
+#include "GNUstepGUI/GSDrawFunctions.h"
 
 @implementation NSStepperCell
 + (void) initialize
@@ -124,21 +125,37 @@
   return c;
 }
 
-static inline void DrawUpButton(NSRect aRect)
+static inline NSRect DrawLightButton(NSRect border, NSRect clip)
 {
-  NSRectEdge up_sides[] = {NSMinXEdge, NSMaxYEdge, 
-			   NSMaxXEdge, NSMinYEdge};
-  float grays[] = {NSWhite, NSWhite, 
-		   NSDarkGray, NSDarkGray};
-  NSRect rect;
-  NSGraphicsContext *ctxt;
-  ctxt = GSCurrentContext();
-  
-  rect = NSDrawTiledRects(aRect, NSZeroRect,
-			  up_sides, grays, 4);
-  DPSsetgray(ctxt, NSLightGray);
-  DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect), 
-	      NSWidth(rect), NSHeight(rect));
+/*
+  NSRect highlightRect = NSInsetRect(border, 1., 1.);
+  [GSDrawFunctions drawButton: border : clip];
+  return highlightRect;
+*/
+  NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, 
+			   NSMinXEdge, NSMaxYEdge}; 
+  NSRectEdge dn_sides[] = {NSMaxXEdge, NSMaxYEdge, 
+			   NSMinXEdge, NSMinYEdge}; 
+  // These names are role names not the actual colours
+  NSColor *dark = [NSColor controlShadowColor];
+  NSColor *white = [NSColor controlLightHighlightColor];
+  NSColor *colors[] = {dark, dark, white, white};
+
+  if ([[NSView focusView] isFlipped] == YES)
+    {
+      return NSDrawColorTiledRects(border, clip, dn_sides, colors, 4);
+    }
+  else
+    {
+      return NSDrawColorTiledRects(border, clip, up_sides, colors, 4);
+    }
+}
+
+ static inline void DrawUpButton(NSRect aRect)
+{
+  NSRect unHighlightRect = DrawLightButton(aRect, NSZeroRect);
+  [[NSColor controlBackgroundColor] set];
+  NSRectFill(unHighlightRect);
       
   PSsetgray(NSDarkGray);
   PSmoveto(NSMaxX(aRect) - 5, NSMinY(aRect) + 3);
@@ -156,20 +173,10 @@ static inline void DrawUpButton(NSRect aRect)
 
 static inline void HighlightUpButton(NSRect aRect)
 {
-  NSRectEdge up_sides[] = {NSMinXEdge, NSMaxYEdge, 
-			   NSMaxXEdge, NSMinYEdge};
-  float grays[] = {NSWhite, NSWhite, 
-		   NSDarkGray, NSDarkGray};
-  NSRect rect;
-  NSGraphicsContext *ctxt;
-  ctxt = GSCurrentContext();
+  NSRect highlightRect = DrawLightButton(aRect, NSZeroRect);
+  [[NSColor selectedControlColor] set];
+  NSRectFill(highlightRect);
   
-  rect = NSDrawTiledRects(aRect, NSZeroRect,
-			  up_sides, grays, 4);
-  DPSsetgray(ctxt, NSWhite);
-  DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect), 
-	      NSWidth(rect), NSHeight(rect));
-      
   PSsetgray(NSLightGray);
   PSmoveto(NSMaxX(aRect) - 5, NSMinY(aRect) + 3);
   PSlineto(NSMaxX(aRect) - 8, NSMinY(aRect) + 9);
@@ -186,19 +193,9 @@ static inline void HighlightUpButton(NSRect aRect)
 
 static inline void DrawDownButton(NSRect aRect)
 {
-  NSRectEdge up_sides[] = {NSMinXEdge, NSMaxYEdge, 
-			   NSMaxXEdge, NSMinYEdge};
-  float grays[] = {NSWhite, NSWhite, 
-		   NSDarkGray, NSDarkGray};
-  NSRect rect;
-  NSGraphicsContext *ctxt;
-  ctxt = GSCurrentContext();
-  
-  rect = NSDrawTiledRects(aRect, NSZeroRect,
-			  up_sides, grays, 4);
-  DPSsetgray(ctxt, NSLightGray);
-  DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect), 
-	      NSWidth(rect), NSHeight(rect));
+  NSRect unHighlightRect = DrawLightButton(aRect, NSZeroRect);
+  [[NSColor controlBackgroundColor] set];
+  NSRectFill(unHighlightRect);
 
   PSsetlinewidth(1.0);
   PSsetgray(NSDarkGray);
@@ -217,19 +214,9 @@ static inline void DrawDownButton(NSRect aRect)
 
 static inline void HighlightDownButton(NSRect aRect)
 {
-  NSRectEdge up_sides[] = {NSMinXEdge, NSMaxYEdge, 
-			   NSMaxXEdge, NSMinYEdge};
-  float grays[] = {NSWhite, NSWhite, 
-		   NSDarkGray, NSDarkGray};
-  NSRect rect;
-  NSGraphicsContext *ctxt;
-  ctxt = GSCurrentContext();
-  
-  rect = NSDrawTiledRects(aRect, NSZeroRect,
-			  up_sides, grays, 4);
-  DPSsetgray(ctxt, NSWhite);
-  DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect), 
-	      NSWidth(rect), NSHeight(rect));
+  NSRect highlightRect = DrawLightButton(aRect, NSZeroRect);
+  [[NSColor selectedControlColor] set];
+  NSRectFill(highlightRect);
   
   PSsetlinewidth(1.0);
   PSsetgray(NSLightGray);
@@ -252,35 +239,31 @@ static inline void HighlightDownButton(NSRect aRect)
   NSRect upRect;
   NSRect downRect;
   NSRect twoButtons;
-  NSGraphicsContext *ctxt;
-  ctxt = GSCurrentContext();
+
+  upRect = [self upButtonRectWithFrame: cellFrame];
+  downRect = [self downButtonRectWithFrame: cellFrame];
+  
+  twoButtons = downRect;
+  twoButtons.origin.y--;
+  twoButtons.size.width++;
+  twoButtons.size.height = 23;
+
+  if (highlightUp)
+    HighlightUpButton(upRect);
+  else
+    DrawUpButton(upRect);
+
+  if (highlightDown)
+    HighlightDownButton(downRect);
+  else
+    DrawDownButton(downRect);
 
   {
-    upRect = [self upButtonRectWithFrame: cellFrame];
-    downRect = [self downButtonRectWithFrame: cellFrame];
-
-    twoButtons = downRect;
-    twoButtons.origin.y--;
-    twoButtons.size.width++;
-    twoButtons.size.height = 23;
-
-    if (highlightUp)
-      HighlightUpButton(upRect);
-    else
-      DrawUpButton(upRect);
-
-    if (highlightDown)
-      HighlightDownButton(downRect);
-    else
-      DrawDownButton(downRect);
-
-    {
-      NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge};
-      float grays[] = {NSBlack, NSBlack}; 
-      
-      NSDrawTiledRects(twoButtons, NSZeroRect,
-		       up_sides, grays, 2);
-    }
+    NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge};
+    float grays[] = {NSBlack, NSBlack}; 
+    
+    NSDrawTiledRects(twoButtons, NSZeroRect,
+		     up_sides, grays, 2);
   }
 }
 
@@ -289,30 +272,16 @@ static inline void HighlightDownButton(NSRect aRect)
 	 withFrame: (NSRect) frame
 	    inView: (NSView*) controlView
 {
-  NSRect upRect;
-  NSRect downRect;
-  NSGraphicsContext *ctxt;
-  ctxt = GSCurrentContext();
-  {
-    upRect = [self upButtonRectWithFrame: frame];
-    downRect = [self downButtonRectWithFrame: frame];
-    if (upButton)
-      {  
-	highlightUp = highlight;
-	if (highlightUp)
-	  HighlightUpButton(upRect);
-	else
-	  DrawUpButton(upRect);
-      }
-    else
-      {
-	highlightDown = highlight;
-	if (highlightDown)
-	  HighlightDownButton(downRect);
-	else
-	  DrawDownButton(downRect);
-      }
-  }
+  if (upButton)
+    {  
+      highlightUp = highlight;
+    }
+  else
+    {
+      highlightDown = highlight;
+    }
+
+  [self drawWithFrame: frame inView: controlView];
 }
 
 - (NSRect) upButtonRectWithFrame: (NSRect) frame

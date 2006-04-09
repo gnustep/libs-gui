@@ -660,7 +660,7 @@ static void initSystemExtensionsColors(void)
 
 - (void) setToolbar: (GSToolbar *)toolbar 
 {
-  if ([toolbar isKindOfClass: [NSToolbar class]])
+  if ([toolbar isKindOfClass: NSClassFromString(@"NSToolbar")])
     [NSException raise: NSInvalidArgumentException
                 format: @"NSToolbar instance can't be attached directly to a \
                           toolbar view, setToolbar: from the NSWindow toolbar \
@@ -896,8 +896,8 @@ static void initSystemExtensionsColors(void)
   int index;
   
   if ((hitView != nil)
-    && ([hitView isKindOfClass: [GSToolbarButton class]] 
-    || [hitView isKindOfClass: [GSToolbarBackView class]]))
+    && ([hitView isKindOfClass: NSClassFromString(@"GSToolbarButton")] 
+    || [hitView isKindOfClass: NSClassFromString(@"GSToolbarBackView")]))
     {
       index = [_toolbar _indexOfItem: [hitView toolbarItem]];
       if (location.x - hitViewFrame.origin.x > hitViewFrame.size.width / 2)

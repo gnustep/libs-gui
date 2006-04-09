@@ -323,7 +323,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
     well = [[NSColorWell alloc] initWithFrame: NSMakeRect(i * 13 + 5, 5, 12, 12)];
     [well setColor: colour];
     [well setBordered: NO];
-    [well setEnabled: NO];
+    [well setEnabled: YES];
     [well setTarget: _colorWell];
     [well setAction: @selector(_bottomWellAction:)];
     [swatchView addSubview: well];

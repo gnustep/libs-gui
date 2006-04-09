@@ -147,6 +147,13 @@
           The syntax of keybindings entries and files is documented elsewhere.
           </p>
 	  </desc>
+	  <term>GSLPRPrinters</term>
+	  <desc>
+          <p>
+	  Specifies a dictionary containing printer information for the
+	  GSLPR printer bundle.  See the bundle source for details.
+          </p>
+	  </desc>
 	  <term>GSSavePanelShowProgress</term>
 	  <desc>
           <p>

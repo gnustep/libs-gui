@@ -34,6 +34,7 @@
 
 #include <Foundation/NSData.h>
 #include <Foundation/NSTask.h>
+#include <Foundation/NSException.h>
 #include <Foundation/NSUserDefaults.h>
 #include "AppKit/NSView.h"
 #include "AppKit/NSPrintPanel.h"
@@ -138,14 +139,25 @@
           NSUserDefaults *def = [NSUserDefaults standardUserDefaults];
           preview = [def objectForKey: @"NSPreviewApp"];
           
-	    if (preview == nil || [preview length] == 0)
-	      preview = @"gv";
+	  if (preview == nil || [preview length] == 0)
+	    preview = @"gv";
             
-          task = [NSTask new];
-          [task setLaunchPath: preview];
-          [task setArguments: [NSArray arrayWithObject: _path]];
-          [task launch];
-	    AUTORELEASE(task);
+	  NS_DURING
+	    {
+	      task = AUTORELEASE([NSTask new]);
+	      [task setLaunchPath: preview];
+	      [task setArguments: [NSArray arrayWithObject: _path]];
+	      [task launch];
+	    }
+	  NS_HANDLER
+	    {
+	      BOOL	result;
+
+	      result = NSRunAlertPanel(_(@"Preview"),
+_(@"Problem running the preview application '%@' perhaps you need to set your NSPreviewApp user default"),
+		_(@"Dismiss"), nil, nil, preview);
+	    }
+	  NS_ENDHANDLER
         }
     }
   else if ([job isEqual: NSPrintSpoolJob])

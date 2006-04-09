@@ -882,14 +882,14 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
 - (NSRect) rectOfItemAtIndex: (int)index
 {
+  if (_needsSizing == YES)
+    {
+      [self sizeToFit];
+    } 
+
   if (_horizontal == YES)
     {
       GSCellRect aRect;
-
-      if (_needsSizing == YES)
-	{
-	  [self sizeToFit];
-	} 
 
       aRect = GSIArrayItemAtIndex(cellRects, index).ext;
 
@@ -901,36 +901,15 @@ _addLeftBorderOffsetToRect(NSRect aRect)
     {
       NSRect theRect;
 
-      if (_needsSizing == YES)
-	{
-	  [self sizeToFit];
-	}
+      theRect.origin.y
+	= _cellSize.height * ([_itemCells count] - index - 1);
+      theRect.origin.x = _leftBorderOffset;
+      theRect.size = _cellSize;
 
       /* Fiddle with the origin so that the item rect is shifted 1 pixel over 
        * so we do not draw on the heavy line at origin.x = 0.
        */
-      if (_horizontal == NO)
-	{
-	  if (![_attachedMenu _ownedByPopUp])
-	    {
-	      theRect.origin.y
-		= 2 + (_cellSize.height * ([_itemCells count] - index - 1));
-	      theRect.origin.x = 1;
-	      theRect.size.width -= 2;
-	    }
-	  else
-	    {
-	      theRect.origin.y
-		= _cellSize.height * ([_itemCells count] - index - 1);
-	      theRect.origin.x = _leftBorderOffset;
-	    }
-	}
-      else
-	{
-	  theRect.origin.x = _cellSize.width * (index + 1);
-	  theRect.origin.y = 0;
-	}
-      theRect.size = _cellSize;
+      theRect.origin.x++;
 
       /* NOTE: This returns the correct NSRect for drawing cells, but nothing 
        * else (unless we are a popup). This rect will have to be modified for 
