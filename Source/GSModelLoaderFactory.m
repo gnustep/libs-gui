@@ -41,6 +41,15 @@
   return 0.0;
 }
 
+- (BOOL) loadModelData: (NSData *)data
+     externalNameTable: (NSDictionary *)context
+              withZone: (NSZone *)zone
+{
+  [NSException raise: NSInternalInconsistencyException
+	       format: @"Abstract model loader."];
+  return NO;
+}
+
 - (BOOL) loadModelFile: (NSString *)fileName
      externalNameTable: (NSDictionary *)context
               withZone: (NSZone *)zone
@@ -106,13 +115,15 @@ static NSMutableDictionary *_modelMap = nil;
   if([ext isEqual: @""])
     {
       NSArray *objectArray = [_modelMap allValues];
-      NSArray *sortedArray = [objectArray sortedArrayUsingSelector: @selector(_comparePriority:)];
+      NSArray *sortedArray = [objectArray sortedArrayUsingSelector: 
+					    @selector(_comparePriority:)];
       NSEnumerator *oen = [sortedArray objectEnumerator];
       Class cls = nil;
 
       while((cls = [oen nextObject]) != nil && result == NO)
 	{
-	  NSString *path = [modelPath stringByAppendingPathExtension: (NSString *)[cls type]];
+	  NSString *path = [modelPath stringByAppendingPathExtension: 
+					(NSString *)[cls type]];
 	  if([mgr isReadableFileAtPath: path])
 	    {
 	      result = path;

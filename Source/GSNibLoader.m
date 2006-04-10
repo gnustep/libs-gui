@@ -1,6 +1,6 @@
-/** <title>GSGormLoader</title>
+/** <title>GSNibLoader</title>
 
-   <abstract>Gorm model loader</abstract>
+   <abstract>Nib (Cocoa XML) model loader</abstract>
 
    Copyright (C) 1997, 1999 Free Software Foundation, Inc.
 
@@ -50,61 +50,40 @@
   return 3.0;
 }
 
-- (BOOL) loadModelFile: (NSString *)fileName
+- (BOOL) loadModelData: (NSData *)data
      externalNameTable: (NSDictionary *)context
               withZone: (NSZone *)zone;
 {
   BOOL		loaded = NO;
-  NSUnarchiver	*unarchiver = nil;
+  NSUnarchiver *unarchiver = nil;
 
-  NSDebugLog(@"Loading Nib `%@'...\n", fileName);
   NS_DURING
     {
-      NSFileManager	*mgr = [NSFileManager defaultManager];
-      BOOL              isDir = NO;
-
-      if ([mgr fileExistsAtPath: fileName isDirectory: &isDir])
+      if (data != nil)
 	{
-	  NSData	*data = nil;
-	  
-	  // if the data is in a directory, then load from objects.gorm in the directory
-	  if (isDir == NO)
+	  unarchiver = [[NSKeyedUnarchiver alloc] 
+			 initForReadingWithData: data];
+	  if (unarchiver != nil)
 	    {
-	      data = [NSData dataWithContentsOfFile: fileName];
-	      NSDebugLog(@"Loaded data from file...");
-	    }
-	  else
-	    {
-	      NSString *newFileName = [fileName stringByAppendingPathComponent: @"keyedobjects.nib"];
-	      data = [NSData dataWithContentsOfFile: newFileName];
-	      NSDebugLog(@"Loaded data from %@...",newFileName);
-	    }
-
-	  if (data != nil)
-	    {
-	      unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData: data];
-	      if (unarchiver != nil)
+	      id obj;
+	      
+	      NSDebugLog(@"Invoking unarchiver");
+	      [unarchiver setObjectZone: zone];
+	      obj = [unarchiver decodeObjectForKey: @"IB.objectdata"];
+	      if (obj != nil)
 		{
-		  id obj;
-		  
-		  NSDebugLog(@"Invoking unarchiver");
-		  [unarchiver setObjectZone: zone];
-		  obj = [unarchiver decodeObjectForKey: @"IB.objectdata"];
-		  if (obj != nil)
+		  if ([obj isKindOfClass: [NSIBObjectData class]])
 		    {
-		      if ([obj isKindOfClass: [NSIBObjectData class]])
-			{
-			  NSDebugLog(@"Calling awakeWithContext");
-			  [obj awakeWithContext: context];
-			  loaded = YES;
-			}
-		      else
-			{
-			  NSLog(@"Nib '%@' without container object!", fileName);
-			}
+		      NSDebugLog(@"Calling awakeWithContext");
+		      [obj awakeWithContext: context];
+		      loaded = YES;
 		    }
-		  RELEASE(unarchiver);
+		  else
+		    {
+		      NSLog(@"Nib without container object!");
+		    }
 		}
+	      RELEASE(unarchiver);
 	    }
 	}
     }
@@ -119,6 +98,48 @@
     {
       NSLog(@"Failed to load Nib\n");
     }
+
+  return loaded;
+}
+
+- (BOOL) loadModelFile: (NSString *)fileName
+     externalNameTable: (NSDictionary *)context
+              withZone: (NSZone *)zone;
+{
+  NSFileManager	*mgr = [NSFileManager defaultManager];
+  BOOL          isDir = NO;
+  BOOL          loaded = NO;
+
+  NSDebugLog(@"Loading Nib `%@'...\n", fileName);
+
+  if ([mgr fileExistsAtPath: fileName isDirectory: &isDir])
+    {
+      NSData	*data = nil;
+      
+      // if the data is in a directory, then load from keyedobjects.nib in the directory
+      if (isDir == NO)
+	{
+	  data = [NSData dataWithContentsOfFile: fileName];
+	  NSDebugLog(@"Loaded data from file...");
+	}
+      else
+	{
+	  NSString *newFileName = [fileName stringByAppendingPathComponent: @"keyedobjects.nib"];
+	  data = [NSData dataWithContentsOfFile: newFileName];
+	  NSDebugLog(@"Loaded data from %@...",newFileName);
+	}
+
+      loaded = [self loadModelData: data 
+		     externalNameTable: context
+		     withZone: zone];
+
+      // report a problem if there is one.
+      if(loaded == NO)
+	{
+	  NSLog(@"Could not load Gorm file: %@",fileName);
+	}
+    }
+      
   return loaded;
 }
 @end
