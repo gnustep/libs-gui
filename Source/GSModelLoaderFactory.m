@@ -134,7 +134,10 @@ static NSMutableDictionary *_modelMap = nil;
     {
       if([_modelMap objectForKey: ext] != nil)
 	{
-	  result = modelPath;
+	  if([mgr isReadableFileAtPath: modelPath])
+	    {
+	      result = modelPath;
+	    }
 	} 
     }
   

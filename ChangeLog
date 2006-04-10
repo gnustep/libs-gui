@@ -1,3 +1,8 @@
+2006-04-09 23:14 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSModelLoaderFactory.m: Fixed a problem with 
+	pathForNibResource:
+
 2006-04-09 20:37 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/Additions/GNUstepGUI/GSModelLoaderFactory.h
