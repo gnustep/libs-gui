@@ -119,6 +119,7 @@
     {
       // load the nib data into memory...
       _nibData = [NSData dataWithContentsOfURL: nibFileURL];
+      ASSIGN(_url, nibFileURL);
     }
   return self;
 }
@@ -199,22 +200,49 @@
 {
   if ((self = [super init]) != nil)
     {
-      [coder decodeValueOfObjCType: @encode(id)
-	     at: &_nibData];
+      //
+      // NOTE: This is okay, since the only encodings which will ever be built into
+      //       the gui library are nib and gorm.  GModel only supports certain
+      //       objects and is going to be deprecated in the future.  There just so
+      //       happens to be a one to one correspondence here.
+      //
+      if([coder allowsKeyedCoding])
+	{
+	  // Need to verify this key...
+	  ASSIGN(_nibData, [coder decodeObjectForKey: @"NSData"]);
+	  ASSIGN(_loader, [GSModelLoaderFactory modelLoaderForFileType: @"nib"]);
+	}
+      else
+	{
+	  // this is sort of a kludge...
+	  [coder decodeValueOfObjCType: @encode(id)
+		 at: &_nibData];
+	  ASSIGN(_loader, [GSModelLoaderFactory modelLoaderForFileType: @"gorm"]);
+	}
     }
   return self;
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
-  [coder encodeValueOfObjCType: @encode(id)
-	 at: &_nibData];
+  if([coder allowsKeyedCoding])
+    {
+      // Need to verify this key...
+      [coder encodeObject: _nibData 
+	     forKey: @"NSData"];      
+    }
+  else
+    {
+      [coder encodeValueOfObjCType: @encode(id)
+	     at: &_nibData];
+    }
 }
 
 - (void) dealloc
 {
   RELEASE(_nibData);
   RELEASE(_loader);
+  TEST_RELEASE(_url);
   [super dealloc];
 }
 

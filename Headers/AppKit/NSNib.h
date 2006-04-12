@@ -56,6 +56,7 @@
 {
   NSData *_nibData;
   id _loader;
+  NSURL *_url;
 }
 
 // reading the data...
