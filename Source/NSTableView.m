@@ -5238,6 +5238,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       while ((col = [e nextObject]) != nil)
         {
 	  [self addTableColumn: col];
+	  [col setTableView: self];
 	}
 
       if ([aDecoder containsValueForKey: @"NSTvFlags"])
@@ -5258,6 +5259,23 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	  [self setAllowsColumnResizing: columnResizing];	  
 	  [self setAllowsColumnReordering: columnOrdering];
 	}
+      
+      _numberOfColumns = [columns count];
+      ASSIGN (_selectedColumns, [NSMutableIndexSet indexSet]);
+      ASSIGN (_selectedRows, [NSMutableIndexSet indexSet]);
+      if (_numberOfColumns)
+	_columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), 
+				       sizeof(float) * _numberOfColumns);
+
+      _clickedRow = -1;
+      _clickedColumn = -1;
+      _selectingColumns = NO;
+      _selectedColumn = -1;
+      _selectedRow = -1;
+      _editedColumn = -1;
+      _editedRow = -1;
+
+      [self tile];
     }
   else
     {

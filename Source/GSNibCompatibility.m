@@ -1013,6 +1013,8 @@
 @implementation NSButtonImageSource
 @end
 
+// overridden in NSTableView to be GSTableCornerView, 
+// but the class needs to be present to be overridden.
 @interface _NSCornerView : NSView
 @end
 

@@ -1234,13 +1234,13 @@ static float scrollerWidth;
 
   if ([aDecoder allowsKeyedCoding])
     {
-      NSClipView *content = [aDecoder decodeObjectForKey: @"NSContentView"];
       NSScroller *hScroller = [aDecoder decodeObjectForKey: @"NSHScroller"];
       NSScroller *vScroller = [aDecoder decodeObjectForKey: @"NSVScroller"];
-      
+      NSClipView *content = [aDecoder decodeObjectForKey: @"NSContentView"]; 
+     
       if (content != nil)
         {
-	  // [self setDocumentView: [content documentView]];
+	  [self setContentView: content];
 	}
       if (hScroller != nil)
         {

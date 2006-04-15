@@ -1,3 +1,11 @@
+2006-04-15 02:26 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Comment on _NSHeaderView.
+	* Source/NSScrollView.m: Corrected issue with content view and
+	keyed coding.
+	* Source/NSTableView.m: Added additional initialization logic in
+	keyed coder.
+
 2006-04-14 00:02 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibCompatibility.m: Changed ordering to allow views
