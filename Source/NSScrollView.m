@@ -1238,10 +1238,6 @@ static float scrollerWidth;
       NSScroller *vScroller = [aDecoder decodeObjectForKey: @"NSVScroller"];
       NSClipView *content = [aDecoder decodeObjectForKey: @"NSContentView"]; 
      
-      if (content != nil)
-        {
-	  [self setContentView: content];
-	}
       if (hScroller != nil)
         {
 	  [self setHorizontalScroller: hScroller];
@@ -1249,6 +1245,20 @@ static float scrollerWidth;
       if (vScroller != nil)
         {
 	  [self setVerticalScroller: vScroller];
+	}
+      if (content != nil)
+        {
+	  NSRect frame = [content frame];
+	  float w = [vScroller frame].size.width;
+
+	  //
+	  // Slide the content view over, since on Mac OS X the scroller is on the
+	  // right, the content view is not properly positioned since our scroller
+	  // is on the left.
+	  //
+	  frame.origin.x += w;
+	  [content setFrame: frame];
+	  [self setContentView: content];
 	}
       if ([aDecoder containsValueForKey: @"NSsFlags"])
         {
