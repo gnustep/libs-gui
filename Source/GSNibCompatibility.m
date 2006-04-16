@@ -889,10 +889,10 @@
   if([coder allowsKeyedCoding])
     {
       ASSIGN(_root, [coder decodeObjectForKey: @"NSRoot"]);
+      ASSIGN(_visibleWindows,  (NSMutableArray *)[coder decodeObjectForKey: @"NSVisibleWindows"]);
       ASSIGN(_accessibilityConnectors, (NSMutableArray *)[coder decodeObjectForKey: @"NSAccessibilityConnectors"]);
       ASSIGN(_fontManager, [coder decodeObjectForKey: @"NSFontManager"]);
       ASSIGN(_framework, [coder decodeObjectForKey: @"NSFramework"]);
-      ASSIGN(_visibleWindows,  (NSMutableArray *)[coder decodeObjectForKey: @"NSVisibleWindows"]);
       ASSIGN(_connections,  (NSMutableArray *)[coder decodeObjectForKey: @"NSConnections"]);
       _nextOid = [coder decodeIntForKey: @"NSNextOid"];
 

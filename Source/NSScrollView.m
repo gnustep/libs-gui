@@ -548,6 +548,15 @@ static float scrollerWidth;
   [_contentView scrollToPoint: point];
 }
 
+//
+// This method is here purely for nib compatibility.  This is the action
+// connected to by NSScrollers in IB when building a scrollview.
+//
+- (void) _doScroller: (NSScroller *)scroller
+{
+  [self _doScroll: scroller];
+}
+
 - (void) reflectScrolledClipView: (NSClipView *)aClipView
 {
   NSRect documentFrame = NSZeroRect;
@@ -1237,15 +1246,7 @@ static float scrollerWidth;
       NSScroller *hScroller = [aDecoder decodeObjectForKey: @"NSHScroller"];
       NSScroller *vScroller = [aDecoder decodeObjectForKey: @"NSVScroller"];
       NSClipView *content = [aDecoder decodeObjectForKey: @"NSContentView"]; 
-     
-      if (hScroller != nil)
-        {
-	  [self setHorizontalScroller: hScroller];
-	}
-      if (vScroller != nil)
-        {
-	  [self setVerticalScroller: vScroller];
-	}
+
       if (content != nil)
         {
 	  NSRect frame = [content frame];
@@ -1258,22 +1259,49 @@ static float scrollerWidth;
 	  //
 	  frame.origin.x += w;
 	  [content setFrame: frame];
+	  RETAIN(content);
 	  [self setContentView: content];
+	  RELEASE(content);
+	  _contentView = content; // make sure it's set.
 	}
+     
+      if (hScroller != nil)
+        {
+	  [self setHorizontalScroller: hScroller];
+	  _hasHorizScroller =  YES;
+	}
+      else
+	{
+	  [self setHasHorizontalScroller: YES];
+	  _hasHorizScroller =  NO;
+	}
+
+      if (vScroller != nil)
+        {
+	  [self setVerticalScroller: vScroller];
+	  _hasVertScroller =  YES;
+	}
+      else
+	{
+	  _hasVertScroller =  NO;
+	}
+
       if ([aDecoder containsValueForKey: @"NSsFlags"])
         {
-	  int flags = [aDecoder decodeIntForKey: @"NSsFlags"]; // & ~2;
-	  BOOL vScroller = ((16 & flags) > 0);
-	  BOOL hScroller = ((32 & flags) > 0);
+	  unsigned int flags = [aDecoder decodeIntForKey: @"NSsFlags"];
+	  BOOL hasv = ((16 & flags) > 0);
+	  BOOL hash = ((32 & flags) > 0);
+	  // NSBorderType bt = ((1024 & flags) | (2048 & flags)); 
 
-	  [self setHasVerticalScroller: vScroller];
-	  [self setHasHorizontalScroller: hScroller];
+	  // _hasVertScroller =  hasv;
+	  // _hasHorizScroller = hash;
+	  // [self setBorderType: bt];
 	}
 
       if ([aDecoder containsValueForKey: @"NSHeaderClipView"])
 	{
 	  _hasHeaderView = YES;
-	  _hasCornerView = YES;
+	  _hasCornerView = YES;	  
 	  ASSIGN(_headerClipView, [aDecoder decodeObjectForKey: @"NSHeaderClipView"]);
 	}
 

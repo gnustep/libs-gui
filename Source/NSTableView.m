@@ -74,6 +74,30 @@ static int currentDropRow;
 static int lastQuarterPosition;
 static unsigned currentDragOperation;
 
+/*
+ * Nib compatibility struct.  This structure is used to 
+ * pull the attributes out of the nib that we need to fill
+ * in the flags.
+ */
+typedef struct _tableViewFlags {
+#ifdef WORDS_BIGENDIAN
+  unsigned int columnOrdering:1;
+  unsigned int columnResizing:1;
+  unsigned int drawsGrid:1;
+  unsigned int emptySelection:1;
+  unsigned int multipleSelection:1;
+  unsigned int columnSelection:1;
+  unsigned int __unused:26;
+#else
+  unsigned int __unused:26;
+  unsigned int columnSelection:1;
+  unsigned int multipleSelection:1;
+  unsigned int emptySelection:1;
+  unsigned int drawsGrid:1;
+  unsigned int columnResizing:1;
+  unsigned int columnOrdering:1;
+#endif
+} GSTableViewFlags;
 
 #define ALLOWS_MULTIPLE (1)
 #define ALLOWS_EMPTY (1 << 1)
@@ -5243,21 +5267,16 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
       if ([aDecoder containsValueForKey: @"NSTvFlags"])
         {
-	  unsigned int raw = [aDecoder decodeIntForKey: @"NSTvFlags"];
-	  unsigned int vFlags = (raw >> 26); // filter out settings not pertinent to us.
-	  BOOL columnSelection   = ((1 & vFlags) > 0);
-	  BOOL multipleSelection = ((2 & vFlags) > 0);
-	  BOOL emptySelection    = ((4 & vFlags) > 0);
-	  BOOL drawsGrid         = ((8 & vFlags) > 0);
-	  BOOL columnResizing    = ((16 & vFlags) > 0);
-	  BOOL columnOrdering    = ((32 & vFlags) > 0);
+	  unsigned long flags = [aDecoder decodeIntForKey: @"NSTvFlags"];
+	  GSTableViewFlags tableViewFlags;
+	  memcpy((void *)&tableViewFlags,(void *)&flags,sizeof(struct _tableViewFlags));
 
-	  [self setAllowsColumnSelection: columnSelection];
-	  [self setAllowsMultipleSelection: multipleSelection];
-	  [self setAllowsEmptySelection: emptySelection];
-	  [self setDrawsGrid: drawsGrid];
-	  [self setAllowsColumnResizing: columnResizing];	  
-	  [self setAllowsColumnReordering: columnOrdering];
+	  [self setAllowsColumnSelection: tableViewFlags.columnSelection];
+	  [self setAllowsMultipleSelection: tableViewFlags.multipleSelection];
+	  [self setAllowsEmptySelection: tableViewFlags.emptySelection];
+	  [self setDrawsGrid: tableViewFlags.drawsGrid];
+	  [self setAllowsColumnResizing: tableViewFlags.columnResizing];	  
+	  [self setAllowsColumnReordering: tableViewFlags.columnOrdering];
 	}
       
       _numberOfColumns = [columns count];
