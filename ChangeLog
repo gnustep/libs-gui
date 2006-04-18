@@ -1,3 +1,9 @@
+2006-04-18 00:55 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSScrollView.m: Corrections for keyed decoding of
+	border style and other settings.
+	* Source/NSTableView.m: Some cleanup of keyed coding.
+
 2006-04-15 23:07 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibCompatibility.m: Changed order of decoding.

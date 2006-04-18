@@ -42,6 +42,27 @@
 #include "AppKit/PSOperators.h"
 #include "GNUstepGUI/GSDrawFunctions.h"
 
+//
+// For nib compatibility, this is used to properly
+// initialize the object from a OS X nib file in initWithCoder:.
+//
+typedef struct _scrollViewFlags 
+{
+#ifdef WORDS_BIGENDIAN
+  unsigned int __unused4:26;
+  unsigned int hasVScroller:1; // 32
+  unsigned int hasHScroller:1; // 16
+  unsigned int __unused0:2;
+  NSBorderType border:2;
+#else
+  NSBorderType border:2;
+  unsigned int __unused0:2;
+  unsigned int hasHScroller:1; // 16
+  unsigned int hasVScroller:1; // 32
+  unsigned int __unused4:26;
+#endif  
+} GSScrollViewFlags;
+
 @implementation NSScrollView
 
 /*
@@ -1289,13 +1310,17 @@ static float scrollerWidth;
       if ([aDecoder containsValueForKey: @"NSsFlags"])
         {
 	  unsigned int flags = [aDecoder decodeIntForKey: @"NSsFlags"];
-	  BOOL hasv = ((16 & flags) > 0);
-	  BOOL hash = ((32 & flags) > 0);
-	  // NSBorderType bt = ((1024 & flags) | (2048 & flags)); 
+	  GSScrollViewFlags scrollViewFlags;
+	  memcpy((void *)&scrollViewFlags,(void *)&flags,sizeof(struct _scrollViewFlags));
 
-	  // _hasVertScroller =  hasv;
-	  // _hasHorizScroller = hash;
-	  // [self setBorderType: bt];
+	  _hasVertScroller = scrollViewFlags.hasVScroller;
+	  _hasHorizScroller = scrollViewFlags.hasHScroller;
+	  // _scrollsDynamically = (!scrollViewFlags.notDynamic);
+	  // _rulersVisible = scrollViewFlags.rulersVisible;
+	  // _hasHorizRuler = scrollViewFlags.hasHRuler;
+	  // _hasVertRuler = scrollViewFlags.hasVRuler;
+	  // [self setDrawsBackground: (!scrollViewFlags.doesNotDrawBack)];
+	  _borderType = scrollViewFlags.border;
 	}
 
       if ([aDecoder containsValueForKey: @"NSHeaderClipView"])

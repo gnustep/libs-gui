@@ -79,7 +79,8 @@ static unsigned currentDragOperation;
  * pull the attributes out of the nib that we need to fill
  * in the flags.
  */
-typedef struct _tableViewFlags {
+typedef struct _tableViewFlags
+{
 #ifdef WORDS_BIGENDIAN
   unsigned int columnOrdering:1;
   unsigned int columnResizing:1;
@@ -5262,7 +5263,6 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       while ((col = [e nextObject]) != nil)
         {
 	  [self addTableColumn: col];
-	  [col setTableView: self];
 	}
 
       if ([aDecoder containsValueForKey: @"NSTvFlags"])
