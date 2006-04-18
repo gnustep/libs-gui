@@ -3791,12 +3791,12 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 - (void) setHeaderView: (NSTableHeaderView*)aHeaderView
 {
   
-  if ([_headerView respondsToSelector:@selector(setTableView)])
+  if ([_headerView respondsToSelector:@selector(setTableView:)])
     [_headerView setTableView: nil];
       
   ASSIGN (_headerView, aHeaderView);
       
-  if ([_headerView respondsToSelector:@selector(setTableView)])
+  if ([_headerView respondsToSelector:@selector(setTableView:)])
     [_headerView setTableView: self];
       
   [self tile]; // resizes corner and header views, then displays
@@ -5248,13 +5248,13 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
       if ([aDecoder containsValueForKey: @"NSHeaderView"])
 	{
-	  ASSIGN(_headerView, [aDecoder decodeObjectForKey: @"NSHeaderView"]);
-	  [_headerView setTableView: self];
+	  [self setHeaderView: [aDecoder decodeObjectForKey: @"NSHeaderView"]];
+	  // [_headerView setTableView: self];
 	}
 
       if ([aDecoder containsValueForKey: @"NSCornerView"])
 	{
-	  ASSIGN(_cornerView, [aDecoder decodeObjectForKey: @"NSCornerView"]);
+	  [self setCornerView: [aDecoder decodeObjectForKey: @"NSCornerView"]];
 	}
 
       // get the table columns...
@@ -5263,6 +5263,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       while ((col = [e nextObject]) != nil)
         {
 	  [self addTableColumn: col];
+	  [col setTableView: self];
 	}
 
       if ([aDecoder containsValueForKey: @"NSTvFlags"])

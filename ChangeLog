@@ -1,3 +1,9 @@
+2006-04-18 19:54 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSTableView.m: Corrected code in setHeaderView: to 
+	properly set the table view into the header view if it has
+	a "setTableView:" method.
+
 2006-04-18 00:55 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSScrollView.m: Corrections for keyed decoding of
