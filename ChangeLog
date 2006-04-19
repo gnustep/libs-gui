@@ -1,5 +1,7 @@
 2006-04-19  Adam Fedor  <fedor@gnu.org>
 
+	* configure: Add arg to disable aspell (for use on Mac OS X).
+	
 	* Source/NSBitmapImageRep+JPEG.m: Add workaround so that INT32
 	is not redefined on MingW by jmorecfg.h (Suggestion from Issac
 	Trotts).
