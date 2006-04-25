@@ -245,7 +245,24 @@
 	* Source/GSNibCompatibility.m: Addition of classes for true OSX nib
 	compatibility.
 
-=======
+2006-04-24  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSDocumentController.m (-makeUntitledDocumentOfType:):
+	Set the type of the new document. Patch by Saso Kiselkov
+	<diablos@manga.sk>. 
+
+2006-04-19  Adam Fedor  <fedor@gnu.org>
+
+	* configure: Add arg to disable aspell (for use on Mac OS X).
+	
+	* Source/NSBitmapImageRep+JPEG.m: Add workaround so that INT32
+	is not redefined on MingW by jmorecfg.h (Suggestion from Issac
+	Trotts).
+
+2006-04-09 12:28 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Tools/gopen.m: Streamline gopen code.
+
 2006-04-06  Adam Fedor  <fedor@gnu.org>
 
 	* Tools/gcloseall.m: Include NSProcessInfo.h. Fixes bug #16212.

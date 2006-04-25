@@ -199,7 +199,11 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
 - (id) makeUntitledDocumentOfType: (NSString *)type
 {
   Class documentClass = [self documentClassForType: type];
-  return AUTORELEASE ([[documentClass alloc] init]);
+  id document = AUTORELEASE ([[documentClass alloc] init]);
+
+  [document setFileType: type];
+
+  return document;
 }
 
 - (id) makeDocumentWithContentsOfFile: (NSString *)fileName 

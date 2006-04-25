@@ -305,8 +305,15 @@ fi
 
 #--------------------------------------------------------------------
 # Check for the spelling lib, for the built-in spell checker...
+# Note: you might want to disable aspell on MacOSX, as it linkes in
+# Apple's libobjc.A, screwing up the links to the GNU libobjc.
 #--------------------------------------------------------------------
-AC_CHECK_LIB(aspell, new_aspell_document_checker)
+AC_ARG_ENABLE(aspell, 
+  [  --disable-aspell        Disable aspell for spellchecker],,
+  enable_aspell=yes)
+if test "$enable_aspell" = yes; then
+  AC_CHECK_LIB(aspell, new_aspell_document_checker)
+fi
 if test "${ac_cv_lib_aspell_new_aspell_document_checker}" = yes; then
    AC_CHECK_HEADERS(aspell.h)
    AC_DEFINE(HAVE_ASPELL,1,[Define if you have the aspell header])

@@ -36,6 +36,13 @@
 #include "AppKit/NSGraphics.h"
 
 #include <jerror.h>
+#if defined(__MINGW32__)
+/* Hack so that INT32 is not redefined in jmorecfg.h. MingW defines this
+   as well in basetsd.h */
+#ifndef XMD_H
+#define XMD_H
+#endif
+#endif
 #include <jpeglib.h>
 
 #include <setjmp.h>
