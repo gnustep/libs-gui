@@ -1006,13 +1006,45 @@
 }
 @end
 
-// dummy/placeholder classes.
-@interface NSButtonImageSource : NSObject
+@interface NSButtonImageSource : NSObject <NSCoding>
+{
+  NSString *imageName;
+}
+- (NSString *)imageName;
 @end
 
 @implementation NSButtonImageSource
+- (id) initWithCoder: (NSCoder *)coder
+{
+  if([coder allowsKeyedCoding])
+    {
+      ASSIGN(imageName, [coder decodeObjectForKey: @"NSImageName"]);
+    }
+  RELEASE(self);
+  return [NSImage imageNamed: imageName];
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  if([coder allowsKeyedCoding])
+    {
+      [coder encodeObject: imageName forKey: @"NSImageName"];
+    }
+}
+
+- (NSString *)imageName
+{
+  return imageName;
+}
+
+- (void) dealloc
+{
+  RELEASE(imageName);
+  [super dealloc];
+}
 @end
 
+// ...dummy/placeholder classes...
 // overridden in NSTableView to be GSTableCornerView, 
 // but the class needs to be present to be overridden.
 @interface _NSCornerView : NSView

@@ -1420,10 +1420,10 @@
 
   if ([aDecoder allowsKeyedCoding])
     {
-      //NSControl *control = [aDecoder decodeObjectForKey: @"NSControlView"];
       int delay = 0;
-      int interval = 0;
-      
+      int interval = 0;      
+      // NSControl *control = [aDecoder decodeObjectForKey: @"NSControlView"];
+
       if ([aDecoder containsValueForKey: @"NSKeyEquivalent"])
         {
 	  [self setKeyEquivalent: [aDecoder decodeObjectForKey: @"NSKeyEquivalent"]];
@@ -1435,11 +1435,34 @@
       if ([aDecoder containsValueForKey: @"NSAlternateImage"])
         {
 	  id image;
-	  
+
+	  //
+	  // NOTE: Okay... this is a humongous kludge.   It seems as though
+	  // Cocoa is doing something very odd here.  It doesn't seem to 
+	  // encode system images for buttons normally, if it is using 
+	  // images at all. Until I figure out what, this will stay.  
+	  // Danger, Will Robinson! :)
+	  //
 	  image = [aDecoder decodeObjectForKey: @"NSAlternateImage"];
-	  // This test works around an Apple bug, where a font gets encoded here. 
 	  if ([image isKindOfClass: [NSImage class]])
 	    {
+	      if([NSImage imageNamed: @"NSSwitch"] == image)
+		{
+		  image = [NSImage imageNamed: @"NSHighlightedSwitch"];
+		  if([self image] == nil)
+		    {
+		      [self setImage: [NSImage imageNamed: @"NSSwitch"]];
+		    }		    
+		}
+	      else if([NSImage imageNamed: @"NSRadioButton"] == image)
+		{
+		  image = [NSImage imageNamed: @"NSHighlightedRadioButton"];
+		  if([self image] == nil)
+		    {
+		      [self setImage: [NSImage imageNamed: @"NSRadioButton"]];
+		    }		    
+		}
+	      
 	      [self setAlternateImage: image];
 	    }
 	}

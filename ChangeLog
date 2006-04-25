@@ -1,3 +1,14 @@
+2006-04-24 22:02 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Implementation of 
+	NSButtonImageSource.
+	* Source/NSButtonCell.m: Code to compensate for image
+	encoding anomalies in nibs.
+	* Source/NSScrollView.m: Changes to properly decode scrollview
+	attributes and border settings.
+	* Source/NSTableView.m: Changes to properly set height of
+	cornerview.
+
 2006-04-18 19:54 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSTableView.m: Corrected code in setHeaderView: to 

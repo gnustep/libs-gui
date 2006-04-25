@@ -5248,13 +5248,24 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
       if ([aDecoder containsValueForKey: @"NSHeaderView"])
 	{
+	  NSRect viewFrame;
+	  float rowHeight = [self rowHeight];
+
 	  [self setHeaderView: [aDecoder decodeObjectForKey: @"NSHeaderView"]];
-	  // [_headerView setTableView: self];
+	  viewFrame = [[self headerView] frame];
+	  viewFrame.size.height = rowHeight;
+	  [[self headerView] setFrame: viewFrame];
 	}
 
       if ([aDecoder containsValueForKey: @"NSCornerView"])
 	{
+	  NSRect viewFrame;
+	  float rowHeight = [self rowHeight];
+
 	  [self setCornerView: [aDecoder decodeObjectForKey: @"NSCornerView"]];
+	  viewFrame = [[self cornerView] frame];
+	  viewFrame.size.height = rowHeight;
+	  [[self cornerView] setFrame: viewFrame];
 	}
 
       // get the table columns...

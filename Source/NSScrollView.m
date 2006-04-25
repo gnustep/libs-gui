@@ -1268,6 +1268,22 @@ static float scrollerWidth;
       NSScroller *vScroller = [aDecoder decodeObjectForKey: @"NSVScroller"];
       NSClipView *content = [aDecoder decodeObjectForKey: @"NSContentView"]; 
 
+      if ([aDecoder containsValueForKey: @"NSsFlags"])
+        {
+	  unsigned int flags = [aDecoder decodeIntForKey: @"NSsFlags"];
+	  GSScrollViewFlags scrollViewFlags;
+	  memcpy((void *)&scrollViewFlags,(void *)&flags,sizeof(struct _scrollViewFlags));
+
+	  _hasVertScroller = scrollViewFlags.hasVScroller;
+	  _hasHorizScroller = scrollViewFlags.hasHScroller;
+	  // _scrollsDynamically = (!scrollViewFlags.notDynamic);
+	  // _rulersVisible = scrollViewFlags.rulersVisible;
+	  // _hasHorizRuler = scrollViewFlags.hasHRuler;
+	  // _hasVertRuler = scrollViewFlags.hasVRuler;
+	  // [self setDrawsBackground: (!scrollViewFlags.doesNotDrawBack)];
+	  _borderType = scrollViewFlags.border;
+	}
+
       if (content != nil)
         {
 	  NSRect frame = [content frame];
@@ -1286,41 +1302,14 @@ static float scrollerWidth;
 	  _contentView = content; // make sure it's set.
 	}
      
-      if (hScroller != nil)
+      if (hScroller != nil && _hasHorizScroller)
         {
 	  [self setHorizontalScroller: hScroller];
-	  _hasHorizScroller =  YES;
-	}
-      else
-	{
-	  [self setHasHorizontalScroller: YES];
-	  _hasHorizScroller =  NO;
 	}
 
-      if (vScroller != nil)
+      if (vScroller != nil && _hasVertScroller)
         {
 	  [self setVerticalScroller: vScroller];
-	  _hasVertScroller =  YES;
-	}
-      else
-	{
-	  _hasVertScroller =  NO;
-	}
-
-      if ([aDecoder containsValueForKey: @"NSsFlags"])
-        {
-	  unsigned int flags = [aDecoder decodeIntForKey: @"NSsFlags"];
-	  GSScrollViewFlags scrollViewFlags;
-	  memcpy((void *)&scrollViewFlags,(void *)&flags,sizeof(struct _scrollViewFlags));
-
-	  _hasVertScroller = scrollViewFlags.hasVScroller;
-	  _hasHorizScroller = scrollViewFlags.hasHScroller;
-	  // _scrollsDynamically = (!scrollViewFlags.notDynamic);
-	  // _rulersVisible = scrollViewFlags.rulersVisible;
-	  // _hasHorizRuler = scrollViewFlags.hasHRuler;
-	  // _hasVertRuler = scrollViewFlags.hasVRuler;
-	  // [self setDrawsBackground: (!scrollViewFlags.doesNotDrawBack)];
-	  _borderType = scrollViewFlags.border;
 	}
 
       if ([aDecoder containsValueForKey: @"NSHeaderClipView"])
