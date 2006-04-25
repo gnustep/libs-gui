@@ -1,3 +1,10 @@
+2006-04-27  Sergii Stoian <stoyan255@yahoo.com>
+
+	* Source/NSMenuView.m (-rectOfItemAtIndex:): Delete origin.x fiddling 
+	code because it's not correct. The code wich draws heavy line have to
+	update _leftBorderOffset instead.
+	(-drawRect:): Always draw dark gray upper and left border.
+	
 2006-04-24  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSDocumentController.m (-makeUntitledDocumentOfType:):
