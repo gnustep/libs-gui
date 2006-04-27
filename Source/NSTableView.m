@@ -5248,19 +5248,26 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
       if ([aDecoder containsValueForKey: @"NSHeaderView"])
 	{
-	  NSRect viewFrame;
+	  NSRect viewFrame = [self frame];
 	  float rowHeight = [self rowHeight];
 
-	  [self setHeaderView: [aDecoder decodeObjectForKey: @"NSHeaderView"]];
-	  viewFrame = [[self headerView] frame];
-	  viewFrame.size.height = rowHeight;
-	  [[self headerView] setFrame: viewFrame];
+	  _headerView = [NSTableHeaderView new];
+	  [_headerView setFrameSize: NSMakeSize(viewFrame.size.width, rowHeight)];
+	  [_headerView setTableView: self];
+
+	  // [self setHeaderView: [aDecoder decodeObjectForKey: @"NSHeaderView"]];
+	  // viewFrame = [[self headerView] frame];
+	  // viewFrame.size.height = rowHeight;
+	  // [[self headerView] setFrame: viewFrame];
 	}
 
       if ([aDecoder containsValueForKey: @"NSCornerView"])
 	{
 	  NSRect viewFrame;
 	  float rowHeight = [self rowHeight];
+	  
+	  // _cornerView = [GSTableCornerView new];
+	  // [self tile];
 
 	  [self setCornerView: [aDecoder decodeObjectForKey: @"NSCornerView"]];
 	  viewFrame = [[self cornerView] frame];
