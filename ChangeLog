@@ -1,3 +1,11 @@
+2006-04-28  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSApplication.m: ([-sendEvent:]) try key equivalents for
+	every key down, not just command modifiers ... consistent with
+	MacOS-X and allows carriage return as a button/menu key.
+	* Source/NSWindow.m: ([-performKeyEquivalent:]) only pass on to
+	our views if this is the key window (NSMenu overrides this).
+
 2006-04-27  Sergii Stoian <stoyan255@yahoo.com>
 
 	* Source/NSMenuView.m (-rectOfItemAtIndex:): Delete origin.x fiddling 
