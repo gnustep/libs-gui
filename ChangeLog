@@ -1,3 +1,9 @@
+2006-04-29  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWindow.m: ([-performKeyEquivalent:]) revert last change as
+	it broke things because I accidentally faileds to commit corresponding
+	NSMenu fix, and because I'm not sure it should be doing it anyway.
+
 2006-04-28  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSApplication.m: ([-sendEvent:]) try key equivalents for

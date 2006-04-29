@@ -2538,7 +2538,7 @@ resetCursorRectsForView(NSView *theView)
 
 - (BOOL) performKeyEquivalent: (NSEvent*)theEvent
 {
-  if ([self isKeyWindow] && _contentView)
+  if (_contentView)
     return [_contentView performKeyEquivalent: theEvent];
   return NO;
 }
