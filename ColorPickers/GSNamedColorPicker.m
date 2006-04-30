@@ -200,6 +200,7 @@ createRowsForColumn: (int)column
        selectRow: (int)row
 	inColumn: (int)column
 {
+  return NO;
 }
 
 - (void) browser: (NSBrowser *)sender 
