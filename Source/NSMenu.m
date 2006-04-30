@@ -964,8 +964,7 @@ static NSNotificationCenter *nc;
                                     
       if ([item hasSubmenu])
         {
-	  // FIXME: Should we only check active submenus?
-	  // Recurse through submenus.
+	  // Recurse through submenus whether active or not.
           if ([[item submenu] performKeyEquivalent: theEvent])
             {
               // The event has been handled by an item in the submenu.
@@ -974,15 +973,21 @@ static NSNotificationCenter *nc;
         }
       else
         {
-	  // FIXME: Should also check the modifier mask  
           if ([[item keyEquivalent] isEqualToString: 
 				      [theEvent charactersIgnoringModifiers]])
 	    {
-	      if ([item isEnabled])
+	      /*
+	       * Must be carriage return or have the command key modifier
+	       */
+              if ([[item keyEquivalent] isEqualToString: @"\r"]
+	        || ([theEvent modifierFlags] & NSCommandKeyMask))
 		{
-		  [_view performActionWithHighlightingForItemAtIndex: i];
+		  if ([item isEnabled])
+		    {
+		      [_view performActionWithHighlightingForItemAtIndex: i];
+		    }
+		  return YES;
 		}
-	      return YES;
 	    }
 	}
     }
