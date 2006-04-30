@@ -1289,17 +1289,22 @@ static float scrollerWidth;
 	  NSRect frame = [content frame];
 	  float w = [vScroller frame].size.width;
 
-	  //
-	  // Slide the content view over, since on Mac OS X the scroller is on the
-	  // right, the content view is not properly positioned since our scroller
-	  // is on the left.
-	  //
-	  frame.origin.x += w;
-	  [content setFrame: frame];
+	  if(_hasVertScroller)
+	    {
+	      //
+	      // Slide the content view over, since on Mac OS X the scroller is on the
+	      // right, the content view is not properly positioned since our scroller
+	      // is on the left.
+	      //
+	      frame.origin.x += w;
+	      [content setFrame: frame];
+	    }
+
+	  // retain the view and reset the content view...
 	  RETAIN(content);
 	  [self setContentView: content];
 	  RELEASE(content);
-	  _contentView = content; // make sure it's set.
+	  _contentView = content;
 	}
      
       if (hScroller != nil && _hasHorizScroller)

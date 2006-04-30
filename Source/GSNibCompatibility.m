@@ -1052,3 +1052,14 @@
 
 @implementation _NSCornerView
 @end
+
+@interface NSKeyedUnarchiver (GSNibCompatibilityAdditions)
+- (NSDictionary *)keyMap;
+@end
+
+@implementation NSKeyedUnarchiver (GSNibCompatibilityAdditions)
+- (NSDictionary *)keyMap
+{
+  return _keyMap;
+}
+@end

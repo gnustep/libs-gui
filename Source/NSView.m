@@ -3955,9 +3955,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
  
   if ([aDecoder allowsKeyedCoding])
     {
-      NSView *prevKeyView = [aDecoder decodeObjectForKey: @"NSPreviousKeyView"];
-      NSView *nextKeyView = [aDecoder decodeObjectForKey: @"NSNextKeyView"];
-      subs = [aDecoder decodeObjectForKey: @"NSSubviews"];
+      NSView *prevKeyView = nil;
+      NSView *nextKeyView = nil;
       
       if ([aDecoder containsValueForKey: @"NSFrame"])
 	{
@@ -3965,7 +3964,10 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	  [_frameMatrix setFrameOrigin: _frame.origin];
 	}
       self = [self initWithFrame: _frame];
-      
+
+      subs = [aDecoder decodeObjectForKey: @"NSSubviews"];
+      prevKeyView = [aDecoder decodeObjectForKey: @"NSPreviousKeyView"];
+      nextKeyView = [aDecoder decodeObjectForKey: @"NSNextKeyView"];
       if (nextKeyView != nil)
 	{
 	  [self setNextKeyView: nextKeyView];

@@ -1,3 +1,13 @@
+2006-04-30 17:12 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Addition of keyMap to NSKeyedUnarchiver
+	in a category.
+	* Source/NSScrollView.m: Change to re-align view only if scroller is
+	present.
+	* Source/NSTextView.m: Changed initWithCoder:
+	* Source/NSView.m: Changed the order of initialization so that the 
+	view has it's frame prior to the unarchiving of subviews.
+
 2006-04-26 22:34 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSTableView.m: Correction for header view.

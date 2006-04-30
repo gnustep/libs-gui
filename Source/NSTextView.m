@@ -125,16 +125,24 @@ Interface for a bunch of internal methods that need to be cleaned up.
 // This class is a helper for keyed unarchiving only
 @interface NSTextViewSharedData : NSObject 
 {
-@public
+@private
   NSColor *backgroundColor;
   NSParagraphStyle *paragraphStyle;
-  int flags;
+  unsigned int flags;
   NSColor *insertionColor;
   NSArray *linkAttr;
   NSArray *markAttr;
   NSArray *selectedAttr;
   NSTextView *textView;
 }
+- (NSColor *) backgroundColor;
+- (NSParagraphStyle *) paragraphStyle;
+- (unsigned int) flags;
+- (NSColor *) insertionColor;
+- (NSArray *) linkAttributes;
+- (NSArray *) markAttributes;
+- (NSArray *) selectedAttributes;
+- (NSTextView *) textView;
 @end
 
 @implementation NSTextViewSharedData
@@ -151,9 +159,7 @@ Interface for a bunch of internal methods that need to be cleaned up.
       ASSIGN(markAttr, [aDecoder decodeObjectForKey: @"NSMarkedAttributes"]);
       ASSIGN(selectedAttr, [aDecoder decodeObjectForKey: @"NSSelectedAttributes"]);
     }
-  else
-    {
-    }
+  
   return self;
 }
 
@@ -167,6 +173,45 @@ Interface for a bunch of internal methods that need to be cleaned up.
   RELEASE(selectedAttr);
 }
 
+- (NSColor *)backgroundColor
+{
+  return backgroundColor;
+}
+
+- (NSParagraphStyle *) paragraphStyle
+{
+  return paragraphStyle;
+}
+
+- (unsigned int) flags
+{
+  return flags;
+}
+
+- (NSColor *) insertionColor
+{
+  return insertionColor;
+}
+
+- (NSArray *) linkAttributes
+{
+  return linkAttr;
+}
+
+- (NSArray *) markAttributes
+{
+  return markAttr;
+}
+
+- (NSArray *) selectedAttributes
+{
+  return selectedAttr;
+}
+
+- (NSTextView *) textView
+{
+  return textView;
+}
 @end
 
 
@@ -646,45 +691,93 @@ that makes decoding and encoding compatible with the old code.
 -(id) initWithCoder: (NSCoder *)aDecoder
 {
   self = [super initWithCoder: aDecoder];
-
   if ([aDecoder allowsKeyedCoding])
-    {
+    {  
+      NSTextContainer *aTextContainer = [self buildUpTextNetwork: [self frame].size];
+
       if ([aDecoder containsValueForKey: @"NSDelegate"])
         {
 	  [self setDelegate: [aDecoder decodeObjectForKey: @"NSDelegate"]];
 	}
+
       if ([aDecoder containsValueForKey: @"NSMaxSize"])
         {
 	  [self setMaxSize: [aDecoder decodeSizeForKey: @"NSMaxSize"]];
 	}
+
       if ([aDecoder containsValueForKey: @"NSMinize"])
         {
 	  // it's NSMinize in pre-10.3 formats.
 	  [self setMinSize: [aDecoder decodeSizeForKey: @"NSMinize"]];
 	}
+
       if ([aDecoder containsValueForKey: @"NSMinSize"])
         {
 	  // However, if NSMinSize is present we want to use it.
 	  [self setMinSize: [aDecoder decodeSizeForKey: @"NSMinSize"]];
 	}
-      if ([aDecoder containsValueForKey: @"NSTextContainer"])
+
+      if ([aDecoder containsValueForKey: @"NSSharedData"])
         {
-	  [self setTextContainer: [aDecoder decodeObjectForKey: @"NSTextContainer"]];
+	  NSTextViewSharedData *shared = [aDecoder decodeObjectForKey: @"NSSharedData"];
+
+	  ASSIGN(_insertionPointColor, [shared insertionColor]);
+	  ASSIGN(_backgroundColor, [shared backgroundColor]);
+	}
+
+      if ([aDecoder containsValueForKey: @"NSTextContainer"])
+        {      
+	  // NSTextContainer *aTextContainer = [aDecoder decodeObjectForKey: @"NSTextContainer"];
+	  // [aTextContainer setTextView: (NSTextView *)self];
+	  // RELEASE(self);
 	}
 
       if ([aDecoder containsValueForKey: @"NSTVFlags"])
         {
-	  //int vFlags = [aDecoder decodeIntForKey: @"NSTVFlags"];
+	  int vFlags = [aDecoder decodeIntForKey: @"NSTVFlags"];
 	  // FIXME set the flags
+	  // [self setEditable: YES];
+	  // [self setSelectable: YES];
 	}
-      if ([aDecoder containsValueForKey: @"NSSharedData"])
-        {
-	  //NSTextViewSharedData *shared = [aDecoder decodeObjectForKey: @"NSSharedData"];
-	}
+
       if ([aDecoder containsValueForKey: @"NSTextStorage"])
         {
-	  //NSTextStorage *storage = [aDecoder decodeObjectForKey: @"NSTextStorage"];
+	  // Don't bother decoding the text storage, since there's no way it can be 
+	  // changed in IB, it will always be the same.
+	  // _textStorage = [[NSTextStorage alloc] init];
 	}
+
+      if (!did_register_for_services)
+	[isa registerForServices];
+
+      _textContainerInset = NSMakeSize(2, 0);
+
+      _tf.draws_background = YES;
+      _tf.is_horizontally_resizable = NO;
+      _tf.is_vertically_resizable = NO;
+      
+      /* We set defaults for all shared attributes here. If container is already
+	 part of a text network, we reset the attributes in -setTextContainer:. */
+      _tf.is_field_editor = NO;
+      _tf.is_editable = YES;
+      _tf.is_selectable = YES;
+      _tf.is_rich_text = YES;
+      _tf.imports_graphics = NO;
+      _tf.uses_font_panel = YES;
+      _tf.uses_ruler = YES;
+      _tf.is_ruler_visible = NO;
+      _tf.allows_undo = NO;
+      _tf.smart_insert_delete = NO;
+      
+      [aTextContainer setTextView: self];
+      RELEASE(self);
+      [self invalidateTextContainerOrigin];
+      
+      [self setPostsFrameChangedNotifications: YES];
+      [notificationCenter addObserver: self
+			  selector: @selector(_updateState:)
+			  name: NSViewFrameDidChangeNotification
+			  object: self];
     }
   else
     {
