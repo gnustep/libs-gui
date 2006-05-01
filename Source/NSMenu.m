@@ -954,6 +954,8 @@ static NSNotificationCenter *nc;
   unsigned      i;
   unsigned      count = [_items count];
   NSEventType   type = [theEvent type];
+  unsigned	modifiers = [theEvent modifierFlags];
+  NSString	*keyEquivalent = [theEvent charactersIgnoringModifiers];
          
   if (type != NSKeyDown && type != NSKeyUp) 
     return NO;
@@ -973,21 +975,16 @@ static NSNotificationCenter *nc;
         }
       else
         {
-          if ([[item keyEquivalent] isEqualToString: 
-				      [theEvent charactersIgnoringModifiers]])
+	  unsigned	mask = [item keyEquivalentModifierMask];
+
+          if ([[item keyEquivalent] isEqualToString: keyEquivalent] 
+	    && (modifiers & mask) == mask)
 	    {
-	      /*
-	       * Must be carriage return or have the command key modifier
-	       */
-              if ([[item keyEquivalent] isEqualToString: @"\r"]
-	        || ([theEvent modifierFlags] & NSCommandKeyMask))
+	      if ([item isEnabled])
 		{
-		  if ([item isEnabled])
-		    {
-		      [_view performActionWithHighlightingForItemAtIndex: i];
-		    }
-		  return YES;
+		  [_view performActionWithHighlightingForItemAtIndex: i];
 		}
+	      return YES;
 	    }
 	}
     }

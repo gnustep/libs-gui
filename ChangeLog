@@ -1,6 +1,14 @@
+2006-05-01  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSMatrix..m: ([performKeyEquivalent:]) Check modifier flags
+	of cells when determining whether to perform their key equivalents.
+	* Source/NSMenu.m: ([performKeyEquivalent:]) Use key equivalent
+	modifier mask as suggested by Fred, rather than original hard-coded
+	command modifier.
+
 2006-04-30  Richard Frith-Macdonald <rfm@gnu.org>
 
-	* NSMenu.m: ([performKeyEquivalent:]) Ignore key eqivalents other
+	* Source/NSMenu.m: ([performKeyEquivalent:]) Ignore key eqivalents other
 	than carriage return if the command key is not pressed.
 
 2006-04-30  David Ayers  <d.ayers@inode.at>
