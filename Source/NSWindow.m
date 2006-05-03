@@ -984,6 +984,51 @@ many times.
   return self;
 }
 
+- (id) initWithWindowRef: (void *)windowRef
+{
+  NSRect contentRect;
+  unsigned int aStyle;
+  NSBackingStoreType bufferingType;
+  NSScreen* aScreen;
+  int screen;
+  int winNum;
+  NSGraphicsContext *context = GSCurrentContext();
+  GSDisplayServer *srv = GSCurrentServer();
+
+  // Get the properties for the underlying window
+  winNum = [srv nativeWindow: windowRef : &contentRect : &bufferingType
+		                : &aStyle : &screen];
+  // FIXME: Get the screen for the right screen number.
+  aScreen = nil;
+
+  // Set up a NSWindow with the same properties
+  self = [self initWithContentRect: contentRect
+			 styleMask: aStyle
+			   backing: bufferingType
+			     defer: YES
+			    screen: aScreen];
+
+  // Fake the initialisation of the backend
+  _windowNum = winNum;
+  NSMapInsert (windowmaps, (void*)(intptr_t)_windowNum, self);
+
+   // Set window in new _gstate
+  DPSgsave(context);
+  [srv windowdevice: _windowNum];
+  _gstate = GSDefineGState(context);
+  DPSgrestore(context);
+
+  {
+    NSRect frame = _frame;
+    frame.origin = NSZeroPoint;
+    [_wv setFrame: frame];
+    [_wv setNeedsDisplay: YES];
+    [_wv setWindowNumber: _windowNum];
+  }
+
+  return self;
+}
+
 -(void) colorListChanged:(NSNotification*)notif
 {
   if ([[notif object] isEqual: [NSColorList colorListNamed:@"System"]])
@@ -4222,20 +4267,11 @@ resetCursorRectsForView(NSView *theView)
   return nil;
 }
 
-- (id) initWithWindowRef: (void *)windowRef
-{
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"initWithWindowRef:", "NSWindow");
-  return nil;
-}
-
 - (void *)windowRef
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"windowRef", "NSWindow");
-  return (void *) 0;
+  GSDisplayServer *srv = GSServerForWindow(self);
+
+  return [srv windowDevice: _windowNum];
 }
 
 - (void *) windowHandle

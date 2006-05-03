@@ -1,3 +1,12 @@
+2006-05-03  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h (-nativeWindow:::::):
+	Added new method.
+	* Source/GSDisplayServer.m (-nativeWindow:::::):
+	Implemented this method as subclassResponsibility.
+	* Source/NSWindow.m (-initWithWindowRef:], -windowRef):
+	Implemented these methods to wrap native window into GNUstep windows.
+
 2006-05-01  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSMatrix..m: ([performKeyEquivalent:]) Check modifier flags

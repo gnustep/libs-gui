@@ -547,6 +547,15 @@ GSCurrentServer(void)
   [self subclassResponsibility: _cmd];
 }
 
+/** Create all the backend structures for a reference to a native window and 
+    return the extend, backing type, style and screen for that window. */ 
+- (int) nativeWindow: (void *)winref : (NSRect*)frame : (NSBackingStoreType*)type 
+		    : (unsigned int*)style : (int*)screen
+{
+  [self subclassResponsibility: _cmd];
+  return 0;
+}
+
 /** Sets the style of the window. See [NSWindow-styleMask] for a
     description of the available styles */
 - (void) stylewindow: (unsigned int) style : (int) win
