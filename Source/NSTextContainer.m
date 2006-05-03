@@ -433,10 +433,9 @@ framework intact.
 {
   if ([aDecoder allowsKeyedCoding])
     {
-      //NSLayoutManager *manager = [aDecoder decodeObjectForKey: @"NSLayoutManager"];
       NSTextView *view = [aDecoder decodeObjectForKey: @"NSTextView"];
       NSSize size = NSZeroSize;
-  
+
       if ([aDecoder containsValueForKey: @"NSWidth"])
         {
 	  size.width = [aDecoder decodeFloatForKey: @"NSWidth"];
@@ -444,10 +443,16 @@ framework intact.
       self = [self initWithContainerSize: size];
       if ([aDecoder containsValueForKey: @"NSTCFlags"])
         {
-	  // FIXME
-	  //int flags = [aDecoder decodeIntForKey: @"NSTCFlags"];
+	  int flags = [aDecoder decodeIntForKey: @"NSTCFlags"];
+	  
+	  // decode the flags.
+	  _widthTracksTextView = flags & 1;
+	  _heightTracksTextView = flags & 2;
+	  _observingFrameChanges = flags & 4;	  
 	}
-      // No need to set manager as the decoding of the layout manager does it
+
+      // decoding the manager adds this text container automatically...
+      [aDecoder decodeObjectForKey: @"NSLayoutManager"];
       [self setTextView: view];
       return self;
     }

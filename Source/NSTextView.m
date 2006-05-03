@@ -693,8 +693,10 @@ that makes decoding and encoding compatible with the old code.
   self = [super initWithCoder: aDecoder];
   if ([aDecoder allowsKeyedCoding])
     {  
-      NSTextContainer *aTextContainer = [self buildUpTextNetwork: [self frame].size];
+      NSTextContainer *aTextContainer;
+      NSRect f = NSMakeRect(0,0,100,100);
 
+      [self setFrame: f];
       if ([aDecoder containsValueForKey: @"NSDelegate"])
         {
 	  [self setDelegate: [aDecoder decodeObjectForKey: @"NSDelegate"]];
@@ -720,59 +722,50 @@ that makes decoding and encoding compatible with the old code.
       if ([aDecoder containsValueForKey: @"NSSharedData"])
         {
 	  NSTextViewSharedData *shared = [aDecoder decodeObjectForKey: @"NSSharedData"];
+	  unsigned int flags = [shared flags];
 
 	  ASSIGN(_insertionPointColor, [shared insertionColor]);
 	  ASSIGN(_backgroundColor, [shared backgroundColor]);
+
+	  _tf.is_editable = ((0x01 & flags) > 0);
+	  _tf.is_selectable = ((0x02 & flags) > 0);
+	  _tf.is_rich_text = ((0x04 & flags) > 0);
+	  _tf.imports_graphics = ((0x08 & flags) > 0);
+	  _tf.is_field_editor = ((0x10 & flags) > 0);
+	  _tf.uses_font_panel = ((0x20 & flags) > 0);
+	  _tf.is_ruler_visible = ((0x40 & flags) > 0);
+	  _tf.uses_ruler = ((0x100 & flags) > 0);
+	  _tf.draws_background = ((0x800 & flags) > 0);
+	  _tf.smart_insert_delete = ((0x2000000 & flags) > 0);
+	  _tf.allows_undo = ((0x40000000 & flags) > 0);	  
+
+	  _tf.is_horizontally_resizable = NO;
+	  _tf.is_vertically_resizable = NO;
 	}
 
+      // currently not used....
       if ([aDecoder containsValueForKey: @"NSTextContainer"])
         {      
-	  // NSTextContainer *aTextContainer = [aDecoder decodeObjectForKey: @"NSTextContainer"];
-	  // [aTextContainer setTextView: (NSTextView *)self];
-	  // RELEASE(self);
+	  NSTextContainer *aTextContainer = [aDecoder decodeObjectForKey: @"NSTextContainer"];
+	  [self setTextContainer: aTextContainer];
 	}
 
+      // currently not used....
+      if ([aDecoder containsValueForKey: @"NSTextStorage"])
+        {
+	  // the text storage is pulled when the text container is unarchived.
+	}
+      
       if ([aDecoder containsValueForKey: @"NSTVFlags"])
         {
 	  int vFlags = [aDecoder decodeIntForKey: @"NSTVFlags"];
-	  // FIXME set the flags
-	  // [self setEditable: YES];
-	  // [self setSelectable: YES];
+	  // these flags are not used...
 	}
 
-      if ([aDecoder containsValueForKey: @"NSTextStorage"])
-        {
-	  // Don't bother decoding the text storage, since there's no way it can be 
-	  // changed in IB, it will always be the same.
-	  // _textStorage = [[NSTextStorage alloc] init];
-	}
-
+      // register for services and subscribe to notifications.
       if (!did_register_for_services)
 	[isa registerForServices];
 
-      _textContainerInset = NSMakeSize(2, 0);
-
-      _tf.draws_background = YES;
-      _tf.is_horizontally_resizable = NO;
-      _tf.is_vertically_resizable = NO;
-      
-      /* We set defaults for all shared attributes here. If container is already
-	 part of a text network, we reset the attributes in -setTextContainer:. */
-      _tf.is_field_editor = NO;
-      _tf.is_editable = YES;
-      _tf.is_selectable = YES;
-      _tf.is_rich_text = YES;
-      _tf.imports_graphics = NO;
-      _tf.uses_font_panel = YES;
-      _tf.uses_ruler = YES;
-      _tf.is_ruler_visible = NO;
-      _tf.allows_undo = NO;
-      _tf.smart_insert_delete = NO;
-      
-      [aTextContainer setTextView: self];
-      RELEASE(self);
-      [self invalidateTextContainerOrigin];
-      
       [self setPostsFrameChangedNotifications: YES];
       [notificationCenter addObserver: self
 			  selector: @selector(_updateState:)

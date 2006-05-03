@@ -1,3 +1,9 @@
+2006-05-03 01:00 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSLayoutManager.m
+	* Source/NSTextContainer.m
+	* Source/NSTextView.m: Improved keyed unarchiving for these classes.
+
 2006-04-30 17:12 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibCompatibility.m: Addition of keyMap to NSKeyedUnarchiver
