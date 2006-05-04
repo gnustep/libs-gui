@@ -50,15 +50,15 @@ typedef struct _scrollViewFlags
 {
 #ifdef WORDS_BIGENDIAN
   unsigned int __unused4:26;
-  unsigned int hasVScroller:1; // 32
   unsigned int hasHScroller:1; // 16
+  unsigned int hasVScroller:1; // 32
   unsigned int __unused0:2;
   NSBorderType border:2;
 #else
   NSBorderType border:2;
   unsigned int __unused0:2;
-  unsigned int hasHScroller:1; // 16
   unsigned int hasVScroller:1; // 32
+  unsigned int hasHScroller:1; // 16
   unsigned int __unused4:26;
 #endif  
 } GSScrollViewFlags;

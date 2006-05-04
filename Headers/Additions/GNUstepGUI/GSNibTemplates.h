@@ -33,8 +33,9 @@
 #include <AppKit/NSText.h>
 #include <AppKit/NSTextView.h>
 #include <AppKit/NSControl.h>
+#include "GNUstepGUI/GSNibContainer.h"
 
-// versions of the nib container and the templates.
+// version of the nib container and the templates.
 #define GNUSTEP_NIB_VERSION 1
 #define GSSWAPPER_VERSION   0
 #define GSWINDOWT_VERSION   1
@@ -62,17 +63,13 @@ enum {
 /*
  * This is the class that holds objects within a nib.
  */
-@interface GSNibContainer : NSObject <NSCoding>
+@interface GSNibContainer : NSObject <NSCoding, GSNibContainer>
 {
   NSMutableDictionary	*nameTable;
   NSMutableArray	*connections;
   NSMutableSet          *topLevelObjects;
   BOOL			isAwake;
 }
-- (void) awakeWithContext: (NSDictionary *)context;
-- (NSMutableDictionary*) nameTable;
-- (NSMutableArray*) connections;
-- (NSMutableSet*) topLevelObjects;
 @end
 
 /*

@@ -739,6 +739,7 @@ that makes decoding and encoding compatible with the old code.
 	  _tf.smart_insert_delete = ((0x2000000 & flags) > 0);
 	  _tf.allows_undo = ((0x40000000 & flags) > 0);	  
 
+	  _tf.owns_text_network = YES;
 	  _tf.is_horizontally_resizable = NO;
 	  _tf.is_vertically_resizable = NO;
 	}
@@ -765,6 +766,9 @@ that makes decoding and encoding compatible with the old code.
       // register for services and subscribe to notifications.
       if (!did_register_for_services)
 	[isa registerForServices];
+
+      [self _recacheDelegateResponses];
+      [self invalidateTextContainerOrigin];
 
       [self setPostsFrameChangedNotifications: YES];
       [notificationCenter addObserver: self

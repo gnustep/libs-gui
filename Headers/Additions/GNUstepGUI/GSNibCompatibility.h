@@ -39,6 +39,7 @@
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSResponder.h>
 #include <AppKit/NSEvent.h>
+#include "GNUstepGUI/GSNibContainer.h"
 #include "GNUstepGUI/GSInstantiator.h"
 
 // templates
@@ -178,7 +179,7 @@
 - (NSString *)className;
 @end
 
-@interface NSIBObjectData : NSObject <NSCoding, GSInstantiator>
+@interface NSIBObjectData : NSObject <NSCoding, GSInstantiator, GSNibContainer>
 {
   id              _root;
   NSMapTable     *_objects;
@@ -196,7 +197,6 @@
   NSMutableArray *_accessibilityConnectors;
   NSMapTable     *_accessibilityOids;
 }
-- (void) awakeWithContext: (NSDictionary *)context;
 - (id) instantiateObject: (id)obj;
 - (void) nibInstantiateWithOwner: (id)owner;
 - (void) nibInstantiateWithOwner: (id)owner topLevelObjects: (NSMutableArray *)toplevel;

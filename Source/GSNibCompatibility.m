@@ -805,9 +805,24 @@
 
 - (void) awakeWithContext: (NSDictionary *)context
 {
-  NSMutableArray *topLevelObjects = [context objectForKey: @"NSTopLevelObjects"];
+  NSMutableArray *tlo = [context objectForKey: @"NSTopLevelObjects"];
   id owner = [context objectForKey: @"NSOwner"];
-  [self nibInstantiateWithOwner: owner topLevelObjects: topLevelObjects];
+  [self nibInstantiateWithOwner: owner topLevelObjects: tlo];
+}
+
+- (NSMutableArray *) connections
+{
+  return _connections;
+}
+
+- (NSMutableSet *) topLevelObjects
+{
+  return nil;
+}
+
+- (NSMutableDictionary *) nameTable
+{
+  return nil;
 }
 
 - (id) objectForName: (NSString *)name

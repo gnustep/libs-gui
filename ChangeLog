@@ -1,3 +1,16 @@
+2006-05-03 22:43 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h: Make
+	NSIBObjectData conform to GSNibContainer protocol.
+	* Headers/Additions/GNUstepGUI/GSNibContainer.h: New protocol.
+	* Headers/Additions/GNUstepGUI/GSNibTemplates.h: Use new protocol
+	as protocol for the GSNibContainer object.
+	* Source/GNUmakefile: Add GSNibContainer.h to makefile.
+	* Source/GSNibCompatibility.m: Implement GSNibContainer methods,
+	skeleton implementation for some.
+	* Source/NSScrollView.m: Correct issue with horiz/vert scroller.
+	* Source/NSTextView.m: More keyed archiving changes.
+
 2006-05-03 01:00 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSLayoutManager.m

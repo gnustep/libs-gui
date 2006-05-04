@@ -363,6 +363,7 @@ GSTextConverter.h \
 GSTrackingRect.h \
 GSHelpManagerPanel.h \
 GSNibTemplates.h \
+GSNibContainer.h \
 GSDisplayServer.h \
 GSFusedSilica.h \
 GSTable.h \
