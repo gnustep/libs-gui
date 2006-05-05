@@ -1,3 +1,8 @@
+2006-05-05 00:41 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSTextView.m: Completion of code in initWithCoder: for
+	keyed unarchiving.
+
 2006-05-03 22:43 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h: Make

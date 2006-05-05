@@ -694,9 +694,7 @@ that makes decoding and encoding compatible with the old code.
   if ([aDecoder allowsKeyedCoding])
     {  
       NSTextContainer *aTextContainer;
-      NSRect f = NSMakeRect(0,0,100,100);
 
-      [self setFrame: f];
       if ([aDecoder containsValueForKey: @"NSDelegate"])
         {
 	  [self setDelegate: [aDecoder decodeObjectForKey: @"NSDelegate"]];
@@ -740,23 +738,30 @@ that makes decoding and encoding compatible with the old code.
 	  _tf.allows_undo = ((0x40000000 & flags) > 0);	  
 
 	  _tf.owns_text_network = YES;
-	  _tf.is_horizontally_resizable = NO;
-	  _tf.is_vertically_resizable = NO;
-	}
-
-      // currently not used....
-      if ([aDecoder containsValueForKey: @"NSTextContainer"])
-        {      
-	  NSTextContainer *aTextContainer = [aDecoder decodeObjectForKey: @"NSTextContainer"];
-	  [self setTextContainer: aTextContainer];
+	  _tf.is_horizontally_resizable = YES;
+	  _tf.is_vertically_resizable = YES;
 	}
 
       // currently not used....
       if ([aDecoder containsValueForKey: @"NSTextStorage"])
         {
-	  // the text storage is pulled when the text container is unarchived.
+	  _textStorage = [aDecoder decodeObjectForKey: @"NSTextStorage"];
 	}
       
+      // currently not used....
+      if ([aDecoder containsValueForKey: @"NSTextContainer"])
+        {      
+	  NSSize size = NSMakeSize(0,_maxSize.height);
+	  NSTextContainer *aTextContainer = [self buildUpTextNetwork: NSZeroSize];
+	  [aTextContainer setTextView: (NSTextView *)self];
+	  /* See initWithFrame: for comments on this RELEASE */
+	  RELEASE(self);
+
+	  [aTextContainer setContainerSize: size];
+	  [aTextContainer setWidthTracksTextView: YES];
+	  [aTextContainer setHeightTracksTextView: NO];
+	}
+
       if ([aDecoder containsValueForKey: @"NSTVFlags"])
         {
 	  int vFlags = [aDecoder decodeIntForKey: @"NSTVFlags"];
@@ -764,11 +769,13 @@ that makes decoding and encoding compatible with the old code.
 	}
 
       // register for services and subscribe to notifications.
+      [self _recacheDelegateResponses];
+      [self invalidateTextContainerOrigin];
+
       if (!did_register_for_services)
 	[isa registerForServices];
 
-      [self _recacheDelegateResponses];
-      [self invalidateTextContainerOrigin];
+      [self updateDragTypeRegistration];
 
       [self setPostsFrameChangedNotifications: YES];
       [notificationCenter addObserver: self
@@ -1604,7 +1611,6 @@ incorrectly. */
 
   [self setConstrainedFrameSize: size];
 }
-
 
 /*
 TODO: There is code in TextEdit that implies that the minimum size is
