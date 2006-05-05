@@ -2667,11 +2667,14 @@ resetCursorRectsForView(NSView *theView)
   if (_firstResponder == aResponder)
     return YES;
 
-  if (![aResponder isKindOfClass: responderClass])
-    return NO;
+  if (aResponder != nil)
+    {
+      if (![aResponder isKindOfClass: responderClass])
+	return NO;
 
-  if (![aResponder acceptsFirstResponder])
-    return NO;
+      if (![aResponder acceptsFirstResponder])
+	return NO;
+    }
 
   /* So that the implementation of -resignFirstResponder in
      _firstResponder might ask for what will be the new first
