@@ -1,436 +1,176 @@
-﻿/*GWorkspace German strings, updated by Ingolf Jandt 2006 *\
+﻿/* Translator: Ingolf Jandt <i.jandt@web.de>
+ * Date: April 2006
+ */
 
-/* ----------------------- menu strings --------------------------- *\
-/* main.m */
+/***
+German.lproj/Localizable.strings
+updated by make_strings 2006-04-03 14:01:41 +0200
+add comments above this one
+***/
 
+
+/*** Keys found in multiple places ***/
+
+/* File: ../Source/GSPrintOperation.m:158 */
+/* File: ../Source/NSSavePanel.m:1147 */
+/* File: ../Source/NSSavePanel.m:1158 */
+"Dismiss" = "Verwerfen";
+
+/* File: ../Source/NSApplication.m:2615 */
+/* Comment: Title of the Info Panel */
+/* File: ../Source/NSMenu.m:236 */
+/* Comment: Info */
+/* File: ../Source/NSMenu.m:302 */
+/* Comment: Info */
 "Info" = "Info";
-	"Info Panel..." = "Info Panel...";
-	"Preferences..." = "Einstellungen...";
-	"Help..." = "Hilfe...";
 
-"File" = "Datei";
-	"Open" = "Öffnen";
-	"Open as Folder" = "Als Ordner öffnen";
-	"New Folder" = "Neuer Ordner";
-	"New File" = "Neue Datei";
-	"Duplicate" = "Duplizieren";	
-	"Destroy" = "Vernichten";
-	"Move to Recycler" = "In den Papierkorb";
-	"Empty Recycler" = "Papierkorb leeren";
-	"Put Away" = "Wiederherstellen";
-	"Print..." = "Drucken...";
-	"Open With..." = "Öffnen mit...";
-	"Run..." = "Ausführen...";
-
-"Edit" = "Bearbeiten";
-	"Cut" = "Ausschneiden";
-	"Copy" = "Kopieren";
-	"Paste" = "Einfügen";
-/*	"Delete" = "Löschen" 		*/
-	"Select All" = "Alles auswählen";
-		
-"View" = "Ansicht";
-	"Browser" = "Browser";
-	"Icon" = "Symbole";
-	"List" = "Liste";
-	"Viewer behaviour" = "Betrachterverhalten";
-		"Browsing" = "Browsing";
-		"Spacial" = "Spacial";
-	"Show" = "Zeige";
-		"Name only" = "Nur Namen";
-		"Modification date" = "Änderungsdatum";
-		"Role" = "Funktion";
-	"Icon Size" = "Symbolgröße";
-	"Icon Position" = "Symbolposition";
-		"Up" = "Oben";
-		"Left" = "Links";
-	"Label Size" = "Schriftgröße";
-	"Viewer" = "Betrachter";
-		
-"Tools" = "Werkzeuge";
-	"Inspectors" = "Inspektoren";
-		"Show Inspectors" = "Inspektoren anzeigen";
-		"Attributes" = "Attribute";
-		"Contents" = "Inhalt";
-		"Tools" = "Werkzeuge";	
-		"Annotations" = "Notizen";
-	"History" = "Verlauf";
-		"Show History" = "Verlauf anzeigen";
-		"Go backward" = "Zurück";
-		"Go forward" = "Vorwärts";
-	"Finder" = "Dateisuche";
-	"Applications..." = "Anwendungen...";
-	"File Operations..." = "Dateioperationen...";
-	"Fiend" = "Fiend";
-		"Show Fiend" = "Fiend anzeigen";
-		"Hide Fiend" = "Fiend ausblenden";
-		"Add Layer..." = "Schicht hinzufügen...";
-		"Remove Current Layer" = "Aktuelle Schicht entfernen";
-		"Rename Current Layer" = "Aktuelle Schicht umbenennen";
-		"Layers" = "Schichten";
-	"Tabbed Shelf" = "Tabbed Shelf";
-		"Show Tabbed Shelf" = "Tabbed Shelf anzeigen";
-		"Hide Tabbed Shelf" = "Tabbed Shelf ausblenden";
-		"Remove Current Tab" = "Aktuellen Tab entfernen";
-		"Rename Current Tab" = "Aktuellen Tab umbenennen";
-		"Add Tab..." = "Tab hinzufügen...";
-	"Terminal" = "Terminal";
-	"Show Desktop" = "Arbeitsfläche anzeigen";
-	"Hide Desktop" = "Arbeitsfläche ausblenden";
-	"Show Recycler" = "Papierkorb anzeigen";
-	"Hide Recycler" = "Papierkorb ausblenden";
-	"Check for disks" = "Nach Medien prüfen";
-	
-"Windows" = "Fenster";
-	"Arrange in Front" = "Im Vordergrund anordnen";
-	"Miniaturize Window" = "Fenster miniaturisieren";
-	"Close Window" = "Fenster schließen";
-	
-"Services" = "Dienste";
-
-"Hide" = "Ausblenden";
-
-"Hide Others" = "Andere ausblenden";
-
-"Show All" = "Alle anzeigen";
-
+/* File: ../Source/NSApplication.m:3092 */
+/* File: ../Source/NSDocumentController.m:558 */
 "Quit" = "Beenden";
 
-"Logout" = "Ausloggen";
-	
-	
-	
-/* ----------------------- File Operations strings --------------------------- *\
+/* File: ../Source/NSDocument.m:283 */
+/* File: ../Source/NSDocument.m:510 */
+/* File: ../Source/NSDocument.m:694 */
+/* File: ../Source/NSSavePanel.m:1135 */
+/* File: ../Source/NSSavePanel.m:1145 */
+/* File: ../Source/NSSavePanel.m:1156 */
+/* File: ../Source/NSSavePanel.m:1167 */
+"Save" = "Speichern";
 
-/* GWorkspace.m */
-
-"Author" = "Autor";
-"GNUstep Workspace Manager" = "GNUstep Workspace Manager";
-"See http://www.gnustep.it/enrico/gworkspace" = "Siehe http://www.gnustep.it/enrico/gworkspace";
-"Released under the GNU General Public License 2.0" = "Veröffentlicht unter der GNU General Public License 2.0";
-"Error" = "Fehler";
-"You have not write permission\nfor" = "Sie haben keine Schreibrechte\nfür";
-"Continue" = "Fortfahren";
-
-"File Viewer" = "Dateibetrachter";
-
-"Quit!" = "Beenden";
-"Do you really want to quit?" = "Wollen Sie GWorkspace wirklich beenden?";
-"Yes" = "Ja";
-"No" = "Nein";
-
-"Log out" = "Ausloggen";
-"Are you sure you want to quit\nall applications and log out now?" = "Sind sie sicher, dass Sie alle\nAnwendungen beenden und ausloggen wollen?";
-"If you do nothing, the system will log out\nautomatically in" = "Falls Sie nichts tun, wird das System\nautomatisch nach ";
-"seconds." = "Sekunden ausloggen.";
-
-/* FileOperation.m */
-
-"OK" = "OK";
+/* File: ../Source/NSDocument.m:283 */
+/* File: ../Source/NSDocument.m:694 */
+/* File: ../Source/NSDocument.m:825 */
+/* File: ../Source/NSDocumentController.m:487 */
+/* File: ../Source/NSSavePanel.m:1169 */
 "Cancel" = "Abbrechen";
-"Move" = "Verschieben";
-"Move from: " = "Verschieben von: ";
-"\nto: " = "\nnach: ";
-"Copy" = "Kopieren";
-"Copy from: " = "Kopieren von: ";
-"Link" = "Link";
-"Link " = "Link ";
-"Delete" = "Löschen";
-"Delete the selected objects?" = "Die ausgewählten Objekte löschen?";
-"Duplicate" = "Duplizieren";
-"Duplicate the selected objects?" = "Die ausgewählten Objekte duplizieren?";
-"From:" = "Von:";
-"To:" = "Nach:";
-"In:" = "In:";
-"Stop" = "Stopp";
-"Pause" = "Pause";
-"Moving" = "Verschiebe";
-"Copying" = "Kopiere";
-"Linking" = "Linke";
-"Duplicating" = "Dupliziere";
-"Destroying" = "Vernichte";
-"File Operation Completed" = "Dateioperation vollständig";
-"Backgrounder connection died!" = "Backgrounder-Verbindung gestorben!";
-"Some items have the same name;\ndo you want to sobstitute them?" = "Einige Gegenstände haben den selben Namen;\nwollen Sie diese ersetzen?";
-"Error" = "Fehler";
-"File Operation Error!" = "Fehler bei Dateioperation!";
+
+/* File: ../Source/NSDocument.m:506 */
+/* File: ../Source/NSSavePanel.m:855 */
+"Save As" = "Speichern als";
 
 
-/* ColumnIcon.m */
-
-"You have not write permission\nfor " = "Sie haben keine Schreibrechte\nfür ";
-"The name " = "Der Name ";
-" is already in use!" = " wird bereits verwendet!";
-
-"Cannot rename " = "Kann folgende Datei nicht umbenennen: ";
-
-/* much better:
-
-"Kann ";
-" nicht umbennen ";
-which ends in "kann <the file> nicht umbenennen"
-*/
-
-"Invalid char in name" = "Ungültiges Zeichen im Namen";
+/*** Strings from ../Source/GSPrintOperation.m ***/
+/* File: ../Source/GSPrintOperation.m:156 */
+"Preview" = "Vorschau";
+/* File: ../Source/GSPrintOperation.m:157 */
+"Problem running the preview application '%@' perhaps you need to set your NSPreviewApp user default"
+= "Vorschau-Anwendung »%@« kann nicht ausgeführt werden. Vielleicht muss der Default-Eintrag NSPreviewApp gesetzt werden";
 
 
-/* ----------------------- Inspectors strings --------------------------- *\
-
-/* InspectorsWin.m */
-
-"Attributes" = "Attribute";
-"Contents" = "Inhalt";
-"Tools" = "Werkzeuge";
-"Access Control" = "Zugriffskontrolle";
+/*** Strings from ../Source/NSAlert.m ***/
+/* File: ../Source/NSAlert.m:1264 */
+"OK" = "Ok";
 
 
-/* AttributesPanel.m */
+/*** Strings from ../Source/NSApplication.m ***/
+/* File: ../Source/NSApplication.m:120 */
+"Abort" = "Abbrechen";
+/* File: ../Source/NSApplication.m:296 */
+"Backend at path %@ doesn't contain the GSBackend class"
+= "Backend bei %@ enthält keine GSBackend-Klasse";
+/* File: ../Source/NSApplication.m:284 */
+"Can't create NSBundle object for backend at path %@"
+= "Kann kein NSBundle-Objekt für Backend bei %@ erstellen";
+/* File: ../Source/NSApplication.m:304 */
+"Can't find backend context" = "Backend-Kontext nicht gefunden";
+/* File: ../Source/NSApplication.m:289 */
+"Can't load object file from backend at path %@"
+= "Kann Objekt-Datei des Backends bei %@ nicht laden";
+/* File: ../Source/NSApplication.m:951 */
+"Cannot load the main model file '%@'"
+= "Kann Haupt-Model-Datei »%@« nicht laden";
+/* File: ../Source/NSApplication.m:117 */
+"Critical Error in %@" = "Kritischer Fehler in %@";
+/* File: ../Source/NSApplication.m:123 */
+"Debug" = "Debug";
+/* File: ../Source/NSApplication.m:1083 */
+"Problem during launch app notification: %@"
+= "Problem beim Starten von App-Notifikation: %@";
+/* File: ../Source/NSApplication.m:277 */
+"Unable to find backend %@" = "Backend %@ nicht gefunden";
+/* File: ../Source/NSApplication.m:897 */
+"[NSApplication -init] called more than once"
+= "[NSApplication -init] mehrfach aufgerufen";
+/* File: ../Source/NSApplication.m:3070 */
+"reported exception - %@" = "meldet Ausnahme - %@ ";
 
-"Attributes" = "Attribute";
-"Attributes Inspector" = "Attribut-Inspektor";
-"Path:" = "Pfad:";
-"Link To:" = "Link zu:";
-"Size:" = "Größe:";
-"Calculate" = "Berechnen";
-"Owner:" = "Besitzer:";
-"Group:" = "Gruppe:";
-"Changed" = "Geändert";
-"also apply to files inside selection" = "auch auf Dateien innerhalb der Auswahl anwenden";
+
+/*** Strings from ../Source/NSBitmapImageRep.m ***/
+/* File: ../Source/NSBitmapImageRep.m:832 */
+"CCITTFAX3 Compression" = "CCITTFAX3-Kompression";
+/* File: ../Source/NSBitmapImageRep.m:833 */
+"CCITTFAX4 Compression" = "CCITTFAX4-Kompression";
+/* File: ../Source/NSBitmapImageRep.m:835 */
+"JPEG Compression" = "JPEG-Kompression";
+/* File: ../Source/NSBitmapImageRep.m:834 */
+"LZW Compression" = "LZW-Kompression";
+/* File: ../Source/NSBitmapImageRep.m:836 */
+"NEXT Compression" = "NEXT-Kompression";
+/* File: ../Source/NSBitmapImageRep.m:831 */
+"No Compression" = "Keine Kompression";
+/* File: ../Source/NSBitmapImageRep.m:838 */
+"Old JPEG Compression" = "alte JPEG-Kompression";
+/* File: ../Source/NSBitmapImageRep.m:837 */
+"PackBits Compression" = "PackBits-Kompression";
+
+
+/*** Strings from ../Source/NSDocument.m ***/
+/* File: ../Source/NSDocument.m:824 */
+"%@ has been edited.  Are you sure you want to undo changes?"
+= "%@ wurde geändert. Wollen Sie die Änderungen wirklich verwerfen?";
+/* File: ../Source/NSDocument.m:282 */
+"%@ has changed.  Save?" = "%@ geändert. Speichern?";
+/* File: ../Source/NSDocument.m:693 */
+"Can't create backup file.  Save anyways?"
+= "Kann Backup-Datei nicht anlegen. Dennoch Speichern?";
+/* File: ../Source/NSDocument.m:281 */
+"Close" = "Schließen";
+/* File: ../Source/NSDocument.m:129 */
+"Could not load URL %@." = "Konnte URL %@ nicht laden";
+/* File: ../Source/NSDocument.m:103 */
+"Could not load file %@." = "Konnte Datei %@ nicht laden.";
+/* File: ../Source/NSDocument.m:283 */
+"Don't Save" = "Verwerfen";
+/* File: ../Source/NSDocument.m:692 */
+"File Error" = "Dateifehler";
+/* File: ../Source/NSDocument.m:128 */
+/* File: ../Source/NSDocument.m:102 */
+"Load failed" = "Laden fehlgeschlagen";
+/* File: ../Source/NSDocument.m:825 */
+/* File: ../Source/NSDocument.m:823 */
 "Revert" = "Zurücksetzen";
-"OK" = "OK";
+/* File: ../Source/NSDocument.m:507 */
+"Save To" = "Speichern in";
+/* File: ../Source/NSDocument.m:361 */
+"Untitled-%d" = "unbenannt-%d";
 
 
-/* ContentsPanel.m */
-
-"Contents" = "Inhalt";
-"Contents Inspector" = "Inhalts-Inspektor";
-"No Contents Inspector" = "Kein Inhalts-Inspektor";
-"No Contents Inspector\nFor Multiple Selection" = "Kein Inhalts-Inspektor\nfür mehrfache Auswahl";
-
-
-/* FolderViewer.m */
-
-"Sort method applies to the\ncontents of the selected folder,\nNOT to its parent folder"
-  = "Sortier-Methode trifft auf die\nInhalte des ausgewählten Ordners zu,\nNICHT auf dessen übergerordneten Ordner";
-"Sort by" = "Sortieren nach:";
-"Name" = "Name";
-"Type" = "Typ";
-"Date" = "Datum";
-"Size" = "Größe";
-"Owner" = "Besitzer";
-"Folder Inspector" = "Verzeichnis-Inspektor";	
+/*** Strings from ../Source/NSDocumentController.m ***/
+/* File: ../Source/NSDocumentController.m:565 */
+"Power Off" = "Aus";
+/* File: ../Source/NSDocumentController.m:502 */
+"Quit Anyways" = "Dennoch beenden";
+/* File: ../Source/NSDocumentController.m:500 */
+"Review Unsaved" = "Ansehen";
+/* File: ../Source/NSDocumentController.m:499 */
+"You have unsaved documents" = "Sie haben ungespeicherte Dokumente";
 
 
-/* ImageViewer.m */
-
-"Image Inspector" = "Bild-Inspektor";
-
-
-/* AppViewer.m */
-
-"Open these kinds of documents:" = "Öffne diese Dokumenttypen:";
-"Invalid Contents" = "Ungültiger Inhalt";
-"App Inspector" = "Applikations-Inspektor";
-
-
-/* PermissionsPanel.m */
-
-"UNIX Permissions" = "UNIX Dateirechte";
-"Access Control" = "Zugriffskontrolle";
-/* "Also apply to files inside selection" = "Auch auf Dateien inner-\nhalb der Auswahl anwenden"; */
-"Also apply to files inside selection" = "Innerhalb der Auswahl anwenden";
-
-
-/* ToolsPanel.m */
-
-"Tools" = "Werkzeuge";
-"Tools Inspector" = "Werkzeug-Inspektor";
-"No Tools Inspector" = "Kein Werkzeug-Inspektor";
-"Set Default" = "Standard setzen";
-
-
-/* AppsView.m */
-	
-"Double-click to open selected document(s)" = "Doppelt klicken, um Dokument(e) zu öffnen";	
-"Default:" = "Standard:";
-"Path:" = "Pfad:";		
-"Click 'Set Default' to set default application\nfor all documents with this extension" 
-  = "Klick 'Standard setzen', um die Anwendung. \nfür alle Dokumente dieser Endung zu setzen";
-
-
-/* PermsBox.m */
-
-"Permissions" = "Zugriffsrechte";
-"Read" = "Lesen";
-"Write" = "Schreiben";
-"Execute" = "Ausführen";
-"Owner" = "Besitzer";
-"Group" = "Gruppe";
-"Others" = "Andere";
-
-
-/* ----------------------- Processes strings --------------------------- *\
-
-/* Processes.m */
-
-"Processes" = "Prozesse";
-"No Background Process" = "Kein Hintergrundprozess";
-"Kill" = "Beenden";
-"Path: " = "Pfad: ";
-"Status: " = "Status: ";
-
-
-/* ProcsView.m */
-
-"Applications" = "Programme";
-"Background" = "Hintergrund";
-
-
-/* ----------------------- Finder strings --------------------------- *\
-
-/* Finder.m */
-
-"Finder" = "Dateisuche";
-"Find items with names that match" = "Nach passenden Namen suchen";
-"Find items with contents that match" = "Nach passenden Inhalten suchen";
-"No selection!" = "Keine Auswahl!";
-"No arguments!" = "Keine Argumente!";
-
-
-/* ----------------------- Fiend strings --------------------------- *\
-
-/* Fiend.m */
-
-"New Layer" = "Neue Schicht";
-"A layer with this name is already present!" = "Eine Schicht mit diesem Namen existiert bereits!";
-"You can't remove the last layer!" = "Sie können die letzte Schicht nicht entfernen!";
-"Remove layer" = "Schicht entfernen";
-"Are you sure that you want to remove this layer?" = "Sie sind sicher, dass Sie diese Schicht entfernen wollen?";
-"Rename Layer" = "Schicht umbenennen";
-"You can't dock multiple paths!" = "Sie können keine mehrfachen Pfade andocken!";
-"This object is already present in this layer!" = "Dieses Objekt existiert bereits in dieser Schicht!";
-	
-			
-/* ----------------------- Preferences strings --------------------------- *\
-
-/* PreferencesWin.m */
-
-"GWorkspace Preferences" = "GWorkspace Grundeinstellungen";
-
-
-/* BackWinPreferences.m */       
-
-"Desktop Shelf" = "Desktop Shelf";	
-"Desktop Color" = "Desktop-Farbe";
-"red" = "rot";
-"green" = "grün";
-"blue" = "blau";
-"Set Color" = "Farbe setzen";
-"Push the \"Set Image\" button\nto set your DeskTop image.\nThe image must have the same\nsize of your screen." = 
-  "Klicken Sie den \"Bild setzen\"-Button,\num Ihr Desktop-Bild zu setzen.\nDas Bild muss die gleiche\nGröße wie Ihr Bildschirm haben.";
-"Set Image" = "Bild setzen";
-"Unset Image" = "Bild aufheben";
-"Activate desktop" = "Desktop aktivieren";
-	
-/* DefaultXTerm.m */             
-
-"Use Terminal service" = "Terminal-Service verwenden";
-"Set" = "Setzen";	
-"xterm" = "Programm";
-"arguments" = "Argumente";
-
-	
-/* BrowserViewsPreferences.m */  
-
-"Column Width" = "Spaltenbreite";
-"Use Default Settings" = "Standards benutzen";	
-"Browser" = "Browser";
-	
-	
-/* FileWatchingPreferences.m */  
-	
-"File System Watching" = "Datei-Überwachung";
-"timeout" = "Auszeit";
-"frequency" = "Frequenz";
-"Values will apply to the \nnew watchers from now, \nto the existing ones, after the first timeout" = 
-   "Werte wirken von jetzt an auf neue\n Überwachungen, auf die existier-\nenden nach der ersten Auszeit";
-	
-	
-/* ShelfPreferences.m */
-	
-"Shelf" = "Shelf";
-"Default" = "Standard";
-	
-	
-/* DefaultEditor.m */            
-
-"Default Editor" = "Standard-Editor";
-"No Default Editor" = "Kein Standard-Editor";
-"Choose..." = "Auswählen...";
-"Choose" = "Auswählen";
-
-/* IconViewsPreferences.m */
-
-"Title Width" = "Titelbreite";
-"Icon View" = "Symbolansicht";
-
-/* Sorting order */
-"Sorting Order" = "Sortierreihenfolge";
-"Sort by" = "Sortieren nach";
-"The sort method will apply to all the folders\nthat have no sorting order specified" = "Diese Sortiermethode gilt für alle Ordner, für die\nkeine Reihenfolge festgelegt ist";
-
-/* File Operations */
-"File Operations" = "Dateioperationen";
-"Status Window" = "Statusfenster";
-"Confirmation" = "Bestätigung";
-"Show status window" = "Statusfenster zeigen";
-"Check this option to show a status window\nduring the file operations" = "Setze diese Option, um ein Statusfenster\nwährend Dateioperationen zu zeigen";
-
-/* Icons */
-
-"Icons" = "Symbole";
-"Thumbnails" = "Thumbnails";
-"use thumbnails" = "Thumbnails verwenden";
-"Animate icons" = "Symbole animieren";
-"when changing a path" = "beim Pfadwechsel";
-"when opening a file" = "beim Dateiöffnen";
-"sliding back after file operation" = "Nach Dateioperation zurückrutschen";
-"Activate changes" = "Änderungen aktivieren";
-
-/* Hidden Files */
-"Files" = "Dateien";
-"Folders" = "Ordner";
-"Hidden Files" = "Versteckte Dateien";
-"Hidden files" = "Versteckte Dateien";
-"Shown files" = "Sichtbare Dateien";
-"Load" = "Laden";
-"Select and move the files to hide or to show" = "Dateien zum Zeigen oder Verstecken auswählen und verschieben";
-"Hidden directories" = "Versteckte Ordner";
-"add" = "hinzufügen";
-"remove" = "entfernen";
-
-
-/* Desktop */
-"Back Color" = "Hintergrundfarbe";
-	"Current color" = "Aktuelle Farbe";
-"Back Image" = "Hintergrundbild";
-	"center" = "zentriert";
-	"fit" = "skaliert";
-	"tile" = "gekachelt";
-	"Use image" = "Bild verwenden";
-"General" = "Allgemein";
-	"Omnipresent" = "Omnipräsent";
-	"Show Dock" = "Dock anzeigen";
-	"Dock position" = "Dockposition";
-	"Left" = "Links";
-	"Right" = "Rechts";
-	"Autohide Tabbed Shelf" = "Tabbed Schelf einfahren";
-
-/* Browser */
-"Aspect" = "Aspekt";
-"Icons in Browser Cells" = "Symbole in Browserzellen zeigen";
-"Uses Shelf" = "Shelf verwenden";
-"Columns Width" = "Spaltenbreite";
-
-/* History */
-"Number of saved paths" = "Anzahl der gespeicherten Pfade";
+/*** Strings from ../Source/NSSavePanel.m ***/
+/* File: ../Source/NSSavePanel.m:1137 */
+"No" = "Nein";
+/* File: ../Source/NSSavePanel.m:1169 */
+"Replace" = "Überschreiben";
+/* File: ../Source/NSSavePanel.m:1146 */
+"The directory '%@' could not be created."
+= "Das Verzeichnis »%@« konnte nicht erstellt werden.";
+/* File: ../Source/NSSavePanel.m:1136 */
+"The directory '%@' does not exist, do you want to create it?"
+= "Das Verzeichnis »%@« existiert nicht. Wollen Sie es anlegen?";
+/* File: ../Source/NSSavePanel.m:1168 */
+"The file '%@' in '%@' exists. Replace it?"
+= "Die datei »%@« in »%@« existiert bereits. Überschreiben?";
+/* File: ../Source/NSSavePanel.m:1157 */
+"The path '%@' is not a directory." = "»%@« ist kein Verzeichnis.";
+/* File: ../Source/NSSavePanel.m:1137 */
+"Yes" = "Ja";

@@ -1,5 +1,12 @@
 2006-05-06  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Resources/Esperanto.lproj/Localizable.string,
+	* Resources/German.lproj/Localizable.string: New string
+	translations. Patch by Ingolf Jandt <i.jandt@web.de>.	
+	* Resources/GNUmakefile: Added new languages.
+
+2006-05-06  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSTableView.m (-_editNextEditableCellAfterRow:column:,
 	_editPreviousEditableCellBeforeRow:column:) Select the new row
 	before editing a cell. 
