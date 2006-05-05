@@ -5363,6 +5363,8 @@ static inline float computePeriod(NSPoint mouseLocationWin,
   // Otherwise, make the big cycle.
   for (i = row + 1; i < _numberOfRows; i++)
     {
+      // Need to select row to be able to edit it.
+      [self selectRow: i byExtendingSelection: NO];
       for (j = 0; j < _numberOfColumns; j++)
 	{
 	  if (_isCellEditable (_delegate, _tableColumns, self, i, j) == YES)
@@ -5393,6 +5395,8 @@ static inline float computePeriod(NSPoint mouseLocationWin,
   // Otherwise, make the big cycle.
   for (i = row - 1; i > -1; i--)
     {
+      // Need to select row to be able to edit it.
+      [self selectRow: i byExtendingSelection: NO];
       for (j = _numberOfColumns - 1; j > -1; j--)
 	{
 	  if (_isCellEditable (_delegate, _tableColumns, self, i, j) == YES)

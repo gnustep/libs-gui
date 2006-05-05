@@ -1,3 +1,12 @@
+2006-05-06  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableView.m (-_editNextEditableCellAfterRow:column:,
+	_editPreviousEditableCellBeforeRow:column:) Select the new row
+	before editing a cell. 
+	* Source/NSComboBoxCell.m (GSComboWindow -validateSelection):
+	Removed the didChangeText call on the textObject.      
+	Patches by Andreas Höschler <ahoesch@smartsoft.de>.
+	
 2006-05-05  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWindow.m: ([-makeFirstResponder:]) fixed for nil argument.
