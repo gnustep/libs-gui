@@ -2261,6 +2261,7 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 
   /* We do *not* retain the dataSource, it's like a delegate */
   _dataSource = anObject;
+
   [self tile];
   [self reloadData];
 }
@@ -5215,10 +5216,18 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       NSTableColumn *col;
 
       [(NSKeyedUnarchiver *)aDecoder setClass: [GSTableCornerView class] forClassName: @"_NSCornerView"];
-      [self setDataSource: [aDecoder decodeObjectForKey: @"NSDataSource"]];
-      [self setDelegate: [aDecoder decodeObjectForKey: @"NSDelegate"]];
-
-      [self setTarget: [aDecoder decodeObjectForKey: @"NSTarget"]];
+      if ([aDecoder containsValueForKey: @"NSDataSource"])
+	{
+	  [self setDataSource: [aDecoder decodeObjectForKey: @"NSDataSource"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSDelegate"])
+	{      
+	  [self setDelegate: [aDecoder decodeObjectForKey: @"NSDelegate"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSTarget"])
+	{
+	  [self setTarget: [aDecoder decodeObjectForKey: @"NSTarget"]];
+	}
       if ([aDecoder containsValueForKey: @"NSAction"])
         {
 	  NSString *action = [aDecoder decodeObjectForKey: @"NSAction"];
@@ -5245,30 +5254,29 @@ static inline float computePeriod(NSPoint mouseLocationWin,
         {
 	  [self setRowHeight: [aDecoder decodeFloatForKey: @"NSRowHeight"]];
 	}
-
+      if ([aDecoder containsValueForKey: @"NSFrameSize"])
+	{
+	  NSRect frame = NSZeroRect;
+	  NSSize size = [aDecoder decodeSizeForKey: @"NSFrameSize"];
+	  frame.size = size;
+	  frame.size.height = [self rowHeight];
+	  [self setFrame: frame];
+	}
       if ([aDecoder containsValueForKey: @"NSHeaderView"])
 	{
+
 	  NSRect viewFrame = [self frame];
 	  float rowHeight = [self rowHeight];
 
 	  _headerView = [NSTableHeaderView new];
 	  [_headerView setFrameSize: NSMakeSize(viewFrame.size.width, rowHeight)];
 	  [_headerView setTableView: self];
-
-	  // [self setHeaderView: [aDecoder decodeObjectForKey: @"NSHeaderView"]];
-	  // viewFrame = [[self headerView] frame];
-	  // viewFrame.size.height = rowHeight;
-	  // [[self headerView] setFrame: viewFrame];
 	}
-
       if ([aDecoder containsValueForKey: @"NSCornerView"])
 	{
 	  NSRect viewFrame;
 	  float rowHeight = [self rowHeight];
 	  
-	  // _cornerView = [GSTableCornerView new];
-	  // [self tile];
-
 	  [self setCornerView: [aDecoder decodeObjectForKey: @"NSCornerView"]];
 	  viewFrame = [[self cornerView] frame];
 	  viewFrame.size.height = rowHeight;
@@ -5372,15 +5380,6 @@ static inline float computePeriod(NSPoint mouseLocationWin,
         {
 	  [self tile];
 	}
-      /*
-	NSLog(@"frame %@", NSStringFromRect([self frame]));
-	NSLog(@"dataSource %@", _dataSource);
-	if (_dataSource != nil)
-	  {
-	    [self setDataSource: _dataSource];
-	    NSLog(@"dataSource set");
-	  }
-      */
     }
   
   return self;

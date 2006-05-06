@@ -92,8 +92,8 @@
 {
   if ([aDecoder allowsKeyedCoding])
     {
-      ASSIGN(_src, [aDecoder decodeObjectForKey: @"NSSource"]);
       ASSIGN(_dst, [aDecoder decodeObjectForKey: @"NSDestination"]);
+      ASSIGN(_src, [aDecoder decodeObjectForKey: @"NSSource"]);
       ASSIGN(_tag, [aDecoder decodeObjectForKey: @"NSLabel"]);
     }
   else

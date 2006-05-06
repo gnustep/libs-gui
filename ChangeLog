@@ -1,3 +1,10 @@
+2006-05-06 13:09 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSBundleAdditions.m: Unarchive destination before source.
+	* Source/NSOutlineView.m: Proper initialization of outline view in
+	initWithCoder:
+	* Source/NSTableView.m: Rearrangement of keys in initWithCoder:
+
 2006-05-05 00:41 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSTextView.m: Completion of code in initWithCoder: for
