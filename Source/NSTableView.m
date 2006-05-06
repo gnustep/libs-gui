@@ -5254,14 +5254,6 @@ static inline float computePeriod(NSPoint mouseLocationWin,
         {
 	  [self setRowHeight: [aDecoder decodeFloatForKey: @"NSRowHeight"]];
 	}
-      if ([aDecoder containsValueForKey: @"NSFrameSize"])
-	{
-	  NSRect frame = NSZeroRect;
-	  NSSize size = [aDecoder decodeSizeForKey: @"NSFrameSize"];
-	  frame.size = size;
-	  frame.size.height = [self rowHeight];
-	  [self setFrame: frame];
-	}
       if ([aDecoder containsValueForKey: @"NSHeaderView"])
 	{
 
