@@ -748,6 +748,27 @@
 }
 @end
 
+/* Correct some instances where the ":" is missing from the method name in the label */
+@interface NSNibControlConnector (NibCompatibility)
+- (void) instantiateWithInstantiator: (id<GSInstantiator>)instantiator;
+@end
+
+@implementation NSNibControlConnector (NibCompatibility)
+- (void) instantiateWithInstantiator: (id<GSInstantiator>)instantiator
+{
+  NSRange colonRange = [_tag rangeOfString: @":"];
+  unsigned int location = colonRange.location;
+  
+  if(location == NSNotFound)
+    {
+      NSString *newTag = [NSString stringWithFormat: @"%@:",_tag];
+      [self setLabel: (id)newTag];
+    }
+
+  [super instantiateWithInstantiator: instantiator];
+}
+@end
+
 @implementation NSIBObjectData
 - (id)instantiateObject: (id)obj
 {
@@ -783,21 +804,7 @@
     {
       if([obj respondsToSelector: @selector(instantiateWithInstantiator:)])
 	{
-	  if([obj isKindOfClass: [NSNibControlConnector class]])
-	    {
-	      NSString *tag = [obj label];
-	      NSRange colonRange = [tag rangeOfString: @":"];
-	      unsigned int location = colonRange.location;
-	      
-	      if(location == NSNotFound)
-		{
-		  NSString *newTag = [NSString stringWithFormat: @"%@:",tag];
-		  [obj setLabel: (id)newTag];
-		}
-	    }
-
-	  [obj instantiateWithInstantiator: self];
-	  
+	  [obj instantiateWithInstantiator: self];	  
 	  [obj establishConnection];
 	}
     }

@@ -1,3 +1,9 @@
+2006-05-07 11:07 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Removed kludge in nibInstantiate:owner:
+	method and added a category for NSNibControlConnector to reformat
+	the method name.
+
 2006-05-07 10:52 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibCompatibility.m
