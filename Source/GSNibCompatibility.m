@@ -783,7 +783,21 @@
     {
       if([obj respondsToSelector: @selector(instantiateWithInstantiator:)])
 	{
+	  if([obj isKindOfClass: [NSNibControlConnector class]])
+	    {
+	      NSString *tag = [obj label];
+	      NSRange colonRange = [tag rangeOfString: @":"];
+	      unsigned int location = colonRange.location;
+	      
+	      if(location == NSNotFound)
+		{
+		  NSString *newTag = [NSString stringWithFormat: @"%@:",tag];
+		  [obj setLabel: (id)newTag];
+		}
+	    }
+
 	  [obj instantiateWithInstantiator: self];
+	  
 	  [obj establishConnection];
 	}
     }

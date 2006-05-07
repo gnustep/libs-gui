@@ -579,6 +579,11 @@ DEFINE_RINT_IF_MISSING
       [_titleCell setTextColor: [NSColor controlTextColor]];
       [_titleCell setStringValue: @""];
       [_titleCell setAlignment: NSCenterTextAlignment];
+
+      // if it's from a nib, make it bordered and bezeled so it's more attractive.
+      [self setBordered: YES];
+      [self setBezeled: YES];
+
       _isVertical = -1;
     }
   else

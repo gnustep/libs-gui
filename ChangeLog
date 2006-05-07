@@ -1,3 +1,11 @@
+2006-05-07 10:52 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m
+	* Source/NSActionCell.m
+	* Source/NSCell.m
+	* Source/NSSliderCell.m: Changes and improvements to handling of
+	cells for nib decoding.
+
 2006-05-06 13:09 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSBundleAdditions.m: Unarchive destination before source.
