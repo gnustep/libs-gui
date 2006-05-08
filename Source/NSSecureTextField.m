@@ -89,6 +89,54 @@
   return [_cell echosBullets];
 }
 
+- (id) initWithCoder: (NSCoder *)decoder
+{
+  self = [super initWithCoder: decoder];
+  if([decoder allowsKeyedCoding])
+    {
+      if([[self cell] isKindOfClass: [NSSecureTextFieldCell class]] == NO)
+	{
+	  Class cls = [[self class] cellClass];
+	  id cell = [[cls alloc] init];
+	  id textCell = [self cell];
+	  
+	  /******* copy properties ******/
+	  // text field
+	  [cell setBackgroundColor: [textCell backgroundColor]];
+	  [cell setTextColor: [textCell textColor]];
+	  [cell setDrawsBackground: [textCell drawsBackground]];
+	  
+	  // cell
+	  [cell setWraps: [textCell wraps]];
+	  [cell setScrollable: [textCell isScrollable]];
+	  [cell setSelectable: [textCell isSelectable]];
+	  [cell setBezeled: [textCell isBezeled]];
+	  [cell setBordered: [textCell isBordered]];
+	  [cell setType: [textCell type]];
+	  [cell setContinuous: [textCell isContinuous]];
+	  [cell setEditable: [textCell isEditable]];
+	  [cell setEnabled: [textCell isEnabled]];
+	  [cell setHighlighted: [textCell isHighlighted]];
+	  [cell setSendsActionOnEndEditing: [textCell sendsActionOnEndEditing]];
+	  [cell setAllowsMixedState: [textCell allowsMixedState]];
+	  [cell setRefusesFirstResponder: [textCell refusesFirstResponder]];
+	  [cell setAlignment: [textCell alignment]];
+	  [cell setImportsGraphics: [textCell importsGraphics]];
+	  [cell setAllowsEditingTextAttributes: [textCell allowsEditingTextAttributes]];
+	  [cell setFont: [textCell font]];
+	  [cell setFormatter: [textCell formatter]];
+
+	  [self setCell: cell];
+	} 
+    }
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  [super encodeWithCoder: coder];
+  // encode self here...
+}
 @end /* NSSecureTextField */
 
 @implementation NSSecureTextFieldCell
@@ -135,8 +183,15 @@
 
 - (id) initWithCoder:(NSCoder *)decoder
 {
-  [super initWithCoder: decoder];
-  [decoder decodeValueOfObjCType: @encode(BOOL) at: &_echosBullets];
+  self = [super initWithCoder: decoder];
+  if([decoder allowsKeyedCoding])
+    {
+      // do nothing for now...
+    }
+  else
+    {
+      [decoder decodeValueOfObjCType: @encode(BOOL) at: &_echosBullets];
+    }
 
   return self;
 }

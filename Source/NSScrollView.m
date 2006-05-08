@@ -1270,7 +1270,7 @@ static float scrollerWidth;
 
       if ([aDecoder containsValueForKey: @"NSsFlags"])
         {
-	  unsigned int flags = [aDecoder decodeIntForKey: @"NSsFlags"];
+	  unsigned long flags = [aDecoder decodeIntForKey: @"NSsFlags"];
 	  GSScrollViewFlags scrollViewFlags;
 	  memcpy((void *)&scrollViewFlags,(void *)&flags,sizeof(struct _scrollViewFlags));
 

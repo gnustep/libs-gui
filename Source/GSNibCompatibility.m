@@ -84,7 +84,7 @@
 	}
       if ([coder containsValueForKey: @"NSWindowStyleMask"])
         {
-	  _interfaceStyle = [coder decodeIntForKey: @"NSWindowStyleMask"];
+	  _windowStyle = [coder decodeIntForKey: @"NSWindowStyleMask"];
 	}
       if([coder containsValueForKey: @"NSWindowBacking"])
 	{
@@ -96,7 +96,8 @@
 	}
       if ([coder containsValueForKey: @"NSWTFlags"])
         {
-	  _flags = [coder decodeIntForKey: @"NSWTFlags"];
+	  unsigned long flags = [coder decodeIntForKey: @"NSWTFlags"];
+	  memcpy((void *)&_flags,(void *)&flags,sizeof(struct _GSWindowTemplateFlags));
 	}
       if ([coder containsValueForKey: @"NSMinSize"])
         {
@@ -128,12 +129,16 @@
 {
   if ([aCoder allowsKeyedCoding])
     {
+      unsigned long flags = 0; 
+
+      memcpy((void *)&flags,(void *)&_flags,sizeof(unsigned long));
+
       [aCoder encodeObject: _viewClass forKey: @"NSViewClass"];
       [aCoder encodeObject: _windowClass forKey: @"NSWindowClass"];
-      [aCoder encodeInt: _interfaceStyle forKey: @"NSWindowStyleMask"];
+      [aCoder encodeInt: _windowStyle forKey: @"NSWindowStyleMask"];
       [aCoder encodeInt: _backingStoreType forKey: @"NSWindowBacking"];
       [aCoder encodeObject: _view forKey: @"NSWindowView"];
-      [aCoder encodeInt: _flags forKey: @"NSWTFlags"];
+      [aCoder encodeInt: flags forKey: @"NSWTFlags"];
       [aCoder encodeSize: _minSize forKey: @"NSMinSize"];
       [aCoder encodeSize: _maxSize forKey: @"NSMaxSize"];
       [aCoder encodeRect: _windowRect forKey: @"NSWindowRect"];
@@ -157,11 +162,23 @@
       
       _realObject = [[aClass allocWithZone: NSDefaultMallocZone()]
 		      initWithContentRect: _windowRect
-		      styleMask: _interfaceStyle
+		      styleMask: _windowStyle
 		      backing: _backingStoreType
-		      defer: _deferFlag
+		      defer: _flags.isDeferred
 		      screen: nil];
       
+      // set flags...
+      [_realObject setHidesOnDeactivate: _flags.isHiddenOnDeactivate];
+      [_realObject setReleasedWhenClosed: !(_flags.isNotReleasedOnClose)];
+      [_realObject setOneShot: _flags.isOneShot];
+      // [_realObject setVisible: _flags.isVisible];
+      // [_realObject setWantsToBeColor: _flags.wantsToBeColor];
+      [_realObject setAutodisplay: YES];
+      [_realObject setDynamicDepthLimit: _flags.dynamicDepthLimit];
+      // [_realObject setAutoPositionMask: _flags.autoPositionMask];
+      // [_realObject setAutoPosition: _flags.autoPosition];
+      [_realObject setDynamicDepthLimit: _flags.dynamicDepthLimit];
+
       // reset attributes...
       [_realObject setContentView: _view];
       [_realObject setMinSize: _minSize];
@@ -194,12 +211,12 @@
 
 - (void) setDeferred: (BOOL)flag
 {
-  _deferFlag = flag;
+  _flags.isDeferred = flag;
 }
 
 - (BOOL) isDeferred
 {
-  return _deferFlag;
+  return _flags.isDeferred;
 }
 
 - (void) setMaxSize: (NSSize)maxSize
@@ -222,14 +239,14 @@
   return _minSize;
 }
 
-- (void) setInterfaceStyle: (unsigned)style
+- (void) setWindowStyle: (unsigned)style
 {
-  _interfaceStyle = style;
+  _windowStyle = style;
 }
 
-- (unsigned) interfaceStyle
+- (unsigned) windowStyle
 {
-  return _interfaceStyle;
+  return _windowStyle;
 }
 
 - (void) setTitle: (NSString *) title
@@ -295,16 +312,6 @@
 - (NSString *)className
 {
   return _windowClass;
-}
-
-- (BOOL)deferFlag
-{
-  return _deferFlag;
-}
-
-- (void)setDeferFlag: (BOOL)flag
-{
-  _deferFlag = flag;
 }
 @end
 

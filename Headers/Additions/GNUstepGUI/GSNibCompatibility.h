@@ -49,6 +49,36 @@
 - (id) realObject;
 @end
 
+
+typedef struct _GSWindowTemplateFlags
+{
+#ifdef WORDS_BIGENDIAN
+  unsigned int isHiddenOnDeactivate:1;
+  unsigned int isNotReleasedOnClose:1;
+  unsigned int isDeferred:1;
+  unsigned int isOneShot:1;
+  unsigned int isVisible:1;
+  unsigned int wantsToBeColor:1;
+  unsigned int dynamicDepthLimit:1;
+  unsigned int autoPositionMask:6;
+  unsigned int savePosition:1;
+  unsigned int style:2;
+  unsigned int _unused:16; // currently not used, contains Cocoa specific info
+#else
+  unsigned int _unused:16; // currently not used, contains Cocoa specific info
+  unsigned int style:2;
+  unsigned int savePosition:1;
+  unsigned int autoPositionMask:6;
+  unsigned int dynamicDepthLimit:1;
+  unsigned int wantsToBeColor:1;
+  unsigned int isVisible:1;
+  unsigned int isOneShot:1;
+  unsigned int isDeferred:1;
+  unsigned int isNotReleasedOnClose:1;
+  unsigned int isHiddenOnDeactivate:1;
+#endif
+} GSWindowTemplateFlags;
+
 /**
  * This class acts as a placeholder for the window.  It doesn't derive from
  * NSWindow for two reasons. First, it shouldn't instantiate a window immediately
@@ -58,10 +88,9 @@
 @interface NSWindowTemplate : NSObject <OSXNibTemplate, NSCoding>
 {
   NSBackingStoreType   _backingStoreType;
-  BOOL                 _deferFlag;
   NSSize               _maxSize;
   NSSize               _minSize;
-  unsigned             _interfaceStyle;
+  unsigned             _windowStyle;
   NSString            *_title;
   NSString            *_viewClass;
   NSString            *_windowClass;
@@ -69,7 +98,8 @@
   NSRect               _screenRect;
   id                   _realObject;
   id                   _view;
-  unsigned             _flags;
+  GSWindowTemplateFlags _flags;
+  NSString            *_autosaveName;
 }
 - (void) setBackingStoreType: (NSBackingStoreType)type;
 - (NSBackingStoreType) backingStoreType;
@@ -79,8 +109,8 @@
 - (NSSize) maxSize;
 - (void) setMinSize: (NSSize)minSize;
 - (NSSize) minSize;
-- (void) setInterfaceStyle: (unsigned)sty;
-- (unsigned) interfaceStyle;
+- (void) setWindowStyle: (unsigned)sty;
+- (unsigned) windowStyle;
 - (void) setTitle: (NSString *) title;
 - (NSString *)title;
 - (void) setViewClass: (NSString *)viewClass;
