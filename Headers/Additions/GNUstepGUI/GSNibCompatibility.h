@@ -201,6 +201,7 @@ typedef struct _GSWindowTemplateFlags
 @interface NSClassSwapper : NSObject <NSCoding>
 {
   NSString *_className;
+  NSString *_originalClassName;
   id _template;
 }
 - (void) setTemplate: (id)temp;

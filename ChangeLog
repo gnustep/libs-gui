@@ -1,3 +1,12 @@
+2006-05-07 22:36 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h: Added 
+	_originalClassName member.
+	* Source/GSNibCompatibility.m: use new member in
+	instantiateRealObject:withClassName: to allow auto-substitution
+	of cell classes.
+	* Source/NSSecureTextField.m: Remove code to copy properties.
+
 2006-05-07 20:29 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h: Addition of

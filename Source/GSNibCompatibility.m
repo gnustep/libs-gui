@@ -706,33 +706,64 @@
   return NO;
 }
 
-- (void) instantiateRealObject: (NSCoder *)coder
+- (void) instantiateRealObject: (NSCoder *)coder withClassName: (NSString *)className
 {
-  Class aClass = NSClassFromString(_className);
+  Class aClass = NSClassFromString(className);
+  id object = nil;
+  Class newCellClass = nil;
+  NSString *origCellClassName = nil; 
+  Class origCellClass = nil;
+
   if(aClass == nil)
     {
       [NSException raise: NSInternalInconsistencyException
-		   format: @"NSClassSwapper unable to find class '%@'", _className];
+		   format: @"NSClassSwapper unable to find class '%@'", className];
     }
-  _template = [aClass allocWithZone: NSDefaultMallocZone()];
-  [(NSKeyedUnarchiver *)coder replaceObject: self withObject: _template];
-  _template = [_template initWithCoder: coder];
+
+  // if this is a class which uses cells, override with the new cellClass, if the 
+  // subclass responds to cellClass.
+  if([aClass respondsToSelector: @selector(cellClass)] && 
+     [className isEqualToString: _originalClassName] == NO)
+    {
+      Class origClass = NSClassFromString(_originalClassName);
+
+      origCellClass = [origClass cellClass];
+      newCellClass = [aClass cellClass];
+      origCellClassName = NSStringFromClass(origCellClass);
+      [(NSKeyedUnarchiver *)coder setClass: newCellClass forClassName: origCellClassName];
+    }
+
+  // swap the class...
+  object = [aClass allocWithZone: NSDefaultMallocZone()];
+  [(NSKeyedUnarchiver *)coder replaceObject: self withObject: object];
+  _template = [object initWithCoder: coder];
+  if(object != _template)
+    {
+      [(NSKeyedUnarchiver *)coder replaceObject: object withObject: _template];
+    }
+
+  if(newCellClass != nil && origCellClass != nil)
+    {
+      [(NSKeyedUnarchiver *)coder setClass: origCellClass forClassName: nil];
+    }
 }
 
 - (id) initWithCoder: (NSCoder *)coder
 {
   if([coder allowsKeyedCoding])
     {
+      ASSIGN(_className, [coder decodeObjectForKey: @"NSClassName"]);  
+      ASSIGN(_originalClassName, [coder decodeObjectForKey: @"NSOriginalClassName"]);  
+
+      // build the real object...
       if([NSClassSwapper isInInterfaceBuilder] == YES)
 	{
-	  ASSIGN(_className, [coder decodeObjectForKey: @"NSOriginalClassName"]);
+	  [self instantiateRealObject: coder withClassName: _originalClassName];
 	}
       else
 	{
-	  ASSIGN(_className, [coder decodeObjectForKey: @"NSClassName"]);  
+	  [self instantiateRealObject: coder withClassName: _className];
 	}
-      // build the real object...
-      [self instantiateRealObject: coder];
     }
   else
     {

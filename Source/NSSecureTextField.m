@@ -94,40 +94,7 @@
   self = [super initWithCoder: decoder];
   if([decoder allowsKeyedCoding])
     {
-      if([[self cell] isKindOfClass: [NSSecureTextFieldCell class]] == NO)
-	{
-	  Class cls = [[self class] cellClass];
-	  id cell = [[cls alloc] init];
-	  id textCell = [self cell];
-	  
-	  /******* copy properties ******/
-	  // text field
-	  [cell setBackgroundColor: [textCell backgroundColor]];
-	  [cell setTextColor: [textCell textColor]];
-	  [cell setDrawsBackground: [textCell drawsBackground]];
-	  
-	  // cell
-	  [cell setWraps: [textCell wraps]];
-	  [cell setScrollable: [textCell isScrollable]];
-	  [cell setSelectable: [textCell isSelectable]];
-	  [cell setBezeled: [textCell isBezeled]];
-	  [cell setBordered: [textCell isBordered]];
-	  [cell setType: [textCell type]];
-	  [cell setContinuous: [textCell isContinuous]];
-	  [cell setEditable: [textCell isEditable]];
-	  [cell setEnabled: [textCell isEnabled]];
-	  [cell setHighlighted: [textCell isHighlighted]];
-	  [cell setSendsActionOnEndEditing: [textCell sendsActionOnEndEditing]];
-	  [cell setAllowsMixedState: [textCell allowsMixedState]];
-	  [cell setRefusesFirstResponder: [textCell refusesFirstResponder]];
-	  [cell setAlignment: [textCell alignment]];
-	  [cell setImportsGraphics: [textCell importsGraphics]];
-	  [cell setAllowsEditingTextAttributes: [textCell allowsEditingTextAttributes]];
-	  [cell setFont: [textCell font]];
-	  [cell setFormatter: [textCell formatter]];
-
-	  [self setCell: cell];
-	} 
+      // do nothing here for now...
     }
   return self;
 }
