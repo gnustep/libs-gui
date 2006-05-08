@@ -88,22 +88,6 @@
 {
   return [_cell echosBullets];
 }
-
-- (id) initWithCoder: (NSCoder *)decoder
-{
-  self = [super initWithCoder: decoder];
-  if([decoder allowsKeyedCoding])
-    {
-      // do nothing here for now...
-    }
-  return self;
-}
-
-- (void) encodeWithCoder: (NSCoder *)coder
-{
-  [super encodeWithCoder: coder];
-  // encode self here...
-}
 @end /* NSSecureTextField */
 
 @implementation NSSecureTextFieldCell
@@ -148,7 +132,7 @@
   return [super setUpFieldEditorAttributes: textObject];
 }
 
-- (id) initWithCoder:(NSCoder *)decoder
+- (id) initWithCoder: (NSCoder *)decoder
 {
   self = [super initWithCoder: decoder];
   if([decoder allowsKeyedCoding])
