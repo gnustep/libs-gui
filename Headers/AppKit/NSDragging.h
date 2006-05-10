@@ -76,8 +76,8 @@ typedef enum _NSDragOperation {
 //
 // Before the Image is Released
 //
-- (unsigned int)draggingEntered:(id <NSDraggingInfo>)sender;
-- (unsigned int)draggingUpdated:(id <NSDraggingInfo>)sender;
+- (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender;
+- (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender;
 - (void)draggingExited:(id <NSDraggingInfo>)sender;
 
 //
@@ -89,6 +89,7 @@ typedef enum _NSDragOperation {
 
 #ifndef STRICT_OPENSTEP
 - (void)draggingEnded: (id <NSDraggingInfo>)sender;
+- (BOOL)wantsPeriodicDraggingUpdates;
 #endif
 @end
 

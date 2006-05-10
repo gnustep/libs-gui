@@ -1,3 +1,15 @@
+2006-05-11  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSDragging.h,
+	* Source/NSColorWell.m,
+	* Source/NSImageView.m,
+	* Source/NSOutlineView.m,
+	* Source/NSSavePanel.m,
+	* Source/NSTableView.m,
+	* Source/NSTextView.m,
+	* Source/NSApplication.m (-draggingEntered:, -draggingUpdated:):
+	Changed return value to NSDragOperation.
+
 2006-05-10  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSApplication.m (-finishLaunching): Don't display the

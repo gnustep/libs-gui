@@ -461,7 +461,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 {
 }
 
-- (unsigned) draggingEntered: (id<NSDraggingInfo>)sender
+- (NSDragOperation) draggingEntered: (id<NSDraggingInfo>)sender
 {
   return NSDragOperationGeneric;
 }
@@ -470,7 +470,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 {
 }
 
-- (unsigned) draggingUpdated: (id<NSDraggingInfo>)sender
+- (NSDragOperation) draggingUpdated: (id<NSDraggingInfo>)sender
 {
   return NSDragOperationGeneric;
 }

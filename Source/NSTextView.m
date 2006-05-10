@@ -4050,7 +4050,7 @@ other than copy/paste or dragging. */
 /**** Drag and drop handling ****/
 
 // dragging of text, colors and files
-- (unsigned int) draggingEntered: (id <NSDraggingInfo>)sender
+- (NSDragOperation) draggingEntered: (id <NSDraggingInfo>)sender
 {
   NSPasteboard	*pboard = [sender draggingPasteboard];
   NSArray	*types = [self readablePasteboardTypes];
@@ -4084,7 +4084,7 @@ other than copy/paste or dragging. */
   return flags;
 }
 
-- (unsigned int) draggingUpdated: (id <NSDraggingInfo>)sender
+- (NSDragOperation) draggingUpdated: (id <NSDraggingInfo>)sender
 {
   NSPasteboard	*pboard = [sender draggingPasteboard];
   NSArray	*types = [self readablePasteboardTypes];
