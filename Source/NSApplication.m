@@ -930,18 +930,22 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   unsigned		count;
   unsigned		i;
   BOOL			hadDuplicates = NO;
+  NSImage		*image = nil;
 
   appIconFile = [infoDict objectForKey: @"NSIcon"];
   if (appIconFile && ![appIconFile isEqual: @""])
     {
-      NSImage	*image = [NSImage imageNamed: appIconFile];
-
-      if (image != nil)
-	{
-	  [self setApplicationIconImage: image];
-	}
+      image = [NSImage imageNamed: appIconFile];
     }
-  [self _appIconInit];
+  if (image == nil)
+    {
+      image = [NSImage imageNamed: @"GNUstep"];
+    }
+  [self setApplicationIconImage: image];
+  if (![defs boolForKey: @"GSDontShowAppIcon"])
+    {
+      [self _appIconInit];
+    }
 
   mainModelFile = [infoDict objectForKey: @"NSMainNibFile"];
   if (mainModelFile != nil && [mainModelFile isEqual: @""] == NO)
@@ -3329,11 +3333,6 @@ image.</p><p>See Also: -applicationIconImage</p>
   NSAppIconView	*iv;
   NSSize iconSize = [GSCurrentServer() iconSize];
   NSRect iconRect = NSMakeRect(0, 0, iconSize.width, iconSize.height);
-
-  if (_app_icon == nil)
-    {
-      [self setApplicationIconImage: [NSImage imageNamed: @"GNUstep"]];
-    }
 
   _app_icon_window = [[NSIconWindow alloc] initWithContentRect: iconRect 
 				styleMask: NSIconWindowMask
