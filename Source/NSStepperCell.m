@@ -333,19 +333,33 @@ static inline void HighlightDownButton(NSRect aRect)
   int tmp1, tmp2;
   [super initWithCoder: aDecoder];
 
-  [aDecoder decodeValueOfObjCType: @encode(double)
-	    at: &_maxValue];
-  [aDecoder decodeValueOfObjCType: @encode(double)
-	    at: &_minValue];
-  [aDecoder decodeValueOfObjCType: @encode(double)
-	    at: &_increment];
-  [aDecoder decodeValueOfObjCType: @encode(int)
-	    at: &tmp1];
-  [aDecoder decodeValueOfObjCType: @encode(int)
-	    at: &tmp2];
+  if([aDecoder allowsKeyedCoding])
+    {
+      _autorepeat = [aDecoder decodeBoolForKey: @"NSAutorepeat"];
+      _valueWraps = [aDecoder decodeBoolForKey: @"NSValueWraps"];
+      _increment = [aDecoder decodeIntForKey: @"NSIncrement"];
+      _maxValue = [aDecoder decodeIntForKey: @"NSMaxValue"];
+      if([aDecoder containsValueForKey: @"NSMinValue"])
+	{
+	  _minValue = [aDecoder decodeIntForKey: @"NSMinValue"];
+	}
+    }
+  else
+    {
+      [aDecoder decodeValueOfObjCType: @encode(double)
+		at: &_maxValue];
+      [aDecoder decodeValueOfObjCType: @encode(double)
+		at: &_minValue];
+      [aDecoder decodeValueOfObjCType: @encode(double)
+		at: &_increment];
+      [aDecoder decodeValueOfObjCType: @encode(int)
+		at: &tmp1];
+      [aDecoder decodeValueOfObjCType: @encode(int)
+		at: &tmp2];
 
-  _autorepeat = (BOOL)tmp1;
-  _valueWraps = (BOOL)tmp2;
+      _autorepeat = (BOOL)tmp1;
+      _valueWraps = (BOOL)tmp2;
+    }
 
   return self;
 }
