@@ -1,3 +1,13 @@
+2006-05-10  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSBundleAdditions.m: ([loadNibNamed:owner:]) if the NIB can't
+	be found in the owners bundle, try the main bundle of the application.
+	Fixes loading where the files owner is in a library, framework or
+	bundle, but the Gorm/NIB file is in the application resources.
+	I'm not sure this is the correct order, perhaps we should try the
+	main bundle first and the library/framework only if the rersource
+	is not in the main bundle.
+
 2006-05-06  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Resources/Esperanto.lproj/Localizable.string,

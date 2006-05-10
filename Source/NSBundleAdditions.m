@@ -344,7 +344,13 @@ Class gmodel_class(void)
     }
   table = [NSDictionary dictionaryWithObject: owner forKey: @"NSOwner"];
   bundle = [self bundleForClass: [owner class]];
-  if (bundle == nil)
+  if (bundle != nil && [bundle loadNibFile: aNibName
+			 externalNameTable: table
+				  withZone: [owner zone]] == YES)
+    {
+      return YES;
+    }
+  else
     {
       bundle = [self mainBundle];
     }
