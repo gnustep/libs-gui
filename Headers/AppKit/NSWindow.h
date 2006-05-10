@@ -393,6 +393,23 @@ style. */
 - (NSScreen*) screen;
 
 - (NSResponder*) firstResponder;
+
+/**
+ * This method attempts to make aResponder the first responder.<br />
+ * If aResponder is already the first responder, this method has no
+ * effect and simply returns YES.
+ * Otherwise, the method sends a -resignFirstResponder message to the
+ * current first responder (if there is one) and immediately returns NO if
+ * the current first responder refuses to resign.<br />
+ * Then the method asks aResponder to become first responder by sending
+ * it a -becomeFirstResponder message, and if that returns YES then this
+ * method immediately returns YES.<br />
+ * However, if that returns NO, the receiver is made the first responder by
+ * sending it a -becomeFirstResponder message, and this method returns NO.<br />
+ * If aResponder is neither nil nor an instance of NSResponder (or of a
+ * subclass of NSResponder) then behavior is undefined (though the current
+ * GNUstep implementation just returns NO).
+ */
 - (BOOL) makeFirstResponder: (NSResponder*)aResponder;
 
 /*

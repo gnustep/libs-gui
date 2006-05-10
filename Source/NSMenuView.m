@@ -906,11 +906,6 @@ _addLeftBorderOffsetToRect(NSRect aRect)
       theRect.origin.x = _leftBorderOffset;
       theRect.size = _cellSize;
 
-      /* Fiddle with the origin so that the item rect is shifted 1 pixel over 
-       * so we do not draw on the heavy line at origin.x = 0.
-       */
-      theRect.origin.x++;
-
       /* NOTE: This returns the correct NSRect for drawing cells, but nothing 
        * else (unless we are a popup). This rect will have to be modified for 
        * event calculation, etc..
@@ -1096,17 +1091,10 @@ _addLeftBorderOffsetToRect(NSRect aRect)
     }
   else
     {
-      if (![_attachedMenu _ownedByPopUp])
-	{
-	  NSDrawButton (_bounds, rect);
-	}
-      else
-	{
-	  sides[0] = NSMinXEdge;
-	  sides[1] = NSMaxYEdge;
-	  // Draw the dark gray upper left lines.
-	  NSDrawTiledRects(_bounds, rect, sides, grays, 2);
-	}
+      sides[0] = NSMinXEdge;
+      sides[1] = NSMaxYEdge;
+      // Draw the dark gray upper left lines.
+      NSDrawTiledRects(_bounds, rect, sides, grays, 2);
     }
   
   // Draw the menu cells.

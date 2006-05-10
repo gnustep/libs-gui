@@ -28,7 +28,7 @@ include $(GNUSTEP_MAKEFILES)/common.make
 
 RESOURCE_SET_NAME = gui-resources
 gui-resources_RESOURCE_FILES_INSTALL_DIR = Library/Libraries/Resources/gnustep-gui
-gui-resources_LANGUAGES = English Italian
+gui-resources_LANGUAGES = English Italian Lojban Esperanto German
 gui-resources_LOCALIZED_RESOURCE_FILES = Localizable.strings
 
 include $(GNUSTEP_MAKEFILES)/resource-set.make

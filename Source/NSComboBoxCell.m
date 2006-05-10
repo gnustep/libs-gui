@@ -711,13 +711,6 @@ static GSComboWindow *gsWindow = nil;
       // no effect, to correct this fact, the code below is needed.
       [textObject setString: [_cell _stringValueAtIndex:
         [_cell indexOfSelectedItem]]];
-      
-      /* 
-       * Dispatch the text notifications and by side effect update the cell 
-       * object value with the -textDidChange: method of NSTextField which is
-       * the editor delegate
-       */
-      [(NSTextView *)textObject didChangeText];
       // End of the code to remove 
       
       if  (textObject != nil)

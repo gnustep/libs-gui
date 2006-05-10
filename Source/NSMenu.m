@@ -954,6 +954,8 @@ static NSNotificationCenter *nc;
   unsigned      i;
   unsigned      count = [_items count];
   NSEventType   type = [theEvent type];
+  unsigned	modifiers = [theEvent modifierFlags];
+  NSString	*keyEquivalent = [theEvent charactersIgnoringModifiers];
          
   if (type != NSKeyDown && type != NSKeyUp) 
     return NO;
@@ -964,8 +966,7 @@ static NSNotificationCenter *nc;
                                     
       if ([item hasSubmenu])
         {
-	  // FIXME: Should we only check active submenus?
-	  // Recurse through submenus.
+	  // Recurse through submenus whether active or not.
           if ([[item submenu] performKeyEquivalent: theEvent])
             {
               // The event has been handled by an item in the submenu.
@@ -974,9 +975,10 @@ static NSNotificationCenter *nc;
         }
       else
         {
-	  // FIXME: Should also check the modifier mask  
-          if ([[item keyEquivalent] isEqualToString: 
-				      [theEvent charactersIgnoringModifiers]])
+	  unsigned	mask = [item keyEquivalentModifierMask];
+
+          if ([[item keyEquivalent] isEqualToString: keyEquivalent] 
+	    && (modifiers & mask) == mask)
 	    {
 	      if ([item isEnabled])
 		{

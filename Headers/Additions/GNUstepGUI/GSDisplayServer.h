@@ -116,6 +116,8 @@ APPKIT_EXPORT NSString * GSScreenNumber;
 - (int) window: (NSRect)frame : (NSBackingStoreType)type : (unsigned int)style
 	      : (int)screen;
 - (void) termwindow: (int) win;
+- (int) nativeWindow: (void *)winref : (NSRect*)frame : (NSBackingStoreType*)type 
+                    : (unsigned int*)style : (int*)screen;
 
 /* Only if handlesWindowDecorations returns YES. */
 - (void) stylewindow: (unsigned int) style : (int) win;

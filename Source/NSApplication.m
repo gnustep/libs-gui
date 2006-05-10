@@ -1825,23 +1825,22 @@ See -runModalForWindow:
 
       case NSKeyDown:
 	{
+	  NSArray	*window_list = [self windows];
+	  unsigned	count = [window_list count];
+	  unsigned	i;
+
 	  NSDebugLLog(@"NSEvent", @"send key down event\n");
-	  if ([theEvent modifierFlags] & NSCommandKeyMask)
+	  for (i = 0; i < count; i++)
 	    {
-	      NSArray	*window_list = [self windows];
-	      unsigned	i;
-	      unsigned	count = [window_list count];
+	      NSWindow	*window = [window_list objectAtIndex: i];
 
-	      for (i = 0; i < count; i++)
-		{
-		  NSWindow	*window = [window_list objectAtIndex: i];
-
-		  if ([window performKeyEquivalent: theEvent] == YES)
-		    break;
-		}
+	      if ([window performKeyEquivalent: theEvent] == YES)
+		break;
 	    }
-	  else
-	    [[theEvent window] sendEvent: theEvent];
+	  if (i == count)
+	    {
+	      [[theEvent window] sendEvent: theEvent];
+	    }
 	  break;
 	}
 
