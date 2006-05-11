@@ -2272,11 +2272,12 @@ static NSColor	*shadowCol;
 	      [self setType: NSTextCellType];
 	    }
 
-	  [self setContinuous: ((cFlags & 0x40100) == 0x40100)];
+	  [self setContinuous: ((cFlags & 0x40000) == 0x40000)];
 	  [self setEditable: ((cFlags & 0x10000000) == 0x10000000)];
 	  // This bit flag is the other way around!
 	  [self setEnabled: ((cFlags & 0x20000000) != 0x20000000)];
 	  [self setHighlighted: ((cFlags & 0x40000000) == 0x40000000)];
+	  [self setState: ((cFlags & 0x80000000) == 0x80000000)?NSOnState:NSOffState];
 	}
       if ([aDecoder containsValueForKey: @"NSCellFlags2"])
         {

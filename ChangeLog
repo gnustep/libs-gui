@@ -1,3 +1,9 @@
+2006-05-10 23:55 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSButtonCell.m
+	* Source/NSCell.m
+	* Source/NSMatrix.m: Improved initWithCoder: nib support.
+
 2006-05-09 22:48 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSStepperCell.m: Implemented keyed coding.
