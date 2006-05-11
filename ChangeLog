@@ -1,3 +1,19 @@
+2006-05-11  Nicolas Roard <nicolas@roard.com>
+
+	* TextConverters/RTF: added support for reading RTFD documents 
+	* TextConverters/RTF/rtfScanner.c:
+	* TextConverters/RTF/rtfGrammer.y:
+	* TextConverters/RTF/rtfGrammer.tab.h:
+	* TextConverters/RTF/rtfGrammer.tab.c: modified the parser and
+	the grammar to parse \NeXTGraphic and the associated \width and \height
+	although \width and \height are not used to set the image size.
+	* TextConverters/RTF/RTFConsumerFunctions.h:
+	* TextConverters/RTF/RTFConsumer.h:
+	* TextConverters/RTF/RTFConsumer.m: modified the RTFDConsumer class so
+	that it holds a list of the files in the rtfd, added an appendImage:
+	method which wrap the files and set an attachment cell with the image.
+	Also added the RTFNeXTGraphic() function called by the parser.
+
 2006-05-11  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSBundleAdditions.m: ([loadNibNamed:owner:]) add comments

@@ -134,6 +134,8 @@ void GSRTFitalic(void *ctxt, BOOL on);
 void GSRTFunderline(void *ctxt, BOOL on);
 /* new paragraph */
 void GSRTFparagraph(void *ctxt);
+/* NeXTGraphic */
+void GSRTFNeXTGraphic(void *ctxt, const char *fileName, int width, int height);
 
 #endif
 

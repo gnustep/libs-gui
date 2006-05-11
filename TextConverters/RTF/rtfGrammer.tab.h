@@ -15,8 +15,8 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.  */
 
 /* As a special exception, when this file is copied by Bison into a
    Bison output file, you may use that output file without restriction.
@@ -68,42 +68,45 @@
      RTFcolortable = 291,
      RTFfont = 292,
      RTFfontSize = 293,
-     RTFpaperWidth = 294,
-     RTFpaperHeight = 295,
-     RTFmarginLeft = 296,
-     RTFmarginRight = 297,
-     RTFmarginTop = 298,
-     RTFmarginButtom = 299,
-     RTFfirstLineIndent = 300,
-     RTFleftIndent = 301,
-     RTFrightIndent = 302,
-     RTFalignCenter = 303,
-     RTFalignJustified = 304,
-     RTFalignLeft = 305,
-     RTFalignRight = 306,
-     RTFlineSpace = 307,
-     RTFspaceAbove = 308,
-     RTFstyle = 309,
-     RTFbold = 310,
-     RTFitalic = 311,
-     RTFunderline = 312,
-     RTFunderlineStop = 313,
-     RTFunichar = 314,
-     RTFsubscript = 315,
-     RTFsuperscript = 316,
-     RTFtabstop = 317,
-     RTFfcharset = 318,
-     RTFfprq = 319,
-     RTFcpg = 320,
-     RTFOtherStatement = 321,
-     RTFfontListStart = 322,
-     RTFfamilyNil = 323,
-     RTFfamilyRoman = 324,
-     RTFfamilySwiss = 325,
-     RTFfamilyModern = 326,
-     RTFfamilyScript = 327,
-     RTFfamilyDecor = 328,
-     RTFfamilyTech = 329
+     RTFNeXTGraphic = 294,
+     RTFNeXTGraphicWidth = 295,
+     RTFNeXTGraphicHeight = 296,
+     RTFpaperWidth = 297,
+     RTFpaperHeight = 298,
+     RTFmarginLeft = 299,
+     RTFmarginRight = 300,
+     RTFmarginTop = 301,
+     RTFmarginButtom = 302,
+     RTFfirstLineIndent = 303,
+     RTFleftIndent = 304,
+     RTFrightIndent = 305,
+     RTFalignCenter = 306,
+     RTFalignJustified = 307,
+     RTFalignLeft = 308,
+     RTFalignRight = 309,
+     RTFlineSpace = 310,
+     RTFspaceAbove = 311,
+     RTFstyle = 312,
+     RTFbold = 313,
+     RTFitalic = 314,
+     RTFunderline = 315,
+     RTFunderlineStop = 316,
+     RTFunichar = 317,
+     RTFsubscript = 318,
+     RTFsuperscript = 319,
+     RTFtabstop = 320,
+     RTFfcharset = 321,
+     RTFfprq = 322,
+     RTFcpg = 323,
+     RTFOtherStatement = 324,
+     RTFfontListStart = 325,
+     RTFfamilyNil = 326,
+     RTFfamilyRoman = 327,
+     RTFfamilySwiss = 328,
+     RTFfamilyModern = 329,
+     RTFfamilyScript = 330,
+     RTFfamilyDecor = 331,
+     RTFfamilyTech = 332
    };
 #endif
 #define RTFtext 258
@@ -142,42 +145,45 @@
 #define RTFcolortable 291
 #define RTFfont 292
 #define RTFfontSize 293
-#define RTFpaperWidth 294
-#define RTFpaperHeight 295
-#define RTFmarginLeft 296
-#define RTFmarginRight 297
-#define RTFmarginTop 298
-#define RTFmarginButtom 299
-#define RTFfirstLineIndent 300
-#define RTFleftIndent 301
-#define RTFrightIndent 302
-#define RTFalignCenter 303
-#define RTFalignJustified 304
-#define RTFalignLeft 305
-#define RTFalignRight 306
-#define RTFlineSpace 307
-#define RTFspaceAbove 308
-#define RTFstyle 309
-#define RTFbold 310
-#define RTFitalic 311
-#define RTFunderline 312
-#define RTFunderlineStop 313
-#define RTFunichar 314
-#define RTFsubscript 315
-#define RTFsuperscript 316
-#define RTFtabstop 317
-#define RTFfcharset 318
-#define RTFfprq 319
-#define RTFcpg 320
-#define RTFOtherStatement 321
-#define RTFfontListStart 322
-#define RTFfamilyNil 323
-#define RTFfamilyRoman 324
-#define RTFfamilySwiss 325
-#define RTFfamilyModern 326
-#define RTFfamilyScript 327
-#define RTFfamilyDecor 328
-#define RTFfamilyTech 329
+#define RTFNeXTGraphic 294
+#define RTFNeXTGraphicWidth 295
+#define RTFNeXTGraphicHeight 296
+#define RTFpaperWidth 297
+#define RTFpaperHeight 298
+#define RTFmarginLeft 299
+#define RTFmarginRight 300
+#define RTFmarginTop 301
+#define RTFmarginButtom 302
+#define RTFfirstLineIndent 303
+#define RTFleftIndent 304
+#define RTFrightIndent 305
+#define RTFalignCenter 306
+#define RTFalignJustified 307
+#define RTFalignLeft 308
+#define RTFalignRight 309
+#define RTFlineSpace 310
+#define RTFspaceAbove 311
+#define RTFstyle 312
+#define RTFbold 313
+#define RTFitalic 314
+#define RTFunderline 315
+#define RTFunderlineStop 316
+#define RTFunichar 317
+#define RTFsubscript 318
+#define RTFsuperscript 319
+#define RTFtabstop 320
+#define RTFfcharset 321
+#define RTFfprq 322
+#define RTFcpg 323
+#define RTFOtherStatement 324
+#define RTFfontListStart 325
+#define RTFfamilyNil 326
+#define RTFfamilyRoman 327
+#define RTFfamilySwiss 328
+#define RTFfamilyModern 329
+#define RTFfamilyScript 330
+#define RTFfamilyDecor 331
+#define RTFfamilyTech 332
 
 
 
@@ -189,8 +195,8 @@ typedef union {
 	const char	*text;
 	RTFcmd		cmd;
 } yystype;
-/* Line 1281 of /usr/share/bison/yacc.c.  */
-#line 194 "rtfGrammer.tab.h"
+/* Line 1281 of /usr/local/share/bison/yacc.c.  */
+#line 200 "rtfGrammer.tab.h"
 # define YYSTYPE yystype
 #endif
 

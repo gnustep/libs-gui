@@ -305,31 +305,32 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 	       documentAttributes: (NSDictionary **)dict
 			    class: (Class)class
 {
-  RTFConsumer *consumer = [RTFConsumer new];
   NSAttributedString *text = nil;
 
   if ([wrapper isRegularFile])
     {
+      RTFConsumer *consumer = [RTFConsumer new];
       text = [consumer parseRTF: [wrapper regularFileContents]
 		       documentAttributes: dict
 		       class: class];
+      RELEASE(consumer);
     }
   else if ([wrapper isDirectory])
     {
       NSDictionary *files = [wrapper fileWrappers];
       NSFileWrapper *contents;
+      RTFDConsumer* consumer = [RTFDConsumer new];
 
-      //FIXME: We should store the files in the consumer
-      // We try to read the main file in the directory
       if ((contents = [files objectForKey: @"TXT.rtf"]) != nil)
 	{
+	  [consumer setFiles: files];
 	  text = [consumer parseRTF: [contents regularFileContents]
 			   documentAttributes: dict
 			   class: class];
 	}
+      RELEASE(consumer);
     }
   
-  RELEASE(consumer);
 
   return text;
 }
@@ -376,6 +377,26 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 
 @implementation RTFDConsumer
 
+- (id) init
+{
+  self = [super init];
+
+  files = nil;
+
+  return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(files);
+  [super dealloc];
+}
+
+- (void) setFiles: (NSDictionary*) theFiles
+{
+  ASSIGN (files, theFiles);
+}
+
 + (NSAttributedString*) parseData: (NSData *)rtfData 
 	       documentAttributes: (NSDictionary **)dict
 			    class: (Class)class
@@ -388,6 +409,44 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
   RELEASE (wrapper);
 
   return str;
+}
+
+- (void) appendImage: (NSString*)string
+{
+  int  oldPosition = [result length];
+  NSRange insertionRange = NSMakeRange(oldPosition,0);
+
+  if (!ignore)
+    {
+      NSString* fileName = [string stringByTrimmingCharactersInSet:
+                         [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+      NSFileWrapper* wrapper = [files objectForKey: fileName];
+      
+      if (wrapper != nil)
+        {
+          NSImage* image = [[NSImage alloc] initWithData: [wrapper regularFileContents]];
+          NSTextAttachmentCell* attachedCell = [[NSTextAttachmentCell alloc] initImageCell: image];
+          NSTextAttachment* attachment = [[NSTextAttachment alloc] initWithFileWrapper: wrapper];
+          [attachment setAttachmentCell: attachedCell];
+        
+          RTFAttribute* attr = [self attr];
+          NSMutableDictionary* attributes = [[NSMutableDictionary alloc]
+			 initWithObjectsAndKeys:
+			   [attr currentFont], NSFontAttributeName,
+			   attr->paragraph, NSParagraphStyleAttributeName,
+			   nil];
+          
+          NSMutableAttributedString* str = [NSMutableAttributedString attributedStringWithAttachment: attachment];
+          [str addAttributes: attributes range: NSMakeRange (0, [str length])];
+          
+          [result replaceCharactersInRange: insertionRange withAttributedString: str];
+          
+          RELEASE(attributes);
+          RELEASE(attachment);
+          RELEASE(attachedCell);
+          RELEASE(image);
+        }
+    }
 }
 
 @end
@@ -551,6 +610,8 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 #define IGNORE	((RTFConsumer *)ctxt)->ignore
 #define TEXTPOSITION [RESULT length]
 #define DOCUMENTATTRIBUTES ((RTFConsumer*)ctxt)->documentAttributes
+
+#define FILES ((RTFDConsumer*)ctxt)->files
 
 #define CTXT [((RTFConsumer *)ctxt) attr]
 #define CHANGED CTXT->changed
@@ -1029,3 +1090,11 @@ void GSRTFparagraph (void *ctxt)
   GSRTFmangleText(ctxt, "\n");
   CTXT->tabChanged = NO;
 }
+
+void GSRTFNeXTGraphic (void *ctxt, const char *fileName, int width, int height)
+{
+  NSLog (@"RTFNextGraphic called");
+  NSLog (@"we want to read the file: <%s> (%dx%d)", fileName, width, height);
+  [(RTFDConsumer *)ctxt appendImage: [NSString stringWithCString: fileName]];
+}
+

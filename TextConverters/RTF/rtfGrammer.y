@@ -117,6 +117,9 @@ int GSRTFlex(void *lvalp, void *lctxt);
 %token <cmd> RTFcolortable
 %token <cmd> RTFfont
 %token <cmd> RTFfontSize
+%token <cmd> RTFNeXTGraphic
+%token <cmd> RTFNeXTGraphicWidth
+%token <cmd> RTFNeXTGraphicHeight
 %token <cmd> RTFpaperWidth
 %token <cmd> RTFpaperHeight
 %token <cmd> RTFmarginLeft
@@ -176,6 +179,7 @@ rtfCharset: RTFansi { $$ = 1; }
 		;
 
 rtfIngredients:	/*	empty	*/
+		|	rtfIngredients rtfNeXTGraphic 
 		|	rtfIngredients rtfFontList
 		|	rtfIngredients rtfColorDef
 		|	rtfIngredients rtfStatement
@@ -355,6 +359,15 @@ rtfStatement: RTFfont				{ int font;
 		|	RTFOtherStatement	{ GSRTFgenericRTFcommand(CTXT, $1); 
 		                                  free((void*)$1.name); }
 		;
+
+/*
+	NeXTGraphic (images)
+*/
+
+rtfNeXTGraphic: '{' '{' RTFNeXTGraphic RTFtext RTFNeXTGraphicWidth RTFNeXTGraphicHeight '}' RTFtext '}'
+		{
+			GSRTFNeXTGraphic (CTXT, $4, $5.parameter, $6.parameter);
+		};
 
 /*
 	Font description
