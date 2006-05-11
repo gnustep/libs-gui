@@ -151,7 +151,7 @@ static Class imageCellClass;
 
 @implementation NSImageView (NSDraggingDestination)
 
-- (unsigned int) draggingEntered: (id <NSDraggingInfo>)sender
+- (NSDragOperation) draggingEntered: (id <NSDraggingInfo>)sender
 {
   if (([sender draggingSource] != self) && ([self isEditable]) && 
       ([NSImage canInitWithPasteboard: [sender draggingPasteboard]]))

@@ -137,7 +137,7 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
   [super dealloc];
 }
 
-- (unsigned int) draggingEntered: (id <NSDraggingInfo>)sender
+- (NSDragOperation) draggingEntered: (id <NSDraggingInfo>)sender
 {
   NSPasteboard *pb;
   NSDragOperation sourceDragMask;

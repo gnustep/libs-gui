@@ -5694,7 +5694,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 }
 
 
-- (unsigned int) draggingEntered: (id <NSDraggingInfo>) sender
+- (NSDragOperation) draggingEntered: (id <NSDraggingInfo>) sender
 {
   currentDropRow = -1;
   currentDropOperation = -1;
@@ -5712,7 +5712,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
   [self displayIfNeeded];
 }
 
-- (unsigned int) draggingUpdated: (id <NSDraggingInfo>) sender
+- (NSDragOperation) draggingUpdated: (id <NSDraggingInfo>) sender
 {
   NSPoint p = [sender draggingLocation];
   NSRect newRect;

@@ -1056,7 +1056,7 @@ static NSImage *unexpandable  = nil;
  *  Drag'n'drop support
  */
 
-- (unsigned int) draggingEntered: (id <NSDraggingInfo>) sender
+- (NSDragOperation) draggingEntered: (id <NSDraggingInfo>) sender
 {
   //NSLog(@"draggingEntered");
   currentDropRow = -1;
@@ -1073,7 +1073,7 @@ static NSImage *unexpandable  = nil;
   [self displayIfNeeded];
 }
 
-- (unsigned int) draggingUpdated: (id <NSDraggingInfo>) sender
+- (NSDragOperation) draggingUpdated: (id <NSDraggingInfo>) sender
 {
   NSPoint p = [sender draggingLocation];
   NSRect newRect;

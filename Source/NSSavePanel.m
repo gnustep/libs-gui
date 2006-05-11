@@ -95,7 +95,7 @@ static BOOL _gs_display_reading_progress = NO;
 
 @implementation NSSavePanel (_PrivateMethods)
 
-- (unsigned int) draggingEntered: (id <NSDraggingInfo>)sender
+- (NSDragOperation) draggingEntered: (id <NSDraggingInfo>)sender
 {
   NSPasteboard *pb;
 

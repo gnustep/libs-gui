@@ -69,6 +69,7 @@
 	position: (NSPoint)eventLocation
        timestamp: (NSTimeInterval)time
 	toWindow: (NSWindow*)dWindow;
+- (void) _handleDrag: (NSEvent*)theEvent slidePoint: (NSPoint)slidePoint;
 - (void) _handleEventDuringDragging: (NSEvent *)theEvent;
 - (void) _updateAndMoveImageToCorrectPosition;
 - (void) _moveDraggedImageToNewPosition;
@@ -110,7 +111,7 @@
 
 static	GSDragView *sharedDragView = nil;
 
-+ (GSDragView*) sharedDragView
++ (id) sharedDragView
 {
   if (sharedDragView == nil)
     {
@@ -304,6 +305,32 @@ static	GSDragView *sharedDragView = nil;
 	    }
 	}
     }
+}
+
+- (void) sendExternalEvent: (GSAppKitSubtype)subtype
+		    action: (NSDragOperation)action
+		  position: (NSPoint)eventLocation
+		 timestamp: (NSTimeInterval)time
+		  toWindow: (int)dWindowNumber
+{
+}
+
+/*
+  Return the window that lies below the cursor and accepts drag and drop.
+  In mouseWindowRef the OS reference for this window is returned, this is even 
+  set, if there is a native window, but no GNUstep window at this location.
+ */
+- (NSWindow*) windowAcceptingDnDunder: (NSPoint)mouseLocation
+			    windowRef: (int*)mouseWindowRef
+{
+  int win;
+
+  *mouseWindowRef = 0;
+  win = [GSServerForWindow(_window) findWindowAt: mouseLocation
+				       windowRef: mouseWindowRef
+				       excluding: [_window windowNumber]];
+
+  return GSWindowWithNumber(win);
 }
 
 @end
@@ -529,14 +556,6 @@ static	GSDragView *sharedDragView = nil;
 	                    data1: dragWindowRef
 	                    data2: action];
   [dWindow sendEvent: e];
-}
-
-- (void) sendExternalEvent: (GSAppKitSubtype)subtype
-		    action: (NSDragOperation)action
-		  position: (NSPoint)eventLocation
-		 timestamp: (NSTimeInterval)time
-		  toWindow: (int)dWindowNumber
-{
 }
 
 /*
@@ -978,24 +997,6 @@ static	GSDragView *sharedDragView = nil;
       [NSThread sleepUntilDate: 
 	[NSDate dateWithTimeIntervalSinceNow: delay * 2.0]];
     }
-}
-
-/*
-  Return the window that lies below the cursor and accepts drag and drop.
-  In mouseWindowRef the OS reference for this window is returned, this is even 
-  set, if there is a native window, but no GNUstep window at this location.
- */
-- (NSWindow*) windowAcceptingDnDunder: (NSPoint)mouseLocation
-			    windowRef: (int*)mouseWindowRef
-{
-  int win;
-
-  *mouseWindowRef = 0;
-  win = [GSServerForWindow(_window) findWindowAt: mouseLocation
-				       windowRef: mouseWindowRef
-				       excluding: [_window windowNumber]];
-
-  return GSWindowWithNumber(win);
 }
 
 @end
