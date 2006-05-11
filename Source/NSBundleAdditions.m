@@ -343,6 +343,19 @@ Class gmodel_class(void)
       return NO;
     }
   table = [NSDictionary dictionaryWithObject: owner forKey: @"NSOwner"];
+
+  /*
+   * First look for the NIB in the bundle corresponding to the owning class,
+   * since the class may have been loaded dynamically and the bundle may
+   * contain class-specific NIB resources as well as code.
+   * If that fails, try to load the NIB from the main application bundle,
+   * which is where most NIB resources are to be found.
+   * Possibly this is the wrong order ... since it's conceivable that an
+   * application may supply an alternative NIB which it would like to have
+   * used in preference to the one in the classes bundle.  However I could
+   * not find the behavior documented anywhere and the current order is
+   * most consistent with the the way the code behaved before I changed it.
+   */
   bundle = [self bundleForClass: [owner class]];
   if (bundle != nil && [bundle loadNibFile: aNibName
 			 externalNameTable: table

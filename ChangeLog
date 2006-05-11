@@ -1,3 +1,7 @@
+2006-05-11  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSBundleAdditions.m: ([loadNibNamed:owner:]) add comments
+
 2006-05-11  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSDragging.h,
@@ -15,7 +19,8 @@
 	* Source/NSApplication.m (-finishLaunching): Don't display the
 	application icon window if the GSDontShowAppIcon is set to YES.
 	Patch by  Saso Kiselkov <diablos@manga.sk>. 
-	* Documentation/GuiUser/DefaultsSuppary.gsdoc: Document GSDontShowAppIcon.
+	* Documentation/GuiUser/DefaultsSuppary.gsdoc:
+	Document GSDontShowAppIcon.
 	* Source/GSDragView.m: Resorted method definitions to remove
 	compiler warnings.
 
