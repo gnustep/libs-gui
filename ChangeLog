@@ -1,3 +1,10 @@
+2006-05-12  Nicolas Roard <nicolas@roard.com>
+	* TextConverters/RTF/RTFProducer.m: fixed the saving of the embedded
+	files by using -lastPathComponent
+	* TextConverters/RTF/rtfGrammer.tab.c:
+	* TextConverters/RTF/rtfGrammer.y: modified the parser to be more
+	flexible (and thus it can now read rtfd produced by gnustep)
+
 2006-05-11  Nicolas Roard <nicolas@roard.com>
 
 	* TextConverters/RTF: added support for reading RTFD documents 

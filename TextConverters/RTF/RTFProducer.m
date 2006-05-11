@@ -101,6 +101,7 @@
     
           filename = [fileWrapper filename] ? [fileWrapper filename]
                                             : [fileWrapper preferredFilename];
+	  filename = [filename lastPathComponent];
 
           [fileDict setObject: fileWrapper forKey: filename];
         }
@@ -952,7 +953,7 @@
               cellSize = [[attachment attachmentCell] cellSize];
 
               [result appendString: @"{{\\NeXTGraphic "];
-              [result appendString: attachmentFilename];
+              [result appendString: [attachmentFilename lastPathComponent]];
               [result appendFormat: @" \\width%d \\height%d}",
                   (short)points2twips(cellSize.width),
                   (short)points2twips(cellSize.height)];

@@ -364,7 +364,7 @@ rtfStatement: RTFfont				{ int font;
 	NeXTGraphic (images)
 */
 
-rtfNeXTGraphic: '{' '{' RTFNeXTGraphic RTFtext RTFNeXTGraphicWidth RTFNeXTGraphicHeight '}' RTFtext '}'
+rtfNeXTGraphic: '{' '{' RTFNeXTGraphic RTFtext RTFNeXTGraphicWidth RTFNeXTGraphicHeight '}' rtfIngredients '}'
 		{
 			GSRTFNeXTGraphic (CTXT, $4, $5.parameter, $6.parameter);
 		};
