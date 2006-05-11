@@ -1093,8 +1093,6 @@ void GSRTFparagraph (void *ctxt)
 
 void GSRTFNeXTGraphic (void *ctxt, const char *fileName, int width, int height)
 {
-  NSLog (@"RTFNextGraphic called");
-  NSLog (@"we want to read the file: <%s> (%dx%d)", fileName, width, height);
   [(RTFDConsumer *)ctxt appendImage: [NSString stringWithCString: fileName]];
 }
 
