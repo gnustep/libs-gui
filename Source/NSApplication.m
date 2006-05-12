@@ -942,7 +942,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
       image = [NSImage imageNamed: @"GNUstep"];
     }
   [self setApplicationIconImage: image];
-  if (![defs boolForKey: @"GSDontShowAppIcon"])
+  if (![defs boolForKey: @"GSSuppressAppIcon"])
     {
       [self _appIconInit];
     }

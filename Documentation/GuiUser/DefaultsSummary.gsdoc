@@ -194,11 +194,11 @@
           application. This is a new feature and has not been tested. 
           </p>
 	  </desc>
-	  <term>GSDontShowAppIcon</term>
+	  <term>GSSuppressAppIcon</term>
 	  <desc>
           <p>
 	  A boolean value, <code>NO</code> by default. Specifies wether the
-	  application icon window should be displayed. Set to <code>YES</code>
+	  application icon window should not be displayed. Set to <code>YES</code>
 	  for background server applications.
           </p>
 	  </desc>
