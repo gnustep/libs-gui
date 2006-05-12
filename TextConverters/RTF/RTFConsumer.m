@@ -375,6 +375,13 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 
 @end
 
+
+@interface RTFDConsumer (Private)
+
+- (void) appendImage: (NSString*) string;
+
+@end
+
 @implementation RTFDConsumer
 
 - (id) init
@@ -427,16 +434,21 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
           NSImage* image = [[NSImage alloc] initWithData: [wrapper regularFileContents]];
           NSTextAttachmentCell* attachedCell = [[NSTextAttachmentCell alloc] initImageCell: image];
           NSTextAttachment* attachment = [[NSTextAttachment alloc] initWithFileWrapper: wrapper];
+          RTFAttribute* attr = [self attr];
+          NSMutableDictionary* attributes = nil;
+          NSMutableAttributedString* str = nil;
+
           [attachment setAttachmentCell: attachedCell];
         
-          RTFAttribute* attr = [self attr];
-          NSMutableDictionary* attributes = [[NSMutableDictionary alloc]
+          attributes = [[NSMutableDictionary alloc]
 			 initWithObjectsAndKeys:
 			   [attr currentFont], NSFontAttributeName,
 			   attr->paragraph, NSParagraphStyleAttributeName,
 			   nil];
           
-          NSMutableAttributedString* str = [NSMutableAttributedString attributedStringWithAttachment: attachment];
+          str = (NSMutableAttributedString*) [NSMutableAttributedString 
+                         attributedStringWithAttachment: attachment];
+
           [str addAttributes: attributes range: NSMakeRange (0, [str length])];
           
           [result replaceCharactersInRange: insertionRange withAttributedString: str];

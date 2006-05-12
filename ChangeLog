@@ -1,4 +1,11 @@
 2006-05-12  Nicolas Roard <nicolas@roard.com>
+
+	* TextConverters/RTF/RTFConsumer.m: reorganized -appendImage: in 
+	the RTFDConsumer class to compile with gcc 2.95 and declared the
+	method in a private category.
+
+2006-05-12  Nicolas Roard <nicolas@roard.com>
+
 	* TextConverters/RTF/RTFProducer.m: fixed the saving of the embedded
 	files by using -lastPathComponent
 	* TextConverters/RTF/rtfGrammer.tab.c:
