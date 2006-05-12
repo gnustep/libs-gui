@@ -1,3 +1,10 @@
+2006-05-12  Nicolas Roard <nicolas@roard.com>
+	
+	* TextConverters/RTF/RTFProducer.h:
+	* TextConverters/RTF/RTFProducer.m: Fixed the RTFD generation
+	when the attachments do not have filenames. It is now possible
+	to write RTFD documents with pasted images.
+
 2006-05-12  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Documentation/GuiUser/DefaultsSuppary.gsdoc,

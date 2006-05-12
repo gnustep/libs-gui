@@ -925,7 +925,15 @@
 
                   if (! attachmentFilename)
                     {
-                      attachmentFilename = @"unnamed";
+                      // If we do not have a proper filename, we set it here, incrementing
+                      // the number of unnamed attachment so we do not overwrite existing ones.
+
+                      // FIXME: setting the filename extension to tiff is not that great, but as
+                      // we anyway append \NeXTGraphic just after it makes sense... (without the
+                      // extension the file is not loaded) 
+
+                      attachmentFilename = [NSString stringWithFormat: @"__unnamed_file_%d.tiff", 
+                                             unnamedAttachmentCounter++];
                       [attachmentFileWrapper setPreferredFilename: 
                           attachmentFilename];
                     }

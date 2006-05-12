@@ -56,6 +56,7 @@
     to build the delta "*/
 
   BOOL _inlineGraphics; /*" Indicates if graphics should be inlined. "*/
+  int unnamedAttachmentCounter; /*" Count the number of unnamed attachments so we can name them uniquely "*/
 }
 
 + (NSData *)produceDataFrom: (NSAttributedString *)aText
