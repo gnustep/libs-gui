@@ -66,7 +66,7 @@
   RELEASE(_viewClass);
   RELEASE(_windowClass);
   RELEASE(_view);
-  RELEASE(_title);
+  RELEASE(_autosaveName);
   [super dealloc];
 }
 
@@ -111,6 +111,10 @@
         {
 	  _windowRect = [coder decodeRectForKey: @"NSWindowRect"];
 	}
+      if ([coder containsValueForKey: @"NSFrameAutosaveName"])
+        {
+	  ASSIGN(_autosaveName, [coder decodeObjectForKey: @"NSFrameAutosaveName"]);
+	}
       if ([coder containsValueForKey: @"NSWindowTitle"])
         {
 	  ASSIGN(_title, [coder decodeObjectForKey: @"NSWindowTitle"]);
@@ -143,6 +147,7 @@
       [aCoder encodeSize: _maxSize forKey: @"NSMaxSize"];
       [aCoder encodeRect: _windowRect forKey: @"NSWindowRect"];
       [aCoder encodeObject: _title forKey: @"NSWindowTitle"];
+      [aCoder encodeObject: _autosaveName forKey: @"NSFrameAutosaveName"];
     }
 }
 
@@ -171,13 +176,14 @@
       [_realObject setHidesOnDeactivate: _flags.isHiddenOnDeactivate];
       [_realObject setReleasedWhenClosed: !(_flags.isNotReleasedOnClose)];
       [_realObject setOneShot: _flags.isOneShot];
-      // [_realObject setVisible: _flags.isVisible];
-      // [_realObject setWantsToBeColor: _flags.wantsToBeColor];
+      // [_realObject setVisible: _flags.isVisible]; // this is determined by whether it's in the visible windows array...
+      // [_realObject setWantsToBeColor: _flags.wantsToBeColor]; // not applicable on GNUstep.
       [_realObject setAutodisplay: YES];
       [_realObject setDynamicDepthLimit: _flags.dynamicDepthLimit];
-      // [_realObject setAutoPositionMask: _flags.autoPositionMask];
+      // [_realObject setAutoPositionMask: _flags.autoPositionMask]; // currently not implemented for nibs
       // [_realObject setAutoPosition: _flags.autoPosition];
       [_realObject setDynamicDepthLimit: _flags.dynamicDepthLimit];
+      [_realObject setFrameAutosaveName: _autosaveName];
 
       // reset attributes...
       [_realObject setContentView: _view];

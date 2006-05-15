@@ -1,3 +1,7 @@
+2006-05-14 20:58 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Added autosaveName.
+
 2006-05-10 23:55 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSButtonCell.m
