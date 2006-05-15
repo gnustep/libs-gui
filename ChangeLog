@@ -1,3 +1,10 @@
+2006-05-15 00:54 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Add title mask if window has
+	a title in the archive.
+	* Source/NSPopUpButtonCell.m: Clear and reset the menu
+	in the popup button cell initWithCoder: method.
+
 2006-05-14 20:58 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibCompatibility.m: Added autosaveName.

@@ -1010,6 +1010,7 @@ static NSImage *_pbc_image[2];
 	}
 
       menu = [aDecoder decodeObjectForKey: @"NSMenu"];
+      [self setMenu: nil];
       [self setMenu: menu];
     }
   else

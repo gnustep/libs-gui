@@ -165,6 +165,12 @@
 		       format: @"Unable to find class '%@'", _windowClass];
 	}
       
+      // if it has a title add the title mask...
+      if(_title != nil)
+	{
+	  _windowStyle |= NSTitledWindowMask;
+	}
+
       _realObject = [[aClass allocWithZone: NSDefaultMallocZone()]
 		      initWithContentRect: _windowRect
 		      styleMask: _windowStyle
