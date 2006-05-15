@@ -47,6 +47,10 @@
 @end
 
 @interface RTFDConsumer: RTFConsumer
+{
+  NSDictionary* files;
+}
+- (void) setFiles: (NSDictionary*) theFiles;
 @end
 
 #endif

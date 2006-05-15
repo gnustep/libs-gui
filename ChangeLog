@@ -77,6 +77,54 @@
 	* Source/NSTextContainer.m
 	* Source/NSTextView.m: Improved keyed unarchiving for these classes.
 
+=======
+2006-05-12  Nicolas Roard <nicolas@roard.com>
+	
+	* TextConverters/RTF/RTFProducer.h:
+	* TextConverters/RTF/RTFProducer.m: Fixed the RTFD generation
+	when the attachments do not have filenames. It is now possible
+	to write RTFD documents with pasted images.
+
+2006-05-12  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Documentation/GuiUser/DefaultsSuppary.gsdoc,
+	* Source/NSApplication.m (-finishLaunching): Changed
+	GSDontShowAppIcon to GSSuppressAppIcon.
+
+2006-05-12  Nicolas Roard <nicolas@roard.com>
+
+	* TextConverters/RTF/RTFConsumer.m: reorganized -appendImage: in 
+	the RTFDConsumer class to compile with gcc 2.95 and declared the
+	method in a private category.
+
+2006-05-12  Nicolas Roard <nicolas@roard.com>
+
+	* TextConverters/RTF/RTFProducer.m: fixed the saving of the embedded
+	files by using -lastPathComponent
+	* TextConverters/RTF/rtfGrammer.tab.c:
+	* TextConverters/RTF/rtfGrammer.y: modified the parser to be more
+	flexible (and thus it can now read rtfd produced by gnustep)
+
+2006-05-11  Nicolas Roard <nicolas@roard.com>
+
+	* TextConverters/RTF: added support for reading RTFD documents 
+	* TextConverters/RTF/rtfScanner.c:
+	* TextConverters/RTF/rtfGrammer.y:
+	* TextConverters/RTF/rtfGrammer.tab.h:
+	* TextConverters/RTF/rtfGrammer.tab.c: modified the parser and
+	the grammar to parse \NeXTGraphic and the associated \width and \height
+	although \width and \height are not used to set the image size.
+	* TextConverters/RTF/RTFConsumerFunctions.h:
+	* TextConverters/RTF/RTFConsumer.h:
+	* TextConverters/RTF/RTFConsumer.m: modified the RTFDConsumer class so
+	that it holds a list of the files in the rtfd, added an appendImage:
+	method which wrap the files and set an attachment cell with the image.
+	Also added the RTFNeXTGraphic() function called by the parser.
+
+2006-05-11  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSBundleAdditions.m: ([loadNibNamed:owner:]) add comments
+
 2006-05-11  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSDragging.h,
@@ -94,7 +142,8 @@
 	* Source/NSApplication.m (-finishLaunching): Don't display the
 	application icon window if the GSDontShowAppIcon is set to YES.
 	Patch by  Saso Kiselkov <diablos@manga.sk>. 
-	* Documentation/GuiUser/DefaultsSuppary.gsdoc: Document GSDontShowAppIcon.
+	* Documentation/GuiUser/DefaultsSuppary.gsdoc:
+	Document GSDontShowAppIcon.
 	* Source/GSDragView.m: Resorted method definitions to remove
 	compiler warnings.
 

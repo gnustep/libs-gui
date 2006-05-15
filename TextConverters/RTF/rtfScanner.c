@@ -158,6 +158,7 @@ int findStringFromKeywordArray(const char *string, const LexKeyword *array,
 //	<!> must be sorted
 LexKeyword RTFcommands[] = 
   {
+    {"NeXTGraphic",token(RTFNeXTGraphic)},
     {"ansi",      token(RTFansi)},
     {"b",         token(RTFbold)},
     {"blue",      token(RTFblue)},
@@ -197,6 +198,7 @@ LexKeyword RTFcommands[] =
     {"headerf",   token(RTFheader)},
     {"headerl",   token(RTFheader)},
     {"headerr",   token(RTFheader)},
+    {"height",    token(RTFNeXTGraphicHeight)},
     {"i",         token(RTFitalic)},
     {"info",      token(RTFinfo)},
     {"ldblquote", token(RTFldblquote)},
@@ -238,7 +240,8 @@ LexKeyword RTFcommands[] =
     {"uldb",      token(RTFunderline)},
     {"ulnone",    token(RTFunderlineStop)},
     {"ulw",       token(RTFunderline)},
-    {"up",        token(RTFsuperscript)}
+    {"up",        token(RTFsuperscript)},
+    {"width",     token(RTFNeXTGraphicWidth)}
   };
 
 BOOL probeCommand (RTFscannerCtxt *lctxt)
