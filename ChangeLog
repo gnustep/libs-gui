@@ -1,3 +1,7 @@
+2006-05-15 21:55 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Streamlined previous change.
+
 2006-05-15 00:54 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibCompatibility.m: Add title mask if window has
