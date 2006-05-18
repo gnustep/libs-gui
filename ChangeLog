@@ -1,3 +1,11 @@
+2006-05-18  [themes] Nicolas Roard <nicolas@roard.com>
+
+	* Headers/Additions/GNUstepGUI/GSDrawFunctions.h:
+	* Source/GSDrawFunctions.m:
+	* Source/NSButtonCell.m: Added theme support for NSButtonCell
+	with two new methods in GSDrawFunctions:
+	drawButton:in:view:style:state: and drawFoctusFrame:view:
+
 2006-05-12  Nicolas Roard <nicolas@roard.com>
 	
 	* TextConverters/RTF/RTFProducer.h:
