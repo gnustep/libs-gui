@@ -64,6 +64,11 @@
            inRect: (NSRect)border 
            withClip: (NSRect)clip;
 
+/* Themes */
+- (NSRect) drawButton: (NSRect) frame in: (NSButtonCell*) cell 
+  view: (NSView*) view style: (int) style state: (int) state;
+- (void) drawFocusFrame: (NSRect) frame view: (NSView*) view;
+
 @end
 
 #endif /* _GNUstep_H_GSDrawFunctions */

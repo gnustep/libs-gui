@@ -392,4 +392,51 @@ static id theTheme = nil;
   return rect;
 }
 
+/** theme drawing methos */
+
+- (NSRect) drawButton: (NSRect) frame 
+                   in: (NSButtonCell*) cell 
+                 view: (NSView*) view 
+                style: (int) style 
+                state: (int) state
+{
+  /* computes the interior frame rect */
+
+  NSRect interiorFrame = [cell drawingRectForBounds: frame];
+
+  /* Draw the button background */
+
+  if (state == 0) /* default state, unpressed */
+    {
+      //[[NSColor redColor] set];
+      [[NSColor controlBackgroundColor] set];
+      NSRectFill(frame);
+      [GSDrawFunctions drawButton: frame : NSZeroRect];
+    }
+  else if (state == 1) /* highlighted state */
+    {
+      //[[NSColor blueColor] set];
+      [[NSColor selectedControlColor] set];
+      NSRectFill(frame);
+      [GSDrawFunctions drawGrayBezel: frame : NSZeroRect];
+    }
+  else if (state == 2) /* pushed state */
+    {
+      //[[NSColor yellowColor] set];
+      [[NSColor selectedControlColor] set];
+      NSRectFill(frame);
+      [GSDrawFunctions drawGrayBezel: frame : NSZeroRect];
+      interiorFrame = NSOffsetRect(interiorFrame, 1.0, [view isFlipped] ? 1.0 : -1.0);
+    }
+
+  /* returns the interior frame rect */
+
+  return interiorFrame;
+}
+
+- (void) drawFocusFrame: (NSRect) frame view: (NSView*) view
+{
+  NSDottedFrameRect(frame);
+}
+
 @end

@@ -788,6 +788,9 @@
 
 - (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
+  unsigned	mask;
+  int buttonState = 0;
+
   // Save last view drawn to
   if (_control_view != controlView)
     _control_view = controlView;
@@ -800,22 +803,61 @@
   if (NSIsEmptyRect(cellFrame))
     return;
 
+  // set the mask
+  if (_cell.is_highlighted)
+    {
+      mask = _highlightsByMask;
+
+      if (_cell.state)
+	mask &= ~_showAltStateMask;
+    }
+  else if (_cell.state)
+    mask = _showAltStateMask;
+  else
+    mask = NSNoCellMask;
+
+  /* Draw the cell's background color.  
+     We draw when there is a border or when highlightsByMask
+     is NSChangeBackgroundCellMask or NSChangeGrayCellMask,
+     as required by our nextstep-like look and feel.  */
+  if (_cell.is_bordered 
+      || (_highlightsByMask & NSChangeBackgroundCellMask)
+      || (_highlightsByMask & NSChangeGrayCellMask))
+    {
+      /* Determine the background color. */
+      if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
+        {
+          buttonState = 1; /* highlighted state */
+        }
+    }
+
+  /* Pushed in buttons contents are displaced to the bottom right 1px.  */
+  if (_cell.is_bordered && (mask & NSPushInCellMask))
+    {
+      //cellFrame = NSOffsetRect(cellFrame, 1., flippedView ? 1. : -1.);
+      buttonState = 2; // pushed button
+    }
+
   // draw the border if needed
   if ((_cell.is_bordered) && 
       (!_shows_border_only_while_mouse_inside || _mouse_inside))
     {
-      // FIXME Should check the bezel and gradient style
-      if (_cell.is_highlighted && (_highlightsByMask & NSPushInCellMask))
-        {
-	  [GSDrawFunctions drawGrayBezel: cellFrame : NSZeroRect];
-        }
-      else
-        {
-	  [GSDrawFunctions drawButton: cellFrame : NSZeroRect];
-        }
+      cellFrame = [[GSDrawFunctions theme]
+         drawButton: cellFrame in: self view: controlView
+              style: _bezel_style
+              state: buttonState];
     }
 
   [self drawInteriorWithFrame: cellFrame inView: controlView];
+
+  // Draw first responder
+  if (_cell.shows_first_responder
+      && [[controlView window] firstResponder] == controlView)
+    {
+      //NSDottedFrameRect(cellFrame);
+      [[GSDrawFunctions theme]
+        drawFocusFrame: cellFrame view: controlView];
+    }
 }
 
 - (void) drawGradientWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
@@ -936,8 +978,8 @@
 
   _control_view = controlView;
 
-  cellFrame = [self drawingRectForBounds: cellFrame];
-
+  //TODO: we should be able to get rid of "mask"
+  // set the mask
   if (_cell.is_highlighted)
     {
       mask = _highlightsByMask;
@@ -949,38 +991,6 @@
     mask = _showAltStateMask;
   else
     mask = NSNoCellMask;
-
-  /* Pushed in buttons contents are displaced to the bottom right 1px.  */
-  if (_cell.is_bordered && (mask & NSPushInCellMask))
-    {
-      cellFrame = NSOffsetRect(cellFrame, 1., flippedView ? 1. : -1.);
-    }
-
-  /* Draw the cell's background color.  
-     We draw when there is a border or when highlightsByMask
-     is NSChangeBackgroundCellMask or NSChangeGrayCellMask,
-     as required by our nextstep-like look and feel.  */
-  if (_cell.is_bordered 
-      || (_highlightsByMask & NSChangeBackgroundCellMask)
-      || (_highlightsByMask & NSChangeGrayCellMask))
-    {
-      /* Determine the background color. */
-      if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
-        {
-          backgroundColor = [NSColor selectedControlColor];
-        }
-      else if (_cell.is_bordered) 
-        {
-          backgroundColor = [NSColor controlBackgroundColor];
-        }
-      
-      if (backgroundColor != nil) 
-        {
-          [backgroundColor set];
-          NSRectFill (cellFrame);
-        }
-      
-    }
 
   /*
    * Determine the image and the title that will be
@@ -1190,12 +1200,6 @@
       [self _drawAttributedText: titleToDisplay inFrame: titleRect];
     }
 
-  // Draw first responder
-  if (_cell.shows_first_responder
-      && [[controlView window] firstResponder] == controlView)
-    {
-      NSDottedFrameRect(cellFrame);
-    }
 }
 
 - (NSSize) cellSize
