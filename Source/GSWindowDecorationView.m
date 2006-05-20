@@ -30,6 +30,7 @@
 #include "AppKit/NSColor.h"
 #include "AppKit/NSWindow.h"
 #include "GNUstepGUI/GSDisplayServer.h"
+#include "GNUstepGUI/GSDrawFunctions.h"
 
 
 struct NSWindow_struct
@@ -69,7 +70,7 @@ GSWindowDecorationView implementation.
 
 
 +(void) offsets: (float *)l : (float *)r : (float *)t : (float *)b
-   forStyleMask: (unsigned int)style
+   forStyleMask: (unsigned int)stylek
 {
   [self subclassResponsibility: _cmd];
 }
@@ -270,12 +271,13 @@ Returns the content rect for a given window frame.
 
 - (void) drawRect: (NSRect)rect
 {
-  NSColor *c = [_window backgroundColor];
+  //NSColor *c = [_window backgroundColor];
 
   if (NSIntersectsRect(rect, contentRect))
     {
-      [c set];
-      NSRectFill(contentRect);
+    //  [c set];
+    //  NSRectFill(contentRect);
+      [[GSDrawFunctions theme] drawWindowBackground: contentRect view: self];
     }
 }
 

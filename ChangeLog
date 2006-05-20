@@ -1,3 +1,9 @@
+2006-05-20  [thenes] Nicolas Roard <nicolas@roard.com>
+
+	* Headers/Additions/GNUstepGUI/GSDrawFunctions.h:
+	* Source/GSDrawFunctions.m:
+	* Source/GSWindowDecorationView.m: added the drawWindowdBackground:view: method
+
 2006-05-18  [themes] Nicolas Roard <nicolas@roard.com>
 
 	* Headers/Additions/GNUstepGUI/GSDrawFunctions.h:

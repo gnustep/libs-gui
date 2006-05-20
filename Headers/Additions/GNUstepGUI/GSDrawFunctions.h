@@ -68,6 +68,7 @@
 - (NSRect) drawButton: (NSRect) frame in: (NSButtonCell*) cell 
   view: (NSView*) view style: (int) style state: (int) state;
 - (void) drawFocusFrame: (NSRect) frame view: (NSView*) view;
+- (void) drawWindowBackground: (NSRect) frame view: (NSView*) view;
 
 @end
 

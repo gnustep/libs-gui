@@ -439,4 +439,12 @@ static id theTheme = nil;
   NSDottedFrameRect(frame);
 }
 
+- (void) drawWindowBackground: (NSRect) frame view: (NSView*) view
+{
+  NSColor *c = [[view window] backgroundColor];
+  [c set];
+  //[[NSColor redColor] set];
+  NSRectFill (frame);
+}
+
 @end
