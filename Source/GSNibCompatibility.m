@@ -686,6 +686,7 @@
 
 @interface NSKeyedUnarchiver (NSClassSwapperPrivate)
 - (BOOL) replaceObject: (id)oldObj withObject: (id)newObj;
+- (NSDictionary *)keyMap;
 @end
 
 @implementation NSKeyedUnarchiver (NSClassSwapperPrivate)
@@ -707,6 +708,11 @@
     }
 
   return NO;
+}
+
+- (NSDictionary *)keyMap
+{
+  return _keyMap;
 }
 @end
 
@@ -1155,15 +1161,4 @@
 @end
 
 @implementation _NSCornerView
-@end
-
-@interface NSKeyedUnarchiver (GSNibCompatibilityAdditions)
-- (NSDictionary *)keyMap;
-@end
-
-@implementation NSKeyedUnarchiver (GSNibCompatibilityAdditions)
-- (NSDictionary *)keyMap
-{
-  return _keyMap;
-}
 @end
