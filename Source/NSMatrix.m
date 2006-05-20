@@ -121,6 +121,40 @@ typedef struct {
   int height;
 } MRect;
 
+typedef struct _GSMatrixFlags {
+#ifdef WORDS_BIGENDIAN
+  unsigned int isHighlight:1;
+  unsigned int isRadio:1;
+  unsigned int isList:1;
+  unsigned int allowsEmptySelection:1;
+  unsigned int autoScroll:1;
+  unsigned int selectionByRect:1;
+  unsigned int drawCellBackground:1;
+  unsigned int drawBackground:1;
+  unsigned int autosizesCells:1;
+  unsigned int drawingAncestor:1;
+  unsigned int tabKeyTraversesCells:1;
+  unsigned int tabKeyTraversesCellsExplicitly:1;
+  unsigned int canSearchIncrementally:1;
+  unsigned int unused:19;
+#else
+  unsigned int unused:19;
+  unsigned int canSearchIncrementally:1;
+  unsigned int tabKeyTraversesCellsExplicitly:1;
+  unsigned int tabKeyTraversesCells:1;
+  unsigned int drawingAncestor:1;
+  unsigned int autosizesCells:1;
+  unsigned int drawBackground:1;
+  unsigned int drawCellBackground:1;
+  unsigned int selectionByRect:1;
+  unsigned int autoScroll:1;
+  unsigned int allowsEmptySelection:1;
+  unsigned int isList:1;
+  unsigned int isRadio:1;
+  unsigned int isHighlight:1;  
+#endif
+} GSMatrixFlags;
+
 static inline MPoint MakePoint (int x, int y)
 {
   MPoint point = { x, y };
@@ -2719,10 +2753,28 @@ static SEL getSel;
 	}
       if ([aDecoder containsValueForKey: @"NSMatrixFlags"])
         {
-	  int mFlags;
+	  int mFlags = [aDecoder decodeIntForKey: @"NSMatrixFlags"];
+	  GSMatrixFlags matrixFlags;
+	  memcpy((void *)&matrixFlags,(void *)&mFlags,sizeof(struct _GSMatrixFlags));
 
-	  mFlags = [aDecoder decodeIntForKey: @"NSMatrixFlags"];
-	  // FIXME
+	  if(matrixFlags.isRadio)
+	    {
+	      [self setMode: NSRadioModeMatrix];
+	    }
+	  else if(matrixFlags.isList)
+	    {
+	      [self setMode: NSListModeMatrix];
+	    }
+	  else if(matrixFlags.isHighlight)
+	    {
+	      [self setMode: NSHighlightModeMatrix];
+	    }
+
+	  [self setAllowsEmptySelection: matrixFlags.allowsEmptySelection];
+	  [self setSelectionByRect: matrixFlags.selectionByRect];
+	  [self setDrawsCellBackground: matrixFlags.drawCellBackground];
+	  [self setDrawsBackground: matrixFlags.drawBackground];
+	  _tabKeyTraversesCells = matrixFlags.tabKeyTraversesCells;
 	}
       if ([aDecoder containsValueForKey: @"NSNumCols"])
         {

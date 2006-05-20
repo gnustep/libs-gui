@@ -42,6 +42,27 @@
 #include "AppKit/PSOperators.h"
 #include "GNUstepGUI/GSDrawFunctions.h"
 
+//
+// For nib compatibility, this is used to properly
+// initialize the object from a OS X nib file in initWithCoder:.
+//
+typedef struct _scrollViewFlags 
+{
+#ifdef WORDS_BIGENDIAN
+  unsigned int __unused4:26;
+  unsigned int hasHScroller:1; // 16
+  unsigned int hasVScroller:1; // 32
+  unsigned int __unused0:2;
+  NSBorderType border:2;
+#else
+  NSBorderType border:2;
+  unsigned int __unused0:2;
+  unsigned int hasVScroller:1; // 32
+  unsigned int hasHScroller:1; // 16
+  unsigned int __unused4:26;
+#endif  
+} GSScrollViewFlags;
+
 @implementation NSScrollView
 
 /*
@@ -546,6 +567,15 @@ static float scrollerWidth;
   /* scrollToPoint will call reflectScrollerClipView, and that will
    * update scrollers, rulers and headers */
   [_contentView scrollToPoint: point];
+}
+
+//
+// This method is here purely for nib compatibility.  This is the action
+// connected to by NSScrollers in IB when building a scrollview.
+//
+- (void) _doScroller: (NSScroller *)scroller
+{
+  [self _doScroll: scroller];
 }
 
 - (void) reflectScrolledClipView: (NSClipView *)aClipView
@@ -1188,38 +1218,44 @@ static float scrollerWidth;
 {
   [super encodeWithCoder: aCoder];
       
-  [aCoder encodeObject: _contentView];
-  [aCoder encodeValueOfObjCType: @encode(NSBorderType) at: &_borderType];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_scrollsDynamically];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_rulersVisible];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_hLineScroll];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_hPageScroll];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_vLineScroll];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_vPageScroll];
-
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasHorizScroller];
-  if (_hasHorizScroller)
-    [aCoder encodeObject: _horizScroller];
-
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasVertScroller];
-  if (_hasVertScroller)
-    [aCoder encodeObject: _vertScroller];
-
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasHorizRuler];
-  if (_hasHorizRuler)
-    [aCoder encodeObject: _horizRuler];
-
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasVertRuler];
-  if (_hasVertRuler)
-    [aCoder encodeObject: _vertRuler];
-
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasHeaderView];
-  if (_hasHeaderView)
-    [aCoder encodeObject: _headerClipView];
-
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasCornerView];
-
-  /* We do not need to encode headerview, cornerview stuff */
+  if([aCoder allowsKeyedCoding])
+    {
+    }
+  else
+    {
+      [aCoder encodeObject: _contentView];
+      [aCoder encodeValueOfObjCType: @encode(NSBorderType) at: &_borderType];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_scrollsDynamically];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_rulersVisible];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_hLineScroll];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_hPageScroll];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_vLineScroll];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_vPageScroll];
+      
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasHorizScroller];
+      if (_hasHorizScroller)
+	[aCoder encodeObject: _horizScroller];
+      
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasVertScroller];
+      if (_hasVertScroller)
+	[aCoder encodeObject: _vertScroller];
+      
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasHorizRuler];
+      if (_hasHorizRuler)
+	[aCoder encodeObject: _horizRuler];
+      
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasVertRuler];
+      if (_hasVertRuler)
+	[aCoder encodeObject: _vertRuler];
+      
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasHeaderView];
+      if (_hasHeaderView)
+	[aCoder encodeObject: _headerClipView];
+      
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasCornerView];
+      
+      /* We do not need to encode headerview, cornerview stuff */
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -1228,32 +1264,71 @@ static float scrollerWidth;
 
   if ([aDecoder allowsKeyedCoding])
     {
-      NSClipView *content = [aDecoder decodeObjectForKey: @"NSContentView"];
       NSScroller *hScroller = [aDecoder decodeObjectForKey: @"NSHScroller"];
       NSScroller *vScroller = [aDecoder decodeObjectForKey: @"NSVScroller"];
-      
+      NSClipView *content = [aDecoder decodeObjectForKey: @"NSContentView"]; 
+
+      if ([aDecoder containsValueForKey: @"NSsFlags"])
+        {
+	  unsigned long flags = [aDecoder decodeIntForKey: @"NSsFlags"];
+	  GSScrollViewFlags scrollViewFlags;
+	  memcpy((void *)&scrollViewFlags,(void *)&flags,sizeof(struct _scrollViewFlags));
+
+	  _hasVertScroller = scrollViewFlags.hasVScroller;
+	  _hasHorizScroller = scrollViewFlags.hasHScroller;
+	  // _scrollsDynamically = (!scrollViewFlags.notDynamic);
+	  // _rulersVisible = scrollViewFlags.rulersVisible;
+	  // _hasHorizRuler = scrollViewFlags.hasHRuler;
+	  // _hasVertRuler = scrollViewFlags.hasVRuler;
+	  // [self setDrawsBackground: (!scrollViewFlags.doesNotDrawBack)];
+	  _borderType = scrollViewFlags.border;
+	}
+
       if (content != nil)
         {
+	  NSRect frame = [content frame];
+	  float w = [vScroller frame].size.width;
+
+	  if(_hasVertScroller)
+	    {
+	      //
+	      // Slide the content view over, since on Mac OS X the scroller is on the
+	      // right, the content view is not properly positioned since our scroller
+	      // is on the left.
+	      //
+	      frame.origin.x += w;
+	      [content setFrame: frame];
+	    }
+
+	  // retain the view and reset the content view...
+	  RETAIN(content);
 	  [self setContentView: content];
+	  RELEASE(content);
+	  _contentView = content;
 	}
-      if (hScroller != nil)
+     
+      if (hScroller != nil && _hasHorizScroller)
         {
 	  [self setHorizontalScroller: hScroller];
 	}
-      if (vScroller != nil)
+
+      if (vScroller != nil && _hasVertScroller)
         {
 	  [self setVerticalScroller: vScroller];
 	}
-      if ([aDecoder containsValueForKey: @"NSsFlags"])
-        {
-	  //int flags = [aDecoder decodeIntForKey: @"NSsFlags"];
-	  // FIXME
+
+      if ([aDecoder containsValueForKey: @"NSHeaderClipView"])
+	{
+	  _hasHeaderView = YES;
+	  _hasCornerView = YES;	  
+	  ASSIGN(_headerClipView, [aDecoder decodeObjectForKey: @"NSHeaderClipView"]);
 	}
+
+      [self tile];
     }
   else
     {
-      int version = [aDecoder versionForClassName: 
-				  @"NSScrollView"];
+      int version = [aDecoder versionForClassName: @"NSScrollView"];
       NSDebugLLog(@"NSScrollView", @"NSScrollView: start decoding\n");
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_contentView];
       [aDecoder decodeValueOfObjCType: @encode(NSBorderType) at: &_borderType];

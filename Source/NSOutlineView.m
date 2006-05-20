@@ -756,35 +756,65 @@ static NSImage *unexpandable  = nil;
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autoResizesOutlineColumn];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_indentationMarkerFollowsCell];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autosaveExpandedItems];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_indentationPerLevel];
-  [aCoder encodeConditionalObject: _outlineTableColumn];
+  if([aCoder allowsKeyedCoding])
+    {
+    }
+  else
+    {
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autoResizesOutlineColumn];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_indentationMarkerFollowsCell];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autosaveExpandedItems];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_indentationPerLevel];
+      [aCoder encodeConditionalObject: _outlineTableColumn];
+    }
 }
 
 - (id) initWithCoder: (NSCoder *)aDecoder
 {
   // Since we only have one version....
   self = [super initWithCoder: aDecoder];
-  
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_autoResizesOutlineColumn];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_indentationMarkerFollowsCell];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_autosaveExpandedItems];
-  [aDecoder decodeValueOfObjCType: @encode(float) at: &_indentationPerLevel];
-  _outlineTableColumn = [aDecoder decodeObject];
-
-  _itemDict = NSCreateMapTable(NSObjectMapKeyCallBacks,
-			       NSObjectMapValueCallBacks,
-			       64);
-  _items = [[NSMutableArray alloc] init];
-  _expandedItems = [[NSMutableArray alloc] init];
-  _selectedItems = [[NSMutableArray alloc] init];
-  _levelOfItems = NSCreateMapTable(NSObjectMapKeyCallBacks,
+  if([aDecoder allowsKeyedCoding])
+    {     
+      _itemDict = NSCreateMapTable(NSObjectMapKeyCallBacks,
 				   NSObjectMapValueCallBacks,
-				   64); 
+				   64);
+      _items = [[NSMutableArray alloc] init];
+      _expandedItems = [[NSMutableArray alloc] init];
+      _selectedItems = [[NSMutableArray alloc] init];
+      _levelOfItems = NSCreateMapTable(NSObjectMapKeyCallBacks,
+				       NSObjectMapValueCallBacks,
+				       64);
 
+      // these can't be chosen on IB.
+      _indentationPerLevel = 10.0;
+      _indentationMarkerFollowsCell = YES;
+      _autoResizesOutlineColumn = NO;
+      _autosaveExpandedItems = NO;
+
+      // init the table column... (this can't be chosen on IB either)...
+      if([_tableColumns count] > 0)
+	{
+	  _outlineTableColumn = [_tableColumns objectAtIndex: 0];
+	}
+    }
+  else
+    {
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_autoResizesOutlineColumn];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_indentationMarkerFollowsCell];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_autosaveExpandedItems];
+      [aDecoder decodeValueOfObjCType: @encode(float) at: &_indentationPerLevel];
+      _outlineTableColumn = [aDecoder decodeObject];
+      
+      _itemDict = NSCreateMapTable(NSObjectMapKeyCallBacks,
+				   NSObjectMapValueCallBacks,
+				   64);
+      _items = [[NSMutableArray alloc] init];
+      _expandedItems = [[NSMutableArray alloc] init];
+      _selectedItems = [[NSMutableArray alloc] init];
+      _levelOfItems = NSCreateMapTable(NSObjectMapKeyCallBacks,
+				       NSObjectMapValueCallBacks,
+				       64); 
+    }
   return self;
 }
 

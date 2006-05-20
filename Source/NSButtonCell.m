@@ -55,6 +55,54 @@
 
 #include <math.h>
 
+typedef struct _GSButtonCellFlags 
+{
+#ifdef WORDS_BIGENDIAN
+  unsigned int isPushin:1;
+  unsigned int changeContents:1;
+  unsigned int changeBackground:1;
+  unsigned int changeGray:1;
+  unsigned int highlightByContents:1;
+  unsigned int highlightByBackground:1;
+  unsigned int highlightByGray:1;
+  unsigned int drawing:1;
+  unsigned int isBordered:1;
+  unsigned int imageDoesOverlap:1;
+  unsigned int isHorizontal:1;
+  unsigned int isBottomOrLeft:1;
+  unsigned int isImageAndText:1;
+  unsigned int isImageSizeDiff:1;
+  unsigned int hasKeyEquiv:1;
+  unsigned int lastState:1;
+  unsigned int isTransparent:1;
+  unsigned int inset:2
+  unsigned int unused2:4; // doesn't dim:1 gradient:3
+  unsigned int useButtonImageSource:1;
+  unsigned int unused3:8; // alt mnemonic loc.
+#else
+  unsigned int unused3:8; // alt mnemonic loc.
+  unsigned int useButtonImageSource:1;
+  unsigned int unused0:6; // inset:2 doesn't dim:1 gradient:3
+  unsigned int isTransparent:1;
+  unsigned int lastState:1;
+  unsigned int hasKeyEquiv:1;
+  unsigned int isImageSizeDiff:1;
+  unsigned int isImageAndText:1;
+  unsigned int isBottomOrLeft:1;
+  unsigned int isHorizontal:1;
+  unsigned int imageDoesOverlap:1;
+  unsigned int isBordered:1;
+  unsigned int drawing:1;
+  unsigned int highlightByGray:1;
+  unsigned int highlightByBackground:1;
+  unsigned int highlightByContents:1;
+  unsigned int changeGray:1;
+  unsigned int changeBackground:1;
+  unsigned int changeContents:1;
+  unsigned int isPushin:1;
+#endif
+} GSButtonCellFlags;
+
 @interface NSButtonCell (Private)
 // Overriden private internal method
 - (void) _drawImage: (NSImage *)anImage inFrame: (NSRect)aRect 
@@ -1394,8 +1442,9 @@
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  // FIXME: Add new ivars
   BOOL tmp;
+
+  // FIXME: Add new ivars
   [super encodeWithCoder: aCoder];
 
   [aCoder encodeObject: _keyEquivalent];
@@ -1420,10 +1469,10 @@
 
   if ([aDecoder allowsKeyedCoding])
     {
-      //NSControl *control = [aDecoder decodeObjectForKey: @"NSControlView"];
       int delay = 0;
-      int interval = 0;
-      
+      int interval = 0;      
+      // NSControl *control = [aDecoder decodeObjectForKey: @"NSControlView"];
+
       if ([aDecoder containsValueForKey: @"NSKeyEquivalent"])
         {
 	  [self setKeyEquivalent: [aDecoder decodeObjectForKey: @"NSKeyEquivalent"]];
@@ -1432,52 +1481,38 @@
         {
 	  [self setImage: [aDecoder decodeObjectForKey: @"NSNormalImage"]];
 	}
-      if ([aDecoder containsValueForKey: @"NSAlternateImage"])
-        {
-	  id image;
-	  
-	  image = [aDecoder decodeObjectForKey: @"NSAlternateImage"];
-	  // This test works around an Apple bug, where a font gets encoded here. 
-	  if ([image isKindOfClass: [NSImage class]])
-	    {
-	      [self setAlternateImage: image];
-	    }
-	}
       if ([aDecoder containsValueForKey: @"NSAlternateContents"])
         {
 	  [self setAlternateTitle: [aDecoder decodeObjectForKey: @"NSAlternateContents"]];
 	}
       if ([aDecoder containsValueForKey: @"NSButtonFlags"])
         {
-	  int bFlags;
+	  unsigned int bFlags = [aDecoder decodeIntForKey: @"NSButtonFlags"];
 	  int highlights = 0;  
 	  int show_state = NSNoCellMask;  
+	  GSButtonCellFlags buttonCellFlags;
+	  memcpy((void *)&buttonCellFlags,(void *)&bFlags,sizeof(struct _GSButtonCellFlags));
 
-	  bFlags = [aDecoder decodeIntForKey: @"NSButtonFlags"];
-
-	  [self setTransparent: (bFlags & 0x8000)];
-	  // FIXME
-	  if ((bFlags & 0x800000) == 0x800000)
-	    {
-	      [self setBordered: YES];
-	    }
-	  if ((bFlags & 0x6000000) == 0x6000000)
+	  [self setTransparent: buttonCellFlags.isTransparent];
+	  [self setBordered: buttonCellFlags.isBordered];
+	  
+	  if (buttonCellFlags.highlightByBackground)
 	    {
 	      highlights |= NSChangeBackgroundCellMask;
 	    }
-	  if ((bFlags & 0x8000000) == 0x8000000)
+	  if (buttonCellFlags.highlightByContents)
 	    {
 	      highlights |= NSContentsCellMask;
 	    }
-	  if ((bFlags & 0x30000000) == 0x30000000)
+	  if (buttonCellFlags.changeBackground)
 	    {
 	      show_state |= NSChangeBackgroundCellMask;
 	    }
-	  if ((bFlags & 0x40000000) == 0x40000000)
+	  if (buttonCellFlags.changeContents)
 	    {
 	      show_state |= NSContentsCellMask;
 	    }
-	  if ((bFlags & 0x80000000) == 0x80000000)
+	  if (buttonCellFlags.isPushin)
 	    {
 	      highlights |= NSPushInCellMask;
 	    }
@@ -1526,6 +1561,40 @@
 */
 	      default:
 		break;
+	    }
+	}
+      if ([aDecoder containsValueForKey: @"NSAlternateImage"])
+        {
+	  id image;
+
+	  //
+	  // NOTE: Okay... this is a humongous kludge.   It seems as though
+	  // Cocoa is doing something very odd here.  It doesn't seem to 
+	  // encode system images for buttons normally, if it is using 
+	  // images at all. Until I figure out what, this will stay.  
+	  // Danger, Will Robinson! :)
+	  //
+	  image = [aDecoder decodeObjectForKey: @"NSAlternateImage"];
+	  if ([image isKindOfClass: [NSImage class]])
+	    {
+	      if([NSImage imageNamed: @"NSSwitch"] == image)
+		{
+		  image = [NSImage imageNamed: @"NSHighlightedSwitch"];
+		  if([self image] == nil)
+		    {
+		      [self setImage: [NSImage imageNamed: @"NSSwitch"]];
+		    }		    
+		}
+	      else if([NSImage imageNamed: @"NSRadioButton"] == image)
+		{
+		  image = [NSImage imageNamed: @"NSHighlightedRadioButton"];
+		  if([self image] == nil)
+		    {
+		      [self setImage: [NSImage imageNamed: @"NSRadioButton"]];
+		    }		    
+		}
+	      
+	      [self setAlternateImage: image];
 	    }
 	}
       if ([aDecoder containsValueForKey: @"NSPeriodicDelay"])
