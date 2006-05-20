@@ -48,6 +48,7 @@
 #include <Foundation/NSKeyedArchiver.h>
 #include "AppKit/AppKit.h"
 #include <GNUstepBase/GSObjCRuntime.h>
+#include <GNUstepBase/GSIArray.h>
 #include <GNUstepGUI/GSNibCompatibility.h>
 #include <GNUstepGUI/GSInstantiator.h>
 
@@ -685,6 +686,28 @@
 
 @interface NSKeyedUnarchiver (NSClassSwapperPrivate)
 - (BOOL) replaceObject: (id)oldObj withObject: (id)newObj;
+@end
+
+@implementation NSKeyedUnarchiver (NSClassSwapperPrivate)
+- (BOOL) replaceObject: (id)oldObj withObject: (id)newObj
+{
+  unsigned int i = 0;
+  unsigned int count = GSIArrayCount(_objMap);
+  for(i = 0; i < count; i++)
+    {
+      id obj = GSIArrayItemAtIndex(_objMap, i).obj;
+      if(obj == oldObj)
+	break;
+    }
+
+  if(i < count)
+    {
+      GSIArraySetItemAtIndex(_objMap, (GSIArrayItem)newObj, i);
+      return YES;
+    }
+
+  return NO;
+}
 @end
 
 @implementation NSClassSwapper

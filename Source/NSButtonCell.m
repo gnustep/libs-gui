@@ -75,8 +75,7 @@ typedef struct _GSButtonCellFlags
   unsigned int hasKeyEquiv:1;
   unsigned int lastState:1;
   unsigned int isTransparent:1;
-  unsigned int inset:2
-  unsigned int unused2:4; // doesn't dim:1 gradient:3
+  unsigned int unused2:6; // inset:2 doesn't dim:1 gradient:3
   unsigned int useButtonImageSource:1;
   unsigned int unused3:8; // alt mnemonic loc.
 #else
