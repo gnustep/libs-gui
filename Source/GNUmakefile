@@ -200,8 +200,11 @@ GSWindowDecorationView.m \
 GSPrinting.m \
 GSPrintOperation.m \
 GSEPSPrintOperation.m \
-GSPDFPrintOperation.m
-
+GSPDFPrintOperation.m \
+GSModelLoaderFactory.m \
+GSGormLoader.m \
+GSGModelLoader.m \
+GSNibLoader.m
 
 # Turn off NSMenuItem warning that NSMenuItem conforms to <NSObject>,
 # but does not implement <NSObject>'s methods itself (it inherits
@@ -360,6 +363,7 @@ GSTextConverter.h \
 GSTrackingRect.h \
 GSHelpManagerPanel.h \
 GSNibTemplates.h \
+GSNibContainer.h \
 GSDisplayServer.h \
 GSFusedSilica.h \
 GSTable.h \
@@ -380,7 +384,9 @@ GSTitleView.h \
 GSPrinting.h \
 GSPrintOperation.h \
 GSEPSPrintOperation.h \
-GSPDFPrintOperation.h
+GSPDFPrintOperation.h \
+GSModelLoaderFactory.h \
+GSInstantiator.h 
 
 libgnustep-gui_HEADER_FILES = ${GUI_HEADERS}
 

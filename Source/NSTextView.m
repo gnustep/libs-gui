@@ -125,16 +125,24 @@ Interface for a bunch of internal methods that need to be cleaned up.
 // This class is a helper for keyed unarchiving only
 @interface NSTextViewSharedData : NSObject 
 {
-@public
+@private
   NSColor *backgroundColor;
   NSParagraphStyle *paragraphStyle;
-  int flags;
+  unsigned int flags;
   NSColor *insertionColor;
   NSArray *linkAttr;
   NSArray *markAttr;
   NSArray *selectedAttr;
   NSTextView *textView;
 }
+- (NSColor *) backgroundColor;
+- (NSParagraphStyle *) paragraphStyle;
+- (unsigned int) flags;
+- (NSColor *) insertionColor;
+- (NSArray *) linkAttributes;
+- (NSArray *) markAttributes;
+- (NSArray *) selectedAttributes;
+- (NSTextView *) textView;
 @end
 
 @implementation NSTextViewSharedData
@@ -151,9 +159,7 @@ Interface for a bunch of internal methods that need to be cleaned up.
       ASSIGN(markAttr, [aDecoder decodeObjectForKey: @"NSMarkedAttributes"]);
       ASSIGN(selectedAttr, [aDecoder decodeObjectForKey: @"NSSelectedAttributes"]);
     }
-  else
-    {
-    }
+  
   return self;
 }
 
@@ -167,6 +173,45 @@ Interface for a bunch of internal methods that need to be cleaned up.
   RELEASE(selectedAttr);
 }
 
+- (NSColor *)backgroundColor
+{
+  return backgroundColor;
+}
+
+- (NSParagraphStyle *) paragraphStyle
+{
+  return paragraphStyle;
+}
+
+- (unsigned int) flags
+{
+  return flags;
+}
+
+- (NSColor *) insertionColor
+{
+  return insertionColor;
+}
+
+- (NSArray *) linkAttributes
+{
+  return linkAttr;
+}
+
+- (NSArray *) markAttributes
+{
+  return markAttr;
+}
+
+- (NSArray *) selectedAttributes
+{
+  return selectedAttr;
+}
+
+- (NSTextView *) textView
+{
+  return textView;
+}
 @end
 
 
@@ -646,45 +691,97 @@ that makes decoding and encoding compatible with the old code.
 -(id) initWithCoder: (NSCoder *)aDecoder
 {
   self = [super initWithCoder: aDecoder];
-
   if ([aDecoder allowsKeyedCoding])
-    {
+    {  
+      NSTextContainer *aTextContainer;
+
       if ([aDecoder containsValueForKey: @"NSDelegate"])
         {
 	  [self setDelegate: [aDecoder decodeObjectForKey: @"NSDelegate"]];
 	}
+
       if ([aDecoder containsValueForKey: @"NSMaxSize"])
         {
 	  [self setMaxSize: [aDecoder decodeSizeForKey: @"NSMaxSize"]];
 	}
+
       if ([aDecoder containsValueForKey: @"NSMinize"])
         {
 	  // it's NSMinize in pre-10.3 formats.
 	  [self setMinSize: [aDecoder decodeSizeForKey: @"NSMinize"]];
 	}
+
       if ([aDecoder containsValueForKey: @"NSMinSize"])
         {
 	  // However, if NSMinSize is present we want to use it.
 	  [self setMinSize: [aDecoder decodeSizeForKey: @"NSMinSize"]];
 	}
-      if ([aDecoder containsValueForKey: @"NSTextContainer"])
+
+      if ([aDecoder containsValueForKey: @"NSSharedData"])
         {
-	  [self setTextContainer: [aDecoder decodeObjectForKey: @"NSTextContainer"]];
+	  NSTextViewSharedData *shared = [aDecoder decodeObjectForKey: @"NSSharedData"];
+	  unsigned int flags = [shared flags];
+
+	  ASSIGN(_insertionPointColor, [shared insertionColor]);
+	  ASSIGN(_backgroundColor, [shared backgroundColor]);
+
+	  _tf.is_editable = ((0x01 & flags) > 0);
+	  _tf.is_selectable = ((0x02 & flags) > 0);
+	  _tf.is_rich_text = ((0x04 & flags) > 0);
+	  _tf.imports_graphics = ((0x08 & flags) > 0);
+	  _tf.is_field_editor = ((0x10 & flags) > 0);
+	  _tf.uses_font_panel = ((0x20 & flags) > 0);
+	  _tf.is_ruler_visible = ((0x40 & flags) > 0);
+	  _tf.uses_ruler = ((0x100 & flags) > 0);
+	  _tf.draws_background = ((0x800 & flags) > 0);
+	  _tf.smart_insert_delete = ((0x2000000 & flags) > 0);
+	  _tf.allows_undo = ((0x40000000 & flags) > 0);	  
+
+	  _tf.owns_text_network = YES;
+	  _tf.is_horizontally_resizable = YES;
+	  _tf.is_vertically_resizable = YES;
+	}
+
+      // currently not used....
+      if ([aDecoder containsValueForKey: @"NSTextStorage"])
+        {
+	  _textStorage = [aDecoder decodeObjectForKey: @"NSTextStorage"];
+	}
+      
+      // currently not used....
+      if ([aDecoder containsValueForKey: @"NSTextContainer"])
+        {      
+	  NSSize size = NSMakeSize(0,_maxSize.height);
+	  NSTextContainer *aTextContainer = [self buildUpTextNetwork: NSZeroSize];
+	  [aTextContainer setTextView: (NSTextView *)self];
+	  /* See initWithFrame: for comments on this RELEASE */
+	  RELEASE(self);
+
+	  [aTextContainer setContainerSize: size];
+	  [aTextContainer setWidthTracksTextView: YES];
+	  [aTextContainer setHeightTracksTextView: NO];
 	}
 
       if ([aDecoder containsValueForKey: @"NSTVFlags"])
         {
-	  //int vFlags = [aDecoder decodeIntForKey: @"NSTVFlags"];
-	  // FIXME set the flags
+	  int vFlags = [aDecoder decodeIntForKey: @"NSTVFlags"];
+	  // these flags are not used...
 	}
-      if ([aDecoder containsValueForKey: @"NSSharedData"])
-        {
-	  //NSTextViewSharedData *shared = [aDecoder decodeObjectForKey: @"NSSharedData"];
-	}
-      if ([aDecoder containsValueForKey: @"NSTextStorage"])
-        {
-	  //NSTextStorage *storage = [aDecoder decodeObjectForKey: @"NSTextStorage"];
-	}
+
+      // register for services and subscribe to notifications.
+      [self _recacheDelegateResponses];
+      [self invalidateTextContainerOrigin];
+
+      if (!did_register_for_services)
+	[isa registerForServices];
+
+      [self updateDragTypeRegistration];
+
+      [self setPostsFrameChangedNotifications: YES];
+      [notificationCenter addObserver: self
+			  selector: @selector(_updateState:)
+			  name: NSViewFrameDidChangeNotification
+			  object: self];
     }
   else
     {
@@ -1514,7 +1611,6 @@ incorrectly. */
 
   [self setConstrainedFrameSize: size];
 }
-
 
 /*
 TODO: There is code in TextEdit that implies that the minimum size is

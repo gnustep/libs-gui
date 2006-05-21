@@ -564,15 +564,40 @@ DEFINE_RINT_IF_MISSING
 - (id) initWithCoder: (NSCoder*)decoder
 {
   self = [super initWithCoder: decoder];
-  [decoder decodeValuesOfObjCTypes: "fffi",
-    &_minValue, &_maxValue, &_altIncrementValue, &_isVertical];
-  [decoder decodeValueOfObjCType: @encode(id) at: &_titleCell];
-  [decoder decodeValueOfObjCType: @encode(id) at: &_knobCell];
-  if ([decoder versionForClassName: @"NSSliderCell"] >= 2)
+  if([decoder allowsKeyedCoding])
     {
-      [decoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsTickMarkValuesOnly];
-      [decoder decodeValueOfObjCType: @encode(int) at: &_numberOfTickMarks];
-      [decoder decodeValueOfObjCType: @encode(int) at: &_tickMarkPosition];
+      _allowsTickMarkValuesOnly = [decoder decodeBoolForKey: @"NSAllowsTickMarkValuesOnly"];
+      _numberOfTickMarks = [decoder decodeIntForKey: @"NSNumberOfTickMarks"];
+      _tickMarkPosition = [decoder decodeIntForKey: @"NSTickMarkPosition"];
+      _minValue = [decoder decodeFloatForKey: @"NSMinValue"];
+      _maxValue = [decoder decodeFloatForKey: @"NSMaxValue"];
+      _altIncrementValue = [decoder decodeFloatForKey: @"NSAltIncValue"];
+
+      // do these here, since the Cocoa version of the class does not save these values...
+      _knobCell = [NSCell new];
+      _titleCell = [NSTextFieldCell new];
+      [_titleCell setTextColor: [NSColor controlTextColor]];
+      [_titleCell setStringValue: @""];
+      [_titleCell setAlignment: NSCenterTextAlignment];
+
+      // if it's from a nib, make it bordered and bezeled so it's more attractive.
+      [self setBordered: YES];
+      [self setBezeled: YES];
+
+      _isVertical = -1;
+    }
+  else
+    {
+      [decoder decodeValuesOfObjCTypes: "fffi",
+	       &_minValue, &_maxValue, &_altIncrementValue, &_isVertical];
+      [decoder decodeValueOfObjCType: @encode(id) at: &_titleCell];
+      [decoder decodeValueOfObjCType: @encode(id) at: &_knobCell];
+      if ([decoder versionForClassName: @"NSSliderCell"] >= 2)
+	{
+	  [decoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsTickMarkValuesOnly];
+	  [decoder decodeValueOfObjCType: @encode(int) at: &_numberOfTickMarks];
+	  [decoder decodeValueOfObjCType: @encode(int) at: &_tickMarkPosition];
+	}
     }
   return self;
 }
@@ -580,14 +605,27 @@ DEFINE_RINT_IF_MISSING
 - (void) encodeWithCoder: (NSCoder*)coder
 {
   [super encodeWithCoder: coder];
-  [coder encodeValuesOfObjCTypes: "fffi",
-    &_minValue, &_maxValue, &_altIncrementValue, &_isVertical];
-  [coder encodeValueOfObjCType: @encode(id) at: &_titleCell];
-  [coder encodeValueOfObjCType: @encode(id) at: &_knobCell];
-  // New for version 2
-  [coder encodeValueOfObjCType: @encode(BOOL) at: &_allowsTickMarkValuesOnly];
-  [coder encodeValueOfObjCType: @encode(int) at: &_numberOfTickMarks];
-  [coder encodeValueOfObjCType: @encode(int) at: &_tickMarkPosition];
+  if([coder allowsKeyedCoding])
+    {
+      [coder encodeBool: _allowsTickMarkValuesOnly forKey: @"NSAllowsTickMarkValuesOnly"];
+      [coder encodeInt: _numberOfTickMarks forKey: @"NSNumberOfTickMarks"];
+      [coder encodeInt: _tickMarkPosition forKey: @"NSTickMarkPosition"];
+      [coder encodeFloat: _minValue forKey: @"NSMinValue"];
+      [coder encodeFloat: _maxValue forKey: @"NSMaxValue"];
+      [coder encodeFloat: _altIncrementValue forKey: @"NSAltIncValue"];
+      [coder encodeFloat: _minValue forKey: @"NSValue"]; // encoded for compatibility
+    }
+  else
+    {
+      [coder encodeValuesOfObjCTypes: "fffi",
+	     &_minValue, &_maxValue, &_altIncrementValue, &_isVertical];
+      [coder encodeValueOfObjCType: @encode(id) at: &_titleCell];
+      [coder encodeValueOfObjCType: @encode(id) at: &_knobCell];
+      // New for version 2
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &_allowsTickMarkValuesOnly];
+      [coder encodeValueOfObjCType: @encode(int) at: &_numberOfTickMarks];
+      [coder encodeValueOfObjCType: @encode(int) at: &_tickMarkPosition];
+    }
 }
-
+  
 @end

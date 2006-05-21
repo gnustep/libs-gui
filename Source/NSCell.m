@@ -2256,13 +2256,12 @@ static NSColor	*shadowCol;
 
       if ([aDecoder containsValueForKey: @"NSCellFlags"])
         {
-	  int cFlags;
+	  unsigned long cFlags;
 
 	  cFlags = [aDecoder decodeIntForKey: @"NSCellFlags"];
 
 	  // This bit flag is the other way around!
 	  [self setWraps: ((cFlags & 0x40) != 0x40)];
-	  [self setContinuous: ((cFlags & 0x80000) == 0x80000)];
 	  [self setScrollable: ((cFlags & 0x100000) == 0x100000)];
 	  // Strange that this is not a simple bit flag
 	  [self setSelectable: ((cFlags & 0x200001) == 0x200001)];
@@ -2272,12 +2271,13 @@ static NSColor	*shadowCol;
 	    {
 	      [self setType: NSTextCellType];
 	    }
+
+	  [self setContinuous: ((cFlags & 0x40000) == 0x40000)];
 	  [self setEditable: ((cFlags & 0x10000000) == 0x10000000)];
 	  // This bit flag is the other way around!
 	  [self setEnabled: ((cFlags & 0x20000000) != 0x20000000)];
 	  [self setHighlighted: ((cFlags & 0x40000000) == 0x40000000)];
-	  // FIXME
-	  
+	  [self setState: ((cFlags & 0x80000000) == 0x80000000)?NSOnState:NSOffState];
 	}
       if ([aDecoder containsValueForKey: @"NSCellFlags2"])
         {
@@ -2306,7 +2306,6 @@ static NSColor	*shadowCol;
 
 	  [self setImportsGraphics: ((cFlags2 & 0x20000000) == 0x20000000)];
 	  [self setAllowsEditingTextAttributes: ((cFlags2 & 0x40000000) == 0x40000000)];
-	  // FIXME
 	}
       if ([aDecoder containsValueForKey: @"NSSupport"])
         {

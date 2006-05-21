@@ -2183,7 +2183,9 @@ no_soft_invalidation:
       if ([aDecoder containsValueForKey: @"NSLMFlags"])
         {
 	  flags = [aDecoder decodeIntForKey: @"NSLMFlags"];
-	  // FIXME
+	  // nothing really to do with these flags....
+	  // they are runtime flags which, even if set into the archive
+	  // they are ignored...
 	}
       [self setDelegate: delegate];
       [storage addLayoutManager: self];

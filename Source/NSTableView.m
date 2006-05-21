@@ -37,6 +37,7 @@
 #include <Foundation/NSSet.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSValue.h>
+#include <Foundation/NSKeyedArchiver.h>
 
 #include "AppKit/NSTableView.h"
 #include "AppKit/NSApplication.h"
@@ -73,13 +74,37 @@ static int currentDropRow;
 static int lastQuarterPosition;
 static unsigned currentDragOperation;
 
+/*
+ * Nib compatibility struct.  This structure is used to 
+ * pull the attributes out of the nib that we need to fill
+ * in the flags.
+ */
+typedef struct _tableViewFlags
+{
+#ifdef WORDS_BIGENDIAN
+  unsigned int columnOrdering:1;
+  unsigned int columnResizing:1;
+  unsigned int drawsGrid:1;
+  unsigned int emptySelection:1;
+  unsigned int multipleSelection:1;
+  unsigned int columnSelection:1;
+  unsigned int __unused:26;
+#else
+  unsigned int __unused:26;
+  unsigned int columnSelection:1;
+  unsigned int multipleSelection:1;
+  unsigned int emptySelection:1;
+  unsigned int drawsGrid:1;
+  unsigned int columnResizing:1;
+  unsigned int columnOrdering:1;
+#endif
+} GSTableViewFlags;
 
 #define ALLOWS_MULTIPLE (1)
 #define ALLOWS_EMPTY (1 << 1)
 #define SHIFT_DOWN (1 << 2)
 #define CONTROL_DOWN (1 << 3)
 #define ADDING_ROW (1 << 4)
-
 
 @interface NSTableView (NotificationRequestMethods)
 - (void) _postSelectionIsChangingNotification;
@@ -2236,6 +2261,7 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 
   /* We do *not* retain the dataSource, it's like a delegate */
   _dataSource = anObject;
+
   [self tile];
   [self reloadData];
 }
@@ -3766,12 +3792,12 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 - (void) setHeaderView: (NSTableHeaderView*)aHeaderView
 {
   
-  if ([_headerView respondsToSelector:@selector(setTableView)])
+  if ([_headerView respondsToSelector:@selector(setTableView:)])
     [_headerView setTableView: nil];
       
   ASSIGN (_headerView, aHeaderView);
       
-  if ([_headerView respondsToSelector:@selector(setTableView)])
+  if ([_headerView respondsToSelector:@selector(setTableView:)])
     [_headerView setTableView: self];
       
   [self tile]; // resizes corner and header views, then displays
@@ -5112,30 +5138,70 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 {
   [super encodeWithCoder: aCoder];
 
-  [aCoder encodeConditionalObject: _dataSource];
-  [aCoder encodeObject: _tableColumns];
-  [aCoder encodeObject: _gridColor];
-  [aCoder encodeObject: _backgroundColor];
-  [aCoder encodeObject: _headerView];
-  [aCoder encodeObject: _cornerView];
-  [aCoder encodeConditionalObject: _delegate];
-  [aCoder encodeConditionalObject: _target];
+  if ([aCoder allowsKeyedCoding])
+    {
+      unsigned int vFlags = 0; // (raw >> 26); // filter out settings not pertinent to us.
+      NSSize intercellSpacing = [self intercellSpacing];
 
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_numberOfRows];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_numberOfColumns];
+      [aCoder encodeObject: [self dataSource] forKey: @"NSDataSource"];
+      [aCoder encodeObject: [self delegate] forKey: @"NSDelegate"];
+      [aCoder encodeObject: [self target] forKey: @"NSTarget"];
+      [aCoder encodeObject: NSStringFromSelector([self action]) forKey: @"NSAction"];
+      [aCoder encodeObject: [self backgroundColor] forKey: @"NSBackgroundColor"];
+      [aCoder encodeObject: [self gridColor] forKey: @"NSGridColor"];
+      [aCoder encodeFloat: intercellSpacing.height forKey: @"NSIntercellSpacingHeight"];
+      [aCoder encodeFloat: intercellSpacing.width forKey: @"NSIntercellSpacingWidth"];
+      [aCoder encodeFloat: [self rowHeight] forKey: @"NSRowHeight"];
+      [aCoder encodeObject: [self tableColumns] forKey: @"NSTableColumns"];
+      
+      if([self allowsColumnSelection])
+	vFlags |= 1;
 
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_drawsGrid];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_rowHeight];
-  [aCoder encodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
-  [aCoder encodeSize: _intercellSpacing];
+      if([self allowsMultipleSelection])
+	vFlags |= 2;
 
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsMultipleSelection];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsEmptySelection];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnSelection];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnResizing];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnReordering];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autoresizesAllColumnsToFit];
+      if([self allowsEmptySelection])
+	vFlags |= 4;
 
+      if([self allowsColumnResizing])
+	vFlags |= 16;
+
+      if([self allowsColumnReordering])
+	vFlags |= 32;
+
+      // shift...
+      vFlags = vFlags << 26;
+      vFlags |= 0x2400000; // add the constant...
+
+      // encode..
+      [aCoder encodeInt: vFlags forKey: @"NSTvFlags"];
+    }
+  else
+    {
+      [aCoder encodeConditionalObject: _dataSource];
+      [aCoder encodeObject: _tableColumns];
+      [aCoder encodeObject: _gridColor];
+      [aCoder encodeObject: _backgroundColor];
+      [aCoder encodeObject: _headerView];
+      [aCoder encodeObject: _cornerView];
+      [aCoder encodeConditionalObject: _delegate];
+      [aCoder encodeConditionalObject: _target];
+      
+      [aCoder encodeValueOfObjCType: @encode(int) at: &_numberOfRows];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &_numberOfColumns];
+      
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_drawsGrid];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_rowHeight];
+      [aCoder encodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
+      [aCoder encodeSize: _intercellSpacing];
+      
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsMultipleSelection];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsEmptySelection];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnSelection];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnResizing];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnReordering];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autoresizesAllColumnsToFit];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -5149,10 +5215,19 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       NSEnumerator *e;
       NSTableColumn *col;
 
-      [self setDataSource: [aDecoder decodeObjectForKey: @"NSDataSource"]];
-      [self setDelegate: [aDecoder decodeObjectForKey: @"NSDelegate"]];
-
-      [self setTarget: [aDecoder decodeObjectForKey: @"NSTarget"]];
+      [(NSKeyedUnarchiver *)aDecoder setClass: [GSTableCornerView class] forClassName: @"_NSCornerView"];
+      if ([aDecoder containsValueForKey: @"NSDataSource"])
+	{
+	  [self setDataSource: [aDecoder decodeObjectForKey: @"NSDataSource"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSDelegate"])
+	{      
+	  [self setDelegate: [aDecoder decodeObjectForKey: @"NSDelegate"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSTarget"])
+	{
+	  [self setTarget: [aDecoder decodeObjectForKey: @"NSTarget"]];
+	}
       if ([aDecoder containsValueForKey: @"NSAction"])
         {
 	  NSString *action = [aDecoder decodeObjectForKey: @"NSAction"];
@@ -5179,19 +5254,66 @@ static inline float computePeriod(NSPoint mouseLocationWin,
         {
 	  [self setRowHeight: [aDecoder decodeFloatForKey: @"NSRowHeight"]];
 	}
+      if ([aDecoder containsValueForKey: @"NSHeaderView"])
+	{
 
+	  NSRect viewFrame = [self frame];
+	  float rowHeight = [self rowHeight];
+
+	  _headerView = [NSTableHeaderView new];
+	  [_headerView setFrameSize: NSMakeSize(viewFrame.size.width, rowHeight)];
+	  [_headerView setTableView: self];
+	}
+      if ([aDecoder containsValueForKey: @"NSCornerView"])
+	{
+	  NSRect viewFrame;
+	  float rowHeight = [self rowHeight];
+	  
+	  [self setCornerView: [aDecoder decodeObjectForKey: @"NSCornerView"]];
+	  viewFrame = [[self cornerView] frame];
+	  viewFrame.size.height = rowHeight;
+	  [[self cornerView] setFrame: viewFrame];
+	}
+
+      // get the table columns...
       columns = [aDecoder decodeObjectForKey: @"NSTableColumns"];
       e = [columns objectEnumerator];
       while ((col = [e nextObject]) != nil)
         {
 	  [self addTableColumn: col];
+	  [col setTableView: self];
 	}
 
       if ([aDecoder containsValueForKey: @"NSTvFlags"])
         {
-	  //int vFlags = [aDecoder decodeIntForKey: @"NSTvFlags"];
-	  // FIXME set the flags
+	  unsigned long flags = [aDecoder decodeIntForKey: @"NSTvFlags"];
+	  GSTableViewFlags tableViewFlags;
+	  memcpy((void *)&tableViewFlags,(void *)&flags,sizeof(struct _tableViewFlags));
+
+	  [self setAllowsColumnSelection: tableViewFlags.columnSelection];
+	  [self setAllowsMultipleSelection: tableViewFlags.multipleSelection];
+	  [self setAllowsEmptySelection: tableViewFlags.emptySelection];
+	  [self setDrawsGrid: tableViewFlags.drawsGrid];
+	  [self setAllowsColumnResizing: tableViewFlags.columnResizing];	  
+	  [self setAllowsColumnReordering: tableViewFlags.columnOrdering];
 	}
+      
+      _numberOfColumns = [columns count];
+      ASSIGN (_selectedColumns, [NSMutableIndexSet indexSet]);
+      ASSIGN (_selectedRows, [NSMutableIndexSet indexSet]);
+      if (_numberOfColumns)
+	_columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), 
+				       sizeof(float) * _numberOfColumns);
+
+      _clickedRow = -1;
+      _clickedColumn = -1;
+      _selectingColumns = NO;
+      _selectedColumn = -1;
+      _selectedRow = -1;
+      _editedColumn = -1;
+      _editedRow = -1;
+
+      [self tile];
     }
   else
     {
@@ -5250,15 +5372,6 @@ static inline float computePeriod(NSPoint mouseLocationWin,
         {
 	  [self tile];
 	}
-      /*
-	NSLog(@"frame %@", NSStringFromRect([self frame]));
-	NSLog(@"dataSource %@", _dataSource);
-	if (_dataSource != nil)
-	  {
-	    [self setDataSource: _dataSource];
-	    NSLog(@"dataSource set");
-	  }
-      */
     }
   
   return self;

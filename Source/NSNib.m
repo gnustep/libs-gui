@@ -51,57 +51,21 @@
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
 
+#include "GNUstepGUI/GSModelLoaderFactory.h"
 #include "GNUstepGUI/GSNibTemplates.h"
 #include "GNUstepGUI/IMLoading.h"
 
 @implementation NSNib
 
-// Private methods...
-+ (NSString *) _nibFilename: (NSString *)fileName
-{
-  NSFileManager	*mgr = [NSFileManager defaultManager];
-  BOOL           isDir = NO;
-  NSString      *newFileName = nil;
-
-  // assign the filename...
-  ASSIGN(newFileName, fileName);
-
-  // detect if it's a directory or not...
-  if ([mgr fileExistsAtPath: fileName isDirectory: &isDir])
-    {
-      // if the data is in a directory, then load from objects.gorm in the directory
-      if (isDir == YES)
-	{
-	  newFileName = [fileName stringByAppendingPathComponent: @"objects.gorm"];
-	}
-    }
-  
-  return newFileName;
-}
-
 // private method to read in the data...
 - (void) _readNibData: (NSString *)fileName
 {
-  NSString      *ext = [fileName pathExtension];
-
-  if ([ext isEqual: @"nib"])
-    {
-      NSFileManager	*mgr = [NSFileManager defaultManager];
-      NSString		*base = [fileName stringByDeletingPathExtension];
-
-      /* We can't read nibs, look for an equivalent gorm or gmodel file */
-      fileName = [base stringByAppendingPathExtension: @"gorm"];
-      if ([mgr isReadableFileAtPath: fileName])
-	{
-	  ext = @"gorm";
-	}
-    }
-
-  NSDebugLog(@"Loading Nib `%@'...\n", fileName);
+  NSDebugLog(@"Loading model `%@'...\n", fileName);
   NS_DURING
     {
-      NSString *newFileName = [NSNib _nibFilename: fileName];
-      _nibData = [NSData dataWithContentsOfFile: newFileName];
+      NSString *newFileName = [GSModelLoaderFactory supportedModelFileAtPath: fileName];
+      ASSIGN(_nibData, [NSData dataWithContentsOfFile: newFileName]);
+      ASSIGN(_loader, [GSModelLoaderFactory modelLoaderForFileName: newFileName]);
       NSDebugLog(@"Loaded data from %@...",newFileName);
     }
   NS_HANDLER
@@ -155,6 +119,7 @@
     {
       // load the nib data into memory...
       _nibData = [NSData dataWithContentsOfURL: nibFileURL];
+      ASSIGN(_url, nibFileURL);
     }
   return self;
 }
@@ -192,51 +157,9 @@
 - (BOOL)instantiateNibWithExternalNameTable: (NSDictionary *)externalNameTable
 				   withZone: (NSZone *)zone
 {
-  BOOL		 loaded = NO;
-  NSUnarchiver	*unarchiver = nil;
-
-  NS_DURING
-  {
-    if (_nibData != nil)
-      {
-	unarchiver = [[NSUnarchiver alloc] initForReadingWithData: _nibData];
-	if (unarchiver != nil)
-	  {
- 	    id obj;
-	    
-	    [unarchiver setObjectZone: zone];
-	    obj = [unarchiver decodeObject];
-	    if (obj != nil)
-	      {
-		if ([obj isKindOfClass: [GSNibContainer class]])
-		  {
-		    NSDictionary *nameTable = [self _copyTable: externalNameTable];
-		    [obj awakeWithContext: nameTable];
-		    loaded = YES;
-		    RELEASE(nameTable);
-	 	  }
-		else
-		  {
-		    NSLog(@"Nib '%@' without container object!");
-		  }
-	      }
-	    RELEASE(unarchiver);
-	  }
-      }
-  }
-  NS_HANDLER
-  {
-    NSLog(@"Exception occured while loading model: %@",[localException reason]);
-    TEST_RELEASE(unarchiver);
-  }
-  NS_ENDHANDLER
-  
-  if (loaded == NO)
-  {
-    NSLog(@"Failed to load Nib\n");
-  }
-
-  return loaded;
+  return [_loader loadModelData: _nibData 
+		  externalNameTable: externalNameTable
+		  withZone: zone];
 }
 
 /**
@@ -277,21 +200,49 @@
 {
   if ((self = [super init]) != nil)
     {
-      [coder decodeValueOfObjCType: @encode(id)
-	     at: &_nibData];
+      //
+      // NOTE: This is okay, since the only encodings which will ever be built into
+      //       the gui library are nib and gorm.  GModel only supports certain
+      //       objects and is going to be deprecated in the future.  There just so
+      //       happens to be a one to one correspondence here.
+      //
+      if([coder allowsKeyedCoding])
+	{
+	  // Need to verify this key...
+	  ASSIGN(_nibData, [coder decodeObjectForKey: @"NSData"]);
+	  ASSIGN(_loader, [GSModelLoaderFactory modelLoaderForFileType: @"nib"]);
+	}
+      else
+	{
+	  // this is sort of a kludge...
+	  [coder decodeValueOfObjCType: @encode(id)
+		 at: &_nibData];
+	  ASSIGN(_loader, [GSModelLoaderFactory modelLoaderForFileType: @"gorm"]);
+	}
     }
   return self;
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
-  [coder encodeValueOfObjCType: @encode(id)
-	 at: &_nibData];
+  if([coder allowsKeyedCoding])
+    {
+      // Need to verify this key...
+      [coder encodeObject: _nibData 
+	     forKey: @"NSData"];      
+    }
+  else
+    {
+      [coder encodeValueOfObjCType: @encode(id)
+	     at: &_nibData];
+    }
 }
 
 - (void) dealloc
 {
   RELEASE(_nibData);
+  RELEASE(_loader);
+  TEST_RELEASE(_url);
   [super dealloc];
 }
 

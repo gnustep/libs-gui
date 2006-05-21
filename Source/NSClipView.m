@@ -753,29 +753,54 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
+  if([aCoder allowsKeyedCoding])
+    {
+      unsigned int flags = 0;
+      [aCoder encodeObject: [self backgroundColor] forKey: @"NSBGColor"];
+      [aCoder encodeObject: [self documentCursor] forKey: @"NSCursor"];
+      [aCoder encodeObject: [self documentView] forKey: @"NSDocView"];
+      
+      if([self drawsBackground])
+	flags |= 4;
+      if([self copiesOnScroll] == NO)
+	flags |= 2;
 
-  [aCoder encodeObject: _backgroundColor];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_copiesOnScroll];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_drawsBackground];
-  [aCoder encodeObject: _cursor];
+      [aCoder encodeInt: flags forKey: @"NScvFlags"];
+    }
+  else
+    {
+      [aCoder encodeObject: _backgroundColor];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_copiesOnScroll];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_drawsBackground];
+      [aCoder encodeObject: _cursor];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   self = [super initWithCoder: aDecoder];
-
   if ([aDecoder allowsKeyedCoding])
     {
-      int flags;
-      
+      [self setAutoresizesSubviews: YES];
+
       [self setBackgroundColor: [aDecoder decodeObjectForKey: @"NSBGColor"]];
       [self setDocumentCursor: [aDecoder decodeObjectForKey: @"NSCursor"]];
-      [self setDocumentView: [aDecoder decodeObjectForKey: @"NSDocView"]];
 
       if ([aDecoder containsValueForKey: @"NScvFlags"])
         {
-	  flags = [aDecoder decodeIntForKey: @"NScvFlags"];
-	  // FIXME setCopiesOnScroll: setDrawsBackground: 
+	  int flags = [aDecoder decodeIntForKey: @"NScvFlags"];
+	  BOOL drawsBackground = ((4 & flags) > 0);
+	  BOOL noCopyOnScroll =  ((2 & flags) > 0); // ??? Not sure...
+
+	  [self setCopiesOnScroll: (noCopyOnScroll == NO)];
+	  [self setDrawsBackground: drawsBackground];
+	}
+
+      if ([[self subviews] count] > 0)
+        {
+	  id document = [aDecoder decodeObjectForKey: @"NSDocView"];
+	  [self removeSubview: document];
+	  [self setDocumentView: document];
 	}
     }
   else

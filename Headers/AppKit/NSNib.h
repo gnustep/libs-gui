@@ -55,7 +55,8 @@
 @interface NSNib : NSObject <NSCoding>
 {
   NSData *_nibData;
-  NSMutableArray *_topLevelItems;
+  id _loader;
+  NSURL *_url;
 }
 
 // reading the data...

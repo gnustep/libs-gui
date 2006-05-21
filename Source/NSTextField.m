@@ -709,17 +709,19 @@ static Class textFieldCellClass;
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-
-  [aCoder encodeConditionalObject: _delegate];
-  [aCoder encodeValueOfObjCType: @encode(SEL) at: &_error_action];
+  if(![aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeConditionalObject: _delegate];
+      [aCoder encodeValueOfObjCType: @encode(SEL) at: &_error_action];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   self = [super initWithCoder: aDecoder];
-
-  if ([aDecoder allowsKeyedCoding])
+  if([aDecoder allowsKeyedCoding])
     {
+      // do nothing for now...
     }
   else
     {

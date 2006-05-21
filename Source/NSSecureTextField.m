@@ -88,7 +88,6 @@
 {
   return [_cell echosBullets];
 }
-
 @end /* NSSecureTextField */
 
 @implementation NSSecureTextFieldCell
@@ -133,10 +132,17 @@
   return [super setUpFieldEditorAttributes: textObject];
 }
 
-- (id) initWithCoder:(NSCoder *)decoder
+- (id) initWithCoder: (NSCoder *)decoder
 {
-  [super initWithCoder: decoder];
-  [decoder decodeValueOfObjCType: @encode(BOOL) at: &_echosBullets];
+  self = [super initWithCoder: decoder];
+  if([decoder allowsKeyedCoding])
+    {
+      // do nothing for now...
+    }
+  else
+    {
+      [decoder decodeValueOfObjCType: @encode(BOOL) at: &_echosBullets];
+    }
 
   return self;
 }

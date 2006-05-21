@@ -8,6 +8,8 @@
    Date: 1997
    Author:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: 1999
+   Author:  Gregory John Casamento <greg_casamento@yahoo.com>
+   Date: 2000
    
    This file is part of the GNUstep GUI Library.
 
@@ -45,10 +47,11 @@
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSKeyValueCoding.h>
 #include <Foundation/NSNotification.h>
+#include <AppKit/NSControl.h>
 #include "AppKit/NSNibConnector.h"
 #include "AppKit/NSNibLoading.h"
-#include "GNUstepGUI/GSNibTemplates.h"
-#include "GNUstepGUI/IMLoading.h"
+#include "GNUstepGUI/GSInstantiator.h"
+#include "GNUstepGUI/GSModelLoaderFactory.h"
 
 @implementation	NSNibConnector
 
@@ -67,9 +70,18 @@
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodeObject: _src];
-  [aCoder encodeObject: _dst];
-  [aCoder encodeObject: _tag];
+  if ([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeObject: _src forKey: @"NSSource"];
+      [aCoder encodeObject: _dst forKey: @"NSDestination"];
+      [aCoder encodeObject: _tag forKey: @"NSLabel"];
+    }
+  else
+    {
+      [aCoder encodeObject: _src];
+      [aCoder encodeObject: _dst];
+      [aCoder encodeObject: _tag];
+    }
 }
 
 - (void) establishConnection
@@ -80,8 +92,8 @@
 {
   if ([aDecoder allowsKeyedCoding])
     {
-      ASSIGN(_src, [aDecoder decodeObjectForKey: @"NSSource"]);
       ASSIGN(_dst, [aDecoder decodeObjectForKey: @"NSDestination"]);
+      ASSIGN(_src, [aDecoder decodeObjectForKey: @"NSSource"]);
       ASSIGN(_tag, [aDecoder decodeObjectForKey: @"NSLabel"]);
     }
   else
@@ -144,6 +156,12 @@
   return desc;
 }
 
+- (void) instantiateWithInstantiator: (id<GSInstantiator>)instantiator
+{
+  _src = [instantiator instantiateObject: _src];
+  _dst = [instantiator instantiateObject: _dst];
+}
+
 @end
 
 @implementation	NSNibControlConnector
@@ -196,139 +214,14 @@
 @end
 
 @implementation NSBundle (NSBundleAdditions)
-
-static 
-Class gmodel_class(void)
-{
-  static Class gmclass = Nil;
-
-  if (gmclass == Nil)
-    {
-      NSBundle	*theBundle;
-      NSEnumerator *benum;
-      NSString	*path;
-
-      /* Find the bundle */
-      benum = [NSStandardLibraryPaths() objectEnumerator];
-      while ((path = [benum nextObject]))
-	{
-	  path = [path stringByAppendingPathComponent: @"Bundles"];
-	  path = [path stringByAppendingPathComponent: @"libgmodel.bundle"];
-	  if ([[NSFileManager defaultManager] fileExistsAtPath: path])
-	    break;
-	  path = nil;
-	}
-      NSCAssert(path != nil, @"Unable to load gmodel bundle");
-      NSDebugLog(@"Loading gmodel from %@", path);
-
-      theBundle = [NSBundle bundleWithPath: path];
-      NSCAssert(theBundle != nil, @"Can't init gmodel bundle");
-      gmclass = [theBundle classNamed: @"GMModel"];
-      NSCAssert(gmclass, @"Can't load gmodel bundle");
-    }
-  return gmclass;
-}
-
 + (BOOL) loadNibFile: (NSString*)fileName
    externalNameTable: (NSDictionary*)context
 	    withZone: (NSZone*)zone
 {
-  BOOL		loaded = NO;
-  NSUnarchiver	*unarchiver = nil;
-  NSString      *ext = [fileName pathExtension];
-
-  if ([ext isEqual: @"nib"])
-    {
-      NSFileManager	*mgr = [NSFileManager defaultManager];
-      NSString		*base = [fileName stringByDeletingPathExtension];
-
-      /* We can't read nibs, look for an equivalent gorm or gmodel file */
-      fileName = [base stringByAppendingPathExtension: @"gorm"];
-      if ([mgr isReadableFileAtPath: fileName])
-	{
-	  ext = @"gorm";
-	}
-      else
-	{
-	  fileName = [base stringByAppendingPathExtension: @"gmodel"];
-	  ext = @"gmodel";
-	}
-    }
-
-  /*
-   * If the file to be read is a gmodel, use the GMModel method to
-   * read it in and skip the dearchiving below.
-   */
-  if ([ext isEqualToString: @"gmodel"])
-    {
-      return [gmodel_class() loadIMFile: fileName
-		      owner: [context objectForKey: @"NSOwner"]];
-    } 
-
-  NSDebugLog(@"Loading Nib `%@'...\n", fileName);
-  NS_DURING
-    {
-      NSFileManager	*mgr = [NSFileManager defaultManager];
-      BOOL              isDir = NO;
-
-      if ([mgr fileExistsAtPath: fileName isDirectory: &isDir])
-	{
-	  NSData	*data = nil;
-	  
-	  // if the data is in a directory, then load from objects.gorm in the directory
-	  if (isDir == NO)
-	    {
-	      data = [NSData dataWithContentsOfFile: fileName];
-	      NSDebugLog(@"Loaded data from file...");
-	    }
-	  else
-	    {
-	      NSString *newFileName = [fileName stringByAppendingPathComponent: @"objects.gorm"];
-	      data = [NSData dataWithContentsOfFile: newFileName];
-	      NSDebugLog(@"Loaded data from %@...",newFileName);
-	    }
-
-	  if (data != nil)
-	    {
-	      unarchiver = [[NSUnarchiver alloc] initForReadingWithData: data];
-	      if (unarchiver != nil)
-		{
-		  id obj;
-		  
-		  NSDebugLog(@"Invoking unarchiver");
-		  [unarchiver setObjectZone: zone];
-		  obj = [unarchiver decodeObject];
-		  if (obj != nil)
-		    {
-		      if ([obj isKindOfClass: [GSNibContainer class]])
-			{
-			  NSDebugLog(@"Calling awakeWithContext");
-			  [obj awakeWithContext: context];
-			  loaded = YES;
-			}
-		      else
-			{
-			  NSLog(@"Nib '%@' without container object!", fileName);
-			}
-		    }
-		  // RELEASE(nibitems);
-		  RELEASE(unarchiver);
-		}
-	    }
-	}
-    }
-  NS_HANDLER
-    {
-      NSLog(@"Exception occured while loading model: %@",[localException reason]);
-      // TEST_RELEASE(nibitems);
-      TEST_RELEASE(unarchiver);
-    }
-  NS_ENDHANDLER
-
-  if (loaded == NO)
-    {
-      NSLog(@"Failed to load Nib\n");
-    }
+  GSModelLoader *loader = [GSModelLoaderFactory modelLoaderForFileName: fileName];
+  BOOL loaded = [loader loadModelFile: fileName
+			externalNameTable: context
+			withZone: zone];
   return loaded;
 }
 
@@ -374,21 +267,12 @@ Class gmodel_class(void)
 
 - (NSString *) pathForNibResource: (NSString *)fileName
 {
-  NSFileManager		*mgr = [NSFileManager defaultManager];
   NSMutableArray	*array = [NSMutableArray arrayWithCapacity: 8];
   NSArray		*languages = [NSUserDefaults userLanguages];
   NSString		*rootPath = [self bundlePath];
   NSString		*primary;
   NSString		*language;
   NSEnumerator		*enumerator;
-  NSString		*ext;
-
-  ext = [fileName pathExtension];
-  fileName = [fileName stringByDeletingPathExtension];
-  if ([ext isEqualToString: @"nib"] == YES)
-    {
-      ext = @"";
-    }
 
   /*
    * Build an array of resource paths that differs from the normal order -
@@ -418,31 +302,12 @@ Class gmodel_class(void)
   enumerator = [array objectEnumerator];
   while ((rootPath = [enumerator nextObject]) != nil)
     {
-      NSString	*path;
-
-      rootPath = [rootPath stringByAppendingPathComponent: fileName];
-      // If the file does not have an extension, then we need to
-      // figure out what type of model file to load.
-      if ([ext isEqualToString: @""] == YES)
+      NSString *modelPath = [rootPath stringByAppendingPathComponent: fileName];
+      NSString *path = [GSModelLoaderFactory supportedModelFileAtPath: modelPath];
+      
+      if(path != nil)
 	{
-	  path = [rootPath stringByAppendingPathExtension: @"gorm"];
-	  if ([mgr isReadableFileAtPath: path] == NO)
-	    {
-	      path = [rootPath stringByAppendingPathExtension: @"gmodel"];
-	      if ([mgr isReadableFileAtPath: path] == NO)
-		{
-		  continue;
-		}
-	    }
 	  return path;
-	}
-      else
-	{
-	  path = [rootPath stringByAppendingPathExtension: ext];
-	  if ([mgr isReadableFileAtPath: path])
-	    {
-	      return path;
-	    }
 	}
     }
 

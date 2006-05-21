@@ -302,6 +302,15 @@ static Class controlClass;
         {
 	  [self setTag: [aDecoder decodeIntForKey: @"NSTag"]];
 	}
+      if ([aDecoder containsValueForKey: @"NSTarget"])
+	{
+	  [self setTarget: [aDecoder decodeObjectForKey: @"NSTarget"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSAction"])
+        {
+	  NSString *action = [aDecoder decodeObjectForKey: @"NSAction"];
+	  [self setAction: NSSelectorFromString(action)];
+	}
     }
   else
     {

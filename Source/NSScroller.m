@@ -181,7 +181,25 @@ static NSColor *scrollBarColor = nil;
       float value = 0.0;
       float percent = 0.0;
       int flags;
-      
+
+      if (_frame.size.width > _frame.size.height)
+        {
+	  _isHorizontal = YES;
+	}
+      else
+        {
+	  _isHorizontal = NO;
+	}
+
+      if (_isHorizontal)
+        {
+	  _floatValue = 0.0;
+	}
+      else
+        {
+	  _floatValue = 1.0;
+	}
+
       if (action != nil)
         {
 	  [self setAction: NSSelectorFromString(action)];
@@ -201,8 +219,15 @@ static NSColor *scrollBarColor = nil;
       if ([aDecoder containsValueForKey: @"NSsFlags"])
         {
 	  flags = [aDecoder decodeIntForKey: @"NSsFlags"];
-	  // FIXME
+	  // is horiz is set above...
+	  
 	}
+
+      // setup...
+      _hitPart = NSScrollerNoPart;
+
+      [self drawParts];
+      [self checkSpaceForParts];
     }
   else
     {
