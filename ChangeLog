@@ -1,3 +1,10 @@
+2006-05-23  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTabView.m (-tabViewItemAtPoint:, -mouseDown:): Moved
+	conversion of point with view transformation into the mouseDown:
+	method to be compatible with Cocoa. 
+	Patch by Andreas Höschler <ahoesch@smartsoft.de>.
+
 2006-05-20 18:25 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibCompatibility.m

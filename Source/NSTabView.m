@@ -700,12 +700,14 @@
 
 // Event handling.
 
+/* 
+ *  Find the tab view item containing the NSPoint point. This point 
+ *  is expected to be alreay in the coordinate system of the tab view.
+ */
 - (NSTabViewItem*) tabViewItemAtPoint: (NSPoint)point
 {
   int		howMany = [_items count];
   int		i;
-
-  point = [self convertPoint: point fromView: nil];
 
   for (i = 0; i < howMany; i++)
     {
@@ -720,7 +722,8 @@
 
 - (void) mouseDown: (NSEvent *)theEvent
 {
-  NSPoint location = [theEvent locationInWindow];
+  NSPoint location = [self convertPoint: [theEvent locationInWindow] 
+			   fromView: nil];
   NSTabViewItem *anItem = [self tabViewItemAtPoint: location];
   
   if (anItem != nil  &&  ![anItem isEqual: _selected])
