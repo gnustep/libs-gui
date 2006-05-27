@@ -2625,7 +2625,25 @@ Returns YES iff any scrolling was done.
     {
       if (_rFlags.valid_rects != 0)
 	{
-	  [_cursor_rects makeObjectsPerformSelector: @selector(invalidate)];
+	  unsigned count = [_cursor_rects count];
+	  if (count > 0)
+	    {
+	      GSTrackingRect *rects[count];
+	      NSPoint loc = [_window mouseLocationOutsideOfEventStream];
+	      unsigned i;
+
+	      [_cursor_rects getObjects: rects];
+
+	      for (i = 0; i < count; ++i)
+		{
+		  GSTrackingRect *r = rects[i];
+		  if (NSMouseInRect(loc, r->rectangle, NO))
+		    {
+		      [[r owner] mouseExited: nil];
+		    }
+		  [r invalidate];
+		}
+	    }
 	  _rFlags.valid_rects = 0;
 	}
       [_cursor_rects removeAllObjects];
@@ -2638,6 +2656,7 @@ Returns YES iff any scrolling was done.
   id e = [_cursor_rects objectEnumerator];
   GSTrackingRect	*o;
   NSCursor		*c;
+  NSPoint loc = [_window mouseLocationOutsideOfEventStream];
 
   /* Base remove test upon cursor object */
   o = [e nextObject];
@@ -2646,6 +2665,10 @@ Returns YES iff any scrolling was done.
       c = [o owner];
       if (c == anObject)
 	{
+	  if (NSMouseInRect(loc, o->rectangle, NO))
+	    {
+	      [c mouseExited: nil];
+	    }
 	  [o invalidate];
 	  [_cursor_rects removeObject: o];
 	  if ([_cursor_rects count] == 0)

@@ -2344,10 +2344,43 @@ discardCursorRectsForView(NSView *theView)
 {
   if (((NSViewPtr)aView)->_rFlags.valid_rects)
     {
-      [((NSViewPtr)aView)->_cursor_rects
-	makeObjectsPerformSelector: @selector(invalidate)];
+      unsigned count = [((NSViewPtr)aView)->_cursor_rects count];
+      if (count > 0)
+	{
+	  GSTrackingRect *rects[count];
+	  unsigned i;
+
+	  [((NSViewPtr)aView)->_cursor_rects getObjects: rects];
+
+	  for (i = 0; i < count; ++i)
+	    {
+	      GSTrackingRect *r = rects[i];
+	      if (NSMouseInRect(_lastPoint, r->rectangle, NO))
+		{
+		  [[r owner] mouseExited: nil];
+		}
+	      [r invalidate];
+	    }
+	}
       ((NSViewPtr)aView)->_rFlags.valid_rects = 0;
-      _f.cursor_rects_valid = NO;
+
+      if (_f.cursor_rects_valid)
+	{
+	  if (_f.is_key && _f.cursor_rects_enabled)
+	    {
+	      NSEvent *e = [NSEvent otherEventWithType: NSAppKitDefined
+					      location: NSMakePoint(-1, -1)
+					 modifierFlags: 0
+					     timestamp: 0
+					  windowNumber: _windowNum
+					       context: GSCurrentContext()
+					       subtype: -1
+						 data1: 0
+						 data2: 0];
+	      [self postEvent: e atStart: YES];
+	    }
+	  _f.cursor_rects_valid = NO;
+	}
     }
 }
 
@@ -2383,6 +2416,26 @@ resetCursorRectsForView(NSView *theView)
   [self discardCursorRects];
   resetCursorRectsForView(_wv);
   _f.cursor_rects_valid = YES;
+
+  if (_f.is_key && _f.cursor_rects_enabled)
+    {
+      NSPoint loc = [self mouseLocationOutsideOfEventStream];
+      if (NSMouseInRect(loc, [_wv bounds], NO))
+	{
+	  NSEvent *e = [NSEvent mouseEventWithType: NSMouseMoved
+					  location: loc
+				     modifierFlags: 0
+					 timestamp: 0
+				      windowNumber: _windowNum
+					   context: GSCurrentContext()
+				       eventNumber: 0
+					clickCount: 0
+					  pressure: 0];
+	  _lastPoint = NSMakePoint(-1,-1);
+	  (*ccImp)(self, ccSel, _wv, e);
+	  _lastPoint = loc;
+	}
+    }
 }
 
 /*

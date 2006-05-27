@@ -448,6 +448,14 @@ backgroundColorHint:(NSColor *)bg
        */
       [self pop];
     }
+  else
+    {
+      /*
+       * The cursor was set on entry, we reset it to the default cursor on exit. 
+       * Using push and pop all the time would seem to be a clearer way.
+       */
+      [[NSCursor arrowCursor] set];
+    }
 }
 
 /**<p>Pops the cursor off the top of the stack and makes the previous
