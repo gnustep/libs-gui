@@ -1837,7 +1837,10 @@ See -runModalForWindow:
 	  for (i = 0; i < count; i++)
 	    {
 	      NSWindow	*window = [window_list objectAtIndex: i];
-
+	      
+	      if ([window isVisible] == NO)
+		continue;
+	      
 	      if ([window performKeyEquivalent: theEvent] == YES)
 		break;
 	    }

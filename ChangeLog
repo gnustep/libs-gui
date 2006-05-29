@@ -1,3 +1,10 @@
+2006-05-29 00:58 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSApplication.m: Correction for bug#16688.
+	* Source/NSDocumentController.m: Changed comment for currentDirectory.
+	* Source/NSDocument.m: Removed "FIXME" since it is inaccurate.
+	The signature of the method is the same as in the documentation.
+
 2006-05-27  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSView.m (-discardCursorRects, -removeCursorRect:cursor:) 

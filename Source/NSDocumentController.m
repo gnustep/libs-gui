@@ -601,13 +601,14 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
 		 [[NSApplication sharedApplication] mainWindow]];
 }
 
-/** Returns the current directory. This method first checks if there
-    is a current document using the -currentDocument method. If this
-    returns a document and the document has a filename, this method
-    returns the directory this file is located in. Otherwise it
-    returns the directory of the most recently opened document or
-    the user's home directory if no document has been opened before.
-*/
+/** 
+ * Returns the current directory. This method first checks if there
+ * is a current document using the -currentDocument method. If this
+ * returns a document and the document has a filename, this method
+ * returns the directory this file is located in. Otherwise it
+ * returns the directory of the most recently opened document or
+ * the user's home directory if no document has been opened before.
+ */
 - (NSString *) currentDirectory
 {
   NSFileManager *manager = [NSFileManager defaultManager];

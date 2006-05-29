@@ -207,7 +207,11 @@
   _window = aWindow;
 }
 
-//FIXME: In the later specification this method has a different return type!! 
+/**
+ * Creates the window controllers for the current document.  Calls
+ * addWindowController: on the receiver to add them to the controller 
+ * array.
+ */
 - (void) makeWindowControllers
 {
   NSString *name = [self windowNibName];
