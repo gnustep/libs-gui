@@ -563,6 +563,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
     }
 
   [NSApp stopModalWithCode: NSOKButton];
+  [_okButton setEnabled: NO];
   [self close];
 }
 

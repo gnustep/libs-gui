@@ -1,3 +1,17 @@
+2006-05-29  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSApplication.m: Revert last change which broke menu
+	key equivalents for off-screen windows.
+	* Source/NSOpenPanel.m: Fix handling CR key equivalent (bug #16688)
+	so that panel only takes action when it is active.
+	* Source/NSSavePanel.m: ditto
+	Fix done by disabling the ok button when the panel is not active,
+	but what about if other panels have similar bugs ... shouldn't there
+	be some automatic mechanism to stop buttons (but not menu items) from
+	responding to key equivalents when a window is not the key window?
+	* Source/NSButton.m: ([performKeyEquivalent:]) return NO if blocked
+	by a modal window as per macos-x documentation.
+
 2006-05-29 00:58 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSApplication.m: Correction for bug#16688.

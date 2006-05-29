@@ -1067,6 +1067,7 @@ selectCellWithString: (NSString*)title
 {
   ASSIGN(_directory, [_browser pathToColumn:[_browser lastColumn]]);
   [NSApp stopModalWithCode: NSCancelButton];
+  [_okButton setEnabled: NO];
   [self close];
 }
 
@@ -1179,6 +1180,7 @@ selectCellWithString: (NSString*)title
       return;
 
   [NSApp stopModalWithCode: NSOKButton];
+  [_okButton setEnabled: NO];
   [self close];
 }
 
