@@ -36,6 +36,7 @@
 #include "AppKit/NSView.h"
 #include "AppKit/NSPopUpButton.h"
 #include "AppKit/NSDocumentFrameworkPrivate.h"
+#include "AppKit/NSBox.h"
 
 #include "GSGuiPrivate.h"
 
@@ -456,7 +457,7 @@
 
 - (IBAction)changeSaveType: (id)sender
 { 
-//FIXME if we have accessory -- store the desired save type somewhere.
+  [self setFileType: [sender titleOfSelectedItem]];
 }
 
 - (int)runModalSavePanel: (NSSavePanel *)savePanel 
@@ -471,13 +472,45 @@
   return YES;
 }
 
-- (void) _loadPanelAccessoryNib
+- (void) _createPanelAccessory
 {
-// FIXME.  We need to load the pop-up button
+  if(savePanelAccessory == nil)
+    {
+      NSRect accessoryFrame = NSMakeRect(0,0,380,70);
+      NSRect spaFrame = NSMakeRect(115,14,150,22);
+
+      savePanelAccessory = [[NSBox alloc] initWithFrame: accessoryFrame];
+      [(NSBox *)savePanelAccessory setTitle: @"File Type"];
+      [savePanelAccessory setAutoresizingMask: 
+			    NSViewWidthSizable | NSViewHeightSizable];
+      spaButton = [[NSPopUpButton alloc] initWithFrame: spaFrame];
+      [spaButton setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable | NSViewMinYMargin |
+		 NSViewMaxYMargin | NSViewMinXMargin | NSViewMaxXMargin];
+      [spaButton setTarget: self];
+      [spaButton setAction: @selector(changeSaveType:)];
+      [savePanelAccessory addSubview: spaButton];
+    }
 }
 - (void) _addItemsToSpaButtonFromArray: (NSArray *)types
 {
-// FIXME.  Add types to popup.
+  NSEnumerator *en = [types objectEnumerator];
+  NSString *title = nil;
+  int i = 0;
+
+  while((title = [en nextObject]) != nil)
+    {
+      [spaButton addItemWithTitle: title];
+      i++;
+    }
+
+  // if it's more than one, then
+  [spaButton setEnabled: (i > 0)];
+  
+  // if we have some items, select the current filetype.
+  if(i > 0)
+    {
+      [spaButton selectItemWithTitle: [self fileType]];
+    }
 }
 
 - (NSString *)fileNameFromRunningSavePanelForSaveOperation: (NSSaveOperationType)saveOperation
@@ -495,7 +528,7 @@
   if ([self shouldRunSavePanelWithAccessoryView])
     {
       if (savePanelAccessory == nil)
-	[self _loadPanelAccessoryNib];
+	[self _createPanelAccessory];
       
       [self _addItemsToSpaButtonFromArray: extensions];
       
@@ -645,9 +678,8 @@
 
 - (NSString *)fileTypeFromLastRunSavePanel
 {
-  // FIXME this should return type picked on save accessory
-  // return [spaPopupButton title];
-  return [self fileType];
+  // return [self fileType];
+  return [spaButton title];
 }
 
 - (NSDictionary *)fileAttributesToWriteToFile: (NSString *)fullDocumentPath 
