@@ -1829,19 +1829,9 @@ See -runModalForWindow:
 
       case NSKeyDown:
 	{
-	  NSArray	*window_list = [self windows];
-	  unsigned	count = [window_list count];
-	  unsigned	i;
-
 	  NSDebugLLog(@"NSEvent", @"send key down event\n");
-	  for (i = 0; i < count; i++)
-	    {
-	      NSWindow	*window = [window_list objectAtIndex: i];
-	      
-	      if ([window performKeyEquivalent: theEvent] == YES)
-		break;
-	    }
-	  if (i == count)
+	  if ([[self mainMenu] performKeyEquivalent: theEvent] == NO
+	    && [[self keyWindow] performKeyEquivalent: theEvent] == NO)
 	    {
 	      [[theEvent window] sendEvent: theEvent];
 	    }

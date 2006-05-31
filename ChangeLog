@@ -1,3 +1,11 @@
+2006-05-21  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSApplication.m: Implement MacOS-X behavior (as determined
+	by experimentation) of sending ([performKeyEquivalent:]) to main menu
+	and to the key window.  This differs from the old behavior of sending
+	to all windows and means that popup/pulldown menus on windows other
+	than the key window now cannot be activated using key equivalents.
+
 2006-05-30 00:53 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSDocument.m: Implemented accessory view logic when
