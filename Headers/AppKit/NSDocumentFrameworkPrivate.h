@@ -34,6 +34,9 @@
 - (NSArray *)_editorAndViewerTypesForClass:(Class)documentClass;
 - (NSArray *)_editorTypesForClass:(Class)fp12;
 - (NSArray *)_exportableTypesForClass:(Class)documentClass;
+- (NSString *)_nameForHumanReadableType: (NSString *)type;
+- (NSArray *)_displayNamesForTypes: (NSArray *)types;
+- (NSArray *)_displayNamesForClass: (Class)documentClass;
 @end
 
 

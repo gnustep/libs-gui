@@ -80,6 +80,7 @@ typedef enum _NSSaveOperationType {
     NSPopUpButton	*spaButton;     	// outlet for "the File Format:" button in the save panel.
     int			_documentIndex;		// Untitled index
     NSUndoManager 	*_undoManager;		// Undo manager for this document
+    NSString            *_saveType;             // the currently selected extension.
     struct __docFlags {
         unsigned int inClose:1;
         unsigned int hasUndoManager:1;
