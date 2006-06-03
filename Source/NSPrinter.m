@@ -1155,10 +1155,10 @@ static NSMutableDictionary* printerCache;
   // The translations also have to have any hex substrings interpreted
   if (optionTranslation)
     optionTranslation = [self interpretQuotedValue: optionTranslation];
-    
+
   if (valueTranslation)
     valueTranslation = [self interpretQuotedValue: valueTranslation];
-    
+
   // The keyword (or keyword/option pair, if there's a option), should only
   // only have one value, unless it's one of the optionless keywords which
   // allow multiple instances.
@@ -1448,35 +1448,45 @@ static NSMutableDictionary* printerCache;
       [scanner scanString: @"<" 
                intoString: NULL];
 
-    [scanner scanCharactersFromSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]
-                        intoString: NULL];
+      // "<<" is a valid part of a PS string
+      if ([scanner scanString: @"<" 
+		   intoString: NULL])
+        {
+	  value = [value stringByAppendingString: @"<<"];	    
+	}
+      else 
+        {
+	  [scanner scanCharactersFromSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]
+		   intoString: NULL];
+	  
+	  while (![scanner scanString: @">" 
+			   intoString: NULL])
+	    {
+	      location = [scanner scanLocation];
+	      if (location+2 > stringLength)
+	        {
+		  [NSException raise: NSPPDParseException
+			       format: @"Badly formatted hexadecimal substring '%@' in \
+                                  PPD printer file.", qString];
+		  // NOT REACHED
+		}
+	      value = [value stringByAppendingFormat: @"%c",
+			     16 * [self gethex: [qString characterAtIndex: location]]
+			     + [self gethex: [qString characterAtIndex: location+1]]];
+	      
+	      [scanner setScanLocation: location+2];
+	      
+	      [scanner scanCharactersFromSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]
+		       intoString: NULL];
+	    }
+	}
+      
+      if ([scanner scanUpToString:@"<" intoString:&part])
+        {
+	  value = [value stringByAppendingString: part];
+	}
+    }
 
-    while (![scanner scanString: @">" 
-                     intoString: NULL])
-      {
-        location = [scanner scanLocation];
-        if (location+2 > stringLength)
-          {
-	      [NSException raise: NSPPDParseException
-                        format: @"Badly formatted hexadecimal substring in \
-                                  PPD printer file."];
-            // NOT REACHED
-          }
-        value = [value stringByAppendingFormat: @"%c",
-                 16 * [self gethex: [qString characterAtIndex: location]]
-                    + [self gethex: [qString characterAtIndex: location+1]]];
-
-        [scanner setScanLocation: location+2];
-
-        [scanner scanCharactersFromSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]
-                            intoString: NULL];
-      }
-
-    if ([scanner scanUpToString:@"<" intoString:&part])
-      {
-        value = [value stringByAppendingString: part];
-      }
-  }
   return value;
 }
 
@@ -1509,8 +1519,9 @@ static NSMutableDictionary* printerCache;
       case 'f': return 15;
     }      
   [NSException 
-         raise:NSPPDParseException 
-        format:@"Badly formatted hexadeximal substring in PPD printer file."];
+      raise: NSPPDParseException 
+      format: @"Badly formatted hexadeximal character '%d' in PPD printer file.", 
+      character];
 
   return 0; /* Quiet compiler warnings */
 }

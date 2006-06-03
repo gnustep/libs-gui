@@ -1,3 +1,9 @@
+2006-06-03  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPrinter.m (-interpretQuotedValue:, -gethex:): Better
+	error reporting on non-hexadecimal substring. Ignore "<<" sequence
+	as this is valid as part of a PS command string.  
+
 2006-06-01 00:13 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/AppKit/NSDocumentFrameworkPrivate.h: Addition of new
