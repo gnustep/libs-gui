@@ -722,118 +722,248 @@
   int i;
   
   [super encodeWithCoder: aCoder];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_numberOfRows];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_numberOfColumns];
-  for (i = 0; i < _numberOfRows * _numberOfColumns; i++)
+  if([aCoder allowsKeyedCoding])
     {
-      [aCoder encodeObject: _jails[i]];
-      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_havePrisoner[i]];
+      [aCoder encodeInt: _numberOfRows forKey: @"GSNumberOfRows"];
+      [aCoder encodeInt: _numberOfColumns forKey: @"GSNumberOfColumns"];
+      for (i = 0; i < _numberOfRows * _numberOfColumns; i++)
+	{
+	  [aCoder encodeObject: _jails[i] forKey: 
+		    [NSString stringWithFormat: @"GSJail%d",i]];
+	  [aCoder encodeBool: _havePrisoner[i] forKey: 
+		    [NSString stringWithFormat: @"GSHavePrisoner%d",i]];
+	}
+      [aCoder encodeFloat: _minXBorder forKey: @"GSMinXBorder"];
+      [aCoder encodeFloat: _maxXBorder forKey: @"GSMaxXBorder"];
+      [aCoder encodeFloat: _minYBorder forKey: @"GSMinYBorder"];
+      [aCoder encodeFloat: _maxYBorder forKey: @"GSMaxYBorder"];
+      for (i = 0; i < _numberOfColumns; i++)
+	{
+	  [aCoder encodeBool: _expandColumn[i] forKey: 
+		    [NSString stringWithFormat: @"GSExpandColumn%d",i]];
+	  [aCoder encodeFloat: _columnDimension[i] forKey:
+		    [NSString stringWithFormat: @"GSColumnDimension%d",i]];	  
+	  [aCoder encodeFloat: _minColumnDimension[i] forKey:
+		    [NSString stringWithFormat: @"GSMinColumnDimension%d",i]];
+	}
+      for (i = 0; i < _numberOfRows; i++)
+	{
+	  [aCoder encodeBool: _expandRow[i] forKey: 
+		    [NSString stringWithFormat: @"GSExpandRow%d",i]];
+	  [aCoder encodeFloat: _rowDimension[i] forKey: 
+		    [NSString stringWithFormat: @"GSRowDimension%d",i]];
+	  [aCoder encodeFloat: _minRowDimension[i] forKey: 
+		    [NSString stringWithFormat: @"GSMinRowDimension%d",i]];
+	}
     }
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_minXBorder];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_maxXBorder];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_minYBorder];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_maxYBorder];
-  for (i = 0; i < _numberOfColumns; i++)
+  else
     {
-      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_expandColumn[i]];
-      [aCoder encodeValueOfObjCType: @encode(float) at: &_columnDimension[i]];
-      [aCoder encodeValueOfObjCType: @encode(float) 
-	      at: &_minColumnDimension[i]];
-    }
-  for (i = 0; i < _numberOfRows; i++)
-    {
-      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_expandRow[i]];
-      [aCoder encodeValueOfObjCType: @encode(float) at: &_rowDimension[i]];
-      [aCoder encodeValueOfObjCType: @encode(float) at: &_minRowDimension[i]];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &_numberOfRows];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &_numberOfColumns];
+      for (i = 0; i < _numberOfRows * _numberOfColumns; i++)
+	{
+	  [aCoder encodeObject: _jails[i]];
+	  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_havePrisoner[i]];
+	}
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_minXBorder];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_maxXBorder];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_minYBorder];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_maxYBorder];
+      for (i = 0; i < _numberOfColumns; i++)
+	{
+	  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_expandColumn[i]];
+	  [aCoder encodeValueOfObjCType: @encode(float) at: &_columnDimension[i]];
+	  [aCoder encodeValueOfObjCType: @encode(float) 
+		  at: &_minColumnDimension[i]];
+	}
+      for (i = 0; i < _numberOfRows; i++)
+	{
+	  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_expandRow[i]];
+	  [aCoder encodeValueOfObjCType: @encode(float) at: &_rowDimension[i]];
+	  [aCoder encodeValueOfObjCType: @encode(float) at: &_minRowDimension[i]];
+	}
     }
 }
 
 -(id) initWithCoder: (NSCoder*)aDecoder
 {
   int i;
-
+      
   [super initWithCoder: aDecoder];
   [super setAutoresizesSubviews: NO];
 
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfRows];
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfColumns];
-
-  // 
-  _jails = NSZoneMalloc (NSDefaultMallocZone (), 
-			sizeof (NSView *) 
-			 * (_numberOfRows * _numberOfColumns));
-
-  _havePrisoner = NSZoneMalloc (NSDefaultMallocZone (), 
-			       sizeof (BOOL) 
-				* (_numberOfRows * _numberOfColumns));
-
-  for (i = 0; i < _numberOfRows * _numberOfColumns; i++)
+  if([aDecoder allowsKeyedCoding])
     {
-      _jails[i] = [aDecoder decodeObject];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_havePrisoner[i]];
-    }
+      _numberOfRows = [aDecoder decodeIntForKey: @"GSNumberOfRows"];
+      _numberOfColumns = [aDecoder decodeIntForKey: @"GSNumberOfColumns"];
 
-  [aDecoder decodeValueOfObjCType: @encode(float) at: &_minXBorder];
-  [aDecoder decodeValueOfObjCType: @encode(float) at: &_maxXBorder];
-  [aDecoder decodeValueOfObjCType: @encode(float) at: &_minYBorder];
-  [aDecoder decodeValueOfObjCType: @encode(float) at: &_maxYBorder];
+      // create the jails...
+      _jails = NSZoneMalloc (NSDefaultMallocZone (), 
+			     sizeof (NSView *) 
+			     * (_numberOfRows * _numberOfColumns));
+      
+      _havePrisoner = NSZoneMalloc (NSDefaultMallocZone (), 
+				    sizeof (BOOL) 
+				    * (_numberOfRows * _numberOfColumns));
+      
+      
+      for (i = 0; i < _numberOfRows * _numberOfColumns; i++)
+	{
+	  _jails[i] = [aDecoder decodeObjectForKey: 
+				  [NSString stringWithFormat: @"GSJail%d",i]];
+	  _havePrisoner[i] = [aDecoder decodeBoolForKey: 
+					 [NSString stringWithFormat: @"GSHavePrisoner%d",i]];
+	}
+      
+      _minXBorder = [aDecoder decodeFloatForKey: @"GSMinXBorder"];
+      _maxXBorder = [aDecoder decodeFloatForKey: @"GSMaxXBorder"];
+      _minYBorder = [aDecoder decodeFloatForKey: @"GSMinYBorder"];
+      _maxYBorder = [aDecoder decodeFloatForKey: @"GSMaxYBorder"];
 
-  // We compute _minimumSize, _expandingRowNumber 
-  // and _expandingColumnNumber during deconding.
-  _minimumSize = NSZeroSize;
-  _expandingRowNumber = 0;
-  _expandingColumnNumber = 0;
-
-  // Columns
-  _expandColumn = NSZoneMalloc (NSDefaultMallocZone (), 
-				sizeof (BOOL) * _numberOfColumns);
-  _columnDimension = NSZoneMalloc (NSDefaultMallocZone (), 
-				   sizeof (float) * _numberOfColumns);
-  _minColumnDimension = NSZoneMalloc (NSDefaultMallocZone (), 
-				      sizeof (float) * _numberOfColumns);
-  _minimumSize.width += _minXBorder;
-  for (i = 0; i < _numberOfColumns; i++)
-    {
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_expandColumn[i]];
-      if (_expandColumn[i])
-	_expandingColumnNumber++;
-      [aDecoder decodeValueOfObjCType: @encode(float) at: &_columnDimension[i]];
-      [aDecoder decodeValueOfObjCType: @encode(float) 
-		at: &_minColumnDimension[i]];
-      _minimumSize.width += _minColumnDimension[i];
-    }
-  _minimumSize.width += _maxXBorder;
-  // Calculate column origins
-  _columnXOrigin = NSZoneMalloc (NSDefaultMallocZone (), 
-				sizeof (float) * _numberOfColumns);
-  _columnXOrigin[0] = _minXBorder;
-  for (i = 1; i < _numberOfColumns; i++)
-    _columnXOrigin[i] = _columnXOrigin[i - 1] + _columnDimension[i - 1];
-
-  // Rows
-  _expandRow = NSZoneMalloc (NSDefaultMallocZone (), 
-			     sizeof (BOOL) * _numberOfRows);
-  _rowDimension = NSZoneMalloc (NSDefaultMallocZone (), 
-			       sizeof (float) * _numberOfRows);
-  _minRowDimension = NSZoneMalloc (NSDefaultMallocZone (), 
+                  // We compute _minimumSize, _expandingRowNumber 
+      // and _expandingColumnNumber during deconding.
+      _minimumSize = NSZeroSize;
+      _expandingRowNumber = 0;
+      _expandingColumnNumber = 0;
+      
+      // Columns
+      _expandColumn = NSZoneMalloc (NSDefaultMallocZone (), 
+				    sizeof (BOOL) * _numberOfColumns);
+      _columnDimension = NSZoneMalloc (NSDefaultMallocZone (), 
+				       sizeof (float) * _numberOfColumns);
+      _minColumnDimension = NSZoneMalloc (NSDefaultMallocZone (), 
+					  sizeof (float) * _numberOfColumns);
+      _minimumSize.width += _minXBorder;
+      for (i = 0; i < _numberOfColumns; i++)
+	{
+	  _expandColumn[i] = [aDecoder decodeBoolForKey: 
+					 [NSString stringWithFormat: @"GSExpandColumn%d",i]];
+	  if (_expandColumn[i])
+	    _expandingColumnNumber++;
+	  _columnDimension[i] = [aDecoder decodeFloatForKey: 
+					    [NSString stringWithFormat: @"GSColumnDimension%d",i]];
+	  _minColumnDimension[i] = [aDecoder decodeFloatForKey: 
+					       [NSString stringWithFormat: @"GSMinColumnDimension%d",i]];
+	  _minimumSize.width += _minColumnDimension[i];
+	}
+      _minimumSize.width += _maxXBorder;
+      // Calculate column origins
+      _columnXOrigin = NSZoneMalloc (NSDefaultMallocZone (), 
+				     sizeof (float) * _numberOfColumns);
+      _columnXOrigin[0] = _minXBorder;
+      for (i = 1; i < _numberOfColumns; i++)
+	_columnXOrigin[i] = _columnXOrigin[i - 1] + _columnDimension[i - 1];
+      
+      // Rows
+      _expandRow = NSZoneMalloc (NSDefaultMallocZone (), 
+				 sizeof (BOOL) * _numberOfRows);
+      _rowDimension = NSZoneMalloc (NSDefaultMallocZone (), 
+				    sizeof (float) * _numberOfRows);
+      _minRowDimension = NSZoneMalloc (NSDefaultMallocZone (), 
+				       sizeof (float) * _numberOfRows);
+      _minimumSize.height += _minYBorder;
+      for (i = 0; i < _numberOfRows; i++)
+	{
+	  _expandRow[i] = [aDecoder decodeBoolForKey:
+				      [NSString stringWithFormat: @"GSExpandRow%d",i]];
+	  if (_expandRow[i])
+	    _expandingRowNumber++;
+	  _rowDimension[i] = [aDecoder decodeFloatForKey: 
+					 [NSString stringWithFormat: @"GSRowDimension%d",i]];
+	  _minRowDimension[i] = [aDecoder decodeFloatForKey: 
+					    [NSString stringWithFormat: @"GSMinRowDimension%d",i]];
+	  _minimumSize.height += _minRowDimension[i];
+	}
+      _minimumSize.height += _maxYBorder;
+      // Calculate row origins
+      _rowYOrigin = NSZoneMalloc (NSDefaultMallocZone (), 
 				  sizeof (float) * _numberOfRows);
-  _minimumSize.height += _minYBorder;
-  for (i = 0; i < _numberOfRows; i++)
-    {
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_expandRow[i]];
-      if (_expandRow[i])
-	_expandingRowNumber++;
-      [aDecoder decodeValueOfObjCType: @encode(float) at: &_rowDimension[i]];
-      [aDecoder decodeValueOfObjCType: @encode(float) at: &_minRowDimension[i]];
-      _minimumSize.height += _minRowDimension[i];
+      _rowYOrigin[0] = _minYBorder;
+      for (i = 1; i < _numberOfRows; i++)
+	_rowYOrigin[i] = _rowYOrigin[i - 1] + _rowDimension[i - 1];
     }
-  _minimumSize.height += _maxYBorder;
-  // Calculate row origins
-  _rowYOrigin = NSZoneMalloc (NSDefaultMallocZone (), 
-			      sizeof (float) * _numberOfRows);
-  _rowYOrigin[0] = _minYBorder;
-  for (i = 1; i < _numberOfRows; i++)
-    _rowYOrigin[i] = _rowYOrigin[i - 1] + _rowDimension[i - 1];
+  else
+    {
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfRows];
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfColumns];
+      
+      // 
+      _jails = NSZoneMalloc (NSDefaultMallocZone (), 
+			     sizeof (NSView *) 
+			     * (_numberOfRows * _numberOfColumns));
+      
+      _havePrisoner = NSZoneMalloc (NSDefaultMallocZone (), 
+				    sizeof (BOOL) 
+				    * (_numberOfRows * _numberOfColumns));
+      
+      for (i = 0; i < _numberOfRows * _numberOfColumns; i++)
+	{
+	  _jails[i] = [aDecoder decodeObject];
+	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_havePrisoner[i]];
+	}
+      
+      [aDecoder decodeValueOfObjCType: @encode(float) at: &_minXBorder];
+      [aDecoder decodeValueOfObjCType: @encode(float) at: &_maxXBorder];
+      [aDecoder decodeValueOfObjCType: @encode(float) at: &_minYBorder];
+      [aDecoder decodeValueOfObjCType: @encode(float) at: &_maxYBorder];
+      
+      // We compute _minimumSize, _expandingRowNumber 
+      // and _expandingColumnNumber during deconding.
+      _minimumSize = NSZeroSize;
+      _expandingRowNumber = 0;
+      _expandingColumnNumber = 0;
+      
+      // Columns
+      _expandColumn = NSZoneMalloc (NSDefaultMallocZone (), 
+				    sizeof (BOOL) * _numberOfColumns);
+      _columnDimension = NSZoneMalloc (NSDefaultMallocZone (), 
+				       sizeof (float) * _numberOfColumns);
+      _minColumnDimension = NSZoneMalloc (NSDefaultMallocZone (), 
+					  sizeof (float) * _numberOfColumns);
+      _minimumSize.width += _minXBorder;
+      for (i = 0; i < _numberOfColumns; i++)
+	{
+	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_expandColumn[i]];
+	  if (_expandColumn[i])
+	    _expandingColumnNumber++;
+	  [aDecoder decodeValueOfObjCType: @encode(float) at: &_columnDimension[i]];
+	  [aDecoder decodeValueOfObjCType: @encode(float) 
+		    at: &_minColumnDimension[i]];
+	  _minimumSize.width += _minColumnDimension[i];
+	}
+      _minimumSize.width += _maxXBorder;
+      // Calculate column origins
+      _columnXOrigin = NSZoneMalloc (NSDefaultMallocZone (), 
+				     sizeof (float) * _numberOfColumns);
+      _columnXOrigin[0] = _minXBorder;
+      for (i = 1; i < _numberOfColumns; i++)
+	_columnXOrigin[i] = _columnXOrigin[i - 1] + _columnDimension[i - 1];
+      
+      // Rows
+      _expandRow = NSZoneMalloc (NSDefaultMallocZone (), 
+				 sizeof (BOOL) * _numberOfRows);
+      _rowDimension = NSZoneMalloc (NSDefaultMallocZone (), 
+				    sizeof (float) * _numberOfRows);
+      _minRowDimension = NSZoneMalloc (NSDefaultMallocZone (), 
+				       sizeof (float) * _numberOfRows);
+      _minimumSize.height += _minYBorder;
+      for (i = 0; i < _numberOfRows; i++)
+	{
+	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_expandRow[i]];
+	  if (_expandRow[i])
+	    _expandingRowNumber++;
+	  [aDecoder decodeValueOfObjCType: @encode(float) at: &_rowDimension[i]];
+	  [aDecoder decodeValueOfObjCType: @encode(float) at: &_minRowDimension[i]];
+	  _minimumSize.height += _minRowDimension[i];
+	}
+      _minimumSize.height += _maxYBorder;
+      // Calculate row origins
+      _rowYOrigin = NSZoneMalloc (NSDefaultMallocZone (), 
+				  sizeof (float) * _numberOfRows);
+      _rowYOrigin[0] = _minYBorder;
+      for (i = 1; i < _numberOfRows; i++)
+	_rowYOrigin[i] = _rowYOrigin[i - 1] + _rowDimension[i - 1];
+    }
 
   return self;
 }

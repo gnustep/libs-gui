@@ -163,12 +163,20 @@
   BOOL	flag;
 
   [super encodeWithCoder: aCoder];
-  flag = _becomesKeyOnlyIfNeeded;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _isFloatingPanel;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _worksWhenModal;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  if([aCoder allowsKeyedCoding])
+    {
+      // Nothing to do here, for keyed coding this is handled by NSWindowTemplate.
+      // Calling the above method should throw an NSInvalidArgumentException.
+    }
+  else
+    {
+       flag = _becomesKeyOnlyIfNeeded;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _isFloatingPanel;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _worksWhenModal;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -176,12 +184,20 @@
   BOOL	flag;
 
   [super initWithCoder: aDecoder];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  [self setBecomesKeyOnlyIfNeeded: flag];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  [self setFloatingPanel: flag];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  [self setWorksWhenModal: flag];
+  if([aDecoder allowsKeyedCoding])
+    {
+      // Nothing to do here, for keyed coding this is handled by NSWindowTemplate.
+      // Calling the above method should throw an NSInvalidArgumentException.
+    }
+  else
+    {
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [self setBecomesKeyOnlyIfNeeded: flag];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [self setFloatingPanel: flag];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [self setWorksWhenModal: flag];
+    }
 
   return self;
 }

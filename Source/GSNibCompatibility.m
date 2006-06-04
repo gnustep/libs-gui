@@ -820,6 +820,14 @@
       [coder encodeObject: (id)originalClassName forKey: @"NSOriginalClassName"];
     }
 }
+
+- (void) dealloc
+{
+  RELEASE(_className);
+  RELEASE(_originalClassName);
+  RELEASE(_template);
+  [super dealloc];
+}
 @end
 
 /* Correct some instances where the ":" is missing from the method name in the label */
@@ -944,20 +952,36 @@
   return result;
 }
 
+/**
+ * Get the values from the map in the same order as the keys.
+ */
+- (NSArray *) _valuesForKeys: (NSArray *)keys inMap: (NSMapTable *)map
+{
+  NSMutableArray *result = [NSMutableArray array];
+  NSEnumerator *en = [keys objectEnumerator];
+  id key = nil;
+  while((key = [en nextObject]) != nil)
+    {
+      id value = (id)NSMapGet(map,key);
+      [result addObject: value];
+    }
+  return result;
+}
+
 - (void) encodeWithCoder: (NSCoder *)coder
 {
   if([coder allowsKeyedCoding])
     {
       NSArray *accessibilityOidsKeys = (NSArray *)NSAllMapTableKeys(_accessibilityOids);
-      NSArray *accessibilityOidsValues = (NSArray *)NSAllMapTableValues(_accessibilityOids);
+      NSArray *accessibilityOidsValues = [self _valuesForKeys: accessibilityOidsKeys inMap: _accessibilityOids];
       NSArray *classKeys = (NSArray *)NSAllMapTableKeys(_classes);
-      NSArray *classValues = (NSArray *)NSAllMapTableValues(_classes);
+      NSArray *classValues = [self _valuesForKeys: classKeys inMap: _classes];
       NSArray *nameKeys = (NSArray *)NSAllMapTableKeys(_names);
-      NSArray *nameValues = (NSArray *)NSAllMapTableValues(_names);
+      NSArray *nameValues = [self _valuesForKeys: nameKeys inMap: _names];
       NSArray *objectsKeys = (NSArray *)NSAllMapTableKeys(_objects);
-      NSArray *objectsValues = (NSArray *)NSAllMapTableValues(_objects);
+      NSArray *objectsValues = [self _valuesForKeys: objectsKeys inMap: _objects];
       NSArray *oidsKeys = (NSArray *)NSAllMapTableKeys(_oids);
-      NSArray *oidsValues = (NSArray *)NSAllMapTableValues(_oids);
+      NSArray *oidsValues = [self _valuesForKeys: oidsKeys inMap: _oids];
 
       [coder encodeObject: (id)_accessibilityConnectors forKey: @"NSAccessibilityConnectors"];
       [coder encodeObject: (id) accessibilityOidsKeys forKey: @"NSAccessibilityOidsKeys"];

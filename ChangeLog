@@ -1,3 +1,25 @@
+2006-06-04 01:09 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSHbox.m: Implemented keyed coding.
+	* Source/GSNibCompatibility.m: Added private method to help 
+	better decode keys/values in the nib data structures.
+	* Source/GSTable.m: Implemented keyed coding.
+	* Source/GSTextStorage.m: Added code to skip existing
+	coding method contents, if the coder is a keyed coder.
+	* Source/GSVbox.m: Implemented keyed coding.
+	* Source/NSMenuView.m: Added code to skip coding, if
+	it is a keyed coder.
+	* Source/NSPanel.m: Added comment indicating that the
+	call to the superclass initWithCoder method should throw
+	an exception per documentation.
+	* Source/NSPrinter.m: Added if to skip the coder logic,
+	if using a keyed coder.
+	* Source/NSStepper.m: Removed dummy initWithCoder:/encodeWithCoder:
+	methods since they only called the superclass.
+	* Source/NSWindow.m: Added exception called for in the 
+	documentation if NSWindow initWithCoder:/encodeWithCoder: 
+	is called with a keyed archiver. 
+
 2006-06-03  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPrinter.m (-interpretQuotedValue:, -gethex:): Better

@@ -4188,6 +4188,19 @@ resetCursorRectsForView(NSView *theView)
 {
   BOOL		flag;
 
+
+  // If were're being initialized from a keyed coder...
+  if([aCoder allowsKeyedCoding])
+    {
+      // The docs indicate that there should be an error when directly encoding with
+      // a keyed coding archiver.  We should only encode NSWindow and subclasses
+      // using NSWindowTemplate.
+      [NSException raise: NSInvalidArgumentException
+		   format: @"%@ keyed coding not implemented for %@.", 
+		   NSStringFromClass([self class])];
+    }
+
+
   [super encodeWithCoder: aCoder];
 
   [aCoder encodeRect: [[self contentView] frame]];
@@ -4233,6 +4246,19 @@ resetCursorRectsForView(NSView *theView)
 {
   id	oldself = self;
   BOOL	flag;
+
+
+  // If were're being initialized from a keyed coder...
+  if([aDecoder allowsKeyedCoding])
+    {
+      // The docs indicate that there should be an error when directly encoding with
+      // a keyed coding archiver.  We should only encode NSWindow and subclasses
+      // using NSWindowTemplate.
+      [NSException raise: NSInvalidArgumentException
+		   format: @"%@ keyed coding not implemented for %@.", 
+		   NSStringFromClass([self class])];
+    }
+
 
   if ((self = [super initWithCoder: aDecoder]) == oldself)
     {

@@ -646,21 +646,34 @@ static NSMutableDictionary* printerCache;
 //
 - (void) encodeWithCoder: (NSCoder*)aCoder
 { 
-  [aCoder encodeObject: _printerHost];
-  [aCoder encodeObject: _printerName];
-  [aCoder encodeObject: _printerNote];
-  [aCoder encodeObject: _printerType];
-  [aCoder encodeObject: _tables];
+  if([aCoder allowsKeyedCoding])
+    {
+      // TODO: Determine keys for NSPrinter.
+    }
+  else
+    {
+      [aCoder encodeObject: _printerHost];
+      [aCoder encodeObject: _printerName];
+      [aCoder encodeObject: _printerNote];
+      [aCoder encodeObject: _printerType];
+      [aCoder encodeObject: _tables];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {  
-  _printerHost = [aDecoder decodeObject];
-  _printerName = [aDecoder decodeObject];
-  _printerNote = [aDecoder decodeObject];
-  _printerType = [aDecoder decodeObject];
-  _tables = [aDecoder decodeObject];
-
+  if([aDecoder allowsKeyedCoding])
+    {
+      // TODO: Determine keys for NSPrinter.
+    }
+  else
+    {
+      _printerHost = [aDecoder decodeObject];
+      _printerName = [aDecoder decodeObject];
+      _printerNote = [aDecoder decodeObject];
+      _printerType = [aDecoder decodeObject];
+      _tables = [aDecoder decodeObject];
+    }
   return self;
 }
 

@@ -99,18 +99,6 @@ id _nsstepperCellClass = nil;
 {
 }
 
-- (void) encodeWithCoder: (NSCoder *)aCoder
-{
-  [super encodeWithCoder: aCoder];
-}
-
-- (id) initWithCoder: (NSCoder *)aDecoder
-{
-  [super initWithCoder: aDecoder];
-
-  return self;
-}
-
 - (double) maxValue
 {
   return [_cell maxValue];
