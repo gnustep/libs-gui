@@ -211,23 +211,46 @@ typedef enum
 //
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodeValueOfObjCType: @encode(BOOL)
-	  at: &_isWellKnownSelection];
-  [aCoder encodeValueOfObjCType: @encode(int)
-	  at: &_selectionType];
-  [aCoder encodeValueOfObjCType: @encode(id)
-	  at: _descriptionData];
+  if([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeBool: _isWellKnownSelection
+	      forKey: @"GSIsWellKnownSelection"];
+      [aCoder encodeBool: _selectionType
+	      forKey: @"GSSelectionType"];
+      [aCoder encodeObject: _descriptionData
+	      forKey: @"GSDescriptionData"];
+    }
+  else
+    {
+      [aCoder encodeValueOfObjCType: @encode(BOOL)
+	      at: &_isWellKnownSelection];
+      [aCoder encodeValueOfObjCType: @encode(int)
+	      at: &_selectionType];
+      [aCoder encodeValueOfObjCType: @encode(id)
+	      at: _descriptionData];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   [super init];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL)
-	    at: &_isWellKnownSelection];
-  [aDecoder decodeValueOfObjCType: @encode(int)
-	    at: &_selectionType];
-  [aDecoder decodeValueOfObjCType: @encode(id)
-	    at: _descriptionData];
+  if([aDecoder allowsKeyedCoding])
+    {
+      _isWellKnownSelection = [aDecoder decodeBoolForKey: @"GSIsWellKnownSelection"];
+      _selectionType = [aDecoder decodeIntForKey: @"GSSelectionType"];
+      ASSIGN(_descriptionData, [aDecoder decodeObjectForKey: @"GSDescriptionData"]);
+    }
+  else
+    {
+      id obj;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL)
+		at: &_isWellKnownSelection];
+      [aDecoder decodeValueOfObjCType: @encode(int)
+		at: &_selectionType];
+      [aDecoder decodeValueOfObjCType: @encode(id)
+		at: obj];
+      ASSIGN(_descriptionData, obj);
+    }
 
   // if it's a well known selection then determine which one it is.
   if (_isWellKnownSelection)
@@ -251,7 +274,7 @@ typedef enum
 	  break;
 	}
     }
-
+  
   return self;
 }
 

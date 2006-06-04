@@ -314,99 +314,111 @@ static NSParagraphStyle	*defaultStyle = nil;
 
 - (id) initWithCoder: (NSCoder*)aCoder
 {
-  unsigned	count;
-
-  [aCoder decodeValueOfObjCType: @encode(NSTextAlignment) at: &_alignment];
-  [aCoder decodeValueOfObjCType: @encode(NSLineBreakMode) 
-	  at: &_lineBreakMode];
-  [aCoder decodeValueOfObjCType: @encode(float) at: &_firstLineHeadIndent];
-  [aCoder decodeValueOfObjCType: @encode(float) at: &_headIndent];
-  [aCoder decodeValueOfObjCType: @encode(float) at: &_lineSpacing];
-  [aCoder decodeValueOfObjCType: @encode(float) at: &_maximumLineHeight];
-  [aCoder decodeValueOfObjCType: @encode(float) at: &_minimumLineHeight];
-  [aCoder decodeValueOfObjCType: @encode(float) at: &_paragraphSpacing];
-  [aCoder decodeValueOfObjCType: @encode(float) at: &_tailIndent];
-
-  /*
-   *	Tab stops don't conform to NSCoding - so we do it the long way.
-   */
-  [aCoder decodeValueOfObjCType: @encode(unsigned) at: &count];
-  _tabStops = [[NSMutableArray alloc] initWithCapacity: count];
-  if (count > 0)
+  if([aCoder allowsKeyedCoding])
     {
-      float		locations[count];
-      NSTextTabType	types[count];
-      unsigned		i;
-
-      [aCoder decodeArrayOfObjCType: @encode(float)
-			      count: count
-				 at: locations];
-      [aCoder decodeArrayOfObjCType: @encode(NSTextTabType)
-			      count: count
-				 at: types];
-      for (i = 0; i < count; i++)
+      // TODO_NIB: Determine keys for NSParagraphStyle, if there are any.
+    }
+  else
+    {
+      unsigned	count;
+      
+      [aCoder decodeValueOfObjCType: @encode(NSTextAlignment) at: &_alignment];
+      [aCoder decodeValueOfObjCType: @encode(NSLineBreakMode) 
+	      at: &_lineBreakMode];
+      [aCoder decodeValueOfObjCType: @encode(float) at: &_firstLineHeadIndent];
+      [aCoder decodeValueOfObjCType: @encode(float) at: &_headIndent];
+      [aCoder decodeValueOfObjCType: @encode(float) at: &_lineSpacing];
+      [aCoder decodeValueOfObjCType: @encode(float) at: &_maximumLineHeight];
+      [aCoder decodeValueOfObjCType: @encode(float) at: &_minimumLineHeight];
+      [aCoder decodeValueOfObjCType: @encode(float) at: &_paragraphSpacing];
+      [aCoder decodeValueOfObjCType: @encode(float) at: &_tailIndent];
+      
+      /*
+       *	Tab stops don't conform to NSCoding - so we do it the long way.
+       */
+      [aCoder decodeValueOfObjCType: @encode(unsigned) at: &count];
+      _tabStops = [[NSMutableArray alloc] initWithCapacity: count];
+      if (count > 0)
 	{
-	  NSTextTab	*tab;
-
-	  tab = [NSTextTab alloc];
-	  tab = [tab initWithType: types[i] location: locations[i]];
-	  [_tabStops addObject: tab];
-	  RELEASE (tab);
+	  float		locations[count];
+	  NSTextTabType	types[count];
+	  unsigned		i;
+	  
+	  [aCoder decodeArrayOfObjCType: @encode(float)
+		  count: count
+		  at: locations];
+	  [aCoder decodeArrayOfObjCType: @encode(NSTextTabType)
+		  count: count
+		  at: types];
+	  for (i = 0; i < count; i++)
+	    {
+	      NSTextTab	*tab;
+	      
+	      tab = [NSTextTab alloc];
+	      tab = [tab initWithType: types[i] location: locations[i]];
+	      [_tabStops addObject: tab];
+	      RELEASE (tab);
+	    }
+	}
+      
+      if ([aCoder versionForClassName: @"NSParagraphStyle"] >= 2)
+	{
+	  [aCoder decodeValueOfObjCType: @encode(int) at: &_baseDirection];
 	}
     }
-
-  if ([aCoder versionForClassName: @"NSParagraphStyle"] >= 2)
-    {
-      [aCoder decodeValueOfObjCType: @encode(int) at: &_baseDirection];
-    }
-
   return self;
 }
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  unsigned	count;
-
-  [aCoder encodeValueOfObjCType: @encode(NSTextAlignment) at: &_alignment];
-  [aCoder encodeValueOfObjCType: @encode(NSLineBreakMode) 
-	  at: &_lineBreakMode];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_firstLineHeadIndent];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_headIndent];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_lineSpacing];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_maximumLineHeight];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_minimumLineHeight];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_paragraphSpacing];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_tailIndent];
-
-  /*
-   *	Tab stops don't conform to NSCoding - so we do it the long way.
-   */
-  count = [_tabStops count];
-  [aCoder encodeValueOfObjCType: @encode(unsigned) at: &count];
-  if (count > 0)
+  if([aCoder allowsKeyedCoding])
     {
-      float		locations[count];
-      NSTextTabType	types[count];
-      unsigned		i;
-
-      for (i = 0; i < count; i++)
-	{
-	  NSTextTab	*tab = [_tabStops objectAtIndex: i];
-
-	  locations[i] = [tab location]; 
-	  types[i] = [tab tabStopType]; 
-	}
-      [aCoder encodeArrayOfObjCType: @encode(float)
-			      count: count
-				 at: locations];
-      [aCoder encodeArrayOfObjCType: @encode(NSTextTabType)
-			      count: count
-				 at: types];
+      // TODO_NIB: Determine keys for NSParagraphStyle, if there are any.
     }
-
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_baseDirection];
+  else
+    {
+      unsigned	count;
+      
+      [aCoder encodeValueOfObjCType: @encode(NSTextAlignment) at: &_alignment];
+      [aCoder encodeValueOfObjCType: @encode(NSLineBreakMode) 
+	      at: &_lineBreakMode];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_firstLineHeadIndent];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_headIndent];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_lineSpacing];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_maximumLineHeight];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_minimumLineHeight];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_paragraphSpacing];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_tailIndent];
+      
+      /*
+       *	Tab stops don't conform to NSCoding - so we do it the long way.
+       */
+      count = [_tabStops count];
+      [aCoder encodeValueOfObjCType: @encode(unsigned) at: &count];
+      if (count > 0)
+	{
+	  float		locations[count];
+	  NSTextTabType	types[count];
+	  unsigned		i;
+	  
+	  for (i = 0; i < count; i++)
+	    {
+	      NSTextTab	*tab = [_tabStops objectAtIndex: i];
+	      
+	      locations[i] = [tab location]; 
+	      types[i] = [tab tabStopType]; 
+	    }
+	  [aCoder encodeArrayOfObjCType: @encode(float)
+		  count: count
+		  at: locations];
+	  [aCoder encodeArrayOfObjCType: @encode(NSTextTabType)
+		  count: count
+		  at: types];
+	}
+      
+      [aCoder encodeValueOfObjCType: @encode(int) at: &_baseDirection];
+    }
 }
-
 
 - (BOOL) isEqual: (id)aother
 {

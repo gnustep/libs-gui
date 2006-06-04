@@ -1,3 +1,16 @@
+2006-06-04 12:28 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSTrackingRect.m: Encode, if not a keyed archiver.
+	* Source/NSApplication.m: Added coding
+	* Source/NSDataLink.m: Added coding
+	* Source/NSDataLinkManager.m: Added coding
+	* Source/NSNib.m: Made comment use "TODO_NIB" instead of TODO, so that
+	it can be pulled later.
+	* Source/NSParagraphStyle.m: Added TODO_NIB.
+	* Source/NSSelection.m: Added coding.
+	* Source/NSSound.m: Added TODO_NIB
+	* Source/NSTextAttachment.m: Added TODO_NIB.
+
 2006-06-04 01:09 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSHbox.m: Implemented keyed coding.

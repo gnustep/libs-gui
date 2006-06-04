@@ -333,46 +333,84 @@
 {
   BOOL flag = NO;
 
-  [aCoder encodeValueOfObjCType: @encode(id)  at: &filename];
-  [aCoder encodeValueOfObjCType: @encode(id)  at: &sourceLinks];
-  [aCoder encodeValueOfObjCType: @encode(id)  at: &destinationLinks];
-
-  flag = _flags.areLinkOutlinesVisible;
-  [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
-  flag = _flags.delegateVerifiesLinks;
-  [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
-  flag = _flags.interactsWithUser;
-  [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
-  flag = _flags.isEdited;
-  [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
+  if([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeObject: filename forKey: @"GSFilename"];
+      [aCoder encodeObject: sourceLinks forKey: @"GSSourceLinks"];
+      [aCoder encodeObject: destinationLinks forKey: @"GSDestinationLinks"];
+      
+      flag = _flags.areLinkOutlinesVisible;
+      [aCoder encodeBool: flag forKey: @"GSAreLinkOutlinesVisible"];
+      flag = _flags.delegateVerifiesLinks;
+      [aCoder encodeBool: flag forKey: @"GSDelegateVerifiesLinks"];
+      flag = _flags.interactsWithUser;
+      [aCoder encodeBool: flag forKey: @"GSInteractsWithUser"];
+      flag = _flags.isEdited;
+      [aCoder encodeBool: flag forKey: @"GSIsEdited"];
+    }
+  else
+    {
+      [aCoder encodeValueOfObjCType: @encode(id)  at: &filename];
+      [aCoder encodeValueOfObjCType: @encode(id)  at: &sourceLinks];
+      [aCoder encodeValueOfObjCType: @encode(id)  at: &destinationLinks];
+      
+      flag = _flags.areLinkOutlinesVisible;
+      [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
+      flag = _flags.delegateVerifiesLinks;
+      [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
+      flag = _flags.interactsWithUser;
+      [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
+      flag = _flags.isEdited;
+      [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aCoder
 {
-  int version = [aCoder versionForClassName: @"NSDataLinkManager"];
-
-  if (version == 0)
+  if([aCoder allowsKeyedCoding])
     {
       BOOL flag = NO;
+      id obj;
+
+      obj = [aCoder decodeObjectForKey: @"GSFilename"];
+      ASSIGN(filename,obj);
+      obj = [aCoder decodeObjectForKey: @"GSSourceLinks"];
+      ASSIGN(sourceLinks,obj);
+      obj = [aCoder decodeObjectForKey: @"GSDestinationLinks"];
+      ASSIGN(destinationLinks,obj);
       
-      [aCoder decodeValueOfObjCType: @encode(id)  at: &filename];
-      [aCoder decodeValueOfObjCType: @encode(id)  at: &sourceLinks];
-      [aCoder decodeValueOfObjCType: @encode(id)  at: &destinationLinks];
-      
-      [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
+      flag = [aCoder decodeBoolForKey: @"GSAreLinkOutlinesVisible"]; 
       _flags.areLinkOutlinesVisible = flag;
-      [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
+      flag = [aCoder decodeBoolForKey: @"GSDelegateVerifiesLinks"];
       _flags.delegateVerifiesLinks = flag;
-      [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
+      flag = [aCoder decodeBoolForKey: @"GSInteractsWithUser"];
       _flags.interactsWithUser = flag;
-      [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
+      flag = [aCoder decodeBoolForKey: @"GSIsEdited"];
       _flags.isEdited = flag;
     }
   else
     {
-      return nil;
+      int version = [aCoder versionForClassName: @"NSDataLinkManager"];
+      if (version == 0)
+	{
+	  BOOL flag = NO;
+	  
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &filename];
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &sourceLinks];
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &destinationLinks];
+	  
+	  [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
+	  _flags.areLinkOutlinesVisible = flag;
+	  [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
+	  _flags.delegateVerifiesLinks = flag;
+	  [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
+	  _flags.interactsWithUser = flag;
+	  [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
+	  _flags.isEdited = flag;
+	}
+      else
+	return nil;
     }
-
   return self;
 }
 

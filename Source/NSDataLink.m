@@ -269,79 +269,154 @@
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   BOOL flag = NO;
+      
+  if([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeInt: linkNumber forKey: @"GSLinkNumber"];
+      [aCoder encodeInt: disposition forKey: @"GSUpdateMode"];
+      [aCoder encodeInt: updateMode forKey: @"GSLastUpdateMode"];
 
-  [aCoder encodeValueOfObjCType: @encode(int) at: &linkNumber];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &disposition];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &updateMode];
-  [aCoder encodeValueOfObjCType: @encode(id)  at: &lastUpdateTime];
+      [aCoder encodeObject: lastUpdateTime forKey: @"GSLastUpdateTime"];      
 
-  [aCoder encodeValueOfObjCType: @encode(id)  at: &sourceApplicationName];
-  [aCoder encodeValueOfObjCType: @encode(id)  at: &sourceFilename];
-  [aCoder encodeValueOfObjCType: @encode(id)  at: &sourceSelection];
-  [aCoder encodeValueOfObjCType: @encode(id)  at: &sourceManager];
+      [aCoder encodeObject: sourceApplicationName forKey: @"GSSourceApplicationName"];
+      [aCoder encodeObject: sourceFilename forKey: @"GSSourceFilename"];
+      [aCoder encodeObject: sourceSelection forKey: @"GSSourceSelection"];
+      [aCoder encodeObject: sourceManager forKey: @"GSSourceManager"];
 
-  [aCoder encodeValueOfObjCType: @encode(id)  at: &destinationApplicationName];
-  [aCoder encodeValueOfObjCType: @encode(id)  at: &destinationFilename];
-  [aCoder encodeValueOfObjCType: @encode(id)  at: &destinationSelection];
-  [aCoder encodeValueOfObjCType: @encode(id)  at: &destinationManager];
-
-  [aCoder encodeValueOfObjCType: @encode(id)  at: &types];
-
-  // flags...
-  flag = _flags.appVerifies;
-  [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
-  flag = _flags.canUpdateContinuously;
-  [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
-  flag = _flags.isDirty;
-  [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
-  flag = _flags.willOpenSource;
-  [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
-  flag = _flags.willUpdate;
-  [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
+      [aCoder encodeObject: destinationApplicationName forKey: @"GSDestinationApplicationName"];
+      [aCoder encodeObject: destinationFilename forKey: @"GSDestinationFilename"];
+      [aCoder encodeObject: destinationSelection forKey: @"GSDestinationSelection"];
+      [aCoder encodeObject: destinationManager forKey: @"GSDestinationManager"];
+      
+      [aCoder encodeObject: types forKey: @"GSTypes"]; 
+      
+      // flags...
+      flag = _flags.appVerifies;
+      [aCoder encodeBool: flag forKey: @"GSAppVerifies"];
+      flag = _flags.canUpdateContinuously;
+      [aCoder encodeBool: flag forKey: @"GSCanUpdateContinuously"];
+      flag = _flags.isDirty;
+      [aCoder encodeBool: flag forKey: @"GSIsDirty"];
+      flag = _flags.willOpenSource;
+      [aCoder encodeBool: flag forKey: @"GSWillOpenSource"];
+      flag = _flags.willUpdate;
+      [aCoder encodeBool: flag forKey: @"GSWillUpdate"];
+    }
+  else
+    {
+      [aCoder encodeValueOfObjCType: @encode(int) at: &linkNumber];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &disposition];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &updateMode];
+      [aCoder encodeValueOfObjCType: @encode(id)  at: &lastUpdateTime];
+      
+      [aCoder encodeValueOfObjCType: @encode(id)  at: &sourceApplicationName];
+      [aCoder encodeValueOfObjCType: @encode(id)  at: &sourceFilename];
+      [aCoder encodeValueOfObjCType: @encode(id)  at: &sourceSelection];
+      [aCoder encodeValueOfObjCType: @encode(id)  at: &sourceManager];
+      
+      [aCoder encodeValueOfObjCType: @encode(id)  at: &destinationApplicationName];
+      [aCoder encodeValueOfObjCType: @encode(id)  at: &destinationFilename];
+      [aCoder encodeValueOfObjCType: @encode(id)  at: &destinationSelection];
+      [aCoder encodeValueOfObjCType: @encode(id)  at: &destinationManager];
+      
+      [aCoder encodeValueOfObjCType: @encode(id)  at: &types];
+      
+      // flags...
+      flag = _flags.appVerifies;
+      [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
+      flag = _flags.canUpdateContinuously;
+      [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
+      flag = _flags.isDirty;
+      [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
+      flag = _flags.willOpenSource;
+      [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
+      flag = _flags.willUpdate;
+      [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aCoder
 {
-  int version = [aCoder versionForClassName: @"NSDataLink"];
-
-  if (version == 0)
+  if([aCoder allowsKeyedCoding])
     {
-      BOOL flag = NO;
+      id obj;
 
-      [aCoder decodeValueOfObjCType: @encode(int) at: &linkNumber];
-      [aCoder decodeValueOfObjCType: @encode(int) at: &disposition];
-      [aCoder decodeValueOfObjCType: @encode(int) at: &updateMode];
-      [aCoder decodeValueOfObjCType: @encode(id)  at: &sourceManager];
-      [aCoder encodeValueOfObjCType: @encode(id)  at: &destinationManager];
-      [aCoder decodeValueOfObjCType: @encode(id)  at: &lastUpdateTime];
+      linkNumber = [aCoder decodeObjectForKey: @"GSLinkNumber"];
+      disposition = [aCoder decodeIntForKey: @"GSDisposition"];
+      updateMode = [aCoder decodeIntForKey: @"GSUpdateMode"];
 
-      [aCoder decodeValueOfObjCType: @encode(id)  at: &sourceApplicationName];
-      [aCoder decodeValueOfObjCType: @encode(id)  at: &sourceFilename];
-      [aCoder decodeValueOfObjCType: @encode(id)  at: &sourceSelection];
-      [aCoder decodeValueOfObjCType: @encode(id)  at: &sourceManager];
-
-      [aCoder decodeValueOfObjCType: @encode(id)  at: &destinationApplicationName];
-      [aCoder decodeValueOfObjCType: @encode(id)  at: &destinationFilename];
-      [aCoder decodeValueOfObjCType: @encode(id)  at: &destinationSelection];
-      [aCoder decodeValueOfObjCType: @encode(id)  at: &destinationManager];
-
-      [aCoder decodeValueOfObjCType: @encode(id)  at: &types];
+      obj = [aCoder decodeObjectForKey: @"GSSourceManager"];
+      ASSIGN(sourceManager,obj);
+      obj = [aCoder decodeObjectForKey: @"GSDestinationManager"];
+      ASSIGN(destinationManager,obj);
+      obj = [aCoder decodeObjectForKey: @"GSLastUpdateTime"];
+      ASSIGN(lastUpdateTime, obj);
+      obj = [aCoder decodeObjectForKey: @"GSSourceApplicationName"];
+      ASSIGN(sourceApplicationName,obj);
+      obj = [aCoder decodeObjectForKey: @"GSSourceFilename"];
+      ASSIGN(sourceFilename,obj);
+      obj = [aCoder decodeObjectForKey: @"GSSourceSelection"];
+      ASSIGN(sourceSelection,obj);
+      obj = [aCoder decodeObjectForKey: @"GSSourceManager"];
+      ASSIGN(sourceManager,obj);
+      obj = [aCoder decodeObjectForKey: @"GSDestinationApplicationName"];
+      ASSIGN(destinationApplicationName,obj);
+      obj = [aCoder decodeObjectForKey: @"GSDestinationFilename"];
+      ASSIGN(destinationFilename,obj);
+      obj = [aCoder decodeObjectForKey: @"GSDestinationSelection"];
+      ASSIGN(destinationSelection,obj);
+      obj = [aCoder decodeObjectForKey: @"GSDestinationManager"];
+      ASSIGN(destinationManager,obj);      
+      obj = [aCoder decodeObjectForKey: @"GSTypes"];
+      ASSIGN(types,obj);
 
       // flags...
-      [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
-      _flags.appVerifies = flag;
-      [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
-      _flags.canUpdateContinuously = flag;
-      [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
-      _flags.isDirty = flag;
-      [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
-      _flags.willOpenSource = flag;
-      [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
-      _flags.willUpdate = flag;
+      _flags.appVerifies = [aCoder decodeBoolForKey: @"GSAppVerifies"];
+      _flags.canUpdateContinuously = [aCoder decodeBoolForKey: @"GSCanUpdateContinuously"];
+      _flags.isDirty = [aCoder decodeBoolForKey: @"GSIsDirty"];
+      _flags.willOpenSource = [aCoder decodeBoolForKey: @"GSWillOpenSource"];
+      _flags.willUpdate = [aCoder decodeBoolForKey: @"GSWillUpdate"];
     }
   else
     {
-      return nil;
+      int version = [aCoder versionForClassName: @"NSDataLink"];
+      if (version == 0)
+	{
+	  BOOL flag = NO;
+	  
+	  [aCoder decodeValueOfObjCType: @encode(int) at: &linkNumber];
+	  [aCoder decodeValueOfObjCType: @encode(int) at: &disposition];
+	  [aCoder decodeValueOfObjCType: @encode(int) at: &updateMode];
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &sourceManager];
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &destinationManager];
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &lastUpdateTime];
+	  
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &sourceApplicationName];
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &sourceFilename];
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &sourceSelection];
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &sourceManager];
+	  
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &destinationApplicationName];
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &destinationFilename];
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &destinationSelection];
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &destinationManager];
+	  
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &types];
+	  
+	  // flags...
+	  [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
+	  _flags.appVerifies = flag;
+	  [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
+	  _flags.canUpdateContinuously = flag;
+	  [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
+	  _flags.isDirty = flag;
+	  [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
+	  _flags.willOpenSource = flag;
+	  [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
+	  _flags.willUpdate = flag;
+	}
+      else
+	return nil;
     }
 
   return self;

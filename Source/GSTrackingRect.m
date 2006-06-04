@@ -115,23 +115,29 @@
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  BOOL	inside = flags.inside;
-
-  [aCoder encodeRect: rectangle];
-  [aCoder encodeValueOfObjCType: @encode(NSTrackingRectTag) at: &tag];
-  [aCoder encodeObject: owner];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &inside];
+  if([aCoder allowsKeyedCoding] == NO)
+    {
+      BOOL	inside = flags.inside;
+      
+      [aCoder encodeRect: rectangle];
+      [aCoder encodeValueOfObjCType: @encode(NSTrackingRectTag) at: &tag];
+      [aCoder encodeObject: owner];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &inside];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  BOOL	inside;
-
-  rectangle = [aDecoder decodeRect];
-  [aDecoder decodeValueOfObjCType: @encode(NSTrackingRectTag) at: &tag];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &owner];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &inside];
-  flags.inside = inside;
+  if([aDecoder allowsKeyedCoding] == NO)
+    {
+      BOOL	inside;
+      
+      rectangle = [aDecoder decodeRect];
+      [aDecoder decodeValueOfObjCType: @encode(NSTrackingRectTag) at: &tag];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &owner];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &inside];
+      flags.inside = inside;
+    }
   return self;
 }
 
