@@ -53,6 +53,7 @@ enum {
   NSRectEdge _currentEdge;
   NSSize _maxContentSize;
   NSSize _minContentSize;
+  NSSize _contentSize;
   float _leadingOffset;
   float _trailingOffset;
   int _state;

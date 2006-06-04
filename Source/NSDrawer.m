@@ -26,6 +26,8 @@
 */ 
 
 #include <Foundation/NSCoder.h>
+#include <Foundation/NSArchiver.h>
+#include <Foundation/NSKeyedArchiver.h>
 #include <Foundation/NSNotification.h>
 #include "AppKit/NSWindow.h"
 #include "AppKit/NSView.h"
@@ -291,12 +293,64 @@ static NSNotificationCenter *nc = nil;
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-//FIXME
+  [super encodeWithCoder: aCoder];
+  if([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeSize: _contentSize forKey: @"NSContentSize"];
+      [aCoder encodeObject: _delegate forKey: @"NSDelegate"];
+      [aCoder encodeFloat: _leadingOffset forKey: @"NSLeadingOffset"];
+      [aCoder encodeSize: _maxContentSize forKey: @"NSMaxContentSize"];
+      [aCoder encodeSize: _minContentSize forKey: @"NSMinContentSize"];
+      [aCoder encodeObject: _parentWindow forKey: @"NSParentWindow"];
+      [aCoder encodeInt: _preferredEdge forKey: @"NSPreferredEdge"];
+      [aCoder encodeFloat: _trailingOffset forKey: @"NSTrailingOffset"];
+    }
+  else
+    {
+      [aCoder encodeSize: _contentSize];
+      [aCoder encodeObject: _delegate];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_leadingOffset];
+      [aCoder encodeSize: _maxContentSize];
+      [aCoder encodeSize: _minContentSize];
+      [aCoder encodeObject: _parentWindow];
+      [aCoder encodeValueOfObjCType: @encode(unsigned) at: &_preferredEdge];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_trailingOffset];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-//FIXME
+  if((self = [super initWithCoder: aDecoder]) != nil)
+    {
+      if([aDecoder allowsKeyedCoding])
+	{
+	  _contentSize = [aDecoder decodeSizeForKey: @"NSContentSize"];
+	  ASSIGN(_delegate, [aDecoder decodeObjectForKey: @"NSDelegate"]);
+	  _leadingOffset = [aDecoder decodeFloatForKey: @"NSLeadingOffset"];
+	  _maxContentSize = [aDecoder decodeSizeForKey: @"NSMaxContentSize"];
+	  _minContentSize = [aDecoder decodeSizeForKey: @"NSMinContentSize"];
+	  ASSIGN(_parentWindow, [aDecoder decodeObjectForKey: @"NSParentWindow"]);
+	  _preferredEdge = [aDecoder decodeIntForKey: @"NSPreferredEdge"];
+	  _trailingOffset = [aDecoder decodeFloatForKey: @"NSTrailingOffset"];
+	}
+      else
+	{
+	  int version = [aDecoder versionForClassName: @"NSDrawer"];
+	  if(version == 0)
+	    {
+	      _contentSize = [aDecoder decodeSize];
+	      ASSIGN(_delegate, [aDecoder decodeObject]);
+	      [aDecoder decodeValueOfObjCType: @encode(float) at: &_leadingOffset];
+	      _maxContentSize = [aDecoder decodeSize];
+	      _minContentSize = [aDecoder decodeSize];
+	      ASSIGN(_parentWindow, [aDecoder decodeObject]);
+	      [aDecoder decodeValueOfObjCType: @encode(unsigned) at: &_preferredEdge];
+	      [aDecoder decodeValueOfObjCType: @encode(float) at: &_trailingOffset];	      
+	    }
+	  else
+	    return nil;
+	}
+    }
   return self;
 }
 
