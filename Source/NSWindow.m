@@ -4196,7 +4196,7 @@ resetCursorRectsForView(NSView *theView)
       // a keyed coding archiver.  We should only encode NSWindow and subclasses
       // using NSWindowTemplate.
       [NSException raise: NSInvalidArgumentException
-		   format: @"%@ keyed coding not implemented for %@.", 
+		   format: @"Keyed coding not implemented for %@.", 
 		   NSStringFromClass([self class])];
     }
 
@@ -4255,7 +4255,7 @@ resetCursorRectsForView(NSView *theView)
       // a keyed coding archiver.  We should only encode NSWindow and subclasses
       // using NSWindowTemplate.
       [NSException raise: NSInvalidArgumentException
-		   format: @"%@ keyed coding not implemented for %@.", 
+		   format: @"Keyed coding not implemented for %@.", 
 		   NSStringFromClass([self class])];
     }
 

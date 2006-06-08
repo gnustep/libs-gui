@@ -124,7 +124,7 @@
     }
   else
     {
-      [NSException raise: NSInternalInconsistencyException 
+      [NSException raise: NSInvalidArgumentException 
 		   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
 		   NSStringFromClass([coder class])];
     }
@@ -345,7 +345,7 @@
     }
   else
     {
-      [NSException raise: NSInternalInconsistencyException 
+      [NSException raise: NSInvalidArgumentException 
 		   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
 		   NSStringFromClass([coder class])];
     }
@@ -360,7 +360,7 @@
     }
 }
 
-- (id)nibInstantiate
+- (id) nibInstantiate
 {
   if(_realObject == nil)
     {
@@ -519,7 +519,7 @@
     }
   else
     {
-      [NSException raise: NSInternalInconsistencyException 
+      [NSException raise: NSInvalidArgumentException 
 		   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
 		   NSStringFromClass([coder class])];
     }
@@ -533,6 +533,13 @@
       [coder encodeObject: (id)_className forKey: @"NSClassName"];
       [coder encodeConditionalObject: (id)_extension forKey: @"NSExtension"];
     }
+  else
+    {
+      [NSException raise: NSInvalidArgumentException
+		   format: @"Keyed coding not implemented for %@.", 
+		   NSStringFromClass([self class])];
+    }
+  
 }
 
 - (id) nibInstantiate
@@ -572,7 +579,7 @@
   return _extension;
 }
 
-- (id)nibInstantiate
+- (id) nibInstantiate
 {
   if(_view == nil)
     {
@@ -585,6 +592,8 @@
       else
 	{
 	  _view = [[aClass allocWithZone: NSDefaultMallocZone()] initWithFrame: [self frame]];
+	  [_view setAutoresizingMask: [self autoresizingMask]];
+	  [_view setNextResponder: [self nextResponder]];
 	  [[self superview] replaceSubview: self with: _view]; // replace the old view...
 	}
     }
@@ -601,6 +610,12 @@
 	{
 	  _className = [coder decodeObjectForKey: @"NSClassName"];
 	}
+      else
+	{
+	  [NSException raise: NSInvalidArgumentException 
+		       format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+		       NSStringFromClass([coder class])];
+	}
     }
   return self;
 }
@@ -610,6 +625,12 @@
   if([coder allowsKeyedCoding])
     {
       [coder encodeObject: (id)_className forKey: @"NSClassName"];
+    }
+  else
+    {
+      [NSException raise: NSInvalidArgumentException 
+		   format: @"Can't encode %@ with %@.",NSStringFromClass([self class]),
+		   NSStringFromClass([coder class])];
     }
 }
 @end
@@ -666,7 +687,7 @@
     }
   else
     {
-      [NSException raise: NSInternalInconsistencyException 
+      [NSException raise: NSInvalidArgumentException 
 		   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
 		   NSStringFromClass([coder class])];
     }
@@ -803,7 +824,7 @@
     }
   else
     {
-      [NSException raise: NSInternalInconsistencyException 
+      [NSException raise: NSInvalidArgumentException 
 		   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
 		   NSStringFromClass([coder class])];
     }
@@ -818,6 +839,12 @@
       NSString *originalClassName = NSStringFromClass(_template);
       [coder encodeObject: (id)_className forKey: @"NSClassName"];
       [coder encodeObject: (id)originalClassName forKey: @"NSOriginalClassName"];
+    }
+  else
+    {
+      [NSException raise: NSInvalidArgumentException 
+		   format: @"Can't encode %@ with %@.",NSStringFromClass([self class]),
+		   NSStringFromClass([coder class])];
     }
 }
 
@@ -928,6 +955,16 @@
   return nil;
 }
 
+- (NSDictionary *) customClasses
+{
+  return nil;
+}
+
+- (NSArray *) visibleWindows
+{
+  return [_visibleWindows allObjects];
+}
+
 - (id) objectForName: (NSString *)name
 {
   NSArray *nameKeys = (NSArray *)NSAllMapTableKeys(_names);
@@ -950,6 +987,17 @@
   int i = [nameKeys indexOfObject: obj];
   NSString *result = [nameValues objectAtIndex: i];
   return result;
+}
+
+- (void) setName: (NSString *)name forObject: (id)obj
+{
+  // TODO_NIB: Implement this in GSNibCompatibility.
+}
+
+- (BOOL) containsObject: (id) obj
+{
+  // TODO_NIB: Implement this in GSNibCompatibility.
+  return NO;
 }
 
 /**
@@ -1000,6 +1048,12 @@
       [coder encodeObject: (id) _visibleWindows forKey: @"NSVisibleWindows"];
       [coder encodeInt: _nextOid forKey: @"NSNextOid"];
       [coder encodeConditionalObject: (id) _root forKey: @"NSRoot"];
+    }
+  else
+    {
+      [NSException raise: NSInvalidArgumentException 
+		   format: @"Can't encode %@ with %@.",NSStringFromClass([self class]),
+		   NSStringFromClass([coder class])];
     }
 }
 
@@ -1074,7 +1128,7 @@
     }
   else
     {
-      [NSException raise: NSInternalInconsistencyException 
+      [NSException raise: NSInvalidArgumentException 
 		   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
 		   NSStringFromClass([coder class])];
     }
@@ -1154,6 +1208,13 @@
     {
       ASSIGN(imageName, [coder decodeObjectForKey: @"NSImageName"]);
     }
+  else
+    {
+      [NSException raise: NSInvalidArgumentException 
+		   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+		   NSStringFromClass([coder class])];
+    }
+
   RELEASE(self);
   return [NSImage imageNamed: imageName];
 }
@@ -1163,6 +1224,12 @@
   if([coder allowsKeyedCoding])
     {
       [coder encodeObject: imageName forKey: @"NSImageName"];
+    }
+  else
+    {
+      [NSException raise: NSInvalidArgumentException 
+		   format: @"Can't encode %@ with %@.",NSStringFromClass([self class]),
+		   NSStringFromClass([coder class])];
     }
 }
 

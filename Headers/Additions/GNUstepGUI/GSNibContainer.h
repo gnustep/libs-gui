@@ -33,9 +33,9 @@
 
 @protocol GSNibContainer 
 - (void) awakeWithContext: (NSDictionary *)context;
-- (NSMutableDictionary*) nameTable;
-- (NSMutableArray*) connections;
-- (NSMutableSet*) topLevelObjects;
+- (NSMutableDictionary *) nameTable;
+- (NSMutableArray *) connections;
+- (NSMutableSet *) topLevelObjects;
 @end
 
 #endif /* _GNUstep_H_GSNibContainer */

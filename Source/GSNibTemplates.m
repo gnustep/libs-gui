@@ -331,11 +331,6 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
     }
 }
 
-- (NSMutableArray*) connections
-{
-  return connections;
-}
-
 - (void) dealloc
 {
   RELEASE(nameTable);
@@ -368,6 +363,14 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
       nameTable = [[NSMutableDictionary alloc] initWithCapacity: 8];
       connections = [[NSMutableArray alloc] initWithCapacity: 8];
       topLevelObjects = [[NSMutableSet alloc] initWithCapacity: 8];
+
+      // add special objects...
+      [nameTable setObject: [NSMutableDictionary dictionary] 
+		 forKey: @"GSCustomClassMap"];
+      [nameTable setObject: [NSMutableArray array]
+		 forKey: @"NSDeferred"];
+      [nameTable setObject: [NSMutableArray array]
+		 forKey: @"NSVisible"];      
     }
   return self;
 }
@@ -427,6 +430,11 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 - (NSMutableSet*) topLevelObjects
 {
   return topLevelObjects;
+}
+
+- (NSMutableArray*) connections
+{
+  return connections;
 }
 @end
 

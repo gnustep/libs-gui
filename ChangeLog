@@ -1,3 +1,13 @@
+2006-06-08 00:00 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSNibContainer.h: Minor cleanup.
+	* Source/GSNibCompatibility.m: Added exception similar to the
+	one for NSWindow to classes here, which don't implement non-keyed
+	coding.
+	* Source/GSNibTemplates.m: Added initial objects for GSCustomClass,
+	NSDeferred, NSVisible names in name table.
+	* Source/NSWindow.m: Added corrected exception text.
+
 2006-06-04 13:30 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/AppKit/NSDrawer.h: Added ivar _contentSize to header.
