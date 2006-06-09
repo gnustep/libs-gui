@@ -2344,25 +2344,7 @@ discardCursorRectsForView(NSView *theView)
 {
   if (((NSViewPtr)aView)->_rFlags.valid_rects)
     {
-      unsigned count = [((NSViewPtr)aView)->_cursor_rects count];
-      if (count > 0)
-	{
-	  GSTrackingRect *rects[count];
-	  unsigned i;
-
-	  [((NSViewPtr)aView)->_cursor_rects getObjects: rects];
-
-	  for (i = 0; i < count; ++i)
-	    {
-	      GSTrackingRect *r = rects[i];
-	      if (NSMouseInRect(_lastPoint, r->rectangle, NO))
-		{
-		  [[r owner] mouseExited: nil];
-		}
-	      [r invalidate];
-	    }
-	}
-      ((NSViewPtr)aView)->_rFlags.valid_rects = 0;
+      [aView discardCursorRects];
 
       if (_f.cursor_rects_valid)
 	{

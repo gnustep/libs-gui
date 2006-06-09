@@ -1,3 +1,10 @@
+2006-06-09  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSView.m (-discardCursorRects) 
+	* Source/NSWindow.m (-invalidateCursorRectsForView:): Updated
+	version of patch for improved handling of cursor rects to fix bug #5871. 
+	Patch by Mircea Trache <aer@shaw.ca>.
+	
 2006-06-08 00:00 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/Additions/GNUstepGUI/GSNibContainer.h: Minor cleanup.

@@ -303,6 +303,8 @@ NSSavePanel.h \
 NSScreen.h \
 NSScrollView.h \
 NSScroller.h \
+NSSearchField.h \
+NSSearchFieldCell.h \
 NSSecureTextField.h \
 NSSelection.h \
 NSSlider.h \

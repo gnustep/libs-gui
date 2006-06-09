@@ -2629,7 +2629,7 @@ Returns YES iff any scrolling was done.
 	  if (count > 0)
 	    {
 	      GSTrackingRect *rects[count];
-	      NSPoint loc = [_window mouseLocationOutsideOfEventStream];
+	      NSPoint loc = ((struct NSWindow_struct *)_window)->_lastPoint;
 	      unsigned i;
 
 	      [_cursor_rects getObjects: rects];
@@ -2639,7 +2639,7 @@ Returns YES iff any scrolling was done.
 		  GSTrackingRect *r = rects[i];
 		  if (NSMouseInRect(loc, r->rectangle, NO))
 		    {
-		      [[r owner] mouseExited: nil];
+		      [r->owner mouseExited: nil];
 		    }
 		  [r invalidate];
 		}
