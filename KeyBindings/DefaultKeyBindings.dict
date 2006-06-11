@@ -49,7 +49,7 @@
   "Control-f" = "moveRight:";
   "Control-h" = "deleteBackward:";
   /* "Control-l" = "centerSelectionInVisibleArea:"; */
-  /* "Control-k" = "deleteToEndOfLine:"; */
+  "Control-k" = "deleteToEndOfLine:";
   "Control-n" = "moveDown:";
   "Control-p" = "moveUp:";
   "Control-t" = "transpose:";

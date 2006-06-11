@@ -1,3 +1,9 @@
+2006-06-11  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView_actions.m (-deleteToEndOfLine:): New method
+	based on patch by Andreas Höschler <ahoesch@smartsoft.de>.
+	* KeyBindings/DefaultKeyBindings.dict: Enable Control-k.
+
 2006-06-09  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSView.m (-discardCursorRects) 
