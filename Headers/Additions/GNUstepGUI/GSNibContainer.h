@@ -36,6 +36,8 @@
 - (NSMutableDictionary *) nameTable;
 - (NSMutableArray *) connections;
 - (NSMutableSet *) topLevelObjects;
+// - (NSSet *) visibleWindows;
+// - (NSSet *) deferredWindows;
 @end
 
 #endif /* _GNUstep_H_GSNibContainer */
