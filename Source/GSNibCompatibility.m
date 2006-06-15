@@ -52,6 +52,8 @@
 #include <GNUstepGUI/GSNibCompatibility.h>
 #include <GNUstepGUI/GSInstantiator.h>
 
+static BOOL _isInInterfaceBuilder = NO;
+
 @implementation NSWindowTemplate
 + (void) initialize
 {
@@ -121,6 +123,8 @@
 	  ASSIGN(_title, [coder decodeObjectForKey: @"NSWindowTitle"]);
 	  _windowStyle |= NSTitledWindowMask;
 	}
+
+      _baseWindowClass = [NSWindow class];
     }
   else
     {
@@ -157,10 +161,19 @@
 {
   if(_realObject == nil)
     {
-      Class aClass = NSClassFromString(_windowClass);      
+      Class aClass;
       NSEnumerator *en;
       id v = nil;
-      
+
+      if([NSClassSwapper isInInterfaceBuilder])
+	{
+	  aClass = [self baseWindowClass];
+	}
+      else
+	{
+	  aClass = NSClassFromString(_windowClass);      
+	}
+
       if (aClass == nil)
 	{
 	  [NSException raise: NSInternalInconsistencyException
@@ -320,6 +333,11 @@
 - (NSString *)className
 {
   return _windowClass;
+}
+
+- (Class) baseWindowClass
+{
+  return _baseWindowClass;
 }
 @end
 
@@ -546,7 +564,17 @@
 {
   if(_object == nil)
     {
-      Class aClass = NSClassFromString(_className);
+      Class aClass;
+      
+      if([NSClassSwapper isInInterfaceBuilder])
+	{
+	  aClass = [self class];
+	}
+      else
+	{
+	  aClass = NSClassFromString(_className);
+	}
+
       if(aClass == nil)
 	{
 	  [NSException raise: NSInternalInconsistencyException
@@ -583,7 +611,17 @@
 {
   if(_view == nil)
     {
-      Class aClass = NSClassFromString(_className);
+      Class aClass;
+      
+      if([NSClassSwapper isInInterfaceBuilder])
+	{
+	  aClass = [self class];
+	}
+      else
+	{
+	  aClass = NSClassFromString(_className);
+	}
+
       if(aClass == nil)
 	{
 	  [NSException raise: NSInternalInconsistencyException
@@ -738,6 +776,16 @@
 @end
 
 @implementation NSClassSwapper
++ (void) setIsInInterfaceBuilder: (BOOL)flag
+{
+  _isInInterfaceBuilder = flag;
+}
+
++ (BOOL) isInInterfaceBuilder
+{
+  return _isInInterfaceBuilder;
+}
+
 - (void) setTemplate: (id)temp
 {
   ASSIGN(_template, temp);
@@ -756,11 +804,6 @@
 - (NSString *)className
 {
   return _className;
-}
-
-+ (BOOL) isInInterfaceBuilder
-{
-  return NO;
 }
 
 - (void) instantiateRealObject: (NSCoder *)coder withClassName: (NSString *)className
@@ -947,7 +990,7 @@
 
 - (NSMutableSet *) topLevelObjects
 {
-  return nil;
+  return _topLevelObjects;
 }
 
 - (NSMutableDictionary *) nameTable
@@ -955,14 +998,14 @@
   return nil;
 }
 
-- (NSDictionary *) customClasses
-{
-  return nil;
-}
-
 - (NSArray *) visibleWindows
 {
   return [_visibleWindows allObjects];
+}
+
+- (NSMapTable) objects
+{
+  return _objects;
 }
 
 - (id) objectForName: (NSString *)name
@@ -987,17 +1030,6 @@
   int i = [nameKeys indexOfObject: obj];
   NSString *result = [nameValues objectAtIndex: i];
   return result;
-}
-
-- (void) setName: (NSString *)name forObject: (id)obj
-{
-  // TODO_NIB: Implement this in GSNibCompatibility.
-}
-
-- (BOOL) containsObject: (id) obj
-{
-  // TODO_NIB: Implement this in GSNibCompatibility.
-  return NO;
 }
 
 /**
@@ -1124,6 +1156,9 @@
 	[self _buildMap: _names withKeys: nameKeys andValues: nameValues];
 	[self _buildMap: _objects withKeys: objectsKeys andValues: objectsValues];
 	[self _buildMap: _oids withKeys: oidsKeys andValues: oidsValues];
+
+	// instantiate...
+	_topLevelObjects = [[NSMutableSet alloc] init];
       }
     }
   else
@@ -1180,6 +1215,7 @@
   RELEASE(_framework);
   RELEASE(_visibleWindows);
   RELEASE(_root);
+  RELEASE(_topLevelObjects);
   [super dealloc];
 }
 

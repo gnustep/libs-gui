@@ -523,7 +523,14 @@
     {
       NSString *title = [[NSDocumentController sharedDocumentController] 
 			  displayNameForType: [self fileType]];
-      [spaButton selectItemWithTitle: title];
+      if([spaButton itemWithTitle: title] != nil)
+	{
+	  [spaButton selectItemWithTitle: title];
+	}
+      else
+	{
+	  [spaButton selectItemAtIndex: 0];
+	}
     }
 }
 

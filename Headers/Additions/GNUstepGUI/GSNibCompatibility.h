@@ -100,6 +100,7 @@ typedef struct _GSWindowTemplateFlags
   id                   _view;
   GSWindowTemplateFlags _flags;
   NSString            *_autosaveName;
+  Class               _baseWindowClass;
 }
 - (void) setBackingStoreType: (NSBackingStoreType)type;
 - (NSBackingStoreType) backingStoreType;
@@ -122,6 +123,7 @@ typedef struct _GSWindowTemplateFlags
 - (id) realObject;
 - (void) setView: (id)view;
 - (id) view;
+- (Class) baseWindowClass;
 @end
 
 @interface NSViewTemplate : NSView <OSXNibTemplate, NSCoding>
@@ -204,6 +206,8 @@ typedef struct _GSWindowTemplateFlags
   NSString *_originalClassName;
   id _template;
 }
++ (void) setIsInInterfaceBuilder: (BOOL)flag;
++ (BOOL) isInInterfaceBuilder;
 - (void) setTemplate: (id)temp;
 - (id) template;
 - (void) setClassName: (NSString *)className;
@@ -227,12 +231,15 @@ typedef struct _GSWindowTemplateFlags
   unsigned        _nextOid;
   NSMutableArray *_accessibilityConnectors;
   NSMapTable     *_accessibilityOids;
+  NSMutableSet   *_topLevelObjects;
 }
 - (id) instantiateObject: (id)obj;
 - (void) nibInstantiateWithOwner: (id)owner;
 - (void) nibInstantiateWithOwner: (id)owner topLevelObjects: (NSMutableArray *)toplevel;
 - (id) objectForName: (NSString *)name;
 - (NSString *) nameForObject: (id)name;
+- (NSMapTable) objects;
+- (NSArray *) visibleWindows;
 @end
 
 #endif /* _GNUstep_H_GSNibCompatibility */
