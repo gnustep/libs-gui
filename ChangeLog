@@ -2,7 +2,9 @@
 
 	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h: Removed
 	unecessary ivar.
-	* Source/GSNibCompatibility.m: Remove some uneeded code
+	* Source/GSNibCompatibility.m: Remove some uneeded code. Added
+	code to translate a class properly NSClassSwapper when the class has
+	a replacement registered with the current NSKeyedUnarchiver.
 
 2006-06-15 00:51 Gregory John Casamento <greg_casamento@yahoo.com>
 
