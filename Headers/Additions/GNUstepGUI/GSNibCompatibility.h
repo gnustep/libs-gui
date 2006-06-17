@@ -227,7 +227,6 @@ typedef struct _GSWindowTemplateFlags
   id              _firstResponder;
   id              _fontManager;
   NSString       *_framework;
-  id              _document;
   unsigned        _nextOid;
   NSMutableArray *_accessibilityConnectors;
   NSMapTable     *_accessibilityOids;

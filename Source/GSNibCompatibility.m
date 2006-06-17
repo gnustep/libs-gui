@@ -808,11 +808,17 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (void) instantiateRealObject: (NSCoder *)coder withClassName: (NSString *)className
 {
-  Class aClass = NSClassFromString(className);
+  Class aClass = nil;
   id object = nil;
   Class newCellClass = nil;
   NSString *origCellClassName = nil; 
   Class origCellClass = nil;
+
+  // if there is a replacement class, use it, otherwise, use the one specified.
+  if((aClass = [(NSKeyedUnarchiver *)coder classForClassName: className]) == nil)
+    {
+      aClass = NSClassFromString(className);
+    }
 
   if(aClass == nil)
     {
