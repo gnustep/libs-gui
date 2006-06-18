@@ -49,7 +49,6 @@
 - (id) realObject;
 @end
 
-
 typedef struct _GSWindowTemplateFlags
 {
 #ifdef WORDS_BIGENDIAN
@@ -78,6 +77,10 @@ typedef struct _GSWindowTemplateFlags
   unsigned int isHiddenOnDeactivate:1;
 #endif
 } GSWindowTemplateFlags;
+
+// help connector class...
+@interface NSIBHelpConnector : NSNibConnector
+@end
 
 /**
  * This class acts as a placeholder for the window.  It doesn't derive from

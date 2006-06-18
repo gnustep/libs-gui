@@ -1300,3 +1300,7 @@ static BOOL _isInInterfaceBuilder = NO;
 
 @implementation _NSCornerView
 @end
+
+@implementation NSIBHelpConnector
+@end
+
