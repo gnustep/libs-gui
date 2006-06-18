@@ -205,6 +205,11 @@ static BOOL _isInInterfaceBuilder = NO;
       [_realObject setMinSize: _minSize];
       [_realObject setMaxSize: _maxSize];
       [_realObject setTitle: _title];
+
+      // resize the window...
+      [_realObject setFrame: [NSWindow frameRectForContentRect: [self windowRect] 
+				       styleMask: [self windowStyle]]
+		   display: NO];
       
       // swap out any views which need to be swapped...
       en = [[[_realObject contentView] subviews] objectEnumerator];
