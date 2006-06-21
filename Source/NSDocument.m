@@ -731,8 +731,9 @@
 {
   NSFileManager *fileManager = [NSFileManager defaultManager];
   NSString *backupFilename = nil;
+  BOOL isNativeType = [[self class] isNativeType: fileType];
 
-  if (fileName)
+  if (fileName && isNativeType)
     {
       NSArray  *extensions = [[NSDocumentController sharedDocumentController] 
 			       fileExtensionsFromType: fileType];

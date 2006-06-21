@@ -240,7 +240,9 @@ typedef struct _GSWindowTemplateFlags
 - (void) nibInstantiateWithOwner: (id)owner topLevelObjects: (NSMutableArray *)toplevel;
 - (id) objectForName: (NSString *)name;
 - (NSString *) nameForObject: (id)name;
-- (NSMapTable) objects;
+- (NSMapTable *) objects;
+- (NSMapTable *) names;
+- (NSMapTable *) classes;
 - (NSArray *) visibleWindows;
 @end
 

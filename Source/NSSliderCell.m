@@ -580,9 +580,10 @@ DEFINE_RINT_IF_MISSING
       [_titleCell setStringValue: @""];
       [_titleCell setAlignment: NSCenterTextAlignment];
 
-      // if it's from a nib, make it bordered and bezeled so it's more attractive.
+      // if it's from a nib, make it bordered and bezeled so it's more attractive, this
+      // information is not in the nib.
       [self setBordered: YES];
-      [self setBezeled: YES];
+      [self setBezeled: NO];
 
       _isVertical = -1;
     }

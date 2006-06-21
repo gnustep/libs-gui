@@ -1014,9 +1014,19 @@ static BOOL _isInInterfaceBuilder = NO;
   return [_visibleWindows allObjects];
 }
 
-- (NSMapTable) objects
+- (NSMapTable *) objects
 {
   return _objects;
+}
+
+- (NSMapTable *) names
+{
+  return _names;
+}
+
+- (NSMapTable *) classes
+{
+  return _classes;
 }
 
 - (id) objectForName: (NSString *)name
