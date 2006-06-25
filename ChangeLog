@@ -1,3 +1,9 @@
+2006-06-25 12:40 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Added NSDecimalNumberPlaceholder
+	class implementation to decode NSDecimalNumber instances in
+	nib files.
+
 2006-06-25 00:26 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibCompatibility.m: in -[NSIBObjectData 

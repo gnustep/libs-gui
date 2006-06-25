@@ -32,8 +32,10 @@
 #include <Foundation/NSArchiver.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSBundle.h>
+#include <Foundation/NSByteOrder.h>
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSData.h>
+#include <Foundation/NSDecimalNumber.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSEnumerator.h>
@@ -1339,3 +1341,44 @@ static BOOL _isInInterfaceBuilder = NO;
 @implementation NSIBHelpConnector
 @end
 
+@interface NSDecimalNumberPlaceholder : NSObject
+@end
+
+@implementation NSDecimalNumberPlaceholder
+- (id) initWithCoder: (NSCoder *)coder
+{
+  NSDecimalNumber *dn = nil;
+  if([coder allowsKeyedCoding])
+    {
+      unsigned int len = 0;
+      // BOOL compact = [coder decodeBoolForKey: @"NS.compact"];
+      short exponent = (short)[coder decodeIntForKey: @"NS.exponent"];
+      // int length = [coder decodeIntForKey: @"NS.length"];
+      NSByteOrder bo = [coder decodeIntForKey: @"NS.mantissa.bo"];
+      BOOL negative = [coder decodeBoolForKey: @"NS.negative"];
+      void *mantissaBytes = (void *)[coder decodeBytesForKey: @"NS.mantissa" returnedLength: &len];
+      unsigned long long unswapped = 0; 
+      unsigned long long mantissa = 0;
+
+      memcpy((void *)&unswapped, (void *)mantissaBytes, sizeof(unsigned long long));
+
+      switch(bo)
+	{
+	case NS_BigEndian:
+	  mantissa = NSSwapBigLongLongToHost(unswapped);
+	  break;
+	case NS_LittleEndian:
+	  mantissa = NSSwapLittleLongLongToHost(unswapped);
+	  break;
+	default:
+	  break;
+	}
+
+      dn = [[NSDecimalNumber alloc] initWithMantissa: mantissa
+				    exponent: exponent
+				    isNegative: negative];
+    }
+  return dn;
+}
+
+@end
