@@ -956,9 +956,10 @@ static BOOL _isInInterfaceBuilder = NO;
 - (void) nibInstantiateWithOwner: (id)owner topLevelObjects: (NSMutableArray *)topLevelObjects
 {
   NSEnumerator *en = [_connections objectEnumerator];
+  NSArray *objs = NSAllMapTableKeys([self names]);
   id obj = nil;
   id menu = nil;
-
+  
   // replace the owner with the actual instance provided.
   [_root setObject: owner];
   
@@ -972,13 +973,37 @@ static BOOL _isInInterfaceBuilder = NO;
 	}
     }
 
+  // instantiate all windows and fill in the top level array.
+  en = [objs objectEnumerator];
+  while((obj = [en nextObject]) != nil)
+    {
+      if([obj isKindOfClass: [NSWindowTemplate class]])
+	{
+	  if([obj realObject] == nil)
+	    {
+	      id o = [self instantiateObject: obj];
+	      [topLevelObjects addObject: o];
+	    }
+	}
+      else
+	{
+	  id v = NSMapGet(_objects, obj);
+	  if(v == nil || v == owner)
+	    {
+	      [topLevelObjects addObject: obj];
+	    }
+	}
+    }
+
+  // bring visible windows to front...
   en = [_visibleWindows objectEnumerator];
   while((obj = [en nextObject]) != nil)
     {
-      id w = [self instantiateObject: obj];
+      id w = [obj realObject];
       [w orderFront: self];
     }
 
+  // add the menu...
   menu = [self objectForName: @"MainMenu"];
   if(menu != nil)
     {

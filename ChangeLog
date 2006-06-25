@@ -1,3 +1,9 @@
+2006-06-25 00:26 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: in -[NSIBObjectData 
+	instantiateWithOwner:topLevelObjects:] properly initialize
+	the NSWindowTemplate and fill in the topLevelObjects array.
+
 2006-06-20 20:58 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h: Added
