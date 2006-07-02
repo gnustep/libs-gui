@@ -3316,8 +3316,8 @@ image.</p><p>See Also: -applicationIconImage</p>
       if([aDecoder containsValueForKey: @"NSDelegate"])
 	{
 	  obj = [aDecoder decodeObjectForKey: @"NSDelegate"];
+	  [self setDelegate: obj];
 	}
-      [self setDelegate: obj];
       obj = [aDecoder decodeObjectForKey: @"NSMainMenu"]; // TODO_NIB: Verify this key!!
       [self setMainMenu: obj];
       obj = [aDecoder decodeObjectForKey: @"NSWindowsMenu"]; // TODO_NIB: Verify this key!!

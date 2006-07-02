@@ -1456,8 +1456,6 @@ static NSImage *unexpandable  = nil;
   // move the drawing rect over like in the drawRow routine...
   drawingRect = [self frameOfCellAtColumn: columnIndex  row: rowIndex];
 
-  [self lockFocus];
-
   if (tb == [self outlineTableColumn])
     {
       level = [self levelForItem: item];
@@ -1481,7 +1479,10 @@ static NSImage *unexpandable  = nil;
       // draw...
       imageRect.size.width = [image size].width;
       imageRect.size.height = [image size].height;
+
+      [self lockFocus];
       [imageCell drawWithFrame: imageRect inView: self];
+      [self unlockFocus];
     }
 
   if (flag)
@@ -1502,7 +1503,6 @@ static NSImage *unexpandable  = nil;
 		   event: theEvent];
     }
 
-  [self unlockFocus];
   return;
 }
 

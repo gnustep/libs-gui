@@ -1,3 +1,18 @@
+2006-07-02  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView.m (-rulerView:didMoveMarker:,
+	-rulerView:didRemoveMarker:, -rulerView:didAddMarker:): Removed a 
+	compiler warning by adding a type cast.
+	* Source/NSTextView.m (-initWithCoder:) Removed unused variables.
+	* Source/NSTextView.m (NSTextViewSharedData -dealloc) Call super dealloc.
+	* Source/NSApplication.m (-initWithCoder:) Set delegate only when
+	the keyed decoder contains it.
+	* Source/NSSlider.m (-trackKnob:knobRect:, mouseDown:) Don't draw
+	explicitly, as this gets handled automatically by the cell.
+	* Source/NSOutlineView.m (-editColumn:row:withEvent:select:) Moved
+	the lockFocus call right around the image cell drawing, as it is
+	only needed here.
+
 2006-06-25 12:40 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibCompatibility.m: Added NSDecimalNumberPlaceholder

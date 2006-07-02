@@ -171,6 +171,7 @@ Interface for a bunch of internal methods that need to be cleaned up.
   RELEASE(linkAttr);
   RELEASE(markAttr);
   RELEASE(selectedAttr);
+  [super dealloc];
 }
 
 - (NSColor *)backgroundColor
@@ -693,8 +694,6 @@ that makes decoding and encoding compatible with the old code.
   self = [super initWithCoder: aDecoder];
   if ([aDecoder allowsKeyedCoding])
     {  
-      NSTextContainer *aTextContainer;
-
       if ([aDecoder containsValueForKey: @"NSDelegate"])
         {
 	  [self setDelegate: [aDecoder decodeObjectForKey: @"NSDelegate"]];
@@ -764,7 +763,7 @@ that makes decoding and encoding compatible with the old code.
 
       if ([aDecoder containsValueForKey: @"NSTVFlags"])
         {
-	  int vFlags = [aDecoder decodeIntForKey: @"NSTVFlags"];
+	  //int vFlags = [aDecoder decodeIntForKey: @"NSTVFlags"];
 	  // these flags are not used...
 	}
 
@@ -3361,7 +3360,7 @@ Figure out how the additional layout stuff is supposed to work.
 - (void) rulerView: (NSRulerView *)ruler
      didMoveMarker: (NSRulerMarker *)marker
 {
-  NSTextTab *old_tab = [marker representedObject];
+  NSTextTab *old_tab = (NSTextTab *)[marker representedObject];
   NSTextTab *new_tab = [[NSTextTab alloc] initWithType: [old_tab tabStopType]
 					  location: [marker markerLocation]];
   NSRange range = [self rangeForUserParagraphAttributeChange];
@@ -3430,7 +3429,7 @@ Figure out how the additional layout stuff is supposed to work.
 - (void) rulerView: (NSRulerView *)ruler
    didRemoveMarker: (NSRulerMarker *)marker
 {
-  NSTextTab *tab = [marker representedObject];
+  NSTextTab *tab = (NSTextTab *)[marker representedObject];
   NSRange range = [self rangeForUserParagraphAttributeChange];
   unsigned	loc = range.location;
   NSParagraphStyle *style;
@@ -3489,7 +3488,7 @@ Figure out how the additional layout stuff is supposed to work.
 - (void) rulerView: (NSRulerView *)ruler 
       didAddMarker: (NSRulerMarker *)marker
 {
-  NSTextTab *old_tab = [marker representedObject];
+  NSTextTab *old_tab = (NSTextTab *)[marker representedObject];
   NSTextTab *new_tab = [[NSTextTab alloc] initWithType: [old_tab tabStopType]
 					  location: [marker markerLocation]];
   NSRange range = [self rangeForUserParagraphAttributeChange];
