@@ -167,6 +167,7 @@ unCacheAttributes(NSDictionary *attrs)
 {
   [self gcFinalize];
   NSDeallocateObject(self);
+  GSNOSUPERDEALLOC;
 }
 
 - (NSString*) description

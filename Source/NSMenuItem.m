@@ -476,14 +476,22 @@ static Class imageClass;
 {
   if ([aDecoder allowsKeyedCoding])
     {
-      NSString *title = [aDecoder decodeObjectForKey: @"NSTitle"];
-      NSString *action = [aDecoder decodeObjectForKey: @"NSAction"];
-      NSString *key = [aDecoder decodeObjectForKey: @"NSKeyEquiv"];
-      NSImage *mixedImage = [aDecoder decodeObjectForKey: @"NSMixedImage"];
-      NSImage *onImage = [aDecoder decodeObjectForKey: @"NSOnImage"];
-      id target = [aDecoder decodeObjectForKey: @"NSTarget"];
-      NSMenu *menu = [aDecoder decodeObjectForKey: @"NSMenu"];
-      NSMenu *submenu = [aDecoder decodeObjectForKey: @"NSSubmenu"];
+      NSString *title;
+      NSString *action;
+      NSString *key;
+      NSImage *mixedImage;
+      NSImage *onImage;
+      id target;
+      NSMenu *submenu;
+
+      title = [aDecoder decodeObjectForKey: @"NSTitle"];
+      action = [aDecoder decodeObjectForKey: @"NSAction"];
+      key = [aDecoder decodeObjectForKey: @"NSKeyEquiv"];
+      mixedImage = [aDecoder decodeObjectForKey: @"NSMixedImage"];
+      onImage = [aDecoder decodeObjectForKey: @"NSOnImage"];
+      target = [aDecoder decodeObjectForKey: @"NSTarget"];
+      [aDecoder decodeObjectForKey: @"NSMenu"];
+      submenu = [aDecoder decodeObjectForKey: @"NSSubmenu"];
 
       self = [self initWithTitle: title
 		   action: NSSelectorFromString(action)

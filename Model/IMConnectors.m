@@ -76,7 +76,7 @@
     {
       const char	*type;
       unsigned int	size;
-      unsigned int	offset;
+      int		offset;
 
       /*
        * Use the GNUstep additional function to set the instance
@@ -100,7 +100,7 @@
     {
       const char	*type;
       unsigned int	size;
-      unsigned int	offset;
+      int		offset;
 
       /*
        * Use the GNUstep additional function to set the instance
@@ -158,7 +158,7 @@
       const char	*nam = [label cString];
       const char	*type;
       unsigned int	size;
-      unsigned int	offset;
+      int		offset;
 
       /*
        * Use the GNUstep additional function to set the instance

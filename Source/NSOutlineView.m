@@ -2,8 +2,9 @@
 
    <abstract>
    This class is a subclass of NSTableView which provides the user with a way
-   to display tree structured data in an outline format.   It is particularly useful for show
-   hierarchical data such as a class inheritance tree or any other set of relationships.
+   to display tree structured data in an outline format.
+   It is particularly useful for show hierarchical data such as a
+   class inheritance tree or any other set of relationships.
    </abstract>
    
    Copyright (C) 2001 Free Software Foundation, Inc.
@@ -263,7 +264,7 @@ static NSImage *unexpandable  = nil;
 	  NSMutableArray *allChildren = nil;
 	  int numchild = 0;
 	  int index = 0;
-	  id sitem = (item == nil)?[NSNull null]:item;
+	  id sitem = (item == nil) ? (id)[NSNull null] : (id)item;
 
 	  allChildren = NSMapGet(_itemDict, sitem);
 	  numchild = [allChildren count];
@@ -298,7 +299,7 @@ static NSImage *unexpandable  = nil;
  * expandable children of this item all also expanded in a recursive fashion (i.e.
  * all children, grandchildren and etc).
  */
-- (void)expandItem:(id)item expandChildren:(BOOL)expandChildren
+- (void)expandItem: (id)item expandChildren: (BOOL)expandChildren
 {
   const SEL shouldExpandSelector = @selector(outlineView:shouldExpandItem:);
   BOOL canExpand = YES;
@@ -354,7 +355,7 @@ static NSImage *unexpandable  = nil;
 	  NSMutableArray *allChildren = nil;
 	  int numchild = 0;
 	  int index = 0;
-	  id sitem = (item == nil)?[NSNull null]:item;
+	  id sitem = (item == nil) ? (id)[NSNull null] : (id)item;
 
 	  allChildren = NSMapGet(_itemDict, sitem);
 	  numchild = [allChildren count];
@@ -456,15 +457,15 @@ static NSImage *unexpandable  = nil;
  * Causes an item to be reloaded.  This is the equivalent of calling
  * [NSOutlineView-reloadItem:reloadChildren:] with reloadChildren set to NO.
  */
-- (void)reloadItem: (id)item
+- (void) reloadItem: (id)item
 {
   [self reloadItem: item reloadChildren: NO];
 }
 
 /**
  * Causes an item and all of it's children to be reloaded if reloadChildren is
- * set to YES, if it's set to NO, then only the item itself is refreshed from the
- * datasource.
+ * set to YES, if it's set to NO, then only the item itself is refreshed
+ * from the datasource.
  */
 - (void)reloadItem: (id)item reloadChildren: (BOOL)reloadChildren
 {
@@ -472,7 +473,7 @@ static NSImage *unexpandable  = nil;
   id parent;
   BOOL expanded;
   id dsobj = nil;
-  id object = (item == nil)?([NSNull null]):item;
+  id object = (item == nil) ? (id)[NSNull null] : (id)item;
   NSArray *allKeys = NSAllMapTableKeys(_itemDict);
   NSEnumerator *en = [allKeys objectEnumerator];
 
@@ -485,7 +486,7 @@ static NSImage *unexpandable  = nil;
 
       if ((index = [childArray indexOfObject: object]) != NSNotFound)
 	{
-	  parent = (parent == [NSNull null])?nil:parent;
+	  parent = (parent == [NSNull null]) ? (id)nil :  (id)parent;
 	  dsobj = [_dataSource outlineView: self
 			       child: index
 			       ofItem: parent];
@@ -516,10 +517,10 @@ static NSImage *unexpandable  = nil;
 }
 
 /**
- * Returns the corresponding row in the outline view for the given item.  Returns
- * -1 if item is nil or not found.
+ * Returns the corresponding row in the outline view for the given item.
+ * Returns -1 if item is nil or not found.
  */
-- (int)rowForItem: (id)item
+- (int) rowForItem: (id)item
 {
   int row;
   if (item == nil)
@@ -534,7 +535,7 @@ static NSImage *unexpandable  = nil;
  * the expand/collapse gadget, to resize based on the amount of space 
  * needed by widest content.
  */
-- (void)setAutoresizesOutlineColumn: (BOOL)resize
+- (void) setAutoresizesOutlineColumn: (BOOL)resize
 {
   _autoResizesOutlineColumn = resize;
 }
@@ -544,7 +545,7 @@ static NSImage *unexpandable  = nil;
  * collapsed items in the view to the users defaults for the application the
  * outline view is running in.
  */
-- (void)setAutosaveExpandedItems: (BOOL)flag
+- (void) setAutosaveExpandedItems: (BOOL)flag
 {
   if (flag == _autosaveExpandedItems)
     {
@@ -679,7 +680,7 @@ static NSImage *unexpandable  = nil;
 
   // Is the data source editable?
   _dataSource_editable = [anObject respondsToSelector: 
-				     @selector(outlineView:setObjectValue:forTableColumn:byItem:)];
+    @selector(outlineView:setObjectValue:forTableColumn:byItem:)];
 
   /* We do *not* retain the dataSource, it's like a delegate */
   _dataSource = anObject;
@@ -756,15 +757,19 @@ static NSImage *unexpandable  = nil;
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
     }
   else
     {
-      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autoResizesOutlineColumn];
-      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_indentationMarkerFollowsCell];
-      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autosaveExpandedItems];
-      [aCoder encodeValueOfObjCType: @encode(float) at: &_indentationPerLevel];
+      [aCoder encodeValueOfObjCType: @encode(BOOL)
+				 at: &_autoResizesOutlineColumn];
+      [aCoder encodeValueOfObjCType: @encode(BOOL)
+				 at: &_indentationMarkerFollowsCell];
+      [aCoder encodeValueOfObjCType: @encode(BOOL)
+				 at: &_autosaveExpandedItems];
+      [aCoder encodeValueOfObjCType: @encode(float)
+				 at: &_indentationPerLevel];
       [aCoder encodeConditionalObject: _outlineTableColumn];
     }
 }
@@ -773,7 +778,7 @@ static NSImage *unexpandable  = nil;
 {
   // Since we only have one version....
   self = [super initWithCoder: aDecoder];
-  if([aDecoder allowsKeyedCoding])
+  if ([aDecoder allowsKeyedCoding])
     {     
       _itemDict = NSCreateMapTable(NSObjectMapKeyCallBacks,
 				   NSObjectMapValueCallBacks,
@@ -792,17 +797,21 @@ static NSImage *unexpandable  = nil;
       _autosaveExpandedItems = NO;
 
       // init the table column... (this can't be chosen on IB either)...
-      if([_tableColumns count] > 0)
+      if ([_tableColumns count] > 0)
 	{
 	  _outlineTableColumn = [_tableColumns objectAtIndex: 0];
 	}
     }
   else
     {
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_autoResizesOutlineColumn];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_indentationMarkerFollowsCell];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_autosaveExpandedItems];
-      [aDecoder decodeValueOfObjCType: @encode(float) at: &_indentationPerLevel];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL)
+				   at: &_autoResizesOutlineColumn];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL)
+				   at: &_indentationMarkerFollowsCell];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL)
+				   at: &_autosaveExpandedItems];
+      [aDecoder decodeValueOfObjCType: @encode(float)
+				   at: &_indentationPerLevel];
       _outlineTableColumn = [aDecoder decodeObject];
       
       _itemDict = NSCreateMapTable(NSObjectMapKeyCallBacks,
@@ -987,8 +996,10 @@ static NSImage *unexpandable  = nil;
 		  imageRect.size.width = [image size].width;
 		  imageRect.size.height = [image size].height;
 		  [imageCell drawWithFrame: imageRect inView: self];
-		  drawingRect.origin.x += indentationFactor + [image size].width + 5;
-		  drawingRect.size.width -= indentationFactor + [image size].width + 5;
+		  drawingRect.origin.x
+		    += indentationFactor + [image size].width + 5;
+		  drawingRect.size.width
+		    -= indentationFactor + [image size].width + 5;
 		}
 	      else
 		{
@@ -1554,9 +1565,10 @@ static NSImage *unexpandable  = nil;
 - (BOOL) _shouldSelectTableColumn: (NSTableColumn *)tableColumn
 {
   if ([_delegate respondsToSelector: 
-		   @selector (outlineView:shouldSelectTableColumn:)] == YES) 
+    @selector (outlineView:shouldSelectTableColumn:)] == YES) 
     {
-      if ([_delegate outlineView: self  shouldSelectTableColumn: tableColumn] == NO)
+      if ([_delegate outlineView: self  shouldSelectTableColumn: tableColumn]
+	== NO)
 	{
 	  return NO;
 	}
@@ -1570,7 +1582,7 @@ static NSImage *unexpandable  = nil;
   id item = [self itemAtRow: rowIndex];
 
   if ([_delegate respondsToSelector: 
-		   @selector (outlineView:shouldSelectItem:)] == YES) 
+    @selector (outlineView:shouldSelectItem:)] == YES) 
     {
       if ([_delegate outlineView: self  shouldSelectItem: item] == NO)
 	{
@@ -1584,7 +1596,7 @@ static NSImage *unexpandable  = nil;
 - (BOOL) _shouldSelectionChange
 {
   if ([_delegate respondsToSelector: 
-	  @selector (selectionShouldChangeInTableView:)] == YES) 
+    @selector (selectionShouldChangeInTableView:)] == YES) 
     {
       if ([_delegate selectionShouldChangeInTableView: self] == NO)
 	{
@@ -1599,7 +1611,7 @@ static NSImage *unexpandable  = nil;
 			    row: (int) rowIndex
 {
   if ([_delegate respondsToSelector: 
-			@selector(outlineView:shouldEditTableColumn:item:)])
+    @selector(outlineView:shouldEditTableColumn:item:)])
     {
       id item = [self itemAtRow: rowIndex];
 
@@ -1633,14 +1645,12 @@ static NSImage *unexpandable  = nil;
 {
   int count = [rows count];
   int i;
-  NSMutableArray *itemArray = [NSMutableArray
-				arrayWithCapacity: count];
+  NSMutableArray *itemArray = [NSMutableArray arrayWithCapacity: count];
 
   for (i = 0; i < count; i++)
     {
       [itemArray addObject: 
-		   [self itemAtRow: 
-			   [[rows objectAtIndex: i] intValue]]];
+	[self itemAtRow: [[rows objectAtIndex: i] intValue]]];
     }
 
   if ([_dataSource respondsToSelector:
@@ -1665,7 +1675,7 @@ static NSImage *unexpandable  = nil;
   id result = nil;
 
   if ([_dataSource respondsToSelector:
-		    @selector(outlineView:objectValueForTableColumn:byItem:)])
+    @selector(outlineView:objectValueForTableColumn:byItem:)])
     {
       id item = [self itemAtRow: index];
 
@@ -1682,7 +1692,7 @@ static NSImage *unexpandable  = nil;
 		     row: (int) index
 {
   if ([_dataSource respondsToSelector:
-		    @selector(outlineView:setObjectValue:forTableColumn:byItem:)])
+    @selector(outlineView:setObjectValue:forTableColumn:byItem:)])
     {
       id item = [self itemAtRow: index];
 
@@ -1721,8 +1731,8 @@ static NSImage *unexpandable  = nil;
       NSString           *tableKey;
 
       defaults  = [NSUserDefaults standardUserDefaults];
-      tableKey = [NSString stringWithFormat: @"NSOutlineView Expanded Items %@", 
-			   _autosaveName];
+      tableKey = [NSString stringWithFormat: @"NSOutlineView Expanded Items %@",
+	_autosaveName];
       config = [defaults objectForKey: tableKey];
       if (config != nil) 
 	{
@@ -1743,7 +1753,7 @@ static NSImage *unexpandable  = nil;
 {
   int num;
   int i;
-  id sitem = (startitem == nil)?[NSNull null]:startitem;
+  id sitem = (startitem == nil) ? (id)[NSNull null] : (id)startitem;
   NSMutableArray *anarray;
 
   anarray = NSMapGet(_itemDict, sitem); 
@@ -1769,7 +1779,7 @@ static NSImage *unexpandable  = nil;
   int num = [_dataSource outlineView: self
 			 numberOfChildrenOfItem: startitem];
   int i = 0;
-  id sitem = (startitem == nil)?[NSNull null]:startitem;
+  id sitem = (startitem == nil) ? (id)[NSNull null] : (id)startitem;
   NSMutableArray *anarray = nil;
 
   if (num > 0)
@@ -1822,7 +1832,7 @@ static NSImage *unexpandable  = nil;
   int i = 0;
   int insertionPoint = 0;
   id object = nil;
-  id sitem = (item == nil)?[NSNull null]:item;
+  id sitem = (item == nil) ? (id)[NSNull null] : (id)item;
 
   object = NSMapGet(_itemDict, sitem);
   numchildren = [object count];
@@ -1872,7 +1882,7 @@ static NSImage *unexpandable  = nil;
 {
   int numchildren = 0;
   int i = 0;
-  id sitem = (startitem == nil)?[NSNull null]:startitem;
+  id sitem = (startitem == nil) ? (id)[NSNull null] : (id)startitem;
   NSMutableArray *anarray;
   
   anarray = NSMapGet(_itemDict, sitem); 

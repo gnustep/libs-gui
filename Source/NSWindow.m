@@ -1236,9 +1236,11 @@ many times.
   ASSIGN(_miniaturizedImage, image);
   if (_counterpart != 0 && (_styleMask & NSMiniWindowMask) == 0)
     {
-      NSMiniWindow	*mini = [NSApp windowWithWindowNumber: _counterpart];
-      id		v = [mini contentView];
+      NSMiniWindow	*mini;
+      id		v;
 
+      mini = (NSMiniWindow*)[NSApp windowWithWindowNumber: _counterpart];
+      v = [mini contentView];
       if ([v respondsToSelector: @selector(setImage:)])
 	{
 	  [v setImage: [self miniwindowImage]];
@@ -1251,9 +1253,11 @@ many times.
   ASSIGN(_miniaturizedTitle, title);
   if (_counterpart != 0 && (_styleMask & NSMiniWindowMask) == 0)
     {
-      NSMiniWindow	*mini = [NSApp windowWithWindowNumber: _counterpart];
-      id		v = [mini contentView];
+      NSMiniWindow	*mini;
+      id		v;
 
+      mini = (NSMiniWindow*)[NSApp windowWithWindowNumber: _counterpart];
+      v = [mini contentView];
       if ([v respondsToSelector: @selector(setTitle:)])
 	{
 	  [v setTitle: [self miniwindowTitle]];

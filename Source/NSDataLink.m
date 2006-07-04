@@ -341,7 +341,7 @@
     {
       id obj;
 
-      linkNumber = [aCoder decodeObjectForKey: @"GSLinkNumber"];
+      linkNumber = [aCoder decodeIntForKey: @"GSLinkNumber"];
       disposition = [aCoder decodeIntForKey: @"GSDisposition"];
       updateMode = [aCoder decodeIntForKey: @"GSUpdateMode"];
 

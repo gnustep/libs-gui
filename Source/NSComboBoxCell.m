@@ -695,12 +695,12 @@ static GSComboWindow *gsWindow = nil;
 {
   if (_cell != nil)
     {
-      NSText *textObject = nil;
-      NSControl *cv = [_cell controlView];
+      NSText	*textObject = nil;
+      id	cv = [_cell controlView];
       
       if ([cv isKindOfClass: [NSControl class]])
         {
-	   textObject = [(NSControl *)cv currentEditor];
+	  textObject = [(NSControl *)cv currentEditor];
 	}
       
       [_cell setStringValue: [_cell _stringValueAtIndex: 

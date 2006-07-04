@@ -1,3 +1,37 @@
+2006-07-04  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSSpellServer.m:
+	* Source/NSAlert.m:
+	* Source/NSWindowController.m:
+	* Source/GSDisplayServer.m:
+	* Source/NSWorkspace.m:
+	* Source/GSLayoutManager.m:
+	* Source/NSWindow.m:
+	* Source/NSLayoutManager.m:
+	* Source/GSStandardWindowDecorationView.m:
+	* Source/GSTextStorage.m:
+	* Source/GSHorizontalTypesetter.m:
+	* Source/NSColor.m:
+	* Source/NSPasteboard.m:
+	* Source/NSMenuItem.m:
+	* Source/NSPageLayout.m:
+	* Source/NSOutlineView.m:
+	* Source/NSTextView.m:
+	* Source/NSBitmapImageRep+JPEG.m:
+	* Source/NSComboBoxCell.m:
+	* Source/NSToolbarItem.m:
+	* Source/NSImage.m:
+	* Source/NSDataLink.m:
+	* Source/GSServicesManager.m:
+	* Source/NSPrintPanel.m:
+	* Source/NSEvent.m:
+	* Source/GSDragView.m:
+	* Model/GMArchiver.m:
+	* Model/IMConnectors.m:
+	* Tools/GSspell.m:
+	Tweaks to avoid spurious warnings in recent gcc-4.1 and a few casts
+	etc to deal with a few real issues when working on 64bit cpus.
+
 2006-07-02  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView.m (-rulerView:didMoveMarker:,

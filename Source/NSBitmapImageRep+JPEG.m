@@ -270,7 +270,7 @@ nil. */
     {
       /* assign the description of possible occured error to errorMsg */
       if (errorMsg)
-	*errorMsg = (jerrMgr.error ? jerrMgr.error : nil);
+	*errorMsg = (jerrMgr.error ? (id)jerrMgr.error : (id)nil);
       gs_jpeg_memory_src_destroy(&cinfo);
       jpeg_destroy_decompress(&cinfo);
       if (imgbuffer)

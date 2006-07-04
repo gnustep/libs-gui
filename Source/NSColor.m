@@ -1673,7 +1673,7 @@ systemColorWithName(NSString *name)
     }
   else
     {
-      GSNamedColor *aCopy = NSCopyObject(self, 0, aZone);
+      GSNamedColor *aCopy = (GSNamedColor*)NSCopyObject(self, 0, aZone);
 
       aCopy->_catalog_name = [_catalog_name copyWithZone: aZone];
       aCopy->_color_name = [_color_name copyWithZone: aZone];
@@ -2893,7 +2893,7 @@ systemColorWithName(NSString *name)
     }
   else
     {
-      GSPatternColor *aCopy = NSCopyObject(self, 0, aZone);
+      GSPatternColor *aCopy = (GSPatternColor*)NSCopyObject(self, 0, aZone);
 
       aCopy->_pattern = [_pattern copyWithZone: aZone];
       return aCopy;

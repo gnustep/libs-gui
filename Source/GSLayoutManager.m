@@ -157,9 +157,9 @@ Private method used internally by GSLayoutManager for sanity checking.
     h = (glyph_run_t *)(glyphs + SKIP_LIST_DEPTH - 1)->next;
     for (; h; h = (glyph_run_t *)h->head.next)
       {
-	printf("%08x %i chars, %i glyphs, %i complete, prev %08x next %08x\n",
-		(int)h, h->head.char_length, h->head.glyph_length, h->head.complete,
-		(int)h->prev, (int)h->head.next);
+	printf("%8p %i chars, %i glyphs, %i complete, prev %8p next %8p\n",
+	  h, h->head.char_length, h->head.glyph_length, h->head.complete,
+	  h->prev, h->head.next);
 	printf("         level %i, continued %i\n", h->level, h->continued);
 	if (h->head.complete)
 	  {
@@ -181,14 +181,14 @@ Private method used internally by GSLayoutManager for sanity checking.
 
     printf("    head: ");
     for (i = 0, h = glyphs + SKIP_LIST_DEPTH - 1; i < SKIP_LIST_DEPTH; i++, h--)
-      printf("%8x %i %3i %3i|", (int)h->next, h->complete, h->char_length, h->glyph_length);
+      printf("%8p %i %3i %3i|", h->next, h->complete, h->char_length, h->glyph_length);
     printf("\n");
     h = (glyphs + SKIP_LIST_DEPTH - 1)->next;
     for (; h; h = h->next)
       {
-	printf("%8x: ", (int)h);
+	printf("%8p: ", h);
 	for (g = h, i = ((glyph_run_t *)h)->level; i >= 0; i--, g--)
-	  printf("%8x %i %3i %3i|", (int)g->next, g->complete, g->char_length, g->glyph_length);
+	  printf("%8p %i %3i %3i|", g->next, g->complete, g->char_length, g->glyph_length);
 	  printf("\n");
       }
   }

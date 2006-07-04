@@ -120,7 +120,7 @@ static NSColor *titleColor[3];
     {
       NSMutableParagraphStyle *p;
 
-      p = [NSMutableParagraphStyle defaultParagraphStyle];
+      p = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
       [p setLineBreakMode: NSLineBreakByClipping];
 
       titleTextAttributes[0] = [[NSMutableDictionary alloc]
@@ -142,6 +142,7 @@ static NSColor *titleColor[3];
 	  p, NSParagraphStyleAttributeName,
 	  nil];
 
+      RELEASE(p);
       titleColor[0] = RETAIN([NSColor windowFrameColor]);
       titleColor[1] = RETAIN([NSColor lightGrayColor]);
       titleColor[2] = RETAIN([NSColor darkGrayColor]);

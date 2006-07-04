@@ -108,18 +108,18 @@ Interface for a bunch of internal methods that need to be cleaned up.
 /*
  * Used to implement the blinking insertion point
  */
--(void) _blink: (NSTimer *)t;
+- (void) _blink: (NSTimer *)t;
 
 /*
  * these NSLayoutManager- like method is here only informally
  */
--(NSRect) rectForCharacterRange: (NSRange)aRange;
+- (NSRect) rectForCharacterRange: (NSRange)aRange;
 
 //
 // GNU utility methods
 //
--(void) copySelection;
--(void) pasteSelection;
+- (void) copySelection;
+- (void) pasteSelection;
 @end
 
 // This class is a helper for keyed unarchiving only
@@ -151,13 +151,17 @@ Interface for a bunch of internal methods that need to be cleaned up.
 {
   if ([aDecoder allowsKeyedCoding])
     {
-      ASSIGN(backgroundColor, [aDecoder decodeObjectForKey: @"NSBackgroundColor"]);
-      ASSIGN(paragraphStyle, [aDecoder decodeObjectForKey: @"NSDefaultParagraphStyle"]);
+      ASSIGN(backgroundColor,
+	[aDecoder decodeObjectForKey: @"NSBackgroundColor"]);
+      ASSIGN(paragraphStyle,
+	[aDecoder decodeObjectForKey: @"NSDefaultParagraphStyle"]);
       flags = [aDecoder decodeIntForKey: @"NSFlags"];
-      ASSIGN(insertionColor, [aDecoder decodeObjectForKey: @"NSInsertionColor"]);
+      ASSIGN(insertionColor,
+	[aDecoder decodeObjectForKey: @"NSInsertionColor"]);
       ASSIGN(linkAttr, [aDecoder decodeObjectForKey: @"NSLinkAttributes"]);
       ASSIGN(markAttr, [aDecoder decodeObjectForKey: @"NSMarkedAttributes"]);
-      ASSIGN(selectedAttr, [aDecoder decodeObjectForKey: @"NSSelectedAttributes"]);
+      ASSIGN(selectedAttr,
+	[aDecoder decodeObjectForKey: @"NSSelectedAttributes"]);
     }
   
   return self;
@@ -273,7 +277,7 @@ of the removed text view. It is also sent by -setTextContainer:.
 This will be sent several times to the same text view for one change in
 some cases, so it needs to be safe wrt. that.
 */
--(void) _updateMultipleTextViews
+- (void) _updateMultipleTextViews
 {
   id oldNotifObject = _notifObject;
 
@@ -334,7 +338,7 @@ directly from one textview to another - to allow subclasses to
 override eg. -setEditable: to take some particular action when
 editing is turned on or off.
 */
--(void) _syncTextViewsByCalling: (SEL)action
+- (void) _syncTextViewsByCalling: (SEL)action
 		       withFlag: (BOOL)flag
 {
   NSArray *array;
@@ -378,7 +382,7 @@ This must be called whenever the delegate changes (directly, through calls
 to -setDelegate:, or indirectly due to changes in the text system, or being
 decoded.
 */
--(void) _recacheDelegateResponses
+- (void) _recacheDelegateResponses
 {
   SEL selector;
 
@@ -408,7 +412,7 @@ decoded.
 Called when our state needs updating due to external changes. Currently,
 this happens when layout has been invalidated, and when we are resized.
 */
--(void) _updateState: (id)sender
+- (void) _updateState: (id)sender
 {
   [self sizeToFit];
   /* TODO: we don't have to redisplay the entire view */
@@ -418,7 +422,7 @@ this happens when layout has been invalidated, and when we are resized.
   [self _updateInputMethodState];
 }
 
--(void) _layoutManagerDidInvalidateLayout
+- (void) _layoutManagerDidInvalidateLayout
 {
   /*
   We don't want to do the update right away, since the invalidation might
@@ -532,7 +536,7 @@ If a text view is added to an empty text network, it keeps its attributes.
 */
 
 
--(NSTextContainer *) buildUpTextNetwork: (NSSize)aSize
+- (NSTextContainer *) buildUpTextNetwork: (NSSize)aSize
 {
   NSTextContainer *textContainer;
   NSLayoutManager *layoutManager;
@@ -564,7 +568,7 @@ If a text view is added to an empty text network, it keeps its attributes.
 
 
 /* Designated initializer. */
--(id) initWithFrame: (NSRect)frameRect
+- (id) initWithFrame: (NSRect)frameRect
       textContainer: (NSTextContainer *)container
 {
   self = [super initWithFrame: frameRect];
@@ -611,7 +615,7 @@ If a text view is added to an empty text network, it keeps its attributes.
 }
 
 
--(id) initWithFrame: (NSRect)frameRect
+- (id) initWithFrame: (NSRect)frameRect
 {
   NSTextContainer *aTextContainer;
 
@@ -641,7 +645,7 @@ NSTextView, and parts of their handling (including encoding and decoding)
 were there. This has been fixed and the ivar:s moved here, but in a way
 that makes decoding and encoding compatible with the old code.
 */
--(void) encodeWithCoder: (NSCoder *)aCoder
+- (void) encodeWithCoder: (NSCoder *)aCoder
 {
   BOOL flag;
   NSSize containerSize = [_textContainer containerSize];
@@ -689,7 +693,7 @@ that makes decoding and encoding compatible with the old code.
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
 }
 
--(id) initWithCoder: (NSCoder *)aDecoder
+- (id) initWithCoder: (NSCoder *)aDecoder
 {
   self = [super initWithCoder: aDecoder];
   if ([aDecoder allowsKeyedCoding])
@@ -718,9 +722,10 @@ that makes decoding and encoding compatible with the old code.
 
       if ([aDecoder containsValueForKey: @"NSSharedData"])
         {
-	  NSTextViewSharedData *shared = [aDecoder decodeObjectForKey: @"NSSharedData"];
+	  NSTextViewSharedData *shared;
 	  unsigned int flags = [shared flags];
 
+	  shared = [aDecoder decodeObjectForKey: @"NSSharedData"];
 	  ASSIGN(_insertionPointColor, [shared insertionColor]);
 	  ASSIGN(_backgroundColor, [shared backgroundColor]);
 
@@ -763,8 +768,7 @@ that makes decoding and encoding compatible with the old code.
 
       if ([aDecoder containsValueForKey: @"NSTVFlags"])
         {
-	  //int vFlags = [aDecoder decodeIntForKey: @"NSTVFlags"];
-	  // these flags are not used...
+	  [aDecoder decodeIntForKey: @"NSTVFlags"];
 	}
 
       // register for services and subscribe to notifications.
@@ -864,7 +868,7 @@ that makes decoding and encoding compatible with the old code.
   return self;
 }
 
--(void) dealloc
+- (void) dealloc
 {
   if (_tf.owns_text_network == YES)
     {
@@ -911,7 +915,6 @@ that makes decoding and encoding compatible with the old code.
   [super dealloc];
 }
 
-
 /**** Managing the text network ****/
 
 /* This should only be called by [NSTextContainer -setTextView:]. If the
@@ -926,7 +929,7 @@ is hairy, and this is the only place where it happens.
 TODO: Make sure the assumption holds; might need to add more dummy calls
 to this method from the text container or layout manager.
 */
--(void) setTextContainer: (NSTextContainer *)container
+- (void) setTextContainer: (NSTextContainer *)container
 {
   unsigned int i, c;
   NSArray *tcs;
@@ -990,22 +993,22 @@ to this method from the text container or layout manager.
 
 
 
--(void) replaceTextContainer: (NSTextContainer *)newContainer
+- (void) replaceTextContainer: (NSTextContainer *)newContainer
 {
   NSLog(@"TODO! [NSTextView -replaceTextContainer:] isn't implemented");
 }
 
--(NSTextContainer *) textContainer
+- (NSTextContainer *) textContainer
 {
   return _textContainer;
 }
 
--(NSLayoutManager *) layoutManager
+- (NSLayoutManager *) layoutManager
 {
   return _layoutManager;
 }
 
--(NSTextStorage *) textStorage
+- (NSTextStorage *) textStorage
 {
   return _textStorage;
 }
@@ -1046,12 +1049,12 @@ to make sure syncing is handled properly in all cases.
 
 /* Delegate */
 
--(id) delegate
+- (id) delegate
 {
   return _delegate;
 }
 
--(void) setDelegate: (id)anObject
+- (void) setDelegate: (id)anObject
 {
   /* Code to allow sharing the delegate */
   if (_tf.multiple_textviews && (IS_SYNCHRONIZING_DELEGATES == NO))
@@ -1105,12 +1108,12 @@ to make sure syncing is handled properly in all cases.
 
 /* Editable */
 
--(BOOL) isEditable
+- (BOOL) isEditable
 {
   return _tf.is_editable;
 }
 
--(void) setEditable: (BOOL)flag
+- (void) setEditable: (BOOL)flag
 {
   NSTEXTVIEW_SYNC;
   _tf.is_editable = flag;
@@ -1132,12 +1135,12 @@ to make sure syncing is handled properly in all cases.
 
 /* Selectable */
 
--(BOOL) isSelectable
+- (BOOL) isSelectable
 {
   return _tf.is_selectable;
 }
 
--(void) setSelectable: (BOOL)flag
+- (void) setSelectable: (BOOL)flag
 {
   NSTEXTVIEW_SYNC;
   _tf.is_selectable = flag;
@@ -1151,12 +1154,12 @@ to make sure syncing is handled properly in all cases.
 
 /* Field editor */
 
--(BOOL) isFieldEditor
+- (BOOL) isFieldEditor
 {
   return _tf.is_field_editor;
 }
 
--(void) setFieldEditor: (BOOL)flag
+- (void) setFieldEditor: (BOOL)flag
 {
   NSTEXTVIEW_SYNC;
   [self setHorizontallyResizable: NO]; /* TODO: why? */
@@ -1168,12 +1171,12 @@ to make sure syncing is handled properly in all cases.
 
 /* Rich-text */
 
--(BOOL) isRichText
+- (BOOL) isRichText
 {
   return _tf.is_rich_text;
 }
 
--(void) setRichText: (BOOL)flag
+- (void) setRichText: (BOOL)flag
 {
   NSTEXTVIEW_SYNC;
   _tf.is_rich_text  = flag;
@@ -1189,12 +1192,12 @@ to make sure syncing is handled properly in all cases.
 
 /* Imports graphics */
 
--(BOOL) importsGraphics
+- (BOOL) importsGraphics
 {
   return _tf.imports_graphics;
 }
 
--(void) setImportsGraphics: (BOOL)flag
+- (void) setImportsGraphics: (BOOL)flag
 {
   NSTEXTVIEW_SYNC;
   _tf.imports_graphics = flag;
@@ -1208,13 +1211,13 @@ to make sure syncing is handled properly in all cases.
 
 /* Uses ruler */
 
--(BOOL) usesRuler
+- (BOOL) usesRuler
 {
   return _tf.uses_ruler;
 }
 
 /* TODO: set ruler visible to NO if flag==NO? */
--(void) setUsesRuler: (BOOL)flag
+- (void) setUsesRuler: (BOOL)flag
 {
   NSTEXTVIEW_SYNC;
   _tf.uses_ruler = flag;
@@ -1223,12 +1226,12 @@ to make sure syncing is handled properly in all cases.
 
 /* Ruler visible (TODO: is this really supposed to be shared??) */
 
--(BOOL) isRulerVisible
+- (BOOL) isRulerVisible
 {
   return _tf.is_ruler_visible;
 }
 
--(void) setRulerVisible: (BOOL)flag
+- (void) setRulerVisible: (BOOL)flag
 {
   NSScrollView *sv;
 
@@ -1245,12 +1248,12 @@ to make sure syncing is handled properly in all cases.
 
 /* Uses font panel */
 
--(BOOL) usesFontPanel
+- (BOOL) usesFontPanel
 {
   return _tf.uses_font_panel;
 }
 
--(void) setUsesFontPanel: (BOOL)flag
+- (void) setUsesFontPanel: (BOOL)flag
 {
   NSTEXTVIEW_SYNC;
   _tf.uses_font_panel = flag;
@@ -1259,12 +1262,12 @@ to make sure syncing is handled properly in all cases.
 
 /* Smart insert/delete */
 
--(BOOL) smartInsertDeleteEnabled
+- (BOOL) smartInsertDeleteEnabled
 {
   return _tf.smart_insert_delete;
 }
 
--(void) setSmartInsertDeleteEnabled: (BOOL)flag
+- (void) setSmartInsertDeleteEnabled: (BOOL)flag
 {
   NSTEXTVIEW_SYNC;
   _tf.smart_insert_delete = flag;
@@ -1273,12 +1276,12 @@ to make sure syncing is handled properly in all cases.
 
 /* Undo */
 
--(BOOL) allowsUndo
+- (BOOL) allowsUndo
 {
   return _tf.allows_undo;
 }
 
--(void) setAllowsUndo: (BOOL)flag
+- (void) setAllowsUndo: (BOOL)flag
 {
   NSTEXTVIEW_SYNC;
   _tf.allows_undo = flag;
@@ -1288,14 +1291,14 @@ to make sure syncing is handled properly in all cases.
 /* Continuous spell checking */
 
 /* TODO */
--(BOOL) isContinuousSpellCheckingEnabled
+- (BOOL) isContinuousSpellCheckingEnabled
 {
   NSLog(@"Method %s is not implemented for class %s",
 	__PRETTY_FUNCTION__, "NSTextView");
   return NO;
 }
 
--(void) setContinuousSpellCheckingEnabled: (BOOL)flag
+- (void) setContinuousSpellCheckingEnabled: (BOOL)flag
 {
   NSLog(@"Method %s is not implemented for class %s",
 	__PRETTY_FUNCTION__, "NSTextView");
@@ -1309,12 +1312,12 @@ to make sure syncing is handled properly in all cases.
 
 /**** Basic view stuff ****/
 
--(BOOL) isFlipped
+- (BOOL) isFlipped
 {
   return YES;
 }
 
--(BOOL) isOpaque
+- (BOOL) isOpaque
 {
   if (_tf.draws_background == NO
       || _backgroundColor == nil
@@ -1324,12 +1327,12 @@ to make sure syncing is handled properly in all cases.
     return YES;
 }
 
--(BOOL) needsPanelToBecomeKey
+- (BOOL) needsPanelToBecomeKey
 {
   return _tf.is_editable;
 }
 
--(BOOL) acceptsFirstResponder
+- (BOOL) acceptsFirstResponder
 {
   if (_tf.is_selectable)
     {
@@ -1341,7 +1344,7 @@ to make sure syncing is handled properly in all cases.
     }
 }
 
--(BOOL) resignFirstResponder
+- (BOOL) resignFirstResponder
 {
   /* Check if another text view attached to the same layout manager is the
   new first responder. If so, we always let it become first responder, and
@@ -1413,7 +1416,7 @@ to make sure syncing is handled properly in all cases.
 
 /* Note that when this method is called, editing might already have
 started (in another text view attached to the same layout manager). */
--(BOOL) becomeFirstResponder
+- (BOOL) becomeFirstResponder
 {
   if (_tf.is_selectable == NO)
     {
@@ -1432,7 +1435,7 @@ started (in another text view attached to the same layout manager). */
   return YES;
 }
 
--(void) resignKeyWindow
+- (void) resignKeyWindow
 {
   if ([self shouldDrawInsertionPoint])
     {
@@ -1440,7 +1443,7 @@ started (in another text view attached to the same layout manager). */
     }
 }
 
--(void) becomeKeyWindow
+- (void) becomeKeyWindow
 {
   if ([self shouldDrawInsertionPoint])
     {
@@ -1451,17 +1454,17 @@ started (in another text view attached to the same layout manager). */
 
 /**** Unshared attributes ****/
 
--(NSColor *) backgroundColor
+- (NSColor *) backgroundColor
 {
   return _backgroundColor;
 }
 
--(BOOL) drawsBackground
+- (BOOL) drawsBackground
 {
   return _tf.draws_background;
 }
 
--(void) setBackgroundColor: (NSColor *)color
+- (void) setBackgroundColor: (NSColor *)color
 {
   if (![_backgroundColor isEqual: color])
     {
@@ -1470,7 +1473,7 @@ started (in another text view attached to the same layout manager). */
     }
 }
 
--(void) setDrawsBackground: (BOOL)flag
+- (void) setDrawsBackground: (BOOL)flag
 {
   if (_tf.draws_background != flag)
     {
@@ -1480,34 +1483,34 @@ started (in another text view attached to the same layout manager). */
 }
 
 
--(void) setInsertionPointColor: (NSColor *)color
+- (void) setInsertionPointColor: (NSColor *)color
 {
   ASSIGN(_insertionPointColor, color);
 }
 
--(NSColor *) insertionPointColor
+- (NSColor *) insertionPointColor
 {
   return _insertionPointColor;
 }
 
 
--(void) setSelectedTextAttributes: (NSDictionary *)attributeDictionary
+- (void) setSelectedTextAttributes: (NSDictionary *)attributeDictionary
 {
   ASSIGN(_selectedTextAttributes, attributeDictionary);
 }
 
--(NSDictionary *) selectedTextAttributes
+- (NSDictionary *) selectedTextAttributes
 {
   return _selectedTextAttributes;
 }
 
 
--(void) setMarkedTextAttributes: (NSDictionary *)attributeDictionary
+- (void) setMarkedTextAttributes: (NSDictionary *)attributeDictionary
 {
   ASSIGN(_markedTextAttributes, attributeDictionary);
 }
 
--(NSDictionary *) markedTextAttributes
+- (NSDictionary *) markedTextAttributes
 {
   return _markedTextAttributes;
 }
@@ -1539,49 +1542,49 @@ TODO: Check and fix bounds vs. frame issues.
 would be very tricky), so is it worth having them there at all? The docs are
 pretty clear about what happens (ie. breakage) if you set the flags
 incorrectly. */
--(void) setHorizontallyResizable: (BOOL)flag
+- (void) setHorizontallyResizable: (BOOL)flag
 {
   /* Safety call */
   [_textContainer setWidthTracksTextView: !flag];
 
   _tf.is_horizontally_resizable = flag;
 }
--(void) setVerticallyResizable: (BOOL)flag
+- (void) setVerticallyResizable: (BOOL)flag
 {
   /* Safety call */
   [_textContainer setHeightTracksTextView: !flag];
 
   _tf.is_vertically_resizable = flag;
 }
--(BOOL) isHorizontallyResizable
+- (BOOL) isHorizontallyResizable
 {
   return _tf.is_horizontally_resizable;
 }
--(BOOL) isVerticallyResizable
+- (BOOL) isVerticallyResizable
 {
   return _tf.is_vertically_resizable;
 }
 
 
--(NSSize) maxSize
+- (NSSize) maxSize
 {
   return _maxSize;
 }
--(NSSize) minSize
+- (NSSize) minSize
 {
   return _minSize;
 }
--(void) setMaxSize: (NSSize)newMaxSize
+- (void) setMaxSize: (NSSize)newMaxSize
 {
   _maxSize = newMaxSize;
 }
--(void) setMinSize: (NSSize)newMinSize
+- (void) setMinSize: (NSSize)newMinSize
 {
   _minSize = newMinSize;
 }
 
 
--(void) sizeToFit
+- (void) sizeToFit
 {
   NSSize size;
 
@@ -1619,7 +1622,7 @@ used instead. Should test on OS to find out what the proper behavior is.
 UPDATE: current behavior is correct, but must be documented properly
 before this TODO can be removed
 */
--(void) setConstrainedFrameSize: (NSSize)desiredSize
+- (void) setConstrainedFrameSize: (NSSize)desiredSize
 {
   NSSize newSize;
   NSSize effectiveMinSize = _minSize;
@@ -1670,7 +1673,7 @@ The text container origin is the origin of the text container's coordinate
 system in our coordinate system.
 */
 
--(void) setTextContainerInset: (NSSize)inset
+- (void) setTextContainerInset: (NSSize)inset
 {
   _textContainerInset = inset;
   [self invalidateTextContainerOrigin];
@@ -1680,12 +1683,12 @@ system in our coordinate system.
       object: self];
 }
 
--(NSSize) textContainerInset
+- (NSSize) textContainerInset
 {
   return _textContainerInset;
 }
 
--(NSPoint) textContainerOrigin
+- (NSPoint) textContainerOrigin
 {
   return _textContainerOrigin;
 }
@@ -1696,7 +1699,7 @@ really see what it did, and I didn't see anything in the docs that imply
 that anything complex needs to be done, so I removed it. Should double-check
 and bring it back if necessary.
 */
--(void) invalidateTextContainerOrigin
+- (void) invalidateTextContainerOrigin
 {
   _textContainerOrigin.x = NSMinX(_bounds);
   _textContainerOrigin.x += _textContainerInset.width;
@@ -1715,7 +1718,7 @@ here. */
 
 /* TODO: currently no support for marked text */
 
--(NSAttributedString *) attributedSubstringFromRange: (NSRange)theRange
+- (NSAttributedString *) attributedSubstringFromRange: (NSRange)theRange
 {
   if (theRange.location >= [_textStorage length])
     return nil;
@@ -1728,7 +1731,7 @@ here. */
 TODO: make sure this is only called when _layoutManager is known non-nil,
 or add guards
 */
--(unsigned int) characterIndexForPoint: (NSPoint)point
+- (unsigned int) characterIndexForPoint: (NSPoint)point
 {
   unsigned	index;
   float		fraction;
@@ -1750,35 +1753,35 @@ or add guards
   return index;
 }
 
--(NSRange) markedRange
+- (NSRange) markedRange
 {
   return NSMakeRange(NSNotFound, 0);
 }
 
--(void) setMarkedText: (NSString *)aString  selectedRange: (NSRange)selRange
+- (void) setMarkedText: (id)aString  selectedRange: (NSRange)selRange
 {
 }
 
--(BOOL) hasMarkedText
+- (BOOL) hasMarkedText
 {
   return NO;
 }
 
--(void) unmarkText
+- (void) unmarkText
 {
 }
 
--(NSArray *) validAttributesForMarkedText
+- (NSArray *) validAttributesForMarkedText
 {
   return nil;
 }
 
--(long int) conversationIdentifier
+- (long int) conversationIdentifier
 {
   return (long int)_textStorage;
 }
 
--(NSRect) firstRectForCharacterRange: (NSRange)theRange
+- (NSRect) firstRectForCharacterRange: (NSRange)theRange
 {
   unsigned int rectCount = 0; /* If there's no layout manager, it'll be 0 after the call too. */
   NSRect *rects = [_layoutManager 
@@ -1795,7 +1798,7 @@ or add guards
 
 /* Unlike NSResponder, we should _not_ send the selector down the responder
 chain if we can't handle it. */
--(void) doCommandBySelector: (SEL)aSelector
+- (void) doCommandBySelector: (SEL)aSelector
 {
   if (!_layoutManager)
     {
@@ -1826,7 +1829,7 @@ attributes.
 
 This method is for user changes; see NSTextView_actions.m.
 */
--(void) insertText: (id)insertString
+- (void) insertText: (id)insertString
 {
   NSRange insertRange = [self rangeForUserTextChange];
   NSString *string;
@@ -1950,7 +1953,7 @@ GNUstep extension. Like the above, but uses the attributes from the
 string if the text view is rich-text, and otherwise the typing
 attributes.
 */
--(void) replaceCharactersInRange: (NSRange)aRange
+- (void) replaceCharactersInRange: (NSRange)aRange
 	    withAttributedString: (NSAttributedString *)aString
 {
   if (aRange.location == NSNotFound) /* TODO: throw exception instead? */
@@ -1981,7 +1984,7 @@ the attributes for the range, and do not update the typing attributes.
 */
 
 
--(void) setFont: (NSFont *)font
+- (void) setFont: (NSFont *)font
 {
   if (!font)
     return;
@@ -1993,7 +1996,7 @@ the attributes for the range, and do not update the typing attributes.
     forKey: NSFontAttributeName];
 }
 
--(void) setFont: (NSFont *)font  range: (NSRange)aRange
+- (void) setFont: (NSFont *)font  range: (NSRange)aRange
 {
   if (!_tf.is_rich_text || !font)
     return;
@@ -2004,7 +2007,7 @@ the attributes for the range, and do not update the typing attributes.
 }
 
 
--(void) setAlignment: (NSTextAlignment)alignment
+- (void) setAlignment: (NSTextAlignment)alignment
 {
   NSParagraphStyle *style;
   NSMutableParagraphStyle *mstyle;
@@ -2025,7 +2028,7 @@ the attributes for the range, and do not update the typing attributes.
   DESTROY(mstyle);
 }
 
--(void) setAlignment: (NSTextAlignment)alignment
+- (void) setAlignment: (NSTextAlignment)alignment
 	       range: (NSRange)range
 {
   if (!_tf.is_rich_text)
@@ -2076,28 +2079,28 @@ the attributes for the range, and do not update the typing attributes.
 
 /**** Text access methods ****/
 
--(NSData *) RTFDFromRange: (NSRange)aRange
+- (NSData *) RTFDFromRange: (NSRange)aRange
 {
   return [_textStorage RTFDFromRange: aRange  documentAttributes: nil];
 }
 
--(NSData *) RTFFromRange: (NSRange)aRange
+- (NSData *) RTFFromRange: (NSRange)aRange
 {
   return [_textStorage RTFFromRange: aRange  documentAttributes: nil];
 }
 
--(NSString *) string
+- (NSString *) string
 {
   return [_textStorage string];
 }
 
--(unsigned) textLength
+- (unsigned) textLength
 {
   return [_textStorage length];
 }
 
 
--(NSFont *) font
+- (NSFont *) font
 {
   if ([_textStorage length] > 0)
     {
@@ -2118,13 +2121,13 @@ Since the alignment of the typing attributes will always be the same as the
 alignment of the first selected paragraph, we can simply return the typing
 attributes' alignment. (TODO: double-check this assumption)
 */
--(NSTextAlignment) alignment
+- (NSTextAlignment) alignment
 {
   return [[_layoutManager->_typingAttributes objectForKey: NSParagraphStyleAttributeName] 
 	   alignment];
 }
 
--(NSColor *) textColor
+- (NSColor *) textColor
 {
   if ([_textStorage length] > 0)
     {
@@ -2145,7 +2148,7 @@ TODO:
 Move to NSTextView_actions.m?
 */
 
--(void) copy: (id)sender
+- (void) copy: (id)sender
 {  
   NSMutableArray *types = [NSMutableArray array];
 
@@ -2162,7 +2165,7 @@ Move to NSTextView_actions.m?
 }
 
 /* Copy the current font to the font pasteboard */
--(void) copyFont: (id)sender
+- (void) copyFont: (id)sender
 {
   NSPasteboard *pb = [NSPasteboard pasteboardWithName: NSFontPboard];
 
@@ -2171,7 +2174,7 @@ Move to NSTextView_actions.m?
 }
 
 /* Copy the current ruler settings to the ruler pasteboard */
--(void) copyRuler: (id)sender
+- (void) copyRuler: (id)sender
 {
   NSPasteboard *pb = [NSPasteboard pasteboardWithName: NSRulerPboard];
 
@@ -2180,12 +2183,12 @@ Move to NSTextView_actions.m?
 }
 
 
--(void) paste: (id)sender
+- (void) paste: (id)sender
 {
   [self readSelectionFromPasteboard: [NSPasteboard generalPasteboard]];
 }
 
--(void) pasteFont: (id)sender
+- (void) pasteFont: (id)sender
 {
   NSPasteboard *pb = [NSPasteboard pasteboardWithName: NSFontPboard];
 
@@ -2193,7 +2196,7 @@ Move to NSTextView_actions.m?
 			       type: NSFontPboardType];
 }
 
--(void) pasteRuler: (id)sender
+- (void) pasteRuler: (id)sender
 {
   NSPasteboard *pb = [NSPasteboard pasteboardWithName: NSRulerPboard];
 
@@ -2201,13 +2204,13 @@ Move to NSTextView_actions.m?
 			       type: NSRulerPboardType];
 }
 
--(void) pasteAsPlainText: (id)sender
+- (void) pasteAsPlainText: (id)sender
 {
   [self readSelectionFromPasteboard: [NSPasteboard generalPasteboard]
 			       type: NSStringPboardType];
 }
 
--(void) pasteAsRichText: (id)sender
+- (void) pasteAsRichText: (id)sender
 {
   [self readSelectionFromPasteboard: [NSPasteboard generalPasteboard]
 			       type: NSRTFPboardType];
@@ -2270,7 +2273,7 @@ In -didChangeText, if we still aren't the first responder, we send the
 TextDidEndEditing notification _without_ asking the delegate
 (-; since we can't handle a NO return).
 */
--(BOOL) shouldChangeTextInRange: (NSRange)affectedCharRange
+- (BOOL) shouldChangeTextInRange: (NSRange)affectedCharRange
 	      replacementString: (NSString *)replacementString
 {
   if (_tf.is_editable == NO)
@@ -2307,7 +2310,7 @@ TextDidEndEditing notification _without_ asking the delegate
 /*
 After each user-induced change, this method should be called.
 */
--(void) didChangeText
+- (void) didChangeText
 {
   [self scrollRangeToVisible: [self selectedRange]];
   [notificationCenter postNotificationName: NSTextDidChangeNotification
@@ -2334,7 +2337,7 @@ After each user-induced change, this method should be called.
 Returns the ranges to which various kinds of user changes should apply.
 */
 
--(NSRange) rangeForUserCharacterAttributeChange
+- (NSRange) rangeForUserCharacterAttributeChange
 {
   if (!_tf.is_editable || !_tf.uses_font_panel || !_layoutManager)
     {
@@ -2351,7 +2354,7 @@ Returns the ranges to which various kinds of user changes should apply.
     }
 }
 
--(NSRange) rangeForUserParagraphAttributeChange
+- (NSRange) rangeForUserParagraphAttributeChange
 {
   if (!_tf.is_editable || !_tf.uses_ruler || !_layoutManager)
     {
@@ -2369,7 +2372,7 @@ Returns the ranges to which various kinds of user changes should apply.
     }
 }
 
--(NSRange) rangeForUserTextChange
+- (NSRange) rangeForUserTextChange
 {
   if (!_tf.is_editable || !_layoutManager)
     {
@@ -2386,7 +2389,7 @@ Returns the ranges to which various kinds of user changes should apply.
 /*
 Scroll so that the beginning of the range is visible.
 */
--(void) scrollRangeToVisible: (NSRange)aRange
+- (void) scrollRangeToVisible: (NSRange)aRange
 {
   NSRect rect, r;
   NSView *cv;
@@ -2531,10 +2534,10 @@ Scroll so that the beginning of the range is visible.
 (XIM, currently). Backends may override these in categories with the real
 (backend-specific) handling. */
 
--(void) _updateInputMethodState
+- (void) _updateInputMethodState
 {
 }
--(void) _updateInputMethodWithInsertionPoint: (NSPoint)insertionPoint
+- (void) _updateInputMethodWithInsertionPoint: (NSPoint)insertionPoint
 {
 }
 
@@ -2761,27 +2764,27 @@ This method is for user changes; see NSTextView_actions.m.
 
 /**** Smart insert/delete ****/
 
--(NSRange) smartDeleteRangeForProposedRange: (NSRange)proposedCharRange
+- (NSRange) smartDeleteRangeForProposedRange: (NSRange)proposedCharRange
 {
   /* TODO */
   return proposedCharRange;
 }
 
--(NSString *)smartInsertAfterStringForString: (NSString *)aString
+- (NSString *)smartInsertAfterStringForString: (NSString *)aString
 			      replacingRange: (NSRange)charRange
 {
   /* TODO */
   return nil;
 }
 
--(NSString *)smartInsertBeforeStringForString: (NSString *)aString
+- (NSString *)smartInsertBeforeStringForString: (NSString *)aString
 			       replacingRange: (NSRange)charRange
 {
   /* TODO */
   return nil;
 }
 
--(void) smartInsertForString: (NSString *)aString
+- (void) smartInsertForString: (NSString *)aString
 	      replacingRange: (NSRange)charRange
 		beforeString: (NSString **)beforeString
 		 afterString: (NSString **)afterString
@@ -3360,7 +3363,7 @@ Figure out how the additional layout stuff is supposed to work.
 - (void) rulerView: (NSRulerView *)ruler
      didMoveMarker: (NSRulerMarker *)marker
 {
-  NSTextTab *old_tab = (NSTextTab *)[marker representedObject];
+  NSTextTab *old_tab = (NSTextTab*)[marker representedObject];
   NSTextTab *new_tab = [[NSTextTab alloc] initWithType: [old_tab tabStopType]
 					  location: [marker markerLocation]];
   NSRange range = [self rangeForUserParagraphAttributeChange];
@@ -3721,7 +3724,7 @@ shouldRemoveMarker: (NSRulerMarker *)marker
 }
 
 
--(int) spellCheckerDocumentTag
+- (int) spellCheckerDocumentTag
 {
   if (!_spellCheckerDocumentTag)
     _spellCheckerDocumentTag = [NSSpellChecker uniqueSpellDocumentTag];
@@ -4290,7 +4293,7 @@ other than copy/paste or dragging. */
 
 /**** Event handling ****/
 
--(void) mouseDown: (NSEvent *)theEvent
+- (void) mouseDown: (NSEvent *)theEvent
 {
   NSSelectionAffinity affinity = [self selectionAffinity];
   NSSelectionGranularity granularity = NSSelectByCharacter;
@@ -4544,7 +4547,7 @@ other than copy/paste or dragging. */
   [self setSelectionGranularity: granularity];
 }
 
--(void) keyDown: (NSEvent *)theEvent
+- (void) keyDown: (NSEvent *)theEvent
 {
   // If not editable, don't recognize the key down
   if (_tf.is_editable == NO)
@@ -4559,7 +4562,7 @@ other than copy/paste or dragging. */
 
 /* Bind other mouse up to pasteSelection. This should be done via
 configuation! */
--(void) otherMouseUp: (NSEvent *)theEvent
+- (void) otherMouseUp: (NSEvent *)theEvent
 {
   // TODO: Should we change the insertion point, based on the event position?
   [self pasteSelection];

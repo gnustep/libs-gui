@@ -306,8 +306,7 @@ static NSPrintPanel *shared_instance;
     }
   else
     {
-      NSLog(@"Print panel buttonAction: from unknown sender - x%x\n",
-	(unsigned)sender);
+      NSLog(@"Print panel buttonAction: from unknown sender - x%p\n", sender);
     }
   [NSApp stopModalWithCode: _picked];
 }

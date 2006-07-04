@@ -289,7 +289,7 @@
 	   -encodeObject: withName: message, save its label into the
 	   topLevelObjects array. */
 	if (!level)
-	  [topLevelObjects addObject: (name ? name : label)];
+	  [topLevelObjects addObject: (name ? (id)name : (id)label)];
 
 	lastObjectRepresentation = objectPList;
 
@@ -579,7 +579,7 @@
 {
   id inArchiveName = [(id)NSMapGet(classes, trueName) className];
 
-  return inArchiveName ? inArchiveName : trueName;
+  return inArchiveName ? (NSString*)inArchiveName : (NSString*)trueName;
 }
 
 /* In the following method the version of class named trueName is written as

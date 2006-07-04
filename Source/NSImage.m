@@ -127,6 +127,7 @@ BOOL	NSImageForceCaching = NO;	/* use on missmatch	*/
   TEST_RELEASE(rep);
   TEST_RELEASE(bg);
   NSDeallocateObject(self);
+  GSNOSUPERDEALLOC;
 }
 @end
 
@@ -1781,7 +1782,7 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
       rep =  [self _cacheForRep: rep];
       repd = repd_for_rep(_reps, rep);
 
-      NSDebugLLog(@"NSImage", @"Cached image rep is %d", (int)rep);
+      NSDebugLLog(@"NSImage", @"Cached image rep is %p", rep);
       /*
        * if the cache is not valid, it's background color will not exist
        * and we must draw the background then render from the original
@@ -1811,8 +1812,8 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 	    {
 	      [rep setOpaque: [repd->original isOpaque]];
 	    }
-	  NSDebugLLog(@"NSImage", @"Rendered rep %d on background %@",
-	    (int)rep, repd->bg);
+	  NSDebugLLog(@"NSImage", @"Rendered rep %p on background %@",
+	    rep, repd->bg);
 	}
     }
   

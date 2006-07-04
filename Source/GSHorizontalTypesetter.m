@@ -874,12 +874,14 @@ restart: ;
 
 	if (g->g == GSAttachmentGlyph)
 	  {
-	    NSTextAttachment *attach = [curTextStorage attribute: NSAttachmentAttributeName
-		atIndex: g->char_index
-		effectiveRange: NULL];
-	    NSTextAttachmentCell *cell = [attach attachmentCell];
+	    NSTextAttachment *attach;
+	    NSTextAttachmentCell *cell;
 	    NSRect r;
 
+	    attach = [curTextStorage attribute: NSAttachmentAttributeName
+	      atIndex: g->char_index
+	      effectiveRange: NULL];
+	    cell = (NSTextAttachmentCell*)[attach attachmentCell];
 	    if (!cell)
 	      {
 		g->pos = p;

@@ -191,7 +191,7 @@
   
   if ([self isWindowLoaded])
     {
-      [[self window] setFrameAutosaveName: name ? name : @""];
+      [[self window] setFrameAutosaveName: name ? (id)name : (id)@""];
     }
 }
 
