@@ -258,7 +258,7 @@
       }
     }
 
-    if (label != nil) {
+    if (label == nil) {
       Class archiveClass;
 
       /* If the object gets encoded on the top level, set the label to be
