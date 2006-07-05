@@ -248,7 +248,7 @@ typedef enum
       [aDecoder decodeValueOfObjCType: @encode(int)
 		at: &_selectionType];
       [aDecoder decodeValueOfObjCType: @encode(id)
-		at: obj];
+		at: &obj];
       ASSIGN(_descriptionData, obj);
     }
 

@@ -723,9 +723,10 @@ that makes decoding and encoding compatible with the old code.
       if ([aDecoder containsValueForKey: @"NSSharedData"])
         {
 	  NSTextViewSharedData *shared;
-	  unsigned int flags = [shared flags];
+	  unsigned int flags;
 
 	  shared = [aDecoder decodeObjectForKey: @"NSSharedData"];
+	  flags = [shared flags];
 	  ASSIGN(_insertionPointColor, [shared insertionColor]);
 	  ASSIGN(_backgroundColor, [shared backgroundColor]);
 
