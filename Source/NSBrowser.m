@@ -2545,8 +2545,68 @@ static NSTextFieldCell *titleCell;
       NSString *title = [aDecoder decodeObjectForKey: @"NSFirstColumnTitle"];
       NSString *sep = [aDecoder decodeObjectForKey: @"NSPathSeparator"];
       int flags;
+
+      // start //
+      NSSize bs;
+      //NSScroller *hs;
       
-      self = [super initWithCoder: aDecoder];
+      /* Created the shared titleCell if it hasn't been created already. */
+      if (!titleCell)
+	{
+	  titleCell = [GSBrowserTitleCell new];
+	}
+      
+      // Class setting
+      _browserCellPrototype = [[[NSBrowser cellClass] alloc] init];
+      _browserMatrixClass = [NSMatrix class];
+      
+      // Default values
+      _pathSeparator = @"/";
+      _allowsBranchSelection = YES;
+      _allowsEmptySelection = YES;
+      _allowsMultipleSelection = YES;
+      _reusesColumns = NO;
+      _separatesColumns = YES;
+      _isTitled = YES;
+      _takesTitleFromPreviousColumn = YES;
+      _hasHorizontalScroller = YES;
+      _isLoaded = NO;
+      _acceptsArrowKeys = YES;
+      _acceptsAlphaNumericalKeys = YES;
+      _lastKeyPressed = 0.;
+      _charBuffer = nil;
+      _sendsActionOnArrowKeys = YES;
+      _sendsActionOnAlphaNumericalKeys = YES;
+      _browserDelegate = nil;
+      _passiveDelegate = YES;
+      _doubleAction = NULL;  
+      bs = _sizeForBorderType (NSBezelBorder);
+      _minColumnWidth = scrollerWidth + (2 * bs.width);
+      if (_minColumnWidth < 100.0)
+	_minColumnWidth = 100.0;
+      
+      // Horizontal scroller
+      _scrollerRect.origin.x = bs.width;
+      _scrollerRect.origin.y = bs.height;
+      _scrollerRect.size.width = _frame.size.width - (2 * bs.width);
+      _scrollerRect.size.height = scrollerWidth;
+      _horizontalScroller = [[NSScroller alloc] initWithFrame: _scrollerRect];
+      [_horizontalScroller setTarget: self];
+      [_horizontalScroller setAction: @selector(scrollViaScroller:)];
+      [self addSubview: _horizontalScroller];
+      _skipUpdateScroller = NO;
+      
+      // Columns
+      _browserColumns = [[NSMutableArray alloc] init];
+      
+      // Create a single column
+      _lastColumnLoaded = -1;
+      _firstVisibleColumn = 0;
+      _lastVisibleColumn = 0;
+      _maxVisibleColumns = 3;
+      [self _createColumn];
+      // end //            
+      
       [self setCellPrototype: proto];
       [self setPathSeparator: sep];
       [self setTitle: title ofColumn: 0];

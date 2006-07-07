@@ -1268,6 +1268,12 @@ static float scrollerWidth;
       NSScroller *vScroller = [aDecoder decodeObjectForKey: @"NSVScroller"];
       NSClipView *content = [aDecoder decodeObjectForKey: @"NSContentView"]; 
 
+      _hLineScroll = 10;
+      _hPageScroll = 10;
+      _vLineScroll = 10;
+      _vPageScroll = 10;
+      _scrollsDynamically = YES;
+
       if ([aDecoder containsValueForKey: @"NSsFlags"])
         {
 	  unsigned long flags = [aDecoder decodeIntForKey: @"NSsFlags"];

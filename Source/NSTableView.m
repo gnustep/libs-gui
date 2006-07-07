@@ -5215,6 +5215,32 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       NSEnumerator *e;
       NSTableColumn *col;
 
+      // assign defaults, so that there's color in case none is specified
+      ASSIGN (_gridColor, [NSColor gridColor]); 
+      ASSIGN (_backgroundColor, [NSColor controlBackgroundColor]); 
+      ASSIGN (_tableColumns, [NSMutableArray array]);
+      ASSIGN (_selectedColumns, [NSMutableIndexSet indexSet]);
+      ASSIGN (_selectedRows, [NSMutableIndexSet indexSet]);
+
+      _autoresizesAllColumnsToFit = NO;
+      _clickedRow = -1;
+      _clickedColumn = -1;
+      _drawsGrid = YES;
+      _editedColumn = -1;
+      _editedRow = -1;
+      _highlightedTableColumn = nil;
+      _intercellSpacing = NSMakeSize (5.0, 2.0);
+      _rowHeight = 16.0;
+      _selectedColumn = -1;
+      _selectedRow = -1;
+      _selectingColumns = NO;
+
+      /*
+      _headerView = [NSTableHeaderView new];
+      [_headerView setFrameSize: NSMakeSize (_frame.size.width, 22.0)];
+      [_headerView setTableView: self];
+      */
+
       [(NSKeyedUnarchiver *)aDecoder setClass: [GSTableCornerView class] forClassName: @"_NSCornerView"];
       if ([aDecoder containsValueForKey: @"NSDataSource"])
 	{
@@ -5254,16 +5280,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
         {
 	  [self setRowHeight: [aDecoder decodeFloatForKey: @"NSRowHeight"]];
 	}
-      if ([aDecoder containsValueForKey: @"NSHeaderView"])
-	{
 
-	  NSRect viewFrame = [self frame];
-	  float rowHeight = [self rowHeight];
-
-	  _headerView = [NSTableHeaderView new];
-	  [_headerView setFrameSize: NSMakeSize(viewFrame.size.width, rowHeight)];
-	  [_headerView setTableView: self];
-	}
       if ([aDecoder containsValueForKey: @"NSCornerView"])
 	{
 	  NSRect viewFrame;
@@ -5273,6 +5290,17 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	  viewFrame = [[self cornerView] frame];
 	  viewFrame.size.height = rowHeight;
 	  [[self cornerView] setFrame: viewFrame];
+	}
+
+      if ([aDecoder containsValueForKey: @"NSHeaderView"])
+	{
+
+	  NSRect viewFrame = [self frame];
+	  float rowHeight = [self rowHeight];
+
+	  _headerView = [NSTableHeaderView new];
+	  [_headerView setFrameSize: NSMakeSize(viewFrame.size.width, rowHeight)];
+	  [_headerView setTableView: self];
 	}
 
       // get the table columns...
@@ -5304,14 +5332,6 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       if (_numberOfColumns)
 	_columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), 
 				       sizeof(float) * _numberOfColumns);
-
-      _clickedRow = -1;
-      _clickedColumn = -1;
-      _selectingColumns = NO;
-      _selectedColumn = -1;
-      _selectedRow = -1;
-      _editedColumn = -1;
-      _editedRow = -1;
 
       [self tile];
     }

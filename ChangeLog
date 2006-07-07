@@ -1,3 +1,15 @@
+2006-07-06 21:35 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSBrowser.m:
+	* Source/NSClipView.m:
+	* Source/NSScrollView.m:
+	* Source/NSTableView.m: Copy some initialization code from 
+	initWithFrame: to initWithCoder.
+	* Source/NSView.m: Remove from initWithCoder: a call to initWithFrame:
+	according to the documentation normal objects in a nib should not have
+	thier initWithFrame: method called at the time they are unarchived. 
+	Also, copy some initialization code here.
+
 2006-07-04  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSSpellServer.m:
