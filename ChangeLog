@@ -1,3 +1,15 @@
+2006-07-09 10:50 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSNibTemplates.h: Declaration for 
+	new methods: visibleWindows, deferredWindows, & customClasses. 
+	* Source/GSNibTemplates.m: Simplification of awakeFromContext: code
+	due to new gorm format changes.   Also, changes to init to initialize
+	the new ivars, dealloc to release them and modifications to
+	initWithCoder: and encodeWithCoder: to decode and encode the new 
+	data.  Added new methods: visibleWindows, deferredWindows, & 
+	customClasses.
+	* Source/NSView.m: Minor cleanup.
+
 2006-07-06 21:35 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSBrowser.m:

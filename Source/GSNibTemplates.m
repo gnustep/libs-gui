@@ -158,7 +158,6 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
       NSEnumerator	*enumerator;
       NSNibConnector	*connection;
       NSString		*key;
-      NSArray		*visible;
       NSMenu		*menu;
       NSMutableArray    *topObjects; 
       id                 obj;
@@ -248,12 +247,10 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 	  if ([context objectForKey: key] == nil || 
 	      [key isEqualToString: @"NSOwner"]) // we want to send the message to the owner
 	    {
-	      if ([key isEqualToString: @"NSWindowsMenu"] == NO && // we don't want to send a message to these menus twice, 
-		 [key isEqualToString: @"NSServicesMenu"] == NO && // if they're custom classes.
-		 [key isEqualToString: @"NSVisible"] == NO && // also exclude any other special parts of the nameTable.
-		 [key isEqualToString: @"NSDeferred"] == NO &&
-		 [key isEqualToString: @"NSTopLevelObjects"] == NO &&
-		 [key isEqualToString: @"GSCustomClassMap"] == NO)
+	      // we don't want to send a message to these menus twice, if they're custom classes. 
+	      if ([key isEqualToString: @"NSWindowsMenu"] == NO && 
+		  [key isEqualToString: @"NSServicesMenu"] == NO && 
+		  [key isEqualToString: @"NSTopLevelObjects"] == NO)
 		{
 		  id o = [nameTable objectForKey: key];
 
@@ -305,15 +302,12 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
        * This is the last thing we should do since changes might be made
        * in the awakeFromNib methods which are called on all of the objects.
        */
-      visible = [nameTable objectForKey: @"NSVisible"];
-      if (visible != nil
-	&& [visible isKindOfClass: [NSArray class]] == YES)
+      if (visibleWindows != nil)
 	{
-	  unsigned	pos = [visible count];
-
+	  unsigned	pos = [visibleWindows count];
 	  while (pos-- > 0)
 	    {
-	      NSWindow *win = [visible objectAtIndex: pos];
+	      NSWindow *win = [visibleWindows objectAtIndex: pos];
 	      if ([NSApp isActive])
 		[win orderFront: self];
 	      else
@@ -336,24 +330,10 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
   RELEASE(nameTable);
   RELEASE(connections);
   RELEASE(topLevelObjects);
+  RELEASE(visibleWindows);
+  RELEASE(deferredWindows);
+  RELEASE(customClasses);
   [super dealloc];
-}
-
-- (void) encodeWithCoder: (NSCoder*)aCoder
-{
-  int version = [GSNibContainer version];
-  if (version == GNUSTEP_NIB_VERSION)
-    {
-      [aCoder encodeObject: nameTable];
-      [aCoder encodeObject: connections];
-      [aCoder encodeObject: topLevelObjects];
-    }
-  else
-    {
-      // encode it as a version 0 file...
-      [aCoder encodeObject: nameTable];
-      [aCoder encodeObject: connections];
-    }
 }
 
 - (id) init
@@ -363,16 +343,55 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
       nameTable = [[NSMutableDictionary alloc] initWithCapacity: 8];
       connections = [[NSMutableArray alloc] initWithCapacity: 8];
       topLevelObjects = [[NSMutableSet alloc] initWithCapacity: 8];
-
-      // add special objects...
-      [nameTable setObject: [NSMutableDictionary dictionary] 
-		 forKey: @"GSCustomClassMap"];
-      [nameTable setObject: [NSMutableArray array]
-		 forKey: @"NSDeferred"];
-      [nameTable setObject: [NSMutableArray array]
-		 forKey: @"NSVisible"];      
+      customClasses = [[NSMutableDictionary alloc] initWithCapacity: 8];
+      deferredWindows = [[NSMutableArray alloc] initWithCapacity: 8];
+      visibleWindows = [[NSMutableArray alloc] initWithCapacity: 8];
     }
   return self;
+}
+
+- (void) encodeWithCoder: (NSCoder*)aCoder
+{
+  int version = [GSNibContainer version];
+  if (version == GNUSTEP_NIB_VERSION)
+    {
+      [aCoder encodeObject: topLevelObjects];
+      [aCoder encodeObject: visibleWindows];
+      [aCoder encodeObject: deferredWindows];
+      [aCoder encodeObject: nameTable];
+      [aCoder encodeObject: connections];
+      [aCoder encodeObject: customClasses];
+    }
+  else if (version == 1)
+    {
+      NSMutableDictionary *nt = [NSMutableDictionary dictionaryWithDictionary: nameTable];
+      [nt setObject: [NSMutableArray arrayWithArray: visibleWindows] 
+	  forKey: @"NSVisible"];
+      [nt setObject: [NSMutableArray arrayWithArray: deferredWindows] 
+	  forKey: @"NSDeferred"];
+      [nt setObject: [NSMutableDictionary dictionaryWithDictionary: customClasses] 
+	  forKey: @"GSCustomClassMap"];
+      [aCoder encodeObject: nt];
+      [aCoder encodeObject: connections];
+      [aCoder encodeObject: topLevelObjects];
+    }
+  else if (version == 0)
+    {
+      NSMutableDictionary *nt = [NSMutableDictionary dictionaryWithDictionary: nameTable];
+      [nt setObject: [NSMutableArray arrayWithArray: visibleWindows] 
+	  forKey: @"NSVisible"];
+      [nt setObject: [NSMutableArray arrayWithArray: deferredWindows] 
+	  forKey: @"NSDeferred"];
+      [nt setObject: [NSMutableDictionary dictionaryWithDictionary: customClasses] 
+	  forKey: @"GSCustomClassMap"];
+      [aCoder encodeObject: nt];
+      [aCoder encodeObject: connections];
+    }
+  else
+    {
+      [NSException raise: NSInternalInconsistencyException
+		   format: @"Unable to write GSNibContainer version #%d.  GSNibContainer version for the installed gui lib is %d.", version, GNUSTEP_NIB_VERSION];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aCoder
@@ -382,9 +401,31 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
   // save the version to the ivar, we need it later.
   if (version == GNUSTEP_NIB_VERSION)
     {
+      [aCoder decodeValueOfObjCType: @encode(id) at: &topLevelObjects];
+      [aCoder decodeValueOfObjCType: @encode(id) at: &visibleWindows];
+      [aCoder decodeValueOfObjCType: @encode(id) at: &deferredWindows];
+      [aCoder decodeValueOfObjCType: @encode(id) at: &nameTable];
+      [aCoder decodeValueOfObjCType: @encode(id) at: &connections];
+      [aCoder decodeValueOfObjCType: @encode(id) at: &customClasses];
+    }
+  else if (version == 1)
+    {
       [aCoder decodeValueOfObjCType: @encode(id) at: &nameTable];
       [aCoder decodeValueOfObjCType: @encode(id) at: &connections];
       [aCoder decodeValueOfObjCType: @encode(id) at: &topLevelObjects];
+
+      // initialize with special entries...
+      ASSIGN(visibleWindows, [NSMutableArray arrayWithArray: 
+					       [nameTable objectForKey: @"NSVisible"]]);
+      ASSIGN(deferredWindows, [NSMutableArray arrayWithArray: 
+						[nameTable objectForKey: @"NSDeferred"]]);
+      ASSIGN(customClasses, [NSMutableDictionary dictionaryWithDictionary: 
+						   [nameTable objectForKey: @"GSCustomClassMap"]]);
+
+      // then remove them from the name table.
+      [nameTable removeObjectForKey: @"NSVisible"];
+      [nameTable removeObjectForKey: @"NSDeferred"];
+      [nameTable removeObjectForKey: @"GSCustomClassMap"];
     }
   else if (version == 0)
     {
@@ -412,6 +453,20 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 	      [topLevelObjects addObject: o]; // if it's a top level object, add it.
 	    }
 	}
+
+      // initialize with special entries...
+      ASSIGN(visibleWindows, [NSMutableArray arrayWithArray: 
+					       [nameTable objectForKey: @"NSVisible"]]);
+      ASSIGN(deferredWindows, [NSMutableArray arrayWithArray: 
+						[nameTable objectForKey: @"NSDeferred"]]);
+      ASSIGN(customClasses, [NSMutableDictionary dictionaryWithDictionary: 
+						   [nameTable objectForKey: @"GSCustomClassMap"]]);
+
+
+      // then remove them from the name table.
+      [nameTable removeObjectForKey: @"NSVisible"];
+      [nameTable removeObjectForKey: @"NSDeferred"];
+      [nameTable removeObjectForKey: @"GSCustomClassMap"];
     }
   else
     {
@@ -435,6 +490,21 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 - (NSMutableArray*) connections
 {
   return connections;
+}
+
+- (NSMutableArray*) visibleWindows
+{
+  return visibleWindows;
+}
+
+- (NSMutableArray*) deferredWindows
+{
+  return visibleWindows;
+}
+
+- (NSMutableDictionary *) customClasses
+{
+  return customClasses;
 }
 @end
 

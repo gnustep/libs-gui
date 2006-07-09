@@ -4017,8 +4017,10 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       e = [subs objectEnumerator];
       while ((sub = [e nextObject]) != nil)
 	{
-	  NSAssert([sub window] == nil, NSInternalInconsistencyException);
-	  NSAssert([sub superview] == nil, NSInternalInconsistencyException);
+	  NSAssert([sub window] == nil,
+		   NSInternalInconsistencyException);
+	  NSAssert([sub superview] == nil,
+		   NSInternalInconsistencyException);
 	  [sub viewWillMoveToWindow: _window];
 	  [sub viewWillMoveToSuperview: self];
 	  [sub setNextResponder: self];
@@ -4096,8 +4098,10 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       e = [subs objectEnumerator];
       while ((sub = [e nextObject]) != nil)
 	{
-	  NSAssert([sub window] == nil, NSInternalInconsistencyException);
-	  NSAssert([sub superview] == nil, NSInternalInconsistencyException);
+	  NSAssert([sub window] == nil,
+		   NSInternalInconsistencyException);
+	  NSAssert([sub superview] == nil,
+		   NSInternalInconsistencyException);
 	  [sub viewWillMoveToWindow: _window];
 	  [sub viewWillMoveToSuperview: self];
 	  [sub setNextResponder: self];
