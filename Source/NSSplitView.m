@@ -927,6 +927,13 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
         {
 	  [self setVertical: [aDecoder decodeBoolForKey: @"NSIsVertical"]];
 	}
+
+      _dividerWidth = [self dividerThickness];
+      _draggedBarWidth = 8; // default bigger than dividerThickness
+      ASSIGN(_dividerColor, [NSColor controlShadowColor]);
+      ASSIGN(_backgroundColor, [NSColor controlBackgroundColor]);
+      ASSIGN(_dimpleImage, [NSImage imageNamed: @"common_Dimple.tiff"]); 
+      _never_displayed_before = YES;
     }
   else
     {

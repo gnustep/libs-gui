@@ -1,3 +1,7 @@
+2006-07-10 00:12 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSSplitView.m: Keyed encoding changes in initWithCoder:
+
 2006-07-09 10:50 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/Additions/GNUstepGUI/GSNibTemplates.h: Declaration for 
