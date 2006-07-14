@@ -1,3 +1,9 @@
+2006-07-14 01:17 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h:
+	* Source/GSNibCompatibility.m: Added method initWithWindow:.. to 
+	initialize the template from an actual window instance.
+
 2006-07-10 00:12 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSSplitView.m: Keyed encoding changes in initWithCoder:

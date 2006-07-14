@@ -75,6 +75,48 @@ static BOOL _isInInterfaceBuilder = NO;
   [super dealloc];
 }
 
+- (id) initWithWindow: (NSWindow *)window
+	    className: (NSString *)windowClass
+	  isDefferred: (BOOL) deferred
+	    isOneShot: (BOOL) oneShot
+	    isVisible: (BOOL) visible
+       wantsToBeColor: (BOOL) wantsToBeColor
+     autoPositionMask: (int) autoPositionMask
+{
+  if((self = [super init]) != nil)
+    {
+      if(window != nil)
+	{
+	  // object members
+	  ASSIGN(_title, [window title]);
+	  ASSIGN(_viewClass, NSStringFromClass([[window contentView] class]));
+	  ASSIGN(_windowClass, windowClass);
+	  ASSIGN(_view, [window contentView]);
+	  ASSIGN(_autosaveName, [window frameAutosaveName]);
+	  
+	  // style & size
+	  _windowStyle = [window styleMask];
+	  _backingStoreType = [window backingType];
+	  _maxSize = [window maxSize];
+	  _minSize = [window minSize];
+	  _windowRect = [window frame];
+	  _screenRect = [[NSScreen mainScreen] frame];
+	  
+	  // flags
+	  _flags.isHiddenOnDeactivate = [window hidesOnDeactivate];
+	  _flags.isNotReleasedOnClose = (![window isReleasedWhenClosed]);
+	  _flags.isDeferred = deferred;
+	  _flags.isOneShot = oneShot;
+	  _flags.isVisible = visible;
+	  _flags.wantsToBeColor = wantsToBeColor;
+	  _flags.dynamicDepthLimit = [window hasDynamicDepthLimit];
+	  _flags.autoPositionMask = autoPositionMask;
+	  _flags.savePosition = YES; // not yet implemented.
+	}
+    }
+  return self;
+}
+
 - (id) initWithCoder: (NSCoder *)coder
 {
   if ([coder allowsKeyedCoding])

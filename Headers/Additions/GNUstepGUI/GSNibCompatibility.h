@@ -105,6 +105,13 @@ typedef struct _GSWindowTemplateFlags
   NSString            *_autosaveName;
   Class               _baseWindowClass;
 }
+- (id) initWithWindow: (NSWindow *)window
+	    className: (NSString *)windowClass
+	  isDefferred: (BOOL) deferred
+	    isOneShot: (BOOL) oneShot
+	    isVisible: (BOOL) visible
+       wantsToBeColor: (BOOL) wantsToBeColor
+     autoPositionMask: (int) autoPositionMask;
 - (void) setBackingStoreType: (NSBackingStoreType)type;
 - (NSBackingStoreType) backingStoreType;
 - (void) setDeferred: (BOOL)flag;
