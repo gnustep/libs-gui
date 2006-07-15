@@ -1,3 +1,14 @@
+2006-07-15 Enrico Sersale <enrico@fibernet.ro>
+	
+  * Headers/AppKit/AppKit.h: added NSHelpManager.h.
+  * Headers/AppKit/NSHelpManager.h: declaration for new method -pathForHelpResource:
+  * Source/NSHelpManager.m: implemented -pathForHelpResource: in the NSBundle 
+  category. -pathForHelpResource: looks for help files giving the priority
+  to localized resources. 
+  -showHelp: looks for rtfd files too.
+  * Source/GSHelpManagerPanel.m: various fixes to avoid a crash when quitting
+  and to resize correctly the NSTextView.
+
 2006-07-14 01:17 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h:

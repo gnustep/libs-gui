@@ -81,6 +81,7 @@
 #include <AppKit/NSForm.h>
 #include <AppKit/NSFormCell.h>
 #include <AppKit/NSGraphicsContext.h>
+#include <AppKit/NSHelpManager.h>
 #include <AppKit/NSHelpPanel.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSImageCell.h>

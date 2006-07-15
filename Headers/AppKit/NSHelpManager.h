@@ -37,7 +37,8 @@
 @class NSAttributedString;
 
 @interface NSBundle (NSHelpManager)
-- (NSAttributedString*) contextHelpForKey: (NSString*) key;
+- (NSString *)pathForHelpResource:(NSString *)fileName;
+- (NSAttributedString *)contextHelpForKey:(NSString *)key;
 @end
 
 @interface NSApplication (NSHelpManager)

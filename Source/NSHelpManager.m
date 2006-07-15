@@ -26,6 +26,7 @@
    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */ 
 
+#include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSString.h>
@@ -41,33 +42,107 @@
 
 @implementation NSBundle (NSHelpManager)
 
-- (NSAttributedString*) contextHelpForKey: (NSString*) key
+- (NSString *)pathForHelpResource:(NSString *)fileName
 {
-  id helpFile = nil;
-  NSDictionary *contextHelp = 
-    RETAIN([NSDictionary dictionaryWithContentsOfFile: 
-			     [self pathForResource: @"Help" ofType: @"plist"]]);
+  NSFileManager *fm = [NSFileManager defaultManager];
+  NSMutableArray *array = [NSMutableArray array];
+  NSArray *languages = [NSUserDefaults userLanguages];
+  NSString *rootPath = [self bundlePath];
+  NSString *primary;
+  NSString *language;
+  NSEnumerator *enumerator;
+  
+  primary = [rootPath stringByAppendingPathComponent: @"Resources"];
+  
+  enumerator = [languages objectEnumerator];
+  
+  while ((language = [enumerator nextObject]))
+    {
+      NSString *langDir = [NSString stringWithFormat: @"%@.lproj", language];
+      [array addObject: [primary stringByAppendingPathComponent: langDir]];
+    }
+  
+  [array addObject: primary];
+  
+  primary = rootPath;
+  
+  enumerator = [languages objectEnumerator];
+  
+  while ((language = [enumerator nextObject]))
+    {
+      NSString *langDir = [NSString stringWithFormat: @"%@.lproj", language];
+      [array addObject: [primary stringByAppendingPathComponent: langDir]];
+    }
+  
+  [array addObject: primary];
+  
+  enumerator = [array objectEnumerator];
+  
+  while ((rootPath = [enumerator nextObject]) != nil)
+    {
+      NSString *helpDir;
+      NSString *helpPath;
+      BOOL isdir;
+      
+      helpPath = [rootPath stringByAppendingPathComponent: fileName];
+      
+      if ([fm fileExistsAtPath: helpPath])
+        {
+          return helpPath;
+        }
+      
+      helpDir = [rootPath stringByAppendingPathComponent: @"Help"];
+      
+      if ([fm fileExistsAtPath: helpDir isDirectory: & isdir] && isdir)
+        {
+          helpPath = [helpDir stringByAppendingPathComponent: fileName];
+          
+          if ([fm fileExistsAtPath: helpPath])
+            {
+              return helpPath;
+            }
+        }
+    }
+  
+  return nil;
+}
 
+- (NSAttributedString *)contextHelpForKey:(NSString *)key
+{
+  NSFileManager *fm = [NSFileManager defaultManager];
+  NSString *dictPath = [self pathForResource: @"Help" ofType: @"plist"];
+  NSDictionary *contextHelp = nil;
+  id helpFile = nil;
+  
+  if (dictPath && [fm fileExistsAtPath: dictPath])
+    {
+      contextHelp = [NSDictionary dictionaryWithContentsOfFile: dictPath];
+    }
+  
   if (contextHelp)
     {
       helpFile = [contextHelp objectForKey: key];
     }
-
+  
   if (helpFile)
     {
-      return [NSUnarchiver unarchiveObjectWithData:
-			     [helpFile objectForKey: @"NSHelpRTFContents"]];
-    }
-  else
+      NSData *data = [helpFile objectForKey: @"NSHelpRTFContents"];
+      return ((data != nil) ? [NSUnarchiver unarchiveObjectWithData: data] :
+        nil) ;
+      
+    } 
+    else
     {
-      helpFile = [self 
-		   pathForResource: key 
-		   ofType: @"rtf" 
-		   inDirectory: @"Help"];
-      return AUTORELEASE([[NSAttributedString alloc] initWithPath: (NSString *)helpFile 
-						     documentAttributes: NULL]);
-    }
+      helpFile = [self pathForHelpResource: key];
 
+      if (helpFile)
+        {
+          NSString *helpstr = [[NSAttributedString alloc] initWithPath: helpFile
+                                                    documentAttributes: NULL];
+          return TEST_AUTORELEASE (helpstr);
+        }
+    }
+      
   return nil;
 }
 
@@ -83,22 +158,33 @@
 
   help = [info objectForKey: @"GSHelpContentsFile"];
 
-  if (!help)
+  if (help == nil)
     {
       help = [info objectForKey: @"NSExecutable"];
-      // If there's no specification, we look for a file named "appname.rtf"
+      // If there's no specification, we look for a files named
+      // "appname.rtfd" or "appname.rtf"
     }
 
   if (help)
     {
-      NSString *file = [mb pathForResource: help ofType: @"rtf"]; 
-      
-      if (file)
+      NSString *file;
+
+      if ([[help pathExtension] length] == 0)
         {
-	  [[NSWorkspace sharedWorkspace] openFile: file];
-	  return;
-	}
+          file = [mb pathForHelpResource: [help stringByAppendingPathExtension: @"rtfd"]];
+
+          if (file == nil)
+            {
+              file = [mb pathForHelpResource: [help stringByAppendingPathExtension: @"rtf"]];
+            }
+        }
+
+    if (file) {
+      [[NSWorkspace sharedWorkspace] openFile: file];
+      return;
     }
+  }
+  
   NSBeep();
 }
 
@@ -205,7 +291,7 @@ static BOOL _gnu_contextHelpActive = NO;
 
 - (BOOL) showContextHelpForObject: (id)object locationHint: (NSPoint) point
 {
-  id contextHelp = [self contextHelpForObject: object];
+  NSAttributedString *contextHelp = [self contextHelpForObject: object];
 
   if (contextHelp)
     {
