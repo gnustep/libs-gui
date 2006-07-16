@@ -30,10 +30,12 @@
 #include "AppKit/NSTextView.h"
 #include "AppKit/NSTextContainer.h"
 #include "AppKit/NSScrollView.h"
+#include "AppKit/NSButton.h"
 #include "AppKit/NSClipView.h"
 #include "AppKit/NSColor.h"
-
+#include "AppKit/NSImage.h"
 #include "GNUstepGUI/GSHelpManagerPanel.h"
+#include "GSGuiPrivate.h"
 
 @implementation GSHelpManagerPanel
 
@@ -49,29 +51,27 @@ static GSHelpManagerPanel* _GSsharedGSHelpPanel;
 
 - (id)init
 {
-  NSRect	winRect = {{100, 100}, {470, 150}};
-  unsigned int style = NSTitledWindowMask | NSClosableWindowMask
-                  | NSMiniaturizableWindowMask | NSResizableWindowMask;
-
-  self = [super initWithContentRect: winRect
-		                      styleMask: style
+  self = [super initWithContentRect: NSMakeRect(100, 100, 470, 200)
+		                      styleMask: NSTitledWindowMask | NSResizableWindowMask
 		                        backing: NSBackingStoreRetained
 		                          defer: NO];
   
   if (self) {
-    NSRect scrollViewRect = {{0, 0}, {470, 150}};
+    NSRect scrollViewRect = {{8, 40}, {454, 152}};
+    NSRect buttonRect = {{390, 6}, {72, 27}};
     NSRect r;
     NSScrollView *scrollView;
-  
+    NSButton *button;
+    
     [self setReleasedWhenClosed: NO]; 
     [self setFloatingPanel: YES];
- //   [self setTitle: NSLocalizedString(@"Help", @"")];
-    [self setTitle: @"Help"];
+    [self setTitle: NSLocalizedString(@"Help", @"")];
 
     scrollView = [[NSScrollView alloc] initWithFrame: scrollViewRect];
+    [scrollView setBorderType: NSBezelBorder];
     [scrollView setHasHorizontalScroller: NO];
     [scrollView setHasVerticalScroller: YES]; 
-    [scrollView setAutoresizingMask: NSViewHeightSizable];
+    [scrollView setAutoresizingMask: NSViewHeightSizable | NSViewWidthSizable];
 
     r = [[scrollView contentView] frame];
     textView = [[NSTextView alloc] initWithFrame: r];
@@ -86,13 +86,28 @@ static GSHelpManagerPanel* _GSsharedGSHelpPanel;
     [[textView textContainer] setContainerSize: NSMakeSize(r.size.width, 1e7)];
     [[textView textContainer] setWidthTracksTextView: YES];
     [textView setUsesRuler: NO];
- //   [textView setBackgroundColor: [NSColor colorWithCalibratedWhite: 0.85 alpha: 1.0]];					
     
     [scrollView setDocumentView: textView];
-    RELEASE(textView);
+    RELEASE (textView);
     
     [[self contentView] addSubview: scrollView];
-    RELEASE(scrollView);
+    RELEASE (scrollView);
+    
+    button = [[NSButton alloc] initWithFrame: buttonRect];
+    [button setAutoresizingMask: NSViewMinXMargin | NSViewMaxYMargin];
+    [button setButtonType: NSMomentaryLight];
+    [button setTitle: NSLocalizedString(@"OK", @"")];
+    [button setKeyEquivalent: @"\r"];
+    [button setImagePosition: NSImageRight];
+    [button setImage: [NSImage imageNamed: @"common_ret"]];
+    [button setAlternateImage: [NSImage imageNamed: @"common_retH"]];
+	  [button setTarget: self];
+	  [button setAction: @selector(buttonAction:)];		
+
+    [[self contentView] addSubview: button];
+    RELEASE (button);
+
+    [self makeFirstResponder: button];
   }
 
   return self;
@@ -101,6 +116,11 @@ static GSHelpManagerPanel* _GSsharedGSHelpPanel;
 - (void)setHelpText:(NSAttributedString *)helpText
 {
   [[textView textStorage] setAttributedString: helpText];
+}
+
+- (void)buttonAction:(id)sender
+{
+  [self close];
 }
 
 - (void) close

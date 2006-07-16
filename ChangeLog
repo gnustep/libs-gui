@@ -1,3 +1,11 @@
+2006-07-16 Enrico Sersale <enrico@fibernet.ro>
+	
+  * Headers/Additions/GNUstepGUI/GSHelpManagerPanel.h: added -buttonAction: 
+  method.
+  * Source/GSHelpManagerPanel.m: implemented -buttonAction:.
+  added a button to close the panel and changed the style mask of the window 
+  to NSTitledWindowMask | NSResizableWindowMask.
+
 2006-07-15 Enrico Sersale <enrico@fibernet.ro>
 	
   * Headers/AppKit/AppKit.h: added NSHelpManager.h.
