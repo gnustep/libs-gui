@@ -284,6 +284,15 @@ static BOOL _gnu_contextHelpActive = NO;
   NSMapRemove(contextHelpTopics, object);
 }
 
+- (void)setContextHelp:(NSAttributedString *)help forObject:(id)object
+{
+  NSMapInsert(contextHelpTopics, object, help);
+}
+
+/**
+ * Deprecated ... do not use.
+ * Use -setContextHelp:forObject: instead.
+ */
 - (void) setContextHelp: (NSAttributedString*) help withObject: (id) object
 {
   NSMapInsert(contextHelpTopics, object, help);

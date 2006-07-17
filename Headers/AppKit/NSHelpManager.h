@@ -68,6 +68,8 @@
 
 - (void) removeContextHelpForObject: (id)object;
 
+- (void)setContextHelp:(NSAttributedString *)help forObject:(id)object;
+
 - (void) setContextHelp: (NSAttributedString*) help withObject: (id) object;
 
 - (BOOL) showContextHelpForObject: (id)object locationHint: (NSPoint) point;

@@ -1,3 +1,10 @@
+2006-07-17 Enrico Sersale <enrico@fibernet.ro>
+	
+  * Headers/AppKit/NSHelpManager.h: 
+  * Source/NSHelpManager.m:
+  added -setContextHelp:forObject: as specified in Apple docs;
+  -setContextHelp:withObject: deprecated. 
+
 2006-07-16 Enrico Sersale <enrico@fibernet.ro>
 	
   * Headers/Additions/GNUstepGUI/GSHelpManagerPanel.h: added -buttonAction: 
