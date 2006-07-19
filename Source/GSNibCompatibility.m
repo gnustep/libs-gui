@@ -56,6 +56,38 @@
 
 static BOOL _isInInterfaceBuilder = NO;
 
+@interface NSView (NibCompatibility)
+- (void) _fixSubviews;
+@end
+
+@implementation NSView (NibCompatibility)
+- (void) _setSuperview: (id) sv
+{
+  ASSIGN(_super_view,sv);
+}
+
+- (void) _setWindow: (id) w
+{
+  ASSIGN(_window,w);
+}
+
+- (void) _fixSubviews
+{
+  NSEnumerator *en = [[self subviews] objectEnumerator];
+  id v = nil;
+  while((v = [en nextObject]) != nil)
+    {
+      if([v window] != [self window] ||
+	 [v superview] != self)
+	{
+	  [v _setWindow: [self window]];
+	  [v _setSuperview: self];	  
+	}
+      [v _fixSubviews];
+    }
+}
+@end
+
 @implementation NSWindowTemplate
 + (void) initialize
 {
@@ -201,6 +233,12 @@ static BOOL _isInInterfaceBuilder = NO;
     }
 }
 
+- (void) _fixSubviews
+{
+  id view = [_realObject contentView];
+  [view _fixSubviews];
+}
+
 - (id) nibInstantiate
 {
   if(_realObject == nil)
@@ -249,6 +287,8 @@ static BOOL _isInInterfaceBuilder = NO;
       [_realObject setMinSize: _minSize];
       [_realObject setMaxSize: _maxSize];
       [_realObject setTitle: _title];
+
+      [self _fixSubviews];
 
       // resize the window...
       [_realObject setFrame: [NSWindow frameRectForContentRect: [self windowRect] 

@@ -1,3 +1,13 @@
+2006-07-18 23:11-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Added category on NSView and 
+	_fixSubviews method to correct window and superview after 
+	loading the nib file. The _fixSubviews method is called in 
+	nibInstantiate.
+	* Source/GSNibTemplates.m: More helpful error message for when 
+	decoding fails due to the user attempting to load a version of
+	GSNibContainer that the container doesn't know about in initWithCoder:
+
 2006-07-17 Enrico Sersale <enrico@fibernet.ro>
 	
   * Headers/AppKit/NSHelpManager.h: 
@@ -13,6 +23,7 @@
   added a button to close the panel and changed the style mask of the window 
   to NSTitledWindowMask | NSResizableWindowMask.
 
+>>>>>>> .r23179
 2006-07-15 Enrico Sersale <enrico@fibernet.ro>
 	
   * Headers/AppKit/AppKit.h: added NSHelpManager.h.

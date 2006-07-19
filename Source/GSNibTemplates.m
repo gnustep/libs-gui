@@ -471,7 +471,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
   else
     {
       [NSException raise: NSInternalInconsistencyException
-		   format: @"Unable to read GSNibContainer version #%d.  GSNibContainer version for the installed gui lib is %d.", version, GNUSTEP_NIB_VERSION];
+		   format: @"Unable to read GSNibContainer version #%d.  GSNibContainer version for the installed gui lib is %d.  Please upgrade to a more recent version of the gui library.", version, GNUSTEP_NIB_VERSION];
     }
 
   return self;
