@@ -2703,14 +2703,33 @@ This method is for user changes; see NSTextView_actions.m.
 
 - (void) setTypingAttributes: (NSDictionary *)attrs
 {
+  NSDictionary *old_attrs;
+  NSString *names[] = {NSParagraphStyleAttributeName,
+		       NSFontAttributeName,
+		       NSForegroundColorAttributeName};
+  int i;
+
   if (attrs == nil)
     {
       attrs = [isa defaultTypingAttributes];
     }
 
-  DESTROY(_layoutManager->_typingAttributes);
+  old_attrs = _layoutManager->_typingAttributes;
   _layoutManager->_typingAttributes = [[NSMutableDictionary alloc]
 			    initWithDictionary: attrs];
+
+  // make sure to keep the main attributes set.
+  for (i = 0; i < 3; i++)
+    {
+      NSString *name = names[i];
+
+      if ([attrs objectForKey: name] == nil)
+        {
+	  [_layoutManager->_typingAttributes setObject: [old_attrs objectForKey: name]
+			 forKey: name];
+	}
+    }
+  RELEASE(old_attrs);
 
   [self updateFontPanel];
   [self updateRuler];
