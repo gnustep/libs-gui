@@ -107,7 +107,7 @@ typedef struct _GSWindowTemplateFlags
 }
 - (id) initWithWindow: (NSWindow *)window
 	    className: (NSString *)windowClass
-	  isDefferred: (BOOL) deferred
+           isDeferred: (BOOL) deferred
 	    isOneShot: (BOOL) oneShot
 	    isVisible: (BOOL) visible
        wantsToBeColor: (BOOL) wantsToBeColor
@@ -216,12 +216,17 @@ typedef struct _GSWindowTemplateFlags
   NSString *_originalClassName;
   id _template;
 }
+- (id) initWithObject: (id)object 
+        withClassName: (NSString *)className
+    originalClassName: (NSString *)origClassName;
 + (void) setIsInInterfaceBuilder: (BOOL)flag;
 + (BOOL) isInInterfaceBuilder;
 - (void) setTemplate: (id)temp;
 - (id) template;
 - (void) setClassName: (NSString *)className;
 - (NSString *)className;
+- (void) setOriginalClassName: (NSString *)className;
+- (NSString *)originalClassName;
 @end
 
 @interface NSIBObjectData : NSObject <NSCoding, GSInstantiator, GSNibContainer>
@@ -232,7 +237,7 @@ typedef struct _GSWindowTemplateFlags
   NSMapTable     *_oids;
   NSMapTable     *_classes;
   NSMapTable     *_instantiatedObjs;
-  NSMutableSet   *_visibleWindows;
+  NSMutableArray *_visibleWindows;
   NSMutableArray *_connections;
   id              _firstResponder;
   id              _fontManager;
@@ -250,7 +255,11 @@ typedef struct _GSWindowTemplateFlags
 - (NSMapTable *) objects;
 - (NSMapTable *) names;
 - (NSMapTable *) classes;
-- (NSArray *) visibleWindows;
+- (NSMutableArray *) visibleWindows;
+- (void) setRoot: (id)root;
+- (id) root;
+- (void) setNextOid: (int)noid;
+- (int) nextOid;
 @end
 
 #endif /* _GNUstep_H_GSNibCompatibility */

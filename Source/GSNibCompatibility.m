@@ -61,11 +61,6 @@ static BOOL _isInInterfaceBuilder = NO;
 @end
 
 @implementation NSView (NibCompatibility)
-- (void) _setSuperview: (id) sv
-{
-  ASSIGN(_super_view,sv);
-}
-
 - (void) _setWindow: (id) w
 {
   ASSIGN(_window,w);
@@ -81,7 +76,10 @@ static BOOL _isInInterfaceBuilder = NO;
 	 [v superview] != self)
 	{
 	  [v _setWindow: [self window]];
-	  [v _setSuperview: self];	  
+	  RETAIN(v);
+	  [_sub_views removeObject: v];
+	  [self addSubview: v];
+	  RELEASE(v);
 	}
       [v _fixSubviews];
     }
@@ -109,7 +107,7 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (id) initWithWindow: (NSWindow *)window
 	    className: (NSString *)windowClass
-	  isDefferred: (BOOL) deferred
+	   isDeferred: (BOOL) deferred
 	    isOneShot: (BOOL) oneShot
 	    isVisible: (BOOL) visible
        wantsToBeColor: (BOOL) wantsToBeColor
@@ -233,12 +231,6 @@ static BOOL _isInInterfaceBuilder = NO;
     }
 }
 
-- (void) _fixSubviews
-{
-  id view = [_realObject contentView];
-  [view _fixSubviews];
-}
-
 - (id) nibInstantiate
 {
   if(_realObject == nil)
@@ -288,7 +280,7 @@ static BOOL _isInInterfaceBuilder = NO;
       [_realObject setMaxSize: _maxSize];
       [_realObject setTitle: _title];
 
-      [self _fixSubviews];
+      [_view _fixSubviews];
 
       // resize the window...
       [_realObject setFrame: [NSWindow frameRectForContentRect: [self windowRect] 
@@ -865,6 +857,19 @@ static BOOL _isInInterfaceBuilder = NO;
 @end
 
 @implementation NSClassSwapper
+- (id) initWithObject: (id)object 
+        withClassName: (NSString *)className
+    originalClassName: (NSString *)origClassName
+{
+  if((self = [super init]) != nil)
+    {
+      [self setTemplate: object];
+      [self setClassName: className];
+      [self setOriginalClassName: origClassName];
+    }
+  return self;
+}
+
 + (void) setIsInInterfaceBuilder: (BOOL)flag
 {
   _isInInterfaceBuilder = flag;
@@ -893,6 +898,16 @@ static BOOL _isInInterfaceBuilder = NO;
 - (NSString *)className
 {
   return _className;
+}
+
+- (void) setOriginalClassName: (NSString *)className
+{
+  ASSIGN(_originalClassName, className);
+}
+
+- (NSString *)originalClassName
+{
+  return _originalClassName;
 }
 
 - (void) instantiateRealObject: (NSCoder *)coder withClassName: (NSString *)className
@@ -931,7 +946,7 @@ static BOOL _isInInterfaceBuilder = NO;
   // swap the class...
   object = [aClass allocWithZone: NSDefaultMallocZone()];
   [(NSKeyedUnarchiver *)coder replaceObject: self withObject: object];
-  _template = [object initWithCoder: coder];
+  [self setTemplate: [object initWithCoder: coder]];
   if(object != _template)
     {
       [(NSKeyedUnarchiver *)coder replaceObject: object withObject: _template];
@@ -977,6 +992,7 @@ static BOOL _isInInterfaceBuilder = NO;
       NSString *originalClassName = NSStringFromClass(_template);
       [coder encodeObject: (id)_className forKey: @"NSClassName"];
       [coder encodeObject: (id)originalClassName forKey: @"NSOriginalClassName"];
+      [_template encodeWithCoder: coder]; // encode the actual object;
     }
   else
     {
@@ -1118,9 +1134,9 @@ static BOOL _isInInterfaceBuilder = NO;
   return nil;
 }
 
-- (NSArray *) visibleWindows
+- (NSMutableArray *) visibleWindows
 {
-  return [_visibleWindows allObjects];
+  return _visibleWindows;
 }
 
 - (NSMapTable *) objects
@@ -1243,7 +1259,6 @@ static BOOL _isInInterfaceBuilder = NO;
       ASSIGN(_accessibilityConnectors, (NSMutableArray *)[coder decodeObjectForKey: @"NSAccessibilityConnectors"]);
       ASSIGN(_fontManager, [coder decodeObjectForKey: @"NSFontManager"]);
       ASSIGN(_framework, [coder decodeObjectForKey: @"NSFramework"]);
-      ASSIGN(_connections,  (NSMutableArray *)[coder decodeObjectForKey: @"NSConnections"]);
       _nextOid = [coder decodeIntForKey: @"NSNextOid"];
 
       {
@@ -1286,6 +1301,8 @@ static BOOL _isInInterfaceBuilder = NO;
 	[self _buildMap: _names withKeys: nameKeys andValues: nameValues];
 	[self _buildMap: _objects withKeys: objectsKeys andValues: objectsValues];
 	[self _buildMap: _oids withKeys: oidsKeys andValues: oidsValues];
+
+	ASSIGN(_connections,  (NSMutableArray *)[coder decodeObjectForKey: @"NSConnections"]);
 
 	// instantiate...
 	_topLevelObjects = [[NSMutableSet alloc] init];
@@ -1357,6 +1374,16 @@ static BOOL _isInInterfaceBuilder = NO;
 - (id) root
 {
   return _root;
+}
+
+- (void) setNextOid: (int)noid
+{
+  _nextOid = noid;
+}
+
+- (int) nextOid
+{
+  return _nextOid;
 }
 @end
 

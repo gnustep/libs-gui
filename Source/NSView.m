@@ -3939,7 +3939,14 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       [aCoder encodeInt: vFlags 
 	      forKey: @"NSvFlags"];
 
-      [aCoder encodeObject: _super_view forKey: @"NSSuperview"];
+      //
+      // Don't attempt to archive the superview of a view which is the
+      // content view for a window.
+      //
+      if(([[self window] contentView] != self) && _super_view != nil)
+	{
+	  [aCoder encodeObject: _super_view forKey: @"NSSuperview"];
+	}
     }
   else
     {

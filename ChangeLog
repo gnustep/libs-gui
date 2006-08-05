@@ -1,3 +1,11 @@
+2006-08-05 08:43-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h
+	* Source/GSNibCompatibility.m: Changed visibleWindows to an Array, as
+	it should be.
+	* Source/NSView.m: Avoid encoding of super_view in encodeWithCoder: if
+	it is the contentView of the window.
+
 2006-07-21  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView.m (-setTypingAttributes:): Make sure to keep
