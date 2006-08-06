@@ -2677,45 +2677,77 @@ static SEL getSel;
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
+  if([aCoder allowsKeyedCoding])
+    {
+      GSMatrixFlags matrixFlags;
+      unsigned int mFlags = 0;
 
-  [aCoder encodeValueOfObjCType: @encode (int) at: &_mode];
-  [aCoder encodeValueOfObjCType: @encode (BOOL) at: &_allowsEmptySelection];
-  [aCoder encodeValueOfObjCType: @encode (BOOL) at: &_selectionByRect];
-  [aCoder encodeValueOfObjCType: @encode (BOOL) at: &_autosizesCells];
-  [aCoder encodeValueOfObjCType: @encode (BOOL) at: &_autoscroll];
-  [aCoder encodeSize: _cellSize];
-  [aCoder encodeSize: _intercell];
-  [aCoder encodeObject: _backgroundColor];
-  [aCoder encodeObject: _cellBackgroundColor];
-  [aCoder encodeValueOfObjCType: @encode (BOOL) at: &_drawsBackground];
-  [aCoder encodeValueOfObjCType: @encode (BOOL) at: &_drawsCellBackground];
-  [aCoder encodeObject: NSStringFromClass (_cellClass)];
-  [aCoder encodeObject: _cellPrototype];
-  [aCoder encodeValueOfObjCType: @encode (int) at: &_numRows];
-  [aCoder encodeValueOfObjCType: @encode (int) at: &_numCols];
-  
-  /* This is slower, but does not expose NSMatrix internals and will work 
+      [aCoder encodeObject: [self backgroundColor] forKey: @"NSBackgroundColor"];
+      [aCoder encodeObject: [self cellBackgroundColor] forKey: @"NSCellBackgroundColor"];
+      [aCoder encodeObject: [self prototype] forKey: @"NSProtoCell"];
+      [aCoder encodeObject: NSStringFromClass([self cellClass]) forKey: @"NSCellClass"];
+      [aCoder encodeSize: _cellSize forKey: @"NSCellSize"];
+      [aCoder encodeSize: _intercell forKey: @"NSIntercellSpacing"];
+
+      /// set the flags...
+      matrixFlags.isRadio = ([self mode] == NSRadioModeMatrix);
+      matrixFlags.isList = ([self mode] == NSListModeMatrix);
+      matrixFlags.isHighlight = ([self mode] == NSHighlightModeMatrix);      
+      matrixFlags.allowsEmptySelection = [self allowsEmptySelection];
+      matrixFlags.selectionByRect = [self isSelectionByRect];
+      matrixFlags.drawCellBackground = [self drawsCellBackground];
+      matrixFlags.drawBackground = [self drawsBackground];
+      matrixFlags.tabKeyTraversesCells = _tabKeyTraversesCells;
+      memcpy((void *)&mFlags,(void *)&matrixFlags,sizeof(unsigned int));
+      [aCoder encodeInt: mFlags forKey: @"NSMatrixFlags"];
+
+      [aCoder encodeInt: _numCols forKey: @"NSNumCols"];
+      [aCoder encodeInt: _numRows forKey: @"NSNumRows"];
+      [aCoder encodeObject: [self cells] forKey: @"NSCells"];
+      [aCoder encodeInt: _selectedColumn forKey: @"NSSelectedCol"];
+      [aCoder encodeInt: _selectedRow forKey: @"NSSelectedRow"];
+    }
+  else
+    {
+      [aCoder encodeValueOfObjCType: @encode (int) at: &_mode];
+      [aCoder encodeValueOfObjCType: @encode (BOOL) at: &_allowsEmptySelection];
+      [aCoder encodeValueOfObjCType: @encode (BOOL) at: &_selectionByRect];
+      [aCoder encodeValueOfObjCType: @encode (BOOL) at: &_autosizesCells];
+      [aCoder encodeValueOfObjCType: @encode (BOOL) at: &_autoscroll];
+      [aCoder encodeSize: _cellSize];
+      [aCoder encodeSize: _intercell];
+      [aCoder encodeObject: _backgroundColor];
+      [aCoder encodeObject: _cellBackgroundColor];
+      [aCoder encodeValueOfObjCType: @encode (BOOL) at: &_drawsBackground];
+      [aCoder encodeValueOfObjCType: @encode (BOOL) at: &_drawsCellBackground];
+      [aCoder encodeObject: NSStringFromClass (_cellClass)];
+      [aCoder encodeObject: _cellPrototype];
+      [aCoder encodeValueOfObjCType: @encode (int) at: &_numRows];
+      [aCoder encodeValueOfObjCType: @encode (int) at: &_numCols];
+      
+      /* This is slower, but does not expose NSMatrix internals and will work 
      with subclasses */
-  [aCoder encodeObject: [self cells]];
-  
-  [aCoder encodeConditionalObject: _delegate];
-  [aCoder encodeConditionalObject: _target];
-  [aCoder encodeValueOfObjCType: @encode (SEL) at: &_action];
-  [aCoder encodeValueOfObjCType: @encode (SEL) at: &_doubleAction];
-  [aCoder encodeValueOfObjCType: @encode (SEL) at: &_errorAction];
-  [aCoder encodeValueOfObjCType: @encode (BOOL) at: &_tabKeyTraversesCells];
-  [aCoder encodeObject: [self keyCell]];
-  /* We do not encode information on selected cells, because this is saved 
-     with the cells themselves */
+      [aCoder encodeObject: [self cells]];
+      
+      [aCoder encodeConditionalObject: _delegate];
+      [aCoder encodeConditionalObject: _target];
+      [aCoder encodeValueOfObjCType: @encode (SEL) at: &_action];
+      [aCoder encodeValueOfObjCType: @encode (SEL) at: &_doubleAction];
+      [aCoder encodeValueOfObjCType: @encode (SEL) at: &_errorAction];
+      [aCoder encodeValueOfObjCType: @encode (BOOL) at: &_tabKeyTraversesCells];
+      [aCoder encodeObject: [self keyCell]];
+      /* We do not encode information on selected cells, because this is saved 
+	 with the cells themselves */
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   Class class;
   id cell;
-  int rows, columns;
+  int rows = 0, columns = 0;
   NSArray *array;
-  int i, count;
+  int i = 0, count = 0;
 
   [super initWithCoder: aDecoder];
 

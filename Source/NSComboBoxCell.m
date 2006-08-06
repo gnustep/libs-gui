@@ -1654,18 +1654,26 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 {
   [super encodeWithCoder: coder];
 
-  [coder encodeValueOfObjCType: @encode(id) at: &_popUpList];
-  [coder encodeValueOfObjCType: @encode(BOOL) at: &_usesDataSource];
-  [coder encodeValueOfObjCType: @encode(BOOL) at: &_hasVerticalScroller];
-  [coder encodeValueOfObjCType: @encode(BOOL) at: &_completes];
-  [coder encodeValueOfObjCType: @encode(BOOL) at: &_usesDataSource];
-  [coder encodeValueOfObjCType: @encode(int) at: &_visibleItems];
-  [coder encodeValueOfObjCType: @encode(NSSize) at: &_intercellSpacing];
-  [coder encodeValueOfObjCType: @encode(float) at: &_itemHeight];
-  [coder encodeValueOfObjCType: @encode(int) at: &_selectedItem];
-
-  if (_usesDataSource == YES)
-    [coder encodeConditionalObject: _dataSource];      
+  if([coder allowsKeyedCoding])
+    {
+      [coder encodeBool: [self hasVerticalScroller] forKey: @"NSHasVerticalScroller"];
+      [coder encodeInt: [self numberOfVisibleItems] forKey: @"NSVisibleItemCount"];
+    }
+  else
+    {
+      [coder encodeValueOfObjCType: @encode(id) at: &_popUpList];
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &_usesDataSource];
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &_hasVerticalScroller];
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &_completes];
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &_usesDataSource];
+      [coder encodeValueOfObjCType: @encode(int) at: &_visibleItems];
+      [coder encodeValueOfObjCType: @encode(NSSize) at: &_intercellSpacing];
+      [coder encodeValueOfObjCType: @encode(float) at: &_itemHeight];
+      [coder encodeValueOfObjCType: @encode(int) at: &_selectedItem];
+      
+      if (_usesDataSource == YES)
+	[coder encodeConditionalObject: _dataSource];      
+    }
 }
 
 /**

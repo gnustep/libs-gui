@@ -283,8 +283,7 @@ static BOOL _isInInterfaceBuilder = NO;
       [_view _fixSubviews];
 
       // resize the window...
-      [_realObject setFrame: [NSWindow frameRectForContentRect: [self windowRect] 
-				       styleMask: [self windowStyle]]
+      [_realObject setFrame: [self windowRect]
 		   display: NO];
       
       // swap out any views which need to be swapped...

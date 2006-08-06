@@ -843,10 +843,17 @@ static Class actionCellClass;
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_tag];
-  [aCoder encodeObject: _cell];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_ignoresMultiClick];
+  if([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeObject: [self cell] forKey: @"NSCell"];
+      [aCoder encodeBool: [self isEnabled] forKey: @"NSEnabled"];
+    }
+  else
+    {
+      [aCoder encodeValueOfObjCType: @encode(int) at: &_tag];
+      [aCoder encodeObject: _cell];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_ignoresMultiClick];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder

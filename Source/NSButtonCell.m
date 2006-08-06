@@ -1443,23 +1443,51 @@ typedef struct _GSButtonCellFlags
 {
   BOOL tmp;
 
-  // FIXME: Add new ivars
   [super encodeWithCoder: aCoder];
+  if([aCoder allowsKeyedCoding])
+    {
+      GSButtonCellFlags buttonCellFlags;
+      unsigned int bFlags = 0;
+      unsigned int bFlags2 = 0;
 
-  [aCoder encodeObject: _keyEquivalent];
-  [aCoder encodeObject: _keyEquivalentFont];
-  [aCoder encodeObject: _altContents];
-  [aCoder encodeObject: _altImage];
-  tmp = _buttoncell_is_transparent;
-  [aCoder encodeValueOfObjCType: @encode(BOOL)
-			     at: &tmp];
-  [aCoder encodeValueOfObjCType: @encode(unsigned int)
-			     at: &_keyEquivalentModifierMask];
-  [aCoder encodeValueOfObjCType: @encode(unsigned int)
-			     at: &_highlightsByMask];
-  [aCoder encodeValueOfObjCType: @encode(unsigned int)
-			     at: &_showAltStateMask];
+      [aCoder encodeObject: [self keyEquivalent] forKey: @"NSKeyEquivalent"];
+      [aCoder encodeObject: [self image] forKey: @"NSNormalImage"];
+      [aCoder encodeObject: [self alternateTitle] forKey: @"NSAlternateContents"];
 
+      // encode button flags...
+      buttonCellFlags.isTransparent = [self isTransparent];
+      buttonCellFlags.isBordered = [self isBordered]; 
+      buttonCellFlags.highlightByBackground = (_highlightsByMask & NSChangeBackgroundCellMask);
+      buttonCellFlags.highlightByContents = (_highlightsByMask & NSContentsCellMask);
+      buttonCellFlags.isPushin = (_highlightsByMask & NSPushInCellMask);
+      buttonCellFlags.changeBackground = (_showAltStateMask & NSChangeBackgroundCellMask);
+      buttonCellFlags.changeContents = (_showAltStateMask & NSContentsCellMask);
+      memcpy((void *)&bFlags, (void *)&buttonCellFlags,sizeof(unsigned int));
+      [aCoder encodeInt: bFlags forKey: @"NSButtonFlags"];
+
+      // style and border.
+      bFlags2 != [self showsBorderOnlyWhileMouseInside] ? 0x8 : 0;
+      bFlags2 |= [self bezelStyle];
+      [aCoder encodeInt: bFlags2 forKey: @"NSButtonFlags2"];
+    }
+  else
+    {
+      // FIXME: Add new ivars
+      [aCoder encodeObject: _keyEquivalent];
+      [aCoder encodeObject: _keyEquivalentFont];
+      [aCoder encodeObject: _altContents];
+      [aCoder encodeObject: _altImage];
+      tmp = _buttoncell_is_transparent;
+      [aCoder encodeValueOfObjCType: @encode(BOOL)
+	      at: &tmp];
+      [aCoder encodeValueOfObjCType: @encode(unsigned int)
+	      at: &_keyEquivalentModifierMask];
+      [aCoder encodeValueOfObjCType: @encode(unsigned int)
+	      at: &_highlightsByMask];
+      [aCoder encodeValueOfObjCType: @encode(unsigned int)
+	      at: &_showAltStateMask];
+      
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder

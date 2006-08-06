@@ -2185,65 +2185,105 @@ static NSColor	*shadowCol;
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  BOOL flag;
-  unsigned int tmp_int;
+  if([aCoder allowsKeyedCoding])
+    {
+      unsigned long cFlags = 0;
+      unsigned int cFlags2 = 0;
 
-  [aCoder encodeObject: _contents];
-  [aCoder encodeObject: _cell_image];
-  [aCoder encodeObject: _font];
-  [aCoder encodeObject: _objectValue];
-  flag = _cell.contents_is_attributed_string;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _cell.is_highlighted;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _cell.is_disabled;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _cell.is_editable;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _cell.is_rich_text;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _cell.imports_graphics;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _cell.shows_first_responder;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _cell.refuses_first_responder;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _cell.sends_action_on_end_editing;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _cell.is_bordered;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _cell.is_bezeled;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _cell.is_scrollable;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _cell.is_selectable;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  // This used to be is_continuous, which has been replaced.
-  /* Ayers 20.03.2003: But we must continue to encode it for backward
-     compatibility or current releases will have undefined behavior when
-     decoding archives (i.e. .gorm files) encoded by this version. */
-  flag = [self isContinuous];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _cell.allows_mixed_state;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _cell.wraps;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  tmp_int = _cell.text_align;
-  [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-  tmp_int = _cell.type;
-  [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-  tmp_int = _cell.image_position;
-  [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-  tmp_int = _cell.entry_type;
-  [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-  tmp_int = _cell.state;
-  [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-  [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_mnemonic_location];
-  [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_mouse_down_flags];
-  [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_action_mask];
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_formatter];
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_menu];
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_represented_object];
+      [aCoder encodeObject: _contents forKey: @"NSContents"];
+
+      // flags
+      cFlags |= [self wraps] ?  0x40 : 0;
+      cFlags |= [self isScrollable] ? 0x100000 : 0; 
+      cFlags |= [self isSelectable] ? 0x200001 : 0;
+      cFlags |= [self isBezeled] ? 0x400000 : 0;
+      cFlags |= [self isBordered] ? 0x800000 : 0;
+      cFlags |= ([self type] == NSTextCellType) ? 0x4000000 : 0;
+      cFlags |= [self isContinuous] ? 0x40000 : 0;
+      cFlags |= [self isEditable] ? 0x10000000 : 0;
+      cFlags |= ([self isEnabled] == NO) ? 0x20000000 : 0;
+      cFlags |= ([self state] == NSOnState) ? 0x80000000 : 0;
+      cFlags |= [self isHighlighted] ? 0x40000000 : 0;
+      [aCoder encodeInt: cFlags forKey: @"NSCellFlags"];
+      
+      // flags part 2
+      cFlags2 |= [self sendsActionOnEndEditing] ? 0x400000 : 0;
+      cFlags2 |= [self allowsMixedState] ? 0x1000000 : 0;
+      cFlags2 |= [self refusesFirstResponder] ? 0x2000000 : 0;
+      cFlags2 |= ([self alignment] == NSRightTextAlignment) ? 0x4000000 : 0;
+      cFlags2 |= ([self alignment] == NSCenterTextAlignment) ? 0x8000000 : 0;
+      cFlags2 |= ([self alignment] == NSJustifiedTextAlignment) ? 0xC000000 : 0;
+      cFlags2 |= ([self alignment] == NSNaturalTextAlignment) ? 0x10000000 : 0;
+      cFlags2 |= [self importsGraphics] ? 0x20000000 : 0;
+      cFlags2 |= [self allowsEditingTextAttributes] ? 0x40000000 : 0;
+      [aCoder encodeInt: cFlags2 forKey: @"NSCellFlags2"];
+	  
+      // font and formatter.
+      [aCoder encodeObject: [self font] forKey: @"NSSupport"];
+      [aCoder encodeObject: [self formatter] forKey: @"NSFormatter"];
+    }
+  else
+    {
+      BOOL flag;
+      unsigned int tmp_int;
+      
+      [aCoder encodeObject: _contents];
+      [aCoder encodeObject: _cell_image];
+      [aCoder encodeObject: _font];
+      [aCoder encodeObject: _objectValue];
+      flag = _cell.contents_is_attributed_string;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _cell.is_highlighted;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _cell.is_disabled;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _cell.is_editable;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _cell.is_rich_text;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _cell.imports_graphics;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _cell.shows_first_responder;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _cell.refuses_first_responder;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _cell.sends_action_on_end_editing;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _cell.is_bordered;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _cell.is_bezeled;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _cell.is_scrollable;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _cell.is_selectable;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      // This used to be is_continuous, which has been replaced.
+      /* Ayers 20.03.2003: But we must continue to encode it for backward
+	 compatibility or current releases will have undefined behavior when
+	 decoding archives (i.e. .gorm files) encoded by this version. */
+      flag = [self isContinuous];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _cell.allows_mixed_state;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _cell.wraps;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      tmp_int = _cell.text_align;
+      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+      tmp_int = _cell.type;
+      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+      tmp_int = _cell.image_position;
+      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+      tmp_int = _cell.entry_type;
+      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+      tmp_int = _cell.state;
+      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_mnemonic_location];
+      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_mouse_down_flags];
+      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_action_mask];
+      [aCoder encodeValueOfObjCType: @encode(id) at: &_formatter];
+      [aCoder encodeValueOfObjCType: @encode(id) at: &_menu];
+      [aCoder encodeValueOfObjCType: @encode(id) at: &_represented_object];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder

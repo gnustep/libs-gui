@@ -1,3 +1,18 @@
+2006-08-06 00:30-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Correction in nibInstantiate for 
+	window frame.
+	* Source/NSActionCell.m
+	* Source/NSButtonCell.m
+	* Source/NSCell.m
+	* Source/NSComboBoxCell.m
+	* Source/NSControl.m
+	* Source/NSMatrix.m
+	* Source/NSTableView.m
+	* Source/NSTextContainer.m
+	* Source/NSTextStorage.m
+	* Source/NSTextView.m: Encoding in encodeWithCoder:.
+
 2006-08-05 09:08-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSMenu.m: encodeWithCoder: encode items and title of

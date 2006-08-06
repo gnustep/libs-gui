@@ -147,6 +147,35 @@ Interface for a bunch of internal methods that need to be cleaned up.
 
 @implementation NSTextViewSharedData
 
+- (id) initWithTextView: (NSTextView *)tv
+{
+  if((self = [super init]) != nil)
+    {
+      flags = (([tv isEditable]?0x01:0) |
+	       ([tv isSelectable]?0x02:0) |
+	       ([tv isRichText]?0x04:0) |
+	       ([tv importsGraphics]?0x08:0) |
+	       ([tv isFieldEditor]?0x10:0) |
+	       ([tv usesFontPanel]?0x20:0) |
+	       ([tv isRulerVisible]?0x40:0) |
+	       ([tv usesRuler]?0x100:0) |
+	       ([tv drawsBackground]?0x800:0) |
+	       ([tv smartInsertDeleteEnabled]?0x2000000:0) |
+	       ([tv allowsUndo]?0x40000000:0));
+
+      ASSIGN(backgroundColor,[tv backgroundColor]);
+      ASSIGN(paragraphStyle,[NSParagraphStyle defaultParagraphStyle]);
+      ASSIGN(insertionColor,[tv insertionPointColor]);
+      ASSIGN(markAttr,[tv markedTextAttributes]);
+      ASSIGN(selectedAttr,[tv selectedTextAttributes]);
+      
+      linkAttr = nil;
+      textView = tv;
+    }
+
+  return self;
+}
+
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   if ([aDecoder allowsKeyedCoding])
@@ -165,6 +194,21 @@ Interface for a bunch of internal methods that need to be cleaned up.
     }
   
   return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  if([coder allowsKeyedCoding])
+    {	
+      [coder encodeObject: backgroundColor forKey: @"NSBackgoundColor"];
+      [coder encodeObject: paragraphStyle forKey: @"NSDefaultParagraphStyle"];
+      [coder encodeInt: flags forKey: @"NSFlags"];
+      [coder encodeObject: markAttr forKey: @"NSMarkedAttributes"];
+      [coder encodeObject: selectedAttr forKey: @"NSSelectedAttributes"];
+      [coder encodeObject: insertionColor forKey: @"NSInsertionColor"];
+
+      // TODO: Encode/Decode link attributes...
+    }
 }
 
 - (void) dealloc
@@ -652,45 +696,60 @@ that makes decoding and encoding compatible with the old code.
 
   [super encodeWithCoder: aCoder];
 
-  [aCoder encodeConditionalObject: _delegate];
+  if([aCoder allowsKeyedCoding])
+    {
+      NSTextViewSharedData *tvsd = [[NSTextViewSharedData alloc] initWithTextView: self];
 
-  flag = _tf.is_field_editor;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tf.is_editable;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tf.is_selectable;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tf.is_rich_text;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tf.imports_graphics;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tf.draws_background;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tf.is_horizontally_resizable;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tf.is_vertically_resizable;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tf.uses_font_panel;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tf.uses_ruler;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tf.is_ruler_visible;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-
-  [aCoder encodeObject: _backgroundColor];
-  [aCoder encodeValueOfObjCType: @encode(NSSize) at: &_minSize];
-  [aCoder encodeValueOfObjCType: @encode(NSSize) at: &_maxSize];
-
-  flag = _tf.smart_insert_delete;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tf.allows_undo;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  [aCoder encodeObject: _insertionPointColor];
-  [aCoder encodeValueOfObjCType: @encode(NSSize) at: &containerSize];
-  flag = [_textContainer widthTracksTextView];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = [_textContainer heightTracksTextView];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [aCoder encodeConditionalObject: _delegate forKey: @"NSDelegate"];
+      [aCoder encodeSize: [self maxSize] forKey: @"NSMaxSize"];
+      [aCoder encodeSize: [self minSize] forKey: @"NSMinSize"];
+      [aCoder encodeObject: tvsd forKey: @"NSSharedData"];
+      [aCoder encodeObject: [self textStorage] forKey: @"NSTextStorage"];
+      [aCoder encodeObject: [self textContainer] forKey: @"NSTextContainer"];
+      [aCoder encodeInt: 0 forKey: @"NSTVFlags"]; // no delegates, etc... set to zero.      
+    }
+  else
+    {
+      [aCoder encodeConditionalObject: _delegate];
+      
+      flag = _tf.is_field_editor;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _tf.is_editable;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _tf.is_selectable;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _tf.is_rich_text;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _tf.imports_graphics;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _tf.draws_background;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _tf.is_horizontally_resizable;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _tf.is_vertically_resizable;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _tf.uses_font_panel;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _tf.uses_ruler;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _tf.is_ruler_visible;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      
+      [aCoder encodeObject: _backgroundColor];
+      [aCoder encodeValueOfObjCType: @encode(NSSize) at: &_minSize];
+      [aCoder encodeValueOfObjCType: @encode(NSSize) at: &_maxSize];
+      
+      flag = _tf.smart_insert_delete;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _tf.allows_undo;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [aCoder encodeObject: _insertionPointColor];
+      [aCoder encodeValueOfObjCType: @encode(NSSize) at: &containerSize];
+      flag = [_textContainer widthTracksTextView];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = [_textContainer heightTracksTextView];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+    }
 }
 
 - (id) initWithCoder: (NSCoder *)aDecoder

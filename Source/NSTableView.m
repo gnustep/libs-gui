@@ -5136,13 +5136,14 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [super encodeWithCoder: aCoder];
-
   if ([aCoder allowsKeyedCoding])
     {
       unsigned int vFlags = 0; // (raw >> 26); // filter out settings not pertinent to us.
       NSSize intercellSpacing = [self intercellSpacing];
 
+      // make sure the corner view is properly encoded...
+      [(NSKeyedArchiver *)aCoder setClassName: @"_NSCornerView" forClass: [GSTableCornerView class]];
+      [super encodeWithCoder: aCoder];
       [aCoder encodeObject: [self dataSource] forKey: @"NSDataSource"];
       [aCoder encodeObject: [self delegate] forKey: @"NSDelegate"];
       [aCoder encodeObject: [self target] forKey: @"NSTarget"];
@@ -5178,6 +5179,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
     }
   else
     {
+      [super encodeWithCoder: aCoder];
       [aCoder encodeConditionalObject: _dataSource];
       [aCoder encodeObject: _tableColumns];
       [aCoder encodeObject: _gridColor];

@@ -285,11 +285,20 @@ static Class controlClass;
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_tag];
-  [aCoder encodeConditionalObject: _target];
-  [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
-  // This is only encoded for backward compatibility and won't be decoded.
-  [aCoder encodeConditionalObject: nil];
+  if([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeInt: [self tag] forKey: @"NSTag"];
+      [aCoder encodeObject: [self target] forKey: @"NSTarget"];
+      [aCoder encodeObject: NSStringFromSelector([self action]) forKey: @"NSAction"];
+    }
+  else
+    {
+      [aCoder encodeValueOfObjCType: @encode(int) at: &_tag];
+      [aCoder encodeConditionalObject: _target];
+      [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
+      // This is only encoded for backward compatibility and won't be decoded.
+      [aCoder encodeConditionalObject: nil];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
