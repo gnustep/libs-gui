@@ -1,3 +1,9 @@
+2006-08-07  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSCell.m (-setBezeled:, -setBordered:): Switch border off,
+	if setBezeled: is called and visa versa, independent of the actual
+	parameter setting. This matches documented Cocoa behaviour.
+
 2006-08-06 00:30-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibCompatibility.m: Correction in nibInstantiate for 
@@ -44,30 +50,29 @@
 
 2006-07-17 Enrico Sersale <enrico@fibernet.ro>
 	
-  * Headers/AppKit/NSHelpManager.h: 
-  * Source/NSHelpManager.m:
-  added -setContextHelp:forObject: as specified in Apple docs;
-  -setContextHelp:withObject: deprecated. 
+	* Headers/AppKit/NSHelpManager.h: 
+	* Source/NSHelpManager.m:
+	added -setContextHelp:forObject: as specified in Apple docs;
+	-setContextHelp:withObject: deprecated. 
 
 2006-07-16 Enrico Sersale <enrico@fibernet.ro>
 	
-  * Headers/Additions/GNUstepGUI/GSHelpManagerPanel.h: added -buttonAction: 
-  method.
-  * Source/GSHelpManagerPanel.m: implemented -buttonAction:.
-  added a button to close the panel and changed the style mask of the window 
-  to NSTitledWindowMask | NSResizableWindowMask.
+	* Headers/Additions/GNUstepGUI/GSHelpManagerPanel.h: added -buttonAction: 
+	method.
+	* Source/GSHelpManagerPanel.m: implemented -buttonAction:.
+	added a button to close the panel and changed the style mask of the window 
+	to NSTitledWindowMask | NSResizableWindowMask.
 
->>>>>>> .r23179
 2006-07-15 Enrico Sersale <enrico@fibernet.ro>
 	
-  * Headers/AppKit/AppKit.h: added NSHelpManager.h.
-  * Headers/AppKit/NSHelpManager.h: declaration for new method -pathForHelpResource:
-  * Source/NSHelpManager.m: implemented -pathForHelpResource: in the NSBundle 
-  category. -pathForHelpResource: looks for help files giving the priority
-  to localized resources. 
-  -showHelp: looks for rtfd files too.
-  * Source/GSHelpManagerPanel.m: various fixes to avoid a crash when quitting
-  and to resize correctly the NSTextView.
+	* Headers/AppKit/AppKit.h: added NSHelpManager.h.
+	* Headers/AppKit/NSHelpManager.h: declaration for new method -pathForHelpResource:
+	* Source/NSHelpManager.m: implemented -pathForHelpResource: in the NSBundle 
+	category. -pathForHelpResource: looks for help files giving the priority
+	to localized resources. 
+	-showHelp: looks for rtfd files too.
+	* Source/GSHelpManagerPanel.m: various fixes to avoid a crash when quitting
+	and to resize correctly the NSTextView.
 
 2006-07-14 01:17 Gregory John Casamento <greg_casamento@yahoo.com>
 

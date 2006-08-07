@@ -688,30 +688,24 @@ static NSColor	*shadowCol;
 }
 
 /**<p>Sets whether the cell has a bezeled border. 
- If the cell has a bezeled border, the bordered  flag is turn off.
+ If this method is called, the bordered flag is turn off.
  By default a NSCell has no bezeled border</p>
  <p>See Also: -isBezeled -setBordered: -isBordered</p>
  */
 - (void) setBezeled: (BOOL)flag
 {
   _cell.is_bezeled = flag;
-  if (_cell.is_bezeled)
-    {
-      _cell.is_bordered = NO;
-    }
+  _cell.is_bordered = NO;
 }
 
-/**<p>Sets whether the cell has a border.  If the cell has a border, 
+/**<p>Sets whether the cell has a border.  If this method is called, 
  the bezeled flag is turn off. By default a NSCell has no border</p>
  <p>See Also: -isBordered -setBezeled: -isBezeled</p>
  */
 - (void) setBordered: (BOOL)flag
 {
   _cell.is_bordered = flag;
-  if (_cell.is_bordered)
-    {
-      _cell.is_bezeled = NO;
-    }
+  _cell.is_bezeled = NO;
 }
 
 /**<p>Sets the NSCell's state.  Please use always symbolic constants when
