@@ -4,6 +4,8 @@
 
    Author: Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
    Date: 2001
+   Author: Fred Kiefer <FredKiefer@gmx.de>
+   Date: August 2006
    
    This file is part of the GNUstep GUI Library.
 
@@ -24,17 +26,35 @@
 */ 
 
 #include "config.h"
-#include "AppKit/NSGraphicsContext.h"
+
+#include "AppKit/NSApplication.h"
 #include "AppKit/NSColor.h"
-#include "AppKit/DPSOperators.h"
-#include "AppKit/PSOperators.h"
-#include "AppKit/NSFont.h"
+#include "AppKit/NSControl.h"
+#include "AppKit/NSEvent.h"
 #include "AppKit/NSGraphics.h"
+#include "AppKit/NSGraphicsContext.h"
 #include "AppKit/NSStepperCell.h"
-#include "AppKit/NSText.h"
+#include "AppKit/NSWindow.h"
+#include "AppKit/PSOperators.h"
 #include "GNUstepGUI/GSDrawFunctions.h"
 
+// Hard coded values for button sizes
+#define STEPPER_WIDTH 15
+#define STEPPER_HEIGHT 11
+
+@interface NSStepperCell (Private)
+- (void) _increment;
+- (void) _decrement;
+- (void) setHighlighted: (BOOL)highlight
+	       upButton: (BOOL)upButton
+	      withFrame: (NSRect)frame
+		 inView: (NSView*)controlView;
+- (NSRect) upButtonRectWithFrame: (NSRect)frame;
+- (NSRect) downButtonRectWithFrame: (NSRect)frame;
+@end
+
 @implementation NSStepperCell
+
 + (void) initialize
 {
   if (self == [NSStepperCell class])
@@ -43,21 +63,30 @@
     }
 }
 
++ (BOOL) prefersTrackingUntilMouseUp
+{
+  return YES;
+}
+
 //
 // Initialization
 //
 - (id) init
 {
+  self = [super init];
+
   [self setIntValue: 0];
-  [super setAlignment: NSRightTextAlignment];
-  [super setWraps: NO];
+  [self setAlignment: NSRightTextAlignment];
+  [self setWraps: NO];
   _autorepeat = YES;
   _valueWraps = YES;
   _maxValue = 59;
   _minValue = 0;
   _increment = 1;
+
   highlightUp = NO;
   highlightDown = NO;
+
   return self;
 }
 
@@ -91,8 +120,6 @@
   _increment = increment;
 }
 
-
-
 - (BOOL)autorepeat
 {
   return _autorepeat;
@@ -111,18 +138,6 @@
 - (void)setValueWraps: (BOOL)valueWraps
 {
   _valueWraps = valueWraps;
-}
-
-- (void) dealloc
-{
-  [super dealloc];
-}
-
-- (id) copyWithZone: (NSZone*)zone
-{
-  NSStepperCell *c = [super copyWithZone: zone];
-
-  return c;
 }
 
 static inline NSRect DrawLightButton(NSRect border, NSRect clip)
@@ -151,21 +166,22 @@ static inline NSRect DrawLightButton(NSRect border, NSRect clip)
     }
 }
 
- static inline void DrawUpButton(NSRect aRect)
+static inline void DrawUpButton(NSRect aRect)
 {
   NSRect unHighlightRect = DrawLightButton(aRect, NSZeroRect);
   [[NSColor controlBackgroundColor] set];
   NSRectFill(unHighlightRect);
       
-  PSsetgray(NSDarkGray);
+  PSsetlinewidth(1.0);
+  [[NSColor controlShadowColor] set];
   PSmoveto(NSMaxX(aRect) - 5, NSMinY(aRect) + 3);
   PSlineto(NSMaxX(aRect) - 8, NSMinY(aRect) + 9);
   PSstroke();
-  PSsetgray(NSBlack);
+  [[NSColor controlDarkShadowColor] set];
   PSmoveto(NSMaxX(aRect) - 8, NSMinY(aRect) + 9);
   PSlineto(NSMaxX(aRect) - 11, NSMinY(aRect) + 4);
   PSstroke();
-  PSsetgray(NSWhite);
+  [[NSColor controlLightHighlightColor] set];
   PSmoveto(NSMaxX(aRect) - 11, NSMinY(aRect) + 3);
   PSlineto(NSMaxX(aRect) - 5, NSMinY(aRect) + 3);
   PSstroke();
@@ -177,15 +193,16 @@ static inline void HighlightUpButton(NSRect aRect)
   [[NSColor selectedControlColor] set];
   NSRectFill(highlightRect);
   
-  PSsetgray(NSLightGray);
+  PSsetlinewidth(1.0);
+  [[NSColor controlHighlightColor] set];
   PSmoveto(NSMaxX(aRect) - 5, NSMinY(aRect) + 3);
   PSlineto(NSMaxX(aRect) - 8, NSMinY(aRect) + 9);
   PSstroke();
-  PSsetgray(NSBlack);
+  [[NSColor controlDarkShadowColor] set];
   PSmoveto(NSMaxX(aRect) - 8, NSMinY(aRect) + 9);
   PSlineto(NSMaxX(aRect) - 11, NSMinY(aRect) + 4);
   PSstroke();
-  PSsetgray(NSLightGray);
+  [[NSColor controlHighlightColor] set];
   PSmoveto(NSMaxX(aRect) - 11, NSMinY(aRect) + 3);
   PSlineto(NSMaxX(aRect) - 5, NSMinY(aRect) + 3);
   PSstroke();
@@ -198,15 +215,15 @@ static inline void DrawDownButton(NSRect aRect)
   NSRectFill(unHighlightRect);
 
   PSsetlinewidth(1.0);
-  PSsetgray(NSDarkGray);
+  [[NSColor controlShadowColor] set];
   PSmoveto(NSMinX(aRect) + 4, NSMaxY(aRect) - 3);
   PSlineto(NSMinX(aRect) + 7, NSMaxY(aRect) - 8);
   PSstroke();
-  PSsetgray(NSWhite);
+  [[NSColor controlLightHighlightColor] set];
   PSmoveto(NSMinX(aRect) + 7, NSMaxY(aRect) - 8);
   PSlineto(NSMinX(aRect) + 10, NSMaxY(aRect) - 3);
   PSstroke();
-  PSsetgray(NSBlack);
+  [[NSColor controlDarkShadowColor] set];
   PSmoveto(NSMinX(aRect) + 10, NSMaxY(aRect) - 2);
   PSlineto(NSMinX(aRect) + 4, NSMaxY(aRect) - 2);
   PSstroke();
@@ -219,15 +236,15 @@ static inline void HighlightDownButton(NSRect aRect)
   NSRectFill(highlightRect);
   
   PSsetlinewidth(1.0);
-  PSsetgray(NSLightGray);
+  [[NSColor controlHighlightColor] set];
   PSmoveto(NSMinX(aRect) + 4, NSMaxY(aRect) - 3);
   PSlineto(NSMinX(aRect) + 7, NSMaxY(aRect) - 8);
   PSstroke();
-  PSsetgray(NSLightGray);
+  [[NSColor controlHighlightColor] set];
   PSmoveto(NSMinX(aRect) + 7, NSMaxY(aRect) - 8);
   PSlineto(NSMinX(aRect) + 10, NSMaxY(aRect) - 3);
   PSstroke();
-  PSsetgray(NSBlack);
+  [[NSColor controlDarkShadowColor] set];
   PSmoveto(NSMinX(aRect) + 10, NSMaxY(aRect) - 2);
   PSlineto(NSMinX(aRect) + 4, NSMaxY(aRect) - 2);
   PSstroke();
@@ -246,7 +263,7 @@ static inline void HighlightDownButton(NSRect aRect)
   twoButtons = downRect;
   twoButtons.origin.y--;
   twoButtons.size.width++;
-  twoButtons.size.height = 23;
+  twoButtons.size.height = 2 * STEPPER_HEIGHT + 1;
 
   if (highlightUp)
     HighlightUpButton(upRect);
@@ -260,49 +277,169 @@ static inline void HighlightDownButton(NSRect aRect)
 
   {
     NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge};
-    float grays[] = {NSBlack, NSBlack}; 
+    NSColor *black = [NSColor controlDarkShadowColor];
+    NSColor *grays[] = {black, black}; 
     
-    NSDrawTiledRects(twoButtons, NSZeroRect,
-		     up_sides, grays, 2);
+    NSDrawColorTiledRects(twoButtons, NSZeroRect,
+			  up_sides, grays, 2);
   }
 }
 
-- (void) highlight: (BOOL) highlight
-	  upButton: (BOOL) upButton
-	 withFrame: (NSRect) frame
-	    inView: (NSView*) controlView
+- (void) getPeriodicDelay: (float*)delay interval: (float*)interval
 {
-  if (upButton)
-    {  
-      highlightUp = highlight;
+  *delay = 0.5;
+  *interval = 0.025;
+}
+
+- (BOOL) trackMouse: (NSEvent*)theEvent
+	     inRect: (NSRect)cellFrame
+	     ofView: (NSView*)controlView
+       untilMouseUp: (BOOL)flag
+{
+  NSPoint location = [theEvent locationInWindow];
+  NSPoint point = [controlView convertPoint: location fromView: nil];
+  NSRect upRect;
+  NSRect downRect;
+  NSRect rect;
+  float delay;
+  float	interval;
+  BOOL overButton = YES;
+  unsigned int event_mask = NSLeftMouseUpMask | NSLeftMouseDraggedMask;
+  unsigned int periodCount = 0;
+  BOOL isDirectionUp;
+  BOOL autorepeat = [self autorepeat];
+  BOOL done = NO;
+  BOOL mouseWentUp = NO;
+
+  _mouse_down_flags = [theEvent modifierFlags];
+  if (![self startTrackingAt: point inView: controlView])
+    return NO;
+
+  if (![controlView mouse: point inRect: cellFrame])
+    return NO;	// point is not in cell
+
+  if ([self isEnabled] == NO)
+    return NO;
+
+  if ([theEvent type] != NSLeftMouseDown)
+    return NO;
+
+  upRect = [self upButtonRectWithFrame: cellFrame];
+  downRect = [self downButtonRectWithFrame: cellFrame];
+  
+  // Did the mouse go down in the up or in the down part?
+  if (NSMouseInRect(point, upRect, NO))
+    {
+      isDirectionUp = YES;
+      rect = upRect;
+    }
+  else if (NSMouseInRect(point, downRect, NO))
+    {
+      isDirectionUp = NO;
+      rect = downRect;
     }
   else
     {
-      highlightDown = highlight;
+      return mouseWentUp;
     }
 
-  [self drawWithFrame: frame inView: controlView];
-}
+  [self setHighlighted: YES
+	upButton: isDirectionUp
+	withFrame: cellFrame
+	inView: controlView];
 
-- (NSRect) upButtonRectWithFrame: (NSRect) frame
-{
-  NSRect upRect;
-  upRect.size.width = 15;
-  upRect.size.height = 11;
-  upRect.origin.x = NSMaxX(frame) - 16;
-  upRect.origin.y = NSMinY(frame) + ((int) frame.size.height / 2) + 1;
-  return upRect;
-}
+  if (autorepeat)
+    {
+      [self getPeriodicDelay: &delay interval: &interval];
+      [NSEvent startPeriodicEventsAfterDelay: delay withPeriod: interval];
+      event_mask |= NSPeriodicMask;
+    }
 
-- (NSRect) downButtonRectWithFrame: (NSRect) frame
-{
-  NSRect downRect;
-  downRect.size.width = 15;
-  downRect.size.height = 11;
-  downRect.origin.x = NSMaxX(frame) - 16;
-  downRect.origin.y = NSMinY(frame) + 
-    ((int) frame.size.height / 2) - 10;
-  return downRect;
+  while (!done)
+    {
+      NSEventType	eventType;
+
+      theEvent = [NSApp nextEventMatchingMask: event_mask
+			untilDate: nil
+			inMode: NSEventTrackingRunLoopMode
+			dequeue: YES];
+      eventType = [theEvent type];
+
+      // Did the mouse go up?
+      if (eventType == NSLeftMouseUp)
+	{
+	  mouseWentUp = YES;
+	  done = YES;
+	}
+
+      if (eventType == NSPeriodic)
+        {
+	  periodCount++;
+	  if (periodCount == 4) 
+	    periodCount = 0;
+	  if (periodCount == 0)
+	    {
+	      if (isDirectionUp)
+		[self _increment];
+	      else
+		[self _decrement];
+	      [(NSControl*)controlView sendAction: [self action] to: [self target]];
+	    }
+	  location = [[controlView window] mouseLocationOutsideOfEventStream];
+	}
+      else
+        {
+	  location = [theEvent locationInWindow];
+	}
+      point = [controlView convertPoint: location fromView: nil];
+
+      if (![controlView mouse: point inRect: cellFrame])
+	{
+	  if (flag == NO) 
+	    {
+	      done = YES;
+	    }
+	}
+
+      if (NSMouseInRect(point, rect, NO) != overButton)
+        {
+	  overButton = !overButton;
+	  if (overButton && autorepeat)
+	    {
+	      [NSEvent startPeriodicEventsAfterDelay: delay withPeriod: interval];
+	      periodCount = 0;
+	    }
+	  else
+	    {
+	      [NSEvent stopPeriodicEvents];
+	    }
+	  [self setHighlighted: overButton
+		upButton: isDirectionUp
+		withFrame: cellFrame
+		inView: controlView];
+	}
+    }
+
+  if (overButton && autorepeat)
+    {
+      [NSEvent stopPeriodicEvents];
+    }
+
+  if (overButton)
+    {
+      if (isDirectionUp)
+	[self _increment];
+      else
+	[self _decrement];
+      [(NSControl*)controlView sendAction: [self action] to: [self target]];
+    }
+  
+  [self setHighlighted: NO
+	upButton: isDirectionUp
+	withFrame: cellFrame
+	inView: controlView];
+
+  return mouseWentUp;
 }
 
 //
@@ -310,42 +447,55 @@ static inline void HighlightDownButton(NSRect aRect)
 //
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  int tmp1, tmp2;
   [super encodeWithCoder: aCoder];
 
-  tmp1 = (int)_autorepeat;
-  tmp2 = (int)_valueWraps;
+  if([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeDouble: [self increment] forKey: @"NSIncrement"];
+      [aCoder encodeDouble: [self maxValue] forKey: @"NSMaxValue"];
+      [aCoder encodeDouble: [self minValue] forKey: @"NSMinValue"];
+      [aCoder encodeBool: [self autorepeat] forKey: @"NSAutorepeat"];
+      [aCoder encodeBool: [self valueWraps] forKey: @"NSValueWraps"];
+    }
+  else
+  {
+    int tmp1, tmp2;
 
-  [aCoder encodeValueOfObjCType: @encode(double)
-	  at: &_maxValue];
-  [aCoder encodeValueOfObjCType: @encode(double)
-	  at: &_minValue];
-  [aCoder encodeValueOfObjCType: @encode(double)
-	  at: &_increment];
-  [aCoder encodeValueOfObjCType: @encode(int)
-	  at: &tmp1];
-  [aCoder encodeValueOfObjCType: @encode(int)
-	  at: &tmp2];
+    tmp1 = (int)_autorepeat;
+    tmp2 = (int)_valueWraps;
+    
+    [aCoder encodeValueOfObjCType: @encode(double)
+	    at: &_maxValue];
+    [aCoder encodeValueOfObjCType: @encode(double)
+	    at: &_minValue];
+    [aCoder encodeValueOfObjCType: @encode(double)
+	    at: &_increment];
+    [aCoder encodeValueOfObjCType: @encode(int)
+	    at: &tmp1];
+    [aCoder encodeValueOfObjCType: @encode(int)
+	    at: &tmp2];
+  }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  int tmp1, tmp2;
   [super initWithCoder: aDecoder];
 
   if([aDecoder allowsKeyedCoding])
     {
       _autorepeat = [aDecoder decodeBoolForKey: @"NSAutorepeat"];
       _valueWraps = [aDecoder decodeBoolForKey: @"NSValueWraps"];
-      _increment = [aDecoder decodeIntForKey: @"NSIncrement"];
-      _maxValue = [aDecoder decodeIntForKey: @"NSMaxValue"];
+      _increment = [aDecoder decodeDoubleForKey: @"NSIncrement"];
+      _maxValue = [aDecoder decodeDoubleForKey: @"NSMaxValue"];
       if([aDecoder containsValueForKey: @"NSMinValue"])
 	{
-	  _minValue = [aDecoder decodeIntForKey: @"NSMinValue"];
+	  _minValue = [aDecoder decodeDoubleForKey: @"NSMinValue"];
 	}
     }
   else
     {
+      int tmp1, tmp2;
+
       [aDecoder decodeValueOfObjCType: @encode(double)
 		at: &_maxValue];
       [aDecoder decodeValueOfObjCType: @encode(double)
@@ -362,6 +512,99 @@ static inline void HighlightDownButton(NSRect aRect)
     }
 
   return self;
+}
+
+@end
+
+@implementation NSStepperCell (Private)
+
+- (void) _increment
+{
+  double newValue;
+  double maxValue = [self maxValue];
+  double minValue = [self minValue];
+  double increment = [self increment];
+
+  newValue = [self doubleValue] + increment;
+  if ([self valueWraps])
+    {
+      if (newValue > maxValue)
+	newValue = newValue - maxValue + minValue - 1;
+      else if (newValue < minValue)
+	newValue = newValue + maxValue - minValue + 1;
+    }
+  else
+    {
+      if (newValue > maxValue)
+	newValue = maxValue;
+      else if (newValue < minValue)
+	 newValue = minValue;
+    }
+  [self setDoubleValue: newValue];
+}
+
+- (void) _decrement
+{
+  double newValue;
+  double maxValue = [self maxValue];
+  double minValue = [self minValue];
+  double increment = [self increment];
+
+  newValue = [self doubleValue] - increment;
+  if ([self valueWraps])
+    {
+      if (newValue > maxValue)
+	newValue = newValue - maxValue + minValue - 1;
+      else if (newValue < minValue)
+	newValue = newValue + maxValue - minValue + 1;
+    }
+  else
+    {
+      if (newValue > maxValue)
+	newValue = maxValue;
+      else if (newValue < minValue)
+	 newValue = minValue;
+    }
+  [self setDoubleValue: newValue];
+}
+
+- (void) setHighlighted: (BOOL)highlight
+	       upButton: (BOOL)upButton
+	      withFrame: (NSRect)frame
+		 inView: (NSView*)controlView
+{
+  if (upButton)
+    {  
+      highlightUp = highlight;
+    }
+  else
+    {
+      highlightDown = highlight;
+    }
+
+  [controlView setNeedsDisplayInRect: frame];
+}
+
+- (NSRect) upButtonRectWithFrame: (NSRect)frame
+{
+  NSRect upRect;
+
+  upRect.size.width = STEPPER_WIDTH;
+  upRect.size.height = STEPPER_HEIGHT;
+  upRect.origin.x = NSMaxX(frame) - STEPPER_WIDTH - 1;
+  upRect.origin.y = NSMinY(frame) + ((int)frame.size.height / 2) + 1;
+  return upRect;
+}
+
+- (NSRect) downButtonRectWithFrame: (NSRect)frame
+{
+  NSRect downRect;
+
+  downRect.size.width = STEPPER_WIDTH;
+  downRect.size.height = STEPPER_HEIGHT;
+  downRect.origin.x = NSMaxX(frame) - STEPPER_WIDTH - 1;
+  downRect.origin.y = NSMinY(frame) + ((int)frame.size.height / 2) - STEPPER_HEIGHT + 1;
+  return downRect;
 }
 
 @end

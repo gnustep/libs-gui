@@ -1522,6 +1522,7 @@ static NSColor	*shadowCol;
   NSPoint	last_point = point;
   BOOL		done;
   BOOL		mouseWentUp;
+  unsigned	periodCount = 0;
 
   NSDebugLLog(@"NSCell", @"cell start tracking in rect %@ initial point %f %f",
 	     NSStringFromRect(cellFrame), point.x, point.y);
@@ -1551,7 +1552,6 @@ static NSColor	*shadowCol;
     {
       NSEventType	eventType;
       BOOL		pointIsInCell;
-      unsigned		periodCount = 0;
 
       theEvent = [theApp nextEventMatchingMask: event_mask
 				     untilDate: nil

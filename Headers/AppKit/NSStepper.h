@@ -31,8 +31,6 @@
 
 #include <AppKit/NSControl.h>
 
-@class NSEvent;
-
 @interface NSStepper : NSControl
 {
   // Attributes
@@ -44,18 +42,11 @@
 - (double) increment;
 - (void) setIncrement: (double)increment;
 
-
 - (BOOL)autorepeat;
 - (void)setAutorepeat: (BOOL)autorepeat;
 - (BOOL)valueWraps;
 - (void)setValueWraps: (BOOL)valueWraps;
 
-- (void)mouseDown:(NSEvent*)event;
-@end
-
-@interface NSStepper (Private)
-- (void)_increment;
-- (void)_decrement;
 @end
 
 #endif // _GNUstep_H_NSStepper

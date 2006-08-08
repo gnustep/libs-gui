@@ -1,3 +1,19 @@
+2006-08-09  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSStepper.h
+	* Headers/AppKit/NSStepperCell.h: Removed private method declarations.
+	* Source/NSStepper.m: Moved code from mouseDown: method to the cell
+	method trackMouse:...untilMouseUp:. Also moved the _increment and
+	_decrement methods to the cell class.
+	* Source/NSStepperCell.m: Rewrote mouse tracking to be more
+	similar to NSCell's implementation and not use any direct
+	drawing. Do not use hard coded colour values in the drawing
+	methods, implemented keyed encoding and cleaned up the rest of the
+	class. 
+	* Source/NSCell.m (trackMouse:...untilMouseUp:): Moved
+	initialisation of periodCount out of the loop. In the old version
+	the value stayed always 0.
+
 2006-08-07  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSCell.m (-setBezeled:, -setBordered:): Switch border off,

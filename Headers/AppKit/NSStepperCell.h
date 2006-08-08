@@ -29,8 +29,7 @@
 
 #include <AppKit/NSActionCell.h>
 
-
-@interface NSStepperCell : NSActionCell <NSCoding>
+@interface NSStepperCell : NSActionCell
 {
   // Think of the following ones as of two BOOL ivars
   #define _autorepeat _cell.subclass_bool_one
@@ -50,29 +49,11 @@
 - (double)increment;
 - (void)setIncrement: (double)increment;
 
-
 - (BOOL)autorepeat;
 - (void)setAutorepeat: (BOOL)autorepeat;
 - (BOOL)valueWraps;
 - (void)setValueWraps: (BOOL)valueWraps;
 
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder: (NSCoder *)aCoder;
-- initWithCoder: (NSCoder *)aDecoder;
-
 @end
 
-@interface NSStepperCell (Private)
-- (void) highlight: (BOOL) highlight
-	  upButton: (BOOL) upButton
-	 withFrame: (NSRect) frame
-	    inView: (NSView*) controlView;
-
-- (NSRect)upButtonRectWithFrame: (NSRect) frame;
-- (NSRect)downButtonRectWithFrame: (NSRect) frame;
-- (void)_drawText: (NSRect)aRect;
-@end
 #endif // _GNUstep_H_NSStepperCell
