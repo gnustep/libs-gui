@@ -4018,29 +4018,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       
       _rFlags.flipped_view = [self isFlipped];
 
-      subs = [aDecoder decodeObjectForKey: @"NSSubviews"];
-
-      // iterate over subviews and put them into the view...
-      e = [subs objectEnumerator];
-      while ((sub = [e nextObject]) != nil)
-	{
-	  NSAssert([sub window] == nil,
-		   NSInternalInconsistencyException);
-	  NSAssert([sub superview] == nil,
-		   NSInternalInconsistencyException);
-	  [sub viewWillMoveToWindow: _window];
-	  [sub viewWillMoveToSuperview: self];
-	  [sub setNextResponder: self];
-	  [_sub_views addObject: sub];
-	  _rFlags.has_subviews = 1;
-	  [sub resetCursorRects];
-	  [sub setNeedsDisplay: YES];
-	  [sub _viewDidMoveToWindow];
-	  [sub viewDidMoveToSuperview];
-	  [self didAddSubview: sub];
-	}
-      RELEASE(subs);
-
+      // previous and next key views...
       prevKeyView = [aDecoder decodeObjectForKey: @"NSPreviousKeyView"];
       nextKeyView = [aDecoder decodeObjectForKey: @"NSNextKeyView"];
       if (nextKeyView != nil)
@@ -4061,6 +4039,31 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	  [self setAutoresizesSubviews: ((vFlags & 0x100) == 0x100)];
 	  [self setHidden: ((vFlags & 0x80000000) == 0x80000000)];
 	}
+
+      // iterate over subviews and put them into the view...
+      subs = [aDecoder decodeObjectForKey: @"NSSubviews"];
+      e = [subs objectEnumerator];
+      while ((sub = [e nextObject]) != nil)
+	{
+	  NSAssert([sub window] == nil,
+		   NSInternalInconsistencyException);
+	  NSAssert([sub superview] == nil,
+		   NSInternalInconsistencyException);
+	  [sub viewWillMoveToWindow: _window];
+	  [sub viewWillMoveToSuperview: self];
+	  [sub setNextResponder: self];
+	  [_sub_views addObject: sub];
+	  _rFlags.has_subviews = 1;
+	  [sub resetCursorRects];
+	  [sub setNeedsDisplay: YES];
+	  [sub _viewDidMoveToWindow];
+	  [sub viewDidMoveToSuperview];
+	  [self didAddSubview: sub];
+	}
+      RELEASE(subs);
+
+      // the superview...
+      [aDecoder decodeObjectForKey: @"NSSuperview"];
     }
   else
     {

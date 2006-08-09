@@ -1137,7 +1137,7 @@ static BOOL flip_hack;
   if ([aCoder allowsKeyedCoding])
     {
       [aCoder encodeObject: fontName forKey: @"NSName"];
-      [aCoder encodeInt: [self pointSize] forKey: @"NSSize"];
+      [aCoder encodeFloat: [self pointSize] forKey: @"NSSize"];
       
       switch (role >> 1)
         {
@@ -1177,7 +1177,7 @@ static BOOL flip_hack;
   if ([aDecoder allowsKeyedCoding])
     {
       NSString *name = [aDecoder decodeObjectForKey: @"NSName"];
-      int size = [aDecoder decodeIntForKey: @"NSSize"];
+      float size = [aDecoder decodeFloatForKey: @"NSSize"];
       
       RELEASE(self);
       if ([aDecoder containsValueForKey: @"NSfFlags"])

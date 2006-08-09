@@ -1,3 +1,18 @@
+2006-08-09 01:44-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSFont.m: Correct issue with size encoding in encodeWithCoder:
+	and initWithCoder:.  Properly encode/decode as a float.
+	* Source/NSImageCell.m: Implement encodeWithCoder:.
+	* Source/NSImage.m: Comment out code in encodeWithCoder: which
+	encodes reps until can determine how to properly encode images.
+	* Source/NSImageView.m: implement encoding in encodeWithCoder:
+	* Source/NSScrollView.m: Don't encode headerClipView if it's
+	nil.
+	* Source/NSTextView.m: Properly encode background color in 
+	NSTextViewSharedData.
+	* Source/NSView.m: Encoding corrections in initWithCoder: and
+	encodeWithCoder:.
+
 2006-08-08 21:33-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h

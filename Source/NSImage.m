@@ -1482,6 +1482,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   if([coder allowsKeyedCoding])
     {
       // FIXME: Not sure this is the way it goes...
+      /*
       if(_flags.archiveByName == NO)
 	{
 	  NSMutableArray *container = [NSMutableArray array];
@@ -1501,6 +1502,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 	{
 	  [coder encodeObject: _name forKey: @"NSImageName"];
 	}
+      */
 
       // encode the rest...
       [coder encodeObject: _color forKey: @"NSColor"];

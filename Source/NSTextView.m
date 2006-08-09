@@ -200,7 +200,7 @@ Interface for a bunch of internal methods that need to be cleaned up.
 {
   if([coder allowsKeyedCoding])
     {	
-      [coder encodeObject: backgroundColor forKey: @"NSBackgoundColor"];
+      [coder encodeObject: backgroundColor forKey: @"NSBackgroundColor"];
       [coder encodeObject: paragraphStyle forKey: @"NSDefaultParagraphStyle"];
       [coder encodeInt: flags forKey: @"NSFlags"];
       [coder encodeObject: markAttr forKey: @"NSMarkedAttributes"];

@@ -279,8 +279,15 @@ static Class imageCellClass;
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
   [super encodeWithCoder: aCoder];
-  [aCoder encodeConditionalObject: _target];
-  [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
+  if([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeBool: [self isEditable] forKey: @"NSEditable"];
+    }
+  else
+    {
+      [aCoder encodeConditionalObject: _target];
+      [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
+    }
 }
 
 - (id) initWithCoder: (NSCoder *)aDecoder
@@ -290,7 +297,6 @@ static Class imageCellClass;
   if ([aDecoder allowsKeyedCoding])
     {
       //NSArray *dragType = [aDecoder decodeObjectForKey: @"NSDragTypes"];
-
       if ([aDecoder containsValueForKey: @"NSEditable"])
         {
 	  [self setEditable: [aDecoder decodeBoolForKey: @"NSEditable"]];

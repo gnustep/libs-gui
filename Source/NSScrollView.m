@@ -1220,6 +1220,25 @@ static float scrollerWidth;
       
   if([aCoder allowsKeyedCoding])
     {
+      unsigned long flags = 0;
+      GSScrollViewFlags scrollViewFlags;
+
+      [aCoder encodeObject: _horizScroller forKey: @"NSHScroller"];
+      [aCoder encodeObject: _vertScroller forKey: @"NSVScroller"];
+      [aCoder encodeObject: _contentView forKey: @"NSContentView"];
+
+      // only encode this, if it's not null...
+      if(_headerClipView != nil)
+	{
+	  [aCoder encodeObject: _headerClipView forKey: @"NSHeaderClipView"];
+	}
+
+      scrollViewFlags.hasVScroller = _hasVertScroller;
+      scrollViewFlags.hasHScroller = _hasHorizScroller;
+      scrollViewFlags.border = _borderType;
+      memcpy((void *)&flags, (void *)&scrollViewFlags,sizeof(unsigned long));
+
+      [aCoder encodeInt: flags forKey: @"NSsFlags"];
     }
   else
     {
