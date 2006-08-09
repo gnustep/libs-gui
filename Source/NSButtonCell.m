@@ -1489,8 +1489,8 @@ typedef struct _GSButtonCellFlags
       [aCoder encodeObject: bi forKey: @"NSAlternateImage"];      
 
       // repeat and delay
-      [aCoder encodeFloat: _delayInterval forKey: @"NSPeriodicDelay"];
-      [aCoder encodeFloat: _repeatInterval forKey: @"NSPeriodicInterval"];
+      [aCoder encodeInt: (int)_delayInterval forKey: @"NSPeriodicDelay"];
+      [aCoder encodeInt: (int)_repeatInterval forKey: @"NSPeriodicInterval"];
     }
   else
     {
