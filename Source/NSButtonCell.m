@@ -52,6 +52,7 @@
 #include "AppKit/NSSound.h"
 #include "AppKit/NSWindow.h"
 #include "GNUstepGUI/GSDrawFunctions.h"
+#include "GNUstepGUI/GSNibCompatibility.h"
 
 #include <math.h>
 
@@ -1449,6 +1450,8 @@ typedef struct _GSButtonCellFlags
       GSButtonCellFlags buttonCellFlags;
       unsigned int bFlags = 0;
       unsigned int bFlags2 = 0;
+      NSImage *image = nil;
+      NSButtonImageSource *bi = nil;
 
       [aCoder encodeObject: [self keyEquivalent] forKey: @"NSKeyEquivalent"];
       [aCoder encodeObject: [self image] forKey: @"NSNormalImage"];
@@ -1469,6 +1472,25 @@ typedef struct _GSButtonCellFlags
       bFlags2 != [self showsBorderOnlyWhileMouseInside] ? 0x8 : 0;
       bFlags2 |= [self bezelStyle];
       [aCoder encodeInt: bFlags2 forKey: @"NSButtonFlags2"];
+
+      // alternate image encoding...
+      image = [self image];
+      if ([image isKindOfClass: [NSImage class]])
+	{
+	  if([NSImage imageNamed: @"NSSwitch"] == image)
+	    {
+	      bi = [[NSButtonImageSource alloc] initWithImageNamed: @"NSHighlightedSwitch"];
+	    }
+	  else if([NSImage imageNamed: @"NSRadioButton"] == image)
+	    {
+	      bi = [[NSButtonImageSource alloc] initWithImageNamed: @"NSHighlightedRadioButton"];
+	    }
+	}
+      [aCoder encodeObject: bi forKey: @"NSAlternateImage"];      
+
+      // repeat and delay
+      [aCoder encodeFloat: _delayInterval forKey: @"NSPeriodicDelay"];
+      [aCoder encodeFloat: _repeatInterval forKey: @"NSPeriodicInterval"];
     }
   else
     {

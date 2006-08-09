@@ -186,7 +186,7 @@ static BOOL _isInInterfaceBuilder = NO;
 	}
       if ([coder containsValueForKey: @"NSWindowRect"])
         {
-	  _windowRect = [coder decodeRectForKey: @"NSWindowRect"];
+	  _windowRect =  [coder decodeRectForKey: @"NSWindowRect"];
 	}
       if ([coder containsValueForKey: @"NSFrameAutosaveName"])
         {
@@ -214,7 +214,8 @@ static BOOL _isInInterfaceBuilder = NO;
   if ([aCoder allowsKeyedCoding])
     {
       unsigned long flags = 0; 
-
+      NSRect rect = [NSWindow contentRectForFrameRect: _windowRect
+			      styleMask: _windowStyle];
       memcpy((void *)&flags,(void *)&_flags,sizeof(unsigned long));
 
       [aCoder encodeObject: _viewClass forKey: @"NSViewClass"];
@@ -225,7 +226,7 @@ static BOOL _isInInterfaceBuilder = NO;
       [aCoder encodeInt: flags forKey: @"NSWTFlags"];
       [aCoder encodeSize: _minSize forKey: @"NSMinSize"];
       [aCoder encodeSize: _maxSize forKey: @"NSMaxSize"];
-      [aCoder encodeRect: _windowRect forKey: @"NSWindowRect"];
+      [aCoder encodeRect: rect forKey: @"NSWindowRect"];
       [aCoder encodeObject: _title forKey: @"NSWindowTitle"];
       [aCoder encodeObject: _autosaveName forKey: @"NSFrameAutosaveName"];
     }
@@ -283,9 +284,10 @@ static BOOL _isInInterfaceBuilder = NO;
       [_view _fixSubviews];
 
       // resize the window...
-      [_realObject setFrame: [self windowRect]
+      [_realObject setFrame: [NSWindow frameRectForContentRect: [self windowRect] 
+				       styleMask: [self windowStyle]]
 		   display: NO];
-      
+
       // swap out any views which need to be swapped...
       en = [[[_realObject contentView] subviews] objectEnumerator];
       while((v = [en nextObject]) != nil)
@@ -1386,13 +1388,6 @@ static BOOL _isInInterfaceBuilder = NO;
 }
 @end
 
-@interface NSButtonImageSource : NSObject <NSCoding>
-{
-  NSString *imageName;
-}
-- (NSString *)imageName;
-@end
-
 @implementation NSButtonImageSource
 - (id) initWithCoder: (NSCoder *)coder
 {
@@ -1423,6 +1418,15 @@ static BOOL _isInInterfaceBuilder = NO;
 		   format: @"Can't encode %@ with %@.",NSStringFromClass([self class]),
 		   NSStringFromClass([coder class])];
     }
+}
+
+- (id) initWithImageNamed: (NSString *)name
+{
+  if((self = [super init]) != nil)
+    {
+      ASSIGN(imageName,name);
+    }
+  return self;
 }
 
 - (NSString *)imageName

@@ -83,6 +83,17 @@ typedef struct _GSWindowTemplateFlags
 @end
 
 /**
+ * Button image source class.
+ */
+@interface NSButtonImageSource : NSObject <NSCoding>
+{
+  NSString *imageName;
+}
+- (id) initWithImageNamed: (NSString *)name;
+- (NSString *)imageName;
+@end
+
+/**
  * This class acts as a placeholder for the window.  It doesn't derive from
  * NSWindow for two reasons. First, it shouldn't instantiate a window immediately
  * when it's unarchived and second, it holds certain attributes (but doesn't set them

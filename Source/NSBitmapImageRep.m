@@ -948,7 +948,14 @@ static BOOL supports_lzw_compression = NO;
   NSData *data = [self TIFFRepresentation];
 
   [super encodeWithCoder: aCoder];
-  [aCoder encodeObject: data];
+  if([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeObject: data forKey: @"NSTIFFRepresentation"];
+    }
+  else
+    {
+      [aCoder encodeObject: data];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder

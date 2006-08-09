@@ -1,3 +1,17 @@
+2006-08-08 21:33-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h
+	* Source/GSNibCompatibility.m: Fix for window size issue caused
+	by previous change.
+	* Source/NSBitmapImageRep.m
+	* Source/NSBox.m
+	* Source/NSButtonCell.m
+	* Source/NSCachedImageRep.m
+	* Source/NSImage.m
+	* Source/NSTabViewItem.m
+	* Source/NSTabView.m
+	* Source/NSTextFieldCell.m: Added encoding in encodeWithCoder:
+
 2006-08-09  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSStepper.h

@@ -766,14 +766,25 @@
 - (void) encodeWithCoder: (NSCoder*)aCoder
 { 
   [super encodeWithCoder: aCoder];
-           
-  [aCoder encodeObject: _items];
-  [aCoder encodeObject: _font];
-  [aCoder encodeValueOfObjCType: @encode(NSTabViewType) at: &_type];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_draws_background];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_truncated_label];
-  [aCoder encodeConditionalObject: _delegate];
-  [aCoder encodeValueOfObjCType: "i" at: &_selected_item];
+  if ([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeBool: [self allowsTruncatedLabels] forKey: @"NSAllowTruncatedLabels"];
+      [aCoder encodeBool: [self drawsBackground] forKey: @"NSDrawsBackground"];
+      [aCoder encodeObject: [self font] forKey: @"NSFont"];
+      [aCoder encodeObject: _items forKey: @"NSTabViewItems"];
+      [aCoder encodeObject: [self selectedTabViewItem] forKey: @"NSSelectedTabViewItem"];
+      [aCoder encodeInt: 0 forKey: @"NSTvFlags"]; // no flags set...
+    }
+  else
+    {
+      [aCoder encodeObject: _items];
+      [aCoder encodeObject: _font];
+      [aCoder encodeValueOfObjCType: @encode(NSTabViewType) at: &_type];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_draws_background];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_truncated_label];
+      [aCoder encodeConditionalObject: _delegate];
+      [aCoder encodeValueOfObjCType: "i" at: &_selected_item];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder

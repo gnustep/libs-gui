@@ -208,10 +208,19 @@ static NSColor	*txtCol;
   BOOL tmp;
   [super encodeWithCoder: aCoder];
 
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_background_color];
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_text_color];
-  tmp = _textfieldcell_draws_background;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &tmp];
+  if([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeObject: [self backgroundColor] forKey: @"NSBackgroundColor"];
+      [aCoder encodeObject: [self textColor] forKey: @"NSTextColor"];
+      [aCoder encodeBool: [self drawsBackground] forKey: @"NSDrawsBackground"];
+    }
+  else
+    {
+      [aCoder encodeValueOfObjCType: @encode(id) at: &_background_color];
+      [aCoder encodeValueOfObjCType: @encode(id) at: &_text_color];
+      tmp = _textfieldcell_draws_background;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &tmp];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder

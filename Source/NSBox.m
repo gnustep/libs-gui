@@ -479,12 +479,24 @@
 {
   [super encodeWithCoder: aCoder];
 
-  [aCoder encodeObject: _cell];
-  [aCoder encodeSize: _offsets];
-  [aCoder encodeValueOfObjCType: @encode(NSBorderType) at: &_border_type];
-  [aCoder encodeValueOfObjCType: @encode(NSTitlePosition) at: &_title_position];
-  // NB: the content view is our (only) subview, so it is already 
-  // encoded by NSView.
+  if ([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeObject: [self contentView] forKey: @"NSContentView"];
+      [aCoder encodeObject: _cell forKey: @"NSTitleCell"];
+      [aCoder encodeInt: [self borderType] forKey: @"NSBorderType"];
+      [aCoder encodeInt: [self titlePosition] forKey: @"NSTitlePosition"];
+      [aCoder encodeBool: NO forKey: @"NSTransparent"];
+      [aCoder encodeSize: [self contentViewMargins] forKey: @"NSOffsets"];
+    }
+  else
+    {
+      [aCoder encodeObject: _cell];
+      [aCoder encodeSize: _offsets];
+      [aCoder encodeValueOfObjCType: @encode(NSBorderType) at: &_border_type];
+      [aCoder encodeValueOfObjCType: @encode(NSTitlePosition) at: &_title_position];
+      // NB: the content view is our (only) subview, so it is already 
+      // encoded by NSView.
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder

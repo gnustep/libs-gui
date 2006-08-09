@@ -208,13 +208,24 @@
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodeObject:_ident];
-  [aCoder encodeObject:_label];
-  [aCoder encodeObject:_view];
-  [aCoder encodeObject:_color];
-  [aCoder encodeValueOfObjCType: @encode(NSTabState) at: &_state];
-  [aCoder encodeObject:_first_responder];
-  [aCoder encodeObject:_tabview];
+  if ([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeObject: _ident forKey: @"NSIdentifier"];
+      [aCoder encodeObject: _label forKey: @"NSLabel"];
+      [aCoder encodeObject: _view forKey: @"NSView"];
+      [aCoder encodeObject: _color forKey: @"NSColor"];
+      [aCoder encodeObject: _tabview forKey: @"NSTabView"];
+    }
+  else
+    {
+      [aCoder encodeObject:_ident];
+      [aCoder encodeObject:_label];
+      [aCoder encodeObject:_view];
+      [aCoder encodeObject:_color];
+      [aCoder encodeValueOfObjCType: @encode(NSTabState) at: &_state];
+      [aCoder encodeObject:_first_responder];
+      [aCoder encodeObject:_tabview];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
