@@ -1,3 +1,8 @@
+2006-08-10  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSControl.m (mouseDown:): Simplified code to no longer
+	fiddle with the cells action mask nor to capture the mouse.
+
 2006-08-09 02:28-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSButtonCell.m: Correct encoding of repeat and delay in

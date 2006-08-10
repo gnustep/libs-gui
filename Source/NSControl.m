@@ -732,82 +732,63 @@ static Class actionCellClass;
  */
 - (void) mouseDown: (NSEvent *)theEvent
 {
-  NSApplication *theApp = [NSApplication sharedApplication];
-  BOOL mouseUp = NO, done = NO;
-  NSEvent *e;
-  int oldActionMask;
-  NSPoint location;
   unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask
     | NSMouseMovedMask | NSLeftMouseDraggedMask | NSOtherMouseDraggedMask
     | NSRightMouseDraggedMask;
+  BOOL mouseUp = NO;
 
+  // If not enabled ignore mouse clicks
   if (![self isEnabled])
     return;
 
+  // Ignore multiple clicks, if configured to do so
   if (_ignoresMultiClick && ([theEvent clickCount] > 1))
     {  
       [super mouseDown: theEvent];
       return;
     }
 
-  if ([_cell isContinuous])
-    {
-      oldActionMask = [_cell sendActionOn: NSPeriodicMask];
-    }
-  else
-    {
-      oldActionMask = [_cell sendActionOn: 0];
-    }
-  
-  [_window _captureMouse: self];
-
-  e = theEvent;
   // loop until mouse goes up
-  while (!done)
+  while (1)
     {
-      location = [e locationInWindow];
-      location = [self convertPoint: location fromView: nil];
-      // ask the cell to track the mouse only
+      NSPoint location = [self convertPoint: [theEvent locationInWindow] 
+                                   fromView: nil];
+
+      // ask the cell to track the mouse only,
       // if the mouse is within the cell
       if ([self mouse: location inRect: _bounds])
 	{
+	  BOOL done;
+
 	  [_cell setHighlighted: YES];
 	  [self setNeedsDisplay: YES];
-	  if ([_cell trackMouse: e
-		     inRect: _bounds
-		     ofView: self
-		     untilMouseUp: [[_cell class] prefersTrackingUntilMouseUp]])
-	    done = mouseUp = YES;
-	  else
-	    {
-	      [_cell setHighlighted: NO];
-	      [self setNeedsDisplay: YES];
-	    }
+	  done = [_cell trackMouse: theEvent
+		     inRect: _bounds	
+		     ofView: self	
+		     untilMouseUp: [[_cell class] prefersTrackingUntilMouseUp]];
+	  [_cell setHighlighted: NO];
+	  [self setNeedsDisplay: YES];
+
+	  if (done)
+	    break;
 	}
 
-      if (done)
-	break;
-
-      e = [theApp nextEventMatchingMask: event_mask
-			      untilDate: nil
-				 inMode: NSEventTrackingRunLoopMode
-				dequeue: YES];
-      if ([e type] == NSLeftMouseUp)
-	done = YES;
+      theEvent = [NSApp nextEventMatchingMask: event_mask
+			            untilDate: nil
+				       inMode: NSEventTrackingRunLoopMode
+				      dequeue: YES];
+      if ([theEvent type] == NSLeftMouseUp)
+        {
+          mouseUp = YES;
+	  break;
+        }
     }
 
-  [_window _releaseMouse: self];
-
+  // Mouse went up inside the control but not inside the cell
   if (mouseUp)
     {
-      [_cell setHighlighted: NO];
-      [self setNeedsDisplay: YES];
+      [self sendAction: [self action] to: [self target]];
     }
-
-  [_cell sendActionOn: oldActionMask];
-
-  if (mouseUp)
-    [self sendAction: [self action] to: [self target]];
 }
 
 - (BOOL) shouldBeTreatedAsInkEvent: (NSEvent *)theEvent
