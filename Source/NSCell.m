@@ -2184,6 +2184,7 @@ static NSColor	*shadowCol;
       unsigned long cFlags = 0;
       unsigned int cFlags2 = 0;
 
+      // encode contents
       [aCoder encodeObject: _contents forKey: @"NSContents"];
 
       // flags

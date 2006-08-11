@@ -1520,7 +1520,7 @@ typedef struct _GSButtonCellFlags
     {
       int delay = 0;
       int interval = 0;      
-      // NSControl *control = [aDecoder decodeObjectForKey: @"NSControlView"];
+      NSControl *control = [aDecoder decodeObjectForKey: @"NSControlView"];
 
       if ([aDecoder containsValueForKey: @"NSKeyEquivalent"])
         {

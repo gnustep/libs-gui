@@ -290,6 +290,7 @@ static Class controlClass;
       [aCoder encodeInt: [self tag] forKey: @"NSTag"];
       [aCoder encodeObject: [self target] forKey: @"NSTarget"];
       [aCoder encodeObject: NSStringFromSelector([self action]) forKey: @"NSAction"];
+      [aCoder encodeObject: _control_view forKey: @"NSControlView"];
     }
   else
     {

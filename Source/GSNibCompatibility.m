@@ -582,7 +582,7 @@ static BOOL _isInInterfaceBuilder = NO;
 @implementation NSCustomObject
 - (void) setClassName: (NSString *)name
 {
-  ASSIGN(_className, name);
+  ASSIGNCOPY(_className, name);
 }
 
 - (NSString *)className
@@ -592,7 +592,7 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (void) setExtension: (NSString *)name
 {
-  ASSIGN(_extension, name);
+  ASSIGNCOPY(_extension, name);
 }
 
 - (NSString *)extension
@@ -672,7 +672,7 @@ static BOOL _isInInterfaceBuilder = NO;
 @implementation NSCustomView
 - (void) setClassName: (NSString *)name
 {
-  ASSIGN(_className, name);
+  ASSIGNCOPY(_className, name);
 }
 
 - (NSString *)className
@@ -681,7 +681,7 @@ static BOOL _isInInterfaceBuilder = NO;
 }
 - (void) setExtension: (NSString *)ext;
 {
-  ASSIGN(_extension, ext);
+  ASSIGNCOPY(_extension, ext);
 }
 
 - (NSString *)extension
@@ -728,7 +728,8 @@ static BOOL _isInInterfaceBuilder = NO;
     {
       if([coder allowsKeyedCoding])
 	{
-	  _className = [coder decodeObjectForKey: @"NSClassName"];
+	  ASSIGN(_className, [coder decodeObjectForKey: @"NSClassName"]);
+	  ASSIGN(_extension, [coder decodeObjectForKey: @"NSExtension"]);
 	}
       else
 	{
@@ -742,9 +743,11 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
+  [super encodeWithCoder: coder];
   if([coder allowsKeyedCoding])
     {
-      [coder encodeObject: (id)_className forKey: @"NSClassName"];
+      [coder encodeObject: _className forKey: @"NSClassName"];
+      [coder encodeObject: _extension forKey: @"NSExtension"];
     }
   else
     {
@@ -758,7 +761,7 @@ static BOOL _isInInterfaceBuilder = NO;
 @implementation NSCustomResource
 - (void) setClassName: (NSString *)className
 {
-  ASSIGN(_className, className);
+  ASSIGNCOPY(_className, className);
 }
 
 - (NSString *)className
@@ -768,7 +771,7 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (void) setResourceName: (NSString *)resourceName
 {
-  ASSIGN(_resourceName, resourceName);
+  ASSIGNCOPY(_resourceName, resourceName);
 }
 
 - (NSString *)resourceName
@@ -893,7 +896,7 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (void) setClassName: (NSString *)className
 {
-  ASSIGN(_className, className);
+  ASSIGNCOPY(_className, className);
 }
 
 - (NSString *)className
@@ -903,7 +906,7 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (void) setOriginalClassName: (NSString *)className
 {
-  ASSIGN(_originalClassName, className);
+  ASSIGNCOPY(_originalClassName, className);
 }
 
 - (NSString *)originalClassName
@@ -990,9 +993,8 @@ static BOOL _isInInterfaceBuilder = NO;
 {
   if([coder allowsKeyedCoding])
     {
-      NSString *originalClassName = NSStringFromClass(_template);
-      [coder encodeObject: (id)_className forKey: @"NSClassName"];
-      [coder encodeObject: (id)originalClassName forKey: @"NSOriginalClassName"];
+      [coder encodeObject: _originalClassName forKey: @"NSOriginalClassName"];
+      [coder encodeObject: _className forKey: @"NSClassName"];
       [_template encodeWithCoder: coder]; // encode the actual object;
     }
   else
@@ -1222,8 +1224,8 @@ static BOOL _isInInterfaceBuilder = NO;
       [coder encodeObject: (id) oidsKeys forKey: @"NSOidsKeys"];
       [coder encodeObject: (id) oidsValues forKey: @"NSOidsValues"];
       [coder encodeObject: (id) _connections forKey: @"NSConnections"];
-      [coder encodeConditionalObject: (id) _fontManager forKey: @"NSFontManager"];
-      [coder encodeConditionalObject: (id) _framework forKey: @"NSFramework"];
+      [coder encodeObject: (id) _fontManager forKey: @"NSFontManager"];
+      [coder encodeObject: (id) _framework forKey: @"NSFramework"];
       [coder encodeObject: (id) _visibleWindows forKey: @"NSVisibleWindows"];
       [coder encodeInt: _nextOid forKey: @"NSNextOid"];
       [coder encodeConditionalObject: (id) _root forKey: @"NSRoot"];
