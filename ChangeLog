@@ -1,3 +1,11 @@
+2006-08-11  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSlider.m (mouseDown:, trackKnob:knobRect:,
+	_floatValueForMousePoint()): Moved all track related code to cell class. 
+	* Source/NSSliderCell.m (_floatValueForMousePoint(),
+	trackMouse:...untilMouseUp:): Code previously in the NSSlider class.
+	Reworked slightly to be more similar to [NSCell trackMouse:...untilMouseUp:].
+
 2006-08-11 01:50-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibCompatibility.m: Assign copies of the parameters to
