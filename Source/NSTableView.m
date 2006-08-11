@@ -4002,26 +4002,11 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       lastColumn = [_tableColumns objectAtIndex: (_numberOfColumns - 1)];
       if ([lastColumn isResizable] == NO)
 	return;
-      excess_width = NSMaxX ([self convertRect: [_super_view bounds] 
-				      fromView: _super_view]);
-      excess_width -= NSMaxX (_bounds);
-      last_column_width = [lastColumn width];
-      last_column_width += excess_width;
-      _tilingDisabled = YES;
-      if (last_column_width < [lastColumn minWidth])
-	{
-	  [lastColumn setWidth: [lastColumn minWidth]];
-	}
-      else if (last_column_width > [lastColumn maxWidth])
-	{
-	  [lastColumn setWidth: [lastColumn maxWidth]];
-	}
-      else
-	{
-	  [lastColumn setWidth: last_column_width];
-	}
-      _tilingDisabled = NO;
-      [self tile];
+      excess_width = NSMaxX([self convertRect: [_super_view bounds] 
+				     fromView: _super_view]) - NSMaxX(_bounds);
+      last_column_width = [lastColumn width] + excess_width;
+      // This will automatically retile the table
+      [lastColumn setWidth: last_column_width];
     }
 }
 

@@ -1,5 +1,15 @@
 2006-08-11  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSView.m (displayIfNeededInRect:): Check for
+	needs_display == YES, instead of NO.
+	* Headers/AppKit/AppKit.h: Added missing header files and moved
+	the non-OpenStep ones inside the #ifdef.
+	* Source/NSTableView.m (-sizeLastColumnToFit): Don't clamp the
+	value of the new column width, as the column those this by
+	itself, and rely on the automatic tiling
+
+2006-08-11  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSSlider.m (mouseDown:, trackKnob:knobRect:,
 	_floatValueForMousePoint()): Moved all track related code to cell class. 
 	* Source/NSSliderCell.m (_floatValueForMousePoint(),

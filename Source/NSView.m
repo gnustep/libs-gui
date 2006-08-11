@@ -1996,7 +1996,7 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 
 - (void) displayIfNeededInRect: (NSRect)aRect
 {
-  if (_rFlags.needs_display == NO)
+  if (_rFlags.needs_display == YES)
     {
       if ([self isOpaque] == YES)
 	{
