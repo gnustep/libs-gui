@@ -5123,11 +5123,11 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 {
   if ([aCoder allowsKeyedCoding])
     {
-      unsigned int vFlags = 0; // (raw >> 26); // filter out settings not pertinent to us.
+      unsigned long vFlags = 0; 
       NSSize intercellSpacing = [self intercellSpacing];
+      GSTableViewFlags tableViewFlags;
 
       // make sure the corner view is properly encoded...
-      [(NSKeyedArchiver *)aCoder setClassName: @"_NSCornerView" forClass: [GSTableCornerView class]];
       [super encodeWithCoder: aCoder];
       [aCoder encodeObject: [self dataSource] forKey: @"NSDataSource"];
       [aCoder encodeObject: [self delegate] forKey: @"NSDelegate"];
@@ -5139,25 +5139,17 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       [aCoder encodeFloat: intercellSpacing.width forKey: @"NSIntercellSpacingWidth"];
       [aCoder encodeFloat: [self rowHeight] forKey: @"NSRowHeight"];
       [aCoder encodeObject: [self tableColumns] forKey: @"NSTableColumns"];
+      [aCoder encodeObject: _headerView forKey: @"NSHeaderView"];
+      [aCoder encodeObject: _cornerView forKey: @"NSCornerView"];
+
+      tableViewFlags.columnSelection = [self allowsColumnSelection];
+      tableViewFlags.multipleSelection = [self allowsMultipleSelection];
+      tableViewFlags.emptySelection = [self allowsEmptySelection];
+      tableViewFlags.drawsGrid = [self drawsGrid]; 
+      tableViewFlags.columnResizing = [self allowsColumnResizing];
+      tableViewFlags.columnOrdering = [self allowsColumnReordering];
       
-      if([self allowsColumnSelection])
-	vFlags |= 1;
-
-      if([self allowsMultipleSelection])
-	vFlags |= 2;
-
-      if([self allowsEmptySelection])
-	vFlags |= 4;
-
-      if([self allowsColumnResizing])
-	vFlags |= 16;
-
-      if([self allowsColumnReordering])
-	vFlags |= 32;
-
-      // shift...
-      vFlags = vFlags << 26;
-      vFlags |= 0x2400000; // add the constant...
+      memcpy((void *)&vFlags,(void *)&tableViewFlags,sizeof(unsigned long));
 
       // encode..
       [aCoder encodeInt: vFlags forKey: @"NSTvFlags"];

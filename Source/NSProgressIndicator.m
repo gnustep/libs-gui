@@ -28,6 +28,7 @@
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSWindow.h"
 #include "GNUstepGUI/GSDrawFunctions.h"
+#include "GNUstepGUI/GSNibCompatibility.h"
 
 @implementation NSProgressIndicator
 
@@ -289,14 +290,44 @@ static NSColor *fillColour = nil;
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
    [super encodeWithCoder:aCoder];
-   [aCoder encodeValueOfObjCType: @encode(BOOL) at:&_isIndeterminate];
-   [aCoder encodeValueOfObjCType: @encode(BOOL) at:&_isBezeled];
-   [aCoder encodeValueOfObjCType: @encode(BOOL) at:&_usesThreadedAnimation];
-   [aCoder encodeValueOfObjCType: @encode(NSTimeInterval) at:&_animationDelay];
-   [aCoder encodeValueOfObjCType: @encode(double) at:&_doubleValue];
-   [aCoder encodeValueOfObjCType: @encode(double) at:&_minValue];
-   [aCoder encodeValueOfObjCType: @encode(double) at:&_maxValue];
-   [aCoder encodeValueOfObjCType: @encode(BOOL) at:&_isVertical];
+   if([aCoder allowsKeyedCoding])
+     {
+       unsigned long flags = 0;
+       id matrix = AUTORELEASE([[NSPSMatrix alloc] init]);
+
+       [aCoder encodeDouble: _minValue forKey: @"NSMinValue"];
+       [aCoder encodeDouble: _maxValue forKey: @"NSMaxValue"];
+       [aCoder encodeObject: matrix forKey: @"NSDrawMatrix"];
+
+       // add flag values.
+       flags |= (_isIndeterminate)? 2 : 0;
+
+       //
+       // Hard coded... this value forces it to be a regular-sized, 
+       // bar type progress indicator since this is the only type
+       // gnustep supports. 
+       //
+       flags |= 8200; 
+       [aCoder encodeInt: flags forKey: @"NSpiFlags"];
+
+       // things which Gorm encodes, but IB doesn't care about.
+       [aCoder encodeDouble: _doubleValue forKey: @"GSDoubleValue"];
+       [aCoder encodeBool: _isBezeled forKey: @"GSIsBezeled"];
+       [aCoder encodeBool: _isVertical forKey: @"GSIsVertical"];
+       [aCoder encodeBool: _usesThreadedAnimation forKey: @"GSUsesThreadAnimation"];
+       [aCoder encodeDouble: _animationDelay forKey: @"GSAnimationDelay"];
+     }
+   else
+     {
+       [aCoder encodeValueOfObjCType: @encode(BOOL) at:&_isIndeterminate];
+       [aCoder encodeValueOfObjCType: @encode(BOOL) at:&_isBezeled];
+       [aCoder encodeValueOfObjCType: @encode(BOOL) at:&_usesThreadedAnimation];
+       [aCoder encodeValueOfObjCType: @encode(NSTimeInterval) at:&_animationDelay];
+       [aCoder encodeValueOfObjCType: @encode(double) at:&_doubleValue];
+       [aCoder encodeValueOfObjCType: @encode(double) at:&_minValue];
+       [aCoder encodeValueOfObjCType: @encode(double) at:&_maxValue];
+       [aCoder encodeValueOfObjCType: @encode(BOOL) at:&_isVertical];
+     }
 }
 
 - (id)initWithCoder:(NSCoder *)aDecoder
@@ -304,18 +335,47 @@ static NSColor *fillColour = nil;
   self = [super initWithCoder:aDecoder];
   if ([aDecoder allowsKeyedCoding])
     {
-      //id *matrix = [aDecoder decodeObjectForKey: @"NSDrawMatrix"];
-
+      // id matrix = [aDecoder decodeObjectForKey: @"NSDrawMatrix"];
       if ([aDecoder containsValueForKey: @"NSMaxValue"])
         {
-	  int max = [aDecoder decodeIntForKey: @"NSMaxValue"];
+	  int max = [aDecoder decodeDoubleForKey: @"NSMaxValue"];
 
 	  [self setMaxValue: max];
 	}
+      if ([aDecoder containsValueForKey: @"NSMinValue"])
+        {
+	  int min = [aDecoder decodeDoubleForKey: @"NSMinValue"];
+
+	  [self setMinValue: min];
+	}
       if ([aDecoder containsValueForKey: @"NSpiFlags"])
         {
-	  //int flags = [aDecoder decodeIntForKey: @"NSpiFlags"];
-	  // FIXME
+	  int flags = [aDecoder decodeIntForKey: @"NSpiFlags"];
+
+	  _isIndeterminate = ((flags & 2) == 2);
+	  // ignore the rest, since they are not pertinent to GNUstep.
+	}
+
+      // things which Gorm encodes, but IB doesn't care about.
+      if ([aDecoder containsValueForKey: @"GSDoubleValue"])
+	{
+	  _doubleValue = [aDecoder decodeDoubleForKey: @"GSDoubleValue"];
+	}
+      if ([aDecoder containsValueForKey: @"GSIsBezeled"])
+	{
+	  _isBezeled = [aDecoder decodeBoolForKey: @"GSIsBezeled"];
+	}
+      if ([aDecoder containsValueForKey: @"GSIsVertical"])
+	{
+	  _isVertical = [aDecoder decodeBoolForKey: @"GSIsVertical"];
+	}
+      if ([aDecoder containsValueForKey: @"GSUsesThreadAnimation"])
+	{
+	  _usesThreadedAnimation = [aDecoder decodeBoolForKey: @"GSUsesThreadAnimation"];
+	}      
+      if ([aDecoder containsValueForKey: @"GSAnimationDelay"])
+	{
+	  _animationDelay = [aDecoder decodeDoubleForKey: @"GSAnimationDelay"];
 	}
     }
   else
@@ -348,3 +408,4 @@ static NSColor *fillColour = nil;
 }
 
 @end
+

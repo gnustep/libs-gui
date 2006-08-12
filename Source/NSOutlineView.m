@@ -757,10 +757,7 @@ static NSImage *unexpandable  = nil;
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-  if ([aCoder allowsKeyedCoding])
-    {
-    }
-  else
+  if ([aCoder allowsKeyedCoding] == NO)
     {
       [aCoder encodeValueOfObjCType: @encode(BOOL)
 				 at: &_autoResizesOutlineColumn];

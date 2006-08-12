@@ -1212,6 +1212,8 @@ static BOOL _isInInterfaceBuilder = NO;
       NSArray *oidsKeys = (NSArray *)NSAllMapTableKeys(_oids);
       NSArray *oidsValues = [self _valuesForKeys: oidsKeys inMap: _oids];
 
+      [(NSKeyedArchiver *)coder setClassName: @"_NSCornerView" forClass: NSClassFromString(@"GSTableCornerView")];
+
       [coder encodeObject: (id)_accessibilityConnectors forKey: @"NSAccessibilityConnectors"];
       [coder encodeObject: (id) accessibilityOidsKeys forKey: @"NSAccessibilityOidsKeys"];
       [coder encodeObject: (id) accessibilityOidsValues forKey: @"NSAccessibilityOidsValues"];
@@ -1496,3 +1498,20 @@ static BOOL _isInInterfaceBuilder = NO;
 }
 
 @end
+
+// class needed for nib encoding/decoding by
+@implementation NSPSMatrix
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  // do nothing... just encoding the presence of the class.
+}
+
+- (id) initWithCoder: (NSCoder *)coder
+{
+  // what's NSPSMatix all about?
+  // NSLog(@"NSPSMatrix = %@",[(NSKeyedUnarchiver *)coder keyMap]);
+  return self;
+}
+@end
+
+

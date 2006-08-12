@@ -273,4 +273,8 @@ typedef struct _GSWindowTemplateFlags
 - (int) nextOid;
 @end
 
+// class needed for nib encoding/decoding by the progress bar...
+@interface NSPSMatrix : NSObject
+@end
+
 #endif /* _GNUstep_H_GSNibCompatibility */
