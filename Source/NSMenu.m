@@ -1217,6 +1217,12 @@ static NSNotificationCenter *nc;
     {
       [encoder encodeObject: _title forKey: @"NSTitle"];
       [encoder encodeObject: _items forKey: @"NSMenuItems"];
+      
+      // if there is no supermenu, make it the main menu.
+      if([self supermenu] == nil)
+	{
+	  [encoder encodeObject: @"_NSMainMenu" forKey: @"NSName"];
+	}
     }
   else
     {

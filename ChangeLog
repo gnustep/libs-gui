@@ -1,3 +1,13 @@
+2006-08-13 16:18-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSCell.m: Conditionally encode the formatter in 
+	encodeWithCoder:.
+	* Source/NSMenu.m: Change in encodeWithCoder: to add NSName to the
+	menu with "_NSMainMenu" as the value so that IB will display the menu
+	properly when loading.
+	* Source/NSTableView.m: Conditionally encode datasource, delegate, 
+	target and action in encodeWithCoder:
+
 2006-08-13 13:05-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSControl.m: Rolling back previous change to mouseDown:

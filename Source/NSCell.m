@@ -2215,7 +2215,11 @@ static NSColor	*shadowCol;
 	  
       // font and formatter.
       [aCoder encodeObject: [self font] forKey: @"NSSupport"];
-      [aCoder encodeObject: [self formatter] forKey: @"NSFormatter"];
+
+      if([self formatter])
+	{
+	  [aCoder encodeObject: [self formatter] forKey: @"NSFormatter"];
+	}
     }
   else
     {
