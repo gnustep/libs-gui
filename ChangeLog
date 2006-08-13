@@ -26,7 +26,6 @@
 	itself, and rely on the automatic tiling
 
 2006-08-11  Fred Kiefer <FredKiefer@gmx.de>
-
 	* Source/NSSlider.m (mouseDown:, trackKnob:knobRect:,
 	_floatValueForMousePoint()): Moved all track related code to cell class. 
 	* Source/NSSliderCell.m (_floatValueForMousePoint(),
