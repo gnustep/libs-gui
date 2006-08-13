@@ -1,3 +1,8 @@
+2006-08-13 13:05-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSControl.m: Rolling back previous change to mouseDown:
+	until it can be determined why it is causing some apps to crash.
+
 2006-08-12 18:37-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h: Added 
