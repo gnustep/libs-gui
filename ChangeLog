@@ -1,3 +1,10 @@
+2006-08-15 01:02-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h: Added oids method.
+	* Images/common_Printer.tiff: Replaced old printer icon with one
+	created from the PrefsIcon_SelectSpooler_Tile.jpg image on the website.
+	* Source/GSNibCompatibility.m: Added oids method to get the map.
+
 2006-08-13 16:18-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSCell.m: Conditionally encode the formatter in 

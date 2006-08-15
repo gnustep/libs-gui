@@ -266,6 +266,7 @@ typedef struct _GSWindowTemplateFlags
 - (NSMapTable *) objects;
 - (NSMapTable *) names;
 - (NSMapTable *) classes;
+- (NSMapTable *) oids;
 - (NSMutableArray *) visibleWindows;
 - (void) setRoot: (id)root;
 - (id) root;

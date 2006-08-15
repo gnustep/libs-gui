@@ -1157,6 +1157,11 @@ static BOOL _isInInterfaceBuilder = NO;
   return _classes;
 }
 
+- (NSMapTable *) oids
+{
+  return _oids;
+}
+
 - (id) objectForName: (NSString *)name
 {
   NSArray *nameKeys = (NSArray *)NSAllMapTableKeys(_names);
