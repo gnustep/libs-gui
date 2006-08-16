@@ -1,3 +1,8 @@
+2006-08-16 00:53-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSTabView.m: Corrections in initWithCoder: and 
+	encodeWithCoder: to properly encode items and tabview orientation.
+
 2006-08-15 01:02-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h: Added oids method.

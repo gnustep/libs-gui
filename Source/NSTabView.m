@@ -768,12 +768,29 @@
   [super encodeWithCoder: aCoder];
   if ([aCoder allowsKeyedCoding])
     {
+      unsigned int type = 0;
+      switch(_type)
+	{
+	case NSTopTabsBezelBorder:
+	  type = 0;
+	  break;
+	case NSLeftTabsBezelBorder:
+	  type = 1;
+	  break;
+	case NSBottomTabsBezelBorder:
+	  type = 2;
+	  break;
+	case NSRightTabsBezelBorder:
+	  type = 3;
+	  break;
+	}
+
       [aCoder encodeBool: [self allowsTruncatedLabels] forKey: @"NSAllowTruncatedLabels"];
       [aCoder encodeBool: [self drawsBackground] forKey: @"NSDrawsBackground"];
       [aCoder encodeObject: [self font] forKey: @"NSFont"];
       [aCoder encodeObject: _items forKey: @"NSTabViewItems"];
       [aCoder encodeObject: [self selectedTabViewItem] forKey: @"NSSelectedTabViewItem"];
-      [aCoder encodeInt: 0 forKey: @"NSTvFlags"]; // no flags set...
+      [aCoder encodeInt: type forKey: @"NSTvFlags"]; // no flags set...
     }
   else
     {
@@ -809,14 +826,7 @@
 	}
       if ([aDecoder containsValueForKey: @"NSTabViewItems"])
         {
-	  NSArray *items = [aDecoder decodeObjectForKey: @"NSTabViewItems"];
-	  NSEnumerator *enumerator = [items objectEnumerator];
-	  NSTabViewItem *item;
-	  
-	  while ((item = [enumerator nextObject]) != nil)
-	    {
-	      [self addTabViewItem: item];
-	    }
+	  ASSIGN(_items, [aDecoder decodeObjectForKey: @"NSTabViewItems"]);
 	}
       if ([aDecoder containsValueForKey: @"NSSelectedTabViewItem"])
         {
@@ -825,7 +835,25 @@
 	}
       if ([aDecoder containsValueForKey: @"NSTvFlags"])
         {
-	    //int flags = [aDecoder decodeObjectForKey: @"NSTvFlags"]];
+	  unsigned int type = [aDecoder decodeIntForKey: @"NSTvFlags"];
+	  switch(type)
+	    {
+	    case 0: 
+	      _type = NSTopTabsBezelBorder;
+	      break;
+	    case 1: 
+	      _type = NSLeftTabsBezelBorder;
+	      break;
+	    case 2: 
+	      _type = NSBottomTabsBezelBorder;
+	      break;
+	    case 3:
+	      _type = NSRightTabsBezelBorder;
+	      break;
+	    default:
+	      _type = NSTopTabsBezelBorder;
+	      break;
+	    }
 	}
     }
   else
