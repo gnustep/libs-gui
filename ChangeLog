@@ -1,3 +1,10 @@
+2006-08-17 00:54-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSButtonCell.m: Improvements in both initWithCoder: and
+	encodeWithCoder: utilize the setCellAttribute:to: method and
+	the cellAttribute: method to determine settings when saving
+	to a keyed archive.
+
 2006-08-16 00:53-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSTabView.m: Corrections in initWithCoder: and 
