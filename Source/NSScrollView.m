@@ -1236,6 +1236,8 @@ static float scrollerWidth;
       scrollViewFlags.hasVScroller = _hasVertScroller;
       scrollViewFlags.hasHScroller = _hasHorizScroller;
       scrollViewFlags.border = _borderType;
+      scrollViewFlags.__unused4 = 0;
+      scrollViewFlags.__unused0 = 0;
       memcpy((void *)&flags, (void *)&scrollViewFlags,sizeof(unsigned long));
 
       [aCoder encodeInt: flags forKey: @"NSsFlags"];

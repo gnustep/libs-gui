@@ -338,14 +338,20 @@ static NSFont *_leafFont;
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  BOOL tmp;
   [super encodeWithCoder: aCoder];
-  
-  tmp = _browsercell_is_leaf;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &tmp];
-  tmp = _browsercell_is_loaded;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &tmp];
-  [aCoder encodeObject: _alternateImage];
+  if([aCoder allowsKeyedCoding])
+    {
+      // simply encodes prescence...
+    }
+  else
+    {
+      BOOL tmp;
+      tmp = _browsercell_is_leaf;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &tmp];
+      tmp = _browsercell_is_loaded;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &tmp];
+      [aCoder encodeObject: _alternateImage];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -354,7 +360,7 @@ static NSFont *_leafFont;
 
   if ([aDecoder allowsKeyedCoding])
     {
-	// Nothing special
+      // Nothing to decode...
     }
   else
     {

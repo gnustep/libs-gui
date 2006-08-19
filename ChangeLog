@@ -1,3 +1,12 @@
+2006-08-19 10:33-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSBrowserCell.m: Improved encoding and decoding in
+	encodeWithCoder: and initWithCoder:
+	* Source/NSBrowser.m: Improved encoding and decoding in
+	encodeWithCoder: and initWithCoder:
+	* Source/NSScrollView.m: Improved encoding and decoding in
+	encodeWithCoder: and initWithCoder:
+
 2006-08-17 00:54-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSButtonCell.m: Improvements in both initWithCoder: and
