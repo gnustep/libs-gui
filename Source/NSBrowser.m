@@ -2503,6 +2503,11 @@ static NSTextFieldCell *titleCell;
   [super encodeWithCoder: aCoder];
   if([aCoder allowsKeyedCoding])
     {
+      //
+      // NOTE: The browserview under GS uses an NSMatrix subview, the one under
+      // Cocoa does not.   This will cause IB to issue an "inconsistency" alert
+      // which is minor and nothing to worry about.
+      //
       [aCoder encodeObject: _browserCellPrototype forKey: @"NSCellPrototype"];
       [aCoder encodeObject: [self _getTitleOfColumn: 0] forKey: @"NSFirstColumnTitle"];
       [aCoder encodeObject: _pathSeparator forKey: @"NSPathSeparator"];
@@ -2521,7 +2526,7 @@ static NSTextFieldCell *titleCell;
       [aCoder encodeInt: flags forKey: @"NSBrFlags"];
 
       [aCoder encodeInt: _maxVisibleColumns forKey: @"NSNumberOfVisibleColumns"];
-      [aCoder encodeFloat: _minColumnWidth forKey: @"NSMinColumnWidth"];
+      [aCoder encodeInt: _minColumnWidth forKey: @"NSMinColumnWidth"];
 
       //[aCoder encodeInt: columnResizingType forKey: @"NSColumnResizingType"]];
       //[aCoder encodeInt: prefWidth forKey: @"NSPreferedColumnWidth"];
@@ -2577,7 +2582,6 @@ static NSTextFieldCell *titleCell;
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   self = [super initWithCoder: aDecoder];
-
   if ([aDecoder allowsKeyedCoding])
     {
       NSCell *proto = [aDecoder decodeObjectForKey: @"NSCellPrototype"];
