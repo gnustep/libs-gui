@@ -958,21 +958,36 @@ static NSImage *_pbc_image[2];
 //
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  int flag;
   [super encodeWithCoder: aCoder];
-
-  [aCoder encodeObject: _menu];
-  [aCoder encodeConditionalObject: [self selectedItem]];
-  flag = _pbcFlags.pullsDown;
-  [aCoder encodeValueOfObjCType: @encode(int) at: &flag];
-  flag = _pbcFlags.preferredEdge;
-  [aCoder encodeValueOfObjCType: @encode(int) at: &flag];
-  flag = _pbcFlags.usesItemFromMenu;
-  [aCoder encodeValueOfObjCType: @encode(int) at: &flag];
-  flag = _pbcFlags.altersStateOfSelectedItem;
-  [aCoder encodeValueOfObjCType: @encode(int) at: &flag];
-  flag = _pbcFlags.arrowPosition;
-  [aCoder encodeValueOfObjCType: @encode(int) at: &flag];
+  if([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeBool: [self altersStateOfSelectedItem] forKey: @"NSAltersState"];
+      [aCoder encodeBool: [self usesItemFromMenu] forKey: @"NSUsesItemFromMenu"];
+      [aCoder encodeInt: [self arrowPosition] forKey: @"NSArrowPosition"];
+      [aCoder encodeInt: [self preferredEdge] forKey: @"NSPreferredEdge"];
+      
+      // encode the menu, if present.
+      if(_menu != nil)
+	{
+	  [aCoder encodeObject: _menu forKey: @"NSMenu"];
+	}
+    }
+  else
+    {    
+      int flag;
+      [aCoder encodeObject: _menu];
+      [aCoder encodeConditionalObject: [self selectedItem]];
+      flag = _pbcFlags.pullsDown;
+      [aCoder encodeValueOfObjCType: @encode(int) at: &flag];
+      flag = _pbcFlags.preferredEdge;
+      [aCoder encodeValueOfObjCType: @encode(int) at: &flag];
+      flag = _pbcFlags.usesItemFromMenu;
+      [aCoder encodeValueOfObjCType: @encode(int) at: &flag];
+      flag = _pbcFlags.altersStateOfSelectedItem;
+      [aCoder encodeValueOfObjCType: @encode(int) at: &flag];
+      flag = _pbcFlags.arrowPosition;
+      [aCoder encodeValueOfObjCType: @encode(int) at: &flag];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -980,7 +995,6 @@ static NSImage *_pbc_image[2];
   NSMenu *menu;
 
   self = [super initWithCoder: aDecoder];
-
   if ([aDecoder allowsKeyedCoding])
     {
       if ([aDecoder containsValueForKey: @"NSAltersState"])

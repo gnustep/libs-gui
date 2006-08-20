@@ -2289,10 +2289,22 @@ static NSColor	*shadowCol;
 {
   if ([aDecoder allowsKeyedCoding])
     {
-      NSString *contents = [aDecoder decodeObjectForKey: @"NSContents"];
+      id contents = [aDecoder decodeObjectForKey: @"NSContents"];
 
-      self = [self initTextCell: contents];
-
+      // initialize based on content...
+      if([contents isKindOfClass: [NSString class]])
+	{
+	  self = [self initTextCell: contents];
+	}
+      else if([contents isKindOfClass: [NSImage class]])
+	{
+	  self = [self initImageCell: contents];
+	}
+      else
+	{
+	  self = [self init];
+	}
+      
       if ([aDecoder containsValueForKey: @"NSCellFlags"])
         {
 	  unsigned long cFlags;

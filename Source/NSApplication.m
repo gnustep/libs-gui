@@ -3294,9 +3294,14 @@ image.</p><p>See Also: -applicationIconImage</p>
   [super encodeWithCoder: aCoder];
   if([aCoder allowsKeyedCoding])
     {
-      [aCoder encodeObject: _delegate forKey: @"NSDelegate"];
+      /*
+      if(_delegate != nil)
+        {
+	  [aCoder encodeObject: _delegate forKey: @"NSDelegate"];
+	}
       [aCoder encodeObject: _main_menu forKey: @"NSMainMenu"]; // ???
       [aCoder encodeObject: _windows_menu forKey: @"NSWindowsMenu"]; // ???
+      */
     }
   else
     {
@@ -3313,15 +3318,17 @@ image.</p><p>See Also: -applicationIconImage</p>
   [super initWithCoder: aDecoder];
   if([aDecoder allowsKeyedCoding])
     {
+      /*
       if([aDecoder containsValueForKey: @"NSDelegate"])
 	{
 	  obj = [aDecoder decodeObjectForKey: @"NSDelegate"];
 	  [self setDelegate: obj];
 	}
-      obj = [aDecoder decodeObjectForKey: @"NSMainMenu"]; // TODO_NIB: Verify this key!!
+      obj = [aDecoder decodeObjectForKey: @"NSMainMenu"];
       [self setMainMenu: obj];
-      obj = [aDecoder decodeObjectForKey: @"NSWindowsMenu"]; // TODO_NIB: Verify this key!!
+      obj = [aDecoder decodeObjectForKey: @"NSWindowsMenu"];
       [self setWindowsMenu: obj];
+      */
     }
   else
     {

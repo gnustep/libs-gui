@@ -2698,6 +2698,15 @@ static SEL getSel;
       matrixFlags.drawCellBackground = [self drawsCellBackground];
       matrixFlags.drawBackground = [self drawsBackground];
       matrixFlags.tabKeyTraversesCells = _tabKeyTraversesCells;
+      matrixFlags.autosizesCells = _autosizesCells;
+
+      // clear unused...
+      matrixFlags.autoScroll = 0;
+      matrixFlags.drawingAncestor = 0;
+      matrixFlags.tabKeyTraversesCellsExplicitly = 0;
+      matrixFlags.canSearchIncrementally = 0;
+      matrixFlags.unused = 0;
+
       memcpy((void *)&mFlags,(void *)&matrixFlags,sizeof(unsigned int));
       [aCoder encodeInt: mFlags forKey: @"NSMatrixFlags"];
 
@@ -2806,6 +2815,7 @@ static SEL getSel;
 	  [self setSelectionByRect: matrixFlags.selectionByRect];
 	  [self setDrawsCellBackground: matrixFlags.drawCellBackground];
 	  [self setDrawsBackground: matrixFlags.drawBackground];
+	  _autosizesCells = matrixFlags.autosizesCells;
 	  _tabKeyTraversesCells = matrixFlags.tabKeyTraversesCells;
 	}
       if ([aDecoder containsValueForKey: @"NSNumCols"])
