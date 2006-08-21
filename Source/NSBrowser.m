@@ -2503,6 +2503,8 @@ static NSTextFieldCell *titleCell;
   [super encodeWithCoder: aCoder];
   if([aCoder allowsKeyedCoding])
     {
+      long flags = 0;
+
       //
       // NOTE: The browserview under GS uses an NSMatrix subview, the one under
       // Cocoa does not.   This will cause IB to issue an "inconsistency" alert
@@ -2512,7 +2514,6 @@ static NSTextFieldCell *titleCell;
       [aCoder encodeObject: [self _getTitleOfColumn: 0] forKey: @"NSFirstColumnTitle"];
       [aCoder encodeObject: _pathSeparator forKey: @"NSPathSeparator"];
 
-      long flags = 0;
       flags |= [self hasHorizontalScroller] ? 0x10000 : 0;
       flags |= ([self allowsEmptySelection] == NO) ? 0x20000 : 0;
       flags |= [self sendsActionOnArrowKeys] ? 0x40000 : 0;
