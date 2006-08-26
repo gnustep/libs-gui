@@ -5353,6 +5353,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       [_headerView setTableView: self];
       [_tableColumns makeObjectsPerformSelector: @selector(setTableView:)
 		     withObject: self];
+
       [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfRows];
       [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfColumns];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_drawsGrid];

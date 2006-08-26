@@ -1,3 +1,9 @@
+2006-08-26 18:25-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSTableView.m: initWithCoder: minor cleanup.
+	* Source/NSTextFieldCell.m: Retain text/background colors to 
+	prevent crash.
+
 2006-08-26 10:01-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibCompatibility.m: In [NSIBObjectData initWithCoder:] 

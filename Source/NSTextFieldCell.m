@@ -229,8 +229,11 @@ static NSColor	*txtCol;
  
   if ([aDecoder allowsKeyedCoding])
     {
-      [self setBackgroundColor: [aDecoder decodeObjectForKey: @"NSBackgroundColor"]];
-      [self setTextColor: [aDecoder decodeObjectForKey: @"NSTextColor"]];
+      id textColor = RETAIN([aDecoder decodeObjectForKey: @"NSTextColor"]);
+      id backColor = RETAIN([aDecoder decodeObjectForKey: @"NSBackgroundColor"]);
+
+      [self setBackgroundColor: backColor];
+      [self setTextColor: textColor];
       if ([aDecoder containsValueForKey: @"NSDrawsBackground"])
         {
 	  [self setDrawsBackground: [aDecoder decodeBoolForKey: 
