@@ -1331,7 +1331,7 @@ static float scrollerWidth;
 	  RETAIN(content);
 	  [self setContentView: content];
 	  RELEASE(content);
-	  _contentView = content;
+	  ASSIGN(_contentView, content);
 	}
      
       if (hScroller != nil && _hasHorizScroller)

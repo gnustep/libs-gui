@@ -667,6 +667,13 @@ static BOOL _isInInterfaceBuilder = NO;
     }
   return _object;
 }
+
+- (void) dealloc
+{
+  RELEASE(_className);
+  RELEASE(_extension);
+  [super dealloc];
+}
 @end
 
 @implementation NSCustomView
@@ -795,11 +802,11 @@ static BOOL _isInInterfaceBuilder = NO;
       // this is a hack, but for now it should do.
       if([_className isEqual: @"NSSound"])
 	{
-	  realObject = [NSSound soundNamed: _resourceName];
+	  realObject = RETAIN([NSSound soundNamed: _resourceName]);
 	}
       else if([_className isEqual: @"NSImage"])
 	{
-	  realObject = [NSImage imageNamed: _resourceName];
+	  realObject = RETAIN([NSImage imageNamed: _resourceName]);
 	}
 
       // if an object has been substituted, then release the placeholder.
@@ -1306,13 +1313,23 @@ static BOOL _isInInterfaceBuilder = NO;
 					      NSObjectMapValueCallBacks, 2);
 	
 	// fill in the maps...
-	[self _buildMap: _accessibilityOids withKeys: accessibilityOidsKeys andValues: accessibilityOidsValues];
-	[self _buildMap: _classes withKeys: classKeys andValues: classValues];
-	[self _buildMap: _names withKeys: nameKeys andValues: nameValues];
-	[self _buildMap: _objects withKeys: objectsKeys andValues: objectsValues];
-	[self _buildMap: _oids withKeys: oidsKeys andValues: oidsValues];
+	[self _buildMap: _accessibilityOids 
+	      withKeys: accessibilityOidsKeys 
+	      andValues: accessibilityOidsValues];
+	[self _buildMap: _classes 
+	      withKeys: classKeys 
+	      andValues: classValues];
+	[self _buildMap: _names 
+	      withKeys: nameKeys 
+	      andValues: nameValues];
+	[self _buildMap: _objects 
+	      withKeys: objectsKeys 
+	      andValues: objectsValues];
+	[self _buildMap: _oids 
+	      withKeys: oidsKeys 
+	      andValues: oidsValues];
 
-	ASSIGN(_connections,  (NSMutableArray *)[coder decodeObjectForKey: @"NSConnections"]);
+	ASSIGN(_connections,  [[coder decodeObjectForKey: @"NSConnections"] mutableCopy]);
 
 	// instantiate...
 	_topLevelObjects = [[NSMutableSet alloc] init];

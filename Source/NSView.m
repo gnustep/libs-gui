@@ -4060,7 +4060,6 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	  [sub viewDidMoveToSuperview];
 	  [self didAddSubview: sub];
 	}
-      RELEASE(subs);
 
       // the superview...
       [aDecoder decodeObjectForKey: @"NSSuperview"];

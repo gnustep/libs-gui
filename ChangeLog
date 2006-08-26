@@ -1,3 +1,22 @@
+2006-08-26 10:01-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: In [NSIBObjectData initWithCoder:] 
+	clean up the buildMap calls.  In NSCustomResource retain the resource
+	that is returned to prevent a crash.  Add dealloc method to 
+	NSCustomObject.
+	* Source/NSClipView.m: In initWithCoder: retain and release
+	documentView before removing it from the view and resetting
+	it as the document view.   This ensures that the view will
+	not be deallocated.
+	* Source/NSScrollView.m: Retain the contentView before exchanging
+	it and then release to prevent the view from being deallocated in
+	initWithCoder:
+	* Source/NSTableView.m: Replace call to "new" with alloc/init for
+	NSTableHeaderView in initWithCoder:
+	* Source/NSView.m: in initWithCoder: keyed coding don't release
+	the subs array since it's already autoreleased.  This was causing
+	a crash.
+
 2006-08-21  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBrowser.m (-encodeWithCoder:): Moved variable

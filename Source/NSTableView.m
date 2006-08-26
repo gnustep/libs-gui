@@ -5294,11 +5294,10 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
       if ([aDecoder containsValueForKey: @"NSHeaderView"])
 	{
-
 	  NSRect viewFrame = [self frame];
 	  float rowHeight = [self rowHeight];
 
-	  _headerView = [NSTableHeaderView new];
+	  _headerView = [[NSTableHeaderView alloc] init];
 	  [_headerView setFrameSize: NSMakeSize(viewFrame.size.width, rowHeight)];
 	  [_headerView setTableView: self];
 	}

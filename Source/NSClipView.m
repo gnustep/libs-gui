@@ -802,8 +802,10 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 	  NSRect rect = [document frame];
 	  rect.origin = NSZeroPoint;
 	  [document setFrame: rect];
+	  RETAIN(document); // prevent it from being released.
 	  [self removeSubview: document];
 	  [self setDocumentView: document];
+	  RELEASE(document);
 	}
     }
   else
