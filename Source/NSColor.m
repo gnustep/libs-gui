@@ -1253,17 +1253,17 @@ systemColorWithName(NSString *name)
 
 	  if (colorSpace == 1)
 	    {
-	      self = [NSColor colorWithCalibratedRed: red
-			      green: green
-			      blue: blue
-			      alpha: alpha];
+	      self = RETAIN([NSColor colorWithCalibratedRed: red
+				     green: green
+				     blue: blue
+				     alpha: alpha]);
 	    }
 	  else
 	    {
-	      self = [NSColor colorWithDeviceRed: red
-			      green: green
-			      blue: blue
-			      alpha: alpha];
+	      self = RETAIN([NSColor colorWithDeviceRed: red
+				     green: green
+				     blue: blue
+				     alpha: alpha]);
 	    }
 	}
       else if ((colorSpace == 3) || (colorSpace == 4))
@@ -1289,13 +1289,13 @@ systemColorWithName(NSString *name)
 	  
 	  if (colorSpace == 3)
 	    {
-	      self = [NSColor colorWithCalibratedWhite: white
-			      alpha: alpha];
+	      self = RETAIN([NSColor colorWithCalibratedWhite: white
+				     alpha: alpha]);
 	    }
 	  else
 	    {
-	      self = [NSColor colorWithDeviceWhite: white
-			      alpha: alpha];
+	      self = RETAIN([NSColor colorWithDeviceWhite: white
+				     alpha: alpha]);
 	    }
 	}
       else if (colorSpace == 5)
@@ -1325,11 +1325,11 @@ systemColorWithName(NSString *name)
 	      RELEASE(str);
 	    }
 
-	  self = [NSColor colorWithDeviceCyan: cyan
-			  magenta: magenta
-			  yellow: yellow
-			  black: black
-			  alpha: alpha];
+	  self = RETAIN([NSColor colorWithDeviceCyan: cyan
+				 magenta: magenta
+				 yellow: yellow
+				 black: black
+				 alpha: alpha]);
 	}
       else if (colorSpace == 6)
         {
@@ -1337,14 +1337,14 @@ systemColorWithName(NSString *name)
 	  NSString *name = [aDecoder decodeObjectForKey: @"NSColorName"];
 	  //NSColor *color = [aDecoder decodeObjectForKey: @"NSColor"];
 	  
-	  self = [NSColor colorWithCatalogName: catalog
-			  colorName: name];
+	  self = RETAIN([NSColor colorWithCatalogName: catalog
+				 colorName: name]);
 	}
       else if (colorSpace == 10)
         {
 	  NSImage *image = [aDecoder decodeObjectForKey: @"NSImage"];
 	  
-	  self = [NSColor colorWithPatternImage: image];
+	  self = RETAIN([NSColor colorWithPatternImage: image]);
 	}
       
       return self;

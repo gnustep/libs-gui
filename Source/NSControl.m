@@ -862,7 +862,7 @@ static Class actionCellClass;
 
   if ([aDecoder allowsKeyedCoding])
     {
-      NSCell *cell = [aDecoder decodeObjectForKey: @"NSCell"];
+      NSCell *cell = RETAIN([aDecoder decodeObjectForKey: @"NSCell"]);
       
       if (cell != nil)
         {

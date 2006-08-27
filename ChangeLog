@@ -1,3 +1,14 @@
+2006-08-26 22:30-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibLoader.m: loadModelData:... Remove TEST_RELEASE 
+	from handler block.
+	* Source/NSColor.m: initWithCoder: retain autoreleased instances
+	of NSColor to prevent double release when the pool is cleared.
+	* Source/NSControl.m: initWithCoder: retain cell to prevent
+	double release when the pool is cleared.
+	* Source/NSFont.m: initWithCoder: retain autoreleased instances
+	of NSFont to prevent double release when the pool is cleared.
+
 2006-08-26 18:25-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSTableView.m: initWithCoder: minor cleanup.

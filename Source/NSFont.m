@@ -1186,22 +1186,22 @@ static BOOL flip_hack;
 	  // FIXME
 	  if (flags == 16)
 	    {
-	      return [NSFont controlContentFontOfSize: size];
+	      return RETAIN([NSFont controlContentFontOfSize: size]);
 	    }
 	  else if (flags == 20)
 	    {
-	      return [NSFont labelFontOfSize: size];
+	      return RETAIN([NSFont labelFontOfSize: size]);
 	    }
 	  else if (flags == 22)
 	    {
-	      return [NSFont titleBarFontOfSize: size];
+	      return RETAIN([NSFont titleBarFontOfSize: size]);
 	    }
 	}
 
       self = [NSFont fontWithName: name size: size];
       if (self == nil)
         {
-	  self = [NSFont systemFontOfSize: size];
+	  self = RETAIN([NSFont systemFontOfSize: size]);
 	}
 
       return self;
