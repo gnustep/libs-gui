@@ -1,9 +1,0 @@
-GNUmakefile.local
-*obj
-*.app
-*.debug
-*.profile
-.gdbinit
-*.nib~
-*.iconheader
-*.bundle
