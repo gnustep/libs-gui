@@ -9,14 +9,25 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.11.0}
+
+@itemize @bullet
+@item Added support for keyed encoding in all gui classes.
+@item Added mechanism to allow for dynamic extension of 
+model loading mechanism
+@item Implemented glue code in GSNibCompatibility for 
+classes such as NSIBObjectData, NSClassSwapper, etc. to 
+facilitate nib loading.
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.10.3}
 
 @itemize @bullet
 @item Horizontal menus now work
 @item Better support for tracking active applications.
 @end itemize
-
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.10.2}
 
@@ -36,7 +47,7 @@ and libraries that use the base library need to be recompiled to use
 this new version.
 
 @itemize @bullet
-@item Nib loading supports window auto-positioning
+@item Model loading supports window auto-positioning
 @item Keyed encoding is supported in many classes.
 @end itemize
 

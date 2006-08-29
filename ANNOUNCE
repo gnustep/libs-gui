@@ -27,12 +27,16 @@ systems.
 GNUstep Base Library, the TIFF Graphics library, and a back-end
 component like the GNUstep 'Back' Backend.
 
-1.2 Noteworthy changes in version `0.10.3'
+1.2 Noteworthy changes in version `0.11.0'
 ==========================================
 
-   * Horizontal menus now work
+   * Added support for keyed encoding in all gui classes.
 
-   * Better support for tracking active applications.
+   * Added mechanism to allow for dynamic extension of model loading
+     mechanism
+
+   * Implemented glue code in GSNibCompatibility for classes such as
+     NSIBObjectData, NSClassSwapper, etc. to facilitate nib loading.
 
 1.3 Where can you get it?  How can you compile it?
 ==================================================
