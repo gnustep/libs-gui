@@ -177,7 +177,7 @@ static NSColor *titleColor[3];
       different method here. */
       [closeButton setAction: @selector(performClose:)];
       [self addSubview: closeButton];
-      RELEASE(closeButton);
+      // RELEASE(closeButton);  // FIXME... causes crash when closing.
     }
   if ([w styleMask] & NSMiniaturizableWindowMask)
     {

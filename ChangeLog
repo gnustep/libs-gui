@@ -1,3 +1,11 @@
+2006-08-31 00:21-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSStandardWindowDecorationView.m: Correct issue in 
+	initWithFrame:window: that was causing a crash when the window 
+	was closed.
+	* Source/NSControl.m: Reinstated fix from Fred Kiefer for 
+	mouseDown: simplification and refactoring. 
+
 2006-08-29  Adam Fedor  <fedor@gnu.org>
 
 	* Documentation/ReleaseNotes.gsdoc: Updates.
