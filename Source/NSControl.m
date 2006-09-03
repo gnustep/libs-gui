@@ -726,16 +726,15 @@ static Class actionCellClass;
   return [[self selectedCell] acceptsFirstResponder];
 }
 
-/** <p>This method is invoked when the user click into the NSControl.</p>
-    
- * 
- */
+
 - (void) mouseDown: (NSEvent *)theEvent
 {
   unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask
     | NSMouseMovedMask | NSLeftMouseDraggedMask | NSOtherMouseDraggedMask
     | NSRightMouseDraggedMask;
   BOOL mouseUp = NO;
+  int oldActionMask = 0;
+  NSEvent *e = nil;
 
   // If not enabled ignore mouse clicks
   if (![self isEnabled])
@@ -748,11 +747,15 @@ static Class actionCellClass;
       return;
     }
 
+  // stop cell from sending action while tracking the mouse...
+  oldActionMask = [_cell sendActionOn: ([_cell isContinuous]?NSPeriodicMask:0)];
+
   // loop until mouse goes up
+  e = theEvent;
   while (1)
     {
-      NSPoint location = [self convertPoint: [theEvent locationInWindow] 
-                                   fromView: nil];
+      NSPoint location = [self convertPoint: [e locationInWindow] 
+			       fromView: nil];
 
       // ask the cell to track the mouse only,
       // if the mouse is within the cell
@@ -762,27 +765,33 @@ static Class actionCellClass;
 
 	  [_cell setHighlighted: YES];
 	  [self setNeedsDisplay: YES];
-	  done = [_cell trackMouse: theEvent
-		     inRect: _bounds	
-		     ofView: self	
-		     untilMouseUp: [[_cell class] prefersTrackingUntilMouseUp]];
+	  done = [_cell trackMouse: e
+			inRect: _bounds	
+			ofView: self	
+			untilMouseUp: [[_cell class] prefersTrackingUntilMouseUp]];
 	  [_cell setHighlighted: NO];
 	  [self setNeedsDisplay: YES];
 
 	  if (done)
-	    break;
+	    {
+	      mouseUp = YES;
+	      break;
+	    }
 	}
 
-      theEvent = [NSApp nextEventMatchingMask: event_mask
-			            untilDate: nil
-				       inMode: NSEventTrackingRunLoopMode
-				      dequeue: YES];
-      if ([theEvent type] == NSLeftMouseUp)
+      e = [NSApp nextEventMatchingMask: event_mask
+		 untilDate: nil
+		 inMode: NSEventTrackingRunLoopMode
+		 dequeue: YES];
+      if ([e type] == NSLeftMouseUp)
         {
           mouseUp = YES;
 	  break;
         }
     }
+
+  // allow the cell to send actions again...
+  [_cell sendActionOn: oldActionMask];
 
   // Mouse went up inside the control but not inside the cell
   if (mouseUp)

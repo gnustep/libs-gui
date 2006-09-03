@@ -1,3 +1,10 @@
+2006-09-03 12:12-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSStandardWindowDecorationView.m: Put back RELEASE to
+	prevent memory leak.
+	* Source/NSControl.m: Reverted last change.
+	* Source/NSWindow.m: Added autogsdoc comments to methods.
+
 2006-08-31 00:21-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSStandardWindowDecorationView.m: Correct issue in 

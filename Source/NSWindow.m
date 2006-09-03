@@ -2490,11 +2490,18 @@ resetCursorRectsForView(NSView *theView)
   [self _didDeminiaturize: sender];
 }
 
+/**
+   Returns YES, if the document has been changed. 
+*/
 - (BOOL) isDocumentEdited
 {
   return _f.is_edited;
 }
 
+
+/**
+   Returns YES, if the window is released when it is closed. 
+*/
 - (BOOL) isReleasedWhenClosed
 {
   return _f.is_released_when_closed;
@@ -2564,6 +2571,11 @@ resetCursorRectsForView(NSView *theView)
 		    object: self];
 }
 
+/**
+   Causes the window to close.  Calls the windowShouldClose: method
+   on the delegate to determine if it should close and calls 
+   shouldCloseWindowController on the controller for the receiver.
+*/
 - (void) performClose: (id)sender
 {
   /* Don't close if a modal session is running and we are not the
@@ -2620,6 +2632,9 @@ resetCursorRectsForView(NSView *theView)
   [self close];
 }
 
+/**
+   Performs the key equivalent represented by theEvent.
+ */
 - (BOOL) performKeyEquivalent: (NSEvent*)theEvent
 {
   if (_contentView)
@@ -2654,6 +2669,11 @@ resetCursorRectsForView(NSView *theView)
   return 0;
 }
 
+/**
+   Set document edit status.   If YES, then, if the receiver has a close
+   button, the close button will show a broken X.  If NO, then, if the reciever
+   has a close button, the close button will show a solid X.
+ */
 - (void) setDocumentEdited: (BOOL)flag
 {
   if (_f.is_edited != flag)
@@ -2667,6 +2687,9 @@ resetCursorRectsForView(NSView *theView)
     }
 }
 
+/**
+   If YES, then the window is released when the close method is called.
+ */
 - (void) setReleasedWhenClosed: (BOOL)flag
 {
   _f.is_released_when_closed = flag;
@@ -2691,16 +2714,26 @@ resetCursorRectsForView(NSView *theView)
   [NSApp discardEventsMatchingMask: mask beforeEvent: lastEvent];
 }
 
+/**
+   Returns the first responder of the window.
+ */
 - (NSResponder*) firstResponder
 {
   return _firstResponder;
 }
 
+/**
+   Returns YES, if the window can accept first responder.  The default
+   implementation of this method returns YES.
+ */
 - (BOOL) acceptsFirstResponder
 {
   return YES;
 }
 
+/**
+   Makes aResponder the first responder within the receiver.
+ */
 - (BOOL) makeFirstResponder: (NSResponder*)aResponder
 {
   if (_firstResponder == aResponder)
@@ -2738,6 +2771,9 @@ resetCursorRectsForView(NSView *theView)
   return YES;
 }
 
+/**
+   Sets the initial first responder of the receiver.
+ */
 - (void) setInitialFirstResponder: (NSView*)aView
 {
   if ([aView isKindOfClass: viewClass])
@@ -2746,11 +2782,18 @@ resetCursorRectsForView(NSView *theView)
     }
 }
 
+/**
+   returns the initial first responder of the receiver.
+ */
 - (NSView*) initialFirstResponder
 {
   return _initialFirstResponder;
 }
 
+/**
+   Processes theEvent when a key is pressed while within
+   the window.
+ */
 - (void) keyDown: (NSEvent*)theEvent
 {
   NSString	*characters = [theEvent characters];
@@ -4024,11 +4067,19 @@ resetCursorRectsForView(NSView *theView)
 			   [_wv convertRect: aRect fromView: nil]];
 }
 
+/**
+   Opens the fax panel to allow the user to fax the contents of
+   the window view.
+*/
 - (void) fax: (id)sender
 {
   [_wv fax: sender];
 }
 
+/**
+   Opens the print panel to allow the user to print the contents of
+   the window view.
+*/
 - (void) print: (id)sender
 {
   [_wv print: sender];
@@ -4038,12 +4089,18 @@ resetCursorRectsForView(NSView *theView)
  * Zooming
  */
 
+/**
+   Returns yes, if the receiver is zoomed.
+ */
 - (BOOL) isZoomed
 {
   // FIXME: Method is missing  
   return NO;
 }
 
+/**
+   Performs the zoom method on the receiver.
+*/
 - (void) performZoom: (id)sender
 {
   // FIXME: We should check for the style and highlight the button
@@ -4052,6 +4109,11 @@ resetCursorRectsForView(NSView *theView)
 
 #define DIST 3
 
+/**
+   Zooms the receiver.   This method calls the delegate method 
+   windowShouldZoom:toFrame: to determine if the window should 
+   be allowed to zoom to full screen.
+*/
 - (void) zoom: (id)sender
 {
   NSRect maxRect = [[self screen] visibleFrame];
@@ -4132,11 +4194,18 @@ resetCursorRectsForView(NSView *theView)
 /*
  * Assigning a delegate
  */
+
+/**
+   Returns the delegate.
+ */
 - (id) delegate
 {
   return _delegate;
 }
 
+/**
+   Sets the delegate to anObject.
+*/
 - (void) setDelegate: (id)anObject
 {
   if (_delegate)
@@ -4327,6 +4396,9 @@ resetCursorRectsForView(NSView *theView)
   return self;
 }
 
+/**
+   Returns all drawers associated with this window.
+*/
 - (NSArray *) drawers
 {
   // TODO
