@@ -49,7 +49,6 @@
 - (id) realObject;
 @end
 
-
 typedef struct _GSWindowTemplateFlags
 {
 #ifdef WORDS_BIGENDIAN
@@ -79,6 +78,21 @@ typedef struct _GSWindowTemplateFlags
 #endif
 } GSWindowTemplateFlags;
 
+// help connector class...
+@interface NSIBHelpConnector : NSNibConnector
+@end
+
+/**
+ * Button image source class.
+ */
+@interface NSButtonImageSource : NSObject <NSCoding>
+{
+  NSString *imageName;
+}
+- (id) initWithImageNamed: (NSString *)name;
+- (NSString *)imageName;
+@end
+
 /**
  * This class acts as a placeholder for the window.  It doesn't derive from
  * NSWindow for two reasons. First, it shouldn't instantiate a window immediately
@@ -100,7 +114,15 @@ typedef struct _GSWindowTemplateFlags
   id                   _view;
   GSWindowTemplateFlags _flags;
   NSString            *_autosaveName;
+  Class               _baseWindowClass;
 }
+- (id) initWithWindow: (NSWindow *)window
+	    className: (NSString *)windowClass
+           isDeferred: (BOOL) deferred
+	    isOneShot: (BOOL) oneShot
+	    isVisible: (BOOL) visible
+       wantsToBeColor: (BOOL) wantsToBeColor
+     autoPositionMask: (int) autoPositionMask;
 - (void) setBackingStoreType: (NSBackingStoreType)type;
 - (NSBackingStoreType) backingStoreType;
 - (void) setDeferred: (BOOL)flag;
@@ -122,6 +144,7 @@ typedef struct _GSWindowTemplateFlags
 - (id) realObject;
 - (void) setView: (id)view;
 - (id) view;
+- (Class) baseWindowClass;
 @end
 
 @interface NSViewTemplate : NSView <OSXNibTemplate, NSCoding>
@@ -204,10 +227,17 @@ typedef struct _GSWindowTemplateFlags
   NSString *_originalClassName;
   id _template;
 }
+- (id) initWithObject: (id)object 
+        withClassName: (NSString *)className
+    originalClassName: (NSString *)origClassName;
++ (void) setIsInInterfaceBuilder: (BOOL)flag;
++ (BOOL) isInInterfaceBuilder;
 - (void) setTemplate: (id)temp;
 - (id) template;
 - (void) setClassName: (NSString *)className;
 - (NSString *)className;
+- (void) setOriginalClassName: (NSString *)className;
+- (NSString *)originalClassName;
 @end
 
 @interface NSIBObjectData : NSObject <NSCoding, GSInstantiator, GSNibContainer>
@@ -218,21 +248,34 @@ typedef struct _GSWindowTemplateFlags
   NSMapTable     *_oids;
   NSMapTable     *_classes;
   NSMapTable     *_instantiatedObjs;
-  NSMutableSet   *_visibleWindows;
+  NSMutableArray *_visibleWindows;
   NSMutableArray *_connections;
   id              _firstResponder;
   id              _fontManager;
   NSString       *_framework;
-  id              _document;
   unsigned        _nextOid;
   NSMutableArray *_accessibilityConnectors;
   NSMapTable     *_accessibilityOids;
+  NSMutableSet   *_topLevelObjects;
 }
 - (id) instantiateObject: (id)obj;
 - (void) nibInstantiateWithOwner: (id)owner;
 - (void) nibInstantiateWithOwner: (id)owner topLevelObjects: (NSMutableArray *)toplevel;
 - (id) objectForName: (NSString *)name;
 - (NSString *) nameForObject: (id)name;
+- (NSMapTable *) objects;
+- (NSMapTable *) names;
+- (NSMapTable *) classes;
+- (NSMapTable *) oids;
+- (NSMutableArray *) visibleWindows;
+- (void) setRoot: (id)root;
+- (id) root;
+- (void) setNextOid: (int)noid;
+- (int) nextOid;
+@end
+
+// class needed for nib encoding/decoding by the progress bar...
+@interface NSPSMatrix : NSObject
 @end
 
 #endif /* _GNUstep_H_GSNibCompatibility */

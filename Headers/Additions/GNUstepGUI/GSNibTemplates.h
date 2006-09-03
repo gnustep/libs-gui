@@ -36,7 +36,7 @@
 #include "GNUstepGUI/GSNibContainer.h"
 
 // version of the nib container and the templates.
-#define GNUSTEP_NIB_VERSION 1
+#define GNUSTEP_NIB_VERSION 2
 #define GSSWAPPER_VERSION   0
 #define GSWINDOWT_VERSION   1
 #define GSVIEWT_VERSION     0
@@ -67,9 +67,15 @@ enum {
 {
   NSMutableDictionary	*nameTable;
   NSMutableArray	*connections;
+  NSMutableArray	*visibleWindows;
+  NSMutableArray	*deferredWindows;
   NSMutableSet          *topLevelObjects;
+  NSMutableDictionary	*customClasses;
   BOOL			isAwake;
 }
+- (NSMutableArray*) visibleWindows;
+- (NSMutableArray*) deferredWindows;
+- (NSMutableDictionary *) customClasses;
 @end
 
 /*

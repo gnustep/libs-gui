@@ -42,6 +42,8 @@
 
 -(void)setHelpText: (NSAttributedString*)helpText;
 
+- (void)buttonAction:(id)sender;
+
 @end
 
 #endif // _GNUstep_H_GSHelpManagerPanel
