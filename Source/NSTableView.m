@@ -4002,26 +4002,11 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       lastColumn = [_tableColumns objectAtIndex: (_numberOfColumns - 1)];
       if ([lastColumn isResizable] == NO)
 	return;
-      excess_width = NSMaxX ([self convertRect: [_super_view bounds] 
-				      fromView: _super_view]);
-      excess_width -= NSMaxX (_bounds);
-      last_column_width = [lastColumn width];
-      last_column_width += excess_width;
-      _tilingDisabled = YES;
-      if (last_column_width < [lastColumn minWidth])
-	{
-	  [lastColumn setWidth: [lastColumn minWidth]];
-	}
-      else if (last_column_width > [lastColumn maxWidth])
-	{
-	  [lastColumn setWidth: [lastColumn maxWidth]];
-	}
-      else
-	{
-	  [lastColumn setWidth: last_column_width];
-	}
-      _tilingDisabled = NO;
-      [self tile];
+      excess_width = NSMaxX([self convertRect: [_super_view bounds] 
+				     fromView: _super_view]) - NSMaxX(_bounds);
+      last_column_width = [lastColumn width] + excess_width;
+      // This will automatically retile the table
+      [lastColumn setWidth: last_column_width];
     }
 }
 
@@ -5136,48 +5121,63 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [super encodeWithCoder: aCoder];
-
   if ([aCoder allowsKeyedCoding])
     {
-      unsigned int vFlags = 0; // (raw >> 26); // filter out settings not pertinent to us.
+      unsigned long vFlags = 0; 
       NSSize intercellSpacing = [self intercellSpacing];
+      GSTableViewFlags tableViewFlags;
 
-      [aCoder encodeObject: [self dataSource] forKey: @"NSDataSource"];
-      [aCoder encodeObject: [self delegate] forKey: @"NSDelegate"];
-      [aCoder encodeObject: [self target] forKey: @"NSTarget"];
-      [aCoder encodeObject: NSStringFromSelector([self action]) forKey: @"NSAction"];
+      // make sure the corner view is properly encoded...
+      [super encodeWithCoder: aCoder];
+      
+      if([self dataSource])
+	{
+	  [aCoder encodeObject: [self dataSource] forKey: @"NSDataSource"];
+	}
+      if([self delegate])
+	{
+	  [aCoder encodeObject: [self delegate] forKey: @"NSDelegate"];
+	}
+      if([self target])
+	{
+	  [aCoder encodeObject: [self target] forKey: @"NSTarget"];
+	}
+      if([self action])
+	{
+	  [aCoder encodeObject: NSStringFromSelector([self action]) forKey: @"NSAction"];
+	}
+
       [aCoder encodeObject: [self backgroundColor] forKey: @"NSBackgroundColor"];
       [aCoder encodeObject: [self gridColor] forKey: @"NSGridColor"];
       [aCoder encodeFloat: intercellSpacing.height forKey: @"NSIntercellSpacingHeight"];
       [aCoder encodeFloat: intercellSpacing.width forKey: @"NSIntercellSpacingWidth"];
       [aCoder encodeFloat: [self rowHeight] forKey: @"NSRowHeight"];
       [aCoder encodeObject: [self tableColumns] forKey: @"NSTableColumns"];
+
+      if(_headerView)
+	{
+	  [aCoder encodeObject: _headerView forKey: @"NSHeaderView"];
+	}
+      if(_cornerView)
+	{
+	  [aCoder encodeObject: _cornerView forKey: @"NSCornerView"];
+	}
+
+      tableViewFlags.columnSelection = [self allowsColumnSelection];
+      tableViewFlags.multipleSelection = [self allowsMultipleSelection];
+      tableViewFlags.emptySelection = [self allowsEmptySelection];
+      tableViewFlags.drawsGrid = [self drawsGrid]; 
+      tableViewFlags.columnResizing = [self allowsColumnResizing];
+      tableViewFlags.columnOrdering = [self allowsColumnReordering];
       
-      if([self allowsColumnSelection])
-	vFlags |= 1;
-
-      if([self allowsMultipleSelection])
-	vFlags |= 2;
-
-      if([self allowsEmptySelection])
-	vFlags |= 4;
-
-      if([self allowsColumnResizing])
-	vFlags |= 16;
-
-      if([self allowsColumnReordering])
-	vFlags |= 32;
-
-      // shift...
-      vFlags = vFlags << 26;
-      vFlags |= 0x2400000; // add the constant...
+      memcpy((void *)&vFlags,(void *)&tableViewFlags,sizeof(unsigned long));
 
       // encode..
       [aCoder encodeInt: vFlags forKey: @"NSTvFlags"];
     }
   else
     {
+      [super encodeWithCoder: aCoder];
       [aCoder encodeConditionalObject: _dataSource];
       [aCoder encodeObject: _tableColumns];
       [aCoder encodeObject: _gridColor];
@@ -5214,6 +5214,32 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       NSArray *columns;
       NSEnumerator *e;
       NSTableColumn *col;
+
+      // assign defaults, so that there's color in case none is specified
+      ASSIGN (_gridColor, [NSColor gridColor]); 
+      ASSIGN (_backgroundColor, [NSColor controlBackgroundColor]); 
+      ASSIGN (_tableColumns, [NSMutableArray array]);
+      ASSIGN (_selectedColumns, [NSMutableIndexSet indexSet]);
+      ASSIGN (_selectedRows, [NSMutableIndexSet indexSet]);
+
+      _autoresizesAllColumnsToFit = NO;
+      _clickedRow = -1;
+      _clickedColumn = -1;
+      _drawsGrid = YES;
+      _editedColumn = -1;
+      _editedRow = -1;
+      _highlightedTableColumn = nil;
+      _intercellSpacing = NSMakeSize (5.0, 2.0);
+      _rowHeight = 16.0;
+      _selectedColumn = -1;
+      _selectedRow = -1;
+      _selectingColumns = NO;
+
+      /*
+      _headerView = [NSTableHeaderView new];
+      [_headerView setFrameSize: NSMakeSize (_frame.size.width, 22.0)];
+      [_headerView setTableView: self];
+      */
 
       [(NSKeyedUnarchiver *)aDecoder setClass: [GSTableCornerView class] forClassName: @"_NSCornerView"];
       if ([aDecoder containsValueForKey: @"NSDataSource"])
@@ -5254,16 +5280,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
         {
 	  [self setRowHeight: [aDecoder decodeFloatForKey: @"NSRowHeight"]];
 	}
-      if ([aDecoder containsValueForKey: @"NSHeaderView"])
-	{
 
-	  NSRect viewFrame = [self frame];
-	  float rowHeight = [self rowHeight];
-
-	  _headerView = [NSTableHeaderView new];
-	  [_headerView setFrameSize: NSMakeSize(viewFrame.size.width, rowHeight)];
-	  [_headerView setTableView: self];
-	}
       if ([aDecoder containsValueForKey: @"NSCornerView"])
 	{
 	  NSRect viewFrame;
@@ -5273,6 +5290,16 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	  viewFrame = [[self cornerView] frame];
 	  viewFrame.size.height = rowHeight;
 	  [[self cornerView] setFrame: viewFrame];
+	}
+
+      if ([aDecoder containsValueForKey: @"NSHeaderView"])
+	{
+	  NSRect viewFrame = [self frame];
+	  float rowHeight = [self rowHeight];
+
+	  _headerView = [[NSTableHeaderView alloc] init];
+	  [_headerView setFrameSize: NSMakeSize(viewFrame.size.width, rowHeight)];
+	  [_headerView setTableView: self];
 	}
 
       // get the table columns...
@@ -5305,14 +5332,6 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	_columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), 
 				       sizeof(float) * _numberOfColumns);
 
-      _clickedRow = -1;
-      _clickedColumn = -1;
-      _selectingColumns = NO;
-      _selectedColumn = -1;
-      _selectedRow = -1;
-      _editedColumn = -1;
-      _editedRow = -1;
-
       [self tile];
     }
   else
@@ -5334,6 +5353,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       [_headerView setTableView: self];
       [_tableColumns makeObjectsPerformSelector: @selector(setTableView:)
 		     withObject: self];
+
       [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfRows];
       [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfColumns];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_drawsGrid];

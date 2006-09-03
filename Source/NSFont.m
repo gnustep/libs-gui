@@ -1137,7 +1137,7 @@ static BOOL flip_hack;
   if ([aCoder allowsKeyedCoding])
     {
       [aCoder encodeObject: fontName forKey: @"NSName"];
-      [aCoder encodeInt: [self pointSize] forKey: @"NSSize"];
+      [aCoder encodeFloat: [self pointSize] forKey: @"NSSize"];
       
       switch (role >> 1)
         {
@@ -1177,7 +1177,7 @@ static BOOL flip_hack;
   if ([aDecoder allowsKeyedCoding])
     {
       NSString *name = [aDecoder decodeObjectForKey: @"NSName"];
-      int size = [aDecoder decodeIntForKey: @"NSSize"];
+      float size = [aDecoder decodeFloatForKey: @"NSSize"];
       
       RELEASE(self);
       if ([aDecoder containsValueForKey: @"NSfFlags"])
@@ -1186,22 +1186,22 @@ static BOOL flip_hack;
 	  // FIXME
 	  if (flags == 16)
 	    {
-	      return [NSFont controlContentFontOfSize: size];
+	      return RETAIN([NSFont controlContentFontOfSize: size]);
 	    }
 	  else if (flags == 20)
 	    {
-	      return [NSFont labelFontOfSize: size];
+	      return RETAIN([NSFont labelFontOfSize: size]);
 	    }
 	  else if (flags == 22)
 	    {
-	      return [NSFont titleBarFontOfSize: size];
+	      return RETAIN([NSFont titleBarFontOfSize: size]);
 	    }
 	}
 
       self = [NSFont fontWithName: name size: size];
       if (self == nil)
         {
-	  self = [NSFont systemFontOfSize: size];
+	  self = RETAIN([NSFont systemFontOfSize: size]);
 	}
 
       return self;

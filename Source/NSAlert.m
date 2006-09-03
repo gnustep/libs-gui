@@ -690,8 +690,7 @@ setControl(NSView* content, id control, NSString *title)
     }
   else
     {
-      NSLog(@"alert panel buttonAction: from unknown sender - x%x\n",
-	(unsigned)sender);
+      NSLog(@"alert panel buttonAction: from unknown sender - x%p\n", sender);
     }
   [NSApp stopModalWithCode: result];
 }

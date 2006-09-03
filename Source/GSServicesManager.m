@@ -278,6 +278,7 @@ NSRegisterServicesProvider(id provider, NSString *name)
 
 - (void) dealloc
 {
+  GSNOSUPERDEALLOC;
 }
 
 /**
@@ -644,7 +645,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
   unsigned      i, j;
   unsigned      es = [sendTypes count];
   unsigned      er = [returnTypes count];
-  NSWindow      *resp = [[_application keyWindow] firstResponder];
+  NSResponder   *resp = [[_application keyWindow] firstResponder];
   id            obj = nil;
 
   for (i = 0; i <= es; i++)
@@ -1267,7 +1268,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
   unsigned      i, j;
   unsigned      es = [sendTypes count];
   unsigned      er = [returnTypes count];
-  NSWindow      *resp = [[_application keyWindow] firstResponder];
+  NSResponder	*resp = [[_application keyWindow] firstResponder];
 
   /*
    *    If the menu item is not in our map, it must be the item containing

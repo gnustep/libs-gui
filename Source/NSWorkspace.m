@@ -607,6 +607,7 @@ static NSString			*_rootPath = @"/";
 {
   [NSException raise: NSInvalidArgumentException
 	      format: @"Attempt to call dealloc for shared worksapace"];
+  GSNOSUPERDEALLOC;
 }
 
 - (id) init
@@ -1938,7 +1939,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
     }
   else
     {
-      [inf setObject: appName forKey: (role ? role : @"Editor")];
+      [inf setObject: appName forKey: (role ? (id)role : (id)@"Editor")];
     }
   [map setObject: inf forKey: ext];
   RELEASE(inf);

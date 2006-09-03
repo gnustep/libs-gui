@@ -80,7 +80,7 @@ GSServerForWindow(NSWindow *window)
       /* Backend window hasn't been initialized yet, assume current server. */
       return GSCurrentServer();
     }
-  return NSMapGet(windowmaps, (void *)num);
+  return NSMapGet(windowmaps, (void *)(intptr_t)num);
 }
 
 /** Returns the current GSDisplayServer */
@@ -511,7 +511,7 @@ GSCurrentServer(void)
     for a window that has already been created */
 - (void) _setWindowOwnedByServer: (int)win
 {
-  NSMapInsert (windowmaps, (void*)win,  self);
+  NSMapInsert (windowmaps, (void*)(intptr_t)win,  self);
 }
 
 /** Creates a window whose location and size is described by frame and

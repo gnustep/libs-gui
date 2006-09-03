@@ -36,6 +36,7 @@
 #include "AppKit/NSView.h"
 #include "AppKit/NSPopUpButton.h"
 #include "AppKit/NSDocumentFrameworkPrivate.h"
+#include "AppKit/NSBox.h"
 
 #include "GSGuiPrivate.h"
 
@@ -77,6 +78,7 @@
       if ([fileTypes count])
        { 
          [self setFileType: [fileTypes objectAtIndex: 0]];
+	 ASSIGN(_saveType, [fileTypes objectAtIndex: 0]);
        }
     }
   return self;
@@ -145,6 +147,7 @@
   RELEASE(_printInfo);
   RELEASE(savePanelAccessory);
   RELEASE(spaButton);
+  RELEASE(_saveType);
   [super dealloc];
 }
 
@@ -207,7 +210,11 @@
   _window = aWindow;
 }
 
-//FIXME: In the later specification this method has a different return type!! 
+/**
+ * Creates the window controllers for the current document.  Calls
+ * addWindowController: on the receiver to add them to the controller 
+ * array.
+ */
 - (void) makeWindowControllers
 {
   NSString *name = [self windowNibName];
@@ -452,7 +459,17 @@
 
 - (IBAction)changeSaveType: (id)sender
 { 
-//FIXME if we have accessory -- store the desired save type somewhere.
+  NSDocumentController *controller = 
+    [NSDocumentController sharedDocumentController];
+  NSArray  *extensions = nil;
+
+  ASSIGN(_saveType, [controller _nameForHumanReadableType: 
+				  [sender titleOfSelectedItem]]);
+  extensions = [controller fileExtensionsFromType: _saveType];
+  if([extensions count] > 0)
+    {
+      [(NSSavePanel *)[sender window] setRequiredFileType: [extensions objectAtIndex:0]];
+    }
 }
 
 - (int)runModalSavePanel: (NSSavePanel *)savePanel 
@@ -467,13 +484,54 @@
   return YES;
 }
 
-- (void) _loadPanelAccessoryNib
+- (void) _createPanelAccessory
 {
-// FIXME.  We need to load the pop-up button
+  if(savePanelAccessory == nil)
+    {
+      NSRect accessoryFrame = NSMakeRect(0,0,380,70);
+      NSRect spaFrame = NSMakeRect(115,14,150,22);
+
+      savePanelAccessory = [[NSBox alloc] initWithFrame: accessoryFrame];
+      [(NSBox *)savePanelAccessory setTitle: @"File Type"];
+      [savePanelAccessory setAutoresizingMask: 
+			    NSViewWidthSizable | NSViewHeightSizable];
+      spaButton = [[NSPopUpButton alloc] initWithFrame: spaFrame];
+      [spaButton setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable | NSViewMinYMargin |
+		 NSViewMaxYMargin | NSViewMinXMargin | NSViewMaxXMargin];
+      [spaButton setTarget: self];
+      [spaButton setAction: @selector(changeSaveType:)];
+      [savePanelAccessory addSubview: spaButton];
+    }
 }
 - (void) _addItemsToSpaButtonFromArray: (NSArray *)types
 {
-// FIXME.  Add types to popup.
+  NSEnumerator *en = [types objectEnumerator];
+  NSString *title = nil;
+  int i = 0;
+
+  while((title = [en nextObject]) != nil)
+    {
+      [spaButton addItemWithTitle: title];
+      i++;
+    }
+
+  // if it's more than one, then
+  [spaButton setEnabled: (i > 0)];
+  
+  // if we have some items, select the current filetype.
+  if(i > 0)
+    {
+      NSString *title = [[NSDocumentController sharedDocumentController] 
+			  displayNameForType: [self fileType]];
+      if([spaButton itemWithTitle: title] != nil)
+	{
+	  [spaButton selectItemWithTitle: title];
+	}
+      else
+	{
+	  [spaButton selectItemAtIndex: 0];
+	}
+    }
 }
 
 - (NSString *)fileNameFromRunningSavePanelForSaveOperation: (NSSaveOperationType)saveOperation
@@ -481,25 +539,32 @@
   NSView *accessory = nil;
   NSString *title;
   NSString *directory;
-  NSArray *extensions;
+  NSArray *displayNames;
   NSDocumentController *controller;
   NSSavePanel *savePanel = [NSSavePanel savePanel];
 
   controller = [NSDocumentController sharedDocumentController];
-  extensions = [controller fileExtensionsFromType:[self fileType]];
+  displayNames = [controller _displayNamesForClass: [self class]];
   
   if ([self shouldRunSavePanelWithAccessoryView])
     {
       if (savePanelAccessory == nil)
-	[self _loadPanelAccessoryNib];
+	[self _createPanelAccessory];
       
-      [self _addItemsToSpaButtonFromArray: extensions];
+      [self _addItemsToSpaButtonFromArray: displayNames];
       
       accessory = savePanelAccessory;
     }
 
-  if ([extensions count] > 0)
-    [savePanel setRequiredFileType:[extensions objectAtIndex:0]];
+  if ([displayNames count] > 0)
+    {
+      NSArray  *extensions = [[NSDocumentController sharedDocumentController] 
+			       fileExtensionsFromType: [self fileTypeFromLastRunSavePanel]];
+      if([extensions count] > 0)
+	{
+	  [savePanel setRequiredFileType:[extensions objectAtIndex:0]];
+	}
+    }
 
   switch (saveOperation)
     {
@@ -641,9 +706,7 @@
 
 - (NSString *)fileTypeFromLastRunSavePanel
 {
-  // FIXME this should return type picked on save accessory
-  // return [spaPopupButton title];
-  return [self fileType];
+  return _saveType;
 }
 
 - (NSDictionary *)fileAttributesToWriteToFile: (NSString *)fullDocumentPath 
@@ -668,54 +731,63 @@
 {
   NSFileManager *fileManager = [NSFileManager defaultManager];
   NSString *backupFilename = nil;
+  BOOL isNativeType = [[self class] isNativeType: fileType];
 
-  if (fileName)
+  if (fileName && isNativeType)
     {
-      if ([fileManager fileExistsAtPath: fileName])
+      NSArray  *extensions = [[NSDocumentController sharedDocumentController] 
+			       fileExtensionsFromType: fileType];
+
+      if([extensions count] > 0)
 	{
-	  NSString *extension  = [fileName pathExtension];
+	  NSString *extension = [extensions objectAtIndex: 0];
+	  NSString *newFileName = [[fileName stringByDeletingPathExtension] 
+				    stringByAppendingPathExtension: extension];
 	  
-	  backupFilename = [fileName stringByDeletingPathExtension];
-	  backupFilename = [backupFilename stringByAppendingString:@"~"];
-	  backupFilename = [backupFilename stringByAppendingPathExtension: extension];
-
-	  /* Save panel has already asked if the user wants to replace it */
-
-	  /* NSFileManager movePath: will fail if destination exists */
-	  if ([fileManager fileExistsAtPath: backupFilename])
-	    [fileManager removeFileAtPath: backupFilename handler: nil];
-
-	  // Move or copy?
-	  if (![fileManager movePath: fileName toPath: backupFilename handler: nil] &&
-	      [self keepBackupFile])
-            {
-	      int result = NSRunAlertPanel(_(@"File Error"),
-					   _(@"Can't create backup file.  Save anyways?"),
-					   _(@"Save"), _(@"Cancel"), nil);
+	  if ([fileManager fileExistsAtPath: newFileName])
+	    {
+	      backupFilename = [newFileName stringByDeletingPathExtension];
+	      backupFilename = [backupFilename stringByAppendingString:@"~"];
+	      backupFilename = [backupFilename stringByAppendingPathExtension: extension];
 	      
-	      if (result != NSAlertDefaultReturn) return NO;
-            }
-	}
-      if ([self writeToFile: fileName 
-		ofType: fileType
-		originalFile: backupFilename
-		saveOperation: saveOp])
-	{
-	  if (saveOp != NSSaveToOperation)
-	    {
-	      [self setFileName: fileName];
-	      [self setFileType: fileType];
-	      [self updateChangeCount: NSChangeCleared];
+	      /* Save panel has already asked if the user wants to replace it */
+	      
+	      /* NSFileManager movePath: will fail if destination exists */
+	      if ([fileManager fileExistsAtPath: backupFilename])
+		[fileManager removeFileAtPath: backupFilename handler: nil];
+	      
+	      // Move or copy?
+	      if (![fileManager movePath: newFileName toPath: backupFilename handler: nil] &&
+		  [self keepBackupFile])
+		{
+		  int result = NSRunAlertPanel(_(@"File Error"),
+					       _(@"Can't create backup file.  Save anyways?"),
+					       _(@"Save"), _(@"Cancel"), nil);
+		  
+		  if (result != NSAlertDefaultReturn) return NO;
+		}
 	    }
-
-	  // FIXME: Should set the file attributes
-
-	  if (backupFilename && ![self keepBackupFile])
+	  if ([self writeToFile: fileName 
+		    ofType: fileType
+		    originalFile: backupFilename
+		    saveOperation: saveOp])
 	    {
-	      [fileManager removeFileAtPath: backupFilename handler: nil];
+	      if (saveOp != NSSaveToOperation)
+		{
+		  [self setFileName: newFileName];
+		  [self setFileType: fileType];
+		  [self updateChangeCount: NSChangeCleared];
+		}
+	      
+	      // FIXME: Should set the file attributes
+	      
+	      if (backupFilename && ![self keepBackupFile])
+		{
+		  [fileManager removeFileAtPath: backupFilename handler: nil];
+		}
+	      
+	      return YES;
 	    }
-
-	  return YES;
 	}
     }
 

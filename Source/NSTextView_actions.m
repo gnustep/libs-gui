@@ -12,7 +12,7 @@
    Author: Felipe A. Rodriguez <far@ix.netcom.com>
    Date: July 1998
 
-   Author: Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de>
+   Author: Daniel Böhringer <boehring@biomed.ruhr-uni-bochum.de>
    Date: August 1998
 
    Author: Fred Kiefer <FredKiefer@gmx.de>
@@ -111,7 +111,6 @@ send -shouldChangeTextInRange:replacementString: or -didChangeText.
 
 */
 
-
 /** First some helpers **/
 
 @interface NSTextView (user_action_helpers)
@@ -120,7 +119,7 @@ send -shouldChangeTextInRange:replacementString: or -didChangeText.
 
 -(void) _changeAttribute: (NSString *)name
 		 inRange: (NSRange)r
-		   using: (id (*)(id))func;
+		   using: (NSNumber*(*)(NSNumber*))func;
 
 @end
 
@@ -164,7 +163,7 @@ send -shouldChangeTextInRange:replacementString: or -didChangeText.
 
 - (void) _changeAttribute: (NSString *)name
 		  inRange: (NSRange)r
-		    using: (id (*)(id))func
+		    using: (NSNumber*(*)(NSNumber*))func
 {
   unsigned int i;
   NSRange e, r2;
@@ -613,6 +612,62 @@ static NSNumber *float_plus_one(NSNumber *cur)
 	}
     }
   
+  if (![self shouldChangeTextInRange: range  replacementString: @""])
+    {
+      return;
+    }
+
+  [_textStorage beginEditing];
+  [_textStorage deleteCharactersInRange: range];
+  [_textStorage endEditing];
+  [self didChangeText];
+}
+
+- (void) deleteToEndOfLine: (id)sender
+{
+  NSRange range = [self rangeForUserTextChange];
+  NSRange linerange;
+  unsigned maxRange;
+  unsigned endCorrection = 0;
+
+  if (range.location == NSNotFound)
+    {
+      return;
+    }
+
+  linerange = [[_textStorage string] lineRangeForRange: 
+					 NSMakeRange(range.location, 0)];
+  maxRange = NSMaxRange (linerange);
+  
+  if (maxRange == range.location)
+    {
+      return;
+    }
+
+  // Only delete the linebreak, if the line is empty.
+  if (linerange.length > 1)
+    {
+      // Treat the last line special, as it does not have to end in a leine break.
+      if (maxRange == [_textStorage length])
+        {
+	  unichar u = [[_textStorage string] characterAtIndex: (maxRange - 1)];
+	  if (u == '\n'  ||  u == '\r')
+	    {
+	      endCorrection = 1;
+	    }
+	  else
+	    {
+	      endCorrection = 0;
+	    }
+	}
+      else
+        {
+	  endCorrection = 1;
+	}
+    }
+
+  range = NSMakeRange(range.location, maxRange - range.location - endCorrection);
+
   if (![self shouldChangeTextInRange: range  replacementString: @""])
     {
       return;

@@ -536,7 +536,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
       NSAttributedString *attrString;
       NSDictionary *attr;
       NSColor *color;
-      NSMutableParagraphStyle *pStyle = [NSMutableParagraphStyle defaultParagraphStyle];
+      NSMutableParagraphStyle *pStyle;
       NSRect titleRect;
       NSRect viewBounds = [self bounds];
 
@@ -549,12 +549,15 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
           color = [NSColor disabledControlTextColor];
         }
 	
+      pStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
       [pStyle setAlignment: NSCenterTextAlignment];
       
       // We draw the label
       attr = [NSDictionary dictionaryWithObjectsAndKeys: _font, 
         NSFontAttributeName, color, NSForegroundColorAttributeName, pStyle,
         NSParagraphStyleAttributeName, nil];
+      RELEASE(pStyle);
+
       attrString = [[NSAttributedString alloc] 
         initWithString: [_toolbarItem label] attributes: attr];
       

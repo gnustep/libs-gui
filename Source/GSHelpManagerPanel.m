@@ -28,11 +28,14 @@
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSAttributedString.h"
 #include "AppKit/NSTextView.h"
+#include "AppKit/NSTextContainer.h"
 #include "AppKit/NSScrollView.h"
+#include "AppKit/NSButton.h"
 #include "AppKit/NSClipView.h"
 #include "AppKit/NSColor.h"
-
+#include "AppKit/NSImage.h"
 #include "GNUstepGUI/GSHelpManagerPanel.h"
+#include "GSGuiPrivate.h"
 
 @implementation GSHelpManagerPanel
 
@@ -46,68 +49,87 @@ static GSHelpManagerPanel* _GSsharedGSHelpPanel;
   return _GSsharedGSHelpPanel;
 }
 
-/* This window should not be destroyed... So we don't allow it to! */
-- (id) retain
+- (id)init
 {
+  self = [super initWithContentRect: NSMakeRect(100, 100, 470, 200)
+		                      styleMask: NSTitledWindowMask | NSResizableWindowMask
+		                        backing: NSBackingStoreRetained
+		                          defer: NO];
+  
+  if (self) {
+    NSRect scrollViewRect = {{8, 40}, {454, 152}};
+    NSRect buttonRect = {{390, 6}, {72, 27}};
+    NSRect r;
+    NSScrollView *scrollView;
+    NSButton *button;
+    
+    [self setReleasedWhenClosed: NO]; 
+    [self setFloatingPanel: YES];
+    [self setTitle: NSLocalizedString(@"Help", @"")];
+
+    scrollView = [[NSScrollView alloc] initWithFrame: scrollViewRect];
+    [scrollView setBorderType: NSBezelBorder];
+    [scrollView setHasHorizontalScroller: NO];
+    [scrollView setHasVerticalScroller: YES]; 
+    [scrollView setAutoresizingMask: NSViewHeightSizable | NSViewWidthSizable];
+
+    r = [[scrollView contentView] frame];
+    textView = [[NSTextView alloc] initWithFrame: r];
+    [textView setRichText: YES];
+    [textView setEditable: NO];
+    [textView setSelectable: NO];
+    [textView setHorizontallyResizable: NO];
+    [textView setVerticallyResizable: YES];
+    [textView setMinSize: NSMakeSize (0, 0)];
+    [textView setMaxSize: NSMakeSize (1E7, 1E7)];
+    [textView setAutoresizingMask: NSViewHeightSizable | NSViewWidthSizable];
+    [[textView textContainer] setContainerSize: NSMakeSize(r.size.width, 1e7)];
+    [[textView textContainer] setWidthTracksTextView: YES];
+    [textView setUsesRuler: NO];
+    
+    [scrollView setDocumentView: textView];
+    RELEASE (textView);
+    
+    [[self contentView] addSubview: scrollView];
+    RELEASE (scrollView);
+    
+    button = [[NSButton alloc] initWithFrame: buttonRect];
+    [button setAutoresizingMask: NSViewMinXMargin | NSViewMaxYMargin];
+    [button setButtonType: NSMomentaryLight];
+    [button setTitle: NSLocalizedString(@"OK", @"")];
+    [button setKeyEquivalent: @"\r"];
+    [button setImagePosition: NSImageRight];
+    [button setImage: [NSImage imageNamed: @"common_ret"]];
+    [button setAlternateImage: [NSImage imageNamed: @"common_retH"]];
+	  [button setTarget: self];
+	  [button setAction: @selector(buttonAction:)];		
+
+    [[self contentView] addSubview: button];
+    RELEASE (button);
+
+    [self makeFirstResponder: button];
+  }
+
   return self;
 }
 
-- (void) release
+- (void)setHelpText:(NSAttributedString *)helpText
 {
+  [[textView textStorage] setAttributedString: helpText];
 }
 
-- (id) autorelease
+- (void)buttonAction:(id)sender
 {
-  return self;
-}
-
-- (id) init
-{
-  NSScrollView	*scrollView;
-  NSRect	scrollViewRect = {{0, 0}, {470, 150}};
-  NSRect	winRect = {{100, 100}, {470, 150}};
-  unsigned int	style = NSTitledWindowMask | NSClosableWindowMask
-    | NSMiniaturizableWindowMask | NSResizableWindowMask;
-  
-  [self initWithContentRect: winRect
-		  styleMask: style
-		    backing: NSBackingStoreRetained
-		      defer: NO];
-  [self setFloatingPanel: YES];
-  [self setRepresentedFilename: @"Help"];
-  [self setTitle: @"Help"];
-  [self setDocumentEdited: NO];
-  
-  scrollView = [[NSScrollView alloc] initWithFrame: scrollViewRect];
-  [scrollView setHasHorizontalScroller: NO];
-  [scrollView setHasVerticalScroller: YES]; 
-  [scrollView setAutoresizingMask: NSViewHeightSizable];
-  
-  textView = [[NSTextView alloc] initWithFrame: 
-				     [[scrollView contentView] frame]];
-  [textView setEditable: NO];
-  [textView setRichText: YES];
-  [textView setSelectable: YES];
-  // off white
-  [textView setBackgroundColor: [NSColor colorWithCalibratedWhite: 0.85 
-					 alpha: 1.0]];					
-  [scrollView setDocumentView: textView];
-  [[self contentView] addSubview: scrollView];
-  RELEASE(scrollView);
-
-  return self;
-}
-
-- (void) setHelpText: (NSAttributedString*) helpText
-{
-  // FIXME: The attributed text should be set, but there is 
-  // no public method for this.
-  [textView setText: [helpText string]];
+  [self close];
 }
 
 - (void) close
 {
-  [NSApp stopModal];
+  if ([self isVisible])
+    {
+      [NSApp stopModal];
+    }
   [super close];
 }
+
 @end

@@ -323,17 +323,31 @@
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodeObject: _fileWrapper];
-  [aCoder encodeObject: _cell];
+  if([aCoder allowsKeyedCoding])
+    {
+      // TODO_NIB: Determine keys for NSTextAttachment.
+    }
+  else
+    {
+      [aCoder encodeObject: _fileWrapper];
+      [aCoder encodeObject: _cell];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_fileWrapper];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_cell];
-
-  // Reconnect the cell, so the cell does not have to store the attachment
-  [_cell setAttachment: self];
+  if([aDecoder allowsKeyedCoding])
+    {
+      // TODO_NIB: Determine keys for NSTextAttachment.
+    }
+  else
+    {
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_fileWrapper];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_cell];
+      
+      // Reconnect the cell, so the cell does not have to store the attachment
+      [_cell setAttachment: self];
+    }
   return self;
 }
 

@@ -167,16 +167,21 @@
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-  [aCoder encodeObject: _window];
-  [aCoder encodeRect: _rect];
+  if([aCoder allowsKeyedCoding] == NO)
+    {
+      [aCoder encodeObject: _window];
+      [aCoder encodeRect: _rect];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   self = [super initWithCoder: aDecoder];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_window];
-  _rect = [aDecoder decodeRect];
-
+  if([aDecoder allowsKeyedCoding] == NO)
+    {
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_window];
+      _rect = [aDecoder decodeRect];
+    }
   return self;
 }
 

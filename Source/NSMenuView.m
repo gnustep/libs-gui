@@ -1572,31 +1572,34 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 - (void) encodeWithCoder: (NSCoder*)encoder
 {
   [super encodeWithCoder: encoder];
-
-  [encoder encodeObject: _itemCells];
-  [encoder encodeObject: _font];
-  [encoder encodeValueOfObjCType: @encode(BOOL) at: &_horizontal];
-  [encoder encodeValueOfObjCType: @encode(float) at: &_horizontalEdgePad];
-  [encoder encodeValueOfObjCType: @encode(NSSize) at: &_cellSize];
+  if([encoder allowsKeyedCoding] == NO)
+    {
+      [encoder encodeObject: _itemCells];
+      [encoder encodeObject: _font];
+      [encoder encodeValueOfObjCType: @encode(BOOL) at: &_horizontal];
+      [encoder encodeValueOfObjCType: @encode(float) at: &_horizontalEdgePad];
+      [encoder encodeValueOfObjCType: @encode(NSSize) at: &_cellSize];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)decoder
 {
   self = [super initWithCoder: decoder];
-
-  [decoder decodeValueOfObjCType: @encode(id) at: &_itemCells];
-  
-  [_itemCells makeObjectsPerformSelector: @selector(setMenuView:)
-	      withObject: self];
-
-  [decoder decodeValueOfObjCType: @encode(id) at: &_font];
-  [decoder decodeValueOfObjCType: @encode(BOOL) at: &_horizontal];
-  [decoder decodeValueOfObjCType: @encode(float) at: &_horizontalEdgePad];
-  [decoder decodeValueOfObjCType: @encode(NSSize) at: &_cellSize];
-
-  _highlightedItemIndex = -1;
-  _needsSizing = YES;
-
+  if([decoder allowsKeyedCoding] == NO)
+    {
+      [decoder decodeValueOfObjCType: @encode(id) at: &_itemCells];
+      
+      [_itemCells makeObjectsPerformSelector: @selector(setMenuView:)
+		  withObject: self];
+      
+      [decoder decodeValueOfObjCType: @encode(id) at: &_font];
+      [decoder decodeValueOfObjCType: @encode(BOOL) at: &_horizontal];
+      [decoder decodeValueOfObjCType: @encode(float) at: &_horizontalEdgePad];
+      [decoder decodeValueOfObjCType: @encode(NSSize) at: &_cellSize];
+      
+      _highlightedItemIndex = -1;
+      _needsSizing = YES;
+    }
   return self;
 }
 

@@ -700,12 +700,14 @@
 
 // Event handling.
 
+/* 
+ *  Find the tab view item containing the NSPoint point. This point 
+ *  is expected to be alreay in the coordinate system of the tab view.
+ */
 - (NSTabViewItem*) tabViewItemAtPoint: (NSPoint)point
 {
   int		howMany = [_items count];
   int		i;
-
-  point = [self convertPoint: point fromView: nil];
 
   for (i = 0; i < howMany; i++)
     {
@@ -720,7 +722,8 @@
 
 - (void) mouseDown: (NSEvent *)theEvent
 {
-  NSPoint location = [theEvent locationInWindow];
+  NSPoint location = [self convertPoint: [theEvent locationInWindow] 
+			   fromView: nil];
   NSTabViewItem *anItem = [self tabViewItemAtPoint: location];
   
   if (anItem != nil  &&  ![anItem isEqual: _selected])
@@ -763,14 +766,42 @@
 - (void) encodeWithCoder: (NSCoder*)aCoder
 { 
   [super encodeWithCoder: aCoder];
-           
-  [aCoder encodeObject: _items];
-  [aCoder encodeObject: _font];
-  [aCoder encodeValueOfObjCType: @encode(NSTabViewType) at: &_type];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_draws_background];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_truncated_label];
-  [aCoder encodeConditionalObject: _delegate];
-  [aCoder encodeValueOfObjCType: "i" at: &_selected_item];
+  if ([aCoder allowsKeyedCoding])
+    {
+      unsigned int type = 0;
+      switch(_type)
+	{
+	case NSTopTabsBezelBorder:
+	  type = 0;
+	  break;
+	case NSLeftTabsBezelBorder:
+	  type = 1;
+	  break;
+	case NSBottomTabsBezelBorder:
+	  type = 2;
+	  break;
+	case NSRightTabsBezelBorder:
+	  type = 3;
+	  break;
+	}
+
+      [aCoder encodeBool: [self allowsTruncatedLabels] forKey: @"NSAllowTruncatedLabels"];
+      [aCoder encodeBool: [self drawsBackground] forKey: @"NSDrawsBackground"];
+      [aCoder encodeObject: [self font] forKey: @"NSFont"];
+      [aCoder encodeObject: _items forKey: @"NSTabViewItems"];
+      [aCoder encodeObject: [self selectedTabViewItem] forKey: @"NSSelectedTabViewItem"];
+      [aCoder encodeInt: type forKey: @"NSTvFlags"]; // no flags set...
+    }
+  else
+    {
+      [aCoder encodeObject: _items];
+      [aCoder encodeObject: _font];
+      [aCoder encodeValueOfObjCType: @encode(NSTabViewType) at: &_type];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_draws_background];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_truncated_label];
+      [aCoder encodeConditionalObject: _delegate];
+      [aCoder encodeValueOfObjCType: "i" at: &_selected_item];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -795,14 +826,7 @@
 	}
       if ([aDecoder containsValueForKey: @"NSTabViewItems"])
         {
-	  NSArray *items = [aDecoder decodeObjectForKey: @"NSTabViewItems"];
-	  NSEnumerator *enumerator = [items objectEnumerator];
-	  NSTabViewItem *item;
-	  
-	  while ((item = [enumerator nextObject]) != nil)
-	    {
-	      [self addTabViewItem: item];
-	    }
+	  ASSIGN(_items, [aDecoder decodeObjectForKey: @"NSTabViewItems"]);
 	}
       if ([aDecoder containsValueForKey: @"NSSelectedTabViewItem"])
         {
@@ -811,7 +835,25 @@
 	}
       if ([aDecoder containsValueForKey: @"NSTvFlags"])
         {
-	    //int flags = [aDecoder decodeObjectForKey: @"NSTvFlags"]];
+	  unsigned int type = [aDecoder decodeIntForKey: @"NSTvFlags"];
+	  switch(type)
+	    {
+	    case 0: 
+	      _type = NSTopTabsBezelBorder;
+	      break;
+	    case 1: 
+	      _type = NSLeftTabsBezelBorder;
+	      break;
+	    case 2: 
+	      _type = NSBottomTabsBezelBorder;
+	      break;
+	    case 3:
+	      _type = NSRightTabsBezelBorder;
+	      break;
+	    default:
+	      _type = NSTopTabsBezelBorder;
+	      break;
+	    }
 	}
     }
   else

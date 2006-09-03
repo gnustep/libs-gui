@@ -462,5 +462,22 @@ framework intact.
     }
 }
 
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  if([coder allowsKeyedCoding])
+    {
+      NSSize size = _containerRect.size;
+      int flags = ((_widthTracksTextView)?1:0) | 
+	((_heightTracksTextView)?2:0) |
+	((_observingFrameChanges)?4:0);
+
+      [coder encodeObject: _textView forKey: @"NSTextView"];
+      [coder encodeFloat: size.width forKey: @"NSWidth"];
+      [coder encodeInt: flags forKey: @"NSTCFlags"];
+
+      // TODO: Add layout manager encoding, if needed...
+    }
+}
+
 @end /* NSTextContainer */
 

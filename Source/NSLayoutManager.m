@@ -1578,12 +1578,12 @@ dictionary.
 -(BOOL) layoutManagerOwnsFirstResponderInWindow: (NSWindow *)window
 {
   int i;
-  NSView *tv;
-  NSView *v = [window firstResponder];
+  NSResponder *tv;
+  NSResponder *v = [window firstResponder];
 
   for (i = 0; i < num_textcontainers; i++)
     {
-      tv = (NSView *)[textcontainers[i].textContainer textView];
+      tv = [textcontainers[i].textContainer textView];
       if (tv == v)
         return YES;
     }

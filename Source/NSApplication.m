@@ -1829,19 +1829,9 @@ See -runModalForWindow:
 
       case NSKeyDown:
 	{
-	  NSArray	*window_list = [self windows];
-	  unsigned	count = [window_list count];
-	  unsigned	i;
-
 	  NSDebugLLog(@"NSEvent", @"send key down event\n");
-	  for (i = 0; i < count; i++)
-	    {
-	      NSWindow	*window = [window_list objectAtIndex: i];
-
-	      if ([window performKeyEquivalent: theEvent] == YES)
-		break;
-	    }
-	  if (i == count)
+	  if ([[self mainMenu] performKeyEquivalent: theEvent] == NO
+	    && [[self keyWindow] performKeyEquivalent: theEvent] == NO)
 	    {
 	      [[theEvent window] sendEvent: theEvent];
 	    }
@@ -3302,10 +3292,23 @@ image.</p><p>See Also: -applicationIconImage</p>
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-
-  [aCoder encodeConditionalObject: _delegate];
-  [aCoder encodeObject: _main_menu];
-  [aCoder encodeConditionalObject: _windows_menu];
+  if([aCoder allowsKeyedCoding])
+    {
+      /*
+      if(_delegate != nil)
+        {
+	  [aCoder encodeObject: _delegate forKey: @"NSDelegate"];
+	}
+      [aCoder encodeObject: _main_menu forKey: @"NSMainMenu"]; // ???
+      [aCoder encodeObject: _windows_menu forKey: @"NSWindowsMenu"]; // ???
+      */
+    }
+  else
+    {
+      [aCoder encodeConditionalObject: _delegate];
+      [aCoder encodeObject: _main_menu];
+      [aCoder encodeConditionalObject: _windows_menu];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -3313,13 +3316,29 @@ image.</p><p>See Also: -applicationIconImage</p>
   id	obj;
 
   [super initWithCoder: aDecoder];
-
-  obj = [aDecoder decodeObject];
-  [self setDelegate: obj];
-  obj = [aDecoder decodeObject];
-  [self setMainMenu: obj];
-  obj = [aDecoder decodeObject];
-  [self setWindowsMenu: obj];
+  if([aDecoder allowsKeyedCoding])
+    {
+      /*
+      if([aDecoder containsValueForKey: @"NSDelegate"])
+	{
+	  obj = [aDecoder decodeObjectForKey: @"NSDelegate"];
+	  [self setDelegate: obj];
+	}
+      obj = [aDecoder decodeObjectForKey: @"NSMainMenu"];
+      [self setMainMenu: obj];
+      obj = [aDecoder decodeObjectForKey: @"NSWindowsMenu"];
+      [self setWindowsMenu: obj];
+      */
+    }
+  else
+    {
+      obj = [aDecoder decodeObject];
+      [self setDelegate: obj];
+      obj = [aDecoder decodeObject];
+      [self setMainMenu: obj];
+      obj = [aDecoder decodeObject];
+      [self setWindowsMenu: obj];
+    }
   return self;
 }
 

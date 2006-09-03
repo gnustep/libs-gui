@@ -127,6 +127,7 @@ BOOL	NSImageForceCaching = NO;	/* use on missmatch	*/
   TEST_RELEASE(rep);
   TEST_RELEASE(bg);
   NSDeallocateObject(self);
+  GSNOSUPERDEALLOC;
 }
 @end
 
@@ -1478,63 +1479,95 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 {
   BOOL	flag;
 
-  flag = _flags.archiveByName;
-  [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  if (flag == YES)
+  if([coder allowsKeyedCoding])
     {
+      // FIXME: Not sure this is the way it goes...
       /*
-       * System image - just encode the name.
-       */
-      [coder encodeValueOfObjCType: @encode(id) at: &_name];
+      if(_flags.archiveByName == NO)
+	{
+	  NSMutableArray *container = [NSMutableArray array];
+	  NSMutableArray *reps = [NSMutableArray array];
+	  NSEnumerator *en = [_reps objectEnumerator];
+	  GSRepData *rd = nil;
+
+	  // add the reps to the container...
+	  [container addObject: reps];
+	  while((rd = [en nextObject]) != nil)
+	    {
+	      [reps addObject: rd->rep];
+	    }
+	  [coder encodeObject: container forKey: @"NSReps"];
+	}
+      else
+	{
+	  [coder encodeObject: _name forKey: @"NSImageName"];
+	}
+      */
+
+      // encode the rest...
+      [coder encodeObject: _color forKey: @"NSColor"];
+      [coder encodeInt: 0 forKey: @"NSImageFlags"]; // zero...
+      [coder encodeSize: _size forKey: @"NSSize"];
     }
   else
     {
-      NSMutableArray	*a;
-      NSEnumerator	*e;
-      NSImageRep	*r;
-
-      /*
-       * Normal image - encode the ivars
-       */
-      [coder encodeValueOfObjCType: @encode(NSSize) at: &_size];
-      [coder encodeValueOfObjCType: @encode(id) at: &_color];
-      flag = _flags.scalable;
+      flag = _flags.archiveByName;
       [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      flag = _flags.dataRetained;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      flag = _flags.flipDraw;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      flag = _flags.sizeWasExplicitlySet;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      flag = _flags.useEPSOnResolutionMismatch;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      flag = _flags.colorMatchPreferred;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      flag = _flags.multipleResolutionMatching;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      flag = _flags.cacheSeparately;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      flag = _flags.unboundedCacheDepth;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-
-      // FIXME: The documentation says to archive only the file name,
-      // if not data retained!
-      /*
-       * Now encode an array of all the image reps (excluding cache)
-       */
-      a = [NSMutableArray arrayWithCapacity: 2];
-      e = [[self representations] objectEnumerator];
-      while ((r = [e nextObject]) != nil)
+      if (flag == YES)
 	{
-	  if ([r isKindOfClass: cachedClass] == NO)
-	    {
-	      [a addObject: r];
-	    }
+	  /*
+	   * System image - just encode the name.
+	   */
+	  [coder encodeValueOfObjCType: @encode(id) at: &_name];
 	}
-      [coder encodeValueOfObjCType: @encode(id) at: &a];
+      else
+	{
+	  NSMutableArray	*a;
+	  NSEnumerator	*e;
+	  NSImageRep	*r;
+	  
+	  /*
+	   * Normal image - encode the ivars
+	   */
+	  [coder encodeValueOfObjCType: @encode(NSSize) at: &_size];
+	  [coder encodeValueOfObjCType: @encode(id) at: &_color];
+	  flag = _flags.scalable;
+	  [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+	  flag = _flags.dataRetained;
+	  [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+	  flag = _flags.flipDraw;
+	  [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+	  flag = _flags.sizeWasExplicitlySet;
+	  [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+	  flag = _flags.useEPSOnResolutionMismatch;
+	  [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+	  flag = _flags.colorMatchPreferred;
+	  [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+	  flag = _flags.multipleResolutionMatching;
+	  [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+	  flag = _flags.cacheSeparately;
+	  [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+	  flag = _flags.unboundedCacheDepth;
+	  [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+	  
+	  // FIXME: The documentation says to archive only the file name,
+	  // if not data retained!
+	  /*
+	   * Now encode an array of all the image reps (excluding cache)
+	   */
+	  a = [NSMutableArray arrayWithCapacity: 2];
+	  e = [[self representations] objectEnumerator];
+	  while ((r = [e nextObject]) != nil)
+	    {
+	      if ([r isKindOfClass: cachedClass] == NO)
+		{
+		  [a addObject: r];
+		}
+	    }
+	  [coder encodeValueOfObjCType: @encode(id) at: &a];
+	}
     }
 }
-
 - (id) initWithCoder: (NSCoder*)coder
 {
   BOOL	flag;
@@ -1781,7 +1814,7 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
       rep =  [self _cacheForRep: rep];
       repd = repd_for_rep(_reps, rep);
 
-      NSDebugLLog(@"NSImage", @"Cached image rep is %d", (int)rep);
+      NSDebugLLog(@"NSImage", @"Cached image rep is %p", rep);
       /*
        * if the cache is not valid, it's background color will not exist
        * and we must draw the background then render from the original
@@ -1811,8 +1844,8 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 	    {
 	      [rep setOpaque: [repd->original isOpaque]];
 	    }
-	  NSDebugLLog(@"NSImage", @"Rendered rep %d on background %@",
-	    (int)rep, repd->bg);
+	  NSDebugLLog(@"NSImage", @"Rendered rep %p on background %@",
+	    rep, repd->bg);
 	}
     }
   

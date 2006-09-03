@@ -32,8 +32,10 @@
 #include <Foundation/NSArchiver.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSBundle.h>
+#include <Foundation/NSByteOrder.h>
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSData.h>
+#include <Foundation/NSDecimalNumber.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSEnumerator.h>
@@ -52,6 +54,38 @@
 #include <GNUstepGUI/GSNibCompatibility.h>
 #include <GNUstepGUI/GSInstantiator.h>
 
+static BOOL _isInInterfaceBuilder = NO;
+
+@interface NSView (NibCompatibility)
+- (void) _fixSubviews;
+@end
+
+@implementation NSView (NibCompatibility)
+- (void) _setWindow: (id) w
+{
+  ASSIGN(_window,w);
+}
+
+- (void) _fixSubviews
+{
+  NSEnumerator *en = [[self subviews] objectEnumerator];
+  id v = nil;
+  while((v = [en nextObject]) != nil)
+    {
+      if([v window] != [self window] ||
+	 [v superview] != self)
+	{
+	  [v _setWindow: [self window]];
+	  RETAIN(v);
+	  [_sub_views removeObject: v];
+	  [self addSubview: v];
+	  RELEASE(v);
+	}
+      [v _fixSubviews];
+    }
+}
+@end
+
 @implementation NSWindowTemplate
 + (void) initialize
 {
@@ -69,6 +103,48 @@
   RELEASE(_view);
   RELEASE(_autosaveName);
   [super dealloc];
+}
+
+- (id) initWithWindow: (NSWindow *)window
+	    className: (NSString *)windowClass
+	   isDeferred: (BOOL) deferred
+	    isOneShot: (BOOL) oneShot
+	    isVisible: (BOOL) visible
+       wantsToBeColor: (BOOL) wantsToBeColor
+     autoPositionMask: (int) autoPositionMask
+{
+  if((self = [super init]) != nil)
+    {
+      if(window != nil)
+	{
+	  // object members
+	  ASSIGN(_title, [window title]);
+	  ASSIGN(_viewClass, NSStringFromClass([[window contentView] class]));
+	  ASSIGN(_windowClass, windowClass);
+	  ASSIGN(_view, [window contentView]);
+	  ASSIGN(_autosaveName, [window frameAutosaveName]);
+	  
+	  // style & size
+	  _windowStyle = [window styleMask];
+	  _backingStoreType = [window backingType];
+	  _maxSize = [window maxSize];
+	  _minSize = [window minSize];
+	  _windowRect = [window frame];
+	  _screenRect = [[NSScreen mainScreen] frame];
+	  
+	  // flags
+	  _flags.isHiddenOnDeactivate = [window hidesOnDeactivate];
+	  _flags.isNotReleasedOnClose = (![window isReleasedWhenClosed]);
+	  _flags.isDeferred = deferred;
+	  _flags.isOneShot = oneShot;
+	  _flags.isVisible = visible;
+	  _flags.wantsToBeColor = wantsToBeColor;
+	  _flags.dynamicDepthLimit = [window hasDynamicDepthLimit];
+	  _flags.autoPositionMask = autoPositionMask;
+	  _flags.savePosition = YES; // not yet implemented.
+	}
+    }
+  return self;
 }
 
 - (id) initWithCoder: (NSCoder *)coder
@@ -110,7 +186,7 @@
 	}
       if ([coder containsValueForKey: @"NSWindowRect"])
         {
-	  _windowRect = [coder decodeRectForKey: @"NSWindowRect"];
+	  _windowRect =  [coder decodeRectForKey: @"NSWindowRect"];
 	}
       if ([coder containsValueForKey: @"NSFrameAutosaveName"])
         {
@@ -121,10 +197,12 @@
 	  ASSIGN(_title, [coder decodeObjectForKey: @"NSWindowTitle"]);
 	  _windowStyle |= NSTitledWindowMask;
 	}
+
+      _baseWindowClass = [NSWindow class];
     }
   else
     {
-      [NSException raise: NSInternalInconsistencyException 
+      [NSException raise: NSInvalidArgumentException 
 		   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
 		   NSStringFromClass([coder class])];
     }
@@ -136,7 +214,8 @@
   if ([aCoder allowsKeyedCoding])
     {
       unsigned long flags = 0; 
-
+      NSRect rect = [NSWindow contentRectForFrameRect: _windowRect
+			      styleMask: _windowStyle];
       memcpy((void *)&flags,(void *)&_flags,sizeof(unsigned long));
 
       [aCoder encodeObject: _viewClass forKey: @"NSViewClass"];
@@ -147,7 +226,7 @@
       [aCoder encodeInt: flags forKey: @"NSWTFlags"];
       [aCoder encodeSize: _minSize forKey: @"NSMinSize"];
       [aCoder encodeSize: _maxSize forKey: @"NSMaxSize"];
-      [aCoder encodeRect: _windowRect forKey: @"NSWindowRect"];
+      [aCoder encodeRect: rect forKey: @"NSWindowRect"];
       [aCoder encodeObject: _title forKey: @"NSWindowTitle"];
       [aCoder encodeObject: _autosaveName forKey: @"NSFrameAutosaveName"];
     }
@@ -157,10 +236,19 @@
 {
   if(_realObject == nil)
     {
-      Class aClass = NSClassFromString(_windowClass);      
+      Class aClass;
       NSEnumerator *en;
       id v = nil;
-      
+
+      if([NSClassSwapper isInInterfaceBuilder])
+	{
+	  aClass = [self baseWindowClass];
+	}
+      else
+	{
+	  aClass = NSClassFromString(_windowClass);      
+	}
+
       if (aClass == nil)
 	{
 	  [NSException raise: NSInternalInconsistencyException
@@ -192,7 +280,14 @@
       [_realObject setMinSize: _minSize];
       [_realObject setMaxSize: _maxSize];
       [_realObject setTitle: _title];
-      
+
+      [_view _fixSubviews];
+
+      // resize the window...
+      [_realObject setFrame: [NSWindow frameRectForContentRect: [self windowRect] 
+				       styleMask: [self windowStyle]]
+		   display: NO];
+
       // swap out any views which need to be swapped...
       en = [[[_realObject contentView] subviews] objectEnumerator];
       while((v = [en nextObject]) != nil)
@@ -321,6 +416,11 @@
 {
   return _windowClass;
 }
+
+- (Class) baseWindowClass
+{
+  return _baseWindowClass;
+}
 @end
 
 // Template for any classes which derive from NSView
@@ -345,7 +445,7 @@
     }
   else
     {
-      [NSException raise: NSInternalInconsistencyException 
+      [NSException raise: NSInvalidArgumentException 
 		   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
 		   NSStringFromClass([coder class])];
     }
@@ -360,7 +460,7 @@
     }
 }
 
-- (id)nibInstantiate
+- (id) nibInstantiate
 {
   if(_realObject == nil)
     {
@@ -482,7 +582,7 @@
 @implementation NSCustomObject
 - (void) setClassName: (NSString *)name
 {
-  ASSIGN(_className, name);
+  ASSIGNCOPY(_className, name);
 }
 
 - (NSString *)className
@@ -492,7 +592,7 @@
 
 - (void) setExtension: (NSString *)name
 {
-  ASSIGN(_extension, name);
+  ASSIGNCOPY(_extension, name);
 }
 
 - (NSString *)extension
@@ -519,7 +619,7 @@
     }
   else
     {
-      [NSException raise: NSInternalInconsistencyException 
+      [NSException raise: NSInvalidArgumentException 
 		   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
 		   NSStringFromClass([coder class])];
     }
@@ -533,13 +633,30 @@
       [coder encodeObject: (id)_className forKey: @"NSClassName"];
       [coder encodeConditionalObject: (id)_extension forKey: @"NSExtension"];
     }
+  else
+    {
+      [NSException raise: NSInvalidArgumentException
+		   format: @"Keyed coding not implemented for %@.", 
+		   NSStringFromClass([self class])];
+    }
+  
 }
 
 - (id) nibInstantiate
 {
   if(_object == nil)
     {
-      Class aClass = NSClassFromString(_className);
+      Class aClass;
+      
+      if([NSClassSwapper isInInterfaceBuilder])
+	{
+	  aClass = [self class];
+	}
+      else
+	{
+	  aClass = NSClassFromString(_className);
+	}
+
       if(aClass == nil)
 	{
 	  [NSException raise: NSInternalInconsistencyException
@@ -550,12 +667,19 @@
     }
   return _object;
 }
+
+- (void) dealloc
+{
+  RELEASE(_className);
+  RELEASE(_extension);
+  [super dealloc];
+}
 @end
 
 @implementation NSCustomView
 - (void) setClassName: (NSString *)name
 {
-  ASSIGN(_className, name);
+  ASSIGNCOPY(_className, name);
 }
 
 - (NSString *)className
@@ -564,7 +688,7 @@
 }
 - (void) setExtension: (NSString *)ext;
 {
-  ASSIGN(_extension, ext);
+  ASSIGNCOPY(_extension, ext);
 }
 
 - (NSString *)extension
@@ -572,11 +696,21 @@
   return _extension;
 }
 
-- (id)nibInstantiate
+- (id) nibInstantiate
 {
   if(_view == nil)
     {
-      Class aClass = NSClassFromString(_className);
+      Class aClass;
+      
+      if([NSClassSwapper isInInterfaceBuilder])
+	{
+	  aClass = [self class];
+	}
+      else
+	{
+	  aClass = NSClassFromString(_className);
+	}
+
       if(aClass == nil)
 	{
 	  [NSException raise: NSInternalInconsistencyException
@@ -585,6 +719,8 @@
       else
 	{
 	  _view = [[aClass allocWithZone: NSDefaultMallocZone()] initWithFrame: [self frame]];
+	  [_view setAutoresizingMask: [self autoresizingMask]];
+	  [_view setNextResponder: [self nextResponder]];
 	  [[self superview] replaceSubview: self with: _view]; // replace the old view...
 	}
     }
@@ -599,7 +735,14 @@
     {
       if([coder allowsKeyedCoding])
 	{
-	  _className = [coder decodeObjectForKey: @"NSClassName"];
+	  ASSIGN(_className, [coder decodeObjectForKey: @"NSClassName"]);
+	  ASSIGN(_extension, [coder decodeObjectForKey: @"NSExtension"]);
+	}
+      else
+	{
+	  [NSException raise: NSInvalidArgumentException 
+		       format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+		       NSStringFromClass([coder class])];
 	}
     }
   return self;
@@ -607,9 +750,17 @@
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
+  [super encodeWithCoder: coder];
   if([coder allowsKeyedCoding])
     {
-      [coder encodeObject: (id)_className forKey: @"NSClassName"];
+      [coder encodeObject: _className forKey: @"NSClassName"];
+      [coder encodeObject: _extension forKey: @"NSExtension"];
+    }
+  else
+    {
+      [NSException raise: NSInvalidArgumentException 
+		   format: @"Can't encode %@ with %@.",NSStringFromClass([self class]),
+		   NSStringFromClass([coder class])];
     }
 }
 @end
@@ -617,7 +768,7 @@
 @implementation NSCustomResource
 - (void) setClassName: (NSString *)className
 {
-  ASSIGN(_className, className);
+  ASSIGNCOPY(_className, className);
 }
 
 - (NSString *)className
@@ -627,7 +778,7 @@
 
 - (void) setResourceName: (NSString *)resourceName
 {
-  ASSIGN(_resourceName, resourceName);
+  ASSIGNCOPY(_resourceName, resourceName);
 }
 
 - (NSString *)resourceName
@@ -651,11 +802,11 @@
       // this is a hack, but for now it should do.
       if([_className isEqual: @"NSSound"])
 	{
-	  realObject = [NSSound soundNamed: _resourceName];
+	  realObject = RETAIN([NSSound soundNamed: _resourceName]);
 	}
       else if([_className isEqual: @"NSImage"])
 	{
-	  realObject = [NSImage imageNamed: _resourceName];
+	  realObject = RETAIN([NSImage imageNamed: _resourceName]);
 	}
 
       // if an object has been substituted, then release the placeholder.
@@ -666,7 +817,7 @@
     }
   else
     {
-      [NSException raise: NSInternalInconsistencyException 
+      [NSException raise: NSInvalidArgumentException 
 		   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
 		   NSStringFromClass([coder class])];
     }
@@ -717,6 +868,29 @@
 @end
 
 @implementation NSClassSwapper
+- (id) initWithObject: (id)object 
+        withClassName: (NSString *)className
+    originalClassName: (NSString *)origClassName
+{
+  if((self = [super init]) != nil)
+    {
+      [self setTemplate: object];
+      [self setClassName: className];
+      [self setOriginalClassName: origClassName];
+    }
+  return self;
+}
+
++ (void) setIsInInterfaceBuilder: (BOOL)flag
+{
+  _isInInterfaceBuilder = flag;
+}
+
++ (BOOL) isInInterfaceBuilder
+{
+  return _isInInterfaceBuilder;
+}
+
 - (void) setTemplate: (id)temp
 {
   ASSIGN(_template, temp);
@@ -729,7 +903,7 @@
 
 - (void) setClassName: (NSString *)className
 {
-  ASSIGN(_className, className);
+  ASSIGNCOPY(_className, className);
 }
 
 - (NSString *)className
@@ -737,18 +911,29 @@
   return _className;
 }
 
-+ (BOOL) isInInterfaceBuilder
+- (void) setOriginalClassName: (NSString *)className
 {
-  return NO;
+  ASSIGNCOPY(_originalClassName, className);
+}
+
+- (NSString *)originalClassName
+{
+  return _originalClassName;
 }
 
 - (void) instantiateRealObject: (NSCoder *)coder withClassName: (NSString *)className
 {
-  Class aClass = NSClassFromString(className);
+  Class aClass = nil;
   id object = nil;
   Class newCellClass = nil;
   NSString *origCellClassName = nil; 
   Class origCellClass = nil;
+
+  // if there is a replacement class, use it, otherwise, use the one specified.
+  if((aClass = [(NSKeyedUnarchiver *)coder classForClassName: className]) == nil)
+    {
+      aClass = NSClassFromString(className);
+    }
 
   if(aClass == nil)
     {
@@ -772,7 +957,7 @@
   // swap the class...
   object = [aClass allocWithZone: NSDefaultMallocZone()];
   [(NSKeyedUnarchiver *)coder replaceObject: self withObject: object];
-  _template = [object initWithCoder: coder];
+  [self setTemplate: [object initWithCoder: coder]];
   if(object != _template)
     {
       [(NSKeyedUnarchiver *)coder replaceObject: object withObject: _template];
@@ -803,7 +988,7 @@
     }
   else
     {
-      [NSException raise: NSInternalInconsistencyException 
+      [NSException raise: NSInvalidArgumentException 
 		   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
 		   NSStringFromClass([coder class])];
     }
@@ -815,10 +1000,24 @@
 {
   if([coder allowsKeyedCoding])
     {
-      NSString *originalClassName = NSStringFromClass(_template);
-      [coder encodeObject: (id)_className forKey: @"NSClassName"];
-      [coder encodeObject: (id)originalClassName forKey: @"NSOriginalClassName"];
+      [coder encodeObject: _originalClassName forKey: @"NSOriginalClassName"];
+      [coder encodeObject: _className forKey: @"NSClassName"];
+      [_template encodeWithCoder: coder]; // encode the actual object;
     }
+  else
+    {
+      [NSException raise: NSInvalidArgumentException 
+		   format: @"Can't encode %@ with %@.",NSStringFromClass([self class]),
+		   NSStringFromClass([coder class])];
+    }
+}
+
+- (void) dealloc
+{
+  RELEASE(_className);
+  RELEASE(_originalClassName);
+  RELEASE(_template);
+  [super dealloc];
 }
 @end
 
@@ -867,9 +1066,10 @@
 - (void) nibInstantiateWithOwner: (id)owner topLevelObjects: (NSMutableArray *)topLevelObjects
 {
   NSEnumerator *en = [_connections objectEnumerator];
+  NSArray *objs = NSAllMapTableKeys([self names]);
   id obj = nil;
   id menu = nil;
-
+  
   // replace the owner with the actual instance provided.
   [_root setObject: owner];
   
@@ -883,13 +1083,37 @@
 	}
     }
 
+  // instantiate all windows and fill in the top level array.
+  en = [objs objectEnumerator];
+  while((obj = [en nextObject]) != nil)
+    {
+      if([obj isKindOfClass: [NSWindowTemplate class]])
+	{
+	  if([obj realObject] == nil)
+	    {
+	      id o = [self instantiateObject: obj];
+	      [topLevelObjects addObject: o];
+	    }
+	}
+      else
+	{
+	  id v = NSMapGet(_objects, obj);
+	  if(v == nil || v == owner)
+	    {
+	      [topLevelObjects addObject: obj];
+	    }
+	}
+    }
+
+  // bring visible windows to front...
   en = [_visibleWindows objectEnumerator];
   while((obj = [en nextObject]) != nil)
     {
-      id w = [self instantiateObject: obj];
+      id w = [obj realObject];
       [w orderFront: self];
     }
 
+  // add the menu...
   menu = [self objectForName: @"MainMenu"];
   if(menu != nil)
     {
@@ -912,12 +1136,37 @@
 
 - (NSMutableSet *) topLevelObjects
 {
-  return nil;
+  return _topLevelObjects;
 }
 
 - (NSMutableDictionary *) nameTable
 {
   return nil;
+}
+
+- (NSMutableArray *) visibleWindows
+{
+  return _visibleWindows;
+}
+
+- (NSMapTable *) objects
+{
+  return _objects;
+}
+
+- (NSMapTable *) names
+{
+  return _names;
+}
+
+- (NSMapTable *) classes
+{
+  return _classes;
+}
+
+- (NSMapTable *) oids
+{
+  return _oids;
 }
 
 - (id) objectForName: (NSString *)name
@@ -944,20 +1193,38 @@
   return result;
 }
 
+/**
+ * Get the values from the map in the same order as the keys.
+ */
+- (NSArray *) _valuesForKeys: (NSArray *)keys inMap: (NSMapTable *)map
+{
+  NSMutableArray *result = [NSMutableArray array];
+  NSEnumerator *en = [keys objectEnumerator];
+  id key = nil;
+  while((key = [en nextObject]) != nil)
+    {
+      id value = (id)NSMapGet(map,key);
+      [result addObject: value];
+    }
+  return result;
+}
+
 - (void) encodeWithCoder: (NSCoder *)coder
 {
   if([coder allowsKeyedCoding])
     {
       NSArray *accessibilityOidsKeys = (NSArray *)NSAllMapTableKeys(_accessibilityOids);
-      NSArray *accessibilityOidsValues = (NSArray *)NSAllMapTableValues(_accessibilityOids);
+      NSArray *accessibilityOidsValues = [self _valuesForKeys: accessibilityOidsKeys inMap: _accessibilityOids];
       NSArray *classKeys = (NSArray *)NSAllMapTableKeys(_classes);
-      NSArray *classValues = (NSArray *)NSAllMapTableValues(_classes);
+      NSArray *classValues = [self _valuesForKeys: classKeys inMap: _classes];
       NSArray *nameKeys = (NSArray *)NSAllMapTableKeys(_names);
-      NSArray *nameValues = (NSArray *)NSAllMapTableValues(_names);
+      NSArray *nameValues = [self _valuesForKeys: nameKeys inMap: _names];
       NSArray *objectsKeys = (NSArray *)NSAllMapTableKeys(_objects);
-      NSArray *objectsValues = (NSArray *)NSAllMapTableValues(_objects);
+      NSArray *objectsValues = [self _valuesForKeys: objectsKeys inMap: _objects];
       NSArray *oidsKeys = (NSArray *)NSAllMapTableKeys(_oids);
-      NSArray *oidsValues = (NSArray *)NSAllMapTableValues(_oids);
+      NSArray *oidsValues = [self _valuesForKeys: oidsKeys inMap: _oids];
+
+      [(NSKeyedArchiver *)coder setClassName: @"_NSCornerView" forClass: NSClassFromString(@"GSTableCornerView")];
 
       [coder encodeObject: (id)_accessibilityConnectors forKey: @"NSAccessibilityConnectors"];
       [coder encodeObject: (id) accessibilityOidsKeys forKey: @"NSAccessibilityOidsKeys"];
@@ -971,11 +1238,17 @@
       [coder encodeObject: (id) oidsKeys forKey: @"NSOidsKeys"];
       [coder encodeObject: (id) oidsValues forKey: @"NSOidsValues"];
       [coder encodeObject: (id) _connections forKey: @"NSConnections"];
-      [coder encodeConditionalObject: (id) _fontManager forKey: @"NSFontManager"];
-      [coder encodeConditionalObject: (id) _framework forKey: @"NSFramework"];
+      [coder encodeObject: (id) _fontManager forKey: @"NSFontManager"];
+      [coder encodeObject: (id) _framework forKey: @"NSFramework"];
       [coder encodeObject: (id) _visibleWindows forKey: @"NSVisibleWindows"];
       [coder encodeInt: _nextOid forKey: @"NSNextOid"];
       [coder encodeConditionalObject: (id) _root forKey: @"NSRoot"];
+    }
+  else
+    {
+      [NSException raise: NSInvalidArgumentException 
+		   format: @"Can't encode %@ with %@.",NSStringFromClass([self class]),
+		   NSStringFromClass([coder class])];
     }
 }
 
@@ -1003,7 +1276,6 @@
       ASSIGN(_accessibilityConnectors, (NSMutableArray *)[coder decodeObjectForKey: @"NSAccessibilityConnectors"]);
       ASSIGN(_fontManager, [coder decodeObjectForKey: @"NSFontManager"]);
       ASSIGN(_framework, [coder decodeObjectForKey: @"NSFramework"]);
-      ASSIGN(_connections,  (NSMutableArray *)[coder decodeObjectForKey: @"NSConnections"]);
       _nextOid = [coder decodeIntForKey: @"NSNextOid"];
 
       {
@@ -1041,16 +1313,31 @@
 					      NSObjectMapValueCallBacks, 2);
 	
 	// fill in the maps...
-	[self _buildMap: _accessibilityOids withKeys: accessibilityOidsKeys andValues: accessibilityOidsValues];
-	[self _buildMap: _classes withKeys: classKeys andValues: classValues];
-	[self _buildMap: _names withKeys: nameKeys andValues: nameValues];
-	[self _buildMap: _objects withKeys: objectsKeys andValues: objectsValues];
-	[self _buildMap: _oids withKeys: oidsKeys andValues: oidsValues];
+	[self _buildMap: _accessibilityOids 
+	      withKeys: accessibilityOidsKeys 
+	      andValues: accessibilityOidsValues];
+	[self _buildMap: _classes 
+	      withKeys: classKeys 
+	      andValues: classValues];
+	[self _buildMap: _names 
+	      withKeys: nameKeys 
+	      andValues: nameValues];
+	[self _buildMap: _objects 
+	      withKeys: objectsKeys 
+	      andValues: objectsValues];
+	[self _buildMap: _oids 
+	      withKeys: oidsKeys 
+	      andValues: oidsValues];
+
+	ASSIGN(_connections,  [[coder decodeObjectForKey: @"NSConnections"] mutableCopy]);
+
+	// instantiate...
+	_topLevelObjects = [[NSMutableSet alloc] init];
       }
     }
   else
     {
-      [NSException raise: NSInternalInconsistencyException 
+      [NSException raise: NSInvalidArgumentException 
 		   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
 		   NSStringFromClass([coder class])];
     }
@@ -1102,6 +1389,7 @@
   RELEASE(_framework);
   RELEASE(_visibleWindows);
   RELEASE(_root);
+  RELEASE(_topLevelObjects);
   [super dealloc];
 }
 
@@ -1114,13 +1402,16 @@
 {
   return _root;
 }
-@end
 
-@interface NSButtonImageSource : NSObject <NSCoding>
+- (void) setNextOid: (int)noid
 {
-  NSString *imageName;
+  _nextOid = noid;
 }
-- (NSString *)imageName;
+
+- (int) nextOid
+{
+  return _nextOid;
+}
 @end
 
 @implementation NSButtonImageSource
@@ -1130,6 +1421,13 @@
     {
       ASSIGN(imageName, [coder decodeObjectForKey: @"NSImageName"]);
     }
+  else
+    {
+      [NSException raise: NSInvalidArgumentException 
+		   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+		   NSStringFromClass([coder class])];
+    }
+
   RELEASE(self);
   return [NSImage imageNamed: imageName];
 }
@@ -1140,6 +1438,21 @@
     {
       [coder encodeObject: imageName forKey: @"NSImageName"];
     }
+  else
+    {
+      [NSException raise: NSInvalidArgumentException 
+		   format: @"Can't encode %@ with %@.",NSStringFromClass([self class]),
+		   NSStringFromClass([coder class])];
+    }
+}
+
+- (id) initWithImageNamed: (NSString *)name
+{
+  if((self = [super init]) != nil)
+    {
+      ASSIGN(imageName,name);
+    }
+  return self;
 }
 
 - (NSString *)imageName
@@ -1162,3 +1475,65 @@
 
 @implementation _NSCornerView
 @end
+
+@implementation NSIBHelpConnector
+@end
+
+@interface NSDecimalNumberPlaceholder : NSObject
+@end
+
+@implementation NSDecimalNumberPlaceholder
+- (id) initWithCoder: (NSCoder *)coder
+{
+  NSDecimalNumber *dn = nil;
+  if([coder allowsKeyedCoding])
+    {
+      unsigned int len = 0;
+      // BOOL compact = [coder decodeBoolForKey: @"NS.compact"];
+      short exponent = (short)[coder decodeIntForKey: @"NS.exponent"];
+      // int length = [coder decodeIntForKey: @"NS.length"];
+      NSByteOrder bo = [coder decodeIntForKey: @"NS.mantissa.bo"];
+      BOOL negative = [coder decodeBoolForKey: @"NS.negative"];
+      void *mantissaBytes = (void *)[coder decodeBytesForKey: @"NS.mantissa" returnedLength: &len];
+      unsigned long long unswapped = 0; 
+      unsigned long long mantissa = 0;
+
+      memcpy((void *)&unswapped, (void *)mantissaBytes, sizeof(unsigned long long));
+
+      switch(bo)
+	{
+	case NS_BigEndian:
+	  mantissa = NSSwapBigLongLongToHost(unswapped);
+	  break;
+	case NS_LittleEndian:
+	  mantissa = NSSwapLittleLongLongToHost(unswapped);
+	  break;
+	default:
+	  break;
+	}
+
+      dn = [[NSDecimalNumber alloc] initWithMantissa: mantissa
+				    exponent: exponent
+				    isNegative: negative];
+    }
+  return dn;
+}
+
+@end
+
+// class needed for nib encoding/decoding by
+@implementation NSPSMatrix
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  // do nothing... just encoding the presence of the class.
+}
+
+- (id) initWithCoder: (NSCoder *)coder
+{
+  // what's NSPSMatix all about?
+  // NSLog(@"NSPSMatrix = %@",[(NSKeyedUnarchiver *)coder keyMap]);
+  return self;
+}
+@end
+
+

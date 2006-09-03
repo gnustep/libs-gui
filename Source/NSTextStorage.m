@@ -353,4 +353,17 @@ static NSNotificationCenter *nc = nil;
   return self;
 }
 
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  if([coder allowsKeyedCoding])
+    {
+      [coder encodeObject: [self delegate] forKey: @"NSDelegate"];
+      [coder encodeObject: [self string] forKey: @"NSString"];
+    }
+  else
+    {
+      [super encodeWithCoder: coder];
+    }
+}
+
 @end

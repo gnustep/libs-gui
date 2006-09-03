@@ -208,7 +208,7 @@
       //
       if([coder allowsKeyedCoding])
 	{
-	  // Need to verify this key...
+	  // TODO_NIB: Need to verify this key...
 	  ASSIGN(_nibData, [coder decodeObjectForKey: @"NSData"]);
 	  ASSIGN(_loader, [GSModelLoaderFactory modelLoaderForFileType: @"nib"]);
 	}
@@ -227,7 +227,7 @@
 {
   if([coder allowsKeyedCoding])
     {
-      // Need to verify this key...
+      // TODO_NIB: Need to verify this key...
       [coder encodeObject: _nibData 
 	     forKey: @"NSData"];      
     }

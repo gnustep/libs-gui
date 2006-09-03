@@ -536,6 +536,7 @@
 #include <Foundation/NSInvocation.h>
 #include <Foundation/NSLock.h>
 #include <Foundation/NSPathUtilities.h>
+#include <Foundation/NSPortCoder.h>
 #include <Foundation/NSPortNameServer.h>
 #include <Foundation/NSProcessInfo.h>
 #include <Foundation/NSSerialization.h>

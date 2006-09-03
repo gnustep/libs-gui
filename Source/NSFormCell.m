@@ -391,20 +391,29 @@ static NSColor	*shadowCol;
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  BOOL tmp;
-
   [super encodeWithCoder: aCoder];
-
-  tmp = _formcell_auto_title_width;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &tmp];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_displayedTitleWidth];
-  [aCoder encodeObject: _titleCell];
+  if([aCoder allowsKeyedCoding])
+    {
+      /*
+      if([self stringValue] != nil)
+	{
+	  [aCoder encodeObject: [self stringValue] forKey: @"NSContents"];
+	}
+      */
+      [aCoder encodeFloat: [self titleWidth] forKey: @"NSTitleWidth"];
+      [aCoder encodeObject: _titleCell forKey: @"NSTitleCell"];
+    }
+  else
+    {
+      BOOL tmp = _formcell_auto_title_width;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &tmp];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_displayedTitleWidth];
+      [aCoder encodeObject: _titleCell];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  BOOL tmp;
-
   [super initWithCoder: aDecoder];
   if ([aDecoder allowsKeyedCoding])
     {
@@ -423,6 +432,7 @@ static NSColor	*shadowCol;
     }
   else
     {
+      BOOL tmp;
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
       _formcell_auto_title_width = tmp;
       [aDecoder decodeValueOfObjCType: @encode(float) at: &_displayedTitleWidth];

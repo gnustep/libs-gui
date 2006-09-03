@@ -1236,9 +1236,11 @@ many times.
   ASSIGN(_miniaturizedImage, image);
   if (_counterpart != 0 && (_styleMask & NSMiniWindowMask) == 0)
     {
-      NSMiniWindow	*mini = [NSApp windowWithWindowNumber: _counterpart];
-      id		v = [mini contentView];
+      NSMiniWindow	*mini;
+      id		v;
 
+      mini = (NSMiniWindow*)[NSApp windowWithWindowNumber: _counterpart];
+      v = [mini contentView];
       if ([v respondsToSelector: @selector(setImage:)])
 	{
 	  [v setImage: [self miniwindowImage]];
@@ -1251,9 +1253,11 @@ many times.
   ASSIGN(_miniaturizedTitle, title);
   if (_counterpart != 0 && (_styleMask & NSMiniWindowMask) == 0)
     {
-      NSMiniWindow	*mini = [NSApp windowWithWindowNumber: _counterpart];
-      id		v = [mini contentView];
+      NSMiniWindow	*mini;
+      id		v;
 
+      mini = (NSMiniWindow*)[NSApp windowWithWindowNumber: _counterpart];
+      v = [mini contentView];
       if ([v respondsToSelector: @selector(setTitle:)])
 	{
 	  [v setTitle: [self miniwindowTitle]];
@@ -2344,10 +2348,25 @@ discardCursorRectsForView(NSView *theView)
 {
   if (((NSViewPtr)aView)->_rFlags.valid_rects)
     {
-      [((NSViewPtr)aView)->_cursor_rects
-	makeObjectsPerformSelector: @selector(invalidate)];
-      ((NSViewPtr)aView)->_rFlags.valid_rects = 0;
-      _f.cursor_rects_valid = NO;
+      [aView discardCursorRects];
+
+      if (_f.cursor_rects_valid)
+	{
+	  if (_f.is_key && _f.cursor_rects_enabled)
+	    {
+	      NSEvent *e = [NSEvent otherEventWithType: NSAppKitDefined
+					      location: NSMakePoint(-1, -1)
+					 modifierFlags: 0
+					     timestamp: 0
+					  windowNumber: _windowNum
+					       context: GSCurrentContext()
+					       subtype: -1
+						 data1: 0
+						 data2: 0];
+	      [self postEvent: e atStart: YES];
+	    }
+	  _f.cursor_rects_valid = NO;
+	}
     }
 }
 
@@ -2383,6 +2402,26 @@ resetCursorRectsForView(NSView *theView)
   [self discardCursorRects];
   resetCursorRectsForView(_wv);
   _f.cursor_rects_valid = YES;
+
+  if (_f.is_key && _f.cursor_rects_enabled)
+    {
+      NSPoint loc = [self mouseLocationOutsideOfEventStream];
+      if (NSMouseInRect(loc, [_wv bounds], NO))
+	{
+	  NSEvent *e = [NSEvent mouseEventWithType: NSMouseMoved
+					  location: loc
+				     modifierFlags: 0
+					 timestamp: 0
+				      windowNumber: _windowNum
+					   context: GSCurrentContext()
+				       eventNumber: 0
+					clickCount: 0
+					  pressure: 0];
+	  _lastPoint = NSMakePoint(-1,-1);
+	  (*ccImp)(self, ccSel, _wv, e);
+	  _lastPoint = loc;
+	}
+    }
 }
 
 /*
@@ -4135,6 +4174,19 @@ resetCursorRectsForView(NSView *theView)
 {
   BOOL		flag;
 
+
+  // If were're being initialized from a keyed coder...
+  if([aCoder allowsKeyedCoding])
+    {
+      // The docs indicate that there should be an error when directly encoding with
+      // a keyed coding archiver.  We should only encode NSWindow and subclasses
+      // using NSWindowTemplate.
+      [NSException raise: NSInvalidArgumentException
+		   format: @"Keyed coding not implemented for %@.", 
+		   NSStringFromClass([self class])];
+    }
+
+
   [super encodeWithCoder: aCoder];
 
   [aCoder encodeRect: [[self contentView] frame]];
@@ -4180,6 +4232,19 @@ resetCursorRectsForView(NSView *theView)
 {
   id	oldself = self;
   BOOL	flag;
+
+
+  // If were're being initialized from a keyed coder...
+  if([aDecoder allowsKeyedCoding])
+    {
+      // The docs indicate that there should be an error when directly encoding with
+      // a keyed coding archiver.  We should only encode NSWindow and subclasses
+      // using NSWindowTemplate.
+      [NSException raise: NSInvalidArgumentException
+		   format: @"Keyed coding not implemented for %@.", 
+		   NSStringFromClass([self class])];
+    }
+
 
   if ((self = [super initWithCoder: aDecoder]) == oldself)
     {

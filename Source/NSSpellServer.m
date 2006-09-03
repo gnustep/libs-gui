@@ -78,24 +78,23 @@ GSSpellServerName(NSString *vendor, NSString *language)
   NSArray *userLanguages = [NSUserDefaults userLanguages];  
   NSString *currentLanguage = [userLanguages objectAtIndex: 0];
 
-  [super init];
-
-  _delegate = nil;
-  _ignoredWords = nil;
-  ASSIGN(_userDictionaries, [NSMutableDictionary dictionary]);
-  ASSIGN(_currentLanguage, currentLanguage);
-
-  RETAIN(_userDictionaries);
-  RETAIN(_currentLanguage);
+  if ((self = [super init]) != nil)
+    {
+      _delegate = nil;
+      _ignoredWords = nil;
+      ASSIGN(_userDictionaries, [NSMutableDictionary dictionary]);
+      ASSIGN(_currentLanguage, currentLanguage);
+    }
 
   return self;
 }
 
 // Cleanup when deallocated
-- (void)dealloc
+- (void) dealloc
 {
   RELEASE(_userDictionaries);
   RELEASE(_currentLanguage);
+  [super dealloc];
 }
 
 // Checking in Your Service 

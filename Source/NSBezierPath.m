@@ -1839,6 +1839,8 @@ static NSPoint point_on_curve(double t, NSPoint a, NSPoint b, NSPoint c,
   
   elem.type = NSMoveToBezierPathElement;
   elem.points[0] = aPoint;
+  elem.points[1] = NSZeroPoint;
+  elem.points[2] = NSZeroPoint;
   GSIArrayAddItem(pathElements, (GSIArrayItem)elem);
   INVALIDATE_CACHE();
 }
@@ -1849,6 +1851,8 @@ static NSPoint point_on_curve(double t, NSPoint a, NSPoint b, NSPoint c,
   
   elem.type = NSLineToBezierPathElement;
   elem.points[0] = aPoint;
+  elem.points[1] = NSZeroPoint;
+  elem.points[2] = NSZeroPoint;
   GSIArrayAddItem(pathElements, (GSIArrayItem)elem);
   INVALIDATE_CACHE();
 }
@@ -1874,6 +1878,9 @@ static NSPoint point_on_curve(double t, NSPoint a, NSPoint b, NSPoint c,
   PathElement elem;
 
   elem.type = NSClosePathBezierPathElement;
+  elem.points[0] = NSZeroPoint;
+  elem.points[1] = NSZeroPoint;
+  elem.points[2] = NSZeroPoint;
   GSIArrayAddItem(pathElements, (GSIArrayItem)elem);
   INVALIDATE_CACHE();
 }

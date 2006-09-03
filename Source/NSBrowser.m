@@ -152,30 +152,43 @@ static NSTextFieldCell *titleCell;
 
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
-  int dummy = 0;
-
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isLoaded];
-  [aCoder encodeObject: _columnScrollView];
-  [aCoder encodeObject: _columnMatrix];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &dummy];
-  [aCoder encodeObject: _columnTitle];
+  if([aCoder allowsKeyedCoding])
+    {
+    }
+  else
+    {
+      int dummy = 0;
+      
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isLoaded];
+      [aCoder encodeObject: _columnScrollView];
+      [aCoder encodeObject: _columnMatrix];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &dummy];
+      [aCoder encodeObject: _columnTitle];
+    }
 }
-
+  
 - (id) initWithCoder: (NSCoder *)aDecoder
 {
-  int dummy = 0;
+  if([aDecoder allowsKeyedCoding])
+    {
+      
+    }
+  else
+    {
+      int dummy = 0;
 
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isLoaded];
-  _columnScrollView = [aDecoder decodeObject];
-  if (_columnScrollView)
-    RETAIN(_columnScrollView);
-  _columnMatrix = [aDecoder decodeObject];
-  if (_columnMatrix)
-    RETAIN(_columnMatrix);
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &dummy];
-  _columnTitle = [aDecoder decodeObject];
-  if (_columnTitle)
-    RETAIN(_columnTitle);
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isLoaded];
+      _columnScrollView = [aDecoder decodeObject];
+      if (_columnScrollView)
+	RETAIN(_columnScrollView);
+      _columnMatrix = [aDecoder decodeObject];
+      if (_columnMatrix)
+	RETAIN(_columnMatrix);
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &dummy];
+      _columnTitle = [aDecoder decodeObject];
+      if (_columnTitle)
+	RETAIN(_columnTitle);
+    }
   return self;
 }
 
@@ -2488,65 +2501,156 @@ static NSTextFieldCell *titleCell;
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
+  if([aCoder allowsKeyedCoding])
+    {
+      long flags = 0;
 
-  // Here to keep compatibility with old version
-  [aCoder encodeObject: nil];
-  [aCoder encodeObject:_browserCellPrototype];
-  [aCoder encodeObject: NSStringFromClass (_browserMatrixClass)];
+      //
+      // NOTE: The browserview under GS uses an NSMatrix subview, the one under
+      // Cocoa does not.   This will cause IB to issue an "inconsistency" alert
+      // which is minor and nothing to worry about.
+      //
+      [aCoder encodeObject: _browserCellPrototype forKey: @"NSCellPrototype"];
+      [aCoder encodeObject: [self _getTitleOfColumn: 0] forKey: @"NSFirstColumnTitle"];
+      [aCoder encodeObject: _pathSeparator forKey: @"NSPathSeparator"];
 
-  [aCoder encodeObject:_pathSeparator];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isLoaded];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsBranchSelection];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsEmptySelection];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsMultipleSelection];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_maxVisibleColumns];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_minColumnWidth];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_reusesColumns];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_separatesColumns];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_takesTitleFromPreviousColumn];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isTitled];
+      flags |= [self hasHorizontalScroller] ? 0x10000 : 0;
+      flags |= ([self allowsEmptySelection] == NO) ? 0x20000 : 0;
+      flags |= [self sendsActionOnArrowKeys] ? 0x40000 : 0;
+      flags |= [self acceptsArrowKeys] ? 0x100000 : 0;
+      flags |= [self separatesColumns] ? 0x4000000 : 0;
+      flags |= [self takesTitleFromPreviousColumn] ? 0x8000000 : 0;
+      flags |= [self isTitled] ? 0x10000000 : 0;
+      flags |= [self reusesColumns] ? 0x20000000 : 0;
+      flags |= [self allowsBranchSelection] ? 0x40000000 : 0;
+      flags |= [self allowsMultipleSelection] ? 0x80000000 : 0;
+      [aCoder encodeInt: flags forKey: @"NSBrFlags"];
 
- 
-  [aCoder encodeObject:_horizontalScroller];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasHorizontalScroller];
-  [aCoder encodeRect: _scrollerRect];
-  [aCoder encodeSize: _columnSize];
+      [aCoder encodeInt: _maxVisibleColumns forKey: @"NSNumberOfVisibleColumns"];
+      [aCoder encodeInt: _minColumnWidth forKey: @"NSMinColumnWidth"];
 
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_acceptsArrowKeys];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_sendsActionOnArrowKeys];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_acceptsAlphaNumericalKeys];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_sendsActionOnAlphaNumericalKeys];
-
-  [aCoder encodeConditionalObject:_browserDelegate];
-
-  [aCoder encodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
-  [aCoder encodeConditionalObject: _target];
-  [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
-
-  [aCoder encodeObject: _browserColumns];
-
-  // Just encode the number of columns and the first visible
-  // and rebuild the browser columns on the decoding side
-  {
-    int colCount = [_browserColumns count];  
-    [aCoder encodeValueOfObjCType: @encode(int) at: &colCount];
-    [aCoder encodeValueOfObjCType: @encode(int) at: &_firstVisibleColumn];
-  }
-
+      //[aCoder encodeInt: columnResizingType forKey: @"NSColumnResizingType"]];
+      //[aCoder encodeInt: prefWidth forKey: @"NSPreferedColumnWidth"];
+    }
+  else
+    {
+      // Here to keep compatibility with old version
+      [aCoder encodeObject: nil];
+      [aCoder encodeObject:_browserCellPrototype];
+      [aCoder encodeObject: NSStringFromClass (_browserMatrixClass)];
+      
+      [aCoder encodeObject:_pathSeparator];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isLoaded];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsBranchSelection];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsEmptySelection];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsMultipleSelection];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &_maxVisibleColumns];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_minColumnWidth];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_reusesColumns];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_separatesColumns];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_takesTitleFromPreviousColumn];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isTitled];
+      
+      
+      [aCoder encodeObject:_horizontalScroller];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasHorizontalScroller];
+      [aCoder encodeRect: _scrollerRect];
+      [aCoder encodeSize: _columnSize];
+      
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_acceptsArrowKeys];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_sendsActionOnArrowKeys];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_acceptsAlphaNumericalKeys];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_sendsActionOnAlphaNumericalKeys];
+      
+      [aCoder encodeConditionalObject:_browserDelegate];
+      
+      [aCoder encodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
+      [aCoder encodeConditionalObject: _target];
+      [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
+      
+      [aCoder encodeObject: _browserColumns];
+      
+      // Just encode the number of columns and the first visible
+      // and rebuild the browser columns on the decoding side
+      {
+	int colCount = [_browserColumns count];  
+	[aCoder encodeValueOfObjCType: @encode(int) at: &colCount];
+	[aCoder encodeValueOfObjCType: @encode(int) at: &_firstVisibleColumn];
+      }
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   self = [super initWithCoder: aDecoder];
-
   if ([aDecoder allowsKeyedCoding])
     {
       NSCell *proto = [aDecoder decodeObjectForKey: @"NSCellPrototype"];
       NSString *title = [aDecoder decodeObjectForKey: @"NSFirstColumnTitle"];
       NSString *sep = [aDecoder decodeObjectForKey: @"NSPathSeparator"];
-      int flags;
+      long flags;
+
+      // start //
+      NSSize bs;
+      //NSScroller *hs;
       
-      self = [super initWithCoder: aDecoder];
+      /* Created the shared titleCell if it hasn't been created already. */
+      if (!titleCell)
+	{
+	  titleCell = [GSBrowserTitleCell new];
+	}
+      
+      // Class setting
+      _browserCellPrototype = [[[NSBrowser cellClass] alloc] init];
+      _browserMatrixClass = [NSMatrix class];
+      
+      // Default values
+      _pathSeparator = @"/";
+      _allowsBranchSelection = YES;
+      _allowsEmptySelection = YES;
+      _allowsMultipleSelection = YES;
+      _reusesColumns = NO;
+      _separatesColumns = YES;
+      _isTitled = YES;
+      _takesTitleFromPreviousColumn = YES;
+      _hasHorizontalScroller = YES;
+      _isLoaded = NO;
+      _acceptsArrowKeys = YES;
+      _acceptsAlphaNumericalKeys = YES;
+      _lastKeyPressed = 0.;
+      _charBuffer = nil;
+      _sendsActionOnArrowKeys = YES;
+      _sendsActionOnAlphaNumericalKeys = YES;
+      _browserDelegate = nil;
+      _passiveDelegate = YES;
+      _doubleAction = NULL;  
+      bs = _sizeForBorderType (NSBezelBorder);
+      _minColumnWidth = scrollerWidth + (2 * bs.width);
+      if (_minColumnWidth < 100.0)
+	_minColumnWidth = 100.0;
+      
+      // Horizontal scroller
+      _scrollerRect.origin.x = bs.width;
+      _scrollerRect.origin.y = bs.height;
+      _scrollerRect.size.width = _frame.size.width - (2 * bs.width);
+      _scrollerRect.size.height = scrollerWidth;
+      _horizontalScroller = [[NSScroller alloc] initWithFrame: _scrollerRect];
+      [_horizontalScroller setTarget: self];
+      [_horizontalScroller setAction: @selector(scrollViaScroller:)];
+      [self addSubview: _horizontalScroller];
+      _skipUpdateScroller = NO;
+      
+      // Columns
+      _browserColumns = [[NSMutableArray alloc] init];
+      
+      // Create a single column
+      _lastColumnLoaded = -1;
+      _firstVisibleColumn = 0;
+      _lastVisibleColumn = 0;
+      _maxVisibleColumns = 3;
+      [self _createColumn];
+      // end //            
+      
       [self setCellPrototype: proto];
       [self setPathSeparator: sep];
       [self setTitle: title ofColumn: 0];
@@ -2555,16 +2659,16 @@ static NSTextFieldCell *titleCell;
         {
 	  flags = [aDecoder decodeIntForKey: @"NSBrFlags"];
 
-	  [self setHasHorizontalScroller: (flags & 0x10000)];
-	  [self setAllowsEmptySelection: !(flags & 0x20000)];
-	  [self setSendsActionOnArrowKeys: (flags & 0x40000)];
-	  [self setAcceptsArrowKeys: (flags & 0x100000)];
-	  [self setSeparatesColumns: (flags & 0x4000000)];
-	  [self setTakesTitleFromPreviousColumn: (flags & 0x8000000)];
-	  [self setTitled: (flags & 0x10000000)];
-	  [self setReusesColumns: (flags & 0x20000000)];
-	  [self setAllowsBranchSelection: (flags & 0x40000000)];
-	  [self setAllowsMultipleSelection: (flags & 0x80000000)];
+	  [self setHasHorizontalScroller: ((flags & 0x10000) == 0x10000)];
+	  [self setAllowsEmptySelection: !((flags & 0x20000) == 0x20000)];
+	  [self setSendsActionOnArrowKeys: ((flags & 0x40000) == 0x40000)];
+	  [self setAcceptsArrowKeys: ((flags & 0x100000) == 0x100000)];
+	  [self setSeparatesColumns: ((flags & 0x4000000) == 0x4000000)];
+	  [self setTakesTitleFromPreviousColumn: ((flags & 0x8000000) == 0x8000000)];
+	  [self setTitled: ((flags & 0x10000000) == 0x10000000)];
+	  [self setReusesColumns: ((flags & 0x20000000) == 0x20000000)];
+	  [self setAllowsBranchSelection: ((flags & 0x40000000) == 0x40000000)];
+	  [self setAllowsMultipleSelection: ((flags & 0x80000000) == 0x80000000)];
 	}
 
       if ([aDecoder containsValueForKey: @"NSNumberOfVisibleColumns"])

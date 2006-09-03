@@ -52,6 +52,7 @@
 #include "AppKit/NSSound.h"
 #include "AppKit/NSWindow.h"
 #include "GNUstepGUI/GSDrawFunctions.h"
+#include "GNUstepGUI/GSNibCompatibility.h"
 
 #include <math.h>
 
@@ -75,13 +76,13 @@ typedef struct _GSButtonCellFlags
   unsigned int hasKeyEquiv:1;
   unsigned int lastState:1;
   unsigned int isTransparent:1;
-  unsigned int unused2:6; // inset:2 doesn't dim:1 gradient:3
+  unsigned int unused1:6; // inset:2 doesn't dim:1 gradient:3
   unsigned int useButtonImageSource:1;
-  unsigned int unused3:8; // alt mnemonic loc.
+  unsigned int unused2:8; // alt mnemonic loc.
 #else
-  unsigned int unused3:8; // alt mnemonic loc.
+  unsigned int unused2:8; // alt mnemonic loc.
   unsigned int useButtonImageSource:1;
-  unsigned int unused0:6; // inset:2 doesn't dim:1 gradient:3
+  unsigned int unused1:6; // inset:2 doesn't dim:1 gradient:3
   unsigned int isTransparent:1;
   unsigned int lastState:1;
   unsigned int hasKeyEquiv:1;
@@ -1445,25 +1446,110 @@ typedef struct _GSButtonCellFlags
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  BOOL tmp;
 
-  // FIXME: Add new ivars
   [super encodeWithCoder: aCoder];
+  if([aCoder allowsKeyedCoding])
+    {
+      GSButtonCellFlags buttonCellFlags;
+      unsigned int bFlags = 0;
+      unsigned int bFlags2 = 0;
+      NSImage *image = [self image];
+      NSButtonImageSource *bi = nil;
 
-  [aCoder encodeObject: _keyEquivalent];
-  [aCoder encodeObject: _keyEquivalentFont];
-  [aCoder encodeObject: _altContents];
-  [aCoder encodeObject: _altImage];
-  tmp = _buttoncell_is_transparent;
-  [aCoder encodeValueOfObjCType: @encode(BOOL)
-			     at: &tmp];
-  [aCoder encodeValueOfObjCType: @encode(unsigned int)
-			     at: &_keyEquivalentModifierMask];
-  [aCoder encodeValueOfObjCType: @encode(unsigned int)
-			     at: &_highlightsByMask];
-  [aCoder encodeValueOfObjCType: @encode(unsigned int)
-			     at: &_showAltStateMask];
+      if([self keyEquivalent] != nil)
+	{
+	  [aCoder encodeObject: [self keyEquivalent] forKey: @"NSKeyEquivalent"];
+	}
+      if([self image] != nil)
+	{
+	  [aCoder encodeObject: [self image] forKey: @"NSNormalImage"];
+	}
+      if([self alternateTitle] != nil)
+	{
+	  [aCoder encodeObject: [self alternateTitle] forKey: @"NSAlternateContents"];
+	}
 
+      buttonCellFlags.useButtonImageSource = (([NSImage imageNamed: @"NSSwitch"] == image) ||
+					      ([NSImage imageNamed: @"NSRadioButton"] == image));
+      buttonCellFlags.isTransparent = [self isTransparent];
+      buttonCellFlags.isBordered = [self isBordered]; 
+      buttonCellFlags.isImageAndText = (image != nil);
+      buttonCellFlags.hasKeyEquiv = ([self keyEquivalent] != nil);
+
+      // cell attributes...
+      buttonCellFlags.isPushin = [self cellAttribute: NSPushInCell]; 
+      buttonCellFlags.highlightByBackground = [self cellAttribute: NSCellLightsByBackground];
+      buttonCellFlags.highlightByContents = [self cellAttribute: NSCellLightsByContents];
+      buttonCellFlags.highlightByGray = [self cellAttribute: NSCellLightsByGray];
+      buttonCellFlags.changeBackground = [self cellAttribute: NSChangeBackgroundCell];
+      buttonCellFlags.changeContents = [self cellAttribute: NSCellChangesContents];
+      buttonCellFlags.changeGray = [self cellAttribute: NSChangeGrayCell];
+
+      // set these to zero...
+      buttonCellFlags.unused1 = 0; // 32;
+      buttonCellFlags.unused2 = 0; // 255;
+      buttonCellFlags.lastState = 0;
+      buttonCellFlags.isImageSizeDiff = 0;
+      buttonCellFlags.imageDoesOverlap = 0;
+      buttonCellFlags.drawing = 0;
+      buttonCellFlags.isBottomOrLeft = 0;
+
+      memcpy((void *)&bFlags, (void *)&buttonCellFlags,sizeof(unsigned int));
+      [aCoder encodeInt: bFlags forKey: @"NSButtonFlags"];
+
+      // style and border.
+      bFlags2 != [self showsBorderOnlyWhileMouseInside] ? 0x8 : 0;
+      bFlags2 |= [self bezelStyle];
+      [aCoder encodeInt: bFlags2 forKey: @"NSButtonFlags2"];
+
+      // alternate image encoding...
+      if(image != nil)
+	{
+	  if ([image isKindOfClass: [NSImage class]] && buttonCellFlags.useButtonImageSource)
+	    {
+	      if([NSImage imageNamed: @"NSSwitch"] == image)
+		{
+		  bi = [[NSButtonImageSource alloc] initWithImageNamed: @"NSHighlightedSwitch"];
+		}
+	      else if([NSImage imageNamed: @"NSRadioButton"] == image)
+		{
+		  bi = [[NSButtonImageSource alloc] initWithImageNamed: @"NSHighlightedRadioButton"];
+		}
+	    }
+	}
+
+      // encode button image source, if it exists...
+      if(bi != nil)
+	{
+	  [aCoder encodeObject: bi forKey: @"NSAlternateImage"];      
+	}
+      else if(_altImage != nil)
+	{
+	  [aCoder encodeObject: _altImage forKey: @"NSAlternateImage"];
+	}
+
+      // repeat and delay
+      [aCoder encodeInt: (int)_delayInterval forKey: @"NSPeriodicDelay"];
+      [aCoder encodeInt: (int)_repeatInterval forKey: @"NSPeriodicInterval"];
+    }
+  else
+    {
+      // FIXME: Add new ivars
+      [aCoder encodeObject: _keyEquivalent];
+      [aCoder encodeObject: _keyEquivalentFont];
+      [aCoder encodeObject: _altContents];
+      [aCoder encodeObject: _altImage];
+      tmp = _buttoncell_is_transparent;
+      [aCoder encodeValueOfObjCType: @encode(BOOL)
+	      at: &tmp];
+      [aCoder encodeValueOfObjCType: @encode(unsigned int)
+	      at: &_keyEquivalentModifierMask];
+      [aCoder encodeValueOfObjCType: @encode(unsigned int)
+	      at: &_highlightsByMask];
+      [aCoder encodeValueOfObjCType: @encode(unsigned int)
+	      at: &_showAltStateMask];
+      
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -1491,36 +1577,27 @@ typedef struct _GSButtonCellFlags
       if ([aDecoder containsValueForKey: @"NSButtonFlags"])
         {
 	  unsigned int bFlags = [aDecoder decodeIntForKey: @"NSButtonFlags"];
-	  int highlights = 0;  
-	  int show_state = NSNoCellMask;  
 	  GSButtonCellFlags buttonCellFlags;
 	  memcpy((void *)&buttonCellFlags,(void *)&bFlags,sizeof(struct _GSButtonCellFlags));
 
 	  [self setTransparent: buttonCellFlags.isTransparent];
 	  [self setBordered: buttonCellFlags.isBordered];
 	  
-	  if (buttonCellFlags.highlightByBackground)
-	    {
-	      highlights |= NSChangeBackgroundCellMask;
-	    }
-	  if (buttonCellFlags.highlightByContents)
-	    {
-	      highlights |= NSContentsCellMask;
-	    }
-	  if (buttonCellFlags.changeBackground)
-	    {
-	      show_state |= NSChangeBackgroundCellMask;
-	    }
-	  if (buttonCellFlags.changeContents)
-	    {
-	      show_state |= NSContentsCellMask;
-	    }
-	  if (buttonCellFlags.isPushin)
-	    {
-	      highlights |= NSPushInCellMask;
-	    }
-	  [self setHighlightsBy: highlights];
-	  [self setShowsStateBy: show_state];
+	  [self setCellAttribute: NSPushInCell
+		to: buttonCellFlags.isPushin];
+	  [self setCellAttribute: NSCellLightsByBackground 
+		to: buttonCellFlags.highlightByBackground];
+	  [self setCellAttribute: NSCellLightsByContents   
+		to: buttonCellFlags.highlightByContents];
+	  [self setCellAttribute: NSCellLightsByGray
+		to: buttonCellFlags.highlightByGray]; 
+	  [self setCellAttribute: NSChangeBackgroundCell   
+		to: buttonCellFlags.changeBackground];
+	  [self setCellAttribute: NSCellChangesContents    
+		to: buttonCellFlags.changeContents];
+	  [self setCellAttribute: NSChangeGrayCell
+		to: buttonCellFlags.changeGray]; 
+	  
 	  [self setImagePosition: NSImageLeft];
 	}
       if ([aDecoder containsValueForKey: @"NSButtonFlags2"])

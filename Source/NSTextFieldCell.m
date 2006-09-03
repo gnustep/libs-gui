@@ -208,10 +208,19 @@ static NSColor	*txtCol;
   BOOL tmp;
   [super encodeWithCoder: aCoder];
 
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_background_color];
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_text_color];
-  tmp = _textfieldcell_draws_background;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &tmp];
+  if([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeObject: [self backgroundColor] forKey: @"NSBackgroundColor"];
+      [aCoder encodeObject: [self textColor] forKey: @"NSTextColor"];
+      [aCoder encodeBool: [self drawsBackground] forKey: @"NSDrawsBackground"];
+    }
+  else
+    {
+      [aCoder encodeValueOfObjCType: @encode(id) at: &_background_color];
+      [aCoder encodeValueOfObjCType: @encode(id) at: &_text_color];
+      tmp = _textfieldcell_draws_background;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &tmp];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -220,8 +229,11 @@ static NSColor	*txtCol;
  
   if ([aDecoder allowsKeyedCoding])
     {
-      [self setBackgroundColor: [aDecoder decodeObjectForKey: @"NSBackgroundColor"]];
-      [self setTextColor: [aDecoder decodeObjectForKey: @"NSTextColor"]];
+      id textColor = RETAIN([aDecoder decodeObjectForKey: @"NSTextColor"]);
+      id backColor = RETAIN([aDecoder decodeObjectForKey: @"NSBackgroundColor"]);
+
+      [self setBackgroundColor: backColor];
+      [self setTextColor: textColor];
       if ([aDecoder containsValueForKey: @"NSDrawsBackground"])
         {
 	  [self setDrawsBackground: [aDecoder decodeBoolForKey: 

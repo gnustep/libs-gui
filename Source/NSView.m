@@ -1996,7 +1996,7 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 
 - (void) displayIfNeededInRect: (NSRect)aRect
 {
-  if (_rFlags.needs_display == NO)
+  if (_rFlags.needs_display == YES)
     {
       if ([self isOpaque] == YES)
 	{
@@ -2625,7 +2625,25 @@ Returns YES iff any scrolling was done.
     {
       if (_rFlags.valid_rects != 0)
 	{
-	  [_cursor_rects makeObjectsPerformSelector: @selector(invalidate)];
+	  unsigned count = [_cursor_rects count];
+	  if (count > 0)
+	    {
+	      GSTrackingRect *rects[count];
+	      NSPoint loc = ((struct NSWindow_struct *)_window)->_lastPoint;
+	      unsigned i;
+
+	      [_cursor_rects getObjects: rects];
+
+	      for (i = 0; i < count; ++i)
+		{
+		  GSTrackingRect *r = rects[i];
+		  if (NSMouseInRect(loc, r->rectangle, NO))
+		    {
+		      [r->owner mouseExited: nil];
+		    }
+		  [r invalidate];
+		}
+	    }
 	  _rFlags.valid_rects = 0;
 	}
       [_cursor_rects removeAllObjects];
@@ -2638,6 +2656,7 @@ Returns YES iff any scrolling was done.
   id e = [_cursor_rects objectEnumerator];
   GSTrackingRect	*o;
   NSCursor		*c;
+  NSPoint loc = [_window mouseLocationOutsideOfEventStream];
 
   /* Base remove test upon cursor object */
   o = [e nextObject];
@@ -2646,6 +2665,10 @@ Returns YES iff any scrolling was done.
       c = [o owner];
       if (c == anObject)
 	{
+	  if (NSMouseInRect(loc, o->rectangle, NO))
+	    {
+	      [c mouseExited: nil];
+	    }
 	  [o invalidate];
 	  [_cursor_rects removeObject: o];
 	  if ([_cursor_rects count] == 0)
@@ -3916,7 +3939,14 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       [aCoder encodeInt: vFlags 
 	      forKey: @"NSvFlags"];
 
-      [aCoder encodeObject: _super_view forKey: @"NSSuperview"];
+      //
+      // Don't attempt to archive the superview of a view which is the
+      // content view for a window.
+      //
+      if(([[self window] contentView] != self) && _super_view != nil)
+	{
+	  [aCoder encodeObject: _super_view forKey: @"NSSuperview"];
+	}
     }
   else
     {
@@ -3957,15 +3987,38 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     {
       NSView *prevKeyView = nil;
       NSView *nextKeyView = nil;
-      
+
       if ([aDecoder containsValueForKey: @"NSFrame"])
 	{
 	  _frame = [aDecoder decodeRectForKey: @"NSFrame"];
-	  [_frameMatrix setFrameOrigin: _frame.origin];
 	}
-      self = [self initWithFrame: _frame];
+      else
+	{
+	  _frame = NSZeroRect;
+	}
 
-      subs = [aDecoder decodeObjectForKey: @"NSSubviews"];
+      _bounds.origin = NSZeroPoint;		// Set bounds rectangle
+      _bounds.size = _frame.size;
+      
+      [_frameMatrix setFrameOrigin: _frame.origin];
+      
+      _sub_views = [NSMutableArray new];
+      _tracking_rects = [NSMutableArray new];
+      _cursor_rects = [NSMutableArray new];
+      
+      _is_rotated_from_base = NO;
+      _is_rotated_or_scaled_from_base = NO;
+      _rFlags.needs_display = YES;
+      _post_frame_changes = NO;
+      _autoresizes_subviews = YES;
+      _autoresizingMask = NSViewNotSizable;
+      _coordinates_valid = NO;
+      _nextKeyView = 0;
+      _previousKeyView = 0;
+      
+      _rFlags.flipped_view = [self isFlipped];
+
+      // previous and next key views...
       prevKeyView = [aDecoder decodeObjectForKey: @"NSPreviousKeyView"];
       nextKeyView = [aDecoder decodeObjectForKey: @"NSNextKeyView"];
       if (nextKeyView != nil)
@@ -3986,6 +4039,30 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	  [self setAutoresizesSubviews: ((vFlags & 0x100) == 0x100)];
 	  [self setHidden: ((vFlags & 0x80000000) == 0x80000000)];
 	}
+
+      // iterate over subviews and put them into the view...
+      subs = [aDecoder decodeObjectForKey: @"NSSubviews"];
+      e = [subs objectEnumerator];
+      while ((sub = [e nextObject]) != nil)
+	{
+	  NSAssert([sub window] == nil,
+		   NSInternalInconsistencyException);
+	  NSAssert([sub superview] == nil,
+		   NSInternalInconsistencyException);
+	  [sub viewWillMoveToWindow: _window];
+	  [sub viewWillMoveToSuperview: self];
+	  [sub setNextResponder: self];
+	  [_sub_views addObject: sub];
+	  _rFlags.has_subviews = 1;
+	  [sub resetCursorRects];
+	  [sub setNeedsDisplay: YES];
+	  [sub _viewDidMoveToWindow];
+	  [sub viewDidMoveToSuperview];
+	  [self didAddSubview: sub];
+	}
+
+      // the superview...
+      [aDecoder decodeObjectForKey: @"NSSuperview"];
     }
   else
     {
@@ -4025,27 +4102,29 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       
       [aDecoder decodeValueOfObjCType: @encode(id) at: &subs];
       NSDebugLLog(@"NSView", @"NSView: finish decoding\n");
+
+      // iterate over subviews and put them into the view...
+      e = [subs objectEnumerator];
+      while ((sub = [e nextObject]) != nil)
+	{
+	  NSAssert([sub window] == nil,
+		   NSInternalInconsistencyException);
+	  NSAssert([sub superview] == nil,
+		   NSInternalInconsistencyException);
+	  [sub viewWillMoveToWindow: _window];
+	  [sub viewWillMoveToSuperview: self];
+	  [sub setNextResponder: self];
+	  [_sub_views addObject: sub];
+	  _rFlags.has_subviews = 1;
+	  [sub resetCursorRects];
+	  [sub setNeedsDisplay: YES];
+	  [sub _viewDidMoveToWindow];
+	  [sub viewDidMoveToSuperview];
+	  [self didAddSubview: sub];
+	}
+      RELEASE(subs);
     }
 
-  // iterate over subviews and put them into the view...
-  e = [subs objectEnumerator];
-  while ((sub = [e nextObject]) != nil)
-    {
-      NSAssert([sub window] == nil, NSInternalInconsistencyException);
-      NSAssert([sub superview] == nil, NSInternalInconsistencyException);
-      [sub viewWillMoveToWindow: _window];
-      [sub viewWillMoveToSuperview: self];
-      [sub setNextResponder: self];
-      [_sub_views addObject: sub];
-      _rFlags.has_subviews = 1;
-      [sub resetCursorRects];
-      [sub setNeedsDisplay: YES];
-      [sub _viewDidMoveToWindow];
-      [sub viewDidMoveToSuperview];
-      [self didAddSubview: sub];
-    }
-  RELEASE(subs);
-        
   return self;
 }
 

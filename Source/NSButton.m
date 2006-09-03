@@ -500,10 +500,15 @@ static id buttonCellClass = nil;
    [NSControl-performClick:]
    [NSEvent-charactersIgnoringModifiers] [NSEvent-modifierFlags]</p>
 
+  Does nothing and returns NO if the receiver is disabled or if it is
+  blocked by a modal window being run.
+  
  */
 - (BOOL) performKeyEquivalent: (NSEvent *)anEvent
 {
-  if ([self isEnabled])
+  NSWindow	*w = [self window];
+
+  if ([self isEnabled] && ([w worksWhenModal] || [NSApp modalWindow] == w))
     {
       NSString	*key = [self keyEquivalent];
 

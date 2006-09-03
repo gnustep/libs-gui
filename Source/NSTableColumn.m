@@ -370,16 +370,30 @@
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodeObject: _identifier];
-
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_width];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_min_width];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_max_width];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_is_resizable];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_is_editable];
-
-  [aCoder encodeObject: _headerCell];
-  [aCoder encodeObject: _dataCell];
+  if([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeObject: _identifier forKey: @"NSIdentifier"];
+      [aCoder encodeObject: _dataCell forKey: @"NSDataCell"];
+      [aCoder encodeObject: _headerCell forKey: @"NSHeaderCell"];
+      [aCoder encodeBool: _is_resizable forKey: @"NSIsResizable"];
+      [aCoder encodeBool: _is_editable forKey: @"NSIsEditable"];
+      [aCoder encodeFloat: _max_width forKey: @"NSMaxWidth"];
+      [aCoder encodeFloat: _min_width forKey: @"NSMinWidth"];
+      [aCoder encodeFloat: _width forKey: @"NSWidth"];
+    }
+  else
+    {
+      [aCoder encodeObject: _identifier];
+      
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_width];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_min_width];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_max_width];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_is_resizable];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_is_editable];
+      
+      [aCoder encodeObject: _headerCell];
+      [aCoder encodeObject: _dataCell];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder

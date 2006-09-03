@@ -53,6 +53,7 @@ static NSString *NSDefaultOpenDirectory = @"NSDefaultOpenDirectory";
 static NSDocumentController *sharedController = nil;
 
 #define TYPE_INFO(name) TypeInfoForName(_types, name)
+#define HR_TYPE_INFO(name) TypeInfoForHumanReadableName(_types, name)
 
 static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
 {
@@ -62,6 +63,22 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
       NSDictionary *dict = [types objectAtIndex: i];
 
       if ([[dict objectForKey: NSNameKey] isEqualToString: typeName])
+	{
+	  return dict;
+	}
+    }  
+
+  return nil;
+}
+
+static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
+{
+  int i, count = [types count];
+  for (i = 0; i < count; i++)
+    {
+      NSDictionary *dict = [types objectAtIndex: i];
+
+      if ([[dict objectForKey: NSHumanReadableNameKey] isEqualToString: typeName])
 	{
 	  return dict;
 	}
@@ -488,7 +505,7 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
 - (BOOL) reviewUnsavedDocumentsWithAlertTitle: (NSString *)title 
 				  cancellable: (BOOL)cancellable
 {
-  NSString *cancelString = (cancellable)? _(@"Cancel") : nil;
+  NSString *cancelString = (cancellable)? ((NSString *)_(@"Cancel")) : ((NSString *)nil);
   int      result;
   
   /* Probably as good a place as any to do this */
@@ -601,13 +618,14 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
 		 [[NSApplication sharedApplication] mainWindow]];
 }
 
-/** Returns the current directory. This method first checks if there
-    is a current document using the -currentDocument method. If this
-    returns a document and the document has a filename, this method
-    returns the directory this file is located in. Otherwise it
-    returns the directory of the most recently opened document or
-    the user's home directory if no document has been opened before.
-*/
+/** 
+ * Returns the current directory. This method first checks if there
+ * is a current document using the -currentDocument method. If this
+ * returns a document and the document has a filename, this method
+ * returns the directory this file is located in. Otherwise it
+ * returns the directory of the most recently opened document or
+ * the user's home directory if no document has been opened before.
+ */
 - (NSString *) currentDirectory
 {
   NSFileManager *manager = [NSFileManager defaultManager];
@@ -845,5 +863,28 @@ static NSString *NSViewerRole = @"Viewer";
   return [self _editorTypesForClass: documentClass];
 }
 
+- (NSString *) _nameForHumanReadableType: (NSString *)type
+{
+  return [HR_TYPE_INFO(type) objectForKey: NSNameKey];
+}
+
+- (NSArray *) _displayNamesForTypes: (NSArray *)types
+{
+  NSEnumerator *en = [types objectEnumerator];
+  NSString *type = nil;
+  NSMutableArray *result = [NSMutableArray arrayWithCapacity: 10];
+  while((type = (NSString *)[en nextObject]) != nil)
+    {
+      NSString *name = [self displayNameForType: type];
+      [result addObject: name];
+    }
+  return result;
+}
+
+- (NSArray *) _displayNamesForClass: (Class)documentClass
+{
+  return [self _displayNamesForTypes: 
+		 [self _editorTypesForClass: documentClass]];
+}
 @end
 

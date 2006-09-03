@@ -543,7 +543,7 @@ static	GSDragView *sharedDragView = nil;
   NSEvent *e;
   NSGraphicsContext *context = GSCurrentContext();
   // FIXME: Should store this once
-  int dragWindowRef = (int)[GSServerForWindow(_window) windowDevice: [_window windowNumber]];
+  int dragWindowRef = (int)(intptr_t)[GSServerForWindow(_window) windowDevice: [_window windowNumber]];
 
   eventLocation = [dWindow convertScreenToBase: eventLocation];
   e = [NSEvent otherEventWithType: NSAppKitDefined

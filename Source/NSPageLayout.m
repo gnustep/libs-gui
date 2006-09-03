@@ -529,8 +529,7 @@ enum {
 {
   RELEASE(customPapers);
   RELEASE(measurementString);
-
-  [super release];
+  [super dealloc];
 }
 
 

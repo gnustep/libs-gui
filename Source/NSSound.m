@@ -667,60 +667,73 @@ return NO; \
 //
 - (void) encodeWithCoder: (NSCoder *)coder
 {
-  [coder encodeValueOfObjCType: @encode(BOOL) at: &_onlyReference];
-  [coder encodeObject: _name];
-	
-  if (_onlyReference == YES) 
+  if([coder allowsKeyedCoding])
     {
-      return;
+      // TODO_NIB: Determine keys for NSSound.
     }
-
-  if (_uniqueIdentifier != nil) 
+  else
     {
-      [coder encodeObject: _uniqueIdentifier];
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &_onlyReference];
+      [coder encodeObject: _name];
+      
+      if (_onlyReference == YES) 
+	{
+	  return;
+	}
+      
+      if (_uniqueIdentifier != nil) 
+	{
+	  [coder encodeObject: _uniqueIdentifier];
+	}
+      
+      [coder encodeConditionalObject: _delegate];
+      [coder encodeValueOfObjCType: @encode(long) at: &_dataLocation];
+      [coder encodeValueOfObjCType: @encode(long) at: &_dataSize];
+      [coder encodeValueOfObjCType: @encode(int) at: &_dataFormat];
+      [coder encodeValueOfObjCType: @encode(float) at: &_samplingRate];
+      [coder encodeValueOfObjCType: @encode(float) at: &_frameSize];
+      [coder encodeValueOfObjCType: @encode(long) at: &_frameCount];
+      [coder encodeValueOfObjCType: @encode(int) at: &_channelCount];
+      
+      [coder encodeObject: _data];
     }
-
-  [coder encodeConditionalObject: _delegate];
-  [coder encodeValueOfObjCType: @encode(long) at: &_dataLocation];
-  [coder encodeValueOfObjCType: @encode(long) at: &_dataSize];
-  [coder encodeValueOfObjCType: @encode(int) at: &_dataFormat];
-  [coder encodeValueOfObjCType: @encode(float) at: &_samplingRate];
-  [coder encodeValueOfObjCType: @encode(float) at: &_frameSize];
-  [coder encodeValueOfObjCType: @encode(long) at: &_frameCount];
-  [coder encodeValueOfObjCType: @encode(int) at: &_channelCount];
-
-  [coder encodeObject: _data];
 }
 
 - (id) initWithCoder: (NSCoder*)decoder
 {	
-  [decoder decodeValueOfObjCType: @encode(BOOL) at: &_onlyReference];
-
-  if (_onlyReference == YES) 
+  if([decoder allowsKeyedCoding])
     {
-      NSString *theName = [decoder decodeObject];
-
-      RELEASE (self);
-      self = RETAIN ([NSSound soundNamed: theName]);
-      [self setName: theName];	
-    } 
-  else 
-    {
-      _name = TEST_RETAIN ([decoder decodeObject]);
-      _uniqueIdentifier = TEST_RETAIN ([decoder decodeObject]);
-      [self setDelegate: [decoder decodeObject]];
-      
-      [decoder decodeValueOfObjCType: @encode(long) at: &_dataLocation];
-      [decoder decodeValueOfObjCType: @encode(long) at: &_dataSize];
-      [decoder decodeValueOfObjCType: @encode(int) at: &_dataFormat];
-      [decoder decodeValueOfObjCType: @encode(float) at: &_samplingRate];
-      [decoder decodeValueOfObjCType: @encode(float) at: &_frameSize];
-      [decoder decodeValueOfObjCType: @encode(long) at: &_frameCount];
-      [decoder decodeValueOfObjCType: @encode(int) at: &_channelCount];
-      
-      _data = RETAIN([decoder decodeObject]);
+      // TODO_NIB: Determine keys for NSSound.
     }
-	
+  else
+    {
+      [decoder decodeValueOfObjCType: @encode(BOOL) at: &_onlyReference];
+      
+      if (_onlyReference == YES) 
+	{
+	  NSString *theName = [decoder decodeObject];
+	  
+	  RELEASE (self);
+	  self = RETAIN ([NSSound soundNamed: theName]);
+	  [self setName: theName];	
+	} 
+      else 
+	{
+	  _name = TEST_RETAIN ([decoder decodeObject]);
+	  _uniqueIdentifier = TEST_RETAIN ([decoder decodeObject]);
+	  [self setDelegate: [decoder decodeObject]];
+	  
+	  [decoder decodeValueOfObjCType: @encode(long) at: &_dataLocation];
+	  [decoder decodeValueOfObjCType: @encode(long) at: &_dataSize];
+	  [decoder decodeValueOfObjCType: @encode(int) at: &_dataFormat];
+	  [decoder decodeValueOfObjCType: @encode(float) at: &_samplingRate];
+	  [decoder decodeValueOfObjCType: @encode(float) at: &_frameSize];
+	  [decoder decodeValueOfObjCType: @encode(long) at: &_frameCount];
+	  [decoder decodeValueOfObjCType: @encode(int) at: &_channelCount];
+	  
+	  _data = RETAIN([decoder decodeObject]);
+	}
+    }
   return self;
 }
 

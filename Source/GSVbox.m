@@ -163,15 +163,31 @@ enablingYResizing: (BOOL)aFlag
 -(void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_haveViews];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_defaultMinYMargin];
+  if([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeBool: _haveViews forKey: @"GSHaveViews"];
+      [aCoder encodeFloat: _defaultMinYMargin forKey: @"GSDefaultMinYMargin"];
+    }
+  else
+    {
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_haveViews];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_defaultMinYMargin];
+    }
 }
 
 -(id) initWithCoder: (NSCoder*)aDecoder
 {
   [super initWithCoder: aDecoder];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_haveViews];
-  [aDecoder decodeValueOfObjCType: @encode(float) at: &_defaultMinYMargin];
+  if([aDecoder allowsKeyedCoding])
+    {
+      _haveViews = [aDecoder decodeBoolForKey: @"GSHaveViews"];
+      _defaultMinYMargin = [aDecoder decodeFloatForKey: @"GSDefaultMinYMargin"];
+    }
+  else
+    {
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_haveViews];
+      [aDecoder decodeValueOfObjCType: @encode(float) at: &_defaultMinYMargin];
+    }
   return self;
 }
 @end

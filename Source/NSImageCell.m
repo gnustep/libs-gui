@@ -369,42 +369,52 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
   [super encodeWithCoder: aCoder];
-
-  [aCoder encodeValueOfObjCType: @encode(NSImageAlignment) at: &_imageAlignment];
-  [aCoder encodeValueOfObjCType: @encode(NSImageFrameStyle) at: &_frameStyle];
-  [aCoder encodeValueOfObjCType: @encode(NSImageScaling) at: &_imageScaling];
-  [aCoder encodeSize: _original_image_size];
+  if([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeInt: _imageAlignment forKey: @"NSAlign"];
+      [aCoder encodeInt: _imageScaling forKey: @"NSScale"];
+      [aCoder encodeInt: _frameStyle forKey: @"NSStyle"];
+      [aCoder encodeBool: NO forKey: @"NSAnimates"];
+    }
+  else
+    {
+      [aCoder encodeValueOfObjCType: @encode(NSImageAlignment) at: &_imageAlignment];
+      [aCoder encodeValueOfObjCType: @encode(NSImageFrameStyle) at: &_frameStyle];
+      [aCoder encodeValueOfObjCType: @encode(NSImageScaling) at: &_imageScaling];
+      [aCoder encodeSize: _original_image_size];
+    }
 }
 
 - (id) initWithCoder: (NSCoder *)aDecoder
 {
-  self = [super initWithCoder: aDecoder];
-
-  if ([aDecoder allowsKeyedCoding])
+  if((self = [super initWithCoder: aDecoder]) != nil)
     {
-      if ([aDecoder containsValueForKey: @"NSAlign"])
-        {
-	  [self setImageAlignment: [aDecoder decodeIntForKey: @"NSAlign"]];
+      if ([aDecoder allowsKeyedCoding])
+	{
+	  if ([aDecoder containsValueForKey: @"NSAlign"])
+	    {
+	      [self setImageAlignment: [aDecoder decodeIntForKey: @"NSAlign"]];
+	    }
+	  if ([aDecoder containsValueForKey: @"NSScale"])
+	    {
+	      [self setImageScaling: [aDecoder decodeIntForKey: @"NSScale"]];
+	    }
+	  if ([aDecoder containsValueForKey: @"NSStyle"])
+	    {
+	      [self setImageFrameStyle: [aDecoder decodeIntForKey: @"NSStyle"]];
+	    }
+	  if ([aDecoder containsValueForKey: @"NSAnimates"])
+	    {
+	      //BOOL animates = [aDecoder decodeBoolForKey: @"NSAnimates"];
+	    }
 	}
-      if ([aDecoder containsValueForKey: @"NSScale"])
-        {
-	  [self setImageScaling: [aDecoder decodeIntForKey: @"NSScale"]];
+      else
+	{
+	  [aDecoder decodeValueOfObjCType: @encode(NSImageAlignment) at: &_imageAlignment];
+	  [aDecoder decodeValueOfObjCType: @encode(NSImageFrameStyle) at: &_frameStyle];
+	  [aDecoder decodeValueOfObjCType: @encode(NSImageScaling) at: &_imageScaling];
+	  _original_image_size = [aDecoder decodeSize];
 	}
-      if ([aDecoder containsValueForKey: @"NSStyle"])
-        {
-	  [self setImageFrameStyle: [aDecoder decodeIntForKey: @"NSStyle"]];
-	}
-      if ([aDecoder containsValueForKey: @"NSAnimates"])
-        {
-	  //BOOL animates = [aDecoder decodeBoolForKey: @"NSAnimates"];
-	}
-    }
-  else
-    {
-      [aDecoder decodeValueOfObjCType: @encode(NSImageAlignment) at: &_imageAlignment];
-      [aDecoder decodeValueOfObjCType: @encode(NSImageFrameStyle) at: &_frameStyle];
-      [aDecoder decodeValueOfObjCType: @encode(NSImageScaling) at: &_imageScaling];
-      _original_image_size = [aDecoder decodeSize];
     }
   return self;
 }

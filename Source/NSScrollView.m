@@ -1220,6 +1220,27 @@ static float scrollerWidth;
       
   if([aCoder allowsKeyedCoding])
     {
+      unsigned long flags = 0;
+      GSScrollViewFlags scrollViewFlags;
+
+      [aCoder encodeObject: _horizScroller forKey: @"NSHScroller"];
+      [aCoder encodeObject: _vertScroller forKey: @"NSVScroller"];
+      [aCoder encodeObject: _contentView forKey: @"NSContentView"];
+
+      // only encode this, if it's not null...
+      if(_headerClipView != nil)
+	{
+	  [aCoder encodeObject: _headerClipView forKey: @"NSHeaderClipView"];
+	}
+
+      scrollViewFlags.hasVScroller = _hasVertScroller;
+      scrollViewFlags.hasHScroller = _hasHorizScroller;
+      scrollViewFlags.border = _borderType;
+      scrollViewFlags.__unused4 = 0;
+      scrollViewFlags.__unused0 = 0;
+      memcpy((void *)&flags, (void *)&scrollViewFlags,sizeof(unsigned long));
+
+      [aCoder encodeInt: flags forKey: @"NSsFlags"];
     }
   else
     {
@@ -1268,6 +1289,12 @@ static float scrollerWidth;
       NSScroller *vScroller = [aDecoder decodeObjectForKey: @"NSVScroller"];
       NSClipView *content = [aDecoder decodeObjectForKey: @"NSContentView"]; 
 
+      _hLineScroll = 10;
+      _hPageScroll = 10;
+      _vLineScroll = 10;
+      _vPageScroll = 10;
+      _scrollsDynamically = YES;
+
       if ([aDecoder containsValueForKey: @"NSsFlags"])
         {
 	  unsigned long flags = [aDecoder decodeIntForKey: @"NSsFlags"];
@@ -1304,7 +1331,7 @@ static float scrollerWidth;
 	  RETAIN(content);
 	  [self setContentView: content];
 	  RELEASE(content);
-	  _contentView = content;
+	  ASSIGN(_contentView, content);
 	}
      
       if (hScroller != nil && _hasHorizScroller)
