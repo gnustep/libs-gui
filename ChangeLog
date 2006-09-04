@@ -1,3 +1,10 @@
+2006-09-04 00:23 Nicolas Roard <nicolas@roard.com>
+
+	* Source/NSBitmapImageRep+JPEG.m: Added JPEG writing support to 
+	NSBitmapImageRep. Only handles RGB images (NS*RGBColorSpace). 
+	You can specify the compression ratio by using the 
+	NSImageCompressionFactor key in the properties dictionary.
+
 2006-09-03 12:12-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSStandardWindowDecorationView.m: Put back RELEASE to
