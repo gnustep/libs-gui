@@ -504,6 +504,7 @@ nil. */
         int sPP = [self samplesPerPixel];
         int width = [self size].width;
         int height = [self size].height;
+        int row_stride = width * sPP;
 	int quality = 90;
 	NSNumber* qualityNumber = nil;
         NSString* colorSpace = nil;
@@ -565,7 +566,6 @@ nil. */
         jpeg_start_compress (&cinfo, TRUE);
 
         JSAMPROW row_pointer [1]; // pointer to a single row
-        int row_stride = width * sPP;
 
         while (cinfo.next_scanline < cinfo.image_height)
           {
