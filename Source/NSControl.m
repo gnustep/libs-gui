@@ -747,9 +747,6 @@ static Class actionCellClass;
       return;
     }
 
-  // stop cell from sending action while tracking the mouse...
-  oldActionMask = [_cell sendActionOn: ([_cell isContinuous]?NSPeriodicMask:0)];
-
   // loop until mouse goes up
   e = theEvent;
   while (1)
@@ -785,13 +782,9 @@ static Class actionCellClass;
 		 dequeue: YES];
       if ([e type] == NSLeftMouseUp)
         {
-          mouseUp = YES;
 	  break;
         }
     }
-
-  // allow the cell to send actions again...
-  [_cell sendActionOn: oldActionMask];
 
   // Mouse went up inside the control but not inside the cell
   if (mouseUp)
