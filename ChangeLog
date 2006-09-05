@@ -1,3 +1,9 @@
+2006-09-05 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSBitmapImageRep+JPEG.m: Fix declaration position causing
+	compile failure on older compilers.  Make more consistent with coding
+	(indentation and white space usage) standards.
+
 2006-09-04 00:23 Nicolas Roard <nicolas@roard.com>
 
 	* Source/NSBitmapImageRep+JPEG.m: Added JPEG writing support to 

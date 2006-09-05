@@ -260,12 +260,12 @@ static boolean gs_empty_output_buffer (j_compress_ptr cinfo)
   //NSLog (@"length added (%d)", dest->length);
   int imageSize = cinfo->image_width * cinfo->image_height;
   int bufSize = imageSize * cinfo->input_components;
-
   int i;
-  for (i=0; i< bufSize; i++)
-  {
-        dest->data [dest->length + i] = dest->buffer [i];
-  }
+
+  for (i = 0; i < bufSize; i++)
+    {
+      dest->data [dest->length + i] = dest->buffer [i];
+    }
 
   dest->length = dest->length + bufSize;
   dest->pub.next_output_byte = dest->buffer;
@@ -287,23 +287,24 @@ static void gs_term_destination (j_compress_ptr cinfo)
   gs_jpeg_dest_ptr dest = (gs_jpeg_dest_ptr) cinfo->dest;
   int imageSize = cinfo->image_width * cinfo->image_height;
   int bufSize = imageSize * cinfo->input_components;
-
   int i;
-  for (i=0; i< bufSize; i++)
-  {
-        dest->data [dest->length + i] = dest->buffer [i];
-  }
+
+  for (i = 0; i < bufSize; i++)
+    {
+      dest->data [dest->length + i] = dest->buffer [i];
+    }
   dest->length = dest->length + bufSize;
 
   *dest->finalData = [[NSData alloc] initWithBytes: dest->data
-                   length: (dest->length) - dest->pub.free_in_buffer]; //imageSize * cinfo->input_components];
+    length: (dest->length) - dest->pub.free_in_buffer];
 }
 
 static void gs_jpeg_memory_dest_create (j_compress_ptr cinfo, NSData** data)
 {
   gs_jpeg_dest_ptr dest;
 
-  cinfo->dest = (struct jpeg_destination_mgr*) malloc (sizeof (gs_jpeg_destination_mgr));
+  cinfo->dest = (struct jpeg_destination_mgr*)
+    malloc (sizeof (gs_jpeg_destination_mgr));
 
   dest = (gs_jpeg_dest_ptr) cinfo->dest;
 
@@ -370,8 +371,9 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
 }
 
 
-/* Read the jpeg image. Assume it is from a jpeg file and imageData is not
-nil. */
+/* Read the jpeg image. Assume it is from a jpeg file and imageData
+ * is not nil.
+ */
 - (id) _initBitmapFromJPEG: (NSData *)imageData
 	      errorMessage: (NSString **)errorMsg
 {
@@ -444,15 +446,17 @@ nil. */
   i = 0;
   while (cinfo.output_scanline < cinfo.output_height)
     {
-      sclcount = jpeg_read_scanlines(&cinfo, sclbuffer, cinfo.rec_outbuf_height);
+      sclcount
+	= jpeg_read_scanlines(&cinfo, sclbuffer, cinfo.rec_outbuf_height);
+
       for (j = 0; j < sclcount; j++)
-       {
-         // copy a row to the image buffer
-         memcpy((imgbuffer + (i * rowSize)),
-                *(sclbuffer + (j * rowSize)),
-                rowSize);
-         i++;
-       }
+        {
+	  // copy a row to the image buffer
+	  memcpy((imgbuffer + (i * rowSize)),
+	    *(sclbuffer + (j * rowSize)),
+	    rowSize);
+	  i++;
+        }
     }
 
   /* done */
@@ -463,8 +467,8 @@ nil. */
 
   if (jerrMgr.parent.num_warnings)
     {
-      NSLog(@"NSBitmapImageRep+JPEG: %d warnings during jpeg decompression, image may be corrupted",
-            jerrMgr.parent.num_warnings);
+      NSLog(@"NSBitmapImageRep+JPEG: %d warnings during jpeg decompression, "
+        @"image may be corrupted", jerrMgr.parent.num_warnings);
     }
 
   // create the imagerep
@@ -498,89 +502,87 @@ nil. */
 - (NSData*) representationUsingType: (NSBitmapImageFileType) storageType
                 properties: (NSDictionary*) properties
 {
-        NSData* ret;
+  NSData			*ret;
+  unsigned char			*imageSource = [self bitmapData];
+  int				sPP = [self samplesPerPixel];
+  int				width = [self size].width;
+  int				height = [self size].height;
+  int				row_stride = width * sPP;
+  int				quality = 90;
+  NSNumber			*qualityNumber = nil;
+  NSString			*colorSpace = nil;
+  struct jpeg_compress_struct	cinfo;
+  struct jpeg_error_mgr		jerr;
+  JSAMPROW			row_pointer[1]; // pointer to a single row
 
-        unsigned char* imageSource = [self bitmapData];
-        int sPP = [self samplesPerPixel];
-        int width = [self size].width;
-        int height = [self size].height;
-        int row_stride = width * sPP;
-	int quality = 90;
-	NSNumber* qualityNumber = nil;
-        NSString* colorSpace = nil;
+  cinfo.err = jpeg_std_error (&jerr);
+  jpeg_create_compress (&cinfo);
 
-        struct jpeg_compress_struct cinfo;
-        struct jpeg_error_mgr jerr;
+  // TODO: handles planar images 
 
-        cinfo.err = jpeg_std_error (&jerr);
-        jpeg_create_compress (&cinfo);
+  if ([self isPlanar])
+    {
+      NSLog (@"Planar Image, not handled yet !");
+      return nil;
+    }
+
+  // specify the destination for the compressed data.. 
+
+  gs_jpeg_memory_dest_create (&cinfo, &ret);
+
+  // set parameters
+
+  cinfo.image_width  = width;
+  cinfo.image_height = height;
+  cinfo.input_components = sPP;
+
+  // TODO: use the image infos to choose the proper color space
+  //cinfo.in_color_space = JCS_GRAYSCALE;
+
+  colorSpace = [self colorSpaceName];
+
+  if ([colorSpace isEqualToString: @"NSCalibratedRGBColorSpace"]
+    || [colorSpace isEqualToString: @"NSDeviceRGBColorSpace"])
+    {
+      cinfo.in_color_space = JCS_RGB;
+    }
+  else
+    {
+      NSLog (@"Image Color Space: %@ not handled yet !", colorSpace);
+      return nil;
+    }
+
+  // set quality
+  
+  qualityNumber = [properties objectForKey: @"NSImageCompressionFactor"];
+  if (qualityNumber != nil)
+    {
+      quality = (int) ([qualityNumber floatValue] * 100);
+    }
+
+  jpeg_set_defaults (&cinfo);
+
+  // compress the image
+
+  jpeg_set_quality (&cinfo, quality, TRUE);
+  jpeg_start_compress (&cinfo, TRUE);
 
 
-        // TODO: handles planar images 
+  while (cinfo.next_scanline < cinfo.image_height)
+    {
+      int	index = cinfo.next_scanline * row_stride;
 
-	if ([self isPlanar])
-	  {
-	    NSLog (@"Planar Image, not handled yet !");
-	    return nil;
-	  }
+      row_pointer[0] = &imageSource[index];
+      jpeg_write_scanlines (&cinfo, row_pointer, 1);
+    }
 
-        // specify the destination for the compressed data.. 
+  jpeg_finish_compress(&cinfo);
 
-        gs_jpeg_memory_dest_create (&cinfo, &ret);
+  gs_jpeg_memory_dest_destroy (&cinfo);
 
-        // set parameters
+  jpeg_destroy_compress(&cinfo);
 
-        cinfo.image_width  = width;
-        cinfo.image_height = height;
-        cinfo.input_components = sPP;
-
-	// TODO: use the image infos to choose the proper color space
-        //cinfo.in_color_space = JCS_GRAYSCALE;
-
-	colorSpace = [self colorSpaceName];
-
-	if ([colorSpace isEqualToString: @"NSCalibratedRGBColorSpace"] ||
-		[colorSpace isEqualToString: @"NSDeviceRGBColorSpace"])
-	  {
-            cinfo.in_color_space = JCS_RGB;
-          }
-        else
-         {
-            NSLog (@"Image Color Space: %@ not handled yet !", colorSpace);
-	    return nil;
-	 }
-
-	// set quality
-	
-	qualityNumber = [properties objectForKey: @"NSImageCompressionFactor"];
-	if (qualityNumber != nil)
-	  {
-	    quality = (int) ([qualityNumber floatValue] * 100);
-	  }
-
-        jpeg_set_defaults (&cinfo);
-
-        // compress the image
-
-        jpeg_set_quality (&cinfo, quality, TRUE);
-        jpeg_start_compress (&cinfo, TRUE);
-
-        JSAMPROW row_pointer [1]; // pointer to a single row
-
-        while (cinfo.next_scanline < cinfo.image_height)
-          {
-            int index = cinfo.next_scanline * row_stride;
-            row_pointer[0] = & imageSource [index];
-            jpeg_write_scanlines (&cinfo, row_pointer, 1);
-          }
-
-        jpeg_finish_compress(&cinfo);
-
-        gs_jpeg_memory_dest_destroy (&cinfo);
-
-        jpeg_destroy_compress(&cinfo);
-
-        return [ret autorelease];
+  return AUTORELEASE(ret);
 }
 
 @end
@@ -592,6 +594,7 @@ nil. */
 {
   return NO;
 }
+
 - (id) _initBitmapFromJPEG: (NSData *)imageData
 	      errorMessage: (NSString **)errorMsg
 {
