@@ -44,18 +44,22 @@
 #define TITLE_HEIGHT 23.0
 #define RESIZE_HEIGHT 9.0
 
-+(void) offsets: (float *)l : (float *)r : (float *)t : (float *)b
-   forStyleMask: (unsigned int)style
++ (void) offsets: (float *)l : (float *)r : (float *)t : (float *)b
+    forStyleMask: (unsigned int)style
 {
   if (style
-      & (NSTitledWindowMask | NSClosableWindowMask
-	 | NSMiniaturizableWindowMask | NSResizableWindowMask))
-    *l = *r = *t = *b = 1.0;
+    & (NSTitledWindowMask | NSClosableWindowMask
+      | NSMiniaturizableWindowMask | NSResizableWindowMask))
+    {
+      *l = *r = *t = *b = 1.0;
+    }
   else
-    *l = *r = *t = *b = 0.0;
+    {
+      *l = *r = *t = *b = 0.0;
+    }
 
   if (style
-      & (NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask))
+    & (NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask))
     {
       *t = TITLE_HEIGHT;
     }
@@ -65,24 +69,19 @@
     }
 }
 
-+(void) screenOffsets: (float *)l : (float *)r : (float *)t : (float *)b
-   forStyleMask: (unsigned int)style
-{
-  *l = *r = *r = *b = 0.0;
-}
-
 + (float) minFrameWidthWithTitle: (NSString *)aTitle
 		       styleMask: (unsigned int)aStyle
 {
   float l, r, t, b, width;
-  [self offsets: &l : &r : &t : &b
-   forStyleMask: aStyle];
+
+  [self offsets: &l : &r : &t : &b forStyleMask: aStyle];
 
   width = l + r;
 
   if (aStyle & NSTitledWindowMask)
-    width += [aTitle sizeWithAttributes: nil].width;
-
+    {
+      width += [aTitle sizeWithAttributes: nil].width;
+    }
   return width;
 }
 
@@ -90,14 +89,17 @@
 static NSDictionary *titleTextAttributes[3];
 static NSColor *titleColor[3];
 
--(void) updateRects
+- (void) updateRects
 {
   if (hasTitleBar)
-    titleBarRect = NSMakeRect(0.0, _frame.size.height - TITLE_HEIGHT,
-			      _frame.size.width, TITLE_HEIGHT);
+    {
+      titleBarRect = NSMakeRect(0.0, _frame.size.height - TITLE_HEIGHT,
+	_frame.size.width, TITLE_HEIGHT);
+    }
   if (hasResizeBar)
-    resizeBarRect = NSMakeRect(0.0, 0.0, _frame.size.width, RESIZE_HEIGHT);
-
+    {
+      resizeBarRect = NSMakeRect(0.0, 0.0, _frame.size.width, RESIZE_HEIGHT);
+    }
   if (hasCloseButton)
     {
       closeButtonRect = NSMakeRect(
@@ -107,18 +109,18 @@ static NSColor *titleColor[3];
 
   if (hasMiniaturizeButton)
     {
-      miniaturizeButtonRect = NSMakeRect(4, _frame.size.height - 15 - 4,
-					 15, 15);
+      miniaturizeButtonRect = NSMakeRect(
+	4, _frame.size.height - 15 - 4, 15, 15);
       [miniaturizeButton setFrame: miniaturizeButtonRect];
     }
 }
 
-- initWithFrame: (NSRect)frame
-	 window: (NSWindow *)w
+- (id) initWithFrame: (NSRect)frame
+	      window: (NSWindow *)w
 {
   if (!titleTextAttributes[0])
     {
-      NSMutableParagraphStyle *p;
+      NSMutableParagraphStyle	*p;
 
       p = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
       [p setLineBreakMode: NSLineBreakByClipping];
@@ -129,12 +131,14 @@ static NSColor *titleColor[3];
 	  [NSColor windowFrameTextColor], NSForegroundColorAttributeName,
 	  p, NSParagraphStyleAttributeName,
 	  nil];
+
       titleTextAttributes[1] = [[NSMutableDictionary alloc]
 	initWithObjectsAndKeys:
 	  [NSFont titleBarFontOfSize: 0], NSFontAttributeName,
 	  [NSColor blackColor], NSForegroundColorAttributeName, /* TODO: need a named color for this */
 	  p, NSParagraphStyleAttributeName,
 	  nil];
+
       titleTextAttributes[2] = [[NSMutableDictionary alloc]
 	initWithObjectsAndKeys:
 	  [NSFont titleBarFontOfSize: 0], NSFontAttributeName,
@@ -148,18 +152,18 @@ static NSColor *titleColor[3];
       titleColor[2] = RETAIN([NSColor darkGrayColor]);
     }
 
-  self = [super initWithFrame: frame
-		       window: w];
+  self = [super initWithFrame: frame window: w];
   if (!self) return nil;
 
   if ([w styleMask]
-      & (NSTitledWindowMask | NSClosableWindowMask
-	 | NSMiniaturizableWindowMask))
+    & (NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask))
     {
       hasTitleBar = YES;
     }
   if ([w styleMask] & NSTitledWindowMask)
-    isTitled = YES;
+    {
+      isTitled = YES;
+    }
   if ([w styleMask] & NSClosableWindowMask)
     {
       hasCloseButton = YES;
@@ -200,17 +204,18 @@ static NSColor *titleColor[3];
       RELEASE(miniaturizeButton);
     }
   if ([w styleMask] & NSResizableWindowMask)
-    hasResizeBar = YES;
-
+    {
+      hasResizeBar = YES;
+    }
   [self updateRects];
 
   return self;
 }
 
 
--(void) drawTitleBar
+- (void) drawTitleBar
 {
-static const NSRectEdge edges[4] = {NSMinXEdge, NSMaxYEdge,
+  static const NSRectEdge edges[4] = {NSMinXEdge, NSMaxYEdge,
 				    NSMaxXEdge, NSMinYEdge};
   float grays[3][4] =
     {{NSLightGray, NSLightGray, NSDarkGray, NSDarkGray},
@@ -271,7 +276,7 @@ static const NSRectEdge edges[4] = {NSMinXEdge, NSMaxYEdge,
     }
 }
 
--(void) drawResizeBar
+- (void) drawResizeBar
 {
   [[NSColor lightGrayColor] set];
   PSrectfill(1.0, 1.0, resizeBarRect.size.width - 2.0, RESIZE_HEIGHT - 3.0);
@@ -313,7 +318,7 @@ static const NSRectEdge edges[4] = {NSMinXEdge, NSMaxYEdge,
   PSstroke();
 }
 
--(void) drawRect: (NSRect)rect
+- (void) drawRect: (NSRect)rect
 {
   if (hasTitleBar && NSIntersectsRect(rect, titleBarRect))
     {
@@ -359,14 +364,14 @@ static const NSRectEdge edges[4] = {NSMinXEdge, NSMaxYEdge,
 }
 
 
--(void) setTitle: (NSString *)newTitle
+- (void) setTitle: (NSString *)newTitle
 {
   if (isTitled)
     [self setNeedsDisplayInRect: titleBarRect];
   [super setTitle: newTitle];
 }
 
--(void) setInputState: (int)state
+- (void) setInputState: (int)state
 {
   NSAssert(state >= 0 && state <= 2, @"Invalid state!");
   [super setInputState: state];
@@ -374,7 +379,7 @@ static const NSRectEdge edges[4] = {NSMinXEdge, NSMaxYEdge,
     [self setNeedsDisplayInRect: titleBarRect];
 }
 
--(void) setDocumentEdited: (BOOL)flag
+- (void) setDocumentEdited: (BOOL)flag
 {
   if (flag)
     {
@@ -392,14 +397,14 @@ static const NSRectEdge edges[4] = {NSMinXEdge, NSMaxYEdge,
 }
 
 
--(NSPoint) mouseLocationOnScreenOutsideOfEventStream
+- (NSPoint) mouseLocationOnScreenOutsideOfEventStream
 {
   int screen = [[window screen] screenNumber];
   return [GSServerForWindow(window) mouseLocationOnScreen: screen
 						   window: NULL];
 }
 
--(void) moveWindowStartingWithEvent: (NSEvent *)event
+- (void) moveWindowStartingWithEvent: (NSEvent *)event
 {
   unsigned int mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask;
   NSEvent *currentEvent = event;
@@ -436,8 +441,9 @@ static const NSRectEdge edges[4] = {NSMinXEdge, NSMaxYEdge,
 }
 
 
-static NSRect calc_new_frame(NSRect frame, NSPoint point, NSPoint firstPoint,
-	int mode, NSSize minSize, NSSize maxSize)
+static NSRect
+calc_new_frame(NSRect frame, NSPoint point, NSPoint firstPoint,
+  int mode, NSSize minSize, NSSize maxSize)
 {
   NSRect newFrame = frame;
   newFrame.origin.y = point.y - firstPoint.y;
@@ -473,7 +479,7 @@ static NSRect calc_new_frame(NSRect frame, NSPoint point, NSPoint firstPoint,
   return newFrame;
 }
 
--(void) resizeWindowStartingWithEvent: (NSEvent *)event
+- (void) resizeWindowStartingWithEvent: (NSEvent *)event
 {
   unsigned int mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask;
   NSEvent *currentEvent = event;
@@ -517,7 +523,8 @@ static NSRect calc_new_frame(NSRect frame, NSPoint point, NSPoint firstPoint,
 	}
 
       point = [self mouseLocationOnScreenOutsideOfEventStream];
-      newFrame = calc_new_frame(frame, point, firstPoint, mode, minSize, maxSize);
+      newFrame
+	= calc_new_frame(frame, point, firstPoint, mode, minSize, maxSize);
 
       if (currentEvent && [currentEvent type] == NSLeftMouseUp)
 	break;
@@ -532,12 +539,12 @@ static NSRect calc_new_frame(NSRect frame, NSPoint point, NSPoint firstPoint,
   [window setFrame: newFrame  display: YES];
 }
 
--(BOOL) acceptsFirstMouse: (NSEvent*)theEvent
+- (BOOL) acceptsFirstMouse: (NSEvent*)theEvent
 {
   return YES;
 }
 
--(void) mouseDown: (NSEvent *)event
+- (void) mouseDown: (NSEvent *)event
 {
   NSPoint p = [self convertPoint: [event locationInWindow] fromView: nil];
 

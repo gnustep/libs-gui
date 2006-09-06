@@ -106,29 +106,21 @@ APPKIT_EXPORT NSSize NSTokenSize;
   /*
   A window really has three interesting frames:
   
-  The screen frame. This is the frame of the _entire_ window on the screen,
+  The window frame. This is the frame of the _entire_ window on the screen,
   including all decorations and borders (regardless of where they come from).
-  (On X, we can only guess what the screen frame is.)
 
-  The window frame. This is the frame of the backend window for this window,
+  The backend frame. This is the frame of the backend window for this window,
   and is thus the base of the coordinate system for the window. IOW, it's
-  the frame of the area we can draw into.
+  the frame of the area the gui library internals can draw into.
 
-  The contect rect. This is the frame of the content view.
+  The contect rect. This is the frame of the content view ... ie the frame
+  that an application using the GUI/AppKit API can draw into.
 
-  Wrt. size, ScreenFrame >= WindowFrame >= ContentRect. When -gui doesn't
-  manage the window decorations, WindowFrame == ContentRect. When -gui does
-  manage the window decorations, WindowFrame will include the decorations,
-  and ScreenFrame == WindowFrame.
+  Wrt. size, Frame >= BackendFrame >= ContentRect. When -gui doesn't
+  manage the window decorations, BackendFrame == ContentRect. When -gui does
+  manage the window decorations, BackendFrame will include the decorations,
+  and Frame == BackendFrame.
 
-
-  To get coordinate transforms and stuff right wrt. OpenStep, we really want
-  the window frame here.
-
-  For hysterical reasons, _frame used to be the screen frame. However, the
-  resulting inconsistencies caused a bunch of problems. Thus, _frame is the
-  window frame. The other rectangles/sizes passed around in NSWindow
-  methods are supposed to all be window frames.
   */
   NSRect        _frame;
 
@@ -219,21 +211,27 @@ APPKIT_EXPORT NSSize NSTokenSize;
  * Computing frame and content rectangles
  */
 
-/* These methods convert between the various frames discussed above. */
+/**
+ * Returns the rectangle which would be used for the content view of
+ * a window whose on-screen size and position is specified by aRect
+ * and which is decorated with the border and title etc given by aStyle.
+ */
 + (NSRect) contentRectForFrameRect: (NSRect)aRect
 			 styleMask: (unsigned int)aStyle;
 
+/**
+ * Returns the rectangle which would be used for the on-screen frame of
+ * a window if that window had a content view occupying the rectangle aRect
+ * and was decorated with the border and title etc given by aStyle.
+ */
 + (NSRect) frameRectForContentRect: (NSRect)aRect
 			 styleMask: (unsigned int)aStyle;
 
-+ (NSRect) screenRectForFrameRect: (NSRect)aRect
-			styleMask: (unsigned int)aStyle;
-
-+ (NSRect) frameRectForScreenRect: (NSRect)aRect
-			styleMask: (unsigned int)aStyle;
-
-/* Returns the smallest window width that will fit the given title and
-style. */
+/**
+ * Returns the smallest frame width that will fit the given title
+ * and style.  This is the on-screen width of the window including
+ * decorations.
+ */
 + (float) minFrameWidthWithTitle: (NSString *)aTitle
 		       styleMask: (unsigned int)aStyle;
 
@@ -252,22 +250,66 @@ style. */
 		     defer: (BOOL)flag
 		    screen: (NSScreen*)aScreen;
 
-/*
- * Converting coordinates
+/**
+ * Converts aPoint from the base coordinate system of the receiver
+ * to a point in the screen coordinate system.
  */
 - (NSPoint) convertBaseToScreen: (NSPoint)aPoint;
+
+/**
+ * Converts aPoint from the screen coordinate system to a point in
+ * the base coordinate system of the receiver.
+ */
 - (NSPoint) convertScreenToBase: (NSPoint)aPoint;
 
-/*
- * Moving and resizing the window
+/**
+ * Returns the frame of the receiver ... the rectangular area that the window
+ * (including any border, title, and other decorations) occupies on screen.
  */
 - (NSRect) frame;
+
+/**
+ * <p>Sets the frame for the receiver to frameRect and if flag is YES causes
+ * the window contents to be refreshed.  The value of frameRect is the
+ * desired on-screen size and position of the window including all
+ * border/decoration.
+ * </p>
+ * <p>The size of the frame is constrained to the minimum and maximum
+ * sizes set for the receiver (if any).<br />
+ * Its position is constrained to be on screen if it is a titled window.
+ * </p>
+ */
 - (void) setFrame: (NSRect)frameRect
 	  display: (BOOL)flag;
+
+/**
+ * Sets the origin (bottom left corner) of the receiver's frame to be the
+ * specified point (in screen coordinates).
+ */
 - (void) setFrameOrigin: (NSPoint)aPoint;
+
+/**
+ * Sets the top left corner of the receiver's frame to be the
+ * specified point (in screen coordinates).
+ */
 - (void) setFrameTopLeftPoint: (NSPoint)aPoint;
+
+/**
+ * Sets the size of the receiver's content view  to aSize, implicitly
+ * adjusting the size of the receiver's frame to match.
+ */
 - (void) setContentSize: (NSSize)aSize;
+
+/**
+ * Positions the receiver at topLeftPoint (or if topLeftPoint is NSZeroPoint,
+ * leaves the receiver unmoved except for any necessary constraint to fit
+ * on screen).<br />
+ * Returns the position of the top left corner of the receivers content
+ * view (after repositioning), so that another window cascaded at the
+ * returned point will not obscure the title bar of the receiver.
+ */
 - (NSPoint) cascadeTopLeftFromPoint: (NSPoint)topLeftPoint;
+
 - (void) center;
 - (int) resizeFlags;
 #ifndef STRICT_OPENSTEP
@@ -309,7 +351,7 @@ style. */
 - (NSString*) stringWithSavedFrame;
 #ifndef STRICT_OPENSTEP
 - (BOOL) setFrameUsingName: (NSString *)name
-		    force: (BOOL)force;
+		     force: (BOOL)force;
 #endif
 
 /*
@@ -556,7 +598,7 @@ style. */
 - (void) print: (id)sender;
 - (NSData*) dataWithEPSInsideRect: (NSRect)rect;
 #ifndef STRICT_OPENSTEP
-- (NSData *)dataWithPDFInsideRect:(NSRect)aRect;
+- (NSData*) dataWithPDFInsideRect:(NSRect)aRect;
 #endif
 
 /*

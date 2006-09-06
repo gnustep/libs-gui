@@ -616,26 +616,6 @@ static NSNotificationCenter *nc = nil;
 					styleMask: aStyle];
 }
 
-+ (NSRect) screenRectForFrameRect: (NSRect)aRect
-			styleMask: (unsigned int)aStyle
-{
-  if (!windowDecorator)
-    windowDecorator = [GSWindowDecorationView windowDecorator];
-
-  return [windowDecorator screenRectForFrameRect: aRect
-				       styleMask: aStyle];
-}
-
-+ (NSRect) frameRectForScreenRect: (NSRect)aRect
-			styleMask: (unsigned int)aStyle
-{
-  if (!windowDecorator)
-    windowDecorator = [GSWindowDecorationView windowDecorator];
-
-  return [windowDecorator frameRectForScreenRect: aRect
-				       styleMask: aStyle];
-}
-
 + (float) minFrameWidthWithTitle: (NSString *)aTitle
 		       styleMask: (unsigned int)aStyle
 {
@@ -1706,16 +1686,20 @@ many times.
     }
 }
 
-/*
- * Moving and resizing the window
- */
 - (NSPoint) cascadeTopLeftFromPoint: (NSPoint)topLeftPoint
 {
-  // FIXME: As we know nothing about the other window we can only guess
-  topLeftPoint.x += 20;
-  topLeftPoint.y += 20;
+  NSRect	cRect;
 
+  if (NSEqualPoints(topLeftPoint, NSZeroPoint) == YES)
+    {
+      topLeftPoint.x = _frame.origin.x;
+      topLeftPoint.y = _frame.origin.y + _frame.size.height;
+    }
   [self setFrameTopLeftPoint: topLeftPoint];
+  cRect = [isa contentRectForFrameRect: _frame styleMask: _styleMask];
+  topLeftPoint.x = cRect.origin.x;
+  topLeftPoint.y = cRect.origin.y + cRect.size.height;
+
   return topLeftPoint;
 }
 
@@ -4061,7 +4045,7 @@ resetCursorRectsForView(NSView *theView)
 			   [_wv convertRect: rect fromView: nil]];
 }
 
-- (NSData *)dataWithPDFInsideRect:(NSRect)aRect
+- (NSData *) dataWithPDFInsideRect:(NSRect)aRect
 {
   return [_wv dataWithPDFInsideRect:
 			   [_wv convertRect: aRect fromView: nil]];

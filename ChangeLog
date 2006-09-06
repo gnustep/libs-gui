@@ -1,3 +1,16 @@
+2006-09-06 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Headers/AppKit/NSWindow.h: Add some documentation about what
+	frame management methods should do.  Remove some bogus additional
+	methods for messing with frames.
+	* Source/NSWindow.m: ([cascadeTopLeftFromPoint:]) implement to match
+	MacOS-X specification.  Remove unused additional frame methods.
+	* Source/GSWindowDecorationView.h:
+	* Source/GSWindowDecorationView.m:
+	* Source/GSStandardWindowDecorationView.m:
+	Remove unused/unnecessary methods and simplify.
+	NB. These fixups require corresponding fixups in the backend.
+
 2006-09-05 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSBitmapImageRep+JPEG.m: Fix declaration position causing
