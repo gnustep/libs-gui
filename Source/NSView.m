@@ -2289,6 +2289,7 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
   NSRect rect;
   struct NSWindow_struct *window_t;
 
+  aRect = [self convertRect: aRect toView: nil];
   window_t = (struct NSWindow_struct *)_window;
   rect = [[window_t->_rectsBeingDrawn lastObject] rectValue];
   return NSIntersectsRect(rect, aRect);
