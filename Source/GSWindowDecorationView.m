@@ -104,20 +104,6 @@ struct NSWindow_struct
 }
 
 
-+ (NSRect) decorationRectForFrameRect: (NSRect)aRect
-			    styleMask: (unsigned int)aStyle
-{
-  aRect.origin = NSZeroPoint;
-  return aRect;
-}
-
-+ (NSRect) contentRectForDecorationRect: (NSRect)aRect
-			      styleMask: (unsigned int)aStyle
-{
-  return [self contentRectForFrameRect: aRect  styleMask: aStyle];
-}
-
-
 - (id) initWithFrame: (NSRect)frame
 {
   NSAssert(NO, @"Tried to create GSWindowDecorationView without a window!");
@@ -127,15 +113,11 @@ struct NSWindow_struct
 - (id) initWithFrame: (NSRect)frame
 	      window: (NSWindow *)w
 {
-  unsigned int	styleMask = [w styleMask];
-
-  frame = [isa decorationRectForFrameRect: frame
-				styleMask: styleMask];
   self = [super initWithFrame: frame];
   if (self != nil)
     {
-      contentRect = [isa contentRectForDecorationRect: frame
-					    styleMask: styleMask];
+      contentRect = [isa contentRectForFrameRect: frame
+				       styleMask: [w styleMask]];
       window = w;
     }
   return self;
@@ -176,14 +158,11 @@ struct NSWindow_struct
   NSSize oldSize = _frame.size;
   NSView *cv = [_window contentView];
 
-  frameRect = [isa decorationRectForFrameRect: frameRect
-				    styleMask: [window styleMask]];
-
   _autoresizes_subviews = NO;
   [super setFrame: frameRect];
 
-  contentRect = [isa contentRectForDecorationRect: frameRect
-					styleMask: [window styleMask]];
+  contentRect = [isa contentRectForFrameRect: frameRect
+				   styleMask: [window styleMask]];
 
   // Safety Check.
   [cv setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
@@ -259,23 +238,6 @@ struct NSWindow_struct
 {
   /* TODO: we could at least guess... */
   return 0.0;
-}
-
-+ (NSRect) decorationRectForFrameRect: (NSRect)aRect
-			    styleMask: (unsigned int)aStyle
-{
-  float l, r, t, b;
-
-  [self offsets: &l : &r : &t : &b forStyleMask: aStyle];
-  aRect.size.width -= l + r;
-  aRect.size.height -= t + b;
-  return aRect;
-}
-
-+ (NSRect) contentRectForDecorationRect: (NSRect)aRect
-			     styleMask: (unsigned int)aStyle
-{
-  return aRect;
 }
 
 @end

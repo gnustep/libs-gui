@@ -101,30 +101,44 @@ typedef enum _NSSelectionDirection {
 APPKIT_EXPORT NSSize NSIconSize;
 APPKIT_EXPORT NSSize NSTokenSize;
 
+/**
+ * <p>An NSWindow instance represents a window, panel or menu on the
+ * screen.<br />
+ * Each window has a style, which determines how the window is decorated:
+ * ie whether it has a border, a title bar, a resize bar, minimise and
+ * close buttons.
+ * </p>
+ * <p>A window has a <em>frame</em>. This is the frame of the <em>entire</em>
+ * window on the screen, including all decorations and borders.  The origin
+ * of the frame represents its bottom left corner and the frame is expressed
+ * in screen coordinates (see [NSScreen]).<br />
+ * </p>
+ * <p>When a window is created, it has a <em>private</em> [NSView] instance
+ * which fills the entire window frame and whose coordinate system is the
+ * same as the base coordinate system of the window (ie zero x and
+ * y coordinates are at the bottom left corner of the window, with increasing
+ * x and y corresponding to points to the right and above the origin).<br />
+ * This view may be used by the library internals (and theme engines) to
+ * draw window decorations if the backend library is not handling the
+ * window decorations.
+ * </p>
+ * <p>A window always contains a <em>content view<em> which is the highest
+ * level view available for public (application) use.  This view fills the
+ * area of the window inside any decoration/border.<br />
+ * This is the only part of the window that application programmers are
+ * allowed to draw in directly.
+ * </p>
+ * <p>You can convert between view coordinates and window base coordinates
+ * using the [NSView-convertPoint:fromView:], [NSView-convertPoint:toView:],
+ * [NSView-convertRect:fromView:], and [NSView-convertRect:toView:]
+ * methods with a nil view argument.<br />
+ * You can convert between window and screen coordinates using the
+ * -convertBaseToScreen: and -convertScreenToBase: methods.
+ * </p>
+ */
 @interface NSWindow : NSResponder <NSCoding>
 {
-  /*
-  A window really has three interesting frames:
-  
-  The window frame. This is the frame of the _entire_ window on the screen,
-  including all decorations and borders (regardless of where they come from).
-
-  The backend frame. This is the frame of the backend window for this window,
-  and is thus the base of the coordinate system for the window. IOW, it's
-  the frame of the area the gui library internals can draw into.
-
-  The contect rect. This is the frame of the content view ... ie the frame
-  that an application using the GUI/AppKit API can draw into.
-
-  Wrt. size, Frame >= BackendFrame >= ContentRect. When -gui doesn't
-  manage the window decorations, BackendFrame == ContentRect. When -gui does
-  manage the window decorations, BackendFrame will include the decorations,
-  and Frame == BackendFrame.
-
-  */
   NSRect        _frame;
-
-
   NSSize        _minimumSize;
   NSSize        _maximumSize;
   NSSize        _increments;
@@ -214,7 +228,8 @@ APPKIT_EXPORT NSSize NSTokenSize;
 /**
  * Returns the rectangle which would be used for the content view of
  * a window whose on-screen size and position is specified by aRect
- * and which is decorated with the border and title etc given by aStyle.
+ * and which is decorated with the border and title etc given by aStyle.<br />
+ * Both rectangles are expressed in screen coordinates.
  */
 + (NSRect) contentRectForFrameRect: (NSRect)aRect
 			 styleMask: (unsigned int)aStyle;
@@ -222,7 +237,8 @@ APPKIT_EXPORT NSSize NSTokenSize;
 /**
  * Returns the rectangle which would be used for the on-screen frame of
  * a window if that window had a content view occupying the rectangle aRect
- * and was decorated with the border and title etc given by aStyle.
+ * and was decorated with the border and title etc given by aStyle.<br />
+ * Both rectangles are expressed in screen coordinates.
  */
 + (NSRect) frameRectForContentRect: (NSRect)aRect
 			 styleMask: (unsigned int)aStyle;
@@ -244,6 +260,12 @@ APPKIT_EXPORT NSSize NSTokenSize;
 		   backing: (NSBackingStoreType)bufferingType
 		     defer: (BOOL)flag;
 
+/**
+ * Creates a new window with the specified characteristics.<br />
+ * The contentRect is expressed in screen coordinates (for aScreen)
+ * and the window frame is calculated from the content rectangle and
+ * the window style mask.
+ */
 - (id) initWithContentRect: (NSRect)contentRect
 		 styleMask: (unsigned int)aStyle
 		   backing: (NSBackingStoreType)bufferingType

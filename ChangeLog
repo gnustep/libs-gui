@@ -1,3 +1,11 @@
+2006-09-12 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSWindowDecorationView.m: Simplify/rewrite to have the view
+	always match the window frame so that the window base coordinate
+	system has its origin at the bottom left corner of the window frame.
+	* Headers/AppKit/NSWindow.h: Improve documentation
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h: ditto
+
 2006-09-06 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/AppKit/NSWindow.h: Add some documentation about what
