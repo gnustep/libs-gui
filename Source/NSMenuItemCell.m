@@ -479,7 +479,7 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
 {
   cellFrame = [self keyEquivalentRectForBounds: cellFrame];
 
-  if ([_menuItem hasSubmenu])
+  if ([_menuItem hasSubmenu] && arrowImage != nil)
     {
       NSSize	size;
       NSPoint	position;
