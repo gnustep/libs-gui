@@ -1,3 +1,12 @@
+2006-09-13 00:28-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/AppKit/NSDrawer.h: Added ivars to support implementation.
+	* Source/GSNibCompatibility.m: Moved comments to top, for gcc < 3.0
+	compilation.
+	* Source/NSDrawer.m: Added GSDrawerWindow implementation and
+	implementation of some methods in NSDrawer to interact with the 
+	window.
+
 2006-09-12 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSWindowDecorationView.m: Simplify/rewrite to have the view

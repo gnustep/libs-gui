@@ -1489,14 +1489,15 @@ static BOOL _isInInterfaceBuilder = NO;
   if([coder allowsKeyedCoding])
     {
       unsigned int len = 0;
-      // BOOL compact = [coder decodeBoolForKey: @"NS.compact"];
       short exponent = (short)[coder decodeIntForKey: @"NS.exponent"];
-      // int length = [coder decodeIntForKey: @"NS.length"];
       NSByteOrder bo = [coder decodeIntForKey: @"NS.mantissa.bo"];
       BOOL negative = [coder decodeBoolForKey: @"NS.negative"];
       void *mantissaBytes = (void *)[coder decodeBytesForKey: @"NS.mantissa" returnedLength: &len];
       unsigned long long unswapped = 0; 
       unsigned long long mantissa = 0;
+
+      // BOOL compact = [coder decodeBoolForKey: @"NS.compact"];
+      // int length = [coder decodeIntForKey: @"NS.length"];
 
       memcpy((void *)&unswapped, (void *)mantissaBytes, sizeof(unsigned long long));
 
