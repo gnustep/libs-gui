@@ -88,7 +88,7 @@ static NSNotificationCenter *nc = nil;
 		backing: bufferingType
 		defer: flag
 		screen: aScreen];
-  if(self != nil)
+  if (self != nil)
     {
       /*
       _box = [[NSBox alloc] init];
@@ -123,25 +123,25 @@ static NSNotificationCenter *nc = nil;
   BOOL opened = (state == NSDrawerOpenState);
   NSSize size = [_drawer maxContentSize];
   
-  if(edge == NSMinXEdge) // left
+  if (edge == NSMinXEdge) // left
     {
       newFrame.size.height -= total;
       newFrame.origin.y += [_drawer trailingOffset];
       newFrame.origin.x -= (opened)?size.width:0;
     }
-  else if(edge == NSMinYEdge) // bottom
+  else if (edge == NSMinYEdge) // bottom
     {
       newFrame.size.width -= total;
       newFrame.origin.x += [_drawer leadingOffset];
       newFrame.origin.y -= (opened)?size.height:0;
     }
-  else if(edge == NSMaxXEdge) // right
+  else if (edge == NSMaxXEdge) // right
     {
       newFrame.size.height -= total;
       newFrame.origin.y += [_drawer trailingOffset];
       newFrame.origin.x += (opened)?size.width:0;
     }
-  else if(edge == NSMaxYEdge) // top
+  else if (edge == NSMaxYEdge) // top
     {
       newFrame.size.width -= total;
       newFrame.origin.x += [_drawer leadingOffset];
@@ -190,8 +190,8 @@ static NSNotificationCenter *nc = nil;
   [self setFrame: frame display: YES];
   [self orderOut: self];
 
-  if(_pendingParentWindow != nil &&
-     _pendingParentWindow != _parentWindow)
+  if (_pendingParentWindow != nil
+    && _pendingParentWindow != _parentWindow)
     {
       [self setParentWindow: _pendingParentWindow];
       ASSIGN(_pendingParentWindow, nil);
@@ -207,46 +207,46 @@ static NSNotificationCenter *nc = nil;
   float factor = 1.0;
 
   // if it's open, then slide it closed.
-  if([_drawer state] == NSDrawerClosingState)
+  if ([_drawer state] == NSDrawerClosingState)
     {
       factor = -factor;
     }
-  else if([_drawer state] == NSDrawerOpeningState)
+  else if ([_drawer state] == NSDrawerOpeningState)
     {
       factor = 1.0;
     }
 
-  if(edge == NSMinXEdge) // left
+  if (edge == NSMinXEdge) // left
     {
       // slide left...
-      for(i = 0; i < size.width; i++)
+      for (i = 0; i < size.width; i++)
 	{
 	  frame.origin.x -= factor;
 	  [self setFrame: frame display: YES];
 	}
     }
-  else if(edge == NSMinYEdge) // bottom
+  else if (edge == NSMinYEdge) // bottom
     {
       // slide down...
-      for(i = 0; i < size.height; i++)
+      for (i = 0; i < size.height; i++)
 	{
 	  frame.origin.y -= factor;
 	  [self setFrame: frame display: YES];
 	}
     }
-  else if(edge == NSMaxXEdge) // right
+  else if (edge == NSMaxXEdge) // right
     {
       // slide right...
-      for(i = 0; i < size.width; i++)
+      for (i = 0; i < size.width; i++)
 	{
 	  frame.origin.x += factor;
 	  [self setFrame: frame display: YES];
 	}
     }
-  else if(edge == NSMaxYEdge) // top
+  else if (edge == NSMaxYEdge) // top
     {
       // slide up...
-      for(i = 0; i < size.height; i++)
+      for (i = 0; i < size.height; i++)
 	{
 	  frame.origin.y += factor;
 	  [self setFrame: frame display: YES];
@@ -273,14 +273,14 @@ static NSNotificationCenter *nc = nil;
 
 - (void) setParentWindow: (NSWindow *)window
 {
-  if(_parentWindow != window)
+  if (_parentWindow != window)
     {
       ASSIGN(_parentWindow, window);
       [nc removeObserver: self];
 
-      if(_parentWindow != nil)
+      if (_parentWindow != nil)
 	{
-	  NSRect frame = [self frameFromParentWindowFrame]; // : [_parentWindow frame]];
+	  NSRect frame = [self frameFromParentWindowFrame];
 	  [self setFrame: frame display: YES];
 
 	  // add observers....
@@ -401,10 +401,9 @@ static NSNotificationCenter *nc = nil;
   if (_state != NSDrawerOpenState)
     return;
 
-  if ((_delegate != nil) && 
-      ([_delegate respondsToSelector:
-		      @selector(drawerShouldClose:)]) &&
-      ![_delegate drawerShouldClose: self])
+  if ((_delegate != nil)
+    && ([_delegate respondsToSelector: @selector(drawerShouldClose:)])
+    && ![_delegate drawerShouldClose: self])
     return;
 
   _state = NSDrawerClosingState;
@@ -433,14 +432,13 @@ static NSNotificationCenter *nc = nil;
 
 - (void) openOnEdge: (NSRectEdge)edge
 {
-  if ((_state != NSDrawerClosedState) || 
-      ([self parentWindow] == nil))
+  if ((_state != NSDrawerClosedState)
+    || ([self parentWindow] == nil))
     return;
 
-  if ((_delegate != nil) && 
-      ([_delegate respondsToSelector:
-		      @selector(drawerShouldOpen:)]) &&
-      ![_delegate drawerShouldOpen: self])
+  if ((_delegate != nil)
+    && ([_delegate respondsToSelector: @selector(drawerShouldOpen:)])
+    && ![_delegate drawerShouldOpen: self])
     return;
 
   _state = NSDrawerOpeningState;
@@ -496,12 +494,12 @@ static NSNotificationCenter *nc = nil;
     size.height = _maxContentSize.height;
 
   // Check with delegate
-  if ((_delegate != nil) && 
-      ([_delegate respondsToSelector:
-		      @selector(drawerWillResizeContents:toSize:)]))
+  if ((_delegate != nil)
+    && ([_delegate respondsToSelector:
+      @selector(drawerWillResizeContents:toSize:)]))
     {
       size = [_delegate drawerWillResizeContents: self
-			toSize: size];
+					  toSize: size];
     }
 
   [_drawerWindow setContentSize: size];
@@ -566,7 +564,7 @@ static NSNotificationCenter *nc = nil;
 
 - (void) setParentWindow: (NSWindow *)parent
 {
-  if(_state == NSDrawerClosedState)
+  if (_state == NSDrawerClosedState)
     {
       [_drawerWindow setParentWindow: parent];
     }
@@ -617,11 +615,11 @@ static NSNotificationCenter *nc = nil;
   id parent = [self parentWindow];
 
   [super encodeWithCoder: aCoder];
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       [aCoder encodeSize: [self contentSize] forKey: @"NSContentSize"];
 
-      if(_delegate != nil)
+      if (_delegate != nil)
 	{
 	  [aCoder encodeObject: _delegate forKey: @"NSDelegate"];
 	}
@@ -630,7 +628,7 @@ static NSNotificationCenter *nc = nil;
       [aCoder encodeSize: _maxContentSize forKey: @"NSMaxContentSize"];
       [aCoder encodeSize: _minContentSize forKey: @"NSMinContentSize"];
       
-      if(parent != nil)
+      if (parent != nil)
 	{
 	  [aCoder encodeObject: parent forKey: @"NSParentWindow"];
 	}
@@ -653,15 +651,15 @@ static NSNotificationCenter *nc = nil;
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  if((self = [super initWithCoder: aDecoder]) != nil)
+  if ((self = [super initWithCoder: aDecoder]) != nil)
     {
-      NSWindow *parentWindow;
+      NSWindow *parentWindow = nil;
       
-      if([aDecoder allowsKeyedCoding])
+      if ([aDecoder allowsKeyedCoding])
 	{
 	  _contentSize = [aDecoder decodeSizeForKey: @"NSContentSize"];
 
-	  if([aDecoder containsValueForKey: @"NSDelegate"])
+	  if ([aDecoder containsValueForKey: @"NSDelegate"])
 	    {
 	      ASSIGN(_delegate, [aDecoder decodeObjectForKey: @"NSDelegate"]);
 	    }
@@ -670,7 +668,7 @@ static NSNotificationCenter *nc = nil;
 	  _maxContentSize = [aDecoder decodeSizeForKey: @"NSMaxContentSize"];
 	  _minContentSize = [aDecoder decodeSizeForKey: @"NSMinContentSize"];
 	  
-	  if([aDecoder containsValueForKey: @"NSParentWindow"])
+	  if ([aDecoder containsValueForKey: @"NSParentWindow"])
 	    {
 	      parentWindow = [aDecoder decodeObjectForKey: @"NSParentWindow"];
 	    }
@@ -681,22 +679,25 @@ static NSNotificationCenter *nc = nil;
       else
 	{
 	  int version = [aDecoder versionForClassName: @"NSDrawer"];
-	  if(version == 0)
+	  if (version == 0)
 	    {
 	      _contentSize = [aDecoder decodeSize];
 	      ASSIGN(_delegate, [aDecoder decodeObject]);
-	      [aDecoder decodeValueOfObjCType: @encode(float) at: &_leadingOffset];
+	      [aDecoder decodeValueOfObjCType: @encode(float)
+					   at: &_leadingOffset];
 	      _maxContentSize = [aDecoder decodeSize];
 	      _minContentSize = [aDecoder decodeSize];
 	      parentWindow = [aDecoder decodeObject];
-	      [aDecoder decodeValueOfObjCType: @encode(unsigned) at: &_preferredEdge];
-	      [aDecoder decodeValueOfObjCType: @encode(float) at: &_trailingOffset];	      
+	      [aDecoder decodeValueOfObjCType: @encode(unsigned)
+					   at: &_preferredEdge];
+	      [aDecoder decodeValueOfObjCType: @encode(float)
+					   at: &_trailingOffset];	      
 	    }
 	  else      
 	    {
 	      [NSException raise: NSInternalInconsistencyException
-			   format: @"Invalid version of NSDrawer (version = %d).", 
-			   version];
+		format: @"Invalid version of NSDrawer (version = %d).",
+		version];
 	      return nil; // not reached, but keeps gcc happy...
 	    }
 	}
