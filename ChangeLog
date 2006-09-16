@@ -1,5 +1,11 @@
 2006-09-17  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Images/GSSearch.tiff,
+	* Images/GSStop.tiff: New icons for the NSSearchButtonCell by 
+	Nikolaus Schaller <hns@computer.org>.
+
+2006-09-17  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSTableView.m: Changed _isCellEditable into a method
 	[_isCellEditableColumn:row:] and use this everywhere. Have this new
 	method check, if the table column is editable and only when not ask
