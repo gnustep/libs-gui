@@ -130,6 +130,9 @@ typedef struct _tableViewFlags
 - (void)_setObjectValue: (id)value
 	 forTableColumn: (NSTableColumn *)tb
 		    row: (int)index;
+
+- (BOOL) _isCellEditableColumn: (int) columnIndex
+			   row: (int) rowIndex;
 @end
 
 @interface NSTableView (SelectionHelper)
@@ -1910,23 +1913,6 @@ static void computeNewSelection
     }
 }
 
-static inline BOOL 
-_isCellEditable (id delegate, NSArray *tableColumns, 
-		 NSTableView *tableView, int row, int column)
-{
-  {
-    NSTableColumn *tb;
-    tb = [tableColumns objectAtIndex: column];
-    if ([tableView _shouldEditTableColumn: tb 
-		   row: row] == NO)
-      {
-	return NO;
-      }
-  }
-  
-  return YES;
-}
-
 @interface GSTableCornerView : NSView
 {}
 @end
@@ -2505,6 +2491,7 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 {
   return _backgroundColor;
 }
+
 - (void) setUsesAlternatingRowBackgroundColors: (BOOL)useAlternatingRowColors
 {
   // FIXME
@@ -3217,7 +3204,7 @@ byExtendingSelection: (BOOL)flag
   // of editing.
   if (_dataSource_editable == NO)
     {
-      return;
+      flag = YES;
     }
   
   [self scrollRowToVisible: rowIndex];
@@ -3256,7 +3243,7 @@ byExtendingSelection: (BOOL)flag
   // NB: need to be released when no longer used
   _editedCell = [[tb dataCellForRow: rowIndex] copy];
 
-  [_editedCell setEditable: YES];
+  [_editedCell setEditable: _dataSource_editable];
   [_editedCell setObjectValue: [self _objectValueForTableColumn: tb
 				     row: rowIndex]];
   /* [_dataSource tableView: self
@@ -3373,6 +3360,13 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       return;
     }
 
+  /* Stop editing if any */
+  if (_textObject != nil)
+    {
+      [self validateEditing];
+      [self abortEditing];
+    }  
+
   // Determine row and column which were clicked
   location = [self convertPoint: initialLocation fromView: nil];
   _clickedRow  = [self rowAtPoint: location];
@@ -3381,17 +3375,13 @@ static inline float computePeriod(NSPoint mouseLocationWin,
   if (clickCount == 2)
     {
       // Double-click event
-      NSTableColumn *tb;
 
-      if ([self isRowSelected: _clickedRow] == NO)
+      if (![self isRowSelected: _clickedRow])
         {
 	  return;
 	}
 
-      tb = [_tableColumns objectAtIndex: _clickedColumn];
-      if (([tb isEditable] == NO) || 
-	  ([self _shouldEditTableColumn: tb 
-		 row: _clickedRow] == NO))
+      if (![self _isCellEditableColumn: _clickedColumn row: _clickedRow ])
         {
 	  // Send double-action but don't edit
 	  [self sendAction: _doubleAction to: _target];
@@ -5486,7 +5476,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       // First look for cells in the same row
       for (j = column + 1; j < _numberOfColumns; j++)
 	{
-	  if (_isCellEditable (_delegate, _tableColumns, self, row, j) == YES)
+	  if ([self _isCellEditableColumn: j row: row])
 	    {
 	      [self editColumn: j  row: row  withEvent: nil  select: YES];
 	      return YES;
@@ -5500,7 +5490,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       [self selectRow: i byExtendingSelection: NO];
       for (j = 0; j < _numberOfColumns; j++)
 	{
-	  if (_isCellEditable (_delegate, _tableColumns, self, i, j) == YES)
+	  if ([self _isCellEditableColumn: j row: i])
 	    {
 	      [self editColumn: j  row: i  withEvent: nil  select: YES];
 	      return YES;
@@ -5509,6 +5499,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
     }
   return NO;
 }
+
 -(BOOL) _editPreviousEditableCellBeforeRow: (int)row
 				    column: (int)column
 {
@@ -5518,7 +5509,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       // First look for cells in the same row
       for (j = column - 1; j > -1; j--)
 	{
-	  if (_isCellEditable (_delegate, _tableColumns, self, row, j) == YES)
+	  if ([self _isCellEditableColumn: j row: row])
 	    {
 	      [self editColumn: j  row: row  withEvent: nil  select: YES];
 	      return YES;
@@ -5532,7 +5523,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       [self selectRow: i byExtendingSelection: NO];
       for (j = _numberOfColumns - 1; j > -1; j--)
 	{
-	  if (_isCellEditable (_delegate, _tableColumns, self, i, j) == YES)
+	  if ([self _isCellEditableColumn: j row: i])
 	    {
 	      [self editColumn: j  row: i  withEvent: nil  select: YES];
 	      return YES;
@@ -5541,6 +5532,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
     }
   return NO;
 }
+
 - (void) _autosaveTableColumns
 {
   if (_autosaveTableColumns && _autosaveName != nil) 
@@ -6017,13 +6009,27 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 			    row: (int) rowIndex
 {
   if ([_delegate respondsToSelector: 
-			@selector(tableView:shouldEditTableColumn:row:)])
+		     @selector(tableView:shouldEditTableColumn:row:)])
     {
-      if ([_delegate tableView: self shouldEditTableColumn: tableColumn
-		     row: rowIndex] == NO)
-	{
-	  return NO;
-	}
+      return [_delegate tableView: self shouldEditTableColumn: tableColumn
+			row: rowIndex] == NO;
+    }
+
+  return YES;
+}
+
+- (BOOL) _isCellEditableColumn: (int) columnIndex
+			   row: (int) rowIndex
+		     
+{
+  NSTableColumn *tableColumn;
+
+  tableColumn = [_tableColumns objectAtIndex: columnIndex];
+  // If the column is editable, the cell always is
+  if (![tableColumn isEditable])
+    {
+      // otherwise ask the delegate, if any.
+      [self _shouldEditTableColumn: tableColumn row: rowIndex];
     }
 
   return YES;

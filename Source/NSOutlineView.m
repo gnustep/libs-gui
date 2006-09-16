@@ -1361,17 +1361,14 @@ static NSImage *unexpandable  = nil;
   NSTableColumn *tb;
   NSRect drawingRect, imageRect;
   unsigned length = 0;
-  id item = nil;
   int level = 0;
   float indentationFactor = 0.0;
-  NSImage *image = nil;
-  NSCell *imageCell = nil;
 
   // We refuse to edit cells if the delegate can not accept results 
   // of editing.
   if (_dataSource_editable == NO)
     {
-      return;
+      flag = YES;
     }
   
   [self scrollRowToVisible: rowIndex];
@@ -1404,14 +1401,13 @@ static NSImage *unexpandable  = nil;
   
   _editedRow = rowIndex;
   _editedColumn = columnIndex;
-  item = [self itemAtRow: _editedRow];
 
   // Prepare the cell
   tb = [_tableColumns objectAtIndex: columnIndex];
   // NB: need to be released when no longer used
   _editedCell = [[tb dataCellForRow: rowIndex] copy];
 
-  [_editedCell setEditable: YES];
+  [_editedCell setEditable: _dataSource_editable];
   [_editedCell setObjectValue: [self _objectValueForTableColumn: tb
 				     row: rowIndex]];
 
@@ -1447,29 +1443,32 @@ static NSImage *unexpandable  = nil;
 
   _textObject = [_editedCell setUpFieldEditorAttributes: t];
 
-  // determine which image to use...
-  if ([self isItemExpanded: item])
-    {
-      image = expanded;
-    }
-  else
-    {
-      image = collapsed;
-    }
-
-  if (![self isExpandable: item])
-    {
-      image = unexpandable;
-    }
-  // move the drawing rect over like in the drawRow routine...
   drawingRect = [self frameOfCellAtColumn: columnIndex  row: rowIndex];
 
   if (tb == [self outlineTableColumn])
     {
+      id item = nil;
+      NSImage *image = nil;
+      NSCell *imageCell = nil;
+
+      item = [self itemAtRow: _editedRow];
+      // determine which image to use...
+      if ([self isItemExpanded: item])
+        {
+	  image = expanded;
+	}
+      else
+        {
+	  image = collapsed;
+	}
+
+      if (![self isExpandable: item])
+        {
+	  image = unexpandable;
+	}
+
       level = [self levelForItem: item];
       indentationFactor = _indentationPerLevel * level;
-      drawingRect.origin.x += indentationFactor + 5 + [image size].width;
-      drawingRect.size.width -= indentationFactor + 5 + [image size].width;
 
       // create the image cell..
       imageCell = [[NSCell alloc] initImageCell: image];
@@ -1484,13 +1483,19 @@ static NSImage *unexpandable  = nil;
 	  imageRect.origin.y = drawingRect.origin.y;
 	}
       
-      // draw...
       imageRect.size.width = [image size].width;
       imageRect.size.height = [image size].height;
 
+      // draw...
       [self lockFocus];
       [imageCell drawWithFrame: imageRect inView: self];
       [self unlockFocus];
+
+      // move the drawing rect over like in the drawRow routine...
+      drawingRect.origin.x += indentationFactor + 5 + [image size].width;
+      drawingRect.size.width -= indentationFactor + 5 + [image size].width;
+
+      RELEASE(imageCell);
     }
 
   if (flag)

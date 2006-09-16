@@ -1,3 +1,16 @@
+2006-09-17  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableView.m: Changed _isCellEditable into a method
+	[_isCellEditableColumn:row:] and use this everywhere. Have this new
+	method check, if the table column is editable and only when not ask
+	the delegate wether the cell should be editable. The matches the Cocoa
+	behaviour as reported by Quentin Mathe <qmathe@club-internet.fr>. 
+	* Source/NSTableView.m (-editColumn:row:withEvent:select:): Allow
+	selection of cell, even when the data source is not editable. 
+	* Source/NSTableView.m (-mouseDown:): Abort editing.
+	* Source/NSOutlineView.m (-editColumn:row:withEvent:select:):
+	Similar changes to super class, plus some code reordering and correction.
+	
 2006-09-16 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSColor.m: Fix memory leak (bug #17769)
