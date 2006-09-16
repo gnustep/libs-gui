@@ -1660,7 +1660,7 @@ systemColorWithName(NSString *name)
   [super dealloc];
 }
 
-- (NSString *)colorSpaceName
+- (NSString *) colorSpaceName
 {
   return NSNamedColorSpace;
 }
@@ -1740,7 +1740,7 @@ systemColorWithName(NSString *name)
   return NO;
 }
 
-- (NSColor *)colorUsingColorSpaceName: (NSString *)colorSpace
+- (NSColor*) colorUsingColorSpaceName: (NSString *)colorSpace
 			       device: (NSDictionary *)deviceDescription
 {
   NSColorList *list;
@@ -1888,7 +1888,7 @@ systemColorWithName(NSString *name)
       aCopy->_alpha_component = alpha;
     }
 
-  return aCopy;
+  return AUTORELEASE(aCopy);
 }
 
 - (NSColor*) colorUsingColorSpaceName: (NSString *)colorSpace
@@ -1912,43 +1912,43 @@ systemColorWithName(NSString *name)
       return nil;
     }
 
-  if ([colorSpace isEqualToString: NSDeviceWhiteColorSpace] ||
-      [colorSpace isEqualToString: NSDeviceBlackColorSpace])
+  if ([colorSpace isEqualToString: NSDeviceWhiteColorSpace]
+    || [colorSpace isEqualToString: NSDeviceBlackColorSpace])
     {
       return [NSColor colorWithDeviceWhite: _white_component
-		      alpha: _alpha_component];
+				     alpha: _alpha_component];
     }
 
-  if ([colorSpace isEqualToString: NSCalibratedWhiteColorSpace] ||
-      [colorSpace isEqualToString: NSCalibratedBlackColorSpace])
+  if ([colorSpace isEqualToString: NSCalibratedWhiteColorSpace]
+    || [colorSpace isEqualToString: NSCalibratedBlackColorSpace])
     {
       return [NSColor colorWithCalibratedWhite: _white_component
-		      alpha: _alpha_component];
+					 alpha: _alpha_component];
     }
 
   if ([colorSpace isEqualToString: NSCalibratedRGBColorSpace])
     {
       return [NSColor colorWithCalibratedRed: _white_component
-		      green: _white_component
-		      blue: _white_component
-		      alpha: _alpha_component];
+				       green: _white_component
+					blue: _white_component
+				       alpha: _alpha_component];
     }
 
   if ([colorSpace isEqualToString: NSDeviceRGBColorSpace])
     {
       return [NSColor colorWithDeviceRed: _white_component
-		      green: _white_component
-		      blue: _white_component
-		      alpha: _alpha_component];
+				   green: _white_component
+				    blue: _white_component
+				   alpha: _alpha_component];
     }
 
   if ([colorSpace isEqualToString: NSDeviceCMYKColorSpace])
     {
       return [NSColor colorWithDeviceCyan: 0.0
-		      magenta: 0.0
-		      yellow: 0.0
-		      black: 1.0 - _white_component
-		      alpha: _alpha_component];
+				  magenta: 0.0
+				   yellow: 0.0
+				    black: 1.0 - _white_component
+				    alpha: _alpha_component];
     }
 
   return nil;
@@ -2007,7 +2007,7 @@ systemColorWithName(NSString *name)
 
 @implementation GSDeviceWhiteColor
 
-- (NSString *)colorSpaceName
+- (NSString *) colorSpaceName
 {
   return NSDeviceWhiteColorSpace;
 }
@@ -2030,7 +2030,7 @@ systemColorWithName(NSString *name)
 
 @implementation GSCalibratedWhiteColor
 
-- (NSString *)colorSpaceName
+- (NSString *) colorSpaceName
 {
   return NSCalibratedWhiteColorSpace;
 }
@@ -2082,7 +2082,7 @@ systemColorWithName(NSString *name)
   return self;
 }
 
-- (NSString *)colorSpaceName
+- (NSString *) colorSpaceName
 {
   return NSDeviceCMYKColorSpace;
 }
@@ -2160,12 +2160,14 @@ systemColorWithName(NSString *name)
     {
       GSDeviceCMYKColor *col = (GSDeviceCMYKColor*)other;
 
-      if (col->_cyan_component != _cyan_component ||
-	  col->_magenta_component != _magenta_component ||
-	  col->_yellow_component != _yellow_component ||
-	  col->_black_component != _black_component ||
-	  col->_alpha_component != _alpha_component)
-	return NO;
+      if (col->_cyan_component != _cyan_component
+	|| col->_magenta_component != _magenta_component
+	|| col->_yellow_component != _yellow_component
+	|| col->_black_component != _black_component
+	|| col->_alpha_component != _alpha_component)
+	{
+	  return NO;
+	}
       return YES;
     }
   return NO;
@@ -2188,7 +2190,7 @@ systemColorWithName(NSString *name)
       aCopy->_alpha_component = alpha;
     }
 
-  return aCopy;
+  return AUTORELEASE(aCopy);
 }
 
 - (NSColor*) colorUsingColorSpaceName: (NSString *)colorSpace
@@ -2238,20 +2240,20 @@ systemColorWithName(NSString *name)
 		      alpha: _alpha_component];
     }
 
-  if ([colorSpace isEqualToString: NSCalibratedWhiteColorSpace] ||
-      [colorSpace isEqualToString: NSCalibratedBlackColorSpace])
+  if ([colorSpace isEqualToString: NSCalibratedWhiteColorSpace]
+    || [colorSpace isEqualToString: NSCalibratedBlackColorSpace])
     {
       return [NSColor colorWithCalibratedWhite: 1 - _black_component -
-		      (_cyan_component + _magenta_component + _yellow_component)/3
-		      alpha: _alpha_component];
+	(_cyan_component + _magenta_component + _yellow_component)/3
+	alpha: _alpha_component];
     }
 
-  if ([colorSpace isEqualToString: NSDeviceWhiteColorSpace] ||
-      [colorSpace isEqualToString: NSDeviceBlackColorSpace])
+  if ([colorSpace isEqualToString: NSDeviceWhiteColorSpace]
+    || [colorSpace isEqualToString: NSDeviceBlackColorSpace])
     {
       return [NSColor colorWithDeviceWhite: 1 - _black_component -
-		      (_cyan_component + _magenta_component + _yellow_component)/3
-		      alpha: _alpha_component];
+	(_cyan_component + _magenta_component + _yellow_component)/3
+	alpha: _alpha_component];
     }
 
   return nil;
@@ -2281,10 +2283,10 @@ systemColorWithName(NSString *name)
       // FIXME: Missing handling of alpha value
       [aCoder encodeInt: 5 forKey: @"NSColorSpace"];
       str = [[NSString alloc] initWithFormat: @"%f %f %f %f", _cyan_component, 
-			      _magenta_component, _yellow_component, _black_component];
+	_magenta_component, _yellow_component, _black_component];
       [aCoder encodeBytes: (const uint8_t*)[str cString] 
-	      length: [str cStringLength] 
-	      forKey: @"NSCYMK"];
+		   length: [str cStringLength] 
+		   forKey: @"NSCYMK"];
       RELEASE(str);
     }
   else 
@@ -2392,9 +2394,11 @@ systemColorWithName(NSString *name)
       GSRGBColor *col = (GSRGBColor*)other;
 
       if (col->_red_component != _red_component
-	  || col->_green_component != _green_component
-	  || col->_blue_component != _blue_component)
-	return NO;
+	|| col->_green_component != _green_component
+	|| col->_blue_component != _blue_component)
+	{
+	  return NO;
+	}
       return YES;
     }
 
@@ -2418,7 +2422,7 @@ systemColorWithName(NSString *name)
       aCopy->_alpha_component = alpha;
     }
 
-  return aCopy;
+  return AUTORELEASE(aCopy);
 }
 
 - (NSColor*) colorUsingColorSpaceName: (NSString *)colorSpace
@@ -2458,29 +2462,29 @@ systemColorWithName(NSString *name)
 		      alpha: _alpha_component];
     }
 
-  if ([colorSpace isEqualToString: NSCalibratedWhiteColorSpace] ||
-      [colorSpace isEqualToString: NSCalibratedBlackColorSpace])
+  if ([colorSpace isEqualToString: NSCalibratedWhiteColorSpace]
+    || [colorSpace isEqualToString: NSCalibratedBlackColorSpace])
     {
       return [NSColor colorWithCalibratedWhite:
-		      (_red_component + _green_component + _blue_component)/3
-		      alpha: _alpha_component];
+	(_red_component + _green_component + _blue_component)/3
+	alpha: _alpha_component];
     }
 
-  if ([colorSpace isEqualToString: NSDeviceWhiteColorSpace] ||
-      [colorSpace isEqualToString: NSDeviceBlackColorSpace])
+  if ([colorSpace isEqualToString: NSDeviceWhiteColorSpace]
+    || [colorSpace isEqualToString: NSDeviceBlackColorSpace])
     {
       return [NSColor colorWithDeviceWhite:
-		      (_red_component + _green_component + _blue_component)/3
-		      alpha: _alpha_component];
+	(_red_component + _green_component + _blue_component)/3
+	alpha: _alpha_component];
     }
 
   if ([colorSpace isEqualToString: NSDeviceCMYKColorSpace])
     {
       return [NSColor colorWithDeviceCyan: 1 - _red_component
-		      magenta: 1 - _green_component
-		      yellow: 1 - _blue_component
-		      black: 0.0
-		      alpha: _alpha_component];
+				  magenta: 1 - _green_component
+				   yellow: 1 - _blue_component
+				    black: 0.0
+				    alpha: _alpha_component];
     }
 
   return nil;
@@ -2513,7 +2517,9 @@ systemColorWithName(NSString *name)
 
 - (void) set
 {
-  // This should only be in GSDeviceRGBColor, but is here to keep old code working.
+  /* This should only be in GSDeviceRGBColor,
+   * but is here to keep old code working.
+   */
   NSDebugLLog(@"NSColor", @"RGB %f %f %f\n", _red_component,
 	      _green_component, _blue_component);
   PSsetrgbcolor(_red_component, _green_component,
@@ -2577,7 +2583,7 @@ systemColorWithName(NSString *name)
 
 @implementation GSDeviceRGBColor
 
-- (NSString *)colorSpaceName
+- (NSString *) colorSpaceName
 {
   return NSDeviceRGBColorSpace;
 }
@@ -2703,7 +2709,7 @@ systemColorWithName(NSString *name)
 
 @implementation GSCalibratedRGBColor
 
-- (NSString *)colorSpaceName
+- (NSString *) colorSpaceName
 {
   return NSCalibratedRGBColorSpace;
 }
@@ -2842,7 +2848,7 @@ systemColorWithName(NSString *name)
   [super dealloc];
 }
 
-- (NSString *)colorSpaceName
+- (NSString *) colorSpaceName
 {
   return NSPatternColorSpace;
 }

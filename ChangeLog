@@ -1,3 +1,7 @@
+2006-09-16 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSColor.m: Fix memory leak (bug #17769)
+
 2006-09-13 00:28-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/AppKit/NSDrawer.h: Added ivars to support implementation.
