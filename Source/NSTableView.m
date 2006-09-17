@@ -6029,7 +6029,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
   if (![tableColumn isEditable])
     {
       // otherwise ask the delegate, if any.
-      [self _shouldEditTableColumn: tableColumn row: rowIndex];
+      return [self _shouldEditTableColumn: tableColumn row: rowIndex];
     }
 
   return YES;

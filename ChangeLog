@@ -1,5 +1,10 @@
 2006-09-17  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSTableView.m (-_isCellEditableColumn:row:): Correced
+	error in last patch, pointed out by David Ayers <ayers@fsfe.org>. 
+
+2006-09-17  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Images/GSSearch.tiff,
 	* Images/GSStop.tiff: New icons for the NSSearchButtonCell by 
 	Nikolaus Schaller <hns@computer.org>.
