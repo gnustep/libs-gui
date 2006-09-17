@@ -1,3 +1,8 @@
+2006-09-17  Matt Rice <ratmice@yahoo.com>
+
+	* Source/NSDocument.m (-initWithContentsOfFile:ofType:): Set the
+	file name and type before attempting to read the document.
+
 2006-09-17  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTableView.m (-_isCellEditableColumn:row:): Correced
