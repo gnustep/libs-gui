@@ -338,7 +338,7 @@ static Class textFieldCellClass;
 //
 - (void) mouseDown: (NSEvent*)theEvent
 {
-  if ([self isSelectable] == NO)
+  if ([self isSelectable] == NO || [self isEnabled] == NO)
     {
       [super mouseDown: theEvent];
       return;
@@ -392,7 +392,7 @@ static Class textFieldCellClass;
 
 - (BOOL) acceptsFirstMouse: (NSEvent *)aEvent
 {
-  return [self isEditable];
+  return [self isEditable] && [self isEnabled];
 }
 
 /** <p>Returns whether the NSTextField accepts to be the first responder.
@@ -405,7 +405,7 @@ static Class textFieldCellClass;
   // we do not accept first responder if there is already a 
   // _text_object, else it would make the _text_object resign
   // and end editing
-  return (_text_object == nil) && [self isSelectable];
+  return (_text_object == nil) && [self isSelectable] && [self isEnabled];
 }
 
 - (BOOL) becomeFirstResponder
