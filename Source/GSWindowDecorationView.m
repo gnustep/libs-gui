@@ -123,6 +123,20 @@ struct NSWindow_struct
   return self;
 }
 
+- (void) removeSubview: (NSView*)aView
+{
+  RETAIN(aView);
+  /*
+   * If the content view is removed, we must let the window know.
+   */
+  [super removeSubview: aView];
+  if (aView == [_window contentView])
+    {
+      [_window setContentView: nil];
+    }
+  RELEASE(aView);
+}
+
 - (void) setBackgroundColor: (NSColor *)color
 {
   [self setNeedsDisplayInRect: contentRect];

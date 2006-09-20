@@ -1,3 +1,9 @@
+2006-09-20 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSWindowDecorationView.m: ([removeSubview:]) override to
+	check for removal of the window's content view and handle that
+	case so that the window knows the content view has gone.
+
 2006-09-17  Matt Rice <ratmice@yahoo.com>
 
 	* Source/NSDocument.m (-initWithContentsOfFile:ofType:): Set the
