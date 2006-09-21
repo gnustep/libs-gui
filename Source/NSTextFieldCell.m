@@ -176,16 +176,6 @@ static NSColor	*txtCol;
   return _text_color;
 }
 
-/** <p>Enables or Disables the cell. If disabling the cell, resets its string
-    value to an empty string.</p>
-*/
-- (void) setEnabled:(BOOL)flag
-{
-  [super setEnabled:flag];
-  if (flag == NO)
-    [self setStringValue:@""];
-}
-
 - (NSText *) setUpFieldEditorAttributes: (NSText *)textObject
 {
   textObject = [super setUpFieldEditorAttributes: textObject];
