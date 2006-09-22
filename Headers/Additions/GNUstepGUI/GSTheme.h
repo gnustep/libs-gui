@@ -24,15 +24,121 @@
    License along with this library; if not, write to the Free
    Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02111 USA.
-   */
+
+
+  <chapter>
+    <heading>The theme management system</heading>
+    <p>
+      The theme management system for the GNUstep GUI is based around the
+      [GSTheme] class, which provides support for loading of theme bundles
+      and methods for drawing common user interface elements.<br />
+      The theme system works in conjunction with a variety of other GUI
+      classes and is intended to eventually allow for very major changes
+      in GUI appearance and behavior.
+    </p>
+    <p>
+      Various design imperatives apply to the theme system, but probably
+      the key ones are:
+    </p>
+    <list>
+      <item>It should allow designers and other non-technical users to
+        easily develop new and interesting GUI styles likely to attract
+	new users to GNUstep.
+      </item>
+      <item>Using and switching between themes should be an easy and
+        pleasant experience ... so that people are not put off when they
+        try using themes.
+      </item>
+      <item>It should eventually permit a GNUstep application to
+        appear as a native application on ms-windows and other systems.
+      </item>
+    </list>
+    <p>
+      To attain these aims implies the recognition of some more specific
+      objectives and some possible technical solutions:
+    </p>
+    <list>
+      <item>We must have as simple as possible an API for the
+        functions handling the way GUI elements work and the way they
+	draw themselves.<br />
+	The standard OpenStep/MacOS-X API provides mechanisms for
+	controlling the colors used to draw controls (via [NSColor] and
+	[NSColorList]) and controlling the way controls behave
+	(NSInterfaceStyleForKey() and [NSResponder-interfaceStyle]),
+	but we need to extend that with methods to draw controls entirely
+	differently if required.
+      </item>
+      <item>We must have a GUI application for theme development.
+        It is not sufficient to provide an API if we want good graphic
+	designers and user interface specialists to develop themes
+	for us.
+      </item>
+      <item>It must be possible for an application to dynamically change
+        the theme in use while it is running and it should be easy for a
+	user to select between available themes.<br />
+	This implies that themes must be loadable bundles and that it
+	must always be possible to unload a theme as well as loading one.<br />
+	It suggests that the theme selection mechanism should be in every
+	application, perhaps as an extension to an existing panel such
+	as the info panel.
+      </item>
+    </list>
+    <section>
+      <heading>Types of theming</heading>
+      <p>
+        There are various aspects of theming which can be treated pretty
+	much separately, so there is no reason why a theme might not be
+	created which just employs one of these mechanisms.
+      </p>
+      <deflist>
+	<term>System images</term>
+	<desc>
+	  Possibly the simples theme change ... a theme might supply a
+	  new set of system images used for arrows and other icons that
+	  the GUI decorates controls with.
+	</desc>
+        <term>System colors</term>
+	<desc>
+	  A theme might simply define a new system color list, so that
+	  controls are drawn in a new color range, though they would
+	  still function the same way.  Even specifying new colors can
+	  make the GUI look quite different though.
+	</desc>
+	<term>Image tiling</term>
+	<desc>
+	  Controls might be given sets of images used as tiling to draw
+	  themselves rather than using the standard line drawing and
+	  color fill mechanisms.
+	</desc>
+	<term>Interface style</term>
+	<desc>
+	  A theme might supply a set of interface style keys for various
+	  controls, defining how those controls should behave subject to
+	  the limitation of the range of behaviors coded into the GUI
+	  library.
+	</desc>
+	<term>Method override</term>
+	<desc>
+	  A theme might actually provide code, in the form of a subclass
+	  of [GSTheme] such that drawing methods have completely custom
+	  behavior.
+	</desc>
+      </deflist>
+
+    </section>
+  </chapter>
+
+ */
 
 #ifndef _GNUstep_H_GSTheme
 #define _GNUstep_H_GSTheme
 
+#include <Foundation/NSObject.h>
 #include <Foundation/NSGeometry.h>
 // For gradient types
 #include "AppKit/NSButtonCell.h"
 
+#if	OS_API_VERSION(GS_API_NONE,GS_API_NONE)
 @class NSBundle;
 @class NSColor;
 @class GSDrawTiles;
@@ -280,4 +386,5 @@ withRepeatedImage: (NSImage*)image
 		  flipped: (BOOL)flipped;
 @end
 
+#endif /* OS_API_VERSION */
 #endif /* _GNUstep_H_GSTheme */

@@ -235,7 +235,7 @@ void initSystemColors(void)
 		     //black, @"windowFrameTextColor",
 		     nil];
   
-  systemColors = [NSColorList colorListNamed: @"System"];
+  systemColors = RETAIN([NSColorList colorListNamed: @"System"]);
   defaultSystemColors = [[NSColorList alloc] initWithName: @"System"];
   [NSColorList _setDefaultSystemColorList: defaultSystemColors];
   if (systemColors == nil)
