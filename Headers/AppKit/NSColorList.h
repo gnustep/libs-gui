@@ -65,7 +65,7 @@
 /**
  * Initializes a new, empty color list registered under given name.
  */
-- (id)initWithName:(NSString *)name;
+- (id) initWithName: (NSString *)name;
 
 /**
  * <p>Initializes a new color list registered under given name, taking
@@ -86,48 +86,78 @@
  * for now the only supported method is "0", which is an RGBA format with
  * the arguments in order R,G,B, A.</p>
  */
-- (id)initWithName:(NSString *)name
-	  fromFile:(NSString *)path;
+- (id) initWithName: (NSString *)name
+	   fromFile: (NSString *)path;
 
 //
 // Getting All Color Lists
 //
-+ (NSArray *)availableColorLists;
++ (NSArray *) availableColorLists;
 
-//
-// Getting a Color List by Name
-//
-+ (NSColorList *)colorListNamed:(NSString *)name;
-- (NSString *)name;
+/** Returns the first color list (from the array of available lists)
+ * matching name.
+ */
++ (NSColorList *) colorListNamed: (NSString *)name;
 
-//
-// Managing Colors by Key
-//
-- (NSArray *)allKeys;
-- (NSColor *)colorWithKey:(NSString *)key;
-- (void)insertColor:(NSColor *)color
-		key:(NSString *)key
-	    atIndex:(unsigned)location;
-- (void)removeColorWithKey:(NSString *)key;
-- (void)setColor:(NSColor *)aColor
-	  forKey:(NSString *)key;
+/** Returns an array containing all the keyus in the color list
+ */
+- (NSArray *) allKeys;
 
-//
-// Editing
-//
-- (BOOL)isEditable;
+/** Returns the color for the specified key (if any).
+ */
+- (NSColor *) colorWithKey: (NSString *)key;
 
-//
-// Writing and Removing Files
-//
-- (BOOL)writeToFile:(NSString *)path;
-- (void)removeFile;
+/**
+ * Returns a flag indicating whether the receiver is editable.
+ */
+- (BOOL) isEditable;
+
+/** Inserts a color into the color list at the specified index.
+ * Removes any other color with the same name.
+ */
+- (void) insertColor: (NSColor *)color
+		 key: (NSString *)key
+	     atIndex: (unsigned)location;
+
+/**
+ * Returns the name of the receiver.
+ */
+- (NSString *) name;
+
+/** Removes the color for the specified key from the list.
+ */
+- (void) removeColorWithKey: (NSString *)key;
+
+/** Removes the on-disk representation of the list.
+ */
+- (void) removeFile;
+
+/**
+ * Sets the color for this key and appends it to the color list.
+ */
+- (void) setColor: (NSColor *)aColor
+	   forKey: (NSString *)key;
+
+/**
+ * Writes the receiver to the specified path.<br />
+ * If path is nil, writes to a file located in the current user's personal
+ * Colors directory whose name is that of the list with the extension
+ * 'clr' appended.<br />
+ * If path is a directory, writes to a file in that directory whose name
+ * is that of the list with the extension 'clr' appended.<br />
+ * Otherwise (path is neither nil nor a directory), writes to the path
+ * without appending the l.ist name.<br />
+ * Returns YES on success, NO on failure.<br />
+ * Writing with a path of nil will cause the receiver to be added to the
+ * +availableColorLists if it is not already there.
+ */
+- (BOOL) writeToFile: (NSString *)path;
 
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder: (NSCoder *)aCoder;
-- initWithCoder: (NSCoder *)aDecoder;
+- (void) encodeWithCoder: (NSCoder *)aCoder;
+- (id) initWithCoder: (NSCoder *)aDecoder;
 
 @end
 

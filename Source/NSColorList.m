@@ -421,7 +421,7 @@ static NSColorList *themeColorList = nil;
    */
   [NSColorList _loadAvailableColorLists: nil];
 
-  if (path == nil || ([fm fileExistsAtPath: path isDirectory: &isDir] == NO))
+  if (path == nil)
     {
       NSArray	*paths;
 
@@ -437,6 +437,10 @@ static NSColorList *themeColorList = nil;
 	stringByAppendingPathComponent: @"Colors"]; 
       isDir = YES;
     }
+  else
+    {
+      [fm fileExistsAtPath: path isDirectory: &isDir];
+    }
 
   if (isDir)
     {
@@ -445,7 +449,6 @@ static NSColorList *themeColorList = nil;
     }
   else // it is a file
     {
-      _fullFileName = path;
       if ([[path pathExtension] isEqual: @"clr"] == YES)
 	{
 	  ASSIGN (_fullFileName, path);
@@ -455,11 +458,14 @@ static NSColorList *themeColorList = nil;
 	  ASSIGN (_fullFileName, [[path stringByDeletingPathExtension]
 	    stringByAppendingPathExtension: @"clr"]);
 	}
+      path = [path stringByDeletingLastPathComponent];
     }
 
   // Check if the path is a standard path
   if ([[path lastPathComponent] isEqualToString: @"Colors"] == NO)
-    path_is_standard = NO;
+    {
+      path_is_standard = NO;
+    }
   else 
     {
       tmpPath = [path stringByDeletingLastPathComponent];
@@ -500,7 +506,7 @@ static NSColorList *themeColorList = nil;
       return YES;
     }
   
-  return NO;
+  return success;
 }
 
 - (void) removeFile

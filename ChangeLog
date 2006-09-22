@@ -1,5 +1,11 @@
 2006-09-22 Richard Frith-Macdonald <rfm@gnu.org>
 
+	* Headers/AppKit/NSColorList.h: Add documentation.
+	* Source/NSColorList.m: Fix ([-writeToFile:]) to work as specified
+	by Apple's documentation.
+
+2006-09-22 Richard Frith-Macdonald <rfm@gnu.org>
+
 	* Headers/Additions/GNUstepGUI/GSDrawFunctions.h:
 	* Headers/Additions/GNUstepGUI/GSTheme.h:
 	* Source/GSDrawFunctions.m:
