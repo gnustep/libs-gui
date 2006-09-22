@@ -177,7 +177,7 @@ GSServicesManager.m \
 tiff.m \
 externs.m \
 linking.m \
-GSDrawFunctions.m \
+GSTheme.m \
 GSDragView.m \
 GSFontInfo.m \
 GSTable.m \
@@ -354,7 +354,7 @@ GUI_HEADERS = \
 GSVersion.h \
 GMAppKit.h \
 GMArchiver.h \
-GSDrawFunctions.h \
+GSTheme.h \
 GSFontInfo.h \
 GSMemoryPanel.h \
 GSInfoPanel.h \

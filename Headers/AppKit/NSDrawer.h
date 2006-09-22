@@ -47,12 +47,12 @@ enum {
 {
   // Attributes
   id _delegate;
-  NSView *_contentView;
-  NSWindow *_parentWindow;
+  id _drawerWindow;
   NSRectEdge _preferredEdge;
   NSRectEdge _currentEdge;
   NSSize _maxContentSize;
   NSSize _minContentSize;
+  NSSize _contentSize;
   float _leadingOffset;
   float _trailingOffset;
   int _state;

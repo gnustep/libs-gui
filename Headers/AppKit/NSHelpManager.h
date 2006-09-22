@@ -37,7 +37,8 @@
 @class NSAttributedString;
 
 @interface NSBundle (NSHelpManager)
-- (NSAttributedString*) contextHelpForKey: (NSString*) key;
+- (NSString *)pathForHelpResource:(NSString *)fileName;
+- (NSAttributedString *)contextHelpForKey:(NSString *)key;
 @end
 
 @interface NSApplication (NSHelpManager)
@@ -66,6 +67,8 @@
 - (NSAttributedString*) contextHelpForObject: (id)object;
 
 - (void) removeContextHelpForObject: (id)object;
+
+- (void)setContextHelp:(NSAttributedString *)help forObject:(id)object;
 
 - (void) setContextHelp: (NSAttributedString*) help withObject: (id) object;
 

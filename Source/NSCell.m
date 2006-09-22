@@ -60,7 +60,7 @@
 #include "AppKit/NSTextContainer.h"
 #include "AppKit/NSView.h"
 #include "AppKit/NSWindow.h"
-#include "GNUstepGUI/GSDrawFunctions.h"
+#include "GNUstepGUI/GSTheme.h"
 
 static Class	colorClass;
 static Class	cellClass;
@@ -1937,7 +1937,7 @@ static NSColor	*shadowCol;
     }
   else if (_cell.is_bezeled)
     {
-      [GSDrawFunctions drawWhiteBezel: cellFrame : NSZeroRect];
+      [[GSTheme theme] drawWhiteBezel: cellFrame withClip: NSZeroRect];
     }
 
   [self drawInteriorWithFrame: cellFrame inView: controlView];

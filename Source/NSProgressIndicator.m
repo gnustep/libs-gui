@@ -27,7 +27,7 @@
 #include "AppKit/NSProgressIndicator.h"
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSWindow.h"
-#include "GNUstepGUI/GSDrawFunctions.h"
+#include "GNUstepGUI/GSTheme.h"
 #include "GNUstepGUI/GSNibCompatibility.h"
 
 @implementation NSProgressIndicator
@@ -231,7 +231,7 @@ static NSColor *fillColour = nil;
    if (_isBezeled)
      {
        // Calc the inside rect to be drawn
-       r = [GSDrawFunctions drawGrayBezel: _bounds :rect];
+       r = [[GSTheme theme] drawGrayBezel: _bounds withClip: rect];
      }
    else
      r = _bounds;

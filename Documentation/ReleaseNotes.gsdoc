@@ -20,6 +20,29 @@
 	migrate to using a newer version of the library.
       </p>
       <section>
+	<heading>Version 0.11.0</heading>
+	  <deflist>
+	    <term>Keyed Encoding/Archiving</term>
+	    <desc>
+	    Support for keyed encoding has been added to all gui classes.
+	    </desc>
+	    <term>Nib loading</term>
+	    <desc>
+	    Nib loading has been implemented. For the most part, nibs
+            are (or should be) compatible between GNUstep and Mac OS X.
+	    </desc>
+	    <term>Color schemes and Themes</term>
+	    <desc>
+            Better support for color schemes and themes has been added. In
+            the near future theming should be integrated into gui itself.
+	    </desc>
+	    <term>RTFD</term>
+	    <desc>
+            Loading and writting of RTFD format was implemented.
+	    </desc>
+	  </deflist>
+      </section>
+      <section>
 	<heading>Version 0.10.3</heading>
 	  <deflist>
 	    <term>Horizontal menus</term>

@@ -30,7 +30,7 @@
 #include "AppKit/NSColor.h"
 #include "AppKit/NSWindow.h"
 #include "GNUstepGUI/GSDisplayServer.h"
-#include "GNUstepGUI/GSDrawFunctions.h"
+#include "GNUstepGUI/GSTheme.h"
 
 
 struct NSWindow_struct
@@ -39,20 +39,16 @@ struct NSWindow_struct
 };
 
 
-/*
-Manage window decorations by using the backend functions. This only works
-on backends that can handle window decorations.
-*/
+/* Manage window decorations by using the backend functions. This only works
+ * on backends that can handle window decorations.
+ */
 @interface GSBackendWindowDecorationView : GSWindowDecorationView
 @end
 
 
-/*
-GSWindowDecorationView implementation.
-*/
 @implementation GSWindowDecorationView
 
-+(id<GSWindowDecorator>) windowDecorator
++ (id<GSWindowDecorator>) windowDecorator
 {
   if ([GSCurrentServer() handlesWindowDecorations])
     return [GSBackendWindowDecorationView self];
@@ -61,22 +57,16 @@ GSWindowDecorationView implementation.
 }
 
 
-+(id) newWindowDecorationViewWithFrame: (NSRect)frame
-				window: (NSWindow *)aWindow
++ (id) newWindowDecorationViewWithFrame: (NSRect)frame
+				 window: (NSWindow *)aWindow
 {
   return [[self alloc] initWithFrame: frame
 			      window: aWindow];
 }
 
 
-+(void) offsets: (float *)l : (float *)r : (float *)t : (float *)b
-   forStyleMask: (unsigned int)stylek
-{
-  [self subclassResponsibility: _cmd];
-}
-
-+(void) screenOffsets: (float *)l : (float *)r : (float *)t : (float *)b
-   forStyleMask: (unsigned int)style
++ (void) offsets: (float *)l : (float *)r : (float *)t : (float *)b
+    forStyleMask: (unsigned int)style
 {
   [self subclassResponsibility: _cmd];
 }
@@ -86,8 +76,7 @@ GSWindowDecorationView implementation.
 {
   float t, b, l, r;
 
-  [self offsets: &l : &r : &t : &b
-   forStyleMask: aStyle];
+  [self offsets: &l : &r : &t : &b forStyleMask: aStyle];
   aRect.size.width -= l + r;
   aRect.size.height -= t + b;
   aRect.origin.x += l;
@@ -100,40 +89,11 @@ GSWindowDecorationView implementation.
 {
   float t, b, l, r;
 
-  [self offsets: &l : &r : &t : &b
-   forStyleMask: aStyle];
+  [self offsets: &l : &r : &t : &b forStyleMask: aStyle];
   aRect.size.width += l + r;
   aRect.size.height += t + b;
   aRect.origin.x -= l;
   aRect.origin.y -= b;
-  return aRect;
-}
-
-+ (NSRect) screenRectForFrameRect: (NSRect)aRect
-			styleMask: (unsigned int)aStyle
-{
-  float t, b, l, r;
-
-  [self screenOffsets: &l : &r : &t : &b
-	 forStyleMask: aStyle];
-  aRect.size.width += l + r;
-  aRect.size.height += t + b;
-  aRect.origin.x -= l;
-  aRect.origin.y -= b;
-  return aRect;
-}
-
-+ (NSRect) frameRectForScreenRect: (NSRect)aRect
-			styleMask: (unsigned int)aStyle
-{
-  float t, b, l, r;
-
-  [self screenOffsets: &l : &r : &t : &b
-	 forStyleMask: aStyle];
-  aRect.size.width -= l + r;
-  aRect.size.height -= t + b;
-  aRect.origin.x += l;
-  aRect.origin.y += b;
   return aRect;
 }
 
@@ -145,73 +105,42 @@ GSWindowDecorationView implementation.
 }
 
 
-/*
-Internal helpers.
-
-Returns the internal window frame rect for a given (screen) frame.
-*/
-+(NSRect) windowFrameRectForFrameRect: (NSRect)aRect
-			    styleMask: (unsigned int)aStyle
-{
-  aRect.origin = NSZeroPoint;
-  return aRect;
-}
-
-/*
-Returns the content rect for a given window frame.
-*/
-+(NSRect) contentRectForWindowFrameRect: (NSRect)aRect
-			      styleMask: (unsigned int)aStyle
-{
-  return [self contentRectForFrameRect: aRect  styleMask: aStyle];
-}
-
-
-- initWithFrame: (NSRect)frame
+- (id) initWithFrame: (NSRect)frame
 {
   NSAssert(NO, @"Tried to create GSWindowDecorationView without a window!");
   return nil;
 }
 
-- initWithFrame: (NSRect)frame
-	 window: (NSWindow *)w
+- (id) initWithFrame: (NSRect)frame
+	      window: (NSWindow *)w
 {
-  frame = [isa windowFrameRectForFrameRect: frame
-				 styleMask: [w styleMask]];
-
   self = [super initWithFrame: frame];
-  if (!self)
-    return nil;
-    
-  window = w;
-  contentRect = frame;
-  contentRect =
-    [isa contentRectForWindowFrameRect: contentRect
-			     styleMask: [window styleMask]];
-
+  if (self != nil)
+    {
+      contentRect = [isa contentRectForFrameRect: frame
+				       styleMask: [w styleMask]];
+      window = w;
+    }
   return self;
 }
 
-/*
- * Special setFrame: implementation - a minimal autoresize mechanism
- */
-- (void) setFrame: (NSRect)frameRect
+- (void) removeSubview: (NSView*)aView
 {
-  NSSize oldSize = _frame.size;
-  NSView *cv = [_window contentView];
+  RETAIN(aView);
+  /*
+   * If the content view is removed, we must let the window know.
+   */
+  [super removeSubview: aView];
+  if (aView == [_window contentView])
+    {
+      [_window setContentView: nil];
+    }
+  RELEASE(aView);
+}
 
-  frameRect = [isa windowFrameRectForFrameRect: frameRect
-				     styleMask: [window styleMask]];
-
-  _autoresizes_subviews = NO;
-  [super setFrame: frameRect];
-
-  contentRect = [isa contentRectForWindowFrameRect: frameRect
-					 styleMask: [window styleMask]];
-
-  // Safety Check.
-  [cv setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
-  [cv resizeWithOldSuperviewSize: oldSize];
+- (void) setBackgroundColor: (NSColor *)color
+{
+  [self setNeedsDisplayInRect: contentRect];
 }
 
 - (void) setContentView: (NSView *)contentView
@@ -229,7 +158,46 @@ Returns the content rect for a given window frame.
 					   contentRect.origin.y)];
 }
 
--(void) setWindowNumber: (int)theWindowNumber
+- (void) setDocumentEdited: (BOOL)flag
+{
+  documentEdited = flag;
+  if (windowNumber)
+    [GSServerForWindow(window) docedited: documentEdited : windowNumber];
+}
+
+/*
+ * Special setFrame: implementation - a minimal autoresize mechanism
+ */
+- (void) setFrame: (NSRect)frameRect
+{
+  NSSize oldSize = _frame.size;
+  NSView *cv = [_window contentView];
+
+  _autoresizes_subviews = NO;
+  [super setFrame: frameRect];
+
+  contentRect = [isa contentRectForFrameRect: frameRect
+				   styleMask: [window styleMask]];
+
+  // Safety Check.
+  [cv setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+  [cv resizeWithOldSuperviewSize: oldSize];
+}
+
+- (void) setInputState: (int)state
+{
+  inputState = state;
+  if (windowNumber)
+    [GSServerForWindow(window) setinputstate: inputState : windowNumber];
+}
+
+- (void) setTitle: (NSString *)title
+{
+  if (windowNumber)
+    [GSServerForWindow(window) titlewindow: title : windowNumber];
+}
+
+- (void) setWindowNumber: (int)theWindowNumber
 {
   windowNumber = theWindowNumber;
   if (!windowNumber)
@@ -240,29 +208,6 @@ Returns the content rect for a given window frame.
   [GSServerForWindow(window) docedited: documentEdited : windowNumber];
 }
 
--(void) setTitle: (NSString *)title
-{
-  if (windowNumber)
-    [GSServerForWindow(window) titlewindow: title : windowNumber];
-}
--(void) setInputState: (int)state
-{
-  inputState = state;
-  if (windowNumber)
-    [GSServerForWindow(window) setinputstate: inputState : windowNumber];
-}
--(void) setDocumentEdited: (BOOL)flag
-{
-  documentEdited = flag;
-  if (windowNumber)
-    [GSServerForWindow(window) docedited: documentEdited : windowNumber];
-}
-
--(void) setBackgroundColor: (NSColor *)color
-{
-  [self setNeedsDisplayInRect: contentRect];
-}
-
 
 - (BOOL) isOpaque
 {
@@ -271,24 +216,19 @@ Returns the content rect for a given window frame.
 
 - (void) drawRect: (NSRect)rect
 {
-  //NSColor *c = [_window backgroundColor];
-
   if (NSIntersectsRect(rect, contentRect))
     {
-    //  [c set];
-    //  NSRectFill(contentRect);
-      [[GSDrawFunctions theme] drawWindowBackground: contentRect view: self];
+      [[GSTheme theme] drawWindowBackground: contentRect view: self];
     }
 }
 
-
-
-- initWithCoder: (NSCoder*)aCoder
+- (id) initWithCoder: (NSCoder*)aCoder
 {
   NSAssert(NO, @"The top-level window view should never be encoded.");
   return nil;
 }
--(void) encodeWithCoder: (NSCoder*)aCoder
+
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
   NSAssert(NO, @"The top-level window view should never be encoded.");
 }
@@ -299,14 +239,8 @@ Returns the content rect for a given window frame.
 
 @implementation GSBackendWindowDecorationView
 
-+(void) offsets: (float *)l : (float *)r : (float *)t : (float *)b
-   forStyleMask: (unsigned int)style
-{
-  *l = *r = *t = *b = 0.0;
-}
-
-+(void) screenOffsets: (float *)l : (float *)r : (float *)t : (float *)b
-   forStyleMask: (unsigned int)style
++ (void) offsets: (float *)l : (float *)r : (float *)t : (float *)b
+    forStyleMask: (unsigned int)style
 {
   [GSCurrentServer() styleoffsets: l : r : t : b : style];
 }
@@ -316,25 +250,6 @@ Returns the content rect for a given window frame.
 {
   /* TODO: we could at least guess... */
   return 0.0;
-}
-
-+(NSRect) windowFrameRectForFrameRect: (NSRect)aRect
-			    styleMask: (unsigned int)aStyle
-{
-  float l, r, t, b;
-  [self offsets: &l : &r : &t : &b forStyleMask: aStyle];
-  aRect.size.width -= l + r;
-  aRect.size.height -= t + b;
-  return aRect;
-}
-
-/*
-Returns the content rect for a given window frame.
-*/
-+(NSRect) contentRectForWindowFrameRect: (NSRect)aRect
-			      styleMask: (unsigned int)aStyle
-{
-  return aRect;
 }
 
 @end

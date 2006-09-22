@@ -215,7 +215,11 @@
 	  <desc>
           <p>
           An interface style specific to menu operation. If not set
-          the NSInterfaceStyleDefault value is used. 
+          the NSInterfaceStyleDefault value is used. <br />
+	  Setting this to NSMacintoshInterfaceStyle produces a horizontal
+	  menu at the top of the screen.<br />
+	  Setting it to NSNextStepInterfaceStyle reverts to the defaults
+	  vertical menu layout.
           </p>
 	  </desc>
 	  <term>NSCommandKeys</term>
@@ -282,6 +286,15 @@
 	  directory. This color list can also be manipulated through the
 	  NSColorList class (typically through a preferences module).
           </p>
+	  <p>
+	  Individual system colors may be set by specifying the name of
+	  the system color and giving it a value consisting of aan RGB
+	  color specification (three floating point numbers in the range
+	  0.0 to 1.0 and separated by spaces).<br />
+	  eg.<br />
+	  'defaults write NSGlobalDomain controlBackgroundColor "1.0 0.0 0.0"'
+          </p>
+
 	  </desc>
 	  <term><em>System Fonts</em></term>
 	  <desc>

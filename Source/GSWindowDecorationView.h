@@ -39,10 +39,6 @@
 			 styleMask: (unsigned int)aStyle;
 - (NSRect) frameRectForContentRect: (NSRect)aRect
 			 styleMask: (unsigned int)aStyle;
-- (NSRect) screenRectForFrameRect: (NSRect)aRect
-			styleMask: (unsigned int)aStyle;
-- (NSRect) frameRectForScreenRect: (NSRect)aRect
-			styleMask: (unsigned int)aStyle;
 - (float) minFrameWidthWithTitle: (NSString *)aTitle
 		       styleMask: (unsigned int)aStyle;
 @end
@@ -63,23 +59,22 @@ this, either directly, or indirectly (by using the backend).
   int inputState;
   BOOL documentEdited;
 }
-+(id<GSWindowDecorator>) windowDecorator;
++ (id<GSWindowDecorator>) windowDecorator;
 
-- initWithFrame: (NSRect)frame
-	 window: (NSWindow *)w;
+- (id) initWithFrame: (NSRect)frame window: (NSWindow *)w;
 
--(void) setContentView: (NSView *)contentView;
+- (void) setBackgroundColor: (NSColor *)color;
+- (void) setContentView: (NSView *)contentView;
+- (void) setDocumentEdited: (BOOL)flag;
+- (void) setInputState: (int)state;
+- (void) setTitle: (NSString *)title;
 
 /*
 Called when the backend window is created or destroyed. When it's destroyed,
 windowNumber will be 0.
 */
--(void) setWindowNumber: (int)windowNumber;
+- (void) setWindowNumber: (int)windowNumber;
 
--(void) setTitle: (NSString *)title;
--(void) setInputState: (int)state;
--(void) setDocumentEdited: (BOOL)flag;
--(void) setBackgroundColor: (NSColor *)color;
 @end
 
 

@@ -307,7 +307,12 @@ static NSMutableArray *screenArray = nil;
   switch (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil))
     {
       case NSMacintoshInterfaceStyle:
-	if ([NSApp mainMenu] != nil)
+	if ([NSApp mainMenu] == nil)
+	  {
+	    // No menu yet ... assume a standard height
+	    visFrame.size.height -= 23.0;
+	  }
+	else
 	  {
 	    float menuHeight = [[[NSApp mainMenu] window] frame].size.height;
 

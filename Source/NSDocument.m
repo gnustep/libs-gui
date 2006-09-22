@@ -94,12 +94,10 @@
   self = [self init];
   if (self != nil)
     {
-      if ([self readFromFile: fileName ofType: fileType])
-	{
-	  [self setFileType: fileType];
-	  [self setFileName: fileName];
-	}
-      else
+      [self setFileType: fileType];
+      [self setFileName: fileName];
+      
+      if (![self readFromFile: fileName ofType: fileType])
 	{
 	  NSRunAlertPanel (_(@"Load failed"),
 			   _(@"Could not load file %@."),

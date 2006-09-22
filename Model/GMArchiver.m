@@ -238,7 +238,7 @@
     return @"nil";
   }
   else {
-    id label;
+    NSString *label;
     id upperObjectRepresentation;
 
     anObject = [anObject replacementObjectForModelArchiver: self];
@@ -258,7 +258,7 @@
       }
     }
 
-    if (!label) {
+    if (label == nil) {
       Class archiveClass;
 
       /* If the object gets encoded on the top level, set the label to be
@@ -577,7 +577,7 @@
 
 - (NSString*) classNameEncodedForTrueClassName: (NSString*)trueName
 {
-  id inArchiveName = [(id)NSMapGet(classes, trueName) className];
+  NSString *inArchiveName = [(id)NSMapGet(classes, trueName) className];
 
   return inArchiveName ? inArchiveName : trueName;
 }

@@ -21,7 +21,8 @@
    
    You should have received a copy of the GNU Library General Public
    License along with this library; if not, write to the Free
-   Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02111 USA.
+   Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02111 USA.
    */
 
 #include <Foundation/NSArray.h>
@@ -278,7 +279,9 @@ GSCurrentServer(void)
   return nil;
 }
 
-
+/** Returns YES if the backend handles window decorations and NO
+ * if the gui library must do that instead.
+ */
 - (BOOL) handlesWindowDecorations
 {
   return YES;
@@ -516,13 +519,15 @@ GSCurrentServer(void)
 
 /** Creates a window whose location and size is described by frame and
     whose backing store is described by type. This window is not
-    mapped to the screen by this call.
+    mapped to the screen by this call.<br />
 
-    Note that frame is the frame of the drawable window and does not include
-    any external window decorations. If handlesWindowDecorations returns YES,
-    a window manager (or something equivalent) might add decorations outside
-    the drawable window. Use -styleoffsets::::: to determine the extent of
-    those decorations.
+    Note that frame is the frame of the entire GNUstep window including
+    borders, titlebar and other standard decorations.<br />
+    If -handlesWindowDecorations returns YES, the backend will produce
+    (and return the identifier of) a smaller drawable window inside this
+    decorated area.<br />
+    Use -styleoffsets::::: to determine the extent of the decorations
+    and determine the size of the drawable area inside them.
 */
 - (int) window: (NSRect)frame : (NSBackingStoreType)type : (unsigned int)style
 {
@@ -549,8 +554,11 @@ GSCurrentServer(void)
 
 /** Create all the backend structures for a reference to a native window and 
     return the extend, backing type, style and screen for that window. */ 
-- (int) nativeWindow: (void *)winref : (NSRect*)frame : (NSBackingStoreType*)type 
-		    : (unsigned int*)style : (int*)screen
+- (int) nativeWindow: (void *)winref
+		    : (NSRect*)frame
+		    : (NSBackingStoreType*)type 
+		    : (unsigned int*)style
+		    : (int*)screen
 {
   [self subclassResponsibility: _cmd];
   return 0;
@@ -612,19 +620,31 @@ GSCurrentServer(void)
   [self subclassResponsibility: _cmd];
 }
 
-/** Moves the bottom left cornder of the window to loc */
+/** Moves the bottom left corner of the window (including any border)
+ * to loc.<br />
+ * The position is expressed as an offset from the bottom left
+ * corner of the screen.
+ */ 
 - (void) movewindow: (NSPoint)loc : (int) win
 {
   [self subclassResponsibility: _cmd];
 }
 
-/** Moves and resizes the window on the screen as described by frame. */
+/** Moves and resizes the window on the screen as described by frame.
+ * The value of frame is a rectangle containing the entire window, including
+ * any border/decorations.  Its position is expressed as an offset from
+ * the bottom left corner of the screen.
+ */
 - (void) placewindow: (NSRect)frame : (int) win
 {
   [self subclassResponsibility: _cmd];
 }
 
-/** Returns the frame of the window on the screen */
+/** Returns the frame of the window on the screen.<br />
+ * The value of frame is a rectangle containing the entire window, including
+ * any border/decorations.  Its position is expressed as an offset from
+ * the bottom left corner of the screen.
+ */
 - (NSRect) windowbounds: (int) win
 {
   [self subclassResponsibility: _cmd];
@@ -658,13 +678,13 @@ GSCurrentServer(void)
   return 0;
 }
 
-/** Set the maximum size of the window */
+/** Set the maximum size (pixels) of the window */
 - (void) setmaxsize: (NSSize)size : (int) win
 {
   [self subclassResponsibility: _cmd];
 }
 
-/** Set the minimum size of the window */
+/** Set the minimum size (pixels) of the window */
 - (void) setminsize: (NSSize)size : (int) win
 {
   [self subclassResponsibility: _cmd];
@@ -676,18 +696,22 @@ GSCurrentServer(void)
   [self subclassResponsibility: _cmd];
 }
 
-/** Causes buffered graphics to be flushed to the screen */
+/** Causes buffered graphics to be flushed to the screen.
+ * The value of rect is expressed in OpenStep window coordinates.
+ */
 - (void) flushwindowrect: (NSRect)rect : (int) win
 {
   [self subclassResponsibility: _cmd];
 }
 
-/** Returns the dimensions of window decorations added outside the drawable
-    window frame by a window manager or equivalent. For instance, t
-    gives the height of the title bar for the window. The values returned
-    may be approximations. If handlesWindowDecorations returns NO, there
-    are no decorations outside the drawable window frame and this method
-    shouldn't be called. */
+/**
+ * Returns the dimensions of window decorations added outside the drawable
+ * window frame by a window manager or equivalent. For instance, t
+ * gives the height of the title bar for the window.<br />
+ * If -handlesWindowDecorations returns NO, there
+ * are no decorations outside the drawable window frame and this method
+ * shouldn't be called.
+ * */
 - (void) styleoffsets: (float*) l : (float*) r : (float*) t : (float*) b 
 		     : (unsigned int) style
 {
@@ -722,8 +746,11 @@ GSCurrentServer(void)
 }
 
 /** Returns the current mouse location on the default screen. If the
-    pointer is not on the default screen, an invalid point (-1,-1} is
-    returned. */
+ * pointer is not on the default screen, an invalid point (-1,-1} is
+ * returned.<br />
+ * The location is expressed as an offset from the bottom left corner
+ * of the screen.
+ */
 - (NSPoint) mouselocation
 {
   [self subclassResponsibility: _cmd];
@@ -731,10 +758,13 @@ GSCurrentServer(void)
 }
 
 /** Returns the current mouse location on aScreen. If the pointer is
-    not on aScreen, this method acts like -mouselocation. If aScreen is -1,
-    then the location of the mouse on any screen is returned. The
-    win pointer returns the window number of the GNUstep window
-    that the mouse is in or 0 if it is not in a window. */
+ * not on aScreen, this method acts like -mouselocation. If aScreen is -1,
+ * then the location of the mouse on any screen is returned. The
+ * win pointer returns the window number of the GNUstep window
+ * that the mouse is in or 0 if it is not in a window.<br />
+ * The location is expressed as an offset from the bottom left corner
+ * of the screen.
+ */
 - (NSPoint) mouseLocationOnScreen: (int)aScreen window: (int *)win
 {
   [self subclassResponsibility: _cmd];
@@ -802,6 +832,16 @@ GSCurrentServer(void)
 /* GNUstep Event Operations */
 /* ----------------------------------------------------------------------- */
 @implementation GSDisplayServer (EventOps)
+
+/**
+ * Scans through the event queue to find the first event whose type matches
+ * mask.  If no event is found, then the current run loop is run in the
+ * specified mode to allow more events to arrive.<br />
+ * If a matching event is found, it is returned and either removed from or
+ * left in the queue according to flag.<br />
+ * If no matching event is found and the limit date is reached, this method
+ * returns nil.
+ */
 - (NSEvent*) getEventMatchingMask: (unsigned)mask
 		       beforeDate: (NSDate*)limit
 			   inMode: (NSString*)mode
@@ -853,7 +893,7 @@ GSCurrentServer(void)
 	}
 
       /*
-       * Note the positon we have read up to.
+       * Note the position we have read up to.
        */
       pos += i;
 
@@ -884,6 +924,11 @@ GSCurrentServer(void)
   return nil;	/* No events in specified time	*/
 }
 
+/**
+ * Steps through the event queue and removes all events whose timestamp
+ * is earlier than that of limit wand which match the supplied mask
+ * of event types.
+ */
 - (void) discardEventsMatchingMask: (unsigned)mask
 		       beforeEvent: (NSEvent*)limit
 {
@@ -906,14 +951,20 @@ GSCurrentServer(void)
 
 	  if ([event timestamp] < when)
 	    {	
-	      if ((mask == NSAnyEventMask) ||
-		  (mask & NSEventMaskFromType([event type])))
-		[event_queue removeObjectAtIndex: index];
+	      if ((mask == NSAnyEventMask)
+		|| (mask & NSEventMaskFromType([event type])))
+		{
+		  [event_queue removeObjectAtIndex: index];
+		}
 	    }
 	}
     }
 }
 
+/** Posts an event to the event queue.  The value of flag determines
+ * whether the event is inserted at the start of the queue or appended
+ * at the end.
+ */
 - (void) postEvent: (NSEvent*)anEvent atStart: (BOOL)flag
 {
   if (flag)

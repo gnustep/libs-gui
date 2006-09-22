@@ -29,6 +29,7 @@
 
 #include "config.h"
 #include <Foundation/NSNotification.h>
+#include <Foundation/NSNotificationQueue.h>
 #include <Foundation/NSLock.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSArchiver.h>
@@ -43,80 +44,49 @@
 #include "AppKit/NSColor.h"
 #include "AppKit/AppKitExceptions.h"
 
-// The list of available color lists is created only once -- this has
-// a drawback, that you need to restart your program to get the color
-// lists read again.
-static NSMutableArray *_gnustep_available_color_lists = nil;
-static NSLock *_gnustep_color_list_lock = nil;
+// The list of available color lists is cached and re-loaded only
+// after a time.
+static NSMutableArray *_availableColorLists = nil;
+static NSLock *_colorListLock = nil;
+
+static NSColorList *defaultSystemColorList = nil;
+static NSColorList *themeColorList = nil;
+
+@interface NSColorList (GNUstepPrivate)
+
+/* Loads the available color lists from standard directories.<br />
+ * If called with a nil argument, this will check to see if the
+ * lists have already been loaded, and only load if they haven't been.
+ */
++ (void) _loadAvailableColorLists: (NSNotification*)aNotification;
+
+/* Set the default system color list ... to be used if no system color
+ * list has been loaded from file.  This should always be the last of
+ * the array of available color lists even though it has noit been
+ * written to file.
+ */
++ (void) _setDefaultSystemColorList: (NSColorList*)aList;
+
+/* Set the theme system color list ... if this is not nil, it is placed
+ * at the start of the array of available lists and is used as the system
+ * color list.
+ */
++ (void) _setThemeSystemColorList: (NSColorList*)aList;
+
+@end
 
 @implementation NSColorList
 
 //
 // Class methods
 //
-+ (void)initialize
++ (void) initialize
 {
   if (self == [NSColorList class])
     {
       [self setVersion: 2];
+      _colorListLock = [NSRecursiveLock new];
     }
-}
-
-/*
- * Private Method which loads the color lists. 
- * Invoke if _gnustep_available_color_lists == nil 
- * before any operation with that object or its lock.
- *
- * The aim is to defer reading the available color lists 
- * till we really need to, so that only programs which really use 
- * this feature get the overhead.
- */
-+ (void) _loadAvailableColorLists
-{
-  NSString		*dir;
-  NSString		*file;
-  NSEnumerator		*e;
-  NSFileManager		*fm = [NSFileManager defaultManager];
-  NSDirectoryEnumerator	*de;
-  NSColorList		*newList;
-
-  // Create the global array of color lists
-  _gnustep_available_color_lists = [[NSMutableArray alloc] init];
-  
-  /*
-   * Load color lists found in standard paths into the array
-   * FIXME: Check exactly where in the directory tree we should scan.
-   */
-  e = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
-    NSAllDomainsMask, YES) objectEnumerator];
-
-  while ((dir = (NSString *)[e nextObject])) 
-    {
-      BOOL flag;
-
-      dir = [dir stringByAppendingPathComponent: @"Colors"];
-      if (![fm fileExistsAtPath: dir isDirectory: &flag] || !flag)
-        {
-	  // Only process existing directories
-	  continue;
-	}
-
-      de = [fm enumeratorAtPath: dir];
-      while ((file = [de nextObject])) 
-	{
-	  if ([[file pathExtension] isEqualToString: @"clr"])
-	    {
-	      NSString *name = [file stringByDeletingPathExtension];
-	      newList = [[NSColorList alloc] initWithName: name
-                fromFile: [dir stringByAppendingPathComponent: file]];
-	      [_gnustep_available_color_lists addObject: newList];
-	      RELEASE(newList);
-	    }
-	}
-    }  
-  
-  // And create its access lock
-  _gnustep_color_list_lock = [[NSLock alloc] init];
 }
 
 /*
@@ -126,15 +96,11 @@ static NSLock *_gnustep_color_list_lock = nil;
 {
   NSArray	*a;
 
-  if (_gnustep_available_color_lists == nil)
-    [NSColorList _loadAvailableColorLists];
-  
   // Serialize access to color list
-  [_gnustep_color_list_lock lock];
-
-  a =  [NSArray arrayWithArray: _gnustep_available_color_lists];
-
-  [_gnustep_color_list_lock unlock];
+  [_colorListLock lock];
+  [NSColorList _loadAvailableColorLists: nil];
+  a =  [NSArray arrayWithArray: _availableColorLists];
+  [_colorListLock unlock];
 
   return a;
 }
@@ -146,31 +112,25 @@ static NSLock *_gnustep_color_list_lock = nil;
 {
   NSColorList  *r;
   NSEnumerator *e;
-  BOOL         found = NO;
-
-  if (_gnustep_available_color_lists == nil)
-    [NSColorList _loadAvailableColorLists];
 
   // Serialize access to color list
-  [_gnustep_color_list_lock lock];
+  [_colorListLock lock];
 
-  e = [_gnustep_available_color_lists objectEnumerator];
+  [NSColorList _loadAvailableColorLists: nil];
+  e = [_availableColorLists objectEnumerator];
   
-  while ((r = (NSColorList *)[e nextObject])) 
+  while ((r = (NSColorList *)[e nextObject]) != nil) 
     {
       if ([[r name] isEqualToString: name])
 	{
-	  found = YES;
+	  RETAIN(r);
 	  break;
 	}
     }
   
-  [_gnustep_color_list_lock unlock];
+  [_colorListLock unlock];
 
-  if (found)
-    return r;
-  else
-    return nil;
+  return AUTORELEASE(r);
 }
 
 
@@ -371,6 +331,8 @@ static NSLock *_gnustep_color_list_lock = nil;
 		 key: (NSString *)key
 	     atIndex: (unsigned)location
 {
+  NSNotification	*n;
+
   if (_is_editable == NO)
     [NSException raise: NSColorListNotEditableException
 		format: @"Color list cannot be edited\n"];
@@ -379,13 +341,20 @@ static NSLock *_gnustep_color_list_lock = nil;
   [_orderedColorKeys removeObject: key];
   [_orderedColorKeys insertObject: key atIndex: location];
   
-  [[NSNotificationCenter defaultCenter] 
-    postNotificationName: NSColorListChangedNotification
-    object: self];
+  n = [NSNotification notificationWithName: NSColorListChangedNotification
+				    object: self
+				  userInfo: nil];
+  [[NSNotificationQueue defaultQueue] 
+    enqueueNotification: n
+	   postingStyle: NSPostASAP
+	   coalesceMask: NSNotificationCoalescingOnSender
+	       forModes: nil];
 }
 
 - (void) removeColorWithKey: (NSString *)key
 {
+  NSNotification	*n;
+
   if (_is_editable == NO)
     [NSException raise: NSColorListNotEditableException
 		format: @"Color list cannot be edited\n"];
@@ -393,14 +362,21 @@ static NSLock *_gnustep_color_list_lock = nil;
   [_colorDictionary removeObjectForKey: key];
   [_orderedColorKeys removeObject: key];
 
-  [[NSNotificationCenter defaultCenter] 
-    postNotificationName: NSColorListChangedNotification
-    object: self];
+  n = [NSNotification notificationWithName: NSColorListChangedNotification
+				    object: self
+				  userInfo: nil];
+  [[NSNotificationQueue defaultQueue] 
+    enqueueNotification: n
+	   postingStyle: NSPostASAP
+	   coalesceMask: NSNotificationCoalescingOnSender
+	       forModes: nil];
 }
 
 - (void) setColor: (NSColor *)aColor
 	   forKey: (NSString *)key
 {
+  NSNotification	*n;
+
   if (_is_editable == NO)
     [NSException raise: NSColorListNotEditableException
 		format: @"Color list cannot be edited\n"];
@@ -410,9 +386,14 @@ static NSLock *_gnustep_color_list_lock = nil;
   if ([_orderedColorKeys containsObject: key] == NO)
     [_orderedColorKeys addObject: key];
 
-  [[NSNotificationCenter defaultCenter] 
-    postNotificationName: NSColorListChangedNotification
-    object: self];
+  n = [NSNotification notificationWithName: NSColorListChangedNotification
+				    object: self
+				  userInfo: nil];
+  [[NSNotificationQueue defaultQueue] 
+    enqueueNotification: n
+	   postingStyle: NSPostASAP
+	   coalesceMask: NSNotificationCoalescingOnSender
+	       forModes: nil];
 }
 
 /*
@@ -438,8 +419,7 @@ static NSLock *_gnustep_color_list_lock = nil;
    * We need to initialize before saving, to avoid the new file being 
    * counted as a different list thus making us appear twice
    */
-  if (_gnustep_available_color_lists == nil)
-    [NSColorList _loadAvailableColorLists];
+  [NSColorList _loadAvailableColorLists: nil];
 
   if (path == nil || ([fm fileExistsAtPath: path isDirectory: &isDir] == NO))
     {
@@ -513,10 +493,10 @@ static NSLock *_gnustep_color_list_lock = nil;
 
   if (success && path_is_standard)
     {
-      [_gnustep_color_list_lock lock];
-      if ([_gnustep_available_color_lists containsObject: self] == NO)
-	[_gnustep_available_color_lists addObject: self];
-      [_gnustep_color_list_lock unlock];      
+      [_colorListLock lock];
+      if ([_availableColorLists containsObject: self] == NO)
+	[_availableColorLists addObject: self];
+      [_colorListLock unlock];      
       return YES;
     }
   
@@ -532,12 +512,9 @@ static NSLock *_gnustep_color_list_lock = nil;
 					       handler: nil];
       
       // Remove the color list from the global list of colors
-      if (_gnustep_available_color_lists == nil)
-	[NSColorList _loadAvailableColorLists];
-
-      [_gnustep_color_list_lock lock];
-      [_gnustep_available_color_lists removeObject: self];
-      [_gnustep_color_list_lock unlock];
+      [_colorListLock lock];
+      [_availableColorLists removeObject: self];
+      [_colorListLock unlock];
 
       // Reset file name
       _fullFileName = nil;
@@ -558,6 +535,120 @@ static NSLock *_gnustep_color_list_lock = nil;
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_orderedColorKeys];
 
   return self;
+}
+
+@end
+
+@implementation NSColorList (GNUstepPrivate)
+
++ (void) _loadAvailableColorLists: (NSNotification*)aNotification
+{
+  [_colorListLock lock];
+  /* FIXME ... we should ensure that we get housekeeping notifications */
+  if (_availableColorLists != nil && aNotification == nil)
+    {
+      // Nothing to do ... already loaded
+      [_colorListLock unlock];
+    }
+  else
+    {
+      NSString			*dir;
+      NSString			*file;
+      NSEnumerator		*e;
+      NSFileManager		*fm = [NSFileManager defaultManager];
+      NSDirectoryEnumerator	*de;
+      NSColorList		*newList;
+
+      if (_availableColorLists == nil)
+	{
+	  // Create the global array of color lists
+	  _availableColorLists = [[NSMutableArray alloc] init];
+	}
+      else
+	{
+	  [_availableColorLists removeAllObjects];
+	}
+      
+      /*
+       * Keep any pre-loaded system color list.
+       */
+      if (themeColorList != nil)
+	{
+	  [_availableColorLists addObject: themeColorList];
+	}
+
+      /*
+       * Load color lists found in standard paths into the array
+       * FIXME: Check exactly where in the directory tree we should scan.
+       */
+      e = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+	NSAllDomainsMask, YES) objectEnumerator];
+
+      while ((dir = (NSString *)[e nextObject])) 
+	{
+	  BOOL flag;
+
+	  dir = [dir stringByAppendingPathComponent: @"Colors"];
+	  if (![fm fileExistsAtPath: dir isDirectory: &flag] || !flag)
+	    {
+	      // Only process existing directories
+	      continue;
+	    }
+
+	  de = [fm enumeratorAtPath: dir];
+	  while ((file = [de nextObject])) 
+	    {
+	      if ([[file pathExtension] isEqualToString: @"clr"])
+		{
+		  NSString	*name;
+
+		  name = [file stringByDeletingPathExtension];
+		  newList = [[NSColorList alloc] initWithName: name
+		    fromFile: [dir stringByAppendingPathComponent: file]];
+		  [_availableColorLists addObject: newList];
+		  RELEASE(newList);
+		}
+	    }
+	}  
+
+      if (defaultSystemColorList != nil)
+        {
+	  [_availableColorLists addObject: defaultSystemColorList];
+	}
+      [_colorListLock unlock];
+    }
+}
+
++ (void) _setDefaultSystemColorList: (NSColorList*)aList
+{
+  [_colorListLock lock];
+  if (defaultSystemColorList != aList)
+    {
+      if (defaultSystemColorList != nil
+        && [_availableColorLists lastObject] == defaultSystemColorList)
+	{
+	  [_availableColorLists removeLastObject];
+	}
+      ASSIGN(defaultSystemColorList, aList);
+      [_availableColorLists addObject: aList];
+    }
+  [_colorListLock unlock];
+}
+
++ (void) _setThemeSystemColorList: (NSColorList*)aList
+{
+  [_colorListLock lock];
+  if (themeColorList != aList)
+    {
+      if (themeColorList != nil && [_availableColorLists count] > 0
+        && [_availableColorLists objectAtIndex: 0] == themeColorList)
+	{
+	  [_availableColorLists removeObjectAtIndex: 0];
+	}
+      ASSIGN(themeColorList, aList);
+      [_availableColorLists insertObject: aList atIndex: 0];
+    }
+  [_colorListLock unlock];
 }
 
 @end

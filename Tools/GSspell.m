@@ -99,12 +99,12 @@ findMisspelledWordInString:(NSString *)stringToCheck
               inLanguage:(NSString *)language
 {
   NSMutableArray *array = [NSMutableArray array];
-  const char *p = [word UTF8String];
-  int len = strlen(p);
-  int words = 0;
 
 #ifdef HAVE_ASPELL_H
   {
+    const char *p = [word UTF8String];
+    int len = strlen(p);
+    int words = 0;
     const struct AspellWordList *list = aspell_speller_suggest(speller, p, len);
     AspellStringEnumeration *en;
 

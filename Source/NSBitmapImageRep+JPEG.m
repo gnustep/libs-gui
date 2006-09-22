@@ -33,6 +33,7 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSData.h>
 #include <Foundation/NSException.h>
+#include <Foundation/NSValue.h>
 #include "AppKit/NSGraphics.h"
 
 #include <jerror.h>
@@ -69,7 +70,6 @@ struct gs_jpeg_error_mgr
   NSString *error;
 };
 typedef struct gs_jpeg_error_mgr *gs_jpeg_error_mgr_ptr;
-
 
 /* Print the last jpeg library error and returns
  * the control to the caller of the libary.
@@ -197,6 +197,132 @@ static void gs_jpeg_memory_src_destroy(j_decompress_ptr cinfo)
   cinfo->src = NULL;
 }
 
+/* ------------------------------------------------------------------*/
+
+/*
+ * A custom destination manager.
+ */
+
+typedef struct
+{
+  struct jpeg_destination_mgr pub; // public fields
+  unsigned char* buffer;
+  unsigned char* data;
+  NSData** finalData;
+  int length;
+} gs_jpeg_destination_mgr;
+typedef gs_jpeg_destination_mgr * gs_jpeg_dest_ptr;
+
+/*
+        Initialize destination.  This is called by jpeg_start_compress()
+        before any data is actually written.  It must initialize
+        next_output_byte and free_in_buffer.  free_in_buffer must be
+        initialized to a positive value.
+*/
+
+static void gs_init_destination (j_compress_ptr cinfo)
+{
+        //NSLog (@"gs_init_destination");
+  gs_jpeg_dest_ptr dest = (gs_jpeg_dest_ptr) cinfo->dest;
+
+  // allocate the output image
+
+  int imageSize = cinfo->image_width * cinfo->image_height;
+
+  dest->buffer = (void*) calloc ((imageSize * cinfo->input_components),
+                                sizeof(unsigned char));
+
+  dest->data = (void*) calloc ((imageSize * cinfo->input_components),
+                                sizeof(unsigned char));
+
+  dest->pub.next_output_byte = dest->buffer;
+  dest->pub.free_in_buffer = imageSize * cinfo->input_components;
+  dest->length = 0;
+}
+
+/*
+        This is called whenever the buffer has filled (free_in_buffer
+        reaches zero).  In typical applications, it should write out the
+        *entire* buffer (use the saved start address and buffer length;
+        ignore the current state of next_output_byte and free_in_buffer).
+        Then reset the pointer & count to the start of the buffer, and
+        return TRUE indicating that the buffer has been dumped.
+        free_in_buffer must be set to a positive value when TRUE is
+        returned.  A FALSE return should only be used when I/O suspension is
+        desired (this operating mode is discussed in the next section).
+*/
+
+static boolean gs_empty_output_buffer (j_compress_ptr cinfo)
+{
+
+  //NSLog (@"gs_empty_output_buffer...");
+  gs_jpeg_dest_ptr dest = (gs_jpeg_dest_ptr) cinfo->dest;
+  //NSLog (@"length added (%d)", dest->length);
+  int imageSize = cinfo->image_width * cinfo->image_height;
+  int bufSize = imageSize * cinfo->input_components;
+  int i;
+
+  for (i = 0; i < bufSize; i++)
+    {
+      dest->data [dest->length + i] = dest->buffer [i];
+    }
+
+  dest->length = dest->length + bufSize;
+  dest->pub.next_output_byte = dest->buffer;
+  dest->pub.free_in_buffer = imageSize * cinfo->input_components;
+
+  return TRUE;
+}
+
+/*
+        Terminate destination --- called by jpeg_finish_compress() after all
+        data has been written.  In most applications, this must flush any
+        data remaining in the buffer.  Use either next_output_byte or
+        free_in_buffer to determine how much data is in the buffer.
+*/
+
+static void gs_term_destination (j_compress_ptr cinfo)
+{
+  //NSLog (@"gs_term_destination");
+  gs_jpeg_dest_ptr dest = (gs_jpeg_dest_ptr) cinfo->dest;
+  int imageSize = cinfo->image_width * cinfo->image_height;
+  int bufSize = imageSize * cinfo->input_components;
+  int i;
+
+  for (i = 0; i < bufSize; i++)
+    {
+      dest->data [dest->length + i] = dest->buffer [i];
+    }
+  dest->length = dest->length + bufSize;
+
+  *dest->finalData = [[NSData alloc] initWithBytes: dest->data
+    length: (dest->length) - dest->pub.free_in_buffer];
+}
+
+static void gs_jpeg_memory_dest_create (j_compress_ptr cinfo, NSData** data)
+{
+  gs_jpeg_dest_ptr dest;
+
+  cinfo->dest = (struct jpeg_destination_mgr*)
+    malloc (sizeof (gs_jpeg_destination_mgr));
+
+  dest = (gs_jpeg_dest_ptr) cinfo->dest;
+
+  dest->pub.init_destination = gs_init_destination;
+  dest->pub.empty_output_buffer = gs_empty_output_buffer;
+  dest->pub.term_destination = gs_term_destination;
+  dest->finalData = data;
+}
+
+static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
+{
+  gs_jpeg_dest_ptr dest = (gs_jpeg_dest_ptr) cinfo->dest;
+  free (dest->buffer);
+  free (dest->data);
+  free (dest);
+  cinfo->dest = NULL;
+}
+
 
 /* -----------------------------------------------------------
    The jpeg loading part of NSBitmapImageRep
@@ -245,8 +371,9 @@ static void gs_jpeg_memory_src_destroy(j_decompress_ptr cinfo)
 }
 
 
-/* Read the jpeg image. Assume it is from a jpeg file and imageData is not
-nil. */
+/* Read the jpeg image. Assume it is from a jpeg file and imageData
+ * is not nil.
+ */
 - (id) _initBitmapFromJPEG: (NSData *)imageData
 	      errorMessage: (NSString **)errorMsg
 {
@@ -319,15 +446,17 @@ nil. */
   i = 0;
   while (cinfo.output_scanline < cinfo.output_height)
     {
-      sclcount = jpeg_read_scanlines(&cinfo, sclbuffer, cinfo.rec_outbuf_height);
+      sclcount
+	= jpeg_read_scanlines(&cinfo, sclbuffer, cinfo.rec_outbuf_height);
+
       for (j = 0; j < sclcount; j++)
-       {
-         // copy a row to the image buffer
-         memcpy((imgbuffer + (i * rowSize)),
-                *(sclbuffer + (j * rowSize)),
-                rowSize);
-         i++;
-       }
+        {
+	  // copy a row to the image buffer
+	  memcpy((imgbuffer + (i * rowSize)),
+	    *(sclbuffer + (j * rowSize)),
+	    rowSize);
+	  i++;
+        }
     }
 
   /* done */
@@ -338,8 +467,8 @@ nil. */
 
   if (jerrMgr.parent.num_warnings)
     {
-      NSLog(@"NSBitmapImageRep+JPEG: %d warnings during jpeg decompression, image may be corrupted",
-            jerrMgr.parent.num_warnings);
+      NSLog(@"NSBitmapImageRep+JPEG: %d warnings during jpeg decompression, "
+        @"image may be corrupted", jerrMgr.parent.num_warnings);
     }
 
   // create the imagerep
@@ -364,6 +493,100 @@ nil. */
 
 @end
 
+/* -----------------------------------------------------------
+   The jpeg writing part of NSBitmapImageRep
+   ----------------------------------------------------------- */
+
+@implementation NSBitmapImageRep (JPEGWriting)
+
+- (NSData*) representationUsingType: (NSBitmapImageFileType) storageType
+                properties: (NSDictionary*) properties
+{
+  NSData			*ret;
+  unsigned char			*imageSource = [self bitmapData];
+  int				sPP = [self samplesPerPixel];
+  int				width = [self size].width;
+  int				height = [self size].height;
+  int				row_stride = width * sPP;
+  int				quality = 90;
+  NSNumber			*qualityNumber = nil;
+  NSString			*colorSpace = nil;
+  struct jpeg_compress_struct	cinfo;
+  struct jpeg_error_mgr		jerr;
+  JSAMPROW			row_pointer[1]; // pointer to a single row
+
+  cinfo.err = jpeg_std_error (&jerr);
+  jpeg_create_compress (&cinfo);
+
+  // TODO: handles planar images 
+
+  if ([self isPlanar])
+    {
+      NSLog (@"Planar Image, not handled yet !");
+      return nil;
+    }
+
+  // specify the destination for the compressed data.. 
+
+  gs_jpeg_memory_dest_create (&cinfo, &ret);
+
+  // set parameters
+
+  cinfo.image_width  = width;
+  cinfo.image_height = height;
+  cinfo.input_components = sPP;
+
+  // TODO: use the image infos to choose the proper color space
+  //cinfo.in_color_space = JCS_GRAYSCALE;
+
+  colorSpace = [self colorSpaceName];
+
+  if ([colorSpace isEqualToString: @"NSCalibratedRGBColorSpace"]
+    || [colorSpace isEqualToString: @"NSDeviceRGBColorSpace"])
+    {
+      cinfo.in_color_space = JCS_RGB;
+    }
+  else
+    {
+      NSLog (@"Image Color Space: %@ not handled yet !", colorSpace);
+      return nil;
+    }
+
+  // set quality
+  
+  qualityNumber = [properties objectForKey: @"NSImageCompressionFactor"];
+  if (qualityNumber != nil)
+    {
+      quality = (int) ([qualityNumber floatValue] * 100);
+    }
+
+  jpeg_set_defaults (&cinfo);
+
+  // compress the image
+
+  jpeg_set_quality (&cinfo, quality, TRUE);
+  jpeg_start_compress (&cinfo, TRUE);
+
+
+  while (cinfo.next_scanline < cinfo.image_height)
+    {
+      int	index = cinfo.next_scanline * row_stride;
+
+      row_pointer[0] = &imageSource[index];
+      jpeg_write_scanlines (&cinfo, row_pointer, 1);
+    }
+
+  jpeg_finish_compress(&cinfo);
+
+  gs_jpeg_memory_dest_destroy (&cinfo);
+
+  jpeg_destroy_compress(&cinfo);
+
+  return AUTORELEASE(ret);
+}
+
+@end
+
 #else /* !HAVE_LIBJPEG */
 
 @implementation NSBitmapImageRep (JPEGReading)
@@ -371,6 +594,7 @@ nil. */
 {
   return NO;
 }
+
 - (id) _initBitmapFromJPEG: (NSData *)imageData
 	      errorMessage: (NSString **)errorMsg
 {

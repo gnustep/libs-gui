@@ -131,7 +131,7 @@
         nil) ;
       
     } 
-    else
+  else
     {
       helpFile = [self pathForHelpResource: key];
 
@@ -167,22 +167,25 @@
 
   if (help)
     {
-      NSString *file;
+      NSString *file = nil;
 
       if ([[help pathExtension] length] == 0)
         {
-          file = [mb pathForHelpResource: [help stringByAppendingPathExtension: @"rtfd"]];
+          file = [mb pathForHelpResource:
+	    [help stringByAppendingPathExtension: @"rtfd"]];
 
           if (file == nil)
             {
-              file = [mb pathForHelpResource: [help stringByAppendingPathExtension: @"rtf"]];
+              file = [mb pathForHelpResource:
+		[help stringByAppendingPathExtension: @"rtf"]];
             }
         }
 
-    if (file) {
-      [[NSWorkspace sharedWorkspace] openFile: file];
-      return;
-    }
+    if (file)
+      {
+	[[NSWorkspace sharedWorkspace] openFile: file];
+	return;
+      }
   }
   
   NSBeep();
@@ -304,10 +307,11 @@ static BOOL _gnu_contextHelpActive = NO;
 
   if (contextHelp)
     {
-	GSHelpManagerPanel *helpPanel = [GSHelpManagerPanel sharedHelpManagerPanel];
+      GSHelpManagerPanel *helpPanel;
 
       // FIXME: We should position the window at point! 
       // runModalForWindow will centre the window.
+      helpPanel = [GSHelpManagerPanel sharedHelpManagerPanel];
       [helpPanel setHelpText: contextHelp];
       [NSApp runModalForWindow: helpPanel];
       return YES;

@@ -38,7 +38,7 @@
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSTextFieldCell.h"
 #include "AppKit/NSWindow.h"
-#include "GNUstepGUI/GSDrawFunctions.h"
+#include "GNUstepGUI/GSTheme.h"
 
 #include <math.h>
 
@@ -445,10 +445,10 @@
       NSFrameRect(_border_rect);
       break;
     case NSBezelBorder:
-      [GSDrawFunctions drawDarkBezel: _border_rect : rect];
+      [[GSTheme theme] drawDarkBezel: _border_rect withClip: rect];
       break;
     case NSGrooveBorder: 
-      [GSDrawFunctions drawGroove: _border_rect : rect];
+      [[GSTheme theme] drawGroove: _border_rect withClip: rect];
       break;
     }
 

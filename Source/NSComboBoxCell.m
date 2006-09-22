@@ -50,7 +50,7 @@
 #include "AppKit/NSTableColumn.h"
 #include "AppKit/NSTableView.h"
 #include "AppKit/NSTextView.h"
-#include "GNUstepGUI/GSDrawFunctions.h"
+#include "GNUstepGUI/GSTheme.h"
 
 static NSNotificationCenter *nc;
 static const BOOL ForceBrowser = NO;

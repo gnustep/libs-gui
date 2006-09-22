@@ -37,7 +37,7 @@
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSPasteboard.h"
 #include "AppKit/NSWindow.h"
-#include "GNUstepGUI/GSDrawFunctions.h"
+#include "GNUstepGUI/GSTheme.h"
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSNotification.h>
 
@@ -176,7 +176,7 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
       /*
        * Draw border.
        */
-      [GSDrawFunctions drawButton: aRect : clipRect];
+      [[GSTheme theme] drawButton: aRect withClip: clipRect];
 
       /*
        * Fill in control color.
@@ -213,7 +213,7 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
       /*
        * Draw inner frame.
        */
-      [GSDrawFunctions drawGrayBezel: aRect : clipRect];
+      [[GSTheme theme] drawGrayBezel: aRect withClip: clipRect];
       aRect = NSInsetRect(aRect, 2.0, 2.0);
     }
 

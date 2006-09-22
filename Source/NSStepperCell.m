@@ -36,7 +36,7 @@
 #include "AppKit/NSStepperCell.h"
 #include "AppKit/NSWindow.h"
 #include "AppKit/PSOperators.h"
-#include "GNUstepGUI/GSDrawFunctions.h"
+#include "GNUstepGUI/GSTheme.h"
 
 // Hard coded values for button sizes
 #define STEPPER_WIDTH 15
@@ -144,7 +144,7 @@ static inline NSRect DrawLightButton(NSRect border, NSRect clip)
 {
 /*
   NSRect highlightRect = NSInsetRect(border, 1., 1.);
-  [GSDrawFunctions drawButton: border : clip];
+  [[GSTheme theme] drawButton: border : clip];
   return highlightRect;
 */
   NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, 
