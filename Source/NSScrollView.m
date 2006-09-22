@@ -40,7 +40,7 @@
 #include "AppKit/NSTableView.h"
 #include "AppKit/NSWindow.h"
 #include "AppKit/PSOperators.h"
-#include "GNUstepGUI/GSDrawFunctions.h"
+#include "GNUstepGUI/GSTheme.h"
 
 //
 // For nib compatibility, this is used to properly
@@ -951,11 +951,11 @@ static float scrollerWidth;
 	break;
 
       case NSBezelBorder:
-	[GSDrawFunctions drawGrayBezel: _bounds : rect];
+	[[GSTheme theme] drawGrayBezel: _bounds : rect];
 	break;
 
       case NSGrooveBorder:
-	[GSDrawFunctions drawGroove: _bounds : rect];
+	[[GSTheme theme] drawGroove: _bounds : rect];
 	break;
     }
 

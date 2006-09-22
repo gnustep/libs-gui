@@ -42,7 +42,7 @@
 #include "AppKit/NSMenuItemCell.h"
 #include "AppKit/NSMenuView.h"
 #include "AppKit/NSParagraphStyle.h"
-#include "GNUstepGUI/GSDrawFunctions.h"
+#include "GNUstepGUI/GSTheme.h"
 
 
 @implementation NSMenuItemCell
@@ -446,11 +446,11 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
 
   if (_cell.is_highlighted && (_highlightsByMask & NSPushInCellMask))
     {
-      [GSDrawFunctions drawGrayBezel: cellFrame : NSZeroRect];
+      [[GSTheme theme] drawGrayBezel: cellFrame withClip: NSZeroRect];
     }
   else
     {
-      [GSDrawFunctions drawButton: cellFrame : NSZeroRect];
+      [[GSTheme theme] drawButton: cellFrame withClip: NSZeroRect];
     }
 }
 
@@ -710,7 +710,8 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
       // pushed in buttons contents are displaced to the bottom right 1px
       if (_cell.is_bordered && (mask & NSPushInCellMask))
 	{
-	  cellFrame = NSOffsetRect(cellFrame, 1., [controlView isFlipped] ? 1. : -1.);
+	  cellFrame
+	    = NSOffsetRect(cellFrame, 1., [controlView isFlipped] ? 1. : -1.);
 	}
 
       /*

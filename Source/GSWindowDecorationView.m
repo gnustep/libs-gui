@@ -30,7 +30,7 @@
 #include "AppKit/NSColor.h"
 #include "AppKit/NSWindow.h"
 #include "GNUstepGUI/GSDisplayServer.h"
-#include "GNUstepGUI/GSDrawFunctions.h"
+#include "GNUstepGUI/GSTheme.h"
 
 
 struct NSWindow_struct
@@ -218,7 +218,7 @@ struct NSWindow_struct
 {
   if (NSIntersectsRect(rect, contentRect))
     {
-      [[GSDrawFunctions theme] drawWindowBackground: contentRect view: self];
+      [[GSTheme theme] drawWindowBackground: contentRect view: self];
     }
 }
 

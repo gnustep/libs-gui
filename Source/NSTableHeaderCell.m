@@ -26,7 +26,7 @@
 #include "AppKit/NSTableHeaderCell.h"
 #include "AppKit/NSColor.h"
 #include "AppKit/NSFont.h"
-#include "GNUstepGUI/GSDrawFunctions.h"
+#include "GNUstepGUI/GSTheme.h"
 
 @implementation NSTableHeaderCell
 {
@@ -66,11 +66,11 @@
 
   if (_cell.is_highlighted == YES)
     {
-      [GSDrawFunctions drawButton: cellFrame : cellFrame];
+      [[GSTheme theme] drawButton: cellFrame withClip: cellFrame];
     }
   else
     {
-      [GSDrawFunctions drawDarkButton: cellFrame : cellFrame];
+      [[GSTheme theme] drawDarkButton: cellFrame withClip: cellFrame];
     }
 
   [self drawInteriorWithFrame: cellFrame inView: controlView];

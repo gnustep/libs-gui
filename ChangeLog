@@ -1,5 +1,38 @@
 2006-09-22 Richard Frith-Macdonald <rfm@gnu.org>
 
+	* Headers/Additions/GNUstepGUI/GSDrawFunctions.h:
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	* Source/GSDrawFunctions.m:
+	* Source/GSTheme.m:
+	Renamed file.
+	* Source/NSBrowser.m:
+	* Source/NSTableHeaderCell.m:
+	* Source/GSWindowDecorationView.m:
+	* Source/NSImageCell.m:
+	* Source/NSBox.m:
+	* Source/GNUmakefile:
+	* Source/NSFormCell.m:
+	* Source/NSButtonCell.m:
+	* Source/NSColorWell.m:
+	* Source/NSColor.m:
+	* Source/NSMenuItemCell.m:
+	* Source/GSTitleView.m:
+	* Source/NSProgressIndicator.m:
+	* Source/DocMakefile:
+	* Source/NSComboBoxCell.m:
+	* Source/NSStepperCell.m:
+	* Source/NSScrollView.m:
+	* Source/NSTabView.m:
+	* Source/NSCell.m:
+	* Source/NSTableView.m:
+	* Documentation/GuiAdditions.gsdoc:
+	Update for rename of 'GSDrawFunctions to GSTheme.
+	Change all class based access to drawing methods to go via current
+	instance.
+	Remove all class based versions of drawing methods.
+
+2006-09-22 Richard Frith-Macdonald <rfm@gnu.org>
+
 	* Source/GSWindowDecorationView.m: Merge in theme branch changes.
 	* Source/NSColorList.m: Cooperate with NSColor to change system
 	color list when a new theme is activated.

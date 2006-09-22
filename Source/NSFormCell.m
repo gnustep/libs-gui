@@ -34,7 +34,7 @@
 #include "AppKit/NSFont.h"
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSTextFieldCell.h"
-#include "GNUstepGUI/GSDrawFunctions.h"
+#include "GNUstepGUI/GSTheme.h"
 
 static NSColor	*shadowCol;
 
@@ -361,7 +361,10 @@ static NSColor	*shadowCol;
     }
   else if (_cell.is_bezeled)
     {
-      NSRect frame = [GSDrawFunctions drawWhiteBezel: borderedFrame : NSZeroRect];
+      NSRect frame;
+
+      frame = [[GSTheme theme] drawWhiteBezel: borderedFrame
+				     withClip: NSZeroRect];
       [[NSColor textBackgroundColor] set];
       NSRectFill (frame);
     }

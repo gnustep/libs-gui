@@ -37,7 +37,7 @@
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSRunLoop.h>
 
-#include "GNUstepGUI/GSDrawFunctions.h"
+#include "GNUstepGUI/GSTheme.h"
 
 @implementation GSTitleView
 
@@ -195,7 +195,7 @@
 
 - (void) drawRect: (NSRect)rect
 {
-  GSDrawFunctions	*theme = [GSDrawFunctions theme];
+  GSTheme    *theme = [GSTheme theme];
   NSRect     workRect = [self bounds];
   NSSize     titleSize;
   NSRectEdge top_left[] = {NSMinXEdge, NSMaxYEdge};

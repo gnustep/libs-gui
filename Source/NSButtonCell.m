@@ -51,7 +51,7 @@
 #include "AppKit/NSImage.h"
 #include "AppKit/NSSound.h"
 #include "AppKit/NSWindow.h"
-#include "GNUstepGUI/GSDrawFunctions.h"
+#include "GNUstepGUI/GSTheme.h"
 #include "GNUstepGUI/GSNibCompatibility.h"
 
 #include <math.h>
@@ -890,7 +890,7 @@ typedef struct _GSButtonCellFlags
   if ((_cell.is_bordered)
     && (!_shows_border_only_while_mouse_inside || _mouse_inside))
     {
-      cellFrame = [[GSDrawFunctions theme]
+      cellFrame = [[GSTheme theme]
          drawButton: cellFrame in: self view: controlView
               style: _bezel_style
               state: buttonState];
@@ -902,7 +902,7 @@ typedef struct _GSButtonCellFlags
   if (_cell.shows_first_responder
     && [[controlView window] firstResponder] == controlView)
     {
-      [[GSDrawFunctions theme] drawFocusFrame: cellFrame view: controlView];
+      [[GSTheme theme] drawFocusFrame: cellFrame view: controlView];
     }
 }
 

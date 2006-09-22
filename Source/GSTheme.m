@@ -1,4 +1,4 @@
-/** <title>GSDrawFunctions</title>
+/** <title>GSTheme</title>
 
    <abstract>Useful/configurable drawing functions</abstract>
 
@@ -32,7 +32,7 @@
 #include "Foundation/NSNull.h"
 #include "Foundation/NSPathUtilities.h"
 #include "Foundation/NSUserDefaults.h"
-#include "GNUstepGUI/GSDrawFunctions.h"
+#include "GNUstepGUI/GSTheme.h"
 #include "AppKit/NSColor.h"
 #include "AppKit/NSColorList.h"
 #include "AppKit/NSGraphics.h"
@@ -58,7 +58,7 @@ typedef enum {
   TileBL = 6,	/** Bottom left corner */
   TileBM = 7,	/** Bottom middle section */
   TileBR = 8	/** Bottom right corner */
-} GSDrawFunctionsTileOffset;
+} GSThemeTileOffset;
 
 /** This is a trivial class to hold the nine tiles needed to draw a rectangle
  */
@@ -113,7 +113,7 @@ typedef enum {
 }
 @end
 
-@interface	GSDrawFunctions (internal)
+@interface	GSTheme (internal)
 /**
  * Called whenever user defaults are changed ... this checks for the
  * GSTheme user default and ensures that the specified theme is the
@@ -131,10 +131,10 @@ typedef enum {
 @end
 
 
-@implementation GSDrawFunctions
+@implementation GSTheme
 
-static GSDrawFunctions		*defaultTheme = nil;
-static GSDrawFunctions		*theTheme = nil;
+static GSTheme		*defaultTheme = nil;
+static GSTheme		*theTheme = nil;
 static NSString			*theThemeName = nil;
 static NSMutableDictionary	*themes = nil;
 static NSNull			*null = nil;
@@ -181,7 +181,7 @@ static NSNull			*null = nil;
 {
   NSBundle		*bundle;
   Class			cls;
-  GSDrawFunctions	*instance;
+  GSTheme	*instance;
   NSString		*theme;
 
   if ([aName length] == 0)
@@ -249,7 +249,7 @@ static NSNull			*null = nil;
   return YES;
 }
 
-+ (void) setTheme: (GSDrawFunctions*)theme
++ (void) setTheme: (GSTheme*)theme
 {
   if (theme == nil)
     {
@@ -263,7 +263,7 @@ static NSNull			*null = nil;
     }
 }
 
-+ (GSDrawFunctions*) theme 
++ (GSTheme*) theme 
 {
   return theTheme;
 }
@@ -395,7 +395,7 @@ static NSNull			*null = nil;
 @end
 
 
-@implementation	GSDrawFunctions (Drawing)
+@implementation	GSTheme (Drawing)
 
 - (NSRect) drawButton: (NSRect) frame 
                    in: (NSButtonCell*) cell 
@@ -413,19 +413,19 @@ static NSNull			*null = nil;
     {
       [[NSColor controlBackgroundColor] set];
       NSRectFill(frame);
-      [GSDrawFunctions drawButton: frame : NSZeroRect];
+      [self drawButton: frame withClip: NSZeroRect];
     }
   else if (state == 1) /* highlighted state */
     {
       [[NSColor selectedControlColor] set];
       NSRectFill(frame);
-      [GSDrawFunctions drawGrayBezel: frame : NSZeroRect];
+      [self drawGrayBezel: frame withClip: NSZeroRect];
     }
   else if (state == 2) /* pushed state */
     {
       [[NSColor selectedControlColor] set];
       NSRectFill(frame);
-      [GSDrawFunctions drawGrayBezel: frame : NSZeroRect];
+      [self drawGrayBezel: frame withClip: NSZeroRect];
       interiorFrame
 	= NSOffsetRect(interiorFrame, 1.0, [view isFlipped] ? 1.0 : -1.0);
     }
@@ -453,7 +453,7 @@ static NSNull			*null = nil;
 
 
 
-@implementation	GSDrawFunctions (MidLevelDrawing)
+@implementation	GSTheme (MidLevelDrawing)
 
 - (NSRect) drawButton: (NSRect)border withClip: (NSRect)clip
 {
@@ -711,7 +711,7 @@ static NSNull			*null = nil;
 
 
 
-@implementation	GSDrawFunctions (LowLevelDrawing)
+@implementation	GSTheme (LowLevelDrawing)
 
 - (void) fillHorizontalRect: (NSRect)rect
 		  withImage: (NSImage*)image
@@ -782,7 +782,7 @@ withRepeatedImage: (NSImage*)image
 - (void) fillRect: (NSRect)rect
 	withTiles: (GSDrawTiles*)tiles
        background: (NSColor*)color
-	fillStyle: (GSDrawFunctionsFillStyle)style
+	fillStyle: (GSThemeFillStyle)style
 {
   NSGraphicsContext	*ctxt = GSCurrentContext();
   NSSize		tls = tiles->rects[TileTL].size;
@@ -1024,82 +1024,5 @@ withRepeatedImage: (NSImage*)image
   DPSgrestore (ctxt);	
 }
 
-@end
-
-
-
-@implementation GSDrawFunctions (deprecated)
-+ (NSRect) drawButton: (NSRect)border : (NSRect)clip
-{
-  return [[self theme] drawButton: border : clip];
-}
-+ (NSRect) drawDarkButton: (NSRect)border : (NSRect)clip
-{
-  return [[self theme] drawDarkButton: border : clip];
-}
-+ (NSRect) drawDarkBezel: (NSRect)border : (NSRect)clip
-{
-  return [[self theme] drawDarkBezel: border : clip];
-}
-+ (NSRect) drawLightBezel: (NSRect)border : (NSRect)clip
-{
-  return [[self theme] drawLightBezel: border : clip];
-}
-+ (NSRect) drawWhiteBezel: (NSRect)border : (NSRect)clip
-{
-  return [[self theme] drawWhiteBezel: border : clip];
-}
-+ (NSRect) drawGrayBezel: (NSRect)border : (NSRect)clip
-{
-  return [[self theme] drawGrayBezel: border : clip];
-}
-+ (NSRect) drawGroove: (NSRect)border : (NSRect)clip
-{
-  return [[self theme] drawGroove: border : clip];
-}
-+ (NSRect) drawFramePhoto: (NSRect)border : (NSRect)clip
-{
-  return [[self theme] drawFramePhoto: border : clip];
-}
-+ (NSRect) drawGradientBorder: (NSGradientType)gradientType 
-		       inRect: (NSRect)border 
-		     withClip: (NSRect)clip
-{
-  return [[self theme] drawGradientBorder: gradientType
-				   inRect: border
-				 withClip: clip];
-}
-- (NSRect) drawButton: (NSRect)border : (NSRect)clip
-{
-  return [self drawButton: border withClip: clip];
-}
-- (NSRect) drawDarkButton: (NSRect)border : (NSRect)clip
-{
-  return [self drawDarkButton: border withClip: clip];
-}
-- (NSRect) drawDarkBezel: (NSRect)border : (NSRect)clip
-{
-  return [self drawDarkBezel: border withClip: clip];
-}
-- (NSRect) drawLightBezel: (NSRect)border : (NSRect)clip
-{
-  return [self drawLightBezel: border withClip: clip];
-}
-- (NSRect) drawWhiteBezel: (NSRect)border : (NSRect)clip
-{
-  return [self drawWhiteBezel: border withClip: clip];
-}
-- (NSRect) drawGrayBezel: (NSRect)border : (NSRect)clip
-{
-  return [self drawGrayBezel: border withClip: clip];
-}
-- (NSRect) drawGroove: (NSRect)border : (NSRect)clip
-{
-  return [self drawGroove: border withClip: clip];
-}
-- (NSRect) drawFramePhoto: (NSRect)border : (NSRect)clip
-{
-  return [self drawFramePhoto: border withClip: clip];
-}
 @end
 

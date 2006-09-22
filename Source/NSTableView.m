@@ -59,7 +59,7 @@
 #include "AppKit/NSPasteboard.h"
 #include "AppKit/NSDragging.h"
 #include "AppKit/NSCustomImageRep.h"
-#include "GNUstepGUI/GSDrawFunctions.h"
+#include "GNUstepGUI/GSTheme.h"
 
 #include <math.h>
 static NSNotificationCenter *nc = nil;
@@ -1928,7 +1928,7 @@ static void computeNewSelection
 
   [[NSColor blackColor] set];
   NSRectFill (divide);
-  rect = [GSDrawFunctions drawDarkButton: rect :aRect];
+  rect = [[GSTheme theme] drawDarkButton: rect withClip: aRect];
   [[NSColor controlShadowColor] set];
   NSRectFill (rect);
 }

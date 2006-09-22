@@ -1,4 +1,4 @@
-/** <title>GSDrawFunctions</title>
+/** <title>GSTheme</title>
 
    <abstract>Useful/configurable drawing functions</abstract>
 
@@ -26,8 +26,8 @@
    Boston, MA 02111 USA.
    */
 
-#ifndef _GNUstep_H_GSDrawFunctions
-#define _GNUstep_H_GSDrawFunctions
+#ifndef _GNUstep_H_GSTheme
+#define _GNUstep_H_GSTheme
 
 #include <Foundation/NSGeometry.h>
 // For gradient types
@@ -46,7 +46,7 @@ typedef enum {
   FillStyleScale,	/** The image is scaled to fit */
   FillStyleRepeat,	/** The image is tiled from bottom left */
   FillStyleCenter	/** The image is tiled from the center */
-} GSDrawFunctionsFillStyle;
+} GSThemeFillStyle;
 
 
 /** Notification sent when a theme has just become active.
@@ -95,7 +95,7 @@ APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
   use the appropriate behavior.
   </p>
 */ 
-@interface GSDrawFunctions : NSObject
+@interface GSTheme : NSObject
 {
 @private
   NSBundle		*_bundle;
@@ -109,14 +109,14 @@ APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
  * automatically when the user default which specifies the current
  * theme (GSTheme) is updated.
  */
-+ (void) setTheme: (GSDrawFunctions*)theme;
++ (void) setTheme: (GSTheme*)theme;
 
 /**
  * Returns the currently active theme instance.  This is the value most
  * recently set using +setTheme: or (if none has been set) is a default
  * instance of the base class.
  */
-+ (GSDrawFunctions*) theme;
++ (GSTheme*) theme;
 
 /**
  * <p>This method is called automatically when the receiver is made into
@@ -173,7 +173,7 @@ APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
 /**
  * Theme drawing methods
  */
-@interface	GSDrawFunctions (Drawing)
+@interface	GSTheme (Drawing)
 
 /**
  * Draws a button frame and background (not its content) for the specified
@@ -202,7 +202,7 @@ APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
 /**
  * Helper functions for drawing standard items.
  */
-@interface	GSDrawFunctions (MidLevelDrawing)
+@interface	GSTheme (MidLevelDrawing)
 /** Draw a standard button */
 - (NSRect) drawButton: (NSRect)border withClip: (NSRect)clip;
 
@@ -238,7 +238,7 @@ APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
  * Low level drawiong methods ... themes may use these for drawing,
  * but should not normally override them.
  */
-@interface	GSDrawFunctions (LowLevelDrawing)
+@interface	GSTheme (LowLevelDrawing)
 /**
  * Method to tile the supplied image to fill the horizontal rectangle.
  */
@@ -269,7 +269,7 @@ withRepeatedImage: (NSImage*)image
 - (void) fillRect: (NSRect)rect
 	withTiles: (GSDrawTiles*)tiles
        background: (NSColor*)color
-	fillStyle: (GSDrawFunctionsFillStyle)style;
+	fillStyle: (GSThemeFillStyle)style;
 
 /**
  * Method to tile the supplied image to fill the vertical rectangle.
@@ -280,30 +280,4 @@ withRepeatedImage: (NSImage*)image
 		  flipped: (BOOL)flipped;
 @end
 
-
-/**
- * Deprecated methods ... do not use
- */
-@interface	GSDrawFunctions (deprecated)
-+ (NSRect) drawButton: (NSRect)border : (NSRect)clip;
-+ (NSRect) drawDarkBezel: (NSRect)border : (NSRect)clip;
-+ (NSRect) drawDarkButton: (NSRect)border : (NSRect)clip;
-+ (NSRect) drawLightBezel: (NSRect)border : (NSRect)clip;
-+ (NSRect) drawGradientBorder: (NSGradientType)gradientType 
-		       inRect: (NSRect)border 
-		     withClip: (NSRect)clip;
-+ (NSRect) drawGrayBezel: (NSRect)border : (NSRect)clip;
-+ (NSRect) drawGroove: (NSRect)border : (NSRect)clip;
-+ (NSRect) drawFramePhoto: (NSRect)border : (NSRect)clip;
-+ (NSRect) drawWhiteBezel: (NSRect)border : (NSRect)clip;
-- (NSRect) drawButton: (NSRect)border : (NSRect)clip;
-- (NSRect) drawDarkBezel: (NSRect)border : (NSRect)clip;
-- (NSRect) drawDarkButton: (NSRect)border : (NSRect)clip;
-- (NSRect) drawFramePhoto: (NSRect)border : (NSRect)clip;
-- (NSRect) drawGrayBezel: (NSRect)border : (NSRect)clip;
-- (NSRect) drawGroove: (NSRect)border : (NSRect)clip;
-- (NSRect) drawLightBezel: (NSRect)border : (NSRect)clip;
-- (NSRect) drawWhiteBezel: (NSRect)border : (NSRect)clip;
-@end
-
-#endif /* _GNUstep_H_GSDrawFunctions */
+#endif /* _GNUstep_H_GSTheme */

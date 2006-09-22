@@ -148,7 +148,7 @@ NSWorkspace.h
 
 AUTOGSDOC_HEADERS_GUIADD = \
 GSDisplayServer.h \
-GSDrawFunctions.h \
+GSTheme.h \
 GSFusedSilica.h \
 GSTable.h \
 GSHbox.h \

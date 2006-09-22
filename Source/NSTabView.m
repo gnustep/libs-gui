@@ -35,7 +35,7 @@
 #include "AppKit/NSTabView.h"
 #include "AppKit/NSTabViewItem.h"
 #include "AppKit/PSOperators.h"
-#include "GNUstepGUI/GSDrawFunctions.h"
+#include "GNUstepGUI/GSTheme.h"
 
 @implementation NSTabView
 
@@ -365,7 +365,7 @@
 - (void) drawRect: (NSRect)rect
 {
   NSGraphicsContext     *ctxt = GSCurrentContext();
-  GSDrawFunctions	*theme = [GSDrawFunctions theme];
+  GSTheme		*theme = [GSTheme theme];
   int			howMany = [_items count];
   int			i;
   NSRect		previousRect = NSMakeRect(0, 0, 0, 0);
