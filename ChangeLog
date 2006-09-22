@@ -1,3 +1,23 @@
+2006-09-22 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSWindowDecorationView.m: Merge in theme branch changes.
+	* Source/NSColorList.m: Cooperate with NSColor to change system
+	color list when a new theme is activated.
+	* Source/GSDrawFunctions.m: Merge in theme branch changes.
+	Reorganize, add theme loading functionality, add image tiling
+	methods.
+	* Source/NSButtonCell.m: Merge in theme branch changes.
+	* Source/NSColor.m: Take notice of themes changing the system
+	color list and interface with NSColorList to make the chanes and
+	then send out the notification to tell all observers.
+	* Source/GSTitleView.m: call instance method rather than class method
+	* Source/DocMakefile: Document theme changes
+	* Source/NSTabView.m: call instance method rather than class method
+	* Documentation/GuiAdditions.gsdoc: link to theme documentation
+	* Documentation/General/GNUmakefile: make theme documentation
+	* Headers/AppKit/NSWindow.h: improve comments
+	* Headers/Additions/GNUstepGUI/GSDrawFunctions.h: reorganize
+
 2006-09-21  Matt Rice <ratmice@yahoo.com>
 
 	* Source/NSTextFieldCell.m (-setEnabled:): Revert previous patch.

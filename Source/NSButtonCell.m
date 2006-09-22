@@ -836,6 +836,9 @@ typedef struct _GSButtonCellFlags
 
 - (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
+  unsigned	mask;
+  int		buttonState = 0;
+
   // Save last view drawn to
   if (_control_view != controlView)
     _control_view = controlView;
@@ -848,22 +851,59 @@ typedef struct _GSButtonCellFlags
   if (NSIsEmptyRect(cellFrame))
     return;
 
-  // draw the border if needed
-  if ((_cell.is_bordered) && 
-      (!_shows_border_only_while_mouse_inside || _mouse_inside))
+  // set the mask
+  if (_cell.is_highlighted)
     {
-      // FIXME Should check the bezel and gradient style
-      if (_cell.is_highlighted && (_highlightsByMask & NSPushInCellMask))
+      mask = _highlightsByMask;
+      if (_cell.state)
         {
-	  [GSDrawFunctions drawGrayBezel: cellFrame : NSZeroRect];
-        }
-      else
+	  mask &= ~_showAltStateMask;
+	}
+    }
+  else if (_cell.state)
+    mask = _showAltStateMask;
+  else
+    mask = NSNoCellMask;
+
+  /* Draw the cell's background color.  
+     We draw when there is a border or when highlightsByMask
+     is NSChangeBackgroundCellMask or NSChangeGrayCellMask,
+     as required by our nextstep-like look and feel.  */
+  if (_cell.is_bordered 
+    || (_highlightsByMask & NSChangeBackgroundCellMask)
+    || (_highlightsByMask & NSChangeGrayCellMask))
+    {
+      /* Determine the background color. */
+      if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
         {
-	  [GSDrawFunctions drawButton: cellFrame : NSZeroRect];
+          buttonState = 1; /* highlighted state */
         }
     }
 
+  /* Pushed in buttons contents are displaced to the bottom right 1px.  */
+  if (_cell.is_bordered && (mask & NSPushInCellMask))
+    {
+      buttonState = 2; // pushed button
+    }
+
+  // draw the border if needed
+  if ((_cell.is_bordered)
+    && (!_shows_border_only_while_mouse_inside || _mouse_inside))
+    {
+      cellFrame = [[GSDrawFunctions theme]
+         drawButton: cellFrame in: self view: controlView
+              style: _bezel_style
+              state: buttonState];
+    }
+
   [self drawInteriorWithFrame: cellFrame inView: controlView];
+
+  // Draw first responder
+  if (_cell.shows_first_responder
+    && [[controlView window] firstResponder] == controlView)
+    {
+      [[GSDrawFunctions theme] drawFocusFrame: cellFrame view: controlView];
+    }
 }
 
 - (void) drawGradientWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
@@ -884,47 +924,47 @@ typedef struct _GSButtonCellFlags
 
   switch (_gradient_type)
     {
-    case NSGradientNone:
-      return;
-      break;
+      case NSGradientNone:
+	return;
+	break;
 
-    case NSGradientConcaveWeak:
-      [gray getHue: &h saturation: &s brightness: &v alpha: &a];
-      start_white = [lightGray brightnessComponent];
-      end_white = [gray brightnessComponent];
-      break;
-      
-    case NSGradientConvexWeak:
-      [darkGray getHue: &h saturation: &s brightness: &v alpha: &a];
-      start_white = [gray brightnessComponent];
-      end_white = [lightGray brightnessComponent];
-      break;
-      
-    case NSGradientConcaveStrong:
-      [lightGray getHue: &h saturation: &s brightness: &v alpha: &a];
-      start_white = [lightGray brightnessComponent];
-      end_white = [darkGray brightnessComponent];
-      break;
-      
-    case NSGradientConvexStrong:
-      [darkGray getHue: &h saturation: &s brightness: &v alpha: &a];
-      start_white = [darkGray brightnessComponent];
-      end_white = [lightGray brightnessComponent];
-      break;
+      case NSGradientConcaveWeak:
+	[gray getHue: &h saturation: &s brightness: &v alpha: &a];
+	start_white = [lightGray brightnessComponent];
+	end_white = [gray brightnessComponent];
+	break;
+	
+      case NSGradientConvexWeak:
+	[darkGray getHue: &h saturation: &s brightness: &v alpha: &a];
+	start_white = [gray brightnessComponent];
+	end_white = [lightGray brightnessComponent];
+	break;
+	
+      case NSGradientConcaveStrong:
+	[lightGray getHue: &h saturation: &s brightness: &v alpha: &a];
+	start_white = [lightGray brightnessComponent];
+	end_white = [darkGray brightnessComponent];
+	break;
+	
+      case NSGradientConvexStrong:
+	[darkGray getHue: &h saturation: &s brightness: &v alpha: &a];
+	start_white = [darkGray brightnessComponent];
+	end_white = [lightGray brightnessComponent];
+	break;
 
-    default:
-      break;
+      default:
+	break;
     }
 
   white = start_white;
-  white_step = fabs(start_white - end_white)/
-               (cellFrame.size.width + cellFrame.size.height);
+  white_step = fabs(start_white - end_white)
+    / (cellFrame.size.width + cellFrame.size.height);
 
   // Start from top left
-  p1 = NSMakePoint(cellFrame.origin.x, 
-		   cellFrame.size.height + cellFrame.origin.y);
+  p1 = NSMakePoint(cellFrame.origin.x,
+    cellFrame.size.height + cellFrame.origin.y);
   p2 = NSMakePoint(cellFrame.origin.x, 
-		   cellFrame.size.height + cellFrame.origin.y);
+    cellFrame.size.height + cellFrame.origin.y);
 
   // Move by Y
   while (p1.y > cellFrame.origin.y)
@@ -974,7 +1014,6 @@ typedef struct _GSButtonCellFlags
   NSRect	titleRect;
   NSSize	imageSize = {0, 0};
   NSSize        titleSize = {0, 0};
-  NSColor	*backgroundColor = nil;
   BOOL		flippedView = [controlView isFlipped];
   NSCellImagePosition ipos = _cell.image_position;
 
@@ -997,38 +1036,6 @@ typedef struct _GSButtonCellFlags
     mask = _showAltStateMask;
   else
     mask = NSNoCellMask;
-
-  /* Pushed in buttons contents are displaced to the bottom right 1px.  */
-  if (_cell.is_bordered && (mask & NSPushInCellMask))
-    {
-      cellFrame = NSOffsetRect(cellFrame, 1., flippedView ? 1. : -1.);
-    }
-
-  /* Draw the cell's background color.  
-     We draw when there is a border or when highlightsByMask
-     is NSChangeBackgroundCellMask or NSChangeGrayCellMask,
-     as required by our nextstep-like look and feel.  */
-  if (_cell.is_bordered 
-      || (_highlightsByMask & NSChangeBackgroundCellMask)
-      || (_highlightsByMask & NSChangeGrayCellMask))
-    {
-      /* Determine the background color. */
-      if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
-        {
-          backgroundColor = [NSColor selectedControlColor];
-        }
-      else if (_cell.is_bordered) 
-        {
-          backgroundColor = [NSColor controlBackgroundColor];
-        }
-      
-      if (backgroundColor != nil) 
-        {
-          [backgroundColor set];
-          NSRectFill (cellFrame);
-        }
-      
-    }
 
   /*
    * Determine the image and the title that will be
@@ -1195,7 +1202,8 @@ typedef struct _GSButtonCellFlags
 	imageRect.origin.x = cellFrame.origin.x;
 	imageRect.origin.y = cellFrame.origin.y;
 	imageRect.size.width = cellFrame.size.width;
-	imageRect.size.height = titleRect.origin.y - GSCellTextImageYDist - imageRect.origin.y;
+	imageRect.size.height
+	  = titleRect.origin.y - GSCellTextImageYDist - imageRect.origin.y;
 
 	if (_cell.is_bordered || _cell.is_bezeled) 
 	  {
@@ -1229,20 +1237,15 @@ typedef struct _GSButtonCellFlags
   // Draw image
   if (imageToDisplay != nil)
     {
-      [self _drawImage: imageToDisplay inFrame: imageRect isFlipped: flippedView];
+      [self _drawImage: imageToDisplay
+	       inFrame: imageRect
+	     isFlipped: flippedView];
     }
 
   // Draw title
   if (titleToDisplay != nil)
     {
       [self _drawAttributedText: titleToDisplay inFrame: titleRect];
-    }
-
-  // Draw first responder
-  if (_cell.shows_first_responder
-      && [[controlView window] firstResponder] == controlView)
-    {
-      NSDottedFrameRect(cellFrame);
     }
 }
 

@@ -25,6 +25,7 @@
       </p>
       <list>
         <item><uref url="GSDisplayServer.html">GSDisplayServer</uref></item>
+        <item><uref url="GSDrawFunctions.html">GSDrawFunctions</uref></item>
         <item><uref url="GSHbox.html">GSHbox</uref></item>
         <item><uref url="GSTable.html">GSTable</uref></item>
         <item><uref url="GSVbox.html">GSVbox</uref></item>

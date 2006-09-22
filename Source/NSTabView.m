@@ -365,6 +365,7 @@
 - (void) drawRect: (NSRect)rect
 {
   NSGraphicsContext     *ctxt = GSCurrentContext();
+  GSDrawFunctions	*theme = [GSDrawFunctions theme];
   int			howMany = [_items count];
   int			i;
   NSRect		previousRect = NSMakeRect(0, 0, 0, 0);
@@ -378,18 +379,18 @@
       default:
       case NSTopTabsBezelBorder: 
 	aRect.size.height -= 16;
-	[GSDrawFunctions drawButton: aRect : NSZeroRect];
+	[theme drawButton: aRect withClip: NSZeroRect];
 	break;
 
       case NSBottomTabsBezelBorder: 
 	aRect.size.height -= 16;
 	aRect.origin.y += 16;
-	[GSDrawFunctions drawButton: aRect : rect];
+	[theme drawButton: aRect withClip: rect];
 	aRect.origin.y -= 16;
 	break;
 
       case NSNoTabsBezelBorder: 
-	[GSDrawFunctions drawButton: aRect : rect];
+	[theme drawButton: aRect withClip: rect];
 	break;
 
       case NSNoTabsLineBorder: 

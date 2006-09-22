@@ -111,7 +111,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
  * <p>A window has a <em>frame</em>. This is the frame of the <em>entire</em>
  * window on the screen, including all decorations and borders.  The origin
  * of the frame represents its bottom left corner and the frame is expressed
- * in screen coordinates (see [NSScreen]).<br />
+ * in screen coordinates (see [NSScreen]).
  * </p>
  * <p>When a window is created, it has a <em>private</em> [NSView] instance
  * which fills the entire window frame and whose coordinate system is the
@@ -122,7 +122,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
  * draw window decorations if the backend library is not handling the
  * window decorations.
  * </p>
- * <p>A window always contains a <em>content view<em> which is the highest
+ * <p>A window always contains a <em>content view</em> which is the highest
  * level view available for public (application) use.  This view fills the
  * area of the window inside any decoration/border.<br />
  * This is the only part of the window that application programmers are

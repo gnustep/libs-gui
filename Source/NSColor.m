@@ -45,8 +45,18 @@
 #include "AppKit/NSImage.h"
 #include "AppKit/NSGraphics.h"
 #include "AppKit/PSOperators.h"
+#include "GNUstepGUI/GSDrawFunctions.h"
 
 static Class	NSColorClass;
+
+/* This interface must be provided in NSColorList to let us manage
+ * system colors.
+ */
+@interface NSColorList (GNUstepPrivate)
++ (void) _setDefaultSystemColorList: (NSColorList*)aList;
++ (void) _setThemeSystemColorList: (NSColorList*)aList;
+@end
+
 
 @interface GSNamedColor : NSColor
 {
@@ -153,12 +163,14 @@ static Class	NSColorClass;
 
 + (NSColor*) colorFromString: (NSString*)string;
 + (void) defaultsDidChange: (NSNotification*)notification;
++ (void) themeDidActivate: (NSNotification*)notification;
 
 @end
 
 // Class variables
 static BOOL gnustep_gui_ignores_alpha = YES;
 static NSColorList		*systemColors = nil;
+static NSColorList		*defaultSystemColors = nil;
 static NSMutableDictionary	*colorStrings = nil;
 static NSMutableDictionary	*systemDict = nil;
 
@@ -224,9 +236,11 @@ void initSystemColors(void)
 		     nil];
   
   systemColors = [NSColorList colorListNamed: @"System"];
+  defaultSystemColors = [[NSColorList alloc] initWithName: @"System"];
+  [NSColorList _setDefaultSystemColorList: defaultSystemColors];
   if (systemColors == nil)
     {
-      systemColors = [[NSColorList alloc] initWithName: @"System"];
+      ASSIGN(systemColors, defaultSystemColors);
     }
 
     {
@@ -240,24 +254,24 @@ void initSystemColors(void)
   
       while ((key = (NSString *)[enumerator nextObject])) 
 	{
-	  NSString *aColorString;
 	  NSColor *color;
 
-	  if ([systemColors colorWithKey: key])
-	    continue;
+	  if ((color = [systemColors colorWithKey: key]) == nil)
+	    {
+	      NSString	*aColorString;
 
-	  aColorString = [colorStrings objectForKey: key];
-	  color = [NSColorClass colorFromString: aColorString];
+	      aColorString = [colorStrings objectForKey: key];
+	      color = [NSColorClass colorFromString: aColorString];
 
-	  NSCAssert1(color, @"couldn't get default system color %@", key);
-
-	  [systemColors setColor: color forKey: key];
-
-	  changed = YES;
+	      NSCAssert1(color, @"couldn't get default system color %@", key);
+	      [systemColors setColor: color forKey: key];
+	      changed = YES;
+	    }
+	  if (defaultSystemColors != systemColors)
+	    {
+	      [defaultSystemColors setColor: color forKey: key];
+	    }
 	}
-
-      if (changed)
-	[systemColors writeToFile: nil];
     }
 
   systemDict = [NSMutableDictionary new];
@@ -308,6 +322,12 @@ systemColorWithName(NSString *name)
 	addObserver: self
 	selector: @selector(defaultsDidChange:)
 	name: NSUserDefaultsDidChangeNotification
+	object: nil];
+      // watch for themes which may provide new system color lists
+      [[NSNotificationCenter defaultCenter]
+	addObserver: self
+	selector: @selector(themeDidActivate:)
+	name: GSThemeDidActivateNotification
 	object: nil];
     }
 }
@@ -1634,6 +1654,35 @@ systemColorWithName(NSString *name)
       [[NSNotificationCenter defaultCenter]
 	postNotificationName: NSSystemColorsDidChangeNotification object: nil];
     }
+}
+
+/*
+ * Handle activation of a new theme ... look for a 'System' color list
+ * in the theme bundle and use it instead of the default system color
+ * list if it is present.
+ */
++ (void) themeDidActivate: (NSNotification*)notification
+{
+  NSDictionary	*userInfo = [notification userInfo];
+  NSColorList	*list = [userInfo objectForKey: @"Colors"];
+
+  if (list == nil)
+    {
+      list = defaultSystemColors;
+    }
+  NSAssert([[list name] isEqual: @"System"], NSInvalidArgumentException);
+  [NSColorList _setThemeSystemColorList: list];
+
+  /* We always update the system dictionary and send a notification, since
+   * the theme may have gicen us a pre-existing color list, but have changed
+   * one or more of the colors in it.
+   */
+  list = [NSColorList colorListNamed: @"System"];
+  ASSIGN(systemColors, list);
+  [systemDict removeAllObjects];
+NSLog(@"Theme activation with control background %@", [self controlBackgroundColor]);
+  [[NSNotificationCenter defaultCenter]
+    postNotificationName: NSSystemColorsDidChangeNotification object: nil];
 }
 
 @end

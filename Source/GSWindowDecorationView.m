@@ -30,6 +30,7 @@
 #include "AppKit/NSColor.h"
 #include "AppKit/NSWindow.h"
 #include "GNUstepGUI/GSDisplayServer.h"
+#include "GNUstepGUI/GSDrawFunctions.h"
 
 
 struct NSWindow_struct
@@ -215,12 +216,9 @@ struct NSWindow_struct
 
 - (void) drawRect: (NSRect)rect
 {
-  NSColor *c = [_window backgroundColor];
-
   if (NSIntersectsRect(rect, contentRect))
     {
-      [c set];
-      NSRectFill(contentRect);
+      [[GSDrawFunctions theme] drawWindowBackground: contentRect view: self];
     }
 }
 
