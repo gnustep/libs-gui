@@ -951,11 +951,11 @@ static float scrollerWidth;
 	break;
 
       case NSBezelBorder:
-	[[GSTheme theme] drawGrayBezel: _bounds : rect];
+	[[GSTheme theme] drawGrayBezel: _bounds withClip: rect];
 	break;
 
       case NSGrooveBorder:
-	[[GSTheme theme] drawGroove: _bounds : rect];
+	[[GSTheme theme] drawGroove: _bounds withClip: rect];
 	break;
     }
 
