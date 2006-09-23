@@ -1,3 +1,12 @@
+2006-09-23 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSWindowDecorationView.m: coimment out dubious change.
+	* Source/GSDisplayServer.m: Add method for expose events
+	* Source/NSWindow.m: Handle expose events.
+	* Headers/AppKit/NSEvent.h: Add expose event type.
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h: Add method for
+	expose events.
+
 2006-09-22 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/AppKit/NSColorList.h: Add documentation.

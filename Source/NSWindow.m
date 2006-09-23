@@ -3360,6 +3360,35 @@ resetCursorRectsForView(NSView *theView)
 		break;
 	      }
 
+	    case GSAppKitRegionExposed:
+	      {
+		NSRect region;
+
+		region.size.width = [theEvent data1];
+		region.size.height = [theEvent data2];
+		region.origin = [theEvent locationInWindow];
+		switch (_backingType)
+		  {
+		    case NSBackingStoreBuffered:
+		    case NSBackingStoreRetained:
+		      /* The window is buffered/retained, so we expect the
+		       * backend to have a copy of the region contents and
+		       * be able to draw it.
+		       */
+		      [GSServerForWindow(self) exposewindow: region
+			: _windowNum];
+		      break;
+
+		    default:
+		      /* non-retained ... so we need to redraw the exposed
+		       * region here.
+		       */
+		      [_wv setNeedsDisplayInRect: region];
+		      break;
+		  }
+		}
+	      break;
+
 	    case GSAppKitWindowClose:
 	      [self performClose: NSApp];
 	      break;
