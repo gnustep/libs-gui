@@ -6026,13 +6026,13 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
   tableColumn = [_tableColumns objectAtIndex: columnIndex];
   // If the column is editable, the cell always is
-  if (![tableColumn isEditable])
+  if ([tableColumn isEditable])
     {
       // otherwise ask the delegate, if any.
       return [self _shouldEditTableColumn: tableColumn row: rowIndex];
     }
 
-  return YES;
+  return NO;
 }
 
 - (void) _willDisplayCell: (NSCell*)cell

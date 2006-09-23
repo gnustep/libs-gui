@@ -1,3 +1,8 @@
+2006-09-23  Matt Rice <ratmice@yahoo.com>
+
+	* Source/NSTableView.m (_isCellEditableColumn:row:): Allow
+	delegate to limit editablility of editable columns.
+
 2006-09-23 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSWindowDecorationView.m: coimment out dubious change.
