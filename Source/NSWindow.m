@@ -3396,6 +3396,7 @@ resetCursorRectsForView(NSView *theView)
 			   */
 			  [_wv displayIfNeeded];
 			}
+		      [self flushWindowIfNeeded];
 		      break;
 
 		    default:
