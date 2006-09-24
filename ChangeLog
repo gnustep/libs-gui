@@ -1,3 +1,9 @@
+2006-09-24 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h:
+	* Source/GSDisplayServer.m: Revert unnecessary addition to api
+	* Source/NSWindow.m: Use ([flushwindowrect::]) for expose events.
+
 2006-09-23  Matt Rice <ratmice@yahoo.com>
 
 	* Source/NSTableView.m (_isCellEditableColumn:row:): Allow

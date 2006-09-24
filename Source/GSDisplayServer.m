@@ -724,12 +724,6 @@ GSCurrentServer(void)
   [self subclassResponsibility: _cmd];
 }
 
-/** Repaint an exposed region of a buffered window */
-- (void) exposewindow: (NSRect)frame : (int) win
-{
-  [self subclassResponsibility: _cmd];
-}
-
 /** Sets the input state for the window given by the
     GSWindowInputState constant.  Instructs the window manager that the
     specified window is 'key', 'main', or just a normal window.  */

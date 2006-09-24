@@ -3375,7 +3375,7 @@ resetCursorRectsForView(NSView *theView)
 		       * backend to have a copy of the region contents and
 		       * be able to draw it.
 		       */
-		      [GSServerForWindow(self) exposewindow: region
+		      [GSServerForWindow(self) flushwindowrect: region
 			: _windowNum];
 		      break;
 
