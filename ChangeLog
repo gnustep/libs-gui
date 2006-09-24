@@ -3,6 +3,7 @@
 	* Headers/Additions/GNUstepGUI/GSDisplayServer.h:
 	* Source/GSDisplayServer.m: Revert unnecessary addition to api
 	* Source/NSWindow.m: Use ([flushwindowrect::]) for expose events.
+	* Source/GSDragView.m: Don't drop expose events.
 
 2006-09-23  Matt Rice <ratmice@yahoo.com>
 

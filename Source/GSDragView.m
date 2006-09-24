@@ -724,6 +724,7 @@ static	GSDragView *sharedDragView = nil;
         {
         case GSAppKitWindowMoved:
         case GSAppKitWindowResized:
+	case GSAppKitRegionExposed:
           /*
            * Keep window up-to-date with its current position.
            */
@@ -753,7 +754,7 @@ static	GSDragView *sharedDragView = nil;
 	case GSAppKitWindowLeave:
 	case GSAppKitWindowEnter:
           break;
-          
+
         default:
           NSLog(@"Internal: dropped NSAppKitDefined (%d) event", sub);
           break;
