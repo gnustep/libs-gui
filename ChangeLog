@@ -1,3 +1,8 @@
+2006-09-25  Matt Rice <ratmice@yahoo.com>
+
+	* Source/NSTableView.m (_shouldEditTableColumn:row:):
+	Dont invert delegate return value.
+
 2006-09-24 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/Additions/GNUstepGUI/GSDisplayServer.h:

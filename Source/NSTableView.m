@@ -6012,7 +6012,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		     @selector(tableView:shouldEditTableColumn:row:)])
     {
       return [_delegate tableView: self shouldEditTableColumn: tableColumn
-			row: rowIndex] == NO;
+			row: rowIndex];
     }
 
   return YES;
