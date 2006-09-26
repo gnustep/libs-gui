@@ -1,3 +1,11 @@
+2006-09-26 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWorkspace.m: Use png in preference to tiff.
+	* Source/NSMenu.m: Remove unused extension from icon names.
+	* Source/NSSplitView.m: ditto
+	* Source/NSOutlineView.m: ditto
+	* Source/NSTabView.m: ditto
+
 2006-09-25  Matt Rice <ratmice@yahoo.com>
 
 	* Source/NSTableView.m (_shouldEditTableColumn:row:):

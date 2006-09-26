@@ -425,11 +425,11 @@ static id GSLaunched(NSNotification *notification, BOOL active)
  * <p>To determine the icon for a folder, if the folder has a '.app',
  * '.debug' or '.profile' extension - the Info-gnustep.plist file
  * is examined for an 'NSIcon' value and NSWorkspace tries to use that.
- * If there is no value specified - it tries foo.app/foo.tiff' or
- * 'foo.app/.dir.tiff'
+ * If there is no value specified - it tries 'foo.app/foo.png'
+ * or 'foo.app/foo.tiff' or 'foo.app/.dir.png' or 'foo.app/.dir.tiff'
  * </p>
  * <p>If the folder was not an application wrapper, it just tries
- * the .dir.tiff file.
+ * the .dir.png and .dir.tiff file.
  * </p>
  * <p>If no icon was available, it uses a default folder icon or a
  * special icon for the root directory.
@@ -471,7 +471,7 @@ static id GSLaunched(NSNotification *notification, BOOL active)
  * 
  * {
  *   NSExecutable = "xv";
- *   NSIcon = "xv.tiff";
+ *   NSIcon = "xv.png";
  *   NSTypes = (
  *     {
  *       NSIcon = "tiff.tiff";
@@ -1063,15 +1063,20 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	}
 
       /*
-       * If we have no iconPath, try 'dir/.dir.tiff' as a
+       * If we have no iconPath, try 'dir/.dir.png' as a
        * possible locations for the directory icon.
        */
       if (iconPath == nil)
 	{
-	  iconPath = [fullPath stringByAppendingPathComponent: @".dir.tiff"];
+	  iconPath = [fullPath stringByAppendingPathComponent: @".dir.png"];
 	  if ([mgr isReadableFileAtPath: iconPath] == NO)
 	    {
-	      iconPath = nil;
+	      iconPath
+		= [fullPath stringByAppendingPathComponent: @".dir.tiff"];
+	      if ([mgr isReadableFileAtPath: iconPath] == NO)
+		{
+		  iconPath = nil;
+		}
 	    }
 	}
 
@@ -1090,7 +1095,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 		  if (rootImage == nil)
 		    {
 		      rootImage = RETAIN([NSImage _standardImageWithName:
-			@"Root_PC.tiff"]);
+			@"Root_PC"]);
 		    }
 
 		  image = rootImage;
@@ -1100,7 +1105,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 		  if (homeImage == nil)
 		    {
 		      homeImage = RETAIN([NSImage _standardImageWithName:
-			@"HomeDirectory.tiff"]);
+			@"HomeDirectory"]);
 		    }
 		  image = homeImage;
 		}
@@ -1109,7 +1114,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 		  if (folderImage == nil)
 		    {
 		      folderImage = RETAIN([NSImage _standardImageWithName:
-			@"Folder.tiff"]);
+			@"Folder"]);
 		    }
 		  image = folderImage;
 		}
@@ -1151,7 +1156,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 		  if (unknownTool == nil)
 		    {
 		      unknownTool = RETAIN([NSImage _standardImageWithName:
-			@"UnknownTool.tiff"]);
+			@"UnknownTool"]);
 		    }
 		  image = unknownTool;
 		}
@@ -1822,7 +1827,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
     
   /*
    * If there is no icon specified in the Info.plist for app
-   * try 'wrapper/app.tiff'
+   * try 'wrapper/app.png'
    */
   if (iconPath == nil)
     {
@@ -1831,11 +1836,14 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
       str = [fullPath lastPathComponent];
       str = [str stringByDeletingPathExtension];
       iconPath = [fullPath stringByAppendingPathComponent: str];
-      iconPath = [iconPath stringByAppendingPathExtension: @"tiff"];
-      
+      iconPath = [iconPath stringByAppendingPathExtension: @"png"];
       if ([mgr isReadableFileAtPath: iconPath] == NO)
         {
-          iconPath = nil;
+	  iconPath = [iconPath stringByAppendingPathExtension: @"tiff"];
+	  if ([mgr isReadableFileAtPath: iconPath] == NO)
+	    {
+	      iconPath = nil;
+	    }
         }
     }
   
@@ -2024,7 +2032,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
   if (image == nil)
     {
-      image = RETAIN([NSImage _standardImageWithName: @"Unknown.tiff"]);
+      image = RETAIN([NSImage _standardImageWithName: @"Unknown"]);
     }
 
   return image;
@@ -2157,7 +2165,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	      if (unknownApplication == nil)
 		{
 		  unknownApplication = RETAIN([NSImage _standardImageWithName:
-		    @"UnknownApplication.tiff"]);
+		    @"UnknownApplication"]);
 		}
 	      icon = unknownApplication;
 	    }

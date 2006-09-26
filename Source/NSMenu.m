@@ -252,7 +252,7 @@ static NSNotificationCenter *nc;
 	  appItem = (NSMenuItem *)[self itemWithTitle: title];
 
 	  if (!ti)
-	    ti = [[NSImage imageNamed: @"GNUstep.tiff"] copy];
+	    ti = [[NSImage imageNamed: @"GNUstep"] copy];
 
 	  [ti setScalesWhenResized: YES];
 	  [ti setSize: NSMakeSize(bar, bar)];
@@ -273,7 +273,7 @@ static NSNotificationCenter *nc;
 	  float bar = [NSMenuView menuBarHeight] - 4;
 
 	  if (!ti)
-	    ti = [[NSImage imageNamed: @"GNUstep.tiff"] copy];
+	    ti = [[NSImage imageNamed: @"GNUstep"] copy];
 
 	  [ti setScalesWhenResized: YES];
 	  [ti setSize: NSMakeSize(bar, bar)];

@@ -122,9 +122,9 @@ static NSImage *unexpandable  = nil;
     {
       [self setVersion: current_version];
       nc = [NSNotificationCenter defaultCenter];
-      collapsed    = [NSImage imageNamed: @"common_outlineCollapsed.tiff"];
-      expanded     = [NSImage imageNamed: @"common_outlineExpanded.tiff"];
-      unexpandable = [NSImage imageNamed: @"common_outlineUnexpandable.tiff"];
+      collapsed    = [NSImage imageNamed: @"common_outlineCollapsed"];
+      expanded     = [NSImage imageNamed: @"common_outlineExpanded"];
+      unexpandable = [NSImage imageNamed: @"common_outlineUnexpandable"];
     }
 }
 

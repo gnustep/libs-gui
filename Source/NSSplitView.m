@@ -70,7 +70,7 @@ static NSNotificationCenter *nc = nil;
       _isVertical = NO;
       ASSIGN(_dividerColor, [NSColor controlShadowColor]);
       ASSIGN(_backgroundColor, [NSColor controlBackgroundColor]);
-      ASSIGN(_dimpleImage, [NSImage imageNamed: @"common_Dimple.tiff"]); 
+      ASSIGN(_dimpleImage, [NSImage imageNamed: @"common_Dimple"]); 
 
       _never_displayed_before = YES;
       _autoresizes_subviews = NO;
@@ -932,7 +932,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       _draggedBarWidth = 8; // default bigger than dividerThickness
       ASSIGN(_dividerColor, [NSColor controlShadowColor]);
       ASSIGN(_backgroundColor, [NSColor controlBackgroundColor]);
-      ASSIGN(_dimpleImage, [NSImage imageNamed: @"common_Dimple.tiff"]); 
+      ASSIGN(_dimpleImage, [NSImage imageNamed: @"common_Dimple"]); 
       _never_displayed_before = YES;
     }
   else
@@ -943,7 +943,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       // Decode objects that we do retain.
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_dimpleImage];
       if (_dimpleImage == nil)
-	ASSIGN(_dimpleImage, [NSImage imageNamed: @"common_Dimple.tiff"]);
+	ASSIGN(_dimpleImage, [NSImage imageNamed: @"common_Dimple"]);
 
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_backgroundColor];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_dividerColor];
