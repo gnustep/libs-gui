@@ -228,13 +228,17 @@ APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
  * <p>This method is called automatically when the receiver is made into
  * the currently active theme by the +setTheme: method. Subclasses may
  * override it to perform startup operations, but should call the super
- * class implementation before doing their own thing.
+ * class implementation after doing their own thing.
  * </p>
- * <p>The base implementation handles setup and caching of certain image
- * information and then sends a GSThemeDidActivateNotification to allow
- * other parts of the GUI library to update themselves from the new theme.<br />
+ * <p>The base implementation handles setup and caching of the system color
+ * list and certain image information.<br />
+ * It then sends a GSThemeDidActivateNotification to allow other
+ * parts of the GUI library to update themselves from the new theme.<br />
  * If the theme sets an alternative system color list, the notification
  * userInfo dictionary will contain that list keyed on <em>Colors</em>.
+ * </p>
+ * <p>Finally, this method marks all windows in the application as needing
+ * update ... so they will draw themselves with the new theme information.
  * </p>
  */
 - (void) activate;

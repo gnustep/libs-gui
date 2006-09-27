@@ -33,11 +33,13 @@
 #include "Foundation/NSPathUtilities.h"
 #include "Foundation/NSUserDefaults.h"
 #include "GNUstepGUI/GSTheme.h"
+#include "AppKit/NSApplication.h"
 #include "AppKit/NSColor.h"
 #include "AppKit/NSColorList.h"
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSImage.h"
 #include "AppKit/NSView.h"
+#include "AppKit/NSWindow.h"
 #include "AppKit/NSBezierPath.h"
 #include "AppKit/PSOperators.h"
 
@@ -271,12 +273,15 @@ static NSNull			*null = nil;
 
 - (void) activate
 {
-  NSMutableDictionary	*userInfo = [NSMutableDictionary dictionary];
+  NSMutableDictionary	*userInfo;
   NSArray		*imagePaths;
   NSEnumerator		*enumerator;
   NSString		*imagePath;
+  NSArray		*imageTypes;
   NSString		*colorsPath;
+  NSWindow		*window;
 
+  userInfo = [NSMutableDictionary dictionary];
   colorsPath = [_bundle pathForResource: @"ThemeColors" ofType: @"clr"]; 
   if (colorsPath != nil)
     {
@@ -296,30 +301,48 @@ static NSNull			*null = nil;
    * to memory, setting their names so that they are visible to
    * [NSImage+imageNamed:] and storing them in our local array.
    */
+  imageTypes = [NSImage imageFileTypes];
   imagePaths = [_bundle pathsForResourcesOfType: nil
 				    inDirectory: @"ThemeImages"];
   enumerator = [imagePaths objectEnumerator];
   while ((imagePath = [enumerator nextObject]) != nil)
     {
-      NSImage	*image;
+      NSString	*ext = [imagePath pathExtension];
 
-      image = [[NSImage alloc] initWithContentsOfFile: imagePath];
-      if (image != nil)
-	{
-	  NSString	*imageName;
+      if (ext != nil && [imageTypes containsObject: ext] == YES)
+        {
+	  NSImage	*image;
 
-	  imageName = [imagePath lastPathComponent];
-	  imageName = [imageName stringByDeletingPathExtension];
-	  [_images addObject: image];
-	  [image setName: imageName];
-	  RELEASE(image);
+	  image = [[NSImage alloc] initWithContentsOfFile: imagePath];
+	  if (image != nil)
+	    {
+	      NSString	*imageName;
+
+	      imageName = [imagePath lastPathComponent];
+	      imageName = [imageName stringByDeletingPathExtension];
+	      [_images addObject: image];
+	      [image setName: imageName];
+	      RELEASE(image);
+	    }
 	}
     }
 
+  /*
+   * Tell all other classes that new theme information is present.
+   */
   [[NSNotificationCenter defaultCenter]
    postNotificationName: GSThemeDidActivateNotification
    object: self
    userInfo: userInfo];
+
+  /*
+   * Mark all windows as needing redisplaying to thos the new theme.
+   */
+  enumerator = [[NSApp windows] objectEnumerator];
+  while ((window = [enumerator nextObject]) != nil)
+    {
+      [[[window contentView] superview] setNeedsDisplay: YES];
+    }
 }
 
 - (NSBundle*) bundle
