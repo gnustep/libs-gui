@@ -438,7 +438,7 @@
 		{
 		  iP.y += 1;
 	          NSRectFill (NSMakeRect (iP.x, iP.y, 14, 17));
-		  [[NSImage imageNamed: @"common_TabDownSelectedLeft.tiff"]
+		  [[NSImage imageNamed: @"common_TabDownSelectedLeft"]
 		    compositeToPoint: iP operation: NSCompositeSourceOver];
 		  iP.y -= 1;
 		  iFlex = 1;
@@ -447,7 +447,7 @@
 		{
 		  iP.y += 1;
 	          NSRectFill (NSMakeRect (iP.x, iP.y, 14, 17));
-		  [[NSImage imageNamed: @"common_TabDownUnSelectedLeft.tiff"]
+		  [[NSImage imageNamed: @"common_TabDownUnSelectedLeft"]
 		    compositeToPoint: iP operation: NSCompositeSourceOver];
 		  iP.y -= 1;
 		}
@@ -485,7 +485,7 @@
 		  iFlex = 1;
 	          NSRectFill (NSMakeRect (iP.x, iP.y, 14, 17));
 		  [[NSImage imageNamed:
-		    @"common_TabDownUnSelectedToSelectedJunction.tiff"]
+		    @"common_TabDownUnSelectedToSelectedJunction"]
 		    compositeToPoint: iP operation: NSCompositeSourceOver];
 		  iP.y -= 1;
 		}
@@ -496,7 +496,7 @@
 		      iP.y += 1;
 	              NSRectFill (NSMakeRect (iP.x, iP.y, 14, 17));
 		      [[NSImage imageNamed:
-			@"common_TabDownSelectedToUnSelectedJunction.tiff"]
+			@"common_TabDownSelectedToUnSelectedJunction"]
 			compositeToPoint: iP operation: NSCompositeSourceOver];
 		      iP.y -= 1;
 		      iFlex = -1;
@@ -506,7 +506,7 @@
 		      //		    iP.y += 1;
 	              NSRectFill (NSMakeRect (iP.x, iP.y, 14, 17));
 		      [[NSImage imageNamed:
-			@"common_TabDownUnSelectedJunction.tiff"]
+			@"common_TabDownUnSelectedJunction"]
 			compositeToPoint: iP operation: NSCompositeSourceOver];
 		      //iP.y -= 1;
 		      iFlex = -1;
@@ -543,14 +543,14 @@
 	      if ([anItem tabState] == NSSelectedTab)
 	        {
 	          NSRectFill (NSMakeRect (iP.x, iP.y, 14, 17));
-		  [[NSImage imageNamed: @"common_TabDownSelectedRight.tiff"]
+		  [[NSImage imageNamed: @"common_TabDownSelectedRight"]
 		    compositeToPoint: iP operation: NSCompositeSourceOver];
 	        }
 	      else if ([anItem tabState] == NSBackgroundTab)
 		{
 		  //		  iP.y += 1;
 	          NSRectFill (NSMakeRect (iP.x, iP.y, 14, 17));
-		  [[NSImage imageNamed: @"common_TabDownUnSelectedRight.tiff"]
+		  [[NSImage imageNamed: @"common_TabDownUnSelectedRight"]
 		    compositeToPoint: iP operation: NSCompositeSourceOver];
 		  //		  iP.y -= 1;
 		}
@@ -585,13 +585,13 @@
 		{
 		  iP.y -= 1;
 	          NSRectFill (NSMakeRect (iP.x, iP.y, 14, 17));
-		  [[NSImage imageNamed: @"common_TabSelectedLeft.tiff"]
+		  [[NSImage imageNamed: @"common_TabSelectedLeft"]
 		    compositeToPoint: iP operation: NSCompositeSourceOver];
 		}
 	      else if (itemState == NSBackgroundTab)
 	        {
 	          NSRectFill (NSMakeRect (iP.x, iP.y, 14, 17));
-		  [[NSImage imageNamed: @"common_TabUnSelectedLeft.tiff"]
+		  [[NSImage imageNamed: @"common_TabUnSelectedLeft"]
 		    compositeToPoint: iP operation: NSCompositeSourceOver];
 	        }
 	      else
@@ -625,7 +625,7 @@
 		  iP.y -= 1;
 	          NSRectFill (NSMakeRect (iP.x, iP.y, 14, 17));
 		  [[NSImage imageNamed:
-		    @"common_TabUnSelectToSelectedJunction.tiff"]
+		    @"common_TabUnSelectToSelectedJunction"]
 		    compositeToPoint: iP operation: NSCompositeSourceOver];
 		}
 	      else if (itemState == NSBackgroundTab)
@@ -635,7 +635,7 @@
 		      iP.y -= 1;
 	              NSRectFill (NSMakeRect (iP.x, iP.y, 14, 17));
 		      [[NSImage imageNamed:
-			@"common_TabSelectedToUnSelectedJunction.tiff"]
+			@"common_TabSelectedToUnSelectedJunction"]
 			compositeToPoint: iP operation: NSCompositeSourceOver];
 		      iP.y += 1;
 		    }
@@ -643,7 +643,7 @@
 		    {
 	              NSRectFill (NSMakeRect (iP.x, iP.y, 14, 17));
 		      [[NSImage imageNamed:
-			@"common_TabUnSelectedJunction.tiff"]
+			@"common_TabUnSelectedJunction"]
 			compositeToPoint: iP operation: NSCompositeSourceOver];
 		    }
 		} 
@@ -676,13 +676,13 @@
 	      if ([anItem tabState] == NSSelectedTab)
 	        {	      
 	          NSRectFill (NSMakeRect (iP.x, iP.y, 14, 17));
-		  [[NSImage imageNamed: @"common_TabSelectedRight.tiff"]
+		  [[NSImage imageNamed: @"common_TabSelectedRight"]
 		    compositeToPoint: iP operation: NSCompositeSourceOver];
 		}  
 	      else if ([anItem tabState] == NSBackgroundTab)
 		{
 	          NSRectFill (NSMakeRect (iP.x, iP.y, 14, 17));
-		  [[NSImage imageNamed: @"common_TabUnSelectedRight.tiff"]
+		  [[NSImage imageNamed: @"common_TabUnSelectedRight"]
 		    compositeToPoint: iP operation: NSCompositeSourceOver];
 		}
 	      else

@@ -124,6 +124,7 @@ struct NSWindow_struct
   return self;
 }
 
+#if 0
 - (void) removeSubview: (NSView*)aView
 {
   RETAIN(aView);
@@ -137,6 +138,7 @@ struct NSWindow_struct
     }
   RELEASE(aView);
 }
+#endif
 
 - (void) setBackgroundColor: (NSColor *)color
 {

@@ -3360,6 +3360,55 @@ resetCursorRectsForView(NSView *theView)
 		break;
 	      }
 
+	    case GSAppKitRegionExposed:
+	      {
+		NSRect region;
+
+		region.size.width = [theEvent data1];
+		region.size.height = [theEvent data2];
+		region.origin = [theEvent locationInWindow];
+		switch (_backingType)
+		  {
+		    case NSBackingStoreBuffered:
+		    case NSBackingStoreRetained:
+		      /*
+		       * The backend may have the region buffered ...
+		       * so we add it to the rectangle to be flushed
+		       * and set the flag to say that a flush is required.
+		       */
+		      _rectNeedingFlush
+			= NSUnionRect(_rectNeedingFlush, region);
+		      _f.needs_flush = YES;
+		      if (_rFlags.needs_display)
+		        {
+			  /* Some or all of the window has not been drawn,
+			   * so we must at least make sure that the exposed
+			   * region gets drawn before its backing store is
+			   * flushed ... otherwise we might actually flush
+			   * bogus data from an out of date buffer.
+			   * Maybe we should call
+			   * [_wv displayIfNeededInRect: region]
+			   * but why not do all drawing at this point so
+			   * that if we get another expose event immediately
+			   * (eg. something is dragged over the window and
+			   * we get a series of expose events) we can just
+			   * flush without having to draw again.
+			   */
+			  [_wv displayIfNeeded];
+			}
+		      [self flushWindowIfNeeded];
+		      break;
+
+		    default:
+		      /* non-retained ... so we need to redraw the exposed
+		       * region here.
+		       */
+		      [_wv setNeedsDisplayInRect: region];
+		      break;
+		  }
+		}
+	      break;
+
 	    case GSAppKitWindowClose:
 	      [self performClose: NSApp];
 	      break;

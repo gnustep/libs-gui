@@ -2677,7 +2677,7 @@ static SEL getSel;
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       GSMatrixFlags matrixFlags;
       unsigned int mFlags = 0;
@@ -2798,15 +2798,15 @@ static SEL getSel;
 	  GSMatrixFlags matrixFlags;
 	  memcpy((void *)&matrixFlags,(void *)&mFlags,sizeof(struct _GSMatrixFlags));
 
-	  if(matrixFlags.isRadio)
+	  if (matrixFlags.isRadio)
 	    {
 	      [self setMode: NSRadioModeMatrix];
 	    }
-	  else if(matrixFlags.isList)
+	  else if (matrixFlags.isList)
 	    {
 	      [self setMode: NSListModeMatrix];
 	    }
-	  else if(matrixFlags.isHighlight)
+	  else if (matrixFlags.isHighlight)
 	    {
 	      [self setMode: NSHighlightModeMatrix];
 	    }
@@ -2923,7 +2923,7 @@ static SEL getSel;
 	  row = i / columns;
 	  column = i % columns;
 	  
-	  [self putCell:cell   atRow: row   column: column];
+	  [self putCell: cell   atRow: row   column: column];
 	  if ([cell state])
 	    {
 	      [self selectCellAtRow: row   column: column];
@@ -3382,7 +3382,7 @@ static SEL getSel;
   [self _rebuildLayoutAfterResizing];
 }
 
-- (void)_move:(unichar)pos
+- (void) _move: (unichar)pos
 {
   BOOL selectCell = NO;
   int h, i, lastDottedRow, lastDottedColumn;
@@ -3561,27 +3561,27 @@ static SEL getSel;
     }
 }
 
-- (void)moveUp:(id)sender
+- (void) moveUp: (id)sender
 {
   [self _move: NSUpArrowFunctionKey];
 }
 
-- (void)moveDown:(id)sender
+- (void) moveDown: (id)sender
 {
   [self _move: NSDownArrowFunctionKey];
 }
 
-- (void)moveLeft:(id)sender
+- (void) moveLeft: (id)sender
 {
   [self _move: NSLeftArrowFunctionKey];
 }
 
-- (void)moveRight:(id)sender
+- (void) moveRight: (id)sender
 {
   [self _move: NSRightArrowFunctionKey];
 }
 
-- (void) _shiftModifier:(unichar)character
+- (void) _shiftModifier: (unichar)character
 {
   int i, lastDottedRow, lastDottedColumn;
 
@@ -3657,7 +3657,7 @@ static SEL getSel;
   [self performClick: self];
 }
 
-- (void) _altModifier:(unichar)character
+- (void) _altModifier: (unichar)character
 {
   switch (character)
     {

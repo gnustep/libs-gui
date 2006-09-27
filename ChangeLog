@@ -1,3 +1,43 @@
+2006-09-26 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWorkspace.m: Use png in preference to tiff.
+	* Source/NSMenu.m: Remove unused extension from icon names.
+	* Source/NSSplitView.m: ditto
+	* Source/NSOutlineView.m: ditto
+	* Source/NSTabView.m: ditto
+
+2006-09-25  Matt Rice <ratmice@yahoo.com>
+
+	* Source/NSTableView.m (_shouldEditTableColumn:row:):
+	Dont invert delegate return value.
+
+2006-09-24 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h:
+	* Source/GSDisplayServer.m: Revert unnecessary addition to api
+	* Source/NSWindow.m: Use ([flushwindowrect::]) for expose events.
+	* Source/GSDragView.m: Don't drop expose events.
+
+2006-09-23  Matt Rice <ratmice@yahoo.com>
+
+	* Source/NSTableView.m (_isCellEditableColumn:row:): Allow
+	delegate to limit editablility of editable columns.
+
+2006-09-23 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSWindowDecorationView.m: coimment out dubious change.
+	* Source/GSDisplayServer.m: Add method for expose events
+	* Source/NSWindow.m: Handle expose events.
+	* Headers/AppKit/NSEvent.h: Add expose event type.
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h: Add method for
+	expose events.
+
+2006-09-22 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Headers/AppKit/NSColorList.h: Add documentation.
+	* Source/NSColorList.m: Fix ([-writeToFile:]) to work as specified
+	by Apple's documentation.
+
 2006-09-22 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/Additions/GNUstepGUI/GSDrawFunctions.h:

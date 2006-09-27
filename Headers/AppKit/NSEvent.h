@@ -362,7 +362,8 @@ typedef enum {
   GSAppKitDraggingStatus,
   GSAppKitDraggingExit,
   GSAppKitDraggingDrop,
-  GSAppKitDraggingFinished
+  GSAppKitDraggingFinished,
+  GSAppKitRegionExposed
 } GSAppKitSubtype;
 #endif
 
