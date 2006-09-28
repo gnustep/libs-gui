@@ -205,95 +205,113 @@ static NSNotificationCenter *nc;
 
 - (void) _organizeMenu
 {
-  NSString	*appTitle;
-  NSMenu	*appMenu;
-  NSMenuItem	*appItem;
   int		i;
 
-  if ([self isEqual: [NSApp mainMenu]] == NO)
+  if ([self isEqual: [NSApp mainMenu]] == YES)
     {
-      return;
-    }
+      NSString		*appTitle;
+      NSMenu		*appMenu;
+      NSMenuItem	*appItem;
 
-  appTitle = [[NSProcessInfo processInfo] processName];
-  appItem = (NSMenuItem *)[self itemWithTitle: appTitle];
-  appMenu = [appItem submenu];
+      appTitle = [[NSProcessInfo processInfo] processName];
+      appItem = (NSMenuItem *)[self itemWithTitle: appTitle];
+      appMenu = [appItem submenu];
 
-  if (_horizontal == YES)
-    {
-      NSMutableArray	*itemsToMove;
-      NSImage		*ti;
-      float		bar;
-
-      ti = [[NSApp applicationIconImage] copy];
-      if (ti == nil)
-        {
-	  ti = [[NSImage imageNamed: @"GNUstep"] copy];
-	}
-      [ti setScalesWhenResized: YES];
-      bar = [NSMenuView menuBarHeight] - 4;
-      [ti setSize: NSMakeSize(bar, bar)];
-
-      itemsToMove = [NSMutableArray new];
-
-      if (appMenu == nil)
+      if (_horizontal == YES)
 	{
-	  [self insertItemWithTitle: appTitle
-			     action: NULL
-		      keyEquivalent: @"" 
-			    atIndex: 0];
-	  appItem = [self itemAtIndex: 0];
-	  appMenu = [NSMenu new];
-	  [self setSubmenu: appMenu forItem: appItem];
-	  RELEASE(appMenu);
-	}
-      else
-        {
-	  int index = [self indexOfItem: appItem];
+	  NSMutableArray	*itemsToMove;
+	  NSImage		*ti;
+	  float			bar;
 
-	  if (index != 0)
+	  ti = [[NSApp applicationIconImage] copy];
+	  if (ti == nil)
 	    {
-	      RETAIN (appItem);
-	      [self removeItemAtIndex: index];
-	      [self insertItem: appItem atIndex: 0];
-	      RELEASE (appItem);
+	      ti = [[NSImage imageNamed: @"GNUstep"] copy];
 	    }
-	}
-      [appItem setImage: ti];
-      RELEASE(ti);
+	  [ti setScalesWhenResized: YES];
+	  bar = [NSMenuView menuBarHeight] - 4;
+	  [ti setSize: NSMakeSize(bar, bar)];
 
-      for (i = 1; i < [_items count]; i++)
-	{
-	  NSMenuItem	*anItem = [_items objectAtIndex: i];
-	  NSString	*title = [anItem title];
-	  NSMenu	*submenu = [anItem submenu];
+	  itemsToMove = [NSMutableArray new];
 
-	  if (submenu == nil)
+	  if (appMenu == nil)
 	    {
-	      [itemsToMove addObject: anItem];
+	      [self insertItemWithTitle: appTitle
+				 action: NULL
+			  keyEquivalent: @"" 
+				atIndex: 0];
+	      appItem = [self itemAtIndex: 0];
+	      appMenu = [NSMenu new];
+	      [self setSubmenu: appMenu forItem: appItem];
+	      RELEASE(appMenu);
 	    }
 	  else
 	    {
-	      if ([title isEqual: NSLocalizedString (@"Info", @"Info")])
+	      int index = [self indexOfItem: appItem];
+
+	      if (index != 0)
+		{
+		  RETAIN (appItem);
+		  [self removeItemAtIndex: index];
+		  [self insertItem: appItem atIndex: 0];
+		  RELEASE (appItem);
+		}
+	    }
+	  [appItem setImage: ti];
+	  RELEASE(ti);
+
+	  for (i = 1; i < [_items count]; i++)
+	    {
+	      NSMenuItem	*anItem = [_items objectAtIndex: i];
+	      NSString	*title = [anItem title];
+	      NSMenu	*submenu = [anItem submenu];
+
+	      if (submenu == nil)
 		{
 		  [itemsToMove addObject: anItem];
 		}
-	      [submenu update];
+	      else
+		{
+		  if ([title isEqual: NSLocalizedString (@"Info", @"Info")])
+		    {
+		      [itemsToMove addObject: anItem];
+		    }
+		  [[submenu menuRepresentation] update];
+		}
 	    }
-	}
 
-      for (i = 0; i < [itemsToMove count]; i++)
+	  for (i = 0; i < [itemsToMove count]; i++)
+	    {
+	      [self removeItem: [itemsToMove objectAtIndex: i]];
+	      [appMenu addItem: [itemsToMove objectAtIndex: i]];
+	    }
+	  [[appMenu menuRepresentation] update];
+
+	  RELEASE(itemsToMove);
+	}
+      else
 	{
-	  [self removeItem: [itemsToMove objectAtIndex: i]];
-	  [appMenu addItem: [itemsToMove objectAtIndex: i]];
+	  [appItem setImage: nil];
 	}
+    }
 
-      RELEASE(itemsToMove);
-    }
-  else
+  for (i = 0; i < [_items count]; i++)
     {
-      [appItem setImage: nil];
+      NSMenuItem	*anItem = [_items objectAtIndex: i];
+      NSMenu		*submenu = [anItem submenu];
+
+      if (submenu != nil)
+	{
+	  if ([submenu isTransient])
+	    {
+	      [submenu closeTransient];
+	    }
+	  [submenu close];
+	  [submenu _organizeMenu];
+	}
     }
+  [[self menuRepresentation] update];
+  [self sizeToFit];
 }
 
 - (void) _setGeometry
@@ -1578,8 +1596,6 @@ static NSNotificationCenter *nc;
       oldRep = [self menuRepresentation];
       oldStyle = [oldRep interfaceStyle];
       newStyle = NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
-
-      [self closeTransient];
 
       /*
        * If necessary, rebuild menu for (different) style
