@@ -220,6 +220,8 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 - (void) setMenu: (NSMenu*)menu
 {
   NSNotificationCenter	*theCenter = [NSNotificationCenter defaultCenter];
+  unsigned	count;
+  unsigned	i;
 
   if (_attachedMenu != nil)
     {
@@ -248,30 +250,25 @@ _addLeftBorderOffsetToRect(NSRect aRect)
                     selector: @selector(itemRemoved:)
                         name: NSMenuDidRemoveItemNotification
                       object: _attachedMenu];
-
-      // Force menu view's layout to be recalculated.
-      [self setNeedsSizing: YES];
-      
-      [self update];
     }
-  if (_horizontal)
+
+  count = [[[self menu] itemArray] count];
+  for (i = 0; i < count; i++)
     {
-      unsigned	count = [[[self menu] itemArray] count];
-      unsigned	i;
+      NSNumber	*n = [NSNumber numberWithInt: i];
+      NSDictionary	*d;
 
-      for (i = 0; i < count; i++)
-	{
-	  NSNumber	*n = [NSNumber numberWithInt: i];
-	  NSDictionary	*d;
+      d = [NSDictionary dictionaryWithObject: n forKey: @"NSMenuItemIndex"];
 
-	  d = [NSDictionary dictionaryWithObject: n forKey: @"NSMenuItemIndex"];
-
-	  [self itemAdded: [NSNotification
-	    notificationWithName: NSMenuDidAddItemNotification
-	    object: self
-	    userInfo: d]];
-	}
+      [self itemAdded: [NSNotification
+	notificationWithName: NSMenuDidAddItemNotification
+	object: self
+	userInfo: d]];
     }
+
+  // Force menu view's layout to be recalculated.
+  [self setNeedsSizing: YES];
+  [self update];
 }
 
 - (NSMenu*) menu
@@ -559,6 +556,38 @@ _addLeftBorderOffsetToRect(NSRect aRect)
  */
 - (void) update
 {
+  BOOL	needTitleView;
+
+  NSDebugLLog (@"NSMenu", @"update called on menu view");
+
+  /*
+   * Ensure that a title view exists only if needed.
+   */
+  if ([self _rootIsHorizontal] == YES)
+    {
+      needTitleView = NO;
+    }
+  else if (_attachedMenu == [NSApp mainMenu])
+    {
+      needTitleView = YES;
+    } 
+  else
+    {
+      needTitleView = [_attachedMenu _ownedByPopUp];
+    }
+
+  if (needTitleView == YES)
+    {
+      _titleView = [[GSTitleView alloc] initWithOwner:_attachedMenu];
+      [self addSubview: _titleView];
+      RELEASE(_titleView);
+    }
+  else
+    {
+      [_titleView removeFromSuperview];
+      _titleView = nil;
+    }
+
   if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self)
     == NSMacintoshInterfaceStyle)
     {
@@ -566,23 +595,6 @@ _addLeftBorderOffsetToRect(NSRect aRect)
     }
   else
     {
-      NSDebugLLog (@"NSMenu", @"update called on menu view");
-
-      /*
-       * Ensure that a title view exists only if needed.
-       */
-      if (![_attachedMenu _ownedByPopUp] && !_titleView)
-	{
-	  _titleView = [[GSTitleView alloc] initWithOwner:_attachedMenu];
-	  [self addSubview: _titleView];
-	  RELEASE(_titleView);
-	}
-      else if ([_attachedMenu _ownedByPopUp] && _titleView)
-	{
-	  [_titleView removeFromSuperview];
-	  _titleView = nil;
-	}
-
       [self sizeToFit];
 
       if ([_attachedMenu _ownedByPopUp] == NO)
@@ -1042,7 +1054,8 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 	  // Compute position for popups, if needed
 	  if (selectedItemIndex != -1) 
 	    {
-	      screenFrame.origin.y += screenRect.size.height * selectedItemIndex;
+	      screenFrame.origin.y
+		+= screenRect.size.height * selectedItemIndex;
 	    }
 	}
       else
