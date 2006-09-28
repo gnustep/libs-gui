@@ -43,6 +43,10 @@
 #include "AppKit/NSBezierPath.h"
 #include "AppKit/PSOperators.h"
 
+#include <math.h>
+#include <float.h>
+
+
 NSString	*GSThemeDidActivateNotification
   = @"GSThemeDidActivateNotification";
 NSString	*GSThemeDidDeactivateNotification
@@ -71,6 +75,7 @@ typedef enum {
   NSRect	rects[9];	/** The rectangles to use when drawing */
 }
 - (id) initWithImage: (NSImage*)image;
+- (id) initWithImage: (NSImage*)image horizontal: (float)x vertical: (float)y;
 @end
 
 @implementation	GSDrawTiles
@@ -92,25 +97,45 @@ typedef enum {
  */
 - (id) initWithImage: (NSImage*)image
 {
-  unsigned	i;
-  unsigned	j;
   NSSize	s = [image size];
+
+  return [self initWithImage: image
+		  horizontal: s.width / 3.0
+		    vertical: s.height / 3.0];
+}
+
+- (id) initWithImage: (NSImage*)image horizontal: (float)x vertical: (float)y
+{
+  unsigned	i;
+  NSSize	s = [image size];
+
+  x = floor(x);
+  y = floor(y);
+
+  rects[TileTL] = NSMakeRect(0.0, s.height - y, x, y);
+  rects[TileTM] = NSMakeRect(x, s.height - y, s.width - 2.0 * x, y);
+  rects[TileTR] = NSMakeRect(s.width - x, s.height - y, x, y);
+  rects[TileCL] = NSMakeRect(0.0, y, x, s.height - 2.0 * y);
+  rects[TileCM] = NSMakeRect(x, y, s.width - 2.0 * x, s.height - 2.0 * y);
+  rects[TileCR] = NSMakeRect(s.width - x, y, x, s.height - 2.0 * y);
+  rects[TileBL] = NSMakeRect(0.0, 0.0, x, y);
+  rects[TileBM] = NSMakeRect(x, 0.0, s.width - 2.0 * x, y);
+  rects[TileBR] = NSMakeRect(s.width - x, 0.0, x, y);
 
   for (i = 0; i < 9; i++)
     {
-      images[i] = RETAIN(image);
+      if (rects[i].origin.x < 0.0 || rects[i].origin.y < 0.0
+	|| rects[i].size.width <= 0.0 || rects[i].size.height <= 0.0)
+        {
+	  images[i] = nil;
+	  rects[i] = NSZeroRect;
+	}
+      else
+        {
+	  images[i] = RETAIN(image);
+	}
     }  
-  i = s.width / 3;
-  j = s.height / 3;
-  rects[TileTL] = NSMakeRect(0.0, s.height - j, i, j);
-  rects[TileTM] = NSMakeRect(i, s.height - j, s.width - 2 * i, j);
-  rects[TileTR] = NSMakeRect(s.width - i, s.height - j, i, j);
-  rects[TileCL] = NSMakeRect(0.0, j, i, s.height - 2 * j);
-  rects[TileCM] = NSMakeRect(i, j, s.width - 2 * i, s.height - 2 * j);
-  rects[TileCR] = NSMakeRect(s.width - i, j, i, s.height - 2 * j);
-  rects[TileBL] = NSMakeRect(0.0, 0.0, i, j);
-  rects[TileBM] = NSMakeRect(i, 0.0, s.width - 2 * i, j);
-  rects[TileBR] = NSMakeRect(s.width - i, 0.0, i, j);
+
   return self;
 }
 @end
@@ -273,12 +298,15 @@ static NSNull			*null = nil;
 
 - (void) activate
 {
+  NSUserDefaults	*defs;
   NSMutableDictionary	*userInfo;
+  NSMutableArray	*searchList;
   NSArray		*imagePaths;
   NSEnumerator		*enumerator;
   NSString		*imagePath;
   NSArray		*imageTypes;
   NSString		*colorsPath;
+  NSDictionary		*infoDict;
   NSWindow		*window;
 
   userInfo = [NSMutableDictionary dictionary];
@@ -326,6 +354,53 @@ static NSNull			*null = nil;
 	    }
 	}
     }
+
+  /*
+   * We could cache tile info here, but it's probabaly better for the
+   * tilesNamed: method to do it lazily.
+   */
+
+  /*
+   * Use the GSThemeDomain key in the info dictionary of the bnundle to
+   * set a defaults domain which will establish user defaults values
+   * but will not override any defaults set explicitly by the user.
+   */
+  infoDict = [_bundle infoDictionary];
+  defs = [NSUserDefaults standardUserDefaults];
+  searchList = [[defs searchList] mutableCopy];
+  if ([[infoDict objectForKey: @"GSThemeDomain"] isKindOfClass:
+    [NSDictionary class]] == YES)
+    {
+      [defs setVolatileDomain: [infoDict objectForKey: @"GSThemeDomain"]
+		      forName: @"GSThemeDomain"];
+      if ([searchList containsObject: @"GSThemeDomain"] == NO)
+	{
+	  unsigned	index;
+
+	  /*
+	   * Higher priority than GSConfigDomain and NSRegistrationDomain,
+	   * but lower than NSGlobalDomain, NSArgumentDomain, and others
+	   * set by the user to be application specific.
+	   */
+	  index = [searchList indexOfObject: GSConfigDomain];
+	  if (index == NSNotFound)
+	    {
+	      index = [searchList indexOfObject: NSRegistrationDomain];
+	      if (index == NSNotFound)
+	        {
+		  index = [searchList count];
+		}
+	    }
+	  [searchList insertObject: @"GSThemeDomain" atIndex: index];
+	  [defs setSearchList: searchList];
+	}
+    }
+  else
+    {
+      [searchList removeObject: @"GSThemeDomain"];
+      [defs removeVolatileDomainForName: @"GSThemeDomain"];
+    }
+  RELEASE(searchList);
 
   /*
    * Tell all other classes that new theme information is present.
@@ -395,18 +470,86 @@ static NSNull			*null = nil;
 
   if (tiles == nil)
     {
-      NSImage		*image = [NSImage imageNamed: aName];
+      NSDictionary	*info;
+      NSImage		*image;
 
-      if (image != nil)
+      /* The GSThemeTiles entry in the info dictionary should be a
+       * dictionary containing information about each set of tiles.
+       * Keys are:
+       * FileName		Name of the file in the ThemeTiles directory
+       * HorizontalDivision	Where to divide the image into columns.
+       * VerticalDivision	Where to divide the image into rows.
+       */
+      info = [_bundle infoDictionary];
+      info = [[info objectForKey: @"GSThemeTiles"] objectForKey: aName];
+      if ([info isKindOfClass: [NSDictionary class]] == YES)
         {
-	  tiles = [[GSDrawTiles alloc] initWithImage: image];
+	  float		x;
+	  float		y;
+	  NSString	*path;
+	  NSString	*file;
+	  NSString	*ext;
+
+	  x = [[info objectForKey: @"HorizontalDivision"] floatValue];
+	  y = [[info objectForKey: @"VerticalDivision"] floatValue];
+	  file = [info objectForKey: @"FileName"];
+	  ext = [file pathExtension];
+	  file = [file stringByDeletingPathExtension];
+	  path = [_bundle pathForResource: file
+				   ofType: ext
+			      inDirectory: @"ThemeTiles"];
+	  if (path == nil)
+	    {
+	      NSLog(@"File %@.%@ not found in ThemeTiles", file, ext);
+	    }
+	  else
+	    {
+	      image = [[NSImage alloc] initWithContentsOfFile: path];
+	      if (image != nil)
+		{
+		  tiles = [[GSDrawTiles alloc] initWithImage: image
+						  horizontal: x
+						    vertical: y];
+		  RELEASE(image);
+		}
+	    }
 	}
       else
         {
-	  tiles = RETAIN(null);
+	  NSArray	*imageTypes;
+	  NSString	*imagePath;
+	  unsigned	count;
+
+	  imageTypes = [NSImage imageFileTypes];
+	  for (count = 0; image == nil && count < [imageTypes count]; count++)
+	    {
+	      NSString	*ext = [imageTypes objectAtIndex: count];
+
+	      imagePath = [_bundle pathForResource: aName
+					    ofType: ext
+				       inDirectory: @"ThemeTiles"];
+	      if (imagePath != nil)
+		{
+		  image = [[NSImage alloc] initWithContentsOfFile: imagePath];
+		  if (image != nil)
+		    {
+		      tiles = [[GSDrawTiles alloc] initWithImage: image];
+		      RELEASE(image);
+		      break;
+		    }
+		}
+	    }
 	}
-      [_tiles setObject: tiles forKey: aName];
-      RELEASE(_tiles);
+
+      if (tiles == nil)
+        {
+	  [_tiles setObject: null forKey: aName];
+	}
+      else
+        {
+	  [_tiles setObject: tiles forKey: aName];
+	  RELEASE(_tiles);
+	}
     }
   if (tiles == (id)null)
     {
