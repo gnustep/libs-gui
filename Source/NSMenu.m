@@ -120,10 +120,11 @@ static NSNotificationCenter *nc;
 
 @interface	NSMenu (GNUstepPrivate)
 
-- (NSString *) _locationKey;
 - (NSMenuPanel *) _createWindow;
-- (void) _updateUserDefaults: (id) notification;
+- (NSString *) _locationKey;
 - (void) _rightMouseDisplay: (NSEvent*)theEvent;
+- (void) _setGeometry;
+- (void) _updateUserDefaults: (id) notification;
 
 @end
 
@@ -313,6 +314,51 @@ static NSNotificationCenter *nc;
 
 	  [itemsToMove release];
 	}
+    }
+}
+
+- (void) _setGeometry
+{
+  NSPoint        origin;
+
+  if (_horizontal == YES)
+    {
+      origin = NSMakePoint (0, [[NSScreen mainScreen] frame].size.height
+	- [_aWindow frame].size.height);
+      [_aWindow setFrameOrigin: origin];
+      [_bWindow setFrameOrigin: origin];
+    }
+  else
+    {
+      NSString       *key;
+
+      if (nil != (key = [self _locationKey]))
+	{
+	  NSUserDefaults *defaults;
+	  NSDictionary   *menuLocations;
+	  NSString       *location;
+
+	  defaults = [NSUserDefaults standardUserDefaults];
+	  menuLocations = [defaults objectForKey: NSMenuLocationsKey];
+
+	  if ([menuLocations isKindOfClass: [NSDictionary class]])
+	    location = [menuLocations objectForKey: key];
+	  else
+	    location = nil;
+     
+	  if (location && [location isKindOfClass: [NSString class]])
+	    {
+	      [_aWindow setFrameFromString: location];
+	      [_bWindow setFrameFromString: location];
+	      return;
+	    }
+	}
+      
+      origin = NSMakePoint(0, [[_aWindow screen] visibleFrame].size.height 
+	  - [_aWindow frame].size.height);
+	  
+      [_aWindow setFrameOrigin: origin];
+      [_bWindow setFrameOrigin: origin];
     }
 }
 
@@ -543,7 +589,7 @@ static NSNotificationCenter *nc;
   else
     [_notifications addObject: inserted];
 
-  // Set this after the insert notification has been send.
+  // Set this after the insert notification has been sent.
   [newItem setMenu: self];
 }
 
@@ -1407,9 +1453,9 @@ static NSNotificationCenter *nc;
       _superMenu->_attachedMenu = self;
     }
   else if ([_aWindow frame].origin.y <= 0 
-           && _popUpButtonCell == nil)   // get geometry only if not set
+    && _popUpButtonCell == nil)   // get geometry only if not set
     {
-      [self setGeometry];
+      [self _setGeometry];
     }
   
   NSDebugLLog (@"NSMenu", 
@@ -1470,51 +1516,6 @@ static NSNotificationCenter *nc;
   [_view update];
   
   [_bWindow orderFront: self];
-}
-
-- (void) setGeometry
-{
-  NSPoint        origin;
-
-  if (_horizontal == YES)
-    {
-      origin = NSMakePoint (0, [[NSScreen mainScreen] frame].size.height
-	- [_aWindow frame].size.height);
-      [_aWindow setFrameOrigin: origin];
-      [_bWindow setFrameOrigin: origin];
-    }
-  else
-    {
-      NSString       *key;
-
-      if (nil != (key = [self _locationKey]))
-	{
-	  NSUserDefaults *defaults;
-	  NSDictionary   *menuLocations;
-	  NSString       *location;
-
-	  defaults = [NSUserDefaults standardUserDefaults];
-	  menuLocations = [defaults objectForKey: NSMenuLocationsKey];
-
-	  if ([menuLocations isKindOfClass: [NSDictionary class]])
-	    location = [menuLocations objectForKey: key];
-	  else
-	    location = nil;
-     
-	  if (location && [location isKindOfClass: [NSString class]])
-	    {
-	      [_aWindow setFrameFromString: location];
-	      [_bWindow setFrameFromString: location];
-	      return;
-	    }
-	}
-      
-      origin = NSMakePoint(0, [[_aWindow screen] visibleFrame].size.height 
-	  - [_aWindow frame].size.height);
-	  
-      [_aWindow setFrameOrigin: origin];
-      [_bWindow setFrameOrigin: origin];
-    }
 }
 
 - (void) close
@@ -1591,22 +1592,74 @@ static NSNotificationCenter *nc;
 {
   if (isMain)
     {
-      /*
-       * If necessary,. rebuild menu for macintosh (horizontal) style
-       */
-      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil)
-	== NSMacintoshInterfaceStyle)
-	{
-	  NSMenuView *rep = [[NSMenuView alloc] initWithFrame: NSZeroRect];
+      NSMenuView	*oldRep;
+      NSInterfaceStyle	oldStyle;
+      NSInterfaceStyle	newStyle;
 
-	  [rep setHorizontal: YES];
-	  [self setMenuRepresentation: rep];
+      oldRep = [self menuRepresentation];
+      oldStyle = [oldRep interfaceStyle];
+      newStyle = NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
+
+      /*
+       * If necessary,. rebuild menu for (different) style
+       */
+      if (oldStyle != newStyle)
+        {
+	  NSMenuView	*newRep;
+	  BOOL		reEnable;
+	  NSArray	*array;
+	  unsigned	count;
+	  unsigned	index;
+
+	  newRep = [[NSMenuView alloc] initWithFrame: NSZeroRect];
+	  if (newStyle == NSMacintoshInterfaceStyle)
+	    {
+	      [newRep setHorizontal: YES];
+	    }
+	  else
+	    {
+	      [newRep setHorizontal: NO];
+	    }
+	  [newRep setInterfaceStyle: newStyle];
+	  [self setMenuRepresentation: newRep];
 	  [self _organizeMenu];
-	  RELEASE(rep);
+	  RELEASE(newRep);
+
+	  /*
+	   * Notify the new menu representation of the existence of all
+	   * menu items.
+	   */
+	  reEnable = [self menuChangedMessagesEnabled];
+	  if (reEnable == YES)
+	    {
+	      [self setMenuChangedMessagesEnabled: NO];
+	    }
+	  array = [self itemArray];
+	  count = [array count];
+	  for (index = 0; index < count; index++)
+	    {
+	      NSDictionary	*d;
+	      NSNotification	*n;
+
+	      // Create the notification for the menu representation.
+	      d = [NSDictionary
+		dictionaryWithObject: [NSNumber numberWithInt: index]
+		forKey: @"NSMenuItemIndex"];
+	      n = [NSNotification
+		 notificationWithName: NSMenuDidAddItemNotification
+		 object: self
+		 userInfo: d];
+	      [_notifications addObject: n];
+	    }
+	  if (reEnable == YES)
+	    {
+	      [self setMenuChangedMessagesEnabled: YES];
+	    }
 	}
+
       [[self window] setTitle: [[NSProcessInfo processInfo] processName]];
       [[self window] setLevel: NSMainMenuWindowLevel];
-      [self setGeometry];
+      [self _setGeometry];
 
       if ([NSApp isActive])
         {

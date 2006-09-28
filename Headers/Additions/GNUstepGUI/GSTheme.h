@@ -141,6 +141,7 @@
 #if	OS_API_VERSION(GS_API_NONE,GS_API_NONE)
 @class NSBundle;
 @class NSColor;
+@class NSDictionary;
 @class GSDrawTiles;
 
 /**
@@ -269,6 +270,42 @@ APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
  * you may need to override this to provide additional initialisation.
  */
 - (id) initWithBundle: (NSBundle*)bundle;
+
+/**
+ * <p>Returns the info dictionary for this theme.  In the base class
+ * implementation this is simply the info dictionary of the theme
+ * bundle, but subclasses may override this method to return extra
+ * or different information.
+ * </p>
+ * <p>Keys found in this dictionary include:
+ * </p>
+ * <deflist>
+ *   <term>GSThemeDomain</term>
+ *   <desc>A dictionary whose key/value pairs are used to set up new values
+ *   in the GSThemeDomain domain of the user defaults system, and hence
+ *   define values for these unless overridden by values set explicitly by
+ *   the user.
+ *   </desc>
+ *   <term>GSThemeTiles</term>
+ *   <desc>A dictionary keyed on tile names and containing the following:
+ *     <deflist>
+ *       <term>FileName</term>
+ *       <desc>Name of the file (within the GSThemeTiles directory in the
+ *       bundle) in which the image for this tile is tored.
+ *       </desc>
+ *       <term>HorizontalDivision</term>
+ *       <desc>The offet along the X-axis used to divide the image into
+ *       columns of tiles.
+ *       </desc>
+ *       <term>VerticalDivision</term>
+ *       <desc>The offet along the Y-axis used to divide the image into
+ *       rows of tiles.
+ *       </desc>
+ *     </deflist>
+ *   </desc>
+ * </deflist>
+ */
+- (NSDictionary*) infoDictionary;
 
 /**
  * Returns the tile image information for a particular image name,

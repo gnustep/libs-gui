@@ -38,6 +38,7 @@
 #include "AppKit/NSColorList.h"
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSImage.h"
+#include "AppKit/NSMenu.h"
 #include "AppKit/NSView.h"
 #include "AppKit/NSWindow.h"
 #include "AppKit/NSBezierPath.h"
@@ -295,7 +296,6 @@ static NSNull			*null = nil;
   return theTheme;
 }
 
-
 - (void) activate
 {
   NSUserDefaults	*defs;
@@ -361,16 +361,19 @@ static NSNull			*null = nil;
    */
 
   /*
-   * Use the GSThemeDomain key in the info dictionary of the bnundle to
+   * Use the GSThemeDomain key in the info dictionary of the theme to
    * set a defaults domain which will establish user defaults values
    * but will not override any defaults set explicitly by the user.
+   * NB. For subclasses, the theme info dictionary may not be the same
+   * as that of the bundle, so we don't use the bundle method directly.
    */
-  infoDict = [_bundle infoDictionary];
+  infoDict = [self infoDictionary];
   defs = [NSUserDefaults standardUserDefaults];
   searchList = [[defs searchList] mutableCopy];
   if ([[infoDict objectForKey: @"GSThemeDomain"] isKindOfClass:
     [NSDictionary class]] == YES)
     {
+      [defs removeVolatileDomainForName: @"GSThemeDomain"];
       [defs setVolatileDomain: [infoDict objectForKey: @"GSThemeDomain"]
 		      forName: @"GSThemeDomain"];
       if ([searchList containsObject: @"GSThemeDomain"] == NO)
@@ -409,6 +412,11 @@ static NSNull			*null = nil;
    postNotificationName: GSThemeDidActivateNotification
    object: self
    userInfo: userInfo];
+
+  /*
+   * Reset main menu to change between styles if necessary
+   */
+  [[NSApp mainMenu] setMain: YES];
 
   /*
    * Mark all windows as needing redisplaying to thos the new theme.
@@ -464,6 +472,11 @@ static NSNull			*null = nil;
   return self;
 }
 
+- (NSDictionary*) infoDictionary
+{
+  return [_bundle infoDictionary];
+}
+
 - (GSDrawTiles*) tilesNamed: (NSString*)aName
 {
   GSDrawTiles	*tiles = [_tiles objectForKey: aName];
@@ -480,7 +493,7 @@ static NSNull			*null = nil;
        * HorizontalDivision	Where to divide the image into columns.
        * VerticalDivision	Where to divide the image into rows.
        */
-      info = [_bundle infoDictionary];
+      info = [self infoDictionary];
       info = [[info objectForKey: @"GSThemeTiles"] objectForKey: aName];
       if ([info isKindOfClass: [NSDictionary class]] == YES)
         {

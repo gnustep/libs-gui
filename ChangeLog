@@ -1,3 +1,12 @@
+2006-09-28 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSTheme.m: Update main menu on theme activation.
+	* Source/NSMenu.m: ([setMain:]) handle change of interface style.
+	* Source/NSInterfaceStyle.m: Observe/handle theme activation.
+	* Headers/AppKit/NSMenu.h: remove internal method from public header
+	* Headers/Additions/GNUstepGUI/GSTheme.h: add -infoDictionary method
+	and documentation.
+
 2006-09-26 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: Use png in preference to tiff.
