@@ -990,9 +990,9 @@ _addLeftBorderOffsetToRect(NSRect aRect)
             [_attachedMenu indexOfItemWithSubmenu: aSubmenu]];
 	  NSPoint subOrigin = [_window convertBaseToScreen:
             NSMakePoint(aRect.origin.x, aRect.origin.y)];
-    
+          // FIXME ... why is the offset +1 needed below? 
 	  return NSMakePoint (NSMaxX(frame),
-	    subOrigin.y - NSHeight(submenuFrame) + aRect.size.height);
+	    subOrigin.y - NSHeight(submenuFrame) + aRect.size.height + 1);
 	}
       else
 	{
