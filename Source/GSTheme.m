@@ -161,8 +161,9 @@ typedef enum {
 
 @implementation GSTheme
 
-static GSTheme		*defaultTheme = nil;
-static GSTheme		*theTheme = nil;
+static GSTheme			*defaultTheme = nil;
+static NSString			*defaultThemeName = nil;
+static GSTheme			*theTheme = nil;
 static NSString			*theThemeName = nil;
 static NSMutableDictionary	*themes = nil;
 static NSNull			*null = nil;
@@ -174,8 +175,9 @@ static NSNull			*null = nil;
 
   defs = [NSUserDefaults standardUserDefaults];
   name = [defs stringForKey: @"GSTheme"];
-  if (name != theThemeName && [name isEqual: theThemeName] == NO)
+  if (name != defaultThemeName && [name isEqual: defaultThemeName] == NO)
     {
+      ASSIGN(defaultThemeName, name);	// Don't try to load again.
       [self loadThemeNamed: name];
     }
 }
@@ -185,7 +187,6 @@ static NSNull			*null = nil;
   if (themes == nil)
     {
       themes = [NSMutableDictionary new];
-      [self theme];	// Initialise/create the default theme
       [[NSNotificationCenter defaultCenter]
 	addObserver: self
 	selector: @selector(defaultsDidChange:)
@@ -203,6 +204,9 @@ static NSNull			*null = nil;
       defaultTheme = [[self alloc] initWithBundle: aBundle];
       ASSIGN(theTheme, defaultTheme);
     }
+  /* Establish the theme specified by the user defaults (if any);
+   */
+  [self defaultsDidChange: nil];
 }
 
 + (BOOL) loadThemeNamed: (NSString*)aName
@@ -214,15 +218,14 @@ static NSNull			*null = nil;
 
   if ([aName length] == 0)
     {
+      DESTROY(theThemeName);
       [self setTheme: nil];
       [self theme];
       return YES;
     }
 
-  /* Ensure that the theme name does not contain path components
-   * and has the 'theme' extension.
+  /* Ensure that the theme name has the 'theme' extension.
    */
-  aName = [aName lastPathComponent];
   if ([[aName pathExtension] isEqualToString: @"theme"] == YES)
     {
       theme = aName;
@@ -236,20 +239,34 @@ static NSNull			*null = nil;
   if (bundle == nil)
     {
       NSString		*path;
-      NSEnumerator	*enumerator;
       NSFileManager	*mgr = [NSFileManager defaultManager];
+      BOOL 		isDir;
 
-      enumerator = [NSSearchPathForDirectoriesInDomains
-        (NSAllLibrariesDirectory, NSAllDomainsMask, YES) objectEnumerator];
-      while ((path = [enumerator nextObject]) != nil)
-	{
-	  BOOL isDir;
-	  
-	  path = [path stringByAppendingPathComponent: @"Themes"];
-	  path = [path stringByAppendingPathComponent: theme];
-	  if ([mgr fileExistsAtPath: path isDirectory:	&isDir])
+      /* A theme may be either an absolute path or a filename to be located
+       * in the Themes subdirectory of one of the standard Library directories.
+       */
+      if ([theme isAbsolutePath] == YES)
+        {
+	  if ([mgr fileExistsAtPath: theme isDirectory: &isDir] == YES
+	    && isDir == YES)
 	    {
-	      break;
+	      path = theme;
+	    }
+	}
+      else
+        {
+	  NSEnumerator	*enumerator;
+
+	  enumerator = [NSSearchPathForDirectoriesInDomains
+	    (NSAllLibrariesDirectory, NSAllDomainsMask, YES) objectEnumerator];
+	  while ((path = [enumerator nextObject]) != nil)
+	    {
+	      path = [path stringByAppendingPathComponent: @"Themes"];
+	      path = [path stringByAppendingPathComponent: theme];
+	      if ([mgr fileExistsAtPath: path isDirectory: &isDir])
+		{
+		  break;
+		}
 	    }
 	}
 
@@ -271,6 +288,7 @@ static NSNull			*null = nil;
     {
       cls = self;
     }
+  ASSIGN(theThemeName, theme);
   instance = [[cls alloc] initWithBundle: bundle];
   [self setTheme: instance];
   RELEASE(instance);
