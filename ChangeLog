@@ -1,3 +1,11 @@
+2006-09-29 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWindow.m: If ordewring out a deferred window which was
+	never ordered in, there is nothing to do.
+	* Source/NSMenu.m: (_organize) when switching from horizontal to
+	vertical menu, attempt to restore contents fo the app menu to the
+	main menu in a reasonable manner.
+
 2006-09-28 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTheme.m: Update main menu on theme activation.

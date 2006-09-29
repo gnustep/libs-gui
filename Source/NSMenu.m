@@ -292,6 +292,27 @@ static NSNotificationCenter *nc;
       else
 	{
 	  [appItem setImage: nil];
+	  if (appMenu != nil)
+	    {
+	      NSArray	*array = [NSArray arrayWithArray: [appMenu itemArray]];
+
+	      for (i = 0; i < [array count]; i++)
+	        {
+		  NSMenuItem	*anItem = [array objectAtIndex: i];
+		  NSMenu	*submenu = [anItem submenu];
+
+		  [appMenu removeItem: anItem];
+		  if (submenu == nil)
+		    {
+		      [self addItem: anItem];
+		    }
+		  else
+		    {
+		      [self insertItem: anItem atIndex: 0];	// Info menu
+		    }
+		}
+	      [self removeItem: appItem];
+	    }
 	}
     }
 
