@@ -42,7 +42,7 @@
 
 @implementation NSBundle (NSHelpManager)
 
-- (NSString *)pathForHelpResource:(NSString *)fileName
+- (NSString *) pathForHelpResource: (NSString *)fileName
 {
   NSFileManager *fm = [NSFileManager defaultManager];
   NSMutableArray *array = [NSMutableArray array];
@@ -59,6 +59,7 @@
   while ((language = [enumerator nextObject]))
     {
       NSString *langDir = [NSString stringWithFormat: @"%@.lproj", language];
+
       [array addObject: [primary stringByAppendingPathComponent: langDir]];
     }
   
@@ -71,6 +72,7 @@
   while ((language = [enumerator nextObject]))
     {
       NSString *langDir = [NSString stringWithFormat: @"%@.lproj", language];
+
       [array addObject: [primary stringByAppendingPathComponent: langDir]];
     }
   
@@ -107,7 +109,7 @@
   return nil;
 }
 
-- (NSAttributedString *)contextHelpForKey:(NSString *)key
+- (NSAttributedString *) contextHelpForKey: (NSString *)key
 {
   NSFileManager *fm = [NSFileManager defaultManager];
   NSString *dictPath = [self pathForResource: @"Help" ofType: @"plist"];
@@ -127,8 +129,8 @@
   if (helpFile)
     {
       NSData *data = [helpFile objectForKey: @"NSHelpRTFContents"];
-      return ((data != nil) ? [NSUnarchiver unarchiveObjectWithData: data] :
-        nil) ;
+      return ((data != nil) ? [NSUnarchiver unarchiveObjectWithData: data]
+	: nil);
       
     } 
   else
@@ -137,8 +139,10 @@
 
       if (helpFile)
         {
-          NSString *helpstr = [[NSAttributedString alloc] initWithPath: helpFile
-                                                    documentAttributes: NULL];
+          NSString *helpstr;
+
+          helpstr = [[NSAttributedString alloc] initWithPath: helpFile
+					  documentAttributes: NULL];
           return TEST_AUTORELEASE (helpstr);
         }
     }
@@ -165,7 +169,7 @@
       // "appname.rtfd" or "appname.rtf"
     }
 
-  if (help)
+  if (help != nil)
     {
       NSString *file = nil;
 
@@ -181,10 +185,12 @@
             }
         }
 
-    if (file)
+    if (file != nil)
       {
-	[[NSWorkspace sharedWorkspace] openFile: file];
-	return;
+	if ([[NSWorkspace sharedWorkspace] openFile: file] == YES)
+	  {
+	    return;
+	  }
       }
   }
   
@@ -207,7 +213,7 @@ static BOOL _gnu_contextHelpActive = NO;
 //
 // Class methods
 //
-+ (NSHelpManager*)sharedHelpManager
++ (NSHelpManager*) sharedHelpManager
 {
   if (!_gnu_sharedHelpManager)
     {
@@ -217,12 +223,12 @@ static BOOL _gnu_contextHelpActive = NO;
   return _gnu_sharedHelpManager;
 }
 
-+ (BOOL)isContextHelpModeActive
++ (BOOL) isContextHelpModeActive
 {
   return _gnu_contextHelpActive;
 }
 
-+ (void)setContextHelpModeActive: (BOOL) flag
++ (void) setContextHelpModeActive: (BOOL) flag
 {
   _gnu_contextHelpActive = flag;
   if (flag)
@@ -287,7 +293,7 @@ static BOOL _gnu_contextHelpActive = NO;
   NSMapRemove(contextHelpTopics, object);
 }
 
-- (void)setContextHelp:(NSAttributedString *)help forObject:(id)object
+- (void) setContextHelp: (NSAttributedString *)help forObject: (id)object
 {
   NSMapInsert(contextHelpTopics, object, help);
 }

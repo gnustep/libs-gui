@@ -575,7 +575,11 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   /*
    * Ensure that a title view exists only if needed.
    */
-  if ([self _rootIsHorizontal: &rootIsAppMenu] == YES)
+  if (_attachedMenu == nil)
+    {
+      needTitleView = NO;
+    }
+  else if ([self _rootIsHorizontal: &rootIsAppMenu] == YES)
     {
       needTitleView = NO;
     }
