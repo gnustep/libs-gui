@@ -446,6 +446,11 @@ static NSNull			*null = nil;
     }
 }
 
+- (NSArray*) authors
+{
+  return [[self infoDictionary] objectForKey: @"GSThemeAuthors"];
+}
+
 - (NSBundle*) bundle
 {
   return _bundle;
@@ -479,7 +484,34 @@ static NSNull			*null = nil;
   RELEASE(_bundle);
   RELEASE(_images);
   RELEASE(_tiles);
+  RELEASE(_icon);
   [super dealloc];
+}
+
+- (NSImage*) icon
+{
+  if (_icon == nil)
+    {
+      NSString	*path;
+
+      path = [[self infoDictionary] objectForKey: @"GSThemeIcon"];
+      if (path != nil)
+        {
+	  NSString	*ext = [path pathExtension];
+
+	  path = [path stringByDeletingPathExtension];
+	  path = [_bundle pathForResource: path ofType: ext];
+	  if (path != nil)
+	    {
+	      _icon = [[NSImage alloc] initWithContentsOfFile: path];
+	    }
+	}
+      if (_icon == nil)
+        {
+	  _icon = RETAIN([NSImage imageNamed: @"GNUstep"]);
+	}
+    }
+  return _icon;
 }
 
 - (id) initWithBundle: (NSBundle*)bundle

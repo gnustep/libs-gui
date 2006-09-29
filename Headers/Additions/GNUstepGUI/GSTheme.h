@@ -139,9 +139,11 @@
 #include "AppKit/NSButtonCell.h"
 
 #if	OS_API_VERSION(GS_API_NONE,GS_API_NONE)
+@class NSArray;
 @class NSBundle;
 @class NSColor;
 @class NSDictionary;
+@class NSImage;
 @class GSDrawTiles;
 
 /**
@@ -208,6 +210,7 @@ APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
   NSBundle		*_bundle;
   NSMutableArray	*_images;
   NSMutableDictionary	*_tiles;
+  NSImage		*_icon;
 }
 
 /**
@@ -246,6 +249,11 @@ APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
 - (void) activate;
 
 /**
+ * Returns the names of the theme's authors.
+ */
+- (NSArray*) authors;
+
+/**
  * Return the bundle containing the resources used by the current theme.
  */
 - (NSBundle*) bundle;
@@ -263,6 +271,11 @@ APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
  * </p>
  */
 - (void) deactivate;
+
+/**
+ * Returns the theme's icon.
+ */
+- (NSImage*) icon;
 
 /** <init />
  * Initialise an instance of a theme with the specified resource bundle.<br />

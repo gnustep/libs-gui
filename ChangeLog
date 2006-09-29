@@ -1,11 +1,14 @@
 2006-09-29 Richard Frith-Macdonald <rfm@gnu.org>
 
-	* Source/NSWindow.m: If ordewring out a deferred window which was
+	* Source/NSWindow.m: If ordering out a deferred window which was
 	never ordered in, there is nothing to do.
 	* Source/NSMenu.m: (_organize) when switching from horizontal to
 	vertical menu, attempt to restore contents fo the app menu to the
 	main menu in a reasonable manner.
 	* Source/NSHelpManager.m: Use the help file specified in Info.plist
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	* Source/GSTheme.m: Add -authors and -icon methods. Support loading
+	from an absolute path.
 
 2006-09-28 Richard Frith-Macdonald <rfm@gnu.org>
 
