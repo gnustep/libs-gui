@@ -5,6 +5,7 @@
 	* Source/NSMenu.m: (_organize) when switching from horizontal to
 	vertical menu, attempt to restore contents fo the app menu to the
 	main menu in a reasonable manner.
+	* Source/NSHelpManager.m: Use the help file specified in Info.plist
 
 2006-09-28 Richard Frith-Macdonald <rfm@gnu.org>
 

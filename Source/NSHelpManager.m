@@ -184,15 +184,19 @@
 		[help stringByAppendingPathExtension: @"rtf"]];
             }
         }
+      else
+        {
+	  file = [mb pathForHelpResource: help];
+	}
 
-    if (file != nil)
-      {
-	if ([[NSWorkspace sharedWorkspace] openFile: file] == YES)
-	  {
-	    return;
-	  }
-      }
-  }
+      if (file != nil)
+	{
+	  if ([[NSWorkspace sharedWorkspace] openFile: file] == YES)
+	    {
+	      return;
+	    }
+	}
+    }
   
   NSBeep();
 }
