@@ -187,7 +187,11 @@ static NSNull			*null = nil;
       return defaultTheme;
     }
 
-  if ([aName isAbsolutePath] == NO)
+  if ([aName isAbsolutePath] == YES)
+    {
+      theme = aName;
+    }
+  else
     {
       aName = [aName lastPathComponent];
 
@@ -201,7 +205,7 @@ static NSNull			*null = nil;
 	{
 	  theme = [aName stringByAppendingPathExtension: @"theme"];
 	}
-      if ([aName isEqualToString: @"GNUstep.theme"] == YES)
+      if ([theme isEqualToString: @"GNUstep.theme"] == YES)
 	{
 	  return defaultTheme;
 	}
