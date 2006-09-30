@@ -38,7 +38,10 @@
 #include "AppKit/NSColorList.h"
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSImage.h"
+#include "AppKit/NSMatrix.h"
 #include "AppKit/NSMenu.h"
+#include "AppKit/NSPanel.h"
+#include "AppKit/NSScrollView.h"
 #include "AppKit/NSView.h"
 #include "AppKit/NSWindow.h"
 #include "AppKit/NSBezierPath.h"
@@ -79,68 +82,29 @@ typedef enum {
 - (id) initWithImage: (NSImage*)image horizontal: (float)x vertical: (float)y;
 @end
 
-@implementation	GSDrawTiles
-- (void) dealloc
-{
-  unsigned	i;
-
-  for (i = 0; i < 9; i++)
-    {
-      RELEASE(images[i]);
-    }
-  [super dealloc];
-}
-
-/**
- * Simple initialiser, assume the single image is split into nine equal tiles.
- * If the image size is not divisible by three, the corners are made equal
- * in size and the central parts slightly smaller.
+/** This is the panel used to select and inspect themes.
  */
-- (id) initWithImage: (NSImage*)image
+@interface	GSThemePanel : NSPanel
 {
-  NSSize	s = [image size];
-
-  return [self initWithImage: image
-		  horizontal: s.width / 3.0
-		    vertical: s.height / 3.0];
+  NSMatrix	*matrix;	// Not retained.
 }
 
-- (id) initWithImage: (NSImage*)image horizontal: (float)x vertical: (float)y
-{
-  unsigned	i;
-  NSSize	s = [image size];
+/** Return the shared panel.
+ */
++ (GSThemePanel*) sharedThemePanel;
 
-  x = floor(x);
-  y = floor(y);
+/** Update current theme to the one clicked on in the matrix.
+ */
+- (void) changeSelection: (id)sender;
 
-  rects[TileTL] = NSMakeRect(0.0, s.height - y, x, y);
-  rects[TileTM] = NSMakeRect(x, s.height - y, s.width - 2.0 * x, y);
-  rects[TileTR] = NSMakeRect(s.width - x, s.height - y, x, y);
-  rects[TileCL] = NSMakeRect(0.0, y, x, s.height - 2.0 * y);
-  rects[TileCM] = NSMakeRect(x, y, s.width - 2.0 * x, s.height - 2.0 * y);
-  rects[TileCR] = NSMakeRect(s.width - x, y, x, s.height - 2.0 * y);
-  rects[TileBL] = NSMakeRect(0.0, 0.0, x, y);
-  rects[TileBM] = NSMakeRect(x, 0.0, s.width - 2.0 * x, y);
-  rects[TileBR] = NSMakeRect(s.width - x, 0.0, x, y);
+/** Update list of available themes.
+ */
+- (void) update: (id)sender;
 
-  for (i = 0; i < 9; i++)
-    {
-      if (rects[i].origin.x < 0.0 || rects[i].origin.y < 0.0
-	|| rects[i].size.width <= 0.0 || rects[i].size.height <= 0.0)
-        {
-	  images[i] = nil;
-	  rects[i] = NSZeroRect;
-	}
-      else
-        {
-	  images[i] = RETAIN(image);
-	}
-    }  
-
-  return self;
-}
 @end
 
+/** This category defines private methods for internal use by GSTheme
+ */
 @interface	GSTheme (internal)
 /**
  * Called whenever user defaults are changed ... this checks for the
@@ -150,21 +114,23 @@ typedef enum {
 + (void) defaultsDidChange: (NSNotification*)n;
 
 /**
- * Called to load and make active the specified theme.<br />
- * If aName is nil or an empty string, this reverts to the default theme.<br />
- * If the named theme is already active, this has no effect.<br />
- * Returns YES on success, NO if the theme could not be loaded.
+ * Called to load specified theme.<br />
+ * If aName is nil or an empty string or 'GNUstep',
+ * this returns the default theme.<br />
+ * If the named is a full path specification, this uses that path.<br />
+ * Otherwise this method searches the standard locations.<br />
+ * Returns nil on failure.
  */
-+ (BOOL) loadThemeNamed: (NSString*)aName;
++ (GSTheme*) loadThemeNamed: (NSString*)aName;
 @end
 
+
 
 @implementation GSTheme
 
 static GSTheme			*defaultTheme = nil;
-static NSString			*defaultThemeName = nil;
+static NSString			*currentThemeName = nil;
 static GSTheme			*theTheme = nil;
-static NSString			*theThemeName = nil;
 static NSMutableDictionary	*themes = nil;
 static NSNull			*null = nil;
 
@@ -175,10 +141,10 @@ static NSNull			*null = nil;
 
   defs = [NSUserDefaults standardUserDefaults];
   name = [defs stringForKey: @"GSTheme"];
-  if (name != defaultThemeName && [name isEqual: defaultThemeName] == NO)
+  if (name != currentThemeName && [name isEqual: currentThemeName] == NO)
     {
-      ASSIGN(defaultThemeName, name);	// Don't try to load again.
-      [self loadThemeNamed: name];
+      [self setTheme: [self loadThemeNamed: name]];
+      ASSIGN(currentThemeName, name);	// Don't try to load again.
     }
 }
 
@@ -209,30 +175,36 @@ static NSNull			*null = nil;
   [self defaultsDidChange: nil];
 }
 
-+ (BOOL) loadThemeNamed: (NSString*)aName
++ (GSTheme*) loadThemeNamed: (NSString*)aName
 {
-  NSBundle		*bundle;
-  Class			cls;
+  NSBundle	*bundle;
+  Class		cls;
   GSTheme	*instance;
-  NSString		*theme;
+  NSString	*theme;
 
   if ([aName length] == 0)
     {
-      DESTROY(theThemeName);
-      [self setTheme: nil];
-      [self theme];
-      return YES;
+      return defaultTheme;
     }
 
-  /* Ensure that the theme name has the 'theme' extension.
-   */
-  if ([[aName pathExtension] isEqualToString: @"theme"] == YES)
+  if ([aName isAbsolutePath] == NO)
     {
-      theme = aName;
-    }
-  else
-    {
-      theme = [aName stringByAppendingPathExtension: @"theme"];
+      aName = [aName lastPathComponent];
+
+      /* Ensure that the theme name has the 'theme' extension.
+       */
+      if ([[aName pathExtension] isEqualToString: @"theme"] == YES)
+	{
+	  theme = aName;
+	}
+      else
+	{
+	  theme = [aName stringByAppendingPathExtension: @"theme"];
+	}
+      if ([aName isEqualToString: @"GNUstep.theme"] == YES)
+	{
+	  return defaultTheme;
+	}
     }
 
   bundle = [themes objectForKey: theme];
@@ -273,7 +245,7 @@ static NSNull			*null = nil;
       if (path == nil)
 	{
 	  NSLog (@"No theme named '%@' found", aName);
-	  return NO;
+	  return nil;
 	}
       else
         {
@@ -288,11 +260,17 @@ static NSNull			*null = nil;
     {
       cls = self;
     }
-  ASSIGN(theThemeName, theme);
   instance = [[cls alloc] initWithBundle: bundle];
-  [self setTheme: instance];
-  RELEASE(instance);
-  return YES;
+  return AUTORELEASE(instance);
+}
+
++ (void) orderFrontSharedThemePanel: (id)sender
+{
+  GSThemePanel *panel;
+
+  panel = [GSThemePanel sharedThemePanel];
+  [panel update: self];
+  [panel orderFront: self];
 }
 
 + (void) setTheme: (GSTheme*)theme
@@ -307,6 +285,7 @@ static NSNull			*null = nil;
       ASSIGN (theTheme, theme);
       [theTheme activate];
     }
+  ASSIGN(currentThemeName, [theTheme name]);
 }
 
 + (GSTheme*) theme 
@@ -525,6 +504,21 @@ static NSNull			*null = nil;
 - (NSDictionary*) infoDictionary
 {
   return [_bundle infoDictionary];
+}
+
+- (NSString*) name
+{
+  if (self == defaultTheme)
+    {
+      return @"GNUstep";
+    }
+  return
+    [[[_bundle bundlePath] lastPathComponent] stringByDeletingPathExtension];
+}
+
+- (NSWindow*) themeInspector
+{
+  return nil;
 }
 
 - (GSDrawTiles*) tilesNamed: (NSString*)aName
@@ -1255,3 +1249,245 @@ withRepeatedImage: (NSImage*)image
 
 @end
 
+
+
+@implementation	GSDrawTiles
+- (void) dealloc
+{
+  unsigned	i;
+
+  for (i = 0; i < 9; i++)
+    {
+      RELEASE(images[i]);
+    }
+  [super dealloc];
+}
+
+/**
+ * Simple initialiser, assume the single image is split into nine equal tiles.
+ * If the image size is not divisible by three, the corners are made equal
+ * in size and the central parts slightly smaller.
+ */
+- (id) initWithImage: (NSImage*)image
+{
+  NSSize	s = [image size];
+
+  return [self initWithImage: image
+		  horizontal: s.width / 3.0
+		    vertical: s.height / 3.0];
+}
+
+- (id) initWithImage: (NSImage*)image horizontal: (float)x vertical: (float)y
+{
+  unsigned	i;
+  NSSize	s = [image size];
+
+  x = floor(x);
+  y = floor(y);
+
+  rects[TileTL] = NSMakeRect(0.0, s.height - y, x, y);
+  rects[TileTM] = NSMakeRect(x, s.height - y, s.width - 2.0 * x, y);
+  rects[TileTR] = NSMakeRect(s.width - x, s.height - y, x, y);
+  rects[TileCL] = NSMakeRect(0.0, y, x, s.height - 2.0 * y);
+  rects[TileCM] = NSMakeRect(x, y, s.width - 2.0 * x, s.height - 2.0 * y);
+  rects[TileCR] = NSMakeRect(s.width - x, y, x, s.height - 2.0 * y);
+  rects[TileBL] = NSMakeRect(0.0, 0.0, x, y);
+  rects[TileBM] = NSMakeRect(x, 0.0, s.width - 2.0 * x, y);
+  rects[TileBR] = NSMakeRect(s.width - x, 0.0, x, y);
+
+  for (i = 0; i < 9; i++)
+    {
+      if (rects[i].origin.x < 0.0 || rects[i].origin.y < 0.0
+	|| rects[i].size.width <= 0.0 || rects[i].size.height <= 0.0)
+        {
+	  images[i] = nil;
+	  rects[i] = NSZeroRect;
+	}
+      else
+        {
+	  images[i] = RETAIN(image);
+	}
+    }  
+
+  return self;
+}
+@end
+
+
+
+@implementation	GSThemePanel
+
+static GSThemePanel	*sharedPanel = nil;
+
++ (GSThemePanel*) sharedThemePanel
+{
+  if (sharedPanel == nil)
+    {
+      sharedPanel = [self new];
+    }
+  return sharedPanel;
+}
+
+- (id) init
+{
+  NSRect	winFrame;
+  NSRect	frame;
+  NSScrollView	*scrollView;
+  NSView	*container;
+  NSView	*inspector;
+  NSButtonCell	*proto;
+
+  /* FIXME - should actually autosave the memory panel position and frame ! */
+  winFrame.size = NSMakeSize(300,300);
+  winFrame.origin = NSMakePoint (100, 200);
+  
+  self = [super initWithContentRect: winFrame
+    styleMask: (NSTitledWindowMask | NSClosableWindowMask
+      | NSMiniaturizableWindowMask | NSResizableWindowMask)
+    backing: NSBackingStoreBuffered
+    defer: NO];
+  
+  [self setReleasedWhenClosed: NO];
+  container = [self contentView];
+  frame = [container frame];
+  frame.origin = NSZeroPoint;
+  frame.size.width = 95;
+  scrollView = [[NSScrollView alloc] initWithFrame: frame];
+  [scrollView setHasHorizontalScroller: NO];
+  [scrollView setHasVerticalScroller: YES];
+  [scrollView setBorderType: NSBezelBorder];
+  [scrollView setAutoresizingMask: (NSViewHeightSizable)];
+  [container addSubview: scrollView];
+  RELEASE(scrollView);
+  frame = [scrollView frame];
+  frame.origin = NSZeroPoint;
+
+  proto = [[NSButtonCell alloc] init];
+  [proto setBordered: NO];
+  [proto setAlignment: NSCenterTextAlignment];
+  [proto setImagePosition: NSImageAbove];
+  [proto setSelectable: NO];
+  [proto setEditable: NO];
+  [matrix setPrototype: proto];
+
+  matrix = [[NSMatrix alloc] initWithFrame: frame
+				      mode: NSRadioModeMatrix
+				 prototype: proto
+			      numberOfRows: 1
+			   numberOfColumns: 1];
+  RELEASE(proto);
+  [matrix setAutosizesCells: NO];
+  [matrix setCellSize: NSMakeSize(72,72)];
+  [matrix setIntercellSpacing: NSMakeSize(8,8)];
+  [matrix setAutoresizingMask: NSViewHeightSizable];
+  [matrix setMode: NSRadioModeMatrix];
+  [matrix setAction: @selector(changeSelection:)];
+  [matrix setTarget: self];
+
+  [scrollView setDocumentView: matrix];
+  RELEASE(matrix);
+
+  [self update: self];
+
+  [self setTitle: @"Theme Panel"];
+  
+  return self;
+}
+
+- (void) changeSelection: (id)sender
+{
+  NSButtonCell	*cell = [sender selectedCell];
+  NSString	*name = [cell title];
+
+  [GSTheme setTheme: [GSTheme loadThemeNamed: name]];
+}
+
+- (void) update: (id)sender
+{
+  NSArray		*array;
+  NSMutableSet		*set = [NSMutableSet set];
+  NSString		*selected = RETAIN([[matrix selectedCell] title]);
+  unsigned		existing = [[matrix cells] count];
+  NSFileManager		*mgr = [NSFileManager defaultManager];
+  NSEnumerator		*enumerator;
+  NSString		*path;
+  NSButtonCell		*cell;
+  unsigned		count = 0;
+
+  /* Ensure the first cell contains the default theme.
+   */
+  [set addObject: [defaultTheme name]];
+  cell = [matrix cellAtRow: count++ column: 0];
+  [cell setImage: [defaultTheme icon]];
+  [cell setTitle: [defaultTheme name]];
+
+  /* Go through all the themes in the standard locations,
+   * load them, and add them to the matrix.
+   */
+  enumerator = [NSSearchPathForDirectoriesInDomains
+    (NSAllLibrariesDirectory, NSAllDomainsMask, YES) objectEnumerator];
+  while ((path = [enumerator nextObject]) != nil)
+    {
+      NSEnumerator	*files;
+      NSString		*file;
+
+      path = [path stringByAppendingPathComponent: @"Themes"];
+      files = [[mgr directoryContentsAtPath: path] objectEnumerator];
+      while ((file = [files nextObject]) != nil)
+        {
+	  NSString	*ext = [file pathExtension];
+	  NSString	*name = [file stringByDeletingPathExtension];
+
+	  if ([ext isEqualToString: @"theme"] == YES
+	    && [set member: name] == nil)
+	    {
+	      GSTheme	*loaded;
+	      NSString	*fullName;
+
+	      fullName = [path stringByAppendingPathComponent: file];
+	      loaded = [GSTheme loadThemeNamed: fullName];
+	      if (loaded != nil)
+	        {
+		  if (count >= existing)
+		    {
+		      [matrix addRow];
+		      existing++;
+		    }
+		  cell = [matrix cellAtRow: count column: 0];
+		  [cell setImage: [loaded icon]];
+		  [cell setTitle: [loaded name]];
+		  count++;
+		}
+	    }
+	}
+    }
+
+  /* Empty any unused cells.
+   */
+  while (count < existing)
+    {
+      cell = [matrix cellAtRow: count column: 0];
+      [cell setImage: nil];
+      [cell setTitle: @""];
+      count++;
+    }
+
+  /* Restore the selected cell.
+   */
+  array = [matrix cells];
+  count = [array count];
+  while (count-- > 0)
+    {
+      cell = [matrix cellAtRow: count column: 0];
+      if ([[cell title] isEqual: selected])
+        {
+	  [matrix selectCellAtRow: count column: 0];
+	  break;
+	}
+    }
+  RELEASE(selected);
+  [matrix sizeToCells];
+  [matrix setNeedsDisplay: YES];
+}
+
+@end

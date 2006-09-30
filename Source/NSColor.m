@@ -1680,7 +1680,6 @@ systemColorWithName(NSString *name)
   list = [NSColorList colorListNamed: @"System"];
   ASSIGN(systemColors, list);
   [systemDict removeAllObjects];
-NSLog(@"Theme activation with control background %@", [self controlBackgroundColor]);
   [[NSNotificationCenter defaultCenter]
     postNotificationName: NSSystemColorsDidChangeNotification object: nil];
 }

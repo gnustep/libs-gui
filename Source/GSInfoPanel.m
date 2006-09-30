@@ -30,11 +30,13 @@
 #include "AppKit/NSFont.h"
 #include "AppKit/NSImage.h"
 #include "AppKit/NSTextField.h"
-#include "GNUstepGUI/GSInfoPanel.h"
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSProcessInfo.h>
+#include "GNUstepGUI/GSInfoPanel.h"
+#include "GNUstepGUI/GSTheme.h"
+
 
 static id
 value_from_info_plist_for_key (NSString *key)
@@ -156,7 +158,7 @@ new_label (NSString *value)
     }
 }
 
--(id) initWithDictionary: (NSDictionary *)dictionary;
+- (id) initWithDictionary: (NSDictionary *)dictionary;
 {
   /* Info to show */
   NSString *name = nil;
@@ -593,4 +595,15 @@ new_label (NSString *value)
   [self center];
   return self;
 }
+
+- (void) mouseDown: (NSEvent*)theEvent
+{
+  /*
+   * Mouse down on window background ... we could do different things in
+   * different regions of the window, but for now we just use this to
+   * activate the theme panel.
+   */
+  [GSTheme orderFrontSharedThemePanel: self]; 
+}
+
 @end

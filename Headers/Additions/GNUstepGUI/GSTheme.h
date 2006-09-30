@@ -214,6 +214,12 @@ APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
 }
 
 /**
+ * Creates and displays a panel allowing selection of different themes
+ * and display of the current theme inspector.
+ */
++ (void) orderFrontSharedThemePanel: (id)sender;
+
+/**
  * Set the currently active theme to be the instance specified.<br />
  * You do not normally need to call this method as it is called
  * automatically when the user default which specifies the current
@@ -319,6 +325,23 @@ APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
  * </deflist>
  */
 - (NSDictionary*) infoDictionary;
+
+/**
+ * Return the theme's name.
+ */
+- (NSString*) name;
+
+/**
+ * <p>Provides a standard inspector window used to display information about
+ * the receiver.  The default implementation displays the icon, the name,
+ * and the authors of the theme.
+ * </p>
+ * <p>The code managing this object (if any) must be prepared to have the
+ * content view of the window reparented into another window for display
+ * on screen.
+ * </p>
+ */
+- (NSWindow*) themeInspector;
 
 /**
  * Returns the tile image information for a particular image name,

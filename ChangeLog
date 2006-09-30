@@ -1,3 +1,11 @@
+2006-09-30 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSColor.m: Remove debug log message.
+	* Source/GSInfoPanel.m: Open theme handling panel.
+	* Source/GSTheme.m: Rudimentary theme handling panel.
+	* Headers/Additions/GNUstepGUI/GSTheme.h: A few more methods.
+	Start adding a panel to allow selection of themes in a running app.
+
 2006-09-29 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWindow.m: If ordering out a deferred window which was
