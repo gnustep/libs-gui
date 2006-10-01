@@ -48,43 +48,43 @@
 //
 // Accessing the Help Panel
 //
-+ (NSHelpPanel *)sharedHelpPanel;
-+ (NSHelpPanel *)sharedHelpPanelWithDirectory:(NSString *)helpDirectory;
++ (NSHelpPanel *) sharedHelpPanel;
++ (NSHelpPanel *) sharedHelpPanelWithDirectory: (NSString *)helpDirectory;
 
 //
 // Managing the Contents
 //
-+ (void)setHelpDirectory:(NSString *)helpDirectory;
-- (void)addSupplement:(NSString *)helpDirectory
-	       inPath:(NSString *)supplementPath;
-- (NSString *)helpDirectory;
-- (NSString *)helpFile;
++ (void) setHelpDirectory: (NSString *)helpDirectory;
+- (void) addSupplement: (NSString *)helpDirectory
+	        inPath: (NSString *)supplementPath;
+- (NSString *) helpDirectory;
+- (NSString *) helpFile;
 
 //
 // Attaching Help to Objects 
 //
-+ (void)attachHelpFile:(NSString *)filename
-	    markerName:(NSString *)markerName
-		    to:(id)anObject;
-+ (void)detachHelpFrom:(id)anObject;
++ (void) attachHelpFile: (NSString *)filename
+	     markerName: (NSString *)markerName
+		     to: (id)anObject;
++ (void) detachHelpFrom: (id)anObject;
 
 //
 // Showing Help 
 //
-- (void)showFile:(NSString *)filename
-	atMarker:(NSString *)markerName;
-- (BOOL)showHelpAttachedTo:(id)anObject;
+- (void) showFile: (NSString *)filename
+	 atMarker: (NSString *)markerName;
+- (BOOL) showHelpAttachedTo: (id)anObject;
 
 //
 // Printing 
 //
-- (void)print:(id)sender;
+- (void) print: (id)sender;
 
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder: (NSCoder *)aCoder;
-- initWithCoder: (NSCoder *)aDecoder;
+- (void) encodeWithCoder: (NSCoder *)aCoder;
+- (id) initWithCoder: (NSCoder *)aDecoder;
 
 @end
 

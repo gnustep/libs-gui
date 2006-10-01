@@ -26,6 +26,9 @@
 #include "config.h"
 #include "AppKit/NSHelpPanel.h"
 #include "AppKit/NSHelpManager.h"
+#include "AppKit/NSScrollView.h"
+#include "AppKit/NSTextView.h"
+#include "AppKit/NSTextContainer.h"
 
 
 @implementation NSApplication (NSHelpPanel)
@@ -40,49 +43,68 @@
 
 @implementation NSHelpPanel
 
+static NSString	*_helpDirectory = nil;
+static NSString	*_helpFile = nil;
+static NSHelpPanel	*_sharedPanel = nil;
+
 //
 // Class methods
 //
-+ (void)initialize
++ (void) initialize
 {
   if (self == [NSHelpPanel class])
     {
       // Initial version
-      [self setVersion:1];
+      [self setVersion: 1];
     }
 }
 
 //
 // Accessing the Help Panel
 //
-+ (NSHelpPanel *)sharedHelpPanel
++ (NSHelpPanel*) sharedHelpPanel
 {
-  NSRunAlertPanel (NULL, @"Help Panel not implemented yet",
-		   @"OK", NULL, NULL);
-  return nil;
+  if (_sharedPanel == nil)
+    {
+      return [self new];
+    }
+  return _sharedPanel;
 }
 
-+ (NSHelpPanel *)sharedHelpPanelWithDirectory:(NSString *)helpDirectory
++ (NSHelpPanel *) sharedHelpPanelWithDirectory: (NSString *)helpDirectory
 {
-  return nil;
+  [self setHelpDirectory: helpDirectory];
+  return [self sharedHelpPanel];
 }
 
 //
 // Managing the Contents
 //
-+ (void)setHelpDirectory:(NSString *)helpDirectory
-{}
++ (void) setHelpDirectory: (NSString *)helpDirectory
+{
+  ASSIGN(_helpDirectory, helpDirectory);
+}
 
 //
 // Attaching Help to Objects 
 //
-+ (void)attachHelpFile:(NSString *)filename
-	    markerName:(NSString *)markerName
-to:(id)anObject
-{}
++ (void) attachHelpFile: (NSString *)filename
+	     markerName: (NSString *)markerName
+		     to: (id)anObject
+{
+  if ([filename isAbsolutePath] == NO)
+    {
+      filename = [[[NSHelpPanel sharedHelpPanel] helpDirectory]
+        stringByAppendingPathComponent: filename];
+    }
+  [[NSHelpManager sharedHelpManager] setContextHelp: (id)filename
+					  forObject: anObject];
+}
 
-+ (void)detachHelpFrom:(id)anObject
-{}
++ (void) detachHelpFrom: (id)anObject
+{
+  [[NSHelpManager sharedHelpManager] removeContextHelpForObject: anObject];
+}
 
 //
 // Instance methods
@@ -90,37 +112,100 @@ to:(id)anObject
 //
 // Managing the Contents
 //
-- (void)addSupplement:(NSString *)helpDirectory
-	       inPath:(NSString *)supplementPath
-{}
-
-- (NSString *)helpDirectory
+- (void) addSupplement: (NSString *)helpDirectory
+	        inPath: (NSString *)supplementPath
 {
-  return nil;
 }
 
-- (NSString *)helpFile
+- (NSString *) helpDirectory
 {
-  return nil;
+  return _helpDirectory;
+}
+
+- (NSString *) helpFile
+{
+  return _helpFile;
+}
+
+- (id) initWithContentRect: (NSRect)contentRect
+		 styleMask: (unsigned int)aStyle
+		   backing: (NSBackingStoreType)bufferingType
+		     defer: (BOOL)flag
+		    screen: (NSScreen*)aScreen
+{
+  if (_sharedPanel == nil)
+    {
+      NSScrollView	*s;
+      NSTextView	*v;
+      NSRect		r;
+
+      self = [super initWithContentRect: NSMakeRect(100,100,400,500)
+	styleMask: NSTitledWindowMask|NSClosableWindowMask|NSResizableWindowMask
+	backing: NSBackingStoreBuffered
+	defer: NO
+	screen: nil];
+      [self setReleasedWhenClosed: NO];
+      [self setTitle: @"Help"];
+      s = [[NSScrollView alloc] initWithFrame: contentRect];
+      [s setHasHorizontalScroller: YES];
+      [s setHasVerticalScroller: YES];
+      [s setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
+      [self setContentView: s];
+      RELEASE(s);
+
+      r = [[s documentView] frame];
+      v = [[NSTextView alloc] initWithFrame: r];
+      [v setHorizontallyResizable: YES];
+      [v setVerticallyResizable: YES];
+      [v setEditable: NO];
+      [v setRichText: YES];
+      [v setMinSize: NSMakeSize (0, 0)];
+      [v setMaxSize: NSMakeSize (1E7, 1E7)];
+      [v setAutoresizingMask: NSViewHeightSizable | NSViewWidthSizable];
+      [[v textContainer] setContainerSize:
+	NSMakeSize (r.size.width, 1e7)];
+      [[v textContainer] setWidthTracksTextView: YES];
+
+      [s setDocumentView: v];
+      RELEASE(v);
+
+      _sharedPanel = self;
+    }
+  else
+    {
+      RELEASE(self);
+    }
+  return _sharedPanel;
 }
 
 //
 // Showing Help 
 //
-- (void)showFile:(NSString *)filename
-	atMarker:(NSString *)markerName
-{}
-
-- (BOOL)showHelpAttachedTo:(id)anObject
+- (void) showFile: (NSString *)filename
+	 atMarker: (NSString *)markerName
 {
-  return NO;
+  if ([filename isAbsolutePath] == NO)
+    {
+      filename = [[[NSHelpPanel sharedHelpPanel] helpDirectory]
+        stringByAppendingPathComponent: filename];
+    }
+  [[NSHelpManager sharedHelpManager] setContextHelp: (id)filename
+                                          forObject: self];
+  [self showHelpAttachedTo: self];
+}
+
+- (BOOL) showHelpAttachedTo: (id)anObject
+{
+  return [[NSHelpManager sharedHelpManager]
+    showContextHelpForObject: anObject locationHint: NSZeroPoint];
 }
 
 //
 // Printing 
 //
-- (void)print:(id)sender
-{}
+- (void) print: (id)sender
+{
+}
 
 //
 // NSCoding protocol
