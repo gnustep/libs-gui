@@ -1500,18 +1500,17 @@ static GSThemePanel	*sharedPanel = nil;
   NSFileManager		*mgr = [NSFileManager defaultManager];
   NSEnumerator		*enumerator;
   NSString		*path;
+  NSString		*name;
   NSButtonCell		*cell;
   unsigned		count = 0;
 
   /* Ensure the first cell contains the default theme.
    */
-  [set addObject: [defaultTheme name]];
   cell = [matrix cellAtRow: count++ column: 0];
   [cell setImage: [defaultTheme icon]];
   [cell setTitle: [defaultTheme name]];
 
-  /* Go through all the themes in the standard locations,
-   * load them, and add them to the matrix.
+  /* Go through all the themes in the standard locations and find their names.
    */
   enumerator = [NSSearchPathForDirectoriesInDomains
     (NSAllLibrariesDirectory, NSAllDomainsMask, YES) objectEnumerator];
@@ -1525,29 +1524,37 @@ static GSThemePanel	*sharedPanel = nil;
       while ((file = [files nextObject]) != nil)
         {
 	  NSString	*ext = [file pathExtension];
-	  NSString	*name = [file stringByDeletingPathExtension];
 
+	  name = [file stringByDeletingPathExtension];
 	  if ([ext isEqualToString: @"theme"] == YES
-	    && [set member: name] == nil)
+	    && [name isEqualToString: @"GNUstep"] == NO)
 	    {
-	      GSTheme	*loaded;
-	      NSString	*fullName;
-
-	      fullName = [path stringByAppendingPathComponent: file];
-	      loaded = [GSTheme loadThemeNamed: fullName];
-	      if (loaded != nil)
-	        {
-		  if (count >= existing)
-		    {
-		      [matrix addRow];
-		      existing++;
-		    }
-		  cell = [matrix cellAtRow: count column: 0];
-		  [cell setImage: [loaded icon]];
-		  [cell setTitle: [loaded name]];
-		  count++;
-		}
+	      [set addObject: name];
 	    }
+	}
+    }
+
+  /* Sort theme names alphabetically, and add each theme to the matrix.
+   */
+  array = [[set allObjects] sortedArrayUsingSelector:
+    @selector(caseInsensitiveCompare:)];
+  enumerator = [array objectEnumerator];
+  while ((name = [enumerator nextObject]) != nil)
+    {
+      GSTheme	*loaded;
+
+      loaded = [GSTheme loadThemeNamed: name];
+      if (loaded != nil)
+	{
+	  if (count >= existing)
+	    {
+	      [matrix addRow];
+	      existing++;
+	    }
+	  cell = [matrix cellAtRow: count column: 0];
+	  [cell setImage: [loaded icon]];
+	  [cell setTitle: [loaded name]];
+	  count++;
 	}
     }
 
