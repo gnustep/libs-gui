@@ -34,6 +34,7 @@
 #include "Foundation/NSUserDefaults.h"
 #include "GNUstepGUI/GSTheme.h"
 #include "AppKit/NSApplication.h"
+#include "AppKit/NSButton.h"
 #include "AppKit/NSColor.h"
 #include "AppKit/NSColorList.h"
 #include "AppKit/NSGraphics.h"
@@ -90,6 +91,8 @@ typedef enum {
 @interface	GSThemePanel : NSPanel
 {
   NSMatrix	*matrix;	// Not retained.
+  NSScrollView	*sideView;	// Not retained.
+  NSView	*bottomView;	// Not retained.
 }
 
 /** Return the shared panel.
@@ -103,6 +106,10 @@ typedef enum {
 /** Handle notifications
  */
 - (void) notified: (NSNotification*)n;
+
+/** Toggle whether the current theme is the default theme.
+ */
+- (void) setDefault: (id)sender;
 
 /** Update list of available themes.
  */
@@ -301,6 +308,7 @@ static NSNull			*null = nil;
 
   panel = [GSThemePanel sharedThemePanel];
   [panel update: self];
+  [panel center];
   [panel orderFront: self];
 }
 
@@ -1363,14 +1371,15 @@ static GSThemePanel	*sharedPanel = nil;
 - (id) init
 {
   NSRect	winFrame;
+  NSRect	sideFrame;
+  NSRect	bottomFrame;
   NSRect	frame;
-  NSScrollView	*scrollView;
   NSView	*container;
   NSButtonCell	*proto;
 
-  /* FIXME - should actually autosave the memory panel position and frame ! */
-  winFrame.size = NSMakeSize(367,388);
-  winFrame.origin = NSMakePoint (100, 200);
+  winFrame = NSMakeRect(0, 0, 367, 420);
+  sideFrame = NSMakeRect(0, 0, 95, 420);
+  bottomFrame = NSMakeRect(95, 0, 272, 32);
   
   self = [super initWithContentRect: winFrame
     styleMask: (NSTitledWindowMask | NSClosableWindowMask
@@ -1380,18 +1389,13 @@ static GSThemePanel	*sharedPanel = nil;
   
   [self setReleasedWhenClosed: NO];
   container = [self contentView];
-  frame = [container frame];
-  frame.origin = NSZeroPoint;
-  frame.size.width = 95;
-  scrollView = [[NSScrollView alloc] initWithFrame: frame];
-  [scrollView setHasHorizontalScroller: NO];
-  [scrollView setHasVerticalScroller: YES];
-  [scrollView setBorderType: NSBezelBorder];
-  [scrollView setAutoresizingMask: (NSViewHeightSizable)];
-  [container addSubview: scrollView];
-  RELEASE(scrollView);
-  frame = [scrollView frame];
-  frame.origin = NSZeroPoint;
+  sideView = [[NSScrollView alloc] initWithFrame: sideFrame];
+  [sideView setHasHorizontalScroller: NO];
+  [sideView setHasVerticalScroller: YES];
+  [sideView setBorderType: NSBezelBorder];
+  [sideView setAutoresizingMask: (NSViewHeightSizable | NSViewMaxXMargin)];
+  [container addSubview: sideView];
+  RELEASE(sideView);
 
   proto = [[NSButtonCell alloc] init];
   [proto setBordered: NO];
@@ -1401,6 +1405,8 @@ static GSThemePanel	*sharedPanel = nil;
   [proto setEditable: NO];
   [matrix setPrototype: proto];
 
+  frame = [sideView frame];
+  frame.origin = NSZeroPoint;
   matrix = [[NSMatrix alloc] initWithFrame: frame
 				      mode: NSRadioModeMatrix
 				 prototype: proto
@@ -1415,10 +1421,15 @@ static GSThemePanel	*sharedPanel = nil;
   [matrix setAction: @selector(changeSelection:)];
   [matrix setTarget: self];
 
-  [scrollView setDocumentView: matrix];
+  [sideView setDocumentView: matrix];
   RELEASE(matrix);
 
-  [self setTitle: @"Theme Panel"];
+  bottomView = [[NSView alloc] initWithFrame: bottomFrame];
+  [bottomView setAutoresizingMask: (NSViewWidthSizable | NSViewMaxYMargin)];
+  [container addSubview: bottomView];
+  RELEASE(bottomView);
+
+  [self setTitle: @"Themes"];
   
   [[NSNotificationCenter defaultCenter]
     addObserver: self
@@ -1459,8 +1470,9 @@ static GSThemePanel	*sharedPanel = nil;
   if ([[n name] isEqualToString: GSThemeDidActivateNotification] == YES)
     {
       NSView	*iView;
-      NSView	*sView;
       NSRect	frame;
+      NSButton	*button;
+      NSString	*dName;
 
       /* Ask the inspector to ensure that it is up to date.
        */
@@ -1474,13 +1486,38 @@ static GSThemePanel	*sharedPanel = nil;
       RELEASE(iView);
 
       /* Set inspector view to fill the frame to the right of our
-       * scrollview.
+       * scrollview and above the bottom view
        */
-      sView = [[cView subviews] objectAtIndex: 0];
-      frame = [cView frame];
-      frame.origin = NSMakePoint([sView frame].size.width, 0.0);
-      frame.size.width -= [sView frame].size.width;
+      frame.origin.x = [sideView frame].size.width;
+      frame.origin.y = [bottomView frame].size.height;
+      frame.size = [cView frame].size;
+      frame.size.width -= [sideView frame].size.width;
+      frame.size.height -= [bottomView frame].size.height;
       [iView setFrame: frame];
+
+      button = [[bottomView subviews] lastObject];
+      if (button == nil)
+        {
+	  button = [NSButton new];
+	  [button setTarget: self];
+	  [button setAction: @selector(setDefault:)];
+	  [bottomView addSubview: button];
+	  RELEASE(button);
+	}
+      dName = [[NSUserDefaults standardUserDefaults] stringForKey: @"GSTheme"];
+      if ([[[n object] name] isEqual: dName] == YES)
+        {
+	  [button setTitle: @"Revert default theme"];
+	}
+      else
+	{
+	  [button setTitle: @"Make this the default theme"];
+	}
+      [button sizeToFit];
+      frame = [button frame];
+      frame.origin.x = ([bottomView frame].size.width - frame.size.width) / 2;
+      frame.origin.y = ([bottomView frame].size.height - frame.size.height) / 2;
+      [button setFrame: frame];
     }
   else
     {
@@ -1489,6 +1526,36 @@ static GSThemePanel	*sharedPanel = nil;
       [inspector setContentView: [[cView subviews] lastObject]];
     }
   [cView setNeedsDisplay: YES];
+}
+
+- (void) setDefault: (id)sender
+{
+  NSButton		*button = (NSButton*)sender;
+  NSUserDefaults	*defs = [NSUserDefaults standardUserDefaults];
+  NSString		*cName;
+  NSString		*dName;
+  NSRect		frame;
+
+  dName = [defs stringForKey: @"GSTheme"];
+  cName = [[GSTheme theme] name];
+
+  if ([cName isEqual: dName] == YES)
+    {
+      [defs removeObjectForKey: @"GSTheme"];
+      [button setTitle: @"Make this the default theme"];
+    }
+  else
+    {
+      [defs setObject: cName forKey: @"GSTheme"];
+      [button setTitle: @"Revert default theme"];
+    }
+  [defs synchronize];
+  [button sizeToFit];
+  frame = [button frame];
+  frame.origin.x = ([bottomView frame].size.width - frame.size.width) / 2;
+  frame.origin.y = ([bottomView frame].size.height - frame.size.height) / 2;
+  [button setFrame: frame];
+  [bottomView setNeedsDisplay: YES];
 }
 
 - (void) update: (id)sender
@@ -1685,6 +1752,8 @@ static GSThemeInspector	*sharedInspector = nil;
       [view setFrame: frame];
       [content addSubview: view];
     }
+
+  [content setNeedsDisplay: YES];
 }
 
 @end

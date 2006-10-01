@@ -3,6 +3,7 @@
 	* Source/GSTheme.m: Add rudimentary inspector.
 	Make themes in panel be in alphabetical order except for the
 	default theme (always first in the list).
+	Allow setting of default theme for application.
 
 2006-09-30 Richard Frith-Macdonald <rfm@gnu.org>
 
