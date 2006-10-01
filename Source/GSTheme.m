@@ -42,6 +42,7 @@
 #include "AppKit/NSMenu.h"
 #include "AppKit/NSPanel.h"
 #include "AppKit/NSScrollView.h"
+#include "AppKit/NSTextField.h"
 #include "AppKit/NSView.h"
 #include "AppKit/NSWindow.h"
 #include "AppKit/NSBezierPath.h"
@@ -82,6 +83,8 @@ typedef enum {
 - (id) initWithImage: (NSImage*)image horizontal: (float)x vertical: (float)y;
 @end
 
+
+
 /** This is the panel used to select and inspect themes.
  */
 @interface	GSThemePanel : NSPanel
@@ -97,11 +100,35 @@ typedef enum {
  */
 - (void) changeSelection: (id)sender;
 
+/** Handle notifications
+ */
+- (void) notified: (NSNotification*)n;
+
 /** Update list of available themes.
  */
 - (void) update: (id)sender;
 
 @end
+
+
+
+/** This is the window used to inspect themes.
+ */
+@interface	GSThemeInspector : NSWindow
+{
+}
+
+/** Return the shared panel.
+ */
++ (GSThemeInspector*) sharedThemeInspector;
+
+/** Update to show current theme.
+ */
+- (void) update: (id)sender;
+
+@end
+
+
 
 /** This category defines private methods for internal use by GSTheme
  */
@@ -455,11 +482,12 @@ static NSNull			*null = nil;
     }
   [_images removeAllObjects];
 
+  /* Tell everything that we have become inactive.
+   */
   [[NSNotificationCenter defaultCenter]
    postNotificationName: GSThemeDidDeactivateNotification
    object: self
    userInfo: nil];
-
 }
 
 - (void) dealloc
@@ -522,7 +550,7 @@ static NSNull			*null = nil;
 
 - (NSWindow*) themeInspector
 {
-  return nil;
+  return [GSThemeInspector sharedThemeInspector];
 }
 
 - (GSDrawTiles*) tilesNamed: (NSString*)aName
@@ -1338,11 +1366,10 @@ static GSThemePanel	*sharedPanel = nil;
   NSRect	frame;
   NSScrollView	*scrollView;
   NSView	*container;
-  NSView	*inspector;
   NSButtonCell	*proto;
 
   /* FIXME - should actually autosave the memory panel position and frame ! */
-  winFrame.size = NSMakeSize(300,300);
+  winFrame.size = NSMakeSize(367,388);
   winFrame.origin = NSMakePoint (100, 200);
   
   self = [super initWithContentRect: winFrame
@@ -1391,10 +1418,25 @@ static GSThemePanel	*sharedPanel = nil;
   [scrollView setDocumentView: matrix];
   RELEASE(matrix);
 
-  [self update: self];
-
   [self setTitle: @"Theme Panel"];
   
+  [[NSNotificationCenter defaultCenter]
+    addObserver: self
+    selector: @selector(notified:)
+    name: GSThemeDidActivateNotification
+    object: nil];
+  [[NSNotificationCenter defaultCenter]
+    addObserver: self
+    selector: @selector(notified:)
+    name: GSThemeDidDeactivateNotification
+    object: nil];
+
+  /* Fake a notification to set the initial value for the inspector.
+   */
+  [self notified:
+    [NSNotification notificationWithName: GSThemeDidActivateNotification
+				  object: [GSTheme theme]
+				userInfo: nil]];
   return self;
 }
 
@@ -1404,6 +1446,49 @@ static GSThemePanel	*sharedPanel = nil;
   NSString	*name = [cell title];
 
   [GSTheme setTheme: [GSTheme loadThemeNamed: name]];
+}
+
+- (void) notified: (NSNotification*)n
+{
+  NSView		*cView;
+  GSThemeInspector	*inspector;
+
+  inspector = (GSThemeInspector*)[[n object] themeInspector];
+  cView = [self contentView];
+
+  if ([[n name] isEqualToString: GSThemeDidActivateNotification] == YES)
+    {
+      NSView	*iView;
+      NSView	*sView;
+      NSRect	frame;
+
+      /* Ask the inspector to ensure that it is up to date.
+       */
+      [inspector update: self];
+
+      /* Move the inspector view into our window.
+       */
+      iView = RETAIN([inspector contentView]);
+      [inspector setContentView: nil];
+      [cView addSubview: iView];
+      RELEASE(iView);
+
+      /* Set inspector view to fill the frame to the right of our
+       * scrollview.
+       */
+      sView = [[cView subviews] objectAtIndex: 0];
+      frame = [cView frame];
+      frame.origin = NSMakePoint([sView frame].size.width, 0.0);
+      frame.size.width -= [sView frame].size.width;
+      [iView setFrame: frame];
+    }
+  else
+    {
+      /* Restore the inspector content view.
+       */
+      [inspector setContentView: [[cView subviews] lastObject]];
+    }
+  [cView setNeedsDisplay: YES];
 }
 
 - (void) update: (id)sender
@@ -1495,3 +1580,105 @@ static GSThemePanel	*sharedPanel = nil;
 }
 
 @end
+
+
+
+static NSTextField *
+new_label (NSString *value)
+{
+  NSTextField *t;
+
+  t = AUTORELEASE([NSTextField new]);
+  [t setStringValue: value];
+  [t setDrawsBackground: NO];
+  [t setEditable: NO];
+  [t setSelectable: NO];
+  [t setBezeled: NO];
+  [t setBordered: NO];
+  [t setAlignment: NSLeftTextAlignment];
+  return t;
+}
+
+/* Implemented in GSInfoPanel.m
+ * An object that displays a list of left-aligned strings (used for the authors)
+ */
+@interface _GSLabelListView: NSView
+{
+}
+/* After initialization, its size is the size it needs, just move it
+   where we want it to show */
+- (id) initWithStringArray: (NSArray *)array
+		      font: (NSFont *)font;
+@end
+
+
+@implementation	GSThemeInspector
+
+static GSThemeInspector	*sharedInspector = nil;
+
++ (GSThemeInspector*) sharedThemeInspector
+{
+  if (sharedInspector == nil)
+    {
+      sharedInspector = [self new];
+    }
+  return sharedInspector;
+}
+
+- (id) init
+{
+  NSRect	frame;
+  NSView	*content;
+
+  frame.size = NSMakeSize(272,388);
+  frame.origin = NSZeroPoint;
+  self = [super initWithContentRect: frame
+    styleMask: (NSTitledWindowMask | NSClosableWindowMask
+      | NSMiniaturizableWindowMask | NSResizableWindowMask)
+    backing: NSBackingStoreBuffered
+    defer: NO];
+  
+  [self setReleasedWhenClosed: NO];
+  content = [self contentView];
+  return self;
+}
+
+- (void) update: (id)sender
+{
+  GSTheme	*theme = [GSTheme theme];
+  NSArray	*authors;
+  NSView	*content = [self contentView];
+  NSRect	cFrame = [content frame];
+  NSView	*view;
+  NSTextField	*tf;
+  NSRect	nameFrame;
+  NSRect	frame;
+
+  while ((view = [[content subviews] lastObject]) != nil)
+    {
+      [view removeFromSuperview];
+    }
+  tf = new_label([theme name]);
+  [tf setFont: [NSFont boldSystemFontOfSize: 32]];
+  [tf sizeToFit];
+  nameFrame = [tf frame];
+  nameFrame.origin.x = (cFrame.size.width - nameFrame.size.width) / 2;
+  nameFrame.origin.y = cFrame.size.height - nameFrame.size.height - 25;
+  [tf setFrame: nameFrame];
+  [content addSubview: tf];
+
+  authors = [[theme infoDictionary] objectForKey: @"GSThemeAuthors"];
+  if ([authors count] > 0)
+    {
+      view = [[_GSLabelListView alloc] initWithStringArray: authors
+        font: [NSFont systemFontOfSize: 14]];
+      frame = [view frame];
+      frame.origin.x = (cFrame.size.width - frame.size.width) / 2;
+      frame.origin.y = nameFrame.origin.y - frame.size.height - 25;
+      [view setFrame: frame];
+      [content addSubview: view];
+    }
+}
+
+@end
+
