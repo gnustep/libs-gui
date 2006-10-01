@@ -1410,7 +1410,7 @@ static GSThemePanel	*sharedPanel = nil;
   [matrix setAutosizesCells: NO];
   [matrix setCellSize: NSMakeSize(72,72)];
   [matrix setIntercellSpacing: NSMakeSize(8,8)];
-  [matrix setAutoresizingMask: NSViewHeightSizable];
+  [matrix setAutoresizingMask: NSViewNotSizable];
   [matrix setMode: NSRadioModeMatrix];
   [matrix setAction: @selector(changeSelection:)];
   [matrix setTarget: self];
