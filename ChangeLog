@@ -64,7 +64,7 @@
 
 2006-09-23 Richard Frith-Macdonald <rfm@gnu.org>
 
-	* Source/GSWindowDecorationView.m: coimment out dubious change.
+	* Source/GSWindowDecorationView.m: comment out dubious change.
 	* Source/GSDisplayServer.m: Add method for expose events
 	* Source/NSWindow.m: Handle expose events.
 	* Headers/AppKit/NSEvent.h: Add expose event type.
