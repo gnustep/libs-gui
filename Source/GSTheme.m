@@ -31,6 +31,7 @@
 #include "Foundation/NSNotification.h"
 #include "Foundation/NSNull.h"
 #include "Foundation/NSPathUtilities.h"
+#include "Foundation/NSSet.h"
 #include "Foundation/NSUserDefaults.h"
 #include "GNUstepGUI/GSTheme.h"
 #include "AppKit/NSApplication.h"
@@ -1561,7 +1562,14 @@ static GSThemePanel	*sharedPanel = nil;
 - (void) update: (id)sender
 {
   NSArray		*array;
-  NSMutableSet		*set = [NSMutableSet set];
+
+  /* Avoid [NSMutableSet set] that confuses GCC 3.3.3.  It seems to confuse
+   * this static +(id)set method with the instance -(void)set, so it would
+   * refuse to compile saying
+   * GSTheme.m:1565: error: void value not ignored as it ought to be
+   */
+  NSMutableSet		*set = AUTORELEASE([NSMutableSet new]);
+
   NSString		*selected = RETAIN([[matrix selectedCell] title]);
   unsigned		existing = [[matrix cells] count];
   NSFileManager		*mgr = [NSFileManager defaultManager];

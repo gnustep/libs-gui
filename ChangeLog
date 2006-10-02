@@ -1,3 +1,14 @@
+2006-10-02  Nicola Pero <nicola.pero@meta-innovation.com>
+
+	* configure.ac: Check the new variable GNUSTEP_IS_FLATTENED,
+	and default to yes.
+	* configure: Regenerated.
+
+	* Source/GSTheme.m: Worked arond a compiler bug that would abort
+	compilation on GCC 3.3.3 20040412 (Red Hat Linux 3.3.3-7).  Avoid
+	[NSMutableSet set] as the compiler is confusing +(id)set with
+	-(void)set.
+	
 2006-10-02 08:19-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSDocumentController.m: Correct grammar in 
