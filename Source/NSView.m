@@ -69,6 +69,7 @@
 #include "GNUstepGUI/GSDisplayServer.h"
 #include "GNUstepGUI/GSTrackingRect.h"
 #include "GNUstepGUI/GSVersion.h"
+#include "GSToolTips.h"
 
 /*
  * We need a fast array that can store objects without retain/release ...
@@ -325,7 +326,12 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 					   fromView: _super_view];
 
 	  _visibleRect = NSIntersectionRect(superviewsVisibleRect, _bounds);
+	}
+      if (_rFlags.has_tooltips != 0)
+        {
+	  GSToolTips	*tt = [GSToolTips tipsForView: self];
 
+	  [tt rebuild];
 	}
     }
 }
@@ -521,7 +527,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   /*
    * Now we clean up all views which have us as their previous view.
-   * We also relase the memory we used.
+   * We also release the memory we used.
    */
   if (nKV(self) != 0)
     {
@@ -556,12 +562,16 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   RELEASE(_frameMatrix);
   RELEASE(_boundsMatrix);
   TEST_RELEASE(_sub_views);
-  TEST_RELEASE(_tracking_rects);
+  if (_rFlags.has_tooltips != 0)
+    {
+      [GSToolTips removeTipsForView: self];
+    }
   if (_rFlags.has_currects != 0)
     {
       [self discardCursorRects];	// Handle release of cursors
     }
   TEST_RELEASE(_cursor_rects);
+  TEST_RELEASE(_tracking_rects);
   [self unregisterDraggedTypes];
   [self releaseGState];
 
@@ -4313,23 +4323,47 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 			  owner: (id)anObject 
 		       userData: (void *)data
 {
-  return 0;
+  GSToolTips	*tt = [GSToolTips tipsForView: self];
+
+  _rFlags.has_tooltips = 1;
+  return [tt addToolTipRect: aRect owner: anObject userData: data];
 }
 
 - (void) removeAllToolTips
 {
+  if (_rFlags.has_tooltips == 1)
+    {
+      GSToolTips	*tt = [GSToolTips tipsForView: self];
+
+      [tt removeAllToolTips];
+    }
 }
 
 - (void) removeToolTip: (NSToolTipTag)tag
 {
+  if (_rFlags.has_tooltips == 1)
+    {
+      GSToolTips	*tt = [GSToolTips tipsForView: self];
+
+      [tt removeToolTip: tag];
+    }
 }
 
 - (void) setToolTip: (NSString *)string
 {
+  GSToolTips	*tt = [GSToolTips tipsForView: self];
+
+  [tt setToolTip: string];
 }
 
 - (NSString *) toolTip
 {
+  if (_rFlags.has_tooltips == 1)
+    {
+      GSToolTips	*tt = [GSToolTips tipsForView: self];
+
+      return [tt toolTip];
+    }
   return nil;
 }
 

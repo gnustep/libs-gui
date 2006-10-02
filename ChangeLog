@@ -1,3 +1,13 @@
+2006-10-02 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GNUmakefile: Add GSToolTips.[hm]
+	* Source/NSWindow.m: Add private tooltip functionality.
+	* Source/GSToolTips.h: Interface to let views and windows handle tips.
+	* Source/GSToolTips.m: ToolTip implementation ... main part.
+	* Source/NSView.m: Use GSToolTips to implement tool tips.
+	* Headers/AppKit/NSResponder.h: Add a flag for views with tool tips.
+	Basic implementation of tool tip help.
+
 2006-10-02  Nicola Pero <nicola.pero@meta-innovation.com>
 
 	* configure.ac: Check the new variable GNUSTEP_IS_FLATTENED,

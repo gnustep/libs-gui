@@ -75,6 +75,9 @@
 #include "GNUstepGUI/GSTrackingRect.h"
 #include "GNUstepGUI/GSDisplayServer.h"
 #include "GNUstepGUI/GSToolbarView.h"
+#include "GSToolTips.h"
+
+static GSToolTips	*toolTipVisible = nil;
 
 #include "GSWindowDecorationView.h"
 
@@ -96,11 +99,14 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 
 /*
  * Category for internal methods (for use only within the NSWindow class itself
- * or with other AppKit classes in the case of the _windowView method)
+ * or with other AppKit classes.
  */
 @interface	NSWindow (GNUstepPrivate)
-+(void) _addAutodisplayedWindow: (NSWindow *)w;
-+(void) _removeAutodisplayedWindow: (NSWindow *)w;
+
++ (void) _addAutodisplayedWindow: (NSWindow *)w;
++ (void) _removeAutodisplayedWindow: (NSWindow *)w;
++ (void) _setToolTipVisible: (GSToolTips*)t;
++ (GSToolTips*) _toolTipVisible;
 
 - (void) _lossOfKeyOrMainWindow;
 - (NSView *) _windowView; 
@@ -109,6 +115,15 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 
 @implementation	NSWindow (GNUstepPrivate)
 
++ (void) _setToolTipVisible: (GSToolTips*)t
+{
+  toolTipVisible = t;
+}
+
++ (GSToolTips*) _toolTipVisible
+{
+  return toolTipVisible;
+}
 
 /* Window autodisplay machinery. */
 - (void) _handleAutodisplay
@@ -3183,6 +3198,13 @@ resetCursorRectsForView(NSView *theView)
 		  else
 		    {
 		      ASSIGN(_lastView, v);
+		      if (toolTipVisible != nil)
+		        {
+			  /* Inform the tooltips system that we have had
+			   * a mouse down so it should stop displaying.
+			   */
+			  [toolTipVisible mouseDown: theEvent];
+			}
 		      [v mouseDown: theEvent];
 		    }
 		}
@@ -3253,7 +3275,19 @@ resetCursorRectsForView(NSView *theView)
 		   * forward the mouse movement to the correct view.
 		   */
 		  v = [_wv hitTest: [theEvent locationInWindow]];
-		  [v mouseMoved: theEvent];
+
+		  /* If the view is displaying a tooltip, we should
+		   * send mouse movements to the tooltip system so
+		   * that the window can track the mouse.
+		   */
+		  if (toolTipVisible != nil)
+		    {
+		      [toolTipVisible mouseMoved: theEvent];
+		    }
+		  else
+		    {
+		      [v mouseMoved: theEvent];
+		    }
 		}
 	      break;
 	  }
