@@ -520,7 +520,7 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
   result = NSRunAlertPanel(title, _(@"You have unsaved documents"),
 			   _(@"Review Unsaved"), 
 			   cancelString, 
-			   _(@"Quit Anyways"));
+			   _(@"Quit Anyway"));
   
 #define ReviewUnsaved NSAlertDefaultReturn
 #define Cancel        NSAlertAlternateReturn

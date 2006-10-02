@@ -1,3 +1,9 @@
+2006-10-02 08:19-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSDocumentController.m: Correct grammar in 
+	reviewUnsavedDocumentsWithAlertTitle:...  "Quit Anyways" should
+	be "Quit Anyway".
+
 2006-10-01 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTrackingRect.m:
@@ -50,6 +56,7 @@
 	* Headers/Additions/GNUstepGUI/GSTheme.h: add -infoDictionary method
 	and documentation.
 
+>>>>>>> .r23712
 2006-09-26 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: Use png in preference to tiff.
