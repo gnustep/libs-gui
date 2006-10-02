@@ -180,14 +180,16 @@
 
 - (void) helpRequested: (NSEvent*)theEvent
 {
-  if (![[NSHelpManager sharedHelpManager]
-	showContextHelpForObject: self
-	locationHint: [theEvent locationInWindow]])
-    if (_next_responder)
-      {
-	[_next_responder helpRequested: theEvent];
-	return;
-      }
+  if ([[NSHelpManager sharedHelpManager]
+    showContextHelpForObject: self
+    locationHint: [theEvent locationInWindow]] == NO)
+    {
+      if (_next_responder)
+	{
+	  [_next_responder helpRequested: theEvent];
+	  return;
+	}
+    }
   [NSHelpManager setContextHelpModeActive: NO];
 }
 

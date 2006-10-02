@@ -4,9 +4,13 @@
 	Make themes in panel be in alphabetical order except for the
 	default theme (always first in the list).
 	Allow setting of default theme for application.
-	* Source/NSHelpManager.m:
+	* Source/NSHelpManager.m: Implement context help cursor.
 	* Source/NSHelpPanel.m: Implement simple fallback help panel display
 	for systems where no rtf/rtfd viewing application is installed.
+	* Source/NSResponder.m: Tweak context help
+	* Source/NSCursor.m: tidied a little
+	* Images/GNUmakefile: Install context help cursor
+	* Images/common_HelpCursor.tiff: add context help cursor
 
 2006-09-30 Richard Frith-Macdonald <rfm@gnu.org>
 

@@ -39,6 +39,8 @@
 #include "AppKit/NSHelpManager.h"
 #include "AppKit/NSHelpPanel.h"
 #include "AppKit/NSHelpPanel.h"
+#include "AppKit/NSCursor.h"
+#include "AppKit/NSImage.h"
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSScrollView.h"
 #include "AppKit/NSTextView.h"
@@ -262,6 +264,7 @@
 
 static NSHelpManager *_gnu_sharedHelpManager = nil;
 static BOOL _gnu_contextHelpActive = NO;
+static NSCursor *helpCursor = nil;
 
 
 //
@@ -284,18 +287,31 @@ static BOOL _gnu_contextHelpActive = NO;
 
 + (void) setContextHelpModeActive: (BOOL) flag
 {
-  _gnu_contextHelpActive = flag;
-  if (flag)
+  if (flag != _gnu_contextHelpActive)
     {
-      [[NSNotificationCenter defaultCenter] 
-	postNotificationName: NSContextHelpModeDidActivateNotification 
-	object: [self sharedHelpManager]];
-    }
-  else
-    {
-      [[NSNotificationCenter defaultCenter] 
-	postNotificationName: NSContextHelpModeDidDeactivateNotification 
-	object: [self sharedHelpManager]];
+      _gnu_contextHelpActive = flag;
+      if (flag)
+	{
+	  if (helpCursor == nil)
+	    {
+	      helpCursor = [[NSCursor alloc]
+		initWithImage: [NSImage imageNamed: @"common_HelpCursor"]
+		hotSpot: NSMakePoint(8, 2)];
+	      [helpCursor setOnMouseEntered: NO];
+	      [helpCursor setOnMouseExited: NO];
+	    }
+	  [helpCursor push];
+	  [[NSNotificationCenter defaultCenter] 
+	    postNotificationName: NSContextHelpModeDidActivateNotification 
+	    object: [self sharedHelpManager]];
+	}
+      else
+	{
+	  [helpCursor pop];
+	  [[NSNotificationCenter defaultCenter] 
+	    postNotificationName: NSContextHelpModeDidDeactivateNotification 
+	    object: [self sharedHelpManager]];
+	}
     }
 }
 

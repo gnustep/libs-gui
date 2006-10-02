@@ -353,7 +353,7 @@ backgroundColorHint:(NSColor *)bg
     }
   return cursor;
 }
-- (void)dealloc
+- (void) dealloc
 {
   RELEASE (_cursor_image);
   [super dealloc];
@@ -550,8 +550,10 @@ backgroundColorHint:(NSColor *)bg
     }
   else
     {
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_set_on_mouse_entered];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_set_on_mouse_exited];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL)
+				   at: &_is_set_on_mouse_entered];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL)
+				   at: &_is_set_on_mouse_exited];
       _cursor_image = [aDecoder decodeObject];
       _hot_spot = [aDecoder decodePoint];
       [self _computeCid];
