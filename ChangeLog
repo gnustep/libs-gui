@@ -56,7 +56,6 @@
 	* Headers/Additions/GNUstepGUI/GSTheme.h: add -infoDictionary method
 	and documentation.
 
->>>>>>> .r23712
 2006-09-26 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: Use png in preference to tiff.
