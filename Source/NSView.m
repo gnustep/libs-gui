@@ -557,6 +557,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   RELEASE(_boundsMatrix);
   TEST_RELEASE(_sub_views);
   TEST_RELEASE(_tracking_rects);
+  if (_rFlags.has_currects != 0)
+    {
+      [self discardCursorRects];	// Handle release of cursors
+    }
   TEST_RELEASE(_cursor_rects);
   [self unregisterDraggedTypes];
   [self releaseGState];
@@ -2610,7 +2614,7 @@ Returns YES iff any scrolling was done.
       m = [rectClass allocWithZone: NSDefaultMallocZone()];
       m = [m initWithRect: aRect
 		      tag: 0
-		    owner: anObject
+		    owner: RETAIN(anObject)
 		 userData: NULL
 		   inside: YES];
       [_cursor_rects addObject: m];
@@ -2624,16 +2628,17 @@ Returns YES iff any scrolling was done.
 {
   if (_rFlags.has_currects != 0)
     {
-      if (_rFlags.valid_rects != 0)
-	{
-	  unsigned count = [_cursor_rects count];
-	  if (count > 0)
+      unsigned count = [_cursor_rects count];
+
+      if (count > 0)
+        {
+	  GSTrackingRect *rects[count];
+
+	  [_cursor_rects getObjects: rects];
+	  if (_rFlags.valid_rects != 0)
 	    {
-	      GSTrackingRect *rects[count];
 	      NSPoint loc = ((struct NSWindow_struct *)_window)->_lastPoint;
 	      unsigned i;
-
-	      [_cursor_rects getObjects: rects];
 
 	      for (i = 0; i < count; ++i)
 		{
@@ -2644,10 +2649,14 @@ Returns YES iff any scrolling was done.
 		    }
 		  [r invalidate];
 		}
+	      _rFlags.valid_rects = 0;
 	    }
-	  _rFlags.valid_rects = 0;
+	  while (count-- > 0)
+	    {
+	      RELEASE([rects[count] owner]);
+	    }
+	  [_cursor_rects removeAllObjects];
 	}
-      [_cursor_rects removeAllObjects];
       _rFlags.has_currects = 0;
     }
 }
@@ -2677,6 +2686,7 @@ Returns YES iff any scrolling was done.
 	      _rFlags.has_currects = 0;
 	      _rFlags.valid_rects = 0;
 	    }
+	  RELEASE(c);
 	  break;
 	}
       else
@@ -4091,13 +4101,15 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       
       _rFlags.flipped_view = [self isFlipped];
       
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_rotated_from_base];
       [aDecoder decodeValueOfObjCType: @encode(BOOL)
-		at: &_is_rotated_or_scaled_from_base];
+				   at: &_is_rotated_from_base];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL)
+				   at: &_is_rotated_or_scaled_from_base];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_post_frame_changes];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_autoresizes_subviews];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL)
+				   at: &_autoresizes_subviews];
       [aDecoder decodeValueOfObjCType: @encode(unsigned int)
-		at: &_autoresizingMask];
+				   at: &_autoresizingMask];
       [self setNextKeyView: [aDecoder decodeObject]];
       [[aDecoder decodeObject] setNextKeyView: self];
       
@@ -4109,9 +4121,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       while ((sub = [e nextObject]) != nil)
 	{
 	  NSAssert([sub window] == nil,
-		   NSInternalInconsistencyException);
+	    NSInternalInconsistencyException);
 	  NSAssert([sub superview] == nil,
-		   NSInternalInconsistencyException);
+	    NSInternalInconsistencyException);
 	  [sub viewWillMoveToWindow: _window];
 	  [sub viewWillMoveToSuperview: self];
 	  [sub setNextResponder: self];

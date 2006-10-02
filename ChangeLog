@@ -1,5 +1,14 @@
 2006-10-01 Richard Frith-Macdonald <rfm@gnu.org>
 
+	* Source/GSTrackingRect.m:
+	* Source/NSView.m:
+	* Headers/AppKit/NSView.h:
+	Fix tracking rect bug ... the owner of the rectangle should not
+	be retained by a tracking rect (but should be retained by a cursor
+	rect).  Updated documentation to clearly state what mis retained.
+
+2006-10-01 Richard Frith-Macdonald <rfm@gnu.org>
+
 	* Source/GSTheme.m: Add rudimentary inspector.
 	Make themes in panel be in alphabetical order except for the
 	default theme (always first in the list).

@@ -51,10 +51,6 @@
   rectangle = aRect;
   tag = aTag;
   owner = anObject;
-  if (owner != nil)
-    {
-      RETAIN(owner);
-    }
   user_data = theData;
   flags.inside = flag;
   flags.isValid = YES;
@@ -63,7 +59,6 @@
 
 - (void) dealloc
 {
-  TEST_RELEASE(owner);
   [super dealloc];
 }
 
@@ -103,10 +98,6 @@
     {
       flags.isValid = NO;
       flags.checked = NO;
-      if (owner != nil)
-	{
-	  DESTROY(owner);
-	}
     }
 }
 
@@ -134,7 +125,7 @@
       
       rectangle = [aDecoder decodeRect];
       [aDecoder decodeValueOfObjCType: @encode(NSTrackingRectTag) at: &tag];
-      [aDecoder decodeValueOfObjCType: @encode(id) at: &owner];
+      owner = [aDecoder decodeObject];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &inside];
       flags.inside = inside;
     }

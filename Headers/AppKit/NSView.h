@@ -328,14 +328,41 @@ typedef enum _NSFocusRingType {
                             event: (NSEvent *)theEvent;
 #endif
 
-/*
- * Managing the Cursor
+/**
+ * Adds a cursor rectangle.  This provides for automatic update of the
+ * cursor to be anObject while the mouse is in aRect.<br />
+ * The cursor (anObject) is retained until the cursor rectangle is
+ * removed or discarded.<br />
+ * Generally your subviews should call this in their implementation of
+ * the -resetCursorRects method.<br />
+ * It is your responsibility to ensure that aRect lies within your veiw's
+ * visible rectangle.
  */
 - (void) addCursorRect: (NSRect)aRect
 		cursor: (NSCursor*)anObject;
+
+/**
+ * Removes all the cursor rectancles which have been set up for the
+ * receiver.  This is equivalent to calling -removeCursorRect:cursor:
+ * for all cursor rectangles which have been set up.<br />
+ * This is called automatically before the system calls -resetCursorRects
+ * so you never need to call it.
+ */
 - (void) discardCursorRects;
+
+/**
+ * Removes the cursor rectangle which was set up for the specified
+ * rectangle and cursor.
+ */
 - (void) removeCursorRect: (NSRect)aRect
 		   cursor: (NSCursor*)anObject;
+
+/** <subclass-override />
+ * This is called to establish a new set of cursor rectangles whenever
+ * the receiver needs to do so (eg the view has been resized).  The default
+ * implementation does nothing, but subclasses should use it to make
+ * calls to -addCursorRect:cursor: to establish their new cursor rectangles.
+ */
 - (void) resetCursorRects;
 
 #ifndef STRICT_OPENSTEP
@@ -351,10 +378,26 @@ typedef enum _NSFocusRingType {
 - (NSString *) toolTip;
 #endif
 
-/*
- * Tracking rectangles
+/**
+ * Removes a tracking rectangle which was previously established using the
+ * -addTrackingRect:owner:userData:assumeInside: method.<br />
+ * The value of tag must be the value returned by the method used to add
+ * the rectangle.
  */
 - (void) removeTrackingRect: (NSTrackingRectTag)tag;
+
+/**
+ * Adds a tracking rectangle to monitor mouse movement and generate
+ * mouse-entered and mouse-exited events.<br />
+ * The event messages are sent to anObject, which is <em>not</em>
+ * retained and must therefore be sure to remove any tracking rectangles
+ * using it before it is deallocated.<br />
+ * The value of data is supplied as the user data in the event objects
+ * generated.<br />
+ * If flag is YES then the mouse is assumed to be inside the tracking
+ * rectangle and the first event generated will therefore be a mouse exit,
+ * if it is NO then the first event generated will be a mouse entry.
+ */
 - (NSTrackingRectTag) addTrackingRect: (NSRect)aRect
 				owner: (id)anObject
 			     userData: (void*)data
