@@ -38,7 +38,10 @@
 #include "AppKit/NSWorkspace.h"
 #include "AppKit/NSHelpManager.h"
 #include "AppKit/NSHelpPanel.h"
+#include "AppKit/NSHelpPanel.h"
 #include "AppKit/NSGraphics.h"
+#include "AppKit/NSScrollView.h"
+#include "AppKit/NSTextView.h"
 
 #include "GNUstepGUI/GSHelpManagerPanel.h"
 
