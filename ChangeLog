@@ -1,3 +1,42 @@
+2006-10-01 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSTheme.m: Add rudimentary inspector.
+	Make themes in panel be in alphabetical order except for the
+	default theme (always first in the list).
+	Allow setting of default theme for application.
+	* Source/NSHelpManager.m:
+	* Source/NSHelpPanel.m: Implement simple fallback help panel display
+	for systems where no rtf/rtfd viewing application is installed.
+
+2006-09-30 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSColor.m: Remove debug log message.
+	* Source/GSInfoPanel.m: Open theme handling panel.
+	* Source/GSTheme.m: Rudimentary theme handling panel.
+	* Headers/Additions/GNUstepGUI/GSTheme.h: A few more methods.
+	Start adding a panel to allow selection of themes in a running app.
+
+2006-09-29 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWindow.m: If ordering out a deferred window which was
+	never ordered in, there is nothing to do.
+	* Source/NSMenu.m: (_organize) when switching from horizontal to
+	vertical menu, attempt to restore contents fo the app menu to the
+	main menu in a reasonable manner.
+	* Source/NSHelpManager.m: Use the help file specified in Info.plist
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	* Source/GSTheme.m: Add -authors and -icon methods. Support loading
+	from an absolute path.
+
+2006-09-28 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSTheme.m: Update main menu on theme activation.
+	* Source/NSMenu.m: ([setMain:]) handle change of interface style.
+	* Source/NSInterfaceStyle.m: Observe/handle theme activation.
+	* Headers/AppKit/NSMenu.h: remove internal method from public header
+	* Headers/Additions/GNUstepGUI/GSTheme.h: add -infoDictionary method
+	and documentation.
+
 2006-09-26 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: Use png in preference to tiff.
@@ -25,7 +64,7 @@
 
 2006-09-23 Richard Frith-Macdonald <rfm@gnu.org>
 
-	* Source/GSWindowDecorationView.m: coimment out dubious change.
+	* Source/GSWindowDecorationView.m: comment out dubious change.
 	* Source/GSDisplayServer.m: Add method for expose events
 	* Source/NSWindow.m: Handle expose events.
 	* Headers/AppKit/NSEvent.h: Add expose event type.

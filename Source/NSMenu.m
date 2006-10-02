@@ -120,10 +120,11 @@ static NSNotificationCenter *nc;
 
 @interface	NSMenu (GNUstepPrivate)
 
-- (NSString *) _locationKey;
 - (NSMenuPanel *) _createWindow;
-- (void) _updateUserDefaults: (id) notification;
+- (NSString *) _locationKey;
 - (void) _rightMouseDisplay: (NSEvent*)theEvent;
+- (void) _setGeometry;
+- (void) _updateUserDefaults: (id) notification;
 
 @end
 
@@ -204,38 +205,78 @@ static NSNotificationCenter *nc;
 
 - (void) _organizeMenu
 {
-  if (_horizontal == YES)
+  int		i;
+
+  if ([self isEqual: [NSApp mainMenu]] == YES)
     {
-      NSString	*title = [[NSProcessInfo processInfo] processName];
-      NSMenu	*appMenu = [[self itemWithTitle: title] submenu];
+      NSString		*appTitle;
+      NSMenu		*appMenu;
+      NSMenuItem	*appItem;
 
-      if (![self isEqual: [NSApp mainMenu]])
-	return;
+      appTitle = [[NSProcessInfo processInfo] processName];
+      appItem = (NSMenuItem *)[self itemWithTitle: appTitle];
+      appMenu = [appItem submenu];
 
-      if (appMenu == nil)
+      if (_horizontal == YES)
 	{
-	  int i;
-	  NSMutableArray *itemsToMove = [NSMutableArray new];
-	  NSMenuItem *appItem;
-	  NSImage *ti = [[NSApp applicationIconImage] copy];
-	  float bar = [NSMenuView menuBarHeight] - 4;
+	  NSMutableArray	*itemsToMove;
+	  NSImage		*ti;
+	  float			bar;
 
-	  appMenu = [NSMenu new];
-
-	  for (i = 0; i < [_items count]; i++)
+	  ti = [[NSApp applicationIconImage] copy];
+	  if (ti == nil)
 	    {
-	      NSMenuItem *anItem = [_items objectAtIndex: i];
-	      NSString *title = [anItem title];
+	      ti = [[NSImage imageNamed: @"GNUstep"] copy];
+	    }
+	  [ti setScalesWhenResized: YES];
+	  bar = [NSMenuView menuBarHeight] - 4;
+	  [ti setSize: NSMakeSize(bar, bar)];
 
-	      if (![anItem submenu])
+	  itemsToMove = [NSMutableArray new];
+
+	  if (appMenu == nil)
+	    {
+	      [self insertItemWithTitle: appTitle
+				 action: NULL
+			  keyEquivalent: @"" 
+				atIndex: 0];
+	      appItem = [self itemAtIndex: 0];
+	      appMenu = [NSMenu new];
+	      [self setSubmenu: appMenu forItem: appItem];
+	      RELEASE(appMenu);
+	    }
+	  else
+	    {
+	      int index = [self indexOfItem: appItem];
+
+	      if (index != 0)
+		{
+		  RETAIN (appItem);
+		  [self removeItemAtIndex: index];
+		  [self insertItem: appItem atIndex: 0];
+		  RELEASE (appItem);
+		}
+	    }
+	  [appItem setImage: ti];
+	  RELEASE(ti);
+
+	  for (i = 1; i < [_items count]; i++)
+	    {
+	      NSMenuItem	*anItem = [_items objectAtIndex: i];
+	      NSString	*title = [anItem title];
+	      NSMenu	*submenu = [anItem submenu];
+
+	      if (submenu == nil)
 		{
 		  [itemsToMove addObject: anItem];
 		}
-
-	      if ([title isEqual: NSLocalizedString (@"Info",
-					       @"Info")])
+	      else
 		{
-		  [itemsToMove addObject: anItem];
+		  if ([title isEqual: NSLocalizedString (@"Info", @"Info")])
+		    {
+		      [itemsToMove addObject: anItem];
+		    }
+		  [[submenu menuRepresentation] update];
 		}
 	    }
 
@@ -244,75 +285,98 @@ static NSNotificationCenter *nc;
 	      [self removeItem: [itemsToMove objectAtIndex: i]];
 	      [appMenu addItem: [itemsToMove objectAtIndex: i]];
 	    }
+	  [[appMenu menuRepresentation] update];
 
-	  [self insertItemWithTitle: [[NSProcessInfo processInfo] processName]
-			     action: NULL
-		      keyEquivalent: @"" 
-			    atIndex: 0];
-	  appItem = (NSMenuItem *)[self itemWithTitle: title];
-
-	  if (!ti)
-	    ti = [[NSImage imageNamed: @"GNUstep"] copy];
-
-	  [ti setScalesWhenResized: YES];
-	  [ti setSize: NSMakeSize(bar, bar)];
-	  [appItem setImage: ti];
-	  RELEASE (ti);
-
-	  [self setSubmenu: appMenu forItem: appItem];
-
-	  [itemsToMove release];
+	  RELEASE(itemsToMove);
 	}
       else
 	{
-	  int i;
-	  NSMutableArray *itemsToMove = [NSMutableArray new];
-	  NSMenuItem *appItem = [self itemWithTitle: [[NSProcessInfo processInfo] processName]];
-	  int index = [self indexOfItem: appItem];
-	  NSImage *ti = [[NSApp applicationIconImage] copy];
-	  float bar = [NSMenuView menuBarHeight] - 4;
-
-	  if (!ti)
-	    ti = [[NSImage imageNamed: @"GNUstep"] copy];
-
-	  [ti setScalesWhenResized: YES];
-	  [ti setSize: NSMakeSize(bar, bar)];
-	  [appItem setImage: ti];
-	  RELEASE (ti);
-
-	  if (index != 0)
+	  [appItem setImage: nil];
+	  if (appMenu != nil)
 	    {
-	      RETAIN (appItem);
-	      [self removeItemAtIndex: index];
-	      [self insertItem: appItem atIndex: 0];
-	      RELEASE (appItem);
-	    }
+	      NSArray	*array = [NSArray arrayWithArray: [appMenu itemArray]];
 
-	  for (i = 0; i < [_items count]; i++)
-	    {
-	      NSMenuItem *anItem = [_items objectAtIndex: i];
-	      NSString *title = [anItem title];
+	      for (i = 0; i < [array count]; i++)
+	        {
+		  NSMenuItem	*anItem = [array objectAtIndex: i];
+		  NSMenu	*submenu = [anItem submenu];
 
-	      if (![anItem submenu])
-		{
-		  [itemsToMove addObject: anItem];
+		  [appMenu removeItem: anItem];
+		  if (submenu == nil)
+		    {
+		      [self addItem: anItem];
+		    }
+		  else
+		    {
+		      [self insertItem: anItem atIndex: 0];	// Info menu
+		    }
 		}
-
-	      if ([title isEqual: NSLocalizedString (@"Info",
-					       @"Info")])
-		{
-		  [itemsToMove addObject: anItem];
-		}
+	      [self removeItem: appItem];
 	    }
-
-	  for (i = 0; i < [itemsToMove count]; i++)
-	    {
-	      [self removeItem: [itemsToMove objectAtIndex: i]];
-	      [appMenu addItem: [itemsToMove objectAtIndex: i]];
-	    }
-
-	  [itemsToMove release];
 	}
+    }
+
+  for (i = 0; i < [_items count]; i++)
+    {
+      NSMenuItem	*anItem = [_items objectAtIndex: i];
+      NSMenu		*submenu = [anItem submenu];
+
+      if (submenu != nil)
+	{
+	  if ([submenu isTransient])
+	    {
+	      [submenu closeTransient];
+	    }
+	  [submenu close];
+	  [submenu _organizeMenu];
+	}
+    }
+  [[self menuRepresentation] update];
+  [self sizeToFit];
+}
+
+- (void) _setGeometry
+{
+  NSPoint        origin;
+
+  if (_horizontal == YES)
+    {
+      origin = NSMakePoint (0, [[NSScreen mainScreen] frame].size.height
+	- [_aWindow frame].size.height);
+      [_aWindow setFrameOrigin: origin];
+      [_bWindow setFrameOrigin: origin];
+    }
+  else
+    {
+      NSString       *key;
+
+      if (nil != (key = [self _locationKey]))
+	{
+	  NSUserDefaults *defaults;
+	  NSDictionary   *menuLocations;
+	  NSString       *location;
+
+	  defaults = [NSUserDefaults standardUserDefaults];
+	  menuLocations = [defaults objectForKey: NSMenuLocationsKey];
+
+	  if ([menuLocations isKindOfClass: [NSDictionary class]])
+	    location = [menuLocations objectForKey: key];
+	  else
+	    location = nil;
+     
+	  if (location && [location isKindOfClass: [NSString class]])
+	    {
+	      [_aWindow setFrameFromString: location];
+	      [_bWindow setFrameFromString: location];
+	      return;
+	    }
+	}
+      
+      origin = NSMakePoint(0, [[_aWindow screen] visibleFrame].size.height 
+	  - [_aWindow frame].size.height);
+	  
+      [_aWindow setFrameOrigin: origin];
+      [_bWindow setFrameOrigin: origin];
     }
 }
 
@@ -543,7 +607,7 @@ static NSNotificationCenter *nc;
   else
     [_notifications addObject: inserted];
 
-  // Set this after the insert notification has been send.
+  // Set this after the insert notification has been sent.
   [newItem setMenu: self];
 }
 
@@ -1407,9 +1471,9 @@ static NSNotificationCenter *nc;
       _superMenu->_attachedMenu = self;
     }
   else if ([_aWindow frame].origin.y <= 0 
-           && _popUpButtonCell == nil)   // get geometry only if not set
+    && _popUpButtonCell == nil)   // get geometry only if not set
     {
-      [self setGeometry];
+      [self _setGeometry];
     }
   
   NSDebugLLog (@"NSMenu", 
@@ -1470,51 +1534,6 @@ static NSNotificationCenter *nc;
   [_view update];
   
   [_bWindow orderFront: self];
-}
-
-- (void) setGeometry
-{
-  NSPoint        origin;
-
-  if (_horizontal == YES)
-    {
-      origin = NSMakePoint (0, [[NSScreen mainScreen] frame].size.height
-	- [_aWindow frame].size.height);
-      [_aWindow setFrameOrigin: origin];
-      [_bWindow setFrameOrigin: origin];
-    }
-  else
-    {
-      NSString       *key;
-
-      if (nil != (key = [self _locationKey]))
-	{
-	  NSUserDefaults *defaults;
-	  NSDictionary   *menuLocations;
-	  NSString       *location;
-
-	  defaults = [NSUserDefaults standardUserDefaults];
-	  menuLocations = [defaults objectForKey: NSMenuLocationsKey];
-
-	  if ([menuLocations isKindOfClass: [NSDictionary class]])
-	    location = [menuLocations objectForKey: key];
-	  else
-	    location = nil;
-     
-	  if (location && [location isKindOfClass: [NSString class]])
-	    {
-	      [_aWindow setFrameFromString: location];
-	      [_bWindow setFrameFromString: location];
-	      return;
-	    }
-	}
-      
-      origin = NSMakePoint(0, [[_aWindow screen] visibleFrame].size.height 
-	  - [_aWindow frame].size.height);
-	  
-      [_aWindow setFrameOrigin: origin];
-      [_bWindow setFrameOrigin: origin];
-    }
 }
 
 - (void) close
@@ -1591,22 +1610,40 @@ static NSNotificationCenter *nc;
 {
   if (isMain)
     {
-      /*
-       * If necessary,. rebuild menu for macintosh (horizontal) style
-       */
-      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil)
-	== NSMacintoshInterfaceStyle)
-	{
-	  NSMenuView *rep = [[NSMenuView alloc] initWithFrame: NSZeroRect];
+      NSMenuView	*oldRep;
+      NSInterfaceStyle	oldStyle;
+      NSInterfaceStyle	newStyle;
 
-	  [rep setHorizontal: YES];
-	  [self setMenuRepresentation: rep];
+      oldRep = [self menuRepresentation];
+      oldStyle = [oldRep interfaceStyle];
+      newStyle = NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
+
+      /*
+       * If necessary, rebuild menu for (different) style
+       */
+      if (oldStyle != newStyle)
+        {
+	  NSMenuView	*newRep;
+
+	  newRep = [[NSMenuView alloc] initWithFrame: NSZeroRect];
+	  if (newStyle == NSMacintoshInterfaceStyle)
+	    {
+	      [newRep setHorizontal: YES];
+	    }
+	  else
+	    {
+	      [newRep setHorizontal: NO];
+	    }
+	  [newRep setInterfaceStyle: newStyle];
+	  [self setMenuRepresentation: newRep];
 	  [self _organizeMenu];
-	  RELEASE(rep);
+	  RELEASE(newRep);
 	}
+
       [[self window] setTitle: [[NSProcessInfo processInfo] processName]];
       [[self window] setLevel: NSMainMenuWindowLevel];
-      [self setGeometry];
+      [self _setGeometry];
+      [self sizeToFit];
 
       if ([NSApp isActive])
         {

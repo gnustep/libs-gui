@@ -74,11 +74,11 @@ static NSMapTable	*viewInfo = 0;
 @class NSButton;
 
 @interface NSMenuView (Private)
-- (BOOL) _rootIsHorizontal;
+- (BOOL) _rootIsHorizontal: (BOOL*)isAppMenu;
 @end
 
 @implementation NSMenuView (Private)
-- (BOOL) _rootIsHorizontal
+- (BOOL) _rootIsHorizontal: (BOOL*)isAppMenu
 {
   NSMenu	*m = _attachedMenu;
 
@@ -86,6 +86,17 @@ static NSMapTable	*viewInfo = 0;
   while ([m supermenu] != nil)
     {
       m = [m supermenu];
+    }
+  if (isAppMenu != 0)
+    {
+      if (m == [NSApp mainMenu])
+	{
+	  *isAppMenu = YES;
+	}
+      else
+	{
+	  *isAppMenu = NO;
+	}
     }
   return [[m menuRepresentation] isHorizontal];
 }
@@ -220,6 +231,8 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 - (void) setMenu: (NSMenu*)menu
 {
   NSNotificationCenter	*theCenter = [NSNotificationCenter defaultCenter];
+  unsigned	count;
+  unsigned	i;
 
   if (_attachedMenu != nil)
     {
@@ -248,30 +261,25 @@ _addLeftBorderOffsetToRect(NSRect aRect)
                     selector: @selector(itemRemoved:)
                         name: NSMenuDidRemoveItemNotification
                       object: _attachedMenu];
-
-      // Force menu view's layout to be recalculated.
-      [self setNeedsSizing: YES];
-      
-      [self update];
     }
-  if (_horizontal)
+
+  count = [[[self menu] itemArray] count];
+  for (i = 0; i < count; i++)
     {
-      unsigned	count = [[[self menu] itemArray] count];
-      unsigned	i;
+      NSNumber	*n = [NSNumber numberWithInt: i];
+      NSDictionary	*d;
 
-      for (i = 0; i < count; i++)
-	{
-	  NSNumber	*n = [NSNumber numberWithInt: i];
-	  NSDictionary	*d;
+      d = [NSDictionary dictionaryWithObject: n forKey: @"NSMenuItemIndex"];
 
-	  d = [NSDictionary dictionaryWithObject: n forKey: @"NSMenuItemIndex"];
-
-	  [self itemAdded: [NSNotification
-	    notificationWithName: NSMenuDidAddItemNotification
-	    object: self
-	    userInfo: d]];
-	}
+      [self itemAdded: [NSNotification
+	notificationWithName: NSMenuDidAddItemNotification
+	object: self
+	userInfo: d]];
     }
+
+  // Force menu view's layout to be recalculated.
+  [self setNeedsSizing: YES];
+  [self update];
 }
 
 - (NSMenu*) menu
@@ -559,43 +567,55 @@ _addLeftBorderOffsetToRect(NSRect aRect)
  */
 - (void) update
 {
-  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self)
-    == NSMacintoshInterfaceStyle)
+  BOOL	needTitleView;
+  BOOL	rootIsAppMenu;
+
+  NSDebugLLog (@"NSMenu", @"update called on menu view");
+
+  /*
+   * Ensure that a title view exists only if needed.
+   */
+  if (_attachedMenu == nil)
     {
-      [self sizeToFit];
+      needTitleView = NO;
     }
+  else if ([self _rootIsHorizontal: &rootIsAppMenu] == YES)
+    {
+      needTitleView = NO;
+    }
+  else if (rootIsAppMenu == YES)
+    {
+      needTitleView = YES;
+    } 
   else
     {
-      NSDebugLLog (@"NSMenu", @"update called on menu view");
+      needTitleView = ([_attachedMenu _ownedByPopUp] == YES) ? NO : YES;
+    }
 
-      /*
-       * Ensure that a title view exists only if needed.
-       */
-      if (![_attachedMenu _ownedByPopUp] && !_titleView)
+  if (needTitleView == YES && _titleView == nil)
+    {
+      _titleView = [[GSTitleView alloc] initWithOwner: _attachedMenu];
+      [self addSubview: _titleView];
+      RELEASE(_titleView);
+    }
+  if (needTitleView == NO && _titleView != nil)
+    {
+      [_titleView removeFromSuperview];
+      _titleView = nil;
+    }
+
+  [self sizeToFit];
+
+  if ([_attachedMenu _ownedByPopUp] == NO)
+    {
+      if ([_attachedMenu isTornOff] && ![_attachedMenu isTransient])
 	{
-	  _titleView = [[GSTitleView alloc] initWithOwner:_attachedMenu];
-	  [self addSubview: _titleView];
-	  RELEASE(_titleView);
+	  [_titleView
+	    addCloseButtonWithAction: @selector(_performMenuClose:)];
 	}
-      else if ([_attachedMenu _ownedByPopUp] && _titleView)
+      else
 	{
-	  [_titleView removeFromSuperview];
-	  _titleView = nil;
-	}
-
-      [self sizeToFit];
-
-      if ([_attachedMenu _ownedByPopUp] == NO)
-	{
-	  if ([_attachedMenu isTornOff] && ![_attachedMenu isTransient])
-	    {
-	      [_titleView
-		addCloseButtonWithAction: @selector(_performMenuClose:)];
-	    }
-	  else
-	    {
-	      [_titleView removeCloseButton];
-	    }
+	  [_titleView removeCloseButton];
 	}
     }
 }
@@ -809,9 +829,8 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 				     + menuBarHeight)];
       [_titleView setFrame: NSMakeRect (0, howMany * _cellSize.height,
 					NSWidth (_bounds), menuBarHeight)];
-      
-      _needsSizing = NO;
     }
+  _needsSizing = NO;
 }
 
 - (float) stateImageOffset
@@ -969,15 +988,15 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 	    subOrigin.y - NSHeight(submenuFrame) - 3 +
 	    2*[NSMenuView menuBarHeight]);
 	}
-      else if ([self _rootIsHorizontal] == YES)
+      else if ([self _rootIsHorizontal: 0] == YES)
 	{
 	  NSRect aRect = [self rectOfItemAtIndex:
             [_attachedMenu indexOfItemWithSubmenu: aSubmenu]];
 	  NSPoint subOrigin = [_window convertBaseToScreen:
             NSMakePoint(aRect.origin.x, aRect.origin.y)];
-    
+          // FIXME ... why is the offset +1 needed below? 
 	  return NSMakePoint (NSMaxX(frame),
-	    subOrigin.y - NSHeight(submenuFrame) + aRect.size.height);
+	    subOrigin.y - NSHeight(submenuFrame) + aRect.size.height + 1);
 	}
       else
 	{
@@ -1042,7 +1061,8 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 	  // Compute position for popups, if needed
 	  if (selectedItemIndex != -1) 
 	    {
-	      screenFrame.origin.y += screenRect.size.height * selectedItemIndex;
+	      screenFrame.origin.y
+		+= screenRect.size.height * selectedItemIndex;
 	    }
 	}
       else

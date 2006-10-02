@@ -139,8 +139,11 @@
 #include "AppKit/NSButtonCell.h"
 
 #if	OS_API_VERSION(GS_API_NONE,GS_API_NONE)
+@class NSArray;
 @class NSBundle;
 @class NSColor;
+@class NSDictionary;
+@class NSImage;
 @class GSDrawTiles;
 
 /**
@@ -207,7 +210,14 @@ APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
   NSBundle		*_bundle;
   NSMutableArray	*_images;
   NSMutableDictionary	*_tiles;
+  NSImage		*_icon;
 }
+
+/**
+ * Creates and displays a panel allowing selection of different themes
+ * and display of the current theme inspector.
+ */
++ (void) orderFrontSharedThemePanel: (id)sender;
 
 /**
  * Set the currently active theme to be the instance specified.<br />
@@ -228,16 +238,26 @@ APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
  * <p>This method is called automatically when the receiver is made into
  * the currently active theme by the +setTheme: method. Subclasses may
  * override it to perform startup operations, but should call the super
- * class implementation before doing their own thing.
+ * class implementation after doing their own thing.
  * </p>
- * <p>The base implementation handles setup and caching of certain image
- * information and then sends a GSThemeDidActivateNotification to allow
- * other parts of the GUI library to update themselves from the new theme.<br />
+ * <p>The base implementation handles setup and caching of the system
+ * color list, standard image information, tiling information,
+ * and user defaults.<br />
+ * It then sends a GSThemeDidActivateNotification to allow other
+ * parts of the GUI library to update themselves from the new theme.<br />
  * If the theme sets an alternative system color list, the notification
  * userInfo dictionary will contain that list keyed on <em>Colors</em>.
  * </p>
+ * <p>Finally, this method marks all windows in the application as needing
+ * update ... so they will draw themselves with the new theme information.
+ * </p>
  */
 - (void) activate;
+
+/**
+ * Returns the names of the theme's authors.
+ */
+- (NSArray*) authors;
 
 /**
  * Return the bundle containing the resources used by the current theme.
@@ -258,12 +278,70 @@ APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
  */
 - (void) deactivate;
 
+/**
+ * Returns the theme's icon.
+ */
+- (NSImage*) icon;
+
 /** <init />
  * Initialise an instance of a theme with the specified resource bundle.<br />
  * You don't need to call this method directly, but if you are subclassing
  * you may need to override this to provide additional initialisation.
  */
 - (id) initWithBundle: (NSBundle*)bundle;
+
+/**
+ * <p>Returns the info dictionary for this theme.  In the base class
+ * implementation this is simply the info dictionary of the theme
+ * bundle, but subclasses may override this method to return extra
+ * or different information.
+ * </p>
+ * <p>Keys found in this dictionary include:
+ * </p>
+ * <deflist>
+ *   <term>GSThemeDomain</term>
+ *   <desc>A dictionary whose key/value pairs are used to set up new values
+ *   in the GSThemeDomain domain of the user defaults system, and hence
+ *   define values for these unless overridden by values set explicitly by
+ *   the user.
+ *   </desc>
+ *   <term>GSThemeTiles</term>
+ *   <desc>A dictionary keyed on tile names and containing the following:
+ *     <deflist>
+ *       <term>FileName</term>
+ *       <desc>Name of the file (within the GSThemeTiles directory in the
+ *       bundle) in which the image for this tile is tored.
+ *       </desc>
+ *       <term>HorizontalDivision</term>
+ *       <desc>The offet along the X-axis used to divide the image into
+ *       columns of tiles.
+ *       </desc>
+ *       <term>VerticalDivision</term>
+ *       <desc>The offet along the Y-axis used to divide the image into
+ *       rows of tiles.
+ *       </desc>
+ *     </deflist>
+ *   </desc>
+ * </deflist>
+ */
+- (NSDictionary*) infoDictionary;
+
+/**
+ * Return the theme's name.
+ */
+- (NSString*) name;
+
+/**
+ * <p>Provides a standard inspector window used to display information about
+ * the receiver.  The default implementation displays the icon, the name,
+ * and the authors of the theme.
+ * </p>
+ * <p>The code managing this object (if any) must be prepared to have the
+ * content view of the window reparented into another window for display
+ * on screen.
+ * </p>
+ */
+- (NSWindow*) themeInspector;
 
 /**
  * Returns the tile image information for a particular image name,

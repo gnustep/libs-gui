@@ -33,6 +33,7 @@
 
 #include "AppKit/NSResponder.h"
 #include "AppKit/NSInterfaceStyle.h"
+#include "GNUstepGUI/GSTheme.h"
 
 NSString	*NSInterfaceStyleDefault = @"NSInterfaceStyleDefault";
 
@@ -173,6 +174,11 @@ NSInterfaceStyleForKey(NSString *key, NSResponder *responder)
 	   selector: @selector(defaultsDidChange:)
 	       name: NSUserDefaultsDidChangeNotification
 	     object: nil];
+      [[NSNotificationCenter defaultCenter]
+	addObserver: self
+	   selector: @selector(defaultsDidChange:)
+	       name: GSThemeDidActivateNotification
+	     object: nil];
     }
 }
 
@@ -183,6 +189,12 @@ NSInterfaceStyleForKey(NSString *key, NSResponder *responder)
   NSString		*key;
   void                  *val;
 
+  /*
+   * We ignore the actual notification, which may be nil (when called at
+   * initialization), or may contain a user defaults object (if a persistent
+   * domain changed), or may contain a theme object (if a theme activated).
+   * What we need to do is examine the current state of the standard defaults.
+   */
   defs = [NSUserDefaults standardUserDefaults];
 
   /*

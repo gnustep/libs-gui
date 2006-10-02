@@ -592,9 +592,14 @@ The displayed menus on the screen have the following structure:
 - (NSWindow*) window;
 
 /**
-   Flag this menu to be the main menu of the application, 
+   <p>Flag this menu to be the main menu of the application, 
    when isMain is YES. Flag it as no longer being the main
    menu when NO is handed in.
+   </p>
+   <p>This method also checks the user defaults to determine how
+   the menu is to be displayed (eg vertical or horizontal) and can
+   therefore be used to change window geometry.
+   </p>
  */
 - (void) setMain: (BOOL)isMain;
 
@@ -608,13 +613,6 @@ The displayed menus on the screen have the following structure:
    Display the transient version of the menu.  
 */
 - (void) displayTransient;
-
-/**
-   Positions the menu according to the standard user defaults.
-   If the position is not found in the defaults revert to positioning
-   the window in the upper left corner.
-*/
-- (void) setGeometry;      
 
 /**
    When the flag is YES 

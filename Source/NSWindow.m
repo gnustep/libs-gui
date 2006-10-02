@@ -1534,6 +1534,10 @@ many times.
 
   if (place == NSWindowOut)
     {
+      if (_windowNum == 0)
+        {
+	  return;	/* This deferred window was never ordered in. */
+	}
       _f.visible = NO;
       /*
        * Don't keep trying to update the window while it is ordered out
