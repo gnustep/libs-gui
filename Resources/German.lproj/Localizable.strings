@@ -149,7 +149,7 @@ add comments above this one
 /* File: ../Source/NSDocumentController.m:565 */
 "Power Off" = "Aus";
 /* File: ../Source/NSDocumentController.m:502 */
-"Quit Anyways" = "Dennoch beenden";
+"Quit Anyway" = "Dennoch beenden";
 /* File: ../Source/NSDocumentController.m:500 */
 "Review Unsaved" = "Ansehen";
 /* File: ../Source/NSDocumentController.m:499 */

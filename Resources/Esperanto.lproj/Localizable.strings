@@ -174,7 +174,7 @@ add comments above this one
 "Review Unsaved" = "Rigardu ree";
 
 /* File: ../Source/NSDocumentController.m:502 */
-"Quit Anyways" = "Tamen finu";
+"Quit Anyway" = "Tamen finu";
 
 /* File: ../Source/NSDocumentController.m:565 */
 "Power Off" = "Malŝaltu";

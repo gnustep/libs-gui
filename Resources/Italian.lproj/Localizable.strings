@@ -125,7 +125,7 @@ add comments above this one
 
 /* File: ../Source/NSDocumentController.m:502 */
 /* Flag: untranslated */
-"Quit Anyways" = "Esci comunque";
+"Quit Anyway" = "Esci comunque";
 
 /* File: ../Source/NSDocumentController.m:565 */
 /* Flag: untranslated */

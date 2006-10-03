@@ -1,3 +1,11 @@
+2006-10-02 20:41-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Resources/Esperanto.lproj/Localizable.strings
+	* Resources/German.lproj/Localizable.strings
+	* Resources/Italian.lproj/Localizable.strings
+	* Resources/Lojban.lproj/Localizable.strings: Correct grammar
+	in localization bundles as well.
+
 2006-10-02 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GNUmakefile: Add GSToolTips.[hm]
