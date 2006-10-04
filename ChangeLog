@@ -3,6 +3,7 @@
 	* Source/GSToolTips.h: create tool tip wondow fully on screen
 	* Source/GSToolTips.m: ditto
 	* Source/NSView.m: very minor tooltip efficiency tweak.
+	* Version: Bump to 0.12 for next
 
 2006-10-04 Enrico Sersale <enrico@fibernet.ro>
 
