@@ -2807,6 +2807,12 @@ resetCursorRectsForView(NSView *theView)
       character = [characters characterAtIndex: 0];
     }
 
+  if (character == NSHelpFunctionKey)
+    {
+      [NSHelpManager setContextHelpModeActive: YES];
+      return;
+    }
+
   // If this is a TAB or TAB+SHIFT event, move to the next key view
   if (character == NSTabCharacter)
     {
@@ -2864,6 +2870,27 @@ resetCursorRectsForView(NSView *theView)
 
   // Otherwise, pass the event up
   [super keyDown: theEvent];
+}
+
+- (void) keyUp: (NSEvent*)theEvent
+{
+  if ([NSHelpManager isContextHelpModeActive])
+    {
+      NSString	*characters = [theEvent characters];
+      unichar	character = 0;
+
+      if ([characters length] > 0)
+	{
+	  character = [characters characterAtIndex: 0];
+	}
+      if (character == NSHelpFunctionKey)
+	{
+	  [NSHelpManager setContextHelpModeActive: NO];
+	  return;
+	}
+    }
+
+  [super keyUp: theEvent];
 }
 
 /* Return mouse location in reciever's base coord system, ignores event

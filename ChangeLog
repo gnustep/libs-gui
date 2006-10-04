@@ -1,3 +1,7 @@
+2006-10-04 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWindow.m: Add help key support for context help.
+
 2006-10-02 20:41-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Resources/Esperanto.lproj/Localizable.strings
