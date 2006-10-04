@@ -29,6 +29,7 @@
 #include "AppKit/NSBezierPath.h"
 #include "AppKit/NSView.h"
 #include "AppKit/NSWindow.h"
+#include "AppKit/NSScreen.h"
 #include "GNUstepGUI/GSTrackingRect.h"
 #include "GSToolTips.h"
 
@@ -91,8 +92,6 @@ typedef struct NSView_struct
 {
   @defs(NSView)
 } *NSViewPtr;
-
-
 
 @implementation GSToolTips
 
@@ -251,8 +250,8 @@ static NSMapTable	*viewsMap = 0;
 
   mouseLocation = [NSEvent mouseLocation];
 
-  origin = NSMakePoint(mouseLocation.x + 8,
-		       mouseLocation.y - 16 - [window frame].size.height);
+  origin = NSMakePoint(mouseLocation.x + offset.width,
+    mouseLocation.y + offset.height);
 
   [window setFrameOrigin: origin];
 }
@@ -455,7 +454,8 @@ static NSMapTable	*viewsMap = 0;
       NSAttributedString	*toolTipText = nil;
       NSSize			textSize;
       NSPoint			mouseLocation = [NSEvent mouseLocation];
-      NSRect			windowRect;
+      NSRect			visible;
+      NSRect			rect;
       NSColor			*color;
       NSMutableDictionary	*attributes;
 
@@ -467,15 +467,48 @@ static NSMapTable	*viewsMap = 0;
 	                                attributes: attributes];
       textSize = [toolTipText size];
 
-      // Window
-      windowRect = NSMakeRect(mouseLocation.x + 8,
-			      mouseLocation.y - 16 - (textSize.height+3),
-			      textSize.width + 4, textSize.height + 4);
+      /* Create window just off the current mouse position
+       * Constrain it to be on screen, shrinking if necessary.
+       */
+      rect = NSMakeRect(mouseLocation.x + 8,
+        mouseLocation.y - 16 - (textSize.height+3),
+        textSize.width + 4, textSize.height + 4);
+      visible = [[NSScreen mainScreen] visibleFrame];
+      if (NSMaxY(rect) > NSMaxY(visible))
+        {
+	  rect.origin.y -= (NSMaxY(rect) - NSMaxY(visible));
+	}
+      if (NSMinY(rect) < NSMinY(visible))
+        {
+	  rect.origin.y += (NSMinY(visible) - NSMinY(rect));
+	}
+      if (NSMaxY(rect) > NSMaxY(visible))
+        {
+	  rect.origin.y = visible.origin.y;
+	  rect.size.height = visible.size.height;
+	}
+        
+      if (NSMaxX(rect) > NSMaxX(visible))
+        {
+	  rect.origin.x -= (NSMaxX(rect) - NSMaxX(visible));
+	}
+      if (NSMinX(rect) < NSMinX(visible))
+        {
+	  rect.origin.x += (NSMinX(visible) - NSMinX(rect));
+	}
+      if (NSMaxX(rect) > NSMaxX(visible))
+        {
+	  rect.origin.x = visible.origin.x;
+	  rect.size.width = visible.size.width;
+	}
+      offset.height = rect.origin.y - mouseLocation.y;
+      offset.width = rect.origin.x - mouseLocation.x;
 
-      window = [[NSWindow alloc] initWithContentRect: windowRect
-	                                     styleMask: NSBorderlessWindowMask
-					       backing: NSBackingStoreRetained
-					         defer: YES];
+      window = [[NSWindow alloc] initWithContentRect: rect
+					   styleMask: NSBorderlessWindowMask
+					     backing: NSBackingStoreRetained
+					       defer: YES];
+
       color
 	= [NSColor colorWithDeviceRed: 1.0 green: 1.0 blue: 0.90 alpha: 1.0];
       [window setBackgroundColor: color];

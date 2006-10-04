@@ -4351,10 +4351,13 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (void) setToolTip: (NSString *)string
 {
-  GSToolTips	*tt = [GSToolTips tipsForView: self];
+  if (_rFlags.has_tooltips == 1 || [string length] > 0)
+    {
+      GSToolTips	*tt = [GSToolTips tipsForView: self];
 
-  _rFlags.has_tooltips = 1;
-  [tt setToolTip: string];
+      _rFlags.has_tooltips = 1;
+      [tt setToolTip: string];
+    }
 }
 
 - (NSString *) toolTip
