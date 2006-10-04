@@ -1,3 +1,7 @@
+2006-10-04 Enrico Sersale <enrico@fibernet.ro>
+
+	* Source/NSView.m: In -setToolTip: sets the has_tooltips flag.
+
 2006-10-04 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWindow.m: Add help key support for context help.
