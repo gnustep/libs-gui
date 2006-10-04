@@ -460,7 +460,7 @@ static NSMapTable	*viewsMap = 0;
       NSMutableDictionary	*attributes;
 
       attributes = [NSMutableDictionary dictionary];
-      [attributes setObject: [NSFont systemFontOfSize: 10.0]
+      [attributes setObject: [NSFont toolTipsFontOfSize: 10.0]
 		     forKey: NSFontAttributeName];
       toolTipText =
 	[[NSAttributedString alloc] initWithString: toolTipString
