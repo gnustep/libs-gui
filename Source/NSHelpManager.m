@@ -287,7 +287,6 @@ static NSCursor *helpCursor = nil;
 
 + (void) setContextHelpModeActive: (BOOL) flag
 {
-NSLog(@"setContextHelpModeActive: %d", flag);
   if (flag != _gnu_contextHelpActive)
     {
       _gnu_contextHelpActive = flag;
