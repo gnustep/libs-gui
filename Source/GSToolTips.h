@@ -36,10 +36,6 @@
 {
   NSView		*view;
   NSTrackingRectTag	toolTipTag;
-  NSTimer		*timer;
-  NSWindow		*window;
-  NSSize		offset;
-  BOOL			restoreMouseMoved;
 }
 
 /** Destroy object handling tips for aView.

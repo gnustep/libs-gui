@@ -96,6 +96,10 @@ typedef struct NSView_struct
 @implementation GSToolTips
 
 static NSMapTable	*viewsMap = 0;
+static NSTimer		*timer;
+static NSWindow		*window;
+static NSSize		offset;
+static BOOL		restoreMouseMoved;
 
 + (void) initialize
 {
@@ -192,40 +196,46 @@ static NSMapTable	*viewsMap = 0;
 
 - (void) mouseEntered: (NSEvent *)theEvent
 {
-  if (timer == nil)
+  GSTTProvider	*provider;
+  NSString	*toolTipString;
+
+  if (timer != nil)
     {
-      GSTTProvider	*provider = (GSTTProvider*)[theEvent userData];
-      NSString		*toolTipString;
-
-      if ([[provider object] respondsToSelector:
-	@selector(view:stringForToolTip:point:userData:)] == YES)
-	{
-	  toolTipString = [[provider object] view: view
-				 stringForToolTip: [theEvent trackingNumber]
-					    point: [theEvent locationInWindow]
-					 userData: [provider data]];
-	}
-      else
-        {
-	  toolTipString = [[provider object] description];
-	}
-
-      timer = [NSTimer scheduledTimerWithTimeInterval: 0.5
-	                                         target: self
-			                       selector: @selector(_timedOut:)
-			                       userInfo: toolTipString
-                                                repeats: YES];
-      if ([[view window] acceptsMouseMovedEvents] == YES)
-        {
-	  restoreMouseMoved = NO;
-	}
-      else
-        {
-	  restoreMouseMoved = YES;
-          [[view window] setAcceptsMouseMovedEvents: YES];
-	}
-      [NSWindow _setToolTipVisible: self];
+      /* Moved from one tooltip view to another, so reset the timer.
+       */
+      [timer invalidate];
+      timer = nil;
     }
+
+  provider = (GSTTProvider*)[theEvent userData];
+  if ([[provider object] respondsToSelector:
+    @selector(view:stringForToolTip:point:userData:)] == YES)
+    {
+      toolTipString = [[provider object] view: view
+			     stringForToolTip: [theEvent trackingNumber]
+					point: [theEvent locationInWindow]
+				     userData: [provider data]];
+    }
+  else
+    {
+      toolTipString = [[provider object] description];
+    }
+
+  timer = [NSTimer scheduledTimerWithTimeInterval: 0.5
+					     target: self
+					   selector: @selector(_timedOut:)
+					   userInfo: toolTipString
+					    repeats: YES];
+  if ([[view window] acceptsMouseMovedEvents] == YES)
+    {
+      restoreMouseMoved = NO;
+    }
+  else
+    {
+      restoreMouseMoved = YES;
+      [[view window] setAcceptsMouseMovedEvents: YES];
+    }
+  [NSWindow _setToolTipVisible: self];
 }
 
 - (void) mouseExited: (NSEvent *)theEvent
@@ -438,7 +448,14 @@ static NSMapTable	*viewsMap = 0;
 
 - (void) _timedOut: (NSTimer *)aTimer
 {
-  NSString *toolTipString = [aTimer userInfo];
+  NSString		*toolTipString = [aTimer userInfo];
+  NSAttributedString	*toolTipText = nil;
+  NSSize		textSize;
+  NSPoint		mouseLocation = [NSEvent mouseLocation];
+  NSRect		visible;
+  NSRect		rect;
+  NSColor		*color;
+  NSMutableDictionary	*attributes;
 
   if (timer != nil)
     {
@@ -449,78 +466,84 @@ static NSMapTable	*viewsMap = 0;
       timer = nil;
     }
 
-  if (window == nil)
+  if (window != nil)
     {
-      NSAttributedString	*toolTipText = nil;
-      NSSize			textSize;
-      NSPoint			mouseLocation = [NSEvent mouseLocation];
-      NSRect			visible;
-      NSRect			rect;
-      NSColor			*color;
-      NSMutableDictionary	*attributes;
-
-      attributes = [NSMutableDictionary dictionary];
-      [attributes setObject: [NSFont toolTipsFontOfSize: 10.0]
-		     forKey: NSFontAttributeName];
-      toolTipText =
-	[[NSAttributedString alloc] initWithString: toolTipString
-	                                attributes: attributes];
-      textSize = [toolTipText size];
-
-      /* Create window just off the current mouse position
-       * Constrain it to be on screen, shrinking if necessary.
+      /* Moved from one tooltip view to another ... so stop displaying
+       * the old tool tip before we start the new one.
+       * This is similar to the case in -mouseEntered: where we cancel
+       * the timer for one tooltip view because we have entered another
+       * one.
+       * To think about ... if we entered a tooltip rectangle without
+       * having left the previous one, then when we leave this rectangle
+       * we are probably back in the other one and should really restart
+       * the timer for the original view.  However, this is a rare case
+       * so it's probably better to ignore it than add a lot of code to
+       * keep track of all entry and exit.
        */
-      rect = NSMakeRect(mouseLocation.x + 8,
-        mouseLocation.y - 16 - (textSize.height+3),
-        textSize.width + 4, textSize.height + 4);
-      visible = [[NSScreen mainScreen] visibleFrame];
-      if (NSMaxY(rect) > NSMaxY(visible))
-        {
-	  rect.origin.y -= (NSMaxY(rect) - NSMaxY(visible));
-	}
-      if (NSMinY(rect) < NSMinY(visible))
-        {
-	  rect.origin.y += (NSMinY(visible) - NSMinY(rect));
-	}
-      if (NSMaxY(rect) > NSMaxY(visible))
-        {
-	  rect.origin.y = visible.origin.y;
-	  rect.size.height = visible.size.height;
-	}
-        
-      if (NSMaxX(rect) > NSMaxX(visible))
-        {
-	  rect.origin.x -= (NSMaxX(rect) - NSMaxX(visible));
-	}
-      if (NSMinX(rect) < NSMinX(visible))
-        {
-	  rect.origin.x += (NSMinX(visible) - NSMinX(rect));
-	}
-      if (NSMaxX(rect) > NSMaxX(visible))
-        {
-	  rect.origin.x = visible.origin.x;
-	  rect.size.width = visible.size.width;
-	}
-      offset.height = rect.origin.y - mouseLocation.y;
-      offset.width = rect.origin.x - mouseLocation.x;
-
-      window = [[NSWindow alloc] initWithContentRect: rect
-					   styleMask: NSBorderlessWindowMask
-					     backing: NSBackingStoreRetained
-					       defer: YES];
-
-      color
-	= [NSColor colorWithDeviceRed: 1.0 green: 1.0 blue: 0.90 alpha: 1.0];
-      [window setBackgroundColor: color];
-      [window setReleasedWhenClosed: YES];
-      [window setExcludedFromWindowsMenu: YES];
-      [window setLevel: NSStatusWindowLevel];
-
-      [window orderFront: nil];
-
-      [self _drawText: toolTipText];
-      RELEASE(toolTipText);
+      [self _endDisplay];
     }
+
+  attributes = [NSMutableDictionary dictionary];
+  [attributes setObject: [NSFont toolTipsFontOfSize: 10.0]
+		 forKey: NSFontAttributeName];
+  toolTipText =
+    [[NSAttributedString alloc] initWithString: toolTipString
+				    attributes: attributes];
+  textSize = [toolTipText size];
+
+  /* Create window just off the current mouse position
+   * Constrain it to be on screen, shrinking if necessary.
+   */
+  rect = NSMakeRect(mouseLocation.x + 8,
+    mouseLocation.y - 16 - (textSize.height+3),
+    textSize.width + 4, textSize.height + 4);
+  visible = [[NSScreen mainScreen] visibleFrame];
+  if (NSMaxY(rect) > NSMaxY(visible))
+    {
+      rect.origin.y -= (NSMaxY(rect) - NSMaxY(visible));
+    }
+  if (NSMinY(rect) < NSMinY(visible))
+    {
+      rect.origin.y += (NSMinY(visible) - NSMinY(rect));
+    }
+  if (NSMaxY(rect) > NSMaxY(visible))
+    {
+      rect.origin.y = visible.origin.y;
+      rect.size.height = visible.size.height;
+    }
+    
+  if (NSMaxX(rect) > NSMaxX(visible))
+    {
+      rect.origin.x -= (NSMaxX(rect) - NSMaxX(visible));
+    }
+  if (NSMinX(rect) < NSMinX(visible))
+    {
+      rect.origin.x += (NSMinX(visible) - NSMinX(rect));
+    }
+  if (NSMaxX(rect) > NSMaxX(visible))
+    {
+      rect.origin.x = visible.origin.x;
+      rect.size.width = visible.size.width;
+    }
+  offset.height = rect.origin.y - mouseLocation.y;
+  offset.width = rect.origin.x - mouseLocation.x;
+
+  window = [[NSWindow alloc] initWithContentRect: rect
+				       styleMask: NSBorderlessWindowMask
+					 backing: NSBackingStoreRetained
+					   defer: YES];
+
+  color
+    = [NSColor colorWithDeviceRed: 1.0 green: 1.0 blue: 0.90 alpha: 1.0];
+  [window setBackgroundColor: color];
+  [window setReleasedWhenClosed: YES];
+  [window setExcludedFromWindowsMenu: YES];
+  [window setLevel: NSStatusWindowLevel];
+
+  [window orderFront: nil];
+
+  [self _drawText: toolTipText];
+  RELEASE(toolTipText);
 }
 
 @end
