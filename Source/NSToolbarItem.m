@@ -1311,6 +1311,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 - (void) setToolTip: (NSString *)toolTip
 {
   ASSIGN(_toolTip, toolTip);
+  [_view setToolTip: _toolTip];
 }
 
 - (void) setView: (NSView *)view
@@ -1346,6 +1347,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
       _flags._setAction  = [_view respondsToSelector: @selector(setAction:)];
       _flags._setTarget  = [_view respondsToSelector: @selector(setTarget:)];
       _flags._setImage   = [_backView respondsToSelector: @selector(setImage:)];
+      [_view setToolTip: _toolTip];
     }
   
   [_backView release];

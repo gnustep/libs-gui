@@ -1,12 +1,84 @@
+2006-10-06 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSToolTips.h: Remove some ivars
+	* Source/GSToolTips.m: Move ivars to be static variables for common
+	use by all tool tips.  Cancel an in-progress tooltip when a new one
+	starts.
+
+2006-10-04 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSToolTips.h: create tool tip wondow fully on screen
+	* Source/GSToolTips.m: ditto
+	* Source/NSView.m: very minor tooltip efficiency tweak.
+	* Version: Bump to 0.12 for next
+
+2006-10-04 Enrico Sersale <enrico@fibernet.ro>
+
+	* Source/NSView.m: In -setToolTip: sets the has_tooltips flag.
+
+2006-10-04 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWindow.m: Add help key support for context help.
+	* NSToolbarItem.m: Implement tool tips.
+	* GSToolTips.m: Use correct font.
+
+2006-10-02 20:41-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Resources/Esperanto.lproj/Localizable.strings
+	* Resources/German.lproj/Localizable.strings
+	* Resources/Italian.lproj/Localizable.strings
+	* Resources/Lojban.lproj/Localizable.strings: Correct grammar
+	in localization bundles as well.
+
+2006-10-02 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GNUmakefile: Add GSToolTips.[hm]
+	* Source/NSWindow.m: Add private tooltip functionality.
+	* Source/GSToolTips.h: Interface to let views and windows handle tips.
+	* Source/GSToolTips.m: ToolTip implementation ... main part.
+	* Source/NSView.m: Use GSToolTips to implement tool tips.
+	* Headers/AppKit/NSResponder.h: Add a flag for views with tool tips.
+	Basic implementation of tool tip help.
+
+2006-10-02  Nicola Pero <nicola.pero@meta-innovation.com>
+
+	* configure.ac: Check the new variable GNUSTEP_IS_FLATTENED,
+	and default to yes.
+	* configure: Regenerated.
+
+	* Source/GSTheme.m: Worked arond a compiler bug that would abort
+	compilation on GCC 3.3.3 20040412 (Red Hat Linux 3.3.3-7).  Avoid
+	[NSMutableSet set] as the compiler is confusing +(id)set with
+	-(void)set.
+	
+2006-10-02 08:19-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSDocumentController.m: Correct grammar in 
+	reviewUnsavedDocumentsWithAlertTitle:...  "Quit Anyways" should
+	be "Quit Anyway".
+
+2006-10-01 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSTrackingRect.m:
+	* Source/NSView.m:
+	* Headers/AppKit/NSView.h:
+	Fix tracking rect bug ... the owner of the rectangle should not
+	be retained by a tracking rect (but should be retained by a cursor
+	rect).  Updated documentation to clearly state what mis retained.
+
 2006-10-01 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTheme.m: Add rudimentary inspector.
 	Make themes in panel be in alphabetical order except for the
 	default theme (always first in the list).
 	Allow setting of default theme for application.
-	* Source/NSHelpManager.m:
+	* Source/NSHelpManager.m: Implement context help cursor.
 	* Source/NSHelpPanel.m: Implement simple fallback help panel display
 	for systems where no rtf/rtfd viewing application is installed.
+	* Source/NSResponder.m: Tweak context help
+	* Source/NSCursor.m: tidied a little
+	* Images/GNUmakefile: Install context help cursor
+	* Images/common_HelpCursor.tiff: add context help cursor
 
 2006-09-30 Richard Frith-Macdonald <rfm@gnu.org>
 

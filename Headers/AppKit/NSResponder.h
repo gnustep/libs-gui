@@ -77,6 +77,7 @@
 					/* change to keep track of it.	*/
     unsigned	valid_rects:1;		/* Some cursor rects may be ok.	*/
     unsigned	needs_display:1;	/* Window/view needs display.	*/
+    unsigned	has_tooltips:1;		/* The view has tooltips set.	*/
   } _rFlags;
 }
 

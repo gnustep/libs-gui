@@ -193,6 +193,7 @@ GSHorizontalTypesetter.m \
 GSNibTemplates.m \
 GSNibCompatibility.m \
 GSTitleView.m \
+GSToolTips.m \
 GSToolbar.m \
 GSToolbarView.m \
 GSStandardWindowDecorationView.m \

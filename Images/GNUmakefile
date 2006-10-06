@@ -19,7 +19,8 @@
 #
 #  You should have received a copy of the GNU Library General Public
 #  License along with this library; if not, write to the Free
-#  Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02111 USA.
+#  Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+#  Boston, MA 02111 USA.
 
 GNUSTEP_INSTALLATION_DIR = $(GNUSTEP_SYSTEM_ROOT)
 
@@ -50,6 +51,7 @@ common_CloseBroken.tiff \
 common_CloseBrokenH.tiff \
 common_ColorSwatch.tiff \
 common_2DDash.tiff \
+common_HelpCursor.tiff \
 common_Home.tiff \
 common_HomeDirectory.tiff \
 common_Mount.tiff \
