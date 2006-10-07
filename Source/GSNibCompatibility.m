@@ -1467,15 +1467,6 @@ static BOOL _isInInterfaceBuilder = NO;
 }
 @end
 
-// ...dummy/placeholder classes...
-// overridden in NSTableView to be GSTableCornerView, 
-// but the class needs to be present to be overridden.
-@interface _NSCornerView : NSView
-@end
-
-@implementation _NSCornerView
-@end
-
 @implementation NSIBHelpConnector
 - (id) initWithCoder: (NSCoder *)coder
 {
@@ -1584,6 +1575,15 @@ static BOOL _isInInterfaceBuilder = NO;
   return dn;
 }
 
+@end
+
+// ...dummy/placeholder classes...
+// overridden in NSTableView to be GSTableCornerView, 
+// but the class needs to be present to be overridden.
+@interface _NSCornerView : NSView
+@end
+
+@implementation _NSCornerView
 @end
 
 // class needed for nib encoding/decoding by
