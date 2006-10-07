@@ -1,6 +1,11 @@
+2006-10-07 10:20-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Implement init in NSIBHelpConnector.
+
 2006-10-07 10:13-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
-	* Source/GSNibCompatibility.m: Implement establishConnection.
+	* Source/GSNibCompatibility.m: Implement establishConnection in 
+	NSIBHelpConnector.
 
 2006-10-07 10:02-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 

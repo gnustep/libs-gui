@@ -1468,6 +1468,16 @@ static BOOL _isInInterfaceBuilder = NO;
 @end
 
 @implementation NSIBHelpConnector
+- (id) init
+{
+  if((self = [super init]) != nil)
+    {
+      _file = nil;
+      _marker = @"NSToolTipHelpKey";
+    }
+  return self;
+}
+
 - (id) initWithCoder: (NSCoder *)coder
 {
   if((self = [super initWithCoder: coder]) != nil)
