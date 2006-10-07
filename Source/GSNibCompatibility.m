@@ -1513,6 +1513,11 @@ static BOOL _isInInterfaceBuilder = NO;
     }
 }
 
+- (void) establishConnection
+{
+  [_dst setToolTip: _marker];
+}
+
 - (void) setFile: (id)file
 {
   ASSIGN(_file, file);
