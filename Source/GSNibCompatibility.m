@@ -1477,6 +1477,70 @@ static BOOL _isInInterfaceBuilder = NO;
 @end
 
 @implementation NSIBHelpConnector
+- (id) initWithCoder: (NSCoder *)coder
+{
+  if((self = [super initWithCoder: coder]) != nil)
+    {
+      if([coder allowsKeyedCoding])
+	{
+	  if([coder containsValueForKey: @"NSFile"])
+	    {
+	      _file = RETAIN([coder decodeObjectForKey: @"NSFile"]);
+	    }
+	  if([coder containsValueForKey: @"NSMarker"])
+	    {
+	      _marker = RETAIN([coder decodeObjectForKey: @"NSMarker"]);
+	    }
+	}
+      else
+	{
+	  _file = RETAIN([coder decodeObject]);
+	  _marker = RETAIN([coder decodeObject]);
+	}
+    }
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  [super encodeWithCoder: coder];
+  if([coder allowsKeyedCoding])
+    {
+      if(_file != nil)
+	{
+	  [coder encodeObject: _file forKey: @"NSFile"];
+	}
+      if(_marker != nil)
+	{
+	  [coder encodeObject: _file forKey: @"NSMarker"];
+	}      
+    }
+  else
+    {
+      [coder encodeObject: _file];
+      [coder encodeObject: _marker];
+    }
+}
+
+- (void) setFile: (id)file
+{
+  ASSIGN(_file, file);
+}
+
+- (id) file
+{
+  return _file;
+}
+
+- (void) setMarker: (id)marker
+{
+  ASSIGN(_marker, marker);
+}
+
+- (id) marker
+{
+  return _marker;
+}
 @end
 
 @interface NSDecimalNumberPlaceholder : NSObject

@@ -72,9 +72,18 @@
 {
   if ([aCoder allowsKeyedCoding])
     {
-      [aCoder encodeObject: _src forKey: @"NSSource"];
-      [aCoder encodeObject: _dst forKey: @"NSDestination"];
-      [aCoder encodeObject: _tag forKey: @"NSLabel"];
+      if(_src != nil)
+	{
+	  [aCoder encodeObject: _src forKey: @"NSSource"];
+	}
+      if(_dst != nil)
+	{
+	  [aCoder encodeObject: _dst forKey: @"NSDestination"];
+	}
+      if(_tag != nil)
+	{
+	  [aCoder encodeObject: _tag forKey: @"NSLabel"];
+	}
     }
   else
     {
@@ -92,9 +101,18 @@
 {
   if ([aDecoder allowsKeyedCoding])
     {
-      ASSIGN(_dst, [aDecoder decodeObjectForKey: @"NSDestination"]);
-      ASSIGN(_src, [aDecoder decodeObjectForKey: @"NSSource"]);
-      ASSIGN(_tag, [aDecoder decodeObjectForKey: @"NSLabel"]);
+      if([aDecoder containsValueForKey: @"NSDestination"])
+	{
+	  ASSIGN(_dst, [aDecoder decodeObjectForKey: @"NSDestination"]);
+	}
+      if([aDecoder containsValueForKey: @"NSSource"])
+	{
+	  ASSIGN(_src, [aDecoder decodeObjectForKey: @"NSSource"]);
+	}
+      if([aDecoder containsValueForKey: @"NSLabel"])
+	{      
+	  ASSIGN(_tag, [aDecoder decodeObjectForKey: @"NSLabel"]);
+	}
     }
   else
     {
