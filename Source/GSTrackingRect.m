@@ -67,6 +67,14 @@
   return rectangle;
 }
 
+- (void) reset: (NSRect)aRect inside: (BOOL)flag
+{
+  rectangle = aRect;
+  flags.inside = flag;
+  flags.isValid = YES;
+  flags.checked = NO;
+}
+
 - (NSTrackingRectTag) tag
 {
   return tag;

@@ -1,3 +1,9 @@
+2006-10-06 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSTrackingRect.m: Allow reset rect to another value.
+	* Source/GSToolTips.m: Improve handling of tips in rects other than
+	the main one.
+
 2006-10-07 10:20-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibCompatibility.m: Implement init in NSIBHelpConnector.

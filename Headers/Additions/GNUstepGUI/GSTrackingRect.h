@@ -54,6 +54,7 @@
 	     inside: (BOOL)flag;
 
 - (NSRect) rectangle;
+- (void) reset: (NSRect)aRect inside: (BOOL)flag;
 - (NSTrackingRectTag) tag;
 - (id) owner;
 - (void*) userData;

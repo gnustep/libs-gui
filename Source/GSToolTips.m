@@ -52,13 +52,15 @@
  */
 @interface	GSTTProvider : NSObject
 {
-  id	object;
-  void	*data;
+  id		object;
+  void		*data;
+  NSRect	viewRect;
 }
 - (void*) data;
-- (id) initWithObject: (id)o userData: (void*)d;
+- (id) initWithObject: (id)o userData: (void*)d rect: (NSRect)r;
 - (id) object;
 - (void) setObject: (id)o;
+- (NSRect) viewRect;
 @end
 
 @implementation	GSTTProvider
@@ -66,10 +68,11 @@
 {
   return data;
 }
-- (id) initWithObject: (id)o userData: (void*)d
+- (id) initWithObject: (id)o userData: (void*)d rect: (NSRect)r
 {
   data = d;
   object = o;
+  viewRect = r;
   return self;
 }
 - (id) object
@@ -79,6 +82,10 @@
 - (void) setObject: (id)o
 {
   object = o;
+}
+- (NSRect) viewRect
+{
+  return viewRect;
 }
 @end
 
@@ -144,6 +151,7 @@ static BOOL		restoreMouseMoved;
     {
       return -1;	// A tip is already in progress.
     }
+  aRect = NSIntersectionRect(aRect, [view bounds]);
   if (NSEqualRects(aRect, NSZeroRect))
     {
       return -1;	// No rectangle.
@@ -153,7 +161,9 @@ static BOOL		restoreMouseMoved;
       return -1;	// No provider object.
     }
 
-  provider = [[GSTTProvider alloc] initWithObject: anObject userData: data];
+  provider = [[GSTTProvider alloc] initWithObject: anObject
+					 userData: data
+					     rect: aRect];
   tag = [view addTrackingRect: aRect
                         owner: self
                      userData: provider
@@ -277,23 +287,20 @@ static BOOL		restoreMouseMoved;
       if (rect->owner == self)
         {
           GSTTProvider		*provider = (GSTTProvider *)rect->user_data;
+	  NSRect		frame;
 
-	  // FIXME can we do anything with tooltips other than the main one?
 	  if (rect->tag == toolTipTag)
 	    {
-	      NSTrackingRectTag	tag;
-	      NSRect		frame;
-
-	      [view removeTrackingRect: rect->tag];
-	      frame = [view frame];
-	      frame.origin.x = 0;
-	      frame.origin.y = 0;
-	      tag = [view addTrackingRect: frame
-				    owner: self
-				 userData: provider
-			     assumeInside: NO];
-	      toolTipTag = tag;
+	      frame = [view bounds];
 	    }
+	  else
+	    {
+	      // FIXME is this the thing to do with tooltips other than
+	      // the main one (which we know should cover the whole view)?
+	      frame = [provider viewRect];
+	    }
+	  frame = [view convertRect: frame toView: nil];
+	  [rect reset: frame inside: NO];
 	}
     }
 }
@@ -352,16 +359,14 @@ static BOOL		restoreMouseMoved;
         {
 	  NSRect	rect;
 
-	  rect = [view frame];
-	  rect.origin.x = 0;
-	  rect.origin.y = 0;
-
+	  rect = [view bounds];
 	  provider = [[GSTTProvider alloc] initWithObject: string
-						 userData: nil];
+						 userData: nil
+						     rect: rect];
 	  toolTipTag = [view addTrackingRect: rect
-					owner: self
-				     userData: provider
-				 assumeInside: NO];
+				       owner: self
+				    userData: provider
+				assumeInside: NO];
 	}
       else
         {
