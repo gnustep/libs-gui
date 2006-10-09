@@ -1,3 +1,14 @@
+2006-10-09 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Documentation/GuiAdditions.gsdoc:
+	* Documentation/Gui.gsdoc:
+	* Documentation/GuiUser/KeyboardSetup.gsdoc:
+	* Documentation/GuiUser/LanguageSetup.gsdoc:
+	* Documentation/GuiUser/DefaultsSummary.gsdoc:
+	* Documentation/ReleaseNotes.gsdoc:
+	* Documentation/General/OpenStepCompliance.gsdoc:
+	Update dtd version
+
 2006-10-08 23:47-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Images/GNUmakefile: Copy GSStop.tiff and GSSearch.tiff to the

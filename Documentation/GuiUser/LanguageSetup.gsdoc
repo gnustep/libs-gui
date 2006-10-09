@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 1.0.0//EN" "http://www.gnustep.org/gsdoc-1_0_0.xml" >
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 1.0.3//EN" "http://www.gnustep.org/gsdoc-1_0_3.xml" >
 <gsdoc base="LanguageSetup">
     <head>
 	<title>How to Set Up GNUstep for the East Asian Languages</title>
