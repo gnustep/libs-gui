@@ -1,8 +1,7 @@
-2006-10-06 Richard Frith-Macdonald <rfm@gnu.org>
+2006-10-08 23:47-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
-	* Source/GSTrackingRect.m: Allow reset rect to another value.
-	* Source/GSToolTips.m: Improve handling of tips in rects other than
-	the main one.
+	* Images/GNUmakefile: Copy GSStop.tiff and GSSearch.tiff to the
+	installation directory.  They were previously missing.
 
 2006-10-07 10:20-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
@@ -20,6 +19,12 @@
 	* Source/GSNibCompatibility.m: Implemented NSIBHelpConnector.
 	* Source/NSBundleAdditions.m: Added check to initWithCoder so that
 	values aren't decoded, if there's no value in the coder.
+
+2006-10-06 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSTrackingRect.m: Allow reset rect to another value.
+	* Source/GSToolTips.m: Improve handling of tips in rects other than
+	the main one.
 
 2006-10-06 Richard Frith-Macdonald <rfm@gnu.org>
 
