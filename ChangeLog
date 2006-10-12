@@ -1,6 +1,11 @@
+2006-10-12 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSImageView.m: Fix error in initial drag position.
+
 2006-10-11 Nicola Pero <nicola.pero@meta-innovation.com>
 
-	* GNUmakefile (GNUSTEP_INSTALLATION_DOMAIN): Use GNUSTEP_INSTALLATION_DOMAIN
+	* GNUmakefile (GNUSTEP_INSTALLATION_DOMAIN):
+	Use GNUSTEP_INSTALLATION_DOMAIN
 	instead of GNUSTEP_INSTALLATION_DIR.
 
 2006-10-09 Richard Frith-Macdonald <rfm@gnu.org>

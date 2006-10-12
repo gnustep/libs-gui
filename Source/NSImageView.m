@@ -153,8 +153,8 @@ static Class imageCellClass;
 
 - (NSDragOperation) draggingEntered: (id <NSDraggingInfo>)sender
 {
-  if (([sender draggingSource] != self) && ([self isEditable]) && 
-      ([NSImage canInitWithPasteboard: [sender draggingPasteboard]]))
+  if (([sender draggingSource] != self) && ([self isEditable])
+    && ([NSImage canInitWithPasteboard: [sender draggingPasteboard]]))
     {
       [_cell setHighlighted: YES];
       return NSDragOperationCopy;
@@ -226,7 +226,6 @@ static Class imageCellClass;
 	      // Center the image on the mouse position ... is this right?
 	      s = [anImage size];
 	      p = [theEvent locationInWindow];
-	      p = [self convertPoint: p fromView: nil];
 	      p.x -= s.width/2;
 	      p.y -= s.width/2;
 	      [_window dragImage: anImage
