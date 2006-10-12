@@ -40,11 +40,15 @@
 #include "AppKit/NSColorList.h"
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSImage.h"
+#include "AppKit/NSImageView.h"
 #include "AppKit/NSMatrix.h"
 #include "AppKit/NSMenu.h"
 #include "AppKit/NSPanel.h"
 #include "AppKit/NSScrollView.h"
+#include "AppKit/NSTextContainer.h"
 #include "AppKit/NSTextField.h"
+#include "AppKit/NSTextView.h"
+#include "AppKit/NSScrollView.h"
 #include "AppKit/NSView.h"
 #include "AppKit/NSWindow.h"
 #include "AppKit/NSBezierPath.h"
@@ -1728,10 +1732,12 @@ static GSThemeInspector	*sharedInspector = nil;
 - (void) update: (id)sender
 {
   GSTheme	*theme = [GSTheme theme];
+  NSString	*details;
   NSArray	*authors;
   NSView	*content = [self contentView];
   NSRect	cFrame = [content frame];
   NSView	*view;
+  NSImageView	*iv;
   NSTextField	*tf;
   NSRect	nameFrame;
   NSRect	frame;
@@ -1740,11 +1746,17 @@ static GSThemeInspector	*sharedInspector = nil;
     {
       [view removeFromSuperview];
     }
+  frame = NSMakeRect(cFrame.size.width - 58, cFrame.size.height - 58, 48, 48);
+  iv = [[NSImageView alloc] initWithFrame: frame];
+  [iv setImage: [[GSTheme theme] icon]];
+  [content addSubview: iv];
+
   tf = new_label([theme name]);
   [tf setFont: [NSFont boldSystemFontOfSize: 32]];
   [tf sizeToFit];
   nameFrame = [tf frame];
-  nameFrame.origin.x = (cFrame.size.width - nameFrame.size.width) / 2;
+  nameFrame.origin.x
+    = (cFrame.size.width - frame.size.width - nameFrame.size.width) / 2;
   nameFrame.origin.y = cFrame.size.height - nameFrame.size.height - 25;
   [tf setFrame: nameFrame];
   [content addSubview: tf];
@@ -1759,6 +1771,40 @@ static GSThemeInspector	*sharedInspector = nil;
       frame.origin.y = nameFrame.origin.y - frame.size.height - 25;
       [view setFrame: frame];
       [content addSubview: view];
+    }
+
+  details = [[theme infoDictionary] objectForKey: @"GSThemeDetails"];
+  if ([details length] > 0)
+    {
+      NSScrollView	*s;
+      NSTextView	*v;
+      NSRect		r;
+
+      r = NSMakeRect(10, 10, cFrame.size.width - 20, frame.origin.y - 20);
+      s = [[NSScrollView alloc] initWithFrame: r];
+      [s setHasHorizontalScroller: NO];
+      [s setHasVerticalScroller: YES];
+      [s setBorderType: NSBezelBorder];
+      [s setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
+      [content addSubview: s];
+      RELEASE(s);
+
+      r = [[s documentView] frame];
+      v = [[NSTextView alloc] initWithFrame: r];
+      [v setBackgroundColor: [self backgroundColor]];
+      [v setHorizontallyResizable: YES];
+      [v setVerticallyResizable: YES];
+      [v setEditable: NO];
+      [v setRichText: YES];
+      [v setMinSize: NSMakeSize (0, 0)];
+      [v setMaxSize: NSMakeSize (1E7, 1E7)];
+      [v setAutoresizingMask: NSViewHeightSizable | NSViewWidthSizable];
+      [[v textContainer] setContainerSize:
+	NSMakeSize (r.size.width, 1e7)];
+      [[v textContainer] setWidthTracksTextView: YES];
+      [v setString: details];
+      [s setDocumentView: v];
+      RELEASE(v);
     }
 
   [content setNeedsDisplay: YES];

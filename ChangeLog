@@ -1,6 +1,7 @@
 2006-10-12 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSImageView.m: Fix error in initial drag position.
+	* Source/GSTheme.m: Improve display of current theme information.
 
 2006-10-11 Nicola Pero <nicola.pero@meta-innovation.com>
 
