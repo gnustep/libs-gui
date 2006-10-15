@@ -651,7 +651,7 @@ static NSNull			*null = nil;
       else
         {
 	  [_tiles setObject: tiles forKey: aName];
-	  RELEASE(_tiles);
+	  RELEASE(tiles);
 	}
     }
   if (tiles == (id)null)
@@ -1119,19 +1119,19 @@ withRepeatedImage: (NSImage*)image
         {
 	  y += 3;
 	}
-      [tiles->images[TileBL] compositeToPoint:
-	NSMakePoint(x, y)
+      [tiles->images[TileBL] compositeToPoint: NSMakePoint(x, y)
+        fromRect: tiles->rects[TileBL]
 	operation: NSCompositeSourceOver];
       x += tiles->rects[TileBL].size.width + 3;
       if (tiles->images[TileBM] != nil)
         {
-	  [tiles->images[TileBM] compositeToPoint:
-	    NSMakePoint(x, y)
+	  [tiles->images[TileBM] compositeToPoint: NSMakePoint(x, y)
+            fromRect: tiles->rects[TileBM]
 	    operation: NSCompositeSourceOver];
 	  x += tiles->rects[TileBM].size.width + 3;
 	}
-      [tiles->images[TileBR] compositeToPoint:
-	NSMakePoint(x, y)
+      [tiles->images[TileBR] compositeToPoint: NSMakePoint(x, y)
+	fromRect: tiles->rects[TileBR]
 	operation: NSCompositeSourceOver];
       if (!flipped)
         {
@@ -1151,19 +1151,19 @@ withRepeatedImage: (NSImage*)image
 	    {
 	      y += 3;
 	    }
-	  [tiles->images[TileCL] compositeToPoint:
-	    NSMakePoint(x, y)
+	  [tiles->images[TileCL] compositeToPoint: NSMakePoint(x, y)
+	    fromRect: tiles->rects[TileCL]
 	    operation: NSCompositeSourceOver];
 	  x += tiles->rects[TileCL].size.width + 3;
 	  if (tiles->images[TileCM] != nil)
 	    {
-	      [tiles->images[TileCM] compositeToPoint:
-		NSMakePoint(x, y)
+	      [tiles->images[TileCM] compositeToPoint: NSMakePoint(x, y)
+		fromRect: tiles->rects[TileCM]
 		operation: NSCompositeSourceOver];
 	      x += tiles->rects[TileCM].size.width + 3;
 	    }
-	  [tiles->images[TileCR] compositeToPoint:
-	    NSMakePoint(x, y)
+	  [tiles->images[TileCR] compositeToPoint: NSMakePoint(x, y)
+	    fromRect: tiles->rects[TileCR]
 	    operation: NSCompositeSourceOver];
 	  if (!flipped)
 	    {
@@ -1182,19 +1182,19 @@ withRepeatedImage: (NSImage*)image
 	{
 	  y += 3;
 	}
-      [tiles->images[TileTL] compositeToPoint:
-	NSMakePoint(x, y)
+      [tiles->images[TileTL] compositeToPoint: NSMakePoint(x, y)
+	fromRect: tiles->rects[TileTL]
 	operation: NSCompositeSourceOver];
       x += tiles->rects[TileTL].size.width + 3;
       if (tiles->images[TileTM] != nil)
 	{
-	  [tiles->images[TileTM] compositeToPoint:
-	    NSMakePoint(x, y)
+	  [tiles->images[TileTM] compositeToPoint: NSMakePoint(x, y)
+	    fromRect: tiles->rects[TileTM]
 	    operation: NSCompositeSourceOver];
 	  x += tiles->rects[TileTM].size.width + 3;
 	}
-      [tiles->images[TileTR] compositeToPoint:
-	NSMakePoint(x, y)
+      [tiles->images[TileTR] compositeToPoint: NSMakePoint(x, y)
+	fromRect: tiles->rects[TileTR]
 	operation: NSCompositeSourceOver];
     }
   else if (flipped)
