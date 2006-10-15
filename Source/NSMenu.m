@@ -1277,13 +1277,13 @@ static NSNotificationCenter *nc;
  */
 - (void) encodeWithCoder: (NSCoder*)encoder
 {
-  if([encoder allowsKeyedCoding])
+  if ([encoder allowsKeyedCoding])
     {
       [encoder encodeObject: _title forKey: @"NSTitle"];
       [encoder encodeObject: _items forKey: @"NSMenuItems"];
       
       // if there is no supermenu, make it the main menu.
-      if([self supermenu] == nil)
+      if ([self supermenu] == nil)
 	{
 	  [encoder encodeObject: @"_NSMainMenu" forKey: @"NSName"];
 	}

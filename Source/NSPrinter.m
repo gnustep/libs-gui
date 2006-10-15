@@ -646,7 +646,7 @@ static NSMutableDictionary* printerCache;
 //
 - (void) encodeWithCoder: (NSCoder*)aCoder
 { 
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       // TODO: Determine keys for NSPrinter.
     }
@@ -662,7 +662,7 @@ static NSMutableDictionary* printerCache;
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {  
-  if([aDecoder allowsKeyedCoding])
+  if ([aDecoder allowsKeyedCoding])
     {
       // TODO: Determine keys for NSPrinter.
     }

@@ -278,7 +278,7 @@ static Class imageCellClass;
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
   [super encodeWithCoder: aCoder];
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       [aCoder encodeBool: [self isEditable] forKey: @"NSEditable"];
     }

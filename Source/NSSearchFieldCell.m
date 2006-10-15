@@ -284,7 +284,7 @@
     NSDivideRect(rect, &search, &part, ICON_WIDTH, NSMinXEdge);
   }
 
-  if(!_cancel_button_cell)
+  if (!_cancel_button_cell)
     {
       // nothing to split off
       text = part;

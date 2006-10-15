@@ -72,15 +72,15 @@
 {
   if ([aCoder allowsKeyedCoding])
     {
-      if(_src != nil)
+      if (_src != nil)
 	{
 	  [aCoder encodeObject: _src forKey: @"NSSource"];
 	}
-      if(_dst != nil)
+      if (_dst != nil)
 	{
 	  [aCoder encodeObject: _dst forKey: @"NSDestination"];
 	}
-      if(_tag != nil)
+      if (_tag != nil)
 	{
 	  [aCoder encodeObject: _tag forKey: @"NSLabel"];
 	}
@@ -101,15 +101,15 @@
 {
   if ([aDecoder allowsKeyedCoding])
     {
-      if([aDecoder containsValueForKey: @"NSDestination"])
+      if ([aDecoder containsValueForKey: @"NSDestination"])
 	{
 	  ASSIGN(_dst, [aDecoder decodeObjectForKey: @"NSDestination"]);
 	}
-      if([aDecoder containsValueForKey: @"NSSource"])
+      if ([aDecoder containsValueForKey: @"NSSource"])
 	{
 	  ASSIGN(_src, [aDecoder decodeObjectForKey: @"NSSource"]);
 	}
-      if([aDecoder containsValueForKey: @"NSLabel"])
+      if ([aDecoder containsValueForKey: @"NSLabel"])
 	{      
 	  ASSIGN(_tag, [aDecoder decodeObjectForKey: @"NSLabel"]);
 	}
@@ -323,7 +323,7 @@
       NSString *modelPath = [rootPath stringByAppendingPathComponent: fileName];
       NSString *path = [GSModelLoaderFactory supportedModelFileAtPath: modelPath];
       
-      if(path != nil)
+      if (path != nil)
 	{
 	  return path;
 	}

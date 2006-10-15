@@ -464,7 +464,7 @@
   ASSIGN(_saveType, [controller _nameForHumanReadableType: 
 				  [sender titleOfSelectedItem]]);
   extensions = [controller fileExtensionsFromType: _saveType];
-  if([extensions count] > 0)
+  if ([extensions count] > 0)
     {
       [(NSSavePanel *)[sender window] setRequiredFileType: [extensions objectAtIndex:0]];
     }
@@ -484,7 +484,7 @@
 
 - (void) _createPanelAccessory
 {
-  if(savePanelAccessory == nil)
+  if (savePanelAccessory == nil)
     {
       NSRect accessoryFrame = NSMakeRect(0,0,380,70);
       NSRect spaFrame = NSMakeRect(115,14,150,22);
@@ -507,7 +507,7 @@
   NSString *title = nil;
   int i = 0;
 
-  while((title = [en nextObject]) != nil)
+  while ((title = [en nextObject]) != nil)
     {
       [spaButton addItemWithTitle: title];
       i++;
@@ -517,11 +517,11 @@
   [spaButton setEnabled: (i > 0)];
   
   // if we have some items, select the current filetype.
-  if(i > 0)
+  if (i > 0)
     {
       NSString *title = [[NSDocumentController sharedDocumentController] 
 			  displayNameForType: [self fileType]];
-      if([spaButton itemWithTitle: title] != nil)
+      if ([spaButton itemWithTitle: title] != nil)
 	{
 	  [spaButton selectItemWithTitle: title];
 	}
@@ -558,7 +558,7 @@
     {
       NSArray  *extensions = [[NSDocumentController sharedDocumentController] 
 			       fileExtensionsFromType: [self fileTypeFromLastRunSavePanel]];
-      if([extensions count] > 0)
+      if ([extensions count] > 0)
 	{
 	  [savePanel setRequiredFileType:[extensions objectAtIndex:0]];
 	}
@@ -736,7 +736,7 @@
       NSArray  *extensions = [[NSDocumentController sharedDocumentController] 
 			       fileExtensionsFromType: fileType];
 
-      if([extensions count] > 0)
+      if ([extensions count] > 0)
 	{
 	  NSString *extension = [extensions objectAtIndex: 0];
 	  NSString *newFileName = [[fileName stringByDeletingPathExtension] 

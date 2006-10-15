@@ -1218,7 +1218,7 @@ static float scrollerWidth;
 {
   [super encodeWithCoder: aCoder];
       
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       unsigned long flags = 0;
       GSScrollViewFlags scrollViewFlags;
@@ -1228,7 +1228,7 @@ static float scrollerWidth;
       [aCoder encodeObject: _contentView forKey: @"NSContentView"];
 
       // only encode this, if it's not null...
-      if(_headerClipView != nil)
+      if (_headerClipView != nil)
 	{
 	  [aCoder encodeObject: _headerClipView forKey: @"NSHeaderClipView"];
 	}
@@ -1316,7 +1316,7 @@ static float scrollerWidth;
 	  NSRect frame = [content frame];
 	  float w = [vScroller frame].size.width;
 
-	  if(_hasVertScroller)
+	  if (_hasVertScroller)
 	    {
 	      //
 	      // Slide the content view over, since on Mac OS X the scroller is on the

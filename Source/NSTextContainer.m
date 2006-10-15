@@ -464,7 +464,7 @@ framework intact.
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
-  if([coder allowsKeyedCoding])
+  if ([coder allowsKeyedCoding])
     {
       NSSize size = _containerRect.size;
       int flags = ((_widthTracksTextView)?1:0) | 

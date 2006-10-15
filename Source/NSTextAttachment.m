@@ -323,7 +323,7 @@
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       // TODO_NIB: Determine keys for NSTextAttachment.
     }
@@ -336,7 +336,7 @@
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  if([aDecoder allowsKeyedCoding])
+  if ([aDecoder allowsKeyedCoding])
     {
       // TODO_NIB: Determine keys for NSTextAttachment.
     }

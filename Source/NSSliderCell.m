@@ -727,7 +727,7 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 - (id) initWithCoder: (NSCoder*)decoder
 {
   self = [super initWithCoder: decoder];
-  if([decoder allowsKeyedCoding])
+  if ([decoder allowsKeyedCoding])
     {
       _allowsTickMarkValuesOnly = [decoder decodeBoolForKey: @"NSAllowsTickMarkValuesOnly"];
       _numberOfTickMarks = [decoder decodeIntForKey: @"NSNumberOfTickMarks"];
@@ -769,7 +769,7 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 - (void) encodeWithCoder: (NSCoder*)coder
 {
   [super encodeWithCoder: coder];
-  if([coder allowsKeyedCoding])
+  if ([coder allowsKeyedCoding])
     {
       [coder encodeBool: _allowsTickMarkValuesOnly forKey: @"NSAllowsTickMarkValuesOnly"];
       [coder encodeInt: _numberOfTickMarks forKey: @"NSNumberOfTickMarks"];

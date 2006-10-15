@@ -449,7 +449,7 @@ static inline void HighlightDownButton(NSRect aRect)
 {
   [super encodeWithCoder: aCoder];
 
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       [aCoder encodeDouble: [self increment] forKey: @"NSIncrement"];
       [aCoder encodeDouble: [self maxValue] forKey: @"NSMaxValue"];
@@ -481,13 +481,13 @@ static inline void HighlightDownButton(NSRect aRect)
 {
   [super initWithCoder: aDecoder];
 
-  if([aDecoder allowsKeyedCoding])
+  if ([aDecoder allowsKeyedCoding])
     {
       _autorepeat = [aDecoder decodeBoolForKey: @"NSAutorepeat"];
       _valueWraps = [aDecoder decodeBoolForKey: @"NSValueWraps"];
       _increment = [aDecoder decodeDoubleForKey: @"NSIncrement"];
       _maxValue = [aDecoder decodeDoubleForKey: @"NSMaxValue"];
-      if([aDecoder containsValueForKey: @"NSMinValue"])
+      if ([aDecoder containsValueForKey: @"NSMinValue"])
 	{
 	  _minValue = [aDecoder decodeDoubleForKey: @"NSMinValue"];
 	}

@@ -1448,7 +1448,7 @@ typedef struct _GSButtonCellFlags
   BOOL tmp;
 
   [super encodeWithCoder: aCoder];
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       GSButtonCellFlags buttonCellFlags;
       unsigned int bFlags = 0;
@@ -1456,15 +1456,15 @@ typedef struct _GSButtonCellFlags
       NSImage *image = [self image];
       NSButtonImageSource *bi = nil;
 
-      if([self keyEquivalent] != nil)
+      if ([self keyEquivalent] != nil)
 	{
 	  [aCoder encodeObject: [self keyEquivalent] forKey: @"NSKeyEquivalent"];
 	}
-      if([self image] != nil)
+      if ([self image] != nil)
 	{
 	  [aCoder encodeObject: [self image] forKey: @"NSNormalImage"];
 	}
-      if([self alternateTitle] != nil)
+      if ([self alternateTitle] != nil)
 	{
 	  [aCoder encodeObject: [self alternateTitle] forKey: @"NSAlternateContents"];
 	}
@@ -1503,15 +1503,15 @@ typedef struct _GSButtonCellFlags
       [aCoder encodeInt: bFlags2 forKey: @"NSButtonFlags2"];
 
       // alternate image encoding...
-      if(image != nil)
+      if (image != nil)
 	{
 	  if ([image isKindOfClass: [NSImage class]] && buttonCellFlags.useButtonImageSource)
 	    {
-	      if([NSImage imageNamed: @"NSSwitch"] == image)
+	      if ([NSImage imageNamed: @"NSSwitch"] == image)
 		{
 		  bi = [[NSButtonImageSource alloc] initWithImageNamed: @"NSHighlightedSwitch"];
 		}
-	      else if([NSImage imageNamed: @"NSRadioButton"] == image)
+	      else if ([NSImage imageNamed: @"NSRadioButton"] == image)
 		{
 		  bi = [[NSButtonImageSource alloc] initWithImageNamed: @"NSHighlightedRadioButton"];
 		}
@@ -1519,11 +1519,11 @@ typedef struct _GSButtonCellFlags
 	}
 
       // encode button image source, if it exists...
-      if(bi != nil)
+      if (bi != nil)
 	{
 	  [aCoder encodeObject: bi forKey: @"NSAlternateImage"];      
 	}
-      else if(_altImage != nil)
+      else if (_altImage != nil)
 	{
 	  [aCoder encodeObject: _altImage forKey: @"NSAlternateImage"];
 	}
@@ -1657,18 +1657,18 @@ typedef struct _GSButtonCellFlags
 	  image = [aDecoder decodeObjectForKey: @"NSAlternateImage"];
 	  if ([image isKindOfClass: [NSImage class]])
 	    {
-	      if([NSImage imageNamed: @"NSSwitch"] == image)
+	      if ([NSImage imageNamed: @"NSSwitch"] == image)
 		{
 		  image = [NSImage imageNamed: @"NSHighlightedSwitch"];
-		  if([self image] == nil)
+		  if ([self image] == nil)
 		    {
 		      [self setImage: [NSImage imageNamed: @"NSSwitch"]];
 		    }		    
 		}
-	      else if([NSImage imageNamed: @"NSRadioButton"] == image)
+	      else if ([NSImage imageNamed: @"NSRadioButton"] == image)
 		{
 		  image = [NSImage imageNamed: @"NSHighlightedRadioButton"];
-		  if([self image] == nil)
+		  if ([self image] == nil)
 		    {
 		      [self setImage: [NSImage imageNamed: @"NSRadioButton"]];
 		    }		    

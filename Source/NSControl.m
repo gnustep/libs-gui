@@ -833,7 +833,7 @@ static Class actionCellClass;
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       [aCoder encodeObject: [self cell] forKey: @"NSCell"];
       [aCoder encodeBool: [self isEnabled] forKey: @"NSEnabled"];

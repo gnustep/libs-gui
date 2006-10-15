@@ -290,7 +290,7 @@ static NSColor *fillColour = nil;
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
    [super encodeWithCoder:aCoder];
-   if([aCoder allowsKeyedCoding])
+   if ([aCoder allowsKeyedCoding])
      {
        unsigned long flags = 0;
        id matrix = AUTORELEASE([[NSPSMatrix alloc] init]);

@@ -147,14 +147,18 @@
 @class GSDrawTiles;
 
 /**
- * This defines how the center middle image in a tile array should be
- * used when drawing a rectangle.
+ * This defines how the values in a tile array should be used when
+ * drawing a rectangle.  Mostly this just effects the center, middle
+ * image of the rectangle.<br />
+ * FillStyleMatrix is provided for the use of theme editors wishing
+ * to display the tile.
  */
 typedef enum {
-  FillStyleNone,	/** The image is not drawn */
-  FillStyleScale,	/** The image is scaled to fit */
-  FillStyleRepeat,	/** The image is tiled from bottom left */
-  FillStyleCenter	/** The image is tiled from the center */
+  GSThemeFillStyleNone,		/** CM image is not drawn */
+  GSThemeFillStyleScale,	/** CM image is scaled to fit */
+  GSThemeFillStyleRepeat,	/** CM image is tiled from bottom left */
+  GSThemeFillStyleCenter,	/** CM image is tiled from the center */
+  GSThemeFillStyleMatrix	/** a matrix of nine separated images */
 } GSThemeFillStyle;
 
 
@@ -349,9 +353,11 @@ APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
  * The GUI library uses this internally to handling tiling of image
  * information to draw user interface elements.  The tile information
  * returned by this method can be passed to the
- * -fillRect:withTiles:background:fillStyle: method.
+ * -fillRect:withTiles:background:fillStyle: method.<br />
+ * The useCache argument controls whether the information is retrieved
+ * from cache or regenerated from information in the theme bundle.
  */
-- (GSDrawTiles*) tilesNamed: (NSString*)aName; 
+- (GSDrawTiles*) tilesNamed: (NSString*)aName cache: (BOOL)useCache; 
 @end
 
 /**

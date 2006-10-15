@@ -160,7 +160,7 @@ enablingXResizing: (BOOL)aFlag
 -(void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       [aCoder encodeBool: _haveViews forKey: @"GSHaveViews"];
       [aCoder encodeFloat: _defaultMinXMargin forKey: @"GSDefaultMinXMargin"];
@@ -175,7 +175,7 @@ enablingXResizing: (BOOL)aFlag
 -(id) initWithCoder: (NSCoder*)aDecoder
 {
   [super initWithCoder: aDecoder];
-  if([aDecoder allowsKeyedCoding])
+  if ([aDecoder allowsKeyedCoding])
     {
       _haveViews = [aDecoder decodeBoolForKey: @"GSHaveViews"];
       _defaultMinXMargin = [aDecoder decodeFloatForKey: @"GSDefaultMinXMargin"];

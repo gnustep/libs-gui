@@ -333,7 +333,7 @@
 {
   BOOL flag = NO;
 
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       [aCoder encodeObject: filename forKey: @"GSFilename"];
       [aCoder encodeObject: sourceLinks forKey: @"GSSourceLinks"];
@@ -367,7 +367,7 @@
 
 - (id) initWithCoder: (NSCoder*)aCoder
 {
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       BOOL flag = NO;
       id obj;

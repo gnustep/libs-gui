@@ -114,7 +114,7 @@
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  if([aCoder allowsKeyedCoding] == NO)
+  if ([aCoder allowsKeyedCoding] == NO)
     {
       BOOL	inside = flags.inside;
       
@@ -127,7 +127,7 @@
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  if([aDecoder allowsKeyedCoding] == NO)
+  if ([aDecoder allowsKeyedCoding] == NO)
     {
       BOOL	inside;
       

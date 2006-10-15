@@ -1,3 +1,66 @@
+2006-10-15 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSBrowser.m:
+	* Source/NSSound.m:
+	* Source/NSTextAttachment.m:
+	* Source/NSPopUpButtonCell.m:
+	* Source/NSPanel.m:
+	* Source/NSImageCell.m:
+	* Source/NSSliderCell.m:
+	* Source/GSGormLoader.m:
+	* Source/NSParagraphStyle.m:
+	* Source/NSFormCell.m:
+	* Source/NSMenu.m:
+	* Source/NSWindow.m:
+	* Source/NSButtonCell.m:
+	* Source/NSImageView.m:
+	* Source/NSActionCell.m:
+	* Source/NSDataLinkManager.m:
+	* Source/NSClipView.m:
+	* Source/NSBitmapImageRep.m:
+	* Source/NSTextFieldCell.m:
+	* Source/NSColorWell.m:
+	* Source/GSTextStorage.m:
+	* Source/NSApplication.m:
+	* Source/NSTableColumn.m:
+	* Source/GSVbox.m:
+	* Source/NSNib.m:
+	* Source/NSCachedImageRep.m:
+	* Source/NSPrinter.m:
+	* Source/NSTextContainer.m:
+	* Source/GSNibLoader.m:
+	* Source/GSNibCompatibility.m:
+	* Source/GSTrackingRect.m:
+	* Source/NSSearchFieldCell.m:
+	* Source/NSControl.m:
+	* Source/GSHbox.m:
+	* Source/NSProgressIndicator.m:
+	* Source/GSModelLoaderFactory.m:
+	* Source/NSTextStorage.m:
+	* Source/NSTextView.m:
+	* Source/NSDocumentController.m:
+	* Source/NSMenuView.m:
+	* Source/NSSecureTextField.m:
+	* Source/NSComboBoxCell.m:
+	* Source/NSImage.m:
+	* Source/NSStepperCell.m:
+	* Source/NSDataLink.m:
+	* Source/NSScrollView.m:
+	* Source/NSBundleAdditions.m:
+	* Source/NSCell.m:
+	* Source/GSTable.m:
+	* Source/NSTableView.m:
+	* Source/NSBrowserCell.m:
+	* Source/NSSelection.m:
+	* Source/NSTextField.m:
+	* Source/NSView.m:
+	* Source/NSDocument.m:
+	Fixup some minor coding standard violations ... add white space.
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	* Source/GSTheme.m:
+	Add control for caching of tiles.  Add another fill style for tiling.
+	Make fill style names avoid possible name clashes by using GS prefix.
+
 2006-10-12 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSImageView.m: Fix error in initial drag position.

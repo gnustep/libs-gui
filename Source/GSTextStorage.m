@@ -178,7 +178,7 @@ unCacheAttributes(NSDictionary *attrs)
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  if([aCoder allowsKeyedCoding] == NO)
+  if ([aCoder allowsKeyedCoding] == NO)
     {
       [aCoder encodeValueOfObjCType: @encode(unsigned) at: &loc];
       [aCoder encodeValueOfObjCType: @encode(id) at: &attrs];
@@ -193,7 +193,7 @@ unCacheAttributes(NSDictionary *attrs)
 
 - (id) initWithCoder: (NSCoder*)aCoder
 {
-  if([aCoder allowsKeyedCoding] == NO)
+  if ([aCoder allowsKeyedCoding] == NO)
     {
       NSDictionary	*a;
       [aCoder decodeValueOfObjCType: @encode(unsigned) at: &loc];

@@ -1592,7 +1592,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 - (void) encodeWithCoder: (NSCoder*)encoder
 {
   [super encodeWithCoder: encoder];
-  if([encoder allowsKeyedCoding] == NO)
+  if ([encoder allowsKeyedCoding] == NO)
     {
       [encoder encodeObject: _itemCells];
       [encoder encodeObject: _font];
@@ -1605,7 +1605,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 - (id) initWithCoder: (NSCoder*)decoder
 {
   self = [super initWithCoder: decoder];
-  if([decoder allowsKeyedCoding] == NO)
+  if ([decoder allowsKeyedCoding] == NO)
     {
       [decoder decodeValueOfObjCType: @encode(id) at: &_itemCells];
       

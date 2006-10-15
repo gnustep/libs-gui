@@ -667,7 +667,7 @@ return NO; \
 //
 - (void) encodeWithCoder: (NSCoder *)coder
 {
-  if([coder allowsKeyedCoding])
+  if ([coder allowsKeyedCoding])
     {
       // TODO_NIB: Determine keys for NSSound.
     }
@@ -701,7 +701,7 @@ return NO; \
 
 - (id) initWithCoder: (NSCoder*)decoder
 {	
-  if([decoder allowsKeyedCoding])
+  if ([decoder allowsKeyedCoding])
     {
       // TODO_NIB: Determine keys for NSSound.
     }

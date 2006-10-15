@@ -753,16 +753,16 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       unsigned int flags = 0;
       [aCoder encodeObject: [self backgroundColor] forKey: @"NSBGColor"];
       [aCoder encodeObject: [self documentCursor] forKey: @"NSCursor"];
       [aCoder encodeObject: [self documentView] forKey: @"NSDocView"];
       
-      if([self drawsBackground])
+      if ([self drawsBackground])
 	flags |= 4;
-      if([self copiesOnScroll] == NO)
+      if ([self copiesOnScroll] == NO)
 	flags |= 2;
 
       [aCoder encodeInt: flags forKey: @"NScvFlags"];

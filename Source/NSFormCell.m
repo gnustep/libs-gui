@@ -395,10 +395,10 @@ static NSColor	*shadowCol;
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       /*
-      if([self stringValue] != nil)
+      if ([self stringValue] != nil)
 	{
 	  [aCoder encodeObject: [self stringValue] forKey: @"NSContents"];
 	}

@@ -70,9 +70,9 @@ static BOOL _isInInterfaceBuilder = NO;
 {
   NSEnumerator *en = [[self subviews] objectEnumerator];
   id v = nil;
-  while((v = [en nextObject]) != nil)
+  while ((v = [en nextObject]) != nil)
     {
-      if([v window] != [self window] ||
+      if ([v window] != [self window] ||
 	 [v superview] != self)
 	{
 	  [v _setWindow: [self window]];
@@ -113,9 +113,9 @@ static BOOL _isInInterfaceBuilder = NO;
        wantsToBeColor: (BOOL) wantsToBeColor
      autoPositionMask: (int) autoPositionMask
 {
-  if((self = [super init]) != nil)
+  if ((self = [super init]) != nil)
     {
-      if(window != nil)
+      if (window != nil)
 	{
 	  // object members
 	  ASSIGN(_title, [window title]);
@@ -163,7 +163,7 @@ static BOOL _isInInterfaceBuilder = NO;
         {
 	  _windowStyle = [coder decodeIntForKey: @"NSWindowStyleMask"];
 	}
-      if([coder containsValueForKey: @"NSWindowBacking"])
+      if ([coder containsValueForKey: @"NSWindowBacking"])
 	{
 	  _backingStoreType = [coder decodeIntForKey: @"NSWindowBacking"];
 	}
@@ -234,13 +234,13 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (id) nibInstantiate
 {
-  if(_realObject == nil)
+  if (_realObject == nil)
     {
       Class aClass;
       NSEnumerator *en;
       id v = nil;
 
-      if([NSClassSwapper isInInterfaceBuilder])
+      if ([NSClassSwapper isInInterfaceBuilder])
 	{
 	  aClass = [self baseWindowClass];
 	}
@@ -290,9 +290,9 @@ static BOOL _isInInterfaceBuilder = NO;
 
       // swap out any views which need to be swapped...
       en = [[[_realObject contentView] subviews] objectEnumerator];
-      while((v = [en nextObject]) != nil)
+      while ((v = [en nextObject]) != nil)
 	{
-	  if([v respondsToSelector: @selector(nibInstantiate)])
+	  if ([v respondsToSelector: @selector(nibInstantiate)])
 	    {
 	      [v nibInstantiate];
 	    }
@@ -436,9 +436,9 @@ static BOOL _isInInterfaceBuilder = NO;
 - (id) initWithCoder: (NSCoder *)coder
 {
   self = [super initWithCoder: coder];
-  if(self != nil)
+  if (self != nil)
     {
-      if([coder allowsKeyedCoding])
+      if ([coder allowsKeyedCoding])
 	{
 	  _className = [coder decodeObjectForKey: @"NSClassName"];
 	}
@@ -454,7 +454,7 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
-  if([coder allowsKeyedCoding])
+  if ([coder allowsKeyedCoding])
     {
       [coder encodeObject: (id)_className forKey: @"NSClassName"];
     }
@@ -462,10 +462,10 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (id) nibInstantiate
 {
-  if(_realObject == nil)
+  if (_realObject == nil)
     {
       Class aClass = NSClassFromString(_className);
-      if(aClass == nil)
+      if (aClass == nil)
 	{
 	  [NSException raise: NSInternalInconsistencyException
 		       format: @"Unable to find class '%@'", _className];
@@ -520,10 +520,10 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (id)nibInstantiate
 {
-  if(_realObject == nil)
+  if (_realObject == nil)
     {
       Class aClass = NSClassFromString(_className);
-      if(aClass == nil)
+      if (aClass == nil)
 	{
 	  [NSException raise: NSInternalInconsistencyException
 		       format: @"Unable to find class '%@'", _className];
@@ -612,7 +612,7 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (id) initWithCoder: (NSCoder *)coder
 {
-  if([coder allowsKeyedCoding])
+  if ([coder allowsKeyedCoding])
     {
       ASSIGN(_className, [coder decodeObjectForKey: @"NSClassName"]);
       ASSIGN(_extension, [coder decodeObjectForKey: @"NSExtension"]);
@@ -628,7 +628,7 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
-  if([coder allowsKeyedCoding])
+  if ([coder allowsKeyedCoding])
     {
       [coder encodeObject: (id)_className forKey: @"NSClassName"];
       [coder encodeConditionalObject: (id)_extension forKey: @"NSExtension"];
@@ -644,11 +644,11 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (id) nibInstantiate
 {
-  if(_object == nil)
+  if (_object == nil)
     {
       Class aClass;
       
-      if([NSClassSwapper isInInterfaceBuilder])
+      if ([NSClassSwapper isInInterfaceBuilder])
 	{
 	  aClass = [self class];
 	}
@@ -657,7 +657,7 @@ static BOOL _isInInterfaceBuilder = NO;
 	  aClass = NSClassFromString(_className);
 	}
 
-      if(aClass == nil)
+      if (aClass == nil)
 	{
 	  [NSException raise: NSInternalInconsistencyException
 		       format: @"Unable to find class '%@'", _className];
@@ -698,11 +698,11 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (id) nibInstantiate
 {
-  if(_view == nil)
+  if (_view == nil)
     {
       Class aClass;
       
-      if([NSClassSwapper isInInterfaceBuilder])
+      if ([NSClassSwapper isInInterfaceBuilder])
 	{
 	  aClass = [self class];
 	}
@@ -711,7 +711,7 @@ static BOOL _isInInterfaceBuilder = NO;
 	  aClass = NSClassFromString(_className);
 	}
 
-      if(aClass == nil)
+      if (aClass == nil)
 	{
 	  [NSException raise: NSInternalInconsistencyException
 		       format: @"Unable to find class '%@'", _className];
@@ -731,9 +731,9 @@ static BOOL _isInInterfaceBuilder = NO;
 - (id) initWithCoder: (NSCoder *)coder
 {
   self = [super initWithCoder: coder];
-  if(self != nil)
+  if (self != nil)
     {
-      if([coder allowsKeyedCoding])
+      if ([coder allowsKeyedCoding])
 	{
 	  ASSIGN(_className, [coder decodeObjectForKey: @"NSClassName"]);
 	  ASSIGN(_extension, [coder decodeObjectForKey: @"NSExtension"]);
@@ -751,7 +751,7 @@ static BOOL _isInInterfaceBuilder = NO;
 - (void) encodeWithCoder: (NSCoder *)coder
 {
   [super encodeWithCoder: coder];
-  if([coder allowsKeyedCoding])
+  if ([coder allowsKeyedCoding])
     {
       [coder encodeObject: _className forKey: @"NSClassName"];
       [coder encodeObject: _extension forKey: @"NSExtension"];
@@ -794,23 +794,23 @@ static BOOL _isInInterfaceBuilder = NO;
 - (id) initWithCoder: (NSCoder *)coder
 {
   id realObject = nil;
-  if([coder allowsKeyedCoding])
+  if ([coder allowsKeyedCoding])
     {
       ASSIGN(_className, [coder decodeObjectForKey: @"NSClassName"]);
       ASSIGN(_resourceName, [coder decodeObjectForKey: @"NSResourceName"]);
 
       // this is a hack, but for now it should do.
-      if([_className isEqual: @"NSSound"])
+      if ([_className isEqual: @"NSSound"])
 	{
 	  realObject = RETAIN([NSSound soundNamed: _resourceName]);
 	}
-      else if([_className isEqual: @"NSImage"])
+      else if ([_className isEqual: @"NSImage"])
 	{
 	  realObject = RETAIN([NSImage imageNamed: _resourceName]);
 	}
 
       // if an object has been substituted, then release the placeholder.
-      if(realObject != nil)
+      if (realObject != nil)
 	{
 	  RELEASE(self);
 	}
@@ -827,7 +827,7 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
-  if([coder allowsKeyedCoding])
+  if ([coder allowsKeyedCoding])
     {
       [coder encodeObject: (id)_className forKey: @"NSClassName"];
       [coder encodeObject: (id)_resourceName forKey: @"NSResourceName"];
@@ -845,14 +845,14 @@ static BOOL _isInInterfaceBuilder = NO;
 {
   unsigned int i = 0;
   unsigned int count = GSIArrayCount(_objMap);
-  for(i = 0; i < count; i++)
+  for (i = 0; i < count; i++)
     {
       id obj = GSIArrayItemAtIndex(_objMap, i).obj;
-      if(obj == oldObj)
+      if (obj == oldObj)
 	break;
     }
 
-  if(i < count)
+  if (i < count)
     {
       GSIArraySetItemAtIndex(_objMap, (GSIArrayItem)newObj, i);
       return YES;
@@ -872,7 +872,7 @@ static BOOL _isInInterfaceBuilder = NO;
         withClassName: (NSString *)className
     originalClassName: (NSString *)origClassName
 {
-  if((self = [super init]) != nil)
+  if ((self = [super init]) != nil)
     {
       [self setTemplate: object];
       [self setClassName: className];
@@ -930,12 +930,12 @@ static BOOL _isInInterfaceBuilder = NO;
   Class origCellClass = nil;
 
   // if there is a replacement class, use it, otherwise, use the one specified.
-  if((aClass = [(NSKeyedUnarchiver *)coder classForClassName: className]) == nil)
+  if ((aClass = [(NSKeyedUnarchiver *)coder classForClassName: className]) == nil)
     {
       aClass = NSClassFromString(className);
     }
 
-  if(aClass == nil)
+  if (aClass == nil)
     {
       [NSException raise: NSInternalInconsistencyException
 		   format: @"NSClassSwapper unable to find class '%@'", className];
@@ -943,7 +943,7 @@ static BOOL _isInInterfaceBuilder = NO;
 
   // if this is a class which uses cells, override with the new cellClass, if the 
   // subclass responds to cellClass.
-  if([aClass respondsToSelector: @selector(cellClass)] && 
+  if ([aClass respondsToSelector: @selector(cellClass)] && 
      [className isEqualToString: _originalClassName] == NO)
     {
       Class origClass = NSClassFromString(_originalClassName);
@@ -958,12 +958,12 @@ static BOOL _isInInterfaceBuilder = NO;
   object = [aClass allocWithZone: NSDefaultMallocZone()];
   [(NSKeyedUnarchiver *)coder replaceObject: self withObject: object];
   [self setTemplate: [object initWithCoder: coder]];
-  if(object != _template)
+  if (object != _template)
     {
       [(NSKeyedUnarchiver *)coder replaceObject: object withObject: _template];
     }
 
-  if(newCellClass != nil && origCellClass != nil)
+  if (newCellClass != nil && origCellClass != nil)
     {
       [(NSKeyedUnarchiver *)coder setClass: origCellClass forClassName: nil];
     }
@@ -971,13 +971,13 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (id) initWithCoder: (NSCoder *)coder
 {
-  if([coder allowsKeyedCoding])
+  if ([coder allowsKeyedCoding])
     {
       ASSIGN(_className, [coder decodeObjectForKey: @"NSClassName"]);  
       ASSIGN(_originalClassName, [coder decodeObjectForKey: @"NSOriginalClassName"]);  
 
       // build the real object...
-      if([NSClassSwapper isInInterfaceBuilder] == YES)
+      if ([NSClassSwapper isInInterfaceBuilder] == YES)
 	{
 	  [self instantiateRealObject: coder withClassName: _originalClassName];
 	}
@@ -998,7 +998,7 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
-  if([coder allowsKeyedCoding])
+  if ([coder allowsKeyedCoding])
     {
       [coder encodeObject: _originalClassName forKey: @"NSOriginalClassName"];
       [coder encodeObject: _className forKey: @"NSClassName"];
@@ -1032,7 +1032,7 @@ static BOOL _isInInterfaceBuilder = NO;
   NSRange colonRange = [_tag rangeOfString: @":"];
   unsigned int location = colonRange.location;
   
-  if(location == NSNotFound)
+  if (location == NSNotFound)
     {
       NSString *newTag = [NSString stringWithFormat: @"%@:",_tag];
       [self setLabel: (id)newTag];
@@ -1046,10 +1046,10 @@ static BOOL _isInInterfaceBuilder = NO;
 - (id)instantiateObject: (id)obj
 {
   id newObject = obj;
-  if([obj respondsToSelector: @selector(nibInstantiate)])
+  if ([obj respondsToSelector: @selector(nibInstantiate)])
     {
       newObject = [obj nibInstantiate];
-      if([newObject respondsToSelector: @selector(awakeFromNib)])
+      if ([newObject respondsToSelector: @selector(awakeFromNib)])
 	{
 	  // awaken the object.
 	  [newObject awakeFromNib];
@@ -1074,9 +1074,9 @@ static BOOL _isInInterfaceBuilder = NO;
   [_root setObject: owner];
   
   // iterate over connections, instantiate, and then establish them.
-  while((obj = [en nextObject]) != nil)
+  while ((obj = [en nextObject]) != nil)
     {
-      if([obj respondsToSelector: @selector(instantiateWithInstantiator:)])
+      if ([obj respondsToSelector: @selector(instantiateWithInstantiator:)])
 	{
 	  [obj instantiateWithInstantiator: self];	  
 	  [obj establishConnection];
@@ -1085,11 +1085,11 @@ static BOOL _isInInterfaceBuilder = NO;
 
   // instantiate all windows and fill in the top level array.
   en = [objs objectEnumerator];
-  while((obj = [en nextObject]) != nil)
+  while ((obj = [en nextObject]) != nil)
     {
-      if([obj isKindOfClass: [NSWindowTemplate class]])
+      if ([obj isKindOfClass: [NSWindowTemplate class]])
 	{
-	  if([obj realObject] == nil)
+	  if ([obj realObject] == nil)
 	    {
 	      id o = [self instantiateObject: obj];
 	      [topLevelObjects addObject: o];
@@ -1098,7 +1098,7 @@ static BOOL _isInInterfaceBuilder = NO;
       else
 	{
 	  id v = NSMapGet(_objects, obj);
-	  if(v == nil || v == owner)
+	  if (v == nil || v == owner)
 	    {
 	      [topLevelObjects addObject: obj];
 	    }
@@ -1107,7 +1107,7 @@ static BOOL _isInInterfaceBuilder = NO;
 
   // bring visible windows to front...
   en = [_visibleWindows objectEnumerator];
-  while((obj = [en nextObject]) != nil)
+  while ((obj = [en nextObject]) != nil)
     {
       id w = [obj realObject];
       [w orderFront: self];
@@ -1115,7 +1115,7 @@ static BOOL _isInInterfaceBuilder = NO;
 
   // add the menu...
   menu = [self objectForName: @"MainMenu"];
-  if(menu != nil)
+  if (menu != nil)
     {
       menu = [self instantiateObject: menu];
       [NSApp setMainMenu: menu];
@@ -1176,7 +1176,7 @@ static BOOL _isInInterfaceBuilder = NO;
   int i = [nameValues indexOfObject: name];
   id result = nil;
 
-  if(i != NSNotFound)
+  if (i != NSNotFound)
     {
       result = [nameKeys objectAtIndex: i];
     }
@@ -1201,7 +1201,7 @@ static BOOL _isInInterfaceBuilder = NO;
   NSMutableArray *result = [NSMutableArray array];
   NSEnumerator *en = [keys objectEnumerator];
   id key = nil;
-  while((key = [en nextObject]) != nil)
+  while ((key = [en nextObject]) != nil)
     {
       id value = (id)NSMapGet(map,key);
       [result addObject: value];
@@ -1211,7 +1211,7 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
-  if([coder allowsKeyedCoding])
+  if ([coder allowsKeyedCoding])
     {
       NSArray *accessibilityOidsKeys = (NSArray *)NSAllMapTableKeys(_accessibilityOids);
       NSArray *accessibilityOidsValues = [self _valuesForKeys: accessibilityOidsKeys inMap: _accessibilityOids];
@@ -1261,7 +1261,7 @@ static BOOL _isInInterfaceBuilder = NO;
   id key = nil;
   id value = nil;
   
-  while((key = [ken nextObject]) != nil && (value = [ven nextObject]) != nil)
+  while ((key = [ken nextObject]) != nil && (value = [ven nextObject]) != nil)
     {
       NSMapInsert(mapTable, key, value);
     }
@@ -1269,7 +1269,7 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (id) initWithCoder: (NSCoder *)coder
 {
-  if([coder allowsKeyedCoding])
+  if ([coder allowsKeyedCoding])
     {
       ASSIGN(_root, [coder decodeObjectForKey: @"NSRoot"]);
       ASSIGN(_visibleWindows,  (NSMutableArray *)[coder decodeObjectForKey: @"NSVisibleWindows"]);
@@ -1347,7 +1347,7 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (id) init
 {
-  if((self = [super init]) != nil)
+  if ((self = [super init]) != nil)
     {
       // instantiate the maps..
       _objects = NSCreateMapTable(NSObjectMapKeyCallBacks,
@@ -1417,7 +1417,7 @@ static BOOL _isInInterfaceBuilder = NO;
 @implementation NSButtonImageSource
 - (id) initWithCoder: (NSCoder *)coder
 {
-  if([coder allowsKeyedCoding])
+  if ([coder allowsKeyedCoding])
     {
       ASSIGN(imageName, [coder decodeObjectForKey: @"NSImageName"]);
     }
@@ -1434,7 +1434,7 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
-  if([coder allowsKeyedCoding])
+  if ([coder allowsKeyedCoding])
     {
       [coder encodeObject: imageName forKey: @"NSImageName"];
     }
@@ -1448,7 +1448,7 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (id) initWithImageNamed: (NSString *)name
 {
-  if((self = [super init]) != nil)
+  if ((self = [super init]) != nil)
     {
       ASSIGN(imageName,name);
     }
@@ -1470,7 +1470,7 @@ static BOOL _isInInterfaceBuilder = NO;
 @implementation NSIBHelpConnector
 - (id) init
 {
-  if((self = [super init]) != nil)
+  if ((self = [super init]) != nil)
     {
       _file = nil;
       _marker = @"NSToolTipHelpKey";
@@ -1480,15 +1480,15 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (id) initWithCoder: (NSCoder *)coder
 {
-  if((self = [super initWithCoder: coder]) != nil)
+  if ((self = [super initWithCoder: coder]) != nil)
     {
-      if([coder allowsKeyedCoding])
+      if ([coder allowsKeyedCoding])
 	{
-	  if([coder containsValueForKey: @"NSFile"])
+	  if ([coder containsValueForKey: @"NSFile"])
 	    {
 	      _file = RETAIN([coder decodeObjectForKey: @"NSFile"]);
 	    }
-	  if([coder containsValueForKey: @"NSMarker"])
+	  if ([coder containsValueForKey: @"NSMarker"])
 	    {
 	      _marker = RETAIN([coder decodeObjectForKey: @"NSMarker"]);
 	    }
@@ -1505,13 +1505,13 @@ static BOOL _isInInterfaceBuilder = NO;
 - (void) encodeWithCoder: (NSCoder *)coder
 {
   [super encodeWithCoder: coder];
-  if([coder allowsKeyedCoding])
+  if ([coder allowsKeyedCoding])
     {
-      if(_file != nil)
+      if (_file != nil)
 	{
 	  [coder encodeObject: _file forKey: @"NSFile"];
 	}
-      if(_marker != nil)
+      if (_marker != nil)
 	{
 	  [coder encodeObject: _file forKey: @"NSMarker"];
 	}      
@@ -1556,7 +1556,7 @@ static BOOL _isInInterfaceBuilder = NO;
 - (id) initWithCoder: (NSCoder *)coder
 {
   NSDecimalNumber *dn = nil;
-  if([coder allowsKeyedCoding])
+  if ([coder allowsKeyedCoding])
     {
       unsigned int len = 0;
       short exponent = (short)[coder decodeIntForKey: @"NS.exponent"];

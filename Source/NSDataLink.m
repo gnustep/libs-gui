@@ -270,7 +270,7 @@
 {
   BOOL flag = NO;
       
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       [aCoder encodeInt: linkNumber forKey: @"GSLinkNumber"];
       [aCoder encodeInt: disposition forKey: @"GSUpdateMode"];
@@ -337,7 +337,7 @@
 
 - (id) initWithCoder: (NSCoder*)aCoder
 {
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       id obj;
 

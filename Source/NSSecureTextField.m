@@ -135,7 +135,7 @@
 - (id) initWithCoder: (NSCoder *)decoder
 {
   self = [super initWithCoder: decoder];
-  if([decoder allowsKeyedCoding])
+  if ([decoder allowsKeyedCoding])
     {
       // do nothing for now...
     }

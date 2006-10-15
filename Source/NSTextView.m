@@ -149,7 +149,7 @@ Interface for a bunch of internal methods that need to be cleaned up.
 
 - (id) initWithTextView: (NSTextView *)tv
 {
-  if((self = [super init]) != nil)
+  if ((self = [super init]) != nil)
     {
       flags = (([tv isEditable]?0x01:0) |
 	       ([tv isSelectable]?0x02:0) |
@@ -198,7 +198,7 @@ Interface for a bunch of internal methods that need to be cleaned up.
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
-  if([coder allowsKeyedCoding])
+  if ([coder allowsKeyedCoding])
     {	
       [coder encodeObject: backgroundColor forKey: @"NSBackgroundColor"];
       [coder encodeObject: paragraphStyle forKey: @"NSDefaultParagraphStyle"];
@@ -696,7 +696,7 @@ that makes decoding and encoding compatible with the old code.
 
   [super encodeWithCoder: aCoder];
 
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       NSTextViewSharedData *tvsd = [[NSTextViewSharedData alloc] initWithTextView: self];
 
