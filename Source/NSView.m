@@ -3826,7 +3826,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
   [ctxt resetUsedFonts];
   /* Make sure we set the visible rect so everything is printed. */
-  [self _rebuildCoordinates];
+  [self _invalidateCoordinates];
   _visibleRect = _bounds;
 }
 

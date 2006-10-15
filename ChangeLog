@@ -1,3 +1,21 @@
+2006-10-15 11:23-EDT Mark Tracy <tracy454 at concentric dot net>
+	
+	* Source/NSPageLayout.m: NSPageLayout was setting a default page 
+	scale of 100 cause: pageScale factor is displayed as percentage fix: 
+	pageScale*100 sent to textfield and textfield/100 stored in pageScale. 
+	NSPageLayout had different limits on scaling than NSPrintPanel fix: 
+	adjust formatter max.
+	* Source/NSPrintOperation.m: NSPrintOperation would loop randomly 
+	if a custom view replies YES to -knowsPageRange cause: 
+	-_printPaginateWithInfo did not initialize info->pageScale, 
+	info->xpages, info->ypages fix: in -_printPaginateWithInfo 
+	set default pageScale=1.0 outside conditional fix: in -_print 
+	set xpages and ypages from viewPageRange as reported by custom view.
+	* Source/NSView.m: -beginDocument was misplacing subviews when 
+	generating PostScript for printing fix: force regeneration of 
+	coordinates.
+	Patch Applied by Gregory Casamento
+	
 2006-10-15 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSBrowser.m:

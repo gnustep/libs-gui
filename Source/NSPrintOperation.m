@@ -734,11 +734,11 @@ scaleRect(NSRect rect, double scale)
 
    /* Scale bounds by the user specified scaling */
   info->scaledBounds = scaleRect(_rect, info->printScale);
+  info->pageScale = 1; // default
 
   if (knowsRange == NO)
     {
       /* Now calculate page fitting to get page scale */
-      info->pageScale = 1;
       if ([_printInfo horizontalPagination] == NSFitPagination)
 	info->pageScale  = info->paperBounds.size.width 
 	  / NSWidth(info->scaledBounds);
@@ -879,6 +879,12 @@ scaleRect(NSRect rect, double scale)
     {
       viewPageRange = NSMakeRange(1, (info.xpages * info.ypages));
     }
+  else
+    {
+      info.xpages = 1;
+      info.ypages = viewPageRange.length;
+    }
+
   [dict setObject: NSNUMBER(NSMaxRange(viewPageRange))
 	   forKey: @"NSPrintTotalPages"];
   if (allPages == YES)
