@@ -66,11 +66,11 @@ findMisspelledWordInString:(NSString *)stringToCheck
   NSRange r = NSMakeRange(0,0);
 
 #ifdef HAVE_ASPELL_H
-  if(countOnly)
+  if (countOnly)
     {
       NSScanner *inputScanner = [NSScanner scannerWithString: stringToCheck];
       [inputScanner setCharactersToBeSkipped: [NSCharacterSet whitespaceAndNewlineCharacterSet]];      
-      while(![inputScanner isAtEnd])
+      while (![inputScanner isAtEnd])
         {
           [inputScanner scanUpToCharactersFromSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]
 			intoString: NULL];
@@ -112,7 +112,7 @@ findMisspelledWordInString:(NSString *)stringToCheck
     en = aspell_word_list_elements(list);
 
     // add them to the array.
-    while(!aspell_string_enumeration_at_end(en))
+    while (!aspell_string_enumeration_at_end(en))
       {
 	const char *string = aspell_string_enumeration_next(en);
 	NSString *word = [NSString stringWithUTF8String: string];
@@ -158,7 +158,7 @@ findMisspelledWordInString:(NSString *)stringToCheck
 - init
 {
   self = [super init];
-  if(self != nil)
+  if (self != nil)
     {
 #ifdef HAVE_ASPELL_H
       // initialization...
