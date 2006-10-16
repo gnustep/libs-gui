@@ -85,8 +85,10 @@ typedef enum {
   NSImage	*images[9];	/** The tile images */
   NSRect	rects[9];	/** The rectangles to use when drawing */
 }
+- (id) copyWithZone: (NSZone*)zone;
 - (id) initWithImage: (NSImage*)image;
 - (id) initWithImage: (NSImage*)image horizontal: (float)x vertical: (float)y;
+- (void) scaleUp: (int)multiple;
 @end
 
 
@@ -1080,20 +1082,54 @@ withRepeatedImage: (NSImage*)image
       NSRect	grid;
       float	x;
       float	y;
+      float	space = 3.0;
+      float	scale;
 
       if (tiles->images[TileTM] == nil)
         {
 	  grid.size.width = (tiles->rects[TileTL].size.width
 	    + tiles->rects[TileTR].size.width
-	    + 9);
+	    + space * 3.0);
 	}
       else
         {
 	  grid.size.width = (tiles->rects[TileTL].size.width
 	    + tiles->rects[TileTM].size.width
 	    + tiles->rects[TileTR].size.width
-	    + 12);
+	    + space * 4.0);
 	}
+      scale = floor(rect.size.width / grid.size.width);
+
+      if (tiles->images[TileCL] == nil)
+        {
+	  grid.size.height = (tiles->rects[TileTL].size.height
+	    + tiles->rects[TileBL].size.height
+	    + space * 3.0);
+	}
+      else
+        {
+	  grid.size.height = (tiles->rects[TileTL].size.height
+	    + tiles->rects[TileCL].size.height
+	    + tiles->rects[TileBL].size.height
+	    + space * 4.0);
+	}
+      if ((rect.size.height / grid.size.height) < scale)
+        {
+	  scale = floor(rect.size.height / grid.size.height);
+	}
+
+      if (scale > 1)
+        {
+	  /* We can scale up by an integer number of pixels and still
+	   * fit in the rectangle.
+	   */
+	  grid.size.width *= scale;
+	  grid.size.height *= scale;
+	  space *= scale;
+	  tiles = AUTORELEASE([tiles copy]);
+	  [tiles scaleUp: (int)scale];
+	}
+
       grid.origin.x = rect.origin.x + (rect.size.width - grid.size.width) / 2;
       x = grid.origin.x;
       if (flipped)
@@ -1113,22 +1149,22 @@ withRepeatedImage: (NSImage*)image
        */
       if (flipped)
         {
-          y -= (tiles->rects[TileBL].size.height + 3);
+          y -= (tiles->rects[TileBL].size.height + space);
 	}
       else
         {
-	  y += 3;
+	  y += space;
 	}
       [tiles->images[TileBL] compositeToPoint: NSMakePoint(x, y)
         fromRect: tiles->rects[TileBL]
 	operation: NSCompositeSourceOver];
-      x += tiles->rects[TileBL].size.width + 3;
+      x += tiles->rects[TileBL].size.width + space;
       if (tiles->images[TileBM] != nil)
         {
 	  [tiles->images[TileBM] compositeToPoint: NSMakePoint(x, y)
             fromRect: tiles->rects[TileBM]
 	    operation: NSCompositeSourceOver];
-	  x += tiles->rects[TileBM].size.width + 3;
+	  x += tiles->rects[TileBM].size.width + space;
 	}
       [tiles->images[TileBR] compositeToPoint: NSMakePoint(x, y)
 	fromRect: tiles->rects[TileBR]
@@ -1145,22 +1181,22 @@ withRepeatedImage: (NSImage*)image
 	  x = grid.origin.x;
 	  if (flipped)
 	    {
-	      y -= (tiles->rects[TileCL].size.height + 3);
+	      y -= (tiles->rects[TileCL].size.height + space);
 	    }
 	  else
 	    {
-	      y += 3;
+	      y += space;
 	    }
 	  [tiles->images[TileCL] compositeToPoint: NSMakePoint(x, y)
 	    fromRect: tiles->rects[TileCL]
 	    operation: NSCompositeSourceOver];
-	  x += tiles->rects[TileCL].size.width + 3;
+	  x += tiles->rects[TileCL].size.width + space;
 	  if (tiles->images[TileCM] != nil)
 	    {
 	      [tiles->images[TileCM] compositeToPoint: NSMakePoint(x, y)
 		fromRect: tiles->rects[TileCM]
 		operation: NSCompositeSourceOver];
-	      x += tiles->rects[TileCM].size.width + 3;
+	      x += tiles->rects[TileCM].size.width + space;
 	    }
 	  [tiles->images[TileCR] compositeToPoint: NSMakePoint(x, y)
 	    fromRect: tiles->rects[TileCR]
@@ -1176,22 +1212,22 @@ withRepeatedImage: (NSImage*)image
       x = grid.origin.x;
       if (flipped)
 	{
-	  y -= (tiles->rects[TileTL].size.height + 3);
+	  y -= (tiles->rects[TileTL].size.height + space);
 	}
       else
 	{
-	  y += 3;
+	  y += space;
 	}
       [tiles->images[TileTL] compositeToPoint: NSMakePoint(x, y)
 	fromRect: tiles->rects[TileTL]
 	operation: NSCompositeSourceOver];
-      x += tiles->rects[TileTL].size.width + 3;
+      x += tiles->rects[TileTL].size.width + space;
       if (tiles->images[TileTM] != nil)
 	{
 	  [tiles->images[TileTM] compositeToPoint: NSMakePoint(x, y)
 	    fromRect: tiles->rects[TileTM]
 	    operation: NSCompositeSourceOver];
-	  x += tiles->rects[TileTM].size.width + 3;
+	  x += tiles->rects[TileTM].size.width + space;
 	}
       [tiles->images[TileTR] compositeToPoint: NSMakePoint(x, y)
 	fromRect: tiles->rects[TileTR]
@@ -1365,11 +1401,14 @@ withRepeatedImage: (NSImage*)image
 	}
       else if (style == GSThemeFillStyleScale)
 	{
-	  [tiles->images[TileCM] setScalesWhenResized: YES];
-	  [tiles->images[TileCM] setSize: inFill.size];
-	  [tiles->images[TileCM] compositeToPoint: inFill.origin
-					 fromRect: tiles->rects[TileCM]
-					operation: NSCompositeSourceOver];
+	  NSImage	*im = [tiles->images[TileCM] copy];
+
+	  [im setScalesWhenResized: YES];
+	  [im setSize: inFill.size];
+	  [im compositeToPoint: inFill.origin
+		      fromRect: tiles->rects[TileCM]
+		     operation: NSCompositeSourceOver];
+	  RELEASE(im);
 	}
     }
 }
@@ -1420,6 +1459,35 @@ withRepeatedImage: (NSImage*)image
 
 
 @implementation	GSDrawTiles
+- (id) copyWithZone: (NSZone*)zone
+{
+  GSDrawTiles	*c = (GSDrawTiles*)NSCopyObject(self, 0, zone);
+  unsigned	i;
+
+  c->images[0] = [images[0] copy];
+  for (i = 1; i < 9; i++)
+    {
+      unsigned	j;
+
+      for (j = 0; j < i; j++)
+        {
+	  if (images[i] == images[j])
+	    {
+	      break;
+	    }
+	}
+      if (j < i)
+        {
+	  c->images[i] = RETAIN(c->images[j]);
+	}
+      else
+        {
+	  c->images[i] = [images[i] copy];
+	}
+    }
+  return c;
+}
+
 - (void) dealloc
 {
   unsigned	i;
@@ -1478,6 +1546,49 @@ withRepeatedImage: (NSImage*)image
     }  
 
   return self;
+}
+
+- (void) scaleUp: (int)multiple
+{
+  if (multiple > 1)
+    {
+      unsigned	i;
+      NSSize	s;
+
+      [images[0] setScalesWhenResized: YES];
+      s = [images[0] size];
+      s.width *= multiple;
+      s.height *= multiple;
+      [images[0] setSize: s];
+      rects[0].size.height *= multiple;
+      rects[0].size.width *= multiple;
+      rects[0].origin.x *= multiple;
+      rects[0].origin.y *= multiple;
+      for (i = 1; i < 9; i++)
+        {
+	  unsigned	j;
+
+	  for (j = 0; j < i; j++)
+	    {
+	      if (images[i] == images[j])
+		{
+		  break;
+		}
+	    }
+	  if (j == i)
+	    {
+	      [images[i] setScalesWhenResized: YES];
+	      s = [images[i] size];
+	      s.width *= multiple;
+	      s.height *= multiple;
+	      [images[i] setSize: s];
+	    }
+	  rects[i].size.height *= multiple;
+	  rects[i].size.width *= multiple;
+	  rects[i].origin.x *= multiple;
+	  rects[i].origin.y *= multiple;
+	}
+    }
 }
 @end
 
