@@ -966,7 +966,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       if ([GSCurrentContext() isDrawingToScreen] == NO)
 	{
 	  /* Reset alpha for image drawing. */
-	  [[NSColor whiteColor] set];
+	  [[NSColor colorWithCalibratedWhite: 1.0 alpha: 1.0] set];
 	}
     }
 

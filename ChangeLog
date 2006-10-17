@@ -1,3 +1,10 @@
+2006-10-16 20:53-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSFont.m: Apply slightly modified version of patch
+	from Jeff Teunissen deek@d2dc.net to setNSFont().  Setting
+	a font should set its size.
+	* Source/NSImage.m: Set the alpha on the background.
+
 2006-10-15 11:23-EDT Mark Tracy <tracy454 at concentric dot net>
 	
 	* Source/NSPageLayout.m: NSPageLayout was setting a default page 

@@ -33,6 +33,7 @@
 #include <Foundation/NSMapTable.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSDebug.h>
+#include <Foundation/NSValue.h>
 
 #include "AppKit/NSGraphicsContext.h"
 #include "AppKit/NSFont.h"
@@ -408,8 +409,11 @@ static NSFont *getNSFont(float fontSize, int role)
 static void setNSFont(NSString *key, NSFont *font)
 {
   int i;
-  [defaults setObject: [font fontName] forKey: key];
 
+  [defaults setObject: [font fontName] forKey: key];
+  [defaults setObject: [NSNumber numberWithFloat: [font pointSize]]
+	    forKey: [NSString stringWithFormat: @"%@Size",key]];
+  
   for (i = 1; i < RoleMax; i++)
     {
       DESTROY(font_roles[i].cachedFont);
