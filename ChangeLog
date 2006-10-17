@@ -3,7 +3,7 @@
 	* Source/NSFont.m: Apply slightly modified version of patch
 	from Jeff Teunissen deek@d2dc.net to setNSFont().  Setting
 	a font should set its size.
-	* Source/NSImage.m: Set the alpha on the background.
+	* Source/NSImage.m: Set the alpha on the background when printing.
 
 2006-10-15 11:23-EDT Mark Tracy <tracy454 at concentric dot net>
 	
