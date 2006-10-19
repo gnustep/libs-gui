@@ -1050,10 +1050,10 @@ withRepeatedImage: (NSImage*)image
   DPSgrestore (ctxt);	
 }
 
-- (NSRwect) fillRect: (NSRect)rect
-	   withTiles: (GSDrawTiles*)tiles
-	  background: (NSColor*)color
-	   fillStyle: (GSThemeFillStyle)style
+- (NSRect) fillRect: (NSRect)rect
+	  withTiles: (GSDrawTiles*)tiles
+	 background: (NSColor*)color
+	  fillStyle: (GSThemeFillStyle)style
 {
   NSGraphicsContext	*ctxt = GSCurrentContext();
   NSSize		tls = tiles->rects[TileTL].size;
