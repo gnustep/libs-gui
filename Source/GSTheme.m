@@ -1050,10 +1050,10 @@ withRepeatedImage: (NSImage*)image
   DPSgrestore (ctxt);	
 }
 
-- (void) fillRect: (NSRect)rect
-	withTiles: (GSDrawTiles*)tiles
-       background: (NSColor*)color
-	fillStyle: (GSThemeFillStyle)style
+- (NSRwect) fillRect: (NSRect)rect
+	   withTiles: (GSDrawTiles*)tiles
+	  background: (NSColor*)color
+	   fillStyle: (GSThemeFillStyle)style
 {
   NSGraphicsContext	*ctxt = GSCurrentContext();
   NSSize		tls = tiles->rects[TileTL].size;
@@ -1085,6 +1085,7 @@ withRepeatedImage: (NSImage*)image
       float	space = 3.0;
       float	scale;
 
+      inFill = NSZeroRect;
       if (tiles->images[TileTM] == nil)
         {
 	  grid.size.width = (tiles->rects[TileTL].size.width
@@ -1289,16 +1290,22 @@ withRepeatedImage: (NSImage*)image
 	fromRect: tiles->rects[TileBR]
 	operation: NSCompositeSourceOver];
 
-      inFill = NSMakeRect (rect.origin.x +cls.width,
+      inFill = NSMakeRect (rect.origin.x + cls.width,
 	rect.origin.y + bms.height,
 	rect.size.width - cls.width - crs.width,
 	rect.size.height - bms.height - tms.height);
       if (style == GSThemeFillStyleCenter)
 	{
-	  [self fillRect: inFill
-	    withRepeatedImage: tiles->images[TileCM]
-	    fromRect: tiles->rects[TileCM]
-	    center: NO];
+	  NSRect	r = tiles->rects[TileCM];
+
+	  r.origin.x
+	    = inFill.origin.x + (inFill.size.width - r.size.width) / 2;
+	  r.origin.y
+	    = inFill.origin.y + (inFill.size.height - r.size.height) / 2;
+	  r.origin.y += r.size.height;	// Allow for flip of image rectangle
+	  [tiles->images[TileCM] compositeToPoint: r.origin
+					 fromRect: tiles->rects[TileCM]
+					operation: NSCompositeSourceOver];
 	}
       else if (style == GSThemeFillStyleRepeat)
 	{
@@ -1309,11 +1316,27 @@ withRepeatedImage: (NSImage*)image
 	}
       else if (style == GSThemeFillStyleScale)
 	{
-	  [tiles->images[TileCM] setScalesWhenResized: YES];
-	  [tiles->images[TileCM] setSize: inFill.size];
-	  [tiles->images[TileCM] compositeToPoint: inFill.origin
-					 fromRect: tiles->rects[TileCM]
-					operation: NSCompositeSourceOver];
+	  NSImage	*im = [tiles->images[TileCM] copy];
+	  NSRect	r =  tiles->rects[TileCM];
+	  NSSize	s = [tiles->images[TileCM] size];
+	  NSPoint	p = inFill.origin;
+	  float		sx = inFill.size.width / r.size.width;
+	  float		sy = inFill.size.height / r.size.height;
+
+	  r.size.width = inFill.size.width;
+	  r.size.height = inFill.size.height;
+	  r.origin.x *= sx;
+	  r.origin.y *= sy;
+	  s.width *= sx;
+	  s.height *= sy;
+	  p.y += inFill.size.height;	// In flipped view
+	  
+	  [im setScalesWhenResized: YES];
+	  [im setSize: s];
+	  [im compositeToPoint: p
+		      fromRect: r
+		     operation: NSCompositeSourceOver];
+	  RELEASE(im);
 	}
     }
   else
@@ -1387,10 +1410,15 @@ withRepeatedImage: (NSImage*)image
 
       if (style == GSThemeFillStyleCenter)
 	{
-	  [self fillRect: inFill
-	    withRepeatedImage: tiles->images[TileCM]
-	    fromRect: tiles->rects[TileCM]
-	    center: NO];
+	  NSRect	r = tiles->rects[TileCM];
+
+	  r.origin.x
+	    = inFill.origin.x + (inFill.size.width - r.size.width) / 2;
+	  r.origin.y
+	    = inFill.origin.y + (inFill.size.height - r.size.height) / 2;
+	  [tiles->images[TileCM] compositeToPoint: r.origin
+					 fromRect: tiles->rects[TileCM]
+					operation: NSCompositeSourceOver];
 	}
       else if (style == GSThemeFillStyleRepeat)
 	{
@@ -1402,15 +1430,29 @@ withRepeatedImage: (NSImage*)image
       else if (style == GSThemeFillStyleScale)
 	{
 	  NSImage	*im = [tiles->images[TileCM] copy];
+	  NSRect	r =  tiles->rects[TileCM];
+	  NSSize	s = [tiles->images[TileCM] size];
+	  NSPoint	p = inFill.origin;
+	  float		sx = inFill.size.width / r.size.width;
+	  float		sy = inFill.size.height / r.size.height;
+
+	  r.size.width = inFill.size.width;
+	  r.size.height = inFill.size.height;
+	  r.origin.x *= sx;
+	  r.origin.y *= sy;
+	  s.width *= sx;
+	  s.height *= sy;
+	  
 
 	  [im setScalesWhenResized: YES];
-	  [im setSize: inFill.size];
-	  [im compositeToPoint: inFill.origin
-		      fromRect: tiles->rects[TileCM]
+	  [im setSize: s];
+	  [im compositeToPoint: p
+		      fromRect: r
 		     operation: NSCompositeSourceOver];
 	  RELEASE(im);
 	}
     }
+  return inFill;
 }
 
 - (void) fillVerticalRect: (NSRect)rect

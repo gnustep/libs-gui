@@ -430,7 +430,12 @@ APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
  */
 @interface	GSTheme (LowLevelDrawing)
 /**
- * Method to tile the supplied image to fill the horizontal rectangle.
+ * Method to tile the supplied image to fill the horizontal rectangle.<br />
+ * The rect argument is the rectangle to be filled.<br />
+ * The image argument is the data to fill with.<br />
+ * The source argument is the rectangle within the image which is used.<br />
+ * The flipped argument specifies what sort of coordinate system is in
+ * use in the view where we are drawing.
  */
 - (void) fillHorizontalRect: (NSRect)rect
 		  withImage: (NSImage*)image
@@ -449,20 +454,29 @@ withRepeatedImage: (NSImage*)image
 	   center: (BOOL)center;
 
 /**
- * Method to tile a rectangle given an array of nine tile images.<br />
+ * Method to tile a rectangle given a group of up to nine tile images.<br />
+ * The GSDrawTiles object encapsulates the tile images and information
+ * about what parts of each image are used for tiling.<br />
  * This draws the left, right, top and bottom borders by tiling the
- * images at TileCL, TileCR, TileTM and TileBM respectively.  It then
- * draws the four corner images and finally deals with the remaining
- * space in the middle according to the specified style.<br />
- * The background color specified is used where style is FillStyleNone.
+ * images at left, right, top and bottom.  It then draws the four corner
+ * images and finally deals with the remaining space in the middle according
+ * to the specified style.<br />
+ * The background color specified is used to fill the center where
+ * style is FillStyleNone.<br />
+ * The return value is the central rectangle (inside the border images).
  */
-- (void) fillRect: (NSRect)rect
-	withTiles: (GSDrawTiles*)tiles
-       background: (NSColor*)color
-	fillStyle: (GSThemeFillStyle)style;
+- (NSRect) fillRect: (NSRect)rect
+	  withTiles: (GSDrawTiles*)tiles
+	 background: (NSColor*)color
+	  fillStyle: (GSThemeFillStyle)style;
 
 /**
- * Method to tile the supplied image to fill the vertical rectangle.
+ * Method to tile the supplied image to fill the vertical rectangle.<br />
+ * The rect argument is the rectangle to be filled.<br />
+ * The image argument is the data to fill with.<br />
+ * The source argument is the rectangle within the image which is used.<br />
+ * The flipped argument specifies what sort of coordinate system is in
+ * use in the view where we are drawing.
  */
 - (void) fillVerticalRect: (NSRect)rect
 		withImage: (NSImage*)image

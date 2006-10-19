@@ -1,3 +1,10 @@
+2006-10-19 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	* Source/GSTheme.m:
+	Have tile filling method return rect of central tile area.
+	* Source/NSView.m: Fixup indentation problems.
+
 2006-10-19 01:45-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSView.m: Applied patch from Banlu Kemiyatorn.  Corrects
