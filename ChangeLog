@@ -1,3 +1,10 @@
+2006-10-19 21:17-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSMenuItemCell.m: Correct menu highlighting issue
+	found by applying changes suggested by Jeff Teunissen.   This
+	change causes the menu to use the correct text color when
+	highlighted.
+
 2006-10-19 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h:
