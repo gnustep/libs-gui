@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "/usr/GNUstep/System/Libraries/Resources/DTDs/gsdoc-0_6_6.dtd" >
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 1.0.3//EN" "/usr/GNUstep/System/Libraries/Resources/DTDs/gsdoc-1_0_3.dtd" >
 <gsdoc base="KeyboardSetup">
   <head>
     <title>User Keyboard Setup for GNUstep Libraries</title>

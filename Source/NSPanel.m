@@ -163,7 +163,7 @@
   BOOL	flag;
 
   [super encodeWithCoder: aCoder];
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       // Nothing to do here, for keyed coding this is handled by NSWindowTemplate.
       // Calling the above method should throw an NSInvalidArgumentException.
@@ -184,7 +184,7 @@
   BOOL	flag;
 
   [super initWithCoder: aDecoder];
-  if([aDecoder allowsKeyedCoding])
+  if ([aDecoder allowsKeyedCoding])
     {
       // Nothing to do here, for keyed coding this is handled by NSWindowTemplate.
       // Calling the above method should throw an NSInvalidArgumentException.

@@ -80,8 +80,15 @@ typedef struct _GSWindowTemplateFlags
 
 // help connector class...
 @interface NSIBHelpConnector : NSNibConnector
+{
+  id _marker;
+  id _file;
+}
+- (void) setFile: (id)file;
+- (id) file;
+- (void) setMarker: (id)file;
+- (id) marker;
 @end
-
 /**
  * Button image source class.
  */

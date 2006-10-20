@@ -959,7 +959,7 @@ static NSImage *_pbc_image[2];
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       [aCoder encodeBool: [self altersStateOfSelectedItem] forKey: @"NSAltersState"];
       [aCoder encodeBool: [self usesItemFromMenu] forKey: @"NSUsesItemFromMenu"];
@@ -967,7 +967,7 @@ static NSImage *_pbc_image[2];
       [aCoder encodeInt: [self preferredEdge] forKey: @"NSPreferredEdge"];
       
       // encode the menu, if present.
-      if(_menu != nil)
+      if (_menu != nil)
 	{
 	  [aCoder encodeObject: _menu forKey: @"NSMenu"];
 	}

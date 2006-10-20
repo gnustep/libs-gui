@@ -206,7 +206,7 @@
       //       objects and is going to be deprecated in the future.  There just so
       //       happens to be a one to one correspondence here.
       //
-      if([coder allowsKeyedCoding])
+      if ([coder allowsKeyedCoding])
 	{
 	  // TODO_NIB: Need to verify this key...
 	  ASSIGN(_nibData, [coder decodeObjectForKey: @"NSData"]);
@@ -225,7 +225,7 @@
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
-  if([coder allowsKeyedCoding])
+  if ([coder allowsKeyedCoding])
     {
       // TODO_NIB: Need to verify this key...
       [coder encodeObject: _nibData 

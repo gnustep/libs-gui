@@ -3292,10 +3292,10 @@ image.</p><p>See Also: -applicationIconImage</p>
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       /*
-      if(_delegate != nil)
+      if (_delegate != nil)
         {
 	  [aCoder encodeObject: _delegate forKey: @"NSDelegate"];
 	}
@@ -3316,10 +3316,10 @@ image.</p><p>See Also: -applicationIconImage</p>
   id	obj;
 
   [super initWithCoder: aDecoder];
-  if([aDecoder allowsKeyedCoding])
+  if ([aDecoder allowsKeyedCoding])
     {
       /*
-      if([aDecoder containsValueForKey: @"NSDelegate"])
+      if ([aDecoder containsValueForKey: @"NSDelegate"])
 	{
 	  obj = [aDecoder decodeObjectForKey: @"NSDelegate"];
 	  [self setDelegate: obj];

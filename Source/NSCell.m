@@ -2179,7 +2179,7 @@ static NSColor	*shadowCol;
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       unsigned long cFlags = 0;
       unsigned int cFlags2 = 0;
@@ -2216,7 +2216,7 @@ static NSColor	*shadowCol;
       // font and formatter.
       [aCoder encodeObject: [self font] forKey: @"NSSupport"];
 
-      if([self formatter])
+      if ([self formatter])
 	{
 	  [aCoder encodeObject: [self formatter] forKey: @"NSFormatter"];
 	}
@@ -2292,11 +2292,11 @@ static NSColor	*shadowCol;
       id contents = [aDecoder decodeObjectForKey: @"NSContents"];
 
       // initialize based on content...
-      if([contents isKindOfClass: [NSString class]])
+      if ([contents isKindOfClass: [NSString class]])
 	{
 	  self = [self initTextCell: contents];
 	}
-      else if([contents isKindOfClass: [NSImage class]])
+      else if ([contents isKindOfClass: [NSImage class]])
 	{
 	  self = [self initImageCell: contents];
 	}

@@ -4343,7 +4343,7 @@ resetCursorRectsForView(NSView *theView)
 
 
   // If were're being initialized from a keyed coder...
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       // The docs indicate that there should be an error when directly encoding with
       // a keyed coding archiver.  We should only encode NSWindow and subclasses
@@ -4402,7 +4402,7 @@ resetCursorRectsForView(NSView *theView)
 
 
   // If were're being initialized from a keyed coder...
-  if([aDecoder allowsKeyedCoding])
+  if ([aDecoder allowsKeyedCoding])
     {
       // The docs indicate that there should be an error when directly encoding with
       // a keyed coding archiver.  We should only encode NSWindow and subclasses

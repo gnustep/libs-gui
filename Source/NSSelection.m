@@ -211,7 +211,7 @@ typedef enum
 //
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       [aCoder encodeBool: _isWellKnownSelection
 	      forKey: @"GSIsWellKnownSelection"];
@@ -234,7 +234,7 @@ typedef enum
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   [super init];
-  if([aDecoder allowsKeyedCoding])
+  if ([aDecoder allowsKeyedCoding])
     {
       _isWellKnownSelection = [aDecoder decodeBoolForKey: @"GSIsWellKnownSelection"];
       _selectionType = [aDecoder decodeIntForKey: @"GSSelectionType"];

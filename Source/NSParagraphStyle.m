@@ -314,7 +314,7 @@ static NSParagraphStyle	*defaultStyle = nil;
 
 - (id) initWithCoder: (NSCoder*)aCoder
 {
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       // TODO_NIB: Determine keys for NSParagraphStyle, if there are any.
     }
@@ -371,7 +371,7 @@ static NSParagraphStyle	*defaultStyle = nil;
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       // TODO_NIB: Determine keys for NSParagraphStyle, if there are any.
     }

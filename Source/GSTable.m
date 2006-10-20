@@ -722,7 +722,7 @@
   int i;
   
   [super encodeWithCoder: aCoder];
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       [aCoder encodeInt: _numberOfRows forKey: @"GSNumberOfRows"];
       [aCoder encodeInt: _numberOfColumns forKey: @"GSNumberOfColumns"];
@@ -792,7 +792,7 @@
   [super initWithCoder: aDecoder];
   [super setAutoresizesSubviews: NO];
 
-  if([aDecoder allowsKeyedCoding])
+  if ([aDecoder allowsKeyedCoding])
     {
       _numberOfRows = [aDecoder decodeIntForKey: @"GSNumberOfRows"];
       _numberOfColumns = [aDecoder decodeIntForKey: @"GSNumberOfColumns"];

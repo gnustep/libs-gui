@@ -451,7 +451,7 @@ enum {
                   [NSDecimalNumber decimalNumberWithString: @"1.0"]];
 		     
     [scaleFormatter setMaximum: 
-                  [NSDecimalNumber decimalNumberWithString: @"100000.0"]];
+                  [NSDecimalNumber decimalNumberWithString: @"1000.0"]];
   
     [scaleFormatter setHasThousandSeparators: NO];
     [scaleTextField setFormatter: scaleFormatter];  
@@ -836,6 +836,10 @@ enum {
       NSLog(@"NSPrintScalingFactor was nil in NSPrintInfo");
       scaleNumber = [NSNumber numberWithFloat: 100.0];
     }
+  else
+    {
+      scaleNumber = [NSNumber numberWithDouble: (100.0*[scaleNumber doubleValue])];
+    }
 
   [scaleTextField setObjectValue: scaleNumber];
   
@@ -909,8 +913,8 @@ enum {
       [_printInfo setOrientation: NSLandscapeOrientation];
     }
 
-  //Write scaling
-  scaleNumber = [NSNumber numberWithFloat: [scaleTextField floatValue]];
+  //Write scaling and don't forget to convert from percent
+  scaleNumber = [NSNumber numberWithDouble: [scaleTextField doubleValue]/100.0];
   [[_printInfo dictionary] setObject: scaleNumber
                               forKey: NSPrintScalingFactor];
 

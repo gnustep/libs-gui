@@ -67,6 +67,14 @@
   return rectangle;
 }
 
+- (void) reset: (NSRect)aRect inside: (BOOL)flag
+{
+  rectangle = aRect;
+  flags.inside = flag;
+  flags.isValid = YES;
+  flags.checked = NO;
+}
+
 - (NSTrackingRectTag) tag
 {
   return tag;
@@ -106,7 +114,7 @@
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  if([aCoder allowsKeyedCoding] == NO)
+  if ([aCoder allowsKeyedCoding] == NO)
     {
       BOOL	inside = flags.inside;
       
@@ -119,7 +127,7 @@
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  if([aDecoder allowsKeyedCoding] == NO)
+  if ([aDecoder allowsKeyedCoding] == NO)
     {
       BOOL	inside;
       

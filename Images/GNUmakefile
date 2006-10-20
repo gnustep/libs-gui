@@ -123,7 +123,9 @@ common_ClosedHandCursor.tiff \
 common_OpenHandCursor.tiff \
 page_landscape.tiff \
 page_portrait.tiff \
-MagnifyGlass.tiff 
+MagnifyGlass.tiff \
+GSSearch.tiff \
+GSStop.tiff
 
 -include GNUmakefile.preamble
 

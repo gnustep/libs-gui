@@ -5120,19 +5120,19 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       // make sure the corner view is properly encoded...
       [super encodeWithCoder: aCoder];
       
-      if([self dataSource])
+      if ([self dataSource])
 	{
 	  [aCoder encodeObject: [self dataSource] forKey: @"NSDataSource"];
 	}
-      if([self delegate])
+      if ([self delegate])
 	{
 	  [aCoder encodeObject: [self delegate] forKey: @"NSDelegate"];
 	}
-      if([self target])
+      if ([self target])
 	{
 	  [aCoder encodeObject: [self target] forKey: @"NSTarget"];
 	}
-      if([self action])
+      if ([self action])
 	{
 	  [aCoder encodeObject: NSStringFromSelector([self action]) forKey: @"NSAction"];
 	}
@@ -5144,11 +5144,11 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       [aCoder encodeFloat: [self rowHeight] forKey: @"NSRowHeight"];
       [aCoder encodeObject: [self tableColumns] forKey: @"NSTableColumns"];
 
-      if(_headerView)
+      if (_headerView)
 	{
 	  [aCoder encodeObject: _headerView forKey: @"NSHeaderView"];
 	}
-      if(_cornerView)
+      if (_cornerView)
 	{
 	  [aCoder encodeObject: _cornerView forKey: @"NSCornerView"];
 	}

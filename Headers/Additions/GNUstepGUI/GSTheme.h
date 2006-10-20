@@ -147,14 +147,18 @@
 @class GSDrawTiles;
 
 /**
- * This defines how the center middle image in a tile array should be
- * used when drawing a rectangle.
+ * This defines how the values in a tile array should be used when
+ * drawing a rectangle.  Mostly this just effects the center, middle
+ * image of the rectangle.<br />
+ * FillStyleMatrix is provided for the use of theme editors wishing
+ * to display the tile.
  */
 typedef enum {
-  FillStyleNone,	/** The image is not drawn */
-  FillStyleScale,	/** The image is scaled to fit */
-  FillStyleRepeat,	/** The image is tiled from bottom left */
-  FillStyleCenter	/** The image is tiled from the center */
+  GSThemeFillStyleNone,		/** CM image is not drawn */
+  GSThemeFillStyleScale,	/** CM image is scaled to fit */
+  GSThemeFillStyleRepeat,	/** CM image is tiled from bottom left */
+  GSThemeFillStyleCenter,	/** CM image is tiled from the center */
+  GSThemeFillStyleMatrix	/** a matrix of nine separated images */
 } GSThemeFillStyle;
 
 
@@ -349,9 +353,11 @@ APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
  * The GUI library uses this internally to handling tiling of image
  * information to draw user interface elements.  The tile information
  * returned by this method can be passed to the
- * -fillRect:withTiles:background:fillStyle: method.
+ * -fillRect:withTiles:background:fillStyle: method.<br />
+ * The useCache argument controls whether the information is retrieved
+ * from cache or regenerated from information in the theme bundle.
  */
-- (GSDrawTiles*) tilesNamed: (NSString*)aName; 
+- (GSDrawTiles*) tilesNamed: (NSString*)aName cache: (BOOL)useCache; 
 @end
 
 /**
@@ -424,7 +430,12 @@ APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
  */
 @interface	GSTheme (LowLevelDrawing)
 /**
- * Method to tile the supplied image to fill the horizontal rectangle.
+ * Method to tile the supplied image to fill the horizontal rectangle.<br />
+ * The rect argument is the rectangle to be filled.<br />
+ * The image argument is the data to fill with.<br />
+ * The source argument is the rectangle within the image which is used.<br />
+ * The flipped argument specifies what sort of coordinate system is in
+ * use in the view where we are drawing.
  */
 - (void) fillHorizontalRect: (NSRect)rect
 		  withImage: (NSImage*)image
@@ -443,20 +454,29 @@ withRepeatedImage: (NSImage*)image
 	   center: (BOOL)center;
 
 /**
- * Method to tile a rectangle given an array of nine tile images.<br />
+ * Method to tile a rectangle given a group of up to nine tile images.<br />
+ * The GSDrawTiles object encapsulates the tile images and information
+ * about what parts of each image are used for tiling.<br />
  * This draws the left, right, top and bottom borders by tiling the
- * images at TileCL, TileCR, TileTM and TileBM respectively.  It then
- * draws the four corner images and finally deals with the remaining
- * space in the middle according to the specified style.<br />
- * The background color specified is used where style is FillStyleNone.
+ * images at left, right, top and bottom.  It then draws the four corner
+ * images and finally deals with the remaining space in the middle according
+ * to the specified style.<br />
+ * The background color specified is used to fill the center where
+ * style is FillStyleNone.<br />
+ * The return value is the central rectangle (inside the border images).
  */
-- (void) fillRect: (NSRect)rect
-	withTiles: (GSDrawTiles*)tiles
-       background: (NSColor*)color
-	fillStyle: (GSThemeFillStyle)style;
+- (NSRect) fillRect: (NSRect)rect
+	  withTiles: (GSDrawTiles*)tiles
+	 background: (NSColor*)color
+	  fillStyle: (GSThemeFillStyle)style;
 
 /**
- * Method to tile the supplied image to fill the vertical rectangle.
+ * Method to tile the supplied image to fill the vertical rectangle.<br />
+ * The rect argument is the rectangle to be filled.<br />
+ * The image argument is the data to fill with.<br />
+ * The source argument is the rectangle within the image which is used.<br />
+ * The flipped argument specifies what sort of coordinate system is in
+ * use in the view where we are drawing.
  */
 - (void) fillVerticalRect: (NSRect)rect
 		withImage: (NSImage*)image

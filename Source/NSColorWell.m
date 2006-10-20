@@ -235,7 +235,7 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       [aCoder encodeObject: _the_color forKey: @"NSColor"];
       // [aCoder encodeBool: _is_active forKey: @"NSEnabled"];
@@ -258,7 +258,7 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
   self = [super initWithCoder: aDecoder];
   if (self != nil)
     {
-      if([aDecoder allowsKeyedCoding])
+      if ([aDecoder allowsKeyedCoding])
 	{
 	  NSString *action;
 

@@ -134,7 +134,7 @@
 		     withZone: zone];
 
       // report a problem if there is one.
-      if(loaded == NO)
+      if (loaded == NO)
 	{
 	  NSLog(@"Could not load Gorm file: %@",fileName);
 	}

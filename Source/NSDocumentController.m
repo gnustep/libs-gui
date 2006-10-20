@@ -873,7 +873,7 @@ static NSString *NSViewerRole = @"Viewer";
   NSEnumerator *en = [types objectEnumerator];
   NSString *type = nil;
   NSMutableArray *result = [NSMutableArray arrayWithCapacity: 10];
-  while((type = (NSString *)[en nextObject]) != nil)
+  while ((type = (NSString *)[en nextObject]) != nil)
     {
       NSString *name = [self displayNameForType: type];
       [result addObject: name];

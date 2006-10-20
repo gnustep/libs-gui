@@ -302,12 +302,26 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	}
       else
 	{
-	  NSRect	superviewsVisibleRect;
-	  BOOL		wasFlipped = _super_view->_rFlags.flipped_view;
+	  NSRect		superviewsVisibleRect;
+	  BOOL			wasFlipped = _super_view->_rFlags.flipped_view;
 	  NSAffineTransform	*pMatrix = [_super_view _matrixToWindow];
+ 	  NSAffineTransform     *tMatrix = nil; 
 
 	  [_matrixToWindow takeMatrixFromTransform: pMatrix];
-	  (*preImp)(_matrixToWindow, preSel, _frameMatrix);
+ 
+ 	  /* prepend translation */
+	  tMatrix = _matrixToWindow;
+ 	  tMatrix->matrix.tX = NSMinX(_frame) * tMatrix->matrix.m11 +
+	    NSMinY(_frame) * tMatrix->matrix.m21 + tMatrix->matrix.tX;
+ 	  tMatrix->matrix.tY = NSMinX(_frame) * tMatrix->matrix.m12 +
+	    NSMinY(_frame) * tMatrix->matrix.m22 + tMatrix->matrix.tY;
+ 
+ 	  /* prepend rotation */
+ 	  if (_frameMatrix != nil)
+	    {
+	      (*preImp)(_matrixToWindow, preSel, _frameMatrix);
+	    }
+ 
 	  if (_rFlags.flipped_view != wasFlipped)
 	    {
 	      /*
@@ -428,11 +442,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   _bounds.origin = NSZeroPoint;		// Set bounds rectangle
   _bounds.size = _frame.size;
 
-  _frameMatrix = [NSAffineTransform new];	// Map fromsuperview to frame
   _boundsMatrix = [NSAffineTransform new];	// Map fromsuperview to bounds
   _matrixToWindow = [NSAffineTransform new];	// Map to window coordinates
   _matrixFromWindow = [NSAffineTransform new];	// Map from window coordinates
-  [_frameMatrix setFrameOrigin: _frame.origin];
 
   _sub_views = [NSMutableArray new];
   _tracking_rects = [NSMutableArray new];
@@ -559,7 +571,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   RELEASE(_matrixToWindow);
   RELEASE(_matrixFromWindow);
-  RELEASE(_frameMatrix);
+  TEST_RELEASE(_frameMatrix);
   RELEASE(_boundsMatrix);
   TEST_RELEASE(_sub_views);
   if (_rFlags.has_tooltips != 0)
@@ -1050,11 +1062,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   _bounds.size = frameRect.size;
   
 
-  if (changedOrigin)
-    {
-      [_frameMatrix setFrameOrigin: _frame.origin];
-    }
-
   if (changedSize && _is_rotated_or_scaled_from_base)
     {
       [self _updateBoundsMatrix];
@@ -1082,7 +1089,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       (*invalidateImp)(self, invalidateSel);
     }
   _frame.origin = newOrigin;
-  [_frameMatrix setFrameOrigin: _frame.origin];
 
   if (_post_frame_changes)
     {
@@ -1134,10 +1140,17 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) setFrameRotation: (float)angle
 {
+  /* no frame matrix, create one since it is needed for rotation */
+  if (_frameMatrix == nil)
+    {
+      _frameMatrix = [NSAffineTransform new];	// Map fromsuperview to frame
+    }
+
   if (_coordinates_valid)
     {
       (*invalidateImp)(self, invalidateSel);
     }
+
   [_frameMatrix setFrameRotation: angle];
   _is_rotated_from_base = _is_rotated_or_scaled_from_base = YES;
 
@@ -2072,10 +2085,15 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 		  NSRect	subviewFrame = subview->_frame;
 		  BOOL		intersectCalculated = NO;
 
-		  if ([subview->_frameMatrix isRotated])
+		  if (subview->_frameMatrix) // assume rotation
 		    {
-		      [subview->_frameMatrix boundingRectFor: subviewFrame
-						     result: &subviewFrame];
+		      NSRect r;
+
+		      r.origin = NSZeroPoint;
+		      r.size = subviewFrame.size;
+		      [subview->_frameMatrix boundingRectFor: r result: &r];
+		      subviewFrame = NSOffsetRect(r, NSMinX(subviewFrame),
+			NSMinY(subviewFrame));
 		    }
 
 		  /*
@@ -2201,9 +2219,16 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 	      NSRect	isect;
 	      BOOL	intersectCalculated = NO;
 
-	      if ([subview->_frameMatrix isRotated] == YES)
-		[subview->_frameMatrix boundingRectFor: subviewFrame
-					       result: &subviewFrame];
+	      if (subview->_frameMatrix != nil)
+		{
+		  NSRect r;
+
+		  r.origin = NSZeroPoint;
+		  r.size = subviewFrame.size;
+		  [subview->_frameMatrix boundingRectFor: r result: &r];
+		  subviewFrame = NSOffsetRect(r, NSMinX(subviewFrame),
+		    NSMinY(subviewFrame));
+		}
 
 	      /*
 	       * Having drawn ourself into the rect, we must make sure that
@@ -2220,7 +2245,7 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 		   */
 		  subview->_rFlags.needs_display = YES;
 		  subview->_invalidRect = NSUnionRect(subview->_invalidRect,
-			isect);
+		    isect);
 		}
 
 	      if (subview->_rFlags.needs_display == YES)
@@ -2829,16 +2854,28 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   unsigned count;
   NSView *v = nil, *w;
 
-  /*
-  If not within our frame then it can't be a hit.
+  /* If not within our frame then it can't be a hit.
 
   As a special case, always assume that it's a hit if our _super_view is nil,
   ie. if we're the top-level view in a window.
   */
-  if (_super_view && ![_super_view mouse: aPoint inRect: _frame])
-    return nil;
 
-  p = [self convertPoint: aPoint fromView: _super_view];
+  if (_is_rotated_or_scaled_from_base)
+    {
+      p = [self convertPoint: aPoint fromView: _super_view];
+      if (!NSPointInRect (p, _bounds))
+	{
+	  return nil;
+	}
+    }
+  else if (_super_view && ![_super_view mouse: aPoint inRect: _frame])
+    {
+      return nil;
+    }
+  else
+    {
+      p = [self convertPoint: aPoint fromView: _super_view];
+    }
 
   if (_rFlags.has_subviews)
     {
@@ -3826,7 +3863,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
   [ctxt resetUsedFonts];
   /* Make sure we set the visible rect so everything is printed. */
-  [self _rebuildCoordinates];
+  [self _invalidateCoordinates];
   _visibleRect = _bounds;
 }
 
@@ -3964,7 +4001,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       // Don't attempt to archive the superview of a view which is the
       // content view for a window.
       //
-      if(([[self window] contentView] != self) && _super_view != nil)
+      if (([[self window] contentView] != self) && _super_view != nil)
 	{
 	  [aCoder encodeObject: _super_view forKey: @"NSSuperview"];
 	}
@@ -3999,7 +4036,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   [super initWithCoder: aDecoder];
 
   // initialize these here, since they're needed in either case.
-  _frameMatrix = [NSAffineTransform new];     // Map fromsuperview to frame
+  //_frameMatrix = [NSAffineTransform new];     // Map fromsuperview to frame
   _boundsMatrix = [NSAffineTransform new];    // Map fromsuperview to bounds
   _matrixToWindow = [NSAffineTransform new];  // Map to window coordinates
   _matrixFromWindow = [NSAffineTransform new];// Map from window coordinates
@@ -4095,7 +4132,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       
       _bounds.origin = NSZeroPoint;
       _bounds.size = _frame.size;
-      [_frameMatrix setFrameOrigin: _frame.origin];
+//      [_frameMatrix setFrameOrigin: _frame.origin];
       
       rect = [aDecoder decodeRect];
       [self setBounds: rect];
@@ -4237,7 +4274,12 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (float) frameRotation
 {
-  return [_frameMatrix rotationAngle];
+  if (_frameMatrix != nil)
+    {
+      return [_frameMatrix rotationAngle];
+    }
+
+  return 0.0;
 }
 
 - (BOOL) postsFrameChangedNotifications

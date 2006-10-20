@@ -285,7 +285,7 @@ static Class controlClass;
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       [aCoder encodeInt: [self tag] forKey: @"NSTag"];
       [aCoder encodeObject: [self target] forKey: @"NSTarget"];

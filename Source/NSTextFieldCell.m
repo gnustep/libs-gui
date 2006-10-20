@@ -208,7 +208,7 @@ static NSColor	*txtCol;
   BOOL tmp;
   [super encodeWithCoder: aCoder];
 
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       [aCoder encodeObject: [self backgroundColor] forKey: @"NSBackgroundColor"];
       [aCoder encodeObject: [self textColor] forKey: @"NSTextColor"];

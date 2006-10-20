@@ -1,3 +1,160 @@
+2006-10-19 21:17-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSMenuItemCell.m: Correct menu highlighting issue
+	found by applying changes suggested by Jeff Teunissen.   This
+	change causes the menu to use the correct text color when
+	highlighted.
+
+2006-10-19 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	* Source/GSTheme.m:
+	Have tile filling method return rect of central tile area.
+	* Source/NSView.m: Fixup indentation problems.
+
+2006-10-19 01:45-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSView.m: Applied patch from Banlu Kemiyatorn.  Corrects
+	issue with detection of events in a rotated view.
+
+2006-10-16 20:53-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSFont.m: Apply slightly modified version of patch
+	from Jeff Teunissen deek@d2dc.net to setNSFont().  Setting
+	a font should set its size.
+	* Source/NSImage.m: Set the alpha on the background when printing.
+
+2006-10-15 11:23-EDT Mark Tracy <tracy454 at concentric dot net>
+	
+	* Source/NSPageLayout.m: NSPageLayout was setting a default page 
+	scale of 100 cause: pageScale factor is displayed as percentage fix: 
+	pageScale*100 sent to textfield and textfield/100 stored in pageScale. 
+	NSPageLayout had different limits on scaling than NSPrintPanel fix: 
+	adjust formatter max.
+	* Source/NSPrintOperation.m: NSPrintOperation would loop randomly 
+	if a custom view replies YES to -knowsPageRange cause: 
+	-_printPaginateWithInfo did not initialize info->pageScale, 
+	info->xpages, info->ypages fix: in -_printPaginateWithInfo 
+	set default pageScale=1.0 outside conditional fix: in -_print 
+	set xpages and ypages from viewPageRange as reported by custom view.
+	* Source/NSView.m: -beginDocument was misplacing subviews when 
+	generating PostScript for printing fix: force regeneration of 
+	coordinates.
+	Patch Applied by Gregory Casamento
+	
+2006-10-15 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSBrowser.m:
+	* Source/NSSound.m:
+	* Source/NSTextAttachment.m:
+	* Source/NSPopUpButtonCell.m:
+	* Source/NSPanel.m:
+	* Source/NSImageCell.m:
+	* Source/NSSliderCell.m:
+	* Source/GSGormLoader.m:
+	* Source/NSParagraphStyle.m:
+	* Source/NSFormCell.m:
+	* Source/NSMenu.m:
+	* Source/NSWindow.m:
+	* Source/NSButtonCell.m:
+	* Source/NSImageView.m:
+	* Source/NSActionCell.m:
+	* Source/NSDataLinkManager.m:
+	* Source/NSClipView.m:
+	* Source/NSBitmapImageRep.m:
+	* Source/NSTextFieldCell.m:
+	* Source/NSColorWell.m:
+	* Source/GSTextStorage.m:
+	* Source/NSApplication.m:
+	* Source/NSTableColumn.m:
+	* Source/GSVbox.m:
+	* Source/NSNib.m:
+	* Source/NSCachedImageRep.m:
+	* Source/NSPrinter.m:
+	* Source/NSTextContainer.m:
+	* Source/GSNibLoader.m:
+	* Source/GSNibCompatibility.m:
+	* Source/GSTrackingRect.m:
+	* Source/NSSearchFieldCell.m:
+	* Source/NSControl.m:
+	* Source/GSHbox.m:
+	* Source/NSProgressIndicator.m:
+	* Source/GSModelLoaderFactory.m:
+	* Source/NSTextStorage.m:
+	* Source/NSTextView.m:
+	* Source/NSDocumentController.m:
+	* Source/NSMenuView.m:
+	* Source/NSSecureTextField.m:
+	* Source/NSComboBoxCell.m:
+	* Source/NSImage.m:
+	* Source/NSStepperCell.m:
+	* Source/NSDataLink.m:
+	* Source/NSScrollView.m:
+	* Source/NSBundleAdditions.m:
+	* Source/NSCell.m:
+	* Source/GSTable.m:
+	* Source/NSTableView.m:
+	* Source/NSBrowserCell.m:
+	* Source/NSSelection.m:
+	* Source/NSTextField.m:
+	* Source/NSView.m:
+	* Source/NSDocument.m:
+	Fixup some minor coding standard violations ... add white space.
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	* Source/GSTheme.m:
+	Add control for caching of tiles.  Add another fill style for tiling.
+	Make fill style names avoid possible name clashes by using GS prefix.
+
+2006-10-12 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSImageView.m: Fix error in initial drag position.
+	* Source/GSTheme.m: Improve display of current theme information.
+
+2006-10-11 Nicola Pero <nicola.pero@meta-innovation.com>
+
+	* GNUmakefile (GNUSTEP_INSTALLATION_DOMAIN):
+	Use GNUSTEP_INSTALLATION_DOMAIN
+	instead of GNUSTEP_INSTALLATION_DIR.
+
+2006-10-09 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Documentation/GuiAdditions.gsdoc:
+	* Documentation/Gui.gsdoc:
+	* Documentation/GuiUser/KeyboardSetup.gsdoc:
+	* Documentation/GuiUser/LanguageSetup.gsdoc:
+	* Documentation/GuiUser/DefaultsSummary.gsdoc:
+	* Documentation/ReleaseNotes.gsdoc:
+	* Documentation/General/OpenStepCompliance.gsdoc:
+	Update dtd version
+
+2006-10-08 23:47-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Images/GNUmakefile: Copy GSStop.tiff and GSSearch.tiff to the
+	installation directory.  They were previously missing.
+
+2006-10-07 10:20-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Implement init in NSIBHelpConnector.
+
+2006-10-07 10:13-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Implement establishConnection in 
+	NSIBHelpConnector.
+
+2006-10-07 10:02-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h: Declaration
+	for NSIBHelpConnector ivars and methods.
+	* Source/GSNibCompatibility.m: Implemented NSIBHelpConnector.
+	* Source/NSBundleAdditions.m: Added check to initWithCoder so that
+	values aren't decoded, if there's no value in the coder.
+
+2006-10-06 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSTrackingRect.m: Allow reset rect to another value.
+	* Source/GSToolTips.m: Improve handling of tips in rects other than
+	the main one.
+
 2006-10-06 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSToolTips.h: Remove some ivars

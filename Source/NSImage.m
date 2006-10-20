@@ -966,7 +966,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       if ([GSCurrentContext() isDrawingToScreen] == NO)
 	{
 	  /* Reset alpha for image drawing. */
-	  [[NSColor whiteColor] set];
+	  [[NSColor colorWithCalibratedWhite: 1.0 alpha: 1.0] set];
 	}
     }
 
@@ -1479,11 +1479,11 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 {
   BOOL	flag;
 
-  if([coder allowsKeyedCoding])
+  if ([coder allowsKeyedCoding])
     {
       // FIXME: Not sure this is the way it goes...
       /*
-      if(_flags.archiveByName == NO)
+      if (_flags.archiveByName == NO)
 	{
 	  NSMutableArray *container = [NSMutableArray array];
 	  NSMutableArray *reps = [NSMutableArray array];
@@ -1492,7 +1492,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 	  // add the reps to the container...
 	  [container addObject: reps];
-	  while((rd = [en nextObject]) != nil)
+	  while ((rd = [en nextObject]) != nil)
 	    {
 	      [reps addObject: rd->rep];
 	    }

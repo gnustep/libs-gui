@@ -370,7 +370,7 @@
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       [aCoder encodeObject: _identifier forKey: @"NSIdentifier"];
       [aCoder encodeObject: _dataCell forKey: @"NSDataCell"];

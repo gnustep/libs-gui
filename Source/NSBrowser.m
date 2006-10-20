@@ -152,7 +152,7 @@ static NSTextFieldCell *titleCell;
 
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
     }
   else
@@ -169,7 +169,7 @@ static NSTextFieldCell *titleCell;
   
 - (id) initWithCoder: (NSCoder *)aDecoder
 {
-  if([aDecoder allowsKeyedCoding])
+  if ([aDecoder allowsKeyedCoding])
     {
       
     }
@@ -2501,7 +2501,7 @@ static NSTextFieldCell *titleCell;
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       long flags = 0;
 

@@ -63,11 +63,11 @@
 {
   NSComparisonResult result = NSOrderedSame;
 
-  if([self priority] < [loader priority])
+  if ([self priority] < [loader priority])
     {
       result = NSOrderedAscending;
     }
-  if([self priority] > [loader priority])
+  if ([self priority] > [loader priority])
     {
       result = NSOrderedDescending;
     }
@@ -85,7 +85,7 @@ static NSMutableDictionary *_modelMap = nil;
   NSEnumerator *en = [classes objectEnumerator];
   Class cls = nil;
   
-  while((cls = [en nextObject]) != nil)
+  while ((cls = [en nextObject]) != nil)
     {
       [self registerModelLoaderClass: cls];
     }
@@ -93,7 +93,7 @@ static NSMutableDictionary *_modelMap = nil;
 
 + (void) registerModelLoaderClass: (Class)aClass
 {
-  if(_modelMap == nil)
+  if (_modelMap == nil)
     {
       _modelMap = [[NSMutableDictionary alloc] initWithCapacity: 5];
     }
@@ -112,7 +112,7 @@ static NSMutableDictionary *_modelMap = nil;
   NSFileManager	*mgr = [NSFileManager defaultManager];
   NSString *ext = [modelPath pathExtension];
 
-  if([ext isEqual: @""])
+  if ([ext isEqual: @""])
     {
       NSArray *objectArray = [_modelMap allValues];
       NSArray *sortedArray = [objectArray sortedArrayUsingSelector: 
@@ -120,11 +120,11 @@ static NSMutableDictionary *_modelMap = nil;
       NSEnumerator *oen = [sortedArray objectEnumerator];
       Class cls = nil;
 
-      while((cls = [oen nextObject]) != nil && result == NO)
+      while ((cls = [oen nextObject]) != nil && result == NO)
 	{
 	  NSString *path = [modelPath stringByAppendingPathExtension: 
 					(NSString *)[cls type]];
-	  if([mgr isReadableFileAtPath: path])
+	  if ([mgr isReadableFileAtPath: path])
 	    {
 	      result = path;
 	    }
@@ -132,9 +132,9 @@ static NSMutableDictionary *_modelMap = nil;
     }
   else
     {
-      if([_modelMap objectForKey: ext] != nil)
+      if ([_modelMap objectForKey: ext] != nil)
 	{
-	  if([mgr isReadableFileAtPath: modelPath])
+	  if ([mgr isReadableFileAtPath: modelPath])
 	    {
 	      result = modelPath;
 	    }
@@ -149,7 +149,7 @@ static NSMutableDictionary *_modelMap = nil;
   Class aClass = [GSModelLoaderFactory classForType: type];
   GSModelLoader *loader = nil;
 
-  if(aClass != nil)
+  if (aClass != nil)
     {
       loader = AUTORELEASE([[aClass alloc] init]);
     }
@@ -167,7 +167,7 @@ static NSMutableDictionary *_modelMap = nil;
   NSString *path = [GSModelLoaderFactory supportedModelFileAtPath: modelPath];
   GSModelLoader *result = nil;
 
-  if(path != nil)
+  if (path != nil)
     {
       NSString *ext = [path pathExtension];
       result = [self modelLoaderForFileType: ext];

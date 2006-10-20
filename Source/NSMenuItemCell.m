@@ -89,6 +89,16 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
   return _cell.is_highlighted;
 }
 
+- (NSColor *)textColor
+{
+  if(_cell.is_highlighted && [self isEnabled])
+    {
+      return [NSColor selectedMenuItemTextColor];
+    }
+
+  return [super textColor];
+}
+
 - (void) setMenuItem: (NSMenuItem *)item
 {
   ASSIGN (_menuItem, item);

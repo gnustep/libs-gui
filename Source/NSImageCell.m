@@ -369,7 +369,7 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
   [super encodeWithCoder: aCoder];
-  if([aCoder allowsKeyedCoding])
+  if ([aCoder allowsKeyedCoding])
     {
       [aCoder encodeInt: _imageAlignment forKey: @"NSAlign"];
       [aCoder encodeInt: _imageScaling forKey: @"NSScale"];
@@ -387,7 +387,7 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
 
 - (id) initWithCoder: (NSCoder *)aDecoder
 {
-  if((self = [super initWithCoder: aDecoder]) != nil)
+  if ((self = [super initWithCoder: aDecoder]) != nil)
     {
       if ([aDecoder allowsKeyedCoding])
 	{
