@@ -1,3 +1,10 @@
+2006-10-21 11:30-EDT Matt Rice <ratmice@yahoo.com>
+	
+	* Source/NSTableView.m: If the tableview is smaller than
+	it's clipview, then resize it so that it fits.  
+	Corrects bug#9608 and bug#18073.
+	Patch committed by: Gregory Casamento <greg_casamento@yahoo.com>
+	
 2006-10-19 21:17-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSMenuItemCell.m: Correct menu highlighting issue

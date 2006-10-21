@@ -3350,7 +3350,6 @@ static inline float computePeriod(NSPoint mouseLocationWin,
   // Pathological case -- ignore mouse down
   if ((_numberOfRows == 0) || (_numberOfColumns == 0))
     {
-      [super mouseDown: theEvent];
       return; 
     }
   
@@ -3384,7 +3383,8 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       if (![self _isCellEditableColumn: _clickedColumn row: _clickedRow ])
         {
 	  // Send double-action but don't edit
-	  [self sendAction: _doubleAction to: _target];
+	  if (_clickedRow != -1)
+	    [self sendAction: _doubleAction to: _target];
 	}
       else
         {
@@ -3475,6 +3475,8 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	  id originalValue;
 
 	  // Prepare the cell
+	  if (_clickedRow != -1)
+	    {
 	  tb = [_tableColumns objectAtIndex: _clickedColumn];
 	  /* we should copy the cell here, as we do on editing.
 	     otherwise validation on a cell being edited could
@@ -3520,6 +3522,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	  RELEASE(cell);
 	  [self setNeedsDisplayInRect: cellFrame];
 	  lastEvent = [NSApp currentEvent];
+	    }
 	}
 
       while (done != YES)
@@ -3731,6 +3734,15 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
 	  if (shouldComputeNewSelection == YES)
 	    {
+	      if (originalRow == -1)
+		{
+		  originalRow = currentRow;
+		}
+	      
+	      if (currentRow == -1)
+		{
+		  currentRow = _numberOfRows - 1;
+		}
 	      computeNewSelection(self,
 				  oldSelectedRows, 
 				  _selectedRows,
@@ -3769,7 +3781,8 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	  TODO: should we ask the data source/column for the cell for this
 	  row/column and check whether it has its own action/target?
 	  */
-	  [self sendAction: _action  to: _target];
+	  if (_clickedRow != -1)
+	    [self sendAction: _action  to: _target];
 	}
       return;
     }
@@ -4002,7 +4015,42 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
 - (void) setFrame: (NSRect)frameRect
 {
-  [super setFrame: frameRect];
+  NSRect tmpRect = frameRect;
+
+  if ([_super_view respondsToSelector:@selector(documentRect)])
+    {
+      NSRect docRect = [(NSClipView *)_super_view documentRect];
+      
+      if (docRect.size.height > tmpRect.size.height)
+	{
+	  tmpRect.size.height = docRect.size.height;
+	}
+      // TODO width?
+    }
+  [super setFrame: tmpRect];
+}
+
+- (void) setFrameSize: (NSSize)frameSize
+{
+  NSSize tmpSize = frameSize;
+  
+  if ([_super_view respondsToSelector:@selector(documentRect)])
+    {
+      NSRect docRect = [(NSClipView *)_super_view documentRect];
+      if (docRect.size.height > tmpSize.height)
+	{
+	  tmpSize.height = docRect.size.height;
+	}
+      // TODO width?
+    }
+  [super setFrameSize: tmpSize];
+}
+
+- (void) viewWillMoveToSuperview:(NSView *)newSuper
+{
+  [super viewWillMoveToSuperview:newSuper];
+  /* need to potentially enlarge to fill the documentRect of the clip view */
+  [self setFrame:_frame];
 }
 
 - (void) sizeToFit
@@ -5697,6 +5745,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	}
       _superview_width = visible_width;
     }
+  [self setFrame:_frame];
 }
 
 
@@ -5802,8 +5851,15 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	  [self displayIfNeeded];
 	  
 	  [[NSColor darkGrayColor] set];
-      
-	  if (currentDropOperation == NSTableViewDropAbove)
+
+	  if (currentDropRow > _numberOfRows)
+	    {
+	      newRect = [self bounds];
+	      NSFrameRectWithWidth(newRect, 2.0);
+	      oldDraggingRect = newRect;
+	      currentDropRow = _numberOfRows;
+	    }
+	  else if (currentDropOperation == NSTableViewDropAbove)
 	    {
 	      if (currentDropRow == 0)
 		{
