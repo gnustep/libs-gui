@@ -10,7 +10,7 @@
 	* Source/NSMenuItemCell.m: Correct menu highlighting issue
 	found by applying changes suggested by Jeff Teunissen.   This
 	change causes the menu to use the correct text color when
-	highlighted.
+	highlighted. (minor change)
 
 2006-10-19 Richard Frith-Macdonald <rfm@gnu.org>
 
