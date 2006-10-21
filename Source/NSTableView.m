@@ -3477,64 +3477,64 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	  // Prepare the cell
 	  if (_clickedRow != -1)
 	    {
-	  tb = [_tableColumns objectAtIndex: _clickedColumn];
-	  /* we should copy the cell here, as we do on editing.
-	     otherwise validation on a cell being edited could
-	     cause the cell we are selecting to get it's objectValue */
-	  cell = [[tb dataCellForRow: _clickedRow] copy];
-	  originalValue = RETAIN([self _objectValueForTableColumn:tb row:_clickedRow]);
-	  [cell setObjectValue: originalValue]; 
-	  cellFrame = [self frameOfCellAtColumn: _clickedColumn 
+	      tb = [_tableColumns objectAtIndex: _clickedColumn];
+	      /* we should copy the cell here, as we do on editing.
+		 otherwise validation on a cell being edited could
+		 cause the cell we are selecting to get it's objectValue */
+	      cell = [[tb dataCellForRow: _clickedRow] copy];
+	      originalValue = RETAIN([self _objectValueForTableColumn:tb row:_clickedRow]);
+	      [cell setObjectValue: originalValue]; 
+	      cellFrame = [self frameOfCellAtColumn: _clickedColumn 
 				row: _clickedRow];
-          [cell setHighlighted: YES];
-	  [self setNeedsDisplayInRect: cellFrame];
-	  /* give delegate a chance to i.e set target */
-	  [self _willDisplayCell: cell
-		  forTableColumn: tb
-			     row: _clickedRow];
-	  if ([cell trackMouse: lastEvent
+	      [cell setHighlighted: YES];
+	      [self setNeedsDisplayInRect: cellFrame];
+	      /* give delegate a chance to i.e set target */
+	      [self _willDisplayCell: cell
+		    forTableColumn: tb
+		    row: _clickedRow];
+	      if ([cell trackMouse: lastEvent
 			inRect: cellFrame
 			ofView: self
-		  untilMouseUp: [[cell class] prefersTrackingUntilMouseUp]])
-	    {
-	      id newValue = [cell objectValue];
-
-	      if ([tb isEditable] && originalValue != newValue
-		  && ![originalValue isEqual: newValue])
+			untilMouseUp: [[cell class] prefersTrackingUntilMouseUp]])
 		{
-		  [self _setObjectValue: newValue 
-		         forTableColumn: tb
-				    row: _clickedRow];
-		} 
-	      done = YES;
-	      currentRow = _clickedRow;
-	      computeNewSelection(self,
-				  oldSelectedRows, 
-				  _selectedRows,
-				  originalRow,
-				  oldRow,
-				  currentRow,
-				  &_selectedRow,
-				  selectionMode);
-	    }
-	  RELEASE(originalValue);    
-	  [cell setHighlighted: NO];
-	  RELEASE(cell);
-	  [self setNeedsDisplayInRect: cellFrame];
-	  lastEvent = [NSApp currentEvent];
+		  id newValue = [cell objectValue];
+		  
+		  if ([tb isEditable] && originalValue != newValue
+		      && ![originalValue isEqual: newValue])
+		    {
+		      [self _setObjectValue: newValue 
+			    forTableColumn: tb
+			    row: _clickedRow];
+		    } 
+		  done = YES;
+		  currentRow = _clickedRow;
+		  computeNewSelection(self,
+				      oldSelectedRows, 
+				      _selectedRows,
+				      originalRow,
+				      oldRow,
+				      currentRow,
+				      &_selectedRow,
+				      selectionMode);
+		}
+	      RELEASE(originalValue);    
+	      [cell setHighlighted: NO];
+	      RELEASE(cell);
+	      [self setNeedsDisplayInRect: cellFrame];
+	      lastEvent = [NSApp currentEvent];
 	    }
 	}
-
+      
       while (done != YES)
 	{
 	  /*
-	  Wrap each iteration in an autorelease pool. Otherwise, we end
-	  up allocating huge amounts of objects if the button is held
-	  down for a long time.
+	    Wrap each iteration in an autorelease pool. Otherwise, we end
+	    up allocating huge amounts of objects if the button is held
+	    down for a long time.
 	  */
 	  CREATE_AUTORELEASE_POOL(arp);
 	  BOOL shouldComputeNewSelection = NO;
-
+	  
 	  switch ([lastEvent type])
 	    {
 	    case NSLeftMouseUp:
@@ -4016,7 +4016,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 - (void) setFrame: (NSRect)frameRect
 {
   NSRect tmpRect = frameRect;
-
+  
   if ([_super_view respondsToSelector:@selector(documentRect)])
     {
       NSRect docRect = [(NSClipView *)_super_view documentRect];
