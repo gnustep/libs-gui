@@ -1,3 +1,18 @@
+2006-10-21  Matt Rice  <ratmice@yahoo.com>
+
+	* Headers/AppKit/NSGraphics.h: Add GSOrderedWindows function.
+	* Source/NSApplication.m (NSAppIconView -mouseDown:): Use
+	GSOrderedWindows.
+	(NSApplication -deactivate): Ditto.
+	(-hide:): Ditto.
+	(-unhideWithoutActivation:): Ditto.
+	(-makeWindowsPerform:inOrder): Ditto.
+	(-orderedWindows:): Ditto.
+	(-windowWillClose:): Ditto.
+	* Source/GSDisplayServer.m: Implement -windowlist.
+	* Source/NSWindow.m (NSCountWindowList,NSWindowList): Use -windowlist.
+	(GSOrderedWindows): Initial implementation.
+
 2006-10-21 11:30-EDT Matt Rice <ratmice@yahoo.com>
 	
 	* Source/NSTableView.m: If the tableview is smaller than

@@ -522,12 +522,12 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
        */
       if ([NSApp isHidden] == NO)
 	{
-	  int i;
-	  NSArray *windows = RETAIN([NSApp windows]);
-      
-	  for (i = 0; i < [windows count]; i++)
+	  NSArray *windows = RETAIN(GSOrderedWindows());
+	  NSWindow *aWin;
+	  NSEnumerator *iter = [windows reverseObjectEnumerator];
+	 
+	  while ((aWin = [iter nextObject]))
 	    { 
-	      NSWindow *aWin = [windows objectAtIndex:i];
               
 	      if ([aWin isVisible] == YES && [aWin isMiniaturized] == NO
 		  && aWin != [NSApp keyWindow] && aWin != [NSApp mainWindow]
@@ -561,8 +561,10 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 	  
           RELEASE(windows);
 	}
-       
-      [NSApp unhide: self];
+      else
+        {
+          [NSApp unhide: self];
+	}
     }
   else
     {
@@ -1167,16 +1169,17 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 	  [[_inactive objectAtIndex: i] orderFrontRegardless];
 	}
       [_inactive removeAllObjects];
+
+      if (_unhide_on_activation)
+	{
+	  [self unhide: nil];
+	}
+     
       if ([self keyWindow] == nil && _hidden_key != nil
 	&& [[self windows] indexOfObjectIdenticalTo: _hidden_key] != NSNotFound)
 	{
 	  [_hidden_key makeKeyWindow];
 	  _hidden_key = nil;
-	}
-
-      if (_unhide_on_activation)
-	{
-	  [self unhide: nil];
 	}
 
       if ([self keyWindow] != nil)
@@ -1216,13 +1219,14 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 {
   if (_app_is_active == YES)
     {
-      NSArray		*windows_list = [self windows]; 
-      unsigned		count = [windows_list count];
-      unsigned		i;
+      NSArray		*windows_list;
       NSDictionary	*info;
+      NSWindow		*win;
+      NSEnumerator	*iter;
 
       [nc postNotificationName: NSApplicationWillResignActiveNotification
 			object: self];
+      
 
       _app_is_active = NO;
 
@@ -1235,11 +1239,14 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
       // This is not a problem if it is also key, and I'm not sure if it
       // is a problem at all. May be annoying in the case of workspace switch.
       [[self mainWindow] resignMainWindow];
-      for (i = 0; i < count; i++)
+      
+      windows_list = GSOrderedWindows();
+      iter = [windows_list reverseObjectEnumerator];
+
+      while ((win = [iter nextObject]))
 	{
 	  NSModalSession theSession;
-	  NSWindow	*win = [windows_list objectAtIndex: i];
-
+	   
 	  if ([win isVisible] == NO)
 	    {
 	      continue;		/* Already invisible	*/
@@ -2205,10 +2212,10 @@ image.</p><p>See Also: -applicationIconImage</p>
 {
   if (_app_is_hidden == NO)
     {
-      NSArray		*windows_list = [self windows]; 
-      unsigned		count = [windows_list count];
+      NSArray		*windows_list;
       NSDictionary	*info;
-      unsigned		i;
+      NSWindow		*win;
+      NSEnumerator	*iter;
 
       [nc postNotificationName: NSApplicationWillHideNotification
 			object: self];
@@ -2218,10 +2225,12 @@ image.</p><p>See Also: -applicationIconImage</p>
 	  _hidden_key = [self keyWindow];
 	  [_hidden_key resignKeyWindow];
 	}
-      for (i = 0; i < count; i++)
-	{
-	  NSWindow	*win = [windows_list objectAtIndex: i];
+      
+      windows_list = GSOrderedWindows();
+      iter = [windows_list reverseObjectEnumerator];
 
+      while ((win = [iter nextObject]))
+	{
 	  if ([win isVisible] == NO)
 	    {
 	      continue;		/* Already invisible	*/
@@ -2314,12 +2323,6 @@ image.</p><p>See Also: -applicationIconImage</p>
 	  [[_hidden objectAtIndex: i] orderFrontRegardless];
 	}
       [_hidden removeAllObjects];
-      if (_hidden_key != nil
-	&& [[self windows] indexOfObjectIdenticalTo: _hidden_key] != NSNotFound)
-	{
-	  [_hidden_key makeKeyAndOrderFront: self];
-	  _hidden_key = nil;
-	}
       [[_app_icon_window contentView] setNeedsDisplay: YES];
 
       info = [self _notificationUserInfo];
@@ -2393,12 +2396,20 @@ image.</p><p>See Also: -applicationIconImage</p>
  */
 - (NSWindow*) makeWindowsPerform: (SEL)aSelector inOrder: (BOOL)flag
 {
-  NSArray	*window_list = [self windows];
-  unsigned	i;
+  NSArray	*window_list;
+  unsigned	i, c;
 
-  // FIXME flag ignored
-  i = [window_list count];
-  while (i-- > 0)
+  // so i suppose when flag is YES it only runs on visible windows
+  if (flag)
+    {
+      window_list = GSOrderedWindows();
+    }
+  else
+    {
+      window_list = [self windows];
+    }
+  
+  for (i = 0, c = [window_list count]; i < c; i++)
     {
       NSWindow *window = [window_list objectAtIndex: i];
 
@@ -3251,14 +3262,24 @@ image.</p><p>See Also: -applicationIconImage</p>
 }
 
 /**
- * OS X scripting method to return windows in front-to-back on-screen order.
- * <em>The GNUstep implementation returns all the windows in an arbitrary
- * order.</em>
+ * OS X scripting method to return windows in front-to-back on-screen order
+ * for scriptable windows.
+ * <em>The GNUstep implementation returns all the windows excluding NSPanels.
+ * some backends may return an array in an unspecified order.</em>
  */
 - (NSArray *) orderedWindows
 {
-  // FIXME
-  return [self windows];
+  NSArray *arr = GSOrderedWindows();
+  NSMutableArray *ret = [[NSArray alloc] initWithCapacity:[arr count]];
+  NSEnumerator *iter = [arr objectEnumerator];
+  id win;
+  while ((win = [iter nextObject]))
+    {
+      if (![win isKindOfClass:[NSPanel class]])
+        [ret addObject:win];
+    }
+  
+  return AUTORELEASE(ret);
 }
 
 /*
@@ -3478,17 +3499,17 @@ image.</p><p>See Also: -applicationIconImage</p>
 - (void) _windowWillClose: (NSNotification*) notification
 {
   NSWindow		*win = [notification object];
-  NSArray		*windows_list = [self windows];
+  NSArray		*windows_list = GSOrderedWindows();
   unsigned		count = [windows_list count];
   unsigned		i;
   NSMutableArray	*list = [NSMutableArray arrayWithCapacity: count];
   BOOL			wasKey = [win isKeyWindow];
   BOOL			wasMain = [win isMainWindow];
+  NSEnumerator 		*iter = [windows_list objectEnumerator];
+  NSWindow		*tmp;
 
-  for (i = 0; i < count; i++)
+  while ((tmp = [iter nextObject]))
     {
-      NSWindow	*tmp = [windows_list objectAtIndex: i];
-
       if ([tmp canBecomeMainWindow] == YES && [tmp isVisible] == YES)
 	{
 	  [list addObject: tmp];
