@@ -3445,7 +3445,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       if (modifiers & NSControlKeyMask)
 	{
 	  selectionMode |= CONTROL_DOWN;
-	  if (_allowsMultipleSelection == YES)
+	  if (_allowsMultipleSelection == YES && _selectedRow != -1)
 	    {
 	      originalRow = _selectedRow;
 	      selectionMode |= SHIFT_DOWN;
