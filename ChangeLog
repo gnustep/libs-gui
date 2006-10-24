@@ -1,3 +1,8 @@
+2006-10-24  Matt Rice  <ratmice@yahoo.com>
+
+	* Source/NSApplication.m (NSAppIcon -mouseDown:): Call unhide:
+	regardless of whether we're hidden or not.
+
 2006-10-22  Matt Rice  <ratmice@yahoo.com>
 
 	* Source/NSTableView.m (-mouseDown:): Check for empty selection.

@@ -504,22 +504,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 {
   if ([theEvent clickCount] >= 2)
     {
-      /* If the app is not hidden we need to order front any visible and 
-      	 possibly obscured windows. If we are active we need to order front 
-	 the key or main window again, otherwise unhide: will unhide and
-	 activate us. Do this all in a way which will not change the stacking
-	 order. 
-
-	 There are 3 possibilities:
-	 1. app is active and has no obscured windows
-	 2. app is active and has obscured windows
-	 3. app is inactive.  
-	 I don't know of any way to tell 1 from 2 and do nothing.
-
-	 This should ideally set aWin NSWindowBelow the key or main window
-	 but with most windowmanagers. It doesn't seem to place the receiving 
-	 window immediately below like it should. 
-       */
+      /* if not hidden raise windows which are possibly obscured. */
       if ([NSApp isHidden] == NO)
 	{
 	  NSArray *windows = RETAIN(GSOrderedWindows());
@@ -561,10 +546,8 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 	  
           RELEASE(windows);
 	}
-      else
-        {
-          [NSApp unhide: self];
-	}
+       
+      [NSApp unhide: self]; // or activate or do nothing.
     }
   else
     {
