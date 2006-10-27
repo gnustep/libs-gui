@@ -1,4 +1,12 @@
 2006-10-27  Matt Rice  <ratmice@yahoo.com>
+
+	* Source/NSAlert.m: Add GSRunExceptionPanel function
+	and GSExceptionPanel class.
+	* Headers/AppKit/NSPanel.h: Declare GSRunExceptionPanel.
+	* Source/NSApplication.m (_NSAppKitUncaughtExceptionHandler):
+	Use GSRunExceptionPanel.
+
+2006-10-27  Matt Rice  <ratmice@yahoo.com>
 	
 	* Source/NSTableView.m (-setFrame:,-setFrameSize:): Use
 	documentVisibleRect. Shrink if table is larger than needed height.

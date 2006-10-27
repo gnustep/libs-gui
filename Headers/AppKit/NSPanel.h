@@ -174,6 +174,12 @@ APPKIT_EXPORT void NSBeginInformationalAlertSheet(NSString *title,
 						   void *contextInfo, 
 						   NSString *msg, ...);
 
+APPKIT_EXPORT int GSRunExceptionPanel(NSString *title,
+                                      NSException *exception,
+                                      NSString *defaultButton,
+                                      NSString *alternateButton,
+                                      NSString *otherButton);
+
 #endif
 
 //

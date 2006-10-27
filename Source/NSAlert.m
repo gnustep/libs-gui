@@ -1468,3 +1468,236 @@ void NSBeginInformationalAlertSheet(NSString *title,
 }
 
 @end
+
+@interface GSExceptionPanel : GSAlertPanel
+{
+  NSBrowser *_browser;
+  NSDictionary *_userInfo;
+  NSPanel *_userInfoPanel;
+}
+- (void) setUserInfo:(NSDictionary *)userInfo;
+- (NSPanel *)userInfoPanel;
+@end
+
+int GSRunExceptionPanel(
+  NSString *title,
+  NSException *exception,
+  NSString *defaultButton,
+  NSString *alternateButton,
+  NSString *otherButton)
+{
+  NSString      *message;
+  GSExceptionPanel  *panel;
+  int           result;
+
+  message = [NSString stringWithFormat:@"%@: %@",
+	  			[exception name],
+				[exception reason]];
+  if (defaultButton == nil)
+    {
+      defaultButton = @"OK";
+    }
+
+  panel = [[GSExceptionPanel alloc] init];
+
+  if (title == nil)
+    {
+      title = @"Exception";
+    }
+
+  [panel setTitle: title
+          message: message
+              def: defaultButton
+              alt: alternateButton
+            other: otherButton];
+  [panel setUserInfo: [exception userInfo]];
+  result = [panel runModal];
+  [[panel userInfoPanel] orderOut:nil];
+  [panel setUserInfo: nil];
+  
+  RELEASE(panel);
+  return result;
+}
+
+@implementation GSExceptionPanel
+- (void) dealloc
+{
+  RELEASE(_userInfo);
+  RELEASE(_browser);
+  RELEASE(_userInfoPanel);
+  [super dealloc];
+}
+- (id) init
+{
+  if ((self = [super init]))
+    {
+      [icoButton setEnabled:YES];
+      [icoButton setTarget:self];
+      [icoButton setAction:@selector(_icoAction:)];
+    }
+
+  return self;
+}
+- (NSPanel *) userInfoPanel
+{
+  return _userInfoPanel;
+}
+
+- (void) setUserInfo:(NSDictionary *)userInfo;
+{
+  ASSIGN(_userInfo, userInfo);
+  [_browser reloadColumn:0];
+}
+
+- (void) _icoAction:(id)sender
+{
+   NSRect fr;
+   
+   if (_userInfoPanel) 
+     {
+       [_browser reloadColumn:0];
+       return;
+     }
+
+   fr = NSMakeRect(_frame.origin.x, _frame.origin.y + _frame.size.height + 15, 
+		    _frame.size.width, 108);
+  _userInfoPanel = [[NSPanel alloc] initWithContentRect:fr
+      					styleMask:NSTitledWindowMask
+						  | NSResizableWindowMask
+					backing:NSBackingStoreBuffered
+					defer:NO];
+  [_userInfoPanel setTitle:@"User Info Inspector"];
+  [_userInfoPanel setWorksWhenModal:YES];
+  
+  fr = NSMakeRect(8, 8, _frame.size.width - 16, 100);
+  _browser = [[NSBrowser alloc] initWithFrame:fr];
+  [_browser setMaxVisibleColumns:2];
+  [_browser setDelegate:self];
+  [_browser setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+  [_browser reloadColumn:0];
+  [[_userInfoPanel contentView] addSubview:_browser];
+  [_userInfoPanel makeKeyAndOrderFront:self];
+}
+
+- (int) browser:(id)browser
+numberOfRowsInColumn:(int)col
+{
+  if (col == 0)
+    return [[_userInfo allKeys] count];
+  else
+    {
+      id val = [[(NSCell *)[browser selectedCellInColumn:col - 1] representedObject] description];
+      volatile id foo = nil;
+      NS_DURING
+         foo = [val propertyList];
+         val = foo;
+      NS_HANDLER
+      NS_ENDHANDLER
+      
+      if ([val isKindOfClass:[NSArray class]])
+	return [val count];
+      else if ([val isKindOfClass:[NSDictionary class]])
+        return [[val allKeys] count];
+      else return val != nil;
+    }
+  return 0;
+}
+
+- (void) browser:(NSBrowser *)browser willDisplayCell:(NSBrowserCell *)cell atRow:(int)row
+column:(int)column
+{
+  if (column == 0)
+    {
+      id key = [[_userInfo allKeys] objectAtIndex:row]; 
+      id val = [_userInfo objectForKey:key]; 
+
+      [cell setLeaf:NO];
+      [cell setStringValue:[key description]];
+      [cell setRepresentedObject: val];
+    }
+  else
+    {
+      volatile id val = [(NSCell *)[browser selectedCellInColumn:column - 1] representedObject];
+      BOOL flag;
+     
+      if (!([val isKindOfClass:[NSArray class]] || [val isKindOfClass:[NSArray class]]))
+        {
+          volatile id foo = nil;
+	  val = [val description];
+	  NS_DURING 
+	    foo = [val propertyList];
+	    val = foo;
+	  NS_HANDLER
+	  NS_ENDHANDLER
+	}    
+      flag = (!([val isKindOfClass:[NSArray class]]
+	      || [val isKindOfClass:[NSDictionary class]]));
+     
+      
+      
+      [cell setLeaf:flag];
+      
+      if ([val isKindOfClass:[NSArray class]])
+        {
+	  volatile id obj = [val objectAtIndex:row];
+	  if (!([obj isKindOfClass:[NSArray class]] || [obj isKindOfClass:[NSArray class]]))
+	    {
+	      volatile id foo;
+	      obj = [[obj description] propertyList]; 
+	      NS_DURING
+	        foo = [obj propertyList]; 
+	        obj = foo;
+	      NS_HANDLER
+	      NS_ENDHANDLER
+	    }
+
+	  if ([obj isKindOfClass:[NSArray class]])
+	    {
+              [cell setRepresentedObject:obj];
+	      [cell setLeaf:NO];
+              [cell setStringValue:[NSString stringWithFormat:@"%@ %p", [obj class], obj]];
+	    }
+	  else if ([obj isKindOfClass:[NSDictionary class]])
+	    {
+	      [cell setRepresentedObject:obj];
+	      [cell setLeaf:NO];
+              [cell setStringValue:[NSString stringWithFormat:@"%@ %p", [obj class], obj]];
+	    }
+	  else
+	    {
+	      [cell setLeaf:YES];
+	      [cell setStringValue:[obj description]];
+	      [cell setRepresentedObject:nil];
+	    }
+	}
+      else if ([val isKindOfClass:[NSDictionary class]])
+        {
+	  id key = [[val allKeys] objectAtIndex:row];
+          volatile id it = [(NSDictionary *)val objectForKey: key];
+	  volatile id foo;
+	  foo = [it description];
+	  NS_DURING
+	    foo = [it propertyList];
+	    it = foo;
+	  NS_HANDLER
+	  NS_ENDHANDLER
+	  [cell setStringValue:[key description]];
+	  [cell setRepresentedObject:it];
+        } 
+      else
+        {
+	  [cell setLeaf:YES];
+	  [cell setStringValue:[val description]];
+        }
+      
+    }
+}
+- (id) browser:(NSBrowser *)browser titleOfColumn:(int)column
+{
+  if (column == 0) return @"userInfo";
+  id val = [(NSCell *)[browser selectedCellInColumn:column - 1] representedObject];
+  NSString *title = [NSString stringWithFormat:@"%@ %p", [val class], val];
+  return title;
+}
+@end
+

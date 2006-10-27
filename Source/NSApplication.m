@@ -113,19 +113,17 @@ _NSAppKitUncaughtExceptionHandler (NSException *exception)
       [exception raise];
     }
 
-  retVal = NSRunCriticalAlertPanel 
+  retVal = GSRunExceptionPanel 
     ([NSString stringWithFormat: _(@"Critical Error in %@"),
 	       [[NSProcessInfo processInfo] processName]],
-     @"%@: %@", 
+     exception,
      _(@"Abort"), 
      nil,
 #ifdef DEBUG
-     _(@"Debug"),
+     _(@"Debug"));
 #else
-     nil,
+     nil);
 #endif
-     [exception name], 
-     [exception reason]);
 
   /* The user wants to abort */
   if (retVal == NSAlertDefault)
