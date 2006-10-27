@@ -462,26 +462,17 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
   return rect;
 }
 
-/**<p>Returns the document visible rectangle. Returns NSZeroRect if the 
-   document view does not exists.</p>
+/**<p>Returns the document visible rectangle in the document views coordinate
+ * system.
  <p>See Also: -documentRect [NSView-convertRect:toView:]</p>
  */
 - (NSRect) documentVisibleRect
 {
-  NSRect documentBounds;
-  NSRect clipViewBounds;
-  NSRect rect;
-
-  if (_documentView == nil)
-    {
-      return NSZeroRect;
-    }
-
-  documentBounds = [_documentView bounds];
-  clipViewBounds = [self convertRect: _bounds  toView: _documentView];
-  rect = NSIntersectionRect (documentBounds, clipViewBounds);
-
-  return rect;
+  NSRect visRect;
+  
+  visRect = [self visibleRect];
+  visRect = [self convertRect:visRect toView:_documentView];
+  return visRect;
 }
 
 - (void) drawRect: (NSRect)rect

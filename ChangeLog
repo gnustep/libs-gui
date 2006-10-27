@@ -1,3 +1,12 @@
+2006-10-27  Matt Rice  <ratmice@yahoo.com>
+	
+	* Source/NSTableView.m (-setFrame:,-setFrameSize:): Use
+	documentVisibleRect. Shrink if table is larger than needed height.
+	fixes bug #18117.
+	(-drawBackgroundInClipRect:): Draw the background. 
+	* Source/NSClipView.m (-documentVisibleRect:): Return the clip views
+	visible rect converted to the document views coordinate system.
+
 2006-10-24  Matt Rice  <ratmice@yahoo.com>
 
 	* Source/NSApplication.m (NSAppIcon -mouseDown:): Call unhide:

@@ -4016,15 +4016,19 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 - (void) setFrame: (NSRect)frameRect
 {
   NSRect tmpRect = frameRect;
-  
-  if ([_super_view respondsToSelector:@selector(documentRect)])
+  if ([_super_view respondsToSelector:@selector(documentVisibleRect)])
     {
-      NSRect docRect = [(NSClipView *)_super_view documentRect];
+      float rowsHeight = ((_numberOfRows * _rowHeight) + 1);
+      NSRect docRect = [(NSClipView *)_super_view documentVisibleRect];
       
-      if (docRect.size.height > tmpRect.size.height)
+      if (rowsHeight < docRect.size.height)
 	{
 	  tmpRect.size.height = docRect.size.height;
 	}
+      else 
+        {
+	  tmpRect.size.height = rowsHeight;
+        }
       // TODO width?
     }
   [super setFrame: tmpRect];
@@ -4034,13 +4038,19 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 {
   NSSize tmpSize = frameSize;
   
-  if ([_super_view respondsToSelector:@selector(documentRect)])
+  if ([_super_view respondsToSelector:@selector(documentVisibleRect)])
     {
-      NSRect docRect = [(NSClipView *)_super_view documentRect];
-      if (docRect.size.height > tmpSize.height)
+      float rowsHeight = ((_numberOfRows * _rowHeight) + 1);
+      NSRect docRect = [(NSClipView *)_super_view documentVisibleRect];
+      
+      if (rowsHeight < docRect.size.height)
 	{
 	  tmpSize.height = docRect.size.height;
 	}
+      else
+        {
+          tmpSize.height = rowsHeight;
+        }
       // TODO width?
     }
   [super setFrameSize: tmpSize];
@@ -4687,11 +4697,8 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
 - (void) drawBackgroundInClipRect: (NSRect)clipRect
 {
-  // FIXME
- /*  
   [_backgroundColor set];
   NSRectFill (clipRect);
-  */
 } 
 
 - (void) drawRect: (NSRect)aRect
