@@ -296,11 +296,10 @@ initialize_gnustep_backend(void)
       }
 
 #else
-      /* GSBackend will be in a separate library, so use the runtime
-	 to find the class and avoid an unresolved reference problem */
-      backend = [[NSBundle gnustepBundle] classNamed: @"GSBackend"];
-      NSCAssert (backend, _(@"Can't find backend context"));
-      [backend initializeBackend];
+      /* GSBackend will be in a separate library linked in with the app.
+       This would be cleaner with ...classNamed: @"GSBackend", but that 
+       doesn't work in some cases (Mac OS X for instance).  */
+      [GSBackend initializeBackend];
 #endif
     }
   return YES;
