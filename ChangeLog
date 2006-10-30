@@ -1,3 +1,7 @@
+2006-10-30  Matt Rice  <ratmice@yahoo.com>
+
+	* Source/NSComboBoxCell.m (validateSelection): Test for invalid row.
+
 2006-10-28  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSApplication.m (initialize_gnustep_backend): Use
