@@ -29,6 +29,7 @@
 #include "AppKit/NSAttributedString.h"
 #include "AppKit/NSTextView.h"
 #include "AppKit/NSTextContainer.h"
+#include "AppKit/NSTextStorage.h"
 #include "AppKit/NSScrollView.h"
 #include "AppKit/NSButton.h"
 #include "AppKit/NSClipView.h"

@@ -1,3 +1,11 @@
+2006-10-31  Matt Rice  <ratmice@yahoo.com>
+
+	*  Tools/gopen.m
+	*  Source/NSView.m
+	*  Source/GSPDFPrintOperation.m
+	*  Source/NSHelpManager.m
+	*  Source/GSHelpManagerPanel.m: Add missing includes.
+
 2006-10-31 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: add missing include

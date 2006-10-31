@@ -52,6 +52,7 @@
 
 #include "AppKit/NSAffineTransform.h"
 #include "AppKit/NSApplication.h"
+#include "AppKit/NSCursor.h"
 #include "AppKit/NSDocumentController.h"
 #include "AppKit/NSDocument.h"
 #include "AppKit/NSClipView.h"

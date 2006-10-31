@@ -36,6 +36,7 @@
 #include "AppKit/NSAttributedString.h"
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSWorkspace.h"
+#include "AppKit/NSFileWrapper.h"
 #include "AppKit/NSHelpManager.h"
 #include "AppKit/NSHelpPanel.h"
 #include "AppKit/NSHelpPanel.h"
@@ -44,6 +45,7 @@
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSScrollView.h"
 #include "AppKit/NSTextView.h"
+#include "AppKit/NSTextStorage.h"
 
 #include "GNUstepGUI/GSHelpManagerPanel.h"
 

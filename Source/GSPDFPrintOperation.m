@@ -35,6 +35,7 @@
 #include <Foundation/NSPathUtilities.h>
 #include <Foundation/NSTask.h>
 #include <Foundation/NSProcessInfo.h>
+#include <Foundation/NSData.h>
 #include "AppKit/NSView.h"
 #include "GNUstepGUI/GSPDFPrintOperation.h"
 
