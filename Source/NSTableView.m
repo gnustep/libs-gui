@@ -1944,6 +1944,7 @@ static void computeNewSelection
 				column: (int)column;
 - (BOOL) _editPreviousEditableCellBeforeRow: (int)row
 				     column: (int)column;
+- (void) _editNextCellAfterRow:(int)row inColumn:(int)column;
 - (void) _autosaveTableColumns;
 - (void) _autoloadTableColumns;
 @end
@@ -3212,6 +3213,12 @@ byExtendingSelection: (BOOL)flag
   
   [self scrollRowToVisible: rowIndex];
   [self scrollColumnToVisible: columnIndex];
+
+  if (rowIndex != _selectedRow)
+    {
+      [NSException raise:NSInvalidArgumentException
+	      format:@"Attempted to edit unselected row"];
+    }
 
   if (rowIndex < 0 || rowIndex >= _numberOfRows 
       || columnIndex < 0 || columnIndex >= _numberOfColumns)
@@ -4950,6 +4957,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       switch ([(NSNumber *)textMovement intValue])
 	{
 	case NSReturnTextMovement:
+	  [self _editNextCellAfterRow:row inColumn:column];
 	  // Send action ?
 	  break;
 	case NSTabTextMovement:
@@ -5546,6 +5554,23 @@ static inline float computePeriod(NSPoint mouseLocationWin,
     {
       [_delegate tableView: self
 		 didClickTableColumn: tc];
+    }
+}
+
+- (void) _editNextCellAfterRow:(int)row inColumn:(int)column
+{
+  if (++row >= _numberOfColumns)
+    row = 0;
+
+  if ([self _shouldSelectRow:row])
+    {
+      [self selectRowIndexes:[NSIndexSet indexSetWithIndex:row]
+	      byExtendingSelection:NO];
+
+      if ([self _isCellEditableColumn:column row:row])
+        {
+	  [self editColumn:column row:row withEvent:nil select:YES]; 
+        }
     }
 }
 

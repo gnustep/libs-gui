@@ -1,4 +1,13 @@
 2006-11-01  Matt Rice  <ratmice@yahoo.com>
+	
+	* Source/NSTableView.m:
+	(-editColumn:row:withEvent:select:): Raise when passed an unselected
+	row.
+	(-textDidEndEditing:): Handle NSReturnTextMovement.
+	(_editNextCellAfterRow:inColumn:): New private method.
+	
+
+2006-11-01  Matt Rice  <ratmice@yahoo.com>
 
 	* Source/NSTableView.m: Add new private methods.
 	(-mouseDown:): Reorganize and don't track cells until dragging 
