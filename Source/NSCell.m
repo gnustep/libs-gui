@@ -1548,15 +1548,19 @@ static NSColor	*shadowCol;
   NSDebugLLog(@"NSCell", @"cell get mouse events\n");
   mouseWentUp = NO;
   done = NO;
+  if (theEvent != [NSApp currentEvent])
+    theEvent = [NSApp currentEvent];
+  else
+    theEvent = [theApp nextEventMatchingMask: event_mask
+				     untilDate: nil
+				        inMode: NSEventTrackingRunLoopMode
+				       dequeue: YES];
+		 
   while (!done)
     {
       NSEventType	eventType;
       BOOL		pointIsInCell;
 
-      theEvent = [theApp nextEventMatchingMask: event_mask
-				     untilDate: nil
-				        inMode: NSEventTrackingRunLoopMode
-				       dequeue: YES];
       eventType = [theEvent type];
 
       if (eventType != NSPeriodic || periodCount == 4)
@@ -1626,6 +1630,12 @@ static NSColor	*shadowCol;
 			  && (_action_mask & NSPeriodicMask))))
 	    [(NSControl*)controlView sendAction: action to: target];
 	}
+      
+      if (!done)
+        theEvent = [theApp nextEventMatchingMask: event_mask
+				     untilDate: nil
+				        inMode: NSEventTrackingRunLoopMode
+				       dequeue: YES];
     }
 
   // Hook called when stop tracking

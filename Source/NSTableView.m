@@ -146,7 +146,10 @@ typedef struct _tableViewFlags
 - (void) _unselectAllColumns;
 @end
 
-
+@interface NSTableView (EventLoopHelper)
+- (void) _trackCellAtColumn:(int)column row:(int)row withEvent:(NSEvent *)ev;
+- (BOOL) _startDragOperationWithEvent:(NSEvent *)theEvent;
+@end
 
 /*
  *  A specific struct and its associated quick sort function
@@ -3341,11 +3344,114 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       return 0.01;
 }
 
+- (void) _trackCellAtColumn:(int)columnIndex
+		row:(int)rowIndex
+		withEvent:(NSEvent *)theEvent
+{
+  NSTableColumn *tb;
+  NSCell *cell;
+  NSRect cellFrame;
+  id originalValue;
+
+  if (rowIndex == -1 || columnIndex == -1)
+    {
+      return;
+    }
+  
+  tb = [_tableColumns objectAtIndex: columnIndex];
+  /* we should copy the cell here, as we do on editing.
+     otherwise validation on a cell being edited could
+     cause the cell we are selecting to get it's objectValue */
+  cell = [[tb dataCellForRow: rowIndex] copy];
+  originalValue = RETAIN([self _objectValueForTableColumn:tb
+		  			row:rowIndex]);
+  [cell setObjectValue: originalValue]; 
+  cellFrame = [self frameOfCellAtColumn: columnIndex
+			      row: rowIndex];
+  [cell setHighlighted: YES];
+  [self setNeedsDisplayInRect: cellFrame];
+  /* give delegate a chance to i.e set target */
+  [self _willDisplayCell: cell
+		forTableColumn: tb
+	 	row: rowIndex];
+   
+  if ([cell trackMouse: theEvent 
+		   inRect: cellFrame
+		   ofView: self
+	     untilMouseUp:[[cell class]
+	     prefersTrackingUntilMouseUp]])
+    {
+      id newValue = [cell objectValue];
+
+      if ([tb isEditable]
+	  && originalValue != newValue
+	  && ![originalValue isEqual: newValue])
+        {
+	  [self _setObjectValue: newValue 
+			forTableColumn: tb
+			row: rowIndex];
+	}
+    }
+  RELEASE(originalValue);    
+  [cell setHighlighted: NO];
+  [self setNeedsDisplayInRect: cellFrame];
+  RELEASE(cell);
+}
+
+- (BOOL) _startDragOperationWithEvent:(NSEvent *)theEvent
+{
+  NSPasteboard *pboard;
+  NSArray *rows;
+
+  rows = [self _selectedRowArray];
+  pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
+  if ([self _writeRows: rows
+	toPasteboard: pboard] == YES)
+    {
+      NSPoint	p = NSZeroPoint;
+      NSImage	*dragImage;
+      NSSize	s;
+      
+      dragImage = [self dragImageForRows: rows
+			      event: theEvent
+			      dragImageOffset: &p];
+      /*
+       * Store image offset in s ... the returned
+       * value is the position of the center of
+       * the image, so we adjust to the bottom left
+       * corner.
+       */
+       s = [dragImage size];
+       s.width = p.x - s.width/2;
+       s.height = p.y + s.height/2; // View is flipped
+
+       /*
+	* Find the current mouse location and adjust
+	* it to determine the location of the bottom
+	* left corner of the image in this view's
+	* coordinate system.
+	*/
+       p = [self convertPoint: [theEvent locationInWindow] fromView: nil];
+       p.x += s.width;
+       p.y += s.height;
+	
+
+       [self dragImage: dragImage
+		    at: p
+		offset: NSMakeSize(0, 0)
+		 event: theEvent
+	    pasteboard: pboard
+	        source: self
+	     slideBack: YES];
+      return YES;
+    }
+  return NO;
+}
+
 - (void) mouseDown: (NSEvent *)theEvent
 {
   NSPoint initialLocation = [theEvent locationInWindow];
   NSPoint location;
-  int clickCount;
 
   // Pathological case -- ignore mouse down
   if ((_numberOfRows == 0) || (_numberOfColumns == 0))
@@ -3353,12 +3459,6 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       return; 
     }
   
-  clickCount = [theEvent clickCount];
-  if (clickCount > 2)
-    {
-      return;
-    }
-
   /* Stop editing if any */
   if (_textObject != nil)
     {
@@ -3370,8 +3470,9 @@ static inline float computePeriod(NSPoint mouseLocationWin,
   location = [self convertPoint: initialLocation fromView: nil];
   _clickedRow  = [self rowAtPoint: location];
   _clickedColumn = [self columnAtPoint: location];
-
-  if (clickCount == 2)
+  
+  if ([theEvent type] == NSLeftMouseDown
+       && [theEvent clickCount] > 1)
     {
       // Double-click event
 
@@ -3383,14 +3484,19 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       if (![self _isCellEditableColumn: _clickedColumn row: _clickedRow ])
         {
 	  // Send double-action but don't edit
+	  [self _trackCellAtColumn:_clickedColumn
+			    row:_clickedRow
+			    withEvent:theEvent];
 	  if (_clickedRow != -1)
 	    [self sendAction: _doubleAction to: _target];
 	}
       else
         {
 	  // It is OK to edit column.  Go on, do it.
-	  [self editColumn: _clickedColumn row: _clickedRow
-		withEvent: theEvent select: YES];
+          [self editColumn: _clickedColumn
+		   row: _clickedRow
+		   withEvent: theEvent
+		   select: YES];
 	}
     }
   else 
@@ -3401,7 +3507,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 				| NSLeftMouseDownMask
 				| NSLeftMouseDraggedMask 
 				| NSPeriodicMask);
-      unsigned selectionMode;
+      unsigned selectionMode = 0;
       NSPoint mouseLocationWin;
       NSPoint mouseLocationView;
       NSDate *distantFuture = [NSDate distantFuture];
@@ -3420,8 +3526,8 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       int originalRow = _clickedRow;
       int oldRow = -1;
       int currentRow = -1;
-      
-      selectionMode = 0;
+      BOOL getNextEvent = YES;
+
       if (_allowsMultipleSelection == YES)
 	{
 	  selectionMode |= ALLOWS_MULTIPLE;
@@ -3464,67 +3570,8 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
       // let's sort the _selectedRows
       oldSelectedRows = [_selectedRows copy];
-      mouseLocationView = location;
       lastEvent = theEvent;
-      
-      if ([self mouse: mouseLocationView inRect: _bounds])
-        {
-	  NSTableColumn *tb;
-	  NSCell *cell;
-	  NSRect cellFrame;
-	  id originalValue;
 
-	  // Prepare the cell
-	  if (_clickedRow != -1)
-	    {
-	      tb = [_tableColumns objectAtIndex: _clickedColumn];
-	      /* we should copy the cell here, as we do on editing.
-		 otherwise validation on a cell being edited could
-		 cause the cell we are selecting to get it's objectValue */
-	      cell = [[tb dataCellForRow: _clickedRow] copy];
-	      originalValue = RETAIN([self _objectValueForTableColumn:tb row:_clickedRow]);
-	      [cell setObjectValue: originalValue]; 
-	      cellFrame = [self frameOfCellAtColumn: _clickedColumn 
-				row: _clickedRow];
-	      [cell setHighlighted: YES];
-	      [self setNeedsDisplayInRect: cellFrame];
-	      /* give delegate a chance to i.e set target */
-	      [self _willDisplayCell: cell
-		    forTableColumn: tb
-		    row: _clickedRow];
-	      if ([cell trackMouse: lastEvent
-			inRect: cellFrame
-			ofView: self
-			untilMouseUp: [[cell class] prefersTrackingUntilMouseUp]])
-		{
-		  id newValue = [cell objectValue];
-		  
-		  if ([tb isEditable] && originalValue != newValue
-		      && ![originalValue isEqual: newValue])
-		    {
-		      [self _setObjectValue: newValue 
-			    forTableColumn: tb
-			    row: _clickedRow];
-		    } 
-		  done = YES;
-		  currentRow = _clickedRow;
-		  computeNewSelection(self,
-				      oldSelectedRows, 
-				      _selectedRows,
-				      originalRow,
-				      oldRow,
-				      currentRow,
-				      &_selectedRow,
-				      selectionMode);
-		}
-	      RELEASE(originalValue);    
-	      [cell setHighlighted: NO];
-	      RELEASE(cell);
-	      [self setNeedsDisplayInRect: cellFrame];
-	      lastEvent = [NSApp currentEvent];
-	    }
-	}
-      
       while (done != YES)
 	{
 	  /*
@@ -3535,10 +3582,13 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	  CREATE_AUTORELEASE_POOL(arp);
 	  BOOL shouldComputeNewSelection = NO;
 	  
+	  mouseLocationWin = [lastEvent locationInWindow]; 
+	  mouseLocationView = [self convertPoint: mouseLocationWin 
+					    fromView: nil];
+	
 	  switch ([lastEvent type])
 	    {
 	    case NSLeftMouseUp:
-	      mouseLocationWin = [lastEvent locationInWindow]; 
 	      if ((mouseLocationWin.y > minYVisible) 
 		  && (mouseLocationWin.y < maxYVisible))
 		{
@@ -3548,14 +3598,20 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		      [NSEvent stopPeriodicEvents];
 		      startedPeriodicEvents = NO;
 		    }
-		  mouseLocationView = [self convertPoint: mouseLocationWin 
-					    fromView: nil];
 		  mouseLocationView.x = _bounds.origin.x;
 		  oldRow = currentRow;
 		  currentRow = [self rowAtPoint: mouseLocationView];
+		  
 		  if (oldRow != currentRow)
 		    {
 		      shouldComputeNewSelection = YES;
+		    }
+		  
+		  if (draggingPossible == YES)
+		    {
+		      [self _trackCellAtColumn:_clickedColumn
+			    row:_clickedRow
+			    withEvent:theEvent];
 		    }
 		}
 	      else
@@ -3568,10 +3624,6 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
 	    case NSLeftMouseDown:
 	    case NSLeftMouseDragged:
-	      mouseLocationWin = [lastEvent locationInWindow];
-	      mouseLocationView = [self convertPoint: mouseLocationWin 
-					fromView: nil];
-
 	      if (fabs(mouseLocationWin.x - initialLocation.x) > 1
 	          || fabs(mouseLocationWin.y - initialLocation.y) > 1)
 		{
@@ -3587,12 +3639,10 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		    }
 		  else if (fabs(mouseLocationWin.x - initialLocation.x) >= 4)
 		    {
-		      NSPasteboard *pboard;
-		      NSArray *rows;
-
 		      mouseLocationView.x = _bounds.origin.x;
 		      oldRow = currentRow;
 		      currentRow = [self rowAtPoint: mouseLocationView];
+		      
 		      if (![_selectedRows containsIndex: currentRow])
 			{
 			  /* Mouse drag in a row that wasn't selected.
@@ -3607,46 +3657,8 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 					      selectionMode);
 			}
 
-		      rows = [self _selectedRowArray];
-		      pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
-		      if ([self _writeRows: rows
-				toPasteboard: pboard] == YES)
+		      if ([self _startDragOperationWithEvent:theEvent])
 			{
-			  NSPoint	p = NSZeroPoint;
-			  NSImage	*dragImage;
-			  NSSize	s;
-
-			  dragImage = [self dragImageForRows: rows
-						       event: theEvent
-					     dragImageOffset: &p];
-			  /*
-			   * Store image offset in s ... the returned
-			   * value is the position of the center of
-			   * the image, so we adjust to the bottom left
-			   * corner.
-			   */
-			  s = [dragImage size];
-			  s.width = p.x - s.width/2;
-			  s.height = p.y + s.height/2; // View is flipped
-
-			  /*
-			   * Find the current mouse location and adjust
-			   * it to determine the location of the bottom
-			   * left corner of the image in this view's
-			   * coordinate system.
-			   */
-			  p = [self convertPoint:
-			    [theEvent locationInWindow] fromView: nil];
-			  p.x += s.width;
-			  p.y += s.height;
-
-			  [self dragImage: dragImage
-				       at: p
-				   offset: NSMakeSize(0, 0)
-				    event: theEvent
-			       pasteboard: pboard
-				   source: self
-				slideBack: YES];
 			  return;
 			}
 		      else
@@ -3665,8 +3677,6 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		      startedPeriodicEvents = NO;
 		    }
 
-		  mouseLocationView = [self convertPoint: mouseLocationWin 
-					    fromView: nil];
 		  mouseLocationView.x = _bounds.origin.x;
 		  oldRow = currentRow;
 		  currentRow = [self rowAtPoint: mouseLocationView];
@@ -3674,6 +3684,11 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		    {
 		      shouldComputeNewSelection = YES;
 		    }
+		  
+		  [self _trackCellAtColumn:_clickedColumn
+				row:_clickedRow
+				withEvent:theEvent];
+		  getNextEvent = (lastEvent == [NSApp currentEvent]);
 		}
 	      else
 		{
@@ -3753,12 +3768,25 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 				  selectionMode);
 	      [self displayIfNeeded];
 	    }
+	  
 	  if (done == NO)
 	    {
-	      lastEvent = [NSApp nextEventMatchingMask: eventMask 
+	      /* in certain cases we are working with events that have already
+	       * occured and been dequeued by NSCell classes, in these cases
+	       * we set getNextEvent to NO, and get the current event.
+	       */
+	      if (getNextEvent == YES)
+	        {
+		  lastEvent = [NSApp nextEventMatchingMask: eventMask 
 				 untilDate: distantFuture
 				 inMode: NSEventTrackingRunLoopMode 
 				 dequeue: YES]; 
+		}
+	      else
+		{
+		  lastEvent = [NSApp currentEvent];
+		  getNextEvent = YES;
+		}
 	    }
 	  DESTROY(arp);
 	}

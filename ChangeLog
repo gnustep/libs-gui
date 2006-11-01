@@ -1,3 +1,12 @@
+2006-11-01  Matt Rice  <ratmice@yahoo.com>
+
+	* Source/NSTableView.m: Add new private methods.
+	(-mouseDown:): Reorganize and don't track cells until dragging 
+	has been ruled out.
+	* Source/NSCell.m (trackMouse:inRect:ofView:untilMouseUp:):
+	Handle events no longer in the queue.
+	* Source/GSDragView.m: Change NSLog to NSDebugLLog.
+
 2006-10-31  Matt Rice  <ratmice@yahoo.com>
 
 	*  Tools/gopen.m
