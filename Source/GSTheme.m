@@ -668,40 +668,62 @@ static NSNull			*null = nil;
 
 @implementation	GSTheme (Drawing)
 
-- (NSRect) drawButton: (NSRect) frame 
-                   in: (NSButtonCell*) cell 
-                 view: (NSView*) view 
-                style: (int) style 
-                state: (int) state
+- (NSRect) drawButton: (NSRect)frame 
+                   in: (NSButtonCell*)cell 
+                 view: (NSView*)view 
+                style: (int)style 
+                state: (int)state
 {
-  /* computes the interior frame rect */
-
-  NSRect interiorFrame = [cell drawingRectForBounds: frame];
-
-  /* Draw the button background */
+  GSDrawTiles	*tiles = nil;
+  NSColor	*color = nil;
+  NSRect	interiorFrame;
 
   if (state == 0) /* default state, unpressed */
     {
-      [[NSColor controlBackgroundColor] set];
-      NSRectFill(frame);
-      [self drawButton: frame withClip: NSZeroRect];
+      tiles = [self tilesNamed: @"NSButtonNormal" cache: YES];
+      color = [NSColor controlBackgroundColor];
     }
   else if (state == 1) /* highlighted state */
     {
-      [[NSColor selectedControlColor] set];
-      NSRectFill(frame);
-      [self drawGrayBezel: frame withClip: NSZeroRect];
+      tiles = [self tilesNamed: @"NSButtonHighlighted" cache: YES];
+      color = [NSColor selectedControlColor];
     }
   else if (state == 2) /* pushed state */
     {
-      [[NSColor selectedControlColor] set];
-      NSRectFill(frame);
-      [self drawGrayBezel: frame withClip: NSZeroRect];
-      interiorFrame
-	= NSOffsetRect(interiorFrame, 1.0, [view isFlipped] ? 1.0 : -1.0);
+      tiles = [self tilesNamed: @"NSButtonPushed" cache: YES];
+      color = [NSColor selectedControlColor];
     }
 
-  /* returns the interior frame rect */
+  if (tiles == nil)
+    {
+      interiorFrame = [cell drawingRectForBounds: frame];
+      [color set];
+      NSRectFill(frame);
+
+      if (state == 0) /* default state, unpressed */
+	{
+	  [self drawButton: frame withClip: NSZeroRect];
+	}
+      else if (state == 1) /* highlighted state */
+	{
+	  [self drawGrayBezel: frame withClip: NSZeroRect];
+	}
+      else if (state == 2) /* pushed state */
+	{
+	  [self drawGrayBezel: frame withClip: NSZeroRect];
+	  interiorFrame
+	    = NSOffsetRect(interiorFrame, 1.0, [view isFlipped] ? 1.0 : -1.0);
+	}
+    }
+  else
+    {
+      /* Use tiles to draw button border with central part filled with color
+       */
+      interiorFrame = [self fillRect: frame
+			   withTiles: tiles
+			  background: color
+			   fillStyle: GSThemeFillStyleNone];
+    }
 
   return interiorFrame;
 }

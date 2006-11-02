@@ -1,3 +1,13 @@
+2006-11-02 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSTheme.m:
+	* Source/GSInfoPanel.m:
+	Merge in changes from theme branch...
+	Support tiling when drawing button cells.
+	Make theme panel link visible, as someone suggested that having
+	it totally hidden was not so good. Perhaps make it more explicit
+	in future?
+
 2006-11-01  Matt Rice  <ratmice@yahoo.com>
 	
 	* Source/NSTableView.m:

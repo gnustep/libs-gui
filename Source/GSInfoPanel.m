@@ -170,6 +170,7 @@ new_label (NSString *value)
   NSString *url = nil;
   NSString *copyright = nil;
   NSString *copyrightDescription = nil;
+  NSString *theme = nil;
 
   /* GUI Objects used to show the Info */
   NSButton *iconButton;
@@ -181,6 +182,7 @@ new_label (NSString *value)
   NSTextField *urlLabel = nil;
   NSTextField *copyrightLabel;
   NSTextField *copyrightDescriptionLabel = nil;
+  NSTextField *themeLabel = nil;
   NSFont      *smallFont;
 
   /* Minimum size we use for the panel */
@@ -400,6 +402,12 @@ new_label (NSString *value)
       [copyrightDescriptionLabel sizeToFit];
     }
 
+  theme = [NSString stringWithFormat: @"%@: %@",
+    _(@"Current theme"), [[GSTheme theme] name]];
+  themeLabel = new_label (theme);
+  [themeLabel setFont: smallFont];
+  [themeLabel sizeToFit];
+
   /*
    * Compute width and height of the panel
    */
@@ -452,6 +460,10 @@ new_label (NSString *value)
 	width = tmp_A;
     }
 
+  tmp_A = [themeLabel frame].size.width;
+  if (tmp_A > width)
+    width = tmp_A;
+
   /* height */
   /* Warning: we implicitly assume icon height is approx of the
      standard height of 48.  The code tries to be nice so that 50 or
@@ -480,6 +492,9 @@ new_label (NSString *value)
       tmp_A += 2;
       tmp_A += [copyrightDescriptionLabel frame].size.height;
     }
+
+  tmp_A += 5;
+  tmp_A += [themeLabel frame].size.height;
 
   if (tmp_A > height)
     height = tmp_A;
@@ -592,18 +607,17 @@ new_label (NSString *value)
       [copyrightDescriptionLabel setFrame: f];
     }
 
+  f = [themeLabel frame];
+  f.origin.x = (width - f.size.width) / 2;
+  f.origin.y = tmp_b - 25 - f.size.height;
+  tmp_b = f.origin.y;
+  [cv addSubview: themeLabel];
+  [themeLabel setFrame: f];
+  [themeLabel setTarget: [GSTheme class]];
+  [themeLabel setAction: @selector(orderFrontSharedThemePanel:)];
+
   [self center];
   return self;
-}
-
-- (void) mouseDown: (NSEvent*)theEvent
-{
-  /*
-   * Mouse down on window background ... we could do different things in
-   * different regions of the window, but for now we just use this to
-   * activate the theme panel.
-   */
-  [GSTheme orderFrontSharedThemePanel: self]; 
 }
 
 @end
