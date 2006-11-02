@@ -4613,22 +4613,36 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo)
 
 void NSCountWindows(int *count)
 {
-  *count = (int)NSCountMapTable(windowmaps);
+  *count = (int)[[GSCurrentServer() windowlist] count];
 }
 
 void NSWindowList(int size, int list[])
 {
-  NSMapEnumerator	me = NSEnumerateMapTable(windowmaps);
-  void			*key;
-  id			win;
-  int			i = 0;
-
-  while (i < size && NSNextMapEnumeratorPair(&me, &key, (void*)&win))
+  NSArray *windowList = [GSCurrentServer() windowlist];
+  unsigned i, c;
+  for (i = 0, c = [windowList count]; i < size && i < c; i++)
     {
-      list[i++] = (intptr_t)key;
+      list[i] = [[windowList objectAtIndex:i] intValue];
     }
-/* FIXME - the list produced should be in window stacking order */
 }
+
+NSArray *GSOrderedWindows(void)
+{
+  NSArray *window_list = [GSCurrentServer() windowlist];
+  NSMutableArray *ret = [NSMutableArray array];
+  int i, c; 
+  
+  for (i = 0, c = [window_list count]; i < c; i++)
+    {
+      int windowNumber = [[window_list objectAtIndex:i] intValue];
+      NSWindow *win = GSWindowWithNumber(windowNumber);
+      
+      [ret addObject:win];
+    }
+
+  return ret;
+}
+
 
 NSArray* GSAllWindows(void)
 {

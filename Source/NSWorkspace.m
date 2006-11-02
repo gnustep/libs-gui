@@ -42,6 +42,7 @@
 #endif
 
 #include <Foundation/NSBundle.h>
+#include <Foundation/NSData.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSHost.h>
 #include <Foundation/NSLock.h>

@@ -33,6 +33,7 @@
 #include <Foundation/NSThread.h>
 #include <Foundation/NSGeometry.h>
 
+#include "AppKit/NSApplication.h"
 #include "AppKit/NSEvent.h"
 #include "AppKit/NSImage.h"
 #include "AppKit/NSWindow.h"
@@ -664,11 +665,25 @@ GSCurrentServer(void)
   return 0;
 }
 
-/** Returns the list of windows that the server controls */
+/** Backends can override this method to return an array of window numbers 
+    ordered front to back.  The front most window being the first object
+    in the array.  
+    The default implementation returns the visible windows in an
+    unspecified order.
+ */
 - (NSArray *) windowlist
 {
-  [self subclassResponsibility: _cmd];
-  return nil;
+  NSMutableArray *list = [NSMutableArray arrayWithArray:[NSApp windows]];
+  int c = [list count];
+
+  while (c-- > 0)
+    {
+       if (![[list objectAtIndex:c] isVisible])
+         {
+	   [list removeObjectAtIndex:c];
+         }
+    }
+  return [list valueForKey:@"windowNumber"];
 }
 
 /** Returns the depth of the window */

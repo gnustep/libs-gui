@@ -1,13 +1,108 @@
-2006-10-26 Richard Frith-Macdonald <rfm@gnu.org>
+2006-11-02 Richard Frith-Macdonald <rfm@gnu.org>
 
-	* Source/GSTheme.m: implement use of tiling for NSButton
+	* Source/GSTheme.m:
+	* Source/GSInfoPanel.m:
+	Merge in changes from theme branch...
+	Support tiling when drawing button cells.
+	Make theme panel link visible, as someone suggested that having
+	it totally hidden was not so good. Perhaps make it more explicit
+	in future?
 
+2006-11-01  Matt Rice  <ratmice@yahoo.com>
+	
+	* Source/NSTableView.m:
+	(-editColumn:row:withEvent:select:): Raise when passed an unselected
+	row.
+	(-textDidEndEditing:): Handle NSReturnTextMovement.
+	(_editNextCellAfterRow:inColumn:): New private method.
+	
+
+2006-11-01  Matt Rice  <ratmice@yahoo.com>
+
+	* Source/NSTableView.m: Add new private methods.
+	(-mouseDown:): Reorganize and don't track cells until dragging 
+	has been ruled out.
+	* Source/NSCell.m (trackMouse:inRect:ofView:untilMouseUp:):
+	Handle events no longer in the queue.
+	* Source/GSDragView.m: Change NSLog to NSDebugLLog.
+
+2006-10-31  Matt Rice  <ratmice@yahoo.com>
+
+	*  Tools/gopen.m
+	*  Source/NSView.m
+	*  Source/GSPDFPrintOperation.m
+	*  Source/NSHelpManager.m
+	*  Source/GSHelpManagerPanel.m: Add missing includes.
+
+2006-10-31 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWorkspace.m: add missing include
+
+2006-10-30  Matt Rice  <ratmice@yahoo.com>
+
+	* Source/NSComboBoxCell.m (validateSelection): Test for invalid row.
+
+2006-10-28  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSApplication.m (initialize_gnustep_backend): Use
+	GSBackend class directly when backend is compiled as a library.
+	(Partial fix for Bug #16453, see also gnustep-back).
+
+2006-10-27  Matt Rice  <ratmice@yahoo.com>
+
+	* Source/NSAlert.m: Add GSRunExceptionPanel function
+	and GSExceptionPanel class.
+	* Headers/AppKit/NSPanel.h: Declare GSRunExceptionPanel.
+	* Source/NSApplication.m (_NSAppKitUncaughtExceptionHandler):
+	Use GSRunExceptionPanel.
+
+2006-10-27  Matt Rice  <ratmice@yahoo.com>
+	
+	* Source/NSTableView.m (-setFrame:,-setFrameSize:): Use
+	documentVisibleRect. Shrink if table is larger than needed height.
+	fixes bug #18117.
+	(-drawBackgroundInClipRect:): Draw the background. 
+	* Source/NSClipView.m (-documentVisibleRect:): Return the clip views
+	visible rect converted to the document views coordinate system.
+
+2006-10-24  Matt Rice  <ratmice@yahoo.com>
+
+	* Source/NSApplication.m (NSAppIcon -mouseDown:): Call unhide:
+	regardless of whether we're hidden or not.
+
+2006-10-22  Matt Rice  <ratmice@yahoo.com>
+
+	* Source/NSTableView.m (-mouseDown:): Check for empty selection.
+	when adding to the current selection. Fixes bug #15261.
+
+2006-10-21  Matt Rice  <ratmice@yahoo.com>
+
+	* Headers/AppKit/NSGraphics.h: Add GSOrderedWindows function.
+	* Source/NSApplication.m (NSAppIconView -mouseDown:): Use
+	GSOrderedWindows.
+	(NSApplication -deactivate): Ditto.
+	(-hide:): Ditto.
+	(-unhideWithoutActivation:): Ditto.
+	(-makeWindowsPerform:inOrder): Ditto.
+	(-orderedWindows:): Ditto.
+	(-windowWillClose:): Ditto.
+	* Source/GSDisplayServer.m: Implement -windowlist.
+	* Source/NSWindow.m (NSCountWindowList,NSWindowList): Use -windowlist.
+	(GSOrderedWindows): Initial implementation.
+
+2006-10-21 11:30-EDT Matt Rice <ratmice@yahoo.com>
+	
+	* Source/NSTableView.m: If the tableview is smaller than
+	it's clipview, then resize it so that it fits.  
+	Corrects bug#9608 and bug#18073.
+	Patch committed by: Gregory Casamento <greg_casamento@yahoo.com>
+	
 2006-10-19 21:17-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSMenuItemCell.m: Correct menu highlighting issue
 	found by applying changes suggested by Jeff Teunissen.   This
 	change causes the menu to use the correct text color when
-	highlighted.
+	highlighted. (minor change)
 
 2006-10-19 Richard Frith-Macdonald <rfm@gnu.org>
 
@@ -25,7 +120,7 @@
 
 	* Source/NSFont.m: Apply slightly modified version of patch
 	from Jeff Teunissen deek@d2dc.net to setNSFont().  Setting
-	a font should set its size.
+	a font should set its size. (minor change)
 	* Source/NSImage.m: Set the alpha on the background when printing.
 
 2006-10-15 11:23-EDT Mark Tracy <tracy454 at concentric dot net>

@@ -756,7 +756,7 @@ static	GSDragView *sharedDragView = nil;
           break;
 
         default:
-          NSLog(@"Internal: dropped NSAppKitDefined (%d) event", sub);
+          NSDebugLLog(@"NSDragging", @"dropped NSAppKitDefined (%d) event", sub);
           break;
         }
       }

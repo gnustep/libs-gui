@@ -697,21 +697,25 @@ static GSComboWindow *gsWindow = nil;
     {
       NSText	*textObject = nil;
       id	cv = [_cell controlView];
+      int 	index = [_cell indexOfSelectedItem];
       
       if ([cv isKindOfClass: [NSControl class]])
         {
 	  textObject = [(NSControl *)cv currentEditor];
 	}
       
-      [_cell setStringValue: [_cell _stringValueAtIndex: 
-        [_cell indexOfSelectedItem]]]; 
-      // Will update the editor when needed
+      if (index != -1)
+        {
+          [_cell setStringValue: [_cell _stringValueAtIndex: 
+            [_cell indexOfSelectedItem]]]; 
+          // Will update the editor when needed
       
-      // FIXME: Because NSCell doesn't behave correctly the line just over has 
-      // no effect, to correct this fact, the code below is needed.
-      [textObject setString: [_cell _stringValueAtIndex:
-        [_cell indexOfSelectedItem]]];
-      // End of the code to remove 
+          // FIXME: Because NSCell doesn't behave correctly the line just over has 
+          // no effect, to correct this fact, the code below is needed.
+          [textObject setString: [_cell _stringValueAtIndex:
+          [_cell indexOfSelectedItem]]];
+          // End of the code to remove 
+        }
       
       if  (textObject != nil)
         {
