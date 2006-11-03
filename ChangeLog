@@ -1,3 +1,8 @@
+2006-11-02  Matt Rice  <ratmice@yahoo.com>
+
+	* Source/NSTableView (_editNextCellAfterRow:inColumn:): 
+	Wrap around when number of rows is exceeded.
+	
 2006-11-02 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTheme.m:

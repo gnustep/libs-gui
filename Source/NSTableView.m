@@ -5559,7 +5559,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
 - (void) _editNextCellAfterRow:(int)row inColumn:(int)column
 {
-  if (++row >= _numberOfColumns)
+  if (++row >= _numberOfRows)
     row = 0;
 
   if ([self _shouldSelectRow:row])
