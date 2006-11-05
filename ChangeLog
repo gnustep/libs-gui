@@ -1,3 +1,7 @@
+2006-11-05  Matt Rice  <ratmice@yahoo.com>
+
+	* Source/NSColorPanel.m: Implement -worksWhenModal:. Fixes bug #9417.
+
 2006-11-02  Matt Rice  <ratmice@yahoo.com>
 
 	* Source/NSTableView (_editNextCellAfterRow:inColumn:): 

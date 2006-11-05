@@ -681,6 +681,11 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
                     object: (id)self];
 }
 
+- (BOOL) worksWhenModal
+{
+  return YES;
+}
+
 //
 // NSCoding protocol
 //
