@@ -30,6 +30,7 @@
 #include "AppKit/NSSlider.h"
 #include "AppKit/NSSliderCell.h"
 #include "AppKit/NSWindow.h"
+#include "math.h"
 
 /**
   <unit>
@@ -252,6 +253,94 @@ static Class cellClass;
 - (BOOL) acceptsFirstMouse: (NSEvent *)theEvent
 {
   return YES;
+}
+
+- (void) keyDown:(NSEvent *)ev
+{
+  NSString *characters = [ev characters];
+  int i, length = [characters length];
+  double value = [self doubleValue];
+  double min = [_cell minValue];
+  double max = [_cell maxValue];
+  double altValue = [_cell altIncrementValue];
+  int alt_down = ([ev modifierFlags] & NSAlternateKeyMask);
+  BOOL only_ticks = [_cell allowsTickMarkValuesOnly];
+  BOOL valueChanged = NO;
+  double diff;
+  
+  
+  if (alt_down && altValue != -1)
+    {
+      diff = altValue;
+    }
+  else if (only_ticks)
+    {
+      if ([_cell numberOfTickMarks])
+        {
+  	  double tick0 = [_cell tickMarkValueAtIndex:0];
+	  double tick1 = [_cell tickMarkValueAtIndex:1];
+          diff = tick1 - tick0;
+	}
+      else
+        {
+	  diff = 0.0;
+        }
+    }
+  else
+    {
+      diff = fabs(min - max) / 20;
+    }
+  
+  for (i = 0; i < length; i++)
+    {
+      switch([characters characterAtIndex:i])
+        {
+	   case NSLeftArrowFunctionKey:
+	   case NSDownArrowFunctionKey:
+		value -= diff;
+		valueChanged = YES;
+	     break;
+	   case NSUpArrowFunctionKey:
+	   case NSRightArrowFunctionKey:
+	        value += diff;
+		valueChanged = YES;
+	     break;
+	   case NSPageDownFunctionKey:
+		value -= diff * 2;
+		valueChanged = YES;
+	     break;
+	   case NSPageUpFunctionKey:
+		value += diff * 2;
+		valueChanged = YES;
+	     break;
+	   case NSHomeFunctionKey:
+		value = min;
+		valueChanged = YES;
+	     break;
+	   case NSEndFunctionKey:
+		value = max;
+		valueChanged = YES;
+	     break;
+        }
+    }
+  
+  if (valueChanged)
+    {
+      if (only_ticks)
+        value = [_cell closestTickMarkValueToValue:value];
+      
+      if (value < min)
+	{ 
+	  value = min;
+	}
+      else if (value > max)
+	{
+	  value = max;
+	}
+      
+      [self setDoubleValue:value];
+      [self sendAction:[self action] to:[self target]];
+    }
 }
 
 // ticks

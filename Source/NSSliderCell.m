@@ -700,6 +700,11 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 						self, isFlipped); 
 	  if (floatValue != oldFloatValue)
 	    {
+	      if (_allowsTickMarkValuesOnly)
+		{
+		  floatValue = [self closestTickMarkValueToValue:floatValue]; 
+		}
+
 	      [self setFloatValue: floatValue];
 	      if (isContinuous)
 	        {

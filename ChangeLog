@@ -1,4 +1,10 @@
 2006-11-05  Matt Rice  <ratmice@yahoo.com>
+	
+	* Source/NSSlider.m (-keyDown:): Implement, Fixes bug #14000.
+	* Source/NSSliderCell.m (-trackMouse:...): Fix allows tick marks
+	only mouse tracking.
+	
+2006-11-05  Matt Rice  <ratmice@yahoo.com>
 
 	* Source/NSColorPanel.m: Implement -worksWhenModal:. Fixes bug #9417.
 
