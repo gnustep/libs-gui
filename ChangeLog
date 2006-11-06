@@ -1,3 +1,7 @@
+2006-11-06  Matt Rice  <ratmice@yahoo.com
+
+	* Source/NSTextView_actions.m: Fix keyboard movement scrolling.
+
 2006-11-06  Matt Rice  <ratmice@yahoo.com>
 
 	* Source/NSTextView_actions.m: Remove hack from previous patch.
