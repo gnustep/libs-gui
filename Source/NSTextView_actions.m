@@ -746,7 +746,16 @@ added to the selection (1,3).
 	  [self setSelectedRange: NSMakeRange(anchor, cindex - anchor)
 			affinity: NSSelectionAffinityDownstream
 		  stillSelecting: NO];
-	  [self scrollRangeToVisible: NSMakeRange(anchor, cindex - anchor)];
+	  if (anchor)
+	    {
+	      [self scrollRangeToVisible: NSMakeRange(anchor, cindex - anchor)];
+	    }
+	  else
+	    {
+	      /* seems to only happen from 
+	       * moveToEndOfDocumentAndModifySelection: */
+	      [self scrollRangeToVisible: NSMakeRange(cindex, 0)];
+	    }
 	}
       else
  	{
@@ -943,10 +952,22 @@ check if there was a reason for that.
 	 select: NO];
 }
 
+- (void) moveToBeginningOfDocumentAndModifySelection: (id)sender
+{
+  [self _moveTo: 0
+	  select:YES];
+}
+
 - (void) moveToEndOfDocument: (id)sender
 {
   [self _moveTo: [_textStorage length]
 	 select: NO];
+}
+
+- (void) moveToEndOfDocumentAndModifySelection: (id)sender
+{
+  [self _moveTo: [_textStorage length]
+	  select:YES];
 }
 
 - (void) moveToBeginningOfParagraph: (id)sender
@@ -959,7 +980,17 @@ check if there was a reason for that.
 	 select: NO];
 }
 
-- (void) moveToEndOfParagraph: (id)sender
+- (void) moveToBeginningOfParagraphAndModifySelection: (id)sender
+{
+  NSRange aRange;
+  
+  aRange = [[_textStorage string] lineRangeForRange: 
+				      NSMakeRange([self _movementOrigin], 0)];
+  [self _moveTo: aRange.location
+	 select: YES];
+}
+
+- (void) _moveToEndOfParagraph: (id)sender modify:(BOOL)flag
 {
   NSRange aRange;
   unsigned newLocation;
@@ -1010,9 +1041,18 @@ check if there was a reason for that.
     }
 
   [self _moveTo: newLocation
-	 select: NO];
+	 select: flag];
 }
 
+- (void) moveToEndOfParagraph: (id)sender
+{
+  [self _moveToEndOfParagraph:sender modify:NO];  
+}
+
+- (void) moveToEndOfParagraphAndModifySelection: (id)sender
+{
+  [self _moveToEndOfParagraph:sender modify:YES];  
+}
 
 /* TODO: this is only the beginning and end of lines if lines are horizontal
 and layout is left-to-right */
@@ -1022,11 +1062,26 @@ and layout is left-to-right */
 	distance: 1e8
 	select: NO];
 }
+
+- (void) moveToBeginningOfLineAndModifySelection: (id)sender
+{
+  [self _move: GSInsertionPointMoveLeft
+	distance: 1e8
+	select: YES];
+}
+
 - (void) moveToEndOfLine: (id)sender
 {
   [self _move: GSInsertionPointMoveRight
 	distance: 1e8
 	select: NO];
+}
+
+- (void) moveToEndOfLineAndModify: (id)sender
+{
+  [self _move: GSInsertionPointMoveRight
+	distance: 1e8
+	select: YES];
 }
 
 /**
@@ -1035,7 +1090,7 @@ and layout is left-to-right */
  * horizontal position of the last vertical movement.
  * If the receiver is a field editor, this method returns immediatly. 
  */
-- (void) pageDown: (id)sender
+- (void) _pageDown: (id)sender modify: (BOOL)flag
 {
   float    scrollDelta;
   float    oldOriginY;
@@ -1051,17 +1106,23 @@ and layout is left-to-right */
 
   if (scrollDelta == 0)
     {
-      /* TODO/FIXME: If no scroll was done, it means we are in the
-       * last page of the document already - should we move the
-       * insertion point to the last line when the user clicks
-       * 'PageDown' in that case ?
-       */
+      [self _moveTo:[_textStorage length] select:flag];
       return;
     }
 
   [self _move: GSInsertionPointMoveDown
 	distance: scrollDelta
-	select: NO];
+	select: flag];
+}
+
+- (void) pageDown:(id)sender
+{
+  [self _pageDown:sender modify:NO];
+}
+
+- (void) pageDownAndModifySelection:(id)sender
+{
+  [self _pageDown:sender modify:YES];
 }
 
 /**
@@ -1070,7 +1131,7 @@ and layout is left-to-right */
  * horizontal position of the last vertical movement.
  * If the receiver is a field editor, this method returns immediatly. 
  */
-- (void) pageUp: (id)sender
+- (void) _pageUp: (id)sender modify:(BOOL)flag
 {
   float    scrollDelta;
   float    oldOriginY;
@@ -1086,18 +1147,23 @@ and layout is left-to-right */
 
   if (scrollDelta == 0)
     {
-      /* TODO/FIXME: If no scroll was done, it means we are in the
-       * first page of the document already - should we move the
-       * insertion point to the first line when the user clicks
-       * 'PageUp' in that case ?
-       */
-      return;
+      [self _moveTo:0 select:flag];
+      return; 
     }
-
 
   [self _move: GSInsertionPointMoveUp
 	distance: -scrollDelta
-	select: NO];
+	select: flag];
+}
+
+- (void) pageUp:(id)sender
+{
+  [self _pageUp:sender modify:NO];
+}
+
+- (void) pageUpAndModifySelection:(id)sender
+{
+  [self _pageUp:sender modify:YES];
 }
 
 - (void) scrollLineDown: (id)sender

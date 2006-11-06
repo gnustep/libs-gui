@@ -1,5 +1,10 @@
 2006-11-06  Matt Rice  <ratmice@yahoo.com>
 
+	* Source/NSTextView_actions.m: Implement some undocumented key binding
+	actions.
+
+2006-11-06  Matt Rice  <ratmice@yahoo.com>
+
 	* Source/NSTextView_actions.m:
 	* Source/NSOpenPanel.m:
 	* Source/GSLayoutManager.m:
