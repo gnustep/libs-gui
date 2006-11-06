@@ -1,3 +1,16 @@
+2006-11-06  Matt Rice  <ratmice@yahoo.com>
+
+	* Source/NSTextView_actions.m:
+	* Source/NSOpenPanel.m:
+	* Source/GSLayoutManager.m:
+	* Source/NSLayoutManager.m:
+	* Source/NSSavePanel.m:
+	* Source/NSTextView.m:
+	* Source/NSStringDrawing.m:
+	* Headers/Additions/GNUstepGUI/GSLayoutManager_internal.h:
+	* Headers/AppKit/NSTextView.h: Remove underscores from category names
+	as they can confuse the debugger.
+
 2006-11-05  Matt Rice  <ratmice@yahoo.com>
 	
 	* Source/NSSlider.m (-keyDown:): Implement, Fixes bug #14000.

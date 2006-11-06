@@ -67,14 +67,14 @@ static BOOL _gs_display_reading_progress = NO;
 //
 // SavePanel filename compare
 //
-@interface NSString (_gsSavePanel)
+@interface NSString (GSSavePanel)
 - (NSComparisonResult)_gsSavePanelCompare:(NSString *)other;
 @end
 
 //
 // NSSavePanel private methods
 //
-@interface NSSavePanel (_PrivateMethods)
+@interface NSSavePanel (GSPrivateMethods)
 
 // Methods to manage default settings
 - (id) _initWithoutGModel;
@@ -93,7 +93,7 @@ static BOOL _gs_display_reading_progress = NO;
 - (NSComparisonResult) _compareFilename: (NSString *)n1 with: (NSString *)n2;
 @end /* NSSavePanel (PrivateMethods) */
 
-@implementation NSSavePanel (_PrivateMethods)
+@implementation NSSavePanel (PrivateMethods)
 
 - (NSDragOperation) draggingEntered: (id <NSDraggingInfo>)sender
 {
@@ -1292,7 +1292,7 @@ selectCellWithString: (NSString*)title
 //
 // SavePanel filename compare
 //
-@implementation NSString (_gsSavePanel)
+@implementation NSString (GSSavePanel)
 - (NSComparisonResult)_gsSavePanelCompare:(NSString *)other
 {
   int                sLength, oLength;
@@ -1373,7 +1373,7 @@ selectCellWithString: (NSString*)title
 //
 // NSSavePanel browser delegate methods
 //
-@interface NSSavePanel (_BrowserDelegate)
+@interface NSSavePanel (GSBrowserDelegate)
 - (void) browser: (NSBrowser*)sender
 createRowsForColumn: (int)column
         inMatrix: (NSMatrix*)matrix;
@@ -1405,7 +1405,7 @@ static int compareFilenames (id elem1, id elem2, void *context)
 }
 
 
-@implementation NSSavePanel (_BrowserDelegate)
+@implementation NSSavePanel (GSBrowserDelegate)
 - (void) browser: (NSBrowser*)sender
 createRowsForColumn: (int)column
 	inMatrix: (NSMatrix*)matrix

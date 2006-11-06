@@ -54,10 +54,10 @@ static int random_level(void)
 /*
 Private method used internally by GSLayoutManager for sanity checking.
 */
-@interface NSTextStorage (GSLayoutManager_sanity_checking)
+@interface NSTextStorage (GSLayoutManagerSanityChecking)
 -(unsigned int) _editCount;
 @end
-@implementation NSTextStorage (GSLayoutManager_sanity_checking)
+@implementation NSTextStorage (GSLayoutManagerSanityChecking)
 -(unsigned int) _editCount;
 {
   return _editCount;
@@ -67,7 +67,7 @@ Private method used internally by GSLayoutManager for sanity checking.
 
 /***** Glyph handling *****/
 
-@implementation GSLayoutManager (glyphs_helpers)
+@implementation GSLayoutManager (GlyphsHelpers)
 
 
 -(void) _run_cache_attributes: (glyph_run_t *)r : (NSDictionary *)attributes
@@ -1517,7 +1517,7 @@ places where we switch.
 
 /***** Layout handling *****/
 
-@implementation GSLayoutManager (layout_helpers)
+@implementation GSLayoutManager (LayoutHelpers)
 
 -(void) _invalidateLayoutFromContainer: (int)idx
 {

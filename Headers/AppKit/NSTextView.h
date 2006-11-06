@@ -393,7 +393,7 @@ These methods are implemented in NSTextView_actions.m. See the comment in
 that file for details on the split and which methods are for
 user/programmatic changes of the text.
 */
-@interface NSTextView (user_actions)
+@interface NSTextView (UserActions)
 
 -(void) alignJustified: (id)sender; /* mosx */
 
@@ -538,7 +538,7 @@ already been laid out. */
 @end
 
 
-@interface NSTextView (GSTextView_sync)
+@interface NSTextView (GSTextViewSync)
 /*
  * This queries the NSLayoutManager to see if it is using multiple
  * text views, and saves this information in a flag, and caches the

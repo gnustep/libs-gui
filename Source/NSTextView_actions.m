@@ -113,7 +113,7 @@ send -shouldChangeTextInRange:replacementString: or -didChangeText.
 
 /** First some helpers **/
 
-@interface NSTextView (user_action_helpers)
+@interface NSTextView (UserActionHelpers)
 
 -(void) _illegalMovement: (int)textMovement;
 
@@ -124,7 +124,7 @@ send -shouldChangeTextInRange:replacementString: or -didChangeText.
 @end
 
 
-@implementation NSTextView (user_action_helpers)
+@implementation NSTextView (UserActionHelpers)
 
 - (void) _illegalMovement: (int)textMovement
 {
@@ -221,7 +221,7 @@ send -shouldChangeTextInRange:replacementString: or -didChangeText.
 @end
 
 
-@implementation NSTextView (user_actions)
+@implementation NSTextView (UserActions)
 
 /* Helpers used with _changeAttribute:inRange:using:. */
 static NSNumber *int_minus_one(NSNumber *cur)
