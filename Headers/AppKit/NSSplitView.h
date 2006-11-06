@@ -23,7 +23,8 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */ 
 
 #ifndef _GNUstep_H_NSSplitView
@@ -55,7 +56,7 @@
 - (void) setVertical: (BOOL)flag;
 - (BOOL) isVertical;
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (BOOL) isSubviewCollapsed: (NSView *)subview;
 - (BOOL) isPaneSplitter;
 - (void) setIsPaneSplitter: (BOOL)flag;
@@ -63,7 +64,7 @@
 
 @end
 
-#ifndef	NO_GNUSTEP
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 @interface NSSplitView (GNUstepExtra)
 /* extra methods to make it more usable */
 - (float) draggedBarWidth;
@@ -97,7 +98,7 @@ constrainSplitPosition: (float)proposedPosition
 - (void) splitViewWillResizeSubviews: (NSNotification *)notification;
 - (void) splitViewDidResizeSubviews: (NSNotification *)notification;
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (BOOL) splitView: (NSSplitView *)sender
 canCollapseSubview: (NSView *)subview;
 

@@ -23,11 +23,13 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */ 
 
 #ifndef _GNUstep_H_NSCell
 #define _GNUstep_H_NSCell
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSGeometry.h>
@@ -162,7 +164,7 @@ enum {
 //
 // Class methods
 // 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 + (NSMenu *)defaultMenu;
 #endif
 + (BOOL) prefersTrackingUntilMouseUp;
@@ -242,7 +244,7 @@ enum {
 - (void)setWraps:(BOOL)flag;
 - (BOOL)wraps;
 - (NSText *)setUpFieldEditorAttributes:(NSText *)textObject;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void)setAttributedStringValue:(NSAttributedString *)attribStr;
 - (NSAttributedString *)attributedStringValue;
 - (void)setAllowsEditingTextAttributes:(BOOL)flag;
@@ -279,7 +281,7 @@ enum {
 //
 // Formatting Data and Validating Input 
 //
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void)setFormatter:(NSFormatter *)newFormatter;
 - (id)formatter;
 #endif
@@ -293,7 +295,7 @@ enum {
 //
 // Menu
 //
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void)setMenu:(NSMenu *)aMenu;
 - (NSMenu *)menu;
 - (NSMenu *)menuForEvent:(NSEvent *)anEvent 
@@ -318,7 +320,7 @@ enum {
 // interface so methods referring to mnemonics do nothing -- they are
 // provided for compatibility only; please use key equivalents instead
 // in your GNUstep programs.
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (BOOL)acceptsFirstResponder;
 - (void)setShowsFirstResponder:(BOOL)flag;
 - (BOOL)showsFirstResponder;
@@ -391,7 +393,7 @@ enum {
 - (NSRect)drawingRectForBounds:(NSRect)theRect;
 - (NSRect)imageRectForBounds:(NSRect)theRect;
 - (NSRect)titleRectForBounds:(NSRect)theRect;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void)setControlSize:(NSControlSize)controlSize;
 - (NSControlSize)controlSize;
 #endif
@@ -408,7 +410,7 @@ enum {
 	withFrame:(NSRect)cellFrame
 	   inView:(NSView *)controlView;
 - (BOOL)isHighlighted;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void)setHighlighted: (BOOL) flag;
 - (NSColor*)highlightColorWithFrame:(NSRect)cellFrame
 			     inView:(NSView *)controlView;
@@ -431,7 +433,7 @@ enum {
 		  start:(int)selStart	 
 		 length:(int)selLength;
 - (void)endEditing:(NSText *)textObject;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (BOOL)sendsActionOnEndEditing;
 - (void)setSendsActionOnEndEditing:(BOOL)flag;
 #endif

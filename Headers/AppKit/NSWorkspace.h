@@ -23,7 +23,8 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */ 
 
 #ifndef _GNUstep_H_NSWorkspace
@@ -70,7 +71,7 @@
   withApplication: (NSString*)appName
     andDeactivate: (BOOL)flag;
 - (BOOL) openTempFile: (NSString*)fullPath;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (BOOL) openURL: (NSURL*)url;
 #endif
 
@@ -101,7 +102,7 @@
 - (NSImage*) iconForFile: (NSString*)fullPath;
 - (NSImage*) iconForFiles: (NSArray*)pathArray;
 - (NSImage*) iconForFileType: (NSString*)fileType;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (BOOL) isFilePackageAtPath: (NSString*)fullPath;
 #endif
 
@@ -110,7 +111,7 @@
 //
 - (BOOL) fileSystemChanged;
 - (void) noteFileSystemChanged;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) noteFileSystemChanged: (NSString*)path;
 #endif
 
@@ -127,7 +128,7 @@
 - (BOOL) launchApplication: (NSString*)appName
 		  showIcon: (BOOL)showIcon
 		autolaunch: (BOOL)autolaunch;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (NSDictionary*) activeApplication;
 - (NSArray*) launchedApplications;
 #endif
@@ -143,7 +144,7 @@
 - (void) checkForRemovableMedia;
 - (NSArray*) mountNewRemovableMedia;
 - (NSArray*) mountedRemovableMedia;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (NSArray*) mountedLocalVolumePaths;
 #endif
 
@@ -172,7 +173,7 @@
 
 @end
 
-#ifndef	NO_GNUSTEP
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 
 @class NSBundle;
 

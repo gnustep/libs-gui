@@ -24,11 +24,13 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */ 
 
 #ifndef _GNUstep_H_NSScroller
 #define _GNUstep_H_NSScroller
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <AppKit/NSControl.h>
 #include <AppKit/NSCell.h>
@@ -114,7 +116,7 @@ typedef enum _NSScrollerArrow {
 - (void)trackKnob:(NSEvent *)theEvent;
 - (void)trackScrollButtons:(NSEvent *)theEvent;
 
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 + (float)scrollerWidthForControlSize:(NSControlSize)controlSize;
 - (void)setControlSize:(NSControlSize)controlSize;
 - (NSControlSize)controlSize;

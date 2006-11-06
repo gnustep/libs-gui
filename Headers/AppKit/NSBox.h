@@ -23,11 +23,13 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */ 
 
 #ifndef _GNUstep_H_NSBox
 #define _GNUstep_H_NSBox
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <AppKit/NSView.h>
 
@@ -70,7 +72,7 @@ typedef enum _NSTitlePosition {
 - (NSFont *)titleFont;
 - (NSTitlePosition)titlePosition;
 - (NSRect)titleRect;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void)setTitleWithMnemonic:(NSString *)aString;
 #endif
 
@@ -88,7 +90,7 @@ typedef enum _NSTitlePosition {
 - (void)setFrameFromContentFrame:(NSRect)contentFrame;
 - (void)sizeToFit;
 
-#ifndef NO_GNUSTEP
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 -(NSSize) minimumSize;
 #endif
 @end

@@ -27,11 +27,13 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */
 
 #ifndef _GNUstep_H_NSSavePanel
 #define _GNUstep_H_NSSavePanel
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <AppKit/NSPanel.h>
 
@@ -104,7 +106,7 @@ enum {
 - (void) setPrompt: (NSString *)prompt;
 - (NSString *) prompt;
 
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) setNameFieldLabel: (NSString *)label;
 - (NSString *) nameFieldLabel;
 - (void) setMessage: (NSString *)message;
@@ -126,7 +128,7 @@ enum {
 - (void) setDirectory: (NSString *)path;
 - (void) setRequiredFileType: (NSString *)fileType;
 
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) setAllowedFileTypes: (NSArray *)types;
 - (void) setAllowsOtherFileTypes: (BOOL)flag;
 - (NSArray *) allowedFileTypes;
@@ -138,7 +140,7 @@ enum {
 
 - (void) validateVisibleColumns;
 
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) setCanCreateDirectories: (BOOL)flag;
 - (BOOL) canCreateDirectories;
 #endif
@@ -149,7 +151,7 @@ enum {
 - (int) runModalForDirectory: (NSString *)path file: (NSString *)filename;
 - (int) runModal;
 
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (int) runModalForDirectory: (NSString *)path
 			file: (NSString *)filename
 	    relativeToWindow: (NSWindow*)window;
@@ -166,7 +168,7 @@ enum {
  */
 - (NSString *) directory;
 - (NSString *) filename;
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (NSURL *) URL;
 - (BOOL) isExpanded;
 #endif
@@ -211,7 +213,7 @@ enum {
 userEnteredFilename: (NSString *)fileName
           confirmed: (BOOL)okFlag;
 
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) panel: (id)sender willExpand: (BOOL)expanding;
 - (void) panelSelectionDidChange: (id)sender;
 - (void) panel: (id)sender directoryDidChange: (NSString *)path;

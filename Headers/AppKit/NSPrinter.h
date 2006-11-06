@@ -26,7 +26,8 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */ 
 
 #ifndef _GNUstep_H_NSPrinter
@@ -48,7 +49,10 @@ typedef enum _NSPrinterTableStatus {
 
 @interface NSPrinter : NSObject <NSCoding>
 {
-  NSString *_printerHost, *_printerName, *_printerNote, *_printerType;
+  NSString *_printerHost;
+  NSString *_printerName;
+  NSString *_printerNote;
+  NSString *_printerType;
   
   //The way openstep handled NSPrinter was odd, it had a concept of "real" 
   //printers and

@@ -23,11 +23,13 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */ 
 
 #ifndef _GNUstep_H_NSResponder
 #define _GNUstep_H_NSResponder
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <Foundation/NSObject.h>
 #include <AppKit/NSInterfaceStyle.h>
@@ -41,7 +43,7 @@
 
 @interface NSResponder : NSObject <NSCoding>
 {
-#ifdef  STRICT_OPENSTEP
+#if  OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
   int			_interface_style;
 #else
   NSInterfaceStyle	_interface_style;
@@ -118,7 +120,7 @@
 - (void) mouseMoved: (NSEvent*)theEvent;
 - (void) mouseUp: (NSEvent*)theEvent;
 - (void) noResponderFor: (SEL)eventSelector;
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) otherMouseDown: (NSEvent*)theEvent;
 - (void) otherMouseDragged: (NSEvent*)theEvent;
 - (void) otherMouseUp: (NSEvent*)theEvent;
@@ -140,7 +142,7 @@
 - (void) encodeWithCoder: (NSCoder*)aCoder;
 - (id) initWithCoder: (NSCoder*)aDecoder;
 
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) interpretKeyEvents: (NSArray*)eventArray;
 - (BOOL) performMnemonic: (NSString*)aString;
 - (void) flushBufferedKeyEvents;
@@ -175,7 +177,7 @@
 #endif
 @end
 
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 @interface NSResponder (OptionalActionMethods)
 - (void) capitalizeWord: (id)sender;
 - (void) centerSelectionInVisibleArea: (id)sender;

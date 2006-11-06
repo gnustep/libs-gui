@@ -21,13 +21,15 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */ 
 
 #ifndef _GNUstep_H_NSInterfaceStyle
 #define _GNUstep_H_NSInterfaceStyle
+#import <GNUstepBase/GSVersionMacros.h>
 
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 
 #include <AppKit/AppKitDefines.h>
 
@@ -53,7 +55,7 @@ APPKIT_EXPORT NSString	*NSInterfaceStyleDefault;
 APPKIT_EXPORT NSInterfaceStyle
 NSInterfaceStyleForKey(NSString *key, NSResponder *responder);
 
-#endif // STRICT_OPENSTEP
+#endif // GS_API_MACOSX
 
 #endif // _GNUstep_H_NSInterfaceStyle
 

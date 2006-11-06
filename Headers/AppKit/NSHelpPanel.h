@@ -23,13 +23,16 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */ 
 
-#ifndef	STRICT_MACOS_X
 
 #ifndef _GNUstep_H_NSHelpPanel
 #define _GNUstep_H_NSHelpPanel
+#import <GNUstepBase/GSVersionMacros.h>
+
+#if	OS_API_VERSION(GS_API_OPENSTEP,GS_API_MACOSX) || GS_API_VERSION(GS_API_NONE, GS_API_LATEST)
 
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSPanel.h>
@@ -88,6 +91,6 @@
 
 @end
 
+#endif // !GS_API_MACOSX
 #endif // _GNUstep_H_NSHelpPanel
-#endif // STRICT_MACOS_X
 

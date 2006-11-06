@@ -27,7 +27,8 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */
 
 #ifndef _GNUstep_H_NSWindow
@@ -334,7 +335,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
 
 - (void) center;
 - (int) resizeFlags;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) setFrame: (NSRect)frameRect
 	  display: (BOOL)displayFlag
 	  animate: (BOOL)animationFlag;
@@ -354,7 +355,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
 - (void) setMaxSize: (NSSize)aSize;
 - (NSRect) constrainFrameRect: (NSRect)frameRect
 		     toScreen: (NSScreen*)screen;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (NSSize) aspectRatio;
 - (void) setAspectRatio: (NSSize)ratio;
 - (NSSize) resizeIncrements;
@@ -371,7 +372,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
 - (void) setFrameFromString: (NSString*)string;
 - (BOOL) setFrameUsingName: (NSString*)name;
 - (NSString*) stringWithSavedFrame;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (BOOL) setFrameUsingName: (NSString *)name
 		     force: (BOOL)force;
 #endif
@@ -401,7 +402,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
 - (void) resignKeyWindow;
 - (void) resignMainWindow;
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (NSButtonCell*) defaultButtonCell;
 - (void) setDefaultButtonCell: (NSButtonCell*)aCell;
 - (void) disableKeyEquivalentForDefaultButtonCell;
@@ -426,7 +427,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
 - (void) flushWindow;
 - (void) flushWindowIfNeeded;
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) cacheImageInRect: (NSRect)aRect;
 - (void) discardCachedImage;
 - (void) restoreCachedImage;
@@ -503,7 +504,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
 - (NSText*) fieldEditor: (BOOL)createFlag
 	      forObject: (id)anObject;
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (NSView*) initialFirstResponder;
 - (NSSelectionDirection) keyViewSelectionDirection;
 - (void) selectKeyViewFollowingView: (NSView*)aView;
@@ -545,11 +546,11 @@ APPKIT_EXPORT NSSize NSTokenSize;
 - (NSString*) miniwindowTitle;
 - (void) setMiniwindowImage: (NSImage*)image;
 - (void) setMiniwindowTitle: (NSString*)title;
-#ifndef	NO_GNUSTEP
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 - (NSWindow*) counterpart;
 #endif
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 + (void) menuChanged: (NSMenu*)aMenu;
 #endif
 
@@ -585,7 +586,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
 - (BOOL) hidesOnDeactivate;
 - (void) setHidesOnDeactivate: (BOOL)flag;
 - (BOOL) worksWhenModal;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) setCanHide: (BOOL)flag;
 - (BOOL) canHide;
 #endif
@@ -598,7 +599,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
 - (void) setBackgroundColor: (NSColor*)color;
 - (NSColor*) backgroundColor;
 - (unsigned int) styleMask;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) setHasShadow: (BOOL)hasShadow;
 - (BOOL) hasShadow;
 - (void) setAlphaValue: (float)windowAlpha;
@@ -619,7 +620,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
 - (void) fax: (id)sender;
 - (void) print: (id)sender;
 - (NSData*) dataWithEPSInsideRect: (NSRect)rect;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (NSData*) dataWithPDFInsideRect:(NSRect)aRect;
 #endif
 
@@ -635,7 +636,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
 - (void) setWindowController: (NSWindowController*)windowController;
 - (id) windowController;
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (NSArray *) drawers;
 - (id) initWithWindowRef: (void *)windowRef;
 - (void *)windowRef;
@@ -643,7 +644,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
 #endif
 @end
 
-#ifndef NO_GNUSTEP
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 /*
  * GNUstep backend methods
  */
@@ -669,7 +670,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
 @end
 #endif
 
-#ifndef NO_GNUSTEP
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 @interface NSWindow (GNUstepTextView)
 /*
  * Called from NSTextView's resignFirstResponder to know which is 
@@ -686,7 +687,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
 #ifdef GNUSTEP
 @interface NSObject (NSWindowDelegate)
 - (BOOL) windowShouldClose: (id)sender;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (BOOL) windowShouldZoom: (NSWindow*)sender
 		  toFrame: (NSRect)aFrame;
 - (NSRect) windowWillUseStandardFrame: (NSWindow*)sender

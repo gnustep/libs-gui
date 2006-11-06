@@ -24,11 +24,13 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */ 
 
 #ifndef _GNUstep_H_NSPasteboard
 #define _GNUstep_H_NSPasteboard
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <Foundation/NSObject.h>
 #include <Foundation/NSString.h>
@@ -108,7 +110,7 @@ APPKIT_EXPORT NSString *NSDataLinkPboardType;
  */
 APPKIT_EXPORT NSString *NSGeneralPboardType;
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 /**
  * Pasteboard contains a PDF document
  */
@@ -253,7 +255,7 @@ APPKIT_EXPORT NSString *NSPasteboardCommunicationException;
 - (void) pasteboard: (NSPasteboard*)sender
  provideDataForType: (NSString*)type;
 
-#ifndef	NO_GNUSTEP
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 /**
  * Implemented where GNUstep pasteboard extensions are required.<br />
  * This method is called by the pasteboard system when it does not have
@@ -282,7 +284,7 @@ APPKIT_EXPORT NSString *NSPasteboardCommunicationException;
 - (void) setHistory: (unsigned)length;
 @end
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 #include <Foundation/NSURL.h>
 
 @interface NSURL (NSPasteboard)

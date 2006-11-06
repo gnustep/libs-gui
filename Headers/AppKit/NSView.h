@@ -26,7 +26,8 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */
 
 #ifndef _GNUstep_H_NSView
@@ -140,7 +141,7 @@ typedef enum _NSFocusRingType {
 - (NSView*) opaqueAncestor;
 - (void) removeFromSuperviewWithoutNeedingDisplay;
 - (void) removeFromSuperview;
-#ifndef	NO_GNUSTEP
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 - (void) removeSubview: (NSView*)aView;
 #endif
 - (void) replaceSubview: (NSView*)oldView
@@ -152,7 +153,7 @@ typedef enum _NSFocusRingType {
 - (NSWindow*) window;
 - (void) viewWillMoveToSuperview: (NSView*)newSuper;
 - (void) viewWillMoveToWindow: (NSWindow*)newWindow;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) didAddSubview: (NSView *)subview;
 - (void) viewDidMoveToSuperview;
 - (void) viewDidMoveToWindow;
@@ -234,7 +235,7 @@ typedef enum _NSFocusRingType {
 + (NSView*) focusView;
 - (void) lockFocus;
 - (void) unlockFocus;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (BOOL) lockFocusIfCanDraw;
 - (void) lockFocusInRect: (NSRect)rect;
 #endif
@@ -253,7 +254,7 @@ typedef enum _NSFocusRingType {
 - (void) setNeedsDisplay: (BOOL)flag;
 - (void) setNeedsDisplayInRect: (NSRect)invalidRect;
 - (BOOL) isOpaque;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 + (NSFocusRingType) defaultFocusRingType;
 - (void) setKeyboardFocusRingNeedsDisplayInRect: (NSRect)rect;
 - (void) setFocusRingType: (NSFocusRingType)focusRingType;
@@ -271,7 +272,7 @@ typedef enum _NSFocusRingType {
 - (NSRect) visibleRect;
 - (BOOL) canDraw;
 - (BOOL) shouldDrawColor;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (BOOL) wantsDefaultClipping;
 - (BOOL) needsToDrawRect: (NSRect)aRect;
 - (void) getRectsBeingDrawn: (const NSRect **)rects count: (int *)count;
@@ -298,7 +299,7 @@ typedef enum _NSFocusRingType {
 - (BOOL) mouse: (NSPoint)aPoint
 	inRect: (NSRect)aRect;
 - (BOOL) performKeyEquivalent: (NSEvent*)theEvent;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (BOOL) performMnemonic: (NSString *)aString;
 - (BOOL) mouseDownCanMoveWindow;
 #endif
@@ -320,7 +321,7 @@ typedef enum _NSFocusRingType {
 - (void) registerForDraggedTypes: (NSArray*)newTypes;
 - (void) unregisterDraggedTypes;
 - (BOOL) shouldDelayWindowOrderingForEvent: (NSEvent*)anEvent;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (BOOL) dragPromisedFilesOfTypes: (NSArray *)typeArray
                          fromRect: (NSRect)aRect
                            source: (id)sourceObject 
@@ -357,7 +358,7 @@ typedef enum _NSFocusRingType {
 - (void) removeCursorRect: (NSRect)aRect
 		   cursor: (NSCursor*)anObject;
 
-/** <subclass-override />
+/** <override-subclass/>
  * This is called to establish a new set of cursor rectangles whenever
  * the receiver needs to do so (eg the view has been resized).  The default
  * implementation does nothing, but subclasses should use it to make
@@ -365,7 +366,7 @@ typedef enum _NSFocusRingType {
  */
 - (void) resetCursorRects;
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 /*
  * Tool Tips
  */
@@ -418,7 +419,7 @@ typedef enum _NSFocusRingType {
 - (void) scrollClipView: (NSClipView*)aClipView
 		toPoint: (NSPoint)aPoint;
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 /*
  * Menu operations
  */
@@ -436,7 +437,7 @@ typedef enum _NSFocusRingType {
 - (void) setPreviousKeyView: (NSView*)aView;
 - (NSView*) previousKeyView;
 - (NSView*) previousValidKeyView;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (BOOL) canBecomeKeyView;
 #endif
 
@@ -448,7 +449,7 @@ typedef enum _NSFocusRingType {
 - (NSData*) dataWithEPSInsideRect: (NSRect)aRect;
 - (void) writeEPSInsideRect: (NSRect)rect
 	       toPasteboard: (NSPasteboard*)pasteboard;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (NSData *)dataWithPDFInsideRect:(NSRect)aRect;
 - (void)writePDFInsideRect:(NSRect)aRect 
 	      toPasteboard:(NSPasteboard *)pboard;
@@ -469,7 +470,7 @@ typedef enum _NSFocusRingType {
 - (float) heightAdjustLimit;
 - (BOOL) knowsPagesFirst: (int*)firstPageNum
 		    last: (int*)lastPageNum;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (BOOL) knowsPageRange: (NSRange*)range;
 #endif
 - (NSPoint) locationOfPrintRect: (NSRect)aRect;
@@ -503,7 +504,7 @@ typedef enum _NSFocusRingType {
 - (void) endPageSetup;
 - (void) endPage;
 - (void) endTrailer;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void)beginDocument;
 - (void)beginPageInRect:(NSRect)aRect 
 	    atPlacement:(NSPoint)location;
@@ -519,7 +520,7 @@ typedef enum _NSFocusRingType {
  * GNUstep extensions
  * Methods whose names begin with an underscore must NOT be overridden.
  */
-#ifndef	NO_GNUSTEP
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 @interface NSView (PrivateMethods)
 
 /*

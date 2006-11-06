@@ -377,8 +377,10 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   return self;
 }
 
-/**<p>Initializes and returns a new NSImage from the NSData data.</p>
-   <p>See Also: [NSImageRep+imageRepWithData:]</p>
+/**
+ * <p>Initializes and returns a new NSImage from the NSData data.</p>
+ * <p>See Also: [NSBitmapImageRep+imageRepWithData:] or
+ * [NSEPSImageRep+imageRepWithData:]</p>
  */
 - (id) initWithData: (NSData *)data
 {
@@ -823,7 +825,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 }
 
 - (void) compositeToPoint: (NSPoint)aPoint
-		 fromRect: (NSRect)aRect
+		 fromRect: (NSRect)srcRect
 		operation: (NSCompositingOperation)op
 		 fraction: (float)delta
 {
@@ -832,27 +834,28 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   NS_DURING
     { 
       if ([GSCurrentContext() isDrawingToScreen] == YES)
-	  rep = [self _doImageCache];
+	rep = [self _doImageCache];
       if (rep
-	  &&_cacheMode != NSImageCacheNever 
-	  && [rep isKindOfClass: cachedClass])
+	&&_cacheMode != NSImageCacheNever 
+	&& [rep isKindOfClass: cachedClass])
         {
 	  NSRect rect;
 
 	  rect = [(NSCachedImageRep *)rep rect];
 	  NSDebugLLog(@"NSImage", @"composite rect %@ in %@", 
-		      NSStringFromRect(rect), NSStringFromRect(aRect));
+		      NSStringFromRect(rect), NSStringFromRect(srcRect));
 	  // Move the drawing rectangle to the origin of the image rep
 	  // and intersect the two rects.
-	  aRect.origin.x += rect.origin.x;
-	  aRect.origin.y += rect.origin.y;
-	  rect = NSIntersectionRect(aRect, rect);
+	  srcRect.origin.x += rect.origin.x;
+	  srcRect.origin.y += rect.origin.y;
+	  rect = NSIntersectionRect(srcRect, rect);
 
-	  [GSCurrentContext() GScomposite: [[(NSCachedImageRep *)rep window] gState]
-			   toPoint: aPoint
-			   fromRect: rect
-			   operation: op
-			   fraction: delta];
+	  [GSCurrentContext() GScomposite:
+	    [[(NSCachedImageRep *)rep window] gState]
+	    toPoint: aPoint
+	    fromRect: rect
+	    operation: op
+	    fraction: delta];
 	}
       else	
         {
@@ -864,17 +867,18 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     }
   NS_HANDLER
     {
-      NSLog(@"NSImage: compositeToPoint:fromRect:operation:fraction: failed due to %@: %@", 
-	    [localException name], [localException reason]);
+      NSLog(@"NSImage: compositeToPoint:fromRect:operation:fraction:"
+        @"failed due to %@: %@", 
+        [localException name], [localException reason]);
       if ([_delegate respondsToSelector: @selector(imageDidNotDraw:inRect:)])
         {
-	  NSImage *image = [_delegate imageDidNotDraw: self inRect: aRect];
+	  NSImage *image = [_delegate imageDidNotDraw: self inRect: srcRect];
 
 	  if (image != nil)
 	    [image compositeToPoint: aPoint
-		   fromRect: aRect 
-		   operation: op
-		   fraction: delta];
+			   fromRect: srcRect 
+			  operation: op
+			   fraction: delta];
 	}
     }
   NS_ENDHANDLER
@@ -995,7 +999,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 - (void) drawInRect: (NSRect)dstRect
 	   fromRect: (NSRect)srcRect
 	  operation: (NSCompositingOperation)op
-	   fraction: (float)fraction
+	   fraction: (float)delta
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
   NSAffineTransform *transform;
@@ -1042,7 +1046,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
   /* If the effective transform is the identity transform and there's
      no dissolve, we can composite from our cache.  */
-  if (fraction == 1.0
+  if (delta == 1.0
       && fabs(transform->matrix.m11 - 1.0) < 0.01
       && fabs(transform->matrix.m12) < 0.01
       && fabs(transform->matrix.m21) < 0.01
@@ -1141,9 +1145,9 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
     /* If we're doing a dissolve, use a DestinationIn composite to lower
        the alpha of the pixels.  */
-    if (fraction != 1.0)
+    if (delta != 1.0)
       {
-	DPSsetalpha(ctxt, fraction);
+	DPSsetalpha(ctxt, delta);
 	DPScompositerect(ctxt, 0, 0, s.width, s.height,
 			 NSCompositeDestinationIn);
       }

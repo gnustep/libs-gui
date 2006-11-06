@@ -23,11 +23,13 @@
    
    You should have received a copy of the GNU Library General Public
    License along with this library; if not, write to the Free
-   Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02111 USA.
+   Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02111 USA.
    */
 
 #ifndef _NSGraphicsContext_h_INCLUDE
 #define _NSGraphicsContext_h_INCLUDE
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <Foundation/NSObject.h>
 #include <Foundation/NSMapTable.h>
@@ -92,7 +94,7 @@ typedef enum _NSImageInterpolation
 
 /*
  * The following graphics context stuff is needed by inline functions,
- * so it must always be available even when STRICT_OPENSTEP is defined.
+ * so it must always be available even when compiling for MACOSX or OPENSTEP
  */
 
 
@@ -187,7 +189,7 @@ typedef enum _GSColorSpace
 
 APPKIT_EXPORT NSGraphicsContext	*GSCurrentContext(void);
 
-#ifndef	NO_GNUSTEP
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 
 @interface NSGraphicsContext (GNUstep)
 + (void) setDefaultContextClass: (Class)defaultContextClass;

@@ -22,11 +22,13 @@
 
    You should have received a copy of the GNU Library General Public
    License along with this library; if not, write to the Free
-   Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02111 USA.
+   Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02111 USA.
 */
 
 #ifndef _GNUstep_H_NSClipView
 #define _GNUstep_H_NSClipView
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <AppKit/NSView.h>
 
@@ -70,7 +72,7 @@
 - (void)setBackgroundColor:(NSColor*)aColor;
 - (NSColor*)backgroundColor;
 
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 /* Setting the background drawing */
 - (void)setDrawsBackground:(BOOL)flag;
 - (BOOL)drawsBackground;

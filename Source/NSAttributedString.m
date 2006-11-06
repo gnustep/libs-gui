@@ -136,7 +136,7 @@ Class converter_bundles(NSString *format, BOOL producer)
 	  if (aBundle && ((bclass = [aBundle principalClass])))
 	    {
 	      if ([bclass respondsToSelector: 
-			    @selector(classForFormat:producer:)])
+			    @selector(classForFormat: producer: )])
 		{
 		  converter_class = (Class)[bclass classForFormat: format
 						   producer: producer];
@@ -276,14 +276,14 @@ static Class converter_class(NSString *format, BOOL producer)
   if (NSMaxRange(range) > [self length])
     {
       [NSException raise: NSRangeException
-		  format: @"RangeError in method -fontAttributesInRange:"];
+		  format: @"RangeError in method -fontAttributesInRange: "];
     }
   all = [self attributesAtIndex: range.location
 	      effectiveRange: &range];
 
   if (sel == 0)
     {
-      sel = @selector (objectForKey:);
+      sel = @selector (objectForKey: );
     }
   objForKey = [all methodForSelector: sel];
   
@@ -319,7 +319,7 @@ static Class converter_class(NSString *format, BOOL producer)
   if (NSMaxRange (range) > [self length])
     {
       [NSException raise: NSRangeException
-		   format: @"RangeError in method -rulerAttributesInRange:"];
+		   format: @"RangeError in method -rulerAttributesInRange: "];
     }
   
   style = [self attribute: NSParagraphStyleAttributeName
@@ -348,7 +348,7 @@ static Class converter_class(NSString *format, BOOL producer)
   if (NSMaxRange (aRange) > length || location > length)
     {
       [NSException raise: NSRangeException
-		   format: @"RangeError in method -lineBreakBeforeIndex:withinRange:"];
+		   format: @"RangeError in method -lineBreakBeforeIndex: withinRange: "];
     }
 
   if (!NSLocationInRange (location, aRange))
@@ -362,7 +362,7 @@ static Class converter_class(NSString *format, BOOL producer)
 		    range: scanRange];
   while (startRange.length > 0 && startRange.location > 0
     && [str characterAtIndex: startRange.location] == '\''
-    && [wordCSet characterIsMember:
+    && [wordCSet characterIsMember: 
       [str characterAtIndex: startRange.location-1]])
     {
       location = startRange.location - 1;
@@ -393,7 +393,7 @@ static Class converter_class(NSString *format, BOOL producer)
   if (location > length)
     {
       [NSException raise: NSRangeException
-		  format: @"RangeError in method -doubleClickAtIndex:"];
+		  format: @"RangeError in method -doubleClickAtIndex: "];
     }
 
   /*
@@ -419,9 +419,9 @@ static Class converter_class(NSString *format, BOOL producer)
   while (startRange.length > 0
     && startRange.location > 0 && startRange.location < length - 1
     && [str characterAtIndex: startRange.location] == '\''
-    && [wordCSet characterIsMember:
+    && [wordCSet characterIsMember: 
       [str characterAtIndex: startRange.location - 1]]
-    && [wordCSet characterIsMember:
+    && [wordCSet characterIsMember: 
       [str characterAtIndex: startRange.location + 1]])
     {
       location = startRange.location - 1;
@@ -437,9 +437,9 @@ static Class converter_class(NSString *format, BOOL producer)
   while (endRange.length > 0
     && endRange.location > 0 && endRange.location < length - 1
     && [str characterAtIndex: endRange.location] == '\''
-    && [wordCSet characterIsMember:
+    && [wordCSet characterIsMember: 
       [str characterAtIndex: endRange.location - 1]]
-    && [wordCSet characterIsMember:
+    && [wordCSet characterIsMember: 
       [str characterAtIndex: endRange.location + 1]])
     {
       location = endRange.location + 1;
@@ -478,7 +478,7 @@ static Class converter_class(NSString *format, BOOL producer)
   if (location > length)
     {
       [NSException raise: NSRangeException
-		   format: @"RangeError in method -nextWordFromIndex:forward:"];
+		   format: @"RangeError in method -nextWordFromIndex: forward: "];
     }
 
   /* Please note that we consider ' a valid word separator.  This is
@@ -508,7 +508,7 @@ static Class converter_class(NSString *format, BOOL producer)
 	{
 	  return length;
 	}
-      /* rangeOfCharacterFromSet:options:range: only returns the range
+      /* rangeOfCharacterFromSet: options: range: only returns the range
 	 of the first word-separator character ... we want to skip
 	 them all!  So we need to search again, this time for the
 	 first non-word-separator character, and return the first such
@@ -545,7 +545,7 @@ static Class converter_class(NSString *format, BOOL producer)
 	  return 0;
 	}
 
-      /* rangeOfCharacterFromSet:options:range: only returns the range
+      /* rangeOfCharacterFromSet: options: range: only returns the range
 	 of the first non-word-separator character ... we want to skip
 	 them all!  So we need to search again, this time for the
 	 first word-separator character. */
@@ -719,7 +719,7 @@ documentAttributes: (NSDictionary **)dict
   if (NSMaxRange (range) > [self length])
     {
       [NSException raise: NSRangeException
-		   format: @"RangeError in method -superscriptRange:"];
+		   format: @"RangeError in method -superscriptRange: "];
     }
   
   // We take the value from the first character and use it for the whole range
@@ -751,7 +751,7 @@ documentAttributes: (NSDictionary **)dict
   if (NSMaxRange (range) > [self length])
     {
       [NSException raise: NSRangeException
-		  format: @"RangeError in method -subscriptRange:"];
+		  format: @"RangeError in method -subscriptRange: "];
     }
 
   // We take the value form the first character and use it for the whole range
@@ -778,7 +778,7 @@ documentAttributes: (NSDictionary **)dict
   if (NSMaxRange (range) > [self length])
     {
       [NSException raise: NSRangeException
-		  format: @"RangeError in method -unscriptRange:"];
+		  format: @"RangeError in method -unscriptRange: "];
     }
 
   [self removeAttribute: NSSuperscriptAttributeName
@@ -796,7 +796,7 @@ documentAttributes: (NSDictionary **)dict
   if (NSMaxRange (range) > [self length])
     {
       [NSException raise: NSRangeException
-		   format: @"RangeError in method -applyFontTraits:range:"];
+		   format: @"RangeError in method -applyFontTraits: range: "];
     }
 
   while (loc < NSMaxRange (range))
@@ -830,7 +830,7 @@ documentAttributes: (NSDictionary **)dict
   if (NSMaxRange(range) > [self length])
     {
       [NSException raise: NSRangeException
-		  format: @"RangeError in method -setAlignment:range:"];
+		  format: @"RangeError in method -setAlignment: range: "];
     }
 
   while (loc < NSMaxRange(range))
@@ -879,7 +879,7 @@ documentAttributes: (NSDictionary **)dict
   if (NSMaxRange (range) > [self length])
     {
       [NSException raise: NSRangeException
-		  format: @"RangeError in method -fixFontAttributeInRange:"];
+		  format: @"RangeError in method -fixFontAttributeInRange: "];
     }
   // FIXME: Should check for each character if it is supported by the 
   // assigned font
@@ -899,7 +899,7 @@ documentAttributes: (NSDictionary **)dict
   if (NSMaxRange (range) > [self length])
     {
       [NSException raise: NSRangeException
-		  format: @"RangeError in method -fixParagraphStyleAttributeInRange:"];
+		  format: @"RangeError in method -fixParagraphStyleAttributeInRange: "];
     }
 
   while (loc < NSMaxRange (range))
@@ -965,76 +965,76 @@ documentAttributes: (NSDictionary **)dict
     }
 }
 
-- (void) fixAttachmentAttributeInRange: (NSRange)aRange
+- (void) fixAttachmentAttributeInRange: (NSRange)range
 {
   NSString *string = [self string];
-  unsigned location = aRange.location;
-  unsigned end = NSMaxRange (aRange);
+  unsigned location = range.location;
+  unsigned end = NSMaxRange (range);
 
   cache_init ();
 
   if (end > [self length])
     {
       [NSException raise: NSRangeException
-		  format: @"RangeError in method -fixAttachmentAttributeInRange:"];
+	format: @"RangeError in method -fixAttachmentAttributeInRange: "];
     }
 
   // Check for attachments with the wrong character
   while (location < end)
     {
       NSDictionary	*attr;
-      NSRange range;
+      NSRange		eRange;
 
-      attr = [self attributesAtIndex: location  effectiveRange: &range];
+      attr = [self attributesAtIndex: location  effectiveRange: &eRange];
       if ([attr objectForKey: NSAttachmentAttributeName] != nil)
 	{
-	  unichar	buf[range.length];
+	  unichar	buf[eRange.length];
 	  unsigned	pos = 0;
-	  unsigned	start = range.location;
+	  unsigned	start = eRange.location;
 
 	  // Leave only one character with the attachment
-	  [string getCharacters: buf  range: range];
-	  while (pos < range.length && buf[pos] != NSAttachmentCharacter)
-	      pos++;
+	  [string getCharacters: buf  range: eRange];
+	  while (pos < eRange.length && buf[pos] != NSAttachmentCharacter)
+	    pos++;
 	  if (pos)
 	    [self removeAttribute: NSAttachmentAttributeName
 		  range: NSMakeRange (start, pos)];
 	  pos++;
-	  if (pos < range.length)
+	  if (pos < eRange.length)
 	    [self removeAttribute: NSAttachmentAttributeName
-		  range: NSMakeRange (start + pos, range.length - pos)];
+		  range: NSMakeRange (start + pos, eRange.length - pos)];
 	}
-      location = NSMaxRange (range);
+      location = NSMaxRange (eRange);
     }
 
   // Check for attachment characters without attachments
-  location = aRange.location;
+  location = range.location;
   while (location < end)
     {
-      NSRange range = [string rangeOfString: attachmentString
+      NSRange eRange = [string rangeOfString: attachmentString
 			      options: NSLiteralSearch 
 			      range: NSMakeRange (location, end - location)];
       NSTextAttachment *attachment;
 
-      if (!range.length)
+      if (!eRange.length)
 	break;
 
       attachment = [self attribute: NSAttachmentAttributeName
-			 atIndex: range.location
+			 atIndex: eRange.location
 			 effectiveRange: NULL];
 
       if (attachment == nil)
         {
-	  [self deleteCharactersInRange: NSMakeRange (range.location, 1)];
-	  range.length--;
+	  [self deleteCharactersInRange: NSMakeRange (eRange.location, 1)];
+	  eRange.length--;
 	  end--;
 	}
 
-      location = NSMaxRange (range);
+      location = NSMaxRange (eRange);
     }
 }
 
-- (void)updateAttachmentsFromPath:(NSString *)path
+- (void) updateAttachmentsFromPath: (NSString *)path
 {
   NSString *string = [self string];
   unsigned location = 0;

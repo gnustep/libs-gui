@@ -647,7 +647,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
  * <p>Typically, -run is called by an application's <code>main</code> method
  * after the NSApplication instance is created, which never returns.  However,
  * applications needing to integrate other event loops may strategically call
- * the -stop method, followed by -run later on.</p>
+ * the -stop: method, followed by -run later on.</p>
  *
  * <p>To avoid most common needs for subclassing, NSApplication allows you to
  * specify a <em>delegate</em> that is messaged in particular situations.
@@ -1077,6 +1077,10 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 {
   GSDisplayServer *srv = GSServerForWindow(_app_icon_window);
 
+  if (srv == nil)
+    {
+      srv = GSCurrentServer();
+    }
   [[[NSWorkspace sharedWorkspace] notificationCenter]
     removeObserver: self];
   [nc removeObserver: self];

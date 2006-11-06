@@ -20,10 +20,12 @@
 
    You should have received a copy of the GNU Library General Public
    License along with this library; if not, write to the Free
-   Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02111 USA.
+   Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02111 USA.
 */
 #ifndef __AppKit_AppKitExceptions_h__
 #define __AppKit_AppKitExceptions_h__
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <AppKit/AppKitDefines.h>
 
@@ -66,7 +68,7 @@ APPKIT_EXPORT NSString *NSWindowServerCommunicationException;
 APPKIT_EXPORT NSString *NSWordTablesReadException;
 APPKIT_EXPORT NSString *NSWordTablesWriteException;
 
-#ifndef	NO_GNUSTEP
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 APPKIT_EXPORT NSString *GSWindowServerInternalException;
 #endif
 

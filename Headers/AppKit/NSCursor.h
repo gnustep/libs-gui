@@ -23,11 +23,13 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */ 
 
 #ifndef _GNUstep_H_NSCursor
 #define _GNUstep_H_NSCursor
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <Foundation/NSCoder.h>
 
@@ -52,7 +54,7 @@
 	     hotSpot: (NSPoint)hotSpot;
 
 
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (id)initWithImage:(NSImage *)newImage 
 foregroundColorHint:(NSColor *)fg 
 backgroundColorHint:(NSColor *)bg
@@ -64,7 +66,7 @@ backgroundColorHint:(NSColor *)bg
  */
 - (NSPoint) hotSpot;
 - (NSImage*) image;
-#ifndef	STRICT_MACOS_X
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 - (void) setHotSpot: (NSPoint)spot;
 - (void) setImage: (NSImage *)newImage;
 #endif
@@ -94,11 +96,11 @@ backgroundColorHint:(NSColor *)bg
 + (NSCursor*) currentCursor;
 + (NSCursor*) IBeamCursor;
 
-#ifndef NO_GNUSTEP
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 + (NSCursor*) greenArrowCursor;
 #endif
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 + (NSCursor*) closedHandCursor;
 + (NSCursor*) crosshairCursor;
 + (NSCursor*) disappearingItemCursor;

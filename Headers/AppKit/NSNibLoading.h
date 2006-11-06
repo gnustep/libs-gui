@@ -22,11 +22,13 @@
 
    You should have received a copy of the GNU Library General Public
    License along with this library; if not, write to the Free
-   Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02111 USA.
+   Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02111 USA.
 */ 
 
 #ifndef _GNUstep_H_NSNibLoading
 #define _GNUstep_H_NSNibLoading
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <Foundation/NSObject.h>
 #include <Foundation/NSBundle.h>
@@ -60,9 +62,9 @@
    externalNameTable: (NSDictionary *)context
 	    withZone: (NSZone *)zone;
 
-#ifndef	NO_GNUSTEP
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 - (NSString *) pathForNibResource: (NSString *)fileName;
-#endif // NO_GNUSTEP
+#endif // GS_API_NONE
 @end
 
 #endif /* _GNUstep_H_NSNibLoading */
