@@ -1,3 +1,7 @@
+2006-11-06  Matt Rice  <ratmice@yahoo.com>
+
+	* Source/NSTextView_actions.m: Remove hack from previous patch.
+
 2006-11-06 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSDisplayServer.m: Improve documentation of window ordering

@@ -746,16 +746,7 @@ added to the selection (1,3).
 	  [self setSelectedRange: NSMakeRange(anchor, cindex - anchor)
 			affinity: NSSelectionAffinityDownstream
 		  stillSelecting: NO];
-	  if (anchor)
-	    {
-	      [self scrollRangeToVisible: NSMakeRange(anchor, cindex - anchor)];
-	    }
-	  else
-	    {
-	      /* seems to only happen from 
-	       * moveToEndOfDocumentAndModifySelection: */
-	      [self scrollRangeToVisible: NSMakeRange(cindex, 0)];
-	    }
+	  [self scrollRangeToVisible: NSMakeRange(anchor, cindex - anchor)];
 	}
       else
  	{
