@@ -3351,9 +3351,9 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       return 0.01;
 }
 
-- (void) _trackCellAtColumn:(int)columnIndex
-		row:(int)rowIndex
-		withEvent:(NSEvent *)theEvent
+- (void) _trackCellAtColumn: (int) columnIndex
+		row: (int) rowIndex
+		withEvent: (NSEvent *) theEvent
 {
   NSTableColumn *tb;
   NSCell *cell;
@@ -3370,8 +3370,8 @@ static inline float computePeriod(NSPoint mouseLocationWin,
      otherwise validation on a cell being edited could
      cause the cell we are selecting to get it's objectValue */
   cell = [[tb dataCellForRow: rowIndex] copy];
-  originalValue = RETAIN([self _objectValueForTableColumn:tb
-		  			row:rowIndex]);
+  originalValue = RETAIN([self _objectValueForTableColumn: tb
+		  			row: rowIndex]);
   [cell setObjectValue: originalValue]; 
   cellFrame = [self frameOfCellAtColumn: columnIndex
 			      row: rowIndex];
@@ -3385,8 +3385,8 @@ static inline float computePeriod(NSPoint mouseLocationWin,
   if ([cell trackMouse: theEvent 
 		   inRect: cellFrame
 		   ofView: self
-	     untilMouseUp:[[cell class]
-	     prefersTrackingUntilMouseUp]])
+	     untilMouseUp: [[cell class]
+			     prefersTrackingUntilMouseUp]])
     {
       id newValue = [cell objectValue];
 
@@ -3405,7 +3405,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
   RELEASE(cell);
 }
 
-- (BOOL) _startDragOperationWithEvent:(NSEvent *)theEvent
+- (BOOL) _startDragOperationWithEvent: (NSEvent *) theEvent
 {
   NSPasteboard *pboard;
   NSArray *rows;
@@ -3492,9 +3492,9 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       if (![self _isCellEditableColumn: _clickedColumn row: _clickedRow ])
         {
 	  // Send double-action but don't edit
-	  [self _trackCellAtColumn:_clickedColumn
-			    row:_clickedRow
-			    withEvent:theEvent];
+	  [self _trackCellAtColumn: _clickedColumn
+			    row: _clickedRow
+			    withEvent: theEvent];
 	  if (_clickedRow != -1)
 	    [self sendAction: _doubleAction to: _target];
 	}
@@ -3626,9 +3626,9 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		       * track the cell with the old mouseDown event
 		       * then it will get the current event mouseUp.
 		       */
-		      [self _trackCellAtColumn:_clickedColumn
-			    row:_clickedRow
-			    withEvent:theEvent];
+		      [self _trackCellAtColumn: _clickedColumn
+			    row: _clickedRow
+			    withEvent: theEvent];
 		    }
 		}
 	      else
@@ -3674,7 +3674,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 					      selectionMode);
 			}
 
-		      if ([self _startDragOperationWithEvent:theEvent])
+		      if ([self _startDragOperationWithEvent: theEvent])
 			{
 			  return;
 			}
@@ -3713,9 +3713,9 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		      // if the cell wants to track until mouse up,
 		      // which could cause selections if the mouse leaves the
 		      // cell frame?
-		      [self _trackCellAtColumn:_clickedColumn
-				row:_clickedRow
-				withEvent:theEvent];
+		      [self _trackCellAtColumn: _clickedColumn
+				row: _clickedRow
+				withEvent: theEvent];
 		    }
 		  /*
 		   * Since we may have tracked a cell which may have caused
@@ -4078,7 +4078,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 - (void) setFrame: (NSRect)frameRect
 {
   NSRect tmpRect = frameRect;
-  if ([_super_view respondsToSelector:@selector(documentVisibleRect)])
+  if ([_super_view respondsToSelector: @selector(documentVisibleRect)])
     {
       float rowsHeight = ((_numberOfRows * _rowHeight) + 1);
       NSRect docRect = [(NSClipView *)_super_view documentVisibleRect];
@@ -4100,7 +4100,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 {
   NSSize tmpSize = frameSize;
   
-  if ([_super_view respondsToSelector:@selector(documentVisibleRect)])
+  if ([_super_view respondsToSelector: @selector(documentVisibleRect)])
     {
       float rowsHeight = ((_numberOfRows * _rowHeight) + 1);
       NSRect docRect = [(NSClipView *)_super_view documentVisibleRect];
@@ -4120,9 +4120,9 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
 - (void) viewWillMoveToSuperview:(NSView *)newSuper
 {
-  [super viewWillMoveToSuperview:newSuper];
+  [super viewWillMoveToSuperview: newSuper];
   /* need to potentially enlarge to fill the documentRect of the clip view */
-  [self setFrame:_frame];
+  [self setFrame: _frame];
 }
 
 - (void) sizeToFit
@@ -4984,7 +4984,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       switch ([(NSNumber *)textMovement intValue])
 	{
 	case NSReturnTextMovement:
-	  [self _editNextCellAfterRow:row inColumn:column];
+	  [self _editNextCellAfterRow: row inColumn: column];
 	  // Send action ?
 	  break;
 	case NSTabTextMovement:
@@ -5584,19 +5584,23 @@ static inline float computePeriod(NSPoint mouseLocationWin,
     }
 }
 
-- (void) _editNextCellAfterRow:(int)row inColumn:(int)column
+- (void) _editNextCellAfterRow: (int) row
+		inColumn: (int) column
 {
   if (++row >= _numberOfRows)
     row = 0;
 
-  if ([self _shouldSelectRow:row])
+  if ([self _shouldSelectRow: row])
     {
-      [self selectRowIndexes:[NSIndexSet indexSetWithIndex:row]
-	      byExtendingSelection:NO];
+      [self selectRowIndexes: [NSIndexSet indexSetWithIndex: row]
+	      byExtendingSelection: NO];
 
-      if ([self _isCellEditableColumn:column row:row])
+      if ([self _isCellEditableColumn: column row:row])
         {
-	  [self editColumn:column row:row withEvent:nil select:YES]; 
+	  [self editColumn: column
+		  row: row
+		  withEvent: nil
+		  select: YES]; 
         }
     }
 }

@@ -1,4 +1,9 @@
 2006-11-07  Matt Rice  <ratmice@gmail.com>
+	
+	* Source/NSTableView.m: Whitespace changes to conform to coding
+	standards.
+
+2006-11-07  Matt Rice  <ratmice@gmail.com>
 
 	* Source/NSTableView.m (-mouseDown): Only call editWithFrame: from a
 	double click. Don't track cells from a mouse dragged.
