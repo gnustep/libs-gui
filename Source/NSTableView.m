@@ -3459,6 +3459,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 {
   NSPoint initialLocation = [theEvent locationInWindow];
   NSPoint location;
+  int clickCount = [theEvent clickCount];
 
   // Pathological case -- ignore mouse down
   if ((_numberOfRows == 0) || (_numberOfColumns == 0))
@@ -3479,7 +3480,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
   _clickedColumn = [self columnAtPoint: location];
   
   if ([theEvent type] == NSLeftMouseDown
-       && [theEvent clickCount] > 1)
+       && clickCount > 1)
     {
       // Double-click event
 
@@ -3497,7 +3498,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	  if (_clickedRow != -1)
 	    [self sendAction: _doubleAction to: _target];
 	}
-      else
+      else if (clickCount == 2) // if < 2, dont want to abort editing
         {
 	  // It is OK to edit column.  Go on, do it.
           [self editColumn: _clickedColumn
@@ -3588,18 +3589,19 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	  */
 	  CREATE_AUTORELEASE_POOL(arp);
 	  BOOL shouldComputeNewSelection = NO;
+	  NSEventType eventType = [lastEvent type];
 	  
 	  mouseLocationWin = [lastEvent locationInWindow]; 
 	  mouseLocationView = [self convertPoint: mouseLocationWin 
 					    fromView: nil];
 	
-	  switch ([lastEvent type])
+	  switch (eventType)
 	    {
 	    case NSLeftMouseUp:
 	      if ((mouseLocationWin.y > minYVisible) 
 		  && (mouseLocationWin.y < maxYVisible))
 		{
-		  // mouse dragged within table
+		  // mouse up within table
 		  if (startedPeriodicEvents == YES)
 		    {
 		      [NSEvent stopPeriodicEvents];
@@ -3616,6 +3618,14 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		  
 		  if (draggingPossible == YES)
 		    {
+		      /*
+		       * dragging is still possible so
+		       * selections were never dragged,
+		       * and a drag operation was never attempted.
+		       * the cell was clicked, 
+		       * track the cell with the old mouseDown event
+		       * then it will get the current event mouseUp.
+		       */
 		      [self _trackCellAtColumn:_clickedColumn
 			    row:_clickedRow
 			    withEvent:theEvent];
@@ -3692,9 +3702,26 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		      shouldComputeNewSelection = YES;
 		    }
 		  
-		  [self _trackCellAtColumn:_clickedColumn
+		  if (eventType == NSLeftMouseDown)
+		    {
+		      /*
+		       * Can never get here from a dragging source
+		       * so they need to track in mouse up.
+		       */
+
+		      // FIXME we probably want to return from here
+		      // if the cell wants to track until mouse up,
+		      // which could cause selections if the mouse leaves the
+		      // cell frame?
+		      [self _trackCellAtColumn:_clickedColumn
 				row:_clickedRow
 				withEvent:theEvent];
+		    }
+		  /*
+		   * Since we may have tracked a cell which may have caused
+		   * a change to the currentEvent we may need to loop over
+		   * the current event
+		   */ 
 		  getNextEvent = (lastEvent == [NSApp currentEvent]);
 		}
 	      else
@@ -3780,7 +3807,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	    {
 	      /* in certain cases we are working with events that have already
 	       * occured and been dequeued by NSCell classes, in these cases
-	       * we set getNextEvent to NO, and get the current event.
+	       * getNextEvent is set to NO, use the current event.
 	       */
 	      if (getNextEvent == YES)
 	        {

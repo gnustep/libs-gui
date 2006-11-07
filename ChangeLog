@@ -1,4 +1,10 @@
-2006-11-06  Matt Rice  <ratmice@yahoo.com
+2006-11-07  Matt Rice  <ratmice@gmail.com>
+
+	* Source/NSTableView.m (-mouseDown): Only call editWithFrame: from a
+	double click. Don't track cells from a mouse dragged.
+	Add comments.
+
+2006-11-06  Matt Rice  <ratmice@yahoo.com>
 
 	* Source/NSTextView_actions.m: Fix keyboard movement scrolling.
 
