@@ -3874,11 +3874,10 @@ static BOOL selectContiguousRegion(NSTableView *self,
 				   int oldRow,
 				   int currentRow)
 {
-  int oldDiff = oldRow - originalRow;
-  int newDiff = currentRow - originalRow;
-  int offset = (oldDiff < newDiff) ? oldDiff : newDiff;
+  int first = (oldRow < currentRow) ? oldRow : currentRow;
+  int last = (oldRow < currentRow) ? currentRow : oldRow;
+  int row;
   BOOL notified = NO;
-  int i, c;
 
   if (![_selectedRows containsIndex: currentRow])
     {
@@ -3909,9 +3908,8 @@ static BOOL selectContiguousRegion(NSTableView *self,
    * and possibly unselect the oldRow, one of the two will then
    * be selected or deselected again in in this loop 
    */
-  for (i = 0, c = abs(oldRow - currentRow); i < c; i++)
+  for (row = first; row < last; row++)
     {
-      int row = originalRow + offset;
 	      
       /* check if the old row is between the current row and the original row */
       if ((row < currentRow
@@ -3943,7 +3941,6 @@ static BOOL selectContiguousRegion(NSTableView *self,
 	      [self _unselectRow: row];
 	    }
 	}
-      offset++;
     }
   return notified;
 }         
