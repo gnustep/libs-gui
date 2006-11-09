@@ -340,7 +340,10 @@ static Class cellClass;
       
       [self setDoubleValue:value];
       [self sendAction:[self action] to:[self target]];
+      return;
     }
+
+  [super keyDown:ev];
 }
 
 // ticks

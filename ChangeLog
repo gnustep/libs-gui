@@ -1,4 +1,13 @@
 2006-11-07  Matt Rice  <ratmice@gmail.com>
+
+	* Source/NSTableView.m: Implement keyboard navigation/selection.
+	Fixes bug #11942.
+	(-selectRow:byExtendingSelection:): Update _clickedRow.
+	(-mouseDown:): Ditto.
+	* Source/NSSlider.m (keyDown:): Call supers implementation if we don't
+	use the key stroke.
+
+2006-11-07  Matt Rice  <ratmice@gmail.com>
 	
 	* Source/NSTableView.m: Whitespace changes to conform to coding
 	standards.

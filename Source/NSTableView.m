@@ -2615,6 +2615,9 @@ byExtendingSelection: (BOOL)flag
 	      [self validateEditing];
 	      [self abortEditing];
 	    }
+
+	   /* reset the _clickedRow for keyboard navigation  */
+	  _clickedRow = rowIndex;
 	  return;
 	} 
 
@@ -2641,14 +2644,19 @@ byExtendingSelection: (BOOL)flag
       [self abortEditing];
     }  
 
-  /* Now select the row and post notification only if needed */ 
+  /*
+   * Now select the row and post notification only if needed
+   * also update the _clickedRow for keyboard navigation.
+   */ 
   if ([self _selectUnselectedRow: rowIndex])
     {
+      _clickedRow = rowIndex;
       [self _postSelectionDidChangeNotification];
     }
   else /* Otherwise simply change the last selected row */
     {
       _selectedRow = rowIndex;
+      _clickedRow = rowIndex;
     }
 }
 
@@ -3846,7 +3854,299 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	  if (_clickedRow != -1)
 	    [self sendAction: _action  to: _target];
 	}
+    }
+  
+  _clickedRow = _selectedRow;
+}
+
+
+/* helpers for keyboard selection */
+#define CHECK_CHANGING(x) { \
+if (!x) \
+  { \
+    [self _postSelectionIsChangingNotification]; \
+    x = YES; \
+  } \
+}
+static BOOL selectContiguousRegion(NSTableView *self,
+  				   NSIndexSet *_selectedRows,
+				   int originalRow,
+				   int oldRow,
+				   int currentRow)
+{
+  int oldDiff = oldRow - originalRow;
+  int newDiff = currentRow - originalRow;
+  int offset = (oldDiff < newDiff) ? oldDiff : newDiff;
+  BOOL notified = NO;
+  int i, c;
+
+  if (![_selectedRows containsIndex: currentRow])
+    {
+      CHECK_CHANGING(notified);
+      [self _selectRow: currentRow];
+    }
+
+  /*
+   * check if the old row is not between the current row and the original row 
+   * and not the original or current rows
+   */
+  if (((!((oldRow < currentRow
+	   && currentRow > originalRow
+	   && oldRow > originalRow)
+	  || (oldRow > currentRow
+	      && currentRow < originalRow
+	      && oldRow < originalRow)))
+       && (!(oldRow == currentRow
+	      || oldRow == originalRow))))
+    {
+      CHECK_CHANGING(notified);
+      [self _unselectRow: oldRow]; 
+    }
+
+  /* 
+   * there is an off by one here it could be on either end of the loop 
+   * but its either oldRow or currentRow so above we select the currentRow
+   * and possibly unselect the oldRow, one of the two will then
+   * be selected or deselected again in in this loop 
+   */
+  for (i = 0, c = abs(oldRow - currentRow); i < c; i++)
+    {
+      int row = originalRow + offset;
+	      
+      /* check if the old row is between the current row and the original row */
+      if ((row < currentRow
+	   && row > originalRow
+	   && currentRow > oldRow)
+	  || (row > currentRow
+	      && row < originalRow
+	      && currentRow < oldRow))
+	{
+	  if (![_selectedRows containsIndex: row])
+	    {
+	      CHECK_CHANGING(notified);
+	      [self _selectRow: row];
+	    }
+	}
+      else if (row == currentRow || row == originalRow)
+	{
+	  if (![_selectedRows containsIndex: row])
+	    {
+	      CHECK_CHANGING(notified);
+	      [self _selectRow: row];
+	    }
+	}
+      else
+	{
+	  if ([_selectedRows containsIndex: row])
+	    {
+              CHECK_CHANGING(notified);
+	      [self _unselectRow: row];
+	    }
+	}
+      offset++;
+    }
+  return notified;
+}         
+
+- (void) keyDown:(NSEvent *)theEvent
+{
+   int oldRow = -1;
+   int currentRow = _selectedRow;
+   int originalRow = -1;
+   NSString *characters = [theEvent characters];
+   unsigned int len = [characters length];
+   unsigned int modifiers = [theEvent modifierFlags];
+   int rowHeight = [self rowHeight];
+   NSRect visRect = [self visibleRect];
+   BOOL modifySelection = YES;
+   NSPoint noModPoint = NSZeroPoint;
+   int visRows;
+   unsigned int i;
+   BOOL gotMovementKey = NO;
+   
+   // will not contain partial rows.
+   visRows = visRect.size.height / [self rowHeight]; 
+
+   // _clickedRow is stored between calls as the first selected row 
+   // when doing multiple selection, so the selection may grow and shrink.
+   
+   /*
+    * do a contiguous selection on shift
+    */
+   if (modifiers & NSShiftKeyMask)
+     {
+       originalRow = _clickedRow;
+       if (_allowsMultipleSelection == YES)
+	 {
+	   oldRow = _selectedRow;
+	 }
+     }
+   
+   /* just scroll don't modify any selection */
+   if (modifiers & NSControlKeyMask)
+     {
+       modifySelection = NO;
+     }
+
+   for (i = 0; i < len; i++)
+     {
+       unichar c = [characters characterAtIndex: i];
+
+       switch (c)
+         {
+	   case NSUpArrowFunctionKey:
+	     gotMovementKey = YES;
+   	     if (modifySelection == NO)
+	       {
+   		 noModPoint.x = visRect.origin.x;
+		 noModPoint.y = NSMinY(visRect) - rowHeight;
+	       }
+	     else
+	       {
+		 currentRow--;
+	       }
+	     break;
+	   case NSDownArrowFunctionKey:
+	     gotMovementKey = YES;
+   	     if (modifySelection == NO)
+	       {
+   		 noModPoint.x = visRect.origin.x;
+		 noModPoint.y = NSMinY(visRect) + rowHeight;
+	       }
+	     else
+	       {
+ 	         currentRow++;
+	       }
+	     break;
+	   case NSPageDownFunctionKey:
+	     gotMovementKey = YES;
+   	     if (modifySelection == NO)
+	       {
+   		 noModPoint.x = visRect.origin.x;
+		 noModPoint.y = NSMinY(visRect) + (rowHeight * visRows) - rowHeight;
+	       }
+	     else
+	       { 
+		 currentRow += visRows;
+	       }
+	     break;
+	   case NSPageUpFunctionKey:
+	     gotMovementKey = YES;
+	     if (modifySelection == NO)
+	       {
+   		 noModPoint.x = visRect.origin.x;
+		 noModPoint.y = NSMinY(visRect) - (rowHeight * visRows) + rowHeight;
+	       }
+	     else 
+	       {
+	         currentRow -= visRows;
+	       }
+	     break;
+	   case NSHomeFunctionKey:
+	     gotMovementKey = YES;
+	     if (modifySelection == NO)
+	       {
+		 noModPoint.x = visRect.origin.x;
+		 noModPoint.y = NSMinY(_bounds);
+	       }
+	     else
+	       {
+	         currentRow = 0;
+	       }
+	     break;
+	   case NSEndFunctionKey:
+	     gotMovementKey = YES;
+	     if (modifySelection == NO)
+	       {
+		 noModPoint.x = visRect.origin.x;
+		 noModPoint.y = NSMaxY(_bounds);
+	       }
+	     else
+	       {
+		 currentRow = _numberOfRows - 1;
+	       }
+	     break;
+	   default:
+	     break;
+        }
+     }
+  
+  /*
+   * if scrolled off the bottom or top the selection.
+   * the modifiers might have changed so recompute the selection.
+   */
+  if (gotMovementKey == NO)
+    {
+      /* no handled keys. */
+      [super keyDown: theEvent];
       return;
+    }
+  else if (currentRow < 0)
+    {
+      currentRow = 0;
+    }
+  else if (currentRow >= _numberOfRows)
+    {
+      currentRow = _numberOfRows - 1;
+    }
+  
+  if (_numberOfRows)
+    {
+      if (modifySelection)
+        {
+	  BOOL notified = NO;
+
+          [self _setSelectingColumns: NO];
+     
+          if (originalRow == -1)
+            {
+	      /* we're not extending any selection */
+              originalRow = currentRow;
+              _clickedRow = currentRow;
+	    }
+
+          if (_clickedRow == -1)
+            {
+	      /* user must have hit a key with no selected rows */
+              _clickedRow = currentRow;
+	    }
+	  
+	  if ((!(modifiers & NSShiftKeyMask && _allowsMultipleSelection)))
+	    {
+	      int first = [_selectedRows firstIndex];
+	      int last = [_selectedRows lastIndex];
+
+	      if ((first == last && first == currentRow) == 0)
+	        {
+		  CHECK_CHANGING(notified)
+		  [self _unselectAllRows];
+		  [self _selectRow: currentRow];
+	          _selectedRow = currentRow;
+		}
+	    }
+	  else
+	    {   
+	      notified = selectContiguousRegion(self, _selectedRows,
+			         originalRow, oldRow, currentRow);
+	      _selectedRow = currentRow;
+	    }
+	  
+	  if (notified)
+            {
+              [self _postSelectionDidChangeNotification];
+	    }
+	  
+	  [self scrollRowToVisible: currentRow];
+	  [self displayIfNeeded];
+        }
+      else
+        {
+	  noModPoint = [self convertPoint: noModPoint
+		  		   toView: _super_view];
+	  noModPoint = 
+	     [(NSClipView *)_super_view constrainScrollPoint: noModPoint];
+	  [(NSClipView *)_super_view scrollToPoint: noModPoint];
+	}
     }
 }
 
