@@ -91,6 +91,7 @@ enum {
   NSCell            *_editedCell;
   BOOL               _autosaveTableColumns;
   NSString          *_autosaveName;
+  BOOL              _verticalMotionDrag;
 
   /*
    * Ivars Acting as Cache 

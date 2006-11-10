@@ -1,3 +1,12 @@
+2006-11-10  Matt Rice  <ratmice@gmail.com>
+
+	* Headers/AppKit/NSTableView.h: Add ivar for
+	verticalMotionCanBeginDrag.
+	* Source/NSTableView.m: Implement verticalMotionCanBeginDrag
+	bump class version.
+	* Source/NSTextView_actions.m: Fix method name from previous changes.
+	* KeyBindings/DefaultKeyBindings.dict: Add new key bindings.
+	* ChangeLog: Add to description of a previous change.
 
 2006-11-09  Matt Rice  <ratmice@gmail.com>
 
@@ -26,7 +35,8 @@
 
 2006-11-06  Matt Rice  <ratmice@yahoo.com>
 
-	* Source/NSTextView_actions.m: Fix keyboard movement scrolling.
+	* Source/NSTextView_actions.m: Fix keyboard movement scrolling 
+	when selecting text off the bottom or right of the visible area.
 
 2006-11-06  Matt Rice  <ratmice@yahoo.com>
 

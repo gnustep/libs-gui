@@ -64,7 +64,7 @@
 #include <math.h>
 static NSNotificationCenter *nc = nil;
 
-static const int currentVersion = 3;
+static const int currentVersion = 4;
 
 static NSRect oldDraggingRect;
 static int oldDropRow;
@@ -3657,31 +3657,16 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
 	      if (draggingPossible == YES)
 		{
-		  if (mouseLocationWin.y - initialLocation.y > 2
-		      || mouseLocationWin.y - initialLocation.y < -2)
+		  if ([_selectedRows containsIndex:_clickedRow] == NO
+ 		      || (_verticalMotionDrag == NO
+ 			  && fabs(mouseLocationWin.y - initialLocation.y) > 2))
 		    {
 		      draggingPossible = NO;
 		    }
-		  else if (fabs(mouseLocationWin.x - initialLocation.x) >= 4)
+ 		  else if ((fabs(mouseLocationWin.x - initialLocation.x) >= 4)
+ 			   || (_verticalMotionDrag
+ 			       && fabs(mouseLocationWin.y - initialLocation.y) >= 4))
 		    {
-		      mouseLocationView.x = _bounds.origin.x;
-		      oldRow = currentRow;
-		      currentRow = [self rowAtPoint: mouseLocationView];
-		      
-		      if (![_selectedRows containsIndex: currentRow])
-			{
-			  /* Mouse drag in a row that wasn't selected.
-			     select the new row before dragging */
-			  computeNewSelection(self,
-					      oldSelectedRows, 
-					      _selectedRows,
-					      originalRow,
-					      oldRow,
-					      currentRow,
-					      &_selectedRow,
-					      selectionMode);
-			}
-
 		      if ([self _startDragOperationWithEvent: theEvent])
 			{
 			  return;
@@ -5507,17 +5492,12 @@ static BOOL selectContiguousRegion(NSTableView *self,
 
 - (void) setVerticalMotionCanBeginDrag: (BOOL)flag
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"setVerticalMotionCanBeginDrag:", "NSTableView");
+  _verticalMotionDrag = flag;
 }
 
 - (BOOL) verticalMotionCanBeginDrag
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"verticalMotionCanBeginDrag", "NSTableView");
-  return NO;
+  return _verticalMotionDrag;
 }
 
 /*
@@ -5606,6 +5586,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnResizing];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnReordering];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autoresizesAllColumnsToFit];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_verticalMotionDrag];
     }
 }
 
@@ -5744,6 +5725,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
       int version = [aDecoder versionForClassName: 
 				  @"NSTableView"];
       id aDelegate;
+      _verticalMotionDrag = NO;
 
       _dataSource      = [aDecoder decodeObject];
       _tableColumns    = RETAIN([aDecoder decodeObject]);
@@ -5770,7 +5752,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsEmptySelection];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnSelection];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnResizing];
-      if (version == currentVersion)
+      if (version >= 3)
         {
 	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnReordering];
 	}
@@ -5779,6 +5761,12 @@ static BOOL selectContiguousRegion(NSTableView *self,
 	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_autoresizesAllColumnsToFit];
 	} 
       
+      if (version >= 4)
+        {
+          [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_verticalMotionDrag];
+        }
+
+     
       ASSIGN (_selectedColumns, [NSMutableIndexSet indexSet]);
       ASSIGN (_selectedRows, [NSMutableIndexSet indexSet]);
       if (_numberOfColumns)

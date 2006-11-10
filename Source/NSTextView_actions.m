@@ -1066,7 +1066,7 @@ and layout is left-to-right */
 	select: NO];
 }
 
-- (void) moveToEndOfLineAndModify: (id)sender
+- (void) moveToEndOfLineAndModifySelection: (id)sender
 {
   [self _move: GSInsertionPointMoveRight
 	distance: 1e8
