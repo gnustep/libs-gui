@@ -1,5 +1,10 @@
 2006-11-10  Matt Rice  <ratmice@gmail.com>
 
+	* Source/NSTableView.m (mouseDown:): Rename some local variables
+	to be less ambiguous.
+
+2006-11-10  Matt Rice  <ratmice@gmail.com>
+
 	* Headers/AppKit/NSTableView.h: Add ivar for
 	verticalMotionCanBeginDrag.
 	* Source/NSTableView.m: Implement verticalMotionCanBeginDrag

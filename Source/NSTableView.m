@@ -3530,10 +3530,10 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       NSEvent *lastEvent;
       NSIndexSet *oldSelectedRows;
       BOOL startedPeriodicEvents = NO;
-      BOOL mouseUp = NO;
+      BOOL mouseBelowView = NO;
       BOOL done = NO;
       BOOL mouseMoved = NO;
-      BOOL draggingPossible = [self _isDraggingSource];
+      BOOL dragOperationPossible = [self _isDraggingSource];
       NSRect visibleRect = [self convertRect: [self visibleRect]
 				 toView: nil];
       float minYVisible = NSMinY (visibleRect);
@@ -3624,10 +3624,10 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		      shouldComputeNewSelection = YES;
 		    }
 		  
-		  if (draggingPossible == YES)
+		  if (dragOperationPossible == YES)
 		    {
 		      /*
-		       * dragging is still possible so
+		       * a dragging operation is still possible so
 		       * selections were never dragged,
 		       * and a drag operation was never attempted.
 		       * the cell was clicked, 
@@ -3655,13 +3655,13 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		  mouseMoved = YES;
 		}
 
-	      if (draggingPossible == YES)
+	      if (dragOperationPossible == YES)
 		{
 		  if ([_selectedRows containsIndex:_clickedRow] == NO
  		      || (_verticalMotionDrag == NO
  			  && fabs(mouseLocationWin.y - initialLocation.y) > 2))
 		    {
-		      draggingPossible = NO;
+		      dragOperationPossible = NO;
 		    }
  		  else if ((fabs(mouseLocationWin.x - initialLocation.x) >= 4)
  			   || (_verticalMotionDrag
@@ -3673,7 +3673,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 			}
 		      else
 			{
-			  draggingPossible = NO;
+			  dragOperationPossible = NO;
 			}
 		    }
 		}
@@ -3739,21 +3739,20 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 			   withPeriod: oldPeriod];
 		  startedPeriodicEvents = YES;
 		  if (mouseLocationWin.y <= minYVisible) 
-		    mouseUp = NO;
+		    mouseBelowView = YES;
 		  else
-		    mouseUp = YES;
+		    mouseBelowView = NO;
 		}
 	      break;
 	    case NSPeriodic:
-	      if (mouseUp == NO)
+	      if (mouseBelowView == YES)
 		{
-		  /* mouse below the table */
 		  if (currentRow < _numberOfRows - 1)
 		    {
 		      oldRow = currentRow;
 		      currentRow++;
 		      [self scrollRowToVisible: currentRow];
-		      if (draggingPossible == NO)
+		      if (dragOperationPossible == NO)
 			shouldComputeNewSelection = YES;
 		    }
 		}
@@ -3761,11 +3760,10 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		{
 		  if (currentRow > 0)
 		    {
-		      /* mouse above the table */
 		      oldRow = currentRow;
 		      currentRow--;
 		      [self scrollRowToVisible: currentRow];
-		      if (draggingPossible == NO)
+		      if (dragOperationPossible == NO)
 			shouldComputeNewSelection = YES;
 		    }
 		}
