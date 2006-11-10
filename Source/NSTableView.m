@@ -4964,6 +4964,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
   
   if (_numberOfColumns > 0)
     {
+      int lastRowPosition = position - _rowHeight;
       /* Draw vertical lines */
       if (startingColumn == -1)
 	startingColumn = 0;
@@ -4973,7 +4974,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
       for (i = startingColumn; i <= endingColumn; i++)
 	{
 	  DPSmoveto (ctxt, _columnOrigins[i], minY);
-	  DPSlineto (ctxt, _columnOrigins[i], maxY);
+	  DPSlineto (ctxt, _columnOrigins[i], lastRowPosition);
 	  DPSstroke (ctxt);
 	}
       position =  _columnOrigins[endingColumn];
@@ -4982,7 +4983,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
       if (endingColumn == (_numberOfColumns - 1))
 	position -= 1;
       DPSmoveto (ctxt, position, minY);
-      DPSlineto (ctxt, position, maxY);
+      DPSlineto (ctxt, position, lastRowPosition);
       DPSstroke (ctxt);
     }
 
@@ -5072,7 +5073,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
     }
 
   /* Draw selection */
-  //    [self highlightSelectionInClipRect: aRect];
+  [self highlightSelectionInClipRect: aRect];
 
   /* Draw grid */
   if (_drawsGrid)
@@ -5098,30 +5099,9 @@ static BOOL selectContiguousRegion(NSTableView *self,
     SEL sel = @selector(drawRow:clipRect:);
     IMP imp = [self methodForSelector: sel];
     
-    NSRect localBackground;
-    localBackground = aRect;
-    localBackground.size.height = _rowHeight;
-    localBackground.origin.y = _bounds.origin.y + (_rowHeight * startingRow);
-    
     for (i = startingRow; i <= endingRow; i++)
       {
-	[_backgroundColor set];
-	NSRectFill (localBackground);
-	[self highlightSelectionInClipRect: localBackground];
-	if (_drawsGrid)
-	  {
-	    [self drawGridInClipRect: localBackground];
-	  }
-	localBackground.origin.y += _rowHeight;
 	(*imp)(self, sel, i, aRect);
-      }
-
-    if (NSMaxY(aRect) > NSMaxY(localBackground) - _rowHeight)
-      {
-	[_backgroundColor set];
-	localBackground.size.height =
-	  aRect.size.height - aRect.origin.y + localBackground.origin.y;
-	NSRectFill (localBackground);
       }
   }
 }

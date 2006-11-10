@@ -1,5 +1,13 @@
 2006-11-10  Matt Rice  <ratmice@gmail.com>
 
+	* Source/NSOutlineView.m: Handle rowAtPoint: returning -1.
+	* Source/NSTableView.m (drawRect:): Only call
+	-highlightSelectionInClipRect: and -drawGridInClipRect: once.
+	(-drawGridInClipRect:): Constrain the vertical grid line to the last row
+	drawn in the rect.
+	
+2006-11-10  Matt Rice  <ratmice@gmail.com>
+
 	* Source/NSTableView.m (rowAtPoint:): Return -1 if the point is under 
 	the last row.
 	(mouseDown:): Handle rowAtPoint: returning -1.
