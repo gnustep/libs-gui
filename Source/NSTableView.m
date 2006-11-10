@@ -3219,9 +3219,6 @@ byExtendingSelection: (BOOL)flag
       flag = YES;
     }
   
-  [self scrollRowToVisible: rowIndex];
-  [self scrollColumnToVisible: columnIndex];
-
   if (rowIndex != _selectedRow)
     {
       [NSException raise:NSInvalidArgumentException
@@ -3235,6 +3232,9 @@ byExtendingSelection: (BOOL)flag
 		   format: @"Row/column out of index in edit"];
     }
   
+  [self scrollRowToVisible: rowIndex];
+  [self scrollColumnToVisible: columnIndex];
+
   if (_textObject != nil)
     {
       [self validateEditing];
@@ -3747,7 +3747,10 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	    case NSPeriodic:
 	      if (mouseBelowView == YES)
 		{
-		  if (currentRow < _numberOfRows - 1)
+		  if (currentRow == -1 && oldRow != -1)
+		    currentRow = oldRow + 1;
+
+		  if (currentRow != -1 && currentRow < _numberOfRows - 1)
 		    {
 		      oldRow = currentRow;
 		      currentRow++;
@@ -3758,6 +3761,9 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		}
 	      else
 		{
+		  if (currentRow == -1 && oldRow != -1)
+		    currentRow = oldRow - 1;
+
 		  if (currentRow > 0)
 		    {
 		      oldRow = currentRow;
@@ -3779,11 +3785,9 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		  originalRow = currentRow;
 		}
 	      
-	      if (currentRow == -1)
-		{
-		  currentRow = _numberOfRows - 1;
-		}
-	      computeNewSelection(self,
+	      if (currentRow >= 0 && currentRow < _numberOfRows)
+	        {
+		  computeNewSelection(self,
 				  oldSelectedRows, 
 				  _selectedRows,
 				  originalRow,
@@ -3791,7 +3795,9 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 				  currentRow,
 				  &_selectedRow,
 				  selectionMode);
-	      [self displayIfNeeded];
+
+	          [self displayIfNeeded];
+		}
 	    }
 	  
 	  if (done == NO)
@@ -4243,10 +4249,18 @@ static BOOL selectContiguousRegion(NSTableView *self,
 - (NSRange) rowsInRect: (NSRect)aRect
 {
   NSRange range;
+  int lastRowInRect;
 
   range.location = [self rowAtPoint: aRect.origin];
-  range.length = [self rowAtPoint: 
+  lastRowInRect = [self rowAtPoint: 
 			 NSMakePoint (_bounds.origin.x, NSMaxY (aRect))];
+  
+  if (lastRowInRect == -1)
+    {
+      lastRowInRect = _numberOfRows - 1;
+    }
+  
+  range.length = lastRowInRect;
   range.length -= range.location;
   range.length += 1;
   return range;
@@ -4286,7 +4300,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
       /* This could happen if point lies on the grid line or below the last row */
       if (return_value >= _numberOfRows)
 	{
-	  return_value = _numberOfRows - 1;
+	  return_value = -1;
 	}
       return return_value;
     }

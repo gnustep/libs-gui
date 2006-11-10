@@ -1,5 +1,12 @@
 2006-11-10  Matt Rice  <ratmice@gmail.com>
 
+	* Source/NSTableView.m (rowAtPoint:): Return -1 if the point is under 
+	the last row.
+	(mouseDown:): Handle rowAtPoint: returning -1.
+	(rectOfRows:): Ditto.
+	
+2006-11-10  Matt Rice  <ratmice@gmail.com>
+
 	* Source/NSTableView.m (mouseDown:): Rename some local variables
 	to be less ambiguous.
 
