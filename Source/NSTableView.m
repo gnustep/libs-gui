@@ -4731,6 +4731,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
 	  if (_selectedRow >= _numberOfRows)
 	    {
 	      row = [_selectedRows lastIndex];
+	      [self _postSelectionIsChangingNotification];
 
 	      if (row != NSNotFound)
 		{
@@ -4761,6 +4762,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
 			}
 		    }
 		}
+	      [self _postSelectionDidChangeNotification];
 	    }
 	}
     }

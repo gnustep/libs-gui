@@ -3337,37 +3337,6 @@ static SEL getSel;
 	  _cellSize.width = _bounds.size.width;
 	}
     }
-  else // !autosizesCells
-    {
-      /* Keep the cell size as it is, and adjust the intercell to fit.  */
-      if (_numRows > 1)
-	{
-	  _intercell.height = _bounds.size.height - (_numRows * _cellSize.height);
-	  _intercell.height = _intercell.height / (_numRows - 1);
-	  if (_intercell.height < 0)
-	    {
-	      _intercell.height = 0;
-	    }
-	}
-      else
-	{
-	  _intercell.height = 0;
-	}
-
-      if (_numCols > 1)
-	{
-	  _intercell.width = _bounds.size.width - (_numCols * _cellSize.width);
-	  _intercell.width = _intercell.width / (_numCols - 1);
-	  if (_intercell.width < 0)
-	    {
-	      _intercell.width = 0;
-	    }
-	}
-      else
-	{
-	  _intercell.width = 0;
-	}
-    }  
 }
 
 - (void) setFrame: (NSRect)aFrame

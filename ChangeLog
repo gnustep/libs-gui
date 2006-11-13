@@ -1,3 +1,11 @@
+2006-11-12  Matt Rice  <ratmice@gmail.com>
+	
+	* Source/NSTableView.m (-noteNumberOfRowsChanged:): Post selection
+	is and did change notifications if changing the selected rows.
+	* Source/NSSliderCell.m (-copyWithZone:): Make a little clearer.
+	* Source/NSMatrix.m (-_rebuildLayoutAfterResize): Don't change the
+	intercell spacing if not autosizing cells.
+
 2006-11-11  Matt Rice  <ratmice@gmail.com>
 
 	* Source/NSSliderCell.m: Implement copyWithZone:.

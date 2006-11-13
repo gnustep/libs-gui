@@ -157,9 +157,9 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 {
   NSSliderCell *cpy = [super copyWithZone:zone];
 
-  /* since NSCells -copyWithZone calls NSCopyObject */
-  RETAIN(_titleCell);
-  RETAIN(_knobCell);
+  /* since NSCells call to NSCopyObject only copies object addresses */
+  RETAIN(cpy->_titleCell);
+  RETAIN(cpy->_knobCell);
   return cpy;
 }
 
