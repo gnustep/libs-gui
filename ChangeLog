@@ -1,3 +1,32 @@
+2006-11-15  Nicola Pero  <nicola.pero@meta-innovation.com>
+
+	Notice: you should now use 'make DESTDIR=/tmp/xxx install' if you
+	want to relocate all the installation into /tmp/xxx/
+	* Makefile.postamble: Use DESTDIR instead of INSTALL_ROOT_DIR
+	everywhere.
+	
+	* ColorPickers/GNUmakefile: (GNUSTEP_INSTALLATION_DOMAIN): Use
+	GNUSTEP_INSTALLATION_DOMAIN instead of GNUSTEP_INSTALLATION_DIR.
+	* Documentation/GNUmakefile: Same change.
+	* Documentation/General/GNUmakefile: Same change.
+	* Documentation/GuiUser/GNUmakefile: Same change.
+	* Images/GNUmakefile: Same change.
+	* Model/GNUmakefile: Same change.
+	* Panels/GNUmakefile: Same change.
+	* PrinterTypes/GNUmakefile: Same change.
+	* Resources/GNUmakefile: Same change.
+	* Source/GNUmakefile: Same change.
+	* Tools/GNUmakefile: Same change.
+	* Tools/gsnd/GNUmakefile: Same change.
+
+	* Printing/GSLPR/GNUmakefile (GNUSTEP_INSTALLATION_DOMAIN): Same change,
+	plus set GNUSTEP_INSTALLATION_DOMAIN before common.make and not after.
+
+	* Panels/GNUmakefile.postamble: Fixed all install/uninstall
+	targets that were failing to create the install directories
+	properly.  Also, added ECHO macros so that 'make messages=yes'
+	works properly.
+	
 2006-11-12  Matt Rice  <ratmice@gmail.com>
 	
 	* Source/NSTableView.m (-noteNumberOfRowsChanged:): Post selection
