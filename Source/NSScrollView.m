@@ -25,15 +25,18 @@
 
    You should have received a copy of the GNU Library General Public
    License along with this library; if not, write to the Free
-   Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02111 USA.
+   Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02111 USA.
 */
 
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
+#include <Foundation/NSNotification.h>
 #include "AppKit/NSScroller.h"
 #include "AppKit/NSColor.h"
 #include "AppKit/NSCell.h"
 #include "AppKit/NSClipView.h"
+#include "AppKit/NSInterfaceStyle.h"
 #include "AppKit/NSScrollView.h"
 #include "AppKit/NSRulerView.h"
 #include "AppKit/NSTableHeaderView.h"
@@ -62,6 +65,10 @@ typedef struct _scrollViewFlags
   unsigned int __unused4:26;
 #endif  
 } GSScrollViewFlags;
+
+@interface	NSScrollView (GSPrivate)
+- (void) _themeDidActivate: (NSNotification*)notification;
+@end
 
 @implementation NSScrollView
 
@@ -169,6 +176,11 @@ static float scrollerWidth;
   [self setHasHorizontalRuler: YES];
   [self tile];
 
+  [[NSNotificationCenter defaultCenter]
+    addObserver: self
+    selector: @selector(_themeDidActivate:)
+    name: GSThemeDidActivateNotification
+    object: nil];
   return self;
 }
 
@@ -179,6 +191,8 @@ static float scrollerWidth;
 
 - (void) dealloc
 {
+  [[NSNotificationCenter defaultCenter] removeObserver: self];
+
   DESTROY(_horizScroller);
   DESTROY(_vertScroller);
   DESTROY(_horizRuler);
@@ -866,15 +880,24 @@ static float scrollerWidth;
   if (_hasVertScroller)
     {
       NSRect vertScrollerRect;
+      NSRectEdge	edge = NSMinXEdge;
+      NSInterfaceStyle	style;
+
+      style = NSInterfaceStyleForKey(@"NSScrollViewInterfaceStyle", nil);
+      if (style == NSMacintoshInterfaceStyle
+	|| style == NSWindows95InterfaceStyle)
+	{
+	  edge = NSMaxXEdge;
+	}
 
       NSDivideRect (contentRect, &vertScrollerRect, &contentRect, 
-		    scrollerWidth, NSMinXEdge);
+	scrollerWidth, edge);
 
       [_vertScroller setFrame: vertScrollerRect];
 
       /* Substract 1 for the line that separates the vertical scroller
        * from the clip view (and eventually the horizontal scroller).  */
-      NSDivideRect (contentRect, NULL, &contentRect, 1, NSMinXEdge);
+      NSDivideRect (contentRect, NULL, &contentRect, 1, edge);
     }
 
   /* Prepare the horizontal scroller.  */
@@ -883,7 +906,7 @@ static float scrollerWidth;
       NSRect horizScrollerRect;
       
       NSDivideRect (contentRect, &horizScrollerRect, &contentRect, 
-		    scrollerWidth, bottomEdge);
+	scrollerWidth, bottomEdge);
 
       [_horizScroller setFrame: horizScrollerRect];
 
@@ -918,7 +941,7 @@ static float scrollerWidth;
 	  NSRect horizRulerRect;
 	  
 	  NSDivideRect (contentRect, &horizRulerRect, &contentRect,
-			[_horizRuler requiredThickness], topEdge);
+	    [_horizRuler requiredThickness], topEdge);
 	  [_horizRuler setFrame: horizRulerRect];
 	}
 
@@ -927,7 +950,7 @@ static float scrollerWidth;
 	  NSRect vertRulerRect;
 	  
 	  NSDivideRect (contentRect, &vertRulerRect, &contentRect,
-			[_vertRuler requiredThickness], NSMinXEdge);
+	    [_vertRuler requiredThickness], NSMinXEdge);
 	  [_vertRuler setFrame: vertRulerRect];
 	}
     }
@@ -964,8 +987,20 @@ static float scrollerWidth;
 
   if (_hasVertScroller)
     {
-      DPSmoveto(ctxt, [_vertScroller frame].origin.x + scrollerWidth, 
-		[_vertScroller frame].origin.y - 1);
+      NSInterfaceStyle	style;
+
+      style = NSInterfaceStyleForKey(@"NSScrollViewInterfaceStyle", nil);
+      if (style == NSMacintoshInterfaceStyle
+        || style == NSWindows95InterfaceStyle)
+        {
+          DPSmoveto(ctxt, [_vertScroller frame].origin.x - 1, 
+	    [_vertScroller frame].origin.y - 1);
+	}
+      else
+        {
+          DPSmoveto(ctxt, [_vertScroller frame].origin.x + scrollerWidth, 
+	    [_vertScroller frame].origin.y - 1);
+	}
       DPSrlineto(ctxt, 0, [_vertScroller frame].size.height + 1);
       DPSstroke(ctxt);
     }
@@ -1348,7 +1383,8 @@ static float scrollerWidth;
 	{
 	  _hasHeaderView = YES;
 	  _hasCornerView = YES;	  
-	  ASSIGN(_headerClipView, [aDecoder decodeObjectForKey: @"NSHeaderClipView"]);
+	  ASSIGN(_headerClipView,
+	    [aDecoder decodeObjectForKey: @"NSHeaderClipView"]);
 	}
 
       [self tile];
@@ -1470,3 +1506,11 @@ static float scrollerWidth;
 }
 
 @end
+
+@implementation	NSScrollView (GSPrivate)
+- (void) _themeDidActivate: (NSNotification*)notification
+{
+  [self tile];
+}
+@end
+

@@ -162,6 +162,17 @@ typedef enum {
 } GSThemeFillStyle;
 
 
+/**
+ * This enumeration provides constants for informing drawing methods
+ * what state a control is in (and consequently how the display element
+ * being drawn should be presented).
+ */
+typedef enum {
+  GSThemeNormalState,		/** A control in its normal state */
+  GSThemeHighlightedState,	/** A control which is highlighted */
+  GSThemeSelectedState,		/** A control which is selected */
+} GSThemeControlState;
+
 /** Notification sent when a theme has just become active.
  */
 APPKIT_EXPORT	NSString	*GSThemeDidActivateNotification;
@@ -374,7 +385,7 @@ APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
 		   in: (NSButtonCell*)cell
 		 view: (NSView*)view
 		style: (int)style
-		state: (int)state;
+		state: (GSThemeControlState)state;
 
 /** Draws the indicator (normally a dotted rectangle) to show that
  * the view currently has keyboard focus.

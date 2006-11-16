@@ -1,3 +1,14 @@
+2006-11-16 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	* Source/GSTheme.m:
+	* Source/NSButtonCell.m:
+	Add control state enumeration and use it rather than anoinymous
+	integer.
+	* Source/NSScrollView.m:
+	Support scroller on the right using NSScrollViewInterfaceStyle
+	(for either NSMacintoshInterfaceStyle or NSWindows95InterfaceStyle).
+
 2006-11-02 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTheme.m:
