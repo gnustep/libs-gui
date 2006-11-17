@@ -373,7 +373,7 @@ The text system always has positive y down, so we flip the coordinate
 system when drawing (if the view isn't flipped already). This causes the
 glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
 */
-@interface NSFont (font_flip_hack)
+@interface NSFont (FontFlipHack)
 +(void) _setFontFlipHack: (BOOL)flip;
 @end
 

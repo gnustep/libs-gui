@@ -25,11 +25,13 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */ 
 
 #ifndef _GNUstep_H_NSPageLayout
 #define _GNUstep_H_NSPageLayout
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSPanel.h>
@@ -78,8 +80,8 @@ enum {
 // Running the Panel 
 //
 - (int)runModal;
-- (int)runModalWithPrintInfo:(NSPrintInfo *)pInfo;
-#ifndef	STRICT_OPENSTEP
+- (int)runModalWithPrintInfo:(NSPrintInfo *)printInfo;
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void)beginSheetWithPrintInfo:(NSPrintInfo *)printInfo
                  modalForWindow:(NSWindow *)docWindow
                        delegate:(id)delegate

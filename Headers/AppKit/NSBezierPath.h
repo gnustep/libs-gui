@@ -21,11 +21,13 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02111 - 1307, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02111 - 1307, USA.
 */
 
 #ifndef BEZIERPATH_H
 #define BEZIERPATH_H
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <Foundation/Foundation.h>
 #include <AppKit/NSFont.h>
@@ -222,7 +224,7 @@ typedef enum {
 // Hit detection  
 //
 
-#ifndef	NO_GNUSTEP
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 /** Returns the winding count, according to the PostScript definition,
     at the given point.  */
 - (int) windingCountAtPoint: (NSPoint)point;

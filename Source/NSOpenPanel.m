@@ -54,7 +54,7 @@
 static NSOpenPanel *_gs_gui_open_panel = nil;
 
 // Pacify the compiler
-@interface NSSavePanel (_PrivateMethods)
+@interface NSSavePanel (GSPrivateMethods)
 - (void) _resetDefaults;
 - (void) _selectCellName: (NSString *)title;
 - (void) _selectTextInColumn: (int)column;
@@ -63,7 +63,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 - (NSComparisonResult) _compareFilename: (NSString *)n1 with: (NSString *)n2;
 @end
 
-@implementation NSOpenPanel (_PrivateMethods)
+@implementation NSOpenPanel (GSPrivateMethods)
 - (void) _resetDefaults
 {
   [super _resetDefaults];

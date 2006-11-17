@@ -23,11 +23,13 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */ 
 
 #ifndef _GNUstep_H_NSControl
 #define _GNUstep_H_NSControl
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <AppKit/NSText.h>
 
@@ -107,7 +109,7 @@
 - (void)setFloatingPointFormat:(BOOL)autoRange
 			  left:(unsigned)leftDigits
 			 right:(unsigned)rightDigits;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void)setFormatter:(NSFormatter*)newFormatter;
 - (id)formatter;
 #endif
@@ -150,7 +152,7 @@
 //
 // Attributed string handling
 //
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (NSAttributedString *)attributedStringValue;
 - (void)setAttributedStringValue:(NSAttributedString *)attribStr;
 #endif 
@@ -165,7 +167,7 @@
 // Activation
 //
 - (void)performClick:(id)sender;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (BOOL)refusesFirstResponder;
 - (void)setRefusesFirstResponder:(BOOL)flag;
 #endif
@@ -209,7 +211,7 @@ APPKIT_EXPORT NSString *NSControlTextDidChangeNotification;
   didFailToValidatePartialString: (NSString *)string 
   errorDescription: (NSString *)error;
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (BOOL) control: (NSControl *)control 
   textView: (NSTextView *)textView 
   doCommandBySelector: (SEL)command;

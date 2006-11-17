@@ -832,7 +832,8 @@ static NSImage *unexpandable  = nil;
   _clickedRow = [self rowAtPoint: location];
   _clickedColumn = [self columnAtPoint: location];
 
-  if ([_tableColumns objectAtIndex: _clickedColumn] == _outlineTableColumn)
+  if (_clickedRow != -1
+      && [_tableColumns objectAtIndex: _clickedColumn] == _outlineTableColumn)
     {
       NSImage *image;
 

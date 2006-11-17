@@ -1,4 +1,5 @@
 /* 
+#import <GNUstepBase/GSVersionMacros.h>
    NSParagraphStyle.h
 
      NSParagraphStyle and NSMutableParagraphStyle hold paragraph style 
@@ -25,7 +26,8 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */ 
 
 #include <AppKit/NSText.h>
@@ -133,7 +135,7 @@ typedef enum _NSWritingDirection {
 - (float) maximumLineHeight;
 - (NSLineBreakMode) lineBreakMode;
 
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 /*
  *      Returns the writing direction of "language", which is an ISO 639
  *      two- or three letter code, e.g. "en", or an ISO language-region
@@ -163,7 +165,7 @@ typedef enum _NSWritingDirection {
 - (void) setTabStops: (NSArray*)array;
 - (void) setParagraphStyle: (NSParagraphStyle*)obj;
 
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) setBaseWritingDirection: (NSWritingDirection)direction;
 #endif
 @end

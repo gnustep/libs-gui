@@ -22,11 +22,13 @@
 
    You should have received a copy of the GNU Library General Public
    License along with this library; if not, write to the Free
-   Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02111 USA.
+   Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02111 USA.
 */ 
 
 #ifndef _GNUstep_H_NSDragging
 #define _GNUstep_H_NSDragging
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <Foundation/NSGeometry.h>
 
@@ -87,7 +89,7 @@ typedef enum _NSDragOperation {
 - (BOOL)performDragOperation:(id <NSDraggingInfo>)sender;
 - (void)concludeDragOperation:(id <NSDraggingInfo>)sender;
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void)draggingEnded: (id <NSDraggingInfo>)sender;
 - (BOOL)wantsPeriodicDraggingUpdates;
 #endif
@@ -110,7 +112,7 @@ typedef enum _NSDragOperation {
              endedAt: (NSPoint)screenPoint
            deposited: (BOOL)didDeposit;
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void)draggedImage: (NSImage*)image
              endedAt: (NSPoint)screenPoint
 	   operation: (NSDragOperation)operation;

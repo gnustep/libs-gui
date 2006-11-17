@@ -25,21 +25,15 @@
 #  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=../../gui.make
+GNUSTEP_INSTALLATION_DOMAIN = SYSTEM
 
 include $(GNUSTEP_MAKEFILES)/common.make
 include ../../config.make
 include ../../Version
 
-GNUSTEP_INSTALLATION_DIR=$(GNUSTEP_SYSTEM_ROOT)
-
-
-
-
 BUNDLE_NAME=GSLPR
 BUNDLE_INSTALL_DIR=	$(GNUSTEP_BUNDLES)/GSPrinting
 GSLPR_PRINCIPAL_CLASS=GSLPRPrincipalClass
-
-
 
 ifeq ($(GNUSTEP_TARGET_OS),mingw32)
 GSLPR_BUNDLE_LIBS += -lgnustep-gui $(FND_LIBS) $(OBJC_LIBS)
@@ -48,19 +42,15 @@ ifeq ($(GNUSTEP_TARGET_OS),cygwin)
 GSLPR_BUNDLE_LIBS += -lgnustep-gui $(FND_LIBS) $(OBJC_LIBS)
 endif
 
-
-
 #
 # Libraries
 #
 #GSLPR_LIBRARIES_DEPEND_UPON += 
 
-
 #
 # Resource files
 #
 #GSLPR_RESOURCE_FILES = 
-
 
 #
 # Header files
@@ -73,7 +63,6 @@ GSLPR_HEADERS= \
  GSLPRPrintPanel.m \
  GSLPRPrinter.m
 
-
 #
 # Class files
 #
@@ -85,12 +74,10 @@ GSLPR_OBJC_FILES=	\
  GSLPRPrintPanel.m \
  GSLPRPrinter.m
 
-
 #
 # C files
 #
 #GSLPR_C_FILES = 
-
 
 #
 # Languages
@@ -98,19 +85,12 @@ GSLPR_OBJC_FILES=	\
 #GSLPR_LANGUAGES= \
 # English
 
-
 #
 # Localized Resource Files
 #
 #GSLPR_LOCALIZED_RESOURCE_FILES= \
 # GSLPRPrintPanel.gorm \
 # GSLPRPageLayout.gorm
-
-
-
-
-
-
 
 #
 # Makefiles

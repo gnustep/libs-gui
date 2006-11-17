@@ -26,7 +26,8 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */
 
 /**
@@ -63,10 +64,9 @@ whenever this happens.
 
 #ifndef _GNUstep_H_NSTextContainer
 #define _GNUstep_H_NSTextContainer
+#include <GNUstepBase/GSVersionMacros.h>
 
-#ifdef STRICT_OPENSTEP
-#error "The OpenStep specification does not define an NSTextContainer class."
-#endif
+#if	GS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 
 #include <Foundation/NSGeometry.h>
 
@@ -261,5 +261,9 @@ a line fragment rectangle by the standard typesetter. The default is 0.0.
 - (float) lineFragmentPadding;
 
 @end
+
+#else
+#error "The OpenStep specification does not define an NSTextContainer class."
+#endif
 
 #endif /* _GNUstep_H_NSTextContainer */

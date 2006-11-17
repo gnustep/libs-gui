@@ -23,11 +23,13 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */ 
 
 #ifndef _GNUstep_H_NSEvent
 #define _GNUstep_H_NSEvent
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSGeometry.h>
@@ -203,7 +205,7 @@ enum {
 		     clickCount: (int)clickNum	
 		       pressure: (float)pressureValue;
 
-#ifndef	NO_GNUSTEP
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 + (NSEvent*) mouseEventWithType: (NSEventType)type	
 		       location: (NSPoint)location
 		  modifierFlags: (unsigned int)flags
@@ -236,7 +238,7 @@ enum {
 + (void) stopPeriodicEvents;
 
 
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (int) buttonNumber;
 #endif
 - (NSString *) characters;
@@ -245,7 +247,7 @@ enum {
 - (NSGraphicsContext*) context;
 - (int) data1;
 - (int) data2;
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (float)deltaX;
 - (float)deltaY;
 - (float)deltaZ;
@@ -347,7 +349,7 @@ enum {
  */
 unsigned int NSEventMaskFromType(NSEventType type);
 
-#ifndef	NO_GNUSTEP
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 typedef enum {
   GSAppKitWindowMoved = 1,
   GSAppKitWindowResized,

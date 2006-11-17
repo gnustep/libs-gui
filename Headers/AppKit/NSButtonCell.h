@@ -24,11 +24,13 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */ 
 
 #ifndef _GNUstep_H_NSButtonCell
 #define _GNUstep_H_NSButtonCell
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <AppKit/NSActionCell.h>
 
@@ -104,7 +106,7 @@ typedef enum _NSGradientType {
 - (void)setFont:(NSFont *)fontObject;
 - (void)setTitle:(NSString *)aString;
 - (NSString *)title;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (NSAttributedString *)attributedAlternateTitle;
 - (NSAttributedString *)attributedTitle;
 - (void)setAttributedAlternateTitle:(NSAttributedString *)aString;
@@ -149,7 +151,7 @@ typedef enum _NSGradientType {
 //
 - (BOOL)isTransparent;
 - (void)setTransparent:(BOOL)flag;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (NSBezelStyle)bezelStyle;
 - (void)setBezelStyle:(NSBezelStyle)bezelStyle;
 - (BOOL)showsBorderOnlyWhileMouseInside;
@@ -172,7 +174,7 @@ typedef enum _NSGradientType {
 //
 // Sound
 //
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void)setSound:(NSSound *)aSound;
 - (NSSound *)sound;
 #endif
@@ -180,7 +182,7 @@ typedef enum _NSGradientType {
 //
 // Mouse
 //
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void)mouseEntered:(NSEvent *)event;
 - (void)mouseExited:(NSEvent *)event;
 #endif

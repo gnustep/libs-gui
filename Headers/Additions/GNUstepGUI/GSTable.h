@@ -140,7 +140,7 @@
   prisoners, which are subviews of the jails; the resizing is transmitted
   through the usual autoresizing machinery, because the jails always have
   autoresizing of subviews turned on.  This works because if a prisoner
-  sends to its superview a -frame message, the frame of the jail
+  sends to its superview an [NSView-frame] message, the frame of the jail
   (and <em>not</em> the frame of the GSTable) is returned, so that
   each prisoner will autoresize itself in its jail frame.  Moreover, any
   prisoner, being a subview of its jail, is clipped in its jail frame.  If

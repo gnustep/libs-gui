@@ -1482,22 +1482,22 @@ many times.
 }
 
 /**
-  Orders the window to the back of its level. Equivalent to
-  -orderWindow: NSWindowBelow relativeTo: 0.
-*/
+ * Orders the window to the back of its level. Equivalent to
+ * -orderWindow:relativeTo: with arguments NSWindowBelow and 0.
+ */
 - (void) orderBack: (id)sender
 {
   [self orderWindow: NSWindowBelow relativeTo: 0];
 }
 
 /**
-  If the application is active, orders the window to the front in its
-  level. If the application is not active, the window is ordered in as
-  far forward as possible in its level without being ordered in front
-  of the key or main window of the currently active app. The current key
-  and main window status is not changed. Equivalent to -orderWindow:
-  NSWindowAbove relativeTo: 0.
-*/
+ * If the application is active, orders the window to the front in its
+ * level. If the application is not active, the window is ordered in as
+ * far forward as possible in its level without being ordered in front
+ * of the key or main window of the currently active app. The current key
+ * and main window status is not changed. Equivalent to
+ * -orderWindow:relativeTo: with arguments NSWindowAbove and 0.
+ */
 - (void) orderFront: (id)sender
 {
   [self orderWindow: NSWindowAbove relativeTo: 0];
@@ -1516,9 +1516,9 @@ many times.
 }
 
 /**
-  Orders the window out from the screen. Equivalent to -orderWindow:
-  NSWindowOut relativeTo: 0.
-*/
+ * Orders the window out from the screen. Equivalent to
+ * -orderWindow:relativeTo: with arguments NSWindowOut and 0.
+ */
 - (void) orderOut: (id)sender
 {
   [self orderWindow: NSWindowOut relativeTo: 0];
@@ -1532,6 +1532,9 @@ many times.
   place is NSWindowBelow, places the window directly below otherWin,
   or directly below all windows in its level if otherWin is 0.
   </p>
+  <p>If otherWin is zero and the key window is at the same window level
+  as the receiver, the receiver cannot be positioned above the key window.
+  </p>
   <p>
   If place is NSWindowAbove or NSWindowBelow and the application is
   hidden, the application is unhidden.
@@ -1539,7 +1542,7 @@ many times.
 */
 /*
   As a special undocumented case (for -orderFrontRegardless), if otherWin
-  is negative, then the backend should not try to keep the window below the
+  is minus one, then the backend should not try to keep the window below the
   current key/main window
 */
 - (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (int)otherWin

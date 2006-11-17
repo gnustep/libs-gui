@@ -23,10 +23,12 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */ 
 #ifndef _GNUstep_H_NSDocumentFramworkPrivate
 #define _GNUstep_H_NSDocumentFramworkPrivate
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include "NSDocumentController.h"
 

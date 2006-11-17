@@ -25,7 +25,8 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */ 
 
 #ifndef _GNUstep_H_NSTextView
@@ -393,7 +394,7 @@ These methods are implemented in NSTextView_actions.m. See the comment in
 that file for details on the split and which methods are for
 user/programmatic changes of the text.
 */
-@interface NSTextView (user_actions)
+@interface NSTextView (UserActions)
 
 -(void) alignJustified: (id)sender; /* mosx */
 
@@ -538,7 +539,7 @@ already been laid out. */
 @end
 
 
-@interface NSTextView (GSTextView_sync)
+@interface NSTextView (GSTextViewSync)
 /*
  * This queries the NSLayoutManager to see if it is using multiple
  * text views, and saves this information in a flag, and caches the
@@ -561,7 +562,7 @@ for that text view has been invalidated.
 /* Note that all delegation messages come from the first text view of a
 layout manager. */
 
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 @interface NSObject (NSTextViewDelegate)
 
 -(void) textView: (NSTextView *)textView
@@ -612,7 +613,7 @@ replacementString will be nil. */
 
 -(NSUndoManager *) undoManagerForTextView: (NSTextView *)view;
 @end
-#endif	// STRICT_OPENSTEP
+#endif	// GS_API_MACOSX
 
 /* NSOldNotifyingTextView -> the old view, NSNewNotifyingTextView ->
 the new view.  The text view delegate is not automatically

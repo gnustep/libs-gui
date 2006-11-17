@@ -1,14 +1,300 @@
-2006-11-16 Richard Frith-Macdonald <rfm@gnu.org>
+2006-11-17  Richard Frith-Macdoanld <rfm@gnu.org>
 
-	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	Sync with trunc at revision 24120.
+
+2006-11-17  Richard Frith-Macdoanld <rfm@gnu.org>
+
 	* Source/GSTheme.m:
 	* Source/NSButtonCell.m:
-	Add control state enumeration and use it rather than anoinymous
-	integer.
 	* Source/NSScrollView.m:
-	Support scroller on the right using NSScrollViewInterfaceStyle
-	(for either NSMacintoshInterfaceStyle or NSWindows95InterfaceStyle).
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	Merge in theme changes for scrollviews and cleaner button drawing api.
 
+2006-11-16  Adam Fedor  <fedor@gnu.org>
+
+	* Model/GMAppKit.m ([NSImage +createObjectForModelUnarchiver:]):
+	  Allow loading of images from the owners bundle (patch from
+	  Georg Fleischmann.
+
+2006-11-15  Nicola Pero  <nicola.pero@meta-innovation.com>
+
+	Notice: you should now use 'make DESTDIR=/tmp/xxx install' if you
+	want to relocate all the installation into /tmp/xxx/
+	* Makefile.postamble: Use DESTDIR instead of INSTALL_ROOT_DIR
+	everywhere.
+	
+	* ColorPickers/GNUmakefile: (GNUSTEP_INSTALLATION_DOMAIN): Use
+	GNUSTEP_INSTALLATION_DOMAIN instead of GNUSTEP_INSTALLATION_DIR.
+	* Documentation/GNUmakefile: Same change.
+	* Documentation/General/GNUmakefile: Same change.
+	* Documentation/GuiUser/GNUmakefile: Same change.
+	* Images/GNUmakefile: Same change.
+	* Model/GNUmakefile: Same change.
+	* Panels/GNUmakefile: Same change.
+	* PrinterTypes/GNUmakefile: Same change.
+	* Resources/GNUmakefile: Same change.
+	* Source/GNUmakefile: Same change.
+	* Tools/GNUmakefile: Same change.
+	* Tools/gsnd/GNUmakefile: Same change.
+
+	* Printing/GSLPR/GNUmakefile (GNUSTEP_INSTALLATION_DOMAIN): Same change,
+	plus set GNUSTEP_INSTALLATION_DOMAIN before common.make and not after.
+
+	* Panels/GNUmakefile.postamble: Fixed all install/uninstall
+	targets that were failing to create the install directories
+	properly.  Also, added ECHO macros so that 'make messages=yes'
+	works properly.
+	
+2006-11-12  Matt Rice  <ratmice@gmail.com>
+	
+	* Source/NSTableView.m (-noteNumberOfRowsChanged:): Post selection
+	is and did change notifications if changing the selected rows.
+	* Source/NSSliderCell.m (-copyWithZone:): Make a little clearer.
+	* Source/NSMatrix.m (-_rebuildLayoutAfterResize): Don't change the
+	intercell spacing if not autosizing cells.
+
+2006-11-11  Matt Rice  <ratmice@gmail.com>
+
+	* Source/NSSliderCell.m: Implement copyWithZone:.
+
+2006-11-10  Matt Rice  <ratmice@gmail.com>
+
+	* Source/NSOutlineView.m: Handle rowAtPoint: returning -1.
+	* Source/NSTableView.m (drawRect:): Only call
+	-highlightSelectionInClipRect: and -drawGridInClipRect: once.
+	(-drawGridInClipRect:): Constrain the vertical grid line to the last row
+	drawn in the rect.
+	
+2006-11-10  Matt Rice  <ratmice@gmail.com>
+
+	* Source/NSTableView.m (rowAtPoint:): Return -1 if the point is under 
+	the last row.
+	(mouseDown:): Handle rowAtPoint: returning -1.
+	(rectOfRows:): Ditto.
+	
+2006-11-10  Matt Rice  <ratmice@gmail.com>
+
+	* Source/NSTableView.m (mouseDown:): Rename some local variables
+	to be less ambiguous.
+
+2006-11-10  Matt Rice  <ratmice@gmail.com>
+
+	* Headers/AppKit/NSTableView.h: Add ivar for
+	verticalMotionCanBeginDrag.
+	* Source/NSTableView.m: Implement verticalMotionCanBeginDrag
+	bump class version.
+	* Source/NSTextView_actions.m: Fix method name from previous changes.
+	* KeyBindings/DefaultKeyBindings.dict: Add new key bindings.
+	* ChangeLog: Add to description of a previous change.
+
+2006-11-09  Matt Rice  <ratmice@gmail.com>
+
+	* Source/NSTableView.m (selectContiguousRegion): Remove usage of
+	offsets.
+
+2006-11-08  Matt Rice  <ratmice@gmail.com>
+
+	* Source/NSTableView.m: Implement keyboard navigation/selection.
+	Fixes bug #11942.
+	(-selectRow:byExtendingSelection:): Update _clickedRow.
+	(-mouseDown:): Ditto.
+	* Source/NSSlider.m (keyDown:): Call supers implementation if we don't
+	use the key stroke.
+
+2006-11-07  Matt Rice  <ratmice@gmail.com>
+	
+	* Source/NSTableView.m: Whitespace changes to conform to coding
+	standards.
+
+2006-11-07  Matt Rice  <ratmice@gmail.com>
+
+	* Source/NSTableView.m (-mouseDown): Only call editWithFrame: from a
+	double click. Don't track cells from a mouse dragged.
+	Add comments.
+
+2006-11-06  Matt Rice  <ratmice@yahoo.com>
+
+	* Source/NSTextView_actions.m: Fix keyboard movement scrolling 
+	when selecting text off the bottom or right of the visible area.
+
+2006-11-06  Matt Rice  <ratmice@yahoo.com>
+
+	* Source/NSTextView_actions.m: Remove hack from previous patch.
+
+2006-11-06 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSDisplayServer.m: Improve documentation of window ordering
+	* Source/NSWindow.m: ditto
+	* Source/NSApplication.m: Fix minor bug with cleanup on termination
+	when the appicon was suppressed.
+	* Source/NSAttributedString.m:
+	* Source/NSClipView.m:
+	* Source/NSApplication.m:
+	* Source/NSImage.m:
+	* Headers/AppKit/NSSound.h:
+	* Headers/AppKit/NSTextAttachment.h:
+	* Headers/AppKit/NSPopUpButtonCell.h:
+	* Headers/AppKit/NSPanel.h:
+	* Headers/AppKit/NSTableHeaderCell.h:
+	* Headers/AppKit/NSSpellServer.h:
+	* Headers/AppKit/NSAlert.h:
+	* Headers/AppKit/NSColorList.h:
+	* Headers/AppKit/NSWindowController.h:
+	* Headers/AppKit/NSScreen.h:
+	* Headers/AppKit/NSOpenPanel.h:
+	* Headers/AppKit/NSSliderCell.h:
+	* Headers/AppKit/NSImageCell.h:
+	* Headers/AppKit/NSAffineTransform.h:
+	* Headers/AppKit/NSText.h:
+	* Headers/AppKit/AppKitDefines.h:
+	* Headers/AppKit/NSParagraphStyle.h:
+	* Headers/AppKit/NSBox.h:
+	* Headers/AppKit/AppKitExceptions.h:
+	* Headers/AppKit/NSTableHeaderView.h:
+	* Headers/AppKit/NSAttributedString.h:
+	* Headers/AppKit/NSWorkspace.h:
+	* Headers/AppKit/NSPopUpButton.h:
+	* Headers/AppKit/NSFontManager.h:
+	* Headers/AppKit/NSFormCell.h:
+	* Headers/AppKit/NSMenu.h:
+	* Headers/AppKit/NSMatrix.h:
+	* Headers/AppKit/NSWindow.h:
+	* Headers/AppKit/NSLayoutManager.h:
+	* Headers/AppKit/NSButtonCell.h:
+	* Headers/AppKit/NSColorPicker.h:
+	* Headers/AppKit/NSActionCell.h:
+	* Headers/AppKit/NSImageView.h:
+	* Headers/AppKit/NSOpenGLView.h:
+	* Headers/AppKit/NSDataLinkManager.h:
+	* Headers/AppKit/NSClipView.h:
+	* Headers/AppKit/NSSplitView.h:
+	* Headers/AppKit/NSBitmapImageRep.h:
+	* Headers/AppKit/NSInputServer.h:
+	* Headers/AppKit/NSTextFieldCell.h:
+	* Headers/AppKit/NSImageRep.h:
+	* Headers/AppKit/NSBezierPath.h:
+	* Headers/AppKit/NSGraphics.h:
+	* Headers/AppKit/NSResponder.h:
+	* Headers/AppKit/NSColorWell.h:
+	* Headers/AppKit/NSApplication.h:
+	* Headers/AppKit/NSForm.h:
+	* Headers/AppKit/NSWindow+Toolbar.h:
+	* Headers/AppKit/NSTableColumn.h:
+	* Headers/AppKit/NSNib.h:
+	* Headers/AppKit/NSComboBox.h:
+	* Headers/AppKit/NSMovieView.h:
+	* Headers/AppKit/NSButton.h:
+	* Headers/AppKit/NSSavePanel.h:
+	* Headers/AppKit/NSColor.h:
+	* Headers/AppKit/NSMovie.h:
+	* Headers/AppKit/NSCachedImageRep.h:
+	* Headers/AppKit/NSStepper.h:
+	* Headers/AppKit/NSPrinter.h:
+	* Headers/AppKit/NSHelpManager.h:
+	* Headers/AppKit/NSMenuItemCell.h:
+	* Headers/AppKit/NSPasteboard.h:
+	* Headers/AppKit/DPSOperators.h:
+	* Headers/AppKit/AppKit.h:
+	* Headers/AppKit/NSTextContainer.h:
+	* Headers/AppKit/NSNibDeclarations.h:
+	* Headers/AppKit/NSToolbar.h:
+	* Headers/AppKit/NSSearchFieldCell.h:
+	* Headers/AppKit/NSCursor.h:
+	* Headers/AppKit/NSPrintOperation.h:
+	* Headers/AppKit/NSControl.h:
+	* Headers/AppKit/NSInterfaceStyle.h:
+	* Headers/AppKit/NSMenuItem.h:
+	* Headers/AppKit/NSScroller.h:
+	* Headers/AppKit/NSDocumentFrameworkPrivate.h:
+	* Headers/AppKit/NSInputManager.h:
+	* Headers/AppKit/NSRulerMarker.h:
+	* Headers/AppKit/NSProgressIndicator.h:
+	* Headers/AppKit/NSGraphicsContext.h:
+	* Headers/AppKit/NSFont.h:
+	* Headers/AppKit/NSTextStorage.h:
+	* Headers/AppKit/NSSearchField.h:
+	* Headers/AppKit/NSOutlineView.h:
+	* Headers/AppKit/NSPageLayout.h:
+	* Headers/AppKit/NSTextView.h:
+	* Headers/AppKit/NSFileWrapper.h:
+	* Headers/AppKit/NSTabViewItem.h:
+	* Headers/AppKit/PSOperators.h:
+	* Headers/AppKit/NSDragging.h:
+	* Headers/AppKit/NSDocumentController.h:
+	* Headers/AppKit/NSColorPicking.h:
+	* Headers/AppKit/NSDrawer.h:
+	* Headers/AppKit/NSCustomImageRep.h:
+	* Headers/AppKit/NSRulerView.h:
+	* Headers/AppKit/NSMenuView.h:
+	* Headers/AppKit/NSSecureTextField.h:
+	* Headers/AppKit/NSNibLoading.h:
+	* Headers/AppKit/NSHelpPanel.h:
+	* Headers/AppKit/NSComboBoxCell.h:
+	* Headers/AppKit/NSToolbarItem.h:
+	* Headers/AppKit/NSImage.h:
+	* Headers/AppKit/NSSlider.h:
+	* Headers/AppKit/NSStepperCell.h:
+	* Headers/AppKit/NSStringDrawing.h:
+	* Headers/AppKit/NSOpenGL.h:
+	* Headers/AppKit/NSDataLink.h:
+	* Headers/AppKit/NSScrollView.h:
+	* Headers/AppKit/NSColorPanel.h:
+	* Headers/AppKit/NSEPSImageRep.h:
+	* Headers/AppKit/NSSpellProtocol.h:
+	* Headers/AppKit/NSTabView.h:
+	* Headers/AppKit/NSDataLinkPanel.h:
+	* Headers/AppKit/NSPrintInfo.h:
+	* Headers/AppKit/NSUserInterfaceValidation.h:
+	* Headers/AppKit/NSPrintPanel.h:
+	* Headers/AppKit/NSCell.h:
+	* Headers/AppKit/NSEvent.h:
+	* Headers/AppKit/NSTableView.h:
+	* Headers/AppKit/NSBrowserCell.h:
+	* Headers/AppKit/NSNibConnector.h:
+	* Headers/AppKit/NSSelection.h:
+	* Headers/AppKit/NSTextField.h:
+	* Headers/AppKit/NSSpellChecker.h:
+	* Headers/AppKit/NSView.h:
+	* Headers/AppKit/NSDocument.h:
+	* Headers/AppKit/NSBrowser.h:
+	* Headers/AppKit/NSFontPanel.h:
+	* Headers/Additions/GNUstepGUI/GSTable.h:
+	Update to use current version macros and fix a few documentation
+	errors.
+
+2006-11-06  Matt Rice  <ratmice@yahoo.com>
+
+	* Source/NSTextView_actions.m: Implement some undocumented key binding
+	actions.
+
+2006-11-06  Matt Rice  <ratmice@yahoo.com>
+
+	* Source/NSTextView_actions.m:
+	* Source/NSOpenPanel.m:
+	* Source/GSLayoutManager.m:
+	* Source/NSLayoutManager.m:
+	* Source/NSSavePanel.m:
+	* Source/NSTextView.m:
+	* Source/NSStringDrawing.m:
+	* Headers/Additions/GNUstepGUI/GSLayoutManager_internal.h:
+	* Headers/AppKit/NSTextView.h: Remove underscores from category names
+	as they can confuse the debugger.
+
+2006-11-05  Matt Rice  <ratmice@yahoo.com>
+	
+	* Source/NSSlider.m (-keyDown:): Implement, Fixes bug #14000.
+	* Source/NSSliderCell.m (-trackMouse:...): Fix allows tick marks
+	only mouse tracking.
+	
+2006-11-05  Matt Rice  <ratmice@yahoo.com>
+
+	* Source/NSColorPanel.m: Implement -worksWhenModal:. Fixes bug #9417.
+
+2006-11-02  Matt Rice  <ratmice@yahoo.com>
+
+	* Source/NSTableView (_editNextCellAfterRow:inColumn:): 
+	Wrap around when number of rows is exceeded.
+	
 2006-11-02 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTheme.m:

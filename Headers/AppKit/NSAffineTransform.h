@@ -21,11 +21,13 @@
 
    You should have received a copy of the GNU Library General Public
    License along with this library; if not, write to the Free
-   Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02111 USA.
+   Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02111 USA.
 */
 
 #ifndef _GNUstep_H_NSAffineTransform
 #define _GNUstep_H_NSAffineTransform
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <Foundation/NSObject.h>
 #include <Foundation/NSGeometry.h>
@@ -66,7 +68,7 @@ typedef	struct {
 - (void) translateXBy: (float)tranX yBy: (float)tranY;
 @end
 
-#ifndef	NO_GNUSTEP
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 @interface NSAffineTransform (GNUstep)
 - (void) translateToPoint: (NSPoint)point;
 - (void) scaleTo: (float)sx : (float)sy;

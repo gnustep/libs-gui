@@ -119,11 +119,11 @@ first. Remaining cases, highest priority first:
 
 
 
-@interface NSLayoutManager (layout_helpers)
+@interface NSLayoutManager (LayoutHelpers)
 -(void) _doLayoutToContainer: (int)cindex  point: (NSPoint)p;
 @end
 
-@implementation NSLayoutManager (layout_helpers)
+@implementation NSLayoutManager (LayoutHelpers)
 -(void) _doLayoutToContainer: (int)cindex  point: (NSPoint)p
 {
   [self _doLayout];

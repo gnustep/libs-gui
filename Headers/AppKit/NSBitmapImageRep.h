@@ -23,11 +23,13 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */ 
 
 #ifndef _GNUstep_H_NSBitmapImageRep
 #define _GNUstep_H_NSBitmapImageRep
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <AppKit/NSImageRep.h>
 
@@ -48,7 +50,7 @@ typedef enum _NSTIFFCompression {
   NSTIFFCompressionOldJPEG
 } NSTIFFCompression;
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 // FIXME: This is probably wrong
 typedef enum _NSBitmapImageFileType {
     NSTIFFFileType = 0,
@@ -90,7 +92,7 @@ typedef enum _NSBitmapImageFileType {
 		    bytesPerRow: (int)rowBytes
 		   bitsPerPixel: (int)pixelBits;
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void)colorizeByMappingGray:(float)midPoint 
 		      toColor:(NSColor *)midPointColor 
 		 blackMapping:(NSColor *)shadowColor
@@ -126,7 +128,7 @@ typedef enum _NSBitmapImageFileType {
 - (NSData*) TIFFRepresentationUsingCompression: (NSTIFFCompression)type
 					factor: (float)factor;
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 + (NSData *)representationOfImageRepsInArray:(NSArray *)imageReps 
 				   usingType:(NSBitmapImageFileType)storageType
 				  properties:(NSDictionary *)properties;
@@ -146,7 +148,7 @@ typedef enum _NSBitmapImageFileType {
 - (void) setCompression: (NSTIFFCompression)compression
 		 factor: (float)factor;
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void)setProperty:(NSString *)property withValue:(id)value;
 - (id)valueForProperty:(NSString *)property;
 #endif

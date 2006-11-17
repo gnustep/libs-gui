@@ -287,7 +287,7 @@ for roundoff issues. Whole points should be representable. */
 
 /* For when more than one text view is connected to a layout manager.
 Helpers are here, the actual methods are in the main implementation. */
-@implementation NSTextView (GSTextView_sync)
+@implementation NSTextView (GSTextViewSync)
 
 
 #define SET_DELEGATE_NOTIFICATION(notif_name) \

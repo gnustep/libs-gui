@@ -21,11 +21,13 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */
 
 #ifndef _GNUstep_H_NSComboBoxCell
 #define _GNUstep_H_NSComboBoxCell
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <Foundation/NSGeometry.h>
 #include <AppKit/NSTextFieldCell.h>
@@ -102,7 +104,7 @@
 	     ofView: (NSView *)controlView 
        untilMouseUp: (BOOL)flag;
 
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 /* text completion */
 - (NSString *)completedString:(NSString *)substring;
 - (void)setCompletes:(BOOL)completes;
@@ -116,7 +118,7 @@
   objectValueForItemAtIndex:(int)index;
 - (unsigned int)comboBoxCell:(NSComboBoxCell *)aComboBoxCell
   indexOfItemWithStringValue:(NSString *)string;
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 /* text completion */
 - (NSString *)comboBoxCell:(NSComboBoxCell *)aComboBoxCell 
 	   completedString:(NSString *)uncompletedString;

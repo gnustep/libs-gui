@@ -23,11 +23,13 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */ 
 
 #ifndef _GNUstep_H_NSImage
 #define _GNUstep_H_NSImage
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <AppKit/NSGraphicsContext.h>
 #include <Foundation/NSBundle.h>
@@ -86,7 +88,7 @@ typedef enum {
 - (id) initWithPasteboard: (NSPasteboard*)pasteboard;
 - (id) initWithSize: (NSSize)aSize;
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (id)initWithBitmapHandle:(void *)bitmap;
 - (id)initWithContentsOfURL:(NSURL *)anURL;
 - (id)initWithIconHandle:(void *)icon;
@@ -102,8 +104,8 @@ typedef enum {
 // Referring to Images by Name 
 //
 + (id) imageNamed: (NSString*)aName;
-#ifndef STRICT_OPENSTEP
-#ifndef NO_GNUSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 + (NSImage*) _standardImageWithName: (NSString*)name;
 #endif
 #endif
@@ -133,7 +135,7 @@ typedef enum {
 		fromRect: (NSRect)aRect
 		fraction: (float)aFloat;
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) compositeToPoint: (NSPoint)aPoint
 		 fromRect: (NSRect)srcRect
 		operation: (NSCompositingOperation)op
@@ -177,7 +179,7 @@ typedef enum {
 //
 - (BOOL) drawRepresentation: (NSImageRep*)imageRep
 		     inRect: (NSRect)aRect;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 /** Calls -drawAtPoint:fromRect:operation:fraction: with
     <code>dstRect</code> given by <code>point</code> and the size of
     <code>srcRect</code>.  */
@@ -251,7 +253,7 @@ typedef enum {
 
 @end
 
-#ifndef	NO_GNUSTEP
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 /*
  * A formal protocol that duplicates the informal protocol for delegates.
  */

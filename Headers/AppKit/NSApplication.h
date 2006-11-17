@@ -28,7 +28,8 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 
     AutogsdocSource: NSApplication.m
     AutogsdocSource: GSServicesManager.m
@@ -37,6 +38,7 @@
 
 #ifndef _GNUstep_H_NSApplication
 #define _GNUstep_H_NSApplication
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <AppKit/NSResponder.h>
 
@@ -67,7 +69,7 @@ enum {
   NSRunContinuesResponse = (-1002)
 };
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 #define NSUpdateWindowsRunLoopOrdering 600000
 
 typedef enum {
@@ -123,7 +125,7 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
  * Class methods
  */
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 + (void) detachDrawingThread: (SEL)selector 
 		    toTarget: (id)target 
 		  withObject: (id)argument;
@@ -149,7 +151,7 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 - (void) activateIgnoringOtherApps: (BOOL)flag;
 - (void) deactivate;
 - (BOOL) isActive;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) hideOtherApplications: (id)sender;
 - (void) unhideAllApplications: (id)sender;
 #endif
@@ -170,7 +172,7 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 - (void) stopModal;
 - (void) stopModalWithCode: (int)returnCode;
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (int) runModalForWindow: (NSWindow *)theWindow
 	relativeToWindow: (NSWindow *)docWindow;
 - (void) beginSheet: (NSWindow *)sheet
@@ -202,7 +204,7 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 		 to: (id)aTarget
 	       from: (id)sender;
 - (id) targetForAction: (SEL)aSelector;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (id)targetForAction: (SEL)theAction 
                    to: (id)theTarget 
                  from: (id)sender;
@@ -241,14 +243,14 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 /*
  * Showing Standard Panels
  */
-#ifndef	NO_GNUSTEP
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 /* GNUstep extensions displaying an infoPanel, title is 'Info' */
 /* For a list of the useful values in the dictionary, see GSInfoPanel.h. 
    The entries are mostly compatible with macosx. */
 - (void) orderFrontStandardInfoPanel: (id)sender;
 - (void) orderFrontStandardInfoPanelWithOptions: (NSDictionary *)dictionary;
 #endif 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 /* macosx extensions displaying an aboutPanel, title is 'About'. 
    NB: These two methods do exactly the same as the two methods above, 
    only the title is different. */
@@ -261,7 +263,7 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
  */
 - (NSMenu*) mainMenu;
 - (void) setMainMenu: (NSMenu*)aMenu;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) setAppleMenu: (NSMenu*)aMenu;
 #endif
 
@@ -305,7 +307,7 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 /*
  * Terminating the application
  */
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) replyToApplicationShouldTerminate: (BOOL)shouldTerminate;
 #endif 
 - (void) terminate: (id)sender;
@@ -316,7 +318,7 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 - (id) delegate;
 - (void) setDelegate: (id)anObject;
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 /*
  * Methods for scripting
  */
@@ -353,12 +355,12 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 - (BOOL) writeSelectionToPasteboard: (NSPasteboard*)pboard
                               types: (NSArray*)types;
 
-#ifndef	NO_GNUSTEP
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 - (NSWindow*) iconWindow;
 #endif
 @end
 
-#ifndef	NO_GNUSTEP
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 
 @interface NSApplication (GSGUIInternal)
 - (void) _windowWillDealloc: (NSWindow *)window;
@@ -416,7 +418,7 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
  */
 - (BOOL) applicationShouldOpenUntitledFile:(NSApplication *)sender;
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 /**
  * Sent from within the [NSApplication-terminate:].  If NO is returned
  * termination will not proceed. 
@@ -510,7 +512,7 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
  */
 - (void) applicationWillUpdate: (NSNotification*)aNotification;
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 /**
  * Method called by scripting framework on OS X.  <em>Not implemented (sent)
  * yet on GNUstep.</em>
@@ -577,7 +579,7 @@ NSShowsServicesMenuItem(NSString *name);
 APPKIT_EXPORT BOOL
 NSPerformService(NSString *serviceItem, NSPasteboard *pboard);
 
-#ifndef	NO_GNUSTEP
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 APPKIT_EXPORT id
 GSContactApplication(NSString *appName, NSString *port, NSDate *expire);
 #endif

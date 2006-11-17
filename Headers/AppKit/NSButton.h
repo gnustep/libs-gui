@@ -24,11 +24,13 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */ 
 
 #ifndef _GNUstep_H_NSButton
 #define _GNUstep_H_NSButton
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <AppKit/NSControl.h>
 #include <AppKit/NSButtonCell.h>
@@ -45,7 +47,7 @@
 // Setting the Button Type 
 //
 - (void)setButtonType:(NSButtonType)aType;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void)setHighlightsBy:(int)aType;
 - (void)setShowsStateBy:(int)aType;
 #endif
@@ -74,7 +76,7 @@
 - (void)setAlternateTitle:(NSString *)aString;
 - (void)setTitle:(NSString *)aString;
 - (NSString *)title;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (NSAttributedString *)attributedAlternateTitle;
 - (NSAttributedString *)attributedTitle;
 - (void)setAttributedAlternateTitle:(NSAttributedString *)aString;
@@ -99,7 +101,7 @@
 - (BOOL)isTransparent;
 - (void)setBordered:(BOOL)flag;
 - (void)setTransparent:(BOOL)flag;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (NSBezelStyle)bezelStyle;
 - (void)setBezelStyle:(NSBezelStyle)bezelStyle;
 - (void)setShowsBorderOnlyWhileMouseInside:(BOOL)show;
@@ -127,7 +129,7 @@
 //
 // Sound
 //
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void)setSound:(NSSound *)aSound;
 - (NSSound *)sound;
 #endif

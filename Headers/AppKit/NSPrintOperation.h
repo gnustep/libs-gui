@@ -30,11 +30,13 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */ 
 
 #ifndef _GNUstep_H_NSPrintOperation
 #define _GNUstep_H_NSPrintOperation
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <Foundation/NSObject.h>
 #include <Foundation/NSGeometry.h>
@@ -92,7 +94,7 @@ typedef enum _NSPrintingPageOrder {
 + (NSPrintOperation *)printOperationWithView:(NSView *)aView
                                    printInfo:(NSPrintInfo *)aPrintInfo;
 
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 + (NSPrintOperation *)PDFOperationWithView:(NSView *)aView 
                                 insideRect:(NSRect)rect 
                                     toData:(NSMutableData *)data;
@@ -124,7 +126,7 @@ typedef enum _NSPrintingPageOrder {
 //
 - (BOOL)isEPSOperation;
 
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (BOOL)isCopyingOperation;
 #endif
 
@@ -136,7 +138,7 @@ typedef enum _NSPrintingPageOrder {
 - (void)setPrintPanel:(NSPrintPanel *)panel;
 - (void)setShowPanels:(BOOL)flag;
 
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (NSView *)accessoryView;
 - (void)setAccessoryView:(NSView *)aView;
 #endif
@@ -161,7 +163,7 @@ typedef enum _NSPrintingPageOrder {
 - (void)cleanUpOperation;
 - (BOOL)deliverResult;
 - (BOOL)runOperation;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void)runOperationModalForWindow: (NSWindow *)docWindow 
                           delegate: (id)delegate 
                     didRunSelector: (SEL)didRunSelector 

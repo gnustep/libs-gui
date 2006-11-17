@@ -22,7 +22,7 @@
 #  Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02111 USA.
 #
 
-GNUSTEP_INSTALLATION_DIR = $(GNUSTEP_SYSTEM_ROOT)
+GNUSTEP_INSTALLATION_DOMAIN = SYSTEM
 
 GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=../gui.make
 include $(GNUSTEP_MAKEFILES)/common.make

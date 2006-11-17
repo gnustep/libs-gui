@@ -609,13 +609,46 @@ GSCurrentServer(void)
   [self subclassResponsibility: _cmd];
 }
 
-/** Causes the window to be ordered onto or off the screen depending
-    on the value of op. The window is ordered relative to otherWin. 
-    The window will never be ordered in front of the current key/main
-    window except in the special case where otherWin is negative (This
-    is a special feature that [NSWindow-orderWindow:relativeTo:] uses
-    to place the window correctly).
-*/
+/**
+ * <p>Causes the window to be ordered onto or off the screen depending
+ * on the value of op. The window is ordered relative to otherWin.
+ * </p>
+ * <p>The effect of the various combinations of op and otherWin are:
+ * </p>
+ * <deflist>
+ *   <term>op is NSWindowOut</term>
+ *   <desc>
+ *     The window is removed from the display and otherWinm is ignored.
+ *   </desc>
+ *   <term>op is NSWindowAbove and otherWin is zero</term>
+ *   <desc>
+ *     The window is placed above all other windows at the same level
+ *     unless doing the current key window is at this level (in which
+ *     case the window will be placed immediately below that).
+ *   </desc>
+ *   <term>op is NSWindowAbove and otherWin is minus one</term>
+ *   <desc>
+ *     The window is placed above all other windows at the same level
+ *     even if doing that would place it above the current key window.<br />
+ *     This is a special feature that [NSWindow-orderWindow:relativeTo:] uses
+ *     to place the window correctly.
+ *   </desc>
+ *   <term>op is NSWindowBelow and otherWin is zero</term>
+ *   <desc>
+ *     The window is placed above all other windows at the same level.
+ *   </desc>
+ *   <term>op is NSWindowAbove and otherWin is a window on the display</term>
+ *   <desc>
+ *     The level of the window is set to be the same as that of
+ *     otherWin and the window is placed immediately above otherWin.
+ *   </desc>
+ *   <term>op is NSWindowBelow and otherWin is a window on the display</term>
+ *   <desc>
+ *     The level of the window is set to be the same as that of
+ *     otherWin and the window is placed immediately below otherWin.
+ *   </desc>
+ * </deflist>
+ */
 - (void) orderwindow: (int) op : (int) otherWin : (int) win
 {
   [self subclassResponsibility: _cmd];
@@ -652,7 +685,12 @@ GSCurrentServer(void)
   return NSZeroRect;
 }
 
-/** Set the level of the window as in [NSWindow -setLevel] */
+/** Set the level of the window as in the [NSWindow -setLevel] method.<br />
+ * The use of window levels organises the window hierarchy into groups
+ * of windows at each level.  It effects the operation of the
+ * -orderwindow::: method in the case where the position is 'above' or
+ * 'below' and the other window number is zero.
+ */
 - (void) setwindowlevel: (int) level : (int) win
 {
   [self subclassResponsibility: _cmd];

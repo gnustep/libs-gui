@@ -464,7 +464,8 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 
 /**<p>Returns the document visible rectangle in the document views coordinate
  * system.
- <p>See Also: -documentRect [NSView-convertRect:toView:]</p>
+ * </p>
+ * <p>See Also: -documentRect [NSView-convertRect:toView:]</p>
  */
 - (NSRect) documentVisibleRect
 {

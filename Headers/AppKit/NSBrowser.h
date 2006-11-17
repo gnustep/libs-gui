@@ -23,11 +23,13 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */ 
 
 #ifndef _GNUstep_H_NSBrowser
 #define _GNUstep_H_NSBrowser
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <AppKit/NSControl.h>
 
@@ -174,7 +176,7 @@
 - (void) drawTitle: (NSString *)title
 	    inRect: (NSRect)aRect
 	  ofColumn: (int)column;
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) drawTitleOfColumn: (int)column 
 		    inRect: (NSRect)aRect;
 #endif 

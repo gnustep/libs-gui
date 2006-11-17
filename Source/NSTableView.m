@@ -64,7 +64,7 @@
 #include <math.h>
 static NSNotificationCenter *nc = nil;
 
-static const int currentVersion = 3;
+static const int currentVersion = 4;
 
 static NSRect oldDraggingRect;
 static int oldDropRow;
@@ -2615,6 +2615,9 @@ byExtendingSelection: (BOOL)flag
 	      [self validateEditing];
 	      [self abortEditing];
 	    }
+
+	   /* reset the _clickedRow for keyboard navigation  */
+	  _clickedRow = rowIndex;
 	  return;
 	} 
 
@@ -2641,14 +2644,19 @@ byExtendingSelection: (BOOL)flag
       [self abortEditing];
     }  
 
-  /* Now select the row and post notification only if needed */ 
+  /*
+   * Now select the row and post notification only if needed
+   * also update the _clickedRow for keyboard navigation.
+   */ 
   if ([self _selectUnselectedRow: rowIndex])
     {
+      _clickedRow = rowIndex;
       [self _postSelectionDidChangeNotification];
     }
   else /* Otherwise simply change the last selected row */
     {
       _selectedRow = rowIndex;
+      _clickedRow = rowIndex;
     }
 }
 
@@ -3211,9 +3219,6 @@ byExtendingSelection: (BOOL)flag
       flag = YES;
     }
   
-  [self scrollRowToVisible: rowIndex];
-  [self scrollColumnToVisible: columnIndex];
-
   if (rowIndex != _selectedRow)
     {
       [NSException raise:NSInvalidArgumentException
@@ -3227,6 +3232,9 @@ byExtendingSelection: (BOOL)flag
 		   format: @"Row/column out of index in edit"];
     }
   
+  [self scrollRowToVisible: rowIndex];
+  [self scrollColumnToVisible: columnIndex];
+
   if (_textObject != nil)
     {
       [self validateEditing];
@@ -3351,9 +3359,9 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       return 0.01;
 }
 
-- (void) _trackCellAtColumn:(int)columnIndex
-		row:(int)rowIndex
-		withEvent:(NSEvent *)theEvent
+- (void) _trackCellAtColumn: (int) columnIndex
+		row: (int) rowIndex
+		withEvent: (NSEvent *) theEvent
 {
   NSTableColumn *tb;
   NSCell *cell;
@@ -3370,8 +3378,8 @@ static inline float computePeriod(NSPoint mouseLocationWin,
      otherwise validation on a cell being edited could
      cause the cell we are selecting to get it's objectValue */
   cell = [[tb dataCellForRow: rowIndex] copy];
-  originalValue = RETAIN([self _objectValueForTableColumn:tb
-		  			row:rowIndex]);
+  originalValue = RETAIN([self _objectValueForTableColumn: tb
+		  			row: rowIndex]);
   [cell setObjectValue: originalValue]; 
   cellFrame = [self frameOfCellAtColumn: columnIndex
 			      row: rowIndex];
@@ -3385,8 +3393,8 @@ static inline float computePeriod(NSPoint mouseLocationWin,
   if ([cell trackMouse: theEvent 
 		   inRect: cellFrame
 		   ofView: self
-	     untilMouseUp:[[cell class]
-	     prefersTrackingUntilMouseUp]])
+	     untilMouseUp: [[cell class]
+			     prefersTrackingUntilMouseUp]])
     {
       id newValue = [cell objectValue];
 
@@ -3405,7 +3413,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
   RELEASE(cell);
 }
 
-- (BOOL) _startDragOperationWithEvent:(NSEvent *)theEvent
+- (BOOL) _startDragOperationWithEvent: (NSEvent *) theEvent
 {
   NSPasteboard *pboard;
   NSArray *rows;
@@ -3459,6 +3467,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 {
   NSPoint initialLocation = [theEvent locationInWindow];
   NSPoint location;
+  int clickCount = [theEvent clickCount];
 
   // Pathological case -- ignore mouse down
   if ((_numberOfRows == 0) || (_numberOfColumns == 0))
@@ -3479,7 +3488,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
   _clickedColumn = [self columnAtPoint: location];
   
   if ([theEvent type] == NSLeftMouseDown
-       && [theEvent clickCount] > 1)
+       && clickCount > 1)
     {
       // Double-click event
 
@@ -3491,13 +3500,13 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       if (![self _isCellEditableColumn: _clickedColumn row: _clickedRow ])
         {
 	  // Send double-action but don't edit
-	  [self _trackCellAtColumn:_clickedColumn
-			    row:_clickedRow
-			    withEvent:theEvent];
+	  [self _trackCellAtColumn: _clickedColumn
+			    row: _clickedRow
+			    withEvent: theEvent];
 	  if (_clickedRow != -1)
 	    [self sendAction: _doubleAction to: _target];
 	}
-      else
+      else if (clickCount == 2) // if < 2, dont want to abort editing
         {
 	  // It is OK to edit column.  Go on, do it.
           [self editColumn: _clickedColumn
@@ -3521,10 +3530,10 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       NSEvent *lastEvent;
       NSIndexSet *oldSelectedRows;
       BOOL startedPeriodicEvents = NO;
-      BOOL mouseUp = NO;
+      BOOL mouseBelowView = NO;
       BOOL done = NO;
       BOOL mouseMoved = NO;
-      BOOL draggingPossible = [self _isDraggingSource];
+      BOOL dragOperationPossible = [self _isDraggingSource];
       NSRect visibleRect = [self convertRect: [self visibleRect]
 				 toView: nil];
       float minYVisible = NSMinY (visibleRect);
@@ -3588,18 +3597,19 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	  */
 	  CREATE_AUTORELEASE_POOL(arp);
 	  BOOL shouldComputeNewSelection = NO;
+	  NSEventType eventType = [lastEvent type];
 	  
 	  mouseLocationWin = [lastEvent locationInWindow]; 
 	  mouseLocationView = [self convertPoint: mouseLocationWin 
 					    fromView: nil];
 	
-	  switch ([lastEvent type])
+	  switch (eventType)
 	    {
 	    case NSLeftMouseUp:
 	      if ((mouseLocationWin.y > minYVisible) 
 		  && (mouseLocationWin.y < maxYVisible))
 		{
-		  // mouse dragged within table
+		  // mouse up within table
 		  if (startedPeriodicEvents == YES)
 		    {
 		      [NSEvent stopPeriodicEvents];
@@ -3614,11 +3624,19 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		      shouldComputeNewSelection = YES;
 		    }
 		  
-		  if (draggingPossible == YES)
+		  if (dragOperationPossible == YES)
 		    {
-		      [self _trackCellAtColumn:_clickedColumn
-			    row:_clickedRow
-			    withEvent:theEvent];
+		      /*
+		       * a dragging operation is still possible so
+		       * selections were never dragged,
+		       * and a drag operation was never attempted.
+		       * the cell was clicked, 
+		       * track the cell with the old mouseDown event
+		       * then it will get the current event mouseUp.
+		       */
+		      [self _trackCellAtColumn: _clickedColumn
+			    row: _clickedRow
+			    withEvent: theEvent];
 		    }
 		}
 	      else
@@ -3637,40 +3655,25 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		  mouseMoved = YES;
 		}
 
-	      if (draggingPossible == YES)
+	      if (dragOperationPossible == YES)
 		{
-		  if (mouseLocationWin.y - initialLocation.y > 2
-		      || mouseLocationWin.y - initialLocation.y < -2)
+		  if ([_selectedRows containsIndex:_clickedRow] == NO
+ 		      || (_verticalMotionDrag == NO
+ 			  && fabs(mouseLocationWin.y - initialLocation.y) > 2))
 		    {
-		      draggingPossible = NO;
+		      dragOperationPossible = NO;
 		    }
-		  else if (fabs(mouseLocationWin.x - initialLocation.x) >= 4)
+ 		  else if ((fabs(mouseLocationWin.x - initialLocation.x) >= 4)
+ 			   || (_verticalMotionDrag
+ 			       && fabs(mouseLocationWin.y - initialLocation.y) >= 4))
 		    {
-		      mouseLocationView.x = _bounds.origin.x;
-		      oldRow = currentRow;
-		      currentRow = [self rowAtPoint: mouseLocationView];
-		      
-		      if (![_selectedRows containsIndex: currentRow])
-			{
-			  /* Mouse drag in a row that wasn't selected.
-			     select the new row before dragging */
-			  computeNewSelection(self,
-					      oldSelectedRows, 
-					      _selectedRows,
-					      originalRow,
-					      oldRow,
-					      currentRow,
-					      &_selectedRow,
-					      selectionMode);
-			}
-
-		      if ([self _startDragOperationWithEvent:theEvent])
+		      if ([self _startDragOperationWithEvent: theEvent])
 			{
 			  return;
 			}
 		      else
 			{
-			  draggingPossible = NO;
+			  dragOperationPossible = NO;
 			}
 		    }
 		}
@@ -3692,9 +3695,26 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		      shouldComputeNewSelection = YES;
 		    }
 		  
-		  [self _trackCellAtColumn:_clickedColumn
-				row:_clickedRow
-				withEvent:theEvent];
+		  if (eventType == NSLeftMouseDown)
+		    {
+		      /*
+		       * Can never get here from a dragging source
+		       * so they need to track in mouse up.
+		       */
+
+		      // FIXME we probably want to return from here
+		      // if the cell wants to track until mouse up,
+		      // which could cause selections if the mouse leaves the
+		      // cell frame?
+		      [self _trackCellAtColumn: _clickedColumn
+				row: _clickedRow
+				withEvent: theEvent];
+		    }
+		  /*
+		   * Since we may have tracked a cell which may have caused
+		   * a change to the currentEvent we may need to loop over
+		   * the current event
+		   */ 
 		  getNextEvent = (lastEvent == [NSApp currentEvent]);
 		}
 	      else
@@ -3719,33 +3739,37 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 			   withPeriod: oldPeriod];
 		  startedPeriodicEvents = YES;
 		  if (mouseLocationWin.y <= minYVisible) 
-		    mouseUp = NO;
+		    mouseBelowView = YES;
 		  else
-		    mouseUp = YES;
+		    mouseBelowView = NO;
 		}
 	      break;
 	    case NSPeriodic:
-	      if (mouseUp == NO)
+	      if (mouseBelowView == YES)
 		{
-		  /* mouse below the table */
-		  if (currentRow < _numberOfRows - 1)
+		  if (currentRow == -1 && oldRow != -1)
+		    currentRow = oldRow + 1;
+
+		  if (currentRow != -1 && currentRow < _numberOfRows - 1)
 		    {
 		      oldRow = currentRow;
 		      currentRow++;
 		      [self scrollRowToVisible: currentRow];
-		      if (draggingPossible == NO)
+		      if (dragOperationPossible == NO)
 			shouldComputeNewSelection = YES;
 		    }
 		}
 	      else
 		{
+		  if (currentRow == -1 && oldRow != -1)
+		    currentRow = oldRow - 1;
+
 		  if (currentRow > 0)
 		    {
-		      /* mouse above the table */
 		      oldRow = currentRow;
 		      currentRow--;
 		      [self scrollRowToVisible: currentRow];
-		      if (draggingPossible == NO)
+		      if (dragOperationPossible == NO)
 			shouldComputeNewSelection = YES;
 		    }
 		}
@@ -3761,11 +3785,9 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		  originalRow = currentRow;
 		}
 	      
-	      if (currentRow == -1)
-		{
-		  currentRow = _numberOfRows - 1;
-		}
-	      computeNewSelection(self,
+	      if (currentRow >= 0 && currentRow < _numberOfRows)
+	        {
+		  computeNewSelection(self,
 				  oldSelectedRows, 
 				  _selectedRows,
 				  originalRow,
@@ -3773,14 +3795,16 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 				  currentRow,
 				  &_selectedRow,
 				  selectionMode);
-	      [self displayIfNeeded];
+
+	          [self displayIfNeeded];
+		}
 	    }
 	  
 	  if (done == NO)
 	    {
 	      /* in certain cases we are working with events that have already
 	       * occured and been dequeued by NSCell classes, in these cases
-	       * we set getNextEvent to NO, and get the current event.
+	       * getNextEvent is set to NO, use the current event.
 	       */
 	      if (getNextEvent == YES)
 	        {
@@ -3819,7 +3843,296 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	  if (_clickedRow != -1)
 	    [self sendAction: _action  to: _target];
 	}
+    }
+  
+  _clickedRow = _selectedRow;
+}
+
+
+/* helpers for keyboard selection */
+#define CHECK_CHANGING(x) { \
+if (!x) \
+  { \
+    [self _postSelectionIsChangingNotification]; \
+    x = YES; \
+  } \
+}
+static BOOL selectContiguousRegion(NSTableView *self,
+  				   NSIndexSet *_selectedRows,
+				   int originalRow,
+				   int oldRow,
+				   int currentRow)
+{
+  int first = (oldRow < currentRow) ? oldRow : currentRow;
+  int last = (oldRow < currentRow) ? currentRow : oldRow;
+  int row;
+  BOOL notified = NO;
+
+  if (![_selectedRows containsIndex: currentRow])
+    {
+      CHECK_CHANGING(notified);
+      [self _selectRow: currentRow];
+    }
+
+  /*
+   * check if the old row is not between the current row and the original row 
+   * and not the original or current rows
+   */
+  if (((!((oldRow < currentRow
+	   && currentRow > originalRow
+	   && oldRow > originalRow)
+	  || (oldRow > currentRow
+	      && currentRow < originalRow
+	      && oldRow < originalRow)))
+       && (!(oldRow == currentRow
+	      || oldRow == originalRow))))
+    {
+      CHECK_CHANGING(notified);
+      [self _unselectRow: oldRow]; 
+    }
+
+  /* 
+   * there is an off by one here it could be on either end of the loop 
+   * but its either oldRow or currentRow so above we select the currentRow
+   * and possibly unselect the oldRow, one of the two will then
+   * be selected or deselected again in in this loop 
+   */
+  for (row = first; row < last; row++)
+    {
+	      
+      /* check if the old row is between the current row and the original row */
+      if ((row < currentRow
+	   && row > originalRow
+	   && currentRow > oldRow)
+	  || (row > currentRow
+	      && row < originalRow
+	      && currentRow < oldRow))
+	{
+	  if (![_selectedRows containsIndex: row])
+	    {
+	      CHECK_CHANGING(notified);
+	      [self _selectRow: row];
+	    }
+	}
+      else if (row == currentRow || row == originalRow)
+	{
+	  if (![_selectedRows containsIndex: row])
+	    {
+	      CHECK_CHANGING(notified);
+	      [self _selectRow: row];
+	    }
+	}
+      else
+	{
+	  if ([_selectedRows containsIndex: row])
+	    {
+              CHECK_CHANGING(notified);
+	      [self _unselectRow: row];
+	    }
+	}
+    }
+  return notified;
+}         
+
+- (void) keyDown:(NSEvent *)theEvent
+{
+   int oldRow = -1;
+   int currentRow = _selectedRow;
+   int originalRow = -1;
+   NSString *characters = [theEvent characters];
+   unsigned int len = [characters length];
+   unsigned int modifiers = [theEvent modifierFlags];
+   int rowHeight = [self rowHeight];
+   NSRect visRect = [self visibleRect];
+   BOOL modifySelection = YES;
+   NSPoint noModPoint = NSZeroPoint;
+   int visRows;
+   unsigned int i;
+   BOOL gotMovementKey = NO;
+   
+   // will not contain partial rows.
+   visRows = visRect.size.height / [self rowHeight]; 
+
+   // _clickedRow is stored between calls as the first selected row 
+   // when doing multiple selection, so the selection may grow and shrink.
+   
+   /*
+    * do a contiguous selection on shift
+    */
+   if (modifiers & NSShiftKeyMask)
+     {
+       originalRow = _clickedRow;
+       if (_allowsMultipleSelection == YES)
+	 {
+	   oldRow = _selectedRow;
+	 }
+     }
+   
+   /* just scroll don't modify any selection */
+   if (modifiers & NSControlKeyMask)
+     {
+       modifySelection = NO;
+     }
+
+   for (i = 0; i < len; i++)
+     {
+       unichar c = [characters characterAtIndex: i];
+
+       switch (c)
+         {
+	   case NSUpArrowFunctionKey:
+	     gotMovementKey = YES;
+   	     if (modifySelection == NO)
+	       {
+   		 noModPoint.x = visRect.origin.x;
+		 noModPoint.y = NSMinY(visRect) - rowHeight;
+	       }
+	     else
+	       {
+		 currentRow--;
+	       }
+	     break;
+	   case NSDownArrowFunctionKey:
+	     gotMovementKey = YES;
+   	     if (modifySelection == NO)
+	       {
+   		 noModPoint.x = visRect.origin.x;
+		 noModPoint.y = NSMinY(visRect) + rowHeight;
+	       }
+	     else
+	       {
+ 	         currentRow++;
+	       }
+	     break;
+	   case NSPageDownFunctionKey:
+	     gotMovementKey = YES;
+   	     if (modifySelection == NO)
+	       {
+   		 noModPoint.x = visRect.origin.x;
+		 noModPoint.y = NSMinY(visRect) + (rowHeight * visRows) - rowHeight;
+	       }
+	     else
+	       { 
+		 currentRow += visRows;
+	       }
+	     break;
+	   case NSPageUpFunctionKey:
+	     gotMovementKey = YES;
+	     if (modifySelection == NO)
+	       {
+   		 noModPoint.x = visRect.origin.x;
+		 noModPoint.y = NSMinY(visRect) - (rowHeight * visRows) + rowHeight;
+	       }
+	     else 
+	       {
+	         currentRow -= visRows;
+	       }
+	     break;
+	   case NSHomeFunctionKey:
+	     gotMovementKey = YES;
+	     if (modifySelection == NO)
+	       {
+		 noModPoint.x = visRect.origin.x;
+		 noModPoint.y = NSMinY(_bounds);
+	       }
+	     else
+	       {
+	         currentRow = 0;
+	       }
+	     break;
+	   case NSEndFunctionKey:
+	     gotMovementKey = YES;
+	     if (modifySelection == NO)
+	       {
+		 noModPoint.x = visRect.origin.x;
+		 noModPoint.y = NSMaxY(_bounds);
+	       }
+	     else
+	       {
+		 currentRow = _numberOfRows - 1;
+	       }
+	     break;
+	   default:
+	     break;
+        }
+     }
+  
+  /*
+   * if scrolled off the bottom or top the selection.
+   * the modifiers might have changed so recompute the selection.
+   */
+  if (gotMovementKey == NO)
+    {
+      /* no handled keys. */
+      [super keyDown: theEvent];
       return;
+    }
+  else if (currentRow < 0)
+    {
+      currentRow = 0;
+    }
+  else if (currentRow >= _numberOfRows)
+    {
+      currentRow = _numberOfRows - 1;
+    }
+  
+  if (_numberOfRows)
+    {
+      if (modifySelection)
+        {
+	  BOOL notified = NO;
+
+          [self _setSelectingColumns: NO];
+     
+          if (originalRow == -1)
+            {
+	      /* we're not extending any selection */
+              originalRow = currentRow;
+              _clickedRow = currentRow;
+	    }
+
+          if (_clickedRow == -1)
+            {
+	      /* user must have hit a key with no selected rows */
+              _clickedRow = currentRow;
+	    }
+	  
+	  if ((!(modifiers & NSShiftKeyMask && _allowsMultipleSelection)))
+	    {
+	      int first = [_selectedRows firstIndex];
+	      int last = [_selectedRows lastIndex];
+
+	      if ((first == last && first == currentRow) == 0)
+	        {
+		  CHECK_CHANGING(notified)
+		  [self _unselectAllRows];
+		  [self _selectRow: currentRow];
+	          _selectedRow = currentRow;
+		}
+	    }
+	  else
+	    {   
+	      notified = selectContiguousRegion(self, _selectedRows,
+			         originalRow, oldRow, currentRow);
+	      _selectedRow = currentRow;
+	    }
+	  
+	  if (notified)
+            {
+              [self _postSelectionDidChangeNotification];
+	    }
+	  
+	  [self scrollRowToVisible: currentRow];
+	  [self displayIfNeeded];
+        }
+      else
+        {
+	  noModPoint = [self convertPoint: noModPoint
+		  		   toView: _super_view];
+	  noModPoint = 
+	     [(NSClipView *)_super_view constrainScrollPoint: noModPoint];
+	  [(NSClipView *)_super_view scrollToPoint: noModPoint];
+	}
     }
 }
 
@@ -3936,10 +4249,18 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 - (NSRange) rowsInRect: (NSRect)aRect
 {
   NSRange range;
+  int lastRowInRect;
 
   range.location = [self rowAtPoint: aRect.origin];
-  range.length = [self rowAtPoint: 
+  lastRowInRect = [self rowAtPoint: 
 			 NSMakePoint (_bounds.origin.x, NSMaxY (aRect))];
+  
+  if (lastRowInRect == -1)
+    {
+      lastRowInRect = _numberOfRows - 1;
+    }
+  
+  range.length = lastRowInRect;
   range.length -= range.location;
   range.length += 1;
   return range;
@@ -3979,7 +4300,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       /* This could happen if point lies on the grid line or below the last row */
       if (return_value >= _numberOfRows)
 	{
-	  return_value = _numberOfRows - 1;
+	  return_value = -1;
 	}
       return return_value;
     }
@@ -4051,7 +4372,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 - (void) setFrame: (NSRect)frameRect
 {
   NSRect tmpRect = frameRect;
-  if ([_super_view respondsToSelector:@selector(documentVisibleRect)])
+  if ([_super_view respondsToSelector: @selector(documentVisibleRect)])
     {
       float rowsHeight = ((_numberOfRows * _rowHeight) + 1);
       NSRect docRect = [(NSClipView *)_super_view documentVisibleRect];
@@ -4073,7 +4394,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 {
   NSSize tmpSize = frameSize;
   
-  if ([_super_view respondsToSelector:@selector(documentVisibleRect)])
+  if ([_super_view respondsToSelector: @selector(documentVisibleRect)])
     {
       float rowsHeight = ((_numberOfRows * _rowHeight) + 1);
       NSRect docRect = [(NSClipView *)_super_view documentVisibleRect];
@@ -4093,9 +4414,9 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
 - (void) viewWillMoveToSuperview:(NSView *)newSuper
 {
-  [super viewWillMoveToSuperview:newSuper];
+  [super viewWillMoveToSuperview: newSuper];
   /* need to potentially enlarge to fill the documentRect of the clip view */
-  [self setFrame:_frame];
+  [self setFrame: _frame];
 }
 
 - (void) sizeToFit
@@ -4410,6 +4731,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	  if (_selectedRow >= _numberOfRows)
 	    {
 	      row = [_selectedRows lastIndex];
+	      [self _postSelectionIsChangingNotification];
 
 	      if (row != NSNotFound)
 		{
@@ -4440,6 +4762,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 			}
 		    }
 		}
+	      [self _postSelectionDidChangeNotification];
 	    }
 	}
     }
@@ -4643,6 +4966,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
   
   if (_numberOfColumns > 0)
     {
+      int lastRowPosition = position - _rowHeight;
       /* Draw vertical lines */
       if (startingColumn == -1)
 	startingColumn = 0;
@@ -4652,7 +4976,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       for (i = startingColumn; i <= endingColumn; i++)
 	{
 	  DPSmoveto (ctxt, _columnOrigins[i], minY);
-	  DPSlineto (ctxt, _columnOrigins[i], maxY);
+	  DPSlineto (ctxt, _columnOrigins[i], lastRowPosition);
 	  DPSstroke (ctxt);
 	}
       position =  _columnOrigins[endingColumn];
@@ -4661,7 +4985,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       if (endingColumn == (_numberOfColumns - 1))
 	position -= 1;
       DPSmoveto (ctxt, position, minY);
-      DPSlineto (ctxt, position, maxY);
+      DPSlineto (ctxt, position, lastRowPosition);
       DPSstroke (ctxt);
     }
 
@@ -4751,7 +5075,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
     }
 
   /* Draw selection */
-  //    [self highlightSelectionInClipRect: aRect];
+  [self highlightSelectionInClipRect: aRect];
 
   /* Draw grid */
   if (_drawsGrid)
@@ -4777,30 +5101,9 @@ static inline float computePeriod(NSPoint mouseLocationWin,
     SEL sel = @selector(drawRow:clipRect:);
     IMP imp = [self methodForSelector: sel];
     
-    NSRect localBackground;
-    localBackground = aRect;
-    localBackground.size.height = _rowHeight;
-    localBackground.origin.y = _bounds.origin.y + (_rowHeight * startingRow);
-    
     for (i = startingRow; i <= endingRow; i++)
       {
-	[_backgroundColor set];
-	NSRectFill (localBackground);
-	[self highlightSelectionInClipRect: localBackground];
-	if (_drawsGrid)
-	  {
-	    [self drawGridInClipRect: localBackground];
-	  }
-	localBackground.origin.y += _rowHeight;
 	(*imp)(self, sel, i, aRect);
-      }
-
-    if (NSMaxY(aRect) > NSMaxY(localBackground) - _rowHeight)
-      {
-	[_backgroundColor set];
-	localBackground.size.height =
-	  aRect.size.height - aRect.origin.y + localBackground.origin.y;
-	NSRectFill (localBackground);
       }
   }
 }
@@ -4957,7 +5260,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       switch ([(NSNumber *)textMovement intValue])
 	{
 	case NSReturnTextMovement:
-	  [self _editNextCellAfterRow:row inColumn:column];
+	  [self _editNextCellAfterRow: row inColumn: column];
 	  // Send action ?
 	  break;
 	case NSTabTextMovement:
@@ -5183,17 +5486,12 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
 - (void) setVerticalMotionCanBeginDrag: (BOOL)flag
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"setVerticalMotionCanBeginDrag:", "NSTableView");
+  _verticalMotionDrag = flag;
 }
 
 - (BOOL) verticalMotionCanBeginDrag
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"verticalMotionCanBeginDrag", "NSTableView");
-  return NO;
+  return _verticalMotionDrag;
 }
 
 /*
@@ -5282,6 +5580,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnResizing];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnReordering];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autoresizesAllColumnsToFit];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_verticalMotionDrag];
     }
 }
 
@@ -5420,6 +5719,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       int version = [aDecoder versionForClassName: 
 				  @"NSTableView"];
       id aDelegate;
+      _verticalMotionDrag = NO;
 
       _dataSource      = [aDecoder decodeObject];
       _tableColumns    = RETAIN([aDecoder decodeObject]);
@@ -5446,7 +5746,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsEmptySelection];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnSelection];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnResizing];
-      if (version == currentVersion)
+      if (version >= 3)
         {
 	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnReordering];
 	}
@@ -5455,6 +5755,12 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_autoresizesAllColumnsToFit];
 	} 
       
+      if (version >= 4)
+        {
+          [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_verticalMotionDrag];
+        }
+
+     
       ASSIGN (_selectedColumns, [NSMutableIndexSet indexSet]);
       ASSIGN (_selectedRows, [NSMutableIndexSet indexSet]);
       if (_numberOfColumns)
@@ -5557,19 +5863,23 @@ static inline float computePeriod(NSPoint mouseLocationWin,
     }
 }
 
-- (void) _editNextCellAfterRow:(int)row inColumn:(int)column
+- (void) _editNextCellAfterRow: (int) row
+		inColumn: (int) column
 {
-  if (++row >= _numberOfColumns)
+  if (++row >= _numberOfRows)
     row = 0;
 
-  if ([self _shouldSelectRow:row])
+  if ([self _shouldSelectRow: row])
     {
-      [self selectRowIndexes:[NSIndexSet indexSetWithIndex:row]
-	      byExtendingSelection:NO];
+      [self selectRowIndexes: [NSIndexSet indexSetWithIndex: row]
+	      byExtendingSelection: NO];
 
-      if ([self _isCellEditableColumn:column row:row])
+      if ([self _isCellEditableColumn: column row:row])
         {
-	  [self editColumn:column row:row withEvent:nil select:YES]; 
+	  [self editColumn: column
+		  row: row
+		  withEvent: nil
+		  select: YES]; 
         }
     }
 }

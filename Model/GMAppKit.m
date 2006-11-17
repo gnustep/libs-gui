@@ -756,6 +756,8 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 @implementation NSImage (GMArchiverMethods)
 
+extern id _nibOwner;
+
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
   [archiver encodeString:[self name] withName:@"name"];
@@ -770,7 +772,16 @@ void __dummy_GMAppKit_functionForLinking() {}
   imageName = [unarchiver decodeStringWithName:@"name"];
 
   if (imageName)
+  {
     image = [NSImage imageNamed: imageName];
+    if (image == nil)
+    {
+       NSBundle *bundle = [NSBundle bundleForClass:[_nibOwner class]];
+       NSString *path = [bundle pathForImageResource:imageName];
+
+       image = [[NSImage alloc] initByReferencingFile:path];
+    }
+  }
 
   if (image == nil)
     image = [NSImage imageNamed:@"GNUstepMenuImage"];

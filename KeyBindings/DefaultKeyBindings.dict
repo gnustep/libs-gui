@@ -10,6 +10,11 @@
   "Control-DownArrow" = "pageDown:";
   "Control-LeftArrow" = "moveToBeginningOfLine:";
   "Control-RightArrow" = "moveToEndOfLine:";
+  
+  "Control-Shift-LeftArrow" = "moveToBeginningOfLineAndModifySelection:";
+  "Control-Shift-RightArrow" = "moveToEndOfLineAndModifySelection:";
+  "Control-Shift-UpArrow" = "moveToBeginningOfDocumentAndModifySelection:";
+  "Control-Shift-DownArrow" = "moveToEndOfDocumentAndModifySelection:";
 
 /*  "Alternate-UpArrow" = ("moveUp:", "moveWordBackward:"); */
 /*  "Alternate-DownArrow" = ("moveDown:", "moveWordForward:"); */
@@ -40,6 +45,9 @@
 /*  "Shift-End" = "moveToEndOfParagraphAndModifySelection:"; */
   "PageUp" = "pageUp:";
   "PageDown" = "pageDown:";
+  
+  "Shift-PageDown" = "pageDownAndModifySelection:";
+  "Shift-PageUp" = "pageUpAndModifySelection:";
 
   /* Emacs Control keybindings */
   "Control-a" = "moveToBeginningOfLine:";

@@ -24,11 +24,13 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */ 
 
 #ifndef _GNUstep_H_NSFont
 #define _GNUstep_H_NSFont
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSGeometry.h>
@@ -110,7 +112,7 @@ APPKIT_EXPORT const float *NSFontIdentityMatrix;
 + (NSFont*) userFixedPitchFontOfSize: (float)fontSize;
 + (NSFont*) userFontOfSize: (float)fontSize;
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 + (NSFont*) titleBarFontOfSize: (float)fontSize;
 + (NSFont*) menuFontOfSize: (float)fontSize;
 + (NSFont*) messageFontOfSize: (float)fontSize;
@@ -124,7 +126,7 @@ APPKIT_EXPORT const float *NSFontIdentityMatrix;
 //
 // Font Sizes
 //
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 + (float) labelFontSize;
 + (float) smallSystemFontSize;
 + (float) systemFontSize;
@@ -173,7 +175,7 @@ APPKIT_EXPORT const float *NSFontIdentityMatrix;
 - (float) widthOfString: (NSString*)string;
 - (float) defaultLineHeightForFont;
 
-#ifndef STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (unsigned) numberOfGlyphs;
 - (NSCharacterSet*) coveredCharacterSet;
 - (NSFontDescriptor*) fontDescriptor;
@@ -212,7 +214,7 @@ APPKIT_EXPORT const float *NSFontIdentityMatrix;
 
 @end
 
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 @class GSFontInfo;
 
 @interface NSFont (GNUstep)

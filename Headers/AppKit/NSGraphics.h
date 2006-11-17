@@ -20,10 +20,12 @@
 
    You should have received a copy of the GNU Library General Public
    License along with this library; if not, write to the Free
-   Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02111 USA.
+   Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02111 USA.
 */
 #ifndef __NSGraphics_h__
 #define __NSGraphics_h__
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <Foundation/NSObject.h>
 #include <Foundation/NSGeometry.h>
@@ -46,7 +48,7 @@ APPKIT_EXPORT NSString *NSDeviceBlackColorSpace;
 APPKIT_EXPORT NSString *NSDeviceRGBColorSpace;
 APPKIT_EXPORT NSString *NSDeviceCMYKColorSpace;
 APPKIT_EXPORT NSString *NSNamedColorSpace;
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 APPKIT_EXPORT NSString *NSPatternColorSpace;
 #endif
 APPKIT_EXPORT NSString *NSCustomColorSpace;
@@ -211,7 +213,7 @@ GSWViewIsFlipped(NSGraphicsContext *ctxt)
     (ctxt, @selector(GSWViewIsFlipped));
 }
 
-#ifndef	NO_GNUSTEP
+#if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 @class	NSArray;
 @class	NSWindow;
 
@@ -220,7 +222,7 @@ APPKIT_EXPORT NSArray* GSAllWindows(void);
 APPKIT_EXPORT NSWindow* GSWindowWithNumber(int num);
 #endif
 
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 // Window operations
 APPKIT_EXPORT void NSConvertGlobalToWindowNumber(int globalNum, unsigned int *winNum);
 APPKIT_EXPORT void NSConvertWindowNumberToGlobal(int winNum, unsigned int *globalNum);

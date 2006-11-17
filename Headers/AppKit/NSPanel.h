@@ -23,11 +23,13 @@
    You should have received a copy of the GNU Library General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.
 */ 
 
 #ifndef _GNUstep_H_NSPanel
 #define _GNUstep_H_NSPanel
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <AppKit/NSWindow.h>
 
@@ -55,7 +57,7 @@ enum {
 #define NSAlertAlternate NSAlertAlternateReturn
 #define NSAlertOther NSAlertOtherReturn
 
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 #define	NS_ALERTDEFAULT		NSAlertDefaultReturn
 #define	NS_ALERTALTERNATE	NSAlertAlternateReturn
 #define	NS_ALERTOTHER		NSAlertOtherReturn
@@ -91,7 +93,7 @@ APPKIT_EXPORT id NSGetAlertPanel(NSString *title,
 				  NSString *alternateButton, 
 				  NSString *otherButton, ...);
 
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 APPKIT_EXPORT id NSGetCriticalAlertPanel(NSString *title,
 					  NSString *msg,
 					  NSString *defaultButton,
@@ -114,7 +116,7 @@ APPKIT_EXPORT int NSRunAlertPanel(NSString *title,
 				   NSString *alternateButton,
 				   NSString *otherButton, ...);
 
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 APPKIT_EXPORT int NSRunCriticalAlertPanel(NSString *title,
 					   NSString *msg,
 					   NSString *defaultButton,
@@ -128,7 +130,7 @@ APPKIT_EXPORT int NSRunInformationalAlertPanel(NSString *title,
 						NSString *otherButton, ...);
 #endif
 
-#ifndef	STRICT_MACOS_X
+#if OS_API_VERSION(GS_API_ONE, GS_API_ONE)
 APPKIT_EXPORT int NSRunLocalizedAlertPanel(NSString *table,
 					    NSString *title,
 					    NSString *msg,
@@ -137,7 +139,7 @@ APPKIT_EXPORT int NSRunLocalizedAlertPanel(NSString *table,
 					    NSString *otherButton, ...);
 #endif
 
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 //
 // New alert interface of Mac OS X
 //

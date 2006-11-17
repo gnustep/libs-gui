@@ -153,6 +153,16 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   [super dealloc];
 }
 
+- (id) copyWithZone:(NSZone *)zone
+{
+  NSSliderCell *cpy = [super copyWithZone:zone];
+
+  /* since NSCells call to NSCopyObject only copies object addresses */
+  RETAIN(cpy->_titleCell);
+  RETAIN(cpy->_knobCell);
+  return cpy;
+}
+
 - (BOOL) isFlipped
 {
   return YES;
@@ -700,6 +710,11 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 						self, isFlipped); 
 	  if (floatValue != oldFloatValue)
 	    {
+	      if (_allowsTickMarkValuesOnly)
+		{
+		  floatValue = [self closestTickMarkValueToValue:floatValue]; 
+		}
+
 	      [self setFloatValue: floatValue];
 	      if (isContinuous)
 	        {

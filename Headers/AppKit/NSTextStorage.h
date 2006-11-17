@@ -26,7 +26,8 @@
 
    You should have received a copy of the GNU Library General Public
    License along with this library; if not, write to the Free
-   Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02111 USA.  */
+   Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02111 USA.  */
 
 #ifndef _GNUstep_H_NSTextStorage
 #define _GNUstep_H_NSTextStorage
@@ -136,7 +137,7 @@ enum
 - (void) setDelegate: (id)delegate;
 - (id) delegate;
 
-#ifndef	STRICT_OPENSTEP
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) ensureAttributesAreFixedInRange: (NSRange)range;
 - (BOOL) fixesAttributesLazily;
 - (void) invalidateAttributesInRange: (NSRange)range;
