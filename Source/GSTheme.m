@@ -672,23 +672,23 @@ static NSNull			*null = nil;
                    in: (NSButtonCell*)cell 
                  view: (NSView*)view 
                 style: (int)style 
-                state: (int)state
+                state: (GSThemeControlState)state
 {
   GSDrawTiles	*tiles = nil;
   NSColor	*color = nil;
   NSRect	interiorFrame;
 
-  if (state == 0) /* default state, unpressed */
+  if (state == GSThemeNormalState)
     {
       tiles = [self tilesNamed: @"NSButtonNormal" cache: YES];
       color = [NSColor controlBackgroundColor];
     }
-  else if (state == 1) /* highlighted state */
+  else if (state == GSThemeHighlightedState)
     {
       tiles = [self tilesNamed: @"NSButtonHighlighted" cache: YES];
       color = [NSColor selectedControlColor];
     }
-  else if (state == 2) /* pushed state */
+  else if (state == GSThemeSelectedState)
     {
       tiles = [self tilesNamed: @"NSButtonPushed" cache: YES];
       color = [NSColor selectedControlColor];
@@ -700,15 +700,15 @@ static NSNull			*null = nil;
       [color set];
       NSRectFill(frame);
 
-      if (state == 0) /* default state, unpressed */
+      if (state == GSThemeNormalState)
 	{
 	  [self drawButton: frame withClip: NSZeroRect];
 	}
-      else if (state == 1) /* highlighted state */
+      else if (state == GSThemeHighlightedState)
 	{
 	  [self drawGrayBezel: frame withClip: NSZeroRect];
 	}
-      else if (state == 2) /* pushed state */
+      else if (state == GSThemeSelectedState)
 	{
 	  [self drawGrayBezel: frame withClip: NSZeroRect];
 	  interiorFrame

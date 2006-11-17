@@ -1,3 +1,11 @@
+2006-11-17  Richard Frith-Macdoanld <rfm@gnu.org>
+
+	* Source/GSTheme.m:
+	* Source/NSButtonCell.m:
+	* Source/NSScrollView.m:
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	Merge in theme changes for scrollviews and cleaner button drawing api.
+
 2006-11-16  Adam Fedor  <fedor@gnu.org>
 
 	* Model/GMAppKit.m ([NSImage +createObjectForModelUnarchiver:]):

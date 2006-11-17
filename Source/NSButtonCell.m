@@ -836,8 +836,8 @@ typedef struct _GSButtonCellFlags
 
 - (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  unsigned	mask;
-  int		buttonState = 0;
+  unsigned		mask;
+  GSThemeControlState	buttonState = GSThemeNormalState;
 
   // Save last view drawn to
   if (_control_view != controlView)
@@ -876,14 +876,14 @@ typedef struct _GSButtonCellFlags
       /* Determine the background color. */
       if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
         {
-          buttonState = 1; /* highlighted state */
+          buttonState = GSThemeHighlightedState;
         }
     }
 
   /* Pushed in buttons contents are displaced to the bottom right 1px.  */
   if (_cell.is_bordered && (mask & NSPushInCellMask))
     {
-      buttonState = 2; // pushed button
+      buttonState = GSThemeSelectedState;
     }
 
   // draw the border if needed
