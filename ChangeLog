@@ -1,3 +1,9 @@
+2006-11-16  Adam Fedor  <fedor@gnu.org>
+
+	* Model/GMAppKit.m ([NSImage +createObjectForModelUnarchiver:]):
+	  Allow loading of images from the owners bundle (patch from
+	  Georg Fleischmann.
+
 2006-11-15  Nicola Pero  <nicola.pero@meta-innovation.com>
 
 	Notice: you should now use 'make DESTDIR=/tmp/xxx install' if you
