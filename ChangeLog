@@ -1,3 +1,7 @@
+2006-11-18  Richard Frith-Macdoanld <rfm@gnu.org>
+
+	* Source/NSScrollView.m: Adjust corner view when scroller is on right.
+
 2006-11-17  Richard Frith-Macdoanld <rfm@gnu.org>
 
 	* Source/GSTheme.m:
