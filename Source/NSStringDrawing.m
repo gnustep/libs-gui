@@ -350,11 +350,11 @@ static int cache_lookup_attributed_string(NSAttributedString *string,
 
 static int use_screen_fonts(void)
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  NSAffineTransform *ctm = GSCurrentCTM(ctxt);
+  NSGraphicsContext		*ctxt = GSCurrentContext();
+  NSAffineTransform		*ctm = GSCurrentCTM(ctxt);
+  NSAffineTransformStruct	ts = [ctm transformStruct];
 
-  if (ctm->matrix.m11 != 1.0 || ctm->matrix.m12 != 0.0 ||
-      ctm->matrix.m21 != 0.0 || fabs(ctm->matrix.m22) != 1.0)
+  if (ts.m11 != 1.0 || ts.m12 != 0.0 || ts.m21 != 0.0 || fabs(ts.m22) != 1.0)
     {
       return 0;
     }

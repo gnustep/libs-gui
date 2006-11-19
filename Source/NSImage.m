@@ -1005,7 +1005,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   NSAffineTransform *transform;
 
   if (!dstRect.size.width || !dstRect.size.height
-      || !srcRect.size.width || !srcRect.size.height)
+    || !srcRect.size.width || !srcRect.size.height)
     return;
 
   if (![ctxt isDrawingToScreen])
@@ -1046,16 +1046,19 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
   /* If the effective transform is the identity transform and there's
      no dissolve, we can composite from our cache.  */
-  if (delta == 1.0
-      && fabs(transform->matrix.m11 - 1.0) < 0.01
-      && fabs(transform->matrix.m12) < 0.01
-      && fabs(transform->matrix.m21) < 0.01
-      && fabs(transform->matrix.m22 - 1.0) < 0.01)
+
+  if (delta == 1.0)
     {
-      [self compositeToPoint: dstRect.origin
-		    fromRect: srcRect
-		   operation: op];
-      return;
+      NSAffineTransformStruct ts = [transform transformStruct];
+      
+      if (fabs(ts.m11 - 1.0) < 0.01 && fabs(ts.m12) < 0.01
+	&& fabs(ts.m21) < 0.01 && fabs(ts.m22 - 1.0) < 0.01)
+	{
+	  [self compositeToPoint: dstRect.origin
+			fromRect: srcRect
+		       operation: op];
+	  return;
+	}
     }
 
   /* We can't composite or dissolve directly from the image reps, so we
@@ -1078,6 +1081,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
      */
   {
     NSCachedImageRep *cache;
+    NSAffineTransformStruct ts;
     NSSize s;
     NSPoint p;
     double x0, y0, x1, y1, w, h;
@@ -1134,8 +1138,10 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
     /* Set up the effective transform.  We also save a gState with this
        transform to make it easier to do the final composite.  */
-    transform->matrix.tX = p.x;
-    transform->matrix.tY = p.y;
+    ts = [transform transformStruct];
+    ts.tX = p.x;
+    ts.tY = p.y;
+    [transform setTransformStruct: ts];
     [ctxt GSSetCTM: transform];
 
     gState = [ctxt GSDefineGState];

@@ -25,7 +25,8 @@
 
    You should have received a copy of the GNU Library General Public
    License along with this library; if not, write to the Free
-   Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02111 USA.
+   Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02111 USA.
 */
 
 #include "config.h"
@@ -39,7 +40,13 @@
 #include "AppKit/NSBezierPath.h"
 #include "AppKit/PSOperators.h"
 
+typedef struct internal
+{
+  @defs(NSAffineTransform)
+} *iptr;
+
 /* Private definitions */
+#define	matrix	(((iptr)self)->_matrix)
 #define A matrix.m11
 #define B matrix.m12
 #define C matrix.m21
@@ -71,46 +78,11 @@ matrix_multiply (NSAffineTransformStruct MA, NSAffineTransformStruct MB)
   return MC;
 }
 
-@implementation NSAffineTransform
-
 static NSAffineTransformStruct identityTransform = {
    1.0, 0.0, 0.0, 1.0, 0.0, 0.0
 };
 
-/**
- * Return an autoreleased instance of this class.
- */
-+ (NSAffineTransform*) transform
-{
-  NSAffineTransform	*t;
-
-  t = (NSAffineTransform*)NSAllocateObject(self, 0, NSDefaultMallocZone());
-  t->matrix = identityTransform;
-  return AUTORELEASE(t);
-}
-
-/**
- * Return an autoreleased instance of this class.
- */
-+ (id) new
-{
-  NSAffineTransform	*t;
-
-  t = (NSAffineTransform*)NSAllocateObject(self, 0, NSDefaultMallocZone());
-  t->matrix = identityTransform;
-  return t;
-}
-
-/**
- * Appends the transform matrix to the receiver.  This is done by performing a
- * matrix multiplication of the receiver with aTransform so that aTransform
- * is the first transform applied to the user coordinate. The new
- * matrix then replaces the receiver's matrix.
- */
-- (void) appendTransform: (NSAffineTransform*)aTransform
-{
-  matrix = matrix_multiply(matrix, aTransform->matrix);
-}
+@implementation NSAffineTransform (GUIAdditions)
 
 /**
  * Concatenates the receiver's matrix with the one in the current graphics 
@@ -128,142 +100,18 @@ static NSAffineTransformStruct identityTransform = {
   PSconcat(m);
 }
 
-/**
- * Initialize the transformation matrix instance to the identity matrix.
- * The identity matrix transforms a point to itself.
- */ 
-- (id) init
-{
-  matrix = identityTransform;
-  return self;
-}
-
-/**
- * Initialize the receiever's instance with the instance represented 
- * by aTransform. 
- */
-- (id) initWithTransform: (NSAffineTransform*)aTransform
-{
-  matrix = aTransform->matrix;
-  return self;
-}
-
-/**
- * Calculates the inverse of the receiver's matrix and replaces the 
- * receiever's matrix with it.
- */
-- (void) invert
-{
-  float newA, newB, newC, newD, newTX, newTY;
-  float det;
-
-  det = A * D - B * C;
-  if (det == 0)
-    {
-      NSLog (@"error: determinant of matrix is 0!");
-      return;
-    }
-
-  newA = D / det;
-  newB = -B / det;
-  newC = -C / det;
-  newD = A / det;
-  newTX = (-D * TX + C * TY) / det;
-  newTY = (B * TX - A * TY) / det;
-
-  NSDebugLLog(@"NSAffineTransform",
-	@"inverse of matrix ((%f, %f) (%f, %f) (%f, %f))\n"
-	@"is ((%f, %f) (%f, %f) (%f, %f))",
-	A, B, C, D, TX, TY,
-	newA, newB, newC, newD, newTX, newTY);
-
-  A = newA; B = newB;
-  C = newC; D = newD;
-  TX = newTX; TY = newTY;
-}
-
-/**
- * Prepends the transform matrix to the receiver.  This is done by performing a
- * matrix multiplication of the receiver with aTransform so that aTransform
- * is the last transform applied to the user coordinate. The new
- * matrix then replaces the receiver's matrix.
- */
-- (void) prependTransform: (NSAffineTransform*)aTransform
-{
-  matrix = matrix_multiply(aTransform->matrix, matrix);
-}
-
-/**
- * Applies the rotation specified by angle in degrees.   Points transformed
- * with the transformation matrix of the receiver are rotated counter-clockwise 
- * by the number of degrees specified by angle.
- */
-- (void) rotateByDegrees: (float)angle
-{
-  [self rotateByRadians: pi * angle / 180];
-}
-
-/**
- * Applies the rotation specified by angle in radians.   Points transformed
- * with the transformation matrix of the receiver are rotated counter-clockwise 
- * by the number of radians specified by angle.
- */
-- (void) rotateByRadians: (float)angleRad
-{
-  float sine = sin (angleRad);
-  float cosine = cos (angleRad);
-  NSAffineTransformStruct rotm;
-  rotm.m11 = cosine; rotm.m12 = sine; rotm.m21 = -sine; rotm.m22 = cosine;
-  rotm.tX = rotm.tY = 0;
-  matrix = matrix_multiply(rotm, matrix);
-}
-
-/**
- * Scales the transformation matrix of the reciever by the factor specified
- * by scale.  
- */
-- (void) scaleBy: (float)scale
-{
-  NSAffineTransformStruct scam = identityTransform;
-  scam.m11 = scale; scam.m22 = scale;
-  matrix = matrix_multiply(scam, matrix);
-}
-
-/**
- * Scales the X axis of the receiver's transformation matrix 
- * by scaleX and the Y axis of the transformation matrix by scaleY.
- */
-- (void) scaleXBy: (float)scaleX yBy: (float)scaleY
-{
-  NSAffineTransformStruct scam = identityTransform;
-  scam.m11 = scaleX; scam.m22 = scaleY;
-  matrix = matrix_multiply(scam, matrix);
-}
 
 /**
  * Get the currently active graphics context's transformation 
  * matrix and set it into the receiver.
  */
-
 - (void) set
 {
   GSSetCTM(GSCurrentContext(), self);
 }
 
 /**
- * <p>
- * Sets the structure which represents the matrix of the reciever. 
- * The struct is of the form:</p>
- * <p>{m11, m12, m21, m22, tX, tY}</p>
- */
-- (void) setTransformStruct: (NSAffineTransformStruct)val
-{
-  matrix = val;
-}
-
-/**
- * <p>
- * Applies the receiver's transformation matrix to each point in 
+ * <p>Applies the receiver's transformation matrix to each point in 
  * the bezier path, then returns the result.  The original bezier 
  * path is not modified.
  * </p>
@@ -276,104 +124,7 @@ static NSAffineTransformStruct identityTransform = {
   return AUTORELEASE(path);
 }
 
-/**
- * Transforms a single point based on the transformation matrix.
- * Returns the resulting point.
- */
-- (NSPoint) transformPoint: (NSPoint)aPoint
-{
-  NSPoint new;
-
-  new.x = A * aPoint.x + C * aPoint.y + TX;
-  new.y = B * aPoint.x + D * aPoint.y + TY;
-
-  return new;
-}
-
-/**
- * Transforms the NSSize represented by aSize using the reciever's 
- * transformation matrix.  Returns the resulting NSSize.
- */
-- (NSSize) transformSize: (NSSize)aSize
-{
-  NSSize new;
-
-  new.width = A * aSize.width + C * aSize.height;
-  if (new.width < 0)
-    new.width = - new.width;
-  new.height = B * aSize.width + D * aSize.height;
-  if (new.height < 0)
-    new.height = - new.height;
-
-  return new;
-}
-
-/**
- * <p>
- * Returns the <code>NSAffineTransformStruct</code> structure 
- * which represents the matrix of the reciever. 
- * The struct is of the form:</p>
- * <p>{m11, m12, m21, m22, tX, tY}</p>
- */
-- (NSAffineTransformStruct) transformStruct
-{
-  return matrix;
-}
-
-/**
- * Applies the translation specified by tranX and tranY to the receiver's matrix.
- * Points transformed by the reciever's matrix after this operation will 
- * be shifted in position based on the specified translation.
- */
-- (void) translateXBy: (float)tranX  yBy: (float)tranY
-{
-  NSAffineTransformStruct tranm = identityTransform;
-  tranm.tX = tranX;
-  tranm.tY = tranY;
-  matrix = matrix_multiply(tranm, matrix);
-}
-
-- (id) copyWithZone: (NSZone*)zone
-{
-  return NSCopyObject(self, 0, zone);
-}
-
-- (BOOL) isEqual: (id)anObject
-{
-  if ([anObject class] == isa)
-    {
-      NSAffineTransform	*o = anObject;
-
-      if (A == o->A && B == o->B && C == o->C
-	&& D == o->D && TX == o->TX && TY == o->TY)
-	return YES;
-    }
-  return NO;
-}
-
-- (id) initWithCoder: (NSCoder*)aCoder
-{
-  float replace[6];
-    
-  [aCoder decodeArrayOfObjCType: @encode(float)
-	  count: 6
-	  at: replace];
-  [self setMatrix: replace];
-
-  return self;
-}
-
-- (void) encodeWithCoder: (NSCoder*)aCoder
-{
-  float replace[6];
-    
-  [self getMatrix: replace];
-  [aCoder encodeArrayOfObjCType: @encode(float)
-	  count: 6
-	  at: replace];
-}
-
-@end /* NSAffineTransform */
+@end /* NSAffineTransform (GUIAdditions) */
 
 @implementation NSAffineTransform (GNUstep)
 
@@ -571,13 +322,6 @@ static NSAffineTransformStruct identityTransform = {
   return new;
 }
 
-- (NSString*) description
-{
-  return [NSString stringWithFormat:
-		@"NSAffineTransform ((%f, %f) (%f, %f) (%f, %f))",
-				    A, B, C, D, TX, TY];
-}
-
 - (void) setMatrix: (const float[6])replace
 {
   matrix.m11 = replace[0];
@@ -600,12 +344,7 @@ static NSAffineTransformStruct identityTransform = {
 
 - (void) takeMatrixFromTransform: (NSAffineTransform *)aTransform
 {
-  matrix.m11 = aTransform->matrix.m11;
-  matrix.m12 = aTransform->matrix.m12;
-  matrix.m21 = aTransform->matrix.m21;
-  matrix.m22 = aTransform->matrix.m22;
-  matrix.tX = aTransform->matrix.tX;
-  matrix.tY = aTransform->matrix.tY;
+  matrix = [aTransform transformStruct];
 }
 
 

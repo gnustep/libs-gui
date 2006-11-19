@@ -832,6 +832,15 @@ static float scrollerWidth;
   NSSize border = _sizeForBorderType(_borderType);
   NSRectEdge bottomEdge, topEdge;
   float headerViewHeight = 0;
+  NSRectEdge	verticalScrollerEdge = NSMinXEdge;
+  NSInterfaceStyle	style;
+
+  style = NSInterfaceStyleForKey(@"NSScrollViewInterfaceStyle", nil);
+  if (style == NSMacintoshInterfaceStyle
+    || style == NSWindows95InterfaceStyle)
+    {
+      verticalScrollerEdge = NSMaxXEdge;
+    }
 
   /* Determine edge positions.  */
   if (_rFlags.flipped_view)
@@ -880,24 +889,15 @@ static float scrollerWidth;
   if (_hasVertScroller)
     {
       NSRect vertScrollerRect;
-      NSRectEdge	edge = NSMinXEdge;
-      NSInterfaceStyle	style;
-
-      style = NSInterfaceStyleForKey(@"NSScrollViewInterfaceStyle", nil);
-      if (style == NSMacintoshInterfaceStyle
-	|| style == NSWindows95InterfaceStyle)
-	{
-	  edge = NSMaxXEdge;
-	}
 
       NSDivideRect (contentRect, &vertScrollerRect, &contentRect, 
-	scrollerWidth, edge);
+	scrollerWidth, verticalScrollerEdge);
 
       [_vertScroller setFrame: vertScrollerRect];
 
       /* Substract 1 for the line that separates the vertical scroller
        * from the clip view (and eventually the horizontal scroller).  */
-      NSDivideRect (contentRect, NULL, &contentRect, 1, edge);
+      NSDivideRect (contentRect, NULL, &contentRect, 1, verticalScrollerEdge);
     }
 
   /* Prepare the horizontal scroller.  */
@@ -930,7 +930,13 @@ static float scrollerWidth;
   /* Now place the corner view.  */
   if (_hasCornerView)
     {
-      [_cornerView setFrameOrigin: headerRect.origin];
+      NSPoint	p = headerRect.origin;
+
+      if (verticalScrollerEdge == NSMaxXEdge)
+        {
+	  p.x += contentRect.size.width;
+	}
+      [_cornerView setFrameOrigin: p];
     }
 
   /* Now place the rulers.  */
@@ -1040,12 +1046,12 @@ static float scrollerWidth;
   return [_contentView backgroundColor];
 }
 
-- (void)setDrawsBackground:(BOOL)flag
+- (void) setDrawsBackground: (BOOL)flag
 {
   [_contentView setDrawsBackground: flag];
 }
 
-- (BOOL)drawsBackground
+- (BOOL) drawsBackground
 {
   return [_contentView drawsBackground];
 }
@@ -1454,6 +1460,7 @@ static float scrollerWidth;
   BOOL hadHeaderView = _hasHeaderView;
   BOOL hadCornerView = _hasCornerView;
   NSView *aView = nil;
+
   _hasHeaderView = ([[self documentView] 
                         respondsToSelector: @selector(headerView)]
                     && (aView=[(NSTableView *)[self documentView] headerView]));
@@ -1475,8 +1482,8 @@ static float scrollerWidth;
     {
       aView = nil; 
       _hasCornerView =
-              ([[self documentView] respondsToSelector: @selector(cornerView)]
-               && (aView=[(NSTableView *)[self documentView] cornerView]));
+	([[self documentView] respondsToSelector: @selector(cornerView)]
+	 && (aView=[(NSTableView *)[self documentView] cornerView]));
       
       if (aView == _cornerView)
         return;
@@ -1484,7 +1491,7 @@ static float scrollerWidth;
         {
           if (hadCornerView == NO)
             {
- 	      [self addSubview:aView];
+ 	      [self addSubview: aView];
 	    }
           else
             {

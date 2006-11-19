@@ -306,16 +306,12 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	  NSRect		superviewsVisibleRect;
 	  BOOL			wasFlipped = _super_view->_rFlags.flipped_view;
 	  NSAffineTransform	*pMatrix = [_super_view _matrixToWindow];
- 	  NSAffineTransform     *tMatrix = nil; 
-
-	  [_matrixToWindow takeMatrixFromTransform: pMatrix];
+ 	  NSAffineTransformStruct     ts = [pMatrix transformStruct];
  
  	  /* prepend translation */
-	  tMatrix = _matrixToWindow;
- 	  tMatrix->matrix.tX = NSMinX(_frame) * tMatrix->matrix.m11 +
-	    NSMinY(_frame) * tMatrix->matrix.m21 + tMatrix->matrix.tX;
- 	  tMatrix->matrix.tY = NSMinX(_frame) * tMatrix->matrix.m12 +
-	    NSMinY(_frame) * tMatrix->matrix.m22 + tMatrix->matrix.tY;
+ 	  ts.tX = NSMinX(_frame) * ts.m11 + NSMinY(_frame) * ts.m21 + ts.tX;
+ 	  ts.tY = NSMinX(_frame) * ts.m12 + NSMinY(_frame) * ts.m22 + ts.tY;
+	  [_matrixToWindow setTransformStruct: ts];
  
  	  /* prepend rotation */
  	  if (_frameMatrix != nil)
@@ -330,11 +326,14 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	       * exactly overlays the original.	 To do that, we must translate
 	       * the origin by the height of the view.
 	       */
-	      flip->matrix.tY = _frame.size.height;
+ 	      ts = [flip transformStruct];
+	      ts.tY = _frame.size.height;
+	      [flip setTransformStruct: ts];
 	      (*preImp)(_matrixToWindow, preSel, flip);
 	    }
 	  (*preImp)(_matrixToWindow, preSel, _boundsMatrix);
-	  [_matrixFromWindow takeMatrixFromTransform: _matrixToWindow];
+ 	  ts = [_matrixToWindow transformStruct];
+	  [_matrixFromWindow setTransformStruct: ts];
 	  [_matrixFromWindow invert];
 
 	  superviewsVisibleRect = [self convertRect: [_super_view visibleRect]
