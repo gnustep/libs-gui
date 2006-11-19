@@ -5,7 +5,7 @@
 
    Author: Ovidiu Predescu <ovidiu@net-community.com>
    Date: August 1997
-   Rewrite for macOS-X compatibility: Richard Frith-Macdonald, 1999
+   Rewrite for MacOS-X compatibility: Richard Frith-Macdonald, 1999
    
    This file is part of the GNUstep GUI Library.
 
@@ -29,43 +29,15 @@
 #define _GNUstep_H_NSAffineTransform
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSGeometry.h>
+#import <Foundation/NSAffineTransform.h>
 
 @class NSBezierPath;
 
-typedef	struct {
-  float	m11;
-  float	m12;
-  float	m21;
-  float	m22;
-  float	tX;
-  float	tY;
-} NSAffineTransformStruct;
+@interface NSAffineTransform (GUIAdditions)
 
-@interface NSAffineTransform : NSObject <NSCopying, NSCoding>
-{
-@public
-  NSAffineTransformStruct	matrix;
-}
-
-+ (NSAffineTransform*) transform;
-- (void) appendTransform: (NSAffineTransform*)aTransform;
 - (void) concat;
-- (id) initWithTransform: (NSAffineTransform*)aTransform;
-- (void) invert;
-- (void) prependTransform: (NSAffineTransform*)aTransform;
-- (void) rotateByDegrees: (float)angle;
-- (void) rotateByRadians: (float)angleRad;
-- (void) scaleBy: (float)scale;
-- (void) scaleXBy: (float)scaleX yBy: (float)scaleY;
 - (void) set;
-- (void) setTransformStruct: (NSAffineTransformStruct)val;
 - (NSBezierPath*) transformBezierPath: (NSBezierPath*)aPath;
-- (NSPoint) transformPoint: (NSPoint)aPoint;
-- (NSSize) transformSize: (NSSize)aSize;
-- (NSAffineTransformStruct) transformStruct;
-- (void) translateXBy: (float)tranX yBy: (float)tranY;
 @end
 
 #if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
@@ -77,7 +49,7 @@ typedef	struct {
 - (void) setFrameOrigin: (NSPoint)point;
 - (void) setFrameRotation: (float)angle;
 
-/* Old Apple name for -invert  */
+/* Deprecated: use -invert  */
 - (void) inverse;
 
 - (BOOL) isRotated;
@@ -93,7 +65,9 @@ typedef	struct {
 - (NSSize) sizeInMatrixSpace: (NSSize)size;
 - (NSRect) rectInMatrixSpace: (NSRect)rect;
 
+/* Deprecated: use -setTransformStruct: */
 - (void) setMatrix: (const float[6])replace;
+/* Deprecated: use -transformStruct */
 - (void) getMatrix: (float[6])replace;
 
 - (void) takeMatrixFromTransform: (NSAffineTransform *)aTransform;

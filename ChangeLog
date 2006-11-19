@@ -1,3 +1,15 @@
+2006-11-19  Richard Frith-Macdoanld <rfm@gnu.org>
+
+	* Source/NSAffineTransform.m:
+	* Headers/AppKit/NSAffineTransform.h:
+	Remove basic implementation (now in base for MacOS-X compatibility)
+	retaining gui specific methods and GNUstep extensions (to deprecate?)
+	* Source/NSImage.m:
+	* Source/NSStringDrawing.m:
+	* Source/NSView.m:
+	Update to use transformStruct accessor method rather than trying to
+	work with the affine transform ivars directly.
+
 2006-11-18  Richard Frith-Macdoanld <rfm@gnu.org>
 
 	* Source/NSScrollView.m: Adjust corner view when scroller is on right.
