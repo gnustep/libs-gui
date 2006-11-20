@@ -1,3 +1,14 @@
+2006-11-20  Matt Rice  <ratmice@gmail.com>
+
+	* Source/NSTextView_actions.m: Change cursor movement implementations
+	when collapsing a selection. 
+	* Source/NSParagraphStyle.m (-setBaseWritingDirection:): Add comment.
+	* Source/NSAttributedString: Add and remove characters in the word
+	break character	set.
+	* KeyBindings/DefaultKeyBindings.dict: Change control-f and control-b
+	to moveForward: and moveBackward:
+
+
 2006-11-19  Richard Frith-Macdoanld <rfm@gnu.org>
 
 	* Source/NSAffineTransform.m:

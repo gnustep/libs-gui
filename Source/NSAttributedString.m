@@ -78,7 +78,8 @@ static void cache_init_real(void)
   [m formUnionWithCharacterSet: cset];
   cset = [NSCharacterSet illegalCharacterSet];
   [m formUnionWithCharacterSet: cset];
-  [m removeCharactersInString: @"-"];
+  [m addCharactersInString: @"<>"];
+  [m removeCharactersInString: @"_"];
   wordBreakCSet = [m copy];
   RELEASE (m);
   

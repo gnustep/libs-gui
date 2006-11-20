@@ -514,6 +514,19 @@ static NSParagraphStyle	*defaultStyle = nil;
 
 - (void) setBaseWritingDirection: (NSWritingDirection)direction
 {
+  /*
+   * FIXME there is some confusion regarding natural writing direction.
+   * 
+   * this method is documented as setting
+   * NSWritingDirectionLeftToRight or NSWritingDirectionRightToLeft
+   * based on the users language preferences.
+   * when encountering NSWritingDirectionNaturalDirection
+   *
+   * NSWritingDirectionNatural constant is documented as using the
+   * unicode bidi algorithm. 
+   *
+   * no idea what the constant name or behaviour actually is.
+   */
   _baseDirection = direction;
 }
 

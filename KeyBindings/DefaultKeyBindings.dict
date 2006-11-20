@@ -51,10 +51,10 @@
 
   /* Emacs Control keybindings */
   "Control-a" = "moveToBeginningOfLine:";
-  "Control-b" = "moveLeft:";
+  "Control-b" = "moveBackward:";
   "Control-d" = "deleteForward:";
   "Control-e" = "moveToEndOfLine:";
-  "Control-f" = "moveRight:";
+  "Control-f" = "moveForward:";
   "Control-h" = "deleteBackward:";
   /* "Control-l" = "centerSelectionInVisibleArea:"; */
   "Control-k" = "deleteToEndOfLine:";
