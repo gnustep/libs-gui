@@ -3596,16 +3596,20 @@ resetCursorRectsForView(NSView *theView)
 	    {
 	      BOOL	isEntry;
 
+	      dragInfo = [GSServerForWindow(self) dragInfo];
 	      v = [_wv hitTest: [theEvent locationInWindow]];
-	      while (v != nil && ((NSViewPtr)v)->_rFlags.has_draginfo == 0)
+	      
+	      while (v != nil)
 		{
+		  if (((NSViewPtr)v)->_rFlags.has_draginfo != 0
+		      && GSViewAcceptsDrag(v, dragInfo))
+		    break;
 		  v = [v superview];
 		}
 	      if (v == nil)
 		{
 		  v = _wv;
 		}
-	      dragInfo = [GSServerForWindow(self) dragInfo];
 	      if (_lastDragView == v)
 		{
 		  isEntry = NO;
