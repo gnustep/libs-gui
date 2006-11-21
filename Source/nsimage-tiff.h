@@ -75,5 +75,7 @@ extern NSTiffInfo* NSTiffGetInfo(int imageNumber, TIFF* image);
 
 extern NSTiffColormap* NSTiffGetColormap(TIFF* image);
 
+extern int NSTiffIsCodecConfigured(unsigned int codec);
+
 #endif // _GNUstep_H_tiff
 

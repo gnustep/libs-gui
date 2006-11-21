@@ -34,6 +34,7 @@
 @interface NSBitmapImageRep (PNG)
 + (BOOL) _bitmapIsPNG: (NSData *)imageData;
 - (id) _initBitmapFromPNG: (NSData *)imageData;
+- (NSData *) _PNGRepresentationWithProperties: (NSDictionary *) properties;
 @end
 
 #endif

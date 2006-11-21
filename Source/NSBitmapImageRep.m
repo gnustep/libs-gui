@@ -55,19 +55,14 @@
 /* Maximum number of planes */
 #define MAX_PLANES 5
 
-/* FIXME: By default the libtiff library (v3.5.7 and less at least) do
-   not support LZW compression, but it's not possible to find out if it
-   does or not until after we've already written an image :-(.  */
-static BOOL supports_lzw_compression = NO;
-
 /* Backend methods (optional) */
 @interface NSBitmapImageRep (GSPrivate)
 // GNUstep extension
 - _initFromTIFFImage: (TIFF *)image number: (int)imageNumber;
 
 // Internal
-- (int) _localFromCompressionType: (NSTIFFCompression)type;
-- (NSTIFFCompression) _compressionTypeFromLocal: (int)type;
++ (int) _localFromCompressionType: (NSTIFFCompression)type;
++ (NSTIFFCompression) _compressionTypeFromLocal: (int)type;
 @end
 
 /**
@@ -526,6 +521,7 @@ static BOOL supports_lzw_compression = NO;
     {
       [self setOpaque: YES];
     }
+  _properties = [[NSMutableDictionary alloc] init];
   return self;
 }
 
@@ -555,6 +551,7 @@ static BOOL supports_lzw_compression = NO;
 {
   NSZoneFree([self zone],_imagePlanes);
   RELEASE(_imageData);
+  RELEASE(_properties);
   [super dealloc];
 }
 
@@ -763,7 +760,7 @@ static BOOL supports_lzw_compression = NO;
     }
 
   info.extraSamples = (_hasAlpha) ? 1 : 0;
-  info.compression = [self _localFromCompressionType: type];
+  info.compression = [NSBitmapImageRep _localFromCompressionType: type];
   if (factor < 0)
     factor = 0;
   if (factor > 255)
@@ -790,23 +787,81 @@ static BOOL supports_lzw_compression = NO;
 				   usingType:(NSBitmapImageFileType)storageType
 				  properties:(NSDictionary *)properties
 {
-  // TODO
+  // Partial implementation only returns data for the first imageRep in the array
+  // and only works for NSBitmapImageRep or subclasses thereof. 
+  //FIXME: This only outputs one of the ImageReps
+  NSEnumerator *enumerator = [imageReps objectEnumerator];
+  NSImageRep *rep;
+
+  while ((rep = [enumerator nextObject]) != nil)
+    {
+      if ([rep isKindOfClass: self])
+        {
+	  return [(NSBitmapImageRep*)rep representationUsingType: storageType
+		     properties: properties];
+	}
+    }
+
   return nil;
 }
 
 - (NSData *)representationUsingType:(NSBitmapImageFileType)storageType 
 			 properties:(NSDictionary *)properties
 {
-  // TODO
+  // if it exists, the passed in properties takes precedence over the internal _properties
+  NSDictionary * __properties;
+  __properties = (properties)? properties : (NSDictionary *)_properties;
+
+  switch (storageType)
+  {
+    case NSTIFFFileType:
+    {
+      NSNumber * property;
+      float factor = _comp_factor;
+      NSTIFFCompression compression = _compression;
+      if ((property = [__properties objectForKey: NSImageCompressionMethod]))
+        compression =  [property unsignedShortValue];
+      if ((property = [__properties objectForKey: NSImageCompressionFactor]))
+        factor = [property floatValue];
+      if ([self canBeCompressedUsing: compression] == NO)
+        {
+          factor = 0.0;
+          compression = NSTIFFCompressionNone;
+        }
+      return [self TIFFRepresentationUsingCompression: compression factor: factor];
+    }
+
+    case NSBMPFileType:
+      NSLog(@"BMP representation is not yet implemented");
+      return nil;
+
+    case NSGIFFileType:
+      return [self _GIFRepresentationWithProperties: __properties
+                                       errorMessage: NULL];
+
+    case NSJPEGFileType:
+      return [self _JPEGRepresentationWithProperties: __properties
+                                        errorMessage: NULL];
+
+    case NSPNGFileType:
+      return [self _PNGRepresentationWithProperties: __properties];
+    
+    case NSJPEG2000FileType:
+      NSLog(@"JPEG2000 representation is not yet implemented");
+      return nil;
+  }
   return nil;
 }
 
 //
 // Setting and Checking Compression Types 
 //
+/** Returns a C-array of available TIFF compression types.
+ */
 + (void) getTIFFCompressionTypes: (const NSTIFFCompression **)list
 			   count: (int *)numTypes
 {
+  // the GNUstep supported types
   static NSTIFFCompression	types[] = {
     NSTIFFCompressionNone,
     NSTIFFCompressionCCITTFAX3,
@@ -817,11 +872,22 @@ static BOOL supports_lzw_compression = NO;
     NSTIFFCompressionPackBits,
     NSTIFFCompressionOldJPEG
   };
-
+  
+  // check with libtiff to see what is really available
+  int i, j;
+  static NSTIFFCompression checkedTypes[8];
+  for (i = 0, j = 0; i < 8; i++)
+  {
+    if (NSTiffIsCodecConfigured([NSBitmapImageRep _localFromCompressionType: types[i]]))
+    {
+      checkedTypes[j] = types[i];
+      j++;
+    }
+  }
   if (list)
-    *list = types;
+    *list = checkedTypes;
   if (numTypes)
-    *numTypes = sizeof(types)/sizeof(*types);
+    *numTypes = j;
 }
 
 + (NSString*) localizedNameForTIFFCompressionType: (NSTIFFCompression)type
@@ -845,30 +911,26 @@ static BOOL supports_lzw_compression = NO;
 - (BOOL) canBeCompressedUsing: (NSTIFFCompression)compression
 {
   BOOL does;
+  int codecConf =
+    NSTiffIsCodecConfigured([NSBitmapImageRep _localFromCompressionType: compression]);
   switch (compression)
     {
       case NSTIFFCompressionCCITTFAX3:
       case NSTIFFCompressionCCITTFAX4:
-	if (_numColors == 1 && _bitsPerSample == 1)
+	if (_numColors == 1 && _bitsPerSample == 1 && codecConf != 0)
 	  does = YES;
 	else
 	  does = NO;
 	break;
 
       case NSTIFFCompressionLZW: 
-	does = supports_lzw_compression;
-	break;
-	
       case NSTIFFCompressionNone:
-      case NSTIFFCompressionJPEG:
+      case NSTIFFCompressionJPEG:	// this is a GNUstep extension; Cocoa does not support
       case NSTIFFCompressionPackBits:
       case NSTIFFCompressionOldJPEG:
-	does = YES;
-	break;
-
       case NSTIFFCompressionNEXT:
       default:
-	does = NO;
+	does = (codecConf != 0);
     }
   return does;
 }
@@ -894,13 +956,19 @@ static BOOL supports_lzw_compression = NO;
 
 - (void)setProperty:(NSString *)property withValue:(id)value
 {
-  // TODO
+  if (value)
+  {
+    [_properties setObject: value forKey: property];
+  }
+  else  // clear the property
+  {
+    [_properties removeObjectForKey: property];
+  }
 }
 
 - (id)valueForProperty:(NSString *)property
 {
-  // TODO
-  return nil;
+  return [_properties objectForKey: property];
 }
 
 // NSCopying protocol
@@ -978,7 +1046,7 @@ static BOOL supports_lzw_compression = NO;
 
 @implementation NSBitmapImageRep (GSPrivate)
 
-- (int) _localFromCompressionType: (NSTIFFCompression)type
++ (int) _localFromCompressionType: (NSTIFFCompression)type
 {
   switch (type)
     {
@@ -996,7 +1064,7 @@ static BOOL supports_lzw_compression = NO;
   return COMPRESSION_NONE;
 }
 
-- (NSTIFFCompression) _compressionTypeFromLocal: (int)type
++ (NSTIFFCompression) _compressionTypeFromLocal: (int)type
 {
   switch (type)
     {
@@ -1057,8 +1125,14 @@ static BOOL supports_lzw_compression = NO;
 		colorSpaceName: space
 		bytesPerRow: 0
 		bitsPerPixel: 0];
-  _compression = [self _compressionTypeFromLocal: info->compression];
+  _compression = [NSBitmapImageRep _compressionTypeFromLocal: info->compression];
   _comp_factor = 255 * (1 - ((float)info->quality)/100.0);
+
+  // Note that Cocoa does not do this, even though the docs say it should
+  [_properties setObject: [NSNumber numberWithUnsignedShort: _compression]
+                  forKey: NSImageCompressionMethod];
+  [_properties setObject: [NSNumber numberWithFloat: _comp_factor]
+                  forKey: NSImageCompressionFactor];
 
   if (NSTiffRead(image, info, [self bitmapData]))
     {

@@ -32,6 +32,7 @@
 #import <GNUstepBase/GSVersionMacros.h>
 
 #include <AppKit/NSImageRep.h>
+#include <Foundation/NSDictionary.h>
 
 @class NSArray;
 @class NSString;
@@ -44,21 +45,37 @@ typedef enum _NSTIFFCompression {
   NSTIFFCompressionCCITTFAX3,
   NSTIFFCompressionCCITTFAX4,
   NSTIFFCompressionLZW,
+  NSTIFFCompressionOldJPEG,
   NSTIFFCompressionJPEG,
   NSTIFFCompressionNEXT,
-  NSTIFFCompressionPackBits,
-  NSTIFFCompressionOldJPEG
+  NSTIFFCompressionPackBits
 } NSTIFFCompression;
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
-// FIXME: This is probably wrong
 typedef enum _NSBitmapImageFileType {
     NSTIFFFileType = 0,
     NSBMPFileType = 1,
     NSGIFFileType = 2,
     NSJPEGFileType = 3,
-    NSPNGFileType = 4
+    NSPNGFileType = 4,
+    NSJPEG2000FileType = 5  // available in Mac OS X v10.4
 } NSBitmapImageFileType;
+
+APPKIT_EXPORT NSString *NSImageCompressionMethod;  // NSNumber; only for TIFF files
+APPKIT_EXPORT NSString *NSImageCompressionFactor;  // NSNumber 0.0 to 255.0; only for JPEG files (GNUstep extension: JPEG-compressed TIFFs too)
+APPKIT_EXPORT NSString *NSImageDitherTranparency;  // NSNumber boolean; only for writing GIF files
+APPKIT_EXPORT NSString *NSImageRGBColorTable;  // NSData; only for reading & writing GIF files
+APPKIT_EXPORT NSString *NSImageInterlaced;  // NSNumber boolean; only for writing PNG files
+//APPKIT_EXPORT NSString *NSImageColorSyncProfileData; // Mac OX X only
+//APPKIT_EXPORT NSString *GSImageICCProfileData;  // if & when color management comes to GNUstep
+APPKIT_EXPORT NSString *NSImageFrameCount;  // NSNumber integer; only for reading animated GIF files
+APPKIT_EXPORT NSString *NSImageCurrentFrame; // NSNumber integer; only for animated GIF files
+APPKIT_EXPORT NSString *NSImageCurrentFrameDuration;  // NSNumber float; only for reading animated GIF files
+APPKIT_EXPORT NSString *NSImageLoopCount; // NSNumber integer; only for reading animated GIF files
+APPKIT_EXPORT NSString *NSImageGamma; // NSNumber 0.0 to 1.0; only for reading & writing PNG files
+APPKIT_EXPORT NSString *NSImageProgressive; // NSNumber boolean; only for reading & writing JPEG files
+//APPKIT_EXPORT NSString *NSImageEXIFData; // No GNUstep support yet; for reading & writing JPEG
+
 #endif
 
 @interface NSBitmapImageRep : NSImageRep
@@ -67,8 +84,9 @@ typedef enum _NSBitmapImageFileType {
   unsigned int		_bytesPerRow;
   unsigned int		_numColors;
   unsigned int		_bitsPerPixel;   
-  unsigned short	_compression;
+  unsigned short  	_compression;
   float			_comp_factor;
+  NSMutableDictionary   *_properties;
   BOOL			_isPlanar;
   unsigned char		**_imagePlanes;
   NSMutableData		*_imageData;
