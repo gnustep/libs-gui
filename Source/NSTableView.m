@@ -3398,8 +3398,8 @@ static inline float computePeriod(NSPoint mouseLocationWin,
     {
       id newValue = [cell objectValue];
 
-      if ([tb isEditable]
-	  && originalValue != newValue
+      /* don't check editability that only pertains to editColumn:... */
+      if (originalValue != newValue
 	  && ![originalValue isEqual: newValue])
         {
 	  [self _setObjectValue: newValue 
