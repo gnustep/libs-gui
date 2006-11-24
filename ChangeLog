@@ -1,3 +1,8 @@
+2006-11-24  Matt Rice  <ratmice@gmail.com>
+
+	* Source/NSWindowController.m (_windowDidLoad:): Pass an NSZeroPoint to
+	cascadeTopLeftFromPoint: on the first call.
+
 2006-11-23  Matt Rice  <ratmice@gmail.com>
 
 	* Source/NSTableView.m (_trackCellAtColumn:row:withEvent:): 

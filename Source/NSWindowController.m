@@ -401,30 +401,16 @@
 
   if ([self shouldCascadeWindows])
     {
-      static NSPoint nextWindowLocation  = { 0.0, 0.0 };
-      static BOOL firstWindow = YES;
-
-      if (firstWindow)
-        {
-          NSRect windowFrame = [_window frame];
-
-          /* Start with the frame as set */
-          nextWindowLocation = NSMakePoint (NSMinX (windowFrame), 
-					    NSMaxY (windowFrame));
-          firstWindow = NO;
-        }
-      else
-        {
-          /*
-           * cascadeTopLeftFromPoint will "wrap" the point back to the
-           * top left if the normal cascading will cause the window to go
-           * off the screen. In Apple's implementation, this wraps to the
-           * extreme top of the screen, and offset only a small amount
-           * from the left.
-           */
-           nextWindowLocation 
+      static NSPoint nextWindowLocation = { 0.0, 0.0 };
+      /*
+       * cascadeTopLeftFromPoint will "wrap" the point back to the
+       * top left if the normal cascading will cause the window to go
+       * off the screen. In Apple's implementation, this wraps to the
+       * extreme top of the screen, and offset only a small amount
+       * from the left.
+       */
+       nextWindowLocation 
 	     = [_window cascadeTopLeftFromPoint: nextWindowLocation];
-        }
     }
 
   [self windowDidLoad];
