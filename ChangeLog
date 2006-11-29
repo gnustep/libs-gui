@@ -1,3 +1,72 @@
+2006-11-28  Mark Tracy <tracy454@concentric.net>
+	Belated update to change log (these went in with svn revision 24140).
+	* Source/externs.m: Added definitions for NSBitmapImage properties key
+	strings
+	* Source/tiff.m: Added implementation of NSTiffIsCodecConfigured(codec)
+	* Source/ngimage-tiff.h: Added declaration of
+	NSTiffIsCodecConfigured(codec)
+	* Source/NSBitmapImageRep+GIF.h: Added declaration of
+	_GIFRepresentationWithProperties:errorMessage:
+	* Source/NSBitmapImage+GIF.m: Added implementation of
+	_GIFRepresentationWithProperties:errorMessage: 
+	and static int gs_gif_output(*file, *buffer, len)
+	* Source/NSBitmapImage+GIF.m (_initBitmapFromGIF:errorMessage:):
+	Changed loop to terminate after the first image block
+	is found. Added parsing of graphic control blocks to support
+	transparency. If transparency is found, adds an alpha channel.
+	Saves the color table in _properties.
+	* Source/NSBitmapImage+PNG.h: Added declaration of 
+	_PNGRepresentationWithProperties:
+	* Source/NSBitmapImage+PNG.m: Added implementation of
+	_PNGRepresentationWithProperties:
+	and static void writer_func(png_struct, data, length)
+	* Source/NSBitmapImage+PNG.m: (_initBitmapFromPNG:):
+	Added experimental support for the property NSImageGamma 
+	* Source/NSBitmapImage+JPEG.h: Replaced declaration of
+	representationUsingType:properties
+	with declaration of _JPEGRepresentationWithProperties:errorMessage:
+	and removed category (JPEGWriting)
+	* Source/NSBitmapImage+JPEG.m: Renamed 
+	representationUsingType:properties as 
+	_JPEGRepresentationWithProperties:errorMessage:
+	and reworked it significantly to support alpha stripping, error
+	messages, and NSImageProgressive property. NSImageCompressionFactor
+	now is 0-255 instead of 100-0 quality factor. Returns a real error
+	message instead of crashing.
+	* Source/NSBitmapImage+JPEG.m: (_initBitmapFromJPEG:errorMessage:)
+	Added support for NSImageProgressive property.
+	* Headers/AppKit/NSBitmapImageRep.h: Added extern declarations for the
+	properties key strings. Added declaration for NSMutableDictionary *
+	_properties. Added NSImageJPEG2000FileType to the NSImageFileType enum.
+	* Source/NSBitmapImageRep.m: (canCompressUsing:): Changed to use the 
+	new NSTiffIsCodecConfigured(codec) instead of a static list.
+	* Source/NSBitmapImageRep.m: (getTIFFCompressionTypes:count:):
+	Changed to use the new NSTiffIsCodecConfigures(codec) instead of a
+	static list.
+	* Source/NSBitmapImageRep.m: (_localFromCompressionType:): Changed from
+	an instance method to a class method.
+	* Source/NSBitmapImageRep.m: (_CompressionTypeFromLocal:): Changed from
+	an instance method to a class method.
+	* Source/NSBitmapImageRep.m: (TIFFRepresentationUsingCompression:factor:):
+	Changed to use new implementation of _localFromCompressionType:
+	* Source/NSBitmapImageRep.m: (initFromTIFFImage:number:): Changed to
+	use new implementation of _CompressionTypeFromLocal: and added support
+	for NSImageCompressionMethod and NSImageCompressionFactor properties
+	* Source/NSBitmapImageRep.m: (initWithBitmapDataPlanes:pixelsWide:
+	pixelsHigh:bitsPerSample:samplesPerPixel:hasAlpha:isPlanar:
+	colorSpaceName:bytesPerRow:bitsPerPixel:): 
+	Changed to initialize _properties dictionary
+	* Source/NSBitmapImageRep.m: (dealloc:): Changed to release _properties
+	* Source/NSBitmapImageRep.m: (setProperty:withValue:) Implemented
+	functional code in place of TODO:
+	* Source/NSBitmapImageRep.m: (valueForProperty:) Implemented functional
+	code in place of TODO:
+	* Source/NSBitmapImageRep.m: (representationUsingType:properties:):
+	Implemented working code in place of TODO: It supports writing PNG, 
+	TIFF, GIF and JPEG, with stubs for BMP and JPEG-2000.
+	* Source/NSBigmapImageRep.m: (representationOfImageRepsInArray:
+	usingType:properties:): Incomplete implementation in place of TODO:
+
 2006-11-24  Matt Rice  <ratmice@gmail.com>
 
 	* Source/NSWindowController.m (_windowDidLoad:): Pass an NSZeroPoint to
