@@ -35,8 +35,19 @@
 
 #include <Foundation/NSData.h>
 #include <Foundation/NSException.h>
+#include <Foundation/NSValue.h>
 #include "AppKit/NSGraphics.h"
 
+#if defined(PNG_FLOATING_POINT_SUPPORT)
+#  define PNG_FLOATING_POINT 1
+#else
+#  define PNG_FLOATING_POINT 0
+#endif
+#if defined(PNG_gAMA_SUPPORT)
+#  define PNG_gAMA 1
+#else
+#  define PNG_gAMA 0
+#endif
 
 @implementation NSBitmapImageRep (PNG)
 
@@ -212,11 +223,141 @@ static void reader_func(png_structp png_struct, png_bytep data,
     initWithBytesNoCopy: buf
 		 length: bytes_per_row * height];
 
+  if (PNG_INFO_gAMA & png_info->valid)
+  {
+    double file_gamma = 2.2;
+    if (PNG_FLOATING_POINT)
+    {
+      png_get_gAMA(png_struct, png_info, &file_gamma);
+      // remap file_gamma [1.0, 2.5] to property [0.0, 1.0]
+      file_gamma = (file_gamma - 1.0)/1.5;
+    }
+    else	// fixed point
+    {
+      png_fixed_point int_gamma = 220000;
+      png_get_gAMA_fixed(png_struct, png_info, &int_gamma);
+      // remap gamma [0.0, 1.0] to [100000, 250000]
+      file_gamma = ((double)int_gamma - 100000.0)/150000.0;
+    }
+    [self setProperty: NSImageGamma
+            withValue: [NSNumber numberWithDouble: file_gamma]];
+    //NSLog(@"PNG file gamma: %f", file_gamma);
+   } 
+
   png_destroy_read_struct(&png_struct, &png_info, &png_end_info);
 
   return self;
 }
 
+/***** PNG writing support ******/
+static void writer_func(png_structp png_struct, png_bytep data,
+			png_size_t length)
+{
+  NSMutableData * PNGRep = png_get_io_ptr(png_struct);
+  [PNGRep appendBytes: data length: length];
+}
+
+- (NSData *) _PNGRepresentationWithProperties: (NSDictionary *) properties
+{
+  png_structp png_struct;
+  png_infop png_info;
+
+  int width, height, depth;
+  unsigned char * bitmapData;
+  int bytes_per_row;
+  NSString * colorspace;
+  NSMutableData * PNGRep = nil;
+  int type = -1;	// illegal value
+  int interlace = PNG_INTERLACE_NONE;
+  int transforms = PNG_TRANSFORM_IDENTITY;	// no transformations
+  NSNumber * gammaNumber = nil;
+  double gamma = 0.0;
+  
+  if ([self isPlanar])	// don't handle planar yet
+  {
+    return nil;
+  } 
+  // get the image parameters
+  width = [self pixelsWide];
+  height = [self pixelsHigh];
+  bytes_per_row = [self bytesPerRow];
+  colorspace = [self colorSpaceName];
+  depth = [self bitsPerSample];
+  gammaNumber = [properties objectForKey: NSImageGamma];
+  gamma = [gammaNumber doubleValue];
+  if ([[properties objectForKey: NSImageInterlaced] boolValue])
+    interlace = PNG_INTERLACE_ADAM7;
+
+  if ([colorspace isEqualToString: NSCalibratedWhiteColorSpace] ||
+      [colorspace isEqualToString: NSDeviceWhiteColorSpace])
+    type = PNG_COLOR_TYPE_GRAY;
+  if ([colorspace isEqualToString: NSCalibratedRGBColorSpace] ||
+      [colorspace isEqualToString: NSDeviceRGBColorSpace])
+    type = PNG_COLOR_TYPE_RGB;
+  if ([self hasAlpha]) type = type | PNG_COLOR_MASK_ALPHA;
+
+  // make the PNG structures
+  // ignore errors until I write the handlers
+  png_struct = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+  if (!png_struct)
+    {
+      return nil;
+    }
+
+  png_info = png_create_info_struct(png_struct);
+  if (!png_info)
+    {
+      png_destroy_write_struct(&png_struct, NULL);
+      return nil;
+    }
+
+  if (setjmp(png_jmpbuf(png_struct)))
+    {
+      png_destroy_write_struct(&png_struct, &png_info);
+      return nil;
+    }
+
+  // init structures
+  PNGRep = [NSMutableData dataWithLength: 0];
+  png_info_init_3(&png_info, png_sizeof(png_info));
+  png_set_write_fn(png_struct, PNGRep, writer_func, NULL);
+  png_set_IHDR(png_struct, png_info, width, height, depth,
+   type, interlace, PNG_COMPRESSION_TYPE_BASE,
+   PNG_FILTER_TYPE_BASE);
+
+  if (gammaNumber)
+  {
+    NSLog(@"PNGRepresentation: gamma support is experimental");
+    if (PNG_FLOATING_POINT)
+    {
+      // remap gamma [0.0, 1.0] to [1.0, 2.5]
+      png_set_gAMA(png_struct, png_info, (gamma * 1.5 + 1.0));
+    }
+    else	// fixed point
+    {
+      // remap gamma [0.0, 1.0] to [100000, 250000]
+      int int_gamma = (int)(gamma * 150000.0 + 100000.0);
+      png_set_gAMA_fixed(png_struct, png_info, int_gamma);
+    }
+   } 
+
+  // get rgb data and row pointers and
+  // write PNG out to NSMutableData
+  bitmapData = [self bitmapData];
+  {
+    unsigned char *row_pointers[height];
+    int i;
+    for (i = 0 ; i < height ; i++)
+      row_pointers[i] = bitmapData + i * bytes_per_row;
+    png_set_rows(png_struct, png_info, row_pointers);
+
+    png_write_png(png_struct, png_info, transforms, NULL);
+  }
+               
+  NSLog(@"PNG representation is experimental: %i bytes written", [PNGRep length]);
+  png_destroy_write_struct(&png_struct, &png_info);
+  return PNGRep;
+}
 @end
 
 #else /* !HAVE_LIBPNG */
@@ -229,6 +370,10 @@ static void reader_func(png_structp png_struct, png_bytep data,
 - (id) _initBitmapFromPNG: (NSData *)imageData
 {
   RELEASE(self);
+  return nil;
+}
+- (NSData *) _PNGRepresentationWithProperties: (NSDictionary *) properties
+{
   return nil;
 }
 @end

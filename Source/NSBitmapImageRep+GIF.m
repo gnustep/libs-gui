@@ -7,6 +7,9 @@
    Written by:  Stefan Kleine Stegemann <stefan@wms-network.de>
    Date: Nov 2003
 
+   GIF writing, properties and transparency: Mark Tracy <tracy454@concentric.net>
+   Date: Nov 2006
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -42,6 +45,7 @@ objective-c headers.
 #include <Foundation/NSString.h>
 #include <Foundation/NSData.h>
 #include <Foundation/NSException.h>
+#include <Foundation/NSValue.h>
 #include "AppKit/NSGraphics.h"
 
 
@@ -105,6 +109,15 @@ static void gs_gif_init_input_source(gs_gif_input_src *src, NSData *data)
   src->pos    = 0;
 }
 
+/* Function to write GIF to buffer */
+static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
+{
+  if (len <= 0) return 0;
+
+  NSMutableData * nsData = file->UserData;
+  [nsData appendBytes: buffer length: len];
+  return len;
+}
 
 /* -----------------------------------------------------------
    The gif loading part of NSBitmapImageRep
@@ -143,7 +156,10 @@ static void gs_gif_init_input_source(gs_gif_input_src *src, NSData *data)
      {\
        *errorMsg = msg; \
      }\
-   NSLog(msg);
+   else \
+     {\
+       NSLog(msg);\
+     }
 
 #define GIF_CREATE_ERROR(msg) \
    SET_ERROR_MSG(msg); \
@@ -177,16 +193,21 @@ static void gs_gif_init_input_source(gs_gif_input_src *src, NSData *data)
   GifByteType            *extension;
   GifPixelType           *imgBuffer = NULL;
   GifPixelType           *imgBufferPos;  /* a position inside imgBuffer */
-  unsigned char          *rgbBuffer; /* image convertet to rgb */
+  unsigned char          *rgbBuffer; /* image converted to rgb */
   unsigned                rgbBufferPos;
   unsigned                rgbBufferSize;
   ColorMapObject         *colorMap;
   GifColorType           *color;
+  unsigned char           colorIndex;
   unsigned                pixelSize, rowSize;
   int                     extCode;
   int                     gifrc; /* required by CALL_CHECKED */
   int                     i, j;  /* counters */
   int                     imgHeight = 0, imgWidth = 0, imgRow = 0, imgCol = 0;
+  BOOL                    hasAlpha = NO;
+  unsigned char           transparentColor = 0;
+  int                     sPP = 3;	/* samples per pixel */
+  unsigned short          duration = 0;
 
   /* open the image */
   gs_gif_init_input_source(&src, imageData);
@@ -216,7 +237,9 @@ static void gs_gif_init_input_source(gs_gif_input_src *src, NSData *data)
   memset(imgBuffer, file->SBackGroundColor, file->SHeight * rowSize);
 
 
-  /* read the image */
+  /* read the image 
+   * this delivers the first image in a multi-image gif
+   */
   do
     {
       CALL_CHECKED(DGifGetRecordType(file, &recordType), @"GetRecordType");
@@ -267,12 +290,19 @@ static void gs_gif_init_input_source(gs_gif_input_src *src, NSData *data)
 
 	  case EXTENSION_RECORD_TYPE:
 	    {
-	      /* ignore extensions */
+	      /* transparency support */
 	      CALL_CHECKED(DGifGetExtension(file, &extCode, &extension), @"GetExtension");
+              if (extCode == GRAPHICS_EXT_FUNC_CODE)
+                {
+                   hasAlpha = (extension[1] & 0x01);
+                   transparentColor = extension[4];
+                   duration = extension[3];
+                   duration = (duration << 8) + extension[2];
+                }
 	      while (extension != NULL)
 		{
 		  CALL_CHECKED(DGifGetExtensionNext(file, &extension), @"GetExtensionNext");
-		}
+                }
 	      break;
 	    }
 
@@ -282,11 +312,13 @@ static void gs_gif_init_input_source(gs_gif_input_src *src, NSData *data)
 	      break;
 	    }
 	}
-    } while (recordType != TERMINATE_RECORD_TYPE);
+    } while ((recordType != IMAGE_DESC_RECORD_TYPE)
+            && (recordType != TERMINATE_RECORD_TYPE));
 
 
   /* convert the image to rgb */
-  rgbBufferSize = file->SHeight * (file->SWidth * sizeof(unsigned char) * 3);
+  sPP = hasAlpha? 4 : 3;
+  rgbBufferSize = file->SHeight * (file->SWidth * sizeof(unsigned char) * sPP);
   rgbBuffer = NSZoneMalloc([self zone],  rgbBufferSize);
   if (rgbBuffer == NULL)
     {
@@ -302,10 +334,13 @@ static void gs_gif_init_input_source(gs_gif_input_src *src, NSData *data)
       imgBufferPos = imgBuffer + (i * rowSize);
       for (j = 0; j < file->SWidth; j++)
 	{
-	  color = &colorMap->Colors[*(imgBufferPos + (j * pixelSize))];
+          colorIndex = *(imgBufferPos + j*pixelSize);
+	  color = &colorMap->Colors[colorIndex];
 	  rgbBuffer[rgbBufferPos++] = color->Red;
 	  rgbBuffer[rgbBufferPos++] = color->Green;
 	  rgbBuffer[rgbBufferPos++] = color->Blue;
+          if (hasAlpha)
+            rgbBuffer[rgbBufferPos++] = (transparentColor == colorIndex)? 0 : 255;
 	}
     }
 
@@ -317,21 +352,185 @@ static void gs_gif_init_input_source(gs_gif_input_src *src, NSData *data)
 	pixelsWide: file->SWidth
 	pixelsHigh: file->SHeight
 	bitsPerSample: 8
-	samplesPerPixel: 3
-	hasAlpha: NO
+	samplesPerPixel: sPP
+	hasAlpha: hasAlpha
 	isPlanar: NO
 	colorSpaceName: NSCalibratedRGBColorSpace
-	bytesPerRow: file->SWidth * 3
-	bitsPerPixel: 8 * 3];
+	bytesPerRow: file->SWidth * sPP
+	bitsPerPixel: 8 * sPP];
 
   _imageData = [[NSData alloc] initWithBytesNoCopy: rgbBuffer
 			       length: rgbBufferSize];
-   
+  [self setProperty: NSImageRGBColorTable
+        withValue: [NSData dataWithBytes: colorMap->Colors
+                                  length: sizeof(GifColorType)*colorMap->ColorCount]];
+  if (duration > 0)
+    {
+      [self setProperty: NSImageCurrentFrameDuration
+              withValue: [NSNumber numberWithFloat: (100.0 * duration)]];
+    }
+  [self setProperty: NSImageCurrentFrame
+          withValue: [NSNumber numberWithInt: 0]];
 
   /* don't forget to close the gif */
   DGifCloseFile(file);
 
   return self;
+}
+
+- (NSData *) _GIFRepresentationWithProperties: (NSDictionary *) properties
+                                 errorMessage: (NSString **)errorMsg
+{
+  NSMutableData         * GIFRep = nil;	// our return value
+  GifFileType           * GIFFile = NULL;
+  GifByteType           * rgbPlanes = NULL;	// giflib needs planar RGB
+  GifByteType           * redPlane = NULL;
+  GifByteType           * greenPlane = NULL;
+  GifByteType           * bluePlane = NULL;
+  int                   width, height;
+  GifByteType           * GIFImage = NULL;	// intermediate image storage
+  GifByteType           * GIFImageP = NULL;
+  int                   h;	// general-purpose loop counter
+  ColorMapObject        * GIFColorMap = NULL;
+  int                   colorMapSize = 256;
+  int                   status;	// return status for giflib calls
+  NSString              * colorSpaceName;
+  BOOL                  isRGB, hasAlpha;
+  unsigned char         * bitmapData = NULL;
+  unsigned char         * planes[5];	// MAX_PLANES = 5
+  NSData                * colorTable = NULL;	// passed in from properties
+  
+  NSLog(@"GIF representation is experimental");
+
+  width = [self pixelsWide];
+  height = [self pixelsHigh];
+  if ( !width || !height )
+  {
+    SET_ERROR_MSG(@"GIFRepresentation: image is zero size");
+    return nil;
+  }
+
+  // Giflib wants planar RGB so convert as necessary
+  colorSpaceName = [self colorSpaceName];
+  isRGB = ([colorSpaceName isEqualToString: NSDeviceRGBColorSpace] ||
+           [colorSpaceName isEqualToString: NSCalibratedRGBColorSpace]);
+  if ( !isRGB )
+  {  
+    SET_ERROR_MSG(@"GIFRepresentation: Only RGB is supported at this time.");
+    return nil;
+  }
+  hasAlpha = [self hasAlpha];
+  if ([self isPlanar])
+  {
+    [self getBitmapDataPlanes: planes];
+    redPlane = planes[0];
+    greenPlane = planes[1];
+    bluePlane = planes[2];
+  }
+  else	// interleaved RGB or RGBA
+  {
+    OBJC_MALLOC(rgbPlanes, GifByteType, width*height*3);
+    if ( !rgbPlanes )
+    {
+      SET_ERROR_MSG(@"GIFRepresentation: malloc out of memory.");
+      return nil;
+    }
+    redPlane = rgbPlanes;
+    greenPlane = redPlane + width*height;
+    bluePlane = greenPlane + width*height;
+    bitmapData = [self bitmapData];
+    for (h = 0; h < width*height; h++)
+    {
+      *redPlane++ = *bitmapData++;
+      *greenPlane++ = *bitmapData++;
+      *bluePlane++ = *bitmapData++;
+      if (hasAlpha) bitmapData++;	// ignore alpha channel
+    }
+    redPlane = rgbPlanes;
+    greenPlane = redPlane + width*height;
+    bluePlane = greenPlane + width*height;
+  }
+
+  // If you have a color table, you must be certain that it is GIF format
+  colorTable = [self valueForProperty: NSImageRGBColorTable];	// nil is OK
+  colorMapSize = (colorTable)? [colorTable length]/sizeof(GifColorType) : 256;
+  GIFColorMap = MakeMapObject(colorMapSize, [colorTable bytes]);
+  if ( !GIFColorMap )
+  {
+    SET_ERROR_MSG(@"GIFRepresentation (giflib): MakeMapObject() failed.");
+    OBJC_FREE(rgbPlanes);
+    return nil;
+  }
+
+  OBJC_MALLOC(GIFImage, GifByteType, height*width);
+  if ( !GIFImage )
+  {
+    SET_ERROR_MSG(@"GIFRepresentation: malloc out of memory.");
+    OBJC_FREE(rgbPlanes);
+  }
+  status = QuantizeBuffer(width, height, &colorMapSize,
+		       redPlane, greenPlane, bluePlane,
+		       GIFImage, GIFColorMap->Colors);
+  if (status == GIF_ERROR)
+  {
+    OBJC_FREE(GIFImage);
+    OBJC_FREE(rgbPlanes);
+    return nil;
+  }
+
+  // QuantizeBuffer returns an optimized colorMapSize,
+  // but we must round up to nearest power of 2
+  // otherwise MakeColorMap() fails
+  for (h = 0; h < 8; h++)
+    if ((1<<h) >= colorMapSize) break;
+  colorMapSize = 1<<h;
+  GIFColorMap->ColorCount = colorMapSize;
+  GIFColorMap->BitsPerPixel = h;
+
+  if ( ![self isPlanar] ) OBJC_FREE(rgbPlanes);
+
+  // Write the converted image out to the NSData
+  GIFRep = [NSMutableData dataWithLength: 0];
+  if ( !GIFRep ) 
+  {
+    OBJC_FREE(GIFImage);
+    return nil;
+  }
+  GIFFile = EGifOpen(GIFRep, gs_gif_output);
+  status = EGifPutScreenDesc(GIFFile, width, height, 8, 0, NULL);
+  if (status == GIF_ERROR)
+  {
+    SET_ERROR_MSG(@"GIFRepresentation (giflib): EGifPutScreenDesc() failed.");
+    OBJC_FREE(GIFImage);
+    return nil;
+  }
+
+  // note we are not supporting interlaced mode
+  status = EGifPutImageDesc(GIFFile, 0, 0, width, height, FALSE, GIFColorMap);
+  if (status == GIF_ERROR)
+  {
+    SET_ERROR_MSG(@"GIFRepresentation (giflib): EGifPutImageDesc() failed.");
+    OBJC_FREE(GIFImage);
+    return nil;
+  }
+
+  GIFImageP = GIFImage;
+  for (h = 0; h < height ; h++)
+  {
+    status = EGifPutLine(GIFFile, GIFImageP, width);
+    if (status == GIF_ERROR)
+    {
+      SET_ERROR_MSG(@"GIFRepresentation (giflib): EGifPutLine() failed.");
+      OBJC_FREE(GIFImage);
+      return nil;
+    }
+    GIFImageP += width;
+  }
+  status = EGifCloseFile(GIFFile);
+
+  OBJC_FREE(GIFImage);
+
+  return GIFRep;
 }
 
 @end
@@ -349,6 +548,13 @@ static void gs_gif_init_input_source(gs_gif_input_src *src, NSData *data)
   RELEASE(self);
   return nil;
 }
+
+- (NSData *) _GIFRepresentationWithProperties: (NSDictionary *) properties
+                                 errorMessage: (NSString **)errorMsg
+{
+  return nil;
+}
+
 @end
 
 #endif /* !HAVE_LIBUNGIF || !HAVE_LIBGIF */

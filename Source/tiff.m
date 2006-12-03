@@ -585,4 +585,60 @@ NSTiffGetColormap(TIFF* image)
   return map;
 }
 
+int NSTiffIsCodecConfigured(unsigned int codec)
+{
+#if (TIFFLIB_VERSION >= 20041016)
+  // starting with version 3.7.0 we can ask libtiff what it is configured to do
+  return TIFFIsCODECConfigured(codec);
+#else
+  // we check the tiffconf.h
+#include <tiffconf.h>
+#ifndef CCITT_SUPPORT
+#  define CCITT_SUPPORT 0
+#else
+#  define CCITT_SUPPORT 1
+#endif
+#ifndef PACKBITS_SUPPORT
+#  define PACKBITS_SUPPORT 0
+#else
+#  define PACKBITS_SUPPORT 1
+#endif
+#ifndef OJPEG_SUPPORT
+#  define OJPEG_SUPPORT 0
+#else
+#  define OJPEG_SUPPORT 1
+#endif
+#ifndef LZW_SUPPORT
+#  define LZW_SUPPORT 0
+#else
+#  define LZW_SUPPORT 1
+#endif
+#ifndef NEXT_SUPPORT
+#  define NEXT_SUPPORT 0
+#else
+#  define NEXT_SUPPORT 1
+#endif
+#ifndef JPEG_SUPPORT
+#  define JPEG_SUPPORT 0
+#else
+#  define JPEG_SUPPORT 1
+#endif
+/* If this fails, your libtiff is obsolete! Come to think of it
+ * if you even are compiling this part your libtiff is obsolete. */
+  switch (codec)
+  {
+    case COMPRESSION_NONE: return 1;
+    case COMPRESSION_CCITTFAX3: return CCITT_SUPPORT;
+    case COMPRESSION_CCITTFAX4: return CCITT_SUPPORT;
+    case COMPRESSION_JPEG: return JPEG_SUPPORT;
+    case COMPRESSION_PACKBITS: return PACKBITS_SUPPORT;
+    case COMPRESSION_OJPEG: return OJPEG_SUPPORT;
+    case COMPRESSION_LZW: return LZW_SUPPORT;
+    case COMPRESSION_NEXT: return NEXT_SUPPORT;
+    default:
+      return 0;
+  }
+#endif
+}
+
 

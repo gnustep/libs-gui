@@ -35,6 +35,8 @@
 + (BOOL) _bitmapIsGIF: (NSData *)imageData;
 - (id) _initBitmapFromGIF: (NSData *)imageData
              errorMessage: (NSString **)errorMsg;
+- (NSData *) _GIFRepresentationWithProperties: (NSDictionary *) properties
+                                 errorMessage: (NSString **)errorMsg;
 
 @end
 

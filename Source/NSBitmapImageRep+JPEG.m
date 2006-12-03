@@ -382,6 +382,7 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
   JDIMENSION sclcount, samplesPerRow, i, j, rowSize;
   JSAMPARRAY sclbuffer = NULL;
   unsigned char *imgbuffer = NULL;
+  BOOL isProgressive;
 
   if (!(self = [super init]))
     return nil;
@@ -417,7 +418,7 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
 
   jpeg_read_header(&cinfo, TRUE);
 
-  /* we use RGB as target color space */
+  /* we use RGB as target color space; others are not yet supported */
   cinfo.out_color_space = JCS_RGB;
 
   /* decompress */
@@ -459,6 +460,8 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
         }
     }
 
+  isProgressive = cinfo.progressive_mode;
+
   /* done */
   jpeg_finish_decompress(&cinfo);
 
@@ -484,6 +487,9 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
 		     bytesPerRow: rowSize
 		    bitsPerPixel: BITS_IN_JSAMPLE * cinfo.output_components];
 
+  [self setProperty: NSImageProgressive
+          withValue: [NSNumber numberWithBool: isProgressive]];
+
   _imageData = [[NSData alloc]
     initWithBytesNoCopy: imgbuffer
 		 length: (rowSize * cinfo.output_height)];
@@ -491,40 +497,67 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
   return self;
 }
 
-@end
 
 /* -----------------------------------------------------------
    The jpeg writing part of NSBitmapImageRep
    ----------------------------------------------------------- */
 
-@implementation NSBitmapImageRep (JPEGWriting)
-
-- (NSData*) representationUsingType: (NSBitmapImageFileType) storageType
-                properties: (NSDictionary*) properties
+- (NSData*) _JPEGRepresentationWithProperties: (NSDictionary*) properties
+                                 errorMessage: (NSString **)errorMsg
 {
   NSData			*ret;
-  unsigned char			*imageSource = [self bitmapData];
-  int				sPP = [self samplesPerPixel];
-  int				width = [self size].width;
-  int				height = [self size].height;
-  int				row_stride = width * sPP;
+  unsigned char			*imageSource;
+  int				sPP;
+  int				width;
+  int				height;
+  int				row_stride;
   int				quality = 90;
   NSNumber			*qualityNumber = nil;
+  NSNumber			*progressiveNumber = nil;
   NSString			*colorSpace = nil;
+  BOOL                          isRGB;
   struct jpeg_compress_struct	cinfo;
-  struct jpeg_error_mgr		jerr;
+  struct gs_jpeg_error_mgr      jerrMgr;
   JSAMPROW			row_pointer[1]; // pointer to a single row
-
-  cinfo.err = jpeg_std_error (&jerr);
-  jpeg_create_compress (&cinfo);
 
   // TODO: handles planar images 
 
   if ([self isPlanar])
     {
-      NSLog (@"Planar Image, not handled yet !");
+      NSString * em = @"JPEG image rep: Planar Image, not handled yet !";
+      if (errorMsg != NULL)
+        *errorMsg = em;
+      else
+        NSLog (em);
       return nil;
     }
+
+  imageSource = [self bitmapData];
+  sPP = [self samplesPerPixel];
+  width = [self size].width;
+  height = [self size].height;
+  row_stride = width * sPP;
+
+  /* Establish the our custom error handler */
+  gs_jpeg_error_mgr_init(&jerrMgr);
+  cinfo.err = jpeg_std_error(&jerrMgr.parent);
+  jerrMgr.parent.error_exit = gs_jpeg_error_exit;
+  jerrMgr.parent.output_message = gs_jpeg_output_message;
+
+  // establish return context for error handling
+  if (setjmp(jerrMgr.setjmpBuffer))
+    {
+      /* assign the description of possible occured error to errorMsg */
+      if (errorMsg)
+	*errorMsg = (jerrMgr.error ? (id)jerrMgr.error : (id)nil);
+      gs_jpeg_memory_dest_destroy(&cinfo);
+      jpeg_destroy_compress(&cinfo);
+      return nil;
+    }
+
+  // initialize libjpeg for compression
+
+  jpeg_create_compress (&cinfo);
 
   // specify the destination for the compressed data.. 
 
@@ -532,49 +565,75 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
 
   // set parameters
 
+  colorSpace = [self colorSpaceName];
+  isRGB = ([colorSpace isEqualToString: NSDeviceRGBColorSpace]
+           || [colorSpace isEqualToString: NSCalibratedRGBColorSpace]);
   cinfo.image_width  = width;
   cinfo.image_height = height;
-  cinfo.input_components = sPP;
+  // note we will strip alpha from RGBA
+  cinfo.input_components = (isRGB && [self hasAlpha])? 3 : sPP;
+  cinfo.in_color_space = JCS_UNKNOWN;
+  if (isRGB) cinfo.in_color_space = JCS_RGB;
+  if (sPP == 1) cinfo.in_color_space = JCS_GRAYSCALE;
+  if ([colorSpace isEqualToString: NSDeviceCMYKColorSpace])
+    cinfo.in_color_space = JCS_CMYK;
+  if (cinfo.in_color_space == JCS_UNKNOWN)
+    NSLog(@"JPEG image rep: Using unknown color space with unpredictable results");
 
-  // TODO: use the image infos to choose the proper color space
-  //cinfo.in_color_space = JCS_GRAYSCALE;
-
-  colorSpace = [self colorSpaceName];
-
-  if ([colorSpace isEqualToString: @"NSCalibratedRGBColorSpace"]
-    || [colorSpace isEqualToString: @"NSDeviceRGBColorSpace"])
-    {
-      cinfo.in_color_space = JCS_RGB;
-    }
-  else
-    {
-      NSLog (@"Image Color Space: %@ not handled yet !", colorSpace);
-      return nil;
-    }
+  jpeg_set_defaults (&cinfo);
 
   // set quality
   
-  qualityNumber = [properties objectForKey: @"NSImageCompressionFactor"];
+  qualityNumber = [properties objectForKey: NSImageCompressionFactor];
   if (qualityNumber != nil)
     {
-      quality = (int) ([qualityNumber floatValue] * 100);
+      quality = (int) ((1-[qualityNumber floatValue] / 255.0) * 100.0);
     }
 
-  jpeg_set_defaults (&cinfo);
+  // set progressive mode
+  progressiveNumber = [properties objectForKey: NSImageProgressive];
+  if (progressiveNumber != nil)
+    {
+      cinfo.progressive_mode = [progressiveNumber boolValue];
+    }
+
 
   // compress the image
 
   jpeg_set_quality (&cinfo, quality, TRUE);
   jpeg_start_compress (&cinfo, TRUE);
 
-
-  while (cinfo.next_scanline < cinfo.image_height)
+  if (isRGB && [self hasAlpha])	// strip alpha channel before encoding
+  {
+    unsigned char * RGB, * pRGB, * pRGBA;
+    unsigned int iRGB, iRGBA;
+    OBJC_MALLOC(RGB, unsigned char, 3*width);
+    while (cinfo.next_scanline < cinfo.image_height)
+    {
+      iRGBA = cinfo.next_scanline * row_stride;
+      pRGBA = &imageSource[iRGBA];
+      pRGB = RGB;
+      for (iRGB = 0; iRGB < 3*width; iRGB += 3)
+      {
+        memcpy(pRGB, pRGBA, 3);
+        pRGB +=3;
+        pRGBA +=4;
+      }
+      row_pointer[0] = RGB;
+      jpeg_write_scanlines (&cinfo, row_pointer, 1);
+    }
+    OBJC_FREE(RGB);
+  }
+  else	// no alpha channel
+  {
+    while (cinfo.next_scanline < cinfo.image_height)
     {
       int	index = cinfo.next_scanline * row_stride;
 
       row_pointer[0] = &imageSource[index];
       jpeg_write_scanlines (&cinfo, row_pointer, 1);
     }
+  }
 
   jpeg_finish_compress(&cinfo);
 
@@ -599,6 +658,11 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
 	      errorMessage: (NSString **)errorMsg
 {
   RELEASE(self);
+  return nil;
+}
+- (NSData *) _JPEGRepresentationWithProperties: (NSDictionary *) properties
+                                  errorMessage: (NSString **)errorMsg
+{
   return nil;
 }
 @end

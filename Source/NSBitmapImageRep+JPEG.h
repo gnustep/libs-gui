@@ -36,7 +36,8 @@
 + (BOOL) _bitmapIsJPEG: (NSData *)imageData;
 - (id) _initBitmapFromJPEG: (NSData *)imageData
 	      errorMessage: (NSString **)errorMsg;
-
+- (NSData *) _JPEGRepresentationWithProperties: (NSDictionary *) properties
+                                  errorMessage: (NSString **)errorMsg;
 @end
 
 #endif // _NSBitmapImageRep_JPEG_H_include
