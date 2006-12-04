@@ -1,17 +1,26 @@
-
 include $(GNUSTEP_MAKEFILES)/common.make
 
-#GNUSTEP_MAKEINFO_FLAGS = -D NO-TEXI2HTML
+DOCUMENT_NAME = AppKit
 
-DOCUMENT_NAME = manual
+AppKit_TEXI_FILES = \
+AppKit.texi \
+applicationmakefiles.texi \
+applicationpropertylist.texi \
+browsers.texi		\
+controls.texi            \
+dataexchange.texi	\
+drawing.texi             \
+eventhandling.texi       \
+fdl.texi                 \
+gnustepapplication.texi  \
+interfacefiles.texi \
+introduction.texi   \
+matrix.texi         \
+quickreference.texi \
+tableviews.texi     \
+theviewconcept.texi
 
-manual_TEXI_FILES =              \
-	manual.texi              \
-	Introduction.texi        \
-	BasicClasses.texi
+AppKit_DOC_INSTALL_DIR = Developer/Gui/ProgrammingManual
 
-manual_DOC_INSTALL_DIR = Developer/Gui/ProgrammingManual
 
 include $(GNUSTEP_MAKEFILES)/documentation.make
-
-

@@ -1,3 +1,7 @@
+2006-12-03  Adam Fedor  <fedor@gnu.org>
+
+	* Documentation/manual/: New AppKit manual.
+
 2006-11-28  Mark Tracy <tracy454@concentric.net>
 	Belated update to change log (these went in with svn revision 24140).
 	* Source/externs.m: Added definitions for NSBitmapImage properties key
