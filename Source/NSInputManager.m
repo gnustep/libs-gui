@@ -28,6 +28,7 @@
 #include "AppKit/NSInputManager.h"
 #include "AppKit/NSInputServer.h"
 #include "AppKit/NSText.h"
+#include "AppKit/NSHelpManager.h"
 
 /* For NSBeep () */
 #include "AppKit/NSGraphics.h"
@@ -664,6 +665,10 @@ static NSInputManager *currentInputManager = nil;
 	  [self doCommandBySelector: @selector (insertNewline:)];
 	  break;
 	  
+	case NSHelpFunctionKey:
+	  [NSHelpManager setContextHelpModeActive: YES];
+	  break;
+
 	default:
 	  [self insertText: characters];
 	  break;

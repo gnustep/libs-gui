@@ -1,3 +1,9 @@
+2006-12-08  Richard Frith-Macdoanld <rfm@gnu.org>
+
+	* Source/NSInputManager.m:
+	Use help function key to enter context help mode rather than
+	inserting it into the text.
+
 2006-12-06  Matt Rice  <ratmice@gmail.com>
 
 	* Source/NSTextView.m: Don't update the selection when dragging a
