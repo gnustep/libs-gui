@@ -4235,7 +4235,8 @@ other than copy/paste or dragging. */
 				    restrictedToTypesFromArray: types];
   unsigned int	flags = [self dragOperationForDraggingInfo: sender type: type];
 
-  if (flags != NSDragOperationNone)
+  if (flags != NSDragOperationNone
+      && ![type isEqual:NSColorPboardType])
     {
       NSPoint	dragPoint;
       unsigned	dragIndex;
@@ -4269,7 +4270,8 @@ other than copy/paste or dragging. */
 				    restrictedToTypesFromArray: types];
   unsigned int	flags = [self dragOperationForDraggingInfo: sender type: type];
 
-  if (flags != NSDragOperationNone)
+  if (flags != NSDragOperationNone
+      && ![type isEqual:NSColorPboardType])
     {
       NSPoint	dragPoint;
       unsigned	dragIndex;
@@ -4297,7 +4299,12 @@ other than copy/paste or dragging. */
 
 - (void) draggingExited: (id <NSDraggingInfo>)sender
 {
-  if (_tf.isDragTarget == YES)
+  NSPasteboard	*pboard = [sender draggingPasteboard];
+  NSArray	*types = [self readablePasteboardTypes];
+  NSString	*type = [self preferredPasteboardTypeFromArray: [pboard types]
+				    restrictedToTypesFromArray: types];
+  if (_tf.isDragTarget == YES
+      && ![type isEqual:NSColorPboardType])
     {
       _tf.isDragTarget = NO;
       [self setSelectedRange: _dragTargetSelectionRange];

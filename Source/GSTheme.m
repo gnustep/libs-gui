@@ -383,17 +383,38 @@ static NSNull			*null = nil;
       if (ext != nil && [imageTypes containsObject: ext] == YES)
         {
 	  NSImage	*image;
+	  NSString	*imageName;
 
-	  image = [[NSImage alloc] initWithContentsOfFile: imagePath];
-	  if (image != nil)
+	  imageName = [imagePath lastPathComponent];
+	  imageName = [imageName stringByDeletingPathExtension];
+
+	  image = [_images objectForKey: imageName];
+	  if (image == nil)
 	    {
-	      NSString	*imageName;
+	      image = [[NSImage alloc] initWithContentsOfFile: imagePath];
+	      if (image != nil)
+		{
+		  [_images setObject: image forKey: imageName];
+		  RELEASE(image);
+		}
+	    }
 
-	      imageName = [imagePath lastPathComponent];
-	      imageName = [imageName stringByDeletingPathExtension];
-	      [_images addObject: image];
-	      [image setName: imageName];
-	      RELEASE(image);
+	  /* We try to ensure that our new image can be found by name.
+	   */
+	  if (image != nil && [[image name] isEqualToString: imageName] == NO)
+	    {
+	      if ([image setName: imageName] == NO)
+	        {
+		  NSImage	*old;
+
+		  /* Couldn't set image name ... presumably already
+		   * in use ... so we remove the name from the old
+		   * image and try again.
+		   */
+		  old = [NSImage imageNamed: imageName];
+		  [old setName: nil];
+	          [image setName: imageName];
+		}
 	    }
 	}
     }
@@ -488,7 +509,9 @@ static NSNull			*null = nil;
 
   /*
    * Remove all cached bundle images from both NSImage's name dictionary
-   * and our cache array.
+   * and our cache dictionary, so that we can be sure we reload afresh
+   * when re-activated (in case the images on disk changed ... eg by a
+   * theme editor modifying the theme).
    */
   enumerator = [_images objectEnumerator];
   while ((image = [enumerator nextObject]) != nil)
@@ -543,7 +566,7 @@ static NSNull			*null = nil;
 - (id) initWithBundle: (NSBundle*)bundle
 {
   ASSIGN(_bundle, bundle);
-  _images = [NSMutableArray new];
+  _images = [NSMutableDictionary new];
   _tiles = [NSMutableDictionary new];
   return self;
 }

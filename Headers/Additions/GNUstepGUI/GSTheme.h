@@ -223,7 +223,7 @@ APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
 {
 @private
   NSBundle		*_bundle;
-  NSMutableArray	*_images;
+  NSMutableDictionary	*_images;
   NSMutableDictionary	*_tiles;
   NSImage		*_icon;
 }
