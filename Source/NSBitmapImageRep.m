@@ -159,7 +159,7 @@
 
 /** <p>Returns a newly allocated NSBitmapImageRep object representing the
     image stored in imageData. If the image data contains more than one
-    image, the first one is choosen.</p><p>See Also: +imageRepWithData:</p>  
+    image, the first one is choosen.</p><p>See Also: +imageRepsWithData:</p>  
 */
 + (id) imageRepWithData: (NSData *)imageData
 {
@@ -309,6 +309,7 @@
   return self;
 }
 
+/** Initialize with bitmap data from a rect within the focused view */
 - (id) initWithFocusedViewRect: (NSRect)rect
 {
   int bps, spp, alpha;
@@ -783,6 +784,12 @@
   return [NSData dataWithBytesNoCopy: bytes length: length];
 }
 
+/** <p> Returns a data object in the selected format with multiple images. See Also:
+  -representationUsingType:properties: for a list of supported file types. See Also:
+  -setProperty:withValue: for the options supported in the properties.</p>
+  <p> FIXME: returns only the first image in the array, and only works for
+  NSBitmapImageRep or subclasses thereof. </p>
+*/
 + (NSData *)representationOfImageRepsInArray:(NSArray *)imageReps 
 				   usingType:(NSBitmapImageFileType)storageType
 				  properties:(NSDictionary *)properties
@@ -805,6 +812,21 @@
   return nil;
 }
 
+/** <p> Returns a data object in one of the supported bitmap graphics file types. 
+  A limited set of options may be passed via the properties. If the passed in properties is nil,
+  it falls back to the options set with -setProperty:withValue:. Some file types are not
+  implemented yet; they return nil and log an error message.</p>
+  <p> NSBitmapImageFileType </p>
+  <list>
+    <item> NSTIFFFileType = 0; TIFF is supported </item>
+    <item> NSBMPFileType = 1; BMP is not implemented </item>
+    <item> NSGIFFileType = 2; GIF is supported </item>
+    <item> NSJPEGFileType = 3; JPEG is supported </item>
+    <item> NSPNGFileType = 4; PNG is supported </item>
+    <item> NSJPEG2000FileType = 5; JPEG-2000 is not implemented </item>
+  </list>
+  <p> See Also: -setProperty:withValue: for supported options in the properties. </p>
+*/
 - (NSData *)representationUsingType:(NSBitmapImageFileType)storageType 
 			 properties:(NSDictionary *)properties
 {
@@ -890,6 +912,7 @@
     *numTypes = j;
 }
 
+/** Returns a localized string describing a TIFF compression type. */
 + (NSString*) localizedNameForTIFFCompressionType: (NSTIFFCompression)type
 {
   switch (type)
@@ -954,6 +977,41 @@
   _comp_factor = factor;
 }
 
+/** <p> Properties are key-value pairs associated with the representation. Arbitrary
+  key-value pairs may be set. If the value is nil, the key is erased from properties.
+  There are standard keys that are used to pass information
+  and options related to the standard file types that may be read from or written to.
+  Certain properties are automatically set when reading in image data.
+  Certain properties may be set by the user prior to writing image data in order to set options
+  for the data format. </p>
+  <deflist>
+    <term> NSImageCompressionMethod </term>
+    <desc> NSNumber; automatically set when reading TIFF data; writing TIFF data </desc>
+    <term> NSImageCompressionFactor </term>
+    <desc> NSNumber 0.0 to 255.0; writing JPEG data 
+    (GNUstep extension: JPEG-compressed TIFFs too) </desc>
+    <term> NSImageProgressive </term>
+    <desc> NSNumber boolean; automatically set when reading JPEG data; writing JPEG data.
+    Note: progressive display is not supported in GNUstep at this time. </desc>
+    <term> NSImageInterlaced </term>
+    <desc> NSNumber boolean; only for writing PNG data </desc>
+    <term> NSImageGamma </term>
+    <desc> NSNumber 0.0 to 1.0; only for reading or writing PNG data </desc>
+    <term> NSImageRGBColorTable </term>
+    <desc> NSData; automatically set when reading GIF data; writing GIF data </desc>
+    <term> NSImageFrameCount </term>
+    <desc> NSNumber integer; automatically set when reading animated GIF data.
+    Not currently implemented. </desc>
+    <term> NSImageCurrentFrame </term>
+    <desc> NSNumber integer; only for animated GIF files. Not currently implemented. </desc>
+    <term> NSImageCurrentFrameDuration </term>
+    <desc> NSNumber float; automatically set when reading animated GIF data </desc>
+    <term> NSImageLoopCount </term>
+    <desc> NSNumber integer; automatically set when reading animated GIF data </desc>
+    <term> NSImageDitherTranparency </term>
+    <desc> NSNumber boolean; only for writing GIF data. Not currently supported. </desc>
+  </deflist>
+*/
 - (void)setProperty:(NSString *)property withValue:(id)value
 {
   if (value)
@@ -966,6 +1024,7 @@
   }
 }
 
+/** Returns the value of a property */
 - (id)valueForProperty:(NSString *)property
 {
   return [_properties objectForKey: property];
