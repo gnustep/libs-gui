@@ -20,7 +20,7 @@
 @c GOODS AND SERVICES; OR BUSINESS INTERUPTION) HOWEVER CAUSED, EVEN
 @c IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@node images
+@node images, fdl, dataexchange, Top
 @chapter Images and Imageviews
 
 @anchor{Images and Imageviews}

@@ -25,7 +25,7 @@
 @c
 @c * Thanks to Damien Pollet for some minor spelling and grammatical fixups.
 
-@node basicconcepts
+@node basicconcepts, gnustepapplications, Introduction, Top
 @chapter Basic Concepts
 
 Throughout this manual, we refer to a number of concepts that you will need to be familiar with. It may be useful to at least glance over this section and make sure you are familiar with the concepts presented.

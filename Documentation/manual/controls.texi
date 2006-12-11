@@ -20,7 +20,7 @@
 @c GOODS AND SERVICES; OR BUSINESS INTERUPTION) HOWEVER CAUSED, EVEN
 @c IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@node controls
+@node controls, theviewconcept, interfacefiles, Top
 @chapter Basic Controls
 @anchor{Basic Controls}
 

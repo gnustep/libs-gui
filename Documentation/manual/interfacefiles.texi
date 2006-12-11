@@ -21,7 +21,7 @@
 @c IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 @anchor{Interface Files}
-@node interfacefiles
+@node interfacefiles, controls, applicationmakefiles, Top
 @chapter Interface Files
 
 @cindex interface files, definition

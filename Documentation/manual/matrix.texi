@@ -20,7 +20,7 @@
 @c GOODS AND SERVICES; OR BUSINESS INTERUPTION) HOWEVER CAUSED, EVEN
 @c IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@node matrix
+@node matrix, browsercontrols, outlineviews, Top
 @chapter Matrix Controls
 @anchor{Matrix Controls}
 @cindex matrices, matrix control

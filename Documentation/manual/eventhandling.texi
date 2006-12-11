@@ -20,7 +20,7 @@
 @c GOODS AND SERVICES; OR BUSINESS INTERUPTION) HOWEVER CAUSED, EVEN
 @c IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@node eventhandling
+@node eventhandling, tableview, theviewconcept, Top
 @chapter Event handling
 
 The way events are handled and passed between objects in GNUstep requires special treatment. It is relatively simple, but generally not well documented as to how it works, and how it is used by default in GNUstep. Before reading this chapter, you may wish to reaquaint yourself with views (@pxref{The view concept}).

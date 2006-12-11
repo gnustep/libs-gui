@@ -46,7 +46,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @end copying
 
 @ifnottex
-@node Top
+@node Top, Introduction, (dir), (dir)
 @top Using the GNUstep AppKit
 
 @ifnothtml
@@ -72,31 +72,25 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @end ifhtml
 
 @menu
-@b{Contents}
-
-* Introduction: introduction.
-* Basic Concepts: basicconcepts.
-* GNUstep Applications: gnustepapplications.
-* Application Makefiles: applicationmakefiles.
-* Interface Files: interfacefiles
-* Basic Controls: controls.
-* The View Concept: theviewconcept
-* Event Handling: eventhandling
-* Tableviews: tableview
-* Outline Views: outlineviews
-* Matrix Controls: matrix
-* Browser Controls: browsercontrols
-* Data Exchange: dataexchange
-* Images and ImageViews: images
-
-@b{Appendices}
-* License: fdl
-
-@b{Concept Index}
-* Concept Index: conceptindex.
+* Introduction::                
+* basicconcepts::               
+* gnustepapplications::         
+* applicationmakefiles::        
+* interfacefiles::              
+* controls::                    
+* theviewconcept::              
+* eventhandling::               
+* tableview::                   
+* outlineviews::                
+* matrix::                      
+* browsercontrols::             
+* dataexchange::                
+* images::                      
+* fdl::                         
+* conceptindex::
 @end menu
-@end ifnottex
 
+@end ifnottex
 @iftex
 @titlepage
 @title Using the GNUstep AppKit
@@ -135,7 +129,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @include fdl.texi
 
 @c Indexes
-@node conceptindex
+@node conceptindex,  , Top, Top
 @unnumbered Concept Index
 @printindex cp
 
