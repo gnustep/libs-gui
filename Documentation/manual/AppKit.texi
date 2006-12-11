@@ -112,7 +112,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @c %** @include helloworld.texi
 
 @c // Chapters
-@include introduction.texi
+@include intro.texi
 @include basicconcepts.texi
 @include gnustepapplication.texi
 @c //@include afirstapplication.texi
