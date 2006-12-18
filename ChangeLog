@@ -1,3 +1,7 @@
+2006-12-18	Saso Kiselkov
+
+	* Source/NSAlert.m: Left align long alert messages.
+
 2006-12-11  Adam Fedor  <fedor@gnu.org>
 
 	* Documentation/manual/: File and node name fixes.
