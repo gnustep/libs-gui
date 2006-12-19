@@ -1,4 +1,21 @@
-2006-12-18	Saso Kiselkov
+2006-12-19  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSObjectController.h
+	* Headers/AppKit/NSUserDefaultsController.h
+	* Headers/AppKit/NSKeyValueBinding.h
+	* Headers/AppKit/NSArrayController.h
+	* Headers/AppKit/NSController.h
+	* Source/NSObjectController.m
+	* Source/NSUserDefaultsController.m
+	* Source/NSArrayController.m
+	* Source/NSController.m:
+	New files added as basic support for controllers. 
+	Mostly not implemented.
+	* Source/GNUmakefile
+	* Source/externs.m:
+	Add these new classes and helper variables.
+
+2006-12-18  Saso Kiselkov
 
 	* Source/NSAlert.m: Left align long alert messages.
 
