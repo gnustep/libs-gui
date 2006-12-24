@@ -1,3 +1,15 @@
+2006-12-21  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSWindow.h
+	Added missing delegate methods.
+	* Source/NSResponder.m (-undoManager):
+	Forward method to next responder.
+	* Source/NSWindow.m (-undoManager):
+	Try to get an undo manager from delegate or document.
+	* Source/NSTextView.m
+	(-shouldChangeTextInRange:replacementString:): Added basic support
+	for undo.
+	
 2006-12-19  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSObjectController.h

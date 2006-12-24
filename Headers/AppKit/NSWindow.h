@@ -47,6 +47,7 @@
 @class NSMutableArray;
 @class NSNotification;
 @class NSString;
+@class NSUndoManager;
 
 @class NSButtonCell;
 @class NSColor;
@@ -688,8 +689,15 @@ APPKIT_EXPORT NSSize NSTokenSize;
 @interface NSObject (NSWindowDelegate)
 - (BOOL) windowShouldClose: (id)sender;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
+- (NSRect) window: (NSWindow*)window
+willPositionSheet: (NSWindow*)sheet
+        usingRect: (NSRect)rect;
+- (void) windowDidChangeScreenProfile: (NSNotification*)aNotification;
+- (void) windowDidEndSheet: (NSNotification*)aNotification;
 - (BOOL) windowShouldZoom: (NSWindow*)sender
 		  toFrame: (NSRect)aFrame;
+- (void) windowWillBeginSheet: (NSNotification*)aNotification;
+- (NSUndoManager*) windowWillReturnUndoManager: (NSWindow*)sender;
 - (NSRect) windowWillUseStandardFrame: (NSWindow*)sender
 			 defaultFrame: (NSRect)aFrame;
 #endif
