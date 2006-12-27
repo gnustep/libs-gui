@@ -20,7 +20,7 @@
 @c GOODS AND SERVICES; OR BUSINESS INTERUPTION) HOWEVER CAUSED, EVEN
 @c IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@node applicationmakefiles
+@node applicationmakefiles, interfacefiles, gnustepapplications, Top
 @chapter Application Makefiles
 @anchor{Application Makefiles}
 @cindex makefiles

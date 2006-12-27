@@ -20,7 +20,7 @@
 @c GOODS AND SERVICES; OR BUSINESS INTERUPTION) HOWEVER CAUSED, EVEN
 @c IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@node dataexchange
+@node dataexchange, images, browsercontrols, Top
 @chapter Data Exchange
 
 @dfn{Data Exchange} refers to the many high-level options GNUstep provides for allowing different applications to exchange common types of data. The sorts of services include "cut and paste", "drag and drop", service applications, filter services and distributed objects.

@@ -56,6 +56,7 @@
 #include <Foundation/NSRunLoop.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSTimer.h>
+#include <Foundation/NSUndoManager.h>
 #include <Foundation/NSValue.h>
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSClipView.h"
@@ -2336,9 +2337,10 @@ TextDidEndEditing notification _without_ asking the delegate
 - (BOOL) shouldChangeTextInRange: (NSRange)affectedCharRange
 	      replacementString: (NSString *)replacementString
 {
+  BOOL result = YES;
+
   if (_tf.is_editable == NO)
     return NO;
-
 
   /*
   We need to send the textShouldBeginEditing: /
@@ -2359,12 +2361,41 @@ TextDidEndEditing notification _without_ asking the delegate
 
   if (_tf.delegate_responds_to_should_change)
     {
-      return [_delegate textView: self
-	 shouldChangeTextInRange: affectedCharRange
-	       replacementString: replacementString];
+      result = [_delegate textView: self
+	    shouldChangeTextInRange: affectedCharRange
+	          replacementString: replacementString];
     }
 
-  return YES;
+  if (result && [self allowsUndo])
+    {
+      NSUndoManager *undo;
+      NSRange undoRange;
+      NSAttributedString *undoString;
+
+      // FIXME: Not sure, if this rather belongs into a local implementation of
+      //  the method undoManager.
+      if (![_delegate respondsToSelector: @selector(undoManagerForTextView:)]
+	  || ((undo = [_delegate undoManagerForTextView: self]) == nil))
+        {
+	  undo = [self undoManager];
+	}
+
+      // The length of the undoRange is the length of the replacement, if any.
+      if (replacementString != nil)
+        {
+	  undoRange = NSMakeRange(affectedCharRange.location, 
+				  [replacementString length]);
+	}
+      else
+        {
+	  undoRange = affectedCharRange;
+	}
+      undoString = [self attributedSubstringFromRange: affectedCharRange];
+      [[undo prepareWithInvocationTarget: self] replaceCharactersInRange: undoRange
+						withAttributedString: undoString];
+    }
+
+  return result;
 }
 
 /*

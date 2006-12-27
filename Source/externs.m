@@ -490,6 +490,16 @@ const NSWindowDepth _GSWindowDepths[7] = { 258, 264, 514, 516, 517, 520, 0 };
 
 /* End of color functions externs */
 
+// NSKeyValueBinding
+NSString *NSObservedObjectKey = @"NSObservedObjectKey";
+NSString *NSObservedKeyPath = @"NSObservedKeyPath";
+NSString *NSOptionsKey = @"NSOptionsKey";
+// FIXME: Need to defined!
+id NSMultipleValuesMarker = nil;
+id NSNoSelectionMarker = nil;
+id NSNotApplicableMarker = nil;
+
+
 extern void __objc_gui_force_linking (void);
 
 void

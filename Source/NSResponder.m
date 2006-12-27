@@ -426,7 +426,10 @@
 
 - (NSUndoManager*) undoManager
 {
-  return nil;
+  if (_next_responder)
+    return [_next_responder undoManager];
+  else
+    return nil;
 }
 
 - (BOOL) shouldBeTreatedAsInkEvent: (NSEvent *)theEvent

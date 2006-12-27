@@ -51,6 +51,7 @@ NSActionCell.m \
 NSAffineTransform.m \
 NSAlert.m \
 NSApplication.m \
+NSArrayController.m \
 NSAttributedString.m \
 NSBezierPath.m \
 NSBitmapImageRep.m \
@@ -75,6 +76,7 @@ NSColorWell.m \
 NSComboBox.m \
 NSComboBoxCell.m \
 NSControl.m \
+NSController.m \
 NSCursor.m \
 NSCustomImageRep.m \
 NSDataLink.m \
@@ -110,6 +112,7 @@ NSMenuItemCell.m \
 NSMovie.m \
 NSMovieView.m \
 NSNib.m \
+NSObjectController.m \
 NSOpenGLContext.m \
 NSOpenGLPixelFormat.m \
 NSOpenGLView.m \
@@ -159,6 +162,7 @@ NSTextFieldCell.m \
 NSTextStorage.m \
 NSToolbar.m \
 NSToolbarItem.m \
+NSUserDefaultsController.m \
 NSView.m \
 NSWindow+Toolbar.m \
 NSWindow.m \
@@ -230,6 +234,7 @@ NSActionCell.h \
 NSAffineTransform.h \
 NSAlert.h \
 NSApplication.h \
+NSArrayController.h \
 NSBezierPath.h \
 NSBox.h \
 NSBitmapImageRep.h \
@@ -248,6 +253,7 @@ NSColorWell.h \
 NSComboBox.h \
 NSComboBoxCell.h \
 NSControl.h \
+NSController.h \
 NSCursor.h \
 NSCustomImageRep.h \
 NSDataLink.h \
@@ -282,6 +288,7 @@ NSMenuItemCell.h \
 NSMenuView.h \
 NSMovie.h \
 NSMovieView.h \
+NSObjectController.h \
 NSOpenPanel.h \
 NSOpenGL.h \
 NSOpenGLView.h \
@@ -332,6 +339,7 @@ NSTextStorage.h \
 NSTextView.h \
 NSToolbar.h \
 NSToolbarItem.h \
+NSUserDefaultsController.h \
 NSView.h \
 NSWindow.h \
 NSWindowController.h \

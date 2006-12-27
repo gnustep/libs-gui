@@ -20,7 +20,7 @@
 @c GOODS AND SERVICES; OR BUSINESS INTERUPTION) HOWEVER CAUSED, EVEN
 @c IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@node outlineviews
+@node outlineviews, matrix, tableview, Top
 @chapter Outline Views
 
 An @dfn{outline view} is a specialised form of table view designed for displaying hierachical data in a tree like format. It looks alot like a Windows' TreeView Control, but operates differently, provides much more powerful functionality and it is less tedious to programme.

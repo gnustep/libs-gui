@@ -734,6 +734,20 @@ setControl(NSView* content, id control, NSString *title)
       [messageField removeFromSuperview];
     }
   setControl(content, messageField, message);
+
+  /* If the message contains a newline character then align the
+   * message to the left side, as it is quite undesirable for a long
+   * message to appear aligned in the center
+   */
+  if ([message rangeOfString: @"\n"].location != NSNotFound)
+    {
+      [messageField setAlignment: NSLeftTextAlignment];
+    }
+  else
+    {
+      [messageField setAlignment: NSCenterTextAlignment];
+    }
+
   setControl(content, defButton, defaultButton);
   setControl(content, altButton, alternateButton);
   setControl(content, othButton, otherButton);

@@ -24,7 +24,7 @@
 @c
 @c * Thanks to Damien Pollet for some minor spelling and grammatical fixups.
 
-@node gnustepapplications
+@node gnustepapplications, applicationmakefiles, basicconcepts, Top
 @chapter GNUstep Applications
 
 @cindex AppKit

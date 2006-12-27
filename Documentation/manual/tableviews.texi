@@ -20,7 +20,7 @@
 @c GOODS AND SERVICES; OR BUSINESS INTERUPTION) HOWEVER CAUSED, EVEN
 @c IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@node tableview
+@node tableview, outlineviews, eventhandling, Top
 @chapter Tableviews
 @anchor{Tableviews}
 @cindex tableview, definition

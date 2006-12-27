@@ -2694,6 +2694,36 @@ resetCursorRectsForView(NSView *theView)
 }
 
 /**
+   Get a undo manager from the delegate or create one.
+ */
+- (NSUndoManager*) undoManager
+{
+  NSUndoManager *undo;
+
+  if ([_delegate respondsToSelector: @selector(windowWillReturnUndoManager:)])
+    {
+      return [_delegate windowWillReturnUndoManager: self];
+    }
+  else
+    {
+      // FIXME: This is more a hack to get an undo manager. 
+      if (_windowController)
+        {
+	  NSDocument *document = [_windowController document];
+
+	  if (document && (undo = [document undoManager]) != nil)
+	    {
+	      return undo;
+	    }
+	}
+
+      // FIXME: We should reuse the same undo manager all the time!!!
+      //return AUTORELEASE([[NSUndoManager alloc] init]);
+      return nil;
+    }
+}
+
+/**
    If YES, then the window is released when the close method is called.
  */
 - (void) setReleasedWhenClosed: (BOOL)flag

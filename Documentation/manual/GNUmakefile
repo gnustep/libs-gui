@@ -14,7 +14,7 @@ eventhandling.texi       \
 fdl.texi                 \
 gnustepapplication.texi  \
 interfacefiles.texi \
-introduction.texi   \
+intro.texi   \
 matrix.texi         \
 quickreference.texi \
 tableviews.texi     \

@@ -21,7 +21,7 @@
 @c IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 @anchor{The view concept}
-@node theviewconcept
+@node theviewconcept, eventhandling, controls, Top
 @chapter The view concept
 
 This chapter discusses the concepts surrounding @dfn{views} and goes into some detail what can be done with them. As a result, most of this chapter is concerned with the creation of custom views, which is not necessary for general application development. If you want to create your own view classes or are interested in how GNUstep manages views, then this chapter should be useful.

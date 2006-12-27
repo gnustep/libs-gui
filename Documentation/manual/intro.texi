@@ -1,6 +1,6 @@
 @paragraphindent 0
 
-@node Introduction
+@node Introduction, basicconcepts, Top, Top
 @chapter Introduction
 
 This manual documents some configuration and installation issues

@@ -20,7 +20,7 @@
 @c GOODS AND SERVICES; OR BUSINESS INTERUPTION) HOWEVER CAUSED, EVEN
 @c IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@node fdl
+@node fdl, , images, Top
 @appendix GNU Free Documentation License
 
 @center Version 1.2, November 2002
