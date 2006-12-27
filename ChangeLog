@@ -1,3 +1,10 @@
+2006-12-27  Richard Frith-Macdoanld <rfm@gnu.org>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Store images in dictionary.
+	* Source/GSTheme.m: Improve handling of named images.
+	* Source/NSButtonImageSource.[hm]: Partial implementation of classes
+	to handle standard images in buttons (support theming etc).
+
 2006-12-21  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSWindow.h
