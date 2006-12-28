@@ -4,6 +4,8 @@
 	cell background with controlBackgroundColor.
 	* Source/NSCell.m (-drawInteriorWithFrame:): Draw disabled cell text
 	with disabledControlTextColor.
+	* Source/NSSecureTextFieldCell (-drawInteriorWithFrame:): Draw
+	disabled cell with controlBackgroundColor.
 
 2006-12-27  Richard Frith-Macdoanld <rfm@gnu.org>
 
