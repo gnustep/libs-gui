@@ -4207,7 +4207,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
   rect.origin.x = _columnOrigins[columnIndex];
   rect.origin.y = _bounds.origin.y;
   rect.size.width = [[_tableColumns objectAtIndex: columnIndex] width];
-  rect.size.height = _bounds.size.height;
+  rect.size.height = _numberOfRows * _rowHeight;
   return rect;
 }
 

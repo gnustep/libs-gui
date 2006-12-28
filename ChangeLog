@@ -6,6 +6,8 @@
 	with disabledControlTextColor.
 	* Source/NSSecureTextFieldCell (-drawInteriorWithFrame:): Draw
 	disabled cell with controlBackgroundColor.
+	* Source/NSTableView.m (rectOfColumn:): Use the height of the rows,
+	not the bounds.
 
 2006-12-27  Richard Frith-Macdoanld <rfm@gnu.org>
 
