@@ -1,3 +1,10 @@
+2006-12-28  Matt Rice  <ratmice@gmail.com>
+
+	* Source/NSTextFieldCell.m (-drawInteriorWithFrame:): Draw disabled
+	cell background with controlBackgroundColor.
+	* Source/NSCell.m (-drawInteriorWithFrame:): Draw disabled cell text
+	with disabledControlTextColor.
+
 2006-12-27  Richard Frith-Macdoanld <rfm@gnu.org>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Store images in dictionary.

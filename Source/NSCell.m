@@ -1894,8 +1894,31 @@ static NSColor	*shadowCol;
     {
       case NSTextCellType:
         {
-	  [self _drawAttributedText: [self attributedStringValue]
-		inFrame: cellFrame];
+	  if (!_cell.is_disabled)
+	    {  
+	      [self _drawAttributedText: [self attributedStringValue]
+			inFrame: cellFrame];
+            }
+	  else
+	    {
+	      NSAttributedString *attrStr = [self attributedStringValue];
+	      NSDictionary *attribs;
+	      NSMutableDictionary *newAttribs;
+	      
+	      attribs = [attrStr attributesAtIndex: 0 
+	      		  effectiveRange: NULL];
+	      newAttribs = [NSMutableDictionary 
+	      			dictionaryWithDictionary: attribs];
+	      [newAttribs setObject: [NSColor disabledControlTextColor]
+	      		forKey: NSForegroundColorAttributeName];
+	      
+	      attrStr = [[NSAttributedString alloc]
+	      			initWithString: [attrStr string]
+	      			    attributes: newAttribs];
+	      [self _drawAttributedText: attrStr 
+			inFrame: cellFrame];
+	      RELEASE(attrStr);
+	    }
 	}
 	break;
 
