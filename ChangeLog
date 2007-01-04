@@ -1,3 +1,19 @@
+2007-01-04  Quentin Mathe  <qmathe@club-internet.fr>
+
+	* Headers/Additions/GNUstepGUI/GSToolbar.h: 
+	* Source/GSToolbar.m: 
+	(NSArray(ObjectsWithValueForKey)): Moved this category into new files 
+	named NSArray_filtering.
+	(GSValidationObject, GSValidationCenter): Moved validation related classes 
+	in new files GSToolbar_validation.
+	* Source/GSToolbar_validation.h:
+	* Source/GSToolbar_validation.m:
+	* Source/NSArray_filtering.h:
+	* Source/NSArray_filtering.m:
+	Added.
+	* Source/GNUmakefile: Updated to include the new files.
+	[Toolbar]
+
 2006-12-28  Matt Rice  <ratmice@gmail.com>
 
 	* Source/NSTextFieldCell.m (-drawInteriorWithFrame:): Draw disabled

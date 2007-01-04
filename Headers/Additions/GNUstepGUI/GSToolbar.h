@@ -140,11 +140,4 @@ willBeInsertedIntoToolbar: (BOOL)flag;
 - (NSArray *) toolbarSelectableItemIdentifiers: (GSToolbar *)toolbar;
 @end
 
-
-// Extensions
-
-@interface NSArray (ObjectsWithValueForKey)
-- (NSArray *) objectsWithValue: (id)value forKey: (NSString *)key;
-@end
-
 #endif /* _GNUstep_H_NSToolbar */

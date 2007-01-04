@@ -198,6 +198,8 @@ GSNibTemplates.m \
 GSNibCompatibility.m \
 GSTitleView.m \
 GSToolTips.m \
+NSArray_filtering.m \
+GSToolbar_validation.m \
 GSToolbar.m \
 GSToolbarView.m \
 GSStandardWindowDecorationView.m \
