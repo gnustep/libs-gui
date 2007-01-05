@@ -201,6 +201,7 @@ GSToolTips.m \
 NSArray_filtering.m \
 GSToolbar_validation.m \
 GSToolbar.m \
+GSToolbarCustomizationPalette.m \
 GSToolbarView.m \
 GSStandardWindowDecorationView.m \
 GSWindowDecorationView.m \

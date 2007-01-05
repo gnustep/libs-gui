@@ -991,7 +991,9 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
   // Set action...
   [self setTarget: nil]; // Goes to first responder..
-  [self setAction: @selector(runCustomizationPalette:)];
+  // FIXME: -runCustomizationPalette: would be lost since the toolbar is not
+  // part of the responder chain.
+  [self setAction: @selector(runToolbarCustomizationPalette:)];
 
   return self;
 }

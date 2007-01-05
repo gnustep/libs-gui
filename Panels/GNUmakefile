@@ -38,7 +38,7 @@ LANGUAGES = English
 # LOCALIZED_RESOURCE_FILES = SpellPanel.gmodel
 
 LOCALIZED_RESOURCE_COMPONENTS = GSPrintPanel.gorm GSPageLayout.gorm \
-	GSDataLinkPanel.gorm GSSpellPanel.gorm
+	GSDataLinkPanel.gorm GSSpellPanel.gorm GSToolbarCustomizationPalette.gorm
 
 -include GNUmakefile.preamble
 -include GNUmakefile.local

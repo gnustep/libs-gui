@@ -1,3 +1,19 @@
+2007-01-05  Quentin Mathe  <qmathe@club-internet.fr>
+
+	* Headers/Additions/GNUstepGUI/GSToolbarCustomizationPalette.h: 
+	* Source/GSToolbarCustomizationPalette.m: 
+	* Panels/English.lproj/GSToolbarCustomizationPalette.gorm:
+	Added.
+	* Source/GNUmakefile: 
+	* Panels/GNUmakefile:
+	Updated to include the new files.
+	* Source/GSToolbar.m (-runCustomizationPalette:): Modified to use 
+	GSToolbarCustomizationPalette and show the palette.
+	* Source/NSToolbarItem.m 
+	(-[GSToolbarCustomizeToolbarItem initWithItemIdentifier:]): Temporary hack
+	to let NSWindow pass the customization request to the toolbar.
+	[Toolbar]
+
 2007-01-04  Quentin Mathe  <qmathe@club-internet.fr>
 
 	* Headers/Additions/GNUstepGUI/GSToolbar.h: 

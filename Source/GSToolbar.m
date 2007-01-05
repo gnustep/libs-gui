@@ -47,6 +47,7 @@
 #include "AppKit/NSView.h"
 #include "AppKit/NSWindow.h"
 #include "AppKit/NSWindow+Toolbar.h"
+#include "GNUstepGUI/GSToolbarCustomizationPalette.h"
 #include "GNUstepGUI/GSToolbarView.h"
 #include "GNUstepGUI/GSToolbar.h"
 #include "GSToolbar_validation.h"
@@ -275,13 +276,19 @@ static NSMutableArray *toolbars;
 
 - (void) runCustomizationPalette: (id)sender
 {
-  _customizationPaletteIsRunning = 
-    [NSBundle loadNibNamed: @"GSToolbarCustomizationPalette" owner: self];
+  GSToolbarCustomizationPalette *palette = [GSToolbarCustomizationPalette 
+    paletteWithToolbar: self];
 
-  if (!_customizationPaletteIsRunning)
+  if (_customizationPaletteIsRunning)
     {
-      NSLog(@"Failed to load gorm for GSToolbarCustomizationPalette");
+      NSLog("Customization palette is already running for toolbar: %@", self);
+      return;
     }
+
+  if (palette != nil)
+    _customizationPaletteIsRunning = YES;
+
+  [palette show: self];
 }
 
 - (void) validateVisibleItems
