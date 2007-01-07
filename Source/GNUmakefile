@@ -187,6 +187,7 @@ GSFontInfo.m \
 GSTable.m \
 GSHbox.m \
 GSVbox.m \
+GSFlow.m \
 GSKeyBindingAction.m \
 GSKeyBindingTable.m \
 NSTextView.m \

@@ -1,3 +1,11 @@
+2007-01-07  Quentin Mathe  <qmathe@club-internet.fr>
+
+	* Headers/Additions/GNUstepGUI/GSFlow.h: 
+	* Source/GSFlow.m: 
+	Added.
+	* Source/GNUmakefile: 
+	Updated to take in account GSFlow.m.
+
 2007-01-05  Quentin Mathe  <qmathe@club-internet.fr>
 
 	* Headers/Additions/GNUstepGUI/GSToolbarCustomizationPalette.h: 
