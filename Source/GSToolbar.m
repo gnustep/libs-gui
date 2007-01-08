@@ -100,6 +100,7 @@ static NSMutableArray *toolbars;
 - (GSToolbarView *) _toolbarView;
 - (void) _setWindow: (NSWindow *)window;
 - (NSWindow *) _window;
+- (void) _setCustomizationPaletteIsRunning: (BOOL)isRunning;
 @end
 
 @interface NSToolbarItem (GNUstepPrivate)
@@ -277,18 +278,18 @@ static NSMutableArray *toolbars;
 - (void) runCustomizationPalette: (id)sender
 {
   GSToolbarCustomizationPalette *palette = [GSToolbarCustomizationPalette 
-    paletteWithToolbar: self];
+    palette];
 
   if (_customizationPaletteIsRunning)
     {
-      NSLog("Customization palette is already running for toolbar: %@", self);
+      NSLog(@"Customization palette is already running for toolbar: %@", self);
       return;
     }
 
   if (palette != nil)
     _customizationPaletteIsRunning = YES;
 
-  [palette show: self];
+  [palette showForToolbar: self];
 }
 
 - (void) validateVisibleItems
@@ -815,6 +816,11 @@ static NSMutableArray *toolbars;
 }
 
 // Private Accessors
+
+- (void) _setCustomizationPaletteIsRunning: (BOOL)isRunning
+{
+  _customizationPaletteIsRunning = NO;
+}
 
 - (void) _setToolbarView: (GSToolbarView *)toolbarView
 {

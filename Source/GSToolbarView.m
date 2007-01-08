@@ -471,9 +471,15 @@ static void initSystemExtensionsColors(void)
   NSString *str = [pboard stringForType: [[pboard types] objectAtIndex: 0]];
   int index = [str intValue];
   GSToolbar *toolbar = [self toolbar];
-  
-  [toolbar _concludeRemoveItem: 
-    [[info draggingSource] toolbarItem] atIndex: index broadcast: YES];
+
+  /* When index is equal to -1, it means the toolbar item comes from the 
+     customization palette. We could also test in this case whether 
+     [[[info draggingSource] toolbarItem] toolbar] is nil. */
+  if (index > -1)
+  {
+    [toolbar _concludeRemoveItem: 
+      [[info draggingSource] toolbarItem] atIndex: index broadcast: YES];
+  }
 }
 
 - (void) draggingExited: (id <NSDraggingInfo>)info
@@ -495,11 +501,21 @@ static void initSystemExtensionsColors(void)
   NSToolbarItem *item = [[info draggingSource] toolbarItem];
   int newIndex = [self _insertionIndexAtPoint: [info draggingLocation]]; 
   // Calculate the index
-      
-  [toolbar _insertPassivelyItem:item atIndex: index];
-  RELEASE(item);
-  [toolbar _moveItemFromIndex: index toIndex: newIndex broadcast: YES]; 
-  
+
+  /* The item is not yet part of the toolbar but coming from the customization
+     palette. We will insert it as a new item. */
+  if (index == -1)
+  {
+    [toolbar insertItemWithItemIdentifier: [item itemIdentifier] 
+                                  atIndex: newIndex];
+  }
+  else
+  {
+    [toolbar _insertPassivelyItem:item atIndex: index];
+    RELEASE(item);
+    [toolbar _moveItemFromIndex: index toIndex: newIndex broadcast: YES]; 
+  }
+
   return YES;
 }
 

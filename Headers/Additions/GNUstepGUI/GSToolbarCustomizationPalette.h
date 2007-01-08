@@ -42,12 +42,15 @@
   id _sizeCheckBox;
   id _displayPopup;
   id _doneButton;
+  
+  NSMutableArray *_allowedItems;
+  NSMutableArray *_defaultItems;
+  GSToolbar *_toolbar;
 }
 
-+ (GSToolbarCustomizationPalette *) paletteWithToolbar: (GSToolbar *)toolbar;
-- (GSToolbarCustomizationPalette *) initWithToolbar: (GSToolbar *)toolbar;
++ (id) palette;
 
-- (void) show: (id)sender;
+- (void) showForToolbar: (GSToolbar *)toolbar;
 
 @end
 

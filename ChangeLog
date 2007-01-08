@@ -1,3 +1,46 @@
+2007-01-08  Quentin Mathe  <qmathe@club-internet.fr>
+
+	Finally introduced toolbar customization... :-)
+	* Headers/Additions/GNUstepGUI/GSToolbarCustomizationPalette.h: 
+	* Source/GSToolbarCustomizationPalette.m: 
+	New ivars _allowedItems, _defaultItems, _toolbar
+	(-paletteWithToolbar:): Replaced by -palette.
+	(-initWithToolbar:): Replaced by -init.
+	(-show:): Replaced by -showForToolbar:.
+	(+palette):
+	(-init):
+	(-dealloc):
+	(-awakeFromNib):
+	(-showForToolbar:):
+	(-close):
+	(-paletteDidEnd:):
+	New methods that introduce most of the implementation.
+	(GSToolbarCustomizationView): New class which uses GSFlow to display the 
+	toolbar items available in the palette.
+	* Source/NSToolbarItem.m: Added NSArchiver include.
+	(-[GSToolbarButton, GSToolbarBackView mouseDown:]): Modified to handle 
+	mouse click when the toolbar item is used as element of the 
+	customization palette. Index has now a default value of -1 when the item
+	is located in the customization palette.
+	(-[GSToolbarButton, GSToolbarBackView draggedImage:beganAt:]): Modified
+	to avoid the item removal when it is part of the customization palette.
+	(-[GSToolbarSeparatorItem, GSToolbarSpaceItem, GSToolbarFlexibleSpaceItem
+	initWithItemIdentifier]): Updated to set a palette label.
+	(-[GSToolbarSeparatorItem, GSToolbarFlexibleSpaceItem _layout]): Updated to
+	avoid layout override when the item is used in the customization palette.
+	(-isEnabled, -setEnabled:): Fixed to handle enabling properly when the 
+	toolbar item uses a custom view.
+	(-copyWithZone:): Improved to copy the label and the custom view.
+	* Source/NSToolbarView.m (-draggingEnded:, -performDragOperation:): 
+	Modified to handle the case when the toolbar item comes from the 
+	customization palette.
+	* Source/GSToolbar.m:
+	(-_setCustomizationPaletteIsRunning): New private accessor.
+	(-runCustomizationPalette): Updated to match changes made to 
+	GSToolbarCustomizationPalette.
+	* Panels/English.lproj/GSToolbarCustomizationPalette.gorm: Updated to use
+	GSToolbarCustomizationView.
+
 2007-01-07  Quentin Mathe  <qmathe@club-internet.fr>
 
 	* Headers/Additions/GNUstepGUI/GSFlow.h: 
