@@ -1211,7 +1211,14 @@ static SEL getSel;
       _selectedColumn = column;
       _selectedCells[row][column] = YES;
 
-      [_selectedCell setState: NSOnState];
+      if (_mode == NSListModeMatrix || _mode == NSRadioModeMatrix)
+	{
+	  [_selectedCell setState: NSOnState];
+	}
+      else
+	{
+	  [_selectedCell setNextState];
+	}
 
       if (_mode == NSListModeMatrix)
 	[aCell setHighlighted: YES];
@@ -3695,25 +3702,17 @@ static SEL getSel;
 	    [self _altModifier: character];
 	  else
 	    {
-	      NSCell *cell;
-
 	      switch (_mode)
 		{
 		case NSTrackModeMatrix:
 		case NSHighlightModeMatrix:
-		  cell = _cells[_dottedRow][_dottedColumn];
-
-		  [cell setNextState];
-		  [self setNeedsDisplayInRect: [self cellFrameAtRow: _dottedRow
-						     column: _dottedColumn]];
+		case NSRadioModeMatrix:
+		  [self selectCellAtRow: _dottedRow column: _dottedColumn];
 		  break;
 
 		case NSListModeMatrix:
 		  if (!(modifiers & NSShiftKeyMask))
 		    [self deselectAllCells];
-
-		case NSRadioModeMatrix:
-		  [self selectCellAtRow: _dottedRow column: _dottedColumn];
 		  break;
 		}
 
