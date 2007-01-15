@@ -53,10 +53,14 @@
 typedef int NSTrackingRectTag;
 typedef int NSToolTipTag;
 
-/*
- * constants representing the four types of borders that
- * can appear around an NSView
- */
+/** Describes the type of border used by an NSView.
+  <list>
+   <item>NSNoBorder</item>
+   <item>NSLineBorder</item>
+   <item>NSBezelBorder</item>
+   <item>NSGrooveBorder</item>
+  </list>
+*/
 typedef enum _NSBorderType {
   NSNoBorder,
   NSLineBorder,

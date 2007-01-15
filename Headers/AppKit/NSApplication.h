@@ -72,12 +72,28 @@ enum {
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 #define NSUpdateWindowsRunLoopOrdering 600000
 
+/**
+* Returned by -applicationShouldTerminate: when -terminate: is called.
+* Possible types include:
+* <example>
+* NSTerminateCancel;
+* NSTerminateNow;
+* NSTerminateLater.
+* </example>
+*/
 typedef enum {
   NSTerminateCancel = NO,
   NSTerminateNow = YES, 
   NSTerminateLater
 } NSApplicationTerminateReply;
 
+/** 
+* Type used by -requestUserAttention: when an applications opened.  Possible values are:
+* <example>
+* NSCriticalRequest;
+* NSInformationalRequest;
+* </example>
+*/
 typedef enum {
   NSCriticalRequest,
   NSInformationalRequest

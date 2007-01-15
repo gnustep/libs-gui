@@ -3799,6 +3799,9 @@ resetCursorRectsForView(NSView *theView)
   return NO;
 }
 
+/** If aView responds to -nextValidKeyView with a new NSView, call 
+  -makeFirstResponder: for the returned view.
+*/
 - (void) selectKeyViewFollowingView: (NSView*)aView
 {
   NSView *theView = nil;
@@ -3817,6 +3820,9 @@ resetCursorRectsForView(NSView *theView)
     }
 }
 
+/** If aView responds to -previousValidKeyView with a new NSView, call
+  -makeFirstResponder: for this view.
+*/
 - (void) selectKeyViewPrecedingView: (NSView*)aView
 {
   NSView *theView = nil;
@@ -3835,6 +3841,15 @@ resetCursorRectsForView(NSView *theView)
     }
 }
 
+/** This method checks if:
+  <list>
+   <item>_firstResponder answers to -nextValidKeyView</item>
+   <item>_initialFirstResponder answers to -acceptsFirstResponder</item>
+   <item>_initialFirstResponder answers to -previousValidKeyView</item>
+  </list>
+  If any of these checks return a NSView, call -makeFirstResponder: on 
+  this NSView.
+*/
 - (void) selectNextKeyView: (id)sender
 {
   NSView *theView = nil;
@@ -3862,6 +3877,15 @@ resetCursorRectsForView(NSView *theView)
     }
 }
 
+/** This method checks if:
+  <list>
+   <item>_firstResponder answers to -previousValidKeyView</item>
+   <item>_initialFirstResponder answers to -acceptsFirstResponder</item>
+   <item>_initialFirstResponder answers to -previousValidKeyView</item>
+  </list>
+  If any of these checks return a NSView, call -makeFirstResponder: on 
+  this NSView.
+*/
 - (void) selectPreviousKeyView: (id)sender
 {
   NSView *theView = nil;
@@ -3893,6 +3917,16 @@ resetCursorRectsForView(NSView *theView)
 // to know whether they have received it from the window, and
 // if so, in which direction is the selection moving (so that they know
 // if they should select the last or the first editable cell).
+/** Returns the value of _selectionDirection, the direction of the
+current key view.<br />
+  See Also:
+  <list>
+   <item>-selectKeyViewFollowingView:</item>
+   <item>-selectKeyViewPrecedingView:</item>
+   <item>-selectNextKeyView:</item>
+   <item>-selectPreviousKeyView:</item>
+  </list>
+*/
 - (NSSelectionDirection) keyViewSelectionDirection
 {
   return _selectionDirection;

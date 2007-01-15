@@ -784,9 +784,8 @@
   return [NSData dataWithBytesNoCopy: bytes length: length];
 }
 
-/** <p> Returns a data object in the selected format with multiple images. See Also:
-  -representationUsingType:properties: for a list of supported file types. See Also:
-  -setProperty:withValue: for the options supported in the properties.</p>
+/** <p> Returns a data object in the selected format with multiple images.</p>
+  <p> See Also: -setProperty:withValue: for the options supported in the properties.</p>
   <p> FIXME: returns only the first image in the array, and only works for
   NSBitmapImageRep or subclasses thereof. </p>
 */
@@ -814,17 +813,8 @@
 
 /** <p> Returns a data object in one of the supported bitmap graphics file types. 
   A limited set of options may be passed via the properties. If the passed in properties is nil,
-  it falls back to the options set with -setProperty:withValue:. Some file types are not
-  implemented yet; they return nil and log an error message.</p>
-  <p> NSBitmapImageFileType </p>
-  <list>
-    <item> NSTIFFFileType = 0; TIFF is supported </item>
-    <item> NSBMPFileType = 1; BMP is not implemented </item>
-    <item> NSGIFFileType = 2; GIF is supported </item>
-    <item> NSJPEGFileType = 3; JPEG is supported </item>
-    <item> NSPNGFileType = 4; PNG is supported </item>
-    <item> NSJPEG2000FileType = 5; JPEG-2000 is not implemented </item>
-  </list>
+  it falls back to the options set with -setProperty:withValue:. File types not yet
+  implemented return nil and log an error message.</p>
   <p> See Also: -setProperty:withValue: for supported options in the properties. </p>
 */
 - (NSData *)representationUsingType:(NSBitmapImageFileType)storageType 

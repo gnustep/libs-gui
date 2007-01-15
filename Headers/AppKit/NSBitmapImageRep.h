@@ -40,6 +40,18 @@
 @class NSMutableData;
 @class NSColor;
 
+/** Describes the type of compression used on an image.  Possible compressions:
+  <list>
+   <item> NSTIFFCompressionNone; </item>
+   <item> NSTIFFCompressionCCITTFAX3; </item>
+   <item> NSTIFFCompressionCCITFAX4; </item>
+   <item> NSTIFFCompressionLZW; </item>
+   <item> NSTIFFCompressionOldJPEG; </item>
+   <item> NSTIFFCompressionJPEG; </item>
+   <item> NSTIFFCompressionNEXT; </item>
+   <item> NSTIFFCompressionPackBits. </item>
+  </list>
+ */
 typedef enum _NSTIFFCompression {
   NSTIFFCompressionNone  = 1,
   NSTIFFCompressionCCITTFAX3,
@@ -52,6 +64,16 @@ typedef enum _NSTIFFCompression {
 } NSTIFFCompression;
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
+/** Type of image
+  <list>
+   <item> NSTIFFFileType; </item>
+   <item> NSBMPFileType; Not implemented </item>
+   <item> NSGIFFileType; </item>
+   <item> NSJPEGFileType; </item>
+   <item> NSPNGFileType; </item>
+   <item> NSJPEG2000FileType. Not implemented </item>
+  </list>
+ */
 typedef enum _NSBitmapImageFileType {
     NSTIFFFileType = 0,
     NSBMPFileType = 1,
