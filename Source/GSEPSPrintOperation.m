@@ -98,8 +98,8 @@
 {
   /* Save this for the view to look at. Seems like there should
      be a better way to pass it to beginDocument */
-  [[_printInfo dictionary] setObject: [NSValue valueWithRect: _rect]
-                              forKey: @"NSPrintSheetBounds"];
+  [[[self printInfo] dictionary] setObject: [NSValue valueWithRect: _rect]
+				 forKey: @"NSPrintSheetBounds"];
                               
   [_view beginDocument];
   
@@ -136,7 +136,7 @@
   if (_context)
     return _context;
 
-  info = [_printInfo dictionary];
+  info = [[self printInfo] dictionary];
   
   [info setObject: _path 
            forKey: @"NSOutputFile"];

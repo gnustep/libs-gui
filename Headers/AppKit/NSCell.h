@@ -36,8 +36,12 @@
 
 // For tint
 #include <AppKit/NSColor.h>
+// for NSWritingDirection
+#include <AppKit/NSParagraphStyle.h>
 // For text alignment
 #include <AppKit/NSText.h>
+// for NSFocusRingType
+#include <AppKit/NSView.h>
 
 @class NSString;
 @class NSMutableDictionary;
@@ -58,9 +62,9 @@ enum {
   NSPositiveIntType,   
   NSFloatType,
   NSPositiveFloatType,   
-  NSDateType,
   NSDoubleType,   
-  NSPositiveDoubleType
+  NSPositiveDoubleType,
+  NSDateType
 };
 
 typedef enum {
@@ -121,7 +125,7 @@ enum {
   NSString *_contents;
   NSImage *_cell_image;
   NSFont *_font;
-  id _objectValue;
+  id _object_value;
   struct GSCellFlagsType { 
     // total 32 bits.  0 bits left.
     unsigned contents_is_attributed_string: 1;
@@ -144,30 +148,40 @@ enum {
     unsigned type: 2;           // 3 values
     unsigned image_position: 3; // 7 values
     unsigned entry_type: 4;     // 8 values
+    unsigned allows_undo: 1;
+    unsigned line_break_mode: 3; // 6 values
+
+    // total 19 bits.  4 bits extension, 9 bits left.
+    int state: 2; // 3 values but one negative
+    unsigned mnemonic_location: 8;
+    unsigned control_tint: 3;
+    unsigned control_size: 2;
+    unsigned focus_ring_type: 2; // 3 values
+    unsigned base_writing_direction: 2; // 3 values
     // 4 bits reserved for subclass use
     unsigned subclass_bool_one: 1;
     unsigned subclass_bool_two: 1;
     unsigned subclass_bool_three: 1;
     unsigned subclass_bool_four: 1;
-    /* This is not in the bitfield now (for simpler macosx compatibility) 
-       but who knows in the future */
-    int state; // 3 values but one negative
   } _cell;
-  unsigned char _mnemonic_location;
   unsigned int _mouse_down_flags;
   unsigned int _action_mask; 
   NSFormatter *_formatter;
   NSMenu *_menu;
   id _represented_object; 
+  void *_reserved1;
 }
 
 //
 // Class methods
 // 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
++ (NSFocusRingType)defaultFocusRingType;
+#endif
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 + (NSMenu *)defaultMenu;
 #endif
-+ (BOOL) prefersTrackingUntilMouseUp;
++ (BOOL)prefersTrackingUntilMouseUp;
 
 //
 // Initializing an NSCell 
@@ -217,6 +231,10 @@ enum {
 - (BOOL)isOpaque;
 - (void)setBezeled:(BOOL)flag;
 - (void)setBordered:(BOOL)flag;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (NSFocusRingType)focusRingType;
+- (void)setFocusRingType:(NSFocusRingType)type;
+#endif
 
 //
 // Setting the NSCell's State 
@@ -253,6 +271,14 @@ enum {
 - (BOOL)importsGraphics;
 - (void)setTitle:(NSString *)aString;
 - (NSString *)title;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (NSWritingDirection)baseWritingDirection;
+- (void)setBaseWritingDirection:(NSWritingDirection)direction;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (NSLineBreakMode)lineBreakMode;
+- (void)setLineBreakMode:(NSLineBreakMode)mode;
 #endif
 
 //
@@ -436,6 +462,10 @@ enum {
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (BOOL)sendsActionOnEndEditing;
 - (void)setSendsActionOnEndEditing:(BOOL)flag;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (BOOL)allowsUndo;
+- (void)setAllowsUndo:(BOOL)flag;
 #endif
 
 @end

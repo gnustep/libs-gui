@@ -61,17 +61,22 @@ typedef enum _NSPrintingPageOrder {
 @interface NSPrintOperation : NSObject
 {
   // Attributes
-  NSPrintInfo *_printInfo;
+  NSPrintInfo *_print_info;
   NSView *_view;
   NSRect _rect;
   NSMutableData *_data;
   NSString *_path;
   NSGraphicsContext *_context;
-  NSPrintPanel *_printPanel;
-  NSView *_accessoryView;
-  NSPrintingPageOrder _pageOrder;
-  BOOL _showPanels;
-  //BOOL _pathSet;  removed, just test _path for nil
+  NSPrintPanel *_print_panel;
+  NSView *_accessory_view;
+  NSString *_job_style_hint;
+  NSPrintingPageOrder _page_order;
+  struct __Flags {
+      unsigned int show_print_panel:1;
+      unsigned int show_progress_panel:1;
+      unsigned int can_spawn_separate_thread:1;
+      unsigned int RESERVED:29;
+  } _flags;
   int  _currentPage;
 }
 
@@ -137,6 +142,12 @@ typedef enum _NSPrintingPageOrder {
 - (BOOL)showPanels;
 - (void)setPrintPanel:(NSPrintPanel *)panel;
 - (void)setShowPanels:(BOOL)flag;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (BOOL)showsPrintPanel;
+- (void)setShowsPrintPanel:(BOOL)flag;
+- (BOOL)showsProgressPanel;
+- (void)setShowsProgressPanel:(BOOL)flag;
+#endif
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (NSView *)accessoryView;
@@ -164,10 +175,16 @@ typedef enum _NSPrintingPageOrder {
 - (BOOL)deliverResult;
 - (BOOL)runOperation;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
-- (void)runOperationModalForWindow: (NSWindow *)docWindow 
-                          delegate: (id)delegate 
-                    didRunSelector: (SEL)didRunSelector 
+- (void)runOperationModalForWindow:(NSWindow *)docWindow 
+                          delegate:(id)delegate 
+                    didRunSelector:(SEL)didRunSelector 
                        contextInfo:(void *)contextInfo;
+- (BOOL)canSpawnSeparateThread;
+- (void)setCanSpawnSeparateThread:(BOOL)flag;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+- (NSString *) jobStyleHint;
+- (void)setJobStyleHint:(NSString *)hint;
 #endif
 
 //

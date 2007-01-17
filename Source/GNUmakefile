@@ -347,7 +347,6 @@ NSWindow+Toolbar.h \
 NSWorkspace.h \
 NSAttributedString.h \
 NSColorPicking.h \
-NSDocumentFrameworkPrivate.h \
 NSDragging.h \
 NSGraphics.h \
 NSNibConnector.h \

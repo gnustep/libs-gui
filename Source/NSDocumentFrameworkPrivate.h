@@ -28,9 +28,8 @@
 */ 
 #ifndef _GNUstep_H_NSDocumentFramworkPrivate
 #define _GNUstep_H_NSDocumentFramworkPrivate
-#import <GNUstepBase/GSVersionMacros.h>
 
-#include "NSDocumentController.h"
+#include <AppKit/NSDocumentController.h>
 
 @interface NSDocumentController (Private)
 - (NSArray *)_editorAndViewerTypesForClass:(Class)documentClass;
@@ -42,7 +41,7 @@
 @end
 
 
-#include "NSDocument.h"
+#include <AppKit/NSDocument.h>
 
 @interface NSDocument (Private)
 - (void)_removeWindowController:(NSWindowController *)controller;
@@ -50,7 +49,7 @@
 @end
 
 
-#include "NSWindowController.h"
+#include <AppKit/NSWindowController.h>
 
 @interface NSWindowController (Private)
 - (void)_windowDidLoad;

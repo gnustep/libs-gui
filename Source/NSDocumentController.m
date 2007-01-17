@@ -27,15 +27,21 @@
    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
+#include <Foundation/NSArray.h>
+#include <Foundation/NSFileManager.h>
+#include <Foundation/NSNotification.h>
+#include <Foundation/NSPathUtilities.h>
+#include <Foundation/NSString.h>
+#include <Foundation/NSURL.h>
+#include <Foundation/NSUserDefaults.h>
+
 #include "AppKit/NSDocumentController.h"
 #include "AppKit/NSOpenPanel.h"
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSMenuItem.h"
 #include "AppKit/NSWorkspace.h"
-#include "AppKit/NSDocumentFrameworkPrivate.h"
+#include "NSDocumentFrameworkPrivate.h"
 #include "GSGuiPrivate.h"
-
-#include <Foundation/NSUserDefaults.h>
 
 static NSString *NSTypesKey             = @"NSTypes";
 static NSString *NSNameKey              = @"NSName";
@@ -165,22 +171,22 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
   _documents = [[NSMutableArray alloc] init];
   
   /* Get list of recent documents */
-  _recentDocuments = [[NSUserDefaults standardUserDefaults] 
+  _recent_documents = [[NSUserDefaults standardUserDefaults] 
 		       objectForKey: NSRecentDocuments];
-  if (_recentDocuments)
+  if (_recent_documents)
     {
       int i, count;
-      _recentDocuments = [_recentDocuments mutableCopy];
-      count = [_recentDocuments count];
+      _recent_documents = [_recent_documents mutableCopy];
+      count = [_recent_documents count];
       for (i = 0; i < count; i++)
 	{
 	  NSURL *url;
-	  url = [NSURL URLWithString: [_recentDocuments objectAtIndex: i]];
-	  [_recentDocuments replaceObjectAtIndex: i withObject: url];
+	  url = [NSURL URLWithString: [_recent_documents objectAtIndex: i]];
+	  [_recent_documents replaceObjectAtIndex: i withObject: url];
 	}
     } 
   else
-    _recentDocuments = RETAIN([NSMutableArray array]);
+    _recent_documents = RETAIN([NSMutableArray array]);
   [self setShouldCreateUI:YES];
   
   [[[NSWorkspace sharedWorkspace] notificationCenter]
@@ -198,19 +204,47 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
 {
   [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver: self];
   RELEASE (_documents);
-  RELEASE (_recentDocuments);
+  RELEASE (_recent_documents);
   RELEASE (_types);
   [super dealloc];
 }
 
+/* 
+ * Private helper method to check, if the method given via the selector sel 
+ * has been overridden in the current subclass.
+ */
+- (BOOL)_hasOverridden: (SEL)sel
+{
+  // The actual signature is not important as we wont call the methods.
+  IMP meth1;
+  IMP meth2;
+
+  meth1 = [self methodForSelector: sel];
+  meth2 = [[NSDocument class] instanceMethodForSelector: sel];
+
+  return (meth1 != meth2);
+}
+
+#define OVERRIDDEN(sel) [self _hasOverridden: @selector(sel)]
+
 - (BOOL) shouldCreateUI
 {
-  return _controllerFlags.shouldCreateUI;
+  return _controller_flags.should_create_ui;
 }
 
 - (void) setShouldCreateUI: (BOOL)flag
 {
-  _controllerFlags.shouldCreateUI = flag;
+  _controller_flags.should_create_ui = flag;
+}
+
+- (NSTimeInterval) autosavingDelay
+{
+  return _autosavingDelay;
+}
+
+- (void) setAutosavingDelay: (NSTimeInterval)autosavingDelay
+{
+  _autosavingDelay = autosavingDelay;
 }
 
 - (id) makeUntitledDocumentOfType: (NSString *)type
@@ -238,14 +272,69 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
 					     ofType: type]);
 }
 
-- _defaultType
+- (id)makeDocumentForURL:(NSURL *)url
+       withContentsOfURL:(NSURL *)contents
+                  ofType:(NSString *)type
+                   error:(NSError **)err
+{
+  Class documentClass = [self documentClassForType: type];
+  return AUTORELEASE([[documentClass alloc] initForURL: url
+					    withContentsOfURL: contents 
+					    ofType: type
+					    error: err]);
+}
+
+- (id)makeDocumentWithContentsOfURL:(NSURL *)url 
+			     ofType:(NSString *)type 
+			      error:(NSError **)err
+{
+  Class documentClass = [self documentClassForType: type];
+  return AUTORELEASE([[documentClass alloc] initWithContentsOfURL: url 
+					    ofType: type
+					    error: err]);
+}
+
+- (id)makeUntitledDocumentOfType:(NSString *)type 
+			   error:(NSError **)err
+{
+  Class documentClass = [self documentClassForType: type];
+  return AUTORELEASE([[documentClass alloc] initWithType: type
+					    error: err]);
+}
+
+- (BOOL)presentError:(NSError *)error
+{
+  error = [self willPresentError: error];
+  return [NSApp presentError: error];
+}
+
+- (void)presentError:(NSError *)error
+      modalForWindow:(NSWindow *)window
+	    delegate:(id)delegate 
+  didPresentSelector:(SEL)sel
+	 contextInfo:(void *)context
+{
+  error = [self willPresentError: error];
+  [NSApp presentError: error
+	 modalForWindow: window
+	 delegate: delegate
+	 didPresentSelector: sel
+	 contextInfo: context];
+}
+
+- (NSError *) willPresentError: (NSError *)error
+{
+  return error;
+}
+
+- (NSString*) defaultType
 {
   if ([_types count] == 0) 
     {
       return nil; // raise exception?
     }
   
-  return [(NSDictionary*)[_types objectAtIndex:0] objectForKey:NSNameKey];
+  return [(NSDictionary*)[_types objectAtIndex: 0] objectForKey: NSNameKey];
 }
 
 - (void) addDocument: (NSDocument *)document
@@ -268,13 +357,10 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
     }
 
   [self addDocument: document];
-  if ([self shouldCreateUI])
+  if (display && [self shouldCreateUI])
     {
       [document makeWindowControllers];
-      if (display)
-	{
-	  [document showWindows];
-	}
+      [document showWindows];
     }
 
   return document;
@@ -294,13 +380,16 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
     {
       NSString *type = [self typeFromFileExtension: [fileName pathExtension]];
       
-      if ((document = [self makeDocumentWithContentsOfFile: fileName 
-			    ofType: type]))
+      document = [self makeDocumentWithContentsOfFile: fileName ofType: type];
+
+      if (document == nil)
 	{
-	  [self addDocument: document];
+	  return nil;
 	}
 
-      if ([self shouldCreateUI])
+      [self addDocument: document];
+
+      if (display && [self shouldCreateUI])
 	{
 	  [document makeWindowControllers];
 	}
@@ -324,11 +413,11 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
  */
 - (id) openDocumentWithContentsOfURL: (NSURL *)url  display: (BOOL)display
 {
-  // Should we only do this if [url isFileURL] is YES?
-  NSDocument *document = [self documentForFileName: [url path]];
+  NSDocument *document = [self documentForURL: url];
   
   if (document == nil)
     {
+      // Should we only do this if [url isFileURL] is YES?
       NSString *type = [self typeFromFileExtension: 
 			       [[url path] pathExtension]];
       
@@ -341,7 +430,7 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
       
       [self addDocument: document];
 
-      if ([self shouldCreateUI])
+      if (display && [self shouldCreateUI])
         {
 	  [document makeWindowControllers];
         }
@@ -356,6 +445,94 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
     }
   
   return document;
+}
+
+- (id)openUntitledDocumentAndDisplay:(BOOL)display 
+			       error:(NSError **)err
+{
+  NSString *type;
+  
+  type = [self defaultType];
+
+  if (OVERRIDDEN(openUntitledDocumentOfType:display:))
+    {
+      return [self openUntitledDocumentOfType: type display: display];
+    }
+  else
+    {
+      NSDocument *document = [self makeUntitledDocumentOfType: type
+				   error: err];
+  
+      if (document == nil) 
+        {
+	  return nil;
+	}
+
+      [self addDocument: document];
+      if (display && [self shouldCreateUI])
+        {
+	  [document makeWindowControllers];
+	  [document showWindows];
+	}
+
+      return document;
+  }
+}
+
+- (id) openDocumentWithContentsOfURL: (NSURL *)url
+			     display: (BOOL)display
+			       error: (NSError **)err
+{
+  if (OVERRIDDEN(openDocumentWithContentsOfFile:display:))
+    {
+      NSString *fileName;
+
+      fileName = [url path];
+      return [self openDocumentWithContentsOfFile: fileName display: display];
+    }
+  else
+    {
+      NSDocument *document = [self documentForURL: url];
+  
+      if (document == nil)
+        {
+	  // Should we only do this if [url isFileURL] is YES?
+	  NSString *type = [self typeFromFileExtension: 
+			       [[url path] pathExtension]];
+      
+	  document = [self makeDocumentWithContentsOfURL: url  ofType: type error: err];
+      
+	  if (document == nil)
+	    {
+	      return nil;
+	    }
+      
+	  [self addDocument: document];
+	  
+	  if (display && [self shouldCreateUI])
+	    {
+	      [document makeWindowControllers];
+	    }
+	}
+      
+      // remember this document as opened
+      [self noteNewRecentDocumentURL: url];
+      
+      if (display && [self shouldCreateUI])
+        {
+	  [document showWindows];
+	}
+      
+      return document;
+    }
+}
+
+- (BOOL) reopenDocumentForURL: (NSURL *)url
+            withContentsOfURL: (NSURL *)contents
+                        error: (NSError **)err
+{
+  // FIXME
+  return NO;
 }
 
 - (NSOpenPanel *) _setupOpenPanel
@@ -455,7 +632,7 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
 	
 - (IBAction) newDocument: (id)sender
 {
-  [self openUntitledDocumentOfType: [self _defaultType]  display: YES];
+  [self openUntitledDocumentOfType: [self defaultType]  display: YES];
 }
 
 
@@ -564,7 +741,7 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
 
 - (BOOL) applicationOpenUntitledFile: (NSApplication *)sender
 {
-  return [self openUntitledDocumentOfType: [self _defaultType]
+  return [self openUntitledDocumentOfType: [self defaultType]
 	       display: YES] ? YES : NO;
 }
 
@@ -691,6 +868,33 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
   return nil;
 }
 
+- (id)documentForURL: (NSURL *)url
+{
+  if (OVERRIDDEN(documentForFileName:))
+    {
+      NSString *fileName;
+
+      fileName = [url path];
+      return [self documentForFileName: fileName];
+    }
+  else
+    {
+      int i, count = [_documents count];
+	
+      for (i = 0; i < count; i++)
+        {
+	  NSDocument *document = [_documents objectAtIndex: i];
+      
+	  if ([[document fileURL] isEqual: url])
+	    {
+	      return document;
+	    }
+	}
+	
+      return nil;
+    }
+}
+
 - (BOOL) validateMenuItem: (NSMenuItem *)anItem
 {
   if ([anItem action] == @selector(saveAllDocuments:))
@@ -733,6 +937,15 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
   return nil;
 }
 
+- (NSString *) typeForContentsOfURL: (NSURL *)url error: (NSError **)err
+{
+  // FIXME
+  NSString *extension;
+
+  extension = [[url path] pathExtension];
+  return [self typeFromFileExtension: extension];
+}
+
 - (NSArray *) fileExtensionsFromType: (NSString *)type
 {
   NSDictionary *typeInfo = TYPE_INFO(type);
@@ -751,11 +964,29 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
   return className? NSClassFromString(className) : Nil;
 }
 
+- (NSArray *)documentClassNames
+{
+  int i, count = [_types count];
+  NSMutableArray *classNames;
+
+  classNames = [[NSMutableArray alloc] initWithCapacity: count];
+	
+  for (i = 0; i < count; i++)
+    {
+      NSDictionary *typeInfo = [_types objectAtIndex: i];
+      
+      [classNames addObject: [typeInfo objectForKey: NSDocumentClassKey]];
+    }
+ 
+  return AUTORELEASE(classNames);
+}
+
+
 - (IBAction) clearRecentDocuments: (id)sender
 {
-  [_recentDocuments removeAllObjects];
+  [_recent_documents removeAllObjects];
   [[NSUserDefaults standardUserDefaults] 
-    setObject: _recentDocuments forKey: NSRecentDocuments];
+    setObject: _recent_documents forKey: NSRecentDocuments];
 }
 
 // The number of remembered recent documents
@@ -772,22 +1003,22 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
 
 - (void) noteNewRecentDocumentURL: (NSURL *)anURL
 {
-  unsigned index = [_recentDocuments indexOfObject: anURL];
+  unsigned index = [_recent_documents indexOfObject: anURL];
   NSMutableArray *a;
 
   if (index != NSNotFound)
     {
       // Always keep the current object at the end of the list
-      [_recentDocuments removeObjectAtIndex: index];
+      [_recent_documents removeObjectAtIndex: index];
     }
-  else if ([_recentDocuments count] > MAX_DOCS)
+  else if ([_recent_documents count] > MAX_DOCS)
     {
-      [_recentDocuments removeObjectAtIndex: 0];
+      [_recent_documents removeObjectAtIndex: 0];
     }
 
-  [_recentDocuments addObject: anURL];
+  [_recent_documents addObject: anURL];
   
-  a = [_recentDocuments mutableCopy];
+  a = [_recent_documents mutableCopy];
   index = [a count];
   while (index-- > 0)
     {
@@ -801,7 +1032,7 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
 
 - (NSArray *) recentDocumentURLs
 {
-  return _recentDocuments;
+  return _recent_documents;
 }
 
 @end

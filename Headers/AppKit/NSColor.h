@@ -41,9 +41,9 @@
 
 typedef enum _NSControlTint {
     NSDefaultControlTint,
-    NSClearControlTint,
     NSBlueControlTint,
-    NSGraphiteControlTint
+    NSGraphiteControlTint = 6,
+    NSClearControlTint
 } NSControlTint;
 
 typedef enum _NSControlSize {

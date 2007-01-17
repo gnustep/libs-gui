@@ -97,9 +97,9 @@
   //NSMutableArray *args;
   
   NSDebugMLLog(@"GSPrinting", @"");
-  name = [[_printInfo printer] name];
+  name = [[[self printInfo] printer] name];
   status = [NSString stringWithFormat: @"Spooling to printer %@.", name];
-  [_printPanel _setStatusStringValue: status];
+  [[self printPanel] _setStatusStringValue: status];
 
   cupsPrintFile( [name UTF8String], 
                  [_path UTF8String], 
@@ -107,7 +107,7 @@
                  0, NULL );
                   
 
-  //dict = [_printInfo dictionary];
+  //dict = [[self printInfo] dictionary];
   //args = [NSMutableArray array];
   //copies = [[dict objectForKey: NSPrintCopies] intValue];
   //if (copies > 1)
@@ -141,7 +141,7 @@
     }
   NSDebugMLLog(@"GSPrinting", @"Creating context.");
 
-  info = [_printInfo dictionary];
+  info = [[self printInfo] dictionary];
 
   output = [info objectForKey: NSPrintSavePath];
   if (output)

@@ -437,4 +437,48 @@
   return NO;
 }
 
+- (BOOL)presentError:(NSError *)error
+{
+  error = [self willPresentError: error];
+
+  if (_next_responder)
+    {
+	return [_next_responder presentError: error];
+    }
+  else
+    {
+      return [NSApp presentError: error];
+    }
+}
+
+- (void)presentError:(NSError *)error
+      modalForWindow:(NSWindow *)window
+	    delegate:(id)delegate 
+  didPresentSelector:(SEL)sel
+	 contextInfo:(void *)context
+{
+  error = [self willPresentError: error];
+  if (_next_responder)
+    {
+      [_next_responder presentError: error
+		       modalForWindow: window
+		       delegate: delegate
+		       didPresentSelector: sel
+		       contextInfo: context];
+    }
+  else
+    {
+      [NSApp presentError: error
+	     modalForWindow: window
+	     delegate: delegate
+	     didPresentSelector: sel
+	     contextInfo: context];
+    }
+}
+
+- (NSError *) willPresentError: (NSError *)error
+{
+  return error;
+}
+
 @end

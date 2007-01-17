@@ -99,7 +99,7 @@ static NSColor	*shadowCol;
 {
   if (self == [NSCell class])
     {
-      [self setVersion: 1];
+      [self setVersion: 2];
       colorClass = [NSColor class];
       cellClass = [NSCell class];
       fontClass = [NSFont class];
@@ -117,9 +117,14 @@ static NSColor	*shadowCol;
     }
 }
 
-+ (NSMenu*)defaultMenu
++ (NSMenu*) defaultMenu
 {
   return nil;
+}
+
++ (NSFocusRingType) defaultFocusRingType
+{
+  return NSFocusRingTypeDefault;
 }
 
 /**<p>This class method returns NO. This method should be overrided by 
@@ -170,6 +175,7 @@ static NSColor	*shadowCol;
   //_cell.state = 0;
   _action_mask = NSLeftMouseUpMask;
   _menu = [isa defaultMenu];
+  [self setFocusRingType: [isa defaultFocusRingType]];
 
   return self;
 }
@@ -199,6 +205,7 @@ static NSColor	*shadowCol;
   //_cell.is_selectable = NO;
   _action_mask = NSLeftMouseUpMask;
   _menu = [isa defaultMenu];
+  [self setFocusRingType: [isa defaultFocusRingType]];
 
   return self;
 }
@@ -209,7 +216,7 @@ static NSColor	*shadowCol;
   TEST_RELEASE (_cell_image);
   TEST_RELEASE (_font);
   TEST_RELEASE (_represented_object);
-  TEST_RELEASE (_objectValue);
+  TEST_RELEASE (_object_value);
   TEST_RELEASE (_formatter);
   TEST_RELEASE (_menu);
 
@@ -223,7 +230,7 @@ static NSColor	*shadowCol;
 {
   if (_cell.has_valid_object_value)
     {
-      return _objectValue;
+      return _object_value;
     }
   else
     {
@@ -242,9 +249,9 @@ static NSColor	*shadowCol;
 - (double) doubleValue
 {
   if ((_cell.has_valid_object_value == YES) &&
-      ([_objectValue respondsToSelector: @selector(doubleValue)]))
+      ([_object_value respondsToSelector: @selector(doubleValue)]))
     {
-      return [_objectValue doubleValue];
+      return [_object_value doubleValue];
     }
   else
     {
@@ -258,9 +265,9 @@ static NSColor	*shadowCol;
 - (float) floatValue
 {
   if ((_cell.has_valid_object_value == YES) &&
-      ([_objectValue respondsToSelector: @selector(floatValue)]))
+      ([_object_value respondsToSelector: @selector(floatValue)]))
     {
-      return [_objectValue floatValue];
+      return [_object_value floatValue];
     }
   else
     {
@@ -274,9 +281,9 @@ static NSColor	*shadowCol;
 - (int) intValue
 {
   if ((_cell.has_valid_object_value == YES) &&
-      ([_objectValue respondsToSelector: @selector(intValue)]))
+      ([_object_value respondsToSelector: @selector(intValue)]))
     {
-      return [_objectValue intValue];
+      return [_object_value intValue];
     }
   else
     {
@@ -291,7 +298,7 @@ static NSColor	*shadowCol;
 {
   if (_cell.contents_is_attributed_string == NO)
     {
-      // If we have a formatter this is also the string of the _objectValue
+      // If we have a formatter this is also the string of the _object_value
       return _contents;
     }
   else
@@ -304,7 +311,7 @@ static NSColor	*shadowCol;
 {
   id newContents;
   
-  ASSIGN (_objectValue, object);
+  ASSIGN (_object_value, object);
   
   if (_formatter == nil) 
     {
@@ -322,14 +329,14 @@ static NSColor	*shadowCol;
         }
       else
 	{
-	  newContents = [_objectValue description];
+	  newContents = [_object_value description];
 	  _cell.contents_is_attributed_string = NO;
 	  _cell.has_valid_object_value = YES;
 	}
   }
   else
     {
-      newContents = [_formatter stringForObjectValue: _objectValue];
+      newContents = [_formatter stringForObjectValue: _object_value];
       _cell.contents_is_attributed_string = NO;
       if (newContents != nil)
         {
@@ -414,7 +421,7 @@ static NSColor	*shadowCol;
   if (_formatter == nil)
     {
       ASSIGN (_contents, string);
-      ASSIGN (_objectValue, string);
+      ASSIGN (_object_value, string);
       _cell.has_valid_object_value = YES;
     }
   else
@@ -708,6 +715,16 @@ static NSColor	*shadowCol;
   _cell.is_bezeled = NO;
 }
 
+- (NSFocusRingType) focusRingType
+{
+  return _cell.focus_ring_type;
+}
+
+- (void) setFocusRingType: (NSFocusRingType)type
+{
+  _cell.focus_ring_type = type;
+}
+
 /**<p>Sets the NSCell's state.  Please use always symbolic constants when
    calling this method. The integer values could be changed in the this
    implementation. (Currently they match the Cocoa values but they are
@@ -896,6 +913,11 @@ static NSColor	*shadowCol;
   if (flag)
     {
       _cell.is_scrollable = NO;
+      [self setLineBreakMode: NSLineBreakByWordWrapping];
+    }
+  else
+    {
+      [self setLineBreakMode: NSLineBreakByClipping];
     }
 }
 
@@ -935,7 +957,7 @@ static NSColor	*shadowCol;
       NSAttributedString *attrStr;
 
       attributes = [self _nonAutoreleasedTypingAttributes];
-      attrStr = [_formatter attributedStringForObjectValue: _objectValue 
+      attrStr = [_formatter attributedStringForObjectValue: _object_value 
 			    withDefaultAttributes: attributes];
       RELEASE(attributes);
       if (attrStr != nil)
@@ -1020,6 +1042,26 @@ static NSColor	*shadowCol;
 - (void) setTitle: (NSString*)aString
 {
   [self setStringValue: aString];
+}
+
+- (NSLineBreakMode) lineBreakMode
+{
+  return _cell.line_break_mode;
+}
+
+- (void) setLineBreakMode: (NSLineBreakMode)mode
+{
+  _cell.line_break_mode = mode;
+}
+
+- (NSWritingDirection) baseWritingDirection
+{
+  return _cell.base_writing_direction;
+}
+
+- (void) setBaseWritingDirection: (NSWritingDirection)direction
+{
+  _cell.base_writing_direction = direction;
 }
 
 /**<p>Implemented by subclasses to return the action method.
@@ -1247,7 +1289,7 @@ static NSColor	*shadowCol;
 }
 
 /*
- * respond to keyboard
+ * Should this cell respond to keyboard input?
  */
 - (BOOL) acceptsFirstResponder
 {
@@ -1287,23 +1329,19 @@ static NSColor	*shadowCol;
 
 - (void) setMnemonicLocation: (unsigned int)location 
 {
-  _mnemonic_location = location;
+  _cell.mnemonic_location = location;
 }
 
 - (unsigned int) mnemonicLocation
 {
-  return _mnemonic_location;
+  return _cell.mnemonic_location;
 }
 
-/* Apple Compatibility method - do not use - please test whether the
-   cell is enabled or disabled instead. */
 - (BOOL) refusesFirstResponder
 {
   return _cell.refuses_first_responder;
 }
 
-/* Apple Compatibility method - do not use - please disable the cell
-   instead. */
 - (void) setRefusesFirstResponder: (BOOL)flag
 {
   _cell.refuses_first_responder = flag;
@@ -1845,24 +1883,22 @@ static NSColor	*shadowCol;
 
 - (void) setControlSize: (NSControlSize)controlSize
 {
-  // FIXME
+  _cell.control_size = controlSize;
 }
 
 - (NSControlSize) controlSize
 {
-  // FIXME
-  return NSRegularControlSize;
+  return _cell.control_size;
 }
 
 - (void) setControlTint: (NSControlTint)controlTint
 {
-  // FIXME 
+  _cell.control_tint = controlTint;
 }
 
 - (NSControlTint) controlTint
 {
-  // FIXME
-  return NSDefaultControlTint;
+  return _cell.control_tint;
 }
 
 /**<p>This method is used by subclasses to specified the control view.
@@ -1947,7 +1983,10 @@ static NSColor	*shadowCol;
     }
 
   if (_cell.shows_first_responder)
-    NSDottedFrameRect(cellFrame);
+    {
+      // FIXME: Should depend on _cell.focus_ring_type
+      NSDottedFrameRect(cellFrame);
+    }
 
   // NB: We don't do any highlighting to make it easier for subclasses
   // to reuse this code while doing their own custom highlighting and
@@ -2082,7 +2121,7 @@ static NSColor	*shadowCol;
     {
       NSString *contents; 
 
-      contents = [_formatter editingStringForObjectValue: _objectValue];
+      contents = [_formatter editingStringForObjectValue: _object_value];
       if (contents == nil)
 	{
 	  contents = _contents;
@@ -2126,7 +2165,7 @@ static NSColor	*shadowCol;
   [clipView removeFromSuperview];
 }
 
-/** <p> TODO.This method does nothing if a the <var>controlView</var> is nil,
+/** <p> This method does nothing if the <var>controlView</var> is nil,
     if text object does not exist or if the cell's type is not <ref type="type"
     id="NSCellType">NSTextCellType</ref> </p>
  */
@@ -2148,7 +2187,7 @@ static NSColor	*shadowCol;
     {
       NSString *contents; 
 
-      contents = [_formatter editingStringForObjectValue: _objectValue];
+      contents = [_formatter editingStringForObjectValue: _object_value];
       if (contents == nil)
 	{
 	  contents = _contents;
@@ -2185,6 +2224,16 @@ static NSColor	*shadowCol;
   _cell.sends_action_on_end_editing = flag;
 }
 
+- (BOOL) allowsUndo
+{
+  return _cell.allows_undo;
+}
+
+- (void) setAllowsUndo: (BOOL)flag
+{
+  _cell.allows_undo = flag;
+}
+
 /*
  * Copying
  */
@@ -2198,7 +2247,7 @@ static NSColor	*shadowCol;
      pointers to the objects are copied.  We need to RETAIN them all
      though. */
   TEST_RETAIN (_font);
-  TEST_RETAIN (_objectValue);
+  TEST_RETAIN (_object_value);
   TEST_RETAIN (_menu);
   TEST_RETAIN (_cell_image);
   TEST_RETAIN (_formatter);
@@ -2218,40 +2267,55 @@ static NSColor	*shadowCol;
       unsigned int cFlags2 = 0;
 
       // encode contents
-      [aCoder encodeObject: _contents forKey: @"NSContents"];
+      [aCoder encodeObject: [self objectValue] forKey: @"NSContents"];
 
       // flags
+      cFlags |= [self focusRingType];
+      cFlags |= [self showsFirstResponder] ?  0x4 : 0;
+      cFlags |= (_action_mask & NSLeftMouseUpMask) ?  0 : 0x20;
       cFlags |= [self wraps] ?  0x40 : 0;
+      cFlags |= (_action_mask & NSLeftMouseDraggedMask) ?  0x100 : 0;
+      cFlags |= ([self lineBreakMode] << 12);
+      cFlags |= (_action_mask & NSLeftMouseDownMask) ?  0x40000 : 0;
+      cFlags |= [self isContinuous] ? 0x80000 : 0;
       cFlags |= [self isScrollable] ? 0x100000 : 0; 
-      cFlags |= [self isSelectable] ? 0x200001 : 0;
+      cFlags |= [self isSelectable] ? 0x200000 : 0;
       cFlags |= [self isBezeled] ? 0x400000 : 0;
       cFlags |= [self isBordered] ? 0x800000 : 0;
-      cFlags |= ([self type] == NSTextCellType) ? 0x4000000 : 0;
-      cFlags |= [self isContinuous] ? 0x40000 : 0;
+      cFlags |= ([self type] << 26);
       cFlags |= [self isEditable] ? 0x10000000 : 0;
       cFlags |= ([self isEnabled] == NO) ? 0x20000000 : 0;
-      cFlags |= ([self state] == NSOnState) ? 0x80000000 : 0;
       cFlags |= [self isHighlighted] ? 0x40000000 : 0;
+      cFlags |= ([self state] == NSOnState) ? 0x80000000 : 0;
       [aCoder encodeInt: cFlags forKey: @"NSCellFlags"];
       
       // flags part 2
+      cFlags2 |= ([self controlTint] << 5);
+      cFlags2 |= ([self controlSize] << 17);
       cFlags2 |= [self sendsActionOnEndEditing] ? 0x400000 : 0;
       cFlags2 |= [self allowsMixedState] ? 0x1000000 : 0;
       cFlags2 |= [self refusesFirstResponder] ? 0x2000000 : 0;
-      cFlags2 |= ([self alignment] == NSRightTextAlignment) ? 0x4000000 : 0;
-      cFlags2 |= ([self alignment] == NSCenterTextAlignment) ? 0x8000000 : 0;
-      cFlags2 |= ([self alignment] == NSJustifiedTextAlignment) ? 0xC000000 : 0;
-      cFlags2 |= ([self alignment] == NSNaturalTextAlignment) ? 0x10000000 : 0;
+      cFlags2 |= ([self alignment] << 26);
       cFlags2 |= [self importsGraphics] ? 0x20000000 : 0;
       cFlags2 |= [self allowsEditingTextAttributes] ? 0x40000000 : 0;
       [aCoder encodeInt: cFlags2 forKey: @"NSCellFlags2"];
 	  
-      // font and formatter.
-      [aCoder encodeObject: [self font] forKey: @"NSSupport"];
-
-      if ([self formatter])
-	{
-	  [aCoder encodeObject: [self formatter] forKey: @"NSFormatter"];
+      if (_cell.type == NSTextCellType)
+        {
+	  // font and formatter.
+	  if ([self font])
+	  {
+	      [aCoder encodeObject: [self font] forKey: @"NSSupport"];
+	  }
+	  
+	  if ([self formatter])
+	  {
+	      [aCoder encodeObject: [self formatter] forKey: @"NSFormatter"];
+	  }
+	}
+      else if ([self image])
+        {
+	  [aCoder encodeObject: [self image] forKey: @"NSSupport"];
 	}
     }
   else
@@ -2262,7 +2326,7 @@ static NSColor	*shadowCol;
       [aCoder encodeObject: _contents];
       [aCoder encodeObject: _cell_image];
       [aCoder encodeObject: _font];
-      [aCoder encodeObject: _objectValue];
+      [aCoder encodeObject: _object_value];
       flag = _cell.contents_is_attributed_string;
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
       flag = _cell.is_highlighted;
@@ -2297,7 +2361,7 @@ static NSColor	*shadowCol;
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
       flag = _cell.allows_mixed_state;
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      flag = _cell.wraps;
+      flag = [self wraps];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
       tmp_int = _cell.text_align;
       [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
@@ -2307,14 +2371,29 @@ static NSColor	*shadowCol;
       [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
       tmp_int = _cell.entry_type;
       [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+      // FIXME: State may be -1, why do we encode it as unsigned?
       tmp_int = _cell.state;
       [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_mnemonic_location];
+      tmp_int = _cell.mnemonic_location;
+      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
       [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_mouse_down_flags];
       [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_action_mask];
       [aCoder encodeValueOfObjCType: @encode(id) at: &_formatter];
       [aCoder encodeValueOfObjCType: @encode(id) at: &_menu];
       [aCoder encodeValueOfObjCType: @encode(id) at: &_represented_object];
+
+      tmp_int = _cell.allows_undo;
+      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+      tmp_int = _cell.line_break_mode;
+      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+      tmp_int = _cell.control_tint;
+      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+      tmp_int = _cell.control_size;
+      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+      tmp_int = _cell.focus_ring_type;
+      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+      tmp_int = _cell.base_writing_direction;
+      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
     }
 }
 
@@ -2336,66 +2415,67 @@ static NSColor	*shadowCol;
       else
 	{
 	  self = [self init];
+	  [self setObjectValue: contents];
 	}
       
       if ([aDecoder containsValueForKey: @"NSCellFlags"])
         {
 	  unsigned long cFlags;
-
+	  unsigned long mask = 0;
 	  cFlags = [aDecoder decodeIntForKey: @"NSCellFlags"];
 
+	  [self setFocusRingType: (cFlags & 0x3)];
+	  [self setShowsFirstResponder: ((cFlags & 0x4) == 0x4)];
+	  // This bit flag is the other way around!
+	  if ((cFlags & 0x20) != 0x20)
+	      mask |= NSLeftMouseUpMask;
 	  // This bit flag is the other way around!
 	  [self setWraps: ((cFlags & 0x40) != 0x40)];
+	  if ((cFlags & 0x100) == 0x100)
+	      mask |= NSLeftMouseDraggedMask;
+	  [self setLineBreakMode: ((cFlags & 0x7000) >> 12)];
+	  if ((cFlags & 0x40000) == 0x40000)
+	      mask |= NSLeftMouseDownMask;
+	  if ((cFlags & 0x80000) == 0x80000)
+	      mask |= NSPeriodicMask;
+	  [self sendActionOn: mask];
 	  [self setScrollable: ((cFlags & 0x100000) == 0x100000)];
-	  // Strange that this is not a simple bit flag
-	  [self setSelectable: ((cFlags & 0x200001) == 0x200001)];
+	  [self setSelectable: ((cFlags & 0x200000) == 0x200000)];
 	  [self setBezeled: ((cFlags & 0x400000) == 0x400000)];
 	  [self setBordered: ((cFlags & 0x800000) == 0x800000)];
-	  if ((cFlags & 0x4000000) == 0x4000000)
-	    {
-	      [self setType: NSTextCellType];
-	    }
-
-	  [self setContinuous: ((cFlags & 0x40000) == 0x40000)];
+	  [self setType: ((cFlags & 0xC000000) >> 26)];
 	  [self setEditable: ((cFlags & 0x10000000) == 0x10000000)];
 	  // This bit flag is the other way around!
 	  [self setEnabled: ((cFlags & 0x20000000) != 0x20000000)];
 	  [self setHighlighted: ((cFlags & 0x40000000) == 0x40000000)];
-	  [self setState: ((cFlags & 0x80000000) == 0x80000000)?NSOnState:NSOffState];
+	  [self setState: ((cFlags & 0x80000000) == 0x80000000) ? NSOnState : NSOffState];
 	}
       if ([aDecoder containsValueForKey: @"NSCellFlags2"])
         {
 	  int cFlags2;
       
 	  cFlags2 = [aDecoder decodeIntForKey: @"NSCellFlags2"];
+	  [self setControlTint: ((cFlags2 & 0xE0) >> 5)];
+	  [self setControlSize: ((cFlags2 & 0xE0000) >> 17)];
 	  [self setSendsActionOnEndEditing: (cFlags2 & 0x400000)];
 	  [self setAllowsMixedState: ((cFlags2 & 0x1000000) == 0x1000000)];
 	  [self setRefusesFirstResponder: ((cFlags2 & 0x2000000) == 0x2000000)];
-	  if ((cFlags2 & 0x4000000) == 0x4000000)
-	    {
-	      [self setAlignment: NSRightTextAlignment];
-	    }
-	  if ((cFlags2 & 0x8000000) == 0x8000000)
-	    {
-	      [self setAlignment: NSCenterTextAlignment];
-	    }
-	  if ((cFlags2 & 0xC000000) == 0xC000000)
-	    {
-	      [self setAlignment: NSJustifiedTextAlignment];
-	    }
-	  if ((cFlags2 & 0x10000000) == 0x10000000)
-	    {
-	      [self setAlignment: NSNaturalTextAlignment];
-	    }
-
+	  [self setAlignment: ((cFlags2 & 0x1C000000) >> 26)];
 	  [self setImportsGraphics: ((cFlags2 & 0x20000000) == 0x20000000)];
 	  [self setAllowsEditingTextAttributes: ((cFlags2 & 0x40000000) == 0x40000000)];
 	}
       if ([aDecoder containsValueForKey: @"NSSupport"])
         {
-	  NSFont *support = [aDecoder decodeObjectForKey: @"NSSupport"];
+	  id support = [aDecoder decodeObjectForKey: @"NSSupport"];
 
-	  [self setFont: support];
+	  if ([support isKindOfClass: [NSFont class]])
+	    {
+	      [self setFont: support];
+	    }
+	  else if ([support isKindOfClass: [NSImage class]])
+	    {
+	      [self setImage: support];
+	    }
 	}
       if ([aDecoder containsValueForKey: @"NSFormatter"])
         {
@@ -2409,11 +2489,12 @@ static NSColor	*shadowCol;
       BOOL flag;
       unsigned int tmp_int;
       id formatter, menu;
+      int version = [aDecoder versionForClassName: @"NSCell"];
 
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_contents];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_cell_image];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_font];
-      [aDecoder decodeValueOfObjCType: @encode(id) at: &_objectValue];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_object_value];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       _cell.contents_is_attributed_string = flag;
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
@@ -2457,8 +2538,8 @@ static NSColor	*shadowCol;
       _cell.entry_type = tmp_int;
       [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
       _cell.state = tmp_int;
-      [aDecoder decodeValueOfObjCType: @encode(unsigned int) 
-		                   at: &_mnemonic_location];
+      [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+      _cell.mnemonic_location = tmp_int;
       [aDecoder decodeValueOfObjCType: @encode(unsigned int) 
 		                   at: &_mouse_down_flags];
       [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &_action_mask];
@@ -2472,13 +2553,29 @@ static NSColor	*shadowCol;
         {
 	  NSString *contents;
 
-	  contents = [_formatter stringForObjectValue: _objectValue];
+	  contents = [_formatter stringForObjectValue: _object_value];
 	  if (contents != nil)
 	    {
 	      _cell.has_valid_object_value = YES;
 	      ASSIGN (_contents, contents);
 	      _cell.contents_is_attributed_string = NO;
 	    }
+	}
+
+      if (version >= 2)
+        {
+	  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+	  _cell.allows_undo = tmp_int;
+	  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+	  _cell.line_break_mode = tmp_int;
+	  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+	  _cell.control_tint = tmp_int;
+	  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+	  _cell.control_size = tmp_int;
+	  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+	  _cell.focus_ring_type = tmp_int;
+	  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+	  _cell.base_writing_direction = tmp_int;
 	}
     }
   return self;
@@ -2507,21 +2604,12 @@ static NSColor	*shadowCol;
   NSMutableParagraphStyle *paragraphStyle;
 
   color = [self textColor];
-  /* Note: there are only 6 possible paragraph styles for cells.  
-     TODO: Create them once at the beginning, and reuse them for the whole 
-     app lifetime. */
+  /* Note: There are only a few possible paragraph styles for cells.  
+     TODO: Cache them and reuse them for the whole app lifetime. */
   paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-
-  if (_cell.wraps)
-    {
-      [paragraphStyle setLineBreakMode: NSLineBreakByWordWrapping];
-    }
-  else
-    {
-      [paragraphStyle setLineBreakMode: NSLineBreakByClipping];
-    }   
-
-  [paragraphStyle setAlignment: _cell.text_align];
+  [paragraphStyle setLineBreakMode: [self lineBreakMode]];
+  [paragraphStyle setBaseWritingDirection: [self baseWritingDirection]];
+  [paragraphStyle setAlignment: [self alignment]];
 
   attr = [[NSDictionary alloc] initWithObjectsAndKeys: 
 			       _font, NSFontAttributeName,

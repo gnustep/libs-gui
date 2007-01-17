@@ -36,6 +36,7 @@
 #include <float.h>
 
 #include <Foundation/NSString.h>
+#include <Foundation/NSBundle.h>
 #include <Foundation/NSCalendarDate.h>
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSKeyedArchiver.h>

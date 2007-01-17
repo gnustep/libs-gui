@@ -1,3 +1,50 @@
+2007-01-17  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSResponder.h: Add MacOS 10.4 methods.
+	* Source/NSResponder.m: Implement new MacOS 10.4 methods.
+	* Headers/AppKit/NSDocumentFrameworkPrivate.h: Remove.
+	* Source/NSDocumentFrameworkPrivate.h: Add.
+	* Source/GNUmakefile: Don't install NSDocumentFrameworkPrivate.h.
+	* Headers/AppKit/NSDocument.h: Add MacOS 10.4 methods and
+	additional ivars. Rename ivars to adopt to coding standards.
+	* Source/NSDocument.m: Implement new MacOS 10.4 methods adopted
+	to changes of ivar names.
+	* Headers/AppKit/NSDocument.h: Add MacOS 10.4 methods and
+	additional ivars. Rename ivars to adopt to coding standards.
+	* Source/NSDocument.m: Adopt include of NSDocumentFrameworkPrivate.h. 
+	Implement new MacOS 10.4 methods and adopt to changes of ivar names.
+	* Headers/AppKit/NSDocumentController.h: Add MacOS 10.4 methods and
+	additional ivars. Rename ivars to adopt to coding standards. Fix includes.
+	* Source/NSDocumentController.m: Adopt include of NSDocumentFrameworkPrivate.h. 
+	Implement new MacOS 10.4 methods and adopt to changes of ivar names.
+	* Headers/AppKit/NSWindowController.h: Rename ivars to adopt to coding standards.
+	* Source/NSWindowController.m: Adopt include of NSDocumentFrameworkPrivate.h.
+	Adopt to changes of ivar names.
+	
+	* Headers/AppKit/NSPrintOperation.h: Add MacOS 10.4 methods and
+	additional ivars. Rename ivars to adopt to coding standards.
+	* Source/NSPrintOperation.m: Implement new MacOS 10.4 methods and
+	adopt to changes of ivar names. 
+	* Source/GSPrintOperation.m,
+	* Source/GSEPSPrintOperation.m,
+	* Printing/GSLPR/GSLPRPrintOperation.m,
+	* Printing/GSCUPS/GSCUPSPrintOperation.m: Adopt to changes in super class.
+
+	* Headers/AppKit/NSCell.h: Add MacOS 10.4 methods and
+	additional ivars. Store the state in two bits only. Rename ivar to
+	adopt to coding standards. Move mnemonic_location into flags.
+	* Source/NSCell.m: Implement new MacOS 10.3 and 10.4 methods and
+	adopt to changes of ivar names. Add encoding and decoding of new
+	ivars and improve keyed coding and decoding.
+	
+	* Headers/AppKit/NSColor.h: Adopt values of NSControlTint
+	enumerator to Cocoa values.
+	* Headers/AppKit/NSParagraphstyle.h: Add protection against double inclusion.
+	* Source/GSServicemanager.m,
+	* Source/NSAttributedString.m,
+	* Source/NSView.m,
+	* Source/NSApplication.m: Correct includes to avoid compiler warnings.
+
 2007-01-14  Stefan Bidigaray
 
 	* Source/NSWindow.m:

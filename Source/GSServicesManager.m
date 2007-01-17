@@ -43,6 +43,7 @@
 #include <Foundation/NSPathUtilities.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSSerialization.h>
+#include <Foundation/NSPort.h>
 #include <Foundation/NSPortNameServer.h>
 #include <Foundation/NSTask.h>
 #include <Foundation/NSObjCRuntime.h>

@@ -38,17 +38,17 @@
 {
   @private
     NSWindow            *_window;
-    NSString            *_windowNibName;
-    NSString            *_windowNibPath;
-    NSString            *_windowFrameAutosaveName;
+    NSString            *_window_nib_name;
+    NSString            *_window_nib_path;
+    NSString            *_window_frame_autosave_name;
     NSDocument          *_document;
-    NSArray             *_topLevelObjects;
+    NSArray             *_top_level_objects;
     id                  _owner;
     struct ___wcFlags 
     {
-      unsigned int shouldCloseDocument:1;
-      unsigned int shouldCascade:1;
-      unsigned int nibIsLoaded:1;
+      unsigned int should_close_document:1;
+      unsigned int should_cascade:1;
+      unsigned int nib_is_loaded:1;
       unsigned int RESERVED:29;
     } _wcFlags;
     void                *_reserved1;

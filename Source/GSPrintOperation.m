@@ -88,7 +88,7 @@
                      toData: [NSMutableData data]
                   printInfo: aPrintInfo];
                   
-  _showPanels = YES;
+  [self setShowPanels: YES];
 
   return self;
 }
@@ -116,7 +116,7 @@
   NSString *job;
   
   success = YES;
-  job = [_printInfo jobDisposition];
+  job = [[self printInfo] jobDisposition];
   if ([job isEqual: NSPrintPreviewJob])
     {
       /* Check to see if there is a GNUstep app that can preview PS files.
@@ -126,7 +126,7 @@
       NSTask *task;
       NSString *preview;
       NSWorkspace *ws = [NSWorkspace sharedWorkspace];
-      [_printPanel _setStatusStringValue: @"Opening in previewer..."];
+      [[self printPanel] _setStatusStringValue: @"Opening in previewer..."];
       
       preview = [ws getBestAppInRole: @"Viewer" 
                         forExtension: @"ps"];

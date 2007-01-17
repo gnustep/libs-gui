@@ -290,13 +290,14 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 
 - (void) dealloc
 {
-  RELEASE(_printInfo);
+  RELEASE(_print_info);
   RELEASE(_view);  
   RELEASE(_data);
   TEST_RELEASE(_context);
-  TEST_RELEASE(_printPanel);  
-  TEST_RELEASE(_accessoryView);  
+  TEST_RELEASE(_print_panel);  
+  TEST_RELEASE(_accessory_view);  
   TEST_RELEASE(_path);  
+  TEST_RELEASE(_job_style_hint);  
 
   [super dealloc];
 }
@@ -324,17 +325,17 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
  */
 - (NSPrintPanel *)printPanel
 {
-  if (_printPanel == nil)
-    ASSIGN(_printPanel, [NSPrintPanel printPanel]); 
+  if (_print_panel == nil)
+    ASSIGN(_print_panel, [NSPrintPanel printPanel]); 
 
-  return _printPanel;
+  return _print_panel;
 }
 
 /** Returns YES if the reciever display an NSPrintPanel and other information
     when running a print operation. */
 - (BOOL)showPanels
 {
-  return _showPanels;
+  return [self showsPrintPanel] && [self showsProgressPanel];
 }
 
 /** Sets the NSPrintPanel used by the receiver obtaining and displaying
@@ -342,7 +343,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 */
 - (void)setPrintPanel:(NSPrintPanel *)panel
 {
-  ASSIGN(_printPanel, panel);
+  ASSIGN(_print_panel, panel);
 }
 
 /** Use this to set whether a print panel is displayed during a printing
@@ -352,15 +353,37 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 */
 - (void)setShowPanels:(BOOL)flag
 {
-  _showPanels = flag;
+  [self setShowsPrintPanel: flag];
+  [self setShowsProgressPanel: flag];
 }
+
+- (BOOL)showsPrintPanel
+{
+  return _flags.show_print_panel;
+}
+
+- (void)setShowsPrintPanel:(BOOL)flag
+{
+  _flags.show_print_panel = flag;
+}
+
+- (BOOL)showsProgressPanel
+{
+  return _flags.show_progress_panel;
+}
+
+- (void)setShowsProgressPanel:(BOOL)flag
+{
+  _flags.show_progress_panel = flag;
+}
+
 
 /** Returns the accessory view used by the NSPrintPanel associated with
     the receiver.
 */
 - (NSView *)accessoryView
 {
-  return _accessoryView;
+  return _accessory_view;
 }
 
 /** Set the accessory view used by the NSPrintPanel associated with the
@@ -368,7 +391,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 */
 - (void)setAccessoryView:(NSView *)aView
 {
-  ASSIGN(_accessoryView, aView);
+  ASSIGN(_accessory_view, aView);
 }
 
 //
@@ -413,14 +436,14 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 */
 - (NSPrintingPageOrder)pageOrder
 {
-  return _pageOrder;
+  return _page_order;
 }
 
 /** Set the page order used when printing.
  */
 - (void)setPageOrder:(NSPrintingPageOrder)order
 {
-  _pageOrder = order;
+  _page_order = order;
 }
 
 //
@@ -455,12 +478,12 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 {
   BOOL result;
 
-  if (_showPanels)
+  if ([self showsPrintPanel])
     {
       NSPrintPanel *panel = [self printPanel];
       int button;
       
-      [panel setAccessoryView: _accessoryView];
+      [panel setAccessoryView: _accessory_view];
       [self _setupPrintInfo];
       [panel updateFromPrintInfo];
       button = [panel runModal];
@@ -495,7 +518,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
   NSPrintPanel *panel = [self printPanel];
 
   /* Save the selector so we can use it later */
-  dict = [_printInfo dictionary];
+  dict = [_print_info dictionary];
   [dict setObject: [NSValue value: &didRunSelector withObjCType: @encode(SEL)]
 	   forKey: @"GSModalRunSelector"];
   [dict setObject: delegate
@@ -504,16 +527,36 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
   /* Assume we want to show the panel regardless of the value
      of _showPanels 
   */
-  [panel setAccessoryView: _accessoryView];
+  [panel setAccessoryView: _accessory_view];
   [self _setupPrintInfo];
   [panel updateFromPrintInfo];
-  [panel beginSheetWithPrintInfo: _printInfo 
+  [panel beginSheetWithPrintInfo: _print_info 
 	          modalForWindow: docWindow 
 			delegate: delegate 
 		  didEndSelector: 
 		          @selector(_printOperationDidRun:sucess:contextInfo:)
 		      contextInfo: contextInfo];
   [panel setAccessoryView: nil];
+}
+
+- (BOOL)canSpawnSeparateThread
+{
+  return _flags.can_spawn_separate_thread;
+}
+
+- (void)setCanSpawnSeparateThread:(BOOL)flag
+{
+  _flags.can_spawn_separate_thread = flag;
+}
+
+- (NSString *) jobStyleHint
+{
+  return _job_style_hint;
+}
+
+- (void)setJobStyleHint:(NSString *)hint
+{
+  ASSIGN(_job_style_hint, hint);
 }
 
 //
@@ -523,7 +566,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 */
 - (NSPrintInfo *)printInfo
 {
-  return _printInfo;
+  return _print_info;
 }
 
 /** Set the NSPrintInfo object associated with the receiver.
@@ -533,7 +576,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
   if (aPrintInfo == nil)
     aPrintInfo = [NSPrintInfo sharedPrintInfo];
 
-  ASSIGNCOPY(_printInfo, aPrintInfo);
+  ASSIGNCOPY(_print_info, aPrintInfo);
 }
 
 //
@@ -565,8 +608,9 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
   ASSIGN(_view, aView);
   _rect = rect;
   ASSIGN(_data, data);
-  _pageOrder = NSUnknownPageOrder;
-  _showPanels = NO;
+  _page_order = NSUnknownPageOrder;
+  [self setShowsPrintPanel: NO];
+  [self setShowsProgressPanel: NO];
   [self setPrintInfo: aPrintInfo];
   _path = nil;
   _currentPage = 0;
@@ -593,13 +637,13 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
     return NO;
 
   result = NO;
-  if (_pageOrder == NSUnknownPageOrder)
+  if (_page_order == NSUnknownPageOrder)
     {
-      if ([[[_printInfo dictionary] objectForKey: NSPrintReversePageOrder] 
+      if ([[[_print_info dictionary] objectForKey: NSPrintReversePageOrder] 
 	    boolValue] == YES)
-	_pageOrder = NSDescendingPageOrder;
+	_page_order = NSDescendingPageOrder;
       else
-	_pageOrder = NSAscendingPageOrder;
+	_page_order = NSAscendingPageOrder;
     }
 
   [NSGraphicsContext setCurrentContext: _context];
@@ -626,7 +670,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 {
   BOOL knowsPageRange;
   NSRange viewPageRange;
-  NSMutableDictionary *dict = [_printInfo dictionary];
+  NSMutableDictionary *dict = [_print_info dictionary];
 
   knowsPageRange = [_view knowsPageRange: &viewPageRange]; 
   if (knowsPageRange == YES)
@@ -656,7 +700,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 	success = [self deliverResult];
     }
   [self cleanUpOperation];
-  dict = [_printInfo dictionary];
+  dict = [_print_info dictionary];
   didRunSelector = [[dict objectForKey: @"GSModalRunSelector"] pointerValue];
   delegate = [dict objectForKey: @"GSModalRunDelegate"];
   didRun = (void (*)(id, SEL, BOOL, id))[delegate methodForSelector: 
@@ -693,10 +737,10 @@ scaleRect(NSRect rect, double scale)
 - (void) _printPaginateWithInfo: (page_info_t *)info knowsRange: (BOOL)knowsRange
 {
   NSMutableDictionary *dict;
-  dict = [_printInfo dictionary];
+  dict = [_print_info dictionary];
 
-  info->paperSize = [_printInfo paperSize];
-  info->orient = [_printInfo orientation];
+  info->paperSize = [_print_info paperSize];
+  info->orient = [_print_info orientation];
   info->printScale = [[dict objectForKey: NSPrintScalingFactor] doubleValue];
   info->nup = [[dict objectForKey: NSPrintPagesPerSheet] intValue];
   info->nupScale = 1;
@@ -709,12 +753,12 @@ scaleRect(NSRect rect, double scale)
 
   /* Subtract the margins from the paper size to get print boundary */
   info->paperBounds.size = info->paperSize;
-  info->paperBounds.origin.x = [_printInfo leftMargin];
-  info->paperBounds.origin.y = [_printInfo bottomMargin];
+  info->paperBounds.origin.x = [_print_info leftMargin];
+  info->paperBounds.origin.y = [_print_info bottomMargin];
   info->paperBounds.size.width -= 
-    ([_printInfo rightMargin]+[_printInfo leftMargin]);
+    ([_print_info rightMargin]+[_print_info leftMargin]);
   info->paperBounds.size.height -= 
-    ([_printInfo topMargin]+[_printInfo bottomMargin]);
+    ([_print_info topMargin]+[_print_info bottomMargin]);
 
   info->sheetBounds = info->paperBounds;
   if (info->orient == NSLandscapeOrientation)
@@ -739,10 +783,10 @@ scaleRect(NSRect rect, double scale)
   if (knowsRange == NO)
     {
       /* Now calculate page fitting to get page scale */
-      if ([_printInfo horizontalPagination] == NSFitPagination)
+      if ([_print_info horizontalPagination] == NSFitPagination)
 	info->pageScale  = info->paperBounds.size.width 
 	  / NSWidth(info->scaledBounds);
-      if ([_printInfo verticalPagination] == NSFitPagination)
+      if ([_print_info verticalPagination] == NSFitPagination)
 	info->pageScale = MIN(info->pageScale,
 	  NSHeight(info->paperBounds)/NSHeight(info->scaledBounds));
       /* Scale bounds by pageScale */
@@ -751,9 +795,9 @@ scaleRect(NSRect rect, double scale)
       /* Now find out how many pages */
       info->xpages = ceil(NSWidth(info->scaledBounds)/NSWidth(info->paperBounds));
       info->ypages = ceil(NSHeight(info->scaledBounds)/NSHeight(info->paperBounds));
-      if ([_printInfo horizontalPagination] == NSClipPagination)
+      if ([_print_info horizontalPagination] == NSClipPagination)
 	info->xpages = 1;
-      if ([_printInfo verticalPagination] == NSClipPagination)
+      if ([_print_info verticalPagination] == NSClipPagination)
 	info->ypages = 1;
     }
 
@@ -869,7 +913,7 @@ scaleRect(NSRect rect, double scale)
   NSMutableDictionary *dict;
   page_info_t info;
   
-  dict = [_printInfo dictionary];
+  dict = [_print_info dictionary];
 
   /* Setup pagination */
   allPages = [[dict objectForKey: NSPrintAllPages] boolValue];
@@ -917,7 +961,7 @@ scaleRect(NSRect rect, double scale)
 
   _currentPage = info.first;
   dir = 1;
-  if (_pageOrder == NSDescendingPageOrder)
+  if (_page_order == NSDescendingPageOrder)
     {
       _currentPage = info.last;
       dir = -1;
@@ -975,12 +1019,12 @@ scaleRect(NSRect rect, double scale)
 	  /* Check if adjust pages forced part of the bounds onto 
 	     another page */
 	  if (NSMaxX(pageRect) < NSMaxX(_rect) 
-	      && [_printInfo horizontalPagination] != NSClipPagination)
+	      && [_print_info horizontalPagination] != NSClipPagination)
 	    {
 	      info.xpages++;
 	    }
 	  if (NSMaxY(pageRect) < NSMaxY(_rect)
-	      && [_printInfo verticalPagination] != NSClipPagination)
+	      && [_print_info verticalPagination] != NSClipPagination)
 	    {
 	      info.ypages++;
 	    }

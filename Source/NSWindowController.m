@@ -24,10 +24,15 @@
    Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02111 USA.
 */
 
-#include "AppKit/NSWindowController.h"
-#include "AppKit/NSPanel.h"
+#include <Foundation/NSBundle.h>
+#include <Foundation/NSException.h>
+#include <Foundation/NSNotification.h>
+#include <Foundation/NSString.h>
+
 #include "AppKit/NSNibLoading.h"
-#include "AppKit/NSDocumentFrameworkPrivate.h"
+#include "AppKit/NSPanel.h"
+#include "AppKit/NSWindowController.h"
+#include "NSDocumentFrameworkPrivate.h"
 
 @implementation NSWindowController
 
@@ -51,7 +56,7 @@
     }
 
   self = [self initWithWindow: nil];
-  ASSIGN(_windowNibName, windowNibName);
+  ASSIGN(_window_nib_name, windowNibName);
   _owner = owner;
   return self;
 }
@@ -72,7 +77,7 @@
     }
 
   self = [self initWithWindow: nil];
-  ASSIGN(_windowNibPath, windowNibPath);
+  ASSIGN(_window_nib_path, windowNibPath);
   _owner = owner;
   return self;
 }
@@ -81,9 +86,9 @@
 {
   self = [super init];
 
-  _windowFrameAutosaveName = @"";
-  _wcFlags.shouldCascade = YES;
-  _wcFlags.shouldCloseDocument = NO;
+  _window_frame_autosave_name = @"";
+  _wcFlags.should_cascade = YES;
+  _wcFlags.should_close_document = NO;
 
   [self setWindow: window];
   if (_window != nil)
@@ -103,40 +108,40 @@
 - (void) dealloc
 {
   [self setWindow: nil];
-  RELEASE (_windowNibName);
-  RELEASE (_windowNibPath);
-  RELEASE (_windowFrameAutosaveName);
-  RELEASE (_topLevelObjects);
+  RELEASE(_window_nib_name);
+  RELEASE(_window_nib_path);
+  RELEASE(_window_frame_autosave_name);
+  RELEASE(_top_level_objects);
   [super dealloc];
 }
 
 - (NSString *) windowNibName
 {
-  if ((_windowNibName == nil) && (_windowNibPath != nil))
+  if ((_window_nib_name == nil) && (_window_nib_path != nil))
   {
-    return [[_windowNibPath lastPathComponent] 
+    return [[_window_nib_path lastPathComponent] 
 	       stringByDeletingPathExtension];
   }
 
-  return _windowNibName;
+  return _window_nib_name;
 }
 
 - (NSString *)windowNibPath
 {
-  if ((_windowNibName != nil) && (_windowNibPath == nil))
+  if ((_window_nib_name != nil) && (_window_nib_path == nil))
   {
     NSString *path;
 
     path = [[NSBundle bundleForClass: [_owner class]] 
-	       pathForNibResource: _windowNibName];
+	       pathForNibResource: _window_nib_name];
     if (path == nil)
       path = [[NSBundle mainBundle] 
-		 pathForNibResource: _windowNibName];
+		 pathForNibResource: _window_nib_name];
 
     return path;
   }
 
-  return _windowNibPath;
+  return _window_nib_path;
 }
 
 - (id) owner
@@ -187,7 +192,7 @@
 
 - (void) setWindowFrameAutosaveName:(NSString *)name
 {
-  ASSIGN(_windowFrameAutosaveName, name);
+  ASSIGN(_window_frame_autosave_name, name);
   
   if ([self isWindowLoaded])
     {
@@ -197,27 +202,27 @@
 
 - (NSString *) windowFrameAutosaveName
 {
-  return _windowFrameAutosaveName;
+  return _window_frame_autosave_name;
 }
 
 - (void) setShouldCloseDocument: (BOOL)flag
 {
-  _wcFlags.shouldCloseDocument = flag;
+  _wcFlags.should_close_document = flag;
 }
 
 - (BOOL) shouldCloseDocument
 {
-  return _wcFlags.shouldCloseDocument;
+  return _wcFlags.should_close_document;
 }
 
 - (void) setShouldCascadeWindows: (BOOL)flag
 {
-  _wcFlags.shouldCascade = flag;
+  _wcFlags.should_cascade = flag;
 }
 
 - (BOOL) shouldCascadeWindows
 {
-  return _wcFlags.shouldCascade;
+  return _wcFlags.should_cascade;
 }
 
 - (void) close
@@ -375,7 +380,7 @@
 
 - (BOOL) isWindowLoaded
 {
-  return _wcFlags.nibIsLoaded;
+  return _wcFlags.nib_is_loaded;
 }
 
 - (void) windowDidLoad
@@ -388,15 +393,15 @@
 
 - (void) _windowDidLoad
 {
-  _wcFlags.nibIsLoaded = YES;
+  _wcFlags.nib_is_loaded = YES;
 
   [self synchronizeWindowTitleWithDocumentName];
   
   /* Make sure window sizes itself right */
-  if ([_windowFrameAutosaveName length] > 0)
+  if ([_window_frame_autosave_name length] > 0)
     {
-      [_window setFrameUsingName: _windowFrameAutosaveName];
-      [_window setFrameAutosaveName: _windowFrameAutosaveName];
+      [_window setFrameUsingName: _window_frame_autosave_name];
+      [_window setFrameAutosaveName: _window_frame_autosave_name];
     }
 
   if ([self shouldCascadeWindows])
@@ -431,7 +436,7 @@
 		externalNameTable: table
 		withZone: [_owner zone]])
     {
-      _wcFlags.nibIsLoaded = YES;
+      _wcFlags.nib_is_loaded = YES;
 	  
       if (_window == nil  &&  _document != nil  &&  _owner == _document)
         {
@@ -440,10 +445,10 @@
     }
   else
     {
-      if (_windowNibName != nil)
+      if (_window_nib_name != nil)
         {
 	  NSLog (@"%@: could not load nib named %@.nib", 
-		 [self class], _windowNibName);
+		 [self class], _window_nib_name);
 	}
     }
 }

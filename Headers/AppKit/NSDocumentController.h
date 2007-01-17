@@ -32,27 +32,33 @@
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 
-#include <Foundation/Foundation.h>
+#include <Foundation/NSObject.h>
 #include <AppKit/NSNibDeclarations.h>
 #include <AppKit/NSUserInterfaceValidation.h>
 
-@class NSArray, NSMutableArray;
+@class NSArray;
+@class NSError;
+@class NSMutableArray;
 @class NSURL;
-@class NSMenuItem, NSOpenPanel, NSWindow;
+@class NSString;
+
 @class NSDocument;
+@class NSMenuItem;
+@class NSOpenPanel;
+@class NSWindow;
 
 @interface NSDocumentController : NSObject
 {
   @private
     NSMutableArray 	*_documents;
-    NSMutableArray 	*_recentDocuments;
-    struct __controllerFlags {
-        unsigned int shouldCreateUI:1;
-        unsigned int RESERVED:31;
-    } _controllerFlags;
+    NSMutableArray 	*_recent_documents;
     NSArray		*_types;		// from info.plist with key NSTypes
+    NSTimeInterval      _autosavingDelay;
+    struct __controller_flags {
+        unsigned int should_create_ui:1;
+        unsigned int RESERVED:31;
+    } _controller_flags;
     void 		*_reserved1;
-    void 		*_reserved2;
 }
 
 + (id)sharedDocumentController;
@@ -67,6 +73,32 @@
 
 - (id)makeDocumentWithContentsOfURL:(NSURL *)url ofType:(NSString *)type;
 - (id)openDocumentWithContentsOfURL:(NSURL *)url display:(BOOL)display;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (id)makeDocumentForURL:(NSURL *)url
+       withContentsOfURL:(NSURL *)contents
+                  ofType:(NSString *)type
+                   error:(NSError **)err;
+- (id)makeDocumentWithContentsOfURL:(NSURL *)url 
+			     ofType:(NSString *)type 
+			      error:(NSError **)err;
+- (id)makeUntitledDocumentOfType:(NSString *)type 
+			   error:(NSError **)err;
+- (id)openDocumentWithContentsOfURL:(NSURL *) url
+			    display:(BOOL) flag
+			      error:(NSError **) err;
+- (id)openUntitledDocumentAndDisplay:(BOOL)flag 
+			       error:(NSError **)err;
+- (BOOL)reopenDocumentForURL:(NSURL *)url
+	   withContentsOfURL:(NSURL *)contents
+		       error:(NSError **)err;
+- (BOOL)presentError:(NSError *)err;
+- (void)presentError:(NSError *)err
+      modalForWindow:(NSWindow *)win
+	    delegate:(id)delegate 
+  didPresentSelector:(SEL)sel
+	 contextInfo:(void *)context;
+- (NSError *)willPresentError:(NSError *)err;
+#endif 
 
 /*" With or without UI "*/
 - (BOOL)shouldCreateUI;
@@ -107,6 +139,9 @@
 - (NSString *)currentDirectory;
 - (id)documentForWindow:(NSWindow *)window;
 - (id)documentForFileName:(NSString *)fileName;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (id)documentForURL:(NSURL *)url;
+#endif 
 
 
 /*" Menu validation "*/
@@ -118,10 +153,20 @@
 - (NSString *)typeFromFileExtension:(NSString *)fileExtension;
 - (NSArray *)fileExtensionsFromType:(NSString *)type;
 - (Class)documentClassForType:(NSString *)type;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (NSString *)defaultType;
+- (NSArray *)documentClassNames;
+- (NSString *)typeForContentsOfURL:(NSURL *)url error:(NSError **)err;
+#endif 
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+/* Autosaving */
+- (NSTimeInterval)autosavingDelay;
+- (void)setAutosavingDelay:(NSTimeInterval)autosavingDelay;
+#endif 
 
 @end
 
 #endif // GS_API_MACOSX
 
 #endif // _GNUstep_H_NSDocumentController
-

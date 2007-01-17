@@ -36,10 +36,13 @@
 #include <AppKit/AppKitDefines.h>
 
 @class NSCoder;
+@class NSError;
 @class NSString;
+
 @class NSEvent;
 @class NSMenu;
 @class NSUndoManager;
+@class NSWindow;
 
 @interface NSResponder : NSObject <NSCoding>
 {
@@ -128,7 +131,9 @@
 - (void) rightMouseDown: (NSEvent*)theEvent;
 - (void) rightMouseDragged: (NSEvent*)theEvent;
 - (void) rightMouseUp: (NSEvent*)theEvent;
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) scrollWheel: (NSEvent *)theEvent;
+#endif
 
 /*
  * Services menu support
@@ -175,6 +180,17 @@
 
 - (BOOL) shouldBeTreatedAsInkEvent: (NSEvent *)theEvent;
 #endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (BOOL)presentError:(NSError *)error;
+- (void)presentError:(NSError *)error
+      modalForWindow:(NSWindow *)window
+            delegate:(id)delegate
+  didPresentSelector:(SEL)sel
+         contextInfo:(void *)context;
+- (NSError *)willPresentError:(NSError *)error;
+#endif
+
 @end
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
@@ -231,6 +247,7 @@
 - (void) selectParagraph: (id)sender;
 - (void) selectToMark: (id)sender;
 - (void) selectWord: (id)sender;
+- (void) setMark: (id)sender;
 - (void) showContextHelp: (id)sender;
 - (void) swapWithMark: (id)sender;
 - (void) transpose: (id)sender;
@@ -238,11 +255,22 @@
 - (void) uppercaseWord: (id)sender;
 - (void) yank: (id)sender;
 
-// New in MacOSX 10.3
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (void) cancelOperation: (id)sender;
 - (void) deleteBackwardByDecomposingPreviousCharacter: (id)sender;
 - (void) moveLeftAndModifySelection: (id)sender;
 - (void) moveRightAndModifySelection: (id)sender;
+- (void) moveWordLeft: (id)sender;
+- (void) moveWordLeftAndModifySelection: (id)sender;
+- (void) moveWordRight: (id)sender;
+- (void) moveWordRightAndModifySelection: (id)sender;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (void) insertContainerBreak: (id)sender;
+- (void) insertLineBreak: (id)sender;
+- (void) tabletPoint:(NSEvent *)event;
+- (void) tabletProximity:(NSEvent *)event;
+#endif
 
 @end
 #endif

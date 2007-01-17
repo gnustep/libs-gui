@@ -7,7 +7,7 @@
    Author: Carl Lindberg <Carl.Lindberg@hbo.com>
    Date: 1999
    Modifications: Fred Kiefer <FredKiefer@gmx.de>
-   Date: June 2000
+   Date: June 2000, Dec 2006
 
    This file is part of the GNUstep GUI Library.
 
@@ -28,15 +28,16 @@
 */
 
 #include <Foundation/NSData.h>
+#include "AppKit/NSBox.h"
 #include "AppKit/NSDocument.h"
 #include "AppKit/NSFileWrapper.h"
 #include "AppKit/NSSavePanel.h"
-#include "AppKit/NSPrintInfo.h"
 #include "AppKit/NSPageLayout.h"
-#include "AppKit/NSView.h"
+#include "AppKit/NSPrintInfo.h"
+#include "AppKit/NSPrintOperation.h"
 #include "AppKit/NSPopUpButton.h"
+#include "AppKit/NSView.h"
 #include "AppKit/NSDocumentFrameworkPrivate.h"
-#include "AppKit/NSBox.h"
 
 #include "GSGuiPrivate.h"
 
@@ -69,16 +70,16 @@
   self = [super init];
   if (self != nil)
     {
-      _documentIndex = untitledCount++;
-      _windowControllers = [[NSMutableArray alloc] init];
+      _document_index = untitledCount++;
+      _window_controllers = [[NSMutableArray alloc] init];
       fileTypes = [[self class] readableTypes];
-      _docFlags.hasUndoManager = YES;
+      _doc_flags.has_undo_manager = YES;
 
       /* Set our default type */
       if ([fileTypes count])
        { 
          [self setFileType: [fileTypes objectAtIndex: 0]];
-	 ASSIGN(_saveType, [fileTypes objectAtIndex: 0]);
+	 ASSIGN(_save_type, [fileTypes objectAtIndex: 0]);
        }
     }
   return self;
@@ -94,10 +95,12 @@
   self = [self init];
   if (self != nil)
     {
-      [self setFileType: fileType];
-      [self setFileName: fileName];
-      
-      if (![self readFromFile: fileName ofType: fileType])
+      if ([self readFromFile: fileName ofType: fileType])
+        {
+	  [self setFileType: fileType];
+	  [self setFileName: fileName];
+	}
+      else
 	{
 	  NSRunAlertPanel (_(@"Load failed"),
 			   _(@"Could not load file %@."),
@@ -121,7 +124,7 @@
       if ([self readFromURL: url ofType: fileType])
 	{
 	  [self setFileType: fileType];
-	  [self setFileName:[url path]];
+	  [self setFileName: [url path]];
 	}
       else
 	{
@@ -134,52 +137,172 @@
   return self;
 }
 
+- (id)initForURL: (NSURL *)forUrl
+withContentsOfURL: (NSURL *)url
+          ofType: (NSString *)type
+           error: (NSError **)error
+{
+  self = [self initWithType: type error: error];
+  if (self != nil)
+    {
+      if ([self readFromURL: url
+                     ofType: type
+		      error: error])
+        {
+	  if (forUrl != nil)
+	    {
+	      [self setFileURL: forUrl];
+	    }
+	}
+      else 
+        {
+	  DESTROY(self);
+	}
+    }
+  return self;
+}
+
+- (id)initWithContentsOfURL: (NSURL *)url
+                     ofType: (NSString *)type
+                      error: (NSError **)error
+{
+  return [self initForURL: url
+        withContentsOfURL: url
+	           ofType: type
+	            error: error];
+}
+
+- (id)initWithType:(NSString *)type
+             error:(NSError **)error
+{
+  self = [self init];
+  if (self != nil)
+    {
+      [self setFileType: type];
+    }
+  return self;
+}
+
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver: self];
-  RELEASE(_undoManager);
-  RELEASE(_fileName);
-  RELEASE(_fileType);
-  RELEASE(_windowControllers);
+  RELEASE(_undo_manager);
+  RELEASE(_file_name);
+  RELEASE(_file_url);
+  RELEASE(_file_type);
+  RELEASE(_last_component_file_name);
+  RELEASE(_autosaved_file_url);
+  RELEASE(_file_modification_date);
+  RELEASE(_window_controllers);
   RELEASE(_window);
-  RELEASE(_printInfo);
-  RELEASE(savePanelAccessory);
-  RELEASE(spaButton);
-  RELEASE(_saveType);
+  RELEASE(_print_info);
+  RELEASE(_save_panel_accessory);
+  RELEASE(_spa_button);
+  RELEASE(_save_type);
   [super dealloc];
 }
 
+/* 
+ * Private helper method to check, if the method given via the selector sel 
+ * has been overridden in the current subclass.
+ */
+- (BOOL)_hasOverridden: (SEL)sel
+{
+  // The actual signature is not important as we wont call the methods.
+  IMP meth1;
+  IMP meth2;
+
+  meth1 = [self methodForSelector: sel];
+  meth2 = [[NSDocument class] instanceMethodForSelector: sel];
+
+  return (meth1 != meth2);
+}
+
+#define OVERRIDDEN(sel) [self _hasOverridden: @selector(sel)]
+
 - (NSString *)fileName
 {
-  return _fileName;
+  return _file_name;
 }
 
 - (void)setFileName: (NSString *)fileName
 {
-  ASSIGN(_fileName, fileName);
-	
-  [_windowControllers makeObjectsPerformSelector:
-			@selector(synchronizeWindowTitleWithDocumentName)];
+  // This check is to prevent super calls from recursing.
+  if (!OVERRIDDEN(setFileName:))
+    {
+      [self setFileURL: [NSURL fileURLWithPath: fileName]];
+    }
+  ASSIGN(_file_name, fileName);
+  [self setLastComponentOfFileName: [_file_name lastPathComponent]];
 }
 
 - (NSString *)fileType
 {
-  return _fileType;
+  return _file_type;
 }
 
 - (void)setFileType: (NSString *)type
 {
-  ASSIGN(_fileType, type);
+  ASSIGN(_file_type, type);
+}
+
+- (NSURL *)fileURL
+{
+  if (OVERRIDDEN(fileName))
+    {
+      return [NSURL fileURLWithPath: [self fileName]];
+    }
+  else
+    {
+      return _file_url;
+    }
+}
+
+- (void)setFileURL: (NSURL *)url
+{
+  if (OVERRIDDEN(setFileName:) && 
+      ((url == nil) || [url isFileURL]))
+    {
+      [self setFileName: [url path]];
+    }
+  else
+    {
+      ASSIGN(_file_url, url);
+      [self setLastComponentOfFileName: [[_file_url path] lastPathComponent]];
+    }
+}
+
+- (NSDate *)fileModificationDate
+{
+  return _file_modification_date;
+}
+
+- (void)setFileModificationDate: (NSDate *)date
+{
+  ASSIGN(_file_modification_date, date);
+}
+
+- (NSString *)lastComponentOfFileName
+{
+  return _last_component_file_name;
+}
+
+- (void)setLastComponentOfFileName: (NSString *)str
+{
+  ASSIGN(_last_component_file_name, str);
+
+  [[self windowControllers] makeObjectsPerformSelector:
+				@selector(synchronizeWindowTitleWithDocumentName)];
 }
 
 - (NSArray *)windowControllers
 {
-  return _windowControllers;
+  return _window_controllers;
 }
 
 - (void)addWindowController: (NSWindowController *)windowController
 {
-  [_windowControllers addObject: windowController];
+  [_window_controllers addObject: windowController];
   if ([windowController document] != self)
     {
       [windowController setDocument: self];
@@ -188,10 +311,10 @@
 
 - (void)removeWindowController: (NSWindowController *)windowController
 {
-  if ([_windowControllers containsObject: windowController])
+  if ([_window_controllers containsObject: windowController])
     {
       [windowController setDocument: nil];
-      [_windowControllers removeObject: windowController];
+      [_window_controllers removeObject: windowController];
     }
 }
 
@@ -206,6 +329,19 @@
 - (void)setWindow: (NSWindow *)aWindow
 {
   _window = aWindow;
+}
+
+- (NSWindow *)windowForSheet
+{
+  NSWindow *win;
+
+  if (([_window_controllers count] > 0) &&
+      ((win = [[_window_controllers objectAtIndex: 0] window]) != nil))
+    {
+      return win;
+    }
+
+  return [NSApp mainWindow];
 }
 
 /**
@@ -241,25 +377,34 @@
  */
 - (void) showWindows
 {
-  [_windowControllers makeObjectsPerformSelector: @selector(showWindow:)
+  [_window_controllers makeObjectsPerformSelector: @selector(showWindow:)
 				      withObject: self];
 }
 
 - (BOOL) isDocumentEdited
 {
-  return _changeCount != 0;
+  return _change_count != 0;
 }
 
 - (void)updateChangeCount: (NSDocumentChangeType)change
 {
-  int i, count = [_windowControllers count];
+  int i, count = [_window_controllers count];
   BOOL isEdited;
   
   switch (change)
     {
-    case NSChangeDone:		_changeCount++; break;
-    case NSChangeUndone:	_changeCount--; break;
-    case NSChangeCleared:	_changeCount = 0; break;
+    case NSChangeDone:		_change_count++; 
+	                        _autosave_change_count++; 
+				break;
+    case NSChangeUndone:	_change_count--; 
+	                        _autosave_change_count--; 
+				break;
+    case NSChangeReadOtherContents:
+    case NSChangeCleared:	_change_count = 0; 
+                                _autosave_change_count = 0; 
+				break;
+    case NSChangeAutosaved:     _autosave_change_count = 0; 
+	                        break;
     }
   
     /*
@@ -272,7 +417,7 @@
 
   for (i=0; i<count; i++)
     {
-      [[_windowControllers objectAtIndex: i] setDocumentEdited: isEdited];
+      [[_window_controllers objectAtIndex: i] setDocumentEdited: isEdited];
     }
 }
 
@@ -324,12 +469,12 @@
 
 - (BOOL)shouldCloseWindowController: (NSWindowController *)windowController
 {
-  if (![_windowControllers containsObject: windowController]) return YES;
+  if (![_window_controllers containsObject: windowController]) return YES;
 
   /* If it's the last window controller, pop up a warning */
   /* maybe we should count only loaded window controllers (or visible windows). */
   if ([windowController shouldCloseDocument]
-      || [_windowControllers count] == 1)
+      || [_window_controllers count] == 1)
     {
       return [self canCloseDocument];
     }
@@ -357,13 +502,20 @@
 
 - (NSString *)displayName
 {
-  if ([self fileName] != nil)
+  if ([self lastComponentOfFileName] != nil)
     {
-      return [[[self fileName] lastPathComponent] stringByDeletingPathExtension];
+      if ([self fileNameExtensionWasHiddenInLastRunSavePanel])
+	{
+	  return [[self lastComponentOfFileName] stringByDeletingPathExtension];
+	}
+      else
+        {
+	  return [self lastComponentOfFileName];
+	}
     }
   else
     {
-      return [NSString stringWithFormat: _(@"Untitled-%d"), _documentIndex];
+      return [NSString stringWithFormat: _(@"Untitled-%d"), _document_index];
     }
 }
 
@@ -379,6 +531,19 @@
   return nil;
 }
 
+- (NSData *)dataOfType: (NSString *)type
+                 error: (NSError **)error
+{
+  if (OVERRIDDEN(dataRepresentationOfType:))
+    {
+      return [self dataRepresentationOfType: type];
+    }
+
+  [NSException raise: NSInternalInconsistencyException format:@"%@ must implement %@",
+	       NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
+  return nil;
+}
+
 - (BOOL)loadDataRepresentation: (NSData *)data ofType: (NSString *)type
 {
   [NSException raise: NSInternalInconsistencyException format:@"%@ must implement %@",
@@ -389,6 +554,22 @@
 - (NSFileWrapper *)fileWrapperRepresentationOfType: (NSString *)type
 {
   NSData *data = [self dataRepresentationOfType: type];
+  
+  if (data == nil) 
+    return nil;
+
+  return AUTORELEASE([[NSFileWrapper alloc] initRegularFileWithContents: data]);
+}
+
+- (NSFileWrapper *)fileWrapperOfType: (NSString *)type
+                               error: (NSError **)error
+{
+  if (OVERRIDDEN(fileWrapperRepresentationOfType:))
+    {
+      return [self fileWrapperRepresentationOfType: type];
+    }
+
+  NSData *data = [self dataOfType: type error: error];
   
   if (data == nil) 
     return nil;
@@ -455,15 +636,304 @@
   return [self readFromURL: url ofType: type];
 }
 
+- (BOOL)readFromData: (NSData *)data
+              ofType: (NSString *)type
+               error: (NSError **)error
+{
+  [NSException raise: NSInternalInconsistencyException format:@"%@ must implement %@",
+	       NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
+  return NO;
+}
+
+- (BOOL)readFromFileWrapper: (NSFileWrapper *)wrapper
+                     ofType: (NSString *)type
+                      error: (NSError **)error
+{
+  if (OVERRIDDEN(loadFileWrapperRepresentation:ofType:))
+    {
+      return [self loadFileWrapperRepresentation: wrapper ofType: type];
+    }
+
+  if ([wrapper isRegularFile])
+    {
+      return [self readFromData: [wrapper regularFileContents]
+                         ofType: type
+                          error: error];
+    }
+
+  // FIXME: Set error
+  return NO;
+}
+
+- (BOOL)readFromURL: (NSURL *)url
+             ofType: (NSString *)type
+              error: (NSError **)error
+{
+  if ([url isFileURL])
+    {
+      NSString *fileName = [url path];
+      
+      if (OVERRIDDEN(readFromFile:ofType:))
+        {
+	  return [self readFromFile: [url path] ofType: type];
+	}
+      else
+        {
+	  NSFileWrapper *wrapper = AUTORELEASE([[NSFileWrapper alloc] initWithPath: fileName]);
+	  
+	  return [self readFromFileWrapper: wrapper 
+		       ofType: type
+		       error: error];
+	}
+    }
+
+  // FIXME: Set error
+  return NO;
+}
+
+- (BOOL)revertToContentsOfURL: (NSURL *)url
+                       ofType: (NSString *)type
+                        error: (NSError **)error
+{
+  return [self readFromURL: url
+                    ofType: type
+	             error: error];
+}
+
+- (BOOL)writeToFile: (NSString *)fileName 
+	     ofType: (NSString *)type 
+       originalFile: (NSString *)origFileName
+      saveOperation: (NSSaveOperationType)saveOp
+{
+  return [self writeToFile: fileName ofType: type];
+}
+
+
+- (NSString *)_backupFileNameFor: (NSString *)newFileName 
+{
+  NSString *extension = [newFileName pathExtension];
+  NSString *backupFilename = [newFileName stringByDeletingPathExtension];
+  backupFilename = [backupFilename stringByAppendingString:@"~"];
+  return [backupFilename stringByAppendingPathExtension: extension];
+}
+
+- (BOOL)_writeBackupForFile: (NSString *)newFileName 
+		      toFile: (NSString *)backupFilename
+{
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+
+  /* NSFileManager movePath: will fail if destination exists */
+  /* Save panel has already asked if the user wants to replace it */
+  if ([fileManager fileExistsAtPath: backupFilename])
+    {
+      [fileManager removeFileAtPath: backupFilename handler: nil];
+    }
+      
+  // Move or copy?
+  if (![fileManager movePath: newFileName toPath: backupFilename handler: nil] &&
+      [self keepBackupFile])
+    {
+      int result = NSRunAlertPanel(_(@"File Error"),
+				   _(@"Can't create backup file.  Save anyways?"),
+				   _(@"Save"), _(@"Cancel"), nil);
+      
+      if (result != NSAlertDefaultReturn) return NO;
+    }
+
+  return YES;
+}
+
+- (BOOL)writeWithBackupToFile: (NSString *)fileName 
+		       ofType: (NSString *)fileType 
+		saveOperation: (NSSaveOperationType)saveOp
+{
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  NSString *backupFilename = nil;
+  BOOL isNativeType = [[self class] isNativeType: fileType];
+
+  if (fileName && isNativeType)
+    {
+      NSArray  *extensions = [[NSDocumentController sharedDocumentController] 
+			       fileExtensionsFromType: fileType];
+
+      if ([extensions count] > 0)
+	{
+	  NSString *extension = [extensions objectAtIndex: 0];
+	  NSString *newFileName = [[fileName stringByDeletingPathExtension] 
+				    stringByAppendingPathExtension: extension];
+	  
+	  if ([fileManager fileExistsAtPath: newFileName])
+	    {
+	      backupFilename = [self _backupFileNameFor: newFileName];
+	      
+	      if (![self _writeBackupForFile: newFileName
+			 toFile: backupFilename])
+	        {
+		  return NO;
+		}
+	    }
+
+	  if ([self writeToFile: fileName 
+		    ofType: fileType
+		    originalFile: backupFilename
+		    saveOperation: saveOp])
+	    {
+	      // FIXME: Should set the file attributes
+	      
+	      if (saveOp != NSSaveToOperation)
+		{
+		  [self setFileName: newFileName];
+		  [self setFileType: fileType];
+		  [self updateChangeCount: NSChangeCleared];
+		}
+	      
+	      if (backupFilename && ![self keepBackupFile])
+		{
+		  [fileManager removeFileAtPath: backupFilename handler: nil];
+		}
+	      
+	      return YES;
+	    }
+	}
+    }
+
+  return NO;
+}
+
+- (BOOL)writeSafelyToURL: (NSURL *)url
+                  ofType: (NSString *)type
+        forSaveOperation: (NSSaveOperationType)saveOp
+                   error: (NSError **)error
+{
+  NSDictionary *attrs;
+  NSURL *original = [self fileURL];
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  NSString *backupFilename = nil;
+  BOOL isNativeType = [[self class] isNativeType: type];
+      
+  if (OVERRIDDEN(writeWithBackupToFile:ofType:saveOperation:))
+    {
+      if (saveOp == NSAutosaveOperation)
+	{
+	  saveOp = NSSaveToOperation;
+	}
+
+      return [self writeWithBackupToFile: [url path] 
+		   ofType: type 
+		   saveOperation: saveOp];
+    }
+
+  if (!isNativeType || (url == nil))
+    {
+      return NO;
+    }
+  
+  if (saveOp == NSSaveOperation)
+    {
+      if ([url isFileURL])
+        {
+	  NSString *newFileName;
+	  
+	  newFileName = [url path];
+	  if ([fileManager fileExistsAtPath: newFileName])
+	    {
+	      backupFilename = [self _backupFileNameFor: newFileName];
+	      
+	      if (![self _writeBackupForFile: newFileName
+			 toFile: backupFilename])
+	        {
+		  // FIXME: Set error.
+		  return NO;
+		}
+	    }
+	}
+    }
+      
+  if (![self writeToURL: url 
+	     ofType: type 
+	     forSaveOperation: saveOp 
+	     originalContentsURL: original
+	     error: error])
+    {
+      return NO;
+    }
+
+  attrs = [self fileAttributesToWriteToURL: url
+		ofType: type 
+		forSaveOperation: saveOp 
+		originalContentsURL: original
+		error: error];
+  // FIXME: Should set the file attributes
+
+  if (saveOp != NSSaveToOperation)
+    {
+      [self setFileURL: url];
+      [self setFileType: type];
+      [self updateChangeCount: NSChangeCleared];
+    }
+
+  if (backupFilename && ![self keepBackupFile])
+    {
+      [fileManager removeFileAtPath: backupFilename handler: nil];
+    }
+	      
+  return YES;
+}
+
+- (BOOL)writeToURL: (NSURL *)url 
+            ofType: (NSString *)type 
+             error: (NSError **)error
+{
+  NSFileWrapper *wrapper;
+
+  if (OVERRIDDEN(writeToFile:ofType:))
+    {
+	return [self writeToFile: [url path] ofType: type];
+    }
+
+  wrapper = [self fileWrapperOfType: type
+                              error: error];
+  if (wrapper == nil)
+    {
+      return NO;
+    }
+   
+  return [wrapper writeToFile: [url path] atomically: YES updateFilenames: YES];
+}
+
+- (BOOL)writeToURL: (NSURL *)url
+            ofType: (NSString *)type
+  forSaveOperation: (NSSaveOperationType)saveOp
+originalContentsURL: (NSURL *)orig
+             error: (NSError **)error
+{
+  if (OVERRIDDEN(writeToFile:ofType:originalFile:saveOperation:))
+    {
+      if (saveOp == NSAutosaveOperation)
+	{
+	  saveOp = NSSaveToOperation;
+	}
+
+      return [self writeToFile: [url path] 
+		   ofType: type 
+		   originalFile: [orig path] 
+		   saveOperation: saveOp];
+    }
+
+  return [self writeToURL: url
+	       ofType: type
+	       error: error];
+}
+
 - (IBAction)changeSaveType: (id)sender
 { 
   NSDocumentController *controller = 
     [NSDocumentController sharedDocumentController];
   NSArray  *extensions = nil;
 
-  ASSIGN(_saveType, [controller _nameForHumanReadableType: 
+  ASSIGN(_save_type, [controller _nameForHumanReadableType: 
 				  [sender titleOfSelectedItem]]);
-  extensions = [controller fileExtensionsFromType: _saveType];
+  extensions = [controller fileExtensionsFromType: _save_type];
   if ([extensions count] > 0)
     {
       [(NSSavePanel *)[sender window] setRequiredFileType: [extensions objectAtIndex:0]];
@@ -477,6 +947,27 @@
   return [savePanel runModal];
 }
 
+- (void)runModalSavePanelForSaveOperation: (NSSaveOperationType)saveOperation 
+				 delegate: (id)delegate
+			  didSaveSelector: (SEL)didSaveSelector 
+			      contextInfo: (void *)contextInfo
+{
+  NSString *fileName;
+
+  // FIXME: Setting of the delegate of the save panel is missing
+  fileName = [self fileNameFromRunningSavePanelForSaveOperation: saveOperation];
+  [self saveToFile: fileName 
+	saveOperation: saveOperation 
+	delegate: delegate
+	didSaveSelector: didSaveSelector 
+	contextInfo: contextInfo];
+}
+
+- (BOOL)prepareSavePanel: (NSSavePanel *)savePanel
+{
+  return YES;
+}
+
 - (BOOL)shouldRunSavePanelWithAccessoryView
 {
   return YES;
@@ -484,21 +975,21 @@
 
 - (void) _createPanelAccessory
 {
-  if (savePanelAccessory == nil)
+  if (_save_panel_accessory == nil)
     {
       NSRect accessoryFrame = NSMakeRect(0,0,380,70);
       NSRect spaFrame = NSMakeRect(115,14,150,22);
 
-      savePanelAccessory = [[NSBox alloc] initWithFrame: accessoryFrame];
-      [(NSBox *)savePanelAccessory setTitle: @"File Type"];
-      [savePanelAccessory setAutoresizingMask: 
+      _save_panel_accessory = [[NSBox alloc] initWithFrame: accessoryFrame];
+      [(NSBox *)_save_panel_accessory setTitle: @"File Type"];
+      [_save_panel_accessory setAutoresizingMask: 
 			    NSViewWidthSizable | NSViewHeightSizable];
-      spaButton = [[NSPopUpButton alloc] initWithFrame: spaFrame];
-      [spaButton setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable | NSViewMinYMargin |
+      _spa_button = [[NSPopUpButton alloc] initWithFrame: spaFrame];
+      [_spa_button setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable | NSViewMinYMargin |
 		 NSViewMaxYMargin | NSViewMinXMargin | NSViewMaxXMargin];
-      [spaButton setTarget: self];
-      [spaButton setAction: @selector(changeSaveType:)];
-      [savePanelAccessory addSubview: spaButton];
+      [_spa_button setTarget: self];
+      [_spa_button setAction: @selector(changeSaveType:)];
+      [_save_panel_accessory addSubview: _spa_button];
     }
 }
 - (void) _addItemsToSpaButtonFromArray: (NSArray *)types
@@ -509,25 +1000,25 @@
 
   while ((title = [en nextObject]) != nil)
     {
-      [spaButton addItemWithTitle: title];
+      [_spa_button addItemWithTitle: title];
       i++;
     }
 
   // if it's more than one, then
-  [spaButton setEnabled: (i > 0)];
+  [_spa_button setEnabled: (i > 0)];
   
   // if we have some items, select the current filetype.
   if (i > 0)
     {
       NSString *title = [[NSDocumentController sharedDocumentController] 
 			  displayNameForType: [self fileType]];
-      if ([spaButton itemWithTitle: title] != nil)
+      if ([_spa_button itemWithTitle: title] != nil)
 	{
-	  [spaButton selectItemWithTitle: title];
+	  [_spa_button selectItemWithTitle: title];
 	}
       else
 	{
-	  [spaButton selectItemAtIndex: 0];
+	  [_spa_button selectItemAtIndex: 0];
 	}
     }
 }
@@ -546,12 +1037,12 @@
   
   if ([self shouldRunSavePanelWithAccessoryView])
     {
-      if (savePanelAccessory == nil)
+      if (_save_panel_accessory == nil)
 	[self _createPanelAccessory];
       
       [self _addItemsToSpaButtonFromArray: displayNames];
       
-      accessory = savePanelAccessory;
+      accessory = _save_panel_accessory;
     }
 
   if ([displayNames count] > 0)
@@ -595,6 +1086,39 @@
   return nil;
 }
 
+- (NSArray *)writableTypesForSaveOperation: (NSSaveOperationType)op
+{
+  NSArray *types = [isa writableTypes];
+  NSMutableArray *muTypes;
+  int i, len;
+
+  if (op == NSSaveToOperation)
+    {
+      return types;
+    }
+
+  len = [types count];
+  muTypes = [NSMutableArray arrayWithCapacity: len];
+  for (i = 0; i < len; i++)
+    {
+      NSString *type;
+	
+      type = [types objectAtIndex: i];
+      if ([[self class] isNativeType: type])
+        {
+	  [muTypes addObject: type];
+	}
+    }
+
+  return muTypes;
+}
+
+- (BOOL)fileNameExtensionWasHiddenInLastRunSavePanel
+{
+  // FIXME
+  return NO;
+}
+
 - (BOOL)shouldChangePrintInfo: (NSPrintInfo *)newPrintInfo
 {
   return YES;
@@ -602,20 +1126,34 @@
 
 - (NSPrintInfo *)printInfo
 {
-  return _printInfo? _printInfo : [NSPrintInfo sharedPrintInfo];
+  return _print_info? _print_info : [NSPrintInfo sharedPrintInfo];
 }
 
 - (void)setPrintInfo: (NSPrintInfo *)printInfo
 {
-  ASSIGN(_printInfo, printInfo);
+  ASSIGN(_print_info, printInfo);
 }
 
 
 // Page layout panel (Page Setup)
+- (BOOL)preparePageLayout:(NSPageLayout *)pageLayout
+{
+  return YES;
+}
 
 - (int)runModalPageLayoutWithPrintInfo: (NSPrintInfo *)printInfo
 {
-  return [[NSPageLayout pageLayout] runModalWithPrintInfo: printInfo];
+  NSPageLayout *pageLayout;
+
+  pageLayout = [NSPageLayout pageLayout];
+  if ([self preparePageLayout: pageLayout])
+    {
+      return [pageLayout runModalWithPrintInfo: printInfo];
+    }
+  else
+    {
+      return NSCancelButton;
+    }
 }
 
 - (IBAction)runPageLayout: (id)sender
@@ -630,6 +1168,28 @@
     }
 }
 
+- (void)runModalPageLayoutWithPrintInfo: (NSPrintInfo *)printInfo
+                               delegate: (id)delegate
+                         didRunSelector: (SEL)sel
+                            contextInfo: (void *)context
+{
+  NSPageLayout *pageLayout;
+
+  pageLayout = [NSPageLayout pageLayout];
+  if ([self preparePageLayout: pageLayout])
+    {
+      NSWindow *win;
+
+      win = [self windowForSheet];
+
+      [pageLayout beginSheetWithPrintInfo: printInfo
+		  modalForWindow: win
+		  delegate: delegate
+		  didEndSelector: sel
+		  contextInfo: context];
+    }
+}
+
 /* This is overridden by subclassers; the default implementation does nothing. */
 - (void)printShowingPrintPanel: (BOOL)flag
 {
@@ -638,6 +1198,62 @@
 - (IBAction)printDocument: (id)sender
 {
   [self printShowingPrintPanel: YES];
+}
+
+- (void)printDocumentWithSettings: (NSDictionary *)settings
+                   showPrintPanel: (BOOL)flag
+                         delegate: (id)delegate
+                 didPrintSelector: (SEL)sel
+                      contextInfo: (void *)context
+{
+  NSPrintOperation *printOp;
+  NSError *error;
+
+  if (OVERRIDDEN(printShowingPrintPanel:))
+    {
+      // FIXME: More communication with the panel is needed.
+      return [self printShowingPrintPanel: flag];
+    }
+
+  printOp = [self printOperationWithSettings: settings
+		  error: &error];
+  if (printOp != nil)
+    {
+      [printOp setShowsPrintPanel: flag];
+      [self runModalPrintOperation: printOp
+	    delegate: delegate
+	    didRunSelector: sel
+	    contextInfo: context];
+    }
+  else
+    {
+      [self presentError: error];
+
+      if (delegate != nil && sel != NULL)
+        {
+	  void (*meth)(id, SEL, id, BOOL, void*);
+	  meth = (void (*)(id, SEL, id, BOOL, void*))[delegate methodForSelector: sel];
+	  if (meth)
+	      meth(delegate, sel, self, NO, context);
+	}
+    }
+}
+
+- (NSPrintOperation *)printOperationWithSettings: (NSDictionary *)settings
+                                           error: (NSError **)error
+{
+  return nil;
+}
+
+- (void)runModalPrintOperation: (NSPrintOperation *)op
+                      delegate: (id)delegate
+                didRunSelector: (SEL)sel
+                   contextInfo: (void *)context
+{
+  [op runOperationModalForWindow: [self windowForSheet]
+      delegate: delegate 
+      didRunSelector: sel
+      contextInfo: context];
 }
 
 - (BOOL)validateMenuItem: (NSMenuItem *)anItem
@@ -652,40 +1268,40 @@
     }
   else if (sel_eq(action, @selector(undo:)))
     {
-      if (_undoManager == nil)
+      if (_undo_manager == nil)
 	{
 	  result = NO;
 	}
       else
 	{
-	  if ([_undoManager canUndo])
+	  if ([_undo_manager canUndo])
 	    {
-	      [anItem setTitle: [_undoManager undoMenuItemTitle]];
+	      [anItem setTitle: [_undo_manager undoMenuItemTitle]];
 	      result = YES;
 	    }
 	  else
 	    {
-	      [anItem setTitle: [_undoManager undoMenuTitleForUndoActionName: @""]];
+	      [anItem setTitle: [_undo_manager undoMenuTitleForUndoActionName: @""]];
 	      result = NO;
 	    }
 	}
     }
   else if (sel_eq(action, @selector(redo:)))
     {
-      if (_undoManager == nil)
+      if (_undo_manager == nil)
 	{
 	  result = NO;
 	}
       else
 	{
-	  if ([_undoManager canRedo])
+	  if ([_undo_manager canRedo])
 	    {
-	      [anItem setTitle: [_undoManager redoMenuItemTitle]];
+	      [anItem setTitle: [_undo_manager redoMenuItemTitle]];
 	      result = YES;
 	    }
 	  else
 	    {
-	      [anItem setTitle: [_undoManager redoMenuTitleForUndoActionName: @""]];
+	      [anItem setTitle: [_undo_manager redoMenuTitleForUndoActionName: @""]];
 	      result = NO;
 	    }
 	}
@@ -704,92 +1320,25 @@
 
 - (NSString *)fileTypeFromLastRunSavePanel
 {
-  return _saveType;
+  return _save_type;
 }
 
 - (NSDictionary *)fileAttributesToWriteToFile: (NSString *)fullDocumentPath 
 				       ofType: (NSString *)docType 
 				saveOperation: (NSSaveOperationType)saveOperationType
 {
-  // FIXME: Implement.
+  // FIXME: Implement. Should set NSFileExtensionHidden
   return [NSDictionary dictionary];
 }
 
-- (BOOL)writeToFile: (NSString *)fileName 
-	     ofType: (NSString *)type 
-       originalFile: (NSString *)origFileName
-      saveOperation: (NSSaveOperationType)saveOp
+- (NSDictionary *)fileAttributesToWriteToURL:(NSURL *)url
+                                      ofType:(NSString *)type
+                            forSaveOperation:(NSSaveOperationType)op
+                         originalContentsURL:(NSURL *)original
+                                       error:(NSError **)error
 {
-  return [self writeToFile: fileName ofType: type];
-}
-
-- (BOOL)writeWithBackupToFile: (NSString *)fileName 
-		       ofType: (NSString *)fileType 
-		saveOperation: (NSSaveOperationType)saveOp
-{
-  NSFileManager *fileManager = [NSFileManager defaultManager];
-  NSString *backupFilename = nil;
-  BOOL isNativeType = [[self class] isNativeType: fileType];
-
-  if (fileName && isNativeType)
-    {
-      NSArray  *extensions = [[NSDocumentController sharedDocumentController] 
-			       fileExtensionsFromType: fileType];
-
-      if ([extensions count] > 0)
-	{
-	  NSString *extension = [extensions objectAtIndex: 0];
-	  NSString *newFileName = [[fileName stringByDeletingPathExtension] 
-				    stringByAppendingPathExtension: extension];
-	  
-	  if ([fileManager fileExistsAtPath: newFileName])
-	    {
-	      backupFilename = [newFileName stringByDeletingPathExtension];
-	      backupFilename = [backupFilename stringByAppendingString:@"~"];
-	      backupFilename = [backupFilename stringByAppendingPathExtension: extension];
-	      
-	      /* Save panel has already asked if the user wants to replace it */
-	      
-	      /* NSFileManager movePath: will fail if destination exists */
-	      if ([fileManager fileExistsAtPath: backupFilename])
-		[fileManager removeFileAtPath: backupFilename handler: nil];
-	      
-	      // Move or copy?
-	      if (![fileManager movePath: newFileName toPath: backupFilename handler: nil] &&
-		  [self keepBackupFile])
-		{
-		  int result = NSRunAlertPanel(_(@"File Error"),
-					       _(@"Can't create backup file.  Save anyways?"),
-					       _(@"Save"), _(@"Cancel"), nil);
-		  
-		  if (result != NSAlertDefaultReturn) return NO;
-		}
-	    }
-	  if ([self writeToFile: fileName 
-		    ofType: fileType
-		    originalFile: backupFilename
-		    saveOperation: saveOp])
-	    {
-	      if (saveOp != NSSaveToOperation)
-		{
-		  [self setFileName: newFileName];
-		  [self setFileType: fileType];
-		  [self updateChangeCount: NSChangeCleared];
-		}
-	      
-	      // FIXME: Should set the file attributes
-	      
-	      if (backupFilename && ![self keepBackupFile])
-		{
-		  [fileManager removeFileAtPath: backupFilename handler: nil];
-		}
-	      
-	      return YES;
-	    }
-	}
-    }
-
-  return NO;
+  // FIXME: Implement. Should set NSFileExtensionHidden
+  return [NSDictionary dictionary];
 }
 
 - (IBAction)saveDocument: (id)sender
@@ -809,34 +1358,43 @@
 
 - (IBAction)saveDocumentAs: (id)sender
 {
-  NSString *filename = 
-      [self fileNameFromRunningSavePanelForSaveOperation: 
-		NSSaveAsOperation];
-
-  [self writeWithBackupToFile: filename 
-	ofType: [self fileTypeFromLastRunSavePanel]
-	saveOperation: NSSaveAsOperation];
+  [self runModalSavePanelForSaveOperation: NSSaveAsOperation 
+	delegate: nil
+	didSaveSelector: NULL 
+	contextInfo: NULL];
 }
 
 - (IBAction)saveDocumentTo: (id)sender
 {
-  NSString *filename = 
-      [self fileNameFromRunningSavePanelForSaveOperation: 
-		NSSaveToOperation];
-
-  [self writeWithBackupToFile: filename 
-	ofType: [self fileTypeFromLastRunSavePanel]
-	saveOperation: NSSaveToOperation];
+  [self runModalSavePanelForSaveOperation: NSSaveToOperation 
+	delegate: nil
+	didSaveSelector: NULL 
+	contextInfo: NULL];
 }
 
 - (void)saveDocumentWithDelegate: (id)delegate 
 		 didSaveSelector: (SEL)didSaveSelector 
 		     contextInfo: (void *)contextInfo
 {
-  [self runModalSavePanelForSaveOperation: NSSaveOperation 
-	delegate: delegate
-	didSaveSelector: didSaveSelector 
-	contextInfo: contextInfo];
+  NSURL *fileURL = [self fileURL];
+  NSString *type = [self fileType];
+
+  if ((fileURL != nil) && (type != nil))
+    {
+      [self saveToURL: fileURL
+	    ofType: type
+	    forSaveOperation: NSSaveOperation
+	    delegate: delegate
+	    didSaveSelector: didSaveSelector 
+	    contextInfo: contextInfo];
+    }
+  else
+    {
+      [self runModalSavePanelForSaveOperation: NSSaveOperation 
+	    delegate: delegate
+	    didSaveSelector: didSaveSelector 
+	    contextInfo: contextInfo];
+    }
 }
 
 - (void)saveToFile: (NSString *)fileName 
@@ -864,30 +1422,52 @@
     }
 }
 
-- (BOOL)prepareSavePanel: (NSSavePanel *)savePanel
+- (BOOL)saveToURL: (NSURL *)url
+           ofType: (NSString *)type
+ forSaveOperation: (NSSaveOperationType)op
+            error: (NSError **)error
 {
-  return YES;
+  return [self writeSafelyToURL: url
+	       ofType: type
+	       forSaveOperation: op
+	       error: error];
 }
 
-- (void)runModalSavePanelForSaveOperation: (NSSaveOperationType)saveOperation 
-				 delegate: (id)delegate
-			  didSaveSelector: (SEL)didSaveSelector 
-			      contextInfo: (void *)contextInfo
+- (BOOL)saveToURL: (NSURL *)url
+           ofType: (NSString *)type
+ forSaveOperation: (NSSaveOperationType)op
+         delegate: (id)delegate
+  didSaveSelector: (SEL)didSaveSelector 
+      contextInfo:(void *)contextInfo
 {
-  NSString *fileName;
+  NSError *error;
+  BOOL saved;
 
-  // FIXME: Setting of the delegate of the save panel is missing
-  fileName = [self fileNameFromRunningSavePanelForSaveOperation: saveOperation];
-  [self saveToFile: fileName 
-	saveOperation: saveOperation 
-	delegate: delegate
-	didSaveSelector: didSaveSelector 
-	contextInfo: contextInfo];
+  saved = [self saveToURL: url
+		ofType: type
+		forSaveOperation: op
+		error: &error];
+  if (!saved)
+    {
+      [self presentError: error]; 
+    }
+
+  if (delegate != nil && didSaveSelector != NULL)
+    {
+      void (*meth)(id, SEL, id, BOOL, void*);
+      meth = (void (*)(id, SEL, id, BOOL, void*))[delegate methodForSelector: 
+							       didSaveSelector];
+      if (meth)
+	meth(delegate, didSaveSelector, self, saved, contextInfo);
+    }
+
+  return saved;
 }
 
 - (IBAction)revertDocumentToSaved: (id)sender
 {
   int result;
+  NSError *error;
 
   result = NSRunAlertPanel 
     (_(@"Revert"),
@@ -895,11 +1475,19 @@
      _(@"Revert"), _(@"Cancel"), nil, 
      [self displayName]);
   
-  if (result == NSAlertDefaultReturn &&
-      [self revertToSavedFromFile:[self fileName] ofType:[self fileType]])
-    {
-      [self updateChangeCount: NSChangeCleared];
-    }
+  if (result == NSAlertDefaultReturn)
+  {
+    if ([self revertToContentsOfURL: [self fileURL] 
+	      ofType: [self fileType]
+	      error: &error])
+      {
+	[self updateChangeCount: NSChangeCleared];
+      }
+    else
+      {
+	[self presentError: error];
+      }
+  }
 }
 
 /** Closes all the windows owned by the document, then removes itself
@@ -909,17 +1497,17 @@
  */
 - (void)close
 {
-  if (_docFlags.inClose == NO)
+  if (_doc_flags.in_close == NO)
     {
-      int count = [_windowControllers count];
+      int count = [_window_controllers count];
       /* Closing a windowController will also send us a close, so make
 	 sure we don't go recursive */
-      _docFlags.inClose = YES;
+      _doc_flags.in_close = YES;
 
       if (count > 0)
 	{
 	  NSWindowController *array[count];
-	  [_windowControllers getObjects: array];
+	  [_window_controllers getObjects: array];
 	  while (count-- > 0)
 	    [array[count] close];
 	}
@@ -932,36 +1520,36 @@
 
 - (NSUndoManager *)undoManager
 {
-  if (_undoManager == nil && [self hasUndoManager])
+  if (_undo_manager == nil && [self hasUndoManager])
     {
       [self setUndoManager: AUTORELEASE([[NSUndoManager alloc] init])];
     }
   
-  return _undoManager;
+  return _undo_manager;
 }
 
 - (void)setUndoManager: (NSUndoManager *)undoManager
 {
-  if (undoManager != _undoManager)
+  if (undoManager != _undo_manager)
     {
       NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
       
-      if (_undoManager)
+      if (_undo_manager)
         {
 	  [center removeObserver: self
 		  name: NSUndoManagerWillCloseUndoGroupNotification
-		  object:_undoManager];
+		  object:_undo_manager];
 	  [center removeObserver: self
 		  name: NSUndoManagerDidUndoChangeNotification
-		  object:_undoManager];
+		  object:_undo_manager];
 	  [center removeObserver: self
 		  name: NSUndoManagerDidRedoChangeNotification
-		  object:_undoManager];
+		  object:_undo_manager];
         }
       
-      ASSIGN(_undoManager, undoManager);
+      ASSIGN(_undo_manager, undoManager);
       
-      if (_undoManager == nil)
+      if (_undo_manager == nil)
         {
 	  [self setHasUndoManager: NO];
         }
@@ -970,32 +1558,90 @@
 	  [center addObserver: self
 		  selector:@selector(_changeWasDone:)
 		  name: NSUndoManagerWillCloseUndoGroupNotification
-		  object:_undoManager];
+		  object:_undo_manager];
 	  [center addObserver: self
 		  selector:@selector(_changeWasUndone:)
 		  name: NSUndoManagerDidUndoChangeNotification
-		  object:_undoManager];
+		  object:_undo_manager];
 	  [[NSNotificationCenter defaultCenter]
 	    addObserver: self
 	    selector:@selector(_changeWasRedone:)
 	    name: NSUndoManagerDidRedoChangeNotification
-	    object:_undoManager];
+	    object:_undo_manager];
         }
     }
 }
 
 - (BOOL)hasUndoManager
 {
-  return _docFlags.hasUndoManager;
+  return _doc_flags.has_undo_manager;
 }
 
 - (void)setHasUndoManager: (BOOL)flag
 {
-  if (_undoManager && !flag)
+  if (_undo_manager && !flag)
     [self setUndoManager: nil];
   
-  _docFlags.hasUndoManager = flag;
+  _doc_flags.has_undo_manager = flag;
 }
+
+- (BOOL)presentError: (NSError *)error
+{
+  error = [self willPresentError: error];
+  return [[NSDocumentController sharedDocumentController] presentError: error];
+}
+
+- (void)presentError: (NSError *)error
+      modalForWindow: (NSWindow *)window
+            delegate: (id)delegate
+  didPresentSelector: (SEL)sel
+         contextInfo: (void *)context
+{
+  error = [self willPresentError: error];
+  [[NSDocumentController sharedDocumentController] presentError: error
+						   modalForWindow: window
+						   delegate: delegate
+						   didPresentSelector: sel
+						   contextInfo: context];
+}
+
+- (NSError *)willPresentError:(NSError *)error
+{
+  return error;
+}
+
+- (NSURL *)autosavedContentsFileURL
+{
+  return _autosaved_file_url;
+}
+
+- (void)setAutosavedContentsFileURL: (NSURL *)url
+{
+  ASSIGN(_autosaved_file_url, url);
+}
+
+- (void)autosaveDocumentWithDelegate: (id)delegate
+                 didAutosaveSelector: (SEL)didAutosaveSelector
+                         contextInfo: (void *)context
+{
+  [self saveToURL: [self autosavedContentsFileURL]
+	ofType: [self autosavingFileType]
+	forSaveOperation: NSAutosaveOperation
+	delegate: delegate
+	didSaveSelector: didAutosaveSelector 
+	contextInfo: context];
+}
+
+- (NSString *)autosavingFileType
+{
+  return [self fileType];
+}
+
+- (BOOL)hasUnautosavedChanges
+{
+  return _autosave_change_count != 0;
+}
+
 @end
 
 @implementation NSDocument(Private)
@@ -1015,14 +1661,14 @@
 
 - (void) _removeWindowController: (NSWindowController *)windowController
 {
-  if ([_windowControllers containsObject: windowController])
+  if ([_window_controllers containsObject: windowController])
     {
       BOOL autoClose = [windowController shouldCloseDocument];
       
       [windowController setDocument: nil];
-      [_windowControllers removeObject: windowController];
+      [_window_controllers removeObject: windowController];
       
-      if (autoClose || [_windowControllers count] == 0)
+      if (autoClose || [_window_controllers count] == 0)
         {
 	  [self close];
 	}

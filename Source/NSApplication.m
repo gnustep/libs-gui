@@ -33,18 +33,24 @@
 #include <stdio.h>
 
 #include <Foundation/NSArray.h>
-#include <Foundation/NSSet.h>
+#include <Foundation/NSAutoreleasePool.h>
+#include <Foundation/NSBundle.h>
+#include <Foundation/NSDebug.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSException.h>
+#include <Foundation/NSFileManager.h>
+#include <Foundation/NSInvocation.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSObject.h>
-#include <Foundation/NSRunLoop.h>
-#include <Foundation/NSAutoreleasePool.h>
-#include <Foundation/NSTimer.h>
+#include <Foundation/NSPathUtilities.h>
 #include <Foundation/NSProcessInfo.h>
-#include <Foundation/NSFileManager.h>
+#include <Foundation/NSRunLoop.h>
+#include <Foundation/NSSet.h>
+#include <Foundation/NSString.h>
+#include <Foundation/NSTimer.h>
+#include <Foundation/NSThread.h>
 #include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSBundle.h>
+#include <Foundation/NSValue.h>
 
 #ifndef LIB_FOUNDATION_LIBRARY
 # include <Foundation/NSConnection.h>
@@ -52,20 +58,20 @@
 
 #include "AppKit/AppKitExceptions.h"
 #include "AppKit/NSApplication.h"
+#include "AppKit/NSCell.h"
+#include "AppKit/NSCursor.h"
 #include "AppKit/NSDocumentController.h"
-#include "AppKit/NSPasteboard.h"
-#include "AppKit/NSFontManager.h"
-#include "AppKit/NSPanel.h"
 #include "AppKit/NSEvent.h"
+#include "AppKit/NSFontManager.h"
 #include "AppKit/NSImage.h"
 #include "AppKit/NSMenu.h"
 #include "AppKit/NSMenuItem.h"
-#include "AppKit/NSMenuItemCell.h"
-#include "AppKit/NSMenuView.h"
-#include "AppKit/NSCursor.h"
-#include "AppKit/NSWorkspace.h"
 #include "AppKit/NSNibLoading.h"
 #include "AppKit/NSPageLayout.h"
+#include "AppKit/NSPanel.h"
+#include "AppKit/NSPasteboard.h"
+#include "AppKit/NSWorkspace.h"
+#include "AppKit/NSScreen.h"
 #include "AppKit/PSOperators.h"
 
 #include "GNUstepGUI/GSDisplayServer.h"

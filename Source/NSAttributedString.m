@@ -28,10 +28,16 @@
 */ 
 
 #include <Foundation/NSArray.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSRange.h>
 #include <Foundation/NSBundle.h>
+#include <Foundation/NSCharacterSet.h>
+#include <Foundation/NSDebug.h>
+#include <Foundation/NSException.h>
 #include <Foundation/NSFileManager.h>
+#include <Foundation/NSPathUtilities.h>
+#include <Foundation/NSRange.h>
+#include <Foundation/NSString.h>
+#include <Foundation/NSValue.h>
+
 #include "AppKit/NSAttributedString.h"
 #include "AppKit/NSDocumentController.h"
 #include "AppKit/NSParagraphStyle.h"
