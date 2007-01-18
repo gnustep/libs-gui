@@ -31,7 +31,9 @@
 #define _GNUstep_H_NSControl
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSText.h>
+// for NSWritingDirection
+#include <AppKit/NSParagraphStyle.h>
+#include <AppKit/NSView.h>
 
 @class NSString;
 @class NSNotification;
@@ -112,6 +114,10 @@
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void)setFormatter:(NSFormatter*)newFormatter;
 - (id)formatter;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (NSWritingDirection)baseWritingDirection;
+- (void)setBaseWritingDirection:(NSWritingDirection)direction;
 #endif
 
 //

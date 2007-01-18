@@ -31,6 +31,7 @@
 
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
+#include <Foundation/NSNotification.h>
 #include "AppKit/NSActionCell.h"
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSCell.h"
@@ -47,6 +48,7 @@
 static Class usedCellClass;
 static Class cellClass;
 static Class actionCellClass;
+static NSNotificationCenter *nc;
 
 /**<p>TODO Description</p>
  */
@@ -64,6 +66,8 @@ static Class actionCellClass;
       cellClass = [NSCell class];
       usedCellClass = cellClass;
       actionCellClass = [NSActionCell class];
+      // Cache the notifiaction centre for editing notifications
+      nc = [NSNotificationCenter defaultCenter];
     }
 }
 
@@ -440,6 +444,21 @@ static Class actionCellClass;
   return [_cell formatter];
 }
 
+- (NSWritingDirection) baseWritingDirection
+{
+  return [_cell baseWritingDirection];
+}
+
+- (void) setBaseWritingDirection: (NSWritingDirection)direction
+{
+  if (_cell)
+    {
+      [_cell setBaseWritingDirection: direction];
+      if (![_cell isKindOfClass: actionCellClass])
+	[self setNeedsDisplay: YES];
+    }
+}
+
 /**<p>Sends an [NSCell-endEditing:] message to the current object used to
    edit the NSControl. Returns NO if the the currentEditor does not exists, 
    YES otherwise.</p>
@@ -506,6 +525,70 @@ static Class actionCellClass;
       string = AUTORELEASE([[text string] copy]);
       [[self selectedCell] setStringValue: string];
     }
+}
+
+/* 
+ * Text delegate methods 
+ */
+
+/**<p>Invokes when the text cell starts to be editing.This methods posts 
+   a NSControlTextDidBeginEditingNotification with a dictionary containing 
+   the NSFieldEditor as user info </p><p>See Also:
+   [NSNotificationCenter-postNotificationName:object:userInfo:]</p>
+*/
+- (void) textDidBeginEditing: (NSNotification *)aNotification
+{
+  NSMutableDictionary *dict;
+
+  dict = [[NSMutableDictionary alloc] initWithDictionary: 
+					[aNotification userInfo]];
+  [dict setObject: [aNotification object] forKey: @"NSFieldEditor"];
+
+  [nc postNotificationName: NSControlTextDidBeginEditingNotification
+      object: self
+      userInfo: dict];
+  RELEASE(dict);
+}
+
+/**<p>Invokes when the text cell is changed. This methods posts a 
+   NSControlTextDidChangeNotification with a dictionary containing the
+   NSFieldEditor as user info </p><p>See Also: 
+   [NSNotificationCenter-postNotificationName:object:userInfo:]</p>
+*/
+- (void) textDidChange: (NSNotification *)aNotification
+{
+  NSMutableDictionary *dict;
+
+  dict = [[NSMutableDictionary alloc] initWithDictionary: 
+				     [aNotification userInfo]];
+  [dict setObject: [aNotification object] forKey: @"NSFieldEditor"];
+
+  [nc postNotificationName: NSControlTextDidChangeNotification
+      object: self
+      userInfo: dict];
+  RELEASE(dict);
+}
+
+/**<p>Invokes when the text cell is changed.
+   This methods posts a NSControlTextDidEndEditingNotification
+   a dictionary containing the NSFieldEditor as user info </p><p>See Also:
+   [NSNotificationCenter-postNotificationName:object:userInfo:]</p>
+*/
+- (void) textDidEndEditing: (NSNotification *)aNotification
+{
+  NSMutableDictionary *dict;
+
+  [self validateEditing];
+  [self abortEditing];
+
+  dict = [[NSMutableDictionary alloc] initWithDictionary: 
+					[aNotification userInfo]];
+  [dict setObject: [aNotification object] forKey: @"NSFieldEditor"];
+
+  [nc postNotificationName: NSControlTextDidEndEditingNotification
+      object: self
+      userInfo: dict];
+  RELEASE(dict);
 }
 
 /**<p>Recalculates the internal size by sending [NSCell-calcDrawInfo:] 
@@ -675,7 +758,7 @@ static Class actionCellClass;
       return AUTORELEASE([NSAttributedString new]);
     }
 
-  // As this mehtod is not defined for NSActionCell, we have 
+  // As this method is not defined for NSActionCell, we have 
   // to do the validation here.
   [self validateEditing];
 
@@ -732,8 +815,6 @@ static Class actionCellClass;
   unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask
     | NSMouseMovedMask | NSLeftMouseDraggedMask | NSOtherMouseDraggedMask
     | NSRightMouseDraggedMask;
-  BOOL mouseUp = NO;
-  int oldActionMask = 0;
   NSEvent *e = nil;
 
   // If not enabled ignore mouse clicks
@@ -747,8 +828,8 @@ static Class actionCellClass;
       return;
     }
 
-  // stop cell from sending action while tracking the mouse...
-  oldActionMask = [_cell sendActionOn: ([_cell isContinuous]?NSPeriodicMask:0)];
+  // Make sure self does not go away during the processing of the event
+  RETAIN(self); 
 
   // loop until mouse goes up
   e = theEvent;
@@ -774,7 +855,6 @@ static Class actionCellClass;
 
 	  if (done)
 	    {
-	      mouseUp = YES;
 	      break;
 	    }
 	}
@@ -785,19 +865,12 @@ static Class actionCellClass;
 		 dequeue: YES];
       if ([e type] == NSLeftMouseUp)
         {
-          mouseUp = YES;
 	  break;
         }
     }
 
-  // allow the cell to send actions again...
-  [_cell sendActionOn: oldActionMask];
-
-  // Mouse went up inside the control but not inside the cell
-  if (mouseUp)
-    {
-      [self sendAction: [self action] to: [self target]];
-    }
+  // undo initial retain
+  RELEASE(self); 
 }
 
 - (BOOL) shouldBeTreatedAsInkEvent: (NSEvent *)theEvent

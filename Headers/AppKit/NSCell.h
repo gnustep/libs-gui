@@ -272,11 +272,9 @@ enum {
 - (void)setTitle:(NSString *)aString;
 - (NSString *)title;
 #endif
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 - (NSWritingDirection)baseWritingDirection;
 - (void)setBaseWritingDirection:(NSWritingDirection)direction;
-#endif
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 - (NSLineBreakMode)lineBreakMode;
 - (void)setLineBreakMode:(NSLineBreakMode)mode;
 #endif

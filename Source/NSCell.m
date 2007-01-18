@@ -37,6 +37,7 @@
 #include <Foundation/NSException.h>
 #include <Foundation/NSValue.h>
 #include <Foundation/NSNotification.h>
+#include <Foundation/NSNumberFormatter.h>
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSFormatter.h>
 #include <Foundation/NSRunLoop.h>
@@ -904,6 +905,10 @@ static NSColor	*shadowCol;
 - (void) setScrollable: (BOOL)flag
 {
   _cell.is_scrollable = flag;
+  if (flag)
+    {
+      [self setWraps: NO];
+    }
 }
 
 - (void) setWraps: (BOOL)flag
@@ -1006,32 +1011,6 @@ static NSColor	*shadowCol;
 - (BOOL) importsGraphics
 {
   return _cell.imports_graphics;
-}
-
-- (NSText*) setUpFieldEditorAttributes: (NSText*)textObject
-{
-  [textObject setString: @""];
-  [textObject setTextColor: [self textColor]];
-  if (_cell.contents_is_attributed_string == NO)
-    {
-      /* TODO: Manage scrollable attribute */
-      [textObject setFont: _font];
-      [textObject setAlignment: _cell.text_align];
-    }
-  else
-    {
-      /* FIXME/TODO.  What do we do if we are an attributed string.  
-	 Think about what happens when the user ends editing. 
-	 Allows editing text attributes... Formatter... TODO. */
-    }
-  [textObject setEditable: _cell.is_editable];
-  [textObject setSelectable: _cell.is_selectable || _cell.is_editable];
-  [textObject setRichText: _cell.is_rich_text];
-  [textObject setImportsGraphics: _cell.imports_graphics];
-  [textObject setSelectedRange: NSMakeRange(0, 0)];
-  [textObject scrollRangeToVisible: NSMakeRange(0, 0)];
-
-  return textObject;
 }
 
 - (NSString*) title
@@ -1199,12 +1178,41 @@ static NSColor	*shadowCol;
 			   left: (unsigned int)leftDigits
 			  right: (unsigned int)rightDigits
 {
-  // TODO: Pass this on to the formatter to handle
+  NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+  NSMutableString *format = [[NSMutableString alloc] init];
+
+  if (autoRange)
+    {
+      unsigned fieldWidth = leftDigits + rightDigits + 1;
+
+      // FIXME: this does not fully match the documentation.
+      while (fieldWidth--)
+        {
+	  [format appendString: @"#"];
+	}
+    }
+  else 
+    {
+      while (leftDigits--)
+        {
+	  [format appendString: @"#"];
+	}
+      [format appendString: @"."];
+      while (rightDigits--)
+        {
+	  [format appendString: @"0"];
+	}
+    }
+
+  [formatter setFormat: format];
+  RELEASE(format);
+  [self setFormatter: formatter];
+  RELEASE(formatter);
 }
 
 - (void) setFormatter: (NSFormatter*)newFormatter 
 {
-  ASSIGN (_formatter, newFormatter);
+  ASSIGN(_formatter, newFormatter);
 }
 
 - (id) formatter
@@ -1378,6 +1386,7 @@ static NSColor	*shadowCol;
   if (controlView != nil)
     {  
       NSWindow *cvWin = [controlView window];
+      NSDate *limit = [NSDate dateWithTimeIntervalSinceNow: 0.1];
 
       [controlView lockFocus];
       
@@ -1386,12 +1395,10 @@ static NSColor	*shadowCol;
       [cvWin flushWindow];
       
       // Wait approx 1/10 seconds
-      [[NSRunLoop currentRunLoop] 
-	runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.1]];
+      [[NSRunLoop currentRunLoop] runUntilDate: limit];
       
       [self highlight: NO withFrame: cellFrame inView: controlView];
       [cvWin flushWindow];
-      
       [controlView unlockFocus];
 
       if (action)
@@ -2072,29 +2079,126 @@ static NSColor	*shadowCol;
   return [NSColor selectedControlColor];
 }
 
+- (NSText*) setUpFieldEditorAttributes: (NSText*)textObject
+{
+  // Reset the string to have a well defined state. The real string gets set later on.
+  [textObject setString: @""];
+
+  [textObject setTextColor: [self textColor]];
+  if ([self isBezeled])
+    {
+      [textObject setBackgroundColor: [NSColor textBackgroundColor]];
+      [textObject setDrawsBackground: YES];
+    }
+  else
+    {
+      [textObject setDrawsBackground: NO];
+    }
+  [textObject setFont: [self font]];
+  [textObject setAlignment: [self alignment]];
+  // FIXME: Add base writing direction
+
+  [textObject setEditable: [self isEditable]];
+  [textObject setSelectable: [self isSelectable]];
+  [textObject setRichText: [self allowsEditingTextAttributes]];
+  [textObject setImportsGraphics: [self importsGraphics]];
+  [(NSTextView*)textObject setAllowsUndo: [self allowsUndo]];
+
+  return textObject;
+}
+
 - (void) _setupTextWithFrame: (NSRect)aRect
 		      inView: (NSView*)controlView
 		      editor: (NSText*)textObject
+		    delegate: (id)anObject
+		       range: (NSRange)selection
 {
   NSRect titleRect = [self titleRectForBounds: aRect];
-  /* See comments in NSStringDrawing.m about the choice of maximum size. */
-  NSSize maxSize = NSMakeSize(1e6, titleRect.size.height);
-  NSClipView *cv = [[NSClipView alloc] 
-		       initWithFrame: titleRect];
-  NSTextContainer *ct = [(NSTextView*)textObject textContainer];
+  NSRect maxRect;
 
-  [controlView addSubview: cv];
-  RELEASE(cv);
-  [cv setAutoresizesSubviews: NO];
-  [cv setDocumentView: textObject];
-  [textObject setFrame: NSMakeRect(0, 0, maxSize.width, maxSize.height)];
+  // A clip view should is only created for scrollable text
+  if ([self isScrollable])
+    {
+      /* See comments in NSStringDrawing.m about the choice of maximum size. */
+      NSSize maxSize = NSMakeSize(1e6, titleRect.size.height);
+      NSClipView *cv = [[NSClipView alloc] initWithFrame: titleRect];
+      NSTextContainer *ct = [(NSTextView*)textObject textContainer];
+
+      maxRect = NSMakeRect(0, 0, maxSize.width, maxSize.height);
+      [controlView addSubview: cv];
+      RELEASE(cv);
+      [cv setAutoresizesSubviews: NO];
+      [cv setDocumentView: textObject];
+      [ct setContainerSize: maxSize];
+      [ct setHeightTracksTextView: NO];
+      [ct setWidthTracksTextView: NO];
+    }
+  else
+    {
+      maxRect = titleRect;
+      [controlView addSubview: textObject];
+    }
+
+  [textObject setFrame: maxRect];
   [textObject setHorizontallyResizable: NO];
   [textObject setVerticallyResizable: NO];
-  [textObject setMaxSize: maxSize];
+  [textObject setMaxSize: maxRect.size];
   [textObject setMinSize: titleRect.size];
-  [ct setContainerSize: maxSize];
-  [ct setHeightTracksTextView: NO];
-  [ct setWidthTracksTextView: NO];
+
+  if (_formatter != nil)
+    {
+      NSString *contents; 
+
+      contents = [_formatter editingStringForObjectValue: _object_value];
+      if (contents == nil)
+	{
+	  contents = _contents;
+	}
+      [textObject setText: contents];
+    }
+  else
+    {
+      if (_cell.contents_is_attributed_string == NO)
+	{
+	  [textObject setText: _contents];
+	}
+      else
+	{
+	  // The curent text has size 0, so this replaces the whole text.
+	  [textObject replaceCharactersInRange: NSMakeRange(0, 0)
+		      withAttributedString: (NSAttributedString *)_contents];
+	}
+    }
+
+  [textObject sizeToFit];
+  [textObject setSelectedRange: selection];
+  [textObject scrollRangeToVisible: selection];
+
+  [textObject setDelegate: anObject];
+  [[controlView window] makeFirstResponder: textObject];
+}
+
+/**<p>Ends any text editing. This method sets the text object's delegate 
+   to nil, and remove the NSClipView and the text object used for editing</p>
+ <p>See Also:  -editWithFrame:inView:editor:delegate:event:</p>
+ */
+- (void) endEditing: (NSText*)textObject
+{
+  [textObject setString: @""];
+  [textObject setDelegate: nil];
+
+  if ([self isScrollable])
+    {
+      NSClipView *clipView;
+  
+      clipView = (NSClipView*)[textObject superview];
+      [textObject removeFromSuperview];
+      [clipView removeFromSuperview];
+    }
+  else
+    {
+      [textObject removeFromSuperview];
+    }
 }
 
 /*
@@ -2115,54 +2219,14 @@ static NSColor	*shadowCol;
 
   [self _setupTextWithFrame: aRect
 	inView: controlView
-	editor: textObject];
-
-  if (_formatter != nil)
-    {
-      NSString *contents; 
-
-      contents = [_formatter editingStringForObjectValue: _object_value];
-      if (contents == nil)
-	{
-	  contents = _contents;
-	}
-      [textObject setText: contents];
-    }
-  else
-    {
-      if (_cell.contents_is_attributed_string == NO)
-	{
-	  [textObject setText: _contents];
-	}
-      else
-	{
-	  /* FIXME/TODO make sure this is correct. */
-	  [textObject setText: [(NSAttributedString *)_contents string]];
-	}
-    }
-  [textObject sizeToFit];
-  
-  [textObject setDelegate: anObject];
-  [[controlView window] makeFirstResponder: textObject];
+	editor: textObject
+	delegate: anObject
+	range: NSMakeRange(0, 0)];
 
   if ([theEvent type] == NSLeftMouseDown)
     {
       [textObject mouseDown: theEvent];
     }
-}
-
-/**<p>Ends any text editing. This method sets the text object's delegate 
-   to nil, and remove the NSClipView and the text object used for editing</p>
- <p>See Also:  -editWithFrame:inView:editor:delegate:event:</p>
- */
-- (void) endEditing: (NSText*)textObject
-{
-  NSClipView *clipView;
-
-  [textObject setDelegate: nil];
-  clipView = (NSClipView*)[textObject superview];
-  [textObject removeFromSuperview];
-  [clipView removeFromSuperview];
 }
 
 /** <p> This method does nothing if the <var>controlView</var> is nil,
@@ -2181,37 +2245,9 @@ static NSColor	*shadowCol;
 
   [self _setupTextWithFrame: aRect
 	inView: controlView
-	editor: textObject];
-
-  if (_formatter != nil)
-    {
-      NSString *contents; 
-
-      contents = [_formatter editingStringForObjectValue: _object_value];
-      if (contents == nil)
-	{
-	  contents = _contents;
-	}
-      [textObject setText: contents];
-    }
-  else
-    {
-      if (_cell.contents_is_attributed_string == NO)
-	{
-	  [textObject setText: _contents];
-	}
-      else
-	{
-	  /* FIXME/TODO make sure this is correct. */
-	  [textObject setText: [(NSAttributedString *)_contents string]];
-	}
-    }
-
-  [textObject sizeToFit];
-  [textObject setSelectedRange: NSMakeRange (selStart, selLength)];
-  [textObject scrollRangeToVisible: NSMakeRange(selStart, selLength)];
-  [textObject setDelegate: anObject];
-  [[controlView window] makeFirstResponder: textObject];
+	editor: textObject
+	delegate: anObject
+	range: NSMakeRange(selStart, selLength)];
 }
 
 - (BOOL) sendsActionOnEndEditing 

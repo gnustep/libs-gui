@@ -488,32 +488,17 @@ static Class textFieldCellClass;
     }
 }
 
-/**<p>Posts a NSControlTextDidBeginEditingNotification notification with object
-   self and a NSDictionary containing the NSFieldEditor for key
-   as user Info</p>
-*/
 - (void) textDidBeginEditing: (NSNotification *)aNotification
 {
-  NSDictionary *notifDict;
-  
-  notifDict = [NSDictionary dictionaryWithObject:[aNotification object] 
-			    forKey: @"NSFieldEditor"];
-
-  [nc postNotificationName: NSControlTextDidBeginEditingNotification
-      object: self
-      userInfo: notifDict];
+  [super textDidBeginEditing: aNotification];
 }
 
 - (void) textDidChange: (NSNotification *)aNotification
 {
-  NSDictionary *d;
+
   NSFormatter *formatter;
 
-  d = [NSDictionary dictionaryWithObject: [aNotification object] 
-		    forKey: @"NSFieldEditor"];
-  [nc postNotificationName: NSControlTextDidChangeNotification
-      object: self
-      userInfo: d];
+  [super textDidChange: aNotification];
 
   formatter = [_cell formatter];
   if (formatter != nil)
@@ -559,26 +544,14 @@ static Class textFieldCellClass;
 	      NSLog (@"Unimplemented: should delete last typed character");
 	    }
 	}
-
     }
 }
 
 - (void) textDidEndEditing: (NSNotification *)aNotification
 {
-  NSDictionary *d;
   id textMovement;
 
-  [self validateEditing];
-
-  [_cell endEditing: [aNotification object]];
-
-  _text_object = nil;
-
-  d = [NSDictionary dictionaryWithObject: [aNotification object] 
-		    forKey: @"NSFieldEditor"];
-  [nc postNotificationName: NSControlTextDidEndEditingNotification
-      object: self
-      userInfo: d];
+  [super textDidEndEditing: aNotification];
 
   textMovement = [[aNotification userInfo] objectForKey: @"NSTextMovement"];
   if (textMovement)

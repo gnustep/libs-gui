@@ -5200,59 +5200,29 @@ static BOOL selectContiguousRegion(NSTableView *self,
 
 - (void) textDidBeginEditing: (NSNotification *)aNotification
 {
-  NSMutableDictionary *d;
-
-  d = [NSMutableDictionary dictionaryWithDictionary: 
-				[aNotification userInfo]];
-  [d setObject: [aNotification object] forKey: @"NSFieldEditor"];
-  [nc postNotificationName: NSControlTextDidBeginEditingNotification
-      object: self
-      userInfo: d];
+  [super textDidBeginEditing: aNotification];
 }
 
 - (void) textDidChange: (NSNotification *)aNotification
 {
-  NSMutableDictionary *d;
-
   // MacOS-X asks us to inform the cell if possible.
   if ((_editedCell != nil) && [_editedCell respondsToSelector: 
 						 @selector(textDidChange:)])
     [_editedCell textDidChange: aNotification];
 
-  d = [NSMutableDictionary dictionaryWithDictionary: 
-				     [aNotification userInfo]];
-  [d setObject: [aNotification object] forKey: @"NSFieldEditor"];
-  [nc postNotificationName: NSControlTextDidChangeNotification
-      object: self
-      userInfo: d];
+  [super textDidChange: aNotification];
 }
 
 - (void) textDidEndEditing: (NSNotification *)aNotification
 {
-  NSMutableDictionary *d;
   id textMovement;
   int row, column;
 
-  [self validateEditing];
-
-  [_editedCell endEditing: [aNotification object]];
-  [self setNeedsDisplayInRect: 
-	  [self frameOfCellAtColumn: _editedColumn row: _editedRow]];
-  _textObject = nil;
-  DESTROY (_editedCell);
   /* Save values */
   row = _editedRow;
   column = _editedColumn;
-  /* Only then Reset them */
-  _editedColumn = -1;
-  _editedRow = -1;
 
-  d = [NSMutableDictionary dictionaryWithDictionary: 
-				     [aNotification userInfo]];
-  [d setObject: [aNotification object] forKey: @"NSFieldEditor"];
-  [nc postNotificationName: NSControlTextDidEndEditingNotification
-      object: self
-      userInfo: d];
+  [super textDidEndEditing: aNotification];
 
   textMovement = [[aNotification userInfo] objectForKey: @"NSTextMovement"];
   if (textMovement)

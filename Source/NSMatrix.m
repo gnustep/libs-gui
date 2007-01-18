@@ -1686,16 +1686,7 @@ static SEL getSel;
 */
 - (void) textDidBeginEditing: (NSNotification *)aNotification
 {
-  NSMutableDictionary *dict;
-
-  dict = [[NSMutableDictionary alloc] initWithDictionary: 
-					[aNotification userInfo]];
-  AUTORELEASE (dict);
-  [dict setObject: [aNotification object] forKey: @"NSFieldEditor"];
-
-  [nc postNotificationName: NSControlTextDidBeginEditingNotification
-      object: self
-      userInfo: dict];
+  [super textDidBeginEditing: aNotification];
 }
 
 /**<p>Invokes when the text cell is changed. This methods posts a 
@@ -1705,7 +1696,6 @@ static SEL getSel;
 */
 - (void) textDidChange: (NSNotification *)aNotification
 {
-  NSMutableDictionary *dict;
   NSFormatter *formatter;
 
   // MacOS-X asks us to inform the cell if possible.
@@ -1713,16 +1703,9 @@ static SEL getSel;
 						 @selector(textDidChange:)])
     [_selectedCell textDidChange: aNotification];
 
-  dict = [[NSMutableDictionary alloc] initWithDictionary: 
-				     [aNotification userInfo]];
-  AUTORELEASE (dict);
-  [dict setObject: [aNotification object] forKey: @"NSFieldEditor"];
+  [super textDidChange: aNotification];
 
-  [nc postNotificationName: NSControlTextDidChangeNotification
-      object: self
-      userInfo: dict];
-
-  formatter = [_cell formatter];
+  formatter = [_selectedCell formatter];
   if (formatter != nil)
     {
       /*
@@ -1742,9 +1725,14 @@ static SEL getSel;
 
       if (wasAccepted == NO)
 	{
-	  [_delegate control:self 
-		     didFailToValidatePartialString: partialString 
-		     errorDescription: error];
+	  SEL sel = @selector(control:didFailToValidatePartialString:errorDescription:);
+	  
+	  if ([_delegate respondsToSelector: sel])
+	    {
+	      [_delegate control: self 
+			 didFailToValidatePartialString: partialString 
+			 errorDescription: error];
+	    }
 	}
 
       if (newString != nil)
@@ -1772,22 +1760,9 @@ static SEL getSel;
 */
 - (void) textDidEndEditing: (NSNotification *)aNotification
 {
-  NSMutableDictionary *dict;
   id textMovement;
 
-  [self validateEditing];
-
-  [_selectedCell endEditing: [aNotification object]];
-  _textObject = nil;
-
-  dict = [[NSMutableDictionary alloc] initWithDictionary: 
-					[aNotification userInfo]];
-  AUTORELEASE (dict);
-  [dict setObject: [aNotification object] forKey: @"NSFieldEditor"];
-
-  [nc postNotificationName: NSControlTextDidEndEditingNotification
-      object: self
-      userInfo: dict];
+  [super textDidEndEditing: aNotification];
 
   textMovement = [[aNotification userInfo] objectForKey: @"NSTextMovement"];
   if (textMovement)
@@ -1888,7 +1863,7 @@ static SEL getSel;
       NSFormatter *formatter;
       id newObjectValue;
       
-      formatter = [_cell formatter];
+      formatter = [_selectedCell formatter];
       
       if ([formatter getObjectValue: &newObjectValue 
 		     forString: [_textObject text] 

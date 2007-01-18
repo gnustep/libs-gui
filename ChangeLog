@@ -1,3 +1,26 @@
+2007-01-18  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSCell.m (-setFloatingPointFormat:left:right): Basic
+	implementation.
+	* Source/NSCell.m (-setUpFieldEditorAttributes:,
+	_setupTextWithFrame:inView:editor:delegate:range:, endEditing:, 
+	editWithFrame:...event:, selectWithFrame:...length:): Changed to
+	handle more text attributes and non-scrolling text. 
+	* Source/NSCell.m (-setScrollable:): If switched on, switch wraps off.
+	* Headers/AppKit/NSCell.h: Corrected version number for some methods.
+
+	* Headers/AppKit/NSControl.h: Add MacOS 10.4 methods.
+	* Source/NSControl.m: Implement new MacOS 10.4 methods.
+	* Source/NSControl.m (-mouseDown): Once more removed action mask
+	fiddling. This time there is protection that the control itself
+	does not go away.
+	* Source/NSControl.m (-textDidBeginEditing:, -textDidChange:,
+	-textDidEndEditing:): Extracted code to be shared between subclasses.
+	* Source/NSTextField.m,
+	* Source/NSTableView.m,
+	* Source/NSMatrix.m (-textDidBeginEditing:, -textDidChange:,
+	-textDidEndEditing:): Call shared super code.
+	
 2007-01-17  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSResponder.h: Add MacOS 10.4 methods.
