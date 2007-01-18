@@ -98,8 +98,10 @@
       GET_LINE();
     } while (buffer[0] == '#');
   num = sscanf(buffer, "%d %d", &xsize, &ysize);
-  if (num != 2)
+  if (num != 2 || xsize <= 0 || ysize <= 0)
     ERRMSG(@"Invalid PNM header (xsize/ysize)");
+  if (xsize * ysize > (1 << 31))
+    ERRMSG(@"Invalid PNM header (image size:xsize*ysize too large)");
   GET_LINE();
   num = sscanf(buffer, "%d", &levels);
   if (num != 1)

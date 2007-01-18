@@ -1,3 +1,7 @@
+2007-01-18  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSBitmapImageRep+PNM.m ([NSBitmapImageRep -_initBitmapFromPNM:errorMessage:]): Check for invalid image size.
+
 2007-01-18  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSCell.m (-setFloatingPointFormat:left:right): Basic
