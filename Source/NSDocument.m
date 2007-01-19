@@ -37,7 +37,7 @@
 #include "AppKit/NSPrintOperation.h"
 #include "AppKit/NSPopUpButton.h"
 #include "AppKit/NSView.h"
-#include "AppKit/NSDocumentFrameworkPrivate.h"
+#include "NSDocumentFrameworkPrivate.h"
 
 #include "GSGuiPrivate.h"
 

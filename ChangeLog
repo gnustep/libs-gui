@@ -1,3 +1,7 @@
+2007-01-19  Richard Frith-Macdoanld <rfm@gnu.org>
+
+	* Source/NSDocument.m: fix include path (bug #18829)
+
 2007-01-18  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSBitmapImageRep+PNM.m ([NSBitmapImageRep -_initBitmapFromPNM:errorMessage:]): Check for invalid image size.
