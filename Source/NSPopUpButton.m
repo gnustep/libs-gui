@@ -462,7 +462,7 @@ this to return nil to indicate that we have no context menu.
 	    else
 	      {
 		selectedIndex = [menuView highlightedItemIndex];
-		if (selectedIndex > 0)
+		if (selectedIndex >= 0)
 		  {
 		    [[_cell menu] performActionForItemAtIndex: selectedIndex];
 		  }
