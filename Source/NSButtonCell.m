@@ -1103,7 +1103,7 @@ typedef struct _GSButtonCellFlags
       case NSNoImage: 
 	imageToDisplay = nil;
 	titleRect = cellFrame;
-	imageRect = NSZeroRect;
+	 imageRect = NSZeroRect;
 	if (titleSize.width + 6 <= titleRect.size.width)
 	  {
 	    titleRect.origin.x += 3;

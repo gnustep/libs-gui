@@ -723,13 +723,9 @@ static NSNull			*null = nil;
       [color set];
       NSRectFill(frame);
 
-      if (state == GSThemeNormalState)
+      if (state == GSThemeNormalState || state == GSThemeHighlightedState)
 	{
 	  [self drawButton: frame withClip: NSZeroRect];
-	}
-      else if (state == GSThemeHighlightedState)
-	{
-	  [self drawGrayBezel: frame withClip: NSZeroRect];
 	}
       else if (state == GSThemeSelectedState)
 	{

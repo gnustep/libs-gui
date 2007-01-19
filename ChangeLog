@@ -1,3 +1,9 @@
+2007-01-19  Sergii Stoian <stoyan255@gmail.com>
+
+	* Source/GSTheme.m (-drawButton:view:style:state:): Call 
+	[drawButton:withClip:] instead of [drawGreyBezel:withClip:] if
+	state is highlighted (e.g. scroller buttons).
+
 2007-01-19  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPopUpButton.m (-keyDown:): Handle selection of first
