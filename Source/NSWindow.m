@@ -231,14 +231,10 @@ has blocked and waited for events.
    key/main and skip the main menu window (which is the only
    non-obvious window that can become key) unless we have no choice
    (i.e. all the candidate windows were ordered out.)
-
-   FIXME: It would really be better if we maintained a stack of the
-   most recent key/main windows and went through in order of most
-   recent to least recent. That's probably a lot of work, however.
 */
 - (void) _lossOfKeyOrMainWindow
 {
-  NSArray	*windowList = GSAllWindows();
+  NSArray	*windowList = GSOrderedWindows();
   unsigned	pos = [windowList indexOfObjectIdenticalTo: self];
   unsigned	c = [windowList count];
   unsigned	i;

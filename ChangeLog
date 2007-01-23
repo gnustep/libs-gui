@@ -1,3 +1,7 @@
+2007-01-23  Matt Rice  <ratmice@gmail.com>
+
+	* Source/NSWindow.m (-_lossOfKeyOrMainWindow): Use GSOrderedWindows.
+
 2007-01-19  Sergii Stoian <stoyan255@gmail.com>
 
 	* Source/GSTheme.m (-drawButton:view:style:state:): Call 
