@@ -3045,6 +3045,7 @@ byExtendingSelection: (BOOL)flag
       [_selectedRows addIndexesInRange: NSMakeRange(0, _numberOfRows)];
     }
   
+  [self setNeedsDisplay: YES];
   [self _postSelectionDidChangeNotification];
 }
 
@@ -3071,6 +3072,7 @@ byExtendingSelection: (BOOL)flag
       _selectedColumn = -1;
       _selectedRow = -1;
       _selectingColumns = NO;
+      [self setNeedsDisplay: YES];
       [self _postSelectionDidChangeNotification];
     }
   else

@@ -1,5 +1,10 @@
 2007-01-23  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSTableView.m (-selectAll:, -deselectAll:) Call
+	[setNeedsDisplay:], if something was changed.
+
+2007-01-23  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSBox.h: 
 	* Headers/AppKit/NSButtonCell.h: 
 	Add documentation for NSTitlePosition and NSButtonType. 
