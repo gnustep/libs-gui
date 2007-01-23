@@ -103,12 +103,6 @@ typedef struct _GSButtonCellFlags
 #endif
 } GSButtonCellFlags;
 
-@interface NSButtonCell (Private)
-// Overriden private internal method
-- (void) _drawImage: (NSImage *)anImage inFrame: (NSRect)aRect 
-  isFlipped: (BOOL)flipped;
-@end
-
 /**<p> TODO Description</p>
  */
 @implementation NSButtonCell
@@ -119,7 +113,7 @@ typedef struct _GSButtonCellFlags
 + (void) initialize
 {
   if (self == [NSButtonCell class])
-    [self setVersion: 1];
+    [self setVersion: 2];
 }
 
 /*
@@ -130,19 +124,16 @@ typedef struct _GSButtonCellFlags
   // Implicitly performed by allocation:
   //
   //_buttoncell_is_transparent = NO;
-  //_altContents = nil;
 
   [self setAlignment: NSCenterTextAlignment];
   _cell.is_bordered = YES;
-  _showAltStateMask = NSNoCellMask;	// configure as a NSMomentaryPushButton
-  _highlightsByMask = NSPushInCellMask | NSChangeGrayCellMask;
+  [self setButtonType: NSMomentaryPushInButton];
   _delayInterval = 0.4;
   _repeatInterval = 0.075;
   _keyEquivalentModifierMask = NSCommandKeyMask;
   _keyEquivalent = @"";
   _altContents = @"";
   _gradient_type = NSGradientNone;
-  _image_dims_when_disabled = NO;
 
   return self;
 }
@@ -175,6 +166,7 @@ typedef struct _GSButtonCellFlags
   RELEASE(_keyEquivalent);
   RELEASE(_keyEquivalentFont);
   RELEASE(_sound);
+  RELEASE(_backgroundColor);
 
   [super dealloc];
 }
@@ -387,7 +379,7 @@ typedef struct _GSButtonCellFlags
 - (void)setTitleWithMnemonic:(NSString *)aString
 {
   // TODO
-  [super setTitleWithMnemonic: aString];    
+  [super setTitleWithMnemonic: aString];
 }
 
 - (NSString *)alternateMnemonic
@@ -704,7 +696,7 @@ typedef struct _GSButtonCellFlags
 	[self setShowsStateBy: NSNoCellMask];
 	[self setImageDimsWhenDisabled: YES];
 	break;
-      case NSMomentaryPushButton: 
+      case NSMomentaryPushInButton: 
 	[self setHighlightsBy: NSPushInCellMask | NSChangeGrayCellMask];
 	[self setShowsStateBy: NSNoCellMask];
 	[self setImageDimsWhenDisabled: YES];
@@ -834,22 +826,20 @@ typedef struct _GSButtonCellFlags
   return [NSColor controlTextColor];
 }
 
-- (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
+- (NSColor *) backgroundColor
+{
+  return _backgroundColor;
+}
+
+- (void) setBackgroundColor: (NSColor *)color
+{
+  ASSIGN(_backgroundColor, color);
+}
+
+- (void) drawBezelWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
 {
   unsigned		mask;
   GSThemeControlState	buttonState = GSThemeNormalState;
-
-  // Save last view drawn to
-  if (_control_view != controlView)
-    _control_view = controlView;
-
-  // transparent buttons never draw
-  if (_buttoncell_is_transparent)
-    return;
-
-  // do nothing if cell's frame rect is zero
-  if (NSIsEmptyRect(cellFrame))
-    return;
 
   // set the mask
   if (_cell.is_highlighted)
@@ -865,35 +855,91 @@ typedef struct _GSButtonCellFlags
   else
     mask = NSNoCellMask;
 
-  /* Draw the cell's background color.  
+  /* Determine the background color. 
      We draw when there is a border or when highlightsByMask
      is NSChangeBackgroundCellMask or NSChangeGrayCellMask,
      as required by our nextstep-like look and feel.  */
-  if (_cell.is_bordered 
-    || (_highlightsByMask & NSChangeBackgroundCellMask)
-    || (_highlightsByMask & NSChangeGrayCellMask))
+  if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
     {
-      /* Determine the background color. */
-      if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
-        {
-          buttonState = GSThemeHighlightedState;
-        }
+      buttonState = GSThemeHighlightedState;
     }
 
   /* Pushed in buttons contents are displaced to the bottom right 1px.  */
-  if (_cell.is_bordered && (mask & NSPushInCellMask))
+  if (mask & NSPushInCellMask)
     {
       buttonState = GSThemeSelectedState;
     }
+
+  [[GSTheme theme] drawButton: cellFrame 
+		   in: self 
+		   view: controlView
+		   style: _bezel_style
+		   state: buttonState];
+}
+
+- (void) drawImage: (NSImage*)anImage 
+	 withFrame: (NSRect)aRect 
+	    inView: (NSView*)controlView
+{
+  // Draw image
+  if (anImage != nil)
+    {
+      NSSize size;
+      NSPoint position;
+      
+      size = [anImage size];
+      position.x = MAX(NSMidX(aRect) - (size.width / 2.), 0.);
+      position.y = MAX(NSMidY(aRect) - (size.height / 2.), 0.);
+      
+      /*
+       * Images are always drawn with their bottom-left corner at the origin
+       * so we must adjust the position to take account of a flipped view.
+       */
+      if ([controlView isFlipped])
+        {
+	  position.y += size.height;
+	}
+      
+      if (_cell.is_disabled && _image_dims_when_disabled)
+        {
+	  [anImage dissolveToPoint: position fraction: 0.5];
+	}
+      else
+        {
+	  [anImage compositeToPoint: position 
+		          operation: NSCompositeSourceOver];
+	}
+    }
+}
+
+- (void) drawTitle: (NSAttributedString*)titleToDisplay 
+	 withFrame: (NSRect)frame 
+	    inView: (NSView*)control
+{
+  [self _drawAttributedText: titleToDisplay
+	inFrame: frame];
+}
+
+
+- (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
+{
+  // Save last view drawn to
+  if (_control_view != controlView)
+    _control_view = controlView;
+
+  // transparent buttons never draw
+  if (_buttoncell_is_transparent)
+    return;
+
+  // do nothing if cell's frame rect is zero
+  if (NSIsEmptyRect(cellFrame))
+    return;
 
   // draw the border if needed
   if ((_cell.is_bordered)
     && (!_shows_border_only_while_mouse_inside || _mouse_inside))
     {
-      cellFrame = [[GSTheme theme]
-         drawButton: cellFrame in: self view: controlView
-              style: _bezel_style
-              state: buttonState];
+	[self drawBezelWithFrame: cellFrame inView: controlView];
     }
 
   [self drawInteriorWithFrame: cellFrame inView: controlView];
@@ -902,7 +948,9 @@ typedef struct _GSButtonCellFlags
   if (_cell.shows_first_responder
     && [[controlView window] firstResponder] == controlView)
     {
-      [[GSTheme theme] drawFocusFrame: cellFrame view: controlView];
+      // FIXME: Should depend on _cell.focus_ring_type
+      [[GSTheme theme] drawFocusFrame: [self drawingRectForBounds: cellFrame] 
+		                 view: controlView];
     }
 }
 
@@ -1231,21 +1279,22 @@ typedef struct _GSButtonCellFlags
   // Draw gradient
   if (!_cell.is_highlighted && _gradient_type != NSGradientNone)
     {
+	// FIXME: I think this method is wrong.
       [self drawGradientWithFrame: cellFrame inView: controlView];
     }
 
   // Draw image
   if (imageToDisplay != nil)
     {
-      [self _drawImage: imageToDisplay
-	       inFrame: imageRect
-	     isFlipped: flippedView];
+      [self drawImage: imageToDisplay
+	    withFrame: imageRect
+	       inView: controlView];
     }
 
   // Draw title
   if (titleToDisplay != nil)
     {
-      [self _drawAttributedText: titleToDisplay inFrame: titleRect];
+      [self drawTitle: titleToDisplay withFrame: titleRect inView: controlView];
     }
 }
 
@@ -1334,40 +1383,83 @@ typedef struct _GSButtonCellFlags
   
   // Get border size
   if (_cell.is_bordered)
-    // Buttons only have three paths for border (NeXT looks)
-    borderSize = NSMakeSize (3.0, 3.0);
+    {
+      GSThemeControlState	buttonState = GSThemeNormalState;
+
+      /* Determine the background color. 
+	 We draw when there is a border or when highlightsByMask
+	 is NSChangeBackgroundCellMask or NSChangeGrayCellMask,
+	 as required by our nextstep-like look and feel.  */
+      if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
+        {
+	  buttonState = GSThemeHighlightedState;
+	}
+      
+      /* Pushed in buttons contents are displaced to the bottom right 1px.  */
+      if (mask & NSPushInCellMask)
+        {
+	  buttonState = GSThemeSelectedState;
+	}
+
+      borderSize = [[GSTheme theme] buttonBorderForStyle: _bezel_style 
+				                   state: buttonState];
+    }
   else
     borderSize = NSZeroSize;
 
-  if ((_cell.is_bordered && (_cell.image_position != NSImageOnly))
-      || _cell.is_bezeled)
-    {
-      borderSize.width += 6;
-      borderSize.height += 6;
-    }
-
   // Add border size
-  s.width += borderSize.width;
-  s.height += borderSize.height;
+  s.width += 2 * borderSize.width;
+  s.height += 2 * borderSize.height;
 
   return s;
 }
 
 - (NSRect) drawingRectForBounds: (NSRect)theRect
 {
-  // FIXME
   if (_cell.is_bordered)
     {
-      /*
-       * Special case:  Buttons have only three different paths for border.
-       * One white path at the top left corner, one black path at the
-       * bottom right and another in dark gray at the inner bottom right.
-       */
-      float yDelta = [_control_view isFlipped] ? 1. : 2.;
-      return NSMakeRect (theRect.origin.x + 1.,
-			 theRect.origin.y + yDelta,
-			 theRect.size.width - 3.,
-			 theRect.size.height - 3.);
+      NSSize borderSize;
+      unsigned	mask;
+      GSThemeControlState buttonState = GSThemeNormalState;
+      NSRect interiorFrame;
+
+      if (_cell.is_highlighted)
+        {
+	  mask = _highlightsByMask;
+
+	  if (_cell.state)
+	    mask &= ~_showAltStateMask;
+	}
+      else if (_cell.state)
+	mask = _showAltStateMask;
+      else
+	mask = NSNoCellMask;
+  
+      /* Determine the background color. 
+	 We draw when there is a border or when highlightsByMask
+	 is NSChangeBackgroundCellMask or NSChangeGrayCellMask,
+	 as required by our nextstep-like look and feel.  */
+      if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
+        {
+	  buttonState = GSThemeHighlightedState;
+	}
+      
+      if (mask & NSPushInCellMask)
+        {
+	  buttonState = GSThemeSelectedState;
+	}
+
+      borderSize = [[GSTheme theme] buttonBorderForStyle: _bezel_style 
+				                   state: buttonState];
+      interiorFrame = NSInsetRect(theRect, borderSize.width, borderSize.height);
+
+      /* Pushed in buttons contents are displaced to the bottom right 1px.  */
+      if (mask & NSPushInCellMask)
+	{
+	  interiorFrame
+	    = NSOffsetRect(interiorFrame, 1.0, [_control_view isFlipped] ? 1.0 : -1.0);
+	}
+      return interiorFrame;
     }
   else
     {
@@ -1431,11 +1523,12 @@ typedef struct _GSButtonCellFlags
 {
   NSButtonCell	*c = [super copyWithZone: zone];
   
-  /* Hmmm. */
   c->_altContents = [_altContents copyWithZone: zone];
-  TEST_RETAIN (_altImage);
-  TEST_RETAIN (_keyEquivalent);
-  TEST_RETAIN (_keyEquivalentFont);
+  TEST_RETAIN(_altImage);
+  TEST_RETAIN(_keyEquivalent);
+  TEST_RETAIN(_keyEquivalentFont);
+  TEST_RETAIN(_sound);
+  TEST_RETAIN(_backgroundColor);
 
   return c;
 }
@@ -1534,7 +1627,6 @@ typedef struct _GSButtonCellFlags
     }
   else
     {
-      // FIXME: Add new ivars
       [aCoder encodeObject: _keyEquivalent];
       [aCoder encodeObject: _keyEquivalentFont];
       [aCoder encodeObject: _altContents];
@@ -1548,7 +1640,23 @@ typedef struct _GSButtonCellFlags
 	      at: &_highlightsByMask];
       [aCoder encodeValueOfObjCType: @encode(unsigned int)
 	      at: &_showAltStateMask];
-      
+
+      [aCoder encodeObject: _sound];
+      [aCoder encodeObject: _backgroundColor];
+      [aCoder encodeValueOfObjCType: @encode(float)
+	      at: &_delayInterval];
+      [aCoder encodeValueOfObjCType: @encode(float)
+	      at: &_repeatInterval];
+      [aCoder encodeValueOfObjCType: @encode(unsigned int)
+	      at: &_bezel_style];
+      [aCoder encodeValueOfObjCType: @encode(unsigned int)
+	      at: &_gradient_type];
+      tmp = _image_dims_when_disabled;
+      [aCoder encodeValueOfObjCType: @encode(BOOL)
+	      at: &tmp];
+      tmp = _shows_border_only_while_mouse_inside;
+      [aCoder encodeValueOfObjCType: @encode(BOOL)
+	      at: &tmp];
     }
 }
 
@@ -1608,7 +1716,7 @@ typedef struct _GSButtonCellFlags
 	  [self setShowsBorderOnlyWhileMouseInside: (bFlags2 & 0x8)];
 
 	  // FIXME
-	  switch (bFlags2 & 0x7)
+	  switch (bFlags2 & 0x27)
 	    {
 	      case 1:
 		[self setBezelStyle: NSRoundedBezelStyle];
@@ -1623,7 +1731,7 @@ typedef struct _GSButtonCellFlags
 		[self setBezelStyle: NSThickerSquareBezelStyle];
 		break;
 	      case 5:
-		//[self setBezelStyle: NSDisclosureBezelStyle];
+		[self setBezelStyle: NSDisclosureBezelStyle];
 		break;
 	      case 6:
 		[self setBezelStyle: NSShadowlessSquareBezelStyle];
@@ -1631,14 +1739,12 @@ typedef struct _GSButtonCellFlags
 	      case 7:
 		[self setBezelStyle: NSCircularBezelStyle];
 		break;
-/*
 	      case 32:
 		[self setBezelStyle: NSTexturedSquareBezelStyle];
 		break;
 	      case 33:
 		[self setBezelStyle: NSHelpButtonBezelStyle];
 		break;
-*/
 	      default:
 		break;
 	    }
@@ -1689,7 +1795,6 @@ typedef struct _GSButtonCellFlags
     }
   else
     {
-      // FIXME: Add new ivars
       BOOL tmp;
       
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_keyEquivalent];
@@ -1704,45 +1809,24 @@ typedef struct _GSButtonCellFlags
 		                   at: &_highlightsByMask];
       [aDecoder decodeValueOfObjCType: @encode(unsigned int)
 		                   at: &_showAltStateMask];
+
+      if ([aDecoder versionForClassName: @"NSButtonCell"] >= 2)
+      {
+	  [aDecoder decodeValueOfObjCType: @encode(id) at: &_sound];
+	  [aDecoder decodeValueOfObjCType: @encode(id) at: &_backgroundColor];
+	  [aDecoder decodeValueOfObjCType: @encode(float) at: &_delayInterval];
+	  [aDecoder decodeValueOfObjCType: @encode(float) at: &_repeatInterval];
+	  [aDecoder decodeValueOfObjCType: @encode(unsigned int)
+		                       at: &_bezel_style];
+	  [aDecoder decodeValueOfObjCType: @encode(unsigned int)
+		                       at: &_gradient_type];
+	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
+	  _image_dims_when_disabled = tmp;
+	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
+	  _shows_border_only_while_mouse_inside = tmp;
+      }
     }
   return self;
-}
-
-@end
-
-@implementation NSButtonCell (Private)
-
-// Overriden private internal method
-- (void) _drawImage: (NSImage *)anImage inFrame: (NSRect)aRect 
-  isFlipped: (BOOL)flipped
-{
-  // To keep partially in sync with the NSCell overriden method
-  
-  NSSize size;
-  NSPoint position;
-
-  size = [anImage size];
-  position.x = MAX(NSMidX(aRect) - (size.width / 2.), 0.);
-  position.y = MAX(NSMidY(aRect) - (size.height / 2.), 0.);
-  
-  /*
-   * Images are always drawn with their bottom-left corner at the origin
-   * so we must adjust the position to take account of a flipped view.
-   */
-  if (flipped)
-    {
-      position.y += size.height;
-    }
-	
-  if (_cell.is_disabled && _image_dims_when_disabled)
-    {
-      [anImage dissolveToPoint: position fraction: 0.5];
-    }
-  else
-    {
-      [anImage compositeToPoint: position 
-	                     operation: NSCompositeSourceOver];
-    }
 }
 
 @end

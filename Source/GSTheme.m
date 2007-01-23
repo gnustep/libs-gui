@@ -691,15 +691,14 @@ static NSNull			*null = nil;
 
 @implementation	GSTheme (Drawing)
 
-- (NSRect) drawButton: (NSRect)frame 
-                   in: (NSButtonCell*)cell 
-                 view: (NSView*)view 
-                style: (int)style 
-                state: (GSThemeControlState)state
+- (void) drawButton: (NSRect)frame 
+                 in: (NSButtonCell*)cell 
+               view: (NSView*)view 
+              style: (int)style 
+              state: (GSThemeControlState)state
 {
   GSDrawTiles	*tiles = nil;
   NSColor	*color = nil;
-  NSRect	interiorFrame;
 
   if (state == GSThemeNormalState)
     {
@@ -719,7 +718,6 @@ static NSNull			*null = nil;
 
   if (tiles == nil)
     {
-      interiorFrame = [cell drawingRectForBounds: frame];
       [color set];
       NSRectFill(frame);
 
@@ -730,21 +728,50 @@ static NSNull			*null = nil;
       else if (state == GSThemeSelectedState)
 	{
 	  [self drawGrayBezel: frame withClip: NSZeroRect];
-	  interiorFrame
-	    = NSOffsetRect(interiorFrame, 1.0, [view isFlipped] ? 1.0 : -1.0);
 	}
     }
   else
     {
       /* Use tiles to draw button border with central part filled with color
        */
-      interiorFrame = [self fillRect: frame
-			   withTiles: tiles
-			  background: color
-			   fillStyle: GSThemeFillStyleNone];
+      [self fillRect: frame
+	   withTiles: tiles
+	  background: color
+	   fillStyle: GSThemeFillStyleNone];
+    }
+}
+
+- (NSSize) buttonBorderForStyle: (int)style 
+			  state: (GSThemeControlState)state
+{
+  GSDrawTiles	*tiles = nil;
+  NSRect	interiorFrame;
+
+  if (state == GSThemeNormalState)
+    {
+      tiles = [self tilesNamed: @"NSButtonNormal" cache: YES];
+    }
+  else if (state == GSThemeHighlightedState)
+    {
+      tiles = [self tilesNamed: @"NSButtonHighlighted" cache: YES];
+    }
+  else if (state == GSThemeSelectedState)
+    {
+      tiles = [self tilesNamed: @"NSButtonPushed" cache: YES];
     }
 
-  return interiorFrame;
+  if (tiles == nil)
+    {
+      // FIXME: Should take style into account
+      return NSMakeSize(3, 3);
+    }
+  else
+    {
+      NSSize cls = tiles->rects[TileCL].size;
+      NSSize bms = tiles->rects[TileBM].size;
+
+      return NSMakeSize(cls.width, bms.height);
+    }
 }
 
 - (void) drawFocusFrame: (NSRect) frame view: (NSView*) view

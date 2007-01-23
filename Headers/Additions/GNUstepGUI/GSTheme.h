@@ -378,16 +378,22 @@ APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
 
 /**
  * Draws a button frame and background (not its content) for the specified
- * cell and view.<br />
- * Returns the rectangle into which the cell contents should be drawn.
+ * cell and view.
  */
-- (NSRect) drawButton: (NSRect)frame
-		   in: (NSButtonCell*)cell
-		 view: (NSView*)view
-		style: (int)style
-		state: (GSThemeControlState)state;
+- (void) drawButton: (NSRect)frame
+	         in: (NSButtonCell*)cell
+	       view: (NSView*)view
+	      style: (int)style
+	      state: (GSThemeControlState)state;
 
-/** Draws the indicator (normally a dotted rectangle) to show that
+/**
+ * Amount by which the button is inset by the border.
+ */
+- (NSSize) buttonBorderForStyle: (int)style 
+                          state: (GSThemeControlState)state;
+
+/** 
+ * Draws the indicator (normally a dotted rectangle) to show that
  * the view currently has keyboard focus.
  */
 - (void) drawFocusFrame: (NSRect)frame view: (NSView*)view;

@@ -1989,12 +1989,6 @@ static NSColor	*shadowCol;
          break;
     }
 
-  if (_cell.shows_first_responder)
-    {
-      // FIXME: Should depend on _cell.focus_ring_type
-      NSDottedFrameRect(cellFrame);
-    }
-
   // NB: We don't do any highlighting to make it easier for subclasses
   // to reuse this code while doing their own custom highlighting and
   // prettyfying
@@ -2020,6 +2014,15 @@ static NSColor	*shadowCol;
     }
 
   [self drawInteriorWithFrame: cellFrame inView: controlView];
+
+  // Draw first responder
+  if (_cell.shows_first_responder
+    && [[controlView window] firstResponder] == controlView)
+    {
+      // FIXME: Should depend on _cell.focus_ring_type
+      [[GSTheme theme] drawFocusFrame: [self drawingRectForBounds: cellFrame] 
+		                 view: controlView];
+    }
 }
 
 /**<p>Sets whether the NSCell is highlighted.</p>

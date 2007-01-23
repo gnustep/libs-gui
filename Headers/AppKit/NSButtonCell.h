@@ -38,33 +38,40 @@
 @class NSSound;
 
 typedef enum _NSButtonType {
-  NSMomentaryPushButton,
+  NSMomentaryLightButton,
   NSPushOnPushOffButton,
   NSToggleButton,
   NSSwitchButton,
   NSRadioButton,
   NSMomentaryChangeButton,
   NSOnOffButton,
-  // These come from MacOSX
-  NSMomentaryLight,
-  NSMomentaryLightButton = NSMomentaryLight,
-  NSMomentaryPushInButton = NSMomentaryPushButton
+  NSMomentaryPushInButton,
+  // These are old names
+  NSMomentaryLight = NSMomentaryPushInButton,
+  NSMomentaryPushButton = NSMomentaryLightButton
 } NSButtonType;
 
 typedef enum _NSBezelStyle {
-  NSRoundedBezelStyle,
+  NSRoundedBezelStyle = 1,
   NSRegularSquareBezelStyle,
   NSThickSquareBezelStyle,
   NSThickerSquareBezelStyle,
+  NSDisclosureBezelStyle,
+  NSShadowlessSquareBezelStyle,
+  NSCircularBezelStyle,
+  NSTexturedSquareBezelStyle,
+  NSHelpButtonBezelStyle,
+  NSSmallSquareBezelStyle,
+  NSTexturedRoundBezelStyle,
+  NSRoundRectBezelStyle,
+  NSRecessedBezelStyle,
+  NSRoundedDisclosureBezelStyle,
   // The next five no longer show up in the MacOSX documentation
   NSNeXTBezelStyle,
   NSPushButtonBezelStyle,
   NSSmallIconButtonBezelStyle,
   NSMediumIconButtonBezelStyle,
-  NSLargeIconButtonBezelStyle,
-  // But those two do
-  NSShadowlessSquareBezelStyle,
-  NSCircularBezelStyle
+  NSLargeIconButtonBezelStyle
 } NSBezelStyle;
 
 typedef enum _NSGradientType {
@@ -91,11 +98,12 @@ typedef enum _NSGradientType {
   float _repeatInterval;
   NSBezelStyle _bezel_style;
   NSGradientType _gradient_type;
-  BOOL _shows_border_only_while_mouse_inside;
-  BOOL _mouse_inside;
+  NSColor *_backgroundColor;
   // Think of the following as a BOOL ivars
 #define _buttoncell_is_transparent _cell.subclass_bool_one
 #define _image_dims_when_disabled _cell.subclass_bool_two
+#define _shows_border_only_while_mouse_inside _cell.subclass_bool_three
+#define _mouse_inside _cell.subclass_bool_four
 }
 
 //
@@ -160,6 +168,17 @@ typedef enum _NSGradientType {
 - (void)setGradientType:(NSGradientType)gradientType;
 - (BOOL)imageDimsWhenDisabled;
 - (void)setImageDimsWhenDisabled:(BOOL)flag;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (NSColor *)backgroundColor;
+- (void)setBackgroundColor:(NSColor *)color;
+- (void)drawBezelWithFrame:(NSRect)frame inView:(NSView *)control;
+- (void)drawImage:(NSImage*)imageToDisplay 
+        withFrame:(NSRect)frame 
+           inView:(NSView *)control;
+- (void)drawTitle:(NSAttributedString*)titleToDisplay 
+        withFrame:(NSRect)frame 
+           inView:(NSView *)control;
 #endif
 
 //

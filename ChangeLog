@@ -1,3 +1,30 @@
+2007-01-23  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h, 
+	* Source/GSTheme.m (-buttonBorderForStyle:state:): New method to
+	determine the button border size.
+	* Headers/Additions/GNUstepGUI/GSTheme.h (-drawButton:...state:),
+	* Source/GSTheme.m (-drawButton:view:style:state:): Don't return a result.
+	* Source/NSCell.m (-drawInteriorWithFrame:inView:,
+	-drawWithFrame:inView:): Bring drawing of focus ring inline
+	with the one in NSButtonCell.
+	* Headers/AppKit/NSButtonCell.h: Add MacOS 10.4 methods and
+	additional ivars and changed enumerator values. 
+	* Source/NSButtonCell.m: Implemented new methods. 
+	* Source/NSButtonCell.m (-setButtonType:): Use new enumerator values.
+	* Source/NSButtonCell.m (-_init): Use method call to set button type.
+	* Source/NSButtonCell.m (-drawInteriorWithFrame:inView:,
+	-drawWithFrame:inView:): Use new methods for the drawing.
+	* Source/NSButtonCell.m (-cellSize, -drawingRectForBounds:): Use
+	new theme method to determine border size.
+	* Source/NSButtonCell.m (-encodeWithCoder:, -initWithCoder:):
+	Encode/decode new and previously missing ivars.
+	* Source/NSMenuItemCell.m (-drawingRectForBounds:): Moved old super
+	class code to here.
+	* Source/NSToolbarItem.m (GSToolbarButtonCell
+	-drawImage:withFrame:inView:): Renamed method to match with
+	superclass change and simplified implementation.
+
 2007-01-23  Matt Rice  <ratmice@gmail.com>
 
 	* Source/NSWindow.m (-_lossOfKeyOrMainWindow): Use GSOrderedWindows.

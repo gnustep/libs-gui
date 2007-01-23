@@ -454,33 +454,10 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 }
 
 // Overriden NSButtonCell method
-- (void) _drawImage: (NSImage *)anImage inFrame: (NSRect)aRect isFlipped: (BOOL)flipped
+- (void) drawImage: (NSImage *)anImage withFrame: (NSRect)aRect inView: (NSView*)controlView
 {
-  NSSize size;
-  NSPoint position;
-
   // We ignore aRect value
-  
-  size = [anImage size];
-  position.x = MAX(NSMidX(imageRect) - (size.width / 2.), 0.);
-  position.y = MAX(NSMidY(imageRect) - (size.height / 2.), 0.);
-  
-  /* Images are always drawn with their bottom-left corner at the origin so we 
-     must adjust the position to take account of a flipped view. */
-  if (flipped)
-    {
-      position.y += size.height;
-    }
-	
-  if (_cell.is_disabled && _image_dims_when_disabled)
-    {
-      [anImage dissolveToPoint: position fraction: 0.5];
-    }
-  else
-    {
-      [anImage compositeToPoint: position 
-	              operation: NSCompositeSourceOver];
-    }
+  [super drawImage: anImage withFrame: imageRect inView: controlView];
 }
 
 @end

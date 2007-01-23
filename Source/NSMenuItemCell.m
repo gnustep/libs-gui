@@ -797,7 +797,23 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
     }
   else
     {
-      return [super drawingRectForBounds: theRect];
+      if (_cell.is_bordered)
+        {
+	  /*
+	   * Special case:  Buttons have only three different paths for border.
+	   * One white path at the top left corner, one black path at the
+	   * bottom right and another in dark gray at the inner bottom right.
+	   */
+	    float yDelta = [_control_view isFlipped] ? 1. : 2.;
+	    return NSMakeRect (theRect.origin.x + 1.,
+			       theRect.origin.y + yDelta,
+			       theRect.size.width - 3.,
+			       theRect.size.height - 3.);
+	}
+      else
+      {
+	  return theRect;
+      }
     }
 }
 
