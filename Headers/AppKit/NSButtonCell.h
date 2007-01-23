@@ -37,6 +37,37 @@
 @class NSFont;
 @class NSSound;
 
+/** Type of button in an NSButton or NSButtonCell.
+ * <deflist>
+ *  <term>NSMomentaryPushInButton</term>
+ *   <desc><em>Default button type!</em>  Pushed in and lit when mouse is 
+ *         down, pushed out and unlit when mouse is release.</desc>
+ *  <term>NSPushOnPushOffButton</term>
+ *   <desc>Used to show/store ON / OFF states.  In when ON, out when OFF.</desc>
+ *  <term>NSToggleButton</term>
+ *   <desc>Like NSPushOnPushOffButton but images is changed for ON and 
+ *         OFF state.</desc>
+ *  <term>NSSwitchButton</term>
+ *   <desc>A borderless NSToggleButton</desc>
+ *  <term>NSRadioButton</term>
+ *   <desc>A type of NSSwitchButton similar to a Microsoft Windows radio 
+ *         button.</desc>
+ *  <term>NSMomentaryChangeButton</term>
+ *   <desc>Image of button changes on mouse down and then changes back 
+ *         once released.</desc>
+ *  <term>NSOnOffButton</term>
+ *   <desc>Simple ON / OFF button.  First click lights the button, 
+ *         seconds click unlights it.</desc>
+ *  <term>NSMomentaryLightButton</term>
+ *   <desc>Like NSMomentaryPushInButton but button is not pushed 
+ *         in on mouse down</desc>
+ *
+ *  <term>NSMomentaryLight</term>
+ *   <desc>Same as NSMomentaryPushInButton. Has been depricated in Cocoa.</desc>
+ *  <term>NSMomentaryPushButton</term>
+ *   <desc>Same as NSMomentaryLightButton. Has been depricated in 
+ *         Cocoa.</desc>
+ */
 typedef enum _NSButtonType {
   NSMomentaryLightButton,
   NSPushOnPushOffButton,

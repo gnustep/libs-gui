@@ -36,6 +36,17 @@
 @class NSString;
 @class NSFont;
 
+/** Title positioning of an NSBox:
+ * <list>
+ *  <item>NSNoTitle</item>
+ *  <item>NSAboveTop</item>
+ *  <item>NSAtTop</item>
+ *  <item>NSBelowTop</item>
+ *  <item>NSAboveBottom</item>
+ *  <item>NSAtBottom</item>
+ *  <item>NSBelowBottom</item>
+ * </list>
+ */
 typedef enum _NSTitlePosition {
   NSNoTitle,
   NSAboveTop,

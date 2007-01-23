@@ -745,7 +745,6 @@ static NSNull			*null = nil;
 			  state: (GSThemeControlState)state
 {
   GSDrawTiles	*tiles = nil;
-  NSRect	interiorFrame;
 
   if (state == GSThemeNormalState)
     {

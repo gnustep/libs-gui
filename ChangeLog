@@ -1,5 +1,14 @@
 2007-01-23  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSBox.h: 
+	* Headers/AppKit/NSButtonCell.h: 
+	Add documentation for NSTitlePosition and NSButtonType. 
+	Patch by <stefanbidi@gmail.com>.
+	
+	* Source/GSTheme.m (-buttonBorderForStyle:state:): Removed unused variable.
+	
+2007-01-23  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/Additions/GNUstepGUI/GSTheme.h, 
 	* Source/GSTheme.m (-buttonBorderForStyle:state:): New method to
 	determine the button border size.
