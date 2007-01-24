@@ -1,3 +1,13 @@
+2007-01-24  Richard Frith-Macdoanld <rfm@gnu.org>
+
+	* Headers/AppKit/NSButtonCell.h: Fix documentation error.
+	* Headers/AppKit/NSMenu.h: Tidy a litte, fix errors in documentation
+	markup, fix some documentation cross references.
+
+2007-01-24  Stefan Bidigaray
+
+	* Headers/AppKit/NSMenu.h: Add documentation (patch #5705).
+
 2007-01-23  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTableView.m (-selectAll:, -deselectAll:) Call

@@ -67,6 +67,7 @@
  *  <term>NSMomentaryPushButton</term>
  *   <desc>Same as NSMomentaryLightButton. Has been depricated in 
  *         Cocoa.</desc>
+ * </deflist>
  */
 typedef enum _NSButtonType {
   NSMomentaryLightButton,
