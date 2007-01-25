@@ -1592,7 +1592,7 @@ typedef struct _GSButtonCellFlags
 
       // style and border.
       bFlags2 != [self showsBorderOnlyWhileMouseInside] ? 0x8 : 0;
-      bFlags2 |= [self bezelStyle];
+      bFlags2 |= (([self bezelStyle] & 0x7) | (([self bezelStyle] & 0x18) << 2));
       [aCoder encodeInt: bFlags2 forKey: @"NSButtonFlags2"];
 
       // alternate image encoding...
@@ -1714,40 +1714,7 @@ typedef struct _GSButtonCellFlags
 
 	  bFlags2 = [aDecoder decodeIntForKey: @"NSButtonFlags2"];
 	  [self setShowsBorderOnlyWhileMouseInside: (bFlags2 & 0x8)];
-
-	  // FIXME
-	  switch (bFlags2 & 0x27)
-	    {
-	      case 1:
-		[self setBezelStyle: NSRoundedBezelStyle];
-		break;
-	      case 2:
-		[self setBezelStyle: NSRegularSquareBezelStyle];
-		break;
-	      case 3:
-		[self setBezelStyle: NSThickSquareBezelStyle];
-		break;
-	      case 4:
-		[self setBezelStyle: NSThickerSquareBezelStyle];
-		break;
-	      case 5:
-		[self setBezelStyle: NSDisclosureBezelStyle];
-		break;
-	      case 6:
-		[self setBezelStyle: NSShadowlessSquareBezelStyle];
-		break;
-	      case 7:
-		[self setBezelStyle: NSCircularBezelStyle];
-		break;
-	      case 32:
-		[self setBezelStyle: NSTexturedSquareBezelStyle];
-		break;
-	      case 33:
-		[self setBezelStyle: NSHelpButtonBezelStyle];
-		break;
-	      default:
-		break;
-	    }
+	  [self setBezelStyle: (bFlags2 & 0x7) | ((bFlags2 & 0x20) >> 2)];
 	}
       if ([aDecoder containsValueForKey: @"NSAlternateImage"])
         {

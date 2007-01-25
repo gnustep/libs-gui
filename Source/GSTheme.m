@@ -163,6 +163,10 @@ typedef enum {
  * Returns nil on failure.
  */
 + (GSTheme*) loadThemeNamed: (NSString*)aName;
+
+// These two drawing method may be made public later on
+- (void) drawCircularBezel: (NSRect)cellFrame withColor: (NSColor*)backgroundColor;
+- (void) drawRoundBezel: (NSRect)cellFrame withColor: (NSColor*)backgroundColor;
 @end
 
 
@@ -718,16 +722,57 @@ static NSNull			*null = nil;
 
   if (tiles == nil)
     {
-      [color set];
-      NSRectFill(frame);
+      switch (style)
+        {
+	  case NSRoundRectBezelStyle:
+	  case NSTexturedRoundBezelStyle:
+	  case NSRoundedBezelStyle:
+	    [self drawRoundBezel: frame withColor: color];
+	    break;
+	  case NSTexturedSquareBezelStyle:
+	    frame = NSInsetRect(frame, 0, 1);
+	  case NSSmallSquareBezelStyle:
+	  case NSRegularSquareBezelStyle:
+	  case NSShadowlessSquareBezelStyle:
+	    [color set];
+	    NSRectFill(frame);
+	    [[NSColor controlShadowColor] set];
+	    NSFrameRectWithWidth(frame, 1);
+	    break;
+	  case NSThickSquareBezelStyle:
+	    [color set];
+	    NSRectFill(frame);
+	    [[NSColor controlShadowColor] set];
+	    NSFrameRectWithWidth(frame, 1.5);
+	    break;
+	  case NSThickerSquareBezelStyle:
+	    [color set];
+	    NSRectFill(frame);
+	    [[NSColor controlShadowColor] set];
+	    NSFrameRectWithWidth(frame, 2);
+	    break;
+	  case NSCircularBezelStyle:
+	    frame = NSInsetRect(frame, 3, 3);
+	  case NSHelpButtonBezelStyle:
+	    [self drawCircularBezel: frame withColor: color]; 
+	    break;
+	  case NSDisclosureBezelStyle:
+	  case NSRoundedDisclosureBezelStyle:
+	  case NSRecessedBezelStyle:
+	    // FIXME
+	    break;
+	  default:
+	    [color set];
+	    NSRectFill(frame);
 
-      if (state == GSThemeNormalState || state == GSThemeHighlightedState)
-	{
-	  [self drawButton: frame withClip: NSZeroRect];
-	}
-      else if (state == GSThemeSelectedState)
-	{
-	  [self drawGrayBezel: frame withClip: NSZeroRect];
+	    if (state == GSThemeNormalState || state == GSThemeHighlightedState)
+	      {
+		[self drawButton: frame withClip: NSZeroRect];
+	      }
+	    else if (state == GSThemeSelectedState)
+	      {
+		[self drawGrayBezel: frame withClip: NSZeroRect];
+	      }
 	}
     }
   else
@@ -761,8 +806,34 @@ static NSNull			*null = nil;
 
   if (tiles == nil)
     {
-      // FIXME: Should take style into account
-      return NSMakeSize(3, 3);
+      switch (style)
+        {
+	  case NSRoundRectBezelStyle:
+	  case NSTexturedRoundBezelStyle:
+	  case NSRoundedBezelStyle:
+	    return NSMakeSize(5, 5);
+	  case NSTexturedSquareBezelStyle:
+	    return NSMakeSize(3, 3);
+	  case NSSmallSquareBezelStyle:
+	  case NSRegularSquareBezelStyle:
+	  case NSShadowlessSquareBezelStyle:
+	    return NSMakeSize(2, 2);
+	  case NSThickSquareBezelStyle:
+	    return NSMakeSize(3, 3);
+	  case NSThickerSquareBezelStyle:
+	    return NSMakeSize(4, 4);
+	  case NSCircularBezelStyle:
+	    return NSMakeSize(5, 5);
+	  case NSHelpButtonBezelStyle:
+	    return NSMakeSize(2, 2);
+	  case NSDisclosureBezelStyle:
+	  case NSRoundedDisclosureBezelStyle:
+	  case NSRecessedBezelStyle:
+	    // FIXME
+	    return NSMakeSize(0, 0);
+	  default:
+	    return NSMakeSize(3, 3);
+	}
     }
   else
     {
@@ -1043,6 +1114,49 @@ static NSNull			*null = nil;
     {
       return NSDrawColorTiledRects(border, clip, up_sides, colors, 8);
     }
+}
+
+- (void) drawRoundBezel: (NSRect)cellFrame withColor: (NSColor*)backgroundColor
+{
+  NSBezierPath *p = [NSBezierPath bezierPath];
+  NSPoint point;
+  float radius;
+
+  // make smaller than enclosing frame
+  cellFrame = NSInsetRect(cellFrame, 4, floor(cellFrame.size.height * 0.1875));
+  radius = cellFrame.size.height / 2.0;
+  point = cellFrame.origin;
+  point.x += radius;
+  point.y += radius;
+  // left half-circle
+  [p appendBezierPathWithArcWithCenter: point radius: radius startAngle: 90.0 endAngle: 270.0];
+
+  // line to first point and right halfcircle
+  point.x += cellFrame.size.width - cellFrame.size.height;
+  [p appendBezierPathWithArcWithCenter: point radius: radius startAngle: 270.0 endAngle: 90.0];
+  [p closePath];
+
+  // fill with background color
+  [backgroundColor set];
+  [p fill];
+
+  // and stroke rounded button
+  [[NSColor shadowColor] set];
+  [p stroke];
+}
+
+- (void) drawCircularBezel: (NSRect)cellFrame withColor: (NSColor*)backgroundColor
+{
+  // make smaller so that it does not touch frame
+  NSBezierPath *oval = [NSBezierPath bezierPathWithOvalInRect: NSInsetRect(cellFrame, 1, 1)];
+
+  // fill oval with background color
+  [backgroundColor set];
+  [oval fill];
+
+  // and stroke rounded button
+  [[NSColor shadowColor] set];
+  [oval stroke];
 }
 
 @end

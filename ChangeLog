@@ -1,3 +1,13 @@
+2007-01-25  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSButtonCell.m (-encodeWithCoder:, -initWithCoder:):
+	Corrected coding and decoding of bezel style.
+	* Source/GSTheme.m (-drawCircularBezel:withColor:,
+	-drawRoundBezel:withColor:) New methods to draw bezel. 
+	Code by Nikolaus Schaller <hns@computer.org>.
+	* Source/GSTheme.m (-buttonBorderForStyle:state:,
+	-drawButton:view:style:state:): Handle some of the bezel styles.
+	
 2007-01-24  Richard Frith-Macdoanld <rfm@gnu.org>
 
 	* Headers/AppKit/NSButtonCell.h: Fix documentation error.
