@@ -1,3 +1,29 @@
+2007-01-27  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSMenuItemCell.h: Remove ivar
+	_backgroundColor. Add ivar _needs_display.
+	* Source/NSMenuItemCell.m (-drawingRectForBounds:): Move push in
+	adjustment to here.
+	* Source/NSMenuItemCell.m (-drawBorderAndBackgroundWithFrame:):
+	Draw the background here and not in [drawInteriorWithFrame:inView:]
+	* Source/NSMenuItemCell.m (-backgroundColor:, -tag,
+	-setNeedsDisplay:, -needsDisplay): New methods.
+	* Source/NSMenuItemCell.m (-setMenuItem:, -setHighlighted:,
+	-init): Mark as needing sizing.
+	* Source/NSMenuItemCell.m (-setMenuView:): Switch off border and
+	move image to left side for horizontal menus.
+	* Source/NSMenuItemCell.m (-titleRectForBounds:,
+	-imageRectForBounds:): Add a few more calls to [calcSize].
+	* Source/NSMenuItemCell.m (-drawTitleWithFrame:inView:): Remove
+	setting of enable state.
+	* Source/NSMenuItemCell.m (-drawInteriorWithFrame:inView:): Add
+	call to separator drawing. Share more of the code between
+	horizontal and vertical menus.
+
+	* Source/NSMenuItemCell.m (-_keyEquivalentString): Determine
+	string to display for key equivalent. 
+	Code by Nikolaus Schaller <hns@computer.org>.
+
 2007-01-25  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSButtonCell.m (-encodeWithCoder:, -initWithCoder:):

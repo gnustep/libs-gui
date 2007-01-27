@@ -29,7 +29,6 @@
 #define _GNUstep_H_NSMenuItemCell
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSActionCell.h>
 #include <AppKit/NSButtonCell.h>
 #include <AppKit/NSMenuItem.h>
 
@@ -42,9 +41,14 @@ typedef void (*DrawingIMP)(id, SEL, NSRect, NSView*);
   NSMenuItem *_menuItem;
   NSMenuView *_menuView;
 
+  /* If we belong to a popupbutton, we display image on the extreme
+     right */
+  BOOL _mcell_belongs_to_popupbutton;
+
   // Cache
   BOOL _needs_sizing;
-  char _pad1[3];
+  BOOL _needs_display;
+  char _pad[1];
 
   float _imageWidth;
   float _titleWidth;
@@ -55,14 +59,6 @@ typedef void (*DrawingIMP)(id, SEL, NSRect, NSView*);
   NSImage *_imageToDisplay;
   NSString *_titleToDisplay;
   NSSize _imageSize;
-
-  /* If we belong to a popupbutton, we display image on the extreme
-     right */
-  BOOL _mcell_belongs_to_popupbutton;
-  char _pad2[3];
-
-@private
-  NSColor *_backgroundColor;
 }
 
 - (void)setHighlighted:(BOOL)flag;
@@ -77,6 +73,8 @@ typedef void (*DrawingIMP)(id, SEL, NSRect, NSView*);
 - (void)calcSize;
 - (void)setNeedsSizing:(BOOL)flag;
 - (BOOL)needsSizing;
+- (void)setNeedsDisplay:(BOOL)flag;
+- (BOOL)needsDisplay;
 
 - (float)imageWidth;
 - (float)titleWidth;
