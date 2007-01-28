@@ -5231,6 +5231,8 @@ static BOOL selectContiguousRegion(NSTableView *self,
     {
       switch ([(NSNumber *)textMovement intValue])
 	{
+	case NSIllegalTextMovement:
+	  [self abortEditing];  
 	case NSReturnTextMovement:
 	  [self _editNextCellAfterRow: row inColumn: column];
 	  // Send action ?

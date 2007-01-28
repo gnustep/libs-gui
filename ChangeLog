@@ -1,3 +1,8 @@
+2007-01-28  Matt Rice  <ratmice@gmail.com>
+	
+	* Source/NSTableView.m (-textDidEndEditing:): Handle
+	NSIllegalTextMovement.
+
 2007-01-27  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSMenuItemCell.h: Remove ivar
