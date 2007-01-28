@@ -1,7 +1,11 @@
+
 2007-01-28  Matt Rice  <ratmice@gmail.com>
 	
 	* Source/NSTableView.m (-textDidEndEditing:): Handle
 	NSIllegalTextMovement.
+	
+	* Source/NSTableView.m (-textDidEndEditing:): Add missing break
+	to previous commit.
 
 2007-01-27  Fred Kiefer <FredKiefer@gmx.de>
 
