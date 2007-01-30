@@ -2117,30 +2117,28 @@ static NSColor	*shadowCol;
 		       range: (NSRange)selection
 {
   NSRect titleRect = [self titleRectForBounds: aRect];
+  NSClipView *cv = [[NSClipView alloc] initWithFrame: titleRect];
+  NSTextContainer *ct = [(NSTextView*)textObject textContainer];
   NSRect maxRect;
 
   // A clip view should is only created for scrollable text
   if ([self isScrollable])
     {
       /* See comments in NSStringDrawing.m about the choice of maximum size. */
-      NSSize maxSize = NSMakeSize(1e6, titleRect.size.height);
-      NSClipView *cv = [[NSClipView alloc] initWithFrame: titleRect];
-      NSTextContainer *ct = [(NSTextView*)textObject textContainer];
-
-      maxRect = NSMakeRect(0, 0, maxSize.width, maxSize.height);
-      [controlView addSubview: cv];
-      RELEASE(cv);
-      [cv setAutoresizesSubviews: NO];
-      [cv setDocumentView: textObject];
-      [ct setContainerSize: maxSize];
-      [ct setHeightTracksTextView: NO];
-      [ct setWidthTracksTextView: NO];
+      maxRect = NSMakeRect(0, 0, 1e6, titleRect.size.height);
     }
   else
     {
-      maxRect = titleRect;
-      [controlView addSubview: textObject];
+      maxRect = NSMakeRect(0, 0, titleRect.size.width, titleRect.size.height);
     }
+
+  [controlView addSubview: cv];
+  RELEASE(cv);
+  [cv setAutoresizesSubviews: NO];
+  [cv setDocumentView: textObject];
+  [ct setContainerSize: maxRect.size];
+  [ct setHeightTracksTextView: NO];
+  [ct setWidthTracksTextView: NO];
 
   [textObject setFrame: maxRect];
   [textObject setHorizontallyResizable: NO];
@@ -2187,21 +2185,15 @@ static NSColor	*shadowCol;
  */
 - (void) endEditing: (NSText*)textObject
 {
+  NSClipView *clipView;
+
   [textObject setString: @""];
   [textObject setDelegate: nil];
 
-  if ([self isScrollable])
-    {
-      NSClipView *clipView;
   
-      clipView = (NSClipView*)[textObject superview];
-      [textObject removeFromSuperview];
-      [clipView removeFromSuperview];
-    }
-  else
-    {
-      [textObject removeFromSuperview];
-    }
+  clipView = (NSClipView*)[textObject superview];
+  [textObject removeFromSuperview];
+  [clipView removeFromSuperview];
 }
 
 /*

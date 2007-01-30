@@ -1,3 +1,8 @@
+2007-01-30  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSCell.m (-_setupTextWithFrame:inView:editor:delegate:range:, 
+	-endEditing:): Revert to always use a clip view, but with different size.
+	
 2007-01-29  Matt Rice  <ratmice@gmail.com>
 
 	* Source/NSTableView.m: Revert previous patch.
