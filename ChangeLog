@@ -1,3 +1,6 @@
+2007-01-29  Matt Rice  <ratmice@gmail.com>
+
+	* Source/NSTableView.m: Revert previous patch.
 
 2007-01-28  Matt Rice  <ratmice@gmail.com>
 	
