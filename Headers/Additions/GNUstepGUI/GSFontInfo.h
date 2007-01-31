@@ -79,70 +79,68 @@ values. Backends may override these. */
   BOOL isBaseFont;
   int weight;
   NSFontTraitMask traits;
+  unsigned	numberOfGlyphs;
+  NSCharacterSet	*coveredCharacterSet;
 }
 
-+ (void) setDefaultClass: (Class)defaultClass;
 + (GSFontInfo*) fontInfoForFontName: (NSString*)fontName 
                              matrix: (const float *)fmatrix
 			 screenFont: (BOOL)screenFont;
-
-+ (int) weightForString: (NSString *)weightString;
++ (void) setDefaultClass: (Class)defaultClass;
 + (NSString *) stringForWeight: (int)weight;
-
-- (NSDictionary *)afmDictionary;
-- (NSString *)afmFileContents;
-- (NSRect)boundingRectForFont;
-- (NSString *)displayName;
-- (NSString *)familyName;
-- (NSString *)fontName;
-- (NSString *)encodingScheme;
-- (const float*) matrix;
-- (BOOL)isFixedPitch;
-- (BOOL)isBaseFont;
-- (float)ascender;
-- (float)descender;
-- (float)capHeight;
-- (float)italicAngle;
-- (NSSize)maximumAdvancement;
-- (NSSize)minimumAdvancement;
-- (float)underlinePosition;
-- (float)underlineThickness;
-- (float)xHeight;
-- (float) widthOfString: (NSString*)string;
-- (float)defaultLineHeightForFont;
++ (int) weightForString: (NSString *)weightString;
 
 - (NSSize) advancementForGlyph: (NSGlyph)aGlyph;
+- (NSDictionary *) afmDictionary;
+- (NSString *) afmFileContents;
+- (void) appendBezierPathWithGlyphs: (NSGlyph *)glyphs
+			      count: (int)count
+		       toBezierPath: (NSBezierPath *)path;
+- (float) ascender;
 - (NSRect) boundingRectForGlyph: (NSGlyph)aGlyph;
+- (NSRect) boundingRectForFont;
+- (float) capHeight;
+- (NSCharacterSet*) coveredCharacterSet;
+- (float) defaultLineHeightForFont;
+- (float) descender;
+- (NSString *) displayName;
+- (NSString *) encodingScheme;
+- (NSString *) familyName;
+- (NSString *) fontName;
 - (BOOL) glyphIsEncoded: (NSGlyph)aGlyph;
-- (NSMultibyteGlyphPacking)glyphPacking;
+- (NSMultibyteGlyphPacking) glyphPacking;
 - (NSGlyph) glyphWithName: (NSString*)glyphName;
+- (BOOL) isFixedPitch;
+- (BOOL) isBaseFont;
+- (float) italicAngle;
+- (const float*) matrix;
+- (NSSize) maximumAdvancement;
+- (NSSize) minimumAdvancement;
+- (NSStringEncoding) mostCompatibleStringEncoding;
+- (unsigned) numberOfGlyphs;
+- (NSPoint) positionOfGlyph: (NSGlyph)aGlyph 
+               forCharacter: (unichar)aChar 
+             struckOverRect: (NSRect)aRect;
 - (NSPoint) positionOfGlyph: (NSGlyph)curGlyph
 	    precededByGlyph: (NSGlyph)prevGlyph
 		  isNominal: (BOOL*)nominal;
-- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
-              forCharacter:(unichar)aChar 
-            struckOverRect:(NSRect)aRect;
-- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
-           struckOverGlyph:(NSGlyph)baseGlyph 
-              metricsExist:(BOOL *)flag;
-- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
-            struckOverRect:(NSRect)aRect 
-              metricsExist:(BOOL *)flag;
-- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
-              withRelation:(NSGlyphRelation)relation 
-               toBaseGlyph:(NSGlyph)baseGlyph
-          totalAdvancement:(NSSize *)offset 
-              metricsExist:(BOOL *)flag;
-
-- (NSStringEncoding)mostCompatibleStringEncoding;
-
+- (NSPoint) positionOfGlyph: (NSGlyph)aGlyph 
+	    struckOverGlyph: (NSGlyph)baseGlyph 
+	       metricsExist: (BOOL *)flag;
+- (NSPoint) positionOfGlyph: (NSGlyph)aGlyph 
+	     struckOverRect: (NSRect)aRect 
+	       metricsExist: (BOOL *)flag;
+- (NSPoint) positionOfGlyph: (NSGlyph)aGlyph 
+	       withRelation: (NSGlyphRelation)relation 
+		toBaseGlyph: (NSGlyph)baseGlyph
+	   totalAdvancement: (NSSize *)offset 
+	       metricsExist: (BOOL *)flag;
 - (NSFontTraitMask) traits;
+- (float) underlinePosition;
+- (float) underlineThickness;
 - (int) weight;
-
-
--(void) appendBezierPathWithGlyphs: (NSGlyph *)glyphs
-			     count: (int)count
-		      toBezierPath: (NSBezierPath *)path;
+- (float) widthOfString: (NSString*)string;
+- (float) xHeight;
 
 @end
 

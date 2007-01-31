@@ -22,7 +22,8 @@
 
    You should have received a copy of the GNU Library General Public
    License along with this library; if not, write to the Free
-   Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02111 USA.
+   Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02111 USA.
 */
 
 #include <math.h>
@@ -221,6 +222,7 @@ static GSFontEnumerator *sharedEnumerator = nil;
 
 - (void) dealloc
 {
+  RELEASE(coveredCharacterSet);
   RELEASE(fontDictionary);
   RELEASE(fontName);
   RELEASE(familyName);
@@ -332,6 +334,11 @@ static GSFontEnumerator *sharedEnumerator = nil;
   return nil;
 }
 
+- (NSCharacterSet*) coveredCharacterSet
+{
+  return coveredCharacterSet;
+}
+
 - (NSString*) encodingScheme
 { 
   return encodingScheme; 
@@ -355,6 +362,11 @@ static GSFontEnumerator *sharedEnumerator = nil;
 - (const float*) matrix
 {
   return matrix;
+}
+
+- (unsigned) numberOfGlyphs
+{
+  return numberOfGlyphs;
 }
 
 - (float) pointSize

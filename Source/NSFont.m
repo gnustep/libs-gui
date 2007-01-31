@@ -1005,14 +1005,12 @@ static BOOL flip_hack;
 
 - (unsigned) numberOfGlyphs
 {
-  // FIXME
-  return 0;
+  return [fontInfo numberOfGlyphs];
 }
 
 - (NSCharacterSet*) coveredCharacterSet
 {
-  // FIXME
-  return nil;
+  return [fontInfo coveredCharacterSet];
 }
 
 - (NSFontDescriptor*) fontDescriptor
