@@ -51,6 +51,11 @@ static NSImage *_pbc_image[2];
     }
 }
 
++ (BOOL) prefersTrackingUntilMouseUp
+{
+  return YES;
+}
+
 // Initialization
 /**
  * Initialize a blank cell.
@@ -838,9 +843,10 @@ static NSImage *_pbc_image[2];
   if ([[_menu window] isVisible])
     {
       [self dismissPopUp];
+      return NO;
     }
 
-  return NO;
+  return YES;
 }
 
 /**

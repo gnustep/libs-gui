@@ -1,3 +1,13 @@
+2007-02-04  Matt Rice  <ratmice@gmail.com>
+
+	* Source/NSTableView.m (-mouseDown:): Return early after tracking a 
+	cell which prefersTrackingUntilMouseUp.
+	* Source/NSPopUpButtonCell.m (+prefersTrackingUntilMouseUp:): Return
+	yes.
+	(-trackMouse:inRect:ofView:untilMouseUp:): Return yes or no
+	depending on whether the mouse went up inside the menu or not.
+	Fixes bug #18946
+
 2007-01-31  Richard Frith-Macdoanld <rfm@gnu.org>
 
 	* Source/GSFontInfo.m:

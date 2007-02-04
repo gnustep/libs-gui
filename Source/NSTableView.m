@@ -3703,14 +3703,27 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		       * Can never get here from a dragging source
 		       * so they need to track in mouse up.
 		       */
-
-		      // FIXME we probably want to return from here
-		      // if the cell wants to track until mouse up,
-		      // which could cause selections if the mouse leaves the
-		      // cell frame?
+		      NSTableColumn *tb;
+		      NSCell *cell;
+		      
+		      tb = [_tableColumns objectAtIndex: _clickedColumn];
+		      cell = [tb dataCellForRow: _clickedRow];
+		      
 		      [self _trackCellAtColumn: _clickedColumn
 				row: _clickedRow
 				withEvent: theEvent];
+
+		      if ([[cell class] prefersTrackingUntilMouseUp])
+		        {
+		          /* the mouse could have gone up outside of the cell
+		           * avoid selecting the row under mouse cursor */ 
+
+			  /* FIXME this should really send the action
+			   * unfortunately the row isn't currently being
+			   * selected so that would send the action on the 
+			   * wrong row. */
+			  return;
+			}
 		    }
 		  /*
 		   * Since we may have tracked a cell which may have caused
