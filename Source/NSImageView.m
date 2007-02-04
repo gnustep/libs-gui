@@ -227,7 +227,7 @@ static Class imageCellClass;
 	      s = [anImage size];
 	      p = [theEvent locationInWindow];
 	      p.x -= s.width/2;
-	      p.y -= s.width/2;
+	      p.y -= s.height/2;
 	      [_window dragImage: anImage
 		       at: p
 		       offset: NSMakeSize(0, 0)
