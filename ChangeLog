@@ -1,4 +1,10 @@
 2007-02-04  Matt Rice  <ratmice@gmail.com>
+
+	* Source/NSTableView (-mouseDown:): Release oldSelectedRows.
+	Mark done as yes instead of returning early, and avoid sending action
+	multiple times.
+
+2007-02-04  Matt Rice  <ratmice@gmail.com>
 	
 	* Source/NSTableView (-mouseDown:): Compute the selection immediately
 	instead of at the end of the loop.

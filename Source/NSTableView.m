@@ -3564,6 +3564,7 @@ if (currentRow >= 0 && currentRow < _numberOfRows) \
       int oldRow = -1;
       int currentRow = -1;
       BOOL getNextEvent = YES;
+      BOOL sendAction = NO;
 
       if (_allowsMultipleSelection == YES)
 	{
@@ -3735,10 +3736,8 @@ if (currentRow >= 0 && currentRow < _numberOfRows) \
 		        {
 		          /* the mouse could have gone up outside of the cell
 		           * avoid selecting the row under mouse cursor */ 
-
-			  if (_clickedRow != -1)
-	    		    [self sendAction: _action  to: _target];
-			  return;
+			  sendAction = YES;
+			  done = YES;
 			}
 		    }
 		  /*
@@ -3838,9 +3837,14 @@ if (currentRow >= 0 && currentRow < _numberOfRows) \
 	{
 	  [self _postSelectionDidChangeNotification];
 	}
+      
+      RELEASE(oldSelectedRows);
+
+      if (!mouseMoved)
+        sendAction = YES;
 
       /* If this was a simple click (ie. no dragging), we send our action. */
-      if (!mouseMoved)
+      if (sendAction)
 	{
 	  /*
 	  _clickedRow and _clickedColumn are already set at the start of
