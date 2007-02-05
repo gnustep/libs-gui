@@ -836,11 +836,12 @@ static NSImage *unexpandable  = nil;
       && [_tableColumns objectAtIndex: _clickedColumn] == _outlineTableColumn)
     {
       NSImage *image;
-
+      
+      id item = [self itemAtRow:_clickedRow];
       int level = [self levelForRow: _clickedRow];
       int position = 0;
-      
-      if ([self isItemExpanded: [self itemAtRow: _clickedRow]])
+     
+      if ([self isItemExpanded: item])
 	{
 	  image = expanded;
 	}
@@ -856,15 +857,17 @@ static NSImage *unexpandable  = nil;
 
       position += _columnOrigins[_clickedColumn];
 
-      if (location.x >= position && location.x <= position + [image size].width)
+      if ([self isExpandable:item]
+	  && location.x >= position
+      	  && location.x <= position + [image size].width)
 	{
-	  if (![self isItemExpanded: [self itemAtRow: _clickedRow]])
+	  if (![self isItemExpanded: item])
 	    {
-	      [self expandItem: [self itemAtRow: _clickedRow]];
+	      [self expandItem: item];
 	    }
 	  else
 	    {
-	      [self collapseItem: [self itemAtRow: _clickedRow]];
+	      [self collapseItem: item];
 	    }
 	  return;
 	}
