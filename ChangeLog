@@ -1,3 +1,11 @@
+2007-02-05  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSMenuItem.h: Add MacOS 10.3 methods and
+	additional ivars.
+	* Source/NSMenuItem.m: Implement MacOS 10.3 methods.
+	* Source/NSMenuItem.m (-dealloc, -encodeWithCoder:,
+	-initWithCoder:, -copyWithZone): Handle new ivars.
+
 2007-02-04  Matt Rice  <ratmice@gmail.com>
 
 	* Source/NSTableView (-mouseDown:): Release oldSelectedRows.

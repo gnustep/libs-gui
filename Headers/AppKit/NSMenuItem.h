@@ -36,6 +36,7 @@
 
 #include <Foundation/NSObject.h>
 
+@class NSAttributedString;
 @class NSString;
 
 @class NSMenu;
@@ -76,6 +77,15 @@
  */
 - (SEL) action;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+/**
+   <p>
+   Returns the menu item's title as an attributed string.
+   </p>
+ */
+- (NSAttributedString *)attributedTitle;
+#endif
+
 /**
    <p>
    Returns a boolean indicating if the receiver has a sub menu.
@@ -90,6 +100,15 @@
  */
 - (NSImage*) image;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+/**
+   <p>
+   Returns the indentation level, a number between 0 and 15.
+   </p>
+ */
+- (int)indentationLevel;
+#endif
+
 /**
    <p>
    Initializes the receiver with <var>aString</var> as the title.
@@ -101,6 +120,10 @@
 - (id) initWithTitle: (NSString*)aString
 	      action: (SEL)aSelector
        keyEquivalent: (NSString*)charCode;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (BOOL)isAlternate;
+#endif
 
 /**
    <p>
@@ -174,6 +197,12 @@
  */
 - (void) setAction: (SEL)aSelector;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (void) setAlternate: (BOOL)isAlternate;
+
+-(void) setAttributedTitle: (NSAttributedString *)title;
+#endif
+
 /**
    <p>
    Set the receiver to be enabled.
@@ -187,6 +216,10 @@
    </p>
  */
 - (void) setImage: (NSImage*)menuImage;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (void)setIndentationLevel: (int)level;
+#endif
 
 /**
    <p>
@@ -276,6 +309,10 @@
 - (void) setTitle: (NSString*)aString;
 - (void) setTitleWithMnemonic: (NSString*)stringWithAmpersand;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (void) setToolTip: (NSString *)toolTip;
+#endif
+
 /**
    <p>
    Returns the state of the receiver.
@@ -310,6 +347,10 @@
  */
 - (NSString*) title;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (NSString *) toolTip;
+#endif
+
 /**
    <p>
    Returns the user defined key equivalent modifier.
@@ -334,7 +375,6 @@
   unsigned int _keyEquivalentModifierMask;
   unsigned _mnemonicLocation;
   int _state;
-  BOOL _enabled;
   NSImage *_image;
   NSImage *_onStateImage;
   NSImage *_offStateImage;
@@ -344,7 +384,11 @@
   int _tag;
   id _representedObject;
   NSMenu *_submenu;
+  BOOL _enabled;
   BOOL _changesState;
+  BOOL _isAlternate;
+  char _indentation; // 0..15
+  NSString *_toolTip;
 }
 
 @end

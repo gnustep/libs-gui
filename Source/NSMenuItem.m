@@ -73,7 +73,7 @@ static Class imageClass;
 {
   if (self == [NSMenuItem class])
     {
-      [self setVersion: 2];
+      [self setVersion: 3];
       imageClass = [NSImage class];
     }
 }
@@ -110,6 +110,7 @@ static Class imageClass;
   TEST_RELEASE(_mixedStateImage);
   TEST_RELEASE(_submenu);
   TEST_RELEASE(_representedObject);
+  TEST_RELEASE(_toolTip);
   [super dealloc];
 }
 
@@ -410,6 +411,48 @@ static Class imageClass;
   return _representedObject;
 }
 
+- (NSAttributedString *)attributedTitle
+{
+  // FIXME
+  return nil;
+}
+
+-(void) setAttributedTitle: (NSAttributedString *)title
+{
+  // FIXME
+  [self setTitle: [title string]];
+}
+
+- (int)indentationLevel
+{
+  return _indentation;
+}
+
+- (void)setIndentationLevel: (int)level
+{
+  _indentation = level;
+}
+
+- (BOOL)isAlternate
+{
+  return _isAlternate;
+}
+
+- (void) setAlternate: (BOOL)isAlternate
+{
+  _isAlternate = isAlternate;
+}
+
+- (void) setToolTip: (NSString *)toolTip
+{
+  ASSIGN(_toolTip, toolTip);
+}
+
+- (NSString *) toolTip
+{
+  return _toolTip;
+}
+
 /*
  * NSCopying protocol
  */
@@ -427,6 +470,7 @@ static Class imageClass;
   copy->_mixedStateImage = [_mixedStateImage copyWithZone: zone];
   copy->_representedObject = RETAIN(_representedObject);
   copy->_submenu = [_submenu copy];
+  copy->_toolTip = RETAIN(_toolTip);
 
   return copy;
 }
@@ -469,6 +513,11 @@ static Class imageClass;
       [aCoder encodeConditionalObject: _representedObject];
       [aCoder encodeObject: _submenu];
       [aCoder encodeConditionalObject: _target];
+      
+      // version 3
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isAlternate];
+      [aCoder encodeValueOfObjCType: @encode(char) at: &_indentation];
+      [aCoder encodeObject: _toolTip];
     }
 }
 
@@ -541,11 +590,18 @@ static Class imageClass;
       [aDecoder decodeValueOfObjCType: "i" at: &_tag];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_representedObject];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_submenu];
-      if (version == 2)
+      if (version >= 2)
         {
 	  _target = [aDecoder decodeObject];
 	}
+      if (version == 3)
+        {
+	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isAlternate];
+	  [aDecoder decodeValueOfObjCType: @encode(char) at: &_indentation];
+	  [aDecoder decodeValueOfObjCType: @encode(id) at: &_toolTip];
+	}
     }
+
   return self;
 }
 
