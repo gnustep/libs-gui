@@ -3519,6 +3519,25 @@ static inline float computePeriod(NSPoint mouseLocationWin,
     }
   else 
     {
+#define COMPUTE_NEW_SELECTION do { \
+if (originalRow == -1) \
+  { \
+    originalRow = currentRow; \
+  } \
+if (currentRow >= 0 && currentRow < _numberOfRows) \
+  { \
+    computeNewSelection(self, \
+    oldSelectedRows, \
+    _selectedRows, \
+    originalRow, \
+    oldRow, \
+    currentRow, \
+    &_selectedRow, \
+    selectionMode); \
+    [self displayIfNeeded]; \
+  } \
+} while (0);
+
       // Selection
       unsigned int modifiers = [theEvent modifierFlags];
       unsigned int eventMask = (NSLeftMouseUpMask 
@@ -3598,7 +3617,6 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 	    down for a long time.
 	  */
 	  CREATE_AUTORELEASE_POOL(arp);
-	  BOOL shouldComputeNewSelection = NO;
 	  NSEventType eventType = [lastEvent type];
 	  
 	  mouseLocationWin = [lastEvent locationInWindow]; 
@@ -3623,7 +3641,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		  
 		  if (oldRow != currentRow)
 		    {
-		      shouldComputeNewSelection = YES;
+		      COMPUTE_NEW_SELECTION;
 		    }
 		  
 		  if (dragOperationPossible == YES)
@@ -3694,7 +3712,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		  currentRow = [self rowAtPoint: mouseLocationView];
 		  if (oldRow != currentRow)
 		    {
-		      shouldComputeNewSelection = YES;
+		      COMPUTE_NEW_SELECTION;
 		    }
 		  
 		  if (eventType == NSLeftMouseDown)
@@ -3718,10 +3736,8 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		          /* the mouse could have gone up outside of the cell
 		           * avoid selecting the row under mouse cursor */ 
 
-			  /* FIXME this should really send the action
-			   * unfortunately the row isn't currently being
-			   * selected so that would send the action on the 
-			   * wrong row. */
+			  if (_clickedRow != -1)
+	    		    [self sendAction: _action  to: _target];
 			  return;
 			}
 		    }
@@ -3771,7 +3787,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		      currentRow++;
 		      [self scrollRowToVisible: currentRow];
 		      if (dragOperationPossible == NO)
-			shouldComputeNewSelection = YES;
+			COMPUTE_NEW_SELECTION;
 		    }
 		}
 	      else
@@ -3785,34 +3801,12 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		      currentRow--;
 		      [self scrollRowToVisible: currentRow];
 		      if (dragOperationPossible == NO)
-			shouldComputeNewSelection = YES;
+			COMPUTE_NEW_SELECTION;
 		    }
 		}
 	      break;
 	    default:
 	      break;
-	    }
-
-	  if (shouldComputeNewSelection == YES)
-	    {
-	      if (originalRow == -1)
-		{
-		  originalRow = currentRow;
-		}
-	      
-	      if (currentRow >= 0 && currentRow < _numberOfRows)
-	        {
-		  computeNewSelection(self,
-				  oldSelectedRows, 
-				  _selectedRows,
-				  originalRow,
-				  oldRow,
-				  currentRow,
-				  &_selectedRow,
-				  selectionMode);
-
-	          [self displayIfNeeded];
-		}
 	    }
 	  
 	  if (done == NO)
