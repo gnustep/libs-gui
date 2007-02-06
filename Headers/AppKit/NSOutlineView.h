@@ -84,8 +84,8 @@
  */
 @interface NSObject (NSOutlineViewDataSource)
 /**
- * Returns whether or not the outline view should accept a drop 
- * into the indicated item.
+ * Called to perform drop operation and returns YES if successful,
+ * and NO otherwise.
  */
 - (BOOL)outlineView: (NSOutlineView *)outlineView 
          acceptDrop: (id <NSDraggingInfo>)info 
@@ -141,8 +141,8 @@ persistentObjectForItem: (id)item;
              byItem: (id)item;
 
 /**
- * Used by the Drag and Drop system.  Returns the drap operations which was performed on the
- * given outline view.
+ * Used by the Drag and Drop system.  Returns the drag operation which should
+ * be used when -outlineView:acceptDrop:item:childIndex: is called.
  */
 - (NSDragOperation)outlineView: (NSOutlineView*)outlineView 
                   validateDrop: (id <NSDraggingInfo>)info 

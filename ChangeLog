@@ -1,5 +1,9 @@
 2007-02-05  Matt Rice  <ratmice@gmail.com>
 
+	* Headers/AppKit/NSOutlineView.h: Update documentation.
+
+2007-02-05  Matt Rice  <ratmice@gmail.com>
+
 	* Source/NSTableView.m (-_numRows): New quasi private method.
 	(-noteNumberOfRowsChanged:): Call _numRows instead of data source
 	method.
