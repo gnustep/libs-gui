@@ -133,6 +133,7 @@ typedef struct _tableViewFlags
 
 - (BOOL) _isCellEditableColumn: (int) columnIndex
 			   row: (int) rowIndex;
+- (int) _numRows;
 @end
 
 @interface NSTableView (SelectionHelper)
@@ -4728,7 +4729,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
 */
 - (void) noteNumberOfRowsChanged
 {
-  _numberOfRows = [_dataSource numberOfRowsInTableView: self];
+  _numberOfRows = [self _numRows];
  
   /* If we are selecting rows, we have to check that we have no
      selected rows below the new end of the table */
@@ -6485,6 +6486,15 @@ static BOOL selectContiguousRegion(NSTableView *self,
 		   forTableColumn: tb
 		   row: index];
     }
+}
+
+/* Quasi private method called on self from -noteNumberOfRowsChanged
+ * implemented in NSTableView and subclasses 
+ * by default returns the DataSource's -numberOfRowsInTableView:
+ */
+- (int) _numRows
+{
+  return [_dataSource numberOfRowsInTableView:self];
 }
 
 - (BOOL) _isDraggingSource

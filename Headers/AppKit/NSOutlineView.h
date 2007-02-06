@@ -42,7 +42,7 @@
   NSMapTable *_itemDict;
   NSMutableArray *_items;
   NSMutableArray *_expandedItems;
-  NSMutableArray *_selectedItems;
+  NSMutableArray *_selectedItems; /* No longer in use */
   NSMapTable *_levelOfItems;
   BOOL _autoResizesOutlineColumn;
   BOOL _indentationMarkerFollowsCell;

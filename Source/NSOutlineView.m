@@ -98,6 +98,7 @@ static NSImage *unexpandable  = nil;
 - (void) _setObjectValue: (id)value
 	  forTableColumn: (NSTableColumn *)tb
 		     row: (int) index;
+- (int) _numRows;
 @end
 
 // These methods are private...
@@ -150,7 +151,6 @@ static NSImage *unexpandable  = nil;
 			       64);
   _items = [[NSMutableArray alloc] init];
   _expandedItems = [[NSMutableArray alloc] init];
-  _selectedItems = [[NSMutableArray alloc] init];
   _levelOfItems = NSCreateMapTable(NSObjectMapKeyCallBacks,
 				   NSObjectMapValueCallBacks,
 				   64);
@@ -161,7 +161,6 @@ static NSImage *unexpandable  = nil;
 {
   RELEASE(_items);
   RELEASE(_expandedItems);
-  RELEASE(_selectedItems);
 
   NSFreeMapTable(_itemDict);
   NSFreeMapTable(_levelOfItems);
@@ -227,7 +226,6 @@ static NSImage *unexpandable  = nil;
   if ([self isExpandable: item] && [self isItemExpanded: item] && canCollapse)
     {
       NSMutableDictionary *infoDict = [NSMutableDictionary dictionary];
-      unsigned int row;
 
       [infoDict setObject: item forKey: @"NSObject"];
       
@@ -237,18 +235,6 @@ static NSImage *unexpandable  = nil;
 	  object: self
 	  userInfo: infoDict];
       
-      // We save the selection
-      [_selectedItems removeAllObjects];
-      row = [_selectedRows firstIndex];
-      while (row != NSNotFound)
-        {
-	  if ([self itemAtRow: row])
-	    {
-	      [_selectedItems addObject: [self itemAtRow: row]];
-	    }
-	  row = [_selectedRows indexGreaterThanIndex: row];
-	}
-
       // collapse...
       [self _closeItem: item];
 
@@ -316,7 +302,6 @@ static NSImage *unexpandable  = nil;
       if (![self isItemExpanded: item] && canExpand)
 	{
 	  NSMutableDictionary *infoDict = [NSMutableDictionary dictionary];
-	  unsigned int row;
 
 	  [infoDict setObject: item forKey: @"NSObject"];
 	  
@@ -325,18 +310,6 @@ static NSImage *unexpandable  = nil;
 	  [nc postNotificationName: NSOutlineViewItemWillExpandNotification
 	      object: self
 	      userInfo: infoDict];
-	  
-	  // We save the selection
-	  [_selectedItems removeAllObjects];
-	  row = [_selectedRows firstIndex];
-	  while (row != NSNotFound)
-	    {
-	      if ([self itemAtRow: row])
-	        {
-		  [_selectedItems addObject: [self itemAtRow: row]];
-		}
-	      row = [_selectedRows indexGreaterThanIndex: row];
-	    }
 	  
 	  // insert the root element, if necessary otherwise insert the
 	  // actual object.
@@ -617,52 +590,6 @@ static NSImage *unexpandable  = nil;
   return YES;
 }
 
-
-/**
- *  We override the super class's method.
- */
-- (void) noteNumberOfRowsChanged
-{
-  _numberOfRows = [_items count];
-
-  if (!_selectingColumns)
-    {
-      int i, count, row;
-      
-      /* We restore the selection */
-      [_selectedRows removeAllIndexes];
-      count = [_selectedItems count];
-
-      for (i = 0; i < count; i++)
-	{
-	  row = [self rowForItem: [_selectedItems objectAtIndex: i]];
-
-	  if (row >= 0 && row < _numberOfRows)
-	    {
-	      [_selectedRows addIndex: row];
-	    }
-	}
-    }
-
-  [self setFrame: NSMakeRect (_frame.origin.x, 
-			      _frame.origin.y,
-			      _frame.size.width, 
-			      (_numberOfRows * _rowHeight) + 1)];
-  
-  /* If we are shorter in height than the enclosing clipview, we
-     should redraw us now. */
-  if (_super_view != nil)
-    {
-      NSRect superviewBounds; // Get this *after* [self setFrame:]
-      superviewBounds = [_super_view bounds];
-      if ((superviewBounds.origin.x <= _frame.origin.x) 
-          && (NSMaxY (superviewBounds) >= NSMaxY (_frame)))
-	{
-	  [self setNeedsDisplay: YES];
-	}
-    }
-}
-
 /**
  * Sets the data source for this outline view. 
  */
@@ -782,7 +709,6 @@ static NSImage *unexpandable  = nil;
 				   64);
       _items = [[NSMutableArray alloc] init];
       _expandedItems = [[NSMutableArray alloc] init];
-      _selectedItems = [[NSMutableArray alloc] init];
       _levelOfItems = NSCreateMapTable(NSObjectMapKeyCallBacks,
 				       NSObjectMapValueCallBacks,
 				       64);
@@ -816,7 +742,6 @@ static NSImage *unexpandable  = nil;
 				   64);
       _items = [[NSMutableArray alloc] init];
       _expandedItems = [[NSMutableArray alloc] init];
-      _selectedItems = [[NSMutableArray alloc] init];
       _levelOfItems = NSCreateMapTable(NSObjectMapKeyCallBacks,
 				       NSObjectMapValueCallBacks,
 				       64); 
@@ -1709,6 +1634,11 @@ static NSImage *unexpandable  = nil;
     }
 }
 
+- (int) _numRows
+{
+  return [_items count];
+}
+
 @end
 
 @implementation NSOutlineView (TableViewInternalPrivate)
@@ -1901,7 +1831,6 @@ static NSImage *unexpandable  = nil;
       NSMapRemove(_itemDict, child); 
       [_items removeObject: child];
       [_expandedItems removeObject: child];
-      [_selectedItems removeObject: child];
     }
   [anarray removeAllObjects];
 }
