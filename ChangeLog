@@ -1,6 +1,21 @@
 2007-02-05  Matt Rice  <ratmice@gmail.com>
 
-	* Source/NSOutlineView (-mouseDown:): Check item expandability before
+	* Source/NSTableView.m (-_numRows): New quasi private method.
+	(-noteNumberOfRowsChanged:): Call _numRows instead of data source
+	method.
+	* Source/NSOutlineView.m (-noteNumberOfRowsChanged:): Don't override
+	supers.
+	(-_numRows): Implement.
+	(-collapseItem:collapseChildren:): Remove use of _selectedObjects.
+	(-expandItem:expandChildren:): Ditto.
+	(-_removeChildren:): Ditto.
+	(-initWithFrame:): Don't initialize _selectedObjects.
+	(-initWithCoder:): Ditto.
+	* Headers/AppKit/NSOutlineView.h: Mark _selectedObjects as unused.
+	
+2007-02-05  Matt Rice  <ratmice@gmail.com>
+
+	* Source/NSOutlineView.m (-mouseDown:): Check item expandability before
 	expanding or collapsing.
 
 2007-02-05  Fred Kiefer <FredKiefer@gmx.de>
