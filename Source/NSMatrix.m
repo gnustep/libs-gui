@@ -4053,6 +4053,7 @@ static SEL getSel;
 	      _selectedCell = [self selectTextAtRow: row column: j];
 	      _selectedRow = row;
 	      _selectedColumn = j;
+	      _selectedCells[row][j] = YES;
 	      return YES;
 	    }
 	}
@@ -4067,6 +4068,7 @@ static SEL getSel;
 	      _selectedCell = [self selectTextAtRow: i column: j];
 	      _selectedRow = i;
 	      _selectedColumn = j;
+	      _selectedCells[i][j] = YES;
 	      return YES;
 	    }
 	}
@@ -4089,6 +4091,7 @@ static SEL getSel;
 	      _selectedCell = [self selectTextAtRow: row column: j];
 	      _selectedRow = row;
 	      _selectedColumn = j;
+	      _selectedCells[row][j] = YES;
 	      return YES;
 	    }
 	}
@@ -4103,6 +4106,7 @@ static SEL getSel;
 	      _selectedCell = [self selectTextAtRow: i column: j];
 	      _selectedRow = i;
 	      _selectedColumn = j;
+	      _selectedCells[i][j] = YES;
 	      return YES;
 	    }
 	}

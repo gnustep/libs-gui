@@ -2008,6 +2008,11 @@ static NSTextFieldCell *titleCell;
 
   selectedCellsCount = [selectedCells count];
 
+/* FIXME why were we reselecting already selected cells?
+ * this caused bug #18881 because -selectCell: will scroll the row to visible.
+ */
+#if 0
+
   // Select cells that should be selected
   if (selectedCellsCount > 0)
     {
@@ -2015,6 +2020,7 @@ static NSTextFieldCell *titleCell;
       while ((cell = [enumerator nextObject]))
 	[sender selectCell: cell];
     }
+#endif
 
   [self setLastColumn: column];
   // Single selection
