@@ -104,6 +104,8 @@ NSInputManager.m \
 NSInputServer.m \
 NSInterfaceStyle.m \
 NSLayoutManager.m \
+NSLevelIndicator.m \
+NSLevelIndicatorCell.m \
 NSMatrix.m \
 NSMenu.m \
 NSMenuView.m \
@@ -281,6 +283,8 @@ NSInputManager.h \
 NSInputServer.h \
 NSInterfaceStyle.h \
 NSLayoutManager.h \
+NSLevelIndicator.h \
+NSLevelIndicatorCell.h \
 NSMatrix.h \
 NSMenu.h \
 NSMenuItem.h \

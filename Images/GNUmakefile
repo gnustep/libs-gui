@@ -125,7 +125,8 @@ page_landscape.tiff \
 page_portrait.tiff \
 MagnifyGlass.tiff \
 GSSearch.tiff \
-GSStop.tiff
+GSStop.tiff \
+NSRatingLevelIndicator.tiff
 
 -include GNUmakefile.preamble
 

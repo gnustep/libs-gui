@@ -120,9 +120,11 @@
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 #include <AppKit/NSAlert.h>
 #include <AppKit/NSAffineTransform.h>
+#include <AppKit/NSArrayController.h>
 #include <AppKit/NSBezierPath.h>
 #include <AppKit/NSComboBox.h>
 #include <AppKit/NSComboBoxCell.h>
+#include <AppKit/NSController.h>
 #include <AppKit/NSDocument.h>
 #include <AppKit/NSDocumentController.h>
 #include <AppKit/NSDrawer.h>
@@ -132,11 +134,15 @@
 #include <AppKit/NSInputManager.h>
 #include <AppKit/NSInputServer.h>
 #include <AppKit/NSInterfaceStyle.h>
+#include <AppKit/NSKeyValueBinding.h>
 #include <AppKit/NSLayoutManager.h>
+#include <AppKit/NSLevelIndicator.h>
+#include <AppKit/NSLevelIndicatorCell.h>
 #include <AppKit/NSMovie.h>
 #include <AppKit/NSMovieView.h>
 #include <AppKit/NSNib.h>
 #include <AppKit/NSNibDeclarations.h>
+#include <AppKit/NSObjectController.h>
 #include <AppKit/NSOpenGL.h>
 #include <AppKit/NSOpenGLView.h>
 #include <AppKit/NSOutlineView.h>
@@ -162,6 +168,7 @@
 #include <AppKit/NSTextView.h>
 #include <AppKit/NSToolbar.h>
 #include <AppKit/NSToolbarItem.h>
+#include <AppKit/NSUserDefaultsController.h>
 #include <AppKit/NSUserInterfaceValidation.h>
 #include <AppKit/NSWindowController.h>
 #include <AppKit/NSWindow+Toolbar.h>
