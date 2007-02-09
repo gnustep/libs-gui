@@ -282,6 +282,7 @@ NSImageView.h \
 NSInputManager.h \
 NSInputServer.h \
 NSInterfaceStyle.h \
+NSKeyValueBinding.h \
 NSLayoutManager.h \
 NSLevelIndicator.h \
 NSLevelIndicatorCell.h \
