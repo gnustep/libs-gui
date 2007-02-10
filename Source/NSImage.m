@@ -193,9 +193,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     }
 }
 
-/** <p>Returns the NSImage named aName. The search is done in the main bundle
-    first and then in the usual images directories</p>
- */
 + (id) imageNamed: (NSString *)aName
 {
   NSString	*realName = [nsmapping objectForKey: aName];
@@ -314,9 +311,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   return [self initWithSize: NSMakeSize(0, 0)];
 }
 
-/** <p>Initialize and returns a new NSImage with <var>aSize</var> as specified
-    size.</p><p>See Also: -setSize: -size </p>
- */
 - (id) initWithSize: (NSSize)aSize
 {
   [super init];
@@ -357,11 +351,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   return self;
 }
 
-
-/** <p>Initializes and returns a new NSImage from the file 
-    <var>fileName</var>. <var>fileName</var> should be an absolute path.</p>
-    <p>See Also: [NSImageRep+imageRepsWithContentsOfFile:]</p>
- */
 - (id) initWithContentsOfFile: (NSString *)fileName
 {
   if ( ! ( self = [self init] ) )
@@ -377,11 +366,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   return self;
 }
 
-/**
- * <p>Initializes and returns a new NSImage from the NSData data.</p>
- * <p>See Also: [NSBitmapImageRep+imageRepWithData:] or
- * [NSEPSImageRep+imageRepWithData:]</p>
- */
 - (id) initWithData: (NSData *)data
 {
   if (! ( self = [self init] ) )
@@ -443,11 +427,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   return self;
 }
 
-/** <p>Initializes and returns a new NSImage from the data in pasteboard.
-    the pasteboard types can be whose defined in  
-    [NSImageRep+imagePasteboardTypes] or NSFilenamesPboardType</p>
-    <p>See Also: [NSImageRep+imageRepsWithPasteboard:</p>
- */
 - (id) initWithPasteboard: (NSPasteboard *)pasteboard
 {
   NSArray *reps;
@@ -551,10 +530,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   return _name;
 }
 
-/** <p>Sets the NSImage size to aSize. Changing the size recreate
-    the cache</p>
-    <p>See Also: -size -initWithSize:</p>
- */
 - (void) setSize: (NSSize)aSize
 {
   // Optimized as this is called very often from NSImageCell
@@ -567,10 +542,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   [self recache];
 }
 
-/**<p> Returns NSImage size if the size have been set. Returns the
-   size of the best representation otherwise.</p>
-   <p>See Also: -setSize: -initWithSize:</p>
- */
 - (NSSize) size
 {
   if (_size.width == 0) 
@@ -718,9 +689,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   return _flags.scalable;
 }
 
-/**<p>Sets the color of the NSImage's background to <var>aColor</var></p>
-   <p>See Also: -backgroundColor</p>
- */
 - (void) setBackgroundColor: (NSColor *)aColor
 {
   if (aColor == nil)
@@ -730,9 +698,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   ASSIGN(_color, aColor);
 }
 
-/**<p>Returns the color of the NSImage's background</p>
-   <p>See Also: -setBackgroundColor:</p>
- */
 - (NSColor *) backgroundColor
 {
   return _color;
@@ -1171,10 +1136,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   }
 }
 
-/** <p>Adds the NSImageRep imageRep to the NSImage's representations array.
-    </p><p>See Also: -addRepresentations: removeRepresentation:</p>
- */
-
 - (void) addRepresentation: (NSImageRep *)imageRep
 {
   GSRepData	*repd;
@@ -1185,10 +1146,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   RELEASE(repd);
 }
 
-/** <p>Adds the NSImageRep array imageRepArray to the NSImage's
-    representations array.</p>
-    <p>See Also: -addRepresentation: -removeRepresentation:</p>
- */
 - (void) addRepresentations: (NSArray *)imageRepArray
 {
   unsigned	i, count;
@@ -1204,9 +1161,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     }
 }
 
-/** <p>Remove the NSImageRep imageRep from the NSImage's representations 
-    array</p><p>See Also: -addRepresentations: -addRepresentation:</p>
- */
 - (void) removeRepresentation: (NSImageRep *)imageRep
 {
   unsigned	i;
@@ -1227,17 +1181,11 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     }
 }
 
-/** <p>Locks the focus on the best representation</p>
-    <p>See Also: -lockFocusOnRepresentation:</p>
- */
 - (void) lockFocus
 {
   [self lockFocusOnRepresentation: nil];
 }
 
-/**<p>Locks the focus in the imageRep. if imageRep is nil this method
-   locks the focus on the best representation</p>
- */
 - (void) lockFocusOnRepresentation: (NSImageRep *)imageRep
 {
   if (_cacheMode != NSImageCacheNever)

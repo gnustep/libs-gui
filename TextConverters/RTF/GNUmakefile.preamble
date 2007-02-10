@@ -58,6 +58,8 @@ ADDITIONAL_LIB_DIRS += -L../../Source/$(GNUSTEP_OBJ_DIR)
 
 #ADDITIONAL_TOOL_LIBS +=
 
+RTFConverter_BUNDLE_LIBS += -lgnustep-gui
+
 #
 # Flags dealing with installing and uninstalling
 #

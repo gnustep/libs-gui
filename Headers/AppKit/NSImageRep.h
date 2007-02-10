@@ -59,7 +59,13 @@ enum {
 //
 // Creating an NSImageRep
 //
+/** Returns a NSImageRep with the contents of filename.
+ */
 + (id)imageRepWithContentsOfFile:(NSString *)filename;
+
+/** Returns an array of newly allocated NSImageRep objects with the
+ *  contents of filename.
+ */
 + (NSArray *)imageRepsWithContentsOfFile:(NSString *)filename;
 + (id)imageRepWithPasteboard:(NSPasteboard *)pasteboard;
 + (NSArray *)imageRepsWithPasteboard:(NSPasteboard *)pasteboard;
@@ -71,22 +77,49 @@ enum {
 //
 // Checking Data Types 
 //
+/** Returns NO.  It is the subclass' responsibility to implement this method.
+ *  <p>See Also:</p>
+ *  <list>
+ *   <item>[NSBitmapImageRep+canInitWithData:]</item>
+ *  </list>
+ */
 + (BOOL)canInitWithData:(NSData *)data;
 + (BOOL)canInitWithPasteboard:(NSPasteboard *)pasteboard;
+
+/** Returns array produced by calling -imageUnfilteredFileTypes.
+ */
 + (NSArray *)imageFileTypes;
 + (NSArray *)imagePasteboardTypes;
+
+/** Returns nil.  It is the subclass' responsibility to implement this method.
+ *  <p>See Also:</p>
+ *  <list>
+ *   <item>[NSBitmapImageRep+imageUnfilteredFileTypes]</item>
+ *  </list>
+ */ 
 + (NSArray *)imageUnfilteredFileTypes;
 + (NSArray *)imageUnfilteredPasteboardTypes;
 
 //
 // Setting the Size of the Image 
 //
+/** Sets the size of the image to aSize.
+ */
 - (void)setSize:(NSSize)aSize;
+
+/** Returns the size of the image.
+ */
 - (NSSize)size;
 
 //
 // Specifying Information about the Representation 
 //
+/** Returns the bits per sample of the receiver.
+ *  <p>See Also:</p>
+ *  <list>
+ *   <item>-setBitsPerSample:</item>
+ *  </list>
+ */
 - (int)bitsPerSample;
 - (NSString *)colorSpaceName;
 - (BOOL)hasAlpha;
@@ -94,6 +127,13 @@ enum {
 - (int)pixelsHigh;
 - (int)pixelsWide;
 - (void)setAlpha:(BOOL)flag;
+
+/** Sets the number of bits for each component of a pixel.
+ *  <p>See Also:</p>
+ *  <list>
+ *   <item>-bitsPerSample</item>
+ *  </list>
+ */
 - (void)setBitsPerSample:(int)anInt;
 - (void)setColorSpaceName:(NSString *)aString;
 - (void)setOpaque:(BOOL)flag;

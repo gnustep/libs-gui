@@ -45,6 +45,19 @@
 @class NSColor;
 @class NSView;
 
+/** Defines how an NSImage is to be cached.  Possible values are:
+ *  <list>
+ *   <item>NSImageCacheDefault</item>
+ *   <item>NSImageCacheAlways</item>
+ *   <item>NSImageCacheBySize</item>
+ *   <item>NSImageCacheNever</item>
+ *  </list>
+ *  <p>See Also:</p>
+ *  <list>
+ *   <item>-setCacheMode:</item>
+ *   <item>-cacheMode</item>
+ *  </list>
+ */
 typedef enum {
   NSImageCacheDefault,
   NSImageCacheAlways,
@@ -82,10 +95,47 @@ typedef enum {
 //
 // Initializing a New NSImage Instance 
 //
+/** Initializes and returns a NSImage from the NSString fileName.
+ */
 - (id) initByReferencingFile: (NSString*)fileName;
+
+/** Initializes and returns a new NSImage from the file 
+ *  fileName. fileName should be an absolute path.
+ *  <p>See Also:</p>
+ *  <list>
+ *   <item>[NSImageRep+imageRepsWithContentsOfFile:]</item>
+ *  </list>
+ */
+
 - (id) initWithContentsOfFile: (NSString*)fileName;
+
+/** Initializes and returns a new NSImage from the NSData data.
+ * <p>See Also:</p>
+ * <list>
+ *  <item>[NSBitmapImageRep+imageRepWithData:]</item>
+ *  <item>[NSEPSImageRep+imageRepWithData:]</item>
+ * </list>
+ */
 - (id) initWithData: (NSData*)data;
+
+/** Initializes and returns a new NSImage from the data in pasteboard.
+ *  The pasteboard types can be whose defined in
+ *  [NSImageRep+imagePasteboardTypes] or NSFilenamesPboardType
+ *  <p>See Also:</p>
+ *  <list>
+ *   <item>[NSImageRep+imageRepsWithPasteboard:]</item>
+ *  </list>
+ */
 - (id) initWithPasteboard: (NSPasteboard*)pasteboard;
+
+/** Initialize and returns a new NSImage with aSize as specified
+ *  size.
+ *  <p>See Also:</p>
+ *  <list>
+ *   <item>-setSize:</item>
+ *   <item>-size</item>
+ *  </list>
+ */
 - (id) initWithSize: (NSSize)aSize;
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
@@ -97,28 +147,88 @@ typedef enum {
 //
 // Setting the Size of the Image 
 //
+/** Sets the NSImage size to aSize. Changing the size recreate
+ *  the cache.
+ *  <p>See Also:</p>
+ *  <list>
+ *   <item>-size</item>
+ *   <item>-initWithSize:</item>
+ *  </list>
+ */
 - (void) setSize: (NSSize)aSize;
+
+/** Returns NSImage size if the size have been set. Returns the
+ *  size of the best representation otherwise.
+ *  <p>See Also:</p>
+ *  <list>
+ *   <item>-setSize:</item>
+ *   <item>-initWithSize:</item>
+ *  </list>
+ */
 - (NSSize) size;
 
 //
 // Referring to Images by Name 
 //
+/** Returns the NSImage named aName. The search is done in the main bundle
+ *  first and then in the usual images directories.
+ */
 + (id) imageNamed: (NSString*)aName;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 #if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 + (NSImage*) _standardImageWithName: (NSString*)name;
 #endif
 #endif
+
+/** Sets aName as the name of the receiver.
+ */
 - (BOOL) setName: (NSString*)aName;
+
+/** Returns the name of the receiver.
+ */
 - (NSString*) name;
 
 //
 // Specifying the Image 
 //
+/** Adds the NSImageRep imageRep to the NSImage's representations array.
+ *  <p>See Also:</p>
+ *  <list>
+ *   <item>-addRepresentations:</item>
+ *   <item>-removeRepresentation:</item>
+ *  </list>
+ */
 - (void) addRepresentation: (NSImageRep*)imageRep;
+
+/** Adds the NSImageRep array imageRepArray to the NSImage's
+ *  representations array.
+ *  <p>See Also:</p>
+ *  <list>
+ *   <item>-addRepresentation:</item>
+ *   <item>-removeRepresentation:</item>
+ *  </list>
+ */
 - (void) addRepresentations: (NSArray*)imageRepArray;
+
+/** Locks the focus on the best representation.
+ *  <p>See Also:</p>
+ *  <list>
+ *   <item>-lockFocusOnRepresentation:</item>
+ *  </list>
+ */
 - (void) lockFocus;
+
+/** Locks the focus in the imageRep. If imageRep is nil this method
+ *  locks the focus on the best representation.
+ */
 - (void) lockFocusOnRepresentation: (NSImageRep*)imageRep;
+
+/** Unlocks the focus on the receiver.
+ *  <p>See Also:</p>
+ *  <list>
+ *   <item>-lockFocus</item>
+ *  </list>
+ */
 - (void) unlockFocus;
 
 //
@@ -148,7 +258,18 @@ typedef enum {
 //
 // Choosing Which Image Representation to Use 
 //
+/** Sets the preferred representation of a NSImage.
+ *  <p>See Also:</p>
+ *  <list>
+ *   <item>-prefersColorMatch</item>
+ *   <item>-bestRepresentationForDevice:</item>
+ *  </list>
+ */
 - (void) setPrefersColorMatch: (BOOL)flag;
+
+/** Returns YES if color matching is the preferred representation
+ *  and NO otherwise.
+ */
 - (BOOL) prefersColorMatch;
 - (void) setUsesEPSOnResolutionMismatch: (BOOL)flag;
 - (BOOL) usesEPSOnResolutionMismatch;
@@ -158,8 +279,21 @@ typedef enum {
 //
 // Getting the Representations 
 //
+/** Finds the best representation for deviceDescription.  If
+ *  deviceDescription is nil, it guesses where drawing is taking
+ *  place and finds the best representation.
+ */
 - (NSImageRep*) bestRepresentationForDevice: (NSDictionary*)deviceDescription;
 - (NSArray*) representations;
+
+/** Remove the NSImageRep imageRep from the NSImage's representations 
+ *  array
+ *  <p>See Also:</p>
+ *  <list>
+ *   <item>-addRepresentations:</item>
+ *   <item>-addRepresentation:</item>
+ *  </list>
+ */
 - (void) removeRepresentation: (NSImageRep*)imageRep;
 
 //
@@ -181,25 +315,27 @@ typedef enum {
 		     inRect: (NSRect)aRect;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 /** Calls -drawAtPoint:fromRect:operation:fraction: with
-    <code>dstRect</code> given by <code>point</code> and the size of
-    <code>srcRect</code>.  */
+ *  <code>dstRect</code> given by <code>point</code> and the size of
+ *  <code>srcRect</code>.
+ */
 - (void) drawAtPoint: (NSPoint)point
 	    fromRect: (NSRect)srcRect
 	   operation: (NSCompositingOperation)op
 	    fraction: (float)delta;
 
 /** <p>Takes the part of the receiver given by <code>srcRect</code> and
-    draws it in <code>dstRect</code> in the current coordinate system,
-    transforming the image as necessary.
-    </p><p>
-    The image is drawn as if it was drawn to a cleared window, then
-    dissolved using the fraction <code>delta</code> to another cleared
-    window, and finally composited using <code>op</code> to the
-    destination.
-    </p><p>
-    Note that compositing and dissolving doesn't work on all devices
-    (printers, in particular).
-    </p>  */
+ *  draws it in <code>dstRect</code> in the current coordinate system,
+ *  transforming the image as necessary.
+ *  </p><p>
+ *  The image is drawn as if it was drawn to a cleared window, then
+ *  dissolved using the fraction <code>delta</code> to another cleared
+ *  window, and finally composited using <code>op</code> to the
+ *  destination.
+ *  </p><p>
+ *  Note that compositing and dissolving doesn't work on all devices
+ *  (printers, in particular).
+ *  </p> 
+ */
 - (void) drawInRect: (NSRect)dstRect
 	   fromRect: (NSRect)srcRect
 	  operation: (NSCompositingOperation)op
@@ -212,7 +348,21 @@ typedef enum {
 - (BOOL) isValid;
 - (void) setScalesWhenResized: (BOOL)flag;
 - (BOOL) scalesWhenResized;
+
+/** Sets the color of the NSImage's background to aColor.
+ *  <p>See Also:</p>
+ *  <list>
+ *   <item>-backgroundColor</item>
+ *  </list>
+ */
 - (void) setBackgroundColor: (NSColor*)aColor;
+
+/** Returns the color of the NSImage's background.
+ *  <p>See Also:</p>
+ *  <list>
+ *   <item>-setBackgroundColor:</item>
+ *  </list>
+ */
 - (NSColor*) backgroundColor;
 - (void) recache;
 - (void) setFlipped: (BOOL)flag;
