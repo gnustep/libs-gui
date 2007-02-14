@@ -134,10 +134,9 @@ _addLeftBorderOffsetToRect(NSRect aRect)
     {
       NSFont *font = [NSFont menuFontOfSize: 0.0];
 
-      /* Should make up 23 for the default font */
-      height = ([font boundingRectForFont].size.height) + 8;
-      if (height < 23)
-	height = 23;
+      height = [font boundingRectForFont].size.height;
+      if (height < 22)
+	height = 22;
     }
 
   return height;
@@ -325,7 +324,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   
       r = [_font boundingRectForFont];
       /* Should make up 110, 20 for default font */
-      _cellSize = NSMakeSize (r.size.width * 10., r.size.height + 6.);
+      _cellSize = NSMakeSize (r.size.width * 10., r.size.height + 3.);
 
       if (_cellSize.height < 20)
 	_cellSize.height = 20;
