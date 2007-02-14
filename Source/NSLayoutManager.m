@@ -882,9 +882,6 @@ has the same y origin and height as the line frag rect it is in.
   if (i == -1 || textcontainers[i].textContainer != textContainer)
     return NSZeroRect;
 
-  r.origin.y++;
-  r.size.height -= 2;
-
   return r;
 }
 
