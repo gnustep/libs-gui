@@ -808,12 +808,12 @@ has the same y origin and height as the line frag rect it is in.
 	}
       glyph_index = [self numberOfGlyphs] - 1;
       if (glyph_index == (unsigned int)-1)
-	{
-	  /* No information is available. The best we can do is guess. */
+	{ /* No information is available. Get default font height. */
+	  NSFont *f = [_typingAttributes objectForKey:NSFontAttributeName];
 
 	  /* will be -1 if there are no text containers */
 	  *textContainer = num_textcontainers - 1;
-	  return NSMakeRect(1, 1, 1, 15);
+	  return NSMakeRect(0, 0, 1, [f boundingRectForFont].size.height);
 	}
       fraction_through = 1.0;
     }
