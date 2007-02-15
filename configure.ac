@@ -62,17 +62,39 @@ AC_PATH_X	# Added for checking the existence of ungif.  Note that
 # The following is so that headers and custom libraries
 # in the GNUstep root are used before the standard ones
 #--------------------------------------------------------------------
-# Set location of GNUstep dirs for later use
-GNUSTEP_HDIR=$GNUSTEP_SYSTEM_ROOT/Library/Headers
+
+#
+# It looks like we ought to source the whole GNUstep.sh here, and even
+# ask it to output all variables!  That way we have access to (eg)
+# GNUSTEP_SYSTEM_HEADERS below.
+#
+GNUSTEP_SH_EXPORT_ALL_VARIABLES=yes
+. "$GNUSTEP_MAKEFILES/GNUstep.sh"
+unset GNUSTEP_SH_EXPORT_ALL_VARIABLES
+
+# For backwards compatibility, define GNUSTEP_SYSTEM_HEADERS from
+# GNUSTEP_SYSTEM_ROOT if not set yet.
+if test x"$GNUSTEP_SYSTEM_HEADERS" = x""; then
+  if test x"$GNUSTEP_IS_FLATTENED" = x""; then
+    GNUSTEP_SYSTEM_HEADERS="$GNUSTEP_SYSTEM_ROOT/Library/Headers"
+  else
+    GNUSTEP_SYSTEM_HEADERS="$GNUSTEP_SYSTEM_ROOT/Library/Headers/$LIBRARY_COMBO"
+  fi
+fi
+
+if test x"$GNUSTEP_SYSTEM_LIBRARIES" = x""; then
+  GNUSTEP_SYSTEM_LIBRARIES="$GNUSTEP_SYSTEM_ROOT/Library/Libraries"
+fi
+
 if test "$GNUSTEP_IS_FLATTENED" = no; then
   clean_target_os=`$GNUSTEP_MAKEFILES/clean_os.sh $target_os`
   clean_target_cpu=`$GNUSTEP_MAKEFILES/clean_cpu.sh $target_cpu`
   obj_dir=$clean_target_cpu/$clean_target_os
-  GNUSTEP_LDIR=$GNUSTEP_SYSTEM_ROOT/Library/Libraries/$obj_dir
+  GNUSTEP_LDIR=$GNUSTEP_SYSTEM_LIBRARIES/$obj_dir
 else
-  GNUSTEP_LDIR=$GNUSTEP_SYSTEM_ROOT/Library/Libraries
+  GNUSTEP_LDIR=$GNUSTEP_SYSTEM_LIBRARIES
 fi
-CPPFLAGS="$CPPFLAGS -I$GNUSTEP_HDIR"
+CPPFLAGS="$CPPFLAGS -I$GNUSTEP_SYSTEM_HEADERS"
 LDFLAGS="$LDFLAGS -L$GNUSTEP_LDIR/$LIBRARY_COMBO -L$GNUSTEP_LDIR"
 
 #--------------------------------------------------------------------
@@ -442,8 +464,3 @@ static double rint(double a)     \
 
 AC_CONFIG_FILES([config.make gui.make Headers/Additions/GNUstepGUI/GSVersion.h])
 AC_OUTPUT
-
-
-
-
-

@@ -2715,7 +2715,7 @@ ac_x_header_dirs='
 /usr/openwin/share/include'
 
 if test "$ac_x_includes" = no; then
-  # Guess where to find include files, by looking for Intrinsic.h.
+  # Guess where to find include files, by looking for Xlib.h.
   # First, try using that file with no special directory specified.
   cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -2723,7 +2723,7 @@ _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
-#include <X11/Intrinsic.h>
+#include <X11/Xlib.h>
 _ACEOF
 if { (eval echo "$as_me:$LINENO: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
@@ -2750,7 +2750,7 @@ else
 sed 's/^/| /' conftest.$ac_ext >&5
 
   for ac_dir in $ac_x_header_dirs; do
-  if test -r "$ac_dir/X11/Intrinsic.h"; then
+  if test -r "$ac_dir/X11/Xlib.h"; then
     ac_x_includes=$ac_dir
     break
   fi
@@ -2764,18 +2764,18 @@ if test "$ac_x_libraries" = no; then
   # See if we find them without any special options.
   # Don't add to $LIBS permanently.
   ac_save_LIBS=$LIBS
-  LIBS="-lXt $LIBS"
+  LIBS="-lX11 $LIBS"
   cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
-#include <X11/Intrinsic.h>
+#include <X11/Xlib.h>
 int
 main ()
 {
-XtMalloc (0)
+XrmInitialize ()
   ;
   return 0;
 }
@@ -2861,17 +2861,39 @@ fi
 # The following is so that headers and custom libraries
 # in the GNUstep root are used before the standard ones
 #--------------------------------------------------------------------
-# Set location of GNUstep dirs for later use
-GNUSTEP_HDIR=$GNUSTEP_SYSTEM_ROOT/Library/Headers
+
+#
+# It looks like we ought to source the whole GNUstep.sh here, and even
+# ask it to output all variables!  That way we have access to (eg)
+# GNUSTEP_SYSTEM_HEADERS below.
+#
+GNUSTEP_SH_EXPORT_ALL_VARIABLES=yes
+. "$GNUSTEP_MAKEFILES/GNUstep.sh"
+unset GNUSTEP_SH_EXPORT_ALL_VARIABLES
+
+# For backwards compatibility, define GNUSTEP_SYSTEM_HEADERS from
+# GNUSTEP_SYSTEM_ROOT if not set yet.
+if test x"$GNUSTEP_SYSTEM_HEADERS" = x""; then
+  if test x"$GNUSTEP_IS_FLATTENED" = x""; then
+    GNUSTEP_SYSTEM_HEADERS="$GNUSTEP_SYSTEM_ROOT/Library/Headers"
+  else
+    GNUSTEP_SYSTEM_HEADERS="$GNUSTEP_SYSTEM_ROOT/Library/Headers/$LIBRARY_COMBO"
+  fi
+fi
+
+if test x"$GNUSTEP_SYSTEM_LIBRARIES" = x""; then
+  GNUSTEP_SYSTEM_LIBRARIES="$GNUSTEP_SYSTEM_ROOT/Library/Libraries"
+fi
+
 if test "$GNUSTEP_IS_FLATTENED" = no; then
   clean_target_os=`$GNUSTEP_MAKEFILES/clean_os.sh $target_os`
   clean_target_cpu=`$GNUSTEP_MAKEFILES/clean_cpu.sh $target_cpu`
   obj_dir=$clean_target_cpu/$clean_target_os
-  GNUSTEP_LDIR=$GNUSTEP_SYSTEM_ROOT/Library/Libraries/$obj_dir
+  GNUSTEP_LDIR=$GNUSTEP_SYSTEM_LIBRARIES/$obj_dir
 else
-  GNUSTEP_LDIR=$GNUSTEP_SYSTEM_ROOT/Library/Libraries
+  GNUSTEP_LDIR=$GNUSTEP_SYSTEM_LIBRARIES
 fi
-CPPFLAGS="$CPPFLAGS -I$GNUSTEP_HDIR"
+CPPFLAGS="$CPPFLAGS -I$GNUSTEP_SYSTEM_HEADERS"
 LDFLAGS="$LDFLAGS -L$GNUSTEP_LDIR/$LIBRARY_COMBO -L$GNUSTEP_LDIR"
 
 #--------------------------------------------------------------------
@@ -8304,9 +8326,4 @@ if test "$no_create" != yes; then
   # would make configure fail if this is the last instruction.
   $ac_cs_success || { (exit 1); exit 1; }
 fi
-
-
-
-
-
 
