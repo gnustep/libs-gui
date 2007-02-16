@@ -169,7 +169,7 @@ therefore be stored in the NSLayoutManager to avoid problems.
   text view that is the first responder, so there shouldn't be any
   problems with keeping track of it locally. Still need to think hard
   about handling of it, though. */
-#if 0
+//#if 0
   /* Timer used to redraw the insertion point ... FIXME - think what 
      happens with multiple textviews */
   NSTimer *_insertionPointTimer;
@@ -179,7 +179,7 @@ therefore be stored in the NSLayoutManager to avoid problems.
      following little period in which the insertion point should not
      be drawn */
   BOOL _drawInsertionPointNow;
-#endif
+//#endif
 
 
   /* Stores the insertion point rect - updated by
