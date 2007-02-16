@@ -530,7 +530,10 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
 {
   if ([_menuView isHorizontal] == YES)
     {
-      // FIXME: No idea why this adjustment is needed.
+      /* A horizontal menu does not have borders drawn by the cell,
+       * but it does have a border round the menu as a whole, so we
+       * must inset from that.
+       */
       return NSMakeRect (theRect.origin.x, theRect.origin.y + 2,
 	theRect.size.width, theRect.size.height - 2);
     }
@@ -585,6 +588,14 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
 - (void) drawBorderAndBackgroundWithFrame: (NSRect)cellFrame
 				  inView: (NSView *)controlView
 {
+  if ([_menuView isHorizontal] == YES)
+    {
+      cellFrame = [self drawingRectForBounds: cellFrame];
+      [[self backgroundColor] set];
+      NSRectFill(cellFrame);
+      return;
+    }
+
   // Set cell's background color
   [[self backgroundColor] set];
   NSRectFill(cellFrame);

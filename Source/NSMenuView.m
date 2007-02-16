@@ -132,7 +132,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
   if (height == 0.0)
     {
-      NSFont *font = [NSFont menuFontOfSize: 0.0];
+      NSFont *font = [NSFont menuBarFontOfSize: 0.0];
 
       height = [font boundingRectForFont].size.height;
       if (height < 22)
@@ -910,8 +910,6 @@ _addLeftBorderOffsetToRect(NSRect aRect)
       GSCellRect aRect;
 
       aRect = GSIArrayItemAtIndex(cellRects, index).ext;
-
-      /* FIXME: handle vertical case? */
 
       return aRect.rect;
     }
