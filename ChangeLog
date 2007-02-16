@@ -5,6 +5,19 @@
 	hardcoded paths.
 	* configure: Regenerated.
 
+2007-02-14  Sergii Stoian <stoyan255@gmail.com>
+
+	* Source/NSMenuView.m:
+	(menuBarHeight): Fix calculation. Set minimum height to 22.
+	(setFont:): Fix calculation default cell size.
+	
+	* Source/NSLayouManager.m:
+	(_insertionPointRectForCharacterIndex:textContainer:): Use
+	default font height for insertion point height if there is
+	no characters.
+	(insertionPointRectForCharacterIndex:inTextContainer:): Remove
+	insertion point rectangle correction.
+
 2007-02-14  Nicola Pero <nicola.pero@meta-innovation.com>
 
 	* Source/GNUmakefile (libgui-resources_INSTALL_DIR): New variable
