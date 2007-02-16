@@ -3347,31 +3347,14 @@ Figure out how the additional layout stuff is supposed to work.
 	{
 	  [self drawInsertionPointInRect: _insertionPointRect
 	    color: _insertionPointColor
-	    turnedOn: YES];
+	    turnedOn: _drawInsertionPointNow];
 	}
-#if 0 /* TODO: insertion point */
-      unsigned location = _layoutManager->_selected_range.location;
-      
-      if (NSLocationInRange (location, drawnRange) 
-	  || location == NSMaxRange (drawnRange))
-	{
-	  if (_drawInsertionPointNow && viewIsPrinting != self)
-	    {
-	      [self drawInsertionPointInRect: _insertionPointRect  
-		    color: _insertionPointColor
-		    turnedOn: YES];
-	    }
-	}
-#endif
     }
 }
 
 
 - (void) updateInsertionPointStateAndRestartTimer: (BOOL)restartFlag
 {
-  /* TODO: this is a basic stopgap implementation; should work fine, but no
-  blinking. need to do a proper one once I know how */
-
   NSRect new;
 
   if (!_layoutManager)
@@ -3404,19 +3387,19 @@ Figure out how the additional layout stuff is supposed to work.
 	}
     }
 
-  if (!NSEqualRects(new, _insertionPointRect))
+  // Don't draw insertion point if there's no need
+  if (![self shouldDrawInsertionPoint] && !_drawInsertionPointNow)
     {
-      [self setNeedsDisplayInRect: _insertionPointRect];
-      _insertionPointRect = new;
-      [self setNeedsDisplayInRect: _insertionPointRect];
+      return;
     }
 
-#if 0   /* TODO: old code for insertion point blinking. might be useful */
   if (restartFlag)
     {
       /* Start blinking timer if not yet started */
       if (_insertionPointTimer == nil  &&  [self shouldDrawInsertionPoint])
 	{
+//	  NSLog(@"Start timer");
+	  _insertionPointRect = new;
 	  _insertionPointTimer = [NSTimer scheduledTimerWithTimeInterval: 0.5
 					  target: self
 					  selector: @selector(_blink:)
@@ -3426,17 +3409,15 @@ Figure out how the additional layout stuff is supposed to work.
 	}
       else if (_insertionPointTimer != nil)
 	{
-	  [_insertionPointTimer invalidate];
-	  DESTROY (_insertionPointTimer);
-	  [self setNeedsDisplayInRect: oldInsertionPointRect
-		avoidAdditionalLayout: YES];
-	  _insertionPointTimer = [NSTimer scheduledTimerWithTimeInterval: 0.5
-					  target: self
-					  selector: @selector(_blink:)
-					  userInfo: nil
-					  repeats: YES];
-	  RETAIN (_insertionPointTimer);
+	  if (!NSEqualRects(new, _insertionPointRect))
+	    {
+	      _drawInsertionPointNow = NO;
+	      [self setNeedsDisplayInRect: _insertionPointRect
+		    avoidAdditionalLayout: YES];
+	      _insertionPointRect = new;
+	    }
 	}
+
       /* Ok - blinking has just been turned on.  Make sure we start
        * the on/off/on/off blinking from the 'on', because in that way
        * the user can see where the insertion point is as soon as
@@ -3446,18 +3427,21 @@ Figure out how the additional layout stuff is supposed to work.
       [self setNeedsDisplayInRect: _insertionPointRect
 	    avoidAdditionalLayout: YES];
     }
-  else
+  else if ([self shouldDrawInsertionPoint] && (_insertionPointTimer != nil))
     {
-      if (_insertionPointTimer != nil)
-	{
-	  [self setNeedsDisplayInRect: oldInsertionPointRect
-	    avoidAdditionalLayout: YES];
-	  [_insertionPointTimer invalidate];
-	  DESTROY (_insertionPointTimer);
+      // restartFlag is set to NO when control resigns first responder status
+      // or window resings key window status. So we invalidate timer to 
+      // avoid extra method calls
+//      NSLog(@"Stop timer");
+      [_insertionPointTimer invalidate];
+      DESTROY (_insertionPointTimer);
 
-	}
+      _drawInsertionPointNow = NO;
+      [self setNeedsDisplayInRect: _insertionPointRect
+	    avoidAdditionalLayout: YES];
+
+      _insertionPointRect = new;
     }
-#endif
 
   [self _updateInputMethodWithInsertionPoint: _insertionPointRect.origin];
 }
@@ -4693,7 +4677,6 @@ configuation! */
 
 - (void) _blink: (NSTimer *)t
 {
-#if 0 /* TODO: insertion point */
   if (_drawInsertionPointNow)
     {
       _drawInsertionPointNow = NO;
@@ -4709,7 +4692,6 @@ configuation! */
      event processing in the gui runloop, we need to manually update
      the window.  */
   [self displayIfNeeded];
-#endif
 }
 
 
