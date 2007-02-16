@@ -4,6 +4,7 @@
 	menu items overwriting menu border.
 	* Source/NSMenuView.m: use menubar font size to calculate menubar
 	height.
+	* Source/GSInfoPanel.m: send theme panel action for click on theme.
 
 2007-02-16  Sergii Stoian <stoyan255@gmail.com>
 

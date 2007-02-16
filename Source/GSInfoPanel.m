@@ -612,9 +612,11 @@ new_label (NSString *value)
   f.origin.y = tmp_b - 25 - f.size.height;
   tmp_b = f.origin.y;
   [cv addSubview: themeLabel];
+  [themeLabel setEnabled: YES];
   [themeLabel setFrame: f];
   [themeLabel setTarget: [GSTheme class]];
   [themeLabel setAction: @selector(orderFrontSharedThemePanel:)];
+  [themeLabel sendActionOn: NSLeftMouseUpMask];
 
   [self center];
   return self;
