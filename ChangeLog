@@ -1,3 +1,15 @@
+2007-02-16  Sergii Stoian <stoyan255@gmail.com>
+
+	* Headers/AppKit/NSTextView.h: Enable disabled insertion point
+	blinking code.
+
+	* Source/NSTextView.m:
+	(drawRect:): Draw insertion point using _drawInsertionPointNow
+	ivar. Cleanup code.
+	(_blink:): Enable disabled insertion point blinking code.
+	(updateInsertionPointStateAndRestartTimer:): Implement insertion 
+	point blinking. Remove TODO.
+
 2007-02-15  Nicola Pero <nicola.pero@meta-innovation.com>
 
 	* configure.ac: Source GNUstep.sh then use GNUSTEP_SYSTEM_HEADERS
