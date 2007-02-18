@@ -943,7 +943,10 @@ originalContentsURL: (NSURL *)orig
 - (int)runModalSavePanel: (NSSavePanel *)savePanel 
        withAccessoryView: (NSView *)accessoryView
 {
-  [savePanel setAccessoryView: accessoryView];
+  if (accessoryView)
+    {
+      [savePanel setAccessoryView: accessoryView];
+    }
   return [savePanel runModal];
 }
 
