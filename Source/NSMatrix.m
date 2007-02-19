@@ -669,15 +669,7 @@ static SEL getSel;
   NSRect rect;
 
   rect.origin.x = column * (_cellSize.width + _intercell.width);
-  if (_rFlags.flipped_view)
-    {
-      rect.origin.y = row * (_cellSize.height + _intercell.height);
-    }
-  else
-    {
-      rect.origin.y = (_numRows - row - 1)
-	* (_cellSize.height + _intercell.height);
-    }
+  rect.origin.y = row * (_cellSize.height + _intercell.height);
   rect.size = _cellSize;
   return rect;
 }
@@ -959,11 +951,6 @@ static SEL getSel;
 
   if (row)
     {
-      if (_rFlags.flipped_view == NO)
-	{
-	  approxRow = _numRows - approxRow - 1;
-	}
-      
       if (approxRow < 0)
 	{
 	  approxRow = 0;
@@ -2024,12 +2011,6 @@ static SEL getSel;
   col1 = rect.origin.x / (_cellSize.width + _intercell.width);
   row2 = NSMaxY(rect) / (_cellSize.height + _intercell.height);
   col2 = NSMaxX(rect) / (_cellSize.width + _intercell.width);
-
-  if (_rFlags.flipped_view == NO)
-    {
-      row1 = _numRows - row1 - 1;
-      row2 = _numRows - row2 - 1;
-    }
 
   if (row1 < 0)
     row1 = 0;
