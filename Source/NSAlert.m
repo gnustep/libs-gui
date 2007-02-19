@@ -357,6 +357,7 @@ setControl(NSView* content, id control, NSString *title)
   [icoButton setAutoresizingMask: NSViewMaxXMargin|NSViewMinYMargin];
   [icoButton setBordered: NO];
   [icoButton setEnabled: NO];
+  [[icoButton cell] setImageDimsWhenDisabled: NO];
   [icoButton setImagePosition: NSImageOnly];
   image = [[NSApplication sharedApplication] applicationIconImage];
   [icoButton setImage: image];

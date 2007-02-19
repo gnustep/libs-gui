@@ -1,3 +1,8 @@
+2007-02-19  Enrico Sersale <enrico@fibernet.ro>
+
+	* Source/NSAlert.m: (-_initWithoutGModel): 
+  added [setImageDimsWhenDisabled: NO} to not show the application icon dimmed.
+  
 2007-02-19  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMatrix.m (cellFrameAtRow:column:, drawRect:,
@@ -11,7 +16,7 @@
 
 2007-02-16  Richard Frith-Macdoanld <rfm@gnu.org>
 
-	* Source/NSMenuItemCell.m: fixup glitch with drawing of horizontal
+	* Source/NSMenuItSemCell.m: fixup glitch with drawing of horizontal
 	menu items overwriting menu border.
 	* Source/NSMenuView.m: use menubar font size to calculate menubar
 	height.
