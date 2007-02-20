@@ -1,7 +1,25 @@
+2007-02-20  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSAlert.m: (-_initWithoutGModel): Set the message field
+	to not draw its background.
+	* Source/NSTabViewItem.m: Whitespace changes to conform to coding
+	standards.
+	* Source/NSTabViewItem.m (-drawLabel:inRect:): Moved drawing of
+	background into NSTabView. Only there do we know, how to adjust
+	the rectangle correcty.
+	* Source/NSTabViewItem.m (-initWithCoder:): Autorelease some ivars
+	that don't get retained to prevent memory leak.
+	* Source/NSTabView.m (-insertTabViewItem:atIndex:,
+	-removeTabViewItem:): Adjust selection, if needed. 
+	* Source/NSTabView.m (-minimumSize, -contentRect,
+	-encodeWithCoder:, -initWithCoder:): Handle more type cases. 
+	* Source/NSTabView.m (-drawRect:): Rewrote to simplify and correct
+	code. Moved drawing of the label background to here.
+	
 2007-02-19  Enrico Sersale <enrico@fibernet.ro>
 
 	* Source/NSAlert.m: (-_initWithoutGModel): 
-  added [setImageDimsWhenDisabled: NO} to not show the application icon dimmed.
+	added [setImageDimsWhenDisabled: NO} to not show the application icon dimmed.
   
 2007-02-19  Fred Kiefer <FredKiefer@gmx.de>
 

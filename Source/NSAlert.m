@@ -406,8 +406,7 @@ setControl(NSView* content, id control, NSString *title)
     be selectable for a copy-and-paste. Hence, setSelectable: YES.
   */
   [messageField setBezeled: NO];
-  [messageField setDrawsBackground: YES];
-  [messageField setBackgroundColor: [NSColor controlBackgroundColor]];
+  [messageField setDrawsBackground: NO];
   [messageField setAlignment: NSCenterTextAlignment];
   [messageField setStringValue: @""];
   [messageField setFont: MessageFont];

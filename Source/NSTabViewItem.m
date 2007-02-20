@@ -23,21 +23,27 @@
    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
+#include "AppKit/NSAttributedString.h"
 #include "AppKit/NSColor.h"
 #include "AppKit/NSFont.h"
+#include "AppKit/NSGraphics.h"
 #include "AppKit/NSImage.h"
 #include "AppKit/NSTabViewItem.h"
 #include "AppKit/PSOperators.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSAttributedString.h"
 
 @implementation NSTabViewItem
-- (id) initWithIdentifier:(id)identifier
-{
-  [super init];
 
-  ASSIGN(_ident, identifier);
-  _state = NSBackgroundTab;
+- (id) initWithIdentifier: (id)identifier
+{
+  self = [super init];
+
+  if (self)
+    {
+      ASSIGN(_ident, identifier);
+      _state = NSBackgroundTab;
+      // Use the window background colour as default, not the control background colour.
+      [self setColor: [NSColor windowBackgroundColor]];
+    }
 
   return self;
 }
@@ -51,31 +57,37 @@
   [super dealloc];
 }
 
+- (NSString*) description;
+{
+  return [NSString stringWithFormat: @"%@: %@ (ident: %@)", 
+		   NSStringFromClass([self class]), _label, _ident];
+}
+
 // Set identifier.
 
-- (void)setIdentifier:(id)identifier
+- (void) setIdentifier: (id)identifier
 {
   ASSIGN(_ident, identifier);
 }
 
-- (id)identifier
+- (id) identifier
 {
   return _ident;
 }
 
 // Set label for item.
 
-- (void)setLabel:(NSString *)label
+- (void) setLabel: (NSString*)label
 {
   ASSIGN(_label, label);
 }
 
-- (NSString *)label
+- (NSString *) label
 {
   return _label;
 }
 
-- (NSSize)sizeOfLabel:(BOOL)shouldTruncateLabel
+- (NSSize) sizeOfLabel: (BOOL)shouldTruncateLabel
 {
   NSDictionary *  attr = [[NSDictionary alloc] initWithObjectsAndKeys: 
 			       [_tabview font], NSFontAttributeName,
@@ -89,7 +101,7 @@
     } 
   else 
     {
-	string = _label;
+      string = _label;
     }
 
   rSize = [string sizeWithAttributes: attr];
@@ -99,31 +111,31 @@
 
 // Set view to display when item is clicked.
 
-- (void)setView:(NSView *)view
+- (void) setView: (NSView*)view
 {
   ASSIGN(_view, view);
 }
 
-- (NSView *)view
+- (NSView*) view
 {
   return _view;
 }
 
 // Set color of tab surface.
 
-- (void)setColor:(NSColor *)color
+- (void) setColor: (NSColor*)color
 {
   ASSIGN(_color, color);
 }
 
-- (NSColor *)color
+- (NSColor*) color
 {
   return _color;
 }
 
 // tab state
 
-- (NSTabState)tabState
+- (NSTabState) tabState
 {
   return _state;
 }
@@ -131,34 +143,33 @@
 
 // Tab view, this is the "super" view.
 
-- (NSTabView *)tabView
+- (NSTabView*) tabView
 {
   return _tabview;
 }
 
 // First responder.
 
-- (void)setInitialFirstResponder:(NSView *)view
+- (void) setInitialFirstResponder: (NSView*)view
 {
   // We don't retain this.  
   _first_responder = view;
 }
 
-- (id)initialFirstResponder
+- (id) initialFirstResponder
 {
   return _first_responder;
 }
 
 // Draw item.
 
-- (void)drawLabel:(BOOL)shouldTruncateLabel
-	   inRect:(NSRect)tabRect
+- (void) drawLabel: (BOOL)shouldTruncateLabel
+	    inRect: (NSRect)tabRect
 {
-  NSGraphicsContext     *ctxt = GSCurrentContext();
-  NSRect lRect;
-  NSRect fRect;
   NSDictionary *attr;
   NSString *string;
+
+  _rect = tabRect;
 
   if (shouldTruncateLabel) 
     {
@@ -166,42 +177,16 @@
     } 
   else 
     {
-	string = _label;
-    }
-
-  _rect = tabRect;
-
-  DPSgsave(ctxt);
-
-  fRect = tabRect;
-
-  if (_state == NSSelectedTab)
-    {
-      fRect.origin.y -= 1;
-      fRect.size.height += 1;
-      [[NSColor controlBackgroundColor] set];
-      NSRectFill(fRect);
-    }
-  else if (_state == NSBackgroundTab)
-    {
-      [[NSColor controlBackgroundColor] set];
-      NSRectFill(fRect);
-    }
-  else
-    {
-      [[NSColor controlBackgroundColor] set];
+      string = _label;
     }
 
   attr = [[NSDictionary alloc] initWithObjectsAndKeys: 
 			       [_tabview font], NSFontAttributeName,
-			       [NSColor blackColor], NSForegroundColorAttributeName,
+			       [NSColor controlTextColor], NSForegroundColorAttributeName,
 			       nil];
 
-  lRect = tabRect;
-  [string drawInRect: lRect withAttributes: attr];
+  [string drawInRect: tabRect withAttributes: attr];
   RELEASE(attr);
-
-  DPSgrestore(ctxt);
 }
 
 // NSCoding protocol.
@@ -248,7 +233,9 @@
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_color];
       [aDecoder decodeValueOfObjCType: @encode(NSTabState) at:&_state];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_first_responder];
+      AUTORELEASE(_first_responder);
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_tabview];
+      AUTORELEASE(_tabview);
     }
 
   return self;
@@ -264,17 +251,17 @@
   return _rect;
 }
 
-- (void)_setTabState:(NSTabState)tabState
+- (void) _setTabState: (NSTabState)tabState
 {
   _state = tabState;
 }
 
-- (void)_setTabView:(NSTabView *)tabView
+- (void) _setTabView: (NSTabView*)tabView
 {
   _tabview = tabView;
 }
 
-- (NSString*)_truncatedLabel
+- (NSString*) _truncatedLabel
 {
   // FIXME: What is the algo to truncate?
   return _label;
