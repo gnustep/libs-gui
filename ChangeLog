@@ -1,3 +1,12 @@
+2007-02-21  Sergii Stoian <stoyan255@gmail.com>
+
+        * Source/NSAlert.m: (-_initWithoutGModel): 
+	Make buttons refuse first responder to avoid drawing
+	dashed frame and protec from selecting potentially dangerous 
+	buttons	by accident.
+	(-_makeButtonWithRect:): Change style of button from 
+	NSMomentaryPushButton to NSMomentaryPushInButton.
+
 2007-02-20  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSAlert.m: (-_initWithoutGModel): Set the message field
