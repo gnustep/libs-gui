@@ -330,6 +330,8 @@ setControl(NSView* content, id control, NSString *title)
   NSRect  r = NSMakeRect(0.0, 0.0, WinMinWidth, WinMinHeight);
   NSFont  *titleFont = [NSFont systemFontOfSize: 18.0];
   float   titleHeight = [titleFont boundingRectForFont].size.height;
+  NSText  *fieldEditor = [self fieldEditor: YES forObject: messageField];
+  NSDictionary *selectedAttrs;
 
 
   self = [self initWithContentRect: r
@@ -372,7 +374,7 @@ setControl(NSView* content, id control, NSString *title)
   titleField = [[NSTextField alloc] initWithFrame: rect];
   [titleField setAutoresizingMask: NSViewMinYMargin];
   [titleField setEditable: NO];
-  [titleField setSelectable: YES];
+  [titleField setSelectable: NO];
   [titleField setBezeled: NO];
   [titleField setDrawsBackground: NO];
   [titleField setStringValue: @""];
@@ -395,16 +397,20 @@ setControl(NSView* content, id control, NSString *title)
   rect.size.width = 0.0;
   rect.origin.y = 0.0;
   rect.origin.x = 0.0;
-  
+ 
   messageField = [[NSTextField alloc] initWithFrame: rect];
   [messageField setEditable: NO];
-  [messageField setSelectable: YES];
   /*
     PJB:
     How do you  want the user to report an error  message if it is
     not selectable?  Any text visible on the  screen should always
     be selectable for a copy-and-paste. Hence, setSelectable: YES.
   */
+  selectedAttrs = [NSDictionary dictionaryWithObjectsAndKeys:
+				 [NSColor whiteColor], 
+				 NSBackgroundColorAttributeName];
+  [(NSTextView *)fieldEditor setSelectedTextAttributes: selectedAttrs]; 
+  [messageField setSelectable: YES];
   [messageField setBezeled: NO];
   [messageField setDrawsBackground: NO];
   [messageField setAlignment: NSCenterTextAlignment];
