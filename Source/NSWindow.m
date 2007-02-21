@@ -237,19 +237,27 @@ has blocked and waited for events.
   NSArray	*windowList = GSOrderedWindows();
   unsigned	pos = [windowList indexOfObjectIdenticalTo: self];
   unsigned	c = [windowList count];
-  unsigned	i;
+  unsigned	i,ti;
   NSWindow	*w;
+
+  if (!c)
+    return;
+
+  i = pos + 1;
+  if (pos >= c || pos + 1 == c)
+    {
+      pos = c - 1;
+      i = 0;
+    }
+  ti = i;
 
   if ([self isKeyWindow])
     {
-      NSWindow *menu_window= [[NSApp mainMenu] window];
+      NSWindow *menu_window = [[NSApp mainMenu] window];
+
       [self resignKeyWindow];
-      i = pos + 1;
-      if (i == c)
-	{
-	  i = 0;
-	}
-      while (i != pos)
+
+      for (; i != pos && i < c; i++)
 	{
 	  w = [windowList objectAtIndex: i];
 	  if ([w isVisible] && [w canBecomeKeyWindow] && w != menu_window)
@@ -257,17 +265,11 @@ has blocked and waited for events.
 	      [w makeKeyWindow];
 	      break;
 	    }
-
-	  i++;
-	  if (i == c)
-	    {
-	      i = 0;
-	    }
 	}
       /*
        * if we didn't find a possible key window - use the main menu window
        */
-      if (i == pos)
+      if (i == c)
 	{
 	  if (menu_window != nil)
 	    {
@@ -287,12 +289,7 @@ has blocked and waited for events.
 	}
       else
 	{
-	  i = pos + 1;
-	  if (i == c)
-	    {
-	      i = 0;
-	    }
-	  while (i != pos)
+	  for (i = ti; i != pos && i < c; i++)
 	    {
 	      w = [windowList objectAtIndex: i];
 	      if ([w isVisible] && [w canBecomeMainWindow])
@@ -300,12 +297,6 @@ has blocked and waited for events.
 		  [w makeMainWindow];
 		  break;
 		}
-	    
-	      i++;
-	      if (i == c)
-		{
-		  i = 0;
-		}		  
 	    }
 	}
     }
