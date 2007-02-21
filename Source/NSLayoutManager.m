@@ -1225,6 +1225,7 @@ container
     NSRange r = [self glyphRangeForCharacterRange: _selected_range
 		  actualCharacterRange: NULL];
     NSRange sel = r;
+    NSTextView *ftv;
 
     if (r.location < range.location)
       {
@@ -1240,8 +1241,14 @@ container
 	r.length = range.location + range.length - r.location;
       }
 
-    /* TODO: use the text view's selected text attributes */
-    color = [NSColor selectedTextBackgroundColor];
+    /* Use the text view's selected text attributes */
+    if ((ftv = [self firstTextView]))
+      color = [[ftv selectedTextAttributes] 
+      	objectForKey:NSBackgroundColorAttributeName];
+
+    if (!color)
+      color = [NSColor selectedTextBackgroundColor];
+
     if (!color)
       return;
 
