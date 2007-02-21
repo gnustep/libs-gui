@@ -286,7 +286,7 @@ makeScrollViewWithRect(NSRect rect)
   NSButton	*button = [[NSButton alloc] initWithFrame: rect];
 
   [button setAutoresizingMask: NSViewMinXMargin | NSViewMaxYMargin];
-  [button setButtonType: NSMomentaryPushButton];
+  [button setButtonType: NSMomentaryPushInButton];
   [button setTitle: @""];
   [button setTarget: self];
   [button setAction: @selector(buttonAction:)];
