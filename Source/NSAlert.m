@@ -419,11 +419,14 @@ setControl(NSView* content, id control, NSString *title)
   [defButton setImagePosition: NSImageRight];
   [defButton setImage: [NSImage imageNamed: @"common_ret"]];
   [defButton setAlternateImage: [NSImage imageNamed: @"common_retH"]];
+  [defButton setRefusesFirstResponder: YES];
   
   altButton = [self _makeButtonWithRect: rect];
   [altButton setHighlightsBy: NSPushInCellMask | NSChangeGrayCellMask];
+  [altButton setRefusesFirstResponder: YES];
   othButton = [self _makeButtonWithRect: rect];
   [othButton setHighlightsBy: NSPushInCellMask | NSChangeGrayCellMask];
+  [othButton setRefusesFirstResponder: YES];
   
   rect.size.height = 80.0;
   scroll = makeScrollViewWithRect(rect);
