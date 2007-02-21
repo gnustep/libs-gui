@@ -359,7 +359,6 @@ setControl(NSView* content, id control, NSString *title)
   [icoButton setEnabled: NO];
   [[icoButton cell] setImageDimsWhenDisabled: NO];
   [icoButton setImagePosition: NSImageOnly];
-  [[icoButton cell] setImageDimsWhenDisabled: NO];
   image = [[NSApplication sharedApplication] applicationIconImage];
   [icoButton setImage: image];
   [content addSubview: icoButton];
