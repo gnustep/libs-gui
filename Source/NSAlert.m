@@ -359,6 +359,7 @@ setControl(NSView* content, id control, NSString *title)
   [icoButton setEnabled: NO];
   [[icoButton cell] setImageDimsWhenDisabled: NO];
   [icoButton setImagePosition: NSImageOnly];
+  [[icoButton cell] setImageDimsWhenDisabled: NO];
   image = [[NSApplication sharedApplication] applicationIconImage];
   [icoButton setImage: image];
   [content addSubview: icoButton];
@@ -420,7 +421,9 @@ setControl(NSView* content, id control, NSString *title)
   [defButton setAlternateImage: [NSImage imageNamed: @"common_retH"]];
   
   altButton = [self _makeButtonWithRect: rect];
+  [altButton setHighlightsBy: NSPushInCellMask | NSChangeGrayCellMask];
   othButton = [self _makeButtonWithRect: rect];
+  [othButton setHighlightsBy: NSPushInCellMask | NSChangeGrayCellMask];
   
   rect.size.height = 80.0;
   scroll = makeScrollViewWithRect(rect);
