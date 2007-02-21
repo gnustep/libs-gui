@@ -1,3 +1,12 @@
+2007-02-22  Sergii Stoian <stoyan255@gmail.com>
+
+        * Source/NSWindow.m: (_lossOfKeyOrMainWindow): Add sanity checks.
+	Optimize.
+	* Source/NSLayoutManager.m: (-drawBackgroundForGlyphRange:atPoint):
+	Use the text view's selected text attributes. Remove TODO.
+	* Source/NSAlert.m: (-_initWithoutGModel): Set selected text
+	background color to white. Now we can see selection of message text.
+
 2007-02-21  Sergii Stoian <stoyan255@gmail.com>
 
         * Source/NSAlert.m: (-_initWithoutGModel): 
