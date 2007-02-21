@@ -286,7 +286,7 @@ makeScrollViewWithRect(NSRect rect)
   NSButton	*button = [[NSButton alloc] initWithFrame: rect];
 
   [button setAutoresizingMask: NSViewMinXMargin | NSViewMaxYMargin];
-  [button setButtonType: NSMomentaryPushButton];
+  [button setButtonType: NSMomentaryInPushButton];
   [button setTitle: @""];
   [button setTarget: self];
   [button setAction: @selector(buttonAction:)];
@@ -421,10 +421,8 @@ setControl(NSView* content, id control, NSString *title)
   [defButton setRefusesFirstResponder: YES];
   
   altButton = [self _makeButtonWithRect: rect];
-  [altButton setHighlightsBy: NSPushInCellMask | NSChangeGrayCellMask];
   [altButton setRefusesFirstResponder: YES];
   othButton = [self _makeButtonWithRect: rect];
-  [othButton setHighlightsBy: NSPushInCellMask | NSChangeGrayCellMask];
   [othButton setRefusesFirstResponder: YES];
   
   rect.size.height = 80.0;
