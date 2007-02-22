@@ -1,3 +1,9 @@
+2007-02-22  Matt Rice  <ratmice@gmail.com>
+
+	* Source/NSAlert.m (-_initWithoutGModel): Add missing nil
+	at end of call to -dictionaryWithObjectsAndKeys:
+
+
 2007-02-22  Sergii Stoian <stoyan255@gmail.com>
 
         * Source/NSWindow.m: (_lossOfKeyOrMainWindow): Add sanity checks.

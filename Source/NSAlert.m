@@ -408,7 +408,8 @@ setControl(NSView* content, id control, NSString *title)
   */
   selectedAttrs = [NSDictionary dictionaryWithObjectsAndKeys:
 				 [NSColor whiteColor], 
-				 NSBackgroundColorAttributeName];
+				 NSBackgroundColorAttributeName,
+				 nil];
   [(NSTextView *)fieldEditor setSelectedTextAttributes: selectedAttrs]; 
   [messageField setSelectable: YES];
   [messageField setBezeled: NO];
