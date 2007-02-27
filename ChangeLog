@@ -1,8 +1,15 @@
+2007-02-26  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSLayoutManager.m: ([drawGlyphsForGlyphRange:atPoint:])
+	Implement selected text color ... use the value set in the textview
+	or if that is not supplied, fall back to selectedTextColor.
+	Fix ([drawBackgroundForGlyphRange:atPoint:]) to use
+	([textViewForBeginningOfSelection]) to determine selected text color.
+
 2007-02-22  Matt Rice  <ratmice@gmail.com>
 
 	* Source/NSAlert.m (-_initWithoutGModel): Add missing nil
 	at end of call to -dictionaryWithObjectsAndKeys:
-
 
 2007-02-22  Sergii Stoian <stoyan255@gmail.com>
 
@@ -56,7 +63,7 @@
 	* Source/NSDocument.m (runModalSavePanel:withAccessoryView:): Only
 	set accessory view when not nil. Workaround for bug #19031.
 
-2007-02-16  Richard Frith-Macdoanld <rfm@gnu.org>
+2007-02-16  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSMenuItSemCell.m: fixup glitch with drawing of horizontal
 	menu items overwriting menu border.
@@ -177,7 +184,7 @@
 	* Source/NSTableView (-mouseDown:): Compute the selection immediately
 	instead of at the end of the loop.
 
-2007-02-04  Richard Frith-Macdoanld <rfm@gnu.org>
+2007-02-04  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSImageView.m: fix minor error in dragging offset.
 
@@ -191,7 +198,7 @@
 	depending on whether the mouse went up inside the menu or not.
 	Fixes bug #18946
 
-2007-01-31  Richard Frith-Macdoanld <rfm@gnu.org>
+2007-01-31  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSFontInfo.m:
 	* Source/NSFont.m:
@@ -251,7 +258,7 @@
 	* Source/GSTheme.m (-buttonBorderForStyle:state:,
 	-drawButton:view:style:state:): Handle some of the bezel styles.
 	
-2007-01-24  Richard Frith-Macdoanld <rfm@gnu.org>
+2007-01-24  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/AppKit/NSButtonCell.h: Fix documentation error.
 	* Headers/AppKit/NSMenu.h: Tidy a litte, fix errors in documentation
@@ -317,7 +324,7 @@
 	* Source/NSPopUpButton.m (-keyDown:): Handle selection of first
 	entry correctly. Patch by Phillipe Roussel <p.o.roussel@free.fr>
 
-2007-01-19  Richard Frith-Macdoanld <rfm@gnu.org>
+2007-01-19  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSDocument.m: fix include path (bug #18829)
 
@@ -422,7 +429,7 @@
 	* Source/NSTableView.m (rectOfColumn:): Use the height of the rows,
 	not the bounds.
 
-2006-12-27  Richard Frith-Macdoanld <rfm@gnu.org>
+2006-12-27  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Store images in dictionary.
 	* Source/GSTheme.m: Improve handling of named images.
@@ -470,7 +477,7 @@
 	
 	* Source/NSBitmapImageRep.m: Autogsdoc comments
 
-2006-12-08  Richard Frith-Macdoanld <rfm@gnu.org>
+2006-12-08  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSInputManager.m:
 	Use help function key to enter context help mode rather than
@@ -580,7 +587,7 @@
 	to moveForward: and moveBackward:
 
 
-2006-11-19  Richard Frith-Macdoanld <rfm@gnu.org>
+2006-11-19  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSAffineTransform.m:
 	* Headers/AppKit/NSAffineTransform.h:
@@ -592,11 +599,11 @@
 	Update to use transformStruct accessor method rather than trying to
 	work with the affine transform ivars directly.
 
-2006-11-18  Richard Frith-Macdoanld <rfm@gnu.org>
+2006-11-18  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSScrollView.m: Adjust corner view when scroller is on right.
 
-2006-11-17  Richard Frith-Macdoanld <rfm@gnu.org>
+2006-11-17  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTheme.m:
 	* Source/NSButtonCell.m:
@@ -3857,7 +3864,7 @@
 	(-trackMouse:inRect:ofView:untilMouseUp:): ... to here. This fixes
 	bug #9824.
 
-2005-02-14  Richard Frith-Macdoanld <rfm@gnu.org>
+2005-02-14  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTitleView.m (-mouseDown:): Post an
 	NSWindowDidMoveNotification at end of method if window was dragged.

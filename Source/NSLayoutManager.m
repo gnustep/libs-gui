@@ -1214,8 +1214,8 @@ container
   if (!_selected_range.length || _selected_range.location == NSNotFound)
     return;
 
-  if (_selected_range.location >= char_pos ||
-      _selected_range.location + _selected_range.length <= first_char_pos)
+  if (_selected_range.location >= char_pos
+    || _selected_range.location + _selected_range.length <= first_char_pos)
     {
       return;
     }
@@ -1242,9 +1242,9 @@ container
       }
 
     /* Use the text view's selected text attributes */
-    if ((ftv = [self firstTextView]))
+    if ((ftv = [self textViewForBeginningOfSelection]))
       color = [[ftv selectedTextAttributes] 
-      	objectForKey:NSBackgroundColorAttributeName];
+      	objectForKey: NSBackgroundColorAttributeName];
 
     if (!color)
       color = [NSColor selectedTextBackgroundColor];
@@ -1288,7 +1288,9 @@ container
 
   NSDictionary *attributes;
   NSFont *f;
-  NSColor *color, *new_color;
+  NSColor *color, *run_color;
+  NSRange selectedGlyphRange;
+  BOOL currentGlyphIsSelected;
 
   glyph_run_t *glyph_run;
   unsigned int glyph_pos, char_pos;
@@ -1303,6 +1305,7 @@ container
   cache in sync with the actual color.
   */
   NSColor *defaultTextColor = [NSColor textColor];
+  NSColor *selectedTextColor = defaultTextColor;
  
 #define GBUF_SIZE 16 /* TODO: tweak */
   NSGlyph gbuf[GBUF_SIZE];
@@ -1314,6 +1317,21 @@ container
   if (!range.length)
     return;
   [self _doLayoutToGlyph: range.location + range.length - 1];
+
+  /* Find the selected range of glyphs as it overlaps with the range we
+   * are about to display.
+   */
+  if (_selected_range.length == 0)
+    {
+      selectedGlyphRange.location = 0;
+      selectedGlyphRange.length = 0;
+    }
+  else
+    {
+      selectedGlyphRange = [self glyphRangeForCharacterRange: _selected_range
+	actualCharacterRange: 0];
+    }
+  selectedGlyphRange = NSIntersectionRange(selectedGlyphRange, range);
 
   if ([ctxt isDrawingToScreen])
     gbuf_size = GBUF_SIZE;
@@ -1343,12 +1361,32 @@ container
     lp++, j++;
 
   glyph_run = run_for_glyph_index(lp->pos, glyphs, &glyph_pos, &char_pos);
+  currentGlyphIsSelected = NSLocationInRange(lp->pos, selectedGlyphRange);
   glyph = glyph_run->glyphs + lp->pos - glyph_pos;
   attributes = [_textStorage attributesAtIndex: char_pos
-			     effectiveRange: NULL];
-  color = [attributes valueForKey: NSForegroundColorAttributeName];
-  if (!color)
-    color = defaultTextColor;
+				effectiveRange: NULL];
+  run_color = [attributes valueForKey: NSForegroundColorAttributeName];
+  if (run_color == nil)
+    run_color = defaultTextColor;
+
+  if (selectedGlyphRange.length > 0)
+    {
+      /* Get the text view's color setting for selected text as we will
+       * be needing to draw some selected glyphs.
+       */
+      selectedTextColor = [[[self textViewForBeginningOfSelection]
+	selectedTextAttributes] objectForKey: NSForegroundColorAttributeName];
+
+      /* FIXME ... should we fall back to using selectedTextColor or 
+       * defaultTextColor?
+       */
+      if (selectedTextColor == nil)
+	{
+	  selectedTextColor = [NSColor selectedTextColor];
+	}
+    }
+
+  color = (currentGlyphIsSelected ? selectedTextColor : run_color);
   [color set];
   f = glyph_run->font;
   [f set];
@@ -1359,6 +1397,39 @@ container
   gbuf_len = 0;
   for (g = lp->pos; g < range.location + range.length; g++, glyph++)
     {
+      if (currentGlyphIsSelected != NSLocationInRange(g, selectedGlyphRange))
+	{
+	  /* When we change between drawing selected and unselected glyphs
+	   * we must flush any glyphs from the buffer and change trhe color
+	   * we use for the text.
+	   */
+	  if (gbuf_len)
+	    {
+	      DPSmoveto(ctxt, gbuf_point.x, gbuf_point.y);
+	      GSShowGlyphs(ctxt, gbuf, gbuf_len);
+	      DPSnewpath(ctxt);
+	      gbuf_len = 0;
+	    }
+	  if (currentGlyphIsSelected == YES)
+	    {
+	      currentGlyphIsSelected = NO;
+	      if (color != run_color)
+	        {
+		  color = run_color;
+		  [color set];
+		}
+	    }
+	  else
+	    {
+	      currentGlyphIsSelected = YES;
+	      if (color != selectedTextColor)
+	        {
+		  color = selectedTextColor;
+		  [color set];
+		}
+	    }
+	}
+
       if (g == lp->pos + lp->length)
 	{
 	  if (gbuf_len)
@@ -1390,11 +1461,19 @@ container
 	  glyph_run = (glyph_run_t *)glyph_run->head.next;
 	  attributes = [_textStorage attributesAtIndex: char_pos
 				     effectiveRange: NULL];
-	  new_color = [attributes valueForKey: NSForegroundColorAttributeName];
-	  if (!new_color)
-	    new_color = defaultTextColor;
+	  run_color = [attributes valueForKey: NSForegroundColorAttributeName];
+	  if (run_color == nil)
+	    {
+	      run_color = defaultTextColor;
+	    }
 	  glyph = glyph_run->glyphs;
-	  if (glyph_run->font != f || new_color != color)
+
+	  /* If the font has changed or the color has changed (and we are
+	   * not drawing using the selected text color) then we must flush
+	   * any buffered glyphs and set the new font and color.
+	   */
+	  if (glyph_run->font != f
+	    || (currentGlyphIsSelected == NO && run_color != color))
 	    {
 	      if (gbuf_len)
 		{
@@ -1403,15 +1482,15 @@ container
 		  DPSnewpath(ctxt);
 		  gbuf_len = 0;
 		}
-	      if (color != new_color)
-		{
-		  color = new_color;
-		  [color set];
-		}
 	      if (f != glyph_run->font)
 		{
 		  f = glyph_run->font;
 		  [f set];
+		}
+	      if (currentGlyphIsSelected == NO && run_color != color)
+		{
+		  color = run_color;
+		  [color set];
 		}
 	    }
 	}
