@@ -1,5 +1,11 @@
 2007-02-27  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Panels/GSPrintPanel,
+	* Panels/GSPageLayout: Updated to new Gorm format and made
+	elements transparent. Patch by Ingolf Jandt <i.jandt@web.de>.
+
+2007-02-27  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSClipView.m (-initWithFrame:): Replace the wrong
 	initialise [init].
 	* Source/NSClipView.m (-viewFrameChanged:, -documentVisibleRect,
