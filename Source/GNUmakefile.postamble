@@ -57,11 +57,11 @@ after-all:: Info-gnustep.plist
 after-install::
 	for file in $(APPKIT_HEADERS); do \
 	  $(INSTALL_DATA) ../Headers/AppKit/$$file \
-	  $(GNUSTEP_HEADERS)/AppKit/$$file ; \
+	    $(GNUSTEP_HEADERS)/AppKit/$$file ; \
 	done; \
 	for file in $(COCOA_HEADERS); do \
 	  $(INSTALL_DATA) ../Headers/Cocoa/$$file \
-	  $(GNUSTEP_HEADERS)/Cocoa/$$file ; \
+	    $(GNUSTEP_HEADERS)/Cocoa/$$file ; \
 	done
 
 #
@@ -81,6 +81,7 @@ after-uninstall::
 # before-clean::
 
 # Things to do after cleaning
+# FIXME - this file is in subversion!
 after-clean::
 	rm -f libgnustep-gui.def
 
