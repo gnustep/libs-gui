@@ -48,6 +48,7 @@
       // setup variables  
       ASSIGN(_items, [NSMutableArray array]);
       ASSIGN(_font, [NSFont systemFontOfSize: 0]);
+      _selected_item = NSNotFound;
       //_selected = nil;
       //_truncated_label = NO;
     }
@@ -171,19 +172,23 @@
 
 - (void) selectNextTabViewItem: (id)sender
 {
-  if ((unsigned)(_selected_item + 1) < [_items count])
-    [self selectTabViewItemAtIndex: _selected_item+1];
+  if ((_selected_item != NSNotFound) && ((unsigned)(_selected_item + 1) < [_items count]))
+    {
+      [self selectTabViewItemAtIndex: _selected_item + 1];
+    }
 }
 
 - (void) selectPreviousTabViewItem: (id)sender
 {
-  if (_selected_item > 0)
-    [self selectTabViewItemAtIndex: _selected_item-1];
+  if ((_selected_item != NSNotFound) && (_selected_item > 0))
+    {
+      [self selectTabViewItemAtIndex: _selected_item - 1];
+    }
 }
 
 - (NSTabViewItem*) selectedTabViewItem
 {
-    // FIXME: Why not return _selected?
+  // FIXME: Why not just return _selected?
   if (_selected_item == NSNotFound || [_items count] == 0)
     return nil;
   return [_items objectAtIndex: _selected_item];
@@ -251,9 +256,10 @@
     [self selectTabViewItem: [_items objectAtIndex: index]];
 }
 
-- (void) selectTabViewItemWithIdentifier:(id)identifier 
+- (void) selectTabViewItemWithIdentifier: (id)identifier 
 {
   int index = [self indexOfTabViewItemWithIdentifier: identifier];
+
   [self selectTabViewItemAtIndex: index];
 }
 
@@ -862,7 +868,11 @@
 	}
       if ([aDecoder containsValueForKey: @"NSTvFlags"])
         {
-	  unsigned int type = [aDecoder decodeIntForKey: @"NSTvFlags"];
+	  int vFlags = [aDecoder decodeIntForKey: @"NSTvFlags"];
+	  unsigned int type = (vFlags & 0x00000007);
+
+	  [self setControlTint: ((vFlags & 0x70000000) >> 28)];
+	  [self setControlSize: ((vFlags & 0x0c000000) >> 26)];
 	  // FIXME: We should change the enumerator to match the Apple values
 	  switch(type)
 	    {
