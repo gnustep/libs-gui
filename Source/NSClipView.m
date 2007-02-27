@@ -86,30 +86,22 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 */
 @implementation NSClipView
 
-- (id) init
+- (id) initWithFrame: (NSRect)frameRect
 {
-  [super init];
-  [self setAutoresizesSubviews: YES];
-  [self setBackgroundColor: [NSColor controlColor]];
-  _copiesOnScroll = YES;
-  _drawsBackground = YES;
+  self = [super initWithFrame:frameRect];
+  if (self)
+    {
+      [self setAutoresizesSubviews: YES];
+      [self setBackgroundColor: [NSColor controlBackgroundColor]];
+      _copiesOnScroll = YES;
+      _drawsBackground = YES;
+    }
   return self;
 }
 
 - (void) dealloc
 {
-  if (_documentView != nil)
-    {
-      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-      
-      [nc removeObserver: self  name: nil  object: _documentView];
-      if ([_documentView isKindOfClass: [NSTableView class]])
-	{
-	  [nc removeObserver: _documentView name:nil object:self];
-	}
-
-      /* Don't RELEASE(_documentView), since it's already in our subviews. */
-    }
+  [self setDocumentView: nil];
   RELEASE(_cursor);
   RELEASE(_backgroundColor);
 
@@ -133,13 +125,21 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
   nc = [NSNotificationCenter defaultCenter];
   if (_documentView)
     {
-      [nc removeObserver: self  name: nil  object: _documentView];
+      [nc removeObserver: self
+	  name: NSViewFrameDidChangeNotification
+	  object: _documentView];
+      [nc removeObserver: self
+	  name: NSViewBoundsDidChangeNotification
+	  object: _documentView];
+
       /* if our documentView was a tableview, unregister its
        * observers
        */
       if ([_documentView isKindOfClass: [NSTableView class]])
 	{
-	  [nc removeObserver: _documentView name: nil object: self];
+	  [nc removeObserver: _documentView 
+	      name: NSViewFrameDidChangeNotification 
+	      object: self];
 	}
       [_documentView removeFromSuperview];
     }
@@ -189,7 +189,6 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
        */
       if ([_documentView isKindOfClass: [NSTableView class]])
 	{
-	  [nc removeObserver: _documentView name: nil object: self];
 	  [self setPostsFrameChangedNotifications: YES];
 	  [nc addObserver: _documentView
 	         selector: @selector(superviewFrameChanged:)
@@ -214,6 +213,20 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
   [self setBoundsOrigin: [self constrainScrollPoint: aPoint]];
 }
 
+- (void) setBounds: (NSRect)b
+{
+  // FIXME: Shouldn't the document view be marked as needing a redraw?
+  [super setBounds: b];
+  [_super_view reflectScrolledClipView: self];
+}
+
+- (void) setBoundsSize: (NSSize)aSize
+{
+  // FIXME: Shouldn't the document view be marked as needing a redraw?
+  [super setBoundsSize: aSize];
+  [_super_view reflectScrolledClipView: self];
+}
+
 - (void) setBoundsOrigin: (NSPoint)aPoint
 {
   NSRect originalBounds = _bounds;
@@ -222,7 +235,7 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 
   newBounds.origin = aPoint;
 
-  if (NSEqualPoints (originalBounds.origin, newBounds.origin))
+  if (NSEqualPoints(originalBounds.origin, newBounds.origin))
     {
       return;
     }
@@ -425,15 +438,13 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
      If _copiesOnScroll is set, we make sure the difference between old
      position and new position is an integer so we can copy the image 
      easily. 
+     FIXME: Why should this help? If the value is integral in user space this does 
+     not mean anything in device space.
   */
   if (_copiesOnScroll)
     {
-      new.x =
-	_bounds.origin.x + 
-	(rint(new.x - _bounds.origin.x));
-      new.y =
-	_bounds.origin.y +
-	(rint(new.y - _bounds.origin.y));
+      new.x = _bounds.origin.x + (rint(new.x - _bounds.origin.x));
+      new.y = _bounds.origin.y + (rint(new.y - _bounds.origin.y));
     }
 
   return new;
@@ -469,11 +480,7 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
  */
 - (NSRect) documentVisibleRect
 {
-  NSRect visRect;
-  
-  visRect = [self visibleRect];
-  visRect = [self convertRect:visRect toView:_documentView];
-  return visRect;
+  return [self convertRect: _bounds toView:_documentView];
 }
 
 - (void) drawRect: (NSRect)rect
@@ -538,7 +545,7 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
  */
 - (void) viewFrameChanged: (NSNotification*)aNotification
 {
-  [self setBoundsOrigin: [self constrainScrollPoint: _bounds.origin]];
+  [self scrollToPoint: _bounds.origin];
 
   /* If document frame does not completely cover _bounds */
   if (NSContainsRect([_documentView frame], _bounds) == NO)
@@ -555,12 +562,6 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 - (void) scaleUnitSquareToSize: (NSSize)newUnitSize
 {
   [super scaleUnitSquareToSize: newUnitSize];
-  [_super_view reflectScrolledClipView: self];
-}
-
-- (void) setBoundsSize: (NSSize)aSize
-{
-  [super setBoundsSize: aSize];
   [_super_view reflectScrolledClipView: self];
 }
 
@@ -619,7 +620,7 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
  */
 - (void) setDocumentCursor: (NSCursor*)aCursor
 {
-  ASSIGN (_cursor, aCursor);
+  ASSIGN(_cursor, aCursor);
 }
 
 /**<p>Returns the cursor of the document view</p>
@@ -666,7 +667,7 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
   
 }
 
-- (void) setDrawsBackground:(BOOL)flag
+- (void) setDrawsBackground: (BOOL)flag
 {
   if (_drawsBackground != flag)
     {

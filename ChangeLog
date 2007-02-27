@@ -1,3 +1,13 @@
+2007-02-27  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSClipView.m (-initWithFrame:): Replace the wrong
+	initialise [init].
+	* Source/NSClipView.m (-viewFrameChanged:, -documentVisibleRect,
+	-dealloc): Simplified methods.
+	* Source/NSClipView.m (-setDocumentView:): Remove only
+	notifications that get added here.
+	* Source/NSClipView.m (-setBounds:): Add method.
+
 2007-02-27  Nicola Pero  <nicola.pero@meta-innovation.com>
 
 	* Source/GNUmakefile.preamble (GNUSTEP_INSTALL_PREFIX): Variable
@@ -20,8 +30,8 @@
 
 2007-02-27  Fred Kiefer <FredKiefer@gmx.de>
 
-	* Source/NSTabViewItem.m (-initWithFrame:): Set _selected_item to NSNotFound.
-	* Source/NSTabViewItem.m (-selectNextTabViewItem:,
+	* Source/NSTabView.m (-initWithFrame:): Set _selected_item to NSNotFound.
+	* Source/NSTabView.m (-selectNextTabViewItem:,
 	-selectPreviousTabViewItem:): Handle _selected_item being
 	NSNotFound correctly. Patch by Wolfgang Lux <wolfgang.lux@gmail.com>.
 
