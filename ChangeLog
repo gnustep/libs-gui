@@ -1,3 +1,11 @@
+2007-02-27  Nicola Pero  <nicola.pero@meta-innovation.com>
+
+	* gnustep-gui-debug.spec.in: Obsolete file removed.
+	* GNUmakefile (CVS_MODULE_NAME): Do not set (exports should be
+	done from subversion now).
+	* Documentation/GNUmakefile.postamble (after-install): Use
+	MKINSTALLDIRS, not MKDIRS, to create installation directories.
+
 2007-02-27  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTabViewItem.m (-initWithFrame:): Set _selected_item to NSNotFound.
