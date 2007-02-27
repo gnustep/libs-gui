@@ -1251,9 +1251,8 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	  GSToolsDirectory, NSSystemDomainMask, YES) objectAtIndex: 0] 
 		 stringByAppendingPathComponent: @"make_services"]);
 #else
-      path = RETAIN([[@GNUSTEP_INSTALL_PREFIX 
-			 stringByAppendingPathComponent: @"Tools"] 
-			stringByAppendingPathComponent: @"make_services"]);
+      path = RETAIN([@GNUSTEP_TOOLS_NO_DESTDIR
+		      stringByAppendingPathComponent: @"make_services"]);
 #endif
     }
   task = [NSTask launchedTaskWithLaunchPath: path

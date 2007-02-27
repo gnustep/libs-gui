@@ -1979,9 +1979,8 @@ static  NSMapTable              *mimeMap = NULL;
 		GSToolsDirectory, NSSystemDomainMask, YES) objectAtIndex: 0]
 		stringByAppendingPathComponent: @"gpbs"]);
 #else
-	      cmd = RETAIN([[@GNUSTEP_INSTALL_PREFIX 
-		stringByAppendingPathComponent: @"Tools"] 
-		stringByAppendingPathComponent: @"gpbs"]);
+	      path = RETAIN([@GNUSTEP_TOOLS_NO_DESTDIR
+			      stringByAppendingPathComponent: @"gpbs"]);
 #endif
 	    }
 	  if (recursion == YES || cmd == nil)

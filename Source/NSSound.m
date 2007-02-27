@@ -178,8 +178,7 @@ static id<GSSoundSvr> the_server = nil;
 								objectAtIndex: 0]
 			     stringByAppendingPathComponent: @"gnustep_sndd"]);
 #else
-	      cmd = RETAIN([[@GNUSTEP_INSTALL_PREFIX 
-			      stringByAppendingPathComponent: @"Tools"] 
+	      cmd = RETAIN([@GNUSTEP_TOOLS_NO_DESTDIR
 			     stringByAppendingPathComponent: @"gnustep_sndd"]);
 #endif
 	    }
