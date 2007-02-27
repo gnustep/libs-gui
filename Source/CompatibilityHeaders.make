@@ -35,7 +35,7 @@ after-install::
 	$(MKDIRS) $(GNUSTEP_HEADERS)/$$OLD_DIR; \
 	for I in $$LIST ; do \
 	  (echo "#warning $$I is now included using the path <$$NEW_DIR/$$I>";\
- 	  echo "#include <$$NEW_DIR/$$I>" ) \
+	   echo "#include <$$NEW_DIR/$$I>" ) \
 	  > $(GNUSTEP_HEADERS)/$$OLD_DIR/$$I; \
 	done
 
@@ -44,7 +44,6 @@ after-install::
 	$(MKDIRS) $(GNUSTEP_HEADERS)/$$OLD_DIR; \
 	for I in $$LIST ; do \
 	  (echo "#warning $$I is now included using the path <$$NEW_DIR/$$I>";\
- 	  echo "#include <$$NEW_DIR/$$I>" ) \
+	   echo "#include <$$NEW_DIR/$$I>" ) \
 	  > $(GNUSTEP_HEADERS)/$$OLD_DIR/$$I; \
 	done
-
