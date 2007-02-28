@@ -41,11 +41,13 @@
 
 @interface NSScrollView : NSView
 {
-  NSClipView* _contentView;
-  NSScroller* _horizScroller;
-  NSScroller* _vertScroller;
-  NSRulerView* _horizRuler;
-  NSRulerView* _vertRuler;
+  NSClipView *_contentView;
+  NSScroller *_horizScroller;
+  NSScroller *_vertScroller;
+  NSRulerView *_horizRuler;
+  NSRulerView *_vertRuler;
+  NSClipView *_headerClipView;
+  NSView *_cornerView;
   float _hLineScroll;
   float _hPageScroll;
   float _vLineScroll;
@@ -60,8 +62,7 @@
   BOOL _knobMoved;
   BOOL _hasHeaderView;
   BOOL _hasCornerView;
-  NSClipView *_headerClipView;
-  NSView *_cornerView;
+  BOOL _autohidesScrollers;
 }
 
 /* Calculating layout */
@@ -136,6 +137,10 @@
 - (void)setDrawsBackground:(BOOL)flag;
 - (BOOL)drawsBackground;
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (BOOL)autohidesScrollers;
+- (void)setAutohidesScrollers:(BOOL)flag;
+#endif
 
 /* Updating display after scrolling */
 - (void)reflectScrolledClipView:(NSClipView*)aClipView;
@@ -143,8 +148,6 @@
 /* Arranging components */
 - (void)tile;
 
-/* GNUstep private methods */
-- (void)_synchronizeHeaderAndCornerView;
 @end
 
 #endif /* _GNUstep_H_NSScrollView */

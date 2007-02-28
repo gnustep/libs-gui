@@ -52,21 +52,27 @@
 typedef struct _scrollViewFlags 
 {
 #ifdef WORDS_BIGENDIAN
-  unsigned int __unused4:26;
-  unsigned int hasHScroller:1; // 16
-  unsigned int hasVScroller:1; // 32
+  unsigned int __unused4:22;
+  unsigned int autohidesScrollers:1;
+  unsigned int __unused1:3;
+  unsigned int hasHScroller:1;
+  unsigned int hasVScroller:1;
   unsigned int __unused0:2;
   NSBorderType border:2;
 #else
   NSBorderType border:2;
   unsigned int __unused0:2;
-  unsigned int hasVScroller:1; // 32
-  unsigned int hasHScroller:1; // 16
-  unsigned int __unused4:26;
+  unsigned int hasVScroller:1;
+  unsigned int hasHScroller:1;
+  unsigned int __unused1:3;
+  unsigned int autohidesScrollers:1;
+  unsigned int __unused4:22;
 #endif  
 } GSScrollViewFlags;
 
 @interface	NSScrollView (GSPrivate)
+/* GNUstep private methods */
+- (void) _synchronizeHeaderAndCornerView;
 - (void) _themeDidActivate: (NSNotification*)notification;
 @end
 
@@ -172,6 +178,8 @@ static float scrollerWidth;
   _vPageScroll = 10;
   _borderType = NSNoBorder;
   _scrollsDynamically = YES;
+  //_autohidesScrollers = NO;
+  // FIXME: Not sure here Apple says by default all scrollers are off.
   // For compatibility the ruler should be present but not visible.
   [self setHasHorizontalRuler: YES];
   [self tile];
@@ -182,11 +190,6 @@ static float scrollerWidth;
     name: GSThemeDidActivateNotification
     object: nil];
   return self;
-}
-
-- (id) init
-{
-  return [self initWithFrame: NSZeroRect];
 }
 
 - (void) dealloc
@@ -323,6 +326,16 @@ static float scrollerWidth;
     [_vertScroller removeFromSuperview];
 
   [self tile];
+}
+
+- (BOOL) autohidesScrollers
+{
+  return _autohidesScrollers;
+}
+
+- (void) setAutohidesScrollers: (BOOL)flag
+{
+  _autohidesScrollers = flag;
 }
 
 - (void) scrollWheel: (NSEvent *)theEvent
@@ -616,11 +629,24 @@ static float scrollerWidth;
       documentFrame = [documentView frame];
     }
 
+  // FIXME: Should we just hide the scroll bar or remove it?
+  if ((_autohidesScrollers) && (documentFrame.size.height > clipViewBounds.size.height))
+    {
+      [self setHasVerticalScroller: YES];	
+    } 
+ 
   if (_hasVertScroller)
     {
       if (documentFrame.size.height <= clipViewBounds.size.height)
 	{
-	  [_vertScroller setEnabled: NO];
+	  if (_autohidesScrollers)
+	    {
+	      [self setHasVerticalScroller: NO];
+	    }
+	  else
+	    {
+	      [_vertScroller setEnabled: NO];
+	    }
 	}
       else
 	{
@@ -641,11 +667,23 @@ static float scrollerWidth;
 	}
     }
 
+  if ((_autohidesScrollers) && (documentFrame.size.width > clipViewBounds.size.width))
+    {
+      [self setHasHorizontalScroller: YES];	
+    } 
+ 
   if (_hasHorizScroller)
     {
       if (documentFrame.size.width <= clipViewBounds.size.width)
 	{
-	  [_horizScroller setEnabled: NO];
+	  if (_autohidesScrollers)
+	    {
+	      [self setHasHorizontalScroller: NO];
+	    }
+	  else
+	    {
+	      [_horizScroller setEnabled: NO];
+	    }
 	}
       else
 	{
@@ -854,8 +892,8 @@ static float scrollerWidth;
       bottomEdge = NSMinYEdge;
     }
 
-  /* Prepare the contentRect by the insetting the borders.  */
-  contentRect = NSInsetRect (_bounds, border.width, border.height);
+  /* Prepare the contentRect by insetting the borders.  */
+  contentRect = NSInsetRect(_bounds, border.width, border.height);
   
   [self _synchronizeHeaderAndCornerView];
   
@@ -1338,12 +1376,14 @@ static float scrollerWidth;
 
       if ([aDecoder containsValueForKey: @"NSsFlags"])
         {
-	  unsigned long flags = [aDecoder decodeIntForKey: @"NSsFlags"];
+	  int flags = [aDecoder decodeInt32ForKey: @"NSsFlags"];
 	  GSScrollViewFlags scrollViewFlags;
+	  // FIXME: Why not just use a cast?
 	  memcpy((void *)&scrollViewFlags,(void *)&flags,sizeof(struct _scrollViewFlags));
 
 	  _hasVertScroller = scrollViewFlags.hasVScroller;
 	  _hasHorizScroller = scrollViewFlags.hasHScroller;
+	  _autohidesScrollers = scrollViewFlags.autohidesScrollers;
 	  // _scrollsDynamically = (!scrollViewFlags.notDynamic);
 	  // _rulersVisible = scrollViewFlags.rulersVisible;
 	  // _hasHorizRuler = scrollViewFlags.hasHRuler;
@@ -1354,6 +1394,7 @@ static float scrollerWidth;
 
       if (content != nil)
         {
+          // FIXME: I think this is not needed as we re-tile anyway.
 	  NSRect frame = [content frame];
 	  float w = [vScroller frame].size.width;
 
@@ -1368,6 +1409,7 @@ static float scrollerWidth;
 	      [content setFrame: frame];
 	    }
 
+	  // FIXME: No idea what is going on here.
 	  // retain the view and reset the content view...
 	  RETAIN(content);
 	  [self setContentView: content];
@@ -1450,6 +1492,10 @@ static float scrollerWidth;
   return self;
 }
 
+@end
+
+@implementation	NSScrollView (GSPrivate)
+
 /* GNUstep private method */
 
 /* we update both of these at the same time during -tile
@@ -1512,12 +1558,10 @@ static float scrollerWidth;
     }
 }
 
-@end
-
-@implementation	NSScrollView (GSPrivate)
 - (void) _themeDidActivate: (NSNotification*)notification
 {
   [self tile];
 }
+
 @end
 
