@@ -1317,6 +1317,11 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
+# If GNUSTEP_MAKEFILES is undefined, try to use gnustep-config to determine it.
+if test -z "$GNUSTEP_MAKEFILES"; then
+  GNUSTEP_MAKEFILES=`gnustep-config --variable=GNUSTEP_MAKEFILES 2>&5`
+fi
+
 if test -z "$GNUSTEP_MAKEFILES"; then
   { { echo "$as_me:$LINENO: error: You must have the gnustep-make package installed and set up the GNUSTEP_MAKEFILES environment variable to contain the path to the makefiles directory before configuring!" >&5
 echo "$as_me: error: You must have the gnustep-make package installed and set up the GNUSTEP_MAKEFILES environment variable to contain the path to the makefiles directory before configuring!" >&2;}

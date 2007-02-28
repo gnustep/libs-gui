@@ -25,6 +25,11 @@
 AC_INIT
 AC_CONFIG_SRCDIR([Source/NSApplication.m])
 
+# If GNUSTEP_MAKEFILES is undefined, try to use gnustep-config to determine it.
+if test -z "$GNUSTEP_MAKEFILES"; then
+  GNUSTEP_MAKEFILES=`gnustep-config --variable=GNUSTEP_MAKEFILES 2>&5`
+fi
+
 if test -z "$GNUSTEP_MAKEFILES"; then
   AC_MSG_ERROR([You must have the gnustep-make package installed and set up the GNUSTEP_MAKEFILES environment variable to contain the path to the makefiles directory before configuring!])
 fi
