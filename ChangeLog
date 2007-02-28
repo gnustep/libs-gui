@@ -2,6 +2,7 @@
 
 	* configure.ac: Use gnustep-config to set GNUSTEP_MAKEFILES
 	if not set.
+	* GNUmakefile: Same change.
 	* configure: Regenerated.
 
 2007-02-27  Fred Kiefer <FredKiefer@gmx.de>
