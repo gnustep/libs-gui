@@ -6,8 +6,8 @@
   "LeftArrow" = "moveLeft:";
   "RightArrow" = "moveRight:";
 
-  "Control-UpArrow" = "pageUp:";
-  "Control-DownArrow" = "pageDown:";
+  "Control-UpArrow" = "scrollPageUp:";
+  "Control-DownArrow" = "scrollPageDown:";
   "Control-LeftArrow" = "moveToBeginningOfLine:";
   "Control-RightArrow" = "moveToEndOfLine:";
   
@@ -43,11 +43,17 @@
   "End" = "moveToEndOfParagraph:"; 
   "Control-End" = "moveToEndOfDocument:";
 /*  "Shift-End" = "moveToEndOfParagraphAndModifySelection:"; */
-  "PageUp" = "pageUp:";
-  "PageDown" = "pageDown:";
+  "PageUp" = "scrollPageUp:";
+  "PageDown" = "scrollPageDown:";
   
   "Shift-PageDown" = "pageDownAndModifySelection:";
   "Shift-PageUp" = "pageUpAndModifySelection:";
+
+  "Control-PageDown" = "pageDown:";
+  "Control-PageUp" = "pageUp:";
+
+  "Alternate-PageDown" = "pageDown:";
+  "Alternate-PageUp" = "pageUp:";
 
   /* Emacs Control keybindings */
   "Control-a" = "moveToBeginningOfLine:";

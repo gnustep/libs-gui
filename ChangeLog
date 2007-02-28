@@ -1,5 +1,18 @@
 2007-02-28  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSScrollView.m (-keyDown:, -scrollLineUp:,
+	-scrollLineDown:): New methods.
+	* Source/NSTextView_actions.m (-scrollLineDown:, -scrollLineUp:,
+	-scrollPageDown:, -scrollPageUp:): Implement methods based on
+	scroll view.
+	* KeyBindings/DefaultKeyBindings.dict: Change control-up and and
+	page up to be scrollPageUp: and control-down and page down to be
+	scrollPageDown:. pageDown: and pageUp: can now be reached via
+	control-pageup and alt-pageup resp. control-pagedown and alt-pagedown.
+	Patch by Wolfgang Lux <wolfgang.lux@gmail.com>.
+
+2007-02-28  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSScrollView.h: Add ivar
 	_autohidesScrollers. Move private method to implementation file.
 	* Source/NSScrollView.m (-init): Remove as this is the same as in

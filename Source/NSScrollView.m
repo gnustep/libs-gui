@@ -400,6 +400,90 @@ static float scrollerWidth;
   [_contentView scrollToPoint: point];
 }
 
+- (void) keyDown: (NSEvent *)theEvent
+{
+  NSString *chars = [theEvent characters];
+  unichar c = [chars length] == 1 ? [chars characterAtIndex: 0] : '\0';
+
+  switch (c)
+    {
+      case NSUpArrowFunctionKey:
+	[self scrollLineUp: self];
+	break;
+
+      case NSDownArrowFunctionKey:
+        [self scrollLineDown: self];
+	break;
+
+      case NSPageUpFunctionKey:
+	[self scrollPageUp: self];
+	break;
+
+      case NSPageDownFunctionKey:
+	[self scrollPageDown: self];
+	break;
+
+      default:
+	[super keyDown: theEvent];
+	break;
+    }
+}
+
+/*
+ * This code is based on _doScroll: and still may need some tuning. 
+ */
+- (void) scrollLineUp: (id)sender
+{
+  NSRect  clipViewBounds;
+  NSPoint point;
+  float   amount;
+
+  if (_contentView == nil)
+    {
+      clipViewBounds = NSZeroRect;
+    }
+  else
+    {
+      clipViewBounds = [_contentView bounds];
+    }
+  point = clipViewBounds.origin;
+  amount = _vLineScroll;
+  if (_contentView != nil && !_contentView->_rFlags.flipped_view)
+    {
+      amount = -amount;
+    }
+  point.y = clipViewBounds.origin.y - amount;
+  [_contentView scrollToPoint: point];
+}
+
+
+/*
+ * This code is based on _doScroll: and still may need some tuning. 
+ */
+- (void) scrollLineDown: (id)sender
+{
+  NSRect  clipViewBounds;
+  NSPoint point;
+  float   amount;
+
+  if (_contentView == nil)
+    {
+      clipViewBounds = NSZeroRect;
+    }
+  else
+    {
+      clipViewBounds = [_contentView bounds];
+    }
+  point = clipViewBounds.origin;
+  amount = _vLineScroll;
+  if (_contentView != nil && !_contentView->_rFlags.flipped_view)
+    {
+      amount = -amount;
+    }
+  point.y = clipViewBounds.origin.y + amount;
+  [_contentView scrollToPoint: point];
+}
+
 /**
  * Scrolls the receiver by simply invoking scrollPageUp:
  */

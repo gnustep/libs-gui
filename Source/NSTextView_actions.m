@@ -1302,30 +1302,22 @@ and layout is left-to-right */
 
 - (void) scrollLineDown: (id)sender
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"scrollLineDown:", "NSTextView");
+  [[self enclosingScrollView] scrollLineDown: sender];
 }
 
 - (void) scrollLineUp: (id)sender
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"scrollLineUp:", "NSTextView");
+  [[self enclosingScrollView] scrollLineUp: sender];
 }
 
 - (void) scrollPageDown: (id)sender
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"scrollPageDown:", "NSTextView");
+  [[self enclosingScrollView] scrollPageDown: sender];
 }
 
 - (void) scrollPageUp: (id)sender
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"scrollPageUp:", "NSTextView");
+  [[self enclosingScrollView] scrollPageUp: sender];
 }
 
 
