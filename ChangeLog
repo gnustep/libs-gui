@@ -1,3 +1,9 @@
+2007-03-03 14:51-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSDocument.m: Added change suggested by Wolfgang Lux.  This
+	corrects a potential mismatch between the document type and the type
+	specified in the panel.
+
 2007-02-28  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSScrollView.m (-keyDown:, -scrollLineUp:,

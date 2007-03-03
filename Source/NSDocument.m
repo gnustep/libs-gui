@@ -1051,7 +1051,7 @@ originalContentsURL: (NSURL *)orig
   if ([displayNames count] > 0)
     {
       NSArray  *extensions = [[NSDocumentController sharedDocumentController] 
-			       fileExtensionsFromType: [self fileTypeFromLastRunSavePanel]];
+			       fileExtensionsFromType: [self fileType]];
       if ([extensions count] > 0)
 	{
 	  [savePanel setRequiredFileType:[extensions objectAtIndex:0]];
