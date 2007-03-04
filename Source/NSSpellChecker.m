@@ -35,12 +35,12 @@
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSProxy.h>
 #include <Foundation/NSBundle.h>
+#include <Foundation/NSSpellServer.h>
 #include <Foundation/NSUtilities.h>
 #include <Foundation/NSValue.h>
 #include "AppKit/NSNibLoading.h"
 #include "AppKit/NSImage.h"
 #include "AppKit/NSSpellChecker.h"
-#include "AppKit/NSSpellServer.h"
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSTextField.h"
 #include "AppKit/NSMatrix.h"

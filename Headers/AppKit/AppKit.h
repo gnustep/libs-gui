@@ -107,7 +107,6 @@
 #include <AppKit/NSSliderCell.h>
 #include <AppKit/NSSpellChecker.h>
 #include <AppKit/NSSpellProtocol.h>
-#include <AppKit/NSSpellServer.h>
 #include <AppKit/NSSplitView.h>
 #include <AppKit/NSStringDrawing.h>
 #include <AppKit/NSText.h>

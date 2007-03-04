@@ -1,3 +1,12 @@
+2007-03-04  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSSpellServer.m: deleted
+	* Source/GNUmakefile: remove NSSpellServer.m
+	* Source/NSSpellChecker.m: include NSSpellServer.h fro base
+	* Headers/AppKit/NSSpellServer.h: deleted
+	* Headers/AppKit/AppKit.h remove NSSpellServer.h
+	Moved NSSpellServer to base for macos-x compatibility.
+
 2007-03-03 14:51-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSDocument.m: Added change suggested by Wolfgang Lux.  This

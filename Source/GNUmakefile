@@ -145,7 +145,6 @@ NSSlider.m \
 NSSliderCell.m \
 NSSound.m  \
 NSSpellChecker.m \
-NSSpellServer.m \
 NSSplitView.m \
 NSStepper.m \
 NSStepperCell.m \
