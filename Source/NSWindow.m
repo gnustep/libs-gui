@@ -1171,6 +1171,12 @@ many times.
   return [[self screen] deviceDescription];
 }
 
+- (NSGraphicsContext*) graphicsContext
+{
+  // FIXME
+  return GSCurrentContext();
+}
+
 - (int) gState
 {
   if (_gstate <= 0)

@@ -444,6 +444,10 @@ APPKIT_EXPORT NSSize NSTokenSize;
 - (void) setBackingType: (NSBackingStoreType)type;
 - (BOOL) isOneShot;
 - (void) setOneShot: (BOOL)flag;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (NSGraphicsContext*) graphicsContext;
+#endif
+
 
 /*
  * Screens and window depths

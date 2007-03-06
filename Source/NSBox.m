@@ -67,8 +67,13 @@
 //
 - (id) initWithFrame: (NSRect)frameRect
 {
-  [super initWithFrame: frameRect];
+  NSView *cv;
+
+  self = [super initWithFrame: frameRect];
 	
+  if (!self)
+    return self;
+
   _cell = [[NSCell alloc] initTextCell: @"Title"];
   [_cell setAlignment: NSCenterTextAlignment];
   [_cell setBordered: NO];
@@ -80,10 +85,10 @@
   _title_position = NSAtTop;
   _title_rect = NSZeroRect;
   [self setAutoresizesSubviews: NO];
-  _content_view = [NSView new];
-  [super addSubview: _content_view];
-  [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
-  RELEASE(_content_view);
+
+  cv = [NSView new];
+  [self setContentView: cv];
+  RELEASE(cv);
 
   return self;
 }

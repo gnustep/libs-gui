@@ -244,7 +244,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 		}
 	    }
 	}
-      [self releaseGState];
+      [self renewGState];
     }
 }
 
@@ -427,7 +427,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (id) initWithFrame: (NSRect)frameRect
 {
-  [super init];
+  self = [super init];
+  if (!self)
+    return self;
 
   if (frameRect.size.width < 0)
     {
@@ -443,7 +445,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   _bounds.origin = NSZeroPoint;		// Set bounds rectangle
   _bounds.size = _frame.size;
 
-  _boundsMatrix = [NSAffineTransform new];	// Map fromsuperview to bounds
+  _boundsMatrix = [NSAffineTransform new];	// Map from superview to bounds
   _matrixToWindow = [NSAffineTransform new];	// Map to window coordinates
   _matrixFromWindow = [NSAffineTransform new];	// Map from window coordinates
 
@@ -451,18 +453,20 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   _tracking_rects = [NSMutableArray new];
   _cursor_rects = [NSMutableArray new];
 
-  _super_view = nil;
-  _window = nil;
-  _is_rotated_from_base = NO;
-  _is_rotated_or_scaled_from_base = NO;
+  // Some values are already set by initialisation
+  //_super_view = nil;
+  //_window = nil;
+  //_is_rotated_from_base = NO;
+  //_is_rotated_or_scaled_from_base = NO;
   _rFlags.needs_display = YES;
-  _post_frame_changes = NO;
+  //_post_frame_changes = NO;
   _autoresizes_subviews = YES;
   _autoresizingMask = NSViewNotSizable;
-  _coordinates_valid = NO;
-  _nextKeyView = 0;
-  _previousKeyView = 0;
+  //_coordinates_valid = NO;
+  //_nextKeyView = 0;
+  //_previousKeyView = 0;
 
+  // cache as optimization
   _rFlags.flipped_view = [self isFlipped];
 
   return self;
@@ -507,7 +511,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   /*
    * Now we clean up the previous view array, in case subclasses have
-   * overridden the default -setNextkeyView: method and broken things.
+   * overridden the default -setNextKeyView: method and broken things.
    * We also relase the memory we used.
    */
   if (pKV(self) != 0)
@@ -596,34 +600,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
  */
 - (void) addSubview: (NSView*)aView
 {
-  if (aView == nil)
-    {
-      [NSException raise: NSInvalidArgumentException
-		  format: @"Adding a nil subview"];
-    }
-  if ([self isDescendantOf: aView])
-    {
-      [NSException raise: NSInvalidArgumentException
-		format: @"addSubview: creates a loop in the views tree!"];
-    }
-
-  RETAIN(aView);
-  [aView removeFromSuperview];
-  if (aView->_coordinates_valid)
-    {
-      (*invalidateImp)(aView, invalidateSel);
-    }
-  [aView viewWillMoveToWindow: _window];
-  [aView viewWillMoveToSuperview: self];
-  [aView setNextResponder: self];
-  [_sub_views addObject: aView];
-  _rFlags.has_subviews = 1;
-  [aView resetCursorRects];
-  [aView setNeedsDisplay: YES];
-  [aView _viewDidMoveToWindow];
-  [aView viewDidMoveToSuperview];
-  [self didAddSubview: aView];
-  RELEASE(aView);
+  [self addSubview: aView
+	positioned: NSWindowAbove
+	relativeTo: nil];
 }
 
 - (void) addSubview: (NSView*)aView
@@ -647,7 +626,26 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   if (aView == otherView)
     return;
 
-  index = [_sub_views indexOfObjectIdenticalTo: otherView];
+  RETAIN(aView);
+  [aView removeFromSuperview];
+  if (aView->_coordinates_valid)
+    {
+      (*invalidateImp)(aView, invalidateSel);
+    }
+  [aView viewWillMoveToWindow: _window];
+  [aView viewWillMoveToSuperview: self];
+  [aView setNextResponder: self];
+
+  // Do this after the removeFromSuperview, as aView may already 
+  // be a subview and the index could change.
+  if (otherView == nil)
+    {
+      index = NSNotFound;
+    }
+  else
+    {
+      index = [_sub_views indexOfObjectIdenticalTo: otherView];
+    }
   if (index == NSNotFound)
     {
       if (place == NSWindowBelow)
@@ -660,15 +658,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       index += 1;
     }
 
-  RETAIN(aView);
-  [aView removeFromSuperview];
-  if (aView->_coordinates_valid)
-    {
-      (*invalidateImp)(aView, invalidateSel);
-    }
-  [aView viewWillMoveToWindow: _window];
-  [aView viewWillMoveToSuperview: self];
-  [aView setNextResponder: self];
   [_sub_views insertObject: aView atIndex: index];
   _rFlags.has_subviews = 1;
   [aView resetCursorRects];
@@ -790,7 +779,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
    * which assumes the view is still in the view hierarchy
    */
   for (view = [_window firstResponder];
-    view != nil && [view respondsToSelector:@selector(superview)];
+    view != nil && [view respondsToSelector: @selector(superview)];
     view = [view superview])
     {
       if (view == aView)
@@ -1720,21 +1709,20 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 */
 - (void) allocateGState
 {
+  // FIXME: This should create an actual gState
   _allocate_gstate = 1;
   _renew_gstate = 1;
 }
 
 /**
-  Frees the gstate object, if there is one. Note that the next time
-  the view is lockFocused, the gstate will be allocated again.  */
+  Frees the gstate object, if there is one. 
+*/
 - (void) releaseGState
 {
   if (_allocate_gstate && _gstate)
     GSUndefineGState(GSCurrentContext(), _gstate);
   _gstate = 0;
-  /* Note that the next time we lock focus, we'll realloc a gstate (if
-     _allocate_gstate). This seems to make sense, and also allows us
-     to call this method each time we invalidate the coordinates */
+  _allocate_gstate = 0;
 }
 
 /**
@@ -1742,7 +1730,10 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
   which is used to encapsulate drawing information about the view.
   Most of the time a gstate object is created from scratch when the
   view is focused, so if the view is not currently focused or
-  allocateGState has not been called, then this method will */
+  allocateGState has not been called, then this method will return 0.
+  FIXME: The above is what the OpenStep and Cocoa specification say, but 
+  gState is 0 unless allocateGState has been called. 
+*/
 - (int) gState
 {
   return _gstate;
@@ -1754,6 +1745,9 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 - (void) renewGState
 {
   _renew_gstate = 1;
+  /* Note that the next time we lock focus, we'll realloc a gstate (if
+     _allocate_gstate). This seems to make sense, and also allows us
+     to call this method each time we invalidate the coordinates */
 }
 
 /* Overridden by subclasses to setup custom gstate */
@@ -1761,9 +1755,8 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 {
 }
 
-- (void) lockFocusInRect: (NSRect)rect
+- (void) _lockFocusInContext: ctxt inRect: (NSRect)rect
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
   NSRect wrect;
   int window_gstate = 0;
 
@@ -1776,6 +1769,8 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 	  return;
 	}
     }
+
+  // FIXME: Set current context?
 
   [ctxt lockFocusView: self inRect: rect];
   wrect = [self convertRect: rect toView: nil];
@@ -1807,8 +1802,6 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 	{
 	  [[self _matrixToWindow] concat];
 	}
-      DPSrectclip(ctxt, NSMinX(rect), NSMinY(rect), 
-		      NSWidth(rect), NSHeight(rect));
 
       /* Allow subclases to make other modifications */
       [self setUpGState];
@@ -1848,14 +1841,20 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 	    }
 
 	}
+    }
+
+  if ([self wantsDefaultClipping])
+    {
       /* Clip to the visible rectangle - which will never be greater
        * than the bounds of the view.  This prevents drawing outside
        * our bounds
        */
       DPSrectclip(ctxt, NSMinX(rect), NSMinY(rect),
-			NSWidth(rect), NSHeight(rect));
+		  NSWidth(rect), NSHeight(rect));
     }
-  /* This is obsolete. Backends shouldn't depend on this */
+
+  /* Tell backends that images are drawn upside down. 
+     This is needed when a backend is able to handle full image transformation. */
   GSWSetViewIsFlipped(ctxt, _rFlags.flipped_view);
 }
 
@@ -1899,6 +1898,11 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
   [ctxt unlockFocusView: self needsFlush: YES ];
 }
 
+- (void) lockFocusInRect: (NSRect)rect
+{
+  [self _lockFocusInContext: [_window graphicsContext] inRect: rect];
+}
+
 - (void) lockFocus
 {
   [self lockFocusInRect: [self visibleRect]];
@@ -1911,9 +1915,14 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 
 - (BOOL) lockFocusIfCanDraw
 {
+  return [self lockFocusIfCanDrawInContext: [_window graphicsContext]];
+}
+
+- (BOOL) lockFocusIfCanDrawInContext: (NSGraphicsContext *)context;
+{
   if ([self canDraw])
     {
-      [self lockFocus];
+      [self _lockFocusInContext: context inRect: [self visibleRect]];
       return YES;
     }
   else
@@ -1923,7 +1932,7 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 }
 
 - (BOOL) canDraw
-{			// not implemented per OS spec FIX ME
+{
   if (((viewIsPrinting != nil) && [self isDescendantOf: viewIsPrinting]) || 
       ((_window != nil) && ([_window windowNumber] != 0) && 
        ![self isHiddenOrHasHiddenAncestor]))
@@ -2200,6 +2209,7 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
        */
       [self lockFocusInRect: aRect];
       [self drawRect: aRect];
+      [self unlockFocusNeedsFlush: YES];
     }
 
   if (_rFlags.has_subviews == YES)
@@ -2266,11 +2276,6 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 	}
     }
 
-  if (NSIsEmptyRect(aRect) == NO)
-    {
-      [self unlockFocusNeedsFlush: YES];
-    }
-
   /*
    * If the rect we displayed contains the _invalidRect or _visibleRect
    * then we can empty _invalidRect.  If all subviews have been
@@ -2326,21 +2331,36 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 
 - (BOOL) needsToDrawRect: (NSRect)aRect
 {
-  NSRect rect;
-  struct NSWindow_struct *window_t;
+  const NSRect *rects;
+  int i, count;
 
-  aRect = [self convertRect: aRect toView: nil];
-  window_t = (struct NSWindow_struct *)_window;
-  rect = [[window_t->_rectsBeingDrawn lastObject] rectValue];
-  return NSIntersectsRect(rect, aRect);
+  [self getRectsBeingDrawn: &rects count: &count];
+  for (i = 0; i < count; i++)
+    {
+      if (NSIntersectsRect(aRect, rects[i]))
+	return YES;
+    }
+  return NO;
 }
 
 - (void) getRectsBeingDrawn: (const NSRect **)rects count: (int *)count
 {
   // FIXME
+  static NSRect rect;
+  struct NSWindow_struct *window_t;
+
+  window_t = (struct NSWindow_struct *)_window;
+  rect = [[window_t->_rectsBeingDrawn lastObject] rectValue];
+  rect = [self convertRect: rect fromView: nil];
+
+  if (rects != NULL)
+    {
+      *rects = &rect;
+    }
+
   if (count != NULL)
     {
-      *count = 0;
+      *count = 1;
     }
 }
 
@@ -2519,6 +2539,26 @@ in the main thread.
   _in_live_resize = NO; 
 }
 
+- (BOOL) preservesContentDuringLiveResize
+{
+  return NO;
+}
+
+- (void) getRectsExposedDuringLiveResize: (NSRect[4])exposedRects count: (int *)count
+{
+  // FIXME
+  if (count != NULL)
+    {
+      *count = 1;
+    }
+  exposedRects[0] = _bounds;
+}
+
+- (NSRect) rectPreservedDuringLiveResize
+{
+  return NSZeroRect;
+}
+
 /*
  * Scrolling
  */
@@ -2546,19 +2586,42 @@ in the main thread.
 }
 
 - (void) reflectScrolledClipView: (NSClipView*)aClipView
-{}
+{
+}
 
 - (void) scrollClipView: (NSClipView*)aClipView toPoint: (NSPoint)aPoint
-{}
+{
+  [aClipView scrollToPoint: aPoint];
+}
+
+- (NSClipView*) _enclosingClipView
+{
+  static Class clipViewClass;
+  id aView = [self superview];
+
+  if (!clipViewClass)
+    {
+      clipViewClass = [NSClipView class];
+    }
+
+  while (aView != nil)
+    {
+      if ([aView isKindOfClass: clipViewClass])
+	{
+	  break;
+	}
+      aView = [aView superview];
+    }
+
+  return aView;
+}
 
 - (void) scrollPoint: (NSPoint)aPoint
 {
-  NSClipView	*s = (NSClipView*)_super_view;
+  NSClipView *s = [self _enclosingClipView];
 
-  while (s != nil && [s isKindOfClass: [NSClipView class]] == NO)
-    {
-      s = (NSClipView*)[s superview];
-    }
+  if (s == nil)
+    return;
 
   aPoint = [self convertPoint: aPoint toView: s];
   if (NSEqualPoints(aPoint, [s bounds].origin) == NO)
@@ -2567,8 +2630,20 @@ in the main thread.
     }
 }
 
+/**
+   Copy on scroll method, should be called from [NSClipView setBoundsOrigin].
+ */
 - (void) scrollRect: (NSRect)aRect by: (NSSize)delta
-{}
+{
+  NSPoint destPoint = aRect.origin;
+
+  destPoint.x -= delta.width;
+  destPoint.y -= delta.height;
+
+  [self lockFocus];
+  NSCopyBits(0, aRect, destPoint);
+  [self unlockFocus];
+}
 
 /**
 Scrolls the nearest enclosing clip view the minimum required distance
@@ -2577,12 +2652,8 @@ Returns YES iff any scrolling was done.
 */
 - (BOOL) scrollRectToVisible: (NSRect)aRect
 {
-  NSClipView	*s = (NSClipView*)_super_view;
+  NSClipView *s = [self _enclosingClipView];
 
-  while (s != nil && [s isKindOfClass: [NSClipView class]] == NO)
-    {
-      s = (NSClipView*)[s superview];
-    }
   if (s != nil)
     {
       NSRect	vRect = [self visibleRect];
@@ -2621,11 +2692,17 @@ Returns YES iff any scrolling was done.
 
 - (NSScrollView*) enclosingScrollView
 {
+  static Class scrollViewClass;
   id	aView = [self superview];
+
+  if (!scrollViewClass)
+    {
+      scrollViewClass = [NSScrollView class];
+    }
 
   while (aView != nil)
     {
-      if ([aView isKindOfClass: [NSScrollView class]])
+      if ([aView isKindOfClass: scrollViewClass])
 	{
 	  break;
 	}
@@ -2935,8 +3012,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (BOOL) mouseDownCanMoveWindow
 {
-  // FIXME
-  return NO;
+  return ![self isOpaque];
 }
 
 - (void) removeTrackingRect: (NSTrackingRectTag)tag
@@ -3356,12 +3432,12 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   _rFlags.has_draginfo = 1;
   if (_window != nil)
     {
-
-      [GSDisplayServer addDragTypes: t toWindow: _window];
+      // Remove the old types first, that way overlapping types stay assigned.
       if (o != nil)
 	{
 	  [GSDisplayServer removeDragTypes: o fromWindow: _window];
 	}
+      [GSDisplayServer addDragTypes: t toWindow: _window];
     }
   TEST_RELEASE(o);
 }
@@ -3387,8 +3463,28 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
                         slideBack: (BOOL)slideBack
                             event: (NSEvent *)theEvent
 {
-  // FIXME
-  return NO;
+  // FIXME: Where to get the image from?
+  NSImage *anImage = nil;
+  NSPasteboard *pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
+
+  if (anImage == nil)
+    return NO;
+
+  [pboard declareTypes: [NSArray arrayWithObject: NSFilesPromisePboardType] 
+	  owner: sourceObject];
+  // FIXME: Not sure if this is correct.
+  if (![pboard setPropertyList: typeArray
+	       forType: NSFilesPromisePboardType])
+    return NO;
+
+  [self dragImage: anImage
+	at: aRect.origin
+	offset: NSMakeSize(0, 0)
+	event: theEvent
+	pasteboard: pboard
+	source: sourceObject
+	slideBack: slideBack];
+  return YES;
 }
 
 /*
@@ -3412,11 +3508,16 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 {
   NSMutableData *data = [NSMutableData data];
 
-  [[NSPrintOperation EPSOperationWithView: self
-		     insideRect: aRect
-		     toData: data] runOperation];
-
-  return data;
+  if ([[NSPrintOperation EPSOperationWithView: self
+			 insideRect: aRect
+			 toData: data] runOperation])
+    {
+      return data;
+    }
+  else
+    {
+      return nil;
+    }
 }
 
 - (void) writeEPSInsideRect: (NSRect)rect
@@ -3433,10 +3534,16 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 {
   NSMutableData *data = [NSMutableData data];
   
-  [[NSPrintOperation PDFOperationWithView: self
-		     insideRect: aRect
-		     toData: data] runOperation];
-  return data;
+  if ([[NSPrintOperation PDFOperationWithView: self
+			 insideRect: aRect
+			 toData: data] runOperation])
+    {
+      return data;
+    }
+  else
+    {
+      return nil;
+    }
 }
 
 - (void)writePDFInsideRect:(NSRect)aRect 
@@ -3773,12 +3880,31 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     {
       DPSPrintf(ctxt, "__GSpagesaveobject restore\n\n");
     }
+
+  [self unlockFocus];
 }
 
 - (void) endTrailer
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
   DPSPrintf(ctxt, "%%%%EOF\n");
+}
+
+- (NSAttributedString *) pageFooter
+{
+  return [[[NSAttributedString alloc] 
+	      initWithString:
+		  [NSString stringWithFormat:@"Page %d", 
+			    [[NSPrintOperation currentOperation] currentPage]]] 
+	     autorelease];
+}
+
+- (NSAttributedString *) pageHeader
+{
+  return [[[NSAttributedString alloc] 
+	      initWithString: 
+		  [NSString stringWithFormat:@"%@ %@", [self printJobTitle], 
+			    [[NSCalendarDate calendarDate] description]]] autorelease];
 }
 
 - (void) _loadPrinterProlog: (NSGraphicsContext *)ctxt
@@ -3874,9 +4000,12 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   int nup;
   float scale;
   NSRect bounds;
-  NSGraphicsContext *ctxt = GSCurrentContext();
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSGraphicsContext *ctxt = [printOp context];
   NSDictionary *dict = [[printOp printInfo] dictionary];
+
+  // FIXME: Need to place this correctly
+  [self lockFocusIfCanDrawInContext: ctxt];
 
   if ([dict objectForKey: @"NSPrintPaperBounds"])
     bounds = [[dict objectForKey: @"NSPrintPaperBounds"] rectValue];

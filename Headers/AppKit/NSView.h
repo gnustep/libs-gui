@@ -36,10 +36,11 @@
 #include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSResponder.h>
 
-@class NSString;
 @class NSArray;
-@class NSMutableArray;
+@class NSAttributedString;
 @class NSData;
+@class NSMutableArray;
+@class NSString;
 
 @class NSWindow;
 @class NSPasteboard;
@@ -243,6 +244,9 @@ typedef enum _NSFocusRingType {
 - (BOOL) lockFocusIfCanDraw;
 - (void) lockFocusInRect: (NSRect)rect;
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (BOOL) lockFocusIfCanDrawInContext: (NSGraphicsContext *)context;
+#endif
 
 /*
  * Displaying
@@ -258,7 +262,7 @@ typedef enum _NSFocusRingType {
 - (void) setNeedsDisplay: (BOOL)flag;
 - (void) setNeedsDisplayInRect: (NSRect)invalidRect;
 - (BOOL) isOpaque;
-#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 + (NSFocusRingType) defaultFocusRingType;
 - (void) setKeyboardFocusRingNeedsDisplayInRect: (NSRect)rect;
 - (void) setFocusRingType: (NSFocusRingType)focusRingType;
@@ -276,7 +280,7 @@ typedef enum _NSFocusRingType {
 - (NSRect) visibleRect;
 - (BOOL) canDraw;
 - (BOOL) shouldDrawColor;
-#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (BOOL) wantsDefaultClipping;
 - (BOOL) needsToDrawRect: (NSRect)aRect;
 - (void) getRectsBeingDrawn: (const NSRect **)rects count: (int *)count;
@@ -288,6 +292,12 @@ typedef enum _NSFocusRingType {
 - (void) viewWillStartLiveResize;
 - (void) viewDidEndLiveResize;
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (BOOL) preservesContentDuringLiveResize;
+- (void) getRectsExposedDuringLiveResize: (NSRect[4])exposedRects count: (int *)count;
+- (NSRect) rectPreservedDuringLiveResize;
+#endif
+
 
 /*
  * Graphics State Objects
@@ -325,7 +335,7 @@ typedef enum _NSFocusRingType {
 - (void) registerForDraggedTypes: (NSArray*)newTypes;
 - (void) unregisterDraggedTypes;
 - (BOOL) shouldDelayWindowOrderingForEvent: (NSEvent*)anEvent;
-#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
 - (BOOL) dragPromisedFilesOfTypes: (NSArray *)typeArray
                          fromRect: (NSRect)aRect
                            source: (id)sourceObject 
@@ -441,7 +451,7 @@ typedef enum _NSFocusRingType {
 - (void) setPreviousKeyView: (NSView*)aView;
 - (NSView*) previousKeyView;
 - (NSView*) previousValidKeyView;
-#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (BOOL) canBecomeKeyView;
 #endif
 
@@ -513,6 +523,10 @@ typedef enum _NSFocusRingType {
 - (void)beginPageInRect:(NSRect)aRect 
 	    atPlacement:(NSPoint)location;
 - (void)endDocument;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (NSAttributedString *)pageFooter;
+- (NSAttributedString *)pageHeader;
 #endif
 
 @end
