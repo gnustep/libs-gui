@@ -1,3 +1,8 @@
+2007-03-08  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSPasteboard.m: Launch gpbs with --auto option so that
+	it shuts down again when all connections are closed.
+
 2007-03-06  Nicola Pero <nicola.pero@meta-innovation.com>
 
 	* Source/GSServicesManager.m ([+newWithApplication:]): If the base
@@ -35,7 +40,7 @@
 	* Source/NSView.m (initWithFrame:): Use value from super init call
 	and don't set pre-set ivars.
 	
-2007-03-08  Richard Frith-Macdonald <rfm@gnu.org>
+2007-03-06  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSServicesManager.m:
 	* Source/NSWorkspace.m:

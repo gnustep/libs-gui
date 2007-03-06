@@ -2006,12 +2006,16 @@ description, [cmd stringByDeletingLastPathComponent]);
 		{
 		  args = [[NSArray alloc] initWithObjects:
 		    @"-NSHost", host,
-		    @"-GSStartupNotification",@"GSStartup-GPBS", nil];
+		    @"-GSStartupNotification", @"GSStartup-GPBS",
+		    @"--auto",
+		    nil];
 		}
 	      else
 		{
 		  args = [[NSArray alloc] initWithObjects:
-		    @"-GSStartupNotification",@"GSStartup-GPBS", nil];
+		    @"-GSStartupNotification",@"GSStartup-GPBS",
+		    @"--auto",
+		    nil];
 		}
 
 	      /*
@@ -2035,7 +2039,7 @@ description, [cmd stringByDeletingLastPathComponent]);
 	      timeoutDate = [NSDate dateWithTimeIntervalSinceNow: 5.0];
 
 	      while ([startIndicator count]
-		     && [timeoutDate timeIntervalSinceNow] > 0.0)
+	        && [timeoutDate timeIntervalSinceNow] > 0.0)
 		{
 		  [[NSRunLoop currentRunLoop]
 		       runMode: NSDefaultRunLoopMode
