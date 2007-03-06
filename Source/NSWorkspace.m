@@ -524,17 +524,15 @@ static NSString			*_rootPath = @"/";
 
       NS_DURING
 	{
-	  service = [[NSSearchPathForDirectoriesInDomains(NSUserDirectory, 
-							  NSUserDomainMask, 
-							  YES) 
-							 objectAtIndex: 0]
-		      stringByAppendingPathComponent: @"Library/Services"];
+	  service = [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, 
+	    NSUserDomainMask, YES) objectAtIndex: 0]
+	    stringByAppendingPathComponent: @"Services"];
 	  
 	  /*
 	   *	Load file extension preferences.
 	   */
 	  extPrefPath = [service
-			  stringByAppendingPathComponent: @".GNUstepExtPrefs"];
+	    stringByAppendingPathComponent: @".GNUstepExtPrefs"];
 	  RETAIN(extPrefPath);
 	  if ([mgr isReadableFileAtPath: extPrefPath] == YES)
 	    {

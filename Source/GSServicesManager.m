@@ -521,9 +521,9 @@ static NSString         *disabledName = @".GNUstepDisabled";
 
   manager = [GSServicesManager alloc];
 
-  str = [NSSearchPathForDirectoriesInDomains(NSUserDirectory,
+  str = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
           NSUserDomainMask, YES) objectAtIndex: 0];
-  str = [str stringByAppendingPathComponent: @"Library/Services"];
+  str = [str stringByAppendingPathComponent: @"Services"];
   path = [str stringByAppendingPathComponent: servicesName];
   manager->_servicesPath = [path copy];
   path = [str stringByAppendingPathComponent: disabledName];

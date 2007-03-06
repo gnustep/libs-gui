@@ -1,8 +1,15 @@
+2007-03-08  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSServicesManager.m:
+	* Source/NSWorkspace.m:
+	Fix usage of NSSearchPathForDirectoriesInDomains() to match new
+	filesystem support changes.
+
 2007-03-04  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSSpellServer.m: deleted
 	* Source/GNUmakefile: remove NSSpellServer.m
-	* Source/NSSpellChecker.m: include NSSpellServer.h fro base
+	* Source/NSSpellChecker.m: include NSSpellServer.h from base
 	* Headers/AppKit/NSSpellServer.h: deleted
 	* Headers/AppKit/AppKit.h remove NSSpellServer.h
 	Moved NSSpellServer to base for macos-x compatibility.
