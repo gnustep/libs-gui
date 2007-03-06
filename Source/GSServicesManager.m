@@ -508,7 +508,8 @@ static NSString         *disabledName = @".GNUstepDisabled";
 + (GSServicesManager*) newWithApplication: (NSApplication*)app
 {
   NSString	*str;
-  NSString	*path;
+  NSArray       *paths;
+  NSString      *path = nil;
 
   if (manager != nil)
     {
@@ -521,8 +522,20 @@ static NSString         *disabledName = @".GNUstepDisabled";
 
   manager = [GSServicesManager alloc];
 
-  str = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
-          NSUserDomainMask, YES) objectAtIndex: 0];
+  paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+					      NSUserDomainMask, YES);
+  if ((paths != nil) && ([paths count] > 0))
+    {
+      str = [paths objectAtIndex: 0];
+    }
+  /*
+   * If standard search paths are not set up, try a default location.
+   */
+  if (str == nil)
+    {
+      str = [[NSHomeDirectory() stringByAppendingPathComponent:
+			       @"GNUstep"] stringByAppendingPathComponent: @"Library"];
+    }
   str = [str stringByAppendingPathComponent: @"Services"];
   path = [str stringByAppendingPathComponent: servicesName];
   manager->_servicesPath = [path copy];

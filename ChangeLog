@@ -1,3 +1,9 @@
+2007-03-06  Nicola Pero <nicola.pero@meta-innovation.com>
+
+	* Source/GSServicesManager.m ([+newWithApplication:]): If the base
+	library returns an empty User Library path, try using a default
+	one.
+
 2007-03-06  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBox.m (-initWithFrame:): Set content view via the
