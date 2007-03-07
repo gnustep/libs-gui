@@ -1,3 +1,10 @@
+2007-03-08  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSTabView.h: Correct NSTabViewType enumerator to
+	match values from Apple.
+	* Source/NSTabView.m (-encodeWithCoder:, -initWithCoder:): Adopt
+	to new enum values.
+
 2007-03-07  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPrintPanel.m: The modal loop which displays the print

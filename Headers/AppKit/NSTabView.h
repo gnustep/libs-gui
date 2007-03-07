@@ -34,12 +34,12 @@
 
 typedef enum {
   NSTopTabsBezelBorder, 
+  NSLeftTabsBezelBorder,
   NSBottomTabsBezelBorder, 
+  NSRightTabsBezelBorder,
   NSNoTabsBezelBorder,
   NSNoTabsLineBorder,
-  NSNoTabsNoBorder,
-  NSLeftTabsBezelBorder,
-  NSRightTabsBezelBorder
+  NSNoTabsNoBorder
 } NSTabViewType;
 
 @class NSFont;

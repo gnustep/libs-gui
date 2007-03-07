@@ -39,6 +39,17 @@
 
 @implementation NSTabView
 
+/*
+ * Class methods
+ */
++ (void) initialize
+{
+  if (self == [NSTabView class])
+    {
+      [self setVersion: 2];
+    }
+}
+
 - (id) initWithFrame: (NSRect)rect
 {
   self = [super initWithFrame: rect];
@@ -789,41 +800,14 @@
   [super encodeWithCoder: aCoder];
   if ([aCoder allowsKeyedCoding])
     {
-      unsigned int type = 0;
-      // FIXME: We should change the enumerator to match the Apple values
-      switch(_type)
-	{
-	case NSTopTabsBezelBorder:
-	  type = 0;
-	  break;
-	case NSLeftTabsBezelBorder:
-	  type = 1;
-	  break;
-	case NSBottomTabsBezelBorder:
-	  type = 2;
-	  break;
-	case NSRightTabsBezelBorder:
-	  type = 3;
-	  break;
-	case NSNoTabsBezelBorder:
-	  type = 4;
-	  break;
-	case NSNoTabsLineBorder:
-	  type = 5;
-	  break;
-	case NSNoTabsNoBorder:
-	  type = 6;
-	  break;
-	default:
-	  break;
-	}
+      unsigned int type = _type; // no flags set...
 
       [aCoder encodeBool: [self allowsTruncatedLabels] forKey: @"NSAllowTruncatedLabels"];
       [aCoder encodeBool: [self drawsBackground] forKey: @"NSDrawsBackground"];
       [aCoder encodeObject: [self font] forKey: @"NSFont"];
       [aCoder encodeObject: _items forKey: @"NSTabViewItems"];
       [aCoder encodeObject: [self selectedTabViewItem] forKey: @"NSSelectedTabViewItem"];
-      [aCoder encodeInt: type forKey: @"NSTvFlags"]; // no flags set...
+      [aCoder encodeInt: type forKey: @"NSTvFlags"];
     }
   else
     {
@@ -869,45 +853,48 @@
       if ([aDecoder containsValueForKey: @"NSTvFlags"])
         {
 	  int vFlags = [aDecoder decodeIntForKey: @"NSTvFlags"];
-	  unsigned int type = (vFlags & 0x00000007);
 
 	  [self setControlTint: ((vFlags & 0x70000000) >> 28)];
 	  [self setControlSize: ((vFlags & 0x0c000000) >> 26)];
-	  // FIXME: We should change the enumerator to match the Apple values
-	  switch(type)
-	    {
-	    case 0: 
-	      _type = NSTopTabsBezelBorder;
-	      break;
-	    case 1: 
-	      _type = NSLeftTabsBezelBorder;
-	      break;
-	    case 2: 
-	      _type = NSBottomTabsBezelBorder;
-	      break;
-	    case 3:
-	      _type = NSRightTabsBezelBorder;
-	      break;
-	    case 4:
-	      _type = NSNoTabsBezelBorder;
-	      break;
-	    case 5:
-	      _type = NSNoTabsLineBorder;
-	      break;
-	    case 6:
-	      _type = NSNoTabsNoBorder;
-	      break;
-	    default:
-	      _type = NSTopTabsBezelBorder;
-	      break;
-	    }
+	  [self setTabViewType: (vFlags & 0x00000007)];
 	}
     }
   else
     {
+      int version = [aDecoder versionForClassName: @"NSTabView"];
+
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_items];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_font];
       [aDecoder decodeValueOfObjCType: @encode(NSTabViewType) at: &_type];
+      if (version < 2)
+        {
+	  switch(_type)
+	    {
+	      case 0:
+		_type = NSTopTabsBezelBorder;
+		break;
+	      case 5:
+		_type = NSLeftTabsBezelBorder;
+		break;
+	      case 1:
+		_type = NSBottomTabsBezelBorder;
+		break;
+	      case 6:
+		_type = NSRightTabsBezelBorder;
+		break;
+	      case 2:
+		_type = NSNoTabsBezelBorder;
+		break;
+	      case 3:
+		_type = NSNoTabsLineBorder;
+		break;
+	      case 4:
+		_type = NSNoTabsNoBorder;
+		break;
+	      default:
+		break;
+	    }
+	}
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_draws_background];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_truncated_label];
       _delegate = [aDecoder decodeObject];
