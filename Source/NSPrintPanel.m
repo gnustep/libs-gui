@@ -218,11 +218,13 @@ static NSPrintPanel *shared_instance;
 */
 - (int)runModal
 {
+  int ret;
+
   _picked = NSOKButton;
-  [NSApp runModalForWindow: self];
+  ret = [NSApp runModalForWindow: self];
   [_optionPanel orderOut: self];
   /* Don't order ourselves out, let the NSPrintOperation do that */
-  return (_picked == NSCancelButton) ? NSCancelButton :  NSOKButton;
+  return ret;
 }
 
 - (void) beginSheetWithPrintInfo: (NSPrintInfo *)printInfo 
@@ -308,7 +310,7 @@ static NSPrintPanel *shared_instance;
     {
       NSLog(@"Print panel buttonAction: from unknown sender - x%p\n", sender);
     }
-  [NSApp stopModalWithCode: _picked];
+  [NSApp stopModalWithCode: (_picked == NSCancelButton) ? NSCancelButton :  NSOKButton];
 }
 
 - (void) _pickedPage: (id)sender

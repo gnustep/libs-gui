@@ -1,4 +1,27 @@
-2007-03-08  Richard Frith-Macdonald <rfm@gnu.org>
+2007-03-07  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPrintPanel.m: The modal loop which displays the print
+	panel is now left with either NSOKButton or NSCancelButton
+	(cf. the documentation of NSPrintPanel's -runModal: and
+	-beginSheetWithPrintInfo:modalForWindow:delegate:didEndSelector:contextInfo:).
+	* Source/NSPrintOperation.m: The callback passed to the print
+	panel's beginSheet... method had a wrong signature (and also was
+	misspelled). In addition, the code of the callback did retrieve
+	its own callback from the print dictionary in a wrong way (was
+	asking for a pointer to a selector while a selector was saved).
+	* Source/NSDocument.m: The callback of
+	-runModalPrintOperation:delegate:didRunSelector:contextInfo:
+	method has a different signature than the one passed to the print
+	operation's
+	-runOperationModalForWindow:delegate:didRunSelector:contextInfo:
+	method. This means NSDocument needs some adapter code and also has
+	to save the delegate and selector passed to runModalPrintOperation... 
+	in some place. 
+	* Headers/AppKit/NSDocument.h: Since there can be at most one print dialog for a
+	document, add two private instance variables to NSDocument for that purpose. 
+	Patch by Wolfgang Lux <wolfgang.lux@gmail.com>.
+
+2007-03-07  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSPasteboard.m: Launch gpbs with --auto option so that
 	it shuts down again when all connections are closed.

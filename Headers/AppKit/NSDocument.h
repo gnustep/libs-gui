@@ -96,6 +96,8 @@ typedef enum _NSSaveOperationType {
     NSString		*_last_component_file_name; // file name last component
     NSURL		*_autosaved_file_url;	// Autosave location as URL
     NSPrintInfo 	*_print_info;		// print info record
+    id			_printOp_delegate;	// delegate and selector called
+    SEL			_printOp_didRunSelector;//   after modal print operation
     NSView 		*_save_panel_accessory;	// outlet for the accessory save-panel view
     NSPopUpButton	*_spa_button;     	// outlet for "the File Format:" button in the save panel.
     NSString            *_save_type;             // the currently selected extension.

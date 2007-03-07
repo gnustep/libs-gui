@@ -196,6 +196,7 @@ withContentsOfURL: (NSURL *)url
   RELEASE(_window_controllers);
   RELEASE(_window);
   RELEASE(_print_info);
+  RELEASE(_printOp_delegate);
   RELEASE(_save_panel_accessory);
   RELEASE(_spa_button);
   RELEASE(_save_type);
@@ -1253,10 +1254,28 @@ originalContentsURL: (NSURL *)orig
                 didRunSelector: (SEL)sel
                    contextInfo: (void *)context
 {
+  ASSIGN(_printOp_delegate, delegate);
+  _printOp_didRunSelector = sel;
   [op runOperationModalForWindow: [self windowForSheet]
-      delegate: delegate 
-      didRunSelector: sel
+      delegate: self 
+      didRunSelector: @selector(_runModalPrintOperationDidSucceed:contextInfo:)
       contextInfo: context];
+}
+
+- (void)_runModalPrintOperationDidSucceed: (BOOL)success
+			      contextInfo: (void *)context
+{
+  id delegate = _printOp_delegate;
+  SEL didRunSelector = _printOp_didRunSelector;
+  void (*didRun)(id, SEL, NSDocument *, BOOL, id);
+
+  if (delegate && [delegate respondsToSelector:didRunSelector])
+    {
+      didRun = (void (*)(id, SEL, NSDocument *, BOOL, id))
+	  [delegate methodForSelector:didRunSelector];
+      didRun(delegate, didRunSelector, self, success, context);
+    }
+  DESTROY(_printOp_delegate);
 }
 
 - (BOOL)validateMenuItem: (NSMenuItem *)anItem

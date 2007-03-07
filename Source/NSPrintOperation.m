@@ -86,7 +86,7 @@ typedef struct _page_info_t {
 - (BOOL) _runOperation;
 - (void) _setupPrintInfo;
 - (void)_printOperationDidRun:(NSPrintOperation *)printOperation 
-		                  success:(BOOL)success  
+		               returnCode:(int)returnCode
 		              contextInfo:(void *)contextInfo;
 - (void) _printPaginateWithInfo: (page_info_t *)info 
                      knowsRange: (BOOL)knowsRange;
@@ -532,9 +532,9 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
   [panel updateFromPrintInfo];
   [panel beginSheetWithPrintInfo: _print_info 
 	          modalForWindow: docWindow 
-			delegate: delegate 
+			delegate: self 
 		  didEndSelector: 
-		          @selector(_printOperationDidRun:sucess:contextInfo:)
+		          @selector(_printOperationDidRun:returnCode:contextInfo:)
 		      contextInfo: contextInfo];
   [panel setAccessoryView: nil];
 }
@@ -683,29 +683,29 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 }
 
 - (void)_printOperationDidRun:(NSPrintOperation *)printOperation 
-		      success:(BOOL)success  
+		   returnCode:(int)returnCode  
 		  contextInfo:(void *)contextInfo
 {
   id delegate;
-  SEL *didRunSelector;
+  SEL didRunSelector;
+  BOOL success = NO;
   NSMutableDictionary *dict;
   void (*didRun)(id, SEL, BOOL, id);
 
-  if (success == YES)
+  if (returnCode == NSOKButton)
     {
       NSPrintPanel *panel = [self printPanel];
       [panel finalWritePrintInfo];
-      success = NO;
       if ([self _runOperation])
 	success = [self deliverResult];
     }
   [self cleanUpOperation];
   dict = [_print_info dictionary];
-  didRunSelector = [[dict objectForKey: @"GSModalRunSelector"] pointerValue];
+  [[dict objectForKey: @"GSModalRunSelector"] getValue:&didRunSelector];
   delegate = [dict objectForKey: @"GSModalRunDelegate"];
   didRun = (void (*)(id, SEL, BOOL, id))[delegate methodForSelector: 
-						    *didRunSelector];
-  didRun (delegate, *didRunSelector, success, contextInfo);
+						     didRunSelector];
+  didRun (delegate, didRunSelector, success, contextInfo);
 }
 
 
