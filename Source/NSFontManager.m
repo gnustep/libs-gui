@@ -932,6 +932,8 @@ static Class		fontPanelClass = Nil;
 }
 
 /**<p>Sets the NSFontManager's delegate to <var>anObject</var></p>
+ * FIXME: This is extremely unclear.  At the moment, the
+ * NSFontManager's delegate is never used.  This can't be right.
  */
 - (void) setDelegate: (id)anObject
 {
@@ -959,9 +961,17 @@ static Class		fontPanelClass = Nil;
   NSApplication *theApp = [NSApplication sharedApplication];
 
   if (_action)
-    return [theApp sendAction: _action to: nil from: self];
+    {
+      /* FIXME - shouldn't we try our own delegate first ??  It seems
+       * what every programmer would expect, but it looks like Apple
+       * doesn't do it!  Or maybe they fixed it in recent releases ?
+       */
+      return [theApp sendAction: _action to: nil from: self];
+    }
   else
-    return NO;
+    {
+      return NO;
+    }
 }
 
 @end
