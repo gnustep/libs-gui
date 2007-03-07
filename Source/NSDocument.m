@@ -1036,6 +1036,7 @@ originalContentsURL: (NSURL *)orig
   NSDocumentController *controller;
   NSSavePanel *savePanel = [NSSavePanel savePanel];
 
+  ASSIGN(_save_type, [self fileType]); 
   controller = [NSDocumentController sharedDocumentController];
   displayNames = [controller _displayNamesForClass: [self class]];
   

@@ -1,5 +1,12 @@
 2007-03-08  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSDocument.m
+	(-fileNameFromRunningSavePanelForSaveOperation:): Add remaining
+	change by Wolfgang Lux.  This corrects a potential mismatch
+	between the document type and the type specified in the panel.
+
+2007-03-08  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSTabView.h: Correct NSTabViewType enumerator to
 	match values from Apple.
 	* Source/NSTabView.m (-encodeWithCoder:, -initWithCoder:): Adopt
