@@ -128,7 +128,7 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 /* Window autodisplay machinery. */
 - (void) _handleAutodisplay
 {
-  if (_f.is_autodisplay && _rFlags.needs_display)
+  if (_f.is_autodisplay && _f.views_need_display)
     {
       [self disableFlushWindow];
       [self displayIfNeeded];
@@ -2062,18 +2062,21 @@ many times.
   if (_gstate == 0 || _f.visible == NO)
     return;
 
-  _rFlags.needs_display = NO;
-  
   [_wv display];
   [self discardCachedImage];
+  _f.views_need_display = NO;
 }
 
 - (void) displayIfNeeded
 {
-  if (_rFlags.needs_display)
+  if (_gstate == 0 || _f.visible == NO)
+    return;
+
+  if (_f.views_need_display)
     {
       [_wv displayIfNeeded];
-      _rFlags.needs_display = NO;
+      [self discardCachedImage];
+      _f.views_need_display = NO;
     }
 }
 
@@ -2176,9 +2179,9 @@ many times.
 
 - (void) setViewsNeedDisplay: (BOOL)flag
 {
-  if (_rFlags.needs_display != flag)
+  if (_f.views_need_display != flag)
     {
-      _rFlags.needs_display = flag;
+      _f.views_need_display = flag;
       if (flag)
 	{
 	  /* TODO: this call most likely shouldn't be here */
@@ -2189,7 +2192,7 @@ many times.
 
 - (BOOL) viewsNeedDisplay
 {
-  return _rFlags.needs_display;
+  return _f.views_need_display;
 }
 
 - (void) cacheImageInRect: (NSRect)aRect
@@ -3470,23 +3473,20 @@ resetCursorRectsForView(NSView *theView)
 		      _rectNeedingFlush
 			= NSUnionRect(_rectNeedingFlush, region);
 		      _f.needs_flush = YES;
-		      if (_rFlags.needs_display)
-		        {
-			  /* Some or all of the window has not been drawn,
-			   * so we must at least make sure that the exposed
-			   * region gets drawn before its backing store is
-			   * flushed ... otherwise we might actually flush
-			   * bogus data from an out of date buffer.
-			   * Maybe we should call
-			   * [_wv displayIfNeededInRect: region]
-			   * but why not do all drawing at this point so
-			   * that if we get another expose event immediately
-			   * (eg. something is dragged over the window and
-			   * we get a series of expose events) we can just
-			   * flush without having to draw again.
-			   */
-			  [_wv displayIfNeeded];
-			}
+		      /* Some or all of the window has not been drawn,
+		       * so we must at least make sure that the exposed
+		       * region gets drawn before its backing store is
+		       * flushed ... otherwise we might actually flush
+		       * bogus data from an out of date buffer.
+		       * Maybe we should call
+		       * [_wv displayIfNeededInRect: region]
+		       * but why not do all drawing at this point so
+		       * that if we get another expose event immediately
+		       * (eg. something is dragged over the window and
+		       * we get a series of expose events) we can just
+		       * flush without having to draw again.
+		       */
+		      [self displayIfNeeded];
 		      [self flushWindowIfNeeded];
 		      break;
 
@@ -4654,8 +4654,7 @@ current key view.<br />
   _f.can_hide = YES;
   _f.has_shadow = NO;
   _f.is_opaque = YES;
-
-  _rFlags.needs_display = YES;
+  _f.views_need_display = YES;
 }
 
 @end

@@ -207,6 +207,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
     unsigned	can_hide:1;
     unsigned	has_shadow:1;
     unsigned	is_opaque:1;
+    unsigned	views_need_display:1;
     // 3 bits reserved for subclass use
     unsigned subclass_bool_one: 1;
     unsigned subclass_bool_two: 1;
