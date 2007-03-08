@@ -1421,15 +1421,55 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 // Producing TIFF Data for the Image 
 - (NSData *) TIFFRepresentation
 {
-  return [bitmapClass TIFFRepresentationOfImageRepsInArray: [self representations]];
+  NSData *data;
+
+  // As a result of using bitmap representations, new drawing wont show on the tiff data.
+  data = [bitmapClass TIFFRepresentationOfImageRepsInArray: [self representations]];
+
+  if (!data)
+    {
+      NSBitmapImageRep *rep;
+      NSSize size = [self size];
+      
+      // If there isn't a bitmap representation to output, create one and store it.
+      [self lockFocus];
+      rep = [[NSBitmapImageRep alloc] initWithFocusedViewRect: 
+		       NSMakeRect(0.0, 0.0, size.width, size.height)];
+      [self unlockFocus];
+      [self addRepresentation: rep];
+      data = [rep TIFFRepresentation];
+      RELEASE(rep);
+    }
+
+  return data;
 }
 
 - (NSData *) TIFFRepresentationUsingCompression: (NSTIFFCompression)comp
 	factor: (float)aFloat
 {
-  return [bitmapClass TIFFRepresentationOfImageRepsInArray: [self representations]
+  NSData *data;
+
+  // As a result of using bitmap representations, new drawing wont show on the tiff data.
+  data = [bitmapClass TIFFRepresentationOfImageRepsInArray: [self representations]
 		      usingCompression: comp
 		      factor: aFloat];
+
+  if (!data)
+    {
+      NSBitmapImageRep *rep;
+      NSSize size = [self size];
+      
+      // If there isn't a bitmap representation to output, create one and store it.
+      [self lockFocus];
+      rep = [[NSBitmapImageRep alloc] initWithFocusedViewRect: 
+		       NSMakeRect(0.0, 0.0, size.width, size.height)];
+      [self unlockFocus];
+      [self addRepresentation: rep];
+      data = [rep TIFFRepresentationUsingCompression: comp factor: aFloat];
+      RELEASE(rep);
+    }
+
+  return data;
 }
 
 // NSCoding

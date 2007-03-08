@@ -1,5 +1,12 @@
 2007-03-08  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSImage.m (-TIFFRepresentation,
+	-TIFFRepresentationUsingCompression:factor:): If there is no
+	bitmap representation create one and store it. 
+	Idea by Renaud Molla <renaud.molla@wanadoo.fr>.
+
+2007-03-08  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSDocument.m
 	(-fileNameFromRunningSavePanelForSaveOperation:): Add remaining
 	change by Wolfgang Lux.  This corrects a potential mismatch
