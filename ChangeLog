@@ -1,5 +1,12 @@
 2007-03-08  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSResponder.h: Move _rFlags from here ...
+	* Headers/AppKit/NSView.h: ... to here.
+	* Headers/AppKit/NSWindow.h: Add views_need_display
+	* Source/NSWindow.m: Use _f.views_need_display instead of _rFlags.
+
+2007-03-08  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSImage.m (-TIFFRepresentation,
 	-TIFFRepresentationUsingCompression:factor:): If there is no
 	bitmap representation create one and store it. 
