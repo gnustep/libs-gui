@@ -42,6 +42,7 @@
 
 #include "GNUstepGUI/GSDisplayServer.h"
 #include "GNUstepGUI/GSDragView.h"
+#include <math.h>
 
 /* Size of the dragged window */
 #define	DWZ	48
@@ -271,14 +272,26 @@ static	GSDragView *sharedDragView = nil;
 
 - (void) slideDraggedImageTo:  (NSPoint)point
 {
+  float distx = point.x - dragPosition.x;
+  float disty = point.y - dragPosition.y;
+  float dist = sqrt((distx * distx) + (disty * disty));
+  NSSize imgSize = [[dragCell image] size];
+  float imgDist = sqrt((imgSize.width * imgSize.width) + 
+		       (imgSize.height * imgSize.height));
+  int steps = (int)(dist/imgDist);
+
   /*
    * Convert point from coordinates of image to coordinates of mouse
    * cursor for internal use.
    */
   point.x += offset.width;
   point.y += offset.height;
-  [self _slideDraggedImageTo: point 
+/*  [self _slideDraggedImageTo: point 
 	       numberOfSteps: SLIDE_NR_OF_STEPS 
+	               delay: SLIDE_TIME_STEP
+	      waitAfterSlide: YES];*/
+  [self _slideDraggedImageTo: point 
+	       numberOfSteps: steps
 	               delay: SLIDE_TIME_STEP
 	      waitAfterSlide: YES];
 }

@@ -70,9 +70,14 @@
   float distx = toPoint.x - fromPoint.x;
   float disty = toPoint.y - fromPoint.y;
   float dist = sqrt((distx * distx) + (disty * disty));
-  int steps = (int)(dist / MINDIST);
+//  int steps = (int)(dist / MINDIST);
+  NSSize imgSize = [[slideCell image] size];
+  float imgDist = sqrt((imgSize.width * imgSize.width) + 
+		       (imgSize.height * imgSize.height));
+  int steps = (int)(dist/imgDist);
   int windowNumber = [_window windowNumber];
   GSDisplayServer *server = GSServerForWindow(_window);
+
 
   if (steps > 2)
     {

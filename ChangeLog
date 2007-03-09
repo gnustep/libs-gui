@@ -1,3 +1,9 @@
+2007-03-09  Sergii Stoian <stoyan255@yahoo.com>
+
+        * Source/GSSlideView.m: (- _slideFrom:to:): Calcuate number of
+        steps wrt image size.
+        * Source/GSDragView.m: (- slideDraggedImageTo:): Ditto.
+	
 2007-03-08  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSResponder.h: Move _rFlags from here ...
