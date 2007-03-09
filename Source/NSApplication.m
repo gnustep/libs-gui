@@ -686,7 +686,8 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
       [self setVersion: 1];
       
       /* Create the gui bundle we use to localize messages.  */
-      guiBundle = [NSBundle bundleForLibrary: @"gnustep-gui"];
+      guiBundle = [NSBundle bundleForLibrary: @"gnustep-gui"
+			    version: OBJC_STRINGIFY(GNUSTEP_GUI_MAJOR_VERSION.GNUSTEP_GUI_MINOR_VERSION)];
       RETAIN(guiBundle);
 
       /* Save the base library exception handler */

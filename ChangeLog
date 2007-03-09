@@ -1,3 +1,13 @@
+2007-03-09  Nicola Pero <nicola.pero@meta-innovation.com>
+
+	Updated gnustep-gui to use versioned library resources.
+	* Source/NSApplication.m ([+initialize]): Use
+	bundleForLibrary:version: to get the correct version of the
+	gnustep-gui resources.
+	* Source/GNUmakefile: Install resources in versioned directory.
+	* Resources/GNUmakefile: Same change.
+	* Panels/GNUmakefile.postamble: Same change.
+	
 2007-03-09  Sergii Stoian <stoyan255@yahoo.com>
 
         * Source/GSSlideView.m: (- _slideFrom:to:): Calcuate number of
