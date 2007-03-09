@@ -31,14 +31,12 @@ GNUSTEP_INSTALLATION_DOMAIN = SYSTEM
 GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=../gui.make
 include $(GNUSTEP_MAKEFILES)/common.make
 
-include ../Version
-
 LANGUAGES = English
-
-# LOCALIZED_RESOURCE_FILES = SpellPanel.gmodel
-
-LOCALIZED_RESOURCE_COMPONENTS = GSPrintPanel.gorm GSPageLayout.gorm \
-	GSDataLinkPanel.gorm GSSpellPanel.gorm
+LOCALIZED_RESOURCE_COMPONENTS = \
+  GSDataLinkPanel.gorm \
+  GSPageLayout.gorm \
+  GSPrintPanel.gorm \
+  GSSpellPanel.gorm
 
 -include GNUmakefile.preamble
 -include GNUmakefile.local
