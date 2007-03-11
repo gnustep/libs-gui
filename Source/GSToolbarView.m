@@ -843,13 +843,18 @@ static void initSystemExtensionsColors(void)
   NSEnumerator *e = [items objectEnumerator];
   NSToolbarItem *item;
   NSView *backView; 
-  NSRect lastBackViewFrame = [[[items lastObject] _backView] frame];
-  float lengthAvailable = [self frame].size.width -
-    NSMaxX(lastBackViewFrame);
+  NSRect lastBackViewFrame;
+  float lengthAvailable;
   unsigned int flexibleSpaceItemsNumber = 0;
   BOOL mustAdjustNext = NO;
   float x = 0;
   
+  if ([items count] == 0)
+    return; 
+  
+  lastBackViewFrame = [[[items lastObject] _backView] frame];
+  lengthAvailable = [self frame].size.width - NSMaxX(lastBackViewFrame);
+
   if (lengthAvailable < 1)
     return;
   

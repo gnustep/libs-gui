@@ -616,22 +616,8 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
 - (void) drawImageWithFrame: (NSRect)cellFrame
 		     inView: (NSView *)controlView
 {
-  NSSize	size;
-  NSPoint	position;
-
   cellFrame = [self imageRectForBounds: cellFrame];
-  // FIXME: We could call drawImage:withFrame:inView: here, if we knew that the code there is correct.
-  size = [_imageToDisplay size];
-  position.x = MAX(NSMidX(cellFrame) - (size.width/2.), 0.);
-  position.y = MAX(NSMidY(cellFrame) - (size.height/2.), 0.);
-  /*
-   * Images are always drawn with their bottom-left corner at the origin
-   * so we must adjust the position to take account of a flipped view.
-   */
-  if ([controlView isFlipped])
-    position.y += size.height;
-
-  [_imageToDisplay compositeToPoint: position operation: NSCompositeSourceOver];
+  [self drawImage: _imageToDisplay withFrame: cellFrame inView: controlView];
 }
 
 - (void) drawKeyEquivalentWithFrame:(NSRect)cellFrame

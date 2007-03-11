@@ -1985,10 +1985,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
     {
       [self _setSelectedItem: index];
     }
-  else 
-    {
-      [self _setSelectedItem: -1];
-    }
+  // Otherwise keep old selection
 }
 
 @end

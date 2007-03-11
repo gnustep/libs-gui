@@ -200,6 +200,7 @@
 	postNotificationName: NSTableViewColumnDidResizeNotification
 	object: _tableView
 	userInfo: [NSDictionary dictionaryWithObjectsAndKeys:
+				  self, @"NSTableColumn", 
 				  [NSNumber numberWithFloat: oldWidth],
 				@"NSOldWidth", nil]];
     }

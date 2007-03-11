@@ -1415,12 +1415,20 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
  */
 - (void) abortModal
 {
+/* FIXME: The previous, now commented out, code here did only work from within the modal loop, 
+   which is contrary to the purpose of this method. Calling stopModalWithCode: works a bit better,
+   but still relies on the modal loop to cooperate. Calling that method via performSelectorOnMainThread:...
+   and moving the exception into stopModalWithCode:, looks like another option. Still this would 
+   rely on the loop getting executed.
+
   if (_session == 0)
     {
       [NSException raise: NSAbortModalException
 		  format: @"abortModal called while not in a modal session"];
     }
   [NSException raise: NSAbortModalException format: @"abortModal"];
+*/
+  [self stopModalWithCode: NSRunAbortedResponse];
 }
 
 /**

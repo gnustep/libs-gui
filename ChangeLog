@@ -1,3 +1,17 @@
+2007-03-11  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSApplication.m (-abortModal): Call stopModalWithCode: to
+	make this mehtod work when not inside the modal loop.
+	* Source/GSToolbarView.m (-_takeInAccountFlexibleSpaces): Don't
+	call methods that return astructures on nil as this fails on Solaris.
+	* Source/NSTableColumn.m (-setWidth:): Add self tothe
+	notifiaction.
+	* Source/NSComboBoxCell.m (-_selectCompleted): Don't change
+	selection if no match is found.
+	* Source/NSMenuItemCell.m (-drawImageWithFrame:inView:): Use
+	[drawImage:withFrame:inView:] to do the drawing.  
+	Patches by Andreas Höschler <ahoesch@smartsoft.de>.
+
 2007-03-09  Nicola Pero <nicola.pero@meta-innovation.com>
 
 	Updated gnustep-gui to use versioned library resources.
@@ -271,7 +285,7 @@
 
 2007-02-16  Richard Frith-Macdonald <rfm@gnu.org>
 
-	* Source/NSMenuItSemCell.m: fixup glitch with drawing of horizontal
+	* Source/NSMenuItemCell.m: fixup glitch with drawing of horizontal
 	menu items overwriting menu border.
 	* Source/NSMenuView.m: use menubar font size to calculate menubar
 	height.
