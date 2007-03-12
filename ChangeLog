@@ -1,3 +1,8 @@
+2007-03-12  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSAffineTransform.m: Set _isIdentity for all methods
+	changing the matrix of the affine transform.
+
 2007-03-11  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSApplication.m (-abortModal): Call stopModalWithCode: to

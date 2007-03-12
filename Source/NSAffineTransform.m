@@ -145,6 +145,9 @@ static NSAffineTransformStruct identityTransform = {
       A = sx; B = 0;
       C = 0; D = sy;
     }
+  // FIXME
+  _isIdentity = NO;
+  _isFlipY = NO;
 }
 
 - (void) translateToPoint: (NSPoint)point
@@ -161,6 +164,9 @@ static NSAffineTransformStruct identityTransform = {
 - (void) makeIdentityMatrix
 {
   matrix = identityTransform;
+  // FIXME
+  _isIdentity = YES;
+  _isFlipY = NO;
 }
 
 - (void) setFrameOrigin: (NSPoint)point
@@ -200,6 +206,9 @@ static NSAffineTransformStruct identityTransform = {
   amat.tX  = anotherMatrix[4];
   amat.tY  = anotherMatrix[5];
   matrix = matrix_multiply(amat, matrix);
+  // FIXME
+  _isIdentity = NO;
+  _isFlipY = NO;
 }
 
 - (void)inverse
@@ -330,6 +339,9 @@ static NSAffineTransformStruct identityTransform = {
   matrix.m22 = replace[3];
   matrix.tX = replace[4];
   matrix.tY = replace[5];
+  // FIXME
+  _isIdentity = NO;
+  _isFlipY = NO;
 }
 
 - (void) getMatrix: (float[6])replace
@@ -345,6 +357,9 @@ static NSAffineTransformStruct identityTransform = {
 - (void) takeMatrixFromTransform: (NSAffineTransform *)aTransform
 {
   matrix = [aTransform transformStruct];
+  // FIXME
+  _isIdentity = NO;
+  _isFlipY = NO;
 }
 
 
