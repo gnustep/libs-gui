@@ -50,6 +50,7 @@ libgnustep-gui_OBJC_FILES = Functions.m \
 NSActionCell.m \
 NSAffineTransform.m \
 NSAlert.m \
+NSAnimation.m \
 NSApplication.m \
 NSArrayController.m \
 NSAttributedString.m \
@@ -234,6 +235,7 @@ AppKitExceptions.h \
 NSActionCell.h \
 NSAffineTransform.h \
 NSAlert.h \
+NSAnimation.h \
 NSApplication.h \
 NSArrayController.h \
 NSBezierPath.h \
