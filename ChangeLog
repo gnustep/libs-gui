@@ -2,7 +2,11 @@
 
 	* Panels/GNUmakefile.postamble (after-uninstall): Fixed uninstall
 	target.
-
+	* Source/CompatibilityHeaders.make (after-install): Use
+	ECHO_NOTHING and END_ECHO.
+	(after-uninstall): New target that uninstalls the compatibility
+	headers.
+	
 2007-03-12  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSAffineTransform.m: Set _isIdentity for all methods
