@@ -1,5 +1,6 @@
 2007-03-17  Nicola Pero <nicola.pero@meta-innovation.com>
 
+	* GNUmakefile.postamble (before-uninstall): Uninstall gui.make.
 	* Panels/GNUmakefile.postamble (after-uninstall): Fixed uninstall
 	target.
 	* Source/CompatibilityHeaders.make (after-install): Use
