@@ -1,3 +1,8 @@
+2007-03-17  Nicola Pero <nicola.pero@meta-innovation.com>
+
+	* Panels/GNUmakefile.postamble (after-uninstall): Fixed uninstall
+	target.
+
 2007-03-12  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSAffineTransform.m: Set _isIdentity for all methods
