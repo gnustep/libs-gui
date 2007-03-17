@@ -53,6 +53,7 @@
 
 #include "AppKit/NSAffineTransform.h"
 #include "AppKit/NSApplication.h"
+#include "AppKit/NSBezierPath.h"
 #include "AppKit/NSCursor.h"
 #include "AppKit/NSDocumentController.h"
 #include "AppKit/NSDocument.h"
@@ -971,22 +972,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 - (void) willRemoveSubview: (NSView *)subview
 {}
 
-- (void) rotateByAngle: (float)angle
-{
-  if (_coordinates_valid)
-    {
-      (*invalidateImp)(self, invalidateSel);
-    }
-  [_boundsMatrix rotateByDegrees: angle];
-  _is_rotated_from_base = _is_rotated_or_scaled_from_base = YES;
-
-  if (_post_bounds_changes)
-    {
-      [nc postNotificationName: NSViewBoundsDidChangeNotification
-			     object: self];
-    }
-}
-
 - (void) _updateBoundsMatrix
 {
   float sx;
@@ -1243,12 +1228,11 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) setBoundsOrigin: (NSPoint)newOrigin
 {
-  _bounds.origin = newOrigin;
-
   if (_coordinates_valid)
     {
       (*invalidateImp)(self, invalidateSel);
     }
+  _bounds.origin = newOrigin;
   [_boundsMatrix setFrameOrigin: NSMakePoint(-newOrigin.x, -newOrigin.y)];
 
   if (_post_bounds_changes)
@@ -1287,12 +1271,19 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) setBoundsRotation: (float)angle
 {
+  NSAffineTransform *matrix;
+
   if (_coordinates_valid)
     {
       (*invalidateImp)(self, invalidateSel);
     }
-  [_boundsMatrix setFrameRotation: angle];
+  [_boundsMatrix rotateByDegrees: angle - [_boundsMatrix rotationAngle]];
   _is_rotated_from_base = _is_rotated_or_scaled_from_base = YES;
+  // Adjust bounds
+  matrix = [_boundsMatrix copy];
+  [matrix invert];
+  [matrix boundingRectFor: _frame result: &_bounds];
+  RELEASE(matrix);
 
   if (_post_bounds_changes)
     {
@@ -1303,17 +1294,13 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) translateOriginToPoint: (NSPoint)point
 {
-  if (_coordinates_valid)
-    {
-      (*invalidateImp)(self, invalidateSel);
-    }
-  [_boundsMatrix translateToPoint: point];
+  [self setBoundsOrigin: NSMakePoint(NSMinX(_bounds) - point.x, 
+				     NSMinY(_bounds) - point.y)];
+}
 
-  if (_post_bounds_changes)
-    {
-      [nc postNotificationName: NSViewBoundsDidChangeNotification
-	  object: self];
-    }
+- (void) rotateByAngle: (float)angle
+{
+  [self setBoundsRotation: [self boundsRotation] + angle];
 }
 
 - (NSRect) centerScanRect: (NSRect)aRect
@@ -1845,12 +1832,28 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 
   if ([self wantsDefaultClipping])
     {
-      /* Clip to the visible rectangle - which will never be greater
-       * than the bounds of the view.  This prevents drawing outside
-       * our bounds
+      /* 
+       * Clip to the visible rectangle - which will never be greater
+       * than the bounds of the view. This prevents drawing outside
+       * our bounds.
        */
-      DPSrectclip(ctxt, NSMinX(rect), NSMinY(rect),
-		  NSWidth(rect), NSHeight(rect));
+      if (_is_rotated_from_base)
+	{
+	  // When the view is rotated, more complex clipping is needed.
+	  NSAffineTransform *matrix;
+	  NSBezierPath *bp = [NSBezierPath bezierPathWithRect: _frame];
+
+	  matrix = [_boundsMatrix copy];
+	  [matrix invert];
+	  [bp transformUsingAffineTransform: matrix];
+	  [bp addClip];
+	  RELEASE(matrix);
+	}
+      else
+        { 
+	  DPSrectclip(ctxt, NSMinX(rect), NSMinY(rect),
+		      NSWidth(rect), NSHeight(rect));
+	}
     }
 
   /* Tell backends that images are drawn upside down. 
