@@ -1742,7 +1742,7 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 {
 }
 
-- (void) _lockFocusInContext: ctxt inRect: (NSRect)rect
+- (void) _lockFocusInContext: (NSGraphicsContext *)ctxt inRect: (NSRect)rect
 {
   NSRect wrect;
   int window_gstate = 0;
@@ -1757,7 +1757,21 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 	}
     }
 
-  // FIXME: Set current context?
+  if (ctxt == nil)
+    {
+      if (viewIsPrinting != nil)
+        {
+	  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+
+	  ctxt = [printOp context];
+	}
+      else
+        {
+	  ctxt = [_window graphicsContext];
+	}
+    }
+  // FIXME: Set current context
+
 
   [ctxt lockFocusView: self inRect: rect];
   wrect = [self convertRect: rect toView: nil];
@@ -1903,7 +1917,7 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 
 - (void) lockFocusInRect: (NSRect)rect
 {
-  [self _lockFocusInContext: [_window graphicsContext] inRect: rect];
+  [self _lockFocusInContext: nil inRect: rect];
 }
 
 - (void) lockFocus
@@ -1918,7 +1932,7 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 
 - (BOOL) lockFocusIfCanDraw
 {
-  return [self lockFocusIfCanDrawInContext: [_window graphicsContext]];
+  return [self lockFocusIfCanDrawInContext: nil];
 }
 
 - (BOOL) lockFocusIfCanDrawInContext: (NSGraphicsContext *)context;
@@ -3743,7 +3757,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	      bBox: (NSRect)pageRect
 	     fonts: (NSString*)fontNames
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSGraphicsContext *ctxt = [printOp context];
 
   if (aString == nil)
     aString = [[NSNumber numberWithInt: ordinalNum] description];
@@ -3770,8 +3785,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 		     pages: (int)numPages
 		     title: (NSString*)aTitle
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSGraphicsContext *ctxt = [printOp context];
   NSPrintingOrientation orient;
   BOOL epsOp;
 
@@ -3829,13 +3844,17 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (void) beginSetup
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSGraphicsContext *ctxt = [printOp context];
+
   DPSPrintf(ctxt, "%%%%BeginSetup\n");
 }
 
 - (void) beginTrailer
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSGraphicsContext *ctxt = [printOp context];
+
   DPSPrintf(ctxt, "%%%%Trailer\n");
 }
 
@@ -3849,33 +3868,41 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (void) endHeaderComments
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSGraphicsContext *ctxt = [printOp context];
+
   DPSPrintf(ctxt, "%%%%EndComments\n\n");
 }
 
 - (void) endPrologue
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSGraphicsContext *ctxt = [printOp context];
+
   DPSPrintf(ctxt, "%%%%EndProlog\n\n");
 }
 
 - (void) endSetup
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSGraphicsContext *ctxt = [printOp context];
+
   DPSPrintf(ctxt, "%%%%EndSetup\n\n");
 }
 
 - (void) endPageSetup
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSGraphicsContext *ctxt = [printOp context];
+
   DPSPrintf(ctxt, "%%%%EndPageSetup\n");
 }
 
 - (void) endPage
 {
   int nup;
-  NSGraphicsContext *ctxt = GSCurrentContext();
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSGraphicsContext *ctxt = [printOp context];
   NSDictionary *dict = [[printOp printInfo] dictionary];
 
   nup = [[dict objectForKey: NSPrintPagesPerSheet] intValue];
@@ -3889,7 +3916,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (void) endTrailer
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSGraphicsContext *ctxt = [printOp context];
+
   DPSPrintf(ctxt, "%%%%EOF\n");
 }
 
@@ -3946,10 +3975,10 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 {
   int first, last, pages, nup;
   NSRect bbox;
-  NSDictionary *dict;
-  NSGraphicsContext *ctxt = GSCurrentContext();
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
-  dict = [[printOp printInfo] dictionary];
+  NSGraphicsContext *ctxt = [printOp context];
+  NSDictionary *dict = [[printOp printInfo] dictionary];
+
   if (printOp == nil)
     {
       [NSException raise: NSInternalInconsistencyException
@@ -4051,8 +4080,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 {
   int first, last, current, pages;
   NSSet *fontNames;
-  NSGraphicsContext *ctxt = GSCurrentContext();
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSGraphicsContext *ctxt = [printOp context];
   NSDictionary *dict = [[printOp printInfo] dictionary];
 
   first = [[dict objectForKey: NSPrintFirstPage] intValue];

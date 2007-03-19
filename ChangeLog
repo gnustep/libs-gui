@@ -1,3 +1,15 @@
+2007-03-19  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPrintOperation.m (NSView -_endSheet, NSView
+	-_displayPageInRect:atPlacement:withInfo:): Get graphics context
+	from the print operation. 
+	* Source/NSView.m (-_lockFocusInContext:inRect:): When not set,
+	get graphics context either from window or from the print operation.
+	* Source/NSView.m (-lockFocusInRect, -lockFocusIfCanDraw): Don't
+	set the graphics context.
+	* Source/NSView.m: For all print methods get the context from
+	the print operation.
+
 2007-03-17  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSView.m (-setBoundsRotation:): Adjust _bounds ivar to
