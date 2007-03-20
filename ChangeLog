@@ -1,3 +1,8 @@
+2007-03-21  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSView.m (-gState): Generate a gstate if one is needed
+	and none has been set up to now.
+
 2007-03-19  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPrintOperation.m (NSView -_endSheet, NSView

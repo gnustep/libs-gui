@@ -1681,67 +1681,6 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
   [self setFrame: newFrame];
 }
 
-/**
-  <p> Tell the view to maintain a private gstate object which
-  encapsulates all the information about drawing, such as coordinate
-  transforms, line widths, etc. If you do not invoke this method, a
-  gstate object is constructed each time the view is lockFocused.
-  Allocating a private gstate may improve the performance of views
-  that are focused a lot and have a lot of customized drawing
-  parameters.  </p> 
-
-  <p> View subclasses should override the
-  setUpGstate method to set these custom parameters.
-  </p> 
-*/
-- (void) allocateGState
-{
-  // FIXME: This should create an actual gState
-  _allocate_gstate = 1;
-  _renew_gstate = 1;
-}
-
-/**
-  Frees the gstate object, if there is one. 
-*/
-- (void) releaseGState
-{
-  if (_allocate_gstate && _gstate)
-    GSUndefineGState(GSCurrentContext(), _gstate);
-  _gstate = 0;
-  _allocate_gstate = 0;
-}
-
-/**
-  Returns an identifier that represents the view's gstate object,
-  which is used to encapsulate drawing information about the view.
-  Most of the time a gstate object is created from scratch when the
-  view is focused, so if the view is not currently focused or
-  allocateGState has not been called, then this method will return 0.
-  FIXME: The above is what the OpenStep and Cocoa specification say, but 
-  gState is 0 unless allocateGState has been called. 
-*/
-- (int) gState
-{
-  return _gstate;
-}
-
-/** 
-  Invalidates the view's gstate object so it will be set up again
-  using setUpGState the next time the view is focused.  */
-- (void) renewGState
-{
-  _renew_gstate = 1;
-  /* Note that the next time we lock focus, we'll realloc a gstate (if
-     _allocate_gstate). This seems to make sense, and also allows us
-     to call this method each time we invalidate the coordinates */
-}
-
-/* Overridden by subclasses to setup custom gstate */
-- (void) setUpGState
-{
-}
-
 - (void) _lockFocusInContext: (NSGraphicsContext *)ctxt inRect: (NSRect)rect
 {
   NSRect wrect;
@@ -1818,20 +1757,19 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 	  if (_renew_gstate)
 	    {
 	      [self setUpGState];
+	      _renew_gstate = NO;
 	    }
-	  _renew_gstate = 0;
 	  DPSgsave(ctxt);
 	}
       else
 	{
-
 	  DPSsetgstate(ctxt, window_gstate);
 	  DPSgsave(ctxt);
 	  [matrix concat];
 
 	  /* Allow subclases to make other modifications */
 	  [self setUpGState];
-	  _renew_gstate = 0;
+	  _renew_gstate = NO;
 	  if (_allocate_gstate)
 	    {
 	      _gstate = GSDefineGState(ctxt);
@@ -1913,6 +1851,73 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
       [window_t->_rectsBeingDrawn removeLastObject];
     }
   [ctxt unlockFocusView: self needsFlush: YES ];
+}
+
+/**
+  <p> Tell the view to maintain a private gstate object which
+  encapsulates all the information about drawing, such as coordinate
+  transforms, line widths, etc. If you do not invoke this method, a
+  gstate object is constructed each time the view is lockFocused.
+  Allocating a private gstate may improve the performance of views
+  that are focused a lot and have a lot of customized drawing
+  parameters.  </p> 
+
+  <p> View subclasses should override the
+  setUpGstate method to set these custom parameters.
+  </p> 
+*/
+- (void) allocateGState
+{
+  _allocate_gstate = YES;
+  _renew_gstate = YES;
+}
+
+/**
+  Frees the gstate object, if there is one. 
+*/
+- (void) releaseGState
+{
+  if (_allocate_gstate && _gstate)
+    GSUndefineGState(GSCurrentContext(), _gstate);
+  _gstate = 0;
+  _allocate_gstate = NO;
+}
+
+/**
+  Returns an identifier that represents the view's gstate object,
+  which is used to encapsulate drawing information about the view.
+  Most of the time a gstate object is created from scratch when the
+  view is focused, so if the view is not currently focused or
+  allocateGState has not been called, then this method will return 0.
+  FIXME: The above is what the OpenStep and Cocoa specification say, but 
+  gState is 0 unless allocateGState has been called. 
+*/
+- (int) gState
+{
+  if (_allocate_gstate && (!_gstate || _renew_gstate))
+    {
+      // Set the gstate by locking and unlocking focus.
+      [self lockFocus];
+      [self unlockFocusNeedsFlush: NO];
+    }
+
+  return _gstate;
+}
+
+/** 
+  Invalidates the view's gstate object so it will be set up again
+  using setUpGState the next time the view is focused.  */
+- (void) renewGState
+{
+  _renew_gstate = YES;
+  /* Note that the next time we lock focus, we'll realloc a gstate (if
+     _allocate_gstate). This seems to make sense, and also allows us
+     to call this method each time we invalidate the coordinates */
+}
+
+/* Overridden by subclasses to setup custom gstate */
+- (void) setUpGState
+{
 }
 
 - (void) lockFocusInRect: (NSRect)rect
