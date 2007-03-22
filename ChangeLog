@@ -1,3 +1,11 @@
+2007-03-22  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSAffineTransform.m: Avoid accessing internals of the base
+	library class directly.  Mark many methods as deprecated.
+	* Headers/AppKit/NSAffineTransform.h: Mark gnustep extensions as
+	deprecated.  Perhaps we don't want to deprecate all of them though
+	need feedback on that.
+
 2007-03-21  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSView.m (-gState): Generate a gstate if one is needed
