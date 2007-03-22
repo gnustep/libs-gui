@@ -948,9 +948,21 @@ typedef struct _GSButtonCellFlags
   if (_cell.shows_first_responder
     && [[controlView window] firstResponder] == controlView)
     {
-      // FIXME: Should depend on _cell.focus_ring_type
-      [[GSTheme theme] drawFocusFrame: [self drawingRectForBounds: cellFrame] 
-		                 view: controlView];
+       switch (_cell.focus_ring_type)
+        {
+	  case NSFocusRingTypeDefault:
+	    [[GSTheme theme] drawFocusFrame: [self drawingRectForBounds:
+						       cellFrame]
+			     view: controlView];
+	    break;
+	  case NSFocusRingTypeExterior:
+	    [[GSTheme theme] drawFocusFrame: cellFrame
+			     view: controlView];
+	    break;
+	  case NSFocusRingTypeNone:
+	  default:
+	    break;
+	} 
     }
 }
 

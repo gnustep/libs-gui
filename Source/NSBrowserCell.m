@@ -323,9 +323,6 @@ static NSFont *_leafFont;
   // Draw the body of the cell
   [self _drawAttributedText: [self attributedStringValue]
 	inFrame: title_rect];
-
-  if (_cell.shows_first_responder == YES)
-    NSDottedFrameRect(cellFrame);
 }
 
 - (BOOL) isOpaque

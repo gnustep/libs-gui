@@ -888,12 +888,6 @@ static NSImage *_pbc_image[2];
   [self calcSize];
   [super drawInteriorWithFrame: cellFrame inView: controlView];
 
-  if (_cell.shows_first_responder)
-    {
-      cellFrame = [self drawingRectForBounds: cellFrame];
-      NSDottedFrameRect(cellFrame);
-    }
-
   /* Unset the item to restore balance if a new was created */
   if (new)
     {

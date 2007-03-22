@@ -1,3 +1,13 @@
+2007-03-22  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSButtonCell.m (-drawWithFrame:inView:),
+	* Source/NSCell.m (-drawWithFrame:inView:): Respect focus ring
+	style when drawing first responder state.
+	* Source/NSBrowserCell.m (-drawInteriorWithFrame:inView:),
+	* Source/NSPopupButtonCell.m (-drawInteriorWithFrame:inView:),
+	* Source/NSImageCell.m (-drawInteriorWithFrame:inView:): Don't
+	draw focus ring.
+
 2007-03-22  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSAffineTransform.m: Avoid accessing internals of the base
