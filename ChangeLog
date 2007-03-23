@@ -1,3 +1,7 @@
+2007-03-23  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSAffineTransform.m: Simplify code slightly.
+
 2007-03-23  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSCell.m (-drawWithFrame:inView:): Extract helper methods

@@ -58,24 +58,6 @@
 
 static const float pi = 3.1415926535897932384626434;
 
-/* Quick function to multiply two coordinate matrices. C = AB */
-static inline NSAffineTransformStruct 
-matrix_multiply (NSAffineTransformStruct MA, NSAffineTransformStruct MB)
-{
-  NSAffineTransformStruct MC;
-  MC.m11 = MA.m11 * MB.m11 + MA.m12 * MB.m21;
-  MC.m12 = MA.m11 * MB.m12 + MA.m12 * MB.m22;
-  MC.m21 = MA.m21 * MB.m11 + MA.m22 * MB.m21;
-  MC.m22 = MA.m21 * MB.m12 + MA.m22 * MB.m22;
-  MC.tX  = MA.tX * MB.m11 + MA.tY * MB.m21 + MB.tX;
-  MC.tY  = MA.tX * MB.m12 + MA.tY * MB.m22 + MB.tY;
-  return MC;
-}
-
-static NSAffineTransformStruct identityTransform = {
-   1.0, 0.0, 0.0, 1.0, 0.0, 0.0
-};
-
 @implementation NSAffineTransform (GUIAdditions)
 
 /**
@@ -154,6 +136,10 @@ static NSAffineTransformStruct identityTransform = {
 
 - (void) makeIdentityMatrix
 {
+  static NSAffineTransformStruct identityTransform = {
+    1.0, 0.0, 0.0, 1.0, 0.0, 0.0
+  };
+
   [self setTransformStruct: identityTransform];
 }
 
@@ -190,8 +176,8 @@ static NSAffineTransformStruct identityTransform = {
 
 - (void) concatenateWithMatrix: (const float[6])anotherMatrix
 {
-  NSAffineTransformStruct	matrix = [self transformStruct];
   NSAffineTransformStruct amat;
+  NSAffineTransform 	*other;
 
   GSOnceMLog(@"deprecated ... use -prependTransform:");
   amat.m11 = anotherMatrix[0];
@@ -200,8 +186,10 @@ static NSAffineTransformStruct identityTransform = {
   amat.m22 = anotherMatrix[3];
   amat.tX  = anotherMatrix[4];
   amat.tY  = anotherMatrix[5];
-  matrix = matrix_multiply(amat, matrix);
-  [self setTransformStruct: matrix];
+  other = [NSAffineTransform new];
+  [other setTransformStruct: amat];
+  [self prependTransform: other];
+  RELEASE(other);
 }
 
 - (void)inverse
