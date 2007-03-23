@@ -1,3 +1,12 @@
+2007-03-23  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSCell.m (-drawWithFrame:inView:): Extract helper methods
+	for border and focus drawing.
+	* Source/NSButtonCell.m: Override the border drawing method.
+	* Source/NSMenuItemCell.m: Override the border drawing method and
+	set default focus ring to none.
+	* Source/NSPopupButtonCell.m: Set default focus ring to default.
+	
 2007-03-23  Sergii Stoian <stoyan255@gmail.com>
 
 	* Source/NSAlert.m: (-_initWithoutGModel): Set selected text

@@ -1994,15 +1994,9 @@ static NSColor	*shadowCol;
   // prettyfying
 }
 
-/**<p>Draws the cell in <var>controlView</var></p>
- */
-- (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
+// Private helper method overridden in subclasses
+- (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  // do nothing if cell's frame rect is zero
-  if (NSIsEmptyRect(cellFrame))
-    return;
-
-  // draw the border if needed
   if (_cell.is_bordered)
     {
       [shadowCol set];
@@ -2012,10 +2006,11 @@ static NSColor	*shadowCol;
     {
       [[GSTheme theme] drawWhiteBezel: cellFrame withClip: NSZeroRect];
     }
+}
 
-  [self drawInteriorWithFrame: cellFrame inView: controlView];
-
-  // Draw first responder
+// Private helper method
+- (void) _drawFocusRingWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
+{
   if (_cell.shows_first_responder
     && [[controlView window] firstResponder] == controlView)
     {
@@ -2035,6 +2030,22 @@ static NSColor	*shadowCol;
 	    break;
 	} 
     }
+}
+
+/**<p>Draws the cell in <var>controlView</var></p>
+ */
+- (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
+{
+  // do nothing if cell's frame rect is zero
+  if (NSIsEmptyRect(cellFrame))
+    return;
+
+  // draw the border if needed
+  [self _drawBorderAndBackgroundWithFrame: cellFrame inView: controlView];
+  // draw interior
+  [self drawInteriorWithFrame: cellFrame inView: controlView];
+  // Draw first responder
+  [self _drawFocusRingWithFrame: cellFrame inView: controlView];
 }
 
 /**<p>Sets whether the NSCell is highlighted.</p>

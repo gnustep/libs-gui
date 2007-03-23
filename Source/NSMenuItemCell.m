@@ -59,6 +59,11 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
     }
 }
 
++ (NSFocusRingType) defaultFocusRingType
+{
+  return NSFocusRingTypeNone;
+}
+
 - (id) init
 {
   [super init];
@@ -742,24 +747,9 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
     }
 }
 
-- (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
+- (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  // Save last view drawn to
-  if (_control_view != controlView)
-    _control_view = controlView;
-
-  // Transparent buttons never draw
-  if (_buttoncell_is_transparent)
-    return;
-
-  // Do nothing if cell's frame rect is zero
-  if (NSIsEmptyRect(cellFrame))
-    return;
-
-  // Draw the border if needed
   [self drawBorderAndBackgroundWithFrame: cellFrame inView: controlView];
-
-  [self drawInteriorWithFrame: cellFrame inView: controlView];
 }
 
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView

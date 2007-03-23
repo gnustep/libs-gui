@@ -56,6 +56,11 @@ static NSImage *_pbc_image[2];
   return YES;
 }
 
++ (NSFocusRingType) defaultFocusRingType
+{
+  return NSFocusRingTypeDefault;
+}
+
 // Initialization
 /**
  * Initialize a blank cell.
