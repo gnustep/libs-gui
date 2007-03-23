@@ -1313,8 +1313,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
    *	Plus - this is all pretty meaningless is we are not in a window!
    */
   matrix = [self _matrixToWindow];
-  aRect.origin = [matrix pointInMatrixSpace: aRect.origin];
-  aRect.size = [matrix sizeInMatrixSpace: aRect.size];
+  aRect.origin = [matrix transformPoint: aRect.origin];
+  aRect.size = [matrix transformSize: aRect.size];
 
   aRect.origin.x = floor(aRect.origin.x);
   aRect.origin.y = floor(aRect.origin.y);
@@ -1322,8 +1322,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   aRect.size.height = floor(aRect.size.height);
 
   matrix = [self _matrixFromWindow];
-  aRect.origin = [matrix pointInMatrixSpace: aRect.origin];
-  aRect.size = [matrix sizeInMatrixSpace: aRect.size];
+  aRect.origin = [matrix transformPoint: aRect.origin];
+  aRect.size = [matrix transformSize: aRect.size];
 
   return aRect;
 }
@@ -1340,7 +1340,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   NSAssert(_window == [aView window], NSInvalidArgumentException);
 
   matrix = [aView _matrixToWindow];
-  new = [matrix pointInMatrixSpace: aPoint];
+  new = [matrix transformPoint: aPoint];
 
   if (_coordinates_valid)
     {
@@ -1350,7 +1350,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       matrix = [self _matrixFromWindow];
     }
-  new = [matrix pointInMatrixSpace: new];
+  new = [matrix transformPoint: new];
 
   return new;
 }
@@ -1378,9 +1378,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       matrix = [self _matrixToWindow];
     }
-  new = [matrix pointInMatrixSpace: aPoint];  
+  new = [matrix transformPoint: aPoint];  
   matrix = [aView _matrixFromWindow];
-  new = [matrix pointInMatrixSpace: new];
+  new = [matrix transformPoint: new];
 
   return new;
 }
@@ -1402,12 +1402,12 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
   p[3].y += aRect.size.height;
 
   for (i = 0; i < 4; i++)
-    p[i] = [matrix1 pointInMatrixSpace: p[i]];
+    p[i] = [matrix1 transformPoint: p[i]];
 
-  min = max = p[0] = [matrix2 pointInMatrixSpace: p[0]];
+  min = max = p[0] = [matrix2 transformPoint: p[0]];
   for (i = 1; i < 4; i++)
     {
-      p[i] = [matrix2 pointInMatrixSpace: p[i]];
+      p[i] = [matrix2 transformPoint: p[i]];
       min.x = MIN(min.x, p[i].x);
       min.y = MIN(min.y, p[i].y);
       max.x = MAX(max.x, p[i].x);
@@ -1508,7 +1508,7 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
     }
   NSAssert(_window == [aView window], NSInvalidArgumentException);
   matrix = [aView _matrixToWindow];
-  new = [matrix sizeInMatrixSpace: aSize];
+  new = [matrix transformSize: aSize];
 
   if (_coordinates_valid)
     {
@@ -1518,7 +1518,7 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
     {
       matrix = [self _matrixFromWindow];
     }
-  new = [matrix sizeInMatrixSpace: new];
+  new = [matrix transformSize: new];
 
   return new;
 }
@@ -1545,10 +1545,10 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
     {
       matrix = [self _matrixToWindow];
     }
-  new = [matrix sizeInMatrixSpace: aSize];
+  new = [matrix transformSize: aSize];
 
   matrix = [aView _matrixFromWindow];
-  new = [matrix sizeInMatrixSpace: new];
+  new = [matrix transformSize: new];
 
   return new;
 }
