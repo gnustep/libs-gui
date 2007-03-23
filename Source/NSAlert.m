@@ -407,7 +407,7 @@ setControl(NSView* content, id control, NSString *title)
     be selectable for a copy-and-paste. Hence, setSelectable: YES.
   */
   selectedAttrs = [NSDictionary dictionaryWithObjectsAndKeys:
-				 [NSColor whiteColor], 
+				 [NSColor controlLightHighlightColor], 
 				 NSBackgroundColorAttributeName,
 				 nil];
   [(NSTextView *)fieldEditor setSelectedTextAttributes: selectedAttrs]; 

@@ -1,3 +1,8 @@
+2007-03-23  Sergii Stoian <stoyan255@gmail.com>
+
+	* Source/NSAlert.m: (-_initWithoutGModel): Set selected text
+	background color to [NSColor controlLightHighlightColor].
+
 2007-03-23  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSView.m: Replace calls to the now deprecated methods on
