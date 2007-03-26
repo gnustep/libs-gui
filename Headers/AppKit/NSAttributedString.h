@@ -49,17 +49,26 @@
 /* Global NSString attribute names used in accessing the respective
    property in a text attributes dictionary.  if the key is not in the
    dictionary the default value is assumed.  */
-APPKIT_EXPORT NSString *NSFontAttributeName;
-APPKIT_EXPORT NSString *NSParagraphStyleAttributeName;
-APPKIT_EXPORT NSString *NSForegroundColorAttributeName;
-APPKIT_EXPORT NSString *NSUnderlineStyleAttributeName;
-APPKIT_EXPORT NSString *NSSuperscriptAttributeName;
-APPKIT_EXPORT NSString *NSBackgroundColorAttributeName;
 APPKIT_EXPORT NSString *NSAttachmentAttributeName;
-APPKIT_EXPORT NSString *NSLigatureAttributeName;
+APPKIT_EXPORT NSString *NSBackgroundColorAttributeName;
 APPKIT_EXPORT NSString *NSBaselineOffsetAttributeName;
+APPKIT_EXPORT NSString *NSCursorAttributeName;
+APPKIT_EXPORT NSString *NSExpansionAttributeName;
+APPKIT_EXPORT NSString *NSFontAttributeName;
+APPKIT_EXPORT NSString *NSForegroundColorAttributeName;
 APPKIT_EXPORT NSString *NSKernAttributeName;
+APPKIT_EXPORT NSString *NSLigatureAttributeName;
 APPKIT_EXPORT NSString *NSLinkAttributeName;
+APPKIT_EXPORT NSString *NSObliquenessAttributeName;
+APPKIT_EXPORT NSString *NSParagraphStyleAttributeName;
+APPKIT_EXPORT NSString *NSShadowAttributeName;
+APPKIT_EXPORT NSString *NSStrikethroughColorAttributeName;
+APPKIT_EXPORT NSString *NSStrokeColorAttributeName;
+APPKIT_EXPORT NSString *NSStrokeWidthAttributeName;
+APPKIT_EXPORT NSString *NSSuperscriptAttributeName;
+APPKIT_EXPORT NSString *NSToolTipAttributeName;
+APPKIT_EXPORT NSString *NSUnderlineColorAttributeName;
+APPKIT_EXPORT NSString *NSUnderlineStyleAttributeName;
 
 /* Currently supported values for NSUnderlineStyleAttributeName.  */
 enum 									

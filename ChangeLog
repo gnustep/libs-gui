@@ -1,3 +1,10 @@
+2007-03-26  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSAttributedString.m: Wrap excessively long lines
+	* Source/externs.m: Add new attributed string constants
+	* Headers/AppKit/NSAttributedString.h: Add constants from current
+	MacOS-X
+
 2007-03-23  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSAffineTransform.m: Simplify code slightly.
