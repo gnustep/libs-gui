@@ -1,3 +1,92 @@
+2007-03-26  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSAttributedString.m: Wrap excessively long lines
+	* Source/externs.m: Add new attributed string constants
+	* Headers/AppKit/NSAttributedString.h: Add constants from current
+	MacOS-X
+
+2007-03-23  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSAffineTransform.m: Simplify code slightly.
+
+2007-03-23  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSCell.m (-drawWithFrame:inView:): Extract helper methods
+	for border and focus drawing.
+	* Source/NSButtonCell.m: Override the border drawing method.
+	* Source/NSMenuItemCell.m: Override the border drawing method and
+	set default focus ring to none.
+	* Source/NSPopupButtonCell.m: Set default focus ring to default.
+	
+2007-03-23  Sergii Stoian <stoyan255@gmail.com>
+
+	* Source/NSAlert.m: (-_initWithoutGModel): Set selected text
+	background color to [NSColor controlLightHighlightColor].
+
+2007-03-23  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSView.m: Replace calls to the now deprecated methods on
+	NSAffineTransform with correct ones.
+
+2007-03-22  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSButtonCell.m (-drawWithFrame:inView:),
+	* Source/NSCell.m (-drawWithFrame:inView:): Respect focus ring
+	style when drawing first responder state.
+	* Source/NSBrowserCell.m (-drawInteriorWithFrame:inView:),
+	* Source/NSPopupButtonCell.m (-drawInteriorWithFrame:inView:),
+	* Source/NSImageCell.m (-drawInteriorWithFrame:inView:): Don't
+	draw focus ring.
+
+2007-03-22  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSAffineTransform.m: Avoid accessing internals of the base
+	library class directly.  Mark many methods as deprecated.
+	* Headers/AppKit/NSAffineTransform.h: Mark gnustep extensions as
+	deprecated.  Perhaps we don't want to deprecate all of them though
+	need feedback on that.
+
+2007-03-21  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSView.m (-gState): Generate a gstate if one is needed
+	and none has been set up to now.
+
+2007-03-19  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPrintOperation.m (NSView -_endSheet, NSView
+	-_displayPageInRect:atPlacement:withInfo:): Get graphics context
+	from the print operation. 
+	* Source/NSView.m (-_lockFocusInContext:inRect:): When not set,
+	get graphics context either from window or from the print operation.
+	* Source/NSView.m (-lockFocusInRect, -lockFocusIfCanDraw): Don't
+	set the graphics context.
+	* Source/NSView.m: For all print methods get the context from
+	the print operation.
+
+2007-03-17  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSView.m (-setBoundsRotation:): Adjust _bounds ivar to
+	the rotation.
+	* Source/NSView.m (-translateOriginToPoint:, -rotateByAngle:):
+	Implemented via setBoundsOrigin: and rotateByAngle:.
+	* Source/NSView.m (-_lockFocusInContext:inRect:): For rotated
+	views compute the actual clip region instead of using _bounds.
+
+2007-03-17  Nicola Pero <nicola.pero@meta-innovation.com>
+
+	* GNUmakefile.postamble (before-uninstall): Uninstall gui.make.
+	* Panels/GNUmakefile.postamble (after-uninstall): Fixed uninstall
+	target.
+	* Source/CompatibilityHeaders.make (after-install): Use
+	ECHO_NOTHING and END_ECHO.
+	(after-uninstall): New target that uninstalls the compatibility
+	headers.
+	
+2007-03-12  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSAffineTransform.m: Set _isIdentity for all methods
+	changing the matrix of the affine transform.
+
 2007-03-11  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSApplication.m (-abortModal): Call stopModalWithCode: to

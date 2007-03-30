@@ -301,9 +301,6 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
 				      realImageSize.height)
 		operation: NSCompositeSourceOver
 		 fraction: 1.0];
-
-  if (_cell.shows_first_responder)
-    NSDottedFrameRect(cellFrame);
 }
 
 - (NSSize) cellSize

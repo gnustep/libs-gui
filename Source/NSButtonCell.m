@@ -920,37 +920,13 @@ typedef struct _GSButtonCellFlags
 	inFrame: frame];
 }
 
-
-- (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
+// Private helper method overridden in subclasses
+- (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  // Save last view drawn to
-  if (_control_view != controlView)
-    _control_view = controlView;
-
-  // transparent buttons never draw
-  if (_buttoncell_is_transparent)
-    return;
-
-  // do nothing if cell's frame rect is zero
-  if (NSIsEmptyRect(cellFrame))
-    return;
-
-  // draw the border if needed
   if ((_cell.is_bordered)
     && (!_shows_border_only_while_mouse_inside || _mouse_inside))
     {
-	[self drawBezelWithFrame: cellFrame inView: controlView];
-    }
-
-  [self drawInteriorWithFrame: cellFrame inView: controlView];
-
-  // Draw first responder
-  if (_cell.shows_first_responder
-    && [[controlView window] firstResponder] == controlView)
-    {
-      // FIXME: Should depend on _cell.focus_ring_type
-      [[GSTheme theme] drawFocusFrame: [self drawingRectForBounds: cellFrame] 
-		                 view: controlView];
+      [self drawBezelWithFrame: cellFrame inView: controlView];
     }
 }
 

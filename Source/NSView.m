@@ -53,6 +53,7 @@
 
 #include "AppKit/NSAffineTransform.h"
 #include "AppKit/NSApplication.h"
+#include "AppKit/NSBezierPath.h"
 #include "AppKit/NSCursor.h"
 #include "AppKit/NSDocumentController.h"
 #include "AppKit/NSDocument.h"
@@ -971,22 +972,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 - (void) willRemoveSubview: (NSView *)subview
 {}
 
-- (void) rotateByAngle: (float)angle
-{
-  if (_coordinates_valid)
-    {
-      (*invalidateImp)(self, invalidateSel);
-    }
-  [_boundsMatrix rotateByDegrees: angle];
-  _is_rotated_from_base = _is_rotated_or_scaled_from_base = YES;
-
-  if (_post_bounds_changes)
-    {
-      [nc postNotificationName: NSViewBoundsDidChangeNotification
-			     object: self];
-    }
-}
-
 - (void) _updateBoundsMatrix
 {
   float sx;
@@ -1243,12 +1228,11 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) setBoundsOrigin: (NSPoint)newOrigin
 {
-  _bounds.origin = newOrigin;
-
   if (_coordinates_valid)
     {
       (*invalidateImp)(self, invalidateSel);
     }
+  _bounds.origin = newOrigin;
   [_boundsMatrix setFrameOrigin: NSMakePoint(-newOrigin.x, -newOrigin.y)];
 
   if (_post_bounds_changes)
@@ -1287,12 +1271,19 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) setBoundsRotation: (float)angle
 {
+  NSAffineTransform *matrix;
+
   if (_coordinates_valid)
     {
       (*invalidateImp)(self, invalidateSel);
     }
-  [_boundsMatrix setFrameRotation: angle];
+  [_boundsMatrix rotateByDegrees: angle - [_boundsMatrix rotationAngle]];
   _is_rotated_from_base = _is_rotated_or_scaled_from_base = YES;
+  // Adjust bounds
+  matrix = [_boundsMatrix copy];
+  [matrix invert];
+  [matrix boundingRectFor: _frame result: &_bounds];
+  RELEASE(matrix);
 
   if (_post_bounds_changes)
     {
@@ -1303,17 +1294,13 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) translateOriginToPoint: (NSPoint)point
 {
-  if (_coordinates_valid)
-    {
-      (*invalidateImp)(self, invalidateSel);
-    }
-  [_boundsMatrix translateToPoint: point];
+  [self setBoundsOrigin: NSMakePoint(NSMinX(_bounds) - point.x, 
+				     NSMinY(_bounds) - point.y)];
+}
 
-  if (_post_bounds_changes)
-    {
-      [nc postNotificationName: NSViewBoundsDidChangeNotification
-	  object: self];
-    }
+- (void) rotateByAngle: (float)angle
+{
+  [self setBoundsRotation: [self boundsRotation] + angle];
 }
 
 - (NSRect) centerScanRect: (NSRect)aRect
@@ -1326,8 +1313,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
    *	Plus - this is all pretty meaningless is we are not in a window!
    */
   matrix = [self _matrixToWindow];
-  aRect.origin = [matrix pointInMatrixSpace: aRect.origin];
-  aRect.size = [matrix sizeInMatrixSpace: aRect.size];
+  aRect.origin = [matrix transformPoint: aRect.origin];
+  aRect.size = [matrix transformSize: aRect.size];
 
   aRect.origin.x = floor(aRect.origin.x);
   aRect.origin.y = floor(aRect.origin.y);
@@ -1335,8 +1322,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   aRect.size.height = floor(aRect.size.height);
 
   matrix = [self _matrixFromWindow];
-  aRect.origin = [matrix pointInMatrixSpace: aRect.origin];
-  aRect.size = [matrix sizeInMatrixSpace: aRect.size];
+  aRect.origin = [matrix transformPoint: aRect.origin];
+  aRect.size = [matrix transformSize: aRect.size];
 
   return aRect;
 }
@@ -1353,7 +1340,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   NSAssert(_window == [aView window], NSInvalidArgumentException);
 
   matrix = [aView _matrixToWindow];
-  new = [matrix pointInMatrixSpace: aPoint];
+  new = [matrix transformPoint: aPoint];
 
   if (_coordinates_valid)
     {
@@ -1363,7 +1350,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       matrix = [self _matrixFromWindow];
     }
-  new = [matrix pointInMatrixSpace: new];
+  new = [matrix transformPoint: new];
 
   return new;
 }
@@ -1391,9 +1378,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       matrix = [self _matrixToWindow];
     }
-  new = [matrix pointInMatrixSpace: aPoint];  
+  new = [matrix transformPoint: aPoint];  
   matrix = [aView _matrixFromWindow];
-  new = [matrix pointInMatrixSpace: new];
+  new = [matrix transformPoint: new];
 
   return new;
 }
@@ -1415,12 +1402,12 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
   p[3].y += aRect.size.height;
 
   for (i = 0; i < 4; i++)
-    p[i] = [matrix1 pointInMatrixSpace: p[i]];
+    p[i] = [matrix1 transformPoint: p[i]];
 
-  min = max = p[0] = [matrix2 pointInMatrixSpace: p[0]];
+  min = max = p[0] = [matrix2 transformPoint: p[0]];
   for (i = 1; i < 4; i++)
     {
-      p[i] = [matrix2 pointInMatrixSpace: p[i]];
+      p[i] = [matrix2 transformPoint: p[i]];
       min.x = MIN(min.x, p[i].x);
       min.y = MIN(min.y, p[i].y);
       max.x = MAX(max.x, p[i].x);
@@ -1521,7 +1508,7 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
     }
   NSAssert(_window == [aView window], NSInvalidArgumentException);
   matrix = [aView _matrixToWindow];
-  new = [matrix sizeInMatrixSpace: aSize];
+  new = [matrix transformSize: aSize];
 
   if (_coordinates_valid)
     {
@@ -1531,7 +1518,7 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
     {
       matrix = [self _matrixFromWindow];
     }
-  new = [matrix sizeInMatrixSpace: new];
+  new = [matrix transformSize: new];
 
   return new;
 }
@@ -1558,10 +1545,10 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
     {
       matrix = [self _matrixToWindow];
     }
-  new = [matrix sizeInMatrixSpace: aSize];
+  new = [matrix transformSize: aSize];
 
   matrix = [aView _matrixFromWindow];
-  new = [matrix sizeInMatrixSpace: new];
+  new = [matrix transformSize: new];
 
   return new;
 }
@@ -1694,68 +1681,7 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
   [self setFrame: newFrame];
 }
 
-/**
-  <p> Tell the view to maintain a private gstate object which
-  encapsulates all the information about drawing, such as coordinate
-  transforms, line widths, etc. If you do not invoke this method, a
-  gstate object is constructed each time the view is lockFocused.
-  Allocating a private gstate may improve the performance of views
-  that are focused a lot and have a lot of customized drawing
-  parameters.  </p> 
-
-  <p> View subclasses should override the
-  setUpGstate method to set these custom parameters.
-  </p> 
-*/
-- (void) allocateGState
-{
-  // FIXME: This should create an actual gState
-  _allocate_gstate = 1;
-  _renew_gstate = 1;
-}
-
-/**
-  Frees the gstate object, if there is one. 
-*/
-- (void) releaseGState
-{
-  if (_allocate_gstate && _gstate)
-    GSUndefineGState(GSCurrentContext(), _gstate);
-  _gstate = 0;
-  _allocate_gstate = 0;
-}
-
-/**
-  Returns an identifier that represents the view's gstate object,
-  which is used to encapsulate drawing information about the view.
-  Most of the time a gstate object is created from scratch when the
-  view is focused, so if the view is not currently focused or
-  allocateGState has not been called, then this method will return 0.
-  FIXME: The above is what the OpenStep and Cocoa specification say, but 
-  gState is 0 unless allocateGState has been called. 
-*/
-- (int) gState
-{
-  return _gstate;
-}
-
-/** 
-  Invalidates the view's gstate object so it will be set up again
-  using setUpGState the next time the view is focused.  */
-- (void) renewGState
-{
-  _renew_gstate = 1;
-  /* Note that the next time we lock focus, we'll realloc a gstate (if
-     _allocate_gstate). This seems to make sense, and also allows us
-     to call this method each time we invalidate the coordinates */
-}
-
-/* Overridden by subclasses to setup custom gstate */
-- (void) setUpGState
-{
-}
-
-- (void) _lockFocusInContext: ctxt inRect: (NSRect)rect
+- (void) _lockFocusInContext: (NSGraphicsContext *)ctxt inRect: (NSRect)rect
 {
   NSRect wrect;
   int window_gstate = 0;
@@ -1770,7 +1696,21 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 	}
     }
 
-  // FIXME: Set current context?
+  if (ctxt == nil)
+    {
+      if (viewIsPrinting != nil)
+        {
+	  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+
+	  ctxt = [printOp context];
+	}
+      else
+        {
+	  ctxt = [_window graphicsContext];
+	}
+    }
+  // FIXME: Set current context
+
 
   [ctxt lockFocusView: self inRect: rect];
   wrect = [self convertRect: rect toView: nil];
@@ -1817,20 +1757,19 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 	  if (_renew_gstate)
 	    {
 	      [self setUpGState];
+	      _renew_gstate = NO;
 	    }
-	  _renew_gstate = 0;
 	  DPSgsave(ctxt);
 	}
       else
 	{
-
 	  DPSsetgstate(ctxt, window_gstate);
 	  DPSgsave(ctxt);
 	  [matrix concat];
 
 	  /* Allow subclases to make other modifications */
 	  [self setUpGState];
-	  _renew_gstate = 0;
+	  _renew_gstate = NO;
 	  if (_allocate_gstate)
 	    {
 	      _gstate = GSDefineGState(ctxt);
@@ -1845,12 +1784,28 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 
   if ([self wantsDefaultClipping])
     {
-      /* Clip to the visible rectangle - which will never be greater
-       * than the bounds of the view.  This prevents drawing outside
-       * our bounds
+      /* 
+       * Clip to the visible rectangle - which will never be greater
+       * than the bounds of the view. This prevents drawing outside
+       * our bounds.
        */
-      DPSrectclip(ctxt, NSMinX(rect), NSMinY(rect),
-		  NSWidth(rect), NSHeight(rect));
+      if (_is_rotated_from_base)
+	{
+	  // When the view is rotated, more complex clipping is needed.
+	  NSAffineTransform *matrix;
+	  NSBezierPath *bp = [NSBezierPath bezierPathWithRect: _frame];
+
+	  matrix = [_boundsMatrix copy];
+	  [matrix invert];
+	  [bp transformUsingAffineTransform: matrix];
+	  [bp addClip];
+	  RELEASE(matrix);
+	}
+      else
+        { 
+	  DPSrectclip(ctxt, NSMinX(rect), NSMinY(rect),
+		      NSWidth(rect), NSHeight(rect));
+	}
     }
 
   /* Tell backends that images are drawn upside down. 
@@ -1898,9 +1853,76 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
   [ctxt unlockFocusView: self needsFlush: YES ];
 }
 
+/**
+  <p> Tell the view to maintain a private gstate object which
+  encapsulates all the information about drawing, such as coordinate
+  transforms, line widths, etc. If you do not invoke this method, a
+  gstate object is constructed each time the view is lockFocused.
+  Allocating a private gstate may improve the performance of views
+  that are focused a lot and have a lot of customized drawing
+  parameters.  </p> 
+
+  <p> View subclasses should override the
+  setUpGstate method to set these custom parameters.
+  </p> 
+*/
+- (void) allocateGState
+{
+  _allocate_gstate = YES;
+  _renew_gstate = YES;
+}
+
+/**
+  Frees the gstate object, if there is one. 
+*/
+- (void) releaseGState
+{
+  if (_allocate_gstate && _gstate)
+    GSUndefineGState(GSCurrentContext(), _gstate);
+  _gstate = 0;
+  _allocate_gstate = NO;
+}
+
+/**
+  Returns an identifier that represents the view's gstate object,
+  which is used to encapsulate drawing information about the view.
+  Most of the time a gstate object is created from scratch when the
+  view is focused, so if the view is not currently focused or
+  allocateGState has not been called, then this method will return 0.
+  FIXME: The above is what the OpenStep and Cocoa specification say, but 
+  gState is 0 unless allocateGState has been called. 
+*/
+- (int) gState
+{
+  if (_allocate_gstate && (!_gstate || _renew_gstate))
+    {
+      // Set the gstate by locking and unlocking focus.
+      [self lockFocus];
+      [self unlockFocusNeedsFlush: NO];
+    }
+
+  return _gstate;
+}
+
+/** 
+  Invalidates the view's gstate object so it will be set up again
+  using setUpGState the next time the view is focused.  */
+- (void) renewGState
+{
+  _renew_gstate = YES;
+  /* Note that the next time we lock focus, we'll realloc a gstate (if
+     _allocate_gstate). This seems to make sense, and also allows us
+     to call this method each time we invalidate the coordinates */
+}
+
+/* Overridden by subclasses to setup custom gstate */
+- (void) setUpGState
+{
+}
+
 - (void) lockFocusInRect: (NSRect)rect
 {
-  [self _lockFocusInContext: [_window graphicsContext] inRect: rect];
+  [self _lockFocusInContext: nil inRect: rect];
 }
 
 - (void) lockFocus
@@ -1915,7 +1937,7 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 
 - (BOOL) lockFocusIfCanDraw
 {
-  return [self lockFocusIfCanDrawInContext: [_window graphicsContext]];
+  return [self lockFocusIfCanDrawInContext: nil];
 }
 
 - (BOOL) lockFocusIfCanDrawInContext: (NSGraphicsContext *)context;
@@ -3740,7 +3762,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	      bBox: (NSRect)pageRect
 	     fonts: (NSString*)fontNames
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSGraphicsContext *ctxt = [printOp context];
 
   if (aString == nil)
     aString = [[NSNumber numberWithInt: ordinalNum] description];
@@ -3767,8 +3790,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 		     pages: (int)numPages
 		     title: (NSString*)aTitle
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSGraphicsContext *ctxt = [printOp context];
   NSPrintingOrientation orient;
   BOOL epsOp;
 
@@ -3826,13 +3849,17 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (void) beginSetup
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSGraphicsContext *ctxt = [printOp context];
+
   DPSPrintf(ctxt, "%%%%BeginSetup\n");
 }
 
 - (void) beginTrailer
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSGraphicsContext *ctxt = [printOp context];
+
   DPSPrintf(ctxt, "%%%%Trailer\n");
 }
 
@@ -3846,33 +3873,41 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (void) endHeaderComments
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSGraphicsContext *ctxt = [printOp context];
+
   DPSPrintf(ctxt, "%%%%EndComments\n\n");
 }
 
 - (void) endPrologue
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSGraphicsContext *ctxt = [printOp context];
+
   DPSPrintf(ctxt, "%%%%EndProlog\n\n");
 }
 
 - (void) endSetup
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSGraphicsContext *ctxt = [printOp context];
+
   DPSPrintf(ctxt, "%%%%EndSetup\n\n");
 }
 
 - (void) endPageSetup
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSGraphicsContext *ctxt = [printOp context];
+
   DPSPrintf(ctxt, "%%%%EndPageSetup\n");
 }
 
 - (void) endPage
 {
   int nup;
-  NSGraphicsContext *ctxt = GSCurrentContext();
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSGraphicsContext *ctxt = [printOp context];
   NSDictionary *dict = [[printOp printInfo] dictionary];
 
   nup = [[dict objectForKey: NSPrintPagesPerSheet] intValue];
@@ -3886,7 +3921,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (void) endTrailer
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSGraphicsContext *ctxt = [printOp context];
+
   DPSPrintf(ctxt, "%%%%EOF\n");
 }
 
@@ -3943,10 +3980,10 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 {
   int first, last, pages, nup;
   NSRect bbox;
-  NSDictionary *dict;
-  NSGraphicsContext *ctxt = GSCurrentContext();
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
-  dict = [[printOp printInfo] dictionary];
+  NSGraphicsContext *ctxt = [printOp context];
+  NSDictionary *dict = [[printOp printInfo] dictionary];
+
   if (printOp == nil)
     {
       [NSException raise: NSInternalInconsistencyException
@@ -4048,8 +4085,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 {
   int first, last, current, pages;
   NSSet *fontNames;
-  NSGraphicsContext *ctxt = GSCurrentContext();
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSGraphicsContext *ctxt = [printOp context];
   NSDictionary *dict = [[printOp printInfo] dictionary];
 
   first = [[dict objectForKey: NSPrintFirstPage] intValue];

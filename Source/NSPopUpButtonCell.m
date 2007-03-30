@@ -56,6 +56,11 @@ static NSImage *_pbc_image[2];
   return YES;
 }
 
++ (NSFocusRingType) defaultFocusRingType
+{
+  return NSFocusRingTypeDefault;
+}
+
 // Initialization
 /**
  * Initialize a blank cell.
@@ -887,12 +892,6 @@ static NSImage *_pbc_image[2];
   /* We need to calc our size to get images placed correctly */
   [self calcSize];
   [super drawInteriorWithFrame: cellFrame inView: controlView];
-
-  if (_cell.shows_first_responder)
-    {
-      cellFrame = [self drawingRectForBounds: cellFrame];
-      NSDottedFrameRect(cellFrame);
-    }
 
   /* Unset the item to restore balance if a new was created */
   if (new)

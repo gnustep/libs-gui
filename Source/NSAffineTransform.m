@@ -40,13 +40,7 @@
 #include "AppKit/NSBezierPath.h"
 #include "AppKit/PSOperators.h"
 
-typedef struct internal
-{
-  @defs(NSAffineTransform)
-} *iptr;
-
 /* Private definitions */
-#define	matrix	(((iptr)self)->_matrix)
 #define A matrix.m11
 #define B matrix.m12
 #define C matrix.m21
@@ -64,24 +58,6 @@ typedef struct internal
 
 static const float pi = 3.1415926535897932384626434;
 
-/* Quick function to multiply two coordinate matrices. C = AB */
-static inline NSAffineTransformStruct 
-matrix_multiply (NSAffineTransformStruct MA, NSAffineTransformStruct MB)
-{
-  NSAffineTransformStruct MC;
-  MC.m11 = MA.m11 * MB.m11 + MA.m12 * MB.m21;
-  MC.m12 = MA.m11 * MB.m12 + MA.m12 * MB.m22;
-  MC.m21 = MA.m21 * MB.m11 + MA.m22 * MB.m21;
-  MC.m22 = MA.m21 * MB.m12 + MA.m22 * MB.m22;
-  MC.tX  = MA.tX * MB.m11 + MA.tY * MB.m21 + MB.tX;
-  MC.tY  = MA.tX * MB.m12 + MA.tY * MB.m22 + MB.tY;
-  return MC;
-}
-
-static NSAffineTransformStruct identityTransform = {
-   1.0, 0.0, 0.0, 1.0, 0.0, 0.0
-};
-
 @implementation NSAffineTransform (GUIAdditions)
 
 /**
@@ -90,14 +66,9 @@ static NSAffineTransformStruct identityTransform = {
  */
 - (void) concat
 {
-  float m[6];
-  m[0] = matrix.m11;
-  m[1] = matrix.m12;
-  m[2] = matrix.m21;
-  m[3] = matrix.m22;
-  m[4] = matrix.tX;
-  m[5] = matrix.tY;
-  PSconcat(m);
+  NSAffineTransformStruct	matrix = [self transformStruct];
+
+  PSconcat((float*)&matrix);
 }
 
 
@@ -130,6 +101,8 @@ static NSAffineTransformStruct identityTransform = {
 
 - (void) scaleTo: (float)sx : (float)sy
 {
+  NSAffineTransformStruct	matrix = [self transformStruct];
+
   /* If it's rotated.  */
   if (B != 0  ||  C != 0)
     {
@@ -145,26 +118,34 @@ static NSAffineTransformStruct identityTransform = {
       A = sx; B = 0;
       C = 0; D = sy;
     }
+  [self setTransformStruct: matrix];
 }
 
 - (void) translateToPoint: (NSPoint)point
 {
+  NSAffineTransformStruct	matrix = [self transformStruct];
   float newTX, newTY;
 
   newTX = point.x * A + point.y * C + TX;
   newTY = point.x * B + point.y * D + TY;
   TX = newTX;
   TY = newTY;
+  [self setTransformStruct: matrix];
 }
 
 
 - (void) makeIdentityMatrix
 {
-  matrix = identityTransform;
+  static NSAffineTransformStruct identityTransform = {
+    1.0, 0.0, 0.0, 1.0, 0.0, 0.0
+  };
+
+  [self setTransformStruct: identityTransform];
 }
 
 - (void) setFrameOrigin: (NSPoint)point
 {
+  NSAffineTransformStruct	matrix = [self transformStruct];
   float dx = point.x - TX;
   float dy = point.y - TY;
   [self translateToPoint: NSMakePoint(dx, dy)];
@@ -177,7 +158,9 @@ static NSAffineTransformStruct identityTransform = {
 
 - (float) rotationAngle
 {
+  NSAffineTransformStruct	matrix = [self transformStruct];
   float rotationAngle = atan2(-C, A);
+
   rotationAngle *= 180.0 / pi;
   if (rotationAngle < 0.0)
     rotationAngle += 360.0;
@@ -187,28 +170,38 @@ static NSAffineTransformStruct identityTransform = {
 
 - (void) concatenateWith: (NSAffineTransform*)anotherMatrix
 {
+  GSOnceMLog(@"deprecated ... use -prependTransform:");
   [self prependTransform: anotherMatrix];
 }
 
 - (void) concatenateWithMatrix: (const float[6])anotherMatrix
 {
   NSAffineTransformStruct amat;
+  NSAffineTransform 	*other;
+
+  GSOnceMLog(@"deprecated ... use -prependTransform:");
   amat.m11 = anotherMatrix[0];
   amat.m12 = anotherMatrix[1];
   amat.m21 = anotherMatrix[2];
   amat.m22 = anotherMatrix[3];
   amat.tX  = anotherMatrix[4];
   amat.tY  = anotherMatrix[5];
-  matrix = matrix_multiply(amat, matrix);
+  other = [NSAffineTransform new];
+  [other setTransformStruct: amat];
+  [self prependTransform: other];
+  RELEASE(other);
 }
 
 - (void)inverse
 {
+  GSOnceMLog(@"deprecated ... use -invert:");
   [self invert];
 }
 
 - (BOOL) isRotated
 {
+  NSAffineTransformStruct	matrix = [self transformStruct];
+
   if (B == 0  &&  C == 0)
     {
       return NO;
@@ -221,6 +214,7 @@ static NSAffineTransformStruct identityTransform = {
 
 - (void) boundingRectFor: (NSRect)rect result: (NSRect*)newRect
 {
+  NSAffineTransformStruct	matrix = [self transformStruct];
   /* Shortcuts of the usual rect values */
   float x = rect.origin.x;
   float y = rect.origin.y;
@@ -267,16 +261,13 @@ static NSAffineTransformStruct identityTransform = {
 
 - (NSPoint) pointInMatrixSpace: (NSPoint)point
 {
-  NSPoint new;
-
-  new.x = A * point.x + C * point.y + TX;
-  new.y = B * point.x + D * point.y + TY;
-
-  return new;
+  GSOnceMLog(@"deprecated ... use -transformPoint:");
+  return [self transformPoint: point];
 }
 
 - (NSPoint) deltaPointInMatrixSpace: (NSPoint)point
 {
+  NSAffineTransformStruct	matrix = [self transformStruct];
   NSPoint new;
 
   new.x = A * point.x + C * point.y;
@@ -287,20 +278,13 @@ static NSAffineTransformStruct identityTransform = {
 
 - (NSSize) sizeInMatrixSpace: (NSSize)size
 {
-  NSSize new;
-
-  new.width = A * size.width + C * size.height;
-  if (new.width < 0)
-    new.width = - new.width;
-  new.height = B * size.width + D * size.height;
-  if (new.height < 0)
-    new.height = - new.height;
-
-  return new;
+  GSOnceMLog(@"deprecated ... use -transformSize:");
+  return [self transformSize: size];
 }
 
 - (NSRect) rectInMatrixSpace: (NSRect)rect
 {
+  NSAffineTransformStruct	matrix = [self transformStruct];
   NSRect new;
 
   new.origin.x = A * rect.origin.x + C * rect.origin.y + TX;
@@ -324,16 +308,23 @@ static NSAffineTransformStruct identityTransform = {
 
 - (void) setMatrix: (const float[6])replace
 {
+  NSAffineTransformStruct	matrix;
+
+  GSOnceMLog(@"deprecated ... use -setTransformStruct:");
   matrix.m11 = replace[0];
   matrix.m12 = replace[1];
   matrix.m21 = replace[2];
   matrix.m22 = replace[3];
   matrix.tX = replace[4];
   matrix.tY = replace[5];
+  [self setTransformStruct: matrix];
 }
 
 - (void) getMatrix: (float[6])replace
 {
+  NSAffineTransformStruct	matrix = [self transformStruct];
+
+  GSOnceMLog(@"deprecated ... use -transformStruct");
   replace[0] = matrix.m11;
   replace[1] = matrix.m12;
   replace[2] = matrix.m21;
@@ -344,7 +335,11 @@ static NSAffineTransformStruct identityTransform = {
 
 - (void) takeMatrixFromTransform: (NSAffineTransform *)aTransform
 {
+  NSAffineTransformStruct	matrix;
+
+  GSOnceMLog(@"deprecated ... use -transformStruct and setTransformStruct:");
   matrix = [aTransform transformStruct];
+  [self setTransformStruct: matrix];
 }
 
 

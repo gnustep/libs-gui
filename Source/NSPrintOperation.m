@@ -1063,8 +1063,8 @@ scaleRect(NSRect rect, double scale)
   int currentPage;
   float xoffset, yoffset, scale;
   NSString *label;
-  NSGraphicsContext *ctxt = GSCurrentContext();
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSGraphicsContext *ctxt = [printOp context];
 
   currentPage = [printOp currentPage];
 
@@ -1141,12 +1141,13 @@ scaleRect(NSRect rect, double scale)
 
 - (void) _endSheet
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSGraphicsContext *ctxt = [printOp context];
+
   if ([printOp isEPSOperation] == NO)
     DPSPrintf(ctxt, "showpage\n");
   DPSPrintf(ctxt, "%%%%PageTrailer\n");
   DPSPrintf(ctxt, "\n");
 }
-@end
 
+@end

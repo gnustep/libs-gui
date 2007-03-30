@@ -62,11 +62,12 @@ endif
 
 # Things to do after uninstalling
 after-uninstall::
-ifneq ($(strip $(LOCALIZED_RESOURCE_FILES)),)
+ifneq ($(strip $(LOCALIZED_RESOURCE_FILES)$(LOCALIZED_RESOURCE_COMPONENTS)),)
 	$(ECHO_NOTHING)for l in $(LANGUAGES); do \
 	  if [ -d $$l.lproj ]; then \
 	    rm -rf $(POSTAMBLE_INSTALL_DIR)/$$l.lproj; \
 	  fi; \
 	done$(END_ECHO)
 endif
+
 

@@ -30,20 +30,35 @@
 after-install::
 	@echo Installing compatibility headers...
 
-	@OLD_DIR=AppKit; NEW_DIR=GNUstepGUI; \
+	$(ECHO_NOTHING)OLD_DIR=AppKit; NEW_DIR=GNUstepGUI; \
 	LIST="$(GUI_HEADERS)" ;\
 	$(MKDIRS) $(GNUSTEP_HEADERS)/$$OLD_DIR; \
 	for I in $$LIST ; do \
 	  (echo "#warning $$I is now included using the path <$$NEW_DIR/$$I>";\
 	   echo "#include <$$NEW_DIR/$$I>" ) \
 	  > $(GNUSTEP_HEADERS)/$$OLD_DIR/$$I; \
-	done
+	done$(END_ECHO)
 
-	@OLD_DIR=gnustep/gui; NEW_DIR=GNUstepGUI; \
+	$(ECHO_NOTHING)OLD_DIR=gnustep/gui; NEW_DIR=GNUstepGUI; \
 	LIST="$(GUI_HEADERS)" ;\
 	$(MKDIRS) $(GNUSTEP_HEADERS)/$$OLD_DIR; \
 	for I in $$LIST ; do \
 	  (echo "#warning $$I is now included using the path <$$NEW_DIR/$$I>";\
 	   echo "#include <$$NEW_DIR/$$I>" ) \
 	  > $(GNUSTEP_HEADERS)/$$OLD_DIR/$$I; \
-	done
+	done$(END_ECHO)
+
+after-uninstall::
+	@echo Uninstalling compatibility headers...
+
+	$(ECHO_NOTHING)OLD_DIR=AppKit; \
+	LIST="$(GUI_HEADERS)" ;\
+	for I in $$LIST ; do \
+	   rm -f $(GNUSTEP_HEADERS)/$$OLD_DIR/$$I; \
+	done$(END_ECHO)
+
+	$(ECHO_NOTHING)OLD_DIR=gnustep/gui; \
+	LIST="$(GUI_HEADERS)" ;\
+	for I in $$LIST ; do \
+	   rm -f $(GNUSTEP_HEADERS)/$$OLD_DIR/$$I; \
+	done$(END_ECHO)

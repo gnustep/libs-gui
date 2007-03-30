@@ -57,7 +57,8 @@ before-install:: $(DESTDIR)$(GNUSTEP_MAKEFILES)/Additional
 # after-install::
 
 # Things to do before uninstalling
-# before-uninstall::
+ before-uninstall::
+	rm -f $(DESTDIR)$(GNUSTEP_MAKEFILES)/Additional/gui.make
 
 # Things to do after uninstalling
 # after-uninstall::

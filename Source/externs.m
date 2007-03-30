@@ -429,19 +429,30 @@ NSString *NSWorkspaceWillUnmountNotification =
 @"NSWorkspaceWillUnmountNotification";
 
 /*
- *	NSStringDrawing NSString additions
+ *	NSStringDrawing NSAttributedString additions
  */
-NSString *NSFontAttributeName  = @"NSFontAttributeName";
-NSString *NSParagraphStyleAttributeName = @"NSParagraphStyleAttributeName";
-NSString *NSForegroundColorAttributeName = @"NSForegroundColorAttributeName";
-NSString *NSUnderlineStyleAttributeName = @"NSUnderlineStyleAttributeName";
-NSString *NSSuperscriptAttributeName = @"NSSuperscriptAttributeName";
-NSString *NSBackgroundColorAttributeName = @"NSBackgroundColorAttributeName";
 NSString *NSAttachmentAttributeName = @"NSAttachmentAttributeName";
-NSString *NSLigatureAttributeName = @"NSLigatureAttributeName";
+NSString *NSBackgroundColorAttributeName = @"NSBackgroundColorAttributeName";
 NSString *NSBaselineOffsetAttributeName = @"NSBaselineOffsetAttributeName";
+NSString *NSCursorAttributeName = @"NSCursorAttributeName";
+NSString *NSExpansionAttributeName = @"NSExpansionAttributeName";
+NSString *NSFontAttributeName = @"NSFontAttributeName";
+NSString *NSForegroundColorAttributeName = @"NSForegroundColorAttributeName";
 NSString *NSKernAttributeName = @"NSKernAttributeName";
+NSString *NSLigatureAttributeName = @"NSLigatureAttributeName";
 NSString *NSLinkAttributeName = @"NSLinkAttributeName";
+NSString *NSObliquenessAttributeName = @"NSObliquenessAttributeName";
+NSString *NSParagraphStyleAttributeName = @"NSParagraphStyleAttributeName";
+NSString *NSShadowAttributeName = @"NSShadowAttributeName";
+NSString *NSStrikethroughColorAttributeName
+  = @"NSStrikethroughColorAttributeName";
+NSString *NSStrokeColorAttributeName = @"NSStrokeColorAttributeName";
+NSString *NSStrokeWidthAttributeName = @"NSStrokeWidthAttributeName";
+NSString *NSSuperscriptAttributeName = @"NSSuperscriptAttributeName";
+NSString *NSToolTipAttributeName = @"NSToolTipAttributeName";
+NSString *NSUnderlineColorAttributeName = @"NSUnderlineColorAttributeName";
+NSString *NSUnderlineStyleAttributeName = @"NSUnderlineStyleAttributeName";
+
 
 // NSToolbar notifications
 NSString *NSToolbarDidRemoveItemNotification = @"NSToolbarDidRemoveItemNotification";

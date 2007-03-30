@@ -41,6 +41,7 @@
 @end
 
 #if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
+#if GS_API_VERSION(GS_API_NONE, 011500)
 @interface NSAffineTransform (GNUstep)
 - (void) translateToPoint: (NSPoint)point;
 - (void) scaleTo: (float)sx : (float)sy;
@@ -73,6 +74,7 @@
 - (void) takeMatrixFromTransform: (NSAffineTransform *)aTransform;
 
 @end
+#endif
 #endif
 
 #endif /* _GNUstep_H_NSAffineTransform */

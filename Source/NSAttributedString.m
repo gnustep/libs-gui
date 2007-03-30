@@ -152,9 +152,15 @@ Class converter_bundles(NSString *format, BOOL producer)
 		{
 		  NSString *converter_name;
 		  if (producer)
-		    converter_name = [format stringByAppendingString: @"Producer"];
+		    {
+		      converter_name
+			= [format stringByAppendingString: @"Producer"];
+		    }
 		  else
-		    converter_name = [format stringByAppendingString: @"Consumer"];
+		    {
+		      converter_name
+			= [format stringByAppendingString: @"Consumer"];
+		    }
 		  converter_class = [aBundle classNamed: converter_name];
 		}
 	    }	 
@@ -355,7 +361,7 @@ static Class converter_class(NSString *format, BOOL producer)
   if (NSMaxRange (aRange) > length || location > length)
     {
       [NSException raise: NSRangeException
-		   format: @"RangeError in method -lineBreakBeforeIndex: withinRange: "];
+	format: @"RangeError in method -lineBreakBeforeIndex: withinRange: "];
     }
 
   if (!NSLocationInRange (location, aRange))
@@ -485,7 +491,7 @@ static Class converter_class(NSString *format, BOOL producer)
   if (location > length)
     {
       [NSException raise: NSRangeException
-		   format: @"RangeError in method -nextWordFromIndex: forward: "];
+	format: @"RangeError in method -nextWordFromIndex: forward: "];
     }
 
   /* Please note that we consider ' a valid word separator.  This is
@@ -906,7 +912,7 @@ documentAttributes: (NSDictionary **)dict
   if (NSMaxRange (range) > [self length])
     {
       [NSException raise: NSRangeException
-		  format: @"RangeError in method -fixParagraphStyleAttributeInRange: "];
+	format: @"RangeError in method -fixParagraphStyleAttributeInRange: "];
     }
 
   while (loc < NSMaxRange (range))
