@@ -54,73 +54,47 @@ enum {
 @interface NSAlert : NSObject 
 {
   @private
-    NSString *_informative_text;
-    NSString *_message_text;
-    NSImage *_icon;
-    NSMutableArray *_buttons;
-    NSString *_help_anchor;
-    NSWindow *_window;
-    id _delegate;
-    NSAlertStyle _style;
-    BOOL _shows_help;
+  NSString *_informative_text;
+  NSString *_message_text;
+  NSImage *_icon;
+  NSMutableArray *_buttons;
+  NSString *_help_anchor;
+  NSWindow *_window;
+  id _delegate;
+  NSAlertStyle _style;
+  BOOL _shows_help;
+  int	_result;
 }
 
-+ (NSAlert *)alertWithMessageText:(NSString *)messageTitle
-		    defaultButton:(NSString *)defaultButtonTitle
-		  alternateButton:(NSString *)alternateButtonTitle
-		      otherButton:(NSString *)otherButtonTitle
-	informativeTextWithFormat:(NSString *)format, ...;
++ (NSAlert *) alertWithMessageText: (NSString *)messageTitle
+		     defaultButton: (NSString *)defaultButtonTitle
+		   alternateButton: (NSString *)alternateButtonTitle
+		       otherButton: (NSString *)otherButtonTitle
+	 informativeTextWithFormat: (NSString *)format, ...;
 
-//
-// Alert text
-//
-- (void)setInformativeText:(NSString *)informativeText;
-- (NSString *)informativeText;
-- (void)setMessageText:(NSString *)messageText;
-- (NSString *)messageText;
 
-//
-// Alert icon
-//
-- (void)setIcon:(NSImage *)icon;
-- (NSImage *)icon;
-
-//
-// Buttons
-//
-- (NSButton *)addButtonWithTitle:(NSString *)aTitle;
-- (NSArray *)buttons;
-
-//
-// Help
-//
-- (void)setShowsHelp:(BOOL)showsHelp;
-- (BOOL)showsHelp;
-- (void)setHelpAnchor:(NSString *)anchor;
-- (NSString *)helpAnchor;
-
-//
-// Alert style
-//
-- (void)setAlertStyle:(NSAlertStyle)style;
-- (NSAlertStyle)alertStyle;
-
-//
-// Delegate
-//
-- (void)setDelegate:(id)delegate;
-- (id)delegate;
-
-//
-// Running the alert
-//
-- (int)runModal;
-- (void)beginSheetModalForWindow:(NSWindow *)window
-		   modalDelegate:(id)delegate
-		  didEndSelector:(SEL)didEndSelector
-		     contextInfo:(void *)contextInfo;
-
-- (id)window;
+- (NSButton *) addButtonWithTitle: (NSString *)aTitle;
+- (NSAlertStyle) alertStyle;
+- (void) beginSheetModalForWindow: (NSWindow *)window
+		    modalDelegate: (id)delegate
+		   didEndSelector: (SEL)didEndSelector
+		      contextInfo: (void *)contextInfo;
+- (NSArray *) buttons;
+- (id) delegate;
+- (NSString *) helpAnchor;
+- (NSImage *) icon;
+- (NSString *) informativeText;
+- (NSString *) messageText;
+- (int) runModal;
+- (void) setAlertStyle: (NSAlertStyle)style;
+- (void) setDelegate: (id)delegate;
+- (void) setHelpAnchor: (NSString *)anchor;
+- (void) setIcon: (NSImage *)icon;
+- (void) setInformativeText: (NSString *)informativeText;
+- (void) setMessageText: (NSString *)messageText;
+- (void) setShowsHelp: (BOOL)showsHelp;
+- (BOOL) showsHelp;
+- (id) window;
 
 @end
 
@@ -131,7 +105,7 @@ enum {
 
 #ifdef GNUSTEP
 @interface NSObject (NSAlertDelegate)
-- (BOOL)alertShowHelp:(NSAlert *)alert;
+- (BOOL) alertShowHelp: (NSAlert *)alert;
 @end
 #endif
 

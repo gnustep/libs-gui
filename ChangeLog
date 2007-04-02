@@ -1,3 +1,10 @@
+2007-04-02  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Headers/AppKit/NSAlert.h: Tidied.
+	* Source/NSAlert.m: Tidied to more standard gnustep style and added
+	code to perform gui operations in the main appkit thread where someone
+	tries to use alerts from another thread.
+
 2007-03-26  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSAttributedString.m: Wrap excessively long lines
