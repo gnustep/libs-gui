@@ -960,6 +960,7 @@ setControl(NSView* content, id control, NSString *title)
   instance = _instance;
   ASSIGNCOPY(defaultTitle, _defaultTitle);
   ASSIGNCOPY(title, _title);
+  ASSIGNCOPY(message, _message);
   ASSIGNCOPY(defaultButton, _defaultButton);
   ASSIGNCOPY(alternateButton, _alternateButton);
   ASSIGNCOPY(otherButton, _otherButton);
