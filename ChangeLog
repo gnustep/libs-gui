@@ -1,3 +1,17 @@
+2007-04-04 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSWindow.h: Reuse one reserved ivar as the
+	graphics context.
+	* Source/NSWindow.m (-_terminateBackendWindow,
+	-_initBackendWindow, -initWithWindowRef:, -graphicsContext,
+	-flushWindow, -_processResizeEvent): Set and use context from ivar.
+	* Source/NSImage.m (-drawInRect:fromRect:operation:fraction:):
+	make sure to use the right graphic context.
+	* Source/NSView.m (-releaseGState): Use context from window.
+	* Source/NSView.m (-_lockFocusInContext:inRect:,
+	-unlockFocusNeedsFlush:) Set context to current when locking focus
+	and pop it when unlocking.
+
 2007-04-02  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/AppKit/NSAlert.h: Tidied.

@@ -1051,6 +1051,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     NSPoint p;
     double x0, y0, x1, y1, w, h;
     int gState;
+    NSGraphicsContext *ctxt1;
 
     s = [self size];
 
@@ -1098,8 +1099,9 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 		       alpha: YES];
 
     [[[cache window] contentView] lockFocus];
-
-    DPScompositerect(ctxt, 0, 0, w, h, NSCompositeClear);
+    // The context of the cache window
+    ctxt1 = GSCurrentContext();
+    DPScompositerect(ctxt1, 0, 0, w, h, NSCompositeClear);
 
     /* Set up the effective transform.  We also save a gState with this
        transform to make it easier to do the final composite.  */
@@ -1107,9 +1109,8 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     ts.tX = p.x;
     ts.tY = p.y;
     [transform setTransformStruct: ts];
-    [ctxt GSSetCTM: transform];
-
-    gState = [ctxt GSDefineGState];
+    [ctxt1 GSSetCTM: transform];
+    gState = [ctxt1 GSDefineGState];
 
     [self drawRepresentation: [self bestRepresentationForDevice: nil]
 		      inRect: NSMakeRect(0, 0, s.width, s.height)];
@@ -1118,17 +1119,17 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
        the alpha of the pixels.  */
     if (delta != 1.0)
       {
-	DPSsetalpha(ctxt, delta);
-	DPScompositerect(ctxt, 0, 0, s.width, s.height,
-			 NSCompositeDestinationIn);
+        DPSsetalpha(ctxt1, delta);
+        DPScompositerect(ctxt1, 0, 0, s.width, s.height,
+                         NSCompositeDestinationIn);
       }
 
     [[[cache window] contentView] unlockFocus];
 
 
     DPScomposite(ctxt, srcRect.origin.x, srcRect.origin.y,
-		 srcRect.size.width, srcRect.size.height, gState,
-		 dstRect.origin.x, dstRect.origin.y, op);
+                 srcRect.size.width, srcRect.size.height, gState,
+                 dstRect.origin.x, dstRect.origin.y, op);
 
     [ctxt GSUndefineGState: gState];
 

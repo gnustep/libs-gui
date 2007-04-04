@@ -215,9 +215,9 @@ APPKIT_EXPORT NSSize NSTokenSize;
   } _f;
  
   id _defaultButtonCell;
+  NSGraphicsContext *_context;
+
   void          *_reserved_1;
-  void          *_reserved_2;
-  
 }
 
 /*

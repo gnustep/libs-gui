@@ -1691,26 +1691,28 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
       NSAssert(_window != nil, NSInternalInconsistencyException);
       /* Check for deferred window */
       if ((window_gstate = [_window gState]) == 0)
-	{
-	  return;
-	}
+        {
+          return;
+        }
     }
 
   if (ctxt == nil)
     {
       if (viewIsPrinting != nil)
         {
-	  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+          NSPrintOperation *printOp = [NSPrintOperation currentOperation];
 
-	  ctxt = [printOp context];
-	}
+          ctxt = [printOp context];
+        }
       else
         {
-	  ctxt = [_window graphicsContext];
-	}
+          ctxt = [_window graphicsContext];
+        }
     }
-  // FIXME: Set current context
 
+  // Set current context
+  [NSGraphicsContext saveGraphicsState];
+  [NSGraphicsContext setCurrentContext: ctxt];
 
   [ctxt lockFocusView: self inRect: rect];
   wrect = [self convertRect: rect toView: nil];
@@ -1732,16 +1734,16 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
   if (viewIsPrinting != nil)
     {
       if (viewIsPrinting == self)
-	{
-	  /* Make sure coordinates are valid, then fake that we don't have
-	     a superview so we get printed correctly */
-	  [self _matrixToWindow];
-	  [_matrixToWindow makeIdentityMatrix];
-	}
+        {
+          /* Make sure coordinates are valid, then fake that we don't have
+             a superview so we get printed correctly */
+          [self _matrixToWindow];
+          [_matrixToWindow makeIdentityMatrix];
+        }
       else
-	{
-	  [[self _matrixToWindow] concat];
-	}
+        {
+          [[self _matrixToWindow] concat];
+        }
 
       /* Allow subclases to make other modifications */
       [self setUpGState];
@@ -1752,34 +1754,35 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
       matrix = [self _matrixToWindow];
 
       if (_gstate)
-	{
-	  DPSsetgstate(ctxt, _gstate);
-	  if (_renew_gstate)
-	    {
-	      [self setUpGState];
-	      _renew_gstate = NO;
-	    }
-	  DPSgsave(ctxt);
-	}
+        {
+          DPSsetgstate(ctxt, _gstate);
+          if (_renew_gstate)
+            {
+              [self setUpGState];
+              _renew_gstate = NO;
+            }
+          DPSgsave(ctxt);
+        }
       else
-	{
-	  DPSsetgstate(ctxt, window_gstate);
-	  DPSgsave(ctxt);
-	  [matrix concat];
-
-	  /* Allow subclases to make other modifications */
-	  [self setUpGState];
-	  _renew_gstate = NO;
-	  if (_allocate_gstate)
-	    {
-	      _gstate = GSDefineGState(ctxt);
-	      /* Balance the previous gsave and install our own gstate */
-	      DPSgrestore(ctxt);
-	      DPSsetgstate(ctxt, _gstate);
-	      DPSgsave(ctxt);
-	    }
-
-	}
+        {
+          // This only works, when the context comes from the window
+          DPSsetgstate(ctxt, window_gstate);
+          DPSgsave(ctxt);
+          [matrix concat];
+          
+          /* Allow subclases to make other modifications */
+          [self setUpGState];
+          _renew_gstate = NO;
+          if (_allocate_gstate)
+            {
+              _gstate = GSDefineGState(ctxt);
+              /* Balance the previous gsave and install our own gstate */
+              DPSgrestore(ctxt);
+              DPSsetgstate(ctxt, _gstate);
+              DPSgsave(ctxt);
+            }
+          
+        }
     }
 
   if ([self wantsDefaultClipping])
@@ -1790,25 +1793,25 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
        * our bounds.
        */
       if (_is_rotated_from_base)
-	{
-	  // When the view is rotated, more complex clipping is needed.
-	  NSAffineTransform *matrix;
-	  NSBezierPath *bp = [NSBezierPath bezierPathWithRect: _frame];
-
-	  matrix = [_boundsMatrix copy];
-	  [matrix invert];
-	  [bp transformUsingAffineTransform: matrix];
-	  [bp addClip];
-	  RELEASE(matrix);
-	}
+        {
+          // When the view is rotated, more complex clipping is needed.
+          NSAffineTransform *matrix;
+          NSBezierPath *bp = [NSBezierPath bezierPathWithRect: _frame];
+          
+          matrix = [_boundsMatrix copy];
+          [matrix invert];
+          [bp transformUsingAffineTransform: matrix];
+          [bp addClip];
+          RELEASE(matrix);
+        }
       else
         { 
-	  DPSrectclip(ctxt, NSMinX(rect), NSMinY(rect),
+          DPSrectclip(ctxt, NSMinX(rect), NSMinY(rect),
 		      NSWidth(rect), NSHeight(rect));
-	}
+        }
     }
 
-  /* Tell backends that images are drawn upside down. 
+  /* Tell backends that images are drawn upside down. Obsolete?
      This is needed when a backend is able to handle full image transformation. */
   GSWSetViewIsFlipped(ctxt, _rFlags.flipped_view);
 }
@@ -1825,7 +1828,7 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
       NSAssert(_window != nil, NSInternalInconsistencyException);
       /* Check for deferred window */
       if ([_window gState] == 0)
-	return;
+        return;
 
       /* Restore our original gstate */
       DPSgrestore(ctxt);
@@ -1842,15 +1845,16 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
       struct	NSWindow_struct *window_t;
       window_t = (struct NSWindow_struct *)_window;
       if (flush)
-	{
-	  rect = [[window_t->_rectsBeingDrawn lastObject] rectValue];
-	  window_t->_rectNeedingFlush =
-	    NSUnionRect(window_t->_rectNeedingFlush, rect);
-	  window_t->_f.needs_flush = YES;
-	}
+        {
+          rect = [[window_t->_rectsBeingDrawn lastObject] rectValue];
+          window_t->_rectNeedingFlush =
+              NSUnionRect(window_t->_rectNeedingFlush, rect);
+          window_t->_f.needs_flush = YES;
+        }
       [window_t->_rectsBeingDrawn removeLastObject];
     }
   [ctxt unlockFocusView: self needsFlush: YES ];
+  [NSGraphicsContext restoreGraphicsState];
 }
 
 /**
@@ -1878,7 +1882,7 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 - (void) releaseGState
 {
   if (_allocate_gstate && _gstate)
-    GSUndefineGState(GSCurrentContext(), _gstate);
+    GSUndefineGState([_window graphicsContext], _gstate);
   _gstate = 0;
   _allocate_gstate = NO;
 }
@@ -1977,9 +1981,9 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
   if (_rFlags.needs_display == YES)
     {
       if ([self isOpaque] == YES)
-	{
-	  [self displayIfNeededIgnoringOpacity];
-	}
+        {
+          [self displayIfNeededIgnoringOpacity];
+        }
       else
 	{
 	  NSView	*firstOpaque = [self opaqueAncestor];
@@ -2024,32 +2028,32 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
       NSRect	rect;
 
       if (_coordinates_valid == NO)
-	{
-	  [self _rebuildCoordinates];
-	}
+        {
+          [self _rebuildCoordinates];
+        }
       rect = NSIntersectionRect(_invalidRect, _visibleRect);
       if (NSIsEmptyRect(rect) == NO)
-	{
-	  [self displayIfNeededInRectIgnoringOpacity: rect];
-	}
+        {
+          [self displayIfNeededInRectIgnoringOpacity: rect];
+        }
       /*
        * If we still need display after displaying the invalid rectangle,
        * display any subviews that need display.
        */ 
       if (_rFlags.needs_display == YES)
-	{
-	  NSEnumerator	*enumerator = [_sub_views objectEnumerator];
-	  NSView	*sub;
-
-	  while ((sub = [enumerator nextObject]) != nil)
-	    {
-	      if (sub->_rFlags.needs_display)
-		{
-		  [sub displayIfNeededIgnoringOpacity];
-		}
-	    }
-	  _rFlags.needs_display = NO;
-	}
+        {
+          NSEnumerator	*enumerator = [_sub_views objectEnumerator];
+          NSView	*sub;
+          
+          while ((sub = [enumerator nextObject]) != nil)
+            {
+              if (sub->_rFlags.needs_display)
+                {
+                  [sub displayIfNeededIgnoringOpacity];
+                }
+            }
+          _rFlags.needs_display = NO;
+        }
     }
 }
 
