@@ -1,3 +1,15 @@
+2007-04-05 Xavier Glattard <xavier.glattard@online.fr>
+
+    * Headers/AppKit/NSAnimation.h
+    * Source/NSAnimation.m
+    * Headers/Additions/GNUstepGUI/GSAnimator.h
+    * Source/GSAnimator.m
+    Implementation of NSAnimation and NSViewAnimation classes :
+    - only NSAnimationNonBlocking mode is implemented
+    - runLoopModesForAnimating is not used
+    GSAnimator class is in alpha stage : interface may be changed
+    See gnustep-examples/GSTest for demos.
+
 2007-04-04 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSWindow.h: Reuse one reserved ivar as the
