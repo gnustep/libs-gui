@@ -170,6 +170,7 @@ NSWindow+Toolbar.m \
 NSWindow.m \
 NSWindowController.m \
 NSWorkspace.m \
+GSAnimator.m \
 GSDisplayServer.m \
 GSFusedSilica.m \
 GSFusedSilicaContext.m \
@@ -368,6 +369,7 @@ GUI_HEADERS = \
 GSVersion.h \
 GMAppKit.h \
 GMArchiver.h \
+GSAnimator.h \
 GSTheme.h \
 GSFontInfo.h \
 GSMemoryPanel.h \
