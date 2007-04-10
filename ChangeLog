@@ -1,14 +1,22 @@
+2007-04-10 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSClipView.m (-setBoundsOrigin:): Use NSView method
+	scrollRect:by:.
+	* Source/NSPrintOperation.m (NSView
+	-_displayPageInRect:atPlacement:withInfo:): Release the temporary matrixes.
+	* Source/GSEPSPrintOperation.m (_print): Call endPage on the view.
+		
 2007-04-05 Xavier Glattard <xavier.glattard@online.fr>
 
-    * Headers/AppKit/NSAnimation.h
-    * Source/NSAnimation.m
-    * Headers/Additions/GNUstepGUI/GSAnimator.h
-    * Source/GSAnimator.m
-    Implementation of NSAnimation and NSViewAnimation classes :
-    - only NSAnimationNonBlocking mode is implemented
-    - runLoopModesForAnimating is not used
-    GSAnimator class is in alpha stage : interface may be changed
-    See gnustep-examples/GSTest for demos.
+	* Headers/AppKit/NSAnimation.h
+	* Source/NSAnimation.m
+	* Headers/Additions/GNUstepGUI/GSAnimator.h
+	* Source/GSAnimator.m
+	Implementation of NSAnimation and NSViewAnimation classes :
+	- only NSAnimationNonBlocking mode is implemented
+	- runLoopModesForAnimating is not used
+	GSAnimator class is in alpha stage : interface may be changed
+	See gnustep-examples/GSTest for demos.
 
 2007-04-04 Fred Kiefer <FredKiefer@gmx.de>
 

@@ -102,11 +102,12 @@
 				 forKey: @"NSPrintSheetBounds"];
                               
   [_view beginDocument];
-  
   [_view beginPageInRect: _rect 
              atPlacement: NSMakePoint(0,0)];
              
   [_view displayRectIgnoringOpacity: _rect];
+
+  [_view endPage];
   [_view endDocument];
 }
 
@@ -123,7 +124,7 @@
 
       eps = [NSString stringWithContentsOfFile: _path];
       
-      [_data setData: [eps dataUsingEncoding:NSASCIIStringEncoding]];
+      [_data setData: [eps dataUsingEncoding: NSASCIIStringEncoding]];
     }
 
   return YES;
