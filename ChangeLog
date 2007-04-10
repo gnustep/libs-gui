@@ -1,15 +1,22 @@
+2007-04-09 21:20-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSAnimation.m: Removed static INLINE declaration from
+	nsanimation_progressMarkSorter function so that it will compile
+	properly on versions of gcc prior to 4.1.2.
+
 2007-04-10 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSClipView.m (-setBoundsOrigin:): Use NSView method
 	scrollRect:by:.
 	* Source/NSPrintOperation.m (NSView
-	-_displayPageInRect:atPlacement:withInfo:): Release the temporary matrixes.
+	-_displayPageInRect:atPlacement:withInfo:): Release the temporary 
+	matrixes.
 	* Source/GSEPSPrintOperation.m (_print): Call endPage on the view.
 		
 2007-04-05 Xavier Glattard <xavier.glattard@online.fr>
 
 	* Headers/AppKit/NSAnimation.h
-	* Source/NSAnimation.m
+        * Source/NSAnimation.m
 	* Headers/Additions/GNUstepGUI/GSAnimator.h
 	* Source/GSAnimator.m
 	Implementation of NSAnimation and NSViewAnimation classes :

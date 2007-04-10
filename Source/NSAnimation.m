@@ -83,7 +83,7 @@ _NSAnimationCurveDesc *_gs_animationCurveDesc
 - (NSAnimationProgress) _gs_curveShift;
 @end
 
-static INLINE NSComparisonResult
+NSComparisonResult
 nsanimation_progressMarkSorter( NSAnimationProgress first,NSAnimationProgress second)
 {
   float diff = first - second;
