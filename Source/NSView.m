@@ -1315,6 +1315,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   matrix = [self _matrixToWindow];
   aRect.origin = [matrix transformPoint: aRect.origin];
   aRect.size = [matrix transformSize: aRect.size];
+  if (aRect.size.height < 0.0)
+    {
+      aRect.size.height = -aRect.size.height;
+    }
 
   aRect.origin.x = floor(aRect.origin.x);
   aRect.origin.y = floor(aRect.origin.y);
@@ -1324,6 +1328,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   matrix = [self _matrixFromWindow];
   aRect.origin = [matrix transformPoint: aRect.origin];
   aRect.size = [matrix transformSize: aRect.size];
+  if (aRect.size.height < 0.0)
+    {
+      aRect.size.height = -aRect.size.height;
+    }
 
   return aRect;
 }
@@ -1509,6 +1517,10 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
   NSAssert(_window == [aView window], NSInvalidArgumentException);
   matrix = [aView _matrixToWindow];
   new = [matrix transformSize: aSize];
+  if (new.height < 0.0)
+    {
+      new.height = -new.height;
+    }
 
   if (_coordinates_valid)
     {
@@ -1519,7 +1531,10 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
       matrix = [self _matrixFromWindow];
     }
   new = [matrix transformSize: new];
-
+  if (new.height < 0.0)
+    {
+      new.height = -new.height;
+    }
   return new;
 }
 
@@ -1546,9 +1561,17 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
       matrix = [self _matrixToWindow];
     }
   new = [matrix transformSize: aSize];
+  if (new.height < 0.0)
+    {
+      new.height = -new.height;
+    }
 
   matrix = [aView _matrixFromWindow];
   new = [matrix transformSize: new];
+  if (new.height < 0.0)
+    {
+      new.height = -new.height;
+    }
 
   return new;
 }

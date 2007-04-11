@@ -1,3 +1,10 @@
+2007-04-11 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSView.m: When transforming a size ensure that the
+	resulting height is positive.  Is this correct behavior?
+	It should reproduce the old (incorrect ... ie differing from MacOS-X)
+	behavior of NSAffineTransform.
+
 2007-04-09 21:20-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSAnimation.m: Removed static INLINE declaration from
