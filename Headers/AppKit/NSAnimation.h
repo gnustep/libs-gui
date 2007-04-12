@@ -39,109 +39,10 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSArray.h>
 
-// Bezier curve parameters
-typedef struct __GSBezierDesc
-{
-  float p[4]; // control points
-  BOOL areCoefficientsComputed;
-  float a[4]; // coefficients
-} _GSBezierDesc;
-
-static inline void 
-_GSBezierComputeCoefficients( _GSBezierDesc *b )
-{
-  b->a[0] =     b->p[0];
-  b->a[1] =-3.0*b->p[0]+3.0*b->p[1];
-  b->a[2] = 3.0*b->p[0]-6.0*b->p[1]+3.0*b->p[2];
-  b->a[3] =-    b->p[0]+3.0*b->p[1]-3.0*b->p[2]+b->p[3];
-  b->areCoefficientsComputed = YES;
-}
-
-static inline float 
-_GSBezierEval( _GSBezierDesc *b, float t )
-{
-  if(!b->areCoefficientsComputed)
-    _GSBezierComputeCoefficients(b);
-  return b->a[0]+t*(b->a[1]+t*(b->a[2]+t*b->a[3]));
-}
-
-static inline float 
-_GSBezierDerivEval( _GSBezierDesc *b, float t )
-{
-  if(!b->areCoefficientsComputed)
-    _GSBezierComputeCoefficients(b);
-  return b->a[1]+t*(2.0*b->a[2]+t*3.0*b->a[3]);
-}
-
-// Rational Bezier curve parameters
-typedef struct __GSRationalBezierDesc
-{
-  float w[4]; // weights
-  float p[4]; // control points
-  BOOL areBezierDescComputed;
-  _GSBezierDesc n; // numerator
-  _GSBezierDesc d; // denumerator
-} _GSRationalBezierDesc;
-
-static inline void 
-_GSRationalBezierComputeBezierDesc( _GSRationalBezierDesc *rb )
-{
-  unsigned i;
-  for(i=0;i<4;i++)
-    rb->n.p[i] = (rb->d.p[i] = rb->w[i]) * rb->p[i];
-  _GSBezierComputeCoefficients(&rb->n);
-  _GSBezierComputeCoefficients(&rb->d);
-  rb->areBezierDescComputed = YES;
-}
- 
-static inline float
-_GSRationalBezierEval( _GSRationalBezierDesc *rb, float t)
-{
-  if(!rb->areBezierDescComputed)
-    _GSRationalBezierComputeBezierDesc(rb);
-  return _GSBezierEval(&(rb->n),t)/_GSBezierEval(&(rb->d),t);
-}
-
-static inline float
-_GSRationalBezierDerivEval( _GSRationalBezierDesc *rb, float t)
-{
-  if(!rb->areBezierDescComputed)
-    _GSRationalBezierComputeBezierDesc(rb);
-  float h = _GSBezierEval(&(rb->d),t);
-  return ( _GSBezierDerivEval(&(rb->n),t) * h 
-         - _GSBezierEval     (&(rb->n),t) * _GSBezierDerivEval(&(rb->d),t) )
-    / (h*h);
-}
-
-typedef struct __NSAnimationCurveDesc
-{
-  float s,e; // start & end values
-  float sg,eg; // start & end gradients 
-  _GSRationalBezierDesc rb;
-  BOOL isRBezierComputed;
-} _NSAnimationCurveDesc;
-
-extern
-_NSAnimationCurveDesc *_gs_animationCurveDesc;
-
-static inline float
-_gs_animationValueForCurve( _NSAnimationCurveDesc *c, float t, float t0 )
-{
-  if(!c->isRBezierComputed)
-  {
-    c->rb.p[0] = c->s;
-    c->rb.p[1] = c->s + (c->sg*c->rb.w[0])/(3*c->rb.w[1]);
-    c->rb.p[2] = c->e - (c->eg*c->rb.w[3])/(3*c->rb.w[2]);
-    c->rb.p[3] = c->e;
-    _GSRationalBezierComputeBezierDesc(&c->rb);
-    c->isRBezierComputed = YES;
-  }
-  return _GSRationalBezierEval( &(c->rb),(t-t0)/(1.0-t0) );
-}
-
 @class NSString;
 @class NSArray;
 @class NSNumber;
+@class NSRecursiveLock;
 
 /** These constants describe the curve of an animation—that is, the relative speed of an animation from start to finish. */
 typedef enum _NSAnimationCurve
@@ -156,15 +57,45 @@ typedef enum _NSAnimationCurve
 /** These constants indicate the blocking mode of an NSAnimation object when it is running. */
 typedef enum _NSAnimationBlockingMode
 {
-  NSAnimationBlocking		 = GSBlockingCocoaAnimation,
-  NSAnimationNonblocking	 = GSNonblockingCocoaAnimation,
-  NSAnimationNonblockingThreaded = GSNonblockingCocoaThreadedAnimation
+  NSAnimationBlocking,
+  NSAnimationNonblocking,
+  NSAnimationNonblockingThreaded
 } NSAnimationBlockingMode;
 
 typedef float NSAnimationProgress;
 
+// Bezier curve parameters
+typedef struct __GSBezierDesc
+{
+  float p[4]; // control points
+  BOOL areCoefficientsComputed;
+  float a[4]; // coefficients
+} _GSBezierDesc;
+
+// Rational Bezier curve parameters
+typedef struct __GSRationalBezierDesc
+{
+  float w[4]; // weights
+  float p[4]; // control points
+  BOOL areBezierDescComputed;
+  _GSBezierDesc n; // numerator
+  _GSBezierDesc d; // denumerator
+} _GSRationalBezierDesc;
+
+// Animation curve parameters
+typedef struct __NSAnimationCurveDesc
+{
+  float s,e; // start & end values
+  float sg,eg; // start & end gradients 
+  _GSRationalBezierDesc rb;
+  BOOL isRBezierComputed;
+} _NSAnimationCurveDesc;
+
 /** Posted when the current progress of a running animation reaches one of its progress marks. */
 APPKIT_EXPORT NSString *NSAnimationProgressMarkNotification;
+
+/** Key used in the [NSNotification-userInfo] disctionary to access the current progress mark. */
+APPKIT_EXPORT NSString *NSAnimationProgressMark;
 
 /**
  * Objects of the NSAnimation class manage the timing and progress of
@@ -195,7 +126,7 @@ APPKIT_EXPORT NSString *NSAnimationProgressMarkNotification;
 
   NSAnimationBlockingMode _blockingMode;  // Blocking mode
   GSAnimator *_animator;                  // The animator
-  BOOL _isANewAnimatorNeeded;              // Some parameters have changed...
+  BOOL _isANewAnimatorNeeded;             // Some parameters have changed...
 
   id _delegate; // The delegate, and the cached delegation methods...
   void  (*_delegate_animationDidReachProgressMark)(id,SEL,NSAnimation*,NSAnimationProgress);
@@ -203,6 +134,10 @@ APPKIT_EXPORT NSString *NSAnimationProgressMarkNotification;
   void  (*_delegate_animationDidEnd              )(id,SEL,NSAnimation*);
   void  (*_delegate_animationDidStop             )(id,SEL,NSAnimation*);
   BOOL  (*_delegate_animationShouldStart         )(id,SEL,NSAnimation*);
+  id _currentDelegate; // The delegate when the animation is running
+
+  BOOL _isThreaded;
+  NSRecursiveLock *_isAnimatingLock;
 }
 
 /** Adds the progress mark to the receiver. */
@@ -245,44 +180,63 @@ APPKIT_EXPORT NSString *NSAnimationProgressMarkNotification;
 /** Returns the receiver’s progress marks. */
 - (NSArray*) progressMarks;
 
-/** Removes progress mark from the receiver. */
+/** Removes a progress mark from the receiver.
+    A value that does not correspond to a progress mark is ignored.*/
 - (void) removeProgressMark: (NSAnimationProgress)progress;
 
-/** Overridden to return the run-loop modes that the receiver uses to run the animation timer in. */
+/** Overridden to return the run-loop modes that the receiver uses to run the
+    animation timer in. */
 - (NSArray*) runLoopModesForAnimating;
 
-/** Sets the blocking mode of the receiver. */
+/** Sets the blocking mode of the receiver.
+    The new blocking mode takes effect the next time the receiver is started. */
 - (void) setAnimationBlockingMode: (NSAnimationBlockingMode)mode;
 
-/** Sets the receiver’s animation curve. */
+/** Sets the receiver’s animation curve.
+    The new value affects the animation already in progress : the actual 
+    curve smoothly changes from the old curve to the new one. */
 - (void) setAnimationCurve: (NSAnimationCurve)curve;
 
-/** Sets the current progress of the receiver. */
+/** Sets the current progress of the receiver.
+    In the case of a forward jump the marks between the previous progress value
+    and the new (excluded) progress value are ignored. In the case of a
+    backward jump (rewind) the marks will be reached again. */
 - (void) setCurrentProgress: (NSAnimationProgress)progress;
 
-/** Sets the delegate of the receiver. */
+/** Sets the delegate of the receiver.
+    The new delegate takes effect the next time the receiver is started. */
 - (void) setDelegate: (id)delegate;
 
-/** Sets the duration of the animation to a specified number of seconds. */
+/** Sets the duration of the animation to a specified number of seconds.
+    If the duration is changed while the animation is running the <i>speed</i>
+    of the animation is not changed but the current progress value is
+    (see [-setCurrentprogress]). The new value takes effect at the next
+    frame. */
 - (void) setDuration: (NSTimeInterval)duration;
 
-/** Sets the frame rate of the receiver. */
+/** Sets the frame rate of the receiver. 
+    The new frame rate takes effect at the next frame. */
 - (void) setFrameRate: (float)fps;
 
-/** Sets the receiver’s progress marks to the values specified in the passed-in array. */
+/** Sets the receiver’s progress marks to the values specified in the
+    passed-in array. The new marks are t*/
 - (void) setProgressMarks: (NSArray*)progress;
 
-/** Starts the animation represented by the receiver. */
+/** Starts the animation represented by the receiver.
+    If the animation is already running the method has no effect.*/
 - (void) startAnimation;
 
-/** Starts running the animation represented by the receiver when another animation reaches a specific progress mark. */
+/** Starts running the animation represented by the receiver when another
+    animation reaches a specific progress mark. */
 - (void) startWhenAnimation: (NSAnimation*)animation
             reachesProgress: (NSAnimationProgress)start;
 
-/** Stops the animation represented by the receiver. */
+/** Stops the animation represented by the receiver.
+    If the animation is not running the method has no effect.*/
 - (void) stopAnimation;
 
-/** Stops running the animation represented by the receiver when another animation reaches a specific progress mark. */
+/** Stops running the animation represented by the receiver when another
+    animation reaches a specific progress mark. */
 - (void) stopWhenAnimation: (NSAnimation*)animation
            reachesProgress: (NSAnimationProgress)stop;
 

@@ -5,8 +5,7 @@
  *
  * Copyright (c) 2007 Free Software Foundation, Inc.
  *
- * This file used to be part of the mySTEP Library.
- * This file now is part of the GNUstep GUI Library.
+ * This file is part of the GNUstep GUI Library.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -31,7 +30,7 @@
 @class NSRunLoop;
 @class NSEvent;
 @class NSTimer;
-@class NSThread;
+@class NSString;
 
 #include <Foundation/NSObject.h>
 #include <Foundation/NSDate.h>
@@ -42,8 +41,6 @@
  * be animated by a GSAnimator.
  */
 @protocol GSAnimation
-/** Returns the run-loop modes useed to run the animation timer in. */
-- (NSArray*) runLoopModesForAnimating;
 /** Call back method indicating that the GSAnimator did start the
  * animation loop. */
 - (void) animatorDidStart;
@@ -51,64 +48,56 @@
  * animation loop. */
 - (void) animatorDidStop;
 /** Call back method called for each animation loop. */
-- (void) animatorStep: (NSTimeInterval) elapsedTime;
+- (void) animatorStep: (NSTimeInterval)elapsedTime;
 @end
-
-typedef enum
-{
-  GSTimerBasedAnimation,
-  GSPerformerBasedAnimation,
-  // Cocoa compatible animation modes :
-  GSBlockingCocoaAnimation,
-  GSNonblockingCocoaAnimation,
-  GSNonblockingCocoaThreadedAnimation
-} GSAnimationBlockingMode;
 
 /**
  * GSAnimator is the front of a class cluster. Instances of a subclass of 
- * GSAnimator manages the timing of an animation.
+ * GSAnimator manage the timing of an animation.
  */
 @interface GSAnimator : NSObject
 {
   id<GSAnimation> _animation; // The Object to be animated
-  NSDate *_startTime;         // The time the animation did started
+  NSDate* _startTime;         // The time the animation did started
   BOOL _running;              // Indicates that the animator is looping
 
   NSTimeInterval _elapsed;    // Elapsed time since the animator started
   NSTimeInterval _lastFrame;  // The time of the last animation loop
   unsigned int _frameCount;   // The number of loops since the start
 
-  NSRunLoop *_runLoop;        // The run-loop used for looping
+  NSArray* _runLoopModes;
   
-  NSTimer *_timer;            // Timer used for looping
+  NSTimer* _timer;            // Timer used for looping
   NSTimeInterval _timerInterval;
 }
 
 /** Returns a GSAnimator object initialized with the specified object
+ * to be animated as fast as possible. */
++ (GSAnimator*) animatorWithAnimation: (id<GSAnimation>)anAnimation;
+
+/** Returns a GSAnimator object initialized with the specified object
  * to be animated. */
 + (GSAnimator*) animatorWithAnimation: (id<GSAnimation>)anAnimation
-                                 mode: (GSAnimationBlockingMode)aMode
                             frameRate: (float)fps;
 
 /** Returns a GSAnimator object allocated in the given NSZone and 
  * initialized with the specified object to be animated. */
 + (GSAnimator*) animatorWithAnimation: (id<GSAnimation>)anAnimation
-                                 mode: (GSAnimationBlockingMode)aMode
                             frameRate: (float)fps
 			         zone: (NSZone*)aZone;
 
 /** Returns a GSAnimator object initialized with the specified object
- * to be animated. */
+ * to be animated. The given NSRunLoop is used in NSDefaultRunLoopMode.*/
 - (GSAnimator*) initWithAnimation: (id<GSAnimation>)anAnimation
-                        frameRate: (float)aFrameRate
-                          runLoop: (NSRunLoop*)aRunLoop;
+                        frameRate: (float)aFrameRate;
+
 - (GSAnimator*) initWithAnimation: (id<GSAnimation>)anAnimation;
 
 - (unsigned int) frameCount;
 - (void) resetCounters;
 - (float) frameRate;
-- (NSRunLoop*) runLoopForAnimating;
 - (NSArray*) runLoopModesForAnimating;
+- (void) setRunLoopModesForAnimating: (NSArray*)modes;
 
 - (void) startAnimation;
 - (void) stopAnimation;

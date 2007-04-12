@@ -1,3 +1,15 @@
+2007-04-12 Xavier Glattard <xavier.glattard@online.fr>
+
+	* Headers/AppKit/NSAnimation.h
+    * Source/NSAnimation.m
+	* Headers/Additions/GNUstepGUI/GSAnimator.h
+	* Source/GSAnimator.m
+	- attempt to follow GNU coding standards
+	- implementation of NSAnimationBlockingMode and 
+	  NSAnimationNonBlockingThreaded modes
+	- fix some bugs and incompatibilities with Cocoa
+	- Add some more documentation
+
 2007-04-11 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSView.m: When transforming a size ensure that the
@@ -23,7 +35,7 @@
 2007-04-05 Xavier Glattard <xavier.glattard@online.fr>
 
 	* Headers/AppKit/NSAnimation.h
-        * Source/NSAnimation.m
+    * Source/NSAnimation.m
 	* Headers/Additions/GNUstepGUI/GSAnimator.h
 	* Source/GSAnimator.m
 	Implementation of NSAnimation and NSViewAnimation classes :

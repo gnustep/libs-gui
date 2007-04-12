@@ -36,6 +36,8 @@
 
 #include <AppKit/NSEvent.h>
 
+#include <Foundation/NSDebug.h>
+
 typedef enum {
   NullEvent,
   GSAnimationNextFrameEvent,
@@ -56,80 +58,63 @@ typedef enum {
 { }
 @end
 
-@interface GSThreadedTimerBasedAnimator : GSAnimator
-{
-  NSThread* _thread;
-}
-@end
-
 @implementation GSAnimator
 
 + (GSAnimator*) animatorWithAnimation: (id<GSAnimation>)anAnimation
-                                 mode: (GSAnimationBlockingMode)aMode
-                            frameRate: (float)fps
-{ 
-  return [self 
-    animatorWithAnimation: anAnimation
-		     mode: aMode
-		frameRate: fps
-		     zone: NULL];
-}
-
-+ (GSAnimator*) animatorWithAnimation: (id<GSAnimation>)anAnimation
-                                 mode: (GSAnimationBlockingMode)aMode
                             frameRate: (float)fps
 			         zone: (NSZone*)aZone
 {
   GSAnimator* animator;
-  NSRunLoop* runLoop;
-
-  switch(aMode)
-  {//FIXME
-    case GSTimerBasedAnimation:
-    case GSPerformerBasedAnimation:
-    case GSBlockingCocoaAnimation:
-    case GSNonblockingCocoaAnimation:
-    case GSNonblockingCocoaThreadedAnimation:
-      runLoop = [NSRunLoop currentRunLoop];
-      animator = [[GSTimerBasedAnimator allocWithZone: aZone]
-	initWithAnimation: anAnimation
-	    	frameRate: fps
-		  runLoop: runLoop];
-  }
+  animator = [[GSTimerBasedAnimator allocWithZone: aZone]
+	      initWithAnimation: anAnimation
+		      frameRate: fps];
   AUTORELEASE(animator);
   return animator;
 }
 
++ (GSAnimator*) animatorWithAnimation: (id<GSAnimation>)anAnimation
+    			    frameRate: (float)fps
+{
+  return [self animatorWithAnimation: anAnimation
+			   frameRate: fps
+				zone: NULL];
+}
+
++ (GSAnimator*) animatorWithAnimation: (id<GSAnimation>)anAnimation
+{
+  return [self animatorWithAnimation: anAnimation
+			   frameRate: 0.0];
+}
+
 - (GSAnimator*) initWithAnimation: (id<GSAnimation>)anAnimation
-			frameRate: (float)aFrameRate
-			  runLoop: (NSRunLoop*)aRunLoop
+			frameRate: (float)fps
 {
   if((self = [super init]))
-  {
-    _running = NO;
-    
-    _animation = anAnimation; TEST_RETAIN(_animation);
-    _runLoop = aRunLoop; TEST_RETAIN(_runLoop);
-    _timerInterval = (aFrameRate==0.0)?0.0:(1.0/aFrameRate);
+    {
+      _running = NO;
+      
+      _animation = anAnimation; TEST_RETAIN(_animation);
+      _runLoopModes = [NSArray arrayWithObject: NSDefaultRunLoopMode];
+      RETAIN(_runLoopModes);
+      _timerInterval = (fps==0.0)?0.0:(1.0/fps);
 
-    [self resetCounters];
-  }
+      [self resetCounters];
+    }
   return self;
 }
 
 - (GSAnimator*) initWithAnimation: (id<GSAnimation>)anAnimation
 {
   return [self initWithAnimation: anAnimation
-		       frameRate: 0.0
-			 runLoop: [NSRunLoop currentRunLoop]];
+		       frameRate: 0.0];
 }
 
 - (void) dealloc
 {
   [self stopAnimation];
   TEST_RELEASE(_animation);
-  TEST_RELEASE(_runLoop);
   TEST_RELEASE(_startTime);
+  TEST_RELEASE(_runLoopModes);
   [super dealloc];
 }
 
@@ -146,32 +131,33 @@ typedef enum {
 - (float) frameRate 
 { return ((float)[self frameCount]) / ((float)_elapsed); }
 
-- (NSRunLoop*) runLoopForAnimating
-{ return _runLoop; }
-
 - (NSArray*) runLoopModesForAnimating
-{ return [_animation runLoopModesForAnimating]; }
+{ return _runLoopModes; }
+
+- (void) setRunLoopModesForAnimating: (NSArray*)modes
+{ ASSIGN (_runLoopModes,modes); }
 
 - (void) startAnimation
 {
   if(!_running)
-  {
-    _running = YES;
-    [self resetCounters];
-    [_animation animatorDidStart];
-    [self _animationBegin];
-    [self _animationLoop];
-  }
+    {
+      _running = YES;
+      [self resetCounters];
+      [_animation animatorDidStart];
+      [self _animationBegin];
+      [self _animationLoop];
+      NSDebugFLLog (@"GSAnimator",@"%@ Started !",self);
+    }
 }
 
 - (void) stopAnimation
 {
   if(_running)
-  {
-    _running = NO;
-    [self _animationEnd];
-    [_animation animatorDidStop];
-  }
+    {
+      _running = NO;
+      [self _animationEnd];
+      [_animation animatorDidStop];
+    }
 }
 
 - (void) startStopAnimation
@@ -220,7 +206,7 @@ static int _GSTimerBasedAnimator_animator_count = 0;
 + (void) loopsAnimators
 {
   switch(_GSTimerBasedAnimator_animator_count)
-  {
+    {
     case 0:
       break;
     case 1:
@@ -229,103 +215,120 @@ static int _GSTimerBasedAnimator_animator_count = 0;
     default:
       [[NSNotificationCenter defaultCenter]
         postNotificationName: @"GSTimerBasedAnimator_loop" object: self];
-  }
+    }
 }
 
-+ (void) registerAnimator: (GSTimerBasedAnimator*) anAnimator
++ (void) registerAnimator: (GSTimerBasedAnimator*)anAnimator
 {
-  if(anAnimator->_timerInterval == 0.0)
-  {
-    [[NSNotificationCenter defaultCenter]
-      addObserver: anAnimator
-	 selector: @selector(_animationLoop)
-	     name: @"GSTimerBasedAnimator_loop"
-	   object: self];
-  
-    if(!_GSTimerBasedAnimator_animator_count++)
-      _GSTimerBasedAnimator_the_one_animator = anAnimator;
+  NSTimer* newTimer = nil;
 
-    if(nil==_GSTimerBasedAnimator_animators)
-      _GSTimerBasedAnimator_animators = [[NSMutableSet alloc] initWithCapacity: 5];
-    [_GSTimerBasedAnimator_animators addObject: anAnimator];
-  
-    if(nil==_GSTimerBasedAnimator_timer)
+  if(anAnimator->_timerInterval == 0.0)
     {
-      _GSTimerBasedAnimator_timer = [NSTimer
-	scheduledTimerWithTimeInterval: 0.0
-	   			target: self
-	     		      selector: @selector(loopsAnimators)
-	       		      userInfo: nil
-		 	       repeats: YES
-			       ];
-      TEST_RETAIN(_GSTimerBasedAnimator_timer);
+      NSDebugFLLog (@"GSAnimator",@"%@ AFAP",anAnimator);
+      [[NSNotificationCenter defaultCenter]
+        addObserver: anAnimator
+           selector: @selector(_animationLoop)
+               name: @"GSTimerBasedAnimator_loop"
+             object: self];
+    
+      if(!_GSTimerBasedAnimator_animator_count++)
+        _GSTimerBasedAnimator_the_one_animator = anAnimator;
+
+      if(nil==_GSTimerBasedAnimator_animators)
+        _GSTimerBasedAnimator_animators = [[NSMutableSet alloc] initWithCapacity: 5];
+      [_GSTimerBasedAnimator_animators addObject: anAnimator];
+    
+      if(nil==_GSTimerBasedAnimator_timer)
+        {
+          newTimer =
+          _GSTimerBasedAnimator_timer = [NSTimer
+            timerWithTimeInterval: 0.0
+                           target: self
+                         selector: @selector(loopsAnimators)
+                         userInfo: nil
+                          repeats: YES
+                          ];
+        }
     }
-  }
   else
-  {
-    anAnimator->_timer = [NSTimer
-      scheduledTimerWithTimeInterval: anAnimator->_timerInterval
-			      target: anAnimator
-			    selector: @selector(_animationLoop)
-			    userInfo: nil
-			     repeats: YES
-			     ];
-    TEST_RETAIN(anAnimator->_timer);
-  }
+    {
+      NSDebugFLLog (@"GSAnimator",@"%@ Fixed frame rate",anAnimator);
+      newTimer =
+      anAnimator->_timer = [NSTimer
+        timerWithTimeInterval: anAnimator->_timerInterval
+                       target: anAnimator
+                     selector: @selector(_animationLoop)
+                     userInfo: nil
+                      repeats: YES
+                      ];
+    }
+  if(newTimer!=nil)
+    {
+      unsigned i,c;
+      TEST_RETAIN(newTimer);
+      for (i=0,c=[anAnimator->_runLoopModes count]; i<c; i++)
+        [[NSRunLoop currentRunLoop]
+         addTimer: newTimer
+          forMode: [anAnimator->_runLoopModes objectAtIndex:i]];
+      NSDebugFLLog (@"GSAnimator",@"%@ addTimer in %d mode(s)",anAnimator,c);
+    }
 }
 
-+ (void) unregisterAnimator: (GSTimerBasedAnimator*) anAnimator
++ (void) unregisterAnimator: (GSTimerBasedAnimator*)anAnimator
 {
   if(anAnimator->_timerInterval == 0.0)
-  {
-    [[NSNotificationCenter defaultCenter]
-      removeObserver: anAnimator
-		name: @"GSTimerBasedAnimator_loop"
-	      object: self];
+    {
+      [[NSNotificationCenter defaultCenter]
+        removeObserver: anAnimator
+                  name: @"GSTimerBasedAnimator_loop"
+                object: self];
 
-    [_GSTimerBasedAnimator_animators removeObject: anAnimator];
-      
-    if(!--_GSTimerBasedAnimator_animator_count)
-    {
-      [_GSTimerBasedAnimator_timer invalidate];
-      DESTROY(_GSTimerBasedAnimator_timer);
-      _GSTimerBasedAnimator_the_one_animator = nil;
+      [_GSTimerBasedAnimator_animators removeObject: anAnimator];
+        
+      if(!--_GSTimerBasedAnimator_animator_count)
+        {
+          [_GSTimerBasedAnimator_timer invalidate];
+          DESTROY(_GSTimerBasedAnimator_timer);
+          _GSTimerBasedAnimator_the_one_animator = nil;
+        }
+      else
+        if(_GSTimerBasedAnimator_the_one_animator==anAnimator)
+          _GSTimerBasedAnimator_the_one_animator
+            = [_GSTimerBasedAnimator_animators anyObject];
     }
-    else
-      if(_GSTimerBasedAnimator_the_one_animator==anAnimator)
-	_GSTimerBasedAnimator_the_one_animator
-	  = [_GSTimerBasedAnimator_animators anyObject];
-  }
   else
-  {
-    if(anAnimator->_timer != nil)
     {
-      [anAnimator->_timer invalidate];
-      DESTROY(anAnimator->_timer);
+      if(anAnimator->_timer != nil)
+        {
+          [anAnimator->_timer invalidate];
+          DESTROY(anAnimator->_timer);
+        }
     }
-  }
 }
 
 - (void) _animationBegin
 {
+  NSDebugFLLog (@"GSAnimator",@"%@",self);
   [[self class] registerAnimator: self];
 }
 
 - (void) _animationLoop
 {
+  NSDebugFLLog (@"GSAnimator",@"%@",self);
   [self stepAnimation];
 }
 
 - (void) _animationEnd
 {
+  NSDebugFLLog (@"GSAnimator",@"%@",self);
   [[self class] unregisterAnimator: self];
 }
 
-@end
+@end // implementation GSTimerBasedAnimator
 
 static void _sendAnimationPerformer( GSAnimator* animator )
 {
-  [[animator runLoopForAnimating]
+  [[NSRunLoop currentRunLoop]
     performSelector: @selector(_animationLoop)
        	     target: animator
 	   argument: nil
@@ -336,7 +339,7 @@ static void _sendAnimationPerformer( GSAnimator* animator )
 
 static void _cancelAnimationPerformer( GSAnimator* animator )
 {
-  [[animator runLoopForAnimating] cancelPerformSelectorsWithTarget: animator];
+  [[NSRunLoop currentRunLoop] cancelPerformSelectorsWithTarget: animator];
 }
 
 @implementation GSPerformerBasedAnimator
