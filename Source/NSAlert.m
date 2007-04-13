@@ -35,6 +35,7 @@
 
 #include "config.h"
 
+#include <Foundation/NSDebug.h>
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSString.h>
 #include "AppKit/NSAlert.h"
@@ -53,6 +54,7 @@
 #include "GNUstepGUI/GMAppKit.h"
 #include "GNUstepGUI/GMArchiver.h"
 
+extern NSThread *GSAppKitThread;
 
 #ifdef ALERT_TITLE
 static NSString	*defaultTitle = @"Alert";
@@ -76,7 +78,7 @@ static NSString	*defaultTitle = @" ";
  |                       s    |                                             |
  |                       s    |                                             |
  |    ...................s....|.........................................    |
- |    :Message           s                    s                        ;    |
+ |    : Message           s                    s                        ;    |
  |    :                  s                    s                        :    |
  |    :                  s                    s                        :    |
  |----:                  s                    s                        :----|
@@ -183,11 +185,13 @@ static GSAlertPanel	*criticalAlertPanel = nil;
 
 - (id) _initWithoutGModel;
 - (int) runModal;
-- (void) setTitle: (NSString*)title
-	  message: (NSString*)message
-	      def: (NSString*)defaultButton
-	      alt: (NSString*)alternateButton
-	    other: (NSString*)otherButton;
+- (void) setTitleBar: (NSString*)titleBar
+		icon: (NSImage*)icon
+	       title: (NSString*)title
+	     message: (NSString*)message
+		 def: (NSString*)defaultButton
+		 alt: (NSString*)alternateButton
+	       other: (NSString*)otherButton;
 - (void) sizePanelToFit;
 - (void) buttonAction: (id)sender;
 - (int) result;
@@ -717,24 +721,46 @@ setControl(NSView* content, id control, NSString *title)
 
 - (int) runModal
 {
-  if (isGreen)
+  if (GSCurrentThread() != GSAppKitThread)
     {
-      [self sizePanelToFit];
+      [self performSelectorOnMainThread: _cmd
+			     withObject: nil
+			  waitUntilDone: YES];
     }
-
-  [NSApp runModalForWindow: self];
-  [self orderOut: self];
+  else
+    {
+      if (isGreen)
+	{
+	  [self sizePanelToFit];
+	}
+      [NSApp runModalForWindow: self];
+      [self orderOut: self];
+    }
   return result;
 }
 
-- (void) setTitle: (NSString*)title
-	  message: (NSString*)message
-	      def: (NSString*)defaultButton
-	      alt: (NSString*)alternateButton
-	    other: (NSString*)otherButton
+- (void) setTitleBar: (NSString*)titleBar
+		icon: (NSImage*)icon
+	       title: (NSString*)title
+	     message: (NSString*)message
+		 def: (NSString*)defaultButton
+		 alt: (NSString*)alternateButton
+	       other: (NSString*)otherButton
 {
   NSView	*content = [self contentView];
 
+  if (titleBar != nil)
+    {
+      [self setTitle: titleBar];
+    }
+  if (icon != nil)
+    {
+      [icoButton setImage: icon];
+    }
+  if (title == nil)
+    {
+      title = titleBar;	// Fall back to the same text as the title bar
+    }
   setControl(content, titleField, title);
   if (useControl(scroll))
     { 
@@ -790,7 +816,7 @@ setControl(NSView* content, id control, NSString *title)
 	  [defButton setNextKeyView: altButton];
 	else
 	  {
-	    [defButton setPreviousKeyView:nil];
+	    [defButton setPreviousKeyView: nil];
 	    [defButton setNextKeyView: nil];
 	  }
       }
@@ -803,7 +829,7 @@ setControl(NSView* content, id control, NSString *title)
 	  [othButton setNextKeyView: defButton];
 	else
 	  {
-	    [othButton setPreviousKeyView:nil];
+	    [othButton setPreviousKeyView: nil];
 	    [othButton setNextKeyView: nil];
 	  }
       }
@@ -816,12 +842,12 @@ setControl(NSView* content, id control, NSString *title)
 	  [altButton setNextKeyView: othButton];
 	else
 	  {
-	    [altButton setPreviousKeyView:nil];
+	    [altButton setPreviousKeyView: nil];
 	    [altButton setNextKeyView: nil];
 	  }
       }
   }
-
+  [self sizePanelToFit];
   isGreen = YES;
   result = NSAlertErrorReturn; 	/* If no button was pressed	*/
 }
@@ -890,18 +916,58 @@ setControl(NSView* content, id control, NSString *title)
           for the alert panel, setting its window title to "Alert".
 */
 
-static GSAlertPanel*
-getSomePanel(
-  GSAlertPanel **instance,
-  NSString *defaultTitle,
-  NSString *title,
-  NSString *message,
-  NSString *defaultButton,
-  NSString *alternateButton,
-  NSString *otherButton)
+@interface	_GSAlertCreation : NSObject
 {
-  GSAlertPanel	*panel;
+  GSAlertPanel **instance;
+  NSString *defaultTitle;
+  NSString *title;
+  NSString *message;
+  NSString *defaultButton;
+  NSString *alternateButton;
+  NSString *otherButton;
+  GSAlertPanel *panel;
+}
+- (id) initWithInstance: (GSAlertPanel**)_instance
+	   defaultTitle: (NSString*)_defaultTitle
+		  title: (NSString*)_title
+		message: (NSString*)_message
+	  defaultButton: (NSString*)_defaultButton
+	alternateButton: (NSString*)_alternateButton
+	    otherButton: (NSString*)_otherButton;
+- (void) makePanel;
+- (GSAlertPanel*) panel;
+@end
 
+@implementation	_GSAlertCreation
+- (void) dealloc
+{
+  RELEASE(defaultTitle);
+  RELEASE(title);
+  RELEASE(defaultButton);
+  RELEASE(alternateButton);
+  RELEASE(otherButton);
+  [super dealloc];
+}
+
+- (id) initWithInstance: (GSAlertPanel**)_instance
+	   defaultTitle: (NSString*)_defaultTitle
+		  title: (NSString*)_title
+		message: (NSString*)_message
+	  defaultButton: (NSString*)_defaultButton
+	alternateButton: (NSString*)_alternateButton
+	    otherButton: (NSString*)_otherButton
+{
+  instance = _instance;
+  ASSIGNCOPY(defaultTitle, _defaultTitle);
+  ASSIGNCOPY(title, _title);
+  ASSIGNCOPY(defaultButton, _defaultButton);
+  ASSIGNCOPY(alternateButton, _alternateButton);
+  ASSIGNCOPY(otherButton, _otherButton);
+  return self;
+}
+
+- (void) makePanel
+{
   if (*instance != 0)
     {
       if ([*instance isActivePanel])
@@ -919,21 +985,81 @@ getSomePanel(
       *instance = panel;
     }
 
-  if (title == nil)
-    {
-      title = defaultTitle;
-    }
+  [panel setTitleBar: defaultTitle
+		icon: nil
+	       title: title
+	     message: message
+		 def: defaultButton
+		 alt: alternateButton
+	       other: otherButton];
+}
 
-  if (defaultTitle != nil)
+- (GSAlertPanel*) panel
+{
+  return panel;
+}
+@end
+
+static GSAlertPanel*
+getSomePanel(
+  GSAlertPanel **instance,
+  NSString *defaultTitle,
+  NSString *title,
+  NSString *message,
+  NSString *defaultButton,
+  NSString *alternateButton,
+  NSString *otherButton)
+{
+  GSAlertPanel	*panel;
+
+  if (GSCurrentThread() != GSAppKitThread)
     {
-      [panel setTitle: defaultTitle];
+      _GSAlertCreation	*c;
+
+      NSWarnFLog(@"Alert Panel functionality called from a thread other than"
+        @" the main one, this may not work on MacOS-X and could therefore be"
+	@" a portability problem in your code");
+      c = [_GSAlertCreation alloc];
+      c = [c initWithInstance: instance
+		 defaultTitle: defaultTitle
+			title: title
+		      message: message
+		defaultButton: defaultButton
+	      alternateButton: alternateButton
+		  otherButton: otherButton];
+      [c performSelectorOnMainThread: @selector(makePanel)
+			  withObject: nil
+		       waitUntilDone: YES];
+      panel = [c panel];
+      RELEASE(c);
     }
-  [panel setTitle: title
-	  message: message
-	      def: defaultButton
-	      alt: alternateButton
-	    other: otherButton];
-  [panel sizePanelToFit];
+  else
+    {
+      if (*instance != 0)
+	{
+	  if ([*instance isActivePanel])
+	    {				// c:
+	      panel = [[GSAlertPanel alloc] init];
+	    }
+	  else
+	    {				// b:
+	      panel = *instance;
+	    }
+	}
+      else
+	{ 					// a:
+	  panel = [[GSAlertPanel alloc] init];
+	  *instance = panel;
+	}
+
+      [panel setTitleBar: defaultTitle
+		    icon: nil
+		   title: title
+		 message: message
+		     def: defaultButton
+		     alt: alternateButton
+		   other: otherButton];
+    }
   return panel;
 }
 
@@ -1130,8 +1256,8 @@ void
 NSReleaseAlertPanel(id panel)
 {
   if ((panel != standardAlertPanel)
-     && (panel != informationalAlertPanel)
-     && (panel != criticalAlertPanel))
+    && (panel != informationalAlertPanel)
+    && (panel != criticalAlertPanel))
     {
       RELEASE(panel);
     }
@@ -1249,7 +1375,7 @@ void NSBeginInformationalAlertSheet(NSString *title,
 /*
  * Class methods
  */
-+ (void)initialize
++ (void) initialize
 {
   if (self  ==  [NSAlert class])
     {
@@ -1257,11 +1383,11 @@ void NSBeginInformationalAlertSheet(NSString *title,
     }
 }
 
-+ (NSAlert *)alertWithMessageText:(NSString *)messageTitle
-		    defaultButton:(NSString *)defaultButtonTitle
-		  alternateButton:(NSString *)alternateButtonTitle
-		      otherButton:(NSString *)otherButtonTitle
-	informativeTextWithFormat:(NSString *)format, ...
++ (NSAlert *) alertWithMessageText: (NSString *)messageTitle
+		     defaultButton: (NSString *)defaultButtonTitle
+		   alternateButton: (NSString *)alternateButtonTitle
+		       otherButton: (NSString *)otherButtonTitle
+	 informativeTextWithFormat: (NSString *)format, ...
 {
   va_list ap;
   NSAlert *alert = [[self alloc] init];
@@ -1280,21 +1406,21 @@ void NSBeginInformationalAlertSheet(NSString *title,
 
   if (defaultButtonTitle != nil)
     {
-	[alert addButtonWithTitle: defaultButtonTitle];
+      [alert addButtonWithTitle: defaultButtonTitle];
     }
   else
     {
-	[alert addButtonWithTitle: _(@"OK")];
+      [alert addButtonWithTitle: _(@"OK")];
     }
 
   if (alternateButtonTitle != nil)
     {
-	[alert addButtonWithTitle: alternateButtonTitle];
+      [alert addButtonWithTitle: alternateButtonTitle];
     }
 
   if (otherButtonTitle != nil)
     {
-	[alert addButtonWithTitle: otherButtonTitle];
+      [alert addButtonWithTitle: otherButtonTitle];
     }
 
   return AUTORELEASE(alert);
@@ -1318,37 +1444,37 @@ void NSBeginInformationalAlertSheet(NSString *title,
   [super dealloc];
 }
 
-- (void)setInformativeText:(NSString *)informativeText
+- (void) setInformativeText: (NSString *)informativeText
 {
   ASSIGN(_informative_text, informativeText);
 }
 
-- (NSString *)informativeText
+- (NSString *) informativeText
 {
   return _informative_text;
 }
 
-- (void)setMessageText:(NSString *)messageText
+- (void) setMessageText: (NSString *)messageText
 {
   ASSIGN(_message_text, messageText);
 }
 
-- (NSString *)messageText
+- (NSString *) messageText
 {
   return _message_text;
 }
 
-- (void)setIcon:(NSImage *)icon
+- (void) setIcon: (NSImage *)icon
 {
   ASSIGN(_icon, icon);
 }
 
-- (NSImage *)icon
+- (NSImage *) icon
 {
   return _icon;
 }
 
-- (NSButton *)addButtonWithTitle:(NSString *)aTitle
+- (NSButton *) addButtonWithTitle: (NSString *)aTitle
 {
   NSButton *button = [[NSButton alloc] init];
   int count = [_buttons count];
@@ -1383,110 +1509,134 @@ void NSBeginInformationalAlertSheet(NSString *title,
   return button;
 }
 
-- (NSArray *)buttons
+- (NSArray *) buttons
 {
   return _buttons;
 }
 
-- (void)setShowsHelp:(BOOL)showsHelp
+- (void) setShowsHelp: (BOOL)showsHelp
 {
   _shows_help = showsHelp;
 }
 
-- (BOOL)showsHelp
+- (BOOL) showsHelp
 {
   return _shows_help;
 }
 
-- (void)setHelpAnchor:(NSString *)anchor
+- (void) setHelpAnchor: (NSString *)anchor
 {
   ASSIGN(_help_anchor, anchor);
 }
 
-- (NSString *)helpAnchor
+- (NSString *) helpAnchor
 {
   return _help_anchor;
 }
 
-- (void)setAlertStyle:(NSAlertStyle)style
+- (void) setAlertStyle: (NSAlertStyle)style
 {
   _style = style;
 }
 
-- (NSAlertStyle)alertStyle
+- (NSAlertStyle) alertStyle
 {
   return _style;
 }
 
-- (void)setDelegate:(id)delegate
+- (void) setDelegate: (id)delegate
 {
   _delegate = delegate;
 }
 
-- (id)delegate
+- (id) delegate
 {
   return _delegate;
 }
 
-- (void)_setupPanel
+- (void) _setupPanel
 {
-  GSAlertPanel *panel;
-  NSString *title;
-
-  panel = [[GSAlertPanel alloc] init];
-  _window = panel;
-
-  switch (_style)
+  if (GSCurrentThread() != GSAppKitThread)
     {
-      case NSCriticalAlertStyle: 
-	  title = @"Critical";
-	  break;
-      case NSInformationalAlertStyle: 
-	  title = @"Information";
-	  break;
-      case NSWarningAlertStyle:
-      default:
-	  title = @"Alert";
-	  break;
+      [self performSelectorOnMainThread: _cmd
+			     withObject: nil
+			  waitUntilDone: YES];
     }
-  [panel setTitle: title];
-  // FIXME: Should also set the icon
-  [panel setTitle: _informative_text
-	 message: _message_text
-	 def: [[_buttons objectAtIndex: 0] title]
-	 alt: [[_buttons objectAtIndex: 1] title]
-	 other: [[_buttons objectAtIndex: 2] title]];
-  [panel sizePanelToFit];
+  else
+    {
+      GSAlertPanel *panel;
+      NSString *title;
+
+      panel = [[GSAlertPanel alloc] init];
+      _window = panel;
+
+      switch (_style)
+	{
+	  case NSCriticalAlertStyle: 
+	      title = @"Critical";
+	      break;
+	  case NSInformationalAlertStyle: 
+	      title = @"Information";
+	      break;
+	  case NSWarningAlertStyle:
+	  default:
+	      title = @"Alert";
+	      break;
+	}
+      [panel setTitleBar: title
+      		    icon: _icon
+		   title: _informative_text
+		 message: _message_text
+		     def: [[_buttons objectAtIndex: 0] title]
+		     alt: [[_buttons objectAtIndex: 1] title]
+		   other: [[_buttons objectAtIndex: 2] title]];
+    }
 }
 
-- (int)runModal
+- (int) runModal
 {
-  int result;
-
-  [self _setupPanel];
-  [NSApp runModalForWindow: _window];
-  [_window orderOut: self];
-  result = [(GSAlertPanel*)_window result];
-  DESTROY(_window);
-
-  return result;
+  if (GSCurrentThread() != GSAppKitThread)
+    {
+      [self performSelectorOnMainThread: _cmd
+			     withObject: nil
+			  waitUntilDone: YES];
+      return _result;
+    }
+  else
+    {
+      [self _setupPanel];
+      [NSApp runModalForWindow: _window];
+      [_window orderOut: self];
+      _result = [(GSAlertPanel*)_window result];
+      DESTROY(_window);
+      return _result;
+    }
 }
 
-- (void)beginSheetModalForWindow:(NSWindow *)window
-		   modalDelegate:(id)delegate
-		  didEndSelector:(SEL)didEndSelector
-		     contextInfo:(void *)contextInfo
+- (void) beginSheetModalForWindow: (NSWindow *)window
+		    modalDelegate: (id)delegate
+		   didEndSelector: (SEL)didEndSelector
+		      contextInfo: (void *)contextInfo
 {
   [self _setupPanel];
-  [NSApp beginSheet: _window
-     modalForWindow: window
-      modalDelegate: delegate
-     didEndSelector: didEndSelector
-	contextInfo: contextInfo];
-  DESTROY(_window);
+  if (GSCurrentThread() != GSAppKitThread)
+    {
+      [self performSelectorOnMainThread: _cmd
+			     withObject: nil
+			  waitUntilDone: YES];
+    }
+  else
+    {
+      [NSApp beginSheet: _window
+	 modalForWindow: window
+	  modalDelegate: delegate
+	 didEndSelector: didEndSelector
+	    contextInfo: contextInfo];
+      DESTROY(_window);
+    }
 }
 
-- (id)window
+- (id) window
 {
   return _window;
 }
@@ -1499,8 +1649,8 @@ void NSBeginInformationalAlertSheet(NSString *title,
   NSDictionary *_userInfo;
   NSPanel *_userInfoPanel;
 }
-- (void) setUserInfo:(NSDictionary *)userInfo;
-- (NSPanel *)userInfoPanel;
+- (void) setUserInfo: (NSDictionary *)userInfo;
+- (NSPanel *) userInfoPanel;
 @end
 
 int GSRunExceptionPanel(
@@ -1514,7 +1664,7 @@ int GSRunExceptionPanel(
   GSExceptionPanel  *panel;
   int           result;
 
-  message = [NSString stringWithFormat:@"%@: %@",
+  message = [NSString stringWithFormat: @"%@: %@",
 	  			[exception name],
 				[exception reason]];
   if (defaultButton == nil)
@@ -1529,14 +1679,16 @@ int GSRunExceptionPanel(
       title = @"Exception";
     }
 
-  [panel setTitle: title
-          message: message
-              def: defaultButton
-              alt: alternateButton
-            other: otherButton];
+  [panel setTitleBar: nil
+  		icon: nil
+	       title: title
+	     message: message
+		 def: defaultButton
+		 alt: alternateButton
+	       other: otherButton];
   [panel setUserInfo: [exception userInfo]];
   result = [panel runModal];
-  [[panel userInfoPanel] orderOut:nil];
+  [[panel userInfoPanel] orderOut: nil];
   [panel setUserInfo: nil];
   
   RELEASE(panel);
@@ -1551,100 +1703,109 @@ int GSRunExceptionPanel(
   RELEASE(_userInfoPanel);
   [super dealloc];
 }
+
 - (id) init
 {
   if ((self = [super init]))
     {
-      [icoButton setEnabled:YES];
-      [icoButton setTarget:self];
-      [icoButton setAction:@selector(_icoAction:)];
+      [icoButton setEnabled: YES];
+      [icoButton setTarget: self];
+      [icoButton setAction: @selector(_icoAction:)];
     }
 
   return self;
 }
+
 - (NSPanel *) userInfoPanel
 {
   return _userInfoPanel;
 }
 
-- (void) setUserInfo:(NSDictionary *)userInfo;
+- (void) setUserInfo: (NSDictionary *)userInfo;
 {
   ASSIGN(_userInfo, userInfo);
-  [_browser reloadColumn:0];
+  [_browser reloadColumn: 0];
 }
 
-- (void) _icoAction:(id)sender
+- (void) _icoAction: (id)sender
 {
-   NSRect fr;
+  NSRect fr;
    
-   if (_userInfoPanel) 
-     {
-       [_browser reloadColumn:0];
-       return;
-     }
+  if (_userInfoPanel) 
+    {
+      [_browser reloadColumn: 0];
+      return;
+    }
 
-   fr = NSMakeRect(_frame.origin.x, _frame.origin.y + _frame.size.height + 15, 
-		    _frame.size.width, 108);
-  _userInfoPanel = [[NSPanel alloc] initWithContentRect:fr
-      					styleMask:NSTitledWindowMask
-						  | NSResizableWindowMask
-					backing:NSBackingStoreBuffered
-					defer:NO];
-  [_userInfoPanel setTitle:@"User Info Inspector"];
-  [_userInfoPanel setWorksWhenModal:YES];
+  fr = NSMakeRect(_frame.origin.x, _frame.origin.y + _frame.size.height + 15, 
+    _frame.size.width, 108);
+  _userInfoPanel = [[NSPanel alloc] initWithContentRect: fr
+    styleMask: NSTitledWindowMask | NSResizableWindowMask
+    backing: NSBackingStoreBuffered
+    defer: NO];
+  [_userInfoPanel setTitle: @"User Info Inspector"];
+  [_userInfoPanel setWorksWhenModal: YES];
   
   fr = NSMakeRect(8, 8, _frame.size.width - 16, 100);
-  _browser = [[NSBrowser alloc] initWithFrame:fr];
-  [_browser setMaxVisibleColumns:2];
-  [_browser setDelegate:self];
-  [_browser setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
-  [_browser reloadColumn:0];
+  _browser = [[NSBrowser alloc] initWithFrame: fr];
+  [_browser setMaxVisibleColumns: 2];
+  [_browser setDelegate: self];
+  [_browser setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+  [_browser reloadColumn: 0];
   [[_userInfoPanel contentView] addSubview:_browser];
-  [_userInfoPanel makeKeyAndOrderFront:self];
+  [_userInfoPanel makeKeyAndOrderFront: self];
 }
 
-- (int) browser:(id)browser
-numberOfRowsInColumn:(int)col
+- (int) browser: (id)browser
+numberOfRowsInColumn: (int)col
 {
   if (col == 0)
     return [[_userInfo allKeys] count];
   else
     {
-      id val = [[(NSCell *)[browser selectedCellInColumn:col - 1] representedObject] description];
+      id val;
       volatile id foo = nil;
+
+      val = [[(NSCell *)[browser selectedCellInColumn: col - 1]
+	representedObject] description];
       NS_DURING
          foo = [val propertyList];
          val = foo;
       NS_HANDLER
       NS_ENDHANDLER
       
-      if ([val isKindOfClass:[NSArray class]])
+      if ([val isKindOfClass: [NSArray class]])
 	return [val count];
-      else if ([val isKindOfClass:[NSDictionary class]])
+      else if ([val isKindOfClass: [NSDictionary class]])
         return [[val allKeys] count];
       else return val != nil;
     }
   return 0;
 }
 
-- (void) browser:(NSBrowser *)browser willDisplayCell:(NSBrowserCell *)cell atRow:(int)row
-column:(int)column
+- (void) browser: (NSBrowser *)browser
+  willDisplayCell: (NSBrowserCell *)cell
+  atRow: (int)row
+  column: (int)column
 {
   if (column == 0)
     {
-      id key = [[_userInfo allKeys] objectAtIndex:row]; 
-      id val = [_userInfo objectForKey:key]; 
+      id key = [[_userInfo allKeys] objectAtIndex: row]; 
+      id val = [_userInfo objectForKey: key]; 
 
-      [cell setLeaf:NO];
-      [cell setStringValue:[key description]];
+      [cell setLeaf: NO];
+      [cell setStringValue: [key description]];
       [cell setRepresentedObject: val];
     }
   else
     {
-      volatile id val = [(NSCell *)[browser selectedCellInColumn:column - 1] representedObject];
+      volatile id val;
       BOOL flag;
      
-      if (!([val isKindOfClass:[NSArray class]] || [val isKindOfClass:[NSArray class]]))
+      val = [(NSCell *)[browser selectedCellInColumn: column - 1]
+	representedObject];
+      if (!([val isKindOfClass: [NSArray class]]
+	|| [val isKindOfClass: [NSArray class]]))
         {
           volatile id foo = nil;
 	  val = [val description];
@@ -1654,17 +1815,17 @@ column:(int)column
 	  NS_HANDLER
 	  NS_ENDHANDLER
 	}    
-      flag = (!([val isKindOfClass:[NSArray class]]
-	      || [val isKindOfClass:[NSDictionary class]]));
+      flag = (!([val isKindOfClass: [NSArray class]]
+	|| [val isKindOfClass: [NSDictionary class]]));
      
+      [cell setLeaf: flag];
       
-      
-      [cell setLeaf:flag];
-      
-      if ([val isKindOfClass:[NSArray class]])
+      if ([val isKindOfClass: [NSArray class]])
         {
-	  volatile id obj = [val objectAtIndex:row];
-	  if (!([obj isKindOfClass:[NSArray class]] || [obj isKindOfClass:[NSArray class]]))
+	  volatile id obj = [val objectAtIndex: row];
+
+	  if (!([obj isKindOfClass: [NSArray class]]
+	    || [obj isKindOfClass: [NSArray class]]))
 	    {
 	      volatile id foo;
 	      obj = [[obj description] propertyList]; 
@@ -1675,28 +1836,30 @@ column:(int)column
 	      NS_ENDHANDLER
 	    }
 
-	  if ([obj isKindOfClass:[NSArray class]])
+	  if ([obj isKindOfClass: [NSArray class]])
 	    {
-              [cell setRepresentedObject:obj];
-	      [cell setLeaf:NO];
-              [cell setStringValue:[NSString stringWithFormat:@"%@ %p", [obj class], obj]];
+              [cell setRepresentedObject: obj];
+	      [cell setLeaf: NO];
+              [cell setStringValue:
+		[NSString stringWithFormat: @"%@ %p", [obj class], obj]];
 	    }
-	  else if ([obj isKindOfClass:[NSDictionary class]])
+	  else if ([obj isKindOfClass: [NSDictionary class]])
 	    {
-	      [cell setRepresentedObject:obj];
-	      [cell setLeaf:NO];
-              [cell setStringValue:[NSString stringWithFormat:@"%@ %p", [obj class], obj]];
+	      [cell setRepresentedObject: obj];
+	      [cell setLeaf: NO];
+              [cell setStringValue:
+		[NSString stringWithFormat: @"%@ %p", [obj class], obj]];
 	    }
 	  else
 	    {
-	      [cell setLeaf:YES];
-	      [cell setStringValue:[obj description]];
-	      [cell setRepresentedObject:nil];
+	      [cell setLeaf: YES];
+	      [cell setStringValue: [obj description]];
+	      [cell setRepresentedObject: nil];
 	    }
 	}
-      else if ([val isKindOfClass:[NSDictionary class]])
+      else if ([val isKindOfClass: [NSDictionary class]])
         {
-	  id key = [[val allKeys] objectAtIndex:row];
+	  id key = [[val allKeys] objectAtIndex: row];
           volatile id it = [(NSDictionary *)val objectForKey: key];
 	  volatile id foo;
 	  foo = [it description];
@@ -1705,22 +1868,27 @@ column:(int)column
 	    it = foo;
 	  NS_HANDLER
 	  NS_ENDHANDLER
-	  [cell setStringValue:[key description]];
-	  [cell setRepresentedObject:it];
+	  [cell setStringValue: [key description]];
+	  [cell setRepresentedObject: it];
         } 
       else
         {
-	  [cell setLeaf:YES];
-	  [cell setStringValue:[val description]];
+	  [cell setLeaf: YES];
+	  [cell setStringValue: [val description]];
         }
-      
     }
 }
-- (id) browser:(NSBrowser *)browser titleOfColumn:(int)column
+
+- (id) browser: (NSBrowser *)browser titleOfColumn: (int)column
 {
-  if (column == 0) return @"userInfo";
-  id val = [(NSCell *)[browser selectedCellInColumn:column - 1] representedObject];
-  NSString *title = [NSString stringWithFormat:@"%@ %p", [val class], val];
+  id val;
+  NSString *title;
+
+  if (column == 0)
+    return @"userInfo";
+  val = [(NSCell *)[browser selectedCellInColumn: column - 1]
+    representedObject];
+  title = [NSString stringWithFormat: @"%@ %p", [val class], val];
   return title;
 }
 @end
