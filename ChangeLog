@@ -1,7 +1,12 @@
+2007-04-13  Adam Fedor  <fedor@gnu.org>
+
+	* Version 0.12.0
+	* Source/NSAnimation.m: Remove unused and incorrect include.
+
 2007-04-12 Xavier Glattard <xavier.glattard@online.fr>
 
 	* Headers/AppKit/NSAnimation.h
-    * Source/NSAnimation.m
+	* Source/NSAnimation.m
 	* Headers/Additions/GNUstepGUI/GSAnimator.h
 	* Source/GSAnimator.m
 	- attempt to follow GNU coding standards
