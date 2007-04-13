@@ -1,3 +1,49 @@
+2007-04-12 Xavier Glattard <xavier.glattard@online.fr>
+
+	* Headers/AppKit/NSAnimation.h
+	* Source/NSAnimation.m
+	* Headers/Additions/GNUstepGUI/GSAnimator.h
+	* Source/GSAnimator.m
+	- attempt to follow GNU coding standards
+	- implementation of NSAnimationBlockingMode and 
+	  NSAnimationNonBlockingThreaded modes
+	- fix some bugs and incompatibilities with Cocoa
+	- Add some more documentation
+
+2007-04-11 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSView.m: When transforming a size ensure that the
+	resulting height is positive.  Is this correct behavior?
+	It should reproduce the old (incorrect ... ie differing from MacOS-X)
+	behavior of NSAffineTransform.
+
+2007-04-09 21:20-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSAnimation.m: Removed static INLINE declaration from
+	nsanimation_progressMarkSorter function so that it will compile
+	properly on versions of gcc prior to 4.1.2.
+
+2007-04-10 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSClipView.m (-setBoundsOrigin:): Use NSView method
+	scrollRect:by:.
+	* Source/NSPrintOperation.m (NSView
+	-_displayPageInRect:atPlacement:withInfo:): Release the temporary 
+	matrixes.
+	* Source/GSEPSPrintOperation.m (_print): Call endPage on the view.
+		
+2007-04-05 Xavier Glattard <xavier.glattard@online.fr>
+
+	* Headers/AppKit/NSAnimation.h
+	* Source/NSAnimation.m
+	* Headers/Additions/GNUstepGUI/GSAnimator.h
+	* Source/GSAnimator.m
+	Implementation of NSAnimation and NSViewAnimation classes :
+	- only NSAnimationNonBlocking mode is implemented
+	- runLoopModesForAnimating is not used
+	GSAnimator class is in alpha stage : interface may be changed
+	See gnustep-examples/GSTest for demos.
+
 2007-04-02  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/AppKit/NSAlert.h: Tidied.

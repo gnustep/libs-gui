@@ -45,6 +45,7 @@
 #include <AppKit/NSGraphics.h>
 
 #include <AppKit/NSActionCell.h>
+#include <AppKit/NSAnimation.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSAttributedString.h>
 #include <AppKit/NSBitmapImageRep.h>

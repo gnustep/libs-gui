@@ -1098,9 +1098,9 @@ scaleRect(NSRect rect, double scale)
     {
       NSAffineTransformStruct	ats = { 1, 0, 0, -1, 0, NSHeight(_bounds) };
       NSAffineTransform *matrix, *flip;
+
       flip = [NSAffineTransform new];
       matrix = [NSAffineTransform new];
-      [matrix makeIdentityMatrix];
       [matrix prependTransform: _boundsMatrix];
       /*
        * The flipping process must result in a coordinate system that
@@ -1110,6 +1110,8 @@ scaleRect(NSRect rect, double scale)
       [flip setTransformStruct: ats];
       [matrix prependTransform: flip];
       [matrix concat];
+      RELEASE(flip);
+      RELEASE(matrix);
       yoffset = NSHeight(_frame) - NSMaxY(pageRect);
     }
   else
