@@ -34,7 +34,6 @@
 #include <Foundation/NSThread.h>
 #include <Foundation/NSLock.h>
 #include <Foundation/NSDate.h>
-#include <Foundation/NSAutoReleasePool.h>
 #include <AppKit/NSApplication.h>
 
 // needed by NSViewAnimation

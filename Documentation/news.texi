@@ -9,6 +9,28 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.12.0}
+
+It has been a long time since the last release and many things have been
+added and changed, including new classes, new ivars, and new methods.
+
+@itemize @bullet
+@item Lots of improvements to the NSBitmapImage subclasses thanks to Mark Tracy
+@item GSTheme and other classes were added to improve support of theming.
+@item Added new methods from Mac OS X 10.4 for NSControl, NSResponder,
+NSDocument, NSPrintOperation, NSWindowController, NSCell,
+NSMenuItem, NSView. Some ivar names were changed also.
+@item Added new ivars for NSMenuItem, NSPrintOperation, NSTableView,
+NSDrawer, NSScrollView.
+@item New classes from Mac OS X 10.4 and earlier were added including
+NSLevelIndicator, NSObjectController, NSUserDefaultsController,
+NSKeyValueBinding, NSArrayController, NSController.
+@item NSSpellServer and NSAffineTransform was moved to GNUstep base 
+for Mac OS X compatibility.
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.11.0}
 
 @itemize @bullet
@@ -19,8 +41,6 @@ model loading mechanism
 classes such as NSIBObjectData, NSClassSwapper, etc. to 
 facilitate nib loading.
 @end itemize
-
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.10.3}
 

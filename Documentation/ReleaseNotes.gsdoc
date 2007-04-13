@@ -20,6 +20,76 @@
 	migrate to using a newer version of the library.
       </p>
       <section>
+	<heading>Version 0.12.0</heading>
+	<p>
+	It has been a long time since the last release and many things
+	have been added and changed, including new classes, new ivars,
+	and new methods.
+	</p>
+	  <deflist>
+	    <term>Tooltips</term>
+	    <desc> 
+	    A Tooltip implementation was added.
+	    </desc>
+	    <term>NSBitmapImage Improvements</term>
+	    <desc> 
+	    Lots of improvements to the NSBitmapImage subclasses.
+	    </desc>
+	    <term>Theming Improvements</term>
+	    <desc> 
+	    GSTheme and other classes were added to improve support
+	    of theming.
+	    </desc>
+	    <term>New Methods added</term>
+	    <desc> 
+	    Added new methods from Mac OS X 10.4 for NSControl, NSResponder,
+	    NSDocument, NSPrintOperation, NSWindowController, NSCell,
+	    NSMenuItem, NSView. Some ivar names were changed also.
+	    </desc>
+	    <term>New ivars added</term>
+	    <desc> 
+	    Added new ivars for NSMenuItem, NSPrintOperation, NSTableView,
+	    NSDrawer, NSScrollView, NSAlert, NSTextView.
+	    </desc>
+	    <term>New Classes Added</term>
+	    <desc>
+	    New classes from Mac OS X 10.4 and earlier were added including
+	    NSLevelIndicator, NSObjectController, NSUserDefaultsController,
+	    NSKeyValueBinding, NSArrayController, NSController.
+	    </desc>
+	    <term>NSSpellServer moved to base</term>
+	    <desc>
+	    NSSpellServer was moved to GNUstep base for Mac OS X
+	    compatibility.
+	    </desc>
+	    <term>NSTabViewType enumerations</term>
+	    <desc>
+	    Enumerations were changed to match values from Mac OS X.
+	    </desc>
+	    <term>GNUstep GUI updated for Make 2.0</term>
+	    <desc>
+	    GNUstep GUI was updated to work with GNUstep Make 2.0. This
+	    includes versioned resources.
+	    </desc>
+	    <term>NSAffineTransform moved to base</term>
+	    <desc>
+	    Much of NSAffineTransform was moved to gnustep-base to match
+	    with Mac OS X. Many older methods were marked as deprecated
+	    in favor of the more recent Mac OS X methods.
+	    </desc>
+	    <term>NSAlert in alternate threads</term>
+	    <desc>
+	    NSAlerts are performed in the main thread even if called
+	    from another thread.
+	    </desc>
+	    <term>NSAnimation Class Added</term>
+	    <desc>
+	    Preliminary code for the NSAnimation class has been added.
+	    Only NSAnimationNonBlocking mode implemented.
+	    </desc>
+	  </deflist>
+      </section>
+      <section>
 	<heading>Version 0.11.0</heading>
 	  <deflist>
 	    <term>Keyed Encoding/Archiving</term>

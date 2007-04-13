@@ -1,7 +1,7 @@
 1 ANNOUNCE
 **********
 
-This is version 0.11.0 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.12.0 of the GNUstep GUI library (`gnustep-gui').
 
 1.1 What is the GNUstep GUI Library?
 ====================================
@@ -27,21 +27,35 @@ systems.
 GNUstep Base Library, the TIFF Graphics library, and a back-end
 component like the GNUstep 'Back' Backend.
 
-1.2 Noteworthy changes in version `0.11.0'
+1.2 Noteworthy changes in version `0.12.0'
 ==========================================
 
-   * Added support for keyed encoding in all gui classes.
+It has been a long time since the last release and many things have been
+added and changed, including new classes, new ivars, and new methods.
 
-   * Added mechanism to allow for dynamic extension of model loading
-     mechanism
+   * Lots of improvements to the NSBitmapImage subclasses thanks to
+     Mark Tracy
 
-   * Implemented glue code in GSNibCompatibility for classes such as
-     NSIBObjectData, NSClassSwapper, etc. to facilitate nib loading.
+   * GSTheme and other classes were added to improve support of theming.
+
+   * Added new methods from Mac OS X 10.4 for NSControl, NSResponder,
+     NSDocument, NSPrintOperation, NSWindowController, NSCell,
+     NSMenuItem, NSView. Some ivar names were changed also.
+
+   * Added new ivars for NSMenuItem, NSPrintOperation, NSTableView,
+     NSDrawer, NSScrollView.
+
+   * New classes from Mac OS X 10.4 and earlier were added including
+     NSLevelIndicator, NSObjectController, NSUserDefaultsController,
+     NSKeyValueBinding, NSArrayController, NSController.
+
+   * NSSpellServer and NSAffineTransform was moved to GNUstep base for
+     Mac OS X compatibility.
 
 1.3 Where can you get it?  How can you compile it?
 ==================================================
 
-The gstep-gui-0.11.0.tar.gz distribution file has been placed at
+The gstep-gui-0.12.0.tar.gz distribution file has been placed at
 `ftp://ftp.gnustep.org/pub/gnustep/core'.
 
 Read the INSTALL file or the GNUstep-HOWTO for installation
