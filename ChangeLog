@@ -1,5 +1,9 @@
 2007-04-13  Adam Fedor  <fedor@gnu.org>
 
+	* Version: Bump version
+
+2007-04-13  Adam Fedor  <fedor@gnu.org>
+
 	* Version 0.12.0
 	* Source/NSAnimation.m: Remove unused and incorrect include.
 
