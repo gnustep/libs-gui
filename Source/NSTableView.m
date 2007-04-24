@@ -4727,6 +4727,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
   NSLog(@"exiting sizeToFit");
 }
 */
+
 - (void) noteNumberOfRowsChanged
 {
   _numberOfRows = [self _numRows];
@@ -4737,50 +4738,72 @@ static BOOL selectContiguousRegion(NSTableView *self,
     {
       int row = [_selectedRows lastIndex];
       
-      /* Check that all selected rows are in the new range of rows */
-      if ((row != NSNotFound) && (row >= _numberOfRows))
+      if (row == NSNotFound)
         {
-	  [_selectedRows removeIndexesInRange: 
-			     NSMakeRange(_numberOfRows,  row + 1 - _numberOfRows)];
-	  if (_selectedRow >= _numberOfRows)
-	    {
-	      row = [_selectedRows lastIndex];
-	      [self _postSelectionIsChangingNotification];
-
-	      if (row != NSNotFound)
-		{
-		  _selectedRow = row;
-		}
-	      else
-		{
-		  /* Argh - all selected rows were outside the table */
-		  if (_allowsEmptySelection)
-		    {
-		      _selectedRow = -1;
-		    }
-		  else
-		    {
-		      /* We shouldn't allow empty selection - try
-                         selecting the last row */
-		      int lastRow = _numberOfRows - 1;
+          if (!_allowsEmptySelection)
+            {
+              /* We shouldn't allow empty selection - try
+                 selecting the last row */
+              int lastRow = _numberOfRows - 1;
 		      
-		      if (lastRow > -1)
-			{
-			  [_selectedRows addIndex: lastRow];
-			  _selectedRow = lastRow;
-			}
-		      else
-			{
-			  /* problem - there are no rows at all */
-			  _selectedRow = -1;
-			}
-		    }
-		}
-	      [self _postSelectionDidChangeNotification];
-	    }
-	}
+              if (lastRow > -1)
+                {
+                  [self _postSelectionIsChangingNotification];
+                  [_selectedRows addIndex: lastRow];
+                  _selectedRow = lastRow;
+                  [self _postSelectionDidChangeNotification];
+                }
+              else
+                {
+                  /* problem - there are no rows at all */
+                  _selectedRow = -1;
+                }
+            }
+        }
+      /* Check that all selected rows are in the new range of rows */
+      else if (row >= _numberOfRows)
+        {
+          [_selectedRows removeIndexesInRange: 
+             NSMakeRange(_numberOfRows,  row + 1 - _numberOfRows)];
+          if (_selectedRow >= _numberOfRows)
+            {
+              row = [_selectedRows lastIndex];
+              [self _postSelectionIsChangingNotification];
+              
+              if (row != NSNotFound)
+                {
+                  _selectedRow = row;
+                }
+              else
+                {
+                  /* Argh - all selected rows were outside the table */
+                  if (_allowsEmptySelection)
+                    {
+                      _selectedRow = -1;
+                    }
+                  else
+                    {
+                      /* We shouldn't allow empty selection - try
+                         selecting the last row */
+                      int lastRow = _numberOfRows - 1;
+                      
+                      if (lastRow > -1)
+                        {
+                          [_selectedRows addIndex: lastRow];
+                          _selectedRow = lastRow;
+                        }
+                      else
+                        {
+                          /* problem - there are no rows at all */
+                          _selectedRow = -1;
+                        }
+                    }
+                }
+              [self _postSelectionDidChangeNotification];
+            }
+        }
     }
-
+  
   [self setFrame: NSMakeRect (_frame.origin.x, 
 			      _frame.origin.y,
 			      _frame.size.width, 
@@ -4793,10 +4816,10 @@ static BOOL selectContiguousRegion(NSTableView *self,
       NSRect superviewBounds; // Get this *after* [self setFrame:]
       superviewBounds = [_super_view bounds];
       if ((superviewBounds.origin.x <= _frame.origin.x) 
-          && (NSMaxY (superviewBounds) >= NSMaxY (_frame)))
-	{
-	  [self setNeedsDisplay: YES];
-	}
+          && (NSMaxY(superviewBounds) >= NSMaxY(_frame)))
+        {
+          [self setNeedsDisplay: YES];
+        }
     }
 }
 
@@ -6336,21 +6359,20 @@ static BOOL selectContiguousRegion(NSTableView *self,
  */
 - (void) _postSelectionIsChangingNotification
 {
-  [nc postNotificationName: 
-	NSTableViewSelectionIsChangingNotification
+  [nc postNotificationName: NSTableViewSelectionIsChangingNotification
       object: self];
 }
+
 - (void) _postSelectionDidChangeNotification
 {
-  [nc postNotificationName: 
-	NSTableViewSelectionDidChangeNotification
+  [nc postNotificationName: NSTableViewSelectionDidChangeNotification
       object: self];
 }
+
 - (void) _postColumnDidMoveNotificationWithOldIndex: (int) oldIndex
 					   newIndex: (int) newIndex
 {
-  [nc postNotificationName: 
-	NSTableViewColumnDidMoveNotification
+  [nc postNotificationName: NSTableViewColumnDidMoveNotification
       object: self
       userInfo: [NSDictionary 
 		  dictionaryWithObjectsAndKeys:
