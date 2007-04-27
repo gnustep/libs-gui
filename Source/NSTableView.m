@@ -3267,19 +3267,6 @@ byExtendingSelection: (BOOL)flag
   [_editedCell setEditable: _dataSource_editable];
   [_editedCell setObjectValue: [self _objectValueForTableColumn: tb
 				     row: rowIndex]];
-  /* [_dataSource tableView: self
-     objectValueForTableColumn: tb
-     row: rowIndex]]; */
-
-  // We really want the correct background color!
-  if ([_editedCell respondsToSelector: @selector(setBackgroundColor:)])
-    {
-      [(NSTextFieldCell *)_editedCell setBackgroundColor: _backgroundColor];
-    }
-  else
-    {
-      [t setBackgroundColor: _backgroundColor];
-    }
   
   // But of course the delegate can mess it up if it wants
   [self _willDisplayCell: _editedCell
@@ -3302,6 +3289,9 @@ byExtendingSelection: (BOOL)flag
     }
 
   _textObject = [_editedCell setUpFieldEditorAttributes: t];
+  // FIXME: Which background color do we want here?
+  [_textObject setBackgroundColor: [NSColor selectedControlColor]];
+  [_textObject setDrawsBackground: YES];
 
   drawingRect = [self frameOfCellAtColumn: columnIndex  row: rowIndex];
   if (flag)

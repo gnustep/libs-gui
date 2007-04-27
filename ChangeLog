@@ -1,3 +1,8 @@
+2007-04-27 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableView.m (-editColumn::row:withEvent:select:): Set
+	the background colour of the text object and make it draw its background.
+
 2007-04-24 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTableView.m (-noteNumberOfRowsChanged): Handle the case
