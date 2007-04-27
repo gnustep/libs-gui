@@ -35,6 +35,7 @@
 @class NSWindow;
 @class NSPasteboard;
 @class NSImage;
+@class NSURL;
 
 typedef enum _NSDragOperation {
   NSDragOperationNone = 0,
@@ -45,7 +46,7 @@ typedef enum _NSDragOperation {
   NSDragOperationMove = 16,
   NSDragOperationDelete = 32,
   NSDragOperationAll = 63,
-  NSDragOperationEvery = NSDragOperationAll  
+  NSDragOperationEvery = 0xffff  
 } NSDragOperation;
 
 @protocol NSDraggingInfo
@@ -71,6 +72,9 @@ typedef enum _NSDragOperation {
 //
 - (void)slideDraggedImageTo:(NSPoint)screenPoint;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+- (NSArray *)namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination;
+#endif
 @end
 
 @interface NSObject (NSDraggingDestination)
@@ -91,6 +95,8 @@ typedef enum _NSDragOperation {
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void)draggingEnded: (id <NSDraggingInfo>)sender;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 - (BOOL)wantsPeriodicDraggingUpdates;
 #endif
 @end
@@ -115,10 +121,13 @@ typedef enum _NSDragOperation {
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void)draggedImage: (NSImage*)image
              endedAt: (NSPoint)screenPoint
-	   operation: (NSDragOperation)operation;
+           operation: (NSDragOperation)operation;
 - (void)draggedImage: (NSImage*)image
              movedTo: (NSPoint)screenPoint;
 #endif 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+- (NSArray *)namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination;
+#endif
 @end
 
 #endif // _GNUstep_H_NSDragging

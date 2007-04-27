@@ -1,5 +1,12 @@
 2007-04-27 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSDragging.h: Added a few MacOSX 10.2 methods
+	* Source/GSSlideView.m: (-_handleDrag:slidePoint:): Call new
+	MacOSX method on destionation when available. 
+	Patch by Yen-Ju Chen <yjchenx@gmail.com>
+
+2007-04-27 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSTableView.m (-editColumn::row:withEvent:select:): Set
 	the background colour of the text object and make it draw its background.
 
@@ -200,9 +207,9 @@
 	
 2007-03-09  Sergii Stoian <stoyan255@yahoo.com>
 
-        * Source/GSSlideView.m: (- _slideFrom:to:): Calcuate number of
-        steps wrt image size.
-        * Source/GSDragView.m: (- slideDraggedImageTo:): Ditto.
+	* Source/GSSlideView.m: (- _slideFrom:to:): Calcuate number of
+	steps wrt image size.
+	* Source/GSDragView.m: (- slideDraggedImageTo:): Ditto.
 	
 2007-03-08  Fred Kiefer <FredKiefer@gmx.de>
 
