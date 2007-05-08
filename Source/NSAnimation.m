@@ -115,9 +115,10 @@ _GSRationalBezierEval (_GSRationalBezierDesc *rb, float t)
 static inline float
 _GSRationalBezierDerivEval (_GSRationalBezierDesc *rb, float t)
 {
+  float h;
   if (!rb->areBezierDescComputed)
     _GSRationalBezierComputeBezierDesc (rb);
-  float h = _GSBezierEval (&(rb->d),t);
+  h = _GSBezierEval (&(rb->d),t);
   return ( _GSBezierDerivEval(&(rb->n),t) * h 
            - _GSBezierEval   (&(rb->n),t) * _GSBezierDerivEval(&(rb->d),t) )
     / (h*h);
@@ -212,10 +213,11 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
 - (void) addProgressMark: (NSAnimationProgress)progress
 {
+  _NSANIMATION_LOCK;
+  
   if (progress < 0.0) progress = 0.0;
   if (progress > 1.0) progress = 1.0;
 
-  _NSANIMATION_LOCK;
 
   if (GSIArrayCount(_progressMarks) == 0)
     { // First mark
@@ -456,10 +458,11 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 - (NSArray*) progressMarks
 {
   NSNumber **cpmn;
+  unsigned count;
 
   _NSANIMATION_LOCK;
 
-  unsigned count = GSIArrayCount (_progressMarks);
+  count = GSIArrayCount (_progressMarks);
 
   if (!_isCachedProgressMarkNumbersValid)
     {
@@ -494,9 +497,10 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
 - (void) removeProgressMark: (NSAnimationProgress)progress
 {
+  unsigned index;
   _NSANIMATION_LOCK;
 
-  unsigned index = GSIArraySearch (_progressMarks,progress,nsanimation_progressMarkSorter);
+  index = GSIArraySearch (_progressMarks,progress,nsanimation_progressMarkSorter);
   if ( index < GSIArrayCount(_progressMarks)
       && progress == GSIArrayItemAtIndex (_progressMarks,index) )
     {
@@ -590,10 +594,10 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
   BOOL needSearchNextMark = NO;
   NSAnimationProgress markedProgress;
 
+  _NSANIMATION_LOCK;
+
   if (progress < 0.0) progress = 0.0;
   if (progress > 1.0) progress = 1.0;
-
-  _NSANIMATION_LOCK;
 
   // NOTE: In the case of a forward jump the marks between the
   //       previous progress value and the new (excluded) progress 
@@ -868,9 +872,10 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
 - (void) animatorDidStart
 {
+  _NSANIMATION_LOCK;
+
   NSDebugFLLog (@"NSAnimationAnimator",@"%@",self);
 
-  _NSANIMATION_LOCK;
 
   id delegate;
   delegate = GS_GC_UNHIDE (_currentDelegate);
@@ -945,13 +950,15 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
 - (void) _gs_startAnimationReachesProgressMark: (NSNotification*)notification
 {
-  NSAnimation *animation = [notification object];
-  NSAnimationProgress mark
-   = [[[notification userInfo] objectForKey: NSAnimationProgressMark] floatValue];
+  NSAnimation *animation;
+  NSAnimationProgress mark;
+ 
+  _NSANIMATION_LOCK;
+  animation = [notification object];
+  mark = [[[notification userInfo] objectForKey: NSAnimationProgressMark] floatValue];
+
   NSDebugFLLog (@"NSAnimationMark",
                 @"%@ Start Animation %@ reaches %f",self,animation,mark);
-
-  _NSANIMATION_LOCK;
 
   if ( animation == _startAnimation && mark == _startMark)
     {
@@ -962,15 +969,19 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
   _NSANIMATION_UNLOCK;
 }
 
+
 - (void) _gs_stopAnimationReachesProgressMark: (NSNotification*)notification
 {
-  NSAnimation *animation = [notification object];
-  NSAnimationProgress mark
-   = [[[notification userInfo] objectForKey: NSAnimationProgressMark] floatValue];
+  NSAnimation *animation;
+  NSAnimationProgress mark;
+ 
+  _NSANIMATION_LOCK;
+  animation = [notification object];
+  mark = [[[notification userInfo] objectForKey: NSAnimationProgressMark] floatValue];
+
   NSDebugFLLog (@"NSAnimationMark",
                 @"%@ Stop Animation %@ reaches %f",self,animation,mark);
 
-  _NSANIMATION_LOCK;
 
   if ( animation == _stopAnimation && mark == _stopMark)
     {
