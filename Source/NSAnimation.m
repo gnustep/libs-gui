@@ -680,12 +680,13 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
 - (void) startAnimation
 {
+  unsigned i;
+
   if ([self isAnimating])
     return;
 
   NSDebugFLLog (@"NSAnimationStart",@"%@",self);
 
-  unsigned i;
   for (i=0; i<GSIArrayCount(_progressMarks); i++)
     NSDebugFLLog (@"NSAnimationMark",
                   @"%@ Mark #%d : %f",
@@ -702,10 +703,11 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
   if (_delegate != nil)
     {
+      id delegate;
+
       NSDebugFLLog (@"NSAnimationDelegate",
                     @"%@ Cache delegation methods",self);
       // delegation methods are cached while the animation is running
-      id delegate;
       delegate = GS_GC_UNHIDE (_delegate);
       _delegate_animationDidReachProgressMark =
         ([delegate respondsToSelector: @selector (animation:didReachProgressMark:)]) ?
@@ -862,12 +864,13 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
 - (void) animatorDidStart
 {
+  id delegate;
+
   _NSANIMATION_LOCK;
 
   NSDebugFLLog (@"NSAnimationAnimator",@"%@",self);
 
 
-  id delegate;
   delegate = GS_GC_UNHIDE (_currentDelegate);
 
   if (_delegate_animationShouldStart) // method is cached (the animation is running)
@@ -882,11 +885,12 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
 - (void) animatorDidStop
 {
+  id delegate;
+
   NSDebugFLLog (@"NSAnimationAnimator",@"%@ Progress = %f",self,_currentProgress);
 
   _NSANIMATION_LOCK;
 
-  id delegate;
   delegate = GS_GC_UNHIDE (_currentDelegate);
   if (_currentProgress < 1.0)
     {
@@ -911,11 +915,12 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
 - (void) animatorStep: (NSTimeInterval) elapsedTime;
 {
+  NSAnimationProgress progress;
   NSDebugFLLog (@"NSAnimationAnimator",@"%@ Elapsed time : %f",self,elapsedTime);
 
   _NSANIMATION_LOCK;
 
-  NSAnimationProgress progress = (elapsedTime / _duration);
+  progress = (elapsedTime / _duration);
 
   { // have some marks been passed ?
     // NOTE: the case where progress == markedProgress is
