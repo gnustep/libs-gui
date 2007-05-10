@@ -27,6 +27,7 @@
  */
 
 #include <AppKit/NSAnimation.h>
+#include <GNUstepBase/GSLock.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSValue.h>
 #include <Foundation/NSException.h>
@@ -178,24 +179,14 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 }
 
 #define _NSANIMATION_LOCK           \
-  if (_isThreaded)                  \
-  {                                 \
-    NSAssert(__gs_isLocked == NO, NSInternalInconsistencyException); \
     NSDebugFLLog(@"NSAnimationLock",\
                  @"%@ LOCK %@",self,[NSThread currentThread]);\
     [_isAnimatingLock lock];        \
-    __gs_isLocked = YES;            \
-  }
 
 #define _NSANIMATION_UNLOCK         \
-  if (_isThreaded)                \
-  {                                 \
-    NSAssert(__gs_isLocked == YES, NSInternalInconsistencyException); \
     NSDebugFLLog(@"NSAnimationLock",\
                  @"%@ UNLOCK %@",self,[NSThread currentThread]);\
-    __gs_isLocked = NO;            \
     [_isAnimatingLock unlock];      \
-  }
 
 @implementation NSAnimation
 
@@ -412,8 +403,7 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
       _delegate_animationShouldStart =
         (BOOL (*)(id,SEL,NSAnimation*)) NULL;
       
-      _isThreaded = NO;
-      _isAnimatingLock = [[NSRecursiveLock alloc] init];
+      _isAnimatingLock = [GSLazyRecursiveLock new];
     }
   return self;
 }
@@ -801,7 +791,6 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
         [_animator startAnimation];
         break;
       case NSAnimationNonblockingThreaded:
-        _isThreaded = YES;
         [NSThread
           detachNewThreadSelector: @selector (_gs_startThreadedAnimation)
                          toTarget: self 
@@ -1050,7 +1039,6 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
 - (void) _gs_startThreadedAnimation
 {
-  // NSAssert(_isThreaded);
   CREATE_AUTORELEASE_POOL (pool);
   NSDebugFLLog (@"NSAnimationThread",
                 @"%@ Start of %@",self,[NSThread currentThread]);
@@ -1058,7 +1046,6 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
   NSDebugFLLog (@"NSAnimationThread",
                 @"%@ End of %@",self,[NSThread currentThread]);
   RELEASE (pool);
-  _isThreaded = NO;
 }
 
 
