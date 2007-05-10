@@ -112,9 +112,11 @@ static void gs_gif_init_input_source(gs_gif_input_src *src, NSData *data)
 /* Function to write GIF to buffer */
 static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
 {
+  NSMutableData *nsData;
+  
   if (len <= 0) return 0;
 
-  NSMutableData * nsData = file->UserData;
+  nsData = file->UserData;
   [nsData appendBytes: buffer length: len];
   return len;
 }
