@@ -1,3 +1,9 @@
+2007-05-10 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSAnimation.m: removed some C99-isms and fixed bug in
+	use of boolean.
+	* Headers/AppKit/NSAnimation.h: added an ivar and FIXME comments.
+
 2007-05-08 Riccardo Mottola <rmottola@users.sf.net>
 
 	* Source/NSAnimation.m: removed some C99-isms

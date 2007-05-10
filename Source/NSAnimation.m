@@ -178,21 +178,22 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 }
 
 #define _NSANIMATION_LOCK           \
-  BOOL __gs_isLocked = NO;          \
   if (_isThreaded)                  \
   {                                 \
-    __gs_isLocked = YES;            \
+    NSAssert(__gs_isLocked == NO, NSInternalInconsistencyException); \
     NSDebugFLLog(@"NSAnimationLock",\
                  @"%@ LOCK %@",self,[NSThread currentThread]);\
     [_isAnimatingLock lock];        \
+    __gs_isLocked = YES;            \
   }
 
 #define _NSANIMATION_UNLOCK         \
-  if (__gs_isLocked)                \
+  if (_isThreaded)                \
   {                                 \
-    __gs_isLocked = YES;            \
+    NSAssert(__gs_isLocked == YES, NSInternalInconsistencyException); \
     NSDebugFLLog(@"NSAnimationLock",\
                  @"%@ UNLOCK %@",self,[NSThread currentThread]);\
+    __gs_isLocked = NO;            \
     [_isAnimatingLock unlock];      \
   }
 
