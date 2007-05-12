@@ -178,15 +178,38 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
   return (NSComparisonResult)(diff / fabs (diff));
 }
 
+/* Thread locking/unlocking support macros.
+ * _isThreaded flag is an ivar that records whether the
+ * NSAnimation is running in thread mode.
+ * __gs_isLocked flag is local to each method and records
+ * whether the thread is locked and must be locked before
+ * the method exits.
+ * Both are needed because _isThreaded is reset when the
+ * NSAnimation stops : that may happen at any time between
+ * a lock/unlock pair.
+ */
+#define _NSANIMATION_LOCKING_SETUP  \
+  BOOL __gs_isLocked = NO;
+
 #define _NSANIMATION_LOCK           \
+  if (_isThreaded)                  \
+  {                                 \
+    NSAssert(__gs_isLocked == NO, NSInternalInconsistencyException); \
     NSDebugFLLog(@"NSAnimationLock",\
                  @"%@ LOCK %@",self,[NSThread currentThread]);\
     [_isAnimatingLock lock];        \
+    __gs_isLocked = YES;            \
+   }
 
 #define _NSANIMATION_UNLOCK         \
+  if (__gs_isLocked)                \
+  {                                 \
+    /* NSAssert(__gs_isLocked == YES, NSInternalInconsistencyException); */ \
     NSDebugFLLog(@"NSAnimationLock",\
                  @"%@ UNLOCK %@",self,[NSThread currentThread]);\
+    __gs_isLocked = NO;             \
     [_isAnimatingLock unlock];      \
+  }
 
 @implementation NSAnimation
 
@@ -205,12 +228,13 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
 - (void) addProgressMark: (NSAnimationProgress)progress
 {
-  _NSANIMATION_LOCK;
+  _NSANIMATION_LOCKING_SETUP;
   
   if (progress < 0.0) progress = 0.0;
   if (progress > 1.0) progress = 1.0;
 
 
+  _NSANIMATION_LOCK;
   if (GSIArrayCount(_progressMarks) == 0)
     { // First mark
       GSIArrayAddItem (_progressMarks,progress);
@@ -242,6 +266,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 - (NSAnimationBlockingMode) animationBlockingMode
 {
   NSAnimationBlockingMode m;
+  _NSANIMATION_LOCKING_SETUP;
+  
   _NSANIMATION_LOCK;
   m = _blockingMode;
   _NSANIMATION_UNLOCK;
@@ -251,6 +277,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 - (NSAnimationCurve) animationCurve
 {
   NSAnimationCurve c;
+  _NSANIMATION_LOCKING_SETUP;
+
   _NSANIMATION_LOCK;
   c = _curve;
   _NSANIMATION_UNLOCK;
@@ -259,6 +287,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
 - (void) clearStartAnimation
 {
+  _NSANIMATION_LOCKING_SETUP;
+
   _NSANIMATION_LOCK;
   [[NSNotificationCenter defaultCenter]
     removeObserver: self
@@ -271,6 +301,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
 - (void) clearStopAnimation
 {
+  _NSANIMATION_LOCKING_SETUP;
+
   _NSANIMATION_LOCK;
   [[NSNotificationCenter defaultCenter]
     removeObserver: self
@@ -284,6 +316,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 - (NSAnimationProgress) currentProgress
 {
   NSAnimationProgress p;
+  _NSANIMATION_LOCKING_SETUP;
+
   _NSANIMATION_LOCK;
   p = _currentProgress;
   _NSANIMATION_UNLOCK;
@@ -293,6 +327,7 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 - (float) currentValue
 {
   float value;
+  _NSANIMATION_LOCKING_SETUP;
 
   _NSANIMATION_LOCK;
 
@@ -338,6 +373,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 - (id) delegate
 {
   id d;
+  _NSANIMATION_LOCKING_SETUP;
+
   _NSANIMATION_LOCK;
   d = (_delegate == nil)? nil : GS_GC_UNHIDE (_delegate);
   _NSANIMATION_UNLOCK;
@@ -347,6 +384,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 - (NSTimeInterval) duration
 {
   NSTimeInterval d;
+  _NSANIMATION_LOCKING_SETUP;
+
   _NSANIMATION_LOCK;
   d = _duration;
   _NSANIMATION_UNLOCK;
@@ -356,6 +395,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 - (float) frameRate
 {
   float f;
+  _NSANIMATION_LOCKING_SETUP;
+
   _NSANIMATION_LOCK;
   f = _frameRate;
   _NSANIMATION_UNLOCK;
@@ -403,6 +444,7 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
       _delegate_animationShouldStart =
         (BOOL (*)(id,SEL,NSAnimation*)) NULL;
       
+      _isThreaded = NO;
       _isAnimatingLock = [GSLazyRecursiveLock new];
     }
   return self;
@@ -440,6 +482,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 - (BOOL) isAnimating
 {
   BOOL f;
+  _NSANIMATION_LOCKING_SETUP;
+
   _NSANIMATION_LOCK;
   f = (_animator != nil)? [_animator isAnimationRunning] : NO;
   _NSANIMATION_UNLOCK;
@@ -450,6 +494,7 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 {
   NSNumber **cpmn;
   unsigned count;
+  _NSANIMATION_LOCKING_SETUP;
 
   _NSANIMATION_LOCK;
 
@@ -489,6 +534,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 - (void) removeProgressMark: (NSAnimationProgress)progress
 {
   unsigned index;
+  _NSANIMATION_LOCKING_SETUP;
+
   _NSANIMATION_LOCK;
 
   index = GSIArraySearch (_progressMarks,progress,nsanimation_progressMarkSorter);
@@ -513,6 +560,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
 - (void) setAnimationBlockingMode: (NSAnimationBlockingMode)mode
 {
+  _NSANIMATION_LOCKING_SETUP;
+
   _NSANIMATION_LOCK;
   _isANewAnimatorNeeded |= (_blockingMode != mode);
   _blockingMode = mode;
@@ -521,6 +570,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
 - (void) setAnimationCurve: (NSAnimationCurve)curve
 {
+  _NSANIMATION_LOCKING_SETUP;
+
   _NSANIMATION_LOCK;
 
   if (_currentProgress <= 0.0f || _currentProgress >= 1.0f)
@@ -584,11 +635,12 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 {
   BOOL needSearchNextMark = NO;
   NSAnimationProgress markedProgress;
-
-  _NSANIMATION_LOCK;
+  _NSANIMATION_LOCKING_SETUP;
 
   if (progress < 0.0) progress = 0.0;
   if (progress > 1.0) progress = 1.0;
+
+  _NSANIMATION_LOCK;
 
   // NOTE: In the case of a forward jump the marks between the
   //       previous progress value and the new (excluded) progress 
@@ -631,6 +683,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
 - (void) setDelegate: (id)delegate
 {
+  _NSANIMATION_LOCKING_SETUP;
+
   _NSANIMATION_LOCK;
   _delegate = (delegate == nil)? nil : GS_GC_HIDE (delegate);
   _NSANIMATION_UNLOCK;
@@ -638,6 +692,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
 - (void) setDuration: (NSTimeInterval)duration
 {
+  _NSANIMATION_LOCKING_SETUP;
+
   if (duration<=0.0)
     [NSException raise: NSInvalidArgumentException                
 		format: @"%@ Duration must be > 0.0 (passed: %f)",self,duration];
@@ -648,6 +704,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
 - (void) setFrameRate: (float)fps
 {
+  _NSANIMATION_LOCKING_SETUP;
+
   if (fps<0.0)
     [NSException raise: NSInvalidArgumentException
 		format: @"%@ Framerate must be >= 0.0 (passed: %f)",self,fps];
@@ -665,6 +723,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
 - (void) setProgressMarks: (NSArray*)marks
 {
+  _NSANIMATION_LOCKING_SETUP;
+
   _NSANIMATION_LOCK;
   GSIArrayEmpty (_progressMarks);
   _nextMark = 0;
@@ -793,6 +853,7 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
         [_animator startAnimation];
         break;
       case NSAnimationNonblockingThreaded:
+        _isThreaded = YES;
         [NSThread
           detachNewThreadSelector: @selector (_gs_startThreadedAnimation)
                          toTarget: self 
@@ -803,6 +864,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 - (void) startWhenAnimation: (NSAnimation*)animation
 	    reachesProgress: (NSAnimationProgress)start
 {
+  _NSANIMATION_LOCKING_SETUP;
+
   _NSANIMATION_LOCK;
 
   _startAnimation = animation;
@@ -821,6 +884,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
 - (void) stopAnimation
 {
+  _NSANIMATION_LOCKING_SETUP;
+
   if ([self isAnimating])
     {
       _NSANIMATION_LOCK;
@@ -832,6 +897,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 - (void) stopWhenAnimation: (NSAnimation*)animation
 	   reachesProgress: (NSAnimationProgress)stop
 {
+  _NSANIMATION_LOCKING_SETUP;
+
   _NSANIMATION_LOCK;
 
   _stopAnimation = animation;
@@ -865,11 +932,11 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 - (void) animatorDidStart
 {
   id delegate;
-
-  _NSANIMATION_LOCK;
+  _NSANIMATION_LOCKING_SETUP;
 
   NSDebugFLLog (@"NSAnimationAnimator",@"%@",self);
 
+  _NSANIMATION_LOCK;
 
   delegate = GS_GC_UNHIDE (_currentDelegate);
 
@@ -886,6 +953,7 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 - (void) animatorDidStop
 {
   id delegate;
+  _NSANIMATION_LOCKING_SETUP;
 
   NSDebugFLLog (@"NSAnimationAnimator",@"%@ Progress = %f",self,_currentProgress);
 
@@ -916,6 +984,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 - (void) animatorStep: (NSTimeInterval) elapsedTime;
 {
   NSAnimationProgress progress;
+  _NSANIMATION_LOCKING_SETUP;
+
   NSDebugFLLog (@"NSAnimationAnimator",@"%@ Elapsed time : %f",self,elapsedTime);
 
   _NSANIMATION_LOCK;
@@ -947,6 +1017,7 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 {
   NSAnimation *animation;
   NSAnimationProgress mark;
+  _NSANIMATION_LOCKING_SETUP;
  
   _NSANIMATION_LOCK;
   animation = [notification object];
@@ -969,6 +1040,7 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 {
   NSAnimation *animation;
   NSAnimationProgress mark;
+  _NSANIMATION_LOCKING_SETUP;
  
   _NSANIMATION_LOCK;
   animation = [notification object];
@@ -993,6 +1065,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
 - (void) _gs_didReachProgressMark: (NSAnimationProgress) progress
 {
+  _NSANIMATION_LOCKING_SETUP;
+
   NSDebugFLLog (@"NSAnimationMark",@"%@ progress %f",self, progress);
 
   _NSANIMATION_LOCK;
@@ -1044,6 +1118,7 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
 - (void) _gs_startThreadedAnimation
 {
+  // NSAssert(_isThreaded);
   CREATE_AUTORELEASE_POOL (pool);
   NSDebugFLLog (@"NSAnimationThread",
                 @"%@ Start of %@",self,[NSThread currentThread]);
@@ -1051,6 +1126,7 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
   NSDebugFLLog (@"NSAnimationThread",
                 @"%@ End of %@",self,[NSThread currentThread]);
   RELEASE (pool);
+  _isThreaded = NO;
 }
 
 
@@ -1078,6 +1154,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 - (unsigned int) frameCount
 {
   unsigned c;
+  _NSANIMATION_LOCKING_SETUP;
+  
   _NSANIMATION_LOCK;
   c = (_animator != nil)? [_animator frameCount] : 0;
   _NSANIMATION_UNLOCK;
@@ -1086,6 +1164,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
 - (void) resetCounters
 { 
+  _NSANIMATION_LOCKING_SETUP;
+
   _NSANIMATION_LOCK;
   if (_animator != nil) [_animator resetCounters];
   _NSANIMATION_UNLOCK;
@@ -1094,6 +1174,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 - (float) actualFrameRate;
 { 
   float r;
+  _NSANIMATION_LOCKING_SETUP;
+
   _NSANIMATION_LOCK;
   r = (_animator != nil)? [_animator frameRate] : 0.0;
   _NSANIMATION_UNLOCK;
@@ -1318,6 +1400,8 @@ NSString *NSViewAnimationFadeOutEffect = @"NSViewAnimationFadeOutEffect";
 
 - (void) setViewAnimations: (NSArray*)animations
 {
+  _NSANIMATION_LOCKING_SETUP;
+
   _NSANIMATION_LOCK;
   if (_viewAnimations != animations)
     DESTROY (_viewAnimationDesc);
@@ -1328,6 +1412,8 @@ NSString *NSViewAnimationFadeOutEffect = @"NSViewAnimationFadeOutEffect";
 - (NSArray*) viewAnimations
 {
   NSArray *a;
+  _NSANIMATION_LOCKING_SETUP;
+
   _NSANIMATION_LOCK;
   a = _viewAnimations;
   _NSANIMATION_UNLOCK;
@@ -1336,6 +1422,8 @@ NSString *NSViewAnimationFadeOutEffect = @"NSViewAnimationFadeOutEffect";
 
 - (void) startAnimation
 {
+  _NSANIMATION_LOCKING_SETUP;
+
   _NSANIMATION_LOCK;
   if (_viewAnimationDesc == nil)
   {
@@ -1355,6 +1443,8 @@ NSString *NSViewAnimationFadeOutEffect = @"NSViewAnimationFadeOutEffect";
 
 - (void) stopAnimation
 {
+  _NSANIMATION_LOCKING_SETUP;
+
   _NSANIMATION_LOCK;
   [super stopAnimation];
   [self setCurrentProgress: 1.0];
@@ -1375,6 +1465,8 @@ NSString *NSViewAnimationFadeOutEffect = @"NSViewAnimationFadeOutEffect";
 
 - (void) setCurrentProgress: (NSAnimationProgress)progress
 {
+  _NSANIMATION_LOCKING_SETUP;
+
   _NSANIMATION_LOCK;
   [super setCurrentProgress: progress];
   [self performSelectorOnMainThread: @selector (_gs_updateViewsWithValue:)

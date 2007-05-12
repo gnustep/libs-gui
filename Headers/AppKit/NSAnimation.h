@@ -139,6 +139,7 @@ APPKIT_EXPORT NSString *NSAnimationProgressMark;
   BOOL  (*_delegate_animationShouldStart         )(id,SEL,NSAnimation*);
   id _currentDelegate; // The delegate when the animation is running
 
+  BOOL _isThreaded;
   NSRecursiveLock *_isAnimatingLock;
 }
 
