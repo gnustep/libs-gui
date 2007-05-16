@@ -38,10 +38,10 @@
 #include <AppKit/AppKitDefines.h>
 // For NSControlSize
 #include <AppKit/NSColor.h>
+#import <AppKit/NSFontDescriptor.h>
 
 @class NSDictionary;
 @class NSCharacterSet;
-@class NSFontDescriptor;
 
 typedef unsigned int NSGlyph;
 
@@ -121,6 +121,9 @@ APPKIT_EXPORT const float *NSFontIdentityMatrix;
 + (NSFont*) controlContentFontOfSize: (float)fontSize;
 + (NSFont*) labelFontOfSize: (float)fontSize;
 + (NSFont*) menuBarFontOfSize: (float)fontSize;
++ (NSFont *) fontWithDescriptor:(NSFontDescriptor *) descriptor size:(float) size;
++ (NSFont *) fontWithDescriptor:(NSFontDescriptor *) descriptor size:(float) size
+				  textTransform:(NSAffineTransform *) transform;
 #endif
 
 //

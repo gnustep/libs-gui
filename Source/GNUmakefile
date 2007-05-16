@@ -270,6 +270,7 @@ NSEPSImageRep.h \
 NSEvent.h \
 NSFileWrapper.h \
 NSFont.h \
+NSFontDescriptor.h \
 NSFontManager.h \
 NSFontPanel.h \
 NSForm.h \
