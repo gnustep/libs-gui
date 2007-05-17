@@ -1,3 +1,7 @@
+2007-05-17 Riccardo Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSFont.m: Revert incorrect matrix equality test change.
+
 2007-05-16 Riccardo Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/AppKit/NSFontDescriptor.h: tidied indentation etc.

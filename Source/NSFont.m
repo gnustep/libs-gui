@@ -857,22 +857,14 @@ static void setNSFont(NSString *key, NSFont *font)
 
 - (BOOL) isEqual: (id)anObject
 {
-  NSAffineTransformStruct	ats;
-
   if (anObject == self)
     return YES;
   if ([anObject isKindOfClass: self->isa] == NO)
     return NO;
   if ([[anObject fontName] isEqual: fontName] == NO)
     return NO;
-  ats = [[(NSFontDescriptor*)anObject matrix] transformStruct];
-  if (ats.m11 != matrix[0]) return NO;
-  if (ats.m12 != matrix[1]) return NO;
-  if (ats.m21 != matrix[2]) return NO;
-  if (ats.m22 != matrix[3]) return NO;
-  if (ats.tX != matrix[4]) return NO;
-  if (ats.tY != matrix[5]) return NO;
-
+  if (memcmp(matrix, [(NSFont*)anObject matrix], sizeof(matrix)) != 0)
+    return NO;
   return YES;
 }
 
