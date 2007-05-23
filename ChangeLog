@@ -1,3 +1,10 @@
+2007-05-23 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPrintOperation.m
+	(-runOperationModalForWindow:...contextInfo:,
+	-_printOperationDidRun:returnCode:contextInfo:) Only set and use
+	GSModalRunDelegate and GSModalRunSelector values when not nil.
+
 2007-05-17 Riccardo Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSFont.m: Revert incorrect matrix equality test change.
