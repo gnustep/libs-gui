@@ -1,3 +1,8 @@
+2007-05-28 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSView.m: ([scrollRect:by:]) restrict scrolled rectangle to
+	the bounds of the view.
+
 2007-05-23 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPrintOperation.m
@@ -5,11 +10,11 @@
 	-_printOperationDidRun:returnCode:contextInfo:) Only set and use
 	GSModalRunDelegate and GSModalRunSelector values when not nil.
 
-2007-05-17 Riccardo Frith-Macdonald <rfm@gnu.org>
+2007-05-17 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSFont.m: Revert incorrect matrix equality test change.
 
-2007-05-16 Riccardo Frith-Macdonald <rfm@gnu.org>
+2007-05-16 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/AppKit/NSFontDescriptor.h: tidied indentation etc.
 	* Source/NSFont.m: Tidied for coding standards.  Fixed memory leak.
