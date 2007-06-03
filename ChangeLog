@@ -1,3 +1,10 @@
+2007-06-03 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSOpenPanel.m: In -filenames append name to directory using
+	the standard method rather than by concatenating them joined by a
+	slash.  Might fix bug #19929 but even if it doesn't cure that, it
+	certainly fixes an error.
+
 2007-05-28 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSView.m: ([scrollRect:by:]) restrict scrolled rectangle to
