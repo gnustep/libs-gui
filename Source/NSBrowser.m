@@ -207,7 +207,8 @@ static NSTextFieldCell *titleCell;
     }
 
   [[GSTheme theme] drawGrayBezel: cellFrame withClip: NSZeroRect];
-  [self drawInteriorWithFrame: cellFrame  inView: controlView];
+  [self drawInteriorWithFrame: NSInsetRect(cellFrame, 1.0, 1.0)
+		       inView: controlView];
 }
 @end
 
