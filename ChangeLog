@@ -1,7 +1,12 @@
 2007-06-07 Sergii Stoian <stoyan255@gmail.com>
 
-	* Source/NSBrowser.m: ([drawWithFrame:inView:]) pass inset rect by
+	* Source/NSBrowser.m: ([drawWithFrame:inView:]) Pass inset rect by
 	1 to drawInteriorWithFrame:.
+
+	* Source/NSSavePanel.m: ([_initWithoutGModel]) Change propeties of
+	buttons: remove setting buttons type (by default 
+	NSMomentaryPushInButton); refuse first responder for buttons.
+	Set setImageDimsWhenDisabled:NO to image button. Cleanup.
 
 2007-06-03 Richard Frith-Macdonald <rfm@gnu.org>
 
