@@ -71,7 +71,6 @@
 #include "AppKit/PSOperators.h"
 #include "GNUstepGUI/GSDisplayServer.h"
 #include "GNUstepGUI/GSTrackingRect.h"
-#include "GNUstepGUI/GSVersion.h"
 #include "GSToolTips.h"
 
 /*
@@ -3765,9 +3764,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   if (pages == 1)
     {
       if ([printInfo isHorizontallyCentered])
-	location.x = (NSWidth(bounds) - NSWidth(aRect))/2;
+        location.x = (NSWidth(bounds) - NSWidth(aRect))/2;
       if ([printInfo isVerticallyCentered])
-	location.y = (NSHeight(bounds) - NSHeight(aRect))/2;
+        location.y = (NSHeight(bounds) - NSHeight(aRect))/2;
     }
 
   return location;
@@ -3787,23 +3786,17 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
  * Writing Conforming PostScript
  */
 - (void) beginPage: (int)ordinalNum
-	     label: (NSString*)aString
-	      bBox: (NSRect)pageRect
-	     fonts: (NSString*)fontNames
+             label: (NSString*)aString
+              bBox: (NSRect)pageRect
+             fonts: (NSString*)fontNames
 {
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
   NSGraphicsContext *ctxt = [printOp context];
 
-  if (aString == nil)
-    aString = [[NSNumber numberWithInt: ordinalNum] description];
-  DPSPrintf(ctxt, "%%%%Page: %s %d\n", [aString lossyCString], ordinalNum);
-  if (NSIsEmptyRect(pageRect) == NO)
-    DPSPrintf(ctxt, "%%%%PageBoundingBox: %d %d %d %d\n",
-	      (int)NSMinX(pageRect), (int)NSMinY(pageRect), 
-	      (int)NSMaxX(pageRect), (int)NSMaxY(pageRect));
-  if (fontNames)
-    DPSPrintf(ctxt, "%%%%PageFonts: %s\n", [fontNames lossyCString]);
-  DPSPrintf(ctxt, "%%%%BeginPageSetup\n");
+  [ctxt  beginPage: ordinalNum
+         label: aString
+         bBox: pageRect
+         fonts: fontNames];
 }
 
 - (void) beginPageSetupRect: (NSRect)aRect placement: (NSPoint)location
@@ -3812,64 +3805,23 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 }
 
 - (void) beginPrologueBBox: (NSRect)boundingBox
-	      creationDate: (NSString*)dateCreated
-		 createdBy: (NSString*)anApplication
-		     fonts: (NSString*)fontNames
-		   forWhom: (NSString*)user
-		     pages: (int)numPages
-		     title: (NSString*)aTitle
+              creationDate: (NSString*)dateCreated
+                 createdBy: (NSString*)anApplication
+                     fonts: (NSString*)fontNames
+                   forWhom: (NSString*)user
+                     pages: (int)numPages
+                     title: (NSString*)aTitle
 {
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
   NSGraphicsContext *ctxt = [printOp context];
-  NSPrintingOrientation orient;
-  BOOL epsOp;
 
-  epsOp = [printOp isEPSOperation];
-  orient = [[printOp printInfo] orientation];
-
-  if (epsOp)
-    DPSPrintf(ctxt, "%%!PS-Adobe-3.0 EPSF-3.0\n");
-  else
-    DPSPrintf(ctxt, "%%!PS-Adobe-3.0\n");
-  DPSPrintf(ctxt, "%%%%Title: %s\n", [aTitle lossyCString]);
-  DPSPrintf(ctxt, "%%%%Creator: %s\n", [anApplication lossyCString]);
-  DPSPrintf(ctxt, "%%%%CreationDate: %s\n", 
-	    [[dateCreated description] lossyCString]);
-  DPSPrintf(ctxt, "%%%%For: %s\n", [user lossyCString]);
-  if (fontNames)
-    DPSPrintf(ctxt, "%%%%DocumentFonts: %s\n", [fontNames lossyCString]);
-  else
-    DPSPrintf(ctxt, "%%%%DocumentFonts: (atend)\n");
-
-  if (NSIsEmptyRect(boundingBox) == NO)
-    DPSPrintf(ctxt, "%%%%BoundingBox: %d %d %d %d\n", 
-    	      (int)NSMinX(boundingBox), (int)NSMinY(boundingBox), 
-	      (int)NSMaxX(boundingBox), (int)NSMaxY(boundingBox));
-  else
-    DPSPrintf(ctxt, "%%%%BoundingBox: (atend)\n");
-
-  if (epsOp == NO)
-    {
-      if (numPages)
-	DPSPrintf(ctxt, "%%%%Pages: %d\n", numPages);
-      else
-	DPSPrintf(ctxt, "%%%%Pages: (atend)\n");
-      if ([printOp pageOrder] == NSDescendingPageOrder)
-	DPSPrintf(ctxt, "%%%%PageOrder: Descend\n");
-      else if ([printOp pageOrder] == NSAscendingPageOrder)
-	DPSPrintf(ctxt, "%%%%PageOrder: Ascend\n");
-      else if ([printOp pageOrder] == NSSpecialPageOrder)
-	DPSPrintf(ctxt, "%%%%PageOrder: Special\n");
-
-      if (orient == NSPortraitOrientation)
-	DPSPrintf(ctxt, "%%%%Orientation: Portrait\n");
-      else
-	DPSPrintf(ctxt, "%%%%Orientation: Landscape\n");
-    }
-
-  DPSPrintf(ctxt, "%%%%GNUstepVersion: %d.%d.%d\n", 
-	    GNUSTEP_GUI_MAJOR_VERSION, GNUSTEP_GUI_MINOR_VERSION,
-	    GNUSTEP_GUI_SUBMINOR_VERSION);
+  [ctxt beginPrologueBBox: boundingBox
+	      creationDate: dateCreated
+        createdBy: anApplication
+        fonts: fontNames
+        forWhom: user
+        pages: numPages
+        title: aTitle];
 }
 
 - (void) addToPageSetup
@@ -3881,7 +3833,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
   NSGraphicsContext *ctxt = [printOp context];
 
-  DPSPrintf(ctxt, "%%%%BeginSetup\n");
+  [ctxt beginSetup];
 }
 
 - (void) beginTrailer
@@ -3889,7 +3841,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
   NSGraphicsContext *ctxt = [printOp context];
 
-  DPSPrintf(ctxt, "%%%%Trailer\n");
+  [ctxt beginTrailer];
 }
 
 - (void) drawPageBorderWithSize: (NSSize)borderSize
@@ -3905,7 +3857,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
   NSGraphicsContext *ctxt = [printOp context];
 
-  DPSPrintf(ctxt, "%%%%EndComments\n\n");
+  [ctxt endHeaderComments];
 }
 
 - (void) endPrologue
@@ -3913,7 +3865,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
   NSGraphicsContext *ctxt = [printOp context];
 
-  DPSPrintf(ctxt, "%%%%EndProlog\n\n");
+  [ctxt endPrologue];
 }
 
 - (void) endSetup
@@ -3921,7 +3873,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
   NSGraphicsContext *ctxt = [printOp context];
 
-  DPSPrintf(ctxt, "%%%%EndSetup\n\n");
+  [ctxt endSetup];
 }
 
 - (void) endPageSetup
@@ -3929,7 +3881,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
   NSGraphicsContext *ctxt = [printOp context];
 
-  DPSPrintf(ctxt, "%%%%EndPageSetup\n");
+  [ctxt endPageSetup];
 }
 
 - (void) endPage
@@ -3953,13 +3905,12 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
   NSGraphicsContext *ctxt = [printOp context];
 
-  DPSPrintf(ctxt, "%%%%EOF\n");
+  [ctxt endTrailer];
 }
 
 - (NSAttributedString *) pageFooter
 {
-  return [[[NSAttributedString alloc] 
-	      initWithString:
+  return [[[NSAttributedString alloc] initWithString:
 		  [NSString stringWithFormat:@"Page %d", 
 			    [[NSPrintOperation currentOperation] currentPage]]] 
 	     autorelease];
@@ -3967,25 +3918,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (NSAttributedString *) pageHeader
 {
-  return [[[NSAttributedString alloc] 
-	      initWithString: 
+  return [[[NSAttributedString alloc] initWithString: 
 		  [NSString stringWithFormat:@"%@ %@", [self printJobTitle], 
 			    [[NSCalendarDate calendarDate] description]]] autorelease];
-}
-
-- (void) _loadPrinterProlog: (NSGraphicsContext *)ctxt
-{
-  NSString *prolog;
-  prolog = [NSBundle pathForLibraryResource: @"GSProlog"
-				   ofType: @"ps"
-			      inDirectory: @"PostScript"];
-  if (prolog == nil)
-    {
-      NSLog(@"Cannot find printer prolog file");
-      return;
-    }
-  prolog = [NSString stringWithContentsOfFile: prolog];
-  DPSPrintf(ctxt, [prolog cString]);
 }
 
 
@@ -4044,8 +3979,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	            title: [self printJobTitle]];
   [self endHeaderComments];
 
-  DPSPrintf(ctxt, "%%%%BeginProlog\n");
-  [self _loadPrinterProlog: ctxt];
+  [ctxt printerProlog];
   [self endPrologue];
   if ([printOp isEPSOperation] == NO)
     {
@@ -4064,13 +3998,13 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	    atPlacement:(NSPoint)location
 {
   int nup;
-  float scale;
   NSRect bounds;
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
   NSGraphicsContext *ctxt = [printOp context];
   NSDictionary *dict = [[printOp printInfo] dictionary];
 
-  // FIXME: Need to place this correctly
+  // FIXME: Need to place this correctly. Maybe it isn't needed at all, 
+  // as all drawing happens in displayRectIgnoringOpacity:
   [self lockFocusIfCanDrawInContext: ctxt];
 
   if ([dict objectForKey: @"NSPrintPaperBounds"])
@@ -4083,37 +4017,47 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     {
       int page;
       float xoff, yoff;
+      float scale;
+
       DPSPrintf(ctxt, "/__GSpagesaveobject save def\n");
-      page = [printOp currentPage] 
-	- [[dict objectForKey: NSPrintFirstPage] intValue];
-      page = page % nup;
+
       scale = [[dict objectForKey: @"NSNupScale"] floatValue];
+      page = [printOp currentPage] 
+          - [[dict objectForKey: NSPrintFirstPage] intValue];
+      page = page % nup;
       if (nup == 2)
-	xoff = page;
+        xoff = page;
       else
-	xoff = (page % (nup/2));
+        xoff = (page % (nup/2));
       xoff *= NSWidth(bounds) * scale;
       if (nup == 2)
-	yoff = 0;
+        yoff = 0;
       else
-	yoff = (int)((nup-page-1) / (nup/2));
+        yoff = (int)((nup-page-1) / (nup/2));
       yoff *= NSHeight(bounds) * scale;
       DPStranslate(ctxt, xoff, yoff);
-      DPSgsave(ctxt);
       DPSscale(ctxt, scale, scale);
     }
-  else
-    DPSgsave(ctxt);
+
+  // FIXME: This needs to be balanced explicitly
+  DPSgsave(ctxt);
 
   /* Translate to placement */
   if (location.x != 0 || location.y != 0)
     DPStranslate(ctxt, location.x, location.y);
 }
 
+- (void) _endSheet
+{
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSGraphicsContext *ctxt = [printOp context];
+
+  [ctxt endSheet];
+}
+
 - (void)endDocument
 {
   int first, last, current, pages;
-  NSSet *fontNames;
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
   NSGraphicsContext *ctxt = [printOp context];
   NSDictionary *dict = [[printOp printInfo] dictionary];
@@ -4129,20 +4073,14 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       current = [printOp currentPage];
       pages = current - first; // Current is 1 more than the last page
       if (nup > 1)
-	pages = ceil((float)pages / nup);
-      DPSPrintf(ctxt, "%%%%Pages: %d\n", pages);
+        pages = ceil((float)pages / nup);
     }
-  fontNames = [ctxt usedFonts];
-  if (fontNames && [fontNames count])
+  else
     {
-      NSString *name;
-      NSEnumerator *e = [fontNames objectEnumerator];
-      DPSPrintf(ctxt, "%%%%DocumentFonts: %@\n", [e nextObject]);
-      while ((name = [e nextObject]))
-	{
-	  DPSPrintf(ctxt, "%%%%+ %@\n", name);
-	}
+      // Already reported at start of document
+      pages = 0;
     }
+  [ctxt endDocumentPages: pages documentFonts: [ctxt usedFonts]];
 
   [self endTrailer];
   [self _invalidateCoordinates];

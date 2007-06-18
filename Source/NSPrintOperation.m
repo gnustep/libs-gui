@@ -65,10 +65,10 @@
 /* Local pagination variables needed while printing */
 typedef struct _page_info_t {
   NSRect scaledBounds;       /* View's rect scaled by the user specified scale
-			        and page fitting */
+                                and page fitting */
   NSRect paperBounds;        /* Print area of a page in default user space, possibly
-				rotated if printing Landscape */
-  NSRect sheetBounds;        /* Print are of a page in default user space */
+                                rotated if printing Landscape */
+  NSRect sheetBounds;        /* Print area of a sheet in default user space */
   NSSize paperSize;          /* Size of the paper */
   int xpages, ypages;
   int first, last;
@@ -86,16 +86,16 @@ typedef struct _page_info_t {
 - (BOOL) _runOperation;
 - (void) _setupPrintInfo;
 - (void)_printOperationDidRun:(NSPrintOperation *)printOperation 
-		               returnCode:(int)returnCode
-		              contextInfo:(void *)contextInfo;
+                   returnCode:(int)returnCode
+                  contextInfo:(void *)contextInfo;
 - (void) _printPaginateWithInfo: (page_info_t *)info 
                      knowsRange: (BOOL)knowsRange;
 - (NSRect) _rectForPage: (int)page info: (page_info_t *)info 
-		              xpage: (int *)xptr
-		              ypage: (int *)yptr;
+                  xpage: (int *)xptr
+                  ypage: (int *)yptr;
 - (NSRect) _adjustPagesFirst: (int)first 
-			last: (int)last
-			info: (page_info_t *)info;
+                        last: (int)last
+                        info: (page_info_t *)info;
 - (void) _print;
 @end
 
@@ -106,12 +106,11 @@ typedef struct _page_info_t {
 
 @interface NSView (NSPrintOperation)
 - (void) _displayPageInRect: (NSRect)pageRect
-	        atPlacement: (NSPoint)location
-	           withInfo: (page_info_t)info;
-- (void) _endSheet;
+                   withInfo: (page_info_t)info;
 @end
 
 @interface NSView (NPrintOperationPrivate)
+- (void) _endSheet;
 - (void) _cleanupPrinting;
 @end
 
@@ -152,82 +151,82 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 // Creating and Initializing an NSPrintOperation Object
 //
 + (NSPrintOperation *)EPSOperationWithView:(NSView *)aView
-				insideRect:(NSRect)rect
-				    toData:(NSMutableData *)data
+                                insideRect:(NSRect)rect
+                                    toData:(NSMutableData *)data
 {
-  return [self EPSOperationWithView: aView	
-	       insideRect: rect
-	       toData: data
-	       printInfo: nil];
+  return [self EPSOperationWithView: aView        
+               insideRect: rect
+               toData: data
+               printInfo: nil];
 }
 
-+ (NSPrintOperation *)EPSOperationWithView:(NSView *)aView	
-				insideRect:(NSRect)rect
-				    toData:(NSMutableData *)data
-				 printInfo:(NSPrintInfo *)aPrintInfo
++ (NSPrintOperation *)EPSOperationWithView:(NSView *)aView        
+                                insideRect:(NSRect)rect
+                                    toData:(NSMutableData *)data
+                                 printInfo:(NSPrintInfo *)aPrintInfo
 {
   return AUTORELEASE([[GSEPSPrintOperation alloc] initWithView: aView
-						  insideRect: rect
-						  toData: data
-						  printInfo: aPrintInfo]);
+                                                  insideRect: rect
+                                                  toData: data
+                                                  printInfo: aPrintInfo]);
 }
 
-+ (NSPrintOperation *)EPSOperationWithView:(NSView *)aView	
-				insideRect:(NSRect)rect
-				    toPath:(NSString *)path
-				 printInfo:(NSPrintInfo *)aPrintInfo
++ (NSPrintOperation *)EPSOperationWithView:(NSView *)aView        
+                                insideRect:(NSRect)rect
+                                    toPath:(NSString *)path
+                                 printInfo:(NSPrintInfo *)aPrintInfo
 {
-  return AUTORELEASE([[GSEPSPrintOperation alloc] initWithView: aView	
-						  insideRect: rect
-						  toPath: path
-						  printInfo: aPrintInfo]);
+  return AUTORELEASE([[GSEPSPrintOperation alloc] initWithView: aView        
+                                                  insideRect: rect
+                                                  toPath: path
+                                                  printInfo: aPrintInfo]);
 }
 
 + (NSPrintOperation *)printOperationWithView:(NSView *)aView
 {
   return [self printOperationWithView: aView
-	       printInfo: nil];
+               printInfo: nil];
 }
 
 + (NSPrintOperation *)printOperationWithView:(NSView *)aView
-				   printInfo:(NSPrintInfo *)aPrintInfo
+                                   printInfo:(NSPrintInfo *)aPrintInfo
 {
   return AUTORELEASE([[GSPrintOperation alloc] initWithView: aView
-					       printInfo: aPrintInfo]);
+                                               printInfo: aPrintInfo]);
 }
 
 + (NSPrintOperation *)PDFOperationWithView:(NSView *)aView 
-				insideRect:(NSRect)rect 
-				    toData:(NSMutableData *)data
+                                insideRect:(NSRect)rect 
+                                    toData:(NSMutableData *)data
 {
   return [self PDFOperationWithView: aView 
-	       insideRect: rect 
-	       toData: data 
-	       printInfo: nil];
+               insideRect: rect 
+               toData: data 
+               printInfo: nil];
 }
 
 + (NSPrintOperation *)PDFOperationWithView:(NSView *)aView 
-				insideRect:(NSRect)rect 
-				    toData:(NSMutableData *)data 
-				 printInfo:(NSPrintInfo*)aPrintInfo
+                                insideRect:(NSRect)rect 
+                                    toData:(NSMutableData *)data 
+                                 printInfo:(NSPrintInfo*)aPrintInfo
 {
   return AUTORELEASE([[GSPDFPrintOperation alloc] 
-			 initWithView: aView 
-			 insideRect: rect 
-			 toData: data 
-			 printInfo: aPrintInfo]);
+                         initWithView: aView 
+                         insideRect: rect 
+                         toData: data 
+                         printInfo: aPrintInfo]);
 }
 
 + (NSPrintOperation *)PDFOperationWithView:(NSView *)aView 
-				insideRect:(NSRect)rect 
-				    toPath:(NSString *)path 
-				 printInfo:(NSPrintInfo*)aPrintInfo
+                                insideRect:(NSRect)rect 
+                                    toPath:(NSString *)path 
+                                 printInfo:(NSPrintInfo*)aPrintInfo
 {
   return AUTORELEASE([[GSPDFPrintOperation alloc] 
-			 initWithView: aView 
-			 insideRect: rect 
-			 toPath: path 
-			 printInfo: aPrintInfo]);
+                         initWithView: aView 
+                         insideRect: rect 
+                         toPath: path 
+                         printInfo: aPrintInfo]);
 }
 
 //
@@ -267,25 +266,25 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 //
 
 - (id)initEPSOperationWithView:(NSView *)aView
-		    insideRect:(NSRect)rect
-			toData:(NSMutableData *)data
-		     printInfo:(NSPrintInfo *)aPrintInfo
+                    insideRect:(NSRect)rect
+                        toData:(NSMutableData *)data
+                     printInfo:(NSPrintInfo *)aPrintInfo
 {
   RELEASE(self);
   
-  return [[GSEPSPrintOperation alloc] initWithView: aView	
-				      insideRect: rect
-				      toData: data
-				      printInfo: aPrintInfo];
+  return [[GSEPSPrintOperation alloc] initWithView: aView        
+                                      insideRect: rect
+                                      toData: data
+                                      printInfo: aPrintInfo];
 }
 
 - (id)initWithView:(NSView *)aView
-	 printInfo:(NSPrintInfo *)aPrintInfo
+         printInfo:(NSPrintInfo *)aPrintInfo
 {
   RELEASE(self);
   
   return [[GSPrintOperation alloc] initWithView: aView
-				   printInfo: aPrintInfo];
+                                   printInfo: aPrintInfo];
 }
 
 - (void) dealloc
@@ -490,10 +489,10 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
       [panel setAccessoryView: nil];
 
       if (button != NSOKButton)
-	{
-	  [self cleanUpOperation];
-	  return NO;
-	}
+        {
+          [self cleanUpOperation];
+          return NO;
+        }
       [panel finalWritePrintInfo];
     }
 
@@ -534,11 +533,11 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
   [self _setupPrintInfo];
   [panel updateFromPrintInfo];
   [panel beginSheetWithPrintInfo: _print_info 
-	          modalForWindow: docWindow 
-			delegate: self 
-		  didEndSelector: 
-		          @selector(_printOperationDidRun:returnCode:contextInfo:)
-		      contextInfo: contextInfo];
+                  modalForWindow: docWindow 
+                        delegate: self 
+                  didEndSelector: 
+                          @selector(_printOperationDidRun:returnCode:contextInfo:)
+                      contextInfo: contextInfo];
   [panel setAccessoryView: nil];
 }
 
@@ -598,14 +597,14 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 @implementation NSPrintOperation (Private)
 
 - (id) initWithView:(NSView *)aView
-	 insideRect:(NSRect)rect
-	     toData:(NSMutableData *)data
-	  printInfo:(NSPrintInfo *)aPrintInfo
+         insideRect:(NSRect)rect
+             toData:(NSMutableData *)data
+          printInfo:(NSPrintInfo *)aPrintInfo
 {
   if ([NSPrintOperation currentOperation] != nil)
     {
       [NSException raise: NSPrintOperationExistsException
-		   format: @"There is already a printoperation for this thread"];
+                   format: @"There is already a printoperation for this thread"];
     }
 
   ASSIGN(_view, aView);
@@ -643,10 +642,10 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
   if (_page_order == NSUnknownPageOrder)
     {
       if ([[[_print_info dictionary] objectForKey: NSPrintReversePageOrder] 
-	    boolValue] == YES)
-	_page_order = NSDescendingPageOrder;
+            boolValue] == YES)
+        _page_order = NSDescendingPageOrder;
       else
-	_page_order = NSAscendingPageOrder;
+        _page_order = NSAscendingPageOrder;
     }
 
   [NSGraphicsContext setCurrentContext: _context];
@@ -661,7 +660,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
       [_view _cleanupPrinting];
       [NSGraphicsContext setCurrentContext: oldContext];
       NSRunAlertPanel(@"Error", @"Printing error: %@", 
-		      @"OK", NULL, NULL, localException);
+                      @"OK", NULL, NULL, localException);
     }
   NS_ENDHANDLER
   [self destroyContext];
@@ -686,8 +685,8 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 }
 
 - (void)_printOperationDidRun:(NSPrintOperation *)printOperation 
-		   returnCode:(int)returnCode  
-		  contextInfo:(void *)contextInfo
+                   returnCode:(int)returnCode  
+                  contextInfo:(void *)contextInfo
 {
   id delegate;
   SEL didRunSelector;
@@ -700,7 +699,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
       NSPrintPanel *panel = [self printPanel];
       [panel finalWritePrintInfo];
       if ([self _runOperation])
-	success = [self deliverResult];
+        success = [self deliverResult];
     }
   [self cleanUpOperation];
   dict = [_print_info dictionary];
@@ -717,7 +716,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 
 
 
-
+/*
 static NSSize
 scaleSize(NSSize size, double scale)
 {
@@ -725,14 +724,15 @@ scaleSize(NSSize size, double scale)
   size.width  *= scale;
   return size;
 }
+*/
 
 static NSRect
 scaleRect(NSRect rect, double scale)
 {
   return NSMakeRect(NSMinX(rect) * scale,
-		    NSMinY(rect) * scale,
-		    NSWidth(rect) * scale,
-		    NSHeight(rect) * scale);
+                    NSMinY(rect) * scale,
+                    NSWidth(rect) * scale,
+                    NSHeight(rect) * scale);
 }
 
 /* Pagination - guess how many pages we need to print. This could be off
@@ -770,17 +770,17 @@ scaleRect(NSRect rect, double scale)
   if (info->orient == NSLandscapeOrientation)
     {
       /* Bounding box needs to be in default user space, but the bbox
-	 we get is rotated */
+         we get is rotated */
       info->sheetBounds = NSMakeRect(NSMinY(info->paperBounds), 
-				     NSMinX(info->paperBounds), 
-				     NSHeight(info->paperBounds), 
-				     NSWidth(info->paperBounds));
+                                     NSMinX(info->paperBounds), 
+                                     NSHeight(info->paperBounds), 
+                                     NSWidth(info->paperBounds));
     }
   /* Save this for the view to look at */
   [dict setObject: [NSValue valueWithRect: info->paperBounds]
- 	   forKey: @"NSPrintPaperBounds"];
+            forKey: @"NSPrintPaperBounds"];
   [dict setObject: [NSValue valueWithRect: info->sheetBounds]
- 	   forKey: @"NSPrintSheetBounds"];
+            forKey: @"NSPrintSheetBounds"];
 
    /* Scale bounds by the user specified scaling */
   info->scaledBounds = scaleRect(_rect, info->printScale);
@@ -790,11 +790,11 @@ scaleRect(NSRect rect, double scale)
     {
       /* Now calculate page fitting to get page scale */
       if ([_print_info horizontalPagination] == NSFitPagination)
-	info->pageScale  = info->paperBounds.size.width 
-	  / NSWidth(info->scaledBounds);
+        info->pageScale  = info->paperBounds.size.width 
+          / NSWidth(info->scaledBounds);
       if ([_print_info verticalPagination] == NSFitPagination)
-	info->pageScale = MIN(info->pageScale,
-	  NSHeight(info->paperBounds)/NSHeight(info->scaledBounds));
+        info->pageScale = MIN(info->pageScale,
+          NSHeight(info->paperBounds)/NSHeight(info->scaledBounds));
       /* Scale bounds by pageScale */
       info->scaledBounds = scaleRect(info->scaledBounds, info->pageScale);
 
@@ -802,9 +802,9 @@ scaleRect(NSRect rect, double scale)
       info->xpages = ceil(NSWidth(info->scaledBounds)/NSWidth(info->paperBounds));
       info->ypages = ceil(NSHeight(info->scaledBounds)/NSHeight(info->paperBounds));
       if ([_print_info horizontalPagination] == NSClipPagination)
-	info->xpages = 1;
+        info->xpages = 1;
       if ([_print_info verticalPagination] == NSClipPagination)
-	info->ypages = 1;
+        info->ypages = 1;
     }
 
   /* Calculate nup. If nup is an odd multiple of two, secretly change the
@@ -814,14 +814,14 @@ scaleRect(NSRect rect, double scale)
     {
       float tmp;
       if (info->orient == NSLandscapeOrientation)
-	info->nupScale = 
-	  info->paperSize.width/(2*info->paperSize.height);
+        info->nupScale = 
+          info->paperSize.width/(2*info->paperSize.height);
       else
-	info->nupScale = 
-	  info->paperSize.height/(2*info->paperSize.width);
+        info->nupScale = 
+          info->paperSize.height/(2*info->paperSize.width);
       info->nupScale /= (info->nup / 2);
       info->orient = (info->orient == NSPortraitOrientation) ? 
-	NSLandscapeOrientation : NSPortraitOrientation;
+        NSLandscapeOrientation : NSPortraitOrientation;
       tmp = info->paperSize.width;
       info->paperSize.width = info->paperSize.height;
       info->paperSize.height = tmp;
@@ -843,8 +843,8 @@ scaleRect(NSRect rect, double scale)
    page. The returned pageRect is in the view's coordinate system
 */
 - (NSRect) _rectForPage: (int)page info: (page_info_t *)info 
-		  xpage: (int *)xptr
-		  ypage: (int *)yptr
+                  xpage: (int *)xptr
+                  ypage: (int *)yptr
 {
   int xpage, ypage;
   NSRect pageRect;
@@ -866,7 +866,7 @@ scaleRect(NSRect rect, double scale)
   if (ypage == 0)
     info->lastHeight = 0;
   pageRect = NSMakeRect(info->lastWidth, info->lastHeight,
-			NSWidth(info->paperBounds), NSHeight(info->paperBounds));
+                        NSWidth(info->paperBounds), NSHeight(info->paperBounds));
   pageRect = NSIntersectionRect(pageRect, info->scaledBounds);
   /* Scale to view's coordinate system */
   return scaleRect(pageRect, 1/(info->pageScale*info->printScale));
@@ -877,8 +877,8 @@ scaleRect(NSRect rect, double scale)
    _rectForPage:
 */
 - (NSRect) _adjustPagesFirst: (int)first 
-			last: (int)last 
-			info: (page_info_t *)info
+                        last: (int)last 
+                        info: (page_info_t *)info
 {
   int i, xpage, ypage;
   double hlimit, wlimit;
@@ -891,22 +891,22 @@ scaleRect(NSRect rect, double scale)
       pageRect = [self _rectForPage: i info: info xpage: &xpage ypage: &ypage];
       limitVal = NSMaxY(pageRect) - hlimit * NSHeight(pageRect);
       [_view adjustPageHeightNew: &newVal
-	                     top: NSMinY(pageRect)
-	                  bottom: NSMaxY(pageRect)
-	                   limit: limitVal];
+                             top: NSMinY(pageRect)
+                          bottom: NSMaxY(pageRect)
+                           limit: limitVal];
       if (newVal < NSMaxY(pageRect))
-	pageRect.size.height = MAX(newVal, limitVal) - NSMinY(pageRect);
+        pageRect.size.height = MAX(newVal, limitVal) - NSMinY(pageRect);
       limitVal = NSMaxX(pageRect) - wlimit * NSWidth(pageRect);
       [_view adjustPageWidthNew: &newVal
-	                   left: NSMinX(pageRect)
-	                  right: NSMaxX(pageRect)
-	                   limit: limitVal];
+                           left: NSMinX(pageRect)
+                          right: NSMaxX(pageRect)
+                           limit: limitVal];
       if (newVal < NSMaxX(pageRect))
-	pageRect.size.width = MAX(newVal, limitVal) - NSMinX(pageRect);
+        pageRect.size.width = MAX(newVal, limitVal) - NSMinX(pageRect);
       if (info->pageDirection == 0 || ypage == info->ypages - 1)
-	info->lastWidth = NSMaxX(pageRect)*(info->pageScale*info->printScale);
+        info->lastWidth = NSMaxX(pageRect)*(info->pageScale*info->printScale);
       if (info->pageDirection == 1 || xpage == info->xpages - 1)
-	info->lastHeight = NSMaxY(pageRect)*(info->pageScale*info->printScale);
+        info->lastHeight = NSMaxY(pageRect)*(info->pageScale*info->printScale);
     }
   return pageRect;
 }
@@ -936,7 +936,7 @@ scaleRect(NSRect rect, double scale)
     }
 
   [dict setObject: NSNUMBER(NSMaxRange(viewPageRange))
-	   forKey: @"NSPrintTotalPages"];
+           forKey: @"NSPrintTotalPages"];
   if (allPages == YES)
     {
       info.first = viewPageRange.location;
@@ -960,10 +960,10 @@ scaleRect(NSRect rect, double scale)
   else
     [dict setObject: NSNUMBER(info.last) forKey: NSPrintLastPage];
   NSDebugLLog(@"NSPrinting", @"Printing pages %d to %d", 
-	      info.first, info.last);
+              info.first, info.last);
   NSDebugLLog(@"NSPrinting", @"Printing rect %@, scaled %@",
-	      NSStringFromRect(_rect),
-	      NSStringFromRect(info.scaledBounds));
+              NSStringFromRect(_rect),
+              NSStringFromRect(info.scaledBounds));
 
   _currentPage = info.first;
   dir = 1;
@@ -975,11 +975,11 @@ scaleRect(NSRect rect, double scale)
   if (dir > 0 && _currentPage != 1)
     {
       /* Calculate page rects we aren't processing to catch up to the
-	 first page we are */
+         first page we are */
       NSRect pageRect;
       pageRect = [self _adjustPagesFirst: 1
-			           last: _currentPage-1 
-		                   info: &info];
+                                   last: _currentPage-1 
+                                   info: &info];
     }
 
   /* Print the header information */
@@ -989,54 +989,50 @@ scaleRect(NSRect rect, double scale)
   i = 0;
   while (i < (info.last-info.first+1))
     {
-      NSPoint location;
-      NSRect pageRect, scaledPageRect;
+      NSRect pageRect;
+
       if (knowsPageRange == YES)
-	{
-	  pageRect = [_view rectForPage: _currentPage];
-	}
+        {
+          pageRect = [_view rectForPage: _currentPage];
+        }
       else
-	{
-	  if (dir < 0)
-	    pageRect = [self _adjustPagesFirst: 1 
-			                  last: _currentPage 
-			                  info: &info];
-	  else
-	    pageRect = [self _adjustPagesFirst: _currentPage 
-			                  last: _currentPage 
-			                  info: &info];
-	}
+        {
+          if (dir < 0)
+            pageRect = [self _adjustPagesFirst: 1 
+                                          last: _currentPage 
+                                          info: &info];
+          else
+            pageRect = [self _adjustPagesFirst: _currentPage 
+                                          last: _currentPage 
+                                          info: &info];
+        }
 
       NSDebugLLog(@"NSPrinting", @" current page %d, rect %@", 
-		  _currentPage, NSStringFromRect(pageRect));
+                  _currentPage, NSStringFromRect(pageRect));
       if (NSIsEmptyRect(pageRect))
-	break;
-
-      scaledPageRect = scaleRect(pageRect, info.printScale*info.pageScale);
-      location = [_view locationOfPrintRect: scaledPageRect];
+        break;
 
       /* Draw using our special view routine */
       [_view _displayPageInRect: pageRect
-	            atPlacement: location
-	               withInfo: info];
-	     
+                       withInfo: info];
+             
       if (dir > 0 && _currentPage == info.last && allPages == YES)
-	{
-	  /* Check if adjust pages forced part of the bounds onto 
-	     another page */
-	  if (NSMaxX(pageRect) < NSMaxX(_rect) 
-	      && [_print_info horizontalPagination] != NSClipPagination)
-	    {
-	      info.xpages++;
-	    }
-	  if (NSMaxY(pageRect) < NSMaxY(_rect)
-	      && [_print_info verticalPagination] != NSClipPagination)
-	    {
-	      info.ypages++;
-	    }
-	  viewPageRange = NSMakeRange(1, (info.xpages * info.ypages));
-	  info.last = NSMaxRange(viewPageRange) - 1;
-	}
+        {
+          /* Check if adjust pages forced part of the bounds onto 
+             another page */
+          if (NSMaxX(pageRect) < NSMaxX(_rect) 
+              && [_print_info horizontalPagination] != NSClipPagination)
+            {
+              info.xpages++;
+            }
+          if (NSMaxY(pageRect) < NSMaxY(_rect)
+              && [_print_info verticalPagination] != NSClipPagination)
+            {
+              info.ypages++;
+            }
+          viewPageRange = NSMakeRange(1, (info.xpages * info.ypages));
+          info.last = NSMaxRange(viewPageRange) - 1;
+        }
       i++;
       _currentPage += dir;
     } /* Print each page */
@@ -1044,7 +1040,7 @@ scaleRect(NSRect rect, double scale)
   /* Make sure we end the sheet */
   if (info.nup > 1 && (info.last - info.first) % info.nup != info.nup - 1)
     {
-      [_view drawSheetBorderWithSize: info.paperBounds.size];
+      [_view drawSheetBorderWithSize: info.sheetBounds.size];
       [_view _endSheet];
     }
   [_view endDocument];
@@ -1054,7 +1050,7 @@ scaleRect(NSRect rect, double scale)
   if (((int)(info.nup / 2) & 0x1) == 1)
     {
       info.orient = (info.orient == NSPortraitOrientation) ? 
-	NSLandscapeOrientation : NSPortraitOrientation;
+        NSLandscapeOrientation : NSPortraitOrientation;
       [dict setObject: NSNUMBER(info.orient) forKey: NSPrintOrientation];
     }
 }
@@ -1063,46 +1059,60 @@ scaleRect(NSRect rect, double scale)
 
 @implementation NSView (NSPrintOperation)
 - (void) _displayPageInRect: (NSRect)pageRect
-	        atPlacement: (NSPoint)location
-	           withInfo: (page_info_t)info
+                   withInfo: (page_info_t)info
 {
   int currentPage;
+  int numberOnSheet;
   float xoffset, yoffset, scale;
-  NSString *label;
+  NSPoint location;
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
   NSGraphicsContext *ctxt = [printOp context];
 
   currentPage = [printOp currentPage];
-
-  label = nil;
-  if (info.nup == 1)
-    label = [NSString stringWithFormat: @"%d", currentPage];
+  numberOnSheet = (currentPage - info.first) % info.nup;
 
   /* Begin a sheet (i.e. a physical page in Postscript terms). If 
      nup > 1 then this occurs only once every nup pages */
-  if ((currentPage - info.first) % info.nup == 0)
+  if (numberOnSheet == 0)
     {
+      NSString *label;
+
+      label = nil;
+      if (info.nup == 1)
+        label = [NSString stringWithFormat: @"%d", currentPage];
+
       [self beginPage: floor((currentPage - info.first)/info.nup)+1
-	    label: label
-	    bBox: info.sheetBounds
-	    fonts: nil];
+            label: label
+            bBox: info.sheetBounds
+            fonts: nil];
       if (info.orient == NSLandscapeOrientation)
-	{
-	  DPSrotate(ctxt, 90);
-	  DPStranslate(ctxt, 0, -info.paperSize.height);
-	}
+        {
+          DPSrotate(ctxt, 90);
+          DPStranslate(ctxt, 0, -info.paperSize.height);
+        }
       /* Also offset by margins */
       DPStranslate(ctxt, NSMinX(info.paperBounds), NSMinY(info.paperBounds));
+
+      /* End page setup for multi page */
+      if (info.nup != 1)
+        {
+          [self addToPageSetup];
+          [self endPageSetup];
+        }
     }
+
+  scale = info.pageScale * info.printScale;
+  location = [self locationOfPrintRect: scaleRect(pageRect, scale)];
 
   /* Begin a logical page */
   [self beginPageInRect: pageRect atPlacement: location];
-  scale = info.pageScale * info.printScale;
   if (scale != 1.0)
     DPSscale(ctxt, scale, scale);
+
+  /* FIXME: Why is this needed? Shouldn't the flip be handled by the lockFocus method? */
   if ([self isFlipped])
     {
-      NSAffineTransformStruct	ats = { 1, 0, 0, -1, 0, NSHeight(_bounds) };
+      NSAffineTransformStruct ats = { 1, 0, 0, -1, 0, NSHeight(_bounds) };
       NSAffineTransform *matrix, *flip;
 
       flip = [NSAffineTransform new];
@@ -1110,7 +1120,7 @@ scaleRect(NSRect rect, double scale)
       [matrix prependTransform: _boundsMatrix];
       /*
        * The flipping process must result in a coordinate system that
-       * exactly overlays the original.	 To do that, we must translate
+       * exactly overlays the original. To do that, we must translate
        * the origin by the height of the view.
        */
       [flip setTransformStruct: ats];
@@ -1127,35 +1137,28 @@ scaleRect(NSRect rect, double scale)
   xoffset = 0 - NSMinX(pageRect);
   DPStranslate(ctxt, xoffset, yoffset);
 
-  if ((currentPage - info.first) % info.nup == 0)
-    [self endPageSetup];
+  /* End page setup for single page */
+  if (info.nup == 1)
+    {
+      [self addToPageSetup];
+      [self endPageSetup];
+    }
 
   /* Do the actual drawing */
   [self displayRectIgnoringOpacity: pageRect];
 
   /* End a logical page */
-  DPSgrestore(ctxt); // Balance gsave in beginPageInRect:
-  [self drawPageBorderWithSize: 
-	   scaleSize(info.paperBounds.size, info.nupScale)];
+  // Balance gsave in beginPageInRect:
+  DPSgrestore(ctxt);
+  [self drawPageBorderWithSize: info.paperBounds.size];
   [self endPage];
 
   /* End a physical page */
-  if (((currentPage - info.first) % info.nup == info.nup-1))
+  if (numberOnSheet == info.nup - 1)
     {
-      [self drawSheetBorderWithSize: info.paperBounds.size];
+      [self drawSheetBorderWithSize: info.sheetBounds.size];
       [self _endSheet];
     }
-}
-
-- (void) _endSheet
-{
-  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
-  NSGraphicsContext *ctxt = [printOp context];
-
-  if ([printOp isEPSOperation] == NO)
-    DPSPrintf(ctxt, "showpage\n");
-  DPSPrintf(ctxt, "%%%%PageTrailer\n");
-  DPSPrintf(ctxt, "\n");
 }
 
 @end

@@ -433,6 +433,37 @@ transform between current user space and image space for this image.</desc>
 
 @end
 
+/* ----------------------------------------------------------------------- */
+/* Printing Ops */	
+/* ----------------------------------------------------------------------- */
+@interface NSGraphicsContext (Printing)
+
+- (void) beginPage: (int)ordinalNum
+             label: (NSString*)aString
+              bBox: (NSRect)pageRect
+             fonts: (NSString*)fontNames;
+- (void) beginPrologueBBox: (NSRect)boundingBox
+              creationDate: (NSString*)dateCreated
+                 createdBy: (NSString*)anApplication
+                     fonts: (NSString*)fontNames
+                   forWhom: (NSString*)user
+                     pages: (int)numPages
+                     title: (NSString*)aTitle;
+- (void) beginSetup;
+- (void) beginTrailer;
+- (void) endDocumentPages: (int)pages
+            documentFonts: (NSSet*)fontNames;
+- (void) endHeaderComments;
+- (void) endPageSetup;
+- (void) endPrologue;
+- (void) endSetup;
+- (void) endSheet;
+- (void) endTrailer;
+- (void) printerProlog;
+- (void) showPage;
+
+@end
+
 /* NSGraphicContext constants */
 APPKIT_EXPORT NSString *NSGraphicsContextDestinationAttributeName;
 APPKIT_EXPORT NSString *NSGraphicsContextPDFFormat;

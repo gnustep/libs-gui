@@ -1,3 +1,11 @@
+2007-06-18 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSGraphicsContext.h: Declare new printing
+	methods.
+	* Source/NSGraphicsContext.m: Implement Postscript printing methods.
+	* Source/NSPrintOperation.m: Move _endSheet method into NSView.
+	* Source/NSView.m: Use printing methods from NSGraphicsContext.
+
 2007-06-07 Sergii Stoian <stoyan255@gmail.com>
 
 	* Source/NSBrowser.m: ([drawWithFrame:inView:]) Pass inset rect by

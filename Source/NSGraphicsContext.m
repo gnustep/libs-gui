@@ -44,9 +44,12 @@
 #include "AppKit/NSGraphicsContext.h"
 #include "AppKit/NSAffineTransform.h"
 #include "AppKit/NSBezierPath.h"
+#include "AppKit/NSPrintInfo.h"
+#include "AppKit/NSPrintOperation.h"
 #include "AppKit/NSWindow.h"
 #include "AppKit/NSView.h"
 #include "AppKit/DPSOperators.h"
+#include "GNUstepGUI/GSVersion.h"
 
 /* The memory zone where all global objects are allocated from (Contexts
    are also allocated from this zone) */
@@ -1527,6 +1530,176 @@ NSGraphicsContext	*GSCurrentContext(void)
 - (BOOL) GSWViewIsFlipped
 {
   return [[self focusView] isFlipped];
+}
+
+@end
+
+@implementation NSGraphicsContext (Printing)
+
+- (void) beginPage: (int)ordinalNum
+             label: (NSString*)aString
+              bBox: (NSRect)pageRect
+             fonts: (NSString*)fontNames
+{
+  if (aString == nil)
+    aString = [[NSNumber numberWithInt: ordinalNum] description];
+  DPSPrintf(self, "%%%%Page: %s %d\n", [aString lossyCString], ordinalNum);
+  if (NSIsEmptyRect(pageRect) == NO)
+    DPSPrintf(self, "%%%%PageBoundingBox: %d %d %d %d\n",
+	      (int)NSMinX(pageRect), (int)NSMinY(pageRect), 
+	      (int)NSMaxX(pageRect), (int)NSMaxY(pageRect));
+  if (fontNames)
+    DPSPrintf(self, "%%%%PageFonts: %s\n", [fontNames lossyCString]);
+  DPSPrintf(self, "%%%%BeginPageSetup\n");
+}
+
+- (void) beginPrologueBBox: (NSRect)boundingBox
+              creationDate: (NSString*)dateCreated
+                 createdBy: (NSString*)anApplication
+                     fonts: (NSString*)fontNames
+                   forWhom: (NSString*)user
+                     pages: (int)numPages
+                     title: (NSString*)aTitle
+{
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSPrintingOrientation orient;
+  BOOL epsOp;
+
+  epsOp = [printOp isEPSOperation];
+  orient = [[printOp printInfo] orientation];
+
+  if (epsOp)
+    DPSPrintf(self, "%%!PS-Adobe-3.0 EPSF-3.0\n");
+  else
+    DPSPrintf(self, "%%!PS-Adobe-3.0\n");
+  DPSPrintf(self, "%%%%Title: %s\n", [aTitle lossyCString]);
+  DPSPrintf(self, "%%%%Creator: %s\n", [anApplication lossyCString]);
+  DPSPrintf(self, "%%%%CreationDate: %s\n", 
+	    [[dateCreated description] lossyCString]);
+  DPSPrintf(self, "%%%%For: %s\n", [user lossyCString]);
+  if (fontNames)
+    DPSPrintf(self, "%%%%DocumentFonts: %s\n", [fontNames lossyCString]);
+  else
+    DPSPrintf(self, "%%%%DocumentFonts: (atend)\n");
+
+  if (NSIsEmptyRect(boundingBox) == NO)
+    DPSPrintf(self, "%%%%BoundingBox: %d %d %d %d\n", 
+              (int)NSMinX(boundingBox), (int)NSMinY(boundingBox), 
+              (int)NSMaxX(boundingBox), (int)NSMaxY(boundingBox));
+  else
+    DPSPrintf(self, "%%%%BoundingBox: (atend)\n");
+
+  if (epsOp == NO)
+    {
+      if (numPages)
+        DPSPrintf(self, "%%%%Pages: %d\n", numPages);
+      else
+        DPSPrintf(self, "%%%%Pages: (atend)\n");
+      if ([printOp pageOrder] == NSDescendingPageOrder)
+        DPSPrintf(self, "%%%%PageOrder: Descend\n");
+      else if ([printOp pageOrder] == NSAscendingPageOrder)
+        DPSPrintf(self, "%%%%PageOrder: Ascend\n");
+      else if ([printOp pageOrder] == NSSpecialPageOrder)
+        DPSPrintf(self, "%%%%PageOrder: Special\n");
+
+      if (orient == NSPortraitOrientation)
+        DPSPrintf(self, "%%%%Orientation: Portrait\n");
+      else
+        DPSPrintf(self, "%%%%Orientation: Landscape\n");
+    }
+
+  DPSPrintf(self, "%%%%GNUstepVersion: %d.%d.%d\n", 
+	    GNUSTEP_GUI_MAJOR_VERSION, GNUSTEP_GUI_MINOR_VERSION,
+	    GNUSTEP_GUI_SUBMINOR_VERSION);
+}
+
+- (void) beginSetup
+{
+  DPSPrintf(self, "%%%%BeginSetup\n");
+}
+
+- (void) beginTrailer
+{
+  DPSPrintf(self, "%%%%Trailer\n");
+}
+
+- (void) endDocumentPages: (int)pages
+            documentFonts: (NSSet*)fontNames
+{
+  if (pages != 0)
+    {
+      DPSPrintf(self, "%%%%Pages: %d\n", pages);
+    }
+  if (fontNames && [fontNames count])
+    {
+      NSString *name;
+      NSEnumerator *e = [fontNames objectEnumerator];
+
+      DPSPrintf(self, "%%%%DocumentFonts: %@\n", [e nextObject]);
+      while ((name = [e nextObject]))
+        {
+          DPSPrintf(self, "%%%%+ %@\n", name);
+        }
+    }
+ 
+}
+
+- (void) endHeaderComments
+{
+  DPSPrintf(self, "%%%%EndComments\n\n");
+}
+
+- (void) endPageSetup
+{
+  DPSPrintf(self, "%%%%EndPageSetup\n");
+}
+
+- (void) endPrologue
+{
+  DPSPrintf(self, "%%%%EndProlog\n\n");
+}
+
+- (void) endSetup
+{
+  DPSPrintf(self, "%%%%EndSetup\n\n");
+}
+
+- (void) endSheet
+{
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+
+  if ([printOp isEPSOperation] == NO)
+    {
+      [self showPage];
+    }
+  DPSPrintf(self, "%%%%PageTrailer\n\n");
+}
+
+- (void) endTrailer
+{
+  DPSPrintf(self, "%%%%EOF\n");
+}
+
+- (void) printerProlog
+{
+  NSString *prolog;
+
+  DPSPrintf(self, "%%%%BeginProlog\n");
+  prolog = [NSBundle pathForLibraryResource: @"GSProlog"
+                     ofType: @"ps"
+                     inDirectory: @"PostScript"];
+  if (prolog == nil)
+    {
+      NSLog(@"Cannot find printer prolog file");
+      return;
+    }
+  prolog = [NSString stringWithContentsOfFile: prolog];
+  DPSPrintf(self, [prolog cString]);
+}
+
+- (void) showPage
+{
+  DPSPrintf(self, "showpage\n");
 }
 
 @end
