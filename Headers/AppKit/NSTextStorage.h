@@ -35,6 +35,7 @@
 #include <AppKit/NSStringDrawing.h>
 #include <AppKit/AppKitDefines.h>
 
+@class NSNotification;
 @class GSLayoutManager;
 
 /*

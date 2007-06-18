@@ -35,6 +35,7 @@
 {
   id _target;
   SEL _action;
+	BOOL _allowsCutCopyPaste;
 }
 
 - (NSImage *)image;
@@ -48,6 +49,15 @@
 - (void)setImageFrameStyle:(NSImageFrameStyle)style;
 - (void)setEditable:(BOOL)flag;
 - (BOOL)isEditable;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (BOOL)animates;
+- (void)setAnimates:(BOOL)flag;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (BOOL)allowsCutCopyPaste;
+- (void)setAllowsCutCopyPaste:(BOOL)flag;
+#endif
 
 @end
 

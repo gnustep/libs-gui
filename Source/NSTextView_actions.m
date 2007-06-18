@@ -47,6 +47,7 @@
 
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSValue.h>
+#include "AppKit/NSAttributedString.h"
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSLayoutManager.h"
 #include "AppKit/NSScrollView.h"

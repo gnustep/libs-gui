@@ -34,6 +34,7 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSUserDefaults.h>
 
+#include "AppKit/NSAttributedString.h"
 #include "AppKit/NSColor.h"
 #include "AppKit/NSFont.h"
 #include "AppKit/NSGraphics.h"

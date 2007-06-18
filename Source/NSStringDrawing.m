@@ -487,6 +487,13 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
     }
 }
 
+- (void) drawWithRect:(NSRect)rect
+              options:(NSStringDrawingOptions)options
+{
+  // FIXME: This ignores options
+  [self drawInRect: rect];
+}
+
 - (NSSize) size
 {
   int ci;
@@ -497,6 +504,21 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
   useful way and ignore indents.
   */
   return cache[ci].usedRect.size;
+}
+
+- (NSRect) boundingRectWithSize: (NSSize)size
+                        options: (NSStringDrawingOptions)options
+{
+  int ci;
+
+  // FIXME: This ignores options
+  ci = cache_lookup_attributed_string(self, 1, size, 1);
+  /*
+  An argument could be made for using NSMaxX/NSMaxY here, but that fails
+  horribly on right-aligned strings. For now, we handle that case in a
+  useful way and ignore indents.
+  */
+  return cache[ci].usedRect;
 }
 
 @end
@@ -614,6 +636,14 @@ NSAttributedString to do the job.
     }
 }
 
+- (void) drawWithRect: (NSRect)rect
+              options: (NSStringDrawingOptions)options
+           attributes: (NSDictionary *)attributes
+{
+  // FIXME: This ignores options
+  [self drawInRect: rect withAttributes: attributes];
+}
+
 - (NSSize) sizeWithAttributes: (NSDictionary *)attrs
 {
   int ci;
@@ -624,6 +654,22 @@ NSAttributedString to do the job.
   we handle that case in a useful way and ignore indents.
   */
   return cache[ci].usedRect.size;
+}
+
+- (NSRect) boundingRectWithSize: (NSSize)size
+                        options: (NSStringDrawingOptions)options
+                     attributes: (NSDictionary *)attributes
+{
+  int ci;
+
+  // FIXME: This ignores options
+  ci = cache_lookup_string(self, attributes, 1, size, 1);
+  /*
+  An argument could be made for using NSMaxX/NSMaxY here, but that fails
+  horribly on right-aligned strings (which may be the right thing). For now,
+  we handle that case in a useful way and ignore indents.
+  */
+  return cache[ci].usedRect;
 }
 
 @end

@@ -147,6 +147,27 @@ static Class imageCellClass;
   return [_cell isEditable];
 }
 
+- (BOOL) animates
+{
+  // FIXME: Should be passed on to cell.
+  return NO;
+}
+
+- (void) setAnimates: (BOOL) flag
+{
+  // FIXME: Should be passed on to cell.
+}
+
+- (BOOL) allowsCutCopyPaste
+{
+  return _allowsCutCopyPaste;
+}
+
+- (void) setAllowsCutCopyPaste: (BOOL)flag
+{
+  _allowsCutCopyPaste = flag;
+}
+
 @end
 
 @implementation NSImageView (NSDraggingDestination)

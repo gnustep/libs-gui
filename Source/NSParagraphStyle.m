@@ -35,19 +35,90 @@
 
 @implementation NSTextTab
 
-- (id) copyWithZone: (NSZone*)aZone
-{
-  if (NSShouldRetainWithZone(self, aZone) == YES)
-    return RETAIN(self);
-  return NSCopyObject(self, 0, aZone);
-}
-
 - (id) initWithType: (NSTextTabType)type location: (float)loc
 {
-  self = [super init];
-  _tabStopType = type;
-  _location = loc;
+  if ((self = [super init]))
+    {
+      _tabStopType = type;
+      _location = loc;
+      switch (type)
+        {
+          default:
+          case NSLeftTabStopType:	
+            _alignment = NSLeftTextAlignment;
+            break;
+          case NSRightTabStopType:
+            _alignment = NSRightTextAlignment;
+            break;
+          case NSCenterTabStopType:
+            _alignment = NSCenterTextAlignment;
+            break;
+          case NSDecimalTabStopType:
+            _alignment = NSRightTextAlignment;
+            break;
+        }
+    }
   return self;
+}
+
+- (id) initWithTextAlignment: (NSTextAlignment)align 
+                    location: (float)loc 
+                     options: (NSDictionary *)options
+{
+	NSTextTabType type;
+
+  switch (align)
+    {
+		default:
+		case NSLeftTextAlignment:	
+      type = NSLeftTabStopType; 
+      break;
+		case NSRightTextAlignment:
+      if ([options objectForKey: NSTabColumnTerminatorsAttributeName] != nil)
+        {
+          type = NSDecimalTabStopType;
+        }
+      else
+        {
+          type = NSRightTabStopType;
+        }
+      break;
+		case NSCenterTextAlignment:
+      type = NSCenterTabStopType;
+      break;
+		case NSJustifiedTextAlignment:
+      type = NSLeftTabStopType;
+      break;
+		case NSNaturalTextAlignment:
+      // FIXME: Get from language user setting
+      type = YES ? NSLeftTabStopType : NSRightTabStopType;
+      break;
+    }
+
+	if ((self = [self initWithType: type location: loc]))
+		{
+      _alignment = align;
+      ASSIGN(_options, options);
+		}
+	return self;
+}
+
+- (void) dealloc;
+{
+	RELEASE(_options);
+	[super dealloc];
+}
+
+- (id) copyWithZone: (NSZone*)aZone
+{
+  NSTextTab *copy;
+
+  if (NSShouldRetainWithZone(self, aZone) == YES)
+    return RETAIN(self);
+
+  copy = (NSTextTab *)NSCopyObject(self, 0, aZone);
+  copy->_options = [_options copyWithZone: aZone];
+  return copy; 
 }
 
 - (NSComparisonResult) compare: (id)anObject
@@ -97,6 +168,41 @@
 {
   return _tabStopType;
 }
+- (NSTextAlignment) alignment
+{
+  return _alignment;
+}
+
+- (NSDictionary *) options
+{
+  return _options;
+}
+
+- (id) initWithCoder: (NSCoder *)aCoder
+{
+  if ([aCoder allowsKeyedCoding])
+    {
+      _location = [aCoder decodeFloatForKey: @"NSLocation"];
+   }
+  else
+    {
+        // FIXME
+    }
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)aCoder
+{
+  if ([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeFloat: _location forKey: @"NSLocation"];
+    }
+  else
+    {
+        // FIXME
+    }
+}
+
 @end
 
 
@@ -177,25 +283,29 @@ static NSParagraphStyle	*defaultStyle = nil;
       NSLog(@"Argh - attempt to dealloc the default paragraph style!");
       return;
     }
-  RELEASE (_tabStops);
+  RELEASE(_tabStops);
+  RELEASE(_textBlocks);
+  RELEASE(_textLists);
   [super dealloc];
 }
 
 - (id) init
 {
-  self = [super init];
-  _alignment = NSNaturalTextAlignment;
-  _firstLineHeadIndent = 0.0;
-  _headIndent = 0.0;
-  _lineBreakMode = NSLineBreakByWordWrapping;
-  _lineSpacing = 0.0;
-  _maximumLineHeight = 0.0;
-  _minimumLineHeight = 0.0;
-  _paragraphSpacing = 0.0;
-  _tailIndent = 0.0;
-  _baseDirection = NSWritingDirectionNaturalDirection;
-  _tabStops = [[NSMutableArray allocWithZone: [self zone]] 
-		initWithCapacity: 12];
+  if ((self = [super init]))
+    {
+      _alignment = NSNaturalTextAlignment;
+      //_firstLineHeadIndent = 0.0;
+      //_headIndent = 0.0;
+      _lineBreakMode = NSLineBreakByWordWrapping;
+      //_lineSpacing = 0.0;
+      //_maximumLineHeight = 0.0;
+      //_minimumLineHeight = 0.0;
+      //_paragraphSpacing = 0.0;
+      //_tailIndent = 0.0;
+      _baseDirection = NSWritingDirectionNaturalDirection;
+      _tabStops = [[NSMutableArray allocWithZone: [self zone]] 
+                      initWithCapacity: 12];
+    }
   return self;
 }
 
@@ -289,6 +399,46 @@ static NSParagraphStyle	*defaultStyle = nil;
   return _baseDirection;
 }
 
+- (float) defaultTabInterval
+{
+  return _defaultTabInterval;
+}
+
+- (float) lineHeightMultiple
+{
+  return _lineHeightMultiple;
+}
+
+- (float) paragraphSpacingBefore
+{
+  return _paragraphSpacingBefore;
+}
+
+- (int) headerLevel;
+{
+  return _headerLevel;
+}
+
+- (float) hyphenationFactor;
+{
+  return _hyphenationFactor;
+}
+
+- (NSArray *) textBlocks;
+{
+  return _textBlocks;
+}
+
+- (NSArray *) textLists;
+{
+  return _textLists;
+}
+
+- (float) tighteningFactorForTruncation;
+{
+  return _tighteningFactorForTruncation;
+}
+
 - (id) copyWithZone: (NSZone*)aZone
 {
   if (NSShouldRetainWithZone (self, aZone) == YES)
@@ -339,33 +489,34 @@ static NSParagraphStyle	*defaultStyle = nil;
       [aCoder decodeValueOfObjCType: @encode(unsigned) at: &count];
       _tabStops = [[NSMutableArray alloc] initWithCapacity: count];
       if (count > 0)
-	{
-	  float		locations[count];
-	  NSTextTabType	types[count];
-	  unsigned		i;
-	  
-	  [aCoder decodeArrayOfObjCType: @encode(float)
-		  count: count
-		  at: locations];
-	  [aCoder decodeArrayOfObjCType: @encode(NSTextTabType)
-		  count: count
-		  at: types];
-	  for (i = 0; i < count; i++)
-	    {
-	      NSTextTab	*tab;
-	      
-	      tab = [NSTextTab alloc];
-	      tab = [tab initWithType: types[i] location: locations[i]];
-	      [_tabStops addObject: tab];
-	      RELEASE (tab);
-	    }
-	}
+        {
+          float		locations[count];
+          NSTextTabType	types[count];
+          unsigned		i;
+          
+          [aCoder decodeArrayOfObjCType: @encode(float)
+                  count: count
+                  at: locations];
+          [aCoder decodeArrayOfObjCType: @encode(NSTextTabType)
+                  count: count
+                  at: types];
+          for (i = 0; i < count; i++)
+            {
+              NSTextTab	*tab;
+              
+              tab = [[NSTextTab alloc] initWithType: types[i] 
+                                       location: locations[i]];
+              [_tabStops addObject: tab];
+              RELEASE(tab);
+            }
+        }
       
       if ([aCoder versionForClassName: @"NSParagraphStyle"] >= 2)
-	{
-	  [aCoder decodeValueOfObjCType: @encode(int) at: &_baseDirection];
-	}
+        {
+          [aCoder decodeValueOfObjCType: @encode(int) at: &_baseDirection];
+        }
     }
+
   return self;
 }
 
@@ -396,25 +547,25 @@ static NSParagraphStyle	*defaultStyle = nil;
       count = [_tabStops count];
       [aCoder encodeValueOfObjCType: @encode(unsigned) at: &count];
       if (count > 0)
-	{
-	  float		locations[count];
-	  NSTextTabType	types[count];
-	  unsigned		i;
-	  
-	  for (i = 0; i < count; i++)
-	    {
-	      NSTextTab	*tab = [_tabStops objectAtIndex: i];
-	      
-	      locations[i] = [tab location]; 
-	      types[i] = [tab tabStopType]; 
-	    }
-	  [aCoder encodeArrayOfObjCType: @encode(float)
-		  count: count
-		  at: locations];
-	  [aCoder encodeArrayOfObjCType: @encode(NSTextTabType)
-		  count: count
-		  at: types];
-	}
+        {
+          float		locations[count];
+          NSTextTabType	types[count];
+          unsigned		i;
+          
+          for (i = 0; i < count; i++)
+            {
+              NSTextTab	*tab = [_tabStops objectAtIndex: i];
+              
+              locations[i] = [tab location]; 
+              types[i] = [tab tabStopType]; 
+            }
+          [aCoder encodeArrayOfObjCType: @encode(float)
+                  count: count
+                  at: locations];
+          [aCoder encodeArrayOfObjCType: @encode(NSTextTabType)
+                  count: count
+                  at: types];
+        }
       
       [aCoder encodeValueOfObjCType: @encode(int) at: &_baseDirection];
     }
@@ -438,7 +589,12 @@ static NSParagraphStyle	*defaultStyle = nil;
   C(_maximumLineHeight);
   C(_alignment);
   C(_lineBreakMode);
-  C(_baseDirection);
+  C(_paragraphSpacingBefore);
+  C(_defaultTabInterval);
+  C(_hyphenationFactor);
+  C(_lineHeightMultiple);
+  C(_tighteningFactorForTruncation);
+  C(_headerLevel);
 #undef C
 
   return [_tabStops isEqualToArray: other->_tabStops];
@@ -530,6 +686,46 @@ static NSParagraphStyle	*defaultStyle = nil;
   _baseDirection = direction;
 }
 
+- (void) setDefaultTabInterval: (float)interval
+{
+  _defaultTabInterval = interval;
+}
+
+- (void) setLineHeightMultiple: (float)factor
+{
+  _lineHeightMultiple = factor;
+}
+
+- (void) setParagraphSpacingBefore: (float)spacing
+{
+  _paragraphSpacingBefore = spacing;
+}
+
+- (void) setHeaderLevel: (int)level
+{
+  _headerLevel = level;
+}
+
+- (void) setHyphenationFactor: (float)factor
+{
+  _hyphenationFactor = factor;
+}
+
+- (void) setTextBlocks: (NSArray *)blocks
+{
+  ASSIGN(_textBlocks, blocks);
+}
+
+- (void) setTextLists: (NSArray *)lists
+{
+  ASSIGN(_textLists, lists);
+}
+
+- (void) setTighteningFactorForTruncation: (float)factor
+{
+  _tighteningFactorForTruncation = factor;
+}
+
 - (void) addTabStop: (NSTextTab*)anObject
 {
   unsigned	count = [_tabStops count];
@@ -594,6 +790,12 @@ static NSParagraphStyle	*defaultStyle = nil;
   _paragraphSpacing = p->_paragraphSpacing;
   _tailIndent = p->_tailIndent;
   _baseDirection = p->_baseDirection;
+  _paragraphSpacingBefore = p->_paragraphSpacingBefore;
+  _defaultTabInterval = p->_defaultTabInterval;
+  _hyphenationFactor = p->_hyphenationFactor;
+  _lineHeightMultiple = p->_lineHeightMultiple;
+  _tighteningFactorForTruncation = p->_tighteningFactorForTruncation;
+  _headerLevel = p->_headerLevel;
 }
 
 - (id) copyWithZone: (NSZone*)aZone

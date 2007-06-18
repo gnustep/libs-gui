@@ -59,6 +59,7 @@
 #include <Foundation/NSUndoManager.h>
 #include <Foundation/NSValue.h>
 #include "AppKit/NSApplication.h"
+#include "AppKit/NSAttributedString.h"
 #include "AppKit/NSClipView.h"
 #include "AppKit/NSColor.h"
 #include "AppKit/NSColorPanel.h"

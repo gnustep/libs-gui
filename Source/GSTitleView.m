@@ -23,6 +23,10 @@
    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
+#include <Foundation/NSDebug.h>
+#include <Foundation/NSRunLoop.h>
+
+#include "AppKit/NSAttributedString.h"
 #include <AppKit/NSView.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSPanel.h>
@@ -33,10 +37,6 @@
 #include <AppKit/NSApplication.h>
 
 #include <GNUstepGUI/GSTitleView.h>
-
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSRunLoop.h>
-
 #include "GNUstepGUI/GSTheme.h"
 
 @implementation GSTitleView

@@ -453,6 +453,62 @@ NSString *NSToolTipAttributeName = @"NSToolTipAttributeName";
 NSString *NSUnderlineColorAttributeName = @"NSUnderlineColorAttributeName";
 NSString *NSUnderlineStyleAttributeName = @"NSUnderlineStyleAttributeName";
 
+NSString *NSCharacterShapeAttributeName = @"CharacterShape";
+NSString *NSGlyphInfoAttributeName = @"GlyphInfo";
+
+NSString *NSPaperSizeDocumentAttribute = @"PaperSize";
+NSString *NSLeftMarginDocumentAttribute = @"LeftMargin";
+NSString *NSRightMarginDocumentAttribute = @"RightMargin";
+NSString *NSTopMarginDocumentAttribute = @"TopMargin";
+NSString *NSBottomMarginDocumentAttribute = @"BottomMargin";
+NSString *NSHyphenationFactorDocumentAttribute = @"HyphenationFactor";
+NSString *NSDocumentTypeDocumentAttribute = @"DocumentType";
+NSString *NSCharacterEncodingDocumentAttribute = @"CharacterEncoding";
+NSString *NSViewSizeDocumentAttribute = @"ViewSize";
+NSString *NSViewZoomDocumentAttribute = @"ViewZoom";
+NSString *NSViewModeDocumentAttribute = @"ViewMode";
+NSString *NSBackgroundColorDocumentAttribute = @"BackgroundColor";
+NSString *NSCocoaVersionDocumentAttribute = @"CocoaVersion";
+NSString *NSReadOnlyDocumentAttribute = @"ReadOnly";
+NSString *NSConvertedDocumentAttribute = @"Converted";
+NSString *NSDefaultTabIntervalDocumentAttribute = @"DefaultTabInterval";
+NSString *NSTitleDocumentAttribute = @"Title";
+NSString *NSCompanyDocumentAttribute = @"Company";
+NSString *NSCopyrightDocumentAttribute = @"Copyright";
+NSString *NSSubjectDocumentAttribute = @"Subject";
+NSString *NSAuthorDocumentAttribute = @"Author";
+NSString *NSKeywordsDocumentAttribute = @"Keywords";
+NSString *NSCommentDocumentAttribute = @"Comment";
+NSString *NSEditorDocumentAttribute = @"Editor";
+NSString *NSCreationTimeDocumentAttribute = @"CreationTime";
+NSString *NSModificationTimeDocumentAttribute = @"ModificationTime";
+
+const unsigned NSUnderlineByWordMask = 0x01;
+
+NSString *NSPlainTextDocumentType = @"PlainText";
+NSString *NSRTFTextDocumentType = @"RTF";
+NSString *NSRTFDTextDocumentType = @"RTFD";
+NSString *NSMacSimpleTextDocumentType = @"SimpleText";
+NSString *NSHTMLTextDocumentType = @"HTML";
+NSString *NSDocFormatTextDocumentType = @"Doc";
+NSString *NSWordMLTextDocumentType = @"WordML";
+
+NSString *NSExcludedElementsDocumentAttribute = @"ExcludedElements";
+NSString *NSTextEncodingNameDocumentAttribute = @"TextEncoding";
+NSString *NSPrefixSpacesDocumentAttribute = @"PrefixSpaces";
+
+NSString *NSBaseURLDocumentOption = @"BaseURL";
+NSString *NSCharacterEncodingDocumentOption = @"CharacterEncoding";
+NSString *NSDefaultAttributesDocumentOption = @"DefaultAttributes";
+NSString *NSDocumentTypeDocumentOption = @"DocumentType";
+NSString *NSTextEncodingNameDocumentOption = @"TextEncoding";
+NSString *NSTextSizeMultiplierDocumentOption = @"TextSizeMultiplier";
+NSString *NSTimeoutDocumentOption = @"Timeout";
+NSString *NSWebPreferencesDocumentOption = @"WebPreferences";
+NSString *NSWebResourceLoadDelegateDocumentOption = @"WebResourceLoadDelegate";
+
+// NSTextTab
+NSString *NSTabColumnTerminatorsAttributeName = @"TabColumnTerminatorsAttributeName"; 
 
 // NSToolbar notifications
 NSString *NSToolbarDidRemoveItemNotification = @"NSToolbarDidRemoveItemNotification";

@@ -29,6 +29,7 @@
 #include <Foundation/NSException.h>
 #include <Foundation/NSValue.h>
 
+#include "AppKit/NSAttributedString.h"
 #include "AppKit/NSTextStorage.h"
 #include "AppKit/NSTextContainer.h"
 

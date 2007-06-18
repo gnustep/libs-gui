@@ -35,6 +35,7 @@
 #include <Foundation/NSException.h>
 #include <Foundation/NSString.h>
 #include "AppKit/NSApplication.h"
+#include "AppKit/NSAttributedString.h"
 #include "AppKit/NSButton.h"
 #include "AppKit/NSButtonCell.h"
 #include "AppKit/NSDragging.h"

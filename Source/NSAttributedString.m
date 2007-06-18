@@ -720,6 +720,101 @@ documentAttributes: (NSDictionary **)dict
 			 documentAttributes: dict];
 }
 
+- (id) initWithDocFormat: (NSData *)data
+      documentAttributes: (NSDictionary **)dict
+{
+  // FIXME
+  RELEASE(self);
+  return nil;
+}
+
+- (id) initWithHTML: (NSData *)data
+            options: (NSDictionary *)options
+ documentAttributes: (NSDictionary **)dict
+{
+  // FIXME
+  RELEASE(self);
+  return nil;
+}
+
+- (id) initWithData: (NSData *)data
+            options: (NSDictionary *)options
+ documentAttributes: (NSDictionary **)dict
+              error: (NSError **)error
+{
+  // FIXME
+  RELEASE(self);
+  return nil;
+}
+
+- (id) initWithURL: (NSURL *)url
+           options: (NSDictionary *)options
+documentAttributes: (NSDictionary **)dict
+             error: (NSError **)error
+{
+  // FIXME
+  RELEASE(self);
+  return nil;
+}
+
+- (NSData *) docFormatFromRange: (NSRange)range
+             documentAttributes: (NSDictionary *)dict
+{
+  // FIXME
+  return nil;
+}
+
+- (NSData *) dataFromRange: (NSRange)range
+        documentAttributes: (NSDictionary *)dict
+                     error: (NSError **)error
+{
+  // FIXME
+  return nil;
+}
+
+- (NSFileWrapper *) fileWrapperFromRange: (NSRange)range
+                      documentAttributes: (NSDictionary *)dict
+                                   error: (NSError **)error
+{
+  // FIXME
+  return nil;
+}
+
+- (unsigned) lineBreakByHyphenatingBeforeIndex: (unsigned)location
+                                   withinRange: (NSRange)aRange
+{
+  // FIXME
+  return NSNotFound;
+}
+
+- (NSRange) itemNumberInTextList: (NSTextList *)list
+                         atIndex: (unsigned)location
+{
+  // FIXME
+  return NSMakeRange(NSNotFound, 0);
+}
+
+- (NSRange) rangeOfTextBlock: (NSTextBlock *)block
+                     atIndex: (unsigned)location
+{
+  // FIXME
+  return NSMakeRange(NSNotFound, 0);
+}
+
+- (NSRange) rangeOfTextList: (NSTextList *)list
+                    atIndex: (unsigned)location
+{
+  // FIXME
+  return NSMakeRange(NSNotFound, 0);
+}
+
+- (NSRange) rangeOfTextTable: (NSTextTable *)table
+                     atIndex: (unsigned)location
+{
+  // FIXME
+  return NSMakeRange(NSNotFound, 0);
+}
+
 @end
 
 @implementation NSMutableAttributedString (AppKit)
@@ -1082,6 +1177,17 @@ documentAttributes: (NSDictionary **)dict
 	     options: (NSDictionary *)options
   documentAttributes: (NSDictionary**)documentAttributes
 {
+  return [self readFromURL: url
+               options: options
+               documentAttributes: documentAttributes
+               error: NULL];
+}
+
+- (BOOL) readFromURL: (NSURL *)url
+             options: (NSDictionary *)options
+  documentAttributes: (NSDictionary **)documentAttributes
+               error: (NSError **)error
+{
   NSString *extension;
   NSString *type;
 
@@ -1157,6 +1263,34 @@ documentAttributes: (NSDictionary **)dict
   // FIXME This should also support all converter bundles
 
   return NO;
+}
+
+- (BOOL) readFromData: (NSData *)data
+              options: (NSDictionary *)options
+   documentAttributes: (NSDictionary **)documentAttributes
+{
+  return [self readFromData:  data
+               options: options
+               documentAttributes: documentAttributes
+               error: NULL];
+}
+
+- (BOOL) readFromData: (NSData *)data
+              options: (NSDictionary *)options
+   documentAttributes: (NSDictionary **)documentAttributes
+                error: (NSError **)error
+{
+  // FIXME
+  return NO;
+}
+
+- (void) setBaseWritingDirection: (NSWritingDirection)writingDirection
+                           range: (NSRange)range
+{
+	[self setAttributes: [NSDictionary dictionaryWithObject: 
+                                         [NSNumber numberWithInt: writingDirection]
+													forKey: @"WritingDirection"]
+				  range: range];
 }
 
 @end

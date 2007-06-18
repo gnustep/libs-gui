@@ -28,6 +28,7 @@
 #include <Foundation/NSException.h>
 
 #include "AppKit/NSApplication.h"
+#include "AppKit/NSAttributedString.h"
 #include "AppKit/NSButton.h"
 #include "AppKit/NSImage.h"
 #include "AppKit/NSParagraphStyle.h"

@@ -1,5 +1,31 @@
 2007-06-18 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSAttributedString.h: Add new MacOSX methods and 
+	constants.
+	* Source/NSAttributedString.m: Basic implementation of new
+	methods.
+	* Source/externs.m: Define new string constants.
+	* Headers/AppKit/NSImageView.h: Add new MacOSX methods.
+	* Source/NSImageView.m: Basic implementation of new methods.
+	* Headers/AppKit/NSStringDrawing.h: Add new MacOSX methods.
+	* Source/NSStringDrawing.m: Basic implementation of new methods.
+	* Headers/AppKit/NSParagraphStyle.h: Add new MacOSX methods.
+	* Source/NSParagraphStyle.m: Implementation of new methods.
+	Code by Nikolaus Schaller <hns@computer.org>.
+	* Headers/AppKit/NSTextStorage.h,
+	* Source/NSText.m,
+	* Source/GSLayoutManager.m,
+	* Source/NSLayoutManager.m,
+	* Source/GSStandardWindowDecorationView.m,
+	* Source/GSHorizontalTypesetter.m,
+	* Source/NSMenuItemCell.m,
+	* Source/GSTitleView.m,
+	* Source/NSTextView_actions.m,
+	* Source/NSTextView.m,
+	* Source/NSToolbarItem.m: Clean up includes.
+
+2007-06-18 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSGraphicsContext.h: Declare new printing
 	methods.
 	* Source/NSGraphicsContext.m: Implement Postscript printing methods.

@@ -56,18 +56,37 @@ typedef enum _NSWritingDirection {
     NSWritingDirectionRightToLeft
 } NSWritingDirection;
 
-@interface NSTextTab : NSObject <NSCopying>
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+APPKIT_EXPORT NSString *NSTabColumnTerminatorsAttributeName; 
+#endif
+
+@interface NSTextTab : NSObject <NSCopying, NSCoding>
 {
   NSTextTabType	_tabStopType;
+	NSDictionary *_options;
+	NSTextAlignment _alignment;
   float		_location;
 }
+
 - (id) initWithType: (NSTextTabType)type  location: (float)loc;
 - (float) location;
 - (NSTextTabType) tabStopType;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (id) initWithTextAlignment: (NSTextAlignment)align 
+                    location: (float)loc 
+                     options: (NSDictionary *)options;
+- (NSTextAlignment) alignment;
+- (NSDictionary *) options;
+#endif
+
 @end
 
 @interface NSParagraphStyle : NSObject <NSCopying, NSMutableCopying, NSCoding>
 {
+  NSMutableArray *_tabStops;
+	NSArray *_textBlocks;
+	NSArray *_textLists;
   float _lineSpacing;
   float _paragraphSpacing;
   float _headIndent;
@@ -75,10 +94,15 @@ typedef enum _NSWritingDirection {
   float _firstLineHeadIndent;
   float _minimumLineHeight;
   float _maximumLineHeight;
-  NSMutableArray *_tabStops;
+	float _paragraphSpacingBefore;
+	float _defaultTabInterval;
+	float _hyphenationFactor;
+	float _lineHeightMultiple;
+	float _tighteningFactorForTruncation;
   NSTextAlignment _alignment;
   NSLineBreakMode _lineBreakMode;
   NSWritingDirection _baseDirection;
+	int _headerLevel;
 }
 
 + (NSParagraphStyle*) defaultParagraphStyle;
@@ -146,6 +170,18 @@ typedef enum _NSWritingDirection {
 + (NSWritingDirection) defaultWritingDirectionForLanguage: (NSString*) language;
 - (NSWritingDirection) baseWritingDirection;
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (float) defaultTabInterval;
+- (float) lineHeightMultiple;
+- (float) paragraphSpacingBefore;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (int) headerLevel;
+- (float) hyphenationFactor;
+- (NSArray *) textBlocks;
+- (NSArray *) textLists;
+- (float) tighteningFactorForTruncation;
+#endif
 
 @end
 
@@ -170,6 +206,19 @@ typedef enum _NSWritingDirection {
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
 - (void) setBaseWritingDirection: (NSWritingDirection)direction;
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (void) setDefaultTabInterval: (float)interval;
+- (void) setLineHeightMultiple: (float)factor;
+- (void) setParagraphSpacingBefore: (float)spacing;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (void) setHeaderLevel: (int)level;
+- (void) setHyphenationFactor: (float)factor;
+- (void) setTextBlocks: (NSArray *)blocks;
+- (void) setTextLists: (NSArray *)lists;
+- (void) setTighteningFactorForTruncation: (float)factor;
+#endif
+
 @end
 
 #endif // _GNUstep_H_NSParagraphStyle

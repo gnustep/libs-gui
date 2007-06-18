@@ -37,6 +37,7 @@
 
 #include "AppKit/NSText.h"
 
+#include "AppKit/NSAttributedString.h"
 #include "AppKit/NSPanel.h"
 #include "AppKit/NSSpellChecker.h"
 #include "AppKit/NSTextView.h"

@@ -38,13 +38,32 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSAttributedString.h>
 #include <Foundation/NSGeometry.h>
-#include <AppKit/NSAttributedString.h>
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+typedef enum 
+{
+    NSStringDrawingUsesLineFragmentOrigin=0x01,
+    NSStringDrawingUsesFontLeading=0x02,
+    NSStringDrawingDisableScreenFontSubstitution=0x04,
+    NSStringDrawingUsesDeviceMetrics=0x08,
+    NSStringDrawingOneShot=0x10
+} NSStringDrawingOptions;
+#endif
 
 @interface NSString (NSStringDrawing)
 
 - (void) drawAtPoint: (NSPoint)point withAttributes: (NSDictionary*)attrs;
 - (void) drawInRect: (NSRect)rect withAttributes: (NSDictionary*)attrs;
 - (NSSize) sizeWithAttributes: (NSDictionary*)attrs;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (NSRect) boundingRectWithSize: (NSSize)size
+                        options: (NSStringDrawingOptions)options
+                     attributes: (NSDictionary *)attributes;
+- (void) drawWithRect: (NSRect)rect
+              options: (NSStringDrawingOptions)options
+           attributes: (NSDictionary *)attributes;
+#endif
 
 @end
 
@@ -53,6 +72,13 @@
 - (NSSize) size;
 - (void) drawAtPoint: (NSPoint)point;
 - (void) drawInRect: (NSRect)rect;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (NSRect) boundingRectWithSize: (NSSize)size
+                        options: (NSStringDrawingOptions)options;
+- (void) drawWithRect: (NSRect)rect
+              options: (NSStringDrawingOptions)options;
+#endif
 
 @end
 

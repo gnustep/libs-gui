@@ -1,4 +1,4 @@
-/* 
+/*  -*-objc-*-
    NSAttributedString.h
 
    Categories which add capabilities to NSAttributedString 
@@ -35,6 +35,8 @@
 #include <Foundation/NSAttributedString.h>
 #include <Foundation/NSRange.h>
 #include <AppKit/NSFontManager.h>
+// for NSWritingDirection
+#include <AppKit/NSParagraphStyle.h>
 #include <AppKit/NSText.h>
 #include <AppKit/AppKitDefines.h>
 
@@ -45,6 +47,10 @@
 @class NSData;
 @class NSArray;
 @class NSURL;
+@class NSError;
+@class NSTextBlock;
+@class NSTextList;
+@class NSTextTable;
 
 /* Global NSString attribute names used in accessing the respective
    property in a text attributes dictionary.  if the key is not in the
@@ -70,14 +76,117 @@ APPKIT_EXPORT NSString *NSToolTipAttributeName;
 APPKIT_EXPORT NSString *NSUnderlineColorAttributeName;
 APPKIT_EXPORT NSString *NSUnderlineStyleAttributeName;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+APPKIT_EXPORT NSString *NSGlyphInfoAttributeName;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+APPKIT_EXPORT NSString *NSPaperSizeDocumentAttribute;
+APPKIT_EXPORT NSString *NSLeftMarginDocumentAttribute;
+APPKIT_EXPORT NSString *NSRightMarginDocumentAttribute;
+APPKIT_EXPORT NSString *NSTopMarginDocumentAttribute;
+APPKIT_EXPORT NSString *NSBottomMarginDocumentAttribute;
+APPKIT_EXPORT NSString *NSHyphenationFactorDocumentAttribute;
+APPKIT_EXPORT NSString *NSDocumentTypeDocumentAttribute;
+APPKIT_EXPORT NSString *NSCharacterEncodingDocumentAttribute;
+APPKIT_EXPORT NSString *NSViewSizeDocumentAttribute;
+APPKIT_EXPORT NSString *NSViewZoomDocumentAttribute;
+APPKIT_EXPORT NSString *NSViewModeDocumentAttribute;
+APPKIT_EXPORT NSString *NSBackgroundColorDocumentAttribute;
+APPKIT_EXPORT NSString *NSCocoaVersionDocumentAttribute;
+APPKIT_EXPORT NSString *NSReadOnlyDocumentAttribute;
+APPKIT_EXPORT NSString *NSConvertedDocumentAttribute;
+APPKIT_EXPORT NSString *NSDefaultTabIntervalDocumentAttribute;
+APPKIT_EXPORT NSString *NSTitleDocumentAttribute;
+APPKIT_EXPORT NSString *NSCompanyDocumentAttribute;
+APPKIT_EXPORT NSString *NSCopyrightDocumentAttribute;
+APPKIT_EXPORT NSString *NSSubjectDocumentAttribute;
+APPKIT_EXPORT NSString *NSAuthorDocumentAttribute;
+APPKIT_EXPORT NSString *NSKeywordsDocumentAttribute;
+APPKIT_EXPORT NSString *NSCommentDocumentAttribute;
+APPKIT_EXPORT NSString *NSEditorDocumentAttribute;
+APPKIT_EXPORT NSString *NSCreationTimeDocumentAttribute;
+APPKIT_EXPORT NSString *NSModificationTimeDocumentAttribute;
+
+// DocumentType values
+
+APPKIT_EXPORT NSString *NSPlainTextDocumentType;
+APPKIT_EXPORT NSString *NSRTFTextDocumentType;
+APPKIT_EXPORT NSString *NSRTFDTextDocumentType;
+APPKIT_EXPORT NSString *NSMacSimpleTextDocumentType;
+APPKIT_EXPORT NSString *NSHTMLTextDocumentType;
+APPKIT_EXPORT NSString *NSDocFormatTextDocumentType;
+APPKIT_EXPORT NSString *NSWordMLTextDocumentType;
+
+// for HTML export
+
+APPKIT_EXPORT NSString *NSExcludedElementsDocumentAttribute;
+APPKIT_EXPORT NSString *NSTextEncodingNameDocumentAttribute;
+APPKIT_EXPORT NSString *NSPrefixSpacesDocumentAttribute;
+
+// for HTML import
+
+APPKIT_EXPORT NSString *NSBaseURLDocumentOption;
+APPKIT_EXPORT NSString *NSCharacterEncodingDocumentOption;
+APPKIT_EXPORT NSString *NSDefaultAttributesDocumentOption;
+APPKIT_EXPORT NSString *NSDocumentTypeDocumentOption;
+APPKIT_EXPORT NSString *NSTextEncodingNameDocumentOption;
+APPKIT_EXPORT NSString *NSTextSizeMultiplierDocumentOption;
+APPKIT_EXPORT NSString *NSTimeoutDocumentOption;
+APPKIT_EXPORT NSString *NSWebPreferencesDocumentOption;
+APPKIT_EXPORT NSString *NSWebResourceLoadDelegateDocumentOption;
+
+// special attributes
+
+APPKIT_EXPORT NSString *NSCharacterShapeAttributeName;
+APPKIT_EXPORT const unsigned NSUnderlineByWordMask;
+
+// readFrom... attributes
+
+APPKIT_EXPORT NSString *NSCharacterEncodingDocumentOption;
+APPKIT_EXPORT NSString *NSBaseURLDocumentOption;
+APPKIT_EXPORT NSString *NSDefaultAttributesDocumentOption;
+APPKIT_EXPORT NSString *NSDocumentTypeDocumentOption;
+
+// initWithHTML... attributes
+
+APPKIT_EXPORT NSString *NSTextEncodingNameDocumentOption;
+APPKIT_EXPORT NSString *NSTimeoutDocumentOption;
+APPKIT_EXPORT NSString *NSWebPreferencesDocumentOption;
+APPKIT_EXPORT NSString *NSWebResourceLoadDelegateDocumentOption;
+APPKIT_EXPORT NSString *NSTextSizeMultiplierDocumentOption;
+
 /* Currently supported values for NSUnderlineStyleAttributeName.  */
-enum 									
+enum _NSUnderlineStyle
 {
-  GSNoUnderlineStyle = 0,
-  NSSingleUnderlineStyle = 1
+	NSUnderlineStyleNone   = 0x00,
+	NSUnderlineStyleSingle = 0x01,
+	NSUnderlineStyleThick  = 0x02,
+	NSUnderlineStyleDouble = 0x09
 };
 
+enum _NSUnderlinePattern
+{
+	NSUnderlinePatternSolid      = 0x0000,
+	NSUnderlinePatternDot        = 0x0100,
+	NSUnderlinePatternDash       = 0x0200,
+	NSUnderlinePatternDashDot    = 0x0300,
+	NSUnderlinePatternDashDotDot = 0x0400
+};
+#endif
+
+#if OS_API_VERSION(GS_API_MACOSX, MAC_OS_X_VERSION_10_3)
+// Deprecated
+enum
+{
+  GSNoUnderlineStyle = 0,
+  NSSingleUnderlineStyle = 1,
+	NSUnderlineStrikethroughMask
+};
+#endif
+
 @interface NSAttributedString (AppKit)
+- (BOOL) containsAttachments;
 - (NSDictionary*) fontAttributesInRange: (NSRange)range;
 - (NSDictionary*) rulerAttributesInRange: (NSRange)range;
 - (unsigned) lineBreakBeforeIndex: (unsigned)location
@@ -92,21 +201,59 @@ enum
 - (id) initWithRTFDFileWrapper: (NSFileWrapper*)wrapper
   documentAttributes: (NSDictionary**)dict;
 - (id) initWithHTML: (NSData*)data documentAttributes: (NSDictionary**)dict;
-- (id) initWithHTML: (NSData*)data baseURL: (NSURL*)base
-  documentAttributes: (NSDictionary**)dict;
+- (id) initWithHTML: (NSData*)data 
+            baseURL: (NSURL*)base
+ documentAttributes: (NSDictionary**)dict;
 
 - (NSData*) RTFFromRange: (NSRange)range
-  documentAttributes: (NSDictionary*)dict;
+      documentAttributes: (NSDictionary*)dict;
 - (NSData*) RTFDFromRange: (NSRange)range
-  documentAttributes: (NSDictionary*)dict;
+       documentAttributes: (NSDictionary*)dict;
 - (NSFileWrapper*) RTFDFileWrapperFromRange: (NSRange)range
-  documentAttributes: (NSDictionary*)dict;
+                         documentAttributes: (NSDictionary*)dict;
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 + (NSArray *) textFileTypes;
 + (NSArray *) textPasteboardTypes;
 + (NSArray *) textUnfilteredFileTypes;
 + (NSArray *) textUnfilteredPasteboardTypes;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (NSData *) docFormatFromRange: (NSRange)range
+             documentAttributes: (NSDictionary *)dict;
+- (id) initWithDocFormat: (NSData *)data
+      documentAttributes: (NSDictionary **)dict;
+- (id) initWithHTML: (NSData *)data
+            options: (NSDictionary *)options
+ documentAttributes: (NSDictionary **)dict;
+
+- (unsigned) lineBreakByHyphenatingBeforeIndex: (unsigned)location
+                                   withinRange: (NSRange)aRange;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (NSData *) dataFromRange: (NSRange)range
+        documentAttributes: (NSDictionary *)dict
+                     error: (NSError **)error;
+- (NSFileWrapper *) fileWrapperFromRange: (NSRange)range
+                      documentAttributes: (NSDictionary *)dict
+                                   error: (NSError **)error;
+- (id) initWithData: (NSData *)data
+            options: (NSDictionary *)options
+ documentAttributes: (NSDictionary **)dict
+              error: (NSError **)error;
+- (id) initWithURL: (NSURL *)url
+           options: (NSDictionary *)options
+documentAttributes: (NSDictionary **)dict
+             error: (NSError **)error;
+
+- (NSRange) itemNumberInTextList: (NSTextList *)list
+                         atIndex: (unsigned)location;
+- (NSRange) rangeOfTextBlock: (NSTextBlock *)block
+                     atIndex: (unsigned)location;
+- (NSRange) rangeOfTextList: (NSTextList *)list
+                    atIndex: (unsigned)location;
+- (NSRange) rangeOfTextTable: (NSTextTable *)table
+                     atIndex: (unsigned)location;
 #endif
 @end
 
@@ -122,9 +269,29 @@ enum
 - (void) fixParagraphStyleAttributeInRange: (NSRange)range;
 - (void) fixAttachmentAttributeInRange: (NSRange)range;
 
+- (void) updateAttachmentsFromPath: (NSString *)path;
+
 - (BOOL) readFromURL: (NSURL *)url
 	     options: (NSDictionary *)options
   documentAttributes: (NSDictionary**)documentAttributes;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (BOOL) readFromData: (NSData *)data
+              options: (NSDictionary *)options
+   documentAttributes: (NSDictionary **)documentAttributes;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (BOOL) readFromData: (NSData *)data
+              options: (NSDictionary *)options
+   documentAttributes: (NSDictionary **)documentAttributes
+                error: (NSError **)error;
+- (BOOL) readFromURL: (NSURL *)url
+             options: (NSDictionary *)options
+  documentAttributes: (NSDictionary **)documentAttributes
+               error: (NSError **)error;
+
+- (void) setBaseWritingDirection: (NSWritingDirection)writingDirection
+                           range: (NSRange)range;
+#endif
 @end
 
 #endif

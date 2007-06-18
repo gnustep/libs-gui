@@ -34,6 +34,7 @@
 #include <Foundation/NSLock.h>
 #include <Foundation/NSValue.h>
 
+#include "AppKit/NSAttributedString.h"
 #include "AppKit/NSParagraphStyle.h"
 #include "AppKit/NSTextAttachment.h"
 #include "AppKit/NSTextContainer.h"
