@@ -353,7 +353,6 @@ setControl(NSView* content, id control, NSString *title)
   // we're an ATTENTION panel, therefore:
   [self setHidesOnDeactivate: NO];
   [self setBecomesKeyOnlyIfNeeded: NO];
-  [self setFloatingPanel: YES];
   
   // First, the subviews that will be positioned automatically.
   rect.size.height = IconSide;
