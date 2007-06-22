@@ -1024,57 +1024,67 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       frameRect.size.height = 0;
     }
 
-  if (NSMinX(_frame) != NSMinX(frameRect) 
-      || NSMinY(_frame) != NSMinY(frameRect))
-    changedOrigin = YES;
-  if (NSWidth(_frame) != NSWidth(frameRect) 
-      || NSHeight(_frame) != NSHeight(frameRect))
-    changedSize = YES;
-  
-  _frame = frameRect;
-  /* FIXME: Touch bounds only if we are not scaled or rotated */
-  _bounds.size = frameRect.size;
-  
-
-  if (changedSize && _is_rotated_or_scaled_from_base)
+  if (NSEqualPoints(_frame.origin, frameRect.origin) == NO)
     {
-      [self _updateBoundsMatrix];
+      changedOrigin = YES;
     }
-
-  if (changedSize || changedOrigin)
+  if (NSEqualSizes(_frame.size, frameRect.size) == NO)
     {
-      if (_coordinates_valid)
-	{
-	  (*invalidateImp)(self, invalidateSel);
-	}
-      [self resizeSubviewsWithOldSize: old_size];
-      if (_post_frame_changes)
-	{
-	  [nc postNotificationName: NSViewFrameDidChangeNotification
-	      object: self];
-	}
+      changedSize = YES;
+    }
+  
+  if (changedSize == YES || changedOrigin == YES)
+    {
+      _frame = frameRect;
+
+      if (changedSize == YES)
+        {
+          if (_is_rotated_or_scaled_from_base == YES)
+            {
+              [self _updateBoundsMatrix];
+            }
+          else
+            {
+              _bounds.size = frameRect.size;
+            }
+        }
+
+      if (changedSize || changedOrigin)
+        {
+          if (_coordinates_valid)
+            {
+              (*invalidateImp)(self, invalidateSel);
+            }
+          [self resizeSubviewsWithOldSize: old_size];
+          if (_post_frame_changes)
+            {
+              [nc postNotificationName: NSViewFrameDidChangeNotification
+                  object: self];
+            }
+        }
     }
 }
 
 - (void) setFrameOrigin: (NSPoint)newOrigin
 {
-  if (_coordinates_valid)
+  if (NSEqualPoints(_frame.origin, newOrigin) == NO)
     {
-      (*invalidateImp)(self, invalidateSel);
-    }
-  _frame.origin = newOrigin;
+      if (_coordinates_valid)
+        {
+          (*invalidateImp)(self, invalidateSel);
+        }
+      _frame.origin = newOrigin;
 
-  if (_post_frame_changes)
-    {
-      [nc postNotificationName: NSViewFrameDidChangeNotification
-	  object: self];
+      if (_post_frame_changes)
+        {
+          [nc postNotificationName: NSViewFrameDidChangeNotification
+              object: self];
+        }
     }
 }
 
 - (void) setFrameSize: (NSSize)newSize
 {
-  NSSize old_size = _frame.size;
-
   if (newSize.width < 0)
     {
       NSWarnMLog(@"given negative width", 0);
@@ -1085,53 +1095,66 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       NSWarnMLog(@"given negative height", 0);
       newSize.height = 0;
     }
-  if (_coordinates_valid)
+  if (NSEqualSizes(_frame.size, newSize) == NO)
     {
-      (*invalidateImp)(self, invalidateSel);
-    }
+      NSSize old_size = _frame.size;
 
-  if (_is_rotated_or_scaled_from_base)
-    {
-      float sx = _bounds.size.width  / _frame.size.width;
-      float sy = _bounds.size.height / _frame.size.height;
-      
-      _frame.size = newSize;
-      _bounds.size.width  = _frame.size.width  * sx;
-      _bounds.size.height = _frame.size.height * sy;
-    }
-  else
-    {
-      _frame.size = _bounds.size = newSize;
-    }
+      if (_coordinates_valid)
+        {
+          (*invalidateImp)(self, invalidateSel);
+        }
 
-  [self resizeSubviewsWithOldSize: old_size];
-  if (_post_frame_changes)
-    {
-      [nc postNotificationName: NSViewFrameDidChangeNotification
-	  object: self];
+      if (_is_rotated_or_scaled_from_base)
+        {
+          float sx = _bounds.size.width  / _frame.size.width;
+          float sy = _bounds.size.height / _frame.size.height;
+          
+          _frame.size = newSize;
+          _bounds.size.width  = _frame.size.width  * sx;
+          _bounds.size.height = _frame.size.height * sy;
+        }
+      else
+        {
+          _frame.size = _bounds.size = newSize;
+        }
+
+      [self resizeSubviewsWithOldSize: old_size];
+      if (_post_frame_changes)
+        {
+          [nc postNotificationName: NSViewFrameDidChangeNotification
+              object: self];
+        }
     }
 }
 
 - (void) setFrameRotation: (float)angle
 {
-  /* no frame matrix, create one since it is needed for rotation */
-  if (_frameMatrix == nil)
-    {
-      _frameMatrix = [NSAffineTransform new];	// Map fromsuperview to frame
-    }
+  float oldAngle = [self frameRotation];
 
-  if (_coordinates_valid)
+  if (oldAngle != angle)
     {
-      (*invalidateImp)(self, invalidateSel);
-    }
+      /* no frame matrix, create one since it is needed for rotation */
+      if (_frameMatrix == nil)
+        {
+          // Map fromsuperview to frame
+          _frameMatrix = [NSAffineTransform new];
+        }
 
-  [_frameMatrix setFrameRotation: angle];
-  _is_rotated_from_base = _is_rotated_or_scaled_from_base = YES;
+      if (_coordinates_valid)
+        {
+          (*invalidateImp)(self, invalidateSel);
+        }
 
-  if (_post_frame_changes)
-    {
-      [nc postNotificationName: NSViewFrameDidChangeNotification
-	  object: self];
+      [_frameMatrix setFrameRotation: angle];
+      _is_rotated_from_base = _is_rotated_or_scaled_from_base = YES;
+
+      [self _updateBoundsMatrix];
+
+      if (_post_frame_changes)
+        {
+          [nc postNotificationName: NSViewFrameDidChangeNotification
+              object: self];
+        }
     }
 }
 
@@ -1169,31 +1192,34 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) scaleUnitSquareToSize: (NSSize)newSize
 {
-  if (newSize.width < 0)
+  if (newSize.width != 1.0 || newSize.height != 1.0)
     {
-      NSWarnMLog(@"given negative width", 0);
-      newSize.width = 0;
-    }
-  if (newSize.height < 0)
-    {
-      NSWarnMLog(@"given negative height", 0);
-      newSize.height = 0;
-    }
-  if (_coordinates_valid)
-    {
-      (*invalidateImp)(self, invalidateSel);
-    }
-  _bounds.size.width  = _bounds.size.width  / newSize.width;
-  _bounds.size.height = _bounds.size.height / newSize.height;
+      if (newSize.width < 0)
+        {
+          NSWarnMLog(@"given negative width", 0);
+          newSize.width = 0;
+        }
+      if (newSize.height < 0)
+        {
+          NSWarnMLog(@"given negative height", 0);
+          newSize.height = 0;
+        }
+      if (_coordinates_valid)
+        {
+          (*invalidateImp)(self, invalidateSel);
+        }
+      _bounds.size.width  = _bounds.size.width  / newSize.width;
+      _bounds.size.height = _bounds.size.height / newSize.height;
 
-  _is_rotated_or_scaled_from_base = YES;
-  
-  [self _updateBoundsMatrix];
+      _is_rotated_or_scaled_from_base = YES;
+      
+      [self _updateBoundsMatrix];
 
-  if (_post_bounds_changes)
-    {
-      [nc postNotificationName: NSViewBoundsDidChangeNotification
-	  object: self];
+      if (_post_bounds_changes)
+        {
+          [nc postNotificationName: NSViewBoundsDidChangeNotification
+              object: self];
+        }
     }
 }
 
@@ -1209,35 +1235,41 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       NSWarnMLog(@"given negative height", 0);
       aRect.size.height = 0;
     }
-  if (_coordinates_valid)
+  if (NSEqualRects(_bounds, aRect) == NO)
     {
-      (*invalidateImp)(self, invalidateSel);
-    }
-  _bounds = aRect;
-  [_boundsMatrix
-    setFrameOrigin: NSMakePoint(-_bounds.origin.x, -_bounds.origin.y)];
-  [self _updateBoundsMatrix];
+      if (_coordinates_valid)
+        {
+          (*invalidateImp)(self, invalidateSel);
+        }
+      _bounds = aRect;
+      [_boundsMatrix
+        setFrameOrigin: NSMakePoint(-_bounds.origin.x, -_bounds.origin.y)];
+      [self _updateBoundsMatrix];
 
-  if (_post_bounds_changes)
-    {
-      [nc postNotificationName: NSViewBoundsDidChangeNotification
-	  object: self];
+      if (_post_bounds_changes)
+        {
+          [nc postNotificationName: NSViewBoundsDidChangeNotification
+              object: self];
+        }
     }
 }
 
 - (void) setBoundsOrigin: (NSPoint)newOrigin
 {
-  if (_coordinates_valid)
+  if (NSEqualPoints(_bounds.origin, newOrigin) == NO)
     {
-      (*invalidateImp)(self, invalidateSel);
-    }
-  _bounds.origin = newOrigin;
-  [_boundsMatrix setFrameOrigin: NSMakePoint(-newOrigin.x, -newOrigin.y)];
+      if (_coordinates_valid)
+        {
+          (*invalidateImp)(self, invalidateSel);
+        }
+      _bounds.origin = newOrigin;
+      [_boundsMatrix setFrameOrigin: NSMakePoint(-newOrigin.x, -newOrigin.y)];
 
-  if (_post_bounds_changes)
-    {
-      [nc postNotificationName: NSViewBoundsDidChangeNotification
-	  object: self];
+      if (_post_bounds_changes)
+        {
+          [nc postNotificationName: NSViewBoundsDidChangeNotification
+              object: self];
+        }
     }
 }
 
@@ -1253,41 +1285,49 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       NSWarnMLog(@"given negative height", 0);
       newSize.height = 0;
     }
-  if (_coordinates_valid)
+  if (NSEqualSizes(_bounds.size, newSize) == NO)
     {
-      (*invalidateImp)(self, invalidateSel);
-    }
+      if (_coordinates_valid)
+        {
+          (*invalidateImp)(self, invalidateSel);
+        }
 
-  _bounds.size = newSize;
-  [self _updateBoundsMatrix];
+      _bounds.size = newSize;
+      [self _updateBoundsMatrix];
 
-  if (_post_bounds_changes)
-    {
-      [nc postNotificationName: NSViewBoundsDidChangeNotification
-	  object: self];
+      if (_post_bounds_changes)
+        {
+          [nc postNotificationName: NSViewBoundsDidChangeNotification
+              object: self];
+        }
     }
 }
 
 - (void) setBoundsRotation: (float)angle
 {
-  NSAffineTransform *matrix;
+  float oldAngle = [_boundsMatrix rotationAngle];
 
-  if (_coordinates_valid)
+  if (angle != oldAngle)
     {
-      (*invalidateImp)(self, invalidateSel);
-    }
-  [_boundsMatrix rotateByDegrees: angle - [_boundsMatrix rotationAngle]];
-  _is_rotated_from_base = _is_rotated_or_scaled_from_base = YES;
-  // Adjust bounds
-  matrix = [_boundsMatrix copy];
-  [matrix invert];
-  [matrix boundingRectFor: _frame result: &_bounds];
-  RELEASE(matrix);
+      NSAffineTransform *matrix;
 
-  if (_post_bounds_changes)
-    {
-      [nc postNotificationName: NSViewBoundsDidChangeNotification
-	  object: self];
+      if (_coordinates_valid)
+        {
+          (*invalidateImp)(self, invalidateSel);
+        }
+      [_boundsMatrix rotateByDegrees: angle - oldAngle];
+      _is_rotated_from_base = _is_rotated_or_scaled_from_base = YES;
+      // Adjust bounds
+      matrix = [_boundsMatrix copy];
+      [matrix invert];
+      [matrix boundingRectFor: _frame result: &_bounds];
+      RELEASE(matrix);
+
+      if (_post_bounds_changes)
+        {
+          [nc postNotificationName: NSViewBoundsDidChangeNotification
+              object: self];
+        }
     }
 }
 
@@ -1394,7 +1434,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 
 /* Helper for -convertRect:fromView: and -convertRect:toView:. */
-static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
+static NSRect
+convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
 					  NSAffineTransform *matrix2)
 {
   NSRect r;
@@ -3580,7 +3621,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 		forType: NSPostScriptPboardType];
 }
 
-- (NSData *)dataWithPDFInsideRect:(NSRect)aRect
+- (NSData *) dataWithPDFInsideRect: (NSRect)aRect
 {
   NSMutableData *data = [NSMutableData data];
   
@@ -3596,8 +3637,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     }
 }
 
-- (void)writePDFInsideRect:(NSRect)aRect 
-	      toPasteboard:(NSPasteboard *)pboard
+- (void) writePDFInsideRect: (NSRect)aRect 
+	       toPasteboard: (NSPasteboard *)pboard
 {
   NSData *data = [self dataWithPDFInsideRect: aRect];
 
@@ -3606,7 +3647,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	    forType: NSPDFPboardType];
 }
 
-- (NSString *)printJobTitle
+- (NSString *) printJobTitle
 {
   id doc;
   NSString *title;
@@ -3994,8 +4035,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   _visibleRect = _bounds;
 }
 
-- (void)beginPageInRect:(NSRect)aRect 
-	    atPlacement:(NSPoint)location
+- (void) beginPageInRect: (NSRect)aRect 
+	     atPlacement: (NSPoint)location
 {
   int nup;
   NSRect bounds;
@@ -4055,7 +4096,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   [ctxt endSheet];
 }
 
-- (void)endDocument
+- (void) endDocument
 {
   int first, last, current, pages;
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
@@ -4486,7 +4527,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
  *     [NSView +defaultMenu] and [NSView -menu].
  * </p>
  */
-- (NSMenu *)menuForEvent:(NSEvent *)theEvent
+- (NSMenu *)menuForEvent: (NSEvent *)theEvent
 {
   return [self menu];
 }
