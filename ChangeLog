@@ -1,3 +1,10 @@
+2007-06-22 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSView.m: When setting frame and bounds, refrain from
+	doing anything if the values set are the same as the of values.
+	When setting frame size or rotation, update the bounds too (attempt
+	to fix bug #20057).
+
 2007-06-18 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSAttributedString.h: Add new MacOSX methods and 
