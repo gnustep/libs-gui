@@ -1,3 +1,11 @@
+2007-06-23 10:43-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/AppKit/NSObjectController.h
+	* Source/NSObjectController.m: Changed "class" to "aClass" to 
+	avoid issues with ObjC++ compilation in both the header and the
+	.m file for consistency.  This change was suggested by Rob Burns
+	and he provided a short patch via IRC.
+
 2007-06-22 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSView.m: When setting frame and bounds, refrain from

@@ -99,9 +99,9 @@
   return _object_class;
 }
 
-- (void) setObjectClass: (Class)class
+- (void) setObjectClass: (Class)aClass
 {
-  _object_class = class;
+  _object_class = aClass;
 }
 
 - (id) newObject
