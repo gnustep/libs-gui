@@ -42,14 +42,15 @@
 @class NSMutableArray;
 @class NSString;
 
-@class NSWindow;
-@class NSPasteboard;
-@class NSView;
+@class NSBitmapImageRep;
 @class NSClipView;
-@class NSImage;
 @class NSCursor;
-@class NSScrollView;
+@class NSImage;
 @class NSMenu;
+@class NSPasteboard;
+@class NSScrollView;
+@class NSView;
+@class NSWindow;
 
 typedef int NSTrackingRectTag;
 typedef int NSToolTipTag;
@@ -162,8 +163,8 @@ typedef enum _NSFocusRingType {
  */
 - (void) addSubview: (NSView*)aView;
 - (void) addSubview: (NSView*)aView
-	 positioned: (NSWindowOrderingMode)place
-	 relativeTo: (NSView*)otherView;
+         positioned: (NSWindowOrderingMode)place
+         relativeTo: (NSView*)otherView;
 - (NSView*) ancestorSharedWithView: (NSView*)aView;
 - (BOOL) isDescendantOf: (NSView*)aView;
 - (NSView*) opaqueAncestor;
@@ -173,7 +174,7 @@ typedef enum _NSFocusRingType {
 - (void) removeSubview: (NSView*)aView;
 #endif
 - (void) replaceSubview: (NSView*)oldView
-		   with: (NSView*)newView;
+                   with: (NSView*)newView;
 - (void) sortSubviewsUsingFunction: (int (*)(id ,id ,void*))compare
 			   context: (void*)context;
 - (NSArray*) subviews;
@@ -281,6 +282,10 @@ typedef enum _NSFocusRingType {
 - (void) displayIfNeededInRectIgnoringOpacity: (NSRect)aRect;
 - (void) displayRect: (NSRect)aRect;
 - (void) displayRectIgnoringOpacity: (NSRect)aRect;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (void) displayRectIgnoringOpacity: (NSRect)aRect 
+                          inContext: (NSGraphicsContext *)context;
+#endif
 - (BOOL) needsDisplay;
 - (void) setNeedsDisplay: (BOOL)flag;
 - (void) setNeedsDisplayInRect: (NSRect)invalidRect;
@@ -303,6 +308,11 @@ typedef enum _NSFocusRingType {
 - (NSRect) visibleRect;
 - (BOOL) canDraw;
 - (BOOL) shouldDrawColor;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (NSBitmapImageRep *) bitmapImageRepForCachingDisplayInRect: (NSRect)rect;
+- (void) cacheDisplayInRect: (NSRect)rect 
+           toBitmapImageRep: (NSBitmapImageRep *)bitmap;
+#endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (BOOL) wantsDefaultClipping;
 - (BOOL) needsToDrawRect: (NSRect)aRect;
@@ -365,6 +375,9 @@ typedef enum _NSFocusRingType {
                         slideBack: (BOOL)slideBack
                             event: (NSEvent *)theEvent;
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (NSArray *) registeredDraggedTypes;
+#endif
 
 /**
  * Adds a cursor rectangle.  This provides for automatic update of the
@@ -377,7 +390,7 @@ typedef enum _NSFocusRingType {
  * visible rectangle.
  */
 - (void) addCursorRect: (NSRect)aRect
-		cursor: (NSCursor*)anObject;
+                cursor: (NSCursor*)anObject;
 
 /**
  * Removes all the cursor rectancles which have been set up for the
@@ -393,7 +406,7 @@ typedef enum _NSFocusRingType {
  * rectangle and cursor.
  */
 - (void) removeCursorRect: (NSRect)aRect
-		   cursor: (NSCursor*)anObject;
+                   cursor: (NSCursor*)anObject;
 
 /** <override-subclass/>
  * This is called to establish a new set of cursor rectangles whenever
@@ -408,8 +421,8 @@ typedef enum _NSFocusRingType {
  * Tool Tips
  */
 - (NSToolTipTag) addToolTipRect: (NSRect)aRect 
-			  owner: (id)anObject 
-		       userData: (void *)data;
+                          owner: (id)anObject 
+                       userData: (void *)data;
 - (void) removeAllToolTips;
 - (void) removeToolTip: (NSToolTipTag)tag;
 - (void) setToolTip: (NSString *)string;
@@ -437,9 +450,9 @@ typedef enum _NSFocusRingType {
  * if it is NO then the first event generated will be a mouse entry.
  */
 - (NSTrackingRectTag) addTrackingRect: (NSRect)aRect
-				owner: (id)anObject
-			     userData: (void*)data
-			 assumeInside: (BOOL)flag;
+                                owner: (id)anObject
+                             userData: (void*)data
+                         assumeInside: (BOOL)flag;
 
 /*
  * Scrolling
@@ -449,12 +462,12 @@ typedef enum _NSFocusRingType {
 - (NSScrollView*) enclosingScrollView;
 - (void) scrollPoint: (NSPoint)aPoint;
 - (void) scrollRect: (NSRect)aRect
-		 by: (NSSize)delta;
+                 by: (NSSize)delta;
 - (BOOL) scrollRectToVisible: (NSRect)aRect;
 
 - (void) reflectScrolledClipView: (NSClipView*)aClipView;
 - (void) scrollClipView: (NSClipView*)aClipView
-		toPoint: (NSPoint)aPoint;
+                toPoint: (NSPoint)aPoint;
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 /*
@@ -467,7 +480,7 @@ typedef enum _NSFocusRingType {
 /*
  * Aiding Event Handling
  */
--(BOOL) needsPanelToBecomeKey;
+- (BOOL) needsPanelToBecomeKey;
 - (void) setNextKeyView: (NSView*)aView;
 - (NSView*) nextKeyView;
 - (NSView*) nextValidKeyView;
@@ -485,28 +498,28 @@ typedef enum _NSFocusRingType {
 - (void) print: (id)sender;
 - (NSData*) dataWithEPSInsideRect: (NSRect)aRect;
 - (void) writeEPSInsideRect: (NSRect)rect
-	       toPasteboard: (NSPasteboard*)pasteboard;
+               toPasteboard: (NSPasteboard*)pasteboard;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
-- (NSData *)dataWithPDFInsideRect:(NSRect)aRect;
-- (void)writePDFInsideRect:(NSRect)aRect 
-	      toPasteboard:(NSPasteboard *)pboard;
-- (NSString *)printJobTitle;
+- (NSData *) dataWithPDFInsideRect: (NSRect)aRect;
+- (void) writePDFInsideRect: (NSRect)aRect 
+               toPasteboard: (NSPasteboard *)pboard;
+- (NSString *) printJobTitle;
 #endif
 
 /*
  * Pagination
  */
 - (void) adjustPageHeightNew: (float*)newBottom
-			 top: (float)oldTop
-		      bottom: (float)oldBottom
-		       limit: (float)bottomLimit;
+                         top: (float)oldTop
+                      bottom: (float)oldBottom
+                       limit: (float)bottomLimit;
 - (void) adjustPageWidthNew: (float*)newRight
-		       left: (float)oldLeft
-		      right: (float)oldRight
-		      limit: (float)rightLimit;
+                       left: (float)oldLeft
+                      right: (float)oldRight
+                      limit: (float)rightLimit;
 - (float) heightAdjustLimit;
 - (BOOL) knowsPagesFirst: (int*)firstPageNum
-		    last: (int*)lastPageNum;
+                    last: (int*)lastPageNum;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (BOOL) knowsPageRange: (NSRange*)range;
 #endif

@@ -1145,11 +1145,12 @@ scaleRect(NSRect rect, double scale)
     }
 
   /* Do the actual drawing */
-  [self displayRectIgnoringOpacity: pageRect];
+  [self displayRectIgnoringOpacity: pageRect inContext: ctxt];
 
   /* End a logical page */
-  // Balance gsave in beginPageInRect:
+  // FIXME: Attempt to get the coordinates of the page border correct.
   DPSgrestore(ctxt);
+  DPSgsave(ctxt);
   [self drawPageBorderWithSize: info.paperBounds.size];
   [self endPage];
 

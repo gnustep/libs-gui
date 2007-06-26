@@ -105,7 +105,7 @@
   [_view beginPageInRect: _rect 
              atPlacement: NSMakePoint(0,0)];
              
-  [_view displayRectIgnoringOpacity: _rect];
+  [_view displayRectIgnoringOpacity: _rect inContext: [self context]];
 
   [_view endPage];
   [_view endDocument];

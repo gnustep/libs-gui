@@ -54,6 +54,7 @@
 #include "AppKit/NSAffineTransform.h"
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSBezierPath.h"
+#include "AppKit/NSBitmapImageRep.h"
 #include "AppKit/NSCursor.h"
 #include "AppKit/NSDocumentController.h"
 #include "AppKit/NSDocument.h"
@@ -291,63 +292,63 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       _coordinates_valid = YES;
       if (!_window)
-	{
-	  _visibleRect = NSZeroRect;
-	  [_matrixToWindow makeIdentityMatrix];
-	  [_matrixFromWindow makeIdentityMatrix];
-	}
+        {
+          _visibleRect = NSZeroRect;
+          [_matrixToWindow makeIdentityMatrix];
+          [_matrixFromWindow makeIdentityMatrix];
+        }
       if (!_super_view)
-	{
-	  _visibleRect = _bounds;
-	  [_matrixToWindow makeIdentityMatrix];
-	  [_matrixFromWindow makeIdentityMatrix];
-	}
+        {
+          _visibleRect = _bounds;
+          [_matrixToWindow makeIdentityMatrix];
+          [_matrixFromWindow makeIdentityMatrix];
+        }
       else
-	{
-	  NSRect		superviewsVisibleRect;
-	  BOOL			wasFlipped = _super_view->_rFlags.flipped_view;
-	  NSAffineTransform	*pMatrix = [_super_view _matrixToWindow];
- 	  NSAffineTransformStruct     ts = [pMatrix transformStruct];
+        {
+          NSRect		superviewsVisibleRect;
+          BOOL			wasFlipped = _super_view->_rFlags.flipped_view;
+          NSAffineTransform	*pMatrix = [_super_view _matrixToWindow];
+          NSAffineTransformStruct     ts = [pMatrix transformStruct];
  
- 	  /* prepend translation */
- 	  ts.tX = NSMinX(_frame) * ts.m11 + NSMinY(_frame) * ts.m21 + ts.tX;
- 	  ts.tY = NSMinX(_frame) * ts.m12 + NSMinY(_frame) * ts.m22 + ts.tY;
-	  [_matrixToWindow setTransformStruct: ts];
+          /* prepend translation */
+          ts.tX = NSMinX(_frame) * ts.m11 + NSMinY(_frame) * ts.m21 + ts.tX;
+          ts.tY = NSMinX(_frame) * ts.m12 + NSMinY(_frame) * ts.m22 + ts.tY;
+          [_matrixToWindow setTransformStruct: ts];
  
- 	  /* prepend rotation */
- 	  if (_frameMatrix != nil)
-	    {
-	      (*preImp)(_matrixToWindow, preSel, _frameMatrix);
-	    }
+          /* prepend rotation */
+          if (_frameMatrix != nil)
+            {
+              (*preImp)(_matrixToWindow, preSel, _frameMatrix);
+            }
  
-	  if (_rFlags.flipped_view != wasFlipped)
-	    {
-	      /*
-	       * The flipping process must result in a coordinate system that
-	       * exactly overlays the original.	 To do that, we must translate
-	       * the origin by the height of the view.
-	       */
- 	      ts = [flip transformStruct];
-	      ts.tY = _frame.size.height;
-	      [flip setTransformStruct: ts];
-	      (*preImp)(_matrixToWindow, preSel, flip);
-	    }
-	  (*preImp)(_matrixToWindow, preSel, _boundsMatrix);
- 	  ts = [_matrixToWindow transformStruct];
-	  [_matrixFromWindow setTransformStruct: ts];
-	  [_matrixFromWindow invert];
+          if (_rFlags.flipped_view != wasFlipped)
+            {
+              /*
+               * The flipping process must result in a coordinate system that
+               * exactly overlays the original.	 To do that, we must translate
+               * the origin by the height of the view.
+               */
+              ts = [flip transformStruct];
+              ts.tY = _frame.size.height;
+              [flip setTransformStruct: ts];
+              (*preImp)(_matrixToWindow, preSel, flip);
+            }
+          (*preImp)(_matrixToWindow, preSel, _boundsMatrix);
+          ts = [_matrixToWindow transformStruct];
+          [_matrixFromWindow setTransformStruct: ts];
+          [_matrixFromWindow invert];
 
-	  superviewsVisibleRect = [self convertRect: [_super_view visibleRect]
-					   fromView: _super_view];
+          superviewsVisibleRect = [self convertRect: [_super_view visibleRect]
+                                        fromView: _super_view];
 
-	  _visibleRect = NSIntersectionRect(superviewsVisibleRect, _bounds);
-	}
+          _visibleRect = NSIntersectionRect(superviewsVisibleRect, _bounds);
+        }
       if (_rFlags.has_tooltips != 0)
         {
-	  GSToolTips	*tt = [GSToolTips tipsForView: self];
+          GSToolTips	*tt = [GSToolTips tipsForView: self];
 
-	  [tt rebuild];
-	}
+          [tt rebuild];
+        }
     }
 }
 
@@ -359,19 +360,40 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       unsigned	count = [_sub_views count];
 
       if (count > 0)
-	{
-	  unsigned	i;
-	  NSView	*array[count];
+        {
+          unsigned	i;
+          NSView	*array[count];
 
-	  [_sub_views getObjects: array];
-	  for (i = 0; i < count; ++i)
-	    {
-	      [array[i] _viewDidMoveToWindow];
-	    }
-	}
+          [_sub_views getObjects: array];
+          for (i = 0; i < count; ++i)
+            {
+              [array[i] _viewDidMoveToWindow];
+            }
+        }
     }
 }
 
+/*
+ * Extend in super view covered by the frame of a view.
+ * When the frame is rotated, this is different from the frame.
+ */
+- (NSRect) _frameExtend
+{
+  NSRect frame = _frame;
+              
+  if (_frameMatrix != nil)
+    {
+      NSRect r;
+
+      r.origin = NSZeroPoint;
+      r.size = frame.size;
+      [_frameMatrix boundingRectFor: r result: &r];
+      frame = NSOffsetRect(r, NSMinX(frame),
+                           NSMinY(frame));
+    }
+
+  return frame;
+}
 
 /*
  * Class methods
@@ -2034,6 +2056,35 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
     }
 }
 
+/*
+ * The following display* methods work based on these invariants:
+ * - When a view is marked as needing display, all views above it 
+ *   in the hierarchy are marked as well.
+ * - When a view has an invalid rectangle, all views above it up 
+ *   to the next opaque view also include this invalid rectangle.
+ *
+ * After drawing an area in a view give, subviews a chance to draw 
+ * there too.
+ * When drawing a non-opaque subview we need to make sure any area
+ * we draw in has been drawn by the opaque superview as well.
+ *
+ * When drawing the invalid area of a view, we need to make sure 
+ * that invalid areas in opaque subviews get drawn as well. These 
+ * areas will not be included in the invalid area of the view.
+ *
+ * IfNeeded means we only draw if the view is marked as needing display
+ * and will only draw in the _invalidRect of this view and that of all 
+ * the opaque subviews. For non-opaque subviews we need to draw where 
+ * ever a superview has already drawn.
+ * 
+ * InRect means we will only draw in this rectangle. If non is given the
+ * visibleRect gets used.
+ *
+ * IgnoringOpacity means we start drawing at the current view. Otherwise 
+ * we go up to the next opaque view.
+ *
+ */
+
 - (void) display
 {
   [self displayRect: [self visibleRect]];
@@ -2043,44 +2094,7 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
 {
   if (_rFlags.needs_display == YES)
     {
-      if ([self isOpaque] == YES)
-        {
-          [self displayIfNeededIgnoringOpacity];
-        }
-      else
-	{
-	  NSView	*firstOpaque = [self opaqueAncestor];
-	  NSRect	rect;
-
-	  if (_coordinates_valid == NO)
-	    {
-	      [self _rebuildCoordinates];
-	    }
-	  rect = NSIntersectionRect(_invalidRect, _visibleRect);
-	  rect = [firstOpaque convertRect: rect  fromView: self];
-	  if (NSIsEmptyRect(rect) == NO)
-	    {
-	      [firstOpaque displayIfNeededInRectIgnoringOpacity: rect];
-	    }
-	  /*
-	   * If we still need display after displaying the invalid rectangle,
-	   * display any subviews that need display.
-	   */ 
-	  if (_rFlags.needs_display == YES)
-	    {
-	      NSEnumerator	*enumerator = [_sub_views objectEnumerator];
-	      NSView		*sub;
-
-	      while ((sub = [enumerator nextObject]) != nil)
-		{
-		  if (sub->_rFlags.needs_display)
-		    {
-		      [sub displayIfNeededIgnoringOpacity];
-		    }
-		}
-	      _rFlags.needs_display = NO;
-	    }
-	}
+      [self displayIfNeededInRect: [self visibleRect]];
     }
 }
 
@@ -2088,35 +2102,7 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
 {
   if (_rFlags.needs_display == YES)
     {
-      NSRect	rect;
-
-      if (_coordinates_valid == NO)
-        {
-          [self _rebuildCoordinates];
-        }
-      rect = NSIntersectionRect(_invalidRect, _visibleRect);
-      if (NSIsEmptyRect(rect) == NO)
-        {
-          [self displayIfNeededInRectIgnoringOpacity: rect];
-        }
-      /*
-       * If we still need display after displaying the invalid rectangle,
-       * display any subviews that need display.
-       */ 
-      if (_rFlags.needs_display == YES)
-        {
-          NSEnumerator	*enumerator = [_sub_views objectEnumerator];
-          NSView	*sub;
-          
-          while ((sub = [enumerator nextObject]) != nil)
-            {
-              if (sub->_rFlags.needs_display)
-                {
-                  [sub displayIfNeededIgnoringOpacity];
-                }
-            }
-          _rFlags.needs_display = NO;
-        }
+      [self displayIfNeededInRectIgnoringOpacity: [self visibleRect]];
     }
 }
 
@@ -2125,131 +2111,72 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
   if (_rFlags.needs_display == YES)
     {
       if ([self isOpaque] == YES)
-	{
-	  [self displayIfNeededInRectIgnoringOpacity: aRect];
-	}
+        {
+          [self displayIfNeededInRectIgnoringOpacity: aRect];
+        }
       else
-	{
-	  NSView	*firstOpaque = [self opaqueAncestor];
-	  NSRect	rect;
+        {
+          NSView *firstOpaque = [self opaqueAncestor];
 
-	  rect = [firstOpaque convertRect: aRect fromView: self];
-	  [firstOpaque displayIfNeededInRectIgnoringOpacity: rect];
-	}
+          aRect = [firstOpaque convertRect: aRect fromView: self];
+          [firstOpaque displayIfNeededInRectIgnoringOpacity: aRect];
+        }
     }
 }
 
 - (void) displayIfNeededInRectIgnoringOpacity: (NSRect)aRect
 {
-  if (![self canDraw])
-    {
-      return;
-    }
   if (_rFlags.needs_display == YES)
     {
-      BOOL	subviewNeedsDisplay = NO;
-      NSRect	neededRect;
-      NSRect	redrawRect;
-
-      [_window disableFlushWindow];
-      if (_coordinates_valid == NO)
-	{
-	  [self _rebuildCoordinates];
-	}
-      aRect = NSIntersectionRect(aRect, _visibleRect);
-      redrawRect = NSIntersectionRect(aRect, _invalidRect);
-      neededRect = NSIntersectionRect(_visibleRect, _invalidRect);
-
-      if (NSIsEmptyRect(redrawRect) == NO)
-	{
-	  [self lockFocusInRect: redrawRect];
-	  [self drawRect: redrawRect];
-	  [self unlockFocusNeedsFlush: YES];
-	}
-      if (_rFlags.has_subviews == YES)
-	{
-	  unsigned	count = [_sub_views count];
-
-	  if (count > 0)
-	    {
-	      NSView	*array[count];
-	      unsigned	i;
-
-	      [_sub_views getObjects: array];
-
-	      for (i = 0; i < count; i++)
-		{
-		  NSRect	isect;
-		  NSView	*subview = array[i];
-		  NSRect	subviewFrame = subview->_frame;
-		  BOOL		intersectCalculated = NO;
-
-		  if (subview->_frameMatrix) // assume rotation
-		    {
-		      NSRect r;
-
-		      r.origin = NSZeroPoint;
-		      r.size = subviewFrame.size;
-		      [subview->_frameMatrix boundingRectFor: r result: &r];
-		      subviewFrame = NSOffsetRect(r, NSMinX(subviewFrame),
-			NSMinY(subviewFrame));
-		    }
-
-		  /*
-		   * Having drawn ourself into the rect, we must make sure that
-		   * subviews overlapping the area are redrawn.
-		   */
-		  isect = NSIntersectionRect(redrawRect, subviewFrame);
-		  if (NSIsEmptyRect(isect) == NO)
-		    {
-		      isect = [subview convertRect: isect
-					  fromView: self];
-		      intersectCalculated = YES;
-		      /*
-		       * hack the ivars of the subview directly for speed.
-		       */
-		      subview->_rFlags.needs_display = YES;
-		      subview->_invalidRect = NSUnionRect(subview->_invalidRect,
-			    isect);
-		    }
-
-		  if (subview->_rFlags.needs_display == YES)
-		    {
-		      if (intersectCalculated == NO
-			|| NSEqualRects(aRect, redrawRect) == NO)
-			{
-			  isect = NSIntersectionRect(aRect, subviewFrame);
-			  isect = [subview convertRect: isect
-					      fromView: self];
-			}
-		      [subview displayIfNeededInRectIgnoringOpacity: isect];
-		      if (subview->_rFlags.needs_display == YES)
-			{
-			  subviewNeedsDisplay = YES;
-			}
-		    }
-		}
-	    }
-	}
+      NSRect rect;
+        
+      /*
+       * Restrict the drawing of self onto the invalid rectangle.
+       */
+      rect = NSIntersectionRect(aRect, _invalidRect);
+      [self displayRectIgnoringOpacity: rect];
 
       /*
-       * If the rect we displayed contains the _invalidRect or _visibleRect
-       * then we can empty _invalidRect.
-       * If all subviews have been fully displayed, we can also turn off the
-       * 'needs_display' flag.
-       */
-      if (NSEqualRects(aRect, NSUnionRect(neededRect, aRect)) == YES)
-	{
-	  _invalidRect = NSZeroRect;
-	  _rFlags.needs_display = subviewNeedsDisplay;
-	}
-      if (_rFlags.needs_display == YES
-	&& NSEqualRects(aRect, NSUnionRect(_visibleRect, aRect)) == YES)
-	{
-	  _rFlags.needs_display = NO;
-	}
-      [_window enableFlushWindow];
-      [_window flushWindowIfNeeded];
+       * If we still need display after displaying the invalid rectangle,
+       * this means, some subviews still need to display. For opaque subviews
+       * there invalid rectangle may even overlap the original aRect.
+       * Display any subview that need display.
+       */ 
+      if (_rFlags.needs_display == YES)
+        {
+          NSEnumerator *enumerator = [_sub_views objectEnumerator];
+          NSView *subview;
+          BOOL subviewNeedsDisplay = NO;
+         
+          while ((subview = [enumerator nextObject]) != nil)
+            {
+              if (subview->_rFlags.needs_display)
+                {
+                  NSRect subviewFrame = [subview _frameExtend];
+                  NSRect isect;
+              
+                  isect = NSIntersectionRect(aRect, subviewFrame);
+                  if (NSIsEmptyRect(isect) == NO)
+                    {
+                      isect = [subview convertRect: isect fromView: self];
+                      [subview displayIfNeededInRectIgnoringOpacity: isect];
+                    }
+
+                  if (subview->_rFlags.needs_display)
+                    {
+                      subviewNeedsDisplay = YES;
+                    }
+                }
+            }
+          /*
+           * Make sure our needs_display flag matches that of the subviews.
+           * Only set to NO when there is no _invalidRect.
+           */
+          if (NSIsEmptyRect(_invalidRect))
+            {
+              _rFlags.needs_display = subviewNeedsDisplay;
+            }
+        }
     }
 }
 
@@ -2275,113 +2202,123 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
 
 - (void) displayRectIgnoringOpacity: (NSRect)aRect
 {
-  BOOL		subviewNeedsDisplay = NO;
-  NSRect	neededRect;
+  [self displayRectIgnoringOpacity: aRect inContext: nil];
+}
+
+- (void) displayRectIgnoringOpacity: (NSRect)aRect 
+                          inContext: (NSGraphicsContext *)context
+{
+  NSGraphicsContext *wContext;
+  BOOL flush = NO;
+  BOOL subviewNeedsDisplay = NO;
 
   if (![self canDraw])
     {
       return;
     }
 
-  [_window disableFlushWindow];
-  if (_coordinates_valid == NO)
+  wContext = [_window graphicsContext];
+  if (context == nil)
     {
-      [self _rebuildCoordinates];
+      context = wContext;
     }
-  aRect = NSIntersectionRect(aRect, _visibleRect);
-  neededRect = NSIntersectionRect(_invalidRect, _visibleRect);
 
+  if (context == wContext)
+    {
+      NSRect neededRect;
+
+      flush = YES;
+      [_window disableFlushWindow];
+      if (_coordinates_valid == NO)
+        {
+          [self _rebuildCoordinates];
+        }
+      aRect = NSIntersectionRect(aRect, _visibleRect);
+      neededRect = NSIntersectionRect(_invalidRect, _visibleRect);
+  
+      /*
+       * If the rect we are going to display contains the _invalidRect
+       * then we can empty _invalidRect. Do this before the drawing, as drawRect: 
+       * may change this value.
+       * FIXME: If the drawn rectangle cuts of a complete part of the _invalidRect,
+       * we should try to reduce this.
+       */
+      if (NSEqualRects(aRect, NSUnionRect(neededRect, aRect)) == YES)
+        {
+          _invalidRect = NSZeroRect;
+          _rFlags.needs_display = NO;
+        }
+    }
+  
   if (NSIsEmptyRect(aRect) == NO)
     {
       /*
        * Now we draw this view.
        */
-      [self lockFocusInRect: aRect];
+      [self _lockFocusInContext: context inRect: aRect];
       [self drawRect: aRect];
-      [self unlockFocusNeedsFlush: YES];
-    }
-
-  if (_rFlags.has_subviews == YES)
-    {
-      unsigned		count = [_sub_views count];
-
-      if (count > 0)
-	{
-	  NSView	*array[count];
-	  unsigned	i;
-
-	  [_sub_views getObjects: array];
-
-	  for (i = 0; i < count; ++i)
-	    {
-	      NSView	*subview = array[i];
-	      NSRect	subviewFrame = subview->_frame;
-	      NSRect	isect;
-	      BOOL	intersectCalculated = NO;
-
-	      if (subview->_frameMatrix != nil)
-		{
-		  NSRect r;
-
-		  r.origin = NSZeroPoint;
-		  r.size = subviewFrame.size;
-		  [subview->_frameMatrix boundingRectFor: r result: &r];
-		  subviewFrame = NSOffsetRect(r, NSMinX(subviewFrame),
-		    NSMinY(subviewFrame));
-		}
-
-	      /*
-	       * Having drawn ourself into the rect, we must make sure that
-	       * subviews overlapping the area are redrawn.
-	       */
-	      isect = NSIntersectionRect(aRect, subviewFrame);
-	      if (NSIsEmptyRect(isect) == NO)
-		{
-		  isect = [subview convertRect: isect
-				      fromView: self];
-		  intersectCalculated = YES;
-		  /*
-		   * hack the ivars of the subview directly for speed.
-		   */
-		  subview->_rFlags.needs_display = YES;
-		  subview->_invalidRect = NSUnionRect(subview->_invalidRect,
-		    isect);
-		}
-
-	      if (subview->_rFlags.needs_display == YES)
-		{
-		  if (intersectCalculated == NO)
-		    {
-		      isect = [subview convertRect: isect
-					  fromView: self];
-		    }
-		  [subview displayIfNeededInRectIgnoringOpacity: isect];
-		  if (subview->_rFlags.needs_display == YES)
-		    {
-		      subviewNeedsDisplay = YES;
-		    }
-		}
-	    }
-	}
+      [self unlockFocusNeedsFlush: flush];
     }
 
   /*
-   * If the rect we displayed contains the _invalidRect or _visibleRect
-   * then we can empty _invalidRect.  If all subviews have been
-   * fully displayed, we can also turn off the 'needs_display' flag.
+   * Even when aRect is empty we need to loop over the subviews to see, 
+   * if there is anything left to draw.
    */
-  if (NSEqualRects(aRect, NSUnionRect(neededRect, aRect)) == YES)
+  if (_rFlags.has_subviews == YES)
     {
-      _invalidRect = NSZeroRect;
-      _rFlags.needs_display = subviewNeedsDisplay;
+      unsigned count = [_sub_views count];
+
+      if (count > 0)
+        {
+          NSView *array[count];
+          unsigned i;
+          
+          [_sub_views getObjects: array];
+
+          for (i = 0; i < count; ++i)
+            {
+              NSView *subview = array[i];
+              NSRect subviewFrame = [subview _frameExtend];
+              NSRect isect;
+              
+              /*
+               * Having drawn ourself into the rect, we must make sure that
+               * subviews overlapping the area are redrawn.
+               */
+              isect = NSIntersectionRect(aRect, subviewFrame);
+              if (NSIsEmptyRect(isect) == NO)
+                {
+                  isect = [subview convertRect: isect fromView: self];
+                  [subview displayRectIgnoringOpacity: isect inContext: context];
+                }
+              /*
+               * Is there still something to draw in the subview?
+               * This keeps the invariant that views further up are marked for redraw
+               * when ever a view further down needs to redraw.
+               */
+              if (subview->_rFlags.needs_display == YES)
+                {
+                  subviewNeedsDisplay = YES;
+                }
+            }
+        }
     }
-  if (_rFlags.needs_display == YES
-    && NSEqualRects(aRect, NSUnionRect(_visibleRect, aRect)) == YES)
+
+  if (context == wContext)
     {
-      _rFlags.needs_display = NO;
+      if (subviewNeedsDisplay)
+        {
+          /*
+           * If not all subviews have been fully displayed, we cannot turn off
+           * the 'needs_display' flag. This is to keep the invariant that when 
+           * a view is marked as needing to display, all its ancestors will be 
+           * marked too.
+           */
+          _rFlags.needs_display = YES;
+        }
+      [_window enableFlushWindow];
+      [_window flushWindowIfNeeded];
     }
-  [_window enableFlushWindow];
-  [_window flushWindowIfNeeded];
 }
 
 /**
@@ -2453,6 +2390,50 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
     }
 }
 
+- (NSBitmapImageRep *) bitmapImageRepForCachingDisplayInRect: (NSRect)rect
+{
+  NSBitmapImageRep *bitmap;
+  NSDictionary *dict;
+  int bps, spp, alpha;
+  NSString *space;
+  
+  dict = [_window deviceDescription];
+  bps = [[dict objectForKey: NSDeviceBitsPerSample] intValue];
+  if (bps == 0)
+    bps = 8;
+//  spp = [[dict objectForKey: @"SamplesPerPixel"] intValue];
+  spp = 4;
+//  alpha = [[dict objectForKey: @"HasAlpha"] intValue];
+  alpha = 1;
+  space = [dict objectForKey: NSDeviceColorSpaceName];
+
+  bitmap = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes: NULL
+                                     pixelsWide: rect.size.width
+                                     pixelsHigh: rect.size.height
+                                     bitsPerSample: bps
+                                     samplesPerPixel: spp
+                                     hasAlpha: (alpha) ? YES : NO
+                                     isPlanar: NO
+                                     colorSpaceName: space
+                                     bytesPerRow: 0
+                                     bitsPerPixel: 0];
+  [self cacheDisplayInRect: rect toBitmapImageRep: bitmap];
+  return bitmap;
+}
+
+- (void) cacheDisplayInRect: (NSRect)rect 
+           toBitmapImageRep: (NSBitmapImageRep *)bitmap
+{
+  NSDictionary *dict;
+  NSData *imageData;
+
+  dict = [GSCurrentContext() GSReadRect: rect];
+  imageData = RETAIN([dict objectForKey: @"Data"]);
+  // FIXME: Copy the image data to the bitmap
+  memcpy([bitmap bitmapData], [imageData bytes], [imageData length]);
+}
+
+
 extern NSThread *GSAppKitThread; /* TODO */
 
 /*
@@ -2489,8 +2470,8 @@ in the main thread.
   if (GSCurrentThread() != GSAppKitThread)
     {
       [self performSelectorOnMainThread: @selector(_setNeedsDisplay_real:)
-	withObject: n
-	waitUntilDone: NO];
+            withObject: n
+            waitUntilDone: NO];
     }
   else
     {
@@ -2519,14 +2500,14 @@ in the main thread.
       _rFlags.needs_display = YES;
       _invalidRect = invalidRect;
       if (firstOpaque == self)
-	{
-	  [_window setViewsNeedDisplay: YES];
-	}
+        {
+          [_window setViewsNeedDisplay: YES];
+        }
       else
-	{
-	  invalidRect = [firstOpaque convertRect: _invalidRect fromView: self];
-	  [firstOpaque setNeedsDisplayInRect: invalidRect];
-	}
+        {
+          invalidRect = [firstOpaque convertRect: _invalidRect fromView: self];
+          [firstOpaque setNeedsDisplayInRect: invalidRect];
+        }
     }
   /*
    * Must make sure that superviews know that we need display.
@@ -3548,6 +3529,11 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     }
 }
 
+- (NSArray *) registeredDraggedTypes
+{
+  return GSGetDragTypes(self);
+}
+
 - (BOOL) dragPromisedFilesOfTypes: (NSArray *)typeArray
                          fromRect: (NSRect)aRect
                            source: (id)sourceObject 
@@ -3887,6 +3873,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (void) drawPageBorderWithSize: (NSSize)borderSize
 {
+    NSFrameRect(NSMakeRect(0, 0, borderSize.width, borderSize.height));
 }
 
 - (void) drawSheetBorderWithSize: (NSSize)borderSize
@@ -3931,6 +3918,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
   NSGraphicsContext *ctxt = [printOp context];
   NSDictionary *dict = [[printOp printInfo] dictionary];
+
+  // Balance gsave in beginPageInRect:
+  DPSgrestore(ctxt);
 
   nup = [[dict objectForKey: NSPrintPagesPerSheet] intValue];
   if (nup > 1)
@@ -4036,7 +4026,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 }
 
 - (void) beginPageInRect: (NSRect)aRect 
-	     atPlacement: (NSPoint)location
+             atPlacement: (NSPoint)location
 {
   int nup;
   NSRect bounds;
@@ -4080,7 +4070,6 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       DPSscale(ctxt, scale, scale);
     }
 
-  // FIXME: This needs to be balanced explicitly
   DPSgsave(ctxt);
 
   /* Translate to placement */

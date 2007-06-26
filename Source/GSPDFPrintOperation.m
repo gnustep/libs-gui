@@ -92,13 +92,26 @@
 
 - (NSGraphicsContext*)createContext
 {
-  // FIXME
-  return nil;
+  NSMutableDictionary *info;
+
+  if (_context)
+    return _context;
+
+  info = [[self printInfo] dictionary];
+  
+  [info setObject: _path 
+           forKey: @"NSOutputFile"];
+  
+  [info setObject: NSGraphicsContextPDFFormat
+           forKey: NSGraphicsContextRepresentationFormatAttributeName];
+           
+  _context = RETAIN([NSGraphicsContext graphicsContextWithAttributes: info]);
+  return _context;
 }
 
 - (void) _print
 {
-  [_view displayRectIgnoringOpacity: _rect];
+  [_view displayRectIgnoringOpacity: _rect inContext: [self context]];
 }
 
 - (BOOL)deliverResult

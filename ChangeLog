@@ -1,3 +1,16 @@
+2007-06-26 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSView.h: Add new MacOSX methods.
+	* Source/NSView.m: Basic implementation of new MacOSX methods.
+	Rewrote all the display* methods to use the new method
+	[displayRectIgnoringOpacity:inContext] and made them more
+	consistent. Add some documentation for the display mechanism.
+	* Source/GSPDFPrintOperation.m (-_print),
+	* Source/GSEPSPrintOperation.m (-_print),
+	* Source/NSPrintOperation.m (NSView-_displayPageInRect:withInfo:): 
+	Use new method [NSView displayRectIgnoringOpacity:inContext:]. 
+	* Source/NSView.m (-endPage): Add DPSgrestore() call.
+
 2007-06-23 10:43-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/AppKit/NSObjectController.h
