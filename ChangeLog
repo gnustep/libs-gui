@@ -1,3 +1,10 @@
+2007-06-27 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSView.m (-setBoundsRotation:): Ignore the frame origin
+	when computing the bounds.
+	* Source/NSView.m (-drawPageBorderWithSize:): Remove test code
+	accidentally introduced in last change.
+
 2007-06-26 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSView.h: Add new MacOSX methods.

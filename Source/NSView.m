@@ -1001,9 +1001,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   if (_bounds.size.width == 0)
     {
       if (_frame.size.width == 0)
-	sx = 1;
+          sx = 1;
       else
-	sx = FLT_MAX;
+          sx = FLT_MAX;
     }
   else
     {
@@ -1013,9 +1013,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   if (_bounds.size.height == 0)
     {
       if (_frame.size.height == 0)
-	sy = 1;
+          sy = 1;
       else
-	sy = FLT_MAX;
+          sy = FLT_MAX;
     }
   else
     {
@@ -1332,7 +1332,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   if (angle != oldAngle)
     {
       NSAffineTransform *matrix;
-
+      NSRect frame = _frame;
+      
+      frame.origin = NSMakePoint(0, 0);
       if (_coordinates_valid)
         {
           (*invalidateImp)(self, invalidateSel);
@@ -1342,7 +1344,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       // Adjust bounds
       matrix = [_boundsMatrix copy];
       [matrix invert];
-      [matrix boundingRectFor: _frame result: &_bounds];
+      [matrix boundingRectFor: frame result: &_bounds];
       RELEASE(matrix);
 
       if (_post_bounds_changes)
@@ -3873,7 +3875,6 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (void) drawPageBorderWithSize: (NSSize)borderSize
 {
-    NSFrameRect(NSMakeRect(0, 0, borderSize.width, borderSize.height));
 }
 
 - (void) drawSheetBorderWithSize: (NSSize)borderSize
@@ -4211,13 +4212,13 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       NSView *nextKeyView = nil;
 
       if ([aDecoder containsValueForKey: @"NSFrame"])
-	{
-	  _frame = [aDecoder decodeRectForKey: @"NSFrame"];
-	}
+        {
+          _frame = [aDecoder decodeRectForKey: @"NSFrame"];
+        }
       else
-	{
-	  _frame = NSZeroRect;
-	}
+        {
+          _frame = NSZeroRect;
+        }
 
       _bounds.origin = NSZeroPoint;		// Set bounds rectangle
       _bounds.size = _frame.size;
@@ -4244,23 +4245,23 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       prevKeyView = [aDecoder decodeObjectForKey: @"NSPreviousKeyView"];
       nextKeyView = [aDecoder decodeObjectForKey: @"NSNextKeyView"];
       if (nextKeyView != nil)
-	{
-	  [self setNextKeyView: nextKeyView];
-	}
+        {
+          [self setNextKeyView: nextKeyView];
+        }
       if (prevKeyView != nil)
-	{
-	  [self setPreviousKeyView: prevKeyView];
-	}
+        {
+          [self setPreviousKeyView: prevKeyView];
+        }
       if ([aDecoder containsValueForKey: @"NSvFlags"])
-	{
-	  int vFlags = [aDecoder decodeIntForKey: @"NSvFlags"];
+        {
+          int vFlags = [aDecoder decodeIntForKey: @"NSvFlags"];
 	  
-	  // We are lucky here, Apple use the same constants
-	  // in the lower bits of the flags
-	  [self setAutoresizingMask: vFlags & 0x3F];
-	  [self setAutoresizesSubviews: ((vFlags & 0x100) == 0x100)];
-	  [self setHidden: ((vFlags & 0x80000000) == 0x80000000)];
-	}
+          // We are lucky here, Apple use the same constants
+          // in the lower bits of the flags
+          [self setAutoresizingMask: vFlags & 0x3F];
+          [self setAutoresizesSubviews: ((vFlags & 0x100) == 0x100)];
+          [self setHidden: ((vFlags & 0x80000000) == 0x80000000)];
+        }
 
       // iterate over subviews and put them into the view...
       subs = [aDecoder decodeObjectForKey: @"NSSubviews"];
