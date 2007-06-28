@@ -1881,11 +1881,15 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
        */
       if (_is_rotated_from_base)
         {
-          // When the view is rotated, more complex clipping is needed.
+          // When the view is rotated, we clip to the frame.
           NSAffineTransform *matrix;
-          NSBezierPath *bp = [NSBezierPath bezierPathWithRect: _frame];
+          NSRect frame = _frame;
+          NSBezierPath *bp;
+
+          frame.origin = NSMakePoint(0, 0);
+          bp = [NSBezierPath bezierPathWithRect: frame];
           
-          matrix = [_boundsMatrix copy];
+           matrix = [_boundsMatrix copy];
           [matrix invert];
           [bp transformUsingAffineTransform: matrix];
           [bp addClip];
@@ -1893,8 +1897,9 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
         }
       else
         { 
+          // FIXME: Should we use _bounds or visibleRect here?
           DPSrectclip(ctxt, NSMinX(rect), NSMinY(rect),
-		      NSWidth(rect), NSHeight(rect));
+                      NSWidth(rect), NSHeight(rect));
         }
     }
 

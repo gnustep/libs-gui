@@ -1,3 +1,8 @@
+2007-06-28 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSView.m (-_lockFocusInContext:inRect:): Ignore the frame
+	origin when computing the clip area.
+
 2007-06-27 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSView.m (-setBoundsRotation:): Ignore the frame origin
