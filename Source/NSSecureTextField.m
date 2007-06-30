@@ -30,22 +30,31 @@
 
 #include "config.h"
 #include <Foundation/NSException.h>
-#include "AppKit/NSSecureTextField.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSTextView.h"
-#include "AppKit/NSLayoutManager.h"
-#include "AppKit/NSTextContainer.h"
-#include "AppKit/NSWindow.h"
+
+#include "AppKit/NSAttributedString.h"
 #include "AppKit/NSEvent.h"
+#include "AppKit/NSFont.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSLayoutManager.h"
+#include "AppKit/NSSecureTextField.h"
+#include "AppKit/NSTextContainer.h"
+#include "AppKit/NSTextView.h"
+#include "AppKit/NSWindow.h"
 
 /* 'Secure' subclasses */
 @interface NSSecureTextView : NSTextView
-{}
+{
+}
+- (void) setEchosBullets:(BOOL)flag;
+- (BOOL) echosBullets;
 @end
 
 @interface GSSimpleSecureLayoutManager : NSLayoutManager
-{}
+{
+  BOOL _echosBullets;
+}
+- (void) setEchosBullets:(BOOL)flag;
+- (BOOL) echosBullets;
 @end
 
 @implementation NSSecureTextField
@@ -111,32 +120,97 @@
   _echosBullets = flag;
 }
 
+- (NSAttributedString *)_replacementAttributedString
+{
+  NSDictionary *attributes;
+  NSMutableString *string;
+  unsigned int length;
+  unsigned int i;
+
+  length = [[self stringValue] length];
+  string = [[NSMutableString alloc] initWithCapacity: length];
+  for (i = 0; i < length; i++)
+    {
+      [string appendString: @"*"];
+    }
+  AUTORELEASE(string);
+
+  attributes = [self _nonAutoreleasedTypingAttributes];
+  return AUTORELEASE([[NSAttributedString alloc] initWithString: string 
+                                                 attributes: attributes]);
+}
+
 - (void) drawInteriorWithFrame: (NSRect)cellFrame 
 			inView: (NSView *)controlView
 {
+  cellFrame = [self drawingRectForBounds: cellFrame];
+
   /* Draw background, then ... */ 
   if (_textfieldcell_draws_background)
     {
       if ([self isEnabled])
-	{
-	  [_background_color set];
-	}
+        {
+          [_background_color set];
+        }
       else
-	{
-	  [[NSColor controlBackgroundColor] set];
-	}
-      NSRectFill ([self drawingRectForBounds: cellFrame]);
+        {
+          [[NSColor controlBackgroundColor] set];
+        }
+      NSRectFill(cellFrame);
     }
-  /* .. do nothing.  */
+
+  if (_echosBullets)
+    {
+      // Add spacing between border and inside 
+      if (_cell.is_bordered || _cell.is_bezeled)
+        {
+          cellFrame.origin.x += 3;
+          cellFrame.size.width -= 6;
+          cellFrame.origin.y += 1;
+          cellFrame.size.height -= 2;
+        }
+
+      if (!_cell.is_disabled)
+        {
+          [self _drawAttributedText: [self _replacementAttributedString]
+                inFrame: cellFrame];
+        }
+      else
+        {
+          NSAttributedString *attrStr = [self _replacementAttributedString];
+          NSDictionary *attribs;
+          NSMutableDictionary *newAttribs;
+          
+          attribs = [attrStr attributesAtIndex: 0 
+                             effectiveRange: NULL];
+          newAttribs = [NSMutableDictionary 
+                           dictionaryWithDictionary: attribs];
+          [newAttribs setObject: [NSColor disabledControlTextColor]
+                      forKey: NSForegroundColorAttributeName];
+          
+          attrStr = [[NSAttributedString alloc]
+                        initWithString: [attrStr string]
+                        attributes: newAttribs];
+          [self _drawAttributedText: attrStr 
+                inFrame: cellFrame];
+          RELEASE(attrStr);
+        }
+    }
+  else
+    {
+      /* .. do nothing.  */
+    }
 }
 
 - (NSText *) setUpFieldEditorAttributes: (NSText *)textObject
 {
-  /* Replace the text object with a secure instance.  It's not shared.  */
-  textObject = [NSSecureTextView new];
-  AUTORELEASE (textObject);
+  NSSecureTextView *secureView;
 
-  return [super setUpFieldEditorAttributes: textObject];
+  /* Replace the text object with a secure instance.  It's not shared.  */
+  secureView = AUTORELEASE([[NSSecureTextView alloc] init]);
+
+  [secureView setEchosBullets: [self echosBullets]];
+  return [super setUpFieldEditorAttributes: secureView];
 }
 
 - (id) initWithCoder: (NSCoder *)decoder
@@ -163,11 +237,37 @@
 @end
 
 @implementation GSSimpleSecureLayoutManager
-- (void) drawGlyphsForGlyphRange: (NSRange)glyphRange
-			 atPoint: (NSPoint)containerOrigin
+
+- (BOOL) echosBullets
 {
-  /* Do nothing.  */
+  return _echosBullets;
 }
+
+- (void) setEchosBullets: (BOOL)flag
+{
+  _echosBullets = flag;
+}
+
+- (void) drawGlyphsForGlyphRange: (NSRange)glyphRange
+                         atPoint: (NSPoint)containerOrigin
+{
+  if ([self echosBullets])
+    {
+        /*
+          FIXME: Functionality not implemented.
+          This also doesn't eblong into this method, rather 
+          we should do the replacement during the glyph generation.
+          This gets currently done in [GSLayoutManager _generateGlyphsForRun:at:],
+          but should be done in an NSTypesetter subclass. Only with this in place
+          it seems possible to implement bullet echoing.
+         */
+    }
+  else
+    {
+      /* Do nothing.  */
+    }
+}
+
 @end
 
 @implementation NSSecureTextView
@@ -183,17 +283,22 @@
   /* Then, replace the layout manager with a
    * GSSimpleSecureLayoutManager.  */
   m = [[GSSimpleSecureLayoutManager alloc] init];
-  AUTORELEASE (m);
   [[self textContainer] replaceLayoutManager: m];
+  RELEASE(m);
 
   [self setFieldEditor: YES];
 
   return self;
 }
 
-- (void) copy: (id)sender
+- (BOOL) echosBullets
 {
-  /* Do nothing since copying from a NSSecureTextView is not permitted.  */
+  return [(GSSimpleSecureLayoutManager*)[self layoutManager] echosBullets];
+}
+
+- (void) setEchosBullets: (BOOL)flag
+{
+  [(GSSimpleSecureLayoutManager*)[self layoutManager] setEchosBullets: flag];
 }
 
 - (BOOL) writeSelectionToPasteboard: (NSPasteboard*)pboard
@@ -205,7 +310,7 @@
 }
 
 - (id) validRequestorForSendType: (NSString*) sendType
-		      returnType: (NSString*) returnType
+                      returnType: (NSString*) returnType
 {
   /* Return nil to indicate that no type can be sent to the pasteboard
    * for an object of this class.  */

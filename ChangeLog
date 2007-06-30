@@ -1,3 +1,8 @@
+2007-06-29 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSecureTextFieldCell (-drawInteriorWithFrame:): Add
+	some support for bullet echoing and a comment on the missing bits.
+
 2007-06-28 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSView.m (-_lockFocusInContext:inRect:): Ignore the frame
