@@ -1689,15 +1689,15 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
       id e, o;
 
       if (_autoresizes_subviews == NO || _is_rotated_from_base == YES)
-	return;
+          return;
 
       e = [_sub_views objectEnumerator];
       o = [e nextObject];
       while (o)
-	{
-	  [o resizeWithOldSuperviewSize: oldSize];
-	  o = [e nextObject];
-	}
+        {
+          [o resizeWithOldSuperviewSize: oldSize];
+          o = [e nextObject];
+        }
     }
 }
 
@@ -1905,7 +1905,9 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
        * than the bounds of the view. This prevents drawing outside
        * our bounds.
        */
-      if (_is_rotated_from_base)
+      // Normally the second test is not needed, it can differ only
+      // when the view is loaded from a NIB file.
+      if (_is_rotated_from_base && (_boundsMatrix != nil))
         {
           // When the view is rotated, we clip to the frame.
           NSAffineTransform *matrix;
@@ -1915,7 +1917,7 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
           frame.origin = NSMakePoint(0, 0);
           bp = [NSBezierPath bezierPathWithRect: frame];
           
-           matrix = [_boundsMatrix copy];
+          matrix = [_boundsMatrix copy];
           [matrix invert];
           [bp transformUsingAffineTransform: matrix];
           [bp addClip];
@@ -4180,15 +4182,15 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
       // add the autoresize flag.
       if (_autoresizes_subviews)
-	{
-	  vFlags |= 0x100;
-	}
+        {
+          vFlags |= 0x100;
+        }
 
       // add the hidden flag
       if (_is_hidden)
-	{
-	  vFlags |= 0x80000000;
-	}
+        {
+          vFlags |= 0x80000000;
+        }
       
       [aCoder encodeInt: vFlags 
 	      forKey: @"NSvFlags"];
@@ -4198,9 +4200,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       // content view for a window.
       //
       if (([[self window] contentView] != self) && _super_view != nil)
-	{
-	  [aCoder encodeObject: _super_view forKey: @"NSSuperview"];
-	}
+        {
+          [aCoder encodeObject: _super_view forKey: @"NSSuperview"];
+        }
     }
   else
     {
