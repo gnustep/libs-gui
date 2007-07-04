@@ -1,3 +1,8 @@
+2007-07-04 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextField.m (-isFlipped): Report the text field as
+	being flipped.
+
 2007-06-29 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSSecureTextFieldCell (-drawInteriorWithFrame:): Add

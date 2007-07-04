@@ -105,6 +105,11 @@ static Class textFieldCellClass;
   [super dealloc];
 }
 
+- (BOOL) isFlipped
+{
+  return YES;
+}
+
 /** <p>Returns whether the NSTextField is editable. By default a NSTextField
     is not editable.</p>
     <p>See Also: -setEditable: [NSCell-isEditable]</p>
