@@ -333,7 +333,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
               [flip setTransformStruct: ts];
               (*preImp)(_matrixToWindow, preSel, flip);
             }
-          (*preImp)(_matrixToWindow, preSel, _boundsMatrix);
+          if (_boundsMatrix != nil)
+            {
+              (*preImp)(_matrixToWindow, preSel, _boundsMatrix);
+            }
           ts = [_matrixToWindow transformStruct];
           [_matrixFromWindow setTransformStruct: ts];
           [_matrixFromWindow invert];
@@ -413,10 +416,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       invalidateSel = @selector(_invalidateCoordinates);
 
       preImp = (void (*)(NSAffineTransform*, SEL, NSAffineTransform*))
-		[matrixClass instanceMethodForSelector: preSel];
+          [matrixClass instanceMethodForSelector: preSel];
 
       invalidateImp = (void (*)(NSView*, SEL))
-		[self instanceMethodForSelector: invalidateSel];
+          [self instanceMethodForSelector: invalidateSel];
 
       flip = [matrixClass new];
       [flip setTransformStruct: ats];
@@ -467,9 +470,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   _bounds.origin = NSZeroPoint;		// Set bounds rectangle
   _bounds.size = _frame.size;
 
-  _boundsMatrix = [NSAffineTransform new];	// Map from superview to bounds
-  _matrixToWindow = [NSAffineTransform new];	// Map to window coordinates
-  _matrixFromWindow = [NSAffineTransform new];	// Map from window coordinates
+  //_frameMatrix = [NSAffineTransform new];    // Map fromsuperview to frame
+  //_boundsMatrix = [NSAffineTransform new];   // Map from superview to bounds
+  _matrixToWindow = [NSAffineTransform new];   // Map to window coordinates
+  _matrixFromWindow = [NSAffineTransform new]; // Map from window coordinates
 
   _sub_views = [NSMutableArray new];
   _tracking_rects = [NSMutableArray new];
@@ -599,7 +603,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   RELEASE(_matrixToWindow);
   RELEASE(_matrixFromWindow);
   TEST_RELEASE(_frameMatrix);
-  RELEASE(_boundsMatrix);
+  TEST_RELEASE(_boundsMatrix);
   TEST_RELEASE(_sub_views);
   if (_rFlags.has_tooltips != 0)
     {
@@ -1022,7 +1026,12 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       sy = _frame.size.height / _bounds.size.height;
     }
   
+  if (_boundsMatrix == nil)
+    {
+      _boundsMatrix = [NSAffineTransform new]; 
+    }
   [_boundsMatrix scaleTo: sx : sy];
+
   if (sx != 1 || sy != 1)
     {
       _is_rotated_or_scaled_from_base = YES;
@@ -1134,6 +1143,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
           _frame.size = newSize;
           _bounds.size.width  = _frame.size.width  * sx;
           _bounds.size.height = _frame.size.height * sy;
+          // FIXME: May need to update the bounds matrix.
         }
       else
         {
@@ -1167,7 +1177,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
           (*invalidateImp)(self, invalidateSel);
         }
 
-      [_frameMatrix setFrameRotation: angle];
+      [_frameMatrix rotateByDegrees: angle - oldAngle];
       _is_rotated_from_base = _is_rotated_or_scaled_from_base = YES;
 
       [self _updateBoundsMatrix];
@@ -1232,6 +1242,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
         }
       _bounds.size.width  = _bounds.size.width  / newSize.width;
       _bounds.size.height = _bounds.size.height / newSize.height;
+      // FIXME: This should also affect the _bounds.origin.
+      // I suggest implementing this method via a matrix multiplication
+      // on _boundsMatrix with a scaled matrix and getting the new 
+      // bounds from the matrix.
 
       _is_rotated_or_scaled_from_base = YES;
       
@@ -1263,7 +1277,14 @@ GSSetDragTypes(NSView* obj, NSArray *types)
         {
           (*invalidateImp)(self, invalidateSel);
         }
+      // FIXME: This is wrong, when bounds are rotated.
+      // In this case we should first rotate the new bounds and take 
+      // the result values.
       _bounds = aRect;
+      if (_boundsMatrix == nil)
+        {
+          _boundsMatrix = [NSAffineTransform new]; 
+        }
       [_boundsMatrix
         setFrameOrigin: NSMakePoint(-_bounds.origin.x, -_bounds.origin.y)];
       [self _updateBoundsMatrix];
@@ -1285,6 +1306,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
           (*invalidateImp)(self, invalidateSel);
         }
       _bounds.origin = newOrigin;
+      if (_boundsMatrix == nil)
+        {
+          _boundsMatrix = [NSAffineTransform new]; 
+        }
       [_boundsMatrix setFrameOrigin: NSMakePoint(-newOrigin.x, -newOrigin.y)];
 
       if (_post_bounds_changes)
@@ -1327,7 +1352,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) setBoundsRotation: (float)angle
 {
-  float oldAngle = [_boundsMatrix rotationAngle];
+  float oldAngle = [self boundsRotation];
 
   if (angle != oldAngle)
     {
@@ -1338,6 +1363,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       if (_coordinates_valid)
         {
           (*invalidateImp)(self, invalidateSel);
+        }
+      if (_boundsMatrix == nil)
+        {
+          _boundsMatrix = [NSAffineTransform new]; 
         }
       [_boundsMatrix rotateByDegrees: angle - oldAngle];
       _is_rotated_from_base = _is_rotated_or_scaled_from_base = YES;
@@ -1837,9 +1866,6 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
     }
   else
     {
-      NSAffineTransform *matrix;
-      matrix = [self _matrixToWindow];
-
       if (_gstate)
         {
           DPSsetgstate(ctxt, _gstate);
@@ -1855,7 +1881,7 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
           // This only works, when the context comes from the window
           DPSsetgstate(ctxt, window_gstate);
           DPSgsave(ctxt);
-          [matrix concat];
+          [[self _matrixToWindow] concat];
           
           /* Allow subclases to make other modifications */
           [self setUpGState];
@@ -4207,7 +4233,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
   // initialize these here, since they're needed in either case.
   //_frameMatrix = [NSAffineTransform new];     // Map fromsuperview to frame
-  _boundsMatrix = [NSAffineTransform new];    // Map fromsuperview to bounds
+  //_boundsMatrix = [NSAffineTransform new];    // Map fromsuperview to bounds
   _matrixToWindow = [NSAffineTransform new];  // Map to window coordinates
   _matrixFromWindow = [NSAffineTransform new];// Map from window coordinates
  
@@ -4227,8 +4253,6 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
       _bounds.origin = NSZeroPoint;		// Set bounds rectangle
       _bounds.size = _frame.size;
-      
-      [_frameMatrix setFrameOrigin: _frame.origin];
       
       _sub_views = [NSMutableArray new];
       _tracking_rects = [NSMutableArray new];
@@ -4302,7 +4326,6 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       
       _bounds.origin = NSZeroPoint;
       _bounds.size = _frame.size;
-//      [_frameMatrix setFrameOrigin: _frame.origin];
       
       rect = [aDecoder decodeRect];
       [self setBounds: rect];
@@ -4439,7 +4462,12 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (float) boundsRotation
 {
-  return [_boundsMatrix rotationAngle];
+  if (_boundsMatrix != nil)
+    {
+      return [_boundsMatrix rotationAngle];
+    }
+
+  return 0.0;
 }
 
 - (float) frameRotation

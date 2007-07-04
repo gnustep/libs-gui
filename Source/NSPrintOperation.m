@@ -1058,6 +1058,7 @@ scaleRect(NSRect rect, double scale)
 @end
 
 @implementation NSView (NSPrintOperation)
+
 - (void) _displayPageInRect: (NSRect)pageRect
                    withInfo: (page_info_t)info
 {
@@ -1117,7 +1118,10 @@ scaleRect(NSRect rect, double scale)
 
       flip = [NSAffineTransform new];
       matrix = [NSAffineTransform new];
-      [matrix prependTransform: _boundsMatrix];
+      if (_boundsMatrix != nil)
+        {
+          [matrix prependTransform: _boundsMatrix];
+        }
       /*
        * The flipping process must result in a coordinate system that
        * exactly overlays the original. To do that, we must translate
