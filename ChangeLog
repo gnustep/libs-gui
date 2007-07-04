@@ -1,5 +1,10 @@
 2007-07-04 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSCell.m (-encodeWithCoder:): Try to better key encode
+	the contents of the cell.
+
+2007-07-04 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSPrintOperation.m (NSView-_displayPageInRect:withInfo:),
 	* Source/NSView.m (-_rebuildCoordinates, -initWithFrame:,
 	-initWithCoder:, -dealloc, -_updateBoundsMatrix, -setBounds:,

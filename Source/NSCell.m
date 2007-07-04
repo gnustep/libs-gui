@@ -2319,9 +2319,22 @@ static NSColor	*shadowCol;
     {
       unsigned long cFlags = 0;
       unsigned int cFlags2 = 0;
+      id contents;
 
       // encode contents
-      [aCoder encodeObject: [self objectValue] forKey: @"NSContents"];
+      if (_cell.type == NSTextCellType)
+        {
+          contents = _contents;
+        }
+      else if (_cell.type == NSImageCellType)
+        {
+          contents = _cell_image;
+        }
+      else
+        {
+          contents = [self objectValue];
+        }
+      [aCoder encodeObject: contents forKey: @"NSContents"];
 
       // flags
       cFlags |= [self focusRingType];
@@ -2356,21 +2369,21 @@ static NSColor	*shadowCol;
 	  
       if (_cell.type == NSTextCellType)
         {
-	  // font and formatter.
-	  if ([self font])
-	  {
-	      [aCoder encodeObject: [self font] forKey: @"NSSupport"];
-	  }
+          // font and formatter.
+          if ([self font])
+            {
+              [aCoder encodeObject: [self font] forKey: @"NSSupport"];
+            }
 	  
-	  if ([self formatter])
-	  {
-	      [aCoder encodeObject: [self formatter] forKey: @"NSFormatter"];
-	  }
-	}
+          if ([self formatter])
+            {
+              [aCoder encodeObject: [self formatter] forKey: @"NSFormatter"];
+            }
+        }
       else if ([self image])
         {
-	  [aCoder encodeObject: [self image] forKey: @"NSSupport"];
-	}
+            [aCoder encodeObject: [self image] forKey: @"NSSupport"];
+        }
     }
   else
     {
@@ -2409,8 +2422,8 @@ static NSColor	*shadowCol;
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
       // This used to be is_continuous, which has been replaced.
       /* Ayers 20.03.2003: But we must continue to encode it for backward
-	 compatibility or current releases will have undefined behavior when
-	 decoding archives (i.e. .gorm files) encoded by this version. */
+         compatibility or current releases will have undefined behavior when
+         decoding archives (i.e. .gorm files) encoded by this version. */
       flag = [self isContinuous];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
       flag = _cell.allows_mixed_state;
@@ -2459,84 +2472,84 @@ static NSColor	*shadowCol;
 
       // initialize based on content...
       if ([contents isKindOfClass: [NSString class]])
-	{
-	  self = [self initTextCell: contents];
-	}
+        {
+          self = [self initTextCell: contents];
+        }
       else if ([contents isKindOfClass: [NSImage class]])
-	{
-	  self = [self initImageCell: contents];
-	}
+        {
+          self = [self initImageCell: contents];
+        }
       else
-	{
-	  self = [self init];
-	  [self setObjectValue: contents];
-	}
+        {
+          self = [self init];
+          [self setObjectValue: contents];
+        }
       
       if ([aDecoder containsValueForKey: @"NSCellFlags"])
         {
-	  unsigned long cFlags;
-	  unsigned long mask = 0;
-	  cFlags = [aDecoder decodeIntForKey: @"NSCellFlags"];
-
-	  [self setFocusRingType: (cFlags & 0x3)];
-	  [self setShowsFirstResponder: ((cFlags & 0x4) == 0x4)];
-	  // This bit flag is the other way around!
-	  if ((cFlags & 0x20) != 0x20)
-	      mask |= NSLeftMouseUpMask;
-	  // This bit flag is the other way around!
-	  [self setWraps: ((cFlags & 0x40) != 0x40)];
-	  if ((cFlags & 0x100) == 0x100)
-	      mask |= NSLeftMouseDraggedMask;
-	  [self setLineBreakMode: ((cFlags & 0x7000) >> 12)];
-	  if ((cFlags & 0x40000) == 0x40000)
-	      mask |= NSLeftMouseDownMask;
-	  if ((cFlags & 0x80000) == 0x80000)
-	      mask |= NSPeriodicMask;
-	  [self sendActionOn: mask];
-	  [self setScrollable: ((cFlags & 0x100000) == 0x100000)];
-	  [self setSelectable: ((cFlags & 0x200000) == 0x200000)];
-	  [self setBezeled: ((cFlags & 0x400000) == 0x400000)];
-	  [self setBordered: ((cFlags & 0x800000) == 0x800000)];
-	  [self setType: ((cFlags & 0xC000000) >> 26)];
-	  [self setEditable: ((cFlags & 0x10000000) == 0x10000000)];
-	  // This bit flag is the other way around!
-	  [self setEnabled: ((cFlags & 0x20000000) != 0x20000000)];
-	  [self setHighlighted: ((cFlags & 0x40000000) == 0x40000000)];
-	  [self setState: ((cFlags & 0x80000000) == 0x80000000) ? NSOnState : NSOffState];
-	}
+          unsigned long cFlags;
+          unsigned long mask = 0;
+          cFlags = [aDecoder decodeIntForKey: @"NSCellFlags"];
+          
+          [self setFocusRingType: (cFlags & 0x3)];
+          [self setShowsFirstResponder: ((cFlags & 0x4) == 0x4)];
+          // This bit flag is the other way around!
+          if ((cFlags & 0x20) != 0x20)
+              mask |= NSLeftMouseUpMask;
+          // This bit flag is the other way around!
+          [self setWraps: ((cFlags & 0x40) != 0x40)];
+          if ((cFlags & 0x100) == 0x100)
+            mask |= NSLeftMouseDraggedMask;
+          [self setLineBreakMode: ((cFlags & 0x7000) >> 12)];
+          if ((cFlags & 0x40000) == 0x40000)
+            mask |= NSLeftMouseDownMask;
+          if ((cFlags & 0x80000) == 0x80000)
+            mask |= NSPeriodicMask;
+          [self sendActionOn: mask];
+          [self setScrollable: ((cFlags & 0x100000) == 0x100000)];
+          [self setSelectable: ((cFlags & 0x200000) == 0x200000)];
+          [self setBezeled: ((cFlags & 0x400000) == 0x400000)];
+          [self setBordered: ((cFlags & 0x800000) == 0x800000)];
+          [self setType: ((cFlags & 0xC000000) >> 26)];
+          [self setEditable: ((cFlags & 0x10000000) == 0x10000000)];
+          // This bit flag is the other way around!
+          [self setEnabled: ((cFlags & 0x20000000) != 0x20000000)];
+          [self setHighlighted: ((cFlags & 0x40000000) == 0x40000000)];
+          [self setState: ((cFlags & 0x80000000) == 0x80000000) ? NSOnState : NSOffState];
+        }
       if ([aDecoder containsValueForKey: @"NSCellFlags2"])
         {
-	  int cFlags2;
+          int cFlags2;
       
-	  cFlags2 = [aDecoder decodeIntForKey: @"NSCellFlags2"];
-	  [self setControlTint: ((cFlags2 & 0xE0) >> 5)];
-	  [self setControlSize: ((cFlags2 & 0xE0000) >> 17)];
-	  [self setSendsActionOnEndEditing: (cFlags2 & 0x400000)];
-	  [self setAllowsMixedState: ((cFlags2 & 0x1000000) == 0x1000000)];
-	  [self setRefusesFirstResponder: ((cFlags2 & 0x2000000) == 0x2000000)];
-	  [self setAlignment: ((cFlags2 & 0x1C000000) >> 26)];
-	  [self setImportsGraphics: ((cFlags2 & 0x20000000) == 0x20000000)];
-	  [self setAllowsEditingTextAttributes: ((cFlags2 & 0x40000000) == 0x40000000)];
-	}
+          cFlags2 = [aDecoder decodeIntForKey: @"NSCellFlags2"];
+          [self setControlTint: ((cFlags2 & 0xE0) >> 5)];
+          [self setControlSize: ((cFlags2 & 0xE0000) >> 17)];
+          [self setSendsActionOnEndEditing: (cFlags2 & 0x400000)];
+          [self setAllowsMixedState: ((cFlags2 & 0x1000000) == 0x1000000)];
+          [self setRefusesFirstResponder: ((cFlags2 & 0x2000000) == 0x2000000)];
+          [self setAlignment: ((cFlags2 & 0x1C000000) >> 26)];
+          [self setImportsGraphics: ((cFlags2 & 0x20000000) == 0x20000000)];
+          [self setAllowsEditingTextAttributes: ((cFlags2 & 0x40000000) == 0x40000000)];
+        }
       if ([aDecoder containsValueForKey: @"NSSupport"])
         {
-	  id support = [aDecoder decodeObjectForKey: @"NSSupport"];
+          id support = [aDecoder decodeObjectForKey: @"NSSupport"];
 
-	  if ([support isKindOfClass: [NSFont class]])
-	    {
-	      [self setFont: support];
-	    }
-	  else if ([support isKindOfClass: [NSImage class]])
-	    {
-	      [self setImage: support];
-	    }
-	}
+          if ([support isKindOfClass: [NSFont class]])
+            {
+              [self setFont: support];
+            }
+          else if ([support isKindOfClass: [NSImage class]])
+            {
+              [self setImage: support];
+            }
+        }
       if ([aDecoder containsValueForKey: @"NSFormatter"])
         {
-	  NSFormatter *formatter = [aDecoder decodeObjectForKey: @"NSFormatter"];
-
-	  [self setFormatter: formatter];
-	}
+          NSFormatter *formatter = [aDecoder decodeObjectForKey: @"NSFormatter"];
+            
+          [self setFormatter: formatter];
+        }
     }
   else
     {
