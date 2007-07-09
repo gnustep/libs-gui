@@ -106,41 +106,33 @@ static const float pi = 3.1415926535897932384626434;
   /* If it's rotated.  */
   if (B != 0  ||  C != 0)
     {
+      // FIXME: This case does not handle shear.
       float angle = [self rotationAngle];
 
+      // Keep the translation and add scaling
       A = sx; B = 0;
       C = 0; D = sy;
+      [self setTransformStruct: matrix];
 
+      // Prepend the rotation to the scaling and translation
       [self rotateByDegrees: angle];
     }
   else
     {
       A = sx; B = 0;
       C = 0; D = sy;
+      [self setTransformStruct: matrix];
     }
-  [self setTransformStruct: matrix];
 }
 
 - (void) translateToPoint: (NSPoint)point
 {
-  NSAffineTransformStruct	matrix = [self transformStruct];
-  float newTX, newTY;
-
-  newTX = point.x * A + point.y * C + TX;
-  newTY = point.x * B + point.y * D + TY;
-  TX = newTX;
-  TY = newTY;
-  [self setTransformStruct: matrix];
+  [self translateXBy: point.x yBy: point.y];
 }
-
 
 - (void) makeIdentityMatrix
 {
-  static NSAffineTransformStruct identityTransform = {
-    1.0, 0.0, 0.0, 1.0, 0.0, 0.0
-  };
-
-  [self setTransformStruct: identityTransform];
+  [self init];
 }
 
 - (void) setFrameOrigin: (NSPoint)point
@@ -148,7 +140,8 @@ static const float pi = 3.1415926535897932384626434;
   NSAffineTransformStruct	matrix = [self transformStruct];
   float dx = point.x - TX;
   float dy = point.y - TY;
-  [self translateToPoint: NSMakePoint(dx, dy)];
+
+  [self translateXBy: dx yBy: dy];
 }
 
 - (void) setFrameRotation: (float)angle
@@ -284,19 +277,17 @@ static const float pi = 3.1415926535897932384626434;
 
 - (NSRect) rectInMatrixSpace: (NSRect)rect
 {
-  NSAffineTransformStruct	matrix = [self transformStruct];
   NSRect new;
 
-  new.origin.x = A * rect.origin.x + C * rect.origin.y + TX;
-  new.size.width = A * rect.size.width + C * rect.size.height;
+  new.origin = [self transformPoint: rect.origin];
+  new.size = [self transformSize: rect.size];
+
   if (new.size.width < 0)
     {
       new.origin.x += new.size.width;
       new.size.width *= -1;
     }
 
-  new.origin.y = B * rect.origin.x + D * rect.origin.y + TY;
-  new.size.height = B * rect.size.width + D * rect.size.height;
   if (new.size.height < 0)
     {
       new.origin.y += new.size.height;

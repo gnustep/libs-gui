@@ -1,3 +1,14 @@
+2007-07-09 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSAffineTransform.m (-rectInMatrixSpace:, -translateToPoint:, 
+	-makeIdentityMatrix): Use optimized primitive methods from base.
+	* Source/NSAffineTransform.m (-scaleTo::): Try to handle rotation
+	case better.  
+	* Source/NSView.m (-scaleUnitSquareToSize:): Adjust origin too and
+	handle rotation case.
+	* Source/NSView.m (-setBounds:, setBoundsOrigin:): Try to handle
+	rotation case better.
+
 2007-07-04 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSCell.m (-encodeWithCoder:): Try to better key encode
