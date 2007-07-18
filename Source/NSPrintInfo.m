@@ -29,27 +29,15 @@
    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSArray.h>
 #include <Foundation/NSBundle.h>
-#include <Foundation/NSDebug.h>
 #include <Foundation/NSDictionary.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSValue.h>
 #include "AppKit/NSPrinter.h"
 #include "AppKit/NSPrintInfo.h"
 #include "GNUstepGUI/GSPrinting.h"
 
-#define NSNUMBER(val) [NSNumber numberWithInt: val]
-#define DICTSET(dict, obj, key) \
-   [dict setObject: obj forKey: key]
-
-// FIXME: retain/release of dictionary with retain/release of printInfo?
-
 // Class variables:
 static NSPrintInfo *sharedPrintInfo = nil;
-
 
 /**
   <unit>
@@ -66,19 +54,19 @@ static NSPrintInfo *sharedPrintInfo = nil;
 //
 // Class methods
 //
-+ (void)initialize
++ (void) initialize
 {
   if (self == [NSPrintInfo class])
     {
       // Initial version
-      [self setVersion:1];
+      [self setVersion: 1];
     }
 }
 
 /** Load the appropriate bundle for the PrintInfo
     (eg: GSLPRPrintInfo, GSCUPSPrintInfo).
 */
-+ (id) allocWithZone: (NSZone*) zone
++ (id) allocWithZone: (NSZone*)zone
 {
   Class principalClass;
 
@@ -93,12 +81,12 @@ static NSPrintInfo *sharedPrintInfo = nil;
 //
 // Managing the Shared NSPrintInfo Object 
 //
-+ (void)setSharedPrintInfo:(NSPrintInfo *)printInfo
++ (void) setSharedPrintInfo: (NSPrintInfo*)printInfo
 {
   ASSIGN(sharedPrintInfo, printInfo);
 }
 
-+ (NSPrintInfo *)sharedPrintInfo
++ (NSPrintInfo*) sharedPrintInfo
 {
   if (!sharedPrintInfo)
    {    
@@ -110,15 +98,15 @@ static NSPrintInfo *sharedPrintInfo = nil;
 //
 // Managing the Printing Rectangle 
 //
-+ (NSSize)sizeForPaperName:(NSString *)name
++ (NSSize) sizeForPaperName: (NSString*)name
 {
-  return [[self defaultPrinter] pageSizeForPaper:name];
+  return [[self defaultPrinter] pageSizeForPaper: name];
 }
 
 //
 // Specifying the Printer 
 //
-+ (NSPrinter *)defaultPrinter
++ (NSPrinter*) defaultPrinter
 {
   Class principalClass;
 
@@ -130,7 +118,7 @@ static NSPrintInfo *sharedPrintInfo = nil;
   return [[principalClass printInfoClass] defaultPrinter];
 }
 
-+ (void)setDefaultPrinter:(NSPrinter *)printer
++ (void) setDefaultPrinter: (NSPrinter*)printer
 {
   Class principalClass;
 
@@ -148,26 +136,24 @@ static NSPrintInfo *sharedPrintInfo = nil;
 //
 // Creating and Initializing an NSPrintInfo Instance 
 //
-- (id)initWithDictionary:(NSDictionary *)aDict
+- (id) initWithDictionary: (NSDictionary*)aDict
 {
   NSPrinter *printer;
   NSString *pageSize;
 
-  self = [super init];
+  if (!(self = [super init]))
+    {
+      return self;
+    }
   
   _info = [[NSMutableDictionary alloc] init];
       
-  //put in the defaults
+  // put in the defaults
   [self setVerticalPagination: NSAutoPagination];
-   
   [self setHorizontalPagination: NSClipPagination];
-  
   [self setJobDisposition: NSPrintSpoolJob];
-      
   [self setHorizontallyCentered: YES];
-      
   [self setVerticallyCentered: YES];
-  
   [self setOrientation: NSPortraitOrientation];
 
   printer = [NSPrintInfo defaultPrinter];
@@ -186,14 +172,9 @@ static NSPrintInfo *sharedPrintInfo = nil;
   
   /* Set default margins. FIXME: Probably should check ImageableArea */
   [self setRightMargin: 36];
-  
   [self setLeftMargin: 36];
-  
   [self setTopMargin: 72];
-  
   [self setBottomMargin: 72];
-
-  
   
   if (aDict != nil)
     {
@@ -206,15 +187,11 @@ static NSPrintInfo *sharedPrintInfo = nil;
           printerName = [_info objectForKey: NSPrintPrinter];
           printer = [NSPrinter printerWithName: printerName];
           
-          if (printer)
-              [self setPrinter: printer];
-          else
-              [_info removeObjectForKey: NSPrintPrinter];
+          [self setPrinter: printer];
         }
     }
   return self;
 }
-
 
 - (void) dealloc
 {
@@ -234,58 +211,60 @@ static NSPrintInfo *sharedPrintInfo = nil;
 //
 // Managing the Printing Rectangle 
 //
-- (float)bottomMargin
+- (float) bottomMargin
 {
-  return [(NSNumber *)[_info objectForKey:NSPrintBottomMargin] floatValue];
+  return [(NSNumber *)[_info objectForKey: NSPrintBottomMargin] floatValue];
 }
 
-- (float)leftMargin
+- (float) leftMargin
 {
-  return [(NSNumber *)[_info objectForKey:NSPrintLeftMargin] floatValue];
+  return [(NSNumber *)[_info objectForKey: NSPrintLeftMargin] floatValue];
 }
 
-- (NSPrintingOrientation)orientation
+- (NSPrintingOrientation) orientation
 {
-  return [(NSNumber *)[_info objectForKey:NSPrintOrientation] intValue];
+  return [(NSNumber *)[_info objectForKey: NSPrintOrientation] intValue];
 }
 
-- (NSString *)paperName
+- (NSString*) paperName
 {
-  return [_info objectForKey:NSPrintPaperName];
+  return [_info objectForKey: NSPrintPaperName];
 }
 
-- (NSSize)paperSize
+- (NSSize) paperSize
 {
-  /* Don't simplify this. Some OSs can't handle retuning a NULL value into
+  /* Don't simplify this. Some OSs can't handle returning a NULL value into
      a struct.  */
-  NSValue *val = [_info objectForKey:NSPrintPaperSize];
+  NSValue *val = [_info objectForKey: NSPrintPaperSize];
+
   if (val == nil)
     return NSMakeSize(0,0);
   return [val sizeValue];
 }
 
-- (float)rightMargin
+- (float) rightMargin
 {
-  return [(NSNumber *)[_info objectForKey:NSPrintRightMargin] floatValue];
+  return [(NSNumber *)[_info objectForKey: NSPrintRightMargin] floatValue];
 }
 
-- (void)setBottomMargin:(float)value
+- (void) setBottomMargin: (float)value
 {
-  [_info setObject:[NSNumber numberWithFloat:value]
-            forKey:NSPrintBottomMargin];
+  [_info setObject: [NSNumber numberWithFloat: value]
+            forKey: NSPrintBottomMargin];
 }
 
-- (void)setLeftMargin:(float)value
+- (void) setLeftMargin: (float)value
 {
-  [_info setObject:[NSNumber numberWithFloat:value]
-            forKey:NSPrintLeftMargin];
+  [_info setObject: [NSNumber numberWithFloat: value]
+            forKey: NSPrintLeftMargin];
 }
 
-- (void)setOrientation:(NSPrintingOrientation)mode
+- (void) setOrientation: (NSPrintingOrientation)mode
 {
   NSSize size;
-  [_info setObject:[NSNumber numberWithInt:mode]
-            forKey:NSPrintOrientation];
+
+  [_info setObject: [NSNumber numberWithInt: mode]
+            forKey: NSPrintOrientation];
 		
   /* Set the paper size accordingly */
   size = [self paperSize];
@@ -300,132 +279,185 @@ static NSPrintInfo *sharedPrintInfo = nil;
     }
 }
 
-- (void)setPaperName:(NSString *)name
+- (void) setPaperName: (NSString*)name
 {
-  DICTSET(_info, name, NSPrintPaperName);
-  DICTSET(_info, 
-          [NSValue valueWithSize: [NSPrintInfo sizeForPaperName: name]],
-          NSPrintPaperSize);
+  [_info setObject: name
+         forKey: NSPrintPaperName];
+  // FIXME: Should this change the orientation?
+  [_info setObject: [NSValue valueWithSize: 
+                                 [NSPrintInfo sizeForPaperName: name]]
+         forKey: NSPrintPaperSize];
 }
 
-- (void)setPaperSize:(NSSize)size
+- (void) setPaperSize: (NSSize)size
 {
   NSPrintingOrientation orient;
-  [_info setObject:[NSValue valueWithSize:size]
-            forKey:NSPrintPaperSize];
+  [_info setObject: [NSValue valueWithSize: size]
+            forKey: NSPrintPaperSize];
 		
-  /* Set orientation accordingly */
+  // Set orientation accordingly
   if (size.width <= size.height)
     orient = NSPortraitOrientation;
   else
     orient = NSLandscapeOrientation;
-  DICTSET(_info, NSNUMBER(orient), NSPrintOrientation);
+  [_info setObject: [NSNumber numberWithInt: orient]
+         forKey: NSPrintOrientation];
 }
 
-- (void)setRightMargin:(float)value
+- (void) setRightMargin: (float)value
 {
   [_info setObject:[NSNumber numberWithFloat:value]
             forKey:NSPrintRightMargin];
 }
 
-- (void)setTopMargin:(float)value
+- (void) setTopMargin: (float)value
 {
   [_info setObject:[NSNumber numberWithFloat:value]
             forKey:NSPrintTopMargin];
 }
 
-- (float)topMargin
+- (float) topMargin
 {
   return [(NSNumber *)[_info objectForKey:NSPrintTopMargin] floatValue];
+}
+
+- (NSRect) imageablePageBounds
+{
+  NSRect pageBounds;
+  NSPrinter *printer;
+
+  printer = [self printer];
+  if (printer)
+    {
+      NSPrintingOrientation mode;
+
+      mode = [self orientation];
+      pageBounds = [printer imageRectForPaper: [self paperName]];
+      if ((NSPortraitOrientation == mode
+           && pageBounds.size.width > pageBounds.size.height)
+          || (NSLandscapeOrientation == mode
+              && pageBounds.size.width < pageBounds.size.height))
+        {
+          float tmp;
+
+          tmp = pageBounds.origin.x;
+          pageBounds.origin.x = pageBounds.origin.y;
+          pageBounds.origin.y = tmp;
+          tmp = pageBounds.size.width;
+          pageBounds.size.width = pageBounds.size.height;
+          pageBounds.size.height = tmp;
+        }
+    }
+  else
+    {
+      pageBounds.origin = NSMakePoint(0, 0);
+      pageBounds.size = [self paperSize];
+    }
+     
+  return pageBounds;
+}
+
+- (NSString*) localizedPaperName
+{
+  return NSLocalizedString([self paperName], @"paper name");
 }
 
 //
 // Pagination 
 //
-- (NSPrintingPaginationMode)horizontalPagination
+- (NSPrintingPaginationMode) horizontalPagination
 {
-  return [(NSNumber*)[_info objectForKey:NSPrintHorizontalPagination] intValue];
+  return [(NSNumber*)[_info objectForKey: NSPrintHorizontalPagination] intValue];
 }
 
-- (void)setHorizontalPagination:(NSPrintingPaginationMode)mode
+- (void) setHorizontalPagination: (NSPrintingPaginationMode)mode
 {
-  [_info setObject:[NSNumber numberWithInt:mode]
-            forKey:NSPrintHorizontalPagination];
+  [_info setObject: [NSNumber numberWithInt:mode]
+            forKey: NSPrintHorizontalPagination];
 }
 
-- (void)setVerticalPagination:(NSPrintingPaginationMode)mode
+- (void)setVerticalPagination: (NSPrintingPaginationMode)mode
 {
-  [_info setObject:[NSNumber numberWithInt:mode]
-            forKey:NSPrintVerticalPagination];
+  [_info setObject: [NSNumber numberWithInt:mode]
+            forKey: NSPrintVerticalPagination];
 }
 
-- (NSPrintingPaginationMode)verticalPagination
+- (NSPrintingPaginationMode) verticalPagination
 {
-  return [(NSNumber *)[_info objectForKey:NSPrintVerticalPagination] intValue];
+  return [(NSNumber *)[_info objectForKey: NSPrintVerticalPagination] intValue];
 }
 
 //
 // Positioning the Image on the Page 
 //
-- (BOOL)isHorizontallyCentered
+- (BOOL) isHorizontallyCentered
 {
-  return [(NSNumber*)[_info objectForKey:NSPrintHorizontallyCentered]boolValue];
+  return [(NSNumber *)[_info objectForKey: NSPrintHorizontallyCentered] boolValue];
 }
 
-- (BOOL)isVerticallyCentered
+- (BOOL) isVerticallyCentered
 {
-  return [(NSNumber *)[_info objectForKey:NSPrintVerticallyCentered] boolValue];
+  return [(NSNumber *)[_info objectForKey: NSPrintVerticallyCentered] boolValue];
 }
 
-- (void)setHorizontallyCentered:(BOOL)flag
+- (void) setHorizontallyCentered: (BOOL)flag
 {
-  [_info setObject:[NSNumber numberWithBool:flag]
-            forKey:NSPrintHorizontallyCentered];
+  [_info setObject: [NSNumber numberWithBool: flag]
+            forKey: NSPrintHorizontallyCentered];
 }
 
-- (void)setVerticallyCentered:(BOOL)flag
+- (void) setVerticallyCentered: (BOOL)flag
 {
-  [_info setObject:[NSNumber numberWithBool:flag]
-            forKey:NSPrintVerticallyCentered];
+  [_info setObject: [NSNumber numberWithBool: flag]
+            forKey: NSPrintVerticallyCentered];
 }
 
 //
 // Specifying the Printer 
 //
-- (NSPrinter *)printer
+- (NSPrinter*) printer
 {
-  return [_info objectForKey:NSPrintPrinter];
+  return [_info objectForKey: NSPrintPrinter];
 }
 
-- (void)setPrinter:(NSPrinter *)aPrinter
+- (void) setPrinter: (NSPrinter*)aPrinter
 {
-  [_info setObject:aPrinter 
-            forKey:NSPrintPrinter];
+  if (aPrinter)
+    {
+      [_info setObject: aPrinter 
+             forKey: NSPrintPrinter];
+      // FIXME: Remove features not supported by the new printer
+    }
+  else
+    {
+      [_info removeObjectForKey: NSPrintPrinter];
+      // FIXME: Should we reset the default printer?
+    }
 }
 
 //
 // Controlling Printing
 //
-- (NSString *)jobDisposition
+- (NSString*) jobDisposition
 {
-  return [_info objectForKey:NSPrintJobDisposition];
+  return [_info objectForKey: NSPrintJobDisposition];
 }
 
-- (void)setJobDisposition:(NSString *)disposition
+- (void) setJobDisposition: (NSString*)disposition
 {
-  [_info setObject:disposition 
-            forKey:NSPrintJobDisposition];
+  [_info setObject: disposition 
+            forKey: NSPrintJobDisposition];
 }
 
-- (void)setUpPrintOperationDefaultValues
+- (void) setUpPrintOperationDefaultValues
 {
-  [self subclassResponsibility: _cmd];
+  // [self subclassResponsibility: _cmd];
 }
 
 //
 // Accessing the NSPrintInfo Object's Dictionary 
 //
-- (NSMutableDictionary *)dictionary
+- (NSMutableDictionary*) dictionary
 {
   return _info;
 }
@@ -435,34 +467,33 @@ static NSPrintInfo *sharedPrintInfo = nil;
 //
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  //There is a NSPrinter in the dict, will that work as a Property list?
   NSMutableDictionary *dict;
-  
-  dict = AUTORELEASE([_info mutableCopy]);
-  
-  [dict setObject: [[self printer] name]
-           forKey: NSPrintPrinter];
+  NSString *printerName;
+
+  dict = [_info mutableCopy];
+  printerName = [[self printer] name];
+
+  if (printerName)
+    {
+      [dict setObject: printerName
+            forKey: NSPrintPrinter];
+    }
+  else
+    {
+      [dict removeObjectForKey: NSPrintPrinter];
+    }
            
-  [aCoder encodePropertyList: _info];
+  [aCoder encodePropertyList: dict];
+  RELEASE(dict);
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  NSString *printerName;
-  NSPrinter *printer;
+  NSMutableDictionary *dict;
  
-  _info = RETAIN([aDecoder decodePropertyList]);
+  dict = [aDecoder decodePropertyList];
   
-  printerName = [_info objectForKey: NSPrintPrinter];
-  printer = [NSPrinter printerWithName: printerName];
-  
-  if (printer)
-    [self setPrinter: printer];
-  else
-    [_info removeObjectForKey: NSPrintPrinter]; 
-  
-  return self;
+  return [self initWithDictionary: dict];
 }
 
 @end
-

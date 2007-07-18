@@ -90,6 +90,12 @@ typedef enum _NSPrintingPaginationMode {
 - (void)setRightMargin:(float)value;
 - (void)setTopMargin:(float)value;
 - (float)topMargin;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+- (NSRect)imageablePageBounds;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (NSString *)localizedPaperName;
+#endif
 
 //
 // Pagination 

@@ -1,3 +1,12 @@
+2007-07-18 Fred Kiefer <FredKiefer@gmx.de>
+	
+	* Headers/AppKit/NSPrintInfo.h,
+	* Source/NSPrintInfo.m (-imageablePageBounds,
+	-localizedPaperName): New MacOSX method. Plus some general clean up.
+	* Source/NSPrinter.m (-stringListForKey:inTable:,
+	-isKey:inTable:): Don't raise exception on missing table.
+	* Source/NSPrinter.m (-statusForTable:) Add check for corrct class.
+	
 2007-07-09 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSAffineTransform.m (-rectInMatrixSpace:, -translateToPoint:, 

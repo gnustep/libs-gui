@@ -573,9 +573,6 @@ static NSMutableDictionary* printerCache;
   return [results objectAtIndex: 0];
 }
 
-
-
-
 -(NSArray*) stringListForKey: (NSString*) key
                      inTable: (NSString*) table
 {
@@ -584,10 +581,8 @@ static NSMutableDictionary* printerCache;
 
   tableObj = [_tables objectForKey: table ];
 
-  if (tableObj == nil)
+  if (tableObj == nil) //raise exception?
     {
-      [NSException raise: NSGenericException
-         format: @"Could not find table %@", table];
       return nil;
     }
 
@@ -605,17 +600,17 @@ static NSMutableDictionary* printerCache;
 
 -(NSPrinterTableStatus) statusForTable: (NSString*) table
 {
-  NSMutableDictionary *tableObj;
+  NSDictionary *tableObj;
 
   // Select correct table
   tableObj = [_tables objectForKey: table];
 
   if (tableObj == nil)
-      return NSPrinterTableNotFound;
+    return NSPrinterTableNotFound;
+  else if (![tableObj isKindOfClass: [NSDictionary class]])
+    return NSPrinterTableError;
   else
-      return NSPrinterTableOK;
-
-  //the third option, NSPrinterTableError, I just don't know...
+    return NSPrinterTableOK;
 }
 
 
@@ -627,10 +622,8 @@ static NSMutableDictionary* printerCache;
   // Select correct table
   tableObj = [_tables objectForKey: table];
 
-  if (tableObj == nil)
+  if (tableObj == nil) //raise exception?
     {
-      [NSException raise: NSGenericException
-         format: @"Could not find table %@", table];
       return NO;
     }
 
