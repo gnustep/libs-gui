@@ -58,16 +58,16 @@
 @interface GSAnimator : NSObject
 {
   id<GSAnimation> _animation; // The Object to be animated
-  NSDate* _startTime;         // The time the animation did started
+  NSDate *_startTime;         // The time the animation did started
   BOOL _running;              // Indicates that the animator is looping
 
   NSTimeInterval _elapsed;    // Elapsed time since the animator started
   NSTimeInterval _lastFrame;  // The time of the last animation loop
   unsigned int _frameCount;   // The number of loops since the start
 
-  NSArray* _runLoopModes;
+  NSArray *_runLoopModes;
   
-  NSTimer* _timer;            // Timer used for looping
+  NSTimer *_timer;            // Timer used for looping
   NSTimeInterval _timerInterval;
 }
 

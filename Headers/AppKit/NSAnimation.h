@@ -36,15 +36,15 @@
 #include <Foundation/NSObject.h>
 #include <AppKit/AppKitDefines.h>
 #include <GNUstepGUI/GSAnimator.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSArray.h>
 
 @class NSString;
 @class NSArray;
+@class NSMutableArray;
 @class NSNumber;
 @class NSRecursiveLock;
 
-/** These constants describe the curve of an animation—that is, the relative speed of an animation from start to finish. */
+/** These constants describe the curve of an animation,
+    that is, the relative speed of an animation from start to finish. */
 typedef enum _NSAnimationCurve
 {
   NSAnimationEaseInOut = 0, // default
@@ -180,7 +180,7 @@ APPKIT_EXPORT NSString *NSAnimationProgressMark;
 /** Returns a Boolean value that indicates whether the receiver is currently animating. */
 - (BOOL) isAnimating;
 
-/** Returns the receiver’s progress marks. */
+/** Returns the receiver's progress marks. */
 - (NSArray*) progressMarks;
 
 /** Removes a progress mark from the receiver.
@@ -195,7 +195,7 @@ APPKIT_EXPORT NSString *NSAnimationProgressMark;
     The new blocking mode takes effect the next time the receiver is started. */
 - (void) setAnimationBlockingMode: (NSAnimationBlockingMode)mode;
 
-/** Sets the receiver’s animation curve.
+/** Sets the receiver's animation curve.
     The new value affects the animation already in progress : the actual 
     curve smoothly changes from the old curve to the new one. */
 - (void) setAnimationCurve: (NSAnimationCurve)curve;
@@ -221,7 +221,7 @@ APPKIT_EXPORT NSString *NSAnimationProgressMark;
     The new frame rate takes effect at the next frame. */
 - (void) setFrameRate: (float)fps;
 
-/** Sets the receiver’s progress marks to the values specified in the
+/** Sets the receiver's progress marks to the values specified in the
     passed-in array. The new marks are t*/
 - (void) setProgressMarks: (NSArray*)progress;
 
