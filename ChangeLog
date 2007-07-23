@@ -2,6 +2,7 @@
 	
 	* Headers/AppKit/NSAnimation.h: Remove unneeded includes.
 	* Headers/Additions/GNUstepGUI/GSAnimator.h: Correct line endings.
+	* Source/GSAnimator.m: Correct line endings and coding style.
 
 2007-07-23 Fred Kiefer <FredKiefer@gmx.de>
 	
