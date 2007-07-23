@@ -441,6 +441,10 @@ enum {
 - (void)setControlTint:(NSControlTint)controlTint;
 - (NSControlTint)controlTint;
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (void)setControlView:(NSView*)view;
+#endif
+
 
 //
 // Editing Text 

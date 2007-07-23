@@ -1908,12 +1908,19 @@ static NSColor	*shadowCol;
   return _cell.control_tint;
 }
 
-/**<p>This method is used by subclasses to specified the control view.
+/**<p>This method is used by subclasses to get the control view.
    This method returns nil.</p>
  */
 - (NSView*) controlView
 {
   return nil;
+}
+
+/**<p>This method is used by subclasses to specify the control view.</p>
+ */
+- (void) setControlView: (NSView*)view
+{
+  // Do nothing
 }
 
 /** <p>This drawing is minimal and with no background,

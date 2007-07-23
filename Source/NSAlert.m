@@ -37,6 +37,7 @@
 
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSBundle.h>
+#include <Foundation/NSError.h>
 #include <Foundation/NSString.h>
 #include "AppKit/NSAlert.h"
 #include "AppKit/NSApplication.h"
@@ -1382,6 +1383,20 @@ void NSBeginInformationalAlertSheet(NSString *title,
     {
       [self setVersion: 1];
     }
+}
+
++ (NSAlert *) alertWithError: (NSError *)error
+{
+  NSArray *options;
+  unsigned int count;
+
+  options = [error localizedRecoveryOptions];
+  count = [options count];
+  return [self alertWithMessageText: [error localizedDescription]
+               defaultButton: (count > 0) ? [options objectAtIndex: 0] : nil
+               alternateButton: (count > 1) ? [options objectAtIndex: 1] : nil
+               otherButton: (count > 2) ? [options objectAtIndex: 2] : nil
+               informativeTextWithFormat: [error localizedRecoverySuggestion]];
 }
 
 + (NSAlert *) alertWithMessageText: (NSString *)messageTitle

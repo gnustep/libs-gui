@@ -33,11 +33,14 @@
 #include <Foundation/NSObject.h>
 
 @class NSArray;
+@class NSError;
 @class NSString;
 @class NSMutableArray;
 @class NSButton;
 @class NSImage;
 @class NSWindow;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 
 typedef enum _NSAlertStyle { 
   NSWarningAlertStyle = 0, 
@@ -66,6 +69,9 @@ enum {
   int	_result;
 }
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
++ (NSAlert *) alertWithError: (NSError *)error;
+#endif
 + (NSAlert *) alertWithMessageText: (NSString *)messageTitle
 		     defaultButton: (NSString *)defaultButtonTitle
 		   alternateButton: (NSString *)alternateButtonTitle
@@ -109,4 +115,5 @@ enum {
 @end
 #endif
 
+#endif /* MAC_OS_X_VERSION_10_3 */
 #endif /* _GNUstep_H_NSAlert */

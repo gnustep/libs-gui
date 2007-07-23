@@ -269,6 +269,13 @@ static Class controlClass;
   return _control_view;
 }
 
+/**
+ * Set the control view of the receiver.
+ */
+- (void) setControlView: (NSView*)view
+{
+  _control_view = view;
+}
 
 - (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {

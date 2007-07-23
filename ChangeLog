@@ -1,3 +1,11 @@
+2007-07-23 Fred Kiefer <FredKiefer@gmx.de>
+	
+	* Headers/AppKit/NSCell.h,
+	* Source/NSCell.m,
+	* Source/NSActionCell.m (-setControlView:): Add MacOSX 10.4 method.
+	* Headers/AppKit/NSAlert.h,
+	* Source/NSAlert.m (+alertWithError:): Add MacOSX 10.4 method.
+
 2007-07-18 Fred Kiefer <FredKiefer@gmx.de>
 	
 	* Headers/AppKit/NSPrintInfo.h,
