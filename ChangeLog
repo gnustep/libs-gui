@@ -1,3 +1,9 @@
+2007-07-24 Fred Kiefer <FredKiefer@gmx.de>
+	
+	* Headers/AppKit/NSApplication.h:
+	* Source/NSApplication.m: Add MacOSX 10.4 method declarations.
+	* Source/externs.m: Define new string constant.
+
 2007-07-23 Fred Kiefer <FredKiefer@gmx.de>
 	
 	* Headers/AppKit/NSAnimation.h: Remove unneeded includes.

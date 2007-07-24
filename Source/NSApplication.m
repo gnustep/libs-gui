@@ -3155,6 +3155,11 @@ image.</p><p>See Also: -applicationIconImage</p>
     }
 }
 
+- (void) replyToOpenOrPrint: (NSApplicationDelegateReply)reply
+{
+  // FIXME
+}
+
 /**
  * Returns the application's delegate, as set by the -setDelegate: method.<br/>
  * <p>The application delegate will automatically be sent various

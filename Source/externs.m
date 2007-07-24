@@ -78,6 +78,8 @@ NSString *GSWindowServerInternalException = @"WindowServerInternal";
 // Application notifications
 NSString *NSApplicationDidBecomeActiveNotification
               = @"ApplicationDidBecomeActive";
+NSString *NSApplicationDidChangeScreenParametersNotification 
+              = @"NSApplicationDidChangeScreenParameters";
 NSString *NSApplicationDidFinishLaunchingNotification
               = @"ApplicationDidFinishLaunching";
 NSString *NSApplicationDidHideNotification = @"ApplicationDidHide";
