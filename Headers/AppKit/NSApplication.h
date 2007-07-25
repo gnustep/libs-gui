@@ -475,7 +475,7 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 /**
- * <em>Not sent yet on GNUstep.</em>
+ * Ask delegate for an error replacement.
  */
 - (NSError*) application: (NSApplication*)app willPresentError: (NSError*)error;
 #endif

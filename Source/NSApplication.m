@@ -37,6 +37,8 @@
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSDictionary.h>
+#include <Foundation/NSError.h>
+#include <Foundation/NSErrorRecoveryAttempting.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSInvocation.h>
@@ -57,6 +59,7 @@
 #endif
 
 #include "AppKit/AppKitExceptions.h"
+#include "AppKit/NSAlert.h"
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSCell.h"
 #include "AppKit/NSCursor.h"
@@ -3071,6 +3074,111 @@ image.</p><p>See Also: -applicationIconImage</p>
 {
   if (anException)
     NSLog (_(@"reported exception - %@"), anException);
+}
+
+- (BOOL) presentError: (NSError *)error
+{
+  NSAlert *alert;
+  int result;
+
+  error = [self willPresentError: error];
+  alert = [NSAlert alertWithError: error];
+  result = [alert runModal];
+
+  if (result != NSAlertErrorReturn)
+    {
+      // Convert result (1, 0, -1) into index (0, 1, 2)
+      result = 1 - result;
+      return [[error recoveryAttempter] attemptRecoveryFromError: error
+                 optionIndex: result];
+    }
+  else
+    {
+      return NO;
+    }
+}
+
+struct _DelegateWrapper
+{
+  id delegate;
+  SEL selector;
+  NSError *error;
+  void *context;
+};
+
+- (void) presentError: (NSError*)error
+       modalForWindow: (NSWindow*)window
+             delegate: (id)delegate 
+   didPresentSelector: (SEL)sel
+          contextInfo: (void*)context
+{
+  NSAlert *alert;
+  struct _DelegateWrapper *wrapper;
+
+  error = [self willPresentError: error];
+  alert = [NSAlert alertWithError: error];
+  // FIXME: Who is trying to recover the error?
+  wrapper = malloc(sizeof(struct _DelegateWrapper));
+  wrapper->delegate = delegate;
+  wrapper->selector = sel;
+  wrapper->error = error;
+  wrapper->context = context;
+
+  [alert beginSheetModalForWindow: window
+         modalDelegate: self
+         didEndSelector: @selector(_didPresentError:returnCode:contextInfo:)
+         contextInfo: wrapper];
+}
+
+- (void) _didPresentError: (NSWindow*)sheet 
+               returnCode: (int)result
+              contextInfo: (void*)context
+{
+  struct _DelegateWrapper *wrapper;
+  id delegate;
+  SEL sel;
+  NSError *error;
+  void *orgContext;
+  BOOL recover;
+  
+  wrapper = (struct _DelegateWrapper*)context;
+  delegate = wrapper->delegate;
+  sel = wrapper->selector;
+  error = wrapper->error;
+  orgContext = wrapper->context;
+  free(wrapper);
+
+  if (result != NSAlertErrorReturn)
+    {
+      // Convert result (1, 0, -1) into index (0, 1, 2)
+      result = 1 - result;
+      recover = [[error recoveryAttempter] attemptRecoveryFromError: error
+                 optionIndex: result];
+    }
+  else
+    {
+      recover = NO;
+    }
+  
+  if ([delegate respondsToSelector: sel])
+    {
+      void (*didEnd)(id, SEL, BOOL, void*);
+
+      didEnd = (void (*)(id, SEL, BOOL, void*))[delegate methodForSelector: sel];
+      didEnd(delegate, sel, recover, orgContext);
+    }
+}
+
+- (NSError*) willPresentError: (NSError*)error
+{
+  if ([_delegate respondsToSelector: @selector(application:willPresentError:)])
+    {
+      return [_delegate application: self willPresentError: error];
+    }
+  else
+    {
+      return error;
+    }
 }
 
 /**
