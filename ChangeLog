@@ -1,3 +1,10 @@
+2007-07-26 Fred Kiefer <FredKiefer@gmx.de>
+	
+	* Headers/AppKit/NSBitmapImageRep.h,
+	* Source/NSBitmapImageRep.m: Add MacOSX 10.4 methods and constants.
+	Code mostly by Nikolaus Schaller <hns@computer.org>.
+	* Source/externs.m: Enable new string constant.
+
 2007-07-25 Fred Kiefer <FredKiefer@gmx.de>
 	
 	* Headers/AppKit/NSApplication.h: Correct comment.

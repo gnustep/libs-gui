@@ -428,15 +428,40 @@
       </deflist>
 */
 - (id) initWithBitmapDataPlanes: (unsigned char **)planes
-		pixelsWide: (int)width
-		pixelsHigh: (int)height
-		bitsPerSample: (int)bps
-		samplesPerPixel: (int)spp
-		hasAlpha: (BOOL)alpha
-		isPlanar: (BOOL)isPlanar
-		colorSpaceName: (NSString *)colorSpaceName
-		bytesPerRow: (int)rowBytes
-		bitsPerPixel: (int)pixelBits
+                     pixelsWide: (int)width
+                     pixelsHigh: (int)height
+                  bitsPerSample: (int)bitsPerSample
+                samplesPerPixel: (int)samplesPerPixel
+                       hasAlpha: (BOOL)alpha
+                       isPlanar: (BOOL)isPlanar
+                 colorSpaceName: (NSString *)colorSpaceName
+                    bytesPerRow: (int)rowBytes
+                   bitsPerPixel: (int)pixelBits
+{
+  return [self initWithBitmapDataPlanes: planes
+               pixelsWide: width
+               pixelsHigh: height
+               bitsPerSample: bitsPerSample
+               samplesPerPixel: samplesPerPixel
+               hasAlpha: alpha
+               isPlanar: isPlanar
+               colorSpaceName: colorSpaceName
+               bitmapFormat: 0
+               bytesPerRow: rowBytes
+               bitsPerPixel: pixelBits];
+}
+
+- (id) initWithBitmapDataPlanes: (unsigned char**)planes
+                     pixelsWide: (int)width
+                     pixelsHigh: (int)height
+                  bitsPerSample: (int)bps
+                samplesPerPixel: (int)spp
+                       hasAlpha: (BOOL)alpha
+                       isPlanar: (BOOL)isPlanar
+                 colorSpaceName: (NSString*)colorSpaceName
+                   bitmapFormat: (NSBitmapFormat)bitmapFormat 
+                    bytesPerRow: (int)rowBytes
+                   bitsPerPixel: (int)pixelBits;
 {
   if (!bps || !spp || !width || !height) 
     {
@@ -449,16 +474,17 @@
   _size.width  = width;
   _size.height = height;
   _bitsPerSample = bps;
-  _numColors     = spp;
+  _numColors  = spp;
   _hasAlpha   = alpha;  
   _isPlanar   = isPlanar;
   _colorSpace = RETAIN(colorSpaceName);
+  _format = bitmapFormat;
   if (!pixelBits)
     pixelBits = bps * ((_isPlanar) ? 1 : spp);
-  _bitsPerPixel            = pixelBits;
+  _bitsPerPixel = pixelBits;
   if (!rowBytes) 
     rowBytes = ceil((float)width * _bitsPerPixel / 8);
-  _bytesPerRow            = rowBytes;
+  _bytesPerRow = rowBytes;
 
   _imagePlanes = NSZoneMalloc([self zone], sizeof(unsigned char*) * MAX_PLANES);
   if (planes) 
@@ -548,6 +574,22 @@
   return nil;
 }
 
+- (id) initForIncrementalLoad
+{
+  // FIXME
+  return self;
+}
+
+- (int) incrementalLoadFromData: (NSData *)data complete: (BOOL)complete
+{
+	if (!complete)
+    {
+      // we don't implement it really
+      return NSImageRepLoadStatusWillNeedAllData;
+    }
+	return [self initWithData:data] ? NSImageRepLoadStatusCompleted : NSImageRepLoadStatusUnexpectedEOF;
+}
+
 - (void) dealloc
 {
   NSZoneFree([self zone],_imagePlanes);
@@ -628,10 +670,398 @@
   if (data)
     {
       for (i = 0; i < _numColors; i++)
-	{
-	  data[i] = _imagePlanes[i];
-	}
+        {
+          data[i] = _imagePlanes[i];
+        }
     }
+}
+
+- (NSBitmapFormat) bitmapFormat
+{
+  return _format;
+}
+
+- (void) getPixel: (unsigned int[])pixelData atX: (int)x y: (int)y
+{
+  int i;
+  int offset;
+
+	if (x < 0 || y < 0 || x >= _pixelsWide || y >= _pixelsHigh)
+    {
+      // outside
+      return;
+    }
+
+  if (_isPlanar)
+    {
+      // FIXME: The y value is taken from the bottom of the image. Not sure if this is correct.
+      offset = x + _bytesPerRow * (_pixelsHigh - 1 - y);
+      for (i = 0; i < _numColors; i++)
+        {
+          pixelData[i] = _imagePlanes[i][offset];
+        }
+  }
+  else
+		{
+      offset = _numColors * x + _bytesPerRow * (_pixelsHigh - 1 - y);
+      for (i = 0; i < _numColors; i++)
+        {
+          pixelData[i] = _imagePlanes[0][offset + i];
+        }
+		}
+}
+
+- (void) setPixel: (unsigned int[])pixelData atX: (int)x y: (int)y
+{
+  int i;
+  int offset;
+
+	if (x < 0 || y < 0 || x >= _pixelsWide || y >= _pixelsHigh)
+    {
+      // outside
+      return;
+    }
+
+  if (!_imagePlanes || !_imagePlanes[0])
+    {
+      // allocate plane memory
+      [self bitmapData];
+    }
+  if(_isPlanar)
+    {
+      offset = x + _bytesPerRow * (_pixelsHigh - 1 - y);
+      for (i = 0; i < _numColors; i++)
+        {
+          _imagePlanes[i][offset] = pixelData[i];
+        }
+		}
+  else
+    {
+      offset = _numColors * x + _bytesPerRow * (_pixelsHigh - 1 - y);
+      for (i = 0; i < _numColors; i++)
+        {
+          _imagePlanes[0][offset + i] = pixelData[i];
+        }
+    }
+}
+
+- (NSColor*) colorAtX: (int)x y: (int)y
+{
+	unsigned int pixelData[5];
+
+	if (x < 0 || y < 0 || x >= _pixelsWide || y >= _pixelsHigh)
+    {
+      // outside
+      return nil;
+    }
+
+	[self getPixel: pixelData atX: x y: y];
+	if ([_colorSpace isEqualToString: NSCalibratedRGBColorSpace]
+      || [_colorSpace isEqualToString: NSDeviceRGBColorSpace])
+		{
+      unsigned int ir, ig, ib, ia;
+      float fr, fg, fb, fa;
+      float scale;
+
+      scale = (float)((1 << _bitsPerSample) - 1);
+      if (_hasAlpha)
+        {
+          // FIXME: This order depends on the bitmap format
+          ir = pixelData[0];
+          ig = pixelData[1];
+          ib = pixelData[2];
+          ia = pixelData[3];
+          // Scale to [0.0 ... 1.0] and undo premultiplication
+          fa = ia / scale;
+          fr = ir / (scale * fa);
+          fg = ig / (scale * fa);
+          fb = ib / (scale * fa);
+        }
+      else
+        {
+          // FIXME: This order depends on the bitmap format
+          ir = pixelData[0];
+          ig = pixelData[1];
+          ib = pixelData[2];
+          // Scale to [0.0 ... 1.0]
+          fr = ir / scale;
+          fg = ig / scale;
+          fb = ib / scale;
+          fa = 1.0;
+        }
+      if ([_colorSpace isEqualToString: NSCalibratedRGBColorSpace])
+        {
+          return [NSColor colorWithCalibratedRed: fr
+                          green: fg
+                          blue: fb
+                          alpha: fa];
+        }
+      else
+        {
+          return [NSColor colorWithDeviceRed: fr
+                          green: fg
+                          blue: fb
+                          alpha: fa];
+        }
+		}
+	else if ([_colorSpace isEqual: NSDeviceWhiteColorSpace]
+           || [_colorSpace isEqual: NSCalibratedWhiteColorSpace])
+		{
+      unsigned int iw, ia;
+      float fw, fa;
+      float scale;
+
+      scale = (float)((1 << _bitsPerSample) - 1);
+      if (_hasAlpha)
+        {
+          // FIXME: This order depends on the bitmap format
+          iw = pixelData[0];
+          ia = pixelData[1];
+          // Scale to [0.0 ... 1.0] and undo premultiplication
+          fa = ia / scale;
+          fw = iw / (scale * fa);
+        }
+      else
+        {
+          // FIXME: This order depends on the bitmap format
+          iw = pixelData[0];
+          // Scale to [0.0 ... 1.0]
+          fw = iw / scale;
+          fa = 1.0;
+        }
+      if ([_colorSpace isEqualToString: NSCalibratedWhiteColorSpace])
+        {
+          return [NSColor colorWithCalibratedWhite: fw
+                          alpha: fa];
+        }
+      else
+        {
+          return [NSColor colorWithDeviceWhite: fw
+                          alpha: fa];
+        }
+    }
+  else if ([_colorSpace isEqual: NSDeviceBlackColorSpace]
+           || [_colorSpace isEqual: NSCalibratedBlackColorSpace])
+    {
+      unsigned int ib, ia;
+      float fw, fa;
+      float scale;
+
+      scale = (float)((1 << _bitsPerSample) - 1);
+      if (_hasAlpha)
+        {
+          // FIXME: This order depends on the bitmap format
+          ib = pixelData[0];
+          ia = pixelData[1];
+          // Scale to [0.0 ... 1.0] and undo premultiplication
+          fa = ia / scale;
+          fw = 1.0 - ib / (scale * fa);
+        }
+      else
+        {
+          // FIXME: This order depends on the bitmap format
+          ib = pixelData[0];
+          // Scale to [0.0 ... 1.0]
+          fw = 1.0 - ib / scale;
+          fa = 1.0;
+        }
+      if ([_colorSpace isEqualToString: NSCalibratedBlackColorSpace])
+        {
+          return [NSColor colorWithCalibratedWhite: fw
+                          alpha: fa];
+        }
+      else
+        {
+          return [NSColor colorWithDeviceWhite: fw
+                          alpha: fa];
+        }
+		}
+  else if ([_colorSpace isEqual: NSDeviceCMYKColorSpace])
+    {
+      unsigned int ic, im, iy, ib, ia;
+      float fc, fm, fy, fb, fa;
+      float scale;
+
+      scale = (float)((1 << _bitsPerSample) - 1);
+      if (_hasAlpha)
+        {
+          // FIXME: This order depends on the bitmap format
+          ic = pixelData[0];
+          im = pixelData[1];
+          iy = pixelData[2];
+          ib = pixelData[3];
+          ia = pixelData[4];
+          // Scale to [0.0 ... 1.0] and undo premultiplication
+          fa = ia / scale;
+          fc = ic / (scale * fa);
+          fm = im / (scale * fa);
+          fy = iy / (scale * fa);
+          fb = ib / (scale * fa);
+        }
+      else
+        {
+          // FIXME: This order depends on the bitmap format
+          ic = pixelData[0];
+          im = pixelData[1];
+          iy = pixelData[2];
+          ib = pixelData[3];
+          // Scale to [0.0 ... 1.0]
+          fc = ic / scale;
+          fm = im / scale;
+          fy = iy / scale;
+          fb = ib / scale;
+          fa = 1.0;
+        }
+
+      return [NSColor colorWithDeviceCyan: fc
+                      magenta: fm
+                      yellow: fy
+                      black: fb
+                      alpha: fa];
+    }
+
+	return nil;
+}
+
+- (void) setColor: (NSColor*)color atX: (int)x y: (int)y
+{
+	unsigned int pixelData[5];
+  NSColor *conv;
+
+	if (x < 0 || y < 0 || x >= _pixelsWide || y >= _pixelsHigh)
+    {
+      // outside
+      return;
+    }
+
+  conv = [color colorUsingColorSpaceName: _colorSpace];
+  if (!conv)
+    {
+      return;
+    }
+      
+  if ([_colorSpace isEqualToString: NSCalibratedRGBColorSpace]
+      || [_colorSpace isEqualToString: NSDeviceRGBColorSpace])
+    {
+      unsigned int ir, ig, ib, ia;
+      float fr, fg, fb, fa;
+      float scale;
+
+      scale = (float)((1 << _bitsPerSample) - 1);
+      [conv getRed: &fr green: &fg blue: &fb alpha: &fa];
+      if(_hasAlpha)
+        {
+          // Scale and premultiply alpha
+          ir = scale * fr * fa;
+          ig = scale * fg * fa;
+          ib = scale * fb * fa;
+          ia = scale * fa;
+          // FIXME: This order depends on the bitmap format
+          pixelData[0] = ir;
+          pixelData[1] = ig;
+          pixelData[2] = ib;
+          pixelData[3] = ia;
+        }
+      else
+        {
+          // Scale
+          ir = scale * fr;
+          ig = scale * fg;
+          ib = scale * fb;
+          // FIXME: This order depends on the bitmap format
+          pixelData[0] = ir;
+          pixelData[1] = ig;
+          pixelData[2] = ib;
+        }
+    }
+	else if ([_colorSpace isEqual: NSDeviceWhiteColorSpace]
+           || [_colorSpace isEqual: NSCalibratedWhiteColorSpace])
+		{
+      unsigned int iw, ia;
+      float fw, fa;
+      float scale;
+
+      scale = (float)((1 << _bitsPerSample) - 1);
+      [conv getWhite: &fw alpha: &fa];
+      if (_hasAlpha)
+        {
+          iw = scale * fw * fa;
+          ia = scale * fa;
+          // FIXME: This order depends on the bitmap format
+          pixelData[0] = iw;
+          pixelData[1] = ia;
+        }
+      else
+        {
+          iw = scale * fw;
+          pixelData[0] = iw;
+        }
+    }
+  else if ([_colorSpace isEqual: NSDeviceBlackColorSpace]
+           || [_colorSpace isEqual: NSCalibratedBlackColorSpace])
+    {
+      unsigned int iw, ia;
+      float fw, fa;
+      float scale;
+
+      scale = (float)((1 << _bitsPerSample) - 1);
+      [conv getWhite: &fw alpha: &fa];
+      if (_hasAlpha)
+        {
+          iw = scale * (1 - fw) * fa;
+          ia = scale * fa;
+          // FIXME: This order depends on the bitmap format
+          pixelData[0] = iw;
+          pixelData[1] = ia;
+        }
+      else
+        {
+          iw = scale * (1 - fw);
+          pixelData[0] = iw;
+        }
+    }
+  else if ([_colorSpace isEqual: NSDeviceCMYKColorSpace])
+    {
+      unsigned int ic, im, iy, ib, ia;
+      float fc, fm, fy, fb, fa;
+      float scale;
+
+      scale = (float)((1 << _bitsPerSample) - 1);
+      [conv getCyan: &fc magenta: &fm yellow: &fy black: &fb alpha: &fa];
+      if(_hasAlpha)
+        {
+          ic = scale * fc * fa;
+          im = scale * fm * fa;
+          iy = scale * fy * fa;
+          ib = scale * fb * fa;
+          ia = scale * fa;
+          // FIXME: This order depends on the bitmap format
+          pixelData[0] = ic;
+          pixelData[1] = im;
+          pixelData[2] = iy;
+          pixelData[3] = ib;
+          pixelData[4] = ia;
+        }
+      else
+        {
+          ic = scale * fc;
+          im = scale * fm;
+          iy = scale * fy;
+          ib = scale * fb;
+          // FIXME: This order depends on the bitmap format
+          pixelData[0] = ic;
+          pixelData[1] = im;
+          pixelData[2] = iy;
+          pixelData[3] = ib;
+        }          
+    }
+  else
+    {
+      // FIXME: Other colour spaces not implemented
+      return;
+    }
+
+	[self setPixel: pixelData atX: x y: y];
 }
 
 /** Draws the image in the current window according the information

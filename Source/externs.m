@@ -104,7 +104,7 @@ NSString *NSImageCompressionFactor = @"NSImageCompressionFactor";
 NSString *NSImageDitherTransparency = @"NSImageDitherTransparency";
 NSString *NSImageRGBColorTable = @"NSImageRGBColorTable";
 NSString *NSImageInterlaced = @"NSImageInterlaced";
-//NSString *NSImageColorSyncProfileData = @"NSImageColorSyncProfileData";  // Mac OS X only
+NSString *NSImageColorSyncProfileData = @"NSImageColorSyncProfileData";  // Mac OS X only
 //NSString *GSImageICCProfileData = @"GSImageICCProfileData";  // if & when GNUstep supports color management
 NSString *NSImageFrameCount = @"NSImageFrameCount";
 NSString *NSImageCurrentFrame = @"NSImageCurrentFrame";
@@ -112,7 +112,7 @@ NSString *NSImageCurrentFrameDuration = @"NSImageCurrentFrameDuration";
 NSString *NSImageLoopCount = @"NSImageLoopCount";
 NSString *NSImageGamma = @"NSImageGamma";
 NSString *NSImageProgressive = @"NSImageProgressive";
-//NSString *NSImageEXIFData = @"NSImageEXIFData";  // No support yet in GNUstep
+NSString *NSImageEXIFData = @"NSImageEXIFData";  // No support yet in GNUstep
 
 // NSColor Global strings
 NSString *NSCalibratedWhiteColorSpace = @"NSCalibratedWhiteColorSpace";

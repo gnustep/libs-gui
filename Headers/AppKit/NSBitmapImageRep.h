@@ -46,21 +46,21 @@
    <item> NSTIFFCompressionCCITTFAX3; </item>
    <item> NSTIFFCompressionCCITFAX4; </item>
    <item> NSTIFFCompressionLZW; </item>
-   <item> NSTIFFCompressionOldJPEG; </item>
    <item> NSTIFFCompressionJPEG; </item>
    <item> NSTIFFCompressionNEXT; </item>
    <item> NSTIFFCompressionPackBits. </item>
+   <item> NSTIFFCompressionOldJPEG; </item>
   </list>
  */
 typedef enum _NSTIFFCompression {
   NSTIFFCompressionNone  = 1,
-  NSTIFFCompressionCCITTFAX3,
-  NSTIFFCompressionCCITTFAX4,
-  NSTIFFCompressionLZW,
-  NSTIFFCompressionOldJPEG,
-  NSTIFFCompressionJPEG,
-  NSTIFFCompressionNEXT,
-  NSTIFFCompressionPackBits
+  NSTIFFCompressionCCITTFAX3 = 3,
+  NSTIFFCompressionCCITTFAX4 = 4,
+  NSTIFFCompressionLZW = 5,
+  NSTIFFCompressionJPEG = 6,
+  NSTIFFCompressionNEXT = 32766,
+  NSTIFFCompressionPackBits = 32773,
+  NSTIFFCompressionOldJPEG = 32865
 } NSTIFFCompression;
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
@@ -75,20 +75,41 @@ typedef enum _NSTIFFCompression {
   </list>
  */
 typedef enum _NSBitmapImageFileType {
-    NSTIFFFileType = 0,
-    NSBMPFileType = 1,
-    NSGIFFileType = 2,
-    NSJPEGFileType = 3,
-    NSPNGFileType = 4,
-    NSJPEG2000FileType = 5  // available in Mac OS X v10.4
+    NSTIFFFileType,
+    NSBMPFileType,
+    NSGIFFileType,
+    NSJPEGFileType,
+    NSPNGFileType,
+    NSJPEG2000FileType  // available in Mac OS X v10.4
 } NSBitmapImageFileType;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+
+typedef enum _NSBitmapFormat
+{
+  NSAlphaFirstBitmapFormat = 1,
+  NSAlphaNonpremultipliedBitmapFormat = 2,
+  NSFloatingPointSamplesBitmapFormat = 4
+} NSBitmapFormat;
+
+typedef enum _NSImageRepLoadStatus
+{
+  NSImageRepLoadStatusUnknownType = -1,
+  NSImageRepLoadStatusReadingHeader = -2,
+  NSImageRepLoadStatusWillNeedAllData = -3,
+  NSImageRepLoadStatusInvalidData = -4,
+  NSImageRepLoadStatusUnexpectedEOF = -5,
+  NSImageRepLoadStatusCompleted = -6
+} NSImageRepLoadStatus;
+
+#endif
 
 APPKIT_EXPORT NSString *NSImageCompressionMethod;  // NSNumber; only for TIFF files
 APPKIT_EXPORT NSString *NSImageCompressionFactor;  // NSNumber 0.0 to 255.0; only for JPEG files (GNUstep extension: JPEG-compressed TIFFs too)
 APPKIT_EXPORT NSString *NSImageDitherTranparency;  // NSNumber boolean; only for writing GIF files
 APPKIT_EXPORT NSString *NSImageRGBColorTable;  // NSData; only for reading & writing GIF files
 APPKIT_EXPORT NSString *NSImageInterlaced;  // NSNumber boolean; only for writing PNG files
-//APPKIT_EXPORT NSString *NSImageColorSyncProfileData; // Mac OX X only
+APPKIT_EXPORT NSString *NSImageColorSyncProfileData; // Mac OX X only
 //APPKIT_EXPORT NSString *GSImageICCProfileData;  // if & when color management comes to GNUstep
 APPKIT_EXPORT NSString *NSImageFrameCount;  // NSNumber integer; only for reading animated GIF files
 APPKIT_EXPORT NSString *NSImageCurrentFrame; // NSNumber integer; only for animated GIF files
@@ -96,7 +117,7 @@ APPKIT_EXPORT NSString *NSImageCurrentFrameDuration;  // NSNumber float; only fo
 APPKIT_EXPORT NSString *NSImageLoopCount; // NSNumber integer; only for reading animated GIF files
 APPKIT_EXPORT NSString *NSImageGamma; // NSNumber 0.0 to 1.0; only for reading & writing PNG files
 APPKIT_EXPORT NSString *NSImageProgressive; // NSNumber boolean; only for reading & writing JPEG files
-//APPKIT_EXPORT NSString *NSImageEXIFData; // No GNUstep support yet; for reading & writing JPEG
+APPKIT_EXPORT NSString *NSImageEXIFData; // No GNUstep support yet; for reading & writing JPEG
 
 #endif
 
@@ -112,6 +133,7 @@ APPKIT_EXPORT NSString *NSImageProgressive; // NSNumber boolean; only for readin
   BOOL			_isPlanar;
   unsigned char		**_imagePlanes;
   NSMutableData		*_imageData;
+  NSBitmapFormat _format;
 }
 
 //
@@ -141,6 +163,24 @@ APPKIT_EXPORT NSString *NSImageProgressive; // NSNumber boolean; only for readin
 - (id)initWithIconHandle:(void *)icon;
 #endif
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+- (int) incrementalLoadFromData: (NSData *)data complete: (BOOL)complete;
+- (id) initForIncrementalLoad;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (id) initWithBitmapDataPlanes: (unsigned char**)planes
+                     pixelsWide: (int)width
+                     pixelsHigh: (int)height
+                  bitsPerSample: (int)bps
+                samplesPerPixel: (int)spp
+                       hasAlpha: (BOOL)alpha
+                       isPlanar: (BOOL)isPlanar
+                 colorSpaceName: (NSString*)colorSpaceName
+                   bitmapFormat: (NSBitmapFormat)bitmapFormat 
+                    bytesPerRow: (int)rowBytes
+                   bitsPerPixel: (int)pixelBits;
+#endif
+
 //
 // Getting Information about the Image 
 //
@@ -156,6 +196,14 @@ APPKIT_EXPORT NSString *NSImageProgressive; // NSNumber boolean; only for readin
 //
 - (unsigned char*) bitmapData;
 - (void) getBitmapDataPlanes: (unsigned char**)data;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (NSBitmapFormat) bitmapFormat;
+- (void) getPixel: (unsigned int[])pixelData atX: (int)x y: (int)y;
+- (void) setPixel: (unsigned int[])pixelData atX: (int)x y: (int)y;
+- (NSColor*) colorAtX: (int)x y: (int)y;
+- (void) setColor: (NSColor*)color atX: (int)x y: (int)y;
+#endif 
 
 //
 // Producing a TIFF Representation of the Image 
