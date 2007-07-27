@@ -1,3 +1,9 @@
+2007-07-27 Fred Kiefer <FredKiefer@gmx.de>
+	
+	* Headers/AppKit/NSBox.h, 
+	* Source/NSBox.m: Add methods and ivar for box type and
+	encode/decode it.
+
 2007-07-26 Fred Kiefer <FredKiefer@gmx.de>
 	
 	* Headers/AppKit/NSBitmapImageRep.h,

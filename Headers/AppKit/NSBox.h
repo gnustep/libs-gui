@@ -57,6 +57,16 @@ typedef enum _NSTitlePosition {
   NSBelowBottom
 } NSTitlePosition;
 
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
+typedef enum _NSBoxType
+{
+  NSBoxPrimary=0,
+  NSBoxSecondary,
+  NSBoxSeparator,
+  NSBoxOldStyle
+} NSBoxType;
+#endif
+
 @interface NSBox : NSView <NSCoding>
 {
   // Attributes
@@ -67,6 +77,7 @@ typedef enum _NSTitlePosition {
   NSRect _title_rect;
   NSBorderType _border_type;
   NSTitlePosition _title_position;
+  NSBoxType _box_type;
 }
 
 //
@@ -85,6 +96,8 @@ typedef enum _NSTitlePosition {
 - (NSRect)titleRect;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void)setTitleWithMnemonic:(NSString *)aString;
+- (NSBoxType)boxType;
+- (void)setBoxType:(NSBoxType)aType;
 #endif
 
 //

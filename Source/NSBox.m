@@ -70,7 +70,7 @@
   NSView *cv;
 
   self = [super initWithFrame: frameRect];
-	
+
   if (!self)
     return self;
 
@@ -127,6 +127,21 @@
   if (_border_type != aType)
     {
       _border_type = aType;
+      [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
+      [self setNeedsDisplay: YES];
+    }
+}
+
+- (NSBoxType) boxType
+{
+  return _box_type;
+}
+
+- (void) setBoxType: (NSBoxType)aType
+{
+  if (_box_type != aType)
+    {
+      _box_type = aType;
       [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
       [self setNeedsDisplay: YES];
     }
@@ -264,7 +279,7 @@
 - (void) setContentViewMargins: (NSSize)offsetSize
 {
   NSAssert(offsetSize.width >= 0 && offsetSize.height >= 0,
-	@"illegal margins supplied");
+        @"illegal margins supplied");
 
   _offsets = offsetSize;
   [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
@@ -297,7 +312,7 @@
   NSRect f = _frame;
 
   NSAssert(contentFrame.size.width >= 0 && contentFrame.size.height >= 0,
-	@"illegal content frame supplied");
+        @"illegal content frame supplied");
 
   if (_super_view)
     r = [_super_view convertRect:r fromView: self];
@@ -326,24 +341,24 @@
       NSArray *subviewArray = [_content_view subviews];
 
       if ([subviewArray count])
-	{
-	  id subview;
-	  NSEnumerator *enumerator;
-	  enumerator = [subviewArray objectEnumerator];
-	  
-	  rect = [[enumerator nextObject] frame];
-	  
-	  // Loop through subviews and calculate rect
-	  // to encompass all
-	  while ((subview = [enumerator nextObject]))
-	    {
-	      rect = NSUnionRect(rect, [subview frame]);
-	    }
-	}
+        {
+          id subview;
+          NSEnumerator *enumerator;
+          enumerator = [subviewArray objectEnumerator];
+          
+          rect = [[enumerator nextObject] frame];
+          
+          // Loop through subviews and calculate rect
+          // to encompass all
+          while ((subview = [enumerator nextObject]))
+            {
+              rect = NSUnionRect(rect, [subview frame]);
+            }
+        }
       else // _content_view has no subviews
-	{
-	  rect = NSZeroRect;
-	}
+        {
+          rect = NSZeroRect;
+        }
     }
 
   rect.size = [self convertSize: rect.size fromView:_content_view];
@@ -366,24 +381,24 @@
     {   
       NSArray *subviewArray = [_content_view subviews];
       if ([subviewArray count])
-	{
-	  id o, e = [subviewArray objectEnumerator];
-	  NSRect r = [[e nextObject] frame];
-	  // Loop through subviews and calculate rect to encompass all
-	  while ((o = [e nextObject]))
-	    {
-	      r = NSUnionRect(r, [o frame]);
-	    }
-	  [_content_view setBoundsOrigin: r.origin];
-	  r.size = [self convertSize: r.size fromView: _content_view];
-	  [_content_view setAutoresizesSubviews: NO];
-	  [_content_view setFrameSize: r.size];
-	  [_content_view setAutoresizesSubviews: YES];
-	}
+        {
+          id o, e = [subviewArray objectEnumerator];
+          NSRect r = [[e nextObject] frame];
+          // Loop through subviews and calculate rect to encompass all
+          while ((o = [e nextObject]))
+            {
+              r = NSUnionRect(r, [o frame]);
+            }
+          [_content_view setBoundsOrigin: r.origin];
+          r.size = [self convertSize: r.size fromView: _content_view];
+          [_content_view setAutoresizesSubviews: NO];
+          [_content_view setFrameSize: r.size];
+          [_content_view setAutoresizesSubviews: YES];
+        }
       else // _content_view has no subviews
-	{
-  	  [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
-	}
+        {
+            [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
+        }
     }
 
   f = [_content_view frame];
@@ -394,7 +409,7 @@
       NSSize titleSize = [_cell cellSize];
       titleSize.width += 6;
       if (f.size.width < titleSize.width)
-	f.size.width = titleSize.width;
+        f.size.width = titleSize.width;
     }
   
   if (_super_view != nil)
@@ -462,12 +477,12 @@
     {
       // If the title is on the border, clip a hole in the later 
       if ((_border_type != NSNoBorder) &&
-	  ((_title_position == NSAtTop) || 
-	   (_title_position == NSAtBottom)))
+          ((_title_position == NSAtTop) || 
+           (_title_position == NSAtBottom)))
         {
-	  [color set];
-	  NSRectFill(_title_rect);
-	}
+          [color set];
+          NSRectFill(_title_rect);
+        }
       [_cell drawWithFrame: _title_rect inView: self];
     }
 }
@@ -489,6 +504,7 @@
       [aCoder encodeObject: [self contentView] forKey: @"NSContentView"];
       [aCoder encodeObject: _cell forKey: @"NSTitleCell"];
       [aCoder encodeInt: [self borderType] forKey: @"NSBorderType"];
+      [aCoder encodeInt: [self boxType] forKey: @"NSBoxType"];
       [aCoder encodeInt: [self titlePosition] forKey: @"NSTitlePosition"];
       [aCoder encodeBool: NO forKey: @"NSTransparent"];
       [aCoder encodeSize: [self contentViewMargins] forKey: @"NSOffsets"];
@@ -517,57 +533,59 @@
       ASSIGN(_cell, titleCell);
       if ([aDecoder containsValueForKey: @"NSBoxType"])
         {
-	  //int boxType = [aDecoder decodeIntForKey: @"NSBoxType"];
-	}
+          int boxType = [aDecoder decodeIntForKey: @"NSBoxType"];
+          
+          [self setBoxType: boxType];
+        }
       if ([aDecoder containsValueForKey: @"NSBorderType"])
         {
-	  NSBorderType borderType = [aDecoder decodeIntForKey: @"NSBorderType"];
+          NSBorderType borderType = [aDecoder decodeIntForKey: @"NSBorderType"];
 
-	  [self setBorderType: borderType];
-	}
+          [self setBorderType: borderType];
+        }
       if ([aDecoder containsValueForKey: @"NSTitlePosition"])
         {
-	  NSTitlePosition titlePosition = [aDecoder decodeIntForKey: 
-							@"NSTitlePosition"];
-
-	  [self setTitlePosition: titlePosition];
-	}
+          NSTitlePosition titlePosition = [aDecoder decodeIntForKey: 
+                                                        @"NSTitlePosition"];
+          
+          [self setTitlePosition: titlePosition];
+        }
       if ([aDecoder containsValueForKey: @"NSTransparent"])
         {
-	  //Bool transparent = [aDecoder decodeBoolForKey: @"NSTransparent"];
-	}
+          //Bool transparent = [aDecoder decodeBoolForKey: @"NSTransparent"];
+        }
       if ([aDecoder containsValueForKey: @"NSOffsets"])
         {
-	  [self setContentViewMargins: [aDecoder decodeSizeForKey: @"NSOffsets"]];
-	}
+          [self setContentViewMargins: [aDecoder decodeSizeForKey: @"NSOffsets"]];
+        }
     }
   else
     {
-	[aDecoder decodeValueOfObjCType: @encode(id) at: &_cell];
-	_offsets = [aDecoder decodeSize];
-	[aDecoder decodeValueOfObjCType: @encode(NSBorderType)
-		                     at: &_border_type];
-	[aDecoder decodeValueOfObjCType: @encode(NSTitlePosition) 
-		                     at: &_title_position];
+        [aDecoder decodeValueOfObjCType: @encode(id) at: &_cell];
+        _offsets = [aDecoder decodeSize];
+        [aDecoder decodeValueOfObjCType: @encode(NSBorderType)
+                                     at: &_border_type];
+        [aDecoder decodeValueOfObjCType: @encode(NSTitlePosition) 
+                                     at: &_title_position];
 
-	// The content view is our only sub_view
-	if ([_sub_views count] == 0)
-	  {
-	    NSDebugLLog(@"NSBox", @"NSBox: decoding without content view\n");
-	    // No content view
-	    _content_view = nil;
-	    [self calcSizesAllowingNegative: NO];
-	  }
-	else 
-	  {
-	    if ([_sub_views count] != 1)
-	      {
-		NSLog (@"Warning: Encoded NSBox with more than one content view!");
-	      }
-	    _content_view = [_sub_views objectAtIndex: 0];
-	    // The following also computes _title_rect and _border_rect.
-	    [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
-	  }
+        // The content view is our only sub_view
+        if ([_sub_views count] == 0)
+          {
+            NSDebugLLog(@"NSBox", @"NSBox: decoding without content view\n");
+            // No content view
+            _content_view = nil;
+            [self calcSizesAllowingNegative: NO];
+          }
+        else 
+          {
+            if ([_sub_views count] != 1)
+              {
+                NSLog (@"Warning: Encoded NSBox with more than one content view!");
+              }
+            _content_view = [_sub_views objectAtIndex: 0];
+            // The following also computes _title_rect and _border_rect.
+            [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
+          }
     }
   return self;
 }
@@ -584,83 +602,83 @@
     {
     case NSNoTitle: 
       {
-	NSSize borderSize = _sizeForBorderType (_border_type);
-	_border_rect = _bounds;
-	_title_rect = NSZeroRect;
+        NSSize borderSize = _sizeForBorderType (_border_type);
+        _border_rect = _bounds;
+        _title_rect = NSZeroRect;
 
-	// Add the offsets to the border rect
-	r.origin.x = _offsets.width + borderSize.width;
-	r.origin.y = _offsets.height + borderSize.height;
-	r.size.width = _border_rect.size.width - (2 * _offsets.width)
-	  - (2 * borderSize.width);
-	r.size.height = _border_rect.size.height - (2 * _offsets.height)
-	  - (2 * borderSize.height);
+        // Add the offsets to the border rect
+        r.origin.x = _offsets.width + borderSize.width;
+        r.origin.y = _offsets.height + borderSize.height;
+        r.size.width = _border_rect.size.width - (2 * _offsets.width)
+          - (2 * borderSize.width);
+        r.size.height = _border_rect.size.height - (2 * _offsets.height)
+          - (2 * borderSize.height);
 
-	break;
+        break;
       }
     case NSAboveTop: 
       {
-	NSSize titleSize = [_cell cellSize];
-	NSSize borderSize = _sizeForBorderType (_border_type);
-	float c;
+        NSSize titleSize = [_cell cellSize];
+        NSSize borderSize = _sizeForBorderType (_border_type);
+        float c;
 
-	// Add spacer around title
-	titleSize.width += 6;
-	titleSize.height += 2;
+        // Add spacer around title
+        titleSize.width += 6;
+        titleSize.height += 2;
 
-	// Adjust border rect by title cell
-	_border_rect = _bounds;
-	_border_rect.size.height -= titleSize.height + borderSize.height;
+        // Adjust border rect by title cell
+        _border_rect = _bounds;
+        _border_rect.size.height -= titleSize.height + borderSize.height;
 
-	// Add the offsets to the border rect
-	r.origin.x = _border_rect.origin.x + _offsets.width + borderSize.width;
-	r.origin.y = _border_rect.origin.y + _offsets.height + borderSize.height;
-	r.size.width = _border_rect.size.width - (2 * _offsets.width)
-	  - (2 * borderSize.width);
-	r.size.height = _border_rect.size.height - (2 * _offsets.height)
-	  - (2 * borderSize.height);
+        // Add the offsets to the border rect
+        r.origin.x = _border_rect.origin.x + _offsets.width + borderSize.width;
+        r.origin.y = _border_rect.origin.y + _offsets.height + borderSize.height;
+        r.size.width = _border_rect.size.width - (2 * _offsets.width)
+          - (2 * borderSize.width);
+        r.size.height = _border_rect.size.height - (2 * _offsets.height)
+          - (2 * borderSize.height);
 
-	// center the title cell
-	c = (_bounds.size.width - titleSize.width) / 2;
-	if (c < 0) c = 0;
-	_title_rect.origin.x = _bounds.origin.x + c;
-	_title_rect.origin.y = _bounds.origin.y + _border_rect.size.height
-	  + borderSize.height;
-	_title_rect.size = titleSize;
+        // center the title cell
+        c = (_bounds.size.width - titleSize.width) / 2;
+        if (c < 0) c = 0;
+        _title_rect.origin.x = _bounds.origin.x + c;
+        _title_rect.origin.y = _bounds.origin.y + _border_rect.size.height
+          + borderSize.height;
+        _title_rect.size = titleSize;
 
-	break;
+        break;
       }
     case NSBelowTop: 
       {
-	NSSize titleSize = [_cell cellSize];
-	NSSize borderSize = _sizeForBorderType (_border_type);
-	float c;
+        NSSize titleSize = [_cell cellSize];
+        NSSize borderSize = _sizeForBorderType (_border_type);
+        float c;
 
-	// Add spacer around title
-	titleSize.width += 6;
-	titleSize.height += 2;
+        // Add spacer around title
+        titleSize.width += 6;
+        titleSize.height += 2;
 
-	// Adjust border rect by title cell
-	_border_rect = _bounds;
+        // Adjust border rect by title cell
+        _border_rect = _bounds;
 
-	// Add the offsets to the border rect
-	r.origin.x = _border_rect.origin.x + _offsets.width + borderSize.width;
-	r.origin.y = _border_rect.origin.y + _offsets.height + borderSize.height;
-	r.size.width = _border_rect.size.width - (2 * _offsets.width)
-	  - (2 * borderSize.width);
-	r.size.height = _border_rect.size.height - (2 * _offsets.height)
-	  - (2 * borderSize.height);
+        // Add the offsets to the border rect
+        r.origin.x = _border_rect.origin.x + _offsets.width + borderSize.width;
+        r.origin.y = _border_rect.origin.y + _offsets.height + borderSize.height;
+        r.size.width = _border_rect.size.width - (2 * _offsets.width)
+          - (2 * borderSize.width);
+        r.size.height = _border_rect.size.height - (2 * _offsets.height)
+          - (2 * borderSize.height);
 
-	// Adjust by the title size
-	r.size.height -= titleSize.height + borderSize.height;
+        // Adjust by the title size
+        r.size.height -= titleSize.height + borderSize.height;
 
-	// center the title cell
-	c = (_border_rect.size.width - titleSize.width) / 2;
-	if (c < 0) c = 0;
-	_title_rect.origin.x = _border_rect.origin.x + c;
-	_title_rect.origin.y = _border_rect.origin.y + _border_rect.size.height
-	  - titleSize.height - borderSize.height;
-	_title_rect.size = titleSize;
+        // center the title cell
+        c = (_border_rect.size.width - titleSize.width) / 2;
+        if (c < 0) c = 0;
+        _title_rect.origin.x = _border_rect.origin.x + c;
+        _title_rect.origin.y = _border_rect.origin.y + _border_rect.size.height
+          - titleSize.height - borderSize.height;
+        _title_rect.size = titleSize;
 
 	break;
       }
