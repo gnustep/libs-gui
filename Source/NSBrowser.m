@@ -76,6 +76,7 @@ static NSTextFieldCell *titleCell;
   id _columnScrollView;
   id _columnMatrix;
   NSString *_columnTitle;
+  float _width;
 }
 
 - (void) setIsLoaded: (BOOL)flag;
@@ -609,7 +610,7 @@ static NSTextFieldCell *titleCell;
       NSBrowserColumn	*bc = [_browserColumns objectAtIndex: column];
       NSMatrix		*matrix = [bc columnMatrix];
       NSBrowserCell	*selectedCell = nil;
-      BOOL	      	found = NO;
+      BOOL	             found = NO;
 
       if (useDelegate == YES)
         {
@@ -683,7 +684,7 @@ static NSTextFieldCell *titleCell;
 - (NSString *) pathToColumn: (int)column
 {
   NSMutableString	*separator = [_pathSeparator mutableCopy];
-  NSString              *string;
+  NSString *string;
   int i;
   
   /*
@@ -888,7 +889,7 @@ static NSTextFieldCell *titleCell;
   for (i = 0; i < count; ++i)
     {
       if (matrix == [self matrixInColumn: i])
-      	return i;
+        return i;
     }
 
   // Not found
@@ -904,7 +905,7 @@ static NSTextFieldCell *titleCell;
   for (i = _lastColumnLoaded; i >= 0; i--)
     {
       if (!(matrix = [self matrixInColumn: i]))
-      	continue;
+        continue;
       if ([matrix selectedCell])
       	return i;
     }
@@ -1250,6 +1251,74 @@ static NSTextFieldCell *titleCell;
   [self tile];
 }
 
+- (float) columnWidthForColumnContentWidth: (float)columnContentWidth
+{
+  float cw;
+
+  cw = columnContentWidth;
+  if (scrollerWidth > cw)
+    {
+      cw = scrollerWidth;
+    }
+
+  // Take the border into account
+  if (_separatesColumns)
+    cw += 2 * (_sizeForBorderType(NSBezelBorder)).width;
+
+  return cw;
+}
+
+- (float) columnContentWidthForColumnWidth: (float)columnWidth
+{
+  float cw;
+
+  // Take the border into account
+  if (_separatesColumns)
+    cw -= 2 * (_sizeForBorderType(NSBezelBorder)).width;
+
+  return cw;
+}
+
+- (NSBrowserColumnResizingType) columnResizingType
+{
+  return _columnResizing;
+}
+
+- (void) setColumnResizingType:(NSBrowserColumnResizingType) type
+{
+  _columnResizing = type;
+}
+
+- (BOOL) prefersAllColumnUserResizing
+{
+  return _prefersAllColumnUserResizing;
+}
+
+- (void) setPrefersAllColumnUserResizing: (BOOL)flag
+{
+  _prefersAllColumnUserResizing = flag;
+}
+
+- (float) widthOfColumn: (int)column
+{
+  NSBrowserColumn *browserColumn;
+
+  browserColumn = [_browserColumns objectAtIndex: column];
+
+  return browserColumn->_width;
+}
+
+- (void) setWidth: (float)columnWidth ofColumn: (int)column
+{
+  NSBrowserColumn *browserColumn;
+
+  browserColumn = [_browserColumns objectAtIndex: column];
+
+  browserColumn->_width = columnWidth;
+  // FIXME: Send a notifiaction
+}
+
+
 /**<p> Returns YES if the title of a column is set to the string value of 
     the selected NSCell in the previous column. By default YES</p>
     <p>See Also: -setTakesTitleFromPreviousColumn: -selectedCellInColumn:</p>
@@ -1551,12 +1620,12 @@ static NSTextFieldCell *titleCell;
       // The knob or knob slot
       case NSScrollerKnob:
       case NSScrollerKnobSlot:
-	{
-	  float f = [sender floatValue];
+        {
+          float f = [sender floatValue];
 
-	  [self scrollColumnToVisible: rintf(f * _lastColumnLoaded)];
-	}
-      	break;
+          [self scrollColumnToVisible: rintf(f * _lastColumnLoaded)];
+        }
+        break;
       
       // NSScrollerNoPart ???
       default:
@@ -1667,17 +1736,17 @@ static NSTextFieldCell *titleCell;
       if (column == _firstVisibleColumn)
         rect.origin.x = (n * _columnSize.width) + 2;
       else
-	rect.origin.x = (n * _columnSize.width) + (n + 2);
+        rect.origin.x = (n * _columnSize.width) + (n + 2);
     }
 
   // Adjust for horizontal scroller
   if (_hasHorizontalScroller)
     {
       if (_separatesColumns)
- 	rect.origin.y = (scrollerWidth - 1) + (2 * bezelBorderSize.height) + 
-	  NSBR_VOFFSET;
+        rect.origin.y = (scrollerWidth - 1) + (2 * bezelBorderSize.height) + 
+          NSBR_VOFFSET;
       else
-	rect.origin.y = scrollerWidth + bezelBorderSize.width;
+        rect.origin.y = scrollerWidth + bezelBorderSize.width;
     }
   else
     {
@@ -1688,10 +1757,10 @@ static NSTextFieldCell *titleCell;
   if (column == _lastVisibleColumn)
     {
       if (_separatesColumns)
-	rect.size.width = _frame.size.width - rect.origin.x;
+        rect.size.width = _frame.size.width - rect.origin.x;
       else
-	rect.size.width = _frame.size.width -
-	  (rect.origin.x + bezelBorderSize.width);
+        rect.size.width = _frame.size.width -
+          (rect.origin.x + bezelBorderSize.width);
     }
 
   if (rect.size.width < 0)
@@ -1714,6 +1783,21 @@ static NSTextFieldCell *titleCell;
   return [self frameOfColumn: column];
 }
 
++ (void) removeSavedColumnsWithAutosaveName: (NSString *)name
+{
+  [[NSUserDefaults standardUserDefaults] removeObjectForKey: name];
+}
+
+- (NSString *) columnsAutosaveName
+{
+  return _columnsAutosaveName;
+}
+
+- (void) setColumnsAutosaveName: (NSString *)name
+{
+  // FIXME: More to do. The whole column width saving is missing!
+  ASSIGN(_columnsAutosaveName, name);
+}
 
 /*
  * Arranging browser components
@@ -2083,7 +2167,10 @@ static NSTextFieldCell *titleCell;
       titleCell = [GSBrowserTitleCell new];
     }
 
-  self = [super initWithFrame: rect];
+  if ((self = [super initWithFrame: rect]) == nil)
+    {
+      return nil;
+    }
 
   // Class setting
   _browserCellPrototype = [[[NSBrowser cellClass] alloc] init];
@@ -2536,7 +2623,7 @@ static NSTextFieldCell *titleCell;
       [aCoder encodeInt: _maxVisibleColumns forKey: @"NSNumberOfVisibleColumns"];
       [aCoder encodeInt: _minColumnWidth forKey: @"NSMinColumnWidth"];
 
-      //[aCoder encodeInt: columnResizingType forKey: @"NSColumnResizingType"]];
+      [aCoder encodeInt: _columnResizing forKey: @"NSColumnResizingType"];
       //[aCoder encodeInt: prefWidth forKey: @"NSPreferedColumnWidth"];
     }
   else
@@ -2634,7 +2721,7 @@ static NSTextFieldCell *titleCell;
       bs = _sizeForBorderType (NSBezelBorder);
       _minColumnWidth = scrollerWidth + (2 * bs.width);
       if (_minColumnWidth < 100.0)
-	_minColumnWidth = 100.0;
+        _minColumnWidth = 100.0;
       
       // Horizontal scroller
       _scrollerRect.origin.x = bs.width;
@@ -2691,8 +2778,8 @@ static NSTextFieldCell *titleCell;
 
       if ([aDecoder containsValueForKey: @"NSColumnResizingType"])
         {
-	  //[self setColumnResizingType: [aDecoder decodeIntForKey: @"NSColumnResizingType"]];
-	}
+          [self setColumnResizingType: [aDecoder decodeIntForKey: @"NSColumnResizingType"]];
+        }
 
       if ([aDecoder containsValueForKey: @"NSPreferedColumnWidth"])
         {

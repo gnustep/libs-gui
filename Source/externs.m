@@ -114,6 +114,9 @@ NSString *NSImageGamma = @"NSImageGamma";
 NSString *NSImageProgressive = @"NSImageProgressive";
 NSString *NSImageEXIFData = @"NSImageEXIFData";  // No support yet in GNUstep
 
+// NSBrowser notification
+NSString *NSBrowserColumnConfigurationDidChangeNotification = @"NSBrowserColumnConfigurationDidChange";
+
 // NSColor Global strings
 NSString *NSCalibratedWhiteColorSpace = @"NSCalibratedWhiteColorSpace";
 NSString *NSCalibratedBlackColorSpace = @"NSCalibratedBlackColorSpace";

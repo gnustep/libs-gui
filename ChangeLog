@@ -1,3 +1,9 @@
+2007-07-28 Fred Kiefer <FredKiefer@gmx.de>
+	
+	* Headers/AppKit/NSBrowser.h,
+	* Source/NSBrowser.m: Add MacOSX 10.3 methods and constants.
+	* Source/externs.m: Define new string constant.
+
 2007-07-27 Fred Kiefer <FredKiefer@gmx.de>
 	
 	* Headers/AppKit/NSBox.h, 
