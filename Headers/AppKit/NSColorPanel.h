@@ -53,7 +53,8 @@ enum {
   NSHSBModeColorPanel,
   NSCustomPaletteModeColorPanel,
   NSColorListModeColorPanel,
-  NSWheelModeColorPanel 
+  NSWheelModeColorPanel,
+  NSCrayonModeColorPanel 
 };
 
 enum {
@@ -64,7 +65,8 @@ enum {
   NSColorPanelCustomPaletteModeMask = 16,
   NSColorPanelColorListModeMask = 32,
   NSColorPanelWheelModeMask = 64,
-  NSColorPanelAllModesMask = 127 
+  NSColorPanelCrayonModeMask = 128,
+  NSColorPanelAllModesMask = 255
 };
 
 @interface NSApplication (NSColorPanel)

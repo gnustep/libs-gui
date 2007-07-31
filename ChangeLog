@@ -1,5 +1,14 @@
 2007-07-31 Fred Kiefer <FredKiefer@gmx.de>
 	
+	* Headers/AppKit/NSColorPanel.h: Add constant for
+	NSCrayonModeColorPanel. 
+	* Headers/AppKit/NSComboBox.h,
+	* Source/NSComboBox.m: Add MacOSX 10.3 methods.
+	* Headers/AppKit/NSComboBoxCell.h,
+	* Source/NSComboBoxCell.m: Add MacOSX 10.3 methods.
+
+2007-07-31 Fred Kiefer <FredKiefer@gmx.de>
+	
 	* Headers/AppKit/NSColorSpace.h,
 	* Source/NSColorSpace.m: New files.
 	* GNUMakefile: Add NSColorSpace.

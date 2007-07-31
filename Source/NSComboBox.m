@@ -436,6 +436,16 @@ static NSNotificationCenter *nc;
   [_cell setCompletes: completes];
 }
 
+- (BOOL) isButtonBordered
+{
+  return [_cell isButtonBordered];
+}
+
+- (void) setButtonBordered:(BOOL)flag
+{
+  [_cell setButtonBordered: flag];
+}
+
 - (void) setDelegate: (id)anObject
 {
   [super setDelegate: anObject];

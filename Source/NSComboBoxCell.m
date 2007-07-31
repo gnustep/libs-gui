@@ -1447,6 +1447,16 @@ static GSComboWindow *gsWindow = nil;
   _completes = completes;
 }
 
+- (BOOL) isButtonBordered
+{
+  return [_buttonCell isBordered];
+}
+
+- (void) setButtonBordered:(BOOL)flag
+{
+  [_buttonCell setBordered: flag];
+}
+
 #define ComboBoxHeight 21 // FIX ME: All this stuff shouldn't be hardcoded
 #define ButtonWidth 17
 #define ButtonHeight 17
