@@ -73,6 +73,7 @@ NSColor.m \
 NSColorList.m \
 NSColorPanel.m \
 NSColorPicker.m \
+NSColorSpace.m \
 NSColorWell.m \
 NSComboBox.m \
 NSComboBoxCell.m \
@@ -253,6 +254,7 @@ NSColor.h \
 NSColorList.h \
 NSColorPanel.h \
 NSColorPicker.h \
+NSColorSpace.h \
 NSColorWell.h \
 NSComboBox.h \
 NSComboBoxCell.h \

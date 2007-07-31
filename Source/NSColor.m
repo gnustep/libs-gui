@@ -40,6 +40,7 @@
 
 #include "AppKit/NSColor.h"
 #include "AppKit/NSColorList.h"
+#include "AppKit/NSColorSpace.h"
 #include "AppKit/NSPasteboard.h"
 #include "AppKit/NSView.h"
 #include "AppKit/NSImage.h"
@@ -485,8 +486,24 @@ systemColorWithName(NSString *name)
 
 + (NSColor*) colorForControlTint: (NSControlTint)controlTint
 {
-  // TODO
-  return nil;
+ 	switch (controlTint)
+		{
+      default:
+      case NSDefaultControlTint: 
+        return [self colorForControlTint: [self currentControlTint]];
+      case NSGraphiteControlTint:
+        // FIXME
+      case NSClearControlTint:
+        // FIXME
+      case NSBlueControlTint:
+        return [NSColor blueColor];
+		}
+}
+
++ (NSControlTint) currentControlTint;
+{
+	// FIXME: should be made a system setting
+	return NSBlueControlTint;
 }
 
 + (NSColor*) colorWithPatternImage: (NSImage*)image
@@ -1143,6 +1160,54 @@ systemColorWithName(NSString *name)
   return nil;
 }
 
++ (NSColor *) colorWithColorSpace: (NSColorSpace *)space
+                       components: (const float *)comp
+                            count: (int)number
+{
+  // FIXME
+	return nil;
+}
+				
+/*
+  FIXME: This method does it the wrong way around. We should store the
+  actual colour space and get the colour space name from there.
+*/
+- (NSColorSpace *) colorSpace
+{
+  NSString *name = [self colorSpaceName];
+
+	if ([name isEqualToString: NSCalibratedRGBColorSpace])
+    return [NSColorSpace genericRGBColorSpace];
+	if ([name isEqualToString: NSDeviceRGBColorSpace])
+    return [NSColorSpace deviceRGBColorSpace];
+	if ([name isEqualToString: NSCalibratedBlackColorSpace]
+      || [name isEqualToString: NSCalibratedWhiteColorSpace])
+    return [NSColorSpace genericGrayColorSpace];
+	if ([name isEqualToString: NSDeviceBlackColorSpace]
+      || [name isEqualToString: NSDeviceWhiteColorSpace])
+    return [NSColorSpace deviceGrayColorSpace];
+	if ([name isEqualToString: NSDeviceCMYKColorSpace])
+    return [NSColorSpace deviceCMYKColorSpace];
+
+	return nil;
+}
+
+- (NSColor *) colorUsingColorSpace: (NSColorSpace *)space
+{
+  // FIXME
+	return nil;
+}
+
+- (int) numberOfComponents
+{
+	return [[self colorSpace] numberOfColorComponents];
+}
+
+- (void) getComponents: (float *)components
+{
+  // FIXME
+}
+
 //
 // Changing the Color
 //
@@ -1223,6 +1288,28 @@ systemColorWithName(NSString *name)
 {
   // This is here to keep old code working
   [[self colorUsingColorSpaceName: NSDeviceRGBColorSpace] set];
+}
+
+- (void) setFill
+{
+  int num = [self numberOfComponents];
+  float values[num + 1];
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  
+  [self getComponents: values];
+  [ctxt GSSetFillColorspace: [self colorSpace]];
+  [ctxt GSSetFillColor: values];
+}
+
+- (void) setStroke
+{
+  int num = [self numberOfComponents];
+  float values[num + 1];
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  
+  [ctxt GSSetStrokeColorspace: [self colorSpace]];
+  [self getComponents: values];
+  [ctxt GSSetStrokeColor: values];
 }
 
 //
@@ -1875,6 +1962,17 @@ systemColorWithName(NSString *name)
   return _white_component;
 }
 
+- (void) getComponents: (float *)components;
+{
+  components[0] = _white_component;
+  components[1] = _alpha_component;
+}
+
+- (int) numberOfComponents
+{
+  return 1;
+}
+
 - (NSString*) description
 {
   NSMutableString *desc;
@@ -2160,6 +2258,20 @@ systemColorWithName(NSString *name)
   return _yellow_component;
 }
 
+- (void) getComponents: (float *)components;
+{
+  components[0] = _cyan_component;
+  components[1] = _magenta_component;
+  components[2] = _yellow_component;
+  components[3] = _black_component;
+  components[4] = _alpha_component;
+}
+
+- (int) numberOfComponents
+{
+  return 4;
+}
+
 - (NSString*) description
 {
   NSMutableString *desc;
@@ -2397,6 +2509,19 @@ systemColorWithName(NSString *name)
 - (float) brightnessComponent
 {
   return _brightness_component;
+}
+
+- (void) getComponents: (float *)components;
+{
+  components[0] = _red_component;
+  components[1] = _green_component;
+  components[2] = _blue_component;
+  components[4] = _alpha_component;
+}
+
+- (int) numberOfComponents
+{
+	return 3;
 }
 
 - (void) getHue: (float*)hue

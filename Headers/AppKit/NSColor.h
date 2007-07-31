@@ -38,6 +38,7 @@
 @class NSDictionary;
 @class NSPasteboard;
 @class NSImage;
+@class NSColorSpace;
 
 typedef enum _NSControlTint {
     NSDefaultControlTint,
@@ -168,6 +169,16 @@ typedef enum _NSControlSize {
 - (NSColor *)colorUsingColorSpaceName:(NSString *)colorSpace;
 - (NSColor *)colorUsingColorSpaceName:(NSString *)colorSpace
 			       device:(NSDictionary *)deviceDescription;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+// + (NSColor *)colorWithCIColor:(CIColor *)color;
++ (NSColor *)colorWithColorSpace:(NSColorSpace *)space
+					   components:(const float *)comp
+							count:(int)number;
+- (NSColorSpace *)colorSpace;
+- (NSColor *)colorUsingColorSpace:(NSColorSpace *)space;
+- (void)getComponents:(float *)components;
+- (int)numberOfComponents;
+#endif
 
 //
 // Changing the Color
@@ -187,6 +198,10 @@ typedef enum _NSControlSize {
 //
 - (void)drawSwatchInRect:(NSRect)rect;
 - (void)set;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (void)setFill;
+- (void)setStroke;
+#endif
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 //
@@ -195,14 +210,20 @@ typedef enum _NSControlSize {
 - (NSColor*) highlightWithLevel: (float)level;
 - (NSColor*) shadowWithLevel: (float)level;
 
-+ (NSColor*) colorWithPatternImage:(NSImage*)image;
-+ (NSColor*) colorForControlTint:(NSControlTint)controlTint;
++ (NSColor*)colorWithPatternImage:(NSImage*)image;
++ (NSColor*)colorForControlTint:(NSControlTint)controlTint;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
++ (NSControlTint)currentControlTint;
+#endif
 
 //
 // System colors stuff.
 //
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
 + (NSColor*) alternateSelectedControlColor;
 + (NSColor*) alternateSelectedControlTextColor;
+#endif
 + (NSColor*) controlBackgroundColor;
 + (NSColor*) controlColor;
 + (NSColor*) controlHighlightColor;
@@ -233,7 +254,9 @@ typedef enum _NSControlSize {
 + (NSColor*) windowFrameColor;
 + (NSColor*) windowFrameTextColor;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 + (NSArray*) controlAlternatingRowBackgroundColors;
+#endif
 
 // Pattern colour
 - (NSImage*) patternImage;

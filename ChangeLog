@@ -1,3 +1,12 @@
+2007-07-31 Fred Kiefer <FredKiefer@gmx.de>
+	
+	* Headers/AppKit/NSColorSpace.h,
+	* Source/NSColorSpace.m: New files.
+	* GNUMakefile: Add NSColorSpace.
+	* Headers/AppKit/NSColor.h,
+	* Source/NSColor.m: Add MacOSX 10.4 methods.
+	Code mostly by Nikolaus Schaller <hns@computer.org>.
+
 2007-07-28 Fred Kiefer <FredKiefer@gmx.de>
 	
 	* Headers/AppKit/NSBrowser.h,
