@@ -1413,23 +1413,64 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
  */
 - (NSArray*) launchedApplications
 {
-  id	app;
+  static NSDate *lastCheck = nil;
+  NSArray       *apps = nil;
+  unsigned      count;
 
   NS_DURING
     {
+      id	app;
+
       if ((app = [self _workspaceApplication]) != nil)
 	{
-	  NSArray	*result;
-
-	  result = [app launchedApplications];
-	  NS_VALRETURN(result);
+	  apps = [app launchedApplications];
 	}
     }
   NS_HANDLER
-    // workspace manager problem ... fall through to default code
+    {
+      // workspace manager problem ... fall through to default code
+    }
   NS_ENDHANDLER
+  if (apps == nil)
+    {
+      apps = GSLaunched(nil, NO);
+    }
 
-  return GSLaunched(nil, NO);
+  /* If it's over 30 seconds since the last check ... try to contact
+   * all launched applications to ensure that none have crashed.
+   */
+  if (lastCheck != nil && [lastCheck timeIntervalSinceNow] > -30.0)
+    {
+      return apps;
+    }
+  ASSIGN(lastCheck, [NSDate date]);
+
+  count = [apps count];
+  while (count-- > 0)
+    {
+      NSString  *name;
+
+      name = [[apps objectAtIndex: count] objectForKey: @"NSApplicationName"];
+      if (name != nil)
+        {
+          CREATE_AUTORELEASE_POOL(arp);
+          BOOL  found = NO;
+
+          if ([self _connectApplication: name] != nil)
+            {
+              found = YES;
+            }
+          RELEASE(arp);
+          if (found == NO)
+            {
+              NSMutableArray    *m = [apps mutableCopy];
+
+              [m removeObjectAtIndex: count];
+              apps = AUTORELEASE(m);
+            }
+        }
+    }
+  return apps;
 }
 
 /*
