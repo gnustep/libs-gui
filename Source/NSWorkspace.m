@@ -387,7 +387,7 @@ static id GSLaunched(NSNotification *notification, BOOL active)
 // application communication
 - (BOOL) _launchApplication: (NSString*)appName
 		  arguments: (NSArray*)args;
-- (id) _connectApplication: (NSString*)appName;
+- (id) _connectApplication: (NSString*)appName alert: (BOOL)alert;
 - (id) _workspaceApplication;
 
 @end
@@ -697,7 +697,7 @@ static NSString			*_rootPath = @"/";
 	}
     }
 
-  app = [self _connectApplication: appName];
+  app = [self _connectApplication: appName alert: YES];
   if (app == nil)
     {
       NSArray *args;
@@ -759,7 +759,7 @@ static NSString			*_rootPath = @"/";
       return NO;
     }
 
-  app = [self _connectApplication: appName];
+  app = [self _connectApplication: appName alert: YES];
   if (app == nil)
     {
       NSArray *args;
@@ -1359,7 +1359,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
     // workspace manager problem ... fall through to default code
   NS_ENDHANDLER
 
-  app = [self _connectApplication: appName];
+  app = [self _connectApplication: appName alert: YES];
   if (app == nil)
     {
       NSArray	*args = nil;
@@ -1456,7 +1456,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
           CREATE_AUTORELEASE_POOL(arp);
           BOOL  found = NO;
 
-          if ([self _connectApplication: name] != nil)
+          if ([self _connectApplication: name alert: NO] != nil)
             {
               found = YES;
             }
@@ -2445,7 +2445,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   return YES;
 }
 
-- (id) _connectApplication: (NSString*)appName
+- (id) _connectApplication: (NSString*)appName alert: (BOOL)alert
 {
   NSString	*host;
   NSString	*port;
@@ -2508,9 +2508,16 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	      int		result;
 
 	      DESTROY(when);
-	      result = NSRunAlertPanel(appName,
-		@"Application seems to have hung",
-		@"Continue", @"Terminate", @"Wait");
+              if (alert == YES)
+                {
+	          result = NSRunAlertPanel(appName,
+		    @"Application seems to have hung",
+		    @"Continue", @"Terminate", @"Wait");
+                }
+              else
+                {
+                  result = NSAlertAlternateReturn;
+                }
 
 	      if (result == NSAlertDefaultReturn)
 		{
@@ -2583,7 +2590,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
       return nil;
     }
 
-  app = [self _connectApplication: appName];
+  app = [self _connectApplication: appName alert: YES];
   if (app == nil)
     {
       NSString	*host;
@@ -2613,7 +2620,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	  if ([self _launchApplication: appName
 			     arguments: nil] == YES)
 	    {
-	      app = [self _connectApplication: appName];
+	      app = [self _connectApplication: appName alert: YES];
 	    }
 	}
     }
