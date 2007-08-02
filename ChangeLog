@@ -2,6 +2,7 @@
 
 	* Source/NSWorkspace.m: ([-launchedApplications]) check that each app
 	is still responding if it's more than 30 seconds since the last check.
+	If possible, check that processes still exist.
 
 2007-07-31 Fred Kiefer <FredKiefer@gmx.de>
 	

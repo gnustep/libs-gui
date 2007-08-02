@@ -56,6 +56,7 @@
 #include <Foundation/NSDistributedNotificationCenter.h>
 #include <Foundation/NSConnection.h>
 #include <Foundation/NSDebug.h>
+#include <Foundation/NSProcessInfo.h>
 #include <Foundation/NSThread.h>
 #include <Foundation/NSURL.h>
 #include <Foundation/NSValue.h>
@@ -68,6 +69,12 @@
 #include "AppKit/NSScreen.h"
 #include "GNUstepGUI/GSServicesManager.h"
 #include "GNUstepGUI/GSDisplayServer.h"
+
+/* Private method to check that a process exists.
+ */
+@interface NSProcessInfo (Private)
++ (BOOL)_exists: (int)pid;
+@end
 
 #define PosixExecutePermission	(0111)
 
@@ -1413,9 +1420,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
  */
 - (NSArray*) launchedApplications
 {
-  static NSDate *lastCheck = nil;
   NSArray       *apps = nil;
-  unsigned      count;
 
   NS_DURING
     {
@@ -1433,40 +1438,76 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   NS_ENDHANDLER
   if (apps == nil)
     {
+      static NSDate *lastCheck = nil;
+      unsigned      count;
+
       apps = GSLaunched(nil, NO);
-    }
 
-  /* If it's over 30 seconds since the last check ... try to contact
-   * all launched applications to ensure that none have crashed.
-   */
-  if (lastCheck != nil && [lastCheck timeIntervalSinceNow] > -30.0)
-    {
-      return apps;
-    }
-  ASSIGN(lastCheck, [NSDate date]);
+      count = [apps count];
 
-  count = [apps count];
-  while (count-- > 0)
-    {
-      NSString  *name;
-
-      name = [[apps objectAtIndex: count] objectForKey: @"NSApplicationName"];
-      if (name != nil)
+      if ([NSProcessInfo respondsToSelector: @selector(_exists:)] == YES)
         {
-          CREATE_AUTORELEASE_POOL(arp);
-          BOOL  found = NO;
-
-          if ([self _connectApplication: name alert: NO] != nil)
+          /* Check and remove apps whose pid no loinger exists
+           */
+          while (count-- > 0)
             {
-              found = YES;
+              int       pid;
+              NSString  *name;
+
+              name = [[apps objectAtIndex: count]
+                objectForKey: @"NSApplicationName"];
+              pid = [[[apps objectAtIndex: count]
+                objectForKey: @"NSApplicationProcessIdentifier"] intValue];
+              if (pid > 0 && [name length] > 0)
+                {
+                  if ([NSProcessInfo _exists: pid] == NO)
+                    {
+                      NSMutableArray    *m = [apps mutableCopy];
+
+                      GSLaunched([NSNotification notificationWithName:
+                        NSWorkspaceDidTerminateApplicationNotification
+                        object: self
+                        userInfo: [NSDictionary dictionaryWithObject: name
+                          forKey: @"NSApplicationName"]], NO);
+
+                      [m removeObjectAtIndex: count];
+                      apps = AUTORELEASE(m);
+                    }
+                }
             }
-          RELEASE(arp);
-          if (found == NO)
-            {
-              NSMutableArray    *m = [apps mutableCopy];
+        }
 
-              [m removeObjectAtIndex: count];
-              apps = AUTORELEASE(m);
+      /* If it's over 30 seconds since the last check ... try to contact
+       * all launched applications to ensure that none have crashed.
+       */
+      if (lastCheck == nil || [lastCheck timeIntervalSinceNow] < -30.0)
+        {
+          ASSIGN(lastCheck, [NSDate date]);
+
+          while (count-- > 0)
+            {
+              NSString  *name;
+
+              name = [[apps objectAtIndex: count]
+                objectForKey: @"NSApplicationName"];
+              if (name != nil)
+                {
+                  CREATE_AUTORELEASE_POOL(arp);
+                  BOOL  found = NO;
+
+                  if ([self _connectApplication: name alert: NO] != nil)
+                    {
+                      found = YES;
+                    }
+                  RELEASE(arp);
+                  if (found == NO)
+                    {
+                      NSMutableArray    *m = [apps mutableCopy];
+
+                      [m removeObjectAtIndex: count];
+                      apps = AUTORELEASE(m);
+                    }
+                }
             }
         }
     }
