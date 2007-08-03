@@ -109,6 +109,9 @@
 - (IBAction)openDocument:(id)sender;
 - (IBAction)newDocument:(id)sender;
 - (IBAction)clearRecentDocuments:(id)sender;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (unsigned int) maximumRecentDocumentCount;
+#endif
 
 /*" Recent Documents "*/
 - (void)noteNewRecentDocument:(NSDocument *)aDocument;

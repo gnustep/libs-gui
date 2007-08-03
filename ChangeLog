@@ -1,3 +1,14 @@
+2007-08-03 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSDocumentController.h,
+	* Source/NSDocumentController.m (-maximumRecentDocumentCount): Add
+	missing method.
+	* Headers/AppKit/NSEvent.h,
+	* Source/NSEvent.m: Add MacOSX 10.4 methods and constants. Resort
+	event types to be binary compatible to MacOSX.
+	* Source/Functions.m (NSEventMaskFromType): Remove.
+	* Source/NSWindow.m (-sendEvent:): Handle new event types.
+	
 2007-08-03 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: ([-launchedApplications]) complete and tidy

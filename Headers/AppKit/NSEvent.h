@@ -73,15 +73,12 @@
 typedef enum _NSEventType {
   // Note - order IS significant as ranges of values
   // are used for testing for valid event types.
-  NSLeftMouseDown,
+  NSLeftMouseDown = 1,
   NSLeftMouseUp,
-  NSOtherMouseDown,
-  NSOtherMouseUp,
   NSRightMouseDown,
   NSRightMouseUp,
   NSMouseMoved,
   NSLeftMouseDragged,
-  NSOtherMouseDragged,
   NSRightMouseDragged,
   NSMouseEntered,
   NSMouseExited,
@@ -93,19 +90,23 @@ typedef enum _NSEventType {
   NSApplicationDefined,
   NSPeriodic,
   NSCursorUpdate,
-  NSScrollWheel
+  NSScrollWheel = 22,
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+  NSTabletPoint,
+  NSTabletProximity,
+#endif
+  NSOtherMouseDown = 25,
+  NSOtherMouseUp,
+  NSOtherMouseDragged
 } NSEventType;
 
 enum {
   NSLeftMouseDownMask = (1 << NSLeftMouseDown),
   NSLeftMouseUpMask = (1 << NSLeftMouseUp),
-  NSOtherMouseDownMask = (1 << NSOtherMouseDown),
-  NSOtherMouseUpMask = (1 << NSOtherMouseUp),
   NSRightMouseDownMask = (1 << NSRightMouseDown),
   NSRightMouseUpMask = (1 << NSRightMouseUp),
   NSMouseMovedMask = (1 << NSMouseMoved),
   NSLeftMouseDraggedMask = (1 << NSLeftMouseDragged),
-  NSOtherMouseDraggedMask = (1 << NSOtherMouseDragged),
   NSRightMouseDraggedMask = (1 << NSRightMouseDragged),
   NSMouseEnteredMask = (1 << NSMouseEntered),
   NSMouseExitedMask = (1 << NSMouseExited),
@@ -118,104 +119,191 @@ enum {
   NSPeriodicMask = (1 << NSPeriodic),
   NSCursorUpdateMask = (1 << NSCursorUpdate),
   NSScrollWheelMask = (1 << NSScrollWheel),
-  NSAnyEventMask = 0xffffffff
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+  NSTabletPointMask = (1 << NSTabletPoint),
+  NSTabletProximityMask = (1 << NSTabletProximity),
+#endif
+  NSOtherMouseDownMask = (1 << NSOtherMouseDown),
+  NSOtherMouseUpMask = (1 << NSOtherMouseUp),
+  NSOtherMouseDraggedMask = (1 << NSOtherMouseDragged),
+
+  NSAnyEventMask = 0xffffffffU,
+
+  // key events
+  GSKeyEventMask = (NSKeyDownMask | NSKeyUpMask | NSFlagsChangedMask),
+  // mouse events
+  GSMouseEventMask = (NSLeftMouseDownMask | NSLeftMouseUpMask | NSLeftMouseDraggedMask
+                      | NSRightMouseDownMask | NSRightMouseUpMask | NSRightMouseDraggedMask
+                      | NSOtherMouseDownMask | NSOtherMouseUpMask | NSOtherMouseDraggedMask
+                      | NSMouseMovedMask | NSScrollWheelMask
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+                      | NSTabletPointMask | NSTabletProximityMask
+#endif
+      ),
+  // mouse move events
+  GSMouseMovedEventMask = (NSMouseMovedMask | NSScrollWheelMask
+                           | NSLeftMouseDraggedMask | NSRightMouseDraggedMask
+                           | NSOtherMouseDraggedMask),
+  // enter/exit event
+  GSEnterExitEventMask = (NSMouseEnteredMask | NSMouseExitedMask | NSCursorUpdateMask),
+  // other events
+  GSOtherEventMask = (NSAppKitDefinedMask | NSSystemDefinedMask
+                      | NSApplicationDefinedMask | NSPeriodicMask),
+
+  // tracking loops may need to add NSPeriodicMask
+  GSTrackingLoopMask = (NSLeftMouseDownMask | NSLeftMouseUpMask
+                        | NSLeftMouseDraggedMask | NSMouseMovedMask
+                        | NSRightMouseUpMask | NSOtherMouseUpMask)
+};
+
+/*
+ * Convert an NSEvent Type to it's respective Event Mask
+ */
+// FIXME: Should we use the inline trick from NSGeometry.h here? 
+static inline
+unsigned int
+NSEventMaskFromType(NSEventType type)
+{
+  return (1 << type);
+}
+
+enum {
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+  NSDeviceIndependentModifierFlagsMask = 0xffff0000U,
+#endif
+  NSAlphaShiftKeyMask = 1 << 16,
+  NSShiftKeyMask = 2 << 16,
+  NSControlKeyMask = 4 << 16,
+  NSAlternateKeyMask = 8 << 16,
+  NSCommandKeyMask = 16 << 16,
+  NSNumericPadKeyMask = 32 << 16,
+  NSHelpKeyMask = 64 << 16,
+  NSFunctionKeyMask = 128 << 16
+};
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+typedef enum
+{
+  NSUnknownPointingDevice,
+  NSPenPointingDevice,
+  NSCursorPointingDevice,
+  NSEraserPointingDevice
+} NSPointingDeviceType;
+
+enum
+{
+  NSPenTipMask = 1,
+  NSPenLowerSideMask = 2,
+  NSPenUpperSideMask = 4
+};
+
+enum
+{
+  NSMouseEventSubtype,
+  NSTabletPointEventSubtype,
+  NSTabletProximityEventSubtype
 };
 
 enum {
-  NSAlphaShiftKeyMask = 1,
-  NSShiftKeyMask = 2,
-  NSControlKeyMask = 4,
-  NSAlternateKeyMask = 8,
-  NSCommandKeyMask = 16,
-  NSNumericPadKeyMask = 32,
-  NSHelpKeyMask = 64,
-  NSFunctionKeyMask = 128
+  NSWindowExposedEventType = 0,
+  NSApplicationActivatedEventType = 1,
+  NSApplicationDeactivatedEventType = 2,
+  NSWindowMovedEventType = 4,
+  NSScreenChangedEventType = 8,
+  NSAWTEventType = 16
 };
+
+enum
+{
+  NSPowerOffEventType = 1
+};
+
+#endif
 
 @interface NSEvent : NSObject <NSCoding, NSCopying>
 {
-  NSEventType		event_type;
-  NSPoint		location_point;
-  unsigned int		modifier_flags;
-  NSTimeInterval	event_time;
-  int			window_num;
+  NSEventType	event_type;
+  NSPoint	location_point;
+  unsigned int modifier_flags;
+  NSTimeInterval event_time;
+  int window_num;
   NSGraphicsContext	*event_context;
   union _MB_event_data
     {
       struct
-	{
-	  int	        event_num;
-	  short	        click;
-	  short	        button;
-	  float	        pressure;
-	  float         deltaX;
-	  float         deltaY;
-	  float         deltaZ;
-	} mouse;
+        {
+          int   event_num;
+          short click;
+          short button;
+          float pressure;
+          float deltaX;
+          float deltaY;
+          float deltaZ;
+        } mouse;
       struct
-	{
-	  BOOL		repeat;
-	  NSString	*char_keys;
-	  NSString	*unmodified_keys;
-	  unsigned short key_code;
-	} key;
+        {
+          BOOL     repeat;
+          NSString *char_keys;
+          NSString *unmodified_keys;
+          unsigned short key_code;
+        } key;
       struct
-	{
-	  int		event_num;
-	  int		tracking_num;
-	  void		*user_data;
-	} tracking;
+        {
+          int  event_num;
+          int  tracking_num;
+          void *user_data;
+        } tracking;
       struct
-	{
-	  short		sub_type;
-	  int		data1;
-	  int		data2;
-	} misc;
+        {
+          short sub_type;
+          int   data1;
+          int   data2;
+        } misc;
     } event_data;
 }
 
-+ (NSEvent*) enterExitEventWithType: (NSEventType)type	
-			   location: (NSPoint)location
-		      modifierFlags: (unsigned int)flags
-			  timestamp: (NSTimeInterval)time
-		       windowNumber: (int)windowNum
-			    context: (NSGraphicsContext*)context	
-			eventNumber: (int)eventNum
-		     trackingNumber: (int)trackingNum
-			   userData: (void *)userData; 
++ (NSEvent*) enterExitEventWithType: (NSEventType)type        
+                           location: (NSPoint)location
+                      modifierFlags: (unsigned int)flags
+                          timestamp: (NSTimeInterval)time
+                       windowNumber: (int)windowNum
+                            context: (NSGraphicsContext*)context        
+                        eventNumber: (int)eventNum
+                     trackingNumber: (int)trackingNum
+                           userData: (void *)userData; 
 
 + (NSEvent*) keyEventWithType: (NSEventType)type
-		     location: (NSPoint)location
-		modifierFlags: (unsigned int)flags
-		    timestamp: (NSTimeInterval)time
-		 windowNumber: (int)windowNum
-		      context: (NSGraphicsContext*)context	
-		   characters: (NSString *)keys	
+                     location: (NSPoint)location
+                modifierFlags: (unsigned int)flags
+                    timestamp: (NSTimeInterval)time
+                 windowNumber: (int)windowNum
+                      context: (NSGraphicsContext*)context        
+                   characters: (NSString *)keys        
   charactersIgnoringModifiers: (NSString *)ukeys
-		    isARepeat: (BOOL)repeatKey	
-		      keyCode: (unsigned short)code;
+                    isARepeat: (BOOL)repeatKey        
+                      keyCode: (unsigned short)code;
 
-+ (NSEvent*) mouseEventWithType: (NSEventType)type	
-		       location: (NSPoint)location
-		  modifierFlags: (unsigned int)flags
-		      timestamp: (NSTimeInterval)time
-		   windowNumber: (int)windowNum	
-			context: (NSGraphicsContext*)context	
-		    eventNumber: (int)eventNum	
-		     clickCount: (int)clickNum	
-		       pressure: (float)pressureValue;
++ (NSEvent*) mouseEventWithType: (NSEventType)type        
+                       location: (NSPoint)location
+                  modifierFlags: (unsigned int)flags
+                      timestamp: (NSTimeInterval)time
+                   windowNumber: (int)windowNum        
+                        context: (NSGraphicsContext*)context        
+                    eventNumber: (int)eventNum        
+                     clickCount: (int)clickNum        
+                       pressure: (float)pressureValue;
 
 #if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
-+ (NSEvent*) mouseEventWithType: (NSEventType)type	
-		       location: (NSPoint)location
-		  modifierFlags: (unsigned int)flags
-		      timestamp: (NSTimeInterval)time
-		   windowNumber: (int)windowNum	
-			context: (NSGraphicsContext*)context	
-		    eventNumber: (int)eventNum	
-		     clickCount: (int)clickNum	
-		       pressure: (float)pressureValue
-		   buttonNumber: (int)buttonNum
++ (NSEvent*) mouseEventWithType: (NSEventType)type        
+                       location: (NSPoint)location
+                  modifierFlags: (unsigned int)flags
+                      timestamp: (NSTimeInterval)time
+                   windowNumber: (int)windowNum        
+                        context: (NSGraphicsContext*)context        
+                    eventNumber: (int)eventNum        
+                     clickCount: (int)clickNum        
+                       pressure: (float)pressureValue
+                   buttonNumber: (int)buttonNum
                          deltaX: (float)deltaX
                          deltaY: (float)deltaY
                          deltaZ: (float)deltaZ;
@@ -224,17 +312,17 @@ enum {
 + (NSPoint)mouseLocation;
 
 + (NSEvent*) otherEventWithType: (NSEventType)type
-		       location: (NSPoint)location
-		  modifierFlags: (unsigned int)flags
-		      timestamp: (NSTimeInterval)time
-		   windowNumber: (int)windowNum
-			context: (NSGraphicsContext*)context
-			subtype: (short)subType
-			  data1: (int)data1
-			  data2: (int)data2;
+                       location: (NSPoint)location
+                  modifierFlags: (unsigned int)flags
+                      timestamp: (NSTimeInterval)time
+                   windowNumber: (int)windowNum
+                        context: (NSGraphicsContext*)context
+                        subtype: (short)subType
+                          data1: (int)data1
+                          data2: (int)data2;
 
 + (void) startPeriodicEventsAfterDelay: (NSTimeInterval)delaySeconds
-			    withPeriod: (NSTimeInterval)periodSeconds;
+                            withPeriod: (NSTimeInterval)periodSeconds;
 + (void) stopPeriodicEvents;
 
 
@@ -266,6 +354,27 @@ enum {
 - (NSWindow *) window;
 - (int) windowNumber;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (int) absoluteX;
+- (int) absoluteY;
+- (int) absoluteZ;
+- (unsigned int) buttonMask;
+- (unsigned int) capabilityMask;
+- (unsigned int) deviceID;
+- (BOOL) isEnteringProximity;
+- (unsigned int) pointingDeviceID;
+- (unsigned int) pointingDeviceSerialNumber;
+- (NSPointingDeviceType) pointingDeviceType;
+- (float) rotation;
+- (unsigned int) systemTabletID;
+- (unsigned int) tabletID;
+- (float) tangentialPressure;
+- (NSPoint) tilt;
+- (unsigned long long) uniqueID;
+- (id) vendorDefined;
+- (unsigned int) vendorID;
+- (unsigned int) vendorPointingDeviceType;
+#endif
 
 @end
 

@@ -990,7 +990,10 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
 }
 
 // The number of remembered recent documents
-#define MAX_DOCS 5
+- (unsigned int) maximumRecentDocumentCount
+{
+  return 5;
+}
 
 - (void) noteNewRecentDocument: (NSDocument *)aDocument
 {
@@ -1011,7 +1014,7 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
       // Always keep the current object at the end of the list
       [_recent_documents removeObjectAtIndex: index];
     }
-  else if ([_recent_documents count] > MAX_DOCS)
+  else if ([_recent_documents count] > [self maximumRecentDocumentCount])
     {
       [_recent_documents removeObjectAtIndex: 0];
     }

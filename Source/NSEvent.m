@@ -21,7 +21,7 @@
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
    Library General Public License for more details.
 
    You should have received a copy of the GNU Library General Public
@@ -50,11 +50,11 @@
 #include "GNUstepGUI/GSDisplayServer.h"
 
 /*
- *	gstep-base has a faster mechanism to get the current thread.
+ *        gstep-base has a faster mechanism to get the current thread.
  */
 #ifndef GNUSTEP_BASE_LIBRARY
-#define	GSCurrentThread()		[NSThread currentThread]
-#define	GSCurrentThreadDictionary()	[[NSThread currentThread] threadDictionary]
+#define GSCurrentThread()           [NSThread currentThread]
+#define GSCurrentThreadDictionary() [[NSThread currentThread] threadDictionary]
 #endif
 
 @implementation NSEvent
@@ -62,7 +62,7 @@
 /*
  * Class variables
  */
-static NSString	*timerKey = @"NSEventTimersKey";
+static NSString *timerKey = @"NSEventTimersKey";
 static Class eventClass;
 
 /*
@@ -72,7 +72,7 @@ static Class eventClass;
 {
   if (self == [NSEvent class])
     {
-      [self setVersion: 1];
+      [self setVersion: 2];
       eventClass = [NSEvent class];
     }
 }
@@ -81,22 +81,22 @@ static Class eventClass;
  * Creating NSEvent objects
  */
 + (NSEvent*) enterExitEventWithType: (NSEventType)type
-			   location: (NSPoint)location
-		      modifierFlags: (unsigned int)flags
-			  timestamp: (NSTimeInterval)time
-		       windowNumber: (int)windowNum
-			    context: (NSGraphicsContext*)context
-		        eventNumber: (int)eventNum
-		     trackingNumber: (int)trackingNum
-			   userData: (void *)userData
+                           location: (NSPoint)location
+                      modifierFlags: (unsigned int)flags
+                          timestamp: (NSTimeInterval)time
+                       windowNumber: (int)windowNum
+                            context: (NSGraphicsContext*)context
+                        eventNumber: (int)eventNum
+                     trackingNumber: (int)trackingNum
+                           userData: (void *)userData
 {
-  NSEvent	*e;
+  NSEvent *e;
 
   if (type == NSCursorUpdate)
     RETAIN((id)userData);
   else if ((type != NSMouseEntered) && (type != NSMouseExited))
     [NSException raise: NSInvalidArgumentException
-		format: @"enterExitEvent with wrong type"];
+                format: @"enterExitEvent with wrong type"];
 
   e = (NSEvent*)NSAllocateObject(self, 0, NSDefaultMallocZone());
   if (self != eventClass)
@@ -118,21 +118,21 @@ static Class eventClass;
 }
 
 + (NSEvent*) keyEventWithType: (NSEventType)type
-		     location: (NSPoint)location
-		modifierFlags: (unsigned int)flags
-		    timestamp: (NSTimeInterval)time
-		 windowNumber: (int)windowNum
-		      context: (NSGraphicsContext *)context
-		   characters: (NSString *)keys
+                     location: (NSPoint)location
+                modifierFlags: (unsigned int)flags
+                    timestamp: (NSTimeInterval)time
+                 windowNumber: (int)windowNum
+                      context: (NSGraphicsContext *)context
+                   characters: (NSString *)keys
   charactersIgnoringModifiers: (NSString *)ukeys
-		    isARepeat: (BOOL)repeatKey
-		      keyCode: (unsigned short)code
+                    isARepeat: (BOOL)repeatKey
+                      keyCode: (unsigned short)code
 {
-  NSEvent	*e;
+  NSEvent *e;
 
-  if (type < NSKeyDown || type > NSFlagsChanged)
+  if (!(NSEventMaskFromType(type) & GSKeyEventMask))
     [NSException raise: NSInvalidArgumentException
-		format: @"keyEvent with wrong type"];
+                format: @"keyEvent with wrong type"];
 
   e = (NSEvent*)NSAllocateObject(self, 0, NSDefaultMallocZone());
   if (self != eventClass)
@@ -156,20 +156,20 @@ static Class eventClass;
 }
 
 + (NSEvent*) mouseEventWithType: (NSEventType)type
-		       location: (NSPoint)location
-		  modifierFlags: (unsigned int)flags
-		      timestamp: (NSTimeInterval)time
-		   windowNumber: (int)windowNum
-			context: (NSGraphicsContext*)context
-		    eventNumber: (int)eventNum
-		     clickCount: (int)clickNum
-		       pressure: (float)pressureValue
+                       location: (NSPoint)location
+                  modifierFlags: (unsigned int)flags
+                      timestamp: (NSTimeInterval)time
+                   windowNumber: (int)windowNum
+                        context: (NSGraphicsContext*)context
+                    eventNumber: (int)eventNum
+                     clickCount: (int)clickNum
+                       pressure: (float)pressureValue
 {
-  NSEvent	*e;
+  NSEvent *e;
 
-  if (type < NSLeftMouseDown || type > NSRightMouseDragged)
+  if (!(NSEventMaskFromType(type) & GSMouseEventMask))
     [NSException raise: NSInvalidArgumentException
-		format: @"mouseEvent with wrong type"];
+                format: @"mouseEvent with wrong type"];
 
   e = (NSEvent*)NSAllocateObject(self, 0, NSDefaultMallocZone());
   if (self != eventClass)
@@ -189,26 +189,25 @@ static Class eventClass;
   return e;
 }
 
-+ (NSEvent*) mouseEventWithType: (NSEventType)type	
-		       location: (NSPoint)location
-		  modifierFlags: (unsigned int)flags
-		      timestamp: (NSTimeInterval)time
-		   windowNumber: (int)windowNum
-			context: (NSGraphicsContext*)context	
-		    eventNumber: (int)eventNum
-		     clickCount: (int)clickNum
-		       pressure: (float)pressureValue
-		   buttonNumber: (int)buttonNum
++ (NSEvent*) mouseEventWithType: (NSEventType)type        
+                       location: (NSPoint)location
+                  modifierFlags: (unsigned int)flags
+                      timestamp: (NSTimeInterval)time
+                   windowNumber: (int)windowNum
+                        context: (NSGraphicsContext*)context        
+                    eventNumber: (int)eventNum
+                     clickCount: (int)clickNum
+                       pressure: (float)pressureValue
+                   buttonNumber: (int)buttonNum
                          deltaX: (float)deltaX
                          deltaY: (float)deltaY
                          deltaZ: (float)deltaZ
 {
-  NSEvent	*e;
+  NSEvent *e;
 
-  if ((type < NSLeftMouseDown || type > NSRightMouseDragged)
-      && (type != NSScrollWheel))
+  if (!(NSEventMaskFromType(type) & GSMouseEventMask))
     [NSException raise: NSInvalidArgumentException
-		format: @"mouseEvent with wrong type"];
+                format: @"mouseEvent with wrong type"];
 
   e = (NSEvent*)NSAllocateObject(self, 0, NSDefaultMallocZone());
   if (self != eventClass)
@@ -241,20 +240,20 @@ static Class eventClass;
 }
 
 + (NSEvent*) otherEventWithType: (NSEventType)type
-		       location: (NSPoint)location
-		  modifierFlags: (unsigned int)flags
-		      timestamp: (NSTimeInterval)time
-		   windowNumber: (int)windowNum
-			context: (NSGraphicsContext*)context
-			subtype: (short)subType
-			  data1: (int)data1
-			  data2: (int)data2
+                       location: (NSPoint)location
+                  modifierFlags: (unsigned int)flags
+                      timestamp: (NSTimeInterval)time
+                   windowNumber: (int)windowNum
+                        context: (NSGraphicsContext*)context
+                        subtype: (short)subType
+                          data1: (int)data1
+                          data2: (int)data2
 {
-  NSEvent	*e;
+  NSEvent *e;
 
-  if (type < NSAppKitDefined || type > NSPeriodic)
+  if (!(NSEventMaskFromType(type) & GSOtherEventMask))
     [NSException raise: NSInvalidArgumentException
-		format: @"otherEvent with wrong type"];
+                format: @"otherEvent with wrong type"];
 
   e = (NSEvent*)NSAllocateObject(self, 0, NSDefaultMallocZone());
   if (self != eventClass)
@@ -278,17 +277,17 @@ static Class eventClass;
  * Requesting Periodic Events
  */
 + (void) startPeriodicEventsAfterDelay: (NSTimeInterval)delaySeconds
-			    withPeriod: (NSTimeInterval)periodSeconds
+                            withPeriod: (NSTimeInterval)periodSeconds
 {
-  NSTimer		*timer;
-  NSMutableDictionary	*dict = GSCurrentThreadDictionary();
+  NSTimer             *timer;
+  NSMutableDictionary *dict = GSCurrentThreadDictionary();
 
   NSDebugLLog (@"NSEvent", @"startPeriodicEventsAfterDelay: withPeriod: ");
 
   if ([dict objectForKey: timerKey])
     [NSException raise: NSInternalInconsistencyException
-		format: @"Periodic events are already being generated for "
-		        @"this thread %x", GSCurrentThread()];
+                format: @"Periodic events are already being generated for "
+                        @"this thread %x", GSCurrentThread()];
 
   /*
    *  Register a timer that will fire in delaySeconds.
@@ -296,31 +295,31 @@ static Class eventClass;
    *  a repeat timer that will send the following events
    */
   timer = [NSTimer timerWithTimeInterval: delaySeconds
-		   target: self
-		   selector: @selector(_registerRealTimer:)
-		   userInfo: [NSNumber numberWithDouble: periodSeconds]
-		   repeats: NO];
+                   target: self
+                   selector: @selector(_registerRealTimer:)
+                   userInfo: [NSNumber numberWithDouble: periodSeconds]
+                   repeats: NO];
 
   [[NSRunLoop currentRunLoop] addTimer: timer
-			       forMode: NSEventTrackingRunLoopMode];
+                               forMode: NSEventTrackingRunLoopMode];
   [dict setObject: timer forKey: timerKey];
 }
 
 + (void) _timerFired: (NSTimer*)timer
 {
-  NSTimeInterval	timeInterval;
-  NSEvent		*periodicEvent;
+  NSTimeInterval timeInterval;
+  NSEvent        *periodicEvent;
 
   timeInterval = [[NSDate date] timeIntervalSinceReferenceDate];
   periodicEvent = [self otherEventWithType: NSPeriodic
-				  location: NSZeroPoint
-			     modifierFlags: 0
-				 timestamp: timeInterval
-			      windowNumber: 0
-				   context: [NSApp context]
-				   subtype: 0
-				     data1: 0
-				     data2: 0];
+                                  location: NSZeroPoint
+                             modifierFlags: 0
+                                 timestamp: timeInterval
+                              windowNumber: 0
+                                   context: [NSApp context]
+                                   subtype: 0
+                                     data1: 0
+                                     data2: 0];
 
   NSDebugLLog (@"NSEvent", @"_timerFired: ");
   [NSApp postEvent: periodicEvent atStart: NO];
@@ -331,42 +330,42 @@ static Class eventClass;
  */
 + (void) _registerRealTimer: (NSTimer*)timer
 {
-  NSTimer		*realTimer;
-  NSMutableDictionary	*dict = GSCurrentThreadDictionary();
+  NSTimer             *realTimer;
+  NSMutableDictionary *dict = GSCurrentThreadDictionary();
 
   NSDebugLLog (@"NSEvent", @"_registerRealTimer: ");
   {
-    NSTimeInterval	timeInterval;
-    NSEvent		*periodicEvent;
+    NSTimeInterval timeInterval;
+    NSEvent        *periodicEvent;
     
     timeInterval = [[NSDate date] timeIntervalSinceReferenceDate];
     periodicEvent = [self otherEventWithType: NSPeriodic
-			  location: NSZeroPoint
-			  modifierFlags: 0
-			  timestamp: timeInterval
-			      windowNumber: 0
-			  context: [NSApp context]
-			  subtype: 0
-			  data1: 0
-			  data2: 0];
+                          location: NSZeroPoint
+                          modifierFlags: 0
+                          timestamp: timeInterval
+                              windowNumber: 0
+                          context: [NSApp context]
+                          subtype: 0
+                          data1: 0
+                          data2: 0];
     
     [NSApp postEvent: periodicEvent atStart: NO];
   }
 
   realTimer = [NSTimer timerWithTimeInterval: [[timer userInfo] doubleValue]
-				      target: self
-				    selector: @selector(_timerFired:)
-				    userInfo: nil
-				     repeats: YES];
+                                      target: self
+                                    selector: @selector(_timerFired:)
+                                    userInfo: nil
+                                     repeats: YES];
   [dict setObject: realTimer forKey: timerKey];
   [[NSRunLoop currentRunLoop] addTimer: realTimer
-			       forMode: NSEventTrackingRunLoopMode];
+                               forMode: NSEventTrackingRunLoopMode];
 }
 
 + (void) stopPeriodicEvents
 {
-  NSTimer		*timer;
-  NSMutableDictionary	*dict = GSCurrentThreadDictionary();
+  NSTimer             *timer;
+  NSMutableDictionary *dict = GSCurrentThreadDictionary();
 
   NSDebugLLog (@"NSEvent", @"stopPeriodicEvents");
   timer = [dict objectForKey: timerKey];
@@ -382,10 +381,10 @@ static Class eventClass;
  */
 - (int) buttonNumber
 {
-  if (event_type < NSLeftMouseDown || event_type > NSMouseExited)
+  if (!(NSEventMaskFromType(event_type) & GSMouseEventMask))
     {
       [NSException raise: NSInternalInconsistencyException
-		  format: @"buttonNumber requested for non-mouse event"];
+                  format: @"buttonNumber requested for non-mouse event"];
     }
   return event_data.mouse.button;
 }
@@ -400,7 +399,7 @@ static Class eventClass;
   if ((event_type != NSKeyUp) && (event_type != NSKeyDown))
     {
       [NSException raise: NSInternalInconsistencyException
-		  format: @"characters requested for non-keyboard event"];
+                  format: @"characters requested for non-keyboard event"];
     }
   return event_data.key.char_keys;
 }
@@ -416,8 +415,8 @@ static Class eventClass;
   if ((event_type != NSKeyUp) && (event_type != NSKeyDown))
     {
       [NSException raise: NSInternalInconsistencyException
-		  format: @"charactersIgnoringModifiers requested for "
-			  @"non-keyboard event"];
+                  format: @"charactersIgnoringModifiers requested for "
+                          @"non-keyboard event"];
     }
   return event_data.key.unmodified_keys;
 }
@@ -432,10 +431,10 @@ static Class eventClass;
 - (int) clickCount
 {
   /* Make sure it is one of the right event types */
-  if (event_type < NSLeftMouseDown || event_type > NSRightMouseUp)
+  if (!(NSEventMaskFromType(event_type) & GSMouseEventMask))
     {
       [NSException raise: NSInternalInconsistencyException
-		  format: @"clickCount requested for non-mouse event"];
+                  format: @"clickCount requested for non-mouse event"];
     }
   return event_data.mouse.click;
 }
@@ -456,12 +455,12 @@ static Class eventClass;
     {
       event_data.key.char_keys = [event_data.key.char_keys copyWithZone: zone];
       event_data.key.unmodified_keys
-	= [event_data.key.unmodified_keys copyWithZone: zone];
+        = [event_data.key.unmodified_keys copyWithZone: zone];
     }
   else if (event_type == NSCursorUpdate)
     {
       event_data.tracking.user_data
-	= (void *)[(id)event_data.tracking.user_data copyWithZone: zone];
+        = (void *)[(id)event_data.tracking.user_data copyWithZone: zone];
     }
   return e;
 }
@@ -477,7 +476,7 @@ static Class eventClass;
   if (event_type < NSAppKitDefined || event_type > NSPeriodic)
     {
       [NSException raise: NSInternalInconsistencyException
-		  format: @"data1 requested for invalid event type"];
+                  format: @"data1 requested for invalid event type"];
     }
   return event_data.misc.data1;
 }
@@ -493,7 +492,7 @@ static Class eventClass;
   if (event_type < NSAppKitDefined || event_type > NSPeriodic)
     {
       [NSException raise: NSInternalInconsistencyException
-		  format: @"data2 requested for invalid event type"];
+                  format: @"data2 requested for invalid event type"];
     }
   return event_data.misc.data2;
 }
@@ -525,11 +524,10 @@ static Class eventClass;
  */
 - (float)deltaX
 {
-  if (event_type != NSScrollWheel
-    && (event_type < NSMouseMoved || event_type > NSRightMouseDragged))
+  if (!(NSEventMaskFromType(event_type) & GSMouseMovedEventMask))
     {
       [NSException raise: NSInternalInconsistencyException
-		  format: @"deltaX requested for invalid event type"];
+                  format: @"deltaX requested for invalid event type"];
     }
   return event_data.mouse.deltaX;
 }
@@ -546,11 +544,10 @@ static Class eventClass;
  */
 - (float)deltaY
 {
-  if (event_type != NSScrollWheel
-    && (event_type < NSMouseMoved || event_type > NSRightMouseDragged))
+  if (!(NSEventMaskFromType(event_type) & GSMouseMovedEventMask))
     {
       [NSException raise: NSInternalInconsistencyException
-		  format: @"deltaY requested for invalid event type"];
+                  format: @"deltaY requested for invalid event type"];
     }
   return event_data.mouse.deltaY;
 }
@@ -570,11 +567,10 @@ static Class eventClass;
  */
 - (float)deltaZ
 {
-  if (event_type != NSScrollWheel
-    && (event_type < NSMouseMoved || event_type > NSRightMouseDragged))
+  if (!(NSEventMaskFromType(event_type) & GSMouseMovedEventMask))
     {
       [NSException raise: NSInternalInconsistencyException
-		  format: @"deltaZ requested for invalid event type"];
+                  format: @"deltaZ requested for invalid event type"];
     }
   return event_data.mouse.deltaZ;
 }
@@ -582,15 +578,13 @@ static Class eventClass;
 - (NSString*) description
 {
 static const char *eventTypes[] = {
+    "nullEvent",
     "leftMouseDown",
     "leftMouseUp",
-    "otherMouseDown",
-    "otherMouseUp",
     "rightMouseDown",
     "rightMouseUp",
     "mouseMoved",
     "leftMouseDragged",
-    "otherMouseDragged",
     "rightMouseDragged",
     "mouseEntered",
     "mouseExited",
@@ -602,7 +596,12 @@ static const char *eventTypes[] = {
     "applicationDefined",
     "periodic",
     "cursorUpdate",
-    "scrollWheel"
+    "scrollWheel",
+    "tabletPoint",
+    "tabletProximity",
+    "otherMouseDown",
+    "otherMouseUp",
+    "otherMouseDragged"
   };
 
   switch (event_type)
@@ -613,41 +612,41 @@ static const char *eventTypes[] = {
       case NSOtherMouseUp:
       case NSRightMouseDown:
       case NSRightMouseUp:
-	return [NSString stringWithFormat:
-	  @"NSEvent: eventType = %s, point = { %f, %f }, modifiers = %u,"
-	  @" time = %f, window = %d, dpsContext = %p,"
-	  @" event number = %d, click = %d, pressure = %f",
-	  eventTypes[event_type], location_point.x, location_point.y,
-	  modifier_flags, event_time, window_num, event_context,
-	  event_data.mouse.event_num, event_data.mouse.click,
-	  event_data.mouse.pressure];
-	break;
+        return [NSString stringWithFormat:
+          @"NSEvent: eventType = %s, point = { %f, %f }, modifiers = %u,"
+          @" time = %f, window = %d, dpsContext = %p,"
+          @" event number = %d, click = %d, pressure = %f",
+          eventTypes[event_type], location_point.x, location_point.y,
+          modifier_flags, event_time, window_num, event_context,
+          event_data.mouse.event_num, event_data.mouse.click,
+          event_data.mouse.pressure];
+        break;
 
       case NSMouseEntered:
       case NSMouseExited:
-	return [NSString stringWithFormat:
-	  @"NSEvent: eventType = %s, point = { %f, %f }, modifiers = %u,"
-	  @" time = %f, window = %d, dpsContext = %p, "
-	  @" event number = %d, tracking number = %d, user data = %p",
-	  eventTypes[event_type], location_point.x, location_point.y,
-	  modifier_flags, event_time, window_num, event_context,
-	  event_data.tracking.event_num,
-	  event_data.tracking.tracking_num,
-	  event_data.tracking.user_data];
-	break;
+        return [NSString stringWithFormat:
+          @"NSEvent: eventType = %s, point = { %f, %f }, modifiers = %u,"
+          @" time = %f, window = %d, dpsContext = %p, "
+          @" event number = %d, tracking number = %d, user data = %p",
+          eventTypes[event_type], location_point.x, location_point.y,
+          modifier_flags, event_time, window_num, event_context,
+          event_data.tracking.event_num,
+          event_data.tracking.tracking_num,
+          event_data.tracking.user_data];
+        break;
 
       case NSKeyDown:
       case NSKeyUp:
-	return [NSString stringWithFormat:
-	  @"NSEvent: eventType = %s, point = { %f, %f }, modifiers = %u,"
-	  @" time = %f, window = %d, dpsContext = %p, "
-	  @" repeat = %s, keys = %@, ukeys = %@, keyCode = 0x%x",
-	  eventTypes[event_type], location_point.x, location_point.y,
-	  modifier_flags, event_time, window_num, event_context,
-	  (event_data.key.repeat ? "YES" : "NO"),
-	  event_data.key.char_keys, event_data.key.unmodified_keys,
-	  event_data.key.key_code];
-	break;
+        return [NSString stringWithFormat:
+          @"NSEvent: eventType = %s, point = { %f, %f }, modifiers = %u,"
+          @" time = %f, window = %d, dpsContext = %p, "
+          @" repeat = %s, keys = %@, ukeys = %@, keyCode = 0x%x",
+          eventTypes[event_type], location_point.x, location_point.y,
+          modifier_flags, event_time, window_num, event_context,
+          (event_data.key.repeat ? "YES" : "NO"),
+          event_data.key.char_keys, event_data.key.unmodified_keys,
+          event_data.key.key_code];
+        break;
 
       case NSFlagsChanged:
       case NSPeriodic:
@@ -655,34 +654,39 @@ static const char *eventTypes[] = {
       case NSAppKitDefined:
       case NSSystemDefined:
       case NSApplicationDefined:
-	return [NSString stringWithFormat:
-	  @"NSEvent: eventType = %s, point = { %f, %f }, modifiers = %u,"
-	  @" time = %f, window = %d, dpsContext = %p, "
-	  @" subtype = %d, data1 = %p, data2 = %p",
-	  eventTypes[event_type], location_point.x, location_point.y,
-	  modifier_flags, event_time, window_num, event_context,
-	  event_data.misc.sub_type, event_data.misc.data1,
-	  event_data.misc.data2];
-	break;
+        return [NSString stringWithFormat:
+          @"NSEvent: eventType = %s, point = { %f, %f }, modifiers = %u,"
+          @" time = %f, window = %d, dpsContext = %p, "
+          @" subtype = %d, data1 = %p, data2 = %p",
+          eventTypes[event_type], location_point.x, location_point.y,
+          modifier_flags, event_time, window_num, event_context,
+          event_data.misc.sub_type, event_data.misc.data1,
+          event_data.misc.data2];
+        break;
 
       case NSScrollWheel:
       case NSMouseMoved:
       case NSLeftMouseDragged:
       case NSOtherMouseDragged:
       case NSRightMouseDragged:
-	return [NSString stringWithFormat:
-	  @"NSEvent: eventType = %s, point = { %f, %f }, modifiers = %u,"
-	  @" time = %f, window = %d, dpsContext = %p,"
-	  @" event number = %d, click = %d, pressure = %f"
-	  @" button = %d, deltaX = %f, deltaY = %f, deltaZ = %f",
-	  eventTypes[event_type], location_point.x, location_point.y,
-	  modifier_flags, event_time, window_num, event_context,
-	  event_data.mouse.event_num, event_data.mouse.click,
-	  event_data.mouse.pressure, event_data.mouse.button,
-	  event_data.mouse.deltaX,
-	  event_data.mouse.deltaY,
-	  event_data.mouse.deltaZ];
-	break;
+        return [NSString stringWithFormat:
+          @"NSEvent: eventType = %s, point = { %f, %f }, modifiers = %u,"
+          @" time = %f, window = %d, dpsContext = %p,"
+          @" event number = %d, click = %d, pressure = %f"
+          @" button = %d, deltaX = %f, deltaY = %f, deltaZ = %f",
+          eventTypes[event_type], location_point.x, location_point.y,
+          modifier_flags, event_time, window_num, event_context,
+          event_data.mouse.event_num, event_data.mouse.click,
+          event_data.mouse.pressure, event_data.mouse.button,
+          event_data.mouse.deltaX,
+          event_data.mouse.deltaY,
+          event_data.mouse.deltaZ];
+        break;
+
+      case NSTabletPoint:
+      case NSTabletProximity:
+        // FIXME: Tablet events
+        break;
     }
 
   return [super description];
@@ -709,37 +713,42 @@ static const char *eventTypes[] = {
       case NSLeftMouseDragged:
       case NSOtherMouseDragged:
       case NSRightMouseDragged:
-	[aCoder encodeValuesOfObjCTypes: "iififff", &event_data.mouse.event_num,
-	  &event_data.mouse.click, &event_data.mouse.pressure,
-	  &event_data.mouse.button, &event_data.mouse.deltaX,
-	  &event_data.mouse.deltaY, &event_data.mouse.deltaZ];
-	break;
+        [aCoder encodeValuesOfObjCTypes: "iififff", &event_data.mouse.event_num,
+          &event_data.mouse.click, &event_data.mouse.pressure,
+          &event_data.mouse.button, &event_data.mouse.deltaX,
+          &event_data.mouse.deltaY, &event_data.mouse.deltaZ];
+        break;
 
       case NSMouseEntered:
       case NSMouseExited:
       case NSCursorUpdate:
-	// Can't do anything with the user_data!?
-	[aCoder encodeValuesOfObjCTypes: "ii", &event_data.tracking.event_num,
-	  &event_data.tracking.tracking_num];
-	break;
+        // Can't do anything with the user_data!?
+        [aCoder encodeValuesOfObjCTypes: "ii", &event_data.tracking.event_num,
+          &event_data.tracking.tracking_num];
+        break;
 
       case NSKeyDown:
       case NSKeyUp:
-	[aCoder encodeValueOfObjCType: @encode(BOOL)
-				   at: &event_data.key.repeat];
-	[aCoder encodeObject: event_data.key.char_keys];
-	[aCoder encodeObject: event_data.key.unmodified_keys];
-	[aCoder encodeValueOfObjCType: "S" at: &event_data.key.key_code];
-	break;
+        [aCoder encodeValueOfObjCType: @encode(BOOL)
+                                   at: &event_data.key.repeat];
+        [aCoder encodeObject: event_data.key.char_keys];
+        [aCoder encodeObject: event_data.key.unmodified_keys];
+        [aCoder encodeValueOfObjCType: "S" at: &event_data.key.key_code];
+        break;
 
       case NSFlagsChanged:
       case NSPeriodic:
       case NSAppKitDefined:
       case NSSystemDefined:
       case NSApplicationDefined:
-	[aCoder encodeValuesOfObjCTypes: "sii", &event_data.misc.sub_type,
-	  &event_data.misc.data1, &event_data.misc.data2];
-	break;
+        [aCoder encodeValuesOfObjCTypes: "sii", &event_data.misc.sub_type,
+          &event_data.misc.data1, &event_data.misc.data2];
+        break;
+
+      case NSTabletPoint:
+      case NSTabletProximity:
+        // FIXME: Tablet events
+        break;
     }
 }
 
@@ -753,9 +762,10 @@ static const char *eventTypes[] = {
 - (int) eventNumber
 {
   /* Make sure it is one of the right event types */
-  if (event_type < NSLeftMouseDown || event_type > NSMouseExited)
+  if (!(NSEventMaskFromType(event_type) & GSMouseEventMask) && 
+      !(NSEventMaskFromType(event_type) & GSEnterExitEventMask))
     [NSException raise: NSInternalInconsistencyException
-		format: @"eventNumber requested for non-mouse event"];
+                format: @"eventNumber requested for non-mouse event"];
 
   if ((event_type == NSMouseEntered) || (event_type == NSMouseExited))
     return event_data.tracking.event_num;
@@ -765,11 +775,43 @@ static const char *eventTypes[] = {
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
+  int version = [aDecoder versionForClassName: @"NSEvent"];
+
   [aDecoder decodeValueOfObjCType: @encode(NSEventType) at: &event_type];
   location_point = [aDecoder decodePoint];
   [aDecoder decodeValueOfObjCType: @encode(unsigned) at: &modifier_flags];
   [aDecoder decodeValueOfObjCType: @encode(NSTimeInterval) at: &event_time];
   [aDecoder decodeValueOfObjCType: @encode(unsigned) at: &window_num];
+
+  if (version == 1)
+    {
+      // For the unlikely case that old events have been stored, convert them.
+      switch (event_type)
+        {
+          case 0: event_type = NSLeftMouseDown; break;
+          case 1: event_type = NSLeftMouseUp; break;
+          case 2: event_type = NSOtherMouseDown; break;
+          case 3: event_type = NSOtherMouseUp; break;
+          case 4: event_type = NSRightMouseDown; break;
+          case 5: event_type = NSRightMouseUp; break;
+          case 6: event_type = NSMouseMoved; break;
+          case 7: event_type = NSLeftMouseDragged; break;
+          case 8: event_type = NSOtherMouseDragged; break;
+          case 9: event_type = NSRightMouseDragged; break;
+          case 10: event_type = NSMouseEntered; break;
+          case 11: event_type = NSMouseExited; break;
+          case 12: event_type = NSKeyDown; break;
+          case 13: event_type = NSKeyUp; break;
+          case 14: event_type = NSFlagsChanged; break;
+          case 15: event_type = NSAppKitDefined; break;
+          case 16: event_type = NSSystemDefined; break;
+          case 17: event_type = NSApplicationDefined; break;
+          case 18: event_type = NSPeriodic; break;
+          case 19: event_type = NSCursorUpdate; break;
+          case 20: event_type = NSScrollWheel; break;
+          default: break;
+        }  
+    }
 
   // Decode the event date based upon the event type
   switch (event_type)
@@ -785,38 +827,43 @@ static const char *eventTypes[] = {
       case NSLeftMouseDragged:
       case NSOtherMouseDragged:
       case NSRightMouseDragged:
-	[aDecoder decodeValuesOfObjCTypes: "iififff",
-	  &event_data.mouse.event_num, &event_data.mouse.click,
-	  &event_data.mouse.pressure, &event_data.mouse.button,
-	  &event_data.mouse.deltaX, &event_data.mouse.deltaY,
-	  &event_data.mouse.deltaZ];
-	break;
+        [aDecoder decodeValuesOfObjCTypes: "iififff",
+          &event_data.mouse.event_num, &event_data.mouse.click,
+          &event_data.mouse.pressure, &event_data.mouse.button,
+          &event_data.mouse.deltaX, &event_data.mouse.deltaY,
+          &event_data.mouse.deltaZ];
+        break;
 
       case NSMouseEntered:
       case NSMouseExited:
       case NSCursorUpdate:
-	// Can't do anything with the user_data!?
-	[aDecoder decodeValuesOfObjCTypes: "ii", &event_data.tracking.event_num,
-	  &event_data.tracking.tracking_num];
-	break;
+        // Can't do anything with the user_data!?
+        [aDecoder decodeValuesOfObjCTypes: "ii", &event_data.tracking.event_num,
+          &event_data.tracking.tracking_num];
+        break;
 
       case NSKeyDown:
       case NSKeyUp:
-	[aDecoder decodeValueOfObjCType: @encode(BOOL)
-				     at: &event_data.key.repeat];
-	event_data.key.char_keys = [aDecoder decodeObject];
-	event_data.key.unmodified_keys = [aDecoder decodeObject];
-	[aDecoder decodeValueOfObjCType: "S" at: &event_data.key.key_code];
-	break;
+        [aDecoder decodeValueOfObjCType: @encode(BOOL)
+                                     at: &event_data.key.repeat];
+        event_data.key.char_keys = [aDecoder decodeObject];
+        event_data.key.unmodified_keys = [aDecoder decodeObject];
+        [aDecoder decodeValueOfObjCType: "S" at: &event_data.key.key_code];
+        break;
 
       case NSFlagsChanged:
       case NSPeriodic:
       case NSAppKitDefined:
       case NSSystemDefined:
       case NSApplicationDefined:
-	[aDecoder decodeValuesOfObjCTypes: "sii", &event_data.misc.sub_type,
-	  &event_data.misc.data1, &event_data.misc.data2];
-	break;
+        [aDecoder decodeValuesOfObjCTypes: "sii", &event_data.misc.sub_type,
+          &event_data.misc.data1, &event_data.misc.data2];
+        break;
+
+      case NSTabletPoint:
+      case NSTabletProximity:
+        // FIXME: Tablet events
+        break;
     }
 
   return self;
@@ -831,7 +878,7 @@ static const char *eventTypes[] = {
 {
   if ((event_type != NSKeyUp) && (event_type != NSKeyDown))
     [NSException raise: NSInternalInconsistencyException
-		format: @"isARepeat requested for non-keyboard event"];
+                format: @"isARepeat requested for non-keyboard event"];
 
   return event_data.key.repeat;
 }
@@ -847,7 +894,7 @@ static const char *eventTypes[] = {
     && (event_type != NSFlagsChanged))
     {
       [NSException raise: NSInternalInconsistencyException
-		  format: @"keyCode requested for non-keyboard event"];
+                  format: @"keyCode requested for non-keyboard event"];
     }
   return event_data.key.key_code;
 }
@@ -879,10 +926,10 @@ static const char *eventTypes[] = {
 - (float) pressure
 {
   /* Make sure it is one of the right event types */
-  if (event_type < NSLeftMouseDown || event_type > NSRightMouseDragged)
+  if (!(NSEventMaskFromType(event_type) & GSMouseEventMask))
     {
       [NSException raise: NSInternalInconsistencyException
-		  format: @"pressure requested for non-mouse event"];
+                  format: @"pressure requested for non-mouse event"];
     }
   return event_data.mouse.pressure;
 }
@@ -891,16 +938,28 @@ static const char *eventTypes[] = {
  * Returns the 'subtype' item associated with the event.
  * <br />Raises NSInternalInconsistencyException if the event is not
  * of type NSAppKitDefined, NSSystemDefined, NSApplicationDefined,
- * or NSPeriodic
+ * NSPeriodic or a mouve event.
  */
 - (short) subtype
 {
-  if (event_type < NSAppKitDefined || event_type > NSPeriodic)
+  if (!(NSEventMaskFromType(event_type) & GSOtherEventMask) && 
+      !(NSEventMaskFromType(event_type) & GSMouseEventMask))
     {
       [NSException raise: NSInternalInconsistencyException
-		  format: @"subtype requested for invalid event type"];
+                  format: @"subtype requested for invalid event type"];
     }
-  return event_data.misc.sub_type;;
+
+  if (NSEventMaskFromType(event_type) & GSOtherEventMask)
+    return event_data.misc.sub_type;
+  else
+    {
+      if (event_type == NSTabletPoint)
+        return NSTabletPointEventSubtype;
+      else if (event_type == NSTabletProximity)
+        return NSTabletProximityEventSubtype;
+      else
+        return NSMouseEventSubtype;
+    }
 }
 
 /**
@@ -923,7 +982,7 @@ static const char *eventTypes[] = {
     &&  event_type != NSCursorUpdate)
     {
       [NSException raise: NSInternalInconsistencyException
-		  format: @"trackingNumber requested for non-tracking event"];
+                  format: @"trackingNumber requested for non-tracking event"];
     }
   return event_data.tracking.tracking_num;
 }
@@ -948,7 +1007,7 @@ static const char *eventTypes[] = {
     &&  event_type != NSCursorUpdate)
     {
       [NSException raise: NSInternalInconsistencyException
-		  format: @"userData requested for non-tracking event"];
+                  format: @"userData requested for non-tracking event"];
     }
   return event_data.tracking.user_data;
 }
@@ -971,6 +1030,123 @@ static const char *eventTypes[] = {
 - (int) windowNumber
 {
   return window_num;
+}
+
+/*
+ * Methods for tablet events
+ */
+- (int) absoluteX
+{
+  // FIXME
+  return 0;
+}
+
+- (int) absoluteY
+{
+  // FIXME
+  return 0;
+}
+
+- (int) absoluteZ
+{
+  // FIXME
+  return 0;
+}
+
+- (unsigned int) buttonMask
+{
+  // FIXME
+  return 0;
+}
+
+- (unsigned int) capabilityMask
+{
+  // FIXME
+  return 0;
+}
+
+- (unsigned int) deviceID
+{
+  // FIXME
+  return 0;
+}
+
+- (BOOL) isEnteringProximity
+{
+  // FIXME
+  return NO;
+}
+
+- (unsigned int) pointingDeviceID
+{
+  // FIXME
+  return 0;
+}
+
+- (unsigned int) pointingDeviceSerialNumber
+{
+  // FIXME
+  return 0;
+}
+
+- (NSPointingDeviceType) pointingDeviceType
+{
+  // FIXME
+  return NSUnknownPointingDevice;
+}
+
+- (float) rotation
+{
+  // FIXME
+  return 0.0;
+}
+
+- (unsigned int) systemTabletID
+{
+  // FIXME
+  return 0;
+}
+
+- (unsigned int) tabletID
+{
+  // FIXME
+  return 0;
+}
+
+- (float) tangentialPressure
+{
+  // FIXME
+  return 0.0;
+}
+
+- (NSPoint) tilt
+{
+  // FIXME
+  return NSMakePoint(0.0, 0.0);
+}
+
+- (unsigned long long) uniqueID
+{
+  // FIXME
+  return 0;
+}
+
+- (id) vendorDefined
+{
+  // FIXME
+  return nil;
+}
+
+- (unsigned int) vendorID
+{
+  // FIXME
+  return 0;
+}
+
+- (unsigned int) vendorPointingDeviceType
+{
+  // FIXME
+  return 0;
 }
 
 @end

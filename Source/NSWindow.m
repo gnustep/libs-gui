@@ -3759,6 +3759,11 @@ resetCursorRectsForView(NSView *theView)
       case NSSystemDefined:
       case NSApplicationDefined:
 	break;
+
+      case NSTabletPoint:
+      case NSTabletProximity:
+        // FIXME: Tablet events
+        break;
     }
 }
 

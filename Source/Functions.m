@@ -79,39 +79,6 @@ NSApplicationMain(int argc, const char **argv)
 }
 
 /*
- * Convert an NSEvent Type to it's respective Event Mask
- */
-unsigned
-NSEventMaskFromType(NSEventType type)
-{
-  switch (type)
-    {
-      case NSLeftMouseDown:	return NSLeftMouseDownMask;
-      case NSLeftMouseUp:	return NSLeftMouseUpMask;
-      case NSOtherMouseDown:	return NSOtherMouseDownMask;
-      case NSOtherMouseUp:	return NSOtherMouseUpMask;
-      case NSRightMouseDown:	return NSRightMouseDownMask;
-      case NSRightMouseUp:	return NSRightMouseUpMask;
-      case NSMouseMoved:	return NSMouseMovedMask;
-      case NSMouseEntered:	return NSMouseEnteredMask;
-      case NSMouseExited:	return NSMouseExitedMask;
-      case NSLeftMouseDragged:	return NSLeftMouseDraggedMask;
-      case NSOtherMouseDragged:	return NSOtherMouseDraggedMask;
-      case NSRightMouseDragged:	return NSRightMouseDraggedMask;
-      case NSKeyDown:		return NSKeyDownMask;
-      case NSKeyUp:		return NSKeyUpMask;
-      case NSFlagsChanged:	return NSFlagsChangedMask;
-      case NSPeriodic:		return NSPeriodicMask;
-      case NSCursorUpdate:	return NSCursorUpdateMask;
-      case NSScrollWheel:	return NSScrollWheelMask;
-      case NSAppKitDefined:	return NSAppKitDefinedMask;
-      case NSSystemDefined:	return NSSystemDefinedMask;
-      case NSApplicationDefined: return NSApplicationDefinedMask;
-    }
-  return 0;
-}
-
-/*
  * Color Functions
  */
 
