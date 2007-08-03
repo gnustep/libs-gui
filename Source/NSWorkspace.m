@@ -1436,76 +1436,75 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
       // workspace manager problem ... fall through to default code
     }
   NS_ENDHANDLER
+
   if (apps == nil)
     {
-      static NSDate *lastCheck = nil;
-      unsigned      count;
+      static NSDate     *lastCheck = nil;
+      NSMutableArray    *m;
+      unsigned          count;
 
       apps = GSLaunched(nil, NO);
-
-      count = [apps count];
-
-      if ([NSProcessInfo respondsToSelector: @selector(_exists:)] == YES)
+      apps = m = AUTORELEASE([apps mutableCopy]);
+      if ((count = [apps count]) > 0)
         {
-          /* Check and remove apps whose pid no loinger exists
-           */
-          while (count-- > 0)
+          if ([NSProcessInfo respondsToSelector: @selector(_exists:)] == YES)
             {
-              int       pid;
-              NSString  *name;
-
-              name = [[apps objectAtIndex: count]
-                objectForKey: @"NSApplicationName"];
-              pid = [[[apps objectAtIndex: count]
-                objectForKey: @"NSApplicationProcessIdentifier"] intValue];
-              if (pid > 0 && [name length] > 0)
+              /* Check and remove apps whose pid no longer exists
+               */
+              while (count-- > 0)
                 {
-                  if ([NSProcessInfo _exists: pid] == NO)
+                  int       pid;
+                  NSString  *name;
+
+                  name = [[apps objectAtIndex: count]
+                    objectForKey: @"NSApplicationName"];
+                  pid = [[[apps objectAtIndex: count]
+                    objectForKey: @"NSApplicationProcessIdentifier"] intValue];
+                  if (pid > 0 && [name length] > 0)
                     {
-                      NSMutableArray    *m = [apps mutableCopy];
-
-                      GSLaunched([NSNotification notificationWithName:
-                        NSWorkspaceDidTerminateApplicationNotification
-                        object: self
-                        userInfo: [NSDictionary dictionaryWithObject: name
-                          forKey: @"NSApplicationName"]], NO);
-
-                      [m removeObjectAtIndex: count];
-                      apps = AUTORELEASE(m);
+                      if ([NSProcessInfo _exists: pid] == NO)
+                        {
+                          GSLaunched([NSNotification notificationWithName:
+                            NSWorkspaceDidTerminateApplicationNotification
+                            object: self
+                            userInfo: [NSDictionary dictionaryWithObject: name
+                              forKey: @"NSApplicationName"]], NO);
+                          [m removeObjectAtIndex: count];
+                        }
                     }
                 }
             }
         }
-
-      /* If it's over 30 seconds since the last check ... try to contact
-       * all launched applications to ensure that none have crashed.
-       */
-      if (lastCheck == nil || [lastCheck timeIntervalSinceNow] < -30.0)
+      if ((count = [apps count]) > 0)
         {
-          ASSIGN(lastCheck, [NSDate date]);
-
-          while (count-- > 0)
+          /* If it's over 30 seconds since the last check ... try to contact
+           * all launched applications to ensure that none have crashed.
+           */
+          if (lastCheck == nil || [lastCheck timeIntervalSinceNow] < -30.0)
             {
-              NSString  *name;
+              ASSIGN(lastCheck, [NSDate date]);
 
-              name = [[apps objectAtIndex: count]
-                objectForKey: @"NSApplicationName"];
-              if (name != nil)
+              count = [apps count];
+              while (count-- > 0)
                 {
-                  CREATE_AUTORELEASE_POOL(arp);
-                  BOOL  found = NO;
+                  NSString  *name;
 
-                  if ([self _connectApplication: name alert: NO] != nil)
+                  name = [[apps objectAtIndex: count]
+                    objectForKey: @"NSApplicationName"];
+                  if (name != nil)
                     {
-                      found = YES;
-                    }
-                  RELEASE(arp);
-                  if (found == NO)
-                    {
-                      NSMutableArray    *m = [apps mutableCopy];
+                      CREATE_AUTORELEASE_POOL(arp);
+                      BOOL  found = NO;
 
-                      [m removeObjectAtIndex: count];
-                      apps = AUTORELEASE(m);
+                      if ([self _connectApplication: name alert: NO] != nil)
+                        {
+                          found = YES;
+                        }
+                      RELEASE(arp);
+                      if (found == NO)
+                        {
+                          [m removeObjectAtIndex: count];
+                        }
                     }
                 }
             }

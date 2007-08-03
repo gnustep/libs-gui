@@ -1,3 +1,8 @@
+2007-08-03 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWorkspace.m: ([-launchedApplications]) complete and tidy
+	code to check existence of launched apps.
+
 2007-08-02 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: ([-launchedApplications]) check that each app
