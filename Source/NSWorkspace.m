@@ -394,7 +394,7 @@ static id GSLaunched(NSNotification *notification, BOOL active)
 // application communication
 - (BOOL) _launchApplication: (NSString*)appName
 		  arguments: (NSArray*)args;
-- (id) _connectApplication: (NSString*)appName alert: (BOOL)alert;
+- (id) _connectApplication: (NSString*)appName;
 - (id) _workspaceApplication;
 
 @end
@@ -704,7 +704,7 @@ static NSString			*_rootPath = @"/";
 	}
     }
 
-  app = [self _connectApplication: appName alert: YES];
+  app = [self _connectApplication: appName];
   if (app == nil)
     {
       NSArray *args;
@@ -766,7 +766,7 @@ static NSString			*_rootPath = @"/";
       return NO;
     }
 
-  app = [self _connectApplication: appName alert: YES];
+  app = [self _connectApplication: appName];
   if (app == nil)
     {
       NSArray *args;
@@ -1366,7 +1366,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
     // workspace manager problem ... fall through to default code
   NS_ENDHANDLER
 
-  app = [self _connectApplication: appName alert: YES];
+  app = [self _connectApplication: appName];
   if (app == nil)
     {
       NSArray	*args = nil;
@@ -1439,7 +1439,6 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
   if (apps == nil)
     {
-      static NSDate     *lastCheck = nil;
       NSMutableArray    *m;
       unsigned          count;
 
@@ -1469,40 +1468,6 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
                             object: self
                             userInfo: [NSDictionary dictionaryWithObject: name
                               forKey: @"NSApplicationName"]], NO);
-                          [m removeObjectAtIndex: count];
-                        }
-                    }
-                }
-            }
-        }
-      if ((count = [apps count]) > 0)
-        {
-          /* If it's over 30 seconds since the last check ... try to contact
-           * all launched applications to ensure that none have crashed.
-           */
-          if (lastCheck == nil || [lastCheck timeIntervalSinceNow] < -30.0)
-            {
-              ASSIGN(lastCheck, [NSDate date]);
-
-              count = [apps count];
-              while (count-- > 0)
-                {
-                  NSString  *name;
-
-                  name = [[apps objectAtIndex: count]
-                    objectForKey: @"NSApplicationName"];
-                  if (name != nil)
-                    {
-                      CREATE_AUTORELEASE_POOL(arp);
-                      BOOL  found = NO;
-
-                      if ([self _connectApplication: name alert: NO] != nil)
-                        {
-                          found = YES;
-                        }
-                      RELEASE(arp);
-                      if (found == NO)
-                        {
                           [m removeObjectAtIndex: count];
                         }
                     }
@@ -2485,11 +2450,14 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   return YES;
 }
 
-- (id) _connectApplication: (NSString*)appName alert: (BOOL)alert
+- (id) _connectApplication: (NSString*)appName
 {
+  NSTimeInterval        replyTimeout;
+  NSTimeInterval        requestTimeout;
   NSString	*host;
   NSString	*port;
   NSDate	*when = nil;
+  NSConnection  *conn = nil;
   id		app = nil;
 
   while (app == nil)
@@ -2515,12 +2483,17 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
        */
       NS_DURING
 	{
-	  app = [NSConnection rootProxyForConnectionWithRegisteredName: port  
-								  host: host];
+          conn = [NSConnection connectionWithRegisteredName: port host: host];
+          requestTimeout = [conn requestTimeout];
+          [conn setRequestTimeout: 5.0];
+          replyTimeout = [conn replyTimeout];
+          [conn setReplyTimeout: 5.0];
+	  app = [conn rootProxy];
 	}
       NS_HANDLER
 	{
 	  /* Fatal error in DO	*/
+          conn = nil;
 	  app = nil;
 	}
       NS_ENDHANDLER
@@ -2548,16 +2521,9 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	      int		result;
 
 	      DESTROY(when);
-              if (alert == YES)
-                {
-	          result = NSRunAlertPanel(appName,
-		    @"Application seems to have hung",
-		    @"Continue", @"Terminate", @"Wait");
-                }
-              else
-                {
-                  result = NSAlertAlternateReturn;
-                }
+              result = NSRunAlertPanel(appName,
+                @"Application seems to have hung",
+                @"Continue", @"Terminate", @"Wait");
 
 	      if (result == NSAlertDefaultReturn)
 		{
@@ -2581,18 +2547,12 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	  RELEASE(limit);
 	}
     }
-  if (app == nil && port != nil && [host isEqual: @""] == YES)
+  if (conn != nil)
     {
-      /*
-       * The application is not running on this host ... fake a termination
-       * notification for it and use that to remove it from the on-disk
-       * list of launched applications.
+      /* Use original timeouts
        */
-      GSLaunched([NSNotification
-	notificationWithName: NSWorkspaceDidTerminateApplicationNotification
-	object: self
-	userInfo: [NSDictionary dictionaryWithObject: port
-	  forKey: @"NSApplicationName"]], NO);
+      [conn setRequestTimeout: requestTimeout];
+      [conn setReplyTimeout: replyTimeout];
     }
   TEST_RELEASE(when);
   return app;
@@ -2630,7 +2590,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
       return nil;
     }
 
-  app = [self _connectApplication: appName alert: YES];
+  app = [self _connectApplication: appName];
   if (app == nil)
     {
       NSString	*host;
@@ -2660,7 +2620,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	  if ([self _launchApplication: appName
 			     arguments: nil] == YES)
 	    {
-	      app = [self _connectApplication: appName alert: YES];
+	      app = [self _connectApplication: appName];
 	    }
 	}
     }

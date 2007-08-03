@@ -2,6 +2,8 @@
 
 	* Source/NSWorkspace.m: ([-launchedApplications]) complete and tidy
 	code to check existence of launched apps.
+	Revert code to check for apps that are not responding ... MacOS-X
+	reports hung apps, so we should do the same.
 
 2007-08-02 Richard Frith-Macdonald <rfm@gnu.org>
 
