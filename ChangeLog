@@ -1,5 +1,13 @@
 2007-08-03 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSView.m (-displayIfNeededInRectIgnoringOpacity:):
+	Correct spelling in comment.
+	* Headers/AppKit/NSLevelIndicatorCell.h: Add ivar for cell frame.
+	* Source/NSLevelIndicator.m (-rectOfTickMarkAtIndex:, -cellSize): Implement. 
+	Patch by Christopher Elsmore <elsmorian@gmail.com>.
+
+2007-08-03 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSDocumentController.h,
 	* Source/NSDocumentController.m (-maximumRecentDocumentCount): Add
 	missing method.

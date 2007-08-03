@@ -53,6 +53,7 @@ typedef enum _NSLevelIndicatorStyle
   int _numberOfTickMarks;
   NSLevelIndicatorStyle _style;
   NSTickMarkPosition _tickMarkPosition;
+  NSRect _cellFrame;
 }
 
 - (id)initWithLevelIndicatorStyle:(NSLevelIndicatorStyle)style;

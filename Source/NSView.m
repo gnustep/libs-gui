@@ -2254,8 +2254,8 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
 
       /*
        * If we still need display after displaying the invalid rectangle,
-       * this means, some subviews still need to display. For opaque subviews
-       * there invalid rectangle may even overlap the original aRect.
+       * this means that some subviews still need to display. For opaque subviews
+       * their invalid rectangle may even overlap the original aRect.
        * Display any subview that need display.
        */ 
       if (_rFlags.needs_display == YES)

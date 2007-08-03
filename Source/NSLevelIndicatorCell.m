@@ -50,28 +50,28 @@
       [self setLevelIndicatorStyle: style];
       //_minValue = 0.0;
       if ((style == NSContinuousCapacityLevelIndicatorStyle) ||
-	  (style == NSRelevancyLevelIndicatorStyle))
+          (style == NSRelevancyLevelIndicatorStyle))
         {
-	  _maxValue = 100.0;
-	}
+          _maxValue = 100.0;
+        }
       else
         {
-	  _maxValue = 5.0;
-	}
+          _maxValue = 5.0;
+        }
       [self setDoubleValue: 0.0];
     }
 
   return self;
 }
 
-- (id) copyWithZone:(NSZone *) zone;
+- (id) copyWithZone:(NSZone *) zone
 {
   NSLevelIndicatorCell *c = [super copyWithZone: zone];
 
   return c;
 }
 
-- (void) dealloc;
+- (void) dealloc
 {
   [super dealloc];
 }
@@ -119,7 +119,7 @@
 
 - (void) setWarningValue: (double)val
 {
-  _warningValue=val;
+  _warningValue = val;
 }
 
 - (void) setLevelIndicatorStyle: (NSLevelIndicatorStyle)style
@@ -159,31 +159,132 @@
 
 - (double) tickMarkValueAtIndex: (int)index
 {
-  if ((index < 0) || (index > _numberOfTickMarks))
+  if ((index < 0) || (index >= _numberOfTickMarks))
     {
       [NSException raise: NSRangeException
-		   format: @"tick mark index invalid"];
+                   format: @"tick mark index invalid"];
     }
 
   return _minValue + index * (_maxValue - _minValue) / _numberOfTickMarks;
 }
 
-- (NSRect) rectOfTickMarkAtIndex: (int)index;
+- (NSRect) rectOfTickMarkAtIndex: (int)index
 {
-  if ((index < 0) || (index > _numberOfTickMarks))
+  NSRect cellRect = NSZeroRect;
+  float frameWidth = _cellFrame.size.width;
+
+  if ((index < 0) || (index >= _numberOfTickMarks))
     {
       [NSException raise: NSRangeException
-		   format: @"tick mark index invalid"];
+        format: @"tick mark index invalid"];
     }
 
-  // FIXME: Need to cache the cell frame for this
-  return NSZeroRect;
+  // Create default minor tickmark size in cellRect
+  cellRect.size.width = 1;
+  cellRect.size.height = 4;
+  
+  // If all tick marks are major:
+  if (_numberOfTickMarks <= _numberOfMajorTickMarks)
+    {
+      // Use major tick mark size
+      cellRect.size.width = 3;
+      cellRect.size.height = 7;
+    }
+  // If major tick marks fit with even spacing
+  else if ((_numberOfTickMarks -1) % (_numberOfMajorTickMarks - 1) == 0)
+    {
+      int minorTicksPerMajor = (_numberOfTickMarks - 1) / (_numberOfMajorTickMarks - 1);
+
+      // If index is a major tick mark
+      if (index % minorTicksPerMajor == 0)
+        {
+          // Use major tick mark size
+          cellRect.size.width = 3;
+          cellRect.size.height = 7;
+        }
+    }
+  // FIXME: Extra tick mark code, when all major tick marks don't fit but a lesser amount will
+        
+  // Last tick mark
+  if (index == (_numberOfTickMarks - 1))
+    {
+      cellRect.origin.x = (frameWidth - cellRect.size.width);
+    }
+  // Not the first tick mark. (First tick mark will use 0,0 default values already set)
+  else if (index != 0)
+    {
+      float spacing = (frameWidth / (_numberOfTickMarks - 1)) * index;
+      cellRect.origin.x = spacing - (cellRect.size.width / 2);
+    }
+        
+  // Set origins if tick marks are above the indicator
+  if (_tickMarkPosition == NSTickMarkAbove)
+    {
+      switch (_style)
+        {
+          case NSContinuousCapacityLevelIndicatorStyle:
+            {
+              cellRect.origin.y = 16;
+              break;
+            }
+          case NSRelevancyLevelIndicatorStyle:
+            {
+              cellRect.origin.y = 12;
+              break;
+            }
+          case NSRatingLevelIndicatorStyle:
+            {
+              cellRect.origin.y = 13;
+              break;
+            }
+          case NSDiscreteCapacityLevelIndicatorStyle:
+            {
+              cellRect.origin.y = 18;
+              break;
+            }
+        }
+    }
+  // If tick mark is minor and below indicator, use y origin of 3. If not, default value of 0 is used
+  else if (cellRect.size.width == 1)
+    {
+      cellRect.origin.y = 3;
+    }
+        
+  return NSIntegralRect(cellRect);
 }
 
-- (NSSize) cellSize;
+- (NSSize) cellSize
 {
-  // FIXME: sum up all widths and use default height for controlSize
-  return [super cellSize];
+  // Sizes are the same as those from OSX
+  NSSize cellSize = NSMakeSize(400000, 25);
+
+  // Change cellSize to the correct size:
+  switch (_style)
+    {
+      case NSContinuousCapacityLevelIndicatorStyle:
+        {
+          cellSize.height = 23;
+          break;
+        }
+      case NSRelevancyLevelIndicatorStyle:
+        {
+          cellSize.height = 19;
+          break;
+        }
+      case NSRatingLevelIndicatorStyle:
+        {
+          cellSize.height = 20;
+          cellSize.width = 13 * _maxValue;
+          break;
+        }
+      case NSDiscreteCapacityLevelIndicatorStyle:
+        {
+          cellSize.height = 25;
+          break;
+        }
+    }
+    
+  return cellSize;
 }
 
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
@@ -192,7 +293,8 @@
   double value = [self doubleValue];
   double val = (value -_minValue) / (_maxValue -_minValue);
   BOOL vertical = (cellFrame.size.height > cellFrame.size.width);
-	
+        
+  _cellFrame = cellFrame;
   if (value < _warningValue)
     fillColor = [NSColor greenColor];
   else if (value < _criticalValue)
@@ -205,175 +307,179 @@
       // FIXME: this code only works for horizontal frames
       float x;
       float y0, y1;
-      float step = _numberOfTickMarks > 1 ? (cellFrame.size.width - 1.0) / (_numberOfTickMarks - 1) : 1.0;
+      float step = _numberOfTickMarks > 1 ? 
+          (cellFrame.size.width - 1.0) / (_numberOfTickMarks - 1) : 
+          1.0;
       int tick;
 
       if (_tickMarkPosition == NSTickMarkBelow)
         {
-	  cellFrame.origin.y += 8.0;
-	  cellFrame.size.height -= 8.0;
-	  y0 = 4.0;
-	  y1 = 8.0;
-	}
+          cellFrame.origin.y += 8.0;
+          cellFrame.size.height -= 8.0;
+          y0 = 4.0;
+          y1 = 8.0;
+        }
       else
         {
-	  cellFrame.size.height -= 8.0;
-	  y0 = cellFrame.size.height;
-	  y1 = y0 + 4.0;
-	}
+          cellFrame.size.height -= 8.0;
+          y0 = cellFrame.size.height;
+          y1 = y0 + 4.0;
+        }
 
       [[NSColor darkGrayColor] set];
       for(x = 0.0, tick = 0; tick <= _numberOfTickMarks; x += step, tick++)
         {
-	  [NSBezierPath strokeLineFromPoint: NSMakePoint(x, y0) toPoint: NSMakePoint(x, y1)];
-	  // FIXME: draw _numberOfMajorTickMarks thick ticks (ignore if more than _numberOfTickMarks)
-	}
+          [NSBezierPath strokeLineFromPoint: NSMakePoint(x, y0) toPoint: NSMakePoint(x, y1)];
+          // FIXME: draw _numberOfMajorTickMarks thick ticks (ignore if more than _numberOfTickMarks)
+        }
     }
 
   switch(_style)
     {
       case NSDiscreteCapacityLevelIndicatorStyle:
         {
-	  int segments = (int)(_maxValue - _minValue);
-	  // width of one segment
-	  float step = (segments > 0) ? ((vertical ? cellFrame.size.height : cellFrame.size.width) / segments) : 10.0;
-	  int i;
-	  int ifill = val * segments + 0.5;
+          int segments = (int)(_maxValue - _minValue);
+          // width of one segment
+          float step = (segments > 0) ? 
+              ((vertical ? cellFrame.size.height : cellFrame.size.width) / segments) : 
+              10.0;
+          int i;
+          int ifill = val * segments + 0.5;
 
-	  for( i = 0; i < segments; i++)
-	    {
-	      // draw segments
-	      NSRect seg = cellFrame;
+          for( i = 0; i < segments; i++)
+            {
+              // draw segments
+              NSRect seg = cellFrame;
 
-	      if (vertical)
-	        {
-		  seg.size.height = step - 1.0;
-		  seg.origin.y += i * step;
-		}
-	      else
-	        {
-		  seg.size.width = step - 1.0;
-		  seg.origin.x += i * step;
-		}
+              if (vertical)
+                {
+                  seg.size.height = step - 1.0;
+                  seg.origin.y += i * step;
+                }
+              else
+                {
+                  seg.size.width = step - 1.0;
+                  seg.origin.x += i * step;
+                }
 
-	      if (i < ifill)
-		  [fillColor set];
-	      else
-		  // FIXME: Should not be needed.
-		  [[NSColor controlBackgroundColor] set];
+              if (i < ifill)
+                  [fillColor set];
+              else
+                  // FIXME: Should not be needed.
+                  [[NSColor controlBackgroundColor] set];
 
-	      // we could also fill with a scaled horizontal/vertical image
-	      NSRectFill(seg);
-	      // draw border
-	      [[NSColor lightGrayColor] set];
-	      NSFrameRect(seg);
-	    }
-	  break;
-	}
+              // we could also fill with a scaled horizontal/vertical image
+              NSRectFill(seg);
+              // draw border
+              [[NSColor lightGrayColor] set];
+              NSFrameRect(seg);
+            }
+          break;
+        }
       case NSContinuousCapacityLevelIndicatorStyle:
         {
-	  NSRect ind, fill;
+          NSRect ind, fill;
 
-	  if (vertical)
-	    NSDivideRect(cellFrame, &ind, &fill, cellFrame.size.height * val, NSMinYEdge);
-	  else
-	    NSDivideRect(cellFrame, &ind, &fill, cellFrame.size.width * val, NSMinXEdge);
+          if (vertical)
+            NSDivideRect(cellFrame, &ind, &fill, cellFrame.size.height * val, NSMinYEdge);
+          else
+            NSDivideRect(cellFrame, &ind, &fill, cellFrame.size.width * val, NSMinXEdge);
 
-	  [fillColor set];
-	  // we could also fill with a scaled horizontal/vertical image
-	  NSRectFill(ind);
-	  // FIXME: Not needed
-	  [[NSColor controlBackgroundColor] set];
-	  NSRectFill(fill);
-	  // draw border
-	  [[NSColor lightGrayColor] set];
-	  NSFrameRect(cellFrame);
-	  break;
-	}
+          [fillColor set];
+          // we could also fill with a scaled horizontal/vertical image
+          NSRectFill(ind);
+          // FIXME: Not needed
+          [[NSColor controlBackgroundColor] set];
+          NSRectFill(fill);
+          // draw border
+          [[NSColor lightGrayColor] set];
+          NSFrameRect(cellFrame);
+          break;
+        }
       case NSRelevancyLevelIndicatorStyle:
         {
-	  // FIXME: Not needed
-	  [[NSColor controlBackgroundColor] set];
-	  NSRectFill(cellFrame);
+          // FIXME: Not needed
+          [[NSColor controlBackgroundColor] set];
+          NSRectFill(cellFrame);
 
-	  [[NSColor darkGrayColor] set];
-	  if (vertical)
-	    {
-	      float y;
-	      float yfill = val * cellFrame.size.height + 0.5;
+          [[NSColor darkGrayColor] set];
+          if (vertical)
+            {
+              float y;
+              float yfill = val * cellFrame.size.height + 0.5;
 
-	      for (y = 0.0; y < yfill; y += 2.0)
-	        {
-		  [NSBezierPath strokeLineFromPoint: NSMakePoint(0.0, y) 
-				toPoint: NSMakePoint(cellFrame.size.width, y)];
-		}
-	    }
-	  else
-	    {
-	      float x;
-	      float xfill = val * cellFrame.size.width + 0.5;
-	      for (x = 0.0; x < xfill; x += 2.0)
-	        {
-		  [NSBezierPath strokeLineFromPoint: NSMakePoint(x, 0.0) 
-				toPoint: NSMakePoint(x, cellFrame.size.height)];
-		}
-	    }
-	  break;
-	}
+              for (y = 0.0; y < yfill; y += 2.0)
+                {
+                  [NSBezierPath strokeLineFromPoint: NSMakePoint(0.0, y) 
+                                toPoint: NSMakePoint(cellFrame.size.width, y)];
+                }
+            }
+          else
+            {
+              float x;
+              float xfill = val * cellFrame.size.width + 0.5;
+              for (x = 0.0; x < xfill; x += 2.0)
+                {
+                  [NSBezierPath strokeLineFromPoint: NSMakePoint(x, 0.0) 
+                                toPoint: NSMakePoint(x, cellFrame.size.height)];
+                }
+            }
+          break;
+        }
       case NSRatingLevelIndicatorStyle:
         {
-	  NSImage *indicator = [self image];
-	  NSSize isize;
+          NSImage *indicator = [self image];
+          NSSize isize;
 
-	  if (!indicator)
-	      indicator = [NSImage imageNamed: @"NSRatingLevelIndicator"];
+          if (!indicator)
+              indicator = [NSImage imageNamed: @"NSRatingLevelIndicator"];
 
-	  isize = [indicator size];
+          isize = [indicator size];
 
-	  // FIXME: Not needed
-	  [[NSColor controlBackgroundColor] set];
-	  NSRectFill(cellFrame);
+          // FIXME: Not needed
+          [[NSColor controlBackgroundColor] set];
+          NSRectFill(cellFrame);
 
-	  if (vertical)
-	    {
-	      int y;
+          if (vertical)
+            {
+              int y;
 
-	      for (y = 0.0; y < (val + 0.5); y++)
-	        {
-		  NSPoint pos = NSMakePoint(0, y * isize.height + 2.0);
+              for (y = 0.0; y < (val + 0.5); y++)
+                {
+                  NSPoint pos = NSMakePoint(0, y * isize.height + 2.0);
 
-		  if (pos.y >= cellFrame.size.height)
-		    break;
-			
-		  // here we can strech the image as needed by using drawInRect:
-		  [indicator drawAtPoint: pos 
-			     fromRect: (NSRect){NSZeroPoint, isize} 
-			     operation: NSCompositeCopy 
-			     fraction:1.0];
-		}
+                  if (pos.y >= cellFrame.size.height)
+                    break;
+                        
+                  // here we can strech the image as needed by using drawInRect:
+                  [indicator drawAtPoint: pos 
+                             fromRect: (NSRect){NSZeroPoint, isize} 
+                             operation: NSCompositeCopy 
+                             fraction:1.0];
+                }
 
-	      // FIXME: Should draw place holder for the rest of the cell frame
-	    }
-	  else
-	    {
-	      int x;
+              // FIXME: Should draw place holder for the rest of the cell frame
+            }
+          else
+            {
+              int x;
 
-	      for (x = 0.0; x < (val + 0.5); x++)
-	        {
-		  NSPoint pos = NSMakePoint(x * isize.width + 2.0, 0.0);
+              for (x = 0.0; x < (val + 0.5); x++)
+                {
+                  NSPoint pos = NSMakePoint(x * isize.width + 2.0, 0.0);
 
-		  if(pos.x >= cellFrame.size.width)
-		    break;
-			
-		  [indicator drawAtPoint: pos 
-			     fromRect: (NSRect){NSZeroPoint, isize} 
-			     operation: NSCompositeCopy 
-			     fraction: 1.0];
-		}
+                  if(pos.x >= cellFrame.size.width)
+                    break;
+                        
+                  [indicator drawAtPoint: pos 
+                             fromRect: (NSRect){NSZeroPoint, isize} 
+                             operation: NSCompositeCopy 
+                             fraction: 1.0];
+                }
 
-	      // FIXME: Should draw place holder for the rest of the cell frame
-	    }
-	}
+              // FIXME: Should draw place holder for the rest of the cell frame
+            }
+        }
     }
 }
 
@@ -414,40 +520,40 @@
     {
       if ([aDecoder containsValueForKey: @"NSMinValue"])
         {
-	  _minValue = [aDecoder decodeDoubleForKey: @"NSMinValue"];
-	}
+          _minValue = [aDecoder decodeDoubleForKey: @"NSMinValue"];
+        }
       if ([aDecoder containsValueForKey: @"NSMaxValue"])
         {
-	  _maxValue = [aDecoder decodeDoubleForKey: @"NSMaxValue"];
-	}
+          _maxValue = [aDecoder decodeDoubleForKey: @"NSMaxValue"];
+        }
       if ([aDecoder containsValueForKey: @"NSWarningValue"])
         {
-	  _warningValue = [aDecoder decodeDoubleForKey: @"NSWarningValue"];
-	}
+          _warningValue = [aDecoder decodeDoubleForKey: @"NSWarningValue"];
+        }
       if ([aDecoder containsValueForKey: @"NSCriticalValue"])
         {
-	  _criticalValue = [aDecoder decodeDoubleForKey: @"NSCriticalValue"];
-	}
+          _criticalValue = [aDecoder decodeDoubleForKey: @"NSCriticalValue"];
+        }
        if ([aDecoder containsValueForKey: @"NSValue"])
         {
-	  [self setDoubleValue: [aDecoder decodeDoubleForKey: @"NSValue"]];
-	}
+          [self setDoubleValue: [aDecoder decodeDoubleForKey: @"NSValue"]];
+        }
       if ([aDecoder containsValueForKey: @"NSIndicatorStyle"])
         {
-	  _style = [aDecoder decodeIntForKey: @"NSIndicatorStyle"];
-	}
+          _style = [aDecoder decodeIntForKey: @"NSIndicatorStyle"];
+        }
       if ([aDecoder containsValueForKey: @"NSNumberOfMajorTickMarks"])
         {
-	  _numberOfMajorTickMarks = [aDecoder decodeIntForKey: @"NSNumberOfMajorTickMarks"];
-	}
+          _numberOfMajorTickMarks = [aDecoder decodeIntForKey: @"NSNumberOfMajorTickMarks"];
+        }
       if ([aDecoder containsValueForKey: @"NSNumberOfTickMarks"])
         {
-	  _numberOfTickMarks = [aDecoder decodeIntForKey: @"NSNumberOfTickMarks"];
-	}
+          _numberOfTickMarks = [aDecoder decodeIntForKey: @"NSNumberOfTickMarks"];
+        }
       if ([aDecoder containsValueForKey: @"NSTickMarkPosition"])
         {
-	  _tickMarkPosition = [aDecoder decodeIntForKey: @"NSTickMarkPosition"];
-	}
+          _tickMarkPosition = [aDecoder decodeIntForKey: @"NSTickMarkPosition"];
+        }
     }
   else
     { 
