@@ -73,7 +73,7 @@ static Class imageClass;
 {
   if (self == [NSMenuItem class])
     {
-      [self setVersion: 3];
+      [self setVersion: 4];
       imageClass = [NSImage class];
     }
 }
@@ -552,19 +552,19 @@ static Class imageClass;
 
       if ([aDecoder containsValueForKey: @"NSKeyEquivModMask"])
         {
-	  int keyMask = [aDecoder decodeIntForKey: @"NSKeyEquivModMask"];
-	  [self setKeyEquivalentModifierMask: keyMask];
-	}
+          int keyMask = [aDecoder decodeIntForKey: @"NSKeyEquivModMask"];
+          [self setKeyEquivalentModifierMask: keyMask];
+        }
       if ([aDecoder containsValueForKey: @"NSMnemonicLoc"])
         {
-	  int loc = [aDecoder decodeIntForKey: @"NSMnemonicLoc"];
-	  [self setMnemonicLocation: loc];
-	}
+          int loc = [aDecoder decodeIntForKey: @"NSMnemonicLoc"];
+          [self setMnemonicLocation: loc];
+        }
       if ([aDecoder containsValueForKey: @"NSState"])
         {
-	  int state = [aDecoder decodeIntForKey: @"NSState"];
-	  [self setState: state];
-	}
+          int state = [aDecoder decodeIntForKey: @"NSState"];
+          [self setState: state];
+        }
     }
   else
     {
@@ -574,6 +574,10 @@ static Class imageClass;
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_title];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_keyEquivalent];
       [aDecoder decodeValueOfObjCType: "I" at: &_keyEquivalentModifierMask];
+      if (version <= 3)
+        {
+          _keyEquivalentModifierMask = _keyEquivalentModifierMask << 16;
+        }
       [aDecoder decodeValueOfObjCType: "I" at: &_mnemonicLocation];
       [aDecoder decodeValueOfObjCType: "i" at: &_state];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_enabled];
@@ -584,22 +588,22 @@ static Class imageClass;
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_changesState];
       if (version == 1)
         {
-	  _target = [aDecoder decodeObject];
-	}
+          _target = [aDecoder decodeObject];
+        }
       [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
       [aDecoder decodeValueOfObjCType: "i" at: &_tag];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_representedObject];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_submenu];
       if (version >= 2)
         {
-	  _target = [aDecoder decodeObject];
-	}
-      if (version == 3)
+          _target = [aDecoder decodeObject];
+        }
+      if (version >= 3)
         {
-	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isAlternate];
-	  [aDecoder decodeValueOfObjCType: @encode(char) at: &_indentation];
-	  [aDecoder decodeValueOfObjCType: @encode(id) at: &_toolTip];
-	}
+          [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isAlternate];
+          [aDecoder decodeValueOfObjCType: @encode(char) at: &_indentation];
+          [aDecoder decodeValueOfObjCType: @encode(id) at: &_toolTip];
+        }
     }
 
   return self;

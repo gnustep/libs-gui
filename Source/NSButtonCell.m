@@ -113,7 +113,7 @@ typedef struct _GSButtonCellFlags
 + (void) initialize
 {
   if (self == [NSButtonCell class])
-    [self setVersion: 2];
+    [self setVersion: 3];
 }
 
 /*
@@ -1739,6 +1739,7 @@ typedef struct _GSButtonCellFlags
   else
     {
       BOOL tmp;
+      int version = [aDecoder versionForClassName: @"NSButtonCell"];
       
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_keyEquivalent];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_keyEquivalentFont];
@@ -1748,13 +1749,17 @@ typedef struct _GSButtonCellFlags
       _buttoncell_is_transparent = tmp;
       [aDecoder decodeValueOfObjCType: @encode(unsigned int)
                                    at: &_keyEquivalentModifierMask];
+      if (version <= 2)
+        {
+          _keyEquivalentModifierMask = _keyEquivalentModifierMask << 16;
+        }
       [aDecoder decodeValueOfObjCType: @encode(unsigned int)
                                    at: &_highlightsByMask];
       [aDecoder decodeValueOfObjCType: @encode(unsigned int)
                                    at: &_showAltStateMask];
 
-      if ([aDecoder versionForClassName: @"NSButtonCell"] >= 2)
-      {
+      if (version >= 2)
+        {
           [aDecoder decodeValueOfObjCType: @encode(id) at: &_sound];
           [aDecoder decodeValueOfObjCType: @encode(id) at: &_backgroundColor];
           [aDecoder decodeValueOfObjCType: @encode(float) at: &_delayInterval];
@@ -1767,7 +1772,7 @@ typedef struct _GSButtonCellFlags
           _image_dims_when_disabled = tmp;
           [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
           _shows_border_only_while_mouse_inside = tmp;
-      }
+        }
     }
   return self;
 }

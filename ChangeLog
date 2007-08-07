@@ -1,3 +1,10 @@
+2007-08-07 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSButtonCell.m (-initWithCoder:),
+	* Source/NSMenuItem.m (-initWithCoder:): Adopt to changed values
+	for _keyEquivalentModifierMask. These have changed through the
+	NSEvent.h change.
+
 2007-08-03 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSView.m (-displayIfNeededInRectIgnoringOpacity:):
