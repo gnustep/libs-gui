@@ -72,6 +72,9 @@
 #if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 - (int) screenNumber;
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (float) userSpaceScaleFactor;
+#endif
 
 @end
 #endif // _GNUstep_H_NSScreen

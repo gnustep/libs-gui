@@ -1,3 +1,10 @@
+2007-08-08 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSScreen.h: Add method userSpaceScaleFactor.
+	* Source/NSScreen.m: Implement userSpaceScaleFactor. Correct
+	mainScreen. Listen to NSApplicationDidChangeScreenParametersNotification.
+	Get default menu height from NSMenuView. General cleanup.
+	
 2007-08-07 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSButtonCell.m (-initWithCoder:),
