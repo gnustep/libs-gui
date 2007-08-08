@@ -91,6 +91,7 @@ NSEPSImageRep.m \
 NSEvent.m \
 NSFileWrapper.m \
 NSFont.m \
+NSFontDescriptor.m \
 NSFontManager.m \
 NSFontPanel.m \
 NSForm.m \

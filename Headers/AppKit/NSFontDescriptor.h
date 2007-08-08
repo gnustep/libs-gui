@@ -31,15 +31,19 @@
 #ifndef _GNUstep_H_NSFontDescriptor
 #define _GNUstep_H_NSFontDescriptor
 
-#import "Foundation/NSSet.h"
-#import "AppKit/NSController.h"
-#import "AppKit/NSAffineTransform.h"
+#import <GNUstepBase/GSVersionMacros.h>
 
-#if OS_API_VERSION(100300, GS_API_LATEST)
+#include <Foundation/NSObject.h>
 
-@class NSString;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+
+@class NSAffineTransform;
+@class NSArray;
 @class NSCoder;
+@class NSSet;
+@class NSString;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 typedef uint32_t NSFontSymbolicTraits;
 
 typedef enum _NSFontFamilyClass
@@ -57,6 +61,10 @@ typedef enum _NSFontFamilyClass
   NSFontSymbolicClass = 12 << 28
 } NSFontFamilyClass;
 
+enum _NSFontFamiliyClassMask {
+    NSFontFamiliyClassMask = 0xF0000000
+};
+
 enum _NSFontTrait
 {
   NSFontItalicTrait = 0x0001,
@@ -67,6 +75,8 @@ enum _NSFontTrait
   NSFontVerticalTrait = 0x0800,
   NSFontUIOptimizedTrait = 0x1000
 };
+
+#endif 
 
 extern NSString *NSFontFamilyAttribute;
 extern NSString *NSFontNameAttribute;
@@ -95,16 +105,20 @@ extern NSString *NSFontVariationAxisNameKey;
 @interface NSFontDescriptor : NSObject <NSCoding>
 {
   NSDictionary *_attributes;
-  void *_backendPrivate;		// caches an FT_Face
 }
 
 + (id) fontDescriptorWithFontAttributes: (NSDictionary *)attributes;
 + (id) fontDescriptorWithName: (NSString *)name
-		       matrix: (NSAffineTransform *)matrix;
+                         size: (float)size;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 + (id) fontDescriptorWithName: (NSString *)name
-			 size: (float)size;
+                       matrix: (NSAffineTransform *)matrix;
+#endif
 
 - (NSDictionary *) fontAttributes;
+- (id) initWithFontAttributes: (NSDictionary *)attributes;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 - (NSFontDescriptor *) fontDescriptorByAddingAttributes:
   (NSDictionary *)attributes;
 - (NSFontDescriptor *) fontDescriptorWithFace: (NSString *)face;
@@ -113,16 +127,17 @@ extern NSString *NSFontVariationAxisNameKey;
 - (NSFontDescriptor *) fontDescriptorWithSize: (float)size;
 - (NSFontDescriptor *) fontDescriptorWithSymbolicTraits:
   (NSFontSymbolicTraits)traits;
-- (id) initWithFontAttributes: (NSDictionary *)attributes;
 - (NSArray *) matchingFontDescriptorsWithMandatoryKeys: (NSSet *)keys;
+
 - (id) objectForKey: (NSString *)attribute;
-- (NSAffineTransform *)matrix;
+- (NSAffineTransform *) matrix;
 - (float) pointSize;
 - (NSString *) postscriptName;
 - (NSFontSymbolicTraits) symbolicTraits;
+#endif
 
 @end
 
-#endif /* OS_API_VERSION(100300, GS_API_LATEST) */
+#endif /* OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST) */
 
 #endif /* _GNUstep_H_NSFontDescriptor */

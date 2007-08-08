@@ -27,6 +27,8 @@
 */ 
 
 #include "config.h"
+#include <Foundation/NSAffineTransform.h>
+#include <Foundation/NSCoder.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSSet.h>
@@ -37,6 +39,7 @@
 
 #include "AppKit/NSGraphicsContext.h"
 #include "AppKit/NSFont.h"
+#include <AppKit/NSFontDescriptor.h>
 #include "AppKit/NSFontManager.h"
 #include "AppKit/NSView.h"
 #include "GNUstepGUI/GSFontInfo.h"
@@ -444,13 +447,14 @@ static void setNSFont(NSString *key, NSFont *font)
        */
       placeHolder = [self alloc];
       globalFontMap = NSCreateMapTable(NSObjectMapKeyCallBacks,
-	NSNonRetainedObjectMapValueCallBacks, 64);
+                                       NSNonRetainedObjectMapValueCallBacks, 64);
 
       if (defaults == nil)
-	{
-	  defaults = RETAIN([NSUserDefaults standardUserDefaults]);
-	}
+        {
+          defaults = RETAIN([NSUserDefaults standardUserDefaults]);
+        }
 
+      _preferredFonts = [defaults objectForKey: @"NSPreferredFonts"];
       [self setVersion: currentVersion];
     }
 }
@@ -497,7 +501,7 @@ static void setNSFont(NSString *key, NSFont *font)
 }
 
 + (NSFont *) fontWithDescriptor: (NSFontDescriptor *)descriptor
-			   size: (float)size
+                           size: (float)size
 {
   return [self fontWithDescriptor: descriptor size: size textTransform: nil];
 }
@@ -505,10 +509,11 @@ static void setNSFont(NSString *key, NSFont *font)
 // the transform/matrix can be used to rotate/scale/shear the whole font (independently of the CTM!)
 
 + (NSFont *) fontWithDescriptor: (NSFontDescriptor *)descriptor
-			   size: (float)size
-		  textTransform: (NSAffineTransform *)transform
+                           size: (float)size
+                  textTransform: (NSAffineTransform *)transform
 {
   NSArray *a;
+  NSFontDescriptor *fd;
 
   if (size == 0.0)
     size = [NSFont systemFontSize];	// default
@@ -522,13 +527,17 @@ static void setNSFont(NSString *key, NSFont *font)
     }
 
   // match all keys
+  // FIXME: Matching on size and matrix seems nonsensical.
   a = [descriptor matchingFontDescriptorsWithMandatoryKeys:
     [NSSet setWithArray: [[descriptor fontAttributes] allKeys]]];
 
   if ([a count] == 0)
     return nil;
 
-  return [a objectAtIndex: 0];	// return first matching font
+	// return first matching font
+  fd = [a objectAtIndex: 0];
+  // FIXME: Use NSFontManger to get a font name and create that font
+  return nil;
 }
 
 
@@ -558,6 +567,7 @@ static void setNSFont(NSString *key, NSFont *font)
 + (void) setPreferredFontNames: (NSArray*)fontNames
 {
   ASSIGN(_preferredFonts, fontNames);
+  // FIXME: Should this store back the preferred fonts in the user defaults?
 }
 
 /* Getting various fonts*/
@@ -918,8 +928,11 @@ static BOOL flip_hack;
     without explicitly setting the font matrix */
 - (void) set
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
+  [self setInContext: GSCurrentContext()];
+}
 
+- (void) setInContext: (NSGraphicsContext*)ctxt
+{
   if (matrixExplicitlySet == NO && ([[NSView focusView] isFlipped] || flip_hack))
     [ctxt GSSetFont: [[self _flippedViewFont] fontRef]];
   else
@@ -944,6 +957,23 @@ static BOOL flip_hack;
 - (const float*) matrix		
 { 
   return matrix; 
+}
+
+- (NSAffineTransform*) textTransform
+{
+  NSAffineTransform *transform;
+  NSAffineTransformStruct tstruct;
+
+  tstruct.m11 = matrix[0];
+  tstruct.m12 = matrix[1];
+  tstruct.m21 = matrix[2];
+  tstruct.m22 = matrix[3];
+  tstruct.tX = matrix[4];
+  tstruct.tY = matrix[5];
+ 
+  transform = [NSAffineTransform transform];
+  [transform setTransformStruct: tstruct];
+  return transform;
 }
 
 - (NSString*) encodingScheme
@@ -1016,6 +1046,18 @@ static BOOL flip_hack;
 			screenFont: YES
 			      role: role];
   return AUTORELEASE(RETAIN(cachedScreenFont));
+}
+
+- (NSFont*) screenFontWithRenderingMode: (NSFontRenderingMode)mode
+{
+  // FIXME
+  return [self screenFont];
+}
+
+- (NSFontRenderingMode) renderingMode
+{
+  // FIXME
+  return NSFontDefaultRenderingMode;
 }
 
 - (float) ascender		{ return [fontInfo ascender]; }
@@ -1424,194 +1466,3 @@ int NSConvertGlyphsToPackedGlyphs(NSGlyph *glBuf,
 
   return j;
 }
-
-NSString *NSFontFamilyAttribute=@"Family";
-NSString *NSFontNameAttribute=@"Name";
-NSString *NSFontFaceAttribute=@"Face";
-NSString *NSFontSizeAttribute=@"Size"; 
-NSString *NSFontVisibleNameAttribute=@"VisibleName"; 
-NSString *NSFontColorAttribute=@"Color";
-NSString *NSFontMatrixAttribute=@"Matrix";
-NSString *NSFontVariationAttribute=@"Variation";
-NSString *NSFontCharacterSetAttribute=@"CharacterSet";
-NSString *NSFontCascadeListAttribute=@"CascadeList";
-NSString *NSFontTraitsAttribute=@"Traits";
-NSString *NSFontFixedAdvanceAttribute=@"FixedAdvance";
-
-NSString *NSFontSymbolicTrait=@"SymbolicTrait";
-NSString *NSFontWeightTrait=@"WeightTrait";
-NSString *NSFontWidthTrait=@"WidthTrait";
-NSString *NSFontSlantTrait=@"SlantTrait";
-
-NSString *NSFontVariationAxisIdentifierKey=@"VariationAxisIdentifier";
-NSString *NSFontVariationAxisMinimumValueKey=@"VariationAxisMinimumValue";
-NSString *NSFontVariationAxisMaximumValueKey=@"VariationAxisMaximumValue";
-NSString *NSFontVariationAxisDefaultValueKey=@"VariationAxisDefaultValue";
-NSString *NSFontVariationAxisNameKey=@"VariationAxisName";
-
-
-@implementation NSFontDescriptor
-
-+ (id) fontDescriptorWithFontAttributes: (NSDictionary *) attributes;
-{
-  return [[[self alloc] initWithFontAttributes:attributes] autorelease];
-}
-
-+ (id) fontDescriptorWithName: (NSString *)name
-		       matrix: (NSAffineTransform *)matrix
-{
-  return [self fontDescriptorWithFontAttributes:
-    [NSDictionary dictionaryWithObjectsAndKeys:
-      name, NSFontNameAttribute,
-      matrix, NSFontMatrixAttribute,
-      nil]];
-}
-
-+ (id) fontDescriptorWithName: (NSString *)name size: (float)size
-{
-  return [self fontDescriptorWithFontAttributes:
-    [NSDictionary dictionaryWithObjectsAndKeys:
-      name, NSFontNameAttribute,
-      [NSString stringWithFormat: @"%f", size], NSFontSizeAttribute,
-      nil]];
-}
-
-- (NSDictionary *) fontAttributes
-{
-  return _attributes;
-}
-
-- (NSFontDescriptor *) fontDescriptorByAddingAttributes:
-  (NSDictionary *)attributes
-{
-  NSFontDescriptor *fd = [super copy];
-
-  if (fd != nil)
-    {
-      NSMutableDictionary	*m = [_attributes mutableCopy];
-
-      fd->_attributes = m;	// current attributes
-      [m addEntriesFromDictionary: attributes];	// change
-    }
-  return AUTORELEASE(fd);
-}
-
-- (NSFontDescriptor *) fontDescriptorWithFace: (NSString *)face
-{
-  return [self fontDescriptorByAddingAttributes:
-    [NSDictionary dictionaryWithObject: face forKey: NSFontFaceAttribute]];
-}
-
-- (NSFontDescriptor *) fontDescriptorWithFamily: (NSString *)family
-{
-  return [self fontDescriptorByAddingAttributes:
-    [NSDictionary dictionaryWithObject: family forKey: NSFontFamilyAttribute]];
-}
-
-- (NSFontDescriptor *) fontDescriptorWithMatrix: (NSAffineTransform *)matrix
-{
-  return [self fontDescriptorByAddingAttributes:
-    [NSDictionary dictionaryWithObject: matrix forKey: NSFontMatrixAttribute]];
-}
-
-- (NSFontDescriptor *) fontDescriptorWithSize: (float)size
-{
-  return [self fontDescriptorByAddingAttributes:
-    [NSDictionary dictionaryWithObject: [NSNumber numberWithFloat: size]
-				forKey: NSFontSizeAttribute]];
-}
-
-- (NSFontDescriptor *) fontDescriptorWithSymbolicTraits:
-  (NSFontSymbolicTraits)traits
-{
-  return [self fontDescriptorByAddingAttributes:
-    [NSDictionary dictionaryWithObject: [NSNumber numberWithUnsignedInt: traits]
-				forKey: NSFontSymbolicTrait]];
-}
-
-- (id) initWithFontAttributes: (NSDictionary *) attributes;
-{
-  if ((self = [super init]) != nil)
-    {
-      if (attributes)
-        _attributes = [attributes copy];
-      else
-        _attributes = [NSDictionary new];
-    }
-  return self;
-}
-
-- (void) encodeWithCoder: (NSCoder *)aCoder
-{
-}
-
-- (id) initWithCoder: (NSCoder *)aDecoder
-{
-  if (![aDecoder allowsKeyedCoding])
-    ; // TODO FIXME (copied from mgstep)
-  _attributes = RETAIN([aDecoder decodeObjectForKey: @"NSAttributes"]);
-  return self;
-}
-	
-- (void) dealloc;
-{
-  RELEASE(_attributes);
-  [super dealloc];
-}
-
-- (id) copyWithZone: (NSZone *)z
-{
-  NSFontDescriptor *f = [isa allocWithZone: z];
-
-  if (f != nil)
-    {
-      f->_attributes = [_attributes copyWithZone: z];
-    }
-  return f;
-}
-
-/*
-TODO FIXME: how to port this from mgStep ?
-- (NSArray *) matchingFontDescriptorsWithMandatoryKeys: (NSSet *) keys;	// this is the core font search engine that knows about font directories
-{
-  return BACKEND;
-}
-*/
-
-- (NSAffineTransform *) matrix
-{
-  return [_attributes objectForKey: NSFontMatrixAttribute];
-}
-
-- (id) objectForKey: (NSString *)attribute
-{
-  return [_attributes objectForKey: attribute];
-}
-
-- (float) pointSize
-{
-  return [[_attributes objectForKey: NSFontSizeAttribute] floatValue];
-}
-
-- (NSFontSymbolicTraits) symbolicTraits
-{
-  return [[_attributes objectForKey: NSFontSymbolicTrait] unsignedIntValue];
-}
-
-- (NSString *) postscriptName;
-{
-  NSMutableString	*family;
-  NSString		*face;
-
-  family = AUTORELEASE([[self objectForKey:NSFontFamilyAttribute] mutableCopy]);
-  face = [self objectForKey: NSFontFaceAttribute];
-  [family replaceOccurrencesOfString: @" "
-			  withString: @""
-			     options: 0
-			       range: NSMakeRange(0, [family length])];
-  if ([face isEqualToString:@"Regular"])
-    return family;
-  return [NSString stringWithFormat: @"%@-%@", family, face];
-}
-
-@end

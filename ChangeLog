@@ -1,5 +1,16 @@
 2007-08-08 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSFont.h: Add MacOSX 10.4 methods and constants.
+	* Source/NSFont.m: Add MacOSX 10.4 methods. Remove
+	NSFontDescriptor code. 
+	* Source/NSFont.m (+initialize): Read in preferred fonts from user defaults.
+	* Headers/AppKit/NSFontDescriptor.h: Clean up includes.
+	* Source/NSFontDescriptor.m: New file, split out from NSFont.m.
+	* Source/externs.m: Moved NSFontDescriptor strings to here.
+	* GNUMakefile: Add NSFontDescriptor.m
+
+2007-08-08 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSScreen.h: Add method userSpaceScaleFactor.
 	* Source/NSScreen.m: Implement userSpaceScaleFactor. Correct
 	mainScreen. Listen to NSApplicationDidChangeScreenParametersNotification.

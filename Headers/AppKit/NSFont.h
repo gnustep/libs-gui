@@ -32,16 +32,17 @@
 #define _GNUstep_H_NSFont
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSCoder.h>
+#include <Foundation/NSObject.h>
 #include <Foundation/NSGeometry.h>
-#include <Foundation/NSString.h>
 #include <AppKit/AppKitDefines.h>
 // For NSControlSize
 #include <AppKit/NSColor.h>
-#import <AppKit/NSFontDescriptor.h>
 
-@class NSDictionary;
+@class NSAffineTransform;
 @class NSCharacterSet;
+@class NSDictionary;
+@class NSFontDescriptor;
+@class NSGraphicsContext;
 
 typedef unsigned int NSGlyph;
 
@@ -50,7 +51,6 @@ enum {
   GSAttachmentGlyph = 0x00fffffe,
   NSNullGlyph = 0x0
 };
-
 
 typedef enum _NSGlyphRelation {
   NSGlyphBelow,
@@ -64,6 +64,16 @@ typedef enum _NSMultibyteGlyphPacking {
   NSTwoByteGlyphPacking, 
   NSFourByteGlyphPacking
 } NSMultibyteGlyphPacking;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+typedef enum _NSFontRenderingMode
+{
+  NSFontDefaultRenderingMode = 0,
+  NSFontAntialiasedRenderingMode,
+  NSFontIntegerAdvancementsRenderingMode,
+  NSFontAntialiasedIntegerAdvancementsRenderingMode
+} NSFontRenderingMode;
+#endif
 
 APPKIT_EXPORT const float *NSFontIdentityMatrix;
 
@@ -121,9 +131,12 @@ APPKIT_EXPORT const float *NSFontIdentityMatrix;
 + (NSFont*) controlContentFontOfSize: (float)fontSize;
 + (NSFont*) labelFontOfSize: (float)fontSize;
 + (NSFont*) menuBarFontOfSize: (float)fontSize;
-+ (NSFont *) fontWithDescriptor:(NSFontDescriptor *) descriptor size:(float) size;
-+ (NSFont *) fontWithDescriptor:(NSFontDescriptor *) descriptor size:(float) size
-				  textTransform:(NSAffineTransform *) transform;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
++ (NSFont*) fontWithDescriptor: (NSFontDescriptor*)descriptor size: (float)size;
++ (NSFont*) fontWithDescriptor: (NSFontDescriptor*)descriptor 
+                          size: (float)size
+                 textTransform: (NSAffineTransform*)transform;
 #endif
 
 //
@@ -149,6 +162,10 @@ APPKIT_EXPORT const float *NSFontIdentityMatrix;
 + (void) setUserFont: (NSFont*)aFont;
 + (void) useFont: (NSString*)aFontName;
 - (void) set;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (void) setInContext: (NSGraphicsContext*)context;
+- (NSAffineTransform*) textTransform;
+#endif
 
 //
 // Querying the Font
@@ -181,7 +198,11 @@ APPKIT_EXPORT const float *NSFontIdentityMatrix;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (unsigned) numberOfGlyphs;
 - (NSCharacterSet*) coveredCharacterSet;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 - (NSFontDescriptor*) fontDescriptor;
+- (NSFontRenderingMode) renderingMode;
+- (NSFont*) screenFontWithRenderingMode: (NSFontRenderingMode)mode;
 #endif
 
 //

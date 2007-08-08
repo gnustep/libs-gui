@@ -222,6 +222,31 @@ NSString *NSAFMVersion = @"Version";
 NSString *NSAFMWeight = @"Weight";
 NSString *NSAFMXHeight = @"XHeight";
 
+// NSFontDescriptor global strings
+NSString *NSFontFamilyAttribute = @"Family";
+NSString *NSFontNameAttribute = @"Name";
+NSString *NSFontFaceAttribute = @"Face";
+NSString *NSFontSizeAttribute = @"Size"; 
+NSString *NSFontVisibleNameAttribute = @"VisibleName"; 
+NSString *NSFontColorAttribute = @"Color";
+NSString *NSFontMatrixAttribute = @"Matrix";
+NSString *NSFontVariationAttribute = @"Variation";
+NSString *NSFontCharacterSetAttribute = @"CharacterSet";
+NSString *NSFontCascadeListAttribute = @"CascadeList";
+NSString *NSFontTraitsAttribute = @"Traits";
+NSString *NSFontFixedAdvanceAttribute = @"FixedAdvance";
+
+NSString *NSFontSymbolicTrait = @"SymbolicTrait";
+NSString *NSFontWeightTrait = @"WeightTrait";
+NSString *NSFontWidthTrait = @"WidthTrait";
+NSString *NSFontSlantTrait = @"SlantTrait";
+
+NSString *NSFontVariationAxisIdentifierKey = @"VariationAxisIdentifier";
+NSString *NSFontVariationAxisMinimumValueKey = @"VariationAxisMinimumValue";
+NSString *NSFontVariationAxisMaximumValueKey = @"VariationAxisMaximumValue";
+NSString *NSFontVariationAxisDefaultValueKey = @"VariationAxisDefaultValue";
+NSString *NSFontVariationAxisNameKey = @"VariationAxisName";
+
 // NSScreen Global device dictionary key strings
 NSString *NSDeviceResolution = @"NSDeviceResolution";
 NSString *NSDeviceColorSpaceName = @"NSDeviceColorSpaceName";
