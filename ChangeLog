@@ -1,3 +1,8 @@
+2007-08-09 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSAttributedString.m (-fixFontAttributeInRange:): 
+	First attempt at font attribute fixing.
+
 2007-08-08 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSFont.h: Add MacOSX 10.4 methods and constants.

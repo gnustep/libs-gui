@@ -28,6 +28,7 @@
 */ 
 
 #include <Foundation/NSArray.h>
+#include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSCharacterSet.h>
 #include <Foundation/NSDebug.h>
@@ -982,20 +983,163 @@ documentAttributes: (NSDictionary **)dict
   [self fixAttachmentAttributeInRange: range];
 }
 
+static NSString *lastFont = nil;
+static NSCharacterSet *lastSet = nil;
+static NSMutableDictionary *cachedCSets = nil;
+
+- (NSFont*)_substituteFontWithName: (NSString*)fontName font: (NSFont*)baseFont
+{
+  // FIXME: Catch case were baseFont is nil
+  return [NSFont fontWithName: fontName matrix: [baseFont matrix]];
+}
+
+- (NSFont*)_substituteFontFor: (unichar)uchar font: (NSFont*)baseFont fromList: (NSArray *)fonts
+{
+  unsigned int count;
+  unsigned int i;
+      
+  count = [fonts count];
+  for (i = 0; i < count; i++)
+    {
+      NSFont *newFont;
+      NSString *fName;
+      NSCharacterSet *newSet;
+
+      fName = [fonts objectAtIndex: i];
+      newSet = [cachedCSets objectForKey: fName];
+      if (newSet == nil)
+        { 
+          newFont = [self _substituteFontWithName: fName font: baseFont];
+          newSet = [newFont coveredCharacterSet];
+          if (newSet != nil)
+            {
+              [cachedCSets setObject: newSet forKey: fName];
+            }
+        } 
+      else
+        {
+          newFont = nil;
+        }
+      
+      if ([newSet characterIsMember: uchar])
+        {
+          ASSIGN(lastFont, fName);
+          ASSIGN(lastSet, newSet);
+          if (newFont != nil)
+            {
+              return newFont;
+            }
+          else
+            {
+              return [self _substituteFontWithName: fName font: baseFont];      
+            }
+        }
+    }
+
+  return nil;
+}
+
+- (NSFont*)_substituteFontFor: (unichar)uchar font: (NSFont*)baseFont
+{
+  NSFont *subFont;
+
+  // Caching one font may lead to the selected substitution font not being
+  // from the prefered list, although there is one there with this character.
+  if (lastSet && [lastSet characterIsMember: uchar])
+    {
+      return [self _substituteFontWithName: lastFont font: baseFont];
+    }
+
+  if (cachedCSets == nil)
+    {
+      cachedCSets = [NSMutableDictionary new];
+    }
+
+  subFont = [self _substituteFontFor: uchar font: baseFont fromList: 
+                      [NSFont preferredFontNames]];
+  if (subFont != nil)
+    {
+      return subFont;
+    }
+
+  subFont = [self _substituteFontFor: uchar font: baseFont fromList: 
+                      [[NSFontManager sharedFontManager] availableFonts]];
+  if (subFont != nil)
+    {
+      return subFont;
+    }
+  
+  return nil;
+}
+
 - (void) fixFontAttributeInRange: (NSRange)range
 {
+  NSString *string;
+  NSFont *font;
+  NSCharacterSet *charset = nil;
+  NSRange fontRange = NSMakeRange(NSNotFound, 0);
+  unsigned int i;
+  unsigned int lastMax;
+  unsigned int start;
+  unichar chars[64];
+  CREATE_AUTORELEASE_POOL(pool);
+  
   if (NSMaxRange (range) > [self length])
     {
       [NSException raise: NSRangeException
 		  format: @"RangeError in method -fixFontAttributeInRange: "];
     }
-  // FIXME: Should check for each character if it is supported by the 
+  // Check for each character if it is supported by the 
   // assigned font
+  
   /*
   Note that this needs to be done on a script basis. Per-character checks
   are difficult to do at all, don't give reasonable results, and would have
   really poor performance.
   */
+  string = [self string];
+  lastMax = range.location;
+  start = lastMax;
+  for (i = range.location; i < NSMaxRange(range); i++)
+    {
+      unichar uchar;
+  
+      if (i >= lastMax)
+        {
+          unsigned int dist;
+          
+          start = lastMax;
+          dist = MIN(64, NSMaxRange(range) - start);
+          lastMax = start + dist;
+          [string getCharacters: chars range: NSMakeRange(start, dist)];
+        }
+      uchar = chars[i - start];
+      
+      if (!NSLocationInRange(i, fontRange))
+        {
+          font = [self attribute: NSFontAttributeName
+                       atIndex: i
+                       effectiveRange: &fontRange];
+          charset = [font coveredCharacterSet];
+        }
+      
+      if (charset != nil && ![charset characterIsMember: uchar])
+        {
+          // Find a replacement font
+          NSFont *subFont;
+          
+          subFont = [self _substituteFontFor: uchar font: font];
+          if (subFont != nil)
+            {
+              // Set substitution font permanently
+              [self addAttribute: NSFontAttributeName
+                    value: subFont
+                    range: NSMakeRange(i, 1)];
+            }
+        }
+    }
+  
+  RELEASE(pool);
 }
 
 - (void) fixParagraphStyleAttributeInRange: (NSRange)range
