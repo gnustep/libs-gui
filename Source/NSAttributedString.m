@@ -47,6 +47,7 @@
 #include "AppKit/NSColor.h"
 #include "AppKit/NSFileWrapper.h"
 #include "AppKit/NSFont.h"
+#include "AppKit/NSFontManager.h"
 // For the colour name spaces
 #include "AppKit/NSGraphics.h"
 
@@ -989,8 +990,7 @@ static NSMutableDictionary *cachedCSets = nil;
 
 - (NSFont*)_substituteFontWithName: (NSString*)fontName font: (NSFont*)baseFont
 {
-  // FIXME: Catch case were baseFont is nil
-  return [NSFont fontWithName: fontName matrix: [baseFont matrix]];
+  return [[NSFontManager sharedFontManager] convertFont: baseFont toFace: fontName];
 }
 
 - (NSFont*)_substituteFontFor: (unichar)uchar font: (NSFont*)baseFont fromList: (NSArray *)fonts
