@@ -116,47 +116,48 @@ APPKIT_EXPORT NSString * GSScreenNumber;
 - (int) window: (NSRect)frame : (NSBackingStoreType)type : (unsigned int)style;
 - (int) window: (NSRect)frame : (NSBackingStoreType)type : (unsigned int)style
 	      : (int)screen;
-- (void) termwindow: (int) win;
+- (void) termwindow: (int)win;
 - (int) nativeWindow: (void *)winref : (NSRect*)frame : (NSBackingStoreType*)type 
                     : (unsigned int*)style : (int*)screen;
 
 /* Only if handlesWindowDecorations returns YES. */
-- (void) stylewindow: (unsigned int) style : (int) win;
+- (void) stylewindow: (unsigned int)style : (int)win;
 
-- (void) windowbacking: (NSBackingStoreType)type : (int) win;
-- (void) titlewindow: (NSString *) window_title : (int) win;
-- (void) miniwindow: (int) win;
+- (void) windowbacking: (NSBackingStoreType)type : (int)win;
+- (void) titlewindow: (NSString *)window_title : (int)win;
+- (void) miniwindow: (int)win;
 - (BOOL) appOwnsMiniwindow;
-- (void) windowdevice: (int) win;
-- (void) orderwindow: (int) op : (int) otherWin : (int) win;
-- (void) movewindow: (NSPoint)loc : (int) win;
-- (void) placewindow: (NSRect)frame : (int) win;
-- (NSRect) windowbounds: (int) win;
-- (void) setwindowlevel: (int) level : (int) win;
-- (int) windowlevel: (int) win;
+- (void) windowdevice: (int)win;
+- (void) orderwindow: (int)op : (int)otherWin : (int)win;
+- (void) movewindow: (NSPoint)loc : (int)win;
+- (void) placewindow: (NSRect)frame : (int)win;
+- (NSRect) windowbounds: (int)win;
+- (void) setwindowlevel: (int)level : (int)win;
+- (int) windowlevel: (int)win;
 - (NSArray *) windowlist;
-- (int) windowdepth: (int) win;
-- (void) setmaxsize: (NSSize)size : (int) win;
-- (void) setminsize: (NSSize)size : (int) win;
-- (void) setresizeincrements: (NSSize)size : (int) win;
-- (void) flushwindowrect: (NSRect)rect : (int) win;
-- (void) styleoffsets: (float*) l : (float*) r : (float*) t : (float*) b 
-                     : (unsigned int) style;
-- (void) docedited: (int) edited : (int) win;
+- (int) windowdepth: (int)win;
+- (void) setmaxsize: (NSSize)size : (int)win;
+- (void) setminsize: (NSSize)size : (int)win;
+- (void) setresizeincrements: (NSSize)size : (int)win;
+- (void) flushwindowrect: (NSRect)rect : (int)win;
+- (void) styleoffsets: (float*)l : (float*)r : (float*)t : (float*)b 
+                     : (unsigned int)style;
+- (void) docedited: (int) edited : (int)win;
 - (void) setinputstate: (int)state : (int)win;
-- (void) setinputfocus: (int) win;
-- (void) setalpha: (float)alpha: (int) win;
+- (void) setinputfocus: (int)win;
+- (void) setalpha: (float)alpha: (int)win;
+- (void) setShadow: (BOOL)hasShadow : (int)win;
 
 - (NSPoint) mouselocation;
 - (NSPoint) mouseLocationOnScreen: (int)aScreen window: (int *)win;
-- (BOOL) capturemouse: (int) win;
+- (BOOL) capturemouse: (int)win;
 - (void) releasemouse;
 - (void) hidecursor;
 - (void) showcursor;
-- (void) standardcursor: (int) style : (void**) cid;
-- (void) imagecursor: (NSPoint)hotp : (int)w : (int)h : (int) colors
-		    : (const unsigned char *) image : (void**) cid;
-- (void) setcursorcolor: (NSColor *)fg : (NSColor *)bg : (void*) cid;
+- (void) standardcursor: (int) style : (void**)cid;
+- (void) imagecursor: (NSPoint)hotp : (int)w : (int)h : (int)colors
+		    : (const unsigned char *) image : (void**)cid;
+- (void) setcursorcolor: (NSColor *)fg : (NSColor *)bg : (void*)cid;
 
 @end
 

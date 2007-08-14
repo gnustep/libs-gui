@@ -798,6 +798,12 @@ GSCurrentServer(void)
   //[self subclassResponsibility: _cmd];
 }
 
+/** Sets the window shadow */
+- (void) setShadow: (BOOL)hasShadow : (int)win
+{
+  //[self subclassResponsibility: _cmd];
+}
+
 /** Returns the current mouse location on the default screen. If the
  * pointer is not on the default screen, an invalid point (-1,-1} is
  * returned.<br />
