@@ -1,3 +1,8 @@
+2007-08-14 23:24-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSManagedObjectContext.h
+	* Source/NSManagedObjectContext.m: Add managed object context.
+
 2007-08-14 23:22-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/AppKit/NSController.h: Added new ivar.
