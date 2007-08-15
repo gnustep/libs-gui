@@ -26,20 +26,27 @@
 */
 
 #include <Foundation/NSArray.h>
+#include <Foundation/NSArchiver.h>
+#include <Foundation/NSKeyedArchiver.h>
 #include <AppKit/NSController.h>
 
 @implementation NSController
 
 - (id) init
 {
-  _editors = [[NSMutableArray alloc] init];
-
+  if((self = [super init]) != nil)
+    {
+      _editors = [[NSMutableArray alloc] init];
+      _declared_keys = [[NSMutableArray alloc] init];
+    }
+  
   return self;
 }
 
 - (void) dealloc
 {
   RELEASE(_editors);
+  RELEASE(_declared_keys);
   [super dealloc];
 }
 
@@ -50,7 +57,18 @@
 
 - (id) initWithCoder: (NSCoder *)aDecoder
 { 
-  // TODO
+  if((self = [super init]) != nil)
+    {
+      if([aDecoder allowsKeyedCoding])
+	{
+	  NSLog(@"%@-%@",self,[aDecoder keyMap]);
+	  ASSIGN(_declared_keys,[aDecoder decodeObjectForKey: @"NSDeclaredKeys"]);
+	}
+      else
+	{
+	  ASSIGN(_declared_keys,[aDecoder decodeObject]);
+	}
+    }
   return self; 
 }
 

@@ -37,6 +37,7 @@
 @interface NSController : NSObject <NSCoding>
 {
   NSMutableArray *_editors;
+  NSMutableArray *_declared_keys;
 }
 
 // NSEditor protocol

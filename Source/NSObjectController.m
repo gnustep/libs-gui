@@ -29,7 +29,61 @@
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSPredicate.h>
 #include <Foundation/NSString.h>
+#include <Foundation/NSArchiver.h>
+#include <Foundation/NSKeyedArchiver.h>
 #include <AppKit/NSObjectController.h>
+
+@interface _NSManagedProxy : NSObject
+{
+  NSString *_entity_name_key;
+}
+
+- (void) setEntityName: (NSString *)name;
+- (NSString *) entityName;
+@end
+
+@implementation _NSManagedProxy
+- (id) initWithCoder: (NSCoder *)coder
+{
+  if([coder allowsKeyedCoding])
+    {
+      NSLog(@"%@ - %@",self,[coder keyMap]);
+      ASSIGN(_entity_name_key,[coder decodeObjectForKey: @"NSEntityName"]);
+    }
+  else
+    {
+      ASSIGN(_entity_name_key,[coder decodeObject]);
+    }
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  if([coder allowsKeyedCoding])
+    {
+      [coder encodeObject: _entity_name_key forKey: @"NSEntityName"];
+    }
+  else
+    {
+      [coder encodeObject: _entity_name_key];
+    }
+}
+
+- (void) dealloc
+{
+  RELEASE(_entity_name_key);
+  [super dealloc];
+}
+
+- (void) setEntityName: (NSString *)name
+{
+  ASSIGN(_entity_name_key, name);
+}
+
+- (NSString *) entityName
+{
+  return _entity_name_key;
+}
+@end
 
 @implementation NSObjectController
 
@@ -67,8 +121,6 @@
 - (id) initWithCoder: (NSCoder *)aDecoder
 { 
   self = [super initWithCoder: aDecoder];
-  // TODO
-
   if ([self automaticallyPreparesContent])
   {
     if ([self managedObjectContext] != nil)
@@ -80,6 +132,16 @@
 	[self prepareContent];
       }
   }
+
+  if([aDecoder allowsKeyedCoding])
+    {
+      _is_editable = [aDecoder decodeBoolForKey: @"NSEditable"];
+      _automatically_prepares_content = [aDecoder decodeBoolForKey: @"NSAutomaticallyPreparesContent"];
+      ASSIGN(_managed_proxy, [aDecoder decodeObjectForKey: @"_NSManagedProxy"]);
+    }
+  else
+    {
+    }
 
   return self; 
 }

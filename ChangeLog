@@ -1,3 +1,11 @@
+2007-08-14 23:22-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/AppKit/NSController.h: Added new ivar.
+	* Headers/AppKit/NSObjectController.h: Added new ivar.
+	* Source/GNUmakefile: Added NSManagedObjectContext.[hm].
+	* Source/NSController.m: Add keys for nib encoding/decoding.
+	* Source/NSObjectController.m: Add keys for nib encoding/decoding.
+
 2007-08-15 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Additions/GNUstepGUI/GSDisplayServer.h (-setShadow::),

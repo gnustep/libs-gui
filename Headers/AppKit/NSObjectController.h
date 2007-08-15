@@ -43,14 +43,20 @@
 
 @interface NSObjectController : NSController
 {
+  @protected
   Class _object_class;
+
+  NSString *_object_class_name;
+  NSString *_entity_name_key;
+  id _managed_proxy;
   id _content;
   NSMutableArray *_selection;
-  NSString *_entity_name_key;
   NSPredicate *_fetch_predicate;
   NSManagedObjectContext *_managed_object_context;
+
   BOOL _is_editable;
   BOOL _automatically_prepares_content;
+  BOOL _is_using_managed_proxy;
 }
 
 - (id) initWithContent: (id)content;
