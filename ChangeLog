@@ -1,3 +1,9 @@
+2007-08-16 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSFontManager.h,
+	* Source/NSFontManager.m: Add MacOSX 10.3 methods and constants.
+	* Source/NSWindow.m (-setHasShadow:): Add backend call.
+
 2007-08-14 23:24-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSManagedObjectContext.h

@@ -38,26 +38,36 @@
 
 @class NSString;
 @class NSArray;
+@class NSDictionary;
+@class NSMutableDictionary;
 
 @class NSFont;
+@class NSFontDescriptor;
 @class NSMenu;
 @class NSFontPanel;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+enum _NSFontManagerAddCollectionOptions
+{
+	NSFontCollectionApplicationOnlyMask = 1 << 0
+};
+#endif
 
 typedef unsigned int NSFontTraitMask;
 
 enum {
   NSItalicFontMask = 1,
-  NSUnitalicFontMask = 0, //1024,
   NSBoldFontMask = 2,
-  NSUnboldFontMask = 0, //2048,
-  NSNarrowFontMask = 4,
-  NSExpandedFontMask = 8,
-  NSCondensedFontMask = 16,
-  NSSmallCapsFontMask = 32,
-  NSPosterFontMask = 64,
-  NSCompressedFontMask = 128,
-  NSNonStandardCharacterSetFontMask = 256,
-  NSFixedPitchFontMask = 512
+  NSUnboldFontMask = 4,
+  NSNonStandardCharacterSetFontMask = 8,
+  NSNarrowFontMask = 16,
+  NSExpandedFontMask = 32,
+  NSCondensedFontMask = 64,
+  NSSmallCapsFontMask = 128,
+  NSPosterFontMask = 256,
+  NSCompressedFontMask = 512,
+  NSFixedPitchFontMask = 1024,
+  NSUnitalicFontMask = 1 << 24
 };
 
 typedef enum {
@@ -82,6 +92,8 @@ typedef enum {
   NSFontTag _storedTag;
   NSFontTraitMask _trait;
   id _fontEnumerator;
+  NSDictionary *_selectedAttributes;
+  NSMutableDictionary *_collections;
 }
 
 //
@@ -183,6 +195,22 @@ typedef enum {
 - (SEL)action;
 - (void)setAction:(SEL)aSelector;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (BOOL)addCollection:(NSString *)name options:(int)options;
+- (BOOL)removeCollection:(NSString *)collection;
+- (NSArray *)collectionNames;
+
+- (void)addFontDescriptors:(NSArray *)descriptors 
+              toCollection:(NSString *)collection;
+- (void)removeFontDescriptor:(NSFontDescriptor *)descriptor 
+              fromCollection:(NSString *)collection;
+- (NSArray *)fontDescriptorsInCollection:(NSString *)collection;
+
+- (NSArray *)availableFontNamesMatchingFontDescriptor:(NSFontDescriptor *)descriptor;
+- (NSDictionary *)convertAttributes:(NSDictionary *)attributes;
+- (void)setSelectedAttributes:(NSDictionary *)attributes 
+                   isMultiple:(BOOL)flag;
+#endif
 @end
 
 @interface NSObject (NSFontManagerDelegate)

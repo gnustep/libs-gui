@@ -1129,8 +1129,11 @@ many times.
 
 - (void) setHasShadow: (BOOL)hasShadow
 {
-  // FIXME: Should be send to backend
   _f.has_shadow = hasShadow;
+  if (_windowNum)
+    {
+      [GSServerForWindow(self) setShadow: hasShadow : _windowNum];
+    }
 }
 
 - (BOOL) hasShadow
