@@ -471,19 +471,19 @@ static id buttonCellClass = nil;
       unichar character = 0;
 
       if ([characters length] > 0)
-	{
-	  character = [characters characterAtIndex: 0];
-	}
+        {
+          character = [characters characterAtIndex: 0];
+        }
 
       // Handle SPACE or RETURN to perform a click
       if ((character ==  NSNewlineCharacter)
 	  || (character == NSEnterCharacter) 
 	  || (character == NSCarriageReturnCharacter)
 	  || ([characters isEqualToString: @" "]))
-	{
-	  [self performClick: self];
-	  return;
-	}      
+        {
+          [self performClick: self];
+          return;
+        }
     }
   
   [super keyDown: theEvent];
@@ -506,22 +506,23 @@ static id buttonCellClass = nil;
  */
 - (BOOL) performKeyEquivalent: (NSEvent *)anEvent
 {
-  NSWindow	*w = [self window];
+  NSWindow *w = [self window];
+  NSWindow *mw = [NSApp modalWindow];
 
-  if ([self isEnabled] && ([w worksWhenModal] || [NSApp modalWindow] == w))
+  if ([self isEnabled] && (mw == nil || [w worksWhenModal] || mw == w))
     {
       NSString	*key = [self keyEquivalent];
 
       if (key != nil && [key isEqual: [anEvent charactersIgnoringModifiers]])
-	{
-	  unsigned int	mask = [self keyEquivalentModifierMask];
+        {
+          unsigned int	mask = [self keyEquivalentModifierMask];
 
-	  if (([anEvent modifierFlags] & mask) == mask)
-	    {
-	      [self performClick: self];
-	      return YES;
-	    }
-	}
+          if (([anEvent modifierFlags] & mask) == mask)
+            {
+              [self performClick: self];
+              return YES;
+            }
+        }
     }
   return NO;
 }
