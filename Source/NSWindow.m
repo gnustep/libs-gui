@@ -2134,10 +2134,10 @@ many times.
   if (NSIsEmptyRect(_rectNeedingFlush))
     {
       if ([_rectsBeingDrawn count] == 0)
-	{
-	  _f.needs_flush = NO;
-	  return;
-	}
+        {
+          _f.needs_flush = NO;
+          return;
+        }
     }
 
   /*
@@ -2779,10 +2779,10 @@ resetCursorRectsForView(NSView *theView)
   if (aResponder != nil)
     {
       if (![aResponder isKindOfClass: responderClass])
-	return NO;
+        return NO;
 
       if (![aResponder acceptsFirstResponder])
-	return NO;
+        return NO;
     }
 
   /* So that the implementation of -resignFirstResponder in
@@ -2851,9 +2851,9 @@ resetCursorRectsForView(NSView *theView)
   if (character == NSTabCharacter)
     {
       if ([theEvent modifierFlags] & NSShiftKeyMask)
-	[self selectPreviousKeyView: self];
+        [self selectPreviousKeyView: self];
       else
-	[self selectNextKeyView: self];
+        [self selectNextKeyView: self];
       return;
     }
 
@@ -2861,10 +2861,10 @@ resetCursorRectsForView(NSView *theView)
   if (character == 0x001b)
     {
       if ([NSApp modalWindow] == self)
-	{
-	  // NB: The following *never* returns.
-	  [NSApp abortModal];
-	}
+        {
+          // NB: The following *never* returns.
+          [NSApp abortModal];
+        }
       return;
     }
 
@@ -2873,16 +2873,17 @@ resetCursorRectsForView(NSView *theView)
     || character == NSCarriageReturnCharacter)
     {
       if (_defaultButtonCell && _f.default_button_cell_key_disabled == NO)
-	{
-	  [_defaultButtonCell performClick: self];
-	  return;
-	}
+        {
+          [_defaultButtonCell performClick: self];
+          return;
+        }
     }
 
   // Discard null character events such as a Shift event after a tab key
   if ([characters length] == 0)
     return;
 
+  // FIXME: Why is this here, is the code still needed or a left over hack?
   // Try to process the event as a key equivalent
   // without Command having being pressed
   {
@@ -3224,193 +3225,200 @@ resetCursorRectsForView(NSView *theView)
   switch (type)
     {
       case NSLeftMouseDown:
-	{
-	  BOOL	wasKey = _f.is_key;
+        {
+          BOOL	wasKey = _f.is_key;
 
-	  if (_f.has_closed == NO)
-	    {
-	      v = [_wv hitTest: [theEvent locationInWindow]];
-	      if (_f.is_key == NO && _windowLevel != NSDesktopWindowLevel)
-		{
-		  /* NSPanel modification: check becomesKeyOnlyIfNeeded. */
-		  if (![self becomesKeyOnlyIfNeeded]
-		      || [v needsPanelToBecomeKey])
-		    [self makeKeyAndOrderFront: self];
-		}
-	      /* Activate the app *after* making the receiver key, as app
-		 activation tries to make the previous key window key. */
-	      if ([NSApp isActive] == NO && self != [NSApp iconWindow])
-		{
-		  [NSApp activateIgnoringOtherApps: YES];
-		}
-	      if (_firstResponder != v)
-		{
-		  [self makeFirstResponder: v];
-		}
-	      if (_lastView)
- 		{
-		  DESTROY(_lastView);
-		}
-	      if (wasKey == YES || [v acceptsFirstMouse: theEvent] == YES)
-		{
-		  if ([NSHelpManager isContextHelpModeActive])
-		    {
-		      [v helpRequested: theEvent];
-		    }
-		  else
-		    {
-		      ASSIGN(_lastView, v);
-		      if (toolTipVisible != nil)
-		        {
-			  /* Inform the tooltips system that we have had
-			   * a mouse down so it should stop displaying.
-			   */
-			  [toolTipVisible mouseDown: theEvent];
-			}
-		      [v mouseDown: theEvent];
-		    }
-		}
-	      else
-		{
-		  [self mouseDown: theEvent];
-		}
-	    }
-	  _lastPoint = [theEvent locationInWindow];
-	  break;
-	}
+          if (_f.has_closed == NO)
+            {
+              v = [_wv hitTest: [theEvent locationInWindow]];
+              if (_f.is_key == NO && _windowLevel != NSDesktopWindowLevel)
+                {
+                  /* NSPanel modification: check becomesKeyOnlyIfNeeded. */
+                  if (![self becomesKeyOnlyIfNeeded]
+                      || [v needsPanelToBecomeKey])
+                    {
+                      v = nil;
+                      [self makeKeyAndOrderFront: self];
+                    }
+                }
+              /* Activate the app *after* making the receiver key, as app
+                 activation tries to make the previous key window key. */
+              if ([NSApp isActive] == NO && self != [NSApp iconWindow])
+                {
+                  v = nil;
+                  [NSApp activateIgnoringOtherApps: YES];
+                }
+              // Activating the app may change the window layout.
+              if (v == nil)
+                {
+                  v = [_wv hitTest: [theEvent locationInWindow]];
+                }
+              if (_firstResponder != v)
+                {
+                  [self makeFirstResponder: v];
+                }
+              if (_lastView)
+                {
+                  DESTROY(_lastView);
+                }
+              if (wasKey == YES || [v acceptsFirstMouse: theEvent] == YES)
+                {
+                  if ([NSHelpManager isContextHelpModeActive])
+                    {
+                      [v helpRequested: theEvent];
+                    }
+                  else
+                    {
+                      ASSIGN(_lastView, v);
+                      if (toolTipVisible != nil)
+                        {
+                          /* Inform the tooltips system that we have had
+                           * a mouse down so it should stop displaying.
+                           */
+                          [toolTipVisible mouseDown: theEvent];
+                        }
+                      [v mouseDown: theEvent];
+                    }
+                }
+              else
+                {
+                    [self mouseDown: theEvent];
+                }
+            }
+          _lastPoint = [theEvent locationInWindow];
+          break;
+        }
 
       case NSLeftMouseUp:
-	v = AUTORELEASE(RETAIN(_lastView));
-	DESTROY(_lastView);
-	if (v == nil)
-	  break;
-	[v mouseUp: theEvent];
-	_lastPoint = [theEvent locationInWindow];
-	break;
+        v = AUTORELEASE(RETAIN(_lastView));
+        DESTROY(_lastView);
+        if (v == nil)
+          break;
+        [v mouseUp: theEvent];
+        _lastPoint = [theEvent locationInWindow];
+        break;
 
       case NSOtherMouseDown:
-	v = [_wv hitTest: [theEvent locationInWindow]];
-	[v otherMouseDown: theEvent];
-	_lastPoint = [theEvent locationInWindow];
-	break;
+          v = [_wv hitTest: [theEvent locationInWindow]];
+          [v otherMouseDown: theEvent];
+          _lastPoint = [theEvent locationInWindow];
+          break;
 
       case NSOtherMouseUp:
-	v = [_wv hitTest: [theEvent locationInWindow]];
-	[v otherMouseUp: theEvent];
-	_lastPoint = [theEvent locationInWindow];
-	break;
+        v = [_wv hitTest: [theEvent locationInWindow]];
+        [v otherMouseUp: theEvent];
+        _lastPoint = [theEvent locationInWindow];
+        break;
 
       case NSRightMouseDown:
-	{
-	  v = [_wv hitTest: [theEvent locationInWindow]];
-	  [v rightMouseDown: theEvent];
-	  _lastPoint = [theEvent locationInWindow];
-	}
-	break;
+        v = [_wv hitTest: [theEvent locationInWindow]];
+        [v rightMouseDown: theEvent];
+        _lastPoint = [theEvent locationInWindow];
+        break;
 
       case NSRightMouseUp:
-	v = [_wv hitTest: [theEvent locationInWindow]];
-	[v rightMouseUp: theEvent];
-	_lastPoint = [theEvent locationInWindow];
-	break;
+        v = [_wv hitTest: [theEvent locationInWindow]];
+        [v rightMouseUp: theEvent];
+        _lastPoint = [theEvent locationInWindow];
+        break;
 
       case NSLeftMouseDragged:
       case NSOtherMouseDragged:
       case NSRightMouseDragged:
       case NSMouseMoved:
-	switch (type)
-	  {
-	    case NSLeftMouseDragged:
-	      [_lastView mouseDragged: theEvent];
-	      break;
-	    case NSOtherMouseDragged:
-	      [_lastView otherMouseDragged: theEvent];
-	      break;
-	    case NSRightMouseDragged:
-	      [_lastView rightMouseDragged: theEvent];
-	      break;
-	    default:
-	      if (_f.accepts_mouse_moved)
-		{
-		  /*
-		   * If the window is set to accept mouse movements, we need to
-		   * forward the mouse movement to the correct view.
-		   */
-		  v = [_wv hitTest: [theEvent locationInWindow]];
+        switch (type)
+          {
+            case NSLeftMouseDragged:
+              [_lastView mouseDragged: theEvent];
+              break;
+            case NSOtherMouseDragged:
+              [_lastView otherMouseDragged: theEvent];
+              break;
+            case NSRightMouseDragged:
+              [_lastView rightMouseDragged: theEvent];
+              break;
+            default:
+              if (_f.accepts_mouse_moved)
+                {
+                  /*
+                   * If the window is set to accept mouse movements, we need to
+                   * forward the mouse movement to the correct view.
+                   */
+                  v = [_wv hitTest: [theEvent locationInWindow]];
 
-		  /* If the view is displaying a tooltip, we should
-		   * send mouse movements to the tooltip system so
-		   * that the window can track the mouse.
-		   */
-		  if (toolTipVisible != nil)
-		    {
-		      [toolTipVisible mouseMoved: theEvent];
-		    }
-		  else
-		    {
-		      [v mouseMoved: theEvent];
-		    }
-		}
-	      break;
-	  }
+                  /* If the view is displaying a tooltip, we should
+                   * send mouse movements to the tooltip system so
+                   * that the window can track the mouse.
+                   */
+                  if (toolTipVisible != nil)
+                    {
+                      [toolTipVisible mouseMoved: theEvent];
+                    }
+                  else
+                    {
+                      [v mouseMoved: theEvent];
+                    }
+                }
+              break;
+          }
 
-	/*
-	 * We need to go through all of the views, and if there is any with
-	 * a tracking rectangle then we need to determine if we should send
-	 * a NSMouseEntered or NSMouseExited event.
-	 */
-	(*ctImp)(self, ctSel, _wv, theEvent);
-
-	if (_f.is_key)
-	  {
-	    /*
-	     * We need to go through all of the views, and if there is any with
-	     * a cursor rectangle then we need to determine if we should send a
-	     * cursor update event.
-	     */
-	    if (_f.cursor_rects_enabled)
-	      (*ccImp)(self, ccSel, _wv, theEvent);
-	  }
-
-	_lastPoint = [theEvent locationInWindow];
-	break;
-
+        /*
+         * We need to go through all of the views, and if there is any with
+         * a tracking rectangle then we need to determine if we should send
+         * a NSMouseEntered or NSMouseExited event.
+         */
+        (*ctImp)(self, ctSel, _wv, theEvent);
+        
+        if (_f.is_key)
+          {
+            /*
+             * We need to go through all of the views, and if there is any with
+             * a cursor rectangle then we need to determine if we should send a
+             * cursor update event.
+             */
+            if (_f.cursor_rects_enabled)
+                (*ccImp)(self, ccSel, _wv, theEvent);
+          }
+        
+        _lastPoint = [theEvent locationInWindow];
+        break;
+        
       case NSMouseEntered:
       case NSMouseExited:
-	break;
+        break;
 
       case NSKeyDown:
-	[_firstResponder keyDown: theEvent];
-	break;
-
+        [_firstResponder keyDown: theEvent];
+        break;
+        
       case NSKeyUp:
-	[_firstResponder keyUp: theEvent];
-	break;
+        [_firstResponder keyUp: theEvent];
+        break;
 
       case NSFlagsChanged:
-	[_firstResponder flagsChanged: theEvent];
-	break;
+        [_firstResponder flagsChanged: theEvent];
+        break;
 
       case NSCursorUpdate:
-	{
-	  GSTrackingRect	*r =(GSTrackingRect*)[theEvent userData];
-	  NSCursor		*c = (NSCursor*)[r owner];
-
-	  if ([theEvent trackingNumber])	  // It's a mouse entered
-	    {
-	      [c mouseEntered: theEvent];
-	    }
-	  else					  // it is a mouse exited
-	    {
-	      [c mouseExited: theEvent];
-	    }
-	}
-	break;
+        {
+          GSTrackingRect	*r =(GSTrackingRect*)[theEvent userData];
+          NSCursor		*c = (NSCursor*)[r owner];
+          
+          if ([theEvent trackingNumber])	  // It's a mouse entered
+            {
+              [c mouseEntered: theEvent];
+            }
+          else					  // it is a mouse exited
+            {
+              [c mouseExited: theEvent];
+            }
+        }
+        break;
 
       case NSScrollWheel:
-	v = [_wv hitTest: [theEvent locationInWindow]];
-	[v scrollWheel: theEvent];
-	break;
+        v = [_wv hitTest: [theEvent locationInWindow]];
+        [v scrollWheel: theEvent];
+        break;
 
       case NSAppKitDefined:
 	{
