@@ -61,7 +61,6 @@
     {
       if([aDecoder allowsKeyedCoding])
 	{
-	  NSLog(@"%@-%@",self,[aDecoder keyMap]);
 	  ASSIGN(_declared_keys,[aDecoder decodeObjectForKey: @"NSDeclaredKeys"]);
 	}
       else

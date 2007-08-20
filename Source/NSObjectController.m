@@ -45,15 +45,18 @@
 @implementation _NSManagedProxy
 - (id) initWithCoder: (NSCoder *)coder
 {
-  if([coder allowsKeyedCoding])
+  if((self = [super init]) != nil)
     {
-      NSLog(@"%@ - %@",self,[coder keyMap]);
-      ASSIGN(_entity_name_key,[coder decodeObjectForKey: @"NSEntityName"]);
+      if([coder allowsKeyedCoding])
+	{
+	  ASSIGN(_entity_name_key,[coder decodeObjectForKey: @"NSEntityName"]);
+	}
+      else
+	{
+	  ASSIGN(_entity_name_key,[coder decodeObject]);
+	}
     }
-  else
-    {
-      ASSIGN(_entity_name_key,[coder decodeObject]);
-    }
+  return self;
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
@@ -94,6 +97,7 @@
       [self setContent: content];
       [self setObjectClass: [NSMutableDictionary class]];
       [self setEditable: YES];
+      _managed_proxy = nil;
     }
 
   return self;
@@ -112,35 +116,51 @@
   [super dealloc];
 }
 
-- (void) encodeWithCoder: (NSCoder *)aCoder
+- (void) encodeWithCoder: (NSCoder *)coder
 { 
-  [super encodeWithCoder: aCoder];
-  // TODO
-}
-
-- (id) initWithCoder: (NSCoder *)aDecoder
-{ 
-  self = [super initWithCoder: aDecoder];
-  if ([self automaticallyPreparesContent])
-  {
-    if ([self managedObjectContext] != nil)
-      {
-	[self fetch: aDecoder];  
-      }
-    else 
-      {
-	[self prepareContent];
-      }
-  }
-
-  if([aDecoder allowsKeyedCoding])
+  [super encodeWithCoder: coder];
+  if([coder allowsKeyedCoding])
     {
-      _is_editable = [aDecoder decodeBoolForKey: @"NSEditable"];
-      _automatically_prepares_content = [aDecoder decodeBoolForKey: @"NSAutomaticallyPreparesContent"];
-      ASSIGN(_managed_proxy, [aDecoder decodeObjectForKey: @"_NSManagedProxy"]);
+      [coder encodeBool: _is_editable forKey: @"NSEditable"];
+      [coder encodeBool: _automatically_prepares_content forKey: @"NSAutomaticallyPreparesContent"];
+      [coder encodeObject: _managed_proxy forKey: @"_NSManagedProxy"];
     }
   else
     {
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &_is_editable];
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &_automatically_prepares_content];
+      [coder encodeConditionalObject: _managed_proxy];
+    }
+}
+
+- (id) initWithCoder: (NSCoder *)coder
+{ 
+  if((self = [super initWithCoder: coder]) != nil)
+    {
+      if ([self automaticallyPreparesContent])
+	{
+	  if ([self managedObjectContext] != nil)
+	    {
+	      [self fetch: coder];  
+	    }
+	  else 
+	    {
+	      [self prepareContent];
+	    }
+	}
+      
+      if([coder allowsKeyedCoding])
+	{
+	  _is_editable = [coder decodeBoolForKey: @"NSEditable"];
+	  _automatically_prepares_content = [coder decodeBoolForKey: @"NSAutomaticallyPreparesContent"];
+	  ASSIGN(_managed_proxy, [coder decodeObjectForKey: @"_NSManagedProxy"]);
+	}
+      else
+	{
+	  [coder decodeValueOfObjCType: @encode(BOOL) at: &_is_editable];
+	  [coder decodeValueOfObjCType: @encode(BOOL) at: &_automatically_prepares_content];
+	  ASSIGN(_managed_proxy, [coder decodeObject]);
+	}
     }
 
   return self; 
