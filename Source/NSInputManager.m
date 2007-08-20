@@ -164,39 +164,39 @@ static NSInputManager *currentInputManager = nil;
       NSString *modifier = [components objectAtIndex: i];
       
       if ([modifier isEqualToString: @"Control"] 
-	  || [modifier isEqualToString: @"Ctrl"] 
-	  || [modifier isEqualToString: @"C"])
-	{
-	  flags |= NSControlKeyMask;
-	}
+          || [modifier isEqualToString: @"Ctrl"] 
+          || [modifier isEqualToString: @"C"])
+        {
+          flags |= NSControlKeyMask;
+        }
       else if ([modifier isEqualToString: @"Alternate"] 
-	       || [modifier isEqualToString: @"Alt"] 
-	       || [modifier isEqualToString: @"A"]
-	       || [modifier isEqualToString: @"Meta"]
-	       || [modifier isEqualToString: @"M"])
-	{
-	  flags |= NSAlternateKeyMask;
-	}
+               || [modifier isEqualToString: @"Alt"] 
+               || [modifier isEqualToString: @"A"]
+               || [modifier isEqualToString: @"Meta"]
+               || [modifier isEqualToString: @"M"])
+        {
+          flags |= NSAlternateKeyMask;
+        }
       /* The Shift modifier is only meaningful when used in
        * conjunction with function keys.  'Shift-LeftArrow' is
        * meaningful; 'Control-Shift-g' is not - you should use
        * 'Control-G' instead.  */
       else if ([modifier isEqualToString: @"Shift"] 
-	       || [modifier isEqualToString: @"S"])
-	{
-	  flags |= NSShiftKeyMask;
-	}
+               || [modifier isEqualToString: @"S"])
+        {
+          flags |= NSShiftKeyMask;
+        }
       else if ([modifier isEqualToString: @"NumericPad"]
-	       ||  [modifier isEqualToString: @"Numeric"]
-	       ||  [modifier isEqualToString: @"N"])
-	{
-	  flags |= NSNumericPadKeyMask;
-	}
+               ||  [modifier isEqualToString: @"Numeric"]
+               ||  [modifier isEqualToString: @"N"])
+        {
+          flags |= NSNumericPadKeyMask;
+        }
       else
-	{
-	  NSLog (@"NSInputManager - unknown modifier '%@' ignored", modifier);
-	  return NO;
-	}
+        {
+          NSLog (@"NSInputManager - unknown modifier '%@' ignored", modifier);
+          return NO;
+        }
     }
 
   /* Now, parse the actual key.  */
@@ -216,19 +216,19 @@ static NSInputManager *currentInputManager = nil;
     {
       /* A descriptive string, such as Tab or Home.  */
       for (i = 0; i < CHARACTER_TABLE_SIZE; i++)
-	{
-	  if ([name isEqualToString: (character_table[i]).name])
-	    {
-	      c = (character_table[i]).character;
-	      flags |= NSFunctionKeyMask;
-	      break;
-	    }
-	}
+        {
+          if ([name isEqualToString: (character_table[i]).name])
+            {
+              c = (character_table[i]).character;
+              flags |= NSFunctionKeyMask;
+              break;
+            }
+        }
       if (i == CHARACTER_TABLE_SIZE)
-	{
-	  NSLog (@"NSInputManager - unknown character '%@' ignored", name);
-	  return NO;
-	}
+        {
+          NSLog (@"NSInputManager - unknown character '%@' ignored", name);
+          return NO;
+        }
     }  
   if (character != NULL)
     {
@@ -244,7 +244,7 @@ static NSInputManager *currentInputManager = nil;
 }
 
 + (NSString *) describeKeyStroke: (unichar)character
-		   withModifiers: (unsigned int)modifiers
+                   withModifiers: (unsigned int)modifiers
 {
   NSMutableString *description = [NSMutableString new];
   int i;
@@ -277,10 +277,10 @@ static NSInputManager *currentInputManager = nil;
   for (i = 0; i < CHARACTER_TABLE_SIZE; i++)
     {
       if (character == ((character_table[i]).character))
-	{
-	  [description appendString: character_table[i].name];
-	  break;
-	}
+        {
+          [description appendString: character_table[i].name];
+          break;
+        }
     }  
 
   if (i == CHARACTER_TABLE_SIZE)
@@ -314,7 +314,7 @@ static NSInputManager *currentInputManager = nil;
   NSFileManager *fileManager = [NSFileManager defaultManager];
 
   paths = NSSearchPathForDirectoriesInDomains (NSLibraryDirectory,
-					       NSAllDomainsMask, YES);
+                                               NSAllDomainsMask, YES);
   /* paths are in the order - user, network, local, root. Instead we
      want to load keybindings in the order root, local, network, user
      - so that user can override root - for this reason we use a
@@ -324,18 +324,18 @@ static NSInputManager *currentInputManager = nil;
     {
       NSString *fullPath;
       fullPath =
-	[[[libraryPath stringByAppendingPathComponent: @"KeyBindings"]
-	  stringByAppendingPathComponent: fileName]
-	  stringByAppendingPathExtension: @"dict"];
+        [[[libraryPath stringByAppendingPathComponent: @"KeyBindings"]
+          stringByAppendingPathComponent: fileName]
+          stringByAppendingPathExtension: @"dict"];
       if ([fileManager fileExistsAtPath: fullPath])
-	{
-	  [self loadBindingsFromFile: fullPath];
-	}
+        {
+          [self loadBindingsFromFile: fullPath];
+        }
     }
 }
 
 - (NSInputManager *) initWithName: (NSString *)inputServerName
-			     host: (NSString *)hostName
+                             host: (NSString *)hostName
 {
   NSUserDefaults *defaults;
   CREATE_AUTORELEASE_POOL (pool);
@@ -352,23 +352,23 @@ static NSInputManager *currentInputManager = nil;
 
     if (abortKey == nil)
       {
-	_abortCharacter = 'g';
-	_abortFlags = NSControlKeyMask;		
+        _abortCharacter = 'g';
+        _abortFlags = NSControlKeyMask;                
       }
     else if (![NSInputManager parseKey: abortKey  
-			      intoCharacter: &_abortCharacter
-			      andModifiers: &_abortFlags])
+                              intoCharacter: &_abortCharacter
+                              andModifiers: &_abortFlags])
       {
-	NSLog (@"Could not parse GSAbortKey - using Control-g");
-	_abortCharacter = 'g';
-	_abortFlags = NSControlKeyMask;		
+        NSLog (@"Could not parse GSAbortKey - using Control-g");
+        _abortCharacter = 'g';
+        _abortFlags = NSControlKeyMask;                
       }
   }
 
   /* Read if we should insert Control- keystrokes into the text.  
      This defaults to NO.  */
   _insertControlKeystrokes = [defaults boolForKey: 
-					 @"GSInsertControlKeystrokes"];
+                                         @"GSInsertControlKeystrokes"];
 
   /* Read the quote key from the user defaults.  */
   {
@@ -379,7 +379,7 @@ static NSInputManager *currentInputManager = nil;
 
     if (quoteKey == nil)
       {
-	quoteKey = @"Control-q";
+        quoteKey = @"Control-q";
       }
 
     [_rootBindingTable bindKey: quoteKey  toAction: quoteAction];
@@ -433,7 +433,7 @@ static NSInputManager *currentInputManager = nil;
     
     if (keyBindingsFiles == nil)
       {
-	keyBindingsFiles = [NSArray arrayWithObject: @"DefaultKeyBindings"];
+        keyBindingsFiles = [NSArray arrayWithObject: @"DefaultKeyBindings"];
       }
     
     {
@@ -441,14 +441,14 @@ static NSInputManager *currentInputManager = nil;
       unsigned int i;
     
       for (i = 0; i < [keyBindingsFiles count]; i++)
-	{
-	  NSString *filename = [keyBindingsFiles objectAtIndex: i];
-	  
-	  if ([filename isKindOfClass: string])
-	    {
-	      [self loadBindingsWithName: filename];
-	    }
-	}
+        {
+          NSString *filename = [keyBindingsFiles objectAtIndex: i];
+          
+          if ([filename isKindOfClass: string])
+            {
+              [self loadBindingsWithName: filename];
+            }
+        }
     }
   }
 
@@ -458,7 +458,7 @@ static NSInputManager *currentInputManager = nil;
 
      if ([keyBindings isKindOfClass: [NSDictionary class]])
        {
-	 [_rootBindingTable loadBindingsFromDictionary: keyBindings];
+         [_rootBindingTable loadBindingsFromDictionary: keyBindings];
        }
   }
 
@@ -475,7 +475,7 @@ static NSInputManager *currentInputManager = nil;
 }
 
 - (void) handleKeyboardEvents: (NSArray *)eventArray
-		       client: (id)client
+                       client: (id)client
 {
   NSEvent *theEvent;
   NSEnumerator *eventEnum = [eventArray objectEnumerator];
@@ -495,184 +495,185 @@ static NSInputManager *currentInputManager = nil;
       NSString *unmodifiedCharacters = [theEvent charactersIgnoringModifiers];
       unichar character = 0;
       unsigned flags = [theEvent modifierFlags] & (NSShiftKeyMask 
-						   | NSAlternateKeyMask 
-						   | NSControlKeyMask
-						   | NSNumericPadKeyMask);
-      BOOL isFunctionKey = [theEvent modifierFlags] & NSFunctionKeyMask;
+                                                   | NSAlternateKeyMask 
+                                                   | NSControlKeyMask
+                                                   | NSNumericPadKeyMask);
+      BOOL isFunctionKey = ([theEvent modifierFlags] & NSFunctionKeyMask) 
+        == NSFunctionKeyMask;
 
       if ([unmodifiedCharacters length] > 0)
-	{
-	  character = [unmodifiedCharacters characterAtIndex: 0];
-	}
+        {
+          character = [unmodifiedCharacters characterAtIndex: 0];
+        }
 
       if (!_interpretNextKeyStrokeLiterally)
-	{
-	  GSKeyBindingAction *action;
-	  GSKeyBindingTable *table;
-	  BOOL found;
-	  unsigned adaptedFlags;
+        {
+          GSKeyBindingAction *action;
+          GSKeyBindingTable *table;
+          BOOL found;
+          unsigned adaptedFlags;
 
-	  /* If the keystroke is a function key, then we need to use
-	   * the full modifier flags to compare it against stored
-	   * keybindings, so that we can make a difference for example
-	   * between Shift-LeftArrow and LeftArrow.  But if it's not a
-	   * function key, then we should ignore the shift modifier -
-	   * for example Control-g is a keystroke, and Control-G is
-	   * another one.  The shift modifier flag is not used to
-	   * match these keystrokes - the fact that it's 'G' rather
-	   * than 'g' already contains the fact that it's typed in
-	   * with Shift.  */
-	  if (!isFunctionKey)
-	    {
-	      adaptedFlags = flags & (~NSShiftKeyMask); 
-	    }
-	  else
-	    {
-	      adaptedFlags = flags;
-	    }
+          /* If the keystroke is a function key, then we need to use
+           * the full modifier flags to compare it against stored
+           * keybindings, so that we can make a difference for example
+           * between Shift-LeftArrow and LeftArrow.  But if it's not a
+           * function key, then we should ignore the shift modifier -
+           * for example Control-g is a keystroke, and Control-G is
+           * another one.  The shift modifier flag is not used to
+           * match these keystrokes - the fact that it's 'G' rather
+           * than 'g' already contains the fact that it's typed in
+           * with Shift.  */
+          if (!isFunctionKey)
+            {
+              adaptedFlags = flags & (~NSShiftKeyMask); 
+            }
+          else
+            {
+              adaptedFlags = flags;
+            }
 
-	  /* Special keybinding recognized in all contexts - abort -
-	     normally bound to Control-g.  The user is confused and
-	     wants to go home.  Abort whatever train of thoughts we
-	     were following, discarding whatever pending keystrokes we
-	     have, and return into default state.  */
-	  if (character == _abortCharacter  &&  adaptedFlags == _abortFlags)
-	    {
-	      [self resetInternalState];
-	      break;
-	    }
+          /* Special keybinding recognized in all contexts - abort -
+             normally bound to Control-g.  The user is confused and
+             wants to go home.  Abort whatever train of thoughts we
+             were following, discarding whatever pending keystrokes we
+             have, and return into default state.  */
+          if (character == _abortCharacter  &&  adaptedFlags == _abortFlags)
+            {
+              [self resetInternalState];
+              break;
+            }
 
-	  /* Look up the character in the current keybindings table.  */
-	  found = [_currentBindingTable lookupKeyStroke: character
-					modifiers: adaptedFlags
-					returningActionIn: &action
-					tableIn: &table];
-	  
-	  if (found)
-	    {
-	      if (action != nil)
-		{
-		  /* First reset our internal state - we are done
-		     interpreting this keystroke sequence.  */
-		  [self resetInternalState];
-		  
-		  /* Then perform the action.  The action might actually
-		     modify our internal state, which is why we reset it
-		     before calling the action! (for example, performing
-		     the action might cause us to interpret the next
-		     keystroke literally).  */
-		  [action performActionWithInputManager: self];
-		  break;
-		}
-	      else if (table != nil)
-		{
-		  /* It's part of a composite multi-stroke
-		     keybinding.  */
-		  _currentBindingTable = table;
-		  [_pendingKeyEvents addObject: theEvent];
-		  break;
-		}
-	      /* Else it is as if we didn't find it! */
-	    }
-	  
-	  /* Ok - the keybinding wasn't found.  If we were tracking a
-	     multi-stroke keybinding, it means we were on a false
-	     track.  */
-	  if ([_pendingKeyEvents count] > 0)
-	    {
-	      NSEvent *e;
+          /* Look up the character in the current keybindings table.  */
+          found = [_currentBindingTable lookupKeyStroke: character
+                                        modifiers: adaptedFlags
+                                        returningActionIn: &action
+                                        tableIn: &table];
+          
+          if (found)
+            {
+              if (action != nil)
+                {
+                  /* First reset our internal state - we are done
+                     interpreting this keystroke sequence.  */
+                  [self resetInternalState];
+                  
+                  /* Then perform the action.  The action might actually
+                     modify our internal state, which is why we reset it
+                     before calling the action! (for example, performing
+                     the action might cause us to interpret the next
+                     keystroke literally).  */
+                  [action performActionWithInputManager: self];
+                  break;
+                }
+              else if (table != nil)
+                {
+                  /* It's part of a composite multi-stroke
+                     keybinding.  */
+                  _currentBindingTable = table;
+                  [_pendingKeyEvents addObject: theEvent];
+                  break;
+                }
+              /* Else it is as if we didn't find it! */
+            }
+          
+          /* Ok - the keybinding wasn't found.  If we were tracking a
+             multi-stroke keybinding, it means we were on a false
+             track.  */
+          if ([_pendingKeyEvents count] > 0)
+            {
+              NSEvent *e;
 
-	      /* Save the pending events locally in this stack
-		 frame.  */
-	      NSMutableArray *a = _pendingKeyEvents;
-	      RETAIN (a);
-	      
-	      /* Reset our internal state.  */
-	      [self resetInternalState];
-	      
-	      /* Take the very first event we received and which we
-		 tried to interpret as a key binding, which now we
-		 know was the wrong thing to do.  */	      
-	      e = [a objectAtIndex: 0];
+              /* Save the pending events locally in this stack
+                 frame.  */
+              NSMutableArray *a = _pendingKeyEvents;
+              RETAIN (a);
+              
+              /* Reset our internal state.  */
+              [self resetInternalState];
+              
+              /* Take the very first event we received and which we
+                 tried to interpret as a key binding, which now we
+                 know was the wrong thing to do.  */              
+              e = [a objectAtIndex: 0];
 
-	      /* Interpret it literally, since interpreting it as a
-		 keybinding failed.  */
-	      _interpretNextKeyStrokeLiterally = YES;
-	      [self handleKeyboardEvents: [NSArray arrayWithObject: e]
-		    client: client];
+              /* Interpret it literally, since interpreting it as a
+                 keybinding failed.  */
+              _interpretNextKeyStrokeLiterally = YES;
+              [self handleKeyboardEvents: [NSArray arrayWithObject: e]
+                    client: client];
 
-	      /* Now feed the remaining pending key events to
-		 ourselves for interpretation - again from
-		 scratch.  */
-	      [a removeObjectAtIndex: 0];
-	      [a addObject: theEvent];
-	      
-	      [self handleKeyboardEvents: a
-		    client: client];
+              /* Now feed the remaining pending key events to
+                 ourselves for interpretation - again from
+                 scratch.  */
+              [a removeObjectAtIndex: 0];
+              [a addObject: theEvent];
+              
+              [self handleKeyboardEvents: a
+                    client: client];
 
-	      RELEASE (a);
-	      break;
-	    }	  
-	}
+              RELEASE (a);
+              break;
+            }          
+        }
       
       /* We couldn't (or shouldn't) find the keybinding ... perform
-	 the default action - literally interpreting the
-	 keystroke.  */
+         the default action - literally interpreting the
+         keystroke.  */
 
       /* If this was a forced literal interpretation, make sure the
-	 next one is interpreted normally.  */
+         next one is interpreted normally.  */
       _interpretNextKeyStrokeLiterally = NO;
 
       /* During literal interpretation, function keys are ignored.
-	 Trying to insert 'PageUp' literally makes simply no sense.  */
+         Trying to insert 'PageUp' literally makes simply no sense.  */
       if (isFunctionKey)
-	{
-	  NSBeep ();
-	  break;
-	}
+        {
+          NSBeep ();
+          break;
+        }
 
       /* During literal interpretation, control characters are ignored
-	 if GSInsertControlKeystrokes was NO.  */
+         if GSInsertControlKeystrokes was NO.  */
       if (_insertControlKeystrokes == NO)
-	{
-	  if (flags & NSControlKeyMask)
-	    {
-	      NSBeep ();
-	      break;
-	    }
-	}
+        {
+          if (flags & NSControlKeyMask)
+            {
+              NSBeep ();
+              break;
+            }
+        }
 
       switch (character)
-	{
-	case NSBackspaceCharacter:
-	  [self doCommandBySelector: @selector (deleteBackward:)];
-	  break;
-	  
-	case NSTabCharacter:
-	  if (flags & NSShiftKeyMask)
-	    {
-	      [self doCommandBySelector: @selector (insertBacktab:)];
-	    }
-	  else
-	    {
-	      [self doCommandBySelector: @selector (insertTab:)];
-	    }
-	  break;
-	  
-	case NSEnterCharacter:
-	case NSFormFeedCharacter:
-	case NSCarriageReturnCharacter:
-	  [self doCommandBySelector: @selector (insertNewline:)];
-	  break;
-	  
-	case NSHelpFunctionKey:
-	  [NSHelpManager setContextHelpModeActive: YES];
-	  break;
+        {
+        case NSBackspaceCharacter:
+          [self doCommandBySelector: @selector (deleteBackward:)];
+          break;
+          
+        case NSTabCharacter:
+          if (flags & NSShiftKeyMask)
+            {
+              [self doCommandBySelector: @selector (insertBacktab:)];
+            }
+          else
+            {
+              [self doCommandBySelector: @selector (insertTab:)];
+            }
+          break;
+          
+        case NSEnterCharacter:
+        case NSFormFeedCharacter:
+        case NSCarriageReturnCharacter:
+          [self doCommandBySelector: @selector (insertNewline:)];
+          break;
+          
+        case NSHelpFunctionKey:
+          [NSHelpManager setContextHelpModeActive: YES];
+          break;
 
-	default:
-	  [self insertText: characters];
-	  break;
-	}
+        default:
+          [self insertText: characters];
+          break;
+        }
     }
 }
 
@@ -708,7 +709,7 @@ static NSInputManager *currentInputManager = nil;
 {}
 
 - (void) markedTextSelectionChanged: (NSRange)newSel
-			     client: (id)client
+                             client: (id)client
 {}
 
 - (BOOL) wantsToDelayTextChangeNotifications
@@ -727,7 +728,7 @@ static NSInputManager *currentInputManager = nil;
 }
 
 - (void) setMarkedText: (id)aString 
-	 selectedRange: (NSRange)selRange
+         selectedRange: (NSRange)selRange
 {}
 
 - (BOOL) hasMarkedText

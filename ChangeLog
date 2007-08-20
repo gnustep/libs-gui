@@ -1,3 +1,9 @@
+2007-08-20 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSInputManager.m (-handleKeyboardEvents:client:): Set the
+	isFunctionKey boolean correctly. This was needed as the
+	NSFunctionKeyMask value doesn't fit in the first byte.
+
 2007-08-19 21:18-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSController.m
