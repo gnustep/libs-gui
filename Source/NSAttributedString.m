@@ -1123,7 +1123,8 @@ static NSMutableDictionary *cachedCSets = nil;
           charset = [font coveredCharacterSet];
         }
       
-      if (charset != nil && ![charset characterIsMember: uchar])
+      if (charset != nil && ![charset characterIsMember: uchar]
+          && (uchar > 31))
         {
           // Find a replacement font
           NSFont *subFont;
