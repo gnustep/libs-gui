@@ -119,6 +119,34 @@ enum {
 
 @end
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+enum
+{
+	NSFontPanelFaceModeMask = 1 << 0,
+	NSFontPanelSizeModeMask = 1 << 1,
+	NSFontPanelCollectionModeMask = 1 << 2,
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+	NSFontPanelUnderlineEffectModeMask = 1 << 8,
+	NSFontPanelStrikethroughEffectModeMask = 1 << 9,
+	NSFontPanelTextColorEffectModeMask = 1 << 10,
+	NSFontPanelDocumentColorEffectModeMask = 1 << 11,
+	NSFontPanelShadowEffectModeMask = 1 << 12,
+	NSFontPanelAllEffectsModeMask = 0xfff00,
+#endif
+
+	NSFontPanelStandardModesMask = 0xffff,
+	NSFontPanelAllModesMask = 0xffffffff
+};
+
+@interface NSObject (NSFontPanelValidation)
+
+- (unsigned int)validModesForFontPanel:(NSFontPanel *)fontPanel;
+
+@end
+
+#endif
+
 #endif // _GNUstep_H_NSFontPanel
 
 
