@@ -1,3 +1,8 @@
+2007-08-24 22:33-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSButtonCell.m: Added code in encodeWithCoder: to allow
+	encoding previous versions of the object to the archive.
+
 2007-08-22 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSFontPanel.h: Add MacOSX 10.3 constants.

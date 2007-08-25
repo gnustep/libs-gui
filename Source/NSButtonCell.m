@@ -1610,29 +1610,43 @@ typedef struct _GSButtonCellFlags
       tmp = _buttoncell_is_transparent;
       [aCoder encodeValueOfObjCType: @encode(BOOL)
               at: &tmp];
-      [aCoder encodeValueOfObjCType: @encode(unsigned int)
-              at: &_keyEquivalentModifierMask];
+
+      if([NSButtonCell version] <= 2)
+	{
+	  unsigned int ke = _keyEquivalentModifierMask << 16;
+	  [aCoder encodeValueOfObjCType: @encode(unsigned int)
+		  at: &ke];
+	}
+      else
+	{
+	  [aCoder encodeValueOfObjCType: @encode(unsigned int)
+		  at: &_keyEquivalentModifierMask];
+	}
+
       [aCoder encodeValueOfObjCType: @encode(unsigned int)
               at: &_highlightsByMask];
       [aCoder encodeValueOfObjCType: @encode(unsigned int)
               at: &_showAltStateMask];
 
-      [aCoder encodeObject: _sound];
-      [aCoder encodeObject: _backgroundColor];
-      [aCoder encodeValueOfObjCType: @encode(float)
-              at: &_delayInterval];
-      [aCoder encodeValueOfObjCType: @encode(float)
-              at: &_repeatInterval];
-      [aCoder encodeValueOfObjCType: @encode(unsigned int)
-              at: &_bezel_style];
-      [aCoder encodeValueOfObjCType: @encode(unsigned int)
-              at: &_gradient_type];
-      tmp = _image_dims_when_disabled;
-      [aCoder encodeValueOfObjCType: @encode(BOOL)
-              at: &tmp];
-      tmp = _shows_border_only_while_mouse_inside;
-      [aCoder encodeValueOfObjCType: @encode(BOOL)
-              at: &tmp];
+      if([NSButtonCell version] >= 2)
+	{
+	  [aCoder encodeObject: _sound];
+	  [aCoder encodeObject: _backgroundColor];
+	  [aCoder encodeValueOfObjCType: @encode(float)
+		  at: &_delayInterval];
+	  [aCoder encodeValueOfObjCType: @encode(float)
+		  at: &_repeatInterval];
+	  [aCoder encodeValueOfObjCType: @encode(unsigned int)
+		  at: &_bezel_style];
+	  [aCoder encodeValueOfObjCType: @encode(unsigned int)
+		  at: &_gradient_type];
+	  tmp = _image_dims_when_disabled;
+	  [aCoder encodeValueOfObjCType: @encode(BOOL)
+		  at: &tmp];
+	  tmp = _shows_border_only_while_mouse_inside;
+	  [aCoder encodeValueOfObjCType: @encode(BOOL)
+		  at: &tmp];
+	}
     }
 }
 
