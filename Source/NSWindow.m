@@ -235,70 +235,91 @@ has blocked and waited for events.
 - (void) _lossOfKeyOrMainWindow
 {
   NSArray	*windowList = GSOrderedWindows();
-  unsigned	pos = [windowList indexOfObjectIdenticalTo: self];
-  unsigned	c = [windowList count];
-  unsigned	i,ti;
-  NSWindow	*w;
+  unsigned pos = [windowList indexOfObjectIdenticalTo: self];
+  unsigned c = [windowList count];
+  unsigned i;
+
+  // Don't bother when application is closing.
+  if ([NSApp isRunning] == NO)
+    return;
 
   if (!c)
     return;
 
-  i = pos + 1;
-  if (pos >= c || pos + 1 == c)
+  if (pos == NSNotFound)
     {
-      pos = c - 1;
-      i = 0;
+      pos = c;
     }
-  ti = i;
 
   if ([self isKeyWindow])
     {
-      NSWindow *menu_window = [[NSApp mainMenu] window];
+      NSWindow *w = [NSApp mainWindow];
 
       [self resignKeyWindow];
+      if (w != nil && w != self 
+          && [w canBecomeKeyWindow])
+        {
+          [w makeKeyWindow];
+        }
+      else
+        {
+          NSWindow *menu_window = [[NSApp mainMenu] window];
 
-      for (; i != pos && i < c; i++)
-	{
-	  w = [windowList objectAtIndex: i];
-	  if ([w isVisible] && [w canBecomeKeyWindow] && w != menu_window)
-	    {
-	      [w makeKeyWindow];
-	      break;
-	    }
-	}
-      /*
-       * if we didn't find a possible key window - use the main menu window
-       */
-      if (i == c)
-	{
-	  if (menu_window != nil)
-	    {
-	      [GSServerForWindow(menu_window) setinputfocus: 
-				  [menu_window windowNumber]];
-	    }
-	}
+          // try all windows front to back except self and menu
+          for (i = 0; i < c; i++)
+            {
+              if (i != pos)
+                {
+                  w = [windowList objectAtIndex: i];
+                  if ([w isVisible] && [w canBecomeKeyWindow] 
+                      && w != menu_window)
+                    {
+                      [w makeKeyWindow];
+                      break;
+                    }
+                }
+            }
+
+          /*
+           * if we didn't find a possible key window - use the main menu window
+           */
+          if (i == c)
+            {
+              if (menu_window != nil)
+                {
+                  // FIXME: Why this call and not makeKeyWindow?
+                  [GSServerForWindow(menu_window) setinputfocus: 
+                                        [menu_window windowNumber]];
+                }
+            }
+        }
     }
+
   if ([self isMainWindow])
     {
-      NSWindow	*w = [NSApp keyWindow];
+      NSWindow *w = [NSApp keyWindow];
 
       [self resignMainWindow];
       if (w != nil && [w canBecomeMainWindow])
-	{
-	  [w makeMainWindow];
-	}
+        {
+          [w makeMainWindow];
+        }
       else
-	{
-	  for (i = ti; i != pos && i < c; i++)
-	    {
-	      w = [windowList objectAtIndex: i];
-	      if ([w isVisible] && [w canBecomeMainWindow])
-		{
-		  [w makeMainWindow];
-		  break;
-		}
-	    }
-	}
+        {
+         // try all windows front to back except self
+          for (i = 0; i < c; i++)
+            {
+              if (i != pos)
+                {
+                  w = [windowList objectAtIndex: i];
+                  if ([w isVisible] && [w canBecomeMainWindow])
+                    {
+                      [w makeMainWindow];
+                      break;
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -1554,8 +1575,8 @@ many times.
     {
       if (_windowNum == 0)
         {
-	  return;	/* This deferred window was never ordered in. */
-	}
+          return;	/* This deferred window was never ordered in. */
+        }
       _f.visible = NO;
       /*
        * Don't keep trying to update the window while it is ordered out
@@ -1566,23 +1587,23 @@ many times.
   else
     {
       /* Windows need to be constrained when displayed or resized - but only
-	 titled windows are constrained. Also, and this is the tricky part,
+         titled windows are constrained. Also, and this is the tricky part,
          don't constrain if we are merely unhidding the window or if it's
          already visible and is just being reordered. */
       if ((_styleMask & NSTitledWindowMask)
-	&& [NSApp isHidden] == NO
-	&& _f.visible == NO)
-	{
-	  NSRect nframe = [self constrainFrameRect: _frame
-				          toScreen: [self screen]];
-	  [self setFrame: nframe display: NO];
-	}
+          && [NSApp isHidden] == NO
+          && _f.visible == NO)
+        {
+          NSRect nframe = [self constrainFrameRect: _frame
+                                toScreen: [self screen]];
+          [self setFrame: nframe display: NO];
+        }
       // create deferred window
       if (_windowNum == 0)
-	{
-	  [self _initBackendWindow];
-	  display = YES;
-	}
+        {
+          [self _initBackendWindow];
+          display = YES;
+        }
     }
 
   // Draw content before backend window ordering
@@ -1612,32 +1633,32 @@ many times.
       [isa _addAutodisplayedWindow: self];
 
       if (_f.has_closed == YES)
-	{
-	  _f.has_closed = NO;	/* A closed window has re-opened	*/
-	}
+        {
+          _f.has_closed = NO;	/* A closed window has re-opened	*/
+        }
       if (_f.has_opened == NO)
-	{
-	  _f.has_opened = YES;
-	  if (_f.menu_exclude == NO)
-	    {
-	      BOOL	isFileName;
-	      NSString *aString;
-	       
-	      aString = [NSString stringWithFormat: @"%@  --  %@", 
-	      			[_representedFilename lastPathComponent],
-		      [_representedFilename stringByDeletingLastPathComponent]];							    
-	      isFileName = [_windowTitle isEqual: aString]; 
+        {
+          _f.has_opened = YES;
+          if (_f.menu_exclude == NO)
+            {
+              BOOL	isFileName;
+              NSString *aString;
+              
+              aString = [NSString stringWithFormat: @"%@  --  %@", 
+                          [_representedFilename lastPathComponent],
+                          [_representedFilename stringByDeletingLastPathComponent]];							    
+              isFileName = [_windowTitle isEqual: aString]; 
 
-	      [NSApp addWindowsItem: self
-			      title: _windowTitle
-			   filename: isFileName];
-	    }
-	}
+              [NSApp addWindowsItem: self
+                     title: _windowTitle
+                     filename: isFileName];
+            }
+        }
       if ([self isKeyWindow] == YES)
-	{
-	  [_wv setInputState: GSTitleBarKey];
-	  [srv setinputfocus: _windowNum];
-	}
+        {
+          [_wv setInputState: GSTitleBarKey];
+          [srv setinputfocus: _windowNum];
+        }
       _f.visible = YES;
     }
   else if ([self isOneShot])
@@ -1651,19 +1672,19 @@ many times.
   if (_f.is_key == YES)
     {
       if ((_firstResponder != self)
-	&& [_firstResponder respondsToSelector: @selector(resignKeyWindow)])
-	[_firstResponder resignKeyWindow];
+          && [_firstResponder respondsToSelector: @selector(resignKeyWindow)])
+        [_firstResponder resignKeyWindow];
 
       _f.is_key = NO;
 
       if (_f.is_main == YES)
-	{
-	  [_wv setInputState: GSTitleBarMain];
-	}
+        {
+          [_wv setInputState: GSTitleBarMain];
+        }
       else
-	{
-	  [_wv setInputState: GSTitleBarNormal];
-	}
+        {
+          [_wv setInputState: GSTitleBarNormal];
+        }
       [self discardCursorRects];
 
       [nc postNotificationName: NSWindowDidResignKeyNotification object: self];
@@ -1676,13 +1697,13 @@ many times.
     {
       _f.is_main = NO;
       if (_f.is_key == YES)
-	{
-	  [_wv setInputState: GSTitleBarKey];
-	}
+        {
+          [_wv setInputState: GSTitleBarKey];
+        }
       else
-	{
-	  [_wv setInputState: GSTitleBarNormal];
-	}
+        {
+          [_wv setInputState: GSTitleBarNormal];
+        }
       [nc postNotificationName: NSWindowDidResignMainNotification object: self];
     }
 }
@@ -2447,9 +2468,9 @@ resetCursorRectsForView(NSView *theView)
          we close).
       */
       if (!_f.is_released_when_closed)
-	{
-	  RETAIN(self);
-	}
+        {
+          RETAIN(self);
+        }
 
       [nc postNotificationName: NSWindowWillCloseNotification object: self];
       _f.has_opened = NO;
@@ -3524,31 +3545,31 @@ resetCursorRectsForView(NSView *theView)
 
 	    case GSAppKitWindowFocusIn:
 	      if (_f.is_miniaturized)
-		{
-		  /* Window Manager just deminiaturized us */
-		  [self deminiaturize: self];
-		}
+          {
+            /* Window Manager just deminiaturized us */
+            [self deminiaturize: self];
+          }
 	      if ([NSApp modalWindow]
-		  && self != [NSApp modalWindow])
-		{
-		  /* Ignore this request. We're in a modal loop and the
-		     user pressed on the title bar of another window. */
-		  break;
-		}
+            && self != [NSApp modalWindow])
+          {
+            /* Ignore this request. We're in a modal loop and the
+               user pressed on the title bar of another window. */
+            break;
+          }
 	      if ([self canBecomeKeyWindow] == YES)
-		{
-		  NSDebugLLog(@"Focus", @"Making %d key", _windowNum);
-		  [self makeKeyWindow];
-		  [self makeMainWindow];
-		  [NSApp activateIgnoringOtherApps: YES];
-		}
+          {
+            NSDebugLLog(@"Focus", @"Making %d key", _windowNum);
+            [self makeKeyWindow];
+            [self makeMainWindow];
+            [NSApp activateIgnoringOtherApps: YES];
+          }
 	      if (self == [[NSApp mainMenu] window])
-		{
-		  /* We should really find another window that can become
-		     key (if possible)
-		  */
-		  [self _lossOfKeyOrMainWindow];
-		}
+          {
+            /* We should really find another window that can become
+               key (if possible)
+            */
+            [self _lossOfKeyOrMainWindow];
+          }
 	      break;
 
 	    case GSAppKitWindowFocusOut:
