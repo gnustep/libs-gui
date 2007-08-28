@@ -1,3 +1,10 @@
+2007-08-28 Fred Kiefer <FredKiefer@gmx.de>
+	
+	* Source/NSCell.m (#initialize): Increase version number.
+	* Source/NSCell.m (-initWithCoder:): Correct values for the
+	decoded action mask, as they changed on 2007-08-03. 
+	Fixes bug #20884.
+	
 2007-08-24 22:33-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSButtonCell.m: Added code in encodeWithCoder: to allow

@@ -100,7 +100,7 @@ static NSColor	*shadowCol;
 {
   if (self == [NSCell class])
     {
-      [self setVersion: 2];
+      [self setVersion: 3];
       colorClass = [NSColor class];
       cellClass = [NSCell class];
       fontClass = [NSFont class];
@@ -2617,6 +2617,98 @@ static NSColor	*shadowCol;
       [aDecoder decodeValueOfObjCType: @encode(unsigned int) 
 		                   at: &_mouse_down_flags];
       [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &_action_mask];
+      if (version < 3)
+        {
+          unsigned int mask = 0;
+
+          // Convert old GNUstep mask value to Cocoa values
+          if ((_action_mask & 0x1) == 0x1)
+            {
+              mask |= NSLeftMouseDownMask;
+            }
+          if ((_action_mask & 0x2) == 0x2)
+            {
+              mask |= NSLeftMouseUpMask;
+            }
+          if ((_action_mask & 0x4) == 0x4)
+            {
+              mask |= NSOtherMouseDownMask;
+            }
+          if ((_action_mask & 0x8) == 0x8)
+            {
+              mask |= NSOtherMouseUpMask;
+            }
+          if ((_action_mask & 0x10) == 0x10)
+            {
+              mask |= NSRightMouseDownMask;
+            }
+          if ((_action_mask & 0x20) == 0x20)
+            {
+              mask |= NSRightMouseUpMask;
+            }
+          if ((_action_mask & 0x40) == 0x40)
+            {
+              mask |= NSMouseMovedMask;
+            }
+          if ((_action_mask & 0x80) == 0x80)
+            {
+              mask |= NSLeftMouseDraggedMask;
+            }
+          if ((_action_mask & 0x100) == 0x100)
+            {
+              mask |= NSOtherMouseDraggedMask;
+            }
+          if ((_action_mask & 0x200) == 0x200)
+            {
+              mask |= NSRightMouseDraggedMask;
+            }
+          if ((_action_mask & 0x400) == 0x400)
+            {
+              mask |= NSMouseEnteredMask;
+            }
+          if ((_action_mask & 0x800) == 0x800)
+            {
+              mask |= NSMouseExitedMask;
+            }
+          if ((_action_mask & 0x1000) == 0x1000)
+            {
+              mask |= NSKeyDownMask;
+            }
+          if ((_action_mask & 0x2000) == 0x2000)
+            {
+              mask |= NSKeyUpMask;
+            }
+          if ((_action_mask & 0x4000) == 0x4000)
+            {
+              mask |= NSFlagsChangedMask;
+            }
+          if ((_action_mask & 0x8000) == 0x8000)
+            {
+              mask |= NSAppKitDefinedMask;
+            }
+          if ((_action_mask & 0x10000) == 0x10000)
+            {
+              mask |= NSSystemDefinedMask;
+            }
+          if ((_action_mask & 0x20000) == 0x20000)
+            {
+              mask |= NSApplicationDefinedMask;
+            }
+          if ((_action_mask & 0x40000) == 0x40000)
+            {
+              mask |= NSPeriodicMask;
+            }
+          if ((_action_mask & 0x80000) == 0x80000)
+            {
+              mask |= NSCursorUpdateMask;
+            }
+          if ((_action_mask & 0x100000) == 0x100000)
+            {
+              mask |= NSScrollWheelMask;
+            }
+          _action_mask = mask;
+        }
+      _action_mask = NSLeftMouseUpMask;   
       [aDecoder decodeValueOfObjCType: @encode(id) at: &formatter];
       [self setFormatter: formatter];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &menu];
@@ -2625,32 +2717,32 @@ static NSColor	*shadowCol;
 
       if (_formatter != nil)
         {
-	  NSString *contents;
+          NSString *contents;
 
-	  contents = [_formatter stringForObjectValue: _object_value];
-	  if (contents != nil)
-	    {
-	      _cell.has_valid_object_value = YES;
-	      ASSIGN (_contents, contents);
-	      _cell.contents_is_attributed_string = NO;
-	    }
-	}
+          contents = [_formatter stringForObjectValue: _object_value];
+          if (contents != nil)
+            {
+              _cell.has_valid_object_value = YES;
+              ASSIGN (_contents, contents);
+              _cell.contents_is_attributed_string = NO;
+            }
+        }
 
       if (version >= 2)
         {
-	  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-	  _cell.allows_undo = tmp_int;
-	  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-	  _cell.line_break_mode = tmp_int;
-	  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-	  _cell.control_tint = tmp_int;
-	  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-	  _cell.control_size = tmp_int;
-	  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-	  _cell.focus_ring_type = tmp_int;
-	  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
-	  _cell.base_writing_direction = tmp_int;
-	}
+          [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+          _cell.allows_undo = tmp_int;
+          [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+          _cell.line_break_mode = tmp_int;
+          [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+          _cell.control_tint = tmp_int;
+          [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+          _cell.control_size = tmp_int;
+          [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+          _cell.focus_ring_type = tmp_int;
+          [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+          _cell.base_writing_direction = tmp_int;
+        }
     }
   return self;
 }
