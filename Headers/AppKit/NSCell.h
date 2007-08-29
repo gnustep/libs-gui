@@ -484,6 +484,11 @@ enum {
 - (void) _drawAttributedText: (NSAttributedString*)aString  
 		     inFrame: (NSRect)aRect;
 - (BOOL) _sendsActionOn:(int)eventTypeMask;
+- (NSAttributedString*) _drawAttributedString;
+- (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame 
+                                    inView: (NSView*)controlView;
+- (void) _drawFocusRingWithFrame: (NSRect)cellFrame 
+                          inView: (NSView*)controlView;
 @end
 
 //

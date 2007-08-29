@@ -64,6 +64,10 @@
 - (void)setTextFont:(NSFont*)fontObject;
 - (void)setTitleAlignment:(NSTextAlignment)aMode;
 - (void)setTitleFont:(NSFont*)fontObject;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (void) setTitleBaseWritingDirection: (NSWritingDirection)direction;
+- (void) setTextBaseWritingDirection: (NSWritingDirection)direction;
+#endif
 
 //
 // Getting a Cell 

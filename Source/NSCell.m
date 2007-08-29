@@ -1943,100 +1943,37 @@ static NSColor	*shadowCol;
   switch (_cell.type)
     {
       case NSTextCellType:
-        {
-	  if (!_cell.is_disabled)
-	    {  
-	      [self _drawAttributedText: [self attributedStringValue]
-			inFrame: cellFrame];
-            }
-	  else
-	    {
-	      NSAttributedString *attrStr = [self attributedStringValue];
-	      NSDictionary *attribs;
-	      NSMutableDictionary *newAttribs;
-	      
-	      attribs = [attrStr attributesAtIndex: 0 
-	      		  effectiveRange: NULL];
-	      newAttribs = [NSMutableDictionary 
-	      			dictionaryWithDictionary: attribs];
-	      [newAttribs setObject: [NSColor disabledControlTextColor]
-	      		forKey: NSForegroundColorAttributeName];
-	      
-	      attrStr = [[NSAttributedString alloc]
-	      			initWithString: [attrStr string]
-	      			    attributes: newAttribs];
-	      [self _drawAttributedText: attrStr 
-			inFrame: cellFrame];
-	      RELEASE(attrStr);
-	    }
-	}
-	break;
+        [self _drawAttributedText: [self _drawAttributedString]
+              inFrame: cellFrame];
+        break;
 
       case NSImageCellType:
-	if (_cell_image)
-	  {
-	    NSSize size;
-	    NSPoint position;
-
-	    size = [_cell_image size];
-	    position.x = MAX(NSMidX(cellFrame) - (size.width/2.),0.);
-	    position.y = MAX(NSMidY(cellFrame) - (size.height/2.),0.);
-	    /*
-	     * Images are always drawn with their bottom-left corner
-	     * at the origin so we must adjust the position to take
-	     * account of a flipped view.
-	     */
-	    if ([controlView isFlipped])
-	      position.y += size.height;
-	    [_cell_image compositeToPoint: position operation: NSCompositeSourceOver];
-	  }
-	 break;
+        if (_cell_image)
+          {
+            NSSize size;
+            NSPoint position;
+            
+            size = [_cell_image size];
+            position.x = MAX(NSMidX(cellFrame) - (size.width/2.),0.);
+            position.y = MAX(NSMidY(cellFrame) - (size.height/2.),0.);
+            /*
+             * Images are always drawn with their bottom-left corner
+             * at the origin so we must adjust the position to take
+             * account of a flipped view.
+             */
+            if ([controlView isFlipped])
+              position.y += size.height;
+            [_cell_image compositeToPoint: position operation: NSCompositeSourceOver];
+          }
+        break;
 
       case NSNullCellType:
-         break;
+        break;
     }
 
   // NB: We don't do any highlighting to make it easier for subclasses
   // to reuse this code while doing their own custom highlighting and
   // prettyfying
-}
-
-// Private helper method overridden in subclasses
-- (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
-{
-  if (_cell.is_bordered)
-    {
-      [shadowCol set];
-      NSFrameRect(cellFrame);
-    }
-  else if (_cell.is_bezeled)
-    {
-      [[GSTheme theme] drawWhiteBezel: cellFrame withClip: NSZeroRect];
-    }
-}
-
-// Private helper method
-- (void) _drawFocusRingWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
-{
-  if (_cell.shows_first_responder
-    && [[controlView window] firstResponder] == controlView)
-    {
-      switch (_cell.focus_ring_type)
-        {
-	  case NSFocusRingTypeDefault:
-	    [[GSTheme theme] drawFocusFrame: [self drawingRectForBounds:
-						       cellFrame]
-			     view: controlView];
-	    break;
-	  case NSFocusRingTypeExterior:
-	    [[GSTheme theme] drawFocusFrame: cellFrame
-			     view: controlView];
-	    break;
-	  case NSFocusRingTypeNone:
-	  default:
-	    break;
-	} 
-    }
 }
 
 /**<p>Draws the cell in <var>controlView</var></p>
@@ -2803,6 +2740,33 @@ static NSColor	*shadowCol;
 }
 
 /**
+ * Private internal method, returns an attributed string to display.
+ */
+- (NSAttributedString*) _drawAttributedString
+{
+	if (!_cell.is_disabled)
+    {  
+      return [self attributedStringValue];
+    }
+  else
+    {
+      NSAttributedString *attrStr = [self attributedStringValue];
+      NSDictionary *attribs;
+      NSMutableDictionary *newAttribs;
+	      
+      attribs = [attrStr attributesAtIndex: 0 
+                         effectiveRange: NULL];
+      newAttribs = [NSMutableDictionary dictionaryWithDictionary: attribs];
+      [newAttribs setObject: [NSColor disabledControlTextColor]
+                  forKey: NSForegroundColorAttributeName];
+      
+      return AUTORELEASE([[NSAttributedString alloc]
+                             initWithString: [attrStr string]
+                             attributes: newAttribs]);
+    }
+}
+
+/**
  * Private internal method to display an attributed string.
  */
 - (void) _drawAttributedText: (NSAttributedString*)aString 
@@ -2847,6 +2811,45 @@ static NSColor	*shadowCol;
 
   [aString drawInRect: cellFrame  withAttributes: attributes];
   RELEASE (attributes);
+}
+
+// Private helper method overridden in subclasses
+- (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame 
+                                    inView: (NSView*)controlView
+{
+  if (_cell.is_bordered)
+    {
+      [shadowCol set];
+      NSFrameRect(cellFrame);
+    }
+  else if (_cell.is_bezeled)
+    {
+      [[GSTheme theme] drawWhiteBezel: cellFrame withClip: NSZeroRect];
+    }
+}
+
+// Private helper method
+- (void) _drawFocusRingWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
+{
+  if (_cell.shows_first_responder
+    && [[controlView window] firstResponder] == controlView)
+    {
+      switch (_cell.focus_ring_type)
+        {
+	  case NSFocusRingTypeDefault:
+	    [[GSTheme theme] drawFocusFrame: [self drawingRectForBounds:
+						       cellFrame]
+			     view: controlView];
+	    break;
+	  case NSFocusRingTypeExterior:
+	    [[GSTheme theme] drawFocusFrame: cellFrame
+			     view: controlView];
+	    break;
+	  case NSFocusRingTypeNone:
+	  default:
+	    break;
+	} 
+    }
 }
 
 - (BOOL) _sendsActionOn:(int)eventTypeMask

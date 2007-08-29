@@ -44,6 +44,8 @@
   // YES if the titleWidth is automatically computed
 #define _formcell_auto_title_width _cell.subclass_bool_one
   NSCell* _titleCell;
+#define _formcell_placeholder_is_attributed_string _cell.subclass_bool_two
+  id _placeholder;
 }
 
 //
@@ -67,7 +69,15 @@
 - (void)setAttributedTitle:(NSAttributedString *)anAttributedString;
 - (void)setTitleWithMnemonic:(NSString *)titleWithAmpersand;
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (NSAttributedString*)placeholderAttributedString;
+- (NSString*)placeholderString;
+- (void)setPlaceholderAttributedString:(NSAttributedString*)string;
+- (void)setPlaceholderString:(NSString*)string;
 
+- (NSWritingDirection)titleBaseWritingDirection;
+- (void)setTitleBaseWritingDirection:(NSWritingDirection)writingDirection;
+#endif
 @end
 
 

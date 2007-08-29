@@ -140,40 +140,13 @@
                                                  attributes: attributes]);
 }
 
-- (void) drawInteriorWithFrame: (NSRect)cellFrame 
-			inView: (NSView *)controlView
+- (NSAttributedString*) _drawAttributedString
 {
-  cellFrame = [self drawingRectForBounds: cellFrame];
-
-  /* Draw background, then ... */ 
-  if (_textfieldcell_draws_background)
-    {
-      if ([self isEnabled])
-        {
-          [_background_color set];
-        }
-      else
-        {
-          [[NSColor controlBackgroundColor] set];
-        }
-      NSRectFill(cellFrame);
-    }
-
   if (_echosBullets)
     {
-      // Add spacing between border and inside 
-      if (_cell.is_bordered || _cell.is_bezeled)
-        {
-          cellFrame.origin.x += 3;
-          cellFrame.size.width -= 6;
-          cellFrame.origin.y += 1;
-          cellFrame.size.height -= 2;
-        }
-
       if (!_cell.is_disabled)
         {
-          [self _drawAttributedText: [self _replacementAttributedString]
-                inFrame: cellFrame];
+          return [self _replacementAttributedString];
         }
       else
         {
@@ -188,17 +161,15 @@
           [newAttribs setObject: [NSColor disabledControlTextColor]
                       forKey: NSForegroundColorAttributeName];
           
-          attrStr = [[NSAttributedString alloc]
-                        initWithString: [attrStr string]
-                        attributes: newAttribs];
-          [self _drawAttributedText: attrStr 
-                inFrame: cellFrame];
-          RELEASE(attrStr);
+          return AUTORELEASE([[NSAttributedString alloc]
+                                 initWithString: [attrStr string]
+                                 attributes: newAttribs]);
         }
     }
   else
     {
       /* .. do nothing.  */
+      return nil;
     }
 }
 

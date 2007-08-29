@@ -1,3 +1,17 @@
+2007-08-29 Fred Kiefer <FredKiefer@gmx.de>
+	
+	* Headers/AppKit/NSCell.h: Export more private drawing methods.
+	* Source/NSCell.m (-_drawAttributedString): New helper method to
+	get the attributed string which should be drawn.
+	* Source/NSCell.m (-drawInteriorWithFrame:inView:): Use this method.
+	* Source/NSSecureTextFieldCell.m: Implement -_drawAttributedString
+	instead of -drawInteriorWithFrame:.
+	* Headers/AppKit/NSFormCell.h,
+	* Headers/AppKit/NSForm.h: Add MacOSX 10.4 methods.
+	* Source/NSForm.m: Implement these methods.
+	* Source/NSFormCell.m: Implement these methods. Rewrote drawing
+	code. Remove the color change notification handling.
+
 2007-08-28 Fred Kiefer <FredKiefer@gmx.de>
 	
 	* Source/NSApplication.m (-_windowWillClose:): Don't call
@@ -7,7 +21,7 @@
 
 2007-08-28 Fred Kiefer <FredKiefer@gmx.de>
 	
-	* Source/NSCell.m (#initialize): Increase version number.
+	* Source/NSCell.m (+initialize): Increase version number.
 	* Source/NSCell.m (-initWithCoder:): Correct values for the
 	decoded action mask, as they changed on 2007-08-03. 
 	Fixes bug #20884.
