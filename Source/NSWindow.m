@@ -1363,19 +1363,19 @@ many times.
       _f.is_key = YES;
 
       if ((!_firstResponder) || (_firstResponder == self))
-	{
-	  if (_initialFirstResponder)
-	    {
-	      [self makeFirstResponder: _initialFirstResponder];
-	    }
-	}
+        {
+          if (_initialFirstResponder)
+            {
+              [self makeFirstResponder: _initialFirstResponder];
+            }
+        }
 
       [_firstResponder becomeFirstResponder];
       if ((_firstResponder != self)
-	  && [_firstResponder respondsToSelector: @selector(becomeKeyWindow)])
-	{
-	  [_firstResponder becomeKeyWindow];
-	}
+        && [_firstResponder respondsToSelector: @selector(becomeKeyWindow)])
+        {
+          [_firstResponder becomeKeyWindow];
+        }
 
       [_wv setInputState: GSTitleBarKey];
       [GSServerForWindow(self) setinputfocus: _windowNum];
@@ -2819,11 +2819,11 @@ resetCursorRectsForView(NSView *theView)
     return NO;
 
   _firstResponder = aResponder;
-  if (![_firstResponder becomeFirstResponder])
+  if ((aResponder == nil) || ![_firstResponder becomeFirstResponder])
     {
       _firstResponder = self;
       [_firstResponder becomeFirstResponder];
-      return NO;
+      return (aResponder == nil);
     }
 
   return YES;
@@ -3893,20 +3893,20 @@ resetCursorRectsForView(NSView *theView)
   if ((theView == nil) && (_initialFirstResponder))
     {
       if ([_initialFirstResponder acceptsFirstResponder])
-	theView = _initialFirstResponder;
+        theView = _initialFirstResponder;
       else
-	theView = [_initialFirstResponder nextValidKeyView];
+        theView = [_initialFirstResponder nextValidKeyView];
     }
 
   if (theView)
     {
       [self makeFirstResponder: theView];
       if ([theView respondsToSelector:@selector(selectText:)])
-	{
-	  _selectionDirection =  NSSelectingNext;
-	  [(id)theView selectText: self];
-	  _selectionDirection =  NSDirectSelection;
-	}
+        {
+          _selectionDirection =  NSSelectingNext;
+          [(id)theView selectText: self];
+          _selectionDirection =  NSDirectSelection;
+        }
     }
 }
 
@@ -3929,20 +3929,20 @@ resetCursorRectsForView(NSView *theView)
   if ((theView == nil) && (_initialFirstResponder))
     {
       if ([_initialFirstResponder acceptsFirstResponder])
-	theView = _initialFirstResponder;
+        theView = _initialFirstResponder;
       else
-	theView = [_initialFirstResponder previousValidKeyView];
+        theView = [_initialFirstResponder previousValidKeyView];
     }
 
   if (theView)
     {
       [self makeFirstResponder: theView];
       if ([theView respondsToSelector:@selector(selectText:)])
-	{
-	  _selectionDirection =  NSSelectingPrevious;
-	  [(id)theView selectText: self];
-	  _selectionDirection =  NSDirectSelection;
-	}
+        {
+          _selectionDirection =  NSSelectingPrevious;
+          [(id)theView selectText: self];
+          _selectionDirection =  NSDirectSelection;
+        }
     }
 }
 

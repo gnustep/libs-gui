@@ -1238,13 +1238,13 @@ static NSColor	*shadowCol;
 
 - (BOOL) isEntryAcceptable: (NSString*)aString
 {
-  if (_formatter != nil)
+  if ((_formatter != nil) && ![aString isEqualToString: @""])
     {
       id newObjectValue;
       
       return [_formatter getObjectValue: &newObjectValue 
-			 forString: aString 
-			 errorDescription: NULL];
+                         forString: aString 
+                         errorDescription: NULL];
     }
   else 
     {

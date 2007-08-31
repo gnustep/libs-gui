@@ -1,3 +1,13 @@
+2007-08-31 Fred Kiefer <FredKiefer@gmx.de>
+	
+	* Source/NSWindow.m (-makeFirstResponder:): When parameter is nil,
+	set self as first responder and return YES.
+	* Source/NSCell.m (-isEntryAcceptable:): Accept empty strings.
+	* Source/NSTableView.m (-validateEditing): Check if delegate
+	supports method, before calling it.
+	* Source/NSTextField.m (-validateEditing): Accept empty strings.
+	Patches partly by Andreas Höschler <ahoesch@smartsoft.de>.
+
 2007-08-29 Fred Kiefer <FredKiefer@gmx.de>
 	
 	* Headers/AppKit/NSCell.h: Export more private drawing methods.

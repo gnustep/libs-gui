@@ -376,22 +376,22 @@ static Class textFieldCellClass;
        * was in use by another control.
        */
       if ([_window makeFirstResponder: self])
-	{
-	  NSText *t = [_window fieldEditor: YES forObject: self];
+        {
+          NSText *t = [_window fieldEditor: YES forObject: self];
 	  
-	  if ([t superview] != nil)
-	    {
-	      /* Can't take the field editor ... give up.  */
-	      return;
-	    }
-
-	  _text_object = [_cell setUpFieldEditorAttributes: t];
-	  [_cell editWithFrame: _bounds
-		 inView: self
-		 editor: _text_object
-		 delegate: self
-		 event: theEvent];
-	}
+          if ([t superview] != nil)
+            {
+              /* Can't take the field editor ... give up.  */
+                return;
+            }
+          
+          _text_object = [_cell setUpFieldEditorAttributes: t];
+          [_cell editWithFrame: _bounds
+                 inView: self
+                 editor: _text_object
+                 delegate: self
+                 event: theEvent];
+        }
     }
 }
 
@@ -457,39 +457,44 @@ static Class textFieldCellClass;
     {
       NSFormatter *formatter;
       NSString *string;
+      BOOL validatedOK = YES;
 
       formatter = [_cell formatter];
       string = AUTORELEASE ([[_text_object text] copy]);
 
-      if (formatter == nil)
-	{
-	  [_cell setStringValue: string];
-	}
-      else
-	{
-	  id newObjectValue;
-	  NSString *error;
- 
-	  if ([formatter getObjectValue: &newObjectValue 
-			 forString: string 
-			 errorDescription: &error] == YES)
-	    {
-	      [_cell setObjectValue: newObjectValue];
-	    }
-	  else
-	    {
-	      SEL sel = @selector(control:didFailToFormatString:errorDescription:);
+      if (formatter != nil)
+        {
+          id newObjectValue;
+          NSString *error;
+          
+          if ([formatter getObjectValue: &newObjectValue 
+                         forString: string 
+                         errorDescription: &error] == YES)
+            {
+              [_cell setObjectValue: newObjectValue];
+              return;
+            }
+          else
+            {
+              SEL sel = @selector(control:didFailToFormatString:errorDescription:);
+              
+              if ([_delegate respondsToSelector: sel])
+                {
+                  validatedOK = [_delegate control: self 
+                                           didFailToFormatString: string 
+                                           errorDescription: error];
+                }
+              else if (![string isEqualToString: @""])
+                {
+                  validatedOK = NO;
+                }
+            }
+        }
 
-	      if ([_delegate respondsToSelector: sel] && 
-		  [_delegate control: self 
-			     didFailToFormatString: string 
-			     errorDescription: error] == YES)
-		{
-		  [_cell setStringValue: string];
-		}
-	      
-	    }
-	}
+      if (validatedOK)
+        {
+          [_cell setStringValue: string];
+        }
     }
 }
 

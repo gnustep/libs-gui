@@ -3158,50 +3158,64 @@ byExtendingSelection: (BOOL)flag
       BOOL validatedOK = YES;
 
       formatter = [_editedCell formatter];
-      string = AUTORELEASE ([[_textObject text] copy]);
+      string = AUTORELEASE([[_textObject text] copy]);
 
       if (formatter == nil)
-	{
-	  newObjectValue = string;
-	}
+        {
+          newObjectValue = string;
+        }
       else
-	{
-	  NSString *error;
+        {
+          NSString *error;
 	  
-	  if ([formatter getObjectValue: &newObjectValue 
-			 forString: string 
-			 errorDescription: &error] == NO)
-	    {
-	      if ([_delegate control: self 
-			     didFailToFormatString: string 
-			     errorDescription: error] == NO)
-		{
-		  validatedOK = NO;
-		}
-	      else
-		{
-		  newObjectValue = string;
-		}
-	    }
-	}
-      if (validatedOK == YES)
-	{
-	  [_editedCell setObjectValue: newObjectValue];
-	  
-	  if (_dataSource_editable)
-	    {
-	      NSTableColumn *tb;
-	      
-	      tb = [_tableColumns objectAtIndex: _editedColumn];
-	      
-	      [self _setObjectValue: newObjectValue
-		    forTableColumn: tb
-		    row: _editedRow];
+          if ([formatter getObjectValue: &newObjectValue 
+                         forString: string 
+                         errorDescription: &error] == NO)
+            {
+              if ([_delegate respondsToSelector:
+                    @selector(control:didFailToFormatString:errorDescription:)])
+                {
+                  if ([_delegate control: self 
+                                 didFailToFormatString: string 
+                                 errorDescription: error] == NO) 
 
-	      //[_dataSource tableView: self  setObjectValue: newObjectValue
-	      //	 forTableColumn: tb  row: _editedRow];
-	    }
-	}
+                    {
+                      validatedOK = NO;
+                    }
+                  else
+                    {
+                      newObjectValue = string;
+                    }
+                }
+              // Allow an empty string to fall through
+              else if ([string isEqualToString: @""])
+                {
+                  newObjectValue = string;
+                }
+              else
+                {
+                  validatedOK = NO;
+                }
+            }
+        }
+      if (validatedOK == YES)
+        {
+          [_editedCell setObjectValue: newObjectValue];
+          
+          if (_dataSource_editable)
+            {
+              NSTableColumn *tb;
+              
+              tb = [_tableColumns objectAtIndex: _editedColumn];
+              
+              [self _setObjectValue: newObjectValue
+                    forTableColumn: tb
+                    row: _editedRow];
+              
+              //[_dataSource tableView: self  setObjectValue: newObjectValue
+              //	 forTableColumn: tb  row: _editedRow];
+            }
+        }
     }
 }
 
