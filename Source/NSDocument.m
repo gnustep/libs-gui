@@ -147,17 +147,17 @@ withContentsOfURL: (NSURL *)url
     {
       if ([self readFromURL: url
                      ofType: type
-		      error: error])
+                      error: error])
         {
-	  if (forUrl != nil)
-	    {
-	      [self setFileURL: forUrl];
-	    }
-	}
+          if (forUrl != nil)
+            {
+              [self setFileURL: forUrl];
+            }
+        }
       else 
         {
-	  DESTROY(self);
-	}
+          DESTROY(self);
+        }
     }
   return self;
 }
@@ -233,7 +233,12 @@ withContentsOfURL: (NSURL *)url
     {
       [self setFileURL: [NSURL fileURLWithPath: fileName]];
     }
-  ASSIGN(_file_name, fileName);
+  else
+    {
+      ASSIGN(_file_name, fileName);
+      ASSIGN(_file_url, [NSURL fileURLWithPath: fileName]);
+      [self setLastComponentOfFileName: [_file_name lastPathComponent]];
+    }
   [self setLastComponentOfFileName: [_file_name lastPathComponent]];
 }
 
@@ -269,6 +274,7 @@ withContentsOfURL: (NSURL *)url
   else
     {
       ASSIGN(_file_url, url);
+      ASSIGN(_file_name, (url && [url isFileURL]) ? [url path] : (NSString*)nil);
       [self setLastComponentOfFileName: [[_file_url path] lastPathComponent]];
     }
 }
@@ -537,6 +543,7 @@ withContentsOfURL: (NSURL *)url
 {
   if (OVERRIDDEN(dataRepresentationOfType:))
     {
+      *error = nil; 
       return [self dataRepresentationOfType: type];
     }
 
@@ -569,6 +576,7 @@ withContentsOfURL: (NSURL *)url
   
   if (OVERRIDDEN(fileWrapperRepresentationOfType:))
     {
+      *error = nil; 
       return [self fileWrapperRepresentationOfType: type];
     }
 
@@ -654,6 +662,7 @@ withContentsOfURL: (NSURL *)url
 {
   if (OVERRIDDEN(loadFileWrapperRepresentation:ofType:))
     {
+      *error = nil; 
       return [self loadFileWrapperRepresentation: wrapper ofType: type];
     }
 
@@ -665,6 +674,7 @@ withContentsOfURL: (NSURL *)url
     }
 
   // FIXME: Set error
+  *error = nil;
   return NO;
 }
 
@@ -678,8 +688,9 @@ withContentsOfURL: (NSURL *)url
       
       if (OVERRIDDEN(readFromFile:ofType:))
         {
-	  return [self readFromFile: [url path] ofType: type];
-	}
+          *error = nil;
+          return [self readFromFile: [url path] ofType: type];
+        }
       else
         {
 	  NSFileWrapper *wrapper = AUTORELEASE([[NSFileWrapper alloc] initWithPath: fileName]);
@@ -691,6 +702,7 @@ withContentsOfURL: (NSURL *)url
     }
 
   // FIXME: Set error
+  *error = nil;
   return NO;
 }
 
@@ -817,17 +829,20 @@ withContentsOfURL: (NSURL *)url
   if (OVERRIDDEN(writeWithBackupToFile:ofType:saveOperation:))
     {
       if (saveOp == NSAutosaveOperation)
-	{
-	  saveOp = NSSaveToOperation;
-	}
+        {
+          saveOp = NSSaveToOperation;
+        }
 
+      *error = nil; 
       return [self writeWithBackupToFile: [url path] 
-		   ofType: type 
-		   saveOperation: saveOp];
+                   ofType: type 
+                   saveOperation: saveOp];
     }
 
   if (!isNativeType || (url == nil))
     {
+      // FIXME: Set error
+      *error = nil; 
       return NO;
     }
   
@@ -835,21 +850,22 @@ withContentsOfURL: (NSURL *)url
     {
       if ([url isFileURL])
         {
-	  NSString *newFileName;
+          NSString *newFileName;
 	  
-	  newFileName = [url path];
-	  if ([fileManager fileExistsAtPath: newFileName])
-	    {
-	      backupFilename = [self _backupFileNameFor: newFileName];
+          newFileName = [url path];
+          if ([fileManager fileExistsAtPath: newFileName])
+            {
+              backupFilename = [self _backupFileNameFor: newFileName];
 	      
-	      if (![self _writeBackupForFile: newFileName
-			 toFile: backupFilename])
-	        {
-		  // FIXME: Set error.
-		  return NO;
-		}
-	    }
-	}
+              if (![self _writeBackupForFile: newFileName
+                         toFile: backupFilename])
+                {
+                  // FIXME: Set error.
+                  *error = nil; 
+                  return NO;
+                }
+            }
+        }
     }
       
   if (![self writeToURL: url 
@@ -891,16 +907,20 @@ withContentsOfURL: (NSURL *)url
 
   if (OVERRIDDEN(writeToFile:ofType:))
     {
-	return [self writeToFile: [url path] ofType: type];
+      *error = nil; 
+      return [self writeToFile: [url path] ofType: type];
     }
 
   wrapper = [self fileWrapperOfType: type
                               error: error];
   if (wrapper == nil)
     {
+      // FIXME: Set error
+      *error = nil; 
       return NO;
     }
    
+  *error = nil; 
   return [wrapper writeToFile: [url path] atomically: YES updateFilenames: YES];
 }
 
@@ -913,9 +933,10 @@ originalContentsURL: (NSURL *)orig
   if (OVERRIDDEN(writeToFile:ofType:originalFile:saveOperation:))
     {
       if (saveOp == NSAutosaveOperation)
-	{
-	  saveOp = NSSaveToOperation;
-	}
+        {
+          *error = nil; 
+          saveOp = NSSaveToOperation;
+        }
 
       return [self writeToFile: [url path] 
 		   ofType: type 
@@ -954,9 +975,9 @@ originalContentsURL: (NSURL *)orig
 }
 
 - (void)runModalSavePanelForSaveOperation: (NSSaveOperationType)saveOperation 
-				 delegate: (id)delegate
-			  didSaveSelector: (SEL)didSaveSelector 
-			      contextInfo: (void *)contextInfo
+                                 delegate: (id)delegate
+                          didSaveSelector: (SEL)didSaveSelector 
+                              contextInfo: (void *)contextInfo
 {
   NSString *fileName;
 
@@ -1249,6 +1270,7 @@ originalContentsURL: (NSURL *)orig
 - (NSPrintOperation *)printOperationWithSettings: (NSDictionary *)settings
                                            error: (NSError **)error
 {
+  *error = nil; 
   return nil;
 }
 
@@ -1363,6 +1385,7 @@ originalContentsURL: (NSURL *)orig
                                        error:(NSError **)error
 {
   // FIXME: Implement. Should set NSFileExtensionHidden
+  *error = nil; 
   return [NSDictionary dictionary];
 }
 
@@ -1483,7 +1506,7 @@ originalContentsURL: (NSURL *)orig
       meth = (void (*)(id, SEL, id, BOOL, void*))[delegate methodForSelector: 
 							       didSaveSelector];
       if (meth)
-	meth(delegate, didSaveSelector, self, saved, contextInfo);
+        meth(delegate, didSaveSelector, self, saved, contextInfo);
     }
 
   return saved;
@@ -1501,18 +1524,18 @@ originalContentsURL: (NSURL *)orig
      [self displayName]);
   
   if (result == NSAlertDefaultReturn)
-  {
-    if ([self revertToContentsOfURL: [self fileURL] 
-	      ofType: [self fileType]
-	      error: &error])
-      {
-	[self updateChangeCount: NSChangeCleared];
-      }
-    else
-      {
-	[self presentError: error];
-      }
-  }
+    {
+      if ([self revertToContentsOfURL: [self fileURL] 
+                ofType: [self fileType]
+                error: &error])
+        {
+          [self updateChangeCount: NSChangeCleared];
+        }
+      else
+        {
+          [self presentError: error];
+        }
+    }
 }
 
 /** Closes all the windows owned by the document, then removes itself

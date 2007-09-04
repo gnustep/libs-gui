@@ -1793,7 +1793,8 @@ here. */
 TODO: make sure this is only called when _layoutManager is known non-nil,
 or add guards
 */
-- (unsigned int) characterIndexForPoint: (NSPoint)point
+- (unsigned int) _characterIndexForPoint: (NSPoint)point
+                         respectFraction: (BOOL)respectFraction
 {
   unsigned	index;
   float		fraction;
@@ -1808,13 +1809,22 @@ or add guards
     return (unsigned int)-1;
 
   index = [_layoutManager characterIndexForGlyphAtIndex: index];
-  if (fraction > 0.5 && index < [_textStorage length])
+  if (respectFraction && fraction > 0.5 && index < [_textStorage length] &&
+      [[_textStorage string] characterAtIndex:index] != '\n')
     {
       index++;
     }
   return index;
 }
 
+// This method takes screen coordinates as input.
+- (unsigned int) characterIndexForPoint: (NSPoint)point
+{
+ point = [[self window] convertScreenToBase: point];
+ point = [self convertPoint:point fromView: nil];
+ return [self _characterIndexForPoint: point respectFraction: NO];
+}
+ 
 - (NSRange) markedRange
 {
   return NSMakeRange(NSNotFound, 0);
@@ -4260,14 +4270,15 @@ other than copy/paste or dragging. */
       NSRange	range;
 
       if (_tf.isDragTarget == NO)
-	{
-	  _tf.isDragTarget = YES;
-	  _dragTargetSelectionRange = [self selectedRange];
-	}
+        {
+          _tf.isDragTarget = YES;
+          _dragTargetSelectionRange = [self selectedRange];
+        }
 
       dragPoint = [sender draggingLocation];
       dragPoint = [self convertPoint: dragPoint fromView: nil];
-      dragIndex = [self characterIndexForPoint: dragPoint];
+      dragIndex = [self _characterIndexForPoint: dragPoint
+                        respectFraction: YES];
       dragRange = NSMakeRange (dragIndex, 0);
 
       range = [self selectionRangeForProposedRange: dragRange
@@ -4295,14 +4306,15 @@ other than copy/paste or dragging. */
       NSRange	range;
 
       if (_tf.isDragTarget == NO)
-	{
-	  _tf.isDragTarget = YES;
-	  _dragTargetSelectionRange = [self selectedRange];
-	}
+        {
+          _tf.isDragTarget = YES;
+          _dragTargetSelectionRange = [self selectedRange];
+        }
 
       dragPoint = [sender draggingLocation];
       dragPoint = [self convertPoint: dragPoint fromView: nil];
-      dragIndex = [self characterIndexForPoint: dragPoint];
+      dragIndex = [self _characterIndexForPoint: dragPoint
+                        respectFraction: YES];
       dragRange = NSMakeRange (dragIndex, 0);
 
       range = [self selectionRangeForProposedRange: dragRange
@@ -4416,7 +4428,8 @@ other than copy/paste or dragging. */
      possible) */
 
   startPoint = [self convertPoint: [theEvent locationInWindow] fromView: nil];
-  startIndex = [self characterIndexForPoint: startPoint];
+  startIndex = [self _characterIndexForPoint: startPoint
+                     respectFraction: [theEvent clickCount] == 1];
 
   if (startIndex == (unsigned int)-1)
     {
@@ -4620,8 +4633,9 @@ other than copy/paste or dragging. */
 
 	point = [self convertPoint: [lastEvent locationInWindow]
 		  fromView: nil];
-	proposedRange = MakeRangeFromAbs([self characterIndexForPoint: point],
-					 startIndex);
+  proposedRange = MakeRangeFromAbs([self _characterIndexForPoint: point
+                                         respectFraction: YES],
+                                   startIndex);
 	chosenRange = [self selectionRangeForProposedRange: proposedRange
 			granularity: granularity];
 	[self setSelectedRange: chosenRange  affinity: affinity

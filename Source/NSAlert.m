@@ -1582,30 +1582,31 @@ void NSBeginInformationalAlertSheet(NSString *title,
     {
       GSAlertPanel *panel;
       NSString *title;
+      unsigned nbut = [_buttons count];
 
       panel = [[GSAlertPanel alloc] init];
       _window = panel;
 
       switch (_style)
-	{
-	  case NSCriticalAlertStyle: 
-	      title = @"Critical";
-	      break;
-	  case NSInformationalAlertStyle: 
-	      title = @"Information";
-	      break;
-	  case NSWarningAlertStyle:
-	  default:
-	      title = @"Alert";
-	      break;
-	}
+        {
+          case NSCriticalAlertStyle: 
+            title = @"Critical";
+            break;
+          case NSInformationalAlertStyle: 
+            title = @"Information";
+            break;
+          case NSWarningAlertStyle:
+          default:
+            title = @"Alert";
+            break;
+        }
       [panel setTitleBar: title
-      		    icon: _icon
-		   title: _informative_text
-		 message: _message_text
-		     def: [[_buttons objectAtIndex: 0] title]
-		     alt: [[_buttons objectAtIndex: 1] title]
-		   other: [[_buttons objectAtIndex: 2] title]];
+             icon: _icon
+             title: _informative_text
+             message: _message_text
+             def: (nbut > 0) ? [[_buttons objectAtIndex: 0] title] : (NSString*)nil
+             alt: (nbut > 1) ? [[_buttons objectAtIndex: 1] title] : (NSString*)nil
+             other: (nbut > 2) ? [[_buttons objectAtIndex: 2] title] : (NSString*)nil];
     }
 }
 
