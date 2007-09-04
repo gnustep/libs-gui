@@ -142,6 +142,28 @@ static Class controlClass;
  */
 
 /**
+ * Retrieve the value of the receiver
+ */
+- (id)objectValue
+{
+  if (_control_view)
+    if ([_control_view isKindOfClass: controlClass])
+      [(NSControl *)_control_view validateEditing];
+  return [super objectValue];
+}
+
+/**
+ * Retrieve the value of the receiver as an NSAttributedString.
+ */
+- (NSAttributedString*)attributedStringValue
+{
+  if (_control_view)
+    if ([_control_view isKindOfClass: controlClass])
+      [(NSControl *)_control_view validateEditing];
+  return [super attributedStringValue];
+}
+
+/**
  * Retrieve the value of the receiver as an NSString.
  */
 - (NSString *)stringValue
