@@ -2825,8 +2825,8 @@ in the main thread.
 
   aRect = NSIntersectionRect(aRect, _bounds);   // Don't copy stuff outside.
   destPoint = aRect.origin;
-  destPoint.x -= delta.width;
-  destPoint.y -= delta.height;
+  destPoint.x += delta.width;
+  destPoint.y += delta.height;
 
   [self lockFocus];
   NSCopyBits(0, aRect, destPoint);
