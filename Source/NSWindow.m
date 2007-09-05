@@ -2803,7 +2803,9 @@ resetCursorRectsForView(NSView *theView)
         return NO;
 
       if (![aResponder acceptsFirstResponder])
-        return NO;
+        {
+          return NO;
+        }
     }
 
   /* So that the implementation of -resignFirstResponder in
@@ -2816,12 +2818,14 @@ resetCursorRectsForView(NSView *theView)
    * Change only if it replies YES.
    */
   if ((_firstResponder) && (![_firstResponder resignFirstResponder]))
-    return NO;
+    {
+      return NO;
+    }
 
   _firstResponder = aResponder;
   if ((aResponder == nil) || ![_firstResponder becomeFirstResponder])
     {
-      _firstResponder = self;
+     _firstResponder = self;
       [_firstResponder becomeFirstResponder];
       return (aResponder == nil);
     }
@@ -3274,13 +3278,17 @@ resetCursorRectsForView(NSView *theView)
                 {
                   v = [_wv hitTest: [theEvent locationInWindow]];
                 }
-              if (_firstResponder != v)
-                {
-                  [self makeFirstResponder: v];
-                }
               if (_lastView)
                 {
                   DESTROY(_lastView);
+                }
+              if (_firstResponder != v)
+                {
+                  // Only try to set first responder, when the view wants it.
+                  if ([v acceptsFirstResponder] && ![self makeFirstResponder: v])
+                    {
+                      return;
+                    }
                 }
               if (wasKey == YES || [v acceptsFirstMouse: theEvent] == YES)
                 {
@@ -3843,12 +3851,15 @@ resetCursorRectsForView(NSView *theView)
     theView = [aView nextValidKeyView];
   if (theView)
     {
-      [self makeFirstResponder: theView];
+      if (![self makeFirstResponder: theView])
+        {
+          return;
+        }
       if ([theView respondsToSelector:@selector(selectText:)])
-	{
-	  _selectionDirection =  NSSelectingNext;
-	  [(id)theView selectText: self];
-	  _selectionDirection =  NSDirectSelection;
+        {
+          _selectionDirection =  NSSelectingNext;
+          [(id)theView selectText: self];
+          _selectionDirection =  NSDirectSelection;
       	}
     }
 }
@@ -3864,13 +3875,16 @@ resetCursorRectsForView(NSView *theView)
     theView = [aView previousValidKeyView];
   if (theView)
     {
-      [self makeFirstResponder: theView];
+      if (![self makeFirstResponder: theView])
+        {
+          return;
+        }
       if ([theView respondsToSelector:@selector(selectText:)])
-	{
-	  _selectionDirection =  NSSelectingPrevious;
-	  [(id)theView selectText: self];
-	  _selectionDirection =  NSDirectSelection;
-	}
+        {
+          _selectionDirection =  NSSelectingPrevious;
+          [(id)theView selectText: self];
+          _selectionDirection =  NSDirectSelection;
+        }
     }
 }
 
@@ -3900,7 +3914,10 @@ resetCursorRectsForView(NSView *theView)
 
   if (theView)
     {
-      [self makeFirstResponder: theView];
+      if (![self makeFirstResponder: theView])
+        {
+          return;
+        }
       if ([theView respondsToSelector:@selector(selectText:)])
         {
           _selectionDirection =  NSSelectingNext;
@@ -3936,8 +3953,11 @@ resetCursorRectsForView(NSView *theView)
 
   if (theView)
     {
-      [self makeFirstResponder: theView];
-      if ([theView respondsToSelector:@selector(selectText:)])
+      if (![self makeFirstResponder: theView])
+        {
+          return;
+        }
+       if ([theView respondsToSelector:@selector(selectText:)])
         {
           _selectionDirection =  NSSelectingPrevious;
           [(id)theView selectText: self];

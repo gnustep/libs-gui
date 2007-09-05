@@ -1,3 +1,31 @@
+2007-09-06 Fred Kiefer <FredKiefer@gmx.de>
+	
+	* Source/NSWindow.m (-sendEvent:, -selectKeyViewFollowingView:,
+	-selectKeyViewPrecedingView:, -selectNextKeyView:,
+	-selectPreviousKeyView:): Handle case when makeFirstResonder:
+	fails. 
+
+2007-09-05 Fred Kiefer <FredKiefer@gmx.de>
+	
+	* Source/NSLayoutManager.m
+	(-glyphIndexForPoint:...fractionOfDistanceThroughGlyph:): Don't
+	ignore invisible glyphs.
+	* Source/NSTextView.m (-_characterIndexForPoint:respectFraction:):
+	New helper method.
+	* Source/NSTextView.m (-characterIndexForPoint:): Correct to use
+	screen coordinates.
+	* Source/NSTextView.m (-draggingEntered:, -draggingUpdated:,
+	-mouseDown:): Use new helper method.
+	* Source/NSAlert.m (-_setupPanel): Check count of buttons.
+	* Source/NSDocument.m (-setFileName:, -setFileURL:): Set url and
+	file name always together.
+	* Source/NSDocument.m (-dataOfType:error:,
+	-fileWrapperOfType:error:, -readFromFileWrapper:ofType:error:,
+	-readFromURL:ofType:error:, -writeSafelyToURL:...error:,
+	-writeToURL:ofType:error:, -writeToURL:...error:,
+	-printOperationWithSettings:error:): Set error to nil.  
+	Patches by Wolfgang Lux <wolfgang.lux@gmail.com>.
+	
 2007-09-04 Fred Kiefer <FredKiefer@gmx.de>
 	
 	* Source/NSActionCell.m (-objectValue, -attributedStringValue):
@@ -411,7 +439,6 @@
 	* Source/NSAnimation.m: removed some C99-isms
 	* Source/NSBitmapImageRep+GIF.m : removed some C99-isms
 	* Source/NSDocument.m : removed some C99-isms
-
 
 2007-05-10 Richard Frith-Macdonald <rfm@gnu.org>
 
