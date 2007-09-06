@@ -151,7 +151,7 @@ enum {
     unsigned allows_undo: 1;
     unsigned line_break_mode: 3; // 6 values
 
-    // total 19 bits.  4 bits extension, 9 bits left.
+    // total 20 bits.  4 bits extension, 8 bits left.
     int state: 2; // 3 values but one negative
     unsigned mnemonic_location: 8;
     unsigned control_tint: 3;
@@ -163,9 +163,11 @@ enum {
     unsigned subclass_bool_two: 1;
     unsigned subclass_bool_three: 1;
     unsigned subclass_bool_four: 1;
+    // Set while the cell is edited/selected
+    unsigned in_editing: 1;
   } _cell;
   unsigned int _mouse_down_flags;
-  unsigned int _action_mask; 
+  unsigned int _action_mask;
   NSFormatter *_formatter;
   NSMenu *_menu;
   id _represented_object; 

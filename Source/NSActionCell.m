@@ -146,7 +146,7 @@ static Class controlClass;
  */
 - (id)objectValue
 {
-  if (_control_view)
+  if (_cell.in_editing && _control_view)
     if ([_control_view isKindOfClass: controlClass])
       [(NSControl *)_control_view validateEditing];
   return [super objectValue];
@@ -157,7 +157,7 @@ static Class controlClass;
  */
 - (NSAttributedString*)attributedStringValue
 {
-  if (_control_view)
+  if (_cell.in_editing && _control_view)
     if ([_control_view isKindOfClass: controlClass])
       [(NSControl *)_control_view validateEditing];
   return [super attributedStringValue];
@@ -168,7 +168,7 @@ static Class controlClass;
  */
 - (NSString *)stringValue
 {
-  if (_control_view)
+  if (_cell.in_editing && _control_view)
     if ([_control_view isKindOfClass: controlClass])
       [(NSControl *)_control_view validateEditing];
   return [super stringValue];
@@ -179,7 +179,7 @@ static Class controlClass;
  */
 - (double)doubleValue
 {
-  if (_control_view)
+  if (_cell.in_editing && _control_view)
     if ([_control_view isKindOfClass: controlClass])
       [(NSControl *)_control_view validateEditing];
   return [super doubleValue];
@@ -190,7 +190,7 @@ static Class controlClass;
  */
 - (float)floatValue
 {
-  if (_control_view)
+  if (_cell.in_editing && _control_view)
     if ([_control_view isKindOfClass: controlClass])
       [(NSControl *)_control_view validateEditing];
   return [super floatValue];

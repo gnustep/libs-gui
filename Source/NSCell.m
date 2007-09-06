@@ -2144,6 +2144,7 @@ static NSColor	*shadowCol;
 
   [textObject setDelegate: anObject];
   [[controlView window] makeFirstResponder: textObject];
+  _cell.in_editing = YES;
 }
 
 /**<p>Ends any text editing. This method sets the text object's delegate 
@@ -2154,9 +2155,9 @@ static NSColor	*shadowCol;
 {
   NSClipView *clipView;
 
+  _cell.in_editing = NO;
   [textObject setString: @""];
   [textObject setDelegate: nil];
-
   
   clipView = (NSClipView*)[textObject superview];
   [textObject removeFromSuperview];

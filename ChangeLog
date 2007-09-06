@@ -1,3 +1,13 @@
+2007-09-06 Fred Kiefer <FredKiefer@gmx.de>
+	
+	* Headers/AppKit/NSCell.h: Add ivar in_editing, which gets set,
+	during the editing/selection of the cell.
+	* Source/NSCell.m (-_setupTextWithFrame:..., endEditing:): Set/
+	clear the in_editing flag.
+	* Source/NSActionCell.m (-objectValue, -attributedStringValue,
+	-intValue, -floatValue, -doubleValue, -stringValue): Check flag
+	in_editing before validating the editing.
+	
 2007-09-05 Nicolas Roard <nicolas@roard.com>
 	
 	* Source/NSView.m (-scrollRect:by:): reversed the coordinates 
@@ -5,7 +15,7 @@
 	* Source/NSClipView.m (-setBoundsOrigin): reversed the coordinates
 	of the call to scrollRect:by:, to match OSX behaviour.
 
-2007-09-06 Fred Kiefer <FredKiefer@gmx.de>
+2007-09-05 Fred Kiefer <FredKiefer@gmx.de>
 	
 	* Source/NSWindow.m (-sendEvent:, -selectKeyViewFollowingView:,
 	-selectKeyViewPrecedingView:, -selectNextKeyView:,
