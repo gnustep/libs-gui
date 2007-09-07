@@ -494,11 +494,19 @@ static Class         fontPanelClass = Nil;
       float size = [fontObject pointSize];
       NSString *family = [fontObject familyName];
 
-      // We cannot reuse the weight in a bold
-      if (trait == NSBoldFontMask)
-        weight = 9;
+      if (trait & NSBoldFontMask)
+        {
+          // We cannot reuse the weight in a bold
+          weight = 9;
+          t = t & ~NSUnboldFontMask;
+        }
+      if (trait == NSItalicFontMask)
+        {
+          t = t & ~NSUnitalicFontMask;
+        }
 
       t = t | trait;
+
       newFont = [self fontWithFamily: family 
                               traits: t
                               weight: weight
@@ -516,15 +524,6 @@ static Class         fontPanelClass = Nil;
 {
   NSFontTraitMask t = [self traitsOfFont: fontObject];
 
-  // This is a bit strange but is stated in the specification
-  if (trait & NSUnboldFontMask)
-    {
-      trait = (trait | NSBoldFontMask) & ~NSUnboldFontMask;
-    }
-  if (trait & NSUnitalicFontMask)
-    {
-      trait = (trait | NSItalicFontMask) & ~NSUnitalicFontMask;
-    }
   if (!(t & trait))
     {
       // If already do not have that trait then just return it
@@ -539,11 +538,27 @@ static Class         fontPanelClass = Nil;
       float size = [fontObject pointSize];
       NSString *family = [fontObject familyName];
 
-      // We cannot reuse the weight in an unbold
       if (trait & NSBoldFontMask)
         {
+          // We cannot reuse the weight in an unbold
           weight = 5;
+          t = (t | NSUnboldFontMask);
         }
+      else if (trait & NSUnboldFontMask)
+        {
+          // We cannot reuse the weight in a bold
+          weight = 9;
+          t = (t | NSBoldFontMask);
+        }
+      if (trait & NSItalicFontMask)
+        {
+          t = (t | NSUnitalicFontMask);
+        }
+      else if (trait & NSUnitalicFontMask)
+        {
+          t = (t | NSItalicFontMask);
+        }
+ 
       t &= ~trait;
       newFont = [self fontWithFamily: family 
                               traits: t
@@ -703,15 +718,30 @@ static Class         fontPanelClass = Nil;
       if (([[fontDef objectAtIndex: 2] intValue] == weight) &&
           ([[fontDef objectAtIndex: 3] unsignedIntValue] == traits))
         {
-          //NSLog(@"Found font");
+            //NSLog(@"Found font");
           return [NSFont fontWithName: [fontDef objectAtIndex: 0] 
                          size: size];
         }
     }
 
-  // Try to find something close
+  // Try to find something close by ignoring some trait flags
+  traits &= ~(NSNonStandardCharacterSetFontMask | NSFixedPitchFontMask
+              | NSUnitalicFontMask | NSUnboldFontMask);
+  for (i = 0; i < [fontDefs count]; i++)
+    {
+      NSArray *fontDef = [fontDefs objectAtIndex: i];
+      NSFontTraitMask t = [[fontDef objectAtIndex: 3] unsignedIntValue];
 
-  traits &= ~(NSNonStandardCharacterSetFontMask | NSFixedPitchFontMask);
+      t &= ~(NSNonStandardCharacterSetFontMask | NSFixedPitchFontMask
+             | NSUnitalicFontMask | NSUnboldFontMask);
+      if (([[fontDef objectAtIndex: 2] intValue] == weight) &&
+          (t == traits))
+        {
+            //NSLog(@"Found font");
+          return [NSFont fontWithName: [fontDef objectAtIndex: 0] 
+                         size: size];
+        }
+    }
 
   if (traits & NSBoldFontMask)
     {
@@ -721,7 +751,8 @@ static Class         fontPanelClass = Nil;
           NSArray *fontDef = [fontDefs objectAtIndex: i];
           NSFontTraitMask t = [[fontDef objectAtIndex: 3] unsignedIntValue];
 
-          t &= ~(NSNonStandardCharacterSetFontMask | NSFixedPitchFontMask);
+          t &= ~(NSNonStandardCharacterSetFontMask | NSFixedPitchFontMask
+                 | NSUnitalicFontMask | NSUnboldFontMask);
           if (t == traits)
             {
               //NSLog(@"Found font");
@@ -739,7 +770,8 @@ static Class         fontPanelClass = Nil;
           NSArray *fontDef = [fontDefs objectAtIndex: i];
           NSFontTraitMask t = [[fontDef objectAtIndex: 3] unsignedIntValue];
 
-          t &= ~(NSNonStandardCharacterSetFontMask | NSFixedPitchFontMask);
+          t &= ~(NSNonStandardCharacterSetFontMask | NSFixedPitchFontMask
+                 | NSUnitalicFontMask | NSUnboldFontMask);
           if ((([[fontDef objectAtIndex: 2] intValue] == 5) ||
                ([[fontDef objectAtIndex: 2] intValue] == 6)) &&
               (t == traits))
