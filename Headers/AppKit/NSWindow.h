@@ -34,11 +34,8 @@
 #ifndef _GNUstep_H_NSWindow
 #define _GNUstep_H_NSWindow
 
-#include <Foundation/NSDate.h>
 #include <AppKit/NSGraphicsContext.h>
-#include <AppKit/NSGraphics.h>
 #include <AppKit/NSResponder.h>
-#include <AppKit/NSEvent.h>
 
 @class NSArray;
 @class NSData;
@@ -49,6 +46,7 @@
 @class NSString;
 @class NSUndoManager;
 
+@class NSButton;
 @class NSButtonCell;
 @class NSColor;
 @class NSEvent;
@@ -69,19 +67,21 @@
  * NSDesktopWindowLevel is copied from Window maker and is intended to be
  * the level at which things on the desktop sit ... so you should be able
  * to put a desktop background just below it.
+ * FIXME: The hardcoded values here don't match the ones in Cocoa. 
+ * But we cannot change them easily as the have to match the ones in Window maker.
  */
 enum {
-  NSDesktopWindowLevel = -1000,	/* GNUstep addition	*/
-  NSNormalWindowLevel = 0,
-  NSFloatingWindowLevel = 3,
-  NSSubmenuWindowLevel = 3,
-  NSTornOffMenuWindowLevel = 3,
-  NSMainMenuWindowLevel = 20,
-  NSDockWindowLevel = 21,	/* Deprecated - use NSStatusWindowLevel */
-  NSStatusWindowLevel = 21,
-  NSModalPanelWindowLevel = 100,
-  NSPopUpMenuWindowLevel = 101,
-  NSScreenSaverWindowLevel = 1000
+  NSDesktopWindowLevel = -1000,	/* GNUstep addition	*/ // 2
+  NSNormalWindowLevel = 0, // 3
+  NSFloatingWindowLevel = 3, // 4
+  NSSubmenuWindowLevel = 3, // 5
+  NSTornOffMenuWindowLevel = 3, // 5
+  NSMainMenuWindowLevel = 20, // 7
+  NSDockWindowLevel = 21,	/* Deprecated - use NSStatusWindowLevel */ // 6
+  NSStatusWindowLevel = 21, // 8
+  NSModalPanelWindowLevel = 100, // 9
+  NSPopUpMenuWindowLevel = 101,  // 10
+  NSScreenSaverWindowLevel = 1000  // 12
 };
 
 enum {
@@ -90,6 +90,13 @@ enum {
   NSClosableWindowMask = 2,
   NSMiniaturizableWindowMask = 4,
   NSResizableWindowMask = 8,
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+  NSTexturedBackgroundWindowMask = 256,
+#endif 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+  NSUnscaledWindowMask = 2048,
+  NSUnifiedTitleAndToolbarWindowMask = 4096,
+#endif 
   NSIconWindowMask = 64,	/* GNUstep extension - app icon window	*/
   NSMiniWindowMask = 128	/* GNUstep extension - miniwindows	*/
 };
@@ -99,6 +106,17 @@ typedef enum _NSSelectionDirection {
   NSSelectingNext,
   NSSelectingPrevious
 } NSSelectionDirection;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+typedef enum _NSWindowButton
+{
+  NSWindowCloseButton = 0,
+  NSWindowMiniaturizeButton,
+  NSWindowZoomButton,
+  NSWindowToolbarButton,
+  NSWindowDocumentIconButton
+} NSWindowButton;
+#endif 
 
 APPKIT_EXPORT NSSize NSIconSize;
 APPKIT_EXPORT NSSize NSTokenSize;
@@ -157,7 +175,9 @@ APPKIT_EXPORT NSSize NSTokenSize;
   int           _lastDragOperationMask;
   int           _windowNum;
   int           _gstate;
-  void          *_reserved_s;
+  id            _defaultButtonCell;
+  NSGraphicsContext *_context;
+
   NSScreen      *_screen;
   NSColor       *_backgroundColor;
   NSString      *_representedFilename;
@@ -171,15 +191,14 @@ APPKIT_EXPORT NSSize NSTokenSize;
   NSRect        _rectNeedingFlush;
   NSMutableArray *_rectsBeingDrawn;
   unsigned	_disableFlushWindow;
-  NSSelectionDirection _selectionDirection;
 
   NSWindowDepth _depthLimit;
   NSWindowController *_windowController;
-  int		_counterpart;
+  int	          _counterpart;
   float         _alphaValue;
   
-  NSToolbar    *_toolbar; // Not used (see NSWindow+Toolbar now)
-  id            _toolbarView; // Not used (see NSWindow+Toolbar now)
+  NSMutableArray *_children;
+  NSWindow *_parent;
   NSCachedImageRep *_cachedImage;
   NSPoint       _cachedImageOrigin;
 
@@ -212,11 +231,20 @@ APPKIT_EXPORT NSSize NSTokenSize;
     unsigned subclass_bool_one: 1;
     unsigned subclass_bool_two: 1;
     unsigned subclass_bool_three: 1;
+
+    unsigned selectionDirection: 2;
+    unsigned displays_when_screen_profile_changes: 1;
+    unsigned is_movable_by_window_background: 1;
+    unsigned allows_tooltips_when_inactive: 1;
+
+    // 4 used 28 available
+    unsigned shows_toolbar_button: 1;
+    unsigned autorecalculates_keyview_loop: 1;
+    unsigned ignores_mouse_events: 1;
+    unsigned preserves_content_during_live_resize: 1;
   } _f;
  
-  id _defaultButtonCell;
-  NSGraphicsContext *_context;
-
+  void          *_reserved_s;
   void          *_reserved_1;
 }
 
@@ -254,7 +282,10 @@ APPKIT_EXPORT NSSize NSTokenSize;
 + (float) minFrameWidthWithTitle: (NSString *)aTitle
 		       styleMask: (unsigned int)aStyle;
 
-
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (NSRect) contentRectForFrameRect: (NSRect)frameRect;
+- (NSRect) frameRectForContentRect: (NSRect)contentRect;
+#endif
 /*
  * Initializing and getting a new NSWindow object
  */
@@ -347,6 +378,10 @@ APPKIT_EXPORT NSSize NSTokenSize;
 - (BOOL) showsResizeIndicator;
 - (void) setShowsResizeIndicator: (BOOL)show;
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (BOOL) preservesContentDuringLiveResize;
+- (void) setPreservesContentDuringLiveResize: (BOOL)flag;
+#endif
 
 /*
  * Constraining size
@@ -362,6 +397,16 @@ APPKIT_EXPORT NSSize NSTokenSize;
 - (void) setAspectRatio: (NSSize)ratio;
 - (NSSize) resizeIncrements;
 - (void) setResizeIncrements: (NSSize)aSize;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (NSSize) contentMaxSize;
+- (void) setContentMaxSize: (NSSize)size;
+- (NSSize) contentMinSize;
+- (void) setContentMinSize: (NSSize)size;
+- (NSSize) contentAspectRatio;
+- (void) setContentAspectRatio: (NSSize)ratio;
+- (NSSize) contentResizeIncrements;
+- (void) setContentResizeIncrements: (NSSize)increments;
 #endif
 
 /*
@@ -447,6 +492,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
 - (void) setOneShot: (BOOL)flag;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 - (NSGraphicsContext*) graphicsContext;
+- (float) userSpaceScaleFactor;
 #endif
 
 
@@ -502,6 +548,10 @@ APPKIT_EXPORT NSSize NSTokenSize;
 - (NSPoint) mouseLocationOutsideOfEventStream;
 - (BOOL) acceptsMouseMovedEvents;
 - (void) setAcceptsMouseMovedEvents: (BOOL)flag;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+- (BOOL) ignoresMouseEvents;
+- (void) setIgnoresMouseEvents: (BOOL)flag;
+#endif 
 
 /*
  * The field editor
@@ -518,6 +568,11 @@ APPKIT_EXPORT NSSize NSTokenSize;
 - (void) selectNextKeyView: (id)sender;
 - (void) selectPreviousKeyView: (id)sender;
 - (void) setInitialFirstResponder: (NSView*)aView;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (BOOL) autorecalculatesKeyViewLoop;
+- (void) setAutorecalculatesKeyViewLoop: (BOOL)flag;
+- (void) recalculateKeyViewLoop;
 #endif
 
 /*
@@ -613,6 +668,9 @@ APPKIT_EXPORT NSSize NSTokenSize;
 - (void) setOpaque: (BOOL)isOpaque;
 - (BOOL) isOpaque;
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+- (void) invalidateShadow;
+#endif
 
 /*
  * Services menu support
@@ -648,6 +706,44 @@ APPKIT_EXPORT NSSize NSTokenSize;
 - (void *)windowRef;
 - (void*) windowHandle;
 #endif
+
+/*
+ * Window butons
+ */
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
++ (NSButton *) standardWindowButton: (NSWindowButton)button 
+                       forStyleMask: (unsigned int) mask;
+- (NSButton *) standardWindowButton: (NSWindowButton)button;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (BOOL) showsToolbarButton;
+- (void) setShowsToolbarButton: (BOOL)flag;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+- (NSArray *) childWindows;
+- (void) addChildWindow: (NSWindow *)child 
+                ordered: (NSWindowOrderingMode)place;
+- (void) removeChildWindow: (NSWindow *)child;
+- (NSWindow *) parentWindow;
+- (void) setParentWindow: (NSWindow *)window;
+#endif 
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (BOOL) allowsToolTipsWhenApplicationIsInactive;
+- (void) setAllowsToolTipsWhenApplicationIsInactive: (BOOL)flag;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+- (BOOL) isMovableByWindowBackground;
+- (void) setMovableByWindowBackground: (BOOL)flag;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (BOOL) displaysWhenScreenProfileChanges;
+- (void) setDisplaysWhenScreenProfileChanges: (BOOL)flag;
+#endif
+
 @end
 
 #if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
@@ -694,17 +790,18 @@ APPKIT_EXPORT NSSize NSTokenSize;
 @interface NSObject (NSWindowDelegate)
 - (BOOL) windowShouldClose: (id)sender;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
-- (NSRect) window: (NSWindow*)window
-willPositionSheet: (NSWindow*)sheet
-        usingRect: (NSRect)rect;
-- (void) windowDidChangeScreenProfile: (NSNotification*)aNotification;
+- (void) windowWillBeginSheet: (NSNotification*)aNotification;
 - (void) windowDidEndSheet: (NSNotification*)aNotification;
 - (BOOL) windowShouldZoom: (NSWindow*)sender
-		  toFrame: (NSRect)aFrame;
-- (void) windowWillBeginSheet: (NSNotification*)aNotification;
+                  toFrame: (NSRect)aFrame;
 - (NSUndoManager*) windowWillReturnUndoManager: (NSWindow*)sender;
 - (NSRect) windowWillUseStandardFrame: (NSWindow*)sender
-			 defaultFrame: (NSRect)aFrame;
+                         defaultFrame: (NSRect)aFrame;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (NSRect) window: (NSWindow *)window 
+willPositionSheet: (NSWindow *)sheet
+        usingRect: (NSRect)rect;
 #endif
 - (NSSize) windowWillResize: (NSWindow*)sender
 		     toSize: (NSSize)frameSize;
@@ -713,6 +810,9 @@ willPositionSheet: (NSWindow*)sheet
 - (void) windowDidBecomeKey: (NSNotification*)aNotification;
 - (void) windowDidBecomeMain: (NSNotification*)aNotification;
 - (void) windowDidChangeScreen: (NSNotification*)aNotification;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (void) windowDidChangeScreenProfile: (NSNotification *)aNotification;
+#endif
 - (void) windowDidDeminiaturize: (NSNotification*)aNotification;
 - (void) windowDidExpose: (NSNotification*)aNotification;
 - (void) windowDidMiniaturize: (NSNotification*)aNotification;
@@ -731,7 +831,13 @@ willPositionSheet: (NSWindow*)sheet
 APPKIT_EXPORT NSString *NSWindowDidBecomeKeyNotification;
 APPKIT_EXPORT NSString *NSWindowDidBecomeMainNotification;
 APPKIT_EXPORT NSString *NSWindowDidChangeScreenNotification;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+APPKIT_EXPORT NSString *NSWindowDidChangeScreenProfileNotification;
+#endif
 APPKIT_EXPORT NSString *NSWindowDidDeminiaturizeNotification;
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
+APPKIT_EXPORT NSString *NSWindowDidEndSheetNotification;
+#endif
 APPKIT_EXPORT NSString *NSWindowDidExposeNotification;
 APPKIT_EXPORT NSString *NSWindowDidMiniaturizeNotification;
 APPKIT_EXPORT NSString *NSWindowDidMoveNotification;
@@ -739,6 +845,9 @@ APPKIT_EXPORT NSString *NSWindowDidResignKeyNotification;
 APPKIT_EXPORT NSString *NSWindowDidResignMainNotification;
 APPKIT_EXPORT NSString *NSWindowDidResizeNotification;
 APPKIT_EXPORT NSString *NSWindowDidUpdateNotification;
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
+APPKIT_EXPORT NSString *NSWindowWillBeginSheetNotification;
+#endif
 APPKIT_EXPORT NSString *NSWindowWillCloseNotification;
 APPKIT_EXPORT NSString *NSWindowWillMiniaturizeNotification;
 APPKIT_EXPORT NSString *NSWindowWillMoveNotification;

@@ -38,6 +38,7 @@
 
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSCursor.h"
+#include "AppKit/NSGraphics.h"
 #include "AppKit/NSTextField.h"
 #include "AppKit/NSTextFieldCell.h"
 #include "AppKit/NSWindow.h"

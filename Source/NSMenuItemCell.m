@@ -36,6 +36,7 @@
 
 #include "AppKit/NSAttributedString.h"
 #include "AppKit/NSColor.h"
+#include "AppKit/NSEvent.h"
 #include "AppKit/NSFont.h"
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSImage.h"

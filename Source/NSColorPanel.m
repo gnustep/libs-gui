@@ -38,6 +38,8 @@
 #include "AppKit/NSColorPicker.h"
 #include "AppKit/NSColorPicking.h"
 #include "AppKit/NSColorWell.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSGraphics.h"
 #include "AppKit/NSImage.h"
 #include "AppKit/NSPasteboard.h"
 #include "AppKit/NSWindow.h"

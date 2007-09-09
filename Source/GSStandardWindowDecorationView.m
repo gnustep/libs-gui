@@ -23,13 +23,12 @@
    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
-#include "GSWindowDecorationView.h"
-
 #include <Foundation/NSException.h>
 
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSAttributedString.h"
 #include "AppKit/NSButton.h"
+#include "AppKit/NSEvent.h"
 #include "AppKit/NSImage.h"
 #include "AppKit/NSParagraphStyle.h"
 #include "AppKit/NSScreen.h"
@@ -37,7 +36,7 @@
 #include "AppKit/NSWindow.h"
 #include "AppKit/PSOperators.h"
 #include "GNUstepGUI/GSDisplayServer.h"
-
+#include "GSWindowDecorationView.h"
 
 @implementation GSStandardWindowDecorationView
 
@@ -169,40 +168,19 @@ static NSColor *titleColor[3];
     {
       hasCloseButton = YES;
 
-      closeButton = [[NSButton alloc] init];
-      [closeButton setRefusesFirstResponder: YES];
-      [closeButton setButtonType: NSMomentaryChangeButton];
-      [closeButton setImagePosition: NSImageOnly];
-      [closeButton setBordered: YES];
-      [closeButton setImage: [NSImage imageNamed: @"common_Close"]];
-      [closeButton setAlternateImage: [NSImage imageNamed: @"common_CloseH"]];
+      closeButton = [NSWindow standardWindowButton: NSWindowCloseButton 
+                              forStyleMask: [w styleMask]];
       [closeButton setTarget: window];
-      /* TODO: -performClose: should (but doesn't currently) highlight the
-      button, which is wrong here. When -performClose: is fixed, we'll need a
-      different method here. */
-      [closeButton setAction: @selector(performClose:)];
       [self addSubview: closeButton];
-      RELEASE(closeButton);  
     }
   if ([w styleMask] & NSMiniaturizableWindowMask)
     {
       hasMiniaturizeButton = YES;
 
-      miniaturizeButton = [[NSButton alloc] init];
-      [miniaturizeButton setRefusesFirstResponder: YES];
-      [miniaturizeButton setButtonType: NSMomentaryChangeButton];
-      [miniaturizeButton setImagePosition: NSImageOnly];
-      [miniaturizeButton setBordered: YES];
-      [miniaturizeButton setImage:
-	[NSImage imageNamed: @"common_Miniaturize"]];
-      [miniaturizeButton setAlternateImage:
-	[NSImage imageNamed: @"common_MiniaturizeH"]];
+      miniaturizeButton = [NSWindow standardWindowButton: NSWindowMiniaturizeButton 
+                              forStyleMask: [w styleMask]];
       [miniaturizeButton setTarget: window];
-      /* TODO: -performMiniaturize: should (but doesn't currently) highlight
-      the button, which is wrong here, just like -performClose: above. */
-      [miniaturizeButton setAction: @selector(performMiniaturize:)];
       [self addSubview: miniaturizeButton];
-      RELEASE(miniaturizeButton);
     }
   if ([w styleMask] & NSResizableWindowMask)
     {

@@ -27,6 +27,7 @@
 
 #include "config.h"
 #include "AppKit/NSApplication.h"
+#include "AppKit/NSEvent.h"
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSImage.h"
 #include "AppKit/NSMenu.h"

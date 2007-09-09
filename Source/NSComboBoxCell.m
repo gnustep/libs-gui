@@ -40,6 +40,7 @@
 #include "AppKit/NSButtonCell.h"
 #include "AppKit/NSComboBox.h"
 #include "AppKit/NSComboBoxCell.h"
+#include "AppKit/NSEvent.h"
 #include "AppKit/NSGraphicsContext.h"
 #include "AppKit/NSImage.h"
 #include "AppKit/NSMatrix.h"

@@ -43,6 +43,7 @@
 #include "AppKit/NSBrowser.h"
 #include "AppKit/NSBrowserCell.h"
 #include "AppKit/NSButton.h"
+#include "AppKit/NSEvent.h"
 #include "AppKit/NSFont.h"
 #include "AppKit/NSForm.h"
 #include "AppKit/NSImage.h"

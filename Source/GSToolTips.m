@@ -25,11 +25,13 @@
  */
 
 #include <Foundation/Foundation.h>
+
 #include "AppKit/NSAttributedString.h"
 #include "AppKit/NSBezierPath.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSScreen.h"
 #include "AppKit/NSView.h"
 #include "AppKit/NSWindow.h"
-#include "AppKit/NSScreen.h"
 #include "GNUstepGUI/GSTrackingRect.h"
 #include "GSToolTips.h"
 

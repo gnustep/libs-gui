@@ -35,6 +35,8 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSCell.h>
 #include <AppKit/NSCursor.h>
+#include <AppKit/NSEvent.h>
+#include <AppKit/NSGraphics.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSView.h>

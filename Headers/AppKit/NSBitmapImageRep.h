@@ -127,13 +127,17 @@ APPKIT_EXPORT NSString *NSImageEXIFData; // No GNUstep support yet; for reading 
   unsigned int		_bytesPerRow;
   unsigned int		_numColors;
   unsigned int		_bitsPerPixel;   
-  unsigned short  	_compression;
-  float			_comp_factor;
+  unsigned short  _compression;
+  float			      _comp_factor;
   NSMutableDictionary   *_properties;
   BOOL			_isPlanar;
   unsigned char		**_imagePlanes;
   NSMutableData		*_imageData;
-  NSBitmapFormat _format;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+  NSBitmapFormat  _format;
+#else
+  unsigned int    _format;
+#endif
 }
 
 //

@@ -28,10 +28,11 @@
 #include "config.h"
 
 #include <Foundation/NSCoder.h>
-#include "AppKit/NSPanel.h"
 #include "AppKit/NSButton.h"
-#include "AppKit/NSTextField.h"
+#include "AppKit/NSEvent.h"
 #include "AppKit/NSImage.h"
+#include "AppKit/NSPanel.h"
+#include "AppKit/NSTextField.h"
 
 @implementation	NSPanel
 

@@ -26,14 +26,15 @@
 */
 
 #include "AppKit/NSColor.h"
+#include "AppKit/NSEvent.h"
 #include "AppKit/NSFont.h"
+#include "AppKit/NSForm.h"
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSImage.h"
-#include "AppKit/NSForm.h"
 #include "AppKit/NSMatrix.h"
-#include "AppKit/NSWindow.h"
 #include "AppKit/NSTabView.h"
 #include "AppKit/NSTabViewItem.h"
+#include "AppKit/NSWindow.h"
 #include "AppKit/PSOperators.h"
 #include "GNUstepGUI/GSTheme.h"
 

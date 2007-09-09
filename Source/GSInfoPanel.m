@@ -25,15 +25,17 @@
    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSButton.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSTextField.h"
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSProcessInfo.h>
+
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSButton.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSFont.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSTextField.h"
 #include "GNUstepGUI/GSInfoPanel.h"
 #include "GNUstepGUI/GSTheme.h"
 

@@ -67,6 +67,7 @@
 #include "AppKit/NSDragging.h"
 #include "AppKit/NSEvent.h"
 #include "AppKit/NSFileWrapper.h"
+#include "AppKit/NSGraphics.h"
 #include "AppKit/NSImage.h"
 #include "AppKit/NSLayoutManager.h"
 #include "AppKit/NSParagraphStyle.h"

@@ -28,10 +28,11 @@
 
 #include "config.h"
 
-#include "AppKit/NSButton.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/NSButtonCell.h"
 #include "AppKit/NSApplication.h"
+#include "AppKit/NSButton.h"
+#include "AppKit/NSButtonCell.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSWindow.h"
 
 //
 // class variables

@@ -30,6 +30,7 @@
 #include "AppKit/NSClipView.h"
 #include "AppKit/NSCursor.h"
 #include "AppKit/NSColor.h"
+#include "AppKit/NSEvent.h"
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSTableView.h"
 #include "AppKit/NSWindow.h"

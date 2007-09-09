@@ -32,13 +32,16 @@
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSNotification.h>
-#include "AppKit/NSScroller.h"
+
 #include "AppKit/NSColor.h"
 #include "AppKit/NSCell.h"
 #include "AppKit/NSClipView.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSGraphics.h"
 #include "AppKit/NSInterfaceStyle.h"
-#include "AppKit/NSScrollView.h"
 #include "AppKit/NSRulerView.h"
+#include "AppKit/NSScroller.h"
+#include "AppKit/NSScrollView.h"
 #include "AppKit/NSTableHeaderView.h"
 #include "AppKit/NSTableView.h"
 #include "AppKit/NSWindow.h"

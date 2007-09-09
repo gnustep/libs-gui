@@ -26,15 +26,16 @@
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSRunLoop.h>
 
+#include <AppKit/NSApplication.h>
 #include "AppKit/NSAttributedString.h"
-#include <AppKit/NSView.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSPanel.h>
 #include <AppKit/NSButton.h>
+#include <AppKit/NSEvent.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSMenuView.h>
-#include <AppKit/NSApplication.h>
+#include <AppKit/NSPanel.h>
+#include <AppKit/NSView.h>
+#include <AppKit/NSWindow.h>
 
 #include <GNUstepGUI/GSTitleView.h>
 #include "GNUstepGUI/GSTheme.h"

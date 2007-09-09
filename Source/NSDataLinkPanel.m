@@ -28,6 +28,7 @@
 #include "AppKit/NSDataLinkPanel.h"
 #include "AppKit/NSDataLinkManager.h"
 #include "AppKit/NSDataLink.h"
+#include "AppKit/NSGraphics.h"
 #include "AppKit/NSView.h"
 #include "AppKit/NSNibLoading.h"
 #include "GSGuiPrivate.h"

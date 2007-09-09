@@ -28,9 +28,10 @@
 */ 
 
 #include <Foundation/Foundation.h>
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSEvent.h"
 #include "AppKit/NSPopUpButton.h"
 #include "AppKit/NSPopUpButtonCell.h"
-#include "AppKit/NSApplication.h"
 #include "AppKit/NSMenu.h"
 #include "AppKit/NSMenuItem.h"
 #include "AppKit/NSMenuView.h"

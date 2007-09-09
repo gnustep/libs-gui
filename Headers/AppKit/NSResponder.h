@@ -46,10 +46,10 @@
 
 @interface NSResponder : NSObject <NSCoding>
 {
-#if  OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
-  int			_interface_style;
-#else
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
   NSInterfaceStyle	_interface_style;
+#else
+  int			_interface_style;
 #endif
   NSResponder		*_next_responder;
 

@@ -62,12 +62,14 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSZone.h>
 
+#include "AppKit/NSActionCell.h"
+#include "AppKit/NSApplication.h"
 #include "AppKit/NSColor.h"
 #include "AppKit/NSCursor.h"
-#include "AppKit/NSActionCell.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/NSApplication.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSGraphics.h"
 #include "AppKit/NSMatrix.h"
+#include "AppKit/NSWindow.h"
 
 #include <math.h>
 

@@ -1,3 +1,32 @@
+2007-09-08 Fred Kiefer <FredKiefer@gmx.de>
+	
+	* Headers/AppKit/NSBitmapImageRep.h,
+	* Headers/AppKit/NSResponder.h: Correct conditional compilation.
+	* Headers/AppKit/NSWindow.h: Add new MacOSX 10.4 methods and constants.
+	* Source/NSWindow.m: Basic implementation of new methods.
+	* Source/GSStandardWindowDecorationView.m
+	(-initWithFrame:window:): Get buttons from NSWindow.
+	* Source/NSClipView.m,
+	* Source/NSColorPanel.m,
+	* Source/NSColorWell.m,
+	* Source/NSComboBoxCell.m,
+	* Source/NSDataLinkPanel.m,
+	* Source/NSMatrix.m,
+	* Source/NSMenuItemCell.m,
+	* Source/NSPopUpButton.m:
+	* Source/NSPopUpButtonCell.m:
+	* Source/NSPanel.m:
+	* Source/NSSavePanel.m:
+	* Source/NSScrollView.m,
+	* Source/NSScroller.m,
+	* Source/NSTabView.m,
+	* Source/NSTextField.m,
+	* Source/GSInfoPanel.m,
+	* Source/GSDragView.m,
+	* Source/GSTitleView.m,
+	* Source/GSToolTips.m,
+	* Source/NSButton.m: Clean up includes.
+
 2007-09-07 Fred Kiefer <FredKiefer@gmx.de>
 	
 	* Source/NSFontManager.m (-convertFont:toHaveTrait:,
@@ -483,7 +512,7 @@
 2007-04-27 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSDragging.h: Added a few MacOSX 10.2 methods
-	* Source/GSSlideView.m: (-_handleDrag:slidePoint:): Call new
+	* Source/GSDragView.m: (-_handleDrag:slidePoint:): Call new
 	MacOSX method on destionation when available. 
 	Patch by Yen-Ju Chen <yjchenx@gmail.com>
 
