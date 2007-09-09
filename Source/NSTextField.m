@@ -83,11 +83,12 @@ static Class textFieldCellClass;
 //
 - (id) initWithFrame: (NSRect)frameRect
 {
-  [super initWithFrame: frameRect];
-  [_cell setState: 1];
+  self = [super initWithFrame: frameRect];
+  if (self == nil)
+    return self;
+
   [_cell setBezeled: YES];
   [_cell setSelectable: YES];
-  [_cell setEnabled: YES];
   [_cell setEditable: YES];
   [_cell setDrawsBackground: YES];
   _text_object = nil;
@@ -99,8 +100,7 @@ static Class textFieldCellClass;
 {
   if (_delegate != nil)
     {
-      [nc removeObserver: _delegate  name: nil  object: self];
-      _delegate = nil;
+      [self setDelegate: nil];
     }
 
   [super dealloc];
@@ -157,28 +157,28 @@ static Class textFieldCellClass;
   if ([self isSelectable] && (_super_view != nil))
     {
       if (_text_object)
-	[_text_object selectAll: self];
+        [_text_object selectAll: self];
       else
-	{
-	  NSText *text = [_window fieldEditor: YES  forObject: self];
-	  int length;
+        {
+          NSText *text = [_window fieldEditor: YES  forObject: self];
+          int length;
 
-	  if ([text superview] != nil)
-	    if ([text resignFirstResponder] == NO)
-	      return;
-	  
-	  //  [NSCursor hide];
-	  /* [self stringValue] generates a call to validateEditing 
-	     so we need to call it before setting up the _text_object */
-	  length = [[self stringValue] length];
-	  _text_object = [_cell setUpFieldEditorAttributes: text];
-	  [_cell selectWithFrame: _bounds
-		 inView: self
-		 editor: _text_object
-		 delegate: self
-		 start: 0
-		 length: length];
-	}
+          if ([text superview] != nil)
+            if ([text resignFirstResponder] == NO)
+              return;
+          
+          //  [NSCursor hide];
+          /* [self stringValue] generates a call to validateEditing 
+             so we need to call it before setting up the _text_object */
+          length = [[self stringValue] length];
+          _text_object = [_cell setUpFieldEditorAttributes: text];
+          [_cell selectWithFrame: _bounds
+                 inView: self
+                 editor: _text_object
+                 delegate: self
+                 start: 0
+                 length: length];
+        }
     }
 }
 
@@ -379,7 +379,7 @@ static Class textFieldCellClass;
       if ([_window makeFirstResponder: self])
         {
           NSText *t = [_window fieldEditor: YES forObject: self];
-	  
+          
           if ([t superview] != nil)
             {
               /* Can't take the field editor ... give up.  */
@@ -526,35 +526,35 @@ static Class textFieldCellClass;
       
       partialString = [_text_object string];
       wasAccepted = [formatter isPartialStringValid: partialString 
-			       newEditingString: &newString 
-			       errorDescription: &error];
+                               newEditingString: &newString 
+                               errorDescription: &error];
 
       if (wasAccepted == NO)
-	{
-	  SEL sel = @selector(control:didFailToValidatePartialString:errorDescription:);
-	  
-	  if ([_delegate respondsToSelector: sel])
-	    {
-	      [_delegate control: self 
-			 didFailToValidatePartialString: partialString 
-			 errorDescription: error];
-	    }
-	}
+        {
+          SEL sel = @selector(control:didFailToValidatePartialString:errorDescription:);
+          
+          if ([_delegate respondsToSelector: sel])
+            {
+              [_delegate control: self 
+                         didFailToValidatePartialString: partialString 
+                         errorDescription: error];
+            }
+        }
 
       if (newString != nil)
-	{
-	  NSLog (@"Unimplemented: should set string to %@", newString);
-	  // FIXME ! This would reset editing !
-	  //[_text_object setString: newString];
-	}
+        {
+          NSLog (@"Unimplemented: should set string to %@", newString);
+          // FIXME ! This would reset editing !
+          //[_text_object setString: newString];
+        }
       else
-	{
-	  if (wasAccepted == NO)
-	    {
-	      // FIXME: Need to delete last typed character (?!)
-	      NSLog (@"Unimplemented: should delete last typed character");
-	    }
-	}
+        {
+          if (wasAccepted == NO)
+            {
+              // FIXME: Need to delete last typed character (?!)
+              NSLog (@"Unimplemented: should delete last typed character");
+            }
+        }
     }
 }
 
@@ -568,27 +568,27 @@ static Class textFieldCellClass;
   if (textMovement)
     {
       switch ([(NSNumber *)textMovement intValue])
-	{
-	case NSReturnTextMovement:
-	  if ([self sendAction: [self action] to: [self target]] == NO)
-	    {
-	      if ([self performKeyEquivalent: [_window currentEvent]] == NO)
-		[self selectText: self];
-	    }
-	  break;
-	case NSTabTextMovement:
-	  [_window selectKeyViewFollowingView: self];
+        {
+        case NSReturnTextMovement:
+          if ([self sendAction: [self action] to: [self target]] == NO)
+            {
+              if ([self performKeyEquivalent: [_window currentEvent]] == NO)
+                [self selectText: self];
+            }
+          break;
+        case NSTabTextMovement:
+          [_window selectKeyViewFollowingView: self];
 
-	  if ([_window firstResponder] == _window)
-	    [self selectText: self];
-	  break;
-	case NSBacktabTextMovement:
-	  [_window selectKeyViewPrecedingView: self];
+          if ([_window firstResponder] == _window)
+            [self selectText: self];
+          break;
+        case NSBacktabTextMovement:
+          [_window selectKeyViewPrecedingView: self];
 
-	  if ([_window firstResponder] == _window)
-	    [self selectText: self];
-	  break;
-	}
+          if ([_window firstResponder] == _window)
+            [self selectText: self];
+          break;
+        }
     }
 }
 
@@ -598,9 +598,9 @@ static Class textFieldCellClass;
     return NO;
   
   if (_delegate && [_delegate respondsToSelector: 
-				@selector(control:textShouldBeginEditing:)])
+                                @selector(control:textShouldBeginEditing:)])
     return [_delegate control: self 
-		      textShouldBeginEditing: textObject];
+                      textShouldBeginEditing: textObject];
   else 
     return YES;
 }
@@ -614,13 +614,13 @@ static Class textFieldCellClass;
     }
   
   if ([_delegate respondsToSelector: 
-		   @selector(control:textShouldEndEditing:)])
+                   @selector(control:textShouldEndEditing:)])
     {
       if ([_delegate control: self textShouldEndEditing: textObject] == NO)
-	{
-	  NSBeep ();
-	  return NO;
-	}
+        {
+          NSBeep ();
+          return NO;
+        }
     }
 
   if ([_delegate respondsToSelector: @selector(control:isValidObject:)] == YES)
@@ -631,14 +631,14 @@ static Class textFieldCellClass;
       formatter = [_cell formatter];
       
       if ([formatter getObjectValue: &newObjectValue 
-			  forString: [_text_object text] 
-		   errorDescription: NULL] == YES)
-	{
-	  if ([_delegate control: self isValidObject: newObjectValue] == NO)
-	    {
-	      return NO;
-	    }
-	}
+                          forString: [_text_object text] 
+                   errorDescription: NULL] == YES)
+        {
+          if ([_delegate control: self isValidObject: newObjectValue] == NO)
+            {
+              return NO;
+            }
+        }
     }
 
   // In all other cases
@@ -651,8 +651,8 @@ static Class textFieldCellClass;
       [_delegate respondsToSelector: @selector(control:textView:doCommandBySelector:)])
     {
       return [_delegate control: self 
-			textView: textView 
-			doCommandBySelector: command];
+                        textView: textView 
+                        doCommandBySelector: command];
     }
 
    return NO;
@@ -685,6 +685,16 @@ static Class textFieldCellClass;
 - (void)setTitleWithMnemonic:(NSString *)aString
 {
   [_cell setTitleWithMnemonic: aString];
+}
+
+- (void)setBezelStyle:(NSTextFieldBezelStyle)style
+{
+  [_cell setBezelStyle: style];
+}
+
+- (NSTextFieldBezelStyle)bezelStyle
+{
+  return [_cell bezelStyle];
 }
 
 //

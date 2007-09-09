@@ -29,21 +29,39 @@
 
 #ifndef _GNUstep_H_NSTextFieldCell
 #define _GNUstep_H_NSTextFieldCell
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <AppKit/NSActionCell.h>
 
 @class NSColor;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+typedef enum _NSTextFieldBezelStyle
+{
+	NSTextFieldSquareBezel = 0,
+	NSTextFieldRoundedBezel
+} NSTextFieldBezelStyle;
+#endif 
 
 @interface NSTextFieldCell : NSActionCell <NSCoding>
 {
   // Attributes
   NSColor *_background_color;
   NSColor *_text_color;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+  NSTextFieldBezelStyle _bezelStyle;
+#else
+  unsigned int _bezelStyle;
+#endif 
+
   // Think of the following ones as of two BOOL ivars
 #define _textfieldcell_draws_background _cell.subclass_bool_one
   // The following is different from _draws_background 
   // if we are using a semi-transparent color.
 #define _textfieldcell_is_opaque _cell.subclass_bool_two
+#define _textfieldcell_placeholder_is_attributed_string _cell.subclass_bool_three
+  id _placeholder;
 }
 
 //
@@ -57,6 +75,18 @@
 
 - (void)setBackgroundColor:(NSColor *)aColor;
 - (NSColor *)backgroundColor;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+- (void)setBezelStyle:(NSTextFieldBezelStyle)style;
+- (NSTextFieldBezelStyle)bezelStyle;
+#endif 
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (void)setPlaceholderString:(NSString *)string;
+- (NSString *)placeholderString;
+- (void)setPlaceholderAttributedString:(NSAttributedString *)string;
+- (NSAttributedString *)placeholderAttributedString;
+#endif 
 
 @end
 

@@ -29,16 +29,17 @@
 
 #include "config.h"
 #include <Foundation/NSNotification.h>
+#include "AppKit/NSAttributedString.h"
 #include "AppKit/NSColor.h"
 #include "AppKit/NSControl.h"
+#include "AppKit/NSEvent.h"
 #include "AppKit/NSFont.h"
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSTextFieldCell.h"
 #include "AppKit/NSText.h"
-#include "AppKit/NSEvent.h"
 
-static NSColor	*bgCol;
-static NSColor	*txtCol;
+static NSColor *bgCol;
+static NSColor *txtCol;
 
 @interface NSTextFieldCell (PrivateColor)
 + (void) _systemColorsChanged: (NSNotification*)n;
@@ -46,12 +47,13 @@ static NSColor	*txtCol;
 - (BOOL) _isOpaque;
 @end
 
-@implementation	NSTextFieldCell (PrivateColor)
+@implementation NSTextFieldCell (PrivateColor)
 + (void) _systemColorsChanged: (NSNotification*)n
 {
   ASSIGN(bgCol, [NSColor textBackgroundColor]);
   ASSIGN(txtCol, [NSColor textColor]); 
 }
+
 - (BOOL) _isOpaque
 {
   if (_textfieldcell_draws_background == NO 
@@ -70,10 +72,10 @@ static NSColor	*txtCol;
     {
       [self setVersion: 2];
       [[NSNotificationCenter defaultCenter] 
-	addObserver: self
-	selector: @selector(_systemColorsChanged:)
-	name: NSSystemColorsDidChangeNotification
-	object: nil];
+          addObserver: self
+          selector: @selector(_systemColorsChanged:)
+          name: NSSystemColorsDidChangeNotification
+          object: nil];
       [self _systemColorsChanged: nil];
     }
 }
@@ -81,20 +83,16 @@ static NSColor	*txtCol;
 //
 // Initialization
 //
-- (id) init
-{
-  [self initTextCell: @""];
-  return self;
-}
-
 - (id) initTextCell: (NSString *)aString
 {
-  [super initTextCell: aString];
+  self = [super initTextCell: aString];
+  if (self == nil)
+    return self;
 
   ASSIGN(_text_color, txtCol);
   ASSIGN(_background_color, bgCol);
-  _textfieldcell_draws_background = NO;
-  _textfieldcell_is_opaque = NO;
+//  _textfieldcell_draws_background = NO;
+//  _textfieldcell_is_opaque = NO;
   _action_mask = NSKeyUpMask | NSKeyDownMask;
   return self;
 }
@@ -103,6 +101,7 @@ static NSColor	*txtCol;
 {
   RELEASE(_background_color);
   RELEASE(_text_color);
+  RELEASE(_placeholder);
   [super dealloc];
 }
 
@@ -110,8 +109,9 @@ static NSColor	*txtCol;
 {
   NSTextFieldCell *c = [super copyWithZone: zone];
 
-  RETAIN (_background_color);
-  RETAIN (_text_color);
+  RETAIN(_background_color);
+  RETAIN(_text_color);
+  c->_placeholder = [_placeholder copyWithZone: zone];
 
   return c;
 }
@@ -176,6 +176,52 @@ static NSColor	*txtCol;
   return _text_color;
 }
 
+- (void) setBezelStyle: (NSTextFieldBezelStyle)style
+{
+    _bezelStyle = style;
+}
+
+- (NSTextFieldBezelStyle) bezelStyle
+{
+  return _bezelStyle;
+}
+
+- (NSAttributedString*) placeholderAttributedString
+{
+  if (_textfieldcell_placeholder_is_attributed_string == YES)
+    {
+      return (NSAttributedString*)_placeholder;
+    }
+  else
+    {
+      return nil;
+    }
+}
+
+- (NSString*) placeholderString
+{
+  if (_textfieldcell_placeholder_is_attributed_string == YES)
+    {
+      return nil;
+    }
+  else
+    {
+      return (NSString*)_placeholder;
+    }
+}
+
+- (void) setPlaceholderAttributedString: (NSAttributedString*)string
+{
+  ASSIGN(_placeholder, string);
+  _textfieldcell_placeholder_is_attributed_string = YES;
+}
+
+- (void) setPlaceholderString: (NSString*)string
+{
+  ASSIGN(_placeholder, string);
+  _textfieldcell_placeholder_is_attributed_string = NO;
+}
+
 - (NSText *) setUpFieldEditorAttributes: (NSText *)textObject
 {
   textObject = [super setUpFieldEditorAttributes: textObject];
@@ -190,17 +236,61 @@ static NSColor	*txtCol;
   if (_textfieldcell_draws_background)
     {
       if ([self isEnabled])
-	{
+        {
           [_background_color set];
-	}
+        }
       else
-	{
-	  [[NSColor controlBackgroundColor] set];
-	}
-      NSRectFill ([self drawingRectForBounds: cellFrame]);
+        {
+          [[NSColor controlBackgroundColor] set];
+        }
+      NSRectFill([self drawingRectForBounds: cellFrame]);
     }
 
   [super drawInteriorWithFrame: cellFrame inView: controlView];
+}
+
+/* 
+   Attributed string that will be displayed.
+ */
+- (NSAttributedString*)_drawAttributedString
+{
+  NSAttributedString *attrStr;
+
+  attrStr = [super _drawAttributedString];
+  if (attrStr == nil)
+    {
+      attrStr = [self placeholderAttributedString];
+      if (attrStr == nil)
+        {
+          NSString *string;
+          NSDictionary *attributes;
+          NSMutableDictionary *newAttribs;
+      
+          string = [self placeholderString];
+          if (string == nil)
+            {
+              return nil;
+            }
+
+          attributes = [self _nonAutoreleasedTypingAttributes];
+          newAttribs = [NSMutableDictionary 
+                           dictionaryWithDictionary: attributes];
+          [newAttribs setObject: [NSColor disabledControlTextColor]
+                      forKey: NSForegroundColorAttributeName];
+          
+          return AUTORELEASE([[NSAttributedString alloc]
+                                 initWithString: string
+                                 attributes: newAttribs]);
+        }
+      else
+        {
+          return attrStr;
+        }
+    }
+  else
+    {
+      return attrStr;
+    }
 }
 
 - (BOOL) isOpaque
@@ -244,9 +334,9 @@ static NSColor	*txtCol;
       [self setTextColor: textColor];
       if ([aDecoder containsValueForKey: @"NSDrawsBackground"])
         {
-	  [self setDrawsBackground: [aDecoder decodeBoolForKey: 
-						  @"NSDrawsBackground"]];
-	}
+          [self setDrawsBackground: [aDecoder decodeBoolForKey: 
+                                                  @"NSDrawsBackground"]];
+        }
     }
   else
     {
@@ -254,19 +344,19 @@ static NSColor	*txtCol;
 
       if ([aDecoder versionForClassName:@"NSTextFieldCell"] < 2)
         {
-	  /* Replace the old default _action_mask with the new default one
-	     if it's set. There isn't really a way to modify this value
-	     on an NSTextFieldCell encoded in a .gorm file. The old default value
-	     causes problems with newer NSTableViews which uses this to discern 
-	     whether it should trackMouse:inRect:ofView:untilMouseUp: or not.
-	     This also disables the action from being sent on an uneditable and
-	     unselectable text fields.
-	  */
-	    if (_action_mask == NSLeftMouseUpMask)
-	      {
-		_action_mask = NSKeyUpMask | NSKeyDownMask;
-	      }
-	}
+          /* Replace the old default _action_mask with the new default one
+             if it's set. There isn't really a way to modify this value
+             on an NSTextFieldCell encoded in a .gorm file. The old default value
+             causes problems with newer NSTableViews which uses this to discern 
+             whether it should trackMouse:inRect:ofView:untilMouseUp: or not.
+             This also disables the action from being sent on an uneditable and
+             unselectable text fields.
+          */
+          if (_action_mask == NSLeftMouseUpMask)
+            {
+              _action_mask = NSKeyUpMask | NSKeyDownMask;
+            }
+        }
 
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_background_color];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_text_color];

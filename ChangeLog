@@ -1,4 +1,12 @@
-2007-09-08 Fred Kiefer <FredKiefer@gmx.de>
+2007-09-09 Fred Kiefer <FredKiefer@gmx.de>
+	
+	* Headers/AppKit/NSTextField.h:
+	* Headers/AppKit/NSTextFieldCell.h:
+	* Source/NSTextField.m,
+	* Source/NSTextFieldCell.m: Add new MacOSX 10.3 methods and
+	constants.
+	
+2007-09-09 Fred Kiefer <FredKiefer@gmx.de>
 	
 	* Headers/AppKit/NSBitmapImageRep.h,
 	* Headers/AppKit/NSResponder.h: Correct conditional compilation.

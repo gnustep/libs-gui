@@ -29,8 +29,11 @@
 
 #ifndef _GNUstep_H_NSTextField
 #define _GNUstep_H_NSTextField
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <AppKit/NSControl.h>
+// For NSTextFieldBezelStyle
+#include <AppKit/NSTextFieldCell.h>
 
 @class NSNotification;
 @class NSColor;
@@ -113,6 +116,11 @@
 
 - (void)setTitleWithMnemonic:(NSString *)aString;
 #endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+- (void)setBezelStyle:(NSTextFieldBezelStyle)style;
+- (NSTextFieldBezelStyle)bezelStyle;
+#endif 
 
 @end
 
