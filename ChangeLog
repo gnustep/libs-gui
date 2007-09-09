@@ -1,4 +1,10 @@
 2007-09-09 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m (-makeKeyAndOrderFront:): Use
+	orderFrontRegardless instead of orderFront:.
+	Patch by Yen-Ju Chen <yjchenx@gmail.com>
+
+2007-09-09 Fred Kiefer <FredKiefer@gmx.de>
 	
 	* Headers/AppKit/NSTextField.h:
 	* Headers/AppKit/NSTextFieldCell.h:

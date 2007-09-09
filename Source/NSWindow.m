@@ -1498,7 +1498,7 @@ many times.
 
 - (void) makeKeyAndOrderFront: (id)sender
 {
-  [self orderFront: sender];
+  [self orderFrontRegardless];
   [self makeKeyWindow];
   /*
    * OPENSTEP makes a window the main window when it makes it the key window.
