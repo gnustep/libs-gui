@@ -1,5 +1,10 @@
 2007-09-10 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSPopUpButtonCell.m (-insertItemWithTitle:atIndex:):
+	Select new item when there isn't any selection.
+
+2007-09-10 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSTableHeaderView.m,
 	* Source/NSSlider.m,
 	* Source/NSProgressIndicator.m,

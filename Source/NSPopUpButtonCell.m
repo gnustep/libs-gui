@@ -359,6 +359,12 @@ static NSImage *_pbc_image[2];
   // FIXME: The documentation is unclear what to set here.
   //[anItem setAction: [self action]];
   //[anItem setTarget: [self target]];
+
+  // Select the new item if there isn't any selection.
+  if (_selectedItem == nil)
+    {
+      [self selectItem: anItem];
+    }
 }
 
 /**
