@@ -81,6 +81,11 @@ static id buttonCellClass = nil;
   return YES;
 }
 
+- (BOOL) isFlipped
+{
+  return YES;
+}
+
 /** <p>Sets the NSButtonCell's type to <var>aType</var> and marks self for
     display.See <ref type="type" id="NSButtonType">NSButtonType</ref> for more
     information.</p><p>See Also: [NSButtonCell-setButtonType:]</p>

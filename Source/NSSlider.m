@@ -97,6 +97,11 @@ static Class cellClass;
   return self;
 }
 
+- (BOOL) isFlipped
+{
+  return YES;
+}
+
 /**<p>Returns the value by which the slider will be incremented if the
   user holds down the ALT key.</p><p>See Also: -setAltIncrementValue:</p> */
 - (double) altIncrementValue
