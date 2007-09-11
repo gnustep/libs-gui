@@ -1,5 +1,10 @@
 2007-09-11 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSSplitView.m (-displayRectIgnoringOpacity:inContext:):
+	Implement this method instead of the two old display methods.
+
+2007-09-11 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSTextView.m (-drawRect:, -rectForCharacterRange:,
 	-firstRectForCharacterRange:): Protect againt layoutmanager being nil.
 	* Source/NSTableView.m (-validateEditing): Use setStringValue:
