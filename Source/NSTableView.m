@@ -3160,47 +3160,49 @@ byExtendingSelection: (BOOL)flag
       formatter = [_editedCell formatter];
       string = AUTORELEASE([[_textObject text] copy]);
 
-      if (formatter == nil)
-        {
-          newObjectValue = string;
-        }
-      else
+      if (formatter != nil)
         {
           NSString *error;
 	  
           if ([formatter getObjectValue: &newObjectValue 
                          forString: string 
-                         errorDescription: &error] == NO)
+                         errorDescription: &error] == YES)
             {
-              if ([_delegate respondsToSelector:
-                    @selector(control:didFailToFormatString:errorDescription:)])
+              [_editedCell setObjectValue: newObjectValue];
+              
+              if (_dataSource_editable)
                 {
-                  if ([_delegate control: self 
-                                 didFailToFormatString: string 
-                                 errorDescription: error] == NO) 
-
-                    {
-                      validatedOK = NO;
-                    }
-                  else
-                    {
-                      newObjectValue = string;
-                    }
+                  NSTableColumn *tb;
+              
+                  tb = [_tableColumns objectAtIndex: _editedColumn];
+                  
+                  [self _setObjectValue: newObjectValue
+                        forTableColumn: tb
+                        row: _editedRow];
+                }
+              return;
+            }
+          else
+            {
+              SEL sel = @selector(control:didFailToFormatString:errorDescription:);
+              
+              if ([_delegate respondsToSelector: sel])
+                {
+                  validatedOK = [_delegate control: self 
+                                           didFailToFormatString: string 
+                                           errorDescription: error];
                 }
               // Allow an empty string to fall through
-              else if ([string isEqualToString: @""])
-                {
-                  newObjectValue = string;
-                }
-              else
+              else if (![string isEqualToString: @""])
                 {
                   validatedOK = NO;
                 }
             }
         }
-      if (validatedOK == YES)
+
+      if (validatedOK)
         {
-          [_editedCell setObjectValue: newObjectValue];
+          [_editedCell setStringValue: string];
           
           if (_dataSource_editable)
             {
@@ -3208,12 +3210,9 @@ byExtendingSelection: (BOOL)flag
               
               tb = [_tableColumns objectAtIndex: _editedColumn];
               
-              [self _setObjectValue: newObjectValue
+              [self _setObjectValue: string
                     forTableColumn: tb
                     row: _editedRow];
-              
-              //[_dataSource tableView: self  setObjectValue: newObjectValue
-              //	 forTableColumn: tb  row: _editedRow];
             }
         }
     }
@@ -3485,6 +3484,12 @@ static inline float computePeriod(NSPoint mouseLocationWin,
   /* Stop editing if any */
   if (_textObject != nil)
     {
+      if (_editedCell != nil 
+          && [_editedCell isEntryAcceptable:[_textObject text]] == NO)
+        {
+          NSBeep();
+          return;
+        }
       [self validateEditing];
       [self abortEditing];
     }  

@@ -1,3 +1,13 @@
+2007-09-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView.m (-drawRect:, -rectForCharacterRange:,
+	-firstRectForCharacterRange:): Protect againt layoutmanager being nil.
+	* Source/NSTableView.m (-validateEditing): Use setStringValue:
+	when converting the string failed.
+	* Source/NSTableView.m (-mouseDown:): Don't interrupt editing
+	another cell, if the current string isn't valid.
+	Patches partly by Andreas Höschler <ahoesch@smartsoft.de>.
+	
 2007-09-10 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPopUpButtonCell.m (-insertItemWithTitle:atIndex:):

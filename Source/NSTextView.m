@@ -1856,8 +1856,13 @@ or add guards
 
 - (NSRect) firstRectForCharacterRange: (NSRange)theRange
 {
-  unsigned int rectCount = 0; /* If there's no layout manager, it'll be 0 after the call too. */
-  NSRect *rects = [_layoutManager 
+  unsigned int rectCount = 0;
+  NSRect *rects;
+
+  if (!_layoutManager)
+    return NSZeroRect;
+
+  rects = [_layoutManager 
 		      rectArrayForCharacterRange: theRange
 		      withinSelectedCharacterRange: NSMakeRange(NSNotFound, 0)
 		      inTextContainer: _textContainer
@@ -2509,6 +2514,9 @@ Scroll so that the beginning of the range is visible.
   */
   [self sizeToFit];
 
+  if (_layoutManager == nil)
+    return;
+
   if (aRange.length > 0)
     {
       aRange.length = 1;
@@ -2860,7 +2868,7 @@ This method is for user changes; see NSTextView_actions.m.
 - (void) updateFontPanel
 {
   /* Update fontPanel only if told so */
-  if (_tf.uses_font_panel)
+  if (_tf.uses_font_panel && _layoutManager)
     {
       NSRange longestRange;
       NSFontManager *fm = [NSFontManager sharedFontManager];
@@ -3325,8 +3333,15 @@ Figure out how the additional layout stuff is supposed to work.
 
   containerRect.origin.x -= _textContainerOrigin.x;
   containerRect.origin.y -= _textContainerOrigin.y;
-  drawnRange = [_layoutManager glyphRangeForBoundingRect: containerRect 
-			       inTextContainer: _textContainer];
+  if (_layoutManager)
+    {
+      drawnRange = [_layoutManager glyphRangeForBoundingRect: containerRect 
+                                   inTextContainer: _textContainer];
+    }
+  else
+    {
+      drawnRange = NSMakeRange(0, 0);
+    }
 
   if (_tf.draws_background)
     {
@@ -4716,7 +4731,7 @@ configuation! */
   NSRange glyphRange;
   NSRect rect;
 
-  if (!aRange.length)
+  if (!aRange.length || !_layoutManager)
     return NSZeroRect;
   glyphRange = [_layoutManager glyphRangeForCharacterRange: aRange 
 			       actualCharacterRange: NULL];
