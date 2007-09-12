@@ -1,3 +1,8 @@
+2007-09-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSToolbarItem.m (GSToolbarButtonCell-drawInteriorWithFrame:inView:): 
+	Made working for a flipped view.
+
 2007-09-11 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSSplitView.m (-displayRectIgnoringOpacity:inContext:):

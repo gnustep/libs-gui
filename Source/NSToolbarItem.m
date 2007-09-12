@@ -392,6 +392,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 @end
 
+// FIXME: Why does this class exists at all?
 @implementation GSToolbarButtonCell
 
 /* Overriden NSButtonCell method to handle cell type in a basic way which avoids
@@ -413,29 +414,64 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
     }
 }
 
-// Overriden NSButtonCell method
+// Overriden NSButtonCell method to make sure all test is at the same height.
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  NSSize titleSize = [[self attributedTitle] size];
+  BOOL flippedView = [controlView isFlipped];
+  NSCellImagePosition ipos = _cell.image_position;
   // We ignore alternateAttributedTitle, it is not needed
+  NSSize titleSize = [[self attributedTitle] size];
   
+  if (flippedView == YES)
+    {
+      if (ipos == NSImageAbove)
+        {
+          ipos = NSImageBelow;
+        }
+      else if (ipos == NSImageBelow)
+        {
+          ipos = NSImageAbove;
+        }
+    }
+
   /* We store the values we need to customize the drawing into titleRect and 
      imageRect. */
-  
-  titleRect.origin.x = cellFrame.origin.x;
-  titleRect.origin.y = cellFrame.origin.y + InsetItemTextY;
-  titleRect.size.width =  cellFrame.size.width;
-  titleRect.size.height = titleSize.height;
-  
-  imageRect.origin.x = cellFrame.origin.x;
-  imageRect.origin.y = cellFrame.origin.y;
-  if ([self imagePosition] != NSImageOnly)     
-    imageRect.origin.y += titleRect.size.height;
-  imageRect.size.width = cellFrame.size.width;
-  imageRect.size.height = cellFrame.size.height;
-  if ([self imagePosition] != NSImageOnly)     
-    imageRect.size.height -= titleRect.size.height;
-    
+  switch (ipos)
+    {
+      case NSNoImage: 
+        titleRect = cellFrame;
+        break;
+
+      case NSImageOnly: 
+        imageRect = cellFrame;
+        break;
+
+      default:
+      case NSImageBelow: 
+        titleRect.origin.x = cellFrame.origin.x;
+        titleRect.origin.y = NSMaxY(cellFrame) - titleSize.height - InsetItemTextY;
+        titleRect.size.width = cellFrame.size.width;
+        titleRect.size.height = titleSize.height;
+        
+        imageRect.origin.x = cellFrame.origin.x;
+        imageRect.origin.y = cellFrame.origin.y;
+        imageRect.size.width = cellFrame.size.width;
+        imageRect.size.height = cellFrame.size.height - titleRect.size.height;
+        break;
+
+      case NSImageAbove: 
+        titleRect.origin.x = cellFrame.origin.x;
+        titleRect.origin.y = cellFrame.origin.y + InsetItemTextY;
+        titleRect.size.width = cellFrame.size.width;
+        titleRect.size.height = titleSize.height;
+        
+        imageRect.origin.x = cellFrame.origin.x;
+        imageRect.origin.y = cellFrame.origin.y + titleRect.size.height;
+        imageRect.size.width = cellFrame.size.width;
+        imageRect.size.height = cellFrame.size.height - titleRect.size.height;
+        break;
+    }
+
   [super drawInteriorWithFrame: cellFrame inView: controlView];
 }
 
@@ -1086,16 +1122,16 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
       
           button = [[GSToolbarButton alloc] initWithToolbarItem: self];
           cell = [button cell];
-	  [button setTitle: @""];
-	  [button setEnabled: NO];
+          [button setTitle: @""];
+          [button setEnabled: NO];
           [button setBordered: NO];
           [button setImagePosition: NSImageAbove];
-	  [cell setBezeled: YES];
+          [cell setBezeled: YES];
           [cell setHighlightsBy: 
-	    NSChangeGrayCellMask | NSChangeBackgroundCellMask];
+                    NSChangeGrayCellMask | NSChangeBackgroundCellMask];
           [cell setFont: [NSFont systemFontOfSize: 11]]; 
-	  /* [NSFont smallSystemFontSize] or better should be 
-	     controlContentFontSize. */
+          /* [NSFont smallSystemFontSize] or better should be 
+             controlContentFontSize. */
 
           [_backView release];
           _backView = button;
