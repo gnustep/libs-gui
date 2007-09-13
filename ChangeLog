@@ -1,3 +1,10 @@
+2007-09-13 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableView.m (-validateEditing): Set object value to
+	nil, when formatting the string failed.
+	* Source/NSActionCell.m (-intValue): Check flag in_editing before
+	validating the editing. 
+
 2007-09-12 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSToolbarItem.m (GSToolbarButtonCell-drawInteriorWithFrame:inView:): 

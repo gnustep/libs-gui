@@ -201,7 +201,7 @@ static Class controlClass;
  */
 - (int)intValue
 {
-  if (_control_view)
+  if (_cell.in_editing && _control_view)
     if ([_control_view isKindOfClass: controlClass])
       [(NSControl *)_control_view validateEditing];
   return [super intValue];

@@ -3185,7 +3185,7 @@ byExtendingSelection: (BOOL)flag
           else
             {
               SEL sel = @selector(control:didFailToFormatString:errorDescription:);
-              
+              newObjectValue = nil;
               if ([_delegate respondsToSelector: sel])
                 {
                   validatedOK = [_delegate control: self 
@@ -3210,7 +3210,7 @@ byExtendingSelection: (BOOL)flag
               
               tb = [_tableColumns objectAtIndex: _editedColumn];
               
-              [self _setObjectValue: string
+              [self _setObjectValue: newObjectValue
                     forTableColumn: tb
                     row: _editedRow];
             }
