@@ -1765,13 +1765,30 @@ many times.
 
   if (NSEqualPoints(topLeftPoint, NSZeroPoint) == YES)
     {
-      topLeftPoint.x = _frame.origin.x;
-      topLeftPoint.y = _frame.origin.y + _frame.size.height;
+      topLeftPoint.x = NSMinX(_frame);
+      topLeftPoint.y = NSMaxY(_frame);
     }
+
   [self setFrameTopLeftPoint: topLeftPoint];
   cRect = [isa contentRectForFrameRect: _frame styleMask: _styleMask];
-  topLeftPoint.x = cRect.origin.x;
-  topLeftPoint.y = cRect.origin.y + cRect.size.height;
+  topLeftPoint.x = NSMinX(cRect);
+  topLeftPoint.y = NSMaxY(cRect);
+
+  /* make sure the new point is inside the screen */
+  if ([self screen])
+    {
+      NSRect screenRect;
+
+      screenRect = [[self screen] visibleFrame];
+      if (topLeftPoint.x >= NSMaxX(screenRect))
+        {
+          topLeftPoint.x = NSMinX(screenRect);
+        }
+      if (topLeftPoint.y <= NSMinY(screenRect))
+        {
+          topLeftPoint.y = NSMaxY(screenRect);
+        }
+    }
 
   return topLeftPoint;
 }
