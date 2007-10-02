@@ -921,21 +921,29 @@ static NSImage *_pbc_image[2];
 
   count = [_menu numberOfItems];
 
-  if (count == 0)
-    return NSZeroSize;
-  
   imageSize = [_pbc_image[_pbcFlags.pullsDown] size];
   s = NSMakeSize(0, imageSize.height);
   
+  if (count == 0)
+    {
+      title = [self title];
+      titleSize = [self _sizeText: title];
+
+      if (titleSize.width > s.width)
+        s.width = titleSize.width;
+      if (titleSize.height > s.height)
+        s.height = titleSize.height;
+    }
+
   for (i = 0; i < count; i++)
     {
       title = [[_menu itemAtIndex: i] title];
       titleSize = [self _sizeText: title];
 
       if (titleSize.width > s.width)
-	s.width = titleSize.width;
+        s.width = titleSize.width;
       if (titleSize.height > s.height)
-	s.height = titleSize.height;
+        s.height = titleSize.height;
     }
 
   s.width += imageSize.width; 
