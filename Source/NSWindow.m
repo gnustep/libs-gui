@@ -2631,7 +2631,6 @@ resetCursorRectsForView(NSView *theView)
   if (!_f.is_miniaturized)
     return;
 
-#if 0
   /* At least with X-Windows, the counterpart is tied to us, so it will
      automatically be ordered out when we are deminiaturized */
   if (_counterpart != 0)
@@ -2640,7 +2639,7 @@ resetCursorRectsForView(NSView *theView)
 
       [mini orderOut: self];
     }
-#endif
+
   _f.is_miniaturized = NO;
   [self makeKeyAndOrderFront: self];
   [self _didDeminiaturize: sender];
@@ -2722,6 +2721,8 @@ resetCursorRectsForView(NSView *theView)
       NSWindow *mini = GSWindowWithNumber(_counterpart);
 
       [mini orderFront: self];
+      // If the window is still visible, order it out.
+      [self orderOut: self];
     }
   [nc postNotificationName: NSWindowDidMiniaturizeNotification
                     object: self];

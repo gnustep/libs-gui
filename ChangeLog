@@ -1,5 +1,12 @@
 2007-10-02 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSWindow.m (-deminiaturize:, -miniaturize:): Try to
+	handle the case better, where GNUstep manages the mini window and
+	the window decoration itself.
+	Based on patch by Stefan Bidigaray <stefanbidi@gmail.com>.
+
+2007-10-02 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSPopUpButtonCell.m (-cellSize): Don't return zero size,
 	when there are no items. Based on patch by Andreas Höschler
 	<ahoesch@smartsoft.de>. 
