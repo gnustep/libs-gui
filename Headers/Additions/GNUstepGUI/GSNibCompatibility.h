@@ -27,6 +27,7 @@
 #define _GNUstep_H_GSNibCompatibility
 
 #include <Foundation/NSObject.h>
+
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSView.h>
@@ -34,11 +35,12 @@
 #include <AppKit/NSTextView.h>
 #include <AppKit/NSControl.h>
 #include <AppKit/NSButton.h>
-
 #include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSResponder.h>
 #include <AppKit/NSEvent.h>
+#include <AppKit/NSNibConnector.h>
+
 #include "GNUstepGUI/GSNibContainer.h"
 #include "GNUstepGUI/GSInstantiator.h"
 
@@ -285,4 +287,49 @@ typedef struct _GSWindowTemplateFlags
 @interface NSPSMatrix : NSObject
 @end
 
+@interface NSNibAXAttributeConnector : NSObject <NSCoding>
+{
+  NSString *_attributeType;
+  NSString *_attributeValue;
+  id _destination;
+  id _source;
+  NSString *_label;
+}
+
+// Attribute name/type.
+- (NSString *) attributeType;
+- (void) setAttributeType: (NSString *)type;
+- (NSString *) attributeValue;
+- (void) setAttributeValue: (NSString *)value;
+
+// Source destination, connectors.
+- (id) destination;
+- (void) setDestination: (id)destination;
+- (NSString *) label;
+- (void) setLabel: (NSString *)label;
+- (id) source;
+- (void) setSource: (id)source;
+
+// establish connection...
+- (void) establishConnection;
+@end
+
+@interface NSNibAXRelationshipConnector : NSNibConnector
+@end
+
+@interface NSNibBindingConnector: NSNibConnector
+{
+  NSDictionary *_options;
+  NSString *_binding;
+  NSString *_keyPath;
+  BOOL _hasEstablishedConnection;
+}
+
+- (NSString *) binding;
+- (NSString *) keyPath;
+- (NSDictionary *) options;
+- (void) setBinding: (NSString *)bindings;
+- (void) setKeyPath: (NSString *)keyPath;
+- (void) setOptions: (NSDictionary *)options;
+@end
 #endif /* _GNUstep_H_GSNibCompatibility */

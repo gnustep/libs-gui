@@ -881,24 +881,30 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
   [super encodeWithCoder: aCoder];
-
-  /*
-   *	Encode objects we don't own.
-   */
-  [aCoder encodeConditionalObject: _delegate];
-
-  /*
-   *	Encode the objects we do own.
-   */
-  [aCoder encodeObject: _dimpleImage];
-  [aCoder encodeObject: _backgroundColor];
-  [aCoder encodeObject: _dividerColor];
-
-  /*
-   *	Encode the rest of the ivar data.
-   */
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_draggedBarWidth];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isVertical];
+  if([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeBool: _isVertical forKey: @"NSIsVertical"];
+    }
+  else
+    {
+      /*
+       *	Encode objects we don't own.
+       */
+      [aCoder encodeConditionalObject: _delegate];
+      
+      /*
+       *	Encode the objects we do own.
+       */
+      [aCoder encodeObject: _dimpleImage];
+      [aCoder encodeObject: _backgroundColor];
+      [aCoder encodeObject: _dividerColor];
+      
+      /*
+       *	Encode the rest of the ivar data.
+       */
+      [aCoder encodeValueOfObjCType: @encode(int) at: &_draggedBarWidth];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isVertical];
+    }
 }
 
 - (id) initWithCoder: (NSCoder *)aDecoder

@@ -117,6 +117,9 @@ NSMenuItemCell.m \
 NSMovie.m \
 NSMovieView.m \
 NSNib.m \
+NSNibBindingConnector.m \
+NSNibAXAttributeConnector.m \
+NSNibAXRelationshipConnector.m \
 NSObjectController.m \
 NSOpenGLContext.m \
 NSOpenGLPixelFormat.m \

@@ -1,3 +1,13 @@
+2007-10-06 23:03-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h
+	* Source/GNUmakefile: Added new classes.
+	* Source/NSNibAXAttributeConnector.m
+	* Source/NSNibAXRelationshipConnector.m
+	* Source/NSNibBindingConnector.m: Implementation of special
+	connectors for Key-Value binding.
+	* Source/NSSplitView.m: Added ode for keyed coding
+
 2007-10-02 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWindow.m (-deminiaturize:, -miniaturize:): Try to
