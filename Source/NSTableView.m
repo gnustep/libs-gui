@@ -3154,7 +3154,7 @@ byExtendingSelection: (BOOL)flag
     {
       NSFormatter *formatter;
       NSString *string;
-      id newObjectValue;
+      id newObjectValue = nil;
       BOOL validatedOK = YES;
 
       formatter = [_editedCell formatter];
@@ -3185,7 +3185,7 @@ byExtendingSelection: (BOOL)flag
           else
             {
               SEL sel = @selector(control:didFailToFormatString:errorDescription:);
-              newObjectValue = nil;
+
               if ([_delegate respondsToSelector: sel])
                 {
                   validatedOK = [_delegate control: self 

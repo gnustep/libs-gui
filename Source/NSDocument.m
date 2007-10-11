@@ -1163,6 +1163,7 @@ originalContentsURL: (NSURL *)orig
 - (void)setPrintInfo: (NSPrintInfo *)printInfo
 {
   ASSIGN(_print_info, printInfo);
+  [self updateChangeCount: NSChangeDone];
 }
 
 
@@ -1195,7 +1196,6 @@ originalContentsURL: (NSURL *)orig
       && [self shouldChangePrintInfo: printInfo])
     {
       [self setPrintInfo: printInfo];
-      [self updateChangeCount: NSChangeDone];
     }
 }
 

@@ -1,3 +1,13 @@
+2007-10-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSDocument.m (-setPrintInfo:, -runPageLayout:): Move
+	updateChangeCount: call from one method to the other.
+	* Source/NSPageLayout.m (-okButtonClicked:,
+	-cancelButtonClicked:): Use standard button return codes.
+	* Source/NSTableView.m (-validateEditing): Initialize
+	newObjectValue with nil.
+	Patches by Wolfgang Lux <wolfgang.lux@gmail.com>. 
+
 2007-10-06 23:03-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h
