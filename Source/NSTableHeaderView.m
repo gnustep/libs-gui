@@ -177,7 +177,7 @@
     lastColumnToDraw = [_tableView numberOfColumns] - 1;
 
   drawingRect = [self headerRectOfColumn: firstColumnToDraw];
-  if ([self isFlipped])
+  if (![self isFlipped])
     {
       drawingRect.origin.y++;
     }
@@ -249,7 +249,7 @@
     NSRectEdge dn_sides[] = {NSMaxYEdge, NSMaxXEdge};
     float grays[] = {NSBlack, NSBlack};
     
-    if ([self isFlipped])
+    if (![self isFlipped])
       {
         NSDrawTiledRects(_bounds, aRect, up_sides, grays, 2);
       }

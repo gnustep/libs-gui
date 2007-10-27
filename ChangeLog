@@ -1,3 +1,9 @@
+2007-10-27 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableHeaderView.m (-drawRect:): Switch drawing cases for flipping. 
+	* Source/NSTableView.m (GSTableCornerView): Made flipped and
+	adjust drawing code.
+
 2007-10-11 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSDocument.m (-setPrintInfo:, -runPageLayout:): Move
@@ -16,7 +22,7 @@
 	* Source/NSNibAXRelationshipConnector.m
 	* Source/NSNibBindingConnector.m: Implementation of special
 	connectors for Key-Value binding.
-	* Source/NSSplitView.m: Added ode for keyed coding
+	* Source/NSSplitView.m: Added code for keyed coding
 
 2007-10-02 Fred Kiefer <FredKiefer@gmx.de>
 

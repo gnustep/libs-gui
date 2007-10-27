@@ -1923,18 +1923,30 @@ static void computeNewSelection
 
 @implementation GSTableCornerView
 
+- (BOOL) isFlipped
+{
+  return YES;
+}
+
 - (void) drawRect: (NSRect)aRect
 {
-  NSRect divide = NSMakeRect (aRect.origin.x, aRect.origin.y, aRect.size.width, 1);
-  NSRect rect = aRect;
-  rect.origin.y += 1;
-  rect.size.height -= 1;
+  NSRect divide;
+  NSRect rect;
+
+  if ([self isFlipped])
+    {
+      NSDivideRect(aRect, &divide, &rect, 1.0, NSMaxYEdge);
+    }
+  else
+    {
+      NSDivideRect(aRect, &divide, &rect, 1.0, NSMinYEdge);
+    }
 
   [[NSColor blackColor] set];
-  NSRectFill (divide);
+  NSRectFill(divide);
   rect = [[GSTheme theme] drawDarkButton: rect withClip: aRect];
   [[NSColor controlShadowColor] set];
-  NSRectFill (rect);
+  NSRectFill(rect);
 }
 
 @end
