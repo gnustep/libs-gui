@@ -1,6 +1,12 @@
+2007-10-28 01:44-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSTableView.m: reverted change to validateEditing to 
+	correct crashes.  
+
 2007-10-27 Fred Kiefer <FredKiefer@gmx.de>
 
-	* Source/NSTableHeaderView.m (-drawRect:): Switch drawing cases for flipping. 
+	* Source/NSTableHeaderView.m (-drawRect:): Switch drawing cases for 
+	flipping. 
 	* Source/NSTableView.m (GSTableCornerView): Made flipped and
 	adjust drawing code.
 

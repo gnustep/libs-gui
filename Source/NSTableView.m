@@ -3222,7 +3222,7 @@ byExtendingSelection: (BOOL)flag
               
               tb = [_tableColumns objectAtIndex: _editedColumn];
               
-              [self _setObjectValue: newObjectValue
+              [self _setObjectValue: string // newObjectValue
                     forTableColumn: tb
                     row: _editedRow];
             }
