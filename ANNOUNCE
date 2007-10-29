@@ -1,7 +1,7 @@
 1 ANNOUNCE
 **********
 
-This is version 0.12.0 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.13.0 of the GNUstep GUI library (`gnustep-gui').
 
 1.1 What is the GNUstep GUI Library?
 ====================================
@@ -27,35 +27,40 @@ systems.
 GNUstep Base Library, the TIFF Graphics library, and a back-end
 component like the GNUstep 'Back' Backend.
 
-1.2 Noteworthy changes in version `0.12.0'
+1.2 Noteworthy changes in version `0.13.0'
 ==========================================
 
-It has been a long time since the last release and many things have been
-added and changed, including new classes, new ivars, and new methods.
+   * Switched to use LGPL 3 and GPL 3.
 
-   * Lots of improvements to the NSBitmapImage subclasses thanks to
-     Mark Tracy
+   * Added new methods from Mac OS X 10.4 for NSDragging, NSFontDescriptor,
+     NSAttributedString, NSImageView, NSStringDrawing, NSParagraphStyle,
+     NSView, NSCell, NSActionCell, NSAlert, NSApplication, NSBitmapImageRep,
+     NSBox, NSColor, NSColorSpace, NSComboBox, NSComboBoxCell,
+     NSDocumentController, NSEvent, NSScreen, NSFont, NSFontManager,
+     NSFormCell, NSForm, NSWindow, NSTextField, NSTextFieldCell. Some ivar
+     names were changed also. 
+     
+   * Moved Postscript printing methods from NSView to NSGraphicsContext.
 
-   * GSTheme and other classes were added to improve support of theming.
+   * Rewrote the NSView drawing mechanism to always use
+     [displayRectIgnoringOpacity:inContext].
 
-   * Added new methods from Mac OS X 10.4 for NSControl, NSResponder,
-     NSDocument, NSPrintOperation, NSWindowController, NSCell,
-     NSMenuItem, NSView. Some ivar names were changed also.
+   * Report more controls as being flipped. (NSTextField, NSTableHeaderView,
+     NSSlider, NSProgressIndicator, NSButton) NSTabView is still missing.
 
-   * Added new ivars for NSMenuItem, NSPrintOperation, NSTableView,
-     NSDrawer, NSScrollView.
+   * In NSAffineTransform use optimized primitive methods from base.
 
-   * New classes from Mac OS X 10.4 and earlier were added including
-     NSLevelIndicator, NSObjectController, NSUserDefaultsController,
-     NSKeyValueBinding, NSArrayController, NSController.
+   * Add font attribute fixing to NSAttributedString. To allow for the output
+     of glyphs not present in the current font.
 
-   * NSSpellServer and NSAffineTransform was moved to GNUstep base for
-     Mac OS X compatibility.
+   * Optimized the validation of edited cells.
+
+   * Implementation of special connectors for Key-Value binding.
 
 1.3 Where can you get it?  How can you compile it?
 ==================================================
 
-The gstep-gui-0.12.0.tar.gz distribution file has been placed at
+The gstep-gui-0.13.0.tar.gz distribution file has been placed at
 `ftp://ftp.gnustep.org/pub/gnustep/core'.
 
 Read the INSTALL file or the GNUstep-HOWTO for installation

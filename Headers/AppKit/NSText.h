@@ -1,35 +1,35 @@
-/*                                                        -*-objc-*-
-    NSText.h
+/* -*-objc-*-
+   NSText.h
 
-    The text object
+   The text object
 
-    Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996 Free Software Foundation, Inc.
 
-    Author: Scott Christley <scottc@net-community.com>
-    Date: 1996
-    Author: Felipe A. Rodriguez <far@ix.netcom.com>
-    Date: July 1998
-    Author: Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de>
-    Date: August 1998
-    Author: Nicola Pero <n.pero@mi.flashnet.it>
-    Date: December 2000
+   Author: Scott Christley <scottc@net-community.com>
+   Date: 1996
+   Author: Felipe A. Rodriguez <far@ix.netcom.com>
+   Date: July 1998
+   Author: Daniel Böhringer <boehring@biomed.ruhr-uni-bochum.de>
+   Date: August 1998
+   Author: Nicola Pero <n.pero@mi.flashnet.it>
+   Date: December 2000
 
-    This file is part of the GNUstep GUI Library.
+   This file is part of the GNUstep GUI Library.
 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
-     
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Library General Public License for more details.
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
 
-    You should have received a copy of the GNU Library General Public
-    License along with this library; see the file COPYING.LIB.
-    If not, write to the Free Software Foundation,
-    51 Franklin Street, Fifth Floor,
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
    Boston, MA 02110-1301, USA.
 */ 
 

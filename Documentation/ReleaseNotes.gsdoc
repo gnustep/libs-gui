@@ -20,6 +20,54 @@
 	migrate to using a newer version of the library.
       </p>
       <section>
+      	<heading>Version 0.13.0</heading>
+        	  <deflist>
+            	    <term>Licence</term>
+             	    <desc>
+                  Switched to use LGPL 3 and GPL 3.
+             	    </desc>
+                  <term>New Methods added</term>
+                  <desc> 
+                  Added new methods from Mac OS X 10.4 for NSDragging, NSFontDescriptor,
+                  NSAttributedString, NSImageView, NSStringDrawing, NSParagraphStyle,
+                  NSView, NSCell, NSActionCell, NSAlert, NSApplication, NSBitmapImageRep,
+                  NSBox, NSColor, NSColorSpace, NSComboBox, NSComboBoxCell,
+                  NSDocumentController, NSEvent, NSScreen, NSFont, NSFontManager,
+                  NSFormCell, NSForm, NSWindow, NSTextField, NSTextFieldCell. 
+                  Some ivar names were changed also.
+                  </desc>
+            	    <term>Printing</term>
+             	    <desc>
+                  Moved Postscript printing methods from NSView to NSGraphicsContext.
+             	    </desc>
+            	    <term>View drawing</term>
+             	    <desc>
+                  Rewrote the NSView drawing mechanism to always use
+                  [displayRectIgnoringOpacity:inContext].
+             	    </desc>
+            	    <term>Flipped Controls</term>
+             	    <desc>
+                  Report more controls as being flipped. (NSTextField, NSTableHeaderView,
+                  NSSlider, NSProgressIndicator, NSButton) NSTabView is still missing.
+             	    </desc>
+            	    <term>Font Attribute</term>
+             	    <desc>
+                  Add font attribute fixing to NSAttributedString. To allow for the output
+                  of glyphs not present in the current font.
+             	    </desc>
+            	    <term>Optimization</term>
+             	    <desc>
+                  In NSAffineTransform use optimized primitive methods from
+                  base.
+                  Optimized the validation of edited cells.
+             	    </desc>
+            	    <term>Key-Value Binding</term>
+             	    <desc>
+                  Implementation of special connectors for Key-Value binding.
+             	    </desc>
+         	  </deflist>
+      </section>
+      <section>
 	<heading>Version 0.12.0</heading>
 	<p>
 	It has been a long time since the last release and many things

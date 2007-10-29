@@ -1,3 +1,9 @@
+2007-10-29 Fred Kiefer <FredKiefer@gmx.de>
+
+	* COPYING: Add GPL file.
+	* Change all files to use GPL 3 and LGPL 3.
+	* Prepare for next release.
+	
 2007-10-28 01:44-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSTableView.m: reverted change to validateEditing to 

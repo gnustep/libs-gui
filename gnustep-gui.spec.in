@@ -3,7 +3,7 @@ Release: 1
 Copyright: LGPL
 Group: Development/Libraries
 Source: ftp://ftp.gnustep.org/pub/gnustep/core/%{gs_name}-%{gs_version}.tar.gz
-Requires: gnustep-base >= 1.14.0
+Requires: gnustep-base >= 1.15.0
 
 %description 
 The GNUstep gui Library is a powerful library of graphical user interface
@@ -13,5 +13,5 @@ traditional nextstep-like look and feel.  The classes include graphical
 objects such as windows, menus, buttons, text fields, popup lists, browsers,
 scrollviews, splitviews, fonts, colors, images, events, pasteboards,... This
 package includes development headers too.  You need the corresponding
-backend library package (gnustep-xgps) to use this package.
+backend library package (gnustep-back) to use this package.
 

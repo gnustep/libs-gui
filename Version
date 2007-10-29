@@ -5,7 +5,7 @@
 GNUSTEP_GUI_GCC=2.9.5
 
 # Versions for libraries that gnustep-gui is dependent upon
-GNUSTEP_GUI_BASE=1.14.0
+GNUSTEP_GUI_BASE=1.15.0
 GNUSTEP_GUI_LIBTIFF=3.4
 
 # The version number of this release.

@@ -27,14 +27,16 @@ The following classes are currently unimplemented or unfinished
 to such a degree to be unusable.
 
 @itemize @bullet
-@item NSDataLink, NSDataLinkManager, NSDataLinkPanel
-@item NSHelpPanel, NSHelpManager
+@item NSController and subclasses
+@item NSFontDescriptor
+@item NSColorSpace
+@item NSSearchField and NSSearchFieldCell
 @end itemize
 
 Classes that need work (well every class needs work!)
 
 @itemize @bullet
-@item NSComboBox, NSComboBoxCell
+@item NSTableView and NSOutlineView
 @item NSProgressIndicator
 @item All the Text classes
 @end itemize

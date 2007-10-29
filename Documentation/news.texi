@@ -9,6 +9,31 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.13.0}
+
+@itemize @bullet
+@item Switched to use LGPL 3 and GPL 3.
+@item Added new methods from Mac OS X 10.4 for NSDragging, NSFontDescriptor,
+NSAttributedString, NSImageView, NSStringDrawing, NSParagraphStyle,
+NSView, NSCell, NSActionCell, NSAlert, NSApplication, NSBitmapImageRep,
+NSBox, NSColor, NSColorSpace, NSComboBox, NSComboBoxCell,
+NSDocumentController, NSEvent, NSScreen, NSFont, NSFontManager,
+NSFormCell, NSForm, NSWindow, NSTextField, NSTextFieldCell. Some ivar
+names were changed also. 
+@item Moved Postscript printing methods from NSView to NSGraphicsContext.
+@item Rewrote the NSView drawing mechanism to always use
+[displayRectIgnoringOpacity:inContext].
+@item Report more controls as being flipped. (NSTextField, NSTableHeaderView,
+NSSlider, NSProgressIndicator, NSButton) NSTabView is still missing.
+@item In NSAffineTransform use optimized primitive methods from base.
+@item Add font attribute fixing to NSAttributedString. To allow for the output
+of glyphs not present in the current font.
+@item Optimized the validation of edited cells.
+@item Implementation of special connectors for Key-Value binding.
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.12.0}
 
 It has been a long time since the last release and many things have been
@@ -28,8 +53,6 @@ NSKeyValueBinding, NSArrayController, NSController.
 @item NSSpellServer and NSAffineTransform was moved to GNUstep base 
 for Mac OS X compatibility.
 @end itemize
-
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.11.0}
 

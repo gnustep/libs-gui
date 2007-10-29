@@ -3,39 +3,42 @@
 
    Classes to represent text attachments.
    
-   NSTextAttachment is used to represent text attachments. When inline, 
-   text attachments appear as the value of the NSAttachmentAttributeName 
-   attached to the special character NSAttachmentCharacter.
-   
-   NSTextAttachment uses an object obeying the NSTextAttachmentCell 
-   protocol to get input from the user and to display an image.
-
-   NSTextAttachmentCell is a simple subclass of NSCell which provides 
-   the NSTextAttachment protocol.
-
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de>
+   Author:  Daniel Böhringer <boehring@biomed.ruhr-uni-bochum.de>
    Date: August 1998
-   Source by Daniel Bðhringer integrated into GNUstep gui
+   Source by Daniel Böhringer integrated into GNUstep gui
    by Felipe A. Rodriguez <far@ix.netcom.com> 
    
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
-   version 2 of the License, or (at your option) any later version.
-   
+   version 3 of the License, or (at your option) any later version.
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
-   License along with this library; if not, write to the Free
-   Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02111 USA.
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
+*/
+
+/**
+NSTextAttachment is used to represent text attachments. When inline, 
+text attachments appear as the value of the NSAttachmentAttributeName 
+attached to the special character NSAttachmentCharacter.
+   
+NSTextAttachment uses an object obeying the NSTextAttachmentCell 
+protocol to get input from the user and to display an image.
+
+NSTextAttachmentCell is a simple subclass of NSCell which provides 
+the NSTextAttachment protocol.
 */
 
 #ifndef _GNUstep_H_NSTextAttachment
