@@ -1,3 +1,7 @@
+2007-10-30  Adam Fedor  <fedor@gnu.org>
+
+        * gnustep-gui.spec.in: Change Copyright to License.
+
 2007-10-29 Fred Kiefer <FredKiefer@gmx.de>
 
 	* COPYING: Add GPL file.
