@@ -1,3 +1,11 @@
+2007-11-01 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableView.m (-draggingUpdated:): Use
+	currentDropOperation instead of NSTableViewDropAbove.
+	* Source/NSDocument.m (-windowForSheet): Return nil instead of
+	mainWindow, when there is no associated window.
+	Patches by Wolfgang Lux <wolfgang.lux@gmail.com>. 
+
 2007-10-30  Adam Fedor  <fedor@gnu.org>
 
         * gnustep-gui.spec.in: Change Copyright to License.

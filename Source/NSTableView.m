@@ -6192,13 +6192,13 @@ static BOOL selectContiguousRegion(NSTableView *self,
     {
       currentRow = [self rowAtPoint: p] - 1;
       if (currentRow > 0)
-	[self scrollRowToVisible: currentRow];
+        [self scrollRowToVisible: currentRow];
     }
   else if (p.y > NSMaxY([self visibleRect])-3)
     {
       currentRow = [self rowAtPoint: p] + 1;
       if (currentRow < _numberOfRows)
-	[self scrollRowToVisible: currentRow];
+        [self scrollRowToVisible: currentRow];
     }
 
   positionInRow = (int)(p.y - _bounds.origin.y) % (int)_rowHeight;
@@ -6232,13 +6232,13 @@ static BOOL selectContiguousRegion(NSTableView *self,
     {
       currentDragOperation = dragOperation;
       if ([_dataSource respondsToSelector: 
-			 @selector(tableView:validateDrop:proposedRow:proposedDropOperation:)])
-	{
-	  currentDragOperation = [_dataSource tableView: self
-					      validateDrop: sender
-					      proposedRow: currentDropRow
-					      proposedDropOperation: NSTableViewDropAbove];
-	}
+             @selector(tableView:validateDrop:proposedRow:proposedDropOperation:)])
+        {
+          currentDragOperation = [_dataSource tableView: self
+                                              validateDrop: sender
+                                              proposedRow: currentDropRow
+                                              proposedDropOperation: currentDropOperation];
+        }
       
       lastQuarterPosition = quarterPosition;
       
