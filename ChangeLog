@@ -1,5 +1,14 @@
 2007-11-01 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSBrowser.m (+initialize): Create titleCell here to have
+	it available for browsers loaded from Gorm files.
+	* Source/NSBrowser.m (GSBrowserTitleCell): Add method
+	drawingRectForBounds: and correct drawWithFrame:inView:.
+	* Source/NSBrowser.m (-displayAllColumns, -displayColumn:): Mark
+	for redraw. 
+	
+2007-11-01 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSTableView.m (-draggingUpdated:): Use
 	currentDropOperation instead of NSTableViewDropAbove.
 	* Source/NSDocument.m (-windowForSheet): Return nil instead of
