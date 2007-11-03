@@ -1,3 +1,9 @@
+2007-11-03 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSControl.m,
+	* Source/NSMenuItem.m (-initWithCoder:, -encodeWithCoder:): Better
+	support for keyed encoding (Tag, separator,...).
+
 2007-11-01 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBrowser.m (+initialize): Create titleCell here to have

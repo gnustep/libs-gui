@@ -483,6 +483,10 @@ static Class imageClass;
 {
   if ([aCoder allowsKeyedCoding])
     {
+      if ([self isSeparatorItem])
+        {
+          [aCoder encodeBool: YES forKey: @"NSIsSeparator"];
+        }
       [aCoder encodeObject: _title forKey: @"NSTitle"];
       [aCoder encodeObject: NSStringFromSelector(_action) forKey: @"NSAction"];
       [aCoder encodeObject: _keyEquivalent forKey: @"NSKeyEquiv"];
@@ -495,6 +499,11 @@ static Class imageClass;
       [aCoder encodeInt: _keyEquivalentModifierMask forKey: @"NSKeyEquivModMask"];
       [aCoder encodeInt: _mnemonicLocation forKey: @"NSMnemonicLoc"];
       [aCoder encodeInt: _state forKey: @"NSState"];
+      [aCoder encodeBool: ![self isEnabled] forKey: @"NSIsDisabled"];
+      if (_tag)
+        {
+          [aCoder encodeInt: _tag forKey: @"NSTag"];
+        }
     }
   else
     {
@@ -529,28 +538,48 @@ static Class imageClass;
       NSString *title;
       NSString *action;
       NSString *key;
-      NSImage *mixedImage;
-      NSImage *onImage;
-      id target;
-      NSMenu *submenu;
+      BOOL isSeparator = NO;
+
+      if ([aDecoder containsValueForKey: @"NSIsSeparator"])
+        {
+          isSeparator = [aDecoder decodeBoolForKey: @"NSIsSeparator"];
+        }
+
+      if (isSeparator)
+        {
+          RELEASE(self);
+          return [NSMenuItem separatorItem];
+        }
 
       title = [aDecoder decodeObjectForKey: @"NSTitle"];
       action = [aDecoder decodeObjectForKey: @"NSAction"];
       key = [aDecoder decodeObjectForKey: @"NSKeyEquiv"];
-      mixedImage = [aDecoder decodeObjectForKey: @"NSMixedImage"];
-      onImage = [aDecoder decodeObjectForKey: @"NSOnImage"];
-      target = [aDecoder decodeObjectForKey: @"NSTarget"];
-      [aDecoder decodeObjectForKey: @"NSMenu"];
-      submenu = [aDecoder decodeObjectForKey: @"NSSubmenu"];
 
       self = [self initWithTitle: title
-		   action: NSSelectorFromString(action)
-		   keyEquivalent: key];
-      [self setTarget: target];
-      [self setMixedStateImage: mixedImage];
-      [self setOnStateImage: onImage];
-      [self setSubmenu: submenu];
+                   action: NSSelectorFromString(action)
+                   keyEquivalent: key];
+      //[aDecoder decodeObjectForKey: @"NSMenu"];
 
+      if ([aDecoder containsValueForKey: @"NSTarget"])
+        {
+         id target = [aDecoder decodeObjectForKey: @"NSTarget"];
+         [self setTarget: target];
+        }
+      if ([aDecoder containsValueForKey: @"NSMixedImage"])
+        {
+          NSImage *mixedImage = [aDecoder decodeObjectForKey: @"NSMixedImage"];
+          [self setMixedStateImage: mixedImage];
+        }
+      if ([aDecoder containsValueForKey: @"NSOnImage"])
+        {
+          NSImage *onImage = [aDecoder decodeObjectForKey: @"NSOnImage"];
+          [self setOnStateImage: onImage];
+        }
+      if ([aDecoder containsValueForKey: @"NSSubmenu"])
+        {
+          NSMenu *submenu = [aDecoder decodeObjectForKey: @"NSSubmenu"];
+          [self setSubmenu: submenu];
+        }
       if ([aDecoder containsValueForKey: @"NSKeyEquivModMask"])
         {
           int keyMask = [aDecoder decodeIntForKey: @"NSKeyEquivModMask"];
@@ -565,6 +594,16 @@ static Class imageClass;
         {
           int state = [aDecoder decodeIntForKey: @"NSState"];
           [self setState: state];
+        }
+      if ([aDecoder containsValueForKey: @"NSIsDisabled"])
+        {
+          BOOL flag = [aDecoder decodeBoolForKey: @"NSIsDisabled"];
+          [self setEnabled: !flag];
+        }
+      if ([aDecoder containsValueForKey: @"NSTag"])
+        {
+          int tag = [aDecoder decodeIntForKey: @"NSTag"];
+          [self setTag: tag];
         }
     }
   else

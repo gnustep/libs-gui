@@ -911,6 +911,10 @@ static NSNotificationCenter *nc;
     {
       [aCoder encodeObject: [self cell] forKey: @"NSCell"];
       [aCoder encodeBool: [self isEnabled] forKey: @"NSEnabled"];
+       if (_tag)
+        {
+          [aCoder encodeInt: [self tag] forKey: @"NSTag"];
+        }
     }
   else
     {
@@ -930,12 +934,17 @@ static NSNotificationCenter *nc;
       
       if (cell != nil)
         {
-	  [self setCell: cell];
-	}
+          [self setCell: cell];
+        }
       if ([aDecoder containsValueForKey: @"NSEnabled"])
         {
-	  [self setEnabled: [aDecoder decodeBoolForKey: @"NSEnabled"]];
-	}
+          [self setEnabled: [aDecoder decodeBoolForKey: @"NSEnabled"]];
+        }
+      if ([aDecoder containsValueForKey: @"NSTag"])
+        {
+          int tag = [aDecoder decodeIntForKey: @"NSTag"];
+          [self setTag: tag];
+        }
     }
   else 
     {
