@@ -6,32 +6,39 @@ The currently released version of the library is `0.13.0'.
 1.1 Noteworthy changes in version `0.13.0'
 ==========================================
 
+This is an unstable release. There may be backward compatibility issues
+with previous releases of the gui library.
+
    * Switched to use LGPL 3 and GPL 3.
 
-   * Added new methods from Mac OS X 10.4 for NSDragging, NSFontDescriptor,
-     NSAttributedString, NSImageView, NSStringDrawing, NSParagraphStyle,
-     NSView, NSCell, NSActionCell, NSAlert, NSApplication, NSBitmapImageRep,
-     NSBox, NSColor, NSColorSpace, NSComboBox, NSComboBoxCell,
-     NSDocumentController, NSEvent, NSScreen, NSFont, NSFontManager,
-     NSFormCell, NSForm, NSWindow, NSTextField, NSTextFieldCell. Some ivar
-     names were changed also. 
-     
+   * Added new methods from Mac OS X 10.4 for NSDragging,
+     NSFontDescriptor, NSAttributedString, NSImageView,
+     NSStringDrawing, NSParagraphStyle, NSView, NSCell, NSActionCell,
+     NSAlert, NSApplication, NSBitmapImageRep, NSBox, NSColor,
+     NSColorSpace, NSComboBox, NSComboBoxCell, NSDocumentController,
+     NSEvent, NSScreen, NSFont, NSFontManager, NSFormCell, NSForm,
+     NSWindow, NSTextField, NSTextFieldCell. Some ivar names were
+     changed also.
+
    * Moved Postscript printing methods from NSView to NSGraphicsContext.
 
    * Rewrote the NSView drawing mechanism to always use
      [displayRectIgnoringOpacity:inContext].
 
-   * Report more controls as being flipped. (NSTextField, NSTableHeaderView,
-     NSSlider, NSProgressIndicator, NSButton) NSTabView is still missing.
+   * Report more controls as being flipped. (NSTextField,
+     NSTableHeaderView, NSSlider, NSProgressIndicator, NSButton)
+     NSTabView is still missing.
 
    * In NSAffineTransform use optimized primitive methods from base.
 
-   * Add font attribute fixing to NSAttributedString. To allow for the output
-     of glyphs not present in the current font.
+   * Add font attribute fixing to NSAttributedString. To allow for the
+     output of glyphs not present in the current font.
 
    * Optimized the validation of edited cells.
 
    * Implementation of special connectors for Key-Value binding.
+
+   * Base library version 1.15.1 is required for this release
 
 1.2 Noteworthy changes in version `0.12.0'
 ==========================================

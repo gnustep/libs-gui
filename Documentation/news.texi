@@ -11,6 +11,9 @@ The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSIO
 
 @section Noteworthy changes in version @samp{0.13.0}
 
+This is an unstable release. There may be backward compatibility issues
+with previous releases of the gui library.
+
 @itemize @bullet
 @item Switched to use LGPL 3 and GPL 3.
 @item Added new methods from Mac OS X 10.4 for NSDragging, NSFontDescriptor,
@@ -30,6 +33,7 @@ NSSlider, NSProgressIndicator, NSButton) NSTabView is still missing.
 of glyphs not present in the current font.
 @item Optimized the validation of edited cells.
 @item Implementation of special connectors for Key-Value binding.
+@item Base library version 1.15.1 is required for this release
 @end itemize
 
 @ifclear ANNOUNCE-ONLY

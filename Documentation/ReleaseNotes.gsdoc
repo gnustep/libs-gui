@@ -21,6 +21,10 @@
       </p>
       <section>
       	<heading>Version 0.13.0</heading>
+	<p>This is an unstable release.
+	Changes to error handling and key-value coding require an
+	update to at least the base library version 1.15.1.
+	</p>
         	  <deflist>
             	    <term>Licence</term>
              	    <desc>
