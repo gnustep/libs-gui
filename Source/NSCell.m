@@ -2470,7 +2470,7 @@ static NSColor	*shadowCol;
           cFlags2 = [aDecoder decodeIntForKey: @"NSCellFlags2"];
           [self setControlTint: ((cFlags2 & 0xE0) >> 5)];
           [self setControlSize: ((cFlags2 & 0xE0000) >> 17)];
-          [self setSendsActionOnEndEditing: (cFlags2 & 0x400000)];
+          [self setSendsActionOnEndEditing: ((cFlags2 & 0x400000) == 0x400000)];
           [self setAllowsMixedState: ((cFlags2 & 0x1000000) == 0x1000000)];
           [self setRefusesFirstResponder: ((cFlags2 & 0x2000000) == 0x2000000)];
           [self setAlignment: ((cFlags2 & 0x1C000000) >> 26)];

@@ -1,3 +1,10 @@
+2007-11-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSCell.m (-initWithCoder:): Correct keyed decoding of
+	setSendsActionOnEndEditing. 
+	* Source/tiff.m: Change mode field of chandle_t to char.
+	Bugs reported by gcc 4.2
+	
 2007-11-09  Adam Fedor  <fedor@gnu.org>
 
 	* Version 0.13.0

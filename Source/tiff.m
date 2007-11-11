@@ -75,7 +75,7 @@ typedef struct {
   char* data;
   long  size;
   long  position;
-  const char* mode;
+  char  mode;
   char **outdata;
   long *outposition;
 } chandle_t;
@@ -118,7 +118,7 @@ static tsize_t
 TiffHandleWrite(thandle_t handle, tdata_t buf, tsize_t count)
 {
   chandle_t* chand = (chandle_t *)handle;
-  if (chand->mode == "r")
+  if (chand->mode == 'r')
     return 0;
   if (chand->position + count > chand->size)
     {
@@ -145,8 +145,8 @@ TiffHandleSeek(thandle_t handle, toff_t offset, int mode)
     case SEEK_SET: chand->position = offset; break;
     case SEEK_CUR: chand->position += offset; break;
     case SEEK_END: 
-      if (offset > 0 && chand->mode == "r")
-	return 0;
+      if (offset > 0 && chand->mode == 'r')
+        return 0;
       chand->position += offset; break;
       break;
     }
@@ -206,7 +206,7 @@ NSTiffOpenDataRead(const char* data, long size)
   handle->position = 0;
   handle->outposition = 0;
   handle->size = size;
-  handle->mode = "r";
+  handle->mode = 'r';
   return TIFFClientOpen("GSTiffReadData", "r",
 			(thandle_t)handle,
 			TiffHandleRead, TiffHandleWrite,
@@ -225,7 +225,7 @@ NSTiffOpenDataWrite(char **data, long *size)
   handle->position = 0;
   handle->outposition = size;
   handle->size = *size;
-  handle->mode = "w";
+  handle->mode = 'w';
   return TIFFClientOpen("GSTiffWriteData", "w",
 			(thandle_t)handle,
 			TiffHandleRead, TiffHandleWrite,
