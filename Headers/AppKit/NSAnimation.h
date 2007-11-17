@@ -106,6 +106,9 @@ APPKIT_EXPORT NSString *NSAnimationProgressMark;
  */
 @interface NSAnimation : NSObject < NSCopying, NSCoding, GSAnimation >
 {
+// FIXME ... all these ivars should be hidden inside a pointer to an
+// FIXME ... opaque data structure, so that layout etc can be changed
+// FIXME ... without breaking binary compatibility.
   NSTimeInterval _duration;		  // Duration of the animation
   float _frameRate;			  // Wanted frame rate
   NSAnimationCurve _curve;		  // Id of progres->value function

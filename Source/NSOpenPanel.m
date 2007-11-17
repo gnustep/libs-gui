@@ -385,8 +385,8 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 	{
 	  while ((currCell = [cellEnum nextObject]))
 	    {
-	      [ret addObject: [NSString stringWithFormat: @"%@/%@", dir, 
-					[currCell stringValue]]];
+	      [ret addObject:
+                [dir stringByAppendingPathComponent: [currCell stringValue]]];
 	    }
 	}
       return ret;

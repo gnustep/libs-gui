@@ -2680,8 +2680,10 @@ in the main thread.
  */
 - (void) scrollRect: (NSRect)aRect by: (NSSize)delta
 {
-  NSPoint destPoint = aRect.origin;
+  NSPoint destPoint;
 
+  aRect = NSIntersectionRect(aRect, _bounds);   // Don't copy stuff outside.
+  destPoint = aRect.origin;
   destPoint.x -= delta.width;
   destPoint.y -= delta.height;
 

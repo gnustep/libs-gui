@@ -5,7 +5,7 @@
    Copyright (C) 1996-1999 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
-	    Ovidiu Predescu <ovidiu@net-community.com>
+            Ovidiu Predescu <ovidiu@net-community.com>
    Date: 1996
    Author:  Felipe A. Rodriguez <far@ix.netcom.com>
    Date: August 1998
@@ -213,31 +213,31 @@ typedef struct _GSButtonCellFlags
     {
     case NSPushInCell:
       if (_highlightsByMask & NSPushInCellMask)
-	value = 1;
+        value = 1;
       break;
     case NSChangeGrayCell:
       if (_showAltStateMask & NSChangeGrayCellMask)
-	value = 1;
+        value = 1;
       break;
     case NSCellLightsByGray:
       if (_highlightsByMask & NSChangeGrayCellMask)
-	value = 1;
+        value = 1;
       break;
     case NSChangeBackgroundCell:
       if (_showAltStateMask & NSChangeBackgroundCellMask)
-	value = 1;
+        value = 1;
       break;
     case NSCellLightsByBackground:
       if (_highlightsByMask & NSChangeBackgroundCellMask)
-	value = 1;
+        value = 1;
       break;
     case NSCellChangesContents:
       if (_showAltStateMask & NSContentsCellMask)
-	value = 1;
+        value = 1;
       break;
     case NSCellLightsByContents:
       if (_highlightsByMask & NSContentsCellMask)
-	value = 1;
+        value = 1;
       break;
     default:
       value = [super cellAttribute: aParameter];
@@ -253,45 +253,45 @@ typedef struct _GSButtonCellFlags
     {
     case NSPushInCell:
       if (value)
-	_highlightsByMask |= NSPushInCellMask;
+        _highlightsByMask |= NSPushInCellMask;
       else
-	_highlightsByMask &= ~NSPushInCellMask;
+        _highlightsByMask &= ~NSPushInCellMask;
       break;
     case NSChangeGrayCell:
       if (value)
-	_showAltStateMask |= NSChangeGrayCellMask;
+        _showAltStateMask |= NSChangeGrayCellMask;
       else
-	_showAltStateMask &= ~NSChangeGrayCellMask;
+        _showAltStateMask &= ~NSChangeGrayCellMask;
       break;
     case NSChangeBackgroundCell:
       if (value)
-	_showAltStateMask |= NSChangeBackgroundCellMask;
+        _showAltStateMask |= NSChangeBackgroundCellMask;
       else
-	_showAltStateMask &= ~NSChangeBackgroundCellMask;
+        _showAltStateMask &= ~NSChangeBackgroundCellMask;
       break;
     case NSCellChangesContents:
       if (value)
-	_showAltStateMask |= NSContentsCellMask;
+        _showAltStateMask |= NSContentsCellMask;
       else
-	_showAltStateMask &= ~NSContentsCellMask;
+        _showAltStateMask &= ~NSContentsCellMask;
       break;
     case NSCellLightsByGray:
       if (value)
-	_highlightsByMask |= NSChangeGrayCellMask;
+        _highlightsByMask |= NSChangeGrayCellMask;
       else
-	_highlightsByMask &= ~NSChangeGrayCellMask;
+        _highlightsByMask &= ~NSChangeGrayCellMask;
       break;
     case NSCellLightsByBackground:
       if (value)
-	_highlightsByMask |= NSChangeBackgroundCellMask;
+        _highlightsByMask |= NSChangeBackgroundCellMask;
       else
-	_highlightsByMask &= ~NSChangeBackgroundCellMask;
+        _highlightsByMask &= ~NSChangeBackgroundCellMask;
       break;
     case NSCellLightsByContents:
       if (value)
-	_highlightsByMask |= NSContentsCellMask;
+        _highlightsByMask |= NSContentsCellMask;
       else
-	_highlightsByMask &= ~NSContentsCellMask;
+        _highlightsByMask &= ~NSContentsCellMask;
       break;
     default:
       [super setCellAttribute: aParameter to: value];
@@ -313,7 +313,7 @@ typedef struct _GSButtonCellFlags
       ((size = [fontObject pointSize]) != [_keyEquivalentFont pointSize]))
     {
       [self setKeyEquivalentFont: [_keyEquivalentFont fontName] 
-	    size: size];       
+            size: size];       
     }
 }
 
@@ -336,9 +336,9 @@ typedef struct _GSButtonCellFlags
   if (_control_view)
     {
       if ([_control_view isKindOfClass: [NSControl class]])
-	{
-	  [(NSControl*)_control_view updateCell: self];
-	}
+        {
+          [(NSControl*)_control_view updateCell: self];
+        }
     }
 }
 
@@ -350,7 +350,7 @@ typedef struct _GSButtonCellFlags
 
   dict = [self _nonAutoreleasedTypingAttributes];
   attrStr = [[NSAttributedString alloc] initWithString: _altContents 
-					attributes: dict];
+                                        attributes: dict];
   RELEASE(dict);
 
   return AUTORELEASE(attrStr);
@@ -404,7 +404,7 @@ typedef struct _GSButtonCellFlags
   unsigned int location = [aString rangeOfString: @"&"].location;
 
   [self setAlternateTitle: [aString stringByReplacingString: @"&"
-				    withString: @""]];
+                                    withString: @""]];
   // TODO: We should underline this character
   [self setAlternateMnemonicLocation: location];
 }
@@ -431,7 +431,7 @@ typedef struct _GSButtonCellFlags
   if (anImage) 
     {
       NSAssert ([anImage isKindOfClass: [NSImage class]],
-		NSInvalidArgumentException);
+                NSInvalidArgumentException);
     }
   
   if (_cell.image_position == NSNoImage)
@@ -692,57 +692,57 @@ typedef struct _GSButtonCellFlags
   switch (buttonType)
     {
       case NSMomentaryLightButton: 
-	[self setHighlightsBy: NSChangeBackgroundCellMask];
-	[self setShowsStateBy: NSNoCellMask];
-	[self setImageDimsWhenDisabled: YES];
-	break;
+        [self setHighlightsBy: NSChangeBackgroundCellMask];
+        [self setShowsStateBy: NSNoCellMask];
+        [self setImageDimsWhenDisabled: YES];
+        break;
       case NSMomentaryPushInButton: 
-	[self setHighlightsBy: NSPushInCellMask | NSChangeGrayCellMask];
-	[self setShowsStateBy: NSNoCellMask];
-	[self setImageDimsWhenDisabled: YES];
-	break;
+        [self setHighlightsBy: NSPushInCellMask | NSChangeGrayCellMask];
+        [self setShowsStateBy: NSNoCellMask];
+        [self setImageDimsWhenDisabled: YES];
+        break;
       case NSMomentaryChangeButton: 
-	[self setHighlightsBy: NSContentsCellMask];
-	[self setShowsStateBy: NSNoCellMask];
-	[self setImageDimsWhenDisabled: YES];
-	break;
+        [self setHighlightsBy: NSContentsCellMask];
+        [self setShowsStateBy: NSNoCellMask];
+        [self setImageDimsWhenDisabled: YES];
+        break;
       case NSPushOnPushOffButton: 
-	[self setHighlightsBy: NSPushInCellMask | NSChangeGrayCellMask];
-	[self setShowsStateBy: NSChangeBackgroundCellMask];
-	[self setImageDimsWhenDisabled: YES];
-	break;
+        [self setHighlightsBy: NSPushInCellMask | NSChangeGrayCellMask];
+        [self setShowsStateBy: NSChangeBackgroundCellMask];
+        [self setImageDimsWhenDisabled: YES];
+        break;
       case NSOnOffButton: 
-	[self setHighlightsBy: NSChangeBackgroundCellMask];
-	[self setShowsStateBy: NSChangeBackgroundCellMask];
-	[self setImageDimsWhenDisabled: YES];
-	break;
+        [self setHighlightsBy: NSChangeBackgroundCellMask];
+        [self setShowsStateBy: NSChangeBackgroundCellMask];
+        [self setImageDimsWhenDisabled: YES];
+        break;
       case NSToggleButton: 
-	[self setHighlightsBy: NSPushInCellMask | NSContentsCellMask];
-	[self setShowsStateBy: NSContentsCellMask];
-	[self setImageDimsWhenDisabled: YES];
-	break;
+        [self setHighlightsBy: NSPushInCellMask | NSContentsCellMask];
+        [self setShowsStateBy: NSContentsCellMask];
+        [self setImageDimsWhenDisabled: YES];
+        break;
       case NSSwitchButton: 
-	[self setHighlightsBy: NSContentsCellMask];
-	[self setShowsStateBy: NSContentsCellMask];
-	[self setImage: [NSImage imageNamed: @"NSSwitch"]];
-	[self setAlternateImage: [NSImage imageNamed: @"NSHighlightedSwitch"]];
-	[self setImagePosition: NSImageLeft];
-	[self setAlignment: NSLeftTextAlignment];
-	[self setBordered: NO];
-	[self setBezeled: NO];
-	[self setImageDimsWhenDisabled: NO];
-	break;
+        [self setHighlightsBy: NSContentsCellMask];
+        [self setShowsStateBy: NSContentsCellMask];
+        [self setImage: [NSImage imageNamed: @"NSSwitch"]];
+        [self setAlternateImage: [NSImage imageNamed: @"NSHighlightedSwitch"]];
+        [self setImagePosition: NSImageLeft];
+        [self setAlignment: NSLeftTextAlignment];
+        [self setBordered: NO];
+        [self setBezeled: NO];
+        [self setImageDimsWhenDisabled: NO];
+        break;
       case NSRadioButton: 
-	[self setHighlightsBy: NSContentsCellMask];
-	[self setShowsStateBy: NSContentsCellMask];
-	[self setImage: [NSImage imageNamed: @"NSRadioButton"]];
-	[self setAlternateImage: [NSImage imageNamed: @"NSHighlightedRadioButton"]];
-	[self setImagePosition: NSImageLeft];
-	[self setAlignment: NSLeftTextAlignment];
-	[self setBordered: NO];
-	[self setBezeled: NO];
-	[self setImageDimsWhenDisabled: NO];
-	break;
+        [self setHighlightsBy: NSContentsCellMask];
+        [self setShowsStateBy: NSContentsCellMask];
+        [self setImage: [NSImage imageNamed: @"NSRadioButton"]];
+        [self setAlternateImage: [NSImage imageNamed: @"NSHighlightedRadioButton"]];
+        [self setImagePosition: NSImageLeft];
+        [self setAlignment: NSLeftTextAlignment];
+        [self setBordered: NO];
+        [self setBezeled: NO];
+        [self setImageDimsWhenDisabled: NO];
+        break;
     }
 }
 
@@ -800,15 +800,15 @@ typedef struct _GSButtonCellFlags
 - (id) objectValue
 {
   if (_cell.state == NSOffState)
-    {	
+    {        
       return [NSNumber numberWithBool: NO];
     }
   else if (_cell.state == NSOnState)
-    {	
+    {        
       return [NSNumber numberWithBool: YES];
     }
   else // NSMixedState
-    {	
+    {        
       return [NSNumber numberWithInt: -1];
     }
 }
@@ -838,8 +838,8 @@ typedef struct _GSButtonCellFlags
 
 - (void) drawBezelWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
 {
-  unsigned		mask;
-  GSThemeControlState	buttonState = GSThemeNormalState;
+  unsigned mask;
+  GSThemeControlState buttonState = GSThemeNormalState;
 
   // set the mask
   if (_cell.is_highlighted)
@@ -847,8 +847,8 @@ typedef struct _GSButtonCellFlags
       mask = _highlightsByMask;
       if (_cell.state)
         {
-	  mask &= ~_showAltStateMask;
-	}
+          mask &= ~_showAltStateMask;
+        }
     }
   else if (_cell.state)
     mask = _showAltStateMask;
@@ -871,15 +871,15 @@ typedef struct _GSButtonCellFlags
     }
 
   [[GSTheme theme] drawButton: cellFrame 
-		   in: self 
-		   view: controlView
-		   style: _bezel_style
-		   state: buttonState];
+                   in: self 
+                   view: controlView
+                   style: _bezel_style
+                   state: buttonState];
 }
 
 - (void) drawImage: (NSImage*)anImage 
-	 withFrame: (NSRect)aRect 
-	    inView: (NSView*)controlView
+         withFrame: (NSRect)aRect 
+            inView: (NSView*)controlView
 {
   // Draw image
   if (anImage != nil)
@@ -897,27 +897,27 @@ typedef struct _GSButtonCellFlags
        */
       if ([controlView isFlipped])
         {
-	  position.y += size.height;
-	}
+          position.y += size.height;
+        }
       
       if (_cell.is_disabled && _image_dims_when_disabled)
         {
-	  [anImage dissolveToPoint: position fraction: 0.5];
-	}
+          [anImage dissolveToPoint: position fraction: 0.5];
+        }
       else
         {
-	  [anImage compositeToPoint: position 
-		          operation: NSCompositeSourceOver];
-	}
+          [anImage compositeToPoint: position 
+                          operation: NSCompositeSourceOver];
+        }
     }
 }
 
 - (void) drawTitle: (NSAttributedString*)titleToDisplay 
-	 withFrame: (NSRect)frame 
-	    inView: (NSView*)control
+         withFrame: (NSRect)frame 
+            inView: (NSView*)control
 {
   [self _drawAttributedText: titleToDisplay
-	inFrame: frame];
+        inFrame: frame];
 }
 
 // Private helper method overridden in subclasses
@@ -949,35 +949,35 @@ typedef struct _GSButtonCellFlags
   switch (_gradient_type)
     {
       case NSGradientNone:
-	return;
-	break;
+        return;
+        break;
 
       case NSGradientConcaveWeak:
-	[gray getHue: &h saturation: &s brightness: &v alpha: &a];
-	start_white = [lightGray brightnessComponent];
-	end_white = [gray brightnessComponent];
-	break;
-	
+        [gray getHue: &h saturation: &s brightness: &v alpha: &a];
+        start_white = [lightGray brightnessComponent];
+        end_white = [gray brightnessComponent];
+        break;
+        
       case NSGradientConvexWeak:
-	[darkGray getHue: &h saturation: &s brightness: &v alpha: &a];
-	start_white = [gray brightnessComponent];
-	end_white = [lightGray brightnessComponent];
-	break;
-	
+        [darkGray getHue: &h saturation: &s brightness: &v alpha: &a];
+        start_white = [gray brightnessComponent];
+        end_white = [lightGray brightnessComponent];
+        break;
+        
       case NSGradientConcaveStrong:
-	[lightGray getHue: &h saturation: &s brightness: &v alpha: &a];
-	start_white = [lightGray brightnessComponent];
-	end_white = [darkGray brightnessComponent];
-	break;
-	
+        [lightGray getHue: &h saturation: &s brightness: &v alpha: &a];
+        start_white = [lightGray brightnessComponent];
+        end_white = [darkGray brightnessComponent];
+        break;
+        
       case NSGradientConvexStrong:
-	[darkGray getHue: &h saturation: &s brightness: &v alpha: &a];
-	start_white = [darkGray brightnessComponent];
-	end_white = [lightGray brightnessComponent];
-	break;
+        [darkGray getHue: &h saturation: &s brightness: &v alpha: &a];
+        start_white = [darkGray brightnessComponent];
+        end_white = [lightGray brightnessComponent];
+        break;
 
       default:
-	break;
+        break;
     }
 
   white = start_white;
@@ -994,51 +994,51 @@ typedef struct _GSButtonCellFlags
   while (p1.y > cellFrame.origin.y)
     {
       [[NSColor 
-	colorWithDeviceHue: h saturation: s brightness: white alpha: 1.0] set];
+        colorWithDeviceHue: h saturation: s brightness: white alpha: 1.0] set];
       [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
       
       if (start_white > end_white)
-	white -= white_step;
+        white -= white_step;
       else
-	white += white_step;
+        white += white_step;
 
       p1.y -= 1.0;
       if (p2.x < (cellFrame.size.width + cellFrame.origin.x))
-	p2.x += 1.0;
+        p2.x += 1.0;
       else
-	p2.y -= 1.0;
+        p2.y -= 1.0;
     }
       
   // Move by X
   while (p1.x < (cellFrame.size.width + cellFrame.origin.x))
     {
       [[NSColor 
-	colorWithDeviceHue: h saturation: s brightness: white alpha: 1.0] set];
+        colorWithDeviceHue: h saturation: s brightness: white alpha: 1.0] set];
       [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
       
       if (start_white > end_white)
-	white -= white_step;
+        white -= white_step;
       else
-	white += white_step;
+        white += white_step;
 
       p1.x += 1.0;
       if (p2.x >= (cellFrame.size.width + cellFrame.origin.x))
-	p2.y -= 1.0;
+        p2.y -= 1.0;
       else
-	p2.x += 1.0;
+        p2.x += 1.0;
     }
 }
 
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  unsigned	mask;
-  NSImage	*imageToDisplay;
-  NSRect	imageRect;
-  NSAttributedString	*titleToDisplay;
-  NSRect	titleRect;
-  NSSize	imageSize = {0, 0};
-  NSSize        titleSize = {0, 0};
-  BOOL		flippedView = [controlView isFlipped];
+  unsigned mask;
+  NSImage *imageToDisplay;
+  NSRect imageRect;
+  NSAttributedString *titleToDisplay;
+  NSRect titleRect;
+  NSSize imageSize = {0, 0};
+  NSSize titleSize = {0, 0};
+  BOOL flippedView = [controlView isFlipped];
   NSCellImagePosition ipos = _cell.image_position;
 
   // transparent buttons never draw
@@ -1054,7 +1054,7 @@ typedef struct _GSButtonCellFlags
       mask = _highlightsByMask;
 
       if (_cell.state)
-	mask &= ~_showAltStateMask;
+        mask &= ~_showAltStateMask;
     }
   else if (_cell.state)
     mask = _showAltStateMask;
@@ -1073,13 +1073,13 @@ typedef struct _GSButtonCellFlags
       imageToDisplay = _altImage;
       if (!imageToDisplay)
         {
-	  imageToDisplay = _cell_image;
-	}
+          imageToDisplay = _cell_image;
+        }
       titleToDisplay = [self attributedAlternateTitle];
       if (titleToDisplay == nil || [titleToDisplay length] == 0)
         {
-	  titleToDisplay = [self attributedTitle];
-	}
+          titleToDisplay = [self attributedTitle];
+        }
     }
   else
     {
@@ -1100,13 +1100,13 @@ typedef struct _GSButtonCellFlags
   if (flippedView == YES)
     {
       if (ipos == NSImageAbove)
-	{
-	  ipos = NSImageBelow;
-	}
+        {
+          ipos = NSImageBelow;
+        }
       else if (ipos == NSImageBelow)
-	{
-	  ipos = NSImageAbove;
-	}
+        {
+          ipos = NSImageAbove;
+        }
     }
   
   /*
@@ -1125,137 +1125,137 @@ typedef struct _GSButtonCellFlags
     {
       default:
       case NSNoImage: 
-	imageToDisplay = nil;
-	titleRect = cellFrame;
-	 imageRect = NSZeroRect;
-	if (titleSize.width + 6 <= titleRect.size.width)
-	  {
-	    titleRect.origin.x += 3;
-	    titleRect.size.width -= 6;
-	  }
-	break;
+        imageToDisplay = nil;
+        titleRect = cellFrame;
+         imageRect = NSZeroRect;
+        if (titleSize.width + 6 <= titleRect.size.width)
+          {
+            titleRect.origin.x += 3;
+            titleRect.size.width -= 6;
+          }
+        break;
 
       case NSImageOnly: 
-	titleToDisplay = nil;
-	imageRect = cellFrame;
-	titleRect = NSZeroRect;
-	break;
+        titleToDisplay = nil;
+        imageRect = cellFrame;
+        titleRect = NSZeroRect;
+        break;
 
       case NSImageLeft: 
-	imageRect.origin = cellFrame.origin;
-	imageRect.size.width = imageSize.width;
-	imageRect.size.height = cellFrame.size.height;
-	if (_cell.is_bordered || _cell.is_bezeled) 
-	  {
-	    imageRect.origin.x += 3;
-	  }
-	titleRect = imageRect;
-	titleRect.origin.x += imageSize.width + GSCellTextImageXDist;
-	titleRect.size.width = NSMaxX(cellFrame) - titleRect.origin.x;
-	if (titleSize.width + 3 <= titleRect.size.width)
-	  {
-	    titleRect.size.width -= 3;
-	  }
-	break;
+        imageRect.origin = cellFrame.origin;
+        imageRect.size.width = imageSize.width;
+        imageRect.size.height = cellFrame.size.height;
+        if (_cell.is_bordered || _cell.is_bezeled) 
+          {
+            imageRect.origin.x += 3;
+          }
+        titleRect = imageRect;
+        titleRect.origin.x += imageSize.width + GSCellTextImageXDist;
+        titleRect.size.width = NSMaxX(cellFrame) - titleRect.origin.x;
+        if (titleSize.width + 3 <= titleRect.size.width)
+          {
+            titleRect.size.width -= 3;
+          }
+        break;
 
       case NSImageRight: 
-	imageRect.origin.x = NSMaxX(cellFrame) - imageSize.width;
-	imageRect.origin.y = cellFrame.origin.y;
-	imageRect.size.width = imageSize.width;
-	imageRect.size.height = cellFrame.size.height;
-	if (_cell.is_bordered || _cell.is_bezeled) 
-	  {
-	    imageRect.origin.x -= 3;
-	  }
-	titleRect.origin = cellFrame.origin;
-	titleRect.size.width = imageRect.origin.x - titleRect.origin.x
-			       - GSCellTextImageXDist;
-	titleRect.size.height = cellFrame.size.height;
-	if (titleSize.width + 3 <= titleRect.size.width)
-	  {
-	    titleRect.origin.x += 3;
-	    titleRect.size.width -= 3;
-	  }
-	break;
+        imageRect.origin.x = NSMaxX(cellFrame) - imageSize.width;
+        imageRect.origin.y = cellFrame.origin.y;
+        imageRect.size.width = imageSize.width;
+        imageRect.size.height = cellFrame.size.height;
+        if (_cell.is_bordered || _cell.is_bezeled) 
+          {
+            imageRect.origin.x -= 3;
+          }
+        titleRect.origin = cellFrame.origin;
+        titleRect.size.width = imageRect.origin.x - titleRect.origin.x
+                               - GSCellTextImageXDist;
+        titleRect.size.height = cellFrame.size.height;
+        if (titleSize.width + 3 <= titleRect.size.width)
+          {
+            titleRect.origin.x += 3;
+            titleRect.size.width -= 3;
+          }
+        break;
 
       case NSImageAbove: 
-	/*
+        /*
          * In this case, imageRect is all the space we can allocate
-	 * above the text. 
-	 * The drawing code below will then center the image in imageRect.
-	 */
-	titleRect.origin = cellFrame.origin;
-	titleRect.size.width = cellFrame.size.width;
-	titleRect.size.height = titleSize.height;
-	if (_cell.is_bordered || _cell.is_bezeled) 
-	  {
-	    titleRect.origin.y += 3;
-	  }
+         * above the text. 
+         * The drawing code below will then center the image in imageRect.
+         */
+        titleRect.origin = cellFrame.origin;
+        titleRect.size.width = cellFrame.size.width;
+        titleRect.size.height = titleSize.height;
+        if (_cell.is_bordered || _cell.is_bezeled) 
+          {
+            titleRect.origin.y += 3;
+          }
 
-	imageRect.origin.x = cellFrame.origin.x;
-	imageRect.origin.y = NSMaxY(titleRect) + GSCellTextImageYDist;
-	imageRect.size.width = cellFrame.size.width;
-	imageRect.size.height = NSMaxY(cellFrame) - imageRect.origin.y;
+        imageRect.origin.x = cellFrame.origin.x;
+        imageRect.origin.y = NSMaxY(titleRect) + GSCellTextImageYDist;
+        imageRect.size.width = cellFrame.size.width;
+        imageRect.size.height = NSMaxY(cellFrame) - imageRect.origin.y;
 
-	if (_cell.is_bordered || _cell.is_bezeled) 
-	  {
-	    imageRect.size.height -= 3;
-	  }
-	if (titleSize.width + 6 <= titleRect.size.width)
-	  {
-	    titleRect.origin.x += 3;
-	    titleRect.size.width -= 6;
-	  }
-	break;
+        if (_cell.is_bordered || _cell.is_bezeled) 
+          {
+            imageRect.size.height -= 3;
+          }
+        if (titleSize.width + 6 <= titleRect.size.width)
+          {
+            titleRect.origin.x += 3;
+            titleRect.size.width -= 6;
+          }
+        break;
 
       case NSImageBelow: 
-	/*
-	 * In this case, imageRect is all the space we can allocate
-	 * below the text. 
-	 * The drawing code below will then center the image in imageRect.
-	 */
-	titleRect.origin.x = cellFrame.origin.x;
-	titleRect.origin.y = NSMaxY(cellFrame) - titleSize.height;
-	titleRect.size.width = cellFrame.size.width;
-	titleRect.size.height = titleSize.height;
-	if (_cell.is_bordered || _cell.is_bezeled)
-	  {
-	    titleRect.origin.y -= 3;
-	  }
+        /*
+         * In this case, imageRect is all the space we can allocate
+         * below the text. 
+         * The drawing code below will then center the image in imageRect.
+         */
+        titleRect.origin.x = cellFrame.origin.x;
+        titleRect.origin.y = NSMaxY(cellFrame) - titleSize.height;
+        titleRect.size.width = cellFrame.size.width;
+        titleRect.size.height = titleSize.height;
+        if (_cell.is_bordered || _cell.is_bezeled)
+          {
+            titleRect.origin.y -= 3;
+          }
 
-	imageRect.origin.x = cellFrame.origin.x;
-	imageRect.origin.y = cellFrame.origin.y;
-	imageRect.size.width = cellFrame.size.width;
-	imageRect.size.height
-	  = titleRect.origin.y - GSCellTextImageYDist - imageRect.origin.y;
+        imageRect.origin.x = cellFrame.origin.x;
+        imageRect.origin.y = cellFrame.origin.y;
+        imageRect.size.width = cellFrame.size.width;
+        imageRect.size.height
+          = titleRect.origin.y - GSCellTextImageYDist - imageRect.origin.y;
 
-	if (_cell.is_bordered || _cell.is_bezeled) 
-	  {
-	    imageRect.origin.y += 3;
-	    imageRect.size.height -= 3;
-	  }
-	if (titleSize.width + 6 <= titleRect.size.width)
-	  {
-	    titleRect.origin.x += 3;
-	    titleRect.size.width -= 6;
-	  }
-	break;
+        if (_cell.is_bordered || _cell.is_bezeled) 
+          {
+            imageRect.origin.y += 3;
+            imageRect.size.height -= 3;
+          }
+        if (titleSize.width + 6 <= titleRect.size.width)
+          {
+            titleRect.origin.x += 3;
+            titleRect.size.width -= 6;
+          }
+        break;
 
       case NSImageOverlaps: 
-	imageRect = cellFrame;
-	titleRect = cellFrame;
-	if (titleSize.width + 6 <= titleRect.size.width)
-	  {
-	    titleRect.origin.x += 3;
-	    titleRect.size.width -= 6;
-	  }
-	break;
+        imageRect = cellFrame;
+        titleRect = cellFrame;
+        if (titleSize.width + 6 <= titleRect.size.width)
+          {
+            titleRect.origin.x += 3;
+            titleRect.size.width -= 6;
+          }
+        break;
     }
 
   // Draw gradient
   if (!_cell.is_highlighted && _gradient_type != NSGradientNone)
     {
-	// FIXME: I think this method is wrong.
+        // FIXME: I think this method is wrong.
       [self drawGradientWithFrame: cellFrame inView: controlView];
     }
 
@@ -1263,8 +1263,8 @@ typedef struct _GSButtonCellFlags
   if (imageToDisplay != nil)
     {
       [self drawImage: imageToDisplay
-	    withFrame: imageRect
-	       inView: controlView];
+            withFrame: imageRect
+               inView: controlView];
     }
 
   // Draw title
@@ -1278,11 +1278,11 @@ typedef struct _GSButtonCellFlags
 {
   NSSize s;
   NSSize borderSize;
-  unsigned	mask;
-  NSImage	*imageToDisplay;
-  NSAttributedString	*titleToDisplay;
-  NSSize	imageSize = NSZeroSize;
-  NSSize	titleSize = NSZeroSize;
+  unsigned mask;
+  NSImage *imageToDisplay;
+  NSAttributedString *titleToDisplay;
+  NSSize imageSize = NSZeroSize;
+  NSSize titleSize = NSZeroSize;
   
   /* The size calculations here must be kept in sync with
   -drawInteriorWithFrame. */
@@ -1292,7 +1292,7 @@ typedef struct _GSButtonCellFlags
       mask = _highlightsByMask;
 
       if (_cell.state)
-	mask &= ~_showAltStateMask;
+        mask &= ~_showAltStateMask;
     }
   else if (_cell.state)
     mask = _showAltStateMask;
@@ -1303,14 +1303,14 @@ typedef struct _GSButtonCellFlags
     {
       imageToDisplay = _altImage;
       if (!imageToDisplay)
-	{
-	  imageToDisplay = _cell_image;
-	}
+        {
+          imageToDisplay = _cell_image;
+        }
       titleToDisplay = [self attributedAlternateTitle];
       if (titleToDisplay == nil || [titleToDisplay length] == 0)
         {
-	  titleToDisplay = [self attributedTitle];
-	}
+          titleToDisplay = [self attributedTitle];
+        }
     }
   else
     {
@@ -1332,53 +1332,53 @@ typedef struct _GSButtonCellFlags
     {
       default:
       case NSNoImage: 
-	s = titleSize;
-	break;
-	
+        s = titleSize;
+        break;
+        
       case NSImageOnly: 
-	s = imageSize;
-	break;
-	
+        s = imageSize;
+        break;
+        
       case NSImageLeft: 
       case NSImageRight: 
-	s.width = imageSize.width + titleSize.width + GSCellTextImageXDist;
-	s.height = MAX(imageSize.height, titleSize.height);
-	break;
-	
+        s.width = imageSize.width + titleSize.width + GSCellTextImageXDist;
+        s.height = MAX(imageSize.height, titleSize.height);
+        break;
+        
       case NSImageBelow: 
       case NSImageAbove: 
-	s.width = MAX(imageSize.width, titleSize.width);
-	s.height = imageSize.height + titleSize.height + GSCellTextImageYDist;
-	break;
-	
+        s.width = MAX(imageSize.width, titleSize.width);
+        s.height = imageSize.height + titleSize.height + GSCellTextImageYDist;
+        break;
+        
       case NSImageOverlaps: 
-	s.width = MAX(imageSize.width, titleSize.width);
-	s.height = MAX(imageSize.height, titleSize.height);
-	break;
+        s.width = MAX(imageSize.width, titleSize.width);
+        s.height = MAX(imageSize.height, titleSize.height);
+        break;
     }
   
   // Get border size
   if (_cell.is_bordered)
     {
-      GSThemeControlState	buttonState = GSThemeNormalState;
+      GSThemeControlState        buttonState = GSThemeNormalState;
 
       /* Determine the background color. 
-	 We draw when there is a border or when highlightsByMask
-	 is NSChangeBackgroundCellMask or NSChangeGrayCellMask,
-	 as required by our nextstep-like look and feel.  */
+         We draw when there is a border or when highlightsByMask
+         is NSChangeBackgroundCellMask or NSChangeGrayCellMask,
+         as required by our nextstep-like look and feel.  */
       if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
         {
-	  buttonState = GSThemeHighlightedState;
-	}
+          buttonState = GSThemeHighlightedState;
+        }
       
       /* Pushed in buttons contents are displaced to the bottom right 1px.  */
       if (mask & NSPushInCellMask)
         {
-	  buttonState = GSThemeSelectedState;
-	}
+          buttonState = GSThemeSelectedState;
+        }
 
       borderSize = [[GSTheme theme] buttonBorderForStyle: _bezel_style 
-				                   state: buttonState];
+                                                   state: buttonState];
     }
   else
     borderSize = NSZeroSize;
@@ -1395,46 +1395,46 @@ typedef struct _GSButtonCellFlags
   if (_cell.is_bordered)
     {
       NSSize borderSize;
-      unsigned	mask;
+      unsigned mask;
       GSThemeControlState buttonState = GSThemeNormalState;
       NSRect interiorFrame;
 
       if (_cell.is_highlighted)
         {
-	  mask = _highlightsByMask;
+          mask = _highlightsByMask;
 
-	  if (_cell.state)
-	    mask &= ~_showAltStateMask;
-	}
+          if (_cell.state)
+            mask &= ~_showAltStateMask;
+        }
       else if (_cell.state)
-	mask = _showAltStateMask;
+        mask = _showAltStateMask;
       else
-	mask = NSNoCellMask;
+        mask = NSNoCellMask;
   
       /* Determine the background color. 
-	 We draw when there is a border or when highlightsByMask
-	 is NSChangeBackgroundCellMask or NSChangeGrayCellMask,
-	 as required by our nextstep-like look and feel.  */
+         We draw when there is a border or when highlightsByMask
+         is NSChangeBackgroundCellMask or NSChangeGrayCellMask,
+         as required by our nextstep-like look and feel.  */
       if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
         {
-	  buttonState = GSThemeHighlightedState;
-	}
+          buttonState = GSThemeHighlightedState;
+        }
       
       if (mask & NSPushInCellMask)
         {
-	  buttonState = GSThemeSelectedState;
-	}
+          buttonState = GSThemeSelectedState;
+        }
 
       borderSize = [[GSTheme theme] buttonBorderForStyle: _bezel_style 
-				                   state: buttonState];
+                                                   state: buttonState];
       interiorFrame = NSInsetRect(theRect, borderSize.width, borderSize.height);
 
       /* Pushed in buttons contents are displaced to the bottom right 1px.  */
       if (mask & NSPushInCellMask)
-	{
-	  interiorFrame
-	    = NSOffsetRect(interiorFrame, 1.0, [_control_view isFlipped] ? 1.0 : -1.0);
-	}
+        {
+          interiorFrame
+            = NSOffsetRect(interiorFrame, 1.0, [_control_view isFlipped] ? 1.0 : -1.0);
+        }
       return interiorFrame;
     }
   else
@@ -1487,7 +1487,7 @@ typedef struct _GSButtonCellFlags
   if ([otherCell isKindOfClass: [NSButtonCell class]] == NO)
     {
       [NSException raise: NSBadComparisonException
-		   format: @"NSButtonCell comparison with non-NSButtonCell"];
+                   format: @"NSButtonCell comparison with non-NSButtonCell"];
     }
   return [super compare: otherCell];
 }
@@ -1497,7 +1497,7 @@ typedef struct _GSButtonCellFlags
  */
 - (id) copyWithZone: (NSZone*)zone
 {
-  NSButtonCell	*c = [super copyWithZone: zone];
+  NSButtonCell *c = [super copyWithZone: zone];
   
   c->_altContents = [_altContents copyWithZone: zone];
   TEST_RETAIN(_altImage);
@@ -1526,20 +1526,20 @@ typedef struct _GSButtonCellFlags
       NSButtonImageSource *bi = nil;
 
       if ([self keyEquivalent] != nil)
-	{
-	  [aCoder encodeObject: [self keyEquivalent] forKey: @"NSKeyEquivalent"];
-	}
+        {
+          [aCoder encodeObject: [self keyEquivalent] forKey: @"NSKeyEquivalent"];
+        }
       if ([self image] != nil)
-	{
-	  [aCoder encodeObject: [self image] forKey: @"NSNormalImage"];
-	}
+        {
+          [aCoder encodeObject: [self image] forKey: @"NSNormalImage"];
+        }
       if ([self alternateTitle] != nil)
-	{
-	  [aCoder encodeObject: [self alternateTitle] forKey: @"NSAlternateContents"];
-	}
+        {
+          [aCoder encodeObject: [self alternateTitle] forKey: @"NSAlternateContents"];
+        }
 
       buttonCellFlags.useButtonImageSource = (([NSImage imageNamed: @"NSSwitch"] == image) ||
-					      ([NSImage imageNamed: @"NSRadioButton"] == image));
+                                              ([NSImage imageNamed: @"NSRadioButton"] == image));
       buttonCellFlags.isTransparent = [self isTransparent];
       buttonCellFlags.isBordered = [self isBordered]; 
       buttonCellFlags.isImageAndText = (image != nil);
@@ -1573,29 +1573,29 @@ typedef struct _GSButtonCellFlags
 
       // alternate image encoding...
       if (image != nil)
-	{
-	  if ([image isKindOfClass: [NSImage class]] && buttonCellFlags.useButtonImageSource)
-	    {
-	      if ([NSImage imageNamed: @"NSSwitch"] == image)
-		{
-		  bi = [[NSButtonImageSource alloc] initWithImageNamed: @"NSHighlightedSwitch"];
-		}
-	      else if ([NSImage imageNamed: @"NSRadioButton"] == image)
-		{
-		  bi = [[NSButtonImageSource alloc] initWithImageNamed: @"NSHighlightedRadioButton"];
-		}
-	    }
-	}
+        {
+          if ([image isKindOfClass: [NSImage class]] && buttonCellFlags.useButtonImageSource)
+            {
+              if ([NSImage imageNamed: @"NSSwitch"] == image)
+                {
+                  bi = [[NSButtonImageSource alloc] initWithImageNamed: @"NSHighlightedSwitch"];
+                }
+              else if ([NSImage imageNamed: @"NSRadioButton"] == image)
+                {
+                  bi = [[NSButtonImageSource alloc] initWithImageNamed: @"NSHighlightedRadioButton"];
+                }
+            }
+        }
 
       // encode button image source, if it exists...
       if (bi != nil)
-	{
-	  [aCoder encodeObject: bi forKey: @"NSAlternateImage"];      
-	}
+        {
+          [aCoder encodeObject: bi forKey: @"NSAlternateImage"];      
+        }
       else if (_altImage != nil)
-	{
-	  [aCoder encodeObject: _altImage forKey: @"NSAlternateImage"];
-	}
+        {
+          [aCoder encodeObject: _altImage forKey: @"NSAlternateImage"];
+        }
 
       // repeat and delay
       [aCoder encodeInt: (int)_delayInterval forKey: @"NSPeriodicDelay"];
@@ -1609,30 +1609,30 @@ typedef struct _GSButtonCellFlags
       [aCoder encodeObject: _altImage];
       tmp = _buttoncell_is_transparent;
       [aCoder encodeValueOfObjCType: @encode(BOOL)
-	      at: &tmp];
+              at: &tmp];
       [aCoder encodeValueOfObjCType: @encode(unsigned int)
-	      at: &_keyEquivalentModifierMask];
+              at: &_keyEquivalentModifierMask];
       [aCoder encodeValueOfObjCType: @encode(unsigned int)
-	      at: &_highlightsByMask];
+              at: &_highlightsByMask];
       [aCoder encodeValueOfObjCType: @encode(unsigned int)
-	      at: &_showAltStateMask];
+              at: &_showAltStateMask];
 
       [aCoder encodeObject: _sound];
       [aCoder encodeObject: _backgroundColor];
       [aCoder encodeValueOfObjCType: @encode(float)
-	      at: &_delayInterval];
+              at: &_delayInterval];
       [aCoder encodeValueOfObjCType: @encode(float)
-	      at: &_repeatInterval];
+              at: &_repeatInterval];
       [aCoder encodeValueOfObjCType: @encode(unsigned int)
-	      at: &_bezel_style];
+              at: &_bezel_style];
       [aCoder encodeValueOfObjCType: @encode(unsigned int)
-	      at: &_gradient_type];
+              at: &_gradient_type];
       tmp = _image_dims_when_disabled;
       [aCoder encodeValueOfObjCType: @encode(BOOL)
-	      at: &tmp];
+              at: &tmp];
       tmp = _shows_border_only_while_mouse_inside;
       [aCoder encodeValueOfObjCType: @encode(BOOL)
-	      at: &tmp];
+              at: &tmp];
     }
 }
 
@@ -1648,92 +1648,92 @@ typedef struct _GSButtonCellFlags
 
       if ([aDecoder containsValueForKey: @"NSKeyEquivalent"])
         {
-	  [self setKeyEquivalent: [aDecoder decodeObjectForKey: @"NSKeyEquivalent"]];
-	}
+          [self setKeyEquivalent: [aDecoder decodeObjectForKey: @"NSKeyEquivalent"]];
+        }
       if ([aDecoder containsValueForKey: @"NSNormalImage"])
         {
-	  [self setImage: [aDecoder decodeObjectForKey: @"NSNormalImage"]];
-	}
+          [self setImage: [aDecoder decodeObjectForKey: @"NSNormalImage"]];
+        }
       if ([aDecoder containsValueForKey: @"NSAlternateContents"])
         {
-	  [self setAlternateTitle: [aDecoder decodeObjectForKey: @"NSAlternateContents"]];
-	}
+          [self setAlternateTitle: [aDecoder decodeObjectForKey: @"NSAlternateContents"]];
+        }
       if ([aDecoder containsValueForKey: @"NSButtonFlags"])
         {
-	  unsigned int bFlags = [aDecoder decodeIntForKey: @"NSButtonFlags"];
-	  GSButtonCellFlags buttonCellFlags;
-	  memcpy((void *)&buttonCellFlags,(void *)&bFlags,sizeof(struct _GSButtonCellFlags));
+          unsigned int bFlags = [aDecoder decodeIntForKey: @"NSButtonFlags"];
+          GSButtonCellFlags buttonCellFlags;
+          memcpy((void *)&buttonCellFlags,(void *)&bFlags,sizeof(struct _GSButtonCellFlags));
 
-	  [self setTransparent: buttonCellFlags.isTransparent];
-	  [self setBordered: buttonCellFlags.isBordered];
-	  
-	  [self setCellAttribute: NSPushInCell
-		to: buttonCellFlags.isPushin];
-	  [self setCellAttribute: NSCellLightsByBackground 
-		to: buttonCellFlags.highlightByBackground];
-	  [self setCellAttribute: NSCellLightsByContents   
-		to: buttonCellFlags.highlightByContents];
-	  [self setCellAttribute: NSCellLightsByGray
-		to: buttonCellFlags.highlightByGray]; 
-	  [self setCellAttribute: NSChangeBackgroundCell   
-		to: buttonCellFlags.changeBackground];
-	  [self setCellAttribute: NSCellChangesContents    
-		to: buttonCellFlags.changeContents];
-	  [self setCellAttribute: NSChangeGrayCell
-		to: buttonCellFlags.changeGray]; 
-	  
-	  [self setImagePosition: NSImageLeft];
-	}
+          [self setTransparent: buttonCellFlags.isTransparent];
+          [self setBordered: buttonCellFlags.isBordered];
+          
+          [self setCellAttribute: NSPushInCell
+                to: buttonCellFlags.isPushin];
+          [self setCellAttribute: NSCellLightsByBackground 
+                to: buttonCellFlags.highlightByBackground];
+          [self setCellAttribute: NSCellLightsByContents   
+                to: buttonCellFlags.highlightByContents];
+          [self setCellAttribute: NSCellLightsByGray
+                to: buttonCellFlags.highlightByGray]; 
+          [self setCellAttribute: NSChangeBackgroundCell   
+                to: buttonCellFlags.changeBackground];
+          [self setCellAttribute: NSCellChangesContents    
+                to: buttonCellFlags.changeContents];
+          [self setCellAttribute: NSChangeGrayCell
+                to: buttonCellFlags.changeGray]; 
+          
+          [self setImagePosition: NSImageLeft];
+        }
       if ([aDecoder containsValueForKey: @"NSButtonFlags2"])
         {
-	  int bFlags2;
+          int bFlags2;
 
-	  bFlags2 = [aDecoder decodeIntForKey: @"NSButtonFlags2"];
-	  [self setShowsBorderOnlyWhileMouseInside: (bFlags2 & 0x8)];
-	  [self setBezelStyle: (bFlags2 & 0x7) | ((bFlags2 & 0x20) >> 2)];
-	}
+          bFlags2 = [aDecoder decodeIntForKey: @"NSButtonFlags2"];
+          [self setShowsBorderOnlyWhileMouseInside: (bFlags2 & 0x8)];
+          [self setBezelStyle: (bFlags2 & 0x7) | ((bFlags2 & 0x20) >> 2)];
+        }
       if ([aDecoder containsValueForKey: @"NSAlternateImage"])
         {
-	  id image;
+          id image;
 
-	  //
-	  // NOTE: Okay... this is a humongous kludge.   It seems as though
-	  // Cocoa is doing something very odd here.  It doesn't seem to 
-	  // encode system images for buttons normally, if it is using 
-	  // images at all. Until I figure out what, this will stay.  
-	  // Danger, Will Robinson! :)
-	  //
-	  image = [aDecoder decodeObjectForKey: @"NSAlternateImage"];
-	  if ([image isKindOfClass: [NSImage class]])
-	    {
-	      if ([NSImage imageNamed: @"NSSwitch"] == image)
-		{
-		  image = [NSImage imageNamed: @"NSHighlightedSwitch"];
-		  if ([self image] == nil)
-		    {
-		      [self setImage: [NSImage imageNamed: @"NSSwitch"]];
-		    }		    
-		}
-	      else if ([NSImage imageNamed: @"NSRadioButton"] == image)
-		{
-		  image = [NSImage imageNamed: @"NSHighlightedRadioButton"];
-		  if ([self image] == nil)
-		    {
-		      [self setImage: [NSImage imageNamed: @"NSRadioButton"]];
-		    }		    
-		}
-	      
-	      [self setAlternateImage: image];
-	    }
-	}
+          //
+          // NOTE: Okay... this is a humongous kludge.   It seems as though
+          // Cocoa is doing something very odd here.  It doesn't seem to 
+          // encode system images for buttons normally, if it is using 
+          // images at all. Until I figure out what, this will stay.  
+          // Danger, Will Robinson! :)
+          //
+          image = [aDecoder decodeObjectForKey: @"NSAlternateImage"];
+          if ([image isKindOfClass: [NSImage class]])
+            {
+              if ([NSImage imageNamed: @"NSSwitch"] == image)
+                {
+                  image = [NSImage imageNamed: @"NSHighlightedSwitch"];
+                  if ([self image] == nil)
+                    {
+                      [self setImage: [NSImage imageNamed: @"NSSwitch"]];
+                    }                    
+                }
+              else if ([NSImage imageNamed: @"NSRadioButton"] == image)
+                {
+                  image = [NSImage imageNamed: @"NSHighlightedRadioButton"];
+                  if ([self image] == nil)
+                    {
+                      [self setImage: [NSImage imageNamed: @"NSRadioButton"]];
+                    }                    
+                }
+              
+              [self setAlternateImage: image];
+            }
+        }
       if ([aDecoder containsValueForKey: @"NSPeriodicDelay"])
         {
-	  delay = [aDecoder decodeIntForKey: @"NSPeriodicDelay"];
-	}
+          delay = [aDecoder decodeIntForKey: @"NSPeriodicDelay"];
+        }
       if ([aDecoder containsValueForKey: @"NSPeriodicInterval"])
         {
-	  interval = [aDecoder decodeIntForKey: @"NSPeriodicInterval"];
-	}
+          interval = [aDecoder decodeIntForKey: @"NSPeriodicInterval"];
+        }
       [self setPeriodicDelay: delay interval: interval];
     }
   else
@@ -1747,26 +1747,26 @@ typedef struct _GSButtonCellFlags
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
       _buttoncell_is_transparent = tmp;
       [aDecoder decodeValueOfObjCType: @encode(unsigned int)
-		                   at: &_keyEquivalentModifierMask];
+                                   at: &_keyEquivalentModifierMask];
       [aDecoder decodeValueOfObjCType: @encode(unsigned int)
-		                   at: &_highlightsByMask];
+                                   at: &_highlightsByMask];
       [aDecoder decodeValueOfObjCType: @encode(unsigned int)
-		                   at: &_showAltStateMask];
+                                   at: &_showAltStateMask];
 
       if ([aDecoder versionForClassName: @"NSButtonCell"] >= 2)
       {
-	  [aDecoder decodeValueOfObjCType: @encode(id) at: &_sound];
-	  [aDecoder decodeValueOfObjCType: @encode(id) at: &_backgroundColor];
-	  [aDecoder decodeValueOfObjCType: @encode(float) at: &_delayInterval];
-	  [aDecoder decodeValueOfObjCType: @encode(float) at: &_repeatInterval];
-	  [aDecoder decodeValueOfObjCType: @encode(unsigned int)
-		                       at: &_bezel_style];
-	  [aDecoder decodeValueOfObjCType: @encode(unsigned int)
-		                       at: &_gradient_type];
-	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
-	  _image_dims_when_disabled = tmp;
-	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
-	  _shows_border_only_while_mouse_inside = tmp;
+          [aDecoder decodeValueOfObjCType: @encode(id) at: &_sound];
+          [aDecoder decodeValueOfObjCType: @encode(id) at: &_backgroundColor];
+          [aDecoder decodeValueOfObjCType: @encode(float) at: &_delayInterval];
+          [aDecoder decodeValueOfObjCType: @encode(float) at: &_repeatInterval];
+          [aDecoder decodeValueOfObjCType: @encode(unsigned int)
+                                       at: &_bezel_style];
+          [aDecoder decodeValueOfObjCType: @encode(unsigned int)
+                                       at: &_gradient_type];
+          [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
+          _image_dims_when_disabled = tmp;
+          [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
+          _shows_border_only_while_mouse_inside = tmp;
       }
     }
   return self;

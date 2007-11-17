@@ -1,3 +1,92 @@
+2007-06-07 Sergii Stoian <stoyan255@gmail.com>
+
+	* Source/NSBrowser.m: ([drawWithFrame:inView:]) Pass inset rect by
+	1 to drawInteriorWithFrame:.
+
+	* Source/NSSavePanel.m: ([_initWithoutGModel]) Change propeties of
+	buttons: remove setting buttons type (by default 
+	NSMomentaryPushInButton); refuse first responder for buttons.
+	Set setImageDimsWhenDisabled:NO to image button. Cleanup.
+
+	* Backported from trunk.
+
+2007-06-03 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSOpenPanel.m: In -filenames append name to directory using
+	the standard method rather than by concatenating them joined by a
+	slash.  Might fix bug #19929 but even if it doesn't cure that, it
+	certainly fixes an error.
+
+	* Backported from trunk.
+
+2007-05-28 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSView.m: ([scrollRect:by:]) restrict scrolled rectangle to
+	the bounds of the view.
+
+	* Backported from trunk.
+
+2007-05-23 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPrintOperation.m
+	(-runOperationModalForWindow:...contextInfo:,
+	-_printOperationDidRun:returnCode:contextInfo:) Only set and use
+	GSModalRunDelegate and GSModalRunSelector values when not nil.
+
+	* Backported from trunk.
+
+2007-05-16 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSTextAttachment.m: For MacOS-X compatibility, don't call
+	([-setAttachment:]) on the cell if the cell class doesn't implement
+	it.
+
+	* Backported from trunk.
+
+2007-05-10 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Source/NSAnimation.m: removed some C99-isms
+	* Source/NSBitmapImageRep+GIF.m : removed some C99-isms
+	* Source/NSDocument.m : removed some C99-isms
+
+	* Backported from trunk.
+
+2007-05-10 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSAnimation.m: removed some C99-isms and simplified by
+	removing attempt to avoid locking when in single threaded mode.
+	* Headers/AppKit/NSAnimation.h: added an ivar and FIXME comments.
+
+	* Backported from trunk.
+
+2007-05-08 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Source/NSAnimation.m: removed some C99-isms
+
+	* Backported from trunk.
+
+2007-04-29 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSButtonCell.m
+	* Source/NSMenuItemCell.m: Whitespace cleanup.
+
+	* Backported from trunk.
+
+2007-04-27 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableView.m (-editColumn::row:withEvent:select:): Set
+	the background colour of the text object and make it draw its background.
+
+	* Backported from trunk.
+
+2007-04-24 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableView.m (-noteNumberOfRowsChanged): Handle the case
+	correctly where an empty selection is not allowed and now there
+	are rows available. 
+
+	* Backported from trunk.
+
 2007-04-13  Adam Fedor  <fedor@gnu.org>
 
 	* Version 0.12.0
@@ -171,9 +260,9 @@
 	
 2007-03-09  Sergii Stoian <stoyan255@yahoo.com>
 
-        * Source/GSSlideView.m: (- _slideFrom:to:): Calcuate number of
-        steps wrt image size.
-        * Source/GSDragView.m: (- slideDraggedImageTo:): Ditto.
+	* Source/GSSlideView.m: (- _slideFrom:to:): Calcuate number of
+	steps wrt image size.
+	* Source/GSDragView.m: (- slideDraggedImageTo:): Ditto.
 	
 2007-03-08  Fred Kiefer <FredKiefer@gmx.de>
 

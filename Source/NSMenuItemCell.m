@@ -47,7 +47,7 @@
 
 @implementation NSMenuItemCell
 
-static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
+static NSImage *arrowImage = nil; /* Cache arrow image. */
 
 
 + (void) initialize
@@ -113,7 +113,7 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
       mask = _highlightsByMask;
 
       if (_cell.state)
-	mask &= ~_showAltStateMask;
+        mask &= ~_showAltStateMask;
     }
   else if (_cell.state)
     mask = _showAltStateMask;
@@ -197,11 +197,11 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
   shift = (m & NSShiftKeyMask) & ![key isEqualToString: ucKey];
   
   key = [NSString stringWithFormat:@"%@%@%@%@%@",
-		  (m & NSControlKeyMask) ? @"^" : @"",
-		  (m & NSAlternateKeyMask) ? @"+" : @"",
-		  shift ? @"/" : @"",
-		  (m & NSCommandKeyMask) ? @"#" : @"",
-		  key];
+                  (m & NSControlKeyMask) ? @"^" : @"",
+                  (m & NSAlternateKeyMask) ? @"+" : @"",
+                  shift ? @"/" : @"",
+                  (m & NSCommandKeyMask) ? @"#" : @"",
+                  key];
   return key;
 }
 
@@ -226,30 +226,30 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
       if ([_menuItem onStateImage])
         componentSize = [[_menuItem onStateImage] size];
       else
-      	componentSize = NSMakeSize(0,0);
+        componentSize = NSMakeSize(0,0);
       _stateImageWidth = componentSize.width;
       if (componentSize.height > neededMenuItemHeight)
-	neededMenuItemHeight = componentSize.height;
+        neededMenuItemHeight = componentSize.height;
 
       // NSOffState
       if ([_menuItem offStateImage])
         componentSize = [[_menuItem offStateImage] size];
       else
-      	componentSize = NSMakeSize(0,0);
+        componentSize = NSMakeSize(0,0);
       if (componentSize.width > _stateImageWidth)
-	_stateImageWidth = componentSize.width;
+        _stateImageWidth = componentSize.width;
       if (componentSize.height > neededMenuItemHeight)
-	neededMenuItemHeight = componentSize.height;
+        neededMenuItemHeight = componentSize.height;
 
       // NSMixedState
       if ([_menuItem mixedStateImage])
         componentSize = [[_menuItem mixedStateImage] size];
       else
-      	componentSize = NSMakeSize(0,0);
+        componentSize = NSMakeSize(0,0);
       if (componentSize.width > _stateImageWidth)
-	_stateImageWidth = componentSize.width;
+        _stateImageWidth = componentSize.width;
       if (componentSize.height > neededMenuItemHeight)
-	neededMenuItemHeight = componentSize.height;
+        neededMenuItemHeight = componentSize.height;
     }
   else
     {
@@ -264,7 +264,7 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
       componentSize = [anImage size];
       _imageWidth = componentSize.width;
       if (componentSize.height > neededMenuItemHeight)
-	neededMenuItemHeight = componentSize.height;
+        neededMenuItemHeight = componentSize.height;
     }
   else
     {
@@ -287,7 +287,7 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
       componentSize = [arrowImage size];
       _keyEquivalentWidth = componentSize.width;
       if (componentSize.height > neededMenuItemHeight)
-	neededMenuItemHeight = componentSize.height;
+        neededMenuItemHeight = componentSize.height;
     }
 
   // Cache definitive height
@@ -360,42 +360,42 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
   if (_mcell_belongs_to_popupbutton && _cell.image_position)
     {
       // Special case: draw image on the extreme right 
-	cellFrame.origin.x  += cellFrame.size.width - _imageWidth - 4;
-	cellFrame.size.width = _imageWidth;
-	return cellFrame;
+        cellFrame.origin.x  += cellFrame.size.width - _imageWidth - 4;
+        cellFrame.size.width = _imageWidth;
+        return cellFrame;
     }
 
   if ([_menuView isHorizontal] == YES)
     {
       switch (_cell.image_position)
-	{
-	  case NSNoImage:
-	    cellFrame = NSZeroRect;
-	    break;
-	    
-	  case NSImageOnly:
-	  case NSImageOverlaps:
-	    break;
-	    
-	  case NSImageLeft:
-	    cellFrame.origin.x  += 4.; // _horizontalEdgePad
-	    cellFrame.size.width = _imageWidth;
-	    break;
-	
-	  case NSImageRight:
-	    cellFrame.origin.x  += _titleWidth;
-	    cellFrame.size.width = _imageWidth;
-	    break;
-	   
-	  case NSImageBelow:
-	    cellFrame.size.height /= 2;
-	    break;
-	    
-	  case NSImageAbove:
-	    cellFrame.size.height /= 2;
-	    cellFrame.origin.y += cellFrame.size.height;
-	    break;
-	}
+        {
+          case NSNoImage:
+            cellFrame = NSZeroRect;
+            break;
+            
+          case NSImageOnly:
+          case NSImageOverlaps:
+            break;
+            
+          case NSImageLeft:
+            cellFrame.origin.x  += 4.; // _horizontalEdgePad
+            cellFrame.size.width = _imageWidth;
+            break;
+        
+          case NSImageRight:
+            cellFrame.origin.x  += _titleWidth;
+            cellFrame.size.width = _imageWidth;
+            break;
+           
+          case NSImageBelow:
+            cellFrame.size.height /= 2;
+            break;
+            
+          case NSImageAbove:
+            cellFrame.size.height /= 2;
+            cellFrame.origin.y += cellFrame.size.height;
+            break;
+        }
     }
   else
     {
@@ -404,33 +404,33 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
       cellFrame.size.width = [_menuView imageAndTitleWidth];
 
       switch (_cell.image_position)
-	{
-	  case NSNoImage: 
-	    cellFrame = NSZeroRect;
-	    break;
+        {
+          case NSNoImage: 
+            cellFrame = NSZeroRect;
+            break;
 
-	  case NSImageOnly:
-	  case NSImageOverlaps:
-	    break;
+          case NSImageOnly:
+          case NSImageOverlaps:
+            break;
 
-	  case NSImageLeft:
-	    cellFrame.size.width = _imageWidth;
-	    break;
+          case NSImageLeft:
+            cellFrame.size.width = _imageWidth;
+            break;
 
-	  case NSImageRight:
-	    cellFrame.origin.x  += _titleWidth + GSCellTextImageXDist;
-	    cellFrame.size.width = _imageWidth;
-	    break;
+          case NSImageRight:
+            cellFrame.origin.x  += _titleWidth + GSCellTextImageXDist;
+            cellFrame.size.width = _imageWidth;
+            break;
 
-	  case NSImageBelow: 
-	    cellFrame.size.height /= 2;
-	    break;
+          case NSImageBelow: 
+            cellFrame.size.height /= 2;
+            break;
 
-	  case NSImageAbove: 
-	    cellFrame.size.height /= 2;
-	    cellFrame.origin.y += cellFrame.size.height;
-	    break;
-	}
+          case NSImageAbove: 
+            cellFrame.size.height /= 2;
+            cellFrame.origin.y += cellFrame.size.height;
+            break;
+        }
     }
   return cellFrame;
 }
@@ -465,33 +465,33 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
       cellFrame.size.height -= 2;
 
       switch (_cell.image_position)
-	{
-	  case NSNoImage:
-	  case NSImageOverlaps:
-	    break;
+        {
+          case NSNoImage:
+          case NSImageOverlaps:
+            break;
       
-	  case NSImageOnly:
-	    cellFrame = NSZeroRect;
-	    break;
-	
-	  case NSImageLeft:
-	    cellFrame.origin.x  += _imageWidth + GSCellTextImageXDist + 4;
-	    cellFrame.size.width = _titleWidth;
-	    break;
-	    
-	  case NSImageRight:
-	    cellFrame.size.width = _titleWidth;
-	    break;
-		     
-	  case NSImageBelow:
-	    cellFrame.size.height /= 2;
-	    cellFrame.origin.y += cellFrame.size.height;
-	    break;
+          case NSImageOnly:
+            cellFrame = NSZeroRect;
+            break;
+        
+          case NSImageLeft:
+            cellFrame.origin.x  += _imageWidth + GSCellTextImageXDist + 4;
+            cellFrame.size.width = _titleWidth;
+            break;
+            
+          case NSImageRight:
+            cellFrame.size.width = _titleWidth;
+            break;
+                     
+          case NSImageBelow:
+            cellFrame.size.height /= 2;
+            cellFrame.origin.y += cellFrame.size.height;
+            break;
 
-	  case NSImageAbove:
-	    cellFrame.size.height /= 2;
-	    break;
-	}
+          case NSImageAbove:
+            cellFrame.size.height /= 2;
+            break;
+        }
     }
   else
     {
@@ -500,33 +500,33 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
       cellFrame.size.width = [_menuView imageAndTitleWidth];
 
       switch (_cell.image_position)
-	{
-	  case NSNoImage:
-	  case NSImageOverlaps:
-	    break;
+        {
+          case NSNoImage:
+          case NSImageOverlaps:
+            break;
 
-	  case NSImageOnly:
-	    cellFrame = NSZeroRect;
-	    break;
+          case NSImageOnly:
+            cellFrame = NSZeroRect;
+            break;
 
-	  case NSImageLeft:
-	    cellFrame.origin.x  += _imageWidth + GSCellTextImageXDist;
-	    cellFrame.size.width = _titleWidth;
-	    break;
+          case NSImageLeft:
+            cellFrame.origin.x  += _imageWidth + GSCellTextImageXDist;
+            cellFrame.size.width = _titleWidth;
+            break;
 
-	  case NSImageRight:
-	    cellFrame.size.width = _titleWidth;
-	    break;
+          case NSImageRight:
+            cellFrame.size.width = _titleWidth;
+            break;
 
-	  case NSImageBelow:
-	    cellFrame.size.height /= 2;
-	    cellFrame.origin.y += cellFrame.size.height;
-	    break;
+          case NSImageBelow:
+            cellFrame.size.height /= 2;
+            cellFrame.origin.y += cellFrame.size.height;
+            break;
 
-	  case NSImageAbove:
-	    cellFrame.size.height /= 2;
-	    break;
-	}
+          case NSImageAbove:
+            cellFrame.size.height /= 2;
+            break;
+        }
     }
   return cellFrame;
 }
@@ -540,50 +540,50 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
        * must inset from that.
        */
       return NSMakeRect (theRect.origin.x, theRect.origin.y + 2,
-	theRect.size.width, theRect.size.height - 2);
+        theRect.size.width, theRect.size.height - 2);
     }
   else
     {
       if (_cell.is_bordered)
         {
-	  float yDelta = [_control_view isFlipped] ? 1. : 2.;
-	  unsigned mask;
-	  NSRect interiorFrame;
-	  
-	  if (_cell.is_highlighted)
-	    {
-	      mask = _highlightsByMask;
-		
-	      if (_cell.state)
-		mask &= ~_showAltStateMask;
-	    }
-	  else if (_cell.state)
-	    mask = _showAltStateMask;
-	  else
-	    mask = NSNoCellMask;
+          float yDelta = [_control_view isFlipped] ? 1. : 2.;
+          unsigned mask;
+          NSRect interiorFrame;
+          
+          if (_cell.is_highlighted)
+            {
+              mask = _highlightsByMask;
+                
+              if (_cell.state)
+                mask &= ~_showAltStateMask;
+            }
+          else if (_cell.state)
+            mask = _showAltStateMask;
+          else
+            mask = NSNoCellMask;
  
-	  /*
-	   * Special case:  Buttons have only three different paths for border.
-	   * One white path at the top left corner, one black path at the
-	   * bottom right and another in dark gray at the inner bottom right.
-	   */
-	  interiorFrame = NSMakeRect(theRect.origin.x + 1.,
-				     theRect.origin.y + yDelta,
-				     theRect.size.width - 3.,
-				     theRect.size.height - 3.);
+          /*
+           * Special case:  Buttons have only three different paths for border.
+           * One white path at the top left corner, one black path at the
+           * bottom right and another in dark gray at the inner bottom right.
+           */
+          interiorFrame = NSMakeRect(theRect.origin.x + 1.,
+                                     theRect.origin.y + yDelta,
+                                     theRect.size.width - 3.,
+                                     theRect.size.height - 3.);
 
-	  // pushed in buttons contents are displaced to the bottom right 1px
-	  if ((mask & NSPushInCellMask))
-	    {
-	      interiorFrame
-		  = NSOffsetRect(interiorFrame, 1., [_control_view isFlipped] ? 1. : -1.);
-	    }
-	  return interiorFrame;
-	}
+          // pushed in buttons contents are displaced to the bottom right 1px
+          if ((mask & NSPushInCellMask))
+            {
+              interiorFrame
+                  = NSOffsetRect(interiorFrame, 1., [_control_view isFlipped] ? 1. : -1.);
+            }
+          return interiorFrame;
+        }
       else
         {
-	  return theRect;
-	}
+          return theRect;
+        }
     }
 }
 
@@ -591,7 +591,7 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
 // Drawing.
 //
 - (void) drawBorderAndBackgroundWithFrame: (NSRect)cellFrame
-				  inView: (NSView *)controlView
+                                  inView: (NSView *)controlView
 {
   if ([_menuView isHorizontal] == YES)
     {
@@ -619,21 +619,21 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
 }
 
 - (void) drawImageWithFrame: (NSRect)cellFrame
-		     inView: (NSView *)controlView
+                     inView: (NSView *)controlView
 {
   cellFrame = [self imageRectForBounds: cellFrame];
   [self drawImage: _imageToDisplay withFrame: cellFrame inView: controlView];
 }
 
 - (void) drawKeyEquivalentWithFrame:(NSRect)cellFrame
-			    inView:(NSView *)controlView
+                            inView:(NSView *)controlView
 {
   cellFrame = [self keyEquivalentRectForBounds: cellFrame];
 
   if ([_menuItem hasSubmenu] && arrowImage != nil)
     {
-      NSSize	size;
-      NSPoint	position;
+      NSSize size;
+      NSPoint position;
 
       size = [arrowImage size];
       position.x = cellFrame.origin.x + cellFrame.size.width - size.width;
@@ -643,7 +643,7 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
        * so we must adjust the position to take account of a flipped view.
        */
       if ([controlView isFlipped])
-	position.y += size.height;
+        position.y += size.height;
 
       [arrowImage compositeToPoint: position operation: NSCompositeSourceOver];
     }
@@ -665,33 +665,33 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
 
 
 - (void) drawSeparatorItemWithFrame:(NSRect)cellFrame
-			    inView:(NSView *)controlView
+                            inView:(NSView *)controlView
 {
   // FIXME: This only has sense in MacOS or Windows interface styles.
   // Maybe somebody wants to support this (Lazaro).
 }
 
 - (void) drawStateImageWithFrame: (NSRect)cellFrame
-			  inView: (NSView*)controlView
+                          inView: (NSView*)controlView
 {
-  NSSize	size;
-  NSPoint	position;
-  NSImage	*imageToDisplay;
+  NSSize size;
+  NSPoint position;
+  NSImage *imageToDisplay;
 
   switch ([_menuItem state])
     {
       case NSOnState:
-	imageToDisplay = [_menuItem onStateImage];
-	break;
+        imageToDisplay = [_menuItem onStateImage];
+        break;
 
       case NSMixedState:
-	imageToDisplay = [_menuItem mixedStateImage];
-	break;
+        imageToDisplay = [_menuItem mixedStateImage];
+        break;
 
       case NSOffState:
       default:
-	imageToDisplay = [_menuItem offStateImage];
-	break;
+        imageToDisplay = [_menuItem offStateImage];
+        break;
     }
 
   if (imageToDisplay == nil)
@@ -717,7 +717,7 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
 }
 
 - (void) drawTitleWithFrame:(NSRect)cellFrame
-		    inView:(NSView *)controlView
+                    inView:(NSView *)controlView
 {
   if ([_menuView isHorizontal] == YES)
     {
@@ -728,13 +728,13 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
       NSRect cf = [self titleRectForBounds: cellFrame];
 
       if (!_imageWidth)
-	[value setAlignment: NSCenterTextAlignment];
+        [value setAlignment: NSCenterTextAlignment];
 
       attr = [[NSDictionary alloc] initWithObjectsAndKeys:
-	value, NSParagraphStyleAttributeName,
-	_font, NSFontAttributeName,
-	[NSColor controlTextColor], NSForegroundColorAttributeName,
-	nil];
+        value, NSParagraphStyleAttributeName,
+        _font, NSFontAttributeName,
+        [NSColor controlTextColor], NSForegroundColorAttributeName,
+        nil];
 
       [[_menuItem title] drawInRect: cf withAttributes: attr];
 
@@ -743,7 +743,7 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
   else
     {
       [self _drawText: [_menuItem title]
-	      inFrame: [self titleRectForBounds: cellFrame]];
+              inFrame: [self titleRectForBounds: cellFrame]];
     }
 }
 
@@ -774,7 +774,7 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
       mask = _highlightsByMask;
 
       if (_cell.state)
-	mask &= ~_showAltStateMask;
+        mask &= ~_showAltStateMask;
     }
   else if (_cell.state)
     mask = _showAltStateMask;
@@ -794,10 +794,10 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
     {
       _imageToDisplay = _altImage;
       if (!_imageToDisplay)
-	_imageToDisplay = [_menuItem image];
+        _imageToDisplay = [_menuItem image];
       _titleToDisplay = _altContents;
       if (_titleToDisplay == nil || [_titleToDisplay isEqual: @""])
-	_titleToDisplay = [_menuItem title];
+        _titleToDisplay = [_menuItem title];
     }
   else
     {
@@ -814,29 +814,29 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
     {
       // Draw the image
       if (_imageWidth > 0)
-	[self drawImageWithFrame: cellFrame inView: controlView];
-	 
+        [self drawImageWithFrame: cellFrame inView: controlView];
+         
       // Draw the title
       if (_titleWidth > 0)
-	[self drawTitleWithFrame: cellFrame inView: controlView];
+        [self drawTitleWithFrame: cellFrame inView: controlView];
     }
   else
     {
       // Draw the state image
       if (_stateImageWidth > 0)
-	[self drawStateImageWithFrame: cellFrame inView: controlView];
+        [self drawStateImageWithFrame: cellFrame inView: controlView];
 
       // Draw the image
       if (_imageWidth > 0)
-	[self drawImageWithFrame: cellFrame inView: controlView];
+        [self drawImageWithFrame: cellFrame inView: controlView];
 
       // Draw the title
       if (_titleWidth > 0)
-	[self drawTitleWithFrame: cellFrame inView: controlView];
+        [self drawTitleWithFrame: cellFrame inView: controlView];
 
       // Draw the key equivalent
       if (_keyEquivalentWidth > 0)
-	[self drawKeyEquivalentWithFrame: cellFrame inView: controlView];
+        [self drawKeyEquivalentWithFrame: cellFrame inView: controlView];
     }
 }
 
@@ -889,9 +889,9 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
 
       if ([aDecoder versionForClassName: @"NSMenuItemCell"] < 2)
         {
-	  /* In version 1, we used to encode the _menuView here.  */
-	  [aDecoder decodeObject];
-	}
+          /* In version 1, we used to encode the _menuView here.  */
+          [aDecoder decodeObject];
+        }
     }
   _needs_sizing = YES;
 

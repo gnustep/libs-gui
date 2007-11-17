@@ -510,19 +510,22 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 /** Run a print operation modally with respect to a window.
  */
 - (void)runOperationModalForWindow: (NSWindow *)docWindow 
-			  delegate: (id)delegate 
-		    didRunSelector: (SEL)didRunSelector 
-		       contextInfo:(void *)contextInfo
+                          delegate: (id)delegate 
+                    didRunSelector: (SEL)didRunSelector 
+                       contextInfo:(void *)contextInfo
 {
   NSMutableDictionary *dict;
   NSPrintPanel *panel = [self printPanel];
 
-  /* Save the selector so we can use it later */
-  dict = [_print_info dictionary];
-  [dict setObject: [NSValue value: &didRunSelector withObjCType: @encode(SEL)]
-	   forKey: @"GSModalRunSelector"];
-  [dict setObject: delegate
-	   forKey: @"GSModalRunDelegate"];
+  if (delegate != nil && didRunSelector != NULL)
+    {
+      /* Save the selector so we can use it later */
+      dict = [_print_info dictionary];
+      [dict setObject: [NSValue value: &didRunSelector withObjCType: @encode(SEL)]
+               forKey: @"GSModalRunSelector"];
+      [dict setObject: delegate
+               forKey: @"GSModalRunDelegate"];
+    }
 
   /* Assume we want to show the panel regardless of the value
      of _showPanels 
@@ -701,11 +704,14 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
     }
   [self cleanUpOperation];
   dict = [_print_info dictionary];
-  [[dict objectForKey: @"GSModalRunSelector"] getValue:&didRunSelector];
+  [[dict objectForKey: @"GSModalRunSelector"] getValue: &didRunSelector];
   delegate = [dict objectForKey: @"GSModalRunDelegate"];
-  didRun = (void (*)(id, SEL, BOOL, id))[delegate methodForSelector: 
-						     didRunSelector];
-  didRun (delegate, didRunSelector, success, contextInfo);
+  if (delegate != nil && didRunSelector != NULL)
+    {
+      didRun = (void (*)(id, SEL, BOOL, id))[delegate methodForSelector: 
+                                                          didRunSelector];
+      didRun (delegate, didRunSelector, success, contextInfo);
+    }
 }
 
 

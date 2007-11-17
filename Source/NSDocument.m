@@ -565,12 +565,14 @@ withContentsOfURL: (NSURL *)url
 - (NSFileWrapper *)fileWrapperOfType: (NSString *)type
                                error: (NSError **)error
 {
+  NSData *data;
+  
   if (OVERRIDDEN(fileWrapperRepresentationOfType:))
     {
       return [self fileWrapperRepresentationOfType: type];
     }
 
-  NSData *data = [self dataOfType: type error: error];
+  data = [self dataOfType: type error: error];
   
   if (data == nil) 
     return nil;
