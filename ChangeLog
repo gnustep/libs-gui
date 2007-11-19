@@ -1,3 +1,74 @@
+2007-08-03 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWorkspace.m: ([-launchedApplications]) complete and tidy
+	code to check existence of launched apps.
+	Revert code to check for apps that are not responding ... MacOS-X
+	reports hung apps, so we should do the same.
+	* Backported from trunk.
+
+2007-08-02 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWorkspace.m: ([-launchedApplications]) check that each app
+	is still responding if it's more than 30 seconds since the last check.
+	If possible, check that processes still exist.
+	* Backported from trunk.
+
+2007-07-18 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPrinter.m (-stringListForKey:inTable:,
+	-isKey:inTable:): Don't raise exception on missing table.
+	* Source/NSPrinter.m (-statusForTable:) Add check for corrct class.
+	* Backported from trunk.
+
+2007-07-04 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPrintOperation.m (NSView-_displayPageInRect:withInfo:),
+	Create _boundsMatrix only when needed and protect all uses of it.
+	* Backported from trunk.
+
+2007-07-09 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSAffineTransform.m (-rectInMatrixSpace:, -translateToPoint:,
+	-makeIdentityMatrix): Use optimized primitive methods from base.
+	* Source/NSAffineTransform.m (-scaleTo::): Try to handle rotation
+	case better.
+	* Backported from trunk.
+
+2007-07-04 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSCell.m (-encodeWithCoder:): Try to better key encode
+	the contents of the cell.
+	* Backported from trunk.
+
+2007-07-04 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextField.m (-isFlipped): Report the text field as
+	being flipped.
+	* Backported from trunk.
+
+2007-06-29 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSecureTextFieldCell (-drawInteriorWithFrame:): Add
+	some support for bullet echoing and a comment on the missing bits.
+	* Backported from trunk.
+
+2007-06-23 10:43-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+        
+	* Headers/AppKit/NSObjectController.h
+	* Source/NSObjectController.m: Changed "class" to "aClass" to
+	avoid issues with ObjC++ compilation in both the header and the
+	.m file for consistency.  This change was suggested by Rob Burns
+	and he provided a short patch via IRC.
+	* Backported from trunk.
+
+2007-06-22 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSView.m: When setting frame and bounds, refrain from
+	doing anything if the values set are the same as the of values.
+	When setting frame size or rotation, update the bounds too (attempt
+	to fix bug #20057).
+	* Backported from trunk.
+
 2007-06-07 Sergii Stoian <stoyan255@gmail.com>
 
 	* Source/NSBrowser.m: ([drawWithFrame:inView:]) Pass inset rect by

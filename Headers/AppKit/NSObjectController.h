@@ -57,7 +57,7 @@
 - (id) content;
 - (void) setContent: (id)content;
 - (Class) objectClass;
-- (void) setObjectClass: (Class)class;
+- (void) setObjectClass: (Class)aClass;
 
 - (id) newObject;
 - (void) prepareContent;
