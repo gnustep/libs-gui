@@ -1979,28 +1979,41 @@ static void computeNewSelection
  * Initializing/Releasing 
  */
 
-- (id) initWithFrame: (NSRect)frameRect
+- (void) _initDefaults
 {
-  self = [super initWithFrame: frameRect];
   _drawsGrid        = YES;
   _rowHeight        = 16.0;
   _intercellSpacing = NSMakeSize (5.0, 2.0);
-  ASSIGN (_gridColor, [NSColor gridColor]); 
-  ASSIGN (_backgroundColor, [NSColor controlBackgroundColor]); 
-  ASSIGN (_tableColumns, [NSMutableArray array]);
-  ASSIGN (_selectedColumns, [NSMutableIndexSet indexSet]);
-  ASSIGN (_selectedRows, [NSMutableIndexSet indexSet]);
+  ASSIGN(_selectedColumns, [NSMutableIndexSet indexSet]);
+  ASSIGN(_selectedRows, [NSMutableIndexSet indexSet]);
   _allowsEmptySelection = YES;
   _allowsMultipleSelection = NO;
   _allowsColumnSelection = YES;
   _allowsColumnResizing = YES;
   _allowsColumnReordering = YES;
   _autoresizesAllColumnsToFit = NO;
+  _selectingColumns = NO;
+  _verticalMotionDrag = NO;
   _editedColumn = -1;
   _editedRow = -1;
+  _clickedRow = -1;
+  _clickedColumn = -1;
   _selectedColumn = -1;
   _selectedRow = -1;
   _highlightedTableColumn = nil;
+}
+
+- (id) initWithFrame: (NSRect)frameRect
+{
+  self = [super initWithFrame: frameRect];
+  if (!self)
+    return self;
+
+  [self _initDefaults];
+  ASSIGN(_gridColor, [NSColor gridColor]); 
+  ASSIGN(_backgroundColor, [NSColor controlBackgroundColor]); 
+  ASSIGN(_tableColumns, [NSMutableArray array]);
+
   _headerView = [NSTableHeaderView new];
   [_headerView setFrameSize: NSMakeSize (frameRect.size.width, 22.0)];
   [_headerView setTableView: self];
@@ -5563,13 +5576,13 @@ static BOOL selectContiguousRegion(NSTableView *self,
       [aCoder encodeObject: [self tableColumns] forKey: @"NSTableColumns"];
 
       if (_headerView)
-	{
-	  [aCoder encodeObject: _headerView forKey: @"NSHeaderView"];
-	}
+        {
+          [aCoder encodeObject: _headerView forKey: @"NSHeaderView"];
+        }
       if (_cornerView)
-	{
-	  [aCoder encodeObject: _cornerView forKey: @"NSCornerView"];
-	}
+        {
+          [aCoder encodeObject: _cornerView forKey: @"NSCornerView"];
+        }
 
       tableViewFlags.columnSelection = [self allowsColumnSelection];
       tableViewFlags.multipleSelection = [self allowsMultipleSelection];
@@ -5616,140 +5629,128 @@ static BOOL selectContiguousRegion(NSTableView *self,
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   self = [super initWithCoder: aDecoder];
+  if (!self)
+    return self;
 
   if ([aDecoder allowsKeyedCoding])
     {
-      NSSize intercellSpacing = [self intercellSpacing];
+      NSSize intercellSpacing;
       NSArray *columns;
       NSEnumerator *e;
       NSTableColumn *col;
 
       // assign defaults, so that there's color in case none is specified
-      ASSIGN (_gridColor, [NSColor gridColor]); 
-      ASSIGN (_backgroundColor, [NSColor controlBackgroundColor]); 
-      ASSIGN (_tableColumns, [NSMutableArray array]);
-      ASSIGN (_selectedColumns, [NSMutableIndexSet indexSet]);
-      ASSIGN (_selectedRows, [NSMutableIndexSet indexSet]);
+      [self _initDefaults];
+      ASSIGN(_gridColor, [NSColor gridColor]); 
+      ASSIGN(_backgroundColor, [NSColor controlBackgroundColor]); 
+      ASSIGN(_tableColumns, [NSMutableArray array]);
 
-      _autoresizesAllColumnsToFit = NO;
-      _clickedRow = -1;
-      _clickedColumn = -1;
-      _drawsGrid = YES;
-      _editedColumn = -1;
-      _editedRow = -1;
-      _highlightedTableColumn = nil;
-      _intercellSpacing = NSMakeSize (5.0, 2.0);
-      _rowHeight = 16.0;
-      _selectedColumn = -1;
-      _selectedRow = -1;
-      _selectingColumns = NO;
-
-      /*
-      _headerView = [NSTableHeaderView new];
-      [_headerView setFrameSize: NSMakeSize (_frame.size.width, 22.0)];
-      [_headerView setTableView: self];
-      */
-
-      [(NSKeyedUnarchiver *)aDecoder setClass: [GSTableCornerView class] forClassName: @"_NSCornerView"];
       if ([aDecoder containsValueForKey: @"NSDataSource"])
-	{
-	  [self setDataSource: [aDecoder decodeObjectForKey: @"NSDataSource"]];
-	}
+        {
+          [self setDataSource: [aDecoder decodeObjectForKey: @"NSDataSource"]];
+        }
       if ([aDecoder containsValueForKey: @"NSDelegate"])
-	{      
-	  [self setDelegate: [aDecoder decodeObjectForKey: @"NSDelegate"]];
-	}
+        {      
+          [self setDelegate: [aDecoder decodeObjectForKey: @"NSDelegate"]];
+        }
       if ([aDecoder containsValueForKey: @"NSTarget"])
-	{
-	  [self setTarget: [aDecoder decodeObjectForKey: @"NSTarget"]];
-	}
+        {
+          [self setTarget: [aDecoder decodeObjectForKey: @"NSTarget"]];
+        }
       if ([aDecoder containsValueForKey: @"NSAction"])
         {
-	  NSString *action = [aDecoder decodeObjectForKey: @"NSAction"];
-	  [self setAction: NSSelectorFromString(action)];
-	}
+          NSString *action = [aDecoder decodeObjectForKey: @"NSAction"];
+          [self setAction: NSSelectorFromString(action)];
+        }
       if ([aDecoder containsValueForKey: @"NSBackgroundColor"])
         {
-	  [self setBackgroundColor: [aDecoder decodeObjectForKey: @"NSBackgroundColor"]];
-	}
+          [self setBackgroundColor: [aDecoder decodeObjectForKey: @"NSBackgroundColor"]];
+        }
       if ([aDecoder containsValueForKey: @"NSGridColor"])
         {
-	  [self setGridColor: [aDecoder decodeObjectForKey: @"NSGridColor"]];
-	}
+          [self setGridColor: [aDecoder decodeObjectForKey: @"NSGridColor"]];
+        }
+
+      intercellSpacing = [self intercellSpacing];
       if ([aDecoder containsValueForKey: @"NSIntercellSpacingHeight"])
         {
-	  intercellSpacing.height = [aDecoder decodeFloatForKey: @"NSIntercellSpacingHeight"];
-	}
+          intercellSpacing.height = [aDecoder decodeFloatForKey: @"NSIntercellSpacingHeight"];
+        }
       if ([aDecoder containsValueForKey: @"NSIntercellSpacingWidth"])
         {
-	  intercellSpacing.width = [aDecoder decodeFloatForKey: @"NSIntercellSpacingWidth"];
-	}
+          intercellSpacing.width = [aDecoder decodeFloatForKey: @"NSIntercellSpacingWidth"];
+        }
       [self setIntercellSpacing: intercellSpacing];
+
       if ([aDecoder containsValueForKey: @"NSRowHeight"])
         {
-	  [self setRowHeight: [aDecoder decodeFloatForKey: @"NSRowHeight"]];
-	}
+          [self setRowHeight: [aDecoder decodeFloatForKey: @"NSRowHeight"]];
+        }
 
+      [(NSKeyedUnarchiver *)aDecoder setClass: [GSTableCornerView class] 
+                            forClassName: @"_NSCornerView"];
       if ([aDecoder containsValueForKey: @"NSCornerView"])
-	{
-	  NSRect viewFrame;
-	  float rowHeight = [self rowHeight];
-	  
-	  [self setCornerView: [aDecoder decodeObjectForKey: @"NSCornerView"]];
-	  viewFrame = [[self cornerView] frame];
-	  viewFrame.size.height = rowHeight;
-	  [[self cornerView] setFrame: viewFrame];
-	}
+        {
+          NSRect viewFrame;
+          float rowHeight = [self rowHeight];
+          
+          [self setCornerView: [aDecoder decodeObjectForKey: @"NSCornerView"]];
+          viewFrame = [[self cornerView] frame];
+          viewFrame.size.height = rowHeight;
+          [[self cornerView] setFrame: viewFrame];
+        }
+      else
+        {
+          _cornerView = [GSTableCornerView new];
+        }
 
-      if ([aDecoder containsValueForKey: @"NSHeaderView"])
-	{
-	  NSRect viewFrame = [self frame];
-	  float rowHeight = [self rowHeight];
+//      if ([aDecoder containsValueForKey: @"NSHeaderView"])
+        {
+          NSRect viewFrame = [self frame];
+          float rowHeight = [self rowHeight];
 
-	  _headerView = [[NSTableHeaderView alloc] init];
-	  [_headerView setFrameSize: NSMakeSize(viewFrame.size.width, rowHeight)];
-	  [_headerView setTableView: self];
-	}
+          _headerView = [[NSTableHeaderView alloc] init];
+          [_headerView setFrameSize: NSMakeSize(viewFrame.size.width, rowHeight)];
+          [_headerView setTableView: self];
+        }
 
+      if ([aDecoder containsValueForKey: @"NSTvFlags"])
+        {
+          unsigned long flags = [aDecoder decodeIntForKey: @"NSTvFlags"];
+          GSTableViewFlags tableViewFlags;
+          memcpy((void *)&tableViewFlags,(void *)&flags,sizeof(struct _tableViewFlags));
+
+          [self setAllowsColumnSelection: tableViewFlags.columnSelection];
+          [self setAllowsMultipleSelection: tableViewFlags.multipleSelection];
+          [self setAllowsEmptySelection: tableViewFlags.emptySelection];
+          [self setDrawsGrid: tableViewFlags.drawsGrid];
+          [self setAllowsColumnResizing: tableViewFlags.columnResizing];
+          [self setAllowsColumnReordering: tableViewFlags.columnOrdering];
+        }
+      
       // get the table columns...
       columns = [aDecoder decodeObjectForKey: @"NSTableColumns"];
       e = [columns objectEnumerator];
       while ((col = [e nextObject]) != nil)
         {
-	  [self addTableColumn: col];
-	  [col setTableView: self];
-	}
+          [self addTableColumn: col];
+          [col setTableView: self];
+        }
 
-      if ([aDecoder containsValueForKey: @"NSTvFlags"])
-        {
-	  unsigned long flags = [aDecoder decodeIntForKey: @"NSTvFlags"];
-	  GSTableViewFlags tableViewFlags;
-	  memcpy((void *)&tableViewFlags,(void *)&flags,sizeof(struct _tableViewFlags));
-
-	  [self setAllowsColumnSelection: tableViewFlags.columnSelection];
-	  [self setAllowsMultipleSelection: tableViewFlags.multipleSelection];
-	  [self setAllowsEmptySelection: tableViewFlags.emptySelection];
-	  [self setDrawsGrid: tableViewFlags.drawsGrid];
-	  [self setAllowsColumnResizing: tableViewFlags.columnResizing];	  
-	  [self setAllowsColumnReordering: tableViewFlags.columnOrdering];
-	}
-      
       _numberOfColumns = [columns count];
-      ASSIGN (_selectedColumns, [NSMutableIndexSet indexSet]);
-      ASSIGN (_selectedRows, [NSMutableIndexSet indexSet]);
       if (_numberOfColumns)
-	_columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), 
-				       sizeof(float) * _numberOfColumns);
+        _columnOrigins = NSZoneMalloc(NSDefaultMallocZone (), 
+                                      sizeof(float) * _numberOfColumns);
 
       [self tile];
     }
   else
     {
       int version = [aDecoder versionForClassName: 
-				  @"NSTableView"];
+                                  @"NSTableView"];
       id aDelegate;
-      _verticalMotionDrag = NO;
 
+      [self _initDefaults];
       _dataSource      = [aDecoder decodeObject];
       _tableColumns    = RETAIN([aDecoder decodeObject]);
       _gridColor       = RETAIN([aDecoder decodeObject]);
@@ -5762,7 +5763,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
       [self setDelegate: aDelegate];
       [_headerView setTableView: self];
       [_tableColumns makeObjectsPerformSelector: @selector(setTableView:)
-		     withObject: self];
+                     withObject: self];
 
       [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfRows];
       [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfColumns];
@@ -5777,37 +5778,26 @@ static BOOL selectContiguousRegion(NSTableView *self,
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnResizing];
       if (version >= 3)
         {
-	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnReordering];
-	}
+          [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnReordering];
+        }
       if (version >= 2)
         {
-	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_autoresizesAllColumnsToFit];
-	} 
+          [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_autoresizesAllColumnsToFit];
+        } 
       
       if (version >= 4)
         {
           [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_verticalMotionDrag];
         }
-
      
-      ASSIGN (_selectedColumns, [NSMutableIndexSet indexSet]);
-      ASSIGN (_selectedRows, [NSMutableIndexSet indexSet]);
       if (_numberOfColumns)
-	_columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), 
-				       sizeof(float) * _numberOfColumns);
-      
-      _clickedRow = -1;
-      _clickedColumn = -1;
-      _selectingColumns = NO;
-      _selectedColumn = -1;
-      _selectedRow = -1;
-      _editedColumn = -1;
-      _editedRow = -1;
+        _columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), 
+                                       sizeof(float) * _numberOfColumns);
       
       if (version == 2)
         {
-	  [self tile];
-	}
+          [self tile];
+        }
     }
   
   return self;

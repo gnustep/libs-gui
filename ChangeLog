@@ -1,5 +1,15 @@
 2007-11-22 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSNibBindingConnector.m: Completed implementation.
+	* Source/NSTableView.m (-_initDefaults): New method for shared
+	default settings.
+	* Source/NSTableView.m (-initWithFrame:, initWithCoder:): Use this
+	new method.
+	* Source/NSGraphicsContext.m (-GSDrawImage::): Moved implemenation
+	to back.
+
+2007-11-22 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSGraphics.h: Make NSDrawBitmap a real function.
 	* Source/Functions.m (NSDrawBitmap): Implement via
 	NSBitmapImageRep and GSDrawImage::.

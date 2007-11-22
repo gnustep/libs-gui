@@ -1,4 +1,4 @@
-/** <title>NSNibAXAttributeConnector</title>
+/** <title>NSNibBindingConnector</title>
 
    <abstract>
    </abstract>
@@ -7,6 +7,8 @@
 
    Author: Gregory John Casamento
    Date: 2007
+   Author: Fred Kiefer <fredkiefer@gmx.de>
+   Date: Nov 2007
 
    This file is part of the GNUstep GUI Library.
 
@@ -30,8 +32,18 @@
 #import <GNUstepGUI/GSNibCompatibility.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSDictionary.h>
+#import <AppKit/NSKeyValueBinding.h>
 
 @implementation NSNibBindingConnector
+
+- (void) dealloc
+{
+  RELEASE(_binding);
+  RELEASE(_keyPath);
+  RELEASE(_options);
+  [super dealloc];
+}
+
 - (NSString *) binding
 {
   return _binding;
@@ -61,4 +73,102 @@
 {
   ASSIGN(_options, options);
 }
+
+- (void) replaceObject: (id)anObject withObject: (id)anotherObject
+{
+  if (_binding == anObject)
+    {
+      ASSIGN(_binding, anotherObject);
+    }
+  if (_keyPath == anObject)
+    {
+      ASSIGN(_keyPath, anotherObject);
+    }
+  if (_options == anObject)
+    {
+      ASSIGN(_options, anotherObject);
+    }
+
+  [super replaceObject: anObject withObject: anotherObject];
+}
+
+- (void) establishConnection
+{
+  [_dst bind: _binding 
+        toObject: _src 
+        withKeyPath: _keyPath
+        options: _options];
+}
+
+- (void) encodeWithCoder: (NSCoder*)aCoder
+{
+  if ([aCoder allowsKeyedCoding])
+    {
+      if (_binding != nil)
+        {
+          [aCoder encodeObject: _binding forKey: @"NSBinding"];
+        }
+      if (_keyPath != nil)
+        {
+          [aCoder encodeObject: _keyPath forKey: @"NSKeyPath"];
+        }
+      if (_options != nil)
+        {
+          [aCoder encodeObject: _options forKey: @"NSOptions"];
+        }
+    }
+  else
+    {
+      [aCoder encodeObject: _binding];
+      [aCoder encodeObject: _keyPath];
+      [aCoder encodeObject: _options];
+    }
+}
+
+- (id) initWithCoder: (NSCoder*)aDecoder
+{
+  if (!(self = [super initWithCoder: aDecoder]))
+    {
+      return nil;
+    }
+
+  if ([aDecoder allowsKeyedCoding])
+    {
+      if ([aDecoder decodeIntForKey: @"NSNibBindingConnectorVersion"] != 2)
+        {
+          RELEASE(self);
+          return nil;
+        }
+      if ([aDecoder containsValueForKey: @"NSBinding"])
+        {
+          ASSIGN(_binding, [aDecoder decodeObjectForKey: @"NSBinding"]);
+        }
+      if ([aDecoder containsValueForKey: @"NSKeyPath"])
+        {
+          ASSIGN(_keyPath, [aDecoder decodeObjectForKey: @"NSKeyPath"]);
+        }
+      if ([aDecoder containsValueForKey: @"NSOptions"])
+        {
+          ASSIGN(_options, [aDecoder decodeObjectForKey: @"NSOptions"]);
+        }
+    }
+  else
+    {
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_binding];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_keyPath];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_options];
+    }
+
+  return self;
+}
+
+- (NSString *) description
+{
+  return [NSString stringWithFormat: @"<%@ binding=%@ keypath=%@ options=%@>",
+                   [super description],
+                   [self binding],
+                   [self keyPath],
+                   [self options]];
+}
+
 @end

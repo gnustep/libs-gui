@@ -1465,16 +1465,7 @@ NSGraphicsContext	*GSCurrentContext(void)
     been implemented yet, so it should not be used anywhere. */
 - (void) GSDrawImage: (NSRect)rect: (void *)imageref
 {
-  NSBitmapImageRep *bitmap;
-  const unsigned char *data[5];
-
-  bitmap = (NSBitmapImageRep*)imageref;
-  [bitmap getBitmapDataPlanes: &data];
-  [self NSDrawBitmap: rect : [bitmap pixelsWide] : [bitmap pixelsHigh]
-        : [bitmap bitsPerSample] : [bitmap samplesPerPixel]
-        : [bitmap bitsPerPixel] : [bitmap bytesPerRow] : [bitmap isPlanar]
-        : [bitmap hasAlpha] :  [bitmap colorSpaceName]
-        : data];
+  [self subclassResponsibility: _cmd];
 }
 
 /* ----------------------------------------------------------------------- */
