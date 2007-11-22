@@ -1463,9 +1463,18 @@ NSGraphicsContext	*GSCurrentContext(void)
 /** Generic method to draw an image into a rect. The image is defined
     by imageref, an opaque structure. Support for this method hasn't
     been implemented yet, so it should not be used anywhere. */
-- (void) GSDrawImage: (NSRect) rect: (void *) imageref
+- (void) GSDrawImage: (NSRect)rect: (void *)imageref
 {
-  [self subclassResponsibility: _cmd];
+  NSBitmapImageRep *bitmap;
+  const unsigned char *data[5];
+
+  bitmap = (NSBitmapImageRep*)imageref;
+  [bitmap getBitmapDataPlanes: &data];
+  [self NSDrawBitmap: rect : [bitmap pixelsWide] : [bitmap pixelsHigh]
+        : [bitmap bitsPerSample] : [bitmap samplesPerPixel]
+        : [bitmap bitsPerPixel] : [bitmap bytesPerRow] : [bitmap isPlanar]
+        : [bitmap hasAlpha] :  [bitmap colorSpaceName]
+        : data];
 }
 
 /* ----------------------------------------------------------------------- */

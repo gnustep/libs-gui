@@ -165,33 +165,17 @@ APPKIT_EXPORT void NSCopyBitmapFromGState(int srcGstate, NSRect srcRect,
 APPKIT_EXPORT void NSCopyBits(int srcGstate, NSRect srcRect, 
 			      NSPoint destPoint);
 
-static inline void 
-NSDrawBitmap(NSRect rect,
-	     int pixelsWide,
-	     int pixelsHigh,
-	     int bitsPerSample,
-	     int samplesPerPixel,
-	     int bitsPerPixel,
-	     int bytesPerRow,
-	     BOOL isPlanar,
-	     BOOL hasAlpha,
-	     NSString *colorSpaceName,
-	     const unsigned char *const data[5])
-{
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  (ctxt->methods->NSDrawBitmap___________)
-    (ctxt, @selector(NSDrawBitmap: : : : : : : : : : :),  rect,
-     pixelsWide,
-     pixelsHigh,
-     bitsPerSample,
-     samplesPerPixel,
-     bitsPerPixel,
-     bytesPerRow,
-     isPlanar,
-     hasAlpha,
-     colorSpaceName,
-     data);
-    }
+APPKIT_EXPORT void NSDrawBitmap(NSRect rect,
+                                int pixelsWide,
+                                int pixelsHigh,
+                                int bitsPerSample,
+                                int samplesPerPixel,
+                                int bitsPerPixel,
+                                int bytesPerRow,
+                                BOOL isPlanar,
+                                BOOL hasAlpha,
+                                NSString *colorSpaceName,
+                                const unsigned char *const data[5]);
 
 static inline void
 NSBeep(void)

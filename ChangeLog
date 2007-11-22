@@ -1,3 +1,12 @@
+2007-11-22 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSGraphics.h: Make NSDrawBitmap a real function.
+	* Source/Functions.m (NSDrawBitmap): Implement via
+	NSBitmapImageRep and GSDrawImage::.
+	* Source/NSGraphicsContext.m (-GSDrawImage::): Implement via
+	NSDrawBitmap::::::. To be subclassed in  backends.
+	* Source/NSBitmapImageRep.m (-draw): Use GSDrawImage:: for drawing.
+	
 2007-11-11 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSCell.m (-initWithCoder:): Correct keyed decoding of

@@ -1071,18 +1071,9 @@
 - (BOOL) draw
 {
   NSRect irect = NSMakeRect(0, 0, _size.width, _size.height);
+  NSGraphicsContext *ctxt = GSCurrentContext();
 
-  NSDrawBitmap(irect,
-	       _pixelsWide,
-	       _pixelsHigh,
-	       _bitsPerSample,
-	       _numColors,
-	       _bitsPerPixel,
-	       _bytesPerRow,
-	       _isPlanar,
-	       _hasAlpha,
-	       _colorSpace,
-	       (const unsigned char **)_imagePlanes);
+  [ctxt GSDrawImage: irect : self];
   return YES;
 }
 

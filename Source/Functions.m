@@ -297,6 +297,37 @@ void NSCopyBits(int srcGstate, NSRect srcRect, NSPoint destPoint)
 	       NSCompositeCopy);
 }
 
+void NSDrawBitmap(NSRect rect,
+                  int pixelsWide,
+                  int pixelsHigh,
+                  int bitsPerSample,
+                  int samplesPerPixel,
+                  int bitsPerPixel,
+                  int bytesPerRow,
+                  BOOL isPlanar,
+                  BOOL hasAlpha,
+                  NSString *colorSpaceName,
+                  const unsigned char *const data[5])
+{
+  NSBitmapImageRep *bitmap;
+  NSGraphicsContext *ctxt = GSCurrentContext();
+
+  bitmap = [[NSBitmapImageRep alloc] 
+               initWithBitmapDataPlanes: data
+               pixelsWide: pixelsWide
+               pixelsHigh: pixelsHigh
+               bitsPerSample: bitsPerSample
+               samplesPerPixel: samplesPerPixel
+               hasAlpha: hasAlpha
+               isPlanar: isPlanar
+               colorSpaceName: colorSpaceName
+               bytesPerRow: bytesPerRow
+               bitsPerPixel: bitsPerPixel];
+
+  [ctxt GSDrawImage: rect : bitmap];
+  RELEASE(bitmap);
+}
+
 /*
  * Rectangle Drawing 
  */
