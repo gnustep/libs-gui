@@ -1,3 +1,8 @@
+2007-11-24 12:38-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Call awakeFromNib later in the nib
+	unarchiving process. 
+
 2007-11-22 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSNibBindingConnector.m: Completed implementation.

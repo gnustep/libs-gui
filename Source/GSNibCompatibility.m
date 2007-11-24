@@ -1050,11 +1050,6 @@ static BOOL _isInInterfaceBuilder = NO;
   if ([obj respondsToSelector: @selector(nibInstantiate)])
     {
       newObject = [obj nibInstantiate];
-      if ([newObject respondsToSelector: @selector(awakeFromNib)])
-	{
-	  // awaken the object.
-	  [newObject awakeFromNib];
-	}
     }
   return newObject;
 }
@@ -1084,16 +1079,18 @@ static BOOL _isInInterfaceBuilder = NO;
 	}
     }
 
-  // instantiate all windows and fill in the top level array.
+  // iterate over all objects instantiate windows, awaken objects and fill
+  // in top level array.
   en = [objs objectEnumerator];
   while ((obj = [en nextObject]) != nil)
     {
+      // instantiate all windows and fill in the top level array.
       if ([obj isKindOfClass: [NSWindowTemplate class]])
 	{
 	  if ([obj realObject] == nil)
 	    {
-	      id o = [self instantiateObject: obj];
-	      [topLevelObjects addObject: o];
+	      obj = [self instantiateObject: obj];
+	      [topLevelObjects addObject: obj];
 	    }
 	}
       else
@@ -1103,6 +1100,12 @@ static BOOL _isInInterfaceBuilder = NO;
 	    {
 	      [topLevelObjects addObject: obj];
 	    }
+	}
+
+      // awaken the object.
+      if ([obj respondsToSelector: @selector(awakeFromNib)])
+	{
+	  [obj awakeFromNib];
 	}
     }
 
