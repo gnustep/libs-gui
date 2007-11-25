@@ -51,6 +51,8 @@
 #include "AppKit/DPSOperators.h"
 #include "GNUstepGUI/GSVersion.h"
 
+typedef struct { @defs(NSThread) } *TInfo;
+
 /* The memory zone where all global objects are allocated from (Contexts
    are also allocated from this zone) */
 static NSZone *_globalGSZone = NULL;
@@ -93,7 +95,7 @@ NSGraphicsContext	*GSCurrentContext(void)
  */
   NSThread *th = GSCurrentThread();
 
-  return (NSGraphicsContext*) th->_gcontext;
+  return (NSGraphicsContext*) ((TInfo)th)->_gcontext;
 #else
   NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
 
@@ -162,7 +164,7 @@ NSGraphicsContext	*GSCurrentContext(void)
  */
   NSThread *th = GSCurrentThread();
 
-  ASSIGN(th->_gcontext, context);
+  ASSIGN(((TInfo)th)->_gcontext, context);
 #else
   NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
 
