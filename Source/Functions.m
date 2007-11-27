@@ -32,6 +32,7 @@
 #include <Foundation/NSProcessInfo.h>
 
 #include "AppKit/NSApplication.h"
+#include "AppKit/NSBitmapImageRep.h"
 #include "AppKit/NSEvent.h"
 #include "AppKit/NSGraphicsContext.h"
 #include "AppKit/NSGraphics.h"
@@ -313,7 +314,7 @@ void NSDrawBitmap(NSRect rect,
   NSGraphicsContext *ctxt = GSCurrentContext();
 
   bitmap = [[NSBitmapImageRep alloc] 
-               initWithBitmapDataPlanes: data
+               initWithBitmapDataPlanes: (unsigned char **)data
                pixelsWide: pixelsWide
                pixelsHigh: pixelsHigh
                bitsPerSample: bitsPerSample

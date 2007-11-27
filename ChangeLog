@@ -1,3 +1,13 @@
+2007-11-27 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSApplication.m (-replyToApplicationShouldTerminate:): 
+	Check wheter the application is still running to prevent cycles.
+	* Source/GSNibCompatibility.m (NSCustomObject-awakeFromNib): Call
+	awakeFromNib on the instantiated object.
+	* Source/GSNibCompatibility.m (NSCustomView-nibInstantiate): Move
+	subviews to instantiated view.
+	* Source/Functions.m (NSDrawBitmap): Remove compiler warning.
+
 2007-11-24 12:38-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibCompatibility.m: Call awakeFromNib later in the nib

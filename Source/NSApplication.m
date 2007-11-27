@@ -3221,7 +3221,8 @@ struct _DelegateWrapper
  */
 - (void) replyToApplicationShouldTerminate: (BOOL)shouldTerminate
 {
-  if (shouldTerminate)
+  // Prevent cycles in terminate: call.
+  if (shouldTerminate && _app_is_running)
     {
       [nc postNotificationName: NSApplicationWillTerminateNotification
 	  object: self];
@@ -3241,20 +3242,20 @@ struct _DelegateWrapper
 		    userInfo: [self _notificationUserInfo]];
 
       /* Destroy the main run loop pool (this also destroys any nested
-	 pools which might have been created inside this one).  */
+         pools which might have been created inside this one).  */
       DESTROY (_runLoopPool);
 
       /* Now free the NSApplication object.  Enclose the operation
-	 into an autorelease pool, in case some -dealloc method needs
-	 to use any temporary object.  */
+         into an autorelease pool, in case some -dealloc method needs
+         to use any temporary object.  */
       {
-	NSAutoreleasePool *pool;
+        NSAutoreleasePool *pool;
 	
-	IF_NO_GC(pool = [arpClass new]);
+        IF_NO_GC(pool = [arpClass new]);
 
-	DESTROY(NSApp);
+        DESTROY(NSApp);
 
-	DESTROY(pool);
+        DESTROY(pool);
       }
 
       /* And finally, stop the program.  */
