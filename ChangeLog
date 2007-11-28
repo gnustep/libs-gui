@@ -1,3 +1,195 @@
+2007-10-28 01:44-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+        * Source/NSTableView.m: reverted change to validateEditing to
+        correct crashes.
+	* Backported from trunk.
+
+2007-10-27 Fred Kiefer <FredKiefer@gmx.de>
+
+        * Source/NSTableHeaderView.m (-drawRect:): Switch drawing cases for
+        flipping.
+        * Source/NSTableView.m (GSTableCornerView): Made flipped and
+        adjust drawing code.
+	* Backported from trunk.
+
+2007-10-02 Fred Kiefer <FredKiefer@gmx.de>
+
+        * Source/NSWindow.m (-deminiaturize:, -miniaturize:): Try to
+        handle the case better, where GNUstep manages the mini window and
+        the window decoration itself.
+        Based on patch by Stefan Bidigaray <stefanbidi@gmail.com>.
+	* Backported from trunk.
+        
+2007-10-02 Fred Kiefer <FredKiefer@gmx.de>
+
+        * Source/NSPopUpButtonCell.m (-cellSize): Don't return zero size,
+        when there are no items. Based on patch by Andreas Höschler
+        <ahoesch@smartsoft.de>.
+	* Backported from trunk.
+
+2007-10-01 Fred Kiefer <FredKiefer@gmx.de>
+
+        * Source/NSDocument.m (-setFileName:, -fileURL:, -setUndoManager:
+        -writeToURL:...error:): Small fixes of previous changes.
+        Patch by Wolfgang Lux <wolfgang.lux@gmail.com>.
+	* Backported from trunk.
+
+2007-09-30 Fred Kiefer <FredKiefer@gmx.de>
+
+        * Source/NSWindow.m (-cascadeTopLeftFromPoint:): Adopt the
+        resulting next point to visible screen. Based on patch by
+        Wolfgang Lux <wolfgang.lux@gmail.com>.
+	* Backported from trunk.
+
+2007-09-13 Fred Kiefer <FredKiefer@gmx.de>
+
+        * Source/NSTableView.m (-validateEditing): Set object value to
+        nil, when formatting the string failed.
+        * Source/NSActionCell.m (-intValue): Check flag in_editing before
+        validating the editing.
+	* Backported from trunk.
+
+2007-09-12 Fred Kiefer <FredKiefer@gmx.de>
+
+        * Source/NSToolbarItem.m (GSToolbarButtonCell-drawInteriorWithFrame:inView:):
+        Made working for a flipped view.
+	* Backported from trunk.
+
+2007-09-11 Fred Kiefer <FredKiefer@gmx.de>
+
+        * Source/NSSplitView.m (-displayRectIgnoringOpacity:inContext:):
+        Implement this method instead of the two old display methods.
+	* Backported from trunk.
+
+2007-09-11 Fred Kiefer <FredKiefer@gmx.de>
+
+        * Source/NSTextView.m (-drawRect:, -rectForCharacterRange:,
+        -firstRectForCharacterRange:): Protect againt layoutmanager being nil.
+        * Source/NSTableView.m (-validateEditing): Use setStringValue:
+        when converting the string failed.
+        * Source/NSTableView.m (-mouseDown:): Don't interrupt editing
+        another cell, if the current string isn't valid.
+        Patches partly by Andreas Höschler <ahoesch@smartsoft.de>.
+	* Backported from trunk.
+
+2007-09-10 Fred Kiefer <FredKiefer@gmx.de>
+
+        * Source/NSPopUpButtonCell.m (-insertItemWithTitle:atIndex:):
+        Select new item when there isn't any selection.
+	* Backported from trunk.
+
+2007-09-10 Fred Kiefer <FredKiefer@gmx.de>
+
+        * Source/NSTableHeaderView.m,
+        * Source/NSSlider.m,
+        * Source/NSProgressIndicator.m,
+        * Source/NSButton.m (-isFlipped): Add fliiping.
+        * Source/NSTableHeaderView.m (-drawRect:): Adjust for flipping.
+        * Source/NSTabView.m: Mark as needing an isFlipped method.
+	* Backported from trunk.
+
+2007-09-05 Nicolas Roard <nicolas@roard.com>
+        
+	* Source/NSView.m (-scrollRect:by:): reversed the coordinates
+	of destPoint (substract instead of add), to match OSX behaviour.
+	* Source/NSClipView.m (-setBoundsOrigin): reversed the coordinates
+	of the call to scrollRect:by:, to match OSX behaviour. 
+	* Backported from trunk.
+
+2007-09-05 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m (-sendEvent:, -selectKeyViewFollowingView:,
+	-selectKeyViewPrecedingView:, -selectNextKeyView:,
+	-selectPreviousKeyView:): Handle case when makeFirstResonder:
+	fails. 
+	* Backported from trunk.
+
+2007-09-05 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSLayoutManager.m
+	(-glyphIndexForPoint:...fractionOfDistanceThroughGlyph:): Don't
+	ignore invisible glyphs.
+	* Source/NSTextView.m (-_characterIndexForPoint:respectFraction:):
+	New helper method.
+	* Source/NSTextView.m (-characterIndexForPoint:): Correct to use
+	screen coordinates.
+	* Source/NSTextView.m (-draggingEntered:, -draggingUpdated:,
+	-mouseDown:): Use new helper method.
+	* Source/NSAlert.m (-_setupPanel): Check count of buttons.
+	* Source/NSDocument.m (-setFileName:, -setFileURL:): Set url and
+	file name always together.
+	* Source/NSDocument.m (-dataOfType:error:,
+	-fileWrapperOfType:error:, -readFromFileWrapper:ofType:error:,
+	-readFromURL:ofType:error:, -writeSafelyToURL:...error:,
+	-writeToURL:ofType:error:, -writeToURL:...error:,
+	-printOperationWithSettings:error:): Set error to nil.
+	Patches by Wolfgang Lux <wolfgang.lux@gmail.com>.
+	* Backported from trunk.
+
+2007-09-04 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSActionCell.m (-objectValue, -attributedStringValue):
+	Add validation of editing.
+	* Backported from trunk.
+
+2007-08-31 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m (-makeFirstResponder:): When parameter is nil,
+	set self as first responder and return YES.
+	* Source/NSCell.m (-isEntryAcceptable:): Accept empty strings.
+	* Source/NSTableView.m (-validateEditing): Check if delegate
+	supports method, before calling it.
+	* Source/NSTextField.m (-validateEditing): Accept empty strings.
+	Patches partly by Andreas Höschler <ahoesch@smartsoft.de>.
+	* Backported from trunk.
+
+2007-08-28 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSApplication.m (-_windowWillClose:): Don't call
+	resignKey on the window. Reorganise the code some more and add comments.
+	* Source/NSWindow.m (-_lossOfKeyOrMainWindow): Check all windows
+	whether they could take key or main status.
+	* Backported from trunk.
+        
+2007-08-21 Fred Kiefer <FredKiefe@gmx.de>
+
+	* Source/NSAttributedString.m (-fixFontAttributeInRange:): Ignore
+	characters below 31.
+	Patch by Yen-Ju Chen <yjchenx@gmail.com>
+	* Backported from trunk.
+
+2007-08-20 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m (-sendEvent:): For the left mouse down case
+	make sure that the affected view is still valid after activating
+	the application and making the window key.
+	* Backported from trunk.
+
+2007-08-20 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSInputManager.m (-handleKeyboardEvents:client:): Set the
+	isFunctionKey boolean correctly. This was needed as the
+	NSFunctionKeyMask value doesn't fit in the first byte.
+	* Backported from trunk.
+
+2007-08-19 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSButton.m ([performKeyEquivalent:]): Only test for modal
+	window when it isn't nil.
+	* Backported from trunk.
+
+2007-08-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSAttributedString.m (-_substituteFontWithName:font:):
+	Let the font manager handle the font convertion.
+	* Backported from trunk.
+
+2007-08-09 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSAttributedString.m (-fixFontAttributeInRange:):
+	First attempt at font attribute fixing.
+	* Backported from trunk.
+
 2007-08-03 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: ([-launchedApplications]) complete and tidy

@@ -1792,7 +1792,8 @@ here. */
 TODO: make sure this is only called when _layoutManager is known non-nil,
 or add guards
 */
-- (unsigned int) characterIndexForPoint: (NSPoint)point
+- (unsigned int) _characterIndexForPoint: (NSPoint)point
+                         respectFraction: (BOOL)respectFraction
 {
   unsigned	index;
   float		fraction;
@@ -1807,13 +1808,22 @@ or add guards
     return (unsigned int)-1;
 
   index = [_layoutManager characterIndexForGlyphAtIndex: index];
-  if (fraction > 0.5 && index < [_textStorage length])
+  if (respectFraction && fraction > 0.5 && index < [_textStorage length] &&
+      [[_textStorage string] characterAtIndex:index] != '\n')
     {
       index++;
     }
   return index;
 }
 
+// This method takes screen coordinates as input.
+- (unsigned int) characterIndexForPoint: (NSPoint)point
+{
+ point = [[self window] convertScreenToBase: point];
+ point = [self convertPoint:point fromView: nil];
+ return [self _characterIndexForPoint: point respectFraction: NO];
+}
+ 
 - (NSRange) markedRange
 {
   return NSMakeRange(NSNotFound, 0);
@@ -1844,8 +1854,13 @@ or add guards
 
 - (NSRect) firstRectForCharacterRange: (NSRange)theRange
 {
-  unsigned int rectCount = 0; /* If there's no layout manager, it'll be 0 after the call too. */
-  NSRect *rects = [_layoutManager 
+  unsigned int rectCount = 0;
+  NSRect *rects;
+
+  if (!_layoutManager)
+    return NSZeroRect;
+
+  rects = [_layoutManager 
 		      rectArrayForCharacterRange: theRange
 		      withinSelectedCharacterRange: NSMakeRange(NSNotFound, 0)
 		      inTextContainer: _textContainer
@@ -2497,6 +2512,9 @@ Scroll so that the beginning of the range is visible.
   */
   [self sizeToFit];
 
+  if (_layoutManager == nil)
+    return;
+
   if (aRange.length > 0)
     {
       aRange.length = 1;
@@ -2848,7 +2866,7 @@ This method is for user changes; see NSTextView_actions.m.
 - (void) updateFontPanel
 {
   /* Update fontPanel only if told so */
-  if (_tf.uses_font_panel)
+  if (_tf.uses_font_panel && _layoutManager)
     {
       NSRange longestRange;
       NSFontManager *fm = [NSFontManager sharedFontManager];
@@ -3313,8 +3331,15 @@ Figure out how the additional layout stuff is supposed to work.
 
   containerRect.origin.x -= _textContainerOrigin.x;
   containerRect.origin.y -= _textContainerOrigin.y;
-  drawnRange = [_layoutManager glyphRangeForBoundingRect: containerRect 
-			       inTextContainer: _textContainer];
+  if (_layoutManager)
+    {
+      drawnRange = [_layoutManager glyphRangeForBoundingRect: containerRect 
+                                   inTextContainer: _textContainer];
+    }
+  else
+    {
+      drawnRange = NSMakeRange(0, 0);
+    }
 
   if (_tf.draws_background)
     {
@@ -4259,14 +4284,15 @@ other than copy/paste or dragging. */
       NSRange	range;
 
       if (_tf.isDragTarget == NO)
-	{
-	  _tf.isDragTarget = YES;
-	  _dragTargetSelectionRange = [self selectedRange];
-	}
+        {
+          _tf.isDragTarget = YES;
+          _dragTargetSelectionRange = [self selectedRange];
+        }
 
       dragPoint = [sender draggingLocation];
       dragPoint = [self convertPoint: dragPoint fromView: nil];
-      dragIndex = [self characterIndexForPoint: dragPoint];
+      dragIndex = [self _characterIndexForPoint: dragPoint
+                        respectFraction: YES];
       dragRange = NSMakeRange (dragIndex, 0);
 
       range = [self selectionRangeForProposedRange: dragRange
@@ -4294,14 +4320,15 @@ other than copy/paste or dragging. */
       NSRange	range;
 
       if (_tf.isDragTarget == NO)
-	{
-	  _tf.isDragTarget = YES;
-	  _dragTargetSelectionRange = [self selectedRange];
-	}
+        {
+          _tf.isDragTarget = YES;
+          _dragTargetSelectionRange = [self selectedRange];
+        }
 
       dragPoint = [sender draggingLocation];
       dragPoint = [self convertPoint: dragPoint fromView: nil];
-      dragIndex = [self characterIndexForPoint: dragPoint];
+      dragIndex = [self _characterIndexForPoint: dragPoint
+                        respectFraction: YES];
       dragRange = NSMakeRange (dragIndex, 0);
 
       range = [self selectionRangeForProposedRange: dragRange
@@ -4415,7 +4442,8 @@ other than copy/paste or dragging. */
      possible) */
 
   startPoint = [self convertPoint: [theEvent locationInWindow] fromView: nil];
-  startIndex = [self characterIndexForPoint: startPoint];
+  startIndex = [self _characterIndexForPoint: startPoint
+                     respectFraction: [theEvent clickCount] == 1];
 
   if (startIndex == (unsigned int)-1)
     {
@@ -4619,8 +4647,9 @@ other than copy/paste or dragging. */
 
 	point = [self convertPoint: [lastEvent locationInWindow]
 		  fromView: nil];
-	proposedRange = MakeRangeFromAbs([self characterIndexForPoint: point],
-					 startIndex);
+  proposedRange = MakeRangeFromAbs([self _characterIndexForPoint: point
+                                         respectFraction: YES],
+                                   startIndex);
 	chosenRange = [self selectionRangeForProposedRange: proposedRange
 			granularity: granularity];
 	[self setSelectedRange: chosenRange  affinity: affinity
@@ -4700,7 +4729,7 @@ configuation! */
   NSRange glyphRange;
   NSRect rect;
 
-  if (!aRange.length)
+  if (!aRange.length || !_layoutManager)
     return NSZeroRect;
   glyphRange = [_layoutManager glyphRangeForCharacterRange: aRange 
 			       actualCharacterRange: NULL];

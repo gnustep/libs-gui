@@ -1923,18 +1923,30 @@ static void computeNewSelection
 
 @implementation GSTableCornerView
 
+- (BOOL) isFlipped
+{
+  return YES;
+}
+
 - (void) drawRect: (NSRect)aRect
 {
-  NSRect divide = NSMakeRect (aRect.origin.x, aRect.origin.y, aRect.size.width, 1);
-  NSRect rect = aRect;
-  rect.origin.y += 1;
-  rect.size.height -= 1;
+  NSRect divide;
+  NSRect rect;
+
+  if ([self isFlipped])
+    {
+      NSDivideRect(aRect, &divide, &rect, 1.0, NSMaxYEdge);
+    }
+  else
+    {
+      NSDivideRect(aRect, &divide, &rect, 1.0, NSMinYEdge);
+    }
 
   [[NSColor blackColor] set];
-  NSRectFill (divide);
+  NSRectFill(divide);
   rect = [[GSTheme theme] drawDarkButton: rect withClip: aRect];
   [[NSColor controlShadowColor] set];
-  NSRectFill (rect);
+  NSRectFill(rect);
 }
 
 @end
@@ -3154,54 +3166,67 @@ byExtendingSelection: (BOOL)flag
     {
       NSFormatter *formatter;
       NSString *string;
-      id newObjectValue;
+      id newObjectValue = nil;
       BOOL validatedOK = YES;
 
       formatter = [_editedCell formatter];
-      string = AUTORELEASE ([[_textObject text] copy]);
+      string = AUTORELEASE([[_textObject text] copy]);
 
-      if (formatter == nil)
-	{
-	  newObjectValue = string;
-	}
-      else
-	{
-	  NSString *error;
+      if (formatter != nil)
+        {
+          NSString *error;
 	  
-	  if ([formatter getObjectValue: &newObjectValue 
-			 forString: string 
-			 errorDescription: &error] == NO)
-	    {
-	      if ([_delegate control: self 
-			     didFailToFormatString: string 
-			     errorDescription: error] == NO)
-		{
-		  validatedOK = NO;
-		}
-	      else
-		{
-		  newObjectValue = string;
-		}
-	    }
-	}
-      if (validatedOK == YES)
-	{
-	  [_editedCell setObjectValue: newObjectValue];
-	  
-	  if (_dataSource_editable)
-	    {
-	      NSTableColumn *tb;
-	      
-	      tb = [_tableColumns objectAtIndex: _editedColumn];
-	      
-	      [self _setObjectValue: newObjectValue
-		    forTableColumn: tb
-		    row: _editedRow];
+          if ([formatter getObjectValue: &newObjectValue 
+                         forString: string 
+                         errorDescription: &error] == YES)
+            {
+              [_editedCell setObjectValue: newObjectValue];
+              
+              if (_dataSource_editable)
+                {
+                  NSTableColumn *tb;
+              
+                  tb = [_tableColumns objectAtIndex: _editedColumn];
+                  
+                  [self _setObjectValue: newObjectValue
+                        forTableColumn: tb
+                        row: _editedRow];
+                }
+              return;
+            }
+          else
+            {
+              SEL sel = @selector(control:didFailToFormatString:errorDescription:);
 
-	      //[_dataSource tableView: self  setObjectValue: newObjectValue
-	      //	 forTableColumn: tb  row: _editedRow];
-	    }
-	}
+              if ([_delegate respondsToSelector: sel])
+                {
+                  validatedOK = [_delegate control: self 
+                                           didFailToFormatString: string 
+                                           errorDescription: error];
+                }
+              // Allow an empty string to fall through
+              else if (![string isEqualToString: @""])
+                {
+                  validatedOK = NO;
+                }
+            }
+        }
+
+      if (validatedOK)
+        {
+          [_editedCell setStringValue: string];
+          
+          if (_dataSource_editable)
+            {
+              NSTableColumn *tb;
+              
+              tb = [_tableColumns objectAtIndex: _editedColumn];
+              
+              [self _setObjectValue: string // newObjectValue
+                    forTableColumn: tb
+                    row: _editedRow];
+            }
+        }
     }
 }
 
@@ -3471,6 +3496,12 @@ static inline float computePeriod(NSPoint mouseLocationWin,
   /* Stop editing if any */
   if (_textObject != nil)
     {
+      if (_editedCell != nil 
+          && [_editedCell isEntryAcceptable:[_textObject text]] == NO)
+        {
+          NSBeep();
+          return;
+        }
       [self validateEditing];
       [self abortEditing];
     }  

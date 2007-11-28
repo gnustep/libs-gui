@@ -834,24 +834,8 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   [_window invalidateCursorRectsForView: self];
 }
 
-
-- (void) displayIfNeededInRectIgnoringOpacity: (NSRect)aRect
-{
-  if (_window == nil)
-    {
-      return;
-    }
-  
-  if (_never_displayed_before == YES)
-    {
-      _never_displayed_before = NO;
-      [self _adjustSubviews: _frame.size];
-    }
-
-  [super displayIfNeededInRectIgnoringOpacity: aRect];
-}
-
 - (void) displayRectIgnoringOpacity: (NSRect)aRect
+                          inContext: (NSGraphicsContext *)context
 {
   if (_window == nil)
     {
@@ -864,7 +848,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       [self _adjustSubviews: _frame.size];
     }
 
-  [super displayRectIgnoringOpacity: aRect];
+  [super displayRectIgnoringOpacity: aRect inContext: context];
 }
 
 - (id) delegate

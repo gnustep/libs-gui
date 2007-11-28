@@ -235,70 +235,91 @@ has blocked and waited for events.
 - (void) _lossOfKeyOrMainWindow
 {
   NSArray	*windowList = GSOrderedWindows();
-  unsigned	pos = [windowList indexOfObjectIdenticalTo: self];
-  unsigned	c = [windowList count];
-  unsigned	i,ti;
-  NSWindow	*w;
+  unsigned pos = [windowList indexOfObjectIdenticalTo: self];
+  unsigned c = [windowList count];
+  unsigned i;
+
+  // Don't bother when application is closing.
+  if ([NSApp isRunning] == NO)
+    return;
 
   if (!c)
     return;
 
-  i = pos + 1;
-  if (pos >= c || pos + 1 == c)
+  if (pos == NSNotFound)
     {
-      pos = c - 1;
-      i = 0;
+      pos = c;
     }
-  ti = i;
 
   if ([self isKeyWindow])
     {
-      NSWindow *menu_window = [[NSApp mainMenu] window];
+      NSWindow *w = [NSApp mainWindow];
 
       [self resignKeyWindow];
+      if (w != nil && w != self 
+          && [w canBecomeKeyWindow])
+        {
+          [w makeKeyWindow];
+        }
+      else
+        {
+          NSWindow *menu_window = [[NSApp mainMenu] window];
 
-      for (; i != pos && i < c; i++)
-	{
-	  w = [windowList objectAtIndex: i];
-	  if ([w isVisible] && [w canBecomeKeyWindow] && w != menu_window)
-	    {
-	      [w makeKeyWindow];
-	      break;
-	    }
-	}
-      /*
-       * if we didn't find a possible key window - use the main menu window
-       */
-      if (i == c)
-	{
-	  if (menu_window != nil)
-	    {
-	      [GSServerForWindow(menu_window) setinputfocus: 
-				  [menu_window windowNumber]];
-	    }
-	}
+          // try all windows front to back except self and menu
+          for (i = 0; i < c; i++)
+            {
+              if (i != pos)
+                {
+                  w = [windowList objectAtIndex: i];
+                  if ([w isVisible] && [w canBecomeKeyWindow] 
+                      && w != menu_window)
+                    {
+                      [w makeKeyWindow];
+                      break;
+                    }
+                }
+            }
+
+          /*
+           * if we didn't find a possible key window - use the main menu window
+           */
+          if (i == c)
+            {
+              if (menu_window != nil)
+                {
+                  // FIXME: Why this call and not makeKeyWindow?
+                  [GSServerForWindow(menu_window) setinputfocus: 
+                                        [menu_window windowNumber]];
+                }
+            }
+        }
     }
+
   if ([self isMainWindow])
     {
-      NSWindow	*w = [NSApp keyWindow];
+      NSWindow *w = [NSApp keyWindow];
 
       [self resignMainWindow];
       if (w != nil && [w canBecomeMainWindow])
-	{
-	  [w makeMainWindow];
-	}
+        {
+          [w makeMainWindow];
+        }
       else
-	{
-	  for (i = ti; i != pos && i < c; i++)
-	    {
-	      w = [windowList objectAtIndex: i];
-	      if ([w isVisible] && [w canBecomeMainWindow])
-		{
-		  [w makeMainWindow];
-		  break;
-		}
-	    }
-	}
+        {
+         // try all windows front to back except self
+          for (i = 0; i < c; i++)
+            {
+              if (i != pos)
+                {
+                  w = [windowList objectAtIndex: i];
+                  if ([w isVisible] && [w canBecomeMainWindow])
+                    {
+                      [w makeMainWindow];
+                      break;
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -1335,19 +1356,19 @@ many times.
       _f.is_key = YES;
 
       if ((!_firstResponder) || (_firstResponder == self))
-	{
-	  if (_initialFirstResponder)
-	    {
-	      [self makeFirstResponder: _initialFirstResponder];
-	    }
-	}
+        {
+          if (_initialFirstResponder)
+            {
+              [self makeFirstResponder: _initialFirstResponder];
+            }
+        }
 
       [_firstResponder becomeFirstResponder];
       if ((_firstResponder != self)
-	  && [_firstResponder respondsToSelector: @selector(becomeKeyWindow)])
-	{
-	  [_firstResponder becomeKeyWindow];
-	}
+        && [_firstResponder respondsToSelector: @selector(becomeKeyWindow)])
+        {
+          [_firstResponder becomeKeyWindow];
+        }
 
       [_wv setInputState: GSTitleBarKey];
       [GSServerForWindow(self) setinputfocus: _windowNum];
@@ -1547,8 +1568,8 @@ many times.
     {
       if (_windowNum == 0)
         {
-	  return;	/* This deferred window was never ordered in. */
-	}
+          return;	/* This deferred window was never ordered in. */
+        }
       _f.visible = NO;
       /*
        * Don't keep trying to update the window while it is ordered out
@@ -1559,23 +1580,23 @@ many times.
   else
     {
       /* Windows need to be constrained when displayed or resized - but only
-	 titled windows are constrained. Also, and this is the tricky part,
+         titled windows are constrained. Also, and this is the tricky part,
          don't constrain if we are merely unhidding the window or if it's
          already visible and is just being reordered. */
       if ((_styleMask & NSTitledWindowMask)
-	&& [NSApp isHidden] == NO
-	&& _f.visible == NO)
-	{
-	  NSRect nframe = [self constrainFrameRect: _frame
-				          toScreen: [self screen]];
-	  [self setFrame: nframe display: NO];
-	}
+          && [NSApp isHidden] == NO
+          && _f.visible == NO)
+        {
+          NSRect nframe = [self constrainFrameRect: _frame
+                                toScreen: [self screen]];
+          [self setFrame: nframe display: NO];
+        }
       // create deferred window
       if (_windowNum == 0)
-	{
-	  [self _initBackendWindow];
-	  display = YES;
-	}
+        {
+          [self _initBackendWindow];
+          display = YES;
+        }
     }
 
   // Draw content before backend window ordering
@@ -1605,32 +1626,32 @@ many times.
       [isa _addAutodisplayedWindow: self];
 
       if (_f.has_closed == YES)
-	{
-	  _f.has_closed = NO;	/* A closed window has re-opened	*/
-	}
+        {
+          _f.has_closed = NO;	/* A closed window has re-opened	*/
+        }
       if (_f.has_opened == NO)
-	{
-	  _f.has_opened = YES;
-	  if (_f.menu_exclude == NO)
-	    {
-	      BOOL	isFileName;
-	      NSString *aString;
-	       
-	      aString = [NSString stringWithFormat: @"%@  --  %@", 
-	      			[_representedFilename lastPathComponent],
-		      [_representedFilename stringByDeletingLastPathComponent]];							    
-	      isFileName = [_windowTitle isEqual: aString]; 
+        {
+          _f.has_opened = YES;
+          if (_f.menu_exclude == NO)
+            {
+              BOOL	isFileName;
+              NSString *aString;
+              
+              aString = [NSString stringWithFormat: @"%@  --  %@", 
+                          [_representedFilename lastPathComponent],
+                          [_representedFilename stringByDeletingLastPathComponent]];							    
+              isFileName = [_windowTitle isEqual: aString]; 
 
-	      [NSApp addWindowsItem: self
-			      title: _windowTitle
-			   filename: isFileName];
-	    }
-	}
+              [NSApp addWindowsItem: self
+                     title: _windowTitle
+                     filename: isFileName];
+            }
+        }
       if ([self isKeyWindow] == YES)
-	{
-	  [_wv setInputState: GSTitleBarKey];
-	  [srv setinputfocus: _windowNum];
-	}
+        {
+          [_wv setInputState: GSTitleBarKey];
+          [srv setinputfocus: _windowNum];
+        }
       _f.visible = YES;
     }
   else if ([self isOneShot])
@@ -1644,19 +1665,19 @@ many times.
   if (_f.is_key == YES)
     {
       if ((_firstResponder != self)
-	&& [_firstResponder respondsToSelector: @selector(resignKeyWindow)])
-	[_firstResponder resignKeyWindow];
+          && [_firstResponder respondsToSelector: @selector(resignKeyWindow)])
+        [_firstResponder resignKeyWindow];
 
       _f.is_key = NO;
 
       if (_f.is_main == YES)
-	{
-	  [_wv setInputState: GSTitleBarMain];
-	}
+        {
+          [_wv setInputState: GSTitleBarMain];
+        }
       else
-	{
-	  [_wv setInputState: GSTitleBarNormal];
-	}
+        {
+          [_wv setInputState: GSTitleBarNormal];
+        }
       [self discardCursorRects];
 
       [nc postNotificationName: NSWindowDidResignKeyNotification object: self];
@@ -1669,13 +1690,13 @@ many times.
     {
       _f.is_main = NO;
       if (_f.is_key == YES)
-	{
-	  [_wv setInputState: GSTitleBarKey];
-	}
+        {
+          [_wv setInputState: GSTitleBarKey];
+        }
       else
-	{
-	  [_wv setInputState: GSTitleBarNormal];
-	}
+        {
+          [_wv setInputState: GSTitleBarNormal];
+        }
       [nc postNotificationName: NSWindowDidResignMainNotification object: self];
     }
 }
@@ -1707,13 +1728,30 @@ many times.
 
   if (NSEqualPoints(topLeftPoint, NSZeroPoint) == YES)
     {
-      topLeftPoint.x = _frame.origin.x;
-      topLeftPoint.y = _frame.origin.y + _frame.size.height;
+      topLeftPoint.x = NSMinX(_frame);
+      topLeftPoint.y = NSMaxY(_frame);
     }
+
   [self setFrameTopLeftPoint: topLeftPoint];
   cRect = [isa contentRectForFrameRect: _frame styleMask: _styleMask];
-  topLeftPoint.x = cRect.origin.x;
-  topLeftPoint.y = cRect.origin.y + cRect.size.height;
+  topLeftPoint.x = NSMinX(cRect);
+  topLeftPoint.y = NSMaxY(cRect);
+
+  /* make sure the new point is inside the screen */
+  if ([self screen])
+    {
+      NSRect screenRect;
+
+      screenRect = [[self screen] visibleFrame];
+      if (topLeftPoint.x >= NSMaxX(screenRect))
+        {
+          topLeftPoint.x = NSMinX(screenRect);
+        }
+      if (topLeftPoint.y <= NSMinY(screenRect))
+        {
+          topLeftPoint.y = NSMaxY(screenRect);
+        }
+    }
 
   return topLeftPoint;
 }
@@ -2129,10 +2167,10 @@ many times.
   if (NSIsEmptyRect(_rectNeedingFlush))
     {
       if ([_rectsBeingDrawn count] == 0)
-	{
-	  _f.needs_flush = NO;
-	  return;
-	}
+        {
+          _f.needs_flush = NO;
+          return;
+        }
     }
 
   /*
@@ -2442,9 +2480,9 @@ resetCursorRectsForView(NSView *theView)
          we close).
       */
       if (!_f.is_released_when_closed)
-	{
-	  RETAIN(self);
-	}
+        {
+          RETAIN(self);
+        }
 
       [nc postNotificationName: NSWindowWillCloseNotification object: self];
       _f.has_opened = NO;
@@ -2477,7 +2515,6 @@ resetCursorRectsForView(NSView *theView)
   if (!_f.is_miniaturized)
     return;
 
-#if 0
   /* At least with X-Windows, the counterpart is tied to us, so it will
      automatically be ordered out when we are deminiaturized */
   if (_counterpart != 0)
@@ -2486,7 +2523,7 @@ resetCursorRectsForView(NSView *theView)
 
       [mini orderOut: self];
     }
-#endif
+
   _f.is_miniaturized = NO;
   [self makeKeyAndOrderFront: self];
   [self _didDeminiaturize: sender];
@@ -2568,6 +2605,8 @@ resetCursorRectsForView(NSView *theView)
       NSWindow	*mini = GSWindowWithNumber(_counterpart);
 
       [mini orderFront: self];
+      // If the window is still visible, order it out.
+      [self orderOut: self];
     }
   [nc postNotificationName: NSWindowDidMiniaturizeNotification
 		    object: self];
@@ -2774,10 +2813,12 @@ resetCursorRectsForView(NSView *theView)
   if (aResponder != nil)
     {
       if (![aResponder isKindOfClass: responderClass])
-	return NO;
+        return NO;
 
       if (![aResponder acceptsFirstResponder])
-	return NO;
+        {
+          return NO;
+        }
     }
 
   /* So that the implementation of -resignFirstResponder in
@@ -2790,14 +2831,16 @@ resetCursorRectsForView(NSView *theView)
    * Change only if it replies YES.
    */
   if ((_firstResponder) && (![_firstResponder resignFirstResponder]))
-    return NO;
+    {
+      return NO;
+    }
 
   _firstResponder = aResponder;
-  if (![_firstResponder becomeFirstResponder])
+  if ((aResponder == nil) || ![_firstResponder becomeFirstResponder])
     {
-      _firstResponder = self;
+     _firstResponder = self;
       [_firstResponder becomeFirstResponder];
-      return NO;
+      return (aResponder == nil);
     }
 
   return YES;
@@ -2846,9 +2889,9 @@ resetCursorRectsForView(NSView *theView)
   if (character == NSTabCharacter)
     {
       if ([theEvent modifierFlags] & NSShiftKeyMask)
-	[self selectPreviousKeyView: self];
+        [self selectPreviousKeyView: self];
       else
-	[self selectNextKeyView: self];
+        [self selectNextKeyView: self];
       return;
     }
 
@@ -2856,10 +2899,10 @@ resetCursorRectsForView(NSView *theView)
   if (character == 0x001b)
     {
       if ([NSApp modalWindow] == self)
-	{
-	  // NB: The following *never* returns.
-	  [NSApp abortModal];
-	}
+        {
+          // NB: The following *never* returns.
+          [NSApp abortModal];
+        }
       return;
     }
 
@@ -2868,16 +2911,17 @@ resetCursorRectsForView(NSView *theView)
     || character == NSCarriageReturnCharacter)
     {
       if (_defaultButtonCell && _f.default_button_cell_key_disabled == NO)
-	{
-	  [_defaultButtonCell performClick: self];
-	  return;
-	}
+        {
+          [_defaultButtonCell performClick: self];
+          return;
+        }
     }
 
   // Discard null character events such as a Shift event after a tab key
   if ([characters length] == 0)
     return;
 
+  // FIXME: Why is this here, is the code still needed or a left over hack?
   // Try to process the event as a key equivalent
   // without Command having being pressed
   {
@@ -3218,193 +3262,204 @@ resetCursorRectsForView(NSView *theView)
   switch (type)
     {
       case NSLeftMouseDown:
-	{
-	  BOOL	wasKey = _f.is_key;
+        {
+          BOOL	wasKey = _f.is_key;
 
-	  if (_f.has_closed == NO)
-	    {
-	      v = [_wv hitTest: [theEvent locationInWindow]];
-	      if (_f.is_key == NO && _windowLevel != NSDesktopWindowLevel)
-		{
-		  /* NSPanel modification: check becomesKeyOnlyIfNeeded. */
-		  if (![self becomesKeyOnlyIfNeeded]
-		      || [v needsPanelToBecomeKey])
-		    [self makeKeyAndOrderFront: self];
-		}
-	      /* Activate the app *after* making the receiver key, as app
-		 activation tries to make the previous key window key. */
-	      if ([NSApp isActive] == NO && self != [NSApp iconWindow])
-		{
-		  [NSApp activateIgnoringOtherApps: YES];
-		}
-	      if (_firstResponder != v)
-		{
-		  [self makeFirstResponder: v];
-		}
-	      if (_lastView)
- 		{
-		  DESTROY(_lastView);
-		}
-	      if (wasKey == YES || [v acceptsFirstMouse: theEvent] == YES)
-		{
-		  if ([NSHelpManager isContextHelpModeActive])
-		    {
-		      [v helpRequested: theEvent];
-		    }
-		  else
-		    {
-		      ASSIGN(_lastView, v);
-		      if (toolTipVisible != nil)
-		        {
-			  /* Inform the tooltips system that we have had
-			   * a mouse down so it should stop displaying.
-			   */
-			  [toolTipVisible mouseDown: theEvent];
-			}
-		      [v mouseDown: theEvent];
-		    }
-		}
-	      else
-		{
-		  [self mouseDown: theEvent];
-		}
-	    }
-	  _lastPoint = [theEvent locationInWindow];
-	  break;
-	}
+          if (_f.has_closed == NO)
+            {
+              v = [_wv hitTest: [theEvent locationInWindow]];
+              if (_f.is_key == NO && _windowLevel != NSDesktopWindowLevel)
+                {
+                  /* NSPanel modification: check becomesKeyOnlyIfNeeded. */
+                  if (![self becomesKeyOnlyIfNeeded]
+                      || [v needsPanelToBecomeKey])
+                    {
+                      v = nil;
+                      [self makeKeyAndOrderFront: self];
+                    }
+                }
+              /* Activate the app *after* making the receiver key, as app
+                 activation tries to make the previous key window key. */
+              if ([NSApp isActive] == NO && self != [NSApp iconWindow])
+                {
+                  v = nil;
+                  [NSApp activateIgnoringOtherApps: YES];
+                }
+              // Activating the app may change the window layout.
+              if (v == nil)
+                {
+                  v = [_wv hitTest: [theEvent locationInWindow]];
+                }
+              if (_lastView)
+                {
+                  DESTROY(_lastView);
+                }
+              if (_firstResponder != v)
+                {
+                  // Only try to set first responder, when the view wants it.
+                  if ([v acceptsFirstResponder] && ![self makeFirstResponder: v])
+                    {
+                      return;
+                    }
+                }
+              if (wasKey == YES || [v acceptsFirstMouse: theEvent] == YES)
+                {
+                  if ([NSHelpManager isContextHelpModeActive])
+                    {
+                      [v helpRequested: theEvent];
+                    }
+                  else
+                    {
+                      ASSIGN(_lastView, v);
+                      if (toolTipVisible != nil)
+                        {
+                          /* Inform the tooltips system that we have had
+                           * a mouse down so it should stop displaying.
+                           */
+                          [toolTipVisible mouseDown: theEvent];
+                        }
+                      [v mouseDown: theEvent];
+                    }
+                }
+              else
+                {
+                    [self mouseDown: theEvent];
+                }
+            }
+          _lastPoint = [theEvent locationInWindow];
+          break;
+        }
 
       case NSLeftMouseUp:
-	v = AUTORELEASE(RETAIN(_lastView));
-	DESTROY(_lastView);
-	if (v == nil)
-	  break;
-	[v mouseUp: theEvent];
-	_lastPoint = [theEvent locationInWindow];
-	break;
+        v = AUTORELEASE(RETAIN(_lastView));
+        DESTROY(_lastView);
+        if (v == nil)
+          break;
+        [v mouseUp: theEvent];
+        _lastPoint = [theEvent locationInWindow];
+        break;
 
       case NSOtherMouseDown:
-	v = [_wv hitTest: [theEvent locationInWindow]];
-	[v otherMouseDown: theEvent];
-	_lastPoint = [theEvent locationInWindow];
-	break;
+          v = [_wv hitTest: [theEvent locationInWindow]];
+          [v otherMouseDown: theEvent];
+          _lastPoint = [theEvent locationInWindow];
+          break;
 
       case NSOtherMouseUp:
-	v = [_wv hitTest: [theEvent locationInWindow]];
-	[v otherMouseUp: theEvent];
-	_lastPoint = [theEvent locationInWindow];
-	break;
+        v = [_wv hitTest: [theEvent locationInWindow]];
+        [v otherMouseUp: theEvent];
+        _lastPoint = [theEvent locationInWindow];
+        break;
 
       case NSRightMouseDown:
-	{
-	  v = [_wv hitTest: [theEvent locationInWindow]];
-	  [v rightMouseDown: theEvent];
-	  _lastPoint = [theEvent locationInWindow];
-	}
-	break;
+        v = [_wv hitTest: [theEvent locationInWindow]];
+        [v rightMouseDown: theEvent];
+        _lastPoint = [theEvent locationInWindow];
+        break;
 
       case NSRightMouseUp:
-	v = [_wv hitTest: [theEvent locationInWindow]];
-	[v rightMouseUp: theEvent];
-	_lastPoint = [theEvent locationInWindow];
-	break;
+        v = [_wv hitTest: [theEvent locationInWindow]];
+        [v rightMouseUp: theEvent];
+        _lastPoint = [theEvent locationInWindow];
+        break;
 
       case NSLeftMouseDragged:
       case NSOtherMouseDragged:
       case NSRightMouseDragged:
       case NSMouseMoved:
-	switch (type)
-	  {
-	    case NSLeftMouseDragged:
-	      [_lastView mouseDragged: theEvent];
-	      break;
-	    case NSOtherMouseDragged:
-	      [_lastView otherMouseDragged: theEvent];
-	      break;
-	    case NSRightMouseDragged:
-	      [_lastView rightMouseDragged: theEvent];
-	      break;
-	    default:
-	      if (_f.accepts_mouse_moved)
-		{
-		  /*
-		   * If the window is set to accept mouse movements, we need to
-		   * forward the mouse movement to the correct view.
-		   */
-		  v = [_wv hitTest: [theEvent locationInWindow]];
+        switch (type)
+          {
+            case NSLeftMouseDragged:
+              [_lastView mouseDragged: theEvent];
+              break;
+            case NSOtherMouseDragged:
+              [_lastView otherMouseDragged: theEvent];
+              break;
+            case NSRightMouseDragged:
+              [_lastView rightMouseDragged: theEvent];
+              break;
+            default:
+              if (_f.accepts_mouse_moved)
+                {
+                  /*
+                   * If the window is set to accept mouse movements, we need to
+                   * forward the mouse movement to the correct view.
+                   */
+                  v = [_wv hitTest: [theEvent locationInWindow]];
 
-		  /* If the view is displaying a tooltip, we should
-		   * send mouse movements to the tooltip system so
-		   * that the window can track the mouse.
-		   */
-		  if (toolTipVisible != nil)
-		    {
-		      [toolTipVisible mouseMoved: theEvent];
-		    }
-		  else
-		    {
-		      [v mouseMoved: theEvent];
-		    }
-		}
-	      break;
-	  }
+                  /* If the view is displaying a tooltip, we should
+                   * send mouse movements to the tooltip system so
+                   * that the window can track the mouse.
+                   */
+                  if (toolTipVisible != nil)
+                    {
+                      [toolTipVisible mouseMoved: theEvent];
+                    }
+                  else
+                    {
+                      [v mouseMoved: theEvent];
+                    }
+                }
+              break;
+          }
 
-	/*
-	 * We need to go through all of the views, and if there is any with
-	 * a tracking rectangle then we need to determine if we should send
-	 * a NSMouseEntered or NSMouseExited event.
-	 */
-	(*ctImp)(self, ctSel, _wv, theEvent);
-
-	if (_f.is_key)
-	  {
-	    /*
-	     * We need to go through all of the views, and if there is any with
-	     * a cursor rectangle then we need to determine if we should send a
-	     * cursor update event.
-	     */
-	    if (_f.cursor_rects_enabled)
-	      (*ccImp)(self, ccSel, _wv, theEvent);
-	  }
-
-	_lastPoint = [theEvent locationInWindow];
-	break;
-
+        /*
+         * We need to go through all of the views, and if there is any with
+         * a tracking rectangle then we need to determine if we should send
+         * a NSMouseEntered or NSMouseExited event.
+         */
+        (*ctImp)(self, ctSel, _wv, theEvent);
+        
+        if (_f.is_key)
+          {
+            /*
+             * We need to go through all of the views, and if there is any with
+             * a cursor rectangle then we need to determine if we should send a
+             * cursor update event.
+             */
+            if (_f.cursor_rects_enabled)
+                (*ccImp)(self, ccSel, _wv, theEvent);
+          }
+        
+        _lastPoint = [theEvent locationInWindow];
+        break;
+        
       case NSMouseEntered:
       case NSMouseExited:
-	break;
+        break;
 
       case NSKeyDown:
-	[_firstResponder keyDown: theEvent];
-	break;
-
+        [_firstResponder keyDown: theEvent];
+        break;
+        
       case NSKeyUp:
-	[_firstResponder keyUp: theEvent];
-	break;
+        [_firstResponder keyUp: theEvent];
+        break;
 
       case NSFlagsChanged:
-	[_firstResponder flagsChanged: theEvent];
-	break;
+        [_firstResponder flagsChanged: theEvent];
+        break;
 
       case NSCursorUpdate:
-	{
-	  GSTrackingRect	*r =(GSTrackingRect*)[theEvent userData];
-	  NSCursor		*c = (NSCursor*)[r owner];
-
-	  if ([theEvent trackingNumber])	  // It's a mouse entered
-	    {
-	      [c mouseEntered: theEvent];
-	    }
-	  else					  // it is a mouse exited
-	    {
-	      [c mouseExited: theEvent];
-	    }
-	}
-	break;
+        {
+          GSTrackingRect	*r =(GSTrackingRect*)[theEvent userData];
+          NSCursor		*c = (NSCursor*)[r owner];
+          
+          if ([theEvent trackingNumber])	  // It's a mouse entered
+            {
+              [c mouseEntered: theEvent];
+            }
+          else					  // it is a mouse exited
+            {
+              [c mouseExited: theEvent];
+            }
+        }
+        break;
 
       case NSScrollWheel:
-	v = [_wv hitTest: [theEvent locationInWindow]];
-	[v scrollWheel: theEvent];
-	break;
+        v = [_wv hitTest: [theEvent locationInWindow]];
+        [v scrollWheel: theEvent];
+        break;
 
       case NSAppKitDefined:
 	{
@@ -3510,31 +3565,31 @@ resetCursorRectsForView(NSView *theView)
 
 	    case GSAppKitWindowFocusIn:
 	      if (_f.is_miniaturized)
-		{
-		  /* Window Manager just deminiaturized us */
-		  [self deminiaturize: self];
-		}
+          {
+            /* Window Manager just deminiaturized us */
+            [self deminiaturize: self];
+          }
 	      if ([NSApp modalWindow]
-		  && self != [NSApp modalWindow])
-		{
-		  /* Ignore this request. We're in a modal loop and the
-		     user pressed on the title bar of another window. */
-		  break;
-		}
+            && self != [NSApp modalWindow])
+          {
+            /* Ignore this request. We're in a modal loop and the
+               user pressed on the title bar of another window. */
+            break;
+          }
 	      if ([self canBecomeKeyWindow] == YES)
-		{
-		  NSDebugLLog(@"Focus", @"Making %d key", _windowNum);
-		  [self makeKeyWindow];
-		  [self makeMainWindow];
-		  [NSApp activateIgnoringOtherApps: YES];
-		}
+          {
+            NSDebugLLog(@"Focus", @"Making %d key", _windowNum);
+            [self makeKeyWindow];
+            [self makeMainWindow];
+            [NSApp activateIgnoringOtherApps: YES];
+          }
 	      if (self == [[NSApp mainMenu] window])
-		{
-		  /* We should really find another window that can become
-		     key (if possible)
-		  */
-		  [self _lossOfKeyOrMainWindow];
-		}
+          {
+            /* We should really find another window that can become
+               key (if possible)
+            */
+            [self _lossOfKeyOrMainWindow];
+          }
 	      break;
 
 	    case GSAppKitWindowFocusOut:
@@ -3803,12 +3858,15 @@ resetCursorRectsForView(NSView *theView)
     theView = [aView nextValidKeyView];
   if (theView)
     {
-      [self makeFirstResponder: theView];
+      if (![self makeFirstResponder: theView])
+        {
+          return;
+        }
       if ([theView respondsToSelector:@selector(selectText:)])
-	{
-	  _selectionDirection =  NSSelectingNext;
-	  [(id)theView selectText: self];
-	  _selectionDirection =  NSDirectSelection;
+        {
+          _selectionDirection =  NSSelectingNext;
+          [(id)theView selectText: self];
+          _selectionDirection =  NSDirectSelection;
       	}
     }
 }
@@ -3824,13 +3882,16 @@ resetCursorRectsForView(NSView *theView)
     theView = [aView previousValidKeyView];
   if (theView)
     {
-      [self makeFirstResponder: theView];
+      if (![self makeFirstResponder: theView])
+        {
+          return;
+        }
       if ([theView respondsToSelector:@selector(selectText:)])
-	{
-	  _selectionDirection =  NSSelectingPrevious;
-	  [(id)theView selectText: self];
-	  _selectionDirection =  NSDirectSelection;
-	}
+        {
+          _selectionDirection =  NSSelectingPrevious;
+          [(id)theView selectText: self];
+          _selectionDirection =  NSDirectSelection;
+        }
     }
 }
 
@@ -3853,20 +3914,23 @@ resetCursorRectsForView(NSView *theView)
   if ((theView == nil) && (_initialFirstResponder))
     {
       if ([_initialFirstResponder acceptsFirstResponder])
-	theView = _initialFirstResponder;
+        theView = _initialFirstResponder;
       else
-	theView = [_initialFirstResponder nextValidKeyView];
+        theView = [_initialFirstResponder nextValidKeyView];
     }
 
   if (theView)
     {
-      [self makeFirstResponder: theView];
+      if (![self makeFirstResponder: theView])
+        {
+          return;
+        }
       if ([theView respondsToSelector:@selector(selectText:)])
-	{
-	  _selectionDirection =  NSSelectingNext;
-	  [(id)theView selectText: self];
-	  _selectionDirection =  NSDirectSelection;
-	}
+        {
+          _selectionDirection =  NSSelectingNext;
+          [(id)theView selectText: self];
+          _selectionDirection =  NSDirectSelection;
+        }
     }
 }
 
@@ -3889,20 +3953,23 @@ resetCursorRectsForView(NSView *theView)
   if ((theView == nil) && (_initialFirstResponder))
     {
       if ([_initialFirstResponder acceptsFirstResponder])
-	theView = _initialFirstResponder;
+        theView = _initialFirstResponder;
       else
-	theView = [_initialFirstResponder previousValidKeyView];
+        theView = [_initialFirstResponder previousValidKeyView];
     }
 
   if (theView)
     {
-      [self makeFirstResponder: theView];
-      if ([theView respondsToSelector:@selector(selectText:)])
-	{
-	  _selectionDirection =  NSSelectingPrevious;
-	  [(id)theView selectText: self];
-	  _selectionDirection =  NSDirectSelection;
-	}
+      if (![self makeFirstResponder: theView])
+        {
+          return;
+        }
+       if ([theView respondsToSelector:@selector(selectText:)])
+        {
+          _selectionDirection =  NSSelectingPrevious;
+          [(id)theView selectText: self];
+          _selectionDirection =  NSDirectSelection;
+        }
     }
 }
 

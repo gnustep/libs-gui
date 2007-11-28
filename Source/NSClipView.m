@@ -290,7 +290,7 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
           NSRect redrawRect;
                     
           /* Copy the intersection to the new position */
-          [self scrollRect: intersection by: NSMakeSize(dx, dy)];
+          [self scrollRect: intersection by: NSMakeSize(-dx, -dy)];
 
           /* Change coordinate system to the new one */
           [super setBoundsOrigin: newBounds.origin];

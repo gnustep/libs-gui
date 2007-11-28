@@ -543,13 +543,13 @@ enum {
 - (void) okButtonClicked: (id)sender
 {
   [self writePrintInfo];
-  [NSApp stopModalWithCode: NSPLOKButton];
+  [NSApp stopModalWithCode: NSOKButton];
 }
 
 
 - (void) cancelButtonClicked: (id)sender
 {
-  [NSApp stopModalWithCode: NSPLCancelButton];
+  [NSApp stopModalWithCode: NSCancelButton];
 }
 
 
