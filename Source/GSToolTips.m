@@ -106,8 +106,9 @@ typedef struct NSView_struct
 @implementation GSToolTips
 
 static NSMapTable	*viewsMap = 0;
-static NSTimer		*timer;
-static NSWindow		*window;
+static NSTimer		*timer = nil;
+static GSToolTips       *timedObject = nil;
+static NSWindow		*window = nil;
 static NSSize		offset;
 static BOOL		restoreMouseMoved;
 
@@ -201,8 +202,6 @@ static BOOL		restoreMouseMoved;
 - (id) initForView: (NSView*)aView
 {
   view = aView;
-  timer = nil;
-  window = nil;
   toolTipTag = -1;
   return self;
 }
@@ -218,6 +217,7 @@ static BOOL		restoreMouseMoved;
        */
       [timer invalidate];
       timer = nil;
+      timedObject = nil;
     }
 
   provider = (GSTTProvider*)[theEvent userData];
@@ -235,10 +235,11 @@ static BOOL		restoreMouseMoved;
     }
 
   timer = [NSTimer scheduledTimerWithTimeInterval: 0.5
-					     target: self
-					   selector: @selector(_timedOut:)
-					   userInfo: toolTipString
-					    repeats: YES];
+                                           target: self
+                                         selector: @selector(_timedOut:)
+                                         userInfo: toolTipString
+                                          repeats: YES];
+  timedObject = self;
   if ([[view window] acceptsMouseMovedEvents] == YES)
     {
       restoreMouseMoved = NO;
@@ -434,13 +435,17 @@ static BOOL		restoreMouseMoved;
     {
       [NSWindow _setToolTipVisible: nil];
     }
-  if (timer != nil)
+  /* If there is currently a timer running for this object,
+   * cancel it.
+   */
+  if (timer != nil && timedObject == self)
     {
       if ([timer isValid])
 	{
 	  [timer invalidate];
 	}
       timer = nil;
+      timedObject = nil;
     }
   if (window != nil)
     {
@@ -472,6 +477,7 @@ static BOOL		restoreMouseMoved;
 	  [timer invalidate];
 	}
       timer = nil;
+      timedObject = nil;
     }
 
   if (window != nil)

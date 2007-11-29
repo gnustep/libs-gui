@@ -1,5 +1,9 @@
 2007-11-29 Richard Frith-Macdonald <rfm@gnu.org>
 
+	* Source/GSToolTips.m: Fix for #20861
+
+2007-11-29 Richard Frith-Macdonald <rfm@gnu.org>
+
 	* Source/NSView.m: Call ([resetCursorRects]) whenever view frame or
 	bounds are changed.
 
