@@ -21,8 +21,30 @@
       </p>
       <section>
 	<heading>Version 0.12.1</heading>
-	<p>
-        </p>
+	   <p>
+	   </p>
+        	  <deflist>
+            	    <term>Licence</term>
+             	    <desc>
+                  Switched to use LGPL 3 and GPL 3.
+             	    </desc>
+            	    <term>Flipped Controls</term>
+             	    <desc>
+                  Report more controls as being flipped. (NSTextField, NSTableHeaderView,
+                  NSSlider, NSProgressIndicator, NSButton) NSTabView is still missing.
+             	    </desc>
+            	    <term>Font Attribute</term>
+             	    <desc>
+                  Add font attribute fixing to NSAttributedString. To allow for the output
+                  of glyphs not present in the current font.
+             	    </desc>
+            	    <term>Optimization</term>
+             	    <desc>
+                  In NSAffineTransform use optimized primitive methods from
+                  base.
+                  Optimized the validation of edited cells.
+             	    </desc>
+	  </deflist>
       </section>
       <section>
 	<heading>Version 0.12.0</heading>

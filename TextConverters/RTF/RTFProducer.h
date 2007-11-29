@@ -1,31 +1,32 @@
 /*
- RTFProducer.h
+   RTFProducer.h
 
- Writes out a NSAttributedString as RTF
+   Writes out a NSAttributedString as RTF
 
- Copyright (C) 2000 Free Software Foundation, Inc.
+   Copyright (C) 2000 Free Software Foundation, Inc.
 
- Author: Fred Kiefer <FredKiefer@gmx.de>
- Date: June 2000
- Modifications: Axel Katerbau <axel@objectpark.org>
- Date: April 2003
+   Author: Fred Kiefer <FredKiefer@gmx.de>
+   Date: June 2000
+   Modifications: Axel Katerbau <axel@objectpark.org>
+   Date: April 2003
 
- This file is part of the GNUstep GUI Library.
+   This file is part of the GNUstep GUI Library.
 
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Library General Public
- License as published by the Free Software Foundation; either
- version 2 of the License, or (at your option) any later version.
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
 
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Library General Public License for more details.
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
- You should have received a copy of the GNU Library General Public
- License along with this library; see the file COPYING.LIB.
- If not, write to the Free Software Foundation,
- 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
  */
 
 #ifndef _GNUstep_H_RTFDProducer
