@@ -1082,18 +1082,16 @@ GSSetDragTypes(NSView* obj, NSArray *types)
             }
         }
 
-      if (changedSize || changedOrigin)
+      if (_coordinates_valid)
         {
-          if (_coordinates_valid)
-            {
-              (*invalidateImp)(self, invalidateSel);
-            }
-          [self resizeSubviewsWithOldSize: old_size];
-          if (_post_frame_changes)
-            {
-              [nc postNotificationName: NSViewFrameDidChangeNotification
-                  object: self];
-            }
+          (*invalidateImp)(self, invalidateSel);
+        }
+      [self resetCursorRects];
+      [self resizeSubviewsWithOldSize: old_size];
+      if (_post_frame_changes)
+        {
+          [nc postNotificationName: NSViewFrameDidChangeNotification
+              object: self];
         }
     }
 }
@@ -1107,7 +1105,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
           (*invalidateImp)(self, invalidateSel);
         }
       _frame.origin = newOrigin;
-
+      [self resetCursorRects];
       if (_post_frame_changes)
         {
           [nc postNotificationName: NSViewFrameDidChangeNotification
@@ -1151,7 +1149,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
         {
           _frame.size = _bounds.size = newSize;
         }
-
+      [self resetCursorRects];
       [self resizeSubviewsWithOldSize: old_size];
       if (_post_frame_changes)
         {
@@ -1181,9 +1179,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
       [_frameMatrix rotateByDegrees: angle - oldAngle];
       _is_rotated_from_base = _is_rotated_or_scaled_from_base = YES;
-
       [self _updateBoundsMatrix];
-
+      [self resetCursorRects];
       if (_post_frame_changes)
         {
           [nc postNotificationName: NSViewFrameDidChangeNotification
@@ -1320,7 +1317,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       [matrix invert];
       [matrix boundingRectFor: frame result: &_bounds];
       RELEASE(matrix);
-
+      [self resetCursorRects];
       if (_post_bounds_changes)
         {
           [nc postNotificationName: NSViewBoundsDidChangeNotification
@@ -1341,7 +1338,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       [_boundsMatrix
         setFrameOrigin: NSMakePoint(-_bounds.origin.x, -_bounds.origin.y)];
       [self _updateBoundsMatrix];
-
+      [self resetCursorRects];
       if (_post_bounds_changes)
         {
           [nc postNotificationName: NSViewBoundsDidChangeNotification
@@ -1373,7 +1370,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       [matrix invert];
       [matrix boundingRectFor: frame result: &_bounds];
       RELEASE(matrix);
-
+      [self resetCursorRects];
       if (_post_bounds_changes)
         {
           [nc postNotificationName: NSViewBoundsDidChangeNotification
@@ -1392,7 +1389,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
           _boundsMatrix = [NSAffineTransform new]; 
         }
       [_boundsMatrix setFrameOrigin: NSMakePoint(-newOrigin.x, -newOrigin.y)];
-
+      [self resetCursorRects];
       if (_post_bounds_changes)
         {
           [nc postNotificationName: NSViewBoundsDidChangeNotification
@@ -1423,7 +1420,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
       _bounds.size = newSize;
       [self _updateBoundsMatrix];
-
+      [self resetCursorRects];
       if (_post_bounds_changes)
         {
           [nc postNotificationName: NSViewBoundsDidChangeNotification
@@ -1457,7 +1454,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       [matrix invert];
       [matrix boundingRectFor: frame result: &_bounds];
       RELEASE(matrix);
-
+      [self resetCursorRects];
       if (_post_bounds_changes)
         {
           [nc postNotificationName: NSViewBoundsDidChangeNotification
