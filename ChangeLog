@@ -1,3 +1,9 @@
+2007-11-29 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSCursor.m: ([-initWithImage:]) changed to use a hot point
+	at 0,0 rather than 0,15 for MacOS-X compatibility ... the coordinate
+	system of a cursor is flipped according to the MacOS-X docs.
+
 2007-11-27 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSApplication.m (-replyToApplicationShouldTerminate:): 
