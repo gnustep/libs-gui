@@ -108,6 +108,7 @@ first. Remaining cases, highest priority first:
 #include "AppKit/NSLayoutManager.h"
 #include "GNUstepGUI/GSLayoutManager_internal.h"
 
+#include <Foundation/NSEnumerator.h>
 #include <Foundation/NSException.h>
 #include "AppKit/NSAttributedString.h"
 #include "AppKit/NSColor.h"

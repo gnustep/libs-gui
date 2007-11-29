@@ -1,5 +1,31 @@
 2007-11-29 Richard Frith-Macdonald <rfm@gnu.org>
 
+	* Source/NSWindowController.m:
+	* Source/GSDisplayServer.m:
+	* Source/NSBox.m:
+	* Source/NSFontManager.m:
+	* Source/GSLayoutManager.m:
+	* Source/NSWindow.m:
+	* Source/NSLayoutManager.m:
+	* Source/NSPrinter.m:
+	* Source/NSPasteboard.m:
+	* Source/NSToolbar.m:
+	* Source/NSFont.m:
+	* Source/NSOutlineView.m:
+	* Source/NSTextView.m:
+	* Source/GSToolbar.m:
+	* Source/tiff.m:
+	* Source/NSDataLinkPanel.m:
+	* Source/NSTableView.m:
+	* Source/NSSpellChecker.m:
+	* Printing/GSLPR/GSLPRPrinter.m:
+	* Tools/gcloseall.m:
+	* Tools/gclose.m:
+	Update includes to add NSEnumerator where needed and remove use of
+	the deprecated Foundation/NSUtilities.h header.
+
+2007-11-29 Richard Frith-Macdonald <rfm@gnu.org>
+
 	* Source/GSToolTips.m: Fix for #20861
 
 2007-11-29 Richard Frith-Macdonald <rfm@gnu.org>

@@ -30,6 +30,7 @@
 #include "config.h"
 #include <Foundation/NSAffineTransform.h>
 #include <Foundation/NSCoder.h>
+#include <Foundation/NSDictionary.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSSet.h>

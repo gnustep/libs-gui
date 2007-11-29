@@ -32,6 +32,7 @@
 */ 
 
 #include <Foundation/NSArray.h>
+#include <Foundation/NSEnumerator.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSIndexSet.h>
 #include <Foundation/NSMapTable.h>

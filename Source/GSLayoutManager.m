@@ -27,6 +27,7 @@
 
 #include <Foundation/NSCharacterSet.h>
 #include <Foundation/NSDebug.h>
+#include <Foundation/NSEnumerator.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSValue.h>
 

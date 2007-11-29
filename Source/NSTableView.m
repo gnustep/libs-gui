@@ -31,6 +31,7 @@
 */ 
 
 #include <Foundation/NSAutoreleasePool.h>
+#include <Foundation/NSEnumerator.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSFormatter.h>
 #include <Foundation/NSIndexSet.h>

@@ -42,6 +42,7 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSArray.h>
+#include <Foundation/NSEnumerator.h>
 #include <Foundation/NSGeometry.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSValue.h>

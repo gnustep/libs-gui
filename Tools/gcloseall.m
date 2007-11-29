@@ -26,6 +26,7 @@
 
 #include <Foundation/NSArray.h>
 #include <Foundation/NSConnection.h>
+#include <Foundation/NSEnumerator.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSException.h>

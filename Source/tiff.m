@@ -62,7 +62,8 @@
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSString.h>
-#include <Foundation/NSUtilities.h>
+#include <Foundation/NSDictionary.h>
+#include <Foundation/NSEnumerator.h>
 
 #include <math.h>
 #include <stdlib.h>

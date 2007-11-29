@@ -34,10 +34,10 @@
 #include <Foundation/NSArray.h>
 #include <Foundation/NSSet.h>
 #include <Foundation/NSDictionary.h>
+#include <Foundation/NSEnumerator.h>
 #include <Foundation/NSProxy.h>
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSSpellServer.h>
-#include <Foundation/NSUtilities.h>
 #include <Foundation/NSValue.h>
 #include "AppKit/NSNibLoading.h"
 #include "AppKit/NSImage.h"

@@ -38,13 +38,13 @@
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSCharacterSet.h>
 #include <Foundation/NSDictionary.h>
+#include <Foundation/NSEnumerator.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSPathUtilities.h>
 #include <Foundation/NSScanner.h>
 #include <Foundation/NSSet.h>
 #include <Foundation/NSString.h>
-#include <Foundation/NSUtilities.h>
 #include <Foundation/NSValue.h>
 #include <Foundation/NSMapTable.h>
 #include <Foundation/NSSet.h>

@@ -29,6 +29,7 @@
 
 #include "config.h"
 #include <Foundation/NSArray.h>
+#include <Foundation/NSDictionary.h>
 #include <Foundation/NSSet.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSValue.h>

@@ -33,6 +33,7 @@
 #include <Foundation/NSArray.h>
 #include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSDictionary.h>
+#include <Foundation/NSEnumerator.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSNotification.h>
 #include "AppKit/NSToolbarItem.h"

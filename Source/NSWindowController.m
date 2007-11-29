@@ -27,6 +27,8 @@
 */
 
 #include <Foundation/NSBundle.h>
+#include <Foundation/NSDictionary.h>
+#include <Foundation/NSEnumerator.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSString.h>

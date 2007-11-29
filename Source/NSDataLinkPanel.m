@@ -26,6 +26,7 @@
 */ 
 
 #include "config.h"
+#include "Foundation/NSDictionary.h"
 #include "AppKit/NSDataLinkPanel.h"
 #include "AppKit/NSDataLinkManager.h"
 #include "AppKit/NSDataLink.h"

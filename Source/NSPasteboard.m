@@ -528,6 +528,7 @@
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSHost.h>
 #include <Foundation/NSDictionary.h>
+#include <Foundation/NSEnumerator.h>
 #include <Foundation/NSConnection.h>
 #include <Foundation/NSDistantObject.h>
 #include <Foundation/NSDistributedNotificationCenter.h>

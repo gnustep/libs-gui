@@ -52,6 +52,7 @@
 #include <Foundation/NSArray.h>
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSDebug.h>
+#include <Foundation/NSEnumerator.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSKeyedArchiver.h>
 #include <Foundation/NSNotification.h>
