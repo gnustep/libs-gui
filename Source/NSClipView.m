@@ -214,6 +214,7 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 - (void) scrollToPoint: (NSPoint)aPoint
 {
   [self setBoundsOrigin: [self constrainScrollPoint: aPoint]];
+  [self resetCursorRects];
 }
 
 - (void) setBounds: (NSRect)b

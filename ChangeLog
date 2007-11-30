@@ -1,3 +1,8 @@
+2007-11-30 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSClipView.m: ([scrollToPoint]) reset cursor rectangles when
+	view is scrolled.
+
 2007-11-29 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWindowController.m:
