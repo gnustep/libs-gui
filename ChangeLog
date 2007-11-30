@@ -1,3 +1,9 @@
+2007-11-30 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSImage.m (-drawInRect:fromRect:operation:fraction:):
+	Tread a zero source rectangle as the full image and clip to the
+	image bounds.
+
 2007-11-30 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSClipView.m: ([scrollToPoint]) reset cursor rectangles when
