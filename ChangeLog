@@ -1,3 +1,8 @@
+2007-12-01 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSTableView.h
+	* Source/NSTableView.m: Add MacOSX 10.4 methods.
+		
 2007-11-30 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSImage.m (-drawInRect:fromRect:operation:fraction:):

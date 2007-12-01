@@ -2002,6 +2002,8 @@ static void computeNewSelection
   _selectedColumn = -1;
   _selectedRow = -1;
   _highlightedTableColumn = nil;
+  _draggingSourceOperationMaskForLocal = NSDragOperationAll;
+  _draggingSourceOperationMaskForRemote = NSDragOperationAll;
 }
 
 - (id) initWithFrame: (NSRect)frameRect
@@ -4400,6 +4402,17 @@ static BOOL selectContiguousRegion(NSTableView *self,
   return _autoresizesAllColumnsToFit;
 }
 
+- (NSTableViewColumnAutoresizingStyle) columnAutoresizingStyle
+{
+  // FIXME
+  return NSTableViewNoColumnAutoresizing;
+}
+
+- (void) setColumnAutoresizingStyle: (NSTableViewColumnAutoresizingStyle)style
+{
+  // FIXME
+}
+
 - (void) sizeLastColumnToFit
 {
   if ((_super_view != nil) && (_numberOfColumns > 0))
@@ -4966,6 +4979,10 @@ static BOOL selectContiguousRegion(NSTableView *self,
     }
 }
 
+- (void) noteHeightOfRowsWithIndexesChanged: (NSIndexSet*)indexes
+{
+  // FIXME
+}
 
 - (void) drawGridInClipRect: (NSRect)aRect
 {
@@ -5492,10 +5509,22 @@ static BOOL selectContiguousRegion(NSTableView *self,
 
 /* dragging rows */
 - (NSImage*) dragImageForRows: (NSArray*)dragRows
-			event: (NSEvent*)dragEvent
-	      dragImageOffset: (NSPoint*)dragImageOffset
+                        event: (NSEvent*)dragEvent
+              dragImageOffset: (NSPoint*)dragImageOffset
 {
+  // FIXME
+  NSImage *dragImage = [[NSImage alloc]
+			 initWithSize: NSMakeSize(8, 8)];
 
+  return AUTORELEASE(dragImage);
+}
+
+- (NSImage *) dragImageForRowsWithIndexes: (NSIndexSet*)rows
+                             tableColumns: (NSArray*)cols
+                                    event: (NSEvent*)event
+                                   offset: (NSPoint*)offset;
+{
+  // FIXME
   NSImage *dragImage = [[NSImage alloc]
 			 initWithSize: NSMakeSize(8, 8)];
 
@@ -6139,11 +6168,30 @@ static BOOL selectContiguousRegion(NSTableView *self,
 }
 
 
-- (unsigned int) draggingSourceOperationMaskForLocal: (BOOL) flag
+- (unsigned int) draggingSourceOperationMaskForLocal: (BOOL)isLocal
 {
-  return (NSDragOperationAll);
+  if (isLocal)
+    {
+      return _draggingSourceOperationMaskForLocal;
+    }
+  else
+    {
+      return _draggingSourceOperationMaskForRemote;
+    }
 }
 
+- (void) setDraggingSourceOperationMask: (unsigned int)mask
+                               forLocal: (BOOL)isLocal
+{
+  if (isLocal)
+    {
+      _draggingSourceOperationMaskForLocal = mask;
+    }
+  else
+    {
+      _draggingSourceOperationMaskForRemote = mask;
+    }
+}
 
 - (NSDragOperation) draggingEntered: (id <NSDraggingInfo>) sender
 {
@@ -6342,6 +6390,12 @@ static BOOL selectContiguousRegion(NSTableView *self,
 
 - (void) concludeDragOperation:(id <NSDraggingInfo>)sender
 {
+}
+
+- (BOOL) canDragRowsWithIndexes: (NSIndexSet *)indexes 
+                        atPoint: (NSPoint)point
+{
+  return YES;
 }
 
 /* 
