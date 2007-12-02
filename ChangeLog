@@ -1,3 +1,16 @@
+2007-12-02 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBezierPath.m (-encodeWithCoder:, -initWithCoder:):
+	Corrected some of the encoding problems reported by 
+	Christopher Wojno <christopher@wojno.com>.
+	* Headers/AppKit/NSTableView.h: Add missing new data source method.
+	* Source/NSTableView.m (-encodeWithCoder:, -initWithCoder:):
+	Better decoding of header view, corner view and drag masks.
+	* Source/NSTableView.m (-_indexSetToArray:) New helper method.
+	* Source/NSTableView.m (-_startDragOperationWithEvent:,
+	-dragImageForRowsWithIndexes:...offset:, -_isDraggingSource,
+	_writeRows:toPasteboard:): Support for new dragging methods.
+
 2007-12-01 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSTableView.h

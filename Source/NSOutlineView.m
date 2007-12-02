@@ -92,7 +92,7 @@ static NSImage *unexpandable  = nil;
 - (void) _willDisplayCell: (NSCell*)cell
 	   forTableColumn: (NSTableColumn *)tb
 		      row: (int)index;
-- (BOOL) _writeRows: (NSArray *) rows
+- (BOOL) _writeRows: (NSIndexSet *)rows
        toPasteboard: (NSPasteboard *)pboard;
 - (BOOL) _isDraggingSource;
 - (id) _objectValueForTableColumn: (NSTableColumn *)tb
@@ -1573,25 +1573,25 @@ static NSImage *unexpandable  = nil;
     }    
 }
 
-- (BOOL) _writeRows: (NSArray *) rows
+- (BOOL) _writeRows: (NSIndexSet *)rows
        toPasteboard: (NSPasteboard *)pboard
 {
   int count = [rows count];
-  int i;
   NSMutableArray *itemArray = [NSMutableArray arrayWithCapacity: count];
-
-  for (i = 0; i < count; i++)
+  unsigned int index = [rows firstIndex];
+      
+  while (index != NSNotFound)
     {
-      [itemArray addObject: 
-	[self itemAtRow: [[rows objectAtIndex: i] intValue]]];
-    }
+      [itemArray addObject: [self itemAtRow: index]];
+      index = [rows indexGreaterThanIndex: index];
+    }  
 
   if ([_dataSource respondsToSelector:
 		     @selector(outlineView:writeItems:toPasteboard:)] == YES)
     {
       return [_dataSource outlineView: self
-			  writeItems: itemArray
-			  toPasteboard: pboard];
+                          writeItems: itemArray
+                          toPasteboard: pboard];
     }
   return NO;
 }

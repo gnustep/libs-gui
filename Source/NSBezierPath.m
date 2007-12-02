@@ -1565,12 +1565,12 @@ static int winding_curve(double_point from, double_point to, double_point c1,
         {
 	  case NSMoveToBezierPathElement:
 	  case NSLineToBezierPathElement:
-	      [aCoder encodeValueOfObjCType: @encode(NSPoint) at: &pts[0]];
+	      [aCoder encodePoint: pts[0]];
 	      break;
 	  case NSCurveToBezierPathElement:
-	      [aCoder encodeValueOfObjCType: @encode(NSPoint) at: &pts[0]];
-	      [aCoder encodeValueOfObjCType: @encode(NSPoint) at: &pts[1]];
-	      [aCoder encodeValueOfObjCType: @encode(NSPoint) at: &pts[2]];
+	      [aCoder encodePoint: pts[0]];
+	      [aCoder encodePoint: pts[1]];
+	      [aCoder encodePoint: pts[2]];
 	      break;
 	  case NSClosePathBezierPathElement:
 	      break;
@@ -1610,17 +1610,18 @@ static int winding_curve(double_point from, double_point to, double_point c1,
       switch(type) 
         {
 	  case NSMoveToBezierPathElement:
-	      [aCoder decodeValueOfObjCType: @encode(NSPoint) at: &pts[0]];
+	      pts[0] = [aCoder decodePoint];
 	      [self moveToPoint: pts[0]];
+	      break;
 	  case NSLineToBezierPathElement:
-	      [aCoder decodeValueOfObjCType: @encode(NSPoint) at: &pts[0]];
+	      pts[0] = [aCoder decodePoint];
 	      [self lineToPoint: pts[0]];
 	      break;
 	  case NSCurveToBezierPathElement:
-	      [aCoder decodeValueOfObjCType: @encode(NSPoint) at: &pts[0]];
-	      [aCoder decodeValueOfObjCType: @encode(NSPoint) at: &pts[1]];
-	      [aCoder decodeValueOfObjCType: @encode(NSPoint) at: &pts[2]];
-	      [self curveToPoint: pts[0] controlPoint1: pts[1] controlPoint2: pts[2]];
+	      pts[0] = [aCoder decodePoint];
+	      pts[1] = [aCoder decodePoint];
+	      pts[2] = [aCoder decodePoint];
+	      [self curveToPoint: pts[2] controlPoint1: pts[0] controlPoint2: pts[1]];
 	      break;
 	  case NSClosePathBezierPathElement:
 	      [self closePath];

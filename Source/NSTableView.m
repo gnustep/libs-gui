@@ -124,7 +124,7 @@ typedef struct _tableViewFlags
 	   forTableColumn: (NSTableColumn *)tb
 		      row: (int)index;
 
-- (BOOL) _writeRows: (NSArray *) rows
+- (BOOL) _writeRows: (NSIndexSet *)rows
        toPasteboard: (NSPasteboard *)pboard;
 - (BOOL) _isDraggingSource;
 - (id)_objectValueForTableColumn: (NSTableColumn *)tb
@@ -140,6 +140,7 @@ typedef struct _tableViewFlags
 
 @interface NSTableView (SelectionHelper)
 - (void) _setSelectingColumns: (BOOL)flag;
+- (NSArray *) _indexSetToArray: (NSIndexSet*)indexSet;
 - (NSArray *) _selectedRowArray;
 - (BOOL) _selectRow: (int)rowIndex;
 - (BOOL) _selectUnselectedRow: (int)rowIndex;
@@ -2002,8 +2003,9 @@ static void computeNewSelection
   _selectedColumn = -1;
   _selectedRow = -1;
   _highlightedTableColumn = nil;
-  _draggingSourceOperationMaskForLocal = NSDragOperationAll;
-  _draggingSourceOperationMaskForRemote = NSDragOperationAll;
+  _draggingSourceOperationMaskForLocal = NSDragOperationCopy 
+      | NSDragOperationLink | NSDragOperationGeneric | NSDragOperationPrivate;
+  _draggingSourceOperationMaskForRemote = NSDragOperationNone;
 }
 
 - (id) initWithFrame: (NSRect)frameRect
@@ -3451,20 +3453,22 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 - (BOOL) _startDragOperationWithEvent: (NSEvent *) theEvent
 {
   NSPasteboard *pboard;
-  NSArray *rows;
 
-  rows = [self _selectedRowArray];
   pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
-  if ([self _writeRows: rows
-	toPasteboard: pboard] == YES)
+  if ([self _writeRows: _selectedRows
+            toPasteboard: pboard] == YES)
     {
       NSPoint	p = NSZeroPoint;
       NSImage	*dragImage;
       NSSize	s;
-      
-      dragImage = [self dragImageForRows: rows
-			      event: theEvent
-			      dragImageOffset: &p];
+      // FIXME
+      NSArray *cols = nil;
+
+      dragImage = [self dragImageForRowsWithIndexes: _selectedRows
+                        tableColumns: cols
+                        event: theEvent
+                        offset: &p];
+
       /*
        * Store image offset in s ... the returned
        * value is the position of the center of
@@ -5525,10 +5529,12 @@ static BOOL selectContiguousRegion(NSTableView *self,
                                    offset: (NSPoint*)offset;
 {
   // FIXME
-  NSImage *dragImage = [[NSImage alloc]
-			 initWithSize: NSMakeSize(8, 8)];
+  NSArray *rowArray;
 
-  return AUTORELEASE(dragImage);
+  rowArray = [self _indexSetToArray: rows];
+  return [self dragImageForRows: rowArray 
+               event: event
+               dragImageOffset: offset];
 }
 
 - (void) setDropRow: (int)row
@@ -5712,6 +5718,19 @@ static BOOL selectContiguousRegion(NSTableView *self,
         }
       [self setIntercellSpacing: intercellSpacing];
 
+      if ([aDecoder containsValueForKey: @"NSDraggingSourceMaskForLocal"])
+        {
+          [self setDraggingSourceOperationMask: 
+                    [aDecoder decodeIntForKey: @"NSDraggingSourceMaskForLocal"]
+                forLocal: YES];
+        }
+      if ([aDecoder containsValueForKey: @"NSDraggingSourceMaskForNonLocal"])
+        {
+          [self setDraggingSourceOperationMask: 
+                    [aDecoder decodeIntForKey: @"NSDraggingSourceMaskForNonLocal"]
+                forLocal: NO];
+        }
+
       if ([aDecoder containsValueForKey: @"NSRowHeight"])
         {
           [self setRowHeight: [aDecoder decodeFloatForKey: @"NSRowHeight"]];
@@ -5721,26 +5740,23 @@ static BOOL selectContiguousRegion(NSTableView *self,
                             forClassName: @"_NSCornerView"];
       if ([aDecoder containsValueForKey: @"NSCornerView"])
         {
-          NSRect viewFrame;
-          float rowHeight = [self rowHeight];
-          
           [self setCornerView: [aDecoder decodeObjectForKey: @"NSCornerView"]];
-          viewFrame = [[self cornerView] frame];
-          viewFrame.size.height = rowHeight;
-          [[self cornerView] setFrame: viewFrame];
         }
       else
         {
           _cornerView = [GSTableCornerView new];
         }
 
-//      if ([aDecoder containsValueForKey: @"NSHeaderView"])
+      if ([aDecoder containsValueForKey: @"NSHeaderView"])
+        {
+          [self setHeaderView: [aDecoder decodeObjectForKey: @"NSHeaderView"]];
+        }
+      else
         {
           NSRect viewFrame = [self frame];
-          float rowHeight = [self rowHeight];
 
           _headerView = [[NSTableHeaderView alloc] init];
-          [_headerView setFrameSize: NSMakeSize(viewFrame.size.width, rowHeight)];
+          [_headerView setFrameSize: NSMakeSize(viewFrame.size.width, 22.0)];
           [_headerView setTableView: self];
         }
 
@@ -6589,18 +6605,30 @@ static BOOL selectContiguousRegion(NSTableView *self,
 - (BOOL) _isDraggingSource
 {
   return [_dataSource respondsToSelector:
-			@selector(tableView:writeRows:toPasteboard:)];
+			@selector(tableView:writeRows:toPasteboard:)] 
+      || [_dataSource respondsToSelector:
+           @selector(tableView:writeRowsWithIndexes:toPasteboard:)];
 }
 
-- (BOOL) _writeRows: (NSArray *) rows
+- (BOOL) _writeRows: (NSIndexSet *)rows
        toPasteboard: (NSPasteboard *)pboard
 {
   if ([_dataSource respondsToSelector:
-		     @selector(tableView:writeRows:toPasteboard:)] == YES)
+		     @selector(tableView:writeRowsWithIndexes:toPasteboard:)] == YES)
     {
       return [_dataSource tableView: self
-			  writeRows: rows
-			  toPasteboard: pboard];
+                          writeRowsWithIndexes: rows
+                          toPasteboard: pboard];
+    }
+  else if ([_dataSource respondsToSelector:
+             @selector(tableView:writeRows:toPasteboard:)] == YES)
+    {
+      NSArray *rowArray;
+
+      rowArray = [self _indexSetToArray: rows];
+      return [_dataSource tableView: self
+                          writeRows: rowArray
+                          toPasteboard: pboard];
     }
   return NO;
 }
@@ -6626,20 +6654,25 @@ static BOOL selectContiguousRegion(NSTableView *self,
     }
 }
 
-- (NSArray *) _selectedRowArray
+- (NSArray *) _indexSetToArray: (NSIndexSet*)indexSet
 {
-  NSMutableArray *selected = [NSMutableArray array];
-  unsigned int row = [_selectedRows firstIndex];
+  NSMutableArray *array = [NSMutableArray array];
+  unsigned int index = [indexSet firstIndex];
       
-  while (row != NSNotFound)
+  while (index != NSNotFound)
     {
-      NSNumber *num  = [NSNumber numberWithInt: row];
+      NSNumber *num  = [NSNumber numberWithInt: index];
 
-      [selected addObject: num]; 
-      row = [_selectedRows indexGreaterThanIndex: row];
+      [array addObject: num]; 
+      index = [indexSet indexGreaterThanIndex: index];
     }  
 	    
-  return selected;
+  return array;
+}
+
+- (NSArray *) _selectedRowArray
+{
+  return [self _indexSetToArray: _selectedRows];
 }
 
 - (BOOL) _selectRow: (int)rowIndex
@@ -6702,18 +6735,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
 
 - (NSArray *) _selectedColumArray
 {
-  NSMutableArray *selected = [NSMutableArray array];
-  unsigned int column = [_selectedColumns firstIndex];
-      
-  while (column != NSNotFound)
-    {
-      NSNumber *num  = [NSNumber numberWithInt: column];
-
-      [selected addObject: num]; 
-      column = [_selectedColumns indexGreaterThanIndex: column];
-    }  
-	    
-  return selected;
+  return [self _indexSetToArray: _selectedColumns];
 }
 
 - (void) _unselectAllColumns

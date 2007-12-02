@@ -350,9 +350,14 @@ objectValueForTableColumn: (NSTableColumn *)aTableColumn
                  validateDrop: (id <NSDraggingInfo>)info
                   proposedRow: (int)row
 	proposedDropOperation: (NSTableViewDropOperation)operation;
-- (BOOL) tableView: (NSTableView *)tableView
+- (BOOL) tableView: (NSTableView*)tableView
          writeRows: (NSArray*)rows
       toPasteboard: (NSPasteboard*)pboard;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (BOOL) tableView: (NSTableView*)tableView
+writeRowsWithIndexes: (NSIndexSet*)rows
+      toPasteboard: (NSPasteboard*)pboard;
+#endif
 @end
 
 APPKIT_EXPORT NSString *NSTableViewColumnDidMoveNotification;
