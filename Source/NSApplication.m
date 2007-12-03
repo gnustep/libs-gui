@@ -1019,6 +1019,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
           if ([win canBecomeKeyWindow])
             {
               _key_window = win;
+              break;
             }
         }
     }
