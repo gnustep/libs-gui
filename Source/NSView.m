@@ -2531,7 +2531,6 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
                                      colorSpaceName: space
                                      bytesPerRow: 0
                                      bitsPerPixel: 0];
-  [self cacheDisplayInRect: rect toBitmapImageRep: bitmap];
   return bitmap;
 }
 
@@ -2541,7 +2540,9 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
   NSDictionary *dict;
   NSData *imageData;
 
+  [self lockFocus];
   dict = [GSCurrentContext() GSReadRect: rect];
+  [self unlockFocus];
   imageData = RETAIN([dict objectForKey: @"Data"]);
   // FIXME: Copy the image data to the bitmap
   memcpy([bitmap bitmapData], [imageData bytes], [imageData length]);

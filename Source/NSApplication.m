@@ -1009,6 +1009,20 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
       [_key_window orderFrontRegardless];
     }
 
+  // Make sure there is one designated main window
+  if (_main_window == nil)
+    {
+      for (i = 0; i < count; i++)
+        {
+          NSWindow	*win = [windows_list objectAtIndex: i];
+
+          if ([win canBecomeKeyWindow])
+            {
+              _key_window = win;
+            }
+        }
+    }
+
   /* Register self as observer to window events. */
   [nc addObserver: self selector: @selector(_windowWillClose:)
       name: NSWindowWillCloseNotification object: nil];

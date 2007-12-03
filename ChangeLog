@@ -1,3 +1,12 @@
+2007-12-03 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSView.m (-bitmapImageRepForCachingDisplayInRect:): Don't
+	cache the image here.
+	* Source/NSView.m (-cacheDisplayInRect:toBitmapImageRep:): Lock
+	focus on the current view.
+	* Source/NSApplication.m (-finishLaunching): Make sure we have a
+	designated main window.
+
 2007-12-02 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBezierPath.m (-encodeWithCoder:, -initWithCoder:):
