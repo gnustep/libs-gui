@@ -592,8 +592,7 @@ static Class imageClass;
         }
       if ([aDecoder containsValueForKey: @"NSState"])
         {
-          int state = [aDecoder decodeIntForKey: @"NSState"];
-          [self setState: state];
+          _state = [aDecoder decodeIntForKey: @"NSState"];
         }
       if ([aDecoder containsValueForKey: @"NSIsDisabled"])
         {

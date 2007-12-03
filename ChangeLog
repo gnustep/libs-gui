@@ -1,5 +1,10 @@
 2007-12-03 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSMenuItem.m (-initWithCoder:): Set state directly,
+	otherwise the items gets into changesStatus mode.
+	
+2007-12-03 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSView.m (-bitmapImageRepForCachingDisplayInRect:): Don't
 	cache the image here.
 	* Source/NSView.m (-cacheDisplayInRect:toBitmapImageRep:): Lock
