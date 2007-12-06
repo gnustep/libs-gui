@@ -4331,6 +4331,10 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       else
         {
           _frame = NSZeroRect;
+          if ([aDecoder containsValueForKey: @"NSFrameSize"])
+            {
+              _frame.size = [aDecoder decodeSizeForKey: @"NSFrameSize"];
+            }
         }
 
       _bounds.origin = NSZeroPoint;		// Set bounds rectangle
