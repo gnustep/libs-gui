@@ -858,7 +858,12 @@ static NSString         *disabledName = @".GNUstepDisabled";
     }
   if (changed)
     {
-      [self rebuildServices];
+      /* If we have changed the enabled/disabled services,
+       * or there have been services added/removed
+       * then we must rebuild the services menu to add/remove
+       * items as appropriate.
+       */
+      [self rebuildServicesMenu];
     }
 }
 
@@ -881,6 +886,10 @@ static NSString         *disabledName = @".GNUstepDisabled";
   return _port;
 }
 
+/**
+ * Makes the current set of usable services consistent with the
+ * data types currently available.
+ */
 - (void) rebuildServices
 {
   NSDictionary          *services;
@@ -955,6 +964,9 @@ static NSString         *disabledName = @".GNUstepDisabled";
     }
 }
 
+/** Adds or removes items in the services menu in response to a change
+ * in the services which are available to the app.
+ */
 - (void) rebuildServicesMenu
 {
   if (_servicesMenu != nil)
@@ -967,9 +979,10 @@ static NSString         *disabledName = @".GNUstepDisabled";
       NSMenu            *submenu = nil;
 
       [_servicesMenu setAutoenablesItems: NO];
-      pos = [_servicesMenu numberOfItems];
-      for (; pos; pos--)
-        [_servicesMenu removeItemAtIndex: 0];
+      for (pos = [_servicesMenu numberOfItems]; pos > 0; pos--)
+        {
+          [_servicesMenu removeItemAtIndex: 0];
+        }
       [_servicesMenu setAutoenablesItems: YES];
 
       keyEquivalents = [NSMutableSet setWithCapacity: 4];
@@ -977,17 +990,23 @@ static NSString         *disabledName = @".GNUstepDisabled";
         {
           NSString      *title = [_menuTitles objectAtIndex: pos];
           NSString      *equiv = @"";
-          NSDictionary  *info = [_title2info objectForKey: title];
+          NSDictionary  *info;
           NSDictionary  *titles;
           NSDictionary  *equivs;
           NSRange       r;
           unsigned      lang;
           id<NSMenuItem>        item;
 
+          if (NSShowsServicesMenuItem(title) == NO)
+            {
+              continue; // We don't want to show this one.
+            }
+
           /*
            *    Find the key equivalent corresponding to this menu title
            *    in the service definition.
            */
+          info = [_title2info objectForKey: title];
           titles = [info objectForKey: @"NSMenuItem"];
           equivs = [info objectForKey: @"NSKeyEquivalent"];
           for (lang = 0; lang < [_languages count]; lang++)
@@ -1216,6 +1235,9 @@ static NSString         *disabledName = @".GNUstepDisabled";
 
   if (didChange)
     {
+      /* Types have changed, so we need to enable/disable items in the
+       * services menu depending on what types they support.
+       */
       [self rebuildServices];
     }
 }
