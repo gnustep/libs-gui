@@ -1,5 +1,5 @@
 /* 
-   set_show_servicaes.m
+   set_show_service.m
 
    GNUstep utility to enable or disable a service for the current user.
 
@@ -66,7 +66,7 @@ main(int argc, char** argv, char **env)
 	{
 	  printf(
 "set_show_service enables or disables the display of a specified service\n"
-"item.  It's should be in the form 'set_show_services --enable name' or \n"
+"item.  It's should be in the form 'set_show_service --enable name' or \n"
 "'set_show_service --disable name' where 'name' is a service name.\n");
 	  exit(EXIT_SUCCESS);
 	}
