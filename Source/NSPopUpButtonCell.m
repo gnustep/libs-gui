@@ -157,6 +157,9 @@ static NSImage *_pbc_image[2];
     {
       [self setMenuView: nil];
     }
+  
+  [self selectItemAtIndex: [_menu numberOfItems] - 1];
+  [self synchronizeTitleAndSelectedItem];
 }
 
 /**

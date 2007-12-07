@@ -1,3 +1,12 @@
+2007-12-07 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableView.m (-initWithCoder:): Don't create a header
+	view, if there is none decoded.
+	* Source/NSScrollView.m (-_synchronizeHeaderAndCornerView): Don't
+	show corner view if there is no header view.
+	* Source/NSPopUpButtonCell.m (-setMenu:): Select an emtry from the
+	new menu.
+
 2007-12-07 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSServicesManager.m: Fixup to add/remove menu items

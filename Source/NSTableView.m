@@ -5751,14 +5751,6 @@ static BOOL selectContiguousRegion(NSTableView *self,
         {
           [self setHeaderView: [aDecoder decodeObjectForKey: @"NSHeaderView"]];
         }
-      else
-        {
-          NSRect viewFrame = [self frame];
-
-          _headerView = [[NSTableHeaderView alloc] init];
-          [_headerView setFrameSize: NSMakeSize(viewFrame.size.width, 22.0)];
-          [_headerView setTableView: self];
-        }
 
       if ([aDecoder containsValueForKey: @"NSTvFlags"])
         {

@@ -1612,7 +1612,8 @@ static float scrollerWidth;
     {
       [self removeSubview: _headerClipView];
     }
-  if (_hasVertScroller == YES)
+  if (_hasHeaderView == YES &&
+      _hasVertScroller == YES)
     {
       aView = nil; 
       _hasCornerView =
