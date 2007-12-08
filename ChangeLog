@@ -1,3 +1,14 @@
+2007-12-08 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSControl.m (-mouseDown:): Forward event, if not enabled.
+	* Source/NSTextField.m (-mouseDown:): Send event to next
+	responder not to super, if not selectable or disabled. 
+	* ColorPickers/GSStandardColorPicker.m (GSColorSliderCell):
+	Corrected to work with horizontal and vertial views and for
+	flipped ones.
+	* ColorPickers/GSWheelColorPicker.m: Replace
+	GSWheelColorSliderCell with GSColorSliderCell.
+
 2007-12-07 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTableView.m (-initWithCoder:): Don't create a header

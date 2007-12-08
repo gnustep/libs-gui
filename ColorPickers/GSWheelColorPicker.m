@@ -35,6 +35,7 @@
 #include <Foundation/Foundation.h>
 #include <AppKit/AppKit.h>
 #include <GNUstepGUI/GSHbox.h>
+#include "GSStandardColorPicker.h"
 
 
 @interface GSColorWheel : NSView
@@ -248,96 +249,6 @@
 @end
 
 
-#define KNOB_WIDTH 6
-
-@interface GSColorWheelSliderCell : NSSliderCell
-{
-  float values[2];
-}
--(void) _setColorWheelSliderCellValues: (float)a : (float)b;
-@end
-
-@implementation GSColorWheelSliderCell : NSSliderCell
-
--(void) _setColorWheelSliderCellValues: (float)a : (float)b
-{
-  values[0] = a;
-  values[1] = b;
-}
-
-- (NSRect) knobRectFlipped: (BOOL)flipped
-{
-  NSPoint	origin;
-  float		floatValue = [self floatValue];
-
-  if (_isVertical && flipped)
-    {
-      floatValue = _maxValue + _minValue - floatValue;
-    }
-
-  floatValue = (floatValue - _minValue) / (_maxValue - _minValue);
-
-  origin = _trackRect.origin;
-  if (_isVertical == YES)
-    {
-      origin.y += (_trackRect.size.height - KNOB_WIDTH) * floatValue;
-      return NSMakeRect (origin.x, origin.y, _trackRect.size.width, KNOB_WIDTH);
-    }
-  else
-    {
-      origin.x += (_trackRect.size.width - KNOB_WIDTH) * floatValue;
-      return NSMakeRect (origin.x, origin.y, KNOB_WIDTH, _trackRect.size.height);
-    }
-}
-
-- (void) drawKnob: (NSRect)knobRect
-{
-  [[NSColor blackColor] set];
-  NSDrawButton(knobRect, knobRect);
-}
-
--(void) drawBarInside: (NSRect)r  flipped: (BOOL)flipped
-{
-  float i, f;
-  for (i = r.origin.y; i < r.origin.y + r.size.height; i += 1)
-    {
-      f = (0.5 + i) / r.size.height;
-      PSsethsbcolor(values[0], values[1], f);
-      if (i + 1 < r.origin.y + r.size.height)
-	PSrectfill(r.origin.x, i, r.size.width, 1);
-      else
-	PSrectfill(r.origin.x, i, r.size.width, r.size.height - i);
-    }
-}
-
--(void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
-{
-  _isVertical = (cellFrame.size.height > cellFrame.size.width);
-  cellFrame = [self drawingRectForBounds: cellFrame];
-
-  cellFrame.origin.x -= 1;
-  cellFrame.origin.y -= 1;
-  cellFrame.size.width += 2;
-  cellFrame.size.height += 2;
-
-  [controlView lockFocus];
-
-  _trackRect = cellFrame;
-
-  [self drawBarInside: cellFrame flipped: [controlView isFlipped]];
-
-  [self drawKnob];
-  [controlView unlockFocus];
-}
-
-- (float) knobThickness
-{
-  return KNOB_WIDTH;
-}
-
-@end
-
-
 @interface GSWheelColorPicker: NSColorPicker <NSColorPickingCustom>
 {
   GSHbox *baseView;
@@ -395,8 +306,8 @@
   c = [color colorUsingColorSpaceName: NSCalibratedRGBColorSpace];
   [c getHue: &hue saturation: &saturation brightness: &brightness alpha: &alpha];
 
-  [(GSColorWheelSliderCell *)[brightnessSlider cell]
-  	_setColorWheelSliderCellValues: hue : saturation];
+  [(GSColorSliderCell *)[brightnessSlider cell]
+    _setColorSliderCellValues: hue : saturation : brightness];
   [brightnessSlider setNeedsDisplay: YES];
   [brightnessSlider setFloatValue: brightness];
   [wheel setHue: hue saturation: saturation brightness: brightness];
@@ -417,7 +328,8 @@
 
   s = brightnessSlider = [[NSSlider alloc] initWithFrame: NSMakeRect(0,0,16,0)];
   [s setAutoresizingMask: NSViewHeightSizable];
-  [s setCell: [[GSColorWheelSliderCell alloc] init]];
+  [s setCell: [[GSColorSliderCell alloc] init]];
+  [(GSColorSliderCell *)[s cell] _setColorSliderCellMode: 10];
   [s setContinuous: NO];
   [s setMinValue: 0.0];
   [s setMaxValue: 1.0];
@@ -436,8 +348,8 @@
   float alpha = [_colorPanel alpha];
   NSColor *c;
 
-  [(GSColorWheelSliderCell *)[brightnessSlider cell]
-  	_setColorWheelSliderCellValues: hue : saturation];
+  [(GSColorSliderCell *)[brightnessSlider cell]
+    _setColorSliderCellValues: hue : saturation : brightness];
   [brightnessSlider setNeedsDisplay: YES];
 
   c = [NSColor colorWithCalibratedHue: hue

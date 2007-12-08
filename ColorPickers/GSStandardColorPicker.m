@@ -34,6 +34,7 @@
 #include "GSHSBColorPicker.h"
 #include "GSCMYKColorPicker.h"
 #include "GSGrayColorPicker.h"
+#include "GSStandardColorPicker.h"
 
 @interface GSStandardColorPicker: NSColorPicker <NSColorPickingCustom>
 {
@@ -273,12 +274,6 @@
 @end
 
 
-#include "GSStandardColorPicker.h"
-
-
-#include <GNUstepGUI/GSVbox.h>
-#include <GNUstepGUI/GSHbox.h>
-
 
 #define KNOB_WIDTH 6
 
@@ -294,14 +289,14 @@
       case 2:
       case 3:
       case 10:
-	[_titleCell setTextColor: [NSColor whiteColor]];
-	break;
+        [_titleCell setTextColor: [NSColor whiteColor]];
+        break;
       case 4:
       case 5:
       case 6:
       case 7:
-	[_titleCell setTextColor: [NSColor blackColor]];
-	break;
+        [_titleCell setTextColor: [NSColor blackColor]];
+        break;
     }
   [_titleCell setAlignment: NSLeftTextAlignment];
 }
@@ -314,9 +309,9 @@
   if (mode == 8 || mode == 9)
     {
       if (c>0.7)
-	[_titleCell setTextColor: [NSColor blackColor]];
+        [_titleCell setTextColor: [NSColor blackColor]];
       else
-	[_titleCell setTextColor: [NSColor whiteColor]];
+        [_titleCell setTextColor: [NSColor whiteColor]];
     }
 }
 
@@ -354,34 +349,67 @@
 -(void) drawBarInside: (NSRect)r  flipped: (BOOL)flipped
 {
   float i, f;
-  for (i = r.origin.x; i < r.origin.x + r.size.width; i += 1)
+
+  if (_isVertical)
     {
-      f = (0.5 + i) / r.size.width;
-      switch (mode)
-	{
-	case 0: PSsetgray(f); break;
+      for (i = 0; i < r.size.height; i += 1)
+        {
+          f = (0.5 + i) / r.size.height;
+          if (flipped)
+            {
+              f = 1 - f;
+            }
+          switch (mode)
+            {
+              case 0: PSsetgray(f); break;
 
-	case 1: PSsetrgbcolor(f, 0, 0); break;
-	case 2: PSsetrgbcolor(0, f, 0); break;
-	case 3: PSsetrgbcolor(0, 0, f); break;
-
-	case 4: PSsetcmykcolor(f, 0, 0, 0); break;
-	case 5: PSsetcmykcolor(0, f, 0, 0); break;
-	case 6: PSsetcmykcolor(0, 0, f, 0); break;
-	case 7: PSsetcmykcolor(0, 0, 0, f); break;
-
-	case  8: PSsethsbcolor(f, values[1], values[2]); break;
-	case  9: PSsethsbcolor(values[0], f, values[2]); break;
-	case 10: PSsethsbcolor(values[0], values[1], f); break;
-	}
-      if (i + 1 < r.origin.x + r.size.width)
-	PSrectfill(i, r.origin.y, 1, r.size.height);
-      else
-	PSrectfill(i, r.origin.y, r.size.width - i, r.size.height);
+              case 1: PSsetrgbcolor(f, 0, 0); break;
+              case 2: PSsetrgbcolor(0, f, 0); break;
+              case 3: PSsetrgbcolor(0, 0, f); break;
+                  
+              case 4: PSsetcmykcolor(f, 0, 0, 0); break;
+              case 5: PSsetcmykcolor(0, f, 0, 0); break;
+              case 6: PSsetcmykcolor(0, 0, f, 0); break;
+              case 7: PSsetcmykcolor(0, 0, 0, f); break;
+                  
+              case  8: PSsethsbcolor(f, values[1], values[2]); break;
+              case  9: PSsethsbcolor(values[0], f, values[2]); break;
+              case 10: PSsethsbcolor(values[0], values[1], f); break;
+            }
+          if (i + 1 < r.size.height)
+            PSrectfill(r.origin.x, i + r.origin.y, r.size.width, 1);
+          else
+            PSrectfill(r.origin.x, i + r.origin.y, r.size.width, r.size.height - i);
+        }
     }
-
-  if (_isVertical == NO)
+  else
     {
+      for (i = 0; i < r.size.width; i += 1)
+        {
+          f = (0.5 + i) / r.size.width;
+          switch (mode)
+            {
+              case 0: PSsetgray(f); break;
+
+              case 1: PSsetrgbcolor(f, 0, 0); break;
+              case 2: PSsetrgbcolor(0, f, 0); break;
+              case 3: PSsetrgbcolor(0, 0, f); break;
+                  
+              case 4: PSsetcmykcolor(f, 0, 0, 0); break;
+              case 5: PSsetcmykcolor(0, f, 0, 0); break;
+              case 6: PSsetcmykcolor(0, 0, f, 0); break;
+              case 7: PSsetcmykcolor(0, 0, 0, f); break;
+                  
+              case  8: PSsethsbcolor(f, values[1], values[2]); break;
+              case  9: PSsethsbcolor(values[0], f, values[2]); break;
+              case 10: PSsethsbcolor(values[0], values[1], f); break;
+            }
+          if (i + 1 < r.size.width)
+            PSrectfill(i, r.origin.y, 1, r.size.height);
+          else
+            PSrectfill(i, r.origin.y, r.size.width - i, r.size.height);
+        }
+
       [_titleCell drawInteriorWithFrame: r inView: _control_view];
     }
 }
@@ -396,14 +424,11 @@
   cellFrame.size.width += 2;
   cellFrame.size.height += 2;
 
-  [controlView lockFocus];
-
   _trackRect = cellFrame;
 
   [self drawBarInside: cellFrame flipped: [controlView isFlipped]];
 
   [self drawKnob];
-  [controlView unlockFocus];
 }
 
 - (float) knobThickness

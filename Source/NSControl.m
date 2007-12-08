@@ -820,7 +820,10 @@ static NSNotificationCenter *nc;
 
   // If not enabled ignore mouse clicks
   if (![self isEnabled])
-    return;
+    {  
+      [super mouseDown: theEvent];
+      return;
+    }
 
   // Ignore multiple clicks, if configured to do so
   if (_ignoresMultiClick && ([theEvent clickCount] > 1))

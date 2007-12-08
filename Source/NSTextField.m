@@ -347,7 +347,10 @@ static Class textFieldCellClass;
 {
   if ([self isSelectable] == NO || [self isEnabled] == NO)
     {
-      [super mouseDown: theEvent];
+      if (_next_responder)
+        [_next_responder mouseDown: theEvent];
+      else
+        [super mouseDown: theEvent];
       return;
     }
 
