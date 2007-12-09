@@ -1,3 +1,11 @@
+2007-12-09 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Documentation/gclose.1,
+	* Documentation/gcloseall.1,
+	* Documentation/set_show_service.1: New man pages by 
+	Dennis Leeuw <dleeuw@made-it.com>
+	* Documentation/GNUmakefile: Add the new man page files.
+
 2007-12-08 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSControl.m (-mouseDown:): Forward event, if not enabled.

@@ -68,7 +68,7 @@ BUGS_TEXT_MAIN = todo.texi
 BUGS_DOC_INSTALL_DIR = Developer/Gui/ReleaseNotes/$(VERSION)
 
 # Manual pages to install
-MAN1_PAGES = gopen.1 make_services.1
+MAN1_PAGES = gopen.1 make_services.1 gclose.1 gcloseall.1 set_show_service.1
 
 ReleaseNotes_AGSDOC_FILES = ReleaseNotes.gsdoc
 ReleaseNotes_DOC_INSTALL_DIR =  Developer/Gui
