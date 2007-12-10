@@ -1,5 +1,17 @@
 2007-12-10 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSColor.m (-numberOfComponents, -getComponents:): Raise
+	exception when called on abstract class. Increase teh values
+	returned by real numberOfComponents by one to count in alpha.
+	* Source/NSColor.m (+colorWithColorSpace:components:count:): Basic
+	implementation. 
+	* Source/NSColor.m (-setFill, -setStroke:): Convert to
+	NSDeviceRGBColorSpace first.
+	* Source/NSColor.m (GSRGBColor-setFill, GSRGBColor-setStroke:):
+	Actual implementation.
+
+2007-12-10 Fred Kiefer <FredKiefer@gmx.de>
+
 	* ColorPickers/GSColorSliderCell.h,
 	* ColorPickers/GSColorSliderCell.m: New files split off from
 	GSStandardColorPicker.h and GSStandardColorPicker.m.
