@@ -1166,6 +1166,26 @@ systemColorWithName(NSString *name)
                             count: (int)number
 {
   // FIXME
+  if (space == [NSColorSpace deviceRGBColorSpace] && (number == 4)) 
+    {
+      return [self colorWithDeviceRed: comp[0]
+                   green: comp[1]
+                   blue: comp[2]
+                   alpha: comp[3]];
+    }
+  if (space == [NSColorSpace deviceGrayColorSpace] && (number == 2)) 
+    {
+      return [NSColor colorWithDeviceWhite: comp[0] alpha: comp[1]];
+    }
+  if (space == [NSColorSpace deviceCMYKColorSpace] && (number == 5)) 
+    {
+      return [NSColor colorWithDeviceCyan: comp[0] 
+                      magenta: comp[1]
+                      yellow: comp[2] 
+                      black: comp[3] 
+                      alpha: comp[4]];
+    }
+
 	return nil;
 }
 				
@@ -1201,12 +1221,15 @@ systemColorWithName(NSString *name)
 
 - (int) numberOfComponents
 {
-	return [[self colorSpace] numberOfColorComponents];
+  [NSException raise: NSInternalInconsistencyException
+    format: @"Called numberOfComponents on non-standard colour"];
+  return 0;
 }
 
 - (void) getComponents: (float *)components
 {
-  // FIXME
+  [NSException raise: NSInternalInconsistencyException
+    format: @"Called getComponents: on non-standard colour"];
 }
 
 //
@@ -1293,24 +1316,12 @@ systemColorWithName(NSString *name)
 
 - (void) setFill
 {
-  int num = [self numberOfComponents];
-  float values[num + 1];
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  
-  [self getComponents: values];
-  [ctxt GSSetFillColorspace: [self colorSpace]];
-  [ctxt GSSetFillColor: values];
+  [[self colorUsingColorSpaceName: NSDeviceRGBColorSpace] setFill];
 }
 
 - (void) setStroke
 {
-  int num = [self numberOfComponents];
-  float values[num + 1];
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  
-  [ctxt GSSetStrokeColorspace: [self colorSpace]];
-  [self getComponents: values];
-  [ctxt GSSetStrokeColor: values];
+  [[self colorUsingColorSpaceName: NSDeviceRGBColorSpace] setStroke];
 }
 
 //
@@ -1971,7 +1982,7 @@ systemColorWithName(NSString *name)
 
 - (int) numberOfComponents
 {
-  return 1;
+  return 2;
 }
 
 - (NSString*) description
@@ -2270,7 +2281,7 @@ systemColorWithName(NSString *name)
 
 - (int) numberOfComponents
 {
-  return 4;
+  return 5;
 }
 
 - (NSString*) description
@@ -2522,7 +2533,7 @@ systemColorWithName(NSString *name)
 
 - (int) numberOfComponents
 {
-	return 3;
+	return 4;
 }
 
 - (void) getHue: (float*)hue
@@ -2700,6 +2711,28 @@ systemColorWithName(NSString *name)
 		_blue_component);
   // Should we check the ignore flag here?
   PSsetalpha(_alpha_component);
+}
+
+- (void) setFill
+{
+  int num = [self numberOfComponents];
+  float values[num];
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  
+  [ctxt GSSetFillColorspace: [self colorSpace]];
+  [self getComponents: values];
+  [ctxt GSSetFillColor: values];
+}
+
+- (void) setStroke
+{
+  int num = [self numberOfComponents];
+  float values[num];
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  
+  [ctxt GSSetStrokeColorspace: [self colorSpace]];
+  [self getComponents: values];
+  [ctxt GSSetStrokeColor: values];
 }
 
 //
