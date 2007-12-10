@@ -44,9 +44,10 @@ StandardPicker_OBJC_FILES =  	GSStandardColorPicker.m \
 			     	GSRGBColorPicker.m \
 				GSCMYKColorPicker.m \
 				GSHSBColorPicker.m \
-				GSGrayColorPicker.m
+				GSGrayColorPicker.m \
+				GSColorSliderCell.m
 NamedPicker_OBJC_FILES =  GSNamedColorPicker.m
-WheelPicker_OBJC_FILES =  GSWheelColorPicker.m
+WheelPicker_OBJC_FILES =  GSWheelColorPicker.m GSColorSliderCell.m
 
 # The class to load
 StandardPicker_PRINCIPAL_CLASS = GSStandardColorPicker

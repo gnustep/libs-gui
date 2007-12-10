@@ -36,21 +36,6 @@
 #include "GSGrayColorPicker.h"
 #include "GSStandardColorPicker.h"
 
-@interface GSStandardColorPicker: NSColorPicker <NSColorPickingCustom>
-{
-  GSTable *baseView;
-  NSBox *pickerBox;
-  NSButtonCell *imageCell;
-  NSMatrix *pickerMatrix;
-  NSMutableArray *pickers;
-  id<NSColorPickingCustom, NSColorPickingDefault> currentPicker; 
-}
-
-- (void) loadViews;
-- (void) _showNewPicker: (id) sender;
-
-@end
-
 @implementation GSStandardColorPicker
 
 - (void) dealloc
@@ -63,46 +48,46 @@
 }
 
 - (id)initWithPickerMask:(int)aMask
-	      colorPanel:(NSColorPanel *)colorPanel
+              colorPanel:(NSColorPanel *)colorPanel
 {
   if (aMask & (NSColorPanelRGBModeMask | NSColorPanelHSBModeMask | 
-	       NSColorPanelCMYKModeMask | NSColorPanelGrayModeMask))
+               NSColorPanelCMYKModeMask | NSColorPanelGrayModeMask))
   {
     NSColorPicker *picker;
 
     pickers = [[NSMutableArray alloc] init];
     picker = [[GSGrayColorPicker alloc] initWithPickerMask: aMask
-					colorPanel: colorPanel];
+                                        colorPanel: colorPanel];
     if (picker != nil)
       {
-	[pickers addObject: picker];
-	RELEASE(picker);
+        [pickers addObject: picker];
+        RELEASE(picker);
       }
     picker = [[GSRGBColorPicker alloc] initWithPickerMask: aMask
-				       colorPanel: colorPanel];
+                                       colorPanel: colorPanel];
     if (picker != nil)
       {
-	[pickers addObject: picker];
-	RELEASE(picker);
+        [pickers addObject: picker];
+        RELEASE(picker);
       }
     picker = [[GSCMYKColorPicker alloc] initWithPickerMask: aMask
-					colorPanel: colorPanel];
+                                        colorPanel: colorPanel];
     if (picker != nil)
       {
-	[pickers addObject: picker];
-	RELEASE(picker);
+        [pickers addObject: picker];
+        RELEASE(picker);
       }
     picker = [[GSHSBColorPicker alloc] initWithPickerMask: aMask
-				       colorPanel: colorPanel];
+                                       colorPanel: colorPanel];
     if (picker != nil)
       {
-	[pickers addObject: picker];
-	RELEASE(picker);
+        [pickers addObject: picker];
+        RELEASE(picker);
       }
 
     currentPicker = [pickers lastObject];
     return [super initWithPickerMask: aMask
-		  colorPanel: colorPanel];
+                  colorPanel: colorPanel];
   }
   RELEASE(self);
   return nil;
@@ -125,29 +110,29 @@
     {
       if ([[pickers objectAtIndex: i] supportsMode: mode])
         {
-	  [pickerMatrix selectCellWithTag: i];
-	  [self _showNewPicker: pickerMatrix];
-	  [currentPicker setMode: mode];
-	  break;
-	}
+          [pickerMatrix selectCellWithTag: i];
+          [self _showNewPicker: pickerMatrix];
+          [currentPicker setMode: mode];
+          break;
+        }
     }
 }
 
 - (BOOL)supportsMode:(int)mode
 {
   return ((mode == NSGrayModeColorPanel) ||
-	  (mode == NSRGBModeColorPanel)  ||
-	  (mode == NSCMYKModeColorPanel) ||
-	  (mode == NSHSBModeColorPanel));
+          (mode == NSRGBModeColorPanel)  ||
+          (mode == NSCMYKModeColorPanel) ||
+          (mode == NSHSBModeColorPanel));
 }
 
 - (void)insertNewButtonImage:(NSImage *)newImage
-			  in:(NSButtonCell *)newButtonCell
+                          in:(NSButtonCell *)newButtonCell
 {
   // Store the image button cell
   imageCell = newButtonCell;
   [super insertNewButtonImage: newImage
-	 in: newButtonCell];
+         in: newButtonCell];
 }
 
 - (NSView *)provideNewView:(BOOL)initialRequest
@@ -194,10 +179,10 @@
   [cell setBordered: YES];
 
   pickerMatrix = [[NSMatrix alloc] initWithFrame: NSMakeRect(0,0,0,0)
-				   mode: NSRadioModeMatrix
-				   prototype: cell
-				   numberOfRows: 0
-				   numberOfColumns: 0];
+                                   mode: NSRadioModeMatrix
+                                   prototype: cell
+                                   numberOfRows: 0
+                                   numberOfColumns: 0];
   RELEASE(cell);
   [pickerMatrix setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
   [pickerMatrix setIntercellSpacing: NSMakeSize(1, 0)];
@@ -223,17 +208,17 @@
   pickerBox = [[NSBox alloc] init];
   [pickerBox setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
   [baseView putView: pickerBox
-	atRow: 0
-	column: 0
-	withMargins: 0];
+        atRow: 0
+        column: 0
+        withMargins: 0];
   [pickerBox setTitlePosition: NSNoTitle];
   [pickerBox setBorderType: NSNoBorder];
   [pickerBox setContentView: [currentPicker provideNewView: NO]];
 
   [baseView putView: pickerMatrix
-	atRow: 1
-	column: 0
-	withMargins: 0];
+        atRow: 1
+        column: 0
+        withMargins: 0];
 
   {
     NSBox *b = [[NSBox alloc] initWithFrame: NSMakeRect(0,0,0,2)];
@@ -241,12 +226,12 @@
     [b setTitlePosition: NSNoTitle];
     [b setBorderType: NSGrooveBorder];
     [baseView putView: b
-	atRow: 2
-	column: 0
-	withMinXMargin: 0
-	maxXMargin: 0
-	minYMargin: 4
-	maxYMargin: 0];
+        atRow: 2
+        column: 0
+        withMinXMargin: 0
+        maxXMargin: 0
+        minYMargin: 4
+        maxYMargin: 0];
     DESTROY(b);
   }
 }
@@ -260,9 +245,9 @@
   [currentPicker setColor: [_colorPanel color]];
   //NSLog(@"Base View size %@", NSStringFromRect([baseView frame]));
 /*  [baseView putView: [currentPicker provideNewView: NO]
-	atRow: 0
-	column: 0
-	withMargins: 0];*/
+        atRow: 0
+        column: 0
+        withMargins: 0];*/
   [pickerBox setContentView: [currentPicker provideNewView: NO]];
   currentView = [currentPicker provideNewView: NO];
 
@@ -273,170 +258,6 @@
 
 @end
 
-
-
-#define KNOB_WIDTH 6
-
-@implementation GSColorSliderCell : NSSliderCell
-
--(void) _setColorSliderCellMode: (int)m
-{
-  mode = m;
-  switch (mode)
-    {
-      case 0:
-      case 1:
-      case 2:
-      case 3:
-      case 10:
-        [_titleCell setTextColor: [NSColor whiteColor]];
-        break;
-      case 4:
-      case 5:
-      case 6:
-      case 7:
-        [_titleCell setTextColor: [NSColor blackColor]];
-        break;
-    }
-  [_titleCell setAlignment: NSLeftTextAlignment];
-}
-
--(void) _setColorSliderCellValues: (float)a : (float)b : (float)c
-{
-  values[0] = a;
-  values[1] = b;
-  values[2] = c;
-  if (mode == 8 || mode == 9)
-    {
-      if (c>0.7)
-        [_titleCell setTextColor: [NSColor blackColor]];
-      else
-        [_titleCell setTextColor: [NSColor whiteColor]];
-    }
-}
-
-- (NSRect) knobRectFlipped: (BOOL)flipped
-{
-  NSPoint	origin;
-  float		floatValue = [self floatValue];
-
-  if (_isVertical && flipped)
-    {
-      floatValue = _maxValue + _minValue - floatValue;
-    }
-
-  floatValue = (floatValue - _minValue) / (_maxValue - _minValue);
-
-  origin = _trackRect.origin;
-  if (_isVertical == YES)
-    {
-      origin.y += (_trackRect.size.height - KNOB_WIDTH) * floatValue;
-      return NSMakeRect (origin.x, origin.y, _trackRect.size.width, KNOB_WIDTH);
-    }
-  else
-    {
-      origin.x += (_trackRect.size.width - KNOB_WIDTH) * floatValue;
-      return NSMakeRect (origin.x, origin.y, KNOB_WIDTH, _trackRect.size.height);
-    }
-}
-
-- (void) drawKnob: (NSRect)knobRect
-{
-  [[NSColor blackColor] set];
-  NSDrawButton(knobRect, knobRect);
-}
-
--(void) drawBarInside: (NSRect)r  flipped: (BOOL)flipped
-{
-  float i, f;
-
-  if (_isVertical)
-    {
-      for (i = 0; i < r.size.height; i += 1)
-        {
-          f = (0.5 + i) / r.size.height;
-          if (flipped)
-            {
-              f = 1 - f;
-            }
-          switch (mode)
-            {
-              case 0: PSsetgray(f); break;
-
-              case 1: PSsetrgbcolor(f, 0, 0); break;
-              case 2: PSsetrgbcolor(0, f, 0); break;
-              case 3: PSsetrgbcolor(0, 0, f); break;
-                  
-              case 4: PSsetcmykcolor(f, 0, 0, 0); break;
-              case 5: PSsetcmykcolor(0, f, 0, 0); break;
-              case 6: PSsetcmykcolor(0, 0, f, 0); break;
-              case 7: PSsetcmykcolor(0, 0, 0, f); break;
-                  
-              case  8: PSsethsbcolor(f, values[1], values[2]); break;
-              case  9: PSsethsbcolor(values[0], f, values[2]); break;
-              case 10: PSsethsbcolor(values[0], values[1], f); break;
-            }
-          if (i + 1 < r.size.height)
-            PSrectfill(r.origin.x, i + r.origin.y, r.size.width, 1);
-          else
-            PSrectfill(r.origin.x, i + r.origin.y, r.size.width, r.size.height - i);
-        }
-    }
-  else
-    {
-      for (i = 0; i < r.size.width; i += 1)
-        {
-          f = (0.5 + i) / r.size.width;
-          switch (mode)
-            {
-              case 0: PSsetgray(f); break;
-
-              case 1: PSsetrgbcolor(f, 0, 0); break;
-              case 2: PSsetrgbcolor(0, f, 0); break;
-              case 3: PSsetrgbcolor(0, 0, f); break;
-                  
-              case 4: PSsetcmykcolor(f, 0, 0, 0); break;
-              case 5: PSsetcmykcolor(0, f, 0, 0); break;
-              case 6: PSsetcmykcolor(0, 0, f, 0); break;
-              case 7: PSsetcmykcolor(0, 0, 0, f); break;
-                  
-              case  8: PSsethsbcolor(f, values[1], values[2]); break;
-              case  9: PSsethsbcolor(values[0], f, values[2]); break;
-              case 10: PSsethsbcolor(values[0], values[1], f); break;
-            }
-          if (i + 1 < r.size.width)
-            PSrectfill(i, r.origin.y, 1, r.size.height);
-          else
-            PSrectfill(i, r.origin.y, r.size.width - i, r.size.height);
-        }
-
-      [_titleCell drawInteriorWithFrame: r inView: _control_view];
-    }
-}
-
--(void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
-{
-  _isVertical = (cellFrame.size.height > cellFrame.size.width);
-  cellFrame = [self drawingRectForBounds: cellFrame];
-
-  cellFrame.origin.x -= 1;
-  cellFrame.origin.y -= 1;
-  cellFrame.size.width += 2;
-  cellFrame.size.height += 2;
-
-  _trackRect = cellFrame;
-
-  [self drawBarInside: cellFrame flipped: [controlView isFlipped]];
-
-  [self drawKnob];
-}
-
-- (float) knobThickness
-{
-  return KNOB_WIDTH;
-}
-
-@end
 
 
 @implementation GSStandardCSColorPicker
@@ -505,12 +326,12 @@
       [s setAutoresizingMask: NSViewWidthSizable];
 
       [baseView putView: s
-	atRow: numFields - i
-	column: 0
-	withMinXMargin: 0
-	maxXMargin: 0
-	minYMargin: 0
-	maxYMargin: i?6:2];
+        atRow: numFields - i
+        column: 0
+        withMinXMargin: 0
+        maxXMargin: 0
+        minYMargin: 0
+        maxYMargin: i?6:2];
     }
 
   if (maxValue)
@@ -548,9 +369,9 @@
 
       [hb setAutoresizingMask: NSViewWidthSizable];
       [baseView putView: hb
-	atRow: numFields + 1
-	column: 0
-	withMargins: 0];
+        atRow: numFields + 1
+        column: 0
+        withMargins: 0];
       DESTROY(hb);
     }
   else
@@ -573,9 +394,9 @@
       DESTROY(tv);
       v = [[NSView alloc] initWithFrame: frame];
       [baseView putView: v
-	atRow: numFields + 1
-	column: 0
-	withMargins: 0];
+        atRow: numFields + 1
+        column: 0
+        withMargins: 0];
       DESTROY(v);
     }
 
@@ -589,12 +410,12 @@
       [f setFrameSize: NSMakeSize([f frame].size.width * 1.5, [f frame].size.height)];
       [f setDelegate: self];
       [baseView putView: f
-	atRow: numFields - i
-	column: 1
-	withMinXMargin: 3
-	maxXMargin: 0
-	minYMargin: 0
-	maxYMargin: 0];
+        atRow: numFields - i
+        column: 1
+        withMinXMargin: 3
+        maxXMargin: 0
+        minYMargin: 0
+        maxYMargin: 0];
     }
 }
 
@@ -606,7 +427,7 @@
     return;
   updating = YES;
 
-  for (i = 0; i <numFields; i++)
+  for (i = 0; i < numFields; i++)
     {
       values[i] = [sliders[i] floatValue];
       [fields[i] setIntValue: (int)values[i]];
@@ -625,7 +446,7 @@
     return;
   updating = YES;
 
-  for (i = 0; i <numFields; i++)
+  for (i = 0; i < numFields; i++)
     {
       values[i] = [fields[i] floatValue];
       [sliders[i] setIntValue: (int)values[i]];
@@ -640,7 +461,7 @@
 {
   int i;
 
-  for (i = 0; i <numFields; i++)
+  for (i = 0; i < numFields; i++)
     {
       [fields[i] setIntValue: (int)values[i]];
       [sliders[i] setIntValue: (int)values[i]];
@@ -653,4 +474,3 @@
 }
 
 @end
-

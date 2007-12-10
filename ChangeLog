@@ -1,3 +1,16 @@
+2007-12-10 Fred Kiefer <FredKiefer@gmx.de>
+
+	* ColorPickers/GSColorSliderCell.h,
+	* ColorPickers/GSColorSliderCell.m: New files split off from
+	GSStandardColorPicker.h and GSStandardColorPicker.m.
+	* ColorPickers/GNUmakefile: Add the new files.
+	* ColorPickers/GSStandardColorPicker.h,
+	* ColorPickers/GSStandardColorPicker.m: Remove split off code.
+	* ColorPickers/GSRGBColorPicker.m,
+	* ColorPickers/GSHSBColorPicker.m,
+	* ColorPickers/GSColorSliderCell.m: Add support for dynamically
+	displayed colour changes.
+	
 2007-12-09 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Documentation/gclose.1,

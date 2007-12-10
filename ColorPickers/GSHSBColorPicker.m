@@ -31,16 +31,16 @@
 @implementation GSHSBColorPicker
 
 - (id)initWithPickerMask:(int)aMask
-	      colorPanel:(NSColorPanel *)colorPanel
+              colorPanel:(NSColorPanel *)colorPanel
 {
   if (aMask & NSColorPanelHSBModeMask)
     {
       NSBundle *b;
 
       self = [super initWithPickerMask: aMask
-		colorPanel: colorPanel];
+                colorPanel: colorPanel];
       if (!self)
-	return nil;
+        return nil;
 
       numFields = 3;
       currentMode = NSColorPanelHSBModeMask;
@@ -97,9 +97,9 @@
   float brightness  = values[2] / 100;
   float alpha = [_colorPanel alpha];
   NSColor *c = [NSColor colorWithCalibratedHue: hue
-			saturation: saturation
-			brightness: brightness
-			alpha: alpha];
+                        saturation: saturation
+                        brightness: brightness
+                        alpha: alpha];
   [_colorPanel setColor: c];
 
   [(GSColorSliderCell *)[sliders[0] cell]

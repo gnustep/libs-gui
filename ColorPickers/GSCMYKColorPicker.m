@@ -31,16 +31,16 @@
 @implementation GSCMYKColorPicker
 
 - (id)initWithPickerMask:(int)aMask
-	      colorPanel:(NSColorPanel *)colorPanel
+              colorPanel:(NSColorPanel *)colorPanel
 {
   if (aMask & NSColorPanelCMYKModeMask)
     {
       NSBundle *b;
 
       self = [super initWithPickerMask: aMask
-		colorPanel: colorPanel];
+                colorPanel: colorPanel];
       if (!self)
-	return nil;
+        return nil;
 
       numFields = 4;
       currentMode = NSColorPanelCMYKModeMask;
@@ -73,13 +73,27 @@
 
   c = [color colorUsingColorSpaceName: NSDeviceCMYKColorSpace];
   [c getCyan: &cyan magenta: &magenta yellow: &yellow
-	   black: &black alpha: &alpha];
+           black: &black alpha: &alpha];
 
   values[0] = cyan * 100;
   values[1] = magenta * 100;
   values[2] = yellow * 100;
   values[3] = black * 100;
   [self _valuesChanged];
+
+  // FIXME: No way to store black in slider cell
+  [(GSColorSliderCell *)[sliders[0] cell]
+    _setColorSliderCellValues: cyan : magenta : yellow];
+  [(GSColorSliderCell *)[sliders[1] cell]
+    _setColorSliderCellValues: cyan : magenta : yellow];
+  [(GSColorSliderCell *)[sliders[2] cell]
+    _setColorSliderCellValues: cyan : magenta : yellow];
+  [(GSColorSliderCell *)[sliders[3] cell]
+    _setColorSliderCellValues: cyan : magenta : yellow];
+  [sliders[0] setNeedsDisplay: YES];
+  [sliders[1] setNeedsDisplay: YES];
+  [sliders[2] setNeedsDisplay: YES];
+  [sliders[3] setNeedsDisplay: YES];
 
   updating = NO;
 }
@@ -92,11 +106,25 @@
   float black  = values[3] / 100;
   float alpha = [_colorPanel alpha];
   NSColor *c = [NSColor colorWithDeviceCyan: cyan
-			magenta: magenta
-			yellow: yellow
-			black: black
-			alpha: alpha];
+                        magenta: magenta
+                        yellow: yellow
+                        black: black
+                        alpha: alpha];
   [_colorPanel setColor: c];
+
+  // FIXME: No way to store black in slider cell
+  [(GSColorSliderCell *)[sliders[0] cell]
+    _setColorSliderCellValues: cyan : magenta : yellow];
+  [(GSColorSliderCell *)[sliders[1] cell]
+    _setColorSliderCellValues: cyan : magenta : yellow];
+  [(GSColorSliderCell *)[sliders[2] cell]
+    _setColorSliderCellValues: cyan : magenta : yellow];
+  [(GSColorSliderCell *)[sliders[3] cell]
+    _setColorSliderCellValues: cyan : magenta : yellow];
+  [sliders[0] setNeedsDisplay: YES];
+  [sliders[1] setNeedsDisplay: YES];
+  [sliders[2] setNeedsDisplay: YES];
+  [sliders[3] setNeedsDisplay: YES];
 }
 
 

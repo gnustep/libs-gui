@@ -29,7 +29,26 @@
 #ifndef GSStandardColorPicker_h
 #define GSStandardColorPicker_h
 
-@class GSTable,NSSlider,NSTextField;
+#include <AppKit/NSColorPicker.h>
+#include "GSColorSliderCell.h"
+
+@class GSTable, NSSlider, NSTextField;
+@class NSBox, NSButtonCell, NSMatrix;
+
+@interface GSStandardColorPicker: NSColorPicker <NSColorPickingCustom>
+{
+  GSTable *baseView;
+  NSBox *pickerBox;
+  NSButtonCell *imageCell;
+  NSMatrix *pickerMatrix;
+  NSMutableArray *pickers;
+  id<NSColorPickingCustom, NSColorPickingDefault> currentPicker; 
+}
+
+- (void) loadViews;
+- (void) _showNewPicker: (id) sender;
+
+@end
 
 @interface GSStandardCSColorPicker: NSColorPicker <NSColorPickingCustom>
 {
@@ -57,15 +76,6 @@
 -(void) _setColorFromValues;
 -(void) setColor:(NSColor *)color;
 
-@end
-
-@interface GSColorSliderCell : NSSliderCell
-{
-  int mode;
-  float values[3];
-}
--(void) _setColorSliderCellMode: (int)m;
--(void) _setColorSliderCellValues: (float)a : (float)b : (float)c;
 @end
 
 #endif

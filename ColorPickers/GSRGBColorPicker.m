@@ -31,15 +31,15 @@
 @implementation GSRGBColorPicker
 
 - (id)initWithPickerMask:(int)aMask
-	      colorPanel:(NSColorPanel *)colorPanel
+              colorPanel:(NSColorPanel *)colorPanel
 {
   if (aMask & NSColorPanelRGBModeMask)
     {
       NSBundle *b;
       self = [super initWithPickerMask: aMask
-		colorPanel: colorPanel];
+                colorPanel: colorPanel];
       if (!self)
-	return nil;
+        return nil;
 
       b = [NSBundle bundleForClass: [self class]];
 
@@ -78,6 +78,16 @@
   values[2] = blue * 255;
   [self _valuesChanged];
 
+  [(GSColorSliderCell *)[sliders[0] cell]
+    _setColorSliderCellValues: red : green : blue];
+  [(GSColorSliderCell *)[sliders[1] cell]
+    _setColorSliderCellValues: red : green : blue];
+  [(GSColorSliderCell *)[sliders[2] cell]
+    _setColorSliderCellValues: red : green : blue];
+  [sliders[0] setNeedsDisplay: YES];
+  [sliders[1] setNeedsDisplay: YES];
+  [sliders[2] setNeedsDisplay: YES];
+
   updating = NO;
 }
 
@@ -88,10 +98,20 @@
   float blue  = values[2] / 255;
   float alpha = [_colorPanel alpha];
   NSColor *c = [NSColor colorWithCalibratedRed: red
-			green: green
-			blue: blue
-			alpha: alpha];
+                        green: green
+                        blue: blue
+                        alpha: alpha];
   [_colorPanel setColor: c];
+
+  [(GSColorSliderCell *)[sliders[0] cell]
+    _setColorSliderCellValues: red : green : blue];
+  [(GSColorSliderCell *)[sliders[1] cell]
+    _setColorSliderCellValues: red : green : blue];
+  [(GSColorSliderCell *)[sliders[2] cell]
+    _setColorSliderCellValues: red : green : blue];
+  [sliders[0] setNeedsDisplay: YES];
+  [sliders[1] setNeedsDisplay: YES];
+  [sliders[2] setNeedsDisplay: YES];
 }
 
 
