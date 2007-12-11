@@ -41,6 +41,7 @@
 #include <Foundation/NSCalendarDate.h>
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSKeyedArchiver.h>
+#include <Foundation/NSKeyValueObserving.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSThread.h>
 #include <Foundation/NSLock.h>
@@ -62,6 +63,7 @@
 #include "AppKit/NSClipView.h"
 #include "AppKit/NSFont.h"
 #include "AppKit/NSGraphics.h"
+#include "AppKit/NSKeyValueBinding.h"
 #include "AppKit/NSMenu.h"
 #include "AppKit/NSPasteboard.h"
 #include "AppKit/NSPrintInfo.h"
@@ -74,6 +76,7 @@
 #include "GNUstepGUI/GSDisplayServer.h"
 #include "GNUstepGUI/GSTrackingRect.h"
 #include "GSToolTips.h"
+#include "GSBindingHelpers.h"
 
 /*
  * We need a fast array that can store objects without retain/release ...
@@ -431,6 +434,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       rectClass = [GSTrackingRect class];
       NSDebugLLog(@"NSView", @"Initialize NSView class\n");
       [self setVersion: 1];
+
+      // expose bindings
+      [self exposeBinding: NSToolTipBinding];
+      [self exposeBinding: NSHiddenBinding];
     }
 }
 
@@ -503,6 +510,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 {
   NSView	*tmp;
   unsigned	count;
+
+  GSBindingUnbindAll(self);
 
   while ([_sub_views count] > 0)
     {
@@ -4716,6 +4725,71 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 - (BOOL) shouldBeTreatedAsInkEvent: (NSEvent *)theEvent
 {
   return YES;
+}
+
+- (void) bind: (NSString *)binding
+     toObject: (id)object
+  withKeyPath: (NSString *)keyPath
+      options: (NSDictionary *)options
+{
+  NSMutableDictionary *bindings;
+  NSDictionary *info;
+  BOOL hidden;
+
+  if ([binding hasPrefix: NSHiddenBinding])
+    {
+      [self unbind: binding];
+
+      [object addObserver: self
+              forKeyPath: keyPath
+              options: 0
+              context: NSHiddenBinding];
+      info = [NSDictionary dictionaryWithObjectsAndKeys:
+        object, NSObservedObjectKey,
+        keyPath, NSObservedKeyPathKey,
+        options, NSOptionsKey,
+        nil];
+      GSBindingLock();
+      bindings = GSBindingListForObject(self);
+      [bindings setValue: info forKey: binding];
+      hidden = GSBindingResolveMultipleValueBool(NSHiddenBinding, bindings,
+          GSBindingOperationOr);
+      GSBindingReleaseLock();
+      [self setHidden: hidden];
+    }
+  else
+    {
+      [super bind: binding
+             toObject: object
+             withKeyPath: keyPath
+             options: options];
+    }
+}
+
+- (void) observeValueForKeyPath: (NSString *)keyPath
+                       ofObject: (id)object
+                         change: (NSDictionary *)change
+                        context: (void *)context
+{
+  BOOL hidden;
+  NSDictionary * bindings;
+
+  if (context == NSHiddenBinding)
+    {
+      GSBindingLock();
+      bindings = GSBindingListForObject(self);
+      hidden = GSBindingResolveMultipleValueBool(NSHiddenBinding, bindings,
+          GSBindingOperationOr);
+      GSBindingReleaseLock();
+      [self setHidden: hidden];
+    }
+  else
+    {
+      [super observeValueForKeyPath: keyPath
+                           ofObject: object
+                             change: change
+                            context: context];
+    }
 }
 
 @end

@@ -1,3 +1,14 @@
+2007-12-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSKeyValueBinding.h,
+	* Source/GSBindingHelpers.h,
+	* Source/NSKeyValueBinding.m: Basic key value binding implementation.
+	* Source/GNUmakefile: Add new source file.
+	* Source/externs.m: Variables for key binding.
+	* Source/NSTextField.m,
+	* Source/NSView.m: Class specific key bindings.
+	Patch by Chris Farber <chris@chrisfarber.net>.
+	
 2007-12-10 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSColor.m (-numberOfComponents, -getComponents:): Raise

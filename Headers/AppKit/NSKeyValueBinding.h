@@ -1,6 +1,6 @@
 /** <title>NSKeyValueBinding</title>
 
-   <abstract>Interfae declaration for key value binding</abstract>
+   <abstract>Interface declaration for key value binding</abstract>
 
    Copyright <copy>(C) 2006 Free Software Foundation, Inc.</copy>
 
@@ -29,9 +29,11 @@
 #ifndef _GNUstep_H_NSKeyValueBinding
 #define _GNUstep_H_NSKeyValueBinding
 
+#import <GNUstepBase/GSVersionMacros.h>
 #include <Foundation/NSObject.h>
+#include <AppKit/AppKitDefines.h>
 
-#if OS_API_VERSION(100300,GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 
 @class NSString;
 @class NSArray;
@@ -49,11 +51,9 @@
   withKeyPath: (NSString *)keyPath 
       options: (NSDictionary *)options;
 - (void) unbind: (NSString *)binding;
-- (void) commitEditingWithDelegate: (id)delegate
-                 didCommitSelector: (SEL)didCommitSelector 
-                       contextInfo: (void *)contextInfo;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 - (NSDictionary *) infoForBinding: (NSString *)binding;
-
+#endif
 @end
 
 @interface NSObject (NSPlaceholder)
@@ -71,6 +71,11 @@
 
 - (BOOL) commitEditing;
 - (void) discardEditing;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (void) commitEditingWithDelegate: (id)delegate
+                 didCommitSelector: (SEL)didCommitSelector 
+                       contextInfo: (void *)contextInfo;
+#endif
 
 @end
 
@@ -85,15 +90,54 @@
 
 // binding values
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 // Keys in dictionary returned by infoForBinding
 APPKIT_EXPORT NSString *NSObservedObjectKey;
-APPKIT_EXPORT NSString *NSObservedKeyPath;
+APPKIT_EXPORT NSString *NSObservedKeyPathKey;
 APPKIT_EXPORT NSString *NSOptionsKey;
 
 // special markers
 APPKIT_EXPORT id NSMultipleValuesMarker;
 APPKIT_EXPORT id NSNoSelectionMarker;
 APPKIT_EXPORT id NSNotApplicableMarker;
+
+// Binding name constants
+APPKIT_EXPORT NSString *NSAlignmentBinding;
+APPKIT_EXPORT NSString *NSEditableBinding;
+APPKIT_EXPORT NSString *NSEnabledBinding;
+APPKIT_EXPORT NSString *NSFontBinding;
+APPKIT_EXPORT NSString *NSHiddenBinding;
+APPKIT_EXPORT NSString *NSSelectedIndexBinding;
+APPKIT_EXPORT NSString *NSTextColorBinding;
+APPKIT_EXPORT NSString *NSToolTipBinding;
+APPKIT_EXPORT NSString *NSValueBinding;
+
+//Binding options constants
+APPKIT_EXPORT NSString *NSAllowsEditingMultipleValuesSelectionBindingOption;
+APPKIT_EXPORT NSString *NSAllowsNullArgumentBindingOption;
+APPKIT_EXPORT NSString *NSConditionallySetsEditableBindingOption;
+APPKIT_EXPORT NSString *NSConditionallySetsEnabledBindingOption;
+APPKIT_EXPORT NSString *NSConditionallySetsHiddenBindingOption;
+APPKIT_EXPORT NSString *NSContinuouslyUpdatesValueBindingOption;
+APPKIT_EXPORT NSString *NSCreatesSortDescriptorBindingOption;
+APPKIT_EXPORT NSString *NSDeletesObjectsOnRemoveBindingsOption;
+APPKIT_EXPORT NSString *NSDisplayNameBindingOption;
+APPKIT_EXPORT NSString *NSDisplayPatternBindingOption;
+APPKIT_EXPORT NSString *NSHandlesContentAsCompoundValueBindingOption;
+APPKIT_EXPORT NSString *NSInsertsNullPlaceholderBindingOption;
+APPKIT_EXPORT NSString *NSInvokesSeparatelyWithArrayObjectsBindingOption;
+APPKIT_EXPORT NSString *NSMultipleValuesPlaceholderBindingOption;
+APPKIT_EXPORT NSString *NSNoSelectionPlaceholderBindingOption;
+APPKIT_EXPORT NSString *NSNotApplicablePlaceholderBindingOption;
+APPKIT_EXPORT NSString *NSNullPlaceholderBindingOption;
+APPKIT_EXPORT NSString *NSPredicateFormatBindingOption;
+APPKIT_EXPORT NSString *NSRaisesForNotApplicableKeysBindingOption;
+APPKIT_EXPORT NSString *NSSelectorNameBindingOption;
+APPKIT_EXPORT NSString *NSSelectsAllWhenSettingContentBindingOption;
+APPKIT_EXPORT NSString *NSValidatesImmediatelyBindingOption;
+APPKIT_EXPORT NSString *NSValueTransformerNameBindingOption;
+APPKIT_EXPORT NSString *NSValueTransformerBindingOption;
+#endif
 
 #endif // OS_API_VERSION
 

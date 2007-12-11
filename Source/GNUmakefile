@@ -104,6 +104,7 @@ NSImageView.m \
 NSInputManager.m \
 NSInputServer.m \
 NSInterfaceStyle.m \
+NSKeyValueBinding.m \
 NSLayoutManager.m \
 NSLevelIndicator.m \
 NSLevelIndicatorCell.m \

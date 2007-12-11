@@ -592,9 +592,45 @@ const NSWindowDepth _GSWindowDepths[7] = { 258, 264, 514, 516, 517, 520, 0 };
 /* End of color functions externs */
 
 // NSKeyValueBinding
-NSString *NSObservedObjectKey = @"NSObservedObjectKey";
-NSString *NSObservedKeyPath = @"NSObservedKeyPath";
-NSString *NSOptionsKey = @"NSOptionsKey";
+NSString *NSObservedObjectKey = @"NSObservedObject";
+NSString *NSObservedKeyPathKey = @"NSObservedKeyPath";
+NSString *NSOptionsKey = @"NSOptions";
+
+NSString *NSAllowsEditingMultipleValuesSelectionBindingOption = @"NSAllowsEditingMultipleValuesSelection";
+NSString *NSAllowsNullArgumentBindingOption = @"NSAllowsNullArgument";
+NSString *NSConditionallySetsEditableBindingOption = @"NSConditionallySetsEditable";
+NSString *NSConditionallySetsEnabledBindingOption = @"NSConditionallySetsEnabled";
+NSString *NSConditionallySetsHiddenBindingOption = @"NSConditionallySetsHidden";
+NSString *NSContinuouslyUpdatesValueBindingOption = @"NSContinuouslyUpdatesValue";
+NSString *NSCreatesSortDescriptorBindingOption = @"NSCreatesSortDescriptor";
+NSString *NSDeletesObjectsOnRemoveBindingsOption = @"NSDeletesObjectsOnRemove";
+NSString *NSDisplayNameBindingOption = @"NSDisplayName";
+NSString *NSDisplayPatternBindingOption = @"NSDisplayPattern";
+NSString *NSHandlesContentAsCompoundValueBindingOption = @"NSHandlesContentAsCompoundValue";
+NSString *NSInsertsNullPlaceholderBindingOption = @"NSInsertsNullPlaceholder";
+NSString *NSInvokesSeparatelyWithArrayObjectsBindingOption = @"NSInvokesSeparatelyWithArrayObjects";
+NSString *NSMultipleValuesPlaceholderBindingOption = @"NSMultipleValuesPlaceholder";
+NSString *NSNoSelectionPlaceholderBindingOption = @"NSNoSelectionPlaceholder";
+NSString *NSNotApplicablePlaceholderBindingOption = @"NSNotApplicablePlaceholder";
+NSString *NSNullPlaceholderBindingOption = @"NSNullPlaceholder";
+NSString *NSPredicateFormatBindingOption = @"NSPredicateFormat";
+NSString *NSRaisesForNotApplicableKeysBindingOption = @"NSRaisesForNotApplicableKeys";
+NSString *NSSelectorNameBindingOption = @"NSSelectorName";
+NSString *NSSelectsAllWhenSettingContentBindingOption = @"NSSelectsAllWhenSettingContent";
+NSString *NSValidatesImmediatelyBindingOption = @"NSValidatesImmediately";
+NSString *NSValueTransformerNameBindingOption = @"NSValueTransformerName";
+NSString *NSValueTransformerBindingOption = @"NSValueTransformer";
+ 
+NSString *NSAlignmentBinding = @"alignment";
+NSString *NSEditableBinding = @"editable";
+NSString *NSEnabledBinding = @"enabled";
+NSString *NSFontBinding = @"font";
+NSString *NSHiddenBinding = @"hidden";
+NSString *NSSelectedIndexBinding = @"selectedIndex";
+NSString *NSTextColorBinding = @"textColor";
+NSString *NSToolTipBinding = @"toolTip";
+NSString *NSValueBinding = @"value";
+
 // FIXME: Need to defined!
 id NSMultipleValuesMarker = nil;
 id NSNoSelectionMarker = nil;
