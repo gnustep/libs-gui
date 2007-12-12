@@ -298,11 +298,14 @@ void GSBindingReleaseLock()
   [bindingLock unlock];
 }
 
-NSMutableDictionary * GSBindingListForObject(id object)
+NSMutableDictionary *GSBindingListForObject(id object)
 {
-  NSMutableDictionary * list;
+  NSMutableDictionary *list;
 
-  list = (NSMutableDictionary *) NSMapGet(objectTable, (void *)object);
+  if (!objectTable)
+    return nil;
+
+  list = (NSMutableDictionary *)NSMapGet(objectTable, (void *)object);
   if (list == nil)
     {
       list = [NSMutableDictionary dictionary];
@@ -315,16 +318,22 @@ void GSBindingUnbindAll(id object)
 {
   NSEnumerator *enumerator;
   NSString *binding;
-  NSArray *bindings;
+  NSDictionary *list;
+
+  if (!objectTable)
+    return;
 
   [bindingLock lock];
-  bindings = [(GSBindingListForObject(object)) allKeys];
-  enumerator = [bindings objectEnumerator];
-  while ((binding = [enumerator nextObject]))
+  list = (NSDictionary *)NSMapGet(objectTable, (void *)object);
+  if (list != nil)
     {
-      [object unbind: binding];
+      enumerator = [list keyEnumerator];
+      while ((binding = [enumerator nextObject]))
+        {
+          [object unbind: binding];
+        }
+      NSMapRemove(objectTable, (void *)object);
     }
-  NSMapRemove(objectTable, (void *)object);
   [bindingLock unlock];
 }
   

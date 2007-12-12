@@ -1,3 +1,8 @@
+2007-12-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSKeyValueBinding.m (GSBindingUnbindAll): Return if table
+	doesn't exist.
+
 2007-12-11 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSKeyValueBinding.h,
