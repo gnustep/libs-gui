@@ -94,8 +94,8 @@
 
 - (void) establishConnection
 {
-  [_dst bind: _binding 
-        toObject: _src 
+  [_src bind: _binding 
+        toObject: _dst
         withKeyPath: _keyPath
         options: _options];
 }

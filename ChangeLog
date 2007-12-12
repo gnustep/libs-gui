@@ -1,5 +1,11 @@
 2007-12-12 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSNibBindingConnector.m (-establishConnection): Swap
+	destination and source.
+	* Source/NSKeyValueBinding.m: Started rework.
+
+2007-12-12 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSKeyValueBinding.m (GSBindingUnbindAll): Return if table
 	doesn't exist.
 

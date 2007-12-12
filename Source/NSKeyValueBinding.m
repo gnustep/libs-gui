@@ -167,7 +167,9 @@ static inline void setup()
   id observedObject;
   NSString *keyPath;
 
-  setup();
+  if (!objectTable)
+    return;
+
   [bindingLock lock];
   bindings = (NSMutableDictionary *)NSMapGet(objectTable, (void *)self);
   if (bindings != nil)
@@ -184,6 +186,10 @@ static inline void setup()
   [bindingLock unlock];
 }
 
+// FIXME: This method should not be defined on this class, as it make all
+// other value observation impossible. Better add a new GSBinding class
+// to handle this. Perhaps with plenty of specific subclasses for the 
+// different special cases?
 - (void) observeValueForKeyPath: (NSString *)keyPath
                        ofObject: (id)object
                          change: (NSDictionary *)change
