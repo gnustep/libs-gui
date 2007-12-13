@@ -29,50 +29,24 @@
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSEnumerator.h>
-#include <Foundation/NSMapTable.h>
-#include <Foundation/NSLock.h>
+#include <Foundation/NSException.h>
+#include <Foundation/NSInvocation.h>
 #include <Foundation/NSKeyValueObserving.h>
 #include <Foundation/NSKeyValueCoding.h>
+#include <Foundation/NSLock.h>
+#include <Foundation/NSMapTable.h>
+#include <Foundation/NSValue.h>
 #include <Foundation/NSValueTransformer.h>
-#include <Foundation/NSInvocation.h>
-#include <Foundation/NSException.h>
 #include <GNUstepBase/GSLock.h>
 
 #include "AppKit/NSKeyValueBinding.h"
 #include "GSBindingHelpers.h"
 
-static NSRecursiveLock *bindingLock = nil;
-static NSMapTable *classTable = NULL;      //available bindings
-static NSMapTable *objectTable = NULL;     //bound bindings
-
-static inline void setup()
-{
-  if (bindingLock == nil)
-    {
-      bindingLock = [GSLazyRecursiveLock new];
-      classTable = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
-          NSOwnedPointerMapValueCallBacks, 128);
-      objectTable = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
-          NSOwnedPointerMapValueCallBacks, 128);
-    }
-}
-
 @implementation NSObject (NSKeyValueBindingCreation)
 
 + (void) exposeBinding: (NSString *)binding
 {
-  NSMutableArray *bindings;
-  
-  setup();
-  [bindingLock lock];
-  bindings = (NSMutableArray *)NSMapGet(classTable, (void*)self);
-  if (bindings == nil)
-    {
-      bindings = [NSMutableArray arrayWithCapacity: 15];
-      NSMapInsert(classTable, (void*)self, (void*)bindings);
-    }
-  [bindings addObject: binding];
-  [bindingLock unlock];
+  [GSKeyValueBinding exposeBinding:  binding forClass: [self class]];
 }
 
 - (NSArray *) exposedBindings
@@ -81,18 +55,16 @@ static inline void setup()
   NSArray *tmp;
   Class class = [self class];
 
-  setup();
-  [bindingLock lock];
   while (class && class != [NSObject class])
     {
-      tmp = NSMapGet(classTable, (void*)class);
+      tmp = [GSKeyValueBinding exposedBindingsForClass: class];
       if (tmp != nil)
         {
           [exposedBindings addObjectsFromArray: tmp];
         }
+  
       class = [class superclass];
     }
-  [bindingLock unlock];
 
   return exposedBindings;
 }
@@ -107,36 +79,22 @@ static inline void setup()
  withKeyPath: (NSString *)keyPath
      options: (NSDictionary *)options
 {
-  NSMutableDictionary *bindings;
-  NSDictionary *info;
-  id newValue;
-  
+  if ((anObject == nil)
+      || (keyPath == nil))
+    {
+      NSLog(@"No object or path for binding on %@ for %@", self, binding);
+      return;
+    }
+
   if ([[self exposedBindings] containsObject: binding])
     {
       [self unbind: binding];
-
-      info = [NSDictionary dictionaryWithObjectsAndKeys:
-        anObject, NSObservedObjectKey,
-        keyPath, NSObservedKeyPathKey,
-        options, NSOptionsKey,
-        nil];
-      [anObject addObserver: self
-                 forKeyPath: keyPath
-                    options: NSKeyValueObservingOptionNew
-                    context: binding];
-      [bindingLock lock];
-      bindings = (NSMutableDictionary *)NSMapGet(objectTable, (void *)self);
-      if (bindings == nil)
-        {
-          bindings = [NSMutableDictionary dictionary];
-          NSMapInsert(objectTable, (void*)self, (void*)bindings);
-        }
-      [bindings setValue: info forKey: binding];
-      [bindingLock unlock];
-
-      newValue = [anObject valueForKeyPath: keyPath];
-      newValue = GSBindingTransformedValue(newValue, options);
-      [self setValue: newValue forKey: binding];
+      [[GSKeyValueBinding alloc] initWithBinding: binding 
+                                 withName: binding 
+                                 toObject: anObject
+                                 withKeyPath: keyPath
+                                 options: options
+                                 fromObject: self];
     }
   else
     {
@@ -146,181 +104,133 @@ static inline void setup()
 
 - (NSDictionary *) infoForBinding: (NSString *)binding
 {
-  NSMutableDictionary *bindings;
-  NSDictionary *info;
-
-  setup();
-  [bindingLock lock];
-  bindings = (NSMutableDictionary *)NSMapGet(objectTable, (void *)self);
-  if (bindings != nil)
-    {
-      info = [bindings objectForKey: binding];
-    }
-  [bindingLock unlock];
-  return [[info copy] autorelease];
+  return [GSKeyValueBinding infoForBinding: binding forObject: self];
 }
 
 - (void) unbind: (NSString *)binding
 {
+  [GSKeyValueBinding unbind: binding forObject: self];
+}
+
+@end
+
+static NSRecursiveLock *bindingLock = nil;
+static NSMapTable *classTable = NULL;      //available bindings
+static NSMapTable *objectTable = NULL;     //bound bindings
+
+typedef enum {
+  GSBindingOperationAnd = 0,
+  GSBindingOperationOr
+} GSBindingOperationKind;
+
+//TODO: document
+BOOL GSBindingResolveMultipleValueBool(NSString *key, NSDictionary *bindings,
+    GSBindingOperationKind operationKind);
+
+//TODO: document
+void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
+    NSDictionary *bindings);
+
+NSArray *GSBindingExposeMultipleValueBindings(
+    NSArray *bindingNames,
+    NSMutableDictionary *bindingList);
+
+NSArray *GSBindingExposePatternBindings(
+    NSArray *bindingNames,
+    NSMutableDictionary *bindingList);
+
+id GSBindingReverseTransformedValue(id value, NSDictionary *options);
+
+@implementation GSKeyValueBinding
+
++ (void) initialize
+{
+  if (self == [GSKeyValueBinding class])
+    {
+      bindingLock = [GSLazyRecursiveLock new];
+      classTable = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
+          NSOwnedPointerMapValueCallBacks, 128);
+      objectTable = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
+          NSOwnedPointerMapValueCallBacks, 128);
+    }
+}
+
++ (void) exposeBinding: (NSString *)binding forClass: (Class)clazz
+{
+  NSMutableArray *bindings;
+
+  [bindingLock lock];
+  bindings = (NSMutableArray *)NSMapGet(classTable, (void*)clazz);
+  if (bindings == nil)
+    {
+      // Need to retain it ourselves
+      bindings = [[NSMutableArray alloc] initWithCapacity: 5];
+      NSMapInsert(classTable, (void*)clazz, (void*)bindings);
+    }
+  [bindings addObject: binding];
+  [bindingLock unlock];
+}
+
++ (NSArray *) exposedBindingsForClass: (Class)clazz
+{
+  NSArray *tmp;
+
+  if (!classTable)
+    return nil;
+
+  [bindingLock lock];
+  tmp = NSMapGet(classTable, (void*)clazz);
+  [bindingLock unlock];
+  
+  return tmp;
+}
+
++ (NSDictionary *) infoForBinding: (NSString *)binding forObject: (id)anObject
+{
   NSMutableDictionary *bindings;
-  NSDictionary *info;
+  GSKeyValueBinding *theBinding;
+
+  if (!objectTable)
+    return nil;
+
+  [bindingLock lock];
+  bindings = (NSMutableDictionary *)NSMapGet(objectTable, (void *)anObject);
+  if (bindings != nil)
+    {
+      theBinding = (GSKeyValueBinding*)[bindings objectForKey: binding];
+    }
+  [bindingLock unlock];
+
+  return theBinding->info;
+}
+
++ (void) unbind: (NSString *)binding  forObject: (id)anObject
+{
+  NSMutableDictionary *bindings;
   id observedObject;
   NSString *keyPath;
+  GSKeyValueBinding *theBinding;
 
   if (!objectTable)
     return;
 
   [bindingLock lock];
-  bindings = (NSMutableDictionary *)NSMapGet(objectTable, (void *)self);
+  bindings = (NSMutableDictionary *)NSMapGet(objectTable, (void *)anObject);
   if (bindings != nil)
     {
-      info = [bindings objectForKey: binding];
-      if (info != nil)
+      theBinding = (GSKeyValueBinding*)[bindings objectForKey: binding];
+      if (theBinding != nil)
         {
-          observedObject = [info objectForKey: NSObservedObjectKey];
-          keyPath = [info objectForKey: NSObservedKeyPathKey];
-          [observedObject removeObserver: self forKeyPath: keyPath];
+          observedObject = [theBinding->info objectForKey: NSObservedObjectKey];
+          keyPath = [theBinding->info objectForKey: NSObservedKeyPathKey];
+          [observedObject removeObserver: theBinding forKeyPath: keyPath];
           [bindings setValue: nil forKey: binding];
         }
     }
   [bindingLock unlock];
 }
 
-// FIXME: This method should not be defined on this class, as it make all
-// other value observation impossible. Better add a new GSBinding class
-// to handle this. Perhaps with plenty of specific subclasses for the 
-// different special cases?
-- (void) observeValueForKeyPath: (NSString *)keyPath
-                       ofObject: (id)object
-                         change: (NSDictionary *)change
-                        context: (void *)context
-{
-  NSMutableDictionary *bindings;
-  NSString *binding = (NSString *)context;
-
-  setup();
-  [bindingLock lock];
-  bindings = (NSMutableDictionary *)NSMapGet(objectTable, (void *)self);
-  if (bindings != nil)
-    {
-      NSDictionary *info;
-
-      info = [bindings objectForKey: binding];
-      if (info != nil)
-        {
-          NSDictionary *options;
-          id newValue;
-
-          options = [info objectForKey: NSOptionsKey];
-          newValue = [change objectForKey: NSKeyValueChangeNewKey];
-          newValue = GSBindingTransformedValue(newValue, options);
-          [self setValue: newValue forKey: binding];
-        }
-    }
-  [bindingLock unlock];
-}
-
-@end
-
-
-//Helper functions
-BOOL GSBindingResolveMultipleValueBool(NSString *key, NSDictionary *bindings,
-    GSBindingOperationKind operationKind)
-{
-  NSString *bindingName;
-  NSDictionary *info;
-  int count = 1;
-  id object;
-  NSString *keyPath;
-  id value;
-  NSDictionary *options;
- 
-  bindingName = key;
-  while ((info = [bindings objectForKey: bindingName]))
-    {
-      object = [info objectForKey: NSObservedObjectKey];
-      keyPath = [info objectForKey: NSObservedKeyPathKey];
-      options = [info objectForKey: NSOptionsKey];
-
-      value = [object valueForKeyPath: keyPath];
-      value = GSBindingTransformedValue(value, options);
-      if ([value boolValue] == operationKind)
-        {
-          return operationKind;
-        }
-      bindingName = [NSString stringWithFormat: @"%@%i", key, ++count];
-    }
-  return !operationKind;
-}
-
-void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
-    NSDictionary *bindings)
-{
-  NSString *bindingName;
-  NSDictionary *info;
-  NSDictionary *options;
-  int count = 1;
-  id object;
-  id target;
-  SEL selector;
-  NSString *keyPath;
-  NSInvocation *invocation;
-
-  info = [bindings objectForKey: targetKey];
-  object = [info objectForKey: NSObservedObjectKey];
-  keyPath = [info objectForKey: NSObservedKeyPathKey];
-  options = [info objectForKey: NSOptionsKey];
-
-  target = [object valueForKeyPath: keyPath];
-  selector = NSSelectorFromString([options objectForKey: 
-      NSSelectorNameBindingOption]);
-  if (target == nil || selector == NULL) return;
-
-  invocation = [NSInvocation invocationWithMethodSignature:
-    [target methodSignatureForSelector: selector]];
-  [invocation setSelector: selector];
-
-  bindingName = argumentKey;
-  while ((info = [bindings objectForKey: bindingName]))
-    {
-      object = [info objectForKey: NSObservedObjectKey];
-      keyPath = [info objectForKey: NSObservedKeyPathKey];
-      if ((object = [object valueForKeyPath: keyPath]))
-        {
-          [invocation setArgument: object atIndex: ++count];
-        }
-      bindingName = [NSString stringWithFormat: @"%@%i", argumentKey, count];
-    }
-  [invocation invoke];
-}
-
-void GSBindingLock()
-{
-  [bindingLock lock];
-}
-
-void GSBindingReleaseLock()
-{
-  [bindingLock unlock];
-}
-
-NSMutableDictionary *GSBindingListForObject(id object)
-{
-  NSMutableDictionary *list;
-
-  if (!objectTable)
-    return nil;
-
-  list = (NSMutableDictionary *)NSMapGet(objectTable, (void *)object);
-  if (list == nil)
-    {
-      list = [NSMutableDictionary dictionary];
-      NSMapInsert(objectTable, (void *)object, (void *)list);
-    }
-  return list;
-}
-
-void GSBindingUnbindAll(id object)
++ (void) unbindAllForObject: (id)anObject
 {
   NSEnumerator *enumerator;
   NSString *binding;
@@ -330,71 +240,105 @@ void GSBindingUnbindAll(id object)
     return;
 
   [bindingLock lock];
-  list = (NSDictionary *)NSMapGet(objectTable, (void *)object);
+  list = (NSDictionary *)NSMapGet(objectTable, (void *)anObject);
   if (list != nil)
     {
       enumerator = [list keyEnumerator];
       while ((binding = [enumerator nextObject]))
         {
-          [object unbind: binding];
+          [anObject unbind: binding];
         }
-      NSMapRemove(objectTable, (void *)object);
+      NSMapRemove(objectTable, (void *)anObject);
+      RELEASE(list);
     }
   [bindingLock unlock];
 }
+
+- (id) initWithBinding: (NSString *)binding 
+              withName: (NSString *)name
+              toObject: (id)dest
+           withKeyPath: (NSString *)keyPath
+               options: (NSDictionary *)options
+            fromObject: (id)source
+{
+  NSMutableDictionary *bindings;
   
-NSArray *GSBindingExposeMultipleValueBindings(
-    NSArray *bindingNames,
-    NSMutableDictionary *bindingList)
-{
-  NSEnumerator *nameEnum;
-  NSString *name;
-  NSString *numberedName;
-  NSMutableArray *additionalBindings;
-  int count;
-
-  additionalBindings = [NSMutableArray array];
-  nameEnum = [bindingNames objectEnumerator];
-  while ((name = [nameEnum nextObject]))
+  src = source;
+  if (options == nil)
     {
-      count = 1;
-      numberedName = name;
-      while ([bindingList objectForKey: numberedName] != nil)
-        {
-          numberedName = [NSString stringWithFormat: @"%@%i", name, ++count];
-          [additionalBindings addObject: numberedName];
-        }
+      info = [[NSDictionary alloc] initWithObjectsAndKeys:
+        dest, NSObservedObjectKey,
+        keyPath, NSObservedKeyPathKey,
+        nil];
     }
-  return additionalBindings;
+  else
+    {
+      info = [[NSDictionary alloc] initWithObjectsAndKeys:
+        dest, NSObservedObjectKey,
+        keyPath, NSObservedKeyPathKey,
+        options, NSOptionsKey,
+        nil];
+    }
+    
+  [dest addObserver: self
+        forKeyPath: keyPath
+        options: NSKeyValueObservingOptionNew
+        context: binding];
+
+  [bindingLock lock];
+  bindings = (NSMutableDictionary *)NSMapGet(objectTable, (void *)source);
+  if (bindings == nil)
+    {
+      bindings = [NSMutableDictionary new];
+      NSMapInsert(objectTable, (void*)source, (void*)bindings);
+    }
+  [bindings setObject: self forKey: name];
+  [bindingLock unlock];
+
+  [self setValueFor: binding];
+
+  return self;
 }
 
-
-NSArray *GSBindingExposePatternBindings(
-    NSArray *bindingNames,
-    NSMutableDictionary *bindingList)
+- (void)dealloc
 {
-  NSEnumerator *nameEnum;
-  NSString *name;
-  NSString *numberedName;
-  NSMutableArray *additionalBindings;
-  int count;
-
-  additionalBindings = [NSMutableArray array];
-  nameEnum = [bindingNames objectEnumerator];
-  while ((name = [nameEnum nextObject]))
-    {
-      count = 1;
-      numberedName = [NSString stringWithFormat:@"%@1", name];
-      while ([bindingList objectForKey: numberedName] != nil)
-        {
-          numberedName = [NSString stringWithFormat:@"%@%i", name, ++count];
-          [additionalBindings addObject: numberedName];
-        }
-    }
-  return additionalBindings;
+  DESTROY(info);
+  src = nil; 
+  [super dealloc];
 }
 
-id GSBindingTransformedValue(id value, NSDictionary *options)
+- (void) setValueFor: (NSString *)binding 
+{
+  id newValue;
+  id dest;
+  NSString *keyPath;
+  NSDictionary *options;
+
+  dest = [info objectForKey: NSObservedObjectKey];
+  keyPath = [info objectForKey: NSObservedKeyPathKey];
+  options = [info objectForKey: NSOptionsKey];
+
+  newValue = [dest valueForKeyPath: keyPath];
+  newValue = [self transformValue: newValue withOptions: options];
+  [src setValue: newValue forKey: binding];
+}
+
+- (void) observeValueForKeyPath: (NSString *)keyPath
+                       ofObject: (id)object
+                         change: (NSDictionary *)change
+                        context: (void *)context
+{
+  NSString *binding = (NSString *)context;
+  NSDictionary *options;
+  id newValue;
+
+  options = [info objectForKey: NSOptionsKey];
+  newValue = [change objectForKey: NSKeyValueChangeNewKey];
+  newValue = [self transformValue: newValue withOptions: options];
+  [src setValue: newValue forKey: binding];
+}
+
+- (id) transformValue: (id)value withOptions: (NSDictionary *)options
 {
   NSString *valueTransformerName;
   NSValueTransformer *valueTransformer;
@@ -466,7 +410,225 @@ id GSBindingTransformedValue(id value, NSDictionary *options)
 
   return value;
 }
-      
+
+@end
+
+@implementation GSKeyValueOrBinding : GSKeyValueBinding 
+
+- (void) setValueFor: (NSString *)binding 
+{
+  NSDictionary *bindings;
+  BOOL res;
+  
+  if (!objectTable)
+    return;
+
+ [bindingLock lock];
+  bindings = (NSDictionary *)NSMapGet(objectTable, (void *)src);
+  if (!bindings)
+    return;
+
+  res = GSBindingResolveMultipleValueBool(binding, bindings,
+                                          GSBindingOperationOr);
+  [bindingLock unlock];
+  [src setValue: [NSNumber numberWithBool: res] forKey: binding];
+}
+
+- (void) observeValueForKeyPath: (NSString *)keyPath
+                       ofObject: (id)object
+                         change: (NSDictionary *)change
+                        context: (void *)context
+{
+  [self setValueFor: (NSString*)context];
+}
+
+@end
+
+@implementation GSKeyValueAndBinding : GSKeyValueBinding 
+
+- (void) setValueFor: (NSString *)binding 
+{
+  NSDictionary *bindings;
+  BOOL res;
+  
+  if (!objectTable)
+    return;
+
+ [bindingLock lock];
+  bindings = (NSDictionary *)NSMapGet(objectTable, (void *)src);
+  if (!bindings)
+    return;
+
+  res = GSBindingResolveMultipleValueBool(binding, bindings,
+                                          GSBindingOperationAnd);
+  [bindingLock unlock];
+  [src setValue: [NSNumber numberWithBool: res] forKey: binding];
+}
+
+- (void) observeValueForKeyPath: (NSString *)keyPath
+                       ofObject: (id)object
+                         change: (NSDictionary *)change
+                        context: (void *)context
+{
+  [self setValueFor: (NSString*)context];
+}
+
+@end
+
+
+//Helper functions
+BOOL GSBindingResolveMultipleValueBool(NSString *key, NSDictionary *bindings,
+    GSBindingOperationKind operationKind)
+{
+  NSString *bindingName;
+  NSDictionary *info;
+  int count = 1;
+  id object;
+  NSString *keyPath;
+  id value;
+  NSDictionary *options;
+  GSKeyValueBinding *theBinding;
+
+  bindingName = key;
+  while ((theBinding = [bindings objectForKey: bindingName]))
+    {
+      info = theBinding->info;
+      object = [info objectForKey: NSObservedObjectKey];
+      keyPath = [info objectForKey: NSObservedKeyPathKey];
+      options = [info objectForKey: NSOptionsKey];
+
+      value = [object valueForKeyPath: keyPath];
+      value = [theBinding transformValue: value withOptions: options];
+      if ([value boolValue] == operationKind)
+        {
+          return operationKind;
+        }
+      bindingName = [NSString stringWithFormat: @"%@%i", key, ++count];
+    }
+  return !operationKind;
+}
+
+void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
+    NSDictionary *bindings)
+{
+  NSString *bindingName;
+  NSDictionary *info;
+  NSDictionary *options;
+  int count = 1;
+  id object;
+  id target;
+  SEL selector;
+  NSString *keyPath;
+  NSInvocation *invocation;
+  GSKeyValueBinding *theBinding;
+
+  theBinding = [bindings objectForKey: targetKey];
+  info = theBinding->info;
+  object = [info objectForKey: NSObservedObjectKey];
+  keyPath = [info objectForKey: NSObservedKeyPathKey];
+  options = [info objectForKey: NSOptionsKey];
+
+  target = [object valueForKeyPath: keyPath];
+  selector = NSSelectorFromString([options objectForKey: 
+      NSSelectorNameBindingOption]);
+  if (target == nil || selector == NULL) return;
+
+  invocation = [NSInvocation invocationWithMethodSignature:
+    [target methodSignatureForSelector: selector]];
+  [invocation setSelector: selector];
+
+  bindingName = argumentKey;
+  while ((theBinding = [bindings objectForKey: bindingName]))
+    {
+      info = theBinding->info;
+      object = [info objectForKey: NSObservedObjectKey];
+      keyPath = [info objectForKey: NSObservedKeyPathKey];
+      if ((object = [object valueForKeyPath: keyPath]))
+        {
+          [invocation setArgument: object atIndex: ++count];
+        }
+      bindingName = [NSString stringWithFormat: @"%@%i", argumentKey, count];
+    }
+  [invocation invoke];
+}
+
+void GSBindingLock()
+{
+  [bindingLock lock];
+}
+
+void GSBindingReleaseLock()
+{
+  [bindingLock unlock];
+}
+
+NSMutableDictionary *GSBindingListForObject(id object)
+{
+  NSMutableDictionary *list;
+
+  if (!objectTable)
+    return nil;
+
+  list = (NSMutableDictionary *)NSMapGet(objectTable, (void *)object);
+  if (list == nil)
+    {
+      list = [NSMutableDictionary new];
+      NSMapInsert(objectTable, (void *)object, (void *)list);
+    }
+  return list;
+}
+
+NSArray *GSBindingExposeMultipleValueBindings(
+    NSArray *bindingNames,
+    NSMutableDictionary *bindingList)
+{
+  NSEnumerator *nameEnum;
+  NSString *name;
+  NSString *numberedName;
+  NSMutableArray *additionalBindings;
+  int count;
+
+  additionalBindings = [NSMutableArray array];
+  nameEnum = [bindingNames objectEnumerator];
+  while ((name = [nameEnum nextObject]))
+    {
+      count = 1;
+      numberedName = name;
+      while ([bindingList objectForKey: numberedName] != nil)
+        {
+          numberedName = [NSString stringWithFormat: @"%@%i", name, ++count];
+          [additionalBindings addObject: numberedName];
+        }
+    }
+  return additionalBindings;
+}
+
+
+NSArray *GSBindingExposePatternBindings(
+    NSArray *bindingNames,
+    NSMutableDictionary *bindingList)
+{
+  NSEnumerator *nameEnum;
+  NSString *name;
+  NSString *numberedName;
+  NSMutableArray *additionalBindings;
+  int count;
+
+  additionalBindings = [NSMutableArray array];
+  nameEnum = [bindingNames objectEnumerator];
+  while ((name = [nameEnum nextObject]))
+    {
+      count = 1;
+      numberedName = [NSString stringWithFormat:@"%@1", name];
+      while ([bindingList objectForKey: numberedName] != nil)
+        {
+          numberedName = [NSString stringWithFormat:@"%@%i", name, ++count];
+          [additionalBindings addObject: numberedName];
+        }
+    }
+  return additionalBindings;
+}
+
 id GSBindingReverseTransformedValue(id value, NSDictionary *options)
 {
   NSValueTransformer *valueTransformer;

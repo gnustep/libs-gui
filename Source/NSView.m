@@ -41,7 +41,6 @@
 #include <Foundation/NSCalendarDate.h>
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSKeyedArchiver.h>
-#include <Foundation/NSKeyValueObserving.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSThread.h>
 #include <Foundation/NSLock.h>
@@ -511,7 +510,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   NSView	*tmp;
   unsigned	count;
 
-  GSBindingUnbindAll(self);
+  // Remove all key value bindings for this view.
+  [GSKeyValueBinding unbindAllForObject: self];
 
   while ([_sub_views count] > 0)
     {
@@ -4728,67 +4728,26 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 }
 
 - (void) bind: (NSString *)binding
-     toObject: (id)object
+     toObject: (id)anObject
   withKeyPath: (NSString *)keyPath
       options: (NSDictionary *)options
 {
-  NSMutableDictionary *bindings;
-  NSDictionary *info;
-  BOOL hidden;
-
   if ([binding hasPrefix: NSHiddenBinding])
     {
       [self unbind: binding];
-
-      [object addObserver: self
-              forKeyPath: keyPath
-              options: 0
-              context: NSHiddenBinding];
-      info = [NSDictionary dictionaryWithObjectsAndKeys:
-        object, NSObservedObjectKey,
-        keyPath, NSObservedKeyPathKey,
-        options, NSOptionsKey,
-        nil];
-      GSBindingLock();
-      bindings = GSBindingListForObject(self);
-      [bindings setValue: info forKey: binding];
-      hidden = GSBindingResolveMultipleValueBool(NSHiddenBinding, bindings,
-          GSBindingOperationOr);
-      GSBindingReleaseLock();
-      [self setHidden: hidden];
+      [[GSKeyValueOrBinding alloc] initWithBinding: NSHiddenBinding 
+                                   withName: binding 
+                                   toObject: anObject
+                                   withKeyPath: keyPath
+                                   options: options
+                                   fromObject: self];
     }
   else
     {
       [super bind: binding
-             toObject: object
+             toObject: anObject
              withKeyPath: keyPath
              options: options];
-    }
-}
-
-- (void) observeValueForKeyPath: (NSString *)keyPath
-                       ofObject: (id)object
-                         change: (NSDictionary *)change
-                        context: (void *)context
-{
-  BOOL hidden;
-  NSDictionary * bindings;
-
-  if (context == NSHiddenBinding)
-    {
-      GSBindingLock();
-      bindings = GSBindingListForObject(self);
-      hidden = GSBindingResolveMultipleValueBool(NSHiddenBinding, bindings,
-          GSBindingOperationOr);
-      GSBindingReleaseLock();
-      [self setHidden: hidden];
-    }
-  else
-    {
-      [super observeValueForKeyPath: keyPath
-                           ofObject: object
-                             change: change
-                            context: context];
     }
 }
 

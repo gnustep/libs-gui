@@ -27,51 +27,44 @@
 #ifndef _GS_BINDING_HELPER_H
 #define _GS_BINDING_HELPER_H
 
+#include <Foundation/NSObject.h>
+
 @class NSString;
 @class NSDictionary;
 @class NSMutableDictionary;
 @class NSArray;
 
-typedef enum {
-  GSBindingOperationAnd = 0,
-  GSBindingOperationOr
-} GSBindingOperationKind;
+@interface GSKeyValueBinding : NSObject
+{
+@public
+  NSDictionary *info;
+  id src;
+}
 
-//Obtain a lock 
-void GSBindingLock();
++ (void) exposeBinding: (NSString *)binding forClass: (Class)clazz;
++ (NSArray *) exposedBindingsForClass: (Class)clazz;
++ (NSDictionary *) infoForBinding: (NSString *)binding forObject: (id)anObject;
++ (void) unbind: (NSString *)binding  forObject: (id)anObject;
++ (void) unbindAllForObject: (id)anObject;
 
-//Releases the lock
-void GSBindingReleaseLock();
-
-
-//Get the mutable list of bindings for an object. You must obtain a lock
-//with GSBindingLock() before calling this function and release the lock with
-//GSBindingReleaseLock() when done with the dictionary.
-NSMutableDictionary *GSBindingListForObject(id object);
-
-//TODO: document
-BOOL GSBindingResolveMultipleValueBool(NSString *key, NSDictionary *bindings,
-    GSBindingOperationKind operationKind);
-
-//TODO: document
-void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
-    NSDictionary *bindings);
-
-
-NSArray *GSBindingExposeMultipleValueBindings(
-    NSArray *bindingNames,
-    NSMutableDictionary *bindingList);
-
-NSArray *GSBindingExposePatternBindings(
-    NSArray *bindingNames,
-    NSMutableDictionary *bindingList);
-
-void GSBindingUnbindAll(id object);
-
+- (id) initWithBinding: (NSString *)binding 
+              withName: (NSString *)name
+              toObject: (id)dest
+           withKeyPath: (NSString *)keyPath
+               options: (NSDictionary *)options
+            fromObject: (id)source;
+- (void) setValueFor: (NSString *)binding;
 /* Transforms the value with a value transformer, if specified and available,
  * and takes care of any placeholders
  */
-id GSBindingTransformedValue(id value, NSDictionary *options);
-id GSBindingReverseTransformedValue(id value, NSDictionary *options);
+- (id) transformValue: (id)value withOptions: (NSDictionary *)options;
+
+@end
+
+@interface GSKeyValueOrBinding : GSKeyValueBinding 
+@end
+
+@interface GSKeyValueAndBinding : GSKeyValueBinding 
+@end
 
 #endif //_GS_BINDING_HELPER_H

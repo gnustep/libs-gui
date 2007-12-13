@@ -36,7 +36,6 @@
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSValue.h>
-#include <Foundation/NSKeyValueObserving.h>
 
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSCursor.h"
@@ -753,96 +752,36 @@ static Class textFieldCellClass;
  */
 
 - (void) bind: (NSString *)binding
-     toObject: (id)object
+     toObject: (id)anObject
   withKeyPath: (NSString *)keyPath
       options: (NSDictionary *)options
 {
-  NSMutableDictionary *bindings;
-  NSDictionary *info;
-  BOOL bVal;
-
   if ([binding hasPrefix: NSEditableBinding])
     {
       [self unbind: binding];
-
-      [object addObserver: self
-               forKeyPath: keyPath
-                  options: 0
-                  context: NSEditableBinding];
-      info = [NSDictionary dictionaryWithObjectsAndKeys:
-        object, NSObservedObjectKey,
-        keyPath, NSObservedKeyPathKey,
-        options, NSOptionsKey,
-        nil];
-      GSBindingLock();
-      bindings = GSBindingListForObject(self);
-      [bindings setValue: info forKey: binding];
-      bVal = GSBindingResolveMultipleValueBool(NSHiddenBinding, bindings,
-          GSBindingOperationAnd);
-      GSBindingReleaseLock();
-      [self setEditable: bVal];
+      [[GSKeyValueAndBinding alloc] initWithBinding: NSEditableBinding 
+                                    withName: binding 
+                                    toObject: anObject
+                                    withKeyPath: keyPath
+                                    options: options
+                                    fromObject: self];
     }
   else if ([binding hasPrefix: NSEnabledBinding])
     {
-      [object addObserver: self
-               forKeyPath: keyPath
-                  options: 0
-                  context: NSEnabledBinding];
-      info = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-        object, NSObservedObjectKey,
-        keyPath, NSObservedKeyPathKey,
-        options, NSOptionsKey,
-        nil];
       [self unbind: binding];
-      GSBindingLock();
-      bindings = GSBindingListForObject(self);
-      [bindings setValue: info forKey: binding];
-      bVal = GSBindingResolveMultipleValueBool(NSHiddenBinding, bindings,
-          GSBindingOperationAnd);
-      GSBindingReleaseLock();
-      [self setEnabled: bVal];
+      [[GSKeyValueAndBinding alloc] initWithBinding: NSEnabledBinding 
+                                    withName: binding 
+                                    toObject: anObject
+                                    withKeyPath: keyPath
+                                    options: options
+                                    fromObject: self];
     }
   else
     {
       [super bind: binding
-         toObject: object
+         toObject: anObject
       withKeyPath: keyPath
           options: options];
-    }
-}
-
-- (void) observeValueForKeyPath: (NSString *)keyPath
-                       ofObject: (id)object
-                         change: (NSDictionary *)change
-                        context: (void *)context
-{
-  BOOL bVal;
-  NSDictionary *bindings;
-
-  if (context == NSEditableBinding)
-    {
-      GSBindingLock();
-      bindings = GSBindingListForObject(self);
-      bVal = GSBindingResolveMultipleValueBool(NSEditableBinding, bindings,
-          GSBindingOperationAnd);
-      GSBindingReleaseLock();
-      [self setEditable: bVal];
-    }
-  else if (context == NSEnabledBinding)
-    {
-      GSBindingLock();
-      bindings = GSBindingListForObject(self);
-      bVal = GSBindingResolveMultipleValueBool(NSEnabledBinding, bindings,
-          GSBindingOperationAnd);
-      GSBindingReleaseLock();
-      [self setEnabled: bVal];
-    }
-  else
-    {
-      [super observeValueForKeyPath: keyPath
-                           ofObject: object
-                             change: change
-                            context: context];
     }
 }
 

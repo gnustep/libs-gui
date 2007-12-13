@@ -1,3 +1,10 @@
+2007-12-13 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSBindingHelpers.h,
+	* Source/NSKeyValueBinding.m: Rewrote KVB to use separate binding class.
+	* Source/NSTextField.m,
+	* Source/NSView.m: Use it here.
+
 2007-12-12 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSNibBindingConnector.m (-establishConnection): Swap
