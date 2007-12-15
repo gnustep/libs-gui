@@ -1,3 +1,10 @@
+2007-12-15 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextField.m: Move some KVB to NSControl, add binding
+	for text colour.
+	* Source/NSControl.m: Add some bindings from NSTextField plus
+	NSValueBinding. 
+
 2007-12-13 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSBindingHelpers.h,

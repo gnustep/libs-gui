@@ -39,9 +39,11 @@
 #include "AppKit/NSControl.h"
 #include "AppKit/NSColor.h"
 #include "AppKit/NSEvent.h"
+#include "AppKit/NSKeyValueBinding.h"
 #include "AppKit/NSTextStorage.h"
 #include "AppKit/NSTextView.h"
 #include "AppKit/NSWindow.h"
+#include "GSBindingHelpers.h"
 
 /*
  * Class variables
@@ -69,7 +71,13 @@ static NSNotificationCenter *nc;
       actionCellClass = [NSActionCell class];
       // Cache the notifiaction centre for editing notifications
       nc = [NSNotificationCenter defaultCenter];
-    }
+ 
+     // expose bindings
+      [self exposeBinding: NSValueBinding];
+      [self exposeBinding: NSEnabledBinding];
+      [self exposeBinding: NSAlignmentBinding];
+      [self exposeBinding: NSFontBinding];
+     }
 }
 
 /**<p> Returns the cell Class used by NSControl. Used by subclasses.</p>
@@ -957,6 +965,40 @@ static NSNotificationCenter *nc;
     }
 
   return self;
+}
+
+- (void) bind: (NSString *)binding
+     toObject: (id)anObject
+  withKeyPath: (NSString *)keyPath
+      options: (NSDictionary *)options
+{
+  if ([binding isEqual: NSValueBinding])
+    {
+      [self unbind: binding];
+      [[GSKeyValueOrBinding alloc] initWithBinding: @"objectValue"
+                                   withName: NSValueBinding
+                                   toObject: anObject
+                                   withKeyPath: keyPath
+                                   options: options
+                                   fromObject: self];
+    }
+  else if ([binding hasPrefix: NSEnabledBinding])
+    {
+      [self unbind: binding];
+      [[GSKeyValueAndBinding alloc] initWithBinding: NSEnabledBinding 
+                                    withName: binding 
+                                    toObject: anObject
+                                    withKeyPath: keyPath
+                                    options: options
+                                    fromObject: self];
+    }
+  else
+    {
+      [super bind: binding
+             toObject: anObject
+             withKeyPath: keyPath
+             options: options];
+    }
 }
 
 @end

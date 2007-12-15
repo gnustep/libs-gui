@@ -68,9 +68,7 @@ static Class textFieldCellClass;
       nc = [NSNotificationCenter defaultCenter];
 
       [self exposeBinding: NSEditableBinding];
-      [self exposeBinding: NSEnabledBinding];
-      [self exposeBinding: NSAlignmentBinding];
-      [self exposeBinding: NSFontBinding];
+      [self exposeBinding: NSTextColorBinding];
     }
 }
 
@@ -760,16 +758,6 @@ static Class textFieldCellClass;
     {
       [self unbind: binding];
       [[GSKeyValueAndBinding alloc] initWithBinding: NSEditableBinding 
-                                    withName: binding 
-                                    toObject: anObject
-                                    withKeyPath: keyPath
-                                    options: options
-                                    fromObject: self];
-    }
-  else if ([binding hasPrefix: NSEnabledBinding])
-    {
-      [self unbind: binding];
-      [[GSKeyValueAndBinding alloc] initWithBinding: NSEnabledBinding 
                                     withName: binding 
                                     toObject: anObject
                                     withKeyPath: keyPath
