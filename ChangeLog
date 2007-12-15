@@ -1,5 +1,10 @@
 2007-12-15 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSControl.m (-bind:...options:): Correct value binding.
+	* Source/NSImage.m (+imageNamed:): Don't release, autorelease the image.
+
+2007-12-15 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSTextField.m: Move some KVB to NSControl, add binding
 	for text colour.
 	* Source/NSControl.m: Add some bindings from NSTextField plus

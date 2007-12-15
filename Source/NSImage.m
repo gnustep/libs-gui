@@ -288,7 +288,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 	  if (image != nil)
 	    {
 	      [image setName: aName];
-	      RELEASE(image);		// Retained in dictionary.
+	      AUTORELEASE(image);
 	      image->_flags.archiveByName = YES;
 	    }
 	  return image;

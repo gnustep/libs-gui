@@ -975,12 +975,14 @@ static NSNotificationCenter *nc;
   if ([binding isEqual: NSValueBinding])
     {
       [self unbind: binding];
-      [[GSKeyValueOrBinding alloc] initWithBinding: @"objectValue"
-                                   withName: NSValueBinding
-                                   toObject: anObject
-                                   withKeyPath: keyPath
-                                   options: options
-                                   fromObject: self];
+      // FIXME: We could also do the mapping via 
+      // setKeys:triggerChangeNotificationsForDependentKey:
+      [[GSKeyValueBinding alloc] initWithBinding: @"objectValue"
+                                 withName: NSValueBinding
+                                 toObject: anObject
+                                 withKeyPath: keyPath
+                                 options: options
+                                 fromObject: self];
     }
   else if ([binding hasPrefix: NSEnabledBinding])
     {
