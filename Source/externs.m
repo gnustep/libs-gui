@@ -632,9 +632,9 @@ NSString *NSToolTipBinding = @"toolTip";
 NSString *NSValueBinding = @"value";
 
 // FIXME: Need to defined!
-id NSMultipleValuesMarker = nil;
-id NSNoSelectionMarker = nil;
-id NSNotApplicableMarker = nil;
+id NSMultipleValuesMarker = @"NSMultipleValuesMarker";
+id NSNoSelectionMarker = @"NSNoSelectionMarker";
+id NSNotApplicableMarker = @"NSNotApplicableMarker";
 
 
 extern void __objc_gui_force_linking (void);

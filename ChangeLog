@@ -1,3 +1,9 @@
+2007-12-17 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableView.m (-setDataSource:): Make the data source
+	method tableView:objectValueForTableColumn:row: optional.
+	* Source/externs.m: Define some arbitray values for KVB markers.
+
 2007-12-15 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSControl.m (-bind:...options:): Correct value binding.

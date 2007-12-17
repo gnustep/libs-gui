@@ -2273,11 +2273,12 @@ static void computeNewSelection
   
   if (anObject && [anObject respondsToSelector: sel_b] == NO) 
     {
+/* This method isn't required.
       [NSException raise: NSInternalInconsistencyException 
 		   format: @"Data Source doesn't respond to "
 		   @"tableView:objectValueForTableColumn:row:"];
+*/  
     }
-  
   
   _dataSource_editable = [anObject respondsToSelector: sel_c];
 
