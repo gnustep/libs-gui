@@ -446,6 +446,7 @@ ADDITIONAL_LIB_DIRS="$ADDITIONAL_LIB_DIRS $GRAPHIC_LFLAGS"
 
 AC_SUBST(ADDITIONAL_LIB_DIRS)
 AC_SUBST(ADDITIONAL_INCLUDE_DIRS)
+AC_SUBST(cross_compiling)
 
 #--------------------------------------------------------------------
 # Configure
