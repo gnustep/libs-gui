@@ -56,18 +56,16 @@ int
 main(int argc, char** argv, char **env_c)
 {
   CREATE_AUTORELEASE_POOL(pool);
-  NSEnumerator *argEnumerator = nil;
-  NSWorkspace *workspace = nil;
+  NSEnumerator  *argEnumerator = nil;
+  NSWorkspace   *workspace = nil;
   NSFileManager *fm = nil;
-  NSString *arg = nil;
-  NSString 
-    *editor = nil,
-    *terminal = nil;
-  NSString 
-    *application = nil, 
-    *filetoopen = nil,
-    *filetoprint = nil,
-    *nxhost = nil;
+  NSString      *arg = nil;
+  NSString      *editor = nil;
+  NSString      *terminal = nil;
+  NSString      *application = nil;
+  NSString      *filetoopen = nil;
+  NSString      *filetoprint = nil;
+  NSString      *nxhost = nil;
 
 #ifdef GS_PASS_ARGUMENTS
   [NSProcessInfo initializeWithArguments:argv count:argc environment:env_c];
@@ -90,7 +88,9 @@ main(int argc, char** argv, char **env_c)
 
   if (application)
     {
-      // Don't start the application itself but use it for file opening. 
+      /* Start the application now,
+       * later on we will use it for file opening. 
+       */
       [workspace launchApplication: application];
     }
   
@@ -116,12 +116,13 @@ main(int argc, char** argv, char **env_c)
     {
       NSFileHandle	*fh = [NSFileHandle fileHandleWithStandardInput];
       NSData		*data = [fh readDataToEndOfFile];
-      NSString		*tempFile = [NSTemporaryDirectory()
-	stringByAppendingPathComponent: @"openfiletmp"];
-      NSNumber		*processId = [NSNumber numberWithInt:
-	[[NSProcessInfo processInfo] processIdentifier]];
+      NSString		*tempFile;
+      int		processId;
 
-      tempFile = [tempFile stringByAppendingString: [processId stringValue]];
+      tempFile = NSTemporaryDirectory();
+      tempFile = [tempFile stringByAppendingPathComponent: @"openfiletmp"];
+      processId = [[NSProcessInfo processInfo] processIdentifier];
+      tempFile = [tempFile stringByAppendingFormat: @"%d", processId];
       tempFile = [tempFile stringByAppendingString: @".txt"];
       [data writeToFile: tempFile atomically: YES];
       [workspace openFile: tempFile withApplication: editor];      
@@ -132,9 +133,9 @@ main(int argc, char** argv, char **env_c)
     {
       NSString *ext = [arg pathExtension];
       
-      if ([arg isEqualToString: @"-a"] || 
-	  [arg isEqualToString: @"-o"] || 
-	  [arg isEqualToString: @"-NXHost"])
+      if ([arg isEqualToString: @"-a"]
+        || [arg isEqualToString: @"-o"]
+        || [arg isEqualToString: @"-NXHost"])
 	{
 	  // skip since this is handled above...
 	  arg = [argEnumerator nextObject];

@@ -1,3 +1,10 @@
+2007-12-19 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Tools/gopen.m: slight tidyup, improve comments,no functional changes.
+	* Documentation/gopen.1: correct the derscription of the -a option to
+	say that this opens the specified application when used without a
+	file to open.
+
 2007-12-17  Adam Fedor  <fedor@gnu.org>
 
 	* Tools/GNUmakefile, configure.ac: Don't try to run make_services if
