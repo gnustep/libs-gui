@@ -1,3 +1,10 @@
+2007-12-22 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSView.m (-visibleRect:, -setHidden:, -hitTest:): Full
+	support for hidding. 
+	* Source/NSWindow.m (-_checkCursorRectangles:forEvent:,
+	-_checkTrackingRectangles:forEvent:): Ignore hidden views.
+
 2007-12-19 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Tools/gopen.m: slight tidyup, improve comments,no functional changes.

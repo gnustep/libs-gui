@@ -3302,7 +3302,10 @@ resetCursorRectsForView(NSView *theView)
 
           [sb getObjects: subs];
           for (i = 0; i < count; ++i)
-            (*ctImp)(self, ctSel, subs[i], theEvent);
+            {
+              if (![subs[i] isHidden])
+                (*ctImp)(self, ctSel, subs[i], theEvent);
+            }
         }
     }
 }
@@ -3389,7 +3392,10 @@ resetCursorRectsForView(NSView *theView)
 
           [sb getObjects: subs];
           for (i = 0; i < count; ++i)
-            (*ccImp)(self, ccSel, subs[i], theEvent);
+            {
+              if (![subs[i] isHidden])
+                (*ccImp)(self, ccSel, subs[i], theEvent);
+            }
         }
     }
 }

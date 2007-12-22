@@ -2466,6 +2466,11 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
 
 - (NSRect) visibleRect
 {
+  if ([self isHiddenOrHasHiddenAncestor])
+    {
+      return NSZeroRect;
+    }
+
   if (_coordinates_valid == NO)
     {
       [self _rebuildCoordinates];
@@ -2700,7 +2705,48 @@ in the main thread.
  */
 - (void) setHidden: (BOOL)flag
 {
+  id view;
+
+  if (_is_hidden == flag)
+      return;
+
   _is_hidden = flag;
+
+  if (_is_hidden)
+    {
+      for (view = [_window firstResponder];
+           view != nil && [view respondsToSelector: @selector(superview)];
+           view = [view superview])
+        {
+          if (view == self)
+            {
+              [_window makeFirstResponder: [self nextValidKeyView]];
+              break;
+            }
+        }
+      if (_rFlags.has_draginfo)
+        {
+          if (_window != nil)
+            {
+              NSArray *t = GSGetDragTypes(self);
+              
+              [GSDisplayServer removeDragTypes: t fromWindow: _window];
+            }
+        }
+    }
+  else
+    {
+      if (_rFlags.has_draginfo)
+        {
+          if (_window != nil)
+            {
+              NSArray *t = GSGetDragTypes(self);
+              
+              [GSDisplayServer addDragTypes: t toWindow: _window];
+            }
+        }
+    }
+  [self setNeedsDisplay: YES];
 }
 
 - (BOOL) isHidden
@@ -3134,13 +3180,18 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   ie. if we're the top-level view in a window.
   */
 
+  if ([self isHidden])
+    {
+      return nil;
+    }
+
   if (_is_rotated_or_scaled_from_base)
     {
       p = [self convertPoint: aPoint fromView: _super_view];
       if (!NSPointInRect (p, _bounds))
-	{
-	  return nil;
-	}
+        {
+          return nil;
+        }
     }
   else if (_super_view && ![_super_view mouse: aPoint inRect: _frame])
     {
@@ -3155,19 +3206,19 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     {
       count = [_sub_views count];
       if (count > 0)
-	{
-	  NSView	*array[count];
+        {
+          NSView	*array[count];
 
-	  [_sub_views getObjects: array];
-
-	  while (count > 0)
-	    {
-	      w = array[--count];
-	      v = [w hitTest: p];
-	      if (v)
-		break;
-	    }
-	}
+          [_sub_views getObjects: array];
+          
+          while (count > 0)
+            {
+              w = array[--count];
+              v = [w hitTest: p];
+              if (v)
+                break;
+            }
+        }
     }
   /*
    * mouse is either in the subview or within self
