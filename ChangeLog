@@ -1,3 +1,8 @@
+2007-12-23 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenuItem.m: Add KVB for enable.
+	* Source/NSPopUpButton.m: Add KVB for selectedIndex.
+
 2007-12-22 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSView.m (-visibleRect:, -setHidden:, -hitTest:): Full

@@ -34,11 +34,13 @@
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
 #include <GNUstepBase/GSCategories.h>
+#include "AppKit/NSCell.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSKeyValueBinding.h"
 #include "AppKit/NSMenuItem.h"
 #include "AppKit/NSMenu.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSCell.h"
+#include "GSBindingHelpers.h"
 
 static BOOL usesUserKeyEquivalents = NO;
 static Class imageClass;
@@ -76,6 +78,8 @@ static Class imageClass;
     {
       [self setVersion: 4];
       imageClass = [NSImage class];
+
+      [self exposeBinding: NSEnabledBinding];
     }
 }
 
@@ -103,6 +107,9 @@ static Class imageClass;
 
 - (void) dealloc
 {
+  // Remove all key value bindings for this view.
+  [GSKeyValueBinding unbindAllForObject: self];
+
   TEST_RELEASE(_title);
   TEST_RELEASE(_keyEquivalent);
   TEST_RELEASE(_image);
@@ -646,6 +653,30 @@ static Class imageClass;
     }
 
   return self;
+}
+
+- (void) bind: (NSString *)binding
+     toObject: (id)anObject
+  withKeyPath: (NSString *)keyPath
+      options: (NSDictionary *)options
+{
+  if ([binding hasPrefix: NSEnabledBinding])
+    {
+      [self unbind: binding];
+      [[GSKeyValueAndBinding alloc] initWithBinding: NSEnabledBinding 
+                                    withName: binding 
+                                    toObject: anObject
+                                    withKeyPath: keyPath
+                                    options: options
+                                    fromObject: self];
+    }
+  else
+    {
+      [super bind: binding
+             toObject: anObject
+             withKeyPath: keyPath
+             options: options];
+    }
 }
 
 @end

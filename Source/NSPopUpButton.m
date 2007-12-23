@@ -29,8 +29,10 @@
 */ 
 
 #include <Foundation/Foundation.h>
+#include <Foundation/NSKeyValueObserving.h>
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSEvent.h"
+#include "AppKit/NSKeyValueBinding.h"
 #include "AppKit/NSPopUpButton.h"
 #include "AppKit/NSPopUpButtonCell.h"
 #include "AppKit/NSMenu.h"
@@ -58,6 +60,8 @@ Class _nspopupbuttonCellClass = 0;
       // Initial version
       [self setVersion: 1];
       [self setCellClass: [NSPopUpButtonCell class]];
+
+      [self exposeBinding: NSSelectedIndexBinding];
     } 
 }
 
@@ -249,7 +253,9 @@ this to return nil to indicate that we have no context menu.
 
 - (void) selectItem: (id <NSMenuItem>)anObject
 {
+  [self willChangeValueForKey: NSSelectedIndexBinding];
   [_cell selectItem: anObject];
+  [self didChangeValueForKey: NSSelectedIndexBinding];
   [self synchronizeTitleAndSelectedItem];
 }
 
@@ -259,7 +265,9 @@ this to return nil to indicate that we have no context menu.
  */
 - (void) selectItemAtIndex: (int)index
 {
+  [self willChangeValueForKey: NSSelectedIndexBinding];
   [_cell selectItemAtIndex: index];
+  [self didChangeValueForKey: NSSelectedIndexBinding];
   [self synchronizeTitleAndSelectedItem];
 }
 
@@ -270,7 +278,9 @@ this to return nil to indicate that we have no context menu.
  */
 - (void) selectItemWithTitle: (NSString*)title
 {
+  [self willChangeValueForKey: NSSelectedIndexBinding];
   [_cell selectItemWithTitle: title];
+  [self didChangeValueForKey: NSSelectedIndexBinding];
   [self synchronizeTitleAndSelectedItem];
 }
 
@@ -515,6 +525,30 @@ this to return nil to indicate that we have no context menu.
     }
   
   [super keyDown: theEvent];
+}
+
+- (void) setValue: (id)anObject forKey: (NSString*)aKey
+{
+  if ([aKey isEqual: NSSelectedIndexBinding])
+    {
+      [self selectItemAtIndex: [anObject intValue]];
+    }
+  else
+    {
+      [super setValue: anObject forKey: aKey];
+    }
+}
+
+- (id) valueForKey: (NSString*)aKey
+{
+  if ([aKey isEqual: NSSelectedIndexBinding])
+    {
+      return [NSNumber numberWithInt: [self indexOfSelectedItem]];
+    }
+  else
+    {
+      return [super valueForKey: aKey];
+    }
 }
 
 @end
