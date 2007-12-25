@@ -185,7 +185,7 @@ new_label (NSString *value)
   NSTextField *urlLabel = nil;
   NSTextField *copyrightLabel;
   NSTextField *copyrightDescriptionLabel = nil;
-  NSTextField *themeLabel = nil;
+  NSButton    *themeLabel = nil;
   NSFont      *smallFont;
 
   /* Minimum size we use for the panel */
@@ -407,8 +407,13 @@ new_label (NSString *value)
 
   theme = [NSString stringWithFormat: @"%@: %@",
     _(@"Current theme"), [[GSTheme theme] name]];
-  themeLabel = new_label (theme);
+  themeLabel = AUTORELEASE([NSButton new]);
+  [themeLabel setStringValue: theme];
+  [themeLabel setBordered: NO];
+  [themeLabel setAlignment: NSLeftTextAlignment];
   [themeLabel setFont: smallFont];
+  [themeLabel setButtonType: NSMomentaryLightButton];
+  [themeLabel setFocusRingType: NSFocusRingTypeNone];
   [themeLabel sizeToFit];
 
   /*
@@ -615,11 +620,9 @@ new_label (NSString *value)
   f.origin.y = tmp_b - 25 - f.size.height;
   tmp_b = f.origin.y;
   [cv addSubview: themeLabel];
-  [themeLabel setEnabled: YES];
   [themeLabel setFrame: f];
   [themeLabel setTarget: [GSTheme class]];
   [themeLabel setAction: @selector(orderFrontSharedThemePanel:)];
-  [themeLabel sendActionOn: NSLeftMouseUpMask];
 
   [self center];
   return self;
