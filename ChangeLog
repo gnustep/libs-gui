@@ -1,3 +1,8 @@
+2007-12-25 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSMenu.h:
+	* Source/NSMenu.m: Add MacOSX methods and delegate ivar.
+
 2007-12-23 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenuItem.m: Add KVB for enable.
