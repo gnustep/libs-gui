@@ -1,3 +1,40 @@
+2007-11-05 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSFont.m (-initWithName:matrix:fix:screenFont:role:): Add
+	fallback for missing standard fonts.
+	* Backport from trunk.
+
+2007-11-03 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSControl.m,
+	* Source/NSMenuItem.m (-initWithCoder:, -encodeWithCoder:): Better
+	support for keyed encoding (Tag, separator,...).
+	* Backport from trunk.
+
+2007-11-01 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBrowser.m (+initialize): Create titleCell here to have
+	it available for browsers loaded from Gorm files.
+	* Source/NSBrowser.m (GSBrowserTitleCell): Add method
+	drawingRectForBounds: and correct drawWithFrame:inView:.
+	* Source/NSBrowser.m (-displayAllColumns, -displayColumn:): Mark
+	for redraw. 
+	* Backport from trunk.
+	
+2007-11-01 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableView.m (-draggingUpdated:): Use
+	currentDropOperation instead of NSTableViewDropAbove.
+	* Source/NSDocument.m (-windowForSheet): Return nil instead of
+	mainWindow, when there is no associated window.
+	Patches by Wolfgang Lux <wolfgang.lux@gmail.com>. 
+	* Backport from trunk.
+
+2007-10-30  Adam Fedor  <fedor@gnu.org>
+
+        * gnustep-gui.spec.in: Change Copyright to License.
+	* Backport from trunk.
+
 2007-10-29 Fred Kiefer <FredKiefer@gmx.de>
 
 	* COPYING: Add GPL file.

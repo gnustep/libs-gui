@@ -352,7 +352,7 @@ withContentsOfURL: (NSURL *)url
       return win;
     }
 
-  return [NSApp mainWindow];
+  return nil;
 }
 
 /**
