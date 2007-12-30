@@ -419,7 +419,17 @@ PSsetrgbcolor(float r, float g, float b)
   DPSsetrgbcolor(DEFCTXT, r, g, b);
 }
 
+static inline void
+PScountwindowlist(int d, int *c)
+{
+  // dummy implementation for now... GJC
+}
 
+static inline void
+PSwindowlist(int d, int c, int *array)
+{
+  // dummy implementation for now... GJC
+}
 
 /* ----------------------------------------------------------------------- */
 /* Text operations */
