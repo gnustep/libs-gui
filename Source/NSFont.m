@@ -1284,7 +1284,7 @@ static BOOL flip_hack;
       NSString *name = [aDecoder decodeObjectForKey: @"NSName"];
       float size = [aDecoder decodeFloatForKey: @"NSSize"];
       
-      RELEASE(self);
+      DESTROY(self);
       if ([aDecoder containsValueForKey: @"NSfFlags"])
         {
           int flags = [aDecoder decodeIntForKey: @"NSfFlags"];
@@ -1303,7 +1303,7 @@ static BOOL flip_hack;
             }
         }
 
-      self = [NSFont fontWithName: name size: size];
+      self = RETAIN([NSFont fontWithName: name size: size]);
       if (self == nil)
         {
           self = RETAIN([NSFont systemFontOfSize: size]);

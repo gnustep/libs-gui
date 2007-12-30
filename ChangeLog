@@ -1,3 +1,7 @@
+2007-12-30 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSFont.m (-initWithCoder:): Add missing RETAIN. 
+
 2007-12-25 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSMenu.h:
