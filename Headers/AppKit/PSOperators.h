@@ -818,4 +818,9 @@ PSWriteData(const char * buf, unsigned int count)
   DPSWriteData(DEFCTXT, buf, count);
 }
 
+static inline void
+PSWait()
+{
+  // do nothing.
+}
 #endif	

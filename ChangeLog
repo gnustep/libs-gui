@@ -1,3 +1,9 @@
+2007-12-30 12:30-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/AppKit/PSOperators.h: Added dummy PSWait method. 
+	* Source/GSNibCompatibility.m: Added warning when loading nib that has
+	nil in some keys.
+
 2007-12-30 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSFont.m (-initWithCoder:): Add missing RETAIN. 

@@ -1289,6 +1289,10 @@ static BOOL _isInInterfaceBuilder = NO;
   while ((key = [ken nextObject]) != nil && (value = [ven nextObject]) != nil)
     {
       NSMapInsert(mapTable, key, value);
+      if(value == nil)
+	{
+	  NSLog(@"==> WARNING: Value for key %@ is %@",key , value);
+	}
     }
 }
 
