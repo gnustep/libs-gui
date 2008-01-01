@@ -1,7 +1,7 @@
 1 ANNOUNCE
 **********
 
-This is version 0.13.0 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.13.1 of the GNUstep GUI library (`gnustep-gui').
 
 1.1 What is the GNUstep GUI Library?
 ====================================
@@ -27,47 +27,24 @@ systems.
 GNUstep Base Library, the TIFF Graphics library, and a back-end
 component like the GNUstep 'Back' Backend.
 
-1.2 Noteworthy changes in version `0.13.0'
+1.2 Noteworthy changes in version `0.13.1'
 ==========================================
 
-This is an unstable release. There may be backward compatibility issues
-with previous releases of the gui library.
+   * NSMenu - Added more MacOS X methods and an ivar.
 
-   * Switched to use LGPL 3 and GPL 3.
+   * Added support for hiding views.
 
-   * Added new methods from Mac OS X 10.4 for NSDragging,
-     NSFontDescriptor, NSAttributedString, NSImageView,
-     NSStringDrawing, NSParagraphStyle, NSView, NSCell, NSActionCell,
-     NSAlert, NSApplication, NSBitmapImageRep, NSBox, NSColor,
-     NSColorSpace, NSComboBox, NSComboBoxCell, NSDocumentController,
-     NSEvent, NSScreen, NSFont, NSFontManager, NSFormCell, NSForm,
-     NSWindow, NSTextField, NSTextFieldCell. Some ivar names were
-     changed also.
+   * Added Key-Value bindings implementation (NSKeyValueBinding) with
+     support in several classes (NSControl, NSTextField, NSView, etc).
 
-   * Moved Postscript printing methods from NSView to NSGraphicsContext.
+   * Added some MacOS X 10.4 methods to NSTableView.
 
-   * Rewrote the NSView drawing mechanism to always use
-     [displayRectIgnoringOpacity:inContext].
-
-   * Report more controls as being flipped. (NSTextField,
-     NSTableHeaderView, NSSlider, NSProgressIndicator, NSButton)
-     NSTabView is still missing.
-
-   * In NSAffineTransform use optimized primitive methods from base.
-
-   * Add font attribute fixing to NSAttributedString. To allow for the
-     output of glyphs not present in the current font.
-
-   * Optimized the validation of edited cells.
-
-   * Implementation of special connectors for Key-Value binding.
-
-   * Base library version 1.15.1 is required for this release
+   * Changed the NSCursor hot point to 0,0 for MacOS X compatibility.
 
 1.3 Where can you get it?  How can you compile it?
 ==================================================
 
-The gstep-gui-0.13.0.tar.gz distribution file has been placed at
+The gstep-gui-0.13.1.tar.gz distribution file has been placed at
 `ftp://ftp.gnustep.org/pub/gnustep/core'.
 
 Read the INSTALL file or the GNUstep-HOWTO for installation

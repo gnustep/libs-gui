@@ -25,6 +25,37 @@
 	Changes to error handling and key-value coding require an
 	update to at least the base library version 1.15.1.
 	</p>
+	<deflist>
+            <term>NSMenu</term>
+            <desc>
+	    Added more MacOS X methods and an ivar.
+            </desc>
+            <term>NSView</term>
+            <desc>
+	    Added support for hiding views.
+            </desc>
+            <term>Key-Value bindings</term>
+            <desc>
+	    Added Key-Value bindings implementation (NSKeyValueBinding)
+	    with support in several classes (NSControl, NSTextField, NSView,
+	    etc).
+            </desc>
+            <term>NSTableView</term>
+            <desc>
+	    Added some MacOS X 10.4 methods.
+            </desc>
+            <term>NSCursor</term>
+            <desc>
+	    Changed hot point to 0,0 for MacOS X compatibility.
+            </desc>
+	</deflist>
+      </section>
+      <section>
+      	<heading>Version 0.13.0</heading>
+	<p>This is an unstable release.
+	Changes to error handling and key-value coding require an
+	update to at least the base library version 1.15.1.
+	</p>
         	  <deflist>
             	    <term>Licence</term>
              	    <desc>
