@@ -1,5 +1,10 @@
 2008-01-03 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSStringDrawing.h: Include GSVersionMacros.h
+	before using these macros.
+
+2008-01-03 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSTextList.h,
 	* Headers/AppKit/NSTextTable.h: New files.
 	* Headers/AppKit/AppKit.h: Add these.
