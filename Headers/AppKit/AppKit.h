@@ -164,7 +164,9 @@
 #include <AppKit/NSTabViewItem.h>
 #include <AppKit/NSTextAttachment.h>
 #include <AppKit/NSTextContainer.h>
+#include <AppKit/NSTextList.h>
 #include <AppKit/NSTextStorage.h>
+#include <AppKit/NSTextTable.h>
 #include <AppKit/NSTextView.h>
 #include <AppKit/NSToolbar.h>
 #include <AppKit/NSToolbarItem.h>

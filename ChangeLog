@@ -1,3 +1,14 @@
+2008-01-03 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSTextList.h,
+	* Headers/AppKit/NSTextTable.h: New files.
+	* Headers/AppKit/AppKit.h: Add these.
+	* Source/NSTextList.m,
+	* Source/NSTextTable.m,
+	* Source/NSTextBlock.m,
+	* Source/NSTextTableBlock.m: New files
+	* Source/GNUmakefile: Add new source file.
+
 2008-01-01  Adam Fedor  <fedor@gnu.org>
 
 	* Version 0.13.1

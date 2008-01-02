@@ -162,10 +162,14 @@ NSTableHeaderCell.m \
 NSTableView.m \
 NSText.m \
 NSTextAttachment.m \
+NSTextBlock.m \
 NSTextContainer.m \
 NSTextField.m \
 NSTextFieldCell.m \
+NSTextList.m \
 NSTextStorage.m \
+NSTextTable.m \
+NSTextTableBlock.m \
 NSToolbar.m \
 NSToolbarItem.m \
 NSUserDefaultsController.m \
@@ -349,7 +353,9 @@ NSTextAttachment.h \
 NSTextContainer.h \
 NSTextField.h \
 NSTextFieldCell.h \
+NSTextList.h \
 NSTextStorage.h \
+NSTextTable.h \
 NSTextView.h \
 NSToolbar.h \
 NSToolbarItem.h \
