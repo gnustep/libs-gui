@@ -425,6 +425,32 @@ typedef struct GSHorizontalTypesetter_line_frag_s
   return YES;
 }
 
+
+- (NSRect)_getProposedRectFor: (BOOL)newParagraph
+               withLineHeight: (float) line_height 
+{
+  float hindent;
+  float tindent = [curParagraphStyle tailIndent];
+
+  if (newParagraph)
+    hindent = [curParagraphStyle firstLineHeadIndent];
+  else
+    hindent = [curParagraphStyle headIndent];
+
+  if (tindent <= 0.0)
+    { 
+      NSSize size;
+
+      size = [curTextContainer containerSize];
+      tindent = size.width + tindent;
+    }
+
+  return NSMakeRect(hindent,
+                    curPoint.y,
+                    tindent - hindent,
+                    line_height + [curParagraphStyle lineSpacing]);
+}
+
 /*
 Return values 0, 1, 2 are mostly the same as from
 -layoutGlyphsInLayoutManager:.... Additions:
@@ -475,7 +501,7 @@ Return values 0, 1, 2 are mostly the same as from
       [curLayoutManager _softInvalidateFirstGlyphInTextContainer: curTextContainer] == curGlyph)
     {
       if ([self _reuseSoftInvalidatedLayout])
-	return 4;
+        return 4;
     }
 
 
@@ -490,12 +516,11 @@ Return values 0, 1, 2 are mostly the same as from
       will be properly positioned after a trailing newline in the text.
       */
       NSRect r, r2, remain;
-      float hindent, tindent;
 
       if (!newParagraph || !curGlyph)
-	{
-	  return 2;
-	}
+        {
+          return 2;
+        }
 
       /*
       We aren't actually interested in the glyph data, but we want the
@@ -504,30 +529,23 @@ Return values 0, 1, 2 are mostly the same as from
       */
       [self _cacheMoveTo: curGlyph - 1];
 
-      hindent = [curParagraphStyle firstLineHeadIndent];
-      tindent = [curParagraphStyle tailIndent];
-      if (tindent <= 0.0)
-	tindent = [curTextContainer containerSize].width + tindent;
       line_height = [curFont defaultLineHeightForFont];
-
-      r = NSMakeRect(hindent,
-		     curPoint.y,
-		     tindent - hindent,
-		     line_height + [curParagraphStyle lineSpacing]);
+      r = [self _getProposedRectFor: newParagraph
+                 withLineHeight: line_height];
 
       r = [curTextContainer lineFragmentRectForProposedRect: r
-	    sweepDirection: NSLineSweepRight
-	    movementDirection: NSLineMoveDown
-	    remainingRect: &remain];
+                            sweepDirection: NSLineSweepRight
+                            movementDirection: NSLineMoveDown
+                            remainingRect: &remain];
 
       if (!NSIsEmptyRect(r))
-	{
-	  r2 = r;
-	  r2.size.width = 1;
-	  [curLayoutManager setExtraLineFragmentRect: r
-	    usedRect: r2
-	    textContainer: curTextContainer];
-	}
+        {
+          r2 = r;
+          r2.size.width = 1;
+          [curLayoutManager setExtraLineFragmentRect: r
+                            usedRect: r2
+                            textContainer: curTextContainer];
+        }
       return 2;
     }
 
@@ -583,22 +601,8 @@ Return values 0, 1, 2 are mostly the same as from
 
 
 restart: ;
-  {
-    float hindent, tindent = [curParagraphStyle tailIndent];
-
-    if (newParagraph)
-      hindent = [curParagraphStyle firstLineHeadIndent];
-    else
-      hindent = [curParagraphStyle headIndent];
-
-    if (tindent <= 0.0)
-      tindent = [curTextContainer containerSize].width + tindent;
-
-    remain = NSMakeRect(hindent,
-			curPoint.y,
-			tindent - hindent,
-			line_height + [curParagraphStyle lineSpacing]);
-  }
+  remain = [self _getProposedRectFor: newParagraph
+                 withLineHeight: line_height];
 
   /*
   Build a list of all line frag rects for this line.
@@ -616,7 +620,7 @@ restart: ;
 			     movementDirection: line_frags_num?NSLineDoesntMove:NSLineMoveDown
 			     remainingRect: &remain];
       if (NSEqualRects(rect, NSZeroRect))
-	break;
+        break;
 
       line_frags_num++;
       if (line_frags_num > line_frags_size)

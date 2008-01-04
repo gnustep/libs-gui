@@ -17,7 +17,7 @@
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Lesser General Public License for more details.
 
    You should have received a copy of the GNU Lesser General Public
@@ -49,31 +49,31 @@ use bounds rectangle instead of frame? */
 {
   if (_observingFrameChanges)
     {
-      id	textView;
-      NSSize	newTextViewSize;
-      NSSize	size;
-      NSSize	inset;
+      id textView;
+      NSSize newTextViewSize;
+      NSSize size;
+      NSSize inset;
 
       textView = [aNotification object];
       if (textView != _textView)
         {
-	    NSDebugLog(@"NSTextContainer got notification for wrong View %@",
-			textView);
-	    return;
-	}
+            NSDebugLog(@"NSTextContainer got notification for wrong View %@",
+                        textView);
+            return;
+        }
       newTextViewSize = [textView frame].size;
       size = _containerRect.size;
       inset = [textView textContainerInset];
 
       if (_widthTracksTextView)
-	{
-	  size.width = MAX(newTextViewSize.width - (inset.width * 2.0), 0.0);
-	}
+        {
+          size.width = MAX(newTextViewSize.width - (inset.width * 2.0), 0.0);
+        }
       if (_heightTracksTextView)
-	{
-	  size.height = MAX(newTextViewSize.height - (inset.height * 2.0),
-			    0.0);
-	}
+        {
+          size.height = MAX(newTextViewSize.height - (inset.height * 2.0),
+                            0.0);
+        }
 
       [self setContainerSize: size];
     }
@@ -111,8 +111,8 @@ use bounds rectangle instead of frame? */
     {
       NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
       [nc removeObserver: self
-	  name: NSViewFrameDidChangeNotification
-	  object: _textView];
+          name: NSViewFrameDidChangeNotification
+          object: _textView];
 
       [_textView setTextContainer: nil];
       RELEASE(_textView);
@@ -155,22 +155,22 @@ framework intact.
       [textStorage addLayoutManager: aLayoutManager];
 
       for (i = 0; i < count; i++)
-	{
-	  NSTextContainer *container;
+        {
+          NSTextContainer *container;
 
-	  container = RETAIN([textContainers objectAtIndex: i]);
-	  [oldLayoutManager removeTextContainerAtIndex: i];
-	  /* One of these calls will result in our _layoutManager being
-	  changed. */
-	  [aLayoutManager addTextContainer: container];
+          container = RETAIN([textContainers objectAtIndex: i]);
+          [oldLayoutManager removeTextContainerAtIndex: i];
+          /* One of these calls will result in our _layoutManager being
+          changed. */
+          [aLayoutManager addTextContainer: container];
 
-	  /* The textview is caching the layout manager; refresh the
-	   * cache with this do-nothing call.  */
-	  /* TODO: probably unnecessary; the call in -setLayoutManager:
-	  should be enough */
-	  [[container textView] setTextContainer: container];
-	  RELEASE(container);
-	}
+          /* The textview is caching the layout manager; refresh the
+           * cache with this do-nothing call.  */
+          /* TODO: probably unnecessary; the call in -setLayoutManager:
+          should be enough */
+          [[container textView] setTextContainer: container];
+          RELEASE(container);
+        }
       RELEASE(oldLayoutManager);
     }
 }
@@ -180,15 +180,15 @@ framework intact.
   NSNotificationCenter *nc;
 
   nc = [NSNotificationCenter defaultCenter];
-	  
+          
   if (_textView)
     {
       [_textView setTextContainer: nil];
       [nc removeObserver: self  name: NSViewFrameDidChangeNotification 
-	  object: _textView];
+          object: _textView];
       /* NB: We do not set posts frame change notifications for the
-	 text view to NO because there could be other observers for
-	 the frame change notifications. */
+         text view to NO because there could be other observers for
+         the frame change notifications. */
     }
 
   ASSIGN(_textView, aTextView);
@@ -197,13 +197,13 @@ framework intact.
     {
       [_textView setTextContainer: self];
       if (_observingFrameChanges)
-	{
-	  [_textView setPostsFrameChangedNotifications: YES];
-	  [nc addObserver: self
-	      selector: @selector(_textViewFrameChanged:)
-	      name: NSViewFrameDidChangeNotification
-	      object: _textView];
-	}
+        {
+          [_textView setPostsFrameChangedNotifications: YES];
+          [nc addObserver: self
+              selector: @selector(_textViewFrameChanged:)
+              name: NSViewFrameDidChangeNotification
+              object: _textView];
+        }
     }
 
   /* If someone's trying to set a NSTextView for us, the layout manager we
@@ -256,14 +256,14 @@ framework intact.
     {      
       [_textView setPostsFrameChangedNotifications: YES];
       [nc addObserver: self
-	  selector: @selector(_textViewFrameChanged:)
-	  name: NSViewFrameDidChangeNotification
-	  object: _textView];
+          selector: @selector(_textViewFrameChanged:)
+          name: NSViewFrameDidChangeNotification
+          object: _textView];
     }
   else
     {
       [nc removeObserver: self name: NSViewFrameDidChangeNotification 
-	  object: _textView];
+          object: _textView];
     }
 }
 
@@ -291,14 +291,14 @@ framework intact.
     {      
       [_textView setPostsFrameChangedNotifications: YES];
       [nc addObserver: self
-	  selector: @selector(_textViewFrameChanged:)
-	  name: NSViewFrameDidChangeNotification
-	  object: _textView];
+          selector: @selector(_textViewFrameChanged:)
+          name: NSViewFrameDidChangeNotification
+          object: _textView];
     }
   else
     {
       [nc removeObserver: self name: NSViewFrameDidChangeNotification 
-	  object: _textView];
+          object: _textView];
     }
 }
 
@@ -321,9 +321,9 @@ framework intact.
 }
 
 - (NSRect) lineFragmentRectForProposedRect: (NSRect)proposedRect
-			    sweepDirection: (NSLineSweepDirection)sweepDir
-			 movementDirection: (NSLineMovementDirection)moveDir
-			     remainingRect: (NSRect *)remainingRect
+                            sweepDirection: (NSLineSweepDirection)sweepDir
+                         movementDirection: (NSLineMovementDirection)moveDir
+                             remainingRect: (NSRect *)remainingRect
 {
   float minx, maxx, miny, maxy;
   float cminx, cmaxx, cminy, cmaxy;
@@ -348,66 +348,66 @@ framework intact.
   switch (moveDir)
     {
       case NSLineMoveLeft:
-	if (maxx < cminx)
-	  return NSZeroRect;
-	if (maxx > cmaxx)
-	  {
-	    minx -= maxx-cmaxx;
-	    maxx = cmaxx;
-	  }
-	break;
+        if (maxx < cminx)
+          return NSZeroRect;
+        if (maxx > cmaxx)
+          {
+            minx -= maxx-cmaxx;
+            maxx = cmaxx;
+          }
+        break;
 
       case NSLineMoveRight:
-	if (minx > cmaxx)
-	  return NSZeroRect;
-	if (minx < cminx)
-	  {
-	    maxx += cminx-minx;
-	    minx = cminx;
-	  }
-	break;
+        if (minx > cmaxx)
+          return NSZeroRect;
+        if (minx < cminx)
+          {
+            maxx += cminx-minx;
+            minx = cminx;
+          }
+        break;
 
       case NSLineMoveDown:
-	if (miny > cmaxy)
-	  return NSZeroRect;
-	if (miny < cminy)
-	  {
-	    maxy += cminy - miny;
-	    miny = cminy;
-	  }
-	break;
+        if (miny > cmaxy)
+          return NSZeroRect;
+        if (miny < cminy)
+          {
+            maxy += cminy - miny;
+            miny = cminy;
+          }
+        break;
 
       case NSLineMoveUp:
-	if (maxy < cminy)
-	  return NSZeroRect;
-	if (maxy > cmaxy)
-	  {
-	    miny -= maxy - cmaxy;
-	    maxy = cmaxy;
-	  }
-	break;
+        if (maxy < cminy)
+          return NSZeroRect;
+        if (maxy > cmaxy)
+          {
+            miny -= maxy - cmaxy;
+            maxy = cmaxy;
+          }
+        break;
 
       case NSLineDoesntMove:
-	break;
+        break;
     }
 
   switch (sweepDir)
     {
       case NSLineSweepLeft:
       case NSLineSweepRight:
-	if (minx < cminx)
-	  minx = cminx;
-	if (maxx > cmaxx)
-	  maxx = cmaxx;
-	break;
+        if (minx < cminx)
+          minx = cminx;
+        if (maxx > cmaxx)
+          maxx = cmaxx;
+        break;
 
       case NSLineSweepDown:
       case NSLineSweepUp:
-	if (miny < cminy)
-	  miny = cminy;
-	if (maxy > cmaxy)
-	  maxy = cmaxy;
-	break;
+        if (miny < cminy)
+          miny = cminy;
+        if (maxy > cmaxy)
+          maxy = cmaxy;
+        break;
     }
 
   if (minx < cminx || maxx > cmaxx ||
@@ -439,18 +439,18 @@ framework intact.
 
       if ([aDecoder containsValueForKey: @"NSWidth"])
         {
-	  size.width = [aDecoder decodeFloatForKey: @"NSWidth"];
-	}
+          size.width = [aDecoder decodeFloatForKey: @"NSWidth"];
+        }
       self = [self initWithContainerSize: size];
       if ([aDecoder containsValueForKey: @"NSTCFlags"])
         {
-	  int flags = [aDecoder decodeIntForKey: @"NSTCFlags"];
-	  
-	  // decode the flags.
-	  _widthTracksTextView = flags & 1;
-	  _heightTracksTextView = flags & 2;
-	  _observingFrameChanges = flags & 4;	  
-	}
+          int flags = [aDecoder decodeIntForKey: @"NSTCFlags"];
+          
+          // decode the flags.
+          _widthTracksTextView = flags & 1;
+          _heightTracksTextView = flags & 2;
+          _observingFrameChanges = flags & 4;          
+        }
 
       // decoding the manager adds this text container automatically...
       [aDecoder decodeObjectForKey: @"NSLayoutManager"];
@@ -469,8 +469,8 @@ framework intact.
     {
       NSSize size = _containerRect.size;
       int flags = ((_widthTracksTextView)?1:0) | 
-	((_heightTracksTextView)?2:0) |
-	((_observingFrameChanges)?4:0);
+        ((_heightTracksTextView)?2:0) |
+        ((_observingFrameChanges)?4:0);
 
       [coder encodeObject: _textView forKey: @"NSTextView"];
       [coder encodeFloat: size.width forKey: @"NSWidth"];

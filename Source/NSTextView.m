@@ -1612,13 +1612,34 @@ incorrectly. */
 {
   /* Safety call */
   [_textContainer setWidthTracksTextView: !flag];
+  if (flag)
+    {
+      NSSize size;
+      NSSize inset;
+      
+      inset = [self textContainerInset];
+      size = [_textContainer containerSize];
+      size.width = MAX(_maxSize.width - (inset.width * 2.0), 0.0);
+      [_textContainer setContainerSize: size];
+    }
 
   _tf.is_horizontally_resizable = flag;
 }
+
 - (void) setVerticallyResizable: (BOOL)flag
 {
   /* Safety call */
   [_textContainer setHeightTracksTextView: !flag];
+  if (flag)
+    {
+      NSSize size;
+      NSSize inset;
+      
+      inset = [self textContainerInset];
+      size = [_textContainer containerSize];
+      size.height = MAX(_maxSize.height - (inset.height * 2.0), 0.0);
+      [_textContainer setContainerSize: size];
+    }
 
   _tf.is_vertically_resizable = flag;
 }

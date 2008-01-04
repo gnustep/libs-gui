@@ -1574,6 +1574,11 @@ places where we switch.
 
 -(void) _doLayout
 {
+  [self _doLayoutToContainer: num_textcontainers - 1];
+}
+
+-(void) _doLayoutToGlyph: (unsigned int)glyphIndex
+{
   int i, j;
   textcontainer_t *tc;
   unsigned int next;
@@ -1587,79 +1592,155 @@ places where we switch.
   for (i = 0, tc = textcontainers; i < num_textcontainers; i++, tc++)
     {
       if (tc->complete)
-	continue;
+          continue;
 
       while (1)
-	{
-	  if (tc->num_linefrags)
-	    prev = tc->linefrags[tc->num_linefrags - 1].rect;
-	  else
-	    prev = NSZeroRect;
-	  j = [typesetter layoutGlyphsInLayoutManager: self
-			inTextContainer: tc->textContainer
-			startingAtGlyphIndex: next
-			previousLineFragmentRect: prev
-			nextGlyphIndex: &next
-			numberOfLineFragments: 0];
-	  if (j)
-	    break;
-	}
+        {
+          if (tc->num_linefrags)
+            prev = tc->linefrags[tc->num_linefrags - 1].rect;
+          else
+            prev = NSZeroRect;
+          j = [typesetter layoutGlyphsInLayoutManager: self
+                          inTextContainer: tc->textContainer
+                          startingAtGlyphIndex: next
+                          previousLineFragmentRect: prev
+                          nextGlyphIndex: &next
+                          numberOfLineFragments: 0];
+          if (j)
+            break;
+
+          if (next > glyphIndex)
+            {
+              // If all the requested work is done just leave
+              return;
+            }
+        }
       tc->complete = YES;
       tc->usedRectValid = NO;
       if (tc->num_soft)
-	{
-	  /*
-	  If there is any soft invalidated layout information left, remove
-	  it.
-	  */
-	  int k;
-	  linefrag_t *lf;
-	  for (k = tc->num_linefrags, lf = tc->linefrags + k; k < tc->num_linefrags + tc->num_soft; k++, lf++)
-	    {
-	      if (lf->points)
-		{
-		  free(lf->points);
-		  lf->points = NULL;
-		}
-	      if (lf->attachments)
-		{
-		  free(lf->attachments);
-		  lf->attachments = NULL;
-		}
-	    }
-	  tc->num_soft = 0;
-	}
+        {
+          /*
+            If there is any soft invalidated layout information left, remove
+            it.
+          */
+          int k;
+          linefrag_t *lf;
+          for (k = tc->num_linefrags, lf = tc->linefrags + k; 
+               k < tc->num_linefrags + tc->num_soft; k++, lf++)
+            {
+              if (lf->points)
+                {
+                  free(lf->points);
+                  lf->points = NULL;
+                }
+              if (lf->attachments)
+                {
+                  free(lf->attachments);
+                  lf->attachments = NULL;
+                }
+            }
+          tc->num_soft = 0;
+        }
       if (delegate_responds)
-	{
-	  [_delegate layoutManager: self
-	    didCompleteLayoutForTextContainer: tc->textContainer
-	    atEnd: j == 2];
-	  /* The call might have resulted in more text containers being
-	  added, so 'textcontainers' might have moved. */
-	  tc = textcontainers + i;
-	}
+        {
+          [_delegate layoutManager: self
+                     didCompleteLayoutForTextContainer: tc->textContainer
+                     atEnd: j == 2];
+          /* The call might have resulted in more text containers being
+             added, so 'textcontainers' might have moved. */
+          tc = textcontainers + i;
+        }
       if (j == 2)
-	{
-	  break;
-	}
+        {
+          break;
+        }
       if (i == num_textcontainers && delegate_responds)
-	{
-	  [_delegate layoutManager: self
-	    didCompleteLayoutForTextContainer: nil
-	    atEnd: NO];
-	}
+        {
+          [_delegate layoutManager: self
+                     didCompleteLayoutForTextContainer: nil
+                     atEnd: NO];
+        }
     }
-}
-
-
--(void) _doLayoutToGlyph: (unsigned int)glyphIndex
-{
-  [self _doLayout];
 }
 
 -(void) _doLayoutToContainer: (int)cindex
 {
-  [self _doLayout];
+  int i, j;
+  textcontainer_t *tc;
+  unsigned int next;
+  NSRect prev;
+  BOOL delegate_responds;
+
+  delegate_responds = [_delegate respondsToSelector:
+    @selector(layoutManager:didCompleteLayoutForTextContainer:atEnd:)];
+
+  next = layout_glyph;
+  for (i = 0, tc = textcontainers; i <= cindex; i++, tc++)
+    {
+      if (tc->complete)
+          continue;
+
+      while (1)
+        {
+          if (tc->num_linefrags)
+            prev = tc->linefrags[tc->num_linefrags - 1].rect;
+          else
+            prev = NSZeroRect;
+          j = [typesetter layoutGlyphsInLayoutManager: self
+                          inTextContainer: tc->textContainer
+                          startingAtGlyphIndex: next
+                          previousLineFragmentRect: prev
+                          nextGlyphIndex: &next
+                          numberOfLineFragments: 0];
+          if (j)
+            break;
+        }
+      tc->complete = YES;
+      tc->usedRectValid = NO;
+      if (tc->num_soft)
+        {
+          /*
+            If there is any soft invalidated layout information left, remove
+            it.
+          */
+          int k;
+          linefrag_t *lf;
+          for (k = tc->num_linefrags, lf = tc->linefrags + k; 
+               k < tc->num_linefrags + tc->num_soft; k++, lf++)
+            {
+              if (lf->points)
+                {
+                  free(lf->points);
+                  lf->points = NULL;
+                }
+              if (lf->attachments)
+                {
+                  free(lf->attachments);
+                  lf->attachments = NULL;
+                }
+            }
+          tc->num_soft = 0;
+        }
+      if (delegate_responds)
+        {
+          [_delegate layoutManager: self
+                     didCompleteLayoutForTextContainer: tc->textContainer
+                     atEnd: j == 2];
+          /* The call might have resulted in more text containers being
+             added, so 'textcontainers' might have moved. */
+          tc = textcontainers + i;
+        }
+      if (j == 2)
+        {
+          break;
+        }
+      if (i == num_textcontainers && delegate_responds)
+        {
+          [_delegate layoutManager: self
+                     didCompleteLayoutForTextContainer: nil
+                     atEnd: NO];
+        }
+    }
 }
 
 

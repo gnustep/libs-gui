@@ -1,3 +1,17 @@
+2008-01-04 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextContainer.m: Replace tabs with spaces.
+	* Source/GSHorizontalTypesetter.m
+	(-_getProposedRectFor:withLineHeight:) Extract proposed rect
+	generation into separate method.
+	* Source/GSLayoutManager.m (-_doLayoutToGlyph:,
+	_doLayoutToContainer:): Implement based on code from _doLayout.
+	* Source/GSLayoutManager.m (-_doLayout): Implement via
+	_doLayoutToContainer:. 
+	* Source/NSTextView.m (-setHorizontallyResizable:,
+	-setVerticallyResizable:): Set the width/height of the text
+	container to max size, when resizable.
+
 2008-01-03 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSStringDrawing.h: Include GSVersionMacros.h
