@@ -39,10 +39,10 @@
 @class NSNotification;
 
 enum {
-  NSDrawerClosedState,
-  NSDrawerOpeningState,
-  NSDrawerOpenState,
-  NSDrawerClosingState
+  NSDrawerClosedState  = 0,
+  NSDrawerOpeningState = 1,
+  NSDrawerOpenState    = 2,
+  NSDrawerClosingState = 3
 };
 
 @interface NSDrawer : NSResponder

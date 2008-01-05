@@ -1,3 +1,9 @@
+2008-01-05 15:25-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/AppKit/NSDrawer.h: Added new ivars.
+	* Source/NSDrawer.m: Addition implementation of NSDrawer.  Corrected
+	drag problem.  Added border.
+
 2008-01-04 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextContainer.m: Replace tabs with spaces.
