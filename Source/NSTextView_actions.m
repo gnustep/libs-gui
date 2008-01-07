@@ -1436,4 +1436,20 @@ insertion point. (see also: miswart)
   [self setRulerVisible: !_tf.is_ruler_visible];
 }
 
+- (void) outline: (id)sender
+{
+  // FIXME
+}
+
+- (void) setBaseWritingDirection: (NSWritingDirection)direction
+                           range: (NSRange)range
+{
+  // FIXME
+}
+
+- (void) toggleBaseWritingDirection: (id)sender
+{
+  // FIXME
+}
+
 @end

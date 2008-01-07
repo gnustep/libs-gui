@@ -1,3 +1,10 @@
+2008-01-07 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSTextView.h,
+	* Source/NSTextView_actions.m,
+	* Source/NSTextView.m: Add MacOSX methods and ivars.
+	* Source/externs.m: Add NSTextView notification.
+
 2008-01-05 15:25-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/AppKit/NSDrawer.h: Added new ivars.

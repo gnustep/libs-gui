@@ -371,6 +371,8 @@ NSString *NSTextViewDidChangeSelectionNotification =
 @"NSTextViewDidChangeSelectionNotification";
 NSString *NSTextViewWillChangeNotifyingTextViewNotification =
 @"NSTextViewWillChangeNotifyingTextViewNotification";
+NSString *NSTextViewDidChangeTypingAttributesNotification =
+@"NSTextViewDidChangeTypingAttributesNotification";
 
 // NSView notifications
 NSString *NSViewFocusDidChangeNotification

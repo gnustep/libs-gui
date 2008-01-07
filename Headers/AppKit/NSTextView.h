@@ -1,10 +1,10 @@
 /*                                                    -*-objc-*-
    NSTextView.h
 
-   Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2000, 2001, 2008 Free Software Foundation, Inc.
 
    Author: Fred Kiefer <FredKiefer@gmx.de>
-   Date: September 2000
+   Date: September 2000, January 2008
    Reformatted and cleaned up.
 
    Author: Nicola Pero <n.pero@mi.flashnet.it>
@@ -31,11 +31,13 @@
 
 #ifndef _GNUstep_H_NSTextView
 #define _GNUstep_H_NSTextView
+#import <GNUstepBase/GSVersionMacros.h>
 
 #include <AppKit/NSText.h>
 #include <AppKit/NSInputManager.h>
 #include <AppKit/NSDragging.h>
 #include <AppKit/NSTextAttachment.h>
+#include <AppKit/NSUserInterfaceValidation.h>
 
 @class NSTimer;
 @class NSTextContainer;
@@ -58,6 +60,24 @@ typedef enum _NSSelectionAffinity {
   NSSelectionAffinityDownstream	= 1,
 } NSSelectionAffinity;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+typedef enum _NSFindPanelAction
+{
+  NSFindPanelActionShowFindPanel = 1,
+  NSFindPanelActionNext,
+  NSFindPanelActionPrevious,
+  NSFindPanelActionReplaceAll,
+  NSFindPanelActionReplace,
+  NSFindPanelActionReplaceAndFind,
+  NSFindPanelActionSetFindString,
+  NSFindPanelActionReplaceAllInSelection
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+  ,
+  NSFindPanelActionSelectAll,
+  NSFindPanelActionSelectAllInSelection
+#endif
+} NSFindPanelAction;
+#endif
 
 /*
 If several NSTextView:s are connected to one NSLayoutManager, some attributes
@@ -70,7 +90,7 @@ be stored in the NSTextView. Non-persistant attributes don't, and should
 therefore be stored in the NSLayoutManager to avoid problems.
 */
 
-@interface NSTextView : NSText <NSTextInput>
+@interface NSTextView : NSText <NSTextInput, NSUserInterfaceValidations>
 {
   /* These attributes are shared by all text views attached to a layout
   manager. Any changes must be replicated in all those text views. */
@@ -126,6 +146,10 @@ therefore be stored in the NSLayoutManager to avoid problems.
     unsigned delegate_responds_to_will_change_sel:1;
     /* YES if a DnD operation is in progress with this as the target view */
     unsigned isDragTarget:1;
+
+    unsigned uses_find_panel:1;
+    unsigned accepts_glyph_info:1;
+    unsigned allows_document_background_color_change:1;
   } _tf;
 
 
@@ -161,8 +185,6 @@ therefore be stored in the NSLayoutManager to avoid problems.
   /* container inset and origin */
   NSSize _textContainerInset;
   NSPoint _textContainerOrigin;
-
-
 
   /* TODO: move to NSLayoutManager? */
   /* Probably not necessary; the insertion point is always drawn in the
@@ -213,6 +235,10 @@ therefore be stored in the NSLayoutManager to avoid problems.
   Still need to figure out what "proper behavior" is when moving between two
   NSTextView:s, though.
   */
+
+  NSParagraphStyle *_defaultParagraphStyle;
+  NSDictionary *_linkTextAttributes;
+  NSRange _markedRange;
 }
 
 
@@ -291,11 +317,18 @@ and the typing attributed will be used.
 to the set of non-range taking varieties. */
 -(void) setAlignment: (NSTextAlignment)alignment  range: (NSRange)range;
 
-
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (NSParagraphStyle *) defaultParagraphStyle;
+- (void) setDefaultParagraphStyle: (NSParagraphStyle *)style;
+#endif
 
 -(void) setRulerVisible: (BOOL)flag;
 -(BOOL) usesRuler;
 -(void) setUsesRuler: (BOOL)flag;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (BOOL) usesFindPanel;
+- (void) setUsesFindPanel: (BOOL)flag;
+#endif
 -(BOOL) isContinuousSpellCheckingEnabled; /* mosx */
 -(void) setContinuousSpellCheckingEnabled: (BOOL)flag; /* mosx */
 -(BOOL) allowsUndo; /* mosx */
@@ -314,14 +347,24 @@ actions for appropriate "Paste As" submenu commands. */
 /*** Dealing with user changes ***/
 
 -(BOOL) shouldChangeTextInRange: (NSRange)affectedCharRange
-	      replacementString: (NSString *)replacementString;
+              replacementString: (NSString *)replacementString;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (BOOL) shouldChangeTextInRanges: (NSArray *)ranges
+               replacementStrings: (NSArray *)strings;
+#endif
 -(void) didChangeText;
 
 -(NSRange) rangeForUserTextChange;
 -(NSRange) rangeForUserCharacterAttributeChange;
 -(NSRange) rangeForUserParagraphAttributeChange;
-
-
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (NSRange) rangeForUserCompletion;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (NSArray *) rangesForUserCharacterAttributeChange;
+- (NSArray *) rangesForUserParagraphAttributeChange;
+- (NSArray *) rangesForUserTextChange;
+#endif
 
 /*** Text container stuff ***/
 
@@ -372,6 +415,10 @@ the text view is resizable. */
 -(void) setMarkedTextAttributes: (NSDictionary *)attributeDictionary;
 -(NSDictionary *) markedTextAttributes;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (NSDictionary *) linkTextAttributes;
+- (void) setLinkTextAttributes: (NSDictionary *)attributeDictionary;
+#endif
 
 #ifdef GNUSTEP
 /*** Private, internal methods for (currently only) XIM support ***/
@@ -415,6 +462,14 @@ user/programmatic changes of the text.
 -(void) transpose: (id)sender; /* not OPENSTEP */
 
 -(void) toggleContinuousSpellChecking: (id)sender; /* mosx */
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (void) outline: (id)sender;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (void) setBaseWritingDirection: (NSWritingDirection)direction
+                           range: (NSRange)range;
+- (void) toggleBaseWritingDirection: (id)sender;
+#endif
 
 @end
 
@@ -490,19 +545,25 @@ already been laid out. */
 /*** Selected range ***/
 
 -(NSRange) selectionRangeForProposedRange: (NSRange)proposedCharRange
-			      granularity: (NSSelectionGranularity)gr;
+                              granularity: (NSSelectionGranularity)gr;
 
--(NSRange) selectedRange;
 -(void) setSelectedRange: (NSRange)charRange;
 
 -(void) setSelectedRange: (NSRange)charRange
-		affinity: (NSSelectionAffinity)affinity
-	  stillSelecting: (BOOL)stillSelectingFlag;
+                affinity: (NSSelectionAffinity)affinity
+          stillSelecting: (BOOL)stillSelectingFlag;
 /* Called by drawing routines to determine where to draw insertion
    point */
 -(NSSelectionAffinity) selectionAffinity;
 -(NSSelectionGranularity) selectionGranularity;
 -(void) setSelectionGranularity: (NSSelectionGranularity)granularity;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (NSArray *) selectedRanges;
+- (void) setSelectedRanges: (NSArray *)ranges;
+- (void) setSelectedRanges: (NSArray *)ranges
+                  affinity: (NSSelectionAffinity)affinity
+            stillSelecting: (BOOL)flag;
+#endif
 
 -(void) updateInsertionPointStateAndRestartTimer: (BOOL)restartFlag;
 
@@ -528,13 +589,48 @@ already been laid out. */
 -(NSDictionary *) typingAttributes;
 -(void) setTypingAttributes: (NSDictionary *)attrs;
 
+- (void) clickedOnLink: (id)link
+               atIndex: (unsigned int)charIndex;
+
 -(void) updateRuler;
 -(void) updateFontPanel;
 
 -(NSArray *) acceptableDragTypes;
 -(void) updateDragTypeRegistration;
 
+- (void) startSpeaking:(id) sender;
+- (void) stopSpeaking:(id) sender;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+- (BOOL) acceptsGlyphInfo;
+- (void) setAcceptsGlyphInfo: (BOOL)flag;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (BOOL) allowsDocumentBackgroundColorChange;
+- (void) setAllowsDocumentBackgroundColorChange: (BOOL)flag;
+- (void) changeDocumentBackgroundColor: (id)sender;
+- (void) drawViewBackgroundInRect: (NSRect)rect;
+
+- (void) changeAttributes: (id)sender;
+
+- (void) complete: (id)sender;
+- (NSArray *) completionsForPartialWordRange: (NSRange)range
+                         indexOfSelectedItem: (int *)index;
+- (void) insertCompletion: (NSString *)word
+      forPartialWordRange: (NSRange)range
+                 movement: (int)movement
+                  isFinal: (BOOL)flag;
+
+- (void) performFindPanelAction: (id)sender;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (void) breakUndoCoalescing;
+- (void) orderFrontLinkPanel: (id)sender;
+- (void) orderFrontListPanel: (id)sender;
+- (void) orderFrontTablePanel: (id)sender;
+#endif
 
 @end
 
@@ -612,6 +708,29 @@ replacementString will be nil. */
   doCommandBySelector: (SEL)commandSelector;
 
 -(NSUndoManager *) undoManagerForTextView: (NSTextView *)view;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (NSArray *) textView: (NSTextView *)textView
+           completions: (NSArray *)words
+   forPartialWordRange: (NSRange)range
+   indexOfSelectedItem: (int *)index;
+- (NSString *) textView: (NSTextView *)textView
+	 willDisplayToolTip: (NSString *)tooltip
+	forCharacterAtIndex: (unsigned int)index;
+- (void) textViewDidChangeTypingAttributes: (NSNotification *)notification;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (BOOL) textView: (NSTextView *)textView 
+shouldChangeTextInRanges: (NSArray *)ranges 
+replacementStrings: (NSArray *)strings; 
+- (NSRange) textView: (NSTextView *)textView 
+willChangeSelectionFromCharacterRanges: (NSArray *)oldSelectedCharRanges 
+			toCharacterRanges: (NSArray *)newSelectedCharRanges;
+- (BOOL) textView: (NSTextView *)textView 
+shouldChangeTypingAttributes: (NSDictionary *)oldAttribs 
+     toAttributes: (NSDictionary *)newAttribs;
+#endif
+
 @end
 #endif	// GS_API_MACOSX
 
@@ -621,8 +740,10 @@ registered to receive this notification because the text machinery
 will automatically switch over the delegate to observe the new
 first text view as the first text view changes. */
 APPKIT_EXPORT NSString *NSTextViewWillChangeNotifyingTextViewNotification;
-
 APPKIT_EXPORT NSString *NSTextViewDidChangeSelectionNotification;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+APPKIT_EXPORT NSString *NSTextViewDidChangeTypingAttributesNotification;
+#endif
 APPKIT_EXPORT NSString *NSOldSelectedCharacterRange;
 
 #endif /* _GNUstep_H_NSTextView */
