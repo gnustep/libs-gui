@@ -103,6 +103,8 @@
 #include <AppKit/NSScreen.h>
 #include <AppKit/NSScroller.h>
 #include <AppKit/NSScrollView.h>
+#include <AppKit/NSSegmentedCell.h>
+#include <AppKit/NSSegmentedControl.h>
 #include <AppKit/NSSelection.h>
 #include <AppKit/NSSlider.h>
 #include <AppKit/NSSliderCell.h>

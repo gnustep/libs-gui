@@ -141,6 +141,8 @@ NSRulerView.m \
 NSSavePanel.m \
 NSSearchField.m \
 NSSearchFieldCell.m \
+NSSegmentedCell.m \
+NSSegmentedControl.m \
 NSScreen.m \
 NSScroller.m \
 NSScrollView.m \
@@ -332,6 +334,8 @@ NSScroller.h \
 NSSearchField.h \
 NSSearchFieldCell.h \
 NSSecureTextField.h \
+NSSegmentedCell.h \
+NSSegmentedControl.h \
 NSSelection.h \
 NSSlider.h \
 NSSliderCell.h \

@@ -1,3 +1,13 @@
+2008-01-07 09:33-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/AppKit/AppKit.h
+	* Headers/AppKit/NSSegmentedCell.h
+	* Headers/AppKit/NSSegmentedControl.h
+	* Source/GNUmakefile
+	* Source/NSSegmentedCell.m
+	* Source/NSSegmentedControl.m: Added initial implementation of
+	NSSegmentedCell/NSSegmentedControl.
+
 2008-01-07 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSTextView.h,
