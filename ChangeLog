@@ -1,3 +1,7 @@
+2008-01-07 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSegmentedCell.m: Added a bit more code.
+
 2008-01-07 09:33-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/AppKit/AppKit.h
