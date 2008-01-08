@@ -29,6 +29,10 @@
 #include <AppKit/NSImage.h>
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSSegmentedCell.h>
+#include <AppKit/NSColor.h>
+#include <AppKit/NSGraphics.h>
+#include <AppKit/NSFont.h>
+#include <AppKit/NSStringDrawing.h>
 
 @interface NSSegmentItem : NSObject
 {
@@ -182,13 +186,19 @@
     }
   else
     {
-      // FIXME
+      [aCoder encodeObject: _label];
+      [aCoder encodeObject: _image];
+      [aCoder encodeObject: _menu];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_enabled];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_selected];
+      [aCoder encodeValueOfObjCType: @encode(float) at: &_width];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &_tag];
     }
 }
 
 - (id) initWithCoder: (NSCoder *)aDecoder
 {
-	if ([aDecoder allowsKeyedCoding])
+  if ([aDecoder allowsKeyedCoding])
     {
       if ([aDecoder containsValueForKey: @"NSSegmentItemLabel"])
         [self setLabel: [aDecoder decodeObjectForKey: @"NSSegmentItemLabel"]];
@@ -207,11 +217,17 @@
       if ([aDecoder containsValueForKey: @"NSSegmentItemWidth"])
         _width = [aDecoder decodeFloatForKey: @"NSSegmentItemWidth"];
       if ([aDecoder containsValueForKey: @"NSSegmentItemTag"])
-          _tag = [aDecoder decodeIntForKey: @"NSSegmentItemTag"];
+	_tag = [aDecoder decodeIntForKey: @"NSSegmentItemTag"];
     }
   else
     {
-      // FIXME
+      ASSIGN(_label,[aDecoder decodeObject]);
+      ASSIGN(_image,[aDecoder decodeObject]);
+      ASSIGN(_menu, [aDecoder decodeObject]);
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_enabled];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_selected];
+      [aDecoder decodeValueOfObjCType: @encode(float) at: &_width];
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &_tag];
     }
 
   return self;
@@ -226,10 +242,11 @@
   self = [super initImageCell: anImage];
   if (!self)
     return nil;
-
+  
   _items = [[NSMutableArray alloc] initWithCapacity: 2];
   _selected_segment = -1;
-
+  [self setAlignment: NSCenterTextAlignment];
+ 
   return self;
 }
 
@@ -238,30 +255,30 @@
   self = [super initTextCell: aString];
   if (!self)
     return nil;
-
+  
   _items = [[NSMutableArray alloc] initWithCapacity: 2];
   _selected_segment = -1;
-
+  [self setAlignment: NSCenterTextAlignment];
+  
   return self;
 }
 
 - (id) copyWithZone: (NSZone *)zone;
 {
   NSSegmentedCell *c = (NSSegmentedCell *)[super copyWithZone: zone];
-
-	if (c)
-		{
+  
+  if (c)
+    {
       // FIXME: Need a deep copy here
       c->_items = [_items copyWithZone: zone];
     }
-
+  
   return c;
 }
 
 - (void) dealloc
 {
   TEST_RELEASE(_items);
-
   [super dealloc];
 }
 
@@ -275,18 +292,17 @@
       [NSException raise: NSRangeException
                    format: @"Illegal segment count."];
     }
-
+  
   size = [_items count];
-	if (count < size)
-		[_items removeObjectsInRange: NSMakeRange(count, size - count)];
-
-	while (count-- > size)
-		{
+  if (count < size)
+    [_items removeObjectsInRange: NSMakeRange(count, size - count)];
+  
+  while (count-- > size)
+    {
       NSSegmentItem *item = [[NSSegmentItem alloc] init];
       [_items addObject: item];
       RELEASE(item);
-		}
-
+    }
 }
 
 - (int) segmentCount
@@ -475,6 +491,28 @@
              inFrame: (NSRect)frame 
             withView: (NSView *)view
 {
+  id segment = [_items objectAtIndex: seg];
+  NSFont *font = [NSFont controlContentFontOfSize: 
+			   [NSFont systemFontSize]];
+  NSString *label = [segment label];
+  NSSize textSize = [label sizeWithAttributes: [NSDictionary dictionary]];
+  NSRect textFrame = frame;
+  float x_offset = (frame.size.width - textSize.width) / 2;
+  
+  textFrame.origin.x += x_offset;
+  textFrame.size.width -= x_offset;
+
+  if([segment isSelected])
+    {
+      NSDrawDarkBezel(frame,frame);
+    }
+  else
+    {
+      NSDrawButton(frame,frame);
+    }
+
+  [font set];
+  [self _drawText: [segment label] inFrame: textFrame];
 }
 
 - (void) drawInteriorWithFrame: (NSRect)cellFrame 
@@ -482,16 +520,22 @@
 {
   int i;
   unsigned int count = [_items count];
-	NSRect frame = cellFrame;
+  NSRect frame = cellFrame;
+  NSRect controlFrame = [controlView frame];
 
-	for (i = 0; i < count;i++)
-		{
+  for (i = 0; i < count;i++)
+    {
       frame.size.width = [[_items objectAtIndex: i] width];
+      if(frame.size.width == 0.0)
+	{
+	  frame.size.width = (controlFrame.size.width - frame.origin.x) / (count - i); 
+	}
+
       [self drawSegment: i inFrame: frame withView: controlView];
       frame.origin.x += frame.size.width;
       if (frame.origin.x >= cellFrame.size.width)
         break;
-		}
+    }
 }
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
@@ -506,7 +550,8 @@
     }
   else
     {
-      // FIXME
+      [aCoder encodeObject: _items];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &_selected_segment];
     }
 }
 
@@ -525,7 +570,8 @@
     }
   else
     {
-      // FIXME
+      ASSIGN(_items,[aDecoder decodeObject]);
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &_selected_segment];
     }
   return self;
 }

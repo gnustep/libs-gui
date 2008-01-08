@@ -1,3 +1,8 @@
+2008-01-08 09:42-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSSegmentedCell.m: Code to draw and render text in 
+	segments.
+
 2008-01-07 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSSegmentedCell.m: Added a bit more code.
