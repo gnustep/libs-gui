@@ -1,3 +1,14 @@
+2008-01-08 22:35-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/AppKit/NSSegmentedCell.h: Added rect ivar to cache frame.
+	* Source/NSBundleAdditions.m: Minor formatting changes.
+	* Source/NSController.m: Added ivars to encodeWithCoder:.
+	* Source/NSNibBindingConnector.m: Added ivars to encodeWithCoder:.
+	* Source/NSSegmentedCell.m: Changes to fully implement rendering
+	of the cell.
+	* Source/NSSegmentedControl.m: Changes to fully implement
+	control.
+
 2008-01-08 09:42-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSSegmentedCell.m: Code to draw and render text in 

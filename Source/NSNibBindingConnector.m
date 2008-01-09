@@ -36,6 +36,17 @@
 
 @implementation NSNibBindingConnector
 
+- (id) init
+{
+  if((self = [super init]) != nil)
+    {
+      _binding = RETAIN([NSString stringWithString: @""]);
+      _keyPath = RETAIN([NSString stringWithString: @""]);
+      _options = RETAIN([NSMutableDictionary dictionary]);
+    }
+  return self;
+}
+
 - (void) dealloc
 {
   RELEASE(_binding);
@@ -154,9 +165,9 @@
     }
   else
     {
-      [aDecoder decodeValueOfObjCType: @encode(id) at: &_binding];
-      [aDecoder decodeValueOfObjCType: @encode(id) at: &_keyPath];
-      [aDecoder decodeValueOfObjCType: @encode(id) at: &_options];
+      ASSIGN(_binding,[aDecoder decodeObject]);
+      ASSIGN(_keyPath,[aDecoder decodeObject]);
+      ASSIGN(_options,[aDecoder decodeObject]);
     }
 
   return self;

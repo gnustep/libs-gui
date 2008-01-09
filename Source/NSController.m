@@ -53,7 +53,14 @@
 
 - (void) encodeWithCoder: (NSCoder *)aCoder
 { 
-  // TODO
+  if([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeObject: _declared_keys forKey: @"NSDeclaredKeys"];
+    }
+  else
+    {
+      [aCoder encodeObject: _declared_keys];
+    }
 }
 
 - (id) initWithCoder: (NSCoder *)aDecoder

@@ -25,6 +25,7 @@
 
 #include <AppKit/NSControl.h>
 #include <AppKit/NSSegmentedControl.h>
+#include <AppKit/NSEvent.h>
 
 @implementation NSSegmentedControl 
 
@@ -115,4 +116,16 @@
 {
   return [_cell isEnabledForSegment: segment];
 }
+
+/*
+- (void) mouseDown: (NSEvent *)event
+{
+  NSPoint location = [self convertPoint: [event locationInWindow] 
+			   fromView: nil];
+
+  [super mouseDown: event];
+  [_cell _detectHit: location];
+  NSLog(@"%@",NSStringFromPoint(location));
+}
+*/
 @end

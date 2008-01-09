@@ -33,6 +33,7 @@
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSFont.h>
 #include <AppKit/NSStringDrawing.h>
+#include <AppKit/NSEvent.h>
 
 @interface NSSegmentItem : NSObject
 {
@@ -44,6 +45,7 @@
   NSString *_label;
   NSString *_tool_tip;
   NSImage *_image;
+  NSRect _frame;
 }
 
 - (BOOL) isSelected;
@@ -62,6 +64,8 @@
 - (void) setTag: (int)tag;
 - (float) width;
 - (void) setWidth: (float)width;
+- (NSRect) frame;
+- (void) setFrame: (NSRect)frame;
 @end
 
 @implementation NSSegmentItem
@@ -163,6 +167,16 @@
   _width = width;
 }
 
+- (NSRect) frame
+{
+  return _frame;
+}
+
+- (void) setFrame: (NSRect)frame
+{
+  _frame = frame;
+}
+
 - (void) encodeWithCoder:(NSCoder *) aCoder
 {
   if ([aCoder allowsKeyedCoding])
@@ -245,6 +259,7 @@
   
   _items = [[NSMutableArray alloc] initWithCapacity: 2];
   _selected_segment = -1;
+  _previous_selection = -1;
   [self setAlignment: NSCenterTextAlignment];
  
   return self;
@@ -258,6 +273,7 @@
   
   _items = [[NSMutableArray alloc] initWithCapacity: 2];
   _selected_segment = -1;
+  _previous_selection = -1;
   [self setAlignment: NSCenterTextAlignment];
   
   return self;
@@ -319,12 +335,27 @@
 - (void) setSelected: (BOOL)flag forSegment: (int)seg
 {
   NSSegmentItem *segment = [_items objectAtIndex: seg];
+  NSSegmentItem *previous = nil;
 
-  [segment setSelected: flag];
-  if (flag)
-    _selected_segment = seg;
-  else if (seg == _selected_segment)
-    _selected_segment = -1;
+  if(_selected_segment != -1)
+    {
+      _previous_selection = _selected_segment;
+      previous = [_items objectAtIndex: _previous_selection];
+      [previous setSelected: NO];
+    }
+
+  if([segment isEnabled])
+    {
+      [segment setSelected: flag];
+      if (flag)
+	{
+	  _selected_segment = seg;
+	}
+      else if (seg == _selected_segment)
+	{
+	  _selected_segment = -1;
+	}
+    }
 }
 
 - (int) selectedSegment
@@ -501,6 +532,7 @@
   
   textFrame.origin.x += x_offset;
   textFrame.size.width -= x_offset;
+  [segment setFrame: frame];
 
   if([segment isSelected])
     {
@@ -567,6 +599,7 @@
         ASSIGN(_items, [aDecoder decodeObjectForKey: @"NSSegmentImages"]);
       if ([aDecoder containsValueForKey: @"NSSelectedSegment"])
         _selected_segment = [aDecoder decodeIntForKey: @"NSSelectedSegment"]; 
+      _previous_selection = -1;
     }
   else
     {
@@ -576,4 +609,32 @@
   return self;
 }
 
+- (void) _detectHit: (NSPoint)point
+{
+  int count = [self segmentCount];
+  int i = 0;
+
+  for(i = 0; i < count; i++)
+    {
+      id segment = [_items objectAtIndex: i];
+      NSRect frame = [segment frame];
+      if(NSPointInRect(point,frame))
+	{
+	  [self setSelectedSegment: i];
+	  break;
+	}
+    }
+}
+
+- (void) stopTracking: (NSPoint)lastPoint
+		   at: (NSPoint)stopPoint
+	       inView: (NSView*)controlView
+	    mouseIsUp: (BOOL)flag
+{
+  [super stopTracking: lastPoint
+	 at: stopPoint
+	 inView: controlView
+	 mouseIsUp: (BOOL)flag];
+  [self _detectHit: lastPoint];
+}
 @end

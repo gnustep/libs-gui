@@ -186,7 +186,7 @@
 @implementation	NSNibControlConnector
 - (void) establishConnection
 {
-  SEL		sel = NSSelectorFromString(_tag);
+  SEL sel = NSSelectorFromString(_tag);
 	      
   [_src setTarget: _dst];
   [_src setAction: sel];
@@ -198,8 +198,8 @@
 {
   if (_src != nil)
     {
-      NSString	*selName;
-      SEL	sel;
+      NSString *selName;
+      SEL sel;
 
       selName = [NSString stringWithFormat: @"set%@%@:",
 			  [[_tag substringToIndex: 1] uppercaseString],
@@ -212,10 +212,10 @@
 	}
       else
 	{
-	  const char	*nam = [_tag cString];
-	  const char	*type;
-	  unsigned int	size;
-	  int	offset;
+	  const char *nam = [_tag cString];
+	  const char *type;
+	  unsigned int size;
+	  int offset;
 
 	  /*
 	   * Use the GNUstep additional function to set the instance
