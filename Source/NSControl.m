@@ -635,7 +635,8 @@ static NSNotificationCenter *nc;
 {
   if (_cell == aCell)
     {
-      [_cell drawWithFrame: _bounds inView: self];
+      [_cell drawWithFrame: _bounds
+             inView: self];
     }
 }
 
@@ -646,8 +647,8 @@ static NSNotificationCenter *nc;
 {
   if (_cell == aCell)
     {
-      [_cell drawInteriorWithFrame: _bounds 
-	    inView: self];
+      [_cell drawInteriorWithFrame: _bounds
+             inView: self];
     }
 }
 
@@ -701,6 +702,13 @@ static NSNotificationCenter *nc;
  */
 - (BOOL) sendAction: (SEL)theAction to: (id)theTarget
 {
+  GSKeyValueBinding *theBinding;
+
+  theBinding = [GSKeyValueBinding getBinding: NSValueBinding 
+                                  forObject: self];
+  if (theBinding != nil)
+    [theBinding reverseSetValueFor: @"objectValue"];
+
   if (theAction)
     return [NSApp sendAction: theAction to: theTarget from: self];
   else

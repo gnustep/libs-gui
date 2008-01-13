@@ -1,3 +1,9 @@
+2008-01-13 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSBindingHelpers.h,
+	* Source/NSKeyValueBinding.m: Add reverse value change methods.
+	* Source/NSControl.m (-sendAction:to:): Send value change for binding.
+
 2008-01-08 22:35-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/AppKit/NSSegmentedCell.h: Added rect ivar to cache frame.

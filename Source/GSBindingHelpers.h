@@ -2,8 +2,10 @@
 
    Copyright (C) 2007 Free Software Foundation, Inc.
 
-   Written by:  Chris Farber <chris@chrisfarber.net>
+   Written by: Chris Farber <chris@chrisfarber.net>
    Date: 2007
+   Author: Fred Kiefer <fredkiefer@gmx.de>
+   Date: Decembre 2007
 
    This file is part of the GNUstep GUI Library.
 
@@ -43,7 +45,10 @@
 
 + (void) exposeBinding: (NSString *)binding forClass: (Class)clazz;
 + (NSArray *) exposedBindingsForClass: (Class)clazz;
-+ (NSDictionary *) infoForBinding: (NSString *)binding forObject: (id)anObject;
++ (GSKeyValueBinding *) getBinding: (NSString *)binding 
+                         forObject: (id)anObject;
++ (NSDictionary *) infoForBinding: (NSString *)binding 
+                        forObject: (id)anObject;
 + (void) unbind: (NSString *)binding  forObject: (id)anObject;
 + (void) unbindAllForObject: (id)anObject;
 
@@ -54,10 +59,13 @@
                options: (NSDictionary *)options
             fromObject: (id)source;
 - (void) setValueFor: (NSString *)binding;
+- (void) reverseSetValueFor: (NSString *)binding;
+
 /* Transforms the value with a value transformer, if specified and available,
  * and takes care of any placeholders
  */
 - (id) transformValue: (id)value withOptions: (NSDictionary *)options;
+- (id) reverseTransformValue: (id)value withOptions: (NSDictionary *)options;
 
 @end
 

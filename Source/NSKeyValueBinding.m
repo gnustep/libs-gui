@@ -6,6 +6,8 @@
 
    Written by:  Chris Farber <chris@chrisfarber.net>
    Date: 2007
+   Author: Fred Kiefer <fredkiefer@gmx.de>
+   Date: Decembre 2007
 
    This file is part of the GNUstep GUI Library.
 
@@ -131,16 +133,6 @@ BOOL GSBindingResolveMultipleValueBool(NSString *key, NSDictionary *bindings,
 void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
     NSDictionary *bindings);
 
-NSArray *GSBindingExposeMultipleValueBindings(
-    NSArray *bindingNames,
-    NSMutableDictionary *bindingList);
-
-NSArray *GSBindingExposePatternBindings(
-    NSArray *bindingNames,
-    NSMutableDictionary *bindingList);
-
-id GSBindingReverseTransformedValue(id value, NSDictionary *options);
-
 @implementation GSKeyValueBinding
 
 + (void) initialize
@@ -185,7 +177,8 @@ id GSBindingReverseTransformedValue(id value, NSDictionary *options);
   return tmp;
 }
 
-+ (NSDictionary *) infoForBinding: (NSString *)binding forObject: (id)anObject
++ (GSKeyValueBinding *) getBinding: (NSString *)binding 
+                         forObject: (id)anObject
 {
   NSMutableDictionary *bindings;
   GSKeyValueBinding *theBinding;
@@ -201,10 +194,23 @@ id GSBindingReverseTransformedValue(id value, NSDictionary *options);
     }
   [bindingLock unlock];
 
+  return theBinding;
+}
+
++ (NSDictionary *) infoForBinding: (NSString *)binding 
+                        forObject: (id)anObject
+{
+  GSKeyValueBinding *theBinding;
+
+  theBinding = [self getBinding: binding forObject: anObject];
+  if (theBinding == nil)
+    return nil;
+
   return theBinding->info;
 }
 
-+ (void) unbind: (NSString *)binding  forObject: (id)anObject
++ (void) unbind: (NSString *)binding 
+      forObject: (id)anObject
 {
   NSMutableDictionary *bindings;
   id observedObject;
@@ -323,6 +329,22 @@ id GSBindingReverseTransformedValue(id value, NSDictionary *options);
   [src setValue: newValue forKey: binding];
 }
 
+- (void) reverseSetValueFor: (NSString *)binding
+{
+  id newValue;
+  id dest;
+  NSString *keyPath;
+  NSDictionary *options;
+
+  dest = [info objectForKey: NSObservedObjectKey];
+  keyPath = [info objectForKey: NSObservedKeyPathKey];
+  options = [info objectForKey: NSOptionsKey];
+
+  newValue = [src valueForKeyPath: binding];
+  newValue = [self reverseTransformValue: newValue withOptions: options];
+  [dest setValue: newValue forKey: keyPath];
+}
+
 - (void) observeValueForKeyPath: (NSString *)keyPath
                        ofObject: (id)object
                          change: (NSDictionary *)change
@@ -406,6 +428,33 @@ id GSBindingReverseTransformedValue(id value, NSDictionary *options);
   if (valueTransformer != nil)
     {
       value = [valueTransformer transformedValue: value];
+    }
+
+  return value;
+}
+
+- (id) reverseTransformValue: (id)value withOptions: (NSDictionary *)options
+{
+  NSString *valueTransformerName;
+  NSValueTransformer *valueTransformer;
+
+  valueTransformerName = [options objectForKey:
+    NSValueTransformerNameBindingOption];
+  if (valueTransformerName != nil)
+    {
+      valueTransformer = [NSValueTransformer valueTransformerForName:
+                                                 valueTransformerName];
+    }
+  else
+    {
+      valueTransformer = [options objectForKey:
+                                      NSValueTransformerBindingOption];
+    }
+
+  if ((valueTransformer != nil) && [[valueTransformer class]
+                                       allowsReverseTransformation])
+    {
+      value = [valueTransformer reverseTransformedValue: value];
     }
 
   return value;
@@ -551,140 +600,3 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
     }
   [invocation invoke];
 }
-
-void GSBindingLock()
-{
-  [bindingLock lock];
-}
-
-void GSBindingReleaseLock()
-{
-  [bindingLock unlock];
-}
-
-NSMutableDictionary *GSBindingListForObject(id object)
-{
-  NSMutableDictionary *list;
-
-  if (!objectTable)
-    return nil;
-
-  list = (NSMutableDictionary *)NSMapGet(objectTable, (void *)object);
-  if (list == nil)
-    {
-      list = [NSMutableDictionary new];
-      NSMapInsert(objectTable, (void *)object, (void *)list);
-    }
-  return list;
-}
-
-NSArray *GSBindingExposeMultipleValueBindings(
-    NSArray *bindingNames,
-    NSMutableDictionary *bindingList)
-{
-  NSEnumerator *nameEnum;
-  NSString *name;
-  NSString *numberedName;
-  NSMutableArray *additionalBindings;
-  int count;
-
-  additionalBindings = [NSMutableArray array];
-  nameEnum = [bindingNames objectEnumerator];
-  while ((name = [nameEnum nextObject]))
-    {
-      count = 1;
-      numberedName = name;
-      while ([bindingList objectForKey: numberedName] != nil)
-        {
-          numberedName = [NSString stringWithFormat: @"%@%i", name, ++count];
-          [additionalBindings addObject: numberedName];
-        }
-    }
-  return additionalBindings;
-}
-
-
-NSArray *GSBindingExposePatternBindings(
-    NSArray *bindingNames,
-    NSMutableDictionary *bindingList)
-{
-  NSEnumerator *nameEnum;
-  NSString *name;
-  NSString *numberedName;
-  NSMutableArray *additionalBindings;
-  int count;
-
-  additionalBindings = [NSMutableArray array];
-  nameEnum = [bindingNames objectEnumerator];
-  while ((name = [nameEnum nextObject]))
-    {
-      count = 1;
-      numberedName = [NSString stringWithFormat:@"%@1", name];
-      while ([bindingList objectForKey: numberedName] != nil)
-        {
-          numberedName = [NSString stringWithFormat:@"%@%i", name, ++count];
-          [additionalBindings addObject: numberedName];
-        }
-    }
-  return additionalBindings;
-}
-
-id GSBindingReverseTransformedValue(id value, NSDictionary *options)
-{
-  NSValueTransformer *valueTransformer;
-  NSString *valueTransformerName;
-
-  valueTransformerName = [options objectForKey: 
-    NSValueTransformerNameBindingOption];
-  valueTransformer = [NSValueTransformer valueTransformerForName:
-    valueTransformerName];
-  if (valueTransformer && [[valueTransformer class]
-      allowsReverseTransformation])
-    {
-      value = [valueTransformer reverseTransformedValue: value];
-    }
-  return value;
-}
-
-/*
-@interface _GSStateMarker : NSObject
-{
-  NSString * description;
-}
-@end
-
-@implementation _GSStateMarker
-
-- (id) initWithType: (int)type
-{
-  if (type == 0)
-    {
-      description = @"<MULTIPLE VALUES MARKER>";
-    }
-  else if (type == 1)
-    {
-     description = @"<NO SELECTION MARKER>";
-    }
-  else
-    {
-      description = @"<NOT APPLICABLE MARKER>";
-    }
-
-  return self;
-}
-
-- (id) valueForKey: (NSString *)key
-{
-  return self;
-}
-
-- (id) retain { return self; }
-- (oneway void) release {}
-
-- (NSString *) description
-{
-  return description;
-}
-
-@end
-*/
