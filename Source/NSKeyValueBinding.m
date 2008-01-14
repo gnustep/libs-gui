@@ -181,7 +181,7 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
                          forObject: (id)anObject
 {
   NSMutableDictionary *bindings;
-  GSKeyValueBinding *theBinding;
+  GSKeyValueBinding *theBinding = nil;
 
   if (!objectTable)
     return nil;
