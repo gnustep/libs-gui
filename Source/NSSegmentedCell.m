@@ -259,7 +259,6 @@
   
   _items = [[NSMutableArray alloc] initWithCapacity: 2];
   _selected_segment = -1;
-  _previous_selection = -1;
   [self setAlignment: NSCenterTextAlignment];
  
   return self;
@@ -273,7 +272,6 @@
   
   _items = [[NSMutableArray alloc] initWithCapacity: 2];
   _selected_segment = -1;
-  _previous_selection = -1;
   [self setAlignment: NSCenterTextAlignment];
   
   return self;
@@ -339,8 +337,7 @@
 
   if(_selected_segment != -1)
     {
-      _previous_selection = _selected_segment;
-      previous = [_items objectAtIndex: _previous_selection];
+      previous = [_items objectAtIndex: _selected_segment];
       [previous setSelected: NO];
     }
 
@@ -599,7 +596,6 @@
         ASSIGN(_items, [aDecoder decodeObjectForKey: @"NSSegmentImages"]);
       if ([aDecoder containsValueForKey: @"NSSelectedSegment"])
         _selected_segment = [aDecoder decodeIntForKey: @"NSSelectedSegment"]; 
-      _previous_selection = -1;
     }
   else
     {

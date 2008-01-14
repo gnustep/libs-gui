@@ -56,7 +56,6 @@ typedef enum {
     unsigned int _recalcToolTips:1;
     unsigned int unused:24;
   } _segmentCellFlags;
-  int _previous_selection;
 }
 
 // Specifying number of segments...

@@ -1,3 +1,9 @@
+2008-01-14 09:37-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/AppKit/NSSegmentedCell.h
+	* Source/NSSegmentedCell.m: Removed _previous_segment, since it was
+	redundant.
+
 2008-01-14 09:17-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/AppKit/NSSegmentedControl.h
