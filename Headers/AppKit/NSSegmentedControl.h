@@ -53,5 +53,6 @@
 - (BOOL) isSelectedForSegment: (int)segment;
 - (void) setEnabled: (BOOL)flag forSegment: (int)segment;
 - (BOOL) isEnabledForSegment: (int)segment;
+
 @end
 #endif

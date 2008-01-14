@@ -121,7 +121,7 @@
 - (void) mouseDown: (NSEvent *)event
 {
   NSPoint location = [self convertPoint: [event locationInWindow] 
-			   fromView: nil];
+                           fromView: nil];
 
   [super mouseDown: event];
   [_cell _detectHit: location];

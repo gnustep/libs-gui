@@ -348,13 +348,13 @@
     {
       [segment setSelected: flag];
       if (flag)
-	{
-	  _selected_segment = seg;
-	}
+        {
+          _selected_segment = seg;
+        }
       else if (seg == _selected_segment)
-	{
-	  _selected_segment = -1;
-	}
+        {
+          _selected_segment = -1;
+        }
     }
 }
 
@@ -524,7 +524,7 @@
 {
   id segment = [_items objectAtIndex: seg];
   NSFont *font = [NSFont controlContentFontOfSize: 
-			   [NSFont systemFontSize]];
+                           [NSFont systemFontSize]];
   NSString *label = [segment label];
   NSSize textSize = [label sizeWithAttributes: [NSDictionary dictionary]];
   NSRect textFrame = frame;
