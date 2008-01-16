@@ -1,3 +1,9 @@
+2008-01-16 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSDragView.m (-_updateAndMoveImageToCorrectPosition):
+	Add missing "!" in mask for local call.
+	Patch by Andreas Schik <andreas.schik@web.de>.
+
 2008-01-14 09:37-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/AppKit/NSSegmentedCell.h

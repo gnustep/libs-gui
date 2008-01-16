@@ -900,7 +900,7 @@ static	GSDragView *sharedDragView = nil;
     {
       unsigned int newMask;
 
-      newMask = [dragSource draggingSourceOperationMaskForLocal: destExternal];
+      newMask = [dragSource draggingSourceOperationMaskForLocal: !destExternal];
       if (newMask != dragMask)
         {
           dragMask = newMask;
