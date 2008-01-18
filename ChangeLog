@@ -1,3 +1,9 @@
+2008-01-18 14:39-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h
+	* Source/GSTheme.m
+	* Source/NSSegmentedCell.m: Moved drawing code to GSTheme.
+
 2008-01-16 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSDragView.m (-_updateAndMoveImageToCorrectPosition):

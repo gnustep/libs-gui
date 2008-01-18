@@ -135,6 +135,7 @@
 
 #include <Foundation/NSObject.h>
 #include <Foundation/NSGeometry.h>
+#include "AppKit/NSCell.h"
 // For gradient types
 #include "AppKit/NSButtonCell.h"
 
@@ -381,7 +382,7 @@ APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
  * cell and view.
  */
 - (void) drawButton: (NSRect)frame
-	         in: (NSButtonCell*)cell
+	         in: (NSCell*)cell
 	       view: (NSView*)view
 	      style: (int)style
 	      state: (GSThemeControlState)state;

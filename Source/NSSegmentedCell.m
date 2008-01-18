@@ -34,6 +34,7 @@
 #include <AppKit/NSFont.h>
 #include <AppKit/NSStringDrawing.h>
 #include <AppKit/NSEvent.h>
+#include <GNUstepGUI/GSTheme.h>
 
 @interface NSSegmentItem : NSObject
 {
@@ -338,7 +339,10 @@
   if(_selected_segment != -1)
     {
       previous = [_items objectAtIndex: _selected_segment];
-      [previous setSelected: NO];
+      if(_segmentCellFlags._tracking_mode == NSSegmentSwitchTrackingSelectOne)
+	{
+	  [previous setSelected: NO];
+	}
     }
 
   if([segment isEnabled])
@@ -520,27 +524,27 @@
             withView: (NSView *)view
 {
   id segment = [_items objectAtIndex: seg];
-  NSFont *font = [NSFont controlContentFontOfSize: 
-                           [NSFont systemFontSize]];
   NSString *label = [segment label];
   NSSize textSize = [label sizeWithAttributes: [NSDictionary dictionary]];
   NSRect textFrame = frame;
   float x_offset = (frame.size.width - textSize.width) / 2;
-  
+  GSThemeControlState state = GSThemeNormalState;
+
   textFrame.origin.x += x_offset;
   textFrame.size.width -= x_offset;
   [segment setFrame: frame];
 
   if([segment isSelected])
     {
-      NSDrawDarkBezel(frame,frame);
-    }
-  else
-    {
-      NSDrawButton(frame,frame);
+      state = GSThemeSelectedState;
     }
 
-  [font set];
+  [[GSTheme theme] drawButton: frame
+		   in: self
+		   view: [self controlView]
+		   style: NSRegularSquareBezelStyle
+		   state: state];
+
   [self _drawText: [segment label] inFrame: textFrame];
 }
 
@@ -605,32 +609,28 @@
   return self;
 }
 
-- (void) _detectHit: (NSPoint)point
-{
-  int count = [self segmentCount];
-  int i = 0;
-
-  for(i = 0; i < count; i++)
-    {
-      id segment = [_items objectAtIndex: i];
-      NSRect frame = [segment frame];
-      if(NSPointInRect(point,frame))
-	{
-	  [self setSelectedSegment: i];
-	  break;
-	}
-    }
-}
-
 - (void) stopTracking: (NSPoint)lastPoint
 		   at: (NSPoint)stopPoint
 	       inView: (NSView*)controlView
 	    mouseIsUp: (BOOL)flag
 {
+  int count = [self segmentCount];
+  int i = 0;
+
   [super stopTracking: lastPoint
 	 at: stopPoint
 	 inView: controlView
 	 mouseIsUp: (BOOL)flag];
-  [self _detectHit: lastPoint];
+
+  for(i = 0; i < count; i++)
+    {
+      id segment = [_items objectAtIndex: i];
+      NSRect frame = [segment frame];
+      if(NSPointInRect(lastPoint,frame))
+	{
+	  [self setSelectedSegment: i];
+	  break;
+	}
+    }
 }
 @end

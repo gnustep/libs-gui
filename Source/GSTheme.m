@@ -697,7 +697,7 @@ static NSNull			*null = nil;
 @implementation	GSTheme (Drawing)
 
 - (void) drawButton: (NSRect)frame 
-                 in: (NSButtonCell*)cell 
+                 in: (NSCell*)cell 
                view: (NSView*)view 
               style: (int)style 
               state: (GSThemeControlState)state
