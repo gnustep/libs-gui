@@ -50,6 +50,7 @@
 #include "AppKit/NSView.h"
 #include "AppKit/DPSOperators.h"
 #include "GNUstepGUI/GSVersion.h"
+#include "GNUstepGUI/GSDisplayServer.h"
 
 typedef struct { @defs(NSThread) } *TInfo;
 
@@ -212,7 +213,29 @@ NSGraphicsContext	*GSCurrentContext(void)
    device description. */
 + (NSGraphicsContext *) graphicsContextWithWindow: (NSWindow *)aWindow
 {
-  return [self graphicsContextWithAttributes: [aWindow deviceDescription]];
+  return [self graphicsContextWithAttributes:
+                   [NSDictionary dictionaryWithObject: aWindow 
+                                 forKey: NSGraphicsContextDestinationAttributeName]];
+}
+
++ (NSGraphicsContext *) graphicsContextWithBitmapImageRep: (NSBitmapImageRep *)bitmap
+{
+  return [self graphicsContextWithAttributes:
+                   [NSDictionary dictionaryWithObject: bitmap 
+                                 forKey: NSGraphicsContextDestinationAttributeName]];
+}
+
++ (NSGraphicsContext *) graphicsContextWithGraphicsPort: (void *)port 
+                                                flipped: (BOOL)flag
+{
+  NSGraphicsContext *new;
+
+  // FIXME
+  new = [self graphicsContextWithAttributes: nil];
+  new->_graphicsPort = port;
+  new->_isFlipped = flag;
+
+  return new;
 }
 
 + (void) restoreGraphicsState
@@ -286,11 +309,11 @@ NSGraphicsContext	*GSCurrentContext(void)
       [contextLock lock];
       methods = [[classMethodTable objectForKey: [self class]] pointerValue];
       if (methods == 0)
-	{
-	  methods = [[self class] _initializeMethodTable];
-	  [classMethodTable setObject: [NSValue valueWithPointer: methods]
-			       forKey: [self class]];
-	}
+        {
+          methods = [[self class] _initializeMethodTable];
+          [classMethodTable setObject: [NSValue valueWithPointer: methods]
+                            forKey: [self class]];
+        }
       [contextLock unlock];
     }
   return self;
@@ -308,7 +331,7 @@ NSGraphicsContext	*GSCurrentContext(void)
 
 - (void *) graphicsPort
 {
-  return NULL;
+  return _graphicsPort;
 }
 
 - (BOOL) isDrawingToScreen
@@ -354,6 +377,35 @@ NSGraphicsContext	*GSCurrentContext(void)
 - (BOOL) shouldAntialias
 {
   return _antialias;
+}
+
+- (NSPoint) patternPhase
+{
+  return _patternPhase;
+}
+
+- (void) setPatternPhase: (NSPoint)phase
+{
+  _patternPhase = phase;
+}
+
+- (BOOL) isFlipped
+{
+  NSView *focusView = [self focusView];
+
+  if (focusView)
+    return [focusView isFlipped];
+  else
+    return _isFlipped;
+}
+- (NSCompositingOperation) compositingOperation
+{
+  return _compositingOperation;
+}
+
+- (void) setCompositingOperation: (NSCompositingOperation)operation
+{
+  _compositingOperation = operation;
 }
 
 - (NSView*) focusView
@@ -1488,8 +1540,6 @@ NSGraphicsContext	*GSCurrentContext(void)
 }
 
 @end
-
-#include "GNUstepGUI/GSDisplayServer.h"
 
 /* ----------------------------------------------------------------------- */
 /* NSGraphics Ops */	

@@ -770,7 +770,6 @@ many times.
 
 - (void) _initBackendWindow
 {
-  int screenNumber;
   NSCountedSet *dragTypes;
   GSDisplayServer *srv = GSCurrentServer();
 
@@ -785,25 +784,17 @@ many times.
       dragTypes = [dragTypes copy];
 
       /* Now we need to remove all the drag types for this window.  */
-      [srv removeDragTypes: nil  fromWindow: self];
+      [srv removeDragTypes: nil fromWindow: self];
     }
 
-  screenNumber = [_screen screenNumber];
-
-  _windowNum =
-    [srv window: _frame
-               : _backingType
-               : _styleMask
-               : screenNumber];
+  _windowNum = [srv window: _frame
+                    : _backingType
+                    : _styleMask
+                    : [_screen screenNumber]];
   [srv setwindowlevel: [self level] : _windowNum];
-  NSMapInsert (windowmaps, (void*)(intptr_t)_windowNum, self);
+  NSMapInsert(windowmaps, (void*)(intptr_t)_windowNum, self);
 
   ASSIGN(_context, [NSGraphicsContext graphicsContextWithWindow: self]);
-  // FIXME: This belongs into NSGraphicsContext
-  [NSGraphicsContext saveGraphicsState];
-  [NSGraphicsContext setCurrentContext: _context];
-  [srv windowdevice: _windowNum];
-  [NSGraphicsContext restoreGraphicsState];
 
   // Set window in new _gstate
   _gstate = GSDefineGState(_context);
@@ -812,6 +803,7 @@ many times.
     NSRect frame = _frame;
     frame.origin = NSZeroPoint;
     [_wv setFrame: frame];
+    [_wv setWindowNumber: _windowNum];
     [_wv setNeedsDisplay: YES];
   }
 
@@ -851,8 +843,6 @@ many times.
     [self setMaxSize: _maximumSize];
   if (!NSEqualSizes(_increments, NSZeroSize))
     [self setResizeIncrements: _increments];
-
-  [_wv setWindowNumber: _windowNum];
 
   NSDebugLLog(@"NSWindow", @"Created NSWindow window frame %@",
               NSStringFromRect(_frame));
@@ -1020,11 +1010,6 @@ many times.
   NSMapInsert (windowmaps, (void*)(intptr_t)_windowNum, self);
 
   ASSIGN(_context, [NSGraphicsContext graphicsContextWithWindow: self]);
-  // FIXME: This belongs into NSGraphicsContext
-  [NSGraphicsContext saveGraphicsState];
-  [NSGraphicsContext setCurrentContext: _context];
-  [srv windowdevice: _windowNum];
-  [NSGraphicsContext restoreGraphicsState];
 
   // Set window in new _gstate
   _gstate = GSDefineGState(_context);
@@ -3404,13 +3389,9 @@ resetCursorRectsForView(NSView *theView)
 {
   if (_windowNum && _gstate)
     {
-      // FIXME: move this into NSGraphicsContext
-      [NSGraphicsContext saveGraphicsState];
-      [NSGraphicsContext setCurrentContext: _context];
-      DPSsetgstate(_context, _gstate);
-      [GSServerForWindow(self) windowdevice: _windowNum];
+      [GSServerForWindow(self) setWindowdevice: _windowNum 
+                        forContext: _context];
       GSReplaceGState(_context, _gstate);
-      [NSGraphicsContext restoreGraphicsState];
     }
 
   [self update];

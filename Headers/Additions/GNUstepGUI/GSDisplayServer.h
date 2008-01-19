@@ -45,6 +45,7 @@
 @class NSMutableArray;
 @class NSMutableData;
 @class GSDisplayServer;
+@class NSGraphicsContext;
 
 #ifndef	NO_GNUSTEP
 APPKIT_EXPORT GSDisplayServer * GSServerForWindow(NSWindow *window);
@@ -128,7 +129,9 @@ APPKIT_EXPORT NSString * GSScreenNumber;
 - (void) titlewindow: (NSString *)window_title : (int)win;
 - (void) miniwindow: (int)win;
 - (BOOL) appOwnsMiniwindow;
-- (void) windowdevice: (int)win;
+- (void) setWindowdevice: (int)win forContext: (NSGraphicsContext *)ctxt;
+// Deprecated
+- (void) windowdevice: (int) winNum;
 - (void) orderwindow: (int)op : (int)otherWin : (int)win;
 - (void) movewindow: (NSPoint)loc : (int)win;
 - (void) placewindow: (NSRect)frame : (int)win;

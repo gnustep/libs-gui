@@ -47,6 +47,7 @@
 @class NSWindow;
 @class NSFont;
 @class NSSet;
+@class NSBitmapImageRep;
 
 /*
  * Backing Store Types
@@ -158,6 +159,10 @@ typedef enum _GSColorSpace
   NSMutableSet          *usedFonts;
   NSImageInterpolation  _interp;
   BOOL                  _antialias;
+  NSPoint _patternPhase;
+  void *_graphicsPort;
+  BOOL _isFlipped;
+  NSCompositingOperation _compositingOperation;
 }
 
 + (BOOL) currentContextDrawingToScreen;
@@ -169,6 +174,11 @@ typedef enum _GSColorSpace
 + (void) setGraphicsState: (int)graphicsState;
 + (void) setCurrentContext: (NSGraphicsContext*)context;
 + (NSGraphicsContext*) currentContext;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
++ (NSGraphicsContext *) graphicsContextWithBitmapImageRep: (NSBitmapImageRep *)bitmap;
++ (NSGraphicsContext *) graphicsContextWithGraphicsPort: (void *)port 
+                                                flipped: (BOOL)flag;
+#endif
 
 - (NSDictionary *) attributes;
 - (void *) graphicsPort;
@@ -185,6 +195,18 @@ typedef enum _GSColorSpace
 - (NSImageInterpolation) imageInterpolation;
 - (void) setShouldAntialias: (BOOL)antialias;
 - (BOOL) shouldAntialias;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+- (NSPoint) patternPhase;
+- (void) setPatternPhase: (NSPoint)phase;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (NSCompositingOperation) compositingOperation;
+- (void) setCompositingOperation:(NSCompositingOperation) operation;
+
+- (BOOL) isFlipped;
+#endif
 
 @end
 

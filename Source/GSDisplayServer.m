@@ -608,6 +608,15 @@ GSCurrentServer(void)
     than this may need to be exchanged. */
 - (void) windowdevice: (int) win
 {
+  [self setWindowdevice: win forContext: GSCurrentContext()];
+}
+
+/** Sets the window device information for the NSGraphicsContext,
+    typically by calling [NSGraphicsContext-GSSetDevice:::],
+    although depending on the concrete implmentation, more information
+    than this may need to be exchanged. */
+- (void) setWindowdevice: (int)win forContext: (NSGraphicsContext *)ctxt
+{
   [self subclassResponsibility: _cmd];
 }
 

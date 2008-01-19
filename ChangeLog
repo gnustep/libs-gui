@@ -1,3 +1,17 @@
+2008-01-19 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h
+	(-setWindowdevice:forContext:), 
+	* Source/GSDisplayServer.m (-setWindowdevice:forContext:): New
+	method replacing windowdevice:.
+	* Headers/AppKit/NSGraphicsContext.h,
+	* Source/NSGraphicsContext.m: Add new MacOSX methods and ivars.
+	* Source/NSWindow.m (-_processResizeEvent): Simplified with new
+	GSDisplayServer method.
+	* Source/NSWindow.m (-_initBackendWindow, -initWithWindowRef:):
+	Moved device interaction into backend. Requires corresponding
+	change in backend!
+
 2008-01-18 14:39-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h
