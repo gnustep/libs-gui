@@ -1,5 +1,15 @@
 2008-01-19 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/GSFontInfo.m:
+	* Source/NSFontDescriptor.m,
+	* Source/NSTextBlock.m,
+	* Source/NSWindow.m:
+	Add imports to avoid warnings on Windows.
+	* Source/NSMenu.m (-_organizeMenu): Change type of appItem to
+	avoid compiler warning on Windows.
+	
+2008-01-19 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/Additions/GNUstepGUI/GSDisplayServer.h
 	(-setWindowdevice:forContext:), 
 	* Source/GSDisplayServer.m (-setWindowdevice:forContext:): New

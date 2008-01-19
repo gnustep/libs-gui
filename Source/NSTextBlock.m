@@ -29,6 +29,7 @@
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSString.h>
 
+#include "AppKit/NSColor.h"
 #include "AppKit/NSTextTable.h"
 
 @implementation NSTextBlock

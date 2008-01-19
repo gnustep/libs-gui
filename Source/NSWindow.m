@@ -52,6 +52,7 @@
 #include <Foundation/NSUserDefaults.h>
 
 #include "AppKit/NSApplication.h"
+#include "AppKit/NSButton.h"
 #include "AppKit/NSButtonCell.h"
 #include "AppKit/NSCachedImageRep.h"
 #include "AppKit/NSColor.h"

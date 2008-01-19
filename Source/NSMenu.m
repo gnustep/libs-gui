@@ -213,10 +213,10 @@ static BOOL menuBarVisible = YES;
     {
       NSString		*appTitle;
       NSMenu		*appMenu;
-      NSMenuItem	*appItem;
+      id <NSMenuItem>	appItem;
 
       appTitle = [[NSProcessInfo processInfo] processName];
-      appItem = (NSMenuItem *)[self itemWithTitle: appTitle];
+      appItem = [self itemWithTitle: appTitle];
       appMenu = [appItem submenu];
 
       if (_menu.horizontal == YES)
