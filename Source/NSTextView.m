@@ -5042,16 +5042,73 @@ configuation! */
     special section pasteboard */
 - (void) copySelection
 {
-  [self writeSelectionToPasteboard: [NSPasteboard pasteboardWithName: @"Selection"]
-	type: NSStringPboardType];
+#if 1
+  NSString *newSelection;
+  NSString *oldSelection;
+  NSRange range = _layoutManager->_selected_range;
+
+  if (range.location != NSNotFound && range.length != 0)
+    {
+        newSelection = [[self string] substringWithRange: range];
+        oldSelection = [[NSPasteboard pasteboardWithName: @"Selection"] 
+                           stringForType: NSStringPboardType];
+
+        if (oldSelection != nil && 
+            ![newSelection isEqualToString: oldSelection])
+          {
+            NSPasteboard *secondary;
+
+            secondary = [NSPasteboard pasteboardWithName: @"Secondary"];
+            [secondary declareTypes: [NSArray arrayWithObject: NSStringPboardType] 
+                       owner: self];
+            [secondary setString: oldSelection
+                forType: NSStringPboardType];
+          }
+        else
+          {
+            return;
+          }
+    }
+  else
+    {
+      return;
+    }
+#endif
+
+  [self writeSelectionToPasteboard: 
+            [NSPasteboard pasteboardWithName: @"Selection"]
+        type: NSStringPboardType];
 }
 
 /** Extension method that pastes the current selected text from the 
     special section pasteboard */
 - (void) pasteSelection
 {
-  [self readSelectionFromPasteboard: [NSPasteboard pasteboardWithName: @"Selection"]
-	type: NSStringPboardType];
+#if 1
+  NSString *newSelection;
+  NSString *oldSelection;
+  NSRange range = _layoutManager->_selected_range;
+
+  if (range.location != NSNotFound && range.length != 0)
+    {
+        newSelection = [[self string] substringWithRange: range];
+        oldSelection = [[NSPasteboard pasteboardWithName: @"Selection"] 
+                           stringForType: NSStringPboardType];
+
+        if (oldSelection != nil && 
+            [newSelection isEqualToString: oldSelection])
+          {
+            [self readSelectionFromPasteboard: 
+                      [NSPasteboard pasteboardWithName: @"Secondary"] 
+                  type: NSStringPboardType];
+            return;
+          }
+    }
+#endif
+
+  [self readSelectionFromPasteboard: 
+            [NSPasteboard pasteboardWithName: @"Selection"]
+        type: NSStringPboardType];
 }
 
 @end
