@@ -1,3 +1,9 @@
+2008-02-01 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Printing/GSCUPS/GSCUPSPrintInfo.m (-defaultPrinter): Use other
+	CUPS functions to determine the default printer.
+	Patch by Mark Tracy <tracy454@concentric.net>.
+
 2008-01-26 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView.m (-copySelection, -pasteSelection): Add new X
