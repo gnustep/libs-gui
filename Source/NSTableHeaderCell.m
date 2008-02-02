@@ -45,6 +45,7 @@
   [self setFont: [NSFont titleBarFontOfSize: 0]];
   // This is not exactly true 
   _cell.is_bezeled = YES;
+  _cell.is_bordered = NO;
 
   return self;
 }
@@ -59,12 +60,9 @@
   return NSInsetRect(theRect, borderSize.width, borderSize.height);
 }
 
-- (void) drawWithFrame: (NSRect)cellFrame
-		inView: (NSView *)controlView
+- (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame 
+                                    inView: (NSView*)controlView
 {
-  if (NSIsEmptyRect(cellFrame))
-    return;
-
   if (_cell.is_highlighted == YES)
     {
       [[GSTheme theme] drawButton: cellFrame withClip: cellFrame];
@@ -73,8 +71,6 @@
     {
       [[GSTheme theme] drawDarkButton: cellFrame withClip: cellFrame];
     }
-
-  [self drawInteriorWithFrame: cellFrame inView: controlView];
 }
 
 - (void) setHighlighted: (BOOL)flag

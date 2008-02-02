@@ -74,18 +74,18 @@ static NSTextFieldCell *titleCell;
 {
 @public
   BOOL _isLoaded;
-  id _columnScrollView;
-  id _columnMatrix;
+  NSScrollView *_columnScrollView;
+  NSMatrix *_columnMatrix;
   NSString *_columnTitle;
   float _width;
 }
 
 - (void) setIsLoaded: (BOOL)flag;
 - (BOOL) isLoaded;
-- (void) setColumnScrollView: (id)aView;
-- (id) columnScrollView;
-- (void) setColumnMatrix: (id)aMatrix;
-- (id) columnMatrix;
+- (void) setColumnScrollView: (NSScrollView *)aView;
+- (NSScrollView *) columnScrollView;
+- (void) setColumnMatrix: (NSMatrix *)aMatrix;
+- (NSMatrix *) columnMatrix;
 - (void) setColumnTitle: (NSString *)aString;
 - (NSString *) columnTitle;
 @end
@@ -119,22 +119,22 @@ static NSTextFieldCell *titleCell;
   return _isLoaded;
 }
 
-- (void) setColumnScrollView: (id)aView
+- (void) setColumnScrollView: (NSScrollView *)aView
 {
   ASSIGN(_columnScrollView, aView);
 }
 
-- (id) columnScrollView
+- (NSScrollView *) columnScrollView
 {
   return _columnScrollView;
 }
 
-- (void) setColumnMatrix: (id)aMatrix
+- (void) setColumnMatrix: (NSMatrix *)aMatrix
 {
   ASSIGN(_columnMatrix, aMatrix);
 }
 
-- (id) columnMatrix
+- (NSMatrix *) columnMatrix
 {
   return _columnMatrix;
 }
@@ -201,22 +201,19 @@ static NSTextFieldCell *titleCell;
 @end
 
 @implementation GSBrowserTitleCell
+
 - (NSRect) drawingRectForBounds: (NSRect)theRect
 {
   // This adjustment must match the drawn border
   return NSInsetRect(theRect, 2, 2);
 }
 
-- (void) drawWithFrame: (NSRect)cellFrame  inView: (NSView*)controlView
+- (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame 
+                                    inView: (NSView*)controlView
 {
-  if (NSIsEmptyRect (cellFrame))
-    {
-      return;
-    }
-
   [[GSTheme theme] drawGrayBezel: cellFrame withClip: NSZeroRect];
-  [self drawInteriorWithFrame: cellFrame inView: controlView];
 }
+
 @end
 
 //
@@ -299,7 +296,7 @@ static NSTextFieldCell *titleCell;
 - (id) selectedCell
 {
   int i;
-  id matrix;
+  NSMatrix *matrix;
 
   // Nothing selected
   if ((i = [self selectedColumn]) == -1)
@@ -321,7 +318,7 @@ static NSTextFieldCell *titleCell;
 */
 - (id) selectedCellInColumn: (int)column
 {
-  id matrix;
+  NSMatrix *matrix;
 
   if (!(matrix = [self matrixInColumn: column]))
     {
@@ -338,7 +335,7 @@ static NSTextFieldCell *titleCell;
 - (NSArray *) selectedCells
 {
   int i;
-  id matrix;
+  NSMatrix *matrix;
 
   // Nothing selected
   if ((i = [self selectedColumn]) == -1)
@@ -359,7 +356,7 @@ static NSTextFieldCell *titleCell;
 */
 - (void) selectAll: (id)sender
 {
-  id matrix;
+  NSMatrix *matrix;
 
   if (!(matrix = [self matrixInColumn: _lastColumnLoaded]))
     {
@@ -375,7 +372,7 @@ static NSTextFieldCell *titleCell;
 */
 - (int) selectedRowInColumn: (int)column
 {
-  id matrix;
+  NSMatrix *matrix;
 
   if (!(matrix = [self matrixInColumn: column]))
     {
@@ -395,7 +392,7 @@ static NSTextFieldCell *titleCell;
  */
 - (void) selectRow: (int)row inColumn: (int)column 
 {
-  id matrix;
+  NSMatrix *matrix;
   id cell;
   BOOL didSelect;
 
@@ -429,21 +426,22 @@ static NSTextFieldCell *titleCell;
       didSelect = YES;
     }
 
-  if (didSelect && [cell isLeaf] == NO)
+  if (didSelect && (![cell respondsToSelector: @selector(isLeaf)] 
+                    || ([(NSBrowserCell*)cell isLeaf] == NO)))
     {
       [self addColumn];
     }
 }
 
 /** Loads if necessary and returns the NSCell at row in column. 
-    if you change this code, you may want to look at the _loadColumn
+    if you change this code, you may want to look at the __performLoadOfColumn:
     method in which the following code is integrated (for speed) 
 */
 - (id) loadedCellAtRow: (int)row
                column: (int)column
 {
   NSMatrix *matrix;
-  id cell;
+  NSCell *cell;
 
   if ((matrix = [self matrixInColumn: column]) == nil)
     {
@@ -457,7 +455,8 @@ static NSTextFieldCell *titleCell;
     }
 
   // Load if not already loaded
-  if ([cell isLoaded])
+  if (![cell respondsToSelector: @selector(isLoaded)] 
+      || [(NSBrowserCell*)cell isLoaded])
     {
       return cell;
     }
@@ -466,10 +465,10 @@ static NSTextFieldCell *titleCell;
       if (_passiveDelegate || [_browserDelegate respondsToSelector: 
                   @selector(browser:willDisplayCell:atRow:column:)])
         {
-          [_browserDelegate browser: self  willDisplayCell: cell
+          [_browserDelegate browser: self willDisplayCell: cell
                             atRow: row  column: column];
         }
-      [cell setLoaded: YES];
+      [(NSBrowserCell*)cell setLoaded: YES];
     }
 
   return cell;
@@ -853,7 +852,8 @@ static NSTextFieldCell *titleCell;
  */
 - (void) displayColumn: (int)column
 {
-  id bc, sc;
+  NSBrowserColumn *bc;
+  NSScrollView *sc;
 
   // If not visible then nothing to display
   if ((column < _firstVisibleColumn) || (column > _lastVisibleColumn))
@@ -904,7 +904,7 @@ static NSTextFieldCell *titleCell;
 - (int) selectedColumn
 {
   int i;
-  id matrix;
+  NSMatrix *matrix;
 
   for (i = _lastColumnLoaded; i >= 0; i--)
     {
@@ -931,7 +931,8 @@ static NSTextFieldCell *titleCell;
 - (void) setLastColumn: (int)column
 {
   int i, count, num;
-  id bc, sc;
+  NSBrowserColumn *bc;
+  NSScrollView *sc;
 
   if (column > _lastColumnLoaded)
     {
@@ -1123,7 +1124,16 @@ static NSTextFieldCell *titleCell;
 */
 - (void) setAllowsEmptySelection: (BOOL)flag
 {
-  _allowsEmptySelection = flag;
+  if (_allowsEmptySelection != flag)
+    {
+      int i;
+
+      _allowsEmptySelection = flag;
+      for (i = 0; i <= _lastColumnLoaded; i++)
+        {
+          [[self matrixInColumn: i] setAllowsEmptySelection: flag];
+        }
+    }
 }
 
 /**<p>Returns whether the user can select multiple items. By default YES.</p>
@@ -1139,7 +1149,25 @@ static NSTextFieldCell *titleCell;
 */
 - (void) setAllowsMultipleSelection: (BOOL)flag
 {
-  _allowsMultipleSelection = flag;
+  if (_allowsMultipleSelection != flag)
+    {
+      int i;
+      NSMatrixMode mode;
+
+      _allowsMultipleSelection = flag;
+      if (flag)
+        {
+          mode = NSListModeMatrix;
+        }
+      else
+        {
+          mode = NSRadioModeMatrix;
+        }
+      for (i = 0; i <= _lastColumnLoaded; i++)
+        {
+          [[self matrixInColumn: i] setMode: mode];
+        }
+    }
 }
 
 
@@ -1907,8 +1935,9 @@ static NSTextFieldCell *titleCell;
   
   for (i = _firstVisibleColumn; i <= _lastVisibleColumn; i++)
     {
-      id bc, sc;
-      id matrix;
+      NSBrowserColumn *bc;
+      NSScrollView *sc;
+      NSMatrix *matrix;
 
       // FIXME: in some cases the column is not loaded
       while (i >= [_browserColumns count]) [self _createColumn];
@@ -2276,10 +2305,6 @@ static NSTextFieldCell *titleCell;
 
 - (void) drawRect: (NSRect)rect
 {
-  NSRectClip(rect);
-  [[_window backgroundColor] set];
-  NSRectFill(rect);
-
   // Load the first column if not already done
   if (!_isLoaded)
     {
@@ -2314,7 +2339,7 @@ static NSTextFieldCell *titleCell;
       scrollerBorderRect.size.height += (2 * bs.height) - 1;
 
       if ((NSIntersectsRect (scrollerBorderRect, rect) == YES) && _window)
-              {
+        {
           [[GSTheme theme] drawGrayBezel: scrollerBorderRect withClip: rect];
         }
     }
@@ -2911,7 +2936,8 @@ static NSTextFieldCell *titleCell;
 
 - (void) _remapColumnSubviews: (BOOL)fromFirst
 {
-  id bc, sc;
+  NSBrowserColumn *bc;
+  NSScrollView *sc;
   int i, count;
   id firstResponder = nil;
   BOOL setFirstResponder = NO;
@@ -2988,7 +3014,9 @@ static NSTextFieldCell *titleCell;
 /* Loads column 'column' (asking the delegate). */
 - (void) _performLoadOfColumn: (int)column
 {
-  id bc, sc, matrix;
+  NSBrowserColumn *bc;
+  NSScrollView *sc;
+  NSMatrix *matrix;
   int i, rows, cols;
 
   if (_passiveDelegate)

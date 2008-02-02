@@ -53,8 +53,8 @@ typedef enum _NSBrowserColumnResizingType
 @interface NSBrowser : NSControl <NSCoding>
 {
   // Attributes
-  id _browserCellPrototype;
-  id _browserMatrixClass;
+  NSCell *_browserCellPrototype;
+  Class _browserMatrixClass;
   NSString *_pathSeparator;
   
   //NSBox *_horizontalScrollerBox;

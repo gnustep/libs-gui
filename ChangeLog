@@ -1,3 +1,18 @@
+2008-02-02 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableHeaderCell.m,
+	* Source/NSBrowser.m (GSBrowserTitleCell): Move border drawing
+	into _drawBorderAndBackgroundWithFrame:inView:.
+	* Source/NSBrowser.m (-setAllowsEmptySelection,
+	-setAllowsMultipleSelection): Propagate changes on to matrixes.
+	* Headers/AppKit/NSBrowser.h,
+	* Source/NSBrowser.m: Stronger typing of variables.
+	* Source/NSBrowser.m (-drawRect:): Don't draw window background colour.
+	* Source/NSMatrix.m (-drawCellAtRow:column:): Don't call
+	displayRect: when there is no background drawing.
+	* Source/NSMatrix.m (-_drawCellAtRow:column:): Remove this method
+	and replace call to it with -drawCellAtRow:column:.
+	
 2008-02-01 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Printing/GSCUPS/GSCUPSPrintInfo.m (-defaultPrinter): Use other
