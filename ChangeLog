@@ -1,3 +1,9 @@
+2008-02-03 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSButtonCell.m
+	(-_drawBorderAndBackgroundWithFrame:inView:): Add direct check if
+	the mouse is inside the cellFrame.
+
 2008-02-02 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTableHeaderCell.m,

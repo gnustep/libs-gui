@@ -922,10 +922,16 @@ typedef struct _GSButtonCellFlags
 }
 
 // Private helper method overridden in subclasses
-- (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
+- (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame 
+                                    inView: (NSView*)controlView
 {
+  // The inside check could also be done via a track rect, but then this would
+  // only work with specially prepared controls. Therefore we dont use 
+  // _mouse_inside here.
   if ((_cell.is_bordered)
-    && (!_shows_border_only_while_mouse_inside || _mouse_inside))
+      && (!_shows_border_only_while_mouse_inside 
+          || [controlView mouse: [[controlView window] mouseLocationOutsideOfEventStream] 
+                          inRect: cellFrame]))
     {
       [self drawBezelWithFrame: cellFrame inView: controlView];
     }
