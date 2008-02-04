@@ -258,21 +258,36 @@ including gi will have been cached.
   while (gi > 0)
     {
       if (g->g == NSControlGlyph)
-	return gi + cache_base;
+        return gi + cache_base;
       ch = [str characterAtIndex: g->char_index];
-      if (ch == 0x20 || ch == 0x0a || ch == 0x0d /* TODO: paragraph/line separator */)
-	{
-	  g->dont_show = YES;
-	  if (gi > 0)
-	    {
-	      g->pos = g[-1].pos;
-	      g->pos.x += g[-1].size.width;
-	    }
-	  else
-	    g->pos = NSMakePoint(0, 0);
-	  g->size.width = 0;
-	  return gi + 1 + cache_base;
-	}
+      /* TODO: paragraph/line separator */
+      if (ch == 0x20 || ch == 0x0a || ch == 0x0d)
+        {
+          g->dont_show = YES;
+          if (gi > 0)
+            {
+              g->pos = g[-1].pos;
+              g->pos.x += g[-1].size.width;
+            }
+          else
+            g->pos = NSMakePoint(0, 0);
+          g->size.width = 0;
+          return gi + 1 + cache_base;
+        }
+      /* Each CJK glyph should be treated as a word when wrapping word.
+         The range should work for most cases */
+      else if ((ch > 0x2ff0) && (ch < 0x9fff))
+         {
+           g->dont_show = NO;
+           if (gi > 0)
+             {
+               g->pos = g[-1].pos;
+               g->pos.x += g[-1].size.width;
+             }
+           else
+             g->pos = NSMakePoint(0,0);
+           return gi + cache_base;
+         }     
       gi--;
       g--;
     }
