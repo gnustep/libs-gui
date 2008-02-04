@@ -91,13 +91,13 @@ static NSMapTable	*viewInfo = 0;
   if (isAppMenu != 0)
     {
       if (m == [NSApp mainMenu])
-	{
-	  *isAppMenu = YES;
-	}
+        {
+            *isAppMenu = YES;
+        }
       else
-	{
-	  *isAppMenu = NO;
-	}
+        {
+          *isAppMenu = NO;
+        }
     }
   return [[m menuRepresentation] isHorizontal];
 }
@@ -123,7 +123,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   if (viewInfo == 0)
     {
       viewInfo = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
-	NSNonOwnedPointerMapValueCallBacks, 20);
+                                  NSNonOwnedPointerMapValueCallBacks, 20);
     }
 }
 
@@ -137,7 +137,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
       height = [font boundingRectForFont].size.height;
       if (height < 22)
-	height = 22;
+        height = 22;
     }
 
   return height;
@@ -328,7 +328,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
       _cellSize = NSMakeSize (r.size.width * 10., r.size.height + 3.);
 
       if (_cellSize.height < 20)
-	_cellSize.height = 20;
+        _cellSize.height = 20;
 
       [self setNeedsSizing: YES];
     }
@@ -919,7 +919,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
       NSRect theRect;
 
       theRect.origin.y
-	= _cellSize.height * ([_itemCells count] - index - 1);
+          = _cellSize.height * ([_itemCells count] - index - 1);
       theRect.origin.x = _leftBorderOffset;
       theRect.size = _cellSize;
 
@@ -1020,9 +1020,9 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 }
 
 - (void) setWindowFrameForAttachingToRect: (NSRect)screenRect 
-				 onScreen: (NSScreen*)screen
-			    preferredEdge: (NSRectEdge)edge
-			popUpSelectedItem: (int)selectedItemIndex
+                                 onScreen: (NSScreen*)screen
+                            preferredEdge: (NSRectEdge)edge
+                        popUpSelectedItem: (int)selectedItemIndex
 {
   NSRect r;
   NSRect cellFrame;
@@ -1050,37 +1050,48 @@ _addLeftBorderOffsetToRect(NSRect aRect)
       float f;
 
       if (_horizontal == NO)
-	{
-	  f = screenRect.size.height * (items - 1);
-	  screenFrame.size.height += f + _leftBorderOffset;
-	  screenFrame.origin.y -= f;
-	  screenFrame.size.width += _leftBorderOffset;
-	  screenFrame.origin.x -= _leftBorderOffset;
-	  // Compute position for popups, if needed
-	  if (selectedItemIndex != -1) 
-	    {
-	      screenFrame.origin.y
-		+= screenRect.size.height * selectedItemIndex;
-	    }
-	}
+        {
+          f = screenRect.size.height * (items - 1);
+          screenFrame.size.height += f + _leftBorderOffset;
+          screenFrame.origin.y -= f;
+          screenFrame.size.width += _leftBorderOffset;
+          screenFrame.origin.x -= _leftBorderOffset;
+          // Compute position for popups, if needed
+          if (selectedItemIndex != -1) 
+            {
+              screenFrame.origin.y
+                  += screenRect.size.height * selectedItemIndex;
+            }
+        }
       else
-	{
- 	  f = screenRect.size.width * (items - 1);
- 	  screenFrame.size.width += f;
-	  // Compute position for popups, if needed
-	  if (selectedItemIndex != -1) 
-	    {
-	      screenFrame.origin.x -= screenRect.size.width * selectedItemIndex;
-	    }
-	}
+        {
+          f = screenRect.size.width * (items - 1);
+          screenFrame.size.width += f;
+          // Compute position for popups, if needed
+          if (selectedItemIndex != -1) 
+            {
+              screenFrame.origin.x -= screenRect.size.width * selectedItemIndex;
+            }
+        }
     }  
+  
+  // Update position, if needed, using the preferredEdge
+  if (edge == NSMaxYEdge)
+	    {
+	      screenFrame.origin.y += screenRect.size.height;  
+	    }
+	  else if (edge == NSMaxXEdge)
+	    {
+	      screenFrame.origin.x += screenRect.size.width;
+	    }
+	  else if (edge == NSMinXEdge)
+	    {
+	      screenFrame.origin.x -= screenRect.size.width;
+	    }
   
   // Get the frameRect
   r = [NSWindow frameRectForContentRect: screenFrame
-		styleMask: [_window styleMask]];
-  
-  // Update position,if needed, using the preferredEdge;
-  // TODO
+                styleMask: [_window styleMask]];
   
   // Set the window frame
   [_window setFrame: r display: NO]; 

@@ -1,5 +1,16 @@
 2008-02-04 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Images/common_3DArrowLeft.tiff,
+	* Images/common_3DArrowUp.tiff: New files
+	* Images/GNUmakefile: Install new files.
+	* Source/NSMenuView.m
+	(-setWindowFrameForAttachingToRect:...popUpSelectedItem:):
+	Implement preferred edge handling.
+	* Source/NSPopUpButtonCell.m: Rewrote handling of preferred edge,
+	arrow possition and pull down flag.
+
+2008-02-04 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/GSHorizontalTypesetter.m
 	(-breakLineByWordWrappingBefore:): Treat CJK characters as words.
 	Patch by Yen-Ju Chen <yjchenx@hotmail.com>.
