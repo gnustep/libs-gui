@@ -1,3 +1,16 @@
+2008-02-07 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSMenu.h,
+	* Source/NSMenu.m (-_owningPopUp): New helper method.
+	* Source/NSMenuView.m
+	(-setWindowFrameForAttachingToRect:...popUpSelectedItem:):
+	Special case for popups that don't use an item from the list.
+	* Source/NSPopUpButtonCell.m (-setUsesItemFromMenu:): Create a
+	menu item for the title.
+	* Source/NSPopUpButtonCell.m (-setTitel:): Use the menu item, when
+	not using an item from the menu.
+	Reworked patch by Matt Rice <ratmice@gmail.com>. 
+	
 2008-02-04 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Images/common_3DArrowLeft.tiff,

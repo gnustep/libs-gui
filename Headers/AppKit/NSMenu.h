@@ -750,6 +750,7 @@
 
 /* Popup behaviour */
 - (BOOL) _ownedByPopUp;
+- (NSPopUpButtonCell *)_owningPopUp;
 - (void) _setOwnedByPopUp: (NSPopUpButtonCell*)popUp;
 @end
 #endif

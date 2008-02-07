@@ -37,6 +37,7 @@
 #include "AppKit/NSMenuView.h"
 #include "AppKit/NSMenu.h"
 #include "AppKit/NSButton.h"
+#include "AppKit/NSPopUpButtonCell.h"
 #include "AppKit/NSWindow.h"
 #include "AppKit/PSOperators.h"
 #include "AppKit/NSImage.h"
@@ -606,17 +607,17 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
   [self sizeToFit];
 
-  if ([_attachedMenu _ownedByPopUp] == NO)
+  if (_titleView != nil)
     {
       if ([_attachedMenu isTornOff] && ![_attachedMenu isTransient])
-	{
-	  [_titleView
-	    addCloseButtonWithAction: @selector(_performMenuClose:)];
-	}
+        {
+          [_titleView
+              addCloseButtonWithAction: @selector(_performMenuClose:)];
+        }
       else
-	{
-	  [_titleView removeCloseButton];
-	}
+        {
+          [_titleView removeCloseButton];
+        }
     }
 }
 
@@ -1076,18 +1077,26 @@ _addLeftBorderOffsetToRect(NSRect aRect)
     }  
   
   // Update position, if needed, using the preferredEdge
-  if (edge == NSMaxYEdge)
-	    {
-	      screenFrame.origin.y += screenRect.size.height;  
-	    }
-	  else if (edge == NSMaxXEdge)
-	    {
-	      screenFrame.origin.x += screenRect.size.width;
-	    }
-	  else if (edge == NSMinXEdge)
-	    {
-	      screenFrame.origin.x -= screenRect.size.width;
-	    }
+  if (edge == NSMinYEdge)
+    {
+      if ([_attachedMenu _ownedByPopUp] && 
+          ([[_attachedMenu _owningPopUp] usesItemFromMenu] == NO))
+        {
+          screenFrame.origin.y -= screenRect.size.height;  
+        }
+    }
+  else if (edge == NSMaxYEdge)
+    {
+	    screenFrame.origin.y += screenRect.size.height;  
+    }
+  else if (edge == NSMaxXEdge)
+    {
+	    screenFrame.origin.x += screenRect.size.width;
+    }
+  else if (edge == NSMinXEdge)
+    {
+      screenFrame.origin.x -= screenRect.size.width;
+    }
   
   // Get the frameRect
   r = [NSWindow frameRectForContentRect: screenFrame

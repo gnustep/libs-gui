@@ -243,7 +243,20 @@ static NSImage *_pbc_image[5];
  */ 
 - (void) setUsesItemFromMenu: (BOOL)flag
 {
-  _pbcFlags.usesItemFromMenu = flag;
+  if (_pbcFlags.usesItemFromMenu != flag)
+    {
+      _pbcFlags.usesItemFromMenu = flag;
+      if (!flag)
+        {
+          NSMenuItem *anItem;
+
+          anItem = [[NSMenuItem alloc] initWithTitle: [self title]
+                                       action: NULL
+                                       keyEquivalent: nil];
+          [self setMenuItem: anItem];
+          RELEASE(anItem);
+        }
+    }
 }
 
 /**
@@ -635,7 +648,13 @@ static NSImage *_pbc_image[5];
 {
   id <NSMenuItem> anItem;
 
-  if (_pbcFlags.pullsDown)
+  if (!_pbcFlags.usesItemFromMenu)
+    {
+      [_menuItem setTitle: aString];
+
+      return; 
+    }
+  else if (_pbcFlags.pullsDown)
     {
       if ([_menu numberOfItems] == 0)
         {

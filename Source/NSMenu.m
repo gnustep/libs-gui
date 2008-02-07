@@ -1857,6 +1857,11 @@ static BOOL menuBarVisible = YES;
   return _popUpButtonCell != nil;
 }
 
+- (NSPopUpButtonCell *)_owningPopUp
+{
+  return _popUpButtonCell;
+}
+
 - (void)_setOwnedByPopUp: (NSPopUpButtonCell*)popUp
 {
   if (_popUpButtonCell != popUp)
