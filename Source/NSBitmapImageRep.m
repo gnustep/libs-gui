@@ -313,7 +313,7 @@
 /** Initialize with bitmap data from a rect within the focused view */
 - (id) initWithFocusedViewRect: (NSRect)rect
 {
-  int bps, spp, alpha;
+    int bps, spp, alpha, format;
   NSSize size;
   NSString *space;
   unsigned char *planes[4];
@@ -340,17 +340,19 @@
   alpha = [[dict objectForKey: @"HasAlpha"] intValue];
   size = [[dict objectForKey: @"Size"] sizeValue];
   space = [dict objectForKey: @"ColorSpace"];
+  format = [[dict objectForKey: @"BitmapFormat"] intValue];
   planes[0] = (unsigned char *)[_imageData bytes];
   self = [self initWithBitmapDataPlanes: planes
-		pixelsWide: size.width
-		pixelsHigh: size.height
-		bitsPerSample: bps
-		samplesPerPixel: spp
-	        hasAlpha: (alpha) ? YES : NO
-		isPlanar: NO
-		colorSpaceName: space
-		bytesPerRow: 0
-		bitsPerPixel: 0];
+               pixelsWide: size.width
+               pixelsHigh: size.height
+               bitsPerSample: bps
+               samplesPerPixel: spp
+               hasAlpha: (alpha) ? YES : NO
+               isPlanar: NO
+               colorSpaceName: space
+               bitmapFormat: format
+               bytesPerRow: 0
+               bitsPerPixel: 0];
   return self;
 }
 
@@ -682,10 +684,50 @@
   return _format;
 }
 
+/*
+ * This code was copied over from XGBitmap.m
+ * Here we extract a value a given number of bits wide from a bit
+ * offset into a block of memory starting at "base". The bit numbering
+ * is assumed to be such that a bit offset of zero and a width of 4 gives
+ * the upper 4 bits of the first byte, *not* the lower 4 bits. We do allow
+ * the value to cross a byte boundary, though it is unclear as to whether
+ * this is strictly necessary for OpenStep tiffs.
+ */
+static unsigned int
+_get_bit_value(unsigned char *base, long msb_off, int bit_width)
+{
+  long lsb_off, byte1, byte2;
+  int shift, value;
+
+  /*
+   * Firstly we calculate the position of the msb and lsb in terms
+   * of bit offsets and thus byte offsets. The shift is the number of
+   * spare bits left in the byte containing the lsb
+   */
+  lsb_off= msb_off+bit_width-1;
+  byte1= msb_off/8;
+  byte2= lsb_off/8;
+  shift= 7-(lsb_off%8);
+
+  /*
+   * We now get the value from the byte array, possibly using two bytes if
+   * the required set of bits crosses the byte boundary. This is then shifted
+   * down to it's correct position and extraneous bits masked off before
+   * being returned.
+   */
+  value=base[byte2];
+  if (byte1!=byte2)
+    value|= base[byte1]<<8;
+  value >>= shift;
+
+  return value & ((1<<bit_width)-1);
+}
+
 - (void) getPixel: (unsigned int[])pixelData atX: (int)x y: (int)y
 {
   int i;
-  int offset;
+  long int offset;
+  long int line_offset;
 
 	if (x < 0 || y < 0 || x >= _pixelsWide || y >= _pixelsHigh)
     {
@@ -693,29 +735,90 @@
       return;
     }
 
+  // FIXME: The y value is taken from the bottom of the image. 
+  // Not sure if this is correct.
+  line_offset = _bytesPerRow * (_pixelsHigh - 1 - y);
   if (_isPlanar)
     {
-      // FIXME: The y value is taken from the bottom of the image. Not sure if this is correct.
-      offset = x + _bytesPerRow * (_pixelsHigh - 1 - y);
-      for (i = 0; i < _numColors; i++)
+      if (_bitsPerSample == 8)
         {
-          pixelData[i] = _imagePlanes[i][offset];
+          offset = x + line_offset;
+          for (i = 0; i < _numColors; i++)
+            {
+              pixelData[i] = _imagePlanes[i][offset];
+            }
         }
-  }
+      else
+        {
+          offset = _bitsPerPixel * x;
+          for (i = 0; i < _numColors; i++)
+            {
+              pixelData[i] = _get_bit_value(_imagePlanes[i] + line_offset, 
+                                            offset, _bitsPerSample);
+            }
+        }
+    }
   else
 		{
-      offset = _numColors * x + _bytesPerRow * (_pixelsHigh - 1 - y);
-      for (i = 0; i < _numColors; i++)
+      if (_bitsPerSample == 8)
         {
-          pixelData[i] = _imagePlanes[0][offset + i];
+          offset = (_bitsPerPixel * x) / 8 + line_offset;
+          for (i = 0; i < _numColors; i++)
+            {
+              pixelData[i] = _imagePlanes[0][offset + i];
+            }
+        }
+      else
+        {
+          offset = _bitsPerPixel * x;
+          for (i = 0; i < _numColors; i++)
+            {
+              pixelData[i] = _get_bit_value(_imagePlanes[0] + line_offset, 
+                                            offset, _bitsPerSample);
+              offset += _bitsPerSample;
+            }
         }
 		}
+}
+
+static void
+_set_bit_value(unsigned char *base, long msb_off, int bit_width, 
+               unsigned int value)
+{
+  long lsb_off, byte1, byte2;
+  int shift;
+  int all;
+
+  /*
+   * Firstly we calculate the position of the msb and lsb in terms
+   * of bit offsets and thus byte offsets. The shift is the number of
+   * spare bits left in the byte containing the lsb
+   */
+  lsb_off= msb_off+bit_width-1;
+  byte1= msb_off/8;
+  byte2= lsb_off/8;
+  shift= 7-(lsb_off%8);
+
+  /*
+   * We now set the value in the byte array, possibly using two bytes if
+   * the required set of bits crosses the byte boundary. This value is 
+   * first shifted up to it's correct position and extraneous bits are 
+   * masked off.
+   */
+  value &= ((1<<bit_width)-1);
+  value <<= shift;
+  all = ((1<<bit_width)-1) << shift;
+
+  if (byte1 != byte2)
+    base[byte1] = (value >> 8) | (base[byte1] ^ (all >> 8));
+  base[byte2] = (value & 255) | (base[byte2] ^ (all & 255));
 }
 
 - (void) setPixel: (unsigned int[])pixelData atX: (int)x y: (int)y
 {
   int i;
-  int offset;
+  long int offset;
+  long int line_offset;
 
 	if (x < 0 || y < 0 || x >= _pixelsWide || y >= _pixelsHigh)
     {
@@ -728,20 +831,49 @@
       // allocate plane memory
       [self bitmapData];
     }
+
+  // FIXME: The y value is taken from the bottom of the image. 
+  // Not sure if this is correct.
+  line_offset = _bytesPerRow * (_pixelsHigh - 1 - y);
   if(_isPlanar)
     {
-      offset = x + _bytesPerRow * (_pixelsHigh - 1 - y);
-      for (i = 0; i < _numColors; i++)
+      if (_bitsPerSample == 8)
         {
-          _imagePlanes[i][offset] = pixelData[i];
+          offset = x + line_offset;
+          for (i = 0; i < _numColors; i++)
+            {
+              _imagePlanes[i][offset] = pixelData[i];
+            }
+        }
+      else
+        {
+          offset = _bitsPerPixel * x;
+          for (i = 0; i < _numColors; i++)
+            {
+              _set_bit_value(_imagePlanes[i] + line_offset, 
+                             offset, _bitsPerSample, pixelData[i]);
+            }
         }
 		}
   else
     {
-      offset = _numColors * x + _bytesPerRow * (_pixelsHigh - 1 - y);
-      for (i = 0; i < _numColors; i++)
+      if (_bitsPerSample == 8)
         {
-          _imagePlanes[0][offset + i] = pixelData[i];
+          offset = (_bitsPerPixel * x) / 8 + line_offset;
+          for (i = 0; i < _numColors; i++)
+            {
+              _imagePlanes[0][offset + i] = pixelData[i];
+            }
+        }
+      else
+        {
+          offset = _bitsPerPixel * x;
+          for (i = 0; i < _numColors; i++)
+            {
+              _set_bit_value(_imagePlanes[0] + line_offset, 
+                             offset, _bitsPerSample, pixelData[i]);
+              offset += _bitsPerSample;
+            }
         }
     }
 }
@@ -767,20 +899,39 @@
       scale = (float)((1 << _bitsPerSample) - 1);
       if (_hasAlpha)
         {
-          // FIXME: This order depends on the bitmap format
-          ir = pixelData[0];
-          ig = pixelData[1];
-          ib = pixelData[2];
-          ia = pixelData[3];
+          // This order depends on the bitmap format
+          if (_format & NSAlphaFirstBitmapFormat)
+            {
+              ia = pixelData[0];
+              ir = pixelData[1];
+              ig = pixelData[2];
+              ib = pixelData[3];
+            }
+          else
+            {
+              ir = pixelData[0];
+              ig = pixelData[1];
+              ib = pixelData[2];
+              ia = pixelData[3];
+            }
+
           // Scale to [0.0 ... 1.0] and undo premultiplication
           fa = ia / scale;
-          fr = ir / (scale * fa);
-          fg = ig / (scale * fa);
-          fb = ib / (scale * fa);
+          if (_format & NSAlphaNonpremultipliedBitmapFormat)
+            {
+              fr = ir / scale;
+              fg = ig / scale;
+              fb = ib / scale;
+            }
+          else
+            {
+              fr = ir / (scale * fa);
+              fg = ig / (scale * fa);
+              fb = ib / (scale * fa);
+            }
         }
       else
         {
-          // FIXME: This order depends on the bitmap format
           ir = pixelData[0];
           ig = pixelData[1];
           ib = pixelData[2];
@@ -816,11 +967,27 @@
       if (_hasAlpha)
         {
           // FIXME: This order depends on the bitmap format
-          iw = pixelData[0];
-          ia = pixelData[1];
+          if (_format & NSAlphaFirstBitmapFormat)
+            {
+                ia = pixelData[0];
+                iw = pixelData[1];
+            }
+          else
+            {
+                iw = pixelData[0];
+                ia = pixelData[1];
+            }
+
           // Scale to [0.0 ... 1.0] and undo premultiplication
           fa = ia / scale;
-          fw = iw / (scale * fa);
+          if (_format & NSAlphaNonpremultipliedBitmapFormat)
+            {
+              fw = iw / scale;
+            }
+          else
+            {
+              fw = iw / (scale * fa);
+            }
         }
       else
         {
@@ -851,16 +1018,30 @@
       scale = (float)((1 << _bitsPerSample) - 1);
       if (_hasAlpha)
         {
-          // FIXME: This order depends on the bitmap format
-          ib = pixelData[0];
-          ia = pixelData[1];
+          // This order depends on the bitmap format
+          if (_format & NSAlphaFirstBitmapFormat)
+            {
+              ia = pixelData[0];
+              ib = pixelData[1];
+            }
+          else
+            {
+              ib = pixelData[0];
+              ia = pixelData[1];
+            }
           // Scale to [0.0 ... 1.0] and undo premultiplication
           fa = ia / scale;
-          fw = 1.0 - ib / (scale * fa);
+         if (_format & NSAlphaNonpremultipliedBitmapFormat)
+           {
+             fw = 1.0 - ib / scale;
+           }
+         else
+           {
+             fw = 1.0 - ib / (scale * fa);
+           }
         }
       else
         {
-          // FIXME: This order depends on the bitmap format
           ib = pixelData[0];
           // Scale to [0.0 ... 1.0]
           fw = 1.0 - ib / scale;
@@ -886,22 +1067,43 @@
       scale = (float)((1 << _bitsPerSample) - 1);
       if (_hasAlpha)
         {
-          // FIXME: This order depends on the bitmap format
-          ic = pixelData[0];
-          im = pixelData[1];
-          iy = pixelData[2];
-          ib = pixelData[3];
-          ia = pixelData[4];
+          // This order depends on the bitmap format
+          if (_format & NSAlphaFirstBitmapFormat)
+            {
+              ia = pixelData[0];
+              ic = pixelData[1];
+              im = pixelData[2];
+              iy = pixelData[3];
+              ib = pixelData[4];
+            }
+          else
+            {
+              ic = pixelData[0];
+              im = pixelData[1];
+              iy = pixelData[2];
+              ib = pixelData[3];
+              ia = pixelData[4];
+            }
+
           // Scale to [0.0 ... 1.0] and undo premultiplication
           fa = ia / scale;
-          fc = ic / (scale * fa);
-          fm = im / (scale * fa);
-          fy = iy / (scale * fa);
-          fb = ib / (scale * fa);
+          if (_format & NSAlphaNonpremultipliedBitmapFormat)
+            {
+              fc = ic / scale;
+              fm = im / scale;
+              fy = iy / scale;
+              fb = ib / scale;
+            }
+          else
+            {
+              fc = ic / (scale * fa);
+              fm = im / (scale * fa);
+              fy = iy / (scale * fa);
+              fb = ib / (scale * fa);
+            }
         }
       else
         {
-          // FIXME: This order depends on the bitmap format
           ic = pixelData[0];
           im = pixelData[1];
           iy = pixelData[2];
@@ -953,15 +1155,35 @@
       if(_hasAlpha)
         {
           // Scale and premultiply alpha
-          ir = scale * fr * fa;
-          ig = scale * fg * fa;
-          ib = scale * fb * fa;
+          if (_format & NSAlphaNonpremultipliedBitmapFormat)
+            {
+              ir = scale * fr;
+              ig = scale * fg;
+              ib = scale * fb;
+            }
+          else
+            {
+              ir = scale * fr * fa;
+              ig = scale * fg * fa;
+              ib = scale * fb * fa;
+            }
           ia = scale * fa;
-          // FIXME: This order depends on the bitmap format
-          pixelData[0] = ir;
-          pixelData[1] = ig;
-          pixelData[2] = ib;
-          pixelData[3] = ia;
+
+          // This order depends on the bitmap format
+          if (_format & NSAlphaFirstBitmapFormat)
+            {
+              pixelData[0] = ia;
+              pixelData[1] = ir;
+              pixelData[2] = ig;
+              pixelData[3] = ib;
+            }
+          else
+            {
+              pixelData[0] = ir;
+              pixelData[1] = ig;
+              pixelData[2] = ib;
+              pixelData[3] = ia;
+            }
         }
       else
         {
@@ -969,7 +1191,7 @@
           ir = scale * fr;
           ig = scale * fg;
           ib = scale * fb;
-          // FIXME: This order depends on the bitmap format
+          // This order depends on the bitmap format
           pixelData[0] = ir;
           pixelData[1] = ig;
           pixelData[2] = ib;
@@ -986,11 +1208,27 @@
       [conv getWhite: &fw alpha: &fa];
       if (_hasAlpha)
         {
-          iw = scale * fw * fa;
+          if (_format & NSAlphaNonpremultipliedBitmapFormat)
+            {
+              iw = scale * fw;
+            }
+          else
+            {
+              iw = scale * fw * fa;
+            }
           ia = scale * fa;
-          // FIXME: This order depends on the bitmap format
-          pixelData[0] = iw;
-          pixelData[1] = ia;
+
+          // This order depends on the bitmap format
+          if (_format & NSAlphaFirstBitmapFormat)
+            {
+              pixelData[0] = ia;
+              pixelData[1] = iw;
+            }
+          else
+            {
+              pixelData[0] = iw;
+              pixelData[1] = ia;
+            }
         }
       else
         {
@@ -1009,11 +1247,27 @@
       [conv getWhite: &fw alpha: &fa];
       if (_hasAlpha)
         {
-          iw = scale * (1 - fw) * fa;
+          if (_format & NSAlphaNonpremultipliedBitmapFormat)
+            {
+              iw = scale * (1 - fw);
+            }
+          else
+            {
+              iw = scale * (1 - fw) * fa;
+            }
           ia = scale * fa;
-          // FIXME: This order depends on the bitmap format
-          pixelData[0] = iw;
-          pixelData[1] = ia;
+
+          // This order depends on the bitmap format
+          if (_format & NSAlphaFirstBitmapFormat)
+            {
+              pixelData[0] = ia;
+              pixelData[1] = iw;
+            }
+          else
+            {
+              pixelData[0] = iw;
+              pixelData[1] = ia;
+            }
         }
       else
         {
@@ -1031,17 +1285,39 @@
       [conv getCyan: &fc magenta: &fm yellow: &fy black: &fb alpha: &fa];
       if(_hasAlpha)
         {
-          ic = scale * fc * fa;
-          im = scale * fm * fa;
-          iy = scale * fy * fa;
-          ib = scale * fb * fa;
+          if (_format & NSAlphaNonpremultipliedBitmapFormat)
+            {
+              ic = scale * fc;
+              im = scale * fm;
+              iy = scale * fy;
+              ib = scale * fb;
+            }
+          else
+            {
+              ic = scale * fc * fa;
+              im = scale * fm * fa;
+              iy = scale * fy * fa;
+              ib = scale * fb * fa;
+            }
           ia = scale * fa;
-          // FIXME: This order depends on the bitmap format
-          pixelData[0] = ic;
-          pixelData[1] = im;
-          pixelData[2] = iy;
-          pixelData[3] = ib;
-          pixelData[4] = ia;
+
+          // This order depends on the bitmap format
+          if (_format & NSAlphaFirstBitmapFormat)
+            {
+              pixelData[0] = ia;
+              pixelData[1] = ic;
+              pixelData[2] = im;
+              pixelData[3] = iy;
+              pixelData[4] = ib;
+            }
+          else
+            {
+              pixelData[0] = ic;
+              pixelData[1] = im;
+              pixelData[2] = iy;
+              pixelData[3] = ib;
+              pixelData[4] = ia;
+            }
         }
       else
         {
@@ -1049,7 +1325,7 @@
           im = scale * fm;
           iy = scale * fy;
           ib = scale * fb;
-          // FIXME: This order depends on the bitmap format
+          // This order depends on the bitmap format
           pixelData[0] = ic;
           pixelData[1] = im;
           pixelData[2] = iy;
@@ -1183,6 +1459,7 @@
     }
 
   info.extraSamples = (_hasAlpha) ? 1 : 0;
+  info.assocAlpha = (_format & NSAlphaNonpremultipliedBitmapFormat) ? 0 : 1;
   info.compression = [NSBitmapImageRep _localFromCompressionType: type];
   if (factor < 0)
     factor = 0;
@@ -1587,15 +1864,17 @@
     }
 
   [self initWithBitmapDataPlanes: NULL
-		pixelsWide: info->width
-		pixelsHigh: info->height
-		bitsPerSample: info->bitsPerSample
-		samplesPerPixel: info->samplesPerPixel
-		hasAlpha: (info->extraSamples > 0)
-		isPlanar: (info->planarConfig == PLANARCONFIG_SEPARATE)
-		colorSpaceName: space
-		bytesPerRow: 0
-		bitsPerPixel: 0];
+        pixelsWide: info->width
+        pixelsHigh: info->height
+        bitsPerSample: info->bitsPerSample
+        samplesPerPixel: info->samplesPerPixel
+        hasAlpha: (info->extraSamples > 0)
+        isPlanar: (info->planarConfig == PLANARCONFIG_SEPARATE)
+        colorSpaceName: space
+        bitmapFormat: (info->assocAlpha ? 0 : 
+                       NSAlphaNonpremultipliedBitmapFormat)
+        bytesPerRow: 0
+        bitsPerPixel: 0];
   _compression = [NSBitmapImageRep _compressionTypeFromLocal: info->compression];
   _comp_factor = 255 * (1 - ((float)info->quality)/100.0);
 
@@ -1617,5 +1896,96 @@
   return self;
 }
 
-@end
+- (void) _premultiply
+{
+  int x, y;
+	unsigned int pixelData[5];
+  int start, end, i, ai;
+  float scale;
+  float alpha;
+  SEL getPSel = @selector(getPixel:atX:y:);
+  SEL setPSel = @selector(setPixel:atX:y:);
+  IMP getP = [self methodForSelector: getPSel];
+  IMP setP = [self methodForSelector: setPSel];
 
+  if (!_hasAlpha || !(_format & NSAlphaNonpremultipliedBitmapFormat))
+    return;
+
+  scale = (float)((1 << _bitsPerSample) - 1);
+  if (_format & NSAlphaFirstBitmapFormat)
+    {
+      ai = 0;
+      start = 1;
+      end = _numColors;
+    }
+  else
+    {
+      ai = _numColors - 1;
+      start = 0;
+      end = _numColors - 1;
+    }
+
+  for (y = 0; y < _pixelsHigh; y++)
+    {
+      for (x = 0; x < _pixelsWide; x++)
+        {
+          //[self getPixel: pixelData atX: x y: y];
+          getP(self, getPSel, pixelData, x, y);
+          alpha = pixelData[ai] / scale;
+          for (i = start; i < end; i++)
+            {
+              pixelData[i] *= alpha;
+            }
+          //[self setPixel: pixelData atX: x y: y];
+          setP(self, setPSel, pixelData, x, y);
+        }
+    }
+}
+
+- (void) _unpremultiply
+{
+  int x, y;
+	unsigned int pixelData[5];
+  int start, end, i, ai;
+  float scale;
+  float alpha;
+  SEL getPSel = @selector(getPixel:atX:y:);
+  SEL setPSel = @selector(setPixel:atX:y:);
+  IMP getP = [self methodForSelector: getPSel];
+  IMP setP = [self methodForSelector: setPSel];
+
+  if (!_hasAlpha || (_format & NSAlphaNonpremultipliedBitmapFormat))
+    return;
+
+  scale = (float)((1 << _bitsPerSample) - 1);
+  if (_format & NSAlphaFirstBitmapFormat)
+    {
+      ai = 0;
+      start = 1;
+      end = _numColors;
+    }
+  else
+    {
+      ai = _numColors - 1;
+      start = 0;
+      end = _numColors - 1;
+    }
+
+  for (y = 0; y < _pixelsHigh; y++)
+    {
+      for (x = 0; x < _pixelsWide; x++)
+        {
+          //[self getPixel: pixelData atX: x y: y];
+          getP(self, getPSel, pixelData, x, y);
+          alpha = pixelData[ai] / scale;
+          for (i = start; i < end; i++)
+            {
+              pixelData[i] /= alpha;
+            }
+          //[self setPixel: pixelData atX: x y: y];
+          setP(self, setPSel, pixelData, x, y);
+        }
+    }
+}
+
+@end

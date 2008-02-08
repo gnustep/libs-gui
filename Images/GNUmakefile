@@ -34,6 +34,7 @@ imagedir = $(GNUSTEP_LIBRARY)/Images
 
 IMAGE_FILES = \
 GNUstep_Images_Copyright \
+LogoGNUstep.tiff \
 common_3DArrowUp.tiff \
 common_3DArrowLeft.tiff \
 common_3DArrowDown.tiff \

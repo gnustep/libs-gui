@@ -210,14 +210,15 @@ static void reader_func(png_structp png_struct, png_bytep data,
   }
 
   [self initWithBitmapDataPlanes: &buf
-		      pixelsWide: width
-		      pixelsHigh: height
-		   bitsPerSample: depth
-		 samplesPerPixel: channels
-			hasAlpha: alpha
-			isPlanar: NO
-		  colorSpaceName: colorspace
-		     bytesPerRow: bytes_per_row
+        pixelsWide: width
+        pixelsHigh: height
+        bitsPerSample: depth
+        samplesPerPixel: channels
+        hasAlpha: alpha
+        isPlanar: NO
+        colorSpaceName: colorspace
+        bitmapFormat: NSAlphaNonpremultipliedBitmapFormat
+        bytesPerRow: bytes_per_row
 		    bitsPerPixel: bpp];
 
   _imageData = [[NSData alloc]
@@ -274,6 +275,7 @@ static void writer_func(png_structp png_struct, png_bytep data,
   NSNumber * gammaNumber = nil;
   double gamma = 0.0;
   
+  // FIXME: Need to convert to non-pre-multiplied format
   if ([self isPlanar])	// don't handle planar yet
   {
     return nil;

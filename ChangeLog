@@ -1,3 +1,19 @@
+2008-02-08 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Images/LogoGNUstep.tiff: New files
+	* Images/GNUmakefile: Install new files.
+	* Source/GSInfoPanel.m (-initWithDictionary:): Add background
+	logo. Old patch by Nicolas Roard <nicolas@roard.com>
+	* Source/NSBitmapImageRep.m : Flag all created bitmaps as having
+	or not having pre-muliplied alpha.
+	* Source/NSBitmapImageRep.m (-setColor:atX:y:, -colorAtX:y:,
+	-setPixel:atX:y:, -getPixel:atX:y:): Correct to handle most
+	formats correctly. 
+	* Source/NSBitmapImageRep.m (-_premultiply, _unpremultiply): New
+	helper methods.
+	* Source/NSBitmapImage+PNG.m: Mark PNG images as not using
+	pre-muliplied alpha.
+	
 2008-02-07 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSMenu.h,

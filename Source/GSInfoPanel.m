@@ -36,6 +36,7 @@
 #include "AppKit/NSEvent.h"
 #include "AppKit/NSFont.h"
 #include "AppKit/NSImage.h"
+#include "AppKit/NSImageView.h"
 #include "AppKit/NSTextField.h"
 #include "GNUstepGUI/GSInfoPanel.h"
 #include "GNUstepGUI/GSTheme.h"
@@ -523,10 +524,26 @@ new_label (NSString *value)
   self = [super initWithContentRect: NSMakeRect (100, 100, width, height)
 		styleMask: (NSTitledWindowMask | NSClosableWindowMask) 
 		backing: NSBackingStoreRetained defer: YES];
+  if (!self)
+    return nil;
+  
   /* 
    * Add objects to the panel in their position
    */
   cv = [self contentView];
+
+  {
+    NSImageView* backgroundImage = [[NSImageView alloc] 
+                                       initWithFrame: 
+                                           NSMakeRect(0, 0, width, height)];
+
+    //[backgroundImage setImageAlignment: NSImageAlignCenter];
+    //[backgroundImage setImageScaling: NSScaleProportionally];
+    [backgroundImage setImage: [NSImage imageNamed: @"LogoGNUstep"]];
+    [backgroundImage setEditable: NO];
+    [cv addSubview: backgroundImage];
+    RELEASE(backgroundImage);
+  }
 
   f = [iconButton frame];
   f.origin.x = 16;
