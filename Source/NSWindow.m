@@ -101,6 +101,11 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 - (void) postDragEvent: (NSEvent*)event;
 @end
 
+@interface NSView (MoveToWindow)
+// Normally this method is only used internally.
+- (void) _viewWillMoveToWindow: (NSWindow*)newWindow;
+@end
+
 /*
  * Category for internal methods (for use only within the NSWindow class itself
  * or with other AppKit classes.
@@ -731,7 +736,7 @@ many times.
     }
   /* Clean references to this window - important if some of the views
      are not deallocated now */
-  [_wv viewWillMoveToWindow: nil];
+  [_wv _viewWillMoveToWindow: nil];
   /* NB: releasing the window view does not necessarily result in the
      deallocation of the window's views ! - some of them might be
      retained for some other reason by the programmer or by other
@@ -951,7 +956,7 @@ many times.
   cframe.size = _frame.size;
   _wv = [windowDecorator newWindowDecorationViewWithFrame: cframe
                                                    window: self];
-  [_wv viewWillMoveToWindow: self];
+  [_wv _viewWillMoveToWindow: self];
 
   /* Create the content view */
   cframe.origin = NSZeroPoint;

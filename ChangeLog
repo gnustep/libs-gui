@@ -1,3 +1,12 @@
+2008-02-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSView.m (-_viewWillMoveToWindow:,
+	-_viewWillMoveToSuperview:): New methods with code from 
+	viewWillMoveToWindow: and viewWillMoveToSuperview:. The later are
+	now empty to allow subclasses not to call the super implementation.
+	* Source/NSWindow.m:
+	Use these new methods in place of the old ones.
+	
 2008-02-08 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Images/LogoGNUstep.tiff: New files

@@ -379,6 +379,61 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     }
 }
 
+- (void) _viewWillMoveToWindow: (NSWindow*)newWindow
+{
+  [self viewWillMoveToWindow: newWindow];
+  if (newWindow == _window)
+    {
+      return;
+    }
+  if (_coordinates_valid)
+    {
+      (*invalidateImp)(self, invalidateSel);
+    }
+  if (_rFlags.has_currects != 0)
+    {
+      [self discardCursorRects];
+    }
+  if (_rFlags.has_draginfo)
+    {
+      NSArray *t = GSGetDragTypes(self);
+
+      if (_window != nil)
+        {
+          [GSDisplayServer removeDragTypes: t fromWindow: _window];
+        }
+      if (newWindow != nil)
+        {
+          [GSDisplayServer addDragTypes: t toWindow: newWindow];
+        }
+    }
+  
+  _window = newWindow;
+
+  if (_rFlags.has_subviews)
+    {
+      unsigned	count = [_sub_views count];
+
+      if (count > 0)
+        {
+          unsigned	i;
+          NSView	*array[count];
+          
+          [_sub_views getObjects: array];
+          for (i = 0; i < count; ++i)
+            {
+              [array[i] _viewWillMoveToWindow: newWindow];
+            }
+        }
+    }
+}
+
+- (void) _viewWillMoveToSuperview: (NSView*)newSuper
+{
+  [self viewWillMoveToSuperview: newSuper];
+  _super_view = newSuper;
+}
+
 /*
  * Extend in super view covered by the frame of a view.
  * When the frame is rotated, this is different from the frame.
@@ -637,8 +692,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 - (void) addSubview: (NSView*)aView
 {
   [self addSubview: aView
-	positioned: NSWindowAbove
-	relativeTo: nil];
+        positioned: NSWindowAbove
+        relativeTo: nil];
 }
 
 - (void) addSubview: (NSView*)aView
@@ -668,9 +723,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       (*invalidateImp)(aView, invalidateSel);
     }
-  [aView viewWillMoveToWindow: _window];
-  [aView viewWillMoveToSuperview: self];
-  [aView setNextResponder: self];
 
   // Do this after the removeFromSuperview, as aView may already 
   // be a subview and the index could change.
@@ -685,15 +737,18 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   if (index == NSNotFound)
     {
       if (place == NSWindowBelow)
-	index = 0;
+        index = 0;
       else
-	index = [_sub_views count];
+        index = [_sub_views count];
     }
   else if (place != NSWindowBelow)
     {
       index += 1;
     }
 
+  [aView _viewWillMoveToWindow: _window];
+  [aView _viewWillMoveToSuperview: self];
+  [aView setNextResponder: self];
   [_sub_views insertObject: aView atIndex: index];
   _rFlags.has_subviews = 1;
   [aView resetCursorRects];
@@ -826,8 +881,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     }
   [self willRemoveSubview: aView];
   aView->_super_view = nil;
-  [aView viewWillMoveToWindow: nil];
-  [aView viewWillMoveToSuperview: nil];
+  [aView _viewWillMoveToWindow: nil];
+  [aView _viewWillMoveToSuperview: nil];
   [aView setNextResponder: nil];
   RETAIN(aView);
   [_sub_views removeObjectIdenticalTo: aView];
@@ -870,8 +925,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	{
 	  (*invalidateImp)(newView, invalidateSel);
 	}
-      [newView viewWillMoveToWindow: _window];
-      [newView viewWillMoveToSuperview: self];
+      [newView _viewWillMoveToWindow: _window];
+      [newView _viewWillMoveToSuperview: self];
       [newView setNextResponder: self];
       [_sub_views addObject: newView];
       _rFlags.has_subviews = 1;
@@ -911,11 +966,11 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	    }
 	  index = [_sub_views indexOfObjectIdenticalTo: oldView];
 	  [oldView removeFromSuperview];
-	  [newView viewWillMoveToWindow: _window];
-	  [newView viewWillMoveToSuperview: self];
+	  [newView _viewWillMoveToWindow: _window];
+	  [newView _viewWillMoveToSuperview: self];
 	  [newView setNextResponder: self];
-  	  [_sub_views insertObject: newView
-  		      atIndex: index];
+    [_sub_views insertObject: newView
+                atIndex: index];
 	  _rFlags.has_subviews = 1;
 	  [newView resetCursorRects];
 	  [newView setNeedsDisplay: YES];
@@ -938,7 +993,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
  */
 - (void) viewWillMoveToSuperview: (NSView*)newSuper
 {
-  _super_view = newSuper;
 }
 
 /**
@@ -949,50 +1003,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
  */
 - (void) viewWillMoveToWindow: (NSWindow*)newWindow
 {
-  if (newWindow == _window)
-    {
-      return;
-    }
-  if (_coordinates_valid)
-    {
-      (*invalidateImp)(self, invalidateSel);
-    }
-  if (_rFlags.has_currects != 0)
-    {
-      [self discardCursorRects];
-    }
-  if (_rFlags.has_draginfo)
-    {
-      NSArray		*t = GSGetDragTypes(self);
-
-      if (_window != nil)
-	{
-	  [GSDisplayServer removeDragTypes: t fromWindow: _window];
-	}
-      if (newWindow != nil)
-	{
-	  [GSDisplayServer addDragTypes: t toWindow: newWindow];
-	}
-    }
-
-  _window = newWindow;
-
-  if (_rFlags.has_subviews)
-    {
-      unsigned	count = [_sub_views count];
-
-      if (count > 0)
-	{
-	  unsigned	i;
-	  NSView	*array[count];
-
-	  [_sub_views getObjects: array];
-	  for (i = 0; i < count; ++i)
-	    {
-	      [array[i] viewWillMoveToWindow: newWindow];
-	    }
-	}
-    }
 }
 
 - (void) didAddSubview: (NSView *)subview
@@ -4447,8 +4457,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 		   NSInternalInconsistencyException);
 	  NSAssert([sub superview] == nil,
 		   NSInternalInconsistencyException);
-	  [sub viewWillMoveToWindow: _window];
-	  [sub viewWillMoveToSuperview: self];
+	  [sub _viewWillMoveToWindow: _window];
+	  [sub _viewWillMoveToSuperview: self];
 	  [sub setNextResponder: self];
 	  [_sub_views addObject: sub];
 	  _rFlags.has_subviews = 1;
@@ -4510,8 +4520,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	    NSInternalInconsistencyException);
 	  NSAssert([sub superview] == nil,
 	    NSInternalInconsistencyException);
-	  [sub viewWillMoveToWindow: _window];
-	  [sub viewWillMoveToSuperview: self];
+	  [sub _viewWillMoveToWindow: _window];
+	  [sub _viewWillMoveToSuperview: self];
 	  [sub setNextResponder: self];
 	  [_sub_views addObject: sub];
 	  _rFlags.has_subviews = 1;
