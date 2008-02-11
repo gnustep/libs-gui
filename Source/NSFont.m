@@ -809,16 +809,18 @@ static void setNSFont(NSString *key, NSFont *font)
             and this font does not exist, try to replace it with the
             corresponding font in the current setup.
           */
-          if ([fontName isEqualToString: @"Helvetica"] &&
-              ![font_roles[RoleSystemFont].defaultFont isEqualToString: @"Helvetica"])
+          if (([fontName isEqualToString: @"Helvetica"] &&
+               ![font_roles[RoleSystemFont].defaultFont isEqualToString: @"Helvetica"])
+              || ([fontName isEqualToString: @"LucidaGrande"]))
             {
               fontInfo = RETAIN([GSFontInfo fontInfoForFontName:
                                               font_roles[RoleSystemFont].defaultFont
                                             matrix: fontMatrix
                                             screenFont: screen]);
             }
-          else if ([fontName isEqualToString: @"Helvetica-Bold"] &&
-                   ![font_roles[RoleBoldSystemFont].defaultFont isEqualToString: @"Helvetica-Bold"])
+          else if (([fontName isEqualToString: @"Helvetica-Bold"] &&
+                    ![font_roles[RoleBoldSystemFont].defaultFont isEqualToString: @"Helvetica-Bold"])
+                   || ([fontName isEqualToString: @"LucidaGrande-Bold"]))
             {
               fontInfo = RETAIN([GSFontInfo fontInfoForFontName:
                                               font_roles[RoleBoldSystemFont].defaultFont
