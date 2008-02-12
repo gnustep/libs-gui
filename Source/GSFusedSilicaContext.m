@@ -44,7 +44,7 @@
 + (CGColorSpaceRef) CGColorSpaceCreateDeviceGray
 {
   NSMutableDictionary *space;
-  space = [NSDictionary dictionaryWithObject: NSDeviceWhiteColorSpace
+  space = [NSMutableDictionary dictionaryWithObject: NSDeviceWhiteColorSpace
 			forKey: GSColorSpaceName];
   [space setObject: NUMBER(1) forKey: GSColorSpaceComponents];
   return space;
@@ -53,7 +53,7 @@
 + (CGColorSpaceRef) CGColorSpaceCreateDeviceRGB
 {
   NSMutableDictionary *space;
-  space = [NSDictionary dictionaryWithObject: NSDeviceRGBColorSpace
+  space = [NSMutableDictionary dictionaryWithObject: NSDeviceRGBColorSpace
 			forKey: GSColorSpaceName];
   [space setObject: NUMBER(3) forKey: GSColorSpaceComponents];
   return space;
@@ -62,7 +62,7 @@
 + (CGColorSpaceRef) CGColorSpaceCreateDeviceCMYK
 {
   NSMutableDictionary *space;
-  space = [NSDictionary dictionaryWithObject: NSDeviceCMYKColorSpace
+  space = [NSMutableDictionary dictionaryWithObject: NSDeviceCMYKColorSpace
 			forKey: GSColorSpaceName];
   [space setObject: NUMBER(4) forKey: GSColorSpaceComponents];
   return space;
@@ -73,7 +73,7 @@
 						    : (float)gamma
 {
   NSMutableDictionary *space;
-  space = [NSDictionary dictionaryWithObject: NSCalibratedWhiteColorSpace
+  space = [NSMutableDictionary dictionaryWithObject: NSCalibratedWhiteColorSpace
 			forKey: GSColorSpaceName];
   [space setObject: FLOAT_ARRAY(whitePoint, 3) forKey: GSColorSpaceWhitePoint];
   [space setObject: FLOAT_ARRAY(blackPoint, 3) forKey: GSColorSpaceBlackPoint];
@@ -87,7 +87,7 @@
 						   : (const float *)matrix
 {
   NSMutableDictionary *space;
-  space = [NSDictionary dictionaryWithObject: NSCalibratedRGBColorSpace
+  space = [NSMutableDictionary dictionaryWithObject: NSCalibratedRGBColorSpace
 			forKey: GSColorSpaceName];
   [space setObject: FLOAT_ARRAY(whitePoint, 3) forKey: GSColorSpaceWhitePoint];
   [space setObject: FLOAT_ARRAY(blackPoint, 3) forKey: GSColorSpaceBlackPoint];
@@ -102,7 +102,7 @@
 					 : (const float *) range
 {
   NSMutableDictionary *space;
-  space = [NSDictionary dictionaryWithObject: @"NSLabColorSpace"
+  space = [NSMutableDictionary dictionaryWithObject: @"NSLabColorSpace"
 			forKey: GSColorSpaceName];
   [space setObject: FLOAT_ARRAY(whitePoint, 3) forKey: GSColorSpaceWhitePoint];
   [space setObject: FLOAT_ARRAY(blackPoint, 3) forKey: GSColorSpaceBlackPoint];
