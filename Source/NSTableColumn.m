@@ -99,8 +99,8 @@
 - (id)initWithIdentifier: (id)anObject
 {
   self = [super init];
-  _width = 0;
-  _min_width = 0;
+  _width = 100;
+  _min_width = 10;
   _max_width = 100000;
   _is_resizable = YES;
   _is_editable = YES;
@@ -207,7 +207,8 @@
     }
 }
 
-/** Return the width of the table column. */
+/** Return the width of the table column. The 
+    default width is 100. */
 - (float)width
 {
   return _width;
@@ -227,7 +228,7 @@
 /**
   Return the column's min width.  The column can in no way be resized
   to a width smaller than this min width.  The default min width is
-  zero.  */
+  10.  */
 - (float)minWidth
 {
   return _min_width;

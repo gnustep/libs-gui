@@ -1,3 +1,9 @@
+2008-02-16 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableColumn.m (-initWithIdentifier:): Set _width to 100
+	and _min_width to 10.
+	Patch by Quentin Mathe <qmathe@club-internet.fr>. 
+
 2008-02-12  Adam Fedor  <fedor@gnu.org>
 
 	* Source/GSFusedSilicaContext.m: Make sure to allocate a
