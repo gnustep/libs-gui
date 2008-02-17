@@ -1,3 +1,7 @@
+2008-02-17 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenuView.m: White space cleanup.
+
 2008-02-16 20:43-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSCell.m: Correction for bug#22332.
