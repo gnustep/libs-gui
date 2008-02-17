@@ -1,3 +1,10 @@
+2008-02-16 20:43-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSCell.m: Correction for bug#22332.
+	* Source/NSSegmentedCell.m: 
+	* Source/NSSegmentedControl.m: Set up default values in init 
+	methods.
+
 2008-02-16 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTableColumn.m (-initWithIdentifier:): Set _width to 100

@@ -252,12 +252,27 @@
 
 @implementation NSSegmentedCell 
 
+- (id) init
+{
+  self = [super initTextCell: @""];
+  if (!self)
+    return nil;
+
+  _segmentCellFlags._tracking_mode = NSSegmentSwitchTrackingSelectOne;
+  _items = [[NSMutableArray alloc] initWithCapacity: 2];
+  _selected_segment = -1;
+  [self setAlignment: NSCenterTextAlignment];
+ 
+  return self;
+}
+
 - (id) initImageCell: (NSImage*)anImage
 {
   self = [super initImageCell: anImage];
   if (!self)
     return nil;
   
+  _segmentCellFlags._tracking_mode = NSSegmentSwitchTrackingSelectOne;
   _items = [[NSMutableArray alloc] initWithCapacity: 2];
   _selected_segment = -1;
   [self setAlignment: NSCenterTextAlignment];
@@ -271,6 +286,7 @@
   if (!self)
     return nil;
   
+  _segmentCellFlags._tracking_mode = NSSegmentSwitchTrackingSelectOne;
   _items = [[NSMutableArray alloc] initWithCapacity: 2];
   _selected_segment = -1;
   [self setAlignment: NSCenterTextAlignment];

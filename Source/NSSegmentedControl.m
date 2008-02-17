@@ -27,7 +27,23 @@
 #include <AppKit/NSSegmentedControl.h>
 #include <AppKit/NSEvent.h>
 
+static Class segmentedControlCellClass;
+
 @implementation NSSegmentedControl 
+
++ (void) initialize
+{
+  if(self == [NSSegmentedControl class])
+    {
+      [self setVersion: 1];
+      segmentedControlCellClass = [NSSegmentedCell class];
+    }
+}
+
++ (Class) cellClass
+{
+  return segmentedControlCellClass;
+}
 
 // Specifying number of segments...
 - (void) setSegmentCount: (int) count

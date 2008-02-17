@@ -2647,7 +2647,7 @@ static NSColor	*shadowCol;
             }
           _action_mask = mask;
         }
-      _action_mask = NSLeftMouseUpMask;   
+      _action_mask |= NSLeftMouseUpMask;   
       [aDecoder decodeValueOfObjCType: @encode(id) at: &formatter];
       [self setFormatter: formatter];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &menu];
