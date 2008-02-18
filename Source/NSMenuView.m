@@ -354,7 +354,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   // Unhighlight old
   if (_highlightedItemIndex != -1)
     {
-      aCell  = [_itemCells objectAtIndex: _highlightedItemIndex];
+      aCell  = [self menuItemCellForItemAtIndex: _highlightedItemIndex];
       [aCell setHighlighted: NO];
       [self setNeedsDisplayForItemAtIndex: _highlightedItemIndex];
     }
@@ -365,7 +365,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   // Highlight new
   if (_highlightedItemIndex != -1) 
     {
-      aCell  = [_itemCells objectAtIndex: _highlightedItemIndex];
+      aCell  = [self menuItemCellForItemAtIndex: _highlightedItemIndex];
       [aCell setHighlighted: YES];
       [self setNeedsDisplayForItemAtIndex: _highlightedItemIndex];
     } 
@@ -439,7 +439,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 {
   int index = [[[notification userInfo] objectForKey: @"NSMenuItemIndex"]
                 intValue];
-  NSMenuItemCell *aCell = [_itemCells objectAtIndex: index];
+  NSMenuItemCell *aCell = [self menuItemCellForItemAtIndex: index];
 
   // Enabling of the item may have changed
   [aCell setEnabled: [[aCell menuItem] isEnabled]];
@@ -594,6 +594,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
     } 
   else
     {
+      // Popup menu doesn't need title bar
       needTitleView = ([_attachedMenu _ownedByPopUp] == YES) ? NO : YES;
     }
 
@@ -609,8 +610,6 @@ _addLeftBorderOffsetToRect(NSRect aRect)
       _titleView = nil;
     }
 
-  [self sizeToFit];
-
   if (_titleView != nil)
     {
       if ([_attachedMenu isTornOff] && ![_attachedMenu isTransient])
@@ -623,6 +622,9 @@ _addLeftBorderOffsetToRect(NSRect aRect)
           [_titleView removeCloseButton];
         }
     }
+
+  // Ask the menu to update itself. This will call sizeToFit if needed.
+  [_attachedMenu update];
 }
 
 - (void) setNeedsSizing: (BOOL)flag
@@ -652,8 +654,8 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
       for (i = 0; i < howMany; i++)
         {
-                GSCellRect elem;
-                NSMenuItemCell *aCell = [_itemCells objectAtIndex: i];
+          GSCellRect elem;
+          NSMenuItemCell *aCell = [self menuItemCellForItemAtIndex: i];
           float titleWidth = [aCell titleWidth];
 
           if ([aCell imageWidth])
@@ -662,10 +664,10 @@ _addLeftBorderOffsetToRect(NSRect aRect)
             }
 
           elem.rect = NSMakeRect (currentX,
-                             0,
-                             (titleWidth + (2 * _horizontalEdgePad)),
-                             _cellSize.height);
-            GSIArrayAddItem(cellRects, (GSIArrayItem)elem);
+                                  0,
+                                  (titleWidth + (2 * _horizontalEdgePad)),
+                                  _cellSize.height);
+          GSIArrayAddItem(cellRects, (GSIArrayItem)elem);
 
           currentX += titleWidth + (2 * _horizontalEdgePad);
         }
@@ -682,8 +684,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
       float    popupImageWidth = 0.0;
       float    menuBarHeight = 0.0;
 
-      // Popup menu doesn't need title bar
-      if (![_attachedMenu _ownedByPopUp] && _titleView)
+      if (_titleView)
         {
           NSMenu *m = [_attachedMenu supermenu];
           NSMenuView *r = [m menuRepresentation];
@@ -716,7 +717,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
           float anImageWidth;
           float anImageAndTitleWidth;
           float aKeyEquivalentWidth;
-          NSMenuItemCell *aCell = [_itemCells objectAtIndex: i];
+          NSMenuItemCell *aCell = [self menuItemCellForItemAtIndex: i];
           
           // State image area.
           aStateImageWidth = [aCell stateImageWidth];
@@ -819,12 +820,13 @@ _addLeftBorderOffsetToRect(NSRect aRect)
         }
       
       // Calculate frame size.
-      if (![_attachedMenu _ownedByPopUp])
+      if (_needsSizing)
         {
           // Add the border width: 1 for left, 2 for right sides
           _cellSize.width = accumulatedOffset + 3;
         }
-      else
+
+      if ([_attachedMenu _ownedByPopUp])
         {
           _keyEqOffset = _cellSize.width - _keyEqWidth - popupImageWidth;
         }
@@ -1033,19 +1035,89 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   NSRect cellFrame;
   NSRect screenFrame;
   int items = [_itemCells count];
+  BOOL growHeight = YES;
+  BOOL resizeCell = NO;
+  BOOL resizeScreenRect = NO;
+
+  // Make sure the menu entries are up to date
+  [self update];
+
+  /* FIXME: Perhaps all of this belongs into NSPopupButtonCell and
+     should be used to determine the proper screenRect to pass on into
+     this method.
+   */
+  /* certain style of pulldowns don't want sizing on the _cellSize.height */
+  if ([_attachedMenu _ownedByPopUp])
+    {
+      NSPopUpButtonCell *bcell;
+
+      bcell = [_attachedMenu _owningPopUp];
+      if ([bcell pullsDown])
+        {
+          if ([bcell isBordered] == NO)
+            {
+              growHeight = NO;
+            }
+          else
+            {
+              switch ([bcell bezelStyle])
+                {
+                  case NSRegularSquareBezelStyle:
+                  case NSShadowlessSquareBezelStyle:
+                    growHeight = NO;
+                    break;
+                  default:
+                    break;
+                }
+            }
+        }
+    }
   
   // Convert the screen rect to our view
   cellFrame.size = screenRect.size;
   cellFrame.origin = [_window convertScreenToBase: screenRect.origin];
   cellFrame = [self convertRect: cellFrame fromView: nil];
  
-  // Only call update if needed.
-  if ((NSEqualSizes(_cellSize, cellFrame.size) == NO) || _needsSizing)
+  /*
+    we should have the calculated cell size, grow the width
+    if needed to match the screenRect and vice versa
+  */
+  if (cellFrame.size.width > _cellSize.width) 
     {
-      _cellSize = cellFrame.size;
-      [self update];
+      _cellSize.width = cellFrame.size.width;
+      resizeCell = YES;
     }
-  
+  else
+    {
+      cellFrame.size.width = _cellSize.width;
+      resizeScreenRect = YES;
+    }
+
+  /* certain pop-ups don't want the height resized */
+  if (growHeight && cellFrame.size.height > _cellSize.height) 
+    {
+      _cellSize.height = cellFrame.size.height;
+      resizeCell = YES;
+    }
+  else
+    {
+      cellFrame.size.height = _cellSize.height;
+      resizeScreenRect = YES;
+    }
+
+  /*
+     now sizeToFit again with needs sizing = NO so it doesn't 
+     overwrite _cellSize just recalculate the offsets.
+   */
+  if (resizeCell)
+    [self sizeToFit];
+
+  if (resizeScreenRect)
+    {
+      cellFrame = [self convertRect: cellFrame toView: nil];
+      screenRect.size = cellFrame.size;
+    }
+
   /*
    * Compute the frame
    */
@@ -1083,19 +1155,21 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   // Update position, if needed, using the preferredEdge
   if (edge == NSMinYEdge)
     {
+/*
       if ([_attachedMenu _ownedByPopUp] && 
-          ([[_attachedMenu _owningPopUp] usesItemFromMenu] == NO))
+          ([[_attachedMenu _owningPopUp] pullsDown]))
         {
           screenFrame.origin.y -= screenRect.size.height;  
         }
+*/
     }
   else if (edge == NSMaxYEdge)
     {
-            screenFrame.origin.y += screenRect.size.height;  
+      screenFrame.origin.y += screenRect.size.height;  
     }
   else if (edge == NSMaxXEdge)
     {
-            screenFrame.origin.x += screenRect.size.width;
+      screenFrame.origin.x += screenRect.size.width;
     }
   else if (edge == NSMinXEdge)
     {
@@ -1148,7 +1222,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
       aRect = [self rectOfItemAtIndex: i];
       if (NSIntersectsRect(rect, aRect) == YES)
         {
-          aCell = [_itemCells objectAtIndex: i];
+          aCell = [self menuItemCellForItemAtIndex: i];
           [aCell drawWithFrame: aRect inView: self];
         }
     }

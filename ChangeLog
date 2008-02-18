@@ -1,4 +1,10 @@
-2008-02-17 Fred Kiefer <FredKiefer@gmx.de>
+2008-02-18 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenuView.m: Change to better respect the size of the
+	popup when displaying the menu.
+	Reworked patch by Matt Rice <ratmice@gmail.com>. 
+	
+2008-02-18 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPopUpButtonCell.m: Change version for encoding. Set
 	preferred edge and arrow position when decoding old gorm files.
