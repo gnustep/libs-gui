@@ -1,5 +1,11 @@
 2008-02-17 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSPopUpButtonCell.m: Change version for encoding. Set
+	preferred edge and arrow position when decoding old gorm files.
+	New helper method for Gorm.
+
+2008-02-17 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSMenuView.m: White space cleanup.
 
 2008-02-16 20:43-EST Gregory John Casamento <greg_casamento@yahoo.com>

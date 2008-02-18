@@ -48,7 +48,7 @@ static NSImage *_pbc_image[5];
 {
   if (self == [NSPopUpButtonCell class])
     {
-      [self setVersion: 2];
+      [self setVersion: 3];
       ASSIGN(_pbc_image[0], [NSImage imageNamed: @"common_Nibble"]);
       ASSIGN(_pbc_image[1], [NSImage imageNamed: @"common_3DArrowDown"]);
       ASSIGN(_pbc_image[2], [NSImage imageNamed: @"common_3DArrowRight"]);
@@ -84,6 +84,18 @@ static NSImage *_pbc_image[5];
   return [self initTextCell: stringValue pullsDown: NO];
 }
 
+/*
+ * Helper method should be overriden by Gorm
+ */
+- (void)_initMenu
+{
+  NSMenu *menu;
+
+  menu = [[NSMenu alloc] initWithTitle: @""];
+  [self setMenu: menu];
+  RELEASE(menu);
+}
+
 /**
  * Initialize with stringValue and pullDown.  If pullDown is YES, the
  * reciever will be a pulldown button.
@@ -91,14 +103,11 @@ static NSImage *_pbc_image[5];
 - (id) initTextCell: (NSString *)stringValue
           pullsDown: (BOOL)flag
 {
-  NSMenu *menu;
+  self = [super initTextCell: stringValue];
+  if (!self)
+    return nil;
 
-  [super initTextCell: stringValue];
-
-  menu = [[NSMenu alloc] initWithTitle: @""];
-  [self setMenu: menu];
-  RELEASE(menu);
-
+  [self _initMenu];
   [self setPullsDown: flag];
   _pbcFlags.usesItemFromMenu = YES;
   [self setPreferredEdge: NSMinYEdge];
@@ -756,9 +765,9 @@ static NSImage *_pbc_image[5];
  */ 
 - (NSArray *) itemTitles
 {
-  unsigned                count = [_menu numberOfItems];
-  id                        items[count];
-  unsigned                i;
+  unsigned count = [_menu numberOfItems];
+  id items[count];
+  unsigned i;
 
   [[_menu itemArray] getObjects: items];
   for (i = 0; i < count; i++)
@@ -788,7 +797,7 @@ static NSImage *_pbc_image[5];
 - (void) attachPopUpWithFrame: (NSRect)cellFrame
                        inView: (NSView *)controlView
 {
-  NSNotificationCenter        *nc = [NSNotificationCenter defaultCenter];
+  NSNotificationCenter  *nc = [NSNotificationCenter defaultCenter];
   NSWindow              *cvWin = [controlView window];
   NSMenuView            *mr = [_menu menuRepresentation];
   int                   selectedItem;
@@ -833,7 +842,7 @@ static NSImage *_pbc_image[5];
  */ 
 - (void) dismissPopUp
 {
-  NSNotificationCenter        *nc = [NSNotificationCenter defaultCenter];
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
   [nc removeObserver: self
       name: NSMenuDidSendActionNotification
@@ -848,7 +857,8 @@ static NSImage *_pbc_image[5];
    the popUp) without getting this notification */
 - (void) _handleNotification: (NSNotification*)aNotification
 {
-  NSString      *name = [aNotification name];
+  NSString *name = [aNotification name];
+
   if ([name isEqual: NSMenuDidSendActionNotification] == YES)
     {
       [self dismissPopUp];
@@ -958,6 +968,8 @@ static NSImage *_pbc_image[5];
 /* FIXME: this method needs to be rewritten to be something like 
  * NSMenuView's sizeToFit. That way if you call [NSPopUpButton sizeToFit]; 
  * you will get the absolutely correct cellSize.
+ * Not sure if this is true. Maybe the popup should only use the size 
+ * of the current title, at least, when usesItemFromMenu is false.
  */
 - (NSSize) cellSize
 {
@@ -1150,6 +1162,11 @@ static NSImage *_pbc_image[5];
               [anItem setMixedStateImage: nil];
             }
           [self setEnabled: YES];
+        }
+      if (version < 3)
+        {
+          [self setPreferredEdge: NSMinYEdge];
+          [self setArrowPosition: NSPopUpArrowAtCenter];
         }
       [self selectItem: selectedItem];
     }
