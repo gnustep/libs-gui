@@ -1,3 +1,11 @@
+2008-02-25 Fred Kiefer <FredKiefer@gmx.de>
+	
+	* Source/NSBitmapImageRep.m (-_premultiply, _unpremultiply): Flag
+	the format as changed. Add fast path for 8 bit images.
+	* Source/NSBitmapImageRep.m
+	(-_convertToFormatBitsPerSample:...bitsPerPixel:) New helper
+	method for image conversion. Not fully working.
+	
 2008-02-18 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenuView.m: Change to better respect the size of the

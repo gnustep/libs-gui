@@ -39,6 +39,7 @@
 #include "NSBitmapImageRep+PNM.h"
 
 #include <Foundation/NSArray.h>
+#include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSData.h>
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
@@ -464,7 +465,7 @@
                  colorSpaceName: (NSString*)colorSpaceName
                    bitmapFormat: (NSBitmapFormat)bitmapFormat 
                     bytesPerRow: (int)rowBytes
-                   bitsPerPixel: (int)pixelBits;
+                   bitsPerPixel: (int)pixelBits
 {
   if (!bps || !spp || !width || !height) 
     {
@@ -1901,8 +1902,6 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   int x, y;
 	unsigned int pixelData[5];
   int start, end, i, ai;
-  float scale;
-  float alpha;
   SEL getPSel = @selector(getPixel:atX:y:);
   SEL setPSel = @selector(setPixel:atX:y:);
   IMP getP = [self methodForSelector: getPSel];
@@ -1911,7 +1910,6 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   if (!_hasAlpha || !(_format & NSAlphaNonpremultipliedBitmapFormat))
     return;
 
-  scale = (float)((1 << _bitsPerSample) - 1);
   if (_format & NSAlphaFirstBitmapFormat)
     {
       ai = 0;
@@ -1925,21 +1923,52 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
       end = _numColors - 1;
     }
 
-  for (y = 0; y < _pixelsHigh; y++)
+  if (_bitsPerSample == 8)
     {
-      for (x = 0; x < _pixelsWide; x++)
+      unsigned int a;
+
+      for (y = 0; y < _pixelsHigh; y++)
         {
-          //[self getPixel: pixelData atX: x y: y];
-          getP(self, getPSel, pixelData, x, y);
-          alpha = pixelData[ai] / scale;
-          for (i = start; i < end; i++)
+          for (x = 0; x < _pixelsWide; x++)
             {
-              pixelData[i] *= alpha;
+              //[self getPixel: pixelData atX: x y: y];
+              getP(self, getPSel, pixelData, x, y);
+              a = pixelData[ai];
+              for (i = start; i < end; i++)
+                {
+                   unsigned int t = a * pixelData[i] + 0x80;
+
+                   pixelData[i] = ((t >> 8) + t) >> 8;
+                }
+              //[self setPixel: pixelData atX: x y: y];
+              setP(self, setPSel, pixelData, x, y);
             }
-          //[self setPixel: pixelData atX: x y: y];
-          setP(self, setPSel, pixelData, x, y);
         }
     }
+  else
+    {
+      float scale;
+      float alpha;
+
+      scale = (float)((1 << _bitsPerSample) - 1);
+      for (y = 0; y < _pixelsHigh; y++)
+        {
+          for (x = 0; x < _pixelsWide; x++)
+            {
+              //[self getPixel: pixelData atX: x y: y];
+              getP(self, getPSel, pixelData, x, y);
+              alpha = pixelData[ai] / scale;
+              for (i = start; i < end; i++)
+                {
+                  pixelData[i] *= alpha;
+                }
+              //[self setPixel: pixelData atX: x y: y];
+              setP(self, setPSel, pixelData, x, y);
+            }
+        }
+    }
+
+  _format &= ~NSAlphaNonpremultipliedBitmapFormat;
 }
 
 - (void) _unpremultiply
@@ -1947,8 +1976,6 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   int x, y;
 	unsigned int pixelData[5];
   int start, end, i, ai;
-  float scale;
-  float alpha;
   SEL getPSel = @selector(getPixel:atX:y:);
   SEL setPSel = @selector(setPixel:atX:y:);
   IMP getP = [self methodForSelector: getPSel];
@@ -1957,7 +1984,6 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   if (!_hasAlpha || (_format & NSAlphaNonpremultipliedBitmapFormat))
     return;
 
-  scale = (float)((1 << _bitsPerSample) - 1);
   if (_format & NSAlphaFirstBitmapFormat)
     {
       ai = 0;
@@ -1971,21 +1997,162 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
       end = _numColors - 1;
     }
 
-  for (y = 0; y < _pixelsHigh; y++)
+  if (_bitsPerSample == 8)
     {
-      for (x = 0; x < _pixelsWide; x++)
+      unsigned int a;
+
+      for (y = 0; y < _pixelsHigh; y++)
         {
-          //[self getPixel: pixelData atX: x y: y];
-          getP(self, getPSel, pixelData, x, y);
-          alpha = pixelData[ai] / scale;
-          for (i = start; i < end; i++)
+          for (x = 0; x < _pixelsWide; x++)
             {
-              pixelData[i] /= alpha;
+              //[self getPixel: pixelData atX: x y: y];
+              getP(self, getPSel, pixelData, x, y);
+              a = pixelData[ai];
+              if (a != 0)
+                {
+                  for (i = start; i < end; i++)
+                    {
+                      pixelData[i] = (pixelData[i] * 255) / a;
+                    }
+                  //[self setPixel: pixelData atX: x y: y];
+                  setP(self, setPSel, pixelData, x, y);
+                }
             }
-          //[self setPixel: pixelData atX: x y: y];
-          setP(self, setPSel, pixelData, x, y);
         }
     }
+  else
+    {
+      float scale;
+      float alpha;
+
+      scale = (float)((1 << _bitsPerSample) - 1);
+      for (y = 0; y < _pixelsHigh; y++)
+        {
+          unsigned int a;
+
+          for (x = 0; x < _pixelsWide; x++)
+            {
+              //[self getPixel: pixelData atX: x y: y];
+              getP(self, getPSel, pixelData, x, y);
+              a = pixelData[ai];
+              if (a != 0)
+                {
+                    alpha = scale / a;
+                    for (i = start; i < end; i++)
+                      {
+                        float new = pixelData[i] * alpha;
+                        
+                        if (new > scale)
+                          {
+                            pixelData[i] = scale;
+                          }
+                        else
+                          {
+                            pixelData[i] = new;
+                          }
+                      }
+                    //[self setPixel: pixelData atX: x y: y];
+                    setP(self, setPSel, pixelData, x, y);
+                }
+            }
+        }
+    }
+
+  _format |= NSAlphaNonpremultipliedBitmapFormat;
+}
+
+- (NSBitmapImageRep *) _convertToFormatBitsPerSample: (int)bps
+                                     samplesPerPixel: (int)spp
+                                            hasAlpha: (BOOL)alpha
+                                            isPlanar: (BOOL)isPlanar
+                                      colorSpaceName: (NSString*)colorSpaceName
+                                        bitmapFormat: (NSBitmapFormat)bitmapFormat 
+                                         bytesPerRow: (int)rowBytes
+                                        bitsPerPixel: (int)pixelBits
+{
+  if (!pixelBits)
+    pixelBits = bps * ((isPlanar) ? 1 : spp);
+  if (!rowBytes) 
+    rowBytes = ceil((float)_pixelsWide * pixelBits / 8);
+
+  // Do we already have the correct format?
+  if ((bps == _bitsPerSample) && (spp == _numColors)
+      && (alpha == _hasAlpha) && (isPlanar == _isPlanar)
+      && (bitmapFormat == _format) && (rowBytes == _bytesPerRow) 
+      && (pixelBits == _bitsPerPixel)
+      && [_colorSpace isEqualToString: colorSpaceName])
+    {
+      return self;
+    }
+  else
+    {
+      NSBitmapImageRep* new;
+      
+      new = [[NSBitmapImageRep alloc]
+                initWithBitmapDataPlanes: NULL
+                pixelsWide: _pixelsWide
+                pixelsHigh: _pixelsHigh
+                bitsPerSample: bps
+                samplesPerPixel: spp
+                hasAlpha: alpha
+                isPlanar: isPlanar
+                colorSpaceName: colorSpaceName
+                bitmapFormat: bitmapFormat
+                bytesPerRow: rowBytes
+                bitsPerPixel: pixelBits];
+
+      if ([_colorSpace isEqualToString: colorSpaceName])
+        {
+          SEL getPSel = @selector(getPixel:atX:y:);
+          SEL setPSel = @selector(setPixel:atX:y:);
+          IMP getP = [self methodForSelector: getPSel];
+          IMP setP = [new methodForSelector: setPSel];
+          unsigned int pixelData[5];
+          int x, y;
+
+          for (y = 0; y < _pixelsHigh; y++)
+            {
+              for (x = 0; x < _pixelsWide; x++)
+                {
+                  //[self getPixel: pixelData atX: x y: y];
+                  getP(self, getPSel, pixelData, x, y);
+                  // FIXME: Here we may need to resort, scale, pre-multiply
+                  // the pixel data and add alpha. Or do the opposite :-)
+
+                  
+
+                  //[new setPixel: pixelData atX: x y: y];
+                  setP(new, setPSel, pixelData, x, y);
+                }
+            }
+        }
+      else
+        {
+          SEL getCSel = @selector(colorAtX:y:);
+          SEL setCSel = @selector(setColor:atX:y:);
+          IMP getC = [self methodForSelector: getCSel];
+          IMP setC = [new methodForSelector: setCSel];
+          int i, j;
+
+          for (j = 0; j < _pixelsHigh; j++)
+            {
+              CREATE_AUTORELEASE_POOL(pool);
+              
+              for (i = 0; i < _pixelsWide; i++)
+                {
+                  NSColor *c;
+                  
+                  //c = [self colorAtX: i y: j];
+                  c = getC(self, getCSel, i, j);
+                  //[new setColor: c atX: i y: j];
+                  setC(new, setCSel, c, i, j);
+                }
+              RELEASE(pool);
+            }
+        }
+
+      return AUTORELEASE(new);
+    }  
 }
 
 @end
