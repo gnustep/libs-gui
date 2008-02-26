@@ -71,10 +71,28 @@
 {
   return data;
 }
+- (void) dealloc
+{
+  if ([object respondsToSelector:
+    @selector(view:stringForToolTip:point:userData:)] == NO)
+    {
+      /* Object must be a string rather than something which provides one */
+      RELEASE(object);
+    }
+  [super dealloc];
+}
 - (id) initWithObject: (id)o userData: (void*)d rect: (NSRect)r
 {
   data = d;
   object = o;
+  if ([object respondsToSelector:
+    @selector(view:stringForToolTip:point:userData:)] == NO)
+    {
+      /* Object does not provide a string ... so we take a copy of it
+       * as the string to be used.
+       */
+      object = [[object description] copy];
+    }
   viewRect = r;
   return self;
 }
@@ -231,7 +249,7 @@ static BOOL		restoreMouseMoved;
     }
   else
     {
-      toolTipString = [[provider object] description];
+      toolTipString = [provider object];
     }
 
   timer = [NSTimer scheduledTimerWithTimeInterval: 0.5

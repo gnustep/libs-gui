@@ -1,3 +1,7 @@
+2008-02-26 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSToolTips.m: Fix bug #22421
+
 2008-02-25 Fred Kiefer <FredKiefer@gmx.de>
 	
 	* Source/NSBitmapImageRep.m (-_premultiply, _unpremultiply): Flag
