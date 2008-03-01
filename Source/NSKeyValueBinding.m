@@ -354,10 +354,13 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
   NSDictionary *options;
   id newValue;
 
-  options = [info objectForKey: NSOptionsKey];
-  newValue = [change objectForKey: NSKeyValueChangeNewKey];
-  newValue = [self transformValue: newValue withOptions: options];
-  [src setValue: newValue forKey: binding];
+  if (change != nil)
+    {
+      options = [info objectForKey: NSOptionsKey];
+      newValue = [change objectForKey: NSKeyValueChangeNewKey];
+      newValue = [self transformValue: newValue withOptions: options];
+      [src setValue: newValue forKey: binding];
+    }
 }
 
 - (id) transformValue: (id)value withOptions: (NSDictionary *)options

@@ -1,3 +1,9 @@
+2008-03-01 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSKeyValueBinding.m
+	(-observeValueForKeyPath:ofObject:change:context:): Ignore calls
+	with empty change information.
+
 2008-03-01 Nicola Pero <nicola.pero@meta-innovation.com>
 
 	* Source/NSImageCell.m (scaleProportionally): Fixed
