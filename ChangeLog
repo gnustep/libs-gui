@@ -2,7 +2,7 @@
 
 	* Source/NSImageCell.m (scaleProportionally): Fixed
 	NSScaleProportionally to scale images down, but never up.  Bug
-	reported by Otto Herbo <herbo@gmac.com>.
+	reported by Herb Otto <herbo@gmac.com>.
 	* Headers/AppKit/NSImageCell.h: Documented the whole class.
 	
 2008-02-26 Richard Frith-Macdonald <rfm@gnu.org>
