@@ -1,3 +1,10 @@
+2008-03-01 Nicola Pero <nicola.pero@meta-innovation.com>
+
+	* Source/NSImageCell.m (scaleProportionally): Fixed
+	NSScaleProportionally to scale images down, but never up.  Bug
+	reported by Otto Herbo <herbo@gmac.com>.
+	* Headers/AppKit/NSImageCell.h: Documented the whole class.
+	
 2008-02-26 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSToolTips.m: Fix bug #22421

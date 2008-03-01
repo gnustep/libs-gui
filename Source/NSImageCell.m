@@ -68,7 +68,7 @@
 
 - (void)setObjectValue:(id)object
 {
-    if ((object == nil) || ([object isKindOfClass:[NSImage class]]))
+  if ((object == nil) || ([object isKindOfClass:[NSImage class]]))
     {
       [self setImage: object];
     }
@@ -112,8 +112,8 @@
 
 - (void) setImageFrameStyle: (NSImageFrameStyle)aFrameStyle
 {
-  // We could set  _cell.is_bordered and _cell.is_bezeled here to reflect
-  // the border type, but this wont be used.
+  // We could set _cell.is_bordered and _cell.is_bezeled here to
+  // reflect the border type, but this wont be used.
   _frameStyle = aFrameStyle;
 }
 
@@ -125,27 +125,27 @@
   NSDebugLLog(@"NSImageCell", @"NSImageCell -drawWithFrame");
 
   // do nothing if cell's frame rect is zero
-  if (NSIsEmptyRect(cellFrame))
+  if (NSIsEmptyRect (cellFrame))
     return;
   
   // draw the border if needed
   switch (_frameStyle)
     {
-      case NSImageFrameNone:
-	// nada
-	break;
-      case NSImageFramePhoto:
-	[[GSTheme theme] drawFramePhoto: cellFrame withClip: NSZeroRect];
-	break;
-      case NSImageFrameGrayBezel:
-	[[GSTheme theme] drawGrayBezel: cellFrame withClip: NSZeroRect];
-	break;
-      case NSImageFrameGroove:
-	[[GSTheme theme] drawGroove: cellFrame withClip: NSZeroRect];
-	break;
-      case NSImageFrameButton:
-	[[GSTheme theme] drawButton: cellFrame withClip: NSZeroRect];
-	break;
+    case NSImageFrameNone:
+      // do nothing
+      break;
+    case NSImageFramePhoto:
+      [[GSTheme theme] drawFramePhoto: cellFrame withClip: NSZeroRect];
+      break;
+    case NSImageFrameGrayBezel:
+      [[GSTheme theme] drawGrayBezel: cellFrame withClip: NSZeroRect];
+      break;
+    case NSImageFrameGroove:
+      [[GSTheme theme] drawGroove: cellFrame withClip: NSZeroRect];
+      break;
+    case NSImageFrameButton:
+      [[GSTheme theme] drawButton: cellFrame withClip: NSZeroRect];
+      break;
     }
 
   [self drawInteriorWithFrame: cellFrame inView: controlView];
@@ -198,12 +198,19 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
 {
   float ratio;
 
-  // get the smaller ratio and scale the image size by it
+  /* Get the smaller ratio and scale the image size by it.  */
   ratio = MIN(NSWidth(canvasRect) / imageSize.width,
 	      NSHeight(canvasRect) / imageSize.height);
-
-  imageSize.width *= ratio;
-  imageSize.height *= ratio;
+  
+  /* According to the API (see NSScaleProportionally), we should never
+   * scale images up; we only scale them down.  If you want your image
+   * to scale both up and down, you should use NSScaleToFit.
+   */
+  if (ratio < 1.0)
+    {
+      imageSize.width *= ratio;
+      imageSize.height *= ratio;
+    }
 
   return imageSize;
 }
@@ -311,19 +318,19 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
   // Get border size
   switch (_frameStyle)
     {
-      case NSImageFrameNone:
-      default:
-	borderSize = NSZeroSize;
-	break;
-      case NSImageFramePhoto:
-	// FIXME
-	borderSize = _sizeForBorderType (NSNoBorder);
-	break;
-      case NSImageFrameGrayBezel:
-      case NSImageFrameGroove:
-      case NSImageFrameButton:
-	borderSize = _sizeForBorderType (NSBezelBorder); 
-	break;
+    case NSImageFrameNone:
+    default:
+      borderSize = NSZeroSize;
+      break;
+    case NSImageFramePhoto:
+      // FIXME
+      borderSize = _sizeForBorderType (NSNoBorder);
+      break;
+    case NSImageFrameGrayBezel:
+    case NSImageFrameGroove:
+    case NSImageFrameButton:
+      borderSize = _sizeForBorderType (NSBezelBorder); 
+      break;
     }
   
   // Get Content Size
@@ -343,21 +350,21 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
   // Get border size
   switch (_frameStyle)
     {
-      case NSImageFrameNone:
-      default:
-	borderSize = NSZeroSize;
-	break;
-      case NSImageFramePhoto:
-	// what does this one look like? TODO (in sync with the rest of the code)
-	borderSize = _sizeForBorderType (NSNoBorder);
-	break;
-      case NSImageFrameGrayBezel:
-      case NSImageFrameGroove:
-      case NSImageFrameButton:
-	borderSize = _sizeForBorderType (NSBezelBorder); 
-	break;
+    case NSImageFrameNone:
+    default:
+      borderSize = NSZeroSize;
+      break;
+    case NSImageFramePhoto:
+      // what does this one look like? TODO (in sync with the rest of the code)
+      borderSize = _sizeForBorderType (NSNoBorder);
+      break;
+    case NSImageFrameGrayBezel:
+    case NSImageFrameGroove:
+    case NSImageFrameButton:
+      borderSize = _sizeForBorderType (NSBezelBorder); 
+      break;
     }
-
+  
   return NSInsetRect (theRect, borderSize.width, borderSize.height);
 }
 

@@ -33,12 +33,35 @@
 
 #include <AppKit/NSCell.h>
 
+/**
+ *  <p>Enumeration of the ways that you can display an image in an
+ *  NSImageCell.  The available ones are:</p>
+ *  <p><code>NSScaleNone</code>: The image is always displayed with
+ *  its natural size.  If it's bigger than the cell size, it is
+ *  cropped.</p>
+ *  <p><code>NSScaleProportionally</code>: If the image is bigger
+ *  than the cell size, it is displayed in its natural size.  If it
+ *  is smaller than the cell size, it is resized down proportionally
+ *  to fit the cell size.</p>
+ *  <p><code>NSScaleToFit</code>: The image is always resized (up
+ *  or down) to fit exactly in the cell size.</p>
+ */
 typedef enum {
-    NSScaleProportionally = 0,   // Fit proportionally
-    NSScaleToFit,                // Forced fit (distort if necessary)
-    NSScaleNone                  // Don't scale (clip)
+    NSScaleProportionally = 0,
+    NSScaleToFit,
+    NSScaleNone
 } NSImageScaling;
 
+/**
+ *  <p>Enumeration of the ways that you can align an image inside an
+ *  NSImageCell when the image is not taking up all the space inside
+ *  the cell (for example, because you are using NSScaleNone or
+ *  NSScaleProportionally and the cell size is bigger than the natural
+ *  image size).  The available ones are: <code>NSImageAlignCenter,
+ *  NSImageAlignTop, NSImageAlignTopLeft, NSImageAlignTopRight,
+ *  NSImageAlignLeft, NSImageAlignBottom, NSImageAlignBottomLeft,
+ *  NSImageAlignBottomRight, NSImageAlignRight</code>.</p>
+ */
 typedef enum {
     NSImageAlignCenter = 0,
     NSImageAlignTop,
@@ -51,6 +74,12 @@ typedef enum {
     NSImageAlignRight
 } NSImageAlignment;
 
+/**
+ *  <p>Enumeration of the types of frame that can be used in an
+ *  NSImageCell.  The available ones are: <code>NSImageFrameNone, 
+ *  NSImageFramePhoto, NSImageFrameGrayBezel, NSImageFrameGroove,
+ *  NSImageFrameButton</code>.</p>
+ */
 typedef enum {
     NSImageFrameNone = 0,
     NSImageFramePhoto,
@@ -59,27 +88,61 @@ typedef enum {
     NSImageFrameButton
 } NSImageFrameStyle;
 
+/**
+ *  <p>An NSImageCell is a cell that can display a single image.  It
+ *  is normally associated with an NSImageView control; but you can
+ *  use it as a building block in your own controls.</p>
+ *
+ *  <p>The image to display is set using the -setImage: method 
+ *  which is inherited from the superclass.</p>
+ *
+ *  <p>The -setImageAlignment: and -setImageScaling: methods can be
+ *  used to control how the image is drawn inside a rectangle which is
+ *  larger or smaller than the image size; the image might need to be
+ *  scaled, cropped or aligned.</p>
+ *
+ *  <p>The -setImageFrameStyle: method can be used to control if the
+ *  cell should display a frame border, and which one.</p>
+ */
 @interface NSImageCell : NSCell
 {
-  // Attributes
   NSImageAlignment _imageAlignment;
   NSImageFrameStyle _frameStyle;
   NSImageScaling _imageScaling;
   NSSize _original_image_size;
 }
 
-//
-// Aligning and scaling the image
-//
+/**
+ * Returns the alignment used when displaying the image inside
+ * a cell that is bigger than the image, and NSScaleToFit has
+ * not been selected.
+ */
 - (NSImageAlignment) imageAlignment;
+/**
+ * Sets the alignment used when displaying the image inside a cell
+ * that is bigger than the image, and NSScaleToFit has not been
+ * selected.
+ */
 - (void) setImageAlignment: (NSImageAlignment)anAlignment;
+
+/**
+ * Returns the type of image scaling used on the image when the
+ * image natural size and the cell size are different.
+ */
 - (NSImageScaling) imageScaling;
+/**
+ * Sets the type of image scaling used on the image when the image
+ * natural size and the cell size are different.
+ */
 - (void) setImageScaling: (NSImageScaling)scaling;
 
-//
-// Choosing the frame
-//
+/**
+ * Returns the style used to draw the frame around the image.
+ */
 - (NSImageFrameStyle) imageFrameStyle;
+/**
+ * Sets the style used to draw the frame around the image.
+ */
 - (void) setImageFrameStyle: (NSImageFrameStyle)aFrameStyle;
 
 @end
