@@ -22,7 +22,7 @@
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
    Lesser General Public License for more details.
 
    You should have received a copy of the GNU Lesser General Public
@@ -64,21 +64,21 @@
 #include "AppKit/NSWindow.h"
 #include "GNUstepGUI/GSTheme.h"
 
-static Class	colorClass;
-static Class	cellClass;
-static Class	fontClass;
-static Class	imageClass;
+static Class colorClass;
+static Class cellClass;
+static Class fontClass;
+static Class imageClass;
 
-static NSColor	*txtCol;
-static NSColor	*dtxtCol;
-static NSColor	*shadowCol;
+static NSColor *txtCol;
+static NSColor *dtxtCol;
+static NSColor *shadowCol;
 
-@interface	NSCell (PrivateColor)
+@interface NSCell (PrivateColor)
 + (void) _systemColorsChanged: (NSNotification*)n;
 @end
 
 
-@implementation	NSCell (PrivateColor)
+@implementation NSCell (PrivateColor)
 + (void) _systemColorsChanged: (NSNotification*)n
 {
   ASSIGN (txtCol, [colorClass controlTextColor]);
@@ -111,10 +111,10 @@ static NSColor	*shadowCol;
        * in order to set up our defaults.
        */
       [[NSNotificationCenter defaultCenter]
-	addObserver: self
-	   selector: @selector(_systemColorsChanged:)
-	       name: NSSystemColorsDidChangeNotification
-	     object: nil];
+        addObserver: self
+           selector: @selector(_systemColorsChanged:)
+               name: NSSystemColorsDidChangeNotification
+             object: nil];
       [self _systemColorsChanged: nil];
     }
 }
@@ -318,23 +318,23 @@ static NSColor	*shadowCol;
   if (_formatter == nil) 
     {
       if ([object isKindOfClass: [NSString class]] == YES)
-	{
-	  newContents = object;
-	  _cell.contents_is_attributed_string = NO;
-	  _cell.has_valid_object_value = YES;
-	}
+        {
+          newContents = object;
+          _cell.contents_is_attributed_string = NO;
+          _cell.has_valid_object_value = YES;
+        }
       if ([object isKindOfClass: [NSAttributedString class]] == YES)
         {
           newContents = object;
           _cell.contents_is_attributed_string = YES;
-	  _cell.has_valid_object_value = YES;
+          _cell.has_valid_object_value = YES;
         }
       else
-	{
-	  newContents = [_object_value description];
-	  _cell.contents_is_attributed_string = NO;
-	  _cell.has_valid_object_value = YES;
-	}
+        {
+          newContents = [_object_value description];
+          _cell.contents_is_attributed_string = NO;
+          _cell.has_valid_object_value = YES;
+        }
   }
   else
     {
@@ -342,12 +342,12 @@ static NSColor	*shadowCol;
       _cell.contents_is_attributed_string = NO;
       if (newContents != nil)
         {
-	  _cell.has_valid_object_value = YES;
-	}
+          _cell.has_valid_object_value = YES;
+        }
       else
         {
-	  _cell.has_valid_object_value = NO;
-	}
+          _cell.has_valid_object_value = NO;
+        }
     }
 
   ASSIGN (_contents, newContents);
@@ -411,7 +411,7 @@ static NSColor	*shadowCol;
   if (string == nil)
     {
       NSDebugMLLog (@"MacOSXCompatibility", 
-		    @"Attempt to use nil as string value");
+                    @"Attempt to use nil as string value");
     }
 
   if (_cell.type != NSTextCellType)
@@ -431,16 +431,16 @@ static NSColor	*shadowCol;
       id newObjectValue;
       
       if ([_formatter getObjectValue: &newObjectValue 
-		      forString: string 
-		      errorDescription: NULL])
-	{
-	  [self setObjectValue: newObjectValue];
-	}
+                      forString: string 
+                      errorDescription: NULL])
+        {
+          [self setObjectValue: newObjectValue];
+        }
       else
-	{
-	  _cell.has_valid_object_value = NO;
-	  ASSIGN (_contents, string);
-	}
+        {
+          _cell.has_valid_object_value = NO;
+          ASSIGN (_contents, string);
+        }
     }
 }
 
@@ -460,33 +460,33 @@ static NSColor	*shadowCol;
     case NSCellAllowsMixedState: return _cell.allows_mixed_state; 
 
       /*
-	case NSPushInCell: return 0; 
-	case NSChangeGrayCell: return 0; 
-	case NSCellLightsByContents: return 0; 
-	case NSCellLightsByGray: return 0; 
-	case NSChangeBackgroundCell: return 0; 
-	case NSCellLightsByBackground: return 0; 
-	case NSCellChangesContents: return 0;  
-	case NSCellIsInsetButton: return 0;  
+        case NSPushInCell: return 0; 
+        case NSChangeGrayCell: return 0; 
+        case NSCellLightsByContents: return 0; 
+        case NSCellLightsByGray: return 0; 
+        case NSChangeBackgroundCell: return 0; 
+        case NSCellLightsByBackground: return 0; 
+        case NSCellChangesContents: return 0;  
+        case NSCellIsInsetButton: return 0;  
       */
     case NSCellHasOverlappingImage: 
       {
-	return _cell.image_position == NSImageOverlaps;
+        return _cell.image_position == NSImageOverlaps;
       }
     case NSCellHasImageHorizontal: 
       {
-	return (_cell.image_position == NSImageRight) 
-	  || (_cell.image_position == NSImageLeft);
+        return (_cell.image_position == NSImageRight) 
+          || (_cell.image_position == NSImageLeft);
       }
     case NSCellHasImageOnLeftOrBottom: 
       {
-	return (_cell.image_position == NSImageBelow) 
-	  || (_cell.image_position == NSImageLeft);
+        return (_cell.image_position == NSImageBelow) 
+          || (_cell.image_position == NSImageLeft);
       }
     default:
       {
-	NSWarnLog (@"cell attribute %d not supported", aParameter);
-	break;
+        NSWarnLog (@"cell attribute %d not supported", aParameter);
+        break;
       }
     }
   
@@ -503,87 +503,87 @@ static NSColor	*shadowCol;
     {
     case NSCellDisabled:
       {
-	_cell.is_disabled = value;
-	break;
+        _cell.is_disabled = value;
+        break;
       }
     case NSCellState:
       {
-	_cell.state = value;
-	break;
+        _cell.state = value;
+        break;
       }
     case NSCellEditable:
       {
-	_cell.is_editable = value;
-	break;
+        _cell.is_editable = value;
+        break;
       }
     case NSCellHighlighted:
       {
-	_cell.is_highlighted = value;
-	break;
+        _cell.is_highlighted = value;
+        break;
       }
     case NSCellHasOverlappingImage:
       {
-	if (value)
-	  {
-	    _cell.image_position = NSImageOverlaps;
-	  }
-	else
-	  {
-	    if (_cell.image_position == NSImageOverlaps)
-	      {
-		_cell.image_position = NSImageLeft;
-	      }
-	  }
-	break;
+        if (value)
+          {
+            _cell.image_position = NSImageOverlaps;
+          }
+        else
+          {
+            if (_cell.image_position == NSImageOverlaps)
+              {
+                _cell.image_position = NSImageLeft;
+              }
+          }
+        break;
       }
     case NSCellHasImageHorizontal:
       {
-	if (value)
-	  {
-	    if (_cell.image_position != NSImageLeft
-		&& _cell.image_position != NSImageRight)
-	      {
-		_cell.image_position = NSImageLeft;
-	      }
-	  }
-	else
-	  {
-	    if (_cell.image_position == NSImageLeft)
-	      {
-		_cell.image_position = NSImageAbove;
-	      }
-	    else if (_cell.image_position == NSImageRight)
-	      {
-		_cell.image_position = NSImageBelow;
-	      }
-	  }
-	break;
+        if (value)
+          {
+            if (_cell.image_position != NSImageLeft
+                && _cell.image_position != NSImageRight)
+              {
+                _cell.image_position = NSImageLeft;
+              }
+          }
+        else
+          {
+            if (_cell.image_position == NSImageLeft)
+              {
+                _cell.image_position = NSImageAbove;
+              }
+            else if (_cell.image_position == NSImageRight)
+              {
+                _cell.image_position = NSImageBelow;
+              }
+          }
+        break;
       }
     case NSCellHasImageOnLeftOrBottom:
       {
-	if (value)
-	  {
-	    if (_cell.image_position == NSImageAbove)
-	      {
-		_cell.image_position = NSImageBelow;
-	      }
-	    else
-	      {
-		_cell.image_position = NSImageLeft;
-	      }
-	  }
-	else
-	  {
-	    if (_cell.image_position == NSImageBelow)
-	      {
-		_cell.image_position = NSImageAbove;
-	      }
-	    else
-	      {
-		_cell.image_position = NSImageRight;
-	      }
-	  }
-	break;
+        if (value)
+          {
+            if (_cell.image_position == NSImageAbove)
+              {
+                _cell.image_position = NSImageBelow;
+              }
+            else
+              {
+                _cell.image_position = NSImageLeft;
+              }
+          }
+        else
+          {
+            if (_cell.image_position == NSImageBelow)
+              {
+                _cell.image_position = NSImageAbove;
+              }
+            else
+              {
+                _cell.image_position = NSImageRight;
+              }
+          }
+        break;
       }
       /*
     case NSCellChangesContents:
@@ -595,18 +595,18 @@ static NSColor	*shadowCol;
 */
     case NSCellIsBordered:
       {
-	_cell.is_bordered = value;
-	break;
+        _cell.is_bordered = value;
+        break;
       }
     case NSCellAllowsMixedState:
       {
-	_cell.allows_mixed_state = value;
-	break;
+        _cell.allows_mixed_state = value;
+        break;
       }
     default:
       {
-	NSWarnLog (@"cell attribute %d not supported", aParameter);
-	break;
+        NSWarnLog (@"cell attribute %d not supported", aParameter);
+        break;
       }
     }
 }
@@ -627,19 +627,19 @@ static NSColor	*shadowCol;
   switch (_cell.type)
     {
       case NSTextCellType:
-	{
-	  ASSIGN (_contents, @"title");
-	  _cell.contents_is_attributed_string = NO;
-	  /* Doc says we have to reset the font too. */
-	  ASSIGN (_font, [fontClass systemFontOfSize: 0]);
-	  break;
-	}
+        {
+          ASSIGN (_contents, @"title");
+          _cell.contents_is_attributed_string = NO;
+          /* Doc says we have to reset the font too. */
+          ASSIGN (_font, [fontClass systemFontOfSize: 0]);
+          break;
+        }
       case NSImageCellType:
-	{
-	  TEST_RELEASE (_cell_image);
-	  _cell_image = nil;
-	  break;
-	}
+        {
+          TEST_RELEASE (_cell_image);
+          _cell_image = nil;
+          break;
+        }
     }
 }
 
@@ -781,25 +781,25 @@ static NSColor	*shadowCol;
   switch (_cell.state)
     {
       case NSOnState:
-	{
-	  return NSOffState;
-	}
+        {
+          return NSOffState;
+        }
       case NSOffState:
-	{
-	  if (_cell.allows_mixed_state)
-	    {
-	      return NSMixedState;
-	    }
-	  else
-	    {
-	      return NSOnState;
-	    }
-	}
+        {
+          if (_cell.allows_mixed_state)
+            {
+              return NSMixedState;
+            }
+          else
+            {
+              return NSOnState;
+            }
+        }
       case NSMixedState:
       default:
-	{
-	  return NSOnState;
-	}
+        {
+          return NSOnState;
+        }
     }
 }
 
@@ -940,13 +940,13 @@ static NSColor	*shadowCol;
       id newObjectValue;
       
       if ([_formatter getObjectValue: &newObjectValue 
-		      forString: [attribStr string] 
-		      errorDescription: NULL] == YES)
-	{
-	  [self setObjectValue: newObjectValue];
-	  /* What about the attributed string ?  We are loosing it. */
-	  return;
-	}
+                      forString: [attribStr string] 
+                      errorDescription: NULL] == YES)
+        {
+          [self setObjectValue: newObjectValue];
+          /* What about the attributed string ?  We are loosing it. */
+          return;
+        }
     }
 
   /* In all other cases */
@@ -964,12 +964,12 @@ static NSColor	*shadowCol;
 
       attributes = [self _nonAutoreleasedTypingAttributes];
       attrStr = [_formatter attributedStringForObjectValue: _object_value 
-			    withDefaultAttributes: attributes];
+                            withDefaultAttributes: attributes];
       RELEASE(attributes);
       if (attrStr != nil)
-	{
-	  return attrStr;
-	}
+        {
+          return attrStr;
+        }
     }
 
   /* In all other cases */
@@ -984,7 +984,7 @@ static NSColor	*shadowCol;
 
       dict = [self _nonAutoreleasedTypingAttributes];
       attrStr = [[NSAttributedString alloc] initWithString: _contents 
-					    attributes: dict];
+                                            attributes: dict];
       RELEASE(dict);
       return AUTORELEASE(attrStr);
     }
@@ -1060,7 +1060,7 @@ static NSColor	*shadowCol;
 - (void) setAction: (SEL)aSelector
 {
   [NSException raise: NSInternalInconsistencyException
-	      format: @"attempt to set an action in an NSCell"];
+              format: @"attempt to set an action in an NSCell"];
 }
 
 /**<p>Implemented by subclasses to set the target object.
@@ -1070,7 +1070,7 @@ static NSColor	*shadowCol;
 - (void) setTarget: (id)anObject
 {
   [NSException raise: NSInternalInconsistencyException
-	      format: @"attempt to set a target in an NSCell"];
+              format: @"attempt to set a target in an NSCell"];
 }
 
 /**<p>Implemented by subclass to return the target object. 
@@ -1143,7 +1143,7 @@ static NSColor	*shadowCol;
   if (anImage) 
     {
       NSAssert ([anImage isKindOfClass: imageClass],
-		NSInvalidArgumentException);
+                NSInvalidArgumentException);
     }
   
   if (_cell.type != NSImageCellType)
@@ -1161,7 +1161,7 @@ static NSColor	*shadowCol;
 - (void) setTag: (int)anInt
 {
   [NSException raise: NSInternalInconsistencyException
-	      format: @"attempt to set a tag in an NSCell"];
+              format: @"attempt to set a tag in an NSCell"];
 }
 
 /**<p>Implemented by subclasses to Return the tag. 
@@ -1176,8 +1176,8 @@ static NSColor	*shadowCol;
  * Formatting Data
  */
 - (void) setFloatingPointFormat: (BOOL)autoRange
-			   left: (unsigned int)leftDigits
-			  right: (unsigned int)rightDigits
+                           left: (unsigned int)leftDigits
+                          right: (unsigned int)rightDigits
 {
   NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
   NSMutableString *format = [[NSMutableString alloc] init];
@@ -1189,20 +1189,20 @@ static NSColor	*shadowCol;
       // FIXME: this does not fully match the documentation.
       while (fieldWidth--)
         {
-	  [format appendString: @"#"];
-	}
+          [format appendString: @"#"];
+        }
     }
   else 
     {
       while (leftDigits--)
         {
-	  [format appendString: @"#"];
-	}
+          [format appendString: @"#"];
+        }
       [format appendString: @"."];
       while (rightDigits--)
         {
-	  [format appendString: @"0"];
-	}
+          [format appendString: @"0"];
+        }
     }
 
   [formatter setFormat: format];
@@ -1267,8 +1267,8 @@ static NSColor	*shadowCol;
 }
 
 - (NSMenu*) menuForEvent: (NSEvent*)anEvent 
-		  inRect: (NSRect)cellFrame 
-		  ofView: (NSView*)aView
+                  inRect: (NSRect)cellFrame 
+                  ofView: (NSView*)aView
 {
   return [self menu];
 }
@@ -1284,13 +1284,13 @@ static NSColor	*shadowCol;
   if ([otherCell isKindOfClass: cellClass] == NO)
     {
       [NSException raise: NSBadComparisonException
-		   format: @"NSCell comparison with non-NSCell"];
+                   format: @"NSCell comparison with non-NSCell"];
     }
   if (_cell.type != NSTextCellType
       || ((NSCell*)otherCell)->_cell.type != NSTextCellType)
     {
       [NSException raise: NSBadComparisonException
-		   format: @"Comparison between non-text cells"];
+                   format: @"Comparison between non-text cells"];
     }
   /* We shouldn't access instance variables directly as subclasses
      may override stringValue to retrieve the value from somewhere else.  */
@@ -1320,7 +1320,7 @@ static NSColor	*shadowCol;
   unsigned int location = [aString rangeOfString: @"&"].location;
 
   [self setTitle: [aString stringByReplacingString: @"&"
-				 withString: @""]];
+                                 withString: @""]];
   // TODO: We should underline this character
   [self setMnemonicLocation: location];
 }
@@ -1384,14 +1384,14 @@ static NSColor	*shadowCol;
       return;
     }
 
+  [self setNextState];
+
   if (controlView != nil)
     {  
       NSWindow *cvWin = [controlView window];
       NSDate *limit = [NSDate dateWithTimeIntervalSinceNow: 0.1];
 
       [controlView lockFocus];
-      
-      [self setNextState];
       [self highlight: YES withFrame: cellFrame inView: controlView];
       [cvWin flushWindow];
       
@@ -1402,37 +1402,32 @@ static NSColor	*shadowCol;
       [cvWin flushWindow];
       [controlView unlockFocus];
 
-      if (action)
-	{
-	  NS_DURING
-	    {
-	      [(NSControl*)controlView sendAction: action to: [self target]];
-	    }
-	  NS_HANDLER
-	    {
-	      [localException raise];
-	    }
-	  NS_ENDHANDLER
-	}
+      NS_DURING
+        {
+          [(NSControl*)controlView sendAction: action to: [self target]];
+        }
+      NS_HANDLER
+        {
+          [localException raise];
+        }
+      NS_ENDHANDLER
     }
   else  // We have no control view.  The best we can do is the following. 
     {
       if (action)
-	{
-	  [self setNextState];
-
-	  NS_DURING
-	    {
-	      [[NSApplication sharedApplication] sendAction: action
-						 to: [self target]
-						 from: self];
-	    }
-	  NS_HANDLER
-	    {
-	      [localException raise];
-	    }
-	  NS_ENDHANDLER
-	}
+        {
+          NS_DURING
+            {
+              [[NSApplication sharedApplication] sendAction: action
+                                                 to: [self target]
+                                                 from: self];
+            }
+          NS_HANDLER
+            {
+              [localException raise];
+            }
+          NS_ENDHANDLER
+        }
     }
 }
 
@@ -1499,8 +1494,8 @@ static NSColor	*shadowCol;
     <p>See Also: -trackMouse:inRect:ofView:untilMouseUp:</p>
  */
 - (BOOL) continueTracking: (NSPoint)lastPoint
-		       at: (NSPoint)currentPoint
-		   inView: (NSView*)controlView
+                       at: (NSPoint)currentPoint
+                   inView: (NSView*)controlView
 {
   return YES;
 }
@@ -1544,41 +1539,41 @@ static NSColor	*shadowCol;
 /**<p>TODO</p>
  */
 - (void) stopTracking: (NSPoint)lastPoint
-		   at: (NSPoint)stopPoint
-	       inView: (NSView*)controlView
-	    mouseIsUp: (BOOL)flag
+                   at: (NSPoint)stopPoint
+               inView: (NSView*)controlView
+            mouseIsUp: (BOOL)flag
 {
 }
 
 - (BOOL) trackMouse: (NSEvent*)theEvent
-	     inRect: (NSRect)cellFrame
-	     ofView: (NSView*)controlView
+             inRect: (NSRect)cellFrame
+             ofView: (NSView*)controlView
        untilMouseUp: (BOOL)flag
 {
-  NSApplication	*theApp = [NSApplication sharedApplication];
-  unsigned	event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask
+  NSApplication *theApp = [NSApplication sharedApplication];
+  unsigned event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask
     | NSMouseMovedMask | NSLeftMouseDraggedMask | NSOtherMouseDraggedMask
     | NSRightMouseDraggedMask;
-  NSPoint	location = [theEvent locationInWindow];
-  NSPoint	point = [controlView convertPoint: location fromView: nil];
-  float		delay;
-  float		interval;
-  id		target = [self target];
-  SEL		action = [self action];
-  NSPoint	last_point = point;
-  BOOL		done;
-  BOOL		mouseWentUp;
-  unsigned	periodCount = 0;
+  NSPoint location = [theEvent locationInWindow];
+  NSPoint point = [controlView convertPoint: location fromView: nil];
+  float delay;
+  float interval;
+  id target = [self target];
+  SEL action = [self action];
+  NSPoint last_point = point;
+  BOOL done;
+  BOOL mouseWentUp;
+  unsigned periodCount = 0;
 
   NSDebugLLog(@"NSCell", @"cell start tracking in rect %@ initial point %f %f",
-	     NSStringFromRect(cellFrame), point.x, point.y);
+             NSStringFromRect(cellFrame), point.x, point.y);
 
   _mouse_down_flags = [theEvent modifierFlags];
   if (![self startTrackingAt: point inView: controlView])
     return NO;
 
   if (![controlView mouse: point inRect: cellFrame])
-    return NO;	// point is not in cell
+    return NO; // point is not in cell
 
   if ((_action_mask & NSLeftMouseDownMask) 
       && [theEvent type] == NSLeftMouseDown)
@@ -1598,97 +1593,97 @@ static NSColor	*shadowCol;
     theEvent = [NSApp currentEvent];
   else
     theEvent = [theApp nextEventMatchingMask: event_mask
-				     untilDate: nil
-				        inMode: NSEventTrackingRunLoopMode
-				       dequeue: YES];
-		 
+                       untilDate: nil
+                       inMode: NSEventTrackingRunLoopMode
+                       dequeue: YES];
+                 
   while (!done)
     {
-      NSEventType	eventType;
-      BOOL		pointIsInCell;
+      NSEventType eventType;
+      BOOL pointIsInCell;
 
       eventType = [theEvent type];
 
       if (eventType != NSPeriodic || periodCount == 4)
-	{
-	  last_point = point;
-	  if (eventType == NSPeriodic)
-	    {
-	      NSWindow	*w = [controlView window];
+        {
+          last_point = point;
+          if (eventType == NSPeriodic)
+            {
+              NSWindow *w = [controlView window];
 
-	      /*
-	       * Too many periodic events in succession - 
-	       * update the mouse location and reset the counter.
-	       */
-	      location = [w mouseLocationOutsideOfEventStream];
-	      periodCount = 0;
-	    }
-	  else
-	    {
-	      location = [theEvent locationInWindow];
-	    }
-	  point = [controlView convertPoint: location fromView: nil];
-	  NSDebugLLog(@"NSCell", @"location %f %f\n", location.x, location.y);
-	  NSDebugLLog(@"NSCell", @"point %f %f\n", point.x, point.y);
-	}
+              /*
+               * Too many periodic events in succession - 
+               * update the mouse location and reset the counter.
+               */
+              location = [w mouseLocationOutsideOfEventStream];
+              periodCount = 0;
+            }
+          else
+            {
+              location = [theEvent locationInWindow];
+            }
+          point = [controlView convertPoint: location fromView: nil];
+          NSDebugLLog(@"NSCell", @"location %f %f\n", location.x, location.y);
+          NSDebugLLog(@"NSCell", @"point %f %f\n", point.x, point.y);
+        }
       else
-	{
-	  periodCount++;
-	  NSDebugLLog (@"NSCell", @"cell got a periodic event");
-	}
+        {
+          periodCount++;
+          NSDebugLLog (@"NSCell", @"cell got a periodic event");
+        }
 
       if (![controlView mouse: point inRect: cellFrame])
-	{
-	  NSDebugLLog(@"NSCell", @"point not in cell frame\n");
+        {
+          NSDebugLLog(@"NSCell", @"point not in cell frame\n");
 
-	  pointIsInCell = NO;	
-	  if (flag == NO) 
-	    {
-	      NSDebugLLog(@"NSCell", @"cell return immediately\n");
-	      done = YES;
-	    }
-	}
+          pointIsInCell = NO;        
+          if (flag == NO) 
+            {
+              NSDebugLLog(@"NSCell", @"cell return immediately\n");
+              done = YES;
+            }
+        }
       else
-	{
-	  pointIsInCell = YES;
-	}
+        {
+          pointIsInCell = YES;
+        }
 
-      if (!done && ![self continueTracking: last_point 	// should continue
-					at: point 	// tracking?
-				    inView: controlView])
-	{
-	  NSDebugLLog(@"NSCell", @"cell stop tracking\n");
-	  done = YES;
-	}
+      if (!done && ![self continueTracking: last_point    // should continue
+                                        at: point         // tracking?
+                                    inView: controlView])
+        {
+          NSDebugLLog(@"NSCell", @"cell stop tracking\n");
+          done = YES;
+        }
       
       // Did the mouse go up?
       if (eventType == NSLeftMouseUp)
-	{
-	  NSDebugLLog(@"NSCell", @"cell mouse went up\n");
-	  mouseWentUp = YES;
-	  done = YES;
-	}
+        {
+          NSDebugLLog(@"NSCell", @"cell mouse went up\n");
+          mouseWentUp = YES;
+          done = YES;
+        }
       else
-	{
-	  if (pointIsInCell && ((eventType == NSLeftMouseDragged
-			  && (_action_mask & NSLeftMouseDraggedMask))
-			  || ((eventType == NSPeriodic)
-			  && (_action_mask & NSPeriodicMask))))
-	    [(NSControl*)controlView sendAction: action to: target];
-	}
+        {
+          if (pointIsInCell && ((eventType == NSLeftMouseDragged
+                          && (_action_mask & NSLeftMouseDraggedMask))
+                          || ((eventType == NSPeriodic)
+                          && (_action_mask & NSPeriodicMask))))
+            [(NSControl*)controlView sendAction: action to: target];
+        }
       
       if (!done)
         theEvent = [theApp nextEventMatchingMask: event_mask
-				     untilDate: nil
-				        inMode: NSEventTrackingRunLoopMode
-				       dequeue: YES];
+                                       untilDate: nil
+                                          inMode: NSEventTrackingRunLoopMode
+                                         dequeue: YES];
     }
 
   // Hook called when stop tracking
   [self stopTracking: last_point
-		  at: point
-	      inView: controlView
-	   mouseIsUp: mouseWentUp];
+                  at: point
+              inView: controlView
+           mouseIsUp: mouseWentUp];
 
   if (_action_mask & NSPeriodicMask)
     [NSEvent stopPeriodicEvents];
@@ -1697,7 +1692,7 @@ static NSColor	*shadowCol;
     {
       [self setNextState];
       if ((_action_mask & NSLeftMouseUpMask))
-	[(NSControl*)controlView sendAction: action to: target];
+        [(NSControl*)controlView sendAction: action to: target];
     }
 
   // Return YES only if the mouse went up within the cell
@@ -1708,7 +1703,7 @@ static NSColor	*shadowCol;
     }
 
   NSDebugLLog(@"NSCell", @"mouse did not go up in cell\n");
-  return NO;				// Otherwise return NO
+  return NO; // Otherwise return NO
 }
 
 /** <p>TODO</p>
@@ -1718,13 +1713,13 @@ static NSColor	*shadowCol;
   if (_cell.type == NSTextCellType && _cell.is_disabled == NO
     && (_cell.is_selectable == YES || _cell.is_editable == YES))
     {
-      static NSCursor	*cursor = nil;
-      NSRect	rect;
+      static NSCursor        *cursor = nil;
+      NSRect        rect;
 
       if (cursor== nil)
-	{
-	  cursor = RETAIN([NSCursor IBeamCursor]);
-	}
+        {
+          cursor = RETAIN([NSCursor IBeamCursor]);
+        }
       rect = NSIntersectionRect(cellFrame, [controlView visibleRect]);
       /*
        * Here we depend on an undocumented feature of NSCursor which may or
@@ -1788,37 +1783,37 @@ static NSColor	*shadowCol;
   switch (_cell.type)
     {
       case NSTextCellType:
-	{
-	  NSAttributedString *attrStr;
+        {
+          NSAttributedString *attrStr;
 
-	  attrStr = [self attributedStringValue];
-	  if ([attrStr length] != 0)
-	    {
-	      s = [attrStr size];
-	    }
-	  else
-	    {
-	      s = [self _sizeText: @"A"];
-	    }
-	}
-	break;
+          attrStr = [self attributedStringValue];
+          if ([attrStr length] != 0)
+            {
+              s = [attrStr size];
+            }
+          else
+            {
+              s = [self _sizeText: @"A"];
+            }
+        }
+        break;
 
       case NSImageCellType:
-	if (_cell_image == nil)
-	  {
-	    s = NSZeroSize;
-	  }
-	else
-	  {
-	    s = [_cell_image size];
-	  }
-	break;
+        if (_cell_image == nil)
+          {
+            s = NSZeroSize;
+          }
+        else
+          {
+            s = [_cell_image size];
+          }
+        break;
 
       default:
       case NSNullCellType:
-	//  macosx instead returns a 'very big size' here; we return NSZeroSize
-	s = NSZeroSize;
-	break;
+        //  macosx instead returns a 'very big size' here; we return NSZeroSize
+        s = NSZeroSize;
+        break;
     }
 
   // Add in border size
@@ -1875,12 +1870,12 @@ static NSColor	*shadowCol;
       
       // Add spacing between border and inside 
       if (_cell.is_bordered || _cell.is_bezeled)
-	{
-	  frame.origin.x += 3;
-	  frame.size.width -= 6;
-	  frame.origin.y += 1;
-	  frame.size.height -= 2;
-	}
+        {
+          frame.origin.x += 3;
+          frame.size.width -= 6;
+          frame.origin.y += 1;
+          frame.size.height -= 2;
+        }
       return frame;
     }
   else
@@ -2014,8 +2009,8 @@ static NSColor	*shadowCol;
  */
 
 - (void) highlight: (BOOL)lit
-	 withFrame: (NSRect)cellFrame
-	    inView: (NSView*)controlView
+         withFrame: (NSRect)cellFrame
+            inView: (NSView*)controlView
 {
   if (_cell.is_highlighted != lit)
     {
@@ -2028,24 +2023,24 @@ static NSColor	*shadowCol;
        * for easier subclassing.
        */
       if ([self isOpaque] == NO)
-	{
-	  /* FIXME - This looks like potentially generating an
-	   * infinite loop!  The control asking the cell to draw
-	   * itself in the rect, the cell asking the control to draw
-	   * the rect, the control asking the cell to draw itself in
-	   * the rect, the cell ...
-	   *
-	   * I think we should remove it.  The control is responsible
-	   * for using the cell to draw, not vice versa.
-	   */
-	  [controlView displayRect: cellFrame];
-	}
+        {
+          /* FIXME - This looks like potentially generating an
+           * infinite loop!  The control asking the cell to draw
+           * itself in the rect, the cell asking the control to draw
+           * the rect, the control asking the cell to draw itself in
+           * the rect, the cell ...
+           *
+           * I think we should remove it.  The control is responsible
+           * for using the cell to draw, not vice versa.
+           */
+          [controlView displayRect: cellFrame];
+        }
       [self drawWithFrame: cellFrame inView: controlView];
     }
 }
 
 - (NSColor*) highlightColorWithFrame: (NSRect)cellFrame
-			      inView: (NSView *)controlView
+                              inView: (NSView *)controlView
 {
   return [NSColor selectedControlColor];
 }
@@ -2079,10 +2074,10 @@ static NSColor	*shadowCol;
 }
 
 - (void) _setupTextWithFrame: (NSRect)aRect
-		      inView: (NSView*)controlView
-		      editor: (NSText*)textObject
-		    delegate: (id)anObject
-		       range: (NSRange)selection
+                      inView: (NSView*)controlView
+                      editor: (NSText*)textObject
+                    delegate: (id)anObject
+                       range: (NSRange)selection
 {
   NSRect titleRect = [self titleRectForBounds: aRect];
   NSClipView *cv = [[NSClipView alloc] initWithFrame: titleRect];
@@ -2120,23 +2115,23 @@ static NSColor	*shadowCol;
 
       contents = [_formatter editingStringForObjectValue: _object_value];
       if (contents == nil)
-	{
-	  contents = _contents;
-	}
+        {
+          contents = _contents;
+        }
       [textObject setText: contents];
     }
   else
     {
       if (_cell.contents_is_attributed_string == NO)
-	{
-	  [textObject setText: _contents];
-	}
+        {
+          [textObject setText: _contents];
+        }
       else
-	{
-	  // The curent text has size 0, so this replaces the whole text.
-	  [textObject replaceCharactersInRange: NSMakeRange(0, 0)
-		      withAttributedString: (NSAttributedString *)_contents];
-	}
+        {
+          // The curent text has size 0, so this replaces the whole text.
+          [textObject replaceCharactersInRange: NSMakeRange(0, 0)
+                      withAttributedString: (NSAttributedString *)_contents];
+        }
     }
 
   [textObject sizeToFit];
@@ -2173,19 +2168,19 @@ static NSColor	*shadowCol;
     id="NSCellType">NSTextCellType</ref></p>
  */
 - (void) editWithFrame: (NSRect)aRect
-		inView: (NSView*)controlView
-		editor: (NSText*)textObject
-	      delegate: (id)anObject
-		 event: (NSEvent*)theEvent
+                inView: (NSView*)controlView
+                editor: (NSText*)textObject
+              delegate: (id)anObject
+                 event: (NSEvent*)theEvent
 {
   if (!controlView || !textObject || (_cell.type != NSTextCellType))
     return;
 
   [self _setupTextWithFrame: aRect
-	inView: controlView
-	editor: textObject
-	delegate: anObject
-	range: NSMakeRange(0, 0)];
+        inView: controlView
+        editor: textObject
+        delegate: anObject
+        range: NSMakeRange(0, 0)];
 
   if ([theEvent type] == NSLeftMouseDown)
     {
@@ -2198,20 +2193,20 @@ static NSColor	*shadowCol;
     id="NSCellType">NSTextCellType</ref> </p>
  */
 - (void) selectWithFrame: (NSRect)aRect
-		  inView: (NSView*)controlView
-		  editor: (NSText*)textObject
-		delegate: (id)anObject
-		   start: (int)selStart
-		  length: (int)selLength
+                  inView: (NSView*)controlView
+                  editor: (NSText*)textObject
+                delegate: (id)anObject
+                   start: (int)selStart
+                  length: (int)selLength
 {
   if (!controlView || !textObject || (_cell.type != NSTextCellType))
     return;
 
   [self _setupTextWithFrame: aRect
-	inView: controlView
-	editor: textObject
-	delegate: anObject
-	range: NSMakeRange(selStart, selLength)];
+        inView: controlView
+        editor: textObject
+        delegate: anObject
+        range: NSMakeRange(selStart, selLength)];
 }
 
 - (BOOL) sendsActionOnEndEditing 
@@ -2312,7 +2307,7 @@ static NSColor	*shadowCol;
       cFlags2 |= [self importsGraphics] ? 0x20000000 : 0;
       cFlags2 |= [self allowsEditingTextAttributes] ? 0x40000000 : 0;
       [aCoder encodeInt: cFlags2 forKey: @"NSCellFlags2"];
-	  
+          
       if (_cell.type == NSTextCellType)
         {
           // font and formatter.
@@ -2320,7 +2315,7 @@ static NSColor	*shadowCol;
             {
               [aCoder encodeObject: [self font] forKey: @"NSSupport"];
             }
-	  
+          
           if ([self formatter])
             {
               [aCoder encodeObject: [self formatter] forKey: @"NSFormatter"];
@@ -2554,7 +2549,7 @@ static NSColor	*shadowCol;
       [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
       _cell.mnemonic_location = tmp_int;
       [aDecoder decodeValueOfObjCType: @encode(unsigned int) 
-		                   at: &_mouse_down_flags];
+                                   at: &_mouse_down_flags];
       [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &_action_mask];
       if (version < 3)
         {
@@ -2717,10 +2712,10 @@ static NSColor	*shadowCol;
   [paragraphStyle setAlignment: [self alignment]];
 
   attr = [[NSDictionary alloc] initWithObjectsAndKeys: 
-			       _font, NSFontAttributeName,
-			       color, NSForegroundColorAttributeName,
-			       paragraphStyle, NSParagraphStyleAttributeName,
-			       nil];
+                               _font, NSFontAttributeName,
+                               color, NSForegroundColorAttributeName,
+                               paragraphStyle, NSParagraphStyleAttributeName,
+                               nil];
   RELEASE (paragraphStyle);
   return attr;
 }
@@ -2746,7 +2741,7 @@ static NSColor	*shadowCol;
  */
 - (NSAttributedString*) _drawAttributedString
 {
-	if (!_cell.is_disabled)
+        if (!_cell.is_disabled)
     {  
       return [self attributedStringValue];
     }
@@ -2755,7 +2750,7 @@ static NSColor	*shadowCol;
       NSAttributedString *attrStr = [self attributedStringValue];
       NSDictionary *attribs;
       NSMutableDictionary *newAttribs;
-	      
+              
       attribs = [attrStr attributesAtIndex: 0 
                          effectiveRange: NULL];
       newAttribs = [NSMutableDictionary dictionaryWithDictionary: attribs];
@@ -2772,7 +2767,7 @@ static NSColor	*shadowCol;
  * Private internal method to display an attributed string.
  */
 - (void) _drawAttributedText: (NSAttributedString*)aString 
-		     inFrame: (NSRect)aRect
+                     inFrame: (NSRect)aRect
 {
   NSSize titleSize;
 
@@ -2838,19 +2833,19 @@ static NSColor	*shadowCol;
     {
       switch (_cell.focus_ring_type)
         {
-	  case NSFocusRingTypeDefault:
-	    [[GSTheme theme] drawFocusFrame: [self drawingRectForBounds:
-						       cellFrame]
-			     view: controlView];
-	    break;
-	  case NSFocusRingTypeExterior:
-	    [[GSTheme theme] drawFocusFrame: cellFrame
-			     view: controlView];
-	    break;
-	  case NSFocusRingTypeNone:
-	  default:
-	    break;
-	} 
+          case NSFocusRingTypeDefault:
+            [[GSTheme theme] drawFocusFrame: [self drawingRectForBounds:
+                                                       cellFrame]
+                             view: controlView];
+            break;
+          case NSFocusRingTypeExterior:
+            [[GSTheme theme] drawFocusFrame: cellFrame
+                             view: controlView];
+            break;
+          case NSFocusRingTypeNone:
+          default:
+            break;
+        } 
     }
 }
 
@@ -2871,12 +2866,12 @@ _sizeForBorderType (NSBorderType aType)
   switch (aType)
     {
       case NSLineBorder:
-	return NSMakeSize(1, 1);
+        return NSMakeSize(1, 1);
       case NSGrooveBorder:
       case NSBezelBorder:
-	return NSMakeSize(2, 2);
+        return NSMakeSize(2, 2);
       case NSNoBorder: 
       default:
-	return NSZeroSize;
+        return NSZeroSize;
     }
 }

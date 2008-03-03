@@ -1,3 +1,8 @@
+2008-03-04 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSCell.m (-performClickWithFrame:inView:): Call
+	sendAction:to: on control even when there is no action.
+
 2008-03-01 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSKeyValueBinding.m
