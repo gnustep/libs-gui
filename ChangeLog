@@ -1,3 +1,8 @@
+2008-03-05 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Tools/make_services.m: Standardise paths to avoid error reports when
+	two paths point to the same app.
+
 2008-03-04 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSCell.m (-performClickWithFrame:inView:): Call

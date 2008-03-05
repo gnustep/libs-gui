@@ -436,6 +436,7 @@ scanDirectory(NSMutableDictionary *services, NSString *path)
 	|| [ext isEqualToString: @"profile"]))
 	{
 	  newPath = [path stringByAppendingPathComponent: name];
+	  newPath = [newPath stringByStandardizingPath];
 	  if ([mgr fileExistsAtPath: newPath isDirectory: &isDir] && isDir)
 	    {
 	      NSString		*oldPath;
@@ -499,6 +500,7 @@ scanDirectory(NSMutableDictionary *services, NSString *path)
       else if (ext != nil && [ext isEqualToString: @"service"])
 	{
 	  newPath = [path stringByAppendingPathComponent: name];
+	  newPath = [newPath stringByStandardizingPath];
 	  if ([mgr fileExistsAtPath: newPath isDirectory: &isDir] && isDir)
 	    {
 	      NSBundle		*bundle;
@@ -538,6 +540,7 @@ scanDirectory(NSMutableDictionary *services, NSString *path)
       else
 	{
 	  newPath = [path stringByAppendingPathComponent: name];
+	  newPath = [newPath stringByStandardizingPath];
 	  if ([mgr fileExistsAtPath: newPath isDirectory: &isDir] && isDir)
 	    {
 	      scanDirectory(services, newPath);
@@ -567,6 +570,7 @@ scanApplications(NSMutableDictionary *services, NSString *path)
 	|| [ext isEqualToString: @"profile"]))
 	{
 	  newPath = [path stringByAppendingPathComponent: name];
+	  newPath = [newPath stringByStandardizingPath];
 	  if ([mgr fileExistsAtPath: newPath isDirectory: &isDir] && isDir)
 	    {
 	      NSString		*oldPath;
@@ -630,6 +634,7 @@ scanApplications(NSMutableDictionary *services, NSString *path)
       else
 	{
 	  newPath = [path stringByAppendingPathComponent: name];
+	  newPath = [newPath stringByStandardizingPath];
 	  if ([mgr fileExistsAtPath: newPath isDirectory: &isDir] && isDir)
 	    {
 	      scanApplications(services, newPath);
@@ -709,6 +714,7 @@ scanServices(NSMutableDictionary *services, NSString *path)
       if (ext != nil && [ext isEqualToString: @"service"])
 	{
 	  newPath = [path stringByAppendingPathComponent: name];
+	  newPath = [newPath stringByStandardizingPath];
 	  if ([mgr fileExistsAtPath: newPath isDirectory: &isDir] && isDir)
 	    {
 	      NSBundle		*bundle;
@@ -748,6 +754,7 @@ scanServices(NSMutableDictionary *services, NSString *path)
       else
 	{
 	  newPath = [path stringByAppendingPathComponent: name];
+	  newPath = [newPath stringByStandardizingPath];
 	  if ([mgr fileExistsAtPath: newPath isDirectory: &isDir] && isDir)
 	    {
 	      scanServices(services, newPath);
