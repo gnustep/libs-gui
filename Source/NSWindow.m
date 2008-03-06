@@ -1491,6 +1491,7 @@ many times.
 
 - (void) makeKeyAndOrderFront: (id)sender
 {
+  [self deminiaturize: self];
   [self orderFrontRegardless];
   [self makeKeyWindow];
   /*

@@ -1,5 +1,11 @@
 2008-03-05 Richard Frith-Macdonald <rfm@gnu.org>
 
+	* Source/NSWindow.m: deminiaturize window in -makeKeyAndOrderFront:
+	(bug #22444) as I tested and confirmed that implicit deminiaturisation
+	is done here on MacOSX.
+
+2008-03-05 Richard Frith-Macdonald <rfm@gnu.org>
+
 	* Tools/make_services.m: Standardise paths to avoid error reports when
 	two paths point to the same app.
 
