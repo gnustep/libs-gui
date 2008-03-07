@@ -21,7 +21,7 @@
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Lesser General Public License for more details.
 
    You should have received a copy of the GNU Lesser General Public
@@ -81,36 +81,37 @@ static NSImage *unexpandable  = nil;
 - (void) _postSelectionIsChangingNotification;
 - (void) _postSelectionDidChangeNotification;
 - (void) _postColumnDidMoveNotificationWithOldIndex: (int) oldIndex
-					   newIndex: (int) newIndex;
+                                           newIndex: (int) newIndex;
 // FIXME: There is a method with a similar name.but this is never called
 //- (void) _postColumnDidResizeNotification;
 - (BOOL) _shouldSelectTableColumn: (NSTableColumn *)tableColumn;
 - (BOOL) _shouldSelectRow: (int)rowIndex;
 - (BOOL) _shouldSelectionChange;
 - (BOOL) _shouldEditTableColumn: (NSTableColumn *)tableColumn
-			    row: (int) rowIndex;
+                            row: (int) rowIndex;
 - (void) _willDisplayCell: (NSCell*)cell
-	   forTableColumn: (NSTableColumn *)tb
-		      row: (int)index;
+           forTableColumn: (NSTableColumn *)tb
+                      row: (int)index;
 - (BOOL) _writeRows: (NSIndexSet *)rows
        toPasteboard: (NSPasteboard *)pboard;
 - (BOOL) _isDraggingSource;
 - (id) _objectValueForTableColumn: (NSTableColumn *)tb
-			      row: (int)index;
+                              row: (int)index;
 - (void) _setObjectValue: (id)value
-	  forTableColumn: (NSTableColumn *)tb
-		     row: (int) index;
+          forTableColumn: (NSTableColumn *)tb
+                     row: (int) index;
 - (int) _numRows;
 @end
 
 // These methods are private...
 @interface NSOutlineView (TableViewInternalPrivate)
+- (void) _initOutlineDefaults;
 - (void) _autosaveExpandedItems;
 - (void) _autoloadExpandedItems;
 - (void) _collectItemsStartingWith: (id)startitem
-			      into: (NSMutableArray *)allChildren;
+                              into: (NSMutableArray *)allChildren;
 - (void) _loadDictionaryStartingWith: (id) startitem
-			     atLevel: (int) level;
+                             atLevel: (int) level;
 - (void) _openItem: (id)item;
 - (void) _closeItem: (id)item;
 - (void) _removeChildren: (id)startitem;
@@ -140,22 +141,14 @@ static NSImage *unexpandable  = nil;
  */
 - (id)initWithFrame: (NSRect)frame
 {
-  [super initWithFrame: frame];
+ self = [super initWithFrame: frame];
 
-  // Initial values
-  _indentationMarkerFollowsCell = YES;
-  _autoResizesOutlineColumn = NO;
-  _autosaveExpandedItems = NO;
-  _indentationPerLevel = 0.0;
-  _outlineTableColumn = nil;
-  _itemDict = NSCreateMapTable(NSObjectMapKeyCallBacks,
-			       NSObjectMapValueCallBacks,
-			       64);
-  _items = [[NSMutableArray alloc] init];
-  _expandedItems = [[NSMutableArray alloc] init];
-  _levelOfItems = NSCreateMapTable(NSObjectMapKeyCallBacks,
-				   NSObjectMapValueCallBacks,
-				   64);
+ if (self != nil)
+   {
+     [self _initOutlineDefaults];
+     //_outlineTableColumn = nil;
+   }
+
   return self;
 }
 
@@ -171,13 +164,13 @@ static NSImage *unexpandable  = nil;
     {
       // notify when an item expands...
       [nc removeObserver: self
-	  name: NSOutlineViewItemDidExpandNotification
-	  object: self];
+          name: NSOutlineViewItemDidExpandNotification
+          object: self];
       
       // notify when an item collapses...
       [nc removeObserver: self
-	  name: NSOutlineViewItemDidCollapseNotification
-	  object: self];
+          name: NSOutlineViewItemDidCollapseNotification
+          object: self];
     }
 
   [super dealloc];
@@ -234,8 +227,8 @@ static NSImage *unexpandable  = nil;
       // Send out the notification to let observers know that this is about
       // to occur.
       [nc postNotificationName: NSOutlineViewItemWillCollapseNotification
-	  object: self
-	  userInfo: infoDict];
+          object: self
+          userInfo: infoDict];
       
       // collapse...
       [self _closeItem: item];
@@ -243,30 +236,30 @@ static NSImage *unexpandable  = nil;
       // Send out the notification to let observers know that this has
       // occured.
       [nc postNotificationName: NSOutlineViewItemDidCollapseNotification
-	  object: self
-	  userInfo: infoDict];
+          object: self
+          userInfo: infoDict];
       
       // recursively find all children and call this method to open them.
       if (collapseChildren) // collapse all
-	{
-	  NSMutableArray *allChildren = nil;
-	  int numchild = 0;
-	  int index = 0;
-	  id sitem = (item == nil) ? (id)[NSNull null] : (id)item;
+        {
+          NSMutableArray *allChildren = nil;
+          int numchild = 0;
+          int index = 0;
+          id sitem = (item == nil) ? (id)[NSNull null] : (id)item;
 
-	  allChildren = NSMapGet(_itemDict, sitem);
-	  numchild = [allChildren count];
+          allChildren = NSMapGet(_itemDict, sitem);
+          numchild = [allChildren count];
 
-	  for (index = 0;index < numchild;index++)
-	    {
-	      id child = [allChildren objectAtIndex: index];
+          for (index = 0;index < numchild;index++)
+            {
+              id child = [allChildren objectAtIndex: index];
 
-	      if ([self isExpandable: child])
-		{
-		  [self collapseItem: child collapseChildren: collapseChildren];
-		}
-	    }
-	}
+              if ([self isExpandable: child])
+                {
+                  [self collapseItem: child collapseChildren: collapseChildren];
+                }
+            }
+        }
       [self noteNumberOfRowsChanged];
       // Should only mark the rect below the closed item for redraw
       [self setNeedsDisplay: YES];
@@ -302,49 +295,49 @@ static NSImage *unexpandable  = nil;
     {
       // if it is not already expanded and it can be expanded, then expand
       if (![self isItemExpanded: item] && canExpand)
-	{
-	  NSMutableDictionary *infoDict = [NSMutableDictionary dictionary];
+        {
+          NSMutableDictionary *infoDict = [NSMutableDictionary dictionary];
 
-	  [infoDict setObject: item forKey: @"NSObject"];
-	  
-	  // Send out the notification to let observers know that this is about
-	  // to occur.
-	  [nc postNotificationName: NSOutlineViewItemWillExpandNotification
-	      object: self
-	      userInfo: infoDict];
-	  
-	  // insert the root element, if necessary otherwise insert the
-	  // actual object.
-	  [self _openItem: item];
-	  
-	  // Send out the notification to let observers know that this has
-	  // occured.
-	  [nc postNotificationName: NSOutlineViewItemDidExpandNotification
-	      object: self
-	      userInfo: infoDict];
-	}
+          [infoDict setObject: item forKey: @"NSObject"];
+          
+          // Send out the notification to let observers know that this is about
+          // to occur.
+          [nc postNotificationName: NSOutlineViewItemWillExpandNotification
+              object: self
+              userInfo: infoDict];
+          
+          // insert the root element, if necessary otherwise insert the
+          // actual object.
+          [self _openItem: item];
+          
+          // Send out the notification to let observers know that this has
+          // occured.
+          [nc postNotificationName: NSOutlineViewItemDidExpandNotification
+              object: self
+              userInfo: infoDict];
+        }
 
       // recursively find all children and call this method to open them.
       if (expandChildren) // expand all
-	{
-	  NSMutableArray *allChildren = nil;
-	  int numchild = 0;
-	  int index = 0;
-	  id sitem = (item == nil) ? (id)[NSNull null] : (id)item;
+        {
+          NSMutableArray *allChildren = nil;
+          int numchild = 0;
+          int index = 0;
+          id sitem = (item == nil) ? (id)[NSNull null] : (id)item;
 
-	  allChildren = NSMapGet(_itemDict, sitem);
-	  numchild = [allChildren count];
+          allChildren = NSMapGet(_itemDict, sitem);
+          numchild = [allChildren count];
 
-	  for (index = 0;index < numchild;index++)
-	    {
-	      id child = [allChildren objectAtIndex: index];
+          for (index = 0;index < numchild;index++)
+            {
+              id child = [allChildren objectAtIndex: index];
 
-	      if ([self isExpandable: child])
-		{
-		  [self expandItem: child expandChildren: expandChildren];
-		}
-	    }
-	}
+              if ([self isExpandable: child])
+                {
+                  [self expandItem: child expandChildren: expandChildren];
+                }
+            }
+        }
       
       [self noteNumberOfRowsChanged];
       // Should only mark the rect below the expanded item for redraw
@@ -391,10 +384,15 @@ static NSImage *unexpandable  = nil;
 }
 
 /**
- * Returns the item at a given row.
+ * Returns the item at a given row. If no item exists for the given row, 
+ * returns nil.
  */
 - (id)itemAtRow: (int)row
 {
+  if ((row >= [_items count]) || (row < 0))
+    {
+      return nil;
+    }
   return [_items objectAtIndex: row];
 }
 
@@ -460,33 +458,33 @@ static NSImage *unexpandable  = nil;
       NSMutableArray *childArray = NSMapGet(_itemDict, parent);
 
       if ((index = [childArray indexOfObject: object]) != NSNotFound)
-	{
-	  parent = (parent == [NSNull null]) ? (id)nil :  (id)parent;
-	  dsobj = [_dataSource outlineView: self
-			       child: index
-			       ofItem: parent];
+        {
+          parent = (parent == [NSNull null]) ? (id)nil :  (id)parent;
+          dsobj = [_dataSource outlineView: self
+                               child: index
+                               ofItem: parent];
 
-	  if (dsobj != item)
-	    {
-	      [childArray replaceObjectAtIndex: index withObject: dsobj];
-	      // FIXME We need to correct _items, _itemDict, _levelOfItems, 
+          if (dsobj != item)
+            {
+              [childArray replaceObjectAtIndex: index withObject: dsobj];
+              // FIXME We need to correct _items, _itemDict, _levelOfItems, 
               // _expandedItems and _selectedItems
-	    }
-	  break;
-	}
+            }
+          break;
+        }
     }
   
   if (reloadChildren)
     {
       [self _removeChildren: dsobj];
       [self _loadDictionaryStartingWith: dsobj
-	    atLevel: [self levelForItem: dsobj]];
+            atLevel: [self levelForItem: dsobj]];
 
       if (expanded)
         {
-	  [self _openItem: dsobj];
-	  [self noteNumberOfRowsChanged];
-	}
+          [self _openItem: dsobj];
+          [self noteNumberOfRowsChanged];
+        }
     }      
   [self setNeedsDisplay: YES];
 }
@@ -533,27 +531,27 @@ static NSImage *unexpandable  = nil;
       [self _autoloadExpandedItems];
       // notify when an item expands...
       [nc addObserver: self
-	  selector: @selector(_autosaveExpandedItems)
-	  name: NSOutlineViewItemDidExpandNotification
-	  object: self];
+          selector: @selector(_autosaveExpandedItems)
+          name: NSOutlineViewItemDidExpandNotification
+          object: self];
 
       // notify when an item collapses...
       [nc addObserver: self
-	  selector: @selector(_autosaveExpandedItems)
-	  name: NSOutlineViewItemDidCollapseNotification
-	  object: self];
+          selector: @selector(_autosaveExpandedItems)
+          name: NSOutlineViewItemDidCollapseNotification
+          object: self];
     }
   else
     {
       // notify when an item expands...
       [nc removeObserver: self
-	  name: NSOutlineViewItemDidExpandNotification
-	  object: self];
+          name: NSOutlineViewItemDidExpandNotification
+          object: self];
 
       // notify when an item collapses...
       [nc removeObserver: self
-	  name: NSOutlineViewItemDidCollapseNotification
-	  object: self];
+          name: NSOutlineViewItemDidCollapseNotification
+          object: self];
     }
 }
 
@@ -641,15 +639,15 @@ static NSImage *unexpandable  = nil;
   // create a new empty one
   _items = [[NSMutableArray alloc] init]; 
   _itemDict = NSCreateMapTable(NSObjectMapKeyCallBacks,
-			       NSObjectMapValueCallBacks,
-			       64);
+                               NSObjectMapValueCallBacks,
+                               64);
   _levelOfItems = NSCreateMapTable(NSObjectMapKeyCallBacks,
-				   NSObjectMapValueCallBacks,
-				   64);
+                                   NSObjectMapValueCallBacks,
+                                   64);
 
   // reload all the open items...
   [self _loadDictionaryStartingWith: nil
-	atLevel: -1];
+        atLevel: -1];
   [self _openItem: nil];
   [super reloadData];
 }
@@ -689,13 +687,13 @@ static NSImage *unexpandable  = nil;
   if ([aCoder allowsKeyedCoding] == NO)
     {
       [aCoder encodeValueOfObjCType: @encode(BOOL)
-				 at: &_autoResizesOutlineColumn];
+                                 at: &_autoResizesOutlineColumn];
       [aCoder encodeValueOfObjCType: @encode(BOOL)
-				 at: &_indentationMarkerFollowsCell];
+                                 at: &_indentationMarkerFollowsCell];
       [aCoder encodeValueOfObjCType: @encode(BOOL)
-				 at: &_autosaveExpandedItems];
+                                 at: &_autosaveExpandedItems];
       [aCoder encodeValueOfObjCType: @encode(float)
-				 at: &_indentationPerLevel];
+                                 at: &_indentationPerLevel];
       [aCoder encodeConditionalObject: _outlineTableColumn];
     }
 }
@@ -704,49 +702,31 @@ static NSImage *unexpandable  = nil;
 {
   // Since we only have one version....
   self = [super initWithCoder: aDecoder];
+  if (self == nil)
+    return self;
+
+  [self _initOutlineDefaults];
+ 
   if ([aDecoder allowsKeyedCoding])
     {     
-      _itemDict = NSCreateMapTable(NSObjectMapKeyCallBacks,
-				   NSObjectMapValueCallBacks,
-				   64);
-      _items = [[NSMutableArray alloc] init];
-      _expandedItems = [[NSMutableArray alloc] init];
-      _levelOfItems = NSCreateMapTable(NSObjectMapKeyCallBacks,
-				       NSObjectMapValueCallBacks,
-				       64);
-
-      // these can't be chosen on IB.
-      _indentationPerLevel = 10.0;
-      _indentationMarkerFollowsCell = YES;
-      _autoResizesOutlineColumn = NO;
-      _autosaveExpandedItems = NO;
-
       // init the table column... (this can't be chosen on IB either)...
       if ([_tableColumns count] > 0)
-	{
-	  _outlineTableColumn = [_tableColumns objectAtIndex: 0];
-	}
+        {
+          _outlineTableColumn = [_tableColumns objectAtIndex: 0];
+        }
     }
   else
     {
+      // overrides outline defaults with archived values 
       [aDecoder decodeValueOfObjCType: @encode(BOOL)
-				   at: &_autoResizesOutlineColumn];
+                                   at: &_autoResizesOutlineColumn];
       [aDecoder decodeValueOfObjCType: @encode(BOOL)
-				   at: &_indentationMarkerFollowsCell];
+                                   at: &_indentationMarkerFollowsCell];
       [aDecoder decodeValueOfObjCType: @encode(BOOL)
-				   at: &_autosaveExpandedItems];
+                                   at: &_autosaveExpandedItems];
       [aDecoder decodeValueOfObjCType: @encode(float)
-				   at: &_indentationPerLevel];
+                                   at: &_indentationPerLevel];
       _outlineTableColumn = [aDecoder decodeObject];
-      
-      _itemDict = NSCreateMapTable(NSObjectMapKeyCallBacks,
-				   NSObjectMapValueCallBacks,
-				   64);
-      _items = [[NSMutableArray alloc] init];
-      _expandedItems = [[NSMutableArray alloc] init];
-      _levelOfItems = NSCreateMapTable(NSObjectMapKeyCallBacks,
-				       NSObjectMapValueCallBacks,
-				       64); 
     }
   return self;
 }
@@ -769,35 +749,35 @@ static NSImage *unexpandable  = nil;
       int position = 0;
      
       if ([self isItemExpanded: item])
-	{
-	  image = expanded;
-	}
+        {
+          image = expanded;
+        }
       else
-	{
-	  image = collapsed;
-	}
+        {
+          image = collapsed;
+        }
 
       if (_indentationMarkerFollowsCell)
-	{
-	  position = _indentationPerLevel * level;
-	}
+        {
+          position = _indentationPerLevel * level;
+        }
 
       position += _columnOrigins[_clickedColumn];
 
       if ([self isExpandable:item]
-	  && location.x >= position
-      	  && location.x <= position + [image size].width)
-	{
-	  if (![self isItemExpanded: item])
-	    {
-	      [self expandItem: item];
-	    }
-	  else
-	    {
-	      [self collapseItem: item];
-	    }
-	  return;
-	}
+          && location.x >= position
+                && location.x <= position + [image size].width)
+        {
+          if (![self isItemExpanded: item])
+            {
+              [self expandItem: item];
+            }
+          else
+            {
+              [self collapseItem: item];
+            }
+          return;
+        }
     }
 
   [super mouseDown: theEvent];
@@ -859,87 +839,87 @@ static NSImage *unexpandable  = nil;
   for (i = startingColumn; i <= endingColumn; i++)
     {
       if (i != _editedColumn || rowIndex != _editedRow)
-	{
-	  id item = [self itemAtRow: rowIndex];
+        {
+          id item = [self itemAtRow: rowIndex];
 
-	  tb = [_tableColumns objectAtIndex: i];
-	  cell = [tb dataCellForRow: rowIndex];
-	  [self _willDisplayCell: cell
-		forTableColumn: tb
-		row: rowIndex];
-	  [cell setObjectValue: [_dataSource outlineView: self
-					     objectValueForTableColumn: tb
-					     byItem: item]]; 
-	  drawingRect = [self frameOfCellAtColumn: i
-			      row: rowIndex];
+          tb = [_tableColumns objectAtIndex: i];
+          cell = [tb dataCellForRow: rowIndex];
+          [self _willDisplayCell: cell
+                forTableColumn: tb
+                row: rowIndex];
+          [cell setObjectValue: [_dataSource outlineView: self
+                                             objectValueForTableColumn: tb
+                                             byItem: item]]; 
+          drawingRect = [self frameOfCellAtColumn: i
+                              row: rowIndex];
 
-	  if (tb == _outlineTableColumn)
-	    {
-	      NSImage *image = nil;
-	      int level = 0;
-	      float indentationFactor = 0.0;
-	      // float originalWidth = drawingRect.size.width;
+          if (tb == _outlineTableColumn)
+            {
+              NSImage *image = nil;
+              int level = 0;
+              float indentationFactor = 0.0;
+              // float originalWidth = drawingRect.size.width;
 
-	      // display the correct arrow...
-	      if ([self isItemExpanded: item])
-		{
-		  image = expanded;
-		}
-	      else
-		{
-		  image = collapsed;
-		}
+              // display the correct arrow...
+              if ([self isItemExpanded: item])
+                {
+                  image = expanded;
+                }
+              else
+                {
+                  image = collapsed;
+                }
 
-	      if (![self isExpandable: item])
-		{
-		  image = unexpandable;
-		}
+              if (![self isExpandable: item])
+                {
+                  image = unexpandable;
+                }
 
-	      level = [self levelForItem: item];
-	      indentationFactor = _indentationPerLevel * level;
-	      imageCell = [[NSCell alloc] initImageCell: image];
+              level = [self levelForItem: item];
+              indentationFactor = _indentationPerLevel * level;
+              imageCell = [[NSCell alloc] initImageCell: image];
 
-	      if (_indentationMarkerFollowsCell)
-		{
-		  imageRect.origin.x = drawingRect.origin.x + indentationFactor;
-		  imageRect.origin.y = drawingRect.origin.y;
-		}
-	      else
-		{
-		  imageRect.origin.x = drawingRect.origin.x;
-		  imageRect.origin.y = drawingRect.origin.y;
-		}
-	      
-	      if ([_delegate respondsToSelector: @selector(outlineView:willDisplayOutlineCell:forTableColumn:item:)])
-		{
-		  [_delegate outlineView: self
-			     willDisplayOutlineCell: imageCell
-			     forTableColumn: tb
-			     item: item];
-		}
-	      
-	      /* Do not indent if the delegate set the image to nil. */
-	      if ([imageCell image])
-		{
-		  imageRect.size.width = [image size].width;
-		  imageRect.size.height = [image size].height;
-		  [imageCell drawWithFrame: imageRect inView: self];
-		  drawingRect.origin.x
-		    += indentationFactor + [image size].width + 5;
-		  drawingRect.size.width
-		    -= indentationFactor + [image size].width + 5;
-		}
-	      else
-		{
-		  drawingRect.origin.x += indentationFactor;
-		  drawingRect.size.width -= indentationFactor;
-		}
+              if (_indentationMarkerFollowsCell)
+                {
+                  imageRect.origin.x = drawingRect.origin.x + indentationFactor;
+                  imageRect.origin.y = drawingRect.origin.y;
+                }
+              else
+                {
+                  imageRect.origin.x = drawingRect.origin.x;
+                  imageRect.origin.y = drawingRect.origin.y;
+                }
+              
+              if ([_delegate respondsToSelector: @selector(outlineView:willDisplayOutlineCell:forTableColumn:item:)])
+                {
+                  [_delegate outlineView: self
+                             willDisplayOutlineCell: imageCell
+                             forTableColumn: tb
+                             item: item];
+                }
+              
+              /* Do not indent if the delegate set the image to nil. */
+              if ([imageCell image])
+                {
+                  imageRect.size.width = [image size].width;
+                  imageRect.size.height = [image size].height;
+                  [imageCell drawWithFrame: imageRect inView: self];
+                  drawingRect.origin.x
+                    += indentationFactor + [image size].width + 5;
+                  drawingRect.size.width
+                    -= indentationFactor + [image size].width + 5;
+                }
+              else
+                {
+                  drawingRect.origin.x += indentationFactor;
+                  drawingRect.size.width -= indentationFactor;
+                }
 
-	      RELEASE(imageCell);
-	    }
+              RELEASE(imageCell);
+            }
 
-	  [cell drawWithFrame: drawingRect inView: self];
-	}
+          [cell drawWithFrame: drawingRect inView: self];
+        }
     }
 }
 
@@ -951,14 +931,14 @@ static NSImage *unexpandable  = nil;
     {
       float widest = 0;
       for (index = 0;index < _numberOfRows; index++)
-	{
-	  float offset = [self levelForRow: index] * 
-	    [self indentationPerLevel];
-	  NSRect drawingRect = [self frameOfCellAtColumn: 0
-				     row: index];
-	  float length = drawingRect.size.width + offset;
-	  if (widest < length) widest = length;
-	}
+        {
+          float offset = [self levelForRow: index] * 
+            [self indentationPerLevel];
+          NSRect drawingRect = [self frameOfCellAtColumn: 0
+                                     row: index];
+          float length = drawingRect.size.width + offset;
+          if (widest < length) widest = length;
+        }
       // [_outlineTableColumn setWidth: widest];
     }
 
@@ -984,8 +964,8 @@ static NSImage *unexpandable  = nil;
   else
     {
       itemAfter = [_dataSource outlineView: self
-			       child: childIndex
-			       ofItem: item];
+                               child: childIndex
+                               ofItem: item];
       currentDropRow = [_items indexOfObject: itemAfter];
       currentDropLevel = [self levelForItem: itemAfter];
     }
@@ -1079,9 +1059,9 @@ static NSImage *unexpandable  = nil;
       int childIndex;
 
       if (horizontalHalfPosition / 2 < levelAfter)
-	horizontalHalfPosition = levelAfter * 2;
+        horizontalHalfPosition = levelAfter * 2;
       else if (horizontalHalfPosition / 2 > levelBefore)
-	horizontalHalfPosition = levelBefore * 2 + 1;
+        horizontalHalfPosition = levelBefore * 2 + 1;
       level = horizontalHalfPosition / 2;
 
 
@@ -1095,124 +1075,124 @@ static NSImage *unexpandable  = nil;
       currentDropLevel = level;
 
       {
-	int i;
-	int j = 0;
-	int lvl;
-	for (i = row - 1; i >= 0; i--)
-	  {
-	    lvl = [self levelForRow: i];
-	    if (lvl == level - 1)
-	      {
-		break;
-	      }
-	    else if (lvl == level)
-	      {
-		j++;
-	      }
-	  }
-	//NSLog(@"found %d (proposed childIndex = %d)", i, j);
-	if (i == -1)
-	  item = nil;
-	else
-	  item = [self itemAtRow: i];
-	
-	childIndex = j;
+        int i;
+        int j = 0;
+        int lvl;
+        for (i = row - 1; i >= 0; i--)
+          {
+            lvl = [self levelForRow: i];
+            if (lvl == level - 1)
+              {
+                break;
+              }
+            else if (lvl == level)
+              {
+                j++;
+              }
+          }
+        //NSLog(@"found %d (proposed childIndex = %d)", i, j);
+        if (i == -1)
+          item = nil;
+        else
+          item = [self itemAtRow: i];
+        
+        childIndex = j;
       }
 
 
       oldProposedDropRow = currentDropRow;
       if ([_dataSource respondsToSelector: 
-			 @selector(outlineView:validateDrop:proposedItem:proposedChildIndex:)])
-	{
-	   dragOperation = [_dataSource outlineView: self
-					validateDrop: sender
-					proposedItem: item
-					proposedChildIndex: childIndex];
-	}
+                         @selector(outlineView:validateDrop:proposedItem:proposedChildIndex:)])
+        {
+           dragOperation = [_dataSource outlineView: self
+                                        validateDrop: sender
+                                        proposedItem: item
+                                        proposedChildIndex: childIndex];
+        }
       
       if ((currentDropRow != oldDropRow) || (currentDropLevel != oldDropLevel))
-	{
-	  [self lockFocus];
-	  
-	  [self setNeedsDisplayInRect: oldDraggingRect];
-	  [self displayIfNeeded];
-	  
-	  [[NSColor darkGrayColor] set];
-	  
-	  //NSLog(@"currentDropLevel %d, currentDropRow %d", 
-	  //currentDropLevel, currentDropRow);
-		  
-	  if (currentDropLevel != NSOutlineViewDropOnItemIndex)
-	    {
-	      if (currentDropRow == 0)
-		{
-		  newRect = NSMakeRect([self visibleRect].origin.x,
-				       currentDropRow * _rowHeight,
-				       [self visibleRect].size.width,
-				       3);
-		}
-	      else if (currentDropRow == _numberOfRows)
-		{
-		  newRect = NSMakeRect([self visibleRect].origin.x,
-				       currentDropRow * _rowHeight - 2,
-				       [self visibleRect].size.width,
-				       3);
-		}
-	      else
-		{
-		  newRect = NSMakeRect([self visibleRect].origin.x,
-				       currentDropRow * _rowHeight - 1,
-				       [self visibleRect].size.width,
-				       3);
-		}
-	      newRect.origin.x += currentDropLevel * _indentationPerLevel;
-	      newRect.size.width -= currentDropLevel * _indentationPerLevel;
-	      NSRectFill(newRect);
-	      oldDraggingRect = newRect;
+        {
+          [self lockFocus];
+          
+          [self setNeedsDisplayInRect: oldDraggingRect];
+          [self displayIfNeeded];
+          
+          [[NSColor darkGrayColor] set];
+          
+          //NSLog(@"currentDropLevel %d, currentDropRow %d", 
+          //currentDropLevel, currentDropRow);
+                  
+          if (currentDropLevel != NSOutlineViewDropOnItemIndex)
+            {
+              if (currentDropRow == 0)
+                {
+                  newRect = NSMakeRect([self visibleRect].origin.x,
+                                       currentDropRow * _rowHeight,
+                                       [self visibleRect].size.width,
+                                       3);
+                }
+              else if (currentDropRow == _numberOfRows)
+                {
+                  newRect = NSMakeRect([self visibleRect].origin.x,
+                                       currentDropRow * _rowHeight - 2,
+                                       [self visibleRect].size.width,
+                                       3);
+                }
+              else
+                {
+                  newRect = NSMakeRect([self visibleRect].origin.x,
+                                       currentDropRow * _rowHeight - 1,
+                                       [self visibleRect].size.width,
+                                       3);
+                }
+              newRect.origin.x += currentDropLevel * _indentationPerLevel;
+              newRect.size.width -= currentDropLevel * _indentationPerLevel;
+              NSRectFill(newRect);
+              oldDraggingRect = newRect;
 
-	    }
-	  else
-	    {
-	      newRect = [self frameOfCellAtColumn: 0
-			      row: currentDropRow];
-	      newRect.origin.x = _bounds.origin.x;
-	      newRect.size.width = _bounds.size.width + 2;
-	      newRect.origin.x -= _intercellSpacing.height / 2;
-	      newRect.size.height += _intercellSpacing.height;
-	      oldDraggingRect = newRect;
-	      oldDraggingRect.origin.y -= 1;
-	      oldDraggingRect.size.height += 2;
+            }
+          else
+            {
+              newRect = [self frameOfCellAtColumn: 0
+                              row: currentDropRow];
+              newRect.origin.x = _bounds.origin.x;
+              newRect.size.width = _bounds.size.width + 2;
+              newRect.origin.x -= _intercellSpacing.height / 2;
+              newRect.size.height += _intercellSpacing.height;
+              oldDraggingRect = newRect;
+              oldDraggingRect.origin.y -= 1;
+              oldDraggingRect.size.height += 2;
 
-	      newRect.size.height -= 1;
+              newRect.size.height -= 1;
 
-	      newRect.origin.x += 3;
-	      newRect.size.width -= 3;
-		
-	      if (_drawsGrid)
-		{
-		  //newRect.origin.y += 1;
-		  //newRect.origin.x += 1;
-		  //newRect.size.width -= 2;
-		  newRect.size.height += 1;
-		}
-	      else
-		{
-		}
+              newRect.origin.x += 3;
+              newRect.size.width -= 3;
+                
+              if (_drawsGrid)
+                {
+                  //newRect.origin.y += 1;
+                  //newRect.origin.x += 1;
+                  //newRect.size.width -= 2;
+                  newRect.size.height += 1;
+                }
+              else
+                {
+                }
 
-	      newRect.origin.x += currentDropLevel * _indentationPerLevel;
-	      newRect.size.width -= currentDropLevel * _indentationPerLevel;
+              newRect.origin.x += currentDropLevel * _indentationPerLevel;
+              newRect.size.width -= currentDropLevel * _indentationPerLevel;
 
-	      NSFrameRectWithWidth(newRect, 2.0);
-	      //	      NSRectFill(newRect);
+              NSFrameRectWithWidth(newRect, 2.0);
+              //              NSRectFill(newRect);
 
-	      }
-	  [_window flushWindow];
-	  
-	  [self unlockFocus];
-	  
-	  oldDropRow = currentDropRow;
-	  oldDropLevel = currentDropLevel;
-	}
+              }
+          [_window flushWindow];
+          
+          [self unlockFocus];
+          
+          oldDropRow = currentDropRow;
+          oldDropLevel = currentDropLevel;
+        }
     }
 
 
@@ -1222,46 +1202,46 @@ static NSImage *unexpandable  = nil;
 - (BOOL) performDragOperation: (id<NSDraggingInfo>)sender
 {
   if ([_dataSource 
-	respondsToSelector: 
-	  @selector(outlineView:acceptDrop:item:childIndex:)])
+        respondsToSelector: 
+          @selector(outlineView:acceptDrop:item:childIndex:)])
     {
       id item;
       int childIndex;
 
       if (currentDropLevel == NSOutlineViewDropOnItemIndex)
-	{
-	  item = [self itemAtRow: currentDropRow];
-	  childIndex = currentDropLevel;
-	}
+        {
+          item = [self itemAtRow: currentDropRow];
+          childIndex = currentDropLevel;
+        }
       else
-	{
-	  int lvl, i, j = 0;
-	  
-	  for (i = currentDropRow - 1; i >= 0; i--)
-	    {
-	      lvl = [self levelForRow: i];
-	      if (lvl == currentDropLevel - 1)
-		{
-		  break;
-		}
-	      else if (lvl == currentDropLevel)
-		{
-		  j++;
-		}
-	    }
-	  if (i == -1)
-	    item = nil;
-	  else
-	    item = [self itemAtRow: i];
-	  
-	  childIndex = j;
-	}
+        {
+          int lvl, i, j = 0;
+          
+          for (i = currentDropRow - 1; i >= 0; i--)
+            {
+              lvl = [self levelForRow: i];
+              if (lvl == currentDropLevel - 1)
+                {
+                  break;
+                }
+              else if (lvl == currentDropLevel)
+                {
+                  j++;
+                }
+            }
+          if (i == -1)
+            item = nil;
+          else
+            item = [self itemAtRow: i];
+          
+          childIndex = j;
+        }
       
       return [_dataSource 
-	       outlineView: self
-	       acceptDrop: sender
-	       item: item
-	       childIndex: childIndex];
+               outlineView: self
+               acceptDrop: sender
+               item: item
+               childIndex: childIndex];
     }
 
   return NO;
@@ -1284,9 +1264,9 @@ static NSImage *unexpandable  = nil;
 
 
 - (void) editColumn: (int) columnIndex 
-		row: (int) rowIndex 
-	  withEvent: (NSEvent *) theEvent 
-	     select: (BOOL) flag
+                row: (int) rowIndex 
+          withEvent: (NSEvent *) theEvent 
+             select: (BOOL) flag
 {
   NSText *t;
   NSTableColumn *tb;
@@ -1309,7 +1289,7 @@ static NSImage *unexpandable  = nil;
       || columnIndex < 0 || columnIndex >= _numberOfColumns)
     {
       [NSException raise: NSInvalidArgumentException
-		   format: @"Row/column out of index in edit"];
+                   format: @"Row/column out of index in edit"];
     }
   
   if (_textObject != nil)
@@ -1325,9 +1305,9 @@ static NSImage *unexpandable  = nil;
   if ([t superview] != nil)
     {
       if ([t resignFirstResponder] == NO)
-	{
-	  return;
-	}
+        {
+          return;
+        }
     }
   
   _editedRow = rowIndex;
@@ -1340,7 +1320,7 @@ static NSImage *unexpandable  = nil;
 
   [_editedCell setEditable: _dataSource_editable];
   [_editedCell setObjectValue: [self _objectValueForTableColumn: tb
-				     row: rowIndex]];
+                                     row: rowIndex]];
 
   // We really want the correct background color!
   if ([_editedCell respondsToSelector: @selector(setBackgroundColor:)])
@@ -1354,8 +1334,8 @@ static NSImage *unexpandable  = nil;
   
   // But of course the delegate can mess it up if it wants
   [self _willDisplayCell: _editedCell
-	forTableColumn: tb
-	row: rowIndex];
+        forTableColumn: tb
+        row: rowIndex];
 
   /* Please note the important point - calling stringValue normally
      causes the _editedCell to call the validateEditing method of its
@@ -1386,17 +1366,17 @@ static NSImage *unexpandable  = nil;
       // determine which image to use...
       if ([self isItemExpanded: item])
         {
-	  image = expanded;
-	}
+          image = expanded;
+        }
       else
         {
-	  image = collapsed;
-	}
+          image = collapsed;
+        }
 
       if (![self isExpandable: item])
         {
-	  image = unexpandable;
-	}
+          image = unexpandable;
+        }
 
       level = [self levelForItem: item];
       indentationFactor = _indentationPerLevel * level;
@@ -1404,15 +1384,15 @@ static NSImage *unexpandable  = nil;
       // create the image cell..
       imageCell = [[NSCell alloc] initImageCell: image];
       if (_indentationMarkerFollowsCell)
-	{
-	  imageRect.origin.x = drawingRect.origin.x + indentationFactor;
-	  imageRect.origin.y = drawingRect.origin.y;
-	}
+        {
+          imageRect.origin.x = drawingRect.origin.x + indentationFactor;
+          imageRect.origin.y = drawingRect.origin.y;
+        }
       else
-	{
-	  imageRect.origin.x = drawingRect.origin.x;
-	  imageRect.origin.y = drawingRect.origin.y;
-	}
+        {
+          imageRect.origin.x = drawingRect.origin.x;
+          imageRect.origin.y = drawingRect.origin.y;
+        }
       
       imageRect.size.width = [image size].width;
       imageRect.size.height = [image size].height;
@@ -1432,19 +1412,19 @@ static NSImage *unexpandable  = nil;
   if (flag)
     {
       [_editedCell selectWithFrame: drawingRect
-		   inView: self
-		   editor: _textObject
-		   delegate: self
-		   start: 0
-		   length: length];
+                   inView: self
+                   editor: _textObject
+                   delegate: self
+                   start: 0
+                   length: length];
     }
   else
     {
       [_editedCell editWithFrame: drawingRect
-		   inView: self
-		   editor: _textObject
-		   delegate: self
-		   event: theEvent];
+                   inView: self
+                   editor: _textObject
+                   delegate: self
+                   event: theEvent];
     }
 
   return;
@@ -1459,40 +1439,40 @@ static NSImage *unexpandable  = nil;
 - (void) _postSelectionIsChangingNotification
 {
   [nc postNotificationName: 
-	NSOutlineViewSelectionIsChangingNotification
+        NSOutlineViewSelectionIsChangingNotification
       object: self];
 }
 - (void) _postSelectionDidChangeNotification
 {
   [nc postNotificationName: 
-	NSOutlineViewSelectionDidChangeNotification
+        NSOutlineViewSelectionDidChangeNotification
       object: self];
 }
 - (void) _postColumnDidMoveNotificationWithOldIndex: (int) oldIndex
-					   newIndex: (int) newIndex
+                                           newIndex: (int) newIndex
 {
   [nc postNotificationName: 
-	NSOutlineViewColumnDidMoveNotification
+        NSOutlineViewColumnDidMoveNotification
       object: self
       userInfo: [NSDictionary 
-		  dictionaryWithObjectsAndKeys:
-		  [NSNumber numberWithInt: newIndex],
-		  @"NSNewColumn",
-		    [NSNumber numberWithInt: oldIndex],
-		  @"NSOldColumn",
-		  nil]];
+                  dictionaryWithObjectsAndKeys:
+                  [NSNumber numberWithInt: newIndex],
+                  @"NSNewColumn",
+                    [NSNumber numberWithInt: oldIndex],
+                  @"NSOldColumn",
+                  nil]];
 }
 
 - (void) _postColumnDidResizeNotificationWithOldWidth: (float) oldWidth
 {
   [nc postNotificationName: 
-	NSOutlineViewColumnDidResizeNotification
+        NSOutlineViewColumnDidResizeNotification
       object: self
       userInfo: [NSDictionary 
-		  dictionaryWithObjectsAndKeys:
-		    [NSNumber numberWithFloat: oldWidth],
-		  @"NSOldWidth", 
-		  nil]];
+                  dictionaryWithObjectsAndKeys:
+                    [NSNumber numberWithFloat: oldWidth],
+                  @"NSOldWidth", 
+                  nil]];
 }
 
 - (BOOL) _shouldSelectTableColumn: (NSTableColumn *)tableColumn
@@ -1501,10 +1481,10 @@ static NSImage *unexpandable  = nil;
     @selector (outlineView:shouldSelectTableColumn:)] == YES) 
     {
       if ([_delegate outlineView: self  shouldSelectTableColumn: tableColumn]
-	== NO)
-	{
-	  return NO;
-	}
+        == NO)
+        {
+          return NO;
+        }
     }
 
   return YES;
@@ -1518,9 +1498,9 @@ static NSImage *unexpandable  = nil;
     @selector (outlineView:shouldSelectItem:)] == YES) 
     {
       if ([_delegate outlineView: self  shouldSelectItem: item] == NO)
-	{
-	  return NO;
-	}
+        {
+          return NO;
+        }
     }
   
   return YES;
@@ -1532,16 +1512,16 @@ static NSImage *unexpandable  = nil;
     @selector (selectionShouldChangeInTableView:)] == YES) 
     {
       if ([_delegate selectionShouldChangeInTableView: self] == NO)
-	{
-	  return NO;
-	}
+        {
+          return NO;
+        }
     }
   
   return YES;
 }
 
 - (BOOL) _shouldEditTableColumn: (NSTableColumn *)tableColumn
-			    row: (int) rowIndex
+                            row: (int) rowIndex
 {
   if ([_delegate respondsToSelector: 
     @selector(outlineView:shouldEditTableColumn:item:)])
@@ -1549,27 +1529,27 @@ static NSImage *unexpandable  = nil;
       id item = [self itemAtRow: rowIndex];
 
       if ([_delegate outlineView: self shouldEditTableColumn: tableColumn
-		     item: item] == NO)
-	{
-	  return NO;
-	}
+                     item: item] == NO)
+        {
+          return NO;
+        }
     }
 
   return YES;
 }
 
 - (void) _willDisplayCell: (NSCell*)cell
-	   forTableColumn: (NSTableColumn *)tb
-		      row: (int)index
+           forTableColumn: (NSTableColumn *)tb
+                      row: (int)index
 {
   if (_del_responds)
     {
       id item = [self itemAtRow: index];
   
       [_delegate outlineView: self   
-		 willDisplayCell: cell 
-		 forTableColumn: tb   
-		 item: item];
+                 willDisplayCell: cell 
+                 forTableColumn: tb   
+                 item: item];
     }    
 }
 
@@ -1587,7 +1567,7 @@ static NSImage *unexpandable  = nil;
     }  
 
   if ([_dataSource respondsToSelector:
-		     @selector(outlineView:writeItems:toPasteboard:)] == YES)
+                     @selector(outlineView:writeItems:toPasteboard:)] == YES)
     {
       return [_dataSource outlineView: self
                           writeItems: itemArray
@@ -1599,11 +1579,11 @@ static NSImage *unexpandable  = nil;
 - (BOOL) _isDraggingSource
 {
   return [_dataSource respondsToSelector:
-			@selector(outlineView:writeItems:toPasteboard:)];
+                        @selector(outlineView:writeItems:toPasteboard:)];
 }
 
 - (id) _objectValueForTableColumn: (NSTableColumn *)tb
-			      row: (int) index
+                              row: (int) index
 {
   id result = nil;
 
@@ -1613,16 +1593,16 @@ static NSImage *unexpandable  = nil;
       id item = [self itemAtRow: index];
 
       result = [_dataSource outlineView: self
-			    objectValueForTableColumn: tb
-			    byItem: item];
+                            objectValueForTableColumn: tb
+                            byItem: item];
     }
 
   return result;
 }
 
 - (void) _setObjectValue: (id)value
-	  forTableColumn: (NSTableColumn *)tb
-		     row: (int) index
+          forTableColumn: (NSTableColumn *)tb
+                     row: (int) index
 {
   if ([_dataSource respondsToSelector:
     @selector(outlineView:setObjectValue:forTableColumn:byItem:)])
@@ -1630,9 +1610,9 @@ static NSImage *unexpandable  = nil;
       id item = [self itemAtRow: index];
 
       [_dataSource outlineView: self
-		   setObjectValue: value
-		   forTableColumn: tb
-		   byItem: item];
+                   setObjectValue: value
+                   forTableColumn: tb
+                   byItem: item];
     }
 }
 
@@ -1645,16 +1625,33 @@ static NSImage *unexpandable  = nil;
 
 @implementation NSOutlineView (TableViewInternalPrivate)
 
+- (void) _initOutlineDefaults
+{
+  _itemDict = NSCreateMapTable(NSObjectMapKeyCallBacks,
+                               NSObjectMapValueCallBacks,
+                               64);
+  _items = [[NSMutableArray alloc] init];
+  _expandedItems = [[NSMutableArray alloc] init];
+  _levelOfItems = NSCreateMapTable(NSObjectMapKeyCallBacks,
+                                   NSObjectMapValueCallBacks,
+                                   64);
+
+  _indentationMarkerFollowsCell = YES;
+  _autoResizesOutlineColumn = NO;
+  _autosaveExpandedItems = NO;
+  _indentationPerLevel = 10.0;
+}
+
 - (void) _autosaveExpandedItems
 {
   if (_autosaveExpandedItems && _autosaveName != nil) 
     {
-      NSUserDefaults      *defaults;
-      NSString            *tableKey;
+      NSUserDefaults *defaults;
+      NSString       *tableKey;
 
       defaults  = [NSUserDefaults standardUserDefaults];
       tableKey = [NSString stringWithFormat: @"NSOutlineView Expanded Items %@", 
-			   _autosaveName];
+                           _autosaveName];
       [defaults setObject: _expandedItems  forKey: tableKey];
       [defaults synchronize];
     }
@@ -1664,30 +1661,30 @@ static NSImage *unexpandable  = nil;
 {
   if (_autosaveExpandedItems && _autosaveName != nil) 
     { 
-      NSUserDefaults     *defaults;
-      id                  config;
-      NSString           *tableKey;
+      NSUserDefaults *defaults;
+      id             config;
+      NSString       *tableKey;
 
       defaults  = [NSUserDefaults standardUserDefaults];
       tableKey = [NSString stringWithFormat: @"NSOutlineView Expanded Items %@",
-	_autosaveName];
+        _autosaveName];
       config = [defaults objectForKey: tableKey];
       if (config != nil) 
-	{
-	  NSEnumerator *en = [config objectEnumerator];
-	  id item = nil;
-	  
-	  while ((item = [en nextObject]) != nil) 
-	    {
-	      [self expandItem: item];
-	    }
-	}
+        {
+          NSEnumerator *en = [config objectEnumerator];
+          id item = nil;
+          
+          while ((item = [en nextObject]) != nil) 
+            {
+              [self expandItem: item];
+            }
+        }
     }
 }
 
 // Collect all of the items under a given element.
 - (void)_collectItemsStartingWith: (id)startitem
-			     into: (NSMutableArray *)allChildren
+                             into: (NSMutableArray *)allChildren
 {
   int num;
   int i;
@@ -1702,20 +1699,20 @@ static NSImage *unexpandable  = nil;
 
       // Only collect the children if the item is expanded
       if ([self isItemExpanded: startitem])
-	{
-	  [allChildren addObject: anitem];
-	}
+        {
+          [allChildren addObject: anitem];
+        }
 
       [self _collectItemsStartingWith: anitem
-	    into: allChildren];
+            into: allChildren];
     }
 }
 
 - (void) _loadDictionaryStartingWith: (id) startitem
-			     atLevel: (int) level
+                             atLevel: (int) level
 {
   int num = [_dataSource outlineView: self
-			 numberOfChildrenOfItem: startitem];
+                         numberOfChildrenOfItem: startitem];
   int i = 0;
   id sitem = (startitem == nil) ? (id)[NSNull null] : (id)startitem;
   NSMutableArray *anarray = nil;
@@ -1731,12 +1728,12 @@ static NSImage *unexpandable  = nil;
   for (i = 0; i < num; i++)
     {
       id anitem = [_dataSource outlineView: self
-			       child: i
-			       ofItem: startitem];
+                               child: i
+                               ofItem: startitem];
       
       [anarray addObject: anitem];
       [self _loadDictionaryStartingWith: anitem
-	    atLevel: level + 1]; 
+            atLevel: level + 1]; 
     }
 }
 
@@ -1798,18 +1795,18 @@ static NSImage *unexpandable  = nil;
 
       // Add all of the children...
       if ([self isItemExpanded: child])
-	{
-	  NSMutableArray *insertAll = [NSMutableArray array];
-	  int i = 0, numitems = 0;
+        {
+          NSMutableArray *insertAll = [NSMutableArray array];
+          int i = 0, numitems = 0;
 
-	  [self _collectItemsStartingWith: child into: insertAll];
-	  numitems = [insertAll count];
- 	  for (i = numitems-1; i >= 0; i--)
-	    {
-	      [_items insertObject: [insertAll objectAtIndex: i]
-		      atIndex: insertionPoint];
-	    }
-	}
+          [self _collectItemsStartingWith: child into: insertAll];
+          numitems = [insertAll count];
+           for (i = numitems-1; i >= 0; i--)
+            {
+              [_items insertObject: [insertAll objectAtIndex: i]
+                      atIndex: insertionPoint];
+            }
+        }
       
       // Add the parent
       [_items insertObject: child atIndex: insertionPoint];
