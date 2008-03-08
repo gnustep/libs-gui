@@ -358,9 +358,6 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 - (BOOL) sendAction: (SEL)action to: (id)target
 { 
-  if (!action)
-    return NO;
-
   if ([_toolbarItem _selectable])
     {
       [[_toolbarItem toolbar] 
@@ -418,7 +415,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
     }
 }
 
-// Overriden NSButtonCell method to make sure all test is at the same height.
+// Overriden NSButtonCell method to make sure all text is at the same height.
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
   BOOL flippedView = [controlView isFlipped];
@@ -1471,7 +1468,10 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 {
   if (_selectable && [self _selected] == NO && selected)
     {
-      [(GSToolbarButton *)_backView performClick:self];
+      // FIXME: This is a hack to break a recursion.
+      // I think the code here is at fault. FK
+      //[(GSToolbarButton *)_backView performClick:self];
+      [(GSToolbarButton *)_backView setState: YES];
     }
   else if (selected == NO)
     {

@@ -1,5 +1,10 @@
 2008-03-08 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSToolbarItem.m (-_setSelected:): 
+	Undo last hack and add a slightly better on.
+	
+2008-03-08 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSToolbarItem.m (GSToolbarButton-sendAction:to:): 
 	Add a recursion break hack. Needs to be cleaned up.
 	
