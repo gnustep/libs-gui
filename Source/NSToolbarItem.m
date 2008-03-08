@@ -358,6 +358,9 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 - (BOOL) sendAction: (SEL)action to: (id)target
 { 
+  if (!action)
+    return NO;
+
   if ([_toolbarItem _selectable])
     {
       [[_toolbarItem toolbar] 
