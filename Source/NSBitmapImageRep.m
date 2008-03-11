@@ -65,6 +65,16 @@
 // Internal
 + (int) _localFromCompressionType: (NSTIFFCompression)type;
 + (NSTIFFCompression) _compressionTypeFromLocal: (int)type;
+- (void) _premultiply;
+- (void) _unpremultiply;
+- (NSBitmapImageRep *) _convertToFormatBitsPerSample: (int)bps
+                                     samplesPerPixel: (int)spp
+                                            hasAlpha: (BOOL)alpha
+                                            isPlanar: (BOOL)isPlanar
+                                      colorSpaceName: (NSString*)colorSpaceName
+                                        bitmapFormat: (NSBitmapFormat)bitmapFormat 
+                                         bytesPerRow: (int)rowBytes
+                                        bitsPerPixel: (int)pixelBits;
 @end
 
 /**
@@ -553,6 +563,7 @@
       [self setOpaque: YES];
     }
   _properties = [[NSMutableDictionary alloc] init];
+
   return self;
 }
 
@@ -1350,6 +1361,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   NSRect irect = NSMakeRect(0, 0, _size.width, _size.height);
   NSGraphicsContext *ctxt = GSCurrentContext();
 
+  [self _premultiply];
   [ctxt GSDrawImage: irect : self];
   return YES;
 }
@@ -1934,14 +1946,17 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
               //[self getPixel: pixelData atX: x y: y];
               getP(self, getPSel, pixelData, x, y);
               a = pixelData[ai];
-              for (i = start; i < end; i++)
+              if (a != 255)
                 {
-                   unsigned int t = a * pixelData[i] + 0x80;
+                  for (i = start; i < end; i++)
+                    {
+                      unsigned int t = a * pixelData[i] + 0x80;
 
-                   pixelData[i] = ((t >> 8) + t) >> 8;
+                      pixelData[i] = ((t >> 8) + t) >> 8;
+                    }
+                  //[self setPixel: pixelData atX: x y: y];
+                  setP(self, setPSel, pixelData, x, y);
                 }
-              //[self setPixel: pixelData atX: x y: y];
-              setP(self, setPSel, pixelData, x, y);
             }
         }
     }
@@ -2008,11 +2023,21 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
               //[self getPixel: pixelData atX: x y: y];
               getP(self, getPSel, pixelData, x, y);
               a = pixelData[ai];
-              if (a != 0)
+              if ((a != 0) && (a != 255))
                 {
                   for (i = start; i < end; i++)
                     {
-                      pixelData[i] = (pixelData[i] * 255) / a;
+                      unsigned int c;
+                      
+                      c = (pixelData[i] * 255) / a;
+                      if (c >= 255)
+                        {
+                          pixelData[i] = 255;
+                        }
+                      else
+                        {
+                          pixelData[i] = c;
+                        }
                     }
                   //[self setPixel: pixelData atX: x y: y];
                   setP(self, setPSel, pixelData, x, y);

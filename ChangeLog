@@ -1,3 +1,10 @@
+2008-03-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBitmapImageRep.m (-_premultiply, _unpremultiply):
+	Optimized a bit.
+	* Source/NSBitmapImageRep.m (-draw): Premultiply the image before
+	drawing. 
+
 2008-03-08 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSToolbarItem.m (-_setSelected:): 
