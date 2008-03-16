@@ -3203,7 +3203,7 @@ struct _DelegateWrapper
  */
 - (void) terminate: (id)sender
 {
-  int	shouldTerminate = YES;
+  BOOL	shouldTerminate = YES;
 
   if ([_delegate respondsToSelector: @selector(applicationShouldTerminate:)])
     {
