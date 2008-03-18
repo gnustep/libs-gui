@@ -4112,7 +4112,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       DPSPrintf(ctxt, "__GSpagesaveobject restore\n\n");
     }
 
-  [self unlockFocus];
+  // [self unlockFocus];
 }
 
 - (void) endTrailer
@@ -4218,10 +4218,6 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   NSGraphicsContext *ctxt = [printOp context];
   NSDictionary *dict = [[printOp printInfo] dictionary];
 
-  // FIXME: Need to place this correctly. Maybe it isn't needed at all, 
-  // as all drawing happens in displayRectIgnoringOpacity:
-  [self lockFocusIfCanDrawInContext: ctxt];
-
   if ([dict objectForKey: @"NSPrintPaperBounds"])
     bounds = [[dict objectForKey: @"NSPrintPaperBounds"] rectValue];
   else
@@ -4251,14 +4247,21 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
         yoff = (int)((nup-page-1) / (nup/2));
       yoff *= NSHeight(bounds) * scale;
       DPStranslate(ctxt, xoff, yoff);
+      DPSgsave(ctxt);
       DPSscale(ctxt, scale, scale);
     }
-
-  DPSgsave(ctxt);
+  else
+    {
+      DPSgsave(ctxt);
+    }
 
   /* Translate to placement */
   if (location.x != 0 || location.y != 0)
     DPStranslate(ctxt, location.x, location.y);
+
+  // FIXME: Need to place this correctly. Maybe it isn't needed at all, 
+  // as all drawing happens in displayRectIgnoringOpacity:
+  // [self lockFocusIfCanDrawInContext: ctxt];
 }
 
 - (void) _endSheet
