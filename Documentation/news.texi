@@ -9,6 +9,20 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.13.2}
+
+@itemize @bullet
+@item Printing works a little better now.
+@item NSPopUpButtonCell - object encoding was changed
+@item NSTextView - several updates and Mac OS X methods added
+@item NSWindow - devince interaction was changed.  You need to use
+gnustep-back 0.13.2 with this version
+@item New class NSSegmentedCell.
+@item NSDrawer was implemented.
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.13.1}
 
 @itemize @bullet
@@ -19,8 +33,6 @@ with support in several classes (NSControl, NSTextField, NSView, etc).
 @item Added some MacOS X 10.4 methods to NSTableView.
 @item Changed the NSCursor hot point to 0,0 for MacOS X compatibility.
 @end itemize
-
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.13.0}
 

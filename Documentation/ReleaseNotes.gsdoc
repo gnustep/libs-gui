@@ -20,7 +20,36 @@
 	migrate to using a newer version of the library.
       </p>
       <section>
-      	<heading>Version 0.13.0</heading>
+      	<heading>Version 0.13.2</heading>
+	<p>This is an unstable release.
+	</p>
+	<deflist>
+            <term>NSPopUpButtonCell</term>
+            <desc>
+	      The encoding of this object was changed (which is backwards compatible,
+	      but not forwards compatible.
+            </desc>
+            <term>NSTextView</term>
+            <desc>
+	      Add new X secondary selection behavior. Other Mac OS X methods added.
+            </desc>
+            <term>NSWindow</term>
+            <desc>
+	      Device interaction with backend has changed. This release of gui
+	      requires the coresponding gnustep-back release 0.13.2.
+            </desc>
+            <term>NSSegmentedCell</term>
+            <desc>
+	      New class added to draw and render text in segments.
+            </desc>
+            <term>NSDrawer</term>
+            <desc>
+	      Implemented.
+            </desc>
+	</deflist>
+      </section>
+      <section>
+      	<heading>Version 0.13.1</heading>
 	<p>This is an unstable release.
 	Changes to error handling and key-value coding require an
 	update to at least the base library version 1.15.1.

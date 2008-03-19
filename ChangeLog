@@ -1,3 +1,7 @@
+2008-03-19  Adam Fedor  <fedor@gnu.org>
+
+	* Version 0.13.2
+
 2008-03-17 21:00-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSView.m: Changes to beginPage:... and endPage to correct
