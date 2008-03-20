@@ -36,6 +36,7 @@
 #include "AppKit/NSEvent.h"
 #include "AppKit/NSFont.h"
 #include "AppKit/NSGraphics.h"
+#include "AppKit/NSTextField.h"
 #include "AppKit/NSTextFieldCell.h"
 #include "AppKit/NSText.h"
 
@@ -234,20 +235,31 @@ static NSColor *txtCol;
 
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  if (_textfieldcell_draws_background)
+  /* Do nothing if there is already a text editor doing the drawing;
+   * otherwise, we draw everything twice.  That is bad if there are
+   * any transparency involved (eg, even an anti-alias font!) because
+   * if the semi-transparent pixels are drawn over themselves they
+   * become less transparent (eg, an anti-alias font becomes darker
+   * and gives the impression of being bold).
+   */
+  if (([controlView respondsToSelector: @selector(currentEditor)] == NO)
+      || ([(NSTextField *)controlView currentEditor] == nil))
     {
-      if ([self isEnabled])
-        {
-          [_background_color set];
-        }
-      else
-        {
-          [[NSColor controlBackgroundColor] set];
-        }
-      NSRectFill([self drawingRectForBounds: cellFrame]);
+      if (_textfieldcell_draws_background)
+	{
+	  if ([self isEnabled])
+	    {
+	      [_background_color set];
+	    }
+	  else
+	    {
+	      [[NSColor controlBackgroundColor] set];
+	    }
+	  NSRectFill([self drawingRectForBounds: cellFrame]);
+	}
+      
+      [super drawInteriorWithFrame: cellFrame inView: controlView];
     }
-
-  [super drawInteriorWithFrame: cellFrame inView: controlView];
 }
 
 /* 
