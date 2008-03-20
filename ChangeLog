@@ -1,3 +1,9 @@
+2008-03-20  Nicola Pero  <nicola.pero@meta-innovation.com>
+
+	* Source/NSButtonCell.m ([-cellSize]): Restored horizontal space
+	around text in autosized bezeled/bordered buttons not containing
+	only an image so that the autosizing is correct again.
+
 2008-03-19  Adam Fedor  <fedor@gnu.org>
 
 	* Version 0.13.2

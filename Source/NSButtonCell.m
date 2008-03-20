@@ -1390,6 +1390,21 @@ typedef struct _GSButtonCellFlags
   else
     borderSize = NSZeroSize;
 
+  /* Add an additional 6 pixels horizontally so that the text is not
+   * too near the boundaries of the button.  Without them, autosized
+   * buttons look too tiny and crammed.  This might be made
+   * configurable by the theme, but most likely only because themes
+   * might want to have even more space here (to make buttons more
+   * clear and readable) rather than less!  Eg. Apple by default has
+   * huge amounts of empty space between the text and the borders of
+   * their push buttons.
+   */
+  if ((_cell.is_bordered && (_cell.image_position != NSImageOnly))
+      || _cell.is_bezeled)
+    {
+      borderSize.width += 6;
+    }
+
   // Add border size
   s.width += 2 * borderSize.width;
   s.height += 2 * borderSize.height;
