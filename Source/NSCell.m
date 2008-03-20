@@ -2741,7 +2741,7 @@ static NSColor *shadowCol;
  */
 - (NSAttributedString*) _drawAttributedString
 {
-        if (!_cell.is_disabled)
+  if (!_cell.is_disabled)
     {  
       return [self attributedStringValue];
     }
