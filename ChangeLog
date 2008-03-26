@@ -1,3 +1,8 @@
+2008-03-26 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSApplication.m: fixed termination type code and added
+	comments to avoid confusion.
+
 2008-03-20  Nicola Pero  <nicola.pero@meta-innovation.com>
 
 	* Source/NSTextFieldCell.m ([-drawInteriorWithFrame:inView:]): If

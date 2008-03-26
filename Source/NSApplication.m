@@ -3198,28 +3198,47 @@ struct _DelegateWrapper
 /**
  * Requests the application terminates the application.  First an
  * -applicationShouldTerminate: message is sent to the delegate, and only if
- * it returns YES (or <code>NSTerminateNow</code>) will termination be
- * carried out.
+ * it returns <code>NSTerminateNow</code> will termination be
+ * carried out.<br />
+ * The old version of -applicationShouldTerminate: returned a BOOL, and this
+ * behavior is handled for backward compatibility with YES being
+ * equivalent to <code>NSTerminateNow</code> and NO being
+ * equivalent to <code>NSTerminateCancel</code>.
  */
 - (void) terminate: (id)sender
 {
-  BOOL	shouldTerminate = YES;
+  NSApplicationTerminateReply	termination;
 
   if ([_delegate respondsToSelector: @selector(applicationShouldTerminate:)])
     {
-      shouldTerminate = [_delegate applicationShouldTerminate: self];
+      /* The old API has applicationShouldTerminate: return a BOOL,
+       * so if we are linked in to an application which used that
+       * API, the delegate might return a BOOL rather than an
+       * NSTerminateNow.  That's fine as both NSTerminateNow
+       * and BOOL are integers, and NSTerminateNow is defined as YES
+       * and NSTerminateCancel as NO.
+       */
+      termination = (NSApplicationTerminateReply)
+        [_delegate applicationShouldTerminate: self];
     }
   else
     {
       if ([NSDocumentController isDocumentBasedApplication])
 	{
-	  shouldTerminate = [[NSDocumentController sharedDocumentController] 
-				reviewUnsavedDocumentsWithAlertTitle: _(@"Quit")
-				cancellable:YES];
+	  if ([[NSDocumentController sharedDocumentController] 
+            reviewUnsavedDocumentsWithAlertTitle: _(@"Quit")
+            cancellable: YES] == YES)
+            {
+              termination = NSTerminateNow;
+            }
+          else
+            {
+              termination = NSTerminateCancel;
+            }
 	}
     }
 
-  if (shouldTerminate == NSTerminateNow)
+  if (termination == NSTerminateNow)
     {
       [self replyToApplicationShouldTerminate: YES];
     }
