@@ -342,7 +342,7 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
 
   newValue = [src valueForKeyPath: binding];
   newValue = [self reverseTransformValue: newValue withOptions: options];
-  [dest setValue: newValue forKey: keyPath];
+  [dest setValue: newValue forKeyPath: keyPath];
 }
 
 - (void) observeValueForKeyPath: (NSString *)keyPath

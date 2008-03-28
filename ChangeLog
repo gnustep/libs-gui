@@ -1,3 +1,9 @@
+2008-03-28 Xavier Glattard <xavier.glattard@online.fr>
+
+	* Source/NSKeyValueBinding.m : turns a [setValue:forKey:] into
+	a	[setValue:forKeyPath:] -- needed to bind to any NSControler
+	'selection.a_key'
+
 2008-03-26 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSApplication.m: fixed termination type code and added
