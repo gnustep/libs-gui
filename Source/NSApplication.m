@@ -3207,7 +3207,7 @@ struct _DelegateWrapper
  */
 - (void) terminate: (id)sender
 {
-  NSApplicationTerminateReply	termination;
+  NSApplicationTerminateReply	termination = NSTerminateNow;
 
   if ([_delegate respondsToSelector: @selector(applicationShouldTerminate:)])
     {

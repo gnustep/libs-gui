@@ -1,3 +1,8 @@
+2008-03-29 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSApplication.m (-terminate:): Initialize termination as
+	NSTerminateNow. 
+
 2008-03-28 Xavier Glattard <xavier.glattard@online.fr>
 
 	* Source/NSKeyValueBinding.m : turns a [setValue:forKey:] into
