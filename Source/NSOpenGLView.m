@@ -102,7 +102,9 @@ static NSOpenGLPixelFormatAttribute attrs[] =
 {
   [self clearGLContext];
   ASSIGN(glcontext, context);
-  attached = NO;
+  [glcontext setView: self];
+  [glcontext makeCurrentContext];
+  [self prepareOpenGL];
 }
 
 - (void) prepareOpenGL
@@ -116,9 +118,9 @@ static NSOpenGLPixelFormatAttribute attrs[] =
 {
   if (glcontext == nil)
     {
-      glcontext = [[NSOpenGLContext alloc] initWithFormat: pixel_format
-                                           shareContext: nil];
-      attached = NO;
+      [self setOpenGLContext:
+        [[NSOpenGLContext alloc] initWithFormat: pixel_format
+                                   shareContext: nil]];
     }
   return glcontext;
 }
@@ -187,25 +189,12 @@ static NSOpenGLPixelFormatAttribute attrs[] =
   [self reshape];
 }
 
-/* FIXME: This is a hack to get a chance to attach the current 
-   context before any drawing happens. I think this code should 
-   be moved to openGLContext.
+/* FIXME: this should be done in [lockFocus] or [lockFocusInRect:].
  */
-- (BOOL) canDraw
+- (void) _lockFocusInContext: (NSGraphicsContext *)ctxt inRect: (NSRect)rect
 {
-  if (!glcontext)
-    {
-      [self openGLContext];
-      NSAssert(glcontext, NSInternalInconsistencyException);
-    }
-  if (attached == NO && glcontext != nil)
-    {
-      NSDebugMLLog(@"GL", @"Attaching context to the view");
-      [glcontext setView: self];
-      attached = YES;
-      [self prepareOpenGL];
-    }
-  return [super canDraw];
+  [super _lockFocusInContext: ctxt inRect: rect];
+  [[self openGLContext] makeCurrentContext];
 }
 
 @end

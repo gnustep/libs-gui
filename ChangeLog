@@ -1,3 +1,8 @@
+2008-03-31 Xavier Glattard <xavier.glattard@online.fr>
+
+	* Source/NSOpenGLView.m: Use _lockFocusInContext:withRect instead of
+	canDraw. Some changes to be closer to the specifications.
+
 2008-03-31 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSOpenGLView.h: Add MacOS 10.3 method.
