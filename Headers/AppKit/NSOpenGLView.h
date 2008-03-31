@@ -38,16 +38,19 @@
   NSOpenGLPixelFormat	*pixel_format;
   BOOL			attached;
 }
-+ (NSOpenGLPixelFormat*)defaultPixelFormat;
-- (void)clearGLContext;
-- (void)setOpenGLContext:(NSOpenGLContext*)context;
-- (NSOpenGLContext*)openGLContext;
-- (id)initWithFrame:(NSRect)frameRect 
-pixelFormat:(NSOpenGLPixelFormat*)format;
-- (void) dealloc;
-- (NSOpenGLPixelFormat*)pixelFormat;
-- (void)setPixelFormat:(NSOpenGLPixelFormat*)pixelFormat;
+
++ (NSOpenGLPixelFormat*) defaultPixelFormat;
+- (void) clearGLContext;
+- (void) setOpenGLContext: (NSOpenGLContext*)context;
+- (NSOpenGLContext*) openGLContext;
+- (id) initWithFrame: (NSRect)frameRect 
+         pixelFormat: (NSOpenGLPixelFormat*)format;
+- (NSOpenGLPixelFormat*) pixelFormat;
+- (void) setPixelFormat: (NSOpenGLPixelFormat*)pixelFormat;
 - (void) reshape;
 - (void) update;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (void) prepareOpenGL;
+#endif
 @end
 #endif

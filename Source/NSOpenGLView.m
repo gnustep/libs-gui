@@ -32,8 +32,6 @@
 #include "AppKit/NSOpenGL.h"
 #include "AppKit/NSOpenGLView.h"
 
-
-
 /**
   <unit>
   <heading>NSOpenGLView</heading>
@@ -51,15 +49,9 @@
 
   </unit>
 */
-@implementation NSOpenGLView
-/**
-   return a standard NSOpenGLPixelFormat you can pass to the 
-   initWithFrame: pixelFormat: method
- */
-+ (NSOpenGLPixelFormat*)defaultPixelFormat
-{
-  NSOpenGLPixelFormat *fmt;
-  NSOpenGLPixelFormatAttribute attrs[] =
+
+static NSOpenGLPixelFormat *fmt = nil;
+static NSOpenGLPixelFormatAttribute attrs[] =
     {	
       NSOpenGLPFADoubleBuffer,
       NSOpenGLPFADepthSize, 16,
@@ -72,10 +64,20 @@
 //       NSOpenGLPFADepthSize, 32,
 //       0
 //     };
-  
-  fmt = [[NSOpenGLPixelFormat alloc] initWithAttributes: attrs];
+
+@implementation NSOpenGLView
+/**
+   return a standard NSOpenGLPixelFormat you can pass to the 
+   initWithFrame: pixelFormat: method
+ */
++ (NSOpenGLPixelFormat*) defaultPixelFormat
+{
+  // Initialize it once
+  if (!fmt)
+    fmt = [[NSOpenGLPixelFormat alloc] initWithAttributes: attrs];
+
   if (fmt)
-    return AUTORELEASE(fmt);
+    return fmt;
   else
     {
       NSWarnMLog(@"could not find a reasonable pixel format...");
@@ -87,7 +89,7 @@
    detach from the current context.  You should call it before releasing this 
    object.
  */
-- (void)clearGLContext
+- (void) clearGLContext
 {
   if (glcontext)
     {
@@ -96,42 +98,48 @@
     }
 }
 
-- (void)setOpenGLContext:(NSOpenGLContext*)context
+- (void) setOpenGLContext: (NSOpenGLContext*)context
 {
   [self clearGLContext];
   ASSIGN(glcontext, context);
   attached = NO;
 }
 
+- (void) prepareOpenGL
+{
+}
+
 /**
    return the current gl context associated with this view
 */
-- (NSOpenGLContext*)openGLContext
+- (NSOpenGLContext*) openGLContext
 {
   if (glcontext == nil)
     {
       glcontext = [[NSOpenGLContext alloc] initWithFormat: pixel_format
-				 shareContext: nil];
+                                           shareContext: nil];
       attached = NO;
     }
   return glcontext;
 }
 
-
 -(id) initWithFrame: (NSRect)frameRect
 {  
   return [self initWithFrame: frameRect
-	         pixelFormat: [[self class] defaultPixelFormat]];
+               pixelFormat: [[self class] defaultPixelFormat]];
   
 }
 
 /** default initializer.  Can be passed [NSOpenGLContext defaultPixelFormat] 
     as second argument
 */
-- (id)initWithFrame:(NSRect)frameRect 
-	pixelFormat:(NSOpenGLPixelFormat*)format
+- (id) initWithFrame: (NSRect)frameRect 
+         pixelFormat: (NSOpenGLPixelFormat*)format
 {
-  [super initWithFrame: frameRect];
+  self = [super initWithFrame: frameRect];
+  if (!self)
+    return nil;
+
   ASSIGN(pixel_format, format);
 
   [self setPostsFrameChangedNotifications: YES];
@@ -153,12 +161,12 @@
   [super dealloc];
 }
 
-- (NSOpenGLPixelFormat*)pixelFormat
+- (NSOpenGLPixelFormat*) pixelFormat
 {
   return pixel_format;
 }
 
-- (void)setPixelFormat:(NSOpenGLPixelFormat*)pixelFormat
+- (void) setPixelFormat: (NSOpenGLPixelFormat*)pixelFormat
 {
   ASSIGN(pixel_format, pixelFormat);
 }
@@ -179,9 +187,12 @@
   [self reshape];
 }
 
-- (void) lockFocusInRect: (NSRect) aRect
+/* FIXME: This is a hack to get a chance to attach the current 
+   context before any drawing happens. I think this code should 
+   be moved to openGLContext.
+ */
+- (BOOL) canDraw
 {
-  [super lockFocusInRect: aRect];
   if (!glcontext)
     {
       [self openGLContext];
@@ -192,8 +203,11 @@
       NSDebugMLLog(@"GL", @"Attaching context to the view");
       [glcontext setView: self];
       attached = YES;
+      [self prepareOpenGL];
     }
+  return [super canDraw];
 }
+
 @end
 
 

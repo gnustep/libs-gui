@@ -1,3 +1,9 @@
+2008-03-31 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSOpenGLView.h: Add MacOS 10.3 method.
+	* Source/NSOpenGLView.m: Clean up. Use canDraw instead of
+	lockFocusInRect: as the entry point for context attachment.
+
 2008-03-29 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSApplication.m (-terminate:): Initialize termination as
