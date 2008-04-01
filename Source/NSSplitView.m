@@ -32,7 +32,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <math.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSDecimalNumber.h>
@@ -793,7 +792,7 @@ static NSNotificationCenter *nc = nil;
 	  
 	  if (i < (count - 1))
 	    {
-	      newHeight = floor(proportions[i] * newTotal);
+	      newHeight = proportions[i] * newTotal;
 	    }
 	  else
 	    {
@@ -819,7 +818,7 @@ static NSNotificationCenter *nc = nil;
 	  
 	  if (i < (count - 1))
 	    {
-	      newWidth = floor(proportions[i] * newTotal);
+	      newWidth = proportions[i] * newTotal;
 	    }
 	  else
 	    {
