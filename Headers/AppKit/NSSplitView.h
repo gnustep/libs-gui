@@ -36,14 +36,15 @@
 
 @interface NSSplitView : NSView
 {
-  id	   _delegate;
-  float    _dividerWidth;
-  float    _draggedBarWidth;
-  BOOL     _isVertical;
-  NSImage *_dimpleImage;
-  NSColor *_backgroundColor; 
-  NSColor *_dividerColor;
-  BOOL     _never_displayed_before;
+  id	    _delegate;
+  float     _dividerWidth;
+  float     _draggedBarWidth;
+  BOOL      _isVertical;
+  NSImage  *_dimpleImage;
+  NSColor  *_backgroundColor; 
+  NSColor  *_dividerColor;
+  BOOL      _never_displayed_before;
+  NSString *_autosaveName;
 }
 
 - (void) setDelegate: (id)anObject;
@@ -60,6 +61,8 @@
 - (BOOL) isSubviewCollapsed: (NSView *)subview;
 - (BOOL) isPaneSplitter;
 - (void) setIsPaneSplitter: (BOOL)flag;
+- (void) setAutosaveName: (NSString *)autosaveName;
+- (NSString *) autosaveName;
 #endif
 
 @end

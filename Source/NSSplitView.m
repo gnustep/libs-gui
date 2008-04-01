@@ -2,7 +2,7 @@
 
    <abstract>Allows multiple views to share a region in a window</abstract>
 
-   Copyright (C) 1996, 1998, 1999, 2000, 2001, 2004 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1998, 1999, 2000, 2001, 2004, 2008 Free Software Foundation, Inc.
 
    Author: Robert Vasvari <vrobi@ddrummer.com>
    Date: Jul 1998
@@ -10,8 +10,8 @@
    Date: November 1998
    Author: Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: January 1999
-   Author: Nicola Pero <n.pero@mi.flashnet.it>
-   Date: 2000, 2001
+   Author: Nicola Pero <nicola.pero@meta-innovation.com>
+   Date: 2000, 2001, 2008
 
    This file is part of the GNUstep GUI Library.
 
@@ -35,12 +35,14 @@
 #include <math.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSCoder.h>
+#include <Foundation/NSDecimalNumber.h>
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSGeometry.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSRunLoop.h>
 #include <Foundation/NSString.h>
+#include <Foundation/NSUserDefaults.h>
 
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSColor.h"
@@ -84,6 +86,7 @@ static NSNotificationCenter *nc = nil;
   RELEASE(_backgroundColor);
   RELEASE(_dividerColor);
   RELEASE(_dimpleImage);
+  TEST_RELEASE(_autosaveName);
 
   if (_delegate != nil)
     {
@@ -92,6 +95,68 @@ static NSNotificationCenter *nc = nil;
     }
 
   [super dealloc];
+}
+
+- (void) _autosaveSubviewProportions
+{
+  if (_autosaveName != nil) 
+    {
+      NSUserDefaults      *defaults;
+      NSString            *splitViewKey;
+      NSMutableDictionary *config;
+      NSArray	*subs = [self subviews];
+      unsigned	count = [subs count];
+      NSView	*views[count];
+
+      defaults  = [NSUserDefaults standardUserDefaults];
+      splitViewKey = [NSString stringWithFormat: @"NSSplitView Dividers %@", 
+			       _autosaveName];
+      config = [NSMutableDictionary new];
+
+      [subs getObjects: views];
+
+      /* Compute the proportions and store them.  */
+      if (count > 0)
+	{
+	  int i;
+	  float  oldTotal = 0.0;
+	  NSRect frames[count];
+	  
+	  for (i = 0; i < count; i++)
+	    {
+	      frames[i] = [views[i] frame];
+	      if (_isVertical == NO)
+		{
+		  oldTotal +=  NSHeight(frames[i]);
+		}
+	      else
+		{
+		  oldTotal +=  NSWidth(frames[i]);
+		}
+	    }
+
+	  for (i = 0; i < (count - 1); i++)
+	    {
+	      double proportion;
+	      
+	      if (_isVertical == NO)
+		{
+		  proportion = (NSHeight(frames[i]))/oldTotal;
+		}
+	      else
+		{
+		  proportion = (NSWidth(frames[i]))/oldTotal;	      
+		}
+	      
+	      [config setObject: [NSNumber numberWithDouble: proportion]
+		      forKey: [NSNumber numberWithInt: i]];
+	    }
+	}
+      
+      [defaults setObject: config  forKey: splitViewKey];
+      [defaults synchronize];
+      RELEASE (config);
+    }
 }
 
 - (BOOL) acceptsFirstMouse: (NSEvent*)theEvent
@@ -604,6 +669,7 @@ static NSNotificationCenter *nc = nil;
   [nc postNotificationName: NSSplitViewDidResizeSubviewsNotification
 		    object: self];
 
+  [self _autosaveSubviewProportions];
 
   [self setNeedsDisplay: YES];
 
@@ -626,46 +692,114 @@ static NSNotificationCenter *nc = nil;
 
 - (void) adjustSubviews
 {
+  /* Try to load the autosaved view proportions, if any; if there are
+   * no autosaved view proportions, then manually adjust subviews
+   * proportionally to their current sizes.
+   */
   NSArray	*subs = [self subviews];
   unsigned	count = [subs count];
   NSView	*views[count];
-  NSRect	frames[count];
   NSSize	newSize;
   NSPoint	newPoint;
   unsigned	i;
-  float	oldTotal;
-  float	newTotal;
-  float	scale;
-  float	running;
-  
+  BOOL   autoloading = NO;
+  double proportions[count];
+
   [nc postNotificationName: NSSplitViewWillResizeSubviewsNotification
       object: self];
-  
-  
+
+  /* Try loading the autosaved view proportions.  We store the
+   * proportions between the size of each view and the size of the
+   * whole area occupied by the views.  */
+  if (_autosaveName != nil) 
+    { 
+      NSUserDefaults     *defaults;
+      NSDictionary       *config;
+      NSString           *splitViewKey;
+      
+      defaults  = [NSUserDefaults standardUserDefaults];
+      splitViewKey = [NSString stringWithFormat: @"NSSplitView Dividers %@", 
+			       _autosaveName];
+      config = [defaults objectForKey: splitViewKey];
+      if (config != nil) 
+	{
+	  autoloading = YES;
+	  /* Please note that we don't save the 'proportion' of the
+	   * last view; it will be set up to take exactly the
+	   * remaining available space.  */
+	  for (i = 0; i < (count - 1); i++)
+	    {
+	      NSNumber *proportion = [config objectForKey: [NSNumber numberWithInt: i]];
+
+	      if (proportion == nil)
+		{
+		  /* If any autosaved proportion is missing, do not do
+		   * any autoloading.
+		   */
+		  autoloading = NO;
+		  break;
+		}
+	      else
+		{
+		  proportions[i] = [proportion doubleValue];
+		}
+	    }
+	}
+    }
+
   [subs getObjects: views];
-  if (_isVertical == NO)
+
+  /* If we haven't managed to load any saved view proportions, compute
+   * default proportions using the current view sizes.  */
+  if (autoloading == NO)
     {
-      newTotal = NSHeight(_bounds) - _dividerWidth*(count - 1);
-      oldTotal = 0.0;
+      float  oldTotal = 0.0;
+      NSRect frames[count];
+      
       for (i = 0; i < count; i++)
 	{
 	  frames[i] = [views[i] frame];
-	  oldTotal +=  NSHeight(frames[i]);
+	  if (_isVertical == NO)
+	    {
+	      oldTotal +=  NSHeight(frames[i]);
+	    }
+	  else
+	    {
+	      oldTotal +=  NSWidth(frames[i]);
+	    }
 	}
-      scale = newTotal/oldTotal;
-      running = 0.0;
+
+      for (i = 0; i < (count - 1); i++)
+	{
+	  if (_isVertical == NO)
+	    {
+	      proportions[i] = (NSHeight(frames[i]))/oldTotal;
+	    }
+	  else
+	    {
+	      proportions[i] = (NSWidth(frames[i]))/oldTotal;	      
+	    }
+	}
+    }
+
+  if (_isVertical == NO)
+    {
+      float newTotal = NSHeight(_bounds) - _dividerWidth*(count - 1);
+      float running = 0.0;
+
       for (i = 0; i < count; i++)
 	{
 	  float	newHeight;
 	  
-	  newHeight = NSHeight(frames[i]) * scale;
-	  if (i == count - 1)
+	  if (i < (count - 1))
 	    {
-	      newHeight = floor(newHeight);
+	      newHeight = floor(proportions[i] * newTotal);
 	    }
 	  else
 	    {
-	      newHeight = ceil(newHeight);
+	      /* Size the last view to take exactly the remaining
+	       * space.  */
+	      newHeight = NSHeight(_bounds) - running;
 	    }
 	  newSize = NSMakeSize(NSWidth(_bounds), newHeight);
 	  newPoint = NSMakePoint(0.0, running);
@@ -676,27 +810,20 @@ static NSNotificationCenter *nc = nil;
     }
   else
     {
-      newTotal = NSWidth(_bounds) - _dividerWidth*(count - 1);
-      oldTotal = 0.0;
-      for (i = 0; i < count; i++)
-	{
-	  frames[i] = [views[i] frame];
-	  oldTotal +=  NSWidth(frames[i]);
-	}
-      scale = newTotal/oldTotal;
-      running = 0.0;
+      float newTotal = NSWidth(_bounds) - _dividerWidth*(count - 1);
+      float running = 0.0;
+
       for (i = 0; i < count; i++)
 	{
 	  float	newWidth;
 	  
-	  newWidth = NSWidth(frames[i]) * scale;
-	  if (i == count - 1)
+	  if (i < (count - 1))
 	    {
-	      newWidth = floor(newWidth);
+	      newWidth = floor(proportions[i] * newTotal);
 	    }
 	  else
 	    {
-	      newWidth = ceil(newWidth);
+	      newWidth = NSWidth(_bounds) - running;
 	    }
 	  newSize = NSMakeSize(newWidth, NSHeight(_bounds));
 	  newPoint = NSMakePoint(running, 0.0);
@@ -710,6 +837,13 @@ static NSNotificationCenter *nc = nil;
     
   [nc postNotificationName: NSSplitViewDidResizeSubviewsNotification
       object: self];
+
+  /* Do not autosave if we just autoloaded - there's no point as it
+   * would be the same information we just loaded. ;-)  */
+  if (autoloading == NO)
+    {
+      [self _autosaveSubviewProportions];
+    }
 }
 
 - (float) dividerThickness 
@@ -775,13 +909,23 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 
 - (BOOL) isPaneSplitter
 {
-  // FIXME
+  /* TODO */
   return NO;
 }
 
 - (void) setIsPaneSplitter: (BOOL)flag
 {
-  // FIXME
+  /* TODO */
+}
+
+- (NSString *) autosaveName
+{
+  return _autosaveName;
+}
+
+- (void) setAutosaveName: (NSString *)autosaveName
+{
+  ASSIGN(_autosaveName, autosaveName);
 }
 
 /* Overridden Methods */
@@ -883,6 +1027,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   if([aCoder allowsKeyedCoding])
     {
       [aCoder encodeBool: _isVertical forKey: @"NSIsVertical"];
+      [aCoder encodeObject: _autosaveName forKey: @"NSAutosaveName"];
     }
   else
     {
@@ -915,6 +1060,11 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       if ([aDecoder containsValueForKey: @"NSIsVertical"])
         {
 	  [self setVertical: [aDecoder decodeBoolForKey: @"NSIsVertical"]];
+	}
+
+      if ([aDecoder containsValueForKey: @"NSAutosaveName"])
+        {
+	  [self setAutosaveName: [aDecoder decodeObjectForKey: @"NSAutosaveName"]];
 	}
 
       _dividerWidth = [self dividerThickness];

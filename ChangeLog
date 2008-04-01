@@ -1,5 +1,21 @@
 2008-04-01  Nicola Pero  <nicola.pero@meta-innovation.com>
 
+	Implemented -setAutosaveName: for NSSplitView.
+	* Headers/AppKit/NSSplitView.h ([-setAutosaveName:],
+	[autosaveName]): New methods.  New instance variable
+	_autosaveName.
+	* Source/NSSplitView.m ([-_autosaveSubviewProportions]): New
+	method.  ([-mouseDown:]): Invoke _autosaveSubviewProportions at
+	the end of the tracking. ([-adjustSubviews]): Rewritten to support
+	loading autosaved subview proportions as well as proportionally
+	resizing current ones.  ([-autosaveName], [-setAutosaveName:]):
+	New methods.  ([-dealloc]): Release the new
+	ivar.  ([-encodeWithCoder:]): Encode autosaveName using
+	NSAutosaveName key.  ([-initWithCoder:]): If the NSAutosaveName
+	key is set, decode it.
+	
+2008-04-01  Nicola Pero  <nicola.pero@meta-innovation.com>
+
 	* Source/NSSplitView.m ([-adjustSubviews]): Removed unused
 	variable and a few unnecessary method calls.
 
