@@ -633,7 +633,6 @@ static NSNotificationCenter *nc = nil;
   NSSize	newSize;
   NSPoint	newPoint;
   unsigned	i;
-  NSRect	r;
   float	oldTotal;
   float	newTotal;
   float	scale;
@@ -659,7 +658,6 @@ static NSNotificationCenter *nc = nil;
 	{
 	  float	newHeight;
 	  
-	  r = [views[i] frame];
 	  newHeight = NSHeight(frames[i]) * scale;
 	  if (i == count - 1)
 	    {
@@ -682,7 +680,8 @@ static NSNotificationCenter *nc = nil;
       oldTotal = 0.0;
       for (i = 0; i < count; i++)
 	{
-	  oldTotal +=  NSWidth([views[i] frame]);
+	  frames[i] = [views[i] frame];
+	  oldTotal +=  NSWidth(frames[i]);
 	}
       scale = newTotal/oldTotal;
       running = 0.0;
@@ -690,8 +689,7 @@ static NSNotificationCenter *nc = nil;
 	{
 	  float	newWidth;
 	  
-	  r = [views[i] frame];
-	  newWidth = NSWidth(r) * scale;
+	  newWidth = NSWidth(frames[i]) * scale;
 	  if (i == count - 1)
 	    {
 	      newWidth = floor(newWidth);

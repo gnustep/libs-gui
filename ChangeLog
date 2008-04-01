@@ -1,3 +1,8 @@
+2008-04-01  Nicola Pero  <nicola.pero@meta-innovation.com>
+
+	* Source/NSSplitView.m ([-adjustSubviews]): Removed unused
+	variable and a few unnecessary method calls.
+
 2008-03-31 Xavier Glattard <xavier.glattard@online.fr>
 
 	* Source/NSOpenGLView.m: Use _lockFocusInContext:withRect instead of
