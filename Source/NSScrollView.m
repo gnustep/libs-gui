@@ -20,7 +20,7 @@
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Lesser General Public License for more details.
 
    You should have received a copy of the GNU Lesser General Public
@@ -74,7 +74,7 @@ typedef struct _scrollViewFlags
 #endif  
 } GSScrollViewFlags;
 
-@interface	NSScrollView (GSPrivate)
+@interface NSScrollView (GSPrivate)
 /* GNUstep private methods */
 - (void) _synchronizeHeaderAndCornerView;
 - (void) _themeDidActivate: (NSNotification*)notification;
@@ -112,9 +112,9 @@ static float scrollerWidth;
 }
 
 + (NSSize) contentSizeForFrameSize: (NSSize)frameSize
-	     hasHorizontalScroller: (BOOL)hFlag
-	       hasVerticalScroller: (BOOL)vFlag
-			borderType: (NSBorderType)borderType
+             hasHorizontalScroller: (BOOL)hFlag
+               hasVerticalScroller: (BOOL)vFlag
+                        borderType: (NSBorderType)borderType
 {
   NSSize size = frameSize;
   NSSize border = _sizeForBorderType(borderType);
@@ -140,9 +140,9 @@ static float scrollerWidth;
 }
 
 + (NSSize) frameSizeForContentSize: (NSSize)contentSize
-	     hasHorizontalScroller: (BOOL)hFlag
-	       hasVerticalScroller: (BOOL)vFlag
-			borderType: (NSBorderType)borderType
+             hasHorizontalScroller: (BOOL)hFlag
+               hasVerticalScroller: (BOOL)vFlag
+                        borderType: (NSBorderType)borderType
 {
   NSSize size = contentSize;
   NSSize border = _sizeForBorderType(borderType);
@@ -171,11 +171,16 @@ static float scrollerWidth;
  */
 - (id) initWithFrame: (NSRect)rect
 {
-  NSClipView *clipView = [NSClipView new];
+  NSClipView *clipView;
 
   self = [super initWithFrame: rect];
+  if (!self)
+    return nil;
+
+  clipView = [NSClipView new];
   [self setContentView: clipView];
   RELEASE(clipView);
+
   _hLineScroll = 10;
   _hPageScroll = 10;
   _vLineScroll = 10;
@@ -217,10 +222,10 @@ static float scrollerWidth;
 {
   if (aView == nil)
     [NSException raise: NSInvalidArgumentException
-		format: @"Attempt to set nil content view"];
+                format: @"Attempt to set nil content view"];
   if ([aView isKindOfClass: [NSView class]] == NO)
     [NSException raise: NSInvalidArgumentException
-		format: @"Attempt to set non-view object as content view"];
+                format: @"Attempt to set non-view object as content view"];
 
   if (aView != _contentView)
     {
@@ -231,9 +236,9 @@ static float scrollerWidth;
       [self addSubview: _contentView];
 
       if (docView != nil)
-	{
-	  [self setDocumentView: docView];
-	}
+        {
+          [self setDocumentView: docView];
+        }
     }
   [_contentView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
   [self tile];
@@ -276,11 +281,11 @@ static float scrollerWidth;
     {
       if (!_horizScroller)
         {
-	  NSScroller *scroller = [NSScroller new];
+          NSScroller *scroller = [NSScroller new];
 
-	  [self setHorizontalScroller: scroller];
-	  RELEASE(scroller);
-	}
+          [self setHorizontalScroller: scroller];
+          RELEASE(scroller);
+        }
       [self addSubview: _horizScroller];
     }
   else
@@ -316,14 +321,14 @@ static float scrollerWidth;
   if (_hasVertScroller)
     {
       if (!_vertScroller)
-	{
-	  NSScroller *scroller = [NSScroller new];
+        {
+          NSScroller *scroller = [NSScroller new];
 
-	  [self setVerticalScroller: scroller];
-	  RELEASE(scroller);
-	  if (_contentView && !_contentView->_rFlags.flipped_view)
-	    [_vertScroller setFloatValue: 1];
-	}
+          [self setVerticalScroller: scroller];
+          RELEASE(scroller);
+          if (_contentView && !_contentView->_rFlags.flipped_view)
+            [_vertScroller setFloatValue: 1];
+        }
       [self addSubview: _vertScroller];
     }
   else
@@ -344,10 +349,10 @@ static float scrollerWidth;
 
 - (void) scrollWheel: (NSEvent *)theEvent
 {
-  NSRect	clipViewBounds;
-  float		delta = [theEvent deltaY];
-  float 	amount;
-  NSPoint	point;
+  NSRect clipViewBounds;
+  float delta = [theEvent deltaY];
+  float amount;
+  NSPoint point;
 
   if (_contentView == nil)
     {
@@ -364,37 +369,37 @@ static float scrollerWidth;
     && ([theEvent modifierFlags] & NSShiftKeyMask) == NSShiftKeyMask)
     {
       if (([theEvent modifierFlags] & NSAlternateKeyMask) == NSAlternateKeyMask)
-	{
-	  amount = - (clipViewBounds.size.width - _hPageScroll) * delta;
-	}
+        {
+          amount = - (clipViewBounds.size.width - _hPageScroll) * delta;
+        }
       else
-	{
-	  amount = - _hLineScroll * delta;
-	}
+        {
+          amount = - _hLineScroll * delta;
+        }
       NSDebugLLog (@"NSScrollView", 
-	@"increment/decrement: amount = %f, horizontal", amount);
+        @"increment/decrement: amount = %f, horizontal", amount);
 
       point.x = clipViewBounds.origin.x + amount;
     }
   else
     {
       if (([theEvent modifierFlags] & NSAlternateKeyMask) == NSAlternateKeyMask)
-	{
-	  amount = - (clipViewBounds.size.height - _vPageScroll) * delta;
-	}
+        {
+          amount = - (clipViewBounds.size.height - _vPageScroll) * delta;
+        }
       else
-	{
-	  amount = - _vLineScroll * delta;
-	}
+        {
+          amount = - _vLineScroll * delta;
+        }
 
       if (_contentView != nil && !_contentView->_rFlags.flipped_view)
-	{
-	  /* If view is flipped reverse the scroll direction */
-	  amount = -amount;
-	}
+        {
+          /* If view is flipped reverse the scroll direction */
+          amount = -amount;
+        }
       NSDebugLLog (@"NSScrollView", 
-	@"increment/decrement: amount = %f, flipped = %d",
-	amount, _contentView ? _contentView->_rFlags.flipped_view : 0);
+        @"increment/decrement: amount = %f, flipped = %d",
+        amount, _contentView ? _contentView->_rFlags.flipped_view : 0);
 
       point.y = clipViewBounds.origin.y + amount;
     }
@@ -412,24 +417,24 @@ static float scrollerWidth;
   switch (c)
     {
       case NSUpArrowFunctionKey:
-	[self scrollLineUp: self];
-	break;
+        [self scrollLineUp: self];
+        break;
 
       case NSDownArrowFunctionKey:
         [self scrollLineDown: self];
-	break;
+        break;
 
       case NSPageUpFunctionKey:
-	[self scrollPageUp: self];
-	break;
+        [self scrollPageUp: self];
+        break;
 
       case NSPageDownFunctionKey:
-	[self scrollPageDown: self];
-	break;
+        [self scrollPageDown: self];
+        break;
 
       default:
-	[super keyDown: theEvent];
-	break;
+        [super keyDown: theEvent];
+        break;
     }
 }
 
@@ -577,12 +582,12 @@ static float scrollerWidth;
 
 - (void) _doScroll: (NSScroller*)scroller
 {
-  float		floatValue = [scroller floatValue];
+  float floatValue = [scroller floatValue];
   NSScrollerPart hitPart = [scroller hitPart];
-  NSRect	clipViewBounds;
-  NSRect	documentRect;
-  float		amount = 0;
-  NSPoint	point;
+  NSRect clipViewBounds;
+  NSRect documentRect;
+  float amount = 0;
+  NSPoint point;
 
   if (_contentView == nil)
     {
@@ -609,74 +614,74 @@ static float scrollerWidth;
   else
     {
       if (hitPart == NSScrollerIncrementLine)
-	{
-	  if (scroller == _horizScroller)
-	    amount = _hLineScroll;
-	  else
-	    amount = _vLineScroll;
-	}
+        {
+          if (scroller == _horizScroller)
+            amount = _hLineScroll;
+          else
+            amount = _vLineScroll;
+        }
       else if (hitPart == NSScrollerDecrementLine)
-	{
-	  if (scroller == _horizScroller)
-	    amount = -_hLineScroll;
-	  else
-	    amount = -_vLineScroll;
-	}
+        {
+          if (scroller == _horizScroller)
+            amount = -_hLineScroll;
+          else
+            amount = -_vLineScroll;
+        }
       else if (hitPart == NSScrollerIncrementPage)
-	{
-	  if (scroller == _horizScroller)
-	    amount = clipViewBounds.size.width - _hPageScroll;
-	  else
-	    amount = clipViewBounds.size.height - _vPageScroll;
-	}
+        {
+          if (scroller == _horizScroller)
+            amount = clipViewBounds.size.width - _hPageScroll;
+          else
+            amount = clipViewBounds.size.height - _vPageScroll;
+        }
       else if (hitPart == NSScrollerDecrementPage)
-	{
-	  if (scroller == _horizScroller)
-	    amount = _hPageScroll - clipViewBounds.size.width;
-	  else
-	    amount = _vPageScroll - clipViewBounds.size.height;
-	}
+        {
+          if (scroller == _horizScroller)
+            amount = _hPageScroll - clipViewBounds.size.width;
+          else
+            amount = _vPageScroll - clipViewBounds.size.height;
+        }
       else
-	{
-	  return;
-	}
+        {
+          return;
+        }
     }
 
-  if (!_knobMoved)	/* button scrolling */
+  if (!_knobMoved)        /* button scrolling */
     {
       if (scroller == _horizScroller)
-	{
-	  point.x = clipViewBounds.origin.x + amount;
-	}
+        {
+          point.x = clipViewBounds.origin.x + amount;
+        }
       else
-	{
-	  if (_contentView != nil && !_contentView->_rFlags.flipped_view)
-	    {
-	      /* If view is flipped reverse the scroll direction */
-	      amount = -amount;
-	    }
-	  NSDebugLLog (@"NSScrollView", 
-		       @"increment/decrement: amount = %f, flipped = %d",
-	    amount, _contentView ? _contentView->_rFlags.flipped_view : 0);
-	  point.y = clipViewBounds.origin.y + amount;
-	}
+        {
+          if (_contentView != nil && !_contentView->_rFlags.flipped_view)
+            {
+              /* If view is flipped reverse the scroll direction */
+              amount = -amount;
+            }
+          NSDebugLLog (@"NSScrollView", 
+                       @"increment/decrement: amount = %f, flipped = %d",
+            amount, _contentView ? _contentView->_rFlags.flipped_view : 0);
+          point.y = clipViewBounds.origin.y + amount;
+        }
     }
-  else 	/* knob scolling */
+  else         /* knob scolling */
     {
       if (scroller == _horizScroller)
-	{
-	  point.x = floatValue * (documentRect.size.width
-			      		- clipViewBounds.size.width);
-	  point.x += documentRect.origin.x;
-	}
+        {
+          point.x = floatValue * (documentRect.size.width
+                                              - clipViewBounds.size.width);
+          point.x += documentRect.origin.x;
+        }
       else
-	{
-	  if (_contentView != nil && !_contentView->_rFlags.flipped_view)
-	    floatValue = 1 - floatValue;
-	  point.y = floatValue * (documentRect.size.height
-	    - clipViewBounds.size.height);
-	  point.y += documentRect.origin.y;
-	}
+        {
+          if (_contentView != nil && !_contentView->_rFlags.flipped_view)
+            floatValue = 1 - floatValue;
+          point.y = floatValue * (documentRect.size.height
+            - clipViewBounds.size.height);
+          point.y += documentRect.origin.y;
+        }
     }
 
   /* scrollToPoint will call reflectScrollerClipView, and that will
@@ -720,72 +725,72 @@ static float scrollerWidth;
   // FIXME: Should we just hide the scroll bar or remove it?
   if ((_autohidesScrollers) && (documentFrame.size.height > clipViewBounds.size.height))
     {
-      [self setHasVerticalScroller: YES];	
+      [self setHasVerticalScroller: YES];        
     } 
  
   if (_hasVertScroller)
     {
       if (documentFrame.size.height <= clipViewBounds.size.height)
-	{
-	  if (_autohidesScrollers)
-	    {
-	      [self setHasVerticalScroller: NO];
-	    }
-	  else
-	    {
-	      [_vertScroller setEnabled: NO];
-	    }
-	}
+        {
+          if (_autohidesScrollers)
+            {
+              [self setHasVerticalScroller: NO];
+            }
+          else
+            {
+              [_vertScroller setEnabled: NO];
+            }
+        }
       else
-	{
-	  [_vertScroller setEnabled: YES];
+        {
+          [_vertScroller setEnabled: YES];
 
-	  knobProportion = clipViewBounds.size.height
-	    / documentFrame.size.height;
+          knobProportion = clipViewBounds.size.height
+            / documentFrame.size.height;
 
-	  floatValue = (clipViewBounds.origin.y - documentFrame.origin.y)
-	    / (documentFrame.size.height - clipViewBounds.size.height);
+          floatValue = (clipViewBounds.origin.y - documentFrame.origin.y)
+            / (documentFrame.size.height - clipViewBounds.size.height);
 
-	  if (!_contentView->_rFlags.flipped_view)
-	    {
-	      floatValue = 1 - floatValue;
-	    }
-	  [_vertScroller setFloatValue: floatValue 
-			 knobProportion: knobProportion];
-	}
+          if (!_contentView->_rFlags.flipped_view)
+            {
+              floatValue = 1 - floatValue;
+            }
+          [_vertScroller setFloatValue: floatValue 
+                         knobProportion: knobProportion];
+        }
     }
 
   if ((_autohidesScrollers) && (documentFrame.size.width > clipViewBounds.size.width))
     {
-      [self setHasHorizontalScroller: YES];	
+      [self setHasHorizontalScroller: YES];        
     } 
  
   if (_hasHorizScroller)
     {
       if (documentFrame.size.width <= clipViewBounds.size.width)
-	{
-	  if (_autohidesScrollers)
-	    {
-	      [self setHasHorizontalScroller: NO];
-	    }
-	  else
-	    {
-	      [_horizScroller setEnabled: NO];
-	    }
-	}
+        {
+          if (_autohidesScrollers)
+            {
+              [self setHasHorizontalScroller: NO];
+            }
+          else
+            {
+              [_horizScroller setEnabled: NO];
+            }
+        }
       else
-	{
-	  [_horizScroller setEnabled: YES];
+        {
+          [_horizScroller setEnabled: YES];
 
-	  knobProportion = clipViewBounds.size.width
-	    / documentFrame.size.width;
+          knobProportion = clipViewBounds.size.width
+            / documentFrame.size.width;
 
-	  floatValue = (clipViewBounds.origin.x - documentFrame.origin.x)
-	    / (documentFrame.size.width - clipViewBounds.size.width);
+          floatValue = (clipViewBounds.origin.x - documentFrame.origin.x)
+            / (documentFrame.size.width - clipViewBounds.size.width);
 
-	  [_horizScroller setFloatValue: floatValue
-			 knobProportion: knobProportion];
-	}
+          [_horizScroller setFloatValue: floatValue
+                         knobProportion: knobProportion];
+        }
     }
 
   if (_hasHeaderView)
@@ -796,21 +801,21 @@ static float scrollerWidth;
 
       /* If needed, scroll the headerview too.  */
       if (headerClipViewOrigin.x != clipViewBounds.origin.x)
-	{
-	  headerClipViewOrigin.x = clipViewBounds.origin.x;
-	  [_headerClipView scrollToPoint: headerClipViewOrigin];
-	}
+        {
+          headerClipViewOrigin.x = clipViewBounds.origin.x;
+          [_headerClipView scrollToPoint: headerClipViewOrigin];
+        }
     }
 
   if (_rulersVisible == YES)
     {
       if (_hasHorizRuler)
-	{
-	  [_horizRuler setNeedsDisplay: YES];
-	}
+        {
+          [_horizRuler setNeedsDisplay: YES];
+        }
       if (_hasVertRuler)
-	{
-	  [_vertRuler setNeedsDisplay: YES];
+        {
+          [_vertRuler setNeedsDisplay: YES];
        }
     }
 }
@@ -849,19 +854,19 @@ static float scrollerWidth;
     {
       _horizRuler = [[isa rulerViewClass] alloc];
       _horizRuler = [_horizRuler initWithScrollView: self 
-				 orientation: NSHorizontalRuler];
+                                 orientation: NSHorizontalRuler];
     }
 
   if (_rulersVisible)
     {
       if (_hasHorizRuler)
-	{
-	  [self addSubview: _horizRuler];
-	}
+        {
+          [self addSubview: _horizRuler];
+        }
       else
-	{
-	  [_horizRuler removeFromSuperview];
-	}
+        {
+          [_horizRuler removeFromSuperview];
+        }
       [self tile];
     }
 }
@@ -900,19 +905,19 @@ static float scrollerWidth;
     {
       _vertRuler = [[isa rulerViewClass] alloc];
       _vertRuler = [_vertRuler initWithScrollView: self 
-			       orientation: NSVerticalRuler];
+                               orientation: NSVerticalRuler];
     }
 
   if (_rulersVisible)
     {
       if (_hasVertRuler)
-	{
-	  [self addSubview: _vertRuler];
-	}
+        {
+          [self addSubview: _vertRuler];
+        }
       else
-	{
-	  [_vertRuler removeFromSuperview];
-	}
+        {
+          [_vertRuler removeFromSuperview];
+        }
       [self tile];
     }
 }
@@ -926,16 +931,16 @@ static float scrollerWidth;
   if (flag)
     {
       if (_hasVertRuler)
-	[self addSubview: _vertRuler];
+        [self addSubview: _vertRuler];
       if (_hasHorizRuler)
-	[self addSubview: _horizRuler];
+        [self addSubview: _horizRuler];
     }
   else 
     {
       if (_hasVertRuler)
-	[_vertRuler removeFromSuperview];
+        [_vertRuler removeFromSuperview];
       if (_hasHorizRuler)
-	[_horizRuler removeFromSuperview];
+        [_horizRuler removeFromSuperview];
     }
   [self tile];
 }
@@ -958,8 +963,8 @@ static float scrollerWidth;
   NSSize border = _sizeForBorderType(_borderType);
   NSRectEdge bottomEdge, topEdge;
   float headerViewHeight = 0;
-  NSRectEdge	verticalScrollerEdge = NSMinXEdge;
-  NSInterfaceStyle	style;
+  NSRectEdge verticalScrollerEdge = NSMinXEdge;
+  NSInterfaceStyle style;
 
   style = NSInterfaceStyleForKey(@"NSScrollViewInterfaceStyle", nil);
   if (style == NSMacintoshInterfaceStyle
@@ -997,15 +1002,15 @@ static float scrollerWidth;
   if (_hasCornerView == YES)
     {
       if (headerViewHeight == 0)
-	{
-	  headerViewHeight = [_cornerView frame].size.height;
-	}
+        {
+          headerViewHeight = [_cornerView frame].size.height;
+        }
     }
 
   /* Remove the vertical slice used by the header/corner view.  Save
      the height and y position of headerRect for later reuse.  */
   NSDivideRect (contentRect, &headerRect, &contentRect, headerViewHeight, 
-		topEdge);
+                topEdge);
 
   /* Ok - now go on with drawing the actual scrollview in the
      remaining space.  Just consider contentRect to be the area in
@@ -1017,7 +1022,7 @@ static float scrollerWidth;
       NSRect vertScrollerRect;
 
       NSDivideRect (contentRect, &vertScrollerRect, &contentRect, 
-	scrollerWidth, verticalScrollerEdge);
+        scrollerWidth, verticalScrollerEdge);
 
       [_vertScroller setFrame: vertScrollerRect];
 
@@ -1032,7 +1037,7 @@ static float scrollerWidth;
       NSRect horizScrollerRect;
       
       NSDivideRect (contentRect, &horizScrollerRect, &contentRect, 
-	scrollerWidth, bottomEdge);
+        scrollerWidth, bottomEdge);
 
       [_horizScroller setFrame: horizScrollerRect];
 
@@ -1056,12 +1061,12 @@ static float scrollerWidth;
   /* Now place the corner view.  */
   if (_hasCornerView)
     {
-      NSPoint	p = headerRect.origin;
+      NSPoint        p = headerRect.origin;
 
       if (verticalScrollerEdge == NSMaxXEdge)
         {
-	  p.x += contentRect.size.width;
-	}
+          p.x += contentRect.size.width;
+        }
       [_cornerView setFrameOrigin: p];
     }
 
@@ -1069,22 +1074,22 @@ static float scrollerWidth;
   if (_rulersVisible)
     {
       if (_hasHorizRuler)
-	{
-	  NSRect horizRulerRect;
-	  
-	  NSDivideRect (contentRect, &horizRulerRect, &contentRect,
-	    [_horizRuler requiredThickness], topEdge);
-	  [_horizRuler setFrame: horizRulerRect];
-	}
+        {
+          NSRect horizRulerRect;
+          
+          NSDivideRect (contentRect, &horizRulerRect, &contentRect,
+            [_horizRuler requiredThickness], topEdge);
+          [_horizRuler setFrame: horizRulerRect];
+        }
 
       if (_hasVertRuler)
-	{
-	  NSRect vertRulerRect;
-	  
-	  NSDivideRect (contentRect, &vertRulerRect, &contentRect,
-	    [_vertRuler requiredThickness], NSMinXEdge);
-	  [_vertRuler setFrame: vertRulerRect];
-	}
+        {
+          NSRect vertRulerRect;
+          
+          NSDivideRect (contentRect, &vertRulerRect, &contentRect,
+            [_vertRuler requiredThickness], NSMinXEdge);
+          [_vertRuler setFrame: vertRulerRect];
+        }
     }
 
   [_contentView setFrame: contentRect];
@@ -1098,20 +1103,20 @@ static float scrollerWidth;
   switch (_borderType)
     {
       case NSNoBorder:
-	break;
+        break;
 
       case NSLineBorder:
-	[[NSColor controlDarkShadowColor] set];
-	NSFrameRect(_bounds);
-	break;
+        [[NSColor controlDarkShadowColor] set];
+        NSFrameRect(_bounds);
+        break;
 
       case NSBezelBorder:
-	[[GSTheme theme] drawGrayBezel: _bounds withClip: rect];
-	break;
+        [[GSTheme theme] drawGrayBezel: _bounds withClip: rect];
+        break;
 
       case NSGrooveBorder:
-	[[GSTheme theme] drawGroove: _bounds withClip: rect];
-	break;
+        [[GSTheme theme] drawGroove: _bounds withClip: rect];
+        break;
     }
 
   [[NSColor controlDarkShadowColor] set];
@@ -1119,20 +1124,20 @@ static float scrollerWidth;
 
   if (_hasVertScroller)
     {
-      NSInterfaceStyle	style;
+      NSInterfaceStyle style;
 
       style = NSInterfaceStyleForKey(@"NSScrollViewInterfaceStyle", nil);
       if (style == NSMacintoshInterfaceStyle
         || style == NSWindows95InterfaceStyle)
         {
           DPSmoveto(ctxt, [_vertScroller frame].origin.x - 1, 
-	    [_vertScroller frame].origin.y - 1);
-	}
+            [_vertScroller frame].origin.y - 1);
+        }
       else
         {
           DPSmoveto(ctxt, [_vertScroller frame].origin.x + scrollerWidth, 
-	    [_vertScroller frame].origin.y - 1);
-	}
+            [_vertScroller frame].origin.y - 1);
+        }
       DPSrlineto(ctxt, 0, [_vertScroller frame].size.height + 1);
       DPSstroke(ctxt);
     }
@@ -1143,13 +1148,13 @@ static float scrollerWidth;
       float scrollerY = [_horizScroller frame].origin.y;
 
       if (_rFlags.flipped_view)
-	{
-	  ypos = scrollerY - 1;
-	}
+        {
+          ypos = scrollerY - 1;
+        }
       else
-	{
-	  ypos = scrollerY + scrollerWidth + 1;
-	}
+        {
+          ypos = scrollerY + scrollerWidth + 1;
+        }
 
       DPSmoveto(ctxt, [_horizScroller frame].origin.x - 1, ypos);
       DPSrlineto(ctxt, [_horizScroller frame].size.width + 1, 0);
@@ -1175,6 +1180,9 @@ static float scrollerWidth;
 - (void) setDrawsBackground: (BOOL)flag
 {
   [_contentView setDrawsBackground: flag];
+  if ((flag == NO) && 
+      [_contentView respondsToSelector: @selector(setCopiesOnScroll:)])
+    [_contentView setCopiesOnScroll: NO];
 }
 
 - (BOOL) drawsBackground
@@ -1309,7 +1317,7 @@ static float scrollerWidth;
 {
   if (_hLineScroll != _vLineScroll)
     [NSException raise: NSInternalInconsistencyException
-		format: @"horizontal and vertical values not same"];
+                format: @"horizontal and vertical values not same"];
   return _vLineScroll;
 }
 
@@ -1343,7 +1351,7 @@ static float scrollerWidth;
 {
   if (_hPageScroll != _vPageScroll)
     [NSException raise: NSInternalInconsistencyException
-		format: @"horizontal and vertical values not same"];
+                format: @"horizontal and vertical values not same"];
   return _vPageScroll;
 }
 
@@ -1359,7 +1367,7 @@ static float scrollerWidth;
 
 - (void) setScrollsDynamically: (BOOL)flag
 {
-  // FIX ME: This should change the behaviour of the scrollers
+  // FIXME: This should change the behaviour of the scrollers
   _scrollsDynamically = flag;
 }
 
@@ -1396,9 +1404,9 @@ static float scrollerWidth;
 
       // only encode this, if it's not null...
       if (_headerClipView != nil)
-	{
-	  [aCoder encodeObject: _headerClipView forKey: @"NSHeaderClipView"];
-	}
+        {
+          [aCoder encodeObject: _headerClipView forKey: @"NSHeaderClipView"];
+        }
 
       scrollViewFlags.hasVScroller = _hasVertScroller;
       scrollViewFlags.hasHScroller = _hasHorizScroller;
@@ -1422,23 +1430,23 @@ static float scrollerWidth;
       
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasHorizScroller];
       if (_hasHorizScroller)
-	[aCoder encodeObject: _horizScroller];
+        [aCoder encodeObject: _horizScroller];
       
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasVertScroller];
       if (_hasVertScroller)
-	[aCoder encodeObject: _vertScroller];
+        [aCoder encodeObject: _vertScroller];
       
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasHorizRuler];
       if (_hasHorizRuler)
-	[aCoder encodeObject: _horizRuler];
+        [aCoder encodeObject: _horizRuler];
       
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasVertRuler];
       if (_hasVertRuler)
-	[aCoder encodeObject: _vertRuler];
+        [aCoder encodeObject: _vertRuler];
       
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasHeaderView];
       if (_hasHeaderView)
-	[aCoder encodeObject: _headerClipView];
+        [aCoder encodeObject: _headerClipView];
       
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasCornerView];
       
@@ -1449,6 +1457,8 @@ static float scrollerWidth;
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   self = [super initWithCoder: aDecoder];
+  if (!self)
+    return nil;
 
   if ([aDecoder allowsKeyedCoding])
     {
@@ -1464,64 +1474,64 @@ static float scrollerWidth;
 
       if ([aDecoder containsValueForKey: @"NSsFlags"])
         {
-	  int flags = [aDecoder decodeInt32ForKey: @"NSsFlags"];
-	  GSScrollViewFlags scrollViewFlags;
-	  // FIXME: Why not just use a cast?
-	  memcpy((void *)&scrollViewFlags,(void *)&flags,sizeof(struct _scrollViewFlags));
+          int flags = [aDecoder decodeInt32ForKey: @"NSsFlags"];
+          GSScrollViewFlags scrollViewFlags;
+          // FIXME: Why not just use a cast?
+          memcpy((void *)&scrollViewFlags,(void *)&flags,sizeof(struct _scrollViewFlags));
 
-	  _hasVertScroller = scrollViewFlags.hasVScroller;
-	  _hasHorizScroller = scrollViewFlags.hasHScroller;
-	  _autohidesScrollers = scrollViewFlags.autohidesScrollers;
-	  // _scrollsDynamically = (!scrollViewFlags.notDynamic);
-	  // _rulersVisible = scrollViewFlags.rulersVisible;
-	  // _hasHorizRuler = scrollViewFlags.hasHRuler;
-	  // _hasVertRuler = scrollViewFlags.hasVRuler;
-	  // [self setDrawsBackground: (!scrollViewFlags.doesNotDrawBack)];
-	  _borderType = scrollViewFlags.border;
-	}
+          _hasVertScroller = scrollViewFlags.hasVScroller;
+          _hasHorizScroller = scrollViewFlags.hasHScroller;
+          _autohidesScrollers = scrollViewFlags.autohidesScrollers;
+          // _scrollsDynamically = (!scrollViewFlags.notDynamic);
+          // _rulersVisible = scrollViewFlags.rulersVisible;
+          // _hasHorizRuler = scrollViewFlags.hasHRuler;
+          // _hasVertRuler = scrollViewFlags.hasVRuler;
+          // [self setDrawsBackground: (!scrollViewFlags.doesNotDrawBack)];
+          _borderType = scrollViewFlags.border;
+        }
 
       if (content != nil)
         {
           // FIXME: I think this is not needed as we re-tile anyway.
-	  NSRect frame = [content frame];
-	  float w = [vScroller frame].size.width;
+          NSRect frame = [content frame];
+          float w = [vScroller frame].size.width;
 
-	  if (_hasVertScroller)
-	    {
-	      //
-	      // Slide the content view over, since on Mac OS X the scroller is on the
-	      // right, the content view is not properly positioned since our scroller
-	      // is on the left.
-	      //
-	      frame.origin.x += w;
-	      [content setFrame: frame];
-	    }
+          if (_hasVertScroller)
+            {
+              //
+              // Slide the content view over, since on Mac OS X the scroller is on the
+              // right, the content view is not properly positioned since our scroller
+              // is on the left.
+              //
+              frame.origin.x += w;
+              [content setFrame: frame];
+            }
 
-	  // FIXME: No idea what is going on here.
-	  // retain the view and reset the content view...
-	  RETAIN(content);
-	  [self setContentView: content];
-	  RELEASE(content);
-	  ASSIGN(_contentView, content);
-	}
+          // FIXME: No idea what is going on here.
+          // retain the view and reset the content view...
+          RETAIN(content);
+          [self setContentView: content];
+          RELEASE(content);
+          ASSIGN(_contentView, content);
+        }
      
       if (hScroller != nil && _hasHorizScroller)
         {
-	  [self setHorizontalScroller: hScroller];
-	}
+          [self setHorizontalScroller: hScroller];
+        }
 
       if (vScroller != nil && _hasVertScroller)
         {
-	  [self setVerticalScroller: vScroller];
-	}
+          [self setVerticalScroller: vScroller];
+        }
 
       if ([aDecoder containsValueForKey: @"NSHeaderClipView"])
-	{
-	  _hasHeaderView = YES;
-	  _hasCornerView = YES;	  
-	  ASSIGN(_headerClipView,
-	    [aDecoder decodeObjectForKey: @"NSHeaderClipView"]);
-	}
+        {
+          _hasHeaderView = YES;
+          _hasCornerView = YES;          
+          ASSIGN(_headerClipView,
+            [aDecoder decodeObjectForKey: @"NSHeaderClipView"]);
+        }
 
       [self tile];
     }
@@ -1540,38 +1550,38 @@ static float scrollerWidth;
       
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasHorizScroller];
       if (_hasHorizScroller)
-	[aDecoder decodeValueOfObjCType: @encode(id) at: &_horizScroller];
+        [aDecoder decodeValueOfObjCType: @encode(id) at: &_horizScroller];
       
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasVertScroller];
       if (_hasVertScroller)
-	[aDecoder decodeValueOfObjCType: @encode(id) at: &_vertScroller];
+        [aDecoder decodeValueOfObjCType: @encode(id) at: &_vertScroller];
       
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasHorizRuler];
       if (_hasHorizRuler)
-	[aDecoder decodeValueOfObjCType: @encode(id) at: &_horizRuler];
+        [aDecoder decodeValueOfObjCType: @encode(id) at: &_horizRuler];
       
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasVertRuler];
       if (_hasVertRuler)
-	[aDecoder decodeValueOfObjCType: @encode(id) at: &_vertRuler];
+        [aDecoder decodeValueOfObjCType: @encode(id) at: &_vertRuler];
       
       if (version == 2)
         {
-	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasHeaderView];
-	  if (_hasHeaderView)
-	    [aDecoder decodeValueOfObjCType: @encode(id) at: &_headerClipView];
+          [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasHeaderView];
+          if (_hasHeaderView)
+            [aDecoder decodeValueOfObjCType: @encode(id) at: &_headerClipView];
       
-	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasCornerView];
-	}
+          [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasCornerView];
+        }
       else if (version == 1)
         {
-	  /* This recreates all the info about headerView, cornerView, etc */
-	  [self setDocumentView: [_contentView documentView]];
-	}
+          /* This recreates all the info about headerView, cornerView, etc */
+          [self setDocumentView: [_contentView documentView]];
+        }
       else
         {
-	  NSLog(@"unknown NSScrollView version (%d)", version);
-	  DESTROY(self);
-	}
+          NSLog(@"unknown NSScrollView version (%d)", version);
+          DESTROY(self);
+        }
       [self tile];
       
       NSDebugLLog(@"NSScrollView", @"NSScrollView: finish decoding\n");
@@ -1582,7 +1592,7 @@ static float scrollerWidth;
 
 @end
 
-@implementation	NSScrollView (GSPrivate)
+@implementation NSScrollView (GSPrivate)
 
 /* GNUstep private method */
 
@@ -1604,7 +1614,7 @@ static float scrollerWidth;
         {
           _headerClipView = [NSClipView new];
           [self addSubview: _headerClipView];
-          RELEASE (_headerClipView);
+          RELEASE(_headerClipView);
         }
       [_headerClipView setDocumentView: aView]; 
     }
@@ -1617,8 +1627,8 @@ static float scrollerWidth;
     {
       aView = nil; 
       _hasCornerView =
-	([[self documentView] respondsToSelector: @selector(cornerView)]
-	 && (aView=[(NSTableView *)[self documentView] cornerView]));
+        ([[self documentView] respondsToSelector: @selector(cornerView)]
+         && (aView=[(NSTableView *)[self documentView] cornerView]));
       
       if (aView == _cornerView)
         return;
@@ -1626,12 +1636,12 @@ static float scrollerWidth;
         {
           if (hadCornerView == NO)
             {
- 	      [self addSubview: aView];
-	    }
+               [self addSubview: aView];
+            }
           else
             {
               [self replaceSubview: _cornerView with: aView];
-	    }
+            }
         }
       else if (hadCornerView == YES)
         {

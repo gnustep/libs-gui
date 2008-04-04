@@ -1,3 +1,8 @@
+2008-04-04 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSScrollView.m: Correct indentation. Small cleanups.
+	* Source/NSScrollView.m (-setDrawsBackground:): Set setCopiesOnScroll:.
+	
 2008-04-02  Nicola Pero  <nicola.pero@meta-innovation.com>
 
 	* Source/NSSplitView.m ([-adjustSubviews]): Fixed the slow drift
