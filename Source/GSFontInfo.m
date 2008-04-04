@@ -464,7 +464,12 @@ static GSFontEnumerator *sharedEnumerator = nil;
 
 - (BOOL) glyphIsEncoded: (NSGlyph)aGlyph;
 {
-  return NO;
+  // FIXME: This is a hack for aGlyph == theChar fonts.
+  if (coveredCharacterSet == nil)
+    {
+      [self coveredCharacterSet];
+    }
+  return [coveredCharacterSet characterIsMember: (unichar)aGlyph];
 }
 
 - (NSMultibyteGlyphPacking) glyphPacking
@@ -580,12 +585,20 @@ static GSFontEnumerator *sharedEnumerator = nil;
   return weight;
 }
 
-
 -(void) appendBezierPathWithGlyphs: (NSGlyph *)glyphs
 			     count: (int)count
 		      toBezierPath: (NSBezierPath *)path
 {
   [self subclassResponsibility: _cmd];
+}
+
+- (NSGlyph) glyphForCharacter: (unichar)theChar
+{
+  // Hack to get most font backends working
+  if ([self glyphIsEncoded: (NSGlyph)theChar])
+    return (NSGlyph)theChar;
+  else
+    return NSNullGlyph;
 }
 
 @end

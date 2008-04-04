@@ -1,5 +1,17 @@
 2008-04-04 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/Additions/GNUstepGUI/GSFontInfo.h, 
+	* Source/GSFontInfo.m: New method glyphForCharacter:.
+	* Source/GSFontInfo.m (-glyphIsEncoded:): Code based on
+	coveredCharacterSet. 
+	* Source/NSFont.m (_defaultGlyphForChar:): New private method that
+	matches Cocoa.
+	* Source/GSLayoutManager.m (-_findSafeBreakMovingBackwardFrom:,
+	-_findSafeBreakMovingForwardFrom:, -_generateGlyphsForRun:at:):
+	Moved code from the art backend to here. Rewrote it in the process.
+
+2008-04-04 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSScrollView.m: Correct indentation. Small cleanups.
 	* Source/NSScrollView.m (-setDrawsBackground:): Set setCopiesOnScroll:.
 	

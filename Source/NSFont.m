@@ -1455,6 +1455,11 @@ static BOOL flip_hack;
   return _fontRef;
 }
 
+// This is a private but popular Cocoa method.
+- (NSGlyph) _defaultGlyphForChar: (unichar)theChar
+{
+  return [fontInfo glyphForCharacter: theChar];
+}
 
 @end
 

@@ -30,6 +30,8 @@
 #include <Foundation/NSEnumerator.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSValue.h>
+#include <GNUstepBase/Unicode.h>
+
 
 #include "AppKit/NSAttributedString.h"
 #include "AppKit/NSTextStorage.h"
@@ -38,6 +40,7 @@
 /* just for NSAttachmentCharacter */
 #include "AppKit/NSTextAttachment.h"
 
+#include "GNUstepGUI/GSFontInfo.h"
 #include "GNUstepGUI/GSTypesetter.h"
 #include "GNUstepGUI/GSLayoutManager_internal.h"
 
@@ -2804,34 +2807,56 @@ has).
   [self _didInvalidateLayout];
 }
 
-
 /* These must be in the main implementation so backends can override them
-in a category safely. */
-
-/* These three methods should be implemented in the backend, but there's
-a dummy here. It maps each character to a glyph with the glyph id==unicode
-index, except control characters, which are mapped to NSControlGlyph. */
+   in a category safely. */
 
 -(unsigned int) _findSafeBreakMovingBackwardFrom: (unsigned int)ch
 {
-  return ch;
+	NSString *str = [_textStorage string];
+
+	while (ch > 0 && [str characterAtIndex: ch-1] == 'f')
+		ch--;
+	return ch;
 }
 
 -(unsigned int) _findSafeBreakMovingForwardFrom: (unsigned int)ch
 {
-  return ch;
+	unsigned int len = [_textStorage length];
+	NSString *str = [_textStorage string];
+
+	while (ch < len && [str characterAtIndex: ch] == 'f')
+		ch++;
+	if (ch < len && ch > 0 && [str characterAtIndex: ch-1] == 'f')
+		ch++;
+
+	return ch;
 }
 
 
 /* TODO2: put good control code handling here in a way that makes it easy
 for the backends to use it */
+/*
+This is a fairly simple implementation. It will use "ff", "fl", "fi",
+"ffl", and "ffi" ligatures if available. 
+
+TODO: how should words like "pfffffffffff" be handled?
+
+0066 'f'
+0069 'i'
+006c 'l'
+fb00 'ff'
+fb01 'fi'
+fb02 'fl'
+fb03 'ffi'
+fb04 'ffl'
+*/
 -(void) _generateGlyphsForRun: (glyph_run_t *)run  at: (unsigned int)pos
 {
   int i, c = run->head.char_length;
-  unsigned int ch;
   unichar buf[c];
-
   glyph_t *g;
+  GSFontInfo *fi = [run->font fontInfo];
+  //TODO: We should cache the method glyphForCharacter: 
 
   NSCharacterSet *cs = [NSCharacterSet controlCharacterSet];
   BOOL (*characterIsMember)(id, SEL, unichar)
@@ -2848,15 +2873,160 @@ for the backends to use it */
   g = run->glyphs;
   for (i = 0; i < c; i++)
     {
+      unsigned int ch, ch2;
+
       ch = buf[i];
       g->char_offset = i;
       if (characterIsMember(cs, @selector(characterIsMember:), ch))
-	g->g = NSControlGlyph;
-      else if (ch == NSAttachmentCharacter)
-	g->g = GSAttachmentGlyph;
+        {
+          g->g = NSControlGlyph;
+          g++;
+          continue;
+        }
+      if (ch == NSAttachmentCharacter)
+        {
+          g->g = GSAttachmentGlyph;
+          g++;
+          continue;
+        }
+
+      // Simple ligature processing
+      if (run->ligature >= 1)
+        {
+          if (ch == 'f')
+            {
+              NSGlyph gl;
+                    
+              if ((i + 2 < c) && (buf[i + 1] == 'f'))
+                {
+                  // ffl
+                  if ((buf[i + 2] == 'l') 
+                      && (NSNullGlyph != (gl = [fi glyphForCharacter: 0xfb04])))
+                    {
+                      g->g = gl;
+                      i += 2;
+                      run->head.glyph_length -= 2;
+                      g++;
+                      continue;
+                    }
+                  // ffi
+                  if ((buf[i + 2] == 'i') 
+                      && (NSNullGlyph != (gl = [fi glyphForCharacter: 0xfb03])))
+                    {
+                      g->g = gl;
+                      i += 2;
+                      run->head.glyph_length -= 2;
+                      g++;
+                      continue;
+                    }
+                }
+              
+              if (i + 1 < c)
+                {
+                  // ff
+                  if ((buf[i + 1] == 'f')
+                      && (NSNullGlyph != (gl = [fi glyphForCharacter: 0xfb00])))
+                    {
+                      g->g = gl;
+                      i++;
+                      run->head.glyph_length--;
+                      g++;
+                      continue;
+                    }
+                  // fi
+                  if ((buf[i + 1] == 'i')
+                      && (NSNullGlyph != (gl = [fi glyphForCharacter: 0xfb01])))
+                    {
+                      g->g = gl;
+                      i++;
+                      run->head.glyph_length--;
+                      g++;
+                      continue;
+                    }
+                  // fl
+                  if ((buf[i + 1] == 'l')
+                      && (NSNullGlyph != (gl = [fi glyphForCharacter: 0xfb02])))
+                    {
+                      g->g = gl;
+                      i++;
+                      run->head.glyph_length--;
+                      g++;
+                      continue;
+                    }
+                }
+            }
+        }
+
+      // Check for surrogate pairs
+      if (ch >= 0xd800 && ch <= 0xdfff)
+        {
+          if (ch >= 0xd800 && ch < 0xdc00 
+              && (i + 1 < c) && (ch2 = buf[i + 1]) >= 0xdc00 
+              && ch2 <= 0xdfff)
+            {
+              ch = ((ch & 0x3ff) << 10) + (ch2 & 0x3ff) + 0x10000;
+              i++;
+              run->head.glyph_length--;
+            }
+          else
+            {
+              ch = 0xfffd;
+            }
+        }
+
+      g->g = [fi glyphForCharacter: ch];
+      if (g->g != NSNullGlyph)
+        {
+          g++;
+        }
+      else if (ch < 0x10000)
+        {
+          unichar *decomp;
+
+          decomp = uni_is_decomp(ch);
+          if (decomp)
+            {
+              int len = 0;
+              unichar *s = decomp;
+              int j;
+              
+              // Compute length of decomposed string
+              for (; *s; s++)
+                {
+                  len++;
+                }
+              
+              // Adjust buffer and counters
+              j = g - run->glyphs;
+              run->glyphs = realloc(run->glyphs, sizeof(glyph_t) 
+                                    * (run->head.glyph_length + len));
+              memset(&run->glyphs[run->head.glyph_length - 1], len, 
+                     sizeof(glyph_t));
+              run->head.glyph_length += len;
+              g = run->glyphs + j;
+              
+              for (; *decomp; decomp++)
+                {
+                  g->g = [fi glyphForCharacter: *decomp];
+                  if (g->g == NSNullGlyph)
+                    {
+                      run->head.glyph_length -= len; 
+                      break;
+                    }
+                  g++;
+                  len--;
+                  g->char_offset = i;
+                }
+            }
+          else
+            {
+              run->head.glyph_length--; 
+            }
+        }
       else
-	g->g = ch;
-      g++;
+        {
+          run->head.glyph_length--; 
+        }
     }
 }
 

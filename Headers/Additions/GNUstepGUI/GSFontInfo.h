@@ -143,6 +143,7 @@ values. Backends may override these. */
 - (int) weight;
 - (float) widthOfString: (NSString*)string;
 - (float) xHeight;
+- (NSGlyph) glyphForCharacter: (unichar)theChar;
 
 @end
 
