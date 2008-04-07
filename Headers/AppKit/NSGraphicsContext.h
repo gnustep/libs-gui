@@ -272,6 +272,8 @@ APPKIT_EXPORT NSGraphicsContext	*GSCurrentContext(void);
 - (void) DPSawidthshow: (float)cx : (float)cy : (int)c : (float)ax : (float)ay 
 		      : (const char*)s;
 - (void) DPScharpath: (const char*)s : (int)b;
+- (void) appendBezierPathWithPackedGlyphs: (const char *)packedGlyphs
+                                     path: (NSBezierPath*)aPath;
 - (void) DPSshow: (const char*)s;
 - (void) DPSwidthshow: (float)x : (float)y : (int)c : (const char*)s;
 - (void) DPSxshow: (const char*)s : (const float*)numarray : (int)size;

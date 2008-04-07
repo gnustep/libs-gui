@@ -906,6 +906,12 @@ NSGraphicsContext	*GSCurrentContext(void)
   [self subclassResponsibility: _cmd];
 }
 
+- (void) appendBezierPathWithPackedGlyphs: (const char *)packedGlyphs
+                                     path: (NSBezierPath*)aPath
+{
+  [self subclassResponsibility: _cmd];
+}
+
 /** Display the string s using the current font (DPS). */
 - (void) DPSshow: (const char *)s 
 {

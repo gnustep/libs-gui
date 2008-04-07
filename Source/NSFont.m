@@ -1473,6 +1473,8 @@ int NSConvertGlyphsToPackedGlyphs(NSGlyph *glBuf,
   int j;
 
   j = 0;
+  // Store the number of glyphs in the first byte.
+  packedGlyphs[j++] = count;
   for (i = 0; i < count; i++)
     {
       NSGlyph g = glBuf[i];

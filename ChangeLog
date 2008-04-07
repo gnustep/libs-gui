@@ -1,3 +1,13 @@
+2008-04-07 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSFont.m (NSConvertGlyphsToPackedGlyphs): Store the glyph
+	count in th efirst byte.
+	* Source/NSBezierPath.m (-appendBezierPathWithPackedGlyphs): Send
+	this method on to the graphics context.
+	* Headers/AppKit/NSGraphicsContext.h,
+	* Source/NSGraphicsContext.m
+	(-appendBezierPathWithPackedGlyphs:path:): New method. 
+
 2008-04-04 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Additions/GNUstepGUI/GSFontInfo.h, 

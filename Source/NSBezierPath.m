@@ -1169,7 +1169,8 @@ typedef struct _PathElement
 
 - (void)appendBezierPathWithPackedGlyphs:(const char *)packedGlyphs
 {
-  // TODO
+  [GSCurrentContext() appendBezierPathWithPackedGlyphs: packedGlyphs
+                   path: self];
 }
 
 
