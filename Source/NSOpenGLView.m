@@ -32,6 +32,11 @@
 #include "AppKit/NSOpenGL.h"
 #include "AppKit/NSOpenGLView.h"
 
+// Declare a private method of NSView
+@interface NSView (Private)
+- (void) _lockFocusInContext: (NSGraphicsContext *)ctxt inRect: (NSRect)rect;
+@end
+
 /**
   <unit>
   <heading>NSOpenGLView</heading>
@@ -118,9 +123,12 @@ static NSOpenGLPixelFormatAttribute attrs[] =
 {
   if (glcontext == nil)
     {
-      [self setOpenGLContext:
-        [[NSOpenGLContext alloc] initWithFormat: pixel_format
-                                   shareContext: nil]];
+      NSOpenGLContext *context = [[NSOpenGLContext alloc] 
+                                     initWithFormat: pixel_format
+                                     shareContext: nil];
+
+      [self setOpenGLContext: context];
+      RELEASE(context);
     }
   return glcontext;
 }
