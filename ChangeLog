@@ -1,3 +1,8 @@
+2008-04-08 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBezierPath.m (+drawPackedGlyphs:atPoint:): Use fill
+	instead of stroke to draw the glyphs.
+
 2008-04-07 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSFont.m (NSConvertGlyphsToPackedGlyphs): Store the glyph

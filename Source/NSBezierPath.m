@@ -180,7 +180,7 @@ typedef struct _PathElement
   
   [path moveToPoint: aPoint];
   [path appendBezierPathWithPackedGlyphs: packedGlyphs];
-  [path stroke];  
+  [path fill];
   RELEASE(path);
 }
 
