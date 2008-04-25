@@ -500,7 +500,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 
 - (NSMutableArray*) deferredWindows
 {
-  return visibleWindows;
+  return deferredWindows;
 }
 
 - (NSMutableDictionary *) customClasses
