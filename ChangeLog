@@ -1,3 +1,8 @@
+2008-04-27 18:42-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSWindow.m: Change to correct issue with NSWindow placement
+	when toolbar is present.
+
 2008-04-25 18:16-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibTemplates.m: Correct [GSNibTemplates deferredWindows] to

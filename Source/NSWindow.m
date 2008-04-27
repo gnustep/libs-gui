@@ -106,6 +106,24 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 - (void) _viewWillMoveToWindow: (NSWindow*)newWindow;
 @end
 
+@interface NSScreen (PrivateMethods)
+- (id) _initWithScreenNumber: (int)screen;
+@end
+
+/*
+ * FIXME: Not sure if I should be exposing this here, but it seems to be the only way
+ * to fix the window frame save issue when a toolbar is present.
+ */
+@interface NSWindow (ToolbarPrivate)
+- (id) toolbar;
+- (NSView *)contentViewWithoutToolbar;
+@end
+
+@interface NSToolbar (GNUstepPrivate)
+- (GSToolbarView *) _toolbarView;
+@end
+// FIXME: END (GJC)
+
 /*
  * Category for internal methods (for use only within the NSWindow class itself
  * or with other AppKit classes.
@@ -1001,8 +1019,9 @@ many times.
   // Get the properties for the underlying window
   winNum = [srv nativeWindow: windowRef : &contentRect : &bufferingType
                                 : &aStyle : &screen];
-  // FIXME: Get the screen for the right screen number.
-  aScreen = nil;
+
+  // Get the screen for the right screen number.
+  aScreen = [[NSScreen alloc] _initWithScreenNumber: screen];
 
   // Set up a NSWindow with the same properties
   self = [self initWithContentRect: contentRect
@@ -1041,13 +1060,11 @@ many times.
 
 - (NSRect) contentRectForFrameRect: (NSRect)frameRect
 {
-  // FIXME
   return [isa contentRectForFrameRect: frameRect styleMask: _styleMask];
 }
 
 - (NSRect) frameRectForContentRect: (NSRect)contentRect
 {
-  // FIXME
   return [isa frameRectForContentRect: contentRect styleMask: _styleMask];
 }
 
@@ -4477,6 +4494,28 @@ current key view.<br />
   NSRect sRect;
 
   fRect = _frame;
+
+  /*
+   * FIXME: This may not be such an elegant solution, but it works.
+   * I need to find a better way to handle this, maybe in the window
+   * decoration view could handle these calculations.
+   */
+  if([self toolbar] != nil)
+    {
+      NSView *tbview = [[self toolbar] _toolbarView];
+      NSRect tbframe = [tbview frame];
+      if([tbview superview] != nil)
+      {
+        NSRect r = [[self contentViewWithoutToolbar] frame];
+        r = [NSWindow frameRectForContentRect: r  
+                      styleMask: _styleMask];
+
+        // copy w/h
+        fRect.size.width = r.size.width;
+        fRect.size.height = r.size.height;
+        fRect.origin.y += tbframe.size.height;
+      }
+    }
 
   /*
    * The screen rectangle should gives the area of the screen in which
