@@ -43,6 +43,12 @@
 #include "AppKit/NSScrollView.h"
 #include "AppKit/NSGraphics.h"
 
+/*
+ * Number of pixels in either direction that will be counted as a hit 
+ * on the column border and trigger a column resize.
+ */
+#define mouse_sensitivity 4
+
 @interface NSTableView (GNUstepPrivate)
 - (void) _userResizedTableColumn: (int)index
                            width: (float)width;
@@ -78,6 +84,9 @@
 - (id)initWithFrame:(NSRect)frameRect
 {
   self = [super initWithFrame: frameRect];
+  if (self == nil)
+      return nil;
+
   _tableView = nil;
   _resizedColumn = -1;
   return self;
@@ -301,26 +310,25 @@
       /* Safety check */
       if (_resizedColumn != -1)
         {
-          NSLog (@"Bug: starting resizing of column while already resizing!");
+          NSLog(@"Bug: starting resizing of column while already resizing!");
           _resizedColumn = -1;
         }
       
       if ([_tableView allowsColumnResizing])
         {
           /* Start resizing if the mouse is down on the bounds of a column. */
-          
-          if (location.x >= NSMaxX (rect) - 1)
+          if (location.x >= NSMaxX(rect) - mouse_sensitivity)
             {
-              if (columnIndex != ([_tableView numberOfColumns]))
+              if (columnIndex < [_tableView numberOfColumns])
                 {
                   _resizedColumn = columnIndex;
                 }
               else
                 {
-                  NSLog(@"ohoh");
+                  NSLog(@"Bug: Trying to resize column past the end of the table.");
                 }
             }
-          else if (location.x <= NSMinX (rect) + 2) 
+          else if (location.x <= NSMinX(rect) + mouse_sensitivity) 
             {
               if (columnIndex > 0)
                 {
@@ -887,6 +895,9 @@
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   self = [super initWithCoder: aDecoder];
+  if (self == nil)
+      return nil;
+
   _tableView = nil;
   _resizedColumn = -1;
 

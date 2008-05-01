@@ -2231,10 +2231,12 @@ static void computeNewSelection
   
   while ((tb = [enumerator nextObject]) != nil)
     {
-      if ([[tb identifier] isEqual: identifier])
-	return return_value;
+      // Also handle a nil identifier.
+      if ((identifier == [tb identifier]) || 
+          [[tb identifier] isEqual: identifier])
+        return return_value;
       else
-	return_value++;
+        return_value++;
     }
   return -1;
 }

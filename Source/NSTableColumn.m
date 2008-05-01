@@ -99,6 +99,9 @@
 - (id)initWithIdentifier: (id)anObject
 {
   self = [super init];
+  if (!self)
+      return nil;
+
   _width = 100;
   _min_width = 10;
   _max_width = 100000;
@@ -406,30 +409,33 @@
       id identifier = [aDecoder decodeObjectForKey: @"NSIdentifier"];
 
       self = [self initWithIdentifier: identifier];
+      if (!self)
+        return nil;
+
       if ([aDecoder containsValueForKey: @"NSDataCell"])
         {
-	  [self setDataCell: [aDecoder decodeObjectForKey: @"NSDataCell"]];
-	}
+          [self setDataCell: [aDecoder decodeObjectForKey: @"NSDataCell"]];
+        }
       if ([aDecoder containsValueForKey: @"NSHeaderCell"])
         {
-	  [self setHeaderCell: [aDecoder decodeObjectForKey: @"NSHeaderCell"]];
-	}
+          [self setHeaderCell: [aDecoder decodeObjectForKey: @"NSHeaderCell"]];
+        }
       if ([aDecoder containsValueForKey: @"NSIsResizeable"])
         {
-	  [self setResizable: [aDecoder decodeBoolForKey: @"NSIsResizeable"]];
-	}
+          [self setResizable: [aDecoder decodeBoolForKey: @"NSIsResizeable"]];
+        }
       if ([aDecoder containsValueForKey: @"NSWidth"])
         {
-	  [self setWidth: [aDecoder decodeFloatForKey: @"NSWidth"]]; 
-	}
+          [self setWidth: [aDecoder decodeFloatForKey: @"NSWidth"]]; 
+        }
       if ([aDecoder containsValueForKey: @"NSMinWidth"])
         {
-	  [self setMinWidth: [aDecoder decodeFloatForKey: @"NSMinWidth"]];
-	}
+          [self setMinWidth: [aDecoder decodeFloatForKey: @"NSMinWidth"]];
+        }
       if ([aDecoder containsValueForKey: @"NSMaxWidth"])
         {
-	  [self setMaxWidth: [aDecoder decodeFloatForKey: @"NSMaxWidth"]];
-	}
+          [self setMaxWidth: [aDecoder decodeFloatForKey: @"NSMaxWidth"]];
+        }
     }
   else
     {
@@ -437,28 +443,31 @@
 				  @"NSTableColumn"];
       
       self = [super init];
-      if (version == 2)
+      if (!self)
+        return nil;
+
+     if (version == 2)
         {
-	  _identifier = RETAIN([aDecoder decodeObject]);
-	  [aDecoder decodeValueOfObjCType: @encode(float) at: &_width];
-	  [aDecoder decodeValueOfObjCType: @encode(float) at: &_min_width];
-	  [aDecoder decodeValueOfObjCType: @encode(float) at: &_max_width];
-	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_resizable];
-	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_editable];
-	  _headerCell = RETAIN([aDecoder decodeObject]);
-	  _dataCell   = RETAIN([aDecoder decodeObject]);
-	}
+          _identifier = RETAIN([aDecoder decodeObject]);
+          [aDecoder decodeValueOfObjCType: @encode(float) at: &_width];
+          [aDecoder decodeValueOfObjCType: @encode(float) at: &_min_width];
+          [aDecoder decodeValueOfObjCType: @encode(float) at: &_max_width];
+          [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_resizable];
+          [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_editable];
+          _headerCell = RETAIN([aDecoder decodeObject]);
+          _dataCell   = RETAIN([aDecoder decodeObject]);
+        }
       else
         {
-	  _identifier = RETAIN([aDecoder decodeObject]);
-	  _headerCell = RETAIN([aDecoder decodeObject]);
-	  _dataCell   = RETAIN([aDecoder decodeObject]);
-	  [aDecoder decodeValueOfObjCType: @encode(float) at: &_width];
-	  [aDecoder decodeValueOfObjCType: @encode(float) at: &_min_width];
-	  [aDecoder decodeValueOfObjCType: @encode(float) at: &_max_width];
-	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_resizable];
-	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_editable];
-	}
+          _identifier = RETAIN([aDecoder decodeObject]);
+          _headerCell = RETAIN([aDecoder decodeObject]);
+          _dataCell   = RETAIN([aDecoder decodeObject]);
+          [aDecoder decodeValueOfObjCType: @encode(float) at: &_width];
+          [aDecoder decodeValueOfObjCType: @encode(float) at: &_min_width];
+          [aDecoder decodeValueOfObjCType: @encode(float) at: &_max_width];
+          [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_resizable];
+          [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_editable];
+        }
     }
   return self;
 }

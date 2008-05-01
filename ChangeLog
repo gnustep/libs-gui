@@ -1,3 +1,19 @@
+2008-05-01 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableColumn.m (-initWithIdentifier:, -initWithCoder:):
+	Check for self becoming nil.
+	* Source/NSTableView.m (-columnWithIdentifier:): Allow the column
+	identifier to be nil.
+
+2008-04-28 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableHeaderView.m (-mouseDown:): Use new variable
+	mouse_sensitivity (value 4) to determine whether the click is on a
+	column border. 
+	Patch by Andreas Höschler <ahoesch@smartsoft.de>. 
+	* Source/NSTableHeaderView.m (-initWithFrame:, -initWithCoder:):
+	Check for nil return from super call.
+
 2008-04-27 18:42-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSWindow.m: Change to correct issue with NSWindow placement
