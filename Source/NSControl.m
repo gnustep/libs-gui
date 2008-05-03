@@ -920,6 +920,15 @@ static NSNotificationCenter *nc;
   _ignoresMultiClick = flag;
 }
 
+/**<p>Returns the mouse flags. This flags are usally sets in 
+   the NSCell-trackMouse:inRect:ofView:untilMouseUp: method.</p>
+   <p>This is a NeXTStep 3.3 method, no longer officially supported.</p>
+ */
+- (int) mouseDownFlags
+{ 
+  return [[self selectedCell] mouseDownFlags];
+}
+
 /*
  * NSCoding protocol
  */

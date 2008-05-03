@@ -1,5 +1,10 @@
 2008-05-03 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSControl.m (-mouseDownFlags): Add old NeXT method, no
+	longer present, but needed for backward compatibility.
+
+2008-05-03 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSTableView.m (-selectRow:byExtendingSelection:,
 	-selectColumn:byExtendingSelection:, -rectOfColumn:, -rectOfRow:): Don't
 	raise an exception for invalid indexes.
