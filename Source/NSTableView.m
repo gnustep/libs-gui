@@ -31,6 +31,7 @@
 */ 
 
 #include <Foundation/NSAutoreleasePool.h>
+#include <Foundation/NSDebug.h>
 #include <Foundation/NSEnumerator.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSFormatter.h>
@@ -2550,8 +2551,8 @@ static void computeNewSelection
 {
   if (columnIndex < 0 || columnIndex > _numberOfColumns)
     {
-      [NSException raise: NSInvalidArgumentException
-		   format: @"Column index out of table in selectColumn"];
+      NSDebugLLog(@"NSTableView", @"Column index %d out of table in selectColumn", columnIndex);
+      return;
     }
 
   _selectingColumns = YES;
@@ -2622,8 +2623,8 @@ byExtendingSelection: (BOOL)flag
 {
   if (rowIndex < 0 || rowIndex >= _numberOfRows)
     {
-      [NSException raise: NSInvalidArgumentException
-		   format: @"Row index out of table in selectRow"];
+      NSDebugLLog(@"NSTableView", @"Row index %d out of table in selectRow", rowIndex);
+      return;
     }
 
   if (_selectingColumns)
@@ -4250,17 +4251,10 @@ static BOOL selectContiguousRegion(NSTableView *self,
 {
   NSRect rect;
 
-  if (columnIndex < 0)
+  if (columnIndex < 0 || columnIndex > _numberOfColumns)
     {
-      [NSException 
-	raise: NSInternalInconsistencyException 
-	format: @"ColumnIndex < 0 in [NSTableView -rectOfColumn:]"];
-    }
-  if (columnIndex >= _numberOfColumns)
-    {
-      [NSException 
-	raise: NSInternalInconsistencyException 
-	format: @"ColumnIndex => _numberOfColumns in [NSTableView -rectOfColumn:]"];
+      NSDebugLLog(@"NSTableView", @"Column index %d out of table in rectOfColumn", columnIndex);
+      return NSZeroRect;
     }
 
   rect.origin.x = _columnOrigins[columnIndex];
@@ -4274,18 +4268,12 @@ static BOOL selectContiguousRegion(NSTableView *self,
 {
   NSRect rect;
 
-  if (rowIndex < 0)
+  if (rowIndex < 0 || rowIndex >= _numberOfRows)
     {
-      [NSException 
-	raise: NSInternalInconsistencyException 
-	format: @"RowIndex < 0 in [NSTableView -rectOfRow:]"];
+      NSDebugLLog(@"NSTableView", @"Row index %d out of table in rectOfRow", rowIndex);
+      return NSZeroRect;
     }
-  if (rowIndex >= _numberOfRows)
-    {
-      [NSException 
-	raise: NSInternalInconsistencyException 
-	format: @"RowIndex => _numberOfRows in [NSTableView -rectOfRow:]"];
-    }
+
   rect.origin.x = _bounds.origin.x;
   rect.origin.y = _bounds.origin.y + (_rowHeight * rowIndex);
   rect.size.width = _bounds.size.width;

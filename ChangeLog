@@ -1,3 +1,9 @@
+2008-05-03 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableView.m (-selectRow:byExtendingSelection:,
+	-selectColumn:byExtendingSelection:, -rectOfColumn:, -rectOfRow:): Don't
+	raise an exception for invalid indexes.
+
 2008-05-01 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTableColumn.m (-initWithIdentifier:, -initWithCoder:):
