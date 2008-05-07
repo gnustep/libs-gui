@@ -1,3 +1,11 @@
+2008-05-07 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m (-_terminateBackendWindow,
+	-_initBackendWindow, -initWithWindowRef:): Break the retain cycle
+	of the context keeping a reference to the window.
+	* Source/NSCachedImageRep.m: Better checks for super calls
+	returning nil.
+
 2008-05-03 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSControl.m (-mouseDownFlags): Add old NeXT method, no

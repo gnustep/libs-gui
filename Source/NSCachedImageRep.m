@@ -53,6 +53,7 @@
   [self setExcludedFromWindowsMenu: YES];
   [self setAutodisplay: NO];
   [self setReleasedWhenClosed: NO];
+  [self setMiniwindowImage: nil];
 }
 - (void) display
 {
@@ -91,6 +92,9 @@
 					defer: NO];
   self = [self initWithWindow: win rect: frame];
   RELEASE(win);
+  if (!self)
+    return nil;
+
   [self setAlpha: alpha];
   [self setBitsPerSample: NSBitsPerSampleFromDepth(aDepth)];
 
@@ -104,7 +108,9 @@
  */
 - (id) initWithWindow: (NSWindow *)aWindow rect: (NSRect)aRect
 {
-  [super init];
+  self = [super init];
+  if (!self)
+    return nil;
 
   _window = RETAIN(aWindow);
   _rect   = aRect;
@@ -115,11 +121,11 @@
   if (NSIsEmptyRect(_rect))
     {
       if (!_window) 
-	{
-	  [NSException raise: NSInvalidArgumentException
-		      format: @"Must specify either window or rect when "
-			      @"creating NSCachedImageRep"];
-	}
+        {
+          [NSException raise: NSInvalidArgumentException
+                       format: @"Must specify either window or rect when "
+                       @"creating NSCachedImageRep"];
+        }
 
       _rect = [_window frame];
     }
@@ -179,6 +185,9 @@
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   self = [super initWithCoder: aDecoder];
+  if (!self)
+    return nil;
+
   if ([aDecoder allowsKeyedCoding] == NO)
     {
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_window];

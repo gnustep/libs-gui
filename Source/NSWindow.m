@@ -721,6 +721,8 @@ many times.
   
   if (_windowNum)
     {
+      // The context will release the window, make up for that.
+      RETAIN(self);
       DESTROY(_context);
       [_wv setWindowNumber: 0];
       [GSServerForWindow(self) termwindow: _windowNum];
@@ -819,6 +821,8 @@ many times.
   NSMapInsert(windowmaps, (void*)(intptr_t)_windowNum, self);
 
   ASSIGN(_context, [NSGraphicsContext graphicsContextWithWindow: self]);
+  // Now the context retains the window, release it once to make up
+  RELEASE(self);
 
   // Set window in new _gstate
   _gstate = GSDefineGState(_context);
@@ -1035,6 +1039,8 @@ many times.
   NSMapInsert (windowmaps, (void*)(intptr_t)_windowNum, self);
 
   ASSIGN(_context, [NSGraphicsContext graphicsContextWithWindow: self]);
+  // Now the context retains the window, release it once to make up
+  RELEASE(self);
 
   // Set window in new _gstate
   _gstate = GSDefineGState(_context);
