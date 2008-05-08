@@ -704,6 +704,9 @@ static NSNotificationCenter *nc = nil;
   BOOL   autoloading = NO;
   double proportions[count];
 
+  if (count == 0)
+    return;
+
   [nc postNotificationName: NSSplitViewWillResizeSubviewsNotification
       object: self];
 

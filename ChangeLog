@@ -1,3 +1,8 @@
+2008-05-07  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSSplitView.m (-adjustSubviews): Just return if there
+	are no subviews.
+
 2008-05-07 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWindow.m (-_terminateBackendWindow,
