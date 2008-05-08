@@ -44,6 +44,10 @@
 #ifndef XMD_H
 #define XMD_H
 #endif
+/* And another so that boolean is not redefined in jmorecfg.h. */
+#ifndef HAVE_BOOLEAN
+#define HAVE_BOOLEAN
+#endif
 #endif
 #include <jpeglib.h>
 

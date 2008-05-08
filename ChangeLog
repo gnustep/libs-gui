@@ -1,3 +1,8 @@
+2008-05-08  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSBitmapImageRep+JPEG.m: Define HAVE_BOOLEAN to avoid
+	problem with jmorecfg.h header on mingw.
+
 2008-05-07  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSSplitView.m (-adjustSubviews): Just return if there
