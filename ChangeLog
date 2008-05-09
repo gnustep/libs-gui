@@ -1,3 +1,9 @@
+2008-05-08 21:04-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSWindow.m: (-(void)miniaturize: (id)sender): 
+	Change to prevent miniwindow from disappearing.  Apparently uneccessary
+	[self orderOut: self] was causing this issue.
+	
 2008-05-08  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSBitmapImageRep+JPEG.m: Define HAVE_BOOLEAN to avoid
