@@ -31,6 +31,7 @@
 #include <Foundation/NSObject.h>
 #include <Foundation/NSGeometry.h>
 #include <AppKit/NSFont.h>
+#include <AppKit/NSGlyphGenerator.h>
 
 @class GSTypesetter;
 @class NSTextStorage,NSTextContainer;
@@ -44,10 +45,15 @@ typedef enum
   NSGlyphInscribeOverBelow = 4
 } NSGlyphInscription;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+@interface GSLayoutManager : NSObject <NSGlyphStorage, NSCoding>
+#else
 @interface GSLayoutManager : NSObject
+#endif
 {
 @protected
   NSTextStorage *_textStorage;
+  NSGlyphGenerator *_glyphGenerator;
 
   id _delegate;
 
@@ -101,6 +107,8 @@ how it's supposed to work. It's functional and correct, but it isn't fast. */
 - (void) setTextStorage: (NSTextStorage *)aTextStorage;
 - (void) replaceTextStorage: (NSTextStorage *)newTextStorage;
 
+- (NSGlyphGenerator *) glyphGenerator;
+- (void) setGlyphGenerator: (NSGlyphGenerator *)glyphGenerator;
 
 - (id) delegate;
 - (void) setDelegate: (id)aDelegate;
@@ -216,9 +224,11 @@ it isn't NULL. */
 /* These can be used to set arbitrary tags on individual glyphs.
 Non-negative tags are reserved. You must provide storage yourself (by
 subclassing). */
+#if !OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (void) setIntAttribute: (int)attributeTag 
 	value: (int)anInt
 	forGlyphAtIndex: (unsigned int)glyphIndex;
+#endif
 - (int) intAttribute: (int)attributeTag
 	forGlyphAtIndex: (unsigned int)glyphIndex;
 

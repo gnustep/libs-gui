@@ -44,8 +44,6 @@
 #include "GNUstepGUI/GSTypesetter.h"
 #include "GNUstepGUI/GSLayoutManager_internal.h"
 
-
-
 /* TODO: is using rand() here ok? */
 static int random_level(void)
 {
@@ -56,6 +54,101 @@ static int random_level(void)
   return i;
 }
 
+/*
+ * Insert a new run with level into the context of the skip list.
+ * Return the new run.
+ */
+static glyph_run_t *run_insert(glyph_run_head_t **context, int level)
+{
+  glyph_run_head_t *h;
+  glyph_run_t *r;
+  int i, size;
+
+  size = sizeof(glyph_run_head_t) * level + sizeof(glyph_run_t);
+  h = objc_malloc(size);
+  memset(h, 0, size);
+
+  for (i = level; i >= 0; i--, h++)
+    {
+      h->next = context[i]->next;
+      context[i]->next = h;
+    }
+  h--;
+
+  r = (glyph_run_t *)h;
+  r->level = level;
+  r->prev = context[0];
+  if (h->next)
+    ((glyph_run_t *)h->next)->prev = h; 
+
+  return r;
+}
+
+/*
+ * Remove the run r from the context of the skip list and free it.
+ * The context does not point at r, but to the run immediately before r.
+ * context[0]->next == r
+ */
+static void run_remove(glyph_run_head_t **context, glyph_run_t *r)
+{
+  glyph_run_head_t *h;
+  int i;
+
+  // Free the glyphs
+  if (r->glyphs)
+    objc_free(r->glyphs);
+
+  h = &r->head;
+  if (h->next)
+    ((glyph_run_t *)h->next)->prev = r->prev;
+
+  for (i = 0; i <= r->level; i++)
+    context[i]->next = context[i]->next->next;
+
+  h -= r->level;
+  objc_free(h);
+}
+
+/*
+ * Free the glphys of a run.
+ */
+static inline void run_free_glyphs(glyph_run_t *r)
+{
+  if (r->glyphs)
+    {
+      r->head.complete = 0;
+      r->head.glyph_length = 0;
+      objc_free(r->glyphs);
+      r->glyphs = NULL;
+    }
+ }
+
+/* Recalculates char_length, glyph_length, and complete for a
+glyph_run_head_t. All "children" of this head must have valid values. */
+static void run_fix_head(glyph_run_head_t *h)
+{
+  glyph_run_head_t *h2, *next;
+
+  next = h->next;
+  if (next)
+    next++;
+  h2 = h + 1;
+
+  h->complete = 1;
+  h->glyph_length = 0;
+  h->char_length = 0;
+
+  // Loop over all heads below this one
+  while (h2 != next)
+    {
+      h->char_length += h2->char_length;
+      if (!h2->complete)
+        h->complete = 0;
+      else if (h->complete)
+        h->glyph_length += h2->glyph_length;
+      h2 = h2->next;
+    }
+}
 
 /*
 Private method used internally by GSLayoutManager for sanity checking.
@@ -70,11 +163,15 @@ Private method used internally by GSLayoutManager for sanity checking.
 }
 @end
 
+@interface GSLayoutManager (backend)
+-(unsigned int) _findSafeBreakMovingBackwardFrom: (unsigned int)ch;
+-(unsigned int) _findSafeBreakMovingForwardFrom: (unsigned int)ch;
+-(void) _generateGlyphsForRun: (glyph_run_t *)run  at: (unsigned int)cpos;
+@end
 
 /***** Glyph handling *****/
 
 @implementation GSLayoutManager (GlyphsHelpers)
-
 
 -(void) _run_cache_attributes: (glyph_run_t *)r : (NSDictionary *)attributes
 {
@@ -110,19 +207,23 @@ Private method used internally by GSLayoutManager for sanity checking.
 
 -(void) _run_copy_attributes: (glyph_run_t *)dst : (const glyph_run_t *)src
 {
-  dst->font = [src->font retain];
+  dst->font = [src->font copy];
   dst->ligature = src->ligature;
   dst->explicit_kern = src->explicit_kern;
 }
 
-
--(void) _freeGlyphs
+/*
+ * Free up the skip list and all the glyph arrays
+ */
+- (void) _freeGlyphs
 {
   glyph_run_t *cur, *next;
   glyph_run_head_t *h;
 
   if (!glyphs)
     return;
+
+  cached_run = NULL;
 
   h = glyphs;
   h += SKIP_LIST_DEPTH - 1;
@@ -131,53 +232,67 @@ Private method used internally by GSLayoutManager for sanity checking.
     {
       next = (glyph_run_t *)cur->head.next;
       if (cur->glyphs)
-	free(cur->glyphs);
+        objc_free(cur->glyphs);
       [self _run_free_attributes: cur];
+      // Find the start of the allocated memory
       h = &cur->head;
       h -= cur->level;
-      free(h);
+      objc_free(h);
     }
 
-  free(glyphs);
+  // Free the head element
+  objc_free(glyphs);
   glyphs = NULL;
 }
 
--(void) _initGlyphs
+/*
+ * Initialize the glyph skip list
+ */
+- (void) _initGlyphs
 {
   int i, size;
+  glyph_run_t *r;
   glyph_run_head_t *h;
 
   size = sizeof(glyph_run_head_t) * (SKIP_LIST_DEPTH - 1) + sizeof(glyph_run_t);
-  glyphs = malloc(size);
+  glyphs = objc_malloc(size);
   memset(glyphs, 0, size);
+
   for (h = glyphs, i = SKIP_LIST_DEPTH; i; i--, h++)
-    h->complete = 1;
+    {
+      h->complete = 1;
+    }
+  h--;
+
+  r = (glyph_run_t *)h;
+  r->level = SKIP_LIST_DEPTH - 1;
 }
 
--(void) _glyphDumpRuns
+- (void) _glyphDumpRuns
 {
   printf("--- dumping runs\n");
   {
     glyph_run_t *h;
     unsigned int cpos = 0;
+
     h = (glyph_run_t *)(glyphs + SKIP_LIST_DEPTH - 1)->next;
     for (; h; h = (glyph_run_t *)h->head.next)
       {
-	printf("%8p %i chars, %i glyphs, %i complete, prev %8p next %8p\n",
-	  h, h->head.char_length, h->head.glyph_length, h->head.complete,
-	  h->prev, h->head.next);
-	printf("         level %i, continued %i\n", h->level, h->continued);
-	if (h->head.complete)
-	  {
-	    unsigned int i;
-	    printf("glyphs:\n");
-	    for (i = 0;i < h->head.glyph_length;i++)
-	      printf("%5i %04x u%04x  ",
-		h->glyphs[i].char_offset,h->glyphs[i].g,
-		[[_textStorage string] characterAtIndex: cpos+h->glyphs[i].char_offset]);
-	    printf("\n");
-	  }
-	cpos += h->head.char_length;
+        printf("%8p %i chars, %i glyphs, %i complete, prev %8p next %8p\n",
+               h, h->head.char_length, h->head.glyph_length, h->head.complete,
+               h->prev, h->head.next);
+        printf("         level %i, continued %i\n", h->level, h->continued);
+        if (h->head.complete)
+          {
+            unsigned int i;
+            printf("glyphs:\n");
+            for (i = 0;i < h->head.glyph_length;i++)
+              printf("%5i %04x u%04x  ",
+                     h->glyphs[i].char_offset,h->glyphs[i].g,
+                     [[_textStorage string] characterAtIndex: cpos+h->glyphs[i].char_offset]);
+            printf("\n");
+          }
+        cpos += h->head.char_length;
       }
   }
   printf("- structure\n");
@@ -192,18 +307,17 @@ Private method used internally by GSLayoutManager for sanity checking.
     h = (glyphs + SKIP_LIST_DEPTH - 1)->next;
     for (; h; h = h->next)
       {
-	printf("%8p: ", h);
-	for (g = h, i = ((glyph_run_t *)h)->level; i >= 0; i--, g--)
-	  printf("%8p %i %3i %3i|", g->next, g->complete, g->char_length, g->glyph_length);
-	  printf("\n");
+        printf("%8p: ", h);
+        for (g = h, i = ((glyph_run_t *)h)->level; i >= 0; i--, g--)
+          printf("%8p %i %3i %3i|", g->next, g->complete, g->char_length, g->glyph_length);
+        printf("\n");
       }
   }
   printf("--- done\n");
   fflush(stdout);
 }
 
-
--(void) _sanityChecks
+- (void) _sanityChecks
 {
   glyph_run_t *g;
 
@@ -211,34 +325,42 @@ Private method used internally by GSLayoutManager for sanity checking.
   while (g->head.next)
     {
       NSAssert((glyph_run_t *)((glyph_run_t *)g->head.next)->prev == g,
- 	@"glyph structure corrupted: g->next->prev!=g");
+               @"glyph structure corrupted: g->next->prev!=g");
       g = (glyph_run_t *)g->head.next;
     }
 }
 
 
--(glyph_run_t *)run_for_glyph_index: (unsigned int)glyphIndex
-	: (unsigned int *)glyph_pos
-	: (unsigned int *)char_pos
+/*
+ * Returns the glyph run that contains glyphIndex, if there is any.
+ * glyph_pos and char_pos, when supplied, will contain the starting 
+ * glyph/character index for this run.
+ */
+- (glyph_run_t *)run_for_glyph_index: (unsigned int)glyphIndex
+				    : (unsigned int *)glyph_pos
+				    : (unsigned int *)char_pos
 {
   int level;
   glyph_run_head_t *h;
   int pos, cpos;
 
   if (glyphs->glyph_length <= glyphIndex)
-    return NULL;
+    {
+      NSLog(@"run_for_glyph_index failed for %d", glyphIndex);
+      return NULL;
+    }
 
   if (cached_run)
     {
       if (glyphIndex >= cached_pos &&
-	  glyphIndex < cached_pos + cached_run->head.glyph_length)
-	{
-	  if (glyph_pos)
-	    *glyph_pos = cached_pos;
-	  if (char_pos)
-	    *char_pos = cached_cpos;
-	  return cached_run;
-	}
+          glyphIndex < cached_pos + cached_run->head.glyph_length)
+        {
+          if (glyph_pos)
+            *glyph_pos = cached_pos;
+         if (char_pos)
+            *char_pos = cached_cpos;
+         return cached_run;
+        }
     }
 
   pos = cpos = 0;
@@ -246,139 +368,135 @@ Private method used internally by GSLayoutManager for sanity checking.
   h = glyphs;
   while (1)
     {
+      // Find a head, where the glyphs are already created.
       if (!h->complete)
-	{
-	  h++;
-	  level--;
-	  if (!level)
-	    return NULL;
-	  continue;
-	}
-	if (glyphIndex >= pos + h->glyph_length)
-	  {
-	    pos += h->glyph_length;
-	    cpos += h->char_length;
-	    h = h->next;
-	    if (!h)
-	      return NULL;
-	    continue;
-	  }
-	if (level > 1)
-	  {
-	    h++;
-	    level--;
-	    continue;
-	  }
-
-	*glyph_pos = pos;
-	if (char_pos)
-	  *char_pos = cpos;
-
-	cached_run = (glyph_run_t *)h;
-	cached_pos = pos;
-	cached_cpos = cpos;
-
-	return (glyph_run_t *)h;
-    }
-}
-
-static glyph_run_t *run_for_character_index(unsigned int charIndex,
-	glyph_run_head_t *glyphs, unsigned int *glyph_pos,
-	unsigned int *char_pos)
-{
-  int level;
-  glyph_run_head_t *h;
-  int pos, cpos;
-
-  if (glyphs->char_length <= charIndex)
-    return NULL;
-
-  pos = cpos = 0;
-  level = SKIP_LIST_DEPTH;
-  h = glyphs;
-  while (1)
-    {
-      if (!h->complete)
-	{
-	  h++;
-	  level--;
-	  if (!level)
-	    return NULL;
-	  continue;
-	}
-      if (charIndex >= cpos + h->char_length)
-	{
-	  pos += h->glyph_length;
-	  cpos += h->char_length;
-	  h = h->next;
-	  if (!h)
-	    return NULL;
-	  continue;
-	}
+        {
+          h++;
+          level--;
+          if (!level)
+            {
+              NSLog(@"run_for_glyph_index failed for %d", glyphIndex);
+              return NULL;
+            }
+          continue;
+        }
+      // Find the head containing the index.
+      if (glyphIndex >= pos + h->glyph_length)
+        {
+          pos += h->glyph_length;
+          cpos += h->char_length;
+          h = h->next;
+          if (!h)
+            {
+              NSLog(@"run_for_glyph_index failed for %d", glyphIndex);
+              return NULL;
+            }
+          continue;
+        }
+      // Go down one level
       if (level > 1)
-	{
-	  h++;
-	  level--;
-	  continue;
-	}
-      
-      *glyph_pos = pos;
+        {
+          h++;
+          level--;
+          continue;
+        }
+
+      // Level 1
+      if (glyph_pos)
+        *glyph_pos = pos;
       if (char_pos)
-	*char_pos = cpos;
+        *char_pos = cpos;
+
+      cached_run = (glyph_run_t *)h;
+      cached_pos = pos;
+      cached_cpos = cpos;
+      
       return (glyph_run_t *)h;
     }
 }
 
+/*
+ * Returns the glyph run that contains charIndex, if there is any.
+ * glyph_pos and char_pos, when supplied, will contain the starting 
+ * glyph/character index for this run.
+ */
+#define run_for_character_index(a,b,c,d) [self run_for_character_index: a : c : d]
 
-/* Recalculates char_length, glyph_length, and complete for a
-glyph_run_head_t. All "children" of this head must have valid values. */
-static void run_fix_head(glyph_run_head_t *h)
+- (glyph_run_t *)run_for_character_index: (unsigned int)charIndex
+					: (unsigned int *)glyph_pos
+					: (unsigned int *)char_pos
 {
-  glyph_run_head_t *h2, *next;
-  next = h->next;
-  if (next)
-    next++;
-  h2 = h + 1;
-  h->complete = 1;
-  h->glyph_length = 0;
-  h->char_length = 0;
-  while (h2 != next)
-    {
-      if (h->complete)
-	h->glyph_length += h2->glyph_length;
-      h->char_length += h2->char_length;
-      if (!h2->complete)
-	h->complete = 0;
-      h2 = h2->next;
-    }
-}
-
-static glyph_run_t *run_insert(glyph_run_head_t **context)
-{
-  glyph_run_head_t *h;
-  glyph_run_t *r;
   int level;
-  int i;
+  glyph_run_head_t *h;
+  int pos, cpos;
+  BOOL cache = YES;
 
-  level = random_level();
-  h = malloc(sizeof(glyph_run_head_t) * level + sizeof(glyph_run_t));
-  memset(h, 0, sizeof(glyph_run_head_t) * level + sizeof(glyph_run_t));
-
-  for (i = level; i >= 0; i--)
+  if (glyphs->char_length <= charIndex)
     {
-      h->next = context[i]->next;
-      context[i]->next = h;
+      NSLog(@"run_for_character_index failed for %d", charIndex);
+      return NULL;
+    }
+
+  if (cached_run)
+    {
+      if (charIndex >= cached_cpos &&
+          charIndex < cached_cpos + cached_run->head.char_length)
+        {
+          if (glyph_pos)
+            *glyph_pos = cached_pos;
+          if (char_pos)
+            *char_pos = cached_cpos;
+          return cached_run;
+        }
+    }
+
+  pos = cpos = 0;
+  h = glyphs;
+  for (level = SKIP_LIST_DEPTH - 1; level >= 0; level--)
+    {
+      // Find the head containing the index.
+      while (charIndex >= cpos + h->char_length)
+        {
+          // Ignore pos at the end
+          if (!h->complete)
+            cache = NO;
+          pos += h->glyph_length;
+          cpos += h->char_length;
+          h = h->next;
+          if (!h)
+            {
+              NSLog(@"run_for_character_index failed for %d", charIndex);
+              return NULL;
+            }
+        }
+
+      // Go down one level
       h++;
     }
   h--;
 
-  r = (glyph_run_t *)h;
-  r->level = level;
-  r->prev = context[0];
-  return r;
+  if (glyph_pos)
+    *glyph_pos = pos;
+  if (char_pos)
+    *char_pos = cpos;
+  
+  if (cache) 
+    {
+      cached_run = (glyph_run_t *)h;
+      cached_pos = pos;
+      cached_cpos = cpos;
+    }
+
+   return (glyph_run_t *)h;
 }
 
-
+/*
+ * Generate the glyph runs, but not the actual glyphs, up to the 
+ * character index last.
+ * Build up empty skip list entries to later hold the glyphs.
+ * Only appends to the end of the skip list.
+ * Only called after setting up a complete new layout.
+ */
 -(void) _generateRunsToCharacter: (unsigned int)last
 {
   glyph_run_head_t *context[SKIP_LIST_DEPTH];
@@ -387,7 +505,6 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
   unsigned int pos;
   unsigned int length;
   int level;
-
 
   length = [_textStorage length];
   if (last >= length)
@@ -416,23 +533,20 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
       NSRange maxRange;
       NSRange curRange;
       NSDictionary *attributes;
-
-      glyph_run_head_t *new_head;
       glyph_run_t *new;
       int new_level;
-
       int i;
 
       maxRange = NSMakeRange(pos, length - pos);
       if (pos > 0)
-	{
-	  maxRange.location--;
-	  maxRange.length++;
-	}
+        {
+          maxRange.location--;
+          maxRange.length++;
+        }
 
       attributes = [_textStorage attributesAtIndex: pos
-			       longestEffectiveRange: &curRange
-			       inRange: maxRange];
+                                 longestEffectiveRange: &curRange
+                                 inRange: maxRange];
 
       /*
       Optimize run structure by merging with the previous run under
@@ -441,32 +555,28 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
       for more information.
       */
       if (curRange.location < pos && context[0]->char_length &&
-	  context[0]->char_length < 16)
-	{
-	  curRange.length -= pos - curRange.location;
-	  curRange.location = pos;
-	  new = (glyph_run_t *)context[0];
-	  if (new->head.complete)
-	    {
-	      free(new->glyphs);
-	      new->glyphs = NULL;
-	      new->head.glyph_length = 0;
-	      new->head.complete = 0;
-	    }
-	  new->head.char_length += curRange.length;
-	  for (i = 1; i < SKIP_LIST_DEPTH; i++)
-	    {
-	      run_fix_head(context[i]);
-	    }
-	  pos = NSMaxRange(curRange);
-	  continue;
-	}
+          // FIXME: Why 16 and not MAX_RUN_LENGTH
+          context[0]->char_length < 16)
+        {
+          curRange.length -= pos - curRange.location;
+          curRange.location = pos;
+          new = (glyph_run_t *)context[0];
+          // FIXME: We could try to reuse the glyphs
+          run_free_glyphs(new);
+          new->head.char_length += curRange.length;
+          for (i = 1; i < SKIP_LIST_DEPTH; i++)
+            {
+              run_fix_head(context[i]);
+            }
+          pos = NSMaxRange(curRange);
+          continue;
+        }
 
       if (curRange.location < pos)
-	{
-	  curRange.length -= pos - curRange.location;
-	  curRange.location = pos;
-	}
+        {
+          curRange.length -= pos - curRange.location;
+          curRange.location = pos;
+        }
 
       /*
       TODO: this shouldn't really be necessary if all searches inside runs
@@ -474,113 +584,131 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
       more balanced when there are long runs of text.
       */
       if (curRange.length > MAX_RUN_LENGTH)
-	{
-	  unsigned int ch = curRange.location + MAX_RUN_LENGTH;
-	  ch = [self _findSafeBreakMovingForwardFrom: ch];
-	  if (ch < NSMaxRange(curRange))
-	    curRange.length = ch - curRange.location;
-	}
-
-      new_level = random_level();
+        {
+          unsigned int safe_break = curRange.location + MAX_RUN_LENGTH;
+          safe_break = [self _findSafeBreakMovingForwardFrom: safe_break];
+          if (safe_break < NSMaxRange(curRange))
+            curRange.length = safe_break - curRange.location;
+        }
 
       /* Since we'll be creating these in order, we can be smart about
-	 picking new levels. */
+         picking new levels. */
       {
-	int i;
-	glyph_num_end_runs++;
-	for (i=0; i < SKIP_LIST_DEPTH - 2; i++)
-	  if (glyph_num_end_runs & (1 << i))
-	    break;
-	new_level = i;
+        int i;
+
+        /*
+          FIXME: Not sure whether using an ivar here as the counter is a great idea.
+          When the same range is edited over and over again this could lead to a strange structure.
+          It works fine when adding a great chunk of text at the end.
+        */
+        glyph_num_end_runs++;
+        for (i=0; i < SKIP_LIST_DEPTH - 2; i++)
+          if (glyph_num_end_runs & (1 << i))
+            break;
+        new_level = i;
       }
 
-      new_head = malloc(sizeof(glyph_run_t) + sizeof(glyph_run_head_t) * new_level);
-      memset(new_head, 0, sizeof(glyph_run_t) + sizeof(glyph_run_head_t) * new_level);
-      new = (glyph_run_t *)(new_head + new_level);
-
-      new->level = new_level;
-      new->head.char_length = curRange.length;
-      new->prev = context[0];
-
+      new = run_insert(context, new_level);
       [self _run_cache_attributes: new : attributes];
 
       h = &new->head;
       for (i = 0; i <= new_level; i++, h--)
-	{
-	  h->char_length = new->head.char_length;
-	  context[i]->next = h;
-	  context[i] = h;
-	}
-      for (; i < SKIP_LIST_DEPTH; i++)
-	{
-	  context[i]->char_length += new->head.char_length;
-	  context[i]->complete = 0;
-	}
+        {
+          h->char_length = curRange.length;
+          context[i] = h;
+        }
 
-      pos += new->head.char_length;
+      for (; i < SKIP_LIST_DEPTH; i++)
+        {
+          context[i]->char_length += curRange.length;
+          context[i]->complete = 0;
+        }
+
+      pos += curRange.length;
     }
 
   [self _sanityChecks];
 }
 
-
 /*
+Recursive glyph generation helper method method.
 Returns number of valid glyphs under h after generating up to last (sortof,
 not completely accurate).
+Fills in all glyph holes up to last. only looking at levels below level
 */
--(unsigned int) _generateGlyphs_char_r: (unsigned int)last : (unsigned int)pos
-	: (int)level
-	: (glyph_run_head_t *)h : (glyph_run_head_t *)stop
-	: (BOOL *)all_complete
+-(unsigned int) _generateGlyphs_char_r: (unsigned int)last : (unsigned int)cpos
+                                      : (unsigned int)gpos : (int)level
+                                      : (glyph_run_head_t *)h : (glyph_run_head_t *)stop
+                                      : (BOOL *)all_complete
 {
   int total = 0, sub_total;
   BOOL c;
 
   *all_complete = YES;
-  while (h != stop && (pos <= last || *all_complete))
+  while (h != stop && (cpos <= last || *all_complete))
     {
-      if (h->complete)
-	{
-	  total += h->glyph_length;
-	  pos += h->char_length;
-	  h = h->next;
-	  continue;
-	}
+      if (!h->complete)
+        {
+          if (cpos > last)
+            {
+              *all_complete = NO;
+              break;
+            }
 
-      if (pos > last)
-	break;
+          if (level)
+            {
+              glyph_run_head_t *stopn;
 
-      if (level)
-	{
-	  if (h->next)
-	    sub_total = [self _generateGlyphs_char_r: last : pos : level - 1: h + 1: h->next + 1: &c];
-	  else
-	    sub_total = [self _generateGlyphs_char_r: last : pos : level - 1: h + 1: NULL : &c];
-	  if (!c)
-	    *all_complete = NO;
-	  else
-	    h->complete = 1;
-	  h->glyph_length = sub_total;
-	  total += sub_total;
-	}
-      else
-	{
-	  [self _generateGlyphsForRun: (glyph_run_t *)h at: pos];
-	  h->complete = 1;
-	  total += h->glyph_length;
-	}
-      pos += h->char_length;
+              if (h->next)
+                stopn = h->next + 1;
+              else
+                stopn = NULL;
+
+              sub_total = [self _generateGlyphs_char_r: last : cpos : gpos + total 
+                                : level - 1 : h + 1: stopn: &c];
+              if (!c)
+                *all_complete = NO;
+              else
+                h->complete = 1;
+              h->glyph_length = sub_total;
+            }
+          else
+            {
+              unsigned int cindex = cpos;
+              unsigned int gindex = gpos + total;
+              
+              // Cache the current run
+              cached_run = (glyph_run_t *)h;
+              cached_pos = gindex;
+              cached_cpos = cindex;
+              
+              // Generate the glyphs for the run
+              [_glyphGenerator generateGlyphsForGlyphStorage: self 
+                               desiredNumberOfCharacters: h->char_length
+                               glyphIndex: &gindex
+                               characterIndex: &cindex];
+              h->complete = 1;
+            }
+        }
+
+      total += h->glyph_length;
+      cpos += h->char_length;
       h = h->next;
     }
-  if (h != stop)
-    *all_complete = NO;
+
   return total;
 }
 
+/*
+ * Generate all glyphs up to the character index last.
+ */
 -(void) _generateGlyphsUpToCharacter: (unsigned int)last
 {
   unsigned int length;
   BOOL dummy;
+
+  if (!_textStorage)
+    return;
 
   /*
   Trying to do anything here while the text storage has unprocessed edits
@@ -598,8 +726,6 @@ not completely accurate).
 		      @"balanced."];
     }
 
-  if (!_textStorage)
-    return;
   length = [_textStorage length];
   if (!length)
     return;
@@ -609,9 +735,9 @@ not completely accurate).
   if (glyphs->char_length <= last)
     [self _generateRunsToCharacter: last];
 
-//  [self _glyphDumpRuns];
-  if ([self _generateGlyphs_char_r: last : 0 : SKIP_LIST_DEPTH - 1: glyphs : NULL : &dummy])
-    /*[self _glyphDumpRuns]*/;
+  // [self _glyphDumpRuns];
+  [self _generateGlyphs_char_r: last : 0 : 0 : SKIP_LIST_DEPTH - 1: glyphs : NULL : &dummy];
+  // [self _glyphDumpRuns];
 }
 
 -(void) _generateGlyphsUpToGlyph: (unsigned int)last
@@ -629,10 +755,13 @@ not completely accurate).
     }
 }
 
-
--(glyph_run_t *) _glyphForCharacter: (unsigned int)target
-	index: (unsigned int *)rindex
-	positions: (unsigned int *)rpos : (unsigned int *)rcpos
+/*
+ * Find the glyph run that contains target and the glyph that matches to that char index.
+ */
+- (glyph_run_t *) _glyphForCharacter: (unsigned int)target
+                               index: (unsigned int *)rindex
+                           positions: (unsigned int *)rpos 
+                                    : (unsigned int *)rcpos
 {
   glyph_run_t *r;
   unsigned int pos, cpos;
@@ -650,12 +779,15 @@ not completely accurate).
     {
       mid = (lo + hi) / 2;
       if (r->glyphs[mid].char_offset > target)
-	hi = mid - 1;
+        hi = mid - 1;
       else if (r->glyphs[mid].char_offset < target)
-	lo = mid + 1;
+        lo = mid + 1;
       else
-	hi = lo = mid;
+        hi = lo = mid;
     }
+
+  // This final correction is needed as multiple glyph may have
+  // the same character offset and vise versa.
   i = lo;
   while (r->glyphs[i].char_offset > target)
     i--;
@@ -679,22 +811,21 @@ not completely accurate).
   return glyphs->glyph_length;
 }
 
-
 - (NSGlyph) glyphAtIndex: (unsigned int)glyphIndex
 {
   BOOL valid;
   NSGlyph g;
+
   g = [self glyphAtIndex: glyphIndex isValidIndex: &valid];
-  if (valid)
-    return g;
-  [NSException raise: NSRangeException
-	       format: @"%s glyph index out of range", __PRETTY_FUNCTION__];
-  return 0;
+  if (!valid)
+    [NSException raise: NSRangeException
+                 format: @"%s glyph index out of range", __PRETTY_FUNCTION__];
+
+  return g;
 }
 
-
 - (NSGlyph) glyphAtIndex: (unsigned int)glyphIndex
-	isValidIndex: (BOOL *)isValidIndex
+            isValidIndex: (BOOL *)isValidIndex
 {
   glyph_run_t *r;
   unsigned int pos;
@@ -707,22 +838,21 @@ not completely accurate).
   methods will need to be changed so they can return "no glyph index" in
   some other way. */
   if (glyphIndex == (unsigned int)-1)
-    return 0;
+    return NSNullGlyph;
 
   if (glyphs->glyph_length <= glyphIndex)
     {
       [self _generateGlyphsUpToGlyph: glyphIndex];
       if (glyphs->glyph_length <= glyphIndex)
-	return 0;
+        return NSNullGlyph;
     }
 
   r = run_for_glyph_index(glyphIndex, glyphs, &pos, NULL);
   if (!r) /* shouldn't happen */
-    return 0;
+    return NSNullGlyph;
 
-  glyphIndex -= pos;
   *isValidIndex = YES;
-  return r->glyphs[glyphIndex].g;
+  return r->glyphs[glyphIndex - pos].g;
 }
 
 - (BOOL) isValidGlyphIndex: (unsigned int)glyphIndex
@@ -741,7 +871,7 @@ not completely accurate).
 }
 
 - (unsigned int) getGlyphs: (NSGlyph *)glyphArray
-	range: (NSRange)glyphRange
+                     range: (NSRange)glyphRange
 {
   glyph_run_t *r;
   NSGlyph *g;
@@ -759,11 +889,11 @@ not completely accurate).
     {
       [self _generateGlyphsUpToGlyph: pos];
       if (glyphs->glyph_length <= pos)
-	{
-	  [NSException raise: NSRangeException
-		       format: @"%s glyph range out of range", __PRETTY_FUNCTION__];
-	  return 0;
-	}
+        {
+          [NSException raise: NSRangeException
+                       format: @"%s glyph range out of range", __PRETTY_FUNCTION__];
+          return 0;
+        }
     }
 
   r = run_for_glyph_index(glyphRange.location, glyphs, &pos, NULL);
@@ -780,27 +910,27 @@ not completely accurate).
   while (1)
     {
       if (pos < glyphRange.location)
-	j = glyphRange.location - pos;
+        j = glyphRange.location - pos;
       else
-	j = 0;
+        j = 0;
 
       k = NSMaxRange(glyphRange) - pos;
       if (k > r->head.glyph_length)
-	k = r->head.glyph_length;
+        k = r->head.glyph_length;
       if (k <= j)
-	break;
+        break;
 
       /* TODO? only "displayed" glyphs */
       for (i = j; i < k; i++)
-	{
-	  *g++=r->glyphs[i].g;
-	  num++;
-	}
+        {
+          *g++ = r->glyphs[i].g;
+          num++;
+        }
 
       pos += r->head.glyph_length;
       r = (glyph_run_t *)r->head.next;
       if (!r)
-	break;
+        break;
     }
 
   return num;
@@ -815,27 +945,26 @@ not completely accurate).
     {
       [self _generateGlyphsUpToGlyph: glyphIndex];
       if (glyphs->glyph_length <= glyphIndex)
-	{
-	  [NSException raise: NSRangeException
-		       format: @"%s glyph index out of range", __PRETTY_FUNCTION__];
-	  return 0;
-	}
+        {
+          [NSException raise: NSRangeException
+                       format: @"%s glyph index out of range", __PRETTY_FUNCTION__];
+          return 0;
+        }
     }
 
   r = run_for_glyph_index(glyphIndex, glyphs, &pos, &cpos);
   if (!r)
     {
       [NSException raise: NSRangeException
-		   format: @"%s glyph index out of range", __PRETTY_FUNCTION__];
+                   format: @"%s glyph index out of range", __PRETTY_FUNCTION__];
       return 0;
     }
 
   return cpos + r->glyphs[glyphIndex - pos].char_offset;
 }
 
-
 - (NSRange) characterRangeForGlyphRange: (NSRange)glyphRange
-	actualGlyphRange: (NSRange *)actualGlyphRange
+                       actualGlyphRange: (NSRange *)actualGlyphRange
 {
   glyph_run_t *r;
   NSRange real_range, char_range;
@@ -845,7 +974,7 @@ not completely accurate).
   if (NSMaxRange(glyphRange) == 0)
     {
       if (actualGlyphRange)
-	*actualGlyphRange = glyphRange;
+        *actualGlyphRange = glyphRange;
       return NSMakeRange(0, 0);
     }
 
@@ -854,11 +983,11 @@ not completely accurate).
     {
       [self _generateGlyphsUpToGlyph: pos];
       if (glyphs->glyph_length <= pos)
-	{
-	  [NSException raise: NSRangeException
-		       format: @"%s glyph range out of range", __PRETTY_FUNCTION__];
-	  return NSMakeRange(0, 0);
-	}
+        {
+          [NSException raise: NSRangeException
+                       format: @"%s glyph range out of range", __PRETTY_FUNCTION__];
+          return NSMakeRange(0, 0);
+        }
     }
 
   r = run_for_glyph_index(glyphRange.location, glyphs, &pos, &cpos);
@@ -884,18 +1013,18 @@ not completely accurate).
     cadj = cpos;
     while (r2->glyphs[i].char_offset + cadj == j)
       {
-	i--;
-	while (i < 0)
-	  {
-	    if (!r2->prev)
-	      break;
-	    r2 = (glyph_run_t *)r2->prev;
-	    i = r2->head.glyph_length - 1;
-	    adj -= r2->head.glyph_length;
-	    cadj -= r2->head.char_length;
-	  }
-	if (i < 0)
-	  break;
+        i--;
+        while (i < 0)
+          {
+            if (!r2->prev)
+              break;
+            r2 = (glyph_run_t *)r2->prev;
+            i = r2->head.glyph_length - 1;
+            adj -= r2->head.glyph_length;
+            cadj -= r2->head.char_length;
+          }
+        if (i < 0)
+          break;
       }
     real_range.location = i + 1 + adj;
   }
@@ -903,7 +1032,7 @@ not completely accurate).
   /* the range is likely short, so we can do better then a completely new
      search */
   r = run_for_glyph_index(glyphRange.location + glyphRange.length - 1,
-			glyphs, &pos, &cpos);
+                          glyphs, &pos, &cpos);
   if (!r)
     {
       [NSException raise: NSRangeException
@@ -926,12 +1055,12 @@ not completely accurate).
     cadj = cpos;
     while (r2->glyphs[i].char_offset + cadj == j)
       {
-	GLYPH_STEP_FORWARD(r2,i,adj,cadj)
-	if (i==r2->head.glyph_length)
-	  {
-	    last = cadj + r2->head.char_length;
-	    goto found;
-	  }
+        GLYPH_STEP_FORWARD(r2,i,adj,cadj)
+        if (i==r2->head.glyph_length)
+          {
+            last = cadj + r2->head.char_length;
+            goto found;
+          }
       }
     last = r2->glyphs[i].char_offset + cadj;
   found:
@@ -944,9 +1073,8 @@ not completely accurate).
   return char_range;
 }
 
-
 - (NSRange) glyphRangeForCharacterRange: (NSRange)charRange 
-	actualCharacterRange: (NSRange *)actualCharRange
+                   actualCharacterRange: (NSRange *)actualCharRange
 {
   NSRange char_range, glyph_range;
   glyph_run_t *r;
@@ -963,17 +1091,18 @@ not completely accurate).
   if (charRange.length == 0 && charRange.location == [[_textStorage string] length])
     {
       if (actualCharRange)
-	*actualCharRange = NSMakeRange([[_textStorage string] length], 0);
+        *actualCharRange = NSMakeRange([[_textStorage string] length], 0);
       return NSMakeRange([self numberOfGlyphs], 0);
     }
 #endif
+
   /* TODO: this case is also dubious, but it makes sense to return like this,
   so it's mostly the caller's fault */
   if (charRange.length == 0)
     {
       NSLog(@"Warning: %s called with zero-length range", __PRETTY_FUNCTION__);
       if (actualCharRange)
-	*actualCharRange = NSMakeRange(0, 0);
+        *actualCharRange = NSMakeRange(0, 0);
       return NSMakeRange(0, 0);
     }
 
@@ -982,21 +1111,21 @@ not completely accurate).
   if (glyphs->char_length <= pos)
     {
       [NSException raise: NSRangeException
-	format: @"%s character range out of range", __PRETTY_FUNCTION__];
+                   format: @"%s character range out of range", __PRETTY_FUNCTION__];
       return NSMakeRange(0, 0);
     }
 
   target = charRange.location;
   r = [self _glyphForCharacter: target
-	  index: &i
-	  positions: &pos : &cpos];
+            index: &i
+            positions: &pos : &cpos];
   glyph_range.location = i + pos;
   char_range.location = r->glyphs[i].char_offset + cpos;
 
   target = NSMaxRange(charRange) - 1;
   r = [self _glyphForCharacter: target
-	  index: &i
-	  positions: &pos : &cpos];
+            index: &i
+            positions: &pos : &cpos];
 
   GLYPH_SCAN_FORWARD(r, i, pos, cpos, r->glyphs[i].char_offset + cpos <= target)
 
@@ -1026,24 +1155,23 @@ Internally, we switch between before- and after-indices. Comments mark the
 places where we switch.
 */
 - (void) invalidateGlyphsForCharacterRange: (NSRange)range
-	changeInLength: (int)lengthChange
-	actualCharacterRange: (NSRange *)actualRange
+                            changeInLength: (int)lengthChange
+                      actualCharacterRange: (NSRange *)actualRange
 {
-  BOOL trailing;
   glyph_run_head_t *context[SKIP_LIST_DEPTH];
   glyph_run_head_t *h;
   glyph_run_t *r;
   NSRange rng;
   int position[SKIP_LIST_DEPTH];
   unsigned int cpos;
-  unsigned int ts_length;
-  int gap;
   int level;
   unsigned int ch;
-
+  unsigned int max;
 
   /*
-  We always clear out the cached run information to be safe.
+  We always clear out the cached run information to be safe. This is only needed 
+  if the cached run is affected by the invalidation, that is if
+  NSMinRange(range) < cpos + cached_run->head.char_lenght
   */
   cached_run = NULL;
 
@@ -1051,18 +1179,9 @@ places where we switch.
   if (actualRange)
     *actualRange = range;
 
-
 //  printf("\n +++ range=(%i+%i) lengthChange=%i\n", range.location, range.length, lengthChange);
   [self _sanityChecks];
 //  [self _glyphDumpRuns];
-
-
-  /* Switch to before-indices. */
-  range.length -= lengthChange;
-//  printf("invalidate %i+%i=%i\n", range.location, range.length, range.location+range.length);
-
-  ts_length = [_textStorage length];
-
 
   /*
   Find out what range we actually need to invalidate. This depends on how
@@ -1076,22 +1195,16 @@ places where we switch.
       range.location = ch;
     }
 
-  ch = ch + range.length + lengthChange;
-  if (ch < ts_length)
+  max = ch + range.length;
+  if (max < [_textStorage length])
     {
-      ch = [self _findSafeBreakMovingForwardFrom: ch];
-
-      ch -= lengthChange;
-      range.length = ch - range.location;
+      max = [self _findSafeBreakMovingForwardFrom: max];
+      range.length = max - range.location;
     }
+  //  printf("adjusted to %i+%i\n", range.location, range.length);
 
-  /*
-  We now have the range to invalidate in 'range' (indices before the
-  change).
-  */
-//  printf("adjusted to %i+%i\n", range.location, range.length);
-
-  ch = range.location;
+  // Last affected character (indix before the change).
+  max -= lengthChange;
 
   /*
   Find the first run (and context) for the range.
@@ -1101,19 +1214,19 @@ places where we switch.
   for (level = SKIP_LIST_DEPTH - 1; level >= 0; level--)
     {
       while (cpos + h->char_length <= ch)
-	{
-	  cpos += h->char_length;
-	  h = h->next;
-	  if (!h)
-	    {
-	      /*
-	      No runs have been created for the range, so there's nothing
-	      to invalidate.
-	      */
+        {
+          cpos += h->char_length;
+          h = h->next;
+          if (!h)
+            {
+              /*
+                No runs have been created for the range, so there's nothing
+                to invalidate.
+              */
 //	      printf("no runs created yet\n");
-	      return;
-	    }
-	}
+              return;
+            }
+        }
       context[level] = h;
       position[level] = cpos;
       h++;
@@ -1126,33 +1239,35 @@ places where we switch.
   in 'r' (and context in 'context' and 'position').
   */
 
-//  printf("split if %i+%i > %i+%i\n", cpos, r->head.char_length, ch, range.length);
+  //printf("split if %i+%i > %i+%i\n", cpos, r->head.char_length, ch, range.length);
   /*
   If 'r' extends beyond the invalidated range, split off the trailing, valid
   part to a new run. The reason we need to do this is that we must have runs
   for the first glyph not invalidated or the deletion loop below will fail.
   */
-  if (cpos + r->head.char_length > ch + range.length && ch != cpos)
+  if (cpos + r->head.char_length > max && ch != cpos)
     {
       glyph_run_t *new;
       glyph_run_head_t *hn;
       int i;
 
-      new = run_insert(context);
-      new->head.char_length = cpos + r->head.char_length - (ch + range.length);
+      new = run_insert(context,  random_level());
+      new->head.char_length = cpos + r->head.char_length - max;
       [self _run_copy_attributes: new : r];
+
       /* OPT: keep valid glyphs
       this seems to be a fairly rare case
       */
       hn = &new->head;
       hn--;
       for (i = 1; i <= new->level; i++, hn--)
-	run_fix_head(hn);
-
-      if (new->head.next)
-	((glyph_run_t *)new->head.next)->prev = (glyph_run_head_t *)new;
+        {
+          // FIXME: Use simpler adjustment
+          run_fix_head(hn);
+        }
 
       r->head.char_length -= new->head.char_length;
+      // Glyphs get freed later
     }
 
   /*
@@ -1173,20 +1288,24 @@ places where we switch.
       cpos = position[r->level + 1];
       h++;
       for (level = r->level; level >= 0; level--)
-	{
-	  while (h->next != h2)
-	    {
-	      cpos += h->char_length;
-	      h = h->next;
-	    }
-	  position[level] = cpos;
-	  context[level] = h;
-	  h++;
-	  h2++;
-	}
+        {
+          while (h->next != h2)
+            {
+              cpos += h->char_length;
+              h = h->next;
+            }
+          // Fix up old context before switching
+          if (level)
+            run_fix_head(context[level]);
+
+          position[level] = cpos;
+          context[level] = h;
+          h++;
+          h2++;
+        }
       h--;
       r = (glyph_run_t *)h;
-      gap = 0;
+      cpos += r->head.char_length;
     }
   else
     {
@@ -1194,100 +1313,77 @@ places where we switch.
       This run begins before the invalidated range. Resize it so it ends
       just before it.
       */
-      gap = r->head.char_length + cpos - ch;
+      int len = r->head.char_length;
+
       r->head.char_length = ch - cpos;
+      cpos += len;
       /* OPT!!! keep valid glyphs */
-      if (r->head.complete)
-	{
-	  r->head.glyph_length = 0;
-	  r->head.complete = 0;
-	  free(r->glyphs);
-	  r->glyphs = NULL;
-	}
+      run_free_glyphs(r);
     }
 
   /*
   'r' is the last run we should keep, 'context' and 'position' are set up
-  for it, 'gap' is the number of characters already deleted.
+  for it. cpos
 
   Now we delete all runs completely invalidated.
   */
   {
     glyph_run_t *next;
-    unsigned int max = range.location + range.length;
-    int i;
 
-    cpos += gap + r->head.char_length;
     while (1)
       {
-	next = (glyph_run_t *)r->head.next;
+        next = (glyph_run_t *)r->head.next;
 
-	/* We reached the end of all created runs. */
-	if (!next)
-	  break;
+        /* We reached the end of all created runs. */
+        if (!next)
+          break;
 
-	NSAssert(max >= cpos,
-		 @"no run for first glyph beyond invalidated range");
+        NSAssert(max >= cpos,
+                 @"no run for first glyph beyond invalidated range");
+        
+        /* Clean cut, just stop. */
+        if (max == cpos)
+          break;
+        
+        /*
+          Part of this run extends beyond the invalidated range. Resize it
+          so it's completely beyond the invalidated range and stop.
+        */
+        if (max < cpos + next->head.char_length)
+          {
+            glyph_run_head_t *hn;
+            int i;
 
-	/* Clean cut, just stop. */
-	if (max == cpos)
-	  break;
+            /* adjust final run */
+            /* OPT!!! keep valid glyphs */
+            run_free_glyphs(next);
 
-	/*
-	Part of this run extends beyond the invalidated range. Resize it
-	so it's completely beyond the invalidated range and stop.
-	*/
-	if (max < cpos + next->head.char_length)
-	  {
-	    glyph_run_head_t *hn;
-	    /* adjust final run */
-	    /* OPT!!! keep valid glyphs */
-	    if (next->head.complete)
-	      {
-		next->head.complete = 0;
-		next->head.glyph_length = 0;
-		free(next->glyphs);
-		next->glyphs = NULL;
-	      }
-	    next->head.char_length -= max - cpos;
+            next->head.char_length -= max - cpos;
+            
+            hn = &next->head;
+            hn--;
+            for (i = 1; i <= next->level; i++, hn--)
+              run_fix_head(hn);
+            
+            break;
+          }
 
-	    hn = &next->head;
-	    hn--;
-	    for (i = 1; i <= next->level; i++, hn--)
-	      run_fix_head(hn);
+        cpos += next->head.char_length;
 
-	    break;
-	  }
-
-	cpos += next->head.char_length;
-
-	/*
-	This run is completely inside the invalidated range. Remove it.
-	The context run heads will be adjusted later.
-	*/
-	if (next->head.next)
-	  ((glyph_run_t *)next->head.next)->prev = &r->head;
-
-	for (i = 0; i <= next->level; i++)
-	  context[i]->next = context[i]->next->next;
-	h = &next->head;
-	if (h->complete)
-	  free(next->glyphs);
-	[self _run_free_attributes: next];
-	h -= next->level;
-	free(h);
-	h = NULL;
+        /*
+          This run is completely inside the invalidated range. Remove it.
+          The context run heads will be adjusted later.
+        */
+        [self _run_free_attributes: next];
+        run_remove(context, next);
       }
-    trailing = !next;
   }
 
 /*  printf("deleted\n");
   [self _glyphDumpRuns];*/
 
-  /* Switch back to after-indices. */
-  range.length += lengthChange;
-
   /*
+  From now one we are use indexes after after the length change.
   'r' is the last run we want to keep, and the next run is the next
   uninvalidated run. We need to insert new runs for invalidated range
   after 'r'.
@@ -1295,8 +1391,10 @@ places where we switch.
   As we create new runs, we move the context forward. When we do this, we
   adjust their heads with updated information. When we're done, we update
   all the remaining heads.
+
+  FIXME: Much of this code could be shared with the implementation in _generateRunsToCharacter:
   */
-//  printf("create runs for %i+%i\n", range.location, range.length);
+  //printf("create runs for %i+%i\n", range.location, range.length);
   { /* OPT: this is creating more runs than it needs to */
     NSDictionary *attributes;
     glyph_run_t *new;
@@ -1306,122 +1404,127 @@ places where we switch.
     ch = range.location;
     while (ch < max)
       {
-	attributes = [_textStorage attributesAtIndex: ch
-				 longestEffectiveRange: &rng
-				 inRange: NSMakeRange(0, [_textStorage length])];
+        attributes = [_textStorage attributesAtIndex: ch
+                                   longestEffectiveRange: &rng
+                                   inRange: NSMakeRange(0, [_textStorage length])];
 
-/*	printf("at %i, max=%i, effective range (%i+%i)\n",
-	       ch, max, rng.location, rng.length);*/
+        /* printf("at %i, max=%i, effective range (%i+%i)\n",
+           ch, max, rng.location, rng.length);*/
 
-	/*
-	Catch a common case. If the new run would be a continuation of the
-	previous run, and the previous run is short, we resize the previous
-	run instead of creating a new run.
+        /*
+          Catch a common case. If the new run would be a continuation of the
+          previous run, and the previous run is short, we resize the previous
+          run instead of creating a new run.
+          
+          (Note that we must make sure that we don't merge with the dummy runs
+          at the very front.)
+          
+          This happens a lot with repeated single-character insertions, aka.
+          typing in a text view.
+        */
+        if (rng.location < ch && context[0]->char_length &&
+            // FIXME: Why 16 and not MAX_RUN_LENGTH
+            context[0]->char_length < 16)
+          {
+            rng.length -= ch - rng.location;
+            rng.location = ch;
+            if (ch + rng.length > max)
+              {
+                rng.length = max - ch;
+              }
+            new = (glyph_run_t *)context[0];
+            // FIXME: We could try to reuse the glyphs
+            run_free_glyphs(new);
+            new->head.char_length += rng.length;
+            ch = NSMaxRange(rng);
+            continue;
+          }
+        
+        new = run_insert(context, random_level());
+        [self _run_cache_attributes: new : attributes];
+        
+        /*
+          We have the longest range the attributes allow us to create a run
+          for. Since this might overlap the previous and next runs, we might
+          need to adjust the location and length of the range we create a
+          run for.
 
-	(Note that we must make sure that we don't merge with the dummy runs
-	at the very front.)
+          OPT: If the overlapped run is short, we might want to clear out
+          its glyphs and extend it to cover our range. This should result
+          in fewer runs being created for large sequences of single character
+          adds.
+        */
+        if (rng.location < ch)
+          {
+            /*
+              The new run has the same attributes as the previous run, so we
+              mark it is as a continued run.
+            */
+            new->continued = 1;
+            rng.length -= ch - rng.location;
+            rng.location = ch;
+          }
+        if (ch + rng.length > max)
+          {
+            /*
+              The new run has the same attributes as the next run, so we mark
+              the next run as a continued run.
+            */
+            if (new->head.next)
+              ((glyph_run_t *)new->head.next)->continued = 1;
+            rng.length = max - ch;
+          }
+      
+        /* See comment in -_generateRunsToCharacter:. */
+        if (rng.length > MAX_RUN_LENGTH)
+          {
+            unsigned int safe_break = rng.location + MAX_RUN_LENGTH;
+            safe_break = [self _findSafeBreakMovingForwardFrom: safe_break];
+            if (safe_break < NSMaxRange(rng))
+              rng.length = safe_break - rng.location;
+          }
+        
+        // printf("adjusted length: %i\n", rng.length);
+        
+        h = &new->head;
+        h->char_length = rng.length;
+        for (i = 0; i <= new->level; i++, h--)
+          {
+            if (i)
+              {
+                // FIXME: Simpler adjustment
+                run_fix_head(context[i]);
+                run_fix_head(h);
+              }
+            //h->char_length = rng.length;
+            context[i] = h;
+          }
 
-	This happens a lot with repeated single-character insertions, aka.
-	typing in a text view.
-	*/
-	if (rng.location < ch && context[0]->char_length &&
-	    context[0]->char_length < 16)
-	  {
-	    rng.length -= ch - rng.location;
-	    rng.location = ch;
-	    if (ch + rng.length > max)
-	      {
-		rng.length = max - ch;
-	      }
-	    new = (glyph_run_t *)context[0];
-	    if (new->head.complete)
-	      {
-		free(new->glyphs);
-		new->glyphs = NULL;
-		new->head.glyph_length = 0;
-		new->head.complete = 0;
-	      }
-	    new->head.char_length += rng.length;
-	    ch = NSMaxRange(rng);
-	    continue;
-	  }
+        for (; i < SKIP_LIST_DEPTH; i++)
+          {
+            context[i]->char_length += rng.length;
+            context[i]->complete = 0;
+          }
 
-	new = run_insert(context);
-
-	/*
-	We have the longest range the attributes allow us to create a run
-	for. Since this might overlap the previous and next runs, we might
-	need to adjust the location and length of the range we create a
-	run for.
-
-	OPT: If the overlapped run is short, we might want to clear out
-	its glyphs and extend it to cover our range. This should result
-	in fewer runs being created for large sequences of single character
-	adds.
-	*/
-	if (rng.location < ch)
-	  {
-	    /*
-	    The new run has the same attributes as the previous run, so we
-	    mark it is as a continued run.
-	    */
-	    new->continued = 1;
-	    rng.length -= ch - rng.location;
-	    rng.location = ch;
-	  }
-	if (ch + rng.length > max)
-	  {
-	    /*
-	    The new run has the same attributes as the next run, so we mark
-	    the next run as a continued run.
-	    */
-	    if (new->head.next)
-	      ((glyph_run_t *)new->head.next)->continued = 1;
-	    rng.length = max - ch;
-	  }
-
-	/* See comment in -_generateRunsToCharacter:. */
-	if (rng.length > MAX_RUN_LENGTH)
-	  {
-	    unsigned int safe_break = rng.location + MAX_RUN_LENGTH;
-	    safe_break = [self _findSafeBreakMovingForwardFrom: safe_break];
-	    if (safe_break < NSMaxRange(rng))
-	      rng.length = safe_break - rng.location;
-	  }
-
-//	printf("adjusted length: %i\n", rng.length);
-	new->head.char_length = rng.length;
-
-	[self _run_cache_attributes: new : attributes];
-
-	h = &new->head;
-	for (i = 0; i <= new->level; i++, h--)
-	  {
-	    if (i)
-	      run_fix_head(context[i]);
-	    context[i] = h;
-	  }
-	ch += new->head.char_length;
+        ch += rng.length;
       }
-
-    if (context[0]->next)
-      ((glyph_run_t *)context[0]->next)->prev = context[0];
   }
-
-  /* Fix up the remaining context run heads. */
+ 
+  // Final fix up of context
   {
     int i;
+
     for (i = 1; i < SKIP_LIST_DEPTH; i++)
       {
-	run_fix_head(context[i]);
+        run_fix_head(context[i]);     
       }
   }
 
   if (actualRange)
     *actualRange = range;
 
-//  [self _glyphDumpRuns];
   [self _sanityChecks];
+  //[self _glyphDumpRuns];
 }
 
 
@@ -1448,7 +1551,7 @@ places where we switch.
 	idx -= pos;
 
 - (void) setDrawsOutsideLineFragment: (BOOL)flag 
-	forGlyphAtIndex: (unsigned int)idx
+                     forGlyphAtIndex: (unsigned int)idx
 {
   GET_GLYPH
   r->glyphs[idx].drawsOutsideLineFragment = !!flag;
@@ -1460,7 +1563,7 @@ places where we switch.
 }
 
 - (void) setNotShownAttribute: (BOOL)flag 
-	forGlyphAtIndex: (unsigned int)idx
+              forGlyphAtIndex: (unsigned int)idx
 {
   GET_GLYPH
   r->glyphs[idx].isNotShown = !!flag;
@@ -1471,9 +1574,9 @@ places where we switch.
   return r->glyphs[idx].isNotShown;
 }
 
-
+// GNUstep extension
 - (NSFont *) effectiveFontForGlyphAtIndex: (unsigned int)idx
-	range: (NSRange *)range
+                                    range: (NSRange *)range
 {
   GET_GLYPH
   if (range)
@@ -1481,35 +1584,113 @@ places where we switch.
   return r->font;
 }
 
-
 - (void) insertGlyph: (NSGlyph)aGlyph
-	atGlyphIndex: (unsigned int)glyphIndex
+        atGlyphIndex: (unsigned int)glyphIndex
       characterIndex: (unsigned int)charIndex
 {
-  NSLog(@"Internal method %s called", __PRETTY_FUNCTION__);
+  [self insertGlyphs: &aGlyph
+        length: 1
+        forStartingGlyphAtIndex: glyphIndex
+        characterIndex: charIndex];
 }
+
 - (void) replaceGlyphAtIndex: (unsigned int)glyphIndex
-	withGlyph: (NSGlyph)newGlyph
+                   withGlyph: (NSGlyph)newGlyph
 {
-  NSLog(@"Internal method %s called", __PRETTY_FUNCTION__);
+  glyph_run_t *r;
+  unsigned int pos, cpos;
+
+  if (glyphs->glyph_length <= glyphIndex)
+    {
+      [NSException raise: NSRangeException
+		  format: @"%s glyph index out of range", __PRETTY_FUNCTION__];
+      return;
+    }
+
+  r = run_for_glyph_index(glyphIndex, glyphs, &pos, &cpos);
+  if (!r)
+    {
+      [NSException raise: NSRangeException
+		   format: @"%s glyph index out of range", __PRETTY_FUNCTION__];
+      return;
+    }
+
+  if (!r->glyphs || r->head.glyph_length < glyphIndex - pos)
+    {
+      [NSException raise: NSRangeException
+		   format: @"%s glyph index out of range", __PRETTY_FUNCTION__];
+      return;
+    }
+
+  r->glyphs[glyphIndex - pos].g = newGlyph;
 }
+
 - (void) deleteGlyphsInRange: (NSRange)aRange
 {
+  /* See invalidateGlyphsForCharacterRange:changeInLength:actualCharacterRange:
+  glyph_run_t *r;
+  unsigned int pos, cpos;
+  unsigned int glyphIndex;
+  glyph_run_head_t *context[SKIP_LIST_DEPTH];
+
+  glyphIndex = NSMinRange(aRange);
+  while (glyphIndex < NSMaxRange(aRange))
+    {
+      if (glyphs->glyph_length <= glyphIndex)
+	{
+	  [NSException raise: NSRangeException
+		      format: @"%s glyph index out of range", __PRETTY_FUNCTION__];
+	  return;
+	}
+
+      r = run_for_glyph_index(glyphIndex, glyphs, &pos, &cpos);
+      if (!r)
+	{
+	  [NSException raise: NSRangeException
+		      format: @"%s glyph index out of range", __PRETTY_FUNCTION__];
+	  return;
+	}
+  
+      glyphIndex += r->head.glyph_length;
+      run_free_glyphs(r);
+      // FIXME: Need to invalidate the entries above this one.
+    }
+  */
   NSLog(@"Internal method %s called", __PRETTY_FUNCTION__);
 }
+
 - (void) setCharacterIndex: (unsigned int)charIndex
-	   forGlyphAtIndex: (unsigned int)glyphIndex
+           forGlyphAtIndex: (unsigned int)glyphIndex
 {
-  NSLog(@"Internal method %s called", __PRETTY_FUNCTION__);
+  glyph_run_t *r;
+  unsigned int pos, cpos;
+
+  if (glyphs->glyph_length <= glyphIndex)
+    {
+      [NSException raise: NSRangeException
+		  format: @"%s glyph index out of range", __PRETTY_FUNCTION__];
+      return;
+    }
+
+  r = run_for_glyph_index(glyphIndex, glyphs, &pos, &cpos);
+  if (!r)
+    {
+      [NSException raise: NSRangeException
+		   format: @"%s glyph index out of range", __PRETTY_FUNCTION__];
+      return;
+    }
+
+  if (!r->glyphs || r->head.glyph_length < glyphIndex - pos)
+    {
+      [NSException raise: NSRangeException
+		   format: @"%s glyph index out of range", __PRETTY_FUNCTION__];
+      return;
+    }
+
+  r->glyphs[glyphIndex - pos].char_offset = charIndex - cpos;
+  // What should happen to the following glyphs?
 }
 
-
-- (void) setIntAttribute: (int)attributeTag 
-		   value: (int)anInt
-	 forGlyphAtIndex: (unsigned int)glyphIndex
-{
-  [self subclassResponsibility: _cmd];
-}
 - (int) intAttribute: (int)attributeTag
      forGlyphAtIndex: (unsigned int)glyphIndex
 {
@@ -1541,12 +1722,12 @@ places where we switch.
 	  for (j = 0, lf = tc->linefrags; j < tc->num_linefrags + tc->num_soft; j++, lf++)
 	    {
 	      if (lf->points)
-		free(lf->points);
+		objc_free(lf->points);
 	      if (lf->attachments)
-		free(lf->attachments);
+		objc_free(lf->attachments);
 	    }
 
-	  free(tc->linefrags);
+	  objc_free(tc->linefrags);
 	}
       tc->linefrags = NULL;
       tc->num_linefrags = tc->num_soft = 0;
@@ -1633,12 +1814,12 @@ places where we switch.
             {
               if (lf->points)
                 {
-                  free(lf->points);
+                  objc_free(lf->points);
                   lf->points = NULL;
                 }
               if (lf->attachments)
                 {
-                  free(lf->attachments);
+                  objc_free(lf->attachments);
                   lf->attachments = NULL;
                 }
             }
@@ -1713,12 +1894,12 @@ places where we switch.
             {
               if (lf->points)
                 {
-                  free(lf->points);
+                  objc_free(lf->points);
                   lf->points = NULL;
                 }
               if (lf->attachments)
                 {
-                  free(lf->attachments);
+                  objc_free(lf->attachments);
                   lf->attachments = NULL;
                 }
             }
@@ -1931,7 +2112,7 @@ by calling this incorrectly.
       if (!tc->size_linefrags)
 	{
 	  tc->size_linefrags = 16;
-	  tc->linefrags = malloc(sizeof(linefrag_t) * tc->size_linefrags);
+	  tc->linefrags = objc_malloc(sizeof(linefrag_t) * tc->size_linefrags);
 	}
       tc->num_linefrags = 1;
       lf = tc->linefrags;
@@ -1941,7 +2122,7 @@ by calling this incorrectly.
       if (tc->size_linefrags <= tc->num_linefrags)
 	{
 	  tc->size_linefrags += tc->size_linefrags / 2;
-	  tc->linefrags = realloc(tc->linefrags, sizeof(linefrag_t) * tc->size_linefrags);
+	  tc->linefrags = objc_realloc(tc->linefrags, sizeof(linefrag_t) * tc->size_linefrags);
 	}
       tc->num_linefrags++;
       lf = &tc->linefrags[tc->num_linefrags - 1];
@@ -1955,12 +2136,12 @@ by calling this incorrectly.
 	    break;
 	  if (lf->points)
 	    {
-	      free(lf->points);
+	      objc_free(lf->points);
 	      lf->points = NULL;
 	    }
 	  if (lf->attachments)
 	    {
-	      free(lf->attachments);
+	      objc_free(lf->attachments);
 	      lf->attachments = NULL;
 	    }
 	}
@@ -1974,7 +2155,7 @@ by calling this incorrectly.
 	  if (tc->size_linefrags <= tc->num_linefrags + tc->num_soft)
 	    {
 	      tc->size_linefrags += tc->size_linefrags / 2;
-	      tc->linefrags = realloc(tc->linefrags, sizeof(linefrag_t) * tc->size_linefrags);
+	      tc->linefrags = objc_realloc(tc->linefrags, sizeof(linefrag_t) * tc->size_linefrags);
 	    }
 	  memmove(&tc->linefrags[tc->num_linefrags + 1], &tc->linefrags[tc->num_linefrags], tc->num_soft * sizeof(linefrag_t));
 	}
@@ -2050,7 +2231,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
 			      __PRETTY_FUNCTION__];
 	  return;
 	}
-      lp = lf->points = malloc(sizeof(linefrag_point_t));
+      lp = lf->points = objc_malloc(sizeof(linefrag_point_t));
       lf->num_points++;
     }
   else
@@ -2064,7 +2245,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
 	  return;
 	}
       lf->num_points++;
-      lf->points = realloc(lf->points, sizeof(linefrag_point_t) * lf->num_points);
+      lf->points = objc_realloc(lf->points, sizeof(linefrag_point_t) * lf->num_points);
       lp = &lf->points[lf->num_points - 1];
     }
   lp->pos = glyphRange.location;
@@ -2113,7 +2294,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
 
   /* TODO: we do no sanity checking of attachment size ranges. might want
   to consider doing it */
-  lf->attachments = realloc(lf->attachments,
+  lf->attachments = objc_realloc(lf->attachments,
 		      sizeof(linefrag_attachment_t) * (lf->num_attachments + 1));
   la = &lf->attachments[lf->num_attachments++];
 
@@ -2338,7 +2519,6 @@ forStartOfGlyphRange: (NSRange)glyphRange
 }
 
 
-
 /* TODO: make more efficient */
 - (NSArray *) textContainers
 {
@@ -2366,7 +2546,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
     [self _invalidateLayoutFromContainer: index];
 
   num_textcontainers++;
-  textcontainers = realloc(textcontainers,
+  textcontainers = objc_realloc(textcontainers,
 			 sizeof(textcontainer_t) * num_textcontainers);
 
   for (i = num_textcontainers - 1; i > index; i--)
@@ -2394,11 +2574,11 @@ forStartOfGlyphRange: (NSRange)glyphRange
     textcontainers[i] = textcontainers[i + 1];
 
   if (num_textcontainers)
-    textcontainers = realloc(textcontainers,
+    textcontainers = objc_realloc(textcontainers,
 			   sizeof(textcontainer_t) * num_textcontainers);
   else
     {
-      free(textcontainers);
+      objc_free(textcontainers);
       textcontainers = NULL;
     }
 
@@ -2577,22 +2757,21 @@ forStartOfGlyphRange: (NSRange)glyphRange
   if (!(self = [super init]))
     return nil;
 
-  [self _initGlyphs];
-
-  typesetter = [[GSTypesetter sharedSystemTypesetter] retain];
+  [self setTypesetter: [GSTypesetter sharedSystemTypesetter]];
+  [self setGlyphGenerator: [NSGlyphGenerator sharedGlyphGenerator]];
 
   usesScreenFonts = YES;
+  [self _initGlyphs];
 
   return self;
 }
-
 
 -(void) dealloc
 {
   int i;
   textcontainer_t *tc;
 
-  free(rect_array);
+  objc_free(rect_array);
   rect_array_size = 0;
   rect_array = NULL;
 
@@ -2601,12 +2780,13 @@ forStartOfGlyphRange: (NSRange)glyphRange
     {
       [tc->textContainer release];
     }
-  free(textcontainers);
+  objc_free(textcontainers);
   textcontainers = NULL;
 
   [self _freeGlyphs];
 
   DESTROY(typesetter);
+  DESTROY(_glyphGenerator);
 
   [super dealloc];
 }
@@ -2686,6 +2866,14 @@ See [NSTextView -setTextContainer:] for more information about these calls.
     }
 }
 
+- (NSGlyphGenerator *) glyphGenerator
+{
+  return _glyphGenerator;
+}
+- (void) setGlyphGenerator: (NSGlyphGenerator *)glyphGenerator
+{
+  ASSIGN(_glyphGenerator, glyphGenerator);
+}
 
 - (id) delegate
 {
@@ -2705,7 +2893,6 @@ See [NSTextView -setTextContainer:] for more information about these calls.
 {
   ASSIGN(typesetter, a_typesetter);
 }
-
 
 - (BOOL) usesScreenFonts
 {
@@ -2776,15 +2963,14 @@ See [NSTextView -setTextContainer:] for more information about these calls.
   return showsControlCharacters;
 }
 
-
 /*
 Note that NSLayoutManager completely overrides this (to perform more
 intelligent invalidation of layout using the constraints on layout it
 has).
 */
 - (void) textStorage: (NSTextStorage *)aTextStorage
-	      edited: (unsigned int)mask
-	       range: (NSRange)range
+              edited: (unsigned int)mask
+               range: (NSRange)range
       changeInLength: (int)lengthChange
     invalidatedRange: (NSRange)invalidatedRange
 {
@@ -2794,8 +2980,8 @@ has).
     lengthChange = 0;
 
   [self invalidateGlyphsForCharacterRange: invalidatedRange
-	changeInLength: lengthChange
-	actualCharacterRange: &r];
+        changeInLength: lengthChange
+        actualCharacterRange: &r];
 
   /*
   See the comments above -invalidateLayoutForCharacterRange:isSoft:
@@ -2807,228 +2993,116 @@ has).
   [self _didInvalidateLayout];
 }
 
-/* These must be in the main implementation so backends can override them
-   in a category safely. */
-
 -(unsigned int) _findSafeBreakMovingBackwardFrom: (unsigned int)ch
 {
-	NSString *str = [_textStorage string];
+  NSString *str = [_textStorage string];
 
-	while (ch > 0 && [str characterAtIndex: ch-1] == 'f')
-		ch--;
-	return ch;
+  // FIXME: Better check for ligature
+  while (ch > 0 && [str characterAtIndex: ch-1] == 'f')
+    ch--;
+  return ch;
 }
 
 -(unsigned int) _findSafeBreakMovingForwardFrom: (unsigned int)ch
 {
-	unsigned int len = [_textStorage length];
-	NSString *str = [_textStorage string];
+  unsigned int len = [_textStorage length];
+  NSString *str = [_textStorage string];
 
-	while (ch < len && [str characterAtIndex: ch] == 'f')
-		ch++;
-	if (ch < len && ch > 0 && [str characterAtIndex: ch-1] == 'f')
-		ch++;
+  // FIXME: Better check for ligature
+  while (ch < len && [str characterAtIndex: ch] == 'f')
+    ch++;
+  if (ch < len && ch > 0 && [str characterAtIndex: ch-1] == 'f')
+    ch++;
 
-	return ch;
+  return ch;
 }
 
-
-/* TODO2: put good control code handling here in a way that makes it easy
-for the backends to use it */
 /*
-This is a fairly simple implementation. It will use "ff", "fl", "fi",
-"ffl", and "ffi" ligatures if available. 
-
-TODO: how should words like "pfffffffffff" be handled?
-
-0066 'f'
-0069 'i'
-006c 'l'
-fb00 'ff'
-fb01 'fi'
-fb02 'fl'
-fb03 'ffi'
-fb04 'ffl'
-*/
--(void) _generateGlyphsForRun: (glyph_run_t *)run  at: (unsigned int)pos
+ * NSGlyphStorage protocol
+ */ 
+- (NSAttributedString*) attributedString
 {
-  int i, c = run->head.char_length;
-  unichar buf[c];
+  return _textStorage;
+}
+
+- (void) insertGlyphs: (const NSGlyph*)glyph_list
+               length: (NSUInteger)length
+forStartingGlyphAtIndex: (NSUInteger)glyph
+       characterIndex: (NSUInteger)index
+{
+  glyph_run_t *run;
+  int i;
   glyph_t *g;
-  GSFontInfo *fi = [run->font fontInfo];
-  //TODO: We should cache the method glyphForCharacter: 
+  int len;
+  unsigned int gpos = 0;
+  unsigned int cpos = 0;
 
-  NSCharacterSet *cs = [NSCharacterSet controlCharacterSet];
-  BOOL (*characterIsMember)(id, SEL, unichar)
-    = (BOOL(*)(id, SEL, unichar)) [cs methodForSelector:
-					@selector(characterIsMember:)];
+  //NSLog(@"Insert %d glyphs at %d for index %d", length, glyph, index);
 
-  run->head.glyph_length = c;
-  run->glyphs = malloc(sizeof(glyph_t) * c);
-  memset(run->glyphs, 0, sizeof(glyph_t) * c);
-
-  [[_textStorage string] getCharacters: buf
-			 range: NSMakeRange(pos, c)];
-
-  g = run->glyphs;
-  for (i = 0; i < c; i++)
+  run = run_for_character_index(index, glyphs, &gpos, &cpos);
+  if (!run)
     {
-      unsigned int ch, ch2;
+      [NSException raise: NSRangeException
+                   format: @"%s glyph index out of range", __PRETTY_FUNCTION__];
+      return;
+    }
 
-      ch = buf[i];
-      g->char_offset = i;
-      if (characterIsMember(cs, @selector(characterIsMember:), ch))
-        {
-          g->g = NSControlGlyph;
-          g++;
-          continue;
-        }
-      if (ch == NSAttachmentCharacter)
-        {
-          g->g = GSAttachmentGlyph;
-          g++;
-          continue;
-        }
+  len = glyph - gpos + length;
+  if (!run->glyphs)
+    {
+      run->glyphs = objc_malloc(sizeof(glyph_t) * len);
+      memset(run->glyphs, 0, sizeof(glyph_t) * len);
+    }
+  else if (run->head.glyph_length < len)
+    {
+      run->glyphs = objc_realloc(run->glyphs, sizeof(glyph_t) * len);
+      memset(&run->glyphs[glyph - gpos], 0, sizeof(glyph_t) * length);
+    }
+  run->head.glyph_length = len;
 
-      // Simple ligature processing
-      if (run->ligature >= 1)
-        {
-          if (ch == 'f')
-            {
-              NSGlyph gl;
-                    
-              if ((i + 2 < c) && (buf[i + 1] == 'f'))
-                {
-                  // ffl
-                  if ((buf[i + 2] == 'l') 
-                      && (NSNullGlyph != (gl = [fi glyphForCharacter: 0xfb04])))
-                    {
-                      g->g = gl;
-                      i += 2;
-                      run->head.glyph_length -= 2;
-                      g++;
-                      continue;
-                    }
-                  // ffi
-                  if ((buf[i + 2] == 'i') 
-                      && (NSNullGlyph != (gl = [fi glyphForCharacter: 0xfb03])))
-                    {
-                      g->g = gl;
-                      i += 2;
-                      run->head.glyph_length -= 2;
-                      g++;
-                      continue;
-                    }
-                }
-              
-              if (i + 1 < c)
-                {
-                  // ff
-                  if ((buf[i + 1] == 'f')
-                      && (NSNullGlyph != (gl = [fi glyphForCharacter: 0xfb00])))
-                    {
-                      g->g = gl;
-                      i++;
-                      run->head.glyph_length--;
-                      g++;
-                      continue;
-                    }
-                  // fi
-                  if ((buf[i + 1] == 'i')
-                      && (NSNullGlyph != (gl = [fi glyphForCharacter: 0xfb01])))
-                    {
-                      g->g = gl;
-                      i++;
-                      run->head.glyph_length--;
-                      g++;
-                      continue;
-                    }
-                  // fl
-                  if ((buf[i + 1] == 'l')
-                      && (NSNullGlyph != (gl = [fi glyphForCharacter: 0xfb02])))
-                    {
-                      g->g = gl;
-                      i++;
-                      run->head.glyph_length--;
-                      g++;
-                      continue;
-                    }
-                }
-            }
-        }
-
-      // Check for surrogate pairs
-      if (ch >= 0xd800 && ch <= 0xdfff)
-        {
-          if (ch >= 0xd800 && ch < 0xdc00 
-              && (i + 1 < c) && (ch2 = buf[i + 1]) >= 0xdc00 
-              && ch2 <= 0xdfff)
-            {
-              ch = ((ch & 0x3ff) << 10) + (ch2 & 0x3ff) + 0x10000;
-              i++;
-              run->head.glyph_length--;
-            }
-          else
-            {
-              ch = 0xfffd;
-            }
-        }
-
-      g->g = [fi glyphForCharacter: ch];
-      if (g->g != NSNullGlyph)
-        {
-          g++;
-        }
-      else if (ch < 0x10000)
-        {
-          unichar *decomp;
-
-          decomp = uni_is_decomp(ch);
-          if (decomp)
-            {
-              int len = 0;
-              unichar *s = decomp;
-              int j;
-              
-              // Compute length of decomposed string
-              for (; *s; s++)
-                {
-                  len++;
-                }
-              
-              // Adjust buffer and counters
-              j = g - run->glyphs;
-              run->glyphs = realloc(run->glyphs, sizeof(glyph_t) 
-                                    * (run->head.glyph_length + len));
-              memset(&run->glyphs[run->head.glyph_length - 1], len, 
-                     sizeof(glyph_t));
-              run->head.glyph_length += len;
-              g = run->glyphs + j;
-              
-              for (; *decomp; decomp++)
-                {
-                  g->g = [fi glyphForCharacter: *decomp];
-                  if (g->g == NSNullGlyph)
-                    {
-                      run->head.glyph_length -= len; 
-                      break;
-                    }
-                  g++;
-                  len--;
-                  g->char_offset = i;
-                }
-            }
-          else
-            {
-              run->head.glyph_length--; 
-            }
-        }
-      else
-        {
-          run->head.glyph_length--; 
-        }
+  // Add the glyphs to the run
+  g = run->glyphs + (glyph - gpos);
+  for (i = 0; i < length; i++)
+    {
+      // We expect to get a nominal glyph run
+      g->char_offset = i + index - cpos;
+      g->g = glyph_list[i];
+      g++;
     }
 }
 
-@end
+- (NSUInteger) layoutOptions
+{
+  NSUInteger options = 0;
 
+  if (showsInvisibleCharacters)
+    options |= NSShowInvisibleGlyphs;
+  if (showsInvisibleCharacters)
+    options |= NSShowControlGlyphs;
+
+  return options;
+}
+
+- (void) setIntAttribute: (NSInteger)attributeTag 
+                   value: (NSInteger)anInt
+         forGlyphAtIndex: (NSUInteger)glyphIndex
+{
+  // FIXME
+  [self subclassResponsibility: _cmd];
+}
+
+/*
+ * NSCoding protocol
+ */
+- (void) encodeWithCoder: (NSCoder*)aCoder
+{
+  // FIXME
+}
+
+- (id) initWithCoder: (NSCoder*)aDecoder
+{
+  // FIXME
+  return self;
+}
+
+@end

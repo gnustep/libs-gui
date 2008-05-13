@@ -1,3 +1,18 @@
+2008-05-13 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSGlyphGenerator.h,
+	* Source/NSGlyphGenerator.m: New file.
+	* Source/GNUmakefile: Add new files.
+	* Headers/Additions/GNUstepGUI/GSLayoutManager_internal.h: More
+	efficient memory usage for glyph runs.
+	* Headers/Additions/GNUstepGUI/GSLayoutManager.h: Add ivar for
+	glyph generator and some MacOSX methods.
+	* Source/GSLayoutManager.m: Use objc_malloc, objc_free and
+	objc_realloc. Move glyph generation into seperate class. Add
+	documentation. General cleanup. Implement some of the additional
+	methods. 
+	* Source/NSLayoutManager.m: Adopt to changes in super class.
+
 2008-05-13 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSOpenPanel.m:

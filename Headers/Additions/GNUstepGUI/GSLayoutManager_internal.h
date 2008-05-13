@@ -99,11 +99,12 @@ typedef struct
 typedef struct GSLayoutManager_glyph_run_s
 {
   glyph_run_head_t head;
+  // Pointer to the previous leaf. Invariant: t->head->next->prev == t 
   glyph_run_head_t *prev;
 
   /* Zero-based, so it's really the number of heads in addition to the
   one included in glyph_run_t. */
-  int level;
+  unsigned int level:4;
 
   /* All glyph-generation-affecting attributes are same as last run. This
   doesn't have to be set if a run is continued, but if it is set, it must
@@ -121,23 +122,17 @@ typedef struct GSLayoutManager_glyph_run_s
   /* TODO2: these aren't filled in or used anywhere yet */
   unsigned int bidi_level:6;
 
-  /* Font for this run. */
-  NSFont *font;
-  int ligature;
+  int ligature:5;
 
   /* YES if there's an explicit kern attribute. Currently, ligatures aren't
   used when explicit kerning is available (TODO). */
-  BOOL explicit_kern;
+  unsigned int explicit_kern:1;
+
+  /* Font for this run. */
+  NSFont *font;
 
   glyph_t *glyphs;
 } glyph_run_t;
-
-
-@interface GSLayoutManager (backend)
--(unsigned int) _findSafeBreakMovingBackwardFrom: (unsigned int)ch;
--(unsigned int) _findSafeBreakMovingForwardFrom: (unsigned int)ch;
--(void) _generateGlyphsForRun: (glyph_run_t *)run  at: (unsigned int)pos;
-@end
 
 
 /* All positions and lengths in glyphs */

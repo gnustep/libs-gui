@@ -383,7 +383,7 @@ container? necessary? */
 	  if (num_rects == rect_array_size)
 	    {
 	      rect_array_size += 4;
-	      rect_array = realloc(rect_array, sizeof(NSRect) * rect_array_size);
+	      rect_array = objc_realloc(rect_array, sizeof(NSRect) * rect_array_size);
 	    }
 	  rect_array[num_rects++] = r;
 	}
@@ -2036,12 +2036,12 @@ this file describes this.
 		}
 	      if (lf->points)
 		{
-		  free(lf->points);
+		  objc_free(lf->points);
 		  lf->points = NULL;
 		}
 	      if (lf->attachments)
 		{
-		  free(lf->attachments);
+		  objc_free(lf->attachments);
 		  lf->attachments = NULL;
 		}
 	    }
@@ -2156,12 +2156,12 @@ no_soft_invalidation:
 	    {
 	      if (lf->points)
 		{
-		  free(lf->points);
+		  objc_free(lf->points);
 		  lf->points = NULL;
 		}
 	      if (lf->attachments)
 		{
-		  free(lf->attachments);
+		  objc_free(lf->attachments);
 		  lf->attachments = NULL;
 		}
 	    }
