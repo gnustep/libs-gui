@@ -2635,6 +2635,9 @@ resetCursorRectsForView(NSView *theView)
 - (void) _didDeminiaturize: sender
 {
   _f.is_miniaturized = NO;
+  /* May need to redraw on deminiaturisation ... 
+   */
+  [_wv setNeedsDisplay: YES];
   [nc postNotificationName: NSWindowDidDeminiaturizeNotification object: self];
 }
 

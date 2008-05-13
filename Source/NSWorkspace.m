@@ -503,7 +503,7 @@ static NSDictionary		*applications = nil;
 
 static NSString			*extPrefPath = nil;
 static NSDictionary		*extPreferences = nil;
-// FIXME: Won't work for MINGW
+// FIXME: Won't work for MINGW32
 static NSString			*_rootPath = @"/";
 
 /*
@@ -1571,7 +1571,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 {
   NSMutableArray	*names;
   NSFileManager		*mgr = [NSFileManager defaultManager];
-#ifdef	__MINGW__
+#if	defined(__MINGW32__)
   unsigned		max = BUFSIZ;
   unichar		buf[max];
   unichar		*base = buf;

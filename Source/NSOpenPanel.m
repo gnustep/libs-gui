@@ -52,6 +52,19 @@
 #include "AppKit/NSMatrix.h"
 #include "AppKit/NSOpenPanel.h"
 
+static NSString	*
+pathToColumn(NSBrowser *browser, int column)
+{
+#if	defined(__MINGW32__)
+  if (column == 0)
+    return @"/";
+  else
+    return [[browser pathToColumn: column] substringFromIndex: 1];
+#else
+  return [browser pathToColumn: column];
+#endif
+}
+
 static NSOpenPanel *_gs_gui_open_panel = nil;
 
 // Pacify the compiler
@@ -413,7 +426,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 
   while ((filename = [enumerator nextObject]) != nil)
     {
-	[ret addObject: [NSURL fileURLWithPath: filename]];
+      [ret addObject: [NSURL fileURLWithPath: filename]];
     } 
 
   return AUTORELEASE(ret);
@@ -533,7 +546,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
       return;
     }
 
-  ASSIGN (_directory, [_browser pathToColumn: [_browser lastColumn]]);
+  ASSIGN (_directory, pathToColumn(_browser, [_browser lastColumn]));
 
   if (selectedCell)
     tmp = [selectedCell stringValue];

@@ -1,3 +1,10 @@
+2008-05-13 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSOpenPanel.m:
+	* Source/NSSavepanel.m:
+	Add code to handle the fact of ms-windows disk drives (multiple roots)
+	by creating a pseudo-root directory with all the disk drives inside it.
+
 2008-05-08 21:04-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSWindow.m: (-(void)miniaturize: (id)sender): 
