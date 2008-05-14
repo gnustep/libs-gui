@@ -1,3 +1,8 @@
+2008-05-15 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m: (-dealloc): Try to better cope with the
+	circular reference between the window and the context.
+
 2008-05-14 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSDocumentController.m: Cope with bad values in NSRecentItems

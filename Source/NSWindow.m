@@ -783,7 +783,16 @@ many times.
    */
   [GSServerForWindow(self) removeDragTypes: nil fromWindow: self];
 
-  [self _terminateBackendWindow];
+  if (_windowNum)
+    {
+      /* If there was a context, clear it and let it remove the
+         window in that process. We get here again, but without a 
+         _windowNum. This indirection is needed so solve the circular 
+         references between the window and the context.
+       */
+      [self _terminateBackendWindow];
+      return;
+    }
 
   if (_delegate != nil)
     {
