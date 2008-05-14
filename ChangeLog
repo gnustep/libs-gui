@@ -1,3 +1,7 @@
+2008-05-14 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSDocumentController.m: Cope with bad values in NSRecentItems
+
 2008-05-13 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSGlyphGenerator.h,

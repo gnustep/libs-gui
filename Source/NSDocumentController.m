@@ -177,13 +177,27 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
   if (_recent_documents)
     {
       int i, count;
+
       _recent_documents = [_recent_documents mutableCopy];
       count = [_recent_documents count];
       for (i = 0; i < count; i++)
 	{
+          NSString *str;
 	  NSURL *url;
-	  url = [NSURL URLWithString: [_recent_documents objectAtIndex: i]];
-	  [_recent_documents replaceObjectAtIndex: i withObject: url];
+
+	  str = [_recent_documents objectAtIndex: i];
+	  url = [NSURL URLWithString: str];
+          if (url == nil)
+            {
+              NSLog(@"NSRecentItems value '%@' is not valid ... ignored", str);
+              [_recent_documents removeObjectAtIndex: i];
+              i--;
+              count--;
+            }
+          else
+            {
+              [_recent_documents replaceObjectAtIndex: i withObject: url];
+            }
 	}
     } 
   else
