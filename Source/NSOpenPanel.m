@@ -58,6 +58,9 @@ pathToColumn(NSBrowser *browser, int column)
 #if	defined(__MINGW32__)
   if (column == 0)
     return @"/";
+  else if (column == 1)
+    return [[[browser pathToColumn: column] substringFromIndex: 1]
+      stringByAppendingString: @"/"];
   else
     return [[browser pathToColumn: column] substringFromIndex: 1];
 #else
