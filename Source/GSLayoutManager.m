@@ -674,8 +674,8 @@ Fills in all glyph holes up to last. only looking at levels below level
             }
           else
             {
-              unsigned int cindex = cpos;
-              unsigned int gindex = gpos + total;
+              NSUInteger cindex = cpos;
+              NSUInteger gindex = gpos + total;
               
               // Cache the current run
               cached_run = (glyph_run_t *)h;

@@ -1,3 +1,9 @@
+2008-05-14 21:55-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSLayoutManager.m: Changed unsigned int to NSUInteger 
+	per Fred Kiefer's suggestion.  This corrects a crash which was
+	detected on 64 bit systems.
+
 2008-05-15 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWindow.m: (-dealloc): Try to better cope with the
