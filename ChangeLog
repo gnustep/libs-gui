@@ -1,3 +1,17 @@
+2008-05-19 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSGraphicsContext.m (-alloc, -allocWithZone:) New
+	methods, use them in graphicsContextWithAttributes:.
+	* Source/NSWindow.m: (-_startBackendWindow): New method for shared
+	backend creation. Create the NSGraphicsContext as not
+	autoreleased. Use that method in initWithWindowRef: and
+	_initBackendWindow. 
+	* Source/NSWindow.m: (-dealloc): Remove last hack and make a bit
+	safer against reentry.
+	* Source/NSWindow.m (-_terminateBackendWindow): Reorder statements.
+	* Source/NSWindow.m (-initWithContentRect:...screen:): Warn about
+	second call to this method.
+
 2008-05-14 21:55-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSLayoutManager.m: Changed unsigned int to NSUInteger 

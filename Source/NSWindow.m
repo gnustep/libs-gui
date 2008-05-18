@@ -712,19 +712,29 @@ many times.
 */
 - (void) _terminateBackendWindow
 {
-  /* Check for context also as it might have disappeared before us */
-  if (_context && _gstate)
-    {
-      GSUndefineGState(_context, _gstate);
-      _gstate = 0;
-    }
-  
   if (_windowNum)
     {
-      // The context will release the window, make up for that.
-      RETAIN(self);
-      DESTROY(_context);
       [_wv setWindowNumber: 0];
+
+      /* Check for context also as it might have disappeared before us */
+      if (_context && _gstate)
+        {
+          GSUndefineGState(_context, _gstate);
+          _gstate = 0;
+        }
+  
+      if (_context)
+        {
+          /* 
+             If there was a context, clear it and let it remove the
+             window in that process. This indirection is needed so solve the 
+             circular references between the window and the context.
+             But first undo the release call in _startBackendWindow.
+          */
+          RETAIN(self);
+          DESTROY(_context);
+        }
+
       [GSServerForWindow(self) termwindow: _windowNum];
       NSMapRemove(windowmaps, (void*)(intptr_t)_windowNum);
       _windowNum = 0;
@@ -749,11 +759,12 @@ many times.
 
   if (_counterpart != 0 && (_styleMask & NSMiniWindowMask) == 0)
     {
-      NSWindow        *mini = [NSApp windowWithWindowNumber: _counterpart];
+      NSWindow *mini = [NSApp windowWithWindowNumber: _counterpart];
 
       _counterpart = 0;
       RELEASE(mini);
     }
+
   /* Clean references to this window - important if some of the views
      are not deallocated now */
   [_wv _viewWillMoveToWindow: nil];
@@ -762,20 +773,20 @@ many times.
      retained for some other reason by the programmer or by other
      parts of the code */
   DESTROY(_wv);
-  TEST_RELEASE(_fieldEditor);
-  TEST_RELEASE(_backgroundColor);
-  TEST_RELEASE(_representedFilename);
-  TEST_RELEASE(_miniaturizedTitle);
-  TEST_RELEASE(_miniaturizedImage);
-  TEST_RELEASE(_windowTitle);
-  TEST_RELEASE(_rectsBeingDrawn);
-  TEST_RELEASE(_initialFirstResponder);
-  TEST_RELEASE(_defaultButtonCell);
-  TEST_RELEASE(_cachedImage);
-  TEST_RELEASE(_children);
+  DESTROY(_fieldEditor);
+  DESTROY(_backgroundColor);
+  DESTROY(_representedFilename);
+  DESTROY(_miniaturizedTitle);
+  DESTROY(_miniaturizedImage);
+  DESTROY(_windowTitle);
+  DESTROY(_rectsBeingDrawn);
+  DESTROY(_initialFirstResponder);
+  DESTROY(_defaultButtonCell);
+  DESTROY(_cachedImage);
+  DESTROY(_children);
   DESTROY(_lastView);
   DESTROY(_lastDragView);
-  RELEASE(_screen);
+  DESTROY(_screen);
 
   /*
    * FIXME This should not be necessary - the views should have removed
@@ -785,13 +796,7 @@ many times.
 
   if (_windowNum)
     {
-      /* If there was a context, clear it and let it remove the
-         window in that process. We get here again, but without a 
-         _windowNum. This indirection is needed so solve the circular 
-         references between the window and the context.
-       */
       [self _terminateBackendWindow];
-      return;
     }
 
   if (_delegate != nil)
@@ -801,6 +806,42 @@ many times.
     }
 
   [super dealloc];
+}
+
+- (void) _startBackendWindow
+{
+  NSDictionary *info;
+
+  if (!windowmaps)
+    windowmaps = NSCreateMapTable(NSIntMapKeyCallBacks,
+                                  NSNonRetainedObjectMapValueCallBacks, 20);
+
+  NSMapInsert(windowmaps, (void*)(intptr_t)_windowNum, self);
+
+  // Make sure not to create an autoreleased object,
+  // as this will lead to problems when the window is deallocated.
+  info = [[NSDictionary alloc] 
+             initWithObjects: &self 
+             forKeys: &NSGraphicsContextDestinationAttributeName
+             count: 1];
+  _context = [[NSGraphicsContext alloc] initWithContextInfo: info];
+  RELEASE(info);
+  if (_context)
+    {
+      // Now the context retains the window, release it once to make up
+      RELEASE(self);
+    }
+
+  // Set window in new _gstate
+  _gstate = GSDefineGState(_context);
+
+  {
+    NSRect frame = _frame;
+    frame.origin = NSZeroPoint;
+    [_wv setFrame: frame];
+    [_wv setWindowNumber: _windowNum];
+    [_wv setNeedsDisplay: YES];
+  }
 }
 
 - (void) _initBackendWindow
@@ -827,22 +868,9 @@ many times.
                     : _styleMask
                     : [_screen screenNumber]];
   [srv setwindowlevel: [self level] : _windowNum];
-  NSMapInsert(windowmaps, (void*)(intptr_t)_windowNum, self);
 
-  ASSIGN(_context, [NSGraphicsContext graphicsContextWithWindow: self]);
-  // Now the context retains the window, release it once to make up
-  RELEASE(self);
-
-  // Set window in new _gstate
-  _gstate = GSDefineGState(_context);
-
-  {
-    NSRect frame = _frame;
-    frame.origin = NSZeroPoint;
-    [_wv setFrame: frame];
-    [_wv setWindowNumber: _windowNum];
-    [_wv setNeedsDisplay: YES];
-  }
+  // Set up context
+  [self _startBackendWindow];
 
   /* Ok, now add the drag types back */
   if (dragTypes)
@@ -954,12 +982,15 @@ many times.
     @"can be created.");
 
   NSDebugLLog(@"NSWindow", @"NSWindow start of init\n");
-  if (!windowmaps)
-    windowmaps = NSCreateMapTable(NSIntMapKeyCallBacks,
-                                 NSNonRetainedObjectMapValueCallBacks, 20);
-
   if (!windowDecorator)
     windowDecorator = [GSWindowDecorationView windowDecorator];
+
+  // FIXME: This hack is here to work around a gorm decoding problem.
+  if (_windowNum)
+    {
+      NSLog(@"Window already initialized %d", _windowNum);
+      return self;
+    }
 
   /* Initialize attributes and flags */
   [super init];
@@ -1045,22 +1076,9 @@ many times.
 
   // Fake the initialisation of the backend
   _windowNum = winNum;
-  NSMapInsert (windowmaps, (void*)(intptr_t)_windowNum, self);
 
-  ASSIGN(_context, [NSGraphicsContext graphicsContextWithWindow: self]);
-  // Now the context retains the window, release it once to make up
-  RELEASE(self);
-
-  // Set window in new _gstate
-  _gstate = GSDefineGState(_context);
-
-  {
-    NSRect frame = _frame;
-    frame.origin = NSZeroPoint;
-    [_wv setFrame: frame];
-    [_wv setNeedsDisplay: YES];
-    [_wv setWindowNumber: _windowNum];
-  }
+  // Set up context
+  [self _startBackendWindow];
 
   return self;
 }

@@ -195,15 +195,8 @@ NSGraphicsContext	*GSCurrentContext(void)
 + (NSGraphicsContext *) graphicsContextWithAttributes: (NSDictionary *)attributes
 {
   NSGraphicsContext *ctxt;
-  if (self == [NSGraphicsContext class])
-    {
-      NSAssert(defaultNSGraphicsContextClass, 
-	       @"Internal Error: No default NSGraphicsContext set\n");
-      ctxt = [[defaultNSGraphicsContextClass allocWithZone: _globalGSZone]
-	       initWithContextInfo: attributes];
-    }
-  else
-    ctxt = [[self allocWithZone: _globalGSZone] initWithContextInfo: attributes];
+
+  ctxt = [[self alloc] initWithContextInfo: attributes];
  
   return AUTORELEASE(ctxt);
 }
@@ -274,6 +267,23 @@ NSGraphicsContext	*GSCurrentContext(void)
   /* FIXME: Need to keep a table of which context goes with a graphicState,
      or perhaps we could rely on the backend? */
   [self notImplemented: _cmd];
+}
+
++ (id) alloc
+{
+  return [self allocWithZone: _globalGSZone];
+}
+
++ (id) allocWithZone: (NSZone*)z
+{
+  if (self == [NSGraphicsContext class])
+    {
+      NSAssert(defaultNSGraphicsContextClass, 
+	       @"Internal Error: No default NSGraphicsContext set\n");
+      return [defaultNSGraphicsContextClass allocWithZone: z];
+    }
+  else
+    return [super allocWithZone: z];
 }
 
 - (void) dealloc
