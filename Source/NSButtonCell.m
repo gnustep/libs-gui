@@ -148,14 +148,18 @@ typedef struct _GSButtonCellFlags
 
 - (id) initImageCell: (NSImage*)anImage
 {
-  [super initImageCell: anImage];
+  self = [super initImageCell: anImage];
+  if (!self)
+    return nil;
 
   return [self _init];
 }
 
 - (id) initTextCell: (NSString*)aString
 {
-  [super initTextCell: aString];
+  self = [super initTextCell: aString];
+  if (!self)
+    return nil;
 
   return [self _init];
 }
@@ -1564,7 +1568,15 @@ typedef struct _GSButtonCellFlags
                                               ([NSImage imageNamed: @"NSRadioButton"] == image));
       buttonCellFlags.isTransparent = [self isTransparent];
       buttonCellFlags.isBordered = [self isBordered]; 
-      buttonCellFlags.isImageAndText = (image != nil);
+      buttonCellFlags.imageDoesOverlap = 
+          (_cell.image_position == NSImageOverlaps) 
+          || (_cell.image_position == NSImageOnly);
+      buttonCellFlags.isHorizontal = (_cell.image_position == NSImageLeft) 
+          || (_cell.image_position == NSImageRight);
+      buttonCellFlags.isBottomOrLeft = (_cell.image_position == NSImageAbove) 
+          || (_cell.image_position == NSImageBelow);
+      buttonCellFlags.isImageAndText = (image != nil) 
+          && (_cell.image_position != NSImageOnly);
       buttonCellFlags.hasKeyEquiv = ([self keyEquivalent] != nil);
 
       // cell attributes...
@@ -1581,9 +1593,7 @@ typedef struct _GSButtonCellFlags
       buttonCellFlags.unused2 = 0; // 255;
       buttonCellFlags.lastState = 0;
       buttonCellFlags.isImageSizeDiff = 0;
-      buttonCellFlags.imageDoesOverlap = 0;
       buttonCellFlags.drawing = 0;
-      buttonCellFlags.isBottomOrLeft = 0;
 
       memcpy((void *)&bFlags, (void *)&buttonCellFlags,sizeof(unsigned int));
       [aCoder encodeInt: bFlags forKey: @"NSButtonFlags"];
@@ -1675,6 +1685,8 @@ typedef struct _GSButtonCellFlags
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   self = [super initWithCoder: aDecoder];
+  if (!self)
+    return nil;
 
   if ([aDecoder allowsKeyedCoding])
     {
@@ -1718,7 +1730,24 @@ typedef struct _GSButtonCellFlags
           [self setCellAttribute: NSChangeGrayCell
                 to: buttonCellFlags.changeGray]; 
           
-          [self setImagePosition: NSImageLeft];
+          if (buttonCellFlags.imageDoesOverlap)
+            if (buttonCellFlags.isImageAndText)
+              [self setImagePosition: NSImageOverlaps];
+            else
+              [self setImagePosition: NSImageOnly];
+          else if (buttonCellFlags.isImageAndText)
+            if (buttonCellFlags.isHorizontal)
+              if (buttonCellFlags.isBottomOrLeft)
+                [self setImagePosition: NSImageLeft];
+              else
+                [self setImagePosition: NSImageRight];
+            else
+              if (buttonCellFlags.isBottomOrLeft)
+                [self setImagePosition: NSImageBelow];
+              else
+                [self setImagePosition: NSImageAbove];
+          else
+            [self setImagePosition: NSNoImage];
         }
       if ([aDecoder containsValueForKey: @"NSButtonFlags2"])
         {

@@ -1,5 +1,10 @@
 2008-05-19 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSButtonCell.m (-encodeWithCoder:, -initWithCoder:):
+	Correctly encode and decode image position in the keyed encoding case.
+
+2008-05-19 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSGraphicsContext.m (-alloc, -allocWithZone:) New
 	methods, use them in graphicsContextWithAttributes:.
 	* Source/NSWindow.m: (-_startBackendWindow): New method for shared
