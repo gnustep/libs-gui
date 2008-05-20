@@ -989,16 +989,25 @@ static NSString *lastFont = nil;
 static NSCharacterSet *lastSet = nil;
 static NSMutableDictionary *cachedCSets = nil;
 
-- (NSFont*)_substituteFontWithName: (NSString*)fontName font: (NSFont*)baseFont
+- (NSFont*)_substituteFontWithName: (NSString*)fontName 
+                              font: (NSFont*)baseFont
 {
-  return [[NSFontManager sharedFontManager] convertFont: baseFont toFace: fontName];
+  return [[NSFontManager sharedFontManager] convertFont: baseFont 
+                                            toFace: fontName];
 }
 
-- (NSFont*)_substituteFontFor: (unichar)uchar font: (NSFont*)baseFont fromList: (NSArray *)fonts
+- (NSFont*)_substituteFontFor: (unichar)uchar 
+                         font: (NSFont*)baseFont 
+                     fromList: (NSArray *)fonts
 {
   unsigned int count;
   unsigned int i;
       
+  if (cachedCSets == nil)
+    {
+      cachedCSets = [NSMutableDictionary new];
+    }
+
   count = [fonts count];
   for (i = 0; i < count; i++)
     {
@@ -1012,7 +1021,7 @@ static NSMutableDictionary *cachedCSets = nil;
         { 
           newFont = [self _substituteFontWithName: fName font: baseFont];
           newSet = [newFont coveredCharacterSet];
-          if (newSet != nil)
+          if ((newSet != nil) && ([cachedCSets count] < 10))
             {
               [cachedCSets setObject: newSet forKey: fName];
             }
@@ -1051,13 +1060,9 @@ static NSMutableDictionary *cachedCSets = nil;
       return [self _substituteFontWithName: lastFont font: baseFont];
     }
 
-  if (cachedCSets == nil)
-    {
-      cachedCSets = [NSMutableDictionary new];
-    }
-
-  subFont = [self _substituteFontFor: uchar font: baseFont fromList: 
-                      [NSFont preferredFontNames]];
+  subFont = [self _substituteFontFor: uchar 
+                  font: baseFont 
+                  fromList: [NSFont preferredFontNames]];
   if (subFont != nil)
     {
       return subFont;
