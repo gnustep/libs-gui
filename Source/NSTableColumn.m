@@ -424,6 +424,18 @@
         {
           [self setResizable: [aDecoder decodeBoolForKey: @"NSIsResizeable"]];
         }
+      else
+        {
+          [self setResizable: NO];
+        }
+      if ([aDecoder containsValueForKey: @"NSIsEditable"])
+        {
+          [self setEditable: [aDecoder decodeBoolForKey: @"NSIsEditable"]];
+        }
+      else
+        {
+          [self setEditable: NO];
+        }
       if ([aDecoder containsValueForKey: @"NSWidth"])
         {
           [self setWidth: [aDecoder decodeFloatForKey: @"NSWidth"]]; 
