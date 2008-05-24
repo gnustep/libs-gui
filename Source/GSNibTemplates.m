@@ -910,40 +910,20 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 	  _screenRect = [[_object screen] frame];
 	}
 
-      if ([self shouldSwapClass])
-	{
-	  if (GSGetMethod([obj class], @selector(initWithContentRect:styleMask:backing:defer:), YES, NO) != NULL
-	   && ![_className isEqualToString: NSStringFromClass(_superClass)])
-	    {
-	      NSView *contentView = [obj contentView];
+      // FIXME: The designated initializer logic for NSWindow is in the initWithCoder: method of
+      // NSWindow.   Unfortunately, this means that the "defer" flag for NSWindows and NSWindow
+      // subclasses in gorm files will be ignored.   This shouldn't have a great impact, 
+      // but it is not the correct behavior.  
 
-	      // if we are not in an interface builder, call 
-	      // designated initializer per spec...
-	      RETAIN(contentView); // prevent view from being deallocated.
-	      obj = [obj initWithContentRect: [contentView frame]
-			 styleMask: [obj styleMask]
-			 backing: [obj backingType]
-			 defer: _deferFlag];
-	      
-	      // set the content view back
-	      [obj setContentView: contentView];
-	      RELEASE(contentView); // release view.
-	    }
-
-	  // autoposition window
-	  [self autoPositionWindow: obj];
-	}
-      else
+      //
+      // Set all of the attributes into the object, if it 
+      // responds to any of these methods.
+      //
+      if ([obj respondsToSelector: @selector(setAutoPositionMask:)])
 	{
-	  //
-	  // Set all of the attributes into the object, if it 
-	  // responds to any of these methods.
-	  //
-	  if ([obj respondsToSelector: @selector(setAutoPositionMask:)])
-	    {
-	      [obj setAutoPositionMask: [self autoPositionMask]];
-	    }
+	  [obj setAutoPositionMask: [self autoPositionMask]];
 	}
+
       RELEASE(self);
     }
   return obj;

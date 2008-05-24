@@ -4899,11 +4899,11 @@ current key view.<br />
       [aDecoder decodeValueOfObjCType: @encode(NSBackingStoreType)
                                    at: &aBacking];
 
+      // call the designated initializer....
       self = [self initWithContentRect: aRect
                              styleMask: aStyle
                                backing: aBacking
-                                 defer: NO
-                                screen: nil];
+                                 defer: NO];
 
       p = [aDecoder decodePoint];
       obj = [aDecoder decodeObject];

@@ -1,3 +1,11 @@
+2008-05-24 10:54-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/AppKit/NSWindow.h: Minor cleanup and spacing.
+	* Source/GSNibTemplates.m: Removed call to designated init, since
+	this is handled by the initWithCOoder method in NSWindow.m.
+	* Source/NSWindow.m: Correction for calling the designated initializer.
+	Fix for bug#23336.
+
 2008-05-21 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSAttributedString.m (-_substituteFontFor:font:fromList:): 

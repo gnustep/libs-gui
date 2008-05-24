@@ -191,16 +191,16 @@ APPKIT_EXPORT NSSize NSTokenSize;
   NSRect        _rectNeedingFlush;
   NSMutableArray *_rectsBeingDrawn;
   unsigned	_disableFlushWindow;
-
+  
   NSWindowDepth _depthLimit;
   NSWindowController *_windowController;
-  int	          _counterpart;
+  int	        _counterpart;
   float         _alphaValue;
   
   NSMutableArray *_children;
-  NSWindow *_parent;
+  NSWindow       *_parent;
   NSCachedImageRep *_cachedImage;
-  NSPoint       _cachedImageOrigin;
+  NSPoint        _cachedImageOrigin;
 
   struct GSWindowFlagsType {
     unsigned	accepts_drag:1;
