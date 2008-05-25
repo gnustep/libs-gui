@@ -1,3 +1,9 @@
+2008-05-25  Nicola Pero  <nicola.pero@meta-innovation.com>
+
+	* Documentation/GNUmakefile.postamble (after-install): Use
+	GNUSTEP_DOC instead of GNUSTEP_DOCUMENTATION and GNUSTEP_DOC_MAN
+	instead of GNUSTEP_DOCUMENTATION_MAN.
+
 2008-05-24 10:54-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/AppKit/NSWindow.h: Minor cleanup and spacing.
