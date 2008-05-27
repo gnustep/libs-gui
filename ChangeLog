@@ -1,3 +1,8 @@
+2008-05-27 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSTheme.m (-tilesNamed:cache:): Make sure local variable
+	is initialized before using it.
+	
 2008-05-25  Nicola Pero  <nicola.pero@meta-innovation.com>
 
 	* Documentation/GNUmakefile.postamble (after-install): Use
