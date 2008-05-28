@@ -212,7 +212,13 @@ static Class imageClass;
 - (void) setKeyEquivalent: (NSString*)aKeyEquivalent
 {
   if (nil == aKeyEquivalent)
-    aKeyEquivalent = @"";
+    {
+      /* We warn about nil for compatibiliy with MacOS X, which refuses
+         nil.  */
+      NSDebugMLLog(@"MacOSXCompatibility", 
+                   @"Attempt to use nil as key equivalent");
+      aKeyEquivalent = @"";
+    }
 
   ASSIGNCOPY(_keyEquivalent,  aKeyEquivalent);
   [_menu itemChanged: self];

@@ -1,3 +1,8 @@
+2008-05-28 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenuItem.m (-setKeyEquivalent:): Warn about
+	incompatibility with MacOSX.
+
 2008-05-27 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSTheme.m (-tilesNamed:cache:): Make sure local variable
