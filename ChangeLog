@@ -1,3 +1,10 @@
+2008-06-02 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSNibCompatibility.m (NSWindowTemplate-initWithCoder:):
+	Use default maxSize for window if none is given in the NIB file.
+	* Source/NSButtonCell.m (-drawInteriorWithFrame:inView:): Adjust
+	the image position if either the image or the text doesn't exist.
+		
 2008-05-28 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenuItem.m (-setKeyEquivalent:): Warn about

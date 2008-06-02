@@ -1102,10 +1102,22 @@ typedef struct _GSButtonCellFlags
     {
       imageSize = [imageToDisplay size];
     }
+  else
+    {
+      // When there is no image to display, ignore it in the calculations
+      imageToDisplay = nil;
+      ipos = NSNoImage;
+    }
 
   if (titleToDisplay && ipos != NSImageOnly)
     {
       titleSize = [titleToDisplay size];
+    }
+  else
+    {
+      // When there is no text to display, ignore it in the calculations
+      titleToDisplay = nil;
+      ipos = NSImageOnly;
     }
 
   if (flippedView == YES)

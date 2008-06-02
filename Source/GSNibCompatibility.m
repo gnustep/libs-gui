@@ -185,9 +185,13 @@ static BOOL _isInInterfaceBuilder = NO;
         {
           _maxSize = [coder decodeSizeForKey: @"NSMaxSize"];
         }
+      else
+        {
+          _maxSize = NSMakeSize (10e4, 10e4);
+        }
       if ([coder containsValueForKey: @"NSWindowRect"])
         {
-          _windowRect =  [coder decodeRectForKey: @"NSWindowRect"];
+          _windowRect = [coder decodeRectForKey: @"NSWindowRect"];
         }
       if ([coder containsValueForKey: @"NSFrameAutosaveName"])
         {
