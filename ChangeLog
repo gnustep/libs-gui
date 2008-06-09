@@ -1,3 +1,10 @@
+2008-06-09 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableView.m: Indentation changes.
+	* Source/NSTextFieldCell.m ([-drawInteriorWithFrame:inView:]):
+	Move editing check from here to ...
+	* Source/NSControl.m (-drawRect:): ... here.
+
 2008-06-02 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSNibCompatibility.m (NSWindowTemplate-initWithCoder:):

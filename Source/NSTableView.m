@@ -3254,9 +3254,9 @@ byExtendingSelection: (BOOL)flag
 }
 
 - (void) editColumn: (int) columnIndex 
-		row: (int) rowIndex 
-	  withEvent: (NSEvent *) theEvent 
-	     select: (BOOL) flag
+                row: (int) rowIndex 
+          withEvent: (NSEvent *) theEvent 
+             select: (BOOL) flag
 {
   NSText *t;
   NSTableColumn *tb;
@@ -5188,7 +5188,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
     
     for (i = startingRow; i <= endingRow; i++)
       {
-	(*imp)(self, sel, i, aRect);
+        (*imp)(self, sel, i, aRect);
       }
   }
 }
@@ -5924,10 +5924,10 @@ static BOOL selectContiguousRegion(NSTableView *self,
 
       if ([self _isCellEditableColumn: column row:row])
         {
-	  [self editColumn: column
-		  row: row
-		  withEvent: nil
-		  select: YES]; 
+          [self editColumn: column
+                row: row
+                withEvent: nil
+                select: YES]; 
         }
     }
 }
