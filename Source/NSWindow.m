@@ -4000,7 +4000,7 @@ resetCursorRectsForView(NSView *theView)
               dragInfo = [GSServerForWindow(self) dragInfo];
               if (_lastDragView && _f.accepts_drag)
                 {
-                  action = NO;
+                  action = YES;
                   GSPerformDragSelector(_lastDragView,
                     @selector(prepareForDragOperation:), dragInfo, action);
                   if (action)

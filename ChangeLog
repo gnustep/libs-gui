@@ -1,5 +1,10 @@
 2008-06-09 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSWindow.m (-sendEvent:): Make the implemenation of the
+	method prepareForDragOperation: non mandatory.
+
+2008-06-09 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSTableView.m: Indentation changes.
 	* Source/NSTextFieldCell.m ([-drawInteriorWithFrame:inView:]):
 	Move editing check from here to ...
