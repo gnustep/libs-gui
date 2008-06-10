@@ -15,7 +15,7 @@
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
+   version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -590,7 +590,7 @@ NSTiffGetColormap(TIFF* image)
 int NSTiffIsCodecConfigured(unsigned int codec)
 {
 #if (TIFFLIB_VERSION >= 20041016)
-  // starting with version 3.7.0 we can ask libtiff what it is configured to do
+  // starting with version 2.7.0 we can ask libtiff what it is configured to do
   return TIFFIsCODECConfigured(codec);
 #else
   // we check the tiffconf.h

@@ -1,3 +1,8 @@
+2008-05-08  Adam Fedor  <fedor@gnu.org>
+
+	* Revert library license version to 2 until applications
+	can be converted.
+
 2008-06-09 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWindow.m (-sendEvent:): Make the implemenation of the
