@@ -64,12 +64,6 @@
 - (void) setViewsNeedDisplay: (BOOL)f
 {
 }
-
-- (id) retain
-{
-  NSLog(@"GSCacheW retained");
-  return [super retain];
-}
 @end
 
 /**<p>Todo Description </p>

@@ -537,7 +537,7 @@ static Class imageClass;
       [aCoder encodeObject: _submenu];
       [aCoder encodeConditionalObject: _target];
       
-      // version 2
+      // version 3
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isAlternate];
       [aCoder encodeValueOfObjCType: @encode(char) at: &_indentation];
       [aCoder encodeObject: _toolTip];

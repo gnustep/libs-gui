@@ -590,7 +590,7 @@ NSTiffGetColormap(TIFF* image)
 int NSTiffIsCodecConfigured(unsigned int codec)
 {
 #if (TIFFLIB_VERSION >= 20041016)
-  // starting with version 2.7.0 we can ask libtiff what it is configured to do
+  // starting with version 3.7.0 we can ask libtiff what it is configured to do
   return TIFFIsCODECConfigured(codec);
 #else
   // we check the tiffconf.h

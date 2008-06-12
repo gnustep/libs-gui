@@ -1,4 +1,9 @@
-2008-05-08  Adam Fedor  <fedor@gnu.org>
+2008-06-12  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSCachedImageRep.m, Source/NSMenuItem.m, Source/tiff.m:
+	Fix incorrect commits
+
+2008-06-08  Adam Fedor  <fedor@gnu.org>
 
 	* Revert library license version to 2 until applications
 	can be converted.
