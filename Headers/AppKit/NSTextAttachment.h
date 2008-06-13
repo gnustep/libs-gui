@@ -44,6 +44,8 @@ the NSTextAttachment protocol.
 #ifndef _GNUstep_H_NSTextAttachment
 #define _GNUstep_H_NSTextAttachment
 
+#import <GNUstepBase/GSVersionMacros.h>
+
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 
 #include <Foundation/NSGeometry.h>
