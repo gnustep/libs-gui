@@ -13,19 +13,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
-   License along with this library;
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */ 
 
 #include <Foundation/NSClassDescription.h>
@@ -73,14 +74,14 @@ static BOOL _isInInterfaceBuilder = NO;
   while ((v = [en nextObject]) != nil)
     {
       if ([v window] != [self window] ||
-	 [v superview] != self)
-	{
-	  [v _setWindow: [self window]];
-	  RETAIN(v);
-	  [_sub_views removeObject: v];
-	  [self addSubview: v];
-	  RELEASE(v);
-	}
+         [v superview] != self)
+        {
+          [v _setWindow: [self window]];
+          RETAIN(v);
+          [_sub_views removeObject: v];
+          [self addSubview: v];
+          RELEASE(v);
+        }
       [v _fixSubviews];
     }
 }
@@ -106,43 +107,43 @@ static BOOL _isInInterfaceBuilder = NO;
 }
 
 - (id) initWithWindow: (NSWindow *)window
-	    className: (NSString *)windowClass
-	   isDeferred: (BOOL) deferred
-	    isOneShot: (BOOL) oneShot
-	    isVisible: (BOOL) visible
+            className: (NSString *)windowClass
+           isDeferred: (BOOL) deferred
+            isOneShot: (BOOL) oneShot
+            isVisible: (BOOL) visible
        wantsToBeColor: (BOOL) wantsToBeColor
      autoPositionMask: (int) autoPositionMask
 {
   if ((self = [super init]) != nil)
     {
       if (window != nil)
-	{
-	  // object members
-	  ASSIGN(_title, [window title]);
-	  ASSIGN(_viewClass, NSStringFromClass([[window contentView] class]));
-	  ASSIGN(_windowClass, windowClass);
-	  ASSIGN(_view, [window contentView]);
-	  ASSIGN(_autosaveName, [window frameAutosaveName]);
-	  
-	  // style & size
-	  _windowStyle = [window styleMask];
-	  _backingStoreType = [window backingType];
-	  _maxSize = [window maxSize];
-	  _minSize = [window minSize];
-	  _windowRect = [window frame];
-	  _screenRect = [[NSScreen mainScreen] frame];
-	  
-	  // flags
-	  _flags.isHiddenOnDeactivate = [window hidesOnDeactivate];
-	  _flags.isNotReleasedOnClose = (![window isReleasedWhenClosed]);
-	  _flags.isDeferred = deferred;
-	  _flags.isOneShot = oneShot;
-	  _flags.isVisible = visible;
-	  _flags.wantsToBeColor = wantsToBeColor;
-	  _flags.dynamicDepthLimit = [window hasDynamicDepthLimit];
-	  _flags.autoPositionMask = autoPositionMask;
-	  _flags.savePosition = YES; // not yet implemented.
-	}
+        {
+          // object members
+          ASSIGN(_title, [window title]);
+          ASSIGN(_viewClass, NSStringFromClass([[window contentView] class]));
+          ASSIGN(_windowClass, windowClass);
+          ASSIGN(_view, [window contentView]);
+          ASSIGN(_autosaveName, [window frameAutosaveName]);
+          
+          // style & size
+          _windowStyle = [window styleMask];
+          _backingStoreType = [window backingType];
+          _maxSize = [window maxSize];
+          _minSize = [window minSize];
+          _windowRect = [window frame];
+          _screenRect = [[NSScreen mainScreen] frame];
+          
+          // flags
+          _flags.isHiddenOnDeactivate = [window hidesOnDeactivate];
+          _flags.isNotReleasedOnClose = (![window isReleasedWhenClosed]);
+          _flags.isDeferred = deferred;
+          _flags.isOneShot = oneShot;
+          _flags.isVisible = visible;
+          _flags.wantsToBeColor = wantsToBeColor;
+          _flags.dynamicDepthLimit = [window hasDynamicDepthLimit];
+          _flags.autoPositionMask = autoPositionMask;
+          _flags.savePosition = YES; // not yet implemented.
+        }
     }
   return self;
 }
@@ -153,58 +154,62 @@ static BOOL _isInInterfaceBuilder = NO;
     {
       if ([coder containsValueForKey: @"NSViewClass"])
         {
-	  ASSIGN(_viewClass, [coder decodeObjectForKey: @"NSViewClass"]);
-	}
+          ASSIGN(_viewClass, [coder decodeObjectForKey: @"NSViewClass"]);
+        }
       if ([coder containsValueForKey: @"NSWindowClass"])
         {
-	  ASSIGN(_windowClass, [coder decodeObjectForKey: @"NSWindowClass"]);
-	}
+          ASSIGN(_windowClass, [coder decodeObjectForKey: @"NSWindowClass"]);
+        }
       if ([coder containsValueForKey: @"NSWindowStyleMask"])
         {
-	  _windowStyle = [coder decodeIntForKey: @"NSWindowStyleMask"];
-	}
+          _windowStyle = [coder decodeIntForKey: @"NSWindowStyleMask"];
+        }
       if ([coder containsValueForKey: @"NSWindowBacking"])
-	{
-	  _backingStoreType = [coder decodeIntForKey: @"NSWindowBacking"];
-	}
+        {
+          _backingStoreType = [coder decodeIntForKey: @"NSWindowBacking"];
+        }
       if ([coder containsValueForKey: @"NSWindowView"])
         {
-	  ASSIGN(_view, [coder decodeObjectForKey: @"NSWindowView"]);
-	}
+          ASSIGN(_view, [coder decodeObjectForKey: @"NSWindowView"]);
+        }
       if ([coder containsValueForKey: @"NSWTFlags"])
         {
-	  unsigned long flags = [coder decodeIntForKey: @"NSWTFlags"];
-	  memcpy((void *)&_flags,(void *)&flags,sizeof(struct _GSWindowTemplateFlags));
-	}
+          unsigned long flags = [coder decodeIntForKey: @"NSWTFlags"];
+          memcpy((void *)&_flags,(void *)&flags,sizeof(struct _GSWindowTemplateFlags));
+        }
       if ([coder containsValueForKey: @"NSMinSize"])
         {
-	  _minSize = [coder decodeSizeForKey: @"NSMinSize"];
-	}
+          _minSize = [coder decodeSizeForKey: @"NSMinSize"];
+        }
       if ([coder containsValueForKey: @"NSMaxSize"])
         {
-	  _maxSize = [coder decodeSizeForKey: @"NSMaxSize"];
-	}
+          _maxSize = [coder decodeSizeForKey: @"NSMaxSize"];
+        }
+      else
+        {
+          _maxSize = NSMakeSize (10e4, 10e4);
+        }
       if ([coder containsValueForKey: @"NSWindowRect"])
         {
-	  _windowRect =  [coder decodeRectForKey: @"NSWindowRect"];
-	}
+          _windowRect = [coder decodeRectForKey: @"NSWindowRect"];
+        }
       if ([coder containsValueForKey: @"NSFrameAutosaveName"])
         {
-	  ASSIGN(_autosaveName, [coder decodeObjectForKey: @"NSFrameAutosaveName"]);
-	}
+          ASSIGN(_autosaveName, [coder decodeObjectForKey: @"NSFrameAutosaveName"]);
+        }
       if ([coder containsValueForKey: @"NSWindowTitle"])
         {
-	  ASSIGN(_title, [coder decodeObjectForKey: @"NSWindowTitle"]);
-	  _windowStyle |= NSTitledWindowMask;
-	}
+          ASSIGN(_title, [coder decodeObjectForKey: @"NSWindowTitle"]);
+          _windowStyle |= NSTitledWindowMask;
+        }
 
       _baseWindowClass = [NSWindow class];
     }
   else
     {
       [NSException raise: NSInvalidArgumentException 
-		   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
-		   NSStringFromClass([coder class])];
+                   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+                   NSStringFromClass([coder class])];
     }
   return self;
 }
@@ -215,7 +220,7 @@ static BOOL _isInInterfaceBuilder = NO;
     {
       unsigned long flags = 0; 
       NSRect rect = [NSWindow contentRectForFrameRect: _windowRect
-			      styleMask: _windowStyle];
+                              styleMask: _windowStyle];
       memcpy((void *)&flags,(void *)&_flags,sizeof(unsigned long));
 
       [aCoder encodeObject: _viewClass forKey: @"NSViewClass"];
@@ -241,26 +246,26 @@ static BOOL _isInInterfaceBuilder = NO;
       id v = nil;
 
       if ([NSClassSwapper isInInterfaceBuilder])
-	{
-	  aClass = [self baseWindowClass];
-	}
+        {
+          aClass = [self baseWindowClass];
+        }
       else
-	{
-	  aClass = NSClassFromString(_windowClass);      
-	}
+        {
+          aClass = NSClassFromString(_windowClass);      
+        }
 
       if (aClass == nil)
-	{
-	  [NSException raise: NSInternalInconsistencyException
-		       format: @"Unable to find class '%@'", _windowClass];
-	}
+        {
+          [NSException raise: NSInternalInconsistencyException
+                       format: @"Unable to find class '%@'", _windowClass];
+        }
       
       _realObject = [[aClass allocWithZone: NSDefaultMallocZone()]
-		      initWithContentRect: _windowRect
-		      styleMask: _windowStyle
-		      backing: _backingStoreType
-		      defer: _flags.isDeferred
-		      screen: nil];
+                      initWithContentRect: _windowRect
+                      styleMask: _windowStyle
+                      backing: _backingStoreType
+                      defer: _flags.isDeferred
+                      screen: nil];
       
       // set flags...
       [_realObject setHidesOnDeactivate: _flags.isHiddenOnDeactivate];
@@ -285,18 +290,18 @@ static BOOL _isInInterfaceBuilder = NO;
 
       // resize the window...
       [_realObject setFrame: [NSWindow frameRectForContentRect: [self windowRect] 
-				       styleMask: [self windowStyle]]
-		   display: NO];
+                                       styleMask: [self windowStyle]]
+                   display: NO];
 
       // swap out any views which need to be swapped...
       en = [[[_realObject contentView] subviews] objectEnumerator];
       while ((v = [en nextObject]) != nil)
-	{
-	  if ([v respondsToSelector: @selector(nibInstantiate)])
-	    {
-	      [v nibInstantiate];
-	    }
-	}
+        {
+          if ([v respondsToSelector: @selector(nibInstantiate)])
+            {
+              [v nibInstantiate];
+            }
+        }
     } 
   return _realObject;
 }
@@ -439,15 +444,15 @@ static BOOL _isInInterfaceBuilder = NO;
   if (self != nil)
     {
       if ([coder allowsKeyedCoding])
-	{
-	  _className = [coder decodeObjectForKey: @"NSClassName"];
-	}
+        {
+          _className = [coder decodeObjectForKey: @"NSClassName"];
+        }
     }
   else
     {
       [NSException raise: NSInvalidArgumentException 
-		   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
-		   NSStringFromClass([coder class])];
+                   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+                   NSStringFromClass([coder class])];
     }
   return self;
 }
@@ -466,15 +471,15 @@ static BOOL _isInInterfaceBuilder = NO;
     {
       Class aClass = NSClassFromString(_className);
       if (aClass == nil)
-	{
-	  [NSException raise: NSInternalInconsistencyException
-		       format: @"Unable to find class '%@'", _className];
-	}
+        {
+          [NSException raise: NSInternalInconsistencyException
+                       format: @"Unable to find class '%@'", _className];
+        }
       else
-	{
-	  _realObject = [[aClass allocWithZone: NSDefaultMallocZone()] initWithFrame: [self frame]];
-	  [[self superview] replaceSubview: self with: _realObject]; // replace the old view...
-	}
+        {
+          _realObject = [[aClass allocWithZone: NSDefaultMallocZone()] initWithFrame: [self frame]];
+          [[self superview] replaceSubview: self with: _realObject]; // replace the old view...
+        }
     }
 
   return _realObject;
@@ -524,15 +529,15 @@ static BOOL _isInInterfaceBuilder = NO;
     {
       Class aClass = NSClassFromString(_className);
       if (aClass == nil)
-	{
-	  [NSException raise: NSInternalInconsistencyException
-		       format: @"Unable to find class '%@'", _className];
-	}
+        {
+          [NSException raise: NSInternalInconsistencyException
+                       format: @"Unable to find class '%@'", _className];
+        }
       else
-	{
-	  _realObject = [[aClass allocWithZone: NSDefaultMallocZone()] initWithFrame: [self frame]];
-	  [[self superview] replaceSubview: self with: _realObject]; // replace the old view...
-	}
+        {
+          _realObject = [[aClass allocWithZone: NSDefaultMallocZone()] initWithFrame: [self frame]];
+          [[self superview] replaceSubview: self with: _realObject]; // replace the old view...
+        }
     }
 
   return _realObject;
@@ -620,8 +625,8 @@ static BOOL _isInInterfaceBuilder = NO;
   else
     {
       [NSException raise: NSInvalidArgumentException 
-		   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
-		   NSStringFromClass([coder class])];
+                   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+                   NSStringFromClass([coder class])];
     }
   return self;
 }
@@ -636,8 +641,8 @@ static BOOL _isInInterfaceBuilder = NO;
   else
     {
       [NSException raise: NSInvalidArgumentException
-		   format: @"Keyed coding not implemented for %@.", 
-		   NSStringFromClass([self class])];
+                   format: @"Keyed coding not implemented for %@.", 
+                   NSStringFromClass([self class])];
     }
   
 }
@@ -649,23 +654,31 @@ static BOOL _isInInterfaceBuilder = NO;
       Class aClass;
       
       if ([NSClassSwapper isInInterfaceBuilder])
-	{
-	  aClass = [self class];
-	}
+        {
+          aClass = [self class];
+        }
       else
-	{
-	  aClass = NSClassFromString(_className);
-	}
+        {
+          aClass = NSClassFromString(_className);
+        }
 
       if (aClass == nil)
-	{
-	  [NSException raise: NSInternalInconsistencyException
-		       format: @"Unable to find class '%@'", _className];
-	}
+        {
+          [NSException raise: NSInternalInconsistencyException
+                       format: @"Unable to find class '%@'", _className];
+        }
       
       _object = [[aClass allocWithZone: NSDefaultMallocZone()] init];
     }
   return _object;
+}
+
+- (void) awakeFromNib
+{
+  if ([_object respondsToSelector: @selector(awakeFromNib)])
+    {
+      [_object awakeFromNib];
+    }
 }
 
 - (void) dealloc
@@ -703,26 +716,39 @@ static BOOL _isInInterfaceBuilder = NO;
       Class aClass;
       
       if ([NSClassSwapper isInInterfaceBuilder])
-	{
-	  aClass = [self class];
-	}
+        {
+          aClass = [self class];
+        }
       else
-	{
-	  aClass = NSClassFromString(_className);
-	}
+        {
+          aClass = NSClassFromString(_className);
+        }
 
       if (aClass == nil)
-	{
-	  [NSException raise: NSInternalInconsistencyException
-		       format: @"Unable to find class '%@'", _className];
-	}
+        {
+          [NSException raise: NSInternalInconsistencyException
+                       format: @"Unable to find class '%@'", _className];
+        }
       else
-	{
-	  _view = [[aClass allocWithZone: NSDefaultMallocZone()] initWithFrame: [self frame]];
-	  [_view setAutoresizingMask: [self autoresizingMask]];
-	  [_view setNextResponder: [self nextResponder]];
-	  [[self superview] replaceSubview: self with: _view]; // replace the old view...
-	}
+        {
+          _view = [[aClass allocWithZone: NSDefaultMallocZone()] initWithFrame: [self frame]];
+          [_view setAutoresizingMask: [self autoresizingMask]];
+          [self setAutoresizesSubviews: [self autoresizesSubviews]];
+          [self setHidden: [self isHidden]];
+          [_view setNextResponder: [self nextResponder]];
+          [[self superview] replaceSubview: self with: _view]; // replace the old view...
+          if (_rFlags.has_subviews)
+            {
+              NSArray *subviews = [self subviews];
+              int i;
+
+              for (i = 0; i < [subviews count]; i++)
+                {
+                  [_view addSubview: [subviews objectAtIndex: i]];
+                }
+            }
+          // FIXME: Need to transfer all other settings as well
+        }
     }
 
   return _view;
@@ -734,16 +760,16 @@ static BOOL _isInInterfaceBuilder = NO;
   if (self != nil)
     {
       if ([coder allowsKeyedCoding])
-	{
-	  ASSIGN(_className, [coder decodeObjectForKey: @"NSClassName"]);
-	  ASSIGN(_extension, [coder decodeObjectForKey: @"NSExtension"]);
-	}
+        {
+          ASSIGN(_className, [coder decodeObjectForKey: @"NSClassName"]);
+          ASSIGN(_extension, [coder decodeObjectForKey: @"NSExtension"]);
+        }
       else
-	{
-	  [NSException raise: NSInvalidArgumentException 
-		       format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
-		       NSStringFromClass([coder class])];
-	}
+        {
+          [NSException raise: NSInvalidArgumentException 
+                       format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+                       NSStringFromClass([coder class])];
+        }
     }
   return self;
 }
@@ -759,8 +785,8 @@ static BOOL _isInInterfaceBuilder = NO;
   else
     {
       [NSException raise: NSInvalidArgumentException 
-		   format: @"Can't encode %@ with %@.",NSStringFromClass([self class]),
-		   NSStringFromClass([coder class])];
+                   format: @"Can't encode %@ with %@.",NSStringFromClass([self class]),
+                   NSStringFromClass([coder class])];
     }
 }
 @end
@@ -801,25 +827,25 @@ static BOOL _isInInterfaceBuilder = NO;
 
       // this is a hack, but for now it should do.
       if ([_className isEqual: @"NSSound"])
-	{
-	  realObject = RETAIN([NSSound soundNamed: _resourceName]);
-	}
+        {
+          realObject = RETAIN([NSSound soundNamed: _resourceName]);
+        }
       else if ([_className isEqual: @"NSImage"])
-	{
-	  realObject = RETAIN([NSImage imageNamed: _resourceName]);
-	}
+        {
+          realObject = RETAIN([NSImage imageNamed: _resourceName]);
+        }
 
       // if an object has been substituted, then release the placeholder.
       if (realObject != nil)
-	{
-	  RELEASE(self);
-	}
+        {
+          RELEASE(self);
+        }
     }
   else
     {
       [NSException raise: NSInvalidArgumentException 
-		   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
-		   NSStringFromClass([coder class])];
+                   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+                   NSStringFromClass([coder class])];
     }
 
   return realObject;
@@ -849,7 +875,7 @@ static BOOL _isInInterfaceBuilder = NO;
     {
       id obj = GSIArrayItemAtIndex(_objMap, i).obj;
       if (obj == oldObj)
-	break;
+        break;
     }
 
   if (i < count)
@@ -938,7 +964,7 @@ static BOOL _isInInterfaceBuilder = NO;
   if (aClass == nil)
     {
       [NSException raise: NSInternalInconsistencyException
-		   format: @"NSClassSwapper unable to find class '%@'", className];
+                   format: @"NSClassSwapper unable to find class '%@'", className];
     }
 
   // if this is a class which uses cells, override with the new cellClass, if the 
@@ -978,19 +1004,19 @@ static BOOL _isInInterfaceBuilder = NO;
 
       // build the real object...
       if ([NSClassSwapper isInInterfaceBuilder] == YES)
-	{
-	  [self instantiateRealObject: coder withClassName: _originalClassName];
-	}
+        {
+          [self instantiateRealObject: coder withClassName: _originalClassName];
+        }
       else
-	{
-	  [self instantiateRealObject: coder withClassName: _className];
-	}
+        {
+          [self instantiateRealObject: coder withClassName: _className];
+        }
     }
   else
     {
       [NSException raise: NSInvalidArgumentException 
-		   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
-		   NSStringFromClass([coder class])];
+                   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+                   NSStringFromClass([coder class])];
     }
 
   return _template;
@@ -1007,8 +1033,8 @@ static BOOL _isInInterfaceBuilder = NO;
   else
     {
       [NSException raise: NSInvalidArgumentException 
-		   format: @"Can't encode %@ with %@.",NSStringFromClass([self class]),
-		   NSStringFromClass([coder class])];
+                   format: @"Can't encode %@ with %@.",NSStringFromClass([self class]),
+                   NSStringFromClass([coder class])];
     }
 }
 
@@ -1049,11 +1075,6 @@ static BOOL _isInInterfaceBuilder = NO;
   if ([obj respondsToSelector: @selector(nibInstantiate)])
     {
       newObject = [obj nibInstantiate];
-      if ([newObject respondsToSelector: @selector(awakeFromNib)])
-	{
-	  // awaken the object.
-	  [newObject awakeFromNib];
-	}
     }
   return newObject;
 }
@@ -1077,32 +1098,40 @@ static BOOL _isInInterfaceBuilder = NO;
   while ((obj = [en nextObject]) != nil)
     {
       if ([obj respondsToSelector: @selector(instantiateWithInstantiator:)])
-	{
-	  [obj instantiateWithInstantiator: self];	  
-	  [obj establishConnection];
-	}
+        {
+          [obj instantiateWithInstantiator: self];          
+          [obj establishConnection];
+        }
     }
 
-  // instantiate all windows and fill in the top level array.
+  // iterate over all objects instantiate windows, awaken objects and fill
+  // in top level array.
   en = [objs objectEnumerator];
   while ((obj = [en nextObject]) != nil)
     {
+      // instantiate all windows and fill in the top level array.
       if ([obj isKindOfClass: [NSWindowTemplate class]])
-	{
-	  if ([obj realObject] == nil)
-	    {
-	      id o = [self instantiateObject: obj];
-	      [topLevelObjects addObject: o];
-	    }
-	}
+        {
+          if ([obj realObject] == nil)
+            {
+              obj = [self instantiateObject: obj];
+              [topLevelObjects addObject: obj];
+            }
+        }
       else
-	{
-	  id v = NSMapGet(_objects, obj);
-	  if (v == nil || v == owner)
-	    {
-	      [topLevelObjects addObject: obj];
-	    }
-	}
+        {
+          id v = NSMapGet(_objects, obj);
+          if (v == nil || v == owner)
+            {
+              [topLevelObjects addObject: obj];
+            }
+        }
+
+      // awaken the object.
+      if ([obj respondsToSelector: @selector(awakeFromNib)])
+        {
+          [obj awakeFromNib];
+        }
     }
 
   // bring visible windows to front...
@@ -1247,14 +1276,14 @@ static BOOL _isInInterfaceBuilder = NO;
   else
     {
       [NSException raise: NSInvalidArgumentException 
-		   format: @"Can't encode %@ with %@.",NSStringFromClass([self class]),
-		   NSStringFromClass([coder class])];
+                   format: @"Can't encode %@ with %@.",NSStringFromClass([self class]),
+                   NSStringFromClass([coder class])];
     }
 }
 
 - (void) _buildMap: (NSMapTable *)mapTable 
-	  withKeys: (NSArray *)keys 
-	 andValues: (NSArray *)values
+          withKeys: (NSArray *)keys 
+         andValues: (NSArray *)values
 {
   NSEnumerator *ken = [keys objectEnumerator];
   NSEnumerator *ven = [values objectEnumerator];
@@ -1264,6 +1293,10 @@ static BOOL _isInInterfaceBuilder = NO;
   while ((key = [ken nextObject]) != nil && (value = [ven nextObject]) != nil)
     {
       NSMapInsert(mapTable, key, value);
+      if(value == nil)
+	{
+	  NSLog(@"==> WARNING: Value for key %@ is %@",key , value);
+	}
     }
 }
 
@@ -1279,67 +1312,67 @@ static BOOL _isInInterfaceBuilder = NO;
       _nextOid = [coder decodeIntForKey: @"NSNextOid"];
 
       {
-	NSArray *objectsKeys = (NSArray *)
-	  [coder decodeObjectForKey: @"NSObjectsKeys"];
-	NSArray *objectsValues = (NSArray *)
-	  [coder decodeObjectForKey: @"NSObjectsValues"];
-	NSArray *nameKeys = (NSArray *)
-	  [coder decodeObjectForKey: @"NSNamesKeys"];
-	NSArray *nameValues = (NSArray *)
-	  [coder decodeObjectForKey: @"NSNamesValues"];
-	NSArray *oidsKeys = (NSArray *)
-	  [coder decodeObjectForKey: @"NSOidsKeys"];
-	NSArray *oidsValues = (NSArray *)
-	  [coder decodeObjectForKey: @"NSOidsValues"];
-	NSArray *classKeys = (NSArray *)
-	  [coder decodeObjectForKey: @"NSClassesKeys"];
-	NSArray *classValues = (NSArray *)
-	  [coder decodeObjectForKey: @"NSClassesValues"];
-	NSArray *accessibilityOidsKeys = (NSArray *)
-	  [coder decodeObjectForKey: @"NSAccessibilityOidsKeys"];
-	NSArray *accessibilityOidsValues = (NSArray *)
-	  [coder decodeObjectForKey: @"NSAccessibilityOidsValues"];      
-	
-	// instantiate the maps..
-	_objects = NSCreateMapTable(NSObjectMapKeyCallBacks,
-				    NSObjectMapValueCallBacks, 2);
-	_names = NSCreateMapTable(NSObjectMapKeyCallBacks,
-				  NSObjectMapValueCallBacks, 2);
-	_oids = NSCreateMapTable(NSObjectMapKeyCallBacks,
-				 NSObjectMapValueCallBacks, 2);
-	_classes = NSCreateMapTable(NSObjectMapKeyCallBacks,
-				    NSObjectMapValueCallBacks, 2);
-	_accessibilityOids = NSCreateMapTable(NSObjectMapKeyCallBacks,
-					      NSObjectMapValueCallBacks, 2);
-	
-	// fill in the maps...
-	[self _buildMap: _accessibilityOids 
-	      withKeys: accessibilityOidsKeys 
-	      andValues: accessibilityOidsValues];
-	[self _buildMap: _classes 
-	      withKeys: classKeys 
-	      andValues: classValues];
-	[self _buildMap: _names 
-	      withKeys: nameKeys 
-	      andValues: nameValues];
-	[self _buildMap: _objects 
-	      withKeys: objectsKeys 
-	      andValues: objectsValues];
-	[self _buildMap: _oids 
-	      withKeys: oidsKeys 
-	      andValues: oidsValues];
+        NSArray *objectsKeys = (NSArray *)
+          [coder decodeObjectForKey: @"NSObjectsKeys"];
+        NSArray *objectsValues = (NSArray *)
+          [coder decodeObjectForKey: @"NSObjectsValues"];
+        NSArray *nameKeys = (NSArray *)
+          [coder decodeObjectForKey: @"NSNamesKeys"];
+        NSArray *nameValues = (NSArray *)
+          [coder decodeObjectForKey: @"NSNamesValues"];
+        NSArray *oidsKeys = (NSArray *)
+          [coder decodeObjectForKey: @"NSOidsKeys"];
+        NSArray *oidsValues = (NSArray *)
+          [coder decodeObjectForKey: @"NSOidsValues"];
+        NSArray *classKeys = (NSArray *)
+          [coder decodeObjectForKey: @"NSClassesKeys"];
+        NSArray *classValues = (NSArray *)
+          [coder decodeObjectForKey: @"NSClassesValues"];
+        NSArray *accessibilityOidsKeys = (NSArray *)
+          [coder decodeObjectForKey: @"NSAccessibilityOidsKeys"];
+        NSArray *accessibilityOidsValues = (NSArray *)
+          [coder decodeObjectForKey: @"NSAccessibilityOidsValues"];      
+        
+        // instantiate the maps..
+        _objects = NSCreateMapTable(NSObjectMapKeyCallBacks,
+                                    NSObjectMapValueCallBacks, 2);
+        _names = NSCreateMapTable(NSObjectMapKeyCallBacks,
+                                  NSObjectMapValueCallBacks, 2);
+        _oids = NSCreateMapTable(NSObjectMapKeyCallBacks,
+                                 NSObjectMapValueCallBacks, 2);
+        _classes = NSCreateMapTable(NSObjectMapKeyCallBacks,
+                                    NSObjectMapValueCallBacks, 2);
+        _accessibilityOids = NSCreateMapTable(NSObjectMapKeyCallBacks,
+                                              NSObjectMapValueCallBacks, 2);
+        
+        // fill in the maps...
+        [self _buildMap: _accessibilityOids 
+              withKeys: accessibilityOidsKeys 
+              andValues: accessibilityOidsValues];
+        [self _buildMap: _classes 
+              withKeys: classKeys 
+              andValues: classValues];
+        [self _buildMap: _names 
+              withKeys: nameKeys 
+              andValues: nameValues];
+        [self _buildMap: _objects 
+              withKeys: objectsKeys 
+              andValues: objectsValues];
+        [self _buildMap: _oids 
+              withKeys: oidsKeys 
+              andValues: oidsValues];
 
-	ASSIGN(_connections,  [[coder decodeObjectForKey: @"NSConnections"] mutableCopy]);
+        ASSIGN(_connections,  [[coder decodeObjectForKey: @"NSConnections"] mutableCopy]);
 
-	// instantiate...
-	_topLevelObjects = [[NSMutableSet alloc] init];
+        // instantiate...
+        _topLevelObjects = [[NSMutableSet alloc] init];
       }
     }
   else
     {
       [NSException raise: NSInvalidArgumentException 
-		   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
-		   NSStringFromClass([coder class])];
+                   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+                   NSStringFromClass([coder class])];
     }
  
   return self;
@@ -1351,15 +1384,15 @@ static BOOL _isInInterfaceBuilder = NO;
     {
       // instantiate the maps..
       _objects = NSCreateMapTable(NSObjectMapKeyCallBacks,
-				  NSObjectMapValueCallBacks, 2);
+                                  NSObjectMapValueCallBacks, 2);
       _names = NSCreateMapTable(NSObjectMapKeyCallBacks,
-				NSObjectMapValueCallBacks, 2);
+                                NSObjectMapValueCallBacks, 2);
       _oids = NSCreateMapTable(NSObjectMapKeyCallBacks,
-			       NSObjectMapValueCallBacks, 2);
+                               NSObjectMapValueCallBacks, 2);
       _classes = NSCreateMapTable(NSObjectMapKeyCallBacks,
-				  NSObjectMapValueCallBacks, 2);
+                                  NSObjectMapValueCallBacks, 2);
       _accessibilityOids = NSCreateMapTable(NSObjectMapKeyCallBacks,
-					    NSObjectMapValueCallBacks, 2);  
+                                            NSObjectMapValueCallBacks, 2);  
 
       // initialize the objects...
       _accessibilityConnectors = [[NSMutableArray alloc] init];
@@ -1424,8 +1457,8 @@ static BOOL _isInInterfaceBuilder = NO;
   else
     {
       [NSException raise: NSInvalidArgumentException 
-		   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
-		   NSStringFromClass([coder class])];
+                   format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
+                   NSStringFromClass([coder class])];
     }
 
   RELEASE(self);
@@ -1441,8 +1474,8 @@ static BOOL _isInInterfaceBuilder = NO;
   else
     {
       [NSException raise: NSInvalidArgumentException 
-		   format: @"Can't encode %@ with %@.",NSStringFromClass([self class]),
-		   NSStringFromClass([coder class])];
+                   format: @"Can't encode %@ with %@.",NSStringFromClass([self class]),
+                   NSStringFromClass([coder class])];
     }
 }
 
@@ -1483,21 +1516,21 @@ static BOOL _isInInterfaceBuilder = NO;
   if ((self = [super initWithCoder: coder]) != nil)
     {
       if ([coder allowsKeyedCoding])
-	{
-	  if ([coder containsValueForKey: @"NSFile"])
-	    {
-	      _file = RETAIN([coder decodeObjectForKey: @"NSFile"]);
-	    }
-	  if ([coder containsValueForKey: @"NSMarker"])
-	    {
-	      _marker = RETAIN([coder decodeObjectForKey: @"NSMarker"]);
-	    }
-	}
+        {
+          if ([coder containsValueForKey: @"NSFile"])
+            {
+              _file = RETAIN([coder decodeObjectForKey: @"NSFile"]);
+            }
+          if ([coder containsValueForKey: @"NSMarker"])
+            {
+              _marker = RETAIN([coder decodeObjectForKey: @"NSMarker"]);
+            }
+        }
       else
-	{
-	  _file = RETAIN([coder decodeObject]);
-	  _marker = RETAIN([coder decodeObject]);
-	}
+        {
+          _file = RETAIN([coder decodeObject]);
+          _marker = RETAIN([coder decodeObject]);
+        }
     }
   return self;
 }
@@ -1508,13 +1541,13 @@ static BOOL _isInInterfaceBuilder = NO;
   if ([coder allowsKeyedCoding])
     {
       if (_file != nil)
-	{
-	  [coder encodeObject: _file forKey: @"NSFile"];
-	}
+        {
+          [coder encodeObject: _file forKey: @"NSFile"];
+        }
       if (_marker != nil)
-	{
-	  [coder encodeObject: _file forKey: @"NSMarker"];
-	}      
+        {
+          [coder encodeObject: _file forKey: @"NSMarker"];
+        }      
     }
   else
     {
@@ -1572,20 +1605,20 @@ static BOOL _isInInterfaceBuilder = NO;
       memcpy((void *)&unswapped, (void *)mantissaBytes, sizeof(unsigned long long));
 
       switch(bo)
-	{
-	case NS_BigEndian:
-	  mantissa = NSSwapBigLongLongToHost(unswapped);
-	  break;
-	case NS_LittleEndian:
-	  mantissa = NSSwapLittleLongLongToHost(unswapped);
-	  break;
-	default:
-	  break;
-	}
+        {
+        case NS_BigEndian:
+          mantissa = NSSwapBigLongLongToHost(unswapped);
+          break;
+        case NS_LittleEndian:
+          mantissa = NSSwapLittleLongLongToHost(unswapped);
+          break;
+        default:
+          break;
+        }
 
       dn = [[NSDecimalNumber alloc] initWithMantissa: mantissa
-				    exponent: exponent
-				    isNegative: negative];
+                                    exponent: exponent
+                                    isNegative: negative];
     }
   return dn;
 }

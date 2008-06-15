@@ -10,22 +10,20 @@
 #  This file is part of the GNUstep GUI.
 #
 #  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Library General Public
+#  modify it under the terms of the GNU Lesser General Public
 #  License as published by the Free Software Foundation; either
 #  version 2 of the License, or (at your option) any later version.
 #
 #  This library is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
-#  Library General Public License for more details.
+#  Lesser General Public License for more details.
 #
-#  If you are interested in a warranty or support for this source code,
-#  contact Scott Christley at scottc@net-community.com
-#
-#  You should have received a copy of the GNU Library General Public
+#  You should have received a copy of the GNU Lesser General Public
 #  License along with this library; see the file COPYING.LIB.
-#  If not, write to the Free Software Foundation,
-#  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+#  If not, see <http://www.gnu.org/licenses/> or write to the 
+#  Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+#  Boston, MA 02110-1301, USA.
 
 GNUSTEP_INSTALLATION_DOMAIN = SYSTEM
 
@@ -46,9 +44,10 @@ StandardPicker_OBJC_FILES =  	GSStandardColorPicker.m \
 			     	GSRGBColorPicker.m \
 				GSCMYKColorPicker.m \
 				GSHSBColorPicker.m \
-				GSGrayColorPicker.m
+				GSGrayColorPicker.m \
+				GSColorSliderCell.m
 NamedPicker_OBJC_FILES =  GSNamedColorPicker.m
-WheelPicker_OBJC_FILES =  GSWheelColorPicker.m
+WheelPicker_OBJC_FILES =  GSWheelColorPicker.m GSColorSliderCell.m
 
 # The class to load
 StandardPicker_PRINCIPAL_CLASS = GSStandardColorPicker

@@ -12,20 +12,21 @@
    This file is part of the GNU Objective C User interface library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
-   
-   You should have received a copy of the GNU Library General Public
-   License along with this library; if not, write to the Free
-   Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02111 USA.
-   */
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
+*/
 
 #ifndef _NSGraphicsContext_h_INCLUDE
 #define _NSGraphicsContext_h_INCLUDE
@@ -46,6 +47,7 @@
 @class NSWindow;
 @class NSFont;
 @class NSSet;
+@class NSBitmapImageRep;
 
 /*
  * Backing Store Types
@@ -157,6 +159,10 @@ typedef enum _GSColorSpace
   NSMutableSet          *usedFonts;
   NSImageInterpolation  _interp;
   BOOL                  _antialias;
+  NSPoint _patternPhase;
+  void *_graphicsPort;
+  BOOL _isFlipped;
+  NSCompositingOperation _compositingOperation;
 }
 
 + (BOOL) currentContextDrawingToScreen;
@@ -168,6 +174,11 @@ typedef enum _GSColorSpace
 + (void) setGraphicsState: (int)graphicsState;
 + (void) setCurrentContext: (NSGraphicsContext*)context;
 + (NSGraphicsContext*) currentContext;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
++ (NSGraphicsContext *) graphicsContextWithBitmapImageRep: (NSBitmapImageRep *)bitmap;
++ (NSGraphicsContext *) graphicsContextWithGraphicsPort: (void *)port 
+                                                flipped: (BOOL)flag;
+#endif
 
 - (NSDictionary *) attributes;
 - (void *) graphicsPort;
@@ -184,6 +195,18 @@ typedef enum _GSColorSpace
 - (NSImageInterpolation) imageInterpolation;
 - (void) setShouldAntialias: (BOOL)antialias;
 - (BOOL) shouldAntialias;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+- (NSPoint) patternPhase;
+- (void) setPatternPhase: (NSPoint)phase;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (NSCompositingOperation) compositingOperation;
+- (void) setCompositingOperation:(NSCompositingOperation) operation;
+
+- (BOOL) isFlipped;
+#endif
 
 @end
 
@@ -249,6 +272,8 @@ APPKIT_EXPORT NSGraphicsContext	*GSCurrentContext(void);
 - (void) DPSawidthshow: (float)cx : (float)cy : (int)c : (float)ax : (float)ay 
 		      : (const char*)s;
 - (void) DPScharpath: (const char*)s : (int)b;
+- (void) appendBezierPathWithPackedGlyphs: (const char *)packedGlyphs
+                                     path: (NSBezierPath*)aPath;
 - (void) DPSshow: (const char*)s;
 - (void) DPSwidthshow: (float)x : (float)y : (int)c : (const char*)s;
 - (void) DPSxshow: (const char*)s : (const float*)numarray : (int)size;
@@ -430,6 +455,37 @@ transform between current user space and image space for this image.</desc>
 /* Context helper wraps */
 - (void) GSWSetViewIsFlipped: (BOOL) flipped;
 - (BOOL) GSWViewIsFlipped;
+
+@end
+
+/* ----------------------------------------------------------------------- */
+/* Printing Ops */	
+/* ----------------------------------------------------------------------- */
+@interface NSGraphicsContext (Printing)
+
+- (void) beginPage: (int)ordinalNum
+             label: (NSString*)aString
+              bBox: (NSRect)pageRect
+             fonts: (NSString*)fontNames;
+- (void) beginPrologueBBox: (NSRect)boundingBox
+              creationDate: (NSString*)dateCreated
+                 createdBy: (NSString*)anApplication
+                     fonts: (NSString*)fontNames
+                   forWhom: (NSString*)user
+                     pages: (int)numPages
+                     title: (NSString*)aTitle;
+- (void) beginSetup;
+- (void) beginTrailer;
+- (void) endDocumentPages: (int)pages
+            documentFonts: (NSSet*)fontNames;
+- (void) endHeaderComments;
+- (void) endPageSetup;
+- (void) endPrologue;
+- (void) endSetup;
+- (void) endSheet;
+- (void) endTrailer;
+- (void) printerProlog;
+- (void) showPage;
 
 @end
 

@@ -18,19 +18,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 #include <math.h>                  // (float)rintf(float x)
@@ -73,17 +74,18 @@ static NSTextFieldCell *titleCell;
 {
 @public
   BOOL _isLoaded;
-  id _columnScrollView;
-  id _columnMatrix;
+  NSScrollView *_columnScrollView;
+  NSMatrix *_columnMatrix;
   NSString *_columnTitle;
+  float _width;
 }
 
 - (void) setIsLoaded: (BOOL)flag;
 - (BOOL) isLoaded;
-- (void) setColumnScrollView: (id)aView;
-- (id) columnScrollView;
-- (void) setColumnMatrix: (id)aMatrix;
-- (id) columnMatrix;
+- (void) setColumnScrollView: (NSScrollView *)aView;
+- (NSScrollView *) columnScrollView;
+- (void) setColumnMatrix: (NSMatrix *)aMatrix;
+- (NSMatrix *) columnMatrix;
 - (void) setColumnTitle: (NSString *)aString;
 - (NSString *) columnTitle;
 @end
@@ -117,22 +119,22 @@ static NSTextFieldCell *titleCell;
   return _isLoaded;
 }
 
-- (void) setColumnScrollView: (id)aView
+- (void) setColumnScrollView: (NSScrollView *)aView
 {
   ASSIGN(_columnScrollView, aView);
 }
 
-- (id) columnScrollView
+- (NSScrollView *) columnScrollView
 {
   return _columnScrollView;
 }
 
-- (void) setColumnMatrix: (id)aMatrix
+- (void) setColumnMatrix: (NSMatrix *)aMatrix
 {
   ASSIGN(_columnMatrix, aMatrix);
 }
 
-- (id) columnMatrix
+- (NSMatrix *) columnMatrix
 {
   return _columnMatrix;
 }
@@ -180,14 +182,14 @@ static NSTextFieldCell *titleCell;
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isLoaded];
       _columnScrollView = [aDecoder decodeObject];
       if (_columnScrollView)
-	RETAIN(_columnScrollView);
+        RETAIN(_columnScrollView);
       _columnMatrix = [aDecoder decodeObject];
       if (_columnMatrix)
-	RETAIN(_columnMatrix);
+        RETAIN(_columnMatrix);
       [aDecoder decodeValueOfObjCType: @encode(int) at: &dummy];
       _columnTitle = [aDecoder decodeObject];
       if (_columnTitle)
-	RETAIN(_columnTitle);
+        RETAIN(_columnTitle);
     }
   return self;
 }
@@ -199,16 +201,19 @@ static NSTextFieldCell *titleCell;
 @end
 
 @implementation GSBrowserTitleCell
-- (void) drawWithFrame: (NSRect)cellFrame  inView: (NSView*)controlView
-{
-  if (NSIsEmptyRect (cellFrame) || ![controlView window])
-    {
-      return;
-    }
 
-  [[GSTheme theme] drawGrayBezel: cellFrame withClip: NSZeroRect];
-  [self drawInteriorWithFrame: cellFrame  inView: controlView];
+- (NSRect) drawingRectForBounds: (NSRect)theRect
+{
+  // This adjustment must match the drawn border
+  return NSInsetRect(theRect, 2, 2);
 }
+
+- (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame 
+                                    inView: (NSView*)controlView
+{
+  [[GSTheme theme] drawGrayBezel: cellFrame withClip: NSZeroRect];
+}
+
 @end
 
 //
@@ -291,7 +296,7 @@ static NSTextFieldCell *titleCell;
 - (id) selectedCell
 {
   int i;
-  id matrix;
+  NSMatrix *matrix;
 
   // Nothing selected
   if ((i = [self selectedColumn]) == -1)
@@ -313,7 +318,7 @@ static NSTextFieldCell *titleCell;
 */
 - (id) selectedCellInColumn: (int)column
 {
-  id matrix;
+  NSMatrix *matrix;
 
   if (!(matrix = [self matrixInColumn: column]))
     {
@@ -330,7 +335,7 @@ static NSTextFieldCell *titleCell;
 - (NSArray *) selectedCells
 {
   int i;
-  id matrix;
+  NSMatrix *matrix;
 
   // Nothing selected
   if ((i = [self selectedColumn]) == -1)
@@ -351,7 +356,7 @@ static NSTextFieldCell *titleCell;
 */
 - (void) selectAll: (id)sender
 {
-  id matrix;
+  NSMatrix *matrix;
 
   if (!(matrix = [self matrixInColumn: _lastColumnLoaded]))
     {
@@ -367,7 +372,7 @@ static NSTextFieldCell *titleCell;
 */
 - (int) selectedRowInColumn: (int)column
 {
-  id matrix;
+  NSMatrix *matrix;
 
   if (!(matrix = [self matrixInColumn: column]))
     {
@@ -387,7 +392,7 @@ static NSTextFieldCell *titleCell;
  */
 - (void) selectRow: (int)row inColumn: (int)column 
 {
-  id matrix;
+  NSMatrix *matrix;
   id cell;
   BOOL didSelect;
 
@@ -421,21 +426,22 @@ static NSTextFieldCell *titleCell;
       didSelect = YES;
     }
 
-  if (didSelect && [cell isLeaf] == NO)
+  if (didSelect && (![cell respondsToSelector: @selector(isLeaf)] 
+                    || ([(NSBrowserCell*)cell isLeaf] == NO)))
     {
       [self addColumn];
     }
 }
 
 /** Loads if necessary and returns the NSCell at row in column. 
-    if you change this code, you may want to look at the _loadColumn
+    if you change this code, you may want to look at the __performLoadOfColumn:
     method in which the following code is integrated (for speed) 
 */
 - (id) loadedCellAtRow: (int)row
-	       column: (int)column
+               column: (int)column
 {
   NSMatrix *matrix;
-  id cell;
+  NSCell *cell;
 
   if ((matrix = [self matrixInColumn: column]) == nil)
     {
@@ -449,19 +455,20 @@ static NSTextFieldCell *titleCell;
     }
 
   // Load if not already loaded
-  if ([cell isLoaded])
+  if (![cell respondsToSelector: @selector(isLoaded)] 
+      || [(NSBrowserCell*)cell isLoaded])
     {
       return cell;
     }
   else
     {
       if (_passiveDelegate || [_browserDelegate respondsToSelector: 
-		  @selector(browser:willDisplayCell:atRow:column:)])
-	{
-	  [_browserDelegate browser: self  willDisplayCell: cell
-			    atRow: row  column: column];
-	}
-      [cell setLoaded: YES];
+                  @selector(browser:willDisplayCell:atRow:column:)])
+        {
+          [_browserDelegate browser: self willDisplayCell: cell
+                            atRow: row  column: column];
+        }
+      [(NSBrowserCell*)cell setLoaded: YES];
     }
 
   return cell;
@@ -536,10 +543,10 @@ static NSTextFieldCell *titleCell;
 - (BOOL) setPath: (NSString *)path
 {
   NSMutableArray *subStrings;
-  unsigned	  numberOfSubStrings;
-  unsigned	  indexOfSubStrings;
+  unsigned          numberOfSubStrings;
+  unsigned          indexOfSubStrings;
   int             column;
-  BOOL		  useDelegate = NO;
+  BOOL                  useDelegate = NO;
 
   if ([_browserDelegate respondsToSelector:
     @selector(browser:selectCellWithString:inColumn:)])
@@ -586,8 +593,8 @@ static NSTextFieldCell *titleCell;
             }
           else
             {
-	      // Actually it's always called at 0 column
-	      [[self matrixInColumn: i] deselectAllCells];
+              // Actually it's always called at 0 column
+              [[self matrixInColumn: i] deselectAllCells];
               break;
             }
         }
@@ -604,59 +611,59 @@ static NSTextFieldCell *titleCell;
   // cycle thru str's array created from path
   while (indexOfSubStrings < numberOfSubStrings)
     {
-      NSString		*aStr = [subStrings objectAtIndex: indexOfSubStrings];
-      NSBrowserColumn	*bc = [_browserColumns objectAtIndex: column];
-      NSMatrix		*matrix = [bc columnMatrix];
-      NSBrowserCell	*selectedCell = nil;
-      BOOL	      	found = NO;
+      NSString                *aStr = [subStrings objectAtIndex: indexOfSubStrings];
+      NSBrowserColumn        *bc = [_browserColumns objectAtIndex: column];
+      NSMatrix                *matrix = [bc columnMatrix];
+      NSBrowserCell        *selectedCell = nil;
+      BOOL                     found = NO;
 
       if (useDelegate == YES)
         {
-	  if ([_browserDelegate browser: self
-		   selectCellWithString: aStr
-			       inColumn: column])
-	    {
-	      found = YES;
-	      selectedCell = [matrix selectedCell];
-	    }
-	}
+          if ([_browserDelegate browser: self
+                   selectCellWithString: aStr
+                               inColumn: column])
+            {
+              found = YES;
+              selectedCell = [matrix selectedCell];
+            }
+        }
       else
         {
           int numOfRows = [matrix numberOfRows];
           int row;
 
-	  // find the cell in the browser matrix which is equal to aStr
-	  for (row = 0; row < numOfRows; row++)
-	    {
-	      selectedCell = [matrix cellAtRow: row column: 0];
+          // find the cell in the browser matrix which is equal to aStr
+          for (row = 0; row < numOfRows; row++)
+            {
+              selectedCell = [matrix cellAtRow: row column: 0];
 
-	      if ([[selectedCell stringValue] isEqualToString: aStr])
-		{
-		  [matrix selectCellAtRow: row column: 0];
-		  found = YES;
-		  break;
-		}
-	    }
-	}
+              if ([[selectedCell stringValue] isEqualToString: aStr])
+                {
+                  [matrix selectCellAtRow: row column: 0];
+                  found = YES;
+                  break;
+                }
+            }
+        }
 
       if (found)
         {
           indexOfSubStrings++;
         }
       else
-	{
+        {
           // if unable to find a cell whose title matches aStr return NO
-	  NSDebugLLog (@"NSBrowser", 
-		       @"unable to find cell '%@' in column %d\n", 
-		      aStr, column);
-	  break;
-	}
+          NSDebugLLog (@"NSBrowser", 
+                       @"unable to find cell '%@' in column %d\n", 
+                      aStr, column);
+          break;
+        }
 
       // if the cell is a leaf, we are finished setting the path
       if ([selectedCell isLeaf])
         {
-	  break;
-	}
+          break;
+        }
       
       // else, it is not a leaf: get a column in the browser for it
       [self addColumn];
@@ -681,8 +688,8 @@ static NSTextFieldCell *titleCell;
     <p>See Also: -path</p>*/
 - (NSString *) pathToColumn: (int)column
 {
-  NSMutableString	*separator = [_pathSeparator mutableCopy];
-  NSString              *string;
+  NSMutableString        *separator = [_pathSeparator mutableCopy];
+  NSString *string;
   int i;
   
   /*
@@ -698,22 +705,22 @@ static NSTextFieldCell *titleCell;
       id cell = [self selectedCellInColumn: i];
 
       if (i != 0)
-	{
-	  [separator appendString: _pathSeparator];
-	}
+        {
+          [separator appendString: _pathSeparator];
+        }
 
       string = [cell stringValue];
       
       if (string == nil)
-	{
-	  /* This should happen only when c == nil, in which case it
-	     doesn't make sense to go with the path */
-	  break;
-	}
+        {
+          /* This should happen only when c == nil, in which case it
+             doesn't make sense to go with the path */
+          break;
+        }
       else
-	{
-	  [separator appendString: string];	  
-	}
+        {
+          [separator appendString: string];          
+        }
     }
   /*
    * We actually return a mutable string, but that's ok since a mutable
@@ -838,13 +845,15 @@ static NSTextFieldCell *titleCell;
 - (void) displayAllColumns
 {
   [self tile];
+  [self setNeedsDisplay: YES];
 }
 
 /** <p>Updates the NSBrowser to display the column with the given index.</p>
  */
 - (void) displayColumn: (int)column
 {
-  id bc, sc;
+  NSBrowserColumn *bc;
+  NSScrollView *sc;
 
   // If not visible then nothing to display
   if ((column < _firstVisibleColumn) || (column > _lastVisibleColumn))
@@ -854,13 +863,10 @@ static NSTextFieldCell *titleCell;
 
   [self tile];
 
-  // Update and display title of column
+  // Display title of column
   if (_isTitled)
     {
-      [self lockFocus];
-      [self drawTitleOfColumn: column
-	    inRect: [self titleFrameOfColumn: column]];
-      [self unlockFocus];
+      [self setNeedsDisplayInRect: [self titleFrameOfColumn: column]];
     }
 
   // Display column
@@ -887,7 +893,7 @@ static NSTextFieldCell *titleCell;
   for (i = 0; i < count; ++i)
     {
       if (matrix == [self matrixInColumn: i])
-      	return i;
+        return i;
     }
 
   // Not found
@@ -898,14 +904,14 @@ static NSTextFieldCell *titleCell;
 - (int) selectedColumn
 {
   int i;
-  id matrix;
+  NSMatrix *matrix;
 
   for (i = _lastColumnLoaded; i >= 0; i--)
     {
       if (!(matrix = [self matrixInColumn: i]))
-      	continue;
+        continue;
       if ([matrix selectedCell])
-      	return i;
+              return i;
     }
   
   return -1;
@@ -925,7 +931,8 @@ static NSTextFieldCell *titleCell;
 - (void) setLastColumn: (int)column
 {
   int i, count, num;
-  id bc, sc;
+  NSBrowserColumn *bc;
+  NSScrollView *sc;
 
   if (column > _lastColumnLoaded)
     {
@@ -950,23 +957,23 @@ static NSTextFieldCell *titleCell;
       sc = [bc columnScrollView];
 
       if ([bc isLoaded])
-	{
-	  // Make the column appear empty by removing the matrix
-	  if (sc)
-	    {
-	      [sc setDocumentView: nil];
-	    }
-	  [bc setIsLoaded: NO];
+        {
+          // Make the column appear empty by removing the matrix
+          if (sc)
+            {
+              [sc setDocumentView: nil];
+            }
+          [bc setIsLoaded: NO];
           [self setTitle: nil ofColumn: i];
-	}
+        }
 
       if (!_reusesColumns && i > _lastVisibleColumn)
-	{
-	  [sc removeFromSuperview];
-	  [_browserColumns removeObject: bc];
-	  count--;
-	  i--;
-	}
+        {
+          [sc removeFromSuperview];
+          [_browserColumns removeObject: bc];
+          count--;
+          i--;
+        }
     }
   
   [self scrollColumnToVisible:column];
@@ -1003,7 +1010,7 @@ static NSTextFieldCell *titleCell;
 
   // If delegate doesn't care, just return
   if (![_browserDelegate respondsToSelector: 
-			   @selector(browser:isColumnValid:)])
+                           @selector(browser:isColumnValid:)])
     {
       return;
     }
@@ -1014,9 +1021,9 @@ static NSTextFieldCell *titleCell;
       // Ask delegate if the column is valid and if not
       // then reload the column
       if (![_browserDelegate browser: self  isColumnValid: i])
-	{
-	  [self reloadColumn: i];
-	}
+        {
+          [self reloadColumn: i];
+        }
     }
 }
 
@@ -1117,7 +1124,16 @@ static NSTextFieldCell *titleCell;
 */
 - (void) setAllowsEmptySelection: (BOOL)flag
 {
-  _allowsEmptySelection = flag;
+  if (_allowsEmptySelection != flag)
+    {
+      int i;
+
+      _allowsEmptySelection = flag;
+      for (i = 0; i <= _lastColumnLoaded; i++)
+        {
+          [[self matrixInColumn: i] setAllowsEmptySelection: flag];
+        }
+    }
 }
 
 /**<p>Returns whether the user can select multiple items. By default YES.</p>
@@ -1133,7 +1149,25 @@ static NSTextFieldCell *titleCell;
 */
 - (void) setAllowsMultipleSelection: (BOOL)flag
 {
-  _allowsMultipleSelection = flag;
+  if (_allowsMultipleSelection != flag)
+    {
+      int i;
+      NSMatrixMode mode;
+
+      _allowsMultipleSelection = flag;
+      if (flag)
+        {
+          mode = NSListModeMatrix;
+        }
+      else
+        {
+          mode = NSRadioModeMatrix;
+        }
+      for (i = 0; i <= _lastColumnLoaded; i++)
+        {
+          [[self matrixInColumn: i] setMode: mode];
+        }
+    }
 }
 
 
@@ -1245,9 +1279,77 @@ static NSTextFieldCell *titleCell;
     }
 
   _separatesColumns = flag;
-  [self setNeedsDisplay:YES];
   [self tile];
+  [self setNeedsDisplay:YES];
 }
+
+- (float) columnWidthForColumnContentWidth: (float)columnContentWidth
+{
+  float cw;
+
+  cw = columnContentWidth;
+  if (scrollerWidth > cw)
+    {
+      cw = scrollerWidth;
+    }
+
+  // Take the border into account
+  if (_separatesColumns)
+    cw += 2 * (_sizeForBorderType(NSBezelBorder)).width;
+
+  return cw;
+}
+
+- (float) columnContentWidthForColumnWidth: (float)columnWidth
+{
+  float cw;
+
+  // Take the border into account
+  if (_separatesColumns)
+    cw -= 2 * (_sizeForBorderType(NSBezelBorder)).width;
+
+  return cw;
+}
+
+- (NSBrowserColumnResizingType) columnResizingType
+{
+  return _columnResizing;
+}
+
+- (void) setColumnResizingType:(NSBrowserColumnResizingType) type
+{
+  _columnResizing = type;
+}
+
+- (BOOL) prefersAllColumnUserResizing
+{
+  return _prefersAllColumnUserResizing;
+}
+
+- (void) setPrefersAllColumnUserResizing: (BOOL)flag
+{
+  _prefersAllColumnUserResizing = flag;
+}
+
+- (float) widthOfColumn: (int)column
+{
+  NSBrowserColumn *browserColumn;
+
+  browserColumn = [_browserColumns objectAtIndex: column];
+
+  return browserColumn->_width;
+}
+
+- (void) setWidth: (float)columnWidth ofColumn: (int)column
+{
+  NSBrowserColumn *browserColumn;
+
+  browserColumn = [_browserColumns objectAtIndex: column];
+
+  browserColumn->_width = columnWidth;
+  // FIXME: Send a notifiaction
+}
+
 
 /**<p> Returns YES if the title of a column is set to the string value of 
     the selected NSCell in the previous column. By default YES</p>
@@ -1294,7 +1396,7 @@ static NSTextFieldCell *titleCell;
     <p>See Also: -isTitled -titleFrameOfColumn: -titleHeight</p>
 */
 - (void) setTitle: (NSString *)aString
-	 ofColumn: (int)column
+         ofColumn: (int)column
 {
   NSBrowserColumn *bc;
 
@@ -1335,18 +1437,18 @@ static NSTextFieldCell *titleCell;
 /**
  */
 - (void) drawTitleOfColumn: (int)column 
-		    inRect: (NSRect)aRect
+                    inRect: (NSRect)aRect
 {
   [self drawTitle: [self titleOfColumn: column] 
-	inRect: aRect 
-	ofColumn: column];
+        inRect: aRect 
+        ofColumn: column];
 }
 
 /** Draws the title for the column at index column within the rectangle
     defined by aRect. */
 - (void) drawTitle: (NSString *)title
-	    inRect: (NSRect)aRect
-	  ofColumn: (int)column
+            inRect: (NSRect)aRect
+          ofColumn: (int)column
 {
   if (!_isTitled || !NSBR_COLUMN_IS_VISIBLE(column))
     return;
@@ -1383,25 +1485,25 @@ static NSTextFieldCell *titleCell;
 
       // Calculate origin
       if (_separatesColumns)
-	{
-	  rect.origin.x = nbColumn * (_columnSize.width + NSBR_COLUMN_SEP);
-	}
+        {
+          rect.origin.x = nbColumn * (_columnSize.width + NSBR_COLUMN_SEP);
+        }
       else
-	{
-	  rect.origin.x = nbColumn * _columnSize.width;
-	}
+        {
+          rect.origin.x = nbColumn * _columnSize.width;
+        }
 
       rect.origin.y = _frame.size.height - titleHeight;
       
       // Calculate size
       if (column == _lastVisibleColumn)
-	{
-	  rect.size.width = _frame.size.width - rect.origin.x;
-	}
+        {
+          rect.size.width = _frame.size.width - rect.origin.x;
+        }
       else
-	{
-	  rect.size.width = _columnSize.width;
-	}
+        {
+          rect.size.width = _columnSize.width;
+        }
 
       rect.size.height = titleHeight;
 
@@ -1538,28 +1640,28 @@ static NSTextFieldCell *titleCell;
       // Scroll to the left
       case NSScrollerDecrementLine:
       case NSScrollerDecrementPage:
-      	[self scrollColumnsLeftBy: 1];
-      	break;
+              [self scrollColumnsLeftBy: 1];
+              break;
       
       // Scroll to the right
       case NSScrollerIncrementLine:
       case NSScrollerIncrementPage:
         [self scrollColumnsRightBy: 1];
-      	break;
+              break;
       
       // The knob or knob slot
       case NSScrollerKnob:
       case NSScrollerKnobSlot:
-	{
-	  float f = [sender floatValue];
+        {
+          float f = [sender floatValue];
 
-	  [self scrollColumnToVisible: rintf(f * _lastColumnLoaded)];
-	}
-      	break;
+          [self scrollColumnToVisible: rintf(f * _lastColumnLoaded)];
+        }
+        break;
       
       // NSScrollerNoPart ???
       default:
-      	break;
+              break;
     }
 }
 
@@ -1589,7 +1691,7 @@ static NSTextFieldCell *titleCell;
     {
       _hasHorizontalScroller = flag;
       if (!flag)
-      	[_horizontalScroller removeFromSuperview];
+              [_horizontalScroller removeFromSuperview];
       else
         [self addSubview: _horizontalScroller];
       [self tile];
@@ -1666,17 +1768,17 @@ static NSTextFieldCell *titleCell;
       if (column == _firstVisibleColumn)
         rect.origin.x = (n * _columnSize.width) + 2;
       else
-	rect.origin.x = (n * _columnSize.width) + (n + 2);
+        rect.origin.x = (n * _columnSize.width) + (n + 2);
     }
 
   // Adjust for horizontal scroller
   if (_hasHorizontalScroller)
     {
       if (_separatesColumns)
- 	rect.origin.y = (scrollerWidth - 1) + (2 * bezelBorderSize.height) + 
-	  NSBR_VOFFSET;
+        rect.origin.y = (scrollerWidth - 1) + (2 * bezelBorderSize.height) + 
+          NSBR_VOFFSET;
       else
-	rect.origin.y = scrollerWidth + bezelBorderSize.width;
+        rect.origin.y = scrollerWidth + bezelBorderSize.width;
     }
   else
     {
@@ -1687,10 +1789,10 @@ static NSTextFieldCell *titleCell;
   if (column == _lastVisibleColumn)
     {
       if (_separatesColumns)
-	rect.size.width = _frame.size.width - rect.origin.x;
+        rect.size.width = _frame.size.width - rect.origin.x;
       else
-	rect.size.width = _frame.size.width -
-	  (rect.origin.x + bezelBorderSize.width);
+        rect.size.width = _frame.size.width -
+          (rect.origin.x + bezelBorderSize.width);
     }
 
   if (rect.size.width < 0)
@@ -1713,6 +1815,21 @@ static NSTextFieldCell *titleCell;
   return [self frameOfColumn: column];
 }
 
++ (void) removeSavedColumnsWithAutosaveName: (NSString *)name
+{
+  [[NSUserDefaults standardUserDefaults] removeObjectForKey: name];
+}
+
+- (NSString *) columnsAutosaveName
+{
+  return _columnsAutosaveName;
+}
+
+- (void) setColumnsAutosaveName: (NSString *)name
+{
+  // FIXME: More to do. The whole column width saving is missing!
+  ASSIGN(_columnsAutosaveName, name);
+}
 
 /*
  * Arranging browser components
@@ -1743,14 +1860,14 @@ static NSTextFieldCell *titleCell;
       _scrollerRect.origin.x = bezelBorderSize.width;
       _scrollerRect.origin.y = bezelBorderSize.height - 1;
       _scrollerRect.size.width = (_frame.size.width - 
-				  (2 * bezelBorderSize.width));
+                                  (2 * bezelBorderSize.width));
       _scrollerRect.size.height = scrollerWidth;
       
       if (_separatesColumns)
-	_columnSize.height -= (scrollerWidth - 1) + 
-	  (2 * bezelBorderSize.height) + NSBR_VOFFSET;
+        _columnSize.height -= (scrollerWidth - 1) + 
+          (2 * bezelBorderSize.height) + NSBR_VOFFSET;
       else
-	_columnSize.height -= scrollerWidth + (2 * bezelBorderSize.height);
+        _columnSize.height -= scrollerWidth + (2 * bezelBorderSize.height);
       
       if (!NSEqualRects(_scrollerRect, [_horizontalScroller frame]))
         {
@@ -1770,14 +1887,14 @@ static NSTextFieldCell *titleCell;
       float colWidth = _minColumnWidth + scrollerWidth;
 
       if (_separatesColumns)
-	colWidth += NSBR_COLUMN_SEP;
+        colWidth += NSBR_COLUMN_SEP;
 
       if (_frame.size.width > colWidth)
-	{
-	  columnCount = (int)(_frame.size.width / colWidth);
-	}
+        {
+          columnCount = (int)(_frame.size.width / colWidth);
+        }
       else
-	columnCount = 1;
+        columnCount = 1;
     }
   else
     columnCount = num;
@@ -1788,18 +1905,18 @@ static NSTextFieldCell *titleCell;
   if (columnCount != num)
     {
       if (num > 0)
-	delta = columnCount - num;
+        delta = columnCount - num;
       else
-	delta = columnCount - 1;
+        delta = columnCount - 1;
 
       if ((delta > 0) && (_lastVisibleColumn <= _lastColumnLoaded))
-	{
-	  _firstVisibleColumn = (_firstVisibleColumn - delta > 0) ?
-	    _firstVisibleColumn - delta : 0;
-	}
+        {
+          _firstVisibleColumn = (_firstVisibleColumn - delta > 0) ?
+            _firstVisibleColumn - delta : 0;
+        }
 
       for (i = [_browserColumns count]; i < columnCount; i++)
-	[self _createColumn];
+        [self _createColumn];
 
       _lastVisibleColumn = _firstVisibleColumn + columnCount - 1;
     }
@@ -1809,7 +1926,7 @@ static NSTextFieldCell *titleCell;
     frameWidth = _frame.size.width - ((columnCount - 1) * NSBR_COLUMN_SEP);
   else
     frameWidth = _frame.size.width - ((columnCount - 1) + 
-				      (2 * bezelBorderSize.width));
+                                      (2 * bezelBorderSize.width));
 
   _columnSize.width = (int)(frameWidth / (float)columnCount);
 
@@ -1818,8 +1935,9 @@ static NSTextFieldCell *titleCell;
   
   for (i = _firstVisibleColumn; i <= _lastVisibleColumn; i++)
     {
-      id bc, sc;
-      id matrix;
+      NSBrowserColumn *bc;
+      NSScrollView *sc;
+      NSMatrix *matrix;
 
       // FIXME: in some cases the column is not loaded
       while (i >= [_browserColumns count]) [self _createColumn];
@@ -1827,10 +1945,10 @@ static NSTextFieldCell *titleCell;
       bc = [_browserColumns objectAtIndex: i];
 
       if (!(sc = [bc columnScrollView]))
-	{
-	  NSLog(@"NSBrowser error, sc != [bc columnScrollView]");
-	  return;
-	}
+        {
+          NSLog(@"NSBrowser error, sc != [bc columnScrollView]");
+          return;
+        }
 
       [sc setFrame: [self frameOfColumn: i]];
       matrix = [bc columnMatrix];
@@ -1838,14 +1956,14 @@ static NSTextFieldCell *titleCell;
       // Adjust matrix to fit in scrollview if column has been loaded
       if (matrix && [bc isLoaded])
         {
-	  NSSize cs, ms;
-	  
-	  cs = [sc contentSize];
-	  ms = [matrix cellSize];
-	  ms.width = cs.width;
-	  [matrix setCellSize: ms];
-	  [sc setDocumentView: matrix];
-	}
+          NSSize cs, ms;
+          
+          cs = [sc contentSize];
+          ms = [matrix cellSize];
+          ms.width = cs.width;
+          [matrix setCellSize: ms];
+          [sc setDocumentView: matrix];
+        }
     }
 
   if (columnCount != num)
@@ -1893,44 +2011,44 @@ static NSTextFieldCell *titleCell;
   _passiveDelegate = YES;
 
   if ([anObject respondsToSelector: 
-		  @selector(browser:numberOfRowsInColumn:)])
+                  @selector(browser:numberOfRowsInColumn:)])
     {
       flag = YES;
       if (![anObject respondsToSelector: 
-			 @selector(browser:willDisplayCell:atRow:column:)])
-	[NSException raise: NSBrowserIllegalDelegateException
-		     format: @"(Passive) Delegate does not respond to %s\n",
-		     GSNameFromSelector
-		       (@selector(browser:willDisplayCell:atRow:column:))];
+                         @selector(browser:willDisplayCell:atRow:column:)])
+        [NSException raise: NSBrowserIllegalDelegateException
+                     format: @"(Passive) Delegate does not respond to %s\n",
+                     GSNameFromSelector
+                       (@selector(browser:willDisplayCell:atRow:column:))];
     }
 
   if ([anObject respondsToSelector: 
-		  @selector(browser:createRowsForColumn:inMatrix:)])
+                  @selector(browser:createRowsForColumn:inMatrix:)])
     {
       _passiveDelegate = NO;
 
       /* If flag is already set
-	 then the delegate must respond to both methods.  */
+         then the delegate must respond to both methods.  */
       if (flag)
         {
-	  [NSException raise: NSBrowserIllegalDelegateException
-		       format: @"Delegate responds to both %s and %s\n",
-		       GSNameFromSelector
-		         (@selector(browser:numberOfRowsInColumn:)),
-		       GSNameFromSelector
-		         (@selector(browser:createRowsForColumn:inMatrix:))];
-	}
+          [NSException raise: NSBrowserIllegalDelegateException
+                       format: @"Delegate responds to both %s and %s\n",
+                       GSNameFromSelector
+                         (@selector(browser:numberOfRowsInColumn:)),
+                       GSNameFromSelector
+                         (@selector(browser:createRowsForColumn:inMatrix:))];
+        }
 
       flag = YES;
     }
 
   if (!flag && anObject)
     [NSException raise: NSBrowserIllegalDelegateException
-		 format: @"Delegate does not respond to %s or %s\n",
-		 GSNameFromSelector
-		   (@selector(browser:numberOfRowsInColumn:)),
-		 GSNameFromSelector
-		   (@selector(browser:createRowsForColumn:inMatrix:))];
+                 format: @"Delegate does not respond to %s or %s\n",
+                 GSNameFromSelector
+                   (@selector(browser:numberOfRowsInColumn:)),
+                 GSNameFromSelector
+                   (@selector(browser:createRowsForColumn:inMatrix:))];
 
   _browserDelegate = anObject;
 }
@@ -1998,9 +2116,9 @@ static NSTextFieldCell *titleCell;
   while ((cell = [enumerator nextObject]))
     {
       if (_allowsBranchSelection == NO && [cell isLeaf] == NO)
-	{
-	  [selectedCells removeObject: cell];
-	}
+        {
+          [selectedCells removeObject: cell];
+        }
     }
 
   if ([selectedCells count] == 0 && [sender selectedCell] != nil)
@@ -2018,7 +2136,7 @@ static NSTextFieldCell *titleCell;
     {
       enumerator = [selectedCells objectEnumerator];
       while ((cell = [enumerator nextObject]))
-	[sender selectCell: cell];
+        [sender selectCell: cell];
     }
 #endif
 
@@ -2030,9 +2148,9 @@ static NSTextFieldCell *titleCell;
 
       // If the cell is not a leaf we need to load a column
       if (![cell isLeaf])
-	{
-	  [self addColumn];
-	}
+        {
+          [self addColumn];
+        }
 
       [sender scrollCellToVisibleAtRow: [sender selectedRow] column: 0];
     }
@@ -2063,6 +2181,11 @@ static NSTextFieldCell *titleCell;
       // Initial version
       [self setVersion: 1];
       scrollerWidth = [NSScroller scrollerWidth];
+      /* Create the shared titleCell if it hasn't been created already. */
+      if (!titleCell)
+        {
+          titleCell = [GSBrowserTitleCell new];
+        }
     }
 }
 
@@ -2074,15 +2197,11 @@ static NSTextFieldCell *titleCell;
 - (id) initWithFrame: (NSRect)rect
 {
   NSSize bs;
-  //NSScroller *hs;
 
-  /* Created the shared titleCell if it hasn't been created already. */
-  if (!titleCell)
+  if ((self = [super initWithFrame: rect]) == nil)
     {
-      titleCell = [GSBrowserTitleCell new];
+      return nil;
     }
-
-  self = [super initWithFrame: rect];
 
   // Class setting
   _browserCellPrototype = [[[NSBrowser cellClass] alloc] init];
@@ -2186,10 +2305,6 @@ static NSTextFieldCell *titleCell;
 
 - (void) drawRect: (NSRect)rect
 {
-  NSRectClip(rect);
-  [[_window backgroundColor] set];
-  NSRectFill(rect);
-
   // Load the first column if not already done
   if (!_isLoaded)
     {
@@ -2202,14 +2317,14 @@ static NSTextFieldCell *titleCell;
       int i;
 
       for (i = _firstVisibleColumn; i <= _lastVisibleColumn; ++i)
-	{
-	  NSRect titleRect = [self titleFrameOfColumn: i];
-	  if (NSIntersectsRect (titleRect, rect) == YES)
-	    {
-	      [self drawTitleOfColumn: i
-		    inRect: titleRect];
-	    }
-	}
+        {
+          NSRect titleRect = [self titleFrameOfColumn: i];
+          if (NSIntersectsRect (titleRect, rect) == YES)
+            {
+              [self drawTitleOfColumn: i
+                    inRect: titleRect];
+            }
+        }
     }
 
   // Draws scroller border
@@ -2224,9 +2339,9 @@ static NSTextFieldCell *titleCell;
       scrollerBorderRect.size.height += (2 * bs.height) - 1;
 
       if ((NSIntersectsRect (scrollerBorderRect, rect) == YES) && _window)
-      	{
+        {
           [[GSTheme theme] drawGrayBezel: scrollerBorderRect withClip: rect];
-	}
+        }
     }
 
   if (!_separatesColumns)
@@ -2241,21 +2356,21 @@ static NSTextFieldCell *titleCell;
       [[NSColor blackColor] set];
       visibleColumns = [self numberOfVisibleColumns]; 
       for (i = 1; i < visibleColumns; i++)
-	{
-	  p1 = NSMakePoint((_columnSize.width * i) + 2 + (i-1), 
-			   _columnSize.height + hScrollerWidth + 2);
-	  p2 = NSMakePoint((_columnSize.width * i) + 2 + (i-1),
-			   hScrollerWidth + 2);
-	  [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
-	}
+        {
+          p1 = NSMakePoint((_columnSize.width * i) + 2 + (i-1), 
+                           _columnSize.height + hScrollerWidth + 2);
+          p2 = NSMakePoint((_columnSize.width * i) + 2 + (i-1),
+                           hScrollerWidth + 2);
+          [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
+        }
 
       // Horizontal scroller border
       if (_hasHorizontalScroller)
-	{
-	  p1 = NSMakePoint(2, hScrollerWidth + 2);
-	  p2 = NSMakePoint(rect.size.width - 2, hScrollerWidth + 2);
-	  [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
-	}
+        {
+          p1 = NSMakePoint(2, hScrollerWidth + 2);
+          p2 = NSMakePoint(rect.size.width - 2, hScrollerWidth + 2);
+          [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
+        }
     }
 }
 
@@ -2282,26 +2397,26 @@ static NSTextFieldCell *titleCell;
       matrix = (NSMatrix *)[_window firstResponder];
       selectedColumn = [self columnOfMatrix:matrix];
       if (selectedColumn == -1)
-	{
+        {
           selectedColumn = [self selectedColumn];
-	  matrix = [self matrixInColumn: selectedColumn];
+          matrix = [self matrixInColumn: selectedColumn];
         }
       if (selectedColumn > 0)
-	{
-	  [matrix deselectAllCells];
+        {
+          [matrix deselectAllCells];
           [matrix scrollCellToVisibleAtRow:0 column:0];
-	  [self setLastColumn: selectedColumn];
+          [self setLastColumn: selectedColumn];
 
           selectedColumn--;
           [self scrollColumnToVisible: selectedColumn];
-	  matrix = [self matrixInColumn: selectedColumn];
-	  [_window makeFirstResponder: matrix];
+          matrix = [self matrixInColumn: selectedColumn];
+          [_window makeFirstResponder: matrix];
 
-	  if (_sendsActionOnArrowKeys == YES)
+          if (_sendsActionOnArrowKeys == YES)
             {
-	      [super sendAction: _action to: _target];
+              [super sendAction: _action to: _target];
             }
-	}
+        }
     }
 }
 
@@ -2320,28 +2435,28 @@ static NSTextFieldCell *titleCell;
           matrix = [self matrixInColumn: selectedColumn];
         }
       if (selectedColumn == -1)
-	{
+        {
           selectedColumn = 0;
-	  matrix = [self matrixInColumn: 0];
+          matrix = [self matrixInColumn: 0];
 
-	  if ([[matrix cells] count])
-	    {
-	      [matrix selectCellAtRow: 0 column: 0];
-	    }
-	}
+          if ([[matrix cells] count])
+            {
+              [matrix selectCellAtRow: 0 column: 0];
+            }
+        }
       else
-	{
+        {
           // if there is one selected cell and it is a leaf, move right
           // (column is already loaded)
-	  if (![[matrix selectedCell] isLeaf]
-	      && [[matrix selectedCells] count] == 1)
+          if (![[matrix selectedCell] isLeaf]
+              && [[matrix selectedCells] count] == 1)
             {
               selectedColumn++;
-	      matrix = [self matrixInColumn: selectedColumn];
-	      if ([[matrix cells] count] && [matrix selectedCell] == nil)
-	        {
-	          [matrix selectCellAtRow: 0 column: 0];
-	        }
+              matrix = [self matrixInColumn: selectedColumn];
+              if ([[matrix cells] count] && [matrix selectedCell] == nil)
+                {
+                  [matrix selectCellAtRow: 0 column: 0];
+                }
               // if selected cell is a leaf, we need to add a column
               if (![[matrix selectedCell] isLeaf]
                   && [[matrix selectedCells] count] == 1)
@@ -2349,13 +2464,13 @@ static NSTextFieldCell *titleCell;
                   [self addColumn];
                 }
             }
-	}
+        }
 
       [_window makeFirstResponder: matrix];
 
       if (_sendsActionOnArrowKeys == YES)
         {
-	  [super sendAction: _action to: _target];
+          [super sendAction: _action to: _target];
         }
     }
 }
@@ -2373,30 +2488,30 @@ static NSTextFieldCell *titleCell;
   if (_acceptsArrowKeys)
     {
       switch (character)
-	{
-	case NSUpArrowFunctionKey:
-	case NSDownArrowFunctionKey:
-	  return;
-	case NSLeftArrowFunctionKey:
-	  [self moveLeft:self];
-	  return;
-	case NSRightArrowFunctionKey:
-	  [self moveRight:self];
-	  return;
-	case NSTabCharacter:
-	  {
-	    if ([theEvent modifierFlags] & NSShiftKeyMask)
-	      {
-		[_window selectKeyViewPrecedingView: self];
-	      }
-	    else
-	      {
-		[_window selectKeyViewFollowingView: self];
-	      }
-	  }
-	  return;
-	  break;
-	}
+        {
+        case NSUpArrowFunctionKey:
+        case NSDownArrowFunctionKey:
+          return;
+        case NSLeftArrowFunctionKey:
+          [self moveLeft:self];
+          return;
+        case NSRightArrowFunctionKey:
+          [self moveRight:self];
+          return;
+        case NSTabCharacter:
+          {
+            if ([theEvent modifierFlags] & NSShiftKeyMask)
+              {
+                [_window selectKeyViewPrecedingView: self];
+              }
+            else
+              {
+                [_window selectKeyViewFollowingView: self];
+              }
+          }
+          return;
+          break;
+        }
     }
 
   if (_acceptsAlphaNumericalKeys && (character < 0xF700)
@@ -2412,83 +2527,83 @@ static NSTextFieldCell *titleCell;
 
       selectedColumn = [self selectedColumn];
       if (selectedColumn != -1)
-	{
-	  matrix = [self matrixInColumn: selectedColumn];
-	  n = [matrix numberOfRows];
-	  s = [matrix selectedRow];
-	  
-	  if (!_charBuffer)
-	    {
-	      _charBuffer = [characters substringToIndex: 1];
-	      RETAIN(_charBuffer);
-	    }
-	  else
-	    {
-	      if (([theEvent timestamp] - _lastKeyPressed < 2000.0)
-		  && (_alphaNumericalLastColumn == selectedColumn))
-		{
-		  NSString *transition;
-		  transition = [_charBuffer 
-				 stringByAppendingString:
-				   [characters substringToIndex: 1]];
-		  RELEASE(_charBuffer);
-		  _charBuffer = transition;
-		  RETAIN(_charBuffer);
-		}
-	      else
-		{
-		  RELEASE(_charBuffer);
-		  _charBuffer = [characters substringToIndex: 1];
-		  RETAIN(_charBuffer);
-		}
-	    }
+        {
+          matrix = [self matrixInColumn: selectedColumn];
+          n = [matrix numberOfRows];
+          s = [matrix selectedRow];
+          
+          if (!_charBuffer)
+            {
+              _charBuffer = [characters substringToIndex: 1];
+              RETAIN(_charBuffer);
+            }
+          else
+            {
+              if (([theEvent timestamp] - _lastKeyPressed < 2000.0)
+                  && (_alphaNumericalLastColumn == selectedColumn))
+                {
+                  NSString *transition;
+                  transition = [_charBuffer 
+                                 stringByAppendingString:
+                                   [characters substringToIndex: 1]];
+                  RELEASE(_charBuffer);
+                  _charBuffer = transition;
+                  RETAIN(_charBuffer);
+                }
+              else
+                {
+                  RELEASE(_charBuffer);
+                  _charBuffer = [characters substringToIndex: 1];
+                  RETAIN(_charBuffer);
+                }
+            }
 
-	  _alphaNumericalLastColumn = selectedColumn;
-	  _lastKeyPressed = [theEvent timestamp];
-	  
-	  sv = [((*lcarc)(self, lcarcSel, s, selectedColumn))
-		 stringValue];
+          _alphaNumericalLastColumn = selectedColumn;
+          _lastKeyPressed = [theEvent timestamp];
+          
+          sv = [((*lcarc)(self, lcarcSel, s, selectedColumn))
+                 stringValue];
 
-	  if (([sv length] > 0)
-	      && ([sv hasPrefix: _charBuffer]))
-	    return;
+          if (([sv length] > 0)
+              && ([sv hasPrefix: _charBuffer]))
+            return;
 
-	  match = -1;
-	  for (i = s + 1; i < n; i++)
-	    {
-	      sv = [((*lcarc)(self, lcarcSel, i, selectedColumn))
-		     stringValue];
-	      if (([sv length] > 0)
-		  && ([sv hasPrefix: _charBuffer]))
-		{
-		  match = i;
-		  break;
-		}
-	    }
-	  if (i == n)
-	    {
-	      for (i = 0; i < s; i++)
-		{
-		  sv = [((*lcarc)(self, lcarcSel, i, selectedColumn))
-			 stringValue];
-		  if (([sv length] > 0)
-		      && ([sv hasPrefix: _charBuffer]))
-		    {
-		      match = i;
-		      break;
-		    }
-		}
-	    }
-	  if (match != -1)
-	    {
-	      [matrix deselectAllCells];
-	      [self selectRow: match
-		inColumn: selectedColumn];
-	      [matrix scrollCellToVisibleAtRow: match column: 0];
-	      [matrix performClick: self];
-	      return;
-	    }
-	}
+          match = -1;
+          for (i = s + 1; i < n; i++)
+            {
+              sv = [((*lcarc)(self, lcarcSel, i, selectedColumn))
+                     stringValue];
+              if (([sv length] > 0)
+                  && ([sv hasPrefix: _charBuffer]))
+                {
+                  match = i;
+                  break;
+                }
+            }
+          if (i == n)
+            {
+              for (i = 0; i < s; i++)
+                {
+                  sv = [((*lcarc)(self, lcarcSel, i, selectedColumn))
+                         stringValue];
+                  if (([sv length] > 0)
+                      && ([sv hasPrefix: _charBuffer]))
+                    {
+                      match = i;
+                      break;
+                    }
+                }
+            }
+          if (match != -1)
+            {
+              [matrix deselectAllCells];
+              [self selectRow: match
+                inColumn: selectedColumn];
+              [matrix scrollCellToVisibleAtRow: match column: 0];
+              [matrix performClick: self];
+              return;
+            }
+        }
       _lastKeyPressed = 0.;
     }
 
@@ -2535,7 +2650,7 @@ static NSTextFieldCell *titleCell;
       [aCoder encodeInt: _maxVisibleColumns forKey: @"NSNumberOfVisibleColumns"];
       [aCoder encodeInt: _minColumnWidth forKey: @"NSMinColumnWidth"];
 
-      //[aCoder encodeInt: columnResizingType forKey: @"NSColumnResizingType"]];
+      [aCoder encodeInt: _columnResizing forKey: @"NSColumnResizingType"];
       //[aCoder encodeInt: prefWidth forKey: @"NSPreferedColumnWidth"];
     }
   else
@@ -2579,9 +2694,9 @@ static NSTextFieldCell *titleCell;
       // Just encode the number of columns and the first visible
       // and rebuild the browser columns on the decoding side
       {
-	int colCount = [_browserColumns count];  
-	[aCoder encodeValueOfObjCType: @encode(int) at: &colCount];
-	[aCoder encodeValueOfObjCType: @encode(int) at: &_firstVisibleColumn];
+        int colCount = [_browserColumns count];  
+        [aCoder encodeValueOfObjCType: @encode(int) at: &colCount];
+        [aCoder encodeValueOfObjCType: @encode(int) at: &_firstVisibleColumn];
       }
     }
 }
@@ -2595,16 +2710,7 @@ static NSTextFieldCell *titleCell;
       NSString *title = [aDecoder decodeObjectForKey: @"NSFirstColumnTitle"];
       NSString *sep = [aDecoder decodeObjectForKey: @"NSPathSeparator"];
       long flags;
-
-      // start //
       NSSize bs;
-      //NSScroller *hs;
-      
-      /* Created the shared titleCell if it hasn't been created already. */
-      if (!titleCell)
-	{
-	  titleCell = [GSBrowserTitleCell new];
-	}
       
       // Class setting
       _browserCellPrototype = [[[NSBrowser cellClass] alloc] init];
@@ -2633,7 +2739,7 @@ static NSTextFieldCell *titleCell;
       bs = _sizeForBorderType (NSBezelBorder);
       _minColumnWidth = scrollerWidth + (2 * bs.width);
       if (_minColumnWidth < 100.0)
-	_minColumnWidth = 100.0;
+        _minColumnWidth = 100.0;
       
       // Horizontal scroller
       _scrollerRect.origin.x = bs.width;
@@ -2663,40 +2769,40 @@ static NSTextFieldCell *titleCell;
 
       if ([aDecoder containsValueForKey: @"NSBrFlags"])
         {
-	  flags = [aDecoder decodeIntForKey: @"NSBrFlags"];
+          flags = [aDecoder decodeIntForKey: @"NSBrFlags"];
 
-	  [self setHasHorizontalScroller: ((flags & 0x10000) == 0x10000)];
-	  [self setAllowsEmptySelection: !((flags & 0x20000) == 0x20000)];
-	  [self setSendsActionOnArrowKeys: ((flags & 0x40000) == 0x40000)];
-	  [self setAcceptsArrowKeys: ((flags & 0x100000) == 0x100000)];
-	  [self setSeparatesColumns: ((flags & 0x4000000) == 0x4000000)];
-	  [self setTakesTitleFromPreviousColumn: ((flags & 0x8000000) == 0x8000000)];
-	  [self setTitled: ((flags & 0x10000000) == 0x10000000)];
-	  [self setReusesColumns: ((flags & 0x20000000) == 0x20000000)];
-	  [self setAllowsBranchSelection: ((flags & 0x40000000) == 0x40000000)];
-	  [self setAllowsMultipleSelection: ((flags & 0x80000000) == 0x80000000)];
-	}
+          [self setHasHorizontalScroller: ((flags & 0x10000) == 0x10000)];
+          [self setAllowsEmptySelection: !((flags & 0x20000) == 0x20000)];
+          [self setSendsActionOnArrowKeys: ((flags & 0x40000) == 0x40000)];
+          [self setAcceptsArrowKeys: ((flags & 0x100000) == 0x100000)];
+          [self setSeparatesColumns: ((flags & 0x4000000) == 0x4000000)];
+          [self setTakesTitleFromPreviousColumn: ((flags & 0x8000000) == 0x8000000)];
+          [self setTitled: ((flags & 0x10000000) == 0x10000000)];
+          [self setReusesColumns: ((flags & 0x20000000) == 0x20000000)];
+          [self setAllowsBranchSelection: ((flags & 0x40000000) == 0x40000000)];
+          [self setAllowsMultipleSelection: ((flags & 0x80000000) == 0x80000000)];
+        }
 
       if ([aDecoder containsValueForKey: @"NSNumberOfVisibleColumns"])
         {
-	  [self setMaxVisibleColumns: [aDecoder decodeIntForKey: 
-						  @"NSNumberOfVisibleColumns"]];
-	}
+          [self setMaxVisibleColumns: [aDecoder decodeIntForKey: 
+                                                  @"NSNumberOfVisibleColumns"]];
+        }
 
       if ([aDecoder containsValueForKey: @"NSMinColumnWidth"])
         {
-	  [self setMinColumnWidth: [aDecoder decodeIntForKey: @"NSMinColumnWidth"]];
-	}
+          [self setMinColumnWidth: [aDecoder decodeIntForKey: @"NSMinColumnWidth"]];
+        }
 
       if ([aDecoder containsValueForKey: @"NSColumnResizingType"])
         {
-	  //[self setColumnResizingType: [aDecoder decodeIntForKey: @"NSColumnResizingType"]];
-	}
+          [self setColumnResizingType: [aDecoder decodeIntForKey: @"NSColumnResizingType"]];
+        }
 
       if ([aDecoder containsValueForKey: @"NSPreferedColumnWidth"])
         {
-	  //int prefWidth = [aDecoder decodeIntForKey: @"NSPreferedColumnWidth"];
-	}
+          //int prefWidth = [aDecoder decodeIntForKey: @"NSPreferedColumnWidth"];
+        }
     }
   else
     {
@@ -2729,9 +2835,9 @@ static NSTextFieldCell *titleCell;
 
       _skipUpdateScroller = NO;
       /*
-	_horizontalScroller = [[NSScroller alloc] initWithFrame: _scrollerRect];
-	[_horizontalScroller setTarget: self];
-	[_horizontalScroller setAction: @selector(scrollViaScroller:)];
+        _horizontalScroller = [[NSScroller alloc] initWithFrame: _scrollerRect];
+        [_horizontalScroller setTarget: self];
+        [_horizontalScroller setAction: @selector(scrollViaScroller:)];
       */
       [self setHasHorizontalScroller: _hasHorizontalScroller];
 
@@ -2745,9 +2851,9 @@ static NSTextFieldCell *titleCell;
 
       _browserDelegate = [aDecoder decodeObject];
       if (_browserDelegate != nil)
-	[self setDelegate:_browserDelegate];
+        [self setDelegate:_browserDelegate];
       else
-	_passiveDelegate = YES;
+        _passiveDelegate = YES;
       
       [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
       _target = [aDecoder decodeObject];
@@ -2755,10 +2861,10 @@ static NSTextFieldCell *titleCell;
       
       // Do the minimal thing to initiate the browser...
       /*
-	_lastColumnLoaded = -1;
-	_firstVisibleColumn = 0;
-	_lastVisibleColumn = 0;
-	[self _createColumn];
+        _lastColumnLoaded = -1;
+        _firstVisibleColumn = 0;
+        _lastVisibleColumn = 0;
+        [self _createColumn];
       */
       _browserColumns = RETAIN([aDecoder decodeObject]);
       // ..and rebuild any existing browser columns
@@ -2830,7 +2936,8 @@ static NSTextFieldCell *titleCell;
 
 - (void) _remapColumnSubviews: (BOOL)fromFirst
 {
-  id bc, sc;
+  NSBrowserColumn *bc;
+  NSScrollView *sc;
   int i, count;
   id firstResponder = nil;
   BOOL setFirstResponder = NO;
@@ -2843,13 +2950,13 @@ static NSTextFieldCell *titleCell;
       sc = [bc columnScrollView];
 
       if (!firstResponder && [bc columnMatrix] == [_window firstResponder])
-	{
-	  firstResponder = [bc columnMatrix];
-	}
+        {
+          firstResponder = [bc columnMatrix];
+        }
       if (sc)
-	{
-	  [sc removeFromSuperviewWithoutNeedingDisplay];
-	}
+        {
+          [sc removeFromSuperviewWithoutNeedingDisplay];
+        }
     }
 
   if (_firstVisibleColumn > _lastVisibleColumn)
@@ -2861,53 +2968,55 @@ static NSTextFieldCell *titleCell;
   if (fromFirst)
     {
       for (i = _firstVisibleColumn; i <= _lastVisibleColumn; i++)
-	{
-	  bc = [_browserColumns objectAtIndex: i];
-	  sc = [bc columnScrollView];
-	  [self addSubview: sc];
+        {
+          bc = [_browserColumns objectAtIndex: i];
+          sc = [bc columnScrollView];
+          [self addSubview: sc];
 
-	  if ([bc columnMatrix] == firstResponder)
-	    {
-	      [_window makeFirstResponder: firstResponder];
-	      setFirstResponder = YES;
-	    }
-	}
+          if ([bc columnMatrix] == firstResponder)
+            {
+              [_window makeFirstResponder: firstResponder];
+              setFirstResponder = YES;
+            }
+        }
 
       if (firstResponder && setFirstResponder == NO)
-	{
-	  [_window makeFirstResponder:
-		     [[_browserColumns objectAtIndex: _firstVisibleColumn]
-		       columnMatrix]];
-	}
+        {
+          [_window makeFirstResponder:
+                     [[_browserColumns objectAtIndex: _firstVisibleColumn]
+                       columnMatrix]];
+        }
     }
   else
     {
       for (i = _lastVisibleColumn; i >= _firstVisibleColumn; i--)
-	{
-	  bc = [_browserColumns objectAtIndex: i];
-	  sc = [bc columnScrollView];
-	  [self addSubview: sc];
+        {
+          bc = [_browserColumns objectAtIndex: i];
+          sc = [bc columnScrollView];
+          [self addSubview: sc];
 
-	  if ([bc columnMatrix] == firstResponder)
-	    {
-	      [_window makeFirstResponder: firstResponder];
-	      setFirstResponder = YES;
-	    }
-	}
+          if ([bc columnMatrix] == firstResponder)
+            {
+              [_window makeFirstResponder: firstResponder];
+              setFirstResponder = YES;
+            }
+        }
 
       if (firstResponder && setFirstResponder == NO)
-	{
-	  [_window makeFirstResponder:
-		     [[_browserColumns objectAtIndex: _lastVisibleColumn]
-		       columnMatrix]];
-	}
+        {
+          [_window makeFirstResponder:
+                     [[_browserColumns objectAtIndex: _lastVisibleColumn]
+                       columnMatrix]];
+        }
     }
 }
 
 /* Loads column 'column' (asking the delegate). */
 - (void) _performLoadOfColumn: (int)column
 {
-  id bc, sc, matrix;
+  NSBrowserColumn *bc;
+  NSScrollView *sc;
+  NSMatrix *matrix;
   int i, rows, cols;
 
   if (_passiveDelegate)
@@ -2936,8 +3045,8 @@ static NSTextFieldCell *titleCell;
       // Mark all the cells as unloaded
       for (i = 0; i < rows; i++)
         {
-	  [[matrix cellAtRow: i column: 0] setLoaded: NO];
-	}
+          [[matrix cellAtRow: i column: 0] setLoaded: NO];
+        }
     }
   else
     {
@@ -2946,18 +3055,18 @@ static NSTextFieldCell *titleCell;
 
       // create a new col matrix
       matrix = [[_browserMatrixClass alloc]
-		   initWithFrame: matrixRect
-		   mode: NSListModeMatrix
-		   prototype: _browserCellPrototype
-		   numberOfRows: rows
-		   numberOfColumns: cols];
+                   initWithFrame: matrixRect
+                   mode: NSListModeMatrix
+                   prototype: _browserCellPrototype
+                   numberOfRows: rows
+                   numberOfColumns: cols];
       [matrix setIntercellSpacing: matrixIntercellSpace];
       [matrix setAllowsEmptySelection: _allowsEmptySelection];
       [matrix setAutoscroll: YES];
       if (!_allowsMultipleSelection)
         {
-	  [matrix setMode: NSRadioModeMatrix];
-	}
+          [matrix setMode: NSRadioModeMatrix];
+        }
       [matrix setTarget: self];
       [matrix setAction: @selector(doClick:)];
       [matrix setDoubleAction: @selector(doDoubleClick:)];
@@ -2980,24 +3089,23 @@ static NSTextFieldCell *titleCell;
       
       for (i = 0; i < rows; i++)
         {
-	  aCell = (*imp2)(matrix, sel2, i, 0);
-	  if (![aCell isLoaded])
-	    {
-	      (*imp1)(_browserDelegate, sel1, self, aCell, i, 
-		      column);
-	      [aCell setLoaded: YES];
-	    }
-	}
+          aCell = (*imp2)(matrix, sel2, i, 0);
+          if (![aCell isLoaded])
+            {
+              (*imp1)(_browserDelegate, sel1, self, aCell, i, 
+                      column);
+              [aCell setLoaded: YES];
+            }
+        }
     }
   else
     {
       // Tell the delegate to create the rows
       [_browserDelegate browser: self
-			createRowsForColumn: column
-			inMatrix: matrix];
+                        createRowsForColumn: column
+                        inMatrix: matrix];
     }
 
-  [sc setNeedsDisplay: YES];
   [bc setIsLoaded: YES];
   
   if (column > _lastColumnLoaded)
@@ -3013,11 +3121,11 @@ static NSTextFieldCell *titleCell;
 
     if (b != nil)
       {
-	ms = [b cellSize];
+        ms = [b cellSize];
       }
     else
       {
-	ms = [matrix cellSize];
+        ms = [matrix cellSize];
       }
     cs = [sc contentSize];
     ms.width = cs.width;
@@ -3026,6 +3134,8 @@ static NSTextFieldCell *titleCell;
 
   // Get the title even when untitled, as this may change later.
   [self setTitle: [self _getTitleOfColumn: column] ofColumn: column];
+  // Mark for redisplay
+  [self displayColumn: column];
 }
 
 /* Get the title of a column. */
@@ -3033,7 +3143,7 @@ static NSTextFieldCell *titleCell;
 {
   // Ask the delegate for the column title
   if ([_browserDelegate respondsToSelector: 
-			  @selector(browser:titleOfColumn:)])
+                          @selector(browser:titleOfColumn:)])
     {
       return [_browserDelegate browser: self titleOfColumn: column];
     }
@@ -3046,54 +3156,54 @@ static NSTextFieldCell *titleCell;
       
       // If first column then use the path separator
       if (column == 0)
-	{
-	  return _pathSeparator;
-	}
+        {
+          return _pathSeparator;
+        }
       
       // Get the selected cell
       // Use its string value as the title
       // Only if it is not a leaf
       if (_allowsMultipleSelection == NO)
-	{
-	  c = [self selectedCellInColumn: column - 1];
-	}
+        {
+          c = [self selectedCellInColumn: column - 1];
+        }
       else
-	{
-	  NSMatrix *matrix;
-	  NSArray  *selectedCells;
+        {
+          NSMatrix *matrix;
+          NSArray  *selectedCells;
 
-	  if (!(matrix = [self matrixInColumn: column - 1]))
-	    return @"";
+          if (!(matrix = [self matrixInColumn: column - 1]))
+            return @"";
 
-	  selectedCells = [matrix selectedCells];
+          selectedCells = [matrix selectedCells];
 
-	  if ([selectedCells count] == 1)
-	    {
-	      c = [selectedCells objectAtIndex:0];
-	    }
-	  else
-	    {
-	      return @"";
-	    }
-	}
+          if ([selectedCells count] == 1)
+            {
+              c = [selectedCells objectAtIndex:0];
+            }
+          else
+            {
+              return @"";
+            }
+        }
 
       if ([c isLeaf])
-	{
-	  return @"";
-	}
+        {
+          return @"";
+        }
       else
-	{ 
-	  NSString *value = [c stringValue];
+        { 
+          NSString *value = [c stringValue];
 
-	  if (value != nil)
-	    {
-	      return value;
-	    }
-	  else
-	    {
-	      return @"";
-	    }
-	}
+          if (value != nil)
+            {
+              return value;
+            }
+          else
+            {
+              return @"";
+            }
+        }
     }
   return @"";
 }

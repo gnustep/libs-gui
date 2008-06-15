@@ -16,19 +16,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
-   Library General Public License for more details.
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 #include "config.h"
@@ -54,12 +55,14 @@
 #include "AppKit/NSAffineTransform.h"
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSBezierPath.h"
+#include "AppKit/NSBitmapImageRep.h"
 #include "AppKit/NSCursor.h"
 #include "AppKit/NSDocumentController.h"
 #include "AppKit/NSDocument.h"
 #include "AppKit/NSClipView.h"
 #include "AppKit/NSFont.h"
 #include "AppKit/NSGraphics.h"
+#include "AppKit/NSKeyValueBinding.h"
 #include "AppKit/NSMenu.h"
 #include "AppKit/NSPasteboard.h"
 #include "AppKit/NSPrintInfo.h"
@@ -71,8 +74,8 @@
 #include "AppKit/PSOperators.h"
 #include "GNUstepGUI/GSDisplayServer.h"
 #include "GNUstepGUI/GSTrackingRect.h"
-#include "GNUstepGUI/GSVersion.h"
 #include "GSToolTips.h"
+#include "GSBindingHelpers.h"
 
 /*
  * We need a fast array that can store objects without retain/release ...
@@ -222,29 +225,29 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
       _coordinates_valid = NO;
       if (_rFlags.valid_rects != 0)
-	{
-	  [_window invalidateCursorRectsForView: self];
-	}
+        {
+          [_window invalidateCursorRectsForView: self];
+        }
       if (_rFlags.has_subviews)
-	{
-	  count = [_sub_views count];
-	  if (count > 0)
-	    {
-	      NSView*	array[count];
-	      unsigned	i;
-
-	      [_sub_views getObjects: array];
-	      for (i = 0; i < count; i++)
-		{
-		  NSView	*sub = array[i];
-
-		  if (sub->_coordinates_valid == YES)
-		    {
-		      (*invalidateImp)(sub, invalidateSel);
-		    }
-		}
-	    }
-	}
+        {
+          count = [_sub_views count];
+          if (count > 0)
+            {
+              NSView*	array[count];
+              unsigned	i;
+              
+              [_sub_views getObjects: array];
+              for (i = 0; i < count; i++)
+                {
+                  NSView	*sub = array[i];
+                  
+                  if (sub->_coordinates_valid == YES)
+                    {
+                      (*invalidateImp)(sub, invalidateSel);
+                    }
+                }
+            }
+        }
       [self renewGState];
     }
 }
@@ -292,63 +295,66 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       _coordinates_valid = YES;
       if (!_window)
-	{
-	  _visibleRect = NSZeroRect;
-	  [_matrixToWindow makeIdentityMatrix];
-	  [_matrixFromWindow makeIdentityMatrix];
-	}
+        {
+          _visibleRect = NSZeroRect;
+          [_matrixToWindow makeIdentityMatrix];
+          [_matrixFromWindow makeIdentityMatrix];
+        }
       if (!_super_view)
-	{
-	  _visibleRect = _bounds;
-	  [_matrixToWindow makeIdentityMatrix];
-	  [_matrixFromWindow makeIdentityMatrix];
-	}
+        {
+          _visibleRect = _bounds;
+          [_matrixToWindow makeIdentityMatrix];
+          [_matrixFromWindow makeIdentityMatrix];
+        }
       else
-	{
-	  NSRect		superviewsVisibleRect;
-	  BOOL			wasFlipped = _super_view->_rFlags.flipped_view;
-	  NSAffineTransform	*pMatrix = [_super_view _matrixToWindow];
- 	  NSAffineTransformStruct     ts = [pMatrix transformStruct];
+        {
+          NSRect		superviewsVisibleRect;
+          BOOL			wasFlipped = _super_view->_rFlags.flipped_view;
+          NSAffineTransform	*pMatrix = [_super_view _matrixToWindow];
+          NSAffineTransformStruct     ts = [pMatrix transformStruct];
  
- 	  /* prepend translation */
- 	  ts.tX = NSMinX(_frame) * ts.m11 + NSMinY(_frame) * ts.m21 + ts.tX;
- 	  ts.tY = NSMinX(_frame) * ts.m12 + NSMinY(_frame) * ts.m22 + ts.tY;
-	  [_matrixToWindow setTransformStruct: ts];
+          /* prepend translation */
+          ts.tX = NSMinX(_frame) * ts.m11 + NSMinY(_frame) * ts.m21 + ts.tX;
+          ts.tY = NSMinX(_frame) * ts.m12 + NSMinY(_frame) * ts.m22 + ts.tY;
+          [_matrixToWindow setTransformStruct: ts];
  
- 	  /* prepend rotation */
- 	  if (_frameMatrix != nil)
-	    {
-	      (*preImp)(_matrixToWindow, preSel, _frameMatrix);
-	    }
+          /* prepend rotation */
+          if (_frameMatrix != nil)
+            {
+              (*preImp)(_matrixToWindow, preSel, _frameMatrix);
+            }
  
-	  if (_rFlags.flipped_view != wasFlipped)
-	    {
-	      /*
-	       * The flipping process must result in a coordinate system that
-	       * exactly overlays the original.	 To do that, we must translate
-	       * the origin by the height of the view.
-	       */
- 	      ts = [flip transformStruct];
-	      ts.tY = _frame.size.height;
-	      [flip setTransformStruct: ts];
-	      (*preImp)(_matrixToWindow, preSel, flip);
-	    }
-	  (*preImp)(_matrixToWindow, preSel, _boundsMatrix);
- 	  ts = [_matrixToWindow transformStruct];
-	  [_matrixFromWindow setTransformStruct: ts];
-	  [_matrixFromWindow invert];
+          if (_rFlags.flipped_view != wasFlipped)
+            {
+              /*
+               * The flipping process must result in a coordinate system that
+               * exactly overlays the original.	 To do that, we must translate
+               * the origin by the height of the view.
+               */
+              ts = [flip transformStruct];
+              ts.tY = _frame.size.height;
+              [flip setTransformStruct: ts];
+              (*preImp)(_matrixToWindow, preSel, flip);
+            }
+          if (_boundsMatrix != nil)
+            {
+              (*preImp)(_matrixToWindow, preSel, _boundsMatrix);
+            }
+          ts = [_matrixToWindow transformStruct];
+          [_matrixFromWindow setTransformStruct: ts];
+          [_matrixFromWindow invert];
 
-	  superviewsVisibleRect = [self convertRect: [_super_view visibleRect]
-					   fromView: _super_view];
+          superviewsVisibleRect = [self convertRect: [_super_view visibleRect]
+                                        fromView: _super_view];
 
-	  _visibleRect = NSIntersectionRect(superviewsVisibleRect, _bounds);
-	}
+          _visibleRect = NSIntersectionRect(superviewsVisibleRect, _bounds);
+        }
       if (_rFlags.has_tooltips != 0)
         {
-	  GSToolTips	*tt = [GSToolTips tipsForView: self];
+          GSToolTips	*tt = [GSToolTips tipsForView: self];
 
-	  [tt rebuild];
-	}
+          [tt rebuild];
+        }
     }
 }
 
@@ -360,19 +366,95 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       unsigned	count = [_sub_views count];
 
       if (count > 0)
-	{
-	  unsigned	i;
-	  NSView	*array[count];
+        {
+          unsigned	i;
+          NSView	*array[count];
 
-	  [_sub_views getObjects: array];
-	  for (i = 0; i < count; ++i)
-	    {
-	      [array[i] _viewDidMoveToWindow];
-	    }
-	}
+          [_sub_views getObjects: array];
+          for (i = 0; i < count; ++i)
+            {
+              [array[i] _viewDidMoveToWindow];
+            }
+        }
     }
 }
 
+- (void) _viewWillMoveToWindow: (NSWindow*)newWindow
+{
+  [self viewWillMoveToWindow: newWindow];
+  if (newWindow == _window)
+    {
+      return;
+    }
+  if (_coordinates_valid)
+    {
+      (*invalidateImp)(self, invalidateSel);
+    }
+  if (_rFlags.has_currects != 0)
+    {
+      [self discardCursorRects];
+    }
+  if (_rFlags.has_draginfo)
+    {
+      NSArray *t = GSGetDragTypes(self);
+
+      if (_window != nil)
+        {
+          [GSDisplayServer removeDragTypes: t fromWindow: _window];
+        }
+      if (newWindow != nil)
+        {
+          [GSDisplayServer addDragTypes: t toWindow: newWindow];
+        }
+    }
+  
+  _window = newWindow;
+
+  if (_rFlags.has_subviews)
+    {
+      unsigned	count = [_sub_views count];
+
+      if (count > 0)
+        {
+          unsigned	i;
+          NSView	*array[count];
+          
+          [_sub_views getObjects: array];
+          for (i = 0; i < count; ++i)
+            {
+              [array[i] _viewWillMoveToWindow: newWindow];
+            }
+        }
+    }
+}
+
+- (void) _viewWillMoveToSuperview: (NSView*)newSuper
+{
+  [self viewWillMoveToSuperview: newSuper];
+  _super_view = newSuper;
+}
+
+/*
+ * Extend in super view covered by the frame of a view.
+ * When the frame is rotated, this is different from the frame.
+ */
+- (NSRect) _frameExtend
+{
+  NSRect frame = _frame;
+              
+  if (_frameMatrix != nil)
+    {
+      NSRect r;
+
+      r.origin = NSZeroPoint;
+      r.size = frame.size;
+      [_frameMatrix boundingRectFor: r result: &r];
+      frame = NSOffsetRect(r, NSMinX(frame),
+                           NSMinY(frame));
+    }
+
+  return frame;
+}
 
 /*
  * Class methods
@@ -392,10 +474,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       invalidateSel = @selector(_invalidateCoordinates);
 
       preImp = (void (*)(NSAffineTransform*, SEL, NSAffineTransform*))
-		[matrixClass instanceMethodForSelector: preSel];
+          [matrixClass instanceMethodForSelector: preSel];
 
       invalidateImp = (void (*)(NSView*, SEL))
-		[self instanceMethodForSelector: invalidateSel];
+          [self instanceMethodForSelector: invalidateSel];
 
       flip = [matrixClass new];
       [flip setTransformStruct: ats];
@@ -406,6 +488,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       rectClass = [GSTrackingRect class];
       NSDebugLLog(@"NSView", @"Initialize NSView class\n");
       [self setVersion: 1];
+
+      // expose bindings
+      [self exposeBinding: NSToolTipBinding];
+      [self exposeBinding: NSHiddenBinding];
     }
 }
 
@@ -446,9 +532,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   _bounds.origin = NSZeroPoint;		// Set bounds rectangle
   _bounds.size = _frame.size;
 
-  _boundsMatrix = [NSAffineTransform new];	// Map from superview to bounds
-  _matrixToWindow = [NSAffineTransform new];	// Map to window coordinates
-  _matrixFromWindow = [NSAffineTransform new];	// Map from window coordinates
+  //_frameMatrix = [NSAffineTransform new];    // Map fromsuperview to frame
+  //_boundsMatrix = [NSAffineTransform new];   // Map from superview to bounds
+  _matrixToWindow = [NSAffineTransform new];   // Map to window coordinates
+  _matrixFromWindow = [NSAffineTransform new]; // Map from window coordinates
 
   _sub_views = [NSMutableArray new];
   _tracking_rects = [NSMutableArray new];
@@ -477,6 +564,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 {
   NSView	*tmp;
   unsigned	count;
+
+  // Remove all key value bindings for this view.
+  [GSKeyValueBinding unbindAllForObject: self];
 
   while ([_sub_views count] > 0)
     {
@@ -578,7 +668,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   RELEASE(_matrixToWindow);
   RELEASE(_matrixFromWindow);
   TEST_RELEASE(_frameMatrix);
-  RELEASE(_boundsMatrix);
+  TEST_RELEASE(_boundsMatrix);
   TEST_RELEASE(_sub_views);
   if (_rFlags.has_tooltips != 0)
     {
@@ -602,8 +692,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 - (void) addSubview: (NSView*)aView
 {
   [self addSubview: aView
-	positioned: NSWindowAbove
-	relativeTo: nil];
+        positioned: NSWindowAbove
+        relativeTo: nil];
 }
 
 - (void) addSubview: (NSView*)aView
@@ -633,9 +723,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       (*invalidateImp)(aView, invalidateSel);
     }
-  [aView viewWillMoveToWindow: _window];
-  [aView viewWillMoveToSuperview: self];
-  [aView setNextResponder: self];
 
   // Do this after the removeFromSuperview, as aView may already 
   // be a subview and the index could change.
@@ -650,15 +737,18 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   if (index == NSNotFound)
     {
       if (place == NSWindowBelow)
-	index = 0;
+        index = 0;
       else
-	index = [_sub_views count];
+        index = [_sub_views count];
     }
   else if (place != NSWindowBelow)
     {
       index += 1;
     }
 
+  [aView _viewWillMoveToWindow: _window];
+  [aView _viewWillMoveToSuperview: self];
+  [aView setNextResponder: self];
   [_sub_views insertObject: aView atIndex: index];
   _rFlags.has_subviews = 1;
   [aView resetCursorRects];
@@ -791,8 +881,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     }
   [self willRemoveSubview: aView];
   aView->_super_view = nil;
-  [aView viewWillMoveToWindow: nil];
-  [aView viewWillMoveToSuperview: nil];
+  [aView _viewWillMoveToWindow: nil];
+  [aView _viewWillMoveToSuperview: nil];
   [aView setNextResponder: nil];
   RETAIN(aView);
   [_sub_views removeObjectIdenticalTo: aView];
@@ -835,8 +925,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	{
 	  (*invalidateImp)(newView, invalidateSel);
 	}
-      [newView viewWillMoveToWindow: _window];
-      [newView viewWillMoveToSuperview: self];
+      [newView _viewWillMoveToWindow: _window];
+      [newView _viewWillMoveToSuperview: self];
       [newView setNextResponder: self];
       [_sub_views addObject: newView];
       _rFlags.has_subviews = 1;
@@ -876,11 +966,11 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	    }
 	  index = [_sub_views indexOfObjectIdenticalTo: oldView];
 	  [oldView removeFromSuperview];
-	  [newView viewWillMoveToWindow: _window];
-	  [newView viewWillMoveToSuperview: self];
+	  [newView _viewWillMoveToWindow: _window];
+	  [newView _viewWillMoveToSuperview: self];
 	  [newView setNextResponder: self];
-  	  [_sub_views insertObject: newView
-  		      atIndex: index];
+    [_sub_views insertObject: newView
+                atIndex: index];
 	  _rFlags.has_subviews = 1;
 	  [newView resetCursorRects];
 	  [newView setNeedsDisplay: YES];
@@ -903,7 +993,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
  */
 - (void) viewWillMoveToSuperview: (NSView*)newSuper
 {
-  _super_view = newSuper;
 }
 
 /**
@@ -914,50 +1003,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
  */
 - (void) viewWillMoveToWindow: (NSWindow*)newWindow
 {
-  if (newWindow == _window)
-    {
-      return;
-    }
-  if (_coordinates_valid)
-    {
-      (*invalidateImp)(self, invalidateSel);
-    }
-  if (_rFlags.has_currects != 0)
-    {
-      [self discardCursorRects];
-    }
-  if (_rFlags.has_draginfo)
-    {
-      NSArray		*t = GSGetDragTypes(self);
-
-      if (_window != nil)
-	{
-	  [GSDisplayServer removeDragTypes: t fromWindow: _window];
-	}
-      if (newWindow != nil)
-	{
-	  [GSDisplayServer addDragTypes: t toWindow: newWindow];
-	}
-    }
-
-  _window = newWindow;
-
-  if (_rFlags.has_subviews)
-    {
-      unsigned	count = [_sub_views count];
-
-      if (count > 0)
-	{
-	  unsigned	i;
-	  NSView	*array[count];
-
-	  [_sub_views getObjects: array];
-	  for (i = 0; i < count; ++i)
-	    {
-	      [array[i] viewWillMoveToWindow: newWindow];
-	    }
-	}
-    }
 }
 
 - (void) didAddSubview: (NSView *)subview
@@ -977,12 +1022,13 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   float sx;
   float sy;
   
+  // FIXME: The computation here is wrong when there is a rotation involved.
   if (_bounds.size.width == 0)
     {
       if (_frame.size.width == 0)
-	sx = 1;
+          sx = 1;
       else
-	sx = FLT_MAX;
+          sx = FLT_MAX;
     }
   else
     {
@@ -992,16 +1038,21 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   if (_bounds.size.height == 0)
     {
       if (_frame.size.height == 0)
-	sy = 1;
+          sy = 1;
       else
-	sy = FLT_MAX;
+          sy = FLT_MAX;
     }
   else
     {
       sy = _frame.size.height / _bounds.size.height;
     }
   
+  if (_boundsMatrix == nil)
+    {
+      _boundsMatrix = [NSAffineTransform new]; 
+    }
   [_boundsMatrix scaleTo: sx : sy];
+
   if (sx != 1 || sy != 1)
     {
       _is_rotated_or_scaled_from_base = YES;
@@ -1025,57 +1076,65 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       frameRect.size.height = 0;
     }
 
-  if (NSMinX(_frame) != NSMinX(frameRect) 
-      || NSMinY(_frame) != NSMinY(frameRect))
-    changedOrigin = YES;
-  if (NSWidth(_frame) != NSWidth(frameRect) 
-      || NSHeight(_frame) != NSHeight(frameRect))
-    changedSize = YES;
-  
-  _frame = frameRect;
-  /* FIXME: Touch bounds only if we are not scaled or rotated */
-  _bounds.size = frameRect.size;
-  
-
-  if (changedSize && _is_rotated_or_scaled_from_base)
+  if (NSEqualPoints(_frame.origin, frameRect.origin) == NO)
     {
-      [self _updateBoundsMatrix];
+      changedOrigin = YES;
     }
-
-  if (changedSize || changedOrigin)
+  if (NSEqualSizes(_frame.size, frameRect.size) == NO)
     {
+      changedSize = YES;
+    }
+  
+  if (changedSize == YES || changedOrigin == YES)
+    {
+      _frame = frameRect;
+
+      if (changedSize == YES)
+        {
+          if (_is_rotated_or_scaled_from_base == YES)
+            {
+              [self _updateBoundsMatrix];
+            }
+          else
+            {
+              _bounds.size = frameRect.size;
+            }
+        }
+
       if (_coordinates_valid)
-	{
-	  (*invalidateImp)(self, invalidateSel);
-	}
+        {
+          (*invalidateImp)(self, invalidateSel);
+        }
+      [self resetCursorRects];
       [self resizeSubviewsWithOldSize: old_size];
       if (_post_frame_changes)
-	{
-	  [nc postNotificationName: NSViewFrameDidChangeNotification
-	      object: self];
-	}
+        {
+          [nc postNotificationName: NSViewFrameDidChangeNotification
+              object: self];
+        }
     }
 }
 
 - (void) setFrameOrigin: (NSPoint)newOrigin
 {
-  if (_coordinates_valid)
+  if (NSEqualPoints(_frame.origin, newOrigin) == NO)
     {
-      (*invalidateImp)(self, invalidateSel);
-    }
-  _frame.origin = newOrigin;
-
-  if (_post_frame_changes)
-    {
-      [nc postNotificationName: NSViewFrameDidChangeNotification
-	  object: self];
+      if (_coordinates_valid)
+        {
+          (*invalidateImp)(self, invalidateSel);
+        }
+      _frame.origin = newOrigin;
+      [self resetCursorRects];
+      if (_post_frame_changes)
+        {
+          [nc postNotificationName: NSViewFrameDidChangeNotification
+              object: self];
+        }
     }
 }
 
 - (void) setFrameSize: (NSSize)newSize
 {
-  NSSize old_size = _frame.size;
-
   if (newSize.width < 0)
     {
       NSWarnMLog(@"given negative width", 0);
@@ -1086,53 +1145,66 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       NSWarnMLog(@"given negative height", 0);
       newSize.height = 0;
     }
-  if (_coordinates_valid)
+  if (NSEqualSizes(_frame.size, newSize) == NO)
     {
-      (*invalidateImp)(self, invalidateSel);
-    }
+      NSSize old_size = _frame.size;
 
-  if (_is_rotated_or_scaled_from_base)
-    {
-      float sx = _bounds.size.width  / _frame.size.width;
-      float sy = _bounds.size.height / _frame.size.height;
-      
-      _frame.size = newSize;
-      _bounds.size.width  = _frame.size.width  * sx;
-      _bounds.size.height = _frame.size.height * sy;
-    }
-  else
-    {
-      _frame.size = _bounds.size = newSize;
-    }
+      if (_coordinates_valid)
+        {
+          (*invalidateImp)(self, invalidateSel);
+        }
 
-  [self resizeSubviewsWithOldSize: old_size];
-  if (_post_frame_changes)
-    {
-      [nc postNotificationName: NSViewFrameDidChangeNotification
-	  object: self];
+      if (_is_rotated_or_scaled_from_base)
+        {
+          float sx = _bounds.size.width  / _frame.size.width;
+          float sy = _bounds.size.height / _frame.size.height;
+          
+          _frame.size = newSize;
+          _bounds.size.width  = _frame.size.width  * sx;
+          _bounds.size.height = _frame.size.height * sy;
+          // FIXME: May need to update the bounds matrix.
+        }
+      else
+        {
+          _frame.size = _bounds.size = newSize;
+        }
+      [self resetCursorRects];
+      [self resizeSubviewsWithOldSize: old_size];
+      if (_post_frame_changes)
+        {
+          [nc postNotificationName: NSViewFrameDidChangeNotification
+              object: self];
+        }
     }
 }
 
 - (void) setFrameRotation: (float)angle
 {
-  /* no frame matrix, create one since it is needed for rotation */
-  if (_frameMatrix == nil)
-    {
-      _frameMatrix = [NSAffineTransform new];	// Map fromsuperview to frame
-    }
+  float oldAngle = [self frameRotation];
 
-  if (_coordinates_valid)
+  if (oldAngle != angle)
     {
-      (*invalidateImp)(self, invalidateSel);
-    }
+      /* no frame matrix, create one since it is needed for rotation */
+      if (_frameMatrix == nil)
+        {
+          // Map fromsuperview to frame
+          _frameMatrix = [NSAffineTransform new];
+        }
 
-  [_frameMatrix setFrameRotation: angle];
-  _is_rotated_from_base = _is_rotated_or_scaled_from_base = YES;
+      if (_coordinates_valid)
+        {
+          (*invalidateImp)(self, invalidateSel);
+        }
 
-  if (_post_frame_changes)
-    {
-      [nc postNotificationName: NSViewFrameDidChangeNotification
-	  object: self];
+      [_frameMatrix rotateByDegrees: angle - oldAngle];
+      _is_rotated_from_base = _is_rotated_or_scaled_from_base = YES;
+      [self _updateBoundsMatrix];
+      [self resetCursorRects];
+      if (_post_frame_changes)
+        {
+          [nc postNotificationName: NSViewFrameDidChangeNotification
+              object: self];
+        }
     }
 }
 
@@ -1170,31 +1242,57 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) scaleUnitSquareToSize: (NSSize)newSize
 {
-  if (newSize.width < 0)
+  if (newSize.width != 1.0 || newSize.height != 1.0)
     {
-      NSWarnMLog(@"given negative width", 0);
-      newSize.width = 0;
-    }
-  if (newSize.height < 0)
-    {
-      NSWarnMLog(@"given negative height", 0);
-      newSize.height = 0;
-    }
-  if (_coordinates_valid)
-    {
-      (*invalidateImp)(self, invalidateSel);
-    }
-  _bounds.size.width  = _bounds.size.width  / newSize.width;
-  _bounds.size.height = _bounds.size.height / newSize.height;
+      if (newSize.width < 0)
+        {
+          NSWarnMLog(@"given negative width", 0);
+          newSize.width = 0;
+        }
+      if (newSize.height < 0)
+        {
+          NSWarnMLog(@"given negative height", 0);
+          newSize.height = 0;
+        }
+      if (_coordinates_valid)
+        {
+          (*invalidateImp)(self, invalidateSel);
+        }
 
-  _is_rotated_or_scaled_from_base = YES;
-  
-  [self _updateBoundsMatrix];
+      if (_boundsMatrix == nil)
+        {
+          _boundsMatrix = [NSAffineTransform new]; 
+        }
+      [_boundsMatrix scaleXBy: newSize.width yBy: newSize.height];
 
-  if (_post_bounds_changes)
-    {
-      [nc postNotificationName: NSViewBoundsDidChangeNotification
-	  object: self];
+      if (_is_rotated_from_base)
+        {
+          NSAffineTransform *matrix;
+          NSRect frame = _frame;
+      
+          frame.origin = NSMakePoint(0, 0);
+
+          // Adjust bounds
+          matrix = [_boundsMatrix copy];
+          [matrix invert];
+          [matrix boundingRectFor: frame result: &_bounds];
+          RELEASE(matrix);
+        }
+      else
+        {
+          _bounds.origin.x  = _bounds.origin.x  / newSize.width;
+          _bounds.origin.y = _bounds.origin.y / newSize.height;
+          _bounds.size.width  = _bounds.size.width  / newSize.width;
+          _bounds.size.height = _bounds.size.height / newSize.height;
+        }
+
+      _is_rotated_or_scaled_from_base = YES;
+
+      if (_post_bounds_changes)
+        {
+          [nc postNotificationName: NSViewBoundsDidChangeNotification
+              object: self];
+        }
     }
 }
 
@@ -1210,35 +1308,112 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       NSWarnMLog(@"given negative height", 0);
       aRect.size.height = 0;
     }
-  if (_coordinates_valid)
+  if (_is_rotated_from_base)
     {
-      (*invalidateImp)(self, invalidateSel);
-    }
-  _bounds = aRect;
-  [_boundsMatrix
-    setFrameOrigin: NSMakePoint(-_bounds.origin.x, -_bounds.origin.y)];
-  [self _updateBoundsMatrix];
+      NSAffineTransform *matrix;
+      NSRect frame = _frame;
+      
+      frame.origin = NSMakePoint(0, 0);
+      if (_coordinates_valid)
+        {
+          (*invalidateImp)(self, invalidateSel);
+        }
+      if (_boundsMatrix == nil)
+        {
+          _boundsMatrix = [NSAffineTransform new]; 
+        }
+      [_boundsMatrix
+        setFrameOrigin: NSMakePoint(-aRect.origin.x, -aRect.origin.y)];
+      /*
+        FIXME: We need to adjust the size as well, but the computation in 
+        _updateBoundsMatrix is wrong for this case.
+     _bounds.size = aRect.size;
+      [self _updateBoundsMatrix];
+      */
 
-  if (_post_bounds_changes)
+     // Adjust bounds
+      matrix = [_boundsMatrix copy];
+      [matrix invert];
+      [matrix boundingRectFor: frame result: &_bounds];
+      RELEASE(matrix);
+      [self resetCursorRects];
+      if (_post_bounds_changes)
+        {
+          [nc postNotificationName: NSViewBoundsDidChangeNotification
+              object: self];
+        }
+    }
+  else if (NSEqualRects(_bounds, aRect) == NO)
     {
-      [nc postNotificationName: NSViewBoundsDidChangeNotification
-	  object: self];
+      if (_coordinates_valid)
+        {
+          (*invalidateImp)(self, invalidateSel);
+        }
+      _bounds = aRect;
+      if (_boundsMatrix == nil)
+        {
+          _boundsMatrix = [NSAffineTransform new]; 
+        }
+      [_boundsMatrix
+        setFrameOrigin: NSMakePoint(-_bounds.origin.x, -_bounds.origin.y)];
+      [self _updateBoundsMatrix];
+      [self resetCursorRects];
+      if (_post_bounds_changes)
+        {
+          [nc postNotificationName: NSViewBoundsDidChangeNotification
+              object: self];
+        }
     }
 }
 
 - (void) setBoundsOrigin: (NSPoint)newOrigin
 {
-  if (_coordinates_valid)
+  if (_is_rotated_from_base)
     {
-      (*invalidateImp)(self, invalidateSel);
-    }
-  _bounds.origin = newOrigin;
-  [_boundsMatrix setFrameOrigin: NSMakePoint(-newOrigin.x, -newOrigin.y)];
+      NSAffineTransform *matrix;
+      NSRect frame = _frame;
+      
+      frame.origin = NSMakePoint(0, 0);
+      if (_coordinates_valid)
+        {
+          (*invalidateImp)(self, invalidateSel);
+        }
+      if (_boundsMatrix == nil)
+        {
+          _boundsMatrix = [NSAffineTransform new]; 
+        }
+      [_boundsMatrix setFrameOrigin: NSMakePoint(-newOrigin.x, -newOrigin.y)];
 
-  if (_post_bounds_changes)
+     // Adjust bounds
+      matrix = [_boundsMatrix copy];
+      [matrix invert];
+      [matrix boundingRectFor: frame result: &_bounds];
+      RELEASE(matrix);
+      [self resetCursorRects];
+      if (_post_bounds_changes)
+        {
+          [nc postNotificationName: NSViewBoundsDidChangeNotification
+              object: self];
+        }
+    }
+  else if (NSEqualPoints(_bounds.origin, newOrigin) == NO)
     {
-      [nc postNotificationName: NSViewBoundsDidChangeNotification
-	  object: self];
+      if (_coordinates_valid)
+        {
+          (*invalidateImp)(self, invalidateSel);
+        }
+      _bounds.origin = newOrigin;
+      if (_boundsMatrix == nil)
+        {
+          _boundsMatrix = [NSAffineTransform new]; 
+        }
+      [_boundsMatrix setFrameOrigin: NSMakePoint(-newOrigin.x, -newOrigin.y)];
+      [self resetCursorRects];
+      if (_post_bounds_changes)
+        {
+          [nc postNotificationName: NSViewBoundsDidChangeNotification
+              object: self];
+        }
     }
 }
 
@@ -1254,41 +1429,56 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       NSWarnMLog(@"given negative height", 0);
       newSize.height = 0;
     }
-  if (_coordinates_valid)
+  // FIXME: What to do in the rotation case?
+  if (NSEqualSizes(_bounds.size, newSize) == NO)
     {
-      (*invalidateImp)(self, invalidateSel);
-    }
+      if (_coordinates_valid)
+        {
+          (*invalidateImp)(self, invalidateSel);
+        }
 
-  _bounds.size = newSize;
-  [self _updateBoundsMatrix];
-
-  if (_post_bounds_changes)
-    {
-      [nc postNotificationName: NSViewBoundsDidChangeNotification
-	  object: self];
+      _bounds.size = newSize;
+      [self _updateBoundsMatrix];
+      [self resetCursorRects];
+      if (_post_bounds_changes)
+        {
+          [nc postNotificationName: NSViewBoundsDidChangeNotification
+              object: self];
+        }
     }
 }
 
 - (void) setBoundsRotation: (float)angle
 {
-  NSAffineTransform *matrix;
+  float oldAngle = [self boundsRotation];
 
-  if (_coordinates_valid)
+  if (angle != oldAngle)
     {
-      (*invalidateImp)(self, invalidateSel);
-    }
-  [_boundsMatrix rotateByDegrees: angle - [_boundsMatrix rotationAngle]];
-  _is_rotated_from_base = _is_rotated_or_scaled_from_base = YES;
-  // Adjust bounds
-  matrix = [_boundsMatrix copy];
-  [matrix invert];
-  [matrix boundingRectFor: _frame result: &_bounds];
-  RELEASE(matrix);
-
-  if (_post_bounds_changes)
-    {
-      [nc postNotificationName: NSViewBoundsDidChangeNotification
-	  object: self];
+      NSAffineTransform *matrix;
+      NSRect frame = _frame;
+      
+      frame.origin = NSMakePoint(0, 0);
+      if (_coordinates_valid)
+        {
+          (*invalidateImp)(self, invalidateSel);
+        }
+      if (_boundsMatrix == nil)
+        {
+          _boundsMatrix = [NSAffineTransform new]; 
+        }
+      [_boundsMatrix rotateByDegrees: angle - oldAngle];
+      _is_rotated_from_base = _is_rotated_or_scaled_from_base = YES;
+      // Adjust bounds
+      matrix = [_boundsMatrix copy];
+      [matrix invert];
+      [matrix boundingRectFor: frame result: &_bounds];
+      RELEASE(matrix);
+      [self resetCursorRects];
+      if (_post_bounds_changes)
+        {
+          [nc postNotificationName: NSViewBoundsDidChangeNotification
+              object: self];
+        }
     }
 }
 
@@ -1395,7 +1585,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 
 /* Helper for -convertRect:fromView: and -convertRect:toView:. */
-static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
+static NSRect
+convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
 					  NSAffineTransform *matrix2)
 {
   NSRect r;
@@ -1596,15 +1787,15 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
       id e, o;
 
       if (_autoresizes_subviews == NO || _is_rotated_from_base == YES)
-	return;
+          return;
 
       e = [_sub_views objectEnumerator];
       o = [e nextObject];
       while (o)
-	{
-	  [o resizeWithOldSuperviewSize: oldSize];
-	  o = [e nextObject];
-	}
+        {
+          [o resizeWithOldSuperviewSize: oldSize];
+          o = [e nextObject];
+        }
     }
 }
 
@@ -1714,26 +1905,28 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
       NSAssert(_window != nil, NSInternalInconsistencyException);
       /* Check for deferred window */
       if ((window_gstate = [_window gState]) == 0)
-	{
-	  return;
-	}
+        {
+          return;
+        }
     }
 
   if (ctxt == nil)
     {
       if (viewIsPrinting != nil)
         {
-	  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+          NSPrintOperation *printOp = [NSPrintOperation currentOperation];
 
-	  ctxt = [printOp context];
-	}
+          ctxt = [printOp context];
+        }
       else
         {
-	  ctxt = [_window graphicsContext];
-	}
+          ctxt = [_window graphicsContext];
+        }
     }
-  // FIXME: Set current context
 
+  // Set current context
+  [NSGraphicsContext saveGraphicsState];
+  [NSGraphicsContext setCurrentContext: ctxt];
 
   [ctxt lockFocusView: self inRect: rect];
   wrect = [self convertRect: rect toView: nil];
@@ -1755,54 +1948,52 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
   if (viewIsPrinting != nil)
     {
       if (viewIsPrinting == self)
-	{
-	  /* Make sure coordinates are valid, then fake that we don't have
-	     a superview so we get printed correctly */
-	  [self _matrixToWindow];
-	  [_matrixToWindow makeIdentityMatrix];
-	}
+        {
+          /* Make sure coordinates are valid, then fake that we don't have
+             a superview so we get printed correctly */
+          [self _matrixToWindow];
+          [_matrixToWindow makeIdentityMatrix];
+        }
       else
-	{
-	  [[self _matrixToWindow] concat];
-	}
+        {
+          [[self _matrixToWindow] concat];
+        }
 
       /* Allow subclases to make other modifications */
       [self setUpGState];
     }
   else
     {
-      NSAffineTransform *matrix;
-      matrix = [self _matrixToWindow];
-
       if (_gstate)
-	{
-	  DPSsetgstate(ctxt, _gstate);
-	  if (_renew_gstate)
-	    {
-	      [self setUpGState];
-	      _renew_gstate = NO;
-	    }
-	  DPSgsave(ctxt);
-	}
+        {
+          DPSsetgstate(ctxt, _gstate);
+          if (_renew_gstate)
+            {
+              [self setUpGState];
+              _renew_gstate = NO;
+            }
+          DPSgsave(ctxt);
+        }
       else
-	{
-	  DPSsetgstate(ctxt, window_gstate);
-	  DPSgsave(ctxt);
-	  [matrix concat];
-
-	  /* Allow subclases to make other modifications */
-	  [self setUpGState];
-	  _renew_gstate = NO;
-	  if (_allocate_gstate)
-	    {
-	      _gstate = GSDefineGState(ctxt);
-	      /* Balance the previous gsave and install our own gstate */
-	      DPSgrestore(ctxt);
-	      DPSsetgstate(ctxt, _gstate);
-	      DPSgsave(ctxt);
-	    }
-
-	}
+        {
+          // This only works, when the context comes from the window
+          DPSsetgstate(ctxt, window_gstate);
+          DPSgsave(ctxt);
+          [[self _matrixToWindow] concat];
+          
+          /* Allow subclases to make other modifications */
+          [self setUpGState];
+          _renew_gstate = NO;
+          if (_allocate_gstate)
+            {
+              _gstate = GSDefineGState(ctxt);
+              /* Balance the previous gsave and install our own gstate */
+              DPSgrestore(ctxt);
+              DPSsetgstate(ctxt, _gstate);
+              DPSgsave(ctxt);
+            }
+          
+        }
     }
 
   if ([self wantsDefaultClipping])
@@ -1812,26 +2003,33 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
        * than the bounds of the view. This prevents drawing outside
        * our bounds.
        */
-      if (_is_rotated_from_base)
-	{
-	  // When the view is rotated, more complex clipping is needed.
-	  NSAffineTransform *matrix;
-	  NSBezierPath *bp = [NSBezierPath bezierPathWithRect: _frame];
+      // Normally the second test is not needed, it can differ only
+      // when the view is loaded from a NIB file.
+      if (_is_rotated_from_base && (_boundsMatrix != nil))
+        {
+          // When the view is rotated, we clip to the frame.
+          NSAffineTransform *matrix;
+          NSRect frame = _frame;
+          NSBezierPath *bp;
 
-	  matrix = [_boundsMatrix copy];
-	  [matrix invert];
-	  [bp transformUsingAffineTransform: matrix];
-	  [bp addClip];
-	  RELEASE(matrix);
-	}
+          frame.origin = NSMakePoint(0, 0);
+          bp = [NSBezierPath bezierPathWithRect: frame];
+          
+          matrix = [_boundsMatrix copy];
+          [matrix invert];
+          [bp transformUsingAffineTransform: matrix];
+          [bp addClip];
+          RELEASE(matrix);
+        }
       else
         { 
-	  DPSrectclip(ctxt, NSMinX(rect), NSMinY(rect),
-		      NSWidth(rect), NSHeight(rect));
-	}
+          // FIXME: Should we use _bounds or visibleRect here?
+          DPSrectclip(ctxt, NSMinX(rect), NSMinY(rect),
+                      NSWidth(rect), NSHeight(rect));
+        }
     }
 
-  /* Tell backends that images are drawn upside down. 
+  /* Tell backends that images are drawn upside down. Obsolete?
      This is needed when a backend is able to handle full image transformation. */
   GSWSetViewIsFlipped(ctxt, _rFlags.flipped_view);
 }
@@ -1848,7 +2046,7 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
       NSAssert(_window != nil, NSInternalInconsistencyException);
       /* Check for deferred window */
       if ([_window gState] == 0)
-	return;
+        return;
 
       /* Restore our original gstate */
       DPSgrestore(ctxt);
@@ -1865,15 +2063,16 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
       struct	NSWindow_struct *window_t;
       window_t = (struct NSWindow_struct *)_window;
       if (flush)
-	{
-	  rect = [[window_t->_rectsBeingDrawn lastObject] rectValue];
-	  window_t->_rectNeedingFlush =
-	    NSUnionRect(window_t->_rectNeedingFlush, rect);
-	  window_t->_f.needs_flush = YES;
-	}
+        {
+          rect = [[window_t->_rectsBeingDrawn lastObject] rectValue];
+          window_t->_rectNeedingFlush =
+              NSUnionRect(window_t->_rectNeedingFlush, rect);
+          window_t->_f.needs_flush = YES;
+        }
       [window_t->_rectsBeingDrawn removeLastObject];
     }
   [ctxt unlockFocusView: self needsFlush: YES ];
+  [NSGraphicsContext restoreGraphicsState];
 }
 
 /**
@@ -1901,7 +2100,7 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 - (void) releaseGState
 {
   if (_allocate_gstate && _gstate)
-    GSUndefineGState(GSCurrentContext(), _gstate);
+    GSUndefineGState([_window graphicsContext], _gstate);
   _gstate = 0;
   _allocate_gstate = NO;
 }
@@ -1990,6 +2189,35 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
     }
 }
 
+/*
+ * The following display* methods work based on these invariants:
+ * - When a view is marked as needing display, all views above it 
+ *   in the hierarchy are marked as well.
+ * - When a view has an invalid rectangle, all views above it up 
+ *   to the next opaque view also include this invalid rectangle.
+ *
+ * After drawing an area in a view give, subviews a chance to draw 
+ * there too.
+ * When drawing a non-opaque subview we need to make sure any area
+ * we draw in has been drawn by the opaque superview as well.
+ *
+ * When drawing the invalid area of a view, we need to make sure 
+ * that invalid areas in opaque subviews get drawn as well. These 
+ * areas will not be included in the invalid area of the view.
+ *
+ * IfNeeded means we only draw if the view is marked as needing display
+ * and will only draw in the _invalidRect of this view and that of all 
+ * the opaque subviews. For non-opaque subviews we need to draw where 
+ * ever a superview has already drawn.
+ * 
+ * InRect means we will only draw in this rectangle. If non is given the
+ * visibleRect gets used.
+ *
+ * IgnoringOpacity means we start drawing at the current view. Otherwise 
+ * we go up to the next opaque view.
+ *
+ */
+
 - (void) display
 {
   [self displayRect: [self visibleRect]];
@@ -1999,44 +2227,7 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 {
   if (_rFlags.needs_display == YES)
     {
-      if ([self isOpaque] == YES)
-	{
-	  [self displayIfNeededIgnoringOpacity];
-	}
-      else
-	{
-	  NSView	*firstOpaque = [self opaqueAncestor];
-	  NSRect	rect;
-
-	  if (_coordinates_valid == NO)
-	    {
-	      [self _rebuildCoordinates];
-	    }
-	  rect = NSIntersectionRect(_invalidRect, _visibleRect);
-	  rect = [firstOpaque convertRect: rect  fromView: self];
-	  if (NSIsEmptyRect(rect) == NO)
-	    {
-	      [firstOpaque displayIfNeededInRectIgnoringOpacity: rect];
-	    }
-	  /*
-	   * If we still need display after displaying the invalid rectangle,
-	   * display any subviews that need display.
-	   */ 
-	  if (_rFlags.needs_display == YES)
-	    {
-	      NSEnumerator	*enumerator = [_sub_views objectEnumerator];
-	      NSView		*sub;
-
-	      while ((sub = [enumerator nextObject]) != nil)
-		{
-		  if (sub->_rFlags.needs_display)
-		    {
-		      [sub displayIfNeededIgnoringOpacity];
-		    }
-		}
-	      _rFlags.needs_display = NO;
-	    }
-	}
+      [self displayIfNeededInRect: [self visibleRect]];
     }
 }
 
@@ -2044,35 +2235,7 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 {
   if (_rFlags.needs_display == YES)
     {
-      NSRect	rect;
-
-      if (_coordinates_valid == NO)
-	{
-	  [self _rebuildCoordinates];
-	}
-      rect = NSIntersectionRect(_invalidRect, _visibleRect);
-      if (NSIsEmptyRect(rect) == NO)
-	{
-	  [self displayIfNeededInRectIgnoringOpacity: rect];
-	}
-      /*
-       * If we still need display after displaying the invalid rectangle,
-       * display any subviews that need display.
-       */ 
-      if (_rFlags.needs_display == YES)
-	{
-	  NSEnumerator	*enumerator = [_sub_views objectEnumerator];
-	  NSView	*sub;
-
-	  while ((sub = [enumerator nextObject]) != nil)
-	    {
-	      if (sub->_rFlags.needs_display)
-		{
-		  [sub displayIfNeededIgnoringOpacity];
-		}
-	    }
-	  _rFlags.needs_display = NO;
-	}
+      [self displayIfNeededInRectIgnoringOpacity: [self visibleRect]];
     }
 }
 
@@ -2081,131 +2244,72 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
   if (_rFlags.needs_display == YES)
     {
       if ([self isOpaque] == YES)
-	{
-	  [self displayIfNeededInRectIgnoringOpacity: aRect];
-	}
+        {
+          [self displayIfNeededInRectIgnoringOpacity: aRect];
+        }
       else
-	{
-	  NSView	*firstOpaque = [self opaqueAncestor];
-	  NSRect	rect;
+        {
+          NSView *firstOpaque = [self opaqueAncestor];
 
-	  rect = [firstOpaque convertRect: aRect fromView: self];
-	  [firstOpaque displayIfNeededInRectIgnoringOpacity: rect];
-	}
+          aRect = [firstOpaque convertRect: aRect fromView: self];
+          [firstOpaque displayIfNeededInRectIgnoringOpacity: aRect];
+        }
     }
 }
 
 - (void) displayIfNeededInRectIgnoringOpacity: (NSRect)aRect
 {
-  if (![self canDraw])
-    {
-      return;
-    }
   if (_rFlags.needs_display == YES)
     {
-      BOOL	subviewNeedsDisplay = NO;
-      NSRect	neededRect;
-      NSRect	redrawRect;
-
-      [_window disableFlushWindow];
-      if (_coordinates_valid == NO)
-	{
-	  [self _rebuildCoordinates];
-	}
-      aRect = NSIntersectionRect(aRect, _visibleRect);
-      redrawRect = NSIntersectionRect(aRect, _invalidRect);
-      neededRect = NSIntersectionRect(_visibleRect, _invalidRect);
-
-      if (NSIsEmptyRect(redrawRect) == NO)
-	{
-	  [self lockFocusInRect: redrawRect];
-	  [self drawRect: redrawRect];
-	  [self unlockFocusNeedsFlush: YES];
-	}
-      if (_rFlags.has_subviews == YES)
-	{
-	  unsigned	count = [_sub_views count];
-
-	  if (count > 0)
-	    {
-	      NSView	*array[count];
-	      unsigned	i;
-
-	      [_sub_views getObjects: array];
-
-	      for (i = 0; i < count; i++)
-		{
-		  NSRect	isect;
-		  NSView	*subview = array[i];
-		  NSRect	subviewFrame = subview->_frame;
-		  BOOL		intersectCalculated = NO;
-
-		  if (subview->_frameMatrix) // assume rotation
-		    {
-		      NSRect r;
-
-		      r.origin = NSZeroPoint;
-		      r.size = subviewFrame.size;
-		      [subview->_frameMatrix boundingRectFor: r result: &r];
-		      subviewFrame = NSOffsetRect(r, NSMinX(subviewFrame),
-			NSMinY(subviewFrame));
-		    }
-
-		  /*
-		   * Having drawn ourself into the rect, we must make sure that
-		   * subviews overlapping the area are redrawn.
-		   */
-		  isect = NSIntersectionRect(redrawRect, subviewFrame);
-		  if (NSIsEmptyRect(isect) == NO)
-		    {
-		      isect = [subview convertRect: isect
-					  fromView: self];
-		      intersectCalculated = YES;
-		      /*
-		       * hack the ivars of the subview directly for speed.
-		       */
-		      subview->_rFlags.needs_display = YES;
-		      subview->_invalidRect = NSUnionRect(subview->_invalidRect,
-			    isect);
-		    }
-
-		  if (subview->_rFlags.needs_display == YES)
-		    {
-		      if (intersectCalculated == NO
-			|| NSEqualRects(aRect, redrawRect) == NO)
-			{
-			  isect = NSIntersectionRect(aRect, subviewFrame);
-			  isect = [subview convertRect: isect
-					      fromView: self];
-			}
-		      [subview displayIfNeededInRectIgnoringOpacity: isect];
-		      if (subview->_rFlags.needs_display == YES)
-			{
-			  subviewNeedsDisplay = YES;
-			}
-		    }
-		}
-	    }
-	}
+      NSRect rect;
+        
+      /*
+       * Restrict the drawing of self onto the invalid rectangle.
+       */
+      rect = NSIntersectionRect(aRect, _invalidRect);
+      [self displayRectIgnoringOpacity: rect];
 
       /*
-       * If the rect we displayed contains the _invalidRect or _visibleRect
-       * then we can empty _invalidRect.
-       * If all subviews have been fully displayed, we can also turn off the
-       * 'needs_display' flag.
-       */
-      if (NSEqualRects(aRect, NSUnionRect(neededRect, aRect)) == YES)
-	{
-	  _invalidRect = NSZeroRect;
-	  _rFlags.needs_display = subviewNeedsDisplay;
-	}
-      if (_rFlags.needs_display == YES
-	&& NSEqualRects(aRect, NSUnionRect(_visibleRect, aRect)) == YES)
-	{
-	  _rFlags.needs_display = NO;
-	}
-      [_window enableFlushWindow];
-      [_window flushWindowIfNeeded];
+       * If we still need display after displaying the invalid rectangle,
+       * this means that some subviews still need to display. For opaque subviews
+       * their invalid rectangle may even overlap the original aRect.
+       * Display any subview that need display.
+       */ 
+      if (_rFlags.needs_display == YES)
+        {
+          NSEnumerator *enumerator = [_sub_views objectEnumerator];
+          NSView *subview;
+          BOOL subviewNeedsDisplay = NO;
+         
+          while ((subview = [enumerator nextObject]) != nil)
+            {
+              if (subview->_rFlags.needs_display)
+                {
+                  NSRect subviewFrame = [subview _frameExtend];
+                  NSRect isect;
+              
+                  isect = NSIntersectionRect(aRect, subviewFrame);
+                  if (NSIsEmptyRect(isect) == NO)
+                    {
+                      isect = [subview convertRect: isect fromView: self];
+                      [subview displayIfNeededInRectIgnoringOpacity: isect];
+                    }
+
+                  if (subview->_rFlags.needs_display)
+                    {
+                      subviewNeedsDisplay = YES;
+                    }
+                }
+            }
+          /*
+           * Make sure our needs_display flag matches that of the subviews.
+           * Only set to NO when there is no _invalidRect.
+           */
+          if (NSIsEmptyRect(_invalidRect))
+            {
+              _rFlags.needs_display = subviewNeedsDisplay;
+            }
+        }
     }
 }
 
@@ -2231,113 +2335,123 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 
 - (void) displayRectIgnoringOpacity: (NSRect)aRect
 {
-  BOOL		subviewNeedsDisplay = NO;
-  NSRect	neededRect;
+  [self displayRectIgnoringOpacity: aRect inContext: nil];
+}
+
+- (void) displayRectIgnoringOpacity: (NSRect)aRect 
+                          inContext: (NSGraphicsContext *)context
+{
+  NSGraphicsContext *wContext;
+  BOOL flush = NO;
+  BOOL subviewNeedsDisplay = NO;
 
   if (![self canDraw])
     {
       return;
     }
 
-  [_window disableFlushWindow];
-  if (_coordinates_valid == NO)
+  wContext = [_window graphicsContext];
+  if (context == nil)
     {
-      [self _rebuildCoordinates];
+      context = wContext;
     }
-  aRect = NSIntersectionRect(aRect, _visibleRect);
-  neededRect = NSIntersectionRect(_invalidRect, _visibleRect);
 
+  if (context == wContext)
+    {
+      NSRect neededRect;
+
+      flush = YES;
+      [_window disableFlushWindow];
+      if (_coordinates_valid == NO)
+        {
+          [self _rebuildCoordinates];
+        }
+      aRect = NSIntersectionRect(aRect, _visibleRect);
+      neededRect = NSIntersectionRect(_invalidRect, _visibleRect);
+  
+      /*
+       * If the rect we are going to display contains the _invalidRect
+       * then we can empty _invalidRect. Do this before the drawing, as drawRect: 
+       * may change this value.
+       * FIXME: If the drawn rectangle cuts of a complete part of the _invalidRect,
+       * we should try to reduce this.
+       */
+      if (NSEqualRects(aRect, NSUnionRect(neededRect, aRect)) == YES)
+        {
+          _invalidRect = NSZeroRect;
+          _rFlags.needs_display = NO;
+        }
+    }
+  
   if (NSIsEmptyRect(aRect) == NO)
     {
       /*
        * Now we draw this view.
        */
-      [self lockFocusInRect: aRect];
+      [self _lockFocusInContext: context inRect: aRect];
       [self drawRect: aRect];
-      [self unlockFocusNeedsFlush: YES];
-    }
-
-  if (_rFlags.has_subviews == YES)
-    {
-      unsigned		count = [_sub_views count];
-
-      if (count > 0)
-	{
-	  NSView	*array[count];
-	  unsigned	i;
-
-	  [_sub_views getObjects: array];
-
-	  for (i = 0; i < count; ++i)
-	    {
-	      NSView	*subview = array[i];
-	      NSRect	subviewFrame = subview->_frame;
-	      NSRect	isect;
-	      BOOL	intersectCalculated = NO;
-
-	      if (subview->_frameMatrix != nil)
-		{
-		  NSRect r;
-
-		  r.origin = NSZeroPoint;
-		  r.size = subviewFrame.size;
-		  [subview->_frameMatrix boundingRectFor: r result: &r];
-		  subviewFrame = NSOffsetRect(r, NSMinX(subviewFrame),
-		    NSMinY(subviewFrame));
-		}
-
-	      /*
-	       * Having drawn ourself into the rect, we must make sure that
-	       * subviews overlapping the area are redrawn.
-	       */
-	      isect = NSIntersectionRect(aRect, subviewFrame);
-	      if (NSIsEmptyRect(isect) == NO)
-		{
-		  isect = [subview convertRect: isect
-				      fromView: self];
-		  intersectCalculated = YES;
-		  /*
-		   * hack the ivars of the subview directly for speed.
-		   */
-		  subview->_rFlags.needs_display = YES;
-		  subview->_invalidRect = NSUnionRect(subview->_invalidRect,
-		    isect);
-		}
-
-	      if (subview->_rFlags.needs_display == YES)
-		{
-		  if (intersectCalculated == NO)
-		    {
-		      isect = [subview convertRect: isect
-					  fromView: self];
-		    }
-		  [subview displayIfNeededInRectIgnoringOpacity: isect];
-		  if (subview->_rFlags.needs_display == YES)
-		    {
-		      subviewNeedsDisplay = YES;
-		    }
-		}
-	    }
-	}
+      [self unlockFocusNeedsFlush: flush];
     }
 
   /*
-   * If the rect we displayed contains the _invalidRect or _visibleRect
-   * then we can empty _invalidRect.  If all subviews have been
-   * fully displayed, we can also turn off the 'needs_display' flag.
+   * Even when aRect is empty we need to loop over the subviews to see, 
+   * if there is anything left to draw.
    */
-  if (NSEqualRects(aRect, NSUnionRect(neededRect, aRect)) == YES)
+  if (_rFlags.has_subviews == YES)
     {
-      _invalidRect = NSZeroRect;
-      _rFlags.needs_display = subviewNeedsDisplay;
+      unsigned count = [_sub_views count];
+
+      if (count > 0)
+        {
+          NSView *array[count];
+          unsigned i;
+          
+          [_sub_views getObjects: array];
+
+          for (i = 0; i < count; ++i)
+            {
+              NSView *subview = array[i];
+              NSRect subviewFrame = [subview _frameExtend];
+              NSRect isect;
+              
+              /*
+               * Having drawn ourself into the rect, we must make sure that
+               * subviews overlapping the area are redrawn.
+               */
+              isect = NSIntersectionRect(aRect, subviewFrame);
+              if (NSIsEmptyRect(isect) == NO)
+                {
+                  isect = [subview convertRect: isect fromView: self];
+                  [subview displayRectIgnoringOpacity: isect inContext: context];
+                }
+              /*
+               * Is there still something to draw in the subview?
+               * This keeps the invariant that views further up are marked for redraw
+               * when ever a view further down needs to redraw.
+               */
+              if (subview->_rFlags.needs_display == YES)
+                {
+                  subviewNeedsDisplay = YES;
+                }
+            }
+        }
     }
-  if (_rFlags.needs_display == YES
-    && NSEqualRects(aRect, NSUnionRect(_visibleRect, aRect)) == YES)
+
+  if (context == wContext)
     {
-      _rFlags.needs_display = NO;
+      if (subviewNeedsDisplay)
+        {
+          /*
+           * If not all subviews have been fully displayed, we cannot turn off
+           * the 'needs_display' flag. This is to keep the invariant that when 
+           * a view is marked as needing to display, all its ancestors will be 
+           * marked too.
+           */
+          _rFlags.needs_display = YES;
+        }
+      [_window enableFlushWindow];
+      [_window flushWindowIfNeeded];
     }
-  [_window enableFlushWindow];
-  [_window flushWindowIfNeeded];
 }
 
 /**
@@ -2362,6 +2476,11 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
 
 - (NSRect) visibleRect
 {
+  if ([self isHiddenOrHasHiddenAncestor])
+    {
+      return NSZeroRect;
+    }
+
   if (_coordinates_valid == NO)
     {
       [self _rebuildCoordinates];
@@ -2409,6 +2528,51 @@ static NSRect convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matri
     }
 }
 
+- (NSBitmapImageRep *) bitmapImageRepForCachingDisplayInRect: (NSRect)rect
+{
+  NSBitmapImageRep *bitmap;
+  NSDictionary *dict;
+  int bps, spp, alpha;
+  NSString *space;
+  
+  dict = [_window deviceDescription];
+  bps = [[dict objectForKey: NSDeviceBitsPerSample] intValue];
+  if (bps == 0)
+    bps = 8;
+//  spp = [[dict objectForKey: @"SamplesPerPixel"] intValue];
+  spp = 4;
+//  alpha = [[dict objectForKey: @"HasAlpha"] intValue];
+  alpha = 1;
+  space = [dict objectForKey: NSDeviceColorSpaceName];
+
+  bitmap = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes: NULL
+                                     pixelsWide: rect.size.width
+                                     pixelsHigh: rect.size.height
+                                     bitsPerSample: bps
+                                     samplesPerPixel: spp
+                                     hasAlpha: (alpha) ? YES : NO
+                                     isPlanar: NO
+                                     colorSpaceName: space
+                                     bytesPerRow: 0
+                                     bitsPerPixel: 0];
+  return bitmap;
+}
+
+- (void) cacheDisplayInRect: (NSRect)rect 
+           toBitmapImageRep: (NSBitmapImageRep *)bitmap
+{
+  NSDictionary *dict;
+  NSData *imageData;
+
+  [self lockFocus];
+  dict = [GSCurrentContext() GSReadRect: rect];
+  [self unlockFocus];
+  imageData = RETAIN([dict objectForKey: @"Data"]);
+  // FIXME: Copy the image data to the bitmap
+  memcpy([bitmap bitmapData], [imageData bytes], [imageData length]);
+}
+
+
 extern NSThread *GSAppKitThread; /* TODO */
 
 /*
@@ -2445,8 +2609,8 @@ in the main thread.
   if (GSCurrentThread() != GSAppKitThread)
     {
       [self performSelectorOnMainThread: @selector(_setNeedsDisplay_real:)
-	withObject: n
-	waitUntilDone: NO];
+            withObject: n
+            waitUntilDone: NO];
     }
   else
     {
@@ -2475,14 +2639,14 @@ in the main thread.
       _rFlags.needs_display = YES;
       _invalidRect = invalidRect;
       if (firstOpaque == self)
-	{
-	  [_window setViewsNeedDisplay: YES];
-	}
+        {
+          [_window setViewsNeedDisplay: YES];
+        }
       else
-	{
-	  invalidRect = [firstOpaque convertRect: _invalidRect fromView: self];
-	  [firstOpaque setNeedsDisplayInRect: invalidRect];
-	}
+        {
+          invalidRect = [firstOpaque convertRect: _invalidRect fromView: self];
+          [firstOpaque setNeedsDisplayInRect: invalidRect];
+        }
     }
   /*
    * Must make sure that superviews know that we need display.
@@ -2551,7 +2715,48 @@ in the main thread.
  */
 - (void) setHidden: (BOOL)flag
 {
+  id view;
+
+  if (_is_hidden == flag)
+      return;
+
   _is_hidden = flag;
+
+  if (_is_hidden)
+    {
+      for (view = [_window firstResponder];
+           view != nil && [view respondsToSelector: @selector(superview)];
+           view = [view superview])
+        {
+          if (view == self)
+            {
+              [_window makeFirstResponder: [self nextValidKeyView]];
+              break;
+            }
+        }
+      if (_rFlags.has_draginfo)
+        {
+          if (_window != nil)
+            {
+              NSArray *t = GSGetDragTypes(self);
+              
+              [GSDisplayServer removeDragTypes: t fromWindow: _window];
+            }
+        }
+    }
+  else
+    {
+      if (_rFlags.has_draginfo)
+        {
+          if (_window != nil)
+            {
+              NSArray *t = GSGetDragTypes(self);
+              
+              [GSDisplayServer addDragTypes: t toWindow: _window];
+            }
+        }
+    }
+  [self setNeedsDisplay: YES];
 }
 
 - (BOOL) isHidden
@@ -2680,10 +2885,12 @@ in the main thread.
  */
 - (void) scrollRect: (NSRect)aRect by: (NSSize)delta
 {
-  NSPoint destPoint = aRect.origin;
+  NSPoint destPoint;
 
-  destPoint.x -= delta.width;
-  destPoint.y -= delta.height;
+  aRect = NSIntersectionRect(aRect, _bounds);   // Don't copy stuff outside.
+  destPoint = aRect.origin;
+  destPoint.x += delta.width;
+  destPoint.y += delta.height;
 
   [self lockFocus];
   NSCopyBits(0, aRect, destPoint);
@@ -2983,13 +3190,18 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   ie. if we're the top-level view in a window.
   */
 
+  if ([self isHidden])
+    {
+      return nil;
+    }
+
   if (_is_rotated_or_scaled_from_base)
     {
       p = [self convertPoint: aPoint fromView: _super_view];
       if (!NSPointInRect (p, _bounds))
-	{
-	  return nil;
-	}
+        {
+          return nil;
+        }
     }
   else if (_super_view && ![_super_view mouse: aPoint inRect: _frame])
     {
@@ -3004,19 +3216,19 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     {
       count = [_sub_views count];
       if (count > 0)
-	{
-	  NSView	*array[count];
+        {
+          NSView	*array[count];
 
-	  [_sub_views getObjects: array];
-
-	  while (count > 0)
-	    {
-	      w = array[--count];
-	      v = [w hitTest: p];
-	      if (v)
-		break;
-	    }
-	}
+          [_sub_views getObjects: array];
+          
+          while (count > 0)
+            {
+              w = array[--count];
+              v = [w hitTest: p];
+              if (v)
+                break;
+            }
+        }
     }
   /*
    * mouse is either in the subview or within self
@@ -3502,6 +3714,11 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     }
 }
 
+- (NSArray *) registeredDraggedTypes
+{
+  return GSGetDragTypes(self);
+}
+
 - (BOOL) dragPromisedFilesOfTypes: (NSArray *)typeArray
                          fromRect: (NSRect)aRect
                            source: (id)sourceObject 
@@ -3575,7 +3792,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 		forType: NSPostScriptPboardType];
 }
 
-- (NSData *)dataWithPDFInsideRect:(NSRect)aRect
+- (NSData *) dataWithPDFInsideRect: (NSRect)aRect
 {
   NSMutableData *data = [NSMutableData data];
   
@@ -3591,8 +3808,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     }
 }
 
-- (void)writePDFInsideRect:(NSRect)aRect 
-	      toPasteboard:(NSPasteboard *)pboard
+- (void) writePDFInsideRect: (NSRect)aRect 
+	       toPasteboard: (NSPasteboard *)pboard
 {
   NSData *data = [self dataWithPDFInsideRect: aRect];
 
@@ -3601,7 +3818,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	    forType: NSPDFPboardType];
 }
 
-- (NSString *)printJobTitle
+- (NSString *) printJobTitle
 {
   id doc;
   NSString *title;
@@ -3759,9 +3976,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   if (pages == 1)
     {
       if ([printInfo isHorizontallyCentered])
-	location.x = (NSWidth(bounds) - NSWidth(aRect))/2;
+        location.x = (NSWidth(bounds) - NSWidth(aRect))/2;
       if ([printInfo isVerticallyCentered])
-	location.y = (NSHeight(bounds) - NSHeight(aRect))/2;
+        location.y = (NSHeight(bounds) - NSHeight(aRect))/2;
     }
 
   return location;
@@ -3781,23 +3998,17 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
  * Writing Conforming PostScript
  */
 - (void) beginPage: (int)ordinalNum
-	     label: (NSString*)aString
-	      bBox: (NSRect)pageRect
-	     fonts: (NSString*)fontNames
+             label: (NSString*)aString
+              bBox: (NSRect)pageRect
+             fonts: (NSString*)fontNames
 {
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
   NSGraphicsContext *ctxt = [printOp context];
 
-  if (aString == nil)
-    aString = [[NSNumber numberWithInt: ordinalNum] description];
-  DPSPrintf(ctxt, "%%%%Page: %s %d\n", [aString lossyCString], ordinalNum);
-  if (NSIsEmptyRect(pageRect) == NO)
-    DPSPrintf(ctxt, "%%%%PageBoundingBox: %d %d %d %d\n",
-	      (int)NSMinX(pageRect), (int)NSMinY(pageRect), 
-	      (int)NSMaxX(pageRect), (int)NSMaxY(pageRect));
-  if (fontNames)
-    DPSPrintf(ctxt, "%%%%PageFonts: %s\n", [fontNames lossyCString]);
-  DPSPrintf(ctxt, "%%%%BeginPageSetup\n");
+  [ctxt  beginPage: ordinalNum
+         label: aString
+         bBox: pageRect
+         fonts: fontNames];
 }
 
 - (void) beginPageSetupRect: (NSRect)aRect placement: (NSPoint)location
@@ -3806,64 +4017,23 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 }
 
 - (void) beginPrologueBBox: (NSRect)boundingBox
-	      creationDate: (NSString*)dateCreated
-		 createdBy: (NSString*)anApplication
-		     fonts: (NSString*)fontNames
-		   forWhom: (NSString*)user
-		     pages: (int)numPages
-		     title: (NSString*)aTitle
+              creationDate: (NSString*)dateCreated
+                 createdBy: (NSString*)anApplication
+                     fonts: (NSString*)fontNames
+                   forWhom: (NSString*)user
+                     pages: (int)numPages
+                     title: (NSString*)aTitle
 {
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
   NSGraphicsContext *ctxt = [printOp context];
-  NSPrintingOrientation orient;
-  BOOL epsOp;
 
-  epsOp = [printOp isEPSOperation];
-  orient = [[printOp printInfo] orientation];
-
-  if (epsOp)
-    DPSPrintf(ctxt, "%%!PS-Adobe-3.0 EPSF-3.0\n");
-  else
-    DPSPrintf(ctxt, "%%!PS-Adobe-3.0\n");
-  DPSPrintf(ctxt, "%%%%Title: %s\n", [aTitle lossyCString]);
-  DPSPrintf(ctxt, "%%%%Creator: %s\n", [anApplication lossyCString]);
-  DPSPrintf(ctxt, "%%%%CreationDate: %s\n", 
-	    [[dateCreated description] lossyCString]);
-  DPSPrintf(ctxt, "%%%%For: %s\n", [user lossyCString]);
-  if (fontNames)
-    DPSPrintf(ctxt, "%%%%DocumentFonts: %s\n", [fontNames lossyCString]);
-  else
-    DPSPrintf(ctxt, "%%%%DocumentFonts: (atend)\n");
-
-  if (NSIsEmptyRect(boundingBox) == NO)
-    DPSPrintf(ctxt, "%%%%BoundingBox: %d %d %d %d\n", 
-    	      (int)NSMinX(boundingBox), (int)NSMinY(boundingBox), 
-	      (int)NSMaxX(boundingBox), (int)NSMaxY(boundingBox));
-  else
-    DPSPrintf(ctxt, "%%%%BoundingBox: (atend)\n");
-
-  if (epsOp == NO)
-    {
-      if (numPages)
-	DPSPrintf(ctxt, "%%%%Pages: %d\n", numPages);
-      else
-	DPSPrintf(ctxt, "%%%%Pages: (atend)\n");
-      if ([printOp pageOrder] == NSDescendingPageOrder)
-	DPSPrintf(ctxt, "%%%%PageOrder: Descend\n");
-      else if ([printOp pageOrder] == NSAscendingPageOrder)
-	DPSPrintf(ctxt, "%%%%PageOrder: Ascend\n");
-      else if ([printOp pageOrder] == NSSpecialPageOrder)
-	DPSPrintf(ctxt, "%%%%PageOrder: Special\n");
-
-      if (orient == NSPortraitOrientation)
-	DPSPrintf(ctxt, "%%%%Orientation: Portrait\n");
-      else
-	DPSPrintf(ctxt, "%%%%Orientation: Landscape\n");
-    }
-
-  DPSPrintf(ctxt, "%%%%GNUstepVersion: %d.%d.%d\n", 
-	    GNUSTEP_GUI_MAJOR_VERSION, GNUSTEP_GUI_MINOR_VERSION,
-	    GNUSTEP_GUI_SUBMINOR_VERSION);
+  [ctxt beginPrologueBBox: boundingBox
+	      creationDate: dateCreated
+        createdBy: anApplication
+        fonts: fontNames
+        forWhom: user
+        pages: numPages
+        title: aTitle];
 }
 
 - (void) addToPageSetup
@@ -3875,7 +4045,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
   NSGraphicsContext *ctxt = [printOp context];
 
-  DPSPrintf(ctxt, "%%%%BeginSetup\n");
+  [ctxt beginSetup];
 }
 
 - (void) beginTrailer
@@ -3883,7 +4053,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
   NSGraphicsContext *ctxt = [printOp context];
 
-  DPSPrintf(ctxt, "%%%%Trailer\n");
+  [ctxt beginTrailer];
 }
 
 - (void) drawPageBorderWithSize: (NSSize)borderSize
@@ -3899,7 +4069,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
   NSGraphicsContext *ctxt = [printOp context];
 
-  DPSPrintf(ctxt, "%%%%EndComments\n\n");
+  [ctxt endHeaderComments];
 }
 
 - (void) endPrologue
@@ -3907,7 +4077,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
   NSGraphicsContext *ctxt = [printOp context];
 
-  DPSPrintf(ctxt, "%%%%EndProlog\n\n");
+  [ctxt endPrologue];
 }
 
 - (void) endSetup
@@ -3915,7 +4085,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
   NSGraphicsContext *ctxt = [printOp context];
 
-  DPSPrintf(ctxt, "%%%%EndSetup\n\n");
+  [ctxt endSetup];
 }
 
 - (void) endPageSetup
@@ -3923,7 +4093,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
   NSGraphicsContext *ctxt = [printOp context];
 
-  DPSPrintf(ctxt, "%%%%EndPageSetup\n");
+  [ctxt endPageSetup];
 }
 
 - (void) endPage
@@ -3933,13 +4103,16 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   NSGraphicsContext *ctxt = [printOp context];
   NSDictionary *dict = [[printOp printInfo] dictionary];
 
+  // Balance gsave in beginPageInRect:
+  DPSgrestore(ctxt);
+
   nup = [[dict objectForKey: NSPrintPagesPerSheet] intValue];
   if (nup > 1)
     {
       DPSPrintf(ctxt, "__GSpagesaveobject restore\n\n");
     }
 
-  [self unlockFocus];
+  // [self unlockFocus];
 }
 
 - (void) endTrailer
@@ -3947,13 +4120,12 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
   NSGraphicsContext *ctxt = [printOp context];
 
-  DPSPrintf(ctxt, "%%%%EOF\n");
+  [ctxt endTrailer];
 }
 
 - (NSAttributedString *) pageFooter
 {
-  return [[[NSAttributedString alloc] 
-	      initWithString:
+  return [[[NSAttributedString alloc] initWithString:
 		  [NSString stringWithFormat:@"Page %d", 
 			    [[NSPrintOperation currentOperation] currentPage]]] 
 	     autorelease];
@@ -3961,25 +4133,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (NSAttributedString *) pageHeader
 {
-  return [[[NSAttributedString alloc] 
-	      initWithString: 
+  return [[[NSAttributedString alloc] initWithString: 
 		  [NSString stringWithFormat:@"%@ %@", [self printJobTitle], 
 			    [[NSCalendarDate calendarDate] description]]] autorelease];
-}
-
-- (void) _loadPrinterProlog: (NSGraphicsContext *)ctxt
-{
-  NSString *prolog;
-  prolog = [NSBundle pathForLibraryResource: @"GSProlog"
-				   ofType: @"ps"
-			      inDirectory: @"PostScript"];
-  if (prolog == nil)
-    {
-      NSLog(@"Cannot find printer prolog file");
-      return;
-    }
-  prolog = [NSString stringWithContentsOfFile: prolog];
-  DPSPrintf(ctxt, [prolog cString]);
 }
 
 
@@ -4038,8 +4194,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	            title: [self printJobTitle]];
   [self endHeaderComments];
 
-  DPSPrintf(ctxt, "%%%%BeginProlog\n");
-  [self _loadPrinterProlog: ctxt];
+  [ctxt printerProlog];
   [self endPrologue];
   if ([printOp isEPSOperation] == NO)
     {
@@ -4054,18 +4209,14 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   _visibleRect = _bounds;
 }
 
-- (void)beginPageInRect:(NSRect)aRect 
-	    atPlacement:(NSPoint)location
+- (void) beginPageInRect: (NSRect)aRect 
+             atPlacement: (NSPoint)location
 {
   int nup;
-  float scale;
   NSRect bounds;
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
   NSGraphicsContext *ctxt = [printOp context];
   NSDictionary *dict = [[printOp printInfo] dictionary];
-
-  // FIXME: Need to place this correctly
-  [self lockFocusIfCanDrawInContext: ctxt];
 
   if ([dict objectForKey: @"NSPrintPaperBounds"])
     bounds = [[dict objectForKey: @"NSPrintPaperBounds"] rectValue];
@@ -4077,37 +4228,53 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     {
       int page;
       float xoff, yoff;
+      float scale;
+
       DPSPrintf(ctxt, "/__GSpagesaveobject save def\n");
-      page = [printOp currentPage] 
-	- [[dict objectForKey: NSPrintFirstPage] intValue];
-      page = page % nup;
+
       scale = [[dict objectForKey: @"NSNupScale"] floatValue];
+      page = [printOp currentPage] 
+          - [[dict objectForKey: NSPrintFirstPage] intValue];
+      page = page % nup;
       if (nup == 2)
-	xoff = page;
+        xoff = page;
       else
-	xoff = (page % (nup/2));
+        xoff = (page % (nup/2));
       xoff *= NSWidth(bounds) * scale;
       if (nup == 2)
-	yoff = 0;
+        yoff = 0;
       else
-	yoff = (int)((nup-page-1) / (nup/2));
+        yoff = (int)((nup-page-1) / (nup/2));
       yoff *= NSHeight(bounds) * scale;
       DPStranslate(ctxt, xoff, yoff);
       DPSgsave(ctxt);
       DPSscale(ctxt, scale, scale);
     }
   else
-    DPSgsave(ctxt);
+    {
+      DPSgsave(ctxt);
+    }
 
   /* Translate to placement */
   if (location.x != 0 || location.y != 0)
     DPStranslate(ctxt, location.x, location.y);
+
+  // FIXME: Need to place this correctly. Maybe it isn't needed at all, 
+  // as all drawing happens in displayRectIgnoringOpacity:
+  // [self lockFocusIfCanDrawInContext: ctxt];
 }
 
-- (void)endDocument
+- (void) _endSheet
+{
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSGraphicsContext *ctxt = [printOp context];
+
+  [ctxt endSheet];
+}
+
+- (void) endDocument
 {
   int first, last, current, pages;
-  NSSet *fontNames;
   NSPrintOperation *printOp = [NSPrintOperation currentOperation];
   NSGraphicsContext *ctxt = [printOp context];
   NSDictionary *dict = [[printOp printInfo] dictionary];
@@ -4123,20 +4290,14 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       current = [printOp currentPage];
       pages = current - first; // Current is 1 more than the last page
       if (nup > 1)
-	pages = ceil((float)pages / nup);
-      DPSPrintf(ctxt, "%%%%Pages: %d\n", pages);
+        pages = ceil((float)pages / nup);
     }
-  fontNames = [ctxt usedFonts];
-  if (fontNames && [fontNames count])
+  else
     {
-      NSString *name;
-      NSEnumerator *e = [fontNames objectEnumerator];
-      DPSPrintf(ctxt, "%%%%DocumentFonts: %@\n", [e nextObject]);
-      while ((name = [e nextObject]))
-	{
-	  DPSPrintf(ctxt, "%%%%+ %@\n", name);
-	}
+      // Already reported at start of document
+      pages = 0;
     }
+  [ctxt endDocumentPages: pages documentFonts: [ctxt usedFonts]];
 
   [self endTrailer];
   [self _invalidateCoordinates];
@@ -4174,15 +4335,15 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
       // add the autoresize flag.
       if (_autoresizes_subviews)
-	{
-	  vFlags |= 0x100;
-	}
+        {
+          vFlags |= 0x100;
+        }
 
       // add the hidden flag
       if (_is_hidden)
-	{
-	  vFlags |= 0x80000000;
-	}
+        {
+          vFlags |= 0x80000000;
+        }
       
       [aCoder encodeInt: vFlags 
 	      forKey: @"NSvFlags"];
@@ -4192,9 +4353,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       // content view for a window.
       //
       if (([[self window] contentView] != self) && _super_view != nil)
-	{
-	  [aCoder encodeObject: _super_view forKey: @"NSSuperview"];
-	}
+        {
+          [aCoder encodeObject: _super_view forKey: @"NSSuperview"];
+        }
     }
   else
     {
@@ -4227,7 +4388,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
   // initialize these here, since they're needed in either case.
   //_frameMatrix = [NSAffineTransform new];     // Map fromsuperview to frame
-  _boundsMatrix = [NSAffineTransform new];    // Map fromsuperview to bounds
+  //_boundsMatrix = [NSAffineTransform new];    // Map fromsuperview to bounds
   _matrixToWindow = [NSAffineTransform new];  // Map to window coordinates
   _matrixFromWindow = [NSAffineTransform new];// Map from window coordinates
  
@@ -4237,18 +4398,20 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       NSView *nextKeyView = nil;
 
       if ([aDecoder containsValueForKey: @"NSFrame"])
-	{
-	  _frame = [aDecoder decodeRectForKey: @"NSFrame"];
-	}
+        {
+          _frame = [aDecoder decodeRectForKey: @"NSFrame"];
+        }
       else
-	{
-	  _frame = NSZeroRect;
-	}
+        {
+          _frame = NSZeroRect;
+          if ([aDecoder containsValueForKey: @"NSFrameSize"])
+            {
+              _frame.size = [aDecoder decodeSizeForKey: @"NSFrameSize"];
+            }
+        }
 
       _bounds.origin = NSZeroPoint;		// Set bounds rectangle
       _bounds.size = _frame.size;
-      
-      [_frameMatrix setFrameOrigin: _frame.origin];
       
       _sub_views = [NSMutableArray new];
       _tracking_rects = [NSMutableArray new];
@@ -4270,23 +4433,23 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       prevKeyView = [aDecoder decodeObjectForKey: @"NSPreviousKeyView"];
       nextKeyView = [aDecoder decodeObjectForKey: @"NSNextKeyView"];
       if (nextKeyView != nil)
-	{
-	  [self setNextKeyView: nextKeyView];
-	}
+        {
+          [self setNextKeyView: nextKeyView];
+        }
       if (prevKeyView != nil)
-	{
-	  [self setPreviousKeyView: prevKeyView];
-	}
+        {
+          [self setPreviousKeyView: prevKeyView];
+        }
       if ([aDecoder containsValueForKey: @"NSvFlags"])
-	{
-	  int vFlags = [aDecoder decodeIntForKey: @"NSvFlags"];
+        {
+          int vFlags = [aDecoder decodeIntForKey: @"NSvFlags"];
 	  
-	  // We are lucky here, Apple use the same constants
-	  // in the lower bits of the flags
-	  [self setAutoresizingMask: vFlags & 0x3F];
-	  [self setAutoresizesSubviews: ((vFlags & 0x100) == 0x100)];
-	  [self setHidden: ((vFlags & 0x80000000) == 0x80000000)];
-	}
+          // We are lucky here, Apple use the same constants
+          // in the lower bits of the flags
+          [self setAutoresizingMask: vFlags & 0x3F];
+          [self setAutoresizesSubviews: ((vFlags & 0x100) == 0x100)];
+          [self setHidden: ((vFlags & 0x80000000) == 0x80000000)];
+        }
 
       // iterate over subviews and put them into the view...
       subs = [aDecoder decodeObjectForKey: @"NSSubviews"];
@@ -4297,8 +4460,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 		   NSInternalInconsistencyException);
 	  NSAssert([sub superview] == nil,
 		   NSInternalInconsistencyException);
-	  [sub viewWillMoveToWindow: _window];
-	  [sub viewWillMoveToSuperview: self];
+	  [sub _viewWillMoveToWindow: _window];
+	  [sub _viewWillMoveToSuperview: self];
 	  [sub setNextResponder: self];
 	  [_sub_views addObject: sub];
 	  _rFlags.has_subviews = 1;
@@ -4322,7 +4485,6 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       
       _bounds.origin = NSZeroPoint;
       _bounds.size = _frame.size;
-//      [_frameMatrix setFrameOrigin: _frame.origin];
       
       rect = [aDecoder decodeRect];
       [self setBounds: rect];
@@ -4361,8 +4523,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	    NSInternalInconsistencyException);
 	  NSAssert([sub superview] == nil,
 	    NSInternalInconsistencyException);
-	  [sub viewWillMoveToWindow: _window];
-	  [sub viewWillMoveToSuperview: self];
+	  [sub _viewWillMoveToWindow: _window];
+	  [sub _viewWillMoveToSuperview: self];
 	  [sub setNextResponder: self];
 	  [_sub_views addObject: sub];
 	  _rFlags.has_subviews = 1;
@@ -4459,7 +4621,12 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (float) boundsRotation
 {
-  return [_boundsMatrix rotationAngle];
+  if (_boundsMatrix != nil)
+    {
+      return [_boundsMatrix rotationAngle];
+    }
+
+  return 0.0;
 }
 
 - (float) frameRotation
@@ -4542,7 +4709,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
  *     [NSView +defaultMenu] and [NSView -menu].
  * </p>
  */
-- (NSMenu *)menuForEvent:(NSEvent *)theEvent
+- (NSMenu *)menuForEvent: (NSEvent *)theEvent
 {
   return [self menu];
 }
@@ -4622,6 +4789,30 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 - (BOOL) shouldBeTreatedAsInkEvent: (NSEvent *)theEvent
 {
   return YES;
+}
+
+- (void) bind: (NSString *)binding
+     toObject: (id)anObject
+  withKeyPath: (NSString *)keyPath
+      options: (NSDictionary *)options
+{
+  if ([binding hasPrefix: NSHiddenBinding])
+    {
+      [self unbind: binding];
+      [[GSKeyValueOrBinding alloc] initWithBinding: NSHiddenBinding 
+                                   withName: binding 
+                                   toObject: anObject
+                                   withKeyPath: keyPath
+                                   options: options
+                                   fromObject: self];
+    }
+  else
+    {
+      [super bind: binding
+             toObject: anObject
+             withKeyPath: keyPath
+             options: options];
+    }
 }
 
 @end

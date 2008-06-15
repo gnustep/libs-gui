@@ -4,28 +4,18 @@
 1.1 Bugs in the GUI library
 ===========================
 
-   * There have been a lot of improvements in the NSText code, but is
-     particularly complex. It is somewhat usable though.  We hope to
-     keep improving it.
+The following classes are currently unimplemented or unfinished to such
+a degree to be unusable.
 
-   * There are problems with alpha composing.  To avoid these problems,
-     you may set manually the background color of your image when
-     displaying it.
+   * NSFontDescriptor
 
-   * alpha drawing and compositing of graphics works, but only to a
-     limited degree.
+   * NSColorSpace
 
-
-   The following classes are currently unimplemented or unfinished to
-such a degree to be unusable.
-
-   * NSDataLink, NSDataLinkManager, NSDataLinkPanel
-
-   * NSHelpPanel, NSHelpManager
+   * NSSearchField and NSSearchFieldCell
 
    Classes that need work (well every class needs work!)
 
-   * NSComboBox, NSComboBoxCell
+   * NSTableView and NSOutlineView
 
    * NSProgressIndicator
 

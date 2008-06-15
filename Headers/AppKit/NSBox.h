@@ -11,19 +11,19 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor,
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
    Boston, MA 02110-1301, USA.
 */ 
 
@@ -57,6 +57,16 @@ typedef enum _NSTitlePosition {
   NSBelowBottom
 } NSTitlePosition;
 
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
+typedef enum _NSBoxType
+{
+  NSBoxPrimary=0,
+  NSBoxSecondary,
+  NSBoxSeparator,
+  NSBoxOldStyle
+} NSBoxType;
+#endif
+
 @interface NSBox : NSView <NSCoding>
 {
   // Attributes
@@ -67,6 +77,7 @@ typedef enum _NSTitlePosition {
   NSRect _title_rect;
   NSBorderType _border_type;
   NSTitlePosition _title_position;
+  NSBoxType _box_type;
 }
 
 //
@@ -85,6 +96,8 @@ typedef enum _NSTitlePosition {
 - (NSRect)titleRect;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void)setTitleWithMnemonic:(NSString *)aString;
+- (NSBoxType)boxType;
+- (void)setBoxType:(NSBoxType)aType;
 #endif
 
 //

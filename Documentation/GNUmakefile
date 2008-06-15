@@ -7,19 +7,20 @@
 #  This file is part of the GNUstep GUI Library.
 #
 #  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Library General Public
+#  modify it under the terms of the GNU Lesser General Public
 #  License as published by the Free Software Foundation; either
 #  version 2 of the License, or (at your option) any later version.
 #
 #  This library is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
-#  Library General Public License for more details.
+#  Lesser General Public License for more details.
 #
-#  You should have received a copy of the GNU Library General Public
-#  License along with this library; if not, write to the Free
-#  Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-#  Boston, MA 02111 USA.
+#  You should have received a copy of the GNU Lesser General Public
+#  License along with this library; see the file COPYING.LIB.
+#  If not, see <http://www.gnu.org/licenses/> or write to the 
+#  Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+#  Boston, MA 02110-1301, USA.
 
 # Install into the system root by default
 GNUSTEP_INSTALLATION_DOMAIN = SYSTEM
@@ -67,7 +68,7 @@ BUGS_TEXT_MAIN = todo.texi
 BUGS_DOC_INSTALL_DIR = Developer/Gui/ReleaseNotes/$(VERSION)
 
 # Manual pages to install
-MAN1_PAGES = gopen.1 make_services.1
+MAN1_PAGES = gopen.1 make_services.1 gclose.1 gcloseall.1 set_show_service.1
 
 ReleaseNotes_AGSDOC_FILES = ReleaseNotes.gsdoc
 ReleaseNotes_DOC_INSTALL_DIR =  Developer/Gui

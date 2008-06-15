@@ -11,19 +11,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */ 
 
 #include <Foundation/NSAutoreleasePool.h>
@@ -31,6 +32,7 @@
 #include <Foundation/NSProcessInfo.h>
 
 #include "AppKit/NSApplication.h"
+#include "AppKit/NSBitmapImageRep.h"
 #include "AppKit/NSEvent.h"
 #include "AppKit/NSGraphicsContext.h"
 #include "AppKit/NSGraphics.h"
@@ -75,39 +77,6 @@ NSApplicationMain(int argc, const char **argv)
 
   RELEASE(pool);
 
-  return 0;
-}
-
-/*
- * Convert an NSEvent Type to it's respective Event Mask
- */
-unsigned
-NSEventMaskFromType(NSEventType type)
-{
-  switch (type)
-    {
-      case NSLeftMouseDown:	return NSLeftMouseDownMask;
-      case NSLeftMouseUp:	return NSLeftMouseUpMask;
-      case NSOtherMouseDown:	return NSOtherMouseDownMask;
-      case NSOtherMouseUp:	return NSOtherMouseUpMask;
-      case NSRightMouseDown:	return NSRightMouseDownMask;
-      case NSRightMouseUp:	return NSRightMouseUpMask;
-      case NSMouseMoved:	return NSMouseMovedMask;
-      case NSMouseEntered:	return NSMouseEnteredMask;
-      case NSMouseExited:	return NSMouseExitedMask;
-      case NSLeftMouseDragged:	return NSLeftMouseDraggedMask;
-      case NSOtherMouseDragged:	return NSOtherMouseDraggedMask;
-      case NSRightMouseDragged:	return NSRightMouseDraggedMask;
-      case NSKeyDown:		return NSKeyDownMask;
-      case NSKeyUp:		return NSKeyUpMask;
-      case NSFlagsChanged:	return NSFlagsChangedMask;
-      case NSPeriodic:		return NSPeriodicMask;
-      case NSCursorUpdate:	return NSCursorUpdateMask;
-      case NSScrollWheel:	return NSScrollWheelMask;
-      case NSAppKitDefined:	return NSAppKitDefinedMask;
-      case NSSystemDefined:	return NSSystemDefinedMask;
-      case NSApplicationDefined: return NSApplicationDefinedMask;
-    }
   return 0;
 }
 
@@ -327,6 +296,37 @@ void NSCopyBits(int srcGstate, NSRect srcRect, NSPoint destPoint)
 
   DPScomposite(ctxt, x, y, w, h, srcGstate, destPoint.x, destPoint.y,
 	       NSCompositeCopy);
+}
+
+void NSDrawBitmap(NSRect rect,
+                  int pixelsWide,
+                  int pixelsHigh,
+                  int bitsPerSample,
+                  int samplesPerPixel,
+                  int bitsPerPixel,
+                  int bytesPerRow,
+                  BOOL isPlanar,
+                  BOOL hasAlpha,
+                  NSString *colorSpaceName,
+                  const unsigned char *const data[5])
+{
+  NSBitmapImageRep *bitmap;
+  NSGraphicsContext *ctxt = GSCurrentContext();
+
+  bitmap = [[NSBitmapImageRep alloc] 
+               initWithBitmapDataPlanes: (unsigned char **)data
+               pixelsWide: pixelsWide
+               pixelsHigh: pixelsHigh
+               bitsPerSample: bitsPerSample
+               samplesPerPixel: samplesPerPixel
+               hasAlpha: hasAlpha
+               isPlanar: isPlanar
+               colorSpaceName: colorSpaceName
+               bytesPerRow: bytesPerRow
+               bitsPerPixel: bitsPerPixel];
+
+  [ctxt GSDrawImage: rect : bitmap];
+  RELEASE(bitmap);
 }
 
 /*

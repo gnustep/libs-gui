@@ -38,7 +38,7 @@ more information. All files in this package EXCEPT files in the
 the GLPL.
 
 GNUstep tools, test programs, and other files are covered under the GNU
-Public License. This means if you make changes to these programs, you
+General Public License. This means if you make changes to these programs, you
 cannot charge a fee, other than distribution fees, for others to use the
 program. You should read the COPYING file for more information.  All
 files in the @file{Tools} directory are covered under the GPL.

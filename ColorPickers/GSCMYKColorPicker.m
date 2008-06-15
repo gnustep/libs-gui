@@ -9,19 +9,21 @@
    
    This file is part of GNUstep.
    
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-   
-   This program is distributed in the hope that it will be useful,
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-   
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 #include "GSCMYKColorPicker.h"
@@ -29,16 +31,16 @@
 @implementation GSCMYKColorPicker
 
 - (id)initWithPickerMask:(int)aMask
-	      colorPanel:(NSColorPanel *)colorPanel
+              colorPanel:(NSColorPanel *)colorPanel
 {
   if (aMask & NSColorPanelCMYKModeMask)
     {
       NSBundle *b;
 
       self = [super initWithPickerMask: aMask
-		colorPanel: colorPanel];
+                colorPanel: colorPanel];
       if (!self)
-	return nil;
+        return nil;
 
       numFields = 4;
       currentMode = NSColorPanelCMYKModeMask;
@@ -71,13 +73,27 @@
 
   c = [color colorUsingColorSpaceName: NSDeviceCMYKColorSpace];
   [c getCyan: &cyan magenta: &magenta yellow: &yellow
-	   black: &black alpha: &alpha];
+           black: &black alpha: &alpha];
 
   values[0] = cyan * 100;
   values[1] = magenta * 100;
   values[2] = yellow * 100;
   values[3] = black * 100;
   [self _valuesChanged];
+
+  // FIXME: No way to store black in slider cell
+  [(GSColorSliderCell *)[sliders[0] cell]
+    _setColorSliderCellValues: cyan : magenta : yellow];
+  [(GSColorSliderCell *)[sliders[1] cell]
+    _setColorSliderCellValues: cyan : magenta : yellow];
+  [(GSColorSliderCell *)[sliders[2] cell]
+    _setColorSliderCellValues: cyan : magenta : yellow];
+  [(GSColorSliderCell *)[sliders[3] cell]
+    _setColorSliderCellValues: cyan : magenta : yellow];
+  [sliders[0] setNeedsDisplay: YES];
+  [sliders[1] setNeedsDisplay: YES];
+  [sliders[2] setNeedsDisplay: YES];
+  [sliders[3] setNeedsDisplay: YES];
 
   updating = NO;
 }
@@ -90,11 +106,25 @@
   float black  = values[3] / 100;
   float alpha = [_colorPanel alpha];
   NSColor *c = [NSColor colorWithDeviceCyan: cyan
-			magenta: magenta
-			yellow: yellow
-			black: black
-			alpha: alpha];
+                        magenta: magenta
+                        yellow: yellow
+                        black: black
+                        alpha: alpha];
   [_colorPanel setColor: c];
+
+  // FIXME: No way to store black in slider cell
+  [(GSColorSliderCell *)[sliders[0] cell]
+    _setColorSliderCellValues: cyan : magenta : yellow];
+  [(GSColorSliderCell *)[sliders[1] cell]
+    _setColorSliderCellValues: cyan : magenta : yellow];
+  [(GSColorSliderCell *)[sliders[2] cell]
+    _setColorSliderCellValues: cyan : magenta : yellow];
+  [(GSColorSliderCell *)[sliders[3] cell]
+    _setColorSliderCellValues: cyan : magenta : yellow];
+  [sliders[0] setNeedsDisplay: YES];
+  [sliders[1] setNeedsDisplay: YES];
+  [sliders[2] setNeedsDisplay: YES];
+  [sliders[3] setNeedsDisplay: YES];
 }
 
 

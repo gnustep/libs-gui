@@ -11,19 +11,19 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor,
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
    Boston, MA 02110-1301, USA.
 */ 
 
@@ -52,6 +52,18 @@ enum {
     NSTableViewSolidVerticalGridLineMask = 1,
     NSTableViewSolidHorizontalGridLineMask = 2
 };
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+typedef enum _NSTableViewColumnAutoresizingStyle
+{
+    NSTableViewNoColumnAutoresizing = 0,
+    NSTableViewUniformColumnAutoresizingStyle,
+    NSTableViewSequentialColumnAutoresizingStyle,
+    NSTableViewReverseSequentialColumnAutoresizingStyle,
+    NSTableViewLastColumnOnlyAutoresizingStyle,
+    NSTableViewFirstColumnOnlyAutoresizingStyle
+} NSTableViewColumnAutoresizingStyle;
+#endif
 
 @interface NSTableView : NSControl <NSUserInterfaceValidations>
 {
@@ -122,7 +134,10 @@ enum {
      computations on sizes so we ignore tile (produced for example by
      the NSTableColumns) during the computation.  We perform a global
      tile at the end */
-  BOOL   _tilingDisabled;
+  BOOL _tilingDisabled;
+
+	unsigned int _draggingSourceOperationMaskForLocal;
+	unsigned int _draggingSourceOperationMaskForRemote;
 }
 
 /* Data Source */
@@ -157,8 +172,10 @@ enum {
 - (float) rowHeight;
 - (void) setBackgroundColor: (NSColor *)aColor;
 - (NSColor *) backgroundColor;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (void) setUsesAlternatingRowBackgroundColors: (BOOL)useAlternatingRowColors;
 - (BOOL) usesAlternatingRowBackgroundColors;
+#endif
 
 /* Columns */
 - (void) addTableColumn: (NSTableColumn *)aColumn;
@@ -197,15 +214,17 @@ enum {
 - (BOOL) drawsGrid;
 - (void) setGridColor: (NSColor *)aColor;
 - (NSColor *) gridColor;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (void) setGridStyleMask: (unsigned int)gridType;
 - (unsigned int) gridStyleMask;
+#endif
 
 /* Editing Cells */
 /* ALL TODOS */
 - (void) editColumn: (int)columnIndex 
-		row: (int)rowIndex 
-	  withEvent: (NSEvent *)theEvent 
-	     select: (BOOL)flag;
+                row: (int)rowIndex 
+          withEvent: (NSEvent *)theEvent 
+             select: (BOOL)flag;
 - (int) editedRow;
 - (int) editedColumn;
 
@@ -229,12 +248,19 @@ enum {
 - (void) sizeLastColumnToFit;
 - (void) noteNumberOfRowsChanged;
 - (void) tile;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (NSTableViewColumnAutoresizingStyle) columnAutoresizingStyle;
+- (void) setColumnAutoresizingStyle: (NSTableViewColumnAutoresizingStyle)style;
+- (void) noteHeightOfRowsWithIndexesChanged: (NSIndexSet*)indexes;
+#endif
 
 /* Drawing */
 - (void) drawRow: (int)rowIndex clipRect: (NSRect)clipRect;
 - (void) drawGridInClipRect: (NSRect)aRect;
 - (void) highlightSelectionInClipRect: (NSRect)clipRect;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (void) drawBackgroundInClipRect: (NSRect)clipRect;
+#endif
 
 /* Scrolling */
 - (void) scrollRowToVisible: (int)rowIndex;
@@ -271,12 +297,22 @@ enum {
 /* dragging rows */
 /* NB: ALL TODOS */
 - (NSImage*) dragImageForRows: (NSArray*)dragRows
-			event: (NSEvent*)dragEvent
-	      dragImageOffset: (NSPoint*)dragImageOffset;
+                        event: (NSEvent*)dragEvent
+              dragImageOffset: (NSPoint*)dragImageOffset;
 - (void) setDropRow: (int)row
       dropOperation: (NSTableViewDropOperation)operation;
 - (void) setVerticalMotionCanBeginDrag: (BOOL)flag;
 - (BOOL) verticalMotionCanBeginDrag;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (BOOL) canDragRowsWithIndexes: (NSIndexSet*)indexes 
+                        atPoint: (NSPoint)point;
+- (NSImage *) dragImageForRowsWithIndexes: (NSIndexSet*)rows
+                             tableColumns: (NSArray*)cols
+                                    event: (NSEvent*)event
+                                   offset: (NSPoint*)offset;
+- (void) setDraggingSourceOperationMask: (unsigned int)mask
+                               forLocal: (BOOL)isLocal;
+#endif
 
 /* sorting */
 - (void) setSortDescriptors: (NSArray *)array;
@@ -307,16 +343,21 @@ objectValueForTableColumn: (NSTableColumn *)aTableColumn
 
 /* Dragging */
 - (BOOL) tableView: (NSTableView*)tableView
-	acceptDrop: (id <NSDraggingInfo>)info
-	       row: (int)row
+        acceptDrop: (id <NSDraggingInfo>)info
+               row: (int)row
      dropOperation: (NSTableViewDropOperation)operation;
 - (NSDragOperation) tableView: (NSTableView*)tableView
-		 validateDrop: (id <NSDraggingInfo>)info
-		  proposedRow: (int)row
+                 validateDrop: (id <NSDraggingInfo>)info
+                  proposedRow: (int)row
 	proposedDropOperation: (NSTableViewDropOperation)operation;
-- (BOOL) tableView: (NSTableView *)tableView
-	 writeRows: (NSArray*)rows
+- (BOOL) tableView: (NSTableView*)tableView
+         writeRows: (NSArray*)rows
       toPasteboard: (NSPasteboard*)pboard;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (BOOL) tableView: (NSTableView*)tableView
+writeRowsWithIndexes: (NSIndexSet*)rows
+      toPasteboard: (NSPasteboard*)pboard;
+#endif
 @end
 
 APPKIT_EXPORT NSString *NSTableViewColumnDidMoveNotification;
@@ -352,7 +393,16 @@ shouldSelectTableColumn: (NSTableColumn *)aTableColumn;
 - (void) tableViewColumnDidResize: (NSNotification *)aNotification;
 - (void) tableViewSelectionDidChange: (NSNotification *)aNotification;
 - (void) tableViewSelectionIsChanging: (NSNotification *)aNotification;
-
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (float) tableView: (NSTableView *)tableView
+        heightOfRow: (int)row;
+- (NSString *) tableView: (NSTableView *)tableView
+          toolTipForCell: (NSCell *)cell
+                    rect: (NSRect *)rect
+             tableColumn: (NSTableColumn *)col
+                     row: (int)row
+           mouseLocation: (NSPoint)mouse;
+#endif
 @end
 
 #endif /* _GNUstep_H_NSTableView */

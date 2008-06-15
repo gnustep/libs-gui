@@ -12,23 +12,22 @@
    Author: Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: December 1998
 
-   
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor,
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
    Boston, MA 02110-1301, USA.
 
     AutogsdocSource: NSApplication.m
@@ -44,20 +43,21 @@
 
 @class NSArray;
 @class NSAutoreleasePool;
-@class NSMutableArray;
-@class NSString;
-@class NSException;
-@class NSNotification;
 @class NSDate;
+@class NSError;
+@class NSException;
+@class NSMutableArray;
+@class NSNotification;
+@class NSString;
 @class NSTimer;
 
 @class NSEvent;
-@class NSPasteboard;
+@class NSGraphicsContext;
+@class NSImage;
 @class NSMenu;
 @class NSMenuItem;
-@class NSImage;
+@class NSPasteboard;
 @class NSWindow;
-@class NSGraphicsContext;
 
 @class GSInfoPanel;
 
@@ -100,6 +100,23 @@ typedef enum {
 } NSRequestUserAttentionType;
 
 #define NSAppKitVersionNumber10_0 0
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+typedef enum _NSApplicationDelegateReply
+{
+  NSApplicationDelegateReplySuccess =0,
+  NSApplicationDelegateReplyCancel  =1,
+  NSApplicationDelegateReplyFailure =2
+} NSApplicationDelegateReply;
+
+typedef enum _NSApplicationPrintReply
+{
+  NSPrintingCancelled = NO,
+  NSPrintingSuccess = YES,
+  NSPrintingFailure,
+  NSPrintingReplyLater
+} NSApplicationPrintReply;
 #endif
 
 APPKIT_EXPORT NSString	*NSModalPanelRunLoopMode;
@@ -326,6 +343,9 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void) replyToApplicationShouldTerminate: (BOOL)shouldTerminate;
 #endif 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (void) replyToOpenOrPrint: (NSApplicationDelegateReply)reply;
+#endif 
 - (void) terminate: (id)sender;
 
 /*
@@ -376,6 +396,12 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 #endif
 @end
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+@interface NSApplication (CharacterPanel)
+- (void) orderFrontCharacterPalette: (id)sender;
+@end
+#endif
+
 #if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 
 @interface NSApplication (GSGUIInternal)
@@ -405,6 +431,14 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 - (BOOL) application: (NSApplication*)app
 	    openFile: (NSString*)filename;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+/**
+ * Sender requests application to open filenames.
+ * <em>Not sent yet under GNUstep.</em>
+ */
+- (void) application: (NSApplication*)app openFiles: (NSArray*)filenames;
+#endif
+
 /**
  * Sender requests application to open a temporary file.  Responsibility
  * for eventual deletion lies with this application.
@@ -422,6 +456,29 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 - (BOOL) application: (NSApplication *)theApplication 
            printFile:(NSString *)filename;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+/**
+ * <em>Not sent yet on GNUstep.</em>
+ */
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (NSApplicationPrintReply) application: (NSApplication*)app
+                             printFiles: (NSArray*)files 
+                           withSettings: (NSDictionary*)settings 
+                        showPrintPanels: (BOOL)flag;
+
+#else
+// Deprecated in 10.4
+- (void) application: (NSApplication*)app printFiles: (NSArray*)filenames;
+#endif
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+/**
+ * Ask delegate for an error replacement.
+ */
+- (NSError*) application: (NSApplication*)app willPresentError: (NSError*)error;
+#endif
+
 /**
  * Sender requests application to open a fresh document.
  * YES should be returned on success, NO on failure.
@@ -436,12 +493,6 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 /**
- * Sent from within the [NSApplication-terminate:].  If NO is returned
- * termination will not proceed. 
- */
-- (BOOL) applicationShouldTerminate: (id)sender;
-#else
-/**
  * Sent from within the [NSApplication-terminate:].  If
  * <code>NSTerminateNow</code> is returned, termination will proceed.  If
  * <code>NSTerminateCancel</code> is returned, termination will NOT proceed.
@@ -451,6 +502,12 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
  * if confirmation windows, etc. need to be put up.)
  */
 - (NSApplicationTerminateReply) applicationShouldTerminate: (NSApplication *)sender;
+#else
+/**
+ * Sent from within the [NSApplication-terminate:].  If NO is returned
+ * termination will not proceed. 
+ */
+- (BOOL) applicationShouldTerminate: (id)sender;
 #endif
 
 /**
@@ -515,7 +572,7 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
  * Invoked on notification just before application terminates.  (There is
  * no opportunity to avert it now.)
  */
-- (void) applicationWillTerminate:(NSNotification *)aNotification;
+- (void) applicationWillTerminate:(NSNotification*)aNotification;
 
 /**
  * Invoked on notification that application will be unhidden.
@@ -533,15 +590,15 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
  * Method called by scripting framework on OS X.  <em>Not implemented (sent)
  * yet on GNUstep.</em>
  */
-- (BOOL) application: (NSApplication *)sender 
-  delegateHandlesKey: (NSString *)key;
+- (BOOL) application: (NSApplication*)sender 
+  delegateHandlesKey: (NSString*)key;
 
 /**
  * Method used on OS X to allow an application to override the standard menu
  * obtained by right-clicking on the application's dock icon.  <em>Not sent
  * yet in GNUstep.</em>
  */
-- (NSMenu *) applicationDockMenu: (NSApplication *)sender;
+- (NSMenu *) applicationDockMenu: (NSApplication*)sender;
 
 /**
  * Method used on OS X to allow delegate to handle event when user clicks on
@@ -550,7 +607,7 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
  * if NO is returned nothing is done (and you can handle it here in this
  * method).  <em>Not sent yet under GNUstep.</em>
  */
-- (BOOL) applicationShouldHandleReopen: (NSApplication *)theApplication 
+- (BOOL) applicationShouldHandleReopen: (NSApplication*)theApplication 
 		   hasVisibleWindows: (BOOL)flag;
 
 /**
@@ -558,7 +615,7 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
  * have changed (through control panel operation, connecting a new monitor,
  * etc.).  <em>Not implemented/sent yet under GNUstep.</em>
  */
-- (void) applicationDidChangeScreenParameters: (NSNotification *)aNotification;
+- (void) applicationDidChangeScreenParameters: (NSNotification*)aNotification;
 #endif 
 @end
 #endif
@@ -567,6 +624,7 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
  * Notifications
  */
 APPKIT_EXPORT NSString	*NSApplicationDidBecomeActiveNotification;
+APPKIT_EXPORT NSString	*NSApplicationDidChangeScreenParametersNotification;
 APPKIT_EXPORT NSString	*NSApplicationDidFinishLaunchingNotification;
 APPKIT_EXPORT NSString	*NSApplicationDidHideNotification;
 APPKIT_EXPORT NSString	*NSApplicationDidResignActiveNotification;

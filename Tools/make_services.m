@@ -9,17 +9,22 @@
 
    This file is part of the GNUstep Project
 
-   This library is free software; you can redistribute it and/or
+   This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
-   as published by the Free Software Foundation; either version 2
+   as published by the Free Software Foundation; either version 3
    of the License, or (at your option) any later version.
     
-   You should have received a copy of the GNU General Public  
-   License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
 
-   */
+   You should have received a copy of the GNU General Public  
+   License along with this library; see the file COPYING.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
+*/
 
 #include	<Foundation/NSArray.h>
 #include	<Foundation/NSBundle.h>
@@ -431,6 +436,7 @@ scanDirectory(NSMutableDictionary *services, NSString *path)
 	|| [ext isEqualToString: @"profile"]))
 	{
 	  newPath = [path stringByAppendingPathComponent: name];
+	  newPath = [newPath stringByStandardizingPath];
 	  if ([mgr fileExistsAtPath: newPath isDirectory: &isDir] && isDir)
 	    {
 	      NSString		*oldPath;
@@ -494,6 +500,7 @@ scanDirectory(NSMutableDictionary *services, NSString *path)
       else if (ext != nil && [ext isEqualToString: @"service"])
 	{
 	  newPath = [path stringByAppendingPathComponent: name];
+	  newPath = [newPath stringByStandardizingPath];
 	  if ([mgr fileExistsAtPath: newPath isDirectory: &isDir] && isDir)
 	    {
 	      NSBundle		*bundle;
@@ -533,6 +540,7 @@ scanDirectory(NSMutableDictionary *services, NSString *path)
       else
 	{
 	  newPath = [path stringByAppendingPathComponent: name];
+	  newPath = [newPath stringByStandardizingPath];
 	  if ([mgr fileExistsAtPath: newPath isDirectory: &isDir] && isDir)
 	    {
 	      scanDirectory(services, newPath);
@@ -562,6 +570,7 @@ scanApplications(NSMutableDictionary *services, NSString *path)
 	|| [ext isEqualToString: @"profile"]))
 	{
 	  newPath = [path stringByAppendingPathComponent: name];
+	  newPath = [newPath stringByStandardizingPath];
 	  if ([mgr fileExistsAtPath: newPath isDirectory: &isDir] && isDir)
 	    {
 	      NSString		*oldPath;
@@ -625,6 +634,7 @@ scanApplications(NSMutableDictionary *services, NSString *path)
       else
 	{
 	  newPath = [path stringByAppendingPathComponent: name];
+	  newPath = [newPath stringByStandardizingPath];
 	  if ([mgr fileExistsAtPath: newPath isDirectory: &isDir] && isDir)
 	    {
 	      scanApplications(services, newPath);
@@ -704,6 +714,7 @@ scanServices(NSMutableDictionary *services, NSString *path)
       if (ext != nil && [ext isEqualToString: @"service"])
 	{
 	  newPath = [path stringByAppendingPathComponent: name];
+	  newPath = [newPath stringByStandardizingPath];
 	  if ([mgr fileExistsAtPath: newPath isDirectory: &isDir] && isDir)
 	    {
 	      NSBundle		*bundle;
@@ -743,6 +754,7 @@ scanServices(NSMutableDictionary *services, NSString *path)
       else
 	{
 	  newPath = [path stringByAppendingPathComponent: name];
+	  newPath = [newPath stringByStandardizingPath];
 	  if ([mgr fileExistsAtPath: newPath isDirectory: &isDir] && isDir)
 	    {
 	      scanServices(services, newPath);

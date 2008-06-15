@@ -11,19 +11,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */ 
 
 #include <Foundation/NSArray.h>
@@ -65,22 +66,31 @@
 
 +(NSPrinter*) defaultPrinter
 {
-  const char *defaultName;
-  
-  defaultName = cupsGetDefault();
-  NSDebugLLog(@"GSCUPS", @"The default printer name is %s", defaultName);
-
-  if (defaultName)
+  NSString *defaultName;
+  int numDests;
+  cups_dest_t* dests;
+  cups_dest_t* dest = NULL;
+ 
+  numDests = cupsGetDests( &dests );
+  if (dests) 
     {
-      return [NSPrinter printerWithName:
-	       [NSString stringWithCString: defaultName]];
+      // use NULL to request the default printer
+      dest = cupsGetDest( NULL, NULL, numDests, dests );
     }
-  else
-    {
-      return [NSPrinter printerWithName: GSCUPSDummyPrinterName];
-    }  
+ 
+  if (dest)
+     {
+       defaultName = [NSString stringWithCString: dest->name];
+     }
+   else
+     {
+       defaultName = GSCUPSDummyPrinterName;
+     }
+  NSDebugLLog(@"GSCUPS", @"The default printer name is %@", defaultName);
+  cupsFreeDests( numDests, dests );
+  
+  return [NSPrinter printerWithName: defaultName];  
 }
-
 
 
 + (void)setDefaultPrinter:(NSPrinter *)printer

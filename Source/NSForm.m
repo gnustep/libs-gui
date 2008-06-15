@@ -10,19 +10,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */ 
 
 #include "config.h"
@@ -58,32 +59,32 @@ static Class defaultCellClass = nil;
 }
 
 - (id) initWithFrame: (NSRect)frameRect
-	        mode: (int)aMode
-	   cellClass: (Class)class
+                mode: (int)aMode
+           cellClass: (Class)class
         numberOfRows: (int)rowsHigh
      numberOfColumns: (int)colsWide
 {
   self = [super initWithFrame: (NSRect)frameRect
-	        mode: (int)aMode
-	   cellClass: (Class)class
-        numberOfRows: (int)rowsHigh
-     numberOfColumns: (int)colsWide];
+                         mode: (int)aMode
+                    cellClass: (Class)class
+                 numberOfRows: (int)rowsHigh
+              numberOfColumns: (int)colsWide];
 
   [self setIntercellSpacing: NSMakeSize (0, 4)];
   return self;
 }
 
 - (id) initWithFrame: (NSRect)frameRect
-	        mode: (int)aMode
-	   prototype: (NSCell*)prototype
+                mode: (int)aMode
+           prototype: (NSCell*)prototype
         numberOfRows: (int)rowsHigh
      numberOfColumns: (int)colsWide
 {
   self = [super initWithFrame: (NSRect)frameRect
-		 mode: (int)aMode
-		    prototype: (NSCell*)prototype
-		 numberOfRows: (int)rowsHigh
-	      numberOfColumns: (int)colsWide];
+                         mode: (int)aMode
+                    prototype: (NSCell*)prototype
+                 numberOfRows: (int)rowsHigh
+              numberOfColumns: (int)colsWide];
 
   [self setIntercellSpacing: NSMakeSize (0, 4)];  
   return self;
@@ -103,7 +104,7 @@ static Class defaultCellClass = nil;
     <p>See Also: -addEntry: -removeEntryAtIndex:</p>
  */
 - (NSFormCell*) insertEntry: (NSString*)title
-		    atIndex: (int)index
+                    atIndex: (int)index
 {
   NSFormCell *new_cell = [[[isa cellClass] alloc] initTextCell: title];
 
@@ -196,6 +197,16 @@ static Class defaultCellClass = nil;
   [self setCellSize: size];
 }
 
+/**<p>Sets the size of the frame to aSize</p> 
+   <p>See Also: [NSView-setFrameSize:]</p>
+ */
+- (void) setFrameSize: (NSSize)aSize
+{
+  [super setFrameSize: aSize];
+  // Set the width of the entries independent of autosizesCells
+  _cellSize.width = _bounds.size.width;
+}
+
 /** <p>Sets the spacing between all entries to spacing. By default
     the spacing is 4.</p><p>See Also: [NSMatrix-setIntercellSpacing:]</p>
  */
@@ -268,6 +279,34 @@ static Class defaultCellClass = nil;
     [[self cellAtRow: i column: 0] setFont: fontObject];
 }
 
+/** <p>Sets the title writing direction to direction for all entries</p>
+    <p>See Also: [NSFormCell-setTitleBaseWritingDirection:] -setTextBaseWritingDirection:</p>
+ */
+- (void) setTitleBaseWritingDirection: (NSWritingDirection)direction
+{
+  int i, count = [self numberOfRows];
+
+  /* Set the writing direction attribute to the cell prototype */
+  [[self prototype] setTitleBaseWritingDirection: direction];
+
+  for (i = 0; i < count; i++)
+    [[self cellAtRow: i column: 0] setTitleBaseWritingDirection: direction];
+}
+
+/** <p>Sets the contents writing direction to direction for all entries</p>
+    <p>See Also: [NSCell-setBaseWritingDirection:] -setTitleBaseWritingDirection:</p>
+ */
+- (void) setTextBaseWritingDirection: (NSWritingDirection)direction
+{
+  int i, count = [self numberOfRows];
+
+  /* Set the writing direction attribute to the cell prototype */
+  [[self prototype] setBaseWritingDirection: direction];
+
+  for (i = 0; i < count; i++)
+    [[self cellAtRow: i column: 0] setBaseWritingDirection: direction];
+}
+
 /**<p>Returns the index of the entry specified by aTag or -1 if aTag is not 
    found in entries.</p><p>See Also: [NSMatrix-cellAtRow:column:]</p>
  */
@@ -322,7 +361,7 @@ static Class defaultCellClass = nil;
     {
       candidate_title_width = [_cells[i][0] titleWidth];
       if (candidate_title_width > new_title_width)  
-	new_title_width = candidate_title_width;
+        new_title_width = candidate_title_width;
     }
 
   // Suggest this max as title width to all cells 
@@ -351,7 +390,7 @@ static Class defaultCellClass = nil;
   id theCell = [self cellAtIndex: index];
 
   [theCell drawWithFrame: [self cellFrameAtRow: index column: 0]
-		  inView: self];
+                  inView: self];
 }
 
 - (void) drawCellAtRow: (int)row column: (int)column

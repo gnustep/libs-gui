@@ -13,39 +13,49 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
-   Library General Public License for more details.
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 #include "config.h"
 #include <Foundation/NSException.h>
-#include "AppKit/NSSecureTextField.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSTextView.h"
-#include "AppKit/NSLayoutManager.h"
-#include "AppKit/NSTextContainer.h"
-#include "AppKit/NSWindow.h"
+
+#include "AppKit/NSAttributedString.h"
 #include "AppKit/NSEvent.h"
+#include "AppKit/NSFont.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSLayoutManager.h"
+#include "AppKit/NSSecureTextField.h"
+#include "AppKit/NSTextContainer.h"
+#include "AppKit/NSTextView.h"
+#include "AppKit/NSWindow.h"
 
 /* 'Secure' subclasses */
 @interface NSSecureTextView : NSTextView
-{}
+{
+}
+- (void) setEchosBullets:(BOOL)flag;
+- (BOOL) echosBullets;
 @end
 
 @interface GSSimpleSecureLayoutManager : NSLayoutManager
-{}
+{
+  BOOL _echosBullets;
+}
+- (void) setEchosBullets:(BOOL)flag;
+- (BOOL) echosBullets;
 @end
 
 @implementation NSSecureTextField
@@ -111,32 +121,68 @@
   _echosBullets = flag;
 }
 
-- (void) drawInteriorWithFrame: (NSRect)cellFrame 
-			inView: (NSView *)controlView
+- (NSAttributedString *)_replacementAttributedString
 {
-  /* Draw background, then ... */ 
-  if (_textfieldcell_draws_background)
+  NSDictionary *attributes;
+  NSMutableString *string;
+  unsigned int length;
+  unsigned int i;
+
+  length = [[self stringValue] length];
+  string = [[NSMutableString alloc] initWithCapacity: length];
+  for (i = 0; i < length; i++)
     {
-      if ([self isEnabled])
-	{
-	  [_background_color set];
-	}
-      else
-	{
-	  [[NSColor controlBackgroundColor] set];
-	}
-      NSRectFill ([self drawingRectForBounds: cellFrame]);
+      [string appendString: @"*"];
     }
-  /* .. do nothing.  */
+  AUTORELEASE(string);
+
+  attributes = [self _nonAutoreleasedTypingAttributes];
+  return AUTORELEASE([[NSAttributedString alloc] initWithString: string 
+                                                 attributes: attributes]);
+}
+
+- (NSAttributedString*) _drawAttributedString
+{
+  if (_echosBullets)
+    {
+      if (!_cell.is_disabled)
+        {
+          return [self _replacementAttributedString];
+        }
+      else
+        {
+          NSAttributedString *attrStr = [self _replacementAttributedString];
+          NSDictionary *attribs;
+          NSMutableDictionary *newAttribs;
+          
+          attribs = [attrStr attributesAtIndex: 0 
+                             effectiveRange: NULL];
+          newAttribs = [NSMutableDictionary 
+                           dictionaryWithDictionary: attribs];
+          [newAttribs setObject: [NSColor disabledControlTextColor]
+                      forKey: NSForegroundColorAttributeName];
+          
+          return AUTORELEASE([[NSAttributedString alloc]
+                                 initWithString: [attrStr string]
+                                 attributes: newAttribs]);
+        }
+    }
+  else
+    {
+      /* .. do nothing.  */
+      return nil;
+    }
 }
 
 - (NSText *) setUpFieldEditorAttributes: (NSText *)textObject
 {
-  /* Replace the text object with a secure instance.  It's not shared.  */
-  textObject = [NSSecureTextView new];
-  AUTORELEASE (textObject);
+  NSSecureTextView *secureView;
 
-  return [super setUpFieldEditorAttributes: textObject];
+  /* Replace the text object with a secure instance.  It's not shared.  */
+  secureView = AUTORELEASE([[NSSecureTextView alloc] init]);
+
+  [secureView setEchosBullets: [self echosBullets]];
+  return [super setUpFieldEditorAttributes: secureView];
 }
 
 - (id) initWithCoder: (NSCoder *)decoder
@@ -163,11 +209,37 @@
 @end
 
 @implementation GSSimpleSecureLayoutManager
-- (void) drawGlyphsForGlyphRange: (NSRange)glyphRange
-			 atPoint: (NSPoint)containerOrigin
+
+- (BOOL) echosBullets
 {
-  /* Do nothing.  */
+  return _echosBullets;
 }
+
+- (void) setEchosBullets: (BOOL)flag
+{
+  _echosBullets = flag;
+}
+
+- (void) drawGlyphsForGlyphRange: (NSRange)glyphRange
+                         atPoint: (NSPoint)containerOrigin
+{
+  if ([self echosBullets])
+    {
+        /*
+          FIXME: Functionality not implemented.
+          This also doesn't eblong into this method, rather 
+          we should do the replacement during the glyph generation.
+          This gets currently done in [GSLayoutManager _generateGlyphsForRun:at:],
+          but should be done in an NSTypesetter subclass. Only with this in place
+          it seems possible to implement bullet echoing.
+         */
+    }
+  else
+    {
+      /* Do nothing.  */
+    }
+}
+
 @end
 
 @implementation NSSecureTextView
@@ -183,17 +255,22 @@
   /* Then, replace the layout manager with a
    * GSSimpleSecureLayoutManager.  */
   m = [[GSSimpleSecureLayoutManager alloc] init];
-  AUTORELEASE (m);
   [[self textContainer] replaceLayoutManager: m];
+  RELEASE(m);
 
   [self setFieldEditor: YES];
 
   return self;
 }
 
-- (void) copy: (id)sender
+- (BOOL) echosBullets
 {
-  /* Do nothing since copying from a NSSecureTextView is not permitted.  */
+  return [(GSSimpleSecureLayoutManager*)[self layoutManager] echosBullets];
+}
+
+- (void) setEchosBullets: (BOOL)flag
+{
+  [(GSSimpleSecureLayoutManager*)[self layoutManager] setEchosBullets: flag];
 }
 
 - (BOOL) writeSelectionToPasteboard: (NSPasteboard*)pboard
@@ -205,7 +282,7 @@
 }
 
 - (id) validRequestorForSendType: (NSString*) sendType
-		      returnType: (NSString*) returnType
+                      returnType: (NSString*) returnType
 {
   /* Return nil to indicate that no type can be sent to the pasteboard
    * for an object of this class.  */

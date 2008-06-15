@@ -37,7 +37,7 @@ specifing the
 .B -a
 flag on the command line you can tell
 .B gopen
-to open the file with anther application.
+to open the file with another application.
 .PP
 You can also directly print a file without (
 .B -p
@@ -97,19 +97,14 @@ however, not work with applications employing the NSDocument architecture
 as they will only receive filenames whose types the application has registered.
 To circumvent this limitation, applications may advertise their ability to open
 all kinds of files through the "*" filetype.
+When
 .B gopen
-fails when only the 
+is used with only the 
 .B -a
 .I application 
 argument but no
 .I filename
- is present. Thus, to simply launch an application, please use
-.B openapp(1) 
-instead of
-.B gopen
-or 
-.B gopen -a
-.IR application
+ present, the application is simply launched without opening a specific file.
 .P
 .SH SEE ALSO
 GNUstep(7), openapp(1)

@@ -7,22 +7,20 @@
 #  This file is part of the GNUstep GUI Library.
 #
 #  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Library General Public
+#  modify it under the terms of the GNU Lesser General Public
 #  License as published by the Free Software Foundation; either
 #  version 2 of the License, or (at your option) any later version.
 #
 #  This library is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
-#  Library General Public License for more details.
+#  Lesser General Public License for more details.
 #
-#  If you are interested in a warranty or support for this source code,
-#  contact Scott Christley at scottc@net-community.com
-#
-#  You should have received a copy of the GNU Library General Public
+#  You should have received a copy of the GNU Lesser General Public
 #  License along with this library; see the file COPYING.LIB.
-#  If not, write to the Free Software Foundation,
-#  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+#  If not, see <http://www.gnu.org/licenses/> or write to the 
+#  Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+#  Boston, MA 02110-1301, USA.
 
 GNUSTEP_INSTALLATION_DOMAIN = SYSTEM
 
@@ -73,6 +71,7 @@ NSColor.m \
 NSColorList.m \
 NSColorPanel.m \
 NSColorPicker.m \
+NSColorSpace.m \
 NSColorWell.m \
 NSComboBox.m \
 NSComboBoxCell.m \
@@ -90,10 +89,12 @@ NSEPSImageRep.m \
 NSEvent.m \
 NSFileWrapper.m \
 NSFont.m \
+NSFontDescriptor.m \
 NSFontManager.m \
 NSFontPanel.m \
 NSForm.m \
 NSFormCell.m \
+NSGlyphGenerator.m \
 NSGraphicsContext.m \
 NSHelpPanel.m \
 NSHelpManager.m \
@@ -104,6 +105,7 @@ NSImageView.m \
 NSInputManager.m \
 NSInputServer.m \
 NSInterfaceStyle.m \
+NSKeyValueBinding.m \
 NSLayoutManager.m \
 NSLevelIndicator.m \
 NSLevelIndicatorCell.m \
@@ -115,6 +117,9 @@ NSMenuItemCell.m \
 NSMovie.m \
 NSMovieView.m \
 NSNib.m \
+NSNibBindingConnector.m \
+NSNibAXAttributeConnector.m \
+NSNibAXRelationshipConnector.m \
 NSObjectController.m \
 NSOpenGLContext.m \
 NSOpenGLPixelFormat.m \
@@ -137,6 +142,8 @@ NSRulerView.m \
 NSSavePanel.m \
 NSSearchField.m \
 NSSearchFieldCell.m \
+NSSegmentedCell.m \
+NSSegmentedControl.m \
 NSScreen.m \
 NSScroller.m \
 NSScrollView.m \
@@ -158,10 +165,14 @@ NSTableHeaderCell.m \
 NSTableView.m \
 NSText.m \
 NSTextAttachment.m \
+NSTextBlock.m \
 NSTextContainer.m \
 NSTextField.m \
 NSTextFieldCell.m \
+NSTextList.m \
 NSTextStorage.m \
+NSTextTable.m \
+NSTextTableBlock.m \
 NSToolbar.m \
 NSToolbarItem.m \
 NSUserDefaultsController.m \
@@ -212,7 +223,8 @@ GSPDFPrintOperation.m \
 GSModelLoaderFactory.m \
 GSGormLoader.m \
 GSGModelLoader.m \
-GSNibLoader.m
+GSNibLoader.m \
+NSManagedObjectContext.m
 
 # Turn off NSMenuItem warning that NSMenuItem conforms to <NSObject>,
 # but does not implement <NSObject>'s methods itself (it inherits
@@ -253,6 +265,7 @@ NSColor.h \
 NSColorList.h \
 NSColorPanel.h \
 NSColorPicker.h \
+NSColorSpace.h \
 NSColorWell.h \
 NSComboBox.h \
 NSComboBoxCell.h \
@@ -270,10 +283,12 @@ NSEPSImageRep.h \
 NSEvent.h \
 NSFileWrapper.h \
 NSFont.h \
+NSFontDescriptor.h \
 NSFontManager.h \
 NSFontPanel.h \
 NSForm.h \
 NSFormCell.h \
+NSGlyphGenerator.h \
 NSGraphicsContext.h \
 NSHelpPanel.h \
 NSHelpManager.h \
@@ -321,6 +336,8 @@ NSScroller.h \
 NSSearchField.h \
 NSSearchFieldCell.h \
 NSSecureTextField.h \
+NSSegmentedCell.h \
+NSSegmentedControl.h \
 NSSelection.h \
 NSSlider.h \
 NSSliderCell.h \
@@ -342,7 +359,9 @@ NSTextAttachment.h \
 NSTextContainer.h \
 NSTextField.h \
 NSTextFieldCell.h \
+NSTextList.h \
 NSTextStorage.h \
+NSTextTable.h \
 NSTextView.h \
 NSToolbar.h \
 NSToolbarItem.h \

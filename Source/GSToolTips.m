@@ -9,27 +9,30 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
+*/
 
 #include <Foundation/Foundation.h>
+
 #include "AppKit/NSAttributedString.h"
 #include "AppKit/NSBezierPath.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSScreen.h"
 #include "AppKit/NSView.h"
 #include "AppKit/NSWindow.h"
-#include "AppKit/NSScreen.h"
 #include "GNUstepGUI/GSTrackingRect.h"
 #include "GSToolTips.h"
 
@@ -68,10 +71,28 @@
 {
   return data;
 }
+- (void) dealloc
+{
+  if ([object respondsToSelector:
+    @selector(view:stringForToolTip:point:userData:)] == NO)
+    {
+      /* Object must be a string rather than something which provides one */
+      RELEASE(object);
+    }
+  [super dealloc];
+}
 - (id) initWithObject: (id)o userData: (void*)d rect: (NSRect)r
 {
   data = d;
   object = o;
+  if ([object respondsToSelector:
+    @selector(view:stringForToolTip:point:userData:)] == NO)
+    {
+      /* Object does not provide a string ... so we take a copy of it
+       * as the string to be used.
+       */
+      object = [[object description] copy];
+    }
   viewRect = r;
   return self;
 }
@@ -103,8 +124,9 @@ typedef struct NSView_struct
 @implementation GSToolTips
 
 static NSMapTable	*viewsMap = 0;
-static NSTimer		*timer;
-static NSWindow		*window;
+static NSTimer		*timer = nil;
+static GSToolTips       *timedObject = nil;
+static NSWindow		*window = nil;
 static NSSize		offset;
 static BOOL		restoreMouseMoved;
 
@@ -198,8 +220,6 @@ static BOOL		restoreMouseMoved;
 - (id) initForView: (NSView*)aView
 {
   view = aView;
-  timer = nil;
-  window = nil;
   toolTipTag = -1;
   return self;
 }
@@ -215,6 +235,7 @@ static BOOL		restoreMouseMoved;
        */
       [timer invalidate];
       timer = nil;
+      timedObject = nil;
     }
 
   provider = (GSTTProvider*)[theEvent userData];
@@ -228,14 +249,15 @@ static BOOL		restoreMouseMoved;
     }
   else
     {
-      toolTipString = [[provider object] description];
+      toolTipString = [provider object];
     }
 
   timer = [NSTimer scheduledTimerWithTimeInterval: 0.5
-					     target: self
-					   selector: @selector(_timedOut:)
-					   userInfo: toolTipString
-					    repeats: YES];
+                                           target: self
+                                         selector: @selector(_timedOut:)
+                                         userInfo: toolTipString
+                                          repeats: YES];
+  timedObject = self;
   if ([[view window] acceptsMouseMovedEvents] == YES)
     {
       restoreMouseMoved = NO;
@@ -431,13 +453,17 @@ static BOOL		restoreMouseMoved;
     {
       [NSWindow _setToolTipVisible: nil];
     }
-  if (timer != nil)
+  /* If there is currently a timer running for this object,
+   * cancel it.
+   */
+  if (timer != nil && timedObject == self)
     {
       if ([timer isValid])
 	{
 	  [timer invalidate];
 	}
       timer = nil;
+      timedObject = nil;
     }
   if (window != nil)
     {
@@ -469,6 +495,7 @@ static BOOL		restoreMouseMoved;
 	  [timer invalidate];
 	}
       timer = nil;
+      timedObject = nil;
     }
 
   if (window != nil)

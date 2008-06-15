@@ -9,25 +9,46 @@
 
    This file is part of GNUstep.
    
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-   
-   This program is distributed in the hope that it will be useful,
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-   
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 #ifndef GSStandardColorPicker_h
 #define GSStandardColorPicker_h
 
-@class GSTable,NSSlider,NSTextField;
+#include <AppKit/NSColorPicker.h>
+#include "GSColorSliderCell.h"
+
+@class GSTable, NSSlider, NSTextField;
+@class NSBox, NSButtonCell, NSMatrix;
+
+@interface GSStandardColorPicker: NSColorPicker <NSColorPickingCustom>
+{
+  GSTable *baseView;
+  NSBox *pickerBox;
+  NSButtonCell *imageCell;
+  NSMatrix *pickerMatrix;
+  NSMutableArray *pickers;
+  id<NSColorPickingCustom, NSColorPickingDefault> currentPicker; 
+}
+
+- (void) loadViews;
+- (void) _showNewPicker: (id) sender;
+
+@end
 
 @interface GSStandardCSColorPicker: NSColorPicker <NSColorPickingCustom>
 {
@@ -55,15 +76,6 @@
 -(void) _setColorFromValues;
 -(void) setColor:(NSColor *)color;
 
-@end
-
-@interface GSColorSliderCell : NSSliderCell
-{
-  int mode;
-  float values[3];
-}
--(void) _setColorSliderCellMode: (int)m;
--(void) _setColorSliderCellValues: (float)a : (float)b : (float)c;
 @end
 
 #endif

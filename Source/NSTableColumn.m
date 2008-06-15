@@ -9,19 +9,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
-   Library General Public License for more details.
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 
  <chapter>
   <heading>Overview of NSTableColumn</heading>
@@ -98,8 +99,11 @@
 - (id)initWithIdentifier: (id)anObject
 {
   self = [super init];
-  _width = 0;
-  _min_width = 0;
+  if (!self)
+      return nil;
+
+  _width = 100;
+  _min_width = 10;
   _max_width = 100000;
   _is_resizable = YES;
   _is_editable = YES;
@@ -206,7 +210,8 @@
     }
 }
 
-/** Return the width of the table column. */
+/** Return the width of the table column. The 
+    default width is 100. */
 - (float)width
 {
   return _width;
@@ -226,7 +231,7 @@
 /**
   Return the column's min width.  The column can in no way be resized
   to a width smaller than this min width.  The default min width is
-  zero.  */
+  10.  */
 - (float)minWidth
 {
   return _min_width;
@@ -404,30 +409,45 @@
       id identifier = [aDecoder decodeObjectForKey: @"NSIdentifier"];
 
       self = [self initWithIdentifier: identifier];
+      if (!self)
+        return nil;
+
       if ([aDecoder containsValueForKey: @"NSDataCell"])
         {
-	  [self setDataCell: [aDecoder decodeObjectForKey: @"NSDataCell"]];
-	}
+          [self setDataCell: [aDecoder decodeObjectForKey: @"NSDataCell"]];
+        }
       if ([aDecoder containsValueForKey: @"NSHeaderCell"])
         {
-	  [self setHeaderCell: [aDecoder decodeObjectForKey: @"NSHeaderCell"]];
-	}
+          [self setHeaderCell: [aDecoder decodeObjectForKey: @"NSHeaderCell"]];
+        }
       if ([aDecoder containsValueForKey: @"NSIsResizeable"])
         {
-	  [self setResizable: [aDecoder decodeBoolForKey: @"NSIsResizeable"]];
-	}
+          [self setResizable: [aDecoder decodeBoolForKey: @"NSIsResizeable"]];
+        }
+      else
+        {
+          [self setResizable: NO];
+        }
+      if ([aDecoder containsValueForKey: @"NSIsEditable"])
+        {
+          [self setEditable: [aDecoder decodeBoolForKey: @"NSIsEditable"]];
+        }
+      else
+        {
+          [self setEditable: NO];
+        }
       if ([aDecoder containsValueForKey: @"NSWidth"])
         {
-	  [self setWidth: [aDecoder decodeFloatForKey: @"NSWidth"]]; 
-	}
+          [self setWidth: [aDecoder decodeFloatForKey: @"NSWidth"]]; 
+        }
       if ([aDecoder containsValueForKey: @"NSMinWidth"])
         {
-	  [self setMinWidth: [aDecoder decodeFloatForKey: @"NSMinWidth"]];
-	}
+          [self setMinWidth: [aDecoder decodeFloatForKey: @"NSMinWidth"]];
+        }
       if ([aDecoder containsValueForKey: @"NSMaxWidth"])
         {
-	  [self setMaxWidth: [aDecoder decodeFloatForKey: @"NSMaxWidth"]];
-	}
+          [self setMaxWidth: [aDecoder decodeFloatForKey: @"NSMaxWidth"]];
+        }
     }
   else
     {
@@ -435,28 +455,31 @@
 				  @"NSTableColumn"];
       
       self = [super init];
-      if (version == 2)
+      if (!self)
+        return nil;
+
+     if (version == 2)
         {
-	  _identifier = RETAIN([aDecoder decodeObject]);
-	  [aDecoder decodeValueOfObjCType: @encode(float) at: &_width];
-	  [aDecoder decodeValueOfObjCType: @encode(float) at: &_min_width];
-	  [aDecoder decodeValueOfObjCType: @encode(float) at: &_max_width];
-	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_resizable];
-	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_editable];
-	  _headerCell = RETAIN([aDecoder decodeObject]);
-	  _dataCell   = RETAIN([aDecoder decodeObject]);
-	}
+          _identifier = RETAIN([aDecoder decodeObject]);
+          [aDecoder decodeValueOfObjCType: @encode(float) at: &_width];
+          [aDecoder decodeValueOfObjCType: @encode(float) at: &_min_width];
+          [aDecoder decodeValueOfObjCType: @encode(float) at: &_max_width];
+          [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_resizable];
+          [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_editable];
+          _headerCell = RETAIN([aDecoder decodeObject]);
+          _dataCell   = RETAIN([aDecoder decodeObject]);
+        }
       else
         {
-	  _identifier = RETAIN([aDecoder decodeObject]);
-	  _headerCell = RETAIN([aDecoder decodeObject]);
-	  _dataCell   = RETAIN([aDecoder decodeObject]);
-	  [aDecoder decodeValueOfObjCType: @encode(float) at: &_width];
-	  [aDecoder decodeValueOfObjCType: @encode(float) at: &_min_width];
-	  [aDecoder decodeValueOfObjCType: @encode(float) at: &_max_width];
-	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_resizable];
-	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_editable];
-	}
+          _identifier = RETAIN([aDecoder decodeObject]);
+          _headerCell = RETAIN([aDecoder decodeObject]);
+          _dataCell   = RETAIN([aDecoder decodeObject]);
+          [aDecoder decodeValueOfObjCType: @encode(float) at: &_width];
+          [aDecoder decodeValueOfObjCType: @encode(float) at: &_min_width];
+          [aDecoder decodeValueOfObjCType: @encode(float) at: &_max_width];
+          [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_resizable];
+          [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_editable];
+        }
     }
   return self;
 }

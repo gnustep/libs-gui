@@ -14,19 +14,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
-   License along with this library; if not, write to the Free
-   Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02111 USA.
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 #include "config.h"
@@ -106,41 +107,33 @@ static const float pi = 3.1415926535897932384626434;
   /* If it's rotated.  */
   if (B != 0  ||  C != 0)
     {
+      // FIXME: This case does not handle shear.
       float angle = [self rotationAngle];
 
+      // Keep the translation and add scaling
       A = sx; B = 0;
       C = 0; D = sy;
+      [self setTransformStruct: matrix];
 
+      // Prepend the rotation to the scaling and translation
       [self rotateByDegrees: angle];
     }
   else
     {
       A = sx; B = 0;
       C = 0; D = sy;
+      [self setTransformStruct: matrix];
     }
-  [self setTransformStruct: matrix];
 }
 
 - (void) translateToPoint: (NSPoint)point
 {
-  NSAffineTransformStruct	matrix = [self transformStruct];
-  float newTX, newTY;
-
-  newTX = point.x * A + point.y * C + TX;
-  newTY = point.x * B + point.y * D + TY;
-  TX = newTX;
-  TY = newTY;
-  [self setTransformStruct: matrix];
+  [self translateXBy: point.x yBy: point.y];
 }
-
 
 - (void) makeIdentityMatrix
 {
-  static NSAffineTransformStruct identityTransform = {
-    1.0, 0.0, 0.0, 1.0, 0.0, 0.0
-  };
-
-  [self setTransformStruct: identityTransform];
+  [self init];
 }
 
 - (void) setFrameOrigin: (NSPoint)point
@@ -148,7 +141,8 @@ static const float pi = 3.1415926535897932384626434;
   NSAffineTransformStruct	matrix = [self transformStruct];
   float dx = point.x - TX;
   float dy = point.y - TY;
-  [self translateToPoint: NSMakePoint(dx, dy)];
+
+  [self translateXBy: dx yBy: dy];
 }
 
 - (void) setFrameRotation: (float)angle
@@ -284,19 +278,17 @@ static const float pi = 3.1415926535897932384626434;
 
 - (NSRect) rectInMatrixSpace: (NSRect)rect
 {
-  NSAffineTransformStruct	matrix = [self transformStruct];
   NSRect new;
 
-  new.origin.x = A * rect.origin.x + C * rect.origin.y + TX;
-  new.size.width = A * rect.size.width + C * rect.size.height;
+  new.origin = [self transformPoint: rect.origin];
+  new.size = [self transformSize: rect.size];
+
   if (new.size.width < 0)
     {
       new.origin.x += new.size.width;
       new.size.width *= -1;
     }
 
-  new.origin.y = B * rect.origin.x + D * rect.origin.y + TY;
-  new.size.height = B * rect.size.width + D * rect.size.height;
   if (new.size.height < 0)
     {
       new.origin.y += new.size.height;

@@ -12,22 +12,24 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */ 
 
 #include <Foundation/NSArray.h>
+#include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSCharacterSet.h>
 #include <Foundation/NSDebug.h>
@@ -46,6 +48,7 @@
 #include "AppKit/NSColor.h"
 #include "AppKit/NSFileWrapper.h"
 #include "AppKit/NSFont.h"
+#include "AppKit/NSFontManager.h"
 // For the colour name spaces
 #include "AppKit/NSGraphics.h"
 
@@ -720,6 +723,101 @@ documentAttributes: (NSDictionary **)dict
 			 documentAttributes: dict];
 }
 
+- (id) initWithDocFormat: (NSData *)data
+      documentAttributes: (NSDictionary **)dict
+{
+  // FIXME
+  RELEASE(self);
+  return nil;
+}
+
+- (id) initWithHTML: (NSData *)data
+            options: (NSDictionary *)options
+ documentAttributes: (NSDictionary **)dict
+{
+  // FIXME
+  RELEASE(self);
+  return nil;
+}
+
+- (id) initWithData: (NSData *)data
+            options: (NSDictionary *)options
+ documentAttributes: (NSDictionary **)dict
+              error: (NSError **)error
+{
+  // FIXME
+  RELEASE(self);
+  return nil;
+}
+
+- (id) initWithURL: (NSURL *)url
+           options: (NSDictionary *)options
+documentAttributes: (NSDictionary **)dict
+             error: (NSError **)error
+{
+  // FIXME
+  RELEASE(self);
+  return nil;
+}
+
+- (NSData *) docFormatFromRange: (NSRange)range
+             documentAttributes: (NSDictionary *)dict
+{
+  // FIXME
+  return nil;
+}
+
+- (NSData *) dataFromRange: (NSRange)range
+        documentAttributes: (NSDictionary *)dict
+                     error: (NSError **)error
+{
+  // FIXME
+  return nil;
+}
+
+- (NSFileWrapper *) fileWrapperFromRange: (NSRange)range
+                      documentAttributes: (NSDictionary *)dict
+                                   error: (NSError **)error
+{
+  // FIXME
+  return nil;
+}
+
+- (unsigned) lineBreakByHyphenatingBeforeIndex: (unsigned)location
+                                   withinRange: (NSRange)aRange
+{
+  // FIXME
+  return NSNotFound;
+}
+
+- (NSRange) itemNumberInTextList: (NSTextList *)list
+                         atIndex: (unsigned)location
+{
+  // FIXME
+  return NSMakeRange(NSNotFound, 0);
+}
+
+- (NSRange) rangeOfTextBlock: (NSTextBlock *)block
+                     atIndex: (unsigned)location
+{
+  // FIXME
+  return NSMakeRange(NSNotFound, 0);
+}
+
+- (NSRange) rangeOfTextList: (NSTextList *)list
+                    atIndex: (unsigned)location
+{
+  // FIXME
+  return NSMakeRange(NSNotFound, 0);
+}
+
+- (NSRange) rangeOfTextTable: (NSTextTable *)table
+                     atIndex: (unsigned)location
+{
+  // FIXME
+  return NSMakeRange(NSNotFound, 0);
+}
+
 @end
 
 @implementation NSMutableAttributedString (AppKit)
@@ -887,20 +985,168 @@ documentAttributes: (NSDictionary **)dict
   [self fixAttachmentAttributeInRange: range];
 }
 
+static NSString *lastFont = nil;
+static NSCharacterSet *lastSet = nil;
+static NSMutableDictionary *cachedCSets = nil;
+
+- (NSFont*)_substituteFontWithName: (NSString*)fontName 
+                              font: (NSFont*)baseFont
+{
+  return [[NSFontManager sharedFontManager] convertFont: baseFont 
+                                            toFace: fontName];
+}
+
+- (NSFont*)_substituteFontFor: (unichar)uchar 
+                         font: (NSFont*)baseFont 
+                     fromList: (NSArray *)fonts
+{
+  unsigned int count;
+  unsigned int i;
+      
+  if (cachedCSets == nil)
+    {
+      cachedCSets = [NSMutableDictionary new];
+    }
+
+  count = [fonts count];
+  for (i = 0; i < count; i++)
+    {
+      NSFont *newFont;
+      NSString *fName;
+      NSCharacterSet *newSet;
+
+      fName = [fonts objectAtIndex: i];
+      newSet = [cachedCSets objectForKey: fName];
+      if (newSet == nil)
+        { 
+          newFont = [self _substituteFontWithName: fName font: baseFont];
+          newSet = [newFont coveredCharacterSet];
+          if ((newSet != nil) && ([cachedCSets count] < 10))
+            {
+              [cachedCSets setObject: newSet forKey: fName];
+            }
+        } 
+      else
+        {
+          newFont = nil;
+        }
+      
+      if ([newSet characterIsMember: uchar])
+        {
+          ASSIGN(lastFont, fName);
+          ASSIGN(lastSet, newSet);
+          if (newFont != nil)
+            {
+              return newFont;
+            }
+          else
+            {
+              return [self _substituteFontWithName: fName font: baseFont];      
+            }
+        }
+    }
+
+  return nil;
+}
+
+- (NSFont*)_substituteFontFor: (unichar)uchar font: (NSFont*)baseFont
+{
+  NSFont *subFont;
+
+  // Caching one font may lead to the selected substitution font not being
+  // from the prefered list, although there is one there with this character.
+  if (lastSet && [lastSet characterIsMember: uchar])
+    {
+      return [self _substituteFontWithName: lastFont font: baseFont];
+    }
+
+  subFont = [self _substituteFontFor: uchar 
+                  font: baseFont 
+                  fromList: [NSFont preferredFontNames]];
+  if (subFont != nil)
+    {
+      return subFont;
+    }
+
+  subFont = [self _substituteFontFor: uchar font: baseFont fromList: 
+                      [[NSFontManager sharedFontManager] availableFonts]];
+  if (subFont != nil)
+    {
+      return subFont;
+    }
+  
+  return nil;
+}
+
 - (void) fixFontAttributeInRange: (NSRange)range
 {
+  NSString *string;
+  NSFont *font;
+  NSCharacterSet *charset = nil;
+  NSRange fontRange = NSMakeRange(NSNotFound, 0);
+  unsigned int i;
+  unsigned int lastMax;
+  unsigned int start;
+  unichar chars[64];
+  CREATE_AUTORELEASE_POOL(pool);
+  
   if (NSMaxRange (range) > [self length])
     {
       [NSException raise: NSRangeException
 		  format: @"RangeError in method -fixFontAttributeInRange: "];
     }
-  // FIXME: Should check for each character if it is supported by the 
+  // Check for each character if it is supported by the 
   // assigned font
+  
   /*
   Note that this needs to be done on a script basis. Per-character checks
   are difficult to do at all, don't give reasonable results, and would have
   really poor performance.
   */
+  string = [self string];
+  lastMax = range.location;
+  start = lastMax;
+  for (i = range.location; i < NSMaxRange(range); i++)
+    {
+      unichar uchar;
+  
+      if (i >= lastMax)
+        {
+          unsigned int dist;
+          
+          start = lastMax;
+          dist = MIN(64, NSMaxRange(range) - start);
+          lastMax = start + dist;
+          [string getCharacters: chars range: NSMakeRange(start, dist)];
+        }
+      uchar = chars[i - start];
+      
+      if (!NSLocationInRange(i, fontRange))
+        {
+          font = [self attribute: NSFontAttributeName
+                       atIndex: i
+                       effectiveRange: &fontRange];
+          charset = [font coveredCharacterSet];
+        }
+      
+      if (charset != nil && ![charset characterIsMember: uchar]
+          && (uchar > 31))
+        {
+          // Find a replacement font
+          NSFont *subFont;
+          
+          subFont = [self _substituteFontFor: uchar font: font];
+          if (subFont != nil)
+            {
+              // Set substitution font permanently
+              [self addAttribute: NSFontAttributeName
+                    value: subFont
+                    range: NSMakeRange(i, 1)];
+            }
+        }
+    }
+  
+  RELEASE(pool);
 }
 
 - (void) fixParagraphStyleAttributeInRange: (NSRange)range
@@ -1082,6 +1328,17 @@ documentAttributes: (NSDictionary **)dict
 	     options: (NSDictionary *)options
   documentAttributes: (NSDictionary**)documentAttributes
 {
+  return [self readFromURL: url
+               options: options
+               documentAttributes: documentAttributes
+               error: NULL];
+}
+
+- (BOOL) readFromURL: (NSURL *)url
+             options: (NSDictionary *)options
+  documentAttributes: (NSDictionary **)documentAttributes
+               error: (NSError **)error
+{
   NSString *extension;
   NSString *type;
 
@@ -1157,6 +1414,34 @@ documentAttributes: (NSDictionary **)dict
   // FIXME This should also support all converter bundles
 
   return NO;
+}
+
+- (BOOL) readFromData: (NSData *)data
+              options: (NSDictionary *)options
+   documentAttributes: (NSDictionary **)documentAttributes
+{
+  return [self readFromData:  data
+               options: options
+               documentAttributes: documentAttributes
+               error: NULL];
+}
+
+- (BOOL) readFromData: (NSData *)data
+              options: (NSDictionary *)options
+   documentAttributes: (NSDictionary **)documentAttributes
+                error: (NSError **)error
+{
+  // FIXME
+  return NO;
+}
+
+- (void) setBaseWritingDirection: (NSWritingDirection)writingDirection
+                           range: (NSRange)range
+{
+	[self setAttributes: [NSDictionary dictionaryWithObject: 
+                                         [NSNumber numberWithInt: writingDirection]
+													forKey: @"WritingDirection"]
+				  range: range];
 }
 
 @end

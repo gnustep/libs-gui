@@ -13,21 +13,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   If you are interested in a warranty or support for this source code,
-   contact Scott Christley <scottc@net-community.com> for more information.
-   
-   You should have received a copy of the GNU Library General Public
-   License along with this library; if not, write to the Free
-   Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02111 USA.
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */ 
 
 /* NB:
@@ -43,17 +42,16 @@
 #include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDictionary.h>
+#include <Foundation/NSEnumerator.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSCharacterSet.h>
-#include <Foundation/NSDictionary.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSPathUtilities.h>
 #include <Foundation/NSScanner.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSUtilities.h>
 #include <Foundation/NSValue.h>
 #include <Foundation/NSMapTable.h>
 #include "AppKit/AppKitExceptions.h"

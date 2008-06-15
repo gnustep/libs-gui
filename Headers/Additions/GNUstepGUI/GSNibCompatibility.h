@@ -9,24 +9,27 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
-   License along with this library; if not, write to the Free
-   Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02111 USA.
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */ 
 
 #ifndef _GNUstep_H_GSNibCompatibility
 #define _GNUstep_H_GSNibCompatibility
 
 #include <Foundation/NSObject.h>
+
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSView.h>
@@ -34,11 +37,12 @@
 #include <AppKit/NSTextView.h>
 #include <AppKit/NSControl.h>
 #include <AppKit/NSButton.h>
-
 #include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSResponder.h>
 #include <AppKit/NSEvent.h>
+#include <AppKit/NSNibConnector.h>
+
 #include "GNUstepGUI/GSNibContainer.h"
 #include "GNUstepGUI/GSInstantiator.h"
 
@@ -285,4 +289,49 @@ typedef struct _GSWindowTemplateFlags
 @interface NSPSMatrix : NSObject
 @end
 
+@interface NSNibAXAttributeConnector : NSObject <NSCoding>
+{
+  NSString *_attributeType;
+  NSString *_attributeValue;
+  id _destination;
+  id _source;
+  NSString *_label;
+}
+
+// Attribute name/type.
+- (NSString *) attributeType;
+- (void) setAttributeType: (NSString *)type;
+- (NSString *) attributeValue;
+- (void) setAttributeValue: (NSString *)value;
+
+// Source destination, connectors.
+- (id) destination;
+- (void) setDestination: (id)destination;
+- (NSString *) label;
+- (void) setLabel: (NSString *)label;
+- (id) source;
+- (void) setSource: (id)source;
+
+// establish connection...
+- (void) establishConnection;
+@end
+
+@interface NSNibAXRelationshipConnector : NSNibConnector
+@end
+
+@interface NSNibBindingConnector: NSNibConnector
+{
+  NSDictionary *_options;
+  NSString *_binding;
+  NSString *_keyPath;
+  BOOL _hasEstablishedConnection;
+}
+
+- (NSString *) binding;
+- (NSString *) keyPath;
+- (NSDictionary *) options;
+- (void) setBinding: (NSString *)bindings;
+- (void) setKeyPath: (NSString *)keyPath;
+- (void) setOptions: (NSDictionary *)options;
+@end
 #endif /* _GNUstep_H_GSNibCompatibility */

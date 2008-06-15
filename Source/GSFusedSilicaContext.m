@@ -10,19 +10,21 @@
    This file is part of the GNUStep
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
-   
-   You should have received a copy of the GNU Library General Public
-   License along with this library; if not, write to the Free
-   Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02111 USA.
-   */
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
+*/
 
 #include "GSFusedSilicaContext.h"
 #include "GNUstepGUI/GSFontInfo.h"
@@ -42,7 +44,7 @@
 + (CGColorSpaceRef) CGColorSpaceCreateDeviceGray
 {
   NSMutableDictionary *space;
-  space = [NSDictionary dictionaryWithObject: NSDeviceWhiteColorSpace
+  space = [NSMutableDictionary dictionaryWithObject: NSDeviceWhiteColorSpace
 			forKey: GSColorSpaceName];
   [space setObject: NUMBER(1) forKey: GSColorSpaceComponents];
   return space;
@@ -51,7 +53,7 @@
 + (CGColorSpaceRef) CGColorSpaceCreateDeviceRGB
 {
   NSMutableDictionary *space;
-  space = [NSDictionary dictionaryWithObject: NSDeviceRGBColorSpace
+  space = [NSMutableDictionary dictionaryWithObject: NSDeviceRGBColorSpace
 			forKey: GSColorSpaceName];
   [space setObject: NUMBER(3) forKey: GSColorSpaceComponents];
   return space;
@@ -60,7 +62,7 @@
 + (CGColorSpaceRef) CGColorSpaceCreateDeviceCMYK
 {
   NSMutableDictionary *space;
-  space = [NSDictionary dictionaryWithObject: NSDeviceCMYKColorSpace
+  space = [NSMutableDictionary dictionaryWithObject: NSDeviceCMYKColorSpace
 			forKey: GSColorSpaceName];
   [space setObject: NUMBER(4) forKey: GSColorSpaceComponents];
   return space;
@@ -71,7 +73,7 @@
 						    : (float)gamma
 {
   NSMutableDictionary *space;
-  space = [NSDictionary dictionaryWithObject: NSCalibratedWhiteColorSpace
+  space = [NSMutableDictionary dictionaryWithObject: NSCalibratedWhiteColorSpace
 			forKey: GSColorSpaceName];
   [space setObject: FLOAT_ARRAY(whitePoint, 3) forKey: GSColorSpaceWhitePoint];
   [space setObject: FLOAT_ARRAY(blackPoint, 3) forKey: GSColorSpaceBlackPoint];
@@ -85,7 +87,7 @@
 						   : (const float *)matrix
 {
   NSMutableDictionary *space;
-  space = [NSDictionary dictionaryWithObject: NSCalibratedRGBColorSpace
+  space = [NSMutableDictionary dictionaryWithObject: NSCalibratedRGBColorSpace
 			forKey: GSColorSpaceName];
   [space setObject: FLOAT_ARRAY(whitePoint, 3) forKey: GSColorSpaceWhitePoint];
   [space setObject: FLOAT_ARRAY(blackPoint, 3) forKey: GSColorSpaceBlackPoint];
@@ -100,7 +102,7 @@
 					 : (const float *) range
 {
   NSMutableDictionary *space;
-  space = [NSDictionary dictionaryWithObject: @"NSLabColorSpace"
+  space = [NSMutableDictionary dictionaryWithObject: @"NSLabColorSpace"
 			forKey: GSColorSpaceName];
   [space setObject: FLOAT_ARRAY(whitePoint, 3) forKey: GSColorSpaceWhitePoint];
   [space setObject: FLOAT_ARRAY(blackPoint, 3) forKey: GSColorSpaceBlackPoint];

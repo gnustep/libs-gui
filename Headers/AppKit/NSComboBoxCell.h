@@ -110,6 +110,11 @@
 - (void)setCompletes:(BOOL)completes;
 - (BOOL)completes;
 #endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (BOOL) isButtonBordered;
+- (void) setButtonBordered:(BOOL)flag;
+#endif
 @end
 
 @interface NSObject (NSComboBoxCellDataSource)

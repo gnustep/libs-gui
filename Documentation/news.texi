@@ -9,6 +9,67 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.14.0}
+
+@itemize @bullet
+@item New class NSGlyphGenerator for glyph generation
+@item NSSplitView implemented setAutosaveName:
+@item NSOpenGLView added some Mac OS X 10.3 methods
+@item Manu bug fixes.
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
+
+@section Noteworthy changes in version @samp{0.13.2}
+
+@itemize @bullet
+@item Printing works a little better now.
+@item NSPopUpButtonCell - object encoding was changed
+@item NSTextView - several updates and Mac OS X methods added
+@item NSWindow - devince interaction was changed.  You need to use
+gnustep-back 0.13.2 with this version
+@item New class NSSegmentedCell.
+@item NSDrawer was implemented.
+@end itemize
+
+@section Noteworthy changes in version @samp{0.13.1}
+
+@itemize @bullet
+@item NSMenu - Added more MacOS X methods and an ivar.
+@item Added support for hiding views.
+@item Added Key-Value bindings implementation (NSKeyValueBinding)
+with support in several classes (NSControl, NSTextField, NSView, etc).
+@item Added some MacOS X 10.4 methods to NSTableView.
+@item Changed the NSCursor hot point to 0,0 for MacOS X compatibility.
+@end itemize
+
+@section Noteworthy changes in version @samp{0.13.0}
+
+This is an unstable release. There may be backward compatibility issues
+with previous releases of the gui library.
+
+@itemize @bullet
+@item Switched to use LGPL 3 and GPL 3.
+@item Added new methods from Mac OS X 10.4 for NSDragging, NSFontDescriptor,
+NSAttributedString, NSImageView, NSStringDrawing, NSParagraphStyle,
+NSView, NSCell, NSActionCell, NSAlert, NSApplication, NSBitmapImageRep,
+NSBox, NSColor, NSColorSpace, NSComboBox, NSComboBoxCell,
+NSDocumentController, NSEvent, NSScreen, NSFont, NSFontManager,
+NSFormCell, NSForm, NSWindow, NSTextField, NSTextFieldCell. Some ivar
+names were changed also. 
+@item Moved Postscript printing methods from NSView to NSGraphicsContext.
+@item Rewrote the NSView drawing mechanism to always use
+[displayRectIgnoringOpacity:inContext].
+@item Report more controls as being flipped. (NSTextField, NSTableHeaderView,
+NSSlider, NSProgressIndicator, NSButton) NSTabView is still missing.
+@item In NSAffineTransform use optimized primitive methods from base.
+@item Add font attribute fixing to NSAttributedString. To allow for the output
+of glyphs not present in the current font.
+@item Optimized the validation of edited cells.
+@item Implementation of special connectors for Key-Value binding.
+@item Base library version 1.15.1 is required for this release
+@end itemize
+
 @section Noteworthy changes in version @samp{0.12.0}
 
 It has been a long time since the last release and many things have been
@@ -28,8 +89,6 @@ NSKeyValueBinding, NSArrayController, NSController.
 @item NSSpellServer and NSAffineTransform was moved to GNUstep base 
 for Mac OS X compatibility.
 @end itemize
-
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.11.0}
 

@@ -1,6 +1,6 @@
 /** <title>NSTextView</title>
 
-   Copyright (C) 1996, 1998, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1998, 2000, 2001, 2002, 2003, 2008 Free Software Foundation, Inc.
 
    Much code of this class was originally derived from code which was
    in NSText.m.
@@ -11,11 +11,11 @@
    Author: Felipe A. Rodriguez <far@ix.netcom.com>
    Date: July 1998
 
-   Author: Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de>
+   Author: Daniel Boehringer <boehring@biomed.ruhr-uni-bochum.de>
    Date: August 1998
 
    Author: Fred Kiefer <FredKiefer@gmx.de>
-   Date: March 2000, September 2000
+   Date: March 2000, September 2000, January 2008
 
    Author: Nicola Pero <n.pero@mi.flashnet.it>
    Date: 2000, 2001, 2002
@@ -29,19 +29,21 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
+*/
 
 #include "AppKit/NSTextView.h"
 
@@ -50,6 +52,7 @@
 #include <Foundation/NSArray.h>
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSDebug.h>
+#include <Foundation/NSEnumerator.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSKeyedArchiver.h>
 #include <Foundation/NSNotification.h>
@@ -59,6 +62,7 @@
 #include <Foundation/NSUndoManager.h>
 #include <Foundation/NSValue.h>
 #include "AppKit/NSApplication.h"
+#include "AppKit/NSAttributedString.h"
 #include "AppKit/NSClipView.h"
 #include "AppKit/NSColor.h"
 #include "AppKit/NSColorPanel.h"
@@ -66,6 +70,7 @@
 #include "AppKit/NSDragging.h"
 #include "AppKit/NSEvent.h"
 #include "AppKit/NSFileWrapper.h"
+#include "AppKit/NSGraphics.h"
 #include "AppKit/NSImage.h"
 #include "AppKit/NSLayoutManager.h"
 #include "AppKit/NSParagraphStyle.h"
@@ -164,11 +169,12 @@ Interface for a bunch of internal methods that need to be cleaned up.
 	       ([tv smartInsertDeleteEnabled]?0x2000000:0) |
 	       ([tv allowsUndo]?0x40000000:0));
 
-      ASSIGN(backgroundColor,[tv backgroundColor]);
-      ASSIGN(paragraphStyle,[NSParagraphStyle defaultParagraphStyle]);
-      ASSIGN(insertionColor,[tv insertionPointColor]);
-      ASSIGN(markAttr,[tv markedTextAttributes]);
-      ASSIGN(selectedAttr,[tv selectedTextAttributes]);
+      ASSIGN(backgroundColor, [tv backgroundColor]);
+      ASSIGN(paragraphStyle, [tv defaultParagraphStyle]);
+      ASSIGN(insertionColor, [tv insertionPointColor]);
+      ASSIGN(markAttr, [tv markedTextAttributes]);
+      ASSIGN(linkAttr, [tv linkTextAttributes]);
+      ASSIGN(selectedAttr, [tv selectedTextAttributes]);
       
       linkAttr = nil;
       textView = tv;
@@ -204,11 +210,10 @@ Interface for a bunch of internal methods that need to be cleaned up.
       [coder encodeObject: backgroundColor forKey: @"NSBackgroundColor"];
       [coder encodeObject: paragraphStyle forKey: @"NSDefaultParagraphStyle"];
       [coder encodeInt: flags forKey: @"NSFlags"];
+      [coder encodeObject: insertionColor forKey: @"NSInsertionColor"];
+      [coder encodeObject: linkAttr forKey: @"NSLinkAttributes"];
       [coder encodeObject: markAttr forKey: @"NSMarkedAttributes"];
       [coder encodeObject: selectedAttr forKey: @"NSSelectedAttributes"];
-      [coder encodeObject: insertionColor forKey: @"NSInsertionColor"];
-
-      // TODO: Encode/Decode link attributes...
     }
 }
 
@@ -366,6 +371,7 @@ some cases, so it needs to be safe wrt. that.
       /* NSTextView notifications */
       SET_DELEGATE_NOTIFICATION(ViewDidChangeSelection);
       SET_DELEGATE_NOTIFICATION(ViewWillChangeNotifyingTextView);
+      SET_DELEGATE_NOTIFICATION(ViewDidChangeTypingAttributes);
     }
 }
 
@@ -629,6 +635,11 @@ If a text view is added to an empty text network, it keeps its attributes.
 
   ASSIGN(_insertionPointColor, [NSColor textColor]);
   ASSIGN(_backgroundColor, [NSColor textBackgroundColor]);
+  ASSIGN(_defaultParagraphStyle, [NSParagraphStyle defaultParagraphStyle]);
+  _linkTextAttributes = [[NSDictionary alloc] initWithObjectsAndKeys:
+                          [NSNumber numberWithBool: YES], NSUnderlineStyleAttributeName,
+                          [NSColor blueColor], NSForegroundColorAttributeName,
+                          nil];
 
   _tf.draws_background = YES;
   _tf.is_horizontally_resizable = NO;
@@ -646,7 +657,11 @@ If a text view is added to an empty text network, it keeps its attributes.
   _tf.is_ruler_visible = NO;
   _tf.allows_undo = NO;
   _tf.smart_insert_delete = NO;
+  _tf.uses_find_panel = NO;
+  _tf.accepts_glyph_info = NO;
+  _tf.allows_document_background_color_change = YES;
 
+  _markedRange = NSMakeRange(NSNotFound, 0);
   [container setTextView: self];
   [self invalidateTextContainerOrigin];
 
@@ -666,7 +681,7 @@ If a text view is added to an empty text network, it keeps its attributes.
 
   aTextContainer = [self buildUpTextNetwork: frameRect.size];
 
-  self = [self initWithFrame: frameRect  textContainer: aTextContainer];
+  self = [self initWithFrame: frameRect textContainer: aTextContainer];
 
   /* At this point the situation is as follows: 
 
@@ -760,84 +775,87 @@ that makes decoding and encoding compatible with the old code.
     {  
       if ([aDecoder containsValueForKey: @"NSDelegate"])
         {
-	  [self setDelegate: [aDecoder decodeObjectForKey: @"NSDelegate"]];
-	}
+          [self setDelegate: [aDecoder decodeObjectForKey: @"NSDelegate"]];
+        }
 
       if ([aDecoder containsValueForKey: @"NSMaxSize"])
         {
-	  [self setMaxSize: [aDecoder decodeSizeForKey: @"NSMaxSize"]];
-	}
+          [self setMaxSize: [aDecoder decodeSizeForKey: @"NSMaxSize"]];
+        }
 
       if ([aDecoder containsValueForKey: @"NSMinize"])
         {
-	  // it's NSMinize in pre-10.3 formats.
-	  [self setMinSize: [aDecoder decodeSizeForKey: @"NSMinize"]];
-	}
+          // it's NSMinize in pre-10.3 formats.
+          [self setMinSize: [aDecoder decodeSizeForKey: @"NSMinize"]];
+        }
 
       if ([aDecoder containsValueForKey: @"NSMinSize"])
         {
-	  // However, if NSMinSize is present we want to use it.
-	  [self setMinSize: [aDecoder decodeSizeForKey: @"NSMinSize"]];
-	}
+          // However, if NSMinSize is present we want to use it.
+          [self setMinSize: [aDecoder decodeSizeForKey: @"NSMinSize"]];
+        }
 
       if ([aDecoder containsValueForKey: @"NSSharedData"])
         {
-	  NSTextViewSharedData *shared;
-	  unsigned int flags;
+          NSTextViewSharedData *shared;
+          unsigned int flags;
+          
+          shared = [aDecoder decodeObjectForKey: @"NSSharedData"];
+          flags = [shared flags];
+          ASSIGN(_insertionPointColor, [shared insertionColor]);
+          ASSIGN(_backgroundColor, [shared backgroundColor]);
+          ASSIGN(_defaultParagraphStyle, [shared paragraphStyle]);
+          ASSIGN(_markedTextAttributes, [shared markAttributes]);
+          ASSIGN(_linkTextAttributes, [shared linkAttributes]);
 
-	  shared = [aDecoder decodeObjectForKey: @"NSSharedData"];
-	  flags = [shared flags];
-	  ASSIGN(_insertionPointColor, [shared insertionColor]);
-	  ASSIGN(_backgroundColor, [shared backgroundColor]);
-
-	  _tf.is_editable = ((0x01 & flags) > 0);
-	  _tf.is_selectable = ((0x02 & flags) > 0);
-	  _tf.is_rich_text = ((0x04 & flags) > 0);
-	  _tf.imports_graphics = ((0x08 & flags) > 0);
-	  _tf.is_field_editor = ((0x10 & flags) > 0);
-	  _tf.uses_font_panel = ((0x20 & flags) > 0);
-	  _tf.is_ruler_visible = ((0x40 & flags) > 0);
-	  _tf.uses_ruler = ((0x100 & flags) > 0);
-	  _tf.draws_background = ((0x800 & flags) > 0);
-	  _tf.smart_insert_delete = ((0x2000000 & flags) > 0);
-	  _tf.allows_undo = ((0x40000000 & flags) > 0);	  
-
-	  _tf.owns_text_network = YES;
-	  _tf.is_horizontally_resizable = YES;
-	  _tf.is_vertically_resizable = YES;
-	}
+          _tf.is_editable = ((0x01 & flags) > 0);
+          _tf.is_selectable = ((0x02 & flags) > 0);
+          _tf.is_rich_text = ((0x04 & flags) > 0);
+          _tf.imports_graphics = ((0x08 & flags) > 0);
+          _tf.is_field_editor = ((0x10 & flags) > 0);
+          _tf.uses_font_panel = ((0x20 & flags) > 0);
+          _tf.is_ruler_visible = ((0x40 & flags) > 0);
+          _tf.uses_ruler = ((0x100 & flags) > 0);
+          _tf.draws_background = ((0x800 & flags) > 0);
+          _tf.smart_insert_delete = ((0x2000000 & flags) > 0);
+          _tf.allows_undo = ((0x40000000 & flags) > 0);	  
+          
+          _tf.owns_text_network = YES;
+          _tf.is_horizontally_resizable = YES;
+          _tf.is_vertically_resizable = YES;
+        }
 
       // currently not used....
       if ([aDecoder containsValueForKey: @"NSTextStorage"])
         {
-	  _textStorage = [aDecoder decodeObjectForKey: @"NSTextStorage"];
-	}
+          _textStorage = [aDecoder decodeObjectForKey: @"NSTextStorage"];
+        }
       
       // currently not used....
       if ([aDecoder containsValueForKey: @"NSTextContainer"])
         {      
-	  NSSize size = NSMakeSize(0,_maxSize.height);
-	  NSTextContainer *aTextContainer = [self buildUpTextNetwork: NSZeroSize];
-	  [aTextContainer setTextView: (NSTextView *)self];
-	  /* See initWithFrame: for comments on this RELEASE */
-	  RELEASE(self);
-
-	  [aTextContainer setContainerSize: size];
-	  [aTextContainer setWidthTracksTextView: YES];
-	  [aTextContainer setHeightTracksTextView: NO];
-	}
+          NSSize size = NSMakeSize(0,_maxSize.height);
+          NSTextContainer *aTextContainer = [self buildUpTextNetwork: NSZeroSize];
+          [aTextContainer setTextView: (NSTextView *)self];
+          /* See initWithFrame: for comments on this RELEASE */
+          RELEASE(self);
+          
+          [aTextContainer setContainerSize: size];
+          [aTextContainer setWidthTracksTextView: YES];
+          [aTextContainer setHeightTracksTextView: NO];
+        }
 
       if ([aDecoder containsValueForKey: @"NSTVFlags"])
         {
-	  [aDecoder decodeIntForKey: @"NSTVFlags"];
-	}
+          [aDecoder decodeIntForKey: @"NSTVFlags"];
+        }
 
       // register for services and subscribe to notifications.
       [self _recacheDelegateResponses];
       [self invalidateTextContainerOrigin];
 
       if (!did_register_for_services)
-	[isa registerForServices];
+        [isa registerForServices];
 
       [self updateDragTypeRegistration];
 
@@ -964,14 +982,16 @@ that makes decoding and encoding compatible with the old code.
   if (_delegate)
     {
       [notificationCenter removeObserver: _delegate
-	name: nil
-	object: _notifObject];
+                          name: nil
+                          object: _notifObject];
     }
 
   DESTROY(_selectedTextAttributes);
   DESTROY(_markedTextAttributes);
   DESTROY(_insertionPointColor);
   DESTROY(_backgroundColor);
+  DESTROY(_defaultParagraphStyle);
+  DESTROY(_linkTextAttributes);
 
   [super dealloc];
 }
@@ -1146,8 +1166,8 @@ to make sure syncing is handled properly in all cases.
   if (_delegate != nil)
     {
       [notificationCenter removeObserver: _delegate
-	name: nil
-	object: _notifObject];
+                          name: nil
+                          object: _notifObject];
     }
 
   _delegate = anObject;
@@ -1284,7 +1304,6 @@ to make sure syncing is handled properly in all cases.
   _tf.uses_ruler = flag;
 }
 
-
 /* Ruler visible (TODO: is this really supposed to be shared??) */
 
 - (BOOL) isRulerVisible
@@ -1318,6 +1337,16 @@ to make sure syncing is handled properly in all cases.
 {
   NSTEXTVIEW_SYNC;
   _tf.uses_font_panel = flag;
+}
+
+- (BOOL) usesFindPanel
+{
+  return _tf.uses_find_panel;
+}
+
+- (void) setUsesFindPanel: (BOOL)flag
+{
+  _tf.uses_find_panel = flag;
 }
 
 
@@ -1576,7 +1605,15 @@ started (in another text view attached to the same layout manager). */
   return _markedTextAttributes;
 }
 
+- (NSDictionary *) linkTextAttributes
+{
+  return _linkTextAttributes;
+}
 
+- (void) setLinkTextAttributes: (NSDictionary *)attributeDictionary
+{
+  ASSIGN(_linkTextAttributes, attributeDictionary);
+}
 
 /**** Size management ****/
 
@@ -1607,13 +1644,34 @@ incorrectly. */
 {
   /* Safety call */
   [_textContainer setWidthTracksTextView: !flag];
+  if (flag)
+    {
+      NSSize size;
+      NSSize inset;
+      
+      inset = [self textContainerInset];
+      size = [_textContainer containerSize];
+      size.width = MAX(_maxSize.width - (inset.width * 2.0), 0.0);
+      [_textContainer setContainerSize: size];
+    }
 
   _tf.is_horizontally_resizable = flag;
 }
+
 - (void) setVerticallyResizable: (BOOL)flag
 {
   /* Safety call */
   [_textContainer setHeightTracksTextView: !flag];
+  if (flag)
+    {
+      NSSize size;
+      NSSize inset;
+      
+      inset = [self textContainerInset];
+      size = [_textContainer containerSize];
+      size.height = MAX(_maxSize.height - (inset.height * 2.0), 0.0);
+      [_textContainer setContainerSize: size];
+    }
 
   _tf.is_vertically_resizable = flag;
 }
@@ -1792,7 +1850,8 @@ here. */
 TODO: make sure this is only called when _layoutManager is known non-nil,
 or add guards
 */
-- (unsigned int) characterIndexForPoint: (NSPoint)point
+- (unsigned int) _characterIndexForPoint: (NSPoint)point
+                         respectFraction: (BOOL)respectFraction
 {
   unsigned	index;
   float		fraction;
@@ -1807,34 +1866,60 @@ or add guards
     return (unsigned int)-1;
 
   index = [_layoutManager characterIndexForGlyphAtIndex: index];
-  if (fraction > 0.5 && index < [_textStorage length])
+  if (respectFraction && fraction > 0.5 && index < [_textStorage length] &&
+      [[_textStorage string] characterAtIndex:index] != '\n')
     {
       index++;
     }
   return index;
 }
 
+// This method takes screen coordinates as input.
+- (unsigned int) characterIndexForPoint: (NSPoint)point
+{
+ point = [[self window] convertScreenToBase: point];
+ point = [self convertPoint:point fromView: nil];
+ return [self _characterIndexForPoint: point respectFraction: NO];
+}
+ 
 - (NSRange) markedRange
 {
-  return NSMakeRange(NSNotFound, 0);
+  return _markedRange;
 }
 
-- (void) setMarkedText: (id)aString  selectedRange: (NSRange)selRange
+- (void) setMarkedText: (id)aString 
+         selectedRange: (NSRange)selRange
 {
+  NSAttributedString *as;
+
+  _markedRange = selRange;
+
+  as = [[NSAttributedString alloc] initWithString: aString
+                                   attributes: [self markedTextAttributes]];
+  [self replaceCharactersInRange: selRange
+        withAttributedString: as];
+  DESTROY(as);
 }
 
 - (BOOL) hasMarkedText
 {
-  return NO;
+  return (_markedRange.location != NSNotFound);
 }
 
 - (void) unmarkText
 {
+  if (![self hasMarkedText])
+    return;
+    
+  [_textStorage setAttributes: _layoutManager->_typingAttributes 
+                range: _markedRange];
+  _markedRange = NSMakeRange(NSNotFound, 0);
 }
 
 - (NSArray *) validAttributesForMarkedText
 {
-  return nil;
+  return [NSArray arrayWithObjects: NSBackgroundColorAttributeName, 
+            NSForegroundColorAttributeName, NSFontAttributeName, nil];
 }
 
 - (long int) conversationIdentifier
@@ -1844,8 +1929,13 @@ or add guards
 
 - (NSRect) firstRectForCharacterRange: (NSRange)theRange
 {
-  unsigned int rectCount = 0; /* If there's no layout manager, it'll be 0 after the call too. */
-  NSRect *rects = [_layoutManager 
+  unsigned int rectCount = 0;
+  NSRect *rects;
+
+  if (!_layoutManager)
+    return NSZeroRect;
+
+  rects = [_layoutManager 
 		      rectArrayForCharacterRange: theRange
 		      withinSelectedCharacterRange: NSMakeRange(NSNotFound, 0)
 		      inTextContainer: _textContainer
@@ -1996,10 +2086,10 @@ by checking if the text storage is empty.
     {
       NSAttributedString *as;
       as = [[NSAttributedString alloc]
-	initWithString: aString
-	attributes: _layoutManager->_typingAttributes];
+               initWithString: aString
+               attributes: _layoutManager->_typingAttributes];
       [_textStorage replaceCharactersInRange: aRange
-	withAttributedString: as];
+                    withAttributedString: as];
       DESTROY(as);
     }
   else
@@ -2055,6 +2145,8 @@ the attributes for the range, and do not update the typing attributes.
     range: NSMakeRange(0,[_textStorage length])];
   [_layoutManager->_typingAttributes setObject: font
     forKey: NSFontAttributeName];
+  [notificationCenter postNotificationName: NSTextViewDidChangeTypingAttributesNotification
+                      object: _notifObject];
 }
 
 - (void) setFont: (NSFont *)font  range: (NSRange)aRange
@@ -2079,7 +2171,7 @@ the attributes for the range, and do not update the typing attributes.
   /* Update the typing attributes. */
   style = [_layoutManager->_typingAttributes objectForKey: NSParagraphStyleAttributeName];
   if (style == nil)
-    style = [NSParagraphStyle defaultParagraphStyle];
+    style = [self defaultParagraphStyle];
 
   mstyle = [style mutableCopy];
 
@@ -2087,6 +2179,8 @@ the attributes for the range, and do not update the typing attributes.
   [_layoutManager->_typingAttributes setObject: mstyle
     forKey: NSParagraphStyleAttributeName];
   DESTROY(mstyle);
+  [notificationCenter postNotificationName: NSTextViewDidChangeTypingAttributesNotification
+                      object: _notifObject];
 }
 
 - (void) setAlignment: (NSTextAlignment)alignment
@@ -2098,24 +2192,25 @@ the attributes for the range, and do not update the typing attributes.
   [_textStorage setAlignment: alignment range: range];
 }
 
-
 - (void) setTextColor: (NSColor *)color
 {
   if (!color)
     {
       [_textStorage removeAttribute: NSForegroundColorAttributeName
-	range: NSMakeRange(0, [_textStorage length])];
+                    range: NSMakeRange(0, [_textStorage length])];
       [_layoutManager->_typingAttributes
-	removeObjectForKey: NSForegroundColorAttributeName];
+                     removeObjectForKey: NSForegroundColorAttributeName];
     }
   else
     {
       [_textStorage addAttribute: NSForegroundColorAttributeName
-	value: color
-	range: NSMakeRange(0, [_textStorage length])];
+                    value: color
+                    range: NSMakeRange(0, [_textStorage length])];
       [_layoutManager->_typingAttributes setObject: color
-	forKey:  NSForegroundColorAttributeName];
+                     forKey:  NSForegroundColorAttributeName];
     }
+  [notificationCenter postNotificationName: NSTextViewDidChangeTypingAttributesNotification
+                      object: _notifObject];
 }
 
 - (void) setTextColor: (NSColor *)color  range: (NSRange)aRange
@@ -2136,7 +2231,15 @@ the attributes for the range, and do not update the typing attributes.
     }
 }
 
+- (NSParagraphStyle *) defaultParagraphStyle
+{
+  return _defaultParagraphStyle;
+}
 
+- (void) setDefaultParagraphStyle: (NSParagraphStyle *)style
+{
+  ASSIGN(_defaultParagraphStyle, style);
+}
 
 /**** Text access methods ****/
 
@@ -2281,7 +2384,18 @@ Move to NSTextView_actions.m?
 
 /**** Handling user changes ****/
 
+- (NSUndoManager *) undoManager
+{
+  NSUndoManager *undo = nil;
 
+  if (![_delegate respondsToSelector: @selector(undoManagerForTextView:)]
+      || ((undo = [_delegate undoManagerForTextView: self]) == nil))
+    {
+      undo = [super undoManager];
+    }
+
+  return undo;
+}
 
 /*
  * Began editing flag.  There are quite some different ways in which
@@ -2372,30 +2486,35 @@ TextDidEndEditing notification _without_ asking the delegate
       NSRange undoRange;
       NSAttributedString *undoString;
 
-      // FIXME: Not sure, if this rather belongs into a local implementation of
-      //  the method undoManager.
-      if (![_delegate respondsToSelector: @selector(undoManagerForTextView:)]
-	  || ((undo = [_delegate undoManagerForTextView: self]) == nil))
-        {
-	  undo = [self undoManager];
-	}
+      undo = [self undoManager];
 
       // The length of the undoRange is the length of the replacement, if any.
       if (replacementString != nil)
         {
-	  undoRange = NSMakeRange(affectedCharRange.location, 
-				  [replacementString length]);
-	}
+          undoRange = NSMakeRange(affectedCharRange.location, 
+                                  [replacementString length]);
+        }
       else
         {
-	  undoRange = affectedCharRange;
-	}
+          undoRange = affectedCharRange;
+        }
       undoString = [self attributedSubstringFromRange: affectedCharRange];
       [[undo prepareWithInvocationTarget: self] replaceCharactersInRange: undoRange
 						withAttributedString: undoString];
     }
 
   return result;
+}
+
+- (BOOL) shouldChangeTextInRanges: (NSArray *)ranges
+               replacementStrings: (NSArray *)strings
+{
+  // FIXME
+  NSRange range;
+
+  range = [(NSValue*)[ranges objectAtIndex: 0] rangeValue];
+  return [self shouldChangeTextInRange: range  
+               replacementString: [strings objectAtIndex: 0]];
 }
 
 /*
@@ -2473,7 +2592,47 @@ Returns the ranges to which various kinds of user changes should apply.
   return _layoutManager->_selected_range;
 }
 
+- (NSRange) rangeForUserCompletion
+{
+  // FIXME
+  return NSMakeRange(NSNotFound, 0);
+}
 
+- (NSArray *) rangesForUserCharacterAttributeChange
+{
+  // FIXME
+  NSRange range;
+
+  range = [self rangeForUserCharacterAttributeChange];
+  if (range.location == NSNotFound)
+    return nil;
+
+  return [NSArray arrayWithObject: [NSValue valueWithRange: range]];
+}
+
+- (NSArray *) rangesForUserParagraphAttributeChange
+{
+  // FIXME
+  NSRange range;
+
+  range = [self rangeForUserParagraphAttributeChange];
+  if (range.location == NSNotFound)
+    return nil;
+
+  return [NSArray arrayWithObject: [NSValue valueWithRange: range]];
+}
+
+- (NSArray *) rangesForUserTextChange
+{
+  // FIXME
+  NSRange range;
+
+  range = [self rangeForUserTextChange];
+  if (range.location == NSNotFound)
+    return nil;
+
+  return [NSArray arrayWithObject: [NSValue valueWithRange: range]];
+}
 
 /**** Misc. ****/
 
@@ -2496,6 +2655,9 @@ Scroll so that the beginning of the range is visible.
   this method turn up, it could be changed.)
   */
   [self sizeToFit];
+
+  if (_layoutManager == nil)
+    return;
 
   if (aRange.length > 0)
     {
@@ -2620,6 +2782,11 @@ Scroll so that the beginning of the range is visible.
   [self scrollRectToVisible: rect];
 }
 
+- (NSRange) selectedRange
+{
+  return _layoutManager->_selected_range;
+}
+
 
 /* Private, internal methods to help input method handling in some backends
 (XIM, currently). Backends may override these in categories with the real
@@ -2630,6 +2797,12 @@ Scroll so that the beginning of the range is visible.
 }
 - (void) _updateInputMethodWithInsertionPoint: (NSPoint)insertionPoint
 {
+}
+
+- (BOOL) validateUserInterfaceItem: (id <NSValidatedUserInterfaceItem>)anItem
+{
+  // FIXME
+  return YES;
 }
 
 @end
@@ -2713,7 +2886,10 @@ This method is for user changes; see NSTextView_actions.m.
   if (font != nil)
     {
       [_layoutManager->_typingAttributes setObject: [sender convertFont: font] 
-			 forKey: NSFontAttributeName];
+                     forKey: NSFontAttributeName];
+      [notificationCenter postNotificationName: NSTextViewDidChangeTypingAttributesNotification
+                          object: _notifObject];
+
     }
 }
 
@@ -2795,8 +2971,8 @@ This method is for user changes; see NSTextView_actions.m.
 {
   NSDictionary *old_attrs;
   NSString *names[] = {NSParagraphStyleAttributeName,
-		       NSFontAttributeName,
-		       NSForegroundColorAttributeName};
+                       NSFontAttributeName,
+                       NSForegroundColorAttributeName};
   int i;
 
   if (attrs == nil)
@@ -2805,6 +2981,20 @@ This method is for user changes; see NSTextView_actions.m.
     }
 
   old_attrs = _layoutManager->_typingAttributes;
+
+  if (_delegate)
+    {
+      SEL selector = @selector(textView:shouldChangeTypingAttributes:toAttributes:);
+		
+      if ([_delegate respondsToSelector: selector])
+		  {
+          if (![_delegate textView: self 
+                          shouldChangeTypingAttributes: old_attrs 
+                          toAttributes: attrs])
+            return;
+      }
+    }
+
   _layoutManager->_typingAttributes = [[NSMutableDictionary alloc]
 			    initWithDictionary: attrs];
 
@@ -2815,21 +3005,22 @@ This method is for user changes; see NSTextView_actions.m.
 
       if ([attrs objectForKey: name] == nil)
         {
-	  [_layoutManager->_typingAttributes setObject: [old_attrs objectForKey: name]
-			 forKey: name];
-	}
+          [_layoutManager->_typingAttributes setObject: [old_attrs objectForKey: name]
+                         forKey: name];
+        }
     }
   RELEASE(old_attrs);
 
   [self updateFontPanel];
   [self updateRuler];
+  [notificationCenter postNotificationName: NSTextViewDidChangeTypingAttributesNotification
+                      object: _notifObject];
 }
 
 - (NSDictionary *) typingAttributes
 {
   return [NSDictionary dictionaryWithDictionary: _layoutManager->_typingAttributes];
 }
-
 
 - (void) clickedOnLink: (id)link
 	       atIndex: (unsigned int)charIndex
@@ -2839,16 +3030,16 @@ This method is for user changes; see NSTextView_actions.m.
       SEL selector = @selector(textView:clickedOnLink:atIndex:);
 
       if ([_delegate respondsToSelector: selector])
-	{
-	  [_delegate textView: self  clickedOnLink: link  atIndex: charIndex];
-	}
+        {
+          [_delegate textView: self  clickedOnLink: link  atIndex: charIndex];
+        }
     }
 }
 
 - (void) updateFontPanel
 {
   /* Update fontPanel only if told so */
-  if (_tf.uses_font_panel)
+  if (_tf.uses_font_panel && _layoutManager)
     {
       NSRange longestRange;
       NSFontManager *fm = [NSFontManager sharedFontManager];
@@ -2929,15 +3120,11 @@ afterString in order over charRange.
 
 /**** Selection management ****/
 
-- (NSRange) selectedRange
-{
-  return _layoutManager->_selected_range;
-}
-
 - (void) setSelectedRange: (NSRange)charRange
 {
-  [self setSelectedRange: charRange  affinity: [self selectionAffinity]
-	stillSelecting: NO];
+  [self setSelectedRange: charRange  
+        affinity: [self selectionAffinity]
+        stillSelecting: NO];
 }
 
 /**
@@ -3014,7 +3201,6 @@ afterString in order over charRange.
 	return newRange;
     }
 }
-
 
 - (void) setSelectedRange: (NSRange)charRange
 		 affinity: (NSSelectionAffinity)affinity
@@ -3230,6 +3416,36 @@ afterString in order over charRange.
   return _layoutManager->_selectionGranularity;
 }
 
+- (NSArray *) selectedRanges
+{
+  // FIXME
+  NSRange range;
+
+  range = [self selectedRange];
+  return [NSArray arrayWithObject: [NSValue valueWithRange: range]];
+    
+}
+
+- (void) setSelectedRanges: (NSArray *)ranges
+{
+  [self setSelectedRanges: ranges
+        affinity: [self selectionAffinity]
+        stillSelecting: NO];
+}
+
+- (void) setSelectedRanges: (NSArray *)ranges
+                  affinity: (NSSelectionAffinity)affinity
+            stillSelecting: (BOOL)flag
+{
+  // FIXME
+  NSRange range;
+
+  range = [(NSValue*)[ranges objectAtIndex: 0] rangeValue];
+  [self setSelectedRange: range  
+        affinity: affinity
+        stillSelecting: flag];
+
+}
 
 
 /**** Drawing ****/
@@ -3251,7 +3467,7 @@ Figure out how the additional layout stuff is supposed to work.
 
 - (void) setNeedsDisplayInRect: (NSRect)aRect
 {
-  [self setNeedsDisplayInRect: aRect  avoidAdditionalLayout: NO];
+  [self setNeedsDisplayInRect: aRect avoidAdditionalLayout: NO];
 }
 
 - (BOOL) shouldDrawInsertionPoint
@@ -3305,50 +3521,56 @@ Figure out how the additional layout stuff is supposed to work.
     }
 }
 
+- (void) drawViewBackgroundInRect: (NSRect)rect
+{
+  if (_tf.draws_background)
+    {
+      [_backgroundColor set];
+      NSRectFill(rect);
+    }
+}
+
 - (void) drawRect: (NSRect)rect
 {
-  /* TODO: Only do relayout if needed */
   NSRange drawnRange;
   NSRect containerRect = rect;
 
   containerRect.origin.x -= _textContainerOrigin.x;
   containerRect.origin.y -= _textContainerOrigin.y;
-  drawnRange = [_layoutManager glyphRangeForBoundingRect: containerRect 
-			       inTextContainer: _textContainer];
-
-  if (_tf.draws_background)
+  if (_layoutManager)
     {
-      /* First paint the background with the color.  This is necessary
-       * to remove markings of old glyphs.  These would not be removed
-       * by the following call to the layout manager because that only
-       * paints the background of new glyphs.  Depending on the
-       * situation, there might be no new glyphs where the old glyphs
-       * were!  */
-      [_backgroundColor set];
-      NSRectFill([self bounds]);
+      drawnRange = [_layoutManager glyphRangeForBoundingRect: containerRect 
+                                   inTextContainer: _textContainer];
     }
+  else
+    {
+      drawnRange = NSMakeRange(0, 0);
+    }
+
+  /* FIXME: We should only draw inside of rect. This code is necessary
+   * to remove markings of old glyphs.  These would not be removed
+   * by the following call to the layout manager because that only
+   * paints the background of new glyphs.  Depending on the
+   * situation, there might be no new glyphs where the old glyphs
+   * were!  */
+  [self drawViewBackgroundInRect: [self bounds]];
 
   /* Then draw the special background of the new glyphs.  */
   [_layoutManager drawBackgroundForGlyphRange: drawnRange
-				      atPoint: _textContainerOrigin];
+                  atPoint: _textContainerOrigin];
 
-/*printf("%@ drawRect: (%g %g)+(%g %g)\n",
-	self,rect.origin.x,rect.origin.y,
-	rect.size.width,rect.size.height);*/
   [_layoutManager drawGlyphsForGlyphRange: drawnRange 
-		  atPoint: _textContainerOrigin];
-/*printf("insertion point %@\n",
-	NSStringFromRect(_insertionPointRect));*/
+                  atPoint: _textContainerOrigin];
 
   if ([self shouldDrawInsertionPoint] &&
       [NSGraphicsContext currentContextDrawingToScreen])
     {
       if (NSIntersectsRect(rect, _insertionPointRect))
-	{
-	  [self drawInsertionPointInRect: _insertionPointRect
-	    color: _insertionPointColor
-	    turnedOn: _drawInsertionPointNow];
-	}
+        {
+          [self drawInsertionPointInRect: _insertionPointRect
+                color: _insertionPointColor
+                turnedOn: _drawInsertionPointNow];
+        }
     }
 }
 
@@ -3469,7 +3691,6 @@ Figure out how the additional layout stuff is supposed to work.
   while (loc < NSMaxRange(range))
     {
       id	value;
-      BOOL	copiedStyle = NO;
       NSRange	effRange;
       NSRange	newRange;
 
@@ -3479,25 +3700,18 @@ Figure out how the additional layout stuff is supposed to work.
       newRange = NSIntersectionRange (effRange, range);
 
       if (value == nil)
-	{
-	  value = [NSMutableParagraphStyle defaultParagraphStyle];
-	}
-      else
-	{
-	  value = [value mutableCopy];
-	  copiedStyle = YES;
-	}
+        {
+          value = [self defaultParagraphStyle];
+        }
 
+      value = [value mutableCopy];
       [value removeTabStop: old_tab];
       [value addTabStop: new_tab];
 
       [_textStorage addAttribute: NSParagraphStyleAttributeName
 		   value: value
 		   range: newRange];
-      if (copiedStyle == YES)
-	{
-	  RELEASE(value);
-	}
+      RELEASE(value);
       loc = NSMaxRange (effRange);
     }
   [_textStorage endEditing];
@@ -3506,7 +3720,7 @@ Figure out how the additional layout stuff is supposed to work.
   // Set the typing attributes
   style = [_layoutManager->_typingAttributes objectForKey: NSParagraphStyleAttributeName];
   if (style == nil)
-    style = [NSParagraphStyle defaultParagraphStyle];
+    style = [self defaultParagraphStyle];
 
   mstyle = [style mutableCopy];
 
@@ -3514,6 +3728,8 @@ Figure out how the additional layout stuff is supposed to work.
   [mstyle addTabStop: new_tab];
   // TODO: Should use setTypingAttributes
   [_layoutManager->_typingAttributes setObject: mstyle forKey: NSParagraphStyleAttributeName];
+  [notificationCenter postNotificationName: NSTextViewDidChangeTypingAttributesNotification
+                      object: _notifObject];
   RELEASE(mstyle);
 
   [marker setRepresentedObject: new_tab];
@@ -3536,7 +3752,6 @@ Figure out how the additional layout stuff is supposed to work.
   while (loc < NSMaxRange(range))
     {
       id	value;
-      BOOL	copiedStyle = NO;
       NSRange	effRange;
       NSRange	newRange;
 
@@ -3546,24 +3761,17 @@ Figure out how the additional layout stuff is supposed to work.
       newRange = NSIntersectionRange (effRange, range);
 
       if (value == nil)
-	{
-	  value = [NSMutableParagraphStyle defaultParagraphStyle];
-	}
-      else
-	{
-	  value = [value mutableCopy];
-	  copiedStyle = YES;
-	}
+        {
+          value = [self defaultParagraphStyle];
+        }
 
+      value = [value mutableCopy];
       [value removeTabStop: tab];
 
       [_textStorage addAttribute: NSParagraphStyleAttributeName
 		   value: value
 		   range: newRange];
-      if (copiedStyle == YES)
-	{
-	  RELEASE(value);
-	}
+      RELEASE(value);
       loc = NSMaxRange (effRange);
     }
   [_textStorage endEditing];
@@ -3572,13 +3780,15 @@ Figure out how the additional layout stuff is supposed to work.
   // Set the typing attributes
   style = [_layoutManager->_typingAttributes objectForKey: NSParagraphStyleAttributeName];
   if (style == nil)
-    style = [NSParagraphStyle defaultParagraphStyle];
+    style = [self defaultParagraphStyle];
 
   mstyle = [style mutableCopy];
 
   [mstyle removeTabStop: tab];
   // TODO: Should use setTypingAttributes
   [_layoutManager->_typingAttributes setObject: mstyle forKey: NSParagraphStyleAttributeName];
+  [notificationCenter postNotificationName: NSTextViewDidChangeTypingAttributesNotification
+                      object: _notifObject];
   RELEASE(mstyle);
 }
 
@@ -3597,7 +3807,6 @@ Figure out how the additional layout stuff is supposed to work.
   while (loc < NSMaxRange(range))
     {
       id	value;
-      BOOL	copiedStyle = NO;
       NSRange	effRange;
       NSRange	newRange;
 
@@ -3607,24 +3816,17 @@ Figure out how the additional layout stuff is supposed to work.
       newRange = NSIntersectionRange (effRange, range);
 
       if (value == nil)
-	{
-	  value = [NSMutableParagraphStyle defaultParagraphStyle];
-	}
-      else
-	{
-	  value = [value mutableCopy];
-	  copiedStyle = YES;
-	}
-
+        {
+          value = [self defaultParagraphStyle];
+        }
+      
+      value = [value mutableCopy];
       [value addTabStop: new_tab];
 
       [_textStorage addAttribute: NSParagraphStyleAttributeName
 		   value: value
 		   range: newRange];
-      if (copiedStyle == YES)
-	{
-	  RELEASE(value);
-	}
+      RELEASE(value);
       loc = NSMaxRange (effRange);
     }
   [_textStorage endEditing];
@@ -3633,13 +3835,15 @@ Figure out how the additional layout stuff is supposed to work.
   // Set the typing attributes
   style = [_layoutManager->_typingAttributes objectForKey: NSParagraphStyleAttributeName];
   if (style == nil)
-    style = [NSParagraphStyle defaultParagraphStyle];
+    style = [self defaultParagraphStyle];
 
   mstyle = [style mutableCopy];
 
   [mstyle addTabStop: new_tab];
   // TODO: Should use setTypingAttributes
   [_layoutManager->_typingAttributes setObject: mstyle forKey: NSParagraphStyleAttributeName];
+  [notificationCenter postNotificationName: NSTextViewDidChangeTypingAttributesNotification
+                      object: _notifObject];
   RELEASE(mstyle);
 
   [marker setRepresentedObject: new_tab];
@@ -4259,14 +4463,15 @@ other than copy/paste or dragging. */
       NSRange	range;
 
       if (_tf.isDragTarget == NO)
-	{
-	  _tf.isDragTarget = YES;
-	  _dragTargetSelectionRange = [self selectedRange];
-	}
+        {
+          _tf.isDragTarget = YES;
+          _dragTargetSelectionRange = [self selectedRange];
+        }
 
       dragPoint = [sender draggingLocation];
       dragPoint = [self convertPoint: dragPoint fromView: nil];
-      dragIndex = [self characterIndexForPoint: dragPoint];
+      dragIndex = [self _characterIndexForPoint: dragPoint
+                        respectFraction: YES];
       dragRange = NSMakeRange (dragIndex, 0);
 
       range = [self selectionRangeForProposedRange: dragRange
@@ -4294,14 +4499,15 @@ other than copy/paste or dragging. */
       NSRange	range;
 
       if (_tf.isDragTarget == NO)
-	{
-	  _tf.isDragTarget = YES;
-	  _dragTargetSelectionRange = [self selectedRange];
-	}
+        {
+          _tf.isDragTarget = YES;
+          _dragTargetSelectionRange = [self selectedRange];
+        }
 
       dragPoint = [sender draggingLocation];
       dragPoint = [self convertPoint: dragPoint fromView: nil];
-      dragIndex = [self characterIndexForPoint: dragPoint];
+      dragIndex = [self _characterIndexForPoint: dragPoint
+                        respectFraction: YES];
       dragRange = NSMakeRange (dragIndex, 0);
 
       range = [self selectionRangeForProposedRange: dragRange
@@ -4415,7 +4621,8 @@ other than copy/paste or dragging. */
      possible) */
 
   startPoint = [self convertPoint: [theEvent locationInWindow] fromView: nil];
-  startIndex = [self characterIndexForPoint: startPoint];
+  startIndex = [self _characterIndexForPoint: startPoint
+                     respectFraction: [theEvent clickCount] == 1];
 
   if (startIndex == (unsigned int)-1)
     {
@@ -4619,8 +4826,9 @@ other than copy/paste or dragging. */
 
 	point = [self convertPoint: [lastEvent locationInWindow]
 		  fromView: nil];
-	proposedRange = MakeRangeFromAbs([self characterIndexForPoint: point],
-					 startIndex);
+  proposedRange = MakeRangeFromAbs([self _characterIndexForPoint: point
+                                         respectFraction: YES],
+                                   startIndex);
 	chosenRange = [self selectionRangeForProposedRange: proposedRange
 			granularity: granularity];
 	[self setSelectedRange: chosenRange  affinity: affinity
@@ -4669,6 +4877,126 @@ configuation! */
   [self pasteSelection];
 }
 
+- (void) startSpeaking:(id) sender
+{
+  // FIXME
+}
+
+- (void) stopSpeaking:(id) sender
+{
+  // FIXME
+}
+
+- (BOOL) acceptsGlyphInfo
+{
+  return _tf.accepts_glyph_info;
+}
+
+- (void) setAcceptsGlyphInfo: (BOOL)flag
+{
+  _tf.accepts_glyph_info = flag;
+}
+
+
+- (BOOL) allowsDocumentBackgroundColorChange
+{
+  return _tf.allows_document_background_color_change;
+}
+
+- (void) setAllowsDocumentBackgroundColorChange: (BOOL)flag
+{
+  _tf.allows_document_background_color_change = flag;
+}
+
+- (void) changeDocumentBackgroundColor: (id)sender
+{
+  if ([self allowsDocumentBackgroundColorChange])
+    {
+      NSColor *aColor = (NSColor *)[sender color];
+
+      [self setBackgroundColor: aColor];
+    }
+}
+
+- (void) changeAttributes: (id)sender
+{
+  NSDictionary *attributes;
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+  NSRange foundRange;
+  unsigned int location;
+  unsigned int maxSelRange = NSMaxRange(aRange);
+
+  if (aRange.location == NSNotFound)
+    return;
+
+  if (![self shouldChangeTextInRange: aRange
+		   replacementString: nil])
+    return;
+
+  [_textStorage beginEditing];
+  for (location = aRange.location;
+       location < maxSelRange;
+       location = NSMaxRange(foundRange))
+    {
+      attributes = [_textStorage attributesAtIndex: location 
+                                 effectiveRange: &foundRange];
+      if (attributes != nil)
+        {
+          attributes = [sender convertAttributes: attributes];
+          [_textStorage setAttributes: attributes range: foundRange];
+        }
+    }
+  [_textStorage endEditing];
+  [self didChangeText];
+
+  [self setTypingAttributes: [sender convertAttributes: 
+                                         [self typingAttributes]]];
+}
+
+- (void) breakUndoCoalescing
+{
+  // FIXME
+}
+
+- (void) complete: (id)sender
+{
+  // FIXME
+}
+
+- (NSArray *) completionsForPartialWordRange: (NSRange)range
+                         indexOfSelectedItem: (int *)index
+{
+  // FIXME
+  return nil;
+}
+
+- (void) insertCompletion: (NSString *)word
+      forPartialWordRange: (NSRange)range
+                 movement: (int)movement
+                  isFinal: (BOOL)flag
+{
+  // FIXME
+}
+
+- (void) orderFrontLinkPanel: (id)sender
+{
+  // FIXME
+}
+
+- (void) orderFrontListPanel: (id)sender
+{
+  // FIXME
+}
+
+- (void) orderFrontTablePanel: (id)sender
+{
+  // FIXME
+}
+
+- (void) performFindPanelAction: (id)sender
+{
+  // FIXME
+}
 
 @end
 
@@ -4694,13 +5022,12 @@ configuation! */
   [self displayIfNeeded];
 }
 
-
 - (NSRect) rectForCharacterRange: (NSRange)aRange
 {
   NSRange glyphRange;
   NSRect rect;
 
-  if (!aRange.length)
+  if (!aRange.length || !_layoutManager)
     return NSZeroRect;
   glyphRange = [_layoutManager glyphRangeForCharacterRange: aRange 
 			       actualCharacterRange: NULL];
@@ -4715,19 +5042,74 @@ configuation! */
     special section pasteboard */
 - (void) copySelection
 {
-  [self writeSelectionToPasteboard: [NSPasteboard pasteboardWithName: @"Selection"]
-	type: NSStringPboardType];
+#if 1
+  NSString *newSelection;
+  NSString *oldSelection;
+  NSRange range = _layoutManager->_selected_range;
+
+  if (range.location != NSNotFound && range.length != 0)
+    {
+        newSelection = [[self string] substringWithRange: range];
+        oldSelection = [[NSPasteboard pasteboardWithName: @"Selection"] 
+                           stringForType: NSStringPboardType];
+
+        if (oldSelection != nil && 
+            ![newSelection isEqualToString: oldSelection])
+          {
+            NSPasteboard *secondary;
+
+            secondary = [NSPasteboard pasteboardWithName: @"Secondary"];
+            [secondary declareTypes: [NSArray arrayWithObject: NSStringPboardType] 
+                       owner: self];
+            [secondary setString: oldSelection
+                forType: NSStringPboardType];
+          }
+        else
+          {
+            return;
+          }
+    }
+  else
+    {
+      return;
+    }
+#endif
+
+  [self writeSelectionToPasteboard: 
+            [NSPasteboard pasteboardWithName: @"Selection"]
+        type: NSStringPboardType];
 }
 
 /** Extension method that pastes the current selected text from the 
     special section pasteboard */
 - (void) pasteSelection
 {
-  [self readSelectionFromPasteboard: [NSPasteboard pasteboardWithName: @"Selection"]
-	type: NSStringPboardType];
+#if 1
+  NSString *newSelection;
+  NSString *oldSelection;
+  NSRange range = _layoutManager->_selected_range;
+
+  if (range.location != NSNotFound && range.length != 0)
+    {
+        newSelection = [[self string] substringWithRange: range];
+        oldSelection = [[NSPasteboard pasteboardWithName: @"Selection"] 
+                           stringForType: NSStringPboardType];
+
+        if (oldSelection != nil && 
+            [newSelection isEqualToString: oldSelection])
+          {
+            [self readSelectionFromPasteboard: 
+                      [NSPasteboard pasteboardWithName: @"Secondary"] 
+                  type: NSStringPboardType];
+            return;
+          }
+    }
+#endif
+
+  [self readSelectionFromPasteboard: 
+            [NSPasteboard pasteboardWithName: @"Selection"]
+        type: NSStringPboardType];
 }
-
-
 
 @end
 

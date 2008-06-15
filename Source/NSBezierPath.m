@@ -12,19 +12,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02111 - 1307, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 #include "AppKit/NSBezierPath.h"
@@ -179,7 +180,7 @@ typedef struct _PathElement
   
   [path moveToPoint: aPoint];
   [path appendBezierPathWithPackedGlyphs: packedGlyphs];
-  [path stroke];  
+  [path fill];
   RELEASE(path);
 }
 
@@ -1168,7 +1169,8 @@ typedef struct _PathElement
 
 - (void)appendBezierPathWithPackedGlyphs:(const char *)packedGlyphs
 {
-  // TODO
+  [GSCurrentContext() appendBezierPathWithPackedGlyphs: packedGlyphs
+                   path: self];
 }
 
 
@@ -1564,12 +1566,12 @@ static int winding_curve(double_point from, double_point to, double_point c1,
         {
 	  case NSMoveToBezierPathElement:
 	  case NSLineToBezierPathElement:
-	      [aCoder encodeValueOfObjCType: @encode(NSPoint) at: &pts[0]];
+	      [aCoder encodePoint: pts[0]];
 	      break;
 	  case NSCurveToBezierPathElement:
-	      [aCoder encodeValueOfObjCType: @encode(NSPoint) at: &pts[0]];
-	      [aCoder encodeValueOfObjCType: @encode(NSPoint) at: &pts[1]];
-	      [aCoder encodeValueOfObjCType: @encode(NSPoint) at: &pts[2]];
+	      [aCoder encodePoint: pts[0]];
+	      [aCoder encodePoint: pts[1]];
+	      [aCoder encodePoint: pts[2]];
 	      break;
 	  case NSClosePathBezierPathElement:
 	      break;
@@ -1609,17 +1611,18 @@ static int winding_curve(double_point from, double_point to, double_point c1,
       switch(type) 
         {
 	  case NSMoveToBezierPathElement:
-	      [aCoder decodeValueOfObjCType: @encode(NSPoint) at: &pts[0]];
+	      pts[0] = [aCoder decodePoint];
 	      [self moveToPoint: pts[0]];
+	      break;
 	  case NSLineToBezierPathElement:
-	      [aCoder decodeValueOfObjCType: @encode(NSPoint) at: &pts[0]];
+	      pts[0] = [aCoder decodePoint];
 	      [self lineToPoint: pts[0]];
 	      break;
 	  case NSCurveToBezierPathElement:
-	      [aCoder decodeValueOfObjCType: @encode(NSPoint) at: &pts[0]];
-	      [aCoder decodeValueOfObjCType: @encode(NSPoint) at: &pts[1]];
-	      [aCoder decodeValueOfObjCType: @encode(NSPoint) at: &pts[2]];
-	      [self curveToPoint: pts[0] controlPoint1: pts[1] controlPoint2: pts[2]];
+	      pts[0] = [aCoder decodePoint];
+	      pts[1] = [aCoder decodePoint];
+	      pts[2] = [aCoder decodePoint];
+	      [self curveToPoint: pts[2] controlPoint1: pts[0] controlPoint2: pts[1]];
 	      break;
 	  case NSClosePathBezierPathElement:
 	      [self closePath];

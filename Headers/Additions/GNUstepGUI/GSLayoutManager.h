@@ -9,19 +9,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 #ifndef _GNUstep_H_GSLayoutManager
@@ -30,6 +31,7 @@
 #include <Foundation/NSObject.h>
 #include <Foundation/NSGeometry.h>
 #include <AppKit/NSFont.h>
+#include <AppKit/NSGlyphGenerator.h>
 
 @class GSTypesetter;
 @class NSTextStorage,NSTextContainer;
@@ -43,10 +45,15 @@ typedef enum
   NSGlyphInscribeOverBelow = 4
 } NSGlyphInscription;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+@interface GSLayoutManager : NSObject <NSGlyphStorage, NSCoding>
+#else
 @interface GSLayoutManager : NSObject
+#endif
 {
 @protected
   NSTextStorage *_textStorage;
+  NSGlyphGenerator *_glyphGenerator;
 
   id _delegate;
 
@@ -100,6 +107,8 @@ how it's supposed to work. It's functional and correct, but it isn't fast. */
 - (void) setTextStorage: (NSTextStorage *)aTextStorage;
 - (void) replaceTextStorage: (NSTextStorage *)newTextStorage;
 
+- (NSGlyphGenerator *) glyphGenerator;
+- (void) setGlyphGenerator: (NSGlyphGenerator *)glyphGenerator;
 
 - (id) delegate;
 - (void) setDelegate: (id)aDelegate;
@@ -215,9 +224,11 @@ it isn't NULL. */
 /* These can be used to set arbitrary tags on individual glyphs.
 Non-negative tags are reserved. You must provide storage yourself (by
 subclassing). */
+#if !OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (void) setIntAttribute: (int)attributeTag 
 	value: (int)anInt
 	forGlyphAtIndex: (unsigned int)glyphIndex;
+#endif
 - (int) intAttribute: (int)attributeTag
 	forGlyphAtIndex: (unsigned int)glyphIndex;
 

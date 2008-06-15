@@ -10,20 +10,22 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
-   
-   You should have received a copy of the GNU Library General Public
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-   */ 
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
+*/ 
+
 /*
     Keeps a representation of an image in an off-screen window.  If the
     message initFromWindow:rect: is sent with a nil window, one is created
@@ -51,6 +53,7 @@
   [self setExcludedFromWindowsMenu: YES];
   [self setAutodisplay: NO];
   [self setReleasedWhenClosed: NO];
+  [self setMiniwindowImage: nil];
 }
 - (void) display
 {
@@ -89,6 +92,9 @@
 					defer: NO];
   self = [self initWithWindow: win rect: frame];
   RELEASE(win);
+  if (!self)
+    return nil;
+
   [self setAlpha: alpha];
   [self setBitsPerSample: NSBitsPerSampleFromDepth(aDepth)];
 
@@ -102,7 +108,9 @@
  */
 - (id) initWithWindow: (NSWindow *)aWindow rect: (NSRect)aRect
 {
-  [super init];
+  self = [super init];
+  if (!self)
+    return nil;
 
   _window = RETAIN(aWindow);
   _rect   = aRect;
@@ -113,11 +121,11 @@
   if (NSIsEmptyRect(_rect))
     {
       if (!_window) 
-	{
-	  [NSException raise: NSInvalidArgumentException
-		      format: @"Must specify either window or rect when "
-			      @"creating NSCachedImageRep"];
-	}
+        {
+          [NSException raise: NSInvalidArgumentException
+                       format: @"Must specify either window or rect when "
+                       @"creating NSCachedImageRep"];
+        }
 
       _rect = [_window frame];
     }
@@ -177,6 +185,9 @@
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   self = [super initWithCoder: aDecoder];
+  if (!self)
+    return nil;
+
   if ([aDecoder allowsKeyedCoding] == NO)
     {
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_window];

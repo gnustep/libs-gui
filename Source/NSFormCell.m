@@ -12,42 +12,31 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */ 
 
 #include "config.h"
 #include <Foundation/NSNotification.h>
+#include "AppKit/NSAttributedString.h"
 #include "AppKit/NSColor.h"
 #include "AppKit/NSFormCell.h"
 #include "AppKit/NSFont.h"
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSTextFieldCell.h"
 #include "GNUstepGUI/GSTheme.h"
-
-static NSColor	*shadowCol;
-
-@interface NSFormCell (PrivateColor)
-+ (void) _systemColorsChanged: (NSNotification*)n;
-@end
-
-@implementation	NSFormCell (PrivateColor)
-+ (void) _systemColorsChanged: (NSNotification*)n
-{
-  ASSIGN(shadowCol, [NSColor controlDarkShadowColor]);
-}
-@end
 
 /** <p>TODO Description </p>
  */
@@ -57,12 +46,6 @@ static NSColor	*shadowCol;
   if (self == [NSFormCell class])
     {
       [self setVersion: 1];
-      [[NSNotificationCenter defaultCenter] 
-	addObserver: self
-	selector: @selector(_systemColorsChanged:)
-	name: NSSystemColorsDidChangeNotification
-	object: nil];
-      [self _systemColorsChanged: nil];
     }
 }
 
@@ -95,6 +78,7 @@ static NSColor	*shadowCol;
 - (void)dealloc
 {
   RELEASE(_titleCell);
+  TEST_RELEASE(_placeholder);
   [super dealloc];
 }
 
@@ -107,7 +91,7 @@ static NSColor	*shadowCol;
   return [_titleCell isOpaque] && [super isOpaque];
 }
 
-- (void)setAttributedTitle:(NSAttributedString *)anAttributedString
+- (void)setAttributedTitle: (NSAttributedString *)anAttributedString
 {
   [_titleCell setAttributedStringValue: anAttributedString];
   if (_formcell_auto_title_width)
@@ -116,8 +100,8 @@ static NSColor	*shadowCol;
       _displayedTitleWidth = -1;
       // Update the control(s)
       [[NSNotificationCenter defaultCenter] 
-	postNotificationName: _NSFormCellDidChangeTitleWidthNotification
-	object: self];
+        postNotificationName: _NSFormCellDidChangeTitleWidthNotification
+        object: self];
     }
 }
 
@@ -134,8 +118,8 @@ static NSColor	*shadowCol;
       _displayedTitleWidth = -1;
       // Update the control(s)
       [[NSNotificationCenter defaultCenter] 
-	postNotificationName: _NSFormCellDidChangeTitleWidthNotification
-	object: self];
+        postNotificationName: _NSFormCellDidChangeTitleWidthNotification
+        object: self];
     }
 }
 
@@ -148,8 +132,8 @@ static NSColor	*shadowCol;
       _displayedTitleWidth = -1;
       // Update the control(s)
       [[NSNotificationCenter defaultCenter] 
-	postNotificationName: _NSFormCellDidChangeTitleWidthNotification
-	object: self];
+        postNotificationName: _NSFormCellDidChangeTitleWidthNotification
+        object: self];
     }
 }
 
@@ -158,7 +142,7 @@ static NSColor	*shadowCol;
      id="NSTextAlignment">NSTextAlignment</ref> for more informations.
      </p><p>See Also: -titleAlignment [NSCell-setAlignment:]</p>
  */
-- (void)setTitleAlignment:(NSTextAlignment)mode
+- (void)setTitleAlignment: (NSTextAlignment)mode
 {
   [_titleCell setAlignment: mode];
 }
@@ -175,8 +159,8 @@ static NSColor	*shadowCol;
       _displayedTitleWidth = -1;
       // Update the control(s)
       [[NSNotificationCenter defaultCenter] 
-	postNotificationName: _NSFormCellDidChangeTitleWidthNotification
-	object: self];
+        postNotificationName: _NSFormCellDidChangeTitleWidthNotification
+        object: self];
     }
 }
 
@@ -233,6 +217,22 @@ static NSColor	*shadowCol;
   return [_titleCell font];
 }
 
+/** <p>Returns the writing direction of the NSFormCell's title</p>
+    <p>See Also: -setTitleBaseWritingDirection: [NSCell-baseWritingDirection]</p>
+ */
+- (NSWritingDirection)titleBaseWritingDirection
+{
+  return [_titleCell baseWritingDirection];
+}
+
+/** <p>Sets the writing direction of the NSFormCell's title</p>
+    <p>See Also: -titleBaseWritingDirection: [NSCell-setBaseWritingDirection]</p>
+ */
+- (void)setTitleBaseWritingDirection: (NSWritingDirection)writingDirection
+{
+  [_titleCell setBaseWritingDirection: writingDirection];
+}
+
 //
 // Warning: this method returns the width of the title; the width the
 // title would have if the cell was the only cell in the form.  This
@@ -262,10 +262,46 @@ static NSColor	*shadowCol;
       NSSize titleSize = [_titleCell cellSize];
 
       if (aSize.width > titleSize.width)
-	return titleSize.width;
+        return titleSize.width;
       else
-	return aSize.width;
+        return aSize.width;
     }
+}
+
+- (NSAttributedString*)placeholderAttributedString
+{
+  if (_formcell_placeholder_is_attributed_string == YES)
+    {
+      return (NSAttributedString*)_placeholder;
+    }
+  else
+    {
+      return nil;
+    }
+}
+
+- (NSString*)placeholderString
+{
+  if (_formcell_placeholder_is_attributed_string == YES)
+    {
+      return nil;
+    }
+  else
+    {
+      return (NSString*)_placeholder;
+    }
+}
+
+- (void)setPlaceholderAttributedString: (NSAttributedString*)string
+{
+  ASSIGN(_placeholder, string);
+  _formcell_placeholder_is_attributed_string = YES;
+}
+
+- (void)setPlaceholderString: (NSString*)string
+{
+  ASSIGN(_placeholder, string);
+  _formcell_placeholder_is_attributed_string = NO;
 }
 
 // Updates the title width.  The width of aRect is the new title width
@@ -318,61 +354,80 @@ static NSColor	*shadowCol;
   return [super drawingRectForBounds: theRect];
 }
 
-- (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
+- (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  NSRect titleFrame = cellFrame;
   NSRect borderedFrame = cellFrame;
 
-  // Save last view drawn to
-  if (_control_view != controlView)
-    _control_view = controlView;
-  
-  // do nothing if cell's frame rect is zero
-  if (NSIsEmptyRect(cellFrame))
-    return;
-
-  // Safety check
-  if (_displayedTitleWidth == -1)
-    _displayedTitleWidth = [self titleWidth];
-
-  //
-  // Draw title
-  //
-  titleFrame.size.width = _displayedTitleWidth;
-  [_titleCell drawWithFrame: titleFrame inView: controlView];
-
-  //
-  // Leave unfilled the space between titlecell and editable text.
-  // 
-  
   //
   // Draw border
   //
   borderedFrame.origin.x   += _displayedTitleWidth + 3;
   borderedFrame.size.width -= _displayedTitleWidth + 3;
 
-  if (NSIsEmptyRect(borderedFrame))
-    return;
-  
-  if (_cell.is_bordered)
-    {
-      [shadowCol set];
-      NSFrameRect(borderedFrame);
-    }
-  else if (_cell.is_bezeled)
-    {
-      NSRect frame;
+  [super _drawBorderAndBackgroundWithFrame: borderedFrame inView: controlView];
+  // Draw text background
+  [[NSColor textBackgroundColor] set];
+  NSRectFill([self drawingRectForBounds: cellFrame]);
+}
 
-      frame = [[GSTheme theme] drawWhiteBezel: borderedFrame
-				     withClip: NSZeroRect];
-      [[NSColor textBackgroundColor] set];
-      NSRectFill (frame);
-    }
+- (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
+{
+  NSRect titleFrame = cellFrame;
 
-  //
-  // Draw interior
-  //
-  [self drawInteriorWithFrame: cellFrame inView: controlView];
+  // Safety check
+  if (_displayedTitleWidth == -1)
+    _displayedTitleWidth = [self titleWidth];
+
+  // Draw title
+  titleFrame.size.width = _displayedTitleWidth;
+  [_titleCell drawWithFrame: titleFrame inView: controlView];
+
+  // Draw text
+  [super drawWithFrame: cellFrame inView: controlView];
+}
+
+/* 
+   Attributed string that will be displayed.
+ */
+- (NSAttributedString*)_drawAttributedString
+{
+  NSAttributedString *attrStr;
+
+  attrStr = [super _drawAttributedString];
+  if (attrStr == nil)
+    {
+      attrStr = [self placeholderAttributedString];
+      if (attrStr == nil)
+        {
+          NSString *string;
+          NSDictionary *attributes;
+          NSMutableDictionary *newAttribs;
+      
+          string = [self placeholderString];
+          if (string == nil)
+            {
+              return nil;
+            }
+
+          attributes = [self _nonAutoreleasedTypingAttributes];
+          newAttribs = [NSMutableDictionary 
+                           dictionaryWithDictionary: attributes];
+          [newAttribs setObject: [NSColor disabledControlTextColor]
+                      forKey: NSForegroundColorAttributeName];
+          
+          return AUTORELEASE([[NSAttributedString alloc]
+                                 initWithString: string
+                                 attributes: newAttribs]);
+        }
+      else
+        {
+          return attrStr;
+        }
+    }
+  else
+    {
+      return attrStr;
+    }
 }
 
 /*
@@ -387,6 +442,7 @@ static NSColor	*shadowCol;
      title cell of the copied cell, the string value of the title cell
      of the original cell would be changed too ! */
   c->_titleCell = [_titleCell copyWithZone: zone];
+  c->_placeholder = [_placeholder copyWithZone: zone];
   
   return c;
 }
@@ -399,9 +455,9 @@ static NSColor	*shadowCol;
     {
       /*
       if ([self stringValue] != nil)
-	{
-	  [aCoder encodeObject: [self stringValue] forKey: @"NSContents"];
-	}
+        {
+          [aCoder encodeObject: [self stringValue] forKey: @"NSContents"];
+        }
       */
       [aCoder encodeFloat: [self titleWidth] forKey: @"NSTitleWidth"];
       [aCoder encodeObject: _titleCell forKey: @"NSTitleCell"];
@@ -422,16 +478,16 @@ static NSColor	*shadowCol;
     {
       if ([aDecoder containsValueForKey: @"NSContents"])
         {
-	  [self setStringValue: [aDecoder decodeObjectForKey: @"NSContents"]];
-	}
+          [self setStringValue: [aDecoder decodeObjectForKey: @"NSContents"]];
+        }
       if ([aDecoder containsValueForKey: @"NSTitleWidth"])
         {
-	  [self setTitleWidth: [aDecoder decodeFloatForKey: @"NSTitleWidth"]];
-	}
+          [self setTitleWidth: [aDecoder decodeFloatForKey: @"NSTitleWidth"]];
+        }
       if ([aDecoder containsValueForKey: @"NSTitleCell"])
         {
-	  ASSIGN(_titleCell, [aDecoder decodeObjectForKey: @"NSTitleCell"]);
-	}
+          ASSIGN(_titleCell, [aDecoder decodeObjectForKey: @"NSTitleCell"]);
+        }
     }
   else
     {

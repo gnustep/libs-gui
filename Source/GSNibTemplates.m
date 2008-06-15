@@ -10,19 +10,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
-   License along with this library;
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */ 
 
 #include <Foundation/NSArray.h>
@@ -499,7 +500,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 
 - (NSMutableArray*) deferredWindows
 {
-  return visibleWindows;
+  return deferredWindows;
 }
 
 - (NSMutableDictionary *) customClasses
@@ -909,40 +910,20 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 	  _screenRect = [[_object screen] frame];
 	}
 
-      if ([self shouldSwapClass])
-	{
-	  if (GSGetMethod([obj class], @selector(initWithContentRect:styleMask:backing:defer:), YES, NO) != NULL
-	   && ![_className isEqualToString: NSStringFromClass(_superClass)])
-	    {
-	      NSView *contentView = [obj contentView];
+      // FIXME: The designated initializer logic for NSWindow is in the initWithCoder: method of
+      // NSWindow.   Unfortunately, this means that the "defer" flag for NSWindows and NSWindow
+      // subclasses in gorm files will be ignored.   This shouldn't have a great impact, 
+      // but it is not the correct behavior.  
 
-	      // if we are not in an interface builder, call 
-	      // designated initializer per spec...
-	      RETAIN(contentView); // prevent view from being deallocated.
-	      obj = [obj initWithContentRect: [contentView frame]
-			 styleMask: [obj styleMask]
-			 backing: [obj backingType]
-			 defer: _deferFlag];
-	      
-	      // set the content view back
-	      [obj setContentView: contentView];
-	      RELEASE(contentView); // release view.
-	    }
-
-	  // autoposition window
-	  [self autoPositionWindow: obj];
-	}
-      else
+      //
+      // Set all of the attributes into the object, if it 
+      // responds to any of these methods.
+      //
+      if ([obj respondsToSelector: @selector(setAutoPositionMask:)])
 	{
-	  //
-	  // Set all of the attributes into the object, if it 
-	  // responds to any of these methods.
-	  //
-	  if ([obj respondsToSelector: @selector(setAutoPositionMask:)])
-	    {
-	      [obj setAutoPositionMask: [self autoPositionMask]];
-	    }
+	  [obj setAutoPositionMask: [self autoPositionMask]];
 	}
+
       RELEASE(self);
     }
   return obj;

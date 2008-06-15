@@ -13,20 +13,21 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
-   
-   You should have received a copy of the GNU Library General Public
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-   */ 
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
+*/ 
 
 /* Code in NSTiffRead, NSTiffGetInfo, and NSTiffGetColormap 
    is derived from tif_getimage, by Sam Leffler. See the copyright below.
@@ -61,7 +62,8 @@
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSString.h>
-#include <Foundation/NSUtilities.h>
+#include <Foundation/NSDictionary.h>
+#include <Foundation/NSEnumerator.h>
 
 #include <math.h>
 #include <stdlib.h>
@@ -74,7 +76,7 @@ typedef struct {
   char* data;
   long  size;
   long  position;
-  const char* mode;
+  char  mode;
   char **outdata;
   long *outposition;
 } chandle_t;
@@ -117,7 +119,7 @@ static tsize_t
 TiffHandleWrite(thandle_t handle, tdata_t buf, tsize_t count)
 {
   chandle_t* chand = (chandle_t *)handle;
-  if (chand->mode == "r")
+  if (chand->mode == 'r')
     return 0;
   if (chand->position + count > chand->size)
     {
@@ -144,8 +146,8 @@ TiffHandleSeek(thandle_t handle, toff_t offset, int mode)
     case SEEK_SET: chand->position = offset; break;
     case SEEK_CUR: chand->position += offset; break;
     case SEEK_END: 
-      if (offset > 0 && chand->mode == "r")
-	return 0;
+      if (offset > 0 && chand->mode == 'r')
+        return 0;
       chand->position += offset; break;
       break;
     }
@@ -205,7 +207,7 @@ NSTiffOpenDataRead(const char* data, long size)
   handle->position = 0;
   handle->outposition = 0;
   handle->size = size;
-  handle->mode = "r";
+  handle->mode = 'r';
   return TIFFClientOpen("GSTiffReadData", "r",
 			(thandle_t)handle,
 			TiffHandleRead, TiffHandleWrite,
@@ -224,7 +226,7 @@ NSTiffOpenDataWrite(char **data, long *size)
   handle->position = 0;
   handle->outposition = size;
   handle->size = *size;
-  handle->mode = "w";
+  handle->mode = 'w';
   return TIFFClientOpen("GSTiffWriteData", "w",
 			(thandle_t)handle,
 			TiffHandleRead, TiffHandleWrite,

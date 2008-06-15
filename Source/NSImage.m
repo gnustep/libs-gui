@@ -8,20 +8,22 @@
    Date: Feb 1996
    
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
-   
-   You should have received a copy of the GNU Library General Public
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-   */ 
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
+*/
+
 #include "config.h"
 #include <string.h>
 #include <math.h>
@@ -286,7 +288,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 	  if (image != nil)
 	    {
 	      [image setName: aName];
-	      RELEASE(image);		// Retained in dictionary.
+	      AUTORELEASE(image);
 	      image->_flags.archiveByName = YES;
 	    }
 	  return image;
@@ -955,35 +957,48 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 	    fraction: (float)delta
 {
   [self drawInRect: NSMakeRect(point.x, point.y, srcRect.size.width,
-			       srcRect.size.height)
-	  fromRect: srcRect
-	 operation: op
-	  fraction: delta];
+                               srcRect.size.height)
+        fromRect: srcRect
+        operation: op
+        fraction: delta];
 }
 
 - (void) drawInRect: (NSRect)dstRect
-	   fromRect: (NSRect)srcRect
-	  operation: (NSCompositingOperation)op
-	   fraction: (float)delta
+           fromRect: (NSRect)srcRect
+          operation: (NSCompositingOperation)op
+           fraction: (float)delta
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
   NSAffineTransform *transform;
+  NSSize s;
+
+  s = [self size];
+
+  if (NSEqualRects(srcRect, NSZeroRect))
+    srcRect = NSMakeRect(0, 0, s.width, s.height);
 
   if (!dstRect.size.width || !dstRect.size.height
     || !srcRect.size.width || !srcRect.size.height)
     return;
 
+  // CLip to image bounds
+  if (srcRect.origin.x < 0)
+    srcRect.origin.x = 0;
+  if (srcRect.origin.y < 0)
+    srcRect.origin.y = 0;
+  if (NSMaxX(srcRect) > s.width)
+    srcRect.size.width = s.width - srcRect.origin.x;
+  if (NSMaxY(srcRect) > s.height)
+    srcRect.size.height = s.height - srcRect.origin.y;
+
   if (![ctxt isDrawingToScreen])
     {
       /* We can't composite or dissolve if we aren't drawing to a screen,
-	 so we'll just draw the right part of the image in the right
-	 place. */
-      NSSize s;
+         so we'll just draw the right part of the image in the right
+         place. */
       NSPoint p;
       double fx, fy;
-
-      s = [self size];
-
+  
       fx = dstRect.size.width / srcRect.size.width;
       fy = dstRect.size.height / srcRect.size.height;
 
@@ -992,10 +1007,10 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
       DPSgsave(ctxt);
       DPSrectclip(ctxt, dstRect.origin.x, dstRect.origin.y,
-		  dstRect.size.width, dstRect.size.height);
+                  dstRect.size.width, dstRect.size.height);
       DPSscale(ctxt, fx, fy);
       [self drawRepresentation: [self bestRepresentationForDevice: nil]
-			inRect: NSMakeRect(p.x, p.y, s.width, s.height)];
+            inRect: NSMakeRect(p.x, p.y, s.width, s.height)];
       DPSgrestore(ctxt);
 
       return;
@@ -1017,13 +1032,13 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       NSAffineTransformStruct ts = [transform transformStruct];
       
       if (fabs(ts.m11 - 1.0) < 0.01 && fabs(ts.m12) < 0.01
-	&& fabs(ts.m21) < 0.01 && fabs(ts.m22 - 1.0) < 0.01)
-	{
-	  [self compositeToPoint: dstRect.origin
-			fromRect: srcRect
-		       operation: op];
-	  return;
-	}
+          && fabs(ts.m21) < 0.01 && fabs(ts.m22 - 1.0) < 0.01)
+        {
+          [self compositeToPoint: dstRect.origin
+                fromRect: srcRect
+                operation: op];
+          return;
+        }
     }
 
   /* We can't composite or dissolve directly from the image reps, so we
@@ -1036,23 +1051,21 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
      things we could do to:
 
      1. Take srcRect into account and only process the parts of the image
-	we really need.
+     we really need.
      2. Take the clipping path into account.  Desirable, especially if we're
-	being drawn as lots of small strips in a scrollview.  We don't have
-	the clipping path here, though.
+     being drawn as lots of small strips in a scrollview.  We don't have
+     the clipping path here, though.
      3. Allocate a permanent but small buffer and process the image
-	piecewise.
+     piecewise.
 
      */
   {
     NSCachedImageRep *cache;
     NSAffineTransformStruct ts;
-    NSSize s;
     NSPoint p;
     double x0, y0, x1, y1, w, h;
     int gState;
-
-    s = [self size];
+    NSGraphicsContext *ctxt1;
 
     /* Figure out how big we need to make the window that'll hold the
        transformed image.  */
@@ -1098,8 +1111,9 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 		       alpha: YES];
 
     [[[cache window] contentView] lockFocus];
-
-    DPScompositerect(ctxt, 0, 0, w, h, NSCompositeClear);
+    // The context of the cache window
+    ctxt1 = GSCurrentContext();
+    DPScompositerect(ctxt1, 0, 0, w, h, NSCompositeClear);
 
     /* Set up the effective transform.  We also save a gState with this
        transform to make it easier to do the final composite.  */
@@ -1107,9 +1121,8 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     ts.tX = p.x;
     ts.tY = p.y;
     [transform setTransformStruct: ts];
-    [ctxt GSSetCTM: transform];
-
-    gState = [ctxt GSDefineGState];
+    [ctxt1 GSSetCTM: transform];
+    gState = [ctxt1 GSDefineGState];
 
     [self drawRepresentation: [self bestRepresentationForDevice: nil]
 		      inRect: NSMakeRect(0, 0, s.width, s.height)];
@@ -1118,17 +1131,17 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
        the alpha of the pixels.  */
     if (delta != 1.0)
       {
-	DPSsetalpha(ctxt, delta);
-	DPScompositerect(ctxt, 0, 0, s.width, s.height,
-			 NSCompositeDestinationIn);
+        DPSsetalpha(ctxt1, delta);
+        DPScompositerect(ctxt1, 0, 0, s.width, s.height,
+                         NSCompositeDestinationIn);
       }
 
     [[[cache window] contentView] unlockFocus];
 
 
     DPScomposite(ctxt, srcRect.origin.x, srcRect.origin.y,
-		 srcRect.size.width, srcRect.size.height, gState,
-		 dstRect.origin.x, dstRect.origin.y, op);
+                 srcRect.size.width, srcRect.size.height, gState,
+                 dstRect.origin.x, dstRect.origin.y, op);
 
     [ctxt GSUndefineGState: gState];
 

@@ -10,47 +10,72 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 #include <Foundation/NSArray.h>
+#include <Foundation/NSArchiver.h>
+#include <Foundation/NSKeyedArchiver.h>
 #include <AppKit/NSController.h>
 
 @implementation NSController
 
 - (id) init
 {
-  _editors = [[NSMutableArray alloc] init];
-
+  if((self = [super init]) != nil)
+    {
+      _editors = [[NSMutableArray alloc] init];
+      _declared_keys = [[NSMutableArray alloc] init];
+    }
+  
   return self;
 }
 
 - (void) dealloc
 {
   RELEASE(_editors);
+  RELEASE(_declared_keys);
   [super dealloc];
 }
 
 - (void) encodeWithCoder: (NSCoder *)aCoder
 { 
-  // TODO
+  if([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeObject: _declared_keys forKey: @"NSDeclaredKeys"];
+    }
+  else
+    {
+      [aCoder encodeObject: _declared_keys];
+    }
 }
 
 - (id) initWithCoder: (NSCoder *)aDecoder
 { 
-  // TODO
+  if((self = [super init]) != nil)
+    {
+      if([aDecoder allowsKeyedCoding])
+	{
+	  ASSIGN(_declared_keys,[aDecoder decodeObjectForKey: @"NSDeclaredKeys"]);
+	}
+      else
+	{
+	  ASSIGN(_declared_keys,[aDecoder decodeObject]);
+	}
+    }
   return self; 
 }
 

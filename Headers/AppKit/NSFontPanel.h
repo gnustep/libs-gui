@@ -11,19 +11,19 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor,
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
    Boston, MA 02110-1301, USA.
 */ 
 
@@ -118,6 +118,34 @@ enum {
 - (void)setAccessoryView:(NSView *)aView;
 
 @end
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+enum
+{
+	NSFontPanelFaceModeMask = 1 << 0,
+	NSFontPanelSizeModeMask = 1 << 1,
+	NSFontPanelCollectionModeMask = 1 << 2,
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+	NSFontPanelUnderlineEffectModeMask = 1 << 8,
+	NSFontPanelStrikethroughEffectModeMask = 1 << 9,
+	NSFontPanelTextColorEffectModeMask = 1 << 10,
+	NSFontPanelDocumentColorEffectModeMask = 1 << 11,
+	NSFontPanelShadowEffectModeMask = 1 << 12,
+	NSFontPanelAllEffectsModeMask = 0xfff00,
+#endif
+
+	NSFontPanelStandardModesMask = 0xffff,
+	NSFontPanelAllModesMask = 0xffffffff
+};
+
+@interface NSObject (NSFontPanelValidation)
+
+- (unsigned int)validModesForFontPanel:(NSFontPanel *)fontPanel;
+
+@end
+
+#endif
 
 #endif // _GNUstep_H_NSFontPanel
 

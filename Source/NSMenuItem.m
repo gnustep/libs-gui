@@ -12,19 +12,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */ 
 
 #include "config.h"
@@ -33,11 +34,13 @@
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
 #include <GNUstepBase/GSCategories.h>
+#include "AppKit/NSCell.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSKeyValueBinding.h"
 #include "AppKit/NSMenuItem.h"
 #include "AppKit/NSMenu.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSCell.h"
+#include "GSBindingHelpers.h"
 
 static BOOL usesUserKeyEquivalents = NO;
 static Class imageClass;
@@ -73,8 +76,10 @@ static Class imageClass;
 {
   if (self == [NSMenuItem class])
     {
-      [self setVersion: 3];
+      [self setVersion: 4];
       imageClass = [NSImage class];
+
+      [self exposeBinding: NSEnabledBinding];
     }
 }
 
@@ -102,6 +107,9 @@ static Class imageClass;
 
 - (void) dealloc
 {
+  // Remove all key value bindings for this view.
+  [GSKeyValueBinding unbindAllForObject: self];
+
   TEST_RELEASE(_title);
   TEST_RELEASE(_keyEquivalent);
   TEST_RELEASE(_image);
@@ -204,7 +212,13 @@ static Class imageClass;
 - (void) setKeyEquivalent: (NSString*)aKeyEquivalent
 {
   if (nil == aKeyEquivalent)
-    aKeyEquivalent = @"";
+    {
+      /* We warn about nil for compatibiliy with MacOS X, which refuses
+         nil.  */
+      NSDebugMLLog(@"MacOSXCompatibility", 
+                   @"Attempt to use nil as key equivalent");
+      aKeyEquivalent = @"";
+    }
 
   ASSIGNCOPY(_keyEquivalent,  aKeyEquivalent);
   [_menu itemChanged: self];
@@ -482,6 +496,10 @@ static Class imageClass;
 {
   if ([aCoder allowsKeyedCoding])
     {
+      if ([self isSeparatorItem])
+        {
+          [aCoder encodeBool: YES forKey: @"NSIsSeparator"];
+        }
       [aCoder encodeObject: _title forKey: @"NSTitle"];
       [aCoder encodeObject: NSStringFromSelector(_action) forKey: @"NSAction"];
       [aCoder encodeObject: _keyEquivalent forKey: @"NSKeyEquiv"];
@@ -494,6 +512,11 @@ static Class imageClass;
       [aCoder encodeInt: _keyEquivalentModifierMask forKey: @"NSKeyEquivModMask"];
       [aCoder encodeInt: _mnemonicLocation forKey: @"NSMnemonicLoc"];
       [aCoder encodeInt: _state forKey: @"NSState"];
+      [aCoder encodeBool: ![self isEnabled] forKey: @"NSIsDisabled"];
+      if (_tag)
+        {
+          [aCoder encodeInt: _tag forKey: @"NSTag"];
+        }
     }
   else
     {
@@ -528,43 +551,72 @@ static Class imageClass;
       NSString *title;
       NSString *action;
       NSString *key;
-      NSImage *mixedImage;
-      NSImage *onImage;
-      id target;
-      NSMenu *submenu;
+      BOOL isSeparator = NO;
+
+      if ([aDecoder containsValueForKey: @"NSIsSeparator"])
+        {
+          isSeparator = [aDecoder decodeBoolForKey: @"NSIsSeparator"];
+        }
+
+      if (isSeparator)
+        {
+          RELEASE(self);
+          return [NSMenuItem separatorItem];
+        }
 
       title = [aDecoder decodeObjectForKey: @"NSTitle"];
       action = [aDecoder decodeObjectForKey: @"NSAction"];
       key = [aDecoder decodeObjectForKey: @"NSKeyEquiv"];
-      mixedImage = [aDecoder decodeObjectForKey: @"NSMixedImage"];
-      onImage = [aDecoder decodeObjectForKey: @"NSOnImage"];
-      target = [aDecoder decodeObjectForKey: @"NSTarget"];
-      [aDecoder decodeObjectForKey: @"NSMenu"];
-      submenu = [aDecoder decodeObjectForKey: @"NSSubmenu"];
 
       self = [self initWithTitle: title
-		   action: NSSelectorFromString(action)
-		   keyEquivalent: key];
-      [self setTarget: target];
-      [self setMixedStateImage: mixedImage];
-      [self setOnStateImage: onImage];
-      [self setSubmenu: submenu];
+                   action: NSSelectorFromString(action)
+                   keyEquivalent: key];
+      //[aDecoder decodeObjectForKey: @"NSMenu"];
 
+      if ([aDecoder containsValueForKey: @"NSTarget"])
+        {
+         id target = [aDecoder decodeObjectForKey: @"NSTarget"];
+         [self setTarget: target];
+        }
+      if ([aDecoder containsValueForKey: @"NSMixedImage"])
+        {
+          NSImage *mixedImage = [aDecoder decodeObjectForKey: @"NSMixedImage"];
+          [self setMixedStateImage: mixedImage];
+        }
+      if ([aDecoder containsValueForKey: @"NSOnImage"])
+        {
+          NSImage *onImage = [aDecoder decodeObjectForKey: @"NSOnImage"];
+          [self setOnStateImage: onImage];
+        }
+      if ([aDecoder containsValueForKey: @"NSSubmenu"])
+        {
+          NSMenu *submenu = [aDecoder decodeObjectForKey: @"NSSubmenu"];
+          [self setSubmenu: submenu];
+        }
       if ([aDecoder containsValueForKey: @"NSKeyEquivModMask"])
         {
-	  int keyMask = [aDecoder decodeIntForKey: @"NSKeyEquivModMask"];
-	  [self setKeyEquivalentModifierMask: keyMask];
-	}
+          int keyMask = [aDecoder decodeIntForKey: @"NSKeyEquivModMask"];
+          [self setKeyEquivalentModifierMask: keyMask];
+        }
       if ([aDecoder containsValueForKey: @"NSMnemonicLoc"])
         {
-	  int loc = [aDecoder decodeIntForKey: @"NSMnemonicLoc"];
-	  [self setMnemonicLocation: loc];
-	}
+          int loc = [aDecoder decodeIntForKey: @"NSMnemonicLoc"];
+          [self setMnemonicLocation: loc];
+        }
       if ([aDecoder containsValueForKey: @"NSState"])
         {
-	  int state = [aDecoder decodeIntForKey: @"NSState"];
-	  [self setState: state];
-	}
+          _state = [aDecoder decodeIntForKey: @"NSState"];
+        }
+      if ([aDecoder containsValueForKey: @"NSIsDisabled"])
+        {
+          BOOL flag = [aDecoder decodeBoolForKey: @"NSIsDisabled"];
+          [self setEnabled: !flag];
+        }
+      if ([aDecoder containsValueForKey: @"NSTag"])
+        {
+          int tag = [aDecoder decodeIntForKey: @"NSTag"];
+          [self setTag: tag];
+        }
     }
   else
     {
@@ -574,6 +626,10 @@ static Class imageClass;
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_title];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_keyEquivalent];
       [aDecoder decodeValueOfObjCType: "I" at: &_keyEquivalentModifierMask];
+      if (version <= 3)
+        {
+          _keyEquivalentModifierMask = _keyEquivalentModifierMask << 16;
+        }
       [aDecoder decodeValueOfObjCType: "I" at: &_mnemonicLocation];
       [aDecoder decodeValueOfObjCType: "i" at: &_state];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_enabled];
@@ -584,25 +640,49 @@ static Class imageClass;
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_changesState];
       if (version == 1)
         {
-	  _target = [aDecoder decodeObject];
-	}
+          _target = [aDecoder decodeObject];
+        }
       [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
       [aDecoder decodeValueOfObjCType: "i" at: &_tag];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_representedObject];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_submenu];
       if (version >= 2)
         {
-	  _target = [aDecoder decodeObject];
-	}
-      if (version == 3)
+          _target = [aDecoder decodeObject];
+        }
+      if (version >= 3)
         {
-	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isAlternate];
-	  [aDecoder decodeValueOfObjCType: @encode(char) at: &_indentation];
-	  [aDecoder decodeValueOfObjCType: @encode(id) at: &_toolTip];
-	}
+          [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isAlternate];
+          [aDecoder decodeValueOfObjCType: @encode(char) at: &_indentation];
+          [aDecoder decodeValueOfObjCType: @encode(id) at: &_toolTip];
+        }
     }
 
   return self;
+}
+
+- (void) bind: (NSString *)binding
+     toObject: (id)anObject
+  withKeyPath: (NSString *)keyPath
+      options: (NSDictionary *)options
+{
+  if ([binding hasPrefix: NSEnabledBinding])
+    {
+      [self unbind: binding];
+      [[GSKeyValueAndBinding alloc] initWithBinding: NSEnabledBinding 
+                                    withName: binding 
+                                    toObject: anObject
+                                    withKeyPath: keyPath
+                                    options: options
+                                    fromObject: self];
+    }
+  else
+    {
+      [super bind: binding
+             toObject: anObject
+             withKeyPath: keyPath
+             options: options];
+    }
 }
 
 @end

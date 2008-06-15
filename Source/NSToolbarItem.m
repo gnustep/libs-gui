@@ -7,25 +7,26 @@
 
    Author:  Gregory John Casamento <greg_casamento@yahoo.com>,
             Fabien Vallon <fabien.vallon@fr.alcove.com>,
-	    Quentin Mathe <qmathe@club-internet.fr>
+            Quentin Mathe <qmathe@club-internet.fr>
    Date: May 2002
    
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */ 
 
 #include <Foundation/NSObject.h>
@@ -35,6 +36,7 @@
 #include <Foundation/NSException.h>
 #include <Foundation/NSString.h>
 #include "AppKit/NSApplication.h"
+#include "AppKit/NSAttributedString.h"
 #include "AppKit/NSButton.h"
 #include "AppKit/NSButtonCell.h"
 #include "AppKit/NSDragging.h"
@@ -391,6 +393,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 @end
 
+// FIXME: Why does this class exists at all?
 @implementation GSToolbarButtonCell
 
 /* Overriden NSButtonCell method to handle cell type in a basic way which avoids
@@ -412,29 +415,64 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
     }
 }
 
-// Overriden NSButtonCell method
+// Overriden NSButtonCell method to make sure all text is at the same height.
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  NSSize titleSize = [[self attributedTitle] size];
+  BOOL flippedView = [controlView isFlipped];
+  NSCellImagePosition ipos = _cell.image_position;
   // We ignore alternateAttributedTitle, it is not needed
+  NSSize titleSize = [[self attributedTitle] size];
   
+  if (flippedView == YES)
+    {
+      if (ipos == NSImageAbove)
+        {
+          ipos = NSImageBelow;
+        }
+      else if (ipos == NSImageBelow)
+        {
+          ipos = NSImageAbove;
+        }
+    }
+
   /* We store the values we need to customize the drawing into titleRect and 
      imageRect. */
-  
-  titleRect.origin.x = cellFrame.origin.x;
-  titleRect.origin.y = cellFrame.origin.y + InsetItemTextY;
-  titleRect.size.width =  cellFrame.size.width;
-  titleRect.size.height = titleSize.height;
-  
-  imageRect.origin.x = cellFrame.origin.x;
-  imageRect.origin.y = cellFrame.origin.y;
-  if ([self imagePosition] != NSImageOnly)     
-    imageRect.origin.y += titleRect.size.height;
-  imageRect.size.width = cellFrame.size.width;
-  imageRect.size.height = cellFrame.size.height;
-  if ([self imagePosition] != NSImageOnly)     
-    imageRect.size.height -= titleRect.size.height;
-    
+  switch (ipos)
+    {
+      case NSNoImage: 
+        titleRect = cellFrame;
+        break;
+
+      case NSImageOnly: 
+        imageRect = cellFrame;
+        break;
+
+      default:
+      case NSImageBelow: 
+        titleRect.origin.x = cellFrame.origin.x;
+        titleRect.origin.y = NSMaxY(cellFrame) - titleSize.height - InsetItemTextY;
+        titleRect.size.width = cellFrame.size.width;
+        titleRect.size.height = titleSize.height;
+        
+        imageRect.origin.x = cellFrame.origin.x;
+        imageRect.origin.y = cellFrame.origin.y;
+        imageRect.size.width = cellFrame.size.width;
+        imageRect.size.height = cellFrame.size.height - titleRect.size.height;
+        break;
+
+      case NSImageAbove: 
+        titleRect.origin.x = cellFrame.origin.x;
+        titleRect.origin.y = cellFrame.origin.y + InsetItemTextY;
+        titleRect.size.width = cellFrame.size.width;
+        titleRect.size.height = titleSize.height;
+        
+        imageRect.origin.x = cellFrame.origin.x;
+        imageRect.origin.y = cellFrame.origin.y + titleRect.size.height;
+        imageRect.size.width = cellFrame.size.width;
+        imageRect.size.height = cellFrame.size.height - titleRect.size.height;
+        break;
+    }
+
   [super drawInteriorWithFrame: cellFrame inView: controlView];
 }
 
@@ -1085,16 +1123,16 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
       
           button = [[GSToolbarButton alloc] initWithToolbarItem: self];
           cell = [button cell];
-	  [button setTitle: @""];
-	  [button setEnabled: NO];
+          [button setTitle: @""];
+          [button setEnabled: NO];
           [button setBordered: NO];
           [button setImagePosition: NSImageAbove];
-	  [cell setBezeled: YES];
+          [cell setBezeled: YES];
           [cell setHighlightsBy: 
-	    NSChangeGrayCellMask | NSChangeBackgroundCellMask];
+                    NSChangeGrayCellMask | NSChangeBackgroundCellMask];
           [cell setFont: [NSFont systemFontOfSize: 11]]; 
-	  /* [NSFont smallSystemFontSize] or better should be 
-	     controlContentFontSize. */
+          /* [NSFont smallSystemFontSize] or better should be 
+             controlContentFontSize. */
 
           [_backView release];
           _backView = button;
@@ -1430,7 +1468,10 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 {
   if (_selectable && [self _selected] == NO && selected)
     {
-      [(GSToolbarButton *)_backView performClick:self];
+      // FIXME: This is a hack to break a recursion.
+      // I think the code here is at fault. FK
+      //[(GSToolbarButton *)_backView performClick:self];
+      [(GSToolbarButton *)_backView setState: YES];
     }
   else if (selected == NO)
     {

@@ -309,7 +309,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP BUILD_GSND have_cups GSCUPS_CFLAGS GSCUPS_LDFLAGS GSCUPS_LIBS GSCUPS_DATADIR BUILD_GSCUPS GNUSTEP_GUI_VERSION GNUSTEP_GUI_MAJOR_VERSION GNUSTEP_GUI_MINOR_VERSION GNUSTEP_GUI_SUBMINOR_VERSION ADDITIONAL_LIB_DIRS ADDITIONAL_INCLUDE_DIRS LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP EGREP BUILD_GSND have_cups GSCUPS_CFLAGS GSCUPS_LDFLAGS GSCUPS_LIBS GSCUPS_DATADIR BUILD_GSCUPS GNUSTEP_GUI_VERSION GNUSTEP_GUI_MAJOR_VERSION GNUSTEP_GUI_MINOR_VERSION GNUSTEP_GUI_SUBMINOR_VERSION ADDITIONAL_LIB_DIRS ADDITIONAL_INCLUDE_DIRS cross_compiling LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -2720,7 +2720,7 @@ ac_x_header_dirs='
 /usr/openwin/share/include'
 
 if test "$ac_x_includes" = no; then
-  # Guess where to find include files, by looking for Xlib.h.
+  # Guess where to find include files, by looking for Intrinsic.h.
   # First, try using that file with no special directory specified.
   cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -2728,7 +2728,7 @@ _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
-#include <X11/Xlib.h>
+#include <X11/Intrinsic.h>
 _ACEOF
 if { (eval echo "$as_me:$LINENO: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
@@ -2755,7 +2755,7 @@ else
 sed 's/^/| /' conftest.$ac_ext >&5
 
   for ac_dir in $ac_x_header_dirs; do
-  if test -r "$ac_dir/X11/Xlib.h"; then
+  if test -r "$ac_dir/X11/Intrinsic.h"; then
     ac_x_includes=$ac_dir
     break
   fi
@@ -2769,18 +2769,18 @@ if test "$ac_x_libraries" = no; then
   # See if we find them without any special options.
   # Don't add to $LIBS permanently.
   ac_save_LIBS=$LIBS
-  LIBS="-lX11 $LIBS"
+  LIBS="-lXt $LIBS"
   cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
-#include <X11/Xlib.h>
+#include <X11/Intrinsic.h>
 int
 main ()
 {
-XrmInitialize ()
+XtMalloc (0)
   ;
   return 0;
 }
@@ -7188,6 +7188,7 @@ ADDITIONAL_LIB_DIRS="$ADDITIONAL_LIB_DIRS $GRAPHIC_LFLAGS"
 
 
 
+
 #--------------------------------------------------------------------
 # Configure
 #--------------------------------------------------------------------
@@ -7842,6 +7843,7 @@ s,@GNUSTEP_GUI_MINOR_VERSION@,$GNUSTEP_GUI_MINOR_VERSION,;t t
 s,@GNUSTEP_GUI_SUBMINOR_VERSION@,$GNUSTEP_GUI_SUBMINOR_VERSION,;t t
 s,@ADDITIONAL_LIB_DIRS@,$ADDITIONAL_LIB_DIRS,;t t
 s,@ADDITIONAL_INCLUDE_DIRS@,$ADDITIONAL_INCLUDE_DIRS,;t t
+s,@cross_compiling@,$cross_compiling,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
 CEOF

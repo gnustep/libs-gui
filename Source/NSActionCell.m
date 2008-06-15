@@ -10,19 +10,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */ 
 
 #include "config.h"
@@ -142,11 +143,33 @@ static Class controlClass;
  */
 
 /**
+ * Retrieve the value of the receiver
+ */
+- (id)objectValue
+{
+  if (_cell.in_editing && _control_view)
+    if ([_control_view isKindOfClass: controlClass])
+      [(NSControl *)_control_view validateEditing];
+  return [super objectValue];
+}
+
+/**
+ * Retrieve the value of the receiver as an NSAttributedString.
+ */
+- (NSAttributedString*)attributedStringValue
+{
+  if (_cell.in_editing && _control_view)
+    if ([_control_view isKindOfClass: controlClass])
+      [(NSControl *)_control_view validateEditing];
+  return [super attributedStringValue];
+}
+
+/**
  * Retrieve the value of the receiver as an NSString.
  */
 - (NSString *)stringValue
 {
-  if (_control_view)
+  if (_cell.in_editing && _control_view)
     if ([_control_view isKindOfClass: controlClass])
       [(NSControl *)_control_view validateEditing];
   return [super stringValue];
@@ -157,7 +180,7 @@ static Class controlClass;
  */
 - (double)doubleValue
 {
-  if (_control_view)
+  if (_cell.in_editing && _control_view)
     if ([_control_view isKindOfClass: controlClass])
       [(NSControl *)_control_view validateEditing];
   return [super doubleValue];
@@ -168,7 +191,7 @@ static Class controlClass;
  */
 - (float)floatValue
 {
-  if (_control_view)
+  if (_cell.in_editing && _control_view)
     if ([_control_view isKindOfClass: controlClass])
       [(NSControl *)_control_view validateEditing];
   return [super floatValue];
@@ -179,7 +202,7 @@ static Class controlClass;
  */
 - (int)intValue
 {
-  if (_control_view)
+  if (_cell.in_editing && _control_view)
     if ([_control_view isKindOfClass: controlClass])
       [(NSControl *)_control_view validateEditing];
   return [super intValue];
@@ -269,6 +292,13 @@ static Class controlClass;
   return _control_view;
 }
 
+/**
+ * Set the control view of the receiver.
+ */
+- (void) setControlView: (NSView*)view
+{
+  _control_view = view;
+}
 
 - (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {

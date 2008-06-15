@@ -10,30 +10,34 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
-   Library General Public License for more details.
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSButton.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSTextField.h"
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSProcessInfo.h>
+
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSButton.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSFont.h"
+#include "AppKit/NSImage.h"
+#include "AppKit/NSImageView.h"
+#include "AppKit/NSTextField.h"
 #include "GNUstepGUI/GSInfoPanel.h"
 #include "GNUstepGUI/GSTheme.h"
 
@@ -182,7 +186,7 @@ new_label (NSString *value)
   NSTextField *urlLabel = nil;
   NSTextField *copyrightLabel;
   NSTextField *copyrightDescriptionLabel = nil;
-  NSTextField *themeLabel = nil;
+  NSButton    *themeLabel = nil;
   NSFont      *smallFont;
 
   /* Minimum size we use for the panel */
@@ -404,8 +408,13 @@ new_label (NSString *value)
 
   theme = [NSString stringWithFormat: @"%@: %@",
     _(@"Current theme"), [[GSTheme theme] name]];
-  themeLabel = new_label (theme);
+  themeLabel = AUTORELEASE([NSButton new]);
+  [themeLabel setStringValue: theme];
+  [themeLabel setBordered: NO];
+  [themeLabel setAlignment: NSLeftTextAlignment];
   [themeLabel setFont: smallFont];
+  [themeLabel setButtonType: NSMomentaryLightButton];
+  [themeLabel setFocusRingType: NSFocusRingTypeNone];
   [themeLabel sizeToFit];
 
   /*
@@ -515,10 +524,26 @@ new_label (NSString *value)
   self = [super initWithContentRect: NSMakeRect (100, 100, width, height)
 		styleMask: (NSTitledWindowMask | NSClosableWindowMask) 
 		backing: NSBackingStoreRetained defer: YES];
+  if (!self)
+    return nil;
+  
   /* 
    * Add objects to the panel in their position
    */
   cv = [self contentView];
+
+  {
+    NSImageView* backgroundImage = [[NSImageView alloc] 
+                                       initWithFrame: 
+                                           NSMakeRect(0, 0, width, height)];
+
+    //[backgroundImage setImageAlignment: NSImageAlignCenter];
+    //[backgroundImage setImageScaling: NSScaleProportionally];
+    [backgroundImage setImage: [NSImage imageNamed: @"LogoGNUstep"]];
+    [backgroundImage setEditable: NO];
+    [cv addSubview: backgroundImage];
+    RELEASE(backgroundImage);
+  }
 
   f = [iconButton frame];
   f.origin.x = 16;
@@ -612,11 +637,9 @@ new_label (NSString *value)
   f.origin.y = tmp_b - 25 - f.size.height;
   tmp_b = f.origin.y;
   [cv addSubview: themeLabel];
-  [themeLabel setEnabled: YES];
   [themeLabel setFrame: f];
   [themeLabel setTarget: [GSTheme class]];
   [themeLabel setAction: @selector(orderFrontSharedThemePanel:)];
-  [themeLabel sendActionOn: NSLeftMouseUpMask];
 
   [self center];
   return self;

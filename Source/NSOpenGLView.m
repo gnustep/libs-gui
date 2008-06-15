@@ -10,19 +10,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 #include <Foundation/NSDebug.h>
@@ -31,7 +32,10 @@
 #include "AppKit/NSOpenGL.h"
 #include "AppKit/NSOpenGLView.h"
 
-
+// Declare a private method of NSView
+@interface NSView (Private)
+- (void) _lockFocusInContext: (NSGraphicsContext *)ctxt inRect: (NSRect)rect;
+@end
 
 /**
   <unit>
@@ -50,15 +54,9 @@
 
   </unit>
 */
-@implementation NSOpenGLView
-/**
-   return a standard NSOpenGLPixelFormat you can pass to the 
-   initWithFrame: pixelFormat: method
- */
-+ (NSOpenGLPixelFormat*)defaultPixelFormat
-{
-  NSOpenGLPixelFormat *fmt;
-  NSOpenGLPixelFormatAttribute attrs[] =
+
+static NSOpenGLPixelFormat *fmt = nil;
+static NSOpenGLPixelFormatAttribute attrs[] =
     {	
       NSOpenGLPFADoubleBuffer,
       NSOpenGLPFADepthSize, 16,
@@ -71,10 +69,20 @@
 //       NSOpenGLPFADepthSize, 32,
 //       0
 //     };
-  
-  fmt = [[NSOpenGLPixelFormat alloc] initWithAttributes: attrs];
+
+@implementation NSOpenGLView
+/**
+   return a standard NSOpenGLPixelFormat you can pass to the 
+   initWithFrame: pixelFormat: method
+ */
++ (NSOpenGLPixelFormat*) defaultPixelFormat
+{
+  // Initialize it once
+  if (!fmt)
+    fmt = [[NSOpenGLPixelFormat alloc] initWithAttributes: attrs];
+
   if (fmt)
-    return AUTORELEASE(fmt);
+    return fmt;
   else
     {
       NSWarnMLog(@"could not find a reasonable pixel format...");
@@ -86,7 +94,7 @@
    detach from the current context.  You should call it before releasing this 
    object.
  */
-- (void)clearGLContext
+- (void) clearGLContext
 {
   if (glcontext)
     {
@@ -95,42 +103,53 @@
     }
 }
 
-- (void)setOpenGLContext:(NSOpenGLContext*)context
+- (void) setOpenGLContext: (NSOpenGLContext*)context
 {
   [self clearGLContext];
   ASSIGN(glcontext, context);
-  attached = NO;
+  [glcontext setView: self];
+  [glcontext makeCurrentContext];
+  [self prepareOpenGL];
+}
+
+- (void) prepareOpenGL
+{
 }
 
 /**
    return the current gl context associated with this view
 */
-- (NSOpenGLContext*)openGLContext
+- (NSOpenGLContext*) openGLContext
 {
   if (glcontext == nil)
     {
-      glcontext = [[NSOpenGLContext alloc] initWithFormat: pixel_format
-				 shareContext: nil];
-      attached = NO;
+      NSOpenGLContext *context = [[NSOpenGLContext alloc] 
+                                     initWithFormat: pixel_format
+                                     shareContext: nil];
+
+      [self setOpenGLContext: context];
+      RELEASE(context);
     }
   return glcontext;
 }
 
-
 -(id) initWithFrame: (NSRect)frameRect
 {  
   return [self initWithFrame: frameRect
-	         pixelFormat: [[self class] defaultPixelFormat]];
+               pixelFormat: [[self class] defaultPixelFormat]];
   
 }
 
 /** default initializer.  Can be passed [NSOpenGLContext defaultPixelFormat] 
     as second argument
 */
-- (id)initWithFrame:(NSRect)frameRect 
-	pixelFormat:(NSOpenGLPixelFormat*)format
+- (id) initWithFrame: (NSRect)frameRect 
+         pixelFormat: (NSOpenGLPixelFormat*)format
 {
-  [super initWithFrame: frameRect];
+  self = [super initWithFrame: frameRect];
+  if (!self)
+    return nil;
+
   ASSIGN(pixel_format, format);
 
   [self setPostsFrameChangedNotifications: YES];
@@ -152,12 +171,12 @@
   [super dealloc];
 }
 
-- (NSOpenGLPixelFormat*)pixelFormat
+- (NSOpenGLPixelFormat*) pixelFormat
 {
   return pixel_format;
 }
 
-- (void)setPixelFormat:(NSOpenGLPixelFormat*)pixelFormat
+- (void) setPixelFormat: (NSOpenGLPixelFormat*)pixelFormat
 {
   ASSIGN(pixel_format, pixelFormat);
 }
@@ -178,21 +197,14 @@
   [self reshape];
 }
 
-- (void) lockFocusInRect: (NSRect) aRect
+/* FIXME: this should be done in [lockFocus] or [lockFocusInRect:].
+ */
+- (void) _lockFocusInContext: (NSGraphicsContext *)ctxt inRect: (NSRect)rect
 {
-  [super lockFocusInRect: aRect];
-  if (!glcontext)
-    {
-      [self openGLContext];
-      NSAssert(glcontext, NSInternalInconsistencyException);
-    }
-  if (attached == NO && glcontext != nil)
-    {
-      NSDebugMLLog(@"GL", @"Attaching context to the view");
-      [glcontext setView: self];
-      attached = YES;
-    }
+  [super _lockFocusInContext: ctxt inRect: rect];
+  [[self openGLContext] makeCurrentContext];
 }
+
 @end
 
 

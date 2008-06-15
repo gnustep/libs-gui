@@ -12,19 +12,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 #include "config.h"
@@ -38,9 +39,11 @@
 #include "AppKit/NSControl.h"
 #include "AppKit/NSColor.h"
 #include "AppKit/NSEvent.h"
+#include "AppKit/NSKeyValueBinding.h"
 #include "AppKit/NSTextStorage.h"
 #include "AppKit/NSTextView.h"
 #include "AppKit/NSWindow.h"
+#include "GSBindingHelpers.h"
 
 /*
  * Class variables
@@ -68,7 +71,13 @@ static NSNotificationCenter *nc;
       actionCellClass = [NSActionCell class];
       // Cache the notifiaction centre for editing notifications
       nc = [NSNotificationCenter defaultCenter];
-    }
+ 
+     // expose bindings
+      [self exposeBinding: NSValueBinding];
+      [self exposeBinding: NSEnabledBinding];
+      [self exposeBinding: NSAlignmentBinding];
+      [self exposeBinding: NSFontBinding];
+     }
 }
 
 /**<p> Returns the cell Class used by NSControl. Used by subclasses.</p>
@@ -616,6 +625,18 @@ static NSNotificationCenter *nc;
 
 - (void) drawRect: (NSRect)aRect
 {
+  /* Do nothing if there is already a text editor doing the drawing;
+   * otherwise, we draw everything twice.  That is bad if there are
+   * any transparency involved (eg, even an anti-alias font!) because
+   * if the semi-transparent pixels are drawn over themselves they
+   * become less transparent (eg, an anti-alias font becomes darker
+   * and gives the impression of being bold).
+   */
+  if ([self currentEditor] != nil)
+    {
+      return;
+    }
+
   [self drawCell: _cell];
 }
 
@@ -626,7 +647,8 @@ static NSNotificationCenter *nc;
 {
   if (_cell == aCell)
     {
-      [_cell drawWithFrame: _bounds inView: self];
+      [_cell drawWithFrame: _bounds
+             inView: self];
     }
 }
 
@@ -637,8 +659,8 @@ static NSNotificationCenter *nc;
 {
   if (_cell == aCell)
     {
-      [_cell drawInteriorWithFrame: _bounds 
-	    inView: self];
+      [_cell drawInteriorWithFrame: _bounds
+             inView: self];
     }
 }
 
@@ -692,6 +714,13 @@ static NSNotificationCenter *nc;
  */
 - (BOOL) sendAction: (SEL)theAction to: (id)theTarget
 {
+  GSKeyValueBinding *theBinding;
+
+  theBinding = [GSKeyValueBinding getBinding: NSValueBinding 
+                                  forObject: self];
+  if (theBinding != nil)
+    [theBinding reverseSetValueFor: @"objectValue"];
+
   if (theAction)
     return [NSApp sendAction: theAction to: theTarget from: self];
   else
@@ -819,7 +848,10 @@ static NSNotificationCenter *nc;
 
   // If not enabled ignore mouse clicks
   if (![self isEnabled])
-    return;
+    {  
+      [super mouseDown: theEvent];
+      return;
+    }
 
   // Ignore multiple clicks, if configured to do so
   if (_ignoresMultiClick && ([theEvent clickCount] > 1))
@@ -900,6 +932,15 @@ static NSNotificationCenter *nc;
   _ignoresMultiClick = flag;
 }
 
+/**<p>Returns the mouse flags. This flags are usally sets in 
+   the NSCell-trackMouse:inRect:ofView:untilMouseUp: method.</p>
+   <p>This is a NeXTStep 3.3 method, no longer officially supported.</p>
+ */
+- (int) mouseDownFlags
+{ 
+  return [[self selectedCell] mouseDownFlags];
+}
+
 /*
  * NSCoding protocol
  */
@@ -910,6 +951,10 @@ static NSNotificationCenter *nc;
     {
       [aCoder encodeObject: [self cell] forKey: @"NSCell"];
       [aCoder encodeBool: [self isEnabled] forKey: @"NSEnabled"];
+       if (_tag)
+        {
+          [aCoder encodeInt: [self tag] forKey: @"NSTag"];
+        }
     }
   else
     {
@@ -929,12 +974,17 @@ static NSNotificationCenter *nc;
       
       if (cell != nil)
         {
-	  [self setCell: cell];
-	}
+          [self setCell: cell];
+        }
       if ([aDecoder containsValueForKey: @"NSEnabled"])
         {
-	  [self setEnabled: [aDecoder decodeBoolForKey: @"NSEnabled"]];
-	}
+          [self setEnabled: [aDecoder decodeBoolForKey: @"NSEnabled"]];
+        }
+      if ([aDecoder containsValueForKey: @"NSTag"])
+        {
+          int tag = [aDecoder decodeIntForKey: @"NSTag"];
+          [self setTag: tag];
+        }
     }
   else 
     {
@@ -944,6 +994,42 @@ static NSNotificationCenter *nc;
     }
 
   return self;
+}
+
+- (void) bind: (NSString *)binding
+     toObject: (id)anObject
+  withKeyPath: (NSString *)keyPath
+      options: (NSDictionary *)options
+{
+  if ([binding isEqual: NSValueBinding])
+    {
+      [self unbind: binding];
+      // FIXME: We could also do the mapping via 
+      // setKeys:triggerChangeNotificationsForDependentKey:
+      [[GSKeyValueBinding alloc] initWithBinding: @"objectValue"
+                                 withName: NSValueBinding
+                                 toObject: anObject
+                                 withKeyPath: keyPath
+                                 options: options
+                                 fromObject: self];
+    }
+  else if ([binding hasPrefix: NSEnabledBinding])
+    {
+      [self unbind: binding];
+      [[GSKeyValueAndBinding alloc] initWithBinding: NSEnabledBinding 
+                                    withName: binding 
+                                    toObject: anObject
+                                    withKeyPath: keyPath
+                                    options: options
+                                    fromObject: self];
+    }
+  else
+    {
+      [super bind: binding
+             toObject: anObject
+             withKeyPath: keyPath
+             options: options];
+    }
 }
 
 @end

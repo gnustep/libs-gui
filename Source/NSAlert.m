@@ -18,25 +18,27 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 #include "config.h"
 
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSBundle.h>
+#include <Foundation/NSError.h>
 #include <Foundation/NSString.h>
 #include "AppKit/NSAlert.h"
 #include "AppKit/NSApplication.h"
@@ -960,6 +962,7 @@ setControl(NSView* content, id control, NSString *title)
   instance = _instance;
   ASSIGNCOPY(defaultTitle, _defaultTitle);
   ASSIGNCOPY(title, _title);
+  ASSIGNCOPY(message, _message);
   ASSIGNCOPY(defaultButton, _defaultButton);
   ASSIGNCOPY(alternateButton, _alternateButton);
   ASSIGNCOPY(otherButton, _otherButton);
@@ -1383,6 +1386,20 @@ void NSBeginInformationalAlertSheet(NSString *title,
     }
 }
 
++ (NSAlert *) alertWithError: (NSError *)error
+{
+  NSArray *options;
+  unsigned int count;
+
+  options = [error localizedRecoveryOptions];
+  count = [options count];
+  return [self alertWithMessageText: [error localizedDescription]
+               defaultButton: (count > 0) ? [options objectAtIndex: 0] : nil
+               alternateButton: (count > 1) ? [options objectAtIndex: 1] : nil
+               otherButton: (count > 2) ? [options objectAtIndex: 2] : nil
+               informativeTextWithFormat: [error localizedRecoverySuggestion]];
+}
+
 + (NSAlert *) alertWithMessageText: (NSString *)messageTitle
 		     defaultButton: (NSString *)defaultButtonTitle
 		   alternateButton: (NSString *)alternateButtonTitle
@@ -1566,30 +1583,31 @@ void NSBeginInformationalAlertSheet(NSString *title,
     {
       GSAlertPanel *panel;
       NSString *title;
+      unsigned nbut = [_buttons count];
 
       panel = [[GSAlertPanel alloc] init];
       _window = panel;
 
       switch (_style)
-	{
-	  case NSCriticalAlertStyle: 
-	      title = @"Critical";
-	      break;
-	  case NSInformationalAlertStyle: 
-	      title = @"Information";
-	      break;
-	  case NSWarningAlertStyle:
-	  default:
-	      title = @"Alert";
-	      break;
-	}
+        {
+          case NSCriticalAlertStyle: 
+            title = @"Critical";
+            break;
+          case NSInformationalAlertStyle: 
+            title = @"Information";
+            break;
+          case NSWarningAlertStyle:
+          default:
+            title = @"Alert";
+            break;
+        }
       [panel setTitleBar: title
-      		    icon: _icon
-		   title: _informative_text
-		 message: _message_text
-		     def: [[_buttons objectAtIndex: 0] title]
-		     alt: [[_buttons objectAtIndex: 1] title]
-		   other: [[_buttons objectAtIndex: 2] title]];
+             icon: _icon
+             title: _informative_text
+             message: _message_text
+             def: (nbut > 0) ? [[_buttons objectAtIndex: 0] title] : (NSString*)nil
+             alt: (nbut > 1) ? [[_buttons objectAtIndex: 1] title] : (NSString*)nil
+             other: (nbut > 2) ? [[_buttons objectAtIndex: 2] title] : (NSString*)nil];
     }
 }
 

@@ -20,19 +20,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 /* Mouse Tracking Notes:
@@ -62,12 +63,14 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSZone.h>
 
+#include "AppKit/NSActionCell.h"
+#include "AppKit/NSApplication.h"
 #include "AppKit/NSColor.h"
 #include "AppKit/NSCursor.h"
-#include "AppKit/NSActionCell.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/NSApplication.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSGraphics.h"
 #include "AppKit/NSMatrix.h"
+#include "AppKit/NSWindow.h"
 
 #include <math.h>
 
@@ -174,8 +177,6 @@ static inline MPoint MakePoint (int x, int y)
 				    column: (int)column;
 - (BOOL) _selectPreviousSelectableCellBeforeRow: (int)row
 					 column: (int)column;
-- (void) _drawCellAtRow: (int)row 
-                 column: (int)column;
 - (void) _setKeyRow: (int) row
              column: (int) column;
 @end
@@ -2036,7 +2037,7 @@ static SEL getSel;
   for (i = row1; i <= row2 && i < _numRows; i++)
     for (j = col1; j <= col2 && j < _numCols; j++)
       {
-	[self _drawCellAtRow: i column: j];
+        [self drawCellAtRow: i column: j];
       }
 }
 
@@ -2067,40 +2068,27 @@ static SEL getSel;
     {
       NSRect cellFrame = [self cellFrameAtRow: row column: column];
 
-      if (!_drawsBackground)
-	{
-          // the matrix is not opaque, we call displayRect: so 
-          // that our opaque ancestor is redrawn
-	  [self displayRect: cellFrame];
-	  return;
-	}
-      
-      if (_drawsCellBackground)
-	{
-	  [_cellBackgroundColor set];
-	  NSRectFill(cellFrame);
-	}
-      else
-	{
-	  [_backgroundColor set];
-	  NSRectFill(cellFrame);
-	}
+     if (_drawsCellBackground)
+        {
+          [_cellBackgroundColor set];
+          NSRectFill(cellFrame);
+        }
       
       if (_dottedRow == row
           && _dottedColumn == column
-	  && [aCell acceptsFirstResponder]
+          && [aCell acceptsFirstResponder]
           && [_window isKeyWindow]
-	  && [_window firstResponder] == self)
-	{
-	  [aCell setShowsFirstResponder: YES];
+          && [_window firstResponder] == self)
+        {
+          [aCell setShowsFirstResponder: YES];
           [aCell drawWithFrame: cellFrame inView: self];
           [aCell setShowsFirstResponder: NO];
-	}
+        }
       else
-	{
-	  [aCell setShowsFirstResponder: NO];
+        {
+          [aCell setShowsFirstResponder: NO];
           [aCell drawWithFrame: cellFrame inView: self];
-	}
+        }
     }
 }
 
@@ -4093,40 +4081,6 @@ static SEL getSel;
 	}
     }
   return NO;
-}
-
-- (void) _drawCellAtRow: (int)row column: (int)column
-{
-  NSCell *aCell = [self cellAtRow: row column: column];
-
-  if (aCell)
-    {
-      NSRect cellFrame = [self cellFrameAtRow: row column: column];
-
-      // we don't need to draw the matrix's background
-      // as it has already been done in drawRect: if needed
-      // (this method is only called by drawRect:)
-      if (_drawsCellBackground)
-	{
-	  [_cellBackgroundColor set];
-	  NSRectFill(cellFrame);
-	}
-
-      if (_dottedRow == row && _dottedColumn == column
-	  && [aCell acceptsFirstResponder])
-	{
-	  [aCell
-	    setShowsFirstResponder: ([_window isKeyWindow]
-				     && [_window firstResponder] == self)];
-	}
-      else
-        {
-	  [aCell setShowsFirstResponder: NO];
-	}
-      
-      [aCell drawWithFrame: cellFrame inView: self];
-      [aCell setShowsFirstResponder: NO];
-    }
 }
 
 - (void) _setKeyRow: (int)row column: (int)column

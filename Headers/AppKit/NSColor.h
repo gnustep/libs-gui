@@ -11,19 +11,19 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor,
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
    Boston, MA 02110-1301, USA.
 */ 
 
@@ -38,6 +38,7 @@
 @class NSDictionary;
 @class NSPasteboard;
 @class NSImage;
+@class NSColorSpace;
 
 typedef enum _NSControlTint {
     NSDefaultControlTint,
@@ -168,6 +169,16 @@ typedef enum _NSControlSize {
 - (NSColor *)colorUsingColorSpaceName:(NSString *)colorSpace;
 - (NSColor *)colorUsingColorSpaceName:(NSString *)colorSpace
 			       device:(NSDictionary *)deviceDescription;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+// + (NSColor *)colorWithCIColor:(CIColor *)color;
++ (NSColor *)colorWithColorSpace:(NSColorSpace *)space
+					   components:(const float *)comp
+							count:(int)number;
+- (NSColorSpace *)colorSpace;
+- (NSColor *)colorUsingColorSpace:(NSColorSpace *)space;
+- (void)getComponents:(float *)components;
+- (int)numberOfComponents;
+#endif
 
 //
 // Changing the Color
@@ -187,6 +198,10 @@ typedef enum _NSControlSize {
 //
 - (void)drawSwatchInRect:(NSRect)rect;
 - (void)set;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (void)setFill;
+- (void)setStroke;
+#endif
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 //
@@ -195,14 +210,20 @@ typedef enum _NSControlSize {
 - (NSColor*) highlightWithLevel: (float)level;
 - (NSColor*) shadowWithLevel: (float)level;
 
-+ (NSColor*) colorWithPatternImage:(NSImage*)image;
-+ (NSColor*) colorForControlTint:(NSControlTint)controlTint;
++ (NSColor*)colorWithPatternImage:(NSImage*)image;
++ (NSColor*)colorForControlTint:(NSControlTint)controlTint;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
++ (NSControlTint)currentControlTint;
+#endif
 
 //
 // System colors stuff.
 //
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
 + (NSColor*) alternateSelectedControlColor;
 + (NSColor*) alternateSelectedControlTextColor;
+#endif
 + (NSColor*) controlBackgroundColor;
 + (NSColor*) controlColor;
 + (NSColor*) controlHighlightColor;
@@ -233,7 +254,9 @@ typedef enum _NSControlSize {
 + (NSColor*) windowFrameColor;
 + (NSColor*) windowFrameTextColor;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 + (NSArray*) controlAlternatingRowBackgroundColors;
+#endif
 
 // Pattern colour
 - (NSImage*) patternImage;

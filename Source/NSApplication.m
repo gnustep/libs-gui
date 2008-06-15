@@ -14,19 +14,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
-   Library General Public License for more details.
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 #include "config.h"
@@ -37,6 +38,8 @@
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSDictionary.h>
+#include <Foundation/NSError.h>
+#include <Foundation/NSErrorRecoveryAttempting.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSInvocation.h>
@@ -57,6 +60,7 @@
 #endif
 
 #include "AppKit/AppKitExceptions.h"
+#include "AppKit/NSAlert.h"
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSCell.h"
 #include "AppKit/NSCursor.h"
@@ -509,46 +513,45 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
     {
       /* if not hidden raise windows which are possibly obscured. */
       if ([NSApp isHidden] == NO)
-	{
-	  NSArray *windows = RETAIN(GSOrderedWindows());
-	  NSWindow *aWin;
-	  NSEnumerator *iter = [windows reverseObjectEnumerator];
-	 
-	  while ((aWin = [iter nextObject]))
-	    { 
-              
-	      if ([aWin isVisible] == YES && [aWin isMiniaturized] == NO
-		  && aWin != [NSApp keyWindow] && aWin != [NSApp mainWindow]
-		  && aWin != [self window] 
-		  && ([aWin styleMask] & NSMiniWindowMask) == 0)
-	        {
-		  [aWin orderFrontRegardless];
-		}
-	    }
+        {
+          NSArray *windows = RETAIN(GSOrderedWindows());
+          NSWindow *aWin;
+          NSEnumerator *iter = [windows reverseObjectEnumerator];
+          
+          while ((aWin = [iter nextObject]))
+            { 
+              if ([aWin isVisible] == YES && [aWin isMiniaturized] == NO
+                  && aWin != [NSApp keyWindow] && aWin != [NSApp mainWindow]
+                  && aWin != [self window] 
+                  && ([aWin styleMask] & NSMiniWindowMask) == 0)
+                {
+                  [aWin orderFrontRegardless];
+                }
+            }
 	
-	  if ([NSApp isActive] == YES)
-	    {
-	      if ([NSApp keyWindow] != nil)
-		{
-		  [[NSApp keyWindow] orderFront: self];
-		}
-	      else if ([NSApp mainWindow] != nil)
-		{
-		  [[NSApp mainWindow] makeKeyAndOrderFront: self];
-		}
-	      else
-		{
-		  /* We need give input focus to some window otherwise we'll 
-		     never get keyboard events. FIXME: doesn't work. */
-		  NSWindow *menu_window= [[NSApp mainMenu] window];
-		  NSDebugLLog(@"Focus", @"No key on activation - make menu key");
-		  [GSServerForWindow(menu_window) setinputfocus:
-					[menu_window windowNumber]];
-		}
-	    }
+          if ([NSApp isActive] == YES)
+            {
+              if ([NSApp keyWindow] != nil)
+                {
+                  [[NSApp keyWindow] orderFront: self];
+                }
+              else if ([NSApp mainWindow] != nil)
+                {
+                  [[NSApp mainWindow] makeKeyAndOrderFront: self];
+                }
+              else
+                {
+                  /* We need give input focus to some window otherwise we'll 
+                     never get keyboard events. FIXME: doesn't work. */
+                    NSWindow *menu_window= [[NSApp mainMenu] window];
+                    NSDebugLLog(@"Focus", @"No key on activation - make menu key");
+                    [GSServerForWindow(menu_window) setinputfocus:
+                                          [menu_window windowNumber]];
+                }
+            }
 	  
           RELEASE(windows);
-	}
+        }
        
       [NSApp unhide: self]; // or activate or do nothing.
     }
@@ -1006,6 +1009,21 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
       [_key_window orderFrontRegardless];
     }
 
+  // Make sure there is one designated main window
+  if (_main_window == nil)
+    {
+      for (i = 0; i < count; i++)
+        {
+          NSWindow	*win = [windows_list objectAtIndex: i];
+
+          if ([win canBecomeMainWindow])
+            {
+              _main_window = win;
+              break;
+            }
+        }
+    }
+
   /* Register self as observer to window events. */
   [nc addObserver: self selector: @selector(_windowWillClose:)
       name: NSWindowWillCloseNotification object: nil];
@@ -1148,57 +1166,57 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
        * visible when the application is active.
        */
       [nc postNotificationName: NSApplicationWillBecomeActiveNotification
-			object: self];
+          object: self];
 
       _app_is_active = YES;
 
       /* Make sure to calculate count after the notification, since
-	 inactive status might be changed by a notifiee.  */
+         inactive status might be changed by a notifiee.  */
       count = [_inactive count];
       for (i = 0; i < count; i++)
-	{
-	  [[_inactive objectAtIndex: i] orderFrontRegardless];
-	}
+        {
+          [[_inactive objectAtIndex: i] orderFrontRegardless];
+        }
       [_inactive removeAllObjects];
 
       if (_unhide_on_activation)
-	{
-	  [self unhide: nil];
-	}
+        {
+          [self unhide: nil];
+        }
      
       if ([self keyWindow] == nil && _hidden_key != nil
-	&& [[self windows] indexOfObjectIdenticalTo: _hidden_key] != NSNotFound)
-	{
-	  [_hidden_key makeKeyWindow];
-	  _hidden_key = nil;
-	}
-
+          && [[self windows] indexOfObjectIdenticalTo: _hidden_key] != NSNotFound)
+        {
+          [_hidden_key makeKeyWindow];
+          _hidden_key = nil;
+        }
+      
       if ([self keyWindow] != nil)
-	{
-	  [[self keyWindow] orderFront: self];
-	}
+        {
+          [[self keyWindow] orderFront: self];
+        }
       else if ([self mainWindow] != nil)
-	{
-	  [[self mainWindow] makeKeyAndOrderFront: self];
-	}
+        {
+          [[self mainWindow] makeKeyAndOrderFront: self];
+        }
       else
         {
-	  /* We need give input focus to some window otherwise we'll never get
-	     keyboard events. FIXME: doesn't work. */
-	  NSWindow *menu_window= [[self mainMenu] window];
-	  NSDebugLLog(@"Focus", @"No key on activation - make menu key");
-	  [GSServerForWindow(menu_window) setinputfocus: 
-			      [menu_window windowNumber]];
+          /* We need give input focus to some window otherwise we'll never get
+             keyboard events. FIXME: doesn't work. */
+          NSWindow *menu_window= [[self mainMenu] window];
+          NSDebugLLog(@"Focus", @"No key on activation - make menu key");
+          [GSServerForWindow(menu_window) setinputfocus: 
+                                [menu_window windowNumber]];
         }
 
       info = [self _notificationUserInfo];
       [nc postNotificationName: NSApplicationDidBecomeActiveNotification
-			object: self
+          object: self
 		      userInfo: info];
       [[[NSWorkspace sharedWorkspace] notificationCenter]
-	postNotificationName: NSApplicationDidBecomeActiveNotification
+          postNotificationName: NSApplicationDidBecomeActiveNotification
 		      object: [NSWorkspace sharedWorkspace]
-		    userInfo: info];
+          userInfo: info];
     }
 }
 
@@ -1216,16 +1234,15 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
       NSEnumerator	*iter;
 
       [nc postNotificationName: NSApplicationWillResignActiveNotification
-			object: self];
+          object: self];
       
-
       _app_is_active = NO;
 
       if ([self keyWindow] != nil)
-	{
-	  _hidden_key = [self keyWindow];
-	  [_hidden_key resignKeyWindow];
-	}
+        {
+          _hidden_key = [self keyWindow];
+          [_hidden_key resignKeyWindow];
+        }
       // FIXME: main window is not saved for when the app is activated again.
       // This is not a problem if it is also key, and I'm not sure if it
       // is a problem at all. May be annoying in the case of workspace switch.
@@ -1235,47 +1252,47 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
       iter = [windows_list reverseObjectEnumerator];
 
       while ((win = [iter nextObject]))
-	{
-	  NSModalSession theSession;
+        {
+          NSModalSession theSession;
 	   
-	  if ([win isVisible] == NO)
-	    {
-	      continue;		/* Already invisible	*/
-	    }
-	  if ([win canHide] == NO)
-	    {
-	      continue;		/* Can't be hidden	*/
-	    }
-	  if (win == _app_icon_window)
-	    {
-	      continue;		/* can't hide the app icon.	*/
-	    }
-	  /* Don't order out modal windows */
-	  theSession = _session;
-	  while (theSession != 0)
-	    {
-	      if (win == theSession->window)
-		break;
-	      theSession = theSession->previous;
-	    }
-	  if (theSession)
-	    continue;
-
-	  if ([win hidesOnDeactivate] == YES)
-	    {
-	      [_inactive addObject: win];
-	      [win orderOut: self];
-	    }
-	}
-
+          if ([win isVisible] == NO)
+            {
+              continue;		/* Already invisible	*/
+            }
+          if ([win canHide] == NO)
+            {
+              continue;		/* Can't be hidden	*/
+            }
+          if (win == _app_icon_window)
+            {
+              continue;		/* can't hide the app icon.	*/
+            }
+          /* Don't order out modal windows */
+          theSession = _session;
+          while (theSession != 0)
+            {
+              if (win == theSession->window)
+                break;
+              theSession = theSession->previous;
+            }
+          if (theSession)
+            continue;
+          
+          if ([win hidesOnDeactivate] == YES)
+            {
+              [_inactive addObject: win];
+              [win orderOut: self];
+            }
+        }
+      
       info = [self _notificationUserInfo];
       [nc postNotificationName: NSApplicationDidResignActiveNotification
-			object: self
+          object: self
 		      userInfo: info];
       [[[NSWorkspace sharedWorkspace] notificationCenter]
-        postNotificationName: NSApplicationDidResignActiveNotification
+          postNotificationName: NSApplicationDidResignActiveNotification
 		      object: [NSWorkspace sharedWorkspace]
-		    userInfo: info];
+          userInfo: info];
     }
 }
 
@@ -2220,35 +2237,35 @@ image.</p><p>See Also: -applicationIconImage</p>
 			object: self];
 
       if ([self keyWindow] != nil)
-	{
-	  _hidden_key = [self keyWindow];
-	  [_hidden_key resignKeyWindow];
-	}
+        {
+          _hidden_key = [self keyWindow];
+          [_hidden_key resignKeyWindow];
+        }
       
       windows_list = GSOrderedWindows();
       iter = [windows_list reverseObjectEnumerator];
 
       while ((win = [iter nextObject]))
-	{
-	  if ([win isVisible] == NO)
-	    {
-	      continue;		/* Already invisible	*/
-	    }
-	  if ([win canHide] == NO)
-	    {
-	      continue;		/* Not hideable	*/
-	    }
-	  if (win == _app_icon_window)
-	    {
-	      continue;		/* can't hide the app icon.	*/
-	    }
-	  if (_app_is_active == YES && [win hidesOnDeactivate] == YES)
-	    {
-	      continue;		/* Will be hidden by deactivation	*/
-	    }
-	  [_hidden addObject: win];
-	  [win orderOut: self];
-	}
+        {
+          if ([win isVisible] == NO)
+            {
+              continue;		/* Already invisible	*/
+            }
+          if ([win canHide] == NO)
+            {
+              continue;		/* Not hideable	*/
+            }
+          if (win == _app_icon_window)
+            {
+              continue;		/* can't hide the app icon.	*/
+            }
+          if (_app_is_active == YES && [win hidesOnDeactivate] == YES)
+            {
+              continue;		/* Will be hidden by deactivation	*/
+            }
+          [_hidden addObject: win];
+          [win orderOut: self];
+        }
       _app_is_hidden = YES;
       [[_app_icon_window contentView] setNeedsDisplay: YES];
 
@@ -3073,31 +3090,155 @@ image.</p><p>See Also: -applicationIconImage</p>
     NSLog (_(@"reported exception - %@"), anException);
 }
 
+- (BOOL) presentError: (NSError *)error
+{
+  NSAlert *alert;
+  int result;
+
+  error = [self willPresentError: error];
+  alert = [NSAlert alertWithError: error];
+  result = [alert runModal];
+
+  if (result != NSAlertErrorReturn)
+    {
+      // Convert result (1, 0, -1) into index (0, 1, 2)
+      result = 1 - result;
+      return [[error recoveryAttempter] attemptRecoveryFromError: error
+                 optionIndex: result];
+    }
+  else
+    {
+      return NO;
+    }
+}
+
+struct _DelegateWrapper
+{
+  id delegate;
+  SEL selector;
+  NSError *error;
+  void *context;
+};
+
+- (void) presentError: (NSError*)error
+       modalForWindow: (NSWindow*)window
+             delegate: (id)delegate 
+   didPresentSelector: (SEL)sel
+          contextInfo: (void*)context
+{
+  NSAlert *alert;
+  struct _DelegateWrapper *wrapper;
+
+  error = [self willPresentError: error];
+  alert = [NSAlert alertWithError: error];
+  // FIXME: Who is trying to recover the error?
+  wrapper = malloc(sizeof(struct _DelegateWrapper));
+  wrapper->delegate = delegate;
+  wrapper->selector = sel;
+  wrapper->error = error;
+  wrapper->context = context;
+
+  [alert beginSheetModalForWindow: window
+         modalDelegate: self
+         didEndSelector: @selector(_didPresentError:returnCode:contextInfo:)
+         contextInfo: wrapper];
+}
+
+- (void) _didPresentError: (NSWindow*)sheet 
+               returnCode: (int)result
+              contextInfo: (void*)context
+{
+  struct _DelegateWrapper *wrapper;
+  id delegate;
+  SEL sel;
+  NSError *error;
+  void *orgContext;
+  BOOL recover;
+  
+  wrapper = (struct _DelegateWrapper*)context;
+  delegate = wrapper->delegate;
+  sel = wrapper->selector;
+  error = wrapper->error;
+  orgContext = wrapper->context;
+  free(wrapper);
+
+  if (result != NSAlertErrorReturn)
+    {
+      // Convert result (1, 0, -1) into index (0, 1, 2)
+      result = 1 - result;
+      recover = [[error recoveryAttempter] attemptRecoveryFromError: error
+                 optionIndex: result];
+    }
+  else
+    {
+      recover = NO;
+    }
+  
+  if ([delegate respondsToSelector: sel])
+    {
+      void (*didEnd)(id, SEL, BOOL, void*);
+
+      didEnd = (void (*)(id, SEL, BOOL, void*))[delegate methodForSelector: sel];
+      didEnd(delegate, sel, recover, orgContext);
+    }
+}
+
+- (NSError*) willPresentError: (NSError*)error
+{
+  if ([_delegate respondsToSelector: @selector(application:willPresentError:)])
+    {
+      return [_delegate application: self willPresentError: error];
+    }
+  else
+    {
+      return error;
+    }
+}
+
 /**
  * Requests the application terminates the application.  First an
  * -applicationShouldTerminate: message is sent to the delegate, and only if
- * it returns YES (or <code>NSTerminateNow</code>) will termination be
- * carried out.
+ * it returns <code>NSTerminateNow</code> will termination be
+ * carried out.<br />
+ * The old version of -applicationShouldTerminate: returned a BOOL, and this
+ * behavior is handled for backward compatibility with YES being
+ * equivalent to <code>NSTerminateNow</code> and NO being
+ * equivalent to <code>NSTerminateCancel</code>.
  */
 - (void) terminate: (id)sender
 {
-  int	shouldTerminate = YES;
+  NSApplicationTerminateReply	termination = NSTerminateNow;
 
   if ([_delegate respondsToSelector: @selector(applicationShouldTerminate:)])
     {
-      shouldTerminate = [_delegate applicationShouldTerminate: self];
+      /* The old API has applicationShouldTerminate: return a BOOL,
+       * so if we are linked in to an application which used that
+       * API, the delegate might return a BOOL rather than an
+       * NSTerminateNow.  That's fine as both NSTerminateNow
+       * and BOOL are integers, and NSTerminateNow is defined as YES
+       * and NSTerminateCancel as NO.
+       */
+      termination = (NSApplicationTerminateReply)
+        [_delegate applicationShouldTerminate: self];
     }
   else
     {
       if ([NSDocumentController isDocumentBasedApplication])
 	{
-	  shouldTerminate = [[NSDocumentController sharedDocumentController] 
-				reviewUnsavedDocumentsWithAlertTitle: _(@"Quit")
-				cancellable:YES];
+	  if ([[NSDocumentController sharedDocumentController] 
+            reviewUnsavedDocumentsWithAlertTitle: _(@"Quit")
+            cancellable: YES] == YES)
+            {
+              termination = NSTerminateNow;
+            }
+          else
+            {
+              termination = NSTerminateCancel;
+            }
 	}
     }
 
-  if (shouldTerminate == NSTerminateNow)
+  if (termination == NSTerminateNow)
     {
       [self replyToApplicationShouldTerminate: YES];
     }
@@ -3114,7 +3255,8 @@ image.</p><p>See Also: -applicationIconImage</p>
  */
 - (void) replyToApplicationShouldTerminate: (BOOL)shouldTerminate
 {
-  if (shouldTerminate)
+  // Prevent cycles in terminate: call.
+  if (shouldTerminate && _app_is_running)
     {
       [nc postNotificationName: NSApplicationWillTerminateNotification
 	  object: self];
@@ -3134,25 +3276,30 @@ image.</p><p>See Also: -applicationIconImage</p>
 		    userInfo: [self _notificationUserInfo]];
 
       /* Destroy the main run loop pool (this also destroys any nested
-	 pools which might have been created inside this one).  */
+         pools which might have been created inside this one).  */
       DESTROY (_runLoopPool);
 
       /* Now free the NSApplication object.  Enclose the operation
-	 into an autorelease pool, in case some -dealloc method needs
-	 to use any temporary object.  */
+         into an autorelease pool, in case some -dealloc method needs
+         to use any temporary object.  */
       {
-	NSAutoreleasePool *pool;
+        NSAutoreleasePool *pool;
 	
-	IF_NO_GC(pool = [arpClass new]);
+        IF_NO_GC(pool = [arpClass new]);
 
-	DESTROY(NSApp);
+        DESTROY(NSApp);
 
-	DESTROY(pool);
+        DESTROY(pool);
       }
 
       /* And finally, stop the program.  */
       exit(0);
     }
+}
+
+- (void) replyToOpenOrPrint: (NSApplicationDelegateReply)reply
+{
+  // FIXME
 }
 
 /**
@@ -3497,145 +3644,43 @@ image.</p><p>See Also: -applicationIconImage</p>
 
 - (void) _windowWillClose: (NSNotification*) notification
 {
-  NSWindow		*win = [notification object];
-  NSArray		*windows_list = GSOrderedWindows();
-  unsigned		count = [windows_list count];
-  unsigned		i;
-  NSMutableArray	*list = [NSMutableArray arrayWithCapacity: count];
-  BOOL			wasKey = [win isKeyWindow];
-  BOOL			wasMain = [win isMainWindow];
-  NSEnumerator 		*iter = [windows_list objectEnumerator];
-  NSWindow		*tmp;
-
-  while ((tmp = [iter nextObject]))
-    {
-      if ([tmp canBecomeMainWindow] == YES && [tmp isVisible] == YES)
-	{
-	  [list addObject: tmp];
-	}
-    }
-  [list removeObjectIdenticalTo: win];
-  count = [list count];
-  
-  /* If there's only one window left, and that's the one being closed, 
-     then we ask the delegate if the app is to be terminated. */
-  if (wasMain && count == 0 && _app_is_running)
-    {
-      if ([_delegate respondsToSelector:
-	@selector(applicationShouldTerminateAfterLastWindowClosed:)])
-	{
-	  if ([_delegate applicationShouldTerminateAfterLastWindowClosed: self])
-	    {
-	      [self terminate: self];
-	    }
-	}
-    }
-
-  if (wasMain == YES)
-    {
-      [win resignMainWindow];
-    }
-  if (wasKey == YES)
-    {
-      [win resignKeyWindow];
-    }
+  NSWindow *win = [notification object];
+  BOOL wasMain = [win isMainWindow];
 
   if (_app_is_running)
     {
-      /*
-       * If we are not quitting, we may need to find a new key/main window.
-       */
-      if (wasKey == YES && [self keyWindow] == nil)
-	{
-	  win = [self mainWindow];
-	  if (win != nil && [win canBecomeKeyWindow] == YES)
-	    {
-	      /*
-	       * We have a main window that can become key, so do it.
-	       */
-	      [win makeKeyAndOrderFront: self];
-	    }
-	  else if (win != nil)
-	    {
-	      /*
-	       * We have a main window that can't become key, so we just
-	       * find a new window to make into our key window.
-	       */
-	      for (i = 0; i < count; i++)
-		{
-		  win = [list objectAtIndex: i];
+      NSArray *windows_list = GSOrderedWindows();
+      unsigned count = [windows_list count];
+      NSEnumerator *iter = [windows_list objectEnumerator];
+      NSMutableArray *list = [NSMutableArray arrayWithCapacity: count];
+      NSWindow *tmp;
 
-		  if ([win canBecomeKeyWindow] == YES)
-		    {
-		      [win makeKeyAndOrderFront: self];
-		    }
-		}
-	    }
-	  else
-	    {
-	      /*
-	       * Find a window that can be made key and main - and do it.
-	       */
-	      for (i = 0; i < count; i++)
-		{
-		  win = [list objectAtIndex: i];
-		  if ([win canBecomeKeyWindow] && [win canBecomeMainWindow])
-		    {
-		      break;
-		    }
-		}
-	      if (i < count)
-		{
-		  [win makeMainWindow];
-		  [win makeKeyAndOrderFront: self];
-		}
-	      else
-		{
-		  /*
-		   * No window we can use, so just find any candidate to
-		   * be main window and another to be key window.
-		   */
-		  for (i = 0; i < count; i++)
-		    {
-		      win = [list objectAtIndex: i];
-		      if ([win canBecomeMainWindow] == YES)
-			{
-			  [win makeMainWindow];
-			  break;
-			}
-		    }
-		  for (i = 0; i < count; i++)
-		    {
-		      win = [list objectAtIndex: i];
-		      if ([win canBecomeKeyWindow] == YES)
-			{
-			  [win makeKeyAndOrderFront: self];
-			  break;
-			}
-		    }
-		}
-	    }
-	}
-      else if ([self mainWindow] == nil)
-	{
-	  win = [self keyWindow];
-	  if ([win canBecomeMainWindow] == YES)
-	    {
-	      [win makeMainWindow];
-	    }
-	  else
-	    {
-	      for (i = 0; i < count; i++)
-		{
-		  win = [list objectAtIndex: i];
-		  if ([win canBecomeMainWindow] == YES)
-		    {
-		      [win makeMainWindow];
-		      break;
-		    }
-		}
-	    }
-	}
+      /* FIXME: Why are non-visible windows not counted? When there are
+         minimized windows left over, this would still terminate the application.
+      */
+      while ((tmp = [iter nextObject]))
+        {
+          if ([tmp canBecomeMainWindow] == YES && [tmp isVisible] == YES)
+            {
+              [list addObject: tmp];
+            }
+        }
+      [list removeObjectIdenticalTo: win];
+      count = [list count];
+  
+      /* If there's only one window left, and that's the one being closed, 
+         then we ask the delegate if the app is to be terminated. */
+      if (wasMain && count == 0)
+        {
+          if ([_delegate respondsToSelector:
+                             @selector(applicationShouldTerminateAfterLastWindowClosed:)])
+            {
+              if ([_delegate applicationShouldTerminateAfterLastWindowClosed: self])
+                {
+                  [self terminate: self];
+                }
+            }
+        }
     }
 }
 

@@ -12,19 +12,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 #include "config.h"
@@ -40,6 +41,7 @@
 
 #include "AppKit/NSColor.h"
 #include "AppKit/NSColorList.h"
+#include "AppKit/NSColorSpace.h"
 #include "AppKit/NSPasteboard.h"
 #include "AppKit/NSView.h"
 #include "AppKit/NSImage.h"
@@ -485,8 +487,24 @@ systemColorWithName(NSString *name)
 
 + (NSColor*) colorForControlTint: (NSControlTint)controlTint
 {
-  // TODO
-  return nil;
+ 	switch (controlTint)
+		{
+      default:
+      case NSDefaultControlTint: 
+        return [self colorForControlTint: [self currentControlTint]];
+      case NSGraphiteControlTint:
+        // FIXME
+      case NSClearControlTint:
+        // FIXME
+      case NSBlueControlTint:
+        return [NSColor blueColor];
+		}
+}
+
++ (NSControlTint) currentControlTint;
+{
+	// FIXME: should be made a system setting
+	return NSBlueControlTint;
 }
 
 + (NSColor*) colorWithPatternImage: (NSImage*)image
@@ -1143,6 +1161,77 @@ systemColorWithName(NSString *name)
   return nil;
 }
 
++ (NSColor *) colorWithColorSpace: (NSColorSpace *)space
+                       components: (const float *)comp
+                            count: (int)number
+{
+  // FIXME
+  if (space == [NSColorSpace deviceRGBColorSpace] && (number == 4)) 
+    {
+      return [self colorWithDeviceRed: comp[0]
+                   green: comp[1]
+                   blue: comp[2]
+                   alpha: comp[3]];
+    }
+  if (space == [NSColorSpace deviceGrayColorSpace] && (number == 2)) 
+    {
+      return [NSColor colorWithDeviceWhite: comp[0] alpha: comp[1]];
+    }
+  if (space == [NSColorSpace deviceCMYKColorSpace] && (number == 5)) 
+    {
+      return [NSColor colorWithDeviceCyan: comp[0] 
+                      magenta: comp[1]
+                      yellow: comp[2] 
+                      black: comp[3] 
+                      alpha: comp[4]];
+    }
+
+	return nil;
+}
+				
+/*
+  FIXME: This method does it the wrong way around. We should store the
+  actual colour space and get the colour space name from there.
+*/
+- (NSColorSpace *) colorSpace
+{
+  NSString *name = [self colorSpaceName];
+
+	if ([name isEqualToString: NSCalibratedRGBColorSpace])
+    return [NSColorSpace genericRGBColorSpace];
+	if ([name isEqualToString: NSDeviceRGBColorSpace])
+    return [NSColorSpace deviceRGBColorSpace];
+	if ([name isEqualToString: NSCalibratedBlackColorSpace]
+      || [name isEqualToString: NSCalibratedWhiteColorSpace])
+    return [NSColorSpace genericGrayColorSpace];
+	if ([name isEqualToString: NSDeviceBlackColorSpace]
+      || [name isEqualToString: NSDeviceWhiteColorSpace])
+    return [NSColorSpace deviceGrayColorSpace];
+	if ([name isEqualToString: NSDeviceCMYKColorSpace])
+    return [NSColorSpace deviceCMYKColorSpace];
+
+	return nil;
+}
+
+- (NSColor *) colorUsingColorSpace: (NSColorSpace *)space
+{
+  // FIXME
+	return nil;
+}
+
+- (int) numberOfComponents
+{
+  [NSException raise: NSInternalInconsistencyException
+    format: @"Called numberOfComponents on non-standard colour"];
+  return 0;
+}
+
+- (void) getComponents: (float *)components
+{
+  [NSException raise: NSInternalInconsistencyException
+    format: @"Called getComponents: on non-standard colour"];
+}
+
 //
 // Changing the Color
 //
@@ -1223,6 +1312,16 @@ systemColorWithName(NSString *name)
 {
   // This is here to keep old code working
   [[self colorUsingColorSpaceName: NSDeviceRGBColorSpace] set];
+}
+
+- (void) setFill
+{
+  [[self colorUsingColorSpaceName: NSDeviceRGBColorSpace] setFill];
+}
+
+- (void) setStroke
+{
+  [[self colorUsingColorSpaceName: NSDeviceRGBColorSpace] setStroke];
 }
 
 //
@@ -1875,6 +1974,17 @@ systemColorWithName(NSString *name)
   return _white_component;
 }
 
+- (void) getComponents: (float *)components;
+{
+  components[0] = _white_component;
+  components[1] = _alpha_component;
+}
+
+- (int) numberOfComponents
+{
+  return 2;
+}
+
 - (NSString*) description
 {
   NSMutableString *desc;
@@ -2160,6 +2270,20 @@ systemColorWithName(NSString *name)
   return _yellow_component;
 }
 
+- (void) getComponents: (float *)components;
+{
+  components[0] = _cyan_component;
+  components[1] = _magenta_component;
+  components[2] = _yellow_component;
+  components[3] = _black_component;
+  components[4] = _alpha_component;
+}
+
+- (int) numberOfComponents
+{
+  return 5;
+}
+
 - (NSString*) description
 {
   NSMutableString *desc;
@@ -2399,6 +2523,19 @@ systemColorWithName(NSString *name)
   return _brightness_component;
 }
 
+- (void) getComponents: (float *)components;
+{
+  components[0] = _red_component;
+  components[1] = _green_component;
+  components[2] = _blue_component;
+  components[4] = _alpha_component;
+}
+
+- (int) numberOfComponents
+{
+	return 4;
+}
+
 - (void) getHue: (float*)hue
      saturation: (float*)saturation
      brightness: (float*)brightness
@@ -2574,6 +2711,28 @@ systemColorWithName(NSString *name)
 		_blue_component);
   // Should we check the ignore flag here?
   PSsetalpha(_alpha_component);
+}
+
+- (void) setFill
+{
+  int num = [self numberOfComponents];
+  float values[num];
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  
+  [ctxt GSSetFillColorspace: [self colorSpace]];
+  [self getComponents: values];
+  [ctxt GSSetFillColor: values];
+}
+
+- (void) setStroke
+{
+  int num = [self numberOfComponents];
+  float values[num];
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  
+  [ctxt GSSetStrokeColorspace: [self colorSpace]];
+  [self getComponents: values];
+  [ctxt GSSetStrokeColor: values];
 }
 
 //

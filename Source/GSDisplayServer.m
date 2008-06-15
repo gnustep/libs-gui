@@ -10,23 +10,25 @@
    This file is part of the GNU Objective C User interface library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
-   
-   You should have received a copy of the GNU Library General Public
-   License along with this library; if not, write to the Free
-   Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02111 USA.
-   */
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
+*/
 
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDictionary.h>
+#include <Foundation/NSEnumerator.h>
 #include <Foundation/NSData.h>
 #include <Foundation/NSLock.h>
 #include <Foundation/NSRunLoop.h>
@@ -606,6 +608,15 @@ GSCurrentServer(void)
     than this may need to be exchanged. */
 - (void) windowdevice: (int) win
 {
+  [self setWindowdevice: win forContext: GSCurrentContext()];
+}
+
+/** Sets the window device information for the NSGraphicsContext,
+    typically by calling [NSGraphicsContext-GSSetDevice:::],
+    although depending on the concrete implmentation, more information
+    than this may need to be exchanged. */
+- (void) setWindowdevice: (int)win forContext: (NSGraphicsContext *)ctxt
+{
   [self subclassResponsibility: _cmd];
 }
 
@@ -794,6 +805,12 @@ GSCurrentServer(void)
 
 /** Sets the transparancy value for the whole window */
 - (void) setalpha: (float)alpha: (int) win
+{
+  //[self subclassResponsibility: _cmd];
+}
+
+/** Sets the window shadow */
+- (void) setShadow: (BOOL)hasShadow : (int)win
 {
   //[self subclassResponsibility: _cmd];
 }

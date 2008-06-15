@@ -11,19 +11,19 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor,
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
    Boston, MA 02110-1301, USA.
 */ 
 
@@ -41,11 +41,20 @@
 @class NSScroller;
 //@class NSBox;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+typedef enum _NSBrowserColumnResizingType
+{
+  NSBrowserNoColumnResizing,
+  NSBrowserAutoColumnResizing,
+  NSBrowserUserColumnResizing
+} NSBrowserColumnResizingType;
+#endif
+
 @interface NSBrowser : NSControl <NSCoding>
 {
   // Attributes
-  id _browserCellPrototype;
-  id _browserMatrixClass;
+  NSCell *_browserCellPrototype;
+  Class _browserMatrixClass;
   NSString *_pathSeparator;
   
   //NSBox *_horizontalScrollerBox;
@@ -67,6 +76,7 @@
   BOOL _sendsActionOnArrowKeys;
   BOOL _acceptsAlphaNumericalKeys;
   BOOL _sendsActionOnAlphaNumericalKeys;
+  BOOL _prefersAllColumnUserResizing;
 
   BOOL _passiveDelegate;
   id _browserDelegate;
@@ -82,6 +92,8 @@
   int _lastColumnLoaded;
   int _firstVisibleColumn;
   int _lastVisibleColumn;
+  NSString *_columnsAutosaveName;
+	NSBrowserColumnResizingType _columnResizing;
 }
 
 //
@@ -148,6 +160,10 @@
 - (void) setMaxVisibleColumns: (int)columnCount;
 - (void) setMinColumnWidth: (int)columnWidth;
 - (void) setSeparatesColumns: (BOOL)flag;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (float) columnWidthForColumnContentWidth: (float)columnContentWidth;
+- (float) columnContentWidthForColumnWidth: (float)columnWidth;
+#endif
 
 //
 // Manipulating Columns 
@@ -233,6 +249,24 @@
 //
 - (void) tile;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+//
+// Resizing
+//
+- (NSBrowserColumnResizingType) columnResizingType;
+- (void) setColumnResizingType:(NSBrowserColumnResizingType) type;
+- (BOOL) prefersAllColumnUserResizing;
+- (void) setPrefersAllColumnUserResizing: (BOOL)flag;
+- (float) widthOfColumn: (int)column;
+- (void) setWidth: (float)columnWidth ofColumn: (int)columnIndex;
+
+//
+// Autosave names
+//
++ (void) removeSavedColumnsWithAutosaveName: (NSString *)name;
+- (NSString *) columnsAutosaveName;
+- (void) setColumnsAutosaveName: (NSString *)name;
+#endif
 @end
 
 //
@@ -261,12 +295,24 @@
 - (NSString *) browser: (NSBrowser *)sender titleOfColumn: (int)column;
 - (void) browser: (NSBrowser *)sender
  willDisplayCell: (id)cell
-	   atRow: (int)row
-	  column: (int)column;
+           atRow: (int)row
+          column: (int)column;
 - (void) browserDidScroll: (NSBrowser *)sender;
 - (void) browserWillScroll: (NSBrowser *)sender;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (float) browser: (NSBrowser *)browser
+ shouldSizeColumn: (int)column
+    forUserResize: (BOOL)flag
+          toWidth: (float)width;
+- (float) browser: (NSBrowser *)browser
+sizeToFitWidthOfColumn: (int)column;
+- (void) browserColumnConfigurationDidChange: (NSNotification *)notification;
+#endif
 @end
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+APPKIT_EXPORT NSString *NSBrowserColumnConfigurationDidChangeNotification;
+#endif
 
 #endif // _GNUstep_H_NSBrowser

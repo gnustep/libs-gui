@@ -12,19 +12,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 #include <Foundation/NSArray.h>
@@ -176,13 +177,27 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
   if (_recent_documents)
     {
       int i, count;
+
       _recent_documents = [_recent_documents mutableCopy];
       count = [_recent_documents count];
       for (i = 0; i < count; i++)
 	{
+          NSString *str;
 	  NSURL *url;
-	  url = [NSURL URLWithString: [_recent_documents objectAtIndex: i]];
-	  [_recent_documents replaceObjectAtIndex: i withObject: url];
+
+	  str = [_recent_documents objectAtIndex: i];
+	  url = [NSURL URLWithString: str];
+          if (url == nil)
+            {
+              NSLog(@"NSRecentItems value '%@' is not valid ... ignored", str);
+              [_recent_documents removeObjectAtIndex: i];
+              i--;
+              count--;
+            }
+          else
+            {
+              [_recent_documents replaceObjectAtIndex: i withObject: url];
+            }
 	}
     } 
   else
@@ -990,7 +1005,10 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
 }
 
 // The number of remembered recent documents
-#define MAX_DOCS 5
+- (unsigned int) maximumRecentDocumentCount
+{
+  return 5;
+}
 
 - (void) noteNewRecentDocument: (NSDocument *)aDocument
 {
@@ -1011,7 +1029,7 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
       // Always keep the current object at the end of the list
       [_recent_documents removeObjectAtIndex: index];
     }
-  else if ([_recent_documents count] > MAX_DOCS)
+  else if ([_recent_documents count] > [self maximumRecentDocumentCount])
     {
       [_recent_documents removeObjectAtIndex: 0];
     }

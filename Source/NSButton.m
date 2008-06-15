@@ -11,27 +11,29 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 #include "config.h"
 
-#include "AppKit/NSButton.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/NSButtonCell.h"
 #include "AppKit/NSApplication.h"
+#include "AppKit/NSButton.h"
+#include "AppKit/NSButtonCell.h"
+#include "AppKit/NSEvent.h"
+#include "AppKit/NSWindow.h"
 
 //
 // class variables
@@ -76,6 +78,11 @@ static id buttonCellClass = nil;
 //
 
 - (BOOL) acceptsFirstMouse: (NSEvent *)theEvent
+{
+  return YES;
+}
+
+- (BOOL) isFlipped
 {
   return YES;
 }
@@ -471,19 +478,19 @@ static id buttonCellClass = nil;
       unichar character = 0;
 
       if ([characters length] > 0)
-	{
-	  character = [characters characterAtIndex: 0];
-	}
+        {
+          character = [characters characterAtIndex: 0];
+        }
 
       // Handle SPACE or RETURN to perform a click
       if ((character ==  NSNewlineCharacter)
 	  || (character == NSEnterCharacter) 
 	  || (character == NSCarriageReturnCharacter)
 	  || ([characters isEqualToString: @" "]))
-	{
-	  [self performClick: self];
-	  return;
-	}      
+        {
+          [self performClick: self];
+          return;
+        }
     }
   
   [super keyDown: theEvent];
@@ -506,22 +513,23 @@ static id buttonCellClass = nil;
  */
 - (BOOL) performKeyEquivalent: (NSEvent *)anEvent
 {
-  NSWindow	*w = [self window];
+  NSWindow *w = [self window];
+  NSWindow *mw = [NSApp modalWindow];
 
-  if ([self isEnabled] && ([w worksWhenModal] || [NSApp modalWindow] == w))
+  if ([self isEnabled] && (mw == nil || [w worksWhenModal] || mw == w))
     {
       NSString	*key = [self keyEquivalent];
 
       if (key != nil && [key isEqual: [anEvent charactersIgnoringModifiers]])
-	{
-	  unsigned int	mask = [self keyEquivalentModifierMask];
+        {
+          unsigned int	mask = [self keyEquivalentModifierMask];
 
-	  if (([anEvent modifierFlags] & mask) == mask)
-	    {
-	      [self performClick: self];
-	      return YES;
-	    }
-	}
+          if (([anEvent modifierFlags] & mask) == mask)
+            {
+              [self performClick: self];
+              return YES;
+            }
+        }
     }
   return NO;
 }

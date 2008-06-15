@@ -13,21 +13,22 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor,
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
    Boston, MA 02110-1301, USA.
 */ 
+
 #ifndef _GNUstep_H_NSParagraphStyle
 #define _GNUstep_H_NSParagraphStyle
 #import <GNUstepBase/GSVersionMacros.h>
@@ -56,18 +57,37 @@ typedef enum _NSWritingDirection {
     NSWritingDirectionRightToLeft
 } NSWritingDirection;
 
-@interface NSTextTab : NSObject <NSCopying>
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+APPKIT_EXPORT NSString *NSTabColumnTerminatorsAttributeName; 
+#endif
+
+@interface NSTextTab : NSObject <NSCopying, NSCoding>
 {
   NSTextTabType	_tabStopType;
+	NSDictionary *_options;
+	NSTextAlignment _alignment;
   float		_location;
 }
+
 - (id) initWithType: (NSTextTabType)type  location: (float)loc;
 - (float) location;
 - (NSTextTabType) tabStopType;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (id) initWithTextAlignment: (NSTextAlignment)align 
+                    location: (float)loc 
+                     options: (NSDictionary *)options;
+- (NSTextAlignment) alignment;
+- (NSDictionary *) options;
+#endif
+
 @end
 
 @interface NSParagraphStyle : NSObject <NSCopying, NSMutableCopying, NSCoding>
 {
+  NSMutableArray *_tabStops;
+	NSArray *_textBlocks;
+	NSArray *_textLists;
   float _lineSpacing;
   float _paragraphSpacing;
   float _headIndent;
@@ -75,10 +95,15 @@ typedef enum _NSWritingDirection {
   float _firstLineHeadIndent;
   float _minimumLineHeight;
   float _maximumLineHeight;
-  NSMutableArray *_tabStops;
+	float _paragraphSpacingBefore;
+	float _defaultTabInterval;
+	float _hyphenationFactor;
+	float _lineHeightMultiple;
+	float _tighteningFactorForTruncation;
   NSTextAlignment _alignment;
   NSLineBreakMode _lineBreakMode;
   NSWritingDirection _baseDirection;
+	int _headerLevel;
 }
 
 + (NSParagraphStyle*) defaultParagraphStyle;
@@ -146,6 +171,18 @@ typedef enum _NSWritingDirection {
 + (NSWritingDirection) defaultWritingDirectionForLanguage: (NSString*) language;
 - (NSWritingDirection) baseWritingDirection;
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (float) defaultTabInterval;
+- (float) lineHeightMultiple;
+- (float) paragraphSpacingBefore;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (int) headerLevel;
+- (float) hyphenationFactor;
+- (NSArray *) textBlocks;
+- (NSArray *) textLists;
+- (float) tighteningFactorForTruncation;
+#endif
 
 @end
 
@@ -170,6 +207,19 @@ typedef enum _NSWritingDirection {
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
 - (void) setBaseWritingDirection: (NSWritingDirection)direction;
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (void) setDefaultTabInterval: (float)interval;
+- (void) setLineHeightMultiple: (float)factor;
+- (void) setParagraphSpacingBefore: (float)spacing;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (void) setHeaderLevel: (int)level;
+- (void) setHyphenationFactor: (float)factor;
+- (void) setTextBlocks: (NSArray *)blocks;
+- (void) setTextLists: (NSArray *)lists;
+- (void) setTighteningFactorForTruncation: (float)factor;
+#endif
+
 @end
 
 #endif // _GNUstep_H_NSParagraphStyle

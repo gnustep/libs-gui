@@ -11,19 +11,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 #include "config.h"
@@ -78,6 +79,8 @@ NSString *GSWindowServerInternalException = @"WindowServerInternal";
 // Application notifications
 NSString *NSApplicationDidBecomeActiveNotification
               = @"ApplicationDidBecomeActive";
+NSString *NSApplicationDidChangeScreenParametersNotification 
+              = @"NSApplicationDidChangeScreenParameters";
 NSString *NSApplicationDidFinishLaunchingNotification
               = @"ApplicationDidFinishLaunching";
 NSString *NSApplicationDidHideNotification = @"ApplicationDidHide";
@@ -102,7 +105,7 @@ NSString *NSImageCompressionFactor = @"NSImageCompressionFactor";
 NSString *NSImageDitherTransparency = @"NSImageDitherTransparency";
 NSString *NSImageRGBColorTable = @"NSImageRGBColorTable";
 NSString *NSImageInterlaced = @"NSImageInterlaced";
-//NSString *NSImageColorSyncProfileData = @"NSImageColorSyncProfileData";  // Mac OS X only
+NSString *NSImageColorSyncProfileData = @"NSImageColorSyncProfileData";  // Mac OS X only
 //NSString *GSImageICCProfileData = @"GSImageICCProfileData";  // if & when GNUstep supports color management
 NSString *NSImageFrameCount = @"NSImageFrameCount";
 NSString *NSImageCurrentFrame = @"NSImageCurrentFrame";
@@ -110,7 +113,10 @@ NSString *NSImageCurrentFrameDuration = @"NSImageCurrentFrameDuration";
 NSString *NSImageLoopCount = @"NSImageLoopCount";
 NSString *NSImageGamma = @"NSImageGamma";
 NSString *NSImageProgressive = @"NSImageProgressive";
-//NSString *NSImageEXIFData = @"NSImageEXIFData";  // No support yet in GNUstep
+NSString *NSImageEXIFData = @"NSImageEXIFData";  // No support yet in GNUstep
+
+// NSBrowser notification
+NSString *NSBrowserColumnConfigurationDidChangeNotification = @"NSBrowserColumnConfigurationDidChange";
 
 // NSColor Global strings
 NSString *NSCalibratedWhiteColorSpace = @"NSCalibratedWhiteColorSpace";
@@ -216,6 +222,31 @@ NSString *NSAFMUnderlineThickness = @"UnderlineThickness";
 NSString *NSAFMVersion = @"Version";
 NSString *NSAFMWeight = @"Weight";
 NSString *NSAFMXHeight = @"XHeight";
+
+// NSFontDescriptor global strings
+NSString *NSFontFamilyAttribute = @"Family";
+NSString *NSFontNameAttribute = @"Name";
+NSString *NSFontFaceAttribute = @"Face";
+NSString *NSFontSizeAttribute = @"Size"; 
+NSString *NSFontVisibleNameAttribute = @"VisibleName"; 
+NSString *NSFontColorAttribute = @"Color";
+NSString *NSFontMatrixAttribute = @"Matrix";
+NSString *NSFontVariationAttribute = @"Variation";
+NSString *NSFontCharacterSetAttribute = @"CharacterSet";
+NSString *NSFontCascadeListAttribute = @"CascadeList";
+NSString *NSFontTraitsAttribute = @"Traits";
+NSString *NSFontFixedAdvanceAttribute = @"FixedAdvance";
+
+NSString *NSFontSymbolicTrait = @"SymbolicTrait";
+NSString *NSFontWeightTrait = @"WeightTrait";
+NSString *NSFontWidthTrait = @"WidthTrait";
+NSString *NSFontSlantTrait = @"SlantTrait";
+
+NSString *NSFontVariationAxisIdentifierKey = @"VariationAxisIdentifier";
+NSString *NSFontVariationAxisMinimumValueKey = @"VariationAxisMinimumValue";
+NSString *NSFontVariationAxisMaximumValueKey = @"VariationAxisMaximumValue";
+NSString *NSFontVariationAxisDefaultValueKey = @"VariationAxisDefaultValue";
+NSString *NSFontVariationAxisNameKey = @"VariationAxisName";
 
 // NSScreen Global device dictionary key strings
 NSString *NSDeviceResolution = @"NSDeviceResolution";
@@ -340,6 +371,8 @@ NSString *NSTextViewDidChangeSelectionNotification =
 @"NSTextViewDidChangeSelectionNotification";
 NSString *NSTextViewWillChangeNotifyingTextViewNotification =
 @"NSTextViewWillChangeNotifyingTextViewNotification";
+NSString *NSTextViewDidChangeTypingAttributesNotification =
+@"NSTextViewDidChangeTypingAttributesNotification";
 
 // NSView notifications
 NSString *NSViewFocusDidChangeNotification
@@ -380,7 +413,9 @@ NSString *NSOutlineViewItemWillCollapseNotification = @"OutlineViewItemWillColla
 NSString *NSWindowDidBecomeKeyNotification = @"WindowDidBecomeKey";
 NSString *NSWindowDidBecomeMainNotification = @"WindowDidBecomeMain";
 NSString *NSWindowDidChangeScreenNotification = @"WindowDidChangeScreen";
+NSString *NSWindowDidChangeScreenProfileNotification = @"NSWindowDidChangeScreenProfile";
 NSString *NSWindowDidDeminiaturizeNotification = @"WindowDidDeminiaturize";
+NSString *NSWindowDidEndSheetNotification = @"NSWindowDidEndSheet";
 NSString *NSWindowDidExposeNotification = @"WindowDidExpose";
 NSString *NSWindowDidMiniaturizeNotification = @"WindowDidMiniaturize";
 NSString *NSWindowDidMoveNotification = @"WindowDidMove";
@@ -388,6 +423,7 @@ NSString *NSWindowDidResignKeyNotification = @"WindowDidResignKey";
 NSString *NSWindowDidResignMainNotification = @"WindowDidResignMain";
 NSString *NSWindowDidResizeNotification = @"WindowDidResize";
 NSString *NSWindowDidUpdateNotification = @"WindowDidUpdate";
+NSString *NSWindowWillBeginSheetNotification = @"NSWindowWillBeginSheet";
 NSString *NSWindowWillCloseNotification = @"WindowWillClose";
 NSString *NSWindowWillMiniaturizeNotification = @"WindowWillMiniaturize";
 NSString *NSWindowWillMoveNotification = @"WindowWillMove";
@@ -453,6 +489,62 @@ NSString *NSToolTipAttributeName = @"NSToolTipAttributeName";
 NSString *NSUnderlineColorAttributeName = @"NSUnderlineColorAttributeName";
 NSString *NSUnderlineStyleAttributeName = @"NSUnderlineStyleAttributeName";
 
+NSString *NSCharacterShapeAttributeName = @"CharacterShape";
+NSString *NSGlyphInfoAttributeName = @"GlyphInfo";
+
+NSString *NSPaperSizeDocumentAttribute = @"PaperSize";
+NSString *NSLeftMarginDocumentAttribute = @"LeftMargin";
+NSString *NSRightMarginDocumentAttribute = @"RightMargin";
+NSString *NSTopMarginDocumentAttribute = @"TopMargin";
+NSString *NSBottomMarginDocumentAttribute = @"BottomMargin";
+NSString *NSHyphenationFactorDocumentAttribute = @"HyphenationFactor";
+NSString *NSDocumentTypeDocumentAttribute = @"DocumentType";
+NSString *NSCharacterEncodingDocumentAttribute = @"CharacterEncoding";
+NSString *NSViewSizeDocumentAttribute = @"ViewSize";
+NSString *NSViewZoomDocumentAttribute = @"ViewZoom";
+NSString *NSViewModeDocumentAttribute = @"ViewMode";
+NSString *NSBackgroundColorDocumentAttribute = @"BackgroundColor";
+NSString *NSCocoaVersionDocumentAttribute = @"CocoaVersion";
+NSString *NSReadOnlyDocumentAttribute = @"ReadOnly";
+NSString *NSConvertedDocumentAttribute = @"Converted";
+NSString *NSDefaultTabIntervalDocumentAttribute = @"DefaultTabInterval";
+NSString *NSTitleDocumentAttribute = @"Title";
+NSString *NSCompanyDocumentAttribute = @"Company";
+NSString *NSCopyrightDocumentAttribute = @"Copyright";
+NSString *NSSubjectDocumentAttribute = @"Subject";
+NSString *NSAuthorDocumentAttribute = @"Author";
+NSString *NSKeywordsDocumentAttribute = @"Keywords";
+NSString *NSCommentDocumentAttribute = @"Comment";
+NSString *NSEditorDocumentAttribute = @"Editor";
+NSString *NSCreationTimeDocumentAttribute = @"CreationTime";
+NSString *NSModificationTimeDocumentAttribute = @"ModificationTime";
+
+const unsigned NSUnderlineByWordMask = 0x01;
+
+NSString *NSPlainTextDocumentType = @"PlainText";
+NSString *NSRTFTextDocumentType = @"RTF";
+NSString *NSRTFDTextDocumentType = @"RTFD";
+NSString *NSMacSimpleTextDocumentType = @"SimpleText";
+NSString *NSHTMLTextDocumentType = @"HTML";
+NSString *NSDocFormatTextDocumentType = @"Doc";
+NSString *NSWordMLTextDocumentType = @"WordML";
+
+NSString *NSExcludedElementsDocumentAttribute = @"ExcludedElements";
+NSString *NSTextEncodingNameDocumentAttribute = @"TextEncoding";
+NSString *NSPrefixSpacesDocumentAttribute = @"PrefixSpaces";
+
+NSString *NSBaseURLDocumentOption = @"BaseURL";
+NSString *NSCharacterEncodingDocumentOption = @"CharacterEncoding";
+NSString *NSDefaultAttributesDocumentOption = @"DefaultAttributes";
+NSString *NSDocumentTypeDocumentOption = @"DocumentType";
+NSString *NSTextEncodingNameDocumentOption = @"TextEncoding";
+NSString *NSTextSizeMultiplierDocumentOption = @"TextSizeMultiplier";
+NSString *NSTimeoutDocumentOption = @"Timeout";
+NSString *NSWebPreferencesDocumentOption = @"WebPreferences";
+NSString *NSWebResourceLoadDelegateDocumentOption = @"WebResourceLoadDelegate";
+
+// NSTextTab
+NSString *NSTabColumnTerminatorsAttributeName = @"TabColumnTerminatorsAttributeName"; 
 
 // NSToolbar notifications
 NSString *NSToolbarDidRemoveItemNotification = @"NSToolbarDidRemoveItemNotification";
@@ -502,13 +594,49 @@ const NSWindowDepth _GSWindowDepths[7] = { 258, 264, 514, 516, 517, 520, 0 };
 /* End of color functions externs */
 
 // NSKeyValueBinding
-NSString *NSObservedObjectKey = @"NSObservedObjectKey";
-NSString *NSObservedKeyPath = @"NSObservedKeyPath";
-NSString *NSOptionsKey = @"NSOptionsKey";
+NSString *NSObservedObjectKey = @"NSObservedObject";
+NSString *NSObservedKeyPathKey = @"NSObservedKeyPath";
+NSString *NSOptionsKey = @"NSOptions";
+
+NSString *NSAllowsEditingMultipleValuesSelectionBindingOption = @"NSAllowsEditingMultipleValuesSelection";
+NSString *NSAllowsNullArgumentBindingOption = @"NSAllowsNullArgument";
+NSString *NSConditionallySetsEditableBindingOption = @"NSConditionallySetsEditable";
+NSString *NSConditionallySetsEnabledBindingOption = @"NSConditionallySetsEnabled";
+NSString *NSConditionallySetsHiddenBindingOption = @"NSConditionallySetsHidden";
+NSString *NSContinuouslyUpdatesValueBindingOption = @"NSContinuouslyUpdatesValue";
+NSString *NSCreatesSortDescriptorBindingOption = @"NSCreatesSortDescriptor";
+NSString *NSDeletesObjectsOnRemoveBindingsOption = @"NSDeletesObjectsOnRemove";
+NSString *NSDisplayNameBindingOption = @"NSDisplayName";
+NSString *NSDisplayPatternBindingOption = @"NSDisplayPattern";
+NSString *NSHandlesContentAsCompoundValueBindingOption = @"NSHandlesContentAsCompoundValue";
+NSString *NSInsertsNullPlaceholderBindingOption = @"NSInsertsNullPlaceholder";
+NSString *NSInvokesSeparatelyWithArrayObjectsBindingOption = @"NSInvokesSeparatelyWithArrayObjects";
+NSString *NSMultipleValuesPlaceholderBindingOption = @"NSMultipleValuesPlaceholder";
+NSString *NSNoSelectionPlaceholderBindingOption = @"NSNoSelectionPlaceholder";
+NSString *NSNotApplicablePlaceholderBindingOption = @"NSNotApplicablePlaceholder";
+NSString *NSNullPlaceholderBindingOption = @"NSNullPlaceholder";
+NSString *NSPredicateFormatBindingOption = @"NSPredicateFormat";
+NSString *NSRaisesForNotApplicableKeysBindingOption = @"NSRaisesForNotApplicableKeys";
+NSString *NSSelectorNameBindingOption = @"NSSelectorName";
+NSString *NSSelectsAllWhenSettingContentBindingOption = @"NSSelectsAllWhenSettingContent";
+NSString *NSValidatesImmediatelyBindingOption = @"NSValidatesImmediately";
+NSString *NSValueTransformerNameBindingOption = @"NSValueTransformerName";
+NSString *NSValueTransformerBindingOption = @"NSValueTransformer";
+ 
+NSString *NSAlignmentBinding = @"alignment";
+NSString *NSEditableBinding = @"editable";
+NSString *NSEnabledBinding = @"enabled";
+NSString *NSFontBinding = @"font";
+NSString *NSHiddenBinding = @"hidden";
+NSString *NSSelectedIndexBinding = @"selectedIndex";
+NSString *NSTextColorBinding = @"textColor";
+NSString *NSToolTipBinding = @"toolTip";
+NSString *NSValueBinding = @"value";
+
 // FIXME: Need to defined!
-id NSMultipleValuesMarker = nil;
-id NSNoSelectionMarker = nil;
-id NSNotApplicableMarker = nil;
+id NSMultipleValuesMarker = @"NSMultipleValuesMarker";
+id NSNoSelectionMarker = @"NSNoSelectionMarker";
+id NSNotApplicableMarker = @"NSNotApplicableMarker";
 
 
 extern void __objc_gui_force_linking (void);

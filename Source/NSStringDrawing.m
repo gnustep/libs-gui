@@ -14,19 +14,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 #include <math.h>
@@ -487,6 +488,13 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
     }
 }
 
+- (void) drawWithRect:(NSRect)rect
+              options:(NSStringDrawingOptions)options
+{
+  // FIXME: This ignores options
+  [self drawInRect: rect];
+}
+
 - (NSSize) size
 {
   int ci;
@@ -497,6 +505,21 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
   useful way and ignore indents.
   */
   return cache[ci].usedRect.size;
+}
+
+- (NSRect) boundingRectWithSize: (NSSize)size
+                        options: (NSStringDrawingOptions)options
+{
+  int ci;
+
+  // FIXME: This ignores options
+  ci = cache_lookup_attributed_string(self, 1, size, 1);
+  /*
+  An argument could be made for using NSMaxX/NSMaxY here, but that fails
+  horribly on right-aligned strings. For now, we handle that case in a
+  useful way and ignore indents.
+  */
+  return cache[ci].usedRect;
 }
 
 @end
@@ -614,6 +637,14 @@ NSAttributedString to do the job.
     }
 }
 
+- (void) drawWithRect: (NSRect)rect
+              options: (NSStringDrawingOptions)options
+           attributes: (NSDictionary *)attributes
+{
+  // FIXME: This ignores options
+  [self drawInRect: rect withAttributes: attributes];
+}
+
 - (NSSize) sizeWithAttributes: (NSDictionary *)attrs
 {
   int ci;
@@ -624,6 +655,22 @@ NSAttributedString to do the job.
   we handle that case in a useful way and ignore indents.
   */
   return cache[ci].usedRect.size;
+}
+
+- (NSRect) boundingRectWithSize: (NSSize)size
+                        options: (NSStringDrawingOptions)options
+                     attributes: (NSDictionary *)attributes
+{
+  int ci;
+
+  // FIXME: This ignores options
+  ci = cache_lookup_string(self, attributes, 1, size, 1);
+  /*
+  An argument could be made for using NSMaxX/NSMaxY here, but that fails
+  horribly on right-aligned strings (which may be the right thing). For now,
+  we handle that case in a useful way and ignore indents.
+  */
+  return cache[ci].usedRect;
 }
 
 @end

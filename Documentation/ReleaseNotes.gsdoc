@@ -20,6 +20,141 @@
 	migrate to using a newer version of the library.
       </p>
       <section>
+      	<heading>Version 0.14.0</heading>
+	<p>This is an stable release.
+	</p>
+	<deflist>
+            <term>NSGlyphGenerator</term>
+            <desc>
+	      New class for glyph generation (separated from other classes).
+            </desc>
+            <term>NSControl -mouseDownFlags</term>
+            <desc>
+	      Added old NeXT method for compatibility.
+            </desc>
+            <term>NSSplitView</term>
+            <desc>
+	      setAutosaveName: implemented and new instance variable added.
+            </desc>
+            <term>NSOpenGLView</term>
+            <desc>
+	      Added some Mac OS X 10.3 methods.
+            </desc>
+	</deflist>
+      </section>
+       <section>
+      	<heading>Version 0.13.2</heading>
+	<p>This is an unstable release.
+	</p>
+	<deflist>
+            <term>NSPopUpButtonCell</term>
+            <desc>
+	      The encoding of this object was changed (which is backwards compatible,
+	      but not forwards compatible.
+            </desc>
+            <term>NSTextView</term>
+            <desc>
+	      Add new X secondary selection behavior. Other Mac OS X methods added.
+            </desc>
+            <term>NSWindow</term>
+            <desc>
+	      Device interaction with backend has changed. This release of gui
+	      requires the coresponding gnustep-back release 0.13.2.
+            </desc>
+            <term>NSSegmentedCell</term>
+            <desc>
+	      New class added to draw and render text in segments.
+            </desc>
+            <term>NSDrawer</term>
+            <desc>
+	      Implemented.
+            </desc>
+	</deflist>
+      </section>
+      <section>
+      	<heading>Version 0.13.1</heading>
+	<p>This is an unstable release.
+	Changes to error handling and key-value coding require an
+	update to at least the base library version 1.15.1.
+	</p>
+	<deflist>
+            <term>NSMenu</term>
+            <desc>
+	    Added more MacOS X methods and an ivar.
+            </desc>
+            <term>NSView</term>
+            <desc>
+	    Added support for hiding views.
+            </desc>
+            <term>Key-Value bindings</term>
+            <desc>
+	    Added Key-Value bindings implementation (NSKeyValueBinding)
+	    with support in several classes (NSControl, NSTextField, NSView,
+	    etc).
+            </desc>
+            <term>NSTableView</term>
+            <desc>
+	    Added some MacOS X 10.4 methods.
+            </desc>
+            <term>NSCursor</term>
+            <desc>
+	    Changed hot point to 0,0 for MacOS X compatibility.
+            </desc>
+	</deflist>
+      </section>
+      <section>
+      	<heading>Version 0.13.0</heading>
+	<p>This is an unstable release.
+	Changes to error handling and key-value coding require an
+	update to at least the base library version 1.15.1.
+	</p>
+        	  <deflist>
+            	    <term>Licence</term>
+             	    <desc>
+                  Switched to use LGPL 3 and GPL 3.
+             	    </desc>
+                  <term>New Methods added</term>
+                  <desc> 
+                  Added new methods from Mac OS X 10.4 for NSDragging, NSFontDescriptor,
+                  NSAttributedString, NSImageView, NSStringDrawing, NSParagraphStyle,
+                  NSView, NSCell, NSActionCell, NSAlert, NSApplication, NSBitmapImageRep,
+                  NSBox, NSColor, NSColorSpace, NSComboBox, NSComboBoxCell,
+                  NSDocumentController, NSEvent, NSScreen, NSFont, NSFontManager,
+                  NSFormCell, NSForm, NSWindow, NSTextField, NSTextFieldCell. 
+                  Some ivar names were changed also.
+                  </desc>
+            	    <term>Printing</term>
+             	    <desc>
+                  Moved Postscript printing methods from NSView to NSGraphicsContext.
+             	    </desc>
+            	    <term>View drawing</term>
+             	    <desc>
+                  Rewrote the NSView drawing mechanism to always use
+                  [displayRectIgnoringOpacity:inContext].
+             	    </desc>
+            	    <term>Flipped Controls</term>
+             	    <desc>
+                  Report more controls as being flipped. (NSTextField, NSTableHeaderView,
+                  NSSlider, NSProgressIndicator, NSButton) NSTabView is still missing.
+             	    </desc>
+            	    <term>Font Attribute</term>
+             	    <desc>
+                  Add font attribute fixing to NSAttributedString. To allow for the output
+                  of glyphs not present in the current font.
+             	    </desc>
+            	    <term>Optimization</term>
+             	    <desc>
+                  In NSAffineTransform use optimized primitive methods from
+                  base.
+                  Optimized the validation of edited cells.
+             	    </desc>
+            	    <term>Key-Value Binding</term>
+             	    <desc>
+                  Implementation of special connectors for Key-Value binding.
+             	    </desc>
+         	  </deflist>
+      </section>
+      <section>
 	<heading>Version 0.12.0</heading>
 	<p>
 	It has been a long time since the last release and many things

@@ -14,19 +14,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */ 
 
 #include "config.h"
@@ -56,6 +57,7 @@
 #include <Foundation/NSDistributedNotificationCenter.h>
 #include <Foundation/NSConnection.h>
 #include <Foundation/NSDebug.h>
+#include <Foundation/NSProcessInfo.h>
 #include <Foundation/NSThread.h>
 #include <Foundation/NSURL.h>
 #include <Foundation/NSValue.h>
@@ -68,6 +70,12 @@
 #include "AppKit/NSScreen.h"
 #include "GNUstepGUI/GSServicesManager.h"
 #include "GNUstepGUI/GSDisplayServer.h"
+
+/* Private method to check that a process exists.
+ */
+@interface NSProcessInfo (Private)
++ (BOOL)_exists: (int)pid;
+@end
 
 #define PosixExecutePermission	(0111)
 
@@ -495,7 +503,7 @@ static NSDictionary		*applications = nil;
 
 static NSString			*extPrefPath = nil;
 static NSDictionary		*extPreferences = nil;
-// FIXME: Won't work for MINGW
+// FIXME: Won't work for MINGW32
 static NSString			*_rootPath = @"/";
 
 /*
@@ -1413,23 +1421,62 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
  */
 - (NSArray*) launchedApplications
 {
-  id	app;
+  NSArray       *apps = nil;
 
   NS_DURING
     {
+      id	app;
+
       if ((app = [self _workspaceApplication]) != nil)
 	{
-	  NSArray	*result;
-
-	  result = [app launchedApplications];
-	  NS_VALRETURN(result);
+	  apps = [app launchedApplications];
 	}
     }
   NS_HANDLER
-    // workspace manager problem ... fall through to default code
+    {
+      // workspace manager problem ... fall through to default code
+    }
   NS_ENDHANDLER
 
-  return GSLaunched(nil, NO);
+  if (apps == nil)
+    {
+      NSMutableArray    *m;
+      unsigned          count;
+
+      apps = GSLaunched(nil, NO);
+      apps = m = AUTORELEASE([apps mutableCopy]);
+      if ((count = [apps count]) > 0)
+        {
+          if ([NSProcessInfo respondsToSelector: @selector(_exists:)] == YES)
+            {
+              /* Check and remove apps whose pid no longer exists
+               */
+              while (count-- > 0)
+                {
+                  int       pid;
+                  NSString  *name;
+
+                  name = [[apps objectAtIndex: count]
+                    objectForKey: @"NSApplicationName"];
+                  pid = [[[apps objectAtIndex: count]
+                    objectForKey: @"NSApplicationProcessIdentifier"] intValue];
+                  if (pid > 0 && [name length] > 0)
+                    {
+                      if ([NSProcessInfo _exists: pid] == NO)
+                        {
+                          GSLaunched([NSNotification notificationWithName:
+                            NSWorkspaceDidTerminateApplicationNotification
+                            object: self
+                            userInfo: [NSDictionary dictionaryWithObject: name
+                              forKey: @"NSApplicationName"]], NO);
+                          [m removeObjectAtIndex: count];
+                        }
+                    }
+                }
+            }
+        }
+    }
+  return apps;
 }
 
 /*
@@ -1524,7 +1571,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 {
   NSMutableArray	*names;
   NSFileManager		*mgr = [NSFileManager defaultManager];
-#ifdef	__MINGW__
+#if	defined(__MINGW32__)
   unsigned		max = BUFSIZ;
   unichar		buf[max];
   unichar		*base = buf;
@@ -2406,9 +2453,12 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
 - (id) _connectApplication: (NSString*)appName
 {
+  NSTimeInterval        replyTimeout;
+  NSTimeInterval        requestTimeout;
   NSString	*host;
   NSString	*port;
   NSDate	*when = nil;
+  NSConnection  *conn = nil;
   id		app = nil;
 
   while (app == nil)
@@ -2434,12 +2484,17 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
        */
       NS_DURING
 	{
-	  app = [NSConnection rootProxyForConnectionWithRegisteredName: port  
-								  host: host];
+          conn = [NSConnection connectionWithRegisteredName: port host: host];
+          requestTimeout = [conn requestTimeout];
+          [conn setRequestTimeout: 5.0];
+          replyTimeout = [conn replyTimeout];
+          [conn setReplyTimeout: 5.0];
+	  app = [conn rootProxy];
 	}
       NS_HANDLER
 	{
 	  /* Fatal error in DO	*/
+          conn = nil;
 	  app = nil;
 	}
       NS_ENDHANDLER
@@ -2467,9 +2522,9 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	      int		result;
 
 	      DESTROY(when);
-	      result = NSRunAlertPanel(appName,
-		@"Application seems to have hung",
-		@"Continue", @"Terminate", @"Wait");
+              result = NSRunAlertPanel(appName,
+                @"Application seems to have hung",
+                @"Continue", @"Terminate", @"Wait");
 
 	      if (result == NSAlertDefaultReturn)
 		{
@@ -2493,18 +2548,12 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	  RELEASE(limit);
 	}
     }
-  if (app == nil && port != nil && [host isEqual: @""] == YES)
+  if (conn != nil)
     {
-      /*
-       * The application is not running on this host ... fake a termination
-       * notification for it and use that to remove it from the on-disk
-       * list of launched applications.
+      /* Use original timeouts
        */
-      GSLaunched([NSNotification
-	notificationWithName: NSWorkspaceDidTerminateApplicationNotification
-	object: self
-	userInfo: [NSDictionary dictionaryWithObject: port
-	  forKey: @"NSApplicationName"]], NO);
+      [conn setRequestTimeout: requestTimeout];
+      [conn setReplyTimeout: replyTimeout];
     }
   TEST_RELEASE(when);
   return app;

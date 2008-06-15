@@ -11,19 +11,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
-   License along with this library; if not, write to the Free
-   Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02111 USA.
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */ 
 
 #ifndef _GNUstep_H_NSDragging
@@ -35,6 +36,7 @@
 @class NSWindow;
 @class NSPasteboard;
 @class NSImage;
+@class NSURL;
 
 typedef enum _NSDragOperation {
   NSDragOperationNone = 0,
@@ -45,7 +47,7 @@ typedef enum _NSDragOperation {
   NSDragOperationMove = 16,
   NSDragOperationDelete = 32,
   NSDragOperationAll = 63,
-  NSDragOperationEvery = NSDragOperationAll  
+  NSDragOperationEvery = 0xffff  
 } NSDragOperation;
 
 @protocol NSDraggingInfo
@@ -71,6 +73,9 @@ typedef enum _NSDragOperation {
 //
 - (void)slideDraggedImageTo:(NSPoint)screenPoint;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+- (NSArray *)namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination;
+#endif
 @end
 
 @interface NSObject (NSDraggingDestination)
@@ -91,6 +96,8 @@ typedef enum _NSDragOperation {
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void)draggingEnded: (id <NSDraggingInfo>)sender;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 - (BOOL)wantsPeriodicDraggingUpdates;
 #endif
 @end
@@ -115,10 +122,13 @@ typedef enum _NSDragOperation {
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (void)draggedImage: (NSImage*)image
              endedAt: (NSPoint)screenPoint
-	   operation: (NSDragOperation)operation;
+           operation: (NSDragOperation)operation;
 - (void)draggedImage: (NSImage*)image
              movedTo: (NSPoint)screenPoint;
 #endif 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+- (NSArray *)namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination;
+#endif
 @end
 
 #endif // _GNUstep_H_NSDragging

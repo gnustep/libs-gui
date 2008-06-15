@@ -15,19 +15,21 @@
    This file is part of the GNU Objective C User Interface Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
-   
-   You should have received a copy of the GNU Library General Public
-   License along with this library; if not, write to the Free
-   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-   */
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
+*/
 
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSThread.h>
@@ -35,6 +37,8 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSCell.h>
 #include <AppKit/NSCursor.h>
+#include <AppKit/NSEvent.h>
+#include <AppKit/NSGraphics.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSView.h>
@@ -208,6 +212,10 @@ static	GSDragView *sharedDragView = nil;
   return loc;
 }
 
+- (NSArray *)namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination
+{
+  return [[self draggingSource] namesOfPromisedFilesDroppedAtDestination: dropDestination];
+}
 
 - (BOOL) isDragging
 {
@@ -306,25 +314,25 @@ static	GSDragView *sharedDragView = nil;
       NSDragOperation action = [theEvent data2];
 
       if (destExternal)
-	{
+        {
 
-	}
+        }
       else
         {	 
-	  if (action != targetMask)
-	    {
-	      targetMask = action;
-	      [self _setCursor];
-	    }
-	}
+          if (action != targetMask)
+            {
+              targetMask = action;
+              [self _setCursor];
+            }
+        }
     }
 }
 
 - (void) sendExternalEvent: (GSAppKitSubtype)subtype
-		    action: (NSDragOperation)action
-		  position: (NSPoint)eventLocation
-		 timestamp: (NSTimeInterval)time
-		  toWindow: (int)dWindowNumber
+                    action: (NSDragOperation)action
+                  position: (NSPoint)eventLocation
+                 timestamp: (NSTimeInterval)time
+                  toWindow: (int)dWindowNumber
 {
 }
 
@@ -334,7 +342,7 @@ static	GSDragView *sharedDragView = nil;
   set, if there is a native window, but no GNUstep window at this location.
  */
 - (NSWindow*) windowAcceptingDnDunder: (NSPoint)mouseLocation
-			    windowRef: (int*)mouseWindowRef
+                            windowRef: (int*)mouseWindowRef
 {
   int win;
 
@@ -363,8 +371,8 @@ static	GSDragView *sharedDragView = nil;
   - all instance variables pertaining to moving the window are initialized
  */
 - (void) _setupWindowFor: (NSImage*)anImage
-	   mousePosition: (NSPoint)mPoint
-	   imagePosition: (NSPoint)iPoint
+           mousePosition: (NSPoint)mPoint
+           imagePosition: (NSPoint)iPoint
 {
   NSSize	imageSize;
 
@@ -678,21 +686,21 @@ static	GSDragView *sharedDragView = nil;
       [cursorBeforeDrag set];
       NSDebugLLog(@"NSDragging", @"sending dnd drop\n");
       if (!destExternal)
-	{
-	  [self _sendLocalEvent: GSAppKitDraggingDrop
-			 action: 0
-		       position: NSZeroPoint
-		      timestamp: [theEvent timestamp]
-		       toWindow: destWindow];
-	}
+        {
+          [self _sendLocalEvent: GSAppKitDraggingDrop
+                         action: 0
+                       position: NSZeroPoint
+		                  timestamp: [theEvent timestamp]
+                       toWindow: destWindow];
+        }
       else
-	{
-	  [self sendExternalEvent: GSAppKitDraggingDrop
-		           action: 0
-		         position: NSZeroPoint
-		        timestamp: [theEvent timestamp]
-		         toWindow: targetWindowRef];
-	}
+        {
+          [self sendExternalEvent: GSAppKitDraggingDrop
+                           action: 0
+		                     position: NSZeroPoint
+		                    timestamp: [theEvent timestamp]
+		                     toWindow: targetWindowRef];
+        }
       deposited = YES;
     }
   else
@@ -707,7 +715,21 @@ static	GSDragView *sharedDragView = nil;
     }
 
   if ([dragSource respondsToSelector:
-		      @selector(draggedImage:endedAt:deposited:)])
+                      @selector(draggedImage:endedAt:operation:)])
+     {
+       NSPoint point;
+           
+       point = [theEvent locationInWindow];
+       // Convert from mouse cursor coordinate to image coordinate
+       point.x -= offset.width;
+       point.y -= offset.height;
+       point = [[theEvent window] convertBaseToScreen: point];
+       [dragSource draggedImage: [self draggedImage]
+                        endedAt: point
+                      operation: targetMask & dragMask & operationMask];
+     }
+   else if ([dragSource respondsToSelector:
+                            @selector(draggedImage:endedAt:deposited:)])
     {
       NSPoint point;
           
@@ -717,8 +739,8 @@ static	GSDragView *sharedDragView = nil;
       point.y -= offset.height;
       point = [[theEvent window] convertBaseToScreen: point];
       [dragSource draggedImage: [self draggedImage]
-		       endedAt: point
-		     deposited: deposited];
+                       endedAt: point
+                     deposited: deposited];
     }
 }
 
@@ -737,7 +759,7 @@ static	GSDragView *sharedDragView = nil;
         {
         case GSAppKitWindowMoved:
         case GSAppKitWindowResized:
-	case GSAppKitRegionExposed:
+        case GSAppKitRegionExposed:
           /*
            * Keep window up-to-date with its current position.
            */
@@ -763,9 +785,9 @@ static	GSDragView *sharedDragView = nil;
           break;
           
         case GSAppKitWindowFocusIn:
-	case GSAppKitWindowFocusOut:
-	case GSAppKitWindowLeave:
-	case GSAppKitWindowEnter:
+        case GSAppKitWindowFocusOut:
+        case GSAppKitWindowLeave:
+        case GSAppKitWindowEnter:
           break;
 
         default:
@@ -780,29 +802,29 @@ static	GSDragView *sharedDragView = nil;
     case NSLeftMouseDown:
     case NSLeftMouseUp:
       newPosition = [[theEvent window] convertBaseToScreen:
-	[theEvent locationInWindow]];
+                       [theEvent locationInWindow]];
       break;
     case NSFlagsChanged:
       if ([self _updateOperationMask: theEvent])
         {
-	  // If flags change, send update to allow
-	  // destination to take note.
-	  if (destWindow)
+          // If flags change, send update to allow
+          // destination to take note.
+          if (destWindow)
             {
               [self _sendLocalEvent: GSAppKitDraggingUpdate
-		    action: dragMask & operationMask
-		    position: newPosition
-		    timestamp: [theEvent timestamp]
-		    toWindow: destWindow];
-	    }
-	  else
-	    {
+                             action: dragMask & operationMask
+                           position: newPosition
+                          timestamp: [theEvent timestamp]
+                           toWindow: destWindow];
+            }
+          else
+            {
               [self sendExternalEvent: GSAppKitDraggingUpdate
-			       action: dragMask & operationMask
-			      position: newPosition
-			     timestamp: [theEvent timestamp]
-			      toWindow: targetWindowRef];
-	    }
+                               action: dragMask & operationMask
+                             position: newPosition
+                            timestamp: [theEvent timestamp]
+                             toWindow: targetWindowRef];
+            }
           [self _setCursor];
         }
       break;
@@ -836,7 +858,7 @@ static	GSDragView *sharedDragView = nil;
   destWindow = [self windowAcceptingDnDunder: dragPosition
                                    windowRef: &mouseWindowRef];
 
-  // If we have are not hovering above a window that we own
+  // If we are not hovering above a window that we own
   // we are dragging to an external application.
   destExternal = (mouseWindowRef != 0) && (destWindow == nil);
             
@@ -858,18 +880,18 @@ static	GSDragView *sharedDragView = nil;
       if (oldDestWindow != nil)   
         {
           [self _sendLocalEvent: GSAppKitDraggingExit
-			 action: dragMask & operationMask
-		       position: NSZeroPoint
+                         action: dragMask & operationMask
+                       position: NSZeroPoint
                       timestamp: dragSequence
-		       toWindow: oldDestWindow];
+                       toWindow: oldDestWindow];
         }  
       else
         {  
           [self sendExternalEvent: GSAppKitDraggingExit
-		           action: dragMask & operationMask
-		         position: NSZeroPoint
-		        timestamp: dragSequence
-		         toWindow: targetWindowRef];
+                           action: dragMask & operationMask
+                         position: NSZeroPoint
+                        timestamp: dragSequence
+                         toWindow: targetWindowRef];
         }
     }
 
@@ -878,7 +900,7 @@ static	GSDragView *sharedDragView = nil;
     {
       unsigned int newMask;
 
-      newMask = [dragSource draggingSourceOperationMaskForLocal: destExternal];
+      newMask = [dragSource draggingSourceOperationMaskForLocal: !destExternal];
       if (newMask != dragMask)
         {
           dragMask = newMask;
@@ -891,21 +913,22 @@ static	GSDragView *sharedDragView = nil;
       // same window, sending update
       NSDebugLLog(@"NSDragging", @"sending dnd pos\n");
 
+      // FIXME: We should only send this when the destination wantsPeriodicDraggingUpdates
       if (destWindow != nil)
         {
           [self _sendLocalEvent: GSAppKitDraggingUpdate
-			 action: dragMask & operationMask
-		       position: dragPosition
-		      timestamp: dragSequence
-		       toWindow: destWindow];
+                         action: dragMask & operationMask
+                       position: dragPosition
+                      timestamp: dragSequence
+                       toWindow: destWindow];
         }
       else 
         {
-	  [self sendExternalEvent: GSAppKitDraggingUpdate 
-		           action: dragMask & operationMask
-		         position: dragPosition
-		        timestamp: dragSequence
-		         toWindow: targetWindowRef];
+          [self sendExternalEvent: GSAppKitDraggingUpdate 
+                           action: dragMask & operationMask
+                         position: dragPosition
+                        timestamp: dragSequence
+                         toWindow: targetWindowRef];
         }
     }
   else if (mouseWindowRef != 0)
@@ -917,10 +940,10 @@ static	GSDragView *sharedDragView = nil;
       if (destWindow != nil)
         {
           [self _sendLocalEvent: GSAppKitDraggingEnter
-			 action: dragMask
-		       position: dragPosition
-		      timestamp: dragSequence
-		       toWindow: destWindow];
+                         action: dragMask
+                       position: dragPosition
+                      timestamp: dragSequence
+                       toWindow: destWindow];
         }
       else
         {

@@ -9,20 +9,22 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
-   License along with this library; if not, write to the Free
-   Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02111 USA.
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
+
 #ifndef __NSGraphics_h__
 #define __NSGraphics_h__
 #import <GNUstepBase/GSVersionMacros.h>
@@ -163,33 +165,17 @@ APPKIT_EXPORT void NSCopyBitmapFromGState(int srcGstate, NSRect srcRect,
 APPKIT_EXPORT void NSCopyBits(int srcGstate, NSRect srcRect, 
 			      NSPoint destPoint);
 
-static inline void 
-NSDrawBitmap(NSRect rect,
-	     int pixelsWide,
-	     int pixelsHigh,
-	     int bitsPerSample,
-	     int samplesPerPixel,
-	     int bitsPerPixel,
-	     int bytesPerRow,
-	     BOOL isPlanar,
-	     BOOL hasAlpha,
-	     NSString *colorSpaceName,
-	     const unsigned char *const data[5])
-{
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  (ctxt->methods->NSDrawBitmap___________)
-    (ctxt, @selector(NSDrawBitmap: : : : : : : : : : :),  rect,
-     pixelsWide,
-     pixelsHigh,
-     bitsPerSample,
-     samplesPerPixel,
-     bitsPerPixel,
-     bytesPerRow,
-     isPlanar,
-     hasAlpha,
-     colorSpaceName,
-     data);
-    }
+APPKIT_EXPORT void NSDrawBitmap(NSRect rect,
+                                int pixelsWide,
+                                int pixelsHigh,
+                                int bitsPerSample,
+                                int samplesPerPixel,
+                                int bitsPerPixel,
+                                int bytesPerRow,
+                                BOOL isPlanar,
+                                BOOL hasAlpha,
+                                NSString *colorSpaceName,
+                                const unsigned char *const data[5]);
 
 static inline void
 NSBeep(void)

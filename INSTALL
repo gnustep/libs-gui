@@ -13,7 +13,7 @@ and in the gnustep-make package (which you should install first).
 
    You must have installed gnustep-base and gnustep-make before
 building this library. GNUstep Make version 2.0.0 or greater is
-required. GNUstep Base version 1.14.0 or greater is required.
+required. GNUstep Base version 1.15.0 or greater is required.
 
    Other external libraries that you should have installed include:
 

@@ -17,19 +17,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */ 
 
 #include "config.h"
@@ -99,8 +100,8 @@
    the code is supposed to know when it is using window A or B.
    But it will probably only work correctly when
 
-   window A correspond to _transient == NO
-   window B correspond to _transient == YES
+   window A correspond to transient == NO
+   window B correspond to transient == YES
 */
 
 
@@ -117,6 +118,7 @@ static NSZone	*menuZone = NULL;
 static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 static NSString *NSEnqueuedMenuMoveName = @"EnqueuedMoveNotificationName";
 static NSNotificationCenter *nc;
+static BOOL menuBarVisible = YES;
 
 @interface	NSMenu (GNUstepPrivate)
 
@@ -211,13 +213,13 @@ static NSNotificationCenter *nc;
     {
       NSString		*appTitle;
       NSMenu		*appMenu;
-      NSMenuItem	*appItem;
+      id <NSMenuItem>	appItem;
 
       appTitle = [[NSProcessInfo processInfo] processName];
-      appItem = (NSMenuItem *)[self itemWithTitle: appTitle];
+      appItem = [self itemWithTitle: appTitle];
       appMenu = [appItem submenu];
 
-      if (_horizontal == YES)
+      if (_menu.horizontal == YES)
 	{
 	  NSMutableArray	*itemsToMove;
 	  NSImage		*ti;
@@ -339,7 +341,7 @@ static NSNotificationCenter *nc;
 {
   NSPoint        origin;
 
-  if (_horizontal == YES)
+  if (_menu.horizontal == YES)
     {
       origin = NSMakePoint (0, [[NSScreen mainScreen] frame].size.height
 	- [_aWindow frame].size.height);
@@ -385,7 +387,7 @@ static NSNotificationCenter *nc;
 */
 - (void) _updateUserDefaults: (id) notification
 {
-  if (_horizontal == NO)
+  if (_menu.horizontal == NO)
     {
       NSString *key;
 
@@ -436,7 +438,7 @@ static NSNotificationCenter *nc;
 
 - (void) _rightMouseDisplay: (NSEvent*)theEvent
 {
-  if (_horizontal == NO)
+  if (_menu.horizontal == NO)
     {
       [self displayTransient];
       [_view mouseDown: theEvent];
@@ -470,6 +472,16 @@ static NSNotificationCenter *nc;
 + (NSZone*) menuZone
 {
   return menuZone;
+}
+
++ (BOOL) menuBarVisible
+{
+  return menuBarVisible;
+}
+
++ (void) setMenuBarVisible: (BOOL)flag
+{
+  menuBarVisible = flag;
 }
 
 /*
@@ -513,11 +525,11 @@ static NSNotificationCenter *nc;
   // Create an array to store our menu items.
   _items = [[NSMutableArray alloc] init];
 
-  _changedMessagesEnabled = YES;
+  _menu.changedMessagesEnabled = YES;
   _notifications = [[NSMutableArray alloc] init];
-  _needsSizing = YES;
+  _menu.needsSizing = YES;
   // According to the spec, menus do autoenable by default.
-  _autoenable = YES;
+  _menu.autoenable = YES;
 
 
   /* Please note that we own all this menu network of objects.  So, 
@@ -591,7 +603,7 @@ static NSNotificationCenter *nc;
     }
   
   [_items insertObject: newItem atIndex: index];
-  _needsSizing = YES;
+  _menu.needsSizing = YES;
   
   // Create the notification for the menu representation.
   d = [NSDictionary
@@ -602,7 +614,7 @@ static NSNotificationCenter *nc;
 		 object: self
 		 userInfo: d];
   
-  if (_changedMessagesEnabled)
+  if (_menu.changedMessagesEnabled)
     [nc postNotification: inserted];
   else
     [_notifications addObject: inserted];
@@ -663,7 +675,7 @@ static NSNotificationCenter *nc;
 
   [anItem setMenu: nil];
   [_items removeObjectAtIndex: index];
-  _needsSizing = YES;
+  _menu.needsSizing = YES;
   
   d = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt: index]
 		    forKey: @"NSMenuItemIndex"];
@@ -672,7 +684,7 @@ static NSNotificationCenter *nc;
 		object: self
 		userInfo: d];
   
-  if (_changedMessagesEnabled)
+  if (_menu.changedMessagesEnabled)
     [nc postNotification: removed];
   else
     [_notifications addObject: removed];
@@ -687,7 +699,7 @@ static NSNotificationCenter *nc;
   if (-1 == index)
     return;
 
-  _needsSizing = YES;
+  _menu.needsSizing = YES;
 
   d = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt: index]
 		    forKey: @"NSMenuItemIndex"];
@@ -696,7 +708,7 @@ static NSNotificationCenter *nc;
 	                    object: self
 	                  userInfo: d];
 
-  if (_changedMessagesEnabled)
+  if (_menu.changedMessagesEnabled)
     [nc postNotification: changed];
   else
     [_notifications addObject: changed];
@@ -864,8 +876,8 @@ static NSNotificationCenter *nc;
 
 - (NSMenu *) attachedMenu
 {
-  if (_attachedMenu && _transient
-      && !_attachedMenu->_transient)
+  if (_attachedMenu && _menu.transient
+      && !_attachedMenu->_menu.transient)
     return nil;
 
   return _attachedMenu;
@@ -894,7 +906,7 @@ static NSNotificationCenter *nc;
 
 - (BOOL) isTornOff
 {
-  return _is_tornoff;
+  return _menu.is_tornoff;
 }
 
 - (NSPoint) locationForSubmenu: (NSMenu*)aSubmenu
@@ -918,18 +930,60 @@ static NSNotificationCenter *nc;
 //
 - (void) setAutoenablesItems: (BOOL)flag
 {
-  _autoenable = flag;
+  _menu.autoenable = flag;
 }
 
 - (BOOL) autoenablesItems
 {
-  return _autoenable;
+  return _menu.autoenable;
 }
 
 - (void) update
 {
+  if (_delegate)
+    {
+      if ([_delegate respondsToSelector:@selector(menuNeedsUpdate:)])
+        {
+          [_delegate menuNeedsUpdate:self];
+        }
+      else if ([_delegate respondsToSelector:@selector(numberOfItemsInMenu:)])
+        {
+          int num;
+
+          num = [_delegate numberOfItemsInMenu: self];
+          if (num > 0)
+            {
+              BOOL cont = YES;
+              int i = 0;
+              int curr = [self numberOfItems];
+
+              while (num < curr)
+                {
+                  [self removeItemAtIndex: --curr];
+                }
+              while (num > curr)
+                {
+                  [self insertItemWithTitle: @"" 
+                        action: NULL
+                        keyEquivalent: @"" 
+                        atIndex: curr++];
+                }
+
+              // FIXME: Should only process the items we display
+              while (cont && i < num)
+                {
+                  cont = [_delegate menu: self
+                                    updateItem: [self itemAtIndex: i]
+                                    atIndex: i
+                                    shouldCancel: NO];
+                  i++;
+                }
+            }
+        }
+    }
+
   // We use this as a recursion check.
-  if (!_changedMessagesEnabled)
+  if (!_menu.changedMessagesEnabled)
     return;
 
   if ([self autoenablesItems])
@@ -1001,7 +1055,7 @@ static NSNotificationCenter *nc;
       [self setMenuChangedMessagesEnabled: YES];
     }
 
-  if (_needsSizing && ([_aWindow isVisible] || [_bWindow isVisible]))
+  if (_menu.needsSizing && ([_aWindow isVisible] || [_bWindow isVisible]))
     {
       NSDebugLLog (@"NSMenu", @" Calling Size To Fit (A)");
       [self sizeToFit];
@@ -1106,7 +1160,7 @@ static NSNotificationCenter *nc;
 {
   ASSIGN(_title, aTitle);
 
-  _needsSizing = YES;
+  _menu.needsSizing = YES;
   if ([_aWindow isVisible] || [_bWindow isVisible])
     {
       [self sizeToFit];
@@ -1116,6 +1170,22 @@ static NSNotificationCenter *nc;
 - (NSString*) title
 {
   return _title;
+}
+
+- (id) delegate
+{
+  return _delegate;
+}
+
+- (void) setDelegate: (id)delegate
+{
+  _delegate=delegate;
+}
+
+- (float)menuBarHeight
+{
+  // FIXME
+  return [NSMenuView menuBarHeight];
 }
 
 //
@@ -1131,7 +1201,7 @@ static NSNotificationCenter *nc;
       return;
     }
 
-  _horizontal = [menuRep isHorizontal];
+  _menu.horizontal = [menuRep isHorizontal];
 
   if (_view == menuRep)
     {
@@ -1158,6 +1228,24 @@ static NSNotificationCenter *nc;
   return _view;
 }
 
+- (id) contextMenuRepresentation
+{
+  return nil;
+}
+
+- (void) setContextMenuRepresentation: (id)representation
+{
+}
+
+- (id) tearOffMenuRepresentation
+{
+  return nil;
+}
+
+- (void) setTearOffMenuRepresentation: (id)representation
+{
+}
+
 //
 // Updating the Menu Layout
 //
@@ -1166,7 +1254,7 @@ static NSNotificationCenter *nc;
 // to the _notifications array while enumerating it.
 - (void) setMenuChangedMessagesEnabled: (BOOL)flag
 { 
-  if (_changedMessagesEnabled != flag)
+  if (_menu.changedMessagesEnabled != flag)
     {
       if (flag)
 	{
@@ -1183,13 +1271,13 @@ static NSNotificationCenter *nc;
 	  [_notifications removeAllObjects];
 	}
 
-      _changedMessagesEnabled = flag;
+      _menu.changedMessagesEnabled = flag;
     }
 }
  
 - (BOOL) menuChangedMessagesEnabled
 {
-  return _changedMessagesEnabled;
+  return _menu.changedMessagesEnabled;
 }
 
 - (void) sizeToFit
@@ -1238,7 +1326,7 @@ static NSNotificationCenter *nc;
   
   [_view setNeedsDisplay: YES];
   
-  _needsSizing = NO;
+  _menu.needsSizing = NO;
 }
 
 /*
@@ -1252,6 +1340,17 @@ static NSNotificationCenter *nc;
 + (void) popUpContextMenu: (NSMenu*)menu
 		withEvent: (NSEvent*)event
 		  forView: (NSView*)view
+{
+  [self popUpContextMenu: menu 
+        withEvent: event 
+        forView: view 
+        withFont: nil];
+}
+
++ (void) popUpContextMenu: (NSMenu *)menu 
+                withEvent: (NSEvent *)event 
+                  forView: (NSView *)view 
+                 withFont: (NSFont *)font
 {
   [menu _rightMouseDisplay: event];
 }
@@ -1290,9 +1389,11 @@ static NSNotificationCenter *nc;
     }
   else
     {
+      BOOL autoenable = _menu.autoenable;
+
       [encoder encodeObject: _title];
       [encoder encodeObject: _items];
-      [encoder encodeValueOfObjCType: @encode(BOOL) at: &_autoenable];
+      [encoder encodeValueOfObjCType: @encode(BOOL) at: &autoenable];
     }
 }
 
@@ -1350,7 +1451,7 @@ static NSNotificationCenter *nc;
   unsigned i;
   unsigned count = [_items count];
 
-  [new setAutoenablesItems: _autoenable];
+  [new setAutoenablesItems: _menu.autoenable];
   for (i = 0; i < count; i++)
     {
       // This works because the copy on NSMenuItem sets the menu to nil!!!
@@ -1369,7 +1470,7 @@ static NSNotificationCenter *nc;
 {
   NSMenu	*supermenu;
 
-  _is_tornoff = flag; 
+  _menu.is_tornoff = flag; 
 
   if (flag)
     {
@@ -1429,7 +1530,7 @@ static NSNotificationCenter *nc;
 
 - (BOOL) isTransient
 {
-  return _transient;
+  return _menu.transient;
 } 
 
 - (BOOL) isPartlyOffScreen
@@ -1453,13 +1554,13 @@ static NSNotificationCenter *nc;
 
 - (void) display
 {
-  if (_transient)
+  if (_menu.transient)
     {
       NSDebugLLog (@"NSMenu", 
                    @"trying to display while alreay displayed transient");
     }
 
-  if (_needsSizing)
+  if (_menu.needsSizing)
     {
       [self sizeToFit];
     }
@@ -1488,19 +1589,19 @@ static NSNotificationCenter *nc;
   NSPoint location;
   NSView *contentView;
 
-  if (_transient)
+  if (_menu.transient)
     {
       NSDebugLLog (@"NSMenu", @"displaying transient while it is transient");
       return;
     }
 
-  if (_needsSizing)
+  if (_menu.needsSizing)
     {
       [self sizeToFit];
     }
   
   _oldHiglightedIndex = [[self menuRepresentation] highlightedItemIndex];
-  _transient = YES;
+  _menu.transient = YES;
   
   /*
    * Cache the old submenu if any and query the supermenu our position.
@@ -1541,7 +1642,7 @@ static NSNotificationCenter *nc;
   NSMenu *sub = [self attachedMenu];
 
 
-  if (_transient)
+  if (_menu.transient)
     {
       NSDebugLLog (@"NSMenu", @"We should not close ordinary menu while transient version is still open");
     }
@@ -1569,7 +1670,7 @@ static NSNotificationCenter *nc;
 {
   NSView *contentView;
 
-  if (_transient == NO)
+  if (_menu.transient == NO)
     {
       NSDebugLLog (@"NSMenu",
 	@"Closing transient: %@ while it is NOT transient now", _title);
@@ -1594,13 +1695,13 @@ static NSNotificationCenter *nc;
 
   [[self menuRepresentation] setHighlightedItemIndex: _oldHiglightedIndex];
   
-  _transient = NO;
+  _menu.transient = NO;
   [_view update];
 }
 
 - (NSWindow*) window
 {
-  if (_transient)
+  if (_menu.transient)
     return (NSWindow *)_bWindow;
   else
     return (NSWindow *)_aWindow;
@@ -1681,14 +1782,14 @@ static NSNotificationCenter *nc;
 
 - (void) shiftOnScreen
 {
-  NSWindow *theWindow = _transient ? _bWindow : _aWindow;
+  NSWindow *theWindow = [self window];
   NSRect    frameRect = [theWindow frame];
   NSRect    screenRect = [[theWindow screen] visibleFrame];
   NSPoint   vector    = {0.0, 0.0};
   BOOL      moveIt    = NO;
   
   // If we are the main menu forget about moving.
-  if ([self isEqual: [NSApp mainMenu]] && !_transient)
+  if ([self isEqual: [NSApp mainMenu]] && !_menu.transient)
     return;
 
   // 1 - determine the amount we need to shift in the y direction.
@@ -1724,36 +1825,41 @@ static NSNotificationCenter *nc;
       NSPoint  masterLocation;
       NSPoint  destinationPoint;
       
-      if (_horizontal)
+      if (_menu.horizontal)
         {
-	  masterLocation = [[self window] frame].origin;
-	  destinationPoint.x = masterLocation.x + vector.x;
-	  destinationPoint.y = masterLocation.y + vector.y;
+          masterLocation = [[self window] frame].origin;
+          destinationPoint.x = masterLocation.x + vector.x;
+          destinationPoint.y = masterLocation.y + vector.y;
           [self nestedSetFrameOrigin: destinationPoint];
-	}
+        }
       else
-	{
-	  NSMenu  *candidateMenu;
-	  NSMenu  *masterMenu;
-
-	  // Look for the "master" menu, i.e. the one to move from.
-	  for (candidateMenu = masterMenu = self;
-	       (candidateMenu = masterMenu->_superMenu)
-		 && (!masterMenu->_is_tornoff
-		     || masterMenu->_transient);
-	       masterMenu = candidateMenu);
-	  
-	  masterLocation = [[masterMenu window] frame].origin;
-	  destinationPoint.x = masterLocation.x + vector.x;
-	  destinationPoint.y = masterLocation.y + vector.y;
+        {
+          NSMenu  *candidateMenu;
+          NSMenu  *masterMenu;
+          
+          // Look for the "master" menu, i.e. the one to move from.
+          for (candidateMenu = masterMenu = self;
+               (candidateMenu = masterMenu->_superMenu)
+                   && (!masterMenu->_menu.is_tornoff
+                       || masterMenu->_menu.transient);
+               masterMenu = candidateMenu);
+          
+          masterLocation = [[masterMenu window] frame].origin;
+          destinationPoint.x = masterLocation.x + vector.x;
+          destinationPoint.y = masterLocation.y + vector.y;
           [masterMenu nestedSetFrameOrigin: destinationPoint];
-	}
+        }
     }
 }
 
 - (BOOL)_ownedByPopUp
 {
   return _popUpButtonCell != nil;
+}
+
+- (NSPopUpButtonCell *)_owningPopUp
+{
+  return _popUpButtonCell;
 }
 
 - (void)_setOwnedByPopUp: (NSPopUpButtonCell*)popUp
@@ -1773,7 +1879,7 @@ static NSNotificationCenter *nc;
 - (NSString*) description
 {
   return [NSString stringWithFormat: @"NSMenu: %@ (%@)",
-            _title, _transient ? @"Transient": @"Normal"];
+            _title, _menu.transient ? @"Transient": @"Normal"];
 }
 
 @end

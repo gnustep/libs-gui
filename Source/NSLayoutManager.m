@@ -17,19 +17,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 /*
@@ -107,7 +108,9 @@ first. Remaining cases, highest priority first:
 #include "AppKit/NSLayoutManager.h"
 #include "GNUstepGUI/GSLayoutManager_internal.h"
 
+#include <Foundation/NSEnumerator.h>
 #include <Foundation/NSException.h>
+#include "AppKit/NSAttributedString.h"
 #include "AppKit/NSColor.h"
 #include "AppKit/NSImage.h"
 #include "AppKit/NSParagraphStyle.h"
@@ -380,7 +383,7 @@ container? necessary? */
 	  if (num_rects == rect_array_size)
 	    {
 	      rect_array_size += 4;
-	      rect_array = realloc(rect_array, sizeof(NSRect) * rect_array_size);
+	      rect_array = objc_realloc(rect_array, sizeof(NSRect) * rect_array_size);
 	    }
 	  rect_array[num_rects++] = r;
 	}
@@ -609,28 +612,28 @@ anything visible
     {
       /* The point is inside a rect; we're done. */
       if (NSPointInRect(point, lf->rect))
-	break;
+        break;
 
       /* If the current line frag rect is below the point, the point must
       be between the line with the current line frag rect and the line
       with the previous line frag rect. */
       if (NSMinY(lf->rect) > point.y)
-	{
-	  /* If this is not the first line frag rect in the text container,
-	  we consider the point to be after the last glyph on the previous
-	  line. Otherwise, we consider it to be before the first glyph on
-	  the current line. */
-	  if (i > 0)
-	    {
-	      *partialFraction = 1.0;
-	      return lf->pos - 1;
-	    }
-	  else
-	    {
-	      *partialFraction = 0.0;
-	      return lf->pos;
-	    }
-	}
+        {
+          /* If this is not the first line frag rect in the text container,
+             we consider the point to be after the last glyph on the previous
+             line. Otherwise, we consider it to be before the first glyph on
+             the current line. */
+          if (i > 0)
+            {
+              *partialFraction = 1.0;
+              return lf->pos - 1;
+            }
+          else
+            {
+              *partialFraction = 0.0;
+              return lf->pos;
+            }
+        }
       /* We know that NSMinY(lf->rect) <= point.y. If the point is on the
       current line and to the left of the current line frag rect, we
       consider the point to be before the first glyph in the current line
@@ -645,10 +648,10 @@ anything visible
       two lines' case, or by the 'after all line frags' code below.)
       */
       if (NSMaxY(lf->rect) >= point.y && NSMinX(lf->rect) > point.x)
-	{
-	  *partialFraction = 0.0;
-	  return lf->pos;
-	}
+        {
+          *partialFraction = 0.0;
+          return lf->pos;
+        }
     }
 
   /* Point is after all line frags. */
@@ -683,9 +686,9 @@ anything visible
       unsigned j;
 
       if (i < lf->num_points)
-	next = lp->p.x;
+        next = lp->p.x;
       else
-	next = NSMinX(lf->rect);
+        next = NSMinX(lf->rect);
 
       lp--; /* Valid since we checked for !i above. */
       r = run_for_glyph_index(lp->pos, glyphs, &glyph_pos, &char_pos);
@@ -694,29 +697,30 @@ anything visible
 
       last_visible = lf->pos;
       for (j = lp->pos - glyph_pos; j + glyph_pos < lp->pos + lp->length;)
-	{
-	  if (r->glyphs[j].isNotShown || r->glyphs[j].g == NSControlGlyph ||
-	      !r->glyphs[j].g)
-	    {
-	      GLYPH_STEP_FORWARD(r, j, glyph_pos, char_pos)
-		continue;
-	    }
-	  last_visible = j + glyph_pos;
+        {
+          // Don't ignore invisble glyphs.
+          // if (r->glyphs[j].isNotShown || r->glyphs[j].g == NSControlGlyph ||
+          if (!r->glyphs[j].g)
+            {
+              GLYPH_STEP_FORWARD(r, j, glyph_pos, char_pos)
+              continue;
+            }
+          last_visible = j + glyph_pos;
 
-	  cur = prev + [r->font advancementForGlyph: r->glyphs[j].g].width;
-	  if (j + glyph_pos + 1 == lp->pos + lp->length && next > cur)
-	    cur = next;
+          cur = prev + [r->font advancementForGlyph: r->glyphs[j].g].width;
+          if (j + glyph_pos + 1 == lp->pos + lp->length && next > cur)
+            cur = next;
 
-	  if (cur >= point.x)
-	    {
-	      *partialFraction = (point.x - prev) / (cur - prev);
-	      if (*partialFraction < 0)
-		*partialFraction = 0;
-	      return j + glyph_pos;
-	    }
-	  prev = cur;
-	  GLYPH_STEP_FORWARD(r, j, glyph_pos, char_pos)
-	}
+          if (cur >= point.x)
+            {
+              *partialFraction = (point.x - prev) / (cur - prev);
+              if (*partialFraction < 0)
+                *partialFraction = 0;
+              return j + glyph_pos;
+            }
+          prev = cur;
+          GLYPH_STEP_FORWARD(r, j, glyph_pos, char_pos)
+        }
       *partialFraction = 1;
       return last_visible;
     }
@@ -2032,12 +2036,12 @@ this file describes this.
 		}
 	      if (lf->points)
 		{
-		  free(lf->points);
+		  objc_free(lf->points);
 		  lf->points = NULL;
 		}
 	      if (lf->attachments)
 		{
-		  free(lf->attachments);
+		  objc_free(lf->attachments);
 		  lf->attachments = NULL;
 		}
 	    }
@@ -2152,12 +2156,12 @@ no_soft_invalidation:
 	    {
 	      if (lf->points)
 		{
-		  free(lf->points);
+		  objc_free(lf->points);
 		  lf->points = NULL;
 		}
 	      if (lf->attachments)
 		{
-		  free(lf->attachments);
+		  objc_free(lf->attachments);
 		  lf->attachments = NULL;
 		}
 	    }

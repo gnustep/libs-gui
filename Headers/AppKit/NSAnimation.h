@@ -1,29 +1,29 @@
 /*
- * NSAnimation.h
- *
- * Created by Dr. H. Nikolaus Schaller on Sat Jan 07 2006.
- * Copyright (c) 2007 Free Software Foundation, Inc.
- *
- * Author: Xavier Glattard (xgl) <xavier.glattard@online.fr>
- *
- * This file used to be part of the mySTEP Library.
- * This file now is part of the GNUstep GUI Library.
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
- *
- * You should have received a copy of the GNU Library General Public
- * License along with this library; see the file COPYING.LIB.
- * If not, write to the Free Software Foundation,
- * 51 Franklin Street, Fifth Floor,
- * Boston, MA 02110-1301, USA.
+   NSAnimation.h
+ 
+   Created by Dr. H. Nikolaus Schaller on Sat Jan 07 2006.
+   Copyright (c) 2007 Free Software Foundation, Inc.
+ 
+   Author: Xavier Glattard (xgl) <xavier.glattard@online.fr>
+ 
+   This file used to be part of the mySTEP Library.
+   This file now is part of the GNUstep GUI Library.
+ 
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
  */ 
 
 #ifndef _GNUstep_H_NSAnimation_
@@ -36,15 +36,15 @@
 #include <Foundation/NSObject.h>
 #include <AppKit/AppKitDefines.h>
 #include <GNUstepGUI/GSAnimator.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSArray.h>
 
 @class NSString;
 @class NSArray;
+@class NSMutableArray;
 @class NSNumber;
 @class NSRecursiveLock;
 
-/** These constants describe the curve of an animation—that is, the relative speed of an animation from start to finish. */
+/** These constants describe the curve of an animation,
+    that is, the relative speed of an animation from start to finish. */
 typedef enum _NSAnimationCurve
 {
   NSAnimationEaseInOut = 0, // default
@@ -106,6 +106,9 @@ APPKIT_EXPORT NSString *NSAnimationProgressMark;
  */
 @interface NSAnimation : NSObject < NSCopying, NSCoding, GSAnimation >
 {
+// FIXME ... all these ivars should be hidden inside a pointer to an
+// FIXME ... opaque data structure, so that layout etc can be changed
+// FIXME ... without breaking binary compatibility.
   NSTimeInterval _duration;		  // Duration of the animation
   float _frameRate;			  // Wanted frame rate
   NSAnimationCurve _curve;		  // Id of progres->value function
@@ -177,7 +180,7 @@ APPKIT_EXPORT NSString *NSAnimationProgressMark;
 /** Returns a Boolean value that indicates whether the receiver is currently animating. */
 - (BOOL) isAnimating;
 
-/** Returns the receiver’s progress marks. */
+/** Returns the receiver's progress marks. */
 - (NSArray*) progressMarks;
 
 /** Removes a progress mark from the receiver.
@@ -192,7 +195,7 @@ APPKIT_EXPORT NSString *NSAnimationProgressMark;
     The new blocking mode takes effect the next time the receiver is started. */
 - (void) setAnimationBlockingMode: (NSAnimationBlockingMode)mode;
 
-/** Sets the receiver’s animation curve.
+/** Sets the receiver's animation curve.
     The new value affects the animation already in progress : the actual 
     curve smoothly changes from the old curve to the new one. */
 - (void) setAnimationCurve: (NSAnimationCurve)curve;
@@ -218,7 +221,7 @@ APPKIT_EXPORT NSString *NSAnimationProgressMark;
     The new frame rate takes effect at the next frame. */
 - (void) setFrameRate: (float)fps;
 
-/** Sets the receiver’s progress marks to the values specified in the
+/** Sets the receiver's progress marks to the values specified in the
     passed-in array. The new marks are t*/
 - (void) setProgressMarks: (NSArray*)progress;
 

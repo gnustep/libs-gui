@@ -22,19 +22,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 #include <Foundation/NSString.h>
@@ -50,6 +51,22 @@
 #include "AppKit/NSForm.h"
 #include "AppKit/NSMatrix.h"
 #include "AppKit/NSOpenPanel.h"
+
+static NSString	*
+pathToColumn(NSBrowser *browser, int column)
+{
+#if	defined(__MINGW32__)
+  if (column == 0)
+    return @"/";
+  else if (column == 1)
+    return [[[browser pathToColumn: column] substringFromIndex: 1]
+      stringByAppendingString: @"/"];
+  else
+    return [[browser pathToColumn: column] substringFromIndex: 1];
+#else
+  return [browser pathToColumn: column];
+#endif
+}
 
 static NSOpenPanel *_gs_gui_open_panel = nil;
 
@@ -385,8 +402,8 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 	{
 	  while ((currCell = [cellEnum nextObject]))
 	    {
-	      [ret addObject: [NSString stringWithFormat: @"%@/%@", dir, 
-					[currCell stringValue]]];
+	      [ret addObject:
+                [dir stringByAppendingPathComponent: [currCell stringValue]]];
 	    }
 	}
       return ret;
@@ -412,7 +429,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 
   while ((filename = [enumerator nextObject]) != nil)
     {
-	[ret addObject: [NSURL fileURLWithPath: filename]];
+      [ret addObject: [NSURL fileURLWithPath: filename]];
     } 
 
   return AUTORELEASE(ret);
@@ -532,7 +549,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
       return;
     }
 
-  ASSIGN (_directory, [_browser pathToColumn: [_browser lastColumn]]);
+  ASSIGN (_directory, pathToColumn(_browser, [_browser lastColumn]));
 
   if (selectedCell)
     tmp = [selectedCell stringValue];

@@ -11,22 +11,26 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */ 
 
 #include "config.h"
+#include <Foundation/NSAffineTransform.h>
+#include <Foundation/NSCoder.h>
+#include <Foundation/NSDictionary.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSSet.h>
@@ -37,6 +41,7 @@
 
 #include "AppKit/NSGraphicsContext.h"
 #include "AppKit/NSFont.h"
+#include <AppKit/NSFontDescriptor.h>
 #include "AppKit/NSFontManager.h"
 #include "AppKit/NSView.h"
 #include "GNUstepGUI/GSFontInfo.h"
@@ -45,13 +50,13 @@
 
 @interface NSFont (Private)
 - (id) initWithName: (NSString*)name 
-	     matrix: (const float*)fontMatrix
-	        fix: (BOOL)explicitlySet
-	 screenFont: (BOOL)screenFont
-	       role: (int)role;
+             matrix: (const float*)fontMatrix
+                fix: (BOOL)explicitlySet
+         screenFont: (BOOL)screenFont
+               role: (int)role;
 + (NSFont*) _fontWithName: (NSString*)aFontName
-		     size: (float)fontSize
-		     role: (int)role;
+                     size: (float)fontSize
+                     role: (int)role;
 @end
 
 static int currentVersion = 3;
@@ -107,7 +112,7 @@ globalFontMap.
 
 static GSFontMapKey *
 keyForFont(NSString *name, const float *matrix, BOOL fix,
-	   BOOL screenFont, int role)
+           BOOL screenFont, int role)
 {
   GSFontMapKey *d;
   d=[GSFontMapKey alloc];
@@ -122,7 +127,7 @@ keyForFont(NSString *name, const float *matrix, BOOL fix,
   d->matrix[4] = matrix[4] * 1000;
   d->matrix[5] = matrix[5] * 1000;
   d->hash = [d->name hash] + screenFont + role * 4 + fix * 2
-	    + d->matrix[0] + d->matrix[1] + d->matrix[2] + d->matrix[3];
+            + d->matrix[0] + d->matrix[1] + d->matrix[2] + d->matrix[3];
   return d;
 }
 
@@ -192,12 +197,12 @@ static NSFont *placeHolder = nil;
 static NSArray *_preferredFonts;
 
 /* Class for fonts */
-static Class	NSFontClass = 0;
+static Class        NSFontClass = 0;
 
 /* Cache all created fonts for reuse. */
 static NSMapTable* globalFontMap = 0;
 
-static NSUserDefaults	*defaults = nil;
+static NSUserDefaults        *defaults = nil;
 
 
 /*
@@ -294,22 +299,22 @@ static NSString *fontNameForRole(int role, int *actual_entry)
     {
       fontName = [defaults stringForKey: font_roles[i].key];
       if (fontName)
-	{
-	  break;
-	}
+        {
+          break;
+        }
       else if (font_roles[i].fallback)
-	{
-	  i = font_roles[i].fallback;
-	}
+        {
+          i = font_roles[i].fallback;
+        }
       else if (font_roles[i].defaultFont)
-	{
-	  fontName = font_roles[i].defaultFont;
-	  break;
-	}
+        {
+          fontName = font_roles[i].defaultFont;
+          break;
+        }
       else
-	{
-	  NSCAssert(NO, @"Invalid font role table entry.");
-	}
+        {
+          NSCAssert(NO, @"Invalid font role table entry.");
+        }
     }
   if (actual_entry)
     *actual_entry = i;
@@ -338,13 +343,13 @@ static NSFont *getNSFont(float fontSize, int role)
   if (defaultSize)
     {
       if (font_roles[role].cachedFont)
-	return AUTORELEASE(RETAIN(font_roles[role].cachedFont));
+        return AUTORELEASE(RETAIN(font_roles[role].cachedFont));
 
       fontSize = [defaults floatForKey:
-	[NSString stringWithFormat: @"%@Size", font_roles[role].key]];
+        [NSString stringWithFormat: @"%@Size", font_roles[role].key]];
 
       if (!fontSize)
-	fontSize = [NSFont systemFontSize];
+        fontSize = [NSFont systemFontSize];
     }
   else
     {
@@ -353,51 +358,51 @@ static NSFont *getNSFont(float fontSize, int role)
 
   fontName = fontNameForRole(role, &i);
   font = [NSFontClass _fontWithName: fontName
-			       size: fontSize
-			       role: font_role];
+                               size: fontSize
+                               role: font_role];
 
   /* That font couldn't be found. */
   if (font == nil)
     {
       /* Warn using the role that specified the invalid font. */
       NSLog(@"The font specified for %@, %@, can't be found.",
-	font_roles[i].key, fontName);
+        font_roles[i].key, fontName);
 
       /* Try the system font. */
       fontName = fontNameForRole(RoleSystemFont, NULL);
       font = [NSFontClass _fontWithName: fontName
- 				   size: fontSize
-				   role: font_role];
+                                    size: fontSize
+                                   role: font_role];
       
       if (font == nil)
-	{
-	  /* Try the default system font and size. */
-	  fontName = font_roles[RoleSystemFont].defaultFont;
-	  font = [NSFontClass _fontWithName: fontName
-				       size: 12.0
-				       role: font_role];
+        {
+          /* Try the default system font and size. */
+          fontName = font_roles[RoleSystemFont].defaultFont;
+          font = [NSFontClass _fontWithName: fontName
+                                       size: 12.0
+                                       role: font_role];
 
-	  /* It seems we can't get any font here!  Try some well known
-	   * fonts as a last resort.  */
-	  if (font == nil)
-	    {
-	      font = [NSFontClass _fontWithName: @"Helvetica"
-					   size: 12.0
-					   role: font_role];
-	    }
-	  if (font == nil)
-	    {
-	      font = [NSFontClass _fontWithName: @"Courier"
-					   size: 12.0
-					   role: font_role];
-	    }
-	  if (font == nil)
-	    {
-	      font = [NSFontClass _fontWithName: @"Fixed"
-					   size: 12.0
-					   role: font_role];
-	    }
-	}
+          /* It seems we can't get any font here!  Try some well known
+           * fonts as a last resort.  */
+          if (font == nil)
+            {
+              font = [NSFontClass _fontWithName: @"Helvetica"
+                                           size: 12.0
+                                           role: font_role];
+            }
+          if (font == nil)
+            {
+              font = [NSFontClass _fontWithName: @"Courier"
+                                           size: 12.0
+                                           role: font_role];
+            }
+          if (font == nil)
+            {
+              font = [NSFontClass _fontWithName: @"Fixed"
+                                           size: 12.0
+                                           role: font_role];
+            }
+        }
     }
 
   if (defaultSize)
@@ -412,7 +417,7 @@ static void setNSFont(NSString *key, NSFont *font)
 
   [defaults setObject: [font fontName] forKey: key];
   [defaults setObject: [NSNumber numberWithFloat: [font pointSize]]
-	    forKey: [NSString stringWithFormat: @"%@Size",key]];
+            forKey: [NSString stringWithFormat: @"%@Size",key]];
   
   for (i = 1; i < RoleMax; i++)
     {
@@ -444,13 +449,14 @@ static void setNSFont(NSString *key, NSFont *font)
        */
       placeHolder = [self alloc];
       globalFontMap = NSCreateMapTable(NSObjectMapKeyCallBacks,
-	NSNonRetainedObjectMapValueCallBacks, 64);
+                                       NSNonRetainedObjectMapValueCallBacks, 64);
 
       if (defaults == nil)
-	{
-	  defaults = RETAIN([NSUserDefaults standardUserDefaults]);
-	}
+        {
+          defaults = RETAIN([NSUserDefaults standardUserDefaults]);
+        }
 
+      _preferredFonts = [defaults objectForKey: @"NSPreferredFonts"];
       [self setVersion: currentVersion];
     }
 }
@@ -496,6 +502,47 @@ static void setNSFont(NSString *key, NSFont *font)
   return getNSFont(fontSize, RoleUserFont);
 }
 
++ (NSFont *) fontWithDescriptor: (NSFontDescriptor *)descriptor
+                           size: (float)size
+{
+  return [self fontWithDescriptor: descriptor size: size textTransform: nil];
+}
+
+// the transform/matrix can be used to rotate/scale/shear the whole font (independently of the CTM!)
+
++ (NSFont *) fontWithDescriptor: (NSFontDescriptor *)descriptor
+                           size: (float)size
+                  textTransform: (NSAffineTransform *)transform
+{
+  NSArray *a;
+  NSFontDescriptor *fd;
+
+  if (size == 0.0)
+    size = [NSFont systemFontSize];        // default
+
+  descriptor = [descriptor fontDescriptorWithSize: size];
+  if (transform)
+    {
+      descriptor = [descriptor fontDescriptorByAddingAttributes:
+        [NSDictionary dictionaryWithObject: transform
+                                    forKey: NSFontMatrixAttribute]];
+    }
+
+  // match all keys
+  // FIXME: Matching on size and matrix seems nonsensical.
+  a = [descriptor matchingFontDescriptorsWithMandatoryKeys:
+    [NSSet setWithArray: [[descriptor fontAttributes] allKeys]]];
+
+  if ([a count] == 0)
+    return nil;
+
+        // return first matching font
+  fd = [a objectAtIndex: 0];
+  // FIXME: Use NSFontManger to get a font name and create that font
+  return nil;
+}
+
+
 /**<p>Returns an array of the names of preferred fonts.</p>
    <p>See Also: +setPreferredFontNames:</p>
  */
@@ -522,6 +569,7 @@ static void setNSFont(NSString *key, NSFont *font)
 + (void) setPreferredFontNames: (NSArray*)fontNames
 {
   ASSIGN(_preferredFonts, fontNames);
+  // FIXME: Should this store back the preferred fonts in the user defaults?
 }
 
 /* Getting various fonts*/
@@ -611,20 +659,20 @@ static void setNSFont(NSString *key, NSFont *font)
     {
       case NSMiniControlSize:
         {
-	  float fontSize = [defaults floatForKey: @"NSMiniFontSize"];
+          float fontSize = [defaults floatForKey: @"NSMiniFontSize"];
   
-	  if (fontSize == 0)
-	    {
-	      fontSize = 6;
-	    }
-	  
-	  return fontSize;
-	}
+          if (fontSize == 0)
+            {
+              fontSize = 6;
+            }
+          
+          return fontSize;
+        }
       case NSSmallControlSize:
-	return [self smallSystemFontSize];
+        return [self smallSystemFontSize];
       case NSRegularControlSize:
       default:
-	return [self systemFontSize];
+        return [self systemFontSize];
     }
 }
 
@@ -637,10 +685,10 @@ static void setNSFont(NSString *key, NSFont *font)
     </p>
  */
 + (NSFont*) fontWithName: (NSString*)aFontName 
-		  matrix: (const float*)fontMatrix
+                  matrix: (const float*)fontMatrix
 {
-  NSFont	*font;
-  BOOL		fix;
+  NSFont *font;
+  BOOL fix;
 
   if (fontMatrix == NSFontIdentityMatrix)
     fix = NO;
@@ -648,10 +696,10 @@ static void setNSFont(NSString *key, NSFont *font)
     fix = YES;
 
   font = [placeHolder initWithName: aFontName
-			    matrix: fontMatrix
-			       fix: fix
-			screenFont: NO
-			      role: RoleExplicit];
+                            matrix: fontMatrix
+                               fix: fix
+                        screenFont: NO
+                              role: RoleExplicit];
 
   return AUTORELEASE(font);
 }
@@ -661,36 +709,36 @@ static void setNSFont(NSString *key, NSFont *font)
  * when set in a flipped view.</p>
  */
 + (NSFont*) fontWithName: (NSString*)aFontName
-		    size: (float)fontSize
+                    size: (float)fontSize
 {
   return [self _fontWithName: aFontName
-			size: fontSize
-			role: RoleExplicit];
+                        size: fontSize
+                        role: RoleExplicit];
 }
 
 + (NSFont*) _fontWithName: (NSString*)aFontName
-		     size: (float)fontSize
-		     role: (int)aRole
+                     size: (float)fontSize
+                     role: (int)aRole
 {
-  NSFont	*font;
-  float		fontMatrix[6] = { 0, 0, 0, 0, 0, 0 };
+  NSFont *font;
+  float fontMatrix[6] = { 0, 0, 0, 0, 0, 0 };
 
   if (fontSize == 0)
     {
       fontSize = [defaults floatForKey: @"NSUserFontSize"];
       if (fontSize == 0)
-	{
-	  fontSize = 12;
-	}
+        {
+          fontSize = 12;
+        }
     }
   fontMatrix[0] = fontSize;
   fontMatrix[3] = fontSize;
 
   font = [placeHolder initWithName: aFontName
-			    matrix: fontMatrix
-			       fix: NO
-			screenFont: NO
-			      role: aRole];
+                            matrix: fontMatrix
+                               fix: NO
+                        screenFont: NO
+                              role: aRole];
   return AUTORELEASE(font);
 }
 
@@ -707,7 +755,7 @@ static void setNSFont(NSString *key, NSFont *font)
 - (id) init
 {
   [NSException raise: NSInternalInconsistencyException
-	      format: @"Called -init on NSFont ... illegal"];
+              format: @"Called -init on NSFont ... illegal"];
   return self;
 }
 
@@ -720,50 +768,81 @@ static void setNSFont(NSString *key, NSFont *font)
  * This method may destroy the receiver and return a cached instance.
  */
 - (id) initWithName: (NSString*)name
-	     matrix: (const float*)fontMatrix
-		fix: (BOOL)explicitlySet
-	 screenFont: (BOOL)screen
-	       role: (int)aRole
+             matrix: (const float*)fontMatrix
+                fix: (BOOL)explicitlySet
+         screenFont: (BOOL)screen
+               role: (int)aRole
 {
-  GSFontMapKey	*key;
-  NSFont	*font;
+  GSFontMapKey *key;
+  NSFont *font;
 
   /* Should never be called on an initialised font! */
   NSAssert(fontName == nil, NSInternalInconsistencyException);
 
   /* Check whether the font is cached */
   key = keyForFont(name, fontMatrix, explicitlySet,
-		   screen, aRole);
+                   screen, aRole);
   font = (id)NSMapGet(globalFontMap, (void *)key);
   if (font == nil)
     {
       if (self == placeHolder)
-	{
-	  /*
-	   * If we are initialising the placeHolder, we actually want to
-	   * leave it be (for later re-use) and initialise a newly created
-	   * instance instead.
-	   */
-	  self = [NSFontClass alloc];
-	}
+        {
+          /*
+           * If we are initialising the placeHolder, we actually want to
+           * leave it be (for later re-use) and initialise a newly created
+           * instance instead.
+           */
+          self = [NSFontClass alloc];
+        }
       fontName = [name copy];
       memcpy(matrix, fontMatrix, sizeof(matrix));
       matrixExplicitlySet = explicitlySet;
       screenFont = screen;
       role = aRole;
       fontInfo = RETAIN([GSFontInfo fontInfoForFontName: fontName
-						 matrix: fontMatrix
-					     screenFont: screen]);
-      cachedFlippedFont = placeHolder;
-      if (!screenFont)
-	cachedScreenFont = placeHolder;
+                                                 matrix: fontMatrix
+                                             screenFont: screen]);
+      if ((fontInfo == nil) && (aRole == RoleExplicit))
+        {
+          /*
+            Last fallback: If a system font was explicitly requested
+            and this font does not exist, try to replace it with the
+            corresponding font in the current setup.
+          */
+          if (([fontName isEqualToString: @"Helvetica"] &&
+               ![font_roles[RoleSystemFont].defaultFont isEqualToString: @"Helvetica"])
+              || ([fontName isEqualToString: @"LucidaGrande"]))
+            {
+              fontInfo = RETAIN([GSFontInfo fontInfoForFontName:
+                                              font_roles[RoleSystemFont].defaultFont
+                                            matrix: fontMatrix
+                                            screenFont: screen]);
+            }
+          else if (([fontName isEqualToString: @"Helvetica-Bold"] &&
+                    ![font_roles[RoleBoldSystemFont].defaultFont isEqualToString: @"Helvetica-Bold"])
+                   || ([fontName isEqualToString: @"LucidaGrande-Bold"]))
+            {
+              fontInfo = RETAIN([GSFontInfo fontInfoForFontName:
+                                              font_roles[RoleBoldSystemFont].defaultFont
+                                            matrix: fontMatrix
+                                            screenFont: screen]);
+            }
+          else if ([fontName isEqualToString: @"Courier"] &&
+                   ![font_roles[RoleUserFixedPitchFont].defaultFont isEqualToString: @"Courier"])
+            {
+              fontInfo = RETAIN([GSFontInfo fontInfoForFontName:
+                                              font_roles[RoleUserFixedPitchFont].defaultFont
+                                            matrix: fontMatrix
+                                            screenFont: screen]);
+            }
+        }
       if (fontInfo == nil)
-	{
-	  DESTROY(fontName);
-	  DESTROY(key);
-	  RELEASE(self);
-	  return nil;
-	}
+        {
+          DESTROY(fontName);
+          DESTROY(key);
+          RELEASE(self);
+          return nil;
+        }
       
       /* Cache the font for later use */
       NSMapInsert(globalFontMap, (void *)key, (void *)self);
@@ -771,9 +850,9 @@ static void setNSFont(NSString *key, NSFont *font)
   else
     {
       if (self != placeHolder)
-	{
-	  RELEASE(self);
-	}
+        {
+          RELEASE(self);
+        }
       self = RETAIN(font);
     }
   RELEASE(key);
@@ -788,24 +867,22 @@ static void setNSFont(NSString *key, NSFont *font)
       GSFontMapKey *key;
 
       key = keyForFont(fontName, matrix,
-		       matrixExplicitlySet, screenFont,
-		       role);
+                       matrixExplicitlySet, screenFont,
+                       role);
       NSMapRemove(globalFontMap, (void *)key);
       RELEASE(key);
       RELEASE(fontName);
     }
   TEST_RELEASE(fontInfo);
-  if (cachedFlippedFont != placeHolder)
-    DESTROY(cachedFlippedFont);
-  if (cachedScreenFont != placeHolder)
-    DESTROY(cachedScreenFont);
+  DESTROY(cachedFlippedFont);
+  DESTROY(cachedScreenFont);
   [super dealloc];
 }
 
 - (NSString *) description
 {
-  NSString	*nameWithMatrix;
-  NSString	*description;
+  NSString *nameWithMatrix;
+  NSString *description;
 
   nameWithMatrix = [[NSString alloc] initWithFormat:
     @"%@ %.3f %.3f %.3f %.3f %.3f %.3f %c %c %i", fontName,
@@ -821,18 +898,14 @@ static void setNSFont(NSString *key, NSFont *font)
 
 - (BOOL) isEqual: (id)anObject
 {
-  int i;
-  const float*obj_matrix;
   if (anObject == self)
     return YES;
   if ([anObject isKindOfClass: self->isa] == NO)
     return NO;
   if ([[anObject fontName] isEqual: fontName] == NO)
     return NO;
-  obj_matrix = [anObject matrix];
-  for (i = 0; i < 6; i++)
-    if (obj_matrix[i] != matrix[i])
-      return NO;
+  if (memcmp(matrix, [(NSFont*)anObject matrix], sizeof(matrix)) != 0)
+    return NO;
   return YES;
 }
 
@@ -857,7 +930,7 @@ static void setNSFont(NSString *key, NSFont *font)
 
 - (NSFont *)_flippedViewFont
 {
-  if (cachedFlippedFont == placeHolder)
+  if (cachedFlippedFont == nil)
     {
       float fontMatrix[6];
       memcpy(fontMatrix, matrix, sizeof(matrix));
@@ -886,8 +959,11 @@ static BOOL flip_hack;
     without explicitly setting the font matrix */
 - (void) set
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
+  [self setInContext: GSCurrentContext()];
+}
 
+- (void) setInContext: (NSGraphicsContext*)ctxt
+{
   if (matrixExplicitlySet == NO && ([[NSView focusView] isFlipped] || flip_hack))
     [ctxt GSSetFont: [[self _flippedViewFont] fontRef]];
   else
@@ -909,9 +985,26 @@ static BOOL flip_hack;
   return fontName; 
 }
 
-- (const float*) matrix		
+- (const float*) matrix                
 { 
   return matrix; 
+}
+
+- (NSAffineTransform*) textTransform
+{
+  NSAffineTransform *transform;
+  NSAffineTransformStruct tstruct;
+
+  tstruct.m11 = matrix[0];
+  tstruct.m12 = matrix[1];
+  tstruct.m21 = matrix[2];
+  tstruct.m22 = matrix[3];
+  tstruct.tX = matrix[4];
+  tstruct.tY = matrix[5];
+ 
+  transform = [NSAffineTransform transform];
+  [transform setTransformStruct: tstruct];
+  return transform;
 }
 
 - (NSString*) encodingScheme
@@ -924,7 +1017,7 @@ static BOOL flip_hack;
   return [fontInfo familyName]; 
 }
 
-- (NSRect) boundingRectForFont	
+- (NSRect) boundingRectForFont        
 {
   return [fontInfo boundingRectForFont]; 
 }
@@ -962,10 +1055,10 @@ static BOOL flip_hack;
   if (!screenFont)
     return self;
   return AUTORELEASE([placeHolder initWithName: fontName
-			    matrix: matrix
-			       fix: matrixExplicitlySet
-			screenFont: NO
-			      role: role]);
+                            matrix: matrix
+                               fix: matrixExplicitlySet
+                        screenFont: NO
+                              role: role]);
 }
 
 - (NSFont*) screenFont
@@ -977,24 +1070,36 @@ static BOOL flip_hack;
   Note that if the font has no corresponding screen font, cachedScreenFont
   will be set to nil.
   */
-  if (cachedScreenFont == placeHolder)
+  if (cachedScreenFont == nil)
     cachedScreenFont = [placeHolder initWithName: fontName
-			    matrix: matrix
-			       fix: matrixExplicitlySet
-			screenFont: YES
-			      role: role];
+                            matrix: matrix
+                               fix: matrixExplicitlySet
+                        screenFont: YES
+                              role: role];
   return AUTORELEASE(RETAIN(cachedScreenFont));
 }
 
-- (float) ascender		{ return [fontInfo ascender]; }
-- (float) descender		{ return [fontInfo descender]; }
-- (float) capHeight		{ return [fontInfo capHeight]; }
-- (float) italicAngle		{ return [fontInfo italicAngle]; }
-- (NSSize) maximumAdvancement	{ return [fontInfo maximumAdvancement]; }
-- (NSSize) minimumAdvancement	{ return [fontInfo minimumAdvancement]; }
-- (float) underlinePosition	{ return [fontInfo underlinePosition]; }
-- (float) underlineThickness	{ return [fontInfo underlineThickness]; }
-- (float) xHeight		{ return [fontInfo xHeight]; }
+- (NSFont*) screenFontWithRenderingMode: (NSFontRenderingMode)mode
+{
+  // FIXME
+  return [self screenFont];
+}
+
+- (NSFontRenderingMode) renderingMode
+{
+  // FIXME
+  return NSFontDefaultRenderingMode;
+}
+
+- (float) ascender                { return [fontInfo ascender]; }
+- (float) descender                { return [fontInfo descender]; }
+- (float) capHeight                { return [fontInfo capHeight]; }
+- (float) italicAngle                { return [fontInfo italicAngle]; }
+- (NSSize) maximumAdvancement        { return [fontInfo maximumAdvancement]; }
+- (NSSize) minimumAdvancement        { return [fontInfo minimumAdvancement]; }
+- (float) underlinePosition        { return [fontInfo underlinePosition]; }
+- (float) underlineThickness        { return [fontInfo underlineThickness]; }
+- (float) xHeight                { return [fontInfo xHeight]; }
 - (float) defaultLineHeightForFont { return [fontInfo defaultLineHeightForFont]; }
 
 /* Computing font metrics attributes*/
@@ -1050,56 +1155,56 @@ static BOOL flip_hack;
 }
 
 - (NSPoint) positionOfGlyph: (NSGlyph)curGlyph
-	    precededByGlyph: (NSGlyph)prevGlyph
-		  isNominal: (BOOL*)nominal
+            precededByGlyph: (NSGlyph)prevGlyph
+                  isNominal: (BOOL*)nominal
 {
   return [fontInfo positionOfGlyph: curGlyph precededByGlyph: prevGlyph
                          isNominal: nominal];
 }
 
 - (NSPoint) positionOfGlyph: (NSGlyph)aGlyph 
-	       forCharacter: (unichar)aChar 
-	     struckOverRect: (NSRect)aRect
+               forCharacter: (unichar)aChar 
+             struckOverRect: (NSRect)aRect
 {
   return [fontInfo positionOfGlyph: aGlyph 
-		      forCharacter: aChar 
-		    struckOverRect: aRect];
+                      forCharacter: aChar 
+                    struckOverRect: aRect];
 }
 
 - (NSPoint) positionOfGlyph: (NSGlyph)aGlyph 
-	    struckOverGlyph: (NSGlyph)baseGlyph 
-	       metricsExist: (BOOL *)flag
+            struckOverGlyph: (NSGlyph)baseGlyph 
+               metricsExist: (BOOL *)flag
 {
   return [fontInfo positionOfGlyph: aGlyph 
-		   struckOverGlyph: baseGlyph 
-		      metricsExist: flag];
+                   struckOverGlyph: baseGlyph 
+                      metricsExist: flag];
 }
 
 - (NSPoint) positionOfGlyph: (NSGlyph)aGlyph 
-	     struckOverRect: (NSRect)aRect 
-	       metricsExist: (BOOL *)flag
+             struckOverRect: (NSRect)aRect 
+               metricsExist: (BOOL *)flag
 {
   return [fontInfo positionOfGlyph: aGlyph 
-		    struckOverRect: aRect 
-		      metricsExist: flag];
+                    struckOverRect: aRect 
+                      metricsExist: flag];
 }
 
 - (NSPoint) positionOfGlyph: (NSGlyph)aGlyph 
-	       withRelation: (NSGlyphRelation)relation 
-		toBaseGlyph: (NSGlyph)baseGlyph
-	   totalAdvancement: (NSSize *)offset 
-	       metricsExist: (BOOL *)flag
+               withRelation: (NSGlyphRelation)relation 
+                toBaseGlyph: (NSGlyph)baseGlyph
+           totalAdvancement: (NSSize *)offset 
+               metricsExist: (BOOL *)flag
 {
   return [fontInfo positionOfGlyph: aGlyph 
-		      withRelation: relation 
-		       toBaseGlyph: baseGlyph
-		  totalAdvancement: offset 
-		      metricsExist: flag];
+                      withRelation: relation 
+                       toBaseGlyph: baseGlyph
+                  totalAdvancement: offset 
+                      metricsExist: flag];
 }
 
 - (int) positionsForCompositeSequence: (NSGlyph *)glyphs 
-		       numberOfGlyphs: (int)numGlyphs 
-			   pointArray: (NSPoint *)points
+                       numberOfGlyphs: (int)numGlyphs 
+                           pointArray: (NSPoint *)points
 {
   int i;
   NSGlyph base = glyphs[0];
@@ -1112,10 +1217,10 @@ static BOOL flip_hack;
       // This only places the glyphs relative to the base glyph 
       // not to each other
       points[i] = [self positionOfGlyph: glyphs[i] 
-			struckOverGlyph: base 
-			   metricsExist: &flag];
+                        struckOverGlyph: base 
+                           metricsExist: &flag];
       if (!flag)
-	return i - 1;
+        return i - 1;
     }
 
   return i;
@@ -1143,19 +1248,19 @@ static BOOL flip_hack;
       
       switch (role >> 1)
         {
-	  // FIXME: Many cases still missing
-	  case RoleControlContentFont:
-	    [aCoder encodeInt: 16 forKey: @"NSfFlags"];
-	    break;
-	  case RoleLabelFont:
-	    [aCoder encodeInt: 20 forKey: @"NSfFlags"];
-	    break;
-	  case RoleTitleBarFont:
-	    [aCoder encodeInt: 22 forKey: @"NSfFlags"];
-	    break;
-	  default:
-	    break;
-	}
+          // FIXME: Many cases still missing
+          case RoleControlContentFont:
+            [aCoder encodeInt: 16 forKey: @"NSfFlags"];
+            break;
+          case RoleLabelFont:
+            [aCoder encodeInt: 20 forKey: @"NSfFlags"];
+            break;
+          case RoleTitleBarFont:
+            [aCoder encodeInt: 22 forKey: @"NSfFlags"];
+            break;
+          default:
+            break;
+        }
     }
   else 
     {
@@ -1163,14 +1268,14 @@ static BOOL flip_hack;
 
       if (role == 0)
         {
-	  [aCoder encodeObject: fontName];
-	  [aCoder encodeArrayOfObjCType: @encode(float)  count: 6  at: matrix];
-	  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &matrixExplicitlySet];
-	}
+          [aCoder encodeObject: fontName];
+          [aCoder encodeArrayOfObjCType: @encode(float)  count: 6  at: matrix];
+          [aCoder encodeValueOfObjCType: @encode(BOOL) at: &matrixExplicitlySet];
+        }
       else if (role & 1)
         {
-	  [aCoder encodeValueOfObjCType: @encode(float) at: &matrix[0]];
-	}
+          [aCoder encodeValueOfObjCType: @encode(float) at: &matrix[0]];
+        }
     }
 }
 
@@ -1181,154 +1286,154 @@ static BOOL flip_hack;
       NSString *name = [aDecoder decodeObjectForKey: @"NSName"];
       float size = [aDecoder decodeFloatForKey: @"NSSize"];
       
-      RELEASE(self);
+      DESTROY(self);
       if ([aDecoder containsValueForKey: @"NSfFlags"])
         {
-	  int flags = [aDecoder decodeIntForKey: @"NSfFlags"];
-	  // FIXME
-	  if (flags == 16)
-	    {
-	      return RETAIN([NSFont controlContentFontOfSize: size]);
-	    }
-	  else if (flags == 20)
-	    {
-	      return RETAIN([NSFont labelFontOfSize: size]);
-	    }
-	  else if (flags == 22)
-	    {
-	      return RETAIN([NSFont titleBarFontOfSize: size]);
-	    }
-	}
+          int flags = [aDecoder decodeIntForKey: @"NSfFlags"];
+          // FIXME
+          if (flags == 16)
+            {
+              return RETAIN([NSFont controlContentFontOfSize: size]);
+            }
+          else if (flags == 20)
+            {
+              return RETAIN([NSFont labelFontOfSize: size]);
+            }
+          else if (flags == 22)
+            {
+              return RETAIN([NSFont titleBarFontOfSize: size]);
+            }
+        }
 
-      self = [NSFont fontWithName: name size: size];
+      self = RETAIN([NSFont fontWithName: name size: size]);
       if (self == nil)
         {
-	  self = RETAIN([NSFont systemFontOfSize: size]);
-	}
+          self = RETAIN([NSFont systemFontOfSize: size]);
+        }
 
       return self;
     }
   else
     {
       int version = [aDecoder versionForClassName: @"NSFont"];
-      id	name;
-      float	fontMatrix[6];
-      BOOL	fix;
+      id name;
+      float fontMatrix[6];
+      BOOL fix;
       int the_role;
       
       if (version == 3)
         {
-	  [aDecoder decodeValueOfObjCType: @encode(int)
-		                       at: &the_role];
-	}
+          [aDecoder decodeValueOfObjCType: @encode(int)
+                                       at: &the_role];
+        }
       else
         {
-	  the_role = RoleExplicit;
-	}
+          the_role = RoleExplicit;
+        }
       
       if (the_role == RoleExplicit)
         {
-	  /* The easy case: an explicit font, or a font encoded with
-	     version <= 2. */
-	  name = [aDecoder decodeObject];
-	  [aDecoder decodeArrayOfObjCType: @encode(float)
-		                    count: 6
-		                       at: fontMatrix];
-	  
-	  if (version >= 2)
-	    {
-	      [aDecoder decodeValueOfObjCType: @encode(BOOL)
-				           at: &fix];
-	    }
-	  else
-	    {
-	      if (fontMatrix[0] == fontMatrix[3]
-		  && fontMatrix[1] == 0.0 && fontMatrix[2] == 0.0)
-		fix = NO;
-	      else
-		fix = YES;
-	    }
+          /* The easy case: an explicit font, or a font encoded with
+             version <= 2. */
+          name = [aDecoder decodeObject];
+          [aDecoder decodeArrayOfObjCType: @encode(float)
+                                    count: 6
+                                       at: fontMatrix];
+          
+          if (version >= 2)
+            {
+              [aDecoder decodeValueOfObjCType: @encode(BOOL)
+                                           at: &fix];
+            }
+          else
+            {
+              if (fontMatrix[0] == fontMatrix[3]
+                  && fontMatrix[1] == 0.0 && fontMatrix[2] == 0.0)
+                fix = NO;
+              else
+                fix = YES;
+            }
 
-	  self = [self initWithName: name
-		             matrix: fontMatrix
-			        fix: fix
-		         screenFont: NO
-			       role: RoleExplicit];
-	  if (self)
-	    return self;
+          self = [self initWithName: name
+                             matrix: fontMatrix
+                                fix: fix
+                         screenFont: NO
+                               role: RoleExplicit];
+          if (self)
+            return self;
 
-	  self = [NSFont userFontOfSize: fontMatrix[0]];
-	  NSAssert(self != nil, @"Couldn't find a valid font when decoding.");
-	  return RETAIN(self);
-	}
+          self = [NSFont userFontOfSize: fontMatrix[0]];
+          NSAssert(self != nil, @"Couldn't find a valid font when decoding.");
+          return RETAIN(self);
+        }
       else
         {
-	  /* A non-explicit font. */
-	  float size;
-	  NSFont *new;
-	  
-	  if (the_role & 1)
-	    {
-	      [aDecoder decodeValueOfObjCType: @encode(float)
-		    		           at: &size];
-	    }
-	  else
-	    {
-	      size = 0.0;
-	    }
-	  
-	  switch (the_role >> 1)
-	    {
-	      case RoleBoldSystemFont:
-		new = [NSFont boldSystemFontOfSize: size];
-		break;
-	      case RoleSystemFont:
-		new = [NSFont systemFontOfSize: size];
-		break;
-	      case RoleUserFixedPitchFont:
-		new = [NSFont userFixedPitchFontOfSize: size];
-		break;
-	      case RoleTitleBarFont:
-		new = [NSFont titleBarFontOfSize: size];
-		break;
-	      case RoleMenuFont:
-		new = [NSFont menuFontOfSize: size];
-		break;
-	      case RoleMessageFont:
-		new = [NSFont messageFontOfSize: size];
-		break;
-	      case RolePaletteFont:
-		new = [NSFont paletteFontOfSize: size];
-		break;
-	      case RoleToolTipsFont:
-		new = [NSFont toolTipsFontOfSize: size];
-		break;
-	      case RoleControlContentFont:
-		new = [NSFont controlContentFontOfSize: size];
-		break;
-	      case RoleLabelFont:
-		new = [NSFont labelFontOfSize: size];
-		break;
-	      case RoleMenuBarFont:
-		new = [NSFont menuBarFontOfSize: size];
-		break;
+          /* A non-explicit font. */
+          float size;
+          NSFont *new;
+          
+          if (the_role & 1)
+            {
+              [aDecoder decodeValueOfObjCType: @encode(float)
+                                               at: &size];
+            }
+          else
+            {
+              size = 0.0;
+            }
+          
+          switch (the_role >> 1)
+            {
+              case RoleBoldSystemFont:
+                new = [NSFont boldSystemFontOfSize: size];
+                break;
+              case RoleSystemFont:
+                new = [NSFont systemFontOfSize: size];
+                break;
+              case RoleUserFixedPitchFont:
+                new = [NSFont userFixedPitchFontOfSize: size];
+                break;
+              case RoleTitleBarFont:
+                new = [NSFont titleBarFontOfSize: size];
+                break;
+              case RoleMenuFont:
+                new = [NSFont menuFontOfSize: size];
+                break;
+              case RoleMessageFont:
+                new = [NSFont messageFontOfSize: size];
+                break;
+              case RolePaletteFont:
+                new = [NSFont paletteFontOfSize: size];
+                break;
+              case RoleToolTipsFont:
+                new = [NSFont toolTipsFontOfSize: size];
+                break;
+              case RoleControlContentFont:
+                new = [NSFont controlContentFontOfSize: size];
+                break;
+              case RoleLabelFont:
+                new = [NSFont labelFontOfSize: size];
+                break;
+              case RoleMenuBarFont:
+                new = [NSFont menuBarFontOfSize: size];
+                break;
 
-	      default:
-		NSDebugLLog(@"NSFont", @"unknown role %i", the_role);
-		/* fall through */
-	      case RoleUserFont:
-		new = [NSFont userFontOfSize: size];
-		break;
-	    }
+              default:
+                NSDebugLLog(@"NSFont", @"unknown role %i", the_role);
+                /* fall through */
+              case RoleUserFont:
+                new = [NSFont userFontOfSize: size];
+                break;
+            }
 
-	  RELEASE(self);
-	  if (new)
-	    return RETAIN(new);
+          RELEASE(self);
+          if (new)
+            return RETAIN(new);
 
-	  new = [NSFont userFontOfSize: size];
-	  NSAssert(new != nil, @"Couldn't find a valid font when decoding.");
-	  return RETAIN(new);
-	}
+          new = [NSFont userFontOfSize: size];
+          NSAssert(new != nil, @"Couldn't find a valid font when decoding.");
+          return RETAIN(new);
+        }
     }
 }
 
@@ -1350,44 +1455,51 @@ static BOOL flip_hack;
   return _fontRef;
 }
 
+// This is a private but popular Cocoa method.
+- (NSGlyph) _defaultGlyphForChar: (unichar)theChar
+{
+  return [fontInfo glyphForCharacter: theChar];
+}
 
 @end
 
 
 int NSConvertGlyphsToPackedGlyphs(NSGlyph *glBuf, 
-				  int count, 
-				  NSMultibyteGlyphPacking packing, 
-				  char *packedGlyphs)
+                                  int count, 
+                                  NSMultibyteGlyphPacking packing, 
+                                  char *packedGlyphs)
 {
   int i;
   int j;
 
   j = 0;
+  // Store the number of glyphs in the first byte.
+  packedGlyphs[j++] = count;
   for (i = 0; i < count; i++)
     {
       NSGlyph g = glBuf[i];
 
       switch (packing)
         {
-	    case NSOneByteGlyphPacking: 
-		packedGlyphs[j++] = (char)(g & 0xFF); 
-		break;
-	    case NSTwoByteGlyphPacking: 
-		packedGlyphs[j++] = (char)((g & 0xFF00) >> 8) ; 
-		packedGlyphs[j++] = (char)(g & 0xFF); 
-		break;
-	    case NSFourByteGlyphPacking:
-		packedGlyphs[j++] = (char)((g & 0xFF000000) >> 24) ; 
-		packedGlyphs[j++] = (char)((g & 0xFF0000) >> 16); 
-		packedGlyphs[j++] = (char)((g & 0xFF00) >> 8) ; 
-		packedGlyphs[j++] = (char)(g & 0xFF); 
-		break;	  
-	    case NSJapaneseEUCGlyphPacking:
-	    case NSAsciiWithDoubleByteEUCGlyphPacking:
-	    default:
-		// FIXME
-		break;
-	}
+            case NSOneByteGlyphPacking: 
+                packedGlyphs[j++] = (char)(g & 0xFF); 
+                break;
+            case NSTwoByteGlyphPacking: 
+                packedGlyphs[j++] = (char)((g & 0xFF00) >> 8) ; 
+                packedGlyphs[j++] = (char)(g & 0xFF); 
+                break;
+            case NSFourByteGlyphPacking:
+                packedGlyphs[j++] = (char)((g & 0xFF000000) >> 24) ; 
+                packedGlyphs[j++] = (char)((g & 0xFF0000) >> 16); 
+                packedGlyphs[j++] = (char)((g & 0xFF00) >> 8) ; 
+                packedGlyphs[j++] = (char)(g & 0xFF); 
+                break;          
+            case NSJapaneseEUCGlyphPacking:
+            case NSAsciiWithDoubleByteEUCGlyphPacking:
+            default:
+                // FIXME
+                break;
+        }
     } 
 
   return j;

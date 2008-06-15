@@ -10,19 +10,19 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor,
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
    Boston, MA 02110-1301, USA.
 */ 
 
@@ -38,6 +38,7 @@
 
 @class NSString;
 @class NSEvent;
+@class NSFont;
 @class NSMatrix;
 @class NSPopUpButton;
 @class NSPopUpButtonCell;
@@ -335,16 +336,19 @@
   NSMenu *_superMenu;
   NSMenu *_attachedMenu;
   NSMutableArray *_notifications;
-  BOOL _changedMessagesEnabled;
-  BOOL _autoenable;
-  BOOL _needsSizing;
-  BOOL _is_tornoff;
+	id _delegate;
 
   // GNUstepExtra category
   NSPopUpButtonCell *_popUpButtonCell;
-  BOOL _transient;
-  BOOL _horizontal;
-  char _pad1[2];
+	struct GSMenuFlags {
+    unsigned int changedMessagesEnabled: 1;
+    unsigned int autoenable: 1;
+    unsigned int needsSizing: 1;
+    unsigned int is_tornoff: 1;
+    unsigned int transient: 1;
+    unsigned int horizontal: 1;
+		unsigned int unused: 26;
+  } _menu;
 
 @private
   NSWindow *_aWindow;
@@ -356,15 +360,24 @@
 /** Returns the memory allocation zone used to create instances of this class.
  */
 + (NSZone*) menuZone;
-
-+ (void) popUpContextMenu: (NSMenu*)menu
-		withEvent: (NSEvent*)event
-		  forView: (NSView*)view;
-
 /** Specifies the memory allocation zone used to create instances of this class.
  */
 + (void) setMenuZone: (NSZone*)zone;
 
++ (void) popUpContextMenu: (NSMenu*)menu
+		withEvent: (NSEvent*)event
+		  forView: (NSView*)view;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
++ (void) popUpContextMenu: (NSMenu *)menu 
+                withEvent: (NSEvent *)event 
+                  forView: (NSView *)view 
+                 withFont: (NSFont *)font;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
++ (BOOL) menuBarVisible;
++ (void) setMenuBarVisible: (BOOL)flag;
+#endif
 
 /** Add newItem to the menu.
  */
@@ -405,6 +418,14 @@
  *  </list>
  */
 - (BOOL) autoenablesItems;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_0, MAC_OS_X_VERSION_10_1)
+- (id) contextMenuRepresentation;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (id) delegate;
+#endif
 
 /* Displaying Context-Sensitive Help */
 - (void) helpRequested: (NSEvent*)event;
@@ -504,6 +525,10 @@
  */
 - (NSPoint) locationForSubmenu: (NSMenu*)aSubmenu;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (float)menuBarHeight;
+#endif
+
 - (BOOL) menuChangedMessagesEnabled;
 
 /** Return the NSView that is used for drawing
@@ -545,6 +570,14 @@
  */
 - (void) setAutoenablesItems: (BOOL)flag;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_0, MAC_OS_X_VERSION_10_1)
+- (void) setContextMenuRepresentation: (id)representation;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (void) setDelegate:(id) delegate;
+#endif
+
 - (void) setMenuChangedMessagesEnabled: (BOOL)flag;
 
 /** Set the View that should be used to display the menu.
@@ -580,6 +613,10 @@
  */
 - (void) setSupermenu: (NSMenu *)supermenu;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_0, MAC_OS_X_VERSION_10_1)
+- (void) setTearOffMenuRepresentation: (id)representation;
+#endif
+
 /** Change the title of the menu.
  */
 - (void) setTitle: (NSString*)aTitle;
@@ -592,6 +629,10 @@
  *  if this is the application menu.  
  */
 - (NSMenu*) supermenu;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_0, MAC_OS_X_VERSION_10_1)
+- (id) tearOffMenuRepresentation;
+#endif
 
 /** Returns the current title.
  */
@@ -618,6 +659,21 @@
  */
 - (BOOL) validateMenuItem: (id<NSMenuItem>)menuItem;
 @end
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+@interface NSObject (NSMenuDelegate)
+- (void) menuNeedsUpdate: (NSMenu *)menu;
+- (int) numberOfItemsInMenu: (NSMenu *)menu;
+- (BOOL) menu: (NSMenu *)menu
+   updateItem: (NSMenuItem *)item
+      atIndex: (int)index
+ shouldCancel: (BOOL)shouldCancel;
+- (BOOL) menuHasKeyEquivalent: (NSMenu *)menu
+                     forEvent: (NSEvent *)event
+                       target: (id *)target
+                      action: (SEL *)action;
+@end
+#endif
 
 #if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 @interface NSObject (NSMenuActionResponder)
@@ -694,6 +750,7 @@
 
 /* Popup behaviour */
 - (BOOL) _ownedByPopUp;
+- (NSPopUpButtonCell *)_owningPopUp;
 - (void) _setOwnedByPopUp: (NSPopUpButtonCell*)popUp;
 @end
 #endif

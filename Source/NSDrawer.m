@@ -12,19 +12,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */ 
 
 #include <Foundation/NSCoder.h>
@@ -32,10 +33,12 @@
 #include <Foundation/NSKeyedArchiver.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSException.h>
-#include "AppKit/NSWindow.h"
-#include "AppKit/NSBox.h"
-#include "AppKit/NSView.h"
-#include "AppKit/NSDrawer.h"
+#include <Foundation/NSTimer.h>
+#include <AppKit/NSWindow.h>
+#include <AppKit/NSBox.h>
+#include <AppKit/NSView.h>
+#include <AppKit/NSDrawer.h>
+#include <AppKit/NSGraphics.h>
 
 static NSNotificationCenter *nc = nil;
 
@@ -44,7 +47,8 @@ static NSNotificationCenter *nc = nil;
   NSWindow *_parentWindow;
   NSWindow *_pendingParentWindow;
   NSDrawer *_drawer;
-  NSBox    *_box;
+  id        _container;
+  NSTimer  *_timer;
 }
 - (NSRect) frameFromParentWindowFrame;
 
@@ -52,6 +56,8 @@ static NSNotificationCenter *nc = nil;
 - (void) openOnEdge;
 - (void) closeOnEdge;
 - (void) slide;
+- (void) startTimer;
+- (void) stopTimer;
 
 // window/drawer properties
 - (void) setParentWindow: (NSWindow *)window;
@@ -83,6 +89,11 @@ static NSNotificationCenter *nc = nil;
 		     defer: (BOOL)flag
 		    screen: (NSScreen*)aScreen
 {
+  if(NSIsEmptyRect(contentRect))
+    {
+      contentRect = NSMakeRect(0,0,100,100);
+    }
+
   self = [super initWithContentRect: contentRect
 		styleMask: aStyle
 		backing: bufferingType
@@ -90,29 +101,42 @@ static NSNotificationCenter *nc = nil;
 		screen: aScreen];
   if (self != nil)
     {
-      /*
-      _box = [[NSBox alloc] init];
-      [_box setTitle: @""];
-      [_box setTitlePosition: NSNoTitle];
-      [_box setBorderType: NSBezelBorder];
-      [_box setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
-      [[super contentView] addSubview: _box];
-      */
+      NSRect rect = contentRect;
+      NSRect border = contentRect;
+      NSBox *borderBox = nil;
+
+      rect.origin.x += 6;
+      rect.origin.y += 6;
+      rect.size.width -= 16;
+      rect.size.height -= 16;
+
+      border.origin.x += 1;
+      border.origin.y += 1;
+      border.size.width -= 2;
+      border.size.height -= 2;
+
+      borderBox = [[NSBox alloc] initWithFrame: border];
+      [borderBox setTitle: @""];
+      [borderBox setTitlePosition: NSNoTitle];
+      [borderBox setBorderType: NSLineBorder];
+      [borderBox setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+      [borderBox setContentViewMargins: NSMakeSize(0,0)];
+      [[super contentView] addSubview: borderBox];      
+      
+      _container = [[NSBox alloc] initWithFrame: rect];
+      [_container setTitle: @""];
+      [_container setTitlePosition: NSNoTitle];
+      [_container setBorderType: NSBezelBorder];
+      [_container setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+      [borderBox addSubview: _container];      
     }
   return self;
 }
 
-/*
-- (void) setContentView: (NSView *)view
+- (id) container
 {
-  [_box setContentView: view];
+  return _container;
 }
-
-- (NSView *) contentView
-{
-  return [_box contentView];
-}
-*/
 
 - (NSRect) frameFromParentWindowFrame
 {
@@ -176,16 +200,51 @@ static NSNotificationCenter *nc = nil;
   [self setFrame: tempFrame display: YES];
 }
 
+- (void) startTimer
+{
+  NSTimeInterval time = 3.0;
+  _timer = [NSTimer scheduledTimerWithTimeInterval: time
+		    target: self
+		    selector: @selector(_timedWindowReset)
+		    userInfo: nil
+		    repeats: YES];
+}
+
+- (void) stopTimer
+{
+  [_timer invalidate];
+}
+
+- (void) orderFrontRegardless
+{
+  [self orderFront: self];
+}
+
+- (void) orderOut: (id)sender
+{
+  [super orderOut: sender];
+}
+
+/*
+- (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (int)windowNum
+{
+  NSLog(@"Ordering window....");
+  [super orderWindow: place relativeTo: windowNum];  
+}
+*/
+
 - (void) openOnEdge
 {
   [self orderFront: self];
   [self slide];
+  // [self startTimer];
 }
 
 - (void) closeOnEdge
 {
-  NSRect frame = [self frameFromParentWindowFrame]; // : [_parentWindow frame]];
-  // slide the drawer closed....
+  NSRect frame = [self frameFromParentWindowFrame];
+
+  //  [self stopTimer];
   [self slide];
   [self setFrame: frame display: YES];
   [self orderOut: self];
@@ -195,7 +254,7 @@ static NSNotificationCenter *nc = nil;
     {
       [self setParentWindow: _pendingParentWindow];
       ASSIGN(_pendingParentWindow, nil);
-    }
+    }  
 }
 
 - (void) slide
@@ -254,21 +313,34 @@ static NSNotificationCenter *nc = nil;
     }
 }
 
+- (void) _resetWindowPosition
+{
+  NSRect frame = [self frameFromParentWindowFrame]; 
+  [self setFrame: frame display: YES];
+}
+
+- (void) _timedWindowReset
+{
+  NSRect frame = [_parentWindow frame];
+  [self _resetWindowPosition];
+  [_parentWindow setFrame: frame display: YES];
+}
+
 - (void) handleWindowClose: (NSNotification *)notification
 {
+  [self stopTimer];
   [self close];
 }
 
 - (void) handleWindowMiniaturize: (NSNotification *)notification
 {
+  [self stopTimer];
   [self close];
 }
 
 - (void) handleWindowMove: (NSNotification *)notification
 {
-  NSRect frame = [self frameFromParentWindowFrame]; // : [obj frame]];
-  NSLog(@"%@",NSStringFromRect(frame));
-  [self setFrame: frame display: NO];
+  [self _resetWindowPosition];
 }
 
 - (void) setParentWindow: (NSWindow *)window
@@ -280,8 +352,7 @@ static NSNotificationCenter *nc = nil;
 
       if (_parentWindow != nil)
 	{
-	  NSRect frame = [self frameFromParentWindowFrame];
-	  [self setFrame: frame display: YES];
+	  [self _resetWindowPosition];
 
 	  // add observers....
 	  [nc addObserver: self
@@ -296,7 +367,7 @@ static NSNotificationCenter *nc = nil;
 
 	  [nc addObserver: self
 	      selector: @selector(handleWindowMove:)
-	      name: NSWindowDidMoveNotification
+	      name: NSWindowWillMoveNotification
 	      object: _parentWindow];
 
 	  [nc addObserver: self
@@ -335,6 +406,7 @@ static NSNotificationCenter *nc = nil;
 
 - (void) dealloc
 {
+  [self stopTimer];
   RELEASE(_parentWindow);
   TEST_RELEASE(_pendingParentWindow);
   [super dealloc];
@@ -355,7 +427,7 @@ static NSNotificationCenter *nc = nil;
 // Creation
 - (id) init
 {
-  return [self initWithContentSize: NSZeroSize
+  return [self initWithContentSize: NSMakeSize(100,100)
 	       preferredEdge: NSMinXEdge];
 }
 
@@ -549,7 +621,7 @@ static NSNotificationCenter *nc = nil;
 // Managing Views
 - (NSView *) contentView
 {
-  return [_drawerWindow contentView];
+  return [[_drawerWindow container] contentView];
 }
 
 - (NSWindow *) parentWindow
@@ -559,7 +631,7 @@ static NSNotificationCenter *nc = nil;
 
 - (void) setContentView: (NSView *)aView
 {
-  [_drawerWindow setContentView: aView];
+  [[_drawerWindow container] setContentView: aView];
 }
 
 - (void) setParentWindow: (NSWindow *)parent

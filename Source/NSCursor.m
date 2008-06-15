@@ -12,19 +12,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */ 
 
 #include <Foundation/NSArray.h>
@@ -308,21 +309,23 @@ NSCursor *getStandardCursor(NSString *name, int style)
  */
 - (id) init
 {
-  return [self initWithImage: nil hotSpot: NSMakePoint(0,15)];
+  return [self initWithImage: nil hotSpot: NSMakePoint(0,0)];
 }
 
 /**<p>Initializes and returns a new NSCursor with a NSImage <var>newImage</var>
-   and a hot spot point with x=0 and y=15.</p>
+   and a hot spot point with x=0 and y=0 (top left corner).</p>
    <p>See Also: -initWithImage:hotSpot:</p>
  */
 - (id) initWithImage: (NSImage *)newImage
 {
   return [self initWithImage: newImage
-		     hotSpot: NSMakePoint(0,15)];
+		     hotSpot: NSZeroPoint];
 }
 
 /**<p>Initializes and returns a new NSCursor with a NSImage <var>newImage</var>
    and the hot spot to <var>hotSpot</var>.</p>
+   <p>NB. The coordinate system of an NSCursor is flipped, so a hotSpot at
+   0,0 is in the top left corner of the cursor.</p>
    <p>See Also: -initWithImage: -setImage:</p>
  */
 - (id) initWithImage: (NSImage *)newImage hotSpot: (NSPoint)hotSpot
@@ -359,7 +362,9 @@ backgroundColorHint:(NSColor *)bg
   [super dealloc];
 }
 
-/**<p>Returns the hot spot point of the NSCursor</p>
+/**<p>Returns the hot spot point of the NSCursor.  This is in the
+ * cursor's coordinate system which is a flipped on (origin at the
+ * top left of the cursor).</p>
  */
 - (NSPoint) hotSpot
 {

@@ -20,18 +20,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
-   License along with this library; if not, write to the Free
-   Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02111 USA.
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 #include "AppKit/NSCell.h"
@@ -45,18 +47,18 @@
 
 @implementation NSTextAttachmentCell
 
-- (void)drawWithFrame:(NSRect)cellFrame 
-	       inView:(NSView *)controlView 
-       characterIndex:(unsigned)charIndex
+- (void)drawWithFrame: (NSRect)cellFrame 
+	       inView: (NSView *)controlView 
+       characterIndex: (unsigned)charIndex
 {
   [self drawWithFrame: cellFrame 
 	inView: controlView];
 }
 
-- (void)drawWithFrame:(NSRect)cellFrame 
-	       inView:(NSView *)controlView 
-       characterIndex:(unsigned)charIndex
-	layoutManager:(NSLayoutManager *)layoutManager
+- (void)drawWithFrame: (NSRect)cellFrame 
+	       inView: (NSView *)controlView 
+       characterIndex: (unsigned)charIndex
+	layoutManager: (NSLayoutManager *)layoutManager
 {
   [self drawWithFrame: cellFrame 
 	inView: controlView
@@ -68,10 +70,10 @@
   return NSZeroPoint;
 }
 
-- (NSRect)cellFrameForTextContainer:(NSTextContainer *)textContainer 
-	       proposedLineFragment:(NSRect)lineFrag
-		      glyphPosition:(NSPoint)position 
-		     characterIndex:(unsigned)charIndex
+- (NSRect)cellFrameForTextContainer: (NSTextContainer *)textContainer 
+	       proposedLineFragment: (NSRect)lineFrag
+		      glyphPosition: (NSPoint)position 
+		     characterIndex: (unsigned)charIndex
 {
   NSRect aRect;
   
@@ -85,18 +87,18 @@
   return YES;
 }
 
-- (BOOL)wantsToTrackMouseForEvent:(NSEvent *)theEvent 
-			   inRect:(NSRect)cellFrame 
-			   ofView:(NSView *)controlView
-		 atCharacterIndex:(unsigned)charIndex
+- (BOOL)wantsToTrackMouseForEvent: (NSEvent *)theEvent 
+			   inRect: (NSRect)cellFrame 
+			   ofView: (NSView *)controlView
+		 atCharacterIndex: (unsigned)charIndex
 {
   return [self wantsToTrackMouse];
 }
 
-- (BOOL)trackMouse:(NSEvent *)theEvent 
-	    inRect:(NSRect)cellFrame 
-	    ofView:(NSView *)controlView 
-      untilMouseUp:(BOOL)flag
+- (BOOL)trackMouse: (NSEvent *)theEvent 
+	    inRect: (NSRect)cellFrame 
+	    ofView: (NSView *)controlView 
+      untilMouseUp: (BOOL)flag
 {
   if ([controlView respondsToSelector: @selector(delegate)])
     {
@@ -108,9 +110,8 @@
         {
 	  if ([theEvent clickCount] == 2)
 	    {
-	      if (delegate != nil && 
-		  [delegate respondsToSelector: 
-				@selector(textView:doubleClickedOnCell:inRect:)])
+	      if (delegate != nil && [delegate respondsToSelector: 
+		@selector(textView:doubleClickedOnCell:inRect:)])
 	        {
 		  [delegate textView: textView 
 			    doubleClickedOnCell: self 
@@ -120,9 +121,8 @@
 	    }
 	  else
 	    {
-	      if (delegate != nil && 
-		  [delegate respondsToSelector: 
-				@selector(textView:clickedOnCell:inRect:)])
+	      if (delegate != nil && [delegate respondsToSelector: 
+		@selector(textView:clickedOnCell:inRect:)])
 	        {
 		  [delegate textView: textView 
 			    clickedOnCell: self 
@@ -133,9 +133,8 @@
 	}
       else if (type == NSLeftMouseDragged)
         {
-	  if (delegate != nil && 
-	      [delegate respondsToSelector: 
-			    @selector(textView:draggedCell:inRect:event:)])
+	  if (delegate != nil && [delegate respondsToSelector: 
+	    @selector(textView:draggedCell:inRect:event:)])
 	    {
 	      [delegate textView: textView 
 			draggedCell: self 
@@ -152,11 +151,11 @@
 		untilMouseUp: flag];
 }
 
-- (BOOL)trackMouse:(NSEvent *)theEvent 
-	    inRect:(NSRect)cellFrame 
-	    ofView:(NSView *)controlView
-  atCharacterIndex:(unsigned)charIndex 
-      untilMouseUp:(BOOL)flag
+- (BOOL)trackMouse: (NSEvent *)theEvent 
+	    inRect: (NSRect)cellFrame 
+	    ofView: (NSView *)controlView
+  atCharacterIndex: (unsigned)charIndex 
+      untilMouseUp: (BOOL)flag
 {
   if ([controlView respondsToSelector: @selector(delegate)])
     {
@@ -168,9 +167,8 @@
         { 
 	  if ([theEvent clickCount] == 2)
 	    {
-	      if (delegate != nil && 
-		  [delegate respondsToSelector: 
-				@selector(textView:doubleClickedOnCell:inRect:atIndex:)])
+	      if (delegate != nil && [delegate respondsToSelector: 
+		@selector(textView:doubleClickedOnCell:inRect:atIndex:)])
 	        {
 		  [delegate textView: textView 
 			    doubleClickedOnCell: self 
@@ -181,9 +179,8 @@
 	    }
 	  else
 	    {
-	      if (delegate != nil && 
-		  [delegate respondsToSelector: 
-				@selector(textView:clickedOnCell:inRect:atIndex:)])
+	      if (delegate != nil && [delegate respondsToSelector: 
+		@selector(textView:clickedOnCell:inRect:atIndex:)])
 	        {
 		  [delegate textView: textView 
 			    clickedOnCell: self 
@@ -195,9 +192,8 @@
 	}
       else if (type == NSLeftMouseDragged)
         {
-	  if (delegate != nil && 
-	      [delegate respondsToSelector: 
-			    @selector(textView:draggedCell:inRect:event:atIndex:)])
+	  if (delegate != nil && [delegate respondsToSelector: 
+	    @selector(textView:draggedCell:inRect:event:atIndex:)])
 	    {
 	      [delegate textView: textView 
 			draggedCell: self 
@@ -215,7 +211,7 @@
 	       untilMouseUp: flag];
 }
 
-- (void)setAttachment:(NSTextAttachment *)anObject
+- (void)setAttachment: (NSTextAttachment *)anObject
 {
   NSFileWrapper *fileWrap = [anObject fileWrapper];
 
@@ -252,16 +248,16 @@
   return [super cellSize];
 }
 
-- (void)highlight:(BOOL)flag 
-	withFrame:(NSRect)cellFrame 
-	   inView:(NSView *)controlView
+- (void)highlight: (BOOL)flag 
+	withFrame: (NSRect)cellFrame 
+	   inView: (NSView *)controlView
 {
   [super highlight: flag 
 	 withFrame: cellFrame 
 	 inView: controlView];
 }
 
-- (void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
+- (void)drawWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
 {
   [super drawWithFrame: cellFrame inView: controlView];
 }
@@ -283,7 +279,7 @@
   [super dealloc];
 }
 
-- (id) initWithFileWrapper:(NSFileWrapper *)fileWrapper
+- (id) initWithFileWrapper: (NSFileWrapper *)fileWrapper
 {
   self = [super init];
   if (self != nil)
@@ -295,11 +291,14 @@
   return self;
 }
 
-- (void)setFileWrapper:(NSFileWrapper *)fileWrapper
+- (void)setFileWrapper: (NSFileWrapper *)fileWrapper
 {
   ASSIGN(_fileWrapper, fileWrapper);
   // Reset the cell, so it shows the new attachment
-  [_cell setAttachment: self];
+  if ([_cell respondsToSelector: @selector(setAttachment:)] == YES)
+    {
+      [_cell setAttachment: self];
+    }
 }
 
 - (NSFileWrapper *)fileWrapper
@@ -312,10 +311,13 @@
   return _cell;
 }
 
-- (void)setAttachmentCell:(id <NSTextAttachmentCell>)cell
+- (void)setAttachmentCell: (id <NSTextAttachmentCell>)cell
 {
   ASSIGN(_cell, cell);
-  [_cell setAttachment: self];
+  if ([_cell respondsToSelector: @selector(setAttachment:)] == YES)
+    {
+      [_cell setAttachment: self];
+    }
 }
 
 /*
@@ -346,7 +348,10 @@
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_cell];
       
       // Reconnect the cell, so the cell does not have to store the attachment
-      [_cell setAttachment: self];
+      if ([_cell respondsToSelector: @selector(setAttachment:)] == YES)
+	{
+	  [_cell setAttachment: self];
+	}
     }
   return self;
 }

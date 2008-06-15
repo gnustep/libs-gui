@@ -10,26 +10,84 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSPredicate.h>
 #include <Foundation/NSString.h>
+#include <Foundation/NSArchiver.h>
+#include <Foundation/NSKeyedArchiver.h>
 #include <AppKit/NSObjectController.h>
+
+@interface _NSManagedProxy : NSObject
+{
+  NSString *_entity_name_key;
+}
+
+- (void) setEntityName: (NSString *)name;
+- (NSString *) entityName;
+@end
+
+@implementation _NSManagedProxy
+- (id) initWithCoder: (NSCoder *)coder
+{
+  if((self = [super init]) != nil)
+    {
+      if([coder allowsKeyedCoding])
+	{
+	  ASSIGN(_entity_name_key,[coder decodeObjectForKey: @"NSEntityName"]);
+	}
+      else
+	{
+	  ASSIGN(_entity_name_key,[coder decodeObject]);
+	}
+    }
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  if([coder allowsKeyedCoding])
+    {
+      [coder encodeObject: _entity_name_key forKey: @"NSEntityName"];
+    }
+  else
+    {
+      [coder encodeObject: _entity_name_key];
+    }
+}
+
+- (void) dealloc
+{
+  RELEASE(_entity_name_key);
+  [super dealloc];
+}
+
+- (void) setEntityName: (NSString *)name
+{
+  ASSIGN(_entity_name_key, name);
+}
+
+- (NSString *) entityName
+{
+  return _entity_name_key;
+}
+@end
 
 @implementation NSObjectController
 
@@ -40,6 +98,7 @@
       [self setContent: content];
       [self setObjectClass: [NSMutableDictionary class]];
       [self setEditable: YES];
+      _managed_proxy = nil;
     }
 
   return self;
@@ -58,28 +117,52 @@
   [super dealloc];
 }
 
-- (void) encodeWithCoder: (NSCoder *)aCoder
+- (void) encodeWithCoder: (NSCoder *)coder
 { 
-  [super encodeWithCoder: aCoder];
-  // TODO
+  [super encodeWithCoder: coder];
+  if([coder allowsKeyedCoding])
+    {
+      [coder encodeBool: _is_editable forKey: @"NSEditable"];
+      [coder encodeBool: _automatically_prepares_content forKey: @"NSAutomaticallyPreparesContent"];
+      [coder encodeObject: _managed_proxy forKey: @"_NSManagedProxy"];
+    }
+  else
+    {
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &_is_editable];
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &_automatically_prepares_content];
+      [coder encodeConditionalObject: _managed_proxy];
+    }
 }
 
-- (id) initWithCoder: (NSCoder *)aDecoder
+- (id) initWithCoder: (NSCoder *)coder
 { 
-  self = [super initWithCoder: aDecoder];
-  // TODO
-
-  if ([self automaticallyPreparesContent])
-  {
-    if ([self managedObjectContext] != nil)
-      {
-	[self fetch: aDecoder];  
-      }
-    else 
-      {
-	[self prepareContent];
-      }
-  }
+  if((self = [super initWithCoder: coder]) != nil)
+    {
+      if ([self automaticallyPreparesContent])
+	{
+	  if ([self managedObjectContext] != nil)
+	    {
+	      [self fetch: coder];  
+	    }
+	  else 
+	    {
+	      [self prepareContent];
+	    }
+	}
+      
+      if([coder allowsKeyedCoding])
+	{
+	  _is_editable = [coder decodeBoolForKey: @"NSEditable"];
+	  _automatically_prepares_content = [coder decodeBoolForKey: @"NSAutomaticallyPreparesContent"];
+	  ASSIGN(_managed_proxy, [coder decodeObjectForKey: @"_NSManagedProxy"]);
+	}
+      else
+	{
+	  [coder decodeValueOfObjCType: @encode(BOOL) at: &_is_editable];
+	  [coder decodeValueOfObjCType: @encode(BOOL) at: &_automatically_prepares_content];
+	  ASSIGN(_managed_proxy, [coder decodeObject]);
+	}
+    }
 
   return self; 
 }
@@ -99,9 +182,9 @@
   return _object_class;
 }
 
-- (void) setObjectClass: (Class)class
+- (void) setObjectClass: (Class)aClass
 {
-  _object_class = class;
+  _object_class = aClass;
 }
 
 - (id) newObject

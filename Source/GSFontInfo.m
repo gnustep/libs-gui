@@ -11,24 +11,26 @@
    This file is part of the GNUstep.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
-   License along with this library; if not, write to the Free
-   Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02111 USA.
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 #include <math.h>
 
 #include "GNUstepGUI/GSFontInfo.h"
+#include <Foundation/NSCharacterSet.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSArray.h>
@@ -462,7 +464,12 @@ static GSFontEnumerator *sharedEnumerator = nil;
 
 - (BOOL) glyphIsEncoded: (NSGlyph)aGlyph;
 {
-  return NO;
+  // FIXME: This is a hack for aGlyph == theChar fonts.
+  if (coveredCharacterSet == nil)
+    {
+      [self coveredCharacterSet];
+    }
+  return [coveredCharacterSet characterIsMember: (unichar)aGlyph];
 }
 
 - (NSMultibyteGlyphPacking) glyphPacking
@@ -578,12 +585,20 @@ static GSFontEnumerator *sharedEnumerator = nil;
   return weight;
 }
 
-
 -(void) appendBezierPathWithGlyphs: (NSGlyph *)glyphs
 			     count: (int)count
 		      toBezierPath: (NSBezierPath *)path
 {
   [self subclassResponsibility: _cmd];
+}
+
+- (NSGlyph) glyphForCharacter: (unichar)theChar
+{
+  // Hack to get most font backends working
+  if ([self glyphIsEncoded: (NSGlyph)theChar])
+    return (NSGlyph)theChar;
+  else
+    return NSNullGlyph;
 }
 
 @end

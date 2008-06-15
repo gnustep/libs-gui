@@ -11,19 +11,19 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor,
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
    Boston, MA 02110-1301, USA.
 */ 
 
@@ -151,7 +151,7 @@ enum {
     unsigned allows_undo: 1;
     unsigned line_break_mode: 3; // 6 values
 
-    // total 19 bits.  4 bits extension, 9 bits left.
+    // total 20 bits.  4 bits extension, 8 bits left.
     int state: 2; // 3 values but one negative
     unsigned mnemonic_location: 8;
     unsigned control_tint: 3;
@@ -163,9 +163,11 @@ enum {
     unsigned subclass_bool_two: 1;
     unsigned subclass_bool_three: 1;
     unsigned subclass_bool_four: 1;
+    // Set while the cell is edited/selected
+    unsigned in_editing: 1;
   } _cell;
   unsigned int _mouse_down_flags;
-  unsigned int _action_mask; 
+  unsigned int _action_mask;
   NSFormatter *_formatter;
   NSMenu *_menu;
   id _represented_object; 
@@ -441,6 +443,10 @@ enum {
 - (void)setControlTint:(NSControlTint)controlTint;
 - (NSControlTint)controlTint;
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (void)setControlView:(NSView*)view;
+#endif
+
 
 //
 // Editing Text 
@@ -480,6 +486,11 @@ enum {
 - (void) _drawAttributedText: (NSAttributedString*)aString  
 		     inFrame: (NSRect)aRect;
 - (BOOL) _sendsActionOn:(int)eventTypeMask;
+- (NSAttributedString*) _drawAttributedString;
+- (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame 
+                                    inView: (NSView*)controlView;
+- (void) _drawFocusRingWithFrame: (NSRect)cellFrame 
+                          inView: (NSView*)controlView;
 @end
 
 //

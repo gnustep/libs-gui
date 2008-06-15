@@ -12,21 +12,21 @@
    This file is part of the GNUStep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
-   
-   You should have received a copy of the GNU Library General Public
-   License along with this library; if not, write to the Free
-   Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02111 USA.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
-   
 
 #include <Foundation/NSGeometry.h> 
 #include <Foundation/NSString.h> 
@@ -44,9 +44,15 @@
 #include "AppKit/NSGraphicsContext.h"
 #include "AppKit/NSAffineTransform.h"
 #include "AppKit/NSBezierPath.h"
+#include "AppKit/NSPrintInfo.h"
+#include "AppKit/NSPrintOperation.h"
 #include "AppKit/NSWindow.h"
 #include "AppKit/NSView.h"
 #include "AppKit/DPSOperators.h"
+#include "GNUstepGUI/GSVersion.h"
+#include "GNUstepGUI/GSDisplayServer.h"
+
+typedef struct { @defs(NSThread) } *TInfo;
 
 /* The memory zone where all global objects are allocated from (Contexts
    are also allocated from this zone) */
@@ -90,7 +96,7 @@ NSGraphicsContext	*GSCurrentContext(void)
  */
   NSThread *th = GSCurrentThread();
 
-  return (NSGraphicsContext*) th->_gcontext;
+  return (NSGraphicsContext*) ((TInfo)th)->_gcontext;
 #else
   NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
 
@@ -159,7 +165,7 @@ NSGraphicsContext	*GSCurrentContext(void)
  */
   NSThread *th = GSCurrentThread();
 
-  ASSIGN(th->_gcontext, context);
+  ASSIGN(((TInfo)th)->_gcontext, context);
 #else
   NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
 
@@ -189,15 +195,8 @@ NSGraphicsContext	*GSCurrentContext(void)
 + (NSGraphicsContext *) graphicsContextWithAttributes: (NSDictionary *)attributes
 {
   NSGraphicsContext *ctxt;
-  if (self == [NSGraphicsContext class])
-    {
-      NSAssert(defaultNSGraphicsContextClass, 
-	       @"Internal Error: No default NSGraphicsContext set\n");
-      ctxt = [[defaultNSGraphicsContextClass allocWithZone: _globalGSZone]
-	       initWithContextInfo: attributes];
-    }
-  else
-    ctxt = [[self allocWithZone: _globalGSZone] initWithContextInfo: attributes];
+
+  ctxt = [[self alloc] initWithContextInfo: attributes];
  
   return AUTORELEASE(ctxt);
 }
@@ -207,7 +206,29 @@ NSGraphicsContext	*GSCurrentContext(void)
    device description. */
 + (NSGraphicsContext *) graphicsContextWithWindow: (NSWindow *)aWindow
 {
-  return [self graphicsContextWithAttributes: [aWindow deviceDescription]];
+  return [self graphicsContextWithAttributes:
+                   [NSDictionary dictionaryWithObject: aWindow 
+                                 forKey: NSGraphicsContextDestinationAttributeName]];
+}
+
++ (NSGraphicsContext *) graphicsContextWithBitmapImageRep: (NSBitmapImageRep *)bitmap
+{
+  return [self graphicsContextWithAttributes:
+                   [NSDictionary dictionaryWithObject: bitmap 
+                                 forKey: NSGraphicsContextDestinationAttributeName]];
+}
+
++ (NSGraphicsContext *) graphicsContextWithGraphicsPort: (void *)port 
+                                                flipped: (BOOL)flag
+{
+  NSGraphicsContext *new;
+
+  // FIXME
+  new = [self graphicsContextWithAttributes: nil];
+  new->_graphicsPort = port;
+  new->_isFlipped = flag;
+
+  return new;
 }
 
 + (void) restoreGraphicsState
@@ -248,6 +269,23 @@ NSGraphicsContext	*GSCurrentContext(void)
   [self notImplemented: _cmd];
 }
 
++ (id) alloc
+{
+  return [self allocWithZone: _globalGSZone];
+}
+
++ (id) allocWithZone: (NSZone*)z
+{
+  if (self == [NSGraphicsContext class])
+    {
+      NSAssert(defaultNSGraphicsContextClass, 
+	       @"Internal Error: No default NSGraphicsContext set\n");
+      return [defaultNSGraphicsContextClass allocWithZone: z];
+    }
+  else
+    return [super allocWithZone: z];
+}
+
 - (void) dealloc
 {
   DESTROY(usedFonts);
@@ -281,11 +319,11 @@ NSGraphicsContext	*GSCurrentContext(void)
       [contextLock lock];
       methods = [[classMethodTable objectForKey: [self class]] pointerValue];
       if (methods == 0)
-	{
-	  methods = [[self class] _initializeMethodTable];
-	  [classMethodTable setObject: [NSValue valueWithPointer: methods]
-			       forKey: [self class]];
-	}
+        {
+          methods = [[self class] _initializeMethodTable];
+          [classMethodTable setObject: [NSValue valueWithPointer: methods]
+                            forKey: [self class]];
+        }
       [contextLock unlock];
     }
   return self;
@@ -303,7 +341,7 @@ NSGraphicsContext	*GSCurrentContext(void)
 
 - (void *) graphicsPort
 {
-  return NULL;
+  return _graphicsPort;
 }
 
 - (BOOL) isDrawingToScreen
@@ -349,6 +387,35 @@ NSGraphicsContext	*GSCurrentContext(void)
 - (BOOL) shouldAntialias
 {
   return _antialias;
+}
+
+- (NSPoint) patternPhase
+{
+  return _patternPhase;
+}
+
+- (void) setPatternPhase: (NSPoint)phase
+{
+  _patternPhase = phase;
+}
+
+- (BOOL) isFlipped
+{
+  NSView *focusView = [self focusView];
+
+  if (focusView)
+    return [focusView isFlipped];
+  else
+    return _isFlipped;
+}
+- (NSCompositingOperation) compositingOperation
+{
+  return _compositingOperation;
+}
+
+- (void) setCompositingOperation: (NSCompositingOperation)operation
+{
+  _compositingOperation = operation;
 }
 
 - (NSView*) focusView
@@ -845,6 +912,12 @@ NSGraphicsContext	*GSCurrentContext(void)
     outlines of the glyphs in the string. This results in a path
     that can be used for stroking, filling or clipping (DPS). */
 - (void) DPScharpath: (const char *)s : (int)b 
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) appendBezierPathWithPackedGlyphs: (const char *)packedGlyphs
+                                     path: (NSBezierPath*)aPath
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1460,7 +1533,7 @@ NSGraphicsContext	*GSCurrentContext(void)
 /** Generic method to draw an image into a rect. The image is defined
     by imageref, an opaque structure. Support for this method hasn't
     been implemented yet, so it should not be used anywhere. */
-- (void) GSDrawImage: (NSRect) rect: (void *) imageref
+- (void) GSDrawImage: (NSRect)rect: (void *)imageref
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1483,8 +1556,6 @@ NSGraphicsContext	*GSCurrentContext(void)
 }
 
 @end
-
-#include "GNUstepGUI/GSDisplayServer.h"
 
 /* ----------------------------------------------------------------------- */
 /* NSGraphics Ops */	
@@ -1527,6 +1598,176 @@ NSGraphicsContext	*GSCurrentContext(void)
 - (BOOL) GSWViewIsFlipped
 {
   return [[self focusView] isFlipped];
+}
+
+@end
+
+@implementation NSGraphicsContext (Printing)
+
+- (void) beginPage: (int)ordinalNum
+             label: (NSString*)aString
+              bBox: (NSRect)pageRect
+             fonts: (NSString*)fontNames
+{
+  if (aString == nil)
+    aString = [[NSNumber numberWithInt: ordinalNum] description];
+  DPSPrintf(self, "%%%%Page: %s %d\n", [aString lossyCString], ordinalNum);
+  if (NSIsEmptyRect(pageRect) == NO)
+    DPSPrintf(self, "%%%%PageBoundingBox: %d %d %d %d\n",
+	      (int)NSMinX(pageRect), (int)NSMinY(pageRect), 
+	      (int)NSMaxX(pageRect), (int)NSMaxY(pageRect));
+  if (fontNames)
+    DPSPrintf(self, "%%%%PageFonts: %s\n", [fontNames lossyCString]);
+  DPSPrintf(self, "%%%%BeginPageSetup\n");
+}
+
+- (void) beginPrologueBBox: (NSRect)boundingBox
+              creationDate: (NSString*)dateCreated
+                 createdBy: (NSString*)anApplication
+                     fonts: (NSString*)fontNames
+                   forWhom: (NSString*)user
+                     pages: (int)numPages
+                     title: (NSString*)aTitle
+{
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSPrintingOrientation orient;
+  BOOL epsOp;
+
+  epsOp = [printOp isEPSOperation];
+  orient = [[printOp printInfo] orientation];
+
+  if (epsOp)
+    DPSPrintf(self, "%%!PS-Adobe-3.0 EPSF-3.0\n");
+  else
+    DPSPrintf(self, "%%!PS-Adobe-3.0\n");
+  DPSPrintf(self, "%%%%Title: %s\n", [aTitle lossyCString]);
+  DPSPrintf(self, "%%%%Creator: %s\n", [anApplication lossyCString]);
+  DPSPrintf(self, "%%%%CreationDate: %s\n", 
+	    [[dateCreated description] lossyCString]);
+  DPSPrintf(self, "%%%%For: %s\n", [user lossyCString]);
+  if (fontNames)
+    DPSPrintf(self, "%%%%DocumentFonts: %s\n", [fontNames lossyCString]);
+  else
+    DPSPrintf(self, "%%%%DocumentFonts: (atend)\n");
+
+  if (NSIsEmptyRect(boundingBox) == NO)
+    DPSPrintf(self, "%%%%BoundingBox: %d %d %d %d\n", 
+              (int)NSMinX(boundingBox), (int)NSMinY(boundingBox), 
+              (int)NSMaxX(boundingBox), (int)NSMaxY(boundingBox));
+  else
+    DPSPrintf(self, "%%%%BoundingBox: (atend)\n");
+
+  if (epsOp == NO)
+    {
+      if (numPages)
+        DPSPrintf(self, "%%%%Pages: %d\n", numPages);
+      else
+        DPSPrintf(self, "%%%%Pages: (atend)\n");
+      if ([printOp pageOrder] == NSDescendingPageOrder)
+        DPSPrintf(self, "%%%%PageOrder: Descend\n");
+      else if ([printOp pageOrder] == NSAscendingPageOrder)
+        DPSPrintf(self, "%%%%PageOrder: Ascend\n");
+      else if ([printOp pageOrder] == NSSpecialPageOrder)
+        DPSPrintf(self, "%%%%PageOrder: Special\n");
+
+      if (orient == NSPortraitOrientation)
+        DPSPrintf(self, "%%%%Orientation: Portrait\n");
+      else
+        DPSPrintf(self, "%%%%Orientation: Landscape\n");
+    }
+
+  DPSPrintf(self, "%%%%GNUstepVersion: %d.%d.%d\n", 
+	    GNUSTEP_GUI_MAJOR_VERSION, GNUSTEP_GUI_MINOR_VERSION,
+	    GNUSTEP_GUI_SUBMINOR_VERSION);
+}
+
+- (void) beginSetup
+{
+  DPSPrintf(self, "%%%%BeginSetup\n");
+}
+
+- (void) beginTrailer
+{
+  DPSPrintf(self, "%%%%Trailer\n");
+}
+
+- (void) endDocumentPages: (int)pages
+            documentFonts: (NSSet*)fontNames
+{
+  if (pages != 0)
+    {
+      DPSPrintf(self, "%%%%Pages: %d\n", pages);
+    }
+  if (fontNames && [fontNames count])
+    {
+      NSString *name;
+      NSEnumerator *e = [fontNames objectEnumerator];
+
+      DPSPrintf(self, "%%%%DocumentFonts: %@\n", [e nextObject]);
+      while ((name = [e nextObject]))
+        {
+          DPSPrintf(self, "%%%%+ %@\n", name);
+        }
+    }
+ 
+}
+
+- (void) endHeaderComments
+{
+  DPSPrintf(self, "%%%%EndComments\n\n");
+}
+
+- (void) endPageSetup
+{
+  DPSPrintf(self, "%%%%EndPageSetup\n");
+}
+
+- (void) endPrologue
+{
+  DPSPrintf(self, "%%%%EndProlog\n\n");
+}
+
+- (void) endSetup
+{
+  DPSPrintf(self, "%%%%EndSetup\n\n");
+}
+
+- (void) endSheet
+{
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+
+  if ([printOp isEPSOperation] == NO)
+    {
+      [self showPage];
+    }
+  DPSPrintf(self, "%%%%PageTrailer\n\n");
+}
+
+- (void) endTrailer
+{
+  DPSPrintf(self, "%%%%EOF\n");
+}
+
+- (void) printerProlog
+{
+  NSString *prolog;
+
+  DPSPrintf(self, "%%%%BeginProlog\n");
+  prolog = [NSBundle pathForLibraryResource: @"GSProlog"
+                     ofType: @"ps"
+                     inDirectory: @"PostScript"];
+  if (prolog == nil)
+    {
+      NSLog(@"Cannot find printer prolog file");
+      return;
+    }
+  prolog = [NSString stringWithContentsOfFile: prolog];
+  DPSPrintf(self, [prolog cString]);
+}
+
+- (void) showPage
+{
+  DPSPrintf(self, "showpage\n");
 }
 
 @end

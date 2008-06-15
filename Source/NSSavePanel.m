@@ -16,19 +16,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
-   Library General Public License for more details.
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 #include <Foundation/NSAutoreleasePool.h>
@@ -43,6 +44,7 @@
 #include "AppKit/NSBrowser.h"
 #include "AppKit/NSBrowserCell.h"
 #include "AppKit/NSButton.h"
+#include "AppKit/NSEvent.h"
 #include "AppKit/NSFont.h"
 #include "AppKit/NSForm.h"
 #include "AppKit/NSImage.h"
@@ -63,6 +65,32 @@ static NSSavePanel *_gs_gui_save_panel = nil;
 static NSFileManager *_fm = nil;
 
 static BOOL _gs_display_reading_progress = NO;
+
+static NSString	*
+pathToColumn(NSBrowser *browser, int column)
+{
+#if	defined(__MINGW32__)
+  if (column == 0)
+    return @"/";
+  else if (column == 1)
+    return [[[browser pathToColumn: column] substringFromIndex: 1]
+      stringByAppendingString: @"/"];
+  else
+    return [[browser pathToColumn: column] substringFromIndex: 1];
+#else
+  return [browser pathToColumn: column];
+#endif
+}
+
+static void
+setPath(NSBrowser *browser, NSString *path)
+{
+#if	defined(__MINGW32__)
+  [browser setPath: [@"/" stringByAppendingString: path]];
+#else
+  [browser setPath: path];
+#endif
+}
 
 //
 // SavePanel filename compare
@@ -220,15 +248,14 @@ static BOOL _gs_display_reading_progress = NO;
   [_form release];
 
   r = NSMakeRect (43, 6, 27, 27);
-  button = [[NSButton alloc] initWithFrame: r]; 
+  button = [[NSButton alloc] initWithFrame: r];
+  [button setRefusesFirstResponder: YES];
   [button setBordered: YES];
-  [button setButtonType: NSMomentaryPushButton];
   image = [NSImage imageNamed: @"common_Home"];
   [button setImage: image];
   [button setImagePosition: NSImageOnly]; 
   [button setTarget: self];
   [button setAction: @selector(_setHomeDirectory)];
-  // [_form setNextKeyView: button];
   [button setAutoresizingMask: NSViewMinXMargin];
   [button setTag: NSFileHandlingPanelHomeButton];
   [_bottomView addSubview: button];
@@ -238,8 +265,8 @@ static BOOL _gs_display_reading_progress = NO;
   
   r = NSMakeRect (78, 6, 27, 27);
   button = [[NSButton alloc] initWithFrame: r];
+  [button setRefusesFirstResponder: YES];
   [button setBordered: YES];
-  [button setButtonType: NSMomentaryPushButton];
   image = [NSImage imageNamed: @"common_Mount"]; 
   [button setImage: image]; 
   [button setImagePosition: NSImageOnly]; 
@@ -254,8 +281,8 @@ static BOOL _gs_display_reading_progress = NO;
 
   r = NSMakeRect (112, 6, 27, 27);
   button = [[NSButton alloc] initWithFrame: r];
+  [button setRefusesFirstResponder: YES];
   [button setBordered: YES];
-  [button setButtonType: NSMomentaryPushButton];
   image = [NSImage imageNamed: @"common_Unmount"]; 
   [button setImage: image];
   [button setImagePosition: NSImageOnly]; 
@@ -270,8 +297,8 @@ static BOOL _gs_display_reading_progress = NO;
   
   r = NSMakeRect (148, 6, 71, 27);
   button = [[NSButton alloc] initWithFrame: r]; 
+  [button setRefusesFirstResponder: YES];
   [button setBordered: YES];
-  [button setButtonType: NSMomentaryPushButton];
   [button setTitle:  @"Cancel"];
   [button setImagePosition: NSNoImage]; 
   [button setTarget: self];
@@ -285,8 +312,8 @@ static BOOL _gs_display_reading_progress = NO;
   
   r = NSMakeRect (228, 6, 71, 27);
   _okButton = [[NSButton alloc] initWithFrame: r]; 
+  [button setRefusesFirstResponder: YES];
   [_okButton setBordered: YES];
-  [_okButton setButtonType: NSMomentaryPushButton];
   [_okButton setTitle:  @"OK"];
   [_okButton setImagePosition: NSImageRight]; 
   [_okButton setImage: [NSImage imageNamed: @"common_ret"]];
@@ -311,6 +338,7 @@ static BOOL _gs_display_reading_progress = NO;
   [button setImage: image];
   [button setBordered: NO];
   [button setEnabled: NO];
+  [[button cell] setImageDimsWhenDisabled: NO];
   [button setImagePosition: NSImageOnly];
   [button setAutoresizingMask: NSViewMinYMargin];
   [button setTag: NSFileHandlingPanelImageButton];
@@ -434,7 +462,8 @@ static BOOL _gs_display_reading_progress = NO;
     {
       if (_delegateHasDirectoryDidChange)
         {
-	  [_delegate panel: self directoryDidChange: [_browser pathToColumn: column]];
+	  [_delegate panel: self
+	    directoryDidChange: pathToColumn(_browser, column)];
 	}
 
       if ([[[_form cellAtIndex: 0] stringValue] length] > 0)
@@ -504,7 +533,7 @@ selectCellWithString: (NSString*)title
 
   m = [sender matrixInColumn: column];
   isLeaf = [[m selectedCell] isLeaf];
-  path = [sender pathToColumn: column];
+  path = pathToColumn(sender, column);
 
   if (isLeaf)
     {
@@ -535,7 +564,7 @@ selectCellWithString: (NSString*)title
   if (filename == nil)
     filename = @"";
   ASSIGN(_fullFileName, [_directory stringByAppendingPathComponent: filename]);
-  [_browser setPath: _fullFileName];
+  setPath(_browser, _fullFileName);
 
   [self _selectCellName: filename];
   [[_form cellAtIndex: 0] setStringValue: filename];
@@ -677,7 +706,6 @@ selectCellWithString: (NSString*)title
   _delegateHasDirectoryDidChange = NO;
   _delegateHasSelectionDidChange = NO;
 */
-
   [self _getOriginalSize];
   return self;
 }
@@ -882,7 +910,7 @@ selectCellWithString: (NSString*)title
       && isDir)
     {
       ASSIGN (_directory, standardizedPath);
-      [_browser setPath: _directory];
+      setPath(_browser, _directory);
     }
 }
 
@@ -1065,7 +1093,7 @@ selectCellWithString: (NSString*)title
  */
 - (void) cancel: (id)sender
 {
-  ASSIGN(_directory, [_browser pathToColumn:[_browser lastColumn]]);
+  ASSIGN(_directory, pathToColumn(_browser, [_browser lastColumn]));
   [NSApp stopModalWithCode: NSCancelButton];
   [_okButton setEnabled: NO];
   [self close];
@@ -1094,7 +1122,7 @@ selectCellWithString: (NSString*)title
       return;
     }
 
-  ASSIGN (_directory, [_browser pathToColumn:[_browser lastColumn]]);
+  ASSIGN (_directory, pathToColumn(_browser, [_browser lastColumn]));
   filename = [[_form cellAtIndex: 0] stringValue];
   if ([filename isAbsolutePath] == YES)
     {
@@ -1117,7 +1145,7 @@ selectCellWithString: (NSString*)title
 	{
 	  ASSIGN (_directory, [filename stringByDeletingLastPathComponent]);
 	  ASSIGN (_fullFileName, filename);
-	  [_browser setPath: _fullFileName];
+	  setPath(_browser, _fullFileName);
 
 	  filename = [_fullFileName lastPathComponent];
 
@@ -1425,8 +1453,35 @@ createRowsForColumn: (int)column
 
   pool = [NSAutoreleasePool new];
   
-  path = [_browser pathToColumn: column];
+  path = pathToColumn(_browser, column);
+#if	defined(__MINGW32__)
+  if (column == 0)
+    {
+      NSMutableArray	*m;
+      unsigned		i;
+
+      files = [[NSWorkspace sharedWorkspace] mountedLocalVolumePaths];
+      m = [files mutableCopy];
+      i = [m count];
+      while (i-- > 0)
+	{
+	  NSString	*file = [m objectAtIndex: i];
+
+	  /* Strip the backslash from the drive name so we  don't
+	   * get it confusing the path we have.
+	   */
+	  file = [file substringToIndex: [file length] - 1];
+	  [m replaceObjectAtIndex: i withObject: file];
+	}
+      files = [m autorelease];
+    }
+  else
+    {
+      files = [[NSFileManager defaultManager] directoryContentsAtPath: path];
+    }
+#else
   files = [[NSFileManager defaultManager] directoryContentsAtPath: path];
+#endif
 
   /* Remove hidden files.  */
   {
@@ -1591,7 +1646,7 @@ createRowsForColumn: (int)column
 {
   NSArray	*cells = [[sender matrixInColumn: column] cells];
   unsigned	count = [cells count], i;
-  NSString	*path = [sender pathToColumn: column];
+  NSString	*path = pathToColumn(sender, column);
 
   // iterate through the cells asking the delegate if each filename is valid
   // if it says no for any filename, the column is not valid

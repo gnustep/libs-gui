@@ -9,19 +9,20 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */
 
 #include "GNUstepGUI/GSHorizontalTypesetter.h"
@@ -34,6 +35,7 @@
 #include <Foundation/NSLock.h>
 #include <Foundation/NSValue.h>
 
+#include "AppKit/NSAttributedString.h"
 #include "AppKit/NSParagraphStyle.h"
 #include "AppKit/NSTextAttachment.h"
 #include "AppKit/NSTextContainer.h"
@@ -256,21 +258,36 @@ including gi will have been cached.
   while (gi > 0)
     {
       if (g->g == NSControlGlyph)
-	return gi + cache_base;
+        return gi + cache_base;
       ch = [str characterAtIndex: g->char_index];
-      if (ch == 0x20 || ch == 0x0a || ch == 0x0d /* TODO: paragraph/line separator */)
-	{
-	  g->dont_show = YES;
-	  if (gi > 0)
-	    {
-	      g->pos = g[-1].pos;
-	      g->pos.x += g[-1].size.width;
-	    }
-	  else
-	    g->pos = NSMakePoint(0, 0);
-	  g->size.width = 0;
-	  return gi + 1 + cache_base;
-	}
+      /* TODO: paragraph/line separator */
+      if (ch == 0x20 || ch == 0x0a || ch == 0x0d)
+        {
+          g->dont_show = YES;
+          if (gi > 0)
+            {
+              g->pos = g[-1].pos;
+              g->pos.x += g[-1].size.width;
+            }
+          else
+            g->pos = NSMakePoint(0, 0);
+          g->size.width = 0;
+          return gi + 1 + cache_base;
+        }
+      /* Each CJK glyph should be treated as a word when wrapping word.
+         The range should work for most cases */
+      else if ((ch > 0x2ff0) && (ch < 0x9fff))
+         {
+           g->dont_show = NO;
+           if (gi > 0)
+             {
+               g->pos = g[-1].pos;
+               g->pos.x += g[-1].size.width;
+             }
+           else
+             g->pos = NSMakePoint(0,0);
+           return gi + cache_base;
+         }     
       gi--;
       g--;
     }
@@ -423,6 +440,32 @@ typedef struct GSHorizontalTypesetter_line_frag_s
   return YES;
 }
 
+
+- (NSRect)_getProposedRectFor: (BOOL)newParagraph
+               withLineHeight: (float) line_height 
+{
+  float hindent;
+  float tindent = [curParagraphStyle tailIndent];
+
+  if (newParagraph)
+    hindent = [curParagraphStyle firstLineHeadIndent];
+  else
+    hindent = [curParagraphStyle headIndent];
+
+  if (tindent <= 0.0)
+    { 
+      NSSize size;
+
+      size = [curTextContainer containerSize];
+      tindent = size.width + tindent;
+    }
+
+  return NSMakeRect(hindent,
+                    curPoint.y,
+                    tindent - hindent,
+                    line_height + [curParagraphStyle lineSpacing]);
+}
+
 /*
 Return values 0, 1, 2 are mostly the same as from
 -layoutGlyphsInLayoutManager:.... Additions:
@@ -473,7 +516,7 @@ Return values 0, 1, 2 are mostly the same as from
       [curLayoutManager _softInvalidateFirstGlyphInTextContainer: curTextContainer] == curGlyph)
     {
       if ([self _reuseSoftInvalidatedLayout])
-	return 4;
+        return 4;
     }
 
 
@@ -488,12 +531,11 @@ Return values 0, 1, 2 are mostly the same as from
       will be properly positioned after a trailing newline in the text.
       */
       NSRect r, r2, remain;
-      float hindent, tindent;
 
       if (!newParagraph || !curGlyph)
-	{
-	  return 2;
-	}
+        {
+          return 2;
+        }
 
       /*
       We aren't actually interested in the glyph data, but we want the
@@ -502,30 +544,23 @@ Return values 0, 1, 2 are mostly the same as from
       */
       [self _cacheMoveTo: curGlyph - 1];
 
-      hindent = [curParagraphStyle firstLineHeadIndent];
-      tindent = [curParagraphStyle tailIndent];
-      if (tindent <= 0.0)
-	tindent = [curTextContainer containerSize].width + tindent;
       line_height = [curFont defaultLineHeightForFont];
-
-      r = NSMakeRect(hindent,
-		     curPoint.y,
-		     tindent - hindent,
-		     line_height + [curParagraphStyle lineSpacing]);
+      r = [self _getProposedRectFor: newParagraph
+                 withLineHeight: line_height];
 
       r = [curTextContainer lineFragmentRectForProposedRect: r
-	    sweepDirection: NSLineSweepRight
-	    movementDirection: NSLineMoveDown
-	    remainingRect: &remain];
+                            sweepDirection: NSLineSweepRight
+                            movementDirection: NSLineMoveDown
+                            remainingRect: &remain];
 
       if (!NSIsEmptyRect(r))
-	{
-	  r2 = r;
-	  r2.size.width = 1;
-	  [curLayoutManager setExtraLineFragmentRect: r
-	    usedRect: r2
-	    textContainer: curTextContainer];
-	}
+        {
+          r2 = r;
+          r2.size.width = 1;
+          [curLayoutManager setExtraLineFragmentRect: r
+                            usedRect: r2
+                            textContainer: curTextContainer];
+        }
       return 2;
     }
 
@@ -581,22 +616,8 @@ Return values 0, 1, 2 are mostly the same as from
 
 
 restart: ;
-  {
-    float hindent, tindent = [curParagraphStyle tailIndent];
-
-    if (newParagraph)
-      hindent = [curParagraphStyle firstLineHeadIndent];
-    else
-      hindent = [curParagraphStyle headIndent];
-
-    if (tindent <= 0.0)
-      tindent = [curTextContainer containerSize].width + tindent;
-
-    remain = NSMakeRect(hindent,
-			curPoint.y,
-			tindent - hindent,
-			line_height + [curParagraphStyle lineSpacing]);
-  }
+  remain = [self _getProposedRectFor: newParagraph
+                 withLineHeight: line_height];
 
   /*
   Build a list of all line frag rects for this line.
@@ -614,7 +635,7 @@ restart: ;
 			     movementDirection: line_frags_num?NSLineDoesntMove:NSLineMoveDown
 			     remainingRect: &remain];
       if (NSEqualRects(rect, NSZeroRect))
-	break;
+        break;
 
       line_frags_num++;
       if (line_frags_num > line_frags_size)

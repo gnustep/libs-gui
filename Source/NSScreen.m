@@ -11,29 +11,30 @@
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
+   modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Library General Public
+   You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   Boston, MA 02110-1301, USA.
 */ 
 
 #include <Foundation/Foundation.h>
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSScreen.h"
-#include "AppKit/NSInterfaceStyle.h"
-#include "AppKit/NSGraphicsContext.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/NSMenu.h"
 #include "AppKit/AppKitExceptions.h"
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSInterfaceStyle.h"
+#include "AppKit/NSMenu.h"
+#include "AppKit/NSMenuView.h"
+#include "AppKit/NSScreen.h"
+#include "AppKit/NSWindow.h"
 #include "GNUstepGUI/GSDisplayServer.h"
 
 @interface NSScreen (Private)
@@ -51,7 +52,12 @@
   if (self == [NSScreen class])
     {
       [self setVersion: 1];
-    }
+      [[NSNotificationCenter defaultCenter]
+          addObserver: self
+          selector: @selector(_resetScreens:)
+          name: NSApplicationDidChangeScreenParametersNotification
+          object: nil];
+     }
 }
 
 static NSMutableArray *screenArray = nil;
@@ -59,6 +65,11 @@ static NSMutableArray *screenArray = nil;
 /**
  * Resets the cached list of screens.
  */
++ (void) _resetScreens: (NSNotification*)notification
+{
+  [self resetScreens];
+}
+
 + (void) resetScreens
 {
   screenArray = nil;
@@ -84,7 +95,7 @@ static NSMutableArray *screenArray = nil;
     {
       // something is wrong. This shouldn't happen.
       [NSException raise: NSWindowServerCommunicationException
-		   format: @"Unable to retrieve list of screens from window server."];
+                   format: @"Unable to retrieve list of screens from window server."];
       return nil;
     }
 
@@ -96,8 +107,9 @@ static NSMutableArray *screenArray = nil;
       NSScreen *screen = nil;
       
       screen = [[NSScreen alloc] _initWithScreenNumber: 
-      			[[screens objectAtIndex: index] intValue]];
-      [screenArray addObject: AUTORELEASE(screen)];
+                                     [[screens objectAtIndex: index] intValue]];
+      [screenArray addObject: screen];
+      RELEASE(screen);
     }
 
   return [NSArray arrayWithArray: screenArray];
@@ -109,7 +121,26 @@ static NSMutableArray *screenArray = nil;
  */
 + (NSScreen*) mainScreen
 {
-  return [[self screens] objectAtIndex: 0];
+  NSWindow *keyWindow;
+
+  keyWindow = [NSApp keyWindow];
+  if (keyWindow != nil)
+    {
+      return [keyWindow screen];
+    }
+  else
+    {
+      NSArray *screenArray = [self screens];
+
+      if (screenArray != nil)
+        {
+          return [screenArray objectAtIndex: 0];
+        }
+      else
+        {
+          return nil;
+        }
+    }
 }
 
 /**
@@ -132,10 +163,10 @@ static NSMutableArray *screenArray = nil;
       bits = [screen depth];
       
       if (bits > maxBits)
-	{
-	  maxBits = bits;
-	  deepestScreen = screen;
-	}
+        {
+          maxBits = bits;
+          deepestScreen = screen;
+        }
     }
 
   return deepestScreen;
@@ -162,14 +193,10 @@ static NSMutableArray *screenArray = nil;
 {
   GSDisplayServer *srv;
 
-  srv = GSCurrentServer();
-
-  self = [super init];
-
-  // Initialize i-vars
-  _depth = 0;
-  _frame = NSZeroRect;
-  _screenNumber = 0;
+  if (!(self = [super init]))
+    {
+      return nil;
+    }
 
   // Check for problems
   if (screen < 0)
@@ -179,6 +206,7 @@ static NSMutableArray *screenArray = nil;
       return nil;
     }
 
+  srv = GSCurrentServer();
   if (srv == nil)
     {
       NSLog(@"Internal error: No current context\n");
@@ -236,6 +264,7 @@ static NSMutableArray *screenArray = nil;
   int			bps = 0;
   NSSize		screenResolution;
   NSString		*colorSpaceName = nil;
+  GSDisplayServer *srv;
 
   /*
    * This method generates a dictionary from the
@@ -255,9 +284,13 @@ static NSMutableArray *screenArray = nil;
 	      forKey: NSDeviceSize];
 
   // Add the NSDeviceResolution dictionary item
-  screenResolution = [GSCurrentServer() resolutionForScreen: _screenNumber];
-  [devDesc setObject: [NSValue valueWithSize: screenResolution]
-	      forKey: NSDeviceResolution];
+  srv = GSCurrentServer();
+  if (srv != nil)
+    {
+      screenResolution = [srv resolutionForScreen: _screenNumber];
+      [devDesc setObject: [NSValue valueWithSize: screenResolution]
+               forKey: NSDeviceResolution];
+    }
 
   // Add the bits per sample entry
   bps = NSBitsPerSampleFromDepth(_depth);
@@ -288,10 +321,10 @@ static NSMutableArray *screenArray = nil;
 
       // Check the results
       if (_supportedWindowDepths == NULL)
-	{
-	  NSLog(@"Internal error: no depth list returned from window server.");
-	  return NULL;
-	}
+        {
+          NSLog(@"Internal error: no depth list returned from window server.");
+          return NULL;
+        }
     }
 
   return _supportedWindowDepths;
@@ -303,42 +336,43 @@ static NSMutableArray *screenArray = nil;
 - (NSRect) visibleFrame
 {
   NSRect visFrame = _frame;
+  float menuHeight;
 
   switch (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil))
     {
       case NSMacintoshInterfaceStyle:
-	if ([NSApp mainMenu] == nil)
-	  {
-	    // No menu yet ... assume a standard height
-	    visFrame.size.height -= 23.0;
-	  }
-	else
-	  {
-	    float menuHeight = [[[NSApp mainMenu] window] frame].size.height;
-
-	    visFrame.size.height -= menuHeight;
-	  }
-	break;
+        if ([NSApp mainMenu] == nil)
+          {
+            // No menu yet ... assume a standard height
+            menuHeight = [NSMenuView menuBarHeight];
+          }
+        else
+          {
+            menuHeight = [[[NSApp mainMenu] window] frame].size.height;
+          }
+        
+        visFrame.size.height -= menuHeight;
+        break;
 
       case GSWindowMakerInterfaceStyle:
       case NSNextStepInterfaceStyle:
-	/* FIXME: Menu width will vary from app to app and  there is no
-	 * fixed position for the menu ... should we be making room for
-	 * a menu top left, or something else?
-	 */
+        /* FIXME: Menu width will vary from app to app and  there is no
+         * fixed position for the menu ... should we be making room for
+         * a menu top left, or something else?
+         */
 #if 0
-	if ([NSApp mainMenu] != nil)
-	  {
-	    float menuWidth = [[[NSApp mainMenu] window] frame].size.width;
-
-	    visFrame.size.width -= menuWidth;
-	    visFrame.origin.x += menuWidth;
-	  }
+        if ([NSApp mainMenu] != nil)
+          {
+            float menuWidth = [[[NSApp mainMenu] window] frame].size.width;
+      
+            visFrame.size.width -= menuWidth;
+            visFrame.origin.x += menuWidth;
+          }
 #endif
-	break;
+        break;
       
       default:
-	break;
+        break;
     }
   return visFrame;
 }
@@ -361,6 +395,24 @@ static NSMutableArray *screenArray = nil;
     }
 
   [super dealloc];
+}
+
+- (float) userSpaceScaleFactor
+{
+  GSDisplayServer *srv;
+  NSSize dpi;
+
+  srv = GSCurrentServer();
+  if (srv != nil)
+    {
+      dpi = [GSCurrentServer() resolutionForScreen: _screenNumber];
+      // take average for 72dpi
+      return (dpi.width + dpi.height) / 144;
+    }
+  else
+    {
+      return 1.0;
+    }
 }
 
 @end
