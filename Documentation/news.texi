@@ -9,6 +9,17 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.14.0}
+
+@itemize @bullet
+@item New class NSGlyphGenerator for glyph generation
+@item NSSplitView implemented setAutosaveName:
+@item NSOpenGLView added some Mac OS X 10.3 methods
+@item Manu bug fixes.
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.13.2}
 
 @itemize @bullet
@@ -20,8 +31,6 @@ gnustep-back 0.13.2 with this version
 @item New class NSSegmentedCell.
 @item NSDrawer was implemented.
 @end itemize
-
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.13.1}
 

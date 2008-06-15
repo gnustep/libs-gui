@@ -20,6 +20,29 @@
 	migrate to using a newer version of the library.
       </p>
       <section>
+      	<heading>Version 0.14.0</heading>
+	<p>This is an stable release.
+	</p>
+	<deflist>
+            <term>NSGlyphGenerator</term>
+            <desc>
+	      New class for glyph generation (separated from other classes).
+            </desc>
+            <term>NSControl -mouseDownFlags</term>
+            <desc>
+	      Added old NeXT method for compatibility.
+            </desc>
+            <term>NSSplitView</term>
+            <desc>
+	      setAutosaveName: implemented and new instance variable added.
+            </desc>
+            <term>NSOpenGLView</term>
+            <desc>
+	      Added some Mac OS X 10.3 methods.
+            </desc>
+	</deflist>
+      </section>
+       <section>
       	<heading>Version 0.13.2</heading>
 	<p>This is an unstable release.
 	</p>

@@ -1,3 +1,7 @@
+2008-06-14  Adam Fedor  <fedor@gnu.org>
+
+	* Version 0.14.0
+
 2008-06-12  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSCachedImageRep.m, Source/NSMenuItem.m, Source/tiff.m:
@@ -47,7 +51,7 @@
 
 	* Headers/AppKit/NSWindow.h: Minor cleanup and spacing.
 	* Source/GSNibTemplates.m: Removed call to designated init, since
-	this is handled by the initWithCOoder method in NSWindow.m.
+	this is handled by the initWithCoder method in NSWindow.m.
 	* Source/NSWindow.m: Correction for calling the designated initializer.
 	Fix for bug#23336.
 
