@@ -1,3 +1,10 @@
+2008-06-17 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSClipView.m (_scrollToPoint:): New method for adjusted
+	scrolling. 
+	* Source/NSScrollView.m: Use this new method.
+	Patch by Benhur Stein <benhur.stein@gmail.com>.
+	
 2008-06-14  Adam Fedor  <fedor@gnu.org>
 
 	* Version 0.14.0
