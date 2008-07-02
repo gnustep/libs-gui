@@ -1,3 +1,9 @@
+2008-07-02 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSPopUpButton.h,
+	* Source/NSPopUpButton.m (-selectItemWithTag:): Add MacOS 10.4
+	method.
+
 2008-06-17 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSClipView.m (_scrollToPoint:): New method for adjusted
