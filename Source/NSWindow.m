@@ -4483,6 +4483,14 @@ current key view.<br />
     {
       fRect.origin.y = nRect.origin.y + (fRect.origin.y - nRect.origin.y)
         * (nRect.size.height / sRect.size.height);
+
+      /*
+       * If height of the window goes above the screen height, then adjust the window down.
+       */
+      if ((fRect.size.height + fRect.origin.y) > nRect.size.height)
+	{
+	  fRect.origin.y = fRect.origin.y - ((fRect.size.height + fRect.origin.y) - nRect.size.height); 
+	}
     }
 
   /* If we aren't resizable (ie. if we don't have a resize bar), make sure

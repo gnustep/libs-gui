@@ -1,3 +1,11 @@
+2008-07-08 16:15-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSMenu.m: Beginning of support for windows style menus on the
+	top of the window.
+	* Source/NSWindow.m: Added code in the method -setFrameFromString: to 
+	make certain the window doesn't go out of bounds if the screen size
+	changes.
+
 2008-07-02 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSPopUpButton.h,
