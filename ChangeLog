@@ -1,5 +1,11 @@
 2008-07-12 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/GSLayoutManager.m (-_glyphForCharacter:index:positions::), 
+	* Source/NSGlyphGenerator.m (-generateGlyphsForGlyphStorage:...):
+	Add some more protection against inconsistent state.
+
+2008-07-12 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSSavePanel.m (-ok:): Standardize path before checking
 	for existance.
 

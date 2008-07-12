@@ -768,8 +768,12 @@ Fills in all glyph holes up to last. only looking at levels below level
   int lo, hi, mid, i;
 
   r = run_for_character_index(target, glyphs, &pos, &cpos);
-  if (!r)
-    return NULL;
+  if (!r || !r->glyphs)
+    {
+      [NSException raise: NSRangeException
+                   format: @"%s character index out of range", __PRETTY_FUNCTION__];
+      return NULL;
+    }
 
   target -= cpos;
 

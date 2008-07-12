@@ -116,6 +116,12 @@ fb04 'ffl'
                         longestEffectiveRange: &curRange
                         inRange: maxRange];
   fi = [[self fontForCharactersWithAttributes: attributes] fontInfo];
+  if (!fi)
+    {
+      [NSException raise: NSGenericException
+                   format: @"Glyph generation with no font."];
+      return;
+    }
   glyphForCharacter = (NSGlyph(*)(id, SEL, unichar)) [fi methodForSelector: gfc_sel];
 
   n = [attributes objectForKey: NSLigatureAttributeName];
