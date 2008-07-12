@@ -768,11 +768,20 @@ Fills in all glyph holes up to last. only looking at levels below level
   int lo, hi, mid, i;
 
   r = run_for_character_index(target, glyphs, &pos, &cpos);
-  if (!r || !r->glyphs)
+  if (!r)
     {
       [NSException raise: NSRangeException
-                   format: @"%s character index out of range", __PRETTY_FUNCTION__];
+                   format: @"%s character index %d out of range", __PRETTY_FUNCTION__, target];
       return NULL;
+    }
+
+  if (!r->glyphs)
+    {
+      // range, but no glyphs, may be an empty glyph run
+      *rindex = i;
+      *rpos = pos;
+      *rcpos = cpos;
+      return r;
     }
 
   target -= cpos;
@@ -852,7 +861,7 @@ Fills in all glyph holes up to last. only looking at levels below level
     }
 
   r = run_for_glyph_index(glyphIndex, glyphs, &pos, NULL);
-  if (!r) /* shouldn't happen */
+  if (!r || !r->glyphs) /* shouldn't happen */
     return NSNullGlyph;
 
   *isValidIndex = YES;
@@ -964,6 +973,11 @@ Fills in all glyph holes up to last. only looking at levels below level
       return 0;
     }
 
+  if (r->head.glyph_length <= glyphIndex - pos)
+    {
+      return cpos;
+    }
+
   return cpos + r->glyphs[glyphIndex - pos].char_offset;
 }
 
@@ -1002,7 +1016,14 @@ Fills in all glyph holes up to last. only looking at levels below level
       return NSMakeRange(0, 0);
     }
 
-  j = cpos + r->glyphs[glyphRange.location - pos].char_offset;
+  if (r->head.glyph_length <= glyphRange.location - pos)
+    {
+      j = cpos;
+    }
+  else
+    {
+      j = cpos + r->glyphs[glyphRange.location - pos].char_offset;
+    }
   char_range.location = j;
 
   /* scan backwards to find the real first glyph */
@@ -1015,7 +1036,8 @@ Fills in all glyph holes up to last. only looking at levels below level
     r2 = r;
     adj = pos;
     cadj = cpos;
-    while (r2->glyphs[i].char_offset + cadj == j)
+    while ((r2->head.glyph_length > i) && 
+           (r2->glyphs[i].char_offset + cadj == j))
       {
         i--;
         while (i < 0)
@@ -1044,7 +1066,14 @@ Fills in all glyph holes up to last. only looking at levels below level
       return NSMakeRange(0, 0);
     }
 
-  j = cpos + r->glyphs[glyphRange.location + glyphRange.length - 1 - pos].char_offset;
+  if (r->head.glyph_length <= glyphRange.location + glyphRange.length - 1 - pos)
+    {
+      j = cpos;
+    }
+  else
+    {
+      j = cpos + r->glyphs[glyphRange.location + glyphRange.length - 1 - pos].char_offset;
+    }
 
   /* scan forwards to find the real last glyph */
   {
@@ -1057,7 +1086,8 @@ Fills in all glyph holes up to last. only looking at levels below level
     r2 = r;
     adj = pos;
     cadj = cpos;
-    while (r2->glyphs[i].char_offset + cadj == j)
+    while ((r2->head.glyph_length > i) && 
+           (r2->glyphs[i].char_offset + cadj == j))
       {
         GLYPH_STEP_FORWARD(r2,i,adj,cadj)
         if (i==r2->head.glyph_length)
@@ -1066,7 +1096,14 @@ Fills in all glyph holes up to last. only looking at levels below level
             goto found;
           }
       }
-    last = r2->glyphs[i].char_offset + cadj;
+    if (r2->head.glyph_length > i)
+      {
+        last = r2->glyphs[i].char_offset + cadj;
+      }
+    else
+      {
+        last = j;
+      }
   found:
     real_range.length = i + adj - real_range.location;
     char_range.length = last - char_range.location;
@@ -1124,17 +1161,26 @@ Fills in all glyph holes up to last. only looking at levels below level
             index: &i
             positions: &pos : &cpos];
   glyph_range.location = i + pos;
-  char_range.location = r->glyphs[i].char_offset + cpos;
+  if (r->head.glyph_length > i)
+    {
+      char_range.location = r->glyphs[i].char_offset + cpos;
+    }
+  else
+    {
+      char_range.location = cpos;
+    }
 
   target = NSMaxRange(charRange) - 1;
   r = [self _glyphForCharacter: target
             index: &i
             positions: &pos : &cpos];
-
-  GLYPH_SCAN_FORWARD(r, i, pos, cpos, r->glyphs[i].char_offset + cpos <= target)
+  if (r->head.glyph_length > i)
+    {
+      GLYPH_SCAN_FORWARD(r, i, pos, cpos, r->glyphs[i].char_offset + cpos <= target)
+    }
 
   glyph_range.length = i + pos - glyph_range.location;
-  if (i == r->head.glyph_length)
+  if (i >= r->head.glyph_length)
     char_range.length = glyphs->char_length - char_range.location;
   else
     char_range.length = r->glyphs[i].char_offset + cpos - char_range.location;

@@ -1,3 +1,7 @@
+2008-07-13 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSLayoutManager.m: Protect all access to the glyph arrays. 
+
 2008-07-12 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSLayoutManager.m (-_glyphForCharacter:index:positions::), 
