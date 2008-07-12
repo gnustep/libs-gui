@@ -1,3 +1,8 @@
+2008-07-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSavePanel.m (-ok:): Standardize path before checking
+	for existance.
+
 2008-07-08 16:15-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSMenu.m: Beginning of support for windows style menus on the

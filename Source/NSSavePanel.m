@@ -1124,15 +1124,11 @@ selectCellWithString: (NSString*)title
 
   ASSIGN (_directory, pathToColumn(_browser, [_browser lastColumn]));
   filename = [[_form cellAtIndex: 0] stringValue];
-  if ([filename isAbsolutePath] == YES)
+  if ([filename isAbsolutePath] == NO)
     {
-      ASSIGN (_fullFileName, filename);
+      filename = [_directory stringByAppendingPathComponent: filename];
     }
-  else
-    {
-      ASSIGN (_fullFileName, [_directory stringByAppendingPathComponent:
-				       filename]);
-    }
+  ASSIGN (_fullFileName, [filename stringByStandardizingPath]);
 
   if (_delegateHasUserEnteredFilename)
     {
