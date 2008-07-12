@@ -145,8 +145,9 @@ static BOOL menuBarVisible = YES;
 
 - (NSString*) _locationKey
 {
-  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil)
-    == NSMacintoshInterfaceStyle)
+  NSInterfaceStyle style = NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
+  if (style == NSMacintoshInterfaceStyle || 
+      style == NSWindows95InterfaceStyle)
     {
       return nil;
     }
@@ -1486,8 +1487,9 @@ static BOOL menuBarVisible = YES;
 
 - (void) _showTornOffMenuIfAny: (NSNotification*)notification
 {
-  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil)
-    == NSMacintoshInterfaceStyle)
+  NSInterfaceStyle style = NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
+  if (style == NSMacintoshInterfaceStyle || 
+      style == NSWindows95InterfaceStyle)
     {
       return;
     }
@@ -1727,7 +1729,8 @@ static BOOL menuBarVisible = YES;
 	  NSMenuView	*newRep;
 
 	  newRep = [[NSMenuView alloc] initWithFrame: NSZeroRect];
-	  if (newStyle == NSMacintoshInterfaceStyle)
+	  if (newStyle == NSMacintoshInterfaceStyle ||
+	      newStyle == NSWindows95InterfaceStyle)
 	    {
 	      [newRep setHorizontal: YES];
 	    }

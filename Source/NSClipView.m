@@ -42,6 +42,10 @@
 
 DEFINE_RINT_IF_MISSING
 
+@interface NSClipView (Private)
+- (void) _scrollToPoint: (NSPoint)aPoint;
+@end
+
 /*
  * Return the biggest integral (in device space) rect contained in rect. 
  * Conversion to/from device space is done using view.
@@ -538,7 +542,7 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
  */
 - (void) viewFrameChanged: (NSNotification*)aNotification
 {
-  [self scrollToPoint: _bounds.origin];
+  [self _scrollToPoint: _bounds.origin];
 
   /* If document frame does not completely cover _bounds */
   if (NSContainsRect([_documentView frame], _bounds) == NO)
@@ -817,3 +821,26 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
   return self;
 }
 @end
+
+@implementation NSClipView (Private)
+
+- (void) _scrollToPoint: (NSPoint)aPoint
+{ 
+  NSRect proposedBounds; 
+  NSRect proposedVisibleRect; 
+  NSRect newVisibleRect; 
+  NSRect newBounds; 
+  
+  // give documentView a chance to adjust its visible rectangle 
+  proposedBounds = _bounds; 
+  proposedBounds.origin = aPoint; 
+  proposedVisibleRect = [self convertRect: proposedBounds 
+                              toView: _documentView]; 
+  newVisibleRect = [_documentView adjustScroll: proposedVisibleRect]; 
+  newBounds = [self convertRect: newVisibleRect fromView: _documentView]; 
+  
+  [self scrollToPoint: newBounds.origin]; 
+}
+
+@end
+

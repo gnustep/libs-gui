@@ -49,6 +49,10 @@
 #include "AppKit/PSOperators.h"
 #include "GNUstepGUI/GSTheme.h"
 
+@interface NSClipView (Private)
+- (void) _scrollToPoint: (NSPoint)aPoint;
+@end
+
 //
 // For nib compatibility, this is used to properly
 // initialize the object from a OS X nib file in initWithCoder:.
@@ -406,7 +410,7 @@ static float scrollerWidth;
 
   /* scrollToPoint: will call reflectScrolledClipView:, which will
    * update rules, headers, and scrollers.  */
-  [_contentView scrollToPoint: point];
+  [_contentView _scrollToPoint: point];
 }
 
 - (void) keyDown: (NSEvent *)theEvent
@@ -462,7 +466,7 @@ static float scrollerWidth;
       amount = -amount;
     }
   point.y = clipViewBounds.origin.y - amount;
-  [_contentView scrollToPoint: point];
+  [_contentView _scrollToPoint: point];
 }
 
 
@@ -490,7 +494,7 @@ static float scrollerWidth;
       amount = -amount;
     }
   point.y = clipViewBounds.origin.y + amount;
-  [_contentView scrollToPoint: point];
+  [_contentView _scrollToPoint: point];
 }
 
 /**
@@ -534,7 +538,7 @@ static float scrollerWidth;
       amount = -amount;
     }
   point.y = clipViewBounds.origin.y - amount;
-  [_contentView scrollToPoint: point];
+  [_contentView _scrollToPoint: point];
 }
 
 /**
@@ -577,7 +581,7 @@ static float scrollerWidth;
       amount = -amount;
     }
   point.y = clipViewBounds.origin.y + amount;
-  [_contentView scrollToPoint: point];
+  [_contentView _scrollToPoint: point];
 }
 
 - (void) _doScroll: (NSScroller*)scroller
@@ -686,7 +690,7 @@ static float scrollerWidth;
 
   /* scrollToPoint will call reflectScrollerClipView, and that will
    * update scrollers, rulers and headers */
-  [_contentView scrollToPoint: point];
+  [_contentView _scrollToPoint: point];
 }
 
 //
