@@ -110,6 +110,7 @@ fb04 'ffl'
     = (BOOL(*)(id, SEL, unichar)) [cs methodForSelector: cim_sel];
   SEL gfc_sel = @selector(glyphForCharacter:);
   NSGlyph (*glyphForCharacter)(id, SEL, unichar);
+  NSGlyph fallback = NSNullGlyph;
 
   [[attrstr string] getCharacters: buf range: maxRange];
   attributes = [attrstr attributesAtIndex: *index
@@ -238,8 +239,11 @@ fb04 'ffl'
           g++;
           if (surr)
             SEND_GLYPHS();
+
+          continue;
         }
-      else if (ch < 0x10000)
+
+      if (ch < 0x10000)
         {
           unichar *decomp;
 
@@ -257,13 +261,24 @@ fb04 'ffl'
                   g++;
                   SEND_GLYPHS();
                 }
+
+              continue;
             }
         }
-      else
+
+      // No glyph found add fallback
+      if (fallback == NSNullGlyph)
         {
-          // On a NSNullGLyph, send all previous glyphs
-          SEND_GLYPHS();  
+          // FIXME: Find a suitable fallback glyph
+            unichar uc = '?';
+            
+            fallback = glyphForCharacter(fi, gfc_sel, uc);
         }
+      *g = fallback;
+      g++;
+
+      // On a NSNullGLyph, send all previous glyphs
+      SEND_GLYPHS();  
     }
 
   // Send all remaining glyphs

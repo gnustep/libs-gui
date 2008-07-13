@@ -1,5 +1,10 @@
 2008-07-13 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSGlyphGenerator.m (-generateGlyphsForGlyphStorage:...):
+	Add fallback glyph when no glyph can be found for current character.
+
+2008-07-13 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/GSLayoutManager.m: Protect all access to the glyph arrays. 
 
 2008-07-12 Fred Kiefer <FredKiefer@gmx.de>
