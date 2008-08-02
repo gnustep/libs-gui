@@ -1,3 +1,10 @@
+2008-08-02 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSScrollView.m (-initWithCoder:): Handle non-retained
+	ivars correctly.
+	* Source/NSWindowController.m (-loadWindow): Release the loaded
+	window once, as it got retained by the NIB loading mechanism.	
+
 2008-07-13 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSGlyphGenerator.m (-generateGlyphsForGlyphStorage:...):
