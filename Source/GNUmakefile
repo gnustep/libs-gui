@@ -175,6 +175,8 @@ NSTextTable.m \
 NSTextTableBlock.m \
 NSToolbar.m \
 NSToolbarItem.m \
+NSTokenField.m \
+NSTokenFieldCell.m \
 NSUserDefaultsController.m \
 NSView.m \
 NSWindow+Toolbar.m \
@@ -365,6 +367,8 @@ NSTextTable.h \
 NSTextView.h \
 NSToolbar.h \
 NSToolbarItem.h \
+NSTokenField.h \
+NSTokenFieldCell.h \
 NSUserDefaultsController.h \
 NSView.h \
 NSWindow.h \

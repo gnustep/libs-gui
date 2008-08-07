@@ -1,3 +1,13 @@
+2008-08-07 18:23-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/AppKit/NSTokenFieldCell.h
+	* Headers/AppKit/NSTokenField.h: Headers for new class.
+	* Source/GNUmakefile
+	* Source/NSDocumentController.m: Added code to handle the
+	CF keys as well as the NS keys for document oriented apps.
+	* Source/NSTokenFieldCell.m
+	* Source/NSTokenField.m: Start of implementation for this class.
+
 2008-08-02 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSScrollView.m (-initWithCoder:): Handle non-retained
