@@ -1,3 +1,8 @@
+2008-08-08  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSBitmapImageRep+JPEG.m: Handle patched jpeg library 
+	found on CYGWIN.
+
 2008-08-07 18:23-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/AppKit/NSTokenFieldCell.h
