@@ -1,3 +1,10 @@
+2008-08-09 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSGraphics.h: Add NSSetFocusRingStyle and type
+	definition. 
+	* Source/Functions.m (NSSetFocusRingStyle): Add dummy implementation.
+	Code by Nikolaus Schaller <hns@computer.org>.
+	
 2008-08-08  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSBitmapImageRep+JPEG.m: Handle patched jpeg library 

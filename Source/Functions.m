@@ -815,6 +815,12 @@ NSFrameLinkRect(NSRect aRect, BOOL isDestination)
   NSFrameRectWithWidth(aRect, NSLinkFrameThickness());
 }
 
+void NSSetFocusRingStyle(NSFocusRingPlacement placement)
+{
+	// FIXME: NIMP
+	NSLog(@"*** NSSetFocusRingStyle not implemented ***");
+}
+
 void 
 NSConvertGlobalToWindowNumber(int globalNum, unsigned int *winNum)
 {
