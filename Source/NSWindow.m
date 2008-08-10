@@ -1371,13 +1371,14 @@ many times.
 
   if (t && (_firstResponder == t))
     {
+      // Change first responder first to avoid recusion.
+      _firstResponder = self;
+      [_firstResponder becomeFirstResponder];
       [nc postNotificationName: NSTextDidEndEditingNotification
           object: t];
       [t setText: @""];
       [t setDelegate: nil];
       [t removeFromSuperview];
-      _firstResponder = self;
-      [_firstResponder becomeFirstResponder];
     }
 }
 

@@ -1,3 +1,8 @@
+2008-08-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m (-endEditingFor:): Change the first responder
+	first to avoid recusion. 
+
 2008-08-09 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSGraphics.h: Add NSSetFocusRingStyle and type
