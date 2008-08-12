@@ -37,6 +37,7 @@
 #include "NSBitmapImageRep+JPEG.h"
 #include "NSBitmapImageRep+PNG.h"
 #include "NSBitmapImageRep+PNM.h"
+#include "NSBitmapImageRep+ICNS.h"
 
 #include <Foundation/NSArray.h>
 #include <Foundation/NSAutoreleasePool.h>
@@ -116,6 +117,9 @@
   if ([self _bitmapIsGIF: data])
     return YES;
 
+  if ([self _bitmapIsICNS: data])
+    return YES;
+
   image = NSTiffOpenDataRead ((char *)[data bytes], [data length]);
 
   if (image != NULL)
@@ -148,6 +152,9 @@
 #endif
 #if HAVE_LIBPNG
 	@"png",
+#endif
+#if HAVE_LIBICNS
+	@"icns",
 #endif
 	nil];
     }
@@ -256,6 +263,19 @@
       return a;
     }
 
+  if ([self _bitmapIsICNS: imageData])
+    {
+      NSBitmapImageRep *rep;
+      NSArray *a;
+
+      rep=[[self alloc] _initBitmapFromICNS: imageData];
+      if (!rep)
+        return [NSArray array];
+      a = [NSArray arrayWithObject: rep];
+      DESTROY(rep);
+      return a;
+    }
+
   image = NSTiffOpenDataRead((char *)[imageData bytes], [imageData length]);
   if (image == NULL)
     {
@@ -306,6 +326,9 @@
   if ([isa _bitmapIsGIF: imageData])
     return [self _initBitmapFromGIF: imageData
 		       errorMessage: NULL];
+
+  if ([isa _bitmapIsICNS: imageData])
+    return [self _initBitmapFromICNS: imageData];
 
 
   image = NSTiffOpenDataRead((char *)[imageData bytes], [imageData length]);

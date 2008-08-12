@@ -1,3 +1,16 @@
+2008-08-12 00:52-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* configure: Regenerated file
+	* configure.ac: Added check for libicns. (http://icns.sourceforge.net/)
+	* Headers/Additions/GNUstepGUI/config.h.in
+	* Source/GNUmakefile: Added new files
+	* Source/NSBitmapImageRep+ICNS.h: Header for ICNS category
+	* Source/NSBitmapImageRep+ICNS.m: Implementation if ICNS reading
+	logic.
+	* Source/NSBitmapImageRep.m: Add support for the ICNS file 
+	format so that GNUstep can read Mac OS X icon files.   Uses
+	the libicns library available from sourceforge.
+
 2008-08-11 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWindow.m (-endEditingFor:): Change the first responder
