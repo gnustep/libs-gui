@@ -1,3 +1,11 @@
+2008-08-13 01:17-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSInfoPanel.m
+	* Source/NSWorkspace.m
+	* Tools/make_services.m: Added support for CF keys so that icons and
+	document associations from document oriented apps written for Mac OS X
+	can be ported more easily.
+
 2008-08-12 21:53-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSApplication.m: Add logic to load the icns if it's specified

@@ -1849,7 +1849,14 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
     }
   
   iconPath = [[bundle infoDictionary] objectForKey: @"NSIcon"];
-  
+  if(iconPath == nil)
+    {
+      /*
+       * Try the CFBundleIconFile property.
+       */
+      iconPath = [[bundle infoDictionary] objectForKey: @"CFBundleIconFile"];
+    }
+
   if (iconPath && [iconPath isAbsolutePath] == NO)
     {
       NSString *file = iconPath;
@@ -1875,7 +1882,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
    * try 'wrapper/app.png'
    */
   if (iconPath == nil)
-    {
+    {      
       NSString *str;
 
       str = [fullPath lastPathComponent];
@@ -1887,11 +1894,15 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	  iconPath = [iconPath stringByAppendingPathExtension: @"tiff"];
 	  if ([mgr isReadableFileAtPath: iconPath] == NO)
 	    {
-	      iconPath = nil;
+	      iconPath = [iconPath stringByAppendingPathExtension: @"icns"];
+	      if ([mgr isReadableFileAtPath: iconPath] == NO)
+		{		  
+		  iconPath = nil;
+		}
 	    }
         }
     }
-  
+
   if (iconPath != nil)
     {
       image = [self _saveImageFor: iconPath];
@@ -2041,6 +2052,11 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 {
   NSDictionary	*typeInfo = [extInfo objectForKey: appName];
   NSString	*file = [typeInfo objectForKey: @"NSIcon"];
+
+  if(file == nil)
+    {
+      file = [typeInfo objectForKey: @"CFBundleTypeIconFile"];
+    }
 
   if (file && [file length] != 0)
     {

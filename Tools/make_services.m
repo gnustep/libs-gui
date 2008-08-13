@@ -308,6 +308,11 @@ static void addExtensionsForApplication(NSDictionary *info, NSString *app)
 
 
   o0 = [info objectForKey: @"NSTypes"];
+  if (o0 == nil)
+    {
+      o0 = [info objectForKey: @"CFBundleDocumentTypes"];
+    }
+
   if (o0)
     {
       if ([o0 isKindOfClass: aClass] == NO)
@@ -336,6 +341,11 @@ static void addExtensionsForApplication(NSDictionary *info, NSString *app)
 	   */
           t = (NSDictionary*)o1;
           o1 = [t objectForKey: @"NSUnixExtensions"];
+	  
+	  if(o1 == nil)
+	    {
+	      o1 = [t objectForKey: @"CFBundleTypeExtensions"];
+	    }
           if (o1 == nil)
             {
               continue;
@@ -378,6 +388,10 @@ static void addExtensionsForApplication(NSDictionary *info, NSString *app)
       NSDictionary	*extensions;
 
       o0 = [info objectForKey: @"NSExtensions"];
+      if(o0 == nil)
+	{
+	  o0 = [info objectForKey: @"CFBundleTypeExtensions"];
+	}
       if (o0 == nil)
         {
           return;

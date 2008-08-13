@@ -212,13 +212,17 @@ new_label (NSString *value)
   if (nil_or_not_of_class (name, [NSString class]))
     {
       name = value_from_info_plist_for_key (@"ApplicationName");
-      
       if (nil_or_not_of_class (name, [NSString class]))
 	{
 	  name = value_from_info_plist_for_key (@"NSHumanReadableShortName");
-
 	  if (nil_or_not_of_class (name, [NSString class]))
-	    name = [[NSProcessInfo processInfo] processName]; 
+	    {
+	      name = value_from_info_plist_for_key (@"CFBundleName");
+	      if (nil_or_not_of_class (name, [NSString class]))
+		{
+		  name = [[NSProcessInfo processInfo] processName]; 
+		}
+	    }
 	}
     }
   /* Application Description */
@@ -263,7 +267,14 @@ new_label (NSString *value)
 	      release = value_from_info_plist_for_key (@"NSAppVersion");
 	      
 	      if (nil_or_not_of_class (release, [NSString class]))
-		release = @"Unknown";
+		{
+		  release = value_from_info_plist_for_key (@"CFBundleVersion");
+	      
+		  if (nil_or_not_of_class (release, [NSString class]))
+		    {
+		      release = @"Unknown";
+		    }
+		}
 	    }
 	}
     }
