@@ -129,7 +129,12 @@ typedef struct pixel_t
       h = info.iconHeight;
       w = info.iconWidth;
       
-      if( w > iconWidth )
+      //
+      // Temporarily limit to 48 until we can find a way to 
+      // utilize the other representations in the icns file.
+      // 
+      // if( w > iconWidth)
+      if(icns_types_equal(element.elementType,ICNS_48x48_32BIT_DATA)) 
 	{
 	  iconWidth = w;
 	  iconHeight = h;

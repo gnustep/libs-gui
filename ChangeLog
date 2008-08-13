@@ -1,3 +1,10 @@
+2008-08-12 21:53-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSApplication.m: Add logic to load the icns if it's specified
+	as the icon file for an application.
+	* Source/NSBitmapImageRep+ICNS.m: Limit the size of the representation
+	to the 48x48 version.   
+
 2008-08-12 00:52-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* configure: Regenerated file

@@ -929,6 +929,17 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
     {
       image = [NSImage imageNamed: appIconFile];
     }
+
+  // Try to look up the icns file.
+  appIconFile = [infoDict objectForKey: @"CFBundleIconFile"];
+  if (appIconFile && ![appIconFile isEqual: @""])
+    {
+      NSString *fileName = [appIconFile stringByAppendingPathExtension: 
+					  @"icns"];
+      image = [NSImage imageNamed: fileName];
+      [image setScalesWhenResized: YES];
+    }
+
   if (image == nil)
     {
       image = [NSImage imageNamed: @"GNUstep"];
