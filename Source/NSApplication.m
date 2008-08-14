@@ -934,10 +934,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   appIconFile = [infoDict objectForKey: @"CFBundleIconFile"];
   if (appIconFile && ![appIconFile isEqual: @""])
     {
-      NSString *fileName = [appIconFile stringByAppendingPathExtension: 
-					  @"icns"];
-      image = [NSImage imageNamed: fileName];
-      [image setScalesWhenResized: YES];
+      image = [NSImage imageNamed: appIconFile];
     }
 
   if (image == nil)
