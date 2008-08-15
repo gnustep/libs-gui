@@ -2255,7 +2255,7 @@ image.</p><p>See Also: -applicationIconImage</p>
 
       while ((win = [iter nextObject]))
         {
-          if ([win isVisible] == NO)
+          if ([win isVisible] == NO && ![win isMiniaturized])
             {
               continue;		/* Already invisible	*/
             }
@@ -2343,9 +2343,14 @@ image.</p><p>See Also: -applicationIconImage</p>
 
       count = [_hidden count];
       for (i = 0; i < count; i++)
-	{
-	  [[_hidden objectAtIndex: i] orderFrontRegardless];
-	}
+        {
+          NSWindow *win = [_hidden objectAtIndex: i];
+          [win orderFrontRegardless];
+          if ([win isMiniaturized])
+            {
+              [GSServerForWindow(win) miniwindow: [win windowNumber]];
+            }
+        }
       [_hidden removeAllObjects];
       [[_app_icon_window contentView] setNeedsDisplay: YES];
 

@@ -1543,6 +1543,12 @@ many times.
 - (void) makeKeyAndOrderFront: (id)sender
 {
   [self deminiaturize: self];
+  /*
+   * If a window is ordered in, make sure that the application isn't hidden,
+   * and is active.
+   */
+  if ([self canBecomeKeyWindow])
+    [NSApp unhide: self];
   [self orderFrontRegardless];
   [self makeKeyWindow];
   /*
