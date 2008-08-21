@@ -1966,40 +1966,36 @@ static NSPoint point_on_curve(double t, NSPoint a, NSPoint b, NSPoint c,
 {
   NSBezierPathElement type;
   int i, count;
-  PathElement *elments = (PathElement *)GSIArrayItems(pathElements);
+  GSIArrayItem *elments = GSIArrayItems(pathElements);
   SEL transformPointSel = @selector(transformPoint:); 
   NSPoint (*transformPointImp)(NSAffineTransform*, SEL, NSPoint);
 
   transformPointImp = (NSPoint (*)(NSAffineTransform*, SEL, NSPoint))
-      [transform methodForSelector: transformPointSel];
+    [transform methodForSelector: transformPointSel];
 
   count = GSIArrayCount(pathElements);
   for (i = 0; i < count; i++) 
     {
-      type = elments[i].type;
+      type = elments[i].ext.type;
       switch(type) 
         {
 	  case NSMoveToBezierPathElement:
 	  case NSLineToBezierPathElement:
-	      elments[i].points[0] = (*transformPointImp)(transform,  
-							  transformPointSel, 
-							  elments[i].points[0]);
-	      break;
+            elments[i].ext.points[0] = (*transformPointImp)(transform,
+              transformPointSel, elments[i].ext.points[0]);
+            break;
 	  case NSCurveToBezierPathElement:
-	      elments[i].points[0] = (*transformPointImp)(transform,  
-							  transformPointSel, 
-							  elments[i].points[0]);
-	      elments[i].points[1] = (*transformPointImp)(transform,  
-							  transformPointSel, 
-							  elments[i].points[1]);
-	      elments[i].points[2] = (*transformPointImp)(transform,  
-							  transformPointSel, 
-							  elments[i].points[2]);
-	      break;
+            elments[i].ext.points[0] = (*transformPointImp)(transform,  
+              transformPointSel, elments[i].ext.points[0]);
+            elments[i].ext.points[1] = (*transformPointImp)(transform,  
+              transformPointSel, elments[i].ext.points[1]);
+            elments[i].ext.points[2] = (*transformPointImp)(transform,  
+              transformPointSel, elments[i].ext.points[2]);
+            break;
 	  case NSClosePathBezierPathElement:
-	      break;
+            break;
 	  default:
-	      break;
+            break;
 	}
     }
   INVALIDATE_CACHE();

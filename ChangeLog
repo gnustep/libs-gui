@@ -1,3 +1,9 @@
+2008-08-21 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSBezierPath.m: ([transformUsingAffineTransform:]) corrected
+	code which was casting an array of items of one type to be an array
+	of items of another type whose size differs on 64bit machines.
+
 2008-08-15 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWindow.m (-makeKeyAndOrderFront:): Unhide the application.
