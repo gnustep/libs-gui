@@ -1,3 +1,10 @@
+2008-08-21  Yavor Doganov  <yavor@gnu.org>  (tiny change)
+
+	* Source/GNUmakefile.preamble (LIBRARIES_DEPEND_UPON):
+	Unconditionally link against $(OBJC_LIBS) on all platforms to
+	avoid undefined symbols.
+	Reported by Funda Wang (bug #24109).
+
 2008-08-21 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSBezierPath.m: ([transformUsingAffineTransform:]) corrected
