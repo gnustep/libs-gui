@@ -7,6 +7,9 @@
    
    Written by: Gregory Casamento
    Date: 2008-08-12
+
+   Author: Fred Kiefer <fredkiefer@gmx.de>
+   Date: September 2008
    
    This file is part of the GNUstep GUI Library.
 
@@ -29,17 +32,408 @@
 
 #include "config.h"
 #include "NSBitmapImageRep+ICNS.h"
-
-#if HAVE_LIBICNS
-
-#include <icns.h>
-
+#include <Foundation/NSByteOrder.h>
 #include <Foundation/NSData.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSValue.h>
 #include "AppKit/NSGraphics.h"
 
 #define ICNS_HEADER "icns"
+
+#if HAVE_LIBICNS
+
+#include <icns.h>
+
+#else /* !HAVE_LIBICNS */
+/*
+  The following code is a drop in replacement for libicns. It may be used
+  when the library is not available or unsuited due to its licence (Currently
+  GPL 2). This code was mostly build based on the documentation found at 
+  http://icns.sourceforge.net/apidocs.html. It also includes icns decoding 
+  ideas based on code in mySTEP.
+  Only limited formats are implemented and some errors still exist.
+ */
+
+typedef unsigned char icns_byte_t;
+typedef unsigned long icns_size_t;
+typedef struct _icns_type_t {
+  char c[4];
+} icns_type_t;
+
+typedef struct _icns_element_t {
+  icns_type_t elementType;
+  icns_size_t elementSize;
+} icns_element_t;
+
+typedef struct _icns_icon_info_t {
+  unsigned int iconHeight;
+  unsigned int iconWidth;
+  unsigned int iconDepth;
+  unsigned int iconChannels;
+} icns_icon_info_t;
+
+typedef struct _icns_image_t {
+  unsigned int imageWidth;
+  unsigned int imageHeight;
+  unsigned int imageChannels;
+  unsigned int imagePixelDepth;
+  unsigned int imageDataSize;
+  icns_byte_t *imageData;
+} icns_image_t;
+
+typedef struct _icns_family_t {
+  icns_type_t resourceType;
+  icns_size_t resourceSize;
+  icns_element_t elements[1];
+} icns_family_t;
+
+#define ICNS_HEADER_SIZE 8
+
+/*
+// ics# 0x69637323
+static icns_type_t ICNS_16x16_1BIT_DATA = {{'i', 'c', 's', '#'}};
+
+// ich# 0x69636823
+static icns_type_t ICNS_48x48_1BIT_DATA = {{'i', 'c', 'h', '#'}};
+*/
+
+// is32 0x69733332
+static icns_type_t ICNS_16x16_32BIT_DATA = {{'i', 's', '3', '2'}};
+
+// il32 0x696c3332
+static icns_type_t ICNS_32x32_32BIT_DATA = {{'i', 'l', '3', '2'}};
+
+// ih32 0x69683332
+static icns_type_t ICNS_48x48_32BIT_DATA = {{'i', 'h', '3', '2'}};
+
+// it32 0x69743332
+static icns_type_t ICNS_128x128_32BIT_DATA = {{'i', 't', '3', '2'}};
+
+// s8mk 0x73386d6b
+static icns_type_t ICNS_16x16_8BIT_MASK = {{'s', '8', 'm', 'k'}};
+
+// l8mk 0x6c386d6b
+static icns_type_t ICNS_32x32_8BIT_MASK = {{'l', '8', 'm', 'k'}};
+
+// h8mk 0x68386d6b
+static icns_type_t ICNS_48x48_8BIT_MASK = {{'h', '8', 'm', 'k'}};
+
+// t8mk 0x74386d6b
+static icns_type_t ICNS_128x128_8BIT_MASK = {{'t', '8', 'm', 'k'}};
+
+static icns_type_t ICNS_FAMILY_TYPE = {{'i','c','n','s'}};
+
+static icns_type_t ICNS_NULL_TYPE = {{0 , 0 , 0 , 0 }};
+
+#define ICNS_STATUS_OK 0
+
+static int icns_types_equal(icns_type_t type1, icns_type_t type2)
+{
+  return (strncmp((char*)&type1.c, (char*)&type2.c, 4) == 0);
+}
+
+static icns_type_t icns_get_mask_type_for_icon_type(icns_type_t type)
+{
+  if (icns_types_equal(type, ICNS_16x16_32BIT_DATA))
+    {
+      return ICNS_16x16_8BIT_MASK;
+    }
+  else if (icns_types_equal(type, ICNS_32x32_32BIT_DATA))
+    {
+      return ICNS_32x32_8BIT_MASK;
+    }
+  else if (icns_types_equal(type, ICNS_48x48_32BIT_DATA))
+    {
+      return ICNS_48x48_8BIT_MASK;
+    }
+  else if (icns_types_equal(type, ICNS_128x128_32BIT_DATA))
+    {
+      return ICNS_128x128_8BIT_MASK;
+    }
+  else
+    {
+      return ICNS_NULL_TYPE;
+    }  
+}
+
+static icns_icon_info_t icns_get_image_info_for_type(icns_type_t type)
+{
+  icns_icon_info_t info;
+
+  if (icns_types_equal(type, ICNS_16x16_32BIT_DATA))
+    {
+      info.iconHeight = 16;
+      info.iconWidth = 16;
+      info.iconDepth = 8;
+      info.iconChannels = 4;
+    }
+  else if (icns_types_equal(type, ICNS_32x32_32BIT_DATA))
+    {
+      info.iconHeight = 32;
+      info.iconWidth = 32;
+      info.iconDepth = 8;
+      info.iconChannels = 4;
+    }
+  else if (icns_types_equal(type, ICNS_48x48_32BIT_DATA))
+    {
+      info.iconHeight = 48;
+      info.iconWidth = 48;
+      info.iconDepth = 8;
+      info.iconChannels = 4;
+    }
+  else if (icns_types_equal(type, ICNS_128x128_32BIT_DATA))
+    {
+      info.iconHeight = 128;
+      info.iconWidth = 128;
+      info.iconDepth = 8;
+      info.iconChannels = 4;
+    }
+  else
+    {
+      info.iconHeight = 0;
+      info.iconWidth = 0;
+      info.iconDepth = 0;
+      info.iconChannels = 0;
+    }
+
+  return info;
+}
+
+static int icns_get_element_from_family(icns_family_t *iconFamily,
+                                        icns_type_t iconType,
+                                        icns_element_t **iconElement)
+{
+  icns_byte_t *bytes = (icns_byte_t *)iconFamily->elements;
+  unsigned long size = iconFamily->resourceSize;
+  icns_element_t *element;
+  icns_byte_t *data;
+
+  data = bytes;
+  element = (icns_element_t *)data;
+  while ((bytes + size > data) && element->elementSize)
+    {
+      if (icns_types_equal(element->elementType, iconType))
+        {
+          *iconElement = element;
+          return ICNS_STATUS_OK;
+        }
+      data += element->elementSize;
+      element = (icns_element_t *)data;
+    }
+
+  return 1;
+}
+
+static int icns_import_family_data(int size, icns_byte_t *bytes, 
+                                   icns_family_t **iconFamily)
+{
+  icns_element_t *element = NULL;
+  icns_family_t *family;
+  unsigned long el_size;
+  icns_byte_t *data;
+  icns_byte_t *end;
+
+  data = bytes;
+  family = (icns_family_t *)data;
+  while ((bytes + size > data) && family->resourceSize)
+    {
+      if (icns_types_equal(family->resourceType, ICNS_FAMILY_TYPE))
+        {
+          element = (icns_element_t *)family;
+          break;
+        }
+      el_size = NSSwapBigIntToHost(family->resourceSize);
+      data += el_size;
+      family = (icns_family_t *)data;
+    }
+  if (element == NULL)
+    {
+      return 1;
+    }
+
+  el_size = NSSwapBigIntToHost(element->elementSize);
+  family = malloc(el_size);
+  if (!family)
+    {
+      return 1;
+    }
+
+  strncpy((char*)&family->resourceType.c, (char*)&element->elementType.c, 4);
+  family->resourceSize = el_size;
+  memcpy((char*)(family->elements), 
+         (char*)element + ICNS_HEADER_SIZE, 
+         el_size - ICNS_HEADER_SIZE);
+
+  data = (icns_byte_t *)family->elements;
+  end = data + el_size - ICNS_HEADER_SIZE;
+  element = family->elements;
+  while ((data < end) && element->elementSize)
+    {
+      el_size = NSSwapBigIntToHost(element->elementSize);
+      element->elementSize = el_size;
+      data += el_size;
+      element = (icns_element_t *)data;
+    }
+  
+  *iconFamily = family;
+
+  return ICNS_STATUS_OK;
+}
+
+static int icns_init_image(unsigned int iconWidth,
+                           unsigned int iconHeight,
+                           unsigned int iconChannels,
+                           unsigned int iconPixelDepth,
+                           icns_image_t *imageOut)
+{
+  imageOut->imageWidth = iconWidth;
+  imageOut->imageHeight = iconHeight;
+  imageOut->imageChannels = iconChannels;
+  imageOut->imagePixelDepth = iconPixelDepth;
+  imageOut->imageDataSize = (iconHeight * iconWidth 
+                             * iconPixelDepth * iconChannels) / 8;
+  imageOut->imageData = malloc(imageOut->imageDataSize);
+  if (!imageOut->imageData)
+      return 1;
+  else
+      return ICNS_STATUS_OK;
+}
+
+static int icns_init_image_for_type(icns_type_t iconType,
+                                    icns_image_t *imageOut)
+{
+  icns_icon_info_t info;
+
+  info = icns_get_image_info_for_type(iconType);
+  return icns_init_image(info.iconWidth, info.iconHeight, info.iconChannels,
+                         info.iconDepth, imageOut);
+}
+
+static int icns_free_image(icns_image_t *imageIn)
+{
+  free(imageIn->imageData);
+  imageIn->imageData = NULL;
+  return ICNS_STATUS_OK;
+}
+
+static int icns_get_image32_with_mask_from_family(icns_family_t *iconFamily,
+                                                  icns_type_t type, 
+                                                  icns_image_t *iconImage)
+{
+  icns_element_t *element;
+  unsigned int samplesPerPixel = 4;
+  icns_byte_t *b;
+  icns_byte_t *end;
+  int j;
+  int res;
+  icns_type_t mask_type;
+
+  if (icns_types_equal(type, ICNS_NULL_TYPE))
+    return 1;
+
+  res = icns_get_element_from_family(iconFamily, type, &element);
+  if (res != ICNS_STATUS_OK)
+    return res;
+
+  res = icns_init_image_for_type(type, iconImage);
+  if (res != ICNS_STATUS_OK)
+    return res;
+
+  b = (icns_byte_t *)element + ICNS_HEADER_SIZE;
+  end = b + element->elementSize - ICNS_HEADER_SIZE;
+  // Safety check
+  if (end > (icns_byte_t *)iconFamily->elements + iconFamily->resourceSize)
+    {
+      icns_free_image(iconImage);
+      return 1;
+    }
+
+  if ((element->elementSize - ICNS_HEADER_SIZE) < 
+      3 * iconImage->imageHeight * iconImage->imageWidth)
+    {
+      unsigned int plane;
+
+      // Run length encoded planar data
+      for (plane = 0; plane < 3; plane++)
+        {
+          unsigned int offset;
+    
+          offset = 0;
+          while ((offset < iconImage->imageHeight * iconImage->imageWidth) 
+                 && (b < end))
+            {
+              icns_byte_t bv = *b++;
+              int runLen;
+              
+              if (bv & 0x80)
+                {
+                  // Compressed run
+                  icns_byte_t val = *b++;
+                  runLen = bv - 125;
+                  for (j = 0; j < runLen; j++)
+                    {
+                      iconImage->imageData[samplesPerPixel * (offset + j) 
+                                           + plane] = val;
+                    }
+                }
+              else
+                {
+                  // Uncompressed run
+                  int j;
+                  
+                  runLen = bv + 1;
+                  for (j = 0; j < runLen; j++)
+                    {
+                      iconImage->imageData[samplesPerPixel * (offset + j)
+                                           + plane] = *b++;
+                    }
+                }
+              
+              offset += runLen;
+            }
+        }
+    }
+  else
+    {
+      for (j = 0; j < iconImage->imageHeight * iconImage->imageWidth; j++)
+        {
+          iconImage->imageData[samplesPerPixel * j + 0] = *b++;
+          iconImage->imageData[samplesPerPixel * j + 1] = *b++;
+          iconImage->imageData[samplesPerPixel * j + 2] = *b++;
+        }
+    }
+
+  // Fill in the mask
+  mask_type = icns_get_mask_type_for_icon_type(type);
+  res = icns_get_element_from_family(iconFamily, mask_type, &element);
+  if (res == ICNS_STATUS_OK)
+    {
+      b = (icns_byte_t *)element + ICNS_HEADER_SIZE;
+      end = b + element->elementSize - ICNS_HEADER_SIZE;
+      // Safety check
+      if (end > (icns_byte_t *)iconFamily->elements + iconFamily->resourceSize)
+        {
+            icns_free_image(iconImage);
+            return 1;
+        }
+
+      for (j = 0; j < iconImage->imageHeight * iconImage->imageWidth; j++)
+        {
+          iconImage->imageData[samplesPerPixel * j + 3] = *b++;
+        }
+    }
+  else
+    {
+      for (j = 0; j < iconImage->imageHeight * iconImage->imageWidth; j++)
+        {
+          iconImage->imageData[samplesPerPixel * j + 3] = 255;
+        }
+    }
+
+  return ICNS_STATUS_OK;
+}
+
+#endif /* !HAVE_LIBICNS */
 
 // Define the pixel
 typedef struct pixel_t
@@ -59,7 +453,7 @@ typedef struct pixel_t
   /*
    * If the data is 0, return immediately.
    */
-  if (![imageData length])
+  if ([imageData length] < 8)
     {
       return NO;
     }
@@ -85,19 +479,15 @@ typedef struct pixel_t
   icns_family_t          *iconFamily = NULL;
   unsigned long           dataOffset = 0;
   icns_byte_t            *data = NULL;
-  char                    typeStr[5] = {0,0,0,0,0};
+  icns_type_t             typeStr = ICNS_NULL_TYPE;
   unsigned int            iconWidth = 0, iconHeight = 0;
   icns_image_t            iconImage;
-  icns_element_t          iconElement;
-  icns_icon_info_t        iconInfo;
   int                     sPP = 4;
   unsigned char          *rgbBuffer = NULL; /* image converted to rgb */
   unsigned int            rgbBufferPos = 0;
   unsigned int            rgbBufferSize = 0;
   int                     i = 0, j = 0;
   int                     imageChannels = 0;
-  // int                     maskChannels = 0;
-  // icns_image_t            mask;
 
   error = icns_import_family_data(size, bytes, &iconFamily);
   if(error != ICNS_STATUS_OK)
@@ -112,57 +502,53 @@ typedef struct pixel_t
   data = (icns_byte_t *)iconFamily;
 
   // read each icon...
-  while(((dataOffset + 8) < iconFamily->resourceSize))
+  while (((dataOffset + 8) < iconFamily->resourceSize))
     {
       icns_element_t   element;
-      icns_icon_info_t info;
-      icns_size_t      dataSize = 0;
-      unsigned int     w = 0, h = 0;
       
-      memcpy(&element, (data+dataOffset),8);
-      memcpy(&typeStr, &(element.elementType),4);
-
-      dataSize = element.elementSize - 8;
-
-      info = icns_get_image_info_for_type(element.elementType);
-
-      h = info.iconHeight;
-      w = info.iconWidth;
+      memcpy(&element, (data + dataOffset), 8);
       
       //
       // Temporarily limit to 48 until we can find a way to 
       // utilize the other representations in the icns file.
       // 
-      // if( w > iconWidth)
-      if(icns_types_equal(element.elementType,ICNS_48x48_32BIT_DATA)) 
-	{
-	  iconWidth = w;
-	  iconHeight = h;
-	  iconInfo = info;
-	  iconElement = element;
-	}
+      if (icns_types_equal(element.elementType, ICNS_48x48_32BIT_DATA) 
+          || (icns_types_equal(typeStr, ICNS_NULL_TYPE) 
+               && (icns_types_equal(element.elementType, ICNS_32x32_32BIT_DATA) 
+                   || icns_types_equal(element.elementType, ICNS_128x128_32BIT_DATA))))
+        {
+          memcpy(&typeStr, &(element.elementType), 4);
+        }
 
       // next...
       dataOffset += element.elementSize;
     }
 
   // extract the image...
-  memset ( &iconImage, 0, sizeof(icns_image_t) );
-  error = icns_get_image32_with_mask_from_family(iconFamily,iconElement.elementType,&iconImage);
-  if(error)
+  memset(&iconImage, 0, sizeof(icns_image_t));
+  error = icns_get_image32_with_mask_from_family(iconFamily,
+                                                 typeStr,
+                                                 &iconImage);
+  if (error)
     {
       NSLog(@"Error while extracting image from ICNS data.");
       RELEASE(self);
+      free(iconFamily);
       return nil;
     }
+
+  iconWidth = iconImage.imageWidth;
+  iconHeight = iconImage.imageHeight;
 
   // allocate the buffer...
   rgbBufferSize = iconHeight * (iconWidth * sizeof(unsigned char) * sPP);
   rgbBuffer = NSZoneMalloc([self zone],  rgbBufferSize); 
-  if(rgbBuffer == NULL)
+  if (rgbBuffer == NULL)
     {
       NSLog(@"Couldn't allocate memory for image data from ICNS.");
       RELEASE(self);
+      icns_free_image(&iconImage);
+      free(iconFamily);
       return nil;
     }
 
@@ -170,61 +556,40 @@ typedef struct pixel_t
   rgbBufferPos = 0;
   for (i = 0; i < iconHeight; i++)
     {
-      for(j = 0; j < iconWidth; j++)
-	{
-	  pixel_t	*src_rgb_pixel;
-	  //pixel_t	*src_pha_pixel;
+      for (j = 0; j < iconWidth; j++)
+        {
+          pixel_t	*src_rgb_pixel;
 	  
-	  src_rgb_pixel = (pixel_t *)&(iconImage.imageData[i*iconWidth*imageChannels+j*imageChannels]);
-	  
-	  rgbBuffer[rgbBufferPos++] = src_rgb_pixel->r;
-	  rgbBuffer[rgbBufferPos++] = src_rgb_pixel->g;
-	  rgbBuffer[rgbBufferPos++] = src_rgb_pixel->b;
-	  
-	  /*
-	  if(mask != NULL) {
-	    src_pha_pixel = (pixel_t *)&(mask.imageData[i*iconWidth*maskChannels+j*maskChannels]);
-	    rgbBuffer[rgbBufferPos++] = src_pha_pixel->a;
-	  } else {
-	  */
-	  rgbBuffer[rgbBufferPos++] = src_rgb_pixel->a;
-       // }
-	}
+          src_rgb_pixel = (pixel_t *)&(iconImage.imageData[i*iconWidth*imageChannels+j*imageChannels]);
+          
+          rgbBuffer[rgbBufferPos++] = src_rgb_pixel->r;
+          rgbBuffer[rgbBufferPos++] = src_rgb_pixel->g;
+          rgbBuffer[rgbBufferPos++] = src_rgb_pixel->b;
+          rgbBuffer[rgbBufferPos++] = src_rgb_pixel->a;
+        }
     }
   
+  icns_free_image(&iconImage);
+  free(iconFamily);
+
   /* initialize self */
   [self initWithBitmapDataPlanes: &rgbBuffer
-	pixelsWide: (float)iconWidth
-	pixelsHigh: (float)iconHeight
-	bitsPerSample: 8
-	samplesPerPixel: sPP
-	hasAlpha: YES
-	isPlanar: NO
-	colorSpaceName: NSCalibratedRGBColorSpace
-	bytesPerRow: iconWidth * sPP
-	bitsPerPixel: 8 * sPP];
+        pixelsWide: iconWidth
+        pixelsHigh: iconHeight
+        bitsPerSample: 8
+        samplesPerPixel: sPP
+        hasAlpha: YES
+        isPlanar: NO
+        colorSpaceName: NSCalibratedRGBColorSpace
+        // FIXME: Not sure whether this format is pre-multiplied
+        bitmapFormat: NSAlphaNonpremultipliedBitmapFormat
+        bytesPerRow: iconWidth * sPP
+        bitsPerPixel: 8 * sPP];
   
   _imageData = [[NSData alloc] initWithBytesNoCopy: rgbBuffer
-			       length: rgbBufferSize];
+                               length: rgbBufferSize];
 
   return self;
 }
+
 @end
-
-#else /* !HAVE_LIBICNS */
-
-@implementation NSBitmapImageRep (ICNS)
-+ (BOOL) _bitmapIsICNS: (NSData *)imageData
-{
-  return NO;
-}
-
-- (id) _initBitmapFromICNS: (NSData *)imageData
-{
-  RELEASE(self);
-  return nil;
-}
-@end
-
-#endif /* !HAVE_LIBICNS */
-

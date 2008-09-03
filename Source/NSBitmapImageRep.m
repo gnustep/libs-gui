@@ -153,9 +153,7 @@
 #if HAVE_LIBPNG
 	@"png",
 #endif
-#if HAVE_LIBICNS
 	@"icns",
-#endif
 	nil];
     }
 

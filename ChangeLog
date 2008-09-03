@@ -1,3 +1,10 @@
+2008-09-03 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBitmapImageRep.m (+imageUnfilteredFileTypes): Always
+	enable icns format.
+	* Source/NSBitmapImageRep+ICNS.m: Add drop in replacement code for
+	libicns and clean up loading code.
+
 2008-08-30 13:33-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* ChangeLog
