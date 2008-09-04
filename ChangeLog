@@ -1,3 +1,7 @@
+2008-09-03 21:13-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSBitmapImageRep+ICNS.m: Correct minor issue with constant name.
+
 2008-09-03 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBitmapImageRep.m (+imageUnfilteredFileTypes): Always

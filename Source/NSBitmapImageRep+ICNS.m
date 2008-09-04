@@ -515,7 +515,7 @@ typedef struct pixel_t
       if (icns_types_equal(element.elementType, ICNS_48x48_32BIT_DATA) 
           || (icns_types_equal(typeStr, ICNS_NULL_TYPE) 
                && (icns_types_equal(element.elementType, ICNS_32x32_32BIT_DATA) 
-                   || icns_types_equal(element.elementType, ICNS_128x128_32BIT_DATA))))
+                   || icns_types_equal(element.elementType, ICNS_128X128_32BIT_DATA))))
         {
           memcpy(&typeStr, &(element.elementType), 4);
         }
