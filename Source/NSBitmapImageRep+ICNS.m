@@ -107,7 +107,7 @@ static icns_type_t ICNS_32x32_32BIT_DATA = {{'i', 'l', '3', '2'}};
 static icns_type_t ICNS_48x48_32BIT_DATA = {{'i', 'h', '3', '2'}};
 
 // it32 0x69743332
-static icns_type_t ICNS_128x128_32BIT_DATA = {{'i', 't', '3', '2'}};
+static icns_type_t ICNS_128X128_32BIT_DATA = {{'i', 't', '3', '2'}};
 
 // s8mk 0x73386d6b
 static icns_type_t ICNS_16x16_8BIT_MASK = {{'s', '8', 'm', 'k'}};
@@ -119,7 +119,7 @@ static icns_type_t ICNS_32x32_8BIT_MASK = {{'l', '8', 'm', 'k'}};
 static icns_type_t ICNS_48x48_8BIT_MASK = {{'h', '8', 'm', 'k'}};
 
 // t8mk 0x74386d6b
-static icns_type_t ICNS_128x128_8BIT_MASK = {{'t', '8', 'm', 'k'}};
+static icns_type_t ICNS_128X128_8BIT_MASK = {{'t', '8', 'm', 'k'}};
 
 static icns_type_t ICNS_FAMILY_TYPE = {{'i','c','n','s'}};
 

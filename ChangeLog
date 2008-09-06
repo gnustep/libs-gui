@@ -1,3 +1,8 @@
+2008-09-06 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBitmapImageRep+ICNS.m: Change the incosistently named
+	constants not only in the usage but also in the definition.
+	
 2008-09-03 21:13-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSBitmapImageRep+ICNS.m: Correct minor issue with constant name.
