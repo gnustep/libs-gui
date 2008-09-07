@@ -146,9 +146,9 @@ static icns_type_t icns_get_mask_type_for_icon_type(icns_type_t type)
     {
       return ICNS_48x48_8BIT_MASK;
     }
-  else if (icns_types_equal(type, ICNS_128x128_32BIT_DATA))
+  else if (icns_types_equal(type, ICNS_128X128_32BIT_DATA))
     {
-      return ICNS_128x128_8BIT_MASK;
+      return ICNS_128X128_8BIT_MASK;
     }
   else
     {
@@ -181,7 +181,7 @@ static icns_icon_info_t icns_get_image_info_for_type(icns_type_t type)
       info.iconDepth = 8;
       info.iconChannels = 4;
     }
-  else if (icns_types_equal(type, ICNS_128x128_32BIT_DATA))
+  else if (icns_types_equal(type, ICNS_128X128_32BIT_DATA))
     {
       info.iconHeight = 128;
       info.iconWidth = 128;
