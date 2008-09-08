@@ -860,6 +860,86 @@ static NSNull			*null = nil;
   NSRectFill (frame);
 }
 
+- (void) drawBorderType: (NSBorderType)aType 
+                  frame: (NSRect)frame 
+                   view: (NSView*)view
+{
+  switch (aType)
+    {
+      case NSLineBorder:
+        [[NSColor controlDarkShadowColor] set];
+        NSFrameRect(frame);
+        break;
+      case NSGrooveBorder:
+        [self drawGroove: frame withClip: NSZeroRect];
+        break;
+      case NSBezelBorder:
+        [self drawWhiteBezel: frame withClip: NSZeroRect];
+        break;
+      case NSNoBorder: 
+      default:
+        break;
+    }
+}
+
+- (NSSize) sizeForBorderType: (NSBorderType)aType
+{
+  // Returns the size of a border
+  switch (aType)
+    {
+      case NSLineBorder:
+        return NSMakeSize(1, 1);
+      case NSGrooveBorder:
+      case NSBezelBorder:
+        return NSMakeSize(2, 2);
+      case NSNoBorder: 
+      default:
+        return NSZeroSize;
+    }
+}
+
+- (void) drawBorderForImageFrameStyle: (NSImageFrameStyle)frameStyle
+                                frame: (NSRect)frame 
+                                 view: (NSView*)view
+{
+  switch (frameStyle)
+    {
+      case NSImageFrameNone:
+        // do nothing
+        break;
+      case NSImageFramePhoto:
+        [self drawFramePhoto: frame withClip: NSZeroRect];
+        break;
+      case NSImageFrameGrayBezel:
+        [self drawGrayBezel: frame withClip: NSZeroRect];
+        break;
+      case NSImageFrameGroove:
+        [self drawGroove: frame withClip: NSZeroRect];
+        break;
+      case NSImageFrameButton:
+        [self drawButton: frame withClip: NSZeroRect];
+        break;
+    }
+}
+
+- (NSSize) sizeForImageFrameStyle: (NSImageFrameStyle)frameStyle
+{
+  // Get border size
+  switch (frameStyle)
+    {
+      case NSImageFrameNone:
+      default:
+        return NSZeroSize;
+      case NSImageFramePhoto:
+        // FIXME
+        return NSMakeSize(2, 2);
+      case NSImageFrameGrayBezel:
+      case NSImageFrameGroove:
+      case NSImageFrameButton:
+        return NSMakeSize(2, 2);
+    }
+}
+
 @end
 
 
@@ -968,9 +1048,10 @@ static NSNull			*null = nil;
     }
 }
 
+#if 0
 - (NSRect) drawGradientBorder: (NSGradientType)gradientType 
-		       inRect: (NSRect)border 
-		     withClip: (NSRect)clip
+                       inRect: (NSRect)border 
+                     withClip: (NSRect)clip
 {
   NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, 
 			   NSMinXEdge, NSMaxYEdge};
@@ -1016,6 +1097,122 @@ static NSNull			*null = nil;
  
   return rect;
 }
+
+#else
+// FIXME: I think this method is wrong.
+- (NSRect) drawGradientBorder: (NSGradientType)gradientType 
+                       inRect: (NSRect)cellFrame 
+                     withClip: (NSRect)clip
+{
+  float   start_white = 0.0;
+  float   end_white = 0.0;
+  float   white = 0.0;
+  float   white_step = 0.0;
+  float   h, s, v, a;
+  NSPoint p1, p2;
+  NSColor *gray = nil;
+  NSColor *darkGray = nil;
+  NSColor *lightGray = nil;
+
+  lightGray = [NSColor colorWithDeviceRed: NSLightGray 
+                       green: NSLightGray 
+                       blue: NSLightGray 
+                       alpha:1.0];
+  gray = [NSColor colorWithDeviceRed: NSGray 
+                  green: NSGray 
+                  blue: NSGray 
+                  alpha:1.0];
+  darkGray = [NSColor colorWithDeviceRed: NSDarkGray 
+                      green: NSDarkGray 
+                      blue: NSDarkGray 
+                      alpha:1.0];
+
+  switch (gradientType)
+    {
+      case NSGradientNone:
+        return NSZeroRect;
+        break;
+
+      case NSGradientConcaveWeak:
+        [gray getHue: &h saturation: &s brightness: &v alpha: &a];
+        start_white = [lightGray brightnessComponent];
+        end_white = [gray brightnessComponent];
+        break;
+        
+      case NSGradientConvexWeak:
+        [darkGray getHue: &h saturation: &s brightness: &v alpha: &a];
+        start_white = [gray brightnessComponent];
+        end_white = [lightGray brightnessComponent];
+        break;
+        
+      case NSGradientConcaveStrong:
+        [lightGray getHue: &h saturation: &s brightness: &v alpha: &a];
+        start_white = [lightGray brightnessComponent];
+        end_white = [darkGray brightnessComponent];
+        break;
+        
+      case NSGradientConvexStrong:
+        [darkGray getHue: &h saturation: &s brightness: &v alpha: &a];
+        start_white = [darkGray brightnessComponent];
+        end_white = [lightGray brightnessComponent];
+        break;
+
+      default:
+        break;
+    }
+
+  white = start_white;
+  white_step = fabs(start_white - end_white)
+    / (cellFrame.size.width + cellFrame.size.height);
+
+  // Start from top left
+  p1 = NSMakePoint(cellFrame.origin.x,
+    cellFrame.size.height + cellFrame.origin.y);
+  p2 = NSMakePoint(cellFrame.origin.x, 
+    cellFrame.size.height + cellFrame.origin.y);
+
+  // Move by Y
+  while (p1.y > cellFrame.origin.y)
+    {
+      [[NSColor 
+        colorWithDeviceHue: h saturation: s brightness: white alpha: 1.0] set];
+      [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
+      
+      if (start_white > end_white)
+        white -= white_step;
+      else
+        white += white_step;
+
+      p1.y -= 1.0;
+      if (p2.x < (cellFrame.size.width + cellFrame.origin.x))
+        p2.x += 1.0;
+      else
+        p2.y -= 1.0;
+    }
+      
+  // Move by X
+  while (p1.x < (cellFrame.size.width + cellFrame.origin.x))
+    {
+      [[NSColor 
+        colorWithDeviceHue: h saturation: s brightness: white alpha: 1.0] set];
+      [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
+      
+      if (start_white > end_white)
+        white -= white_step;
+      else
+        white += white_step;
+
+      p1.x += 1.0;
+      if (p2.x >= (cellFrame.size.width + cellFrame.origin.x))
+        p2.y -= 1.0;
+      else
+        p2.x += 1.0;
+    }
+
+  return NSZeroRect;
+}
+
+#endif
 
 - (NSRect) drawGrayBezel: (NSRect)border withClip: (NSRect)clip
 {

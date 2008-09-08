@@ -52,9 +52,7 @@
 //
 - (id) init
 {
-  [self initImageCell: nil];
-
-  return self;
+  return [self initImageCell: nil];
 }
 
 - (void) setImage:(NSImage *)anImage
@@ -120,35 +118,13 @@
 //
 // Displaying
 //
-- (void) drawWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
+- (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame 
+                                    inView: (NSView *)controlView
 {
-  NSDebugLLog(@"NSImageCell", @"NSImageCell -drawWithFrame");
-
-  // do nothing if cell's frame rect is zero
-  if (NSIsEmptyRect (cellFrame))
-    return;
-  
-  // draw the border if needed
-  switch (_frameStyle)
-    {
-    case NSImageFrameNone:
-      // do nothing
-      break;
-    case NSImageFramePhoto:
-      [[GSTheme theme] drawFramePhoto: cellFrame withClip: NSZeroRect];
-      break;
-    case NSImageFrameGrayBezel:
-      [[GSTheme theme] drawGrayBezel: cellFrame withClip: NSZeroRect];
-      break;
-    case NSImageFrameGroove:
-      [[GSTheme theme] drawGroove: cellFrame withClip: NSZeroRect];
-      break;
-    case NSImageFrameButton:
-      [[GSTheme theme] drawButton: cellFrame withClip: NSZeroRect];
-      break;
-    }
-
-  [self drawInteriorWithFrame: cellFrame inView: controlView];
+  NSDebugLLog(@"NSImageCell", @"NSImageCell -_drawBorderAndBackgroundWithFrame");
+  [[GSTheme theme] drawBorderForImageFrameStyle: _frameStyle 
+                   frame: cellFrame 
+                   view: controlView];
 }
 
 static inline float
@@ -219,7 +195,7 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
 {
   NSPoint	position;
   BOOL		is_flipped = [controlView isFlipped];
-  NSSize        imageSize, realImageSize;
+  NSSize  imageSize, realImageSize;
 
   NSDebugLLog(@"NSImageCell", @"NSImageCell drawInteriorWithFrame called");
 
@@ -234,65 +210,65 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
   switch (_imageScaling)
     {
       case NSScaleProportionally:
-	{
-	  NSDebugLLog(@"NSImageCell", @"NSScaleProportionally");
-	  imageSize = scaleProportionally (realImageSize, cellFrame);
-	  break;
-	}
+        {
+          NSDebugLLog(@"NSImageCell", @"NSScaleProportionally");
+          imageSize = scaleProportionally (realImageSize, cellFrame);
+          break;
+        }
       case NSScaleToFit:
-	{
-	  NSDebugLLog(@"NSImageCell", @"NSScaleToFit");
-	  imageSize = cellFrame.size;
-	  break;
-	}
+        {
+          NSDebugLLog(@"NSImageCell", @"NSScaleToFit");
+          imageSize = cellFrame.size;
+          break;
+        }
       default:
       case NSScaleNone:
-	{
-	  NSDebugLLog(@"NSImageCell", @"NSScaleNone");
-	  imageSize = realImageSize;
-	  break;
-	}
+        {
+          NSDebugLLog(@"NSImageCell", @"NSScaleNone");
+          imageSize = realImageSize;
+          break;
+        }
     }
 
   switch (_imageAlignment)
     {
       default:
       case NSImageAlignLeft:
-	position.x = xLeftInRect(imageSize, cellFrame);
-	position.y = yCenterInRect(imageSize, cellFrame, is_flipped);
-	break;
+        position.x = xLeftInRect(imageSize, cellFrame);
+        position.y = yCenterInRect(imageSize, cellFrame, is_flipped);
+        break;
       case NSImageAlignRight:
-	position.x = xRightInRect(imageSize, cellFrame);
-	position.y = yCenterInRect(imageSize, cellFrame, is_flipped);
-	break;
+        position.x = xRightInRect(imageSize, cellFrame);
+        position.y = yCenterInRect(imageSize, cellFrame, is_flipped);
+        break;
       case NSImageAlignCenter:
-	position.x = xCenterInRect(imageSize, cellFrame);
-	position.y = yCenterInRect(imageSize, cellFrame, is_flipped);
-	break;
+        position.x = xCenterInRect(imageSize, cellFrame);
+        position.y = yCenterInRect(imageSize, cellFrame, is_flipped);
+        break;
       case NSImageAlignTop:
-	position.x = xCenterInRect(imageSize, cellFrame);
-	position.y = yTopInRect(imageSize, cellFrame, is_flipped);
-	break;
+        position.x = xCenterInRect(imageSize, cellFrame);
+        position.y = yTopInRect(imageSize, cellFrame, is_flipped);
+        break;
       case NSImageAlignBottom:
-	position.x = xCenterInRect(imageSize, cellFrame);
-	position.y = yBottomInRect(imageSize, cellFrame, is_flipped);
-	break;
+        position.x = xCenterInRect(imageSize, cellFrame);
+        position.y = yBottomInRect(imageSize, cellFrame, is_flipped);
+        break;
       case NSImageAlignTopLeft:
-	position.x = xLeftInRect(imageSize, cellFrame);
-	position.y = yTopInRect(imageSize, cellFrame, is_flipped);
-	break;
+        position.x = xLeftInRect(imageSize, cellFrame);
+        position.y = yTopInRect(imageSize, cellFrame, is_flipped);
+        break;
       case NSImageAlignTopRight:
-	position.x = xRightInRect(imageSize, cellFrame);
-	position.y = yTopInRect(imageSize, cellFrame, is_flipped);
-	break;
+        position.x = xRightInRect(imageSize, cellFrame);
+        position.y = yTopInRect(imageSize, cellFrame, is_flipped);
+        break;
       case NSImageAlignBottomLeft:
-	position.x = xLeftInRect(imageSize, cellFrame);
-	position.y = yBottomInRect(imageSize, cellFrame, is_flipped);
-	break;
+        position.x = xLeftInRect(imageSize, cellFrame);
+        position.y = yBottomInRect(imageSize, cellFrame, is_flipped);
+        break;
       case NSImageAlignBottomRight:
-	position.x = xRightInRect(imageSize, cellFrame);
-	position.y = yBottomInRect(imageSize, cellFrame, is_flipped);
-	break;
+        position.x = xRightInRect(imageSize, cellFrame);
+        position.y = yBottomInRect(imageSize, cellFrame, is_flipped);
+        break;
     }
 
   // account for flipped views
@@ -304,11 +280,11 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
 
   // draw!
   [_cell_image drawInRect: NSMakeRect(position.x, position.y,
-				      imageSize.width, imageSize.height)
-		 fromRect: NSMakeRect(0, 0, realImageSize.width,
-				      realImageSize.height)
-		operation: NSCompositeSourceOver
-		 fraction: 1.0];
+                                      imageSize.width, imageSize.height)
+               fromRect: NSMakeRect(0, 0, realImageSize.width,
+                                    realImageSize.height)
+               operation: NSCompositeSourceOver
+               fraction: 1.0];
 }
 
 - (NSSize) cellSize
@@ -316,22 +292,7 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
   NSSize borderSize, s;
   
   // Get border size
-  switch (_frameStyle)
-    {
-    case NSImageFrameNone:
-    default:
-      borderSize = NSZeroSize;
-      break;
-    case NSImageFramePhoto:
-      // FIXME
-      borderSize = _sizeForBorderType (NSNoBorder);
-      break;
-    case NSImageFrameGrayBezel:
-    case NSImageFrameGroove:
-    case NSImageFrameButton:
-      borderSize = _sizeForBorderType (NSBezelBorder); 
-      break;
-    }
+  borderSize = [[GSTheme theme] sizeForImageFrameStyle: _frameStyle];
   
   // Get Content Size
   s = _original_image_size;
@@ -348,23 +309,7 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
   NSSize borderSize;
 
   // Get border size
-  switch (_frameStyle)
-    {
-    case NSImageFrameNone:
-    default:
-      borderSize = NSZeroSize;
-      break;
-    case NSImageFramePhoto:
-      // what does this one look like? TODO (in sync with the rest of the code)
-      borderSize = _sizeForBorderType (NSNoBorder);
-      break;
-    case NSImageFrameGrayBezel:
-    case NSImageFrameGroove:
-    case NSImageFrameButton:
-      borderSize = _sizeForBorderType (NSBezelBorder); 
-      break;
-    }
-  
+  borderSize = [[GSTheme theme] sizeForImageFrameStyle: _frameStyle];
   return NSInsetRect (theRect, borderSize.width, borderSize.height);
 }
 

@@ -929,6 +929,14 @@ typedef struct _GSButtonCellFlags
 - (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame 
                                     inView: (NSView*)controlView
 {
+  // Draw gradient
+  if (!_cell.is_highlighted)
+    {
+      [[GSTheme theme] drawGradientBorder: _gradient_type 
+                       inRect: cellFrame 
+                       withClip: NSZeroRect];
+    }
+
   // The inside check could also be done via a track rect, but then this would
   // only work with specially prepared controls. Therefore we dont use 
   // _mouse_inside here.
@@ -938,105 +946,6 @@ typedef struct _GSButtonCellFlags
                           inRect: cellFrame]))
     {
       [self drawBezelWithFrame: cellFrame inView: controlView];
-    }
-}
-
-- (void) drawGradientWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
-{
-  float   start_white = 0.0;
-  float   end_white = 0.0;
-  float   white = 0.0;
-  float   white_step = 0.0;
-  float   h, s, v, a;
-  NSColor *lightGray = nil;
-  NSColor *gray = nil;
-  NSColor *darkGray = nil;
-  NSPoint p1, p2;
-
-  lightGray = [NSColor colorWithDeviceRed:0.83 green:0.83 blue:0.83 alpha:1.0];
-  gray = [NSColor colorWithDeviceRed:0.50 green:0.50 blue:0.50 alpha:1.0];
-  darkGray = [NSColor colorWithDeviceRed:0.32 green:0.32 blue:0.32 alpha:1.0];
-
-  switch (_gradient_type)
-    {
-      case NSGradientNone:
-        return;
-        break;
-
-      case NSGradientConcaveWeak:
-        [gray getHue: &h saturation: &s brightness: &v alpha: &a];
-        start_white = [lightGray brightnessComponent];
-        end_white = [gray brightnessComponent];
-        break;
-        
-      case NSGradientConvexWeak:
-        [darkGray getHue: &h saturation: &s brightness: &v alpha: &a];
-        start_white = [gray brightnessComponent];
-        end_white = [lightGray brightnessComponent];
-        break;
-        
-      case NSGradientConcaveStrong:
-        [lightGray getHue: &h saturation: &s brightness: &v alpha: &a];
-        start_white = [lightGray brightnessComponent];
-        end_white = [darkGray brightnessComponent];
-        break;
-        
-      case NSGradientConvexStrong:
-        [darkGray getHue: &h saturation: &s brightness: &v alpha: &a];
-        start_white = [darkGray brightnessComponent];
-        end_white = [lightGray brightnessComponent];
-        break;
-
-      default:
-        break;
-    }
-
-  white = start_white;
-  white_step = fabs(start_white - end_white)
-    / (cellFrame.size.width + cellFrame.size.height);
-
-  // Start from top left
-  p1 = NSMakePoint(cellFrame.origin.x,
-    cellFrame.size.height + cellFrame.origin.y);
-  p2 = NSMakePoint(cellFrame.origin.x, 
-    cellFrame.size.height + cellFrame.origin.y);
-
-  // Move by Y
-  while (p1.y > cellFrame.origin.y)
-    {
-      [[NSColor 
-        colorWithDeviceHue: h saturation: s brightness: white alpha: 1.0] set];
-      [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
-      
-      if (start_white > end_white)
-        white -= white_step;
-      else
-        white += white_step;
-
-      p1.y -= 1.0;
-      if (p2.x < (cellFrame.size.width + cellFrame.origin.x))
-        p2.x += 1.0;
-      else
-        p2.y -= 1.0;
-    }
-      
-  // Move by X
-  while (p1.x < (cellFrame.size.width + cellFrame.origin.x))
-    {
-      [[NSColor 
-        colorWithDeviceHue: h saturation: s brightness: white alpha: 1.0] set];
-      [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
-      
-      if (start_white > end_white)
-        white -= white_step;
-      else
-        white += white_step;
-
-      p1.x += 1.0;
-      if (p2.x >= (cellFrame.size.width + cellFrame.origin.x))
-        p2.y -= 1.0;
-      else
-        p2.x += 1.0;
     }
 }
 
@@ -1273,13 +1182,6 @@ typedef struct _GSButtonCellFlags
             titleRect.size.width -= 6;
           }
         break;
-    }
-
-  // Draw gradient
-  if (!_cell.is_highlighted && _gradient_type != NSGradientNone)
-    {
-        // FIXME: I think this method is wrong.
-      [self drawGradientWithFrame: cellFrame inView: controlView];
     }
 
   // Draw image
