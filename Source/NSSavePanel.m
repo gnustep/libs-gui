@@ -1557,7 +1557,7 @@ createRowsForColumn: (int)column
       progressString = [@"Reading Directory " stringByAppendingString: path];
       [super setTitle: progressString];
       // Is the following really safe? 
-      [GSCurrentContext() flushGraphics];
+      [self flushWindow];
     }
 
   //TODO: Sort after creation of matrix so we do not sort 
@@ -1576,12 +1576,12 @@ createRowsForColumn: (int)column
     {
       // Update displayed message if needed
       if (display_progress && (i > (base_frac * (reached_frac + 1))))
-	{
-	  reached_frac++;
-	  progressString = [progressString stringByAppendingString: @"."];
-	  [super setTitle: progressString];
-	  [GSCurrentContext() flushGraphics];
-	}
+        {
+          reached_frac++;
+          progressString = [progressString stringByAppendingString: @"."];
+          [super setTitle: progressString];
+          [self flushWindow];
+        }
       // Now the real code
       file = [files objectAtIndex: i];
       extension = [file pathExtension];
@@ -1631,7 +1631,7 @@ createRowsForColumn: (int)column
   if (display_progress)
     {
       [super setTitle: @""];
-      [GSCurrentContext() flushGraphics];
+      [self flushWindow];
     }
 
   RELEASE (pool);

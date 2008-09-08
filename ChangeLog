@@ -1,5 +1,11 @@
 2008-09-08 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSSavePanel.m (-browser:createRowsForColumn:inMatrix:):
+	Use flushWindow instead of [GSCurrentContext() flushGraphics].
+	Should fix #24200.
+
+2008-09-08 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSCell.h: Move _sizeForBorderType to GSTheme.h
 	* Headers/Additions/GNUstepGUI/GSTheme.h (-sizeForBorderType:,
 	-drawBorderType:frame:view:, -sizeForImageFrameStyle:,
