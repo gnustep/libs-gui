@@ -1,5 +1,11 @@
 2008-09-08 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/GSInfoPanel.m (-keyDown:, -copy:): Added functionality to
+	copy the text content of the info panel to the pasteboard.
+	Fixes #23831.
+
+2008-09-08 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSSavePanel.m (-browser:createRowsForColumn:inMatrix:):
 	Use flushWindow instead of [GSCurrentContext() flushGraphics].
 	Should fix #24200.

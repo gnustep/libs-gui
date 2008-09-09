@@ -28,6 +28,7 @@
 
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSDictionary.h>
+#include <Foundation/NSEnumerator.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSProcessInfo.h>
 
@@ -37,6 +38,7 @@
 #include "AppKit/NSFont.h"
 #include "AppKit/NSImage.h"
 #include "AppKit/NSImageView.h"
+#include "AppKit/NSPasteboard.h"
 #include "AppKit/NSTextField.h"
 #include "GNUstepGUI/GSInfoPanel.h"
 #include "GNUstepGUI/GSTheme.h"
@@ -654,6 +656,52 @@ new_label (NSString *value)
 
   [self center];
   return self;
+}
+
+- (void) copy: (id)sender
+{  
+  NSArray *types = [NSArray arrayWithObject: NSStringPboardType];
+  NSPasteboard *pboard = [NSPasteboard generalPasteboard];
+  NSMutableString *text = [[NSMutableString alloc] init];
+  NSView *cv = [self contentView];
+  NSEnumerator *enumerator = [[cv subviews] objectEnumerator];
+  NSView *subview;
+ 
+  // Loop over all the text subviews and collect the information
+  while ((subview = [enumerator nextObject]) != nil)
+    {
+      if ([subview isKindOfClass: [NSTextField class]])
+        {
+          [text appendString: [(NSTextField*)subview stringValue]];
+          [text appendString: @"\n"];
+        }
+    }
+  
+  [pboard declareTypes: types owner: self];
+  [pboard setString: text
+          forType: NSStringPboardType];
+  RELEASE(text);
+}
+
+- (void) keyDown: (NSEvent*)theEvent
+{
+  NSString *characters = [theEvent characters];
+  unichar character = 0;
+
+  if ([characters length] > 0)
+    {
+      character = [characters characterAtIndex: 0];
+    }
+
+  // FIXME: Hard coded
+  if (character == 'c' && 
+      [theEvent modifierFlags] & NSCommandKeyMask)
+    {
+      [self copy: nil];
+      return;
+    }
+
+  [super keyDown: theEvent];
 }
 
 @end
