@@ -319,11 +319,13 @@ new_label (NSString *value)
     }
   /* URL */
   if (dictionary)
-    url = [dictionary objectForKey: @"URL"];
+      url = [dictionary objectForKey: @"URL"];
 
-  if ([url isKindOfClass: [NSString class]] == NO)
-    url = nil;
-  /* NB: URL can be nil */
+  if (nil_or_not_of_class (url, [NSString class]))
+    {
+      url = value_from_info_plist_for_key (@"URL");
+    }
+  // URL can be nil
 
   /* Copyright */
   if (dictionary)

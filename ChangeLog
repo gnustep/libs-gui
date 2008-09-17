@@ -1,3 +1,9 @@
+2008-09-17 18:15-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSInfoPanel.m: Minor correction in initWithDictionary to 
+	display url properly, if it is not specified in the dictionary passed
+	or if the dictionary is nil.
+
 2008-09-17 17:52-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSWorkspace.m: Exclude list of reserved mount names from
