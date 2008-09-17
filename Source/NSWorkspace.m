@@ -1609,6 +1609,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   FILE		*fptr = fopen("/etc/mtab", "r");
   struct mntent	*m;
 
+
   names = [NSMutableArray arrayWithCapacity: 8];
   while ((m = getmntent(fptr)) != 0)
     {
@@ -1619,10 +1620,33 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
       [names addObject: path];
     }
 #else
+  NSString	*mtabPath;
+  NSString	*mtab;
+  NSArray	*mounts, *reservedMountNames;
 
-  // FIXME This is system specific
-  NSString	*mtab = [NSString stringWithContentsOfFile: @"/etc/mtab"];
-  NSArray	*mounts = [mtab componentsSeparatedByString: @"\n"];
+  // get mount table...
+  mtabPath = [[NSUserDefaults standardUserDefaults] objectForKey:@"GSMtabPath"];
+  if (mtabPath == nil)
+    {
+      mtabPath = @"/etc/mtab";
+    }
+  
+  // get reserved names....
+  reservedMountNames = [[NSUserDefaults standardUserDefaults] objectForKey: @"GSReservedMountNames"];
+  if(reservedMountNames == nil)
+    {
+      reservedMountNames = [NSArray arrayWithObjects: 
+				      @"proc",@"devpts",
+				    @"shm",@"usbdevfs",
+				    @"devpts",@"sysfs",
+				    @"tmpfs",@"procbususb",
+				    @"udev",nil];
+      [[NSUserDefaults standardUserDefaults] setObject: reservedMountNames 
+					     forKey: @"GSReservedMountNames"];
+    }
+
+  mtab = [NSString stringWithContentsOfFile:mtabPath];
+  mounts = [mtab componentsSeparatedByString: @"\n"];
   unsigned int	i;
 
   names = [NSMutableArray arrayWithCapacity: [mounts count]];
@@ -1638,9 +1662,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
             {          
               NSString	*type = [parts objectAtIndex: 2];
               
-              if ([type isEqualToString: @"proc"] == NO
-	          && [type isEqualToString: @"devpts"] == NO
-	          && [type isEqualToString: @"shm"] == NO)
+              if ([reservedMountNames containsObject: type] == NO)
               {
 	         [names addObject: [parts objectAtIndex: 1]];
 	      }
