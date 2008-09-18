@@ -1371,13 +1371,14 @@ many times.
 
   if (t && (_firstResponder == t))
     {
+      // Change first responder first to avoid recusion.
+      _firstResponder = self;
+      [_firstResponder becomeFirstResponder];
       [nc postNotificationName: NSTextDidEndEditingNotification
           object: t];
       [t setText: @""];
       [t setDelegate: nil];
       [t removeFromSuperview];
-      _firstResponder = self;
-      [_firstResponder becomeFirstResponder];
     }
 }
 
@@ -1542,6 +1543,12 @@ many times.
 - (void) makeKeyAndOrderFront: (id)sender
 {
   [self deminiaturize: self];
+  /*
+   * If a window is ordered in, make sure that the application isn't hidden,
+   * and is active.
+   */
+  if ([self canBecomeKeyWindow])
+    [NSApp unhide: self];
   [self orderFrontRegardless];
   [self makeKeyWindow];
   /*

@@ -444,8 +444,13 @@
 	  
       if (_window == nil  &&  _document != nil  &&  _owner == _document)
         {
-	  [self setWindow: [_document _transferWindowOwnership]];
-	}
+          [self setWindow: [_document _transferWindowOwnership]];
+        }
+      else
+        {
+          // The window was already retained by the NIB loading.
+          RELEASE(_window);
+        }
     }
   else
     {

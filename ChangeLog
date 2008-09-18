@@ -1,3 +1,83 @@
+2008-09-08 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSInfoPanel.m (-keyDown:, -copy:): Added functionality to
+	copy the text content of the info panel to the pasteboard.
+	Fixes #23831.
+
+2008-09-08 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSavePanel.m (-browser:createRowsForColumn:inMatrix:):
+	Use flushWindow instead of [GSCurrentContext() flushGraphics].
+	Should fix #24200.
+
+2008-08-30 13:33-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* ChangeLog
+	* Images/GNUmakefile: Remove reference to Images copyright file
+	reference since they images are now under the GPL.
+
+2008-08-30 13:32-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Images/GNUmakefile
+	* Source/GSNibTemplates.m
+
+2008-08-21  Yavor Doganov  <yavor@gnu.org>  (tiny change)
+
+	* Source/GNUmakefile.preamble (LIBRARIES_DEPEND_UPON):
+	Unconditionally link against $(OBJC_LIBS) on all platforms to
+	avoid undefined symbols.
+	Reported by Funda Wang (bug #24109).
+
+2008-08-21 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSBezierPath.m: ([transformUsingAffineTransform:]) corrected
+	code which was casting an array of items of one type to be an array
+	of items of another type whose size differs on 64bit machines.
+
+2008-08-15 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m (-makeKeyAndOrderFront:): Unhide the application.
+	* Source/NSApplication.m (-hide:, -unhideWithoutActivation):
+	Better handling for miniaturized windows.
+	Patch by Hubert Chathi <hubert@uhoreg.ca>.
+
+2008-08-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m (-endEditingFor:): Change the first responder
+	first to avoid recusion.
+		
+2008-08-08  Adam Fedor  <fedor@gnu.org>
+ 
+	* Source/NSBitmapImageRep+JPEG.m: Handle patched jpeg library 
+	found on CYGWIN.
+ 
+2008-08-02 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSScrollView.m (-initWithCoder:): Handle non-retained
+	ivars correctly.
+	* Source/NSWindowController.m (-loadWindow): Release the loaded
+	window once, as it got retained by the NIB loading mechanism.	
+
+2008-07-13 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSGlyphGenerator.m (-generateGlyphsForGlyphStorage:...):
+	Add fallback glyph when no glyph can be found for current character.
+
+2008-07-13 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSLayoutManager.m: Protect all access to the glyph arrays. 
+
+2008-07-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSLayoutManager.m (-_glyphForCharacter:index:positions::), 
+	* Source/NSGlyphGenerator.m (-generateGlyphsForGlyphStorage:...):
+	Add some more protection against inconsistent state.
+
+2008-07-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSavePanel.m (-ok:): Standardize path before checking
+	for existance.
+
 2008-07-08 16:15-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSMenu.m: Beginning of support for windows style menus on the

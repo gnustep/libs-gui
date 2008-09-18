@@ -254,6 +254,14 @@ static float scrollerWidth;
     {
       _contentView = nil;
     }
+  if (aView == _headerClipView)
+    {
+      _headerClipView = nil;
+    }
+  if (aView == _cornerView)
+    {
+      _cornerView = nil;
+    }
   [super removeSubview: aView];
 }
 
@@ -1511,12 +1519,7 @@ static float scrollerWidth;
               [content setFrame: frame];
             }
 
-          // FIXME: No idea what is going on here.
-          // retain the view and reset the content view...
-          RETAIN(content);
           [self setContentView: content];
-          RELEASE(content);
-          ASSIGN(_contentView, content);
         }
      
       if (hScroller != nil && _hasHorizScroller)
@@ -1533,8 +1536,7 @@ static float scrollerWidth;
         {
           _hasHeaderView = YES;
           _hasCornerView = YES;          
-          ASSIGN(_headerClipView,
-            [aDecoder decodeObjectForKey: @"NSHeaderClipView"]);
+          _headerClipView = [aDecoder decodeObjectForKey: @"NSHeaderClipView"];
         }
 
       [self tile];
@@ -1543,7 +1545,7 @@ static float scrollerWidth;
     {
       int version = [aDecoder versionForClassName: @"NSScrollView"];
       NSDebugLLog(@"NSScrollView", @"NSScrollView: start decoding\n");
-      [aDecoder decodeValueOfObjCType: @encode(id) at: &_contentView];
+      _contentView = [aDecoder decodeObject];
       [aDecoder decodeValueOfObjCType: @encode(NSBorderType) at: &_borderType];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_scrollsDynamically];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_rulersVisible];
@@ -1572,7 +1574,7 @@ static float scrollerWidth;
         {
           [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasHeaderView];
           if (_hasHeaderView)
-            [aDecoder decodeValueOfObjCType: @encode(id) at: &_headerClipView];
+            _headerClipView = [aDecoder decodeObject];
       
           [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasCornerView];
         }

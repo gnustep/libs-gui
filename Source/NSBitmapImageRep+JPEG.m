@@ -50,6 +50,10 @@
 #endif
 #endif
 #include <jpeglib.h>
+#if defined(__CYGWIN__)
+/* Cygwin uses a patched jpeg */
+#define GSTEP_PROGRESSIVE_CODEC
+#endif
 
 #include <setjmp.h>
 
@@ -465,7 +469,11 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
         }
     }
 
+#ifdef GSTEP_PROGRESSIVE_CODEC
+  isProgressive = (cinfo.process == JPROC_PROGRESSIVE);
+#else
   isProgressive = cinfo.progressive_mode;
+#endif
 
   /* done */
   jpeg_finish_decompress(&cinfo);
@@ -599,7 +607,12 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
   progressiveNumber = [properties objectForKey: NSImageProgressive];
   if (progressiveNumber != nil)
     {
+#ifdef GSTEP_PROGRESSIVE_CODEC
+      if ([progressiveNumber boolValue])
+        cinfo.process = JPROC_PROGRESSIVE;
+#else
       cinfo.progressive_mode = [progressiveNumber boolValue];
+#endif
     }
 
 
