@@ -1,3 +1,8 @@
+2008-10-17 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m (+initialize, -startBackendWindow:): Move the
+	initialization of windowmaps to initialize.
+
 2008-09-17 18:15-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSInfoPanel.m: Minor correction in initWithDictionary to 

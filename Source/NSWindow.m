@@ -631,6 +631,8 @@ static NSNotificationCenter *nc = nil;
       responderClass = [NSResponder class];
       viewClass = [NSView class];
       autosaveNames = [NSMutableSet new];
+      windowmaps = NSCreateMapTable(NSIntMapKeyCallBacks,
+                                    NSNonRetainedObjectMapValueCallBacks, 20);
       nc = [NSNotificationCenter defaultCenter];
     }
 }
@@ -811,10 +813,6 @@ many times.
 - (void) _startBackendWindow
 {
   NSDictionary *info;
-
-  if (!windowmaps)
-    windowmaps = NSCreateMapTable(NSIntMapKeyCallBacks,
-                                  NSNonRetainedObjectMapValueCallBacks, 20);
 
   NSMapInsert(windowmaps, (void*)(intptr_t)_windowNum, self);
 
