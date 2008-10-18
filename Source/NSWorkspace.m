@@ -1623,6 +1623,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   NSString	*mtabPath;
   NSString	*mtab;
   NSArray	*mounts, *reservedMountNames;
+  unsigned int	i;
 
   // get mount table...
   mtabPath = [[NSUserDefaults standardUserDefaults] objectForKey:@"GSMtabPath"];
@@ -1647,7 +1648,6 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
   mtab = [NSString stringWithContentsOfFile:mtabPath];
   mounts = [mtab componentsSeparatedByString: @"\n"];
-  unsigned int	i;
 
   names = [NSMutableArray arrayWithCapacity: [mounts count]];
   for (i = 0; i < [mounts count]; i++)
