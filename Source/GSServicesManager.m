@@ -142,7 +142,7 @@ NSRegisterServicesProvider(id provider, NSString *name)
 
   ns = [NSPortNameServer systemDefaultPortNameServer];
   namedPort = [ns portForName: name];
-  if ([listenerConnection receivePort] == namedPort)
+  if (namedPort && [listenerConnection receivePort] == namedPort)
     {
       [ns removePortForName: name];
       namedPort = nil;
