@@ -4539,28 +4539,6 @@ current key view.<br />
   fRect = _frame;
 
   /*
-   * FIXME: This may not be such an elegant solution, but it works.
-   * I need to find a better way to handle this, maybe in the window
-   * decoration view could handle these calculations.
-   */
-  if([self toolbar] != nil)
-    {
-      NSView *tbview = [[self toolbar] _toolbarView];
-      NSRect tbframe = [tbview frame];
-      if([tbview superview] != nil)
-      {
-        NSRect r = [[self contentViewWithoutToolbar] frame];
-        r = [NSWindow frameRectForContentRect: r  
-                      styleMask: _styleMask];
-
-        // copy w/h
-        fRect.size.width = r.size.width;
-        fRect.size.height = r.size.height;
-        fRect.origin.y += tbframe.size.height;
-      }
-    }
-
-  /*
    * The screen rectangle should gives the area of the screen in which
    * the window could be placed (ie a rectangle excluding the dock).
    */

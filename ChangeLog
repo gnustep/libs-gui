@@ -1,3 +1,8 @@
+2008-10-18 19:06-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSWindow.m: Remove code in stringWithSavedFrame which was causing a
+	crash due to issues in NSToolbar described in bug#24601.
+
 2008-10-18 Riccardo Mottola <rmottola@users.sf.net>>
 
 	* Source/NSWorkspace.m: Removed c99-ism
