@@ -32,16 +32,16 @@
 
 @class NSWindow;
 
+// These are implemented as class methods on GSWindowDecorationView
 @protocol GSWindowDecorator
 - (id) newWindowDecorationViewWithFrame: (NSRect)frame
 				 window: (NSWindow *)window;
-
 - (NSRect) contentRectForFrameRect: (NSRect)aRect
-			 styleMask: (unsigned int)aStyle;
+       styleMask: (unsigned int)aStyle;
 - (NSRect) frameRectForContentRect: (NSRect)aRect
 			 styleMask: (unsigned int)aStyle;
 - (float) minFrameWidthWithTitle: (NSString *)aTitle
-		       styleMask: (unsigned int)aStyle;
+       styleMask: (unsigned int)aStyle;
 @end
 
 
@@ -64,6 +64,11 @@ this, either directly, or indirectly (by using the backend).
 
 - (id) initWithFrame: (NSRect)frame window: (NSWindow *)w;
 
+- (NSRect) contentRectForFrameRect: (NSRect)aRect
+			 styleMask: (unsigned int)aStyle;
+- (NSRect) frameRectForContentRect: (NSRect)aRect
+			 styleMask: (unsigned int)aStyle;
+
 - (void) setBackgroundColor: (NSColor *)color;
 - (void) setContentView: (NSView *)contentView;
 - (void) setDocumentEdited: (BOOL)flag;
@@ -76,6 +81,13 @@ windowNumber will be 0.
 */
 - (void) setWindowNumber: (int)windowNumber;
 
+@end
+
+
+/* Manage window decorations by using the backend functions. This only works
+ * on backends that can handle window decorations.
+ */
+@interface GSBackendWindowDecorationView : GSWindowDecorationView
 @end
 
 

@@ -980,8 +980,6 @@ many times.
     @"can be created.");
 
   NSDebugLLog(@"NSWindow", @"NSWindow start of init\n");
-  if (!windowDecorator)
-    windowDecorator = [GSWindowDecorationView windowDecorator];
 
   // FIXME: This hack is here to work around a gorm decoding problem.
   if (_windowNum)
@@ -1014,6 +1012,9 @@ many times.
   /* Create the window view */
   cframe.origin = NSZeroPoint;
   cframe.size = _frame.size;
+  if (!windowDecorator)
+    windowDecorator = [GSWindowDecorationView windowDecorator];
+
   _wv = [windowDecorator newWindowDecorationViewWithFrame: cframe
                                                    window: self];
   [_wv _viewWillMoveToWindow: self];
@@ -1091,12 +1092,12 @@ many times.
 
 - (NSRect) contentRectForFrameRect: (NSRect)frameRect
 {
-  return [isa contentRectForFrameRect: frameRect styleMask: _styleMask];
+  return [_wv contentRectForFrameRect: frameRect styleMask: _styleMask];
 }
 
 - (NSRect) frameRectForContentRect: (NSRect)contentRect
 {
-  return [isa frameRectForContentRect: contentRect styleMask: _styleMask];
+  return [_wv frameRectForContentRect: contentRect styleMask: _styleMask];
 }
 
 /*
@@ -1116,8 +1117,7 @@ many times.
     {
       aView = AUTORELEASE([[NSView alloc]
         initWithFrame:
-          [NSWindow contentRectForFrameRect: _frame
-                                  styleMask: _styleMask]]);
+          [self contentRectForFrameRect: _frame]]);
     }
   if (_contentView != nil)
     {
@@ -1819,7 +1819,7 @@ many times.
     }
 
   [self setFrameTopLeftPoint: topLeftPoint];
-  cRect = [isa contentRectForFrameRect: _frame styleMask: _styleMask];
+  cRect = [self contentRectForFrameRect: _frame];
   topLeftPoint.x = NSMinX(cRect);
   topLeftPoint.y = NSMaxY(cRect);
 
@@ -2030,7 +2030,7 @@ many times.
   NSRect r = _frame;
 
   r.size = aSize;
-  r = [NSWindow frameRectForContentRect: r styleMask: _styleMask];
+  r = [self frameRectForContentRect: r];
   r.origin = _frame.origin;
   [self setFrame: r display: YES];
 }
