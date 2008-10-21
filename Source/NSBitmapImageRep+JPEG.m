@@ -47,6 +47,9 @@
 /* And another so that boolean is not redefined in jmorecfg.h. */
 #ifndef HAVE_BOOLEAN
 #define HAVE_BOOLEAN
+/* This MUST match the jpeg definition of boolean */
+typedef int jpeg_boolean;
+#define boolean jpeg_boolean
 #endif
 #endif
 #include <jpeglib.h>
