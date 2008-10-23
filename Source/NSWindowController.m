@@ -310,32 +310,44 @@
 
   if (_window != nil)
     {
+      NSResponder *responder;
+
       [nc removeObserver: self
-	  name: NSWindowWillCloseNotification
-	  object: _window];
+          name: NSWindowWillCloseNotification
+          object: _window];
+      // Remove self from the responder chain
+      responder = _window;
+      while (responder && [responder nextResponder] != self)
+        {
+          responder = [responder nextResponder];
+        }
+      [responder setNextResponder: [self nextResponder]];
       [_window setWindowController: nil];
     }
 
-  ASSIGN (_window, aWindow);
+  ASSIGN(_window, aWindow);
 
   if (_window != nil)
     {
       [_window setWindowController: self];
+      // Put self into the responder chain
+      [self setNextResponder: [_window nextResponder]];
+      [_window setNextResponder: self];
       [nc addObserver: self
-	  selector: @selector(_windowWillClose:)
-	  name: NSWindowWillCloseNotification
-	  object: _window];
+          selector: @selector(_windowWillClose:)
+          name: NSWindowWillCloseNotification
+          object: _window];
 
       /* For information on the following, see the description in 
-	 -setDocument: */
+         -setDocument: */
       if (_document == nil)
-	{
-	  [_window setReleasedWhenClosed: NO];
-	}
+        {
+          [_window setReleasedWhenClosed: NO];
+        }
       else
-	{
-	  [_window setReleasedWhenClosed: YES];
-	}
+        {
+          [_window setReleasedWhenClosed: YES];
+        }
 
     }
 }
