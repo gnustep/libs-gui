@@ -2036,6 +2036,43 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
     }
 }
 
+/*
+ * Helper method to avoid duplicating code for key and main window
+ */
+- (id) targetForAction: (SEL)aSelector forWindow: (NSWindow	*)window
+{
+  id resp;
+
+  resp = [window firstResponder];
+  while (resp != nil && resp != self)
+    {
+      if ([resp respondsToSelector: aSelector])
+        {
+          return resp;
+        }
+      resp = [resp nextResponder];
+    }
+
+  resp = [window delegate];
+  if (resp != nil && [resp respondsToSelector: aSelector])
+    {
+      return resp;
+    }
+
+  if ([NSDocumentController isDocumentBasedApplication])
+    {
+      resp = [[NSDocumentController sharedDocumentController]
+                 documentForWindow: window];
+      
+      if (resp != nil && [resp respondsToSelector: aSelector])
+        {
+          return resp;
+        }
+    }
+
+  return nil;
+}
+
 /** 
  * <p>
  *   Returns the target object that will respond to aSelector, if any. The
@@ -2047,43 +2084,19 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
  */
 - (id) targetForAction: (SEL)aSelector
 {
-  NSWindow	*keyWindow;
-  NSWindow	*mainWindow;
-  id	resp;
+  NSWindow *keyWindow;
+  NSWindow *mainWindow;
+  id resp;
+
+  if (aSelector == NULL)
+      return nil;
 
   keyWindow = [self keyWindow];
   if (keyWindow != nil)
     {
-      resp = [keyWindow firstResponder];
-      while (resp != nil && resp != keyWindow)
-	{
-	  if ([resp respondsToSelector: aSelector])
-	    {
-	      return resp;
-	    }
-	  resp = [resp nextResponder];
-	}
-      if ([keyWindow respondsToSelector: aSelector])
-	{
-	  return keyWindow;
-	}
-
-      resp = [keyWindow delegate];
-      if (resp != nil && [resp respondsToSelector: aSelector])
-	{
-	  return resp;
-	}
-
-      if ([NSDocumentController isDocumentBasedApplication])
-	{
-	  resp = [[NSDocumentController sharedDocumentController]
-		   documentForWindow: keyWindow];
-	  
-	  if (resp != nil  && [resp respondsToSelector: aSelector])
-	    {
-	      return resp;
-	    }
-	}
+      resp = [self targetForAction: aSelector forWindow: keyWindow];
+      if (resp != nil)
+        return resp;
     }
 
   if (_session != 0)
@@ -2092,50 +2105,25 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
   mainWindow = [self mainWindow];
   if (keyWindow != mainWindow && mainWindow != nil)
     {
-      resp = [mainWindow firstResponder];
-      while (resp != nil && resp != mainWindow)
-	{
-	  if ([resp respondsToSelector: aSelector])
-	    {
-	      return resp;
-	    }
-	  resp = [resp nextResponder];
-	}
-      if ([mainWindow respondsToSelector: aSelector])
-	{
-	  return mainWindow;
-	}
-
-      resp = [mainWindow delegate];
-      if (resp != nil && [resp respondsToSelector: aSelector])
-	{
-	  return resp;
-	}
-
-      if ([NSDocumentController isDocumentBasedApplication])
-	{
-	  resp = [[NSDocumentController sharedDocumentController]
-		   documentForWindow: mainWindow];
-	  
-	  if (resp != nil  && [resp respondsToSelector: aSelector])
-	    {
-	      return resp;
-	    }	  
-	}
+      resp = [self targetForAction: aSelector forWindow: mainWindow];
+      if (resp != nil)
+        return resp;
     }
 
   if ([self respondsToSelector: aSelector])
     {
       return self;
     }
+
   if (_delegate != nil && [_delegate respondsToSelector: aSelector])
     {
       return _delegate;
     }
+
   if ([NSDocumentController isDocumentBasedApplication]
-    && [[NSDocumentController sharedDocumentController]
-	   respondsToSelector: aSelector])
-     {
+      && [[NSDocumentController sharedDocumentController]
+             respondsToSelector: aSelector])
+    {
       return [NSDocumentController sharedDocumentController];
     }
    

@@ -40,6 +40,14 @@
 
 @implementation NSWindowController
 
++ (void) initialize
+{
+  if (self == [NSWindowController class])
+    {
+      [self setVersion: 1];
+    }
+}
+
 - (id) initWithWindowNibName: (NSString *)windowNibName
 {
   return [self initWithWindowNibName: windowNibName  owner: self];
@@ -476,7 +484,16 @@
 
 - (id) initWithCoder: (NSCoder *)coder
 {
-  return [self init];
+  if ([coder versionForClassName: @"NSWindowController"] >= 1)
+    {
+      return [super initWithCoder: coder];
+    }
+  else
+    {
+      /* backward compatibility: old NSWindowController instances are not
+         subclasses of NSResponder, but of NSObject */
+      return [self init];
+    }
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
@@ -484,6 +501,8 @@
   // What are we supposed to encode?  Window nib name?  Or should these
   // be empty, just to conform to NSCoding, so we do an -init on
   // unarchival.  ?
+
+  [super encodeWithCoder: coder];
 }
 
 @end

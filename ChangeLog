@@ -1,3 +1,17 @@
+2008-10-24 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenu.m (-indexOfItemWithTarget:andAction:): Compare the
+	target for identity not equality.
+	* Source/NSWindowController.m (+initialize,
+	-initWithCoder:,-encodeWithCoder:): Add encoding and decoding, just
+	calling super. 
+	Patch by Wolfgang Lux <wolfgang.lux@gmail.com>. 
+	* Source/NSApplication.m (-targetForAction:forWindow:): New helper
+	method. Don't stop at the window itself, when going up the
+	responder chain.
+	* Source/NSApplication.m (-targetForAction:): Use the new helper
+	method. 
+
 2008-10-23 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSWindowController.h: Make a subclass of NSResponder.

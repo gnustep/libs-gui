@@ -816,12 +816,13 @@ static BOOL menuBarVisible = YES;
       NSMenuItem *menuItem = [_items objectAtIndex: i];
 
       if (actionSelector == 0 || sel_eq([menuItem action], actionSelector))
-	{
-	  if ([[menuItem target] isEqual: anObject])
-	    {
-	      return i;
-	    }
-	}
+        {
+          // There are different possibilities to implement the check here
+            if ([menuItem target] == anObject)
+            {
+              return i;
+            }
+        }
     }
 
   return -1;
@@ -834,10 +835,10 @@ static BOOL menuBarVisible = YES;
   for (i = 0; i < count; i++)
     {
       if ([[[_items objectAtIndex: i] representedObject]
-	isEqual: anObject])
-	{
-	  return i;
-	}
+              isEqual: anObject])
+        {
+          return i;
+        }
     }
 
   return -1;
@@ -852,10 +853,10 @@ static BOOL menuBarVisible = YES;
       id item = [_items objectAtIndex: i];
 
       if ([item hasSubmenu] && 
-	  [[item submenu] isEqual: anObject])
-	{
-	  return i;
-	}
+          [[item submenu] isEqual: anObject])
+        {
+          return i;
+        }
     }
   
   return -1;
