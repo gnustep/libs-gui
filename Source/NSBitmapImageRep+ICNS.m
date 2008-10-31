@@ -327,6 +327,7 @@ static int icns_get_image32_with_mask_from_family(icns_family_t *iconFamily,
   int j;
   int res;
   icns_type_t mask_type;
+  unsigned int imageDataSize;
 
   if (icns_types_equal(type, ICNS_NULL_TYPE))
     return 1;
@@ -348,6 +349,7 @@ static int icns_get_image32_with_mask_from_family(icns_family_t *iconFamily,
       return 1;
     }
 
+  imageDataSize = iconImage->imageDataSize;
   if ((element->elementSize - ICNS_HEADER_SIZE) < 
       3 * iconImage->imageHeight * iconImage->imageWidth)
     {
@@ -364,16 +366,18 @@ static int icns_get_image32_with_mask_from_family(icns_family_t *iconFamily,
             {
               icns_byte_t bv = *b++;
               int runLen;
+              unsigned int index = samplesPerPixel * offset + plane;
               
               if (bv & 0x80)
                 {
                   // Compressed run
                   icns_byte_t val = *b++;
+
                   runLen = bv - 125;
-                  for (j = 0; j < runLen; j++)
+                  for (j = 0; (j < runLen) && (index < imageDataSize); j++)
                     {
-                      iconImage->imageData[samplesPerPixel * (offset + j) 
-                                           + plane] = val;
+                      iconImage->imageData[index] = val;
+                      index += samplesPerPixel;
                     }
                 }
               else
@@ -382,10 +386,10 @@ static int icns_get_image32_with_mask_from_family(icns_family_t *iconFamily,
                   int j;
                   
                   runLen = bv + 1;
-                  for (j = 0; j < runLen; j++)
+                  for (j = 0; (j < runLen) && (index < imageDataSize); j++)
                     {
-                      iconImage->imageData[samplesPerPixel * (offset + j)
-                                           + plane] = *b++;
+                      iconImage->imageData[index] = *b++;
+                      index += samplesPerPixel;
                     }
                 }
               

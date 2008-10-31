@@ -1,3 +1,15 @@
+2008-10-31 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBitmapImageRep+ICNS.m
+	(icns_get_image32_with_mask_from_family):  Protect against buffer
+	overfow detected by valgrind. 
+
+2008-10-29 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBrowser.m (-drawTitle:inRect:ofColumn:, -dealloc): Set
+	and unset the ownership of the shared title cell.
+	Patch by Matt Rice <ratmice@gmail.com>.
+
 2008-10-24 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenu.m (-indexOfItemWithTarget:andAction:): Compare the
