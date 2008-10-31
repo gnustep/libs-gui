@@ -51,7 +51,15 @@
 #include <Foundation/NSKeyedArchiver.h>
 #include "AppKit/AppKit.h"
 #include <GNUstepBase/GSObjCRuntime.h>
+
+/*
+ *      Setup for inline operation of arrays.
+ */
+#define GSI_ARRAY_RETAIN(A, X)	RETAIN((X).obj)
+#define GSI_ARRAY_RELEASE(A, X)	RELEASE((X).obj)
+#define GSI_ARRAY_TYPES GSUNION_OBJ
 #include <GNUstepBase/GSIArray.h>
+
 #include <GNUstepGUI/GSNibCompatibility.h>
 #include <GNUstepGUI/GSInstantiator.h>
 

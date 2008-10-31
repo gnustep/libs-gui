@@ -1,5 +1,10 @@
 2008-10-31 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/GSNibCompatibility.m: Define the needed GSIARRAY
+	constants, this helps against valgrind complaining. 
+
+2008-10-31 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSBitmapImageRep+ICNS.m
 	(icns_get_image32_with_mask_from_family):  Protect against buffer
 	overfow detected by valgrind. 
