@@ -1,3 +1,8 @@
+2008-11-01 21:35-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSWindow.m: Reverted a previous change to miniaturize.
+	This should correct bug #24707.
+
 2008-10-31 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSNibCompatibility.m: Define the needed GSIARRAY
