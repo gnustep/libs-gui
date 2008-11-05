@@ -2041,7 +2041,7 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
  */
 - (id) targetForAction: (SEL)aSelector forWindow: (NSWindow	*)window
 {
-  id resp;
+  id resp, delegate;
 
   resp = [window firstResponder];
   while (resp != nil && resp != self)
@@ -2050,13 +2050,15 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
         {
           return resp;
         }
+      if (resp == window)
+        {
+	  delegate = [window delegate];
+	  if ([delegate respondsToSelector: aSelector])
+	    {
+	      return delegate;
+	    }
+        }
       resp = [resp nextResponder];
-    }
-
-  resp = [window delegate];
-  if (resp != nil && [resp respondsToSelector: aSelector])
-    {
-      return resp;
     }
 
   if ([NSDocumentController isDocumentBasedApplication])
