@@ -482,11 +482,8 @@ static id buttonCellClass = nil;
           character = [characters characterAtIndex: 0];
         }
 
-      // Handle SPACE or RETURN to perform a click
-      if ((character ==  NSNewlineCharacter)
-	  || (character == NSEnterCharacter) 
-	  || (character == NSCarriageReturnCharacter)
-	  || ([characters isEqualToString: @" "]))
+      /* Handle SPACE to perform a click */
+      if ([characters isEqualToString: @" "])
         {
           [self performClick: self];
           return;

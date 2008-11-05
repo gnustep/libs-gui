@@ -468,6 +468,14 @@ this to return nil to indicate that we have no context menu.
 	case NSNewlineCharacter:
 	case NSEnterCharacter: 
 	case NSCarriageReturnCharacter:
+	  /* Handle Enter and Return keys only when the menu is visible.
+	     The button's action to pop up the menu is initiated only by
+	     the Space key similar to other buttons. */
+	  {
+	    NSMenuView *menuView = [[_cell menu] menuRepresentation];
+	    if ([[menuView window] isVisible] == NO)
+	      break;
+	  }
 	case ' ':
 	  {
 	    int selectedIndex;

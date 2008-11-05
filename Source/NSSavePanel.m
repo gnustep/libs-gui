@@ -249,7 +249,6 @@ setPath(NSBrowser *browser, NSString *path)
 
   r = NSMakeRect (43, 6, 27, 27);
   button = [[NSButton alloc] initWithFrame: r];
-  [button setRefusesFirstResponder: YES];
   [button setBordered: YES];
   image = [NSImage imageNamed: @"common_Home"];
   [button setImage: image];
@@ -265,7 +264,6 @@ setPath(NSBrowser *browser, NSString *path)
   
   r = NSMakeRect (78, 6, 27, 27);
   button = [[NSButton alloc] initWithFrame: r];
-  [button setRefusesFirstResponder: YES];
   [button setBordered: YES];
   image = [NSImage imageNamed: @"common_Mount"]; 
   [button setImage: image]; 
@@ -281,7 +279,6 @@ setPath(NSBrowser *browser, NSString *path)
 
   r = NSMakeRect (112, 6, 27, 27);
   button = [[NSButton alloc] initWithFrame: r];
-  [button setRefusesFirstResponder: YES];
   [button setBordered: YES];
   image = [NSImage imageNamed: @"common_Unmount"]; 
   [button setImage: image];
@@ -297,7 +294,6 @@ setPath(NSBrowser *browser, NSString *path)
   
   r = NSMakeRect (148, 6, 71, 27);
   button = [[NSButton alloc] initWithFrame: r]; 
-  [button setRefusesFirstResponder: YES];
   [button setBordered: YES];
   [button setTitle:  @"Cancel"];
   [button setImagePosition: NSNoImage]; 
@@ -305,6 +301,8 @@ setPath(NSBrowser *browser, NSString *path)
   [button setAction: @selector(cancel:)];
   [button setAutoresizingMask: NSViewMinXMargin];
   [button setTag: NSFileHandlingPanelCancelButton];
+  [button setKeyEquivalent: @"\e"];
+  [button setKeyEquivalentModifierMask: 0];
   [_bottomView addSubview: button];
   [lastKeyView setNextKeyView: button];
   lastKeyView = button;
@@ -312,7 +310,6 @@ setPath(NSBrowser *browser, NSString *path)
   
   r = NSMakeRect (228, 6, 71, 27);
   _okButton = [[NSButton alloc] initWithFrame: r]; 
-  [button setRefusesFirstResponder: YES];
   [_okButton setBordered: YES];
   [_okButton setTitle:  @"OK"];
   [_okButton setImagePosition: NSImageRight]; 
