@@ -5,6 +5,33 @@
 	space and be between black/white and RGB should now be correct and
 	faster.
 
+2008-11-05 Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSWorkspace.m (-isFilePackageAtPath:): Provide a working
+	implementation.
+
+	* Source/NSApplication.m (-targetForAction:forWindow:): Make
+	NSApplication's responder chain for action messages consistent
+	with Apple's documentation and the Mac OS X implementation.
+
+	* Headers/AppKit/NSAlert.h:
+	* Source/NSAlert.m (-beginSheetModalForWindow:...):
+	Pass correct arguments to the didEndSelector.
+	* Source/NSAlert.m (-_setupPanel): Fix swapping of title and
+	informative message text in NSAlerts. Also supply a default title
+	"Alert" if none is set.
+	* Source/NSAlert.m (-addButonWithTitle:): Determine key equivalent
+	of NSAlert buttons from their localized titles.
+
+	* Source/NSAlert.m (-_initWithoutGModel):
+	* Source/NSSavePanel.m (-_initWithoutGModel): Fix key view loop so
+	that all buttons become reachable with the Tab key. Make Escape
+	key equivalent of the Cancel button of NSSavePanel.
+
+	* Source/NSButton.m (-keyDown):
+	* Source/NSPopUpButton.m (-keyDown): Trigger action only after
+	pressing the Space key.
+
 2008-11-01 21:35-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSWindow.m: Reverted a previous change to miniaturize.
