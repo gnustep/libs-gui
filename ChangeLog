@@ -1,3 +1,10 @@
+2008-11-06 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBitmapImageRep.m (-_convertToFormatBitsPerSample:...):
+	Filled with some more code. The conversion within the same colour
+	space and be between black/white and RGB should now be correct and
+	faster.
+
 2008-11-01 21:35-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSWindow.m: Reverted a previous change to miniaturize.
