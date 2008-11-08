@@ -1,3 +1,9 @@
+2008-11-08 10:09-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSDocument.m: Correction for bug#24758, add name and
+	type information to the object before reading the file so that
+	it is available during the readFile:ofType: method call.
+
 2008-11-06 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBitmapImageRep.m (-_convertToFormatBitsPerSample:...):
@@ -32,6 +38,7 @@
 	* Source/NSPopUpButton.m (-keyDown): Trigger action only after
 	pressing the Space key.
 
+>>>>>>> .r27016
 2008-11-01 21:35-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSWindow.m: Reverted a previous change to miniaturize.

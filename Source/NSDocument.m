@@ -96,12 +96,9 @@
   self = [self init];
   if (self != nil)
     {
-      if ([self readFromFile: fileName ofType: fileType])
-        {
-          [self setFileType: fileType];
-          [self setFileName: fileName];
-        }
-      else
+      [self setFileType: fileType];
+      [self setFileName: fileName];
+      if (![self readFromFile: fileName ofType: fileType])
         {
           NSRunAlertPanel (_(@"Load failed"),
                           _(@"Could not load file %@."),
@@ -122,12 +119,9 @@
   self = [self init];
   if (self != nil)
     {
-      if ([self readFromURL: url ofType: fileType])
-        {
-          [self setFileType: fileType];
-          [self setFileName: [url path]];
-        }
-      else
+      [self setFileType: fileType];
+      [self setFileName: [url path]];
+      if (![self readFromURL: url ofType: fileType])
         {
           NSRunAlertPanel(_(@"Load failed"),
                           _(@"Could not load URL %@."),
