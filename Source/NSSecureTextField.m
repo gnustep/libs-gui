@@ -42,6 +42,9 @@
 #include "AppKit/NSTextView.h"
 #include "AppKit/NSWindow.h"
 
+// the Unicode code point for a bullet
+#define BULLET 0x2022
+
 /* 'Secure' subclasses */
 @interface NSSecureTextView : NSTextView
 {
@@ -121,20 +124,35 @@
   _echosBullets = flag;
 }
 
+/* Substitute a fixed-pitch font for correct bullet drawing */
+- (void) setFont: (NSFont *) f
+{
+  if (![f isFixedPitch])
+    {
+      f = [NSFont userFixedPitchFontOfSize: [f pointSize]];
+    }
+
+  [super setFont: f];
+}
+
 - (NSAttributedString *)_replacementAttributedString
 {
   NSDictionary *attributes;
   NSMutableString *string;
   unsigned int length;
   unsigned int i;
+  unichar *buf;
 
   length = [[self stringValue] length];
-  string = [[NSMutableString alloc] initWithCapacity: length];
+  buf = NSZoneMalloc (NSDefaultMallocZone (), length * sizeof (unichar));
   for (i = 0; i < length; i++)
     {
-      [string appendString: @"*"];
+      buf[i] = BULLET;
     }
-  AUTORELEASE(string);
+
+  string = [[NSMutableString alloc]
+    initWithCharactersNoCopy: buf length: length freeWhenDone: YES];
+  AUTORELEASE (string);
 
   attributes = [self _nonAutoreleasedTypingAttributes];
   return AUTORELEASE([[NSAttributedString alloc] initWithString: string 
@@ -225,14 +243,28 @@
 {
   if ([self echosBullets])
     {
-        /*
-          FIXME: Functionality not implemented.
-          This also doesn't eblong into this method, rather 
-          we should do the replacement during the glyph generation.
-          This gets currently done in [GSLayoutManager _generateGlyphsForRun:at:],
-          but should be done in an NSTypesetter subclass. Only with this in place
-          it seems possible to implement bullet echoing.
-         */
+       /*
+        * FIXME: Rather stupid way of drawing bullets, but better than nothing
+        * at all. Works well enough for secure text fields.
+        * This also doesn't belong into this method, rather we should do
+        * the replacement during glyph generation. This gets currently done
+        * in [GSLayoutManager _generateGlyphsForRun:at:], but should be done
+        * in an NSTypesetter subclass. Only with this in place it seems
+        * possible to implement bullet echoing.
+        */
+       unichar buf[] = {BULLET};
+       NSString *string = [NSString stringWithCharacters: buf length: 1];
+       NSFont *font = [_typingAttributes objectForKey: NSFontAttributeName];
+       double width = [font widthOfString: string];
+       int i;
+
+       for (i = glyphRange.location; i <= NSMaxRange (glyphRange); i++)
+         {
+           NSPoint p = NSMakePoint (containerOrigin.x + (i - 1) * width,
+                                    containerOrigin.y);
+
+           [string drawAtPoint: p withAttributes: _typingAttributes];
+         }
     }
   else
     {

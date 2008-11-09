@@ -1,3 +1,10 @@
+2008-11-09 10:24-EST Saso Kiselkov
+	Committed by: Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSSecureTextField.m: Patch to make bullets output when
+	setEchosBullets is set to yes in NSSecureTextField.  Corrects 
+	bug #19761. 
+
 2008-11-08 10:09-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSDocument.m: Correction for bug#24758, add name and
