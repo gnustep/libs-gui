@@ -1,3 +1,12 @@
+2008-11-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSView.m (-setBoundsOrigin:, -setBoundsRotation:,
+	-translateOriginToPoint:, -scaleUnitSquareToSize:,
+	-rotateByAngle:): Reimplemented correctly.
+	* Source/NSView.m (-_computeScale): New method.
+	* Source/NSView.m (-_updateBoundsMatrix:, -setBounds:,
+	-setBoundsSize:): Small changes.
+
 2008-11-09 10:24-EST Saso Kiselkov
 	Committed by: Gregory John Casamento <greg_casamento@yahoo.com>
 
