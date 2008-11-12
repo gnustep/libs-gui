@@ -1566,7 +1566,10 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (void) establishConnection
 {
-  [_dst setToolTip: _marker];
+  if([_dst respondsToSelector: @selector(setToolTip:)])
+    {
+      [_dst setToolTip: _marker];
+    }
 }
 
 - (void) setFile: (id)file

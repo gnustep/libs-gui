@@ -1,3 +1,11 @@
+2008-11-12 05:31-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Conditionally call setToolTip if it
+	exists when doing establishConnection on an NSIBHelpConnector.
+	* Source/NSDocumentController.m: Correction to prevent exception when
+	NSDocumentClass isn't specified.   This does not cause an issue on
+	Mac OS X.
+
 2008-11-11 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSView.m (-setBoundsOrigin:, -setBoundsRotation:,

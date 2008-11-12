@@ -1024,8 +1024,17 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
   for (i = 0; i < count; i++)
     {
       NSDictionary *typeInfo = [_types objectAtIndex: i];
-      
-      [classNames addObject: [typeInfo objectForKey: NSDocumentClassKey]];
+      NSString *className = [typeInfo objectForKey: NSDocumentClassKey];
+
+      if(className != nil)
+	{
+	  [classNames addObject: className];
+	}
+      else
+	{
+	  NSLog(@"WARN: The entry does not have an NSDocumentClass name defined: %@",
+		typeInfo);
+	}
     }
  
   return AUTORELEASE(classNames);
