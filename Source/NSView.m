@@ -1167,13 +1167,28 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
       if (_is_rotated_or_scaled_from_base)
         {
-          float sx = _bounds.size.width  / _frame.size.width;
-          float sy = _bounds.size.height / _frame.size.height;
-          
-          _frame.size = newSize;
-          _bounds.size.width  = _frame.size.width  * sx;
-          _bounds.size.height = _frame.size.height * sy;
-          // FIXME: May need to update the bounds matrix.
+          if (_boundsMatrix == nil)
+            {
+              float sx = _bounds.size.width  / _frame.size.width;
+              float sy = _bounds.size.height / _frame.size.height;
+              
+              _frame.size = newSize;
+              _bounds.size.width  = _frame.size.width  * sx;
+              _bounds.size.height = _frame.size.height * sy;
+            }
+          else
+            {
+              NSAffineTransform *matrix;
+              NSRect frame;
+              
+              _frame.size = newSize;
+              frame = _frame;
+              frame.origin = NSMakePoint(0, 0);
+              matrix = [_boundsMatrix copy];
+              [matrix invert];
+              [matrix boundingRectFor: frame result: &_bounds];
+              RELEASE(matrix);
+            }
         }
       else
         {
@@ -1198,7 +1213,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       /* no frame matrix, create one since it is needed for rotation */
       if (_frameMatrix == nil)
         {
-          // Map fromsuperview to frame
+          // Map from superview to frame
           _frameMatrix = [NSAffineTransform new];
         }
 
@@ -1253,7 +1268,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) setBounds: (NSRect)aRect
 {
-  // FIXME: This implementation needs to be changed similar to setBoundsOrigin:
   NSDebugLLog(@"NSView", @"setBounds %@", NSStringFromRect(aRect));
   if (aRect.size.width < 0)
     {
@@ -1295,12 +1309,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
       [_boundsMatrix translateXBy: oldOrigin.x - aRect.origin.x 
                      yBy: oldOrigin.y - aRect.origin.y];      
-      /*
-        FIXME: We need to adjust the size as well, but the computation in 
-        _updateBoundsMatrix is wrong for this case.
-      _bounds.size = aRect.size;
-      [self _updateBoundsMatrix];
-      */
 
      // Adjust bounds
       matrix = [_boundsMatrix copy];
@@ -1364,21 +1372,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 {
   NSDebugLLog(@"NSView", @"%@ setBoundsSize: %@", self, 
               NSStringFromSize(newSize));
-/*
-  NSSize scale;
-  
-  if (_boundsMatrix == nil)
-    {
-      scale = [self _computeScale];
-    }
-  else
-    {
-      scale = [_boundsMatrix transformSize: NSMakeSize(1, 1)];
-    }
-  // Wrong, this would change the origin as well.
-  [self scaleUnitSquareToSize: NSMakeSize(newSize.width / scale.width, 
-                                          newSize.height / scale.height)];
-*/
 
   if (newSize.width < 0)
     {
@@ -1390,8 +1383,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       NSWarnMLog(@"given negative height", 0);
       newSize.height = 0;
     }
-  // FIXME: What to do in the rotation case?
-  if (NSEqualSizes(_bounds.size, newSize) == NO)
+  // This may seem strange, but Cocoa only adjusts the bounds, when there
+  // is no rotation
+  if (!_is_rotated_from_base)
     {
       if (_coordinates_valid)
         {
@@ -1399,7 +1393,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
         }
 
       _bounds.size = newSize;
-      [self _updateBoundsMatrix];
       [self resetCursorRects];
       if (_post_bounds_changes)
         {

@@ -1,3 +1,8 @@
+2008-11-13 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSView.m (-setBounds:, -setBoundsSize:, -setFrame:,
+	-setFrameSize): Some more adjustments on the bounds transformation.
+
 2008-11-12 05:31-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibCompatibility.m: Conditionally call setToolTip if it
