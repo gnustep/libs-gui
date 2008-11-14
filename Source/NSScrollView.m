@@ -1519,7 +1519,9 @@ static float scrollerWidth;
               [content setFrame: frame];
             }
 
+          // reset the content view...
           [self setContentView: content];
+          _contentView = content;
         }
      
       if (hScroller != nil && _hasHorizScroller)

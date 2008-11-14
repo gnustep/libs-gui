@@ -1,3 +1,8 @@
+2008-11-14 00:40-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSScrollView.m: Correct issue with tableviews when
+	loading nib files, corrected bug #24782.
+
 2008-11-13 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSView.m (-setBounds:, -setBoundsSize:, -setFrame:,
@@ -67,7 +72,6 @@
 	* Source/NSPopUpButton.m (-keyDown): Trigger action only after
 	pressing the Space key.
 
->>>>>>> .r27016
 2008-11-01 21:35-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSWindow.m: Reverted a previous change to miniaturize.
