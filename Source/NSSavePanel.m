@@ -564,6 +564,8 @@ selectCellWithString: (NSString*)title
   setPath(_browser, _fullFileName);
 
   [self _selectCellName: filename];
+  [_form abortEditing]; // FIXME This is necessary because we cannot set a
+                        // cell's value while it is being edited.
   [[_form cellAtIndex: 0] setStringValue: filename];
   [_form selectTextAtIndex: 0];
   [_form setNeedsDisplay: YES];

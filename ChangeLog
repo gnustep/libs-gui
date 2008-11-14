@@ -1,3 +1,16 @@
+2008-11-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSSavePanel.m (-_setupForDirectory:file:): Abort editing
+	for the file name's text cell before setting the passed in file
+	name.
+
+	* Source/NSDocument.m (-runModalSavePanel:withAccessoryView:):
+	When the document has been saved already pass its file name to the
+	save panel like on Mac OS X.
+
+	* Source/NSControl.m (-drawRect): Make sure the cell's control
+	view is always set up.
+
 2008-11-14 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSScrollView.m (-setContentView:): Replaced last change

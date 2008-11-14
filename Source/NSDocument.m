@@ -965,9 +965,17 @@ originalContentsURL: (NSURL *)orig
 - (int)runModalSavePanel: (NSSavePanel *)savePanel 
        withAccessoryView: (NSView *)accessoryView
 {
+  NSString *directory, *file;
+
   if (accessoryView)
     {
       [savePanel setAccessoryView: accessoryView];
+    }
+  if ([self fileName])
+    {
+      directory = [[self fileName] stringByDeletingLastPathComponent];
+      file = [[self fileName] lastPathComponent];
+      return [savePanel runModalForDirectory: directory file: file];
     }
   return [savePanel runModal];
 }
