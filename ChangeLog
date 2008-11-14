@@ -1,3 +1,10 @@
+2008-11-14 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSScrollView.m (-setContentView:): Replaced last change
+	with one inside of setContentView:.
+	* Source/NSView.m (-setFrame:): One more adjustment for bounds
+	transformation. 
+
 2008-11-14 00:40-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSScrollView.m: Correct issue with tableviews when

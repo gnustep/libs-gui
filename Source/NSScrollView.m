@@ -236,8 +236,10 @@ static float scrollerWidth;
       NSView *docView = [aView documentView];
 
       [_contentView removeFromSuperview];
+      [self addSubview: aView];
+      // This must be done after adding it as a subview,
+      // otherwise it will get unset again.
       _contentView = aView;
-      [self addSubview: _contentView];
 
       if (docView != nil)
         {
@@ -1519,9 +1521,7 @@ static float scrollerWidth;
               [content setFrame: frame];
             }
 
-          // reset the content view...
           [self setContentView: content];
-          _contentView = content;
         }
      
       if (hScroller != nil && _hasHorizScroller)

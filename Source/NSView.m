@@ -1104,7 +1104,15 @@ GSSetDragTypes(NSView* obj, NSArray *types)
         {
           if (_is_rotated_or_scaled_from_base == YES)
             {
-              [self _updateBoundsMatrix];
+              //[self _updateBoundsMatrix];
+              NSAffineTransform *matrix;
+              NSRect frame = _frame;
+
+              frame.origin = NSMakePoint(0, 0);
+              matrix = [_boundsMatrix copy];
+              [matrix invert];
+              [matrix boundingRectFor: frame result: &_bounds];
+              RELEASE(matrix);               
             }
           else
             {
