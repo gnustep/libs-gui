@@ -1326,11 +1326,11 @@ GSSetDragTypes(NSView* obj, NSArray *types)
        }
       else
         {
-          // FIXME: Adjust scale
-          [self _updateBoundsMatrix];
-          
           // Adjust bounds
           _bounds = aRect;
+
+          // FIXME: Adjust scale
+          [self _updateBoundsMatrix];
         }
 
       [self resetCursorRects];
@@ -1385,10 +1385,11 @@ GSSetDragTypes(NSView* obj, NSArray *types)
         {
           (*invalidateImp)(self, invalidateSel);
         }
+      _bounds.size = newSize;
+
       // FIXME: Adjust scale
       [self _updateBoundsMatrix];
 
-      _bounds.size = newSize;
       [self resetCursorRects];
       if (_post_bounds_changes)
         {
