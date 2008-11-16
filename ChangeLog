@@ -1,3 +1,8 @@
+2008-11-17 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSImage.m (-bestRepresentationForDevice:): Get the device
+	desription from the window.
+
 2008-11-16 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSView.m (-setBounds:, -setBoundsSize:): Fixed bug in

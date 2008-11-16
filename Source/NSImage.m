@@ -1201,13 +1201,15 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 - (void) lockFocusOnRepresentation: (NSImageRep *)imageRep
 {
+  // FIXME: THis should rather use 
+  // [NSGraphicsContext graphicsContextWithBitmapImageRep:]
   if (_cacheMode != NSImageCacheNever)
     {
       NSWindow	*window;
       GSRepData *repd;
 
       if (imageRep == nil)
-	imageRep = [self bestRepresentationForDevice: nil];
+        imageRep = [self bestRepresentationForDevice: nil];
 
       imageRep = [self _cacheForRep: imageRep];
       repd = repd_for_rep(_reps, imageRep);
@@ -1215,30 +1217,30 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       window = [(NSCachedImageRep *)imageRep window];
       _lockedView = [window contentView];
       if (_lockedView == nil)
-	[NSException raise: NSImageCacheException
-		     format: @"Cannot lock focus on nil rep"];
+        [NSException raise: NSImageCacheException
+                     format: @"Cannot lock focus on nil rep"];
       [_lockedView lockFocus];
 
       /* Validate cached image */
       if (repd->bg == nil)
-	{
-	  repd->bg = [_color copy];
-	  [_color set];
-	  
-	  if ([_color alphaComponent] < 1)
-	    {
-	      /* With a Quartz-like alpha model, alpha can't be cleared
-	         with a rectfill, so we need to clear the alpha channel
-		 explictly. (A compositerect with NSCompositeCopy would
-		 be more efficient, but it doesn't seem like it's 
-		 implemented correctly in all backends yet (as of 
-		 2002-08-23). Also, this will work with both the Quartz-
-		 and DPS-model.) */
-	      PScompositerect(0, 0, _size.width, _size.height,
-			      NSCompositeClear);
-	    }
-	  NSRectFill(NSMakeRect(0, 0, _size.width, _size.height));
-	}
+        {
+          repd->bg = [_color copy];
+          [_color set];
+          
+          if ([_color alphaComponent] < 1)
+            {
+              /* With a Quartz-like alpha model, alpha can't be cleared
+                 with a rectfill, so we need to clear the alpha channel
+                 explictly. (A compositerect with NSCompositeCopy would
+                 be more efficient, but it doesn't seem like it's 
+                 implemented correctly in all backends yet (as of 
+                 2002-08-23). Also, this will work with both the Quartz-
+                 and DPS-model.) */
+              PScompositerect(0, 0, _size.width, _size.height,
+                              NSCompositeClear);
+            }
+          NSRectFill(NSMakeRect(0, 0, _size.width, _size.height));
+        }
     }
 }
 
@@ -1390,13 +1392,15 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     {
       if ([GSCurrentContext() isDrawingToScreen] == YES)
         {
-	    // Take the device description from the current context.
-	    deviceDescription = [GSCurrentContext() attributes];
+          // Take the device description from the current context.
+          deviceDescription = [[[GSCurrentContext() attributes] objectForKey: 
+                NSGraphicsContextDestinationAttributeName] 
+                                  deviceDescription];
         }
       else if ([NSPrintOperation currentOperation])
         {
           /* FIXME: We could try to use the current printer, 
-	     but there are many cases where might
+             but there are many cases where might
              not be printing (EPS, PDF, etc) to a specific device */
         }
     }
@@ -1458,7 +1462,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 }
 
 - (NSData *) TIFFRepresentationUsingCompression: (NSTIFFCompression)comp
-	factor: (float)aFloat
+                                         factor: (float)aFloat
 {
   NSData *data;
 
@@ -1588,71 +1592,71 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     {
       if ([coder containsValueForKey: @"NSColor"])
         {
-	  [self setBackgroundColor: [coder decodeObjectForKey: @"NSColor"]];
-	}
+          [self setBackgroundColor: [coder decodeObjectForKey: @"NSColor"]];
+        }
       if ([coder containsValueForKey: @"NSImageFlags"])
         {
-	  int flags;
+          int flags;
 	  
           //FIXME
-	  flags = [coder decodeIntForKey: @"NSImageFlags"];
-	}
+          flags = [coder decodeIntForKey: @"NSImageFlags"];
+        }
       if ([coder containsValueForKey: @"NSReps"])
         {
-	  NSArray *reps;
+          NSArray *reps;
 
-	  // FIXME: NSReps is in a strange format. It is a mutable array with one 
+          // FIXME: NSReps is in a strange format. It is a mutable array with one 
           // element which is an array with a first element 0 and than the image rep.  
-	  reps = [coder decodeObjectForKey: @"NSReps"];
-	  reps = [reps objectAtIndex: 0];
-	  [self addRepresentation: [reps objectAtIndex: 1]];
-	}
+          reps = [coder decodeObjectForKey: @"NSReps"];
+          reps = [reps objectAtIndex: 0];
+          [self addRepresentation: [reps objectAtIndex: 1]];
+        }
       if ([coder containsValueForKey: @"NSSize"])
         {
-	  [self setSize: [coder decodeSizeForKey: @"NSSize"]];
-	}
+          [self setSize: [coder decodeSizeForKey: @"NSSize"]];
+        }
     }
   else
     {
       [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       if (flag == YES)
         {
-	  NSString	*theName = [coder decodeObject];
+          NSString	*theName = [coder decodeObject];
 
-	  RELEASE(self);
-	  self = RETAIN([NSImage imageNamed: theName]);
-	}
+          RELEASE(self);
+          self = RETAIN([NSImage imageNamed: theName]);
+        }
       else
         {
-	  NSArray	*a;
+          NSArray	*a;
 
-	  [coder decodeValueOfObjCType: @encode(NSSize) at: &_size];
-	  [coder decodeValueOfObjCType: @encode(id) at: &_color];
-	  [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-	  _flags.scalable = flag;
-	  [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-	  _flags.dataRetained = flag;
-	  [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-	  _flags.flipDraw = flag;
-	  [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-	  _flags.sizeWasExplicitlySet = flag;
-	  [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-	  _flags.useEPSOnResolutionMismatch = flag;
-	  [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-	  _flags.colorMatchPreferred = flag;
-	  [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-	  _flags.multipleResolutionMatching = flag;
-	  [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-	  _flags.cacheSeparately = flag;
-	  [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-	  _flags.unboundedCacheDepth = flag;
-	  
-	  /*
-	   * get the image reps and add them.
-	   */
-	  a = [coder decodeObject];
-	  [self addRepresentations: a];
-	}
+          [coder decodeValueOfObjCType: @encode(NSSize) at: &_size];
+          [coder decodeValueOfObjCType: @encode(id) at: &_color];
+          [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+          _flags.scalable = flag;
+          [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+          _flags.dataRetained = flag;
+          [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+          _flags.flipDraw = flag;
+          [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+          _flags.sizeWasExplicitlySet = flag;
+          [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+          _flags.useEPSOnResolutionMismatch = flag;
+          [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+          _flags.colorMatchPreferred = flag;
+          [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+          _flags.multipleResolutionMatching = flag;
+          [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+          _flags.cacheSeparately = flag;
+          [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+          _flags.unboundedCacheDepth = flag;
+          
+          /*
+           * get the image reps and add them.
+           */
+          a = [coder decodeObject];
+          [self addRepresentations: a];
+        }
     }
   return self;
 }
