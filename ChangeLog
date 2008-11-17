@@ -1,3 +1,36 @@
+2008-10-19 Riccardo Mottola <rmottola@users.sf.net>>
+
+        * Source/GSServicesManager.m: dont unreigster non existent named port
+
+2008-10-18 19:06-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSWindow.m: Remove code in stringWithSavedFrame which was causing a
+	crash due to issues in NSToolbar described in bug#24601.
+
+2008-10-18 Riccardo Mottola <rmottola@users.sf.net>>
+
+	* Source/NSWorkspace.m: Removed c99-ism
+
+2008-10-17 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m (+initialize, -startBackendWindow:): Move the
+	initialization of windowmaps to initialize.
+
+2008-09-17 18:15-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSInfoPanel.m: Minor correction in initWithDictionary to 
+	display url properly, if it is not specified in the dictionary passed
+	or if the dictionary is nil.
+
+2008-09-17 17:52-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSWorkspace.m: Exclude list of reserved mount names from
+	the results returned by -mountedLocalVolumePaths.
+
+2008-09-14 13:18-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* install.sh: Adding install script for use by compile-all.
+
 2008-09-08 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSInfoPanel.m (-keyDown:, -copy:): Added functionality to
