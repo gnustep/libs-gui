@@ -1045,10 +1045,14 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 {
   NSImage	*image = nil;
   NSString	*pathExtension = [[fullPath pathExtension] lowercaseString];
+  NSFileManager	*mgr = [NSFileManager defaultManager];
+  NSDictionary	*attributes;
+  NSString	*fileType;
 
-  if ([self isFilePackageAtPath: fullPath])
+  attributes = [mgr fileAttributesAtPath: fullPath traverseLink: YES];
+  fileType = [attributes objectForKey: NSFileType];
+  if ([fileType isEqual: NSFileTypeDirectory] == YES)
     {
-      NSFileManager	*mgr = [NSFileManager defaultManager];
       NSString		*iconPath = nil;
       BOOL		isApplication = NO;
       
@@ -1203,13 +1207,29 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 {
   NSFileManager	*mgr = [NSFileManager defaultManager];
   NSDictionary	*attributes;
-  NSString	*fileType;
+  NSString	*fileType, *extension;
 
   attributes = [mgr fileAttributesAtPath: fullPath traverseLink: YES];
   fileType = [attributes objectForKey: NSFileType];
   if ([fileType isEqual: NSFileTypeDirectory] == YES)
     {
-      return YES;
+      /*
+       * We return YES here exactly when getInfoForFile:application:type:
+       * considers the directory an application or a plain file
+       */
+      extension = [fullPath pathExtension];
+      if ([extension isEqualToString: @"app"]
+	  || [extension isEqualToString: @"debug"]
+	  || [extension isEqualToString: @"profile"]
+          || [extension isEqualToString: @"bundle"])
+        {
+	  return YES;
+	}
+      else if ([extension length] > 0
+	       && [self getBestAppInRole: nil forExtension: extension] != nil)
+        {
+	  return YES;
+        }
     }
   return NO;
 }

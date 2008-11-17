@@ -431,12 +431,9 @@ setControl(NSView* content, id control, NSString *title)
   [defButton setImagePosition: NSImageRight];
   [defButton setImage: [NSImage imageNamed: @"common_ret"]];
   [defButton setAlternateImage: [NSImage imageNamed: @"common_retH"]];
-  [defButton setRefusesFirstResponder: YES];
   
   altButton = [self _makeButtonWithRect: rect];
-  [altButton setRefusesFirstResponder: YES];
   othButton = [self _makeButtonWithRect: rect];
-  [othButton setRefusesFirstResponder: YES];
   
   rect.size.height = 80.0;
   scroll = makeScrollViewWithRect(rect);
@@ -1510,11 +1507,11 @@ void NSBeginInformationalAlertSheet(NSString *title,
   else
     {
       [button setTag: NSAlertFirstButtonReturn + count];
-      if ([aTitle isEqualToString: @"Cancel"])
+      if ([aTitle isEqualToString: _(@"Cancel")])
         {
 	  [button setKeyEquivalent: @"\e"];
 	}
-      else if ([aTitle isEqualToString: @"Don't Save"])
+      else if ([aTitle isEqualToString: _(@"Don't Save")])
         {
 	  [button setKeyEquivalent: @"D"];
 	  [button setKeyEquivalentModifierMask: NSCommandKeyMask];
@@ -1603,8 +1600,8 @@ void NSBeginInformationalAlertSheet(NSString *title,
         }
       [panel setTitleBar: title
              icon: _icon
-             title: _informative_text
-             message: _message_text
+             title: _message_text != nil ? _message_text : _(@"Alert")
+             message: _informative_text
              def: (nbut > 0) ? [[_buttons objectAtIndex: 0] title] : (NSString*)nil
              alt: (nbut > 1) ? [[_buttons objectAtIndex: 1] title] : (NSString*)nil
              other: (nbut > 2) ? [[_buttons objectAtIndex: 2] title] : (NSString*)nil];

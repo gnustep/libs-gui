@@ -1,3 +1,119 @@
+2008-11-16 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSView.m (-setBounds:, -setBoundsSize:): Fixed bug in
+	last change not getting the _boundsMatrix correct.
+
+2008-11-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSSavePanel.m (-_setupForDirectory:file:): Abort editing
+	for the file name's text cell before setting the passed in file
+	name.
+
+	* Source/NSDocument.m (-runModalSavePanel:withAccessoryView:):
+	When the document has been saved already pass its file name to the
+	save panel like on Mac OS X.
+
+	* Source/NSControl.m (-drawRect): Make sure the cell's control
+	view is always set up.
+
+2008-11-14 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSScrollView.m (-setContentView:): Replaced last change
+	with one inside of setContentView:.
+	* Source/NSView.m (-setFrame:): One more adjustment for bounds
+	transformation. 
+
+2008-11-14 00:40-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSScrollView.m: Correct issue with tableviews when
+	loading nib files, corrected bug #24782.
+
+2008-11-13 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSView.m (-setBounds:, -setBoundsSize:, -setFrame:,
+	-setFrameSize): Some more adjustments on the bounds transformation.
+
+2008-11-12 05:31-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Conditionally call setToolTip if it
+	exists when doing establishConnection on an NSIBHelpConnector.
+	* Source/NSDocumentController.m: Correction to prevent exception when
+	NSDocumentClass isn't specified.   This does not cause an issue on
+	Mac OS X.
+
+2008-11-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSView.m (-setBoundsOrigin:, -setBoundsRotation:,
+	-translateOriginToPoint:, -scaleUnitSquareToSize:,
+	-rotateByAngle:): Reimplemented correctly.
+	* Source/NSView.m (-_computeScale): New method.
+	* Source/NSView.m (-_updateBoundsMatrix:, -setBounds:,
+	-setBoundsSize:): Small changes.
+
+2008-11-09 10:24-EST Saso Kiselkov
+	Committed by: Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSSecureTextField.m: Patch to make bullets output when
+	setEchosBullets is set to yes in NSSecureTextField.  Corrects 
+	bug #19761. 
+
+2008-11-08 10:09-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSDocument.m: Correction for bug#24758, add name and
+	type information to the object before reading the file so that
+	it is available during the readFile:ofType: method call.
+
+2008-11-06 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBitmapImageRep.m (-_convertToFormatBitsPerSample:...):
+	Filled with some more code. The conversion within the same colour
+	space and be between black/white and RGB should now be correct and
+	faster.
+
+2008-11-05 Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSWorkspace.m (-isFilePackageAtPath:): Provide a working
+	implementation.
+
+	* Source/NSApplication.m (-targetForAction:forWindow:): Make
+	NSApplication's responder chain for action messages consistent
+	with Apple's documentation and the Mac OS X implementation.
+
+	* Source/NSAlert.m (-_initWithoutGModel):
+	* Source/NSSavePanel.m (-_initWithoutGModel): Fix key view loop so
+	that all buttons become reachable with the Tab key. Make Escape
+	key equivalent of the Cancel button of NSSavePanel.
+
+	* Source/NSButton.m (-keyDown):
+	* Source/NSPopUpButton.m (-keyDown): Trigger action only after
+	pressing the Space key.
+
+2008-11-01 21:35-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSWindow.m: Reverted a previous change to miniaturize.
+	This should correct bug #24707.
+
+2008-10-31 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSNibCompatibility.m: Define the needed GSIARRAY
+	constants, this helps against valgrind complaining. 
+
+2008-10-29 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBrowser.m (-drawTitle:inRect:ofColumn:, -dealloc): Set
+	and unset the ownership of the shared title cell.
+	Patch by Matt Rice <ratmice@gmail.com>.
+
+2008-10-24 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenu.m (-indexOfItemWithTarget:andAction:): Compare the
+	target for identity not equality.
+	* Source/NSApplication.m (-targetForAction:forWindow:): New helper
+	method. Don't stop at the window itself, when going up the
+	responder chain.
+	* Source/NSApplication.m (-targetForAction:): Use the new helper
+	method. 
+
 2008-10-21  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSBitmapImageRep+JPEG.m: Fix broken boolean definition.

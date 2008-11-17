@@ -1453,6 +1453,7 @@ static NSTextFieldCell *titleCell;
   if (!_isTitled || !NSBR_COLUMN_IS_VISIBLE(column))
     return;
 
+  [titleCell setControlView: self];
   [titleCell setStringValue: title];
   [titleCell drawWithFrame: aRect inView: self];
 }
@@ -2258,6 +2259,11 @@ static NSTextFieldCell *titleCell;
 
 - (void) dealloc
 {
+  if ([titleCell controlView] == self)
+    {
+      [titleCell setControlView: nil];
+    }
+
   RELEASE(_browserCellPrototype);
   RELEASE(_pathSeparator);
   RELEASE(_horizontalScroller);

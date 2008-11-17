@@ -634,6 +634,11 @@ static NSNotificationCenter *nc;
    */
   if ([self currentEditor] != nil)
     {
+      /* Make sure the cell's control view is always set up.
+       * FIXME Need to draw the cell's border which is not covered by
+       *       the field editor if the cell is bordered.
+       */
+      [_cell setControlView: self];
       return;
     }
 
@@ -671,7 +676,7 @@ static NSNotificationCenter *nc;
 {
   if (_cell == aCell)
     {
-      [_cell setState: 1];
+      [_cell setState: NSOnState];
       [self setNeedsDisplay: YES];
     }
 }
