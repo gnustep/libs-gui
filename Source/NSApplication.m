@@ -903,8 +903,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
  * Nib file if <code>NSMainNibFile</code> is set in the application
  * property list, posts an
  * <code>NSApplicationWillFinishLaunchingNotification</code>, and takes care
- * of a few other startup tasks, then posts
- * <code>NSApplicationDidFinishLaunchingNotification</code>.
+ * of a few other startup tasks.
  * If you override this method, be sure to call <em>super</em>.</p>
  *
  * <p>The -run method calls this the first time it is called, before starting
@@ -1085,7 +1084,16 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
     {
       [_delegate applicationOpenUntitledFile: self];
     }
-  
+}
+
+/*
+ * Posts <code>NSApplicationDidFinishLaunchingNotification</code>.
+ *
+ * <p>The -run method calls this the first time it is called, before starting
+ * the event loop for the first time and after calling finishLaunching.</p>
+ */  
+- (void) _didFinishLaunching
+{
   /* finish the launching post notification that launching has finished */
   [nc postNotificationName: NSApplicationDidFinishLaunchingNotification
 		    object: self];
@@ -1093,14 +1101,14 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   NS_DURING
     {
       [[[NSWorkspace sharedWorkspace] notificationCenter]
-	postNotificationName: NSWorkspaceDidLaunchApplicationNotification
-	object: [NSWorkspace sharedWorkspace]
-	userInfo: [self _notificationUserInfo]];
+          postNotificationName: NSWorkspaceDidLaunchApplicationNotification
+          object: [NSWorkspace sharedWorkspace]
+          userInfo: [self _notificationUserInfo]];
     }
   NS_HANDLER
     {
       NSLog (_(@"Problem during launch app notification: %@"),
-	 [localException reason]);
+             [localException reason]);
       [localException raise];
     }
   NS_ENDHANDLER
@@ -1372,6 +1380,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
       IF_NO_GC(_runLoopPool = [arpClass new]);
 
       [self finishLaunching];
+      [self _didFinishLaunching];
 
       [_listener updateServicesMenu];
       [_main_menu update];
