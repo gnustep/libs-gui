@@ -1,5 +1,10 @@
 2008-11-17 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSBezierPath.m: (-windingCountAtPoint:) Return 0 when the
+	path is empty.
+
+2008-11-17 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSApplication.m (-finishLaunching): Split up final
 	notification sending into method _didFinishLaunching to allow
 	supclasses to go between these calls.

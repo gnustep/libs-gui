@@ -1418,6 +1418,9 @@ static int winding_curve(double_point from, double_point to, double_point c1,
   total = 0;
   count = [self elementCount];
 
+  if (count == 0)
+    return 0;
+
   /* 'Unroll' the first element to avoid compiler warnings.  It has to be
      a MoveTo, anyway.  */
   type = [self elementAtIndex: 0 associatedPoints: pts];
