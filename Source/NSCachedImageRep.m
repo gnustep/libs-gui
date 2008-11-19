@@ -32,11 +32,16 @@
     using the rect information.
 */
 
+// for fabs()
+#include <math.h>
+
 #include "config.h"
 #include <Foundation/NSString.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSUserDefaults.h>
 
+#include "AppKit/NSAffineTransform.h"
+#include "AppKit/NSBitmapImageRep.h"
 #include "AppKit/NSCachedImageRep.h"
 #include "AppKit/NSView.h"
 #include "AppKit/NSWindow.h"
@@ -166,8 +171,36 @@
 
 - (BOOL) draw
 {
-  PScomposite(NSMinX(_rect), NSMinY(_rect), NSWidth(_rect), NSHeight(_rect),
-    [_window gState], 0, 0, NSCompositeSourceOver);
+/*
+  FIXME: Horrible hack to get drawing on a scaled or rotated
+  context correct. We need another interface with the backend 
+  to do it properly.
+*/
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSAffineTransform *transform;
+  NSAffineTransformStruct ts;
+
+  transform = [ctxt GSCurrentCTM];
+  ts = [transform transformStruct];
+      
+  if (fabs(ts.m11 - 1.0) < 0.01 && fabs(ts.m12) < 0.01
+      && fabs(ts.m21) < 0.01 && fabs(ts.m22 - 1.0) < 0.01)
+    {
+      PScomposite(NSMinX(_rect), NSMinY(_rect), NSWidth(_rect), NSHeight(_rect),
+                  [_window gState], 0, 0, NSCompositeSourceOver);
+    }
+  else
+    {
+      NSView *view = [_window contentView];
+      NSBitmapImageRep *rep;
+
+      [view lockFocus];
+      rep = [[NSBitmapImageRep alloc] initWithFocusedViewRect: _rect];
+      [view unlockFocus];
+      
+      [rep draw];
+    }
+
   return YES;
 }
 

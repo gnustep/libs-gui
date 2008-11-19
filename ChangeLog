@@ -1,3 +1,8 @@
+2008-11-19 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSCachedImageRep.m(-draw): Add hack to draw on a scaled
+	context. 
+
 2008-11-17 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBezierPath.m: (-windingCountAtPoint:) Return 0 when the
