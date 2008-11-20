@@ -1,3 +1,8 @@
+2008-11-20  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSWindow.m (-miniaturize:): Revert the previous change
+	correcting bug #24707. A better fix for this is now in -back.
+
 2008-11-19 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSCachedImageRep.m(-draw): Add hack to draw on a scaled

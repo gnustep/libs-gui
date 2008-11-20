@@ -2769,8 +2769,6 @@ resetCursorRectsForView(NSView *theView)
     {
       NSWindow *mini = GSWindowWithNumber(_counterpart);
       [mini orderFront: self];
-      // If the window is still visible, order it out.
-      [self orderOut: self];
     }
   [nc postNotificationName: NSWindowDidMiniaturizeNotification
                     object: self];
