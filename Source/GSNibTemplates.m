@@ -963,15 +963,6 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
   id obj = [super initWithCoder: coder];
   if (obj != nil)
     {
-      if ([self shouldSwapClass])
-      {
-	if (GSGetMethod([obj class],@selector(initWithFrame:), YES, NO) != NULL
-	   && ![_className isEqualToString: NSStringFromClass(_superClass)])
-	  {
-	    NSRect theFrame = [obj frame];
-	    obj =  [obj initWithFrame: theFrame];
-	  }
-      }
       RELEASE(self);
     }
   return obj;
@@ -993,15 +984,6 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
   id     obj = [super initWithCoder: coder];
   if (obj != nil)
     {
-      if ([self shouldSwapClass])
-      {
-	if (GSGetMethod([obj class],@selector(initWithFrame:), YES, NO) != NULL
-	   && ![_className isEqualToString: NSStringFromClass(_superClass)])
-	  {
-	    NSRect theFrame = [obj frame]; 
-	    obj = [obj initWithFrame: theFrame];
-	  }
-      }
       RELEASE(self);
     }
   return obj;
@@ -1023,17 +1005,6 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
   id     obj = [super initWithCoder: coder];
   if (obj != nil)
     {
-      if ([self shouldSwapClass])
-      {
-	if (GSGetMethod([obj class],@selector(initWithFrame:textContainer:), YES, NO) != NULL
-	   && ![_className isEqualToString: NSStringFromClass(_superClass)])
-	  {
-	    NSRect theFrame = [obj frame];
-	    id textContainer = [obj textContainer];
-	    obj = [obj initWithFrame: theFrame 
-		       textContainer: textContainer];
-	  }
-      }
       RELEASE(self);
     }
   return obj;
@@ -1055,15 +1026,6 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
   id     obj = [super initWithCoder: coder];
   if (obj != nil)
     {
-      if ([self shouldSwapClass])
-      {
-	if (GSGetMethod([obj class],@selector(initWithTitle:), YES, NO) != NULL
-	   && ![_className isEqualToString: NSStringFromClass(_superClass)])
-	  {
-	    NSString *theTitle = [obj title]; 
-	    obj = [obj initWithTitle: theTitle];
-	  }
-      }
       RELEASE(self);
     }
   return obj;
@@ -1086,16 +1048,6 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
   id     obj = [super initWithCoder: coder];
   if (obj != nil)
     {
-      /* 
-      if ([self shouldSwapClass])
-      {
-	if (GSGetMethod([obj class],@selector(initWithFrame:), YES, NO) != NULL)
-	  {
-	    NSRect theFrame = [obj frame]; 
-	    obj = [obj initWithFrame: theFrame];
-	  }
-      }
-      */
       RELEASE(self);
     }
   return obj;
@@ -1116,14 +1068,6 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
   id     obj = [super initWithCoder: coder];
   if (obj != nil)
     {
-      if ([self shouldSwapClass])
-      {
-	if (GSGetMethod([obj class],@selector(init), YES, NO) != NULL
-	   && ![_className isEqualToString: NSStringFromClass(_superClass)])
-	  {
-	    obj = [self init];
-	  }
-      }
       RELEASE(self);
     }
   return obj;
