@@ -1,7 +1,12 @@
+2008-11-21 23:12-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Remove calls to designated initializers
+	for nib files.
+
 2008-11-21 01:12-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibTemplates.m: Remove calls to designated initializers
-	as per documentation.
+	for gorm files as per documentation.
 
 2008-11-20  Wolfgang Lux  <wolfgang.lux@gmail.com>
 

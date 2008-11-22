@@ -455,6 +455,23 @@ static BOOL _isInInterfaceBuilder = NO;
         {
           _className = [coder decodeObjectForKey: @"NSClassName"];
         }
+
+      if (_realObject == nil)
+	{
+	  Class aClass = NSClassFromString(_className);
+	  if (aClass == nil)
+	    {
+	      [NSException raise: NSInternalInconsistencyException
+			   format: @"Unable to find class '%@'", _className];
+	    }
+	  else
+	    {
+	      _realObject = [[aClass allocWithZone: NSDefaultMallocZone()] initWithCoder: coder];
+	      [[self superview] replaceSubview: self with: _realObject]; // replace the old view...
+	    }
+	}
+      
+      return _realObject;
     }
   else
     {
@@ -462,7 +479,7 @@ static BOOL _isInInterfaceBuilder = NO;
                    format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
                    NSStringFromClass([coder class])];
     }
-  return self;
+  return nil;
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
@@ -471,26 +488,6 @@ static BOOL _isInInterfaceBuilder = NO;
     {
       [coder encodeObject: (id)_className forKey: @"NSClassName"];
     }
-}
-
-- (id) nibInstantiate
-{
-  if (_realObject == nil)
-    {
-      Class aClass = NSClassFromString(_className);
-      if (aClass == nil)
-        {
-          [NSException raise: NSInternalInconsistencyException
-                       format: @"Unable to find class '%@'", _className];
-        }
-      else
-        {
-          _realObject = [[aClass allocWithZone: NSDefaultMallocZone()] initWithFrame: [self frame]];
-          [[self superview] replaceSubview: self with: _realObject]; // replace the old view...
-        }
-    }
-
-  return _realObject;
 }
 
 // setters and getters
@@ -507,6 +504,11 @@ static BOOL _isInInterfaceBuilder = NO;
 - (id) realObject
 {
   return _realObject;
+}
+
+- (id) nibInstantiate
+{
+  return [self realObject];
 }
 @end
 
@@ -529,26 +531,6 @@ static BOOL _isInInterfaceBuilder = NO;
     {
       [self setVersion: 0];
     }
-}
-
-- (id)nibInstantiate
-{
-  if (_realObject == nil)
-    {
-      Class aClass = NSClassFromString(_className);
-      if (aClass == nil)
-        {
-          [NSException raise: NSInternalInconsistencyException
-                       format: @"Unable to find class '%@'", _className];
-        }
-      else
-        {
-          _realObject = [[aClass allocWithZone: NSDefaultMallocZone()] initWithFrame: [self frame]];
-          [[self superview] replaceSubview: self with: _realObject]; // replace the old view...
-        }
-    }
-
-  return _realObject;
 }
 @end
 
