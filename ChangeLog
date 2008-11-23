@@ -1,3 +1,8 @@
+2008-11-22 20:46-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Further improvements to nib loading
+	logic.
+
 2008-11-21 23:12-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibCompatibility.m: Remove calls to designated initializers

@@ -611,6 +611,28 @@ static BOOL _isInInterfaceBuilder = NO;
     {
       ASSIGN(_className, [coder decodeObjectForKey: @"NSClassName"]);
       ASSIGN(_extension, [coder decodeObjectForKey: @"NSExtension"]);
+
+      if (_object == nil)
+	{
+	  Class aClass;
+	  
+	  if ([NSClassSwapper isInInterfaceBuilder])
+	    {
+	      aClass = [self class];
+	    }
+	  else
+	    {
+	      aClass = NSClassFromString(_className);
+	    }
+	  
+	  if (aClass == nil)
+	    {
+	      [NSException raise: NSInternalInconsistencyException
+			   format: @"Unable to find class '%@'", _className];
+	    }
+	  
+	  _object = [[aClass allocWithZone: NSDefaultMallocZone()] init];
+	}
     }
   else
     {
@@ -618,7 +640,8 @@ static BOOL _isInInterfaceBuilder = NO;
                    format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
                    NSStringFromClass([coder class])];
     }
-  return self;
+
+  return _object;
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
@@ -639,27 +662,6 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (id) nibInstantiate
 {
-  if (_object == nil)
-    {
-      Class aClass;
-      
-      if ([NSClassSwapper isInInterfaceBuilder])
-        {
-          aClass = [self class];
-        }
-      else
-        {
-          aClass = NSClassFromString(_className);
-        }
-
-      if (aClass == nil)
-        {
-          [NSException raise: NSInternalInconsistencyException
-                       format: @"Unable to find class '%@'", _className];
-        }
-      
-      _object = [[aClass allocWithZone: NSDefaultMallocZone()] init];
-    }
   return _object;
 }
 
@@ -701,46 +703,6 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (id) nibInstantiate
 {
-  if (_view == nil)
-    {
-      Class aClass;
-      
-      if ([NSClassSwapper isInInterfaceBuilder])
-        {
-          aClass = [self class];
-        }
-      else
-        {
-          aClass = NSClassFromString(_className);
-        }
-
-      if (aClass == nil)
-        {
-          [NSException raise: NSInternalInconsistencyException
-                       format: @"Unable to find class '%@'", _className];
-        }
-      else
-        {
-          _view = [[aClass allocWithZone: NSDefaultMallocZone()] initWithFrame: [self frame]];
-          [_view setAutoresizingMask: [self autoresizingMask]];
-          [self setAutoresizesSubviews: [self autoresizesSubviews]];
-          [self setHidden: [self isHidden]];
-          [_view setNextResponder: [self nextResponder]];
-          [[self superview] replaceSubview: self with: _view]; // replace the old view...
-          if (_rFlags.has_subviews)
-            {
-              NSArray *subviews = [self subviews];
-              int i;
-
-              for (i = 0; i < [subviews count]; i++)
-                {
-                  [_view addSubview: [subviews objectAtIndex: i]];
-                }
-            }
-          // FIXME: Need to transfer all other settings as well
-        }
-    }
-
   return _view;
 }
 
@@ -761,7 +723,48 @@ static BOOL _isInInterfaceBuilder = NO;
                        NSStringFromClass([coder class])];
         }
     }
-  return self;
+
+  if (_view == nil)
+    {
+      Class aClass;
+      
+      if ([NSClassSwapper isInInterfaceBuilder])
+        {
+          aClass = [self class];
+        }
+      else
+        {
+          aClass = NSClassFromString(_className);
+        }
+      
+      if (aClass == nil)
+        {
+          [NSException raise: NSInternalInconsistencyException
+                       format: @"Unable to find class '%@'", _className];
+        }
+      else
+        {
+          _view = [[aClass allocWithZone: NSDefaultMallocZone()] initWithFrame: [self frame]];
+          [_view setAutoresizingMask: [self autoresizingMask]];
+          [self setAutoresizesSubviews: [self autoresizesSubviews]];
+          [self setHidden: [self isHidden]];
+          [_view setNextResponder: [self nextResponder]];
+          [[self superview] replaceSubview: self with: _view]; // replace the old view...
+          if (_rFlags.has_subviews)
+            {
+              NSArray *subviews = [self subviews];
+              int i;
+	      
+              for (i = 0; i < [subviews count]; i++)
+                {
+                  [_view addSubview: [subviews objectAtIndex: i]];
+                }
+            }
+          // FIXME: Need to transfer all other settings as well
+        }
+    }
+
+  return _view;
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
@@ -941,9 +944,6 @@ static BOOL _isInInterfaceBuilder = NO;
 {
   Class aClass = nil;
   id object = nil;
-  Class newCellClass = nil;
-  NSString *origCellClassName = nil; 
-  Class origCellClass = nil;
 
   // if there is a replacement class, use it, otherwise, use the one specified.
   if ((aClass = [(NSKeyedUnarchiver *)coder classForClassName: className]) == nil)
@@ -957,19 +957,6 @@ static BOOL _isInInterfaceBuilder = NO;
                    format: @"NSClassSwapper unable to find class '%@'", className];
     }
 
-  // if this is a class which uses cells, override with the new cellClass, if the 
-  // subclass responds to cellClass.
-  if ([aClass respondsToSelector: @selector(cellClass)] && 
-     [className isEqualToString: _originalClassName] == NO)
-    {
-      Class origClass = NSClassFromString(_originalClassName);
-
-      origCellClass = [origClass cellClass];
-      newCellClass = [aClass cellClass];
-      origCellClassName = NSStringFromClass(origCellClass);
-      [(NSKeyedUnarchiver *)coder setClass: newCellClass forClassName: origCellClassName];
-    }
-
   // swap the class...
   object = [aClass allocWithZone: NSDefaultMallocZone()];
   [(NSKeyedUnarchiver *)coder replaceObject: self withObject: object];
@@ -979,9 +966,12 @@ static BOOL _isInInterfaceBuilder = NO;
       [(NSKeyedUnarchiver *)coder replaceObject: object withObject: _template];
     }
 
-  if (newCellClass != nil && origCellClass != nil)
+  if([aClass respondsToSelector: @selector(cellClass)] &&
+     [className isEqualToString: _originalClassName] == NO)
     {
-      [(NSKeyedUnarchiver *)coder setClass: origCellClass forClassName: nil];
+      id oldCell = [_template cell];
+      id newCell = [[[aClass cellClass] alloc] init];
+      [_template setCell: newCell];
     }
 }
 
@@ -994,13 +984,13 @@ static BOOL _isInInterfaceBuilder = NO;
 
       // build the real object...
       if ([NSClassSwapper isInInterfaceBuilder] == YES)
-        {
+	{
           [self instantiateRealObject: coder withClassName: _originalClassName];
         }
       else
         {
           [self instantiateRealObject: coder withClassName: _className];
-        }
+	} 
     }
   else
     {
