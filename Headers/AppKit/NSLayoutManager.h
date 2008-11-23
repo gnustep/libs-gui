@@ -183,6 +183,15 @@ GNUstep extension.
 
 @end
 
-
+@interface NSLayoutManager (temporaryattributes)
+- (void) addTemporaryAttributes: (NSDictionary *)attrs forCharacterRange: (NSRange)range;
+- (void) addTemporaryAttribute: (NSString *)attr value: (id)value forCharacterRange: (NSRange)range;
+- (void) setTemporaryAttributes:forCharacterRange: (NSRange)range;
+- (void) removeTemporaryAttribute: (NSString *)attr forCharacterRange: (NSRange)range;
+- (id) temporaryAttribute: (NSString *)attr atCharacterIndex: (unsigned int)index effectiveRange: (NSRange)range;
+- (id) temporaryAttribute: (NSString *)attr atCharacterIndex: (unsigned int)index longestEffectiveRange: (NSRange*)longestRange inRange: (NSRange)range;
+- (NSDictionary *) temporaryAttributesAtCharacterIndex: (unsigned int)index effectiveRange: (NSRange)range;
+- (NSDictionary *) temporaryAttributesAtCharacterIndex: (unsigned int) longestEffectiveRange: (NSRange*)longestRange inRange: (NSRange)range;
+@end
 #endif
 

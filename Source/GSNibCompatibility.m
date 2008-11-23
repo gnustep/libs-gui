@@ -630,8 +630,14 @@ static BOOL _isInInterfaceBuilder = NO;
 	      [NSException raise: NSInternalInconsistencyException
 			   format: @"Unable to find class '%@'", _className];
 	    }
-	  
-	  _object = [[aClass allocWithZone: NSDefaultMallocZone()] init];
+	  if(GSObjCIsKindOf(aClass, [NSApplication class]))
+	    {
+	      _object = [aClass sharedApplication];
+	    }
+	  else
+	    {
+	      _object = [[aClass allocWithZone: NSDefaultMallocZone()] init];
+	    }
 	}
     }
   else
@@ -1072,7 +1078,7 @@ static BOOL _isInInterfaceBuilder = NO;
   id menu = nil;
   
   // replace the owner with the actual instance provided.
-  [_root setObject: owner];
+  [self setRoot: owner];
   
   // iterate over connections, instantiate, and then establish them.
   while ((obj = [en nextObject]) != nil)
@@ -1284,7 +1290,7 @@ static BOOL _isInInterfaceBuilder = NO;
 {
   if ([coder allowsKeyedCoding])
     {
-      ASSIGN(_root, [coder decodeObjectForKey: @"NSRoot"]);
+      // ASSIGN(_root, [coder decodeObjectForKey: @"NSRoot"]);
       ASSIGN(_visibleWindows,  (NSMutableArray *)[coder decodeObjectForKey: @"NSVisibleWindows"]);
       ASSIGN(_accessibilityConnectors, (NSMutableArray *)[coder decodeObjectForKey: @"NSAccessibilityConnectors"]);
       ASSIGN(_fontManager, [coder decodeObjectForKey: @"NSFontManager"]);
