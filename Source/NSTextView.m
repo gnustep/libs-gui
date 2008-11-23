@@ -4098,7 +4098,20 @@ right.)
 
   if ([type isEqualToString: NSStringPboardType])
     {
-      [self insertText: [pboard stringForType: NSStringPboardType]];
+      if (changeRange.location != NSNotFound)
+      {
+	  NSString *s = [pboard stringForType: NSStringPboardType];
+
+	  if ([self shouldChangeTextInRange: changeRange
+		    replacementString: s])
+	  {
+	      [self replaceCharactersInRange: changeRange
+		    withString: s];
+	      [self didChangeText];
+	      changeRange.length = [s length];
+	      [self setSelectedRange: changeRange];
+	  }
+      }
       return YES;
     } 
 
@@ -4125,6 +4138,8 @@ right.)
 		  [self replaceCharactersInRange: changeRange
 		    withAttributedString: as];
 		  [self didChangeText];
+		  changeRange.length = [as length];
+		  [self setSelectedRange: changeRange];
 		}
 
 	      DESTROY(as);
@@ -4151,6 +4166,8 @@ right.)
 		  [self replaceCharactersInRange: changeRange
 		    withAttributedString: as];
 		  [self didChangeText];
+		  changeRange.length = [as length];
+		  [self setSelectedRange: changeRange];
 		}
 
 	      DESTROY(as);
@@ -4177,6 +4194,8 @@ right.)
 		  [self replaceCharactersInRange: changeRange
 			    withAttributedString: as];
 		  [self didChangeText];
+		  changeRange.length = [as length];
+		  [self setSelectedRange: changeRange];
 		}
 	      RELEASE(attachment);
 	      RELEASE(image);
@@ -4199,6 +4218,8 @@ right.)
 	      [self replaceCharactersInRange: changeRange
 		withAttributedString: as];
 	      [self didChangeText];
+	      changeRange.length = [as length];
+	      [self setSelectedRange: changeRange];
 	    }
 	  RELEASE(attachment);
 	  return YES;
@@ -4435,7 +4456,7 @@ other than copy/paste or dragging. */
   change, and those calls are made on all connected text views.
   */
   
-  if (_tf.is_editable && _tf.is_rich_text)
+  if (_tf.is_editable)
     [self registerForDraggedTypes: [self acceptableDragTypes]];
   else
     [self unregisterDraggedTypes];
@@ -4445,7 +4466,21 @@ other than copy/paste or dragging. */
 
 /**** Drag and drop handling ****/
 
+/*
+ * TODO: Dragging should use a transient insertion point distinct from the
+ * text view's current selection. This allows subclasses of NSTextView to
+ * determine the origin of the dragged selection during a drag operation and
+ * provides better visual feedback for users, since the origin of the dragged
+ * selection remains visible. Note that -rangeForUserTextChange will have to
+ * be changed to take this transient insertion point into account.
+ */
+
 // dragging of text, colors and files
+- (unsigned int)draggingSourceOperationMaskForLocal:(BOOL)isLocal
+{
+    return (NSDragOperationGeneric | NSDragOperationCopy);
+}
+
 - (NSDragOperation) draggingEntered: (id <NSDraggingInfo>)sender
 {
   NSPasteboard	*pboard = [sender draggingPasteboard];
@@ -4476,8 +4511,17 @@ other than copy/paste or dragging. */
 
       range = [self selectionRangeForProposedRange: dragRange
 				       granularity: NSSelectByCharacter];
-      [self setSelectedRange: range];
-      [self displayIfNeeded];
+      if ([sender draggingSource] == self &&
+	  NSLocationInRange(range.location, _dragTargetSelectionRange))
+        {
+	  _tf.isDragTarget = NO;
+	  flags = NSDragOperationNone;
+        }
+      else
+        {
+	  [self setSelectedRange: range];
+	  [self displayIfNeeded];
+	}
     }
   return flags;
 }
@@ -4512,7 +4556,17 @@ other than copy/paste or dragging. */
 
       range = [self selectionRangeForProposedRange: dragRange
 				       granularity: NSSelectByCharacter];
-      [self setSelectedRange: range];
+      if ([sender draggingSource] == self &&
+	  NSLocationInRange(range.location, _dragTargetSelectionRange))
+        {
+	  flags = NSDragOperationNone;
+	  _tf.isDragTarget = NO;
+	  [self setSelectedRange: _dragTargetSelectionRange];
+        }
+      else
+        {
+	  [self setSelectedRange: range];
+	}
       [self displayIfNeeded];
     }
   return flags;
@@ -4541,6 +4595,18 @@ other than copy/paste or dragging. */
 - (BOOL) performDragOperation: (id <NSDraggingInfo>)sender
 {
   _tf.isDragTarget = NO;
+
+  if ([sender draggingSource] == self &&
+      ([sender draggingSourceOperationMask] & NSDragOperationGeneric))
+    {
+      if (![self shouldChangeTextInRange: _dragTargetSelectionRange
+		     replacementString: @""])
+        {
+	  return NO;
+	}
+      [self replaceCharactersInRange: _dragTargetSelectionRange
+			  withString: @""];
+    }
   return [self readSelectionFromPasteboard: [sender draggingPasteboard]];
 }
 
@@ -4567,6 +4633,7 @@ other than copy/paste or dragging. */
   if (origin)
     *origin = NSMakePoint(0, 0);
 
+  // FIXME
   return nil;
 }
 
@@ -4602,6 +4669,7 @@ other than copy/paste or dragging. */
 
 - (void) mouseDown: (NSEvent *)theEvent
 {
+  BOOL canDrag = NO;
   NSSelectionAffinity affinity = [self selectionAffinity];
   NSSelectionGranularity granularity = NSSelectByCharacter;
   NSRange chosenRange, proposedRange;
@@ -4666,6 +4734,7 @@ other than copy/paste or dragging. */
 	  break;
 	}
 
+      canDrag = NSLocationInRange(startIndex, _layoutManager->_selected_range);
       proposedRange = NSMakeRange (startIndex, 0);
 
       /* We manage clicks on attachments and links only on the first
@@ -4757,10 +4826,27 @@ other than copy/paste or dragging. */
 
   chosenRange = [self selectionRangeForProposedRange: proposedRange
 		      granularity: granularity];
-  [self setSelectedRange: chosenRange  affinity: affinity  
-	stillSelecting: YES];
+  if (canDrag)
+  {
+    unsigned int mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask;
+    NSEvent *currentEvent;
 
-
+    currentEvent = [_window nextEventMatchingMask: mask
+  			      untilDate: nil
+  			      inMode: NSEventTrackingRunLoopMode
+  			      dequeue: YES];
+    if ([currentEvent type] == NSLeftMouseDragged)
+      {
+  	if (![self dragSelectionWithEvent: theEvent
+  				   offset: NSMakeSize(0, 0)
+  				slideBack: YES])
+  	  {
+  	    NSBeep();
+  	  }
+  	return;
+      }
+  }
+  else
   /* Enter modal loop tracking the mouse */
   {
     unsigned int mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask
@@ -4769,6 +4855,9 @@ other than copy/paste or dragging. */
     NSEvent *lastEvent = nil; /* Last non-periodic event. */
     NSDate *distantPast = [NSDate distantPast];
     BOOL gettingPeriodic, gotPeriodic;
+
+    [self setSelectedRange: chosenRange  affinity: affinity  
+	  stillSelecting: YES];
 
     currentEvent = [_window nextEventMatchingMask: mask
 		     untilDate: nil

@@ -1,3 +1,25 @@
+2008-11-23  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSTextView.m (-mouseDown:): Allow click into the current
+	selection to start a drag operation.
+
+	* Source/NSTextView.m (-draggingSourceOperationMaskForLocal:):
+	Implement.
+
+	* Source/NSTextView.m (-draggingEntered:, draggingUpdated): Set
+	drag operation to NSDragOperationNone while text is dragged onto
+	itself.
+
+	* Source/NSTextView.m (-performDragOperation:): When performing a
+	local drag operation delete the dragged text at its original
+	location unless a copy operation was forced by the user.
+
+	* Source/NSTextView.m (-readSelectionFromPasteboard:type:): Select
+	dropped text.
+
+	* Source/NSTextView.m (-updateDragTypeRegistration): Register drag
+	types for non-rich text NSTextViews, too.
+
 2008-11-22 20:46-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibCompatibility.m: Further improvements to nib loading
