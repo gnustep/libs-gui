@@ -1,3 +1,20 @@
+2008-11-24  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Headers/AppKit/NSTextView.h: Rename and change types of
+	attributes related to drag and drop.
+
+	* Source/NSTextView.m: Improve implementation of drag and drop so
+	that an ongoing drag operation no longer changes the target view's
+	current selection.
+
+	* Source/NSTextView.m (-_characterIndexForPoint:respectFraction:):
+	Always return a valid index.
+
+	* Source/NSTextView.m (-mouseDown:): Omit check for valid index
+	after calling _characterIndexForPoint:...
+
+	* Source/NSTextView.m (-initWithCoder:): Avoid code duplication.
+
 2008-11-23 18:56-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/AppKit/NSLayoutManager.h: Declarations for new methods
