@@ -2580,10 +2580,6 @@ Returns the ranges to which various kinds of user changes should apply.
       return NSMakeRange(NSNotFound, 0);
     }  
 
-  if (_dragTargetLocation != NSNotFound)
-    {
-      return NSMakeRange(_dragTargetLocation, 0);
-    }
   return _layoutManager->_selected_range;
 }
 
@@ -4555,6 +4551,8 @@ other than copy/paste or dragging. */
 	  flags = NSDragOperationNone;
         }
     }
+  else if (_dragTargetLocation != NSNotFound)
+    [self _draggingReleaseInsertionPoint];
   return flags;
 }
 
@@ -4586,17 +4584,14 @@ other than copy/paste or dragging. */
 	  flags = NSDragOperationNone;
         }
     }
+  else if (_dragTargetLocation != NSNotFound)
+    [self _draggingReleaseInsertionPoint];
   return flags;
 }
 
 - (void) draggingExited: (id <NSDraggingInfo>)sender
 {
-  NSPasteboard	*pboard = [sender draggingPasteboard];
-  NSArray	*types = [self readablePasteboardTypes];
-  NSString	*type = [self preferredPasteboardTypeFromArray: [pboard types]
-				    restrictedToTypesFromArray: types];
-  if (_dragTargetLocation != NSNotFound
-      && ![type isEqual:NSColorPboardType])
+  if (_dragTargetLocation != NSNotFound)
     {
       [self _draggingReleaseInsertionPoint];
     }
@@ -4609,27 +4604,25 @@ other than copy/paste or dragging. */
 
 - (BOOL) performDragOperation: (id <NSDraggingInfo>)sender
 {
+  NSRange sourceRange = [self selectedRange];
+  NSRange changeRange = NSMakeRange(_dragTargetLocation, 0);
+  [self _draggingReleaseInsertionPoint];
+  [self setSelectedRange: changeRange];
+
   if ([sender draggingSource] == self &&
       ([sender draggingSourceOperationMask] & NSDragOperationGeneric))
     {
-      NSRange changeRange = [self selectedRange];
-      if (![self shouldChangeTextInRange: changeRange replacementString: @""])
+      if (![self shouldChangeTextInRange: sourceRange replacementString: @""])
         {
-	  [self _draggingReleaseInsertionPoint];
 	  return NO;
 	}
-      if (_dragTargetLocation >= NSMaxRange(changeRange))
-	_dragTargetLocation -= changeRange.length;
-      else if (_dragTargetLocation >= changeRange.location)
-	_dragTargetLocation = changeRange.location;
-      [self replaceCharactersInRange: changeRange withString: @""];
+      [self replaceCharactersInRange: sourceRange withString: @""];
     }
   return [self readSelectionFromPasteboard: [sender draggingPasteboard]];
 }
 
 - (void) concludeDragOperation: (id <NSDraggingInfo>)sender
 {
-  [self _draggingReleaseInsertionPoint];
 }
 
 - (void) cleanUpAfterDragOperation
