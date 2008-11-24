@@ -4618,11 +4618,11 @@ other than copy/paste or dragging. */
 	  [self _draggingReleaseInsertionPoint];
 	  return NO;
 	}
-      [self replaceCharactersInRange: changeRange withString: @""];
       if (_dragTargetLocation >= NSMaxRange(changeRange))
 	_dragTargetLocation -= changeRange.length;
       else if (_dragTargetLocation >= changeRange.location)
 	_dragTargetLocation = changeRange.location;
+      [self replaceCharactersInRange: changeRange withString: @""];
     }
   return [self readSelectionFromPasteboard: [sender draggingPasteboard]];
 }
