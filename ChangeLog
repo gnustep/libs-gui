@@ -1,3 +1,9 @@
+2008-11-25  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSAttributedString.m (-doubleClickAtIndex:): Double
+	clicking on a white space character also selects the surrounding
+	white space as on OS X.
+
 2008-11-24  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Headers/AppKit/NSTextView.h: Rename and change types of
