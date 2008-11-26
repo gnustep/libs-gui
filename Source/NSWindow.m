@@ -4978,6 +4978,12 @@ current key view.<br />
   // Should only be defined on MS Windows
   return (void *)(intptr_t)_windowNum;
 }
+
+- (NSWindow *) attachedSheet
+{
+  return nil;
+}
+
 @end
 
 /*

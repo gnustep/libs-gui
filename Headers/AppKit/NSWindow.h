@@ -803,6 +803,9 @@ APPKIT_EXPORT NSSize NSTokenSize;
 willPositionSheet: (NSWindow *)sheet
         usingRect: (NSRect)rect;
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_1, GS_API_LATEST)
+- (NSWindow *) attachedSheet;
+#endif
 - (NSSize) windowWillResize: (NSWindow*)sender
 		     toSize: (NSSize)frameSize;
 - (id) windowWillReturnFieldEditor: (NSWindow*)sender

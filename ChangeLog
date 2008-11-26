@@ -1,3 +1,8 @@
+2008-11-26 16:27-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/AppKit/NSWindow.h: Declaration for attachedSheet.
+	* Source/NSWindow.m: Added skeleton implementation of attachedSheet.
+
 2008-11-25  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSAttributedString.m (-doubleClickAtIndex:): Double
