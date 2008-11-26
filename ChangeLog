@@ -1,3 +1,9 @@
+2008-11-26  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSTextView.m (-undoReplaceCharactersInRange:...,
+	-shouldChangeTextInRange:replacementString:): Improve
+	implementation of undo and register redo operations.
+
 2008-11-26 16:27-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/AppKit/NSWindow.h: Declaration for attachedSheet.

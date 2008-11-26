@@ -2388,6 +2388,20 @@ Move to NSTextView_actions.m?
   return undo;
 }
 
+- (void)undoReplaceCharactersInRange: (NSRange)undoRange
+		withAttributedString: (NSAttributedString *)undoString
+		       selectedRange: (NSRange)selectedRange
+{
+  if ([self shouldChangeTextInRange: undoRange
+	    replacementString: undoString ? [undoString string] : @""])
+    {
+      [self replaceCharactersInRange: undoRange
+	    withAttributedString: undoString];
+      [self setSelectedRange: selectedRange];
+      [self didChangeText];
+    }
+}
+
 /*
  * Began editing flag.  There are quite some different ways in which
  * editing can be started.  Each time editing is started, we need to check
@@ -2490,8 +2504,10 @@ TextDidEndEditing notification _without_ asking the delegate
           undoRange = affectedCharRange;
         }
       undoString = [self attributedSubstringFromRange: affectedCharRange];
-      [[undo prepareWithInvocationTarget: self] replaceCharactersInRange: undoRange
-						withAttributedString: undoString];
+      [[undo prepareWithInvocationTarget: self]
+	  undoReplaceCharactersInRange: undoRange
+		  withAttributedString: undoString
+			 selectedRange: [self selectedRange]];
     }
 
   return result;
