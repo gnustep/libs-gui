@@ -1003,7 +1003,10 @@ static BOOL _isInInterfaceBuilder = NO;
       [_className isEqualToString: _originalClassName] == NO)
     {
       Class newCellClass = [newClass cellClass];
-      result = [[newCellClass alloc] initWithCoder: coder];      
+      if(newCellClass != [NSCell class])
+	{
+	  result = [[newCellClass alloc] initWithCoder: coder];      
+	}
     }
 
   return result;

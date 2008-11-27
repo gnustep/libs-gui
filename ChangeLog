@@ -1,3 +1,8 @@
+2008-11-27 10:07-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Corrected issue with using generic
+	cells on some controls.
+
 2008-11-27 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* NSSound.m:
