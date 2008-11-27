@@ -1037,6 +1037,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
     }
   else
     {
+      *appName = nil;
       return NO;
     }
 }

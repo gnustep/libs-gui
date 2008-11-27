@@ -1,3 +1,8 @@
+2008-11-27 01:27-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSWorkspace.m: [NSWorkspace getInfoForFile:application:type:]
+	appName output parameter is set to nil if no application is found.
+
 2008-11-27 00:48-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibCompatibility.m: Minor correction to previous change.
