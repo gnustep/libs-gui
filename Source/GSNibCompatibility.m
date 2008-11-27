@@ -998,7 +998,8 @@ static BOOL _isInInterfaceBuilder = NO;
 
   // if this is a class which uses cells, override with the new cellClass, if the 
   // subclass responds to cellClass.
-  if ([newClass respondsToSelector: @selector(cellClass)] && 
+  if ([obj isKindOfClass: [NSCell class]] &&
+      [newClass respondsToSelector: @selector(cellClass)] && 
       [_className isEqualToString: _originalClassName] == NO)
     {
       Class newCellClass = [newClass cellClass];
