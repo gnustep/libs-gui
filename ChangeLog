@@ -1,3 +1,10 @@
+2008-11-27 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* NSSound.m:
+	* NSWorkspace.m:
+	* NSPasteboard.m:
+	Cope with daemons being installed in any domain, not just system.
+
 2008-11-27 01:27-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSWorkspace.m: [NSWorkspace getInfoForFile:application:type:]

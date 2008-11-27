@@ -174,10 +174,22 @@ static id<GSSoundSvr> the_server = nil;
 	  if (cmd == nil && recursion == NO) 
 	    {
 #ifdef GNUSTEP_BASE_LIBRARY
-	      cmd = RETAIN([[NSSearchPathForDirectoriesInDomains(
-				 GSToolsDirectory, NSSystemDomainMask, YES) 
-								objectAtIndex: 0]
-			     stringByAppendingPathComponent: @"gnustep_sndd"]);
+	      NSEnumerator	*enumerator;
+	      NSString		*path;
+	      NSFileManager	*mgr;
+
+	      mgr = [NSFileManager defaultManager];
+	      enumerator = [NSSearchPathForDirectoriesInDomains(
+		GSToolsDirectory, NSAllDomainsMask, YES) objectEnumerator];
+	      while ((path = [enumerator nextObject]) != nil)
+		{
+		  path = [path stringByAppendingPathComponent: @"gnustep_sndd"];
+		  if ([mgr isExecutableFileAtPath: path])
+		    {
+		      cmd = [path copy];
+		      break;
+		    }
+		}
 #else
 	      cmd = RETAIN([@GNUSTEP_TOOLS_NO_DESTDIR
 			     stringByAppendingPathComponent: @"gnustep_sndd"]);

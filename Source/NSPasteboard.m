@@ -532,6 +532,7 @@
 #include <Foundation/NSConnection.h>
 #include <Foundation/NSDistantObject.h>
 #include <Foundation/NSDistributedNotificationCenter.h>
+#include <Foundation/NSFileManager.h>
 #include <Foundation/NSMapTable.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSException.h>
@@ -1977,9 +1978,22 @@ static  NSMapTable              *mimeMap = NULL;
 	  if (cmd == nil && recursion ==NO)
 	    {
 #ifdef GNUSTEP_BASE_LIBRARY
-	      cmd = RETAIN([[NSSearchPathForDirectoriesInDomains(
-		GSToolsDirectory, NSSystemDomainMask, YES) objectAtIndex: 0]
-		stringByAppendingPathComponent: @"gpbs"]);
+	      NSEnumerator	*enumerator;
+	      NSString		*path;
+	      NSFileManager	*mgr;
+
+	      mgr = [NSFileManager defaultManager];
+	      enumerator = [NSSearchPathForDirectoriesInDomains(
+		GSToolsDirectory, NSAllDomainsMask, YES) objectEnumerator];
+	      while ((path = [enumerator nextObject]) != nil)
+		{
+		  path = [path stringByAppendingPathComponent: @"gpbs"];
+		  if ([mgr isExecutableFileAtPath: path])
+		    {
+		      cmd = [path copy];
+		      break;
+		    }
+		}
 #else
 	      path = RETAIN([@GNUSTEP_TOOLS_NO_DESTDIR
 			      stringByAppendingPathComponent: @"gpbs"]);

@@ -1274,9 +1274,20 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   if (path == nil)
     {
 #ifdef GNUSTEP_BASE_LIBRARY
-      path = RETAIN([[NSSearchPathForDirectoriesInDomains(
-	  GSToolsDirectory, NSSystemDomainMask, YES) objectAtIndex: 0] 
-		 stringByAppendingPathComponent: @"make_services"]);
+      NSEnumerator	*enumerator;
+      NSString		*path;
+
+      enumerator = [NSSearchPathForDirectoriesInDomains(
+	GSToolsDirectory, NSAllDomainsMask, YES) objectEnumerator];
+      while ((path = [enumerator nextObject]) != nil)
+	{
+	  path = [path stringByAppendingPathComponent: @"make_services"];
+	  if ([mgr isExecutableFileAtPath: path])
+	    {
+	      [path retain];
+	      break;
+	    }
+	}
 #else
       path = RETAIN([@GNUSTEP_TOOLS_NO_DESTDIR
 		      stringByAppendingPathComponent: @"make_services"]);
