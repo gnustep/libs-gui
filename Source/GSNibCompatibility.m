@@ -863,6 +863,7 @@ static BOOL _isInInterfaceBuilder = NO;
 @interface NSKeyedUnarchiver (NSClassSwapperPrivate)
 - (BOOL) replaceObject: (id)oldObj withObject: (id)newObj;
 - (NSDictionary *)keyMap;
+- (Class) replacementClassForClassName: (NSString *)className;
 @end
 
 @implementation NSKeyedUnarchiver (NSClassSwapperPrivate)
@@ -889,6 +890,21 @@ static BOOL _isInInterfaceBuilder = NO;
 - (NSDictionary *)keyMap
 {
   return _keyMap;
+}
+
+- (Class) replacementClassForClassName: (NSString *)className
+{
+  Class aClass;
+  if ((aClass = [self classForClassName: className]) == nil)
+    {
+      aClass = NSClassFromString(className);
+    }
+  if (aClass == nil)
+    {
+      [NSException raise: NSInternalInconsistencyException
+                   format: @"NSClassSwapper unable to find class '%@'", className];
+    }
+  return aClass;
 }
 @end
 
@@ -948,37 +964,48 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (void) instantiateRealObject: (NSCoder *)coder withClassName: (NSString *)className
 {
-  Class aClass = nil;
+  Class newClass = nil;
   id object = nil;
+  NSKeyedUnarchiver *decoder = (NSKeyedUnarchiver *)coder;
 
   // if there is a replacement class, use it, otherwise, use the one specified.
-  if ((aClass = [(NSKeyedUnarchiver *)coder classForClassName: className]) == nil)
-    {
-      aClass = NSClassFromString(className);
-    }
-
-  if (aClass == nil)
-    {
-      [NSException raise: NSInternalInconsistencyException
-                   format: @"NSClassSwapper unable to find class '%@'", className];
-    }
+  newClass = [decoder replacementClassForClassName: className];
 
   // swap the class...
-  object = [aClass allocWithZone: NSDefaultMallocZone()];
-  [(NSKeyedUnarchiver *)coder replaceObject: self withObject: object];
-  [self setTemplate: [object initWithCoder: coder]];
+  object = [newClass allocWithZone: NSDefaultMallocZone()];
+  [decoder setDelegate: self]; // set the delegate...
+  [decoder replaceObject: self withObject: object];
+  [self setTemplate: [object initWithCoder: decoder]];
   if (object != _template)
     {
-      [(NSKeyedUnarchiver *)coder replaceObject: object withObject: _template];
+      [decoder replaceObject: object withObject: _template];
+    }
+  [decoder setDelegate: nil]; // unset the delegate...
+}
+
+// Delegate method...
+- (id) unarchiver: (NSKeyedUnarchiver *)coder
+  didDecodeObject: (id)obj
+{
+  Class newClass = [coder replacementClassForClassName: _className];
+  id result = obj;
+
+  // if we are in an interface builder, then return the original object.
+  if ([NSClassSwapper isInInterfaceBuilder] == YES)
+    {
+      return obj;
     }
 
-  if([aClass respondsToSelector: @selector(cellClass)] &&
-     [className isEqualToString: _originalClassName] == NO)
+  // if this is a class which uses cells, override with the new cellClass, if the 
+  // subclass responds to cellClass.
+  if ([newClass respondsToSelector: @selector(cellClass)] && 
+      [_className isEqualToString: _originalClassName] == NO)
     {
-      id oldCell = [_template cell];
-      id newCell = [[[aClass cellClass] alloc] init];
-      [_template setCell: newCell];
+      Class newCellClass = [newClass cellClass];
+      result = [[newCellClass alloc] initWithCoder: coder];      
     }
+
+  return result;
 }
 
 - (id) initWithCoder: (NSCoder *)coder
