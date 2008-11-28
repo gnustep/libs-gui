@@ -968,8 +968,14 @@ static BOOL _isInInterfaceBuilder = NO;
   id object = nil;
   NSKeyedUnarchiver *decoder = (NSKeyedUnarchiver *)coder;
 
-  // if there is a replacement class, use it, otherwise, use the one specified.
-  newClass = [decoder replacementClassForClassName: className];
+  if([NSClassSwapper isInInterfaceBuilder] == YES)
+    {
+      newClass = [decoder replacementClassForClassName: _originalClassName];
+    }
+  else
+    {
+      newClass = [decoder replacementClassForClassName: className];
+    }
 
   // swap the class...
   object = [newClass allocWithZone: NSDefaultMallocZone()];
@@ -987,13 +993,17 @@ static BOOL _isInInterfaceBuilder = NO;
 - (id) unarchiver: (NSKeyedUnarchiver *)coder
   didDecodeObject: (id)obj
 {
-  Class newClass = [coder replacementClassForClassName: _className];
+  Class newClass = nil; 
   id result = obj;
 
   // if we are in an interface builder, then return the original object.
   if ([NSClassSwapper isInInterfaceBuilder] == YES)
     {
-      return obj;
+      newClass = [coder replacementClassForClassName: _originalClassName];
+    }
+  else
+    {
+      newClass = [coder replacementClassForClassName: _className];
     }
 
   // if this is a class which uses cells, override with the new cellClass, if the 

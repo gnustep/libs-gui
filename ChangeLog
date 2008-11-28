@@ -1,3 +1,9 @@
+2008-11-28 15:20-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Correct issue when loading into
+	Gorm.  NSClassSwapper should check to see if it's in the gui builder
+	and return the appropriate class.
+
 2008-11-27 10:07-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibCompatibility.m: Corrected issue with using generic
