@@ -490,6 +490,11 @@ static BOOL _isInInterfaceBuilder = NO;
     }
 }
 
+- (id) nibInstantiate
+{
+  return _realObject;
+}
+
 // setters and getters
 - (void) setClassName: (NSString *)name
 {
@@ -504,11 +509,6 @@ static BOOL _isInInterfaceBuilder = NO;
 - (id) realObject
 {
   return _realObject;
-}
-
-- (id) nibInstantiate
-{
-  return [self realObject];
 }
 @end
 
@@ -611,34 +611,6 @@ static BOOL _isInInterfaceBuilder = NO;
     {
       ASSIGN(_className, [coder decodeObjectForKey: @"NSClassName"]);
       ASSIGN(_extension, [coder decodeObjectForKey: @"NSExtension"]);
-
-      if (_object == nil)
-	{
-	  Class aClass;
-	  
-	  if ([NSClassSwapper isInInterfaceBuilder])
-	    {
-	      aClass = [self class];
-	    }
-	  else
-	    {
-	      aClass = NSClassFromString(_className);
-	    }
-	  
-	  if (aClass == nil)
-	    {
-	      [NSException raise: NSInternalInconsistencyException
-			   format: @"Unable to find class '%@'", _className];
-	    }
-	  if(GSObjCIsKindOf(aClass, [NSApplication class]))
-	    {
-	      _object = [aClass sharedApplication];
-	    }
-	  else
-	    {
-	      _object = [[aClass allocWithZone: NSDefaultMallocZone()] init];
-	    }
-	}
     }
   else
     {
@@ -646,8 +618,7 @@ static BOOL _isInInterfaceBuilder = NO;
                    format: @"Can't decode %@ with %@.",NSStringFromClass([self class]),
                    NSStringFromClass([coder class])];
     }
-
-  return _object;
+  return self;
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
@@ -668,6 +639,27 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (id) nibInstantiate
 {
+  if (_object == nil)
+    {
+      Class aClass;
+      
+      if ([NSClassSwapper isInInterfaceBuilder])
+        {
+          aClass = [self class];
+        }
+      else
+        {
+          aClass = NSClassFromString(_className);
+        }
+
+      if (aClass == nil)
+        {
+          [NSException raise: NSInternalInconsistencyException
+                       format: @"Unable to find class '%@'", _className];
+        }
+      
+      _object = [[aClass allocWithZone: NSDefaultMallocZone()] init];
+    }
   return _object;
 }
 
@@ -709,6 +701,46 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (id) nibInstantiate
 {
+  if (_view == nil)
+    {
+      Class aClass;
+      
+      if ([NSClassSwapper isInInterfaceBuilder])
+        {
+          aClass = [self class];
+        }
+      else
+        {
+          aClass = NSClassFromString(_className);
+        }
+
+      if (aClass == nil)
+        {
+          [NSException raise: NSInternalInconsistencyException
+                       format: @"Unable to find class '%@'", _className];
+        }
+      else
+        {
+          _view = [[aClass allocWithZone: NSDefaultMallocZone()] initWithFrame: [self frame]];
+          [_view setAutoresizingMask: [self autoresizingMask]];
+          [self setAutoresizesSubviews: [self autoresizesSubviews]];
+          [self setHidden: [self isHidden]];
+          [_view setNextResponder: [self nextResponder]];
+          [[self superview] replaceSubview: self with: _view]; // replace the old view...
+          if (_rFlags.has_subviews)
+            {
+              NSArray *subviews = [self subviews];
+              int i;
+
+              for (i = 0; i < [subviews count]; i++)
+                {
+                  [_view addSubview: [subviews objectAtIndex: i]];
+                }
+            }
+          // FIXME: Need to transfer all other settings as well
+        }
+    }
+
   return _view;
 }
 
@@ -729,48 +761,7 @@ static BOOL _isInInterfaceBuilder = NO;
                        NSStringFromClass([coder class])];
         }
     }
-
-  if (_view == nil)
-    {
-      Class aClass;
-      
-      if ([NSClassSwapper isInInterfaceBuilder])
-        {
-          aClass = [self class];
-        }
-      else
-        {
-          aClass = NSClassFromString(_className);
-        }
-      
-      if (aClass == nil)
-        {
-          [NSException raise: NSInternalInconsistencyException
-                       format: @"Unable to find class '%@'", _className];
-        }
-      else
-        {
-          _view = [[aClass allocWithZone: NSDefaultMallocZone()] initWithFrame: [self frame]];
-          [_view setAutoresizingMask: [self autoresizingMask]];
-          [self setAutoresizesSubviews: [self autoresizesSubviews]];
-          [self setHidden: [self isHidden]];
-          [_view setNextResponder: [self nextResponder]];
-          [[self superview] replaceSubview: self with: _view]; // replace the old view...
-          if (_rFlags.has_subviews)
-            {
-              NSArray *subviews = [self subviews];
-              int i;
-	      
-              for (i = 0; i < [subviews count]; i++)
-                {
-                  [_view addSubview: [subviews objectAtIndex: i]];
-                }
-            }
-          // FIXME: Need to transfer all other settings as well
-        }
-    }
-
-  return _view;
+  return self;
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
@@ -1119,7 +1110,7 @@ static BOOL _isInInterfaceBuilder = NO;
   id menu = nil;
   
   // replace the owner with the actual instance provided.
-  [self setRoot: owner];
+  [_root setObject: owner];
   
   // iterate over connections, instantiate, and then establish them.
   while ((obj = [en nextObject]) != nil)
@@ -1331,7 +1322,7 @@ static BOOL _isInInterfaceBuilder = NO;
 {
   if ([coder allowsKeyedCoding])
     {
-      // ASSIGN(_root, [coder decodeObjectForKey: @"NSRoot"]);
+      ASSIGN(_root, [coder decodeObjectForKey: @"NSRoot"]);
       ASSIGN(_visibleWindows,  (NSMutableArray *)[coder decodeObjectForKey: @"NSVisibleWindows"]);
       ASSIGN(_accessibilityConnectors, (NSMutableArray *)[coder decodeObjectForKey: @"NSAccessibilityConnectors"]);
       ASSIGN(_fontManager, [coder decodeObjectForKey: @"NSFontManager"]);

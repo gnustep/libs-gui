@@ -1,3 +1,8 @@
+2008-11-29 00:40-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Added back in _root assignment in
+	-[NSIBObjectData initWithCoder:] which was causing an issue. 
+
 2008-11-28 15:20-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibCompatibility.m: Correct issue when loading into
