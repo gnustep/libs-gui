@@ -778,7 +778,7 @@ Fills in all glyph holes up to last. only looking at levels below level
   if (!r->glyphs)
     {
       // range, but no glyphs, may be an empty glyph run
-      *rindex = i;
+      *rindex = 0;	// FIXME ... is this right?
       *rpos = pos;
       *rcpos = cpos;
       return r;
