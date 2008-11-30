@@ -1,3 +1,8 @@
+2008-11-30  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* install.sh: Fix header syntax and provide default for make
+	command argument.
+
 2008-11-30 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSLayoutManager.m: Fix uninitialised variable ... but is the
