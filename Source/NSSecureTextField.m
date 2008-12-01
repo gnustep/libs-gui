@@ -84,6 +84,15 @@
 	       format: @"NSSecureTextField only uses NSSecureTextFieldCells."];
 }
 
+- (id) initWithCoder: (NSCoder *)coder
+{
+  if((self = [super initWithCoder: coder]) != nil)
+    {
+      [self setEchosBullets: YES];
+    }
+  return self;
+}
+
 - (id) initWithFrame:(NSRect)frameRect
 {
   self = [super initWithFrame: frameRect];
