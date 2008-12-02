@@ -611,6 +611,7 @@ static BOOL _isInInterfaceBuilder = NO;
     {
       ASSIGN(_className, [coder decodeObjectForKey: @"NSClassName"]);
       ASSIGN(_extension, [coder decodeObjectForKey: @"NSExtension"]);
+      ASSIGN(_object, [coder decodeObjectForKey: @"NSObject"]);
     }
   else
     {
@@ -627,6 +628,7 @@ static BOOL _isInInterfaceBuilder = NO;
     {
       [coder encodeObject: (id)_className forKey: @"NSClassName"];
       [coder encodeConditionalObject: (id)_extension forKey: @"NSExtension"];
+      [coder encodeConditionalObject: (id)_object forKey: @"NSObject"];
     }
   else
     {
@@ -657,8 +659,15 @@ static BOOL _isInInterfaceBuilder = NO;
           [NSException raise: NSInternalInconsistencyException
                        format: @"Unable to find class '%@'", _className];
         }
-      
-      _object = [[aClass allocWithZone: NSDefaultMallocZone()] init];
+
+      if(GSObjCIsKindOf(aClass, [NSApplication class]))
+	{
+	  _object = [aClass sharedApplication];
+	}
+      else
+	{
+	  _object = [[aClass allocWithZone: NSDefaultMallocZone()] init];
+	}      
     }
   return _object;
 }
@@ -723,10 +732,10 @@ static BOOL _isInInterfaceBuilder = NO;
         {
           _view = [[aClass allocWithZone: NSDefaultMallocZone()] initWithFrame: [self frame]];
           [_view setAutoresizingMask: [self autoresizingMask]];
-          [self setAutoresizesSubviews: [self autoresizesSubviews]];
-          [self setHidden: [self isHidden]];
+          [_view setAutoresizesSubviews: [self autoresizesSubviews]];
+          [_view setHidden: [self isHidden]];
           [_view setNextResponder: [self nextResponder]];
-          [[self superview] replaceSubview: self with: _view]; // replace the old view...
+          // [[self superview] replaceSubview: self with: _view]; // replace the old view...
           if (_rFlags.has_subviews)
             {
               NSArray *subviews = [self subviews];
@@ -753,6 +762,10 @@ static BOOL _isInInterfaceBuilder = NO;
         {
           ASSIGN(_className, [coder decodeObjectForKey: @"NSClassName"]);
           ASSIGN(_extension, [coder decodeObjectForKey: @"NSExtension"]);
+	  
+	  AUTORELEASE(self);
+	  self = [self nibInstantiate];
+	  RETAIN(self);
         }
       else
         {

@@ -1,3 +1,10 @@
+2008-12-02 01:21-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Fix for bug #24979.   Change in 
+	initWithCoder: for NSCustomView to return the real object directly 
+	and call nibInstantiate.  Change to prevent double instantiation
+	of NSApplication.
+
 2008-12-02  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSSecureTextField.m: Added initWithCoder: method which 
