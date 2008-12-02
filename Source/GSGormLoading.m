@@ -1,4 +1,4 @@
-/** <title>GSNibTemplates</title>
+/** <title>GSGormLoading</title>
 
    <abstract>Contains all of the private classes used in .gorm files.</abstract>
 
@@ -53,7 +53,7 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSScreen.h>
 #include <GNUstepBase/GSObjCRuntime.h>
-#include <GNUstepGUI/GSNibTemplates.h>
+#include <GNUstepGUI/GSGormLoading.h>
 
 static const int currentVersion = 1; // GSNibItem version number...
 

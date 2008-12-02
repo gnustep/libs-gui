@@ -1,3 +1,15 @@
+2008-12-02 02:07-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h: Remove
+	* Headers/Additions/GNUstepGUI/GSNibTemplates.h: Remove 
+	* Source/GNUmakefile: Update to reference new files.
+	* Source/GSGormLoader.m: Change to reference the 
+	* Source/GSGormLoading.m: New gorm loading file.
+	* Source/GSNibCompatibility.m: Removed.
+	* Source/GSNibLoader.m: Reference the new file.
+	* Source/GSNibLoading.m: New file containing the nib loading logic.
+	* Source/GSNibTemplates.m: Removed.
+
 2008-12-02 01:21-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibCompatibility.m: Fix for bug #24979.   Change in 

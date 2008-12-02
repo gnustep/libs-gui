@@ -30,7 +30,7 @@
 #include <AppKit/AppKit.h>
 
 #include "GNUstepGUI/GSModelLoaderFactory.h"
-#include "GNUstepGUI/GSNibCompatibility.h"
+#include "GNUstepGUI/GSNibLoading.h"
 
 @interface GSNibLoader : GSModelLoader
 @end

@@ -211,8 +211,8 @@ NSTextView_actions.m \
 GSLayoutManager.m \
 GSTypesetter.m \
 GSHorizontalTypesetter.m \
-GSNibTemplates.m \
-GSNibCompatibility.m \
+GSGormLoading.m \
+GSNibLoading.m \
 GSTitleView.m \
 GSToolTips.m \
 GSToolbar.m \
@@ -404,7 +404,7 @@ GSServicesManager.h \
 GSTextConverter.h \
 GSTrackingRect.h \
 GSHelpManagerPanel.h \
-GSNibTemplates.h \
+GSGormLoading.h \
 GSNibContainer.h \
 GSDisplayServer.h \
 GSFusedSilica.h \
@@ -420,7 +420,7 @@ GSTypesetter.h \
 GSHorizontalTypesetter.h \
 GSToolbar.h \
 GSToolbarView.h \
-GSNibCompatibility.h \
+GSNibLoading.h \
 GSDragView.h \
 GSTitleView.h \
 GSPrinting.h \

@@ -1,4 +1,4 @@
-/** <title>GSNibCompatibility</title>
+/** <title>GSNibLoading</title>
 
    <abstract>
    These are templates for use with OSX Nib files.  These classes are the
