@@ -60,7 +60,7 @@
 #define GSI_ARRAY_TYPES GSUNION_OBJ
 #include <GNUstepBase/GSIArray.h>
 
-#include <GNUstepGUI/GSNibCompatibility.h>
+#include <GNUstepGUI/GSNibLoading.h>
 #include <GNUstepGUI/GSInstantiator.h>
 
 static BOOL _isInInterfaceBuilder = NO;

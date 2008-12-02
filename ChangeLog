@@ -1,3 +1,13 @@
+2008-12-02 02:31-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibLoading.m
+	* Source/NSButtonCell.m
+	* Source/NSNibAXAttributeConnector.m
+	* Source/NSNibAXRelationshipConnector.m
+	* Source/NSNibBindingConnector.m
+	* Source/NSNib.m
+	* Source/NSProgressIndicator.m: Change to use new headers.
+
 2008-12-02 02:07-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/Additions/GNUstepGUI/GSNibCompatibility.h: Remove
