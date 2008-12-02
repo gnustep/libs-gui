@@ -1304,6 +1304,7 @@ static NSTextFieldCell *titleCell;
 {
   float cw;
 
+  cw = columnWidth;
   // Take the border into account
   if (_separatesColumns)
     cw -= 2 * (_sizeForBorderType(NSBezelBorder)).width;
