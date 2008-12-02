@@ -31,9 +31,6 @@ ifeq ($(GNUSTEP_MAKEFILES),)
   $(error You need to set GNUSTEP_MAKEFILES before compiling!)
 endif
 
-# Install into the system root by default
-GNUSTEP_INSTALLATION_DOMAIN = SYSTEM
-
 RPM_DISABLE_RELOCATABLE=YES
 PACKAGE_NEEDS_CONFIGURE = YES
 

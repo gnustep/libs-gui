@@ -21,8 +21,6 @@
 #  Free Software Foundation, 51 Franklin Street, Fifth Floor,
 #  Boston, MA 02110-1301, USA.
 
-GNUSTEP_INSTALLATION_DOMAIN = SYSTEM
-
 include $(GNUSTEP_MAKEFILES)/common.make
 
 # The applications to be compiled

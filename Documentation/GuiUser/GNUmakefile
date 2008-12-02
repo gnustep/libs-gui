@@ -23,9 +23,6 @@
 #  Free Software Foundation, 51 Franklin Street, Fifth Floor, 
 #  Boston, MA 02110-1301, USA.
 
-# Install into the system root by default
-GNUSTEP_INSTALLATION_DOMAIN = SYSTEM
-
 include $(GNUSTEP_MAKEFILES)/common.make
 include ../../config.make
 
