@@ -1,3 +1,8 @@
+2008-12-02  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSSecureTextField.m: Added initWithCoder: method which 
+	turns on bullets by default.
+
 2008-11-30  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* install.sh: Fix header syntax and provide default for make
