@@ -16,6 +16,9 @@
 	* Tools/gsnd/GNUmakefile:
 	* Images/GNUmakefile:
 	Fix bug #24672
+	* Tools/make_services.m:
+	Fix bug #24990 ... was reporting debug output which should only have
+	appeared when running in verbose mode.
 
 2008-12-02 02:31-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
