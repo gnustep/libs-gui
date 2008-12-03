@@ -1,3 +1,9 @@
+2008-12-03 01:11-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSApplication.m: Always resize icon to 48x48 so that
+	icons larger than this will display correctly.  Change made in
+	setApplicationIconImage:. 
+
 2008-12-02 23:55-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibLoading.m: Added some new methods to address

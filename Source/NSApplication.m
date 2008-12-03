@@ -2184,6 +2184,8 @@ image.</p><p>See Also: -applicationIconImage</p>
   RETAIN(old_app_icon);
   [_app_icon setName: nil];
   [anImage setName: @"NSApplicationIcon"];
+  [anImage setScalesWhenResized: YES];
+  [anImage setSize: NSMakeSize(48,48)];
   ASSIGN(_app_icon, anImage);
 
   [_main_menu _organizeMenu];	// Let horizontal menu change icon
