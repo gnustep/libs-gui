@@ -3230,8 +3230,14 @@ struct _DelegateWrapper
        * and BOOL are integers, and NSTerminateNow is defined as YES
        * and NSTerminateCancel as NO.
        */
-      termination = (NSApplicationTerminateReply)
-        [_delegate applicationShouldTerminate: self];
+
+      /* We need to do double coercion here since some version of the 
+       * compiler will get confused due to the differences in how 
+       * enum is implemented on various platforms.  This ensures 
+       * that the return type is handled properly in all cases. 
+       */
+      termination = (NSApplicationTerminateReply)(BOOL) 
+                [_delegate applicationShouldTerminate: self];
     }
   else
     {
