@@ -1,3 +1,9 @@
+2008-12-03 01:38-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSInfoPanel.m: -[GSInfoPanel initWithDictionary:]
+	don't show authors in the info panel if there are none given
+	in the dictionary.
+
 2008-12-03 01:11-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSApplication.m: Always resize icon to 48x48 so that

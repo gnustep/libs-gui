@@ -313,9 +313,9 @@ new_label (NSString *value)
   if (nil_or_not_of_class (authors, [NSArray class]))
     {
       authors = value_from_info_plist_for_key (@"Authors");
-
-      if (nil_or_not_of_class (authors, [NSArray class]))
-	authors = [NSArray arrayWithObject: @"Unknown"];
+      
+      // if (nil_or_not_of_class (authors, [NSArray class]))
+      //   authors = [NSArray arrayWithObject: @"Unknown"];
     }
   /* URL */
   if (dictionary)
@@ -389,7 +389,11 @@ new_label (NSString *value)
   [versionLabel setFont: smallFont];
   [versionLabel sizeToFit];
 
-  if ([authors count] == 1)
+  if ([authors count] == 0)
+    {
+      authorTitleLabel = new_label (@"");
+    }
+  else if ([authors count] == 1)
     {
       authorTitleLabel = new_label (@"Author: ");
     }
