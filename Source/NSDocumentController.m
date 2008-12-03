@@ -1001,10 +1001,14 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
   NSDictionary *typeInfo = TYPE_INFO(type);
   NSArray *unixExtensions = [typeInfo objectForKey: NSUnixExtensionsKey];
   NSArray *dosExtensions  = [typeInfo objectForKey: NSDOSExtensionsKey];
-  
+  NSArray *cfFileExtensions = [typeInfo objectForKey: CFBundleTypeExtensions];
+
+  if (!dosExtensions && !unixExtensions) return cfFileExtensions;
   if (!dosExtensions)  return unixExtensions;
   if (!unixExtensions) return dosExtensions;
-  return [unixExtensions arrayByAddingObjectsFromArray: dosExtensions];
+
+  return [[unixExtensions arrayByAddingObjectsFromArray: dosExtensions] 
+	   arrayByAddingObjectsFromArray: cfFileExtensions];
 }
 
 - (Class) documentClassForType: (NSString *)type

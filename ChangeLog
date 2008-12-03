@@ -1,3 +1,8 @@
+2008-12-03 17:23-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSDocumentController.m: Fixed fileExtensionFromType:,
+	bug #24894
+
 2008-12-03 01:38-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSInfoPanel.m: -[GSInfoPanel initWithDictionary:]
