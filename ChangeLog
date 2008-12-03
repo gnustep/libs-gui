@@ -1,3 +1,9 @@
+2008-12-02 23:55-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibLoading.m: Added some new methods to address
+	bug #24985.
+	* Source/NSMenu.m: Removed some spaces after a close brace.
+
 2008-12-02 19:45-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSApplication.m: Fix for bug #24785. 

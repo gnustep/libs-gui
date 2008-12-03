@@ -65,6 +65,111 @@
 
 static BOOL _isInInterfaceBuilder = NO;
 
+@interface NSMenu (NibCompatibility)
+- (void) _setGeometry;
+- (void) _setMain: (BOOL)isMain;
+@end
+
+@implementation NSMenu (NibCompatibility)
+- (void) _setMain: (BOOL)isMain
+{
+  if (isMain)
+    {
+      NSMenuView	*oldRep;
+      NSInterfaceStyle	oldStyle;
+      NSInterfaceStyle	newStyle;
+      NSMenuItem        *appItem;
+      NSString          *processName;
+
+      appItem = [self itemAtIndex: 0]; // Info item.
+      oldRep = [self menuRepresentation];
+      oldStyle = [oldRep interfaceStyle];
+      newStyle = NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
+      processName = [[NSProcessInfo processInfo] processName];
+
+      /*
+       * If necessary, rebuild menu for (different) style
+       */
+      if (oldStyle != newStyle)
+        {
+	  NSMenuView	*newRep;
+
+	  newRep = [[NSMenuView alloc] initWithFrame: NSZeroRect];
+	  if (newStyle == NSMacintoshInterfaceStyle ||
+	      newStyle == NSWindows95InterfaceStyle)
+	    {
+	      [newRep setHorizontal: YES];
+	    }
+	  else
+	    {
+	      [newRep setHorizontal: NO];
+	    }
+	  [newRep setInterfaceStyle: newStyle];
+	  [self setMenuRepresentation: newRep];
+	  RELEASE(newRep);
+	}
+
+      [[self window] setTitle: processName];
+      [[self window] setLevel: NSMainMenuWindowLevel];
+
+      // if it's a standard menu, transform it to be more NeXT'ish/GNUstep-like
+      if(_menu.horizontal == NO)
+	{
+	  NSString *infoString = NSLocalizedString (@"Info", @"Info");
+	  NSString *quitString = [NSString stringWithFormat: @"%@ %@", 
+					   NSLocalizedString (@"Quit", @"Quit"), processName];
+	  NSMenuItem *quitItem = [[NSMenuItem alloc] initWithTitle: quitString
+						     action: @selector(terminate:)
+						     keyEquivalent: @"q"];
+
+	  [self addItem: quitItem];
+	  [self setTitle: processName];
+	  [appItem setTitle: infoString];
+	  [[appItem submenu] setTitle: infoString];
+	}
+
+      [self _setGeometry];
+      [self sizeToFit];
+
+      if ([NSApp isActive])
+        {
+	  [self display];
+	}
+    }
+  else 
+    {
+      [self close];
+      [[self window] setLevel: NSSubmenuWindowLevel];
+    }
+}
+@end
+
+@interface NSApplication (NibCompatibility)
+- (void) _setMainMenu: (NSMenu*)aMenu;
+@end
+
+@implementation NSApplication (NibCompatibility)
+- (void) _setMainMenu: (NSMenu*)aMenu
+{
+  if (_main_menu == aMenu)
+    {
+      return;
+    }
+
+  if (_main_menu != nil)
+    {
+      [_main_menu setMain: NO];
+    }
+
+  ASSIGN(_main_menu, aMenu);
+
+  if (_main_menu != nil)
+    {
+      [_main_menu _setMain: YES];
+    }
+}
+@end
+
 @interface NSView (NibCompatibility)
 - (void) _fixSubviews;
 @end
@@ -1178,7 +1283,7 @@ static BOOL _isInInterfaceBuilder = NO;
   if (menu != nil)
     {
       menu = [self instantiateObject: menu];
-      [NSApp setMainMenu: menu];
+      [NSApp _setMainMenu: menu];
     }
 }
 

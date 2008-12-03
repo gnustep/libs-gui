@@ -291,8 +291,8 @@ static BOOL menuBarVisible = YES;
 	  [[appMenu menuRepresentation] update];
 
 	  RELEASE(itemsToMove);
-	}
-      else
+	}      
+      else 
 	{
 	  [appItem setImage: nil];
 	  if (appMenu != nil)
@@ -316,7 +316,7 @@ static BOOL menuBarVisible = YES;
 		}
 	      [self removeItem: appItem];
 	    }
-	}
+	}  
     }
 
   for (i = 0; i < [_items count]; i++)
