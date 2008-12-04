@@ -81,6 +81,9 @@ static BOOL _isInInterfaceBuilder = NO;
       NSMenuItem        *appItem;
       NSString          *processName;
 
+      if([self numberOfItems] == 0)
+	return;
+
       appItem = [self itemAtIndex: 0]; // Info item.
       oldRep = [self menuRepresentation];
       oldStyle = [oldRep interfaceStyle];
