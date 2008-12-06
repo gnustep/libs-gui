@@ -1,5 +1,13 @@
 2008-12-06  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSSavePanel.m (-_shouldShowExtension:isDir:,
+	-browser:createRowsForColumn:inMatrix:):
+	* Source/NSOpenPanel.m (-_shouldShowExtension:isDir:): The panels
+	now use the information provided by NSWorkspace in order to
+	identify file packages.
+
+2008-12-06  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSSavePanel.m (-_reloadBrowser:, -setRequiredFileType:,
 	-setAllowedFileTypes:, -setTreatsFilePackagesAsDirectories:):
 	* Source/NSOpenPanel.m (-_setupForTypes:, -setCanChooseFiles:)

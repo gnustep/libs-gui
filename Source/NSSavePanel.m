@@ -118,7 +118,7 @@ setPath(NSBrowser *browser, NSString *path)
 - (void) _selectTextInColumn: (int)column;
 - (void) _selectCellName: (NSString *)title;
 - (void) _setupForDirectory: (NSString *)path file: (NSString *)name;
-- (BOOL) _shouldShowExtension: (NSString *)extension isDir: (BOOL *)isDir;
+- (BOOL) _shouldShowExtension: (NSString *)extension;
 - (void) _windowResized: (NSNotification*)n;
 - (NSComparisonResult) _compareFilename: (NSString *)n1 with: (NSString *)n2;
 @end /* NSSavePanel (PrivateMethods) */
@@ -592,25 +592,11 @@ selectCellWithString: (NSString*)title
 }
 
 - (BOOL) _shouldShowExtension: (NSString *)extension
-			isDir: (BOOL *)isDir;
 {
-  if (*isDir == NO)
-    {
-      if (_allowedFileTypes != nil
-          && [_allowedFileTypes indexOfObject: extension] == NSNotFound
-	  && [_allowedFileTypes indexOfObject: @""] == NSNotFound)
-	return NO;
-    }
-  else if ([extension length] == 0)
-    {
-      /* Automatic YES */
-    }
-  else if (_treatsFilePackagesAsDirectories == NO)
-    {
-      if (_allowedFileTypes == nil
-	  || [_allowedFileTypes indexOfObject: extension] != NSNotFound)
-	*isDir = NO;
-    }
+  if (_allowedFileTypes != nil
+      && [_allowedFileTypes indexOfObject: extension] == NSNotFound
+      && [_allowedFileTypes indexOfObject: @""] == NSNotFound)
+    return NO;
 
   return YES;
 }
@@ -1508,11 +1494,12 @@ createRowsForColumn: (int)column
   unsigned               base_frac = 1;
   BOOL                   display_progress = NO;
   NSString              *progressString = nil;
+  NSWorkspace		*ws;
   /* We create lot of objects in this method, so we use a pool */
   NSAutoreleasePool     *pool;
 
   pool = [NSAutoreleasePool new];
-  
+  ws = [NSWorkspace sharedWorkspace];
   path = pathToColumn(_browser, column);
 #if	defined(__MINGW32__)
   if (column == 0)
@@ -1520,7 +1507,7 @@ createRowsForColumn: (int)column
       NSMutableArray	*m;
       unsigned		i;
 
-      files = [[NSWorkspace sharedWorkspace] mountedLocalVolumePaths];
+      files = [ws mountedLocalVolumePaths];
       m = [files mutableCopy];
       i = [m count];
       while (i-- > 0)
@@ -1653,16 +1640,20 @@ createRowsForColumn: (int)column
       pathAndFile = [path stringByAppendingPathComponent: file];
       exists = [_fm fileExistsAtPath: pathAndFile 
 		    isDirectory: &isDir];
-      
+      if (isDir && !_treatsFilePackagesAsDirectories
+	  && [ws isFilePackageAtPath: pathAndFile])
+        {
+	  isDir = NO;
+	}
       if (_delegateHasShowFilenameFilter)
 	{
 	  exists = [_delegate panel: self
 			      shouldShowFilename: pathAndFile];
 	}
 
-      if (exists)
+      if (exists && !isDir)
 	{
-	  exists = [self _shouldShowExtension: extension isDir: &isDir];
+	  exists = [self _shouldShowExtension: extension];
 	}
       
       if (exists)

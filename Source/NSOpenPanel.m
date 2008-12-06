@@ -79,7 +79,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 - (void) _selectTextInColumn: (int)column;
 - (void) _setupForDirectory: (NSString *)path file: (NSString *)filename;
 - (void) _setupForTypes: (NSArray *)fileTypes; /* I'm cheating here... */
-- (BOOL) _shouldShowExtension: (NSString *)extension isDir: (BOOL *)isDir;
+- (BOOL) _shouldShowExtension: (NSString *)extension;
 - (NSComparisonResult) _compareFilename: (NSString *)n1 with: (NSString *)n2;
 @end
 
@@ -95,29 +95,12 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 }
 
 - (BOOL) _shouldShowExtension: (NSString *)extension
-			isDir: (BOOL *)isDir;
 {
-  BOOL found = YES;
+  if (_canChooseFiles == NO ||
+      (_fileTypes != nil && [_fileTypes containsObject: extension] == NO))
+    return NO;
 
-  if (_fileTypes != nil)
-    {
-      if ([_fileTypes containsObject: extension] == YES)
-	{
-	  if ([self treatsFilePackagesAsDirectories] == NO)
-	    {
-	      *isDir = NO;
-	    }
-	}
-      else
-	{
-	  found = NO;
-	}
-    }
-
-  if (*isDir == YES || (found == YES && _canChooseFiles == YES))
-    return YES;
-
-  return NO;
+  return YES;
 }
 
 - (void) _selectTextInColumn: (int)column
