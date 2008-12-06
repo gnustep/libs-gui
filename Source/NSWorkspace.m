@@ -1273,9 +1273,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
    */
   if (path == nil)
     {
-#ifdef GNUSTEP_BASE_LIBRARY
       NSEnumerator	*enumerator;
-      NSString		*path;
 
       enumerator = [NSSearchPathForDirectoriesInDomains(
 	GSToolsDirectory, NSAllDomainsMask, YES) objectEnumerator];
@@ -1288,10 +1286,6 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	      break;
 	    }
 	}
-#else
-      path = RETAIN([@GNUSTEP_TOOLS_NO_DESTDIR
-		      stringByAppendingPathComponent: @"make_services"]);
-#endif
     }
   task = [NSTask launchedTaskWithLaunchPath: path
 				  arguments: nil];

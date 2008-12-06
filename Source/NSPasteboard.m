@@ -1977,7 +1977,6 @@ static  NSMapTable              *mimeMap = NULL;
 
 	  if (cmd == nil && recursion ==NO)
 	    {
-#ifdef GNUSTEP_BASE_LIBRARY
 	      NSEnumerator	*enumerator;
 	      NSString		*path;
 	      NSFileManager	*mgr;
@@ -1994,10 +1993,6 @@ static  NSMapTable              *mimeMap = NULL;
 		      break;
 		    }
 		}
-#else
-	      path = RETAIN([@GNUSTEP_TOOLS_NO_DESTDIR
-			      stringByAppendingPathComponent: @"gpbs"]);
-#endif
 	    }
 	  if (recursion == YES || cmd == nil)
 	    {

@@ -173,7 +173,6 @@ static id<GSSoundSvr> the_server = nil;
 	  
 	  if (cmd == nil && recursion == NO) 
 	    {
-#ifdef GNUSTEP_BASE_LIBRARY
 	      NSEnumerator	*enumerator;
 	      NSString		*path;
 	      NSFileManager	*mgr;
@@ -190,16 +189,13 @@ static id<GSSoundSvr> the_server = nil;
 		      break;
 		    }
 		}
-#else
-	      cmd = RETAIN([@GNUSTEP_TOOLS_NO_DESTDIR
-			     stringByAppendingPathComponent: @"gnustep_sndd"]);
-#endif
 	    }
 
 	  if (recursion == YES || cmd == nil) 
 	    {
 	      NSLog(@"Unable to contact sound server - "
-		    @"please ensure that gnustep_sndd is running for %@.", description);
+		@"please ensure that gnustep_sndd is running for %@.",
+		description);
 	      return nil;
 	    } 
 	  else 

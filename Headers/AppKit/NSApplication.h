@@ -608,7 +608,7 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
  * method).  <em>Not sent yet under GNUstep.</em>
  */
 - (BOOL) applicationShouldHandleReopen: (NSApplication*)theApplication 
-		   hasVisibleWindows: (BOOL)flag;
+		     hasVisibleWindows: (BOOL)flag;
 
 /**
  * Called on OS X when the resolution or other characteristics of the display

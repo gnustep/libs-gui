@@ -3215,8 +3215,8 @@ struct _DelegateWrapper
  * it returns <code>NSTerminateNow</code> will termination be
  * carried out.<br />
  * The old version of -applicationShouldTerminate: returned a BOOL, and this
- * behavior is handled for backward compatibility with YES being
- * equivalent to <code>NSTerminateNow</code> and NO being
+ * should still work as YES is
+ * equivalent to <code>NSTerminateNow</code> and NO is
  * equivalent to <code>NSTerminateCancel</code>.
  */
 - (void) terminate: (id)sender
@@ -3232,14 +3232,7 @@ struct _DelegateWrapper
        * and BOOL are integers, and NSTerminateNow is defined as YES
        * and NSTerminateCancel as NO.
        */
-
-      /* We need to do double coercion here since some version of the 
-       * compiler will get confused due to the differences in how 
-       * enum is implemented on various platforms.  This ensures 
-       * that the return type is handled properly in all cases. 
-       */
-      termination = (NSApplicationTerminateReply)(BOOL) 
-                [_delegate applicationShouldTerminate: self];
+      termination = [_delegate applicationShouldTerminate: self];
     }
   else
     {
@@ -3693,9 +3686,10 @@ struct _DelegateWrapper
       if (wasMain && count == 0)
         {
           if ([_delegate respondsToSelector:
-                             @selector(applicationShouldTerminateAfterLastWindowClosed:)])
+	    @selector(applicationShouldTerminateAfterLastWindowClosed:)])
             {
-              if ([_delegate applicationShouldTerminateAfterLastWindowClosed: self])
+              if ([_delegate
+		applicationShouldTerminateAfterLastWindowClosed: self])
                 {
                   [self terminate: self];
                 }

@@ -1,3 +1,11 @@
+2008-12-06 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSSound.m:
+	* Source/NSWorkspace.m:
+	* Source/NSPasteboard.m:
+	* Source/GNUmakefile.preamble:
+	Remove code which would not locate tools properly and fixup.
+
 2008-12-03 22:38-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibLoading.m: Check to make sure the menu has more than
