@@ -221,7 +221,10 @@ main(int argc, char** argv, char **env_c)
     NSAllApplicationsDirectory, NSAllDomainsMask, YES) objectEnumerator];
   while ((path = [enumerator nextObject]) != nil)
     {
-      scanApplications(services, path);
+      if ([path hasPrefix: @"."] == NO)
+ 	{
+          scanApplications(services, path);
+	}
     }
 
   /*
@@ -446,6 +449,13 @@ scanDirectory(NSMutableDictionary *services, NSString *path)
       NSString	*newPath;
       BOOL	isDir;
 
+      /*
+       *	Ignore anything with a leading dot.
+       */
+      if ([name hasPrefix: @"."] == YES)
+ 	{
+	  continue;
+	}
       if (ext != nil
 	&& ([ext isEqualToString: @"app"] || [ext isEqualToString: @"debug"]
 	|| [ext isEqualToString: @"profile"]))
@@ -581,6 +591,13 @@ scanApplications(NSMutableDictionary *services, NSString *path)
       NSString	*newPath;
       BOOL	isDir;
 
+      /*
+       *	Ignore anything with a leading dot.
+       */
+      if ([name hasPrefix: @"."] == YES)
+ 	{
+	  continue;
+	}
       if (ext != nil
 	&& ([ext isEqualToString: @"app"] || [ext isEqualToString: @"debug"]
 	|| [ext isEqualToString: @"profile"]))
@@ -727,6 +744,13 @@ scanServices(NSMutableDictionary *services, NSString *path)
       NSString	*newPath;
       BOOL	isDir;
 
+      /*
+       *	Ignore anything with a leading dot.
+       */
+      if ([name hasPrefix: @"."] == YES)
+ 	{
+	  continue;
+	}
       if (ext != nil && [ext isEqualToString: @"service"])
 	{
 	  newPath = [path stringByAppendingPathComponent: name];
