@@ -110,6 +110,7 @@ setPath(NSBrowser *browser, NSString *path)
 - (void) _setDefaultDirectory;
 - (void) _updateDefaultDirectory;
 - (void) _resetDefaults;
+- (void) _reloadBrowser;
 // Methods invoked by buttons
 - (void) _setHomeDirectory;
 - (void) _mountMedia;
@@ -418,6 +419,13 @@ setPath(NSBrowser *browser, NSString *path)
   [self setAccessoryView: nil];
 }
 
+- (void) _reloadBrowser
+{
+  NSString *path = [_browser path];
+  [_browser loadColumnZero];
+  setPath(_browser, path);
+}
+
 //
 // Methods invoked by button press
 //
@@ -590,7 +598,7 @@ selectCellWithString: (NSString*)title
     {
       if (_allowedFileTypes != nil
           && [_allowedFileTypes indexOfObject: extension] == NSNotFound
-	  && [_allowedFileTypes indexOfObject: @""] != NSNotFound)
+	  && [_allowedFileTypes indexOfObject: @""] == NSNotFound)
 	return NO;
     }
   else if ([extension length] == 0)
@@ -935,10 +943,13 @@ selectCellWithString: (NSString*)title
  */
 - (void) setRequiredFileType: (NSString*)fileType
 {
+  NSArray *fileTypes;
+
   if ([fileType length] == 0)
-    DESTROY(_allowedFileTypes);
+    fileTypes = nil;
   else
-    ASSIGN(_allowedFileTypes, [NSArray arrayWithObject: fileType]);
+    fileTypes = [NSArray arrayWithObject: fileType];
+  [self setAllowedFileTypes: fileTypes];
 }
 
 /**<p>Returns the required file type.  The default, indicated by an empty
@@ -966,10 +977,14 @@ selectCellWithString: (NSString*)title
  */
 - (void) setAllowedFileTypes: (NSArray *)types
 {
-  if ([types count] == 0)
-    DESTROY(_allowedFileTypes);
-  else
-    ASSIGN(_allowedFileTypes, types);
+  if (types != _allowedFileTypes)
+    {
+      if ([types count] == 0)
+   	DESTROY(_allowedFileTypes);
+      else
+	ASSIGN(_allowedFileTypes, types);
+      [self _reloadBrowser];
+    }
 }
 
 /**<p>Returns an array of the allowed file types. The default, indicated by
@@ -1006,7 +1021,11 @@ selectCellWithString: (NSString*)title
  */
 - (void) setTreatsFilePackagesAsDirectories: (BOOL)flag
 {
-  _treatsFilePackagesAsDirectories = flag;
+  if (flag != _treatsFilePackagesAsDirectories)
+    {
+      _treatsFilePackagesAsDirectories = flag;
+      [self _reloadBrowser];
+    }
 }
 
 /**<p> Validates and possibly reloads the browser columns that are visible 

@@ -1,4 +1,12 @@
-2008-12-06  Wolfgang Lux  <wlux@uni-muenster.de>
+2008-12-06  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSSavePanel.m (-_reloadBrowser:, -setRequiredFileType:,
+	-setAllowedFileTypes:, -setTreatsFilePackagesAsDirectories:):
+	* Source/NSOpenPanel.m (-_setupForTypes:, -setCanChooseFiles:)
+	-runModal..., -beginSheet...): Update the panels' browser when the
+	list of visible file extensions is changed programmatically.
+
+2008-12-06  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Headers/AppKit/NSSavePanel.h:
 	* Source/NSSavePanel.m (-requiredFileType, -setRequiredFileType:,
