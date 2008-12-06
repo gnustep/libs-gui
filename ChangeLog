@@ -1,3 +1,10 @@
+2008-12-06  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSDocument.m (-undo:, -redo:, -validateMenuItem:): Move
+	implementation from here ...
+	* Source/NSWindow.m (-undo:, -redo:, -validateMenuItem:): ... to
+	here. Also validate close, miniaturize, and zoom actions.
+
 2008-12-06 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSSound.m:

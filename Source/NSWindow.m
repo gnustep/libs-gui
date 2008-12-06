@@ -50,6 +50,7 @@
 #include <Foundation/NSSet.h>
 #include <Foundation/NSLock.h>
 #include <Foundation/NSUserDefaults.h>
+#include <Foundation/NSUndoManager.h>
 
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSButton.h"
@@ -2979,6 +2980,16 @@ resetCursorRectsForView(NSView *theView)
     }
 }
 
+- (void) undo: (id)sender
+{
+  [[self undoManager] undo];
+}
+
+- (void) redo: (id)sender
+{
+  [[self undoManager] redo];
+}
+
 /**
    If YES, then the window is released when the close method is called.
  */
@@ -4751,6 +4762,73 @@ current key view.<br />
 - (void) setDisplaysWhenScreenProfileChanges: (BOOL)flag
 {
   _f.displays_when_screen_profile_changes = flag;
+}
+
+/*
+ * Menu item validation
+ */
+
+- (BOOL)validateMenuItem: (NSMenuItem *)anItem
+{
+  BOOL result = YES;
+  SEL  action = [anItem action];
+
+  if (sel_eq(action, @selector(performClose:)))
+    {
+      result = ([self styleMask] & NSClosableWindowMask) ? YES : NO;
+    }
+  else if (sel_eq(action, @selector(performMiniaturize:)))
+    {
+      result = ([self styleMask] & NSMiniaturizableWindowMask) ? YES : NO;
+    }
+  else if (sel_eq(action, @selector(performZoom:)))
+    {
+      result = ([self styleMask] & NSResizableWindowMask) ? YES : NO;
+    }
+  else if (sel_eq(action, @selector(undo:)))
+    {
+      NSUndoManager *undo = [self undoManager];
+      if (undo == nil)
+        {
+          result = NO;
+        }
+      else
+        {
+          if ([undo canUndo])
+            {
+              [anItem setTitle: [undo undoMenuItemTitle]];
+              result = YES;
+            }
+          else
+            {
+              [anItem setTitle: [undo undoMenuTitleForUndoActionName: @""]];
+              result = NO;
+            }
+        }
+    }
+  else if (sel_eq(action, @selector(redo:)))
+    {
+      NSUndoManager *undo = [self undoManager];
+      if (undo == nil)
+        {
+          result = NO;
+        }
+      else
+        {
+          if ([undo canRedo])
+            {
+              [anItem setTitle: [undo redoMenuItemTitle]];
+              result = YES;
+            }
+          else
+            {
+              [anItem setTitle: [undo redoMenuTitleForUndoActionName: @""]];
+              result = NO;
+            }
+        }
+    }
+    
+  return result;
 }
 
 /*

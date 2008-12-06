@@ -1319,46 +1319,6 @@ originalContentsURL: (NSURL *)orig
     {
       result = ([self fileName] != nil && [self isDocumentEdited]);
     }
-  else if (sel_eq(action, @selector(undo:)))
-    {
-      if (_undo_manager == nil)
-        {
-          result = NO;
-        }
-      else
-        {
-          if ([_undo_manager canUndo])
-            {
-              [anItem setTitle: [_undo_manager undoMenuItemTitle]];
-              result = YES;
-            }
-          else
-            {
-              [anItem setTitle: [_undo_manager undoMenuTitleForUndoActionName: @""]];
-              result = NO;
-            }
-        }
-    }
-  else if (sel_eq(action, @selector(redo:)))
-    {
-      if (_undo_manager == nil)
-        {
-          result = NO;
-        }
-      else
-        {
-          if ([_undo_manager canRedo])
-            {
-              [anItem setTitle: [_undo_manager redoMenuItemTitle]];
-              result = YES;
-            }
-          else
-            {
-              [anItem setTitle: [_undo_manager redoMenuTitleForUndoActionName: @""]];
-              result = NO;
-            }
-        }
-    }
     
   return result;
 }
@@ -1741,16 +1701,6 @@ originalContentsURL: (NSURL *)orig
 - (void) _changeWasRedone: (NSNotification *)notification
 {
   [self updateChangeCount: NSChangeDone];
-}
-
-- (void) undo: (id)sender
-{
-  [[self undoManager] undo];
-}
-
-- (void) redo: (id)sender
-{
-  [[self undoManager] redo];
 }
 
 @end
