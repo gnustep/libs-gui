@@ -1,5 +1,16 @@
 2008-12-06  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Headers/AppKit/NSDocument.h: 
+	* Source/NSDocument.m (-isDocumentEdited, updateChangeCount:,
+	hasUnautosavedChanges, changeWasDone): Fix bug where a document
+	would appear unmodified after saving the document, undoing a
+	number of changes, and then making an equal number of changes.
+
+	* Source/NSDocument.m (-revertDocumentToSaved:): Reset the undo
+	manager after reverting a document.
+
+2008-12-06  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSDocument.m (-undo:, -redo:, -validateMenuItem:): Move
 	implementation from here ...
 	* Source/NSWindow.m (-undo:, -redo:, -validateMenuItem:): ... to

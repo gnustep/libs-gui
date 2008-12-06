@@ -388,7 +388,7 @@ withContentsOfURL: (NSURL *)url
 
 - (BOOL) isDocumentEdited
 {
-  return _change_count != 0;
+  return _change_count != 0 || _doc_flags.permanently_modified;
 }
 
 - (void)updateChangeCount: (NSDocumentChangeType)change
@@ -398,17 +398,22 @@ withContentsOfURL: (NSURL *)url
   
   switch (change)
     {
-    case NSChangeDone:                _change_count++; 
+    case NSChangeDone:          _change_count++; 
                                 _autosave_change_count++; 
                                 break;
     case NSChangeUndone:        _change_count--; 
                                 _autosave_change_count--; 
                                 break;
     case NSChangeReadOtherContents:
+                                _doc_flags.permanently_modified = 1;
+                                break;
     case NSChangeCleared:        _change_count = 0; 
                                 _autosave_change_count = 0; 
+                                _doc_flags.permanently_modified = 0;
+                                _doc_flags.autosave_permanently_modified = 0;
                                 break;
     case NSChangeAutosaved:     _autosave_change_count = 0; 
+                                _doc_flags.autosave_permanently_modified = 0;
                                 break;
     }
   
@@ -1496,6 +1501,7 @@ originalContentsURL: (NSURL *)orig
                 error: &error])
         {
           [self updateChangeCount: NSChangeCleared];
+          [[self undoManager] removeAllActions];
         }
       else
         {
@@ -1652,7 +1658,7 @@ originalContentsURL: (NSURL *)orig
 
 - (BOOL)hasUnautosavedChanges
 {
-  return _autosave_change_count != 0;
+  return _autosave_change_count != 0 || _doc_flags.autosave_permanently_modified;
 }
 
 @end
@@ -1690,6 +1696,14 @@ originalContentsURL: (NSURL *)orig
 
 - (void) _changeWasDone: (NSNotification *)notification
 {
+  /* Prevent a document from appearing unmodified after saving the
+   * document, undoing a number of changes, and then making an equal
+   * number of changes.  Ditto for autosaved changes.
+   */
+  if (_change_count < 0)
+    _doc_flags.permanently_modified = 1;
+  if (_autosave_change_count < 0)
+    _doc_flags.autosave_permanently_modified = 1;
   [self updateChangeCount: NSChangeDone];
 }
 
@@ -1700,6 +1714,11 @@ originalContentsURL: (NSURL *)orig
 
 - (void) _changeWasRedone: (NSNotification *)notification
 {
+  /* FIXME
+   * Mac OS X 10.5 uses a new constant NSChangeRedone here, but
+   * old applications are not prepared to handle this constant
+   * and expect NSChangeDone instead.
+   */
   [self updateChangeCount: NSChangeDone];
 }
 
