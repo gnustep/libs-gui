@@ -1,3 +1,16 @@
+2008-12-06  Wolfgang Lux  <wlux@uni-muenster.de>
+
+	* Headers/AppKit/NSSavePanel.h:
+	* Source/NSSavePanel.m (-requiredFileType, -setRequiredFileType:,
+	-allowedFileTypes, -setAllowedFileTypes:, -filename, -_resetDefaults,
+	-_shouldShowExtension:isDir:):
+	* Source/NSDocument.m (-changeSaveType:,
+	-fileNameFromRunningSavePanelForSaveOperation:): Implement support
+	for document types with multiple allowed file extensions.
+
+	* Source/NSDocument.m (-writeWithBackuptoFile:ofType:saveOperation:):
+	Bug fix: Do not modify the file name argument.
+
 2008-12-06  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSSavePanel.m (-ok, -cancel:, -_setDefaultDirectory:,

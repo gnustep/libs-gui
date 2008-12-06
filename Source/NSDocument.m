@@ -771,47 +771,37 @@ withContentsOfURL: (NSURL *)url
 
   if (fileName && isNativeType)
     {
-      NSArray  *extensions = [[NSDocumentController sharedDocumentController] 
-                               fileExtensionsFromType: fileType];
-
-      if ([extensions count] > 0)
+      if ([fileManager fileExistsAtPath: fileName])
         {
-          NSString *extension = [extensions objectAtIndex: 0];
-          NSString *newFileName = [[fileName stringByDeletingPathExtension] 
-                                    stringByAppendingPathExtension: extension];
+          backupFilename = [self _backupFileNameFor: fileName];
           
-          if ([fileManager fileExistsAtPath: newFileName])
+          if (![self _writeBackupForFile: fileName
+                     toFile: backupFilename])
             {
-              backupFilename = [self _backupFileNameFor: newFileName];
-              
-              if (![self _writeBackupForFile: newFileName
-                         toFile: backupFilename])
-                {
-                  return NO;
-                }
+              return NO;
             }
+        }
 
-          if ([self writeToFile: fileName 
-                    ofType: fileType
-                    originalFile: backupFilename
-                    saveOperation: saveOp])
+      if ([self writeToFile: fileName 
+                ofType: fileType
+                originalFile: backupFilename
+                saveOperation: saveOp])
+        {
+          // FIXME: Should set the file attributes
+          
+          if (saveOp != NSSaveToOperation)
             {
-              // FIXME: Should set the file attributes
-              
-              if (saveOp != NSSaveToOperation)
-                {
-                  [self setFileName: newFileName];
-                  [self setFileType: fileType];
-                  [self updateChangeCount: NSChangeCleared];
-                }
-              
-              if (backupFilename && ![self keepBackupFile])
-                {
-                  [fileManager removeFileAtPath: backupFilename handler: nil];
-                }
-              
-              return YES;
+              [self setFileName: fileName];
+              [self setFileType: fileType];
+              [self updateChangeCount: NSChangeCleared];
             }
+          
+          if (backupFilename && ![self keepBackupFile])
+            {
+              [fileManager removeFileAtPath: backupFilename handler: nil];
+            }
+          
+          return YES;
         }
     }
 
@@ -853,14 +843,14 @@ withContentsOfURL: (NSURL *)url
     {
       if ([url isFileURL])
         {
-          NSString *newFileName;
+          NSString *fileName;
           
-          newFileName = [url path];
-          if ([fileManager fileExistsAtPath: newFileName])
+          fileName = [url path];
+          if ([fileManager fileExistsAtPath: fileName])
             {
-              backupFilename = [self _backupFileNameFor: newFileName];
+              backupFilename = [self _backupFileNameFor: fileName];
               
-              if (![self _writeBackupForFile: newFileName
+              if (![self _writeBackupForFile: fileName
                          toFile: backupFilename])
                 {
                   // FIXME: Set error.
@@ -961,10 +951,7 @@ originalContentsURL: (NSURL *)orig
   ASSIGN(_save_type, [controller _nameForHumanReadableType: 
                                   [sender titleOfSelectedItem]]);
   extensions = [controller fileExtensionsFromType: _save_type];
-  if ([extensions count] > 0)
-    {
-      [(NSSavePanel *)[sender window] setRequiredFileType: [extensions objectAtIndex:0]];
-    }
+  [(NSSavePanel *)[sender window] setAllowedFileTypes: extensions];
 }
 
 - (int)runModalSavePanel: (NSSavePanel *)savePanel 
@@ -1088,10 +1075,7 @@ originalContentsURL: (NSURL *)orig
     {
       NSArray  *extensions = [[NSDocumentController sharedDocumentController] 
                                fileExtensionsFromType: [self fileType]];
-      if ([extensions count] > 0)
-        {
-          [savePanel setRequiredFileType:[extensions objectAtIndex:0]];
-        }
+      [savePanel setAllowedFileTypes: extensions];
     }
 
   switch (saveOperation)
