@@ -60,7 +60,6 @@ static NSString *CFBundleTypeName       = @"CFBundleTypeName";
 static NSString *CFBundleTypeRole       = @"CFBundleTypeRole";
 
 static NSString *NSRecentDocuments      = @"NSRecentDocuments";
-static NSString *NSDefaultOpenDirectory = @"NSDefaultOpenDirectory";
 
 static NSDocumentController *sharedController = nil;
 
@@ -728,10 +727,6 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
   NSString *cancelString = (cancellable)? ((NSString *)_(@"Cancel")) : ((NSString *)nil);
   int      result;
   
-  /* Probably as good a place as any to do this */
-  [[NSUserDefaults standardUserDefaults] 
-    setObject: [self currentDirectory] forKey: NSDefaultOpenDirectory];
-
   if (![self hasEditedDocuments]) 
     {
       return YES;
@@ -850,13 +845,19 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
 {
   NSFileManager *manager = [NSFileManager defaultManager];
   NSDocument *document = [self currentDocument];
-  NSString *directory;
+  NSString *directory = nil;
   BOOL isDir = NO;
 
   if (document)
-    directory = [[document fileName] stringByDeletingLastPathComponent];
-  else
-    directory = [[NSOpenPanel openPanel] directory];
+    {
+      directory = [[document fileName] stringByDeletingLastPathComponent];
+    }
+  if (directory == nil || [directory isEqual: @""]
+      || [manager fileExistsAtPath: directory  isDirectory: &isDir] == NO
+      || isDir == NO)
+    {
+      directory = [[NSOpenPanel openPanel] directory];
+    }
   if (directory == nil || [directory isEqual: @""]
       || [manager fileExistsAtPath: directory  isDirectory: &isDir] == NO
       || isDir == NO)

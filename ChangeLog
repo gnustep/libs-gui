@@ -1,6 +1,16 @@
 2008-12-06  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
-	* Headers/AppKit/NSDocument.h: 
+	* Source/NSSavePanel.m (-ok, -cancel:, -_setDefaultDirectory:,
+	-_updateDefaultDirectory:, -_setupForDirectory:file:):
+	* Source/NSOpenPanel.m (-ok:):
+	* Source/NSDocumentController.m (-currentDirectory)
+	(-reviewUnsavedDocumentsWithAlertTitle:cancelable:): Make open and
+	save panels consistently start up in the last used directory by
+	default.
+
+2008-12-06  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Headers/AppKit/NSDocument.h:
 	* Source/NSDocument.m (-isDocumentEdited, updateChangeCount:,
 	hasUnautosavedChanges, changeWasDone): Fix bug where a document
 	would appear unmodified after saving the document, undoing a

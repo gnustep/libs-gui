@@ -73,6 +73,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 // Pacify the compiler
 @interface NSSavePanel (GSPrivateMethods)
 - (void) _resetDefaults;
+- (void) _updateDefaultDirectory;
 - (void) _selectCellName: (NSString *)title;
 - (void) _selectTextInColumn: (int)column;
 - (void) _setupForDirectory: (NSString *)path file: (NSString *)filename;
@@ -579,6 +580,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 	}
     }
 
+  [self _updateDefaultDirectory];
   [NSApp stopModalWithCode: NSOKButton];
   [_okButton setEnabled: NO];
   [self close];

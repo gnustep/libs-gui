@@ -108,6 +108,7 @@ setPath(NSBrowser *browser, NSString *path)
 - (id) _initWithoutGModel;
 - (void) _getOriginalSize;
 - (void) _setDefaultDirectory;
+- (void) _updateDefaultDirectory;
 - (void) _resetDefaults;
 // Methods invoked by buttons
 - (void) _setHomeDirectory;
@@ -386,20 +387,24 @@ setPath(NSBrowser *browser, NSString *path)
 {
   NSString *path;
 
-  if (_directory == nil)
+  path = [[NSUserDefaults standardUserDefaults] 
+	     objectForKey: @"NSDefaultOpenDirectory"];
+  if (path == nil)
     {
-      path = [[NSUserDefaults standardUserDefaults] 
-		 objectForKey: @"NSDefaultOpenDirectory"];
-      if (path == nil)
-        {
-	  // FIXME: Should we use this or the home directory?
-	  ASSIGN(_directory, [_fm currentDirectoryPath]);
-	}
-      else
-        {
-	  ASSIGN(_directory, path);
-	}
+      // FIXME: Should we use this or the home directory?
+      ASSIGN(_directory, [_fm currentDirectoryPath]);
     }
+  else
+    {
+      ASSIGN(_directory, path);
+    }
+}
+
+- (void) _updateDefaultDirectory
+{
+  [[NSUserDefaults standardUserDefaults]
+      setObject: _directory
+      forKey: @"NSDefaultOpenDirectory"];
 }
 
 - (void) _resetDefaults
@@ -552,7 +557,10 @@ selectCellWithString: (NSString*)title
 {
   if (path == nil)
     {
-      [self _setDefaultDirectory];
+      if (_directory == nil)
+        {
+	  [self _setDefaultDirectory];
+	}
     }
   else
     {
@@ -1093,6 +1101,7 @@ selectCellWithString: (NSString*)title
 - (void) cancel: (id)sender
 {
   ASSIGN(_directory, pathToColumn(_browser, [_browser lastColumn]));
+  [self _updateDefaultDirectory];
   [NSApp stopModalWithCode: NSCancelButton];
   [_okButton setEnabled: NO];
   [self close];
@@ -1202,6 +1211,7 @@ selectCellWithString: (NSString*)title
     if (![_delegate panel: self isValidFilename: [self filename]])
       return;
 
+  [self _updateDefaultDirectory];
   [NSApp stopModalWithCode: NSOKButton];
   [_okButton setEnabled: NO];
   [self close];
