@@ -3229,10 +3229,12 @@ struct _DelegateWrapper
        * so if we are linked in to an application which used that
        * API, the delegate might return a BOOL rather than an
        * NSTerminateNow.  That's fine as both NSTerminateNow
-       * and BOOL are integers, and NSTerminateNow is defined as YES
-       * and NSTerminateCancel as NO.
+       * and BOOL are integral types (though potentially of different sizes),
+       * and NSTerminateNow is defined as YES and NSTerminateCancel as NO.
+       * So all we need to do is mask the low byte of the return value in
+       * case there is uninitialised random data in the higher bytes.
        */
-      termination = [_delegate applicationShouldTerminate: self];
+      termination = ([_delegate applicationShouldTerminate: self] & 0xff);
     }
   else
     {
