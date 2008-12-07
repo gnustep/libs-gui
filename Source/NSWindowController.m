@@ -50,10 +50,10 @@
 
 - (id) initWithWindowNibName: (NSString *)windowNibName
 {
-  return [self initWithWindowNibName: windowNibName  owner: self];
+  return [self initWithWindowNibName: windowNibName owner: self];
 }
 
-- (id) initWithWindowNibName: (NSString *)windowNibName  owner: (id)owner
+- (id) initWithWindowNibName: (NSString *)windowNibName owner: (id)owner
 {
   if (windowNibName == nil)
     {
@@ -68,13 +68,16 @@
     }
 
   self = [self initWithWindow: nil];
+  if (!self)
+    return nil;
+
   ASSIGN(_window_nib_name, windowNibName);
   _owner = owner;
   return self;
 }
 
 - (id) initWithWindowNibPath: (NSString *)windowNibPath
-		       owner: (id)owner
+                       owner: (id)owner
 {
   if (windowNibPath == nil)
     {
@@ -89,6 +92,9 @@
     }
 
   self = [self initWithWindow: nil];
+  if (!self)
+    return nil;
+
   ASSIGN(_window_nib_path, windowNibPath);
   _owner = owner;
   return self;
@@ -97,10 +103,12 @@
 - (id) initWithWindow: (NSWindow *)window
 {
   self = [super init];
+  if (!self)
+    return nil;
 
-  _window_frame_autosave_name = @"";
+  ASSIGN(_window_frame_autosave_name, @"");
   _wcFlags.should_cascade = YES;
-  _wcFlags.should_close_document = NO;
+  //_wcFlags.should_close_document = NO;
 
   [self setWindow: window];
   if (_window != nil)
@@ -484,9 +492,18 @@
 
 - (id) initWithCoder: (NSCoder *)coder
 {
-  if ([coder versionForClassName: @"NSWindowController"] >= 1)
+  if ([coder allowsKeyedCoding] 
+      || [coder versionForClassName: @"NSWindowController"] >= 1)
     {
-      return [super initWithCoder: coder];
+      self = [super initWithCoder: coder];
+      if (!self)
+        return nil;
+
+      ASSIGN(_window_frame_autosave_name, @"");
+      _wcFlags.should_cascade = YES;
+      //_wcFlags.should_close_document = NO;
+
+      return self;
     }
   else
     {

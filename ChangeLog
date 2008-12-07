@@ -1,3 +1,12 @@
+2008-12-07 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindowController.m (-initWithWindow:,
+	-initWithWindowNibPath:owner:, -initWithWindowNibName:owner:,
+	-initWithCoder:): Made all initialisation methods a bit safer.
+	Solves bug #25004.
+	* Source/NSCachedImageRep.m(-draw): Don't draw an empty
+	rect. Fixes the remaining issue of #22282.
+	
 2008-12-07  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSTextView.m (-mouseDown:): Start drag operation only

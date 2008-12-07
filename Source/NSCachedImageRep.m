@@ -180,6 +180,10 @@
   NSAffineTransform *transform;
   NSAffineTransformStruct ts;
 
+  // Is there anything to draw?
+  if (NSIsEmptyRect(_rect))
+    return YES;
+
   transform = [ctxt GSCurrentCTM];
   ts = [transform transformStruct];
       
