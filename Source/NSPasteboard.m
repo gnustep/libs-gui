@@ -548,9 +548,9 @@
 #include <Foundation/NSRunLoop.h>
 #include <Foundation/NSSet.h>
 #include <Foundation/NSTask.h>
+#include <GNUstepBase/NSTask+GS.h>
 #include <Foundation/NSTimer.h>
 
-#include "GNUstepBase/GSCategories.h"
 #include "GNUstepGUI/GSServicesManager.h"
 #include "GNUstepGUI/GSPasteboardServer.h"
 

@@ -51,6 +51,7 @@
 #include <Foundation/NSPathUtilities.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSTask.h>
+#include <GNUstepBase/NSTask+GS.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSNotificationQueue.h>
@@ -68,7 +69,6 @@
 #include "AppKit/NSPanel.h"
 #include "AppKit/NSWindow.h"
 #include "AppKit/NSScreen.h"
-#include "GNUstepBase/GSCategories.h"
 #include "GNUstepGUI/GSServicesManager.h"
 #include "GNUstepGUI/GSDisplayServer.h"
 

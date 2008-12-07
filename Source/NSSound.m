@@ -28,7 +28,7 @@
 
 #include "config.h"
 #include <Foundation/Foundation.h>
-#include <GNUstepBase/GSCategories.h>
+#include <GNUstepBase/NSTask+GS.h>
 #include "AppKit/NSPasteboard.h"
 #include "AppKit/NSSound.h"
 
