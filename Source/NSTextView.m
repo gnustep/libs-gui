@@ -4143,19 +4143,19 @@ right.)
   if ([type isEqualToString: NSStringPboardType])
     {
       if (changeRange.location != NSNotFound)
-      {
+        {
 	  NSString *s = [pboard stringForType: NSStringPboardType];
 
 	  if ([self shouldChangeTextInRange: changeRange
 		    replacementString: s])
-	  {
+	    {
 	      [self replaceCharactersInRange: changeRange
 		    withString: s];
 	      [self didChangeText];
 	      changeRange.length = [s length];
 	      [self setSelectedRange: changeRange];
-	  }
-      }
+	    }
+	}
       return YES;
     } 
 
@@ -4755,7 +4755,9 @@ other than copy/paste or dragging. */
 	  break;
 	}
 
-      canDrag = NSLocationInRange(startIndex, _layoutManager->_selected_range);
+      /* A single click into the selected range can start a drag operation */
+      canDrag = granularity == NSSelectByCharacter
+	  && NSLocationInRange(startIndex, _layoutManager->_selected_range);
       proposedRange = NSMakeRange (startIndex, 0);
 
       /* We manage clicks on attachments and links only on the first
