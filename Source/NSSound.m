@@ -28,6 +28,7 @@
 
 #include "config.h"
 #include <Foundation/Foundation.h>
+#include <GNUstepBase/GSCategories.h>
 #include "AppKit/NSPasteboard.h"
 #include "AppKit/NSSound.h"
 
@@ -173,22 +174,7 @@ static id<GSSoundSvr> the_server = nil;
 	  
 	  if (cmd == nil && recursion == NO) 
 	    {
-	      NSEnumerator	*enumerator;
-	      NSString		*path;
-	      NSFileManager	*mgr;
-
-	      mgr = [NSFileManager defaultManager];
-	      enumerator = [NSSearchPathForDirectoriesInDomains(
-		GSToolsDirectory, NSAllDomainsMask, YES) objectEnumerator];
-	      while ((path = [enumerator nextObject]) != nil)
-		{
-		  path = [path stringByAppendingPathComponent: @"gnustep_sndd"];
-		  if ([mgr isExecutableFileAtPath: path])
-		    {
-		      cmd = [path copy];
-		      break;
-		    }
-		}
+	      cmd = [NSTask launchPathForTool: @"gnustep_sndd"];
 	    }
 
 	  if (recursion == YES || cmd == nil) 

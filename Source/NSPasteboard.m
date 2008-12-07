@@ -550,6 +550,7 @@
 #include <Foundation/NSTask.h>
 #include <Foundation/NSTimer.h>
 
+#include "GNUstepBase/GSCategories.h"
 #include "GNUstepGUI/GSServicesManager.h"
 #include "GNUstepGUI/GSPasteboardServer.h"
 
@@ -1977,22 +1978,7 @@ static  NSMapTable              *mimeMap = NULL;
 
 	  if (cmd == nil && recursion ==NO)
 	    {
-	      NSEnumerator	*enumerator;
-	      NSString		*path;
-	      NSFileManager	*mgr;
-
-	      mgr = [NSFileManager defaultManager];
-	      enumerator = [NSSearchPathForDirectoriesInDomains(
-		GSToolsDirectory, NSAllDomainsMask, YES) objectEnumerator];
-	      while ((path = [enumerator nextObject]) != nil)
-		{
-		  path = [path stringByAppendingPathComponent: @"gpbs"];
-		  if ([mgr isExecutableFileAtPath: path])
-		    {
-		      cmd = [path copy];
-		      break;
-		    }
-		}
+	      cmd = [NSTask launchPathForTool: @"gpbs"];
 	    }
 	  if (recursion == YES || cmd == nil)
 	    {

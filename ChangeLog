@@ -1,3 +1,11 @@
+2008-12-07 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source\NSSound.m:
+	* Source\NSWorkspace.m:
+	* Source\NSPasteboard.m:
+	Use new method to locate tool executables which handles the addition
+	of .exe extenstion for mingw.
+
 2008-12-06  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSSavePanel.m (-_shouldShowExtension:isDir:,

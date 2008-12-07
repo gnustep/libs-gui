@@ -68,6 +68,7 @@
 #include "AppKit/NSPanel.h"
 #include "AppKit/NSWindow.h"
 #include "AppKit/NSScreen.h"
+#include "GNUstepBase/GSCategories.h"
 #include "GNUstepGUI/GSServicesManager.h"
 #include "GNUstepGUI/GSDisplayServer.h"
 
@@ -1273,19 +1274,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
    */
   if (path == nil)
     {
-      NSEnumerator	*enumerator;
-
-      enumerator = [NSSearchPathForDirectoriesInDomains(
-	GSToolsDirectory, NSAllDomainsMask, YES) objectEnumerator];
-      while ((path = [enumerator nextObject]) != nil)
-	{
-	  path = [path stringByAppendingPathComponent: @"make_services"];
-	  if ([mgr isExecutableFileAtPath: path])
-	    {
-	      [path retain];
-	      break;
-	    }
-	}
+      path = [NSTask launchPathForTool: @"make_services"];
     }
   task = [NSTask launchedTaskWithLaunchPath: path
 				  arguments: nil];
