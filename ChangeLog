@@ -1,3 +1,8 @@
+2008-12-07 22:50-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSTableView.m: Switch to the alternate highlighting color
+	only when the background is white.
+
 2008-12-07 22:30-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSTableView.m: Change highlighting color so that it shows
