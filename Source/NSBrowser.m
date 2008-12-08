@@ -212,6 +212,7 @@ static NSTextFieldCell *titleCell;
                                     inView: (NSView*)controlView
 {
   [[GSTheme theme] drawGrayBezel: cellFrame withClip: NSZeroRect];
+  [self _drawBackgroundWithFrame: cellFrame inView: controlView];
 }
 
 @end

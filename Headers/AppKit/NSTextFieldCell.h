@@ -57,9 +57,6 @@ typedef enum _NSTextFieldBezelStyle
 
   // Think of the following ones as of two BOOL ivars
 #define _textfieldcell_draws_background _cell.subclass_bool_one
-  // The following is different from _draws_background 
-  // if we are using a semi-transparent color.
-#define _textfieldcell_is_opaque _cell.subclass_bool_two
 #define _textfieldcell_placeholder_is_attributed_string _cell.subclass_bool_three
   id _placeholder;
 }
@@ -88,6 +85,15 @@ typedef enum _NSTextFieldBezelStyle
 - (NSAttributedString *)placeholderAttributedString;
 #endif 
 
+@end
+
+// 
+// Methods that are private GNUstep extensions
+//
+@interface NSTextFieldCell (PrivateMethods)
+
+- (void) _drawBackgroundWithFrame: (NSRect)cellFrame 
+                           inView: (NSView*)controlView;
 @end
 
 #endif // _GNUstep_H_NSTextFieldCell

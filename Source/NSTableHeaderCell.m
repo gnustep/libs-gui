@@ -71,6 +71,8 @@
     {
       [[GSTheme theme] drawDarkButton: cellFrame withClip: cellFrame];
     }
+
+  [self _drawBackgroundWithFrame: cellFrame inView: controlView];
 }
 
 - (void) setHighlighted: (BOOL)flag

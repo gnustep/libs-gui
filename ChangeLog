@@ -1,3 +1,20 @@
+2008-12-08 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSTextFieldCell.h: Declare new private method
+	_drawBackgroundWithFrame:inView:. 
+	* Source/NSTextFieldCell.m: Change drawInteriorWithFrame:inView:
+	into _drawBorderAndBackgroundWithFrame:inView:. And moved some
+	code into _drawBackgroundWithFrame:inView:.
+	Remove some minor optimisations to simplify code.
+	* Source/NSTextFieldCell.m (-initWithCoder:): Correct memory leak
+	and improve decoding.
+	* Source/NSTextFieldCell.m (-encodeWithCoder:): Encode bezel style.
+	* Source/NSTableHeaderView.m
+	(-_drawBorderAndBackgroundWithFrame:inView:), 
+	* Source/NSBrowser.m (GSBrowserTitleCell
+	-_drawBorderAndBackgroundWithFrame:inView:):  Use
+	_drawBackgroundWithFrame:inView:. 
+
 2008-12-07 22:50-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSTableView.m: Switch to the alternate highlighting color
