@@ -5102,9 +5102,14 @@ static BOOL selectContiguousRegion(NSTableView *self,
       row = [_selectedRows indexGreaterThanOrEqualToIndex: startingRow];
       while ((row != NSNotFound) && (row <= endingRow))
 	{
+	  NSColor *selectionColor = [NSColor colorWithCalibratedRed: 0.86
+					     green: 0.92
+					     blue: 0.99
+					     alpha: 1.0];
+
 	  //NSHighlightRect(NSIntersectionRect([self rectOfRow: row],
-	    //						 clipRect));
-	  [[NSColor whiteColor] set];
+	  //						 clipRect));
+	  [selectionColor set];
 	  NSRectFill(NSIntersectionRect([self rectOfRow: row], clipRect));
 	  row = [_selectedRows indexGreaterThanIndex: row];
 	}	  
