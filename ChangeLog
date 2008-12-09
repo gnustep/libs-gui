@@ -1,5 +1,8 @@
 2008-12-09  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSTextView_actions.m (-centerSelectionInVisibleArea:):
+	Provide a provisional implementation.
+
 	* Source/NSSavePanel.m (-setAllowedFileTypes:): Change extension
 	of the file name if the current extension is no longer allowed.
 

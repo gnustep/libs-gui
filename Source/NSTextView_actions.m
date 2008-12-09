@@ -1322,6 +1322,14 @@ and layout is left-to-right */
   [[self enclosingScrollView] scrollPageUp: sender];
 }
 
+- (void) centerSelectionInVisibleArea: (id)sender
+{
+  /* FIXME: This does not really implement what the method's name suggests,
+     but it is at least better than nothing.
+  */
+  [self scrollRangeToVisible: [self selectedRange]];
+}
+
 
 /* -selectAll: inherited from NSText  */
 
