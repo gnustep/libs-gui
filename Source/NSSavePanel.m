@@ -965,11 +965,30 @@ selectCellWithString: (NSString*)title
 {
   if (types != _allowedFileTypes)
     {
+      BOOL hasAllowedExtension = NO;
+      NSString *filename, *extension;
+
+      filename = [[_form cellAtIndex: 0] stringValue];
+      extension = [filename pathExtension];
+      if ([extension length] && [_allowedFileTypes count] &&
+	  [_allowedFileTypes indexOfObject: extension] != NSNotFound)
+	hasAllowedExtension = YES;
+
       if ([types count] == 0)
    	DESTROY(_allowedFileTypes);
       else
 	ASSIGN(_allowedFileTypes, types);
       [self _reloadBrowser];
+
+      if (hasAllowedExtension && [types count] &&
+	  [types indexOfObject: extension] == NSNotFound &&
+	  [types indexOfObject: @""] == NSNotFound)
+        {
+	  extension = [types objectAtIndex: 0];
+	  filename = [filename stringByDeletingPathExtension];
+	  filename = [filename stringByAppendingPathExtension: extension];
+	  [[_form cellAtIndex: 0] setStringValue: filename];
+	}
     }
 }
 

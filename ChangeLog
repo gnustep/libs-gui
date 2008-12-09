@@ -1,3 +1,8 @@
+2008-12-09  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSSavePanel.m (-setAllowedFileTypes:): Change extension
+	of the file name if the current extension is no longer allowed.
+
 2008-12-08 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSTextFieldCell.h: Declare new private method
