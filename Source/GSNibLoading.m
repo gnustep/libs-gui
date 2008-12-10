@@ -824,7 +824,8 @@ static BOOL _isInInterfaceBuilder = NO;
       
       if ([NSClassSwapper isInInterfaceBuilder])
         {
-          aClass = [self class];
+	  _view = self;
+	  return self;
         }
       else
         {
@@ -843,8 +844,10 @@ static BOOL _isInInterfaceBuilder = NO;
           [_view setAutoresizesSubviews: [self autoresizesSubviews]];
           [_view setHidden: [self isHidden]];
           [_view setNextResponder: [self nextResponder]];
-          // [[self superview] replaceSubview: self with: _view]; // replace the old view...
-          if (_rFlags.has_subviews)
+	  // [[self superview] replaceSubview: self with: _view]; // replace the old view...
+	  
+          /*
+	  if (_rFlags.has_subviews)
             {
               NSArray *subviews = [self subviews];
               int i;
@@ -854,7 +857,7 @@ static BOOL _isInInterfaceBuilder = NO;
                   [_view addSubview: [subviews objectAtIndex: i]];
                 }
             }
-          // FIXME: Need to transfer all other settings as well
+	  */
         }
     }
 
@@ -871,9 +874,12 @@ static BOOL _isInInterfaceBuilder = NO;
           ASSIGN(_className, [coder decodeObjectForKey: @"NSClassName"]);
           ASSIGN(_extension, [coder decodeObjectForKey: @"NSExtension"]);
 	  
-	  AUTORELEASE(self);
-	  self = [self nibInstantiate];
-	  RETAIN(self);
+	  [self nibInstantiate];
+	  if(self != _view)
+	    {
+	      AUTORELEASE(self);
+	      [coder replaceObject: self withObject: _view];
+	    }
         }
       else
         {
@@ -882,7 +888,8 @@ static BOOL _isInInterfaceBuilder = NO;
                        NSStringFromClass([coder class])];
         }
     }
-  return self;
+
+  return _view;
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
