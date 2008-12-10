@@ -848,12 +848,12 @@ static BOOL _isInInterfaceBuilder = NO;
 	  
 	  if (_rFlags.has_subviews)
             {
-              NSArray *subviews = [self subviews];
-              int i;
+	      NSEnumerator *en = [[self subviews] objectEnumerator];
+	      id v = nil;
 
-              for (i = 0; i < [subviews count]; i++)
+	      while((v = [en nextObject]) == nil)
                 {
-                  [_view addSubview: [subviews objectAtIndex: i]];
+                  [_view addSubview: v];
                 }
             }
         }

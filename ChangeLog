@@ -1,3 +1,8 @@
+2008-12-10 02:31-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibLoading.m: Change code which adds subviews to use
+	an enumerator.
+
 2008-12-10 01:54-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibLoading.m: Add back code with adds in subviews from
