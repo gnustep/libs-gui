@@ -1,3 +1,8 @@
+2008-12-10 01:54-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibLoading.m: Add back code with adds in subviews from
+	the custom view.
+
 2008-12-10 01:37-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibLoading.m: (-[NSCustomView initWithCoder:]) replace

@@ -846,7 +846,6 @@ static BOOL _isInInterfaceBuilder = NO;
           [_view setNextResponder: [self nextResponder]];
 	  // [[self superview] replaceSubview: self with: _view]; // replace the old view...
 	  
-          /*
 	  if (_rFlags.has_subviews)
             {
               NSArray *subviews = [self subviews];
@@ -857,7 +856,6 @@ static BOOL _isInInterfaceBuilder = NO;
                   [_view addSubview: [subviews objectAtIndex: i]];
                 }
             }
-	  */
         }
     }
 
