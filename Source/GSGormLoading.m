@@ -557,14 +557,20 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 		       format: @"Unable to find class '%@', it is not linked into the application.", theClass];
 	}
       
-      obj = [cls allocWithZone: [self zone]];
       if (theFrame.size.height > 0 && theFrame.size.width > 0)
 	{
-	  obj = [obj initWithFrame: theFrame];
+	  obj = [[cls allocWithZone: [self zone]] initWithFrame: theFrame];
 	}
       else
 	{
-	  obj = [obj init];
+	  if(GSObjCIsKindOf(cls, [NSApplication class]))
+	    {
+	      obj = [cls sharedApplication];
+	    }
+	  else
+	    {
+	      obj = [[cls allocWithZone: [self zone]] init];
+	    }  
 	}
 
       if ([obj respondsToSelector: @selector(setAutoresizingMask:)])

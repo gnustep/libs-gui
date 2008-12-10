@@ -1,3 +1,8 @@
+2008-12-09 23:26-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSGormLoading.m: (-[GSNibItem initWithCoder:]) initialize
+	NSApplication and subclasses using sharedApplication.
+
 2008-12-09  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSTextView_actions.m (-centerSelectionInVisibleArea:):
