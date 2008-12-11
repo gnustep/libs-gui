@@ -1,3 +1,9 @@
+2008-12-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBitmapImageRep.m (-_convertToFormatBitsPerSample:...):
+	Made the code a bit more tolerant on matching colour spaces during
+	image conversion.
+	
 2008-12-10 02:31-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibLoading.m: Change code which adds subviews to use

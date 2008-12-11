@@ -2147,7 +2147,11 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
                 bytesPerRow: rowBytes
                 bitsPerPixel: pixelBits];
 
-      if ([_colorSpace isEqualToString: colorSpaceName])
+      if ([_colorSpace isEqualToString: colorSpaceName] ||
+          ([_colorSpace isEqualToString: NSDeviceRGBColorSpace] &&
+           [colorSpaceName isEqualToString: NSCalibratedRGBColorSpace]) ||
+          ([colorSpaceName isEqualToString: NSDeviceRGBColorSpace] &&
+           [_colorSpace isEqualToString: NSCalibratedRGBColorSpace]))
         {
           SEL getPSel = @selector(getPixel:atX:y:);
           SEL setPSel = @selector(setPixel:atX:y:);
@@ -2158,7 +2162,8 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
           float _scale;
           float scale;
 
-          NSDebugLLog(@"NSImage", @"Converting %@ bitmap data", colorSpaceName);
+          NSDebugLLog(@"NSImage", @"Converting %@ bitmap data", _colorSpace);
+
           if (_bitsPerSample != bps)
             {
               _scale = (float)((1 << _bitsPerSample) - 1);
@@ -2414,7 +2419,8 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
           IMP setC = [new methodForSelector: setCSel];
           int i, j;
 
-          NSDebugLLog(@"NSImage", @"Slow converting %@ bitmap data", colorSpaceName);
+          NSDebugLLog(@"NSImage", @"Slow converting %@ bitmap data to %@", 
+                      _colorSpace, colorSpaceName);
           for (j = 0; j < _pixelsHigh; j++)
             {
               CREATE_AUTORELEASE_POOL(pool);
