@@ -74,6 +74,7 @@
 #include "AppKit/PSOperators.h"
 #include "GNUstepGUI/GSDisplayServer.h"
 #include "GNUstepGUI/GSTrackingRect.h"
+#include "GNUstepGUI/GSNibLoading.h"
 #include "GSToolTips.h"
 #include "GSBindingHelpers.h"
 
@@ -4471,6 +4472,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       e = [subs objectEnumerator];
       while ((sub = [e nextObject]) != nil)
 	{
+	  NSAssert([sub class] != [NSCustomView class],
+		   NSInternalInconsistencyException);
 	  NSAssert([sub window] == nil,
 		   NSInternalInconsistencyException);
 	  NSAssert([sub superview] == nil,

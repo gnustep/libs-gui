@@ -1,3 +1,13 @@
+2008-12-12 02:04-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSNibLoading.h: Added new method 
+	nibInstantiateWithCoder: to do the initialization normally done
+	in NSView when not in IB/Gorm.
+	* Source/GSNibLoading.m: Added implementation of new method and
+	also re-wrote part of NSCustomView.
+	* Source/NSView.m: Added an NSAssert to assure that no subview
+	ever decoded is an NSCustomView.
+
 2008-12-12 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBitmapImageRep.m (-_convertToFormatBitsPerSample:...):

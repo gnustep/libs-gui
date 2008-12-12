@@ -65,6 +65,31 @@
 
 static BOOL _isInInterfaceBuilder = NO;
 
+@interface NSKeyedUnarchiver (NSClassSwapperPrivate)
+- (BOOL) replaceObject: (id)oldObj withObject: (id)newObj;
+- (NSDictionary *)keyMap;
+- (Class) replacementClassForClassName: (NSString *)className;
+@end
+
+@interface NSApplication (NibCompatibility)
+- (void) _setMainMenu: (NSMenu*)aMenu;
+@end
+
+@interface NSView (NibCompatibility)
+- (void) _fixSubviews;
+@end
+
+/* Correct some instances where the ":" is missing from the method name in the label */
+@interface NSNibControlConnector (NibCompatibility)
+- (void) instantiateWithInstantiator: (id<GSInstantiator>)instantiator;
+@end
+
+@interface NSDecimalNumberPlaceholder : NSObject
+@end
+
+@interface _NSCornerView : NSView
+@end
+
 @interface NSMenu (NibCompatibility)
 - (void) _setGeometry;
 - (void) _setMain: (BOOL)isMain;
@@ -147,10 +172,6 @@ static BOOL _isInInterfaceBuilder = NO;
 }
 @end
 
-@interface NSApplication (NibCompatibility)
-- (void) _setMainMenu: (NSMenu*)aMenu;
-@end
-
 @implementation NSApplication (NibCompatibility)
 - (void) _setMainMenu: (NSMenu*)aMenu
 {
@@ -171,10 +192,6 @@ static BOOL _isInInterfaceBuilder = NO;
       [_main_menu _setMain: YES];
     }
 }
-@end
-
-@interface NSView (NibCompatibility)
-- (void) _fixSubviews;
 @end
 
 @implementation NSView (NibCompatibility)
@@ -818,45 +835,87 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (id) nibInstantiate
 {
-  if (_view == nil)
+  Class aClass;
+  
+  if ([NSClassSwapper isInInterfaceBuilder])
     {
-      Class aClass;
+      _view = self;
+      return self;
+    }
+  else
+    {
+      aClass = NSClassFromString(_className);
+    }
+  
+  // If the class name is nil, assume NSView.
+  if(_className == nil)
+    {
+      aClass = [NSView class];
+    }
+  
+  if (aClass == nil)
+    {
+      [NSException raise: NSInternalInconsistencyException
+		   format: @"Unable to find class '%@'", _className];
+    }
+  else
+    {
+      _view = [[aClass allocWithZone: NSDefaultMallocZone()] initWithFrame: [self frame]];
+    }
+
+  return _view;
+}
+
+- (id) awakeAfterUsingCoder:  (NSCoder *)coder
+{
+  return _view;
+}
+
+- (id) nibInstantiateWithCoder: (NSCoder *)coder
+{
+  if([NSClassSwapper isInInterfaceBuilder])
+    {
+      return _view;
+    }
+  else if ([coder allowsKeyedCoding])
+    {
+      NSArray *subs = nil;
+      id nextKeyView = nil;
+      id prevKeyView = nil;
+      NSEnumerator *en = nil;
+      id v = nil;
+
+      prevKeyView = [coder decodeObjectForKey: @"NSPreviousKeyView"];
+      nextKeyView = [coder decodeObjectForKey: @"NSNextKeyView"];
+      if (nextKeyView != nil)
+        {
+          [self setNextKeyView: nextKeyView];
+        }
+      if (prevKeyView != nil)
+        {
+          [self setPreviousKeyView: prevKeyView];
+        }      
+      if ([coder containsValueForKey: @"NSvFlags"])
+	{
+	  int vFlags = [coder decodeIntForKey: @"NSvFlags"];
+	  [_view setAutoresizingMask: vFlags & 0x3F];
+	  [_view setAutoresizesSubviews: ((vFlags & 0x100) == 0x100)];
+	  [_view setHidden: ((vFlags & 0x80000000) == 0x80000000)];
+	}
       
-      if ([NSClassSwapper isInInterfaceBuilder])
-        {
-	  _view = self;
-	  return self;
-        }
-      else
-        {
-          aClass = NSClassFromString(_className);
-        }
-
-      if (aClass == nil)
-        {
-          [NSException raise: NSInternalInconsistencyException
-                       format: @"Unable to find class '%@'", _className];
-        }
-      else
-        {
-          _view = [[aClass allocWithZone: NSDefaultMallocZone()] initWithFrame: [self frame]];
-          [_view setAutoresizingMask: [self autoresizingMask]];
-          [_view setAutoresizesSubviews: [self autoresizesSubviews]];
-          [_view setHidden: [self isHidden]];
-          [_view setNextResponder: [self nextResponder]];
-	  // [[self superview] replaceSubview: self with: _view]; // replace the old view...
-	  
-	  if (_rFlags.has_subviews)
-            {
-	      NSEnumerator *en = [[self subviews] objectEnumerator];
-	      id v = nil;
-
-	      while((v = [en nextObject]) == nil)
-                {
-                  [_view addSubview: v];
-                }
-            }
-        }
+      [_view setNextResponder: [self nextResponder]];
+      
+      subs = [coder decodeObjectForKey: @"NSSubviews"];
+      en = [subs objectEnumerator];
+      while((v = [en nextObject]) != nil)
+	{
+	  [_view addSubview: v];
+	}
+    }
+  else
+    {
+      [NSException raise: NSInternalInconsistencyException
+		   format: @"Called NSCustomView awakeAfterUsingCoder with non-keyed archiver."];
     }
 
   return _view;
@@ -864,19 +923,46 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (id) initWithCoder: (NSCoder *)coder
 {
-  self = [super initWithCoder: coder];
+  // if in interface builder, then initialize as normal.
+  if([NSClassSwapper isInInterfaceBuilder])
+    {
+      self = [super initWithCoder: coder];
+    }
+
   if (self != nil)
     {
       if ([coder allowsKeyedCoding])
         {
+	  // get the super stuff without calling super...
+	  if ([coder containsValueForKey: @"NSFrame"])
+	    {
+	      _frame = [coder decodeRectForKey: @"NSFrame"];
+	    }
+	  else
+	    {
+	      _frame = NSZeroRect;
+	      if ([coder containsValueForKey: @"NSFrameSize"])
+		{
+		  _frame.size = [coder decodeSizeForKey: @"NSFrameSize"];
+		}
+	    }
+	  
           ASSIGN(_className, [coder decodeObjectForKey: @"NSClassName"]);
           ASSIGN(_extension, [coder decodeObjectForKey: @"NSExtension"]);
-	  
-	  [self nibInstantiate];
+
+	  if([self nibInstantiate] != nil)
+	    {
+	      [self nibInstantiateWithCoder: coder];
+	    }
+
+	  // Prevent the case where we get back an NSCustomView.
+	  // NSAssert((([NSClassSwapper isInInterfaceBuilder] == NO) &&
+	  //    ([_view class] != [NSCustomView class])), NSInvalidArgumentException);
+
 	  if(self != _view)
 	    {
 	      AUTORELEASE(self);
-	      [coder replaceObject: self withObject: _view];
+	      [(NSKeyedUnarchiver *)coder replaceObject: self withObject: _view];
 	    }
         }
       else
@@ -975,12 +1061,6 @@ static BOOL _isInInterfaceBuilder = NO;
       [coder encodeObject: (id)_resourceName forKey: @"NSResourceName"];
     }
 }
-@end
-
-@interface NSKeyedUnarchiver (NSClassSwapperPrivate)
-- (BOOL) replaceObject: (id)oldObj withObject: (id)newObj;
-- (NSDictionary *)keyMap;
-- (Class) replacementClassForClassName: (NSString *)className;
 @end
 
 @implementation NSKeyedUnarchiver (NSClassSwapperPrivate)
@@ -1189,11 +1269,6 @@ static BOOL _isInInterfaceBuilder = NO;
   RELEASE(_template);
   [super dealloc];
 }
-@end
-
-/* Correct some instances where the ":" is missing from the method name in the label */
-@interface NSNibControlConnector (NibCompatibility)
-- (void) instantiateWithInstantiator: (id<GSInstantiator>)instantiator;
 @end
 
 @implementation NSNibControlConnector (NibCompatibility)
@@ -1729,9 +1804,6 @@ static BOOL _isInInterfaceBuilder = NO;
 }
 @end
 
-@interface NSDecimalNumberPlaceholder : NSObject
-@end
-
 @implementation NSDecimalNumberPlaceholder
 - (id) initWithCoder: (NSCoder *)coder
 {
@@ -1775,9 +1847,6 @@ static BOOL _isInInterfaceBuilder = NO;
 // ...dummy/placeholder classes...
 // overridden in NSTableView to be GSTableCornerView, 
 // but the class needs to be present to be overridden.
-@interface _NSCornerView : NSView
-@end
-
 @implementation _NSCornerView
 @end
 

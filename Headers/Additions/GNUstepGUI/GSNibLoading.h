@@ -218,6 +218,7 @@ typedef struct _GSWindowTemplateFlags
 - (void) setExtension: (NSString *)view;
 - (NSString *)extension;
 - (id)nibInstantiate;
+- (id)nibInstantiateWithCoder: (NSCoder *)coder;
 @end
 
 @interface NSCustomResource : NSObject <NSCoding>
