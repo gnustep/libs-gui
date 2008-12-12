@@ -1,3 +1,10 @@
+2008-12-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBrowser.m (-drawTitle:inRect:ofColumn:, -dealloc): 
+	Replaced the last fix here with a slightly better one that removes
+	the ownership of the shared titlecell as soon as it isn't needed
+	any more. The old code caused redundant redraws.
+
 2008-12-12 02:04-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/Additions/GNUstepGUI/GSNibLoading.h: Added new method 
