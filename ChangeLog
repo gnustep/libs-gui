@@ -1,3 +1,8 @@
+2008-12-12 19:36-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSOutlineView.m: Added change suggested by Doug in 
+	bug #25078.  This should fix the problem in SVN.
+
 2008-12-12 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBrowser.m (-drawTitle:inRect:ofColumn:, -dealloc): 
