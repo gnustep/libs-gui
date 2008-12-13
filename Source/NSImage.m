@@ -153,9 +153,9 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   while ((repd = (*nextImp)(enumerator, @selector(nextObject))) != nil)
     {
       if (repd->rep == rep)
-	{
-	  return repd;
-	}
+        {
+          return repd;
+        }
     }
   [NSException raise: NSInternalInconsistencyException
 	      format: @"Cannot find stored representation"];
@@ -167,8 +167,8 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 - (BOOL) _useFromFile: (NSString *)fileName;
 - (BOOL) _loadFromData: (NSData *)data;
 - (BOOL) _loadFromFile: (NSString *)fileName;
-- (NSImageRep*) _cacheForRep: (NSImageRep*)rep;
-- (NSImageRep*) _doImageCache;
+- (GSRepData*) _cacheForRep: (NSImageRep*)rep;
+- (NSCachedImageRep*) _doImageCache: (NSImageRep *)rep;
 @end
 
 @implementation NSImage
@@ -644,8 +644,8 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 // Determining How the Image is Drawn 
 - (BOOL) isValid
 {
-  BOOL		valid = NO;
-  unsigned	i, count;
+  BOOL valid = NO;
+  unsigned i, count;
 
   /* Go through all our representations and determine if at least one
      is a valid cache */
@@ -656,11 +656,12 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       GSRepData	 *repd = (GSRepData*)[_reps objectAtIndex: i];
 
       if (repd->bg != nil || [repd->rep isKindOfClass: cachedClass] == NO)
-	{
-	  valid = YES;
-	  break;
-	}
+        {
+          valid = YES;
+          break;
+        }
     }
+
   return valid;
 }
 
@@ -675,9 +676,9 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
       repd = (GSRepData*)[_reps objectAtIndex: i];
       if (repd->original != nil)
-	{
-	  [_reps removeObjectAtIndex: i];
-	}
+        {
+          [_reps removeObjectAtIndex: i];
+        }
     }
 }
 
@@ -719,47 +720,51 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 }
 
 - (void) compositeToPoint: (NSPoint)aPoint
-		 fromRect: (NSRect)aRect
-		operation: (NSCompositingOperation)op
+                 fromRect: (NSRect)aRect
+                operation: (NSCompositingOperation)op
 {
 #if 0
   [self compositeToPoint: aPoint
-	fromRect: aRect
-	operation: op
-	fraction: 1.0];
+        fromRect: aRect
+        operation: op
+        fraction: 1.0];
 #else 
-  NSImageRep *rep = nil;
-
   NS_DURING
     { 
-      if ([GSCurrentContext() isDrawingToScreen] == YES)
-	  rep = [self _doImageCache];
-      if (rep
-	  &&_cacheMode != NSImageCacheNever 
-	  && [rep isKindOfClass: cachedClass])
+      NSImageRep *rep = [self bestRepresentationForDevice: nil];
+      NSCachedImageRep *cache = nil;
+
+      if (rep == nil)
+        return;
+
+      if (([GSCurrentContext() isDrawingToScreen] == YES)
+          && _cacheMode != NSImageCacheNever)
+        cache = [self _doImageCache: rep];
+
+      if (cache != nil)
         {
-	  NSRect rect;
-	  float y = aPoint.y;
+          NSRect rect;
+          float y = aPoint.y;
 
-	  rect = [(NSCachedImageRep *)rep rect];
-	  NSDebugLLog(@"NSImage", @"composite rect %@ in %@", 
-		      NSStringFromRect(rect), NSStringFromRect(aRect));
-	  // Move the drawing rectangle to the origin of the image rep
-	  // and intersect the two rects.
-	  aRect.origin.x += rect.origin.x;
-	  aRect.origin.y += rect.origin.y;
-	  rect = NSIntersectionRect(aRect, rect);
-
-	  PScomposite(NSMinX(rect), NSMinY(rect), NSWidth(rect), NSHeight(rect),
-	    [[(NSCachedImageRep *)rep window] gState], aPoint.x, y, op);
-	}
+          rect = [cache rect];
+          NSDebugLLog(@"NSImage", @"composite rect %@ in %@", 
+                      NSStringFromRect(rect), NSStringFromRect(aRect));
+          // Move the drawing rectangle to the origin of the image rep
+          // and intersect the two rects.
+          aRect.origin.x += rect.origin.x;
+          aRect.origin.y += rect.origin.y;
+          rect = NSIntersectionRect(aRect, rect);
+          
+          PScomposite(NSMinX(rect), NSMinY(rect), NSWidth(rect), NSHeight(rect),
+                      [[cache window] gState], aPoint.x, y, op);
+        }
       else	
         {
-	  NSRect rect;
-          rep = [self bestRepresentationForDevice: nil];
-	  rect = NSMakeRect(aPoint.x, aPoint.y, _size.width, _size.height);
-	  [self drawRepresentation: rep inRect: rect];
-	}
+          NSRect rect;
+
+          rect = NSMakeRect(aPoint.x, aPoint.y, _size.width, _size.height);
+          [self drawRepresentation: rep inRect: rect];
+        }
     }
   NS_HANDLER
     {
@@ -767,70 +772,73 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 	    [localException name], [localException reason]);
       if ([_delegate respondsToSelector: @selector(imageDidNotDraw:inRect:)])
         {
-	  NSImage *image = [_delegate imageDidNotDraw: self inRect: aRect];
+          NSImage *image = [_delegate imageDidNotDraw: self inRect: aRect];
 
-	  if (image != nil)
-	    [image compositeToPoint: aPoint
-		   fromRect: aRect 
-		   operation: op];
-	}
+          if (image != nil)
+            [image compositeToPoint: aPoint
+                   fromRect: aRect 
+                   operation: op];
+        }
     }
   NS_ENDHANDLER
 #endif
 }
 
 - (void) compositeToPoint: (NSPoint)aPoint
-		operation: (NSCompositingOperation)op
-		 fraction: (float)delta
+                operation: (NSCompositingOperation)op
+                 fraction: (float)delta
 {
   NSRect rect;
   NSSize size = [self size];
 
   rect = NSMakeRect(0, 0, size.width, size.height);
   [self compositeToPoint: aPoint fromRect: rect 
-	operation: op fraction: delta];
+        operation: op fraction: delta];
 }
 
 - (void) compositeToPoint: (NSPoint)aPoint
-		 fromRect: (NSRect)srcRect
-		operation: (NSCompositingOperation)op
-		 fraction: (float)delta
+                 fromRect: (NSRect)srcRect
+                operation: (NSCompositingOperation)op
+                 fraction: (float)delta
 {
-  NSImageRep *rep = nil;
-
   NS_DURING
     { 
-      if ([GSCurrentContext() isDrawingToScreen] == YES)
-	rep = [self _doImageCache];
-      if (rep
-	&&_cacheMode != NSImageCacheNever 
-	&& [rep isKindOfClass: cachedClass])
+      NSImageRep *rep = [self bestRepresentationForDevice: nil];
+      NSCachedImageRep *cache = nil;
+
+      if (rep == nil)
+        return;
+
+      if (([GSCurrentContext() isDrawingToScreen] == YES)
+          && _cacheMode != NSImageCacheNever)
+        cache = [self _doImageCache: rep];
+
+      if (cache != nil)
         {
-	  NSRect rect;
+          NSRect rect;
 
-	  rect = [(NSCachedImageRep *)rep rect];
-	  NSDebugLLog(@"NSImage", @"composite rect %@ in %@", 
-		      NSStringFromRect(rect), NSStringFromRect(srcRect));
-	  // Move the drawing rectangle to the origin of the image rep
-	  // and intersect the two rects.
-	  srcRect.origin.x += rect.origin.x;
-	  srcRect.origin.y += rect.origin.y;
-	  rect = NSIntersectionRect(srcRect, rect);
-
-	  [GSCurrentContext() GScomposite:
-	    [[(NSCachedImageRep *)rep window] gState]
-	    toPoint: aPoint
-	    fromRect: rect
-	    operation: op
-	    fraction: delta];
-	}
+          rect = [cache rect];
+          NSDebugLLog(@"NSImage", @"composite rect %@ in %@", 
+                      NSStringFromRect(rect), NSStringFromRect(srcRect));
+          // Move the drawing rectangle to the origin of the image rep
+          // and intersect the two rects.
+          srcRect.origin.x += rect.origin.x;
+          srcRect.origin.y += rect.origin.y;
+          rect = NSIntersectionRect(srcRect, rect);
+          
+          [GSCurrentContext() GScomposite: [[cache window] gState]
+                           toPoint: aPoint
+                           fromRect: rect
+                           operation: op
+                           fraction: delta];
+        }
       else	
         {
-	  NSRect rect;
-          rep = [self bestRepresentationForDevice: nil];
-	  rect = NSMakeRect(aPoint.x, aPoint.y, _size.width, _size.height);
-	  [self drawRepresentation: rep inRect: rect];
-	}
+          NSRect rect;
+
+          rect = NSMakeRect(aPoint.x, aPoint.y, _size.width, _size.height);
+          [self drawRepresentation: rep inRect: rect];
+        }
     }
   NS_HANDLER
     {
@@ -839,14 +847,14 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
         [localException name], [localException reason]);
       if ([_delegate respondsToSelector: @selector(imageDidNotDraw:inRect:)])
         {
-	  NSImage *image = [_delegate imageDidNotDraw: self inRect: srcRect];
-
-	  if (image != nil)
-	    [image compositeToPoint: aPoint
-			   fromRect: srcRect 
-			  operation: op
-			   fraction: delta];
-	}
+            NSImage *image = [_delegate imageDidNotDraw: self inRect: srcRect];
+            
+            if (image != nil)
+              [image compositeToPoint: aPoint
+                     fromRect: srcRect 
+                     operation: op
+                     fraction: delta];
+        }
     }
   NS_ENDHANDLER
 }
@@ -870,38 +878,41 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 	operation: NSCompositeSourceOver
 	fraction: aFloat];
 #else 
-  NSImageRep *rep = nil;
-
   NS_DURING
     {
-      if ([GSCurrentContext() isDrawingToScreen] == YES)
-	  rep = [self _doImageCache];
-      if (rep
-	  &&_cacheMode != NSImageCacheNever 
-	  && [rep isKindOfClass: cachedClass])
-        {
-	  NSRect rect;
-	  float y = aPoint.y;
+      NSImageRep *rep = [self bestRepresentationForDevice: nil];
+      NSCachedImageRep *cache = nil;
 
-	  rect = [(NSCachedImageRep *)rep rect];
-	  // Move the drawing rectangle to the origin of the image rep
-	  // and intersect the two rects.
-	  aRect.origin.x += rect.origin.x;
-	  aRect.origin.y += rect.origin.y;
-	  rect = NSIntersectionRect(aRect, rect);
-	  PSdissolve(NSMinX(rect), NSMinY(rect), NSWidth(rect), NSHeight(rect),
-	    [[(NSCachedImageRep *)rep window] gState], aPoint.x, y, aFloat);
-	}
+      if (rep == nil)
+        return;
+
+      if (([GSCurrentContext() isDrawingToScreen] == YES)
+          && _cacheMode != NSImageCacheNever)
+        cache = [self _doImageCache: rep];
+
+      if (cache != nil)
+        {
+          NSRect rect;
+          float y = aPoint.y;
+          
+          rect = [cache rect];
+          // Move the drawing rectangle to the origin of the image rep
+          // and intersect the two rects.
+          aRect.origin.x += rect.origin.x;
+          aRect.origin.y += rect.origin.y;
+          rect = NSIntersectionRect(aRect, rect);
+          PSdissolve(NSMinX(rect), NSMinY(rect), NSWidth(rect), NSHeight(rect),
+                     [[cache window] gState], aPoint.x, y, aFloat);
+        }
       else
         {
-	  NSRect rect;
+          NSRect rect;
 
-	  /* FIXME: Here we are supposed to composite directly from the source
-	     but how do you do that? */
-          rep = [self bestRepresentationForDevice: nil];
-	  rect = NSMakeRect(aPoint.x, aPoint.y, _size.width, _size.height);
-	  [self drawRepresentation: rep inRect: rect];
-	}
+          /* FIXME: Here we are supposed to composite directly from the source
+             but how do you do that? */
+          rect = NSMakeRect(aPoint.x, aPoint.y, _size.width, _size.height);
+          [self drawRepresentation: rep inRect: rect];
+        }
     }
   NS_HANDLER
     {
@@ -909,13 +920,13 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 	    [localException name], [localException reason]);
       if ([_delegate respondsToSelector: @selector(imageDidNotDraw:inRect:)])
         {
-	  NSImage *image = [_delegate imageDidNotDraw: self inRect: aRect];
+          NSImage *image = [_delegate imageDidNotDraw: self inRect: aRect];
 
-	  if (image != nil)
-	    [image dissolveToPoint: aPoint
-		   fromRect: aRect 
-		   fraction: aFloat];
-	}
+          if (image != nil)
+            [image dissolveToPoint: aPoint
+                   fromRect: aRect 
+                   fraction: aFloat];
+        }
     }
   NS_ENDHANDLER
 #endif
@@ -1184,13 +1195,13 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     {
       repd = (GSRepData*)[_reps objectAtIndex: i];
       if (repd->rep == imageRep)
-	{
-	  [_reps removeObjectAtIndex: i];
-	}
+        {
+          [_reps removeObjectAtIndex: i];
+        }
       else if (repd->original == imageRep)
-	{
-	  repd->original = nil;
-	}
+        {
+          repd->original = nil;
+        }
     }
 }
 
@@ -1201,7 +1212,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 - (void) lockFocusOnRepresentation: (NSImageRep *)imageRep
 {
-  // FIXME: THis should rather use 
+  // FIXME: This should rather use 
   // [NSGraphicsContext graphicsContextWithBitmapImageRep:]
   if (_cacheMode != NSImageCacheNever)
     {
@@ -1211,8 +1222,8 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       if (imageRep == nil)
         imageRep = [self bestRepresentationForDevice: nil];
 
-      imageRep = [self _cacheForRep: imageRep];
-      repd = repd_for_rep(_reps, imageRep);
+      repd = [self _cacheForRep: imageRep];
+      imageRep = repd->rep;
 
       window = [(NSCachedImageRep *)imageRep window];
       _lockedView = [window contentView];
@@ -1355,7 +1366,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   if (_flags.syncLoad)
     {
       /* Make sure any images that were added with _useFromFile: are loaded
-	 in and added to the representation list. */
+         in and added to the representation list. */
       [self _loadFromFile: _fileName];
       _flags.syncLoad = NO;
     }
@@ -1373,13 +1384,13 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       [_reps getObjects: repList];
       j = 0;
       for (i = 0; i < count; i++) 
-	{
+        {
           if (flag || ((GSRepData*)repList[i])->original == nil)
             {
               repList[j] = ((GSRepData*)repList[i])->rep;
               j++;
             }
-	}
+        }
       return [NSArray arrayWithObjects: repList count: j];
     }
 }
@@ -1818,184 +1829,201 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 // a cache and no cache exists, create one and draw the representation in it
 // If a cache exists, but is not valid, redraw the cache from the original
 // image (if there is one).
-- (NSImageRep *)_doImageCache
+- (NSCachedImageRep *) _doImageCache: (NSImageRep *)rep
 {
-  NSImageRep *rep = [self bestRepresentationForDevice: nil];
+  GSRepData *repd;
 
-  if (_cacheMode != NSImageCacheNever)
+  repd = [self _cacheForRep: rep];
+  rep = repd->rep;
+  if ([rep isKindOfClass: cachedClass] == NO)
+    return nil;
+  
+  NSDebugLLog(@"NSImage", @"Cached image rep is %p", rep);
+  /*
+   * if the cache is not valid, it's background color will not exist
+   * and we must draw the background then render from the original
+   * image rep into the cache.
+   */
+  if (repd->bg == nil) 
     {
-      GSRepData *repd;
+      [self lockFocusOnRepresentation: rep];
+      [self drawRepresentation: repd->original 
+                inRect: NSMakeRect(0, 0, _size.width, _size.height)];
+      [self unlockFocus];
+      
+      if (_color != nil && [_color alphaComponent] != 0.0)
+        {
+          repd->bg = [_color copy];
+        }
+      else
+        {
+          repd->bg = [clearColor copy];
+        }
+      
+      if ([repd->bg alphaComponent] == 1.0)
+        {
+          [rep setOpaque: YES];
+        }
+      else
+        {
+          [rep setOpaque: [repd->original isOpaque]];
+        }
 
-      rep =  [self _cacheForRep: rep];
-      repd = repd_for_rep(_reps, rep);
-
-      NSDebugLLog(@"NSImage", @"Cached image rep is %p", rep);
-      /*
-       * if the cache is not valid, it's background color will not exist
-       * and we must draw the background then render from the original
-       * image rep into the cache.
-       */
-      if (repd->bg == nil) 
-	{
-	  [self lockFocusOnRepresentation: rep];
-	  [self drawRepresentation: repd->original 
-		inRect: NSMakeRect(0, 0, _size.width, _size.height)];
-	  [self unlockFocus];
-
-	  if (_color != nil && [_color alphaComponent] != 0.0)
-	    {
-	      repd->bg = [_color copy];
-	    }
-	  else
-	    {
-	      repd->bg = [clearColor copy];
-	    }
-
-	  if ([repd->bg alphaComponent] == 1.0)
-	    {
-	      [rep setOpaque: YES];
-	    }
-	  else
-	    {
-	      [rep setOpaque: [repd->original isOpaque]];
-	    }
-	  NSDebugLLog(@"NSImage", @"Rendered rep %p on background %@",
-	    rep, repd->bg);
-	}
+      NSDebugLLog(@"NSImage", @"Rendered rep %p on background %@",
+                  rep, repd->bg);
     }
   
-  return rep;
+  return (NSCachedImageRep *)rep;
 }
 
-- (NSImageRep*) _cacheForRep: (NSImageRep*)rep
+- (GSRepData*) _cacheForRep: (NSImageRep*)rep
 {
-  /*
-   * If this is not a cached image rep - create a cache to be used to
-   * render the image rep into, and switch to the cached rep.
-   */
-  if ([rep isKindOfClass: cachedClass] == NO)
+  if ([rep isKindOfClass: cachedClass] == YES)
     {
-      NSImageRep	*cacheRep = nil;
-      unsigned		count = [_reps count];
-
-      if (count > 0)
-	{
-	  GSRepData	*invalidCache = nil;
-	  GSRepData	*partialCache = nil;
-	  GSRepData	*validCache = nil;
-	  GSRepData	*reps[count];
-          unsigned	partialCount = 0;
-	  unsigned	i;
-	  BOOL		opaque = [rep isOpaque];
-
-	  [_reps getObjects: reps];
-
-	  /*
-	   * Search the cached image reps for any whose original is our
-	   * 'best' image rep.  See if we can notice any invalidated
-	   * cache as we go - if we don't find a valid cache, we want to
-	   * re-use an invalidated one rather than creating a new one.
-	   * NB. If the image rep is opaque, then any cached rep is valid
-	   * irrespective of the background color it was drawn with.
-	   */
-	  for (i = 0; i < count; i++)
-	    {
-	      GSRepData	*repd = reps[i];
-
-	      if (repd->original == rep && repd->rep != rep)
-		{
-		  if (repd->bg == nil)
-		    {
-NSDebugLLog(@"NSImage", @"Invalid %@ ... %@ %d", repd->bg, _color, repd->rep);
-		      invalidCache = repd;
-		    }
-		  else if (opaque == YES || [repd->bg isEqual: _color] == YES)
-		    {
-NSDebugLLog(@"NSImage", @"Exact %@ ... %@ %d", repd->bg, _color, repd->rep);
-		      validCache = repd;
-		      break;
-		    }
-		  else
-		    {
-NSDebugLLog(@"NSImage", @"Partial %@ ... %@ %d", repd->bg, _color, repd->rep);
-		      partialCache = repd;
-		      partialCount++;
-		    }
-		}
-	    }
-
-	  if (validCache != nil)
-	    {
-	      if (NSImageForceCaching == NO && [rep isOpaque] == NO)
-		{
-		  /*
-		   * If the image rep is not opaque and we are drawing
-		   * without an opaque background then the cache can't
-		   * really be valid 'cos we might be drawing transparency
-		   * on top of anything.  So we invalidate the cache by
-		   * removing the background color information.
-		   */
-		  if ([validCache->bg alphaComponent] != 1.0)
-		    {
-		      DESTROY(validCache->bg);
-		    }
-		}
-	      cacheRep = validCache->rep;
-	    }
-	  else if (partialCache != nil && partialCount > 2)
-	    {
-	      /*
-	       * Only re-use partially correct caches if there are already
-	       * a few partial matches - otherwise we fall default to
-	       * creating a new cache.
-	       */
-	      if (NSImageForceCaching == NO && [rep isOpaque] == NO)
-		{
-		  if (invalidCache != nil)
-		    {
-		      /*
-		       * If there is an unused cache - use it rather than
-		       * re-using this one, since we might get a request
-		       * to draw with this color again.
-		       */
-		      partialCache = invalidCache;
-		    }
-		  else
-		    {
-		      DESTROY(partialCache->bg);
-		    }
-		}
-	      cacheRep = partialCache->rep;
-	    }
-	  else if (invalidCache != nil)
-	    {
-	      cacheRep = invalidCache->rep;
-	    }
-	}
-      if (cacheRep == nil)
-	{
-	  NSScreen	*cur = [NSScreen mainScreen];
-	  NSSize	imageSize;
-	  GSRepData	*repd;
-
-	  imageSize = [self size];
-	  if (imageSize.width == 0 || imageSize.height == 0)
-	    return nil;
-
-	  cacheRep = [[cachedClass alloc] initWithSize: _size
-						depth: [cur depth]
-					     separate: NO
-						alpha: NO];
-	  [self addRepresentation: cacheRep];
-	  RELEASE(cacheRep);		/* Retained in _reps array.	*/
-          repd = repd_for_rep(_reps, cacheRep);
-          repd->original = rep;
-	}
-      return cacheRep;
+      return repd_for_rep(_reps, rep);
     }
   else
     {
-      return rep;
+      /*
+       * If this is not a cached image rep - try to find the cache rep
+       * for this image rep. If none is found create a cache to be used to
+       * render the image rep into, and switch to the cached rep.
+       */
+      NSImageRep *cacheRep = nil;
+      unsigned count = [_reps count];
+
+      if (count > 0)
+        {
+          GSRepData *invalidCache = nil;
+          GSRepData *partialCache = nil;
+          GSRepData *validCache = nil;
+          GSRepData *reps[count];
+          unsigned partialCount = 0;
+          unsigned i;
+          BOOL opaque = [rep isOpaque];
+          
+          [_reps getObjects: reps];
+          
+          /*
+           * Search the cached image reps for any whose original is our
+           * 'best' image rep.  See if we can notice any invalidated
+           * cache as we go - if we don't find a valid cache, we want to
+           * re-use an invalidated one rather than creating a new one.
+           * NB. If the image rep is opaque, then any cached rep is valid
+           * irrespective of the background color it was drawn with.
+           */
+          for (i = 0; i < count; i++)
+            {
+              GSRepData	*repd = reps[i];
+
+              if (repd->original == rep && repd->rep != rep)
+                {
+                  if (repd->bg == nil)
+                    {
+                      NSDebugLLog(@"NSImage", @"Invalid %@ ... %@ %d", 
+                                  repd->bg, _color, repd->rep);
+                      invalidCache = repd;
+                    }
+                  else if (opaque == YES || [repd->bg isEqual: _color] == YES)
+                    {
+                      NSDebugLLog(@"NSImage", @"Exact %@ ... %@ %d", 
+                                  repd->bg, _color, repd->rep);
+                      validCache = repd;
+                      break;
+                    }
+                  else
+                    {
+                      NSDebugLLog(@"NSImage", @"Partial %@ ... %@ %d", 
+                                  repd->bg, _color, repd->rep);
+                      partialCache = repd;
+                      partialCount++;
+                    }
+                }
+            }
+
+          if (validCache != nil)
+            {
+              if (NSImageForceCaching == NO && opaque == NO)
+                {
+                  /*
+                   * If the image rep is not opaque and we are drawing
+                   * without an opaque background then the cache can't
+                   * really be valid 'cos we might be drawing transparency
+                   * on top of anything.  So we invalidate the cache by
+                   * removing the background color information.
+                   */
+                  if ([validCache->bg alphaComponent] != 1.0)
+                    {
+                      DESTROY(validCache->bg);
+                    }
+                }
+              cacheRep = validCache->rep;
+              if (cacheRep != nil)
+                return validCache;
+            }
+          else if (partialCache != nil && partialCount > 2)
+            {
+              /*
+               * Only re-use partially correct caches if there are already
+               * a few partial matches - otherwise we fall default to
+               * creating a new cache.
+               */
+              if (NSImageForceCaching == NO && opaque == NO)
+                {
+                  if (invalidCache != nil)
+                    {
+                      /*
+                       * If there is an unused cache - use it rather than
+                       * re-using this one, since we might get a request
+                       * to draw with this color again.
+                       */
+                      partialCache = invalidCache;
+                    }
+                  else
+                    {
+                      DESTROY(partialCache->bg);
+                    }
+                }
+              cacheRep = partialCache->rep;
+              if (cacheRep != nil)
+                return partialCache;
+            }
+          else if (invalidCache != nil)
+            {
+              cacheRep = invalidCache->rep;
+              if (cacheRep != nil)
+                return invalidCache;
+            }
+        }
+
+      if (cacheRep == nil)
+        {
+          NSSize imageSize;
+          GSRepData *repd;
+          
+          imageSize = [self size];
+          if (imageSize.width == 0 || imageSize.height == 0)
+            return nil;
+
+          // Create a new cached image rep without any contents.
+          cacheRep = [[cachedClass alloc] 
+                         initWithSize: _size
+                         depth: [[NSScreen mainScreen] depth]
+                         separate: NO
+                         alpha: NO];
+          repd = [GSRepData new];
+          repd->rep = cacheRep;
+          repd->original = rep;
+          [_reps addObject: repd]; 
+          RELEASE(repd);		/* Retained in _reps array.	*/
+
+          return repd;
+        }
+      else
+        {
+          // I don't think we ever reach this line.
+          return repd_for_rep(_reps, cacheRep);
+        }
     }
 }
 

@@ -1,3 +1,8 @@
+2008-12-13 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSImage.m: Reorganize the image caching code to make it
+	easier to understand and change.
+
 2008-12-12 19:36-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSOutlineView.m: Added change suggested by Doug in 
