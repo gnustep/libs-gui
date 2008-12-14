@@ -1467,6 +1467,7 @@ selectCellWithString: (NSString*)title
 // NSSavePanel browser delegate methods
 //
 @interface NSSavePanel (GSBrowserDelegate)
+- (void) browserDidScroll: (NSBrowser *)sender;
 - (void) browser: (NSBrowser*)sender
 createRowsForColumn: (int)column
         inMatrix: (NSMatrix*)matrix;
@@ -1499,6 +1500,11 @@ static int compareFilenames (id elem1, id elem2, void *context)
 
 
 @implementation NSSavePanel (GSBrowserDelegate)
+- (void) browserDidScroll: (NSBrowser *)sender
+{
+  [self validateVisibleColumns];
+}
+
 - (void) browser: (NSBrowser*)sender
 createRowsForColumn: (int)column
 	inMatrix: (NSMatrix*)matrix
@@ -1714,6 +1720,10 @@ createRowsForColumn: (int)column
 - (BOOL) browser: (NSBrowser*)sender
    isColumnValid: (int)column
 {
+  /*
+   * FIXME This code doesn't handle the case where the delegate now wants
+   *       to show additional files, which were not displayed before.
+   */
   NSArray	*cells = [[sender matrixInColumn: column] cells];
   unsigned	count = [cells count], i;
   NSString	*path = pathToColumn(sender, column);
