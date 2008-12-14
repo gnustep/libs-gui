@@ -207,7 +207,7 @@
 
 - (void) setDocumentEdited: (BOOL)flag
 {
-  [_window setDocumentEdited: flag];
+  [[self window] setDocumentEdited: flag];
 }
 
 - (void) setWindowFrameAutosaveName:(NSString *)name

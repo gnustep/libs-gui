@@ -839,6 +839,7 @@ many times.
     frame.origin = NSZeroPoint;
     [_wv setFrame: frame];
     [_wv setWindowNumber: _windowNum];
+    [_wv setDocumentEdited: _f.is_edited];
     [_wv setNeedsDisplay: YES];
   }
 }

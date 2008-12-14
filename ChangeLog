@@ -1,5 +1,12 @@
 2008-12-14  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSDocument.m (-addWindowController:,-removeWindowController:):
+	* Source/NSWindowController.m (-setDocumentEdited):
+	* Source/NSWindow.m (-_startBackendWindow):
+	Ensure that new windows properly show their document edited status.
+
+2008-12-14  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSDocumentFrameworkPrivate.h:
 	* Source/NSApplication.m(-finishLaunching):
 	* Source/NSDocumentController.m (-setAutosavingDelay:,

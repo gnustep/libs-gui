@@ -315,6 +315,7 @@ withContentsOfURL: (NSURL *)url
   if ([windowController document] != self)
     {
       [windowController setDocument: self];
+      [windowController setDocumentEdited: [self isDocumentEdited]];
     }
 }
 
@@ -322,6 +323,7 @@ withContentsOfURL: (NSURL *)url
 {
   if ([_window_controllers containsObject: windowController])
     {
+      [windowController setDocumentEdited: NO];
       [windowController setDocument: nil];
       [_window_controllers removeObject: windowController];
     }
