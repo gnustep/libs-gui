@@ -1,8 +1,24 @@
-2008-12-14  Wolfgang Lux  <wlux@uni-muenster.de>
+2008-12-14  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSDocumentFrameworkPrivate.h:
+	* Source/NSApplication.m(-finishLaunching):
+	* Source/NSDocumentController.m (-setAutosavingDelay:,
+	-reopenDocumentForURL:withContentsOfURL:error:,	-_autosaveDirectory,
+	-autosaveDocuments:, -reopenAutosavedDocuments,
+	-recordAutosavedDocument:):
+	* Source/NSDocument.m (-initForURL:withContentsOfURL:ofType:error,
+	-writeWithBackupToFile:ofType:saveOperation:,
+	-writeSafelyToURL:ofType:forSaveOperation:error:,
+	-revertDocumentToSaved:, close, -setAutosavedContentsFileURL:,
+	-autosaveDocumentsWithDelegate:didAutosaveSelector:contextInfo:,
+	-_removeAutosavedContentsFile):
+	Implement document autosaving.
+
+2008-12-14  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSSavePanel.m (-browserDidScroll:): Perform column
 	validation whenever the browser is scrolled, since only the
-	contents of the visible columns is validated. 
+	contents of the visible columns is validated.
 
 2008-12-13 Fred Kiefer <FredKiefer@gmx.de>
 

@@ -32,6 +32,8 @@
 
 #include <AppKit/NSDocumentController.h>
 
+@class NSTimer;
+
 @interface NSDocumentController (Private)
 - (NSArray *)_editorAndViewerTypesForClass:(Class)documentClass;
 - (NSArray *)_editorTypesForClass:(Class)fp12;
@@ -39,6 +41,10 @@
 - (NSString *)_nameForHumanReadableType: (NSString *)type;
 - (NSArray *)_displayNamesForTypes: (NSArray *)types;
 - (NSArray *)_displayNamesForClass: (Class)documentClass;
+- (NSString *)_autosaveDirectory: (BOOL)create;
+- (void)_autosaveDocuments: (NSTimer *)timer;
+- (BOOL)_reopenAutosavedDocuments;
+- (void)_recordAutosavedDocument: (NSDocument *)document;
 @end
 
 
@@ -47,6 +53,7 @@
 @interface NSDocument (Private)
 - (void)_removeWindowController:(NSWindowController *)controller;
 - (NSWindow *)_transferWindowOwnership;
+- (void)_removeAutosavedContentsFile;
 @end
 
 

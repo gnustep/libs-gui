@@ -32,9 +32,11 @@
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSPathUtilities.h>
+#include <Foundation/NSProcessInfo.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSURL.h>
 #include <Foundation/NSUserDefaults.h>
+#include <Foundation/NSTimer.h>
 
 #include "AppKit/NSDocumentController.h"
 #include "AppKit/NSOpenPanel.h"
@@ -278,7 +280,24 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
 
 - (void) setAutosavingDelay: (NSTimeInterval)autosavingDelay
 {
+  static NSTimer *autosavingTimer;
+
+  if (autosavingTimer)
+    {
+      [autosavingTimer invalidate];
+      DESTROY (autosavingTimer);
+    }
   _autosavingDelay = autosavingDelay;
+  if (autosavingDelay > 0)
+    {
+      autosavingTimer =
+	[NSTimer scheduledTimerWithTimeInterval: autosavingDelay
+		 target: self
+		 selector: @selector(_autosaveDocuments:)
+		 userInfo: nil
+		 repeats: YES];
+      RETAIN (autosavingTimer);
+    }
 }
 
 - (id) makeUntitledDocumentOfType: (NSString *)type
@@ -572,7 +591,32 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
             withContentsOfURL: (NSURL *)contents
                         error: (NSError **)err
 {
-  // FIXME
+  if ([contents isFileURL])
+    {
+      NSString *type =
+	  [self typeFromFileExtension: [[contents path] pathExtension]];
+      id document =
+	  [self makeDocumentForURL: url
+		withContentsOfURL: contents
+		ofType: type
+		error: err];
+      if (document)
+        {
+	  [self addDocument:document];
+	  if ([self shouldCreateUI])
+	    {
+	      [document makeWindowControllers];
+	      [document showWindows];
+	    }  
+	  return YES;
+	}
+    }
+  else
+    {
+      // FIXME: set error
+      *err = nil;
+    }
+
   return NO;
 }
 
@@ -1199,6 +1243,153 @@ static NSString *NSViewerRole = @"Viewer";
 {
   return [self _displayNamesForTypes: 
 		 [self _editorTypesForClass: documentClass]];
+}
+
+static NSMapTable *autosavedDocuments;
+static NSString *processName;
+
+- (NSString *) _autosaveDirectory: (BOOL)create
+{
+  NSArray *paths =
+      NSSearchPathForDirectoriesInDomains (NSLibraryDirectory,
+                                           NSUserDomainMask,
+                                           YES);
+  NSString *path = [paths objectAtIndex:0];
+  path = [path stringByAppendingPathComponent: @"Autosave"];
+
+  if (create)
+    {
+      BOOL isDir;
+      NSFileManager *fm = [NSFileManager defaultManager];
+
+      if ([fm fileExistsAtPath: path isDirectory: &isDir] == NO)
+        {
+          if (![fm createDirectoryAtPath: path attributes: nil])
+            return nil;
+        }
+      else if (isDir == NO)
+        {
+          if (![fm removeFileAtPath: path handler: nil] ||
+              ![fm createDirectoryAtPath: path attributes: nil])
+            return nil;
+        }
+    }
+
+  return path;
+}
+
+- (void) _autosaveDocuments: (NSTimer *)timer
+{
+  id document;
+  int i, n = [_documents count];
+
+  for (i = 0; i < n; i++)
+    {
+      document = [_documents objectAtIndex: i];
+      if ([document autosavingFileType] && [document hasUnautosavedChanges])
+        {
+	  [document autosaveDocumentWithDelegate: nil
+		    didAutosaveSelector: NULL
+		    contextInfo: NULL];
+	}
+    }
+}
+
+- (BOOL) _reopenAutosavedDocuments
+{
+  BOOL didOpen = NO;
+
+  if (!autosavedDocuments)
+    {
+      NSArray *autosaved;
+      NSString *path;
+
+      autosavedDocuments =
+          NSCreateMapTable (NSObjectMapKeyCallBacks,
+                            NSObjectMapValueCallBacks,
+                            1);
+      if (!processName)
+        processName = [[[NSProcessInfo processInfo] processName] copy];
+
+      path = [self _autosaveDirectory: NO];
+      path = [path stringByAppendingPathComponent: processName];
+      path = [path stringByAppendingPathExtension: @"plist"];
+      autosaved = [NSArray arrayWithContentsOfFile: path];
+      if (autosaved)
+        {
+          int i, n = [autosaved count];
+          NSFileManager *fm = [NSFileManager defaultManager];
+
+          for (i = 0; i < n; i++)
+            {
+              NSDictionary *dict = [autosaved objectAtIndex: i];
+              NSString *location = [dict objectForKey: @"Location"];
+              NSString *autosavedLoc = [dict objectForKey: @"AutosavedLocation"];
+              NSURL *url = location ? [NSURL URLWithString: location] : nil;
+              NSURL *autosavedURL =
+                  autosavedLoc ? [NSURL URLWithString: autosavedLoc] : nil;
+
+              if (autosavedURL && [fm fileExistsAtPath: [autosavedURL path]])
+                {
+                  NSError *err;
+                  if ([self reopenDocumentForURL: url
+                            withContentsOfURL: autosavedURL
+                            error: &err])
+                    didOpen = YES;
+                }
+            }
+        }
+    }
+
+  return didOpen;
+}
+
+- (void) _recordAutosavedDocument: (NSDocument *)document
+{
+  BOOL changed = NO;
+  NSURL *url = [document autosavedContentsFileURL];
+
+  if (!autosavedDocuments)
+    autosavedDocuments =
+        NSCreateMapTable (NSObjectMapKeyCallBacks,
+                          NSObjectMapValueCallBacks,
+                          1);
+  if (!processName)
+    processName = [[[NSProcessInfo processInfo] processName] copy];
+
+  if (url)
+    {
+      NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+      if ([document fileURL])
+        [dict setObject: [document fileURL] forKey: @"Location"];
+      [dict setObject: url forKey: @"AutosavedLocation"];
+      NSMapInsert (autosavedDocuments, document, dict);
+      [dict release];
+      changed = YES;
+    }
+  else if (NSMapGet (autosavedDocuments, document))
+    {
+      NSMapRemove (autosavedDocuments, document);
+      changed = YES;
+    }
+
+  if (changed)
+    {
+      NSString *path = [self _autosaveDirectory: YES];
+      NSArray *autosaved = NSAllMapTableValues (autosavedDocuments);
+      NSFileManager *fm = [NSFileManager defaultManager];
+
+      path = [path stringByAppendingPathComponent: processName];
+      path = [path stringByAppendingPathExtension: @"plist"];
+      if ([autosaved count] == 0)
+        {
+          [fm removeFileAtPath: path handler: nil];
+        }
+      else
+        {
+          [autosaved writeToFile: path atomically:YES];
+        }
+    }
 }
 @end
 

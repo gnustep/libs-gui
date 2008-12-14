@@ -83,6 +83,7 @@
 #include "GSGuiPrivate.h"
 #include "GNUstepGUI/GSInfoPanel.h"
 #include "GNUstepGUI/GSVersion.h"
+#include "NSDocumentFrameworkPrivate.h"
 
 /* The -gui thread. See the comment in initialize_gnustep_backend. */
 NSThread *GSAppKitThread;
@@ -921,6 +922,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   unsigned		count;
   unsigned		i;
   BOOL			hadDuplicates = NO;
+  BOOL			didAutoreopen = NO;
   NSImage		*image = nil;
 
   appIconFile = [infoDict objectForKey: @"NSIcon"];
@@ -1053,9 +1055,16 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 
   [self activateIgnoringOtherApps: YES];
 
-  /* Instantiate the NSDocumentController if we are a doc-based app */
+  /*
+   * Instantiate the NSDocumentController if we are a doc-based app
+   * and eventually reopen all autosaved documents
+   */
   if ([NSDocumentController isDocumentBasedApplication])
-    [NSDocumentController sharedDocumentController];
+    {
+      didAutoreopen =
+	  [[NSDocumentController sharedDocumentController]
+	      _reopenAutosavedDocuments];
+    }
 
   /*
    *	Now check to see if we were launched with arguments asking to
@@ -1075,7 +1084,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
       [_listener application: self printFile: filePath];
       [self terminate: self];
     }
-  else if (![defs boolForKey: @"autolaunch"]
+  else if (!didAutoreopen && ![defs boolForKey: @"autolaunch"]
     && [_delegate respondsToSelector:
       @selector(applicationShouldOpenUntitledFile:)]
     && ([_delegate applicationShouldOpenUntitledFile: self])

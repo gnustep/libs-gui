@@ -140,13 +140,17 @@ withContentsOfURL: (NSURL *)url
   self = [self initWithType: type error: error];
   if (self != nil)
     {
+      [self setFileType: type];
+      if (forUrl)
+        [self setFileURL: forUrl];
       if ([self readFromURL: url
                      ofType: type
                       error: error])
         {
-          if (forUrl != nil)
+          if (![url isEqual:forUrl])
             {
-              [self setFileURL: forUrl];
+              [self setAutosavedContentsFileURL: url];
+              [self updateChangeCount: NSChangeReadOtherContents];
             }
         }
       else 
@@ -791,6 +795,7 @@ withContentsOfURL: (NSURL *)url
           
           if (saveOp != NSSaveToOperation)
             {
+              [self _removeAutosavedContentsFile];
               [self setFileName: fileName];
               [self setFileType: fileType];
               [self updateChangeCount: NSChangeCleared];
@@ -877,8 +882,14 @@ withContentsOfURL: (NSURL *)url
                 error: error];
   // FIXME: Should set the file attributes
 
-  if (saveOp != NSSaveToOperation)
+  if (saveOp == NSAutosaveOperation)
     {
+      [self setAutosavedContentsFileURL: url];
+      [self updateChangeCount: NSChangeAutosaved];
+    }
+  else if (saveOp != NSSaveToOperation)
+    {
+      [self _removeAutosavedContentsFile];
       [self setFileURL: url];
       [self setFileType: type];
       [self updateChangeCount: NSChangeCleared];
@@ -1486,6 +1497,7 @@ originalContentsURL: (NSURL *)orig
         {
           [self updateChangeCount: NSChangeCleared];
           [[self undoManager] removeAllActions];
+          [self _removeAutosavedContentsFile];
         }
       else
         {
@@ -1515,6 +1527,7 @@ originalContentsURL: (NSURL *)orig
           while (count-- > 0)
             [array[count] close];
         }
+      [self _removeAutosavedContentsFile];
       [[NSDocumentController sharedDocumentController] removeDocument: self];
     }
 }
@@ -1621,14 +1634,40 @@ originalContentsURL: (NSURL *)orig
 - (void)setAutosavedContentsFileURL: (NSURL *)url
 {
   ASSIGN(_autosaved_file_url, url);
+  [[NSDocumentController sharedDocumentController]
+      _recordAutosavedDocument: self];
 }
 
 - (void)autosaveDocumentWithDelegate: (id)delegate
                  didAutosaveSelector: (SEL)didAutosaveSelector
                          contextInfo: (void *)context
 {
-  [self saveToURL: [self autosavedContentsFileURL]
-        ofType: [self autosavingFileType]
+  NSURL *url = [self autosavedContentsFileURL];
+  NSString *type = [self autosavingFileType];
+  NSArray *exts =
+      [[NSDocumentController sharedDocumentController]
+          fileExtensionsFromType: type];
+  NSString *ext = [exts count] ? (NSString *)[exts objectAtIndex: 0] : @"";
+
+  if (url == nil)
+    {
+      static NSString *processName = nil;
+      NSString *path;
+
+      if (!processName)
+        processName = [[[NSProcessInfo processInfo] processName] copy];
+
+      path = [[NSDocumentController sharedDocumentController]
+                 _autosaveDirectory: YES];
+      path = [path stringByAppendingPathComponent:
+                       [NSString stringWithFormat: @"%@-%d",
+                                 processName, _document_index]];
+      path = [path stringByAppendingPathExtension: ext];
+      url = [NSURL fileURLWithPath: path];
+    }
+
+  [self saveToURL: url
+        ofType: type
         forSaveOperation: NSAutosaveOperation
         delegate: delegate
         didSaveSelector: didAutosaveSelector 
@@ -1675,6 +1714,20 @@ originalContentsURL: (NSURL *)orig
         {
           [self close];
         }
+    }
+}
+
+- (void)_removeAutosavedContentsFile
+{
+  NSURL *url = [self autosavedContentsFileURL];
+
+  if (url)
+    {
+      NSString *path = [[url path] retain];
+
+      [self setAutosavedContentsFileURL: nil];
+      [[NSFileManager defaultManager] removeFileAtPath: path handler: nil];
+      [path release];
     }
 }
 
