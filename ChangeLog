@@ -1,5 +1,10 @@
 2008-12-15 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSMenuItemCell.m (-_keyEquivalentString): Ignore function
+	keys as key equivalents.
+
+2008-12-15 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSImage.m: White space changes and general clean up.
 	* Source/NSImage.m (-removeRepresentation:): Remove also cached
 	representations for the current one.
