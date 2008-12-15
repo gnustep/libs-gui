@@ -50,7 +50,12 @@
 @protocol OSXNibTemplate
 - (void) setClassName: (NSString *)className;
 - (NSString *)className;
+- (void) setRealObject: (id)o;
 - (id) realObject;
+@end
+
+@protocol GSNibLoading
+- (id) nibInstantiate;
 @end
 
 typedef struct _GSWindowTemplateFlags
@@ -110,7 +115,7 @@ typedef struct _GSWindowTemplateFlags
  * when it's unarchived and second, it holds certain attributes (but doesn't set them
  * on the window, when the window is being edited in the application builder.
  */
-@interface NSWindowTemplate : NSObject <OSXNibTemplate, NSCoding>
+@interface NSWindowTemplate : NSObject <OSXNibTemplate, NSCoding, GSNibLoading>
 {
   NSBackingStoreType   _backingStoreType;
   NSSize               _maxSize;
@@ -152,7 +157,6 @@ typedef struct _GSWindowTemplateFlags
 - (NSRect)windowRect;
 - (void) setScreenRect: (NSRect)rect;
 - (NSRect) screenRect;
-- (id) realObject;
 - (void) setView: (id)view;
 - (id) view;
 - (Class) baseWindowClass;
@@ -163,6 +167,8 @@ typedef struct _GSWindowTemplateFlags
   NSString            *_className;
   id                   _realObject;
 }
+- (id) initWithObject: (id)o
+            className: (NSString *)name;
 @end
 
 @interface NSTextTemplate : NSViewTemplate
@@ -189,10 +195,9 @@ typedef struct _GSWindowTemplateFlags
 }
 - (void) setClassName: (NSString *)name;
 - (NSString *)className;
-- (id)nibInstantiate;
 @end
 
-@interface NSCustomObject : NSObject <NSCoding>
+@interface NSCustomObject : NSObject <NSCoding, GSNibLoading>
 {
   NSString *_className;
   NSString *_extension;
@@ -202,11 +207,9 @@ typedef struct _GSWindowTemplateFlags
 - (NSString *)className;
 - (void) setExtension: (NSString *)ext;
 - (NSString *)extension;
-- (void) setObject: (id)obj;
-- (id)object;
 @end
 
-@interface NSCustomView : NSView
+@interface NSCustomView : NSView <GSNibLoading>
 {
   NSString *_className;
   NSString *_extension;
@@ -217,7 +220,6 @@ typedef struct _GSWindowTemplateFlags
 - (NSString *)className;
 - (void) setExtension: (NSString *)view;
 - (NSString *)extension;
-- (id)nibInstantiate;
 - (id)nibInstantiateWithCoder: (NSCoder *)coder;
 @end
 
@@ -230,7 +232,6 @@ typedef struct _GSWindowTemplateFlags
 - (NSString *)className;
 - (void) setResourceName: (NSString *)view;
 - (NSString *)resourceName;
-- (id)nibInstantiate;
 @end
 
 @interface NSClassSwapper : NSObject <NSCoding>
@@ -271,7 +272,6 @@ typedef struct _GSWindowTemplateFlags
   NSMutableSet   *_topLevelObjects;
 }
 - (id) instantiateObject: (id)obj;
-- (void) nibInstantiateWithOwner: (id)owner;
 - (void) nibInstantiateWithOwner: (id)owner topLevelObjects: (NSMutableArray *)toplevel;
 - (id) objectForName: (NSString *)name;
 - (NSString *) nameForObject: (id)name;

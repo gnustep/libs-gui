@@ -1,3 +1,14 @@
+2008-12-15 18:37-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSNibLoading.h: Added methods to header
+	which were added during refactoring.
+	* Source/GSNibLoading.m: Corrections to NSCustomView, refactoring.
+	Changes to initialization logic to call awakeFromNib.
+	* Source/NSBundleAdditions.m: Cleanup to move code to the nib loading
+	code.
+	* Source/NSClipView.m: Added assertion to guarantee that no
+	NSCustomView is unarchived at time of initWithCoder: being called.
+
 2008-12-15 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenuItemCell.m (-_keyEquivalentString): Ignore function

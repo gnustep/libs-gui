@@ -174,13 +174,6 @@
 			     [self label]];
   return desc;
 }
-
-- (void) instantiateWithInstantiator: (id<GSInstantiator>)instantiator
-{
-  _src = [instantiator instantiateObject: _src];
-  _dst = [instantiator instantiateObject: _dst];
-}
-
 @end
 
 @implementation	NSNibControlConnector
