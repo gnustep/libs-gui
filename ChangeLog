@@ -1,3 +1,10 @@
+2008-12-16 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSButtonCell.m (-setImage:): Call super implementation to
+	make sure the button gets redrawn.
+	* Source/NSWindow.m (-setContentView:): Don't do anything when
+	setting the same view again.
+
 2008-12-16 13:58-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibLoading.m: Make the log ino debug in awakeFromNib 

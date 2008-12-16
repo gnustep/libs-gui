@@ -1115,6 +1115,9 @@ many times.
   previous content view.  */
 - (void) setContentView: (NSView*)aView
 {
+  if (aView == _contentView)
+    return;
+
   if (aView == nil)
     {
       aView = AUTORELEASE([[NSView alloc]

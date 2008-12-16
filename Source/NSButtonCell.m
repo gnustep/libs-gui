@@ -433,18 +433,12 @@ typedef struct _GSButtonCellFlags
 
 - (void) setImage: (NSImage *)anImage
 {
-  if (anImage) 
-    {
-      NSAssert ([anImage isKindOfClass: [NSImage class]],
-                NSInvalidArgumentException);
-    }
-  
   if (_cell.image_position == NSNoImage)
     {
       [self setImagePosition: NSImageOnly];
     }
   
-  ASSIGN (_cell_image, anImage);
+  [super setImage: anImage];
 }
 
 /**<p>Sets the NSButtonCell's alternate image to <var>anImage</var>.</p>
