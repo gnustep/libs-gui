@@ -959,6 +959,7 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
 	  NSConnection	*connection;
 
 	  connection = [(NSDistantObject*)provider connectionForProxy];
+	  [connection enableMultipleThreads];
 	  seconds = [finishBy timeIntervalSinceNow];
 	  [connection setRequestTimeout: seconds];
 	  [connection setReplyTimeout: seconds];
@@ -1964,6 +1965,7 @@ static  NSMapTable              *mimeMap = NULL;
 	  NSConnection	*conn = [(id)the_server connectionForProxy];
           Protocol      *p = @protocol(GSPasteboardSvr);
 
+	  [conn enableMultipleThreads];
           [(id)the_server setProtocolForProxy: p];
 	  [[NSNotificationCenter defaultCenter]
 	    addObserver: self

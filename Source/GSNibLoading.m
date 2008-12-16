@@ -815,7 +815,7 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (void) awakeFromNib
 {
-  NSLog(@"Called awakeFromNib on an NSCustomObject instance: %@", self);
+  NSDebugLog(@"Called awakeFromNib on an NSCustomObject instance: %@", self);
   if([_object respondsToSelector: @selector(awakeFromNib)])
     {
       [_object awakeFromNib];

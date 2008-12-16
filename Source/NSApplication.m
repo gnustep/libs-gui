@@ -1779,8 +1779,10 @@ See -runModalForWindow:
 {
   if (_session == 0)
     {
-      [NSException raise: NSInvalidArgumentException
-		  format: @"stopModalWithCode: when not in a modal session"];
+      // According to the spec, there is no exception which is thrown if we are not 
+      // currently in a modal session.   While it is not good practice to call this 
+      // when we're not, we shouldn't throw an exception.
+      return;
     }
   else if (returnCode == NSRunContinuesResponse)
     {
