@@ -927,9 +927,16 @@ static BOOL _isInInterfaceBuilder = NO;
 	  [_view setAutoresizesSubviews: ((vFlags & 0x100) == 0x100)];
 	  [_view setHidden: ((vFlags & 0x80000000) == 0x80000000)];
 	}
-      
-      [_view setNextResponder: [self nextResponder]];
-      
+      /*
+      if ([coder containsValueForKey: @"NSNextResponder"])
+	{
+	  [_view setNextResponder: [coder decodeObjectForKey: @"NSNextResponder"]];
+	}      
+      */
+
+      // reset the bounds...
+      [_view setBounds: [_view frame]];
+
       subs = [coder decodeObjectForKey: @"NSSubviews"];
       en = [subs objectEnumerator];
       while((v = [en nextObject]) != nil)
@@ -979,10 +986,6 @@ static BOOL _isInInterfaceBuilder = NO;
 	    {
 	      [self nibInstantiateWithCoder: coder];
 	    }
-
-	  // Prevent the case where we get back an NSCustomView.
-	  // NSAssert((([NSClassSwapper isInInterfaceBuilder] == NO) &&
-	  //    ([_view class] != [NSCustomView class])), NSInvalidArgumentException);
 
 	  if(self != _view)
 	    {
@@ -1614,12 +1617,6 @@ static BOOL _isInInterfaceBuilder = NO;
           [obj awakeFromNib];
         }
     }
-
-  // awaken the owner.
-  // if([owner respondsToSelector: @selector(awakeFromNib)])
-  //  {
-  //    [owner awakeFromNib];
-  //  }
 
   // bring visible windows to front...
   en = [_visibleWindows objectEnumerator];

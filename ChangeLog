@@ -1,3 +1,8 @@
+2008-12-16 17:23-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibLoading.m: Changes to initialize bounds in
+	NSCustomView.
+
 2008-12-16 16:41-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSView.m: Add back in matrix initialization.
