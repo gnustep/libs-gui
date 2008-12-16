@@ -115,6 +115,7 @@ common_LeftTabStop.tiff \
 common_DecimalTabStop.tiff \
 common_Diamond.tiff \
 common_Printer.tiff \
+common_ToolbarCustomizeToolbarItem.tiff \
 common_ToolbarClippedItemsMark.tiff \
 common_ToolbarSeparatorItem.tiff \
 common_ToolbarShowColorsItem.tiff \
