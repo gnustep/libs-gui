@@ -953,7 +953,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
   PSgsave();
 
-  if (_color != nil && [_color alphaComponent] != 0.0)
+  if (_color != nil)
     {
       NSRect fillrect = aRect;
 
@@ -1267,7 +1267,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
             }
 
           repd->bg = [_color copy];
-          if (_color != nil && [_color alphaComponent] != 0.0)
+          if (_color != nil)
             {
               // Won't be needed when drawRepresentation: gets called, 
               // but we never know.
