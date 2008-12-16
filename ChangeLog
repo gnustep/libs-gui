@@ -1,3 +1,7 @@
+2008-12-16 16:41-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSView.m: Add back in matrix initialization.
+
 2008-12-16  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSTextView.m (-draggingUpated:): Scroll during dragging
@@ -21,7 +25,7 @@
 
 2008-12-16 13:58-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
-	* Source/GSNibLoading.m: Make the log ino debug in awakeFromNib 
+	* Source/GSNibLoading.m: Make the log into debug in awakeFromNib 
 	* Source/NSApplication.m: Allow modal to end multiple times, per spec
 	there is no exception for doing this.
 	* Source/NSPasteboard.m: Allow multiple threads in pasteboard
