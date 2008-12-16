@@ -1,3 +1,8 @@
+2008-12-15 19:49-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibLoading.m: remove extraneous awakeFromNib call in
+	nibInstantiateWithOwner:topLevelObjects:.
+
 2008-12-15 18:37-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/Additions/GNUstepGUI/GSNibLoading.h: Added methods to header

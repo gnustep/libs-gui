@@ -1616,10 +1616,10 @@ static BOOL _isInInterfaceBuilder = NO;
     }
 
   // awaken the owner.
-  if([owner respondsToSelector: @selector(awakeFromNib)])
-    {
-      [owner awakeFromNib];
-    }
+  // if([owner respondsToSelector: @selector(awakeFromNib)])
+  //  {
+  //    [owner awakeFromNib];
+  //  }
 
   // bring visible windows to front...
   en = [_visibleWindows objectEnumerator];
