@@ -4585,11 +4585,51 @@ other than copy/paste or dragging. */
     {
       NSPoint	dragPoint;
       unsigned	dragIndex;
+      NSRect	vRect;
 
       dragPoint = [sender draggingLocation];
       dragPoint = [self convertPoint: dragPoint fromView: nil];
       dragIndex = [self _characterIndexForPoint: dragPoint
                         respectFraction: YES];
+
+      /* Note: Keep DRAGGING_SCROLL_BORDER in sync with a similar value used
+       * in -draggingUpdated: of NSOutlineView and NSTableView.
+       * FIXME: Is the value of DRAGGING_SCROLL_DIST reasonable?
+       */
+#define DRAGGING_SCROLL_BORDER 3
+#define DRAGGING_SCROLL_DIST 10
+      vRect = [self visibleRect];
+      if (dragPoint.x <= NSMinX(vRect) + DRAGGING_SCROLL_BORDER)
+        {
+	  vRect.origin.x -= DRAGGING_SCROLL_DIST;
+	  if (NSMinX(vRect) < NSMinX(_bounds))
+	    vRect.origin.x = NSMinX(_bounds);
+	  [self scrollPoint: vRect.origin];
+	}
+      else if (dragPoint.x >= NSMaxX(vRect) - DRAGGING_SCROLL_BORDER)
+        {
+	  vRect.origin.x += DRAGGING_SCROLL_DIST;
+	  if (NSMaxX(vRect) > NSMaxX(_bounds))
+	    vRect.origin.x = NSMaxX(_bounds) - NSWidth(vRect);
+	  [self scrollPoint: vRect.origin];
+	}
+
+      if (dragPoint.y <= NSMinY(vRect) + DRAGGING_SCROLL_BORDER)
+        {
+	  vRect.origin.y -= DRAGGING_SCROLL_DIST;
+	  if (NSMinY(vRect) < NSMinY(_bounds))
+	    vRect.origin.y = NSMinY(_bounds);
+	  [self scrollPoint: vRect.origin];
+	}
+      else if (dragPoint.y >= NSMaxY(vRect) - DRAGGING_SCROLL_BORDER)
+        {
+	  vRect.origin.y += DRAGGING_SCROLL_DIST;
+	  if (NSMaxY(vRect) > NSMaxY(_bounds))
+	    vRect.origin.y = NSMaxY(_bounds) - NSHeight(vRect);
+	  [self scrollPoint: vRect.origin];
+	}
+#undef DRAGGING_SCROLL_BORDER
+#undef DRAGGING_SCROLL_DIST
 
       if ([sender draggingSource] != self ||
 	  !NSLocationInRange(dragIndex, [self selectedRange]))
