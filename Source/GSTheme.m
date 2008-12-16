@@ -654,8 +654,7 @@ static NSNull			*null = nil;
 	  unsigned	count;
 
 	  imageTypes = [NSImage imageFileTypes];
-	  for (count = 0, image = nil; image == nil && count < [imageTypes count]; 
-         count++)
+	  for (count = 0; count < [imageTypes count]; count++)
 	    {
 	      NSString	*ext = [imageTypes objectAtIndex: count];
 

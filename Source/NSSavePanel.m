@@ -151,9 +151,7 @@ setPath(NSBrowser *browser, NSString *path)
       NSString	*file = [[names lastObject] stringByStandardizingPath];
       BOOL isDir;
 
-      if (file && 
-	  [_fm fileExistsAtPath: file isDirectory: &isDir] && 
-	  isDir)
+      if (file && [_fm fileExistsAtPath: file isDirectory: &isDir] && isDir)
         {
 	  [self setDirectory: file];
 	}
@@ -1666,14 +1664,13 @@ createRowsForColumn: (int)column
       exists = [_fm fileExistsAtPath: pathAndFile 
 		    isDirectory: &isDir];
       if (isDir && !_treatsFilePackagesAsDirectories
-	  && [ws isFilePackageAtPath: pathAndFile])
+	&& [ws isFilePackageAtPath: pathAndFile])
         {
 	  isDir = NO;
 	}
       if (_delegateHasShowFilenameFilter)
 	{
-	  exists = [_delegate panel: self
-			      shouldShowFilename: pathAndFile];
+	  exists = [_delegate panel: self shouldShowFilename: pathAndFile];
 	}
 
       if (exists && !isDir)
