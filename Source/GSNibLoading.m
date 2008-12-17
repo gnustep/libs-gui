@@ -914,11 +914,11 @@ static BOOL _isInInterfaceBuilder = NO;
       nextKeyView = [coder decodeObjectForKey: @"NSNextKeyView"];
       if (nextKeyView != nil)
         {
-          [self setNextKeyView: nextKeyView];
+          [_view setNextKeyView: nextKeyView];
         }
       if (prevKeyView != nil)
         {
-          [self setPreviousKeyView: prevKeyView];
+          [_view setPreviousKeyView: prevKeyView];
         }      
       if ([coder containsValueForKey: @"NSvFlags"])
 	{

@@ -1,3 +1,10 @@
+2008-12-16 19:41-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibLoading.m: Correct issue with setting next key view and
+	previous key view.
+	* Source/NSView.m: Comment out frame/bounds matrix calculation since they
+	are done when needed.
+
 2008-12-16 17:23-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibLoading.m: Changes to initialize bounds in
