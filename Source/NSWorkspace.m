@@ -2385,10 +2385,18 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
 	  info = [apps objectForKey: appName];
 	  str = [info objectForKey: @"NSRole"];
-	  if (str == nil
-	    || [str isEqualToString: @"Editor"]
-	    || [str isEqualToString: @"Viewer"]
-	    || [str isEqualToString: @""])
+	  /* NB. If str is nil or an empty string, there is no role set,
+	   * and we treat this as an Editor since the role is unrestricted.
+	   */
+	  if ([str length] == 0 || [str isEqualToString: @"Editor"])
+	    {
+	      if (app != 0)
+		{
+		  *app = appName;
+		}
+	      return YES;
+	    }
+	  if ([str isEqualToString: @"Viewer"])
 	    {
 	      if (app != 0)
 		{

@@ -1,9 +1,14 @@
+2008-12-16 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWorkspace.m: Restore priority in lookup for Editors
+	error in last change pointed out by david Ayers.
+
 2008-12-16 19:41-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibLoading.m: Correct issue with setting next key view and
 	previous key view.
-	* Source/NSView.m: Comment out frame/bounds matrix calculation since they
-	are done when needed.
+	* Source/NSView.m: Comment out frame/bounds matrix calculation
+	since they are done when needed.
 
 2008-12-16 17:23-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
