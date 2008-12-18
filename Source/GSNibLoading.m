@@ -935,7 +935,7 @@ static BOOL _isInInterfaceBuilder = NO;
       */
 
       // reset the bounds...
-      [_view setBounds: [_view frame]];
+      // [_view setBounds: [_view frame]];
 
       subs = [coder decodeObjectForKey: @"NSSubviews"];
       en = [subs objectEnumerator];
