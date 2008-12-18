@@ -1,3 +1,4 @@
+GNUSTEP_CORE_SOFTWARE = YES
 include $(GNUSTEP_MAKEFILES)/common.make
 
 DOCUMENT_NAME = AppKit

@@ -23,6 +23,7 @@
 #  Free Software Foundation, 51 Franklin Street, Fifth Floor, 
 #  Boston, MA 02110-1301, USA.
 
+GNUSTEP_CORE_SOFTWARE = YES
 include $(GNUSTEP_MAKEFILES)/common.make
 include ../../config.make
 

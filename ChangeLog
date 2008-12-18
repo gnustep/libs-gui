@@ -1,3 +1,10 @@
+2008-12-18  Nicola Pero <nicola.pero@meta-innovation.com>
+
+	* All GNUmakefiles: added GNUSTEP_CORE_SOFTWARE=YES at the
+	beginning.
+	* GNUmakefile: Export GNUSTEP_CORE_SOFTWARE to reduce chances of a
+	problem if a GNUmakefile in a subdirectory is missing it.	
+
 2008-12-17 21:20-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibLoading.m: Remove change which resets the bounds

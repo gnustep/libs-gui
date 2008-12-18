@@ -23,6 +23,7 @@
 #  Free Software Foundation, 51 Franklin Street, Fifth Floor, 
 #  Boston, MA 02110-1301, USA.
 
+GNUSTEP_CORE_SOFTWARE = YES
 GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=../gui.make
 include $(GNUSTEP_MAKEFILES)/common.make
 
@@ -30,7 +31,7 @@ include ../Version
 
 RES_INSTALL_DIR = $(GNUSTEP_LIBRARY)/PostScript
 PPD_INSTALL_DIR = $(GNUSTEP_LIBRARY)/PostScript/PPD
- 
+
 RESOURCE_DIRS = English.lproj
 
 RESOURCE_FILES = GSProlog.ps
