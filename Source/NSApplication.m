@@ -1881,8 +1881,8 @@ See -runModalForWindow:
       case NSKeyDown:
 	{
 	  NSDebugLLog(@"NSEvent", @"send key down event\n");
-	  if ([[self mainMenu] performKeyEquivalent: theEvent] == NO
-	    && [[self keyWindow] performKeyEquivalent: theEvent] == NO)
+	  if ([[self keyWindow] performKeyEquivalent: theEvent] == NO
+	    && [[self mainMenu] performKeyEquivalent: theEvent] == NO)
 	    {
 	      [[theEvent window] sendEvent: theEvent];
 	    }
