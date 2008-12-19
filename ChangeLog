@@ -1,7 +1,7 @@
 2008-12-19  Nicola Pero <nicola.pero@meta-innovation.com>
 
 	* All GNUmakefiles: removed GNUSTEP_CORE_SOFTWARE=YES and
-	added PACKAGE_NAME=gnustep-base.
+	added PACKAGE_NAME=gnustep-gui.
 	* GNUmakefile: Export PACKAGE_NAME to reduce chances of a problem
 	if a GNUmakefile in a subdirectory is missing it.
 

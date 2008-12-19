@@ -43,8 +43,6 @@ SVN_BASE_URL = svn+ssh://svn.gna.org/svn/gnustep/libs
 GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=gui.make
 include $(GNUSTEP_MAKEFILES)/common.make
 
-PACKAGE_NAME = gnustep-gui
-
 include ./Version
 
 # Don't build docs by default
