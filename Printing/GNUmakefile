@@ -24,7 +24,7 @@
 #  Free Software Foundation, 51 Franklin Street, Fifth Floor, 
 #  Boston, MA 02110-1301, USA.
 
-GNUSTEP_CORE_SOFTWARE = YES
+PACKAGE_NAME = gnustep-gui
 include $(GNUSTEP_MAKEFILES)/common.make
 
 GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=../gui.make
