@@ -1,5 +1,13 @@
 2008-12-20  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSTextView.m (-shouldChangeTextInRange:replacementString:):
+	Fix a crash during undo/redo when a text storage is shared among
+	multiple text views and some of these views are closed by
+	recording the undo/redo operations for the text storage rather
+	than the text view.
+
+2008-12-20  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSApplication.m (-sendEvent:): Attempt to perform key
 	equivalents in the key window before the main menu as on OS X.
 

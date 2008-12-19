@@ -128,6 +128,14 @@ Interface for a bunch of internal methods that need to be cleaned up.
 - (void) pasteSelection;
 @end
 
+
+@interface NSTextStorage(NSTextViewUndoSupport)
+- (NSTextView *)_bestTextViewForUndo;
+- (void)_undoReplaceCharactersInRange: (NSRange)undoRange
+		 withAttributedString: (NSAttributedString *)undoString
+		        selectedRange: (NSRange)selectedRange;
+@end
+
 // This class is a helper for keyed unarchiving only
 @interface NSTextViewSharedData : NSObject 
 {
@@ -2388,20 +2396,6 @@ Move to NSTextView_actions.m?
   return undo;
 }
 
-- (void)undoReplaceCharactersInRange: (NSRange)undoRange
-		withAttributedString: (NSAttributedString *)undoString
-		       selectedRange: (NSRange)selectedRange
-{
-  if ([self shouldChangeTextInRange: undoRange
-	    replacementString: undoString ? [undoString string] : @""])
-    {
-      [self replaceCharactersInRange: undoRange
-	    withAttributedString: undoString];
-      [self setSelectedRange: selectedRange];
-      [self didChangeText];
-    }
-}
-
 /*
  * Began editing flag.  There are quite some different ways in which
  * editing can be started.  Each time editing is started, we need to check
@@ -2504,10 +2498,10 @@ TextDidEndEditing notification _without_ asking the delegate
           undoRange = affectedCharRange;
         }
       undoString = [self attributedSubstringFromRange: affectedCharRange];
-      [[undo prepareWithInvocationTarget: self]
-	  undoReplaceCharactersInRange: undoRange
-		  withAttributedString: undoString
-			 selectedRange: [self selectedRange]];
+      [[undo prepareWithInvocationTarget: [self textStorage]]
+	  _undoReplaceCharactersInRange: undoRange
+		   withAttributedString: undoString
+			  selectedRange: [self selectedRange]];
     }
 
   return result;
@@ -5265,3 +5259,69 @@ configuation! */
 
 @end
 
+@implementation NSTextStorage(NSTextViewUndo)
+/* FIXME: Should this code be moved to NSTextStorage? */
+- (NSTextView *)_bestTextViewForUndo
+{
+  int i, j;
+  NSArray *textContainers;
+  NSTextView *tv, *first = nil, *best = nil;
+  NSWindow *win;
+
+  /* The "best" view will be one in the key window followed by one in the
+   * main window.  In either case, we prefer the window's first responder.
+   * If no view is in the key or main window, we simply use the first text
+   * view.  Since -shouldChangeTextInRange:replacementString: returns NO
+   * by default if a NSTextView is not editable, we consider only editable
+   * views here.
+   */
+  for (i = 0; i < [_layoutManagers count]; i++)
+    {
+      textContainers = [[_layoutManagers objectAtIndex: i] textContainers];
+      for (j = 0; j < [textContainers count]; j++)
+        {
+          tv = [[textContainers objectAtIndex: j] textView];
+          if ([tv isEditable])
+            {
+              win = [tv window];
+              if (first == nil)
+                first = tv;
+              if ([win isKeyWindow])
+                {
+                  if ([win firstResponder] == tv)
+                    return tv;
+                  else if (best == nil)
+                    best = tv;
+                }
+              else if ([win isMainWindow])
+                {
+                  if ([win firstResponder] == tv)
+                    {
+                      if (best == nil || ![[best window] isKeyWindow])
+                        best = tv;
+                    }
+                  else if (best == nil)
+                    best = tv;
+                }
+            }
+        }
+    }
+  return best != nil ? best : first;
+}
+
+- (void)_undoReplaceCharactersInRange: (NSRange)undoRange
+		 withAttributedString: (NSAttributedString *)undoString
+			selectedRange: (NSRange)selectedRange
+{
+  NSTextView *tv = [self _bestTextViewForUndo];
+
+  if ([tv shouldChangeTextInRange: undoRange
+		replacementString: undoString ? [undoString string] : @""])
+    {
+      [tv replaceCharactersInRange: undoRange
+	      withAttributedString: undoString];
+      [tv setSelectedRange: selectedRange];
+      [tv didChangeText];
+    }
+}
+@end
