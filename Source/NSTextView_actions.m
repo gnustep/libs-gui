@@ -1381,15 +1381,15 @@ and layout is left-to-right */
 }
 
 
-/* The following method is bound to 'Control-t', and must work like
- * pressing 'Control-t' inside Emacs.  For example, say that I type
- * 'Nicoal' in a NSTextView.  Then, I press 'Control-t'.  This should
- * swap the last two characters which were inserted, thus swapping the
- * 'a' and the 'l', and changing the text to read 'Nicola'.  */
-/*
-TODO: description incorrect. should swap characters on either side of the
-insertion point. (see also: miswart)
-*/
+/* The following method is bound to 'Control-t', and works exactly like
+ * pressing 'Control-t' inside Emacs, i.e., in general it swaps the
+ * character immediately before and after the insertion point and moves
+ * the insertion point forward by one character.  If, however, the
+ * insertion point is at the end of a line, it swaps the two characters
+ * before the insertion point and does not move the insertion point.
+ * Note that Mac OS X does not implement the special case at the end
+ * of a line, but I consider Emacs' behavior more useful.
+ */
 - (void) transpose: (id)sender
 {
   NSRange range = [self selectedRange];
@@ -1397,16 +1397,26 @@ insertion point. (see also: miswart)
   NSString *replacementString;
   unichar chars[2];
 
-  /* Do nothing if we are at beginning of text.  */
-  if (range.location < 2)
+  /* Do nothing if the selection is not empty or if we are at the
+   * beginning of text.  */
+  if (range.length > 0 || range.location < 1)
     {
       return;
     }
 
-  range = NSMakeRange(range.location - 2, 2);
+  range = NSMakeRange(range.location - 1, 2);
+
+  /* Eventually adjust the range if we are at the end of a line. */
+  string = [_textStorage string];
+  if (range.location + 1 == [string length]
+      || [string characterAtIndex: range.location + 1] == '\n')
+    {
+      if (range.location == 0)
+	return;
+      range.location -= 1;
+    }
 
   /* Get the two chars and swap them.  */
-  string = [_textStorage string];
   chars[1] = [string characterAtIndex: range.location];
   chars[0] = [string characterAtIndex: (range.location + 1)];
 
@@ -1418,6 +1428,7 @@ insertion point. (see also: miswart)
     {
       [self replaceCharactersInRange: range
         withString: replacementString];
+      [self setSelectedRange: NSMakeRange(range.location + 2, 0)];
       [self didChangeText];
     }
 }
