@@ -1384,7 +1384,7 @@ static BOOL menuBarVisible = YES;
       [encoder encodeObject: _items forKey: @"NSMenuItems"];
       
       // if there is no supermenu, make it the main menu.
-      if ([self supermenu] == nil)
+      if ([self supermenu] == nil && ![self _ownedByPopUp])
 	{
 	  [encoder encodeObject: @"_NSMainMenu" forKey: @"NSName"];
 	}

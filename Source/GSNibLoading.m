@@ -1414,6 +1414,12 @@ static BOOL _isInInterfaceBuilder = NO;
       NSArray *nameValues = nil;
       NSArray *classKeys = nil;
       NSArray *classValues = nil;
+      NSArray *objectsKeys = nil;
+      NSArray *objectsValues = nil;
+      NSArray *oidsKeys = nil;
+      NSArray *oidsValues = nil;
+      NSArray *accessibilityOidsKeys = nil;
+      NSArray *accessibilityOidsValues = nil;
 
       ASSIGN(_root, [coder decodeObjectForKey: @"NSRoot"]);
       ASSIGN(_visibleWindows,  
@@ -1424,33 +1430,32 @@ static BOOL _isInInterfaceBuilder = NO;
       ASSIGN(_framework, [coder decodeObjectForKey: @"NSFramework"]);
       _nextOid = [coder decodeIntForKey: @"NSNextOid"];
 
-      /*
-      objectsKeys = (NSArray *)
-	[coder decodeObjectForKey: @"NSObjectsKeys"];
-      objectsValues = (NSArray *)
-	[coder decodeObjectForKey: @"NSObjectsValues"];
-      */
       nameKeys = (NSArray *)
 	[coder decodeObjectForKey: @"NSNamesKeys"];
       nameValues = (NSArray *)
 	[coder decodeObjectForKey: @"NSNamesValues"];
-      /*
-      oidsKeys = (NSArray *)
-	[coder decodeObjectForKey: @"NSOidsKeys"];
-      oidsValues = (NSArray *)
-	[coder decodeObjectForKey: @"NSOidsValues"];
-      */
       classKeys = (NSArray *)
 	[coder decodeObjectForKey: @"NSClassesKeys"];
       classValues = (NSArray *)
 	[coder decodeObjectForKey: @"NSClassesValues"];
-      /*
-      accessibilityOidsKeys = (NSArray *)
-	[coder decodeObjectForKey: @"NSAccessibilityOidsKeys"];
-      accessibilityOidsValues = (NSArray *)
-	[coder decodeObjectForKey: @"NSAccessibilityOidsValues"];      
-      */
-      
+
+      // Only get this when in the editor...
+      if([NSClassSwapper isInInterfaceBuilder])
+	{
+	  objectsKeys = (NSArray *)
+	    [coder decodeObjectForKey: @"NSObjectsKeys"];
+	  objectsValues = (NSArray *)
+	    [coder decodeObjectForKey: @"NSObjectsValues"];
+	  oidsKeys = (NSArray *)
+	    [coder decodeObjectForKey: @"NSOidsKeys"];
+	  oidsValues = (NSArray *)
+	    [coder decodeObjectForKey: @"NSOidsValues"];
+	  accessibilityOidsKeys = (NSArray *)
+	    [coder decodeObjectForKey: @"NSAccessibilityOidsKeys"];
+	  accessibilityOidsValues = (NSArray *)
+	    [coder decodeObjectForKey: @"NSAccessibilityOidsValues"];      
+	}
+
       // instantiate the maps..
       _objects = NSCreateMapTable(NSObjectMapKeyCallBacks,
                                   NSObjectMapValueCallBacks, 2);
@@ -1465,9 +1470,6 @@ static BOOL _isInInterfaceBuilder = NO;
       
       // Fill in the maps...
       /*
-      [self _buildMap: _accessibilityOids 
-             withKeys: accessibilityOidsKeys 
-            andValues: accessibilityOidsValues];
       */
       [self _buildMap: _classes 
 	    withKeys: classKeys 
@@ -1475,14 +1477,21 @@ static BOOL _isInInterfaceBuilder = NO;
       [self _buildMap: _names 
 	    withKeys: nameKeys 
 	    andValues: nameValues];
-      /*
-      [self _buildMap: _objects 
-	     withKeys: objectsKeys 
-	    andValues: objectsValues];
-      [self _buildMap: _oids 
-	     withKeys: oidsKeys 
-	    andValues: oidsValues];
-      */
+
+      // Only get this when in the editor.
+      if([NSClassSwapper isInInterfaceBuilder])
+	{
+	  [self _buildMap: _accessibilityOids 
+		withKeys: accessibilityOidsKeys 
+		andValues: accessibilityOidsValues];
+	  [self _buildMap: _objects 
+		withKeys: objectsKeys 
+		andValues: objectsValues];
+	  [self _buildMap: _oids 
+		withKeys: oidsKeys 
+		andValues: oidsValues];
+	}
+
       ASSIGN(_connections,  [[coder decodeObjectForKey: @"NSConnections"] mutableCopy]);
       
       // instantiate...

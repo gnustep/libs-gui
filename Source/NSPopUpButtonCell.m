@@ -1058,6 +1058,11 @@ static NSImage *_pbc_image[5];
         {
           [aCoder encodeObject: _menu forKey: @"NSMenu"];
         }
+
+      if (_menuItem != nil)
+	{
+	  [aCoder encodeObject: _menuItem forKey: @"NSMenuItem"];
+	}
     }
   else
     {    

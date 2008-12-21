@@ -1,3 +1,14 @@
+2008-12-20 22:13-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibLoading.m: Read objects/accessibility and oids
+	maps if we are in a gui builder so that data is accessible.
+	* Source/NSActionCell.m: Don't archive target/action if they
+	have no values.
+	* Source/NSMenu.m: Only archive as "_NSMainMenu" if it has
+	no parent and is not owner by a popup.
+	* Source/NSPopUpButtonCell.m: Archive the default menu item
+	which will show when this popup is displayed.
+
 2008-12-20  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSTextView.m (-shouldChangeTextInRange:replacementString:):
@@ -25,6 +36,7 @@
 	* GNUmakefile: Export GNUSTEP_CORE_SOFTWARE to reduce chances of a
 	problem if a GNUmakefile in a subdirectory is missing it.
 
+>>>>>>> .r27362
 2008-12-17 21:20-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibLoading.m: Remove change which resets the bounds
