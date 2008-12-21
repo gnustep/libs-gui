@@ -5,6 +5,9 @@
 	* Source/NSTextView.m: Fix inconsistent naming of (private)
 	NSTextStorage category.
 
+	* Source/NSTextView_actions.m (-centerSelectionInVisibleArea):
+	Replace the provisional implementation by a correct one.
+
 2008-12-20 22:13-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibLoading.m: Read objects/accessibility and oids

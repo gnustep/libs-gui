@@ -1324,10 +1324,41 @@ and layout is left-to-right */
 
 - (void) centerSelectionInVisibleArea: (id)sender
 {
-  /* FIXME: This does not really implement what the method's name suggests,
-     but it is at least better than nothing.
-  */
-  [self scrollRangeToVisible: [self selectedRange]];
+  NSRange range;
+  NSPoint new;
+  NSRect rect, vRect;
+
+  vRect = [self visibleRect];
+  range = [self selectedRange];
+  if (range.length == 0)
+    {
+      rect =
+          [_layoutManager insertionPointRectForCharacterIndex: range.location
+                          inTextContainer: _textContainer];
+    }
+  else
+    {
+      range = [_layoutManager glyphRangeForCharacterRange: range
+                              actualCharacterRange: NULL];
+      rect = [_layoutManager boundingRectForGlyphRange: range
+                             inTextContainer: _textContainer];
+    }
+
+  if (NSWidth(_bounds) <= NSWidth(vRect))
+    new.x = 0;
+  else if (NSWidth(rect) > NSWidth(vRect))
+    new.x = NSMinX(rect);
+  else
+    new.x = NSMinX(rect) - (NSWidth(vRect) - NSWidth(rect)) / 2;
+
+  if (NSHeight(_bounds) <= NSHeight(vRect))
+    new.y = 0;
+  else if (NSHeight(rect) > NSHeight(vRect))
+    new.y = NSMinY(rect);
+  else
+    new.y = NSMinY(rect) - (NSHeight(vRect) - NSHeight(rect)) / 2;
+
+  [self scrollPoint: new];
 }
 
 
