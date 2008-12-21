@@ -4598,14 +4598,12 @@ other than copy/paste or dragging. */
 	  vRect.origin.x -= DRAGGING_SCROLL_DIST;
 	  if (NSMinX(vRect) < NSMinX(_bounds))
 	    vRect.origin.x = NSMinX(_bounds);
-	  [self scrollPoint: vRect.origin];
 	}
       else if (dragPoint.x >= NSMaxX(vRect) - DRAGGING_SCROLL_BORDER)
         {
 	  vRect.origin.x += DRAGGING_SCROLL_DIST;
 	  if (NSMaxX(vRect) > NSMaxX(_bounds))
 	    vRect.origin.x = NSMaxX(_bounds) - NSWidth(vRect);
-	  [self scrollPoint: vRect.origin];
 	}
 
       if (dragPoint.y <= NSMinY(vRect) + DRAGGING_SCROLL_BORDER)
@@ -4613,15 +4611,14 @@ other than copy/paste or dragging. */
 	  vRect.origin.y -= DRAGGING_SCROLL_DIST;
 	  if (NSMinY(vRect) < NSMinY(_bounds))
 	    vRect.origin.y = NSMinY(_bounds);
-	  [self scrollPoint: vRect.origin];
 	}
       else if (dragPoint.y >= NSMaxY(vRect) - DRAGGING_SCROLL_BORDER)
         {
 	  vRect.origin.y += DRAGGING_SCROLL_DIST;
 	  if (NSMaxY(vRect) > NSMaxY(_bounds))
 	    vRect.origin.y = NSMaxY(_bounds) - NSHeight(vRect);
-	  [self scrollPoint: vRect.origin];
 	}
+      [self scrollPoint: vRect.origin];
 #undef DRAGGING_SCROLL_BORDER
 #undef DRAGGING_SCROLL_DIST
 
@@ -5259,7 +5256,7 @@ configuation! */
 
 @end
 
-@implementation NSTextStorage(NSTextViewUndo)
+@implementation NSTextStorage(NSTextViewUndoSupport)
 /* FIXME: Should this code be moved to NSTextStorage? */
 - (NSTextView *)_bestTextViewForUndo
 {
