@@ -68,6 +68,9 @@
 - (void)selectItem:(id <NSMenuItem>)anObject;
 - (void)selectItemAtIndex:(int)index;
 - (void)selectItemWithTitle:(NSString *)title;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (BOOL) selectItemWithTag: (NSInteger)tag;
+#endif
 - (int)numberOfItems;
 - (NSArray *)itemArray;
 - (id <NSMenuItem>)itemAtIndex:(int)index;

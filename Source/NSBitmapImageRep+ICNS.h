@@ -1,13 +1,13 @@
-/** <title>NSNibAXAttributeConnector</title>
+/*
+   NSBitmapImageRep+ICNS.m
 
-   <abstract>
-   </abstract>
+   Methods for loading .icns images.
 
-   Copyright (C) 2007 Free Software Foundation, Inc.
-
-   Author: Gregory John Casamento
-   Date: 2007
-
+   Copyright (C) 2008 Free Software Foundation, Inc.
+   
+   Written by: Gregory Casamento
+   Date: 2008-08-12
+   
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -27,8 +27,15 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#import <GNUstepGUI/GSNibLoading.h>
-#import <Foundation/NSString.h>
+#ifndef _NSBitmapImageRep_ICNS_H_include
+#define _NSBitmapImageRep_ICNS_H_include
 
-@implementation NSNibAXRelationshipConnector
+#include "AppKit/NSBitmapImageRep.h"
+
+@interface NSBitmapImageRep (ICNS)
++ (BOOL) _bitmapIsICNS: (NSData *)imageData;
+- (id) _initBitmapFromICNS: (NSData *)imageData;
+// - (NSData *) _ICNSRepresentationWithProperties: (NSDictionary *) properties;
 @end
+
+#endif

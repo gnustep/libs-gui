@@ -70,7 +70,7 @@ enum {
   NSSize _originalMinSize;
   NSSize _originalSize;
 
-  NSString *_requiredFileType;
+  NSArray *_allowedFileTypes;
   NSString *_directory;
   NSString *_fullFileName;
 

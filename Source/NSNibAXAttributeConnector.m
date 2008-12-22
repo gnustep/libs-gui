@@ -27,7 +27,7 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#import <GNUstepGUI/GSNibCompatibility.h>
+#import <GNUstepGUI/GSNibLoading.h>
 #import <Foundation/NSString.h>
 
 @implementation NSNibAXAttributeConnector

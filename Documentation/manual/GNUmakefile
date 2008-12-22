@@ -1,3 +1,4 @@
+PACKAGE_NAME = gnustep-gui
 include $(GNUSTEP_MAKEFILES)/common.make
 
 DOCUMENT_NAME = AppKit

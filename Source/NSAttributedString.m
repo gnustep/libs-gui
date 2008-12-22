@@ -62,6 +62,10 @@ static Class stringClass = nil;
 static NSCharacterSet *wordBreakCSet = nil;
 /* A character set containing characters that are legal within words.  */
 static NSCharacterSet *wordCSet = nil;
+/* Character sets containing characters that are white space and
+   not white space */
+static NSCharacterSet *whiteCSet = nil;
+static NSCharacterSet *nonWhiteCSet = nil;
 /* A String containing the attachment character */
 static NSString *attachmentString = nil;
 
@@ -94,6 +98,10 @@ static void cache_init_real(void)
   
   /* Initializes wordCSet */
   wordCSet = [[wordBreakCSet invertedSet] copy];
+
+  /* Initializes white space and non-white space character sets */
+  whiteCSet = [[NSCharacterSet whitespaceCharacterSet] copy];
+  nonWhiteCSet = [[whiteCSet invertedSet] copy];
   
   /* Initializes attachmentString */
   attachmentString = [stringClass stringWithCharacters: &ch length: 1];
@@ -403,6 +411,7 @@ static Class converter_class(NSString *format, BOOL producer)
   NSRange  scanRange;
   NSRange  startRange;
   NSRange  endRange;
+  NSCharacterSet *breakCSet;
 
   cache_init ();
 
@@ -413,10 +422,15 @@ static Class converter_class(NSString *format, BOOL producer)
     }
 
   /*
-   * If the location lies between words, a double click selects only
-   * the character actually clicked on.
+   * Double clicking on a white space character selects all surrounding
+   * white space. Otherwise, if the location lies between words, a double
+   * click selects only the character actually clicked on.
    */
-  if ([wordBreakCSet characterIsMember: [str characterAtIndex: location]])
+  if ([whiteCSet characterIsMember: [str characterAtIndex: location]])
+    {
+      breakCSet = nonWhiteCSet;
+    }
+  else if ([wordBreakCSet characterIsMember: [str characterAtIndex: location]])
     {
       if (location == 0 || location == length - 1
 	|| [str characterAtIndex: location] != '\''
@@ -425,13 +439,21 @@ static Class converter_class(NSString *format, BOOL producer)
 	{
 	  return NSMakeRange(location, 1);
 	}
+      breakCSet = wordBreakCSet;
+    }
+  else
+    {
+      breakCSet = wordBreakCSet;
     }
 
   scanRange = NSMakeRange (0, location);
-  startRange = [str rangeOfCharacterFromSet: wordBreakCSet
+  startRange = [str rangeOfCharacterFromSet: breakCSet
 				    options: NSBackwardsSearch|NSLiteralSearch
 				      range: scanRange];
-
+  /*
+   * Don't treat single quotes embedded within a word as break characters.
+   * Note: The loop condition is always false when breakCSet==nonWhiteSetCSet.
+   */
   while (startRange.length > 0
     && startRange.location > 0 && startRange.location < length - 1
     && [str characterAtIndex: startRange.location] == '\''
@@ -447,9 +469,13 @@ static Class converter_class(NSString *format, BOOL producer)
     }
 
   scanRange = NSMakeRange (location, length - location);
-  endRange = [str rangeOfCharacterFromSet: wordBreakCSet
+  endRange = [str rangeOfCharacterFromSet: breakCSet
 				  options: NSLiteralSearch
 				    range: scanRange];
+  /*
+   * Don't treat single quotes embedded within a word as break characters.
+   * Note: The loop condition is always false when breakCSet==nonWhiteSetCSet.
+   */
   while (endRange.length > 0
     && endRange.location > 0 && endRange.location < length - 1
     && [str characterAtIndex: endRange.location] == '\''

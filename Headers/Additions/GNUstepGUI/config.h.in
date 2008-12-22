@@ -45,6 +45,9 @@
 /* Define to 1 if you have the `ungif' library (-lungif). */
 #undef HAVE_LIBUNGIF
 
+/* Define to 1 if you have the `icns' library (-licns). */
+#undef HAVE_LIBICNS
+
 /* Define to 1 if you have the `z' library (-lz). */
 #undef HAVE_LIBZ
 

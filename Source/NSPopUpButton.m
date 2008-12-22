@@ -284,6 +284,22 @@ this to return nil to indicate that we have no context menu.
   [self synchronizeTitleAndSelectedItem];
 }
 
+- (BOOL) selectItemWithTag: (NSInteger)tag
+{
+   int index = [self indexOfItemWithTag: tag];
+
+   if (index >= 0)
+     {
+       [self selectItemAtIndex: index];
+       return YES;
+     }
+   else
+     {
+       return NO;
+     }
+}
+
+
 /** <p>Returns the number of items in the item list</p>
     <p>See Also: [NSPopUpButtonCell-numberOfItems]</p>
  */

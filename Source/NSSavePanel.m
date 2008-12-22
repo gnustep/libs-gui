@@ -108,7 +108,9 @@ setPath(NSBrowser *browser, NSString *path)
 - (id) _initWithoutGModel;
 - (void) _getOriginalSize;
 - (void) _setDefaultDirectory;
+- (void) _updateDefaultDirectory;
 - (void) _resetDefaults;
+- (void) _reloadBrowser;
 // Methods invoked by buttons
 - (void) _setHomeDirectory;
 - (void) _mountMedia;
@@ -116,7 +118,7 @@ setPath(NSBrowser *browser, NSString *path)
 - (void) _selectTextInColumn: (int)column;
 - (void) _selectCellName: (NSString *)title;
 - (void) _setupForDirectory: (NSString *)path file: (NSString *)name;
-- (BOOL) _shouldShowExtension: (NSString *)extension isDir: (BOOL *)isDir;
+- (BOOL) _shouldShowExtension: (NSString *)extension;
 - (void) _windowResized: (NSNotification*)n;
 - (NSComparisonResult) _compareFilename: (NSString *)n1 with: (NSString *)n2;
 @end /* NSSavePanel (PrivateMethods) */
@@ -149,9 +151,7 @@ setPath(NSBrowser *browser, NSString *path)
       NSString	*file = [[names lastObject] stringByStandardizingPath];
       BOOL isDir;
 
-      if (file && 
-	  [_fm fileExistsAtPath: file isDirectory: &isDir] && 
-	  isDir)
+      if (file && [_fm fileExistsAtPath: file isDirectory: &isDir] && isDir)
         {
 	  [self setDirectory: file];
 	}
@@ -386,20 +386,24 @@ setPath(NSBrowser *browser, NSString *path)
 {
   NSString *path;
 
-  if (_directory == nil)
+  path = [[NSUserDefaults standardUserDefaults] 
+	     objectForKey: @"NSDefaultOpenDirectory"];
+  if (path == nil)
     {
-      path = [[NSUserDefaults standardUserDefaults] 
-		 objectForKey: @"NSDefaultOpenDirectory"];
-      if (path == nil)
-        {
-	  // FIXME: Should we use this or the home directory?
-	  ASSIGN(_directory, [_fm currentDirectoryPath]);
-	}
-      else
-        {
-	  ASSIGN(_directory, path);
-	}
+      // FIXME: Should we use this or the home directory?
+      ASSIGN(_directory, [_fm currentDirectoryPath]);
     }
+  else
+    {
+      ASSIGN(_directory, path);
+    }
+}
+
+- (void) _updateDefaultDirectory
+{
+  [[NSUserDefaults standardUserDefaults]
+      setObject: _directory
+      forKey: @"NSDefaultOpenDirectory"];
 }
 
 - (void) _resetDefaults
@@ -407,10 +411,17 @@ setPath(NSBrowser *browser, NSString *path)
   [self _setDefaultDirectory];
   [self setPrompt: @"Name:"];
   [self setTitle: @"Save"];
-  [self setRequiredFileType: @""];
+  [self setAllowedFileTypes: nil];
   [self setTreatsFilePackagesAsDirectories: NO];
   [self setDelegate: nil];
   [self setAccessoryView: nil];
+}
+
+- (void) _reloadBrowser
+{
+  NSString *path = [_browser path];
+  [_browser loadColumnZero];
+  setPath(_browser, path);
 }
 
 //
@@ -552,7 +563,10 @@ selectCellWithString: (NSString*)title
 {
   if (path == nil)
     {
-      [self _setDefaultDirectory];
+      if (_directory == nil)
+        {
+	  [self _setDefaultDirectory];
+	}
     }
   else
     {
@@ -576,24 +590,11 @@ selectCellWithString: (NSString*)title
 }
 
 - (BOOL) _shouldShowExtension: (NSString *)extension
-			isDir: (BOOL *)isDir;
 {
-  if (*isDir == NO)
-    {
-      if (_requiredFileType != nil && [_requiredFileType length] != 0
-          && [extension isEqualToString: _requiredFileType] == NO)
-	return NO;
-    }
-  else if ([extension length] == 0)
-    {
-      /* Automatic YES */
-    }
-  else if (_treatsFilePackagesAsDirectories == NO)
-    {
-      if (_requiredFileType == nil || [_requiredFileType length] == 0
-              || [extension isEqualToString: _requiredFileType] == YES)
-	  *isDir = NO;
-    }
+  if (_allowedFileTypes != nil
+      && [_allowedFileTypes indexOfObject: extension] == NSNotFound
+      && [_allowedFileTypes indexOfObject: @""] == NSNotFound)
+    return NO;
 
   return YES;
 }
@@ -679,7 +680,7 @@ selectCellWithString: (NSString*)title
   [[NSNotificationCenter defaultCenter] removeObserver: self];
   TEST_RELEASE (_fullFileName);
   TEST_RELEASE (_directory);  
-  TEST_RELEASE (_requiredFileType);
+  TEST_RELEASE (_allowedFileTypes);
 
   [super dealloc];
 }
@@ -695,7 +696,7 @@ selectCellWithString: (NSString*)title
  * All these are set automatically  
   _directory = nil;
   _fullFileName = nil;
-  _requiredFileType = nil;
+  _allowedFileTypes = nil;
   _delegate = nil;
   
   _treatsFilePackagesAsDirectories = NO;
@@ -920,35 +921,86 @@ selectCellWithString: (NSString*)title
    is used for another file type within the application.  If
    you do not invoke it, or set it to empty string or nil, no
    extension will be appended, indicated by an empty string
-   returned from -requiredFileType .</p><p>See Also: -requiredFileType</p>
+   returned from -requiredFileType.</p><p>This method is equivalent
+   to calling -setAllowedFileTypes: with an array containing only
+   fileType.</p><p>See Also: -requiredFileType</p>
  */
 - (void) setRequiredFileType: (NSString*)fileType
 {
-  ASSIGN(_requiredFileType, fileType);
+  NSArray *fileTypes;
+
+  if ([fileType length] == 0)
+    fileTypes = nil;
+  else
+    fileTypes = [NSArray arrayWithObject: fileType];
+  [self setAllowedFileTypes: fileTypes];
 }
 
-/**<p>Returns the required file type. The default, indicated by empty string,
- * is no required file type.</p><p>See Also: -setRequiredFileType:</p>
+/**<p>Returns the required file type.  The default, indicated by an empty
+ * string, is no required file type.</p><p>This method is equivalent to
+ * calling -allowedFileTypes and returning the first element of the list
+ * of allowed types, or the empty string if there are none.</p>
+ * <p>See Also: -setRequiredFileType:</p>
  */
 - (NSString*) requiredFileType
 {
-  return _requiredFileType;
+  if ([_allowedFileTypes count] > 0)
+    return [_allowedFileTypes objectAtIndex: 0];
+  else
+    return @"";
 }
 
+/**<p> Specifies the allowed types, i.e., file name extensions to
+   be appended to any selected files that don't already have one
+   of those extensions.  The elements of the array should be strings
+   that do not include the period that begins the extension.  Invoke
+   this method each time the Save panel is used for another file type
+   within the application.  If you do not invoke it, or set it to an
+   empty array or nil, no extension will be appended, indicated by nil
+   returned from -allowedFileTypes.</p><p>See Also: -allowedFileTypes</p>
+ */
 - (void) setAllowedFileTypes: (NSArray *)types
 {
-  // FIXME
+  if (types != _allowedFileTypes)
+    {
+      BOOL hasAllowedExtension = NO;
+      NSString *filename, *extension;
+
+      filename = [[_form cellAtIndex: 0] stringValue];
+      extension = [filename pathExtension];
+      if ([extension length] && [_allowedFileTypes count] &&
+	  [_allowedFileTypes indexOfObject: extension] != NSNotFound)
+	hasAllowedExtension = YES;
+
+      if ([types count] == 0)
+   	DESTROY(_allowedFileTypes);
+      else
+	ASSIGN(_allowedFileTypes, types);
+      [self _reloadBrowser];
+
+      if (hasAllowedExtension && [types count] &&
+	  [types indexOfObject: extension] == NSNotFound &&
+	  [types indexOfObject: @""] == NSNotFound)
+        {
+	  extension = [types objectAtIndex: 0];
+	  filename = [filename stringByDeletingPathExtension];
+	  filename = [filename stringByAppendingPathExtension: extension];
+	  [[_form cellAtIndex: 0] setStringValue: filename];
+	}
+    }
+}
+
+/**<p>Returns an array of the allowed file types. The default, indicated by
+ * nil, is any file type is allowed.</p><p>See Also: -setAllowedFileTypes:</p>
+ */
+- (NSArray *) allowedFileTypes
+{
+  return _allowedFileTypes;
 }
 
 - (void) setAllowsOtherFileTypes: (BOOL)flag
 {
   _allowsOtherFileTypes = flag;
-}
-
-- (NSArray *) allowedFileTypes
-{
-  // FIXME
-  return nil;
 }
 
 - (BOOL) allowsOtherFileTypes
@@ -972,7 +1024,11 @@ selectCellWithString: (NSString*)title
  */
 - (void) setTreatsFilePackagesAsDirectories: (BOOL)flag
 {
-  _treatsFilePackagesAsDirectories = flag;
+  if (flag != _treatsFilePackagesAsDirectories)
+    {
+      _treatsFilePackagesAsDirectories = flag;
+      [self _reloadBrowser];
+    }
 }
 
 /**<p> Validates and possibly reloads the browser columns that are visible 
@@ -1068,17 +1124,27 @@ selectCellWithString: (NSString*)title
  */
 - (NSString*) filename
 {
+  NSString *fileType;
+
   if (_fullFileName == nil)
    return @"";
 
-  if (_requiredFileType == nil || [_requiredFileType isEqual: @""] == YES)
+  if (_allowedFileTypes == nil ||
+      [_allowedFileTypes indexOfObject: @""] != NSNotFound)
     return _fullFileName;
 
-  // add filetype extension only if the filename does not include it already
-  if ([[_fullFileName pathExtension] isEqual: _requiredFileType] == YES)
-    return _fullFileName;
+  /* add filetype extension only if the filename does not include an
+     allowed one already */
+  fileType = [_fullFileName pathExtension];
+  if ([_allowedFileTypes indexOfObject: fileType] != NSNotFound)
+    {
+      return _fullFileName;
+    }
   else
-    return [_fullFileName stringByAppendingPathExtension: _requiredFileType];
+    {
+      fileType = [_allowedFileTypes objectAtIndex: 0];
+      return [_fullFileName stringByAppendingPathExtension: fileType];
+    }
 }
 
 - (NSURL *) URL
@@ -1093,6 +1159,7 @@ selectCellWithString: (NSString*)title
 - (void) cancel: (id)sender
 {
   ASSIGN(_directory, pathToColumn(_browser, [_browser lastColumn]));
+  [self _updateDefaultDirectory];
   [NSApp stopModalWithCode: NSCancelButton];
   [_okButton setEnabled: NO];
   [self close];
@@ -1202,6 +1269,7 @@ selectCellWithString: (NSString*)title
     if (![_delegate panel: self isValidFilename: [self filename]])
       return;
 
+  [self _updateDefaultDirectory];
   [NSApp stopModalWithCode: NSOKButton];
   [_okButton setEnabled: NO];
   [self close];
@@ -1397,6 +1465,7 @@ selectCellWithString: (NSString*)title
 // NSSavePanel browser delegate methods
 //
 @interface NSSavePanel (GSBrowserDelegate)
+- (void) browserDidScroll: (NSBrowser *)sender;
 - (void) browser: (NSBrowser*)sender
 createRowsForColumn: (int)column
         inMatrix: (NSMatrix*)matrix;
@@ -1429,6 +1498,11 @@ static int compareFilenames (id elem1, id elem2, void *context)
 
 
 @implementation NSSavePanel (GSBrowserDelegate)
+- (void) browserDidScroll: (NSBrowser *)sender
+{
+  [self validateVisibleColumns];
+}
+
 - (void) browser: (NSBrowser*)sender
 createRowsForColumn: (int)column
 	inMatrix: (NSMatrix*)matrix
@@ -1443,11 +1517,12 @@ createRowsForColumn: (int)column
   unsigned               base_frac = 1;
   BOOL                   display_progress = NO;
   NSString              *progressString = nil;
+  NSWorkspace		*ws;
   /* We create lot of objects in this method, so we use a pool */
   NSAutoreleasePool     *pool;
 
   pool = [NSAutoreleasePool new];
-  
+  ws = [NSWorkspace sharedWorkspace];
   path = pathToColumn(_browser, column);
 #if	defined(__MINGW32__)
   if (column == 0)
@@ -1455,7 +1530,7 @@ createRowsForColumn: (int)column
       NSMutableArray	*m;
       unsigned		i;
 
-      files = [[NSWorkspace sharedWorkspace] mountedLocalVolumePaths];
+      files = [ws mountedLocalVolumePaths];
       m = [files mutableCopy];
       i = [m count];
       while (i-- > 0)
@@ -1588,16 +1663,19 @@ createRowsForColumn: (int)column
       pathAndFile = [path stringByAppendingPathComponent: file];
       exists = [_fm fileExistsAtPath: pathAndFile 
 		    isDirectory: &isDir];
-      
+      if (isDir && !_treatsFilePackagesAsDirectories
+	&& [ws isFilePackageAtPath: pathAndFile])
+        {
+	  isDir = NO;
+	}
       if (_delegateHasShowFilenameFilter)
 	{
-	  exists = [_delegate panel: self
-			      shouldShowFilename: pathAndFile];
+	  exists = [_delegate panel: self shouldShowFilename: pathAndFile];
 	}
 
-      if (exists)
+      if (exists && !isDir)
 	{
-	  exists = [self _shouldShowExtension: extension isDir: &isDir];
+	  exists = [self _shouldShowExtension: extension];
 	}
       
       if (exists)
@@ -1639,6 +1717,10 @@ createRowsForColumn: (int)column
 - (BOOL) browser: (NSBrowser*)sender
    isColumnValid: (int)column
 {
+  /*
+   * FIXME This code doesn't handle the case where the delegate now wants
+   *       to show additional files, which were not displayed before.
+   */
   NSArray	*cells = [[sender matrixInColumn: column] cells];
   unsigned	count = [cells count], i;
   NSString	*path = pathToColumn(sender, column);

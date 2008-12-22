@@ -1642,12 +1642,27 @@ void NSBeginInformationalAlertSheet(NSString *title,
     }
   else
     {
+      _modalDelegate = delegate;
+      _didEndSelector = didEndSelector;
       [NSApp beginSheet: _window
 	 modalForWindow: window
-	  modalDelegate: delegate
-	 didEndSelector: didEndSelector
+	  modalDelegate: self
+         didEndSelector: @selector(_alertDidEnd:returnCode:contextInfo:)
 	    contextInfo: contextInfo];
       DESTROY(_window);
+    }
+}
+
+- (void) _alertDidEnd: (NSWindow *)sheet
+           returnCode: (int)returnCode
+	  contextInfo: (void *)contextInfo
+{
+  if ([_modalDelegate respondsToSelector: _didEndSelector])
+    {
+      void (*didEnd)(id, SEL, id, int, void *);
+      didEnd = (void (*)(id, SEL, id, int, void *))[_modalDelegate
+	methodForSelector: _didEndSelector];
+      didEnd(_modalDelegate, _didEndSelector, self, returnCode, contextInfo);
     }
 }
 

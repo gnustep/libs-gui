@@ -318,8 +318,14 @@ static Class controlClass;
   if ([aCoder allowsKeyedCoding])
     {
       [aCoder encodeInt: [self tag] forKey: @"NSTag"];
-      [aCoder encodeObject: [self target] forKey: @"NSTarget"];
-      [aCoder encodeObject: NSStringFromSelector([self action]) forKey: @"NSAction"];
+      if([self target] != nil)
+	{
+	  [aCoder encodeObject: [self target] forKey: @"NSTarget"];
+	}
+      if([self action] != NULL)
+	{
+	  [aCoder encodeObject: NSStringFromSelector([self action]) forKey: @"NSAction"];
+	}
       [aCoder encodeObject: _control_view forKey: @"NSControlView"];
     }
   else

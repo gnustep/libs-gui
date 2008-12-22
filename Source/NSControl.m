@@ -971,7 +971,11 @@ static NSNotificationCenter *nc;
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder: aDecoder];
+  self = [super initWithCoder: aDecoder];
+  if (self == nil)
+    {
+      return nil;
+    }
 
   if ([aDecoder allowsKeyedCoding])
     {
@@ -980,6 +984,15 @@ static NSNotificationCenter *nc;
       if (cell != nil)
         {
           [self setCell: cell];
+        }
+      else
+        {
+          // This is needed for subclasses without cells, like NSColorWeel
+          // as we store some properties only on the cell.
+          NSCell *cell = [[[self class] cellClass] new];
+
+          [self setCell: cell];
+          RELEASE(cell);
         }
       if ([aDecoder containsValueForKey: @"NSEnabled"])
         {

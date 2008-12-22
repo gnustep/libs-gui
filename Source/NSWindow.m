@@ -50,6 +50,7 @@
 #include <Foundation/NSSet.h>
 #include <Foundation/NSLock.h>
 #include <Foundation/NSUserDefaults.h>
+#include <Foundation/NSUndoManager.h>
 
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSButton.h"
@@ -838,6 +839,7 @@ many times.
     frame.origin = NSZeroPoint;
     [_wv setFrame: frame];
     [_wv setWindowNumber: _windowNum];
+    [_wv setDocumentEdited: _f.is_edited];
     [_wv setNeedsDisplay: YES];
   }
 }
@@ -980,8 +982,6 @@ many times.
     @"can be created.");
 
   NSDebugLLog(@"NSWindow", @"NSWindow start of init\n");
-  if (!windowDecorator)
-    windowDecorator = [GSWindowDecorationView windowDecorator];
 
   // FIXME: This hack is here to work around a gorm decoding problem.
   if (_windowNum)
@@ -1014,6 +1014,9 @@ many times.
   /* Create the window view */
   cframe.origin = NSZeroPoint;
   cframe.size = _frame.size;
+  if (!windowDecorator)
+    windowDecorator = [GSWindowDecorationView windowDecorator];
+
   _wv = [windowDecorator newWindowDecorationViewWithFrame: cframe
                                                    window: self];
   [_wv _viewWillMoveToWindow: self];
@@ -1091,12 +1094,12 @@ many times.
 
 - (NSRect) contentRectForFrameRect: (NSRect)frameRect
 {
-  return [isa contentRectForFrameRect: frameRect styleMask: _styleMask];
+  return [_wv contentRectForFrameRect: frameRect styleMask: _styleMask];
 }
 
 - (NSRect) frameRectForContentRect: (NSRect)contentRect
 {
-  return [isa frameRectForContentRect: contentRect styleMask: _styleMask];
+  return [_wv frameRectForContentRect: contentRect styleMask: _styleMask];
 }
 
 /*
@@ -1112,12 +1115,14 @@ many times.
   previous content view.  */
 - (void) setContentView: (NSView*)aView
 {
+  if (aView == _contentView)
+    return;
+
   if (aView == nil)
     {
       aView = AUTORELEASE([[NSView alloc]
         initWithFrame:
-          [NSWindow contentRectForFrameRect: _frame
-                                  styleMask: _styleMask]]);
+          [self contentRectForFrameRect: _frame]]);
     }
   if (_contentView != nil)
     {
@@ -1819,7 +1824,7 @@ many times.
     }
 
   [self setFrameTopLeftPoint: topLeftPoint];
-  cRect = [isa contentRectForFrameRect: _frame styleMask: _styleMask];
+  cRect = [self contentRectForFrameRect: _frame];
   topLeftPoint.x = NSMinX(cRect);
   topLeftPoint.y = NSMaxY(cRect);
 
@@ -2030,7 +2035,7 @@ many times.
   NSRect r = _frame;
 
   r.size = aSize;
-  r = [NSWindow frameRectForContentRect: r styleMask: _styleMask];
+  r = [self frameRectForContentRect: r];
   r.origin = _frame.origin;
   [self setFrame: r display: YES];
 }
@@ -2769,8 +2774,6 @@ resetCursorRectsForView(NSView *theView)
     {
       NSWindow *mini = GSWindowWithNumber(_counterpart);
       [mini orderFront: self];
-      // If the window is still visible, order it out.
-      [self orderOut: self];
     }
   [nc postNotificationName: NSWindowDidMiniaturizeNotification
                     object: self];
@@ -2979,6 +2982,16 @@ resetCursorRectsForView(NSView *theView)
       //return AUTORELEASE([[NSUndoManager alloc] init]);
       return nil;
     }
+}
+
+- (void) undo: (id)sender
+{
+  [[self undoManager] undo];
+}
+
+- (void) redo: (id)sender
+{
+  [[self undoManager] redo];
 }
 
 /**
@@ -4756,6 +4769,73 @@ current key view.<br />
 }
 
 /*
+ * Menu item validation
+ */
+
+- (BOOL)validateMenuItem: (NSMenuItem *)anItem
+{
+  BOOL result = YES;
+  SEL  action = [anItem action];
+
+  if (sel_eq(action, @selector(performClose:)))
+    {
+      result = ([self styleMask] & NSClosableWindowMask) ? YES : NO;
+    }
+  else if (sel_eq(action, @selector(performMiniaturize:)))
+    {
+      result = ([self styleMask] & NSMiniaturizableWindowMask) ? YES : NO;
+    }
+  else if (sel_eq(action, @selector(performZoom:)))
+    {
+      result = ([self styleMask] & NSResizableWindowMask) ? YES : NO;
+    }
+  else if (sel_eq(action, @selector(undo:)))
+    {
+      NSUndoManager *undo = [self undoManager];
+      if (undo == nil)
+        {
+          result = NO;
+        }
+      else
+        {
+          if ([undo canUndo])
+            {
+              [anItem setTitle: [undo undoMenuItemTitle]];
+              result = YES;
+            }
+          else
+            {
+              [anItem setTitle: [undo undoMenuTitleForUndoActionName: @""]];
+              result = NO;
+            }
+        }
+    }
+  else if (sel_eq(action, @selector(redo:)))
+    {
+      NSUndoManager *undo = [self undoManager];
+      if (undo == nil)
+        {
+          result = NO;
+        }
+      else
+        {
+          if ([undo canRedo])
+            {
+              [anItem setTitle: [undo redoMenuItemTitle]];
+              result = YES;
+            }
+          else
+            {
+              [anItem setTitle: [undo redoMenuTitleForUndoActionName: @""]];
+              result = NO;
+            }
+        }
+    }
+    
+  return result;
+}
+
+/*
  * Assigning a delegate
  */
 
@@ -4980,6 +5060,12 @@ current key view.<br />
   // Should only be defined on MS Windows
   return (void *)(intptr_t)_windowNum;
 }
+
+- (NSWindow *) attachedSheet
+{
+  return nil;
+}
+
 @end
 
 /*

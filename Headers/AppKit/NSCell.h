@@ -493,11 +493,5 @@ enum {
                           inView: (NSView*)controlView;
 @end
 
-//
-// Function which should be somewhere else
-//
-inline NSSize 
-_sizeForBorderType (NSBorderType aType);
-
 #endif // _GNUstep_H_NSCell
 

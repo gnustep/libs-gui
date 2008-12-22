@@ -28,6 +28,7 @@
 
 #include "config.h"
 #include <Foundation/NSNotification.h>
+#include <Foundation/NSException.h>
 
 #include "AppKit/NSClipView.h"
 #include "AppKit/NSCursor.h"
@@ -37,6 +38,8 @@
 #include "AppKit/NSTableView.h"
 #include "AppKit/NSWindow.h"
 #include "AppKit/PSOperators.h"
+
+#include <GNUstepGUI/GSNibLoading.h>
 
 #include <math.h>
 
@@ -789,6 +792,9 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
       if ([[self subviews] count] > 0)
         {
 	  id document = [aDecoder decodeObjectForKey: @"NSDocView"];
+
+	  NSAssert([document class] != [NSCustomView class],
+		   NSInvalidArgumentException);
 	  NSRect rect = [document frame];
 	  rect.origin = NSZeroPoint;
 	  [document setFrame: rect];

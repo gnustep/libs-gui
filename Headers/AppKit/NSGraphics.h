@@ -142,7 +142,6 @@ NSDrawBezel(const NSRect aRect, const NSRect clipRect)
   NSDrawGrayBezel(aRect, clipRect);
 }
 
-
 /** Draws a rectangle along the inside of aRect.  The rectangle will be
     black, dotted (using 1 point dashes), and will have a line width
     of 1 point.  */
@@ -242,6 +241,17 @@ APPKIT_EXPORT int NSGetWindowServerMemory(int context, int *virtualMemory,
 					   int *windowBackingMemory, 
 					   NSString **windowDumpStream);
 
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_1, GS_API_LATEST)
+typedef enum _NSFocusRingPlacement
+{
+    NSFocusRingOnly=0,
+    NSFocusRingBelow,
+    NSFocusRingAbove
+} NSFocusRingPlacement;
+
+void NSSetFocusRingStyle(NSFocusRingPlacement placement);
 #endif
 
 #endif /* __NSGraphics_h__ */

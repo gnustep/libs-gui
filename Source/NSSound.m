@@ -28,6 +28,7 @@
 
 #include "config.h"
 #include <Foundation/Foundation.h>
+#include <GNUstepBase/NSTask+GS.h>
 #include "AppKit/NSPasteboard.h"
 #include "AppKit/NSSound.h"
 
@@ -173,21 +174,14 @@ static id<GSSoundSvr> the_server = nil;
 	  
 	  if (cmd == nil && recursion == NO) 
 	    {
-#ifdef GNUSTEP_BASE_LIBRARY
-	      cmd = RETAIN([[NSSearchPathForDirectoriesInDomains(
-				 GSToolsDirectory, NSSystemDomainMask, YES) 
-								objectAtIndex: 0]
-			     stringByAppendingPathComponent: @"gnustep_sndd"]);
-#else
-	      cmd = RETAIN([@GNUSTEP_TOOLS_NO_DESTDIR
-			     stringByAppendingPathComponent: @"gnustep_sndd"]);
-#endif
+	      cmd = [NSTask launchPathForTool: @"gnustep_sndd"];
 	    }
 
 	  if (recursion == YES || cmd == nil) 
 	    {
 	      NSLog(@"Unable to contact sound server - "
-		    @"please ensure that gnustep_sndd is running for %@.", description);
+		@"please ensure that gnustep_sndd is running for %@.",
+		description);
 	      return nil;
 	    } 
 	  else 

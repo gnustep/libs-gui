@@ -138,6 +138,8 @@
 #include "AppKit/NSCell.h"
 // For gradient types
 #include "AppKit/NSButtonCell.h"
+// For image frame style
+#include "AppKit/NSImageCell.h"
 
 #if	OS_API_VERSION(GS_API_NONE,GS_API_NONE)
 @class NSArray;
@@ -405,6 +407,30 @@ APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
  */
 - (void) drawWindowBackground: (NSRect)frame view: (NSView*)view;
 
+/**
+ * Draw a border of the specified border type.
+ */
+- (void) drawBorderType: (NSBorderType)aType 
+                  frame: (NSRect)frame 
+                   view: (NSView*)view;
+
+/**
+ * Determine the size for the specified border type .
+ */
+- (NSSize) sizeForBorderType: (NSBorderType)aType;
+
+/**
+ * Draw a border of the specified frame style.
+ */
+- (void) drawBorderForImageFrameStyle: (NSImageFrameStyle)frameStyle
+                                frame: (NSRect)frame 
+                                 view: (NSView*)view;
+
+/**
+ * Determine the size for the specified frame style.
+ */
+- (NSSize) sizeForImageFrameStyle: (NSImageFrameStyle)frameStyle;
+
 @end
 
 /**
@@ -501,6 +527,15 @@ withRepeatedImage: (NSImage*)image
 		 fromRect: (NSRect)source
 		  flipped: (BOOL)flipped;
 @end
+
+//
+// Function which should be somewhere else
+//
+static inline NSSize 
+_sizeForBorderType (NSBorderType aType)
+{
+  return [[GSTheme theme] sizeForBorderType: aType];
+}
 
 #endif /* OS_API_VERSION */
 #endif /* _GNUstep_H_GSTheme */

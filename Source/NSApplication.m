@@ -83,6 +83,7 @@
 #include "GSGuiPrivate.h"
 #include "GNUstepGUI/GSInfoPanel.h"
 #include "GNUstepGUI/GSVersion.h"
+#include "NSDocumentFrameworkPrivate.h"
 
 /* The -gui thread. See the comment in initialize_gnustep_backend. */
 NSThread *GSAppKitThread;
@@ -903,8 +904,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
  * Nib file if <code>NSMainNibFile</code> is set in the application
  * property list, posts an
  * <code>NSApplicationWillFinishLaunchingNotification</code>, and takes care
- * of a few other startup tasks, then posts
- * <code>NSApplicationDidFinishLaunchingNotification</code>.
+ * of a few other startup tasks.
  * If you override this method, be sure to call <em>super</em>.</p>
  *
  * <p>The -run method calls this the first time it is called, before starting
@@ -922,6 +922,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   unsigned		count;
   unsigned		i;
   BOOL			hadDuplicates = NO;
+  BOOL			didAutoreopen = NO;
   NSImage		*image = nil;
 
   appIconFile = [infoDict objectForKey: @"NSIcon"];
@@ -929,6 +930,14 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
     {
       image = [NSImage imageNamed: appIconFile];
     }
+
+  // Try to look up the icns file.
+  appIconFile = [infoDict objectForKey: @"CFBundleIconFile"];
+  if (appIconFile && ![appIconFile isEqual: @""])
+    {
+      image = [NSImage imageNamed: appIconFile];
+    }
+
   if (image == nil)
     {
       image = [NSImage imageNamed: @"GNUstep"];
@@ -1046,9 +1055,16 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 
   [self activateIgnoringOtherApps: YES];
 
-  /* Instantiate the NSDocumentController if we are a doc-based app */
+  /*
+   * Instantiate the NSDocumentController if we are a doc-based app
+   * and eventually reopen all autosaved documents
+   */
   if ([NSDocumentController isDocumentBasedApplication])
-    [NSDocumentController sharedDocumentController];
+    {
+      didAutoreopen =
+	  [[NSDocumentController sharedDocumentController]
+	      _reopenAutosavedDocuments];
+    }
 
   /*
    *	Now check to see if we were launched with arguments asking to
@@ -1068,7 +1084,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
       [_listener application: self printFile: filePath];
       [self terminate: self];
     }
-  else if (![defs boolForKey: @"autolaunch"]
+  else if (!didAutoreopen && ![defs boolForKey: @"autolaunch"]
     && [_delegate respondsToSelector:
       @selector(applicationShouldOpenUntitledFile:)]
     && ([_delegate applicationShouldOpenUntitledFile: self])
@@ -1077,7 +1093,16 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
     {
       [_delegate applicationOpenUntitledFile: self];
     }
-  
+}
+
+/*
+ * Posts <code>NSApplicationDidFinishLaunchingNotification</code>.
+ *
+ * <p>The -run method calls this the first time it is called, before starting
+ * the event loop for the first time and after calling finishLaunching.</p>
+ */  
+- (void) _didFinishLaunching
+{
   /* finish the launching post notification that launching has finished */
   [nc postNotificationName: NSApplicationDidFinishLaunchingNotification
 		    object: self];
@@ -1085,14 +1110,14 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   NS_DURING
     {
       [[[NSWorkspace sharedWorkspace] notificationCenter]
-	postNotificationName: NSWorkspaceDidLaunchApplicationNotification
-	object: [NSWorkspace sharedWorkspace]
-	userInfo: [self _notificationUserInfo]];
+          postNotificationName: NSWorkspaceDidLaunchApplicationNotification
+          object: [NSWorkspace sharedWorkspace]
+          userInfo: [self _notificationUserInfo]];
     }
   NS_HANDLER
     {
       NSLog (_(@"Problem during launch app notification: %@"),
-	 [localException reason]);
+             [localException reason]);
       [localException raise];
     }
   NS_ENDHANDLER
@@ -1364,6 +1389,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
       IF_NO_GC(_runLoopPool = [arpClass new]);
 
       [self finishLaunching];
+      [self _didFinishLaunching];
 
       [_listener updateServicesMenu];
       [_main_menu update];
@@ -1753,8 +1779,10 @@ See -runModalForWindow:
 {
   if (_session == 0)
     {
-      [NSException raise: NSInvalidArgumentException
-		  format: @"stopModalWithCode: when not in a modal session"];
+      // According to the spec, there is no exception which is thrown if we are not 
+      // currently in a modal session.   While it is not good practice to call this 
+      // when we're not, we shouldn't throw an exception.
+      return;
     }
   else if (returnCode == NSRunContinuesResponse)
     {
@@ -1853,8 +1881,8 @@ See -runModalForWindow:
       case NSKeyDown:
 	{
 	  NSDebugLLog(@"NSEvent", @"send key down event\n");
-	  if ([[self mainMenu] performKeyEquivalent: theEvent] == NO
-	    && [[self keyWindow] performKeyEquivalent: theEvent] == NO)
+	  if ([[self keyWindow] performKeyEquivalent: theEvent] == NO
+	    && [[self mainMenu] performKeyEquivalent: theEvent] == NO)
 	    {
 	      [[theEvent window] sendEvent: theEvent];
 	    }
@@ -2167,6 +2195,8 @@ image.</p><p>See Also: -applicationIconImage</p>
   RETAIN(old_app_icon);
   [_app_icon setName: nil];
   [anImage setName: @"NSApplicationIcon"];
+  [anImage setScalesWhenResized: YES];
+  [anImage setSize: NSMakeSize(48,48)];
   ASSIGN(_app_icon, anImage);
 
   [_main_menu _organizeMenu];	// Let horizontal menu change icon
@@ -3196,8 +3226,8 @@ struct _DelegateWrapper
  * it returns <code>NSTerminateNow</code> will termination be
  * carried out.<br />
  * The old version of -applicationShouldTerminate: returned a BOOL, and this
- * behavior is handled for backward compatibility with YES being
- * equivalent to <code>NSTerminateNow</code> and NO being
+ * should still work as YES is
+ * equivalent to <code>NSTerminateNow</code> and NO is
  * equivalent to <code>NSTerminateCancel</code>.
  */
 - (void) terminate: (id)sender
@@ -3210,11 +3240,12 @@ struct _DelegateWrapper
        * so if we are linked in to an application which used that
        * API, the delegate might return a BOOL rather than an
        * NSTerminateNow.  That's fine as both NSTerminateNow
-       * and BOOL are integers, and NSTerminateNow is defined as YES
-       * and NSTerminateCancel as NO.
+       * and BOOL are integral types (though potentially of different sizes),
+       * and NSTerminateNow is defined as YES and NSTerminateCancel as NO.
+       * So all we need to do is mask the low byte of the return value in
+       * case there is uninitialised random data in the higher bytes.
        */
-      termination = (NSApplicationTerminateReply)
-        [_delegate applicationShouldTerminate: self];
+      termination = ([_delegate applicationShouldTerminate: self] & 0xff);
     }
   else
     {
@@ -3668,9 +3699,10 @@ struct _DelegateWrapper
       if (wasMain && count == 0)
         {
           if ([_delegate respondsToSelector:
-                             @selector(applicationShouldTerminateAfterLastWindowClosed:)])
+	    @selector(applicationShouldTerminateAfterLastWindowClosed:)])
             {
-              if ([_delegate applicationShouldTerminateAfterLastWindowClosed: self])
+              if ([_delegate
+		applicationShouldTerminateAfterLastWindowClosed: self])
                 {
                   [self terminate: self];
                 }

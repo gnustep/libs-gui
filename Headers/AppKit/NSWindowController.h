@@ -27,15 +27,15 @@
 #ifndef _GNUstep_H_NSWindowController
 #define _GNUstep_H_NSWindowController
 
-#include <Foundation/NSObject.h>
 #include <AppKit/NSNibDeclarations.h>
+#include <AppKit/NSResponder.h>
 
 @class NSString;
 @class NSArray;
 @class NSWindow;
 @class NSDocument;
 
-@interface NSWindowController : NSObject <NSCoding>
+@interface NSWindowController : NSResponder <NSCoding>
 {
   @private
     NSWindow            *_window;

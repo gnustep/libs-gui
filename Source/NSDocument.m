@@ -140,13 +140,17 @@ withContentsOfURL: (NSURL *)url
   self = [self initWithType: type error: error];
   if (self != nil)
     {
+      [self setFileType: type];
+      if (forUrl)
+        [self setFileURL: forUrl];
       if ([self readFromURL: url
                      ofType: type
                       error: error])
         {
-          if (forUrl != nil)
+          if (![url isEqual:forUrl])
             {
-              [self setFileURL: forUrl];
+              [self setAutosavedContentsFileURL: url];
+              [self updateChangeCount: NSChangeReadOtherContents];
             }
         }
       else 
@@ -311,6 +315,7 @@ withContentsOfURL: (NSURL *)url
   if ([windowController document] != self)
     {
       [windowController setDocument: self];
+      [windowController setDocumentEdited: [self isDocumentEdited]];
     }
 }
 
@@ -318,6 +323,7 @@ withContentsOfURL: (NSURL *)url
 {
   if ([_window_controllers containsObject: windowController])
     {
+      [windowController setDocumentEdited: NO];
       [windowController setDocument: nil];
       [_window_controllers removeObject: windowController];
     }
@@ -388,7 +394,7 @@ withContentsOfURL: (NSURL *)url
 
 - (BOOL) isDocumentEdited
 {
-  return _change_count != 0;
+  return _change_count != 0 || _doc_flags.permanently_modified;
 }
 
 - (void)updateChangeCount: (NSDocumentChangeType)change
@@ -398,17 +404,22 @@ withContentsOfURL: (NSURL *)url
   
   switch (change)
     {
-    case NSChangeDone:                _change_count++; 
+    case NSChangeDone:          _change_count++; 
                                 _autosave_change_count++; 
                                 break;
     case NSChangeUndone:        _change_count--; 
                                 _autosave_change_count--; 
                                 break;
     case NSChangeReadOtherContents:
+                                _doc_flags.permanently_modified = 1;
+                                break;
     case NSChangeCleared:        _change_count = 0; 
                                 _autosave_change_count = 0; 
+                                _doc_flags.permanently_modified = 0;
+                                _doc_flags.autosave_permanently_modified = 0;
                                 break;
     case NSChangeAutosaved:     _autosave_change_count = 0; 
+                                _doc_flags.autosave_permanently_modified = 0;
                                 break;
     }
   
@@ -766,47 +777,38 @@ withContentsOfURL: (NSURL *)url
 
   if (fileName && isNativeType)
     {
-      NSArray  *extensions = [[NSDocumentController sharedDocumentController] 
-                               fileExtensionsFromType: fileType];
-
-      if ([extensions count] > 0)
+      if ([fileManager fileExistsAtPath: fileName])
         {
-          NSString *extension = [extensions objectAtIndex: 0];
-          NSString *newFileName = [[fileName stringByDeletingPathExtension] 
-                                    stringByAppendingPathExtension: extension];
+          backupFilename = [self _backupFileNameFor: fileName];
           
-          if ([fileManager fileExistsAtPath: newFileName])
+          if (![self _writeBackupForFile: fileName
+                     toFile: backupFilename])
             {
-              backupFilename = [self _backupFileNameFor: newFileName];
-              
-              if (![self _writeBackupForFile: newFileName
-                         toFile: backupFilename])
-                {
-                  return NO;
-                }
+              return NO;
             }
+        }
 
-          if ([self writeToFile: fileName 
-                    ofType: fileType
-                    originalFile: backupFilename
-                    saveOperation: saveOp])
+      if ([self writeToFile: fileName 
+                ofType: fileType
+                originalFile: backupFilename
+                saveOperation: saveOp])
+        {
+          // FIXME: Should set the file attributes
+          
+          if (saveOp != NSSaveToOperation)
             {
-              // FIXME: Should set the file attributes
-              
-              if (saveOp != NSSaveToOperation)
-                {
-                  [self setFileName: newFileName];
-                  [self setFileType: fileType];
-                  [self updateChangeCount: NSChangeCleared];
-                }
-              
-              if (backupFilename && ![self keepBackupFile])
-                {
-                  [fileManager removeFileAtPath: backupFilename handler: nil];
-                }
-              
-              return YES;
+              [self _removeAutosavedContentsFile];
+              [self setFileName: fileName];
+              [self setFileType: fileType];
+              [self updateChangeCount: NSChangeCleared];
             }
+          
+          if (backupFilename && ![self keepBackupFile])
+            {
+              [fileManager removeFileAtPath: backupFilename handler: nil];
+            }
+          
+          return YES;
         }
     }
 
@@ -848,14 +850,14 @@ withContentsOfURL: (NSURL *)url
     {
       if ([url isFileURL])
         {
-          NSString *newFileName;
+          NSString *fileName;
           
-          newFileName = [url path];
-          if ([fileManager fileExistsAtPath: newFileName])
+          fileName = [url path];
+          if ([fileManager fileExistsAtPath: fileName])
             {
-              backupFilename = [self _backupFileNameFor: newFileName];
+              backupFilename = [self _backupFileNameFor: fileName];
               
-              if (![self _writeBackupForFile: newFileName
+              if (![self _writeBackupForFile: fileName
                          toFile: backupFilename])
                 {
                   // FIXME: Set error.
@@ -882,8 +884,14 @@ withContentsOfURL: (NSURL *)url
                 error: error];
   // FIXME: Should set the file attributes
 
-  if (saveOp != NSSaveToOperation)
+  if (saveOp == NSAutosaveOperation)
     {
+      [self setAutosavedContentsFileURL: url];
+      [self updateChangeCount: NSChangeAutosaved];
+    }
+  else if (saveOp != NSSaveToOperation)
+    {
+      [self _removeAutosavedContentsFile];
       [self setFileURL: url];
       [self setFileType: type];
       [self updateChangeCount: NSChangeCleared];
@@ -956,10 +964,7 @@ originalContentsURL: (NSURL *)orig
   ASSIGN(_save_type, [controller _nameForHumanReadableType: 
                                   [sender titleOfSelectedItem]]);
   extensions = [controller fileExtensionsFromType: _save_type];
-  if ([extensions count] > 0)
-    {
-      [(NSSavePanel *)[sender window] setRequiredFileType: [extensions objectAtIndex:0]];
-    }
+  [(NSSavePanel *)[sender window] setAllowedFileTypes: extensions];
 }
 
 - (int)runModalSavePanel: (NSSavePanel *)savePanel 
@@ -1083,10 +1088,7 @@ originalContentsURL: (NSURL *)orig
     {
       NSArray  *extensions = [[NSDocumentController sharedDocumentController] 
                                fileExtensionsFromType: [self fileType]];
-      if ([extensions count] > 0)
-        {
-          [savePanel setRequiredFileType:[extensions objectAtIndex:0]];
-        }
+      [savePanel setAllowedFileTypes: extensions];
     }
 
   switch (saveOperation)
@@ -1319,46 +1321,6 @@ originalContentsURL: (NSURL *)orig
     {
       result = ([self fileName] != nil && [self isDocumentEdited]);
     }
-  else if (sel_eq(action, @selector(undo:)))
-    {
-      if (_undo_manager == nil)
-        {
-          result = NO;
-        }
-      else
-        {
-          if ([_undo_manager canUndo])
-            {
-              [anItem setTitle: [_undo_manager undoMenuItemTitle]];
-              result = YES;
-            }
-          else
-            {
-              [anItem setTitle: [_undo_manager undoMenuTitleForUndoActionName: @""]];
-              result = NO;
-            }
-        }
-    }
-  else if (sel_eq(action, @selector(redo:)))
-    {
-      if (_undo_manager == nil)
-        {
-          result = NO;
-        }
-      else
-        {
-          if ([_undo_manager canRedo])
-            {
-              [anItem setTitle: [_undo_manager redoMenuItemTitle]];
-              result = YES;
-            }
-          else
-            {
-              [anItem setTitle: [_undo_manager redoMenuTitleForUndoActionName: @""]];
-              result = NO;
-            }
-        }
-    }
     
   return result;
 }
@@ -1536,6 +1498,8 @@ originalContentsURL: (NSURL *)orig
                 error: &error])
         {
           [self updateChangeCount: NSChangeCleared];
+          [[self undoManager] removeAllActions];
+          [self _removeAutosavedContentsFile];
         }
       else
         {
@@ -1565,6 +1529,7 @@ originalContentsURL: (NSURL *)orig
           while (count-- > 0)
             [array[count] close];
         }
+      [self _removeAutosavedContentsFile];
       [[NSDocumentController sharedDocumentController] removeDocument: self];
     }
 }
@@ -1671,14 +1636,40 @@ originalContentsURL: (NSURL *)orig
 - (void)setAutosavedContentsFileURL: (NSURL *)url
 {
   ASSIGN(_autosaved_file_url, url);
+  [[NSDocumentController sharedDocumentController]
+      _recordAutosavedDocument: self];
 }
 
 - (void)autosaveDocumentWithDelegate: (id)delegate
                  didAutosaveSelector: (SEL)didAutosaveSelector
                          contextInfo: (void *)context
 {
-  [self saveToURL: [self autosavedContentsFileURL]
-        ofType: [self autosavingFileType]
+  NSURL *url = [self autosavedContentsFileURL];
+  NSString *type = [self autosavingFileType];
+  NSArray *exts =
+      [[NSDocumentController sharedDocumentController]
+          fileExtensionsFromType: type];
+  NSString *ext = [exts count] ? (NSString *)[exts objectAtIndex: 0] : @"";
+
+  if (url == nil)
+    {
+      static NSString *processName = nil;
+      NSString *path;
+
+      if (!processName)
+        processName = [[[NSProcessInfo processInfo] processName] copy];
+
+      path = [[NSDocumentController sharedDocumentController]
+                 _autosaveDirectory: YES];
+      path = [path stringByAppendingPathComponent:
+                       [NSString stringWithFormat: @"%@-%d",
+                                 processName, _document_index]];
+      path = [path stringByAppendingPathExtension: ext];
+      url = [NSURL fileURLWithPath: path];
+    }
+
+  [self saveToURL: url
+        ofType: type
         forSaveOperation: NSAutosaveOperation
         delegate: delegate
         didSaveSelector: didAutosaveSelector 
@@ -1692,7 +1683,7 @@ originalContentsURL: (NSURL *)orig
 
 - (BOOL)hasUnautosavedChanges
 {
-  return _autosave_change_count != 0;
+  return _autosave_change_count != 0 || _doc_flags.autosave_permanently_modified;
 }
 
 @end
@@ -1728,8 +1719,30 @@ originalContentsURL: (NSURL *)orig
     }
 }
 
+- (void)_removeAutosavedContentsFile
+{
+  NSURL *url = [self autosavedContentsFileURL];
+
+  if (url)
+    {
+      NSString *path = [[url path] retain];
+
+      [self setAutosavedContentsFileURL: nil];
+      [[NSFileManager defaultManager] removeFileAtPath: path handler: nil];
+      [path release];
+    }
+}
+
 - (void) _changeWasDone: (NSNotification *)notification
 {
+  /* Prevent a document from appearing unmodified after saving the
+   * document, undoing a number of changes, and then making an equal
+   * number of changes.  Ditto for autosaved changes.
+   */
+  if (_change_count < 0)
+    _doc_flags.permanently_modified = 1;
+  if (_autosave_change_count < 0)
+    _doc_flags.autosave_permanently_modified = 1;
   [self updateChangeCount: NSChangeDone];
 }
 
@@ -1740,17 +1753,12 @@ originalContentsURL: (NSURL *)orig
 
 - (void) _changeWasRedone: (NSNotification *)notification
 {
+  /* FIXME
+   * Mac OS X 10.5 uses a new constant NSChangeRedone here, but
+   * old applications are not prepared to handle this constant
+   * and expect NSChangeDone instead.
+   */
   [self updateChangeCount: NSChangeDone];
-}
-
-- (void) undo: (id)sender
-{
-  [[self undoManager] undo];
-}
-
-- (void) redo: (id)sender
-{
-  [[self undoManager] redo];
 }
 
 @end

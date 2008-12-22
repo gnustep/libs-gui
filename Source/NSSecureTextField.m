@@ -84,6 +84,15 @@
 	       format: @"NSSecureTextField only uses NSSecureTextFieldCells."];
 }
 
+- (id) initWithCoder: (NSCoder *)coder
+{
+  if((self = [super initWithCoder: coder]) != nil)
+    {
+      [self setEchosBullets: YES];
+    }
+  return self;
+}
+
 - (id) initWithFrame:(NSRect)frameRect
 {
   self = [super initWithFrame: frameRect];
@@ -208,7 +217,7 @@
   self = [super initWithCoder: decoder];
   if ([decoder allowsKeyedCoding])
     {
-      // do nothing for now...
+      _echosBullets = [decoder decodeBoolForKey: @"GSEchoBullets"];
     }
   else
     {
@@ -218,12 +227,18 @@
   return self;
 }
 
-- (void) encodeWithCoder: (NSCoder *)aCoder
+- (void) encodeWithCoder: (NSCoder *)coder
 {
-  [super encodeWithCoder: aCoder];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_echosBullets];
+  [super encodeWithCoder: coder];
+  if([coder allowsKeyedCoding])
+    {
+      [coder encodeBool: _echosBullets forKey: @"GSEchoBullets"];
+    }
+  else
+    {
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &_echosBullets];
+    }
 }
-
 @end
 
 @implementation GSSimpleSecureLayoutManager

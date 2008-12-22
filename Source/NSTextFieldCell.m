@@ -40,45 +40,13 @@
 #include "AppKit/NSTextFieldCell.h"
 #include "AppKit/NSText.h"
 
-static NSColor *bgCol;
-static NSColor *txtCol;
-
-@interface NSTextFieldCell (PrivateColor)
-+ (void) _systemColorsChanged: (NSNotification*)n;
-// Minor optimization -- cache isOpaque.
-- (BOOL) _isOpaque;
-@end
-
-@implementation NSTextFieldCell (PrivateColor)
-+ (void) _systemColorsChanged: (NSNotification*)n
-{
-  ASSIGN(bgCol, [NSColor textBackgroundColor]);
-  ASSIGN(txtCol, [NSColor textColor]); 
-}
-
-- (BOOL) _isOpaque
-{
-  if (_textfieldcell_draws_background == NO 
-      || _background_color == nil 
-      || [_background_color alphaComponent] < 1.0)
-    return NO;
-  else
-    return YES;   
-}
-@end
-
 @implementation NSTextFieldCell
+
 + (void) initialize
 {
   if (self == [NSTextFieldCell class])
     {
       [self setVersion: 2];
-      [[NSNotificationCenter defaultCenter] 
-          addObserver: self
-          selector: @selector(_systemColorsChanged:)
-          name: NSSystemColorsDidChangeNotification
-          object: nil];
-      [self _systemColorsChanged: nil];
     }
 }
 
@@ -91,10 +59,9 @@ static NSColor *txtCol;
   if (self == nil)
     return self;
 
-  ASSIGN(_text_color, txtCol);
-  ASSIGN(_background_color, bgCol);
+  ASSIGN(_text_color, [NSColor textColor]);
+  ASSIGN(_background_color, [NSColor textBackgroundColor]);
 //  _textfieldcell_draws_background = NO;
-//  _textfieldcell_is_opaque = NO;
   _action_mask = NSKeyUpMask | NSKeyDownMask;
   return self;
 }
@@ -124,7 +91,6 @@ static NSColor *txtCol;
 - (void) setBackgroundColor: (NSColor *)aColor
 {
   ASSIGN (_background_color, aColor);
-  _textfieldcell_is_opaque = [self _isOpaque];
   if (_control_view)
     if ([_control_view isKindOfClass: [NSControl class]])
       [(NSControl *)_control_view updateCell: self];
@@ -145,7 +111,6 @@ static NSColor *txtCol;
 - (void) setDrawsBackground: (BOOL)flag
 {
   _textfieldcell_draws_background = flag;
-  _textfieldcell_is_opaque = [self _isOpaque];
   if (_control_view)
     if ([_control_view isKindOfClass: [NSControl class]])
       [(NSControl *)_control_view updateCell: self];
@@ -180,7 +145,7 @@ static NSColor *txtCol;
 
 - (void) setBezelStyle: (NSTextFieldBezelStyle)style
 {
-    _bezelStyle = style;
+  _bezelStyle = style;
 }
 
 - (NSTextFieldBezelStyle) bezelStyle
@@ -233,7 +198,8 @@ static NSColor *txtCol;
   return textObject;
 }
 
-- (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
+- (void) _drawBackgroundWithFrame: (NSRect)cellFrame 
+                           inView: (NSView*)controlView
 {
   if (_textfieldcell_draws_background)
 	  {
@@ -246,9 +212,15 @@ static NSColor *txtCol;
           [[NSColor controlBackgroundColor] set];
         }
       NSRectFill([self drawingRectForBounds: cellFrame]);
-    }
-      
-  [super drawInteriorWithFrame: cellFrame inView: controlView];
+    }     
+}
+
+- (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame 
+                                    inView: (NSView*)controlView
+{
+  // FIXME: Should use the bezel style if set.
+  [super _drawBorderAndBackgroundWithFrame: cellFrame inView: controlView];
+  [self _drawBackgroundWithFrame: cellFrame inView: controlView];
 }
 
 /* 
@@ -297,7 +269,12 @@ static NSColor *txtCol;
 
 - (BOOL) isOpaque
 {
-  return _textfieldcell_is_opaque;
+  if (_textfieldcell_draws_background == NO 
+      || _background_color == nil 
+      || [_background_color alphaComponent] < 1.0)
+    return NO;
+  else
+    return YES;   
 }
 
 //
@@ -306,6 +283,7 @@ static NSColor *txtCol;
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   BOOL tmp;
+
   [super encodeWithCoder: aCoder];
 
   if ([aCoder allowsKeyedCoding])
@@ -313,6 +291,10 @@ static NSColor *txtCol;
       [aCoder encodeObject: [self backgroundColor] forKey: @"NSBackgroundColor"];
       [aCoder encodeObject: [self textColor] forKey: @"NSTextColor"];
       [aCoder encodeBool: [self drawsBackground] forKey: @"NSDrawsBackground"];
+      if ([self isBezeled])
+        {
+          [aCoder encodeInt: [self bezelStyle] forKey: @"NSTextBezelStyle"];
+        }
     }
   else
     {
@@ -326,18 +308,29 @@ static NSColor *txtCol;
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   self = [super initWithCoder: aDecoder];
+  if (self == nil)
+    return self;
  
   if ([aDecoder allowsKeyedCoding])
     {
-      id textColor = RETAIN([aDecoder decodeObjectForKey: @"NSTextColor"]);
-      id backColor = RETAIN([aDecoder decodeObjectForKey: @"NSBackgroundColor"]);
-
-      [self setBackgroundColor: backColor];
-      [self setTextColor: textColor];
+      if ([aDecoder containsValueForKey: @"NSBackgroundColor"])
+        {
+          [self setBackgroundColor: [aDecoder decodeObjectForKey: 
+                                                  @"NSBackgroundColor"]];
+        }
+      if ([aDecoder containsValueForKey: @"NSTextColor"])
+        {
+          [self setTextColor: [aDecoder decodeObjectForKey: @"NSTextColor"]];
+        }
       if ([aDecoder containsValueForKey: @"NSDrawsBackground"])
         {
           [self setDrawsBackground: [aDecoder decodeBoolForKey: 
                                                   @"NSDrawsBackground"]];
+        }
+      if ([aDecoder containsValueForKey: @"NSTextBezelStyle"])
+        {
+          [self setBezelStyle: [aDecoder decodeIntForKey: 
+                                             @"NSTextBezelStyle"]];
         }
     }
   else
@@ -364,7 +357,6 @@ static NSColor *txtCol;
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_text_color];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
       _textfieldcell_draws_background = tmp;
-      _textfieldcell_is_opaque = [self _isOpaque];
     }
 
   return self;

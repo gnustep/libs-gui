@@ -29,7 +29,7 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#import <GNUstepGUI/GSNibCompatibility.h>
+#import <GNUstepGUI/GSNibLoading.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSDictionary.h>
 #import <AppKit/NSKeyValueBinding.h>

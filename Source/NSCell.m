@@ -71,7 +71,6 @@ static Class imageClass;
 
 static NSColor *txtCol;
 static NSColor *dtxtCol;
-static NSColor *shadowCol;
 
 @interface NSCell (PrivateColor)
 + (void) _systemColorsChanged: (NSNotification*)n;
@@ -83,7 +82,6 @@ static NSColor *shadowCol;
 {
   ASSIGN (txtCol, [colorClass controlTextColor]);
   ASSIGN (dtxtCol, [colorClass disabledControlTextColor]);
-  ASSIGN (shadowCol, [colorClass controlDarkShadowColor]);
 }
 @end
 
@@ -1763,14 +1761,17 @@ static NSColor *shadowCol;
 - (NSSize) cellSize
 {
   NSSize borderSize, s;
-  
+  NSBorderType aType;
+
   // Get border size
   if (_cell.is_bordered)
-    borderSize = _sizeForBorderType (NSLineBorder);
+    aType = NSLineBorder;
   else if (_cell.is_bezeled)
-    borderSize = _sizeForBorderType (NSBezelBorder);
+    aType = NSBezelBorder;
   else
-    borderSize = NSZeroSize;
+    aType = NSNoBorder;
+    
+  borderSize = [[GSTheme theme] sizeForBorderType: aType];
 
   // Add spacing between border and inside 
   if (_cell.is_bordered || _cell.is_bezeled)
@@ -1841,15 +1842,17 @@ static NSColor *shadowCol;
 - (NSRect) drawingRectForBounds: (NSRect)theRect
 {
   NSSize borderSize;
+  NSBorderType aType;
 
   // Get border size
   if (_cell.is_bordered)
-    borderSize = _sizeForBorderType (NSLineBorder);
+    aType = NSLineBorder;
   else if (_cell.is_bezeled)
-    borderSize = _sizeForBorderType (NSBezelBorder);
+    aType = NSBezelBorder;
   else
-    borderSize = NSZeroSize;
-
+    aType = NSNoBorder;
+    
+  borderSize = [[GSTheme theme] sizeForBorderType: aType];
   return NSInsetRect(theRect, borderSize.width, borderSize.height);
 }
 
@@ -2814,15 +2817,17 @@ static NSColor *shadowCol;
 - (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame 
                                     inView: (NSView*)controlView
 {
+  NSBorderType aType;
+
+  // Get border size
   if (_cell.is_bordered)
-    {
-      [shadowCol set];
-      NSFrameRect(cellFrame);
-    }
+    aType = NSLineBorder;
   else if (_cell.is_bezeled)
-    {
-      [[GSTheme theme] drawWhiteBezel: cellFrame withClip: NSZeroRect];
-    }
+    aType = NSBezelBorder;
+  else
+    aType = NSNoBorder;
+
+  [[GSTheme theme] drawBorderType: aType frame: cellFrame view: controlView];
 }
 
 // Private helper method
@@ -2855,23 +2860,3 @@ static NSColor *shadowCol;
 }
 
 @end
-
-/*
- * Global function which should go somewhere else
- */
-inline NSSize 
-_sizeForBorderType (NSBorderType aType)
-{
-  // Returns the size of a border
-  switch (aType)
-    {
-      case NSLineBorder:
-        return NSMakeSize(1, 1);
-      case NSGrooveBorder:
-      case NSBezelBorder:
-        return NSMakeSize(2, 2);
-      case NSNoBorder: 
-      default:
-        return NSZeroSize;
-    }
-}

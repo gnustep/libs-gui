@@ -23,8 +23,7 @@
 #  Free Software Foundation, 51 Franklin Street, Fifth Floor, 
 #  Boston, MA 02110-1301, USA.
 
-GNUSTEP_INSTALLATION_DOMAIN = SYSTEM
-
+PACKAGE_NAME = gnustep-gui
 GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=../gui.make
 include $(GNUSTEP_MAKEFILES)/common.make
 
@@ -117,6 +116,7 @@ common_LeftTabStop.tiff \
 common_DecimalTabStop.tiff \
 common_Diamond.tiff \
 common_Printer.tiff \
+common_ToolbarCustomizeToolbarItem.tiff \
 common_ToolbarClippedItemsMark.tiff \
 common_ToolbarSeparatorItem.tiff \
 common_ToolbarShowColorsItem.tiff \

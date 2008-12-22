@@ -108,7 +108,9 @@ typedef enum _NSSaveOperationType {
     struct __docFlags {
         unsigned int in_close:1;
         unsigned int has_undo_manager:1;
-        unsigned int RESERVED:30;
+        unsigned int permanently_modified:1;
+        unsigned int autosave_permanently_modified:1;
+        unsigned int RESERVED:28;
     } _doc_flags;
     void 		*_reserved1;
 }

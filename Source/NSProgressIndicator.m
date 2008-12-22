@@ -29,7 +29,7 @@
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSWindow.h"
 #include "GNUstepGUI/GSTheme.h"
-#include "GNUstepGUI/GSNibCompatibility.h"
+#include "GNUstepGUI/GSNibLoading.h"
 
 @implementation NSProgressIndicator
 

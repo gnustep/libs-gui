@@ -2291,3 +2291,48 @@ no_soft_invalidation:
 
 @end
 
+@implementation NSLayoutManager (temporaryattributes)
+- (void) addTemporaryAttributes: (NSDictionary *)attrs forCharacterRange: (NSRange)range
+{
+  // to be implemented
+}
+
+- (void) addTemporaryAttribute: (NSString *)attr value: (id)value forCharacterRange: (NSRange)range
+{
+  // to be implemented
+}
+
+- (void) setTemporaryAttributes:forCharacterRange: (NSRange)range
+{
+  // to be implemented
+}
+
+- (void) removeTemporaryAttribute: (NSString *)attr forCharacterRange: (NSRange)range
+{
+  // to be implemented
+}
+
+- (id) temporaryAttribute: (NSString *)attr atCharacterIndex: (unsigned int)index effectiveRange: (NSRange)range
+{
+  // to be implemented
+  return nil;
+}
+
+- (id) temporaryAttribute: (NSString *)attr atCharacterIndex: (unsigned int)index longestEffectiveRange: (NSRange*)longestRange inRange: (NSRange)range
+{
+  // to be implemented
+  return nil;
+}
+
+- (NSDictionary *) temporaryAttributesAtCharacterIndex: (unsigned int)index effectiveRange: (NSRange)range
+{
+  // to be implemented
+  return nil;
+}
+
+- (NSDictionary *) temporaryAttributesAtCharacterIndex: (unsigned int) longestEffectiveRange: (NSRange*)longestRange inRange: (NSRange)range
+{
+  // to be implemented
+  return nil;
+}
+@end

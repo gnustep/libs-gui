@@ -36,16 +36,8 @@
 # Flags dealing with compiling and linking
 #
 
-# This GNUSTEP_TOOLS_NO_DESTDIR is used to somehow locate the gui
-# Tools when we are not using gnustep-base (currently, that's mostly a
-# hypothetical case!).  It should be the same as GNUSTEP_TOOLS, except
-# that DESTDIR is not included.  It's not used if we are using
-# gnustep-base.
-GNUSTEP_TOOLS_NO_DESTDIR = $(GNUSTEP_$(GNUSTEP_INSTALLATION_DOMAIN)_TOOLS)
-
 # Additional flags to pass to the preprocessor
 ADDITIONAL_CPPFLAGS =  \
-	-DGNUSTEP_TOOLS_NO_DESTDIR=\"$(GNUSTEP_TOOLS_NO_DESTDIR)\" \
 	-DGNUSTEP_TARGET_DIR=\"$(GNUSTEP_TARGET_DIR)\" \
 	-DGNUSTEP_TARGET_CPU=\"$(GNUSTEP_TARGET_CPU)\" \
 	-DGNUSTEP_TARGET_OS=\"$(GNUSTEP_TARGET_OS)\" \

@@ -834,6 +834,22 @@ static	GSDragView *sharedDragView = nil;
         {
           [self _updateAndMoveImageToCorrectPosition];
         }
+      else if (destWindow)
+        {
+	  [self _sendLocalEvent: GSAppKitDraggingUpdate
+                         action: dragMask & operationMask
+                       position: newPosition
+                      timestamp: [theEvent timestamp]
+                       toWindow: destWindow];
+	}
+      else
+        {
+          [self sendExternalEvent: GSAppKitDraggingUpdate
+                           action: dragMask & operationMask
+                         position: newPosition
+                        timestamp: [theEvent timestamp]
+                         toWindow: targetWindowRef];
+        }
       break;
     default:
       NSLog(@"Internal: dropped event (%d) during dragging", [theEvent type]);

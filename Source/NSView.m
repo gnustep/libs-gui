@@ -74,6 +74,7 @@
 #include "AppKit/PSOperators.h"
 #include "GNUstepGUI/GSDisplayServer.h"
 #include "GNUstepGUI/GSTrackingRect.h"
+#include "GNUstepGUI/GSNibLoading.h"
 #include "GSToolTips.h"
 #include "GSBindingHelpers.h"
 
@@ -532,8 +533,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   _bounds.origin = NSZeroPoint;		// Set bounds rectangle
   _bounds.size = _frame.size;
 
-  //_frameMatrix = [NSAffineTransform new];    // Map fromsuperview to frame
-  //_boundsMatrix = [NSAffineTransform new];   // Map from superview to bounds
+  // _frameMatrix = [NSAffineTransform new];    // Map fromsuperview to frame
+  // _boundsMatrix = [NSAffineTransform new];   // Map from superview to bounds
   _matrixToWindow = [NSAffineTransform new];   // Map to window coordinates
   _matrixFromWindow = [NSAffineTransform new]; // Map from window coordinates
 
@@ -4402,8 +4403,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   [super initWithCoder: aDecoder];
 
   // initialize these here, since they're needed in either case.
-  //_frameMatrix = [NSAffineTransform new];     // Map fromsuperview to frame
-  //_boundsMatrix = [NSAffineTransform new];    // Map fromsuperview to bounds
+  // _frameMatrix = [NSAffineTransform new];    // Map fromsuperview to frame
+  // _boundsMatrix = [NSAffineTransform new];   // Map from superview to bounds
   _matrixToWindow = [NSAffineTransform new];  // Map to window coordinates
   _matrixFromWindow = [NSAffineTransform new];// Map from window coordinates
  
@@ -4471,6 +4472,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       e = [subs objectEnumerator];
       while ((sub = [e nextObject]) != nil)
 	{
+	  NSAssert([sub class] != [NSCustomView class],
+		   NSInternalInconsistencyException);
 	  NSAssert([sub window] == nil,
 		   NSInternalInconsistencyException);
 	  NSAssert([sub superview] == nil,

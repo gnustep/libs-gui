@@ -1711,11 +1711,18 @@ static NSImage *unexpandable  = nil;
 - (void) _loadDictionaryStartingWith: (id) startitem
                              atLevel: (int) level
 {
-  int num = [_dataSource outlineView: self
-                         numberOfChildrenOfItem: startitem];
+  int num = 0; 
   int i = 0;
   id sitem = (startitem == nil) ? (id)[NSNull null] : (id)startitem;
   NSMutableArray *anarray = nil;
+
+  // Check to see if item is expandable before getting the number of
+  // items.
+  if([_dataSource outlineView: self isItemExpandable: startitem])
+    {
+      num = [_dataSource outlineView: self
+			 numberOfChildrenOfItem: startitem];
+    }
 
   if (num > 0)
     {

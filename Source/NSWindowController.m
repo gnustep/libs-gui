@@ -40,12 +40,20 @@
 
 @implementation NSWindowController
 
-- (id) initWithWindowNibName: (NSString *)windowNibName
++ (void) initialize
 {
-  return [self initWithWindowNibName: windowNibName  owner: self];
+  if (self == [NSWindowController class])
+    {
+      [self setVersion: 1];
+    }
 }
 
-- (id) initWithWindowNibName: (NSString *)windowNibName  owner: (id)owner
+- (id) initWithWindowNibName: (NSString *)windowNibName
+{
+  return [self initWithWindowNibName: windowNibName owner: self];
+}
+
+- (id) initWithWindowNibName: (NSString *)windowNibName owner: (id)owner
 {
   if (windowNibName == nil)
     {
@@ -60,13 +68,16 @@
     }
 
   self = [self initWithWindow: nil];
+  if (!self)
+    return nil;
+
   ASSIGN(_window_nib_name, windowNibName);
   _owner = owner;
   return self;
 }
 
 - (id) initWithWindowNibPath: (NSString *)windowNibPath
-		       owner: (id)owner
+                       owner: (id)owner
 {
   if (windowNibPath == nil)
     {
@@ -81,6 +92,9 @@
     }
 
   self = [self initWithWindow: nil];
+  if (!self)
+    return nil;
+
   ASSIGN(_window_nib_path, windowNibPath);
   _owner = owner;
   return self;
@@ -89,10 +103,12 @@
 - (id) initWithWindow: (NSWindow *)window
 {
   self = [super init];
+  if (!self)
+    return nil;
 
-  _window_frame_autosave_name = @"";
+  ASSIGN(_window_frame_autosave_name, @"");
   _wcFlags.should_cascade = YES;
-  _wcFlags.should_close_document = NO;
+  //_wcFlags.should_close_document = NO;
 
   [self setWindow: window];
   if (_window != nil)
@@ -191,7 +207,7 @@
 
 - (void) setDocumentEdited: (BOOL)flag
 {
-  [_window setDocumentEdited: flag];
+  [[self window] setDocumentEdited: flag];
 }
 
 - (void) setWindowFrameAutosaveName:(NSString *)name
@@ -310,32 +326,44 @@
 
   if (_window != nil)
     {
+      NSResponder *responder;
+
       [nc removeObserver: self
-	  name: NSWindowWillCloseNotification
-	  object: _window];
+          name: NSWindowWillCloseNotification
+          object: _window];
+      // Remove self from the responder chain
+      responder = _window;
+      while (responder && [responder nextResponder] != self)
+        {
+          responder = [responder nextResponder];
+        }
+      [responder setNextResponder: [self nextResponder]];
       [_window setWindowController: nil];
     }
 
-  ASSIGN (_window, aWindow);
+  ASSIGN(_window, aWindow);
 
   if (_window != nil)
     {
       [_window setWindowController: self];
+      // Put self into the responder chain
+      [self setNextResponder: [_window nextResponder]];
+      [_window setNextResponder: self];
       [nc addObserver: self
-	  selector: @selector(_windowWillClose:)
-	  name: NSWindowWillCloseNotification
-	  object: _window];
+          selector: @selector(_windowWillClose:)
+          name: NSWindowWillCloseNotification
+          object: _window];
 
       /* For information on the following, see the description in 
-	 -setDocument: */
+         -setDocument: */
       if (_document == nil)
-	{
-	  [_window setReleasedWhenClosed: NO];
-	}
+        {
+          [_window setReleasedWhenClosed: NO];
+        }
       else
-	{
-	  [_window setReleasedWhenClosed: YES];
-	}
+        {
+          [_window setReleasedWhenClosed: YES];
+        }
 
     }
 }
@@ -464,7 +492,25 @@
 
 - (id) initWithCoder: (NSCoder *)coder
 {
-  return [self init];
+  if ([coder allowsKeyedCoding] 
+      || [coder versionForClassName: @"NSWindowController"] >= 1)
+    {
+      self = [super initWithCoder: coder];
+      if (!self)
+        return nil;
+
+      ASSIGN(_window_frame_autosave_name, @"");
+      _wcFlags.should_cascade = YES;
+      //_wcFlags.should_close_document = NO;
+
+      return self;
+    }
+  else
+    {
+      /* backward compatibility: old NSWindowController instances are not
+         subclasses of NSResponder, but of NSObject */
+      return [self init];
+    }
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
@@ -472,6 +518,8 @@
   // What are we supposed to encode?  Window nib name?  Or should these
   // be empty, just to conform to NSCoding, so we do an -init on
   // unarchival.  ?
+
+  [super encodeWithCoder: coder];
 }
 
 @end

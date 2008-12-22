@@ -144,8 +144,8 @@ therefore be stored in the NSLayoutManager to avoid problems.
     /* YES if delegate responds to
        `textView:willChangeSelectionFromCharacterRange:toCharacterRange:' */
     unsigned delegate_responds_to_will_change_sel:1;
-    /* YES if a DnD operation is in progress with this as the target view */
-    unsigned isDragTarget:1;
+    /* YES if a DnD operation controls the insertion point in this text view */
+    unsigned drag_target_hijacks_insertion_point:1;
 
     unsigned uses_find_panel:1;
     unsigned accepts_glyph_info:1;
@@ -226,10 +226,15 @@ therefore be stored in the NSLayoutManager to avoid problems.
   */
   int _currentInsertionPointMovementDirection;
 
-  /* Ivar to store the original range so it can be restored after a DnD
-   * operation is cancelled (the mouse moves back out of the view).
+  /* Ivar to store the location where text is going to be inserted during
+   * a DnD operation.
+   * Note: This used to be a range attribute with a different meaning; the
+   * _dragTargetUnused attribute is present just to preserve the size of
+   * NSTextView instances.
+   * FIXME: Drop this attribute on the next major release.
    */
-  NSRange _dragTargetSelectionRange;
+  unsigned int _dragTargetLocation;
+  unsigned int _dragTargetUnused;
   /*
   TODO:
   Still need to figure out what "proper behavior" is when moving between two

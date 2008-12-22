@@ -53,7 +53,7 @@
 #include <Foundation/NSException.h>
 
 #include "GNUstepGUI/GSModelLoaderFactory.h"
-#include "GNUstepGUI/GSNibTemplates.h"
+#include "GNUstepGUI/GSGormLoading.h"
 #include "GNUstepGUI/IMLoading.h"
 
 @implementation NSNib

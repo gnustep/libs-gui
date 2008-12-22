@@ -22,8 +22,7 @@
 #  Free Software Foundation, 51 Franklin Street, Fifth Floor, 
 #  Boston, MA 02110-1301, USA.
 
-GNUSTEP_INSTALLATION_DOMAIN = SYSTEM
-
+PACKAGE_NAME = gnustep-gui
 GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=../gui.make
 include $(GNUSTEP_MAKEFILES)/common.make
 
@@ -55,6 +54,7 @@ NSAttributedString.m \
 NSBezierPath.m \
 NSBitmapImageRep.m \
 NSBitmapImageRep+GIF.m \
+NSBitmapImageRep+ICNS.m \
 NSBitmapImageRep+JPEG.m \
 NSBitmapImageRep+PNG.m \
 NSBitmapImageRep+PNM.m \
@@ -175,6 +175,8 @@ NSTextTable.m \
 NSTextTableBlock.m \
 NSToolbar.m \
 NSToolbarItem.m \
+NSTokenField.m \
+NSTokenFieldCell.m \
 NSUserDefaultsController.m \
 NSView.m \
 NSWindow+Toolbar.m \
@@ -208,8 +210,8 @@ NSTextView_actions.m \
 GSLayoutManager.m \
 GSTypesetter.m \
 GSHorizontalTypesetter.m \
-GSNibTemplates.m \
-GSNibCompatibility.m \
+GSGormLoading.m \
+GSNibLoading.m \
 GSTitleView.m \
 GSToolTips.m \
 GSToolbar.m \
@@ -365,6 +367,8 @@ NSTextTable.h \
 NSTextView.h \
 NSToolbar.h \
 NSToolbarItem.h \
+NSTokenField.h \
+NSTokenFieldCell.h \
 NSUserDefaultsController.h \
 NSView.h \
 NSWindow.h \
@@ -399,7 +403,7 @@ GSServicesManager.h \
 GSTextConverter.h \
 GSTrackingRect.h \
 GSHelpManagerPanel.h \
-GSNibTemplates.h \
+GSGormLoading.h \
 GSNibContainer.h \
 GSDisplayServer.h \
 GSFusedSilica.h \
@@ -415,7 +419,7 @@ GSTypesetter.h \
 GSHorizontalTypesetter.h \
 GSToolbar.h \
 GSToolbarView.h \
-GSNibCompatibility.h \
+GSNibLoading.h \
 GSDragView.h \
 GSTitleView.h \
 GSPrinting.h \

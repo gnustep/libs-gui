@@ -185,10 +185,19 @@ static NSImage *arrowImage = nil; /* Cache arrow image. */
   unsigned int m = [_menuItem keyEquivalentModifierMask];
   NSString *ucKey = [key uppercaseString];
   BOOL shift;
-  
+  unichar uchar;
+
   if ((key == nil) || [key isEqualToString: @""])
     return key;
   
+  uchar = [key characterAtIndex: 0];
+  if (uchar >= 0xF700)
+    {
+      // FIXME: At the moment we are not able to handle function keys
+      // as key equivalent
+      return nil;
+    }
+
   if ([key isEqualToString: @"\\r"])
     key = @"RET";
   else if ([key isEqualToString: @"\\e"])

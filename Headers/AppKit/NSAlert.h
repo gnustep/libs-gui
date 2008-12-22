@@ -66,6 +66,8 @@ enum {
   id _delegate;
   NSAlertStyle _style;
   BOOL _shows_help;
+  id _modalDelegate;
+  SEL _didEndSelector;
   int	_result;
 }
 

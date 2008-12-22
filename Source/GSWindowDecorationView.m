@@ -33,20 +33,6 @@
 #include "GNUstepGUI/GSDisplayServer.h"
 #include "GNUstepGUI/GSTheme.h"
 
-
-struct NSWindow_struct
-{
-  @defs(NSWindow)
-};
-
-
-/* Manage window decorations by using the backend functions. This only works
- * on backends that can handle window decorations.
- */
-@interface GSBackendWindowDecorationView : GSWindowDecorationView
-@end
-
-
 @implementation GSWindowDecorationView
 
 + (id<GSWindowDecorator>) windowDecorator
@@ -118,11 +104,27 @@ struct NSWindow_struct
   self = [super initWithFrame: frame];
   if (self != nil)
     {
-      contentRect = [isa contentRectForFrameRect: frame
-				       styleMask: [w styleMask]];
       window = w;
+      contentRect = [self contentRectForFrameRect: frame
+                          styleMask: [w styleMask]];
     }
   return self;
+}
+
+- (NSRect) contentRectForFrameRect: (NSRect)aRect
+                         styleMask: (unsigned int)aStyle
+{
+  // TODO: Handle toolbar and others
+  return [isa contentRectForFrameRect: aRect
+              styleMask: aStyle];
+}
+
+- (NSRect) frameRectForContentRect: (NSRect)aRect
+                         styleMask: (unsigned int)aStyle
+{
+  // TODO: Handle toolbar and others
+  return [isa frameRectForContentRect: aRect
+              styleMask: aStyle];
 }
 
 #if 0
@@ -179,8 +181,8 @@ struct NSWindow_struct
   _autoresizes_subviews = NO;
   [super setFrame: frameRect];
 
-  contentRect = [isa contentRectForFrameRect: frameRect
-				   styleMask: [window styleMask]];
+  contentRect = [self contentRectForFrameRect: frameRect
+                      styleMask: [window styleMask]];
 
   // Safety Check.
   [cv setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];

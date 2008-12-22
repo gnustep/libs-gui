@@ -51,6 +51,7 @@
 #include <Foundation/NSPathUtilities.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSTask.h>
+#include <GNUstepBase/NSTask+GS.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSNotificationQueue.h>
@@ -1037,6 +1038,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
     }
   else
     {
+      *appName = nil;
       return NO;
     }
 }
@@ -1219,14 +1221,14 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
        */
       extension = [fullPath pathExtension];
       if ([extension isEqualToString: @"app"]
-	  || [extension isEqualToString: @"debug"]
-	  || [extension isEqualToString: @"profile"]
-          || [extension isEqualToString: @"bundle"])
+	|| [extension isEqualToString: @"debug"]
+	|| [extension isEqualToString: @"profile"]
+        || [extension isEqualToString: @"bundle"])
         {
 	  return YES;
 	}
       else if ([extension length] > 0
-	       && [self getBestAppInRole: nil forExtension: extension] != nil)
+        && [self getBestAppInRole: nil forExtension: extension] != nil)
         {
 	  return YES;
         }
@@ -1272,14 +1274,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
    */
   if (path == nil)
     {
-#ifdef GNUSTEP_BASE_LIBRARY
-      path = RETAIN([[NSSearchPathForDirectoriesInDomains(
-	  GSToolsDirectory, NSSystemDomainMask, YES) objectAtIndex: 0] 
-		 stringByAppendingPathComponent: @"make_services"]);
-#else
-      path = RETAIN([@GNUSTEP_TOOLS_NO_DESTDIR
-		      stringByAppendingPathComponent: @"make_services"]);
-#endif
+      path = [NSTask launchPathForTool: @"make_services"];
     }
   task = [NSTask launchedTaskWithLaunchPath: path
 				  arguments: nil];
@@ -1891,7 +1886,14 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
     }
   
   iconPath = [[bundle infoDictionary] objectForKey: @"NSIcon"];
-  
+  if(iconPath == nil)
+    {
+      /*
+       * Try the CFBundleIconFile property.
+       */
+      iconPath = [[bundle infoDictionary] objectForKey: @"CFBundleIconFile"];
+    }
+
   if (iconPath && [iconPath isAbsolutePath] == NO)
     {
       NSString *file = iconPath;
@@ -1917,7 +1919,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
    * try 'wrapper/app.png'
    */
   if (iconPath == nil)
-    {
+    {      
       NSString *str;
 
       str = [fullPath lastPathComponent];
@@ -1929,11 +1931,15 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	  iconPath = [iconPath stringByAppendingPathExtension: @"tiff"];
 	  if ([mgr isReadableFileAtPath: iconPath] == NO)
 	    {
-	      iconPath = nil;
+	      iconPath = [iconPath stringByAppendingPathExtension: @"icns"];
+	      if ([mgr isReadableFileAtPath: iconPath] == NO)
+		{		  
+		  iconPath = nil;
+		}
 	    }
         }
     }
-  
+
   if (iconPath != nil)
     {
       image = [self _saveImageFor: iconPath];
@@ -2083,6 +2089,11 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 {
   NSDictionary	*typeInfo = [extInfo objectForKey: appName];
   NSString	*file = [typeInfo objectForKey: @"NSIcon"];
+
+  if(file == nil)
+    {
+      file = [typeInfo objectForKey: @"CFBundleTypeIconFile"];
+    }
 
   if (file && [file length] != 0)
     {
@@ -2366,7 +2377,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
       /*
        * If the requested role is 'nil', we can accept an app that is either
-       * an Editor (preferred) or a Viewer.
+       * an Editor (preferred) or a Viewer, or unknown.
        */
       while ((appName = [enumerator nextObject]) != nil)
 	{
@@ -2374,7 +2385,10 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
 	  info = [apps objectForKey: appName];
 	  str = [info objectForKey: @"NSRole"];
-	  if (str == nil || [str isEqualToString: @"Editor"])
+	  /* NB. If str is nil or an empty string, there is no role set,
+	   * and we treat this as an Editor since the role is unrestricted.
+	   */
+	  if ([str length] == 0 || [str isEqualToString: @"Editor"])
 	    {
 	      if (app != 0)
 		{
@@ -2382,7 +2396,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 		}
 	      return YES;
 	    }
-	  else if ([str isEqualToString: @"Viewer"])
+	  if ([str isEqualToString: @"Viewer"])
 	    {
 	      if (app != 0)
 		{

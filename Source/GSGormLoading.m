@@ -1,4 +1,4 @@
-/** <title>GSNibTemplates</title>
+/** <title>GSGormLoading</title>
 
    <abstract>Contains all of the private classes used in .gorm files.</abstract>
 
@@ -53,7 +53,7 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSScreen.h>
 #include <GNUstepBase/GSObjCRuntime.h>
-#include <GNUstepGUI/GSNibTemplates.h>
+#include <GNUstepGUI/GSGormLoading.h>
 
 static const int currentVersion = 1; // GSNibItem version number...
 
@@ -557,14 +557,20 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 		       format: @"Unable to find class '%@', it is not linked into the application.", theClass];
 	}
       
-      obj = [cls allocWithZone: [self zone]];
       if (theFrame.size.height > 0 && theFrame.size.width > 0)
 	{
-	  obj = [obj initWithFrame: theFrame];
+	  obj = [[cls allocWithZone: [self zone]] initWithFrame: theFrame];
 	}
       else
 	{
-	  obj = [obj init];
+	  if(GSObjCIsKindOf(cls, [NSApplication class]))
+	    {
+	      obj = [cls sharedApplication];
+	    }
+	  else
+	    {
+	      obj = [[cls allocWithZone: [self zone]] init];
+	    }  
 	}
 
       if ([obj respondsToSelector: @selector(setAutoresizingMask:)])
@@ -963,15 +969,6 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
   id obj = [super initWithCoder: coder];
   if (obj != nil)
     {
-      if ([self shouldSwapClass])
-      {
-	if (GSGetMethod([obj class],@selector(initWithFrame:), YES, NO) != NULL
-	   && ![_className isEqualToString: NSStringFromClass(_superClass)])
-	  {
-	    NSRect theFrame = [obj frame];
-	    obj =  [obj initWithFrame: theFrame];
-	  }
-      }
       RELEASE(self);
     }
   return obj;
@@ -993,15 +990,6 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
   id     obj = [super initWithCoder: coder];
   if (obj != nil)
     {
-      if ([self shouldSwapClass])
-      {
-	if (GSGetMethod([obj class],@selector(initWithFrame:), YES, NO) != NULL
-	   && ![_className isEqualToString: NSStringFromClass(_superClass)])
-	  {
-	    NSRect theFrame = [obj frame]; 
-	    obj = [obj initWithFrame: theFrame];
-	  }
-      }
       RELEASE(self);
     }
   return obj;
@@ -1023,17 +1011,6 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
   id     obj = [super initWithCoder: coder];
   if (obj != nil)
     {
-      if ([self shouldSwapClass])
-      {
-	if (GSGetMethod([obj class],@selector(initWithFrame:textContainer:), YES, NO) != NULL
-	   && ![_className isEqualToString: NSStringFromClass(_superClass)])
-	  {
-	    NSRect theFrame = [obj frame];
-	    id textContainer = [obj textContainer];
-	    obj = [obj initWithFrame: theFrame 
-		       textContainer: textContainer];
-	  }
-      }
       RELEASE(self);
     }
   return obj;
@@ -1055,15 +1032,6 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
   id     obj = [super initWithCoder: coder];
   if (obj != nil)
     {
-      if ([self shouldSwapClass])
-      {
-	if (GSGetMethod([obj class],@selector(initWithTitle:), YES, NO) != NULL
-	   && ![_className isEqualToString: NSStringFromClass(_superClass)])
-	  {
-	    NSString *theTitle = [obj title]; 
-	    obj = [obj initWithTitle: theTitle];
-	  }
-      }
       RELEASE(self);
     }
   return obj;
@@ -1086,16 +1054,6 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
   id     obj = [super initWithCoder: coder];
   if (obj != nil)
     {
-      /* 
-      if ([self shouldSwapClass])
-      {
-	if (GSGetMethod([obj class],@selector(initWithFrame:), YES, NO) != NULL)
-	  {
-	    NSRect theFrame = [obj frame]; 
-	    obj = [obj initWithFrame: theFrame];
-	  }
-      }
-      */
       RELEASE(self);
     }
   return obj;
@@ -1116,14 +1074,6 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
   id     obj = [super initWithCoder: coder];
   if (obj != nil)
     {
-      if ([self shouldSwapClass])
-      {
-	if (GSGetMethod([obj class],@selector(init), YES, NO) != NULL
-	   && ![_className isEqualToString: NSStringFromClass(_superClass)])
-	  {
-	    obj = [self init];
-	  }
-      }
       RELEASE(self);
     }
   return obj;

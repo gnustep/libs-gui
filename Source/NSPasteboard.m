@@ -532,6 +532,7 @@
 #include <Foundation/NSConnection.h>
 #include <Foundation/NSDistantObject.h>
 #include <Foundation/NSDistributedNotificationCenter.h>
+#include <Foundation/NSFileManager.h>
 #include <Foundation/NSMapTable.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSException.h>
@@ -547,6 +548,7 @@
 #include <Foundation/NSRunLoop.h>
 #include <Foundation/NSSet.h>
 #include <Foundation/NSTask.h>
+#include <GNUstepBase/NSTask+GS.h>
 #include <Foundation/NSTimer.h>
 
 #include "GNUstepGUI/GSServicesManager.h"
@@ -957,6 +959,7 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
 	  NSConnection	*connection;
 
 	  connection = [(NSDistantObject*)provider connectionForProxy];
+	  [connection enableMultipleThreads];
 	  seconds = [finishBy timeIntervalSinceNow];
 	  [connection setRequestTimeout: seconds];
 	  [connection setReplyTimeout: seconds];
@@ -1962,6 +1965,7 @@ static  NSMapTable              *mimeMap = NULL;
 	  NSConnection	*conn = [(id)the_server connectionForProxy];
           Protocol      *p = @protocol(GSPasteboardSvr);
 
+	  [conn enableMultipleThreads];
           [(id)the_server setProtocolForProxy: p];
 	  [[NSNotificationCenter defaultCenter]
 	    addObserver: self
@@ -1976,14 +1980,7 @@ static  NSMapTable              *mimeMap = NULL;
 
 	  if (cmd == nil && recursion ==NO)
 	    {
-#ifdef GNUSTEP_BASE_LIBRARY
-	      cmd = RETAIN([[NSSearchPathForDirectoriesInDomains(
-		GSToolsDirectory, NSSystemDomainMask, YES) objectAtIndex: 0]
-		stringByAppendingPathComponent: @"gpbs"]);
-#else
-	      path = RETAIN([@GNUSTEP_TOOLS_NO_DESTDIR
-			      stringByAppendingPathComponent: @"gpbs"]);
-#endif
+	      cmd = [NSTask launchPathForTool: @"gpbs"];
 	    }
 	  if (recursion == YES || cmd == nil)
 	    {

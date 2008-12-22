@@ -73,10 +73,13 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 // Pacify the compiler
 @interface NSSavePanel (GSPrivateMethods)
 - (void) _resetDefaults;
+- (void) _updateDefaultDirectory;
+- (void) _reloadBrowser;
 - (void) _selectCellName: (NSString *)title;
 - (void) _selectTextInColumn: (int)column;
 - (void) _setupForDirectory: (NSString *)path file: (NSString *)filename;
-- (BOOL) _shouldShowExtension: (NSString *)extension isDir: (BOOL *)isDir;
+- (void) _setupForTypes: (NSArray *)fileTypes; /* I'm cheating here... */
+- (BOOL) _shouldShowExtension: (NSString *)extension;
 - (NSComparisonResult) _compareFilename: (NSString *)n1 with: (NSString *)n2;
 @end
 
@@ -92,29 +95,12 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 }
 
 - (BOOL) _shouldShowExtension: (NSString *)extension
-			isDir: (BOOL *)isDir;
 {
-  BOOL found = YES;
+  if (_canChooseFiles == NO ||
+      (_fileTypes != nil && [_fileTypes containsObject: extension] == NO))
+    return NO;
 
-  if (_fileTypes != nil)
-    {
-      if ([_fileTypes containsObject: extension] == YES)
-	{
-	  if ([self treatsFilePackagesAsDirectories] == NO)
-	    {
-	      *isDir = NO;
-	    }
-	}
-      else
-	{
-	  found = NO;
-	}
-    }
-
-  if (*isDir == YES || (found == YES && _canChooseFiles == YES))
-    return YES;
-
-  return NO;
+  return YES;
 }
 
 - (void) _selectTextInColumn: (int)column
@@ -235,6 +221,16 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
   [super _setupForDirectory: path file: filename];
 }
 
+- (void) _setupForTypes: (NSArray *)fileTypes
+{
+  if (_fileTypes != fileTypes)
+    {
+      BOOL reload = ![_fileTypes isEqual: fileTypes];
+      ASSIGN (_fileTypes, fileTypes);
+      if (reload)
+	[self _reloadBrowser];
+    }
+}
 @end
 
 /** 
@@ -347,7 +343,11 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 */
 - (void) setCanChooseFiles: (BOOL)flag
 {
-  _canChooseFiles = flag;
+  if (flag != _canChooseFiles)
+    {
+      _canChooseFiles = flag;
+      [self _reloadBrowser];
+    }
 }
 
 /**<p>Returns YES if the user is allowed to choose files.  The
@@ -459,8 +459,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 			file: (NSString *)name
 		       types: (NSArray *)fileTypes
 {
-  ASSIGN (_fileTypes, fileTypes);
-
+  [self _setupForTypes: fileTypes];
   return [self runModalForDirectory: path 
 			       file: name];  
 }
@@ -470,8 +469,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 		       types: (NSArray *)fileTypes
 	    relativeToWindow: (NSWindow*)window
 {
-  ASSIGN (_fileTypes, fileTypes);
-
+  [self _setupForTypes: fileTypes];
   return [self runModalForDirectory: path 
 			       file: name
 		   relativeToWindow: window];
@@ -485,8 +483,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 		 didEndSelector: (SEL)didEndSelector
 		    contextInfo: (void *)contextInfo
 {
-  ASSIGN (_fileTypes, fileTypes);
-
+  [self _setupForTypes: fileTypes];
   [self beginSheetForDirectory: path
 			  file: name
 		modalForWindow: docWindow
@@ -579,6 +576,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 	}
     }
 
+  [self _updateDefaultDirectory];
   [NSApp stopModalWithCode: NSOKButton];
   [_okButton setEnabled: NO];
   [self close];

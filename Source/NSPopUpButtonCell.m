@@ -36,6 +36,7 @@
 #include "AppKit/NSPopUpButton.h"
 #include "AppKit/NSPopUpButtonCell.h"
 #include "AppKit/NSWindow.h"
+#include "GNUstepGUI/GSTheme.h"
 
 /* The image to use in a specific popupbutton depends on type and
  * preferred edge; that is, _pbc_image[0] if it is a
@@ -1057,6 +1058,11 @@ static NSImage *_pbc_image[5];
         {
           [aCoder encodeObject: _menu forKey: @"NSMenu"];
         }
+
+      if (_menuItem != nil)
+	{
+	  [aCoder encodeObject: _menuItem forKey: @"NSMenuItem"];
+	}
     }
   else
     {    

@@ -214,13 +214,17 @@ new_label (NSString *value)
   if (nil_or_not_of_class (name, [NSString class]))
     {
       name = value_from_info_plist_for_key (@"ApplicationName");
-      
       if (nil_or_not_of_class (name, [NSString class]))
 	{
 	  name = value_from_info_plist_for_key (@"NSHumanReadableShortName");
-
 	  if (nil_or_not_of_class (name, [NSString class]))
-	    name = [[NSProcessInfo processInfo] processName]; 
+	    {
+	      name = value_from_info_plist_for_key (@"CFBundleName");
+	      if (nil_or_not_of_class (name, [NSString class]))
+		{
+		  name = [[NSProcessInfo processInfo] processName]; 
+		}
+	    }
 	}
     }
   /* Application Description */
@@ -265,7 +269,14 @@ new_label (NSString *value)
 	      release = value_from_info_plist_for_key (@"NSAppVersion");
 	      
 	      if (nil_or_not_of_class (release, [NSString class]))
-		release = @"Unknown";
+		{
+		  release = value_from_info_plist_for_key (@"CFBundleVersion");
+	      
+		  if (nil_or_not_of_class (release, [NSString class]))
+		    {
+		      release = @"Unknown";
+		    }
+		}
 	    }
 	}
     }
@@ -302,17 +313,19 @@ new_label (NSString *value)
   if (nil_or_not_of_class (authors, [NSArray class]))
     {
       authors = value_from_info_plist_for_key (@"Authors");
-
-      if (nil_or_not_of_class (authors, [NSArray class]))
-	authors = [NSArray arrayWithObject: @"Unknown"];
+      
+      // if (nil_or_not_of_class (authors, [NSArray class]))
+      //   authors = [NSArray arrayWithObject: @"Unknown"];
     }
   /* URL */
   if (dictionary)
-    url = [dictionary objectForKey: @"URL"];
+      url = [dictionary objectForKey: @"URL"];
 
-  if ([url isKindOfClass: [NSString class]] == NO)
-    url = nil;
-  /* NB: URL can be nil */
+  if (nil_or_not_of_class (url, [NSString class]))
+    {
+      url = value_from_info_plist_for_key (@"URL");
+    }
+  // URL can be nil
 
   /* Copyright */
   if (dictionary)
@@ -376,7 +389,11 @@ new_label (NSString *value)
   [versionLabel setFont: smallFont];
   [versionLabel sizeToFit];
 
-  if ([authors count] == 1)
+  if ([authors count] == 0)
+    {
+      authorTitleLabel = new_label (@"");
+    }
+  else if ([authors count] == 1)
     {
       authorTitleLabel = new_label (@"Author: ");
     }

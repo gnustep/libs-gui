@@ -212,6 +212,7 @@ static NSTextFieldCell *titleCell;
                                     inView: (NSView*)controlView
 {
   [[GSTheme theme] drawGrayBezel: cellFrame withClip: NSZeroRect];
+  [self _drawBackgroundWithFrame: cellFrame inView: controlView];
 }
 
 @end
@@ -1304,6 +1305,7 @@ static NSTextFieldCell *titleCell;
 {
   float cw;
 
+  cw = columnWidth;
   // Take the border into account
   if (_separatesColumns)
     cw -= 2 * (_sizeForBorderType(NSBezelBorder)).width;
@@ -1453,9 +1455,10 @@ static NSTextFieldCell *titleCell;
   if (!_isTitled || !NSBR_COLUMN_IS_VISIBLE(column))
     return;
 
-  [titleCell setControlView: self];
+//  [titleCell setControlView: self];
   [titleCell setStringValue: title];
   [titleCell drawWithFrame: aRect inView: self];
+  [titleCell setControlView: nil];
 }
 
 /** <p>Returns the height of column titles. The Nextish look returns 21.</p>
@@ -3224,6 +3227,11 @@ static NSTextFieldCell *titleCell;
       r.size.width = _frame.size.width;
       [self setNeedsDisplayInRect: r];
     }
+}
+
+- (void) setNeedsDisplayInRect: (NSRect)invalidRect
+{
+    [super setNeedsDisplayInRect: invalidRect];
 }
 
 @end

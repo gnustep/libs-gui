@@ -128,6 +128,14 @@ Interface for a bunch of internal methods that need to be cleaned up.
 - (void) pasteSelection;
 @end
 
+
+@interface NSTextStorage(NSTextViewUndoSupport)
+- (NSTextView *)_bestTextViewForUndo;
+- (void)_undoReplaceCharactersInRange: (NSRange)undoRange
+		 withAttributedString: (NSAttributedString *)undoString
+		        selectedRange: (NSRange)selectedRange;
+@end
+
 // This class is a helper for keyed unarchiving only
 @interface NSTextViewSharedData : NSObject 
 {
@@ -661,6 +669,8 @@ If a text view is added to an empty text network, it keeps its attributes.
   _tf.accepts_glyph_info = NO;
   _tf.allows_document_background_color_change = YES;
 
+  _dragTargetLocation = NSNotFound;
+
   _markedRange = NSMakeRange(NSNotFound, 0);
   [container setTextView: self];
   [self invalidateTextContainerOrigin];
@@ -849,21 +859,6 @@ that makes decoding and encoding compatible with the old code.
         {
           [aDecoder decodeIntForKey: @"NSTVFlags"];
         }
-
-      // register for services and subscribe to notifications.
-      [self _recacheDelegateResponses];
-      [self invalidateTextContainerOrigin];
-
-      if (!did_register_for_services)
-        [isa registerForServices];
-
-      [self updateDragTypeRegistration];
-
-      [self setPostsFrameChangedNotifications: YES];
-      [notificationCenter addObserver: self
-			  selector: @selector(_updateState:)
-			  name: NSViewFrameDidChangeNotification
-			  object: self];
     }
   else
     {
@@ -927,22 +922,24 @@ that makes decoding and encoding compatible with the old code.
 	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
 	  [aTextContainer setHeightTracksTextView: flag];
 	}
-
-      [self _recacheDelegateResponses];
-      [self invalidateTextContainerOrigin];
-
-      // register for services...
-      if (!did_register_for_services)
-	[isa registerForServices];
-
-      [self updateDragTypeRegistration];
-
-      [self setPostsFrameChangedNotifications: YES];
-      [notificationCenter addObserver: self
-			  selector: @selector(_updateState:)
-			  name: NSViewFrameDidChangeNotification
-			  object: self];
     }
+
+  _dragTargetLocation = NSNotFound;
+
+  [self _recacheDelegateResponses];
+  [self invalidateTextContainerOrigin];
+
+  // register for services...
+  if (!did_register_for_services)
+    [isa registerForServices];
+
+  [self updateDragTypeRegistration];
+
+  [self setPostsFrameChangedNotifications: YES];
+  [notificationCenter addObserver: self
+		      selector: @selector(_updateState:)
+		      name: NSViewFrameDidChangeNotification
+		      object: self];
 
   return self;
 }
@@ -1862,8 +1859,10 @@ or add guards
   index = [_layoutManager glyphIndexForPoint: point 
 			     inTextContainer: _textContainer
 	      fractionOfDistanceThroughGlyph: &fraction];
+  // FIXME The layoutManager should never return -1.
+  // Assume that the text is empty if this happens.
   if (index == (unsigned int)-1)
-    return (unsigned int)-1;
+    return 0;
 
   index = [_layoutManager characterIndexForGlyphAtIndex: index];
   if (respectFraction && fraction > 0.5 && index < [_textStorage length] &&
@@ -2499,8 +2498,10 @@ TextDidEndEditing notification _without_ asking the delegate
           undoRange = affectedCharRange;
         }
       undoString = [self attributedSubstringFromRange: affectedCharRange];
-      [[undo prepareWithInvocationTarget: self] replaceCharactersInRange: undoRange
-						withAttributedString: undoString];
+      [[undo prepareWithInvocationTarget: [self textStorage]]
+	  _undoReplaceCharactersInRange: undoRange
+		   withAttributedString: undoString
+			  selectedRange: [self selectedRange]];
     }
 
   return result;
@@ -3474,12 +3475,12 @@ Figure out how the additional layout stuff is supposed to work.
 {
   if (!_layoutManager)
     return NO;
+  if (_dragTargetLocation != NSNotFound)
+    return YES;
   if (_layoutManager->_selected_range.length != 0)
     return NO;
   if (_tf.is_editable == NO)
     return NO;
-  if (_tf.isDragTarget == YES)
-    return YES;
   if ([_window isKeyWindow] == YES && [_window firstResponder] == self)
     return YES;
   return NO;
@@ -3585,7 +3586,26 @@ Figure out how the additional layout stuff is supposed to work.
       return;
     }
 
-  if (_layoutManager->_selected_range.length > 0 ||
+  if (_dragTargetLocation != NSNotFound)
+    {
+      _tf.drag_target_hijacks_insertion_point = YES;
+
+      new = [_layoutManager
+	      insertionPointRectForCharacterIndex: _dragTargetLocation
+	      inTextContainer: _textContainer];
+
+      new.origin.x += _textContainerOrigin.x;
+      new.origin.y += _textContainerOrigin.y;
+
+      /* If the insertion would extend outside the view (e.g. because it's
+      just to the right of a character on the far right edge of the view,
+      a common case for right-aligned text), we force it back in. */
+      if (NSMaxX(new) > NSMaxX(_bounds))
+	{
+	  new.origin.x = NSMaxX(_bounds) - new.size.width;
+	}
+    }
+  else if (_layoutManager->_selected_range.length > 0 ||
       _layoutManager->_selected_range.location == NSNotFound ||
       !restartFlag)
     {
@@ -3609,63 +3629,81 @@ Figure out how the additional layout stuff is supposed to work.
 	}
     }
 
-  // Don't draw insertion point if there's no need
-  if (![self shouldDrawInsertionPoint] && !_drawInsertionPointNow)
+  /* Handle hijacked insertion point (either set above when entering this
+     method or during the previous call to this method) */
+  if (_tf.drag_target_hijacks_insertion_point)
     {
-      return;
-    }
-
-  if (restartFlag)
-    {
-      /* Start blinking timer if not yet started */
-      if (_insertionPointTimer == nil  &&  [self shouldDrawInsertionPoint])
-	{
-//	  NSLog(@"Start timer");
-	  _insertionPointRect = new;
-	  _insertionPointTimer = [NSTimer scheduledTimerWithTimeInterval: 0.5
-					  target: self
-					  selector: @selector(_blink:)
-					  userInfo: nil
-					  repeats: YES];
-	  RETAIN (_insertionPointTimer);
-	}
-      else if (_insertionPointTimer != nil)
-	{
-	  if (!NSEqualRects(new, _insertionPointRect))
-	    {
-	      _drawInsertionPointNow = NO;
-	      [self setNeedsDisplayInRect: _insertionPointRect
-		    avoidAdditionalLayout: YES];
-	      _insertionPointRect = new;
-	    }
-	}
-
-      /* Ok - blinking has just been turned on.  Make sure we start
-       * the on/off/on/off blinking from the 'on', because in that way
-       * the user can see where the insertion point is as soon as
-       * possible.  
-       */
-      _drawInsertionPointNow = YES;
-      [self setNeedsDisplayInRect: _insertionPointRect
-	    avoidAdditionalLayout: YES];
-    }
-  else if ([self shouldDrawInsertionPoint] && (_insertionPointTimer != nil))
-    {
-      // restartFlag is set to NO when control resigns first responder status
-      // or window resings key window status. So we invalidate timer to 
-      // avoid extra method calls
-//      NSLog(@"Stop timer");
-      [_insertionPointTimer invalidate];
-      DESTROY (_insertionPointTimer);
-
       _drawInsertionPointNow = NO;
       [self setNeedsDisplayInRect: _insertionPointRect
 	    avoidAdditionalLayout: YES];
-
       _insertionPointRect = new;
+
+      if (_dragTargetLocation != NSNotFound)
+        {
+	  _insertionPointRect = new;
+	  _drawInsertionPointNow = YES;
+	  [self setNeedsDisplayInRect: _insertionPointRect
+		avoidAdditionalLayout: YES];
+	}
+      else
+	_tf.drag_target_hijacks_insertion_point = NO;
     }
 
-  [self _updateInputMethodWithInsertionPoint: _insertionPointRect.origin];
+  /* Otherwise, draw insertion point only if there is a need to do so */
+  else if ([self shouldDrawInsertionPoint] || _drawInsertionPointNow)
+    {
+      if (restartFlag)
+        {
+	  /* Start blinking timer if not yet started */
+	  if (_insertionPointTimer == nil  &&  [self shouldDrawInsertionPoint])
+	    {
+//	      NSLog(@"Start timer");
+	      _insertionPointRect = new;
+	      _insertionPointTimer = [NSTimer scheduledTimerWithTimeInterval: 0.5
+					      target: self
+					      selector: @selector(_blink:)
+					      userInfo: nil
+					      repeats: YES];
+	      RETAIN (_insertionPointTimer);
+	    }
+	  else if (_insertionPointTimer != nil)
+	    {
+	      if (!NSEqualRects(new, _insertionPointRect))
+	        {
+		  _drawInsertionPointNow = NO;
+		  [self setNeedsDisplayInRect: _insertionPointRect
+		    avoidAdditionalLayout: YES];
+		  _insertionPointRect = new;
+		}
+	    }
+
+	  /* Ok - blinking has just been turned on.  Make sure we start
+	   * the on/off/on/off blinking from the 'on', because in that way
+	   * the user can see where the insertion point is as soon as
+	   * possible.  
+	   */
+	  _drawInsertionPointNow = YES;
+	  [self setNeedsDisplayInRect: _insertionPointRect
+		avoidAdditionalLayout: YES];
+	}
+      else if ([self shouldDrawInsertionPoint] && (_insertionPointTimer != nil))
+        {
+	  // restartFlag is set to NO when control resigns first responder
+	  // status or window resings key window status. So we invalidate
+	  // timer to  avoid extra method calls
+//	  NSLog(@"Stop timer");
+	  [_insertionPointTimer invalidate];
+	  DESTROY (_insertionPointTimer);
+
+	  _drawInsertionPointNow = NO;
+	  [self setNeedsDisplayInRect: _insertionPointRect
+		avoidAdditionalLayout: YES];
+
+	  _insertionPointRect = new;
+	}
+
+      [self _updateInputMethodWithInsertionPoint: _insertionPointRect.origin];
+    }
 }
 
 
@@ -4098,7 +4136,20 @@ right.)
 
   if ([type isEqualToString: NSStringPboardType])
     {
-      [self insertText: [pboard stringForType: NSStringPboardType]];
+      if (changeRange.location != NSNotFound)
+        {
+	  NSString *s = [pboard stringForType: NSStringPboardType];
+
+	  if ([self shouldChangeTextInRange: changeRange
+		    replacementString: s])
+	    {
+	      [self replaceCharactersInRange: changeRange
+		    withString: s];
+	      [self didChangeText];
+	      changeRange.length = [s length];
+	      [self setSelectedRange: changeRange];
+	    }
+	}
       return YES;
     } 
 
@@ -4125,6 +4176,8 @@ right.)
 		  [self replaceCharactersInRange: changeRange
 		    withAttributedString: as];
 		  [self didChangeText];
+		  changeRange.length = [as length];
+		  [self setSelectedRange: changeRange];
 		}
 
 	      DESTROY(as);
@@ -4151,6 +4204,8 @@ right.)
 		  [self replaceCharactersInRange: changeRange
 		    withAttributedString: as];
 		  [self didChangeText];
+		  changeRange.length = [as length];
+		  [self setSelectedRange: changeRange];
 		}
 
 	      DESTROY(as);
@@ -4177,6 +4232,8 @@ right.)
 		  [self replaceCharactersInRange: changeRange
 			    withAttributedString: as];
 		  [self didChangeText];
+		  changeRange.length = [as length];
+		  [self setSelectedRange: changeRange];
 		}
 	      RELEASE(attachment);
 	      RELEASE(image);
@@ -4199,6 +4256,8 @@ right.)
 	      [self replaceCharactersInRange: changeRange
 		withAttributedString: as];
 	      [self didChangeText];
+	      changeRange.length = [as length];
+	      [self setSelectedRange: changeRange];
 	    }
 	  RELEASE(attachment);
 	  return YES;
@@ -4435,7 +4494,7 @@ other than copy/paste or dragging. */
   change, and those calls are made on all connected text views.
   */
   
-  if (_tf.is_editable && _tf.is_rich_text)
+  if (_tf.is_editable)
     [self registerForDraggedTypes: [self acceptableDragTypes]];
   else
     [self unregisterDraggedTypes];
@@ -4445,7 +4504,35 @@ other than copy/paste or dragging. */
 
 /**** Drag and drop handling ****/
 
+/*
+ * TODO: Dragging should use a transient insertion point distinct from the
+ * text view's current selection. This allows subclasses of NSTextView to
+ * determine the origin of the dragged selection during a drag operation and
+ * provides better visual feedback for users, since the origin of the dragged
+ * selection remains visible. Note that -rangeForUserTextChange will have to
+ * be changed to take this transient insertion point into account.
+ */
+
 // dragging of text, colors and files
+- (unsigned int)draggingSourceOperationMaskForLocal:(BOOL)isLocal
+{
+    return (NSDragOperationGeneric | NSDragOperationCopy);
+}
+
+- (void)_draggingHijackInsertionPoint: (unsigned int)dragIndex
+{
+  _dragTargetLocation = dragIndex;
+  [self updateInsertionPointStateAndRestartTimer: NO];
+  [self displayIfNeeded];
+}
+
+- (void)_draggingReleaseInsertionPoint
+{
+  _dragTargetLocation = NSNotFound;
+  [self updateInsertionPointStateAndRestartTimer: NO];
+  [self displayIfNeeded];
+}
+
 - (NSDragOperation) draggingEntered: (id <NSDraggingInfo>)sender
 {
   NSPasteboard	*pboard = [sender draggingPasteboard];
@@ -4459,26 +4546,23 @@ other than copy/paste or dragging. */
     {
       NSPoint	dragPoint;
       unsigned	dragIndex;
-      NSRange	dragRange;
-      NSRange	range;
-
-      if (_tf.isDragTarget == NO)
-        {
-          _tf.isDragTarget = YES;
-          _dragTargetSelectionRange = [self selectedRange];
-        }
 
       dragPoint = [sender draggingLocation];
       dragPoint = [self convertPoint: dragPoint fromView: nil];
       dragIndex = [self _characterIndexForPoint: dragPoint
                         respectFraction: YES];
-      dragRange = NSMakeRange (dragIndex, 0);
 
-      range = [self selectionRangeForProposedRange: dragRange
-				       granularity: NSSelectByCharacter];
-      [self setSelectedRange: range];
-      [self displayIfNeeded];
+      if ([sender draggingSource] != self ||
+	  !NSLocationInRange(dragIndex, [self selectedRange]))
+	[self _draggingHijackInsertionPoint: dragIndex];
+      else
+        {
+	  [self _draggingReleaseInsertionPoint];
+	  flags = NSDragOperationNone;
+        }
     }
+  else if (_dragTargetLocation != NSNotFound)
+    [self _draggingReleaseInsertionPoint];
   return flags;
 }
 
@@ -4495,41 +4579,68 @@ other than copy/paste or dragging. */
     {
       NSPoint	dragPoint;
       unsigned	dragIndex;
-      NSRange	dragRange;
-      NSRange	range;
-
-      if (_tf.isDragTarget == NO)
-        {
-          _tf.isDragTarget = YES;
-          _dragTargetSelectionRange = [self selectedRange];
-        }
+      NSRect	vRect;
 
       dragPoint = [sender draggingLocation];
       dragPoint = [self convertPoint: dragPoint fromView: nil];
       dragIndex = [self _characterIndexForPoint: dragPoint
                         respectFraction: YES];
-      dragRange = NSMakeRange (dragIndex, 0);
 
-      range = [self selectionRangeForProposedRange: dragRange
-				       granularity: NSSelectByCharacter];
-      [self setSelectedRange: range];
-      [self displayIfNeeded];
+      /* Note: Keep DRAGGING_SCROLL_BORDER in sync with a similar value used
+       * in -draggingUpdated: of NSOutlineView and NSTableView.
+       * FIXME: Is the value of DRAGGING_SCROLL_DIST reasonable?
+       */
+#define DRAGGING_SCROLL_BORDER 3
+#define DRAGGING_SCROLL_DIST 10
+      vRect = [self visibleRect];
+      if (dragPoint.x <= NSMinX(vRect) + DRAGGING_SCROLL_BORDER)
+        {
+	  vRect.origin.x -= DRAGGING_SCROLL_DIST;
+	  if (NSMinX(vRect) < NSMinX(_bounds))
+	    vRect.origin.x = NSMinX(_bounds);
+	}
+      else if (dragPoint.x >= NSMaxX(vRect) - DRAGGING_SCROLL_BORDER)
+        {
+	  vRect.origin.x += DRAGGING_SCROLL_DIST;
+	  if (NSMaxX(vRect) > NSMaxX(_bounds))
+	    vRect.origin.x = NSMaxX(_bounds) - NSWidth(vRect);
+	}
+
+      if (dragPoint.y <= NSMinY(vRect) + DRAGGING_SCROLL_BORDER)
+        {
+	  vRect.origin.y -= DRAGGING_SCROLL_DIST;
+	  if (NSMinY(vRect) < NSMinY(_bounds))
+	    vRect.origin.y = NSMinY(_bounds);
+	}
+      else if (dragPoint.y >= NSMaxY(vRect) - DRAGGING_SCROLL_BORDER)
+        {
+	  vRect.origin.y += DRAGGING_SCROLL_DIST;
+	  if (NSMaxY(vRect) > NSMaxY(_bounds))
+	    vRect.origin.y = NSMaxY(_bounds) - NSHeight(vRect);
+	}
+      [self scrollPoint: vRect.origin];
+#undef DRAGGING_SCROLL_BORDER
+#undef DRAGGING_SCROLL_DIST
+
+      if ([sender draggingSource] != self ||
+	  !NSLocationInRange(dragIndex, [self selectedRange]))
+	[self _draggingHijackInsertionPoint: dragIndex];
+      else
+        {
+	  [self _draggingReleaseInsertionPoint];
+	  flags = NSDragOperationNone;
+        }
     }
+  else if (_dragTargetLocation != NSNotFound)
+    [self _draggingReleaseInsertionPoint];
   return flags;
 }
 
 - (void) draggingExited: (id <NSDraggingInfo>)sender
 {
-  NSPasteboard	*pboard = [sender draggingPasteboard];
-  NSArray	*types = [self readablePasteboardTypes];
-  NSString	*type = [self preferredPasteboardTypeFromArray: [pboard types]
-				    restrictedToTypesFromArray: types];
-  if (_tf.isDragTarget == YES
-      && ![type isEqual:NSColorPboardType])
+  if (_dragTargetLocation != NSNotFound)
     {
-      _tf.isDragTarget = NO;
-      [self setSelectedRange: _dragTargetSelectionRange];
-      [self displayIfNeeded];
+      [self _draggingReleaseInsertionPoint];
     }
 }
 
@@ -4540,13 +4651,25 @@ other than copy/paste or dragging. */
 
 - (BOOL) performDragOperation: (id <NSDraggingInfo>)sender
 {
-  _tf.isDragTarget = NO;
+  NSRange sourceRange = [self selectedRange];
+  NSRange changeRange = NSMakeRange(_dragTargetLocation, 0);
+  [self _draggingReleaseInsertionPoint];
+  [self setSelectedRange: changeRange];
+
+  if ([sender draggingSource] == self &&
+      ([sender draggingSourceOperationMask] & NSDragOperationGeneric))
+    {
+      if (![self shouldChangeTextInRange: sourceRange replacementString: @""])
+        {
+	  return NO;
+	}
+      [self replaceCharactersInRange: sourceRange withString: @""];
+    }
   return [self readSelectionFromPasteboard: [sender draggingPasteboard]];
 }
 
 - (void) concludeDragOperation: (id <NSDraggingInfo>)sender
 {
-  _tf.isDragTarget = NO;
 }
 
 - (void) cleanUpAfterDragOperation
@@ -4567,6 +4690,7 @@ other than copy/paste or dragging. */
   if (origin)
     *origin = NSMakePoint(0, 0);
 
+  // FIXME
   return nil;
 }
 
@@ -4602,6 +4726,7 @@ other than copy/paste or dragging. */
 
 - (void) mouseDown: (NSEvent *)theEvent
 {
+  BOOL canDrag = NO;
   NSSelectionAffinity affinity = [self selectionAffinity];
   NSSelectionGranularity granularity = NSSelectByCharacter;
   NSRange chosenRange, proposedRange;
@@ -4624,11 +4749,6 @@ other than copy/paste or dragging. */
   startIndex = [self _characterIndexForPoint: startPoint
                      respectFraction: [theEvent clickCount] == 1];
 
-  if (startIndex == (unsigned int)-1)
-    {
-      return;
-    }
-  
   if ([theEvent modifierFlags] & NSShiftKeyMask)
     {
       /* Shift-click is for extending an existing selection using 
@@ -4666,6 +4786,9 @@ other than copy/paste or dragging. */
 	  break;
 	}
 
+      /* A single click into the selected range can start a drag operation */
+      canDrag = granularity == NSSelectByCharacter
+	  && NSLocationInRange(startIndex, _layoutManager->_selected_range);
       proposedRange = NSMakeRange (startIndex, 0);
 
       /* We manage clicks on attachments and links only on the first
@@ -4757,10 +4880,27 @@ other than copy/paste or dragging. */
 
   chosenRange = [self selectionRangeForProposedRange: proposedRange
 		      granularity: granularity];
-  [self setSelectedRange: chosenRange  affinity: affinity  
-	stillSelecting: YES];
+  if (canDrag)
+  {
+    unsigned int mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask;
+    NSEvent *currentEvent;
 
-
+    currentEvent = [_window nextEventMatchingMask: mask
+  			      untilDate: nil
+  			      inMode: NSEventTrackingRunLoopMode
+  			      dequeue: YES];
+    if ([currentEvent type] == NSLeftMouseDragged)
+      {
+  	if (![self dragSelectionWithEvent: theEvent
+  				   offset: NSMakeSize(0, 0)
+  				slideBack: YES])
+  	  {
+  	    NSBeep();
+  	  }
+  	return;
+      }
+  }
+  else
   /* Enter modal loop tracking the mouse */
   {
     unsigned int mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask
@@ -4769,6 +4909,9 @@ other than copy/paste or dragging. */
     NSEvent *lastEvent = nil; /* Last non-periodic event. */
     NSDate *distantPast = [NSDate distantPast];
     BOOL gettingPeriodic, gotPeriodic;
+
+    [self setSelectedRange: chosenRange  affinity: affinity  
+	  stillSelecting: YES];
 
     currentEvent = [_window nextEventMatchingMask: mask
 		     untilDate: nil
@@ -5113,3 +5256,69 @@ configuation! */
 
 @end
 
+@implementation NSTextStorage(NSTextViewUndoSupport)
+/* FIXME: Should this code be moved to NSTextStorage? */
+- (NSTextView *)_bestTextViewForUndo
+{
+  int i, j;
+  NSArray *textContainers;
+  NSTextView *tv, *first = nil, *best = nil;
+  NSWindow *win;
+
+  /* The "best" view will be one in the key window followed by one in the
+   * main window.  In either case, we prefer the window's first responder.
+   * If no view is in the key or main window, we simply use the first text
+   * view.  Since -shouldChangeTextInRange:replacementString: returns NO
+   * by default if a NSTextView is not editable, we consider only editable
+   * views here.
+   */
+  for (i = 0; i < [_layoutManagers count]; i++)
+    {
+      textContainers = [[_layoutManagers objectAtIndex: i] textContainers];
+      for (j = 0; j < [textContainers count]; j++)
+        {
+          tv = [[textContainers objectAtIndex: j] textView];
+          if ([tv isEditable])
+            {
+              win = [tv window];
+              if (first == nil)
+                first = tv;
+              if ([win isKeyWindow])
+                {
+                  if ([win firstResponder] == tv)
+                    return tv;
+                  else if (best == nil)
+                    best = tv;
+                }
+              else if ([win isMainWindow])
+                {
+                  if ([win firstResponder] == tv)
+                    {
+                      if (best == nil || ![[best window] isKeyWindow])
+                        best = tv;
+                    }
+                  else if (best == nil)
+                    best = tv;
+                }
+            }
+        }
+    }
+  return best != nil ? best : first;
+}
+
+- (void)_undoReplaceCharactersInRange: (NSRange)undoRange
+		 withAttributedString: (NSAttributedString *)undoString
+			selectedRange: (NSRange)selectedRange
+{
+  NSTextView *tv = [self _bestTextViewForUndo];
+
+  if ([tv shouldChangeTextInRange: undoRange
+		replacementString: undoString ? [undoString string] : @""])
+    {
+      [tv replaceCharactersInRange: undoRange
+	      withAttributedString: undoString];
+      [tv setSelectedRange: selectedRange];
+      [tv didChangeText];
+    }
+}
+@end
