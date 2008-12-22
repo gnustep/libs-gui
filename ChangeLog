@@ -1,3 +1,7 @@
+2008-06-14  Adam Fedor  <fedor@gnu.org>
+
+	* Version 0.16.0
+
 2008-12-21  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSTextView.m (-draggingUpdated:): Avoid redundant call to

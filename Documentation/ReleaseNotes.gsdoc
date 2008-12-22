@@ -20,6 +20,57 @@
 	migrate to using a newer version of the library.
       </p>
       <section>
+      	<heading>Version 0.16.0</heading>
+	<p>This is an stable release. A lot of improvements and bug
+	fixes went into this release. Thanks to Wolfgang Lux for fixing plenty
+	of bugs. Note that gnustep-core is now installed in the LOCAL domain
+	by default instead of the SYSTEM domain. You may want to remove old
+	installations in the SYSTEM domain to avoid any incompatibility problems.
+	Or you can force installation in SYSTEM using make 
+	GNUSTEP_INSTALLATION_DOMAIN=SYSTEM install.
+	</p>
+	<deflist>
+            <term>Nib Loading</term>
+            <desc>
+	      Several methods were added and Nib loading in general was refactored
+	      and improved.
+            </desc>
+            <term>NSDocument</term>
+            <desc>
+	      Document autosaving was implemented.
+            </desc>
+            <term>NSSavePanel</term>
+            <desc>
+	      Several methods were added to implement support for document types
+	      with multiple allowed file extensions.
+            </desc>
+            <term>NSWindow</term>
+            <desc>
+	      Definitions and skeleton implementation of attachedSheet.
+            </desc>
+            <term>NSTextView</term>
+            <desc>
+	      Renamed and changed types of attributes related to drag and drop.
+            </desc>
+            <term>NSLayoutManager</term>
+            <desc>
+	      New methods added to handle temporary attributes.
+            </desc>
+            <term>NSWindowContrller</term>
+            <desc>
+	      NSWindowController was made a subclass of NSResponder.
+            </desc>
+            <term>NSCell</term>
+            <desc>
+	      Rearranged somewhat to use GSTheme implemetations.
+            </desc>
+            <term>NSTokenField, NSTokenFieldCell</term>
+            <desc>
+	      Ned classes added.
+            </desc>
+	</deflist>
+      </section>
+      <section>
       	<heading>Version 0.14.0</heading>
 	<p>This is an stable release.
 	</p>
