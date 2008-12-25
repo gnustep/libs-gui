@@ -1,3 +1,13 @@
+2008-12-25 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSMenuItem.h: Declare to implement interface
+	NSValidatedUserInterfaceItem. 
+	* Headers/AppKit/NSDocumentController.h: Change to use NSUInteger and
+	NSInteger. 
+	* Source/NSDocumentController.m: Implement all Cocoa methods of this
+	class and clean up the rest of the implementation.
+	Partly using code by Nikolaus Schaller <hns@computer.org>.
+
 2008-12-21  Adam Fedor  <fedor@gnu.org>
 
 	* Version 0.16.0

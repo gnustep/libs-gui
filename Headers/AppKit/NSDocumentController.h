@@ -48,7 +48,7 @@
 @class NSOpenPanel;
 @class NSWindow;
 
-@interface NSDocumentController : NSObject
+@interface NSDocumentController : NSObject <NSCoding>
 {
   @private
     NSMutableArray 	*_documents;
@@ -111,7 +111,7 @@
 - (IBAction)newDocument:(id)sender;
 - (IBAction)clearRecentDocuments:(id)sender;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
-- (unsigned int) maximumRecentDocumentCount;
+- (NSUInteger) maximumRecentDocumentCount;
 #endif
 
 /*" Recent Documents "*/
@@ -122,7 +122,7 @@
 /*" Open panel "*/
 - (NSArray *)URLsFromRunningOpenPanel;
 - (NSArray *)fileNamesFromRunningOpenPanel;
-- (int)runModalOpenPanel:(NSOpenPanel *)openPanel forTypes:(NSArray *)openableFileExtensions;
+- (NSInteger)runModalOpenPanel:(NSOpenPanel *)openPanel forTypes:(NSArray *)openableFileExtensions;
 
 /*" Document management "*/
 - (void)addDocument:(NSDocument *)document;

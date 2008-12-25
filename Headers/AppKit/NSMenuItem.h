@@ -35,6 +35,7 @@
 #import <GNUstepBase/GSVersionMacros.h>
 
 #include <Foundation/NSObject.h>
+#include <AppKit/NSUserInterfaceValidation.h>
 
 @class NSAttributedString;
 @class NSString;
@@ -367,7 +368,7 @@
 
 @end
 
-@interface NSMenuItem : NSObject <NSMenuItem>
+@interface NSMenuItem : NSObject <NSMenuItem, NSValidatedUserInterfaceItem>
 {
   NSMenu *_menu;
   NSString *_title;
