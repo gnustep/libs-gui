@@ -1,5 +1,12 @@
 2008-12-26 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSAttributedString.m (-initWithData:...,
+	-initWithURL:...): Basic implementation.
+	* Source/NSAttributedString.m
+	(NSMutableAttributedString-readFromData:...): Implement. 
+
+2008-12-26 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSDocumentController.m: Remove now unused override helper
 	method. 
 	* Headers/AppKit/NSDocument.h: Change to use NSUInteger and

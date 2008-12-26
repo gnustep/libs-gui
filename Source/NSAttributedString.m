@@ -139,9 +139,9 @@ Class converter_bundles(NSString *format, BOOL producer)
       dpath = [dpath stringByAppendingPathComponent: @"Bundles"];
       dpath = [dpath stringByAppendingPathComponent: @"TextConverters"];
       if ([[NSFileManager defaultManager] fileExistsAtPath: dpath])
-	direnum = [[NSFileManager defaultManager] enumeratorAtPath: dpath];
+        direnum = [[NSFileManager defaultManager] enumeratorAtPath: dpath];
       else
-	direnum = nil;
+        direnum = nil;
       while (direnum && (path = [direnum nextObject]))
 	{
 	  Class bclass;
@@ -619,25 +619,20 @@ static Class converter_class(NSString *format, BOOL producer)
   fw = [[NSFileWrapper alloc] initWithPath: path];
   AUTORELEASE (fw);
   
-  return [self initWithRTFDFileWrapper: fw  documentAttributes: dict];
+  return [self initWithRTFDFileWrapper: fw documentAttributes: dict];
 }
 
 - (id) initWithURL: (NSURL *)url 
 documentAttributes: (NSDictionary **)dict
 {
-  NSData *data = [url resourceDataUsingCache: YES];
-  
-  if (data == nil)
-    {
-      RELEASE (self);
-      return nil;
-    }
+  NSError *error;
+  NSDictionary *options = [NSDictionary dictionaryWithObject: [url baseURL]
+                                        forKey: NSBaseURLDocumentOption];
 
-
-  // FIXME: This expects the URL to point to a HTML page
-  return [self initWithHTML: data
-	       baseURL: [url baseURL]
-	       documentAttributes: dict];
+  return [self initWithURL: url
+               options: options
+               documentAttributes: dict
+               error: &error];
 }
 
 - (id) initWithRTFDFileWrapper: (NSFileWrapper *)wrapper
@@ -752,18 +747,32 @@ documentAttributes: (NSDictionary **)dict
 - (id) initWithDocFormat: (NSData *)data
       documentAttributes: (NSDictionary **)dict
 {
-  // FIXME
-  RELEASE(self);
-  return nil;
+  NSAttributedString *new;
+
+  if (data == nil)
+    {
+      RELEASE (self);
+      return nil;
+    }
+
+  new = [converter_class(@"DOC", NO)
+			parseData: data
+			documentAttributes: dict
+			class: [self class]];
+  // We do not return self but the newly created object
+  RELEASE (self);
+  return RETAIN (new); 
 }
 
 - (id) initWithHTML: (NSData *)data
             options: (NSDictionary *)options
  documentAttributes: (NSDictionary **)dict
 {
-  // FIXME
-  RELEASE(self);
-  return nil;
+  NSURL *baseURL = [options objectForKey: NSBaseURLDocumentOption];
+
+  return [self initWithHTML: data
+               baseURL: baseURL
+               documentAttributes: dict];
 }
 
 - (id) initWithData: (NSData *)data
@@ -771,7 +780,49 @@ documentAttributes: (NSDictionary **)dict
  documentAttributes: (NSDictionary **)dict
               error: (NSError **)error
 {
-  // FIXME
+  NSString *type = [options objectForKey: NSDocumentTypeDocumentOption];
+
+  if (type == nil)
+    {
+      // FIXME: try to determine type
+    }
+
+  if ([type isEqualToString: NSDocFormatTextDocumentType])
+    {
+      return [self initWithDocFormat: data
+                   documentAttributes: dict];
+    }
+  else if ([type isEqualToString: NSHTMLTextDocumentType])
+    {
+      return [self initWithHTML: data
+                   options: options
+                   documentAttributes: dict];
+    }
+  else if ([type isEqualToString: NSRTFDTextDocumentType])
+    {
+      return [self initWithRTFD: data
+                   documentAttributes: dict];
+    }
+  else if ([type isEqualToString: NSRTFTextDocumentType])
+    {
+      return [self initWithRTF: data
+                   documentAttributes: dict];
+    }
+  else if ([type isEqualToString: NSPlainTextDocumentType])
+    {
+      NSStringEncoding encoding = [[options objectForKey: @"CharacterEncoding"] 
+				      intValue];
+      NSDictionary *defaultAttrs = [options objectForKey: @"DefaultAttributes"];
+      NSString *str = [[NSString alloc] initWithData: data 
+                                        encoding: encoding];
+
+      self = [self initWithString: str
+                   attributes: defaultAttrs];
+      RELEASE(str);
+      return self;
+    }
+
+  // FIXME: Set error
   RELEASE(self);
   return nil;
 }
@@ -781,9 +832,19 @@ documentAttributes: (NSDictionary **)dict
 documentAttributes: (NSDictionary **)dict
              error: (NSError **)error
 {
-  // FIXME
-  RELEASE(self);
-  return nil;
+  NSData *data = [url resourceDataUsingCache: YES];
+
+  if (data == nil)
+    {
+      // FIXME: Set error
+      RELEASE(self);
+      return nil;
+    }
+
+  return [self initWithData: data
+               options: options
+               documentAttributes: dict
+               error: error];
 }
 
 - (NSData *) docFormatFromRange: (NSRange)range
@@ -1302,7 +1363,7 @@ static NSMutableDictionary *cachedCSets = nil;
       NSTextAttachment *attachment;
 
       if (!eRange.length)
-	break;
+        break;
 
       attachment = [self attribute: NSAttachmentAttributeName
 			 atIndex: eRange.location
@@ -1310,10 +1371,10 @@ static NSMutableDictionary *cachedCSets = nil;
 
       if (attachment == nil)
         {
-	  [self deleteCharactersInRange: NSMakeRange (eRange.location, 1)];
-	  eRange.length--;
-	  end--;
-	}
+          [self deleteCharactersInRange: NSMakeRange (eRange.location, 1)];
+          eRange.length--;
+          end--;
+        }
 
       location = NSMaxRange (eRange);
     }
@@ -1351,7 +1412,7 @@ static NSMutableDictionary *cachedCSets = nil;
 }
 
 - (BOOL) readFromURL: (NSURL *)url
-	     options: (NSDictionary *)options
+             options: (NSDictionary *)options
   documentAttributes: (NSDictionary**)documentAttributes
 {
   return [self readFromURL: url
@@ -1380,13 +1441,12 @@ static NSMutableDictionary *cachedCSets = nil;
   if ([type isEqualToString: @"html"])
     {
       NSData *data = [url resourceDataUsingCache: YES];
-      NSURL *baseURL = [options objectForKey: @"BaseURL"];
       NSAttributedString *attr;
       
       attr = [[NSAttributedString alloc] 
-		 initWithHTML: data
-		 baseURL: baseURL
-		 documentAttributes: documentAttributes];
+                 initWithHTML: data
+                 options: options
+                 documentAttributes: documentAttributes];
       [self setAttributedString: attr];
       RELEASE(attr);
 
@@ -1398,8 +1458,8 @@ static NSMutableDictionary *cachedCSets = nil;
       NSAttributedString *attr;
       
       attr = [[NSAttributedString alloc] 
-		 initWithRTFD: data
-		 documentAttributes: documentAttributes];
+                 initWithRTFD: data
+                 documentAttributes: documentAttributes];
       [self setAttributedString: attr];
       RELEASE(attr);
 
@@ -1411,8 +1471,8 @@ static NSMutableDictionary *cachedCSets = nil;
       NSAttributedString *attr;
       
       attr = [[NSAttributedString alloc] 
-		 initWithRTF: data
-		 documentAttributes: documentAttributes];
+                 initWithRTF: data
+                 documentAttributes: documentAttributes];
       [self setAttributedString: attr];
       RELEASE(attr);
 
@@ -1429,8 +1489,8 @@ static NSMutableDictionary *cachedCSets = nil;
       NSAttributedString *attr;
 
       attr = [[NSAttributedString alloc] 
-		 initWithString: str
-		    attributes: defaultAttrs];
+                 initWithString: str
+                 attributes: defaultAttrs];
       RELEASE(str);
       [self setAttributedString: attr];
       RELEASE(attr);
@@ -1457,7 +1517,20 @@ static NSMutableDictionary *cachedCSets = nil;
    documentAttributes: (NSDictionary **)documentAttributes
                 error: (NSError **)error
 {
-  // FIXME
+  NSAttributedString *attr;
+
+  attr = [[NSAttributedString alloc] 
+             initWithData: data
+             options: options
+             documentAttributes: documentAttributes
+             error: error];
+  if (attr)
+    {
+      [self setAttributedString: attr];
+      RELEASE(attr);
+      return YES;
+    }
+
   return NO;
 }
 
