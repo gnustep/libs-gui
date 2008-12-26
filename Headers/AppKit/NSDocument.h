@@ -150,7 +150,7 @@ withContentsOfURL:(NSURL *)url
 - (void)showWindows;
 - (void)removeWindowController:(NSWindowController *)windowController;
 - (void)setWindow:(NSWindow *)aWindow;
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (NSWindow *)windowForSheet;
 #endif
 
@@ -249,7 +249,7 @@ originalContentsURL:(NSURL *)orig
 - (BOOL)shouldRunSavePanelWithAccessoryView;
 #if OS_API_VERSION(GS_API_MACOSX, MAC_OS_X_VERSION_10_4)
 - (NSString *)fileNameFromRunningSavePanelForSaveOperation:(NSSaveOperationType)saveOperation;
-- (int)runModalSavePanel:(NSSavePanel *)savePanel withAccessoryView:(NSView *)accessoryView;
+- (NSInteger)runModalSavePanel:(NSSavePanel *)savePanel withAccessoryView:(NSView *)accessoryView;
 #endif 
 - (NSString *)fileTypeFromLastRunSavePanel;
 - (NSDictionary *)fileAttributesToWriteToFile: (NSString *)fullDocumentPath 
@@ -269,7 +269,13 @@ originalContentsURL:(NSURL *)orig
                             forSaveOperation:(NSSaveOperationType)op
                          originalContentsURL:(NSURL *)original
                                        error:(NSError **)error;
+#endif 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_1, GS_API_LATEST)
 - (BOOL)fileNameExtensionWasHiddenInLastRunSavePanel;
+#endif 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (NSString *)fileNameExtensionForType:(NSString *)typeName
+                         saveOperation:(NSSaveOperationType)saveOperation;
 #endif 
 
 /*" Printing "*/
@@ -277,7 +283,7 @@ originalContentsURL:(NSURL *)orig
 - (void)setPrintInfo:(NSPrintInfo *)printInfo;
 - (BOOL)shouldChangePrintInfo:(NSPrintInfo *)newPrintInfo;
 - (IBAction)runPageLayout:(id)sender;
-- (int)runModalPageLayoutWithPrintInfo:(NSPrintInfo *)printInfo;
+- (NSInteger)runModalPageLayoutWithPrintInfo:(NSPrintInfo *)printInfo;
 - (IBAction)printDocument:(id)sender;
 - (void)printShowingPrintPanel:(BOOL)flag;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)

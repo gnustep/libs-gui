@@ -1,3 +1,12 @@
+2008-12-26 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSDocumentController.m: Remove now unused override helper
+	method. 
+	* Headers/AppKit/NSDocument.h: Change to use NSUInteger and
+	NSInteger. Add new 10.5 method
+	* Source/NSDocument.m: Implement all Cocoa methods of this class
+	and clean up the rest of the implementation. 
+	
 2008-12-25 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSMenuItem.h: Declare to implement interface

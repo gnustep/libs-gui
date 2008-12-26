@@ -262,22 +262,9 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
 }
 
 /* 
- * Private helper method to check, if the method given via the selector sel 
+ * Private helper macro to check, if the method given via the selector sel 
  * has been overridden in the current subclass.
  */
-- (BOOL)_hasOverridden: (SEL)sel
-{
-  // The actual signature is not important as we wont call the methods.
-  IMP meth1;
-  IMP meth2;
-
-  meth1 = [self methodForSelector: sel];
-  meth2 = [[NSDocumentController class] instanceMethodForSelector: sel];
-
-  return (meth1 != meth2);
-}
-
-//#define OVERRIDDEN(sel) [self _hasOverridden: @selector(sel)]
 #define OVERRIDDEN(sel) ([self methodForSelector: @selector(sel)] != [[NSDocumentController class] instanceMethodForSelector: @selector(sel)])
 
 - (BOOL) shouldCreateUI
@@ -297,7 +284,7 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
 
 - (void) setAutosavingDelay: (NSTimeInterval)autosavingDelay
 {
-  static NSTimer *autosavingTimer;
+  static NSTimer *autosavingTimer = nil;
 
   if (autosavingTimer)
     {
@@ -1404,8 +1391,8 @@ static BOOL _shouldClose = YES;
                  [self _editorTypesForClass: documentClass]];
 }
 
-static NSMapTable *autosavedDocuments;
-static NSString *processName;
+static NSMapTable *autosavedDocuments = NULL;
+static NSString *processName = nil;
 
 - (NSString *) _autosaveDirectory: (BOOL)create
 {
@@ -1513,9 +1500,6 @@ static NSString *processName;
         NSCreateMapTable (NSObjectMapKeyCallBacks,
                           NSObjectMapValueCallBacks,
                           1);
-  if (!processName)
-    processName = [[[NSProcessInfo processInfo] processName] copy];
-
   if (url)
     {
       NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
@@ -1537,6 +1521,9 @@ static NSString *processName;
       NSString *path = [self _autosaveDirectory: YES];
       NSArray *autosaved = NSAllMapTableValues (autosavedDocuments);
       NSFileManager *fm = [NSFileManager defaultManager];
+
+      if (!processName)
+        processName = [[[NSProcessInfo processInfo] processName] copy];
 
       path = [path stringByAppendingPathComponent: processName];
       path = [path stringByAppendingPathExtension: @"plist"];
