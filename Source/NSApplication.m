@@ -224,7 +224,9 @@ gnustep_backend_bundle(NSString *bundleName)
   int version = GNUSTEP_GUI_MAJOR_VERSION * 100 + GNUSTEP_GUI_MINOR_VERSION;
   
   if (bundleName == nil)
-    bundleName = @"libgnustep-back";
+    {
+      bundleName = @"libgnustep-back";
+    }
   else
     {
       if ([bundleName hasPrefix: @"libgnustep-"] == NO)
@@ -239,7 +241,8 @@ gnustep_backend_bundle(NSString *bundleName)
   path = gnustep_backend_path(@"Bundles", bundleWithVersion);
   if (path == nil)
     {
-      NSLog(@"Did not find correct version of backend, falling back to std.");
+      NSLog(@"Did not find correct version of backend (%@), "
+	@"falling back to std (%@).", bundleWithVersion, bundleName);
       path = gnustep_backend_path(@"Bundles", bundleName);
     }
   return path;

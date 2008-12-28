@@ -1,3 +1,8 @@
+2008-12-28 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSApplication.m: Add tiny bit of diagnostic logging for
+	locating backend bundle.
+
 2008-12-26 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSAttributedString.m (-initWithData:...,
