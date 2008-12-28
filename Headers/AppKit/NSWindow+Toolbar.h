@@ -37,9 +37,7 @@
 @interface NSWindow (Toolbar)
 - (void) runToolbarCustomizationPalette: (id)sender;
 - (void) toggleToolbarShown: (id)sender;
-- (NSView *) contentViewWithoutToolbar;
 - (NSToolbar *) toolbar;
-- (void) setContentViewWithoutToolbar: (NSView *)contentViewWithoutToolbar;
 - (void) setToolbar: (NSToolbar*)toolbar;
 @end
 

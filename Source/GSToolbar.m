@@ -56,12 +56,12 @@
 static NSNotificationCenter *nc = nil;
 static const int current_version = 1;
 
-static NSMutableArray *toolbars;
+static NSMutableArray *toolbars = nil;
 
 // Validation stuff
 static const unsigned int ValidationInterval = 4;
 @class GSValidationCenter; // Mandatory because the interface is declared later
-static GSValidationCenter *vc;
+static GSValidationCenter *vc = nil;
 
 // Extensions
 @implementation NSArray (ObjectsWithValueForKey)
@@ -166,18 +166,18 @@ static GSValidationCenter *vc;
       
       [nc addObserver: self selector: @selector(windowDidUpdate:) 
                  name: NSWindowDidUpdateNotification 
-	       object: window];
+               object: window];
       [nc addObserver: vc 
-      	     selector: @selector(windowWillClose:) 
+                   selector: @selector(windowWillClose:) 
                  name: NSWindowWillCloseNotification 
-	       object: window];
-						
+               object: window];
+                                                
        _trackingRectView = [window _windowView];
        _trackingRect 
-	 = [_trackingRectView addTrackingRect: [_trackingRectView bounds]
-			                owner: self 
-			             userData: nil 
-			         assumeInside: NO];  
+         = [_trackingRectView addTrackingRect: [_trackingRectView bounds]
+                                        owner: self 
+                                     userData: nil 
+                                 assumeInside: NO];  
        _window = window;
     }
   return self;
@@ -217,7 +217,7 @@ static GSValidationCenter *vc;
   // currently observing.
   
   [self setObservers: nil]; // To release observers 
-	      
+              
   [_trackingRectView removeTrackingRect: _trackingRect];
   // We can safely remove the tracking rect here, because it will never call
   // this method unlike dealloc.   
@@ -315,11 +315,11 @@ static GSValidationCenter *vc;
   _validationTimer = 
     [NSTimer timerWithTimeInterval: ValidationInterval 
                             target: self 
-			  selector: @selector(scheduledValidate) 
-			  userInfo: nil
-			   repeats: NO];
+                          selector: @selector(scheduledValidate) 
+                          userInfo: nil
+                           repeats: NO];
   [[NSRunLoop currentRunLoop] addTimer: _validationTimer 
-                               forMode: NSDefaultRunLoopMode];	  
+                               forMode: NSDefaultRunLoopMode];          
 }
 
 @end
@@ -371,8 +371,8 @@ static GSValidationCenter *vc;
       observersArray = [_vobjs valueForKey: @"_observers"];
       for (i = 0; i < [observersArray count]; i++)
         {
-	  [result addObjectsFromArray: [observersArray objectAtIndex: i]];
-	}
+          [result addObjectsFromArray: [observersArray objectAtIndex: i]];
+        }
       return result;
     }
   else
@@ -436,12 +436,12 @@ static GSValidationCenter *vc;
       if (observersWindow != nil && [observersWindow containsObject: observer])
         {
           [observersWindow removeObject: observer];
-	  if ([observersWindow count] == 0)
-	    {  
+          if ([observersWindow count] == 0)
+            {  
               [vobj clean];
-	      [_vobjs removeObjectIdenticalTo: vobj];
-	    }
-	}
+              [_vobjs removeObjectIdenticalTo: vobj];
+            }
+        }
     }
  
 }
@@ -556,7 +556,7 @@ static GSValidationCenter *vc;
 {
   return [self initWithIdentifier: identifier 
                       displayMode: NSToolbarDisplayModeIconAndLabel 
-		         sizeMode: NSToolbarSizeModeRegular];
+                         sizeMode: NSToolbarSizeModeRegular];
 }
 
 
@@ -585,10 +585,10 @@ static GSValidationCenter *vc;
       
       if ([toolbarModel displayMode] != displayMode 
         && [toolbarModel sizeMode] != sizeMode)
-	{
-	  // Raise an exception.
-	}
-	
+        {
+          // Raise an exception.
+        }
+        
       // [self _loadConfig];
     }
   else
@@ -666,7 +666,7 @@ static GSValidationCenter *vc;
 }
 
 - (void) insertItemWithItemIdentifier: (NSString *)itemIdentifier
-			      atIndex: (int)index
+                              atIndex: (int)index
 {
   [self _insertItemWithItemIdentifier: itemIdentifier 
                               atIndex: index 
@@ -841,10 +841,10 @@ static GSValidationCenter *vc;
      {
        if ([selectableIdentifiers containsObject: [item itemIdentifier]])
          {
-	   if (![item _selected])
-	     [item _setSelected: YES];
-	   updated = YES;
-	 }
+           if (![item _selected])
+             [item _setSelected: YES];
+           updated = YES;
+         }
      }
    
    if (updated)
@@ -906,7 +906,7 @@ static GSValidationCenter *vc;
         [[toolbarModel items] valueForKey: @"_itemIdentifier"];
     }
   else
-    {	
+    {        
       wantedItemIdentifiers = [_delegate toolbarDefaultItemIdentifiers:self];
     }
     
@@ -954,9 +954,9 @@ static GSValidationCenter *vc;
       config = [defaults objectForKey: tableKey];
       
       if (config != nil) 
-	{
-	  [self setConfigurationFromDictionary: config];
-	}
+        {
+          [self setConfigurationFromDictionary: config];
+        }
     }
 }
 
@@ -1037,35 +1037,35 @@ static GSValidationCenter *vc;
     {
       item = [self _toolbarItemForIdentifier: itemIdentifier];
       if (item == nil)
-	{
-	  item = 
+        {
+          item = 
             [_delegate toolbar: self itemForItemIdentifier: itemIdentifier
-			         willBeInsertedIntoToolbar: YES];
-	}
+                                 willBeInsertedIntoToolbar: YES];
+        }
       
       if (item != nil)
         {
           NSArray *selectableItems;
-	  
-	  if ([_delegate respondsToSelector:
-	    @selector(toolbarSelectableItemIdentifiers:)]) 
-	    {
-	      selectableItems = 
-	        [_delegate toolbarSelectableItemIdentifiers: self]; 
-	      if ([selectableItems containsObject: itemIdentifier])
-	        [item _setSelectable: YES];
-	    }
-	  
-	  [nc postNotificationName: NSToolbarWillAddItemNotification 
+          
+          if ([_delegate respondsToSelector:
+            @selector(toolbarSelectableItemIdentifiers:)]) 
+            {
+              selectableItems = 
+                [_delegate toolbarSelectableItemIdentifiers: self]; 
+              if ([selectableItems containsObject: itemIdentifier])
+                [item _setSelectable: YES];
+            }
+          
+          [nc postNotificationName: NSToolbarWillAddItemNotification 
                             object: self
-			  userInfo: [NSDictionary dictionaryWithObject: item  forKey: @"item"]];
+                          userInfo: [NSDictionary dictionaryWithObject: item  forKey: @"item"]];
           [item _setToolbar: self];
           [_items insertObject: item atIndex: index];
-	  
-	  // We reload the toolbarView each time a new item is added except when
-	  // we build/create the toolbar
+          
+          // We reload the toolbarView each time a new item is added except when
+          // we build/create the toolbar
           if (!_build) 
-	    [_toolbarView _reload];
+            [_toolbarView _reload];
     
           if (broadcast)
             {    
@@ -1097,8 +1097,8 @@ static GSValidationCenter *vc;
 - (void) _concludeRemoveItem: (NSToolbarItem *)item atIndex: (int)index broadcast: (BOOL)broadcast
 {
   [nc postNotificationName: NSToolbarDidRemoveItemNotification
-	            object: self
-	          userInfo: [NSDictionary dictionaryWithObject: item  forKey: @"item"]];
+                    object: self
+                  userInfo: [NSDictionary dictionaryWithObject: item  forKey: @"item"]];
 
   if (broadcast) 
     {
@@ -1136,7 +1136,7 @@ static GSValidationCenter *vc;
   if (broadcast) 
     {
       TRANSMIT(_setConfigurationFromDictionary: _configurationDictionary 
-          			     broadcast: NO);
+                                       broadcast: NO);
     }
 }
 

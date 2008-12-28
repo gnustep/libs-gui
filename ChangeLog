@@ -1,3 +1,13 @@
+2008-12-28 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m: Remove left over traces of toolbar handling.
+	* Headers/AppKit/NSWindow+Toolbar.h: Move some private methods
+	from here ...
+	* Source/NSWindow+Toolbar.m: ... to here.
+	* Source/NSToolbarItem.m,
+	* Source/GSToolbar.m,
+	* Source/NSToolbar.m: White space clean up.
+
 2008-12-28 Riccardo Mottola <rmottola@users.sf.net>
 
 	* Source/NSClipView.m: removed C99-ism

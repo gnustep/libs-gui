@@ -72,21 +72,17 @@
 #include "AppKit/NSScreen.h"
 #include "AppKit/NSTextField.h"
 #include "AppKit/NSTextFieldCell.h"
-#include "AppKit/NSToolbar.h"
 #include "AppKit/NSView.h"
 #include "AppKit/NSWindow.h"
 #include "AppKit/NSWindowController.h"
 #include "AppKit/PSOperators.h"
 #include "GNUstepGUI/GSTrackingRect.h"
 #include "GNUstepGUI/GSDisplayServer.h"
-#include "GNUstepGUI/GSToolbarView.h"
 #include "GSToolTips.h"
-
-static GSToolTips *toolTipVisible = nil;
-
 #include "GSWindowDecorationView.h"
 
-static id<GSWindowDecorator> windowDecorator;
+static GSToolTips *toolTipVisible = nil;
+static id<GSWindowDecorator> windowDecorator = nil;
 
 
 BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
@@ -111,19 +107,6 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 - (id) _initWithScreenNumber: (int)screen;
 @end
 
-/*
- * FIXME: Not sure if I should be exposing this here, but it seems to be the only way
- * to fix the window frame save issue when a toolbar is present.
- */
-@interface NSWindow (ToolbarPrivate)
-- (id) toolbar;
-- (NSView *)contentViewWithoutToolbar;
-@end
-
-@interface NSToolbar (GNUstepPrivate)
-- (GSToolbarView *) _toolbarView;
-@end
-// FIXME: END (GJC)
 
 /*
  * Category for internal methods (for use only within the NSWindow class itself
@@ -138,7 +121,6 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 
 - (void) _lossOfKeyOrMainWindow;
 - (NSView *) _windowView; 
-// Method used to support validation in the toolbar implementation 
 @end
 
 @implementation NSWindow (GNUstepPrivate)

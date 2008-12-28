@@ -230,13 +230,13 @@ static const int current_version = 1;
       if (_window) 
         {
           if (shown)
-	    [_toolbarView _setWillBeVisible: YES];
-	  
-	  [_window toggleToolbarShown: self];
-	  
-	  [_toolbarView _setWillBeVisible: NO];
+            [_toolbarView _setWillBeVisible: YES];
+          
+          [_window toggleToolbarShown: self];
+          
+          [_toolbarView _setWillBeVisible: NO];
         }
-	
+        
        _visible = shown; 
        // Important to set _visible after the toolbar has been toggled because
        // NSWindow method contentViewWithoutToolbar uses [NSToolbar visible]
