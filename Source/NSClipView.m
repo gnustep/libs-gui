@@ -791,11 +791,13 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 
       if ([[self subviews] count] > 0)
         {
+          NSRect rect;
+
 	  id document = [aDecoder decodeObjectForKey: @"NSDocView"];
 
 	  NSAssert([document class] != [NSCustomView class],
 		   NSInvalidArgumentException);
-	  NSRect rect = [document frame];
+	  rect = [document frame];
 	  rect.origin = NSZeroPoint;
 	  [document setFrame: rect];
 	  RETAIN(document); // prevent it from being released.
