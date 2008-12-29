@@ -556,14 +556,5 @@ withRepeatedImage: (NSImage*)image
 		  flipped: (BOOL)flipped;
 @end
 
-//
-// Function which should be somewhere else
-//
-static inline NSSize 
-_sizeForBorderType (NSBorderType aType)
-{
-  return [[GSTheme theme] sizeForBorderType: aType];
-}
-
 #endif /* OS_API_VERSION */
 #endif /* _GNUstep_H_GSTheme */

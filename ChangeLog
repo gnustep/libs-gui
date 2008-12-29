@@ -1,5 +1,17 @@
 2008-12-29 Richard Frith-Macdonald <rfm@gnu.org>
 
+	* Source/NSBrowser.m:
+	* Source/NSPopUpButtonCell.m:
+	* Source/NSBox.m:
+	* Source/NSComboBoxCell.m:
+	* Source/NSScrollView.m:
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	Make code clearer by removing function and replacing it with
+	method call so you can see what's actually going on and also
+	be a little more efficient.
+
+2008-12-29 Richard Frith-Macdonald <rfm@gnu.org>
+
 	* Source/NSHelpManager.m: Allow the GSHelpViewer user default to
 	control how application help is displayed.
 	* Documentation/GuiUser/DefaultsSummary.gsdoc: Document the new

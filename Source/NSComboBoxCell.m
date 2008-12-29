@@ -220,7 +220,7 @@ static GSComboWindow *gsWindow = nil;
 - (void) layoutWithComboBoxCell: (NSComboBoxCell *)comboBoxCell
 {
   NSMatrix *matrix = [_browser matrixInColumn: 0];
-  NSSize bsize = _sizeForBorderType(NSLineBorder);
+  NSSize bsize = [[GSTheme theme] sizeForBorderType: NSLineBorder];
   NSSize size;
   float itemHeight;
   float textCellWidth;

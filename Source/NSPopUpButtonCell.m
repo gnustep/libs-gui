@@ -1019,7 +1019,7 @@ static NSImage *_pbc_image[5];
   s.width += 4; /* Right border to image (border included) */
 
   /* (vertical) border: */
-  s.height += 2 * (_sizeForBorderType (NSBezelBorder).height);
+  s.height += 2 * [[GSTheme theme] sizeForBorderType: NSBezelBorder].height;
 
   /* Spacing between border and inside: */
   s.height += 2 * 1;

@@ -121,7 +121,7 @@ static float scrollerWidth;
                         borderType: (NSBorderType)borderType
 {
   NSSize size = frameSize;
-  NSSize border = _sizeForBorderType(borderType);
+  NSSize border = [[GSTheme theme] sizeForBorderType: borderType];
 
   /*
    * Substract 1 from the width and height of
@@ -149,7 +149,7 @@ static float scrollerWidth;
                         borderType: (NSBorderType)borderType
 {
   NSSize size = contentSize;
-  NSSize border = _sizeForBorderType(borderType);
+  NSSize border = [[GSTheme theme] sizeForBorderType: borderType];
 
   /*
    * Add 1 to the width and height for the line that separates the
@@ -974,7 +974,7 @@ static float scrollerWidth;
 - (void) tile
 {
   NSRect headerRect, contentRect;
-  NSSize border = _sizeForBorderType(_borderType);
+  NSSize border = [[GSTheme theme] sizeForBorderType: _borderType];
   NSRectEdge bottomEdge, topEdge;
   float headerViewHeight = 0;
   NSRectEdge verticalScrollerEdge = NSMinXEdge;

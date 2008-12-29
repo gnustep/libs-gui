@@ -1236,7 +1236,7 @@ static NSTextFieldCell *titleCell;
   sw = scrollerWidth;
   // Take the border into account
   if (_separatesColumns)
-    sw += 2 * (_sizeForBorderType (NSBezelBorder)).width;
+    sw += 2 * ([[GSTheme theme] sizeForBorderType: NSBezelBorder]).width;
 
   // Column width cannot be less than scroller and border
   if (columnWidth < sw)
@@ -1296,7 +1296,7 @@ static NSTextFieldCell *titleCell;
 
   // Take the border into account
   if (_separatesColumns)
-    cw += 2 * (_sizeForBorderType(NSBezelBorder)).width;
+    cw += 2 * ([[GSTheme theme] sizeForBorderType: NSBezelBorder]).width;
 
   return cw;
 }
@@ -1308,7 +1308,7 @@ static NSTextFieldCell *titleCell;
   cw = columnWidth;
   // Take the border into account
   if (_separatesColumns)
-    cw -= 2 * (_sizeForBorderType(NSBezelBorder)).width;
+    cw -= 2 * ([[GSTheme theme] sizeForBorderType: NSBezelBorder]).width;
 
   return cw;
 }
@@ -1753,7 +1753,7 @@ static NSTextFieldCell *titleCell;
 - (NSRect) frameOfColumn: (int)column
 {
   NSRect rect = NSZeroRect;
-  NSSize bezelBorderSize = _sizeForBorderType (NSBezelBorder);
+  NSSize bezelBorderSize = [[GSTheme theme] sizeForBorderType: NSBezelBorder];
   int n;
 
   // Number of columns over from the first
@@ -1846,7 +1846,7 @@ static NSTextFieldCell *titleCell;
  */
 - (void) tile
 {
-  NSSize bezelBorderSize = _sizeForBorderType (NSBezelBorder);
+  NSSize bezelBorderSize = [[GSTheme theme] sizeForBorderType: NSBezelBorder];
   int i, num, columnCount, delta;
   float  frameWidth;
 
@@ -2231,7 +2231,7 @@ static NSTextFieldCell *titleCell;
   _browserDelegate = nil;
   _passiveDelegate = YES;
   _doubleAction = NULL;  
-  bs = _sizeForBorderType (NSBezelBorder);
+  bs = [[GSTheme theme] sizeForBorderType: NSBezelBorder];
   _minColumnWidth = scrollerWidth + (2 * bs.width);
   if (_minColumnWidth < 100.0)
     _minColumnWidth = 100.0;
@@ -2340,7 +2340,7 @@ static NSTextFieldCell *titleCell;
   if (_hasHorizontalScroller && _separatesColumns)
     {
       NSRect scrollerBorderRect = _scrollerRect;
-      NSSize bs = _sizeForBorderType (NSBezelBorder);
+      NSSize bs = [[GSTheme theme] sizeForBorderType: NSBezelBorder];
 
       scrollerBorderRect.origin.x = 0;
       scrollerBorderRect.origin.y = 0;
@@ -2745,7 +2745,7 @@ static NSTextFieldCell *titleCell;
       _browserDelegate = nil;
       _passiveDelegate = YES;
       _doubleAction = NULL;  
-      bs = _sizeForBorderType (NSBezelBorder);
+      bs = [[GSTheme theme] sizeForBorderType: NSBezelBorder];
       _minColumnWidth = scrollerWidth + (2 * bs.width);
       if (_minColumnWidth < 100.0)
         _minColumnWidth = 100.0;
