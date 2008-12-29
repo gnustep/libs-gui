@@ -198,6 +198,10 @@ tiff.m \
 externs.m \
 linking.m \
 GSTheme.m \
+GSThemeDrawing.m \
+GSThemeInspector.m \
+GSThemePanel.m \
+GSThemeTools.m \
 GSDragView.m \
 GSFontInfo.m \
 GSTable.m \
