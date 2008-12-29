@@ -2,6 +2,8 @@
 
 	* Source/GSInfoPanel.m:
 	Update name of current theme when it changes.
+	* Source/GSThemeInspector.m:
+	Display theme version number.
 
 2008-12-29 Richard Frith-Macdonald <rfm@gnu.org>
 

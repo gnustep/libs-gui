@@ -96,6 +96,7 @@ static GSThemeInspector	*sharedInspector = nil;
 - (void) update: (id)sender
 {
   GSTheme	*theme = [GSTheme theme];
+  NSString	*version;
   NSString	*details;
   NSArray	*authors;
   NSView	*content = [self contentView];
@@ -124,6 +125,21 @@ static GSThemeInspector	*sharedInspector = nil;
   nameFrame.origin.y = cFrame.size.height - nameFrame.size.height - 25;
   [tf setFrame: nameFrame];
   [content addSubview: tf];
+
+  version = [[theme infoDictionary] objectForKey: @"GSThemeVersion"];
+  if ([version length] > 0)
+    {
+      version = [NSString stringWithFormat: @"Version: %@", version];
+      tf = new_label(version);
+      [tf setFont: [NSFont systemFontOfSize: 12]];
+      [tf sizeToFit];
+      frame = [tf frame];
+      frame.origin.x = (cFrame.size.width - frame.size.width) / 2;
+      frame.origin.y = nameFrame.origin.y - frame.size.height - 25;
+      [tf setFrame: frame];
+      [content addSubview: tf];
+      nameFrame = [tf frame];
+    }
 
   authors = [[theme infoDictionary] objectForKey: @"GSThemeAuthors"];
   if ([authors count] > 0)
