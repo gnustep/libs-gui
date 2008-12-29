@@ -392,6 +392,11 @@ static NSNull			*null = nil;
   return _bundle;
 }
 
+- (NSColorList*) colors
+{
+  return _colors;
+}
+
 - (void) deactivate
 {
   NSEnumerator	*enumerator;
