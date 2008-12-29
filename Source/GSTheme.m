@@ -249,6 +249,11 @@ static NSNull			*null = nil;
   NSDictionary		*infoDict;
   NSWindow		*window;
 
+  /* Get rid of any cached colors list so that we regenerate it when needed
+   */
+  [_colors release];
+  _colors = nil;
+
   /*
    * We step through all the bundle image resources and load them in
    * to memory, setting their names so that they are visible to
@@ -394,6 +399,25 @@ static NSNull			*null = nil;
 
 - (NSColorList*) colors
 {
+  if (_colors == nil)
+    {
+      NSString	*colorsPath;
+
+      colorsPath = [_bundle pathForResource: @"ThemeColors" ofType: @"clr"]; 
+      if (colorsPath == nil)
+	{
+	  _colors = [null retain];
+	}
+      else
+	{
+	  _colors = [[NSColorList alloc] initWithName: @"System"
+					     fromFile: colorsPath];
+	}
+    }
+  if ((id)_colors == (id)null)
+    {
+      return nil;
+    }
   return _colors;
 }
 
@@ -468,17 +492,9 @@ static NSNull			*null = nil;
 
 - (id) initWithBundle: (NSBundle*)bundle
 {
-  NSString	*colorsPath;
-
   ASSIGN(_bundle, bundle);
   _images = [NSMutableDictionary new];
   _tiles = [NSMutableDictionary new];
-  colorsPath = [_bundle pathForResource: @"ThemeColors" ofType: @"clr"]; 
-  if (colorsPath != nil)
-    {
-      _colors = [[NSColorList alloc] initWithName: @"System"
-				         fromFile: colorsPath];
-    }
   return self;
 }
 
