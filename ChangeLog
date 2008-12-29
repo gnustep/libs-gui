@@ -4,13 +4,19 @@
 	control how application help is displayed.
 	* Documentation/GuiUser/DefaultsSummary.gsdoc: Document the new
 	user default.
-	* Source/GSTheme.m: Move stuff out into separate files.
+	* Headers/Additions/GNUstepGUI/GSTheme.h: New notifications and
+	method to obtain system colors.
+	* Source/GSTheme.m: Move stuff out into separate files.  Add new
+	notifications for activation/deactivations.  Implement new method
+	to provide system colors, making it easy for subclasses to replace
+	the standard mechanism for dealing with colors.
 	* Source/GSThemeInspector.m: The inspector for viewing a theme.
 	* Source/GSThemePanel.m: The panel for viewing/selecting themes.
 	* Source/GSThemeTools.m: Low level drawing tools.
 	* Source/GSThemeDrawing.m: Methods for drawing control.
 	* Source/GSThemePrivate.h: Internal API
 	* Source/GNUmakefile: Changes to build new theme files.
+	* Source/NSColor.m: Use new API for obtaining color list.
 
 2008-12-28 Fred Kiefer <FredKiefer@gmx.de>
 

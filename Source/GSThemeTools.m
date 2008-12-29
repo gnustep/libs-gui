@@ -140,7 +140,7 @@
     }
 }
 
-#if 0
+#if 1
 - (NSRect) drawGradientBorder: (NSGradientType)gradientType 
                        inRect: (NSRect)border 
                      withClip: (NSRect)clip

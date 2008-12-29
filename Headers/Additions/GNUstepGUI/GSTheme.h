@@ -145,6 +145,7 @@
 @class NSArray;
 @class NSBundle;
 @class NSColor;
+@class NSColorList;
 @class NSDictionary;
 @class NSImage;
 @class GSDrawTiles;
@@ -176,13 +177,33 @@ typedef enum {
   GSThemeSelectedState,		/** A control which is selected */
 } GSThemeControlState;
 
-/** Notification sent when a theme has just become active.
+/** Notification sent when a theme has just become active.<br />
+ * The notification is posted by the -activate method.<br />
+ * This is primarily for internal use by AppKit controls which
+ * need to readjust how they are displayed when a new theme is in use.
  */
 APPKIT_EXPORT	NSString	*GSThemeDidActivateNotification;
 
-/** Notification sent when a theme has become inactive.
+/** Notification sent when a theme has just become inactive.<br />
+ * The notification is posted by the -deactivate method.<br />
+ * This is primarily for use by subclasses of GSTheme which need to perform
+ * additional cleanup when the theme stops being used.
  */
 APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
+
+/** Notification sent when a theme is about to become active.<br />
+ * The notification is posted by the -activate method.<br />
+ * This is primarily for use by subclasses of GSTheme which need to perform
+ * additional setup before the theme starts being used by the AppKit controls.
+ */
+APPKIT_EXPORT	NSString	*GSThemeWillActivateNotification;
+
+/** Notification sent when a theme is about to become inactive.<br />
+ * The notification is posted by the -deactivate method.<br />
+ * This allows code to make preparatory changes before the current theme
+ * is deactivated.
+ */
+APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 
 
 /**
@@ -226,6 +247,7 @@ APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
 {
 @private
   NSBundle		*_bundle;
+  NSColorList		*_colors;
   NSMutableDictionary	*_images;
   NSMutableDictionary	*_tiles;
   NSImage		*_icon;
@@ -261,10 +283,9 @@ APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
  * <p>The base implementation handles setup and caching of the system
  * color list, standard image information, tiling information,
  * and user defaults.<br />
- * It then sends a GSThemeDidActivateNotification to allow other
- * parts of the GUI library to update themselves from the new theme.<br />
- * If the theme sets an alternative system color list, the notification
- * userInfo dictionary will contain that list keyed on <em>Colors</em>.
+ * It then sends a GSThemeWillActivateNotification and a
+ * GSThemeDidActivateNotification to allow other
+ * parts of the GUI library to update themselves from the new theme.
  * </p>
  * <p>Finally, this method marks all windows in the application as needing
  * update ... so they will draw themselves with the new theme information.
@@ -281,6 +302,13 @@ APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
  * Return the bundle containing the resources used by the current theme.
  */
 - (NSBundle*) bundle;
+
+/**
+ * Returns the system color list defined by the receiver.<br />
+ * The default implementation returns the color list provided in the
+ * theme bundle (if any) or the default system color list.
+ */
+- (NSColorList*) colors;
 
 /**
  * <p>This method is called automatically when the receiver is stopped from

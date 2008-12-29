@@ -1762,8 +1762,8 @@ systemColorWithName(NSString *name)
  */
 + (void) themeDidActivate: (NSNotification*)notification
 {
-  NSDictionary	*userInfo = [notification userInfo];
-  NSColorList	*list = [userInfo objectForKey: @"Colors"];
+  GSTheme	*theme = [notification object];
+  NSColorList	*list = [theme colors];
 
   if (list == nil)
     {
@@ -1773,7 +1773,7 @@ systemColorWithName(NSString *name)
   [NSColorList _setThemeSystemColorList: list];
 
   /* We always update the system dictionary and send a notification, since
-   * the theme may have gicen us a pre-existing color list, but have changed
+   * the theme may have given us a pre-existing color list, but have changed
    * one or more of the colors in it.
    */
   list = [NSColorList colorListNamed: @"System"];

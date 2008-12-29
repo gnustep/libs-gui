@@ -61,6 +61,10 @@ NSString	*GSThemeDidActivateNotification
   = @"GSThemeDidActivateNotification";
 NSString	*GSThemeDidDeactivateNotification
   = @"GSThemeDidDeactivateNotification";
+NSString	*GSThemeWillActivateNotification
+  = @"GSThemeWillActivateNotification";
+NSString	*GSThemeWillDeactivateNotification
+  = @"GSThemeWillDeactivateNotification";
 
 @implementation GSTheme
 
@@ -237,30 +241,13 @@ static NSNull			*null = nil;
 - (void) activate
 {
   NSUserDefaults	*defs;
-  NSMutableDictionary	*userInfo;
   NSMutableArray	*searchList;
   NSArray		*imagePaths;
   NSEnumerator		*enumerator;
   NSString		*imagePath;
   NSArray		*imageTypes;
-  NSString		*colorsPath;
   NSDictionary		*infoDict;
   NSWindow		*window;
-
-  userInfo = [NSMutableDictionary dictionary];
-  colorsPath = [_bundle pathForResource: @"ThemeColors" ofType: @"clr"]; 
-  if (colorsPath != nil)
-    {
-      NSColorList	*list = nil;
-
-      list = [[NSColorList alloc] initWithName: @"System"
-				      fromFile: colorsPath];
-      if (list != nil)
-	{
-	  [userInfo setObject: list forKey: @"Colors"];
-	  RELEASE(list);
-	}
-    }
 
   /*
    * We step through all the bundle image resources and load them in
@@ -365,12 +352,20 @@ static NSNull			*null = nil;
   RELEASE(searchList);
 
   /*
+   * Tell all other classes that new theme information is about to be present.
+   */
+  [[NSNotificationCenter defaultCenter]
+    postNotificationName: GSThemeWillActivateNotification
+    object: self
+    userInfo: nil];
+
+  /*
    * Tell all other classes that new theme information is present.
    */
   [[NSNotificationCenter defaultCenter]
-   postNotificationName: GSThemeDidActivateNotification
-   object: self
-   userInfo: userInfo];
+    postNotificationName: GSThemeDidActivateNotification
+    object: self
+    userInfo: nil];
 
   /*
    * Reset main menu to change between styles if necessary
@@ -402,6 +397,13 @@ static NSNull			*null = nil;
   NSEnumerator	*enumerator;
   NSImage	*image;
 
+  /* Tell everything that we will become inactive.
+   */
+  [[NSNotificationCenter defaultCenter]
+    postNotificationName: GSThemeWillDeactivateNotification
+    object: self
+    userInfo: nil];
+
   /*
    * Remove all cached bundle images from both NSImage's name dictionary
    * and our cache dictionary, so that we can be sure we reload afresh
@@ -418,14 +420,15 @@ static NSNull			*null = nil;
   /* Tell everything that we have become inactive.
    */
   [[NSNotificationCenter defaultCenter]
-   postNotificationName: GSThemeDidDeactivateNotification
-   object: self
-   userInfo: nil];
+    postNotificationName: GSThemeDidDeactivateNotification
+    object: self
+    userInfo: nil];
 }
 
 - (void) dealloc
 {
   RELEASE(_bundle);
+  RELEASE(_colors);
   RELEASE(_images);
   RELEASE(_tiles);
   RELEASE(_icon);
@@ -460,9 +463,17 @@ static NSNull			*null = nil;
 
 - (id) initWithBundle: (NSBundle*)bundle
 {
+  NSString	*colorsPath;
+
   ASSIGN(_bundle, bundle);
   _images = [NSMutableDictionary new];
   _tiles = [NSMutableDictionary new];
+  colorsPath = [_bundle pathForResource: @"ThemeColors" ofType: @"clr"]; 
+  if (colorsPath != nil)
+    {
+      _colors = [[NSColorList alloc] initWithName: @"System"
+				         fromFile: colorsPath];
+    }
   return self;
 }
 
