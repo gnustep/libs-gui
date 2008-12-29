@@ -166,22 +166,21 @@
 
 - (void) showHelp: (id)sender
 {
-  NSBundle *mb = [NSBundle mainBundle];
-  NSDictionary *info = [mb infoDictionary];
-  NSString *help;
-
-  help = [info objectForKey: @"GSHelpContentsFile"];
+  NSBundle	*mb = [NSBundle mainBundle];
+  NSDictionary	*info = [mb infoDictionary];
+  NSString	*help = [info objectForKey: @"GSHelpContentsFile"];
 
   if (help == nil)
     {
+      /* If there's no specification, we look for a files named
+       * "appname.rtfd" or "appname.rtf"
+       */
       help = [info objectForKey: @"NSExecutable"];
-      // If there's no specification, we look for a files named
-      // "appname.rtfd" or "appname.rtf"
     }
 
   if (help != nil)
     {
-      NSString *file = nil;
+      NSString	*file;
 
       if ([[help pathExtension] length] == 0)
         {
@@ -201,21 +200,37 @@
 
       if (file != nil)
 	{
-	  if ([[NSWorkspace sharedWorkspace] openFile: file] == YES)
+	  BOOL		result = NO;
+	  NSString	*ext = [file pathExtension];
+	  NSWorkspace	*ws = [NSWorkspace sharedWorkspace];
+	  NSString	*viewer;
+
+	  viewer = [[NSUserDefaults standardUserDefaults]
+	    stringForKey: @"GSHelpViewer"];
+
+	  if ([viewer isEqual: @"NSHelpPanel"] == NO)
 	    {
-	      return;
+	      if ([viewer length] == 0)
+		{
+	          viewer = [ws getBestAppInRole: @"Viewer" forExtension: ext];
+		}
+	      if (viewer != nil)
+		{
+		  result = [[NSWorkspace sharedWorkspace] openFile: file
+						   withApplication: viewer];
+		}
 	    }
-	  else
+
+	  if (result == NO)
 	    {
-	      NSHelpPanel	*panel = [NSHelpPanel sharedHelpPanel];
-	      NSString		*ext = [file pathExtension];
+	      NSHelpPanel	*panel;
 	      NSTextView	*tv;
 	      id		object;
 
+	      panel = [NSHelpPanel sharedHelpPanel];
 	      tv = [(NSScrollView*)[panel contentView] documentView];
-
 	      if (ext == nil  
-		||  [ext isEqualToString: @""]	 
+		|| [ext isEqualToString: @""]	 
 		|| [ext isEqualToString: @"txt"] 
 		|| [ext isEqualToString: @"text"])
 		{

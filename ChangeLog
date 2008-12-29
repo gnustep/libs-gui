@@ -1,3 +1,10 @@
+2008-12-29 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSHelpManager.m: Allow the GSHelpViewer user default to
+	control how application help is displayed.
+	* Documentation/GuiUser/DefaultsSummary.gsdoc: Document the new
+	user default.
+
 2008-12-28 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWindow.m: Remove left over traces of toolbar handling.
