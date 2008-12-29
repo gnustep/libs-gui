@@ -30,6 +30,7 @@
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSEnumerator.h>
 #include <Foundation/NSString.h>
+#include <Foundation/NSNotification.h>
 #include <Foundation/NSProcessInfo.h>
 
 #include "AppKit/NSApplication.h"
@@ -161,6 +162,41 @@ new_label (NSString *value)
   if (self == [GSInfoPanel class])
     {
       [self setVersion: 1];
+    }
+}
+
+- (void) dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver: self];
+  [super dealloc];
+}
+
+/* When the current theme changes, we need to update the info panel to match.
+ */
+- (void) _themeDidActivate: (NSNotification*)n
+{
+  NSView	*c = [self contentView];
+  NSEnumerator	*e = [[c subviews] objectEnumerator];
+  NSView	*v;
+  NSButton	*b;
+
+  while ((v = [e nextObject]) != nil)
+    {
+      if ([v isKindOfClass: [NSButton class]]
+	&& [(b = (NSButton*)v) target] == [GSTheme class])
+	{
+	  NSString	*s;
+	  NSRect	f;
+
+	  s = [NSString stringWithFormat: @"%@: %@",
+	    _(@"Current theme"), [[GSTheme theme] name]];
+	  [b setStringValue: s];
+	  [b sizeToFit];
+	  f = [b frame];
+	  f.origin.x = ([c frame].size.width - f.size.width) / 2;
+	  [b setFrame: f];
+	  [c setNeedsDisplay: YES];
+	}
     }
 }
 
@@ -527,7 +563,7 @@ new_label (NSString *value)
   if (tmp_A > height)
     height = tmp_A;
 
-  /* Add border to both wihdt and height */
+  /* Add border to both width and height */
   width += 32;
   height += 36;
 
@@ -647,18 +683,25 @@ new_label (NSString *value)
       f = [copyrightDescriptionLabel frame];
       f.origin.x = (width - f.size.width) / 2;
       f.origin.y = tmp_b - 2 - f.size.height;
+      tmp_b = f.origin.y;
       [cv addSubview: copyrightDescriptionLabel];
       [copyrightDescriptionLabel setFrame: f];
     }
 
   f = [themeLabel frame];
   f.origin.x = (width - f.size.width) / 2;
-  f.origin.y = tmp_b - 25 - f.size.height;
+  f.origin.y = tmp_b - 5 - f.size.height;
   tmp_b = f.origin.y;
   [cv addSubview: themeLabel];
   [themeLabel setFrame: f];
   [themeLabel setTarget: [GSTheme class]];
   [themeLabel setAction: @selector(orderFrontSharedThemePanel:)];
+
+  [[NSNotificationCenter defaultCenter]
+    addObserver: self
+    selector: @selector(_themeDidActivate:)
+    name: GSThemeDidActivateNotification
+    object: nil];
 
   [self center];
   return self;
@@ -700,8 +743,7 @@ new_label (NSString *value)
     }
 
   // FIXME: Hard coded
-  if (character == 'c' && 
-      [theEvent modifierFlags] & NSCommandKeyMask)
+  if (character == 'c' && ([theEvent modifierFlags] & NSCommandKeyMask))
     {
       [self copy: nil];
       return;

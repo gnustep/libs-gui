@@ -1,5 +1,10 @@
 2008-12-29 Richard Frith-Macdonald <rfm@gnu.org>
 
+	* Source/GSInfoPanel.m:
+	Update name of current theme when it changes.
+
+2008-12-29 Richard Frith-Macdonald <rfm@gnu.org>
+
 	* Source/NSBrowser.m:
 	* Source/NSPopUpButtonCell.m:
 	* Source/NSBox.m:
