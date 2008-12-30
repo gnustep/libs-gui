@@ -1,5 +1,10 @@
 2008-12-30 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSPrintOperation.m (_setupPrintInfo): Initialize
+	viewPageRange before calling knowsPageRange:.
+
+2008-12-30 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/Additions/GNUstepGUI/GSToolbar.h (-_toolbars): Remove.
 	* Source/NSWindow+Toolbar.m: Add [GSToolbar _toolbars] declaration
 	here.

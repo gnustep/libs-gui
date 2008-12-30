@@ -686,7 +686,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 - (void) _setupPrintInfo
 {
   BOOL knowsPageRange;
-  NSRange viewPageRange;
+  NSRange viewPageRange = NSMakeRange(1, 0);
   NSMutableDictionary *dict = [_print_info dictionary];
 
   knowsPageRange = [_view knowsPageRange: &viewPageRange]; 
