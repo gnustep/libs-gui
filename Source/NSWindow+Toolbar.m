@@ -34,6 +34,9 @@
 #include "AppKit/NSToolbar.h"
 #include "GNUstepGUI/GSToolbarView.h"
 
+@interface GSToolbar (GNUstepPrivate)
++ (NSArray *) _toolbars;
+@end
 
 @interface NSToolbar (GNUstepPrivate)
 - (GSToolbarView *) _toolbarView;

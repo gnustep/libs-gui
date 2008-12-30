@@ -64,6 +64,10 @@ static const unsigned int ValidationInterval = 4;
 static GSValidationCenter *vc = nil;
 
 // Extensions
+@interface NSArray (ObjectsWithValueForKey)
+- (NSArray *) objectsWithValue: (id)value forKey: (NSString *)key;
+@end
+
 @implementation NSArray (ObjectsWithValueForKey)
 
 - (NSArray *) objectsWithValue: (id)value forKey: (NSString *)key 
@@ -359,6 +363,11 @@ static GSValidationCenter *vc = nil;
   [super dealloc];
 }
 
+- (GSValidationObject *) validationObjectForWindow: (NSWindow*)w
+{
+  return [[_vobjs objectsWithValue: w forKey: @"_window"] objectAtIndex: 0];
+}
+
 - (NSArray *) observersWindow: (NSWindow *)window
 {
   int i;
@@ -377,16 +386,13 @@ static GSValidationCenter *vc = nil;
     }
   else
     {
-      result = [[[_vobjs objectsWithValue: window forKey: @"_window"] 
-        objectAtIndex: 0] observers];
-      return result;
+      return [[self validationObjectForWindow: window] observers];
     }
 }
 
 - (void) addObserver: (id)observer window: (NSWindow *)window
 {
-  GSValidationObject *vobj = 
-    [[_vobjs objectsWithValue: window forKey: @"_window"] objectAtIndex: 0];
+  GSValidationObject *vobj = [self validationObjectForWindow: window];
   NSMutableArray *observersWindow = nil;
   
   if (window == nil)
@@ -430,7 +436,7 @@ static GSValidationCenter *vc = nil;
   
   while ((w = [e nextObject]) != nil)
     { 
-      vobj = [[_vobjs objectsWithValue: w forKey: @"_window"] objectAtIndex: 0];
+      vobj = [self validationObjectForWindow: w];
       observersWindow = [vobj observers];
   
       if (observersWindow != nil && [observersWindow containsObject: observer])
@@ -452,8 +458,7 @@ static GSValidationCenter *vc = nil;
  
   // NSLog(@"Window will close");
  
-  vobj = [[_vobjs objectsWithValue: [notification object] forKey: @"_window"] 
-    objectAtIndex: 0];
+  vobj = [self validationObjectForWindow: [notification object]];
   if (vobj != nil)
     {
       [vobj clean];
@@ -469,7 +474,8 @@ static GSValidationCenter *vc = nil;
 
 // Private class method
 
-+ (NSMutableArray *) _toolbars;
++ (NSArray *) _toolbars;
++ (NSArray *) _toolbarsWithIdentifier: (NSString *)identifier;
 
 - (void) _insertItemWithItemIdentifier: (NSString *)itemIdentifier 
                                atIndex: (int)index 
@@ -484,7 +490,6 @@ static GSValidationCenter *vc = nil;
 - (void) _setAutosavesConfiguration: (BOOL)flag broadcast: (BOOL)broadcast;
 - (void) _setConfigurationFromDictionary: (NSDictionary *)configDict 
                                broadcast: (BOOL)broadcast;
-- (void) _setDelegate: (id)delegate broadcast: (BOOL)broadcast;
 - (void) _moveItemFromIndex: (int)index toIndex: (int)newIndex broadcast: (BOOL)broadcast;
 
 // Few other private methods
@@ -545,9 +550,15 @@ static GSValidationCenter *vc = nil;
 
 // Private class method to access static variable toolbars in subclasses
 
-+ (NSMutableArray *) _toolbars
++ (NSArray *) _toolbars
 {
   return toolbars;
+}
+
++ (NSArray *) _toolbarsWithIdentifier: (NSString *)identifier
+{
+  return [toolbars objectsWithValue: identifier
+                   forKey: @"_identifier"];
 }
 
 // Instance methods
@@ -780,18 +791,40 @@ static GSValidationCenter *vc = nil;
  * -toolbarAllowedItemIdentifiers: and -toolbarDefaultItemIdentifiers:
  * messages.
  */
- 
 - (void) setDelegate: (id)delegate
 { 
-  [self _setDelegate: delegate broadcast: NO];
-  //[self _setDelegate: delegate broadcast: YES];
+  if (_delegate == delegate)
+    return;
   
-  // Deactivated the delegate synchronization because it can create segmentation
-  // faults when the application has not been written specially to support it
-  // which is the case for the Cocoa applications. Moreover it can be
-  // difficult to understand how it works in detail because it doesn't fit
-  // exactly with the delegate philosophy.
-  // Will be made optional later in the case the developers want to use it.
+  if (_delegate != nil)
+    [nc removeObserver: _delegate name: nil object: self];
+    
+  // Assign the delegate...
+  _delegate = delegate;
+  
+  if (_delegate != nil)
+    {
+      #define CHECK_REQUIRED_METHOD(selector_name) \
+      if (![_delegate respondsToSelector: @selector(selector_name)]) \
+        [NSException raise: NSInternalInconsistencyException \
+                    format: @"delegate does not respond to %@",@#selector_name]
+
+      CHECK_REQUIRED_METHOD(toolbar:itemForItemIdentifier:
+        willBeInsertedIntoToolbar:); 
+      CHECK_REQUIRED_METHOD(toolbarAllowedItemIdentifiers:);
+      CHECK_REQUIRED_METHOD(toolbarDefaultItemIdentifiers:);
+
+      #define SET_DELEGATE_NOTIFICATION(notif_name) \
+      if ([_delegate respondsToSelector: @selector(toolbar##notif_name:)]) \
+        [nc addObserver: _delegate \
+               selector: @selector(toolbar##notif_name:) \
+                   name: NSToolbar##notif_name##Notification object: self]
+  
+      SET_DELEGATE_NOTIFICATION(DidRemoveItem);
+      SET_DELEGATE_NOTIFICATION(WillAddItem);
+    }
+    
+  [self _build];
 }
 
 - (void) setSelectedItemIdentifier: (NSString *)itemIdentifier
@@ -874,19 +907,19 @@ static GSValidationCenter *vc = nil;
 
 // Private methods
 
+/*
+ * Toolbar build :
+ * will use the delegate when there is no toolbar model
+ */
 - (void) _build
 {
-  /*
-   * Toolbar build :
-   * will use the delegate when there is no toolbar model
-   */
-  
   GSToolbar *toolbarModel;
   NSArray *wantedItemIdentifiers;
   NSEnumerator *e;
   id itemIdentifier;
   int i = 0;
   
+  // Switch off toolbar view reload
   _build = YES;
 
   RELEASE(_items);
@@ -920,6 +953,9 @@ static GSValidationCenter *vc = nil;
     }
   
   _build = NO;
+  // Now do the toolbar view reload
+  if (_toolbarView != nil)
+    [_toolbarView _reload];
 }
 
 - (int) _indexOfItem: (NSToolbarItem *)item
@@ -965,8 +1001,7 @@ static GSValidationCenter *vc = nil;
   NSArray *linked;
   id toolbar;
   
-  linked = [toolbars objectsWithValue: [self identifier] 
-                               forKey: @"_identifier"];
+  linked = [isa _toolbarsWithIdentifier: [self identifier]];
     
   if (linked != nil && [linked count] > 0)
     {
@@ -1004,15 +1039,15 @@ static GSValidationCenter *vc = nil;
 
 /*
  *
- * The methods below handles the toolbar edition and broacasts each associated
+ * The methods below handles the toolbar edition and broadcasts each associated
  * event to the other toolbars with identical identifiers. 
  * Warning : broadcast process only happens between instances based on the same
  * class. 
  */
 
 #define TRANSMIT(signature) \
-  NSEnumerator *e = [[toolbars objectsWithValue: _identifier forKey: \
-    @"_identifier"] objectEnumerator]; \
+  NSEnumerator *e = [[GSToolbar _toolbarsWithIdentifier: _identifier]  \
+      objectEnumerator];                                        \
   GSToolbar *toolbar; \
   \
   while ((toolbar = [e nextObject]) != nil) \
@@ -1140,54 +1175,6 @@ static GSValidationCenter *vc = nil;
     }
 }
 
-- (void) _setDelegate: (id)delegate broadcast: (BOOL)broadcast
-{   
-  //if (_delegate)
-  //  [nc removeObserver: _delegate name: nil object: self];
-
-  if (_delegate == delegate)
-    return;
-  
-  if (_delegate != nil)
-    [nc removeObserver: _delegate name: nil object: self];
-    
-  // Assign the delegate...
-  _delegate = delegate;
-  
-  if (_delegate != nil)
-    {
-      #define CHECK_REQUIRED_METHOD(selector_name) \
-      if (![_delegate respondsToSelector: @selector(selector_name)]) \
-        [NSException raise: NSInternalInconsistencyException \
-                    format: @"delegate does not respond to %@",@#selector_name]
-
-      CHECK_REQUIRED_METHOD(toolbar:itemForItemIdentifier:
-        willBeInsertedIntoToolbar:); 
-      CHECK_REQUIRED_METHOD(toolbarAllowedItemIdentifiers:);
-      CHECK_REQUIRED_METHOD(toolbarDefaultItemIdentifiers:);
-
-      #define SET_DELEGATE_NOTIFICATION(notif_name) \
-      if ([_delegate respondsToSelector: @selector(toolbar##notif_name:)]) \
-        [nc addObserver: _delegate \
-               selector: @selector(toolbar##notif_name:) \
-                   name: NSToolbar##notif_name##Notification object: self]
-  
-      SET_DELEGATE_NOTIFICATION(DidRemoveItem);
-      SET_DELEGATE_NOTIFICATION(WillAddItem);
-    }
-    
-  [self _build];
-  if (_toolbarView != nil)
-    [_toolbarView _reload];
-  
-  // Broadcast now...
-    
-  if (broadcast) 
-    {
-      TRANSMIT(_setDelegate: _delegate broadcast: NO);
-    } 
-}
-
 - (void) _moveItemFromIndex: (int)index toIndex: (int)newIndex broadcast: (BOOL)broadcast
 {
   id item;
@@ -1231,31 +1218,6 @@ static GSValidationCenter *vc = nil;
   // Don't do an ASSIGN here, the toolbar itself retains us.
   _toolbarView = toolbarView;
   
-  if (_toolbarView == nil)
-    return;
-   
-  /* In the case, the user hasn't set a delegate until now, we set it.
-   * Why ?
-   * We don't set it before when the toolbar is initialized, to do only one 
-   * toolbar content load.
-   * ...
-   * 1 toolbar = [[GSToolbar alloc] initWithIdentifier: @"blabla"];
-   * 2 [toolbar setDelegate: myDelegate];
-   * In case such method like 1 sets a default delegate for the identifier by
-   * requesting a toolbar model, a toolbar content load would occur.
-   * With a method like 2 which follows immediatly :
-   * Another toolbar load content would occur related to a probably different
-   * delegate. 
-   */    
-  //if (_delegate == nil)
-  //[self _setDelegate: [toolbarModel delegate] broadcast: NO];
-   
-  // Deactivated the delegate synchronization because it can create segmentation
-  // faults when the application has not been written specially to support it
-  // which is the case for the Cocoa applications. Moreover it can be
-  // difficult to understand how it works in detail because it doesn't fit
-  // exactly with the delegate philosophy.
-  // Will be made optional later in the case the developers want to use it.
 }
 
 - (GSToolbarView *) _toolbarView 

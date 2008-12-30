@@ -48,10 +48,11 @@
 static NSNotificationCenter *nc = nil;
 static const int current_version = 1;
 
+@interface GSToolbar (GNUstepPrivate)
++ (NSArray *) _toolbarsWithIdentifier: (NSString *)identifier;
+@end
 
 @interface NSToolbar (GNUstepPrivate)
-
-+ (NSMutableArray *) _toolbars;
 
 // Private methods with broadcast support
 - (void) _setDisplayMode: (NSToolbarDisplayMode)displayMode 
@@ -59,7 +60,6 @@ static const int current_version = 1;
 - (void) _setSizeMode: (NSToolbarSizeMode)sizeMode 
             broadcast: (BOOL)broadcast;
 - (void) _setVisible: (BOOL)shown broadcast: (BOOL)broadcast;
-- (void) _setDelegate: (id)delegate broadcast: (BOOL)broadcast;
 
 // Few other private methods
 - (void) _loadConfig;
@@ -185,7 +185,7 @@ static const int current_version = 1;
  */
 
 #define TRANSMIT(signature) \
-  NSEnumerator *e = [[[GSToolbar _toolbars] objectsWithValue: _identifier forKey: @"_identifier"] objectEnumerator]; \
+  NSEnumerator *e = [[GSToolbar _toolbarsWithIdentifier: _identifier] objectEnumerator]; \
   NSToolbar *toolbar; \
   \
   while ((toolbar = [e nextObject]) != nil) \

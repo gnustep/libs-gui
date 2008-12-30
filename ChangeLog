@@ -1,3 +1,17 @@
+2008-12-30 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSToolbar.h (-_toolbars): Remove.
+	* Source/NSWindow+Toolbar.m: Add [GSToolbar _toolbars] declaration
+	here.
+	* Source/GSToolbar.m,
+	* Source/NSToolbar.m: Simplify by adding helper methods and
+	removing dead code. 
+	* Headers/AppKit/NSToolbarItemGroup.h,
+	* Source/NSToolbarItemGroup.m: New files.
+	* Source/GNUmakefile: Add new files.
+	* Headers/AppKit/NSToolbarItem.h: Add 10.5 methods and constants.
+	* Source/NSToolbarItem.m: New methods and general rewrite.
+
 2008-12-29 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSInfoPanel.m:

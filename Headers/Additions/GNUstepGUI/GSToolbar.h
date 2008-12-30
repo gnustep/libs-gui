@@ -113,11 +113,6 @@ APPKIT_EXPORT NSString *NSToolbarWillAddItemNotification;
 - (void) setUsesStandardBackgroundColor: (BOOL)standard;
 - (NSToolbarSizeMode) sizeMode;
 
-
-// Private class method
-
-+ (NSMutableArray *) _toolbars;
-
 @end /* interface of NSToolbar */
 
 /*
@@ -139,13 +134,6 @@ willBeInsertedIntoToolbar: (BOOL)flag;
 - (NSArray*) toolbarDefaultItemIdentifiers: (GSToolbar*)toolbar;
 // optional method
 - (NSArray *) toolbarSelectableItemIdentifiers: (GSToolbar *)toolbar;
-@end
-
-
-// Extensions
-
-@interface NSArray (ObjectsWithValueForKey)
-- (NSArray *) objectsWithValue: (id)value forKey: (NSString *)key;
 @end
 
 #endif /* _GNUstep_H_NSToolbar */

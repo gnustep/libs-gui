@@ -57,10 +57,19 @@ APPKIT_EXPORT NSString *NSToolbarShowFontsItemIdentifier;
 APPKIT_EXPORT NSString *NSToolbarCustomizeToolbarItemIdentifier;
 APPKIT_EXPORT NSString *NSToolbarPrintItemIdentifier;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+enum _NSToolbarItemVisibilityPriority {
+  NSToolbarItemVisibilityPriorityStandard = 0,
+  NSToolbarItemVisibilityPriorityLow = -1000,
+  NSToolbarItemVisibilityPriorityHigh = 1000,
+  NSToolbarItemVisibilityPriorityUser = 2000
+};
+#endif
+
 @interface NSToolbarItem : NSObject <NSCopying, NSValidatedUserInterfaceItem>
 {
   // externally visible variables
-  BOOL _allowsDuplicatesInToolbar;
+  BOOL _autovalidates;
   NSString *_itemIdentifier;
   NSString *_label;
   NSString *_paletteLabel;
@@ -68,7 +77,8 @@ APPKIT_EXPORT NSString *NSToolbarPrintItemIdentifier;
   id _view;
   NSMenuItem *_menuFormRepresentation;
   NSString *_toolTip;
-  int _tag;
+  NSInteger _tag;
+  NSInteger _visibilityPriority;
 
   // toolbar
   GSToolbar *_toolbar;
@@ -86,18 +96,17 @@ APPKIT_EXPORT NSString *NSToolbarPrintItemIdentifier;
   {
     // gets
     unsigned int _isEnabled:1;
-    unsigned int _tag:1;
     unsigned int _action:1;
     unsigned int _target:1;
     unsigned int _image:1;
     // sets
     unsigned int _setEnabled:1;
-    unsigned int _setTag:1;
     unsigned int _setAction:1;
     unsigned int _setTarget:1;
     unsigned int _setImage:1;
-    // to even out the long.
-    unsigned int RESERVED:22;
+
+    // to even out the int.
+    unsigned int RESERVED:24;
   } _flags;
 }
 
@@ -117,7 +126,7 @@ APPKIT_EXPORT NSString *NSToolbarPrintItemIdentifier;
 - (NSMenuItem *) menuFormRepresentation;
 - (NSSize) minSize;
 - (NSString *) paletteLabel;
-- (int) tag;
+- (NSInteger) tag;
 - (id) target;
 - (NSString *) toolTip;
 - (GSToolbar *) toolbar;
@@ -130,10 +139,16 @@ APPKIT_EXPORT NSString *NSToolbarPrintItemIdentifier;
 - (void) setMenuFormRepresentation: (NSMenuItem *)menuItem;
 - (void) setMinSize: (NSSize)minSize;
 - (void) setPaletteLabel: (NSString *)paletteLabel;
-- (void) setTag: (int)tag;
+- (void) setTag: (NSInteger)tag;
 - (void) setTarget: (id)target;
 - (void) setToolTip: (NSString *)toolTip;
 - (void) setView: (NSView *)view;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (BOOL) autovalidates;
+- (void) setAutovalidates: (BOOL)autovalidates;
+- (NSInteger) visibilityPriority;
+- (void) setVisibilityPriority: (NSInteger)visibilityPriority;
+#endif
 
 @end /* interface of NSToolbarItem */
 
@@ -143,6 +158,6 @@ APPKIT_EXPORT NSString *NSToolbarPrintItemIdentifier;
 @end
 
 // Extra private stuff
-extern NSString *GSMovableToolbarItemPboardType;
+APPKIT_EXPORT NSString *GSMovableToolbarItemPboardType;
 
 #endif /* _GNUstep_H_NSToolbarItem */
