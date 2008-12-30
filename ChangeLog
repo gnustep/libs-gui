@@ -1,3 +1,8 @@
+2008-12-31 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m (-validateMenuItem:): Add validation for
+	toolbar toggle method.
+
 2008-12-30 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPrintOperation.m (_setupPrintInfo): Initialize

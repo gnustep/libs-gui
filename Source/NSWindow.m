@@ -74,6 +74,7 @@
 #include "AppKit/NSTextFieldCell.h"
 #include "AppKit/NSView.h"
 #include "AppKit/NSWindow.h"
+#include "AppKit/NSWindow+Toolbar.h"
 #include "AppKit/NSWindowController.h"
 #include "AppKit/PSOperators.h"
 #include "GNUstepGUI/GSTrackingRect.h"
@@ -4754,7 +4755,7 @@ current key view.<br />
  * Menu item validation
  */
 
-- (BOOL)validateMenuItem: (NSMenuItem *)anItem
+- (BOOL) validateMenuItem: (NSMenuItem *)anItem
 {
   BOOL result = YES;
   SEL  action = [anItem action];
@@ -4810,6 +4811,28 @@ current key view.<br />
             {
               [anItem setTitle: [undo redoMenuTitleForUndoActionName: @""]];
               result = NO;
+            }
+        }
+    }
+  else if (sel_eq(action, @selector(toggleToolbarShown:)))
+    {
+      NSToolbar *toolbar = [self toolbar];
+
+      if (toolbar == nil)
+        {
+          result = NO;
+        }
+      else
+        {
+          if ([toolbar isVisible])
+            {
+              [anItem setTitle: _(@"Hide Toolbar")];
+              result = YES;
+            }
+          else
+            {
+              [anItem setTitle: _(@"Show Toolbar")];
+              result = YES;
             }
         }
     }
