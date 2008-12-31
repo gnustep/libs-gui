@@ -189,8 +189,6 @@ static void initSystemExtensionsColors(void)
 - (NSToolbarSizeMode) _sizeMode;
 - (BOOL) _usesStandardBackgroundColor;
 - (void) _setUsesStandardBackgroundColor: (BOOL)standard;
-- (void) _setWillBeVisible: (BOOL)willBeVisible;
-- (BOOL) _willBeVisible;
 @end
 
 @interface GSToolbarClippedItemsButton : NSButton
@@ -973,20 +971,6 @@ static void initSystemExtensionsColors(void)
 - (NSToolbarSizeMode) _sizeMode
 {
   return _sizeMode;
-}
-
-/*
- * _willBeVisible indicates that the toolbar view previously hidden is in
- * process to become visible again before the end of current the event loop.
- */
-- (BOOL) _willBeVisible
-{
-  return _willBeVisible;
-}
-
-- (void) _setWillBeVisible: (BOOL)willBeVisible
-{
-  _willBeVisible = willBeVisible;
 }
 
 - (BOOL) _usesStandardBackgroundColor

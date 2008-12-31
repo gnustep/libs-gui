@@ -31,11 +31,9 @@
 
 #include <Foundation/NSObject.h>
 #include <Foundation/NSArray.h>
-#include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSEnumerator.h>
 #include <Foundation/NSException.h>
-#include <Foundation/NSNotification.h>
 #include "AppKit/NSToolbarItem.h"
 #include "AppKit/NSView.h"
 #include "AppKit/NSWindow.h"
@@ -45,7 +43,6 @@
 #include "AppKit/NSToolbar.h"
 
 // internal
-static NSNotificationCenter *nc = nil;
 static const int current_version = 1;
 
 @interface GSToolbar (GNUstepPrivate)
@@ -62,27 +59,16 @@ static const int current_version = 1;
 - (void) _setVisible: (BOOL)shown broadcast: (BOOL)broadcast;
 
 // Few other private methods
-- (void) _loadConfig;
 - (GSToolbar *) _toolbarModel;
 
-// Accessors
-- (void) _setWindow: (NSWindow *)window;
-- (NSWindow *) _window;
-@end
-
-@interface NSToolbarItem (GNUstepPrivate)
-- (void) _setToolbar: (GSToolbar *)toolbar;
 @end
 
 @interface GSToolbarView (GNUstepPrivate)
 - (void) _reload;
 
 // Accessors
-- (NSArray *) _visibleBackViews;
 - (void) _setSizeMode: (NSToolbarSizeMode)sizeMode;
 - (NSToolbarSizeMode) _sizeMode;
-- (void) _setWillBeVisible: (BOOL)willBeVisible;
-- (BOOL) _willBeVisible;
 @end
 
 @interface NSWindow (ToolbarPrivate)
@@ -101,14 +87,13 @@ static const int current_version = 1;
   if (self == [NSToolbar class])
     {
       [self setVersion: current_version];
-      nc = [NSNotificationCenter defaultCenter];
     }
 }
 
 // Instance methods
 
 - (id) initWithIdentifier: (NSString *)identifier 
-              displayMode:(NSToolbarDisplayMode)displayMode 
+              displayMode: (NSToolbarDisplayMode)displayMode 
                  sizeMode: (NSToolbarSizeMode)sizeMode
 {
   NSToolbar *toolbarModel = nil;
@@ -136,13 +121,6 @@ static const int current_version = 1;
     }
 
   return self;
-}
-
-- (void) dealloc
-{
-  // NSLog(@"Dummy NSToolbar dealloc");
-  
-  [super dealloc];
 }
 
 // Accessors
@@ -179,7 +157,7 @@ static const int current_version = 1;
 
 /*
  *
- * The methods below handles the toolbar edition and broacasts each associated
+ * The methods below handle the toolbar edition and broacast each associated
  * event to the other toolbars with identical identifiers. 
  *
  */
@@ -197,105 +175,52 @@ static const int current_version = 1;
 - (void) _setDisplayMode: (NSToolbarDisplayMode)displayMode 
                broadcast: (BOOL)broadcast
 {
-   _displayMode = displayMode;
+  if (_displayMode != displayMode)
+    {
+      _displayMode = displayMode;
    
-   [_toolbarView _reload];
-   [_window _adjustToolbarView];
-     
-   if (broadcast) 
-     {
-       TRANSMIT(_setDisplayMode: _displayMode broadcast: NO);
-     }
+      [_toolbarView _reload];
+      [[_toolbarView window] _adjustToolbarView];
+      
+      if (broadcast) 
+        {
+          TRANSMIT(_setDisplayMode: _displayMode broadcast: NO);
+        }
+    }
 }
 
 - (void) _setSizeMode: (NSToolbarSizeMode)sizeMode 
             broadcast: (BOOL)broadcast
 {
-   _sizeMode = sizeMode;
-   [_toolbarView _setSizeMode: _sizeMode];
-   
-   [_toolbarView _reload];
-   [_window _adjustToolbarView];
-     
-   if (broadcast) 
-     {
-       TRANSMIT(_setSizeMode: _sizeMode broadcast: NO);
-     }
+  if (_sizeMode != sizeMode)
+    {
+      _sizeMode = sizeMode;
+
+      [_toolbarView _setSizeMode: _sizeMode];
+      
+      [_toolbarView _reload];
+      [[_toolbarView window] _adjustToolbarView];
+  
+      if (broadcast) 
+        {
+          TRANSMIT(_setSizeMode: _sizeMode broadcast: NO);
+        }
+    }
 }
 
+// This method wont make a toolbar visible or invisible by itself.
+// Use [NSWindow toggleToolbarShown:]
 - (void) _setVisible: (BOOL)shown broadcast: (BOOL)broadcast
 {
   if (_visible != shown)
     {  
-      if (_window) 
-        {
-          if (shown)
-            [_toolbarView _setWillBeVisible: YES];
-          
-          [_window toggleToolbarShown: self];
-          
-          [_toolbarView _setWillBeVisible: NO];
-        }
-        
        _visible = shown; 
-       // Important to set _visible after the toolbar has been toggled because
-       // NSWindow method contentViewWithoutToolbar uses [NSToolbar visible]
-       // when we toggle the toolbar
-       // example : the toolbar needs to be still known visible in order to hide
-       // it.
-    }
     
-    if (broadcast) 
-      {
-        TRANSMIT(_setVisible: _visible broadcast: NO);
-      }
-}
-
-// Notifications
-
-- (void) handleNotification: (NSNotification *)notification
-{
-  // We currently only worry about when our window closes.
-  // It's necessary to set the _window ivar in master list to nil when it is
-  // closed, so that it doesn't cause a segmentation fault when we looks at
-  // _window ivar with KVC in -[NSWindow(Toolbar) toolbar].
-  [self _setWindow: nil];
-  
-  if ([_toolbarView superview] == nil)
-    RELEASE(_toolbarView); 
-  // We release the toolbar view in such case because NSWindow(Toolbar) retains
-  // it when its superview value is nil.
-}
-
-// Private Accessors
-
-- (void) _setWindow: (NSWindow *)window 
-{
-  if (_window != window)
-    {
-      if (_window)
-        {
-          [nc removeObserver: self];
-        }
-
-      if (window)
-        {
-          // Watch for this window closing....
-          [nc addObserver: self
-              selector: @selector(handleNotification:)
-              name: NSWindowWillCloseNotification
-              object: window];
-        }
+       if (broadcast) 
+         {
+           TRANSMIT(_setVisible: _visible broadcast: NO);
+         }
     }
-    
-  // We don't do an ASSIGN because the toolbar view retains us.
-  // call [NSWindow(Toolbar) setToolbar:] to set the toolbar window 
-  _window = window; 
-}
-
-- (NSWindow *) _window
-{
-  return _window;
 }
 
 @end

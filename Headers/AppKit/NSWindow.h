@@ -244,7 +244,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
     unsigned preserves_content_during_live_resize: 1;
   } _f;
  
-  void          *_reserved_s;
+  NSToolbar     *_toolbar;
   void          *_reserved_1;
 }
 

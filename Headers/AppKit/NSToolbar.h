@@ -36,7 +36,6 @@
 
 @interface NSToolbar : GSToolbar
 {
-  NSWindow *_window;
   BOOL _visible;
 }
 

@@ -1,5 +1,16 @@
 2008-12-31 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSWindow.h: Use one of the spare ivars for toolbar.
+	* Headers/AppKit/NSToolbar.h: Remove window ivar.
+	* Source/NSWindow.m (-dealloc:): Unset the toolbar.
+	* Source/NSWindow+Toolbar.m: Start to rewrite
+	* Source/GSToolbar.m: Remove unused method declarations.
+	* Source/GSToolbarView.m: Remove unused methods.
+	* Source/NSToolbar.m: Remove all window related methods. Simplify
+	the rest of the code.
+
+2008-12-31 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSWindow.m (-validateMenuItem:): Add validation for
 	toolbar toggle method.
 

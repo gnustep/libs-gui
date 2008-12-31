@@ -507,8 +507,6 @@ static GSValidationCenter *vc = nil;
 // Accessors
 - (void) _setToolbarView: (GSToolbarView *)toolbarView;
 - (GSToolbarView *) _toolbarView;
-- (void) _setWindow: (NSWindow *)window;
-- (NSWindow *) _window;
 @end
 
 @interface NSToolbarItem (GNUstepPrivate)
@@ -525,9 +523,7 @@ static GSValidationCenter *vc = nil;
 // Accessors
 - (NSArray *) _visibleBackViews;
 - (BOOL) _usesStandardBackgroundColor;
-- (BOOL) _willBeVisible;
 - (void) _setUsesStandardBackgroundColor: (BOOL)standard;
-- (void) _setWillBeVisible: (BOOL)willBeVisible;
 @end
 
 // ---
@@ -1203,21 +1199,19 @@ static GSValidationCenter *vc = nil;
 
 - (void) _setToolbarView: (GSToolbarView *)toolbarView
 {
-  //GSToolbar *toolbarModel = [self _toolbarModel];
-  
   if (_toolbarView != nil)
     {
       [vc removeObserver: self window: nil];
-    }
-  if (toolbarView != nil)
-    {
-      [vc addObserver: self window: [toolbarView window]];
-      // In the case the window parameter is a nil value, nothing happens.
     }
     
   // Don't do an ASSIGN here, the toolbar itself retains us.
   _toolbarView = toolbarView;
   
+  if (toolbarView != nil)
+    {
+      [vc addObserver: self window: [toolbarView window]];
+      // In the case the window parameter is a nil value, nothing happens.
+    }
 }
 
 - (GSToolbarView *) _toolbarView 
