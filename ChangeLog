@@ -1,5 +1,10 @@
 2008-12-31 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/Additions/GNUstepGUI/GSLayoutManager.h: Add some 10.5 methods.
+	* Source/GSLayoutManager.m: Implement them.
+
+2008-12-31 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSWindow.h: Use one of the spare ivars for toolbar.
 	* Headers/AppKit/NSToolbar.h: Remove window ivar.
 	* Source/NSWindow.m (-dealloc:): Unset the toolbar.

@@ -293,12 +293,23 @@ invalidation.)
 	forGlyphRange: (NSRange)glyphRange; /* not OPENSTEP */
 
 
-- (NSTextContainer *) textContainerForGlyphAtIndex: (unsigned int)glyphIndex
+- (NSTextContainer *) textContainerForGlyphAtIndex: (NSUInteger)glyphIndex
 	effectiveRange: (NSRange *)effectiveRange;
 - (NSRect) lineFragmentRectForGlyphAtIndex: (unsigned int)glyphIndex
 	effectiveRange: (NSRange *)effectiveGlyphRange;
 - (NSRect) lineFragmentUsedRectForGlyphAtIndex: (unsigned int)glyphIndex
 	effectiveRange: (NSRange *)effectiveGlyphRange;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (NSTextContainer *) textContainerForGlyphAtIndex: (NSUInteger)glyphIndex
+                      effectiveRange: (NSRange *)effectiveRange
+                      withoutAdditionalLayout: (BOOL)flag;
+- (NSRect) lineFragmentRectForGlyphAtIndex: (NSUInteger)glyphIndex
+           effectiveRange: (NSRange *)effectiveGlyphRange
+           withoutAdditionalLayout: (BOOL)flag;
+- (NSRect) lineFragmentUsedRectForGlyphAtIndex: (NSUInteger)glyphIndex
+           effectiveRange: (NSRange *)effectiveGlyphRange
+           withoutAdditionalLayout: (BOOL)flag;
+#endif
 
 
 /*

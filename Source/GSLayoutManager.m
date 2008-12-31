@@ -2356,14 +2356,24 @@ forStartOfGlyphRange: (NSRange)glyphRange
 
 #undef SETUP_STUFF
 
+- (NSTextContainer *) textContainerForGlyphAtIndex: (NSUInteger)glyphIndex
+                                    effectiveRange: (NSRange *)effectiveRange
+{
+  return [self textContainerForGlyphAtIndex: glyphIndex
+               effectiveRange: effectiveRange
+               withoutAdditionalLayout: NO];
+}
 
-- (NSTextContainer *) textContainerForGlyphAtIndex: (unsigned int)glyphIndex
-				    effectiveRange: (NSRange *)effectiveRange
+- (NSTextContainer *) textContainerForGlyphAtIndex: (NSUInteger)glyphIndex
+                                    effectiveRange: (NSRange *)effectiveRange
+                           withoutAdditionalLayout: (BOOL)flag
 {
   textcontainer_t *tc;
   int i;
 
-  [self _doLayoutToGlyph: glyphIndex];
+  if (!flag)
+    [self _doLayoutToGlyph: glyphIndex];
+
   for (i = 0, tc = textcontainers; i < num_textcontainers; i++, tc++)
     if (tc->pos + tc->length > glyphIndex)
       break;
@@ -2382,14 +2392,25 @@ forStartOfGlyphRange: (NSRange)glyphRange
   return tc->textContainer;
 }
 
-- (NSRect) lineFragmentRectForGlyphAtIndex: (unsigned int)glyphIndex
+- (NSRect) lineFragmentRectForGlyphAtIndex: (NSUInteger)glyphIndex
 			    effectiveRange: (NSRange *)effectiveGlyphRange
+{
+  return [self lineFragmentRectForGlyphAtIndex: glyphIndex
+               effectiveRange: effectiveGlyphRange
+               withoutAdditionalLayout: NO];
+}
+
+- (NSRect) lineFragmentRectForGlyphAtIndex: (NSUInteger)glyphIndex
+                            effectiveRange: (NSRange *)effectiveGlyphRange
+                   withoutAdditionalLayout: (BOOL)flag
 {
   int i;
   textcontainer_t *tc;
   linefrag_t *lf;
 
-  [self _doLayoutToGlyph: glyphIndex];
+  if (!flag)
+    [self _doLayoutToGlyph: glyphIndex];
+
   for (i = 0, tc = textcontainers; i < num_textcontainers; i++, tc++)
     if (tc->pos + tc->length > glyphIndex)
       break;
@@ -2415,14 +2436,25 @@ forStartOfGlyphRange: (NSRange)glyphRange
   return lf->rect;
 }
 
-- (NSRect) lineFragmentUsedRectForGlyphAtIndex: (unsigned int)glyphIndex
+- (NSRect) lineFragmentUsedRectForGlyphAtIndex: (NSUInteger)glyphIndex
 				effectiveRange: (NSRange *)effectiveGlyphRange
+{
+  return [self lineFragmentUsedRectForGlyphAtIndex: glyphIndex
+               effectiveRange: effectiveGlyphRange
+               withoutAdditionalLayout: NO];
+}
+
+- (NSRect) lineFragmentUsedRectForGlyphAtIndex: (NSUInteger)glyphIndex
+                                effectiveRange: (NSRange *)effectiveGlyphRange
+                       withoutAdditionalLayout: (BOOL)flag
 {
   int i;
   textcontainer_t *tc;
   linefrag_t *lf;
 
-  [self _doLayoutToGlyph: glyphIndex];
+  if (!flag)
+    [self _doLayoutToGlyph: glyphIndex];
+
   for (i = 0, tc = textcontainers; i < num_textcontainers; i++, tc++)
     if (tc->pos + tc->length > glyphIndex)
       break;
