@@ -1,5 +1,12 @@
 2008-12-31 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSMenu.m
+	* Source/NSPopUpButton.m,
+	* Source/NSTextView.m,
+	* Source/GSNibLoading.m: Add type casts to keep compiler happy.
+
+2008-12-31 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/Additions/GNUstepGUI/GSLayoutManager.h: Add some 10.5 methods.
 	* Source/GSLayoutManager.m: Implement them.
 

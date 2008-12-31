@@ -975,7 +975,7 @@ static BOOL menuBarVisible = YES;
               while (cont && i < num)
                 {
                   cont = [_delegate menu: self
-                                    updateItem: [self itemAtIndex: i]
+                                    updateItem: (NSMenuItem*)[self itemAtIndex: i]
                                     atIndex: i
                                     shouldCancel: NO];
                   i++;

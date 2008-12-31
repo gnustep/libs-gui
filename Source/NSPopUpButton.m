@@ -417,7 +417,7 @@ this to return nil to indicate that we have no context menu.
 - (BOOL) performKeyEquivalent: (NSEvent*)theEvent
 {
   NSMenu     *m = [self menu];
-  NSMenuItem *oldSelectedItem = [_cell selectedItem];
+  NSMenuItem *oldSelectedItem = (NSMenuItem *)[_cell selectedItem];
 
   if (m != nil)
     {

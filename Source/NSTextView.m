@@ -5313,7 +5313,8 @@ configuation! */
   NSTextView *tv = [self _bestTextViewForUndo];
 
   if ([tv shouldChangeTextInRange: undoRange
-		replacementString: undoString ? [undoString string] : @""])
+          replacementString: undoString ? (NSString*)[undoString string] : 
+              (NSString*)@""])
     {
       [tv replaceCharactersInRange: undoRange
 	      withAttributedString: undoString];

@@ -95,11 +95,14 @@ static BOOL _isInInterfaceBuilder = NO;
 @end
 
 @interface NSMenu (NibCompatibility)
-- (void) _setGeometry;
 - (void) _setMain: (BOOL)isMain;
+@end
+@interface	NSMenu (GNUstepPrivate)
+- (void) _setGeometry;
 @end
 
 @implementation NSMenu (NibCompatibility)
+// FIXME: Why can't this be merged with setMain: ?
 - (void) _setMain: (BOOL)isMain
 {
   if (isMain)
@@ -107,13 +110,11 @@ static BOOL _isInInterfaceBuilder = NO;
       NSMenuView	*oldRep;
       NSInterfaceStyle	oldStyle;
       NSInterfaceStyle	newStyle;
-      NSMenuItem        *appItem;
       NSString          *processName;
 
       if([self numberOfItems] == 0)
-	return;
+        return;
 
-      appItem = [self itemAtIndex: 0]; // Info item.
       oldRep = [self menuRepresentation];
       oldStyle = [oldRep interfaceStyle];
       newStyle = NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
@@ -146,19 +147,22 @@ static BOOL _isInInterfaceBuilder = NO;
 
       // if it's a standard menu, transform it to be more NeXT'ish/GNUstep-like
       if(_menu.horizontal == NO)
-	{
-	  NSString *infoString = NSLocalizedString (@"Info", @"Info");
-	  NSString *quitString = [NSString stringWithFormat: @"%@ %@", 
-					   NSLocalizedString (@"Quit", @"Quit"), processName];
-	  NSMenuItem *quitItem = [[NSMenuItem alloc] initWithTitle: quitString
-						     action: @selector(terminate:)
-						     keyEquivalent: @"q"];
+        {
+          NSString *infoString = NSLocalizedString (@"Info", @"Info");
+          NSString *quitString = [NSString stringWithFormat: @"%@ %@", 
+                                           NSLocalizedString (@"Quit", @"Quit"), processName];
+          NSMenuItem *quitItem = [[NSMenuItem alloc] initWithTitle: quitString
+                                                     action: @selector(terminate:)
+                                                     keyEquivalent: @"q"];
+          NSMenuItem *appItem;
+          
+          appItem = (NSMenuItem*)[self itemAtIndex: 0]; // Info item.
 
-	  [self addItem: quitItem];
-	  [self setTitle: processName];
-	  [appItem setTitle: infoString];
-	  [[appItem submenu] setTitle: infoString];
-	}
+          [self addItem: quitItem];
+          [self setTitle: processName];
+          [appItem setTitle: infoString];
+          [[appItem submenu] setTitle: infoString];
+        }
 
       [self _setGeometry];
       [self sizeToFit];
