@@ -123,19 +123,21 @@
 
 - (void) setToolbar: (NSToolbar*)toolbar
 {
-  NSToolbar *lastToolbar = [self toolbar];
-  
-  if (toolbar == lastToolbar)
+  if (toolbar == _toolbar)
     return;
 
-  if (lastToolbar != nil)
+  if (_toolbar != nil)
     {
+      GSToolbarView *toolbarView = [_toolbar _toolbarView];
+
       // We throw the last toolbar out
-      if ([lastToolbar isVisible])
+      if ([_toolbar isVisible])
         {
           [self _toggleToolbarView];
         }
-      // FIXME: Should release the toolbarView
+      [toolbarView _setToolbar: nil];
+      // Release the toolbarView, this will release the toolbar
+      RELEASE(toolbarView);
     }
   
   ASSIGN(_toolbar, toolbar);
