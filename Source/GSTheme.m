@@ -509,8 +509,15 @@ static NSNull			*null = nil;
     {
       return @"GNUstep";
     }
-  return
-    [[[_bundle bundlePath] lastPathComponent] stringByDeletingPathExtension];
+  return _name;
+}
+
+- (void) setName: (NSString*)aString
+{
+  if (self != defaultTheme)
+    {
+      ASSIGNCOPY(_name, aString);
+    }
 }
 
 - (NSWindow*) themeInspector

@@ -251,6 +251,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
   NSMutableDictionary	*_images;
   NSMutableDictionary	*_tiles;
   NSImage		*_icon;
+  NSString		*_name;
 }
 
 /**
@@ -376,6 +377,10 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * Return the theme's name.
  */
 - (NSString*) name;
+
+/** Set the name of this theme ... used for testing by Thematic.app
+ */
+- (void) setName: (NSString*)aString;
 
 /**
  * <p>Provides a standard inspector window used to display information about
