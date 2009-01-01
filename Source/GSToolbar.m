@@ -474,7 +474,6 @@ static GSValidationCenter *vc = nil;
 
 // Private class method
 
-+ (NSArray *) _toolbars;
 + (NSArray *) _toolbarsWithIdentifier: (NSString *)identifier;
 
 - (void) _insertItemWithItemIdentifier: (NSString *)itemIdentifier 
@@ -546,11 +545,6 @@ static GSValidationCenter *vc = nil;
 
 // Private class method to access static variable toolbars in subclasses
 
-+ (NSArray *) _toolbars
-{
-  return toolbars;
-}
-
 + (NSArray *) _toolbarsWithIdentifier: (NSString *)identifier
 {
   return [toolbars objectsWithValue: identifier
@@ -559,18 +553,8 @@ static GSValidationCenter *vc = nil;
 
 // Instance methods
 
-- (id) initWithIdentifier: (NSString *)identifier
-{
-  return [self initWithIdentifier: identifier 
-                      displayMode: NSToolbarDisplayModeIconAndLabel 
-                         sizeMode: NSToolbarSizeModeRegular];
-}
-
-
 // default initialiser
-- (id) initWithIdentifier: (NSString *)identifier 
-              displayMode: (NSToolbarDisplayMode)displayMode 
-                 sizeMode: (NSToolbarSizeMode)sizeMode
+- (id) initWithIdentifier: (NSString *)identifier
 {
   GSToolbar *toolbarModel;
   
@@ -589,12 +573,8 @@ static GSValidationCenter *vc = nil;
       _allowsUserCustomization = [toolbarModel allowsUserCustomization];
       _autosavesConfiguration = [toolbarModel autosavesConfiguration];
       ASSIGN(_configurationDictionary, [toolbarModel configurationDictionary]);
-      
-      if ([toolbarModel displayMode] != displayMode 
-        && [toolbarModel sizeMode] != sizeMode)
-        {
-          // Raise an exception.
-        }
+      _displayMode = [toolbarModel displayMode];
+      _sizeMode = [toolbarModel sizeMode]; 
         
       // [self _loadConfig];
     }
@@ -604,14 +584,15 @@ static GSValidationCenter *vc = nil;
       _allowsUserCustomization = NO;
       _autosavesConfiguration = NO;
       _configurationDictionary = nil;
+      _displayMode = NSToolbarDisplayModeIconAndLabel; 
+      _sizeMode = NSToolbarSizeModeRegular;
 
       // [self _loadConfig];
     }
   
-  _displayMode = displayMode; 
-  _sizeMode = sizeMode;
   _delegate = nil;
   
+  // Store in list of toolbars
   [toolbars addObject: self];
   
   return self;
@@ -638,6 +619,7 @@ static GSValidationCenter *vc = nil;
   [super dealloc];
 }
 
+// FIXME: Hack
 - (void) release
 { 
   // We currently only worry about when our toolbar view is deallocated.
@@ -651,25 +633,12 @@ static GSValidationCenter *vc = nil;
   [super release];
 }
 
-/*
- * FIXME: Replace the deprecated method which follows by this one when -base 
- * NSObject will implement it.
- *
 - (id) valueForUndefinedKey: (NSString *)key
 {
   if ([key isEqualToString: @"window"] || [key isEqualToString: @"_window"])
     return nil;
   
   return [super valueForUndefinedKey: key];
-}
- */
- 
-- (id) handleQueryWithUnboundKey: (NSString *)key
-{
-  if ([key isEqualToString: @"window"] || [key isEqualToString: @"_window"])
-    return [NSNull null];
-  
-  return [super handleQueryWithUnboundKey: key];
 }
 
 - (void) insertItemWithItemIdentifier: (NSString *)itemIdentifier

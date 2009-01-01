@@ -178,7 +178,6 @@ static void initSystemExtensionsColors(void)
 - (void) _handleBackViewsFrame;
 - (void) _handleViewsVisibility;
 - (void) _reload;
-- (void) _setToolbar: (GSToolbar *)toolbar;
 - (void) _takeInAccountFlexibleSpaces;
 - (int) _insertionIndexAtPoint: (NSPoint)location;
 
@@ -659,13 +658,21 @@ static void initSystemExtensionsColors(void)
 
 - (void) setToolbar: (GSToolbar *)toolbar 
 {
-  if ([toolbar isKindOfClass: NSClassFromString(@"NSToolbar")])
-    [NSException raise: NSInvalidArgumentException
-                format: @"NSToolbar instance can't be attached directly to a \
-                          toolbar view, setToolbar: from the NSWindow toolbar \
-                          category must be used."];
-  
-  [self _setToolbar: toolbar];
+  if ([toolbar sizeMode] != _sizeMode)
+    ; // FIXME: Raise exception here
+
+  if (_toolbar == toolbar)
+    return;
+
+  // We unset the toolbar view from the previous toolbar    
+  [_toolbar _setToolbarView: nil];
+  ASSIGN(_toolbar, toolbar);
+  // We set the toolbar view on the new toolbar
+  [_toolbar _setToolbarView: self];
+
+  [_clippedItemsMark setToolbar: _toolbar];
+  // Load the toolbar in the toolbar view
+  [self _reload];
 }
 
 - (NSColor *) standardBackgroundColor
@@ -819,21 +826,6 @@ static void initSystemExtensionsColors(void)
 {  
   [self _handleViewsVisibility]; 
   [self setNeedsDisplay: YES];
-}
-
-- (void) _setToolbar: (GSToolbar *)toolbar
-{
-  if ([toolbar sizeMode] != _sizeMode)
-    ; // FIXME: Raise exception here
-  
-  [toolbar _setToolbarView: self]; // We set the toolbar view on the new toolbar
-  [_toolbar _setToolbarView: nil]; // We unset the toolbar view from the previous toolbar    
-  
-  ASSIGN(_toolbar, toolbar);
-  
-  [_clippedItemsMark setToolbar: _toolbar];
-  
-  [self _reload]; // Load the toolbar in the toolbar view
 }
 
 - (void) _takeInAccountFlexibleSpaces

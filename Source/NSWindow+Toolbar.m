@@ -39,7 +39,6 @@
 @end
 
 @interface GSToolbarView (GNUstepPrivate)
-- (void) _setToolbar: (NSToolbar *)toolbar;
 - (float) _heightFromLayout;
 - (void) _reload;
 @end
@@ -135,7 +134,7 @@
         {
           [self _toggleToolbarView];
         }
-      [toolbarView _setToolbar: nil];
+      [toolbarView setToolbar: nil];
       // Release the toolbarView, this will release the toolbar
       RELEASE(toolbarView);
     }
@@ -164,7 +163,7 @@
           [toolbarView setBorderMask: GSToolbarViewBottomBorder];
           // Load the toolbar inside the toolbar view
           // Will set the _toolbarView variable for the toolbar
-          [toolbarView _setToolbar: toolbar];
+          [toolbarView setToolbar: toolbar];
         }
     
       // Make the toolbar view visible

@@ -85,10 +85,6 @@ APPKIT_EXPORT NSString *NSToolbarWillAddItemNotification;
 
 // Instance methods
 - (id) initWithIdentifier: (NSString*)identifier;
-- (id) initWithIdentifier: (NSString *)identifier 
-              displayMode: (NSToolbarDisplayMode)displayMode 
-                 sizeMode: (NSToolbarSizeMode)sizeMode;
-
 - (void) insertItemWithItemIdentifier: (NSString*)itemIdentifier atIndex: (int)index;
 - (void) removeItemAtIndex: (int)index;
 - (void) runCustomizationPalette: (id)sender;

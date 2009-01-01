@@ -1,4 +1,14 @@
-2009-01-10 Richard Frith-Macdonald <rfm@gnu.org>
+2009-01-01 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSToolbar.h,
+	* Source/GSToolbar.m,
+	* Source/NSToolbar.m: Remove unused initializer.
+	* Source/GSToolbarView.m: Remove method _setToolbar:, code is now
+	in setToolbar:.
+	* Source/NSWindow+Toolbar.m (-setToolbar:): Adopt to changes in
+	GSToolbarView. 
+
+2009-01-01 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h:
 	* Source/GSTheme.m:

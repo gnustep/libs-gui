@@ -93,14 +93,10 @@ static const int current_version = 1;
 // Instance methods
 
 - (id) initWithIdentifier: (NSString *)identifier 
-              displayMode: (NSToolbarDisplayMode)displayMode 
-                 sizeMode: (NSToolbarSizeMode)sizeMode
 {
   NSToolbar *toolbarModel = nil;
 
-  if ((self = [super initWithIdentifier: identifier 
-                            displayMode: displayMode 
-                               sizeMode: sizeMode]) == nil)
+  if ((self = [super initWithIdentifier: identifier]) == nil)
     {
       return nil;
     }
@@ -109,14 +105,10 @@ static const int current_version = 1;
     
   if (toolbarModel != nil)
     {
-      _displayMode = [toolbarModel displayMode];
-      _sizeMode = [toolbarModel sizeMode]; 
       _visible = [toolbarModel isVisible];
     }
   else
     {
-      _displayMode = displayMode; 
-      _sizeMode = sizeMode;
       _visible = YES;
     }
 
