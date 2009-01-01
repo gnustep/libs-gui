@@ -45,8 +45,8 @@
 #include "AppKit/NSMenuItem.h"
 #include "AppKit/NSParagraphStyle.h"
 #include "AppKit/NSPasteboard.h"
+#include "AppKit/NSToolbar.h"
 #include "AppKit/NSView.h"
-#include "GNUstepGUI/GSToolbar.h"
 #include "GNUstepGUI/GSToolbarView.h"
 #include "AppKit/NSToolbarItem.h"
 
@@ -89,7 +89,7 @@ static NSFont *SmallFont = nil;
 
 NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
-@interface GSToolbar (GNUstepPrivate)
+@interface NSToolbar (GNUstepPrivate)
 - (GSToolbarView *) _toolbarView;
 - (int) _indexOfItem: (NSToolbarItem *)item; // Used by drag setup
 
@@ -105,11 +105,10 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 - (BOOL) _isFlexibleSpace;
 - (BOOL) _isModified;
 - (BOOL) _selectable;
-- (GSToolbar *) _toolbar;
 - (void) _setSelectable: (BOOL)selectable;
 - (BOOL) _selected;
 - (void) _setSelected: (BOOL)selected;
-- (void) _setToolbar: (GSToolbar *)toolbar;
+- (void) _setToolbar: (NSToolbar *)toolbar;
 @end
 
 @interface GSToolbarView (GNUstepPrivate)
@@ -278,7 +277,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
  
 - (void) mouseDown: (NSEvent *)event
 {
-  GSToolbar *toolbar = [_toolbarItem toolbar];
+  NSToolbar *toolbar = [_toolbarItem toolbar];
   
   if ([event modifierFlags] == NSCommandKeyMask 
     && [toolbar allowsUserCustomization])
@@ -331,7 +330,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 - (void) draggedImage: (NSImage *)dragImage beganAt: (NSPoint)location
 {
-  GSToolbar *toolbar = [_toolbarItem toolbar];
+  NSToolbar *toolbar = [_toolbarItem toolbar];
   
   // FIXME: Where is this released?
   RETAIN(_toolbarItem); 
@@ -733,7 +732,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
   
 - (void) mouseDown: (NSEvent *)event
 {
-  GSToolbar *toolbar = [_toolbarItem toolbar];
+  NSToolbar *toolbar = [_toolbarItem toolbar];
   
   if ([event modifierFlags] == NSCommandKeyMask 
     && [toolbar allowsUserCustomization])
@@ -783,7 +782,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 - (void) draggedImage: (NSImage *)dragImage beganAt: (NSPoint)location
 {
-  GSToolbar *toolbar = [_toolbarItem toolbar];
+  NSToolbar *toolbar = [_toolbarItem toolbar];
   
   RETAIN(_toolbarItem); 
   /* We retain the toolbar item to be able to have have it reinsered later by 
@@ -1366,7 +1365,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
   return _toolTip;
 }
 
-- (GSToolbar *) toolbar
+- (NSToolbar *) toolbar
 {
   return _toolbar;
 }
@@ -1447,11 +1446,6 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
   return [(GSToolbarButton *)_backView state];
 }
 
-- (GSToolbar *) _toolbar
-{
-  return _toolbar;
-}
-
 - (void) _setSelected: (BOOL)selected
 {
   if (_selectable)
@@ -1478,7 +1472,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
     }   
 }
 
-- (void) _setToolbar: (GSToolbar *)toolbar
+- (void) _setToolbar: (NSToolbar *)toolbar
 {
   // Don't do an ASSIGN here, the toolbar itself retains us.
   _toolbar = toolbar;

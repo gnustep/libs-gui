@@ -3,12 +3,14 @@
 
    The toolbar class.
    
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2009 Free Software Foundation, Inc.
 
    Author:  Gregory John Casamento <greg_casamento@yahoo.com>,
             Fabien Vallon <fabien.vallon@fr.alcove.com>,
             Quentin Mathe <qmathe@club-internet.fr>
-   Date: May 2002
+   Date: May 2002, February 2004
+   Author: Fred Kiefer <fredkiefer@gmx.de>
+   Date: January 2009
    
    This file is part of the GNUstep GUI Library.
 
@@ -32,19 +34,103 @@
 #ifndef _GNUstep_H_NSToolbar
 #define _GNUstep_H_NSToolbar
 
-#include "GNUstepGUI/GSToolbar.h"
+#include <Foundation/NSObject.h>
+#include <Foundation/NSArray.h>
+#include <AppKit/AppKitDefines.h>
 
-@interface NSToolbar : GSToolbar
+@class NSString;
+@class NSMutableArray;
+@class NSDictionary;
+@class NSMutableDictionary;
+@class NSNotification;
+@class NSToolbarItem;
+@class GSToolbarView;
+@class NSWindow;
+
+/*
+ * Constants
+ */
+
+typedef enum 
+{ 
+  NSToolbarDisplayModeDefault,
+  NSToolbarDisplayModeIconAndLabel,
+  NSToolbarDisplayModeIconOnly,
+  NSToolbarDisplayModeLabelOnly
+} NSToolbarDisplayMode;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+typedef enum 
+{ 
+  NSToolbarSizeModeDefault,
+  NSToolbarSizeModeRegular,
+  NSToolbarSizeModeSmall,
+} NSToolbarSizeMode;
+#endif
+
+APPKIT_EXPORT NSString *NSToolbarDidRemoveItemNotification;
+APPKIT_EXPORT NSString *NSToolbarWillAddItemNotification;
+
+@interface NSToolbar : NSObject
 {
+  NSMutableDictionary *_configurationDictionary;
+  id _delegate;
+  NSString *_identifier;
+  NSString *_selectedItemIdentifier;
+  NSMutableArray *_items;
+  GSToolbarView *_toolbarView;
+  NSToolbarDisplayMode _displayMode;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+  NSToolbarSizeMode _sizeMode;
+#else
+  int _sizeMode;
+#endif
+  BOOL _allowsUserCustomization;
+  BOOL _autosavesConfiguration;
   BOOL _visible;
+  BOOL _customizationPaletteIsRunning;
+  BOOL _showsBaselineSeparator;
+  BOOL _build;
 }
 
-// Accessors
+// Instance methods
+- (id) initWithIdentifier: (NSString*)identifier;
 
+- (void) insertItemWithItemIdentifier: (NSString*)itemIdentifier 
+         atIndex: (NSInteger)index;
+- (void) removeItemAtIndex: (NSInteger)index;
+- (void) runCustomizationPalette: (id)sender;
+- (void) validateVisibleItems;
+
+// Accessors
+- (BOOL) allowsUserCustomization;
+- (BOOL) autosavesConfiguration;
+- (NSDictionary*) configurationDictionary;
+- (BOOL) customizationPaletteIsRunning;
+- (id) delegate;
+- (NSToolbarDisplayMode) displayMode;
+- (NSString*) identifier;
+- (NSArray*) items;
+- (NSArray*) visibleItems;
 - (BOOL) isVisible;
+- (void) setAllowsUserCustomization: (BOOL)flag;
+- (void) setAutosavesConfiguration: (BOOL)flag;
+- (void) setConfigurationFromDictionary: (NSDictionary*)configDict;
+- (void) setDelegate: (id)delegate;
 - (void) setDisplayMode: (NSToolbarDisplayMode)displayMode;
-- (void) setSizeMode: (NSToolbarSizeMode)sizeMode;
 - (void) setVisible: (BOOL)shown;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+- (NSToolbarSizeMode) sizeMode;
+- (void) setSizeMode: (NSToolbarSizeMode)sizeMode;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (NSString *) selectedItemIdentifier;
+- (void) setSelectedItemIdentifier: (NSString *) identifier;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (BOOL) showsBaselineSeparator;
+- (void) setShowsBaselineSeparator: (BOOL)flag;
+#endif
 
 @end /* interface of NSToolbar */
 
@@ -52,6 +138,9 @@
  * Methods Implemented by the Delegate
  */
 @interface NSObject (NSToolbarDelegate)
+// notification methods
+- (void) toolbarDidRemoveItem: (NSNotification*)aNotification;
+- (void) toolbarWillAddItem: (NSNotification*)aNotification;
 
 // delegate methods
 // required method

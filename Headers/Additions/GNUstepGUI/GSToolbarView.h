@@ -33,11 +33,11 @@
 #define _GSToolbarView_h_INCLUDE
 
 #include <Foundation/NSGeometry.h>
+// Necessary for NSToolbarDisplayMode and NSToolbarSizeMode
+#include <AppKit/NSToolbar.h>
 #include <AppKit/NSView.h>
 #include <AppKit/NSColor.h>
 
-#include "GNUstepGUI/GSToolbar.h"
-// Necessary for NSToolbarDisplayMode and NSToolbarSizeMode
 
 @class NSMutableArray;
 @class NSClipView;
@@ -54,7 +54,7 @@ typedef enum {
 
 @interface GSToolbarView : NSView
 {
-  GSToolbar *_toolbar;
+  NSToolbar *_toolbar;
   NSClipView *_clipView, *_clipViewForEditMode;
   GSToolbarClippedItemsButton *_clippedItemsMark;
   NSMutableArray *_visibleBackViews;
@@ -72,8 +72,8 @@ typedef enum {
 	    sizeMode: (NSToolbarSizeMode)sizeMode; 
 
 // Accessors
-- (GSToolbar *) toolbar;
-- (void) setToolbar: (GSToolbar *)toolbar;
+- (NSToolbar *) toolbar;
+- (void) setToolbar: (NSToolbar *)toolbar;
 - (unsigned int) borderMask;
 - (void) setBorderMask: (unsigned int)borderMask;
 

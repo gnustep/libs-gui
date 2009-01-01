@@ -44,7 +44,7 @@
 @class NSImage;
 @class NSMenuItem;
 @class NSView;
-@class GSToolbar;
+@class NSToolbar;
 
 /*
  * Constants
@@ -81,7 +81,7 @@ enum _NSToolbarItemVisibilityPriority {
   NSInteger _visibilityPriority;
 
   // toolbar
-  GSToolbar *_toolbar;
+  NSToolbar *_toolbar;
   NSView *_backView;
   BOOL _modified;
   BOOL _selectable;
@@ -129,7 +129,7 @@ enum _NSToolbarItemVisibilityPriority {
 - (NSInteger) tag;
 - (id) target;
 - (NSString *) toolTip;
-- (GSToolbar *) toolbar;
+- (NSToolbar *) toolbar;
 - (NSView *) view;
 - (void) setAction: (SEL)action;
 - (void) setEnabled: (BOOL)enabled;

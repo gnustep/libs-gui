@@ -1,6 +1,19 @@
 2009-01-01 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Additions/GNUstepGUI/GSToolbar.h,
+	* Source/GSToolbar.m: Remove.
+	* Source/GNUmakefile: Remove these files.
+	* Headers/AppKit/NSToolbar.h,
+	* Source/NSToolbar.m: Add code from GSToolbar plus some 10.4 methods.
+	* Headers/Additions/GNUstepGUI/GSToolbarView.h,
+	* Headers/AppKit/NSToolbarItem.h,
+	* Source/GSToolbarView.m,
+	* Source/NSWindow+Toolbar.m,
+	* Source/NSToolbarItem.m: Change GSToolbar into NSToolbar.
+
+2009-01-01 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSToolbar.h,
 	* Source/GSToolbar.m,
 	* Source/NSToolbar.m: Remove unused initializer.
 	* Source/GSToolbarView.m: Remove method _setToolbar:, code is now

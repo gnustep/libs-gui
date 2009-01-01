@@ -219,7 +219,6 @@ GSGormLoading.m \
 GSNibLoading.m \
 GSTitleView.m \
 GSToolTips.m \
-GSToolbar.m \
 GSToolbarView.m \
 GSStandardWindowDecorationView.m \
 GSWindowDecorationView.m \
@@ -423,7 +422,6 @@ GSLayoutManager.h \
 GSLayoutManager_internal.h \
 GSTypesetter.h \
 GSHorizontalTypesetter.h \
-GSToolbar.h \
 GSToolbarView.h \
 GSNibLoading.h \
 GSDragView.h \

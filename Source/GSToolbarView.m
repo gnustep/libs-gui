@@ -44,10 +44,10 @@
 #include "AppKit/NSImage.h"
 #include "AppKit/NSMenu.h"
 #include "AppKit/NSPasteboard.h"
-#include "AppKit/NSToolbarItem.h" // It contains GSMovableToolbarItemPboardType declaration
+// It contains GSMovableToolbarItemPboardType declaration
+#include "AppKit/NSToolbarItem.h"
 #include "AppKit/NSView.h"
 #include "AppKit/NSWindow.h"
-#include "GNUstepGUI/GSToolbar.h"
 #include "GNUstepGUI/GSToolbarView.h"
 
 typedef enum {
@@ -141,7 +141,7 @@ static void initSystemExtensionsColors(void)
 /*
  * Toolbar related code
  */
-@interface GSToolbar (GNUstepPrivate)
+@interface NSToolbar (GNUstepPrivate)
 - (void) _build;
 
 - (void) _concludeRemoveItem: (NSToolbarItem *)item atIndex: (int)index broadcast: (BOOL)broadcast;
@@ -192,7 +192,7 @@ static void initSystemExtensionsColors(void)
 
 @interface GSToolbarClippedItemsButton : NSButton
 {
-  GSToolbar *_toolbar;
+  NSToolbar *_toolbar;
 }
 
 - (id) init;
@@ -203,7 +203,7 @@ static void initSystemExtensionsColors(void)
    method with the same name. */
 
 - (void) layout;
-- (void) setToolbar: (GSToolbar *)toolbar; 
+- (void) setToolbar: (NSToolbar *)toolbar; 
 @end
 
 @interface GSToolbarClipView : NSClipView
@@ -306,7 +306,7 @@ static void initSystemExtensionsColors(void)
 
 // Accessors
 
-- (void) setToolbar: (GSToolbar *)toolbar
+- (void) setToolbar: (NSToolbar *)toolbar
 {
   // Don't do an ASSIGN here, the toolbar view retains us.
   _toolbar = toolbar;
@@ -431,7 +431,7 @@ static void initSystemExtensionsColors(void)
 
 - (NSDragOperation) draggingEntered: (id <NSDraggingInfo>)info
 {
-  GSToolbar *toolbar = [self toolbar];
+  NSToolbar *toolbar = [self toolbar];
   NSArray *allowedItemIdentifiers = 
     [[toolbar delegate] toolbarAllowedItemIdentifiers: toolbar];
   NSString *itemIdentifier = 
@@ -448,7 +448,7 @@ static void initSystemExtensionsColors(void)
 
 - (NSDragOperation) draggingUpdated: (id <NSDraggingInfo>)info
 {
-  GSToolbar *toolbar = [self toolbar];
+  NSToolbar *toolbar = [self toolbar];
   NSArray *allowedItemIdentifiers = 
     [[toolbar delegate] toolbarAllowedItemIdentifiers: toolbar];
   NSString *itemIdentifier = 
@@ -468,7 +468,7 @@ static void initSystemExtensionsColors(void)
   NSPasteboard *pboard = [info draggingPasteboard];
   NSString *str = [pboard stringForType: [[pboard types] objectAtIndex: 0]];
   int index = [str intValue];
-  GSToolbar *toolbar = [self toolbar];
+  NSToolbar *toolbar = [self toolbar];
   
   [toolbar _concludeRemoveItem: 
     [[info draggingSource] toolbarItem] atIndex: index broadcast: YES];
@@ -489,7 +489,7 @@ static void initSystemExtensionsColors(void)
   NSPasteboard *pboard = [info draggingPasteboard];
   NSString *str = [pboard stringForType: [[pboard types] objectAtIndex: 0]];
   int index = [str intValue];
-  GSToolbar *toolbar = [self toolbar];
+  NSToolbar *toolbar = [self toolbar];
   NSToolbarItem *item = [[info draggingSource] toolbarItem];
   int newIndex = [self _insertionIndexAtPoint: [info draggingLocation]]; 
   // Calculate the index
@@ -598,7 +598,7 @@ static void initSystemExtensionsColors(void)
   return _borderMask;
 }
 
-- (GSToolbar *) toolbar
+- (NSToolbar *) toolbar
 {
   return _toolbar;
 }
@@ -656,7 +656,7 @@ static void initSystemExtensionsColors(void)
   [_clipView setFrame: rect];
 }
 
-- (void) setToolbar: (GSToolbar *)toolbar 
+- (void) setToolbar: (NSToolbar *)toolbar 
 {
   if ([toolbar sizeMode] != _sizeMode)
     ; // FIXME: Raise exception here
