@@ -35,6 +35,8 @@
 #include "AppKit/NSWindow+Toolbar.h"
 #include "GNUstepGUI/GSToolbarView.h"
 
+#include "GSWindowDecorationView.h"
+
 @interface GSToolbarView (GNUstepPrivate)
 - (void) _reload;
 
@@ -107,12 +109,10 @@
 - (BOOL) usesStandardBackgroundColor;
 @end
 
-@interface NSWindow (ToolbarPrivate)
-- (void) _adjustToolbarView: (GSToolbarView*)view;
-- (void) _addToolbarView: (GSToolbarView*)view;
-- (void) _removeToolbarView: (GSToolbarView*)view;
-- (NSView *) _contentViewWithoutToolbar;
+@interface GSWindowDecorationView (ToolbarPrivate)
+- (void) addToolbarView: (GSToolbarView*)toolbarView;
+- (void) removeToolbarView: (GSToolbarView *)toolbarView;
+- (void) adjustToolbarView: (GSToolbarView *)toolbarView;
 @end
-
 
 #endif // _NSToolbarFrameworkPrivate_h_INCLUDE

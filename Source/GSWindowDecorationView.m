@@ -33,6 +33,8 @@
 #include "GNUstepGUI/GSDisplayServer.h"
 #include "GNUstepGUI/GSTheme.h"
 
+#include "NSToolbarFrameworkPrivate.h"
+
 @implementation GSWindowDecorationView
 
 + (id<GSWindowDecorator>) windowDecorator
@@ -105,7 +107,9 @@
   if (self != nil)
     {
       window = w;
-      contentRect = [self contentRectForFrameRect: frame
+      // Content rect will be everything apart from the border
+      // that is including menu, toolbar and the like.
+      contentRect = [isa contentRectForFrameRect: frame
                           styleMask: [w styleMask]];
     }
   return self;
@@ -114,15 +118,34 @@
 - (NSRect) contentRectForFrameRect: (NSRect)aRect
                          styleMask: (unsigned int)aStyle
 {
+  NSRect content = [isa contentRectForFrameRect: aRect
+                          styleMask: aStyle];
+  NSToolbar *tb = [_window toolbar];
+
   // TODO: Handle toolbar and others
-  return [isa contentRectForFrameRect: aRect
-              styleMask: aStyle];
+  if ([tb isVisible])
+    {
+      GSToolbarView *tv = [tb _toolbarView];
+
+      content.size.height -= [tv _heightFromLayout];
+    }
+
+  return content;
 }
 
 - (NSRect) frameRectForContentRect: (NSRect)aRect
                          styleMask: (unsigned int)aStyle
 {
+  NSToolbar *tb = [_window toolbar];
+
   // TODO: Handle toolbar and others
+  if ([tb isVisible])
+    {
+      GSToolbarView *tv = [tb _toolbarView];
+
+      aRect.size.height += [tv _heightFromLayout];
+    }
+
   return [isa frameRectForContentRect: aRect
               styleMask: aStyle];
 }
@@ -177,16 +200,35 @@
 {
   NSSize oldSize = _frame.size;
   NSView *cv = [_window contentView];
+  NSToolbar *tb = [_window toolbar];
 
   _autoresizes_subviews = NO;
   [super setFrame: frameRect];
 
-  contentRect = [self contentRectForFrameRect: frameRect
+  contentRect = [isa contentRectForFrameRect: frameRect
                       styleMask: [window styleMask]];
 
   // Safety Check.
   [cv setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
   [cv resizeWithOldSuperviewSize: oldSize];
+
+  // FIXME: Should resize all subviews
+  if ([tb isVisible])
+    {
+      GSToolbarView *tv = [tb _toolbarView];
+      NSRect contentViewFrame = [cv frame];
+      float newToolbarViewHeight;
+      
+      [tv setFrameSize: NSMakeSize(contentViewFrame.size.width, 100)];
+      // Will recalculate the layout
+      [tv _reload];
+      newToolbarViewHeight = [tv _heightFromLayout];
+      [tv setFrame: NSMakeRect(
+              contentViewFrame.origin.x,
+              contentViewFrame.size.height, 
+              contentViewFrame.size.width, 
+              newToolbarViewHeight)];
+    }
 }
 
 - (void) setInputState: (int)state
@@ -240,7 +282,74 @@
 
 @end
 
+@implementation GSWindowDecorationView (ToolbarPrivate)
 
+- (void) addToolbarView: (GSToolbarView*)toolbarView
+{
+  NSView *contentView = [window contentView];
+  NSRect contentViewFrame = [contentView frame];
+  float newToolbarViewHeight;
+
+  [toolbarView setFrameSize: NSMakeSize(contentViewFrame.size.width, 100)];
+  // Will recalculate the layout
+  [toolbarView _reload];
+  newToolbarViewHeight = [toolbarView _heightFromLayout];
+  
+  // Plug the toolbar view
+  [toolbarView setFrame: NSMakeRect(
+          contentViewFrame.origin.x,
+          contentViewFrame.size.height - newToolbarViewHeight, 
+          contentViewFrame.size.width, 
+          newToolbarViewHeight)];
+  [self addSubview: toolbarView];
+  
+  // Resize the content view
+  contentViewFrame.size.height -= newToolbarViewHeight;
+  [contentView setFrame: contentViewFrame];
+}
+
+- (void) removeToolbarView: (GSToolbarView *)toolbarView
+{
+  NSView *contentView = [window contentView];
+  NSRect contentViewFrame = [contentView frame];
+  float toolbarViewHeight = [toolbarView frame].size.height;
+  
+  // Unplug the toolbar view
+  [toolbarView removeFromSuperviewWithoutNeedingDisplay];
+  
+  // Resize the content view
+  contentViewFrame.size.height += toolbarViewHeight;
+  [contentView setFrame: contentViewFrame];
+}
+
+- (void) adjustToolbarView: (GSToolbarView *)toolbarView
+{
+  // Frame and height
+  NSRect toolbarViewFrame = [toolbarView frame];
+  float toolbarViewHeight = toolbarViewFrame.size.height;
+  float newToolbarViewHeight = [toolbarView _heightFromLayout];
+  
+  if (toolbarViewHeight != newToolbarViewHeight)
+    {
+      NSView *contentView = [window contentView];
+      NSRect contentViewFrame = [contentView frame];
+      
+      [toolbarView setFrame: NSMakeRect(
+              toolbarViewFrame.origin.x,
+              toolbarViewFrame.origin.y + (toolbarViewHeight - newToolbarViewHeight),
+              toolbarViewFrame.size.width, 
+              newToolbarViewHeight)];
+      
+      // Resize the content view
+      contentViewFrame.size.height += toolbarViewHeight - newToolbarViewHeight;
+      [contentView setFrame: contentViewFrame];
+
+      // Redisplay the window
+      [window display];
+    }
+}
+
+@end
 
 @implementation GSBackendWindowDecorationView
 

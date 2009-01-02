@@ -1157,7 +1157,7 @@ static GSValidationCenter *vc = nil;
       if ([self isVisible])
         {
           [_toolbarView _reload];
-          [[_toolbarView window] _adjustToolbarView: _toolbarView];
+          [(id)[[_toolbarView window] _windowView] adjustToolbarView: _toolbarView];
         }
       
       if (broadcast) 
@@ -1177,7 +1177,7 @@ static GSValidationCenter *vc = nil;
       if ([self isVisible])
         {
           [_toolbarView _reload];
-          [[_toolbarView window] _adjustToolbarView: _toolbarView];
+          [(id)[[_toolbarView window] _windowView] adjustToolbarView: _toolbarView];
         }
   
       if (broadcast) 

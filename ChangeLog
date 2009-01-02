@@ -1,5 +1,13 @@
 2009-01-02 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSWindow+Toolbar.m: Move window toolbar code from here ...
+	* Source/GSWindowDecorationView.m: ... to here.
+	* Source/NSToolbarFrameworkPrivate.h: Declare new window
+	decoration view toolbar handling methods.
+	* Source/NSToolbar.m: Use them.
+
+2009-01-02 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/Additions/GNUstepGUI/GSToolbarView.h: Remove now
 	unneeded include of NSToolbar.h
 	* Source/NSToolbarFrameworkPrivate.h: New header file with shared
