@@ -74,6 +74,23 @@ static GSTheme			*theTheme = nil;
 static NSMutableDictionary	*themes = nil;
 static NSNull			*null = nil;
 
+typedef	struct {
+  NSBundle		*bundle;
+  NSColorList		*colors;
+  NSMutableDictionary	*images;
+  NSMutableDictionary	*tiles;
+  NSImage		*icon;
+  NSString		*name;
+} internal;
+
+#define	_internal ((internal*)_reserved)
+#define	_bundle	_internal->bundle
+#define	_colors	_internal->colors
+#define	_images	_internal->images
+#define	_tiles	_internal->tiles
+#define	_icon	_internal->icon
+#define	_name	_internal->name
+
 + (void) defaultsDidChange: (NSNotification*)n
 {
   NSUserDefaults	*defs;
@@ -98,17 +115,10 @@ static NSNull			*null = nil;
 	selector: @selector(defaultsDidChange:)
 	name: NSUserDefaultsDidChangeNotification
 	object: nil];
-    }
-  if (null == nil)
-    {
       null = RETAIN([NSNull null]);
-    }
-  if (defaultTheme == nil)
-    {
-      NSBundle		*aBundle = [NSBundle bundleForClass: self];
-
-      defaultTheme = [[self alloc] initWithBundle: aBundle];
+      defaultTheme = [[self alloc] initWithBundle: nil];
       ASSIGN(theTheme, defaultTheme);
+      ASSIGN(currentThemeName, [defaultTheme name]);
     }
   /* Establish the theme specified by the user defaults (if any);
    */
@@ -456,11 +466,15 @@ static NSNull			*null = nil;
 
 - (void) dealloc
 {
-  RELEASE(_bundle);
-  RELEASE(_colors);
-  RELEASE(_images);
-  RELEASE(_tiles);
-  RELEASE(_icon);
+  if (_reserved != 0)
+    {
+      RELEASE(_bundle);
+      RELEASE(_colors);
+      RELEASE(_images);
+      RELEASE(_tiles);
+      RELEASE(_icon);
+      NSZoneFree ([self zone], _reserved);
+    }
   [super dealloc];
 }
 
@@ -492,9 +506,14 @@ static NSNull			*null = nil;
 
 - (id) initWithBundle: (NSBundle*)bundle
 {
+  _reserved = NSZoneCalloc ([self zone], 1, sizeof(internal));
+
   ASSIGN(_bundle, bundle);
   _images = [NSMutableDictionary new];
   _tiles = [NSMutableDictionary new];
+  ASSIGN(_name,
+    [[[_bundle bundlePath] lastPathComponent] stringByDeletingPathExtension]);
+
   return self;
 }
 
@@ -507,7 +526,7 @@ static NSNull			*null = nil;
 {
   if (self == defaultTheme)
     {
-      return @"GNUstep";
+      _name = @"GNUstep";
     }
   return _name;
 }

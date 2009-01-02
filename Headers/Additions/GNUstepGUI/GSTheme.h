@@ -246,12 +246,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 @interface GSTheme : NSObject
 {
 @private
-  NSBundle		*_bundle;
-  NSColorList		*_colors;
-  NSMutableDictionary	*_images;
-  NSMutableDictionary	*_tiles;
-  NSImage		*_icon;
-  NSString		*_name;
+  void		*_reserved;
 }
 
 /**

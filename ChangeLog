@@ -1,3 +1,10 @@
+2009-01-02 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	* Source/GSTheme.m: 
+	Simplify +initialize, set name properly on initialisation, hide
+	private instance variables to make it easy to add new ones later.
+
 2009-01-01 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Additions/GNUstepGUI/GSToolbar.h,
