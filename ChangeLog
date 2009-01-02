@@ -1,9 +1,11 @@
 2009-01-02 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	* Source/GSThemePanel.m:
 	* Source/GSTheme.m: 
-	Simplify +initialize, set name properly on initialisation, hide
+	Simplify +initialize.  Set name properly on initialisation.  Hide
 	private instance variables to make it easy to add new ones later.
+	Refrain from displaying backup versions of themes in selection panel.
 
 2009-01-01 Fred Kiefer <FredKiefer@gmx.de>
 

@@ -283,7 +283,8 @@ static GSThemePanel	*sharedPanel = nil;
 
 	  name = [file stringByDeletingPathExtension];
 	  if ([ext isEqualToString: @"theme"] == YES
-	    && [name isEqualToString: @"GNUstep"] == NO)
+	    && [name isEqualToString: @"GNUstep"] == NO
+	    && [[name pathExtension] isEqual: @"backup"] == NO)
 	    {
 	      [set addObject: name];
 	    }
