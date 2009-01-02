@@ -45,6 +45,8 @@
 #include "AppKit/NSScrollView.h"
 #include "AppKit/NSWindow.h"
 
+#include "GNUstepGUI/GSTheme.h"
+
 /**<p>TODO Description</p>
  */
 @implementation NSScroller
@@ -54,16 +56,16 @@
  */
 
 /* button cells used by scroller instances to draw scroller buttons and knob. */
-static NSButtonCell* upCell = nil;
-static NSButtonCell* downCell = nil;
-static NSButtonCell* leftCell = nil;
-static NSButtonCell* rightCell = nil;
-static NSButtonCell* knobCell = nil;
+static NSButtonCell	*upCell = nil;
+static NSButtonCell	*downCell = nil;
+static NSButtonCell	*leftCell = nil;
+static NSButtonCell	*rightCell = nil;
+static NSCell	*horizontalKnobCell = nil;
+static NSCell	*verticalKnobCell = nil;
+static NSCell	*horizontalKnobSlotCell = nil;
+static NSCell	*verticalKnobSlotCell = nil;
 
-static const float scrollerWidth = 18;
 static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
-
-static NSColor *scrollBarColor = nil;
 
 /*
  * Class methods
@@ -73,7 +75,6 @@ static NSColor *scrollBarColor = nil;
   if (self == [NSScroller class])
     {
       [self setVersion: 1];
-      ASSIGN (scrollBarColor, [NSColor scrollBarColor]);
     }
 }
 
@@ -83,7 +84,7 @@ static NSColor *scrollBarColor = nil;
  */
 + (float) scrollerWidth
 {
-  return scrollerWidth;
+  return [[GSTheme theme] defaultScrollerWidth];  
 }
 
 - (BOOL) isFlipped
@@ -254,7 +255,8 @@ static NSColor *scrollBarColor = nil;
       
       _hitPart = NSScrollerNoPart;
       
-      [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &_arrowsPosition];
+      [aDecoder decodeValueOfObjCType: @encode(unsigned int)
+				   at: &_arrowsPosition];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isEnabled];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_target];
       // Undo RETAIN by decoder
@@ -323,54 +325,41 @@ static NSColor *scrollBarColor = nil;
  */
 - (void) drawParts
 {
-  /*
-   * Create the class variable button cells if they do not yet exist.
-   */
-  if (knobCell)
+  GSTheme *theme = [GSTheme theme] ;
+
+  if (upCell)
     return;
 
-  upCell = [NSButtonCell new];
-  [upCell setHighlightsBy: NSChangeBackgroundCellMask | NSContentsCellMask];
-  [upCell setImage: [NSImage imageNamed: @"common_ArrowUp"]];
-  [upCell setAlternateImage: [NSImage imageNamed: @"common_ArrowUpH"]];
-  [upCell setImagePosition: NSImageOnly];
-  [upCell setContinuous: YES];
-  [upCell sendActionOn: (NSLeftMouseDownMask | NSPeriodicMask)];
-  [upCell setPeriodicDelay: 0.3 interval: 0.03];
+  upCell = RETAIN([theme cellForScrollerArrow:
+    NSScrollerDecrementArrow horizontal:NO]);
+  downCell = RETAIN([theme cellForScrollerArrow:
+    NSScrollerIncrementArrow horizontal:NO]);
+  leftCell = RETAIN([theme cellForScrollerArrow:
+    NSScrollerDecrementArrow horizontal:YES]);
+  rightCell = RETAIN([theme cellForScrollerArrow:
+    NSScrollerIncrementArrow horizontal:YES]);
+  verticalKnobCell = RETAIN([theme cellForScrollerKnob: NO]);
+  horizontalKnobCell = RETAIN([theme cellForScrollerKnob: YES]);
+  verticalKnobSlotCell = RETAIN([theme cellForScrollerKnobSlot: NO]);
+  horizontalKnobSlotCell = RETAIN([theme cellForScrollerKnobSlot: YES]);
 
-  downCell = [NSButtonCell new];
-  [downCell setHighlightsBy: NSChangeBackgroundCellMask | NSContentsCellMask];
-  [downCell setImage: [NSImage imageNamed: @"common_ArrowDown"]];
-  [downCell setAlternateImage: [NSImage imageNamed: @"common_ArrowDownH"]];
-  [downCell setImagePosition: NSImageOnly];
   [downCell setContinuous: YES];
   [downCell sendActionOn: (NSLeftMouseDownMask | NSPeriodicMask)];
   [downCell setPeriodicDelay: 0.3 interval: 0.03];
-
-  leftCell = [NSButtonCell new];
-  [leftCell setHighlightsBy: NSChangeBackgroundCellMask | NSContentsCellMask];
-  [leftCell setImage: [NSImage imageNamed: @"common_ArrowLeft"]];
-  [leftCell setAlternateImage: [NSImage imageNamed: @"common_ArrowLeftH"]];
-  [leftCell setImagePosition: NSImageOnly];
+           
   [leftCell setContinuous: YES];
   [leftCell sendActionOn: (NSLeftMouseDownMask | NSPeriodicMask)];
   [leftCell setPeriodicDelay: 0.3 interval: 0.03];
-
-  rightCell = [NSButtonCell new];
-  [rightCell setHighlightsBy: NSChangeBackgroundCellMask | NSContentsCellMask];
-  [rightCell setImage: [NSImage imageNamed: @"common_ArrowRight"]];
-  [rightCell setAlternateImage: [NSImage imageNamed: @"common_ArrowRightH"]];
-  [rightCell setImagePosition: NSImageOnly];
+           
   [rightCell setContinuous: YES];
   [rightCell sendActionOn: (NSLeftMouseDownMask | NSPeriodicMask)];
   [rightCell setPeriodicDelay: 0.3 interval: 0.03];
-
-  knobCell = [NSButtonCell new];
-  [knobCell setButtonType: NSMomentaryChangeButton];
-  [knobCell setImage: [NSImage imageNamed: @"common_Dimple"]];
-  [knobCell setImagePosition: NSImageOnly];
-}
-
+  
+  [upCell setContinuous: YES];
+  [upCell sendActionOn: (NSLeftMouseDownMask | NSPeriodicMask)];
+  [upCell setPeriodicDelay: 0.3 interval: 0.03];
+}         
+          
 - (void) _setTargetAndActionToCells
 {
   [upCell setTarget: _target];
@@ -385,8 +374,11 @@ static NSColor *scrollBarColor = nil;
   [rightCell setTarget: _target];
   [rightCell setAction: _action];
 
-  [knobCell setTarget: _target];
-  [knobCell setAction: _action];
+  [horizontalKnobCell setTarget: _target];
+  [horizontalKnobCell setAction: _action];
+  
+  [verticalKnobCell setTarget:_target];
+  [horizontalKnobCell setTarget:_target];
 }
 
 - (void) checkSpaceForParts
@@ -948,7 +940,10 @@ static NSColor *scrollBarColor = nil;
  */
 - (void) drawKnob
 {
-  [knobCell drawWithFrame: [self rectForPart: NSScrollerKnob] inView: self];
+  if (_isHorizontal)
+    [horizontalKnobCell drawWithFrame: [self rectForPart: NSScrollerKnob] inView: self];
+  else
+    [verticalKnobCell drawWithFrame: [self rectForPart: NSScrollerKnob] inView: self];
 }
 
 - (void) drawKnobSlot
@@ -960,8 +955,10 @@ static NSColor *scrollBarColor = nil;
       rect = [self rectForPart: NSScrollerKnobSlot];
     }
 
-  [scrollBarColor set];
-  NSRectFill (rect);
+  if (_isHorizontal)
+    [horizontalKnobSlotCell drawWithFrame:rect inView:self];
+  else
+    [verticalKnobSlotCell drawWithFrame:rect inView:self];
 }
 
 /**<p>Highlights the button whose under the mouse. Does nothing if the mouse
@@ -991,11 +988,31 @@ static NSColor *scrollBarColor = nil;
 - (NSRect) rectForPart: (NSScrollerPart)partCode
 {
   NSRect scrollerFrame = _frame;
-  float x = 1, y = 1;
+  float x, y;
   float width, height;
-  float buttonsWidth = ([isa scrollerWidth] - buttonsOffset);
-  float buttonsSize = 2 * buttonsWidth + 2;
+  float buttonsWidth;
+  float buttonsSize;  
   NSUsableScrollerParts usableParts;
+
+  NSInterfaceStyle interfaceStyle = NSInterfaceStyleForKey(@"NSScrollerInterfaceStyle",self);
+
+
+  /* We use the button offset if we in the NeXTstep interface style. */
+  if (interfaceStyle == NSNextStepInterfaceStyle
+    || interfaceStyle == GSWindowMakerInterfaceStyle)
+  { 
+    buttonsWidth = ([isa scrollerWidth] - buttonsOffset);
+    x = y = 1.0;
+    buttonsSize = 2 * buttonsWidth + 2;
+  }
+  else
+  {
+    buttonsWidth = [isa scrollerWidth];
+    x = y = 1.0;
+    buttonsSize = 2 * buttonsWidth;
+  }
+
+
   /*
    * If the scroller is disabled then the scroller buttons and the
    * knob are not displayed at all.
@@ -1045,7 +1062,7 @@ static NSColor *scrollBarColor = nil;
 
 	  /* calc the slot Height */
 	  slotHeight = height - (_arrowsPosition == NSScrollerArrowsNone
-				 ?  0 : buttonsSize);
+	    ?  0 : buttonsSize);
 	  knobHeight = _knobProportion * slotHeight;
 	  knobHeight = (float)floor(knobHeight);
 	  if (knobHeight < buttonsWidth)
@@ -1057,11 +1074,22 @@ static NSColor *scrollBarColor = nil;
 
 
 	  /* calc actual position */
-	  y += knobPosition + ((_arrowsPosition == NSScrollerArrowsMaxEnd
-			       || _arrowsPosition == NSScrollerArrowsNone)
-			       ?  0 : buttonsSize);
+          if (interfaceStyle == NSNextStepInterfaceStyle
+	    || interfaceStyle == GSWindowMakerInterfaceStyle)
+	    {
+	      y += knobPosition + ((_arrowsPosition == NSScrollerArrowsMaxEnd
+		|| _arrowsPosition == NSScrollerArrowsNone)
+		?  0 : buttonsSize);
+	      width = buttonsWidth;
+	    }
+          else
+	    {
+	      y += knobPosition + ((_arrowsPosition == NSScrollerArrowsNone)
+		? 0 : buttonsWidth); 
+	      width = buttonsWidth ;
+	    }
+
 	  height = knobHeight;
-	  width = buttonsWidth;
 	  break;
 	}
 
@@ -1076,11 +1104,19 @@ static NSColor *scrollBarColor = nil;
 	    break;
 	  }
 	height -= buttonsSize;
-	if (_arrowsPosition == NSScrollerArrowsMinEnd)
+	if ( (interfaceStyle == NSNextStepInterfaceStyle || 
+              interfaceStyle == GSWindowMakerInterfaceStyle) 
+            && _arrowsPosition == NSScrollerArrowsMinEnd)
 	  {
 	    y += buttonsSize;
 	  }
-	break;
+        else if (interfaceStyle != NSNextStepInterfaceStyle
+	  && interfaceStyle != GSWindowMakerInterfaceStyle)
+          {
+            y += buttonsWidth;
+            width = buttonsWidth;
+          }
+        break;
 
       case NSScrollerDecrementLine:
       case NSScrollerDecrementPage:
@@ -1089,7 +1125,9 @@ static NSColor *scrollBarColor = nil;
 	  {
 	    return NSZeroRect;
 	  }
-	else if (_arrowsPosition == NSScrollerArrowsMaxEnd)
+	else if ((interfaceStyle == NSNextStepInterfaceStyle
+	  || interfaceStyle == GSWindowMakerInterfaceStyle)
+	  && _arrowsPosition == NSScrollerArrowsMaxEnd)
 	  {
 	    y += (height - buttonsSize + 1);
 	  }
@@ -1104,14 +1142,22 @@ static NSColor *scrollBarColor = nil;
 	  {
 	    return NSZeroRect;
 	  }
-	else if (_arrowsPosition == NSScrollerArrowsMaxEnd)
-	  {
-	    y += (height - buttonsWidth);
-	  }
-	else if (_arrowsPosition == NSScrollerArrowsMinEnd)
-	  {
-	    y += (buttonsWidth + 1);
-	  }
+        else if (interfaceStyle == NSNextStepInterfaceStyle 
+	  || interfaceStyle == GSWindowMakerInterfaceStyle)
+          {
+	    if (_arrowsPosition == NSScrollerArrowsMaxEnd)
+	      {
+	        y += (height - buttonsWidth);
+	      }
+	    else if (_arrowsPosition == NSScrollerArrowsMinEnd)
+	      {
+	        y += (buttonsWidth + 1);
+	      }
+          }
+        else 
+          {
+            y += (height - buttonsWidth);
+          }
 	height = buttonsWidth;
 	width = buttonsWidth;
 	break;
@@ -1133,7 +1179,7 @@ static NSColor *scrollBarColor = nil;
 + (float) scrollerWidthForControlSize: (NSControlSize)controlSize
 {
   // FIXME
-  return scrollerWidth;
+  return [self scrollerWidth];
 }
 
 - (void) setControlSize: (NSControlSize)controlSize

@@ -135,19 +135,24 @@
 
 #include <Foundation/NSObject.h>
 #include <Foundation/NSGeometry.h>
-#include "AppKit/NSCell.h"
+#include <AppKit/NSCell.h>
 // For gradient types
-#include "AppKit/NSButtonCell.h"
+#include <AppKit/NSButtonCell.h>
 // For image frame style
-#include "AppKit/NSImageCell.h"
+#include <AppKit/NSImageCell.h>
+// For scroller constants
+#include <AppKit/NSScroller.h>
 
 #if	OS_API_VERSION(GS_API_NONE,GS_API_NONE)
 @class NSArray;
 @class NSBundle;
+@class NSButton;
 @class NSColor;
 @class NSColorList;
 @class NSDictionary;
 @class NSImage;
+@class NSMenuItemCell;
+@class NSMenuView;
 @class GSDrawTiles;
 
 /**
@@ -214,7 +219,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
   This is a class used for 'theming', which is mostly a matter of
   encapsulating common drawing behaviors so that GUI appearance can
   be easily modified, but also includes mechanisms for altering
-  some GUI behavior (such mas orientation and position of menus).
+  some GUI behavior (such as orientation and position of menus).
   </p>
   <p>
   Methods in this class standardize drawing of buttons, borders
@@ -459,6 +464,14 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  */
 - (NSSize) sizeForImageFrameStyle: (NSImageFrameStyle)frameStyle;
 
+
+/** Methods for scroller theming.
+ */
+- (NSButtonCell*) cellForScrollerArrow: (NSScrollerArrow)part
+			    horizontal: (BOOL)horizontal;
+- (NSCell*) cellForScrollerKnob: (BOOL)horizontal;
+- (NSCell*) cellForScrollerKnobSlot: (BOOL)horizontal;
+- (float) defaultScrollerWidth;
 @end
 
 /**

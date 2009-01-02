@@ -141,7 +141,7 @@ typedef struct _GSButtonCellFlags
 
 - (id) init
 {
-  [self initTextCell: @"Button"];
+  self = [self initTextCell: @"Button"];
 
   return self;
 }
@@ -314,8 +314,8 @@ typedef struct _GSButtonCellFlags
 
   [super setFont: fontObject];
 
-  if ((_keyEquivalentFont != nil) && (fontObject != nil) && 
-      ((size = [fontObject pointSize]) != [_keyEquivalentFont pointSize]))
+  if ((_keyEquivalentFont != nil) && (fontObject != nil)
+    && ((size = [fontObject pointSize]) != [_keyEquivalentFont pointSize]))
     {
       [self setKeyEquivalentFont: [_keyEquivalentFont fontName] 
             size: size];       
@@ -923,6 +923,21 @@ typedef struct _GSButtonCellFlags
 - (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame 
                                     inView: (NSView*)controlView
 {
+  /* The background color is used for borderless cells (the MacOS-X
+   * documentation of the NSButtonCell -backgroundColor method says
+   * it's only used for borderless cells).
+   */
+  if (!_cell.is_bordered)
+    {
+      NSColor	*c = [self backgroundColor];
+
+      if (c != nil)
+	{
+	  [c set];
+	  NSRectFill(cellFrame);
+	}
+    }
+
   // Draw gradient
   if (!_cell.is_highlighted)
     {

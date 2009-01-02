@@ -1,5 +1,15 @@
 2009-01-02 Richard Frith-Macdonald <rfm@gnu.org>
 
+	* Source/NSButtonCell.m: Fix to use the backgroundColor method when
+	drawing a borderless button.
+	* Source/NSScroller.m:
+	* Source/GSThemeDrawing.m:
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	Add in slightly modified version of Christopher Armstrong's code for
+	theming for NSScroller.
+
+2009-01-02 Richard Frith-Macdonald <rfm@gnu.org>
+
 	* Headers/Additions/GNUstepGUI/GSTheme.h:
 	* Source/GSThemePanel.m:
 	* Source/GSTheme.m: 

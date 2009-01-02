@@ -28,6 +28,7 @@
 
 #import "GSThemePrivate.h"
 #import "AppKit/NSGraphics.h"
+#import "AppKit/NSImage.h"
 
 
 @implementation	GSTheme (Drawing)
@@ -273,6 +274,83 @@
       case NSImageFrameButton:
         return NSMakeSize(2, 2);
     }
+}
+
+
+/* NSScroller themeing.
+ */
+- (NSButtonCell*) cellForScrollerArrow: (NSScrollerArrow)arrow
+			    horizontal: (BOOL)horizontal
+{
+  NSButtonCell	*cell;
+  
+  cell = [NSButtonCell new];
+  if (horizontal)
+    {
+      if (arrow == NSScrollerDecrementArrow)
+	{
+	  [cell setHighlightsBy:
+	    NSChangeBackgroundCellMask | NSContentsCellMask];
+	  [cell setImage: [NSImage imageNamed: @"common_ArrowLeft"]];
+	  [cell setAlternateImage: [NSImage imageNamed: @"common_ArrowLeftH"]];
+	  [cell setImagePosition: NSImageOnly];
+	}
+      else
+	{
+	  [cell setHighlightsBy:
+	    NSChangeBackgroundCellMask | NSContentsCellMask];
+	  [cell setImage: [NSImage imageNamed: @"common_ArrowRight"]];
+	  [cell setAlternateImage: [NSImage imageNamed: @"common_ArrowRightH"]];
+	  [cell setImagePosition: NSImageOnly];
+	}
+    }
+  else
+    {
+      if (arrow == NSScrollerDecrementArrow)
+	{
+	  [cell setHighlightsBy:
+	    NSChangeBackgroundCellMask | NSContentsCellMask];
+	  [cell setImage: [NSImage imageNamed: @"common_ArrowUp"]];
+	  [cell setAlternateImage: [NSImage imageNamed: @"common_ArrowUpH"]];
+	  [cell setImagePosition: NSImageOnly];
+	}
+      else
+	{
+	  [cell setHighlightsBy:
+	    NSChangeBackgroundCellMask | NSContentsCellMask];
+	  [cell setImage: [NSImage imageNamed: @"common_ArrowDown"]];
+	  [cell setAlternateImage: [NSImage imageNamed: @"common_ArrowDownH"]];
+	  [cell setImagePosition: NSImageOnly];
+	}
+    }
+  return AUTORELEASE(cell);
+}
+
+- (NSCell*) cellForScrollerKnob: (BOOL)horizontal
+{
+  NSButtonCell	*knobCell;
+
+  knobCell = [NSButtonCell new];
+  [knobCell setButtonType: NSMomentaryChangeButton];
+  [knobCell setImage: [NSImage imageNamed: @"common_Dimple"]];
+  [knobCell setImagePosition: NSImageOnly];
+  return knobCell;
+}
+
+- (NSCell*) cellForScrollerKnobSlot: (BOOL)horizontal
+{
+  NSButtonCell		*cell;
+
+  cell = [NSButtonCell new];
+  [cell setBordered: NO];
+  [cell setStringValue: nil];
+  [cell setBackgroundColor: [NSColor scrollBarColor]];
+  return AUTORELEASE(cell);
+}
+
+- (float) defaultScrollerWidth
+{
+  return 18.0;
 }
 
 @end
