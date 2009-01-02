@@ -50,6 +50,8 @@
 #include "GNUstepGUI/GSToolbarView.h"
 #include "AppKit/NSToolbarItem.h"
 
+#include "NSToolbarFrameworkPrivate.h"
+
 /*
  * Each NSToolbarItem object are coupled with a backView which is their 
  * representation on the screen.
@@ -88,32 +90,6 @@ static NSFont *NormalFont = nil; // See NSToolbarItem -initialize method
 static NSFont *SmallFont = nil;
 
 NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
-
-@interface NSToolbar (GNUstepPrivate)
-- (GSToolbarView *) _toolbarView;
-- (int) _indexOfItem: (NSToolbarItem *)item; // Used by drag setup
-
-- (void) _performRemoveItem: (NSToolbarItem *)item; // Used by drag setup
-@end
-
-@interface NSToolbarItem (GNUstepPrivate)
-- (void) _layout;
-// ---
-- (void) _computeFlags;
-- (NSView *) _backView;
-- (NSMenuItem *) _defaultMenuFormRepresentation;
-- (BOOL) _isFlexibleSpace;
-- (BOOL) _isModified;
-- (BOOL) _selectable;
-- (void) _setSelectable: (BOOL)selectable;
-- (BOOL) _selected;
-- (void) _setSelected: (BOOL)selected;
-- (void) _setToolbar: (NSToolbar *)toolbar;
-@end
-
-@interface GSToolbarView (GNUstepPrivate)
-- (void) _reload;
-@end
 
 /*
  * NSButton subclass is the toolbar buttons _backView

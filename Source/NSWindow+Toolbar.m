@@ -34,21 +34,7 @@
 #include "AppKit/NSToolbar.h"
 #include "GNUstepGUI/GSToolbarView.h"
 
-@interface NSToolbar (GNUstepPrivate)
-- (GSToolbarView *) _toolbarView;
-@end
-
-@interface GSToolbarView (GNUstepPrivate)
-- (float) _heightFromLayout;
-- (void) _reload;
-@end
-
-@interface NSWindow (ToolbarPrivate)
-- (void) _adjustToolbarView: (GSToolbarView*)view;
-- (void) _addToolbarView: (GSToolbarView*)view;
-- (void) _removeToolbarView: (GSToolbarView*)view;
-- (NSView *) _contentViewWithoutToolbar;
-@end
+#include "NSToolbarFrameworkPrivate.h"
 
 @implementation NSWindow (Toolbar)
 
@@ -123,6 +109,8 @@
       else
         {
           // Instantiate the toolbar view
+          // FIXME: Currently this is reatined until the toolbar
+          // gets removed from the window.
           toolbarView = [[GSToolbarView alloc] 
                             initWithFrame: 
                                 NSMakeRect(0, 0, 
@@ -267,7 +255,6 @@
           contentViewWithoutToolbarFrame.size.width, 
         newToolbarViewHeight)];
   [_contentView addSubview: toolbarView];
-  RELEASE(toolbarView);
   
   // Insert the previous content view 
   /* We want contentViewWithoutToolbarFrame at the origin of our new
@@ -295,7 +282,6 @@
   contentViewWithoutToolbar = [self _contentViewWithoutToolbar];
   
   // Unplug the toolbar view
-  RETAIN(toolbarView);
   [toolbarView removeFromSuperviewWithoutNeedingDisplay];
   
   // Resize the window

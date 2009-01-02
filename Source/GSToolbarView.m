@@ -50,6 +50,8 @@
 #include "AppKit/NSWindow.h"
 #include "GNUstepGUI/GSToolbarView.h"
 
+#include "NSToolbarFrameworkPrivate.h"
+
 typedef enum {
   ToolbarViewDefaultHeight = 62,
   ToolbarViewRegularHeight = 62,
@@ -155,34 +157,6 @@ static void initSystemExtensionsColors(void)
 /*
  * Toolbar related code
  */
-@interface NSToolbar (GNUstepPrivate)
-- (void) _build;
-
-- (void) _concludeRemoveItem: (NSToolbarItem *)item 
-         atIndex: (int)index 
-         broadcast: (BOOL)broadcast;
-- (int) _indexOfItem: (NSToolbarItem *)item;
-- (void) _insertPassivelyItem: (NSToolbarItem *)item atIndex: (int)newIndex;
-- (void) _moveItemFromIndex: (int)index 
-         toIndex: (int)newIndex 
-         broadcast: (BOOL)broacast;
-
-- (void) _toolbarViewWillMoveToSuperview: (NSView *)newSuperview;
-
-// Accessors
-- (void) _setToolbarView: (GSToolbarView *)toolbarView;
-- (GSToolbarView *) _toolbarView;
-@end
-
-@interface NSToolbarItem (GNUstepPrivate)
-- (void) _layout;
-
-// Accessors
-- (NSView *) _backView;
-- (NSMenuItem *) _defaultMenuFormRepresentation;
-- (BOOL) _isModified;
-- (BOOL) _isFlexibleSpace;
-@end
 
 @interface GSToolbarButton
 - (NSToolbarItem *) toolbarItem;
@@ -190,20 +164,6 @@ static void initSystemExtensionsColors(void)
 
 @interface GSToolbarBackView
 - (NSToolbarItem *) toolbarItem;
-@end
-
-@interface GSToolbarView (GNUstepPrivate)
-- (void) _handleBackViewsFrame;
-- (void) _handleViewsVisibility;
-- (void) _reload;
-- (void) _takeInAccountFlexibleSpaces;
-- (int) _insertionIndexAtPoint: (NSPoint)location;
-
-// Accessors
-- (float) _heightFromLayout;
-- (NSArray *) _visibleBackViews;
-- (BOOL) _usesStandardBackgroundColor;
-- (void) _setUsesStandardBackgroundColor: (BOOL)standard;
 @end
 
 @interface GSToolbarClippedItemsButton : NSButton
@@ -373,6 +333,25 @@ static void initSystemExtensionsColors(void)
 }
 
 // Dragging related methods
+
+- (int) _insertionIndexAtPoint: (NSPoint)location
+{
+  id hitView = [self hitTest: location];
+  NSRect hitViewFrame = [hitView frame];
+  int index;
+  
+  if ((hitView != nil)
+    && ([hitView isKindOfClass: NSClassFromString(@"GSToolbarButton")] 
+    || [hitView isKindOfClass: NSClassFromString(@"GSToolbarBackView")]))
+    {
+      index = [_toolbar _indexOfItem: [hitView toolbarItem]];
+      if (location.x - hitViewFrame.origin.x > hitViewFrame.size.width / 2)
+        index++;
+      
+      return index; 
+    }
+  return NSNotFound;
+}
 
 - (NSDragOperation) draggingEntered: (id <NSDraggingInfo>)info
 {
@@ -646,6 +625,63 @@ static void initSystemExtensionsColors(void)
     _heightFromLayout = newHeight;
 }
 
+- (void) _takeInAccountFlexibleSpaces
+{
+  NSArray *items = [_toolbar items];
+  NSEnumerator *e = [items objectEnumerator];
+  NSToolbarItem *item;
+  NSView *backView; 
+  NSRect lastBackViewFrame;
+  float lengthAvailable;
+  unsigned int flexibleSpaceItemsNumber = 0;
+  BOOL mustAdjustNext = NO;
+  float x = 0;
+  
+  if ([items count] == 0)
+    return; 
+  
+  lastBackViewFrame = [[[items lastObject] _backView] frame];
+  lengthAvailable = [self frame].size.width - NSMaxX(lastBackViewFrame);
+
+  if (lengthAvailable < 1)
+    return;
+  
+  while ((item = [e nextObject]) != nil) 
+  {
+    if ([item _isFlexibleSpace])
+    {
+      flexibleSpaceItemsNumber++;
+    }
+  }
+  
+  if (lengthAvailable < flexibleSpaceItemsNumber)
+    return; 
+  
+  e = [items objectEnumerator];
+  while ((item = [e nextObject]) != nil)
+  {
+    backView = [item _backView];
+    if ([item _isFlexibleSpace])
+    {
+      NSRect backViewFrame = [backView frame];
+      
+      [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
+        lengthAvailable / flexibleSpaceItemsNumber, 
+        backViewFrame.size.height)];
+      mustAdjustNext = YES;
+    }
+    else if (mustAdjustNext)
+    {
+      NSRect backViewFrame = [backView frame];
+      
+      [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
+        backViewFrame.size.width, backViewFrame.size.height)];
+    }
+    x += [backView frame].size.width;
+  }
+  
+}
+
 - (void) _handleViewsVisibility
 {
   NSArray *items = [_toolbar items];
@@ -750,82 +786,6 @@ static void initSystemExtensionsColors(void)
 {  
   [self _handleViewsVisibility]; 
   [self setNeedsDisplay: YES];
-}
-
-- (void) _takeInAccountFlexibleSpaces
-{
-  NSArray *items = [_toolbar items];
-  NSEnumerator *e = [items objectEnumerator];
-  NSToolbarItem *item;
-  NSView *backView; 
-  NSRect lastBackViewFrame;
-  float lengthAvailable;
-  unsigned int flexibleSpaceItemsNumber = 0;
-  BOOL mustAdjustNext = NO;
-  float x = 0;
-  
-  if ([items count] == 0)
-    return; 
-  
-  lastBackViewFrame = [[[items lastObject] _backView] frame];
-  lengthAvailable = [self frame].size.width - NSMaxX(lastBackViewFrame);
-
-  if (lengthAvailable < 1)
-    return;
-  
-  while ((item = [e nextObject]) != nil) 
-  {
-    if ([item _isFlexibleSpace])
-    {
-      flexibleSpaceItemsNumber++;
-    }
-  }
-  
-  if (lengthAvailable < flexibleSpaceItemsNumber)
-    return; 
-  
-  e = [items objectEnumerator];
-  while ((item = [e nextObject]) != nil)
-  {
-    backView = [item _backView];
-    if ([item _isFlexibleSpace])
-    {
-      NSRect backViewFrame = [backView frame];
-      
-      [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
-        lengthAvailable / flexibleSpaceItemsNumber, 
-        backViewFrame.size.height)];
-      mustAdjustNext = YES;
-    }
-    else if (mustAdjustNext)
-    {
-      NSRect backViewFrame = [backView frame];
-      
-      [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
-        backViewFrame.size.width, backViewFrame.size.height)];
-    }
-    x += [backView frame].size.width;
-  }
-  
-}
-
-- (int) _insertionIndexAtPoint: (NSPoint)location
-{
-  id hitView = [self hitTest: location];
-  NSRect hitViewFrame = [hitView frame];
-  int index;
-  
-  if ((hitView != nil)
-    && ([hitView isKindOfClass: NSClassFromString(@"GSToolbarButton")] 
-    || [hitView isKindOfClass: NSClassFromString(@"GSToolbarBackView")]))
-    {
-      index = [_toolbar _indexOfItem: [hitView toolbarItem]];
-      if (location.x - hitViewFrame.origin.x > hitViewFrame.size.width / 2)
-        index++;
-      
-      return index; 
-    }
-  return NSNotFound;
 }
 
 // Accessors private methods

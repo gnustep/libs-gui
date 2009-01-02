@@ -33,14 +33,12 @@
 #define _GSToolbarView_h_INCLUDE
 
 #include <Foundation/NSGeometry.h>
-// Necessary for NSToolbarDisplayMode and NSToolbarSizeMode
-#include <AppKit/NSToolbar.h>
 #include <AppKit/NSView.h>
 #include <AppKit/NSColor.h>
 
-
 @class NSMutableArray;
 @class NSClipView;
+@class NSToolbar;
 @class NSToolbarItem;
 @class GSToolbarClippedItemsButton;
 

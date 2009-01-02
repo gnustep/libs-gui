@@ -52,6 +52,8 @@
 #include "GNUstepGUI/GSToolbarView.h"
 #include "AppKit/NSToolbar.h"
 
+#include "NSToolbarFrameworkPrivate.h"
+
 // internal
 static NSNotificationCenter *nc = nil;
 static NSMutableArray *toolbars = nil;
@@ -465,68 +467,6 @@ static GSValidationCenter *vc = nil;
     }
 }
 
-@end
-
-@interface NSToolbar (GNUstepPrivate)
-// Private class method
-+ (NSArray *) _toolbarsWithIdentifier: (NSString *)identifier;
-
-// Private methods with broadcast support
-- (void) _insertItemWithItemIdentifier: (NSString *)itemIdentifier 
-                               atIndex: (int)index 
-                             broadcast: (BOOL)broadcast;
-- (void) _removeItemAtIndex: (int)index broadcast: (BOOL)broadcast;
-- (void) _setAllowsUserCustomization: (BOOL)flag broadcast: (BOOL)broadcast;
-- (void) _setAutosavesConfiguration: (BOOL)flag broadcast: (BOOL)broadcast;
-- (void) _setConfigurationFromDictionary: (NSDictionary *)configDict 
-                               broadcast: (BOOL)broadcast;
-- (void) _moveItemFromIndex: (int)index toIndex: (int)newIndex broadcast: (BOOL)broadcast;
-- (void) _setDisplayMode: (NSToolbarDisplayMode)displayMode 
-               broadcast: (BOOL)broadcast;
-- (void) _setSizeMode: (NSToolbarSizeMode)sizeMode 
-            broadcast: (BOOL)broadcast;
-- (void) _setVisible: (BOOL)shown broadcast: (BOOL)broadcast;
-
-// Few other private methods
-- (void) _build;
-- (int) _indexOfItem: (NSToolbarItem *)item;
-- (void) _insertPassivelyItem: (NSToolbarItem *)item atIndex: (int)newIndex; 
-- (void) _performRemoveItem: (NSToolbarItem *)item;
-- (void) _concludeRemoveItem: (NSToolbarItem *)item atIndex: (int)index broadcast: (BOOL)broadcast;
-- (void) _loadConfig;
-- (NSToolbarItem *) _toolbarItemForIdentifier: (NSString *)itemIdent;
-- (NSToolbar *) _toolbarModel;
-- (void) _validate: (NSWindow *)observedWindow;
-- (void) _toolbarViewWillMoveToSuperview: (NSView *)newSuperview;
-
-// Accessors
-- (void) _setToolbarView: (GSToolbarView *)toolbarView;
-- (GSToolbarView *) _toolbarView;
-
-- (void) setUsesStandardBackgroundColor: (BOOL)standard;
-- (BOOL) usesStandardBackgroundColor;
-
-@end
-
-@interface NSToolbarItem (GNUstepPrivate)
-- (BOOL) _selectable;
-- (void) _setSelectable: (BOOL)selectable;
-- (BOOL) _selected;
-- (void) _setSelected: (BOOL)selected;
-- (void) _setToolbar: (NSToolbar *)toolbar;
-@end
-
-@interface GSToolbarView (GNUstepPrivate)
-- (void) _reload;
-
-// Accessors
-- (NSArray *) _visibleBackViews;
-- (BOOL) _usesStandardBackgroundColor;
-- (void) _setUsesStandardBackgroundColor: (BOOL)standard;
-@end
-
-@interface NSWindow (ToolbarPrivate)
-- (void) _adjustToolbarView: (GSToolbarView*)view;
 @end
 
 // ---
