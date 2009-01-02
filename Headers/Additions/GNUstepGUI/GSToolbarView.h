@@ -55,21 +55,15 @@ typedef enum {
 @interface GSToolbarView : NSView
 {
   NSToolbar *_toolbar;
-  NSClipView *_clipView, *_clipViewForEditMode;
+  NSClipView *_clipView;
   GSToolbarClippedItemsButton *_clippedItemsMark;
   NSMutableArray *_visibleBackViews;
-  BOOL _willBeVisible;
   unsigned int _borderMask;
-  NSToolbarDisplayMode _displayMode;
-  NSToolbarSizeMode _sizeMode;
   NSRect _rectAvailable;
   float _heightFromLayout;
 }
 
 - (id) initWithFrame: (NSRect)frame;
-- (id) initWithFrame: (NSRect)frame 
-         displayMode: (NSToolbarDisplayMode)displayMode 
-	    sizeMode: (NSToolbarSizeMode)sizeMode; 
 
 // Accessors
 - (NSToolbar *) toolbar;

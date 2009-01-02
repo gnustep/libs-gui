@@ -78,22 +78,22 @@ static void initSystemExtensionsColors(void)
      colors as keys and with colors in string format as values. */
   toolbarBorderColor = [NSColor colorWithCalibratedRed: 0.5 
                                                  green: 0.5 
-						  blue: 0.5 
-						 alpha: 1.0];
+                                                  blue: 0.5 
+                                                 alpha: 1.0];
   
-  // Window background color by tranparency						 
+  // Window background color by tranparency                                                 
   toolbarBackgroundColor = [NSColor clearColor]; 
   
   // Window backgound color hardcoded
   /* toolbarBackgroundColor = [NSColor colorWithCalibratedRed: 0.8 
                                                         green: 0.8 
-						         blue: 0.8 
-						        alpha: 1.0]; */
-							
+                                                         blue: 0.8 
+                                                        alpha: 1.0]; */
+                                                        
   colors = [[NSDictionary alloc] initWithObjectsAndKeys: 
     toolbarBackgroundColor, @"toolbarBackgroundColor",toolbarBorderColor,
     @"toolbarBorderColor", nil];
-							     
+                                                             
   SystemExtensionsColors = [NSColorList colorListNamed: @"System extensions"];
   if (SystemExtensionsColors == nil)
     {
@@ -111,19 +111,33 @@ static void initSystemExtensionsColors(void)
       e = [colors keyEnumerator];
   
       while ((colorKey = (NSString *)[e nextObject])) 
-	{
-	  if ([SystemExtensionsColors colorWithKey: colorKey])
-	    continue;
+        {
+          if ([SystemExtensionsColors colorWithKey: colorKey])
+            continue;
 
-	  color = [colors objectForKey: colorKey];
-	  [SystemExtensionsColors setColor: color forKey: colorKey];
+          color = [colors objectForKey: colorKey];
+          [SystemExtensionsColors setColor: color forKey: colorKey];
 
-	  changed = YES;
-	}
+          changed = YES;
+        }
 
       if (changed)
-	[SystemExtensionsColors writeToFile: nil];
+        [SystemExtensionsColors writeToFile: nil];
     }
+
+
+  /* Never released, but that's not a problem because the variables are 
+     static and then will be deallocated with the class when the application
+     quits. */
+  StandardBackgroundColor = 
+      [NSColor colorWithCalibratedRed: 0.8 green: 0.8 blue: 0.8 alpha: 1.0];
+  RETAIN(StandardBackgroundColor);
+  BackgroundColor = 
+      [SystemExtensionsColors colorWithKey: @"toolbarBackgroundColor"];
+  BorderColor = 
+      [SystemExtensionsColors colorWithKey: @"toolbarBorderColor"];
+  RETAIN(BackgroundColor);
+  RETAIN(BorderColor);
 }
 
 @implementation NSColor (GSToolbarViewAdditions)
@@ -144,10 +158,14 @@ static void initSystemExtensionsColors(void)
 @interface NSToolbar (GNUstepPrivate)
 - (void) _build;
 
-- (void) _concludeRemoveItem: (NSToolbarItem *)item atIndex: (int)index broadcast: (BOOL)broadcast;
+- (void) _concludeRemoveItem: (NSToolbarItem *)item 
+         atIndex: (int)index 
+         broadcast: (BOOL)broadcast;
 - (int) _indexOfItem: (NSToolbarItem *)item;
 - (void) _insertPassivelyItem: (NSToolbarItem *)item atIndex: (int)newIndex;
-- (void) _moveItemFromIndex: (int)index toIndex: (int)newIndex broadcast: (BOOL)broacast;
+- (void) _moveItemFromIndex: (int)index 
+         toIndex: (int)newIndex 
+         broadcast: (BOOL)broacast;
 
 - (void) _toolbarViewWillMoveToSuperview: (NSView *)newSuperview;
 
@@ -184,8 +202,6 @@ static void initSystemExtensionsColors(void)
 // Accessors
 - (float) _heightFromLayout;
 - (NSArray *) _visibleBackViews;
-- (void) _setSizeMode: (NSToolbarSizeMode)sizeMode;
-- (NSToolbarSizeMode) _sizeMode;
 - (BOOL) _usesStandardBackgroundColor;
 - (void) _setUsesStandardBackgroundColor: (BOOL)standard;
 @end
@@ -204,13 +220,6 @@ static void initSystemExtensionsColors(void)
 
 - (void) layout;
 - (void) setToolbar: (NSToolbar *)toolbar; 
-@end
-
-@interface GSToolbarClipView : NSClipView
-{
-
-}
-
 @end
 
 @implementation GSToolbarClippedItemsButton
@@ -249,17 +258,17 @@ static void initSystemExtensionsColors(void)
 
 - (void) mouseDown: (NSEvent *)event 
 {
-   NSMenu *clippedItemsMenu = [self menuForEvent: event];
+  NSMenu *clippedItemsMenu = [self menuForEvent: event];
    
-   [super highlight: YES];
+  [super highlight: YES];
    
-   if (clippedItemsMenu != nil)
+  if (clippedItemsMenu != nil)
     {
       [NSMenu popUpContextMenu: clippedItemsMenu withEvent: event 
-                                                   forView: self];
+              forView: self];
     }
     
-    [super highlight: NO];
+  [super highlight: NO];
 }
 
 - (NSMenu *) menuForEvent: (NSEvent *)event 
@@ -281,8 +290,6 @@ static void initSystemExtensionsColors(void)
   id item;
   NSArray *visibleItems;
   
-  AUTORELEASE(menu);
-  
   visibleItems = [_toolbar visibleItems];
 
   e = [[_toolbar items] objectEnumerator];
@@ -292,16 +299,16 @@ static void initSystemExtensionsColors(void)
         {
           id menuItem;
       
-      	  menuItem = [item menuFormRepresentation];
+          menuItem = [item menuFormRepresentation];
           if (menuItem == nil)
-	    menuItem = [item _defaultMenuFormRepresentation];
-	    
-	  if (menuItem != nil)
+            menuItem = [item _defaultMenuFormRepresentation];
+            
+          if (menuItem != nil)
             [menu addItem: menuItem];
         }
     }
 
-  return menu;
+  return AUTORELEASE(menu);
 }
 
 // Accessors
@@ -315,103 +322,41 @@ static void initSystemExtensionsColors(void)
 
 // ---
 
-@implementation GSToolbarClipView
-
-// Nothing here
-
-@end
-
 // Implementation GSToolbarView
 
 @implementation GSToolbarView
 + (void) initialize
 {
-  if (self != [GSToolbarView class])
-    return;
-    
-  initSystemExtensionsColors();
-  StandardBackgroundColor = 
-    [NSColor colorWithCalibratedRed: 0.8 green: 0.8 blue: 0.8 alpha: 1.0];
-  RETAIN(StandardBackgroundColor);
-  /* Never released, but that's not a problem because the variable is static and 
-     then will be deallocated with the class when the application quits. */
+  if (self == [GSToolbarView class])
+    initSystemExtensionsColors();
 }
 
 - (id) initWithFrame: (NSRect)frame
 {
-  return [self initWithFrame: frame 
-                 displayMode: NSToolbarDisplayModeDefault 
-	            sizeMode: NSToolbarSizeModeDefault];
-}
-
-- (id) initWithFrame: (NSRect)frame 
-         displayMode: (NSToolbarDisplayMode)displayMode 
-	    sizeMode: (NSToolbarSizeMode)sizeMode
-{
-  if ((self = [super initWithFrame: frame]) != nil)
+  if ((self = [super initWithFrame: frame]) == nil)
     {
-      _displayMode = displayMode;
-      _sizeMode = sizeMode;
-      
-      switch (_sizeMode)
-        {
-	  case NSToolbarSizeModeDefault:
-	    _heightFromLayout = ToolbarViewDefaultHeight;
-	    break;
-	  case NSToolbarSizeModeRegular:
-	    _heightFromLayout = ToolbarViewRegularHeight;
-	    break;
-	  case NSToolbarSizeModeSmall:
-	    _heightFromLayout = ToolbarViewSmallHeight;
-	    break;
-	  default:
-	    // Raise exception
-	    _heightFromLayout = 0;
-	}
-    
-      [self setFrame: NSMakeRect(frame.origin.x, frame.origin.y, 
-        frame.size.width, _heightFromLayout)];
-        
-      // ---
-                 
-      _clipView = 
-        [[GSToolbarClipView alloc] initWithFrame: NSMakeRect(0, 0, 100, 100)];
-
-      [_clipView setAutoresizingMask: (NSViewWidthSizable |
-        NSViewHeightSizable)];
-	
-      [self setBorderMask: GSToolbarViewTopBorder | GSToolbarViewBottomBorder 
-        | GSToolbarViewRightBorder | GSToolbarViewLeftBorder]; 
-      // Adjust the clip view frame
-      
-      [self addSubview: _clipView];
-      
-      _clippedItemsMark = [[GSToolbarClippedItemsButton alloc] init];
-	
-      BackgroundColor = 
-        [SystemExtensionsColors colorWithKey: @"toolbarBackgroundColor"];
-      BorderColor = 
-        [SystemExtensionsColors colorWithKey: @"toolbarBorderColor"];
-      RETAIN(BackgroundColor);
-      RETAIN(BorderColor);
-      /* Never released, but that's not a problem because the variables are 
-         static and then will be deallocated with the class when the application
-	 quits. */
-      
-      // ---
-      
-     [self registerForDraggedTypes: 
-       [NSArray arrayWithObject: GSMovableToolbarItemPboardType]];
-
-      return self;
+      return nil;
     }
     
-  return nil;
-}
-
-- (id) retain
-{
-  return [super retain];
+  _heightFromLayout = ToolbarViewDefaultHeight;
+  [self setFrame: NSMakeRect(frame.origin.x, frame.origin.y, 
+                             frame.size.width, _heightFromLayout)];
+        
+  _clipView = [[NSClipView alloc] initWithFrame: 
+                                      NSMakeRect(0, 0, frame.size.width, 
+                                                 _heightFromLayout)];
+  [_clipView setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
+  [self addSubview: _clipView];
+  // Adjust the clip view frame
+  [self setBorderMask: GSToolbarViewTopBorder | GSToolbarViewBottomBorder 
+        | GSToolbarViewRightBorder | GSToolbarViewLeftBorder]; 
+  
+  _clippedItemsMark = [[GSToolbarClippedItemsButton alloc] init];
+  
+  [self registerForDraggedTypes: 
+            [NSArray arrayWithObject: GSMovableToolbarItemPboardType]];
+  
+  return self;
 }
 
 - (void) dealloc
@@ -440,9 +385,9 @@ static void initSystemExtensionsColors(void)
   if ([self _insertionIndexAtPoint: [info draggingLocation]] != NSNotFound
     && [allowedItemIdentifiers containsObject: itemIdentifier]);
     {
-	  return NSDragOperationGeneric;
+      return NSDragOperationGeneric;
     }
-	
+        
   return NSDragOperationNone;
 }
 
@@ -457,9 +402,9 @@ static void initSystemExtensionsColors(void)
   if ([self _insertionIndexAtPoint: [info draggingLocation]] != NSNotFound
     && [allowedItemIdentifiers containsObject: itemIdentifier]);
     {
-	  return NSDragOperationGeneric;
+      return NSDragOperationGeneric;
     }
-	
+        
   return NSDragOperationNone;
 }
 
@@ -510,41 +455,40 @@ static void initSystemExtensionsColors(void)
 
 - (void) drawRect: (NSRect)aRect
 {
-  NSBezierPath *rect = [NSBezierPath bezierPathWithRect: aRect];
   NSRect viewFrame = [self frame];
   
   // We draw the background
   if (![BackgroundColor isEqual: [NSColor clearColor]])
     {
       [BackgroundColor set];
-      [rect fill];
+      [NSBezierPath fillRect: aRect];
     }
   
   // We draw the border
   [BorderColor set];
   if (_borderMask & GSToolbarViewBottomBorder)
-  {
-    [NSBezierPath strokeLineFromPoint: NSMakePoint(0, 0.5) 
-                              toPoint: NSMakePoint(viewFrame.size.width, 0.5)];
-  }
+    {
+      [NSBezierPath strokeLineFromPoint: NSMakePoint(0, 0.5) 
+                    toPoint: NSMakePoint(viewFrame.size.width, 0.5)];
+    }
   if (_borderMask & GSToolbarViewTopBorder)
-  {
-    [NSBezierPath strokeLineFromPoint: NSMakePoint(0, 
-                                         viewFrame.size.height - 0.5) 
-                              toPoint: NSMakePoint(viewFrame.size.width, 
+    {
+      [NSBezierPath strokeLineFromPoint: NSMakePoint(0, 
+                                                     viewFrame.size.height - 0.5) 
+                    toPoint: NSMakePoint(viewFrame.size.width, 
                                          viewFrame.size.height -  0.5)];
-  }
+    }
   if (_borderMask & GSToolbarViewLeftBorder)
-  {
-    [NSBezierPath strokeLineFromPoint: NSMakePoint(0.5, 0) 
-                              toPoint: NSMakePoint(0.5, viewFrame.size.height)];
-  }
+    {
+      [NSBezierPath strokeLineFromPoint: NSMakePoint(0.5, 0) 
+                    toPoint: NSMakePoint(0.5, viewFrame.size.height)];
+    }
   if (_borderMask & GSToolbarViewRightBorder)
-  {
-    [NSBezierPath strokeLineFromPoint: NSMakePoint(viewFrame.size.width - 0.5,0)
-                              toPoint: NSMakePoint(viewFrame.size.width - 0.5, 
+    {
+      [NSBezierPath strokeLineFromPoint: NSMakePoint(viewFrame.size.width - 0.5,0)
+                    toPoint: NSMakePoint(viewFrame.size.width - 0.5, 
                                          viewFrame.size.height)];
-  }
+    }
   
   [super drawRect: aRect];
 }
@@ -588,10 +532,10 @@ static void initSystemExtensionsColors(void)
   [nc removeObserver: self name: NSWindowDidResizeNotification object: nil];
   [nc addObserver: self selector: @selector(windowDidResize:) 
                             name: NSWindowDidResizeNotification 
-			  object: _window];
+                          object: _window];
 }
 
-// More methods... Accessors
+// Accessors
 
 - (unsigned int) borderMask
 {
@@ -606,51 +550,34 @@ static void initSystemExtensionsColors(void)
 - (void) setBorderMask: (unsigned int)borderMask
 {
   NSRect toolbarViewFrame = [self frame];
-  NSRect rect = NSMakeRect(0, 0, toolbarViewFrame.size.width, 100);
+  NSRect rect = NSMakeRect(0, 0, toolbarViewFrame.size.width, 
+                           toolbarViewFrame.size.height);
   
   _borderMask = borderMask;
   
-  // Take in account the size mode
-  
-  switch (_sizeMode)
-    {
-      case NSToolbarSizeModeDefault:
-        rect.size.height = ToolbarViewDefaultHeight;
-	break;
-      case NSToolbarSizeModeRegular:
-        rect.size.height = ToolbarViewRegularHeight;
-	break;
-      case NSToolbarSizeModeSmall:
-        rect.size.height = ToolbarViewSmallHeight;
-	break;
-      default:
-	; // Invalid
-    }
-  
   // Take in account the border
-  
   if (_borderMask & GSToolbarViewBottomBorder)
     {
       rect = NSMakeRect(rect.origin.x, ++rect.origin.y, rect.size.width, 
-        --rect.size.height);
+                        --rect.size.height);
     }
 
   if (_borderMask & GSToolbarViewTopBorder)
     {
       rect = NSMakeRect(rect.origin.x, rect.origin.y, rect.size.width, 
-        --rect.size.height); 
+                        --rect.size.height); 
     }
     
   if (_borderMask & GSToolbarViewLeftBorder)
     {
       rect = NSMakeRect(++rect.origin.x, rect.origin.y, --rect.size.width, 
-        rect.size.height);
+                        rect.size.height);
     }
     
   if (_borderMask & GSToolbarViewRightBorder)
     {
       rect = NSMakeRect(rect.origin.x, rect.origin.y, --rect.size.width, 
-        rect.size.height);
+                        rect.size.height);
     }
     
   [_clipView setFrame: rect];
@@ -658,9 +585,6 @@ static void initSystemExtensionsColors(void)
 
 - (void) setToolbar: (NSToolbar *)toolbar 
 {
-  if ([toolbar sizeMode] != _sizeMode)
-    ; // FIXME: Raise exception here
-
   if (_toolbar == toolbar)
     return;
 
@@ -702,16 +626,16 @@ static void initSystemExtensionsColors(void)
         || [item _isModified] 
         || [item _isFlexibleSpace])
         {
-	  // When a label is changed, _isModified returns YES to let us known we
-	  // must recalculate the text length and then the size for the edited
-	  // item back view
+          // When a label is changed, _isModified returns YES to let us known we
+          // must recalculate the text length and then the size for the edited
+          // item back view
           [item _layout];
         }
       
       itemBackViewFrame = [itemBackView frame];
       [itemBackView setFrame: NSMakeRect(x, itemBackViewFrame.origin.y, 
         itemBackViewFrame.size.width, itemBackViewFrame.size.height)];
-	
+        
       x += [itemBackView frame].size.width;
       
       if (itemBackViewFrame.size.height > newHeight)
@@ -795,7 +719,7 @@ static void initSystemExtensionsColors(void)
                                       clipViewFrame.origin.y, 
                                       width,
                                       clipViewFrame.size.height)]; 
-	
+        
       // Adjust the clipped items mark frame handling   
       
       [_clippedItemsMark layout];
@@ -803,9 +727,9 @@ static void initSystemExtensionsColors(void)
       clipViewFrame = [_clipView frame]; // We get the new _clipView frame
       [_clippedItemsMark setFrameOrigin: NSMakePoint(
         [self frame].size.width - ClippedItemsViewWidth, clipViewFrame.origin.y)];
-	
+        
       // ---
-	
+        
       if ([_clippedItemsMark superview] == nil)       
         [self addSubview: _clippedItemsMark];  
       
@@ -816,10 +740,10 @@ static void initSystemExtensionsColors(void)
       [_clippedItemsMark removeFromSuperview];
       
       [_clipView setFrame: NSMakeRect(clipViewFrame.origin.x, 
-        clipViewFrame.origin.y, [self frame].size.width, 
-	clipViewFrame.size.height)]; 
+                                      clipViewFrame.origin.y, 
+                                      [self frame].size.width, 
+                                      clipViewFrame.size.height)]; 
     }
- 
 }
 
 - (void) _reload 
@@ -870,7 +794,7 @@ static void initSystemExtensionsColors(void)
       
       [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
         lengthAvailable / flexibleSpaceItemsNumber, 
-	backViewFrame.size.height)];
+        backViewFrame.size.height)];
       mustAdjustNext = YES;
     }
     else if (mustAdjustNext)
@@ -953,16 +877,6 @@ static void initSystemExtensionsColors(void)
   
   return _visibleBackViews;
   
-}
-
-- (void) _setSizeMode: (NSToolbarSizeMode)sizeMode
-{
-  _sizeMode = sizeMode;
-}
-
-- (NSToolbarSizeMode) _sizeMode
-{
-  return _sizeMode;
 }
 
 - (BOOL) _usesStandardBackgroundColor

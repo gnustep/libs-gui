@@ -520,15 +520,13 @@ static GSValidationCenter *vc = nil;
 - (void) _reload;
 
 // Accessors
-- (void) _setSizeMode: (NSToolbarSizeMode)sizeMode;
-- (NSToolbarSizeMode) _sizeMode;
 - (NSArray *) _visibleBackViews;
 - (BOOL) _usesStandardBackgroundColor;
 - (void) _setUsesStandardBackgroundColor: (BOOL)standard;
 @end
 
 @interface NSWindow (ToolbarPrivate)
-- (void) _adjustToolbarView;
+- (void) _adjustToolbarView: (GSToolbarView*)view;
 @end
 
 // ---
@@ -1044,7 +1042,7 @@ static GSValidationCenter *vc = nil;
       item = [[NSToolbarItem alloc] initWithItemIdentifier: itemIdent];
     }
     
-  return item;
+  return AUTORELEASE(item);
 }
 
 
@@ -1216,8 +1214,11 @@ static GSValidationCenter *vc = nil;
     {
       _displayMode = displayMode;
    
-      [_toolbarView _reload];
-      [[_toolbarView window] _adjustToolbarView];
+      if ([self isVisible])
+        {
+          [_toolbarView _reload];
+          [[_toolbarView window] _adjustToolbarView: _toolbarView];
+        }
       
       if (broadcast) 
         {
@@ -1233,10 +1234,11 @@ static GSValidationCenter *vc = nil;
     {
       _sizeMode = sizeMode;
 
-      [_toolbarView _setSizeMode: _sizeMode];
-      
-      [_toolbarView _reload];
-      [[_toolbarView window] _adjustToolbarView];
+      if ([self isVisible])
+        {
+          [_toolbarView _reload];
+          [[_toolbarView window] _adjustToolbarView: _toolbarView];
+        }
   
       if (broadcast) 
         {
