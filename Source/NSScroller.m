@@ -33,6 +33,7 @@
 
 #include <Foundation/NSDate.h>
 #include <Foundation/NSRunLoop.h>
+#include <Foundation/NSNotification.h>
 #include <Foundation/NSDebug.h>
 
 #include "AppKit/NSApplication.h"
@@ -64,8 +65,17 @@ static NSCell	*horizontalKnobCell = nil;
 static NSCell	*verticalKnobCell = nil;
 static NSCell	*horizontalKnobSlotCell = nil;
 static NSCell	*verticalKnobSlotCell = nil;
+static float	scrollerWidth = 18.0;
 
 static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
+
++ (void) _themeActivated: (NSNotification*)n
+{
+  /* Clear cached information.
+   */
+  scrollerWidth = 0.0;
+  DESTROY(upCell);
+}
 
 /*
  * Class methods
@@ -75,6 +85,10 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
   if (self == [NSScroller class])
     {
       [self setVersion: 1];
+      [[NSNotificationCenter defaultCenter] addObserver: self
+	selector: @selector(_themeActivated:)
+	name: GSThemeDidActivateNotification
+	object: nil];
     }
 }
 
@@ -84,7 +98,11 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
  */
 + (float) scrollerWidth
 {
-  return [[GSTheme theme] defaultScrollerWidth];  
+  if (scrollerWidth == 0.0)
+    {
+      scrollerWidth = [[GSTheme theme] defaultScrollerWidth];  
+    }
+  return scrollerWidth;
 }
 
 - (BOOL) isFlipped
@@ -330,18 +348,18 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
   if (upCell)
     return;
 
-  upCell = RETAIN([theme cellForScrollerArrow:
+  ASSIGN(upCell ,[theme cellForScrollerArrow:
     NSScrollerDecrementArrow horizontal:NO]);
-  downCell = RETAIN([theme cellForScrollerArrow:
+  ASSIGN(downCell, [theme cellForScrollerArrow:
     NSScrollerIncrementArrow horizontal:NO]);
-  leftCell = RETAIN([theme cellForScrollerArrow:
+  ASSIGN(leftCell, [theme cellForScrollerArrow:
     NSScrollerDecrementArrow horizontal:YES]);
-  rightCell = RETAIN([theme cellForScrollerArrow:
+  ASSIGN(rightCell, [theme cellForScrollerArrow:
     NSScrollerIncrementArrow horizontal:YES]);
-  verticalKnobCell = RETAIN([theme cellForScrollerKnob: NO]);
-  horizontalKnobCell = RETAIN([theme cellForScrollerKnob: YES]);
-  verticalKnobSlotCell = RETAIN([theme cellForScrollerKnobSlot: NO]);
-  horizontalKnobSlotCell = RETAIN([theme cellForScrollerKnobSlot: YES]);
+  ASSIGN(verticalKnobCell, [theme cellForScrollerKnob: NO]);
+  ASSIGN(horizontalKnobCell, [theme cellForScrollerKnob: YES]);
+  ASSIGN(verticalKnobSlotCell, [theme cellForScrollerKnobSlot: NO]);
+  ASSIGN(horizontalKnobSlotCell, [theme cellForScrollerKnobSlot: YES]);
 
   [downCell setContinuous: YES];
   [downCell sendActionOn: (NSLeftMouseDownMask | NSPeriodicMask)];
@@ -996,21 +1014,20 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 
   NSInterfaceStyle interfaceStyle = NSInterfaceStyleForKey(@"NSScrollerInterfaceStyle",self);
 
-
   /* We use the button offset if we in the NeXTstep interface style. */
   if (interfaceStyle == NSNextStepInterfaceStyle
     || interfaceStyle == GSWindowMakerInterfaceStyle)
-  { 
-    buttonsWidth = ([isa scrollerWidth] - buttonsOffset);
-    x = y = 1.0;
-    buttonsSize = 2 * buttonsWidth + 2;
-  }
+    { 
+      buttonsWidth = ([isa scrollerWidth] - buttonsOffset);
+      x = y = 1.0;
+      buttonsSize = 2 * buttonsWidth + 2;
+    }
   else
-  {
-    buttonsWidth = [isa scrollerWidth];
-    x = y = 1.0;
-    buttonsSize = 2 * buttonsWidth;
-  }
+    {
+      buttonsWidth = [isa scrollerWidth];
+      x = y = 1.0;
+      buttonsSize = 2 * buttonsWidth;
+    }
 
 
   /*
