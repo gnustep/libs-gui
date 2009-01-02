@@ -69,9 +69,10 @@ static float	scrollerWidth = 18.0;
 
 static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 
-+ (void) _themeActivated: (NSNotification*)n
++ (void) _themeWillActivate: (NSNotification*)n
 {
-  /* Clear cached information.
+  /* Clear cached information from the old theme ... will get info from
+   * the new theme as required.
    */
   scrollerWidth = 0.0;
   DESTROY(upCell);
@@ -86,8 +87,8 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
     {
       [self setVersion: 1];
       [[NSNotificationCenter defaultCenter] addObserver: self
-	selector: @selector(_themeActivated:)
-	name: GSThemeDidActivateNotification
+	selector: @selector(_themeWillActivate:)
+	name: GSThemeWillActivateNotification
 	object: nil];
     }
 }
