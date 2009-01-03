@@ -1,3 +1,8 @@
+2009-01-03 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSWindowDecorationView.m: Adopt the window size when
+	adding or removing a toolbar, not the size of the content view.
+
 2009-01-02 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWindow+Toolbar.m: Move window toolbar code from here ...

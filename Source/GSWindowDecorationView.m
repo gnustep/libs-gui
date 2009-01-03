@@ -219,13 +219,17 @@
       NSRect contentViewFrame = [cv frame];
       float newToolbarViewHeight;
       
-      [tv setFrameSize: NSMakeSize(contentViewFrame.size.width, 100)];
-      // Will recalculate the layout
-      [tv _reload];
+      // If the width changed we may need to recalculate the height
+      if (contentViewFrame.size.width != [tv frame].size.width)
+        {
+          [tv setFrameSize: NSMakeSize(contentViewFrame.size.width, 100)];
+          // Will recalculate the layout
+          [tv _reload];
+        }
       newToolbarViewHeight = [tv _heightFromLayout];
       [tv setFrame: NSMakeRect(
               contentViewFrame.origin.x,
-              contentViewFrame.size.height, 
+              NSMaxY(contentViewFrame), 
               contentViewFrame.size.width, 
               newToolbarViewHeight)];
     }
@@ -298,7 +302,11 @@
   // Plug the toolbar view
   [toolbarView setFrame: NSMakeRect(
           contentViewFrame.origin.x,
-          contentViewFrame.size.height - newToolbarViewHeight, 
+#if 1
+          NSMaxY(contentViewFrame), 
+#else
+          NSMaxY(contentViewFrame) - newToolbarViewHeight, 
+#endif
           contentViewFrame.size.width, 
           newToolbarViewHeight)];
   [self addSubview: toolbarView];
@@ -306,6 +314,23 @@
   // Resize the content view
   contentViewFrame.size.height -= newToolbarViewHeight;
   [contentView setFrame: contentViewFrame];
+
+#if 1
+  {
+    NSRect orgWindowFrame;
+    NSRect windowFrame;
+    NSRect windowContentFrame;
+    
+    orgWindowFrame = [window frame];
+    windowContentFrame = [isa contentRectForFrameRect: orgWindowFrame
+                              styleMask: [window styleMask]];
+    windowContentFrame.size.height += newToolbarViewHeight;
+    windowFrame = [isa frameRectForContentRect: windowContentFrame
+                       styleMask: [window styleMask]];
+    windowFrame.origin.y += orgWindowFrame.size.height - windowFrame.size.height;
+    [window setFrame: windowFrame display: YES];
+  }
+#endif
 }
 
 - (void) removeToolbarView: (GSToolbarView *)toolbarView
@@ -313,13 +338,30 @@
   NSView *contentView = [window contentView];
   NSRect contentViewFrame = [contentView frame];
   float toolbarViewHeight = [toolbarView frame].size.height;
-  
+
   // Unplug the toolbar view
   [toolbarView removeFromSuperviewWithoutNeedingDisplay];
   
   // Resize the content view
   contentViewFrame.size.height += toolbarViewHeight;
   [contentView setFrame: contentViewFrame];
+
+#if 1
+  {
+    NSRect orgWindowFrame;
+    NSRect windowFrame;
+    NSRect windowContentFrame;
+    
+    orgWindowFrame = [window frame];
+    windowContentFrame = [isa contentRectForFrameRect: orgWindowFrame
+                              styleMask: [window styleMask]];
+    windowContentFrame.size.height -= toolbarViewHeight;
+    windowFrame = [isa frameRectForContentRect: windowContentFrame
+                       styleMask: [window styleMask]];
+    windowFrame.origin.y += orgWindowFrame.size.height - windowFrame.size.height;
+    [window setFrame: windowFrame display: YES];
+  }
+#endif
 }
 
 - (void) adjustToolbarView: (GSToolbarView *)toolbarView
@@ -344,8 +386,25 @@
       contentViewFrame.size.height += toolbarViewHeight - newToolbarViewHeight;
       [contentView setFrame: contentViewFrame];
 
+#if 1
+      {
+        NSRect orgWindowFrame;
+        NSRect windowFrame;
+        NSRect windowContentFrame;
+          
+        orgWindowFrame = [window frame];
+        windowContentFrame = [isa contentRectForFrameRect: orgWindowFrame
+                                  styleMask: [window styleMask]];
+        windowContentFrame.size.height -= toolbarViewHeight - newToolbarViewHeight;
+        windowFrame = [isa frameRectForContentRect: windowContentFrame
+                           styleMask: [window styleMask]];
+        windowFrame.origin.y += orgWindowFrame.size.height - windowFrame.size.height;
+        [window setFrame: windowFrame display: YES];
+  }
+#else
       // Redisplay the window
       [window display];
+#endif
     }
 }
 
