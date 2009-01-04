@@ -848,7 +848,7 @@ static void initSystemExtensionsColors(void)
 {
   if (standard)
     {
-      RELEASE(BackgroundColor);
+      // RELEASE(BackgroundColor);
       BackgroundColor = [self standardBackgroundColor];
     }
   else
