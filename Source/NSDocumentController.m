@@ -461,10 +461,13 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
     }
 
   [self addDocument: document];
-  if (display && [self shouldCreateUI])
+  if ([self shouldCreateUI])
     {
       [document makeWindowControllers];
-      [document showWindows];
+      if (display)
+        {
+          [document showWindows];
+        }
     }
 
   return document;
@@ -493,7 +496,7 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
 
       [self addDocument: document];
 
-      if (display && [self shouldCreateUI])
+      if ([self shouldCreateUI])
         {
           [document makeWindowControllers];
         }
@@ -532,7 +535,7 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
       
       [self addDocument: document];
 
-      if (display && [self shouldCreateUI])
+      if ([self shouldCreateUI])
         {
           [document makeWindowControllers];
         }
@@ -571,10 +574,13 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
         }
 
       [self addDocument: document];
-      if (display && [self shouldCreateUI])
+      if ([self shouldCreateUI])
         {
           [document makeWindowControllers];
-          [document showWindows];
+          if (display)
+            {
+              [document showWindows];
+            }
         }
 
       return document;
@@ -614,7 +620,7 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
       
           [self addDocument: document];
           
-          if (display && [self shouldCreateUI])
+          if ([self shouldCreateUI])
             {
               [document makeWindowControllers];
             }

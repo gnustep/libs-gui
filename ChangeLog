@@ -1,3 +1,8 @@
+2009-01-04 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSDocumentController.m: Check only shouldCreateUI before
+	callin makeWindowControllers. This is the behaviour reported for Cocoa.
+
 2009-01-03 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSWindowDecorationView.m: Adopt the window size when
