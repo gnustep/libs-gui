@@ -848,13 +848,11 @@ static void initSystemExtensionsColors(void)
 {
   if (standard)
     {
-      // RELEASE(BackgroundColor);
-      BackgroundColor = [self standardBackgroundColor];
+      ASSIGN(BackgroundColor, [self standardBackgroundColor]);
     }
   else
     {
-      BackgroundColor = [NSColor clearColor];
-      RETAIN(BackgroundColor);
+      ASSIGN(BackgroundColor, [NSColor clearColor]);
     }
 }
 

@@ -1,3 +1,8 @@
+2009-01-04 18:32-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSToolbarView.m: Use ASSIGN as suggested.  This corrects
+	the crash and fixes the leak caused by the previous change.
+
 2009-01-04 16:45-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSToolbarView.m: Correct crash in toolbar, since the
