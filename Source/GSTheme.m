@@ -29,6 +29,7 @@
 #import "Foundation/NSBundle.h"
 #import "Foundation/NSDictionary.h"
 #import "Foundation/NSFileManager.h"
+#import "Foundation/NSMapTable.h"
 #import "Foundation/NSNotification.h"
 #import "Foundation/NSNull.h"
 #import "Foundation/NSPathUtilities.h"
@@ -73,6 +74,7 @@ static NSString			*currentThemeName = nil;
 static GSTheme			*theTheme = nil;
 static NSMutableDictionary	*themes = nil;
 static NSNull			*null = nil;
+static NSMapTable		*names = 0;
 
 typedef	struct {
   NSBundle		*bundle;
@@ -119,6 +121,8 @@ typedef	struct {
       defaultTheme = [[self alloc] initWithBundle: nil];
       ASSIGN(theTheme, defaultTheme);
       ASSIGN(currentThemeName, [defaultTheme name]);
+      names = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
+	NSIntMapValueCallBacks, 0);
     }
   /* Establish the theme specified by the user defaults (if any);
    */
@@ -531,11 +535,40 @@ typedef	struct {
   return _name;
 }
 
+- (NSString*) nameForElement: (id)anObject
+{
+  NSString	*name = (NSString*)NSMapGet(names, (void*)anObject);
+
+  if (name == nil)
+    {
+      name = NSStringFromClass([anObject class]);
+    }
+  return name;
+}
+
 - (void) setName: (NSString*)aString
 {
   if (self != defaultTheme)
     {
       ASSIGNCOPY(_name, aString);
+    }
+}
+
+- (void) setName: (NSString*)aString forElement: (id)anObject
+{
+  if (anObject == nil)
+    {
+      [NSException raise: NSInvalidArgumentException
+		  format: @"[%@-%@] nil object supplied",
+	NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
+    }
+  if (aString == nil)
+    {
+      NSMapRemove(names, (void*)anObject);
+    }
+  else
+    {
+      NSMapInsert(names, (void*)anObject, (void*)aString);
     }
 }
 

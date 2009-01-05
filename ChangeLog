@@ -1,3 +1,11 @@
+2009-01-05 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	* Source/GSTheme.m:
+	Add methods to name specific elements in the gui so that we can
+	locate resources for them and so that override methods can handle
+	them specially.
+
 2009-01-04 18:32-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSToolbarView.m: Use ASSIGN as suggested.  This corrects

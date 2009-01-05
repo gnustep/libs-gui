@@ -378,9 +378,25 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  */
 - (NSString*) name;
 
+/** Returns the name used to locate theming resources for a particular gui
+ * element.  If no name has been set for the particular object, the name
+ * for the class of object is returned.
+ */
+- (NSString*) nameForElement: (id)anObject;
+
 /** Set the name of this theme ... used for testing by Thematic.app
  */
 - (void) setName: (NSString*)aString;
+
+/** Set the name that is used to identify theming resources for a particular
+ * control or other gui element.  The name set for a specific element will
+ * override the default (the name of the class of the element), and this is
+ * used so that where an element is part of a control, it can be displayed
+ * differently from the same class of element used outside that control.<br />
+ * Supplying a nil value for aString simply removes any name setting for
+ * anObject.
+ */
+- (void) setName: (NSString*)aString forElement: (id)anObject;
 
 /**
  * <p>Provides a standard inspector window used to display information about
