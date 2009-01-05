@@ -31,7 +31,7 @@
 
 #include <AppKit/NSController.h>
 
-#if OS_API_VERSION(100300,GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 
 @class NSUserDefaults;
 @class NSDictionary;
@@ -41,6 +41,7 @@
 {
   NSUserDefaults* _defaults;
   NSDictionary* _initial_values;
+  id _values;
   BOOL _applies_immediately;
 }
 
@@ -58,6 +59,9 @@
 - (void) revert: (id)sender;
 - (void) revertToInitialValues: (id)sender;
 - (void) save: (id)sender;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (BOOL) hasUnappliedChanges;
+#endif
 
 @end
 

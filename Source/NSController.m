@@ -68,13 +68,13 @@
   if((self = [super init]) != nil)
     {
       if([aDecoder allowsKeyedCoding])
-	{
-	  ASSIGN(_declared_keys,[aDecoder decodeObjectForKey: @"NSDeclaredKeys"]);
-	}
+        {
+          ASSIGN(_declared_keys,[aDecoder decodeObjectForKey: @"NSDeclaredKeys"]);
+        }
       else
-	{
-	  ASSIGN(_declared_keys,[aDecoder decodeObject]);
-	}
+        {
+          ASSIGN(_declared_keys,[aDecoder decodeObject]);
+        }
     }
   return self; 
 }
@@ -93,11 +93,32 @@
     {
       if (![[_editors objectAtIndex: i] commitEditing])
         {
-	  return NO;
-	}
+          return NO;
+        }
     }
 
   return YES;
+}
+
+- (void) commitEditingWithDelegate: (id)delegate
+                 didCommitSelector: (SEL)didCommitSelector
+                       contextInfo: (void*)contextInfo
+{
+  unsigned c = [_editors count];
+  unsigned i;
+
+  for (i = 0; i < c; i++)
+    {
+      BOOL didCommit = [[_editors objectAtIndex: i] commitEditing];
+      if (delegate != nil && didCommitSelector != NULL)
+        {
+          void (*meth)(id, SEL, id, BOOL, void*);
+          meth = (void (*)(id, SEL, id, BOOL, void*))[delegate methodForSelector: 
+                                                                   didCommitSelector];
+          if (meth)
+            meth(delegate, didCommitSelector, self, didCommit, contextInfo);
+        }
+    }
 }
 
 - (void) discardEditing

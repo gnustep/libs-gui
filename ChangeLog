@@ -1,3 +1,10 @@
+2009-01-05 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSController.h,
+	* Source/NSController.m: Add one 10.4 method.
+	* Headers/AppKit/NSUserDefaultsController.h: Add one 10.4 method.
+	* Source/NSUserDefaultsController.m: Fully implement class.
+
 2009-01-05 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSScroller.m: Fixup/reorganisation of setting names for

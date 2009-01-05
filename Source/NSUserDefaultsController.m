@@ -26,11 +26,139 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include <Foundation/NSCoder.h>
 #include <Foundation/NSDictionary.h>
+#include <Foundation/NSEnumerator.h>
+#include <Foundation/NSKeyValueObserving.h>
+#include <Foundation/NSNotification.h>
 #include <Foundation/NSUserDefaults.h>
 #include <AppKit/NSUserDefaultsController.h>
 
 static id shared = nil;
+
+@interface GSUserDefaultsHelper : NSObject
+{
+@public
+  NSUserDefaultsController *controller;
+  NSMutableDictionary *values;
+}
+
+- (id) initWithController: (NSUserDefaultsController*)udc;
+- (id) valueForKey: (NSString*)key;
+- (void) setValue: (id)value forKey: (NSString*)key;
+
+- (void) revert;
+- (void) revertToInitialValues: (NSDictionary *)initial;
+- (void) defaultsDidChange: (NSUserDefaults *)defaults;
+@end
+
+@implementation GSUserDefaultsHelper
+
+- (id) initWithController: (NSUserDefaultsController*)udc
+{
+  if ((self = [super init]) != nil)
+    {
+      // We are retained by the controller
+      controller = udc;
+      values = [[NSMutableDictionary alloc] init];
+    }
+
+  return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(values);
+  [super dealloc];
+}
+
+- (id) valueForKey: (NSString*)key
+{
+  id value = [values objectForKey: key];
+
+  if (!value)
+    {
+      // If the value isn't cached, get it from the controller and cache it.
+      value = [[controller defaults] objectForKey: key];
+      if (!value)
+        {
+          value = [[controller initialValues] objectForKey: key];
+        }
+      // We need to cache the values we return to be able to 
+      // report changes to them when the defaults change.
+      if (value)
+        [values setObject: value forKey: key];
+    }
+  NSLog(@"returning %@ for key %@", value, key);
+
+  return value;
+}
+
+- (void) setValue: (id)value forKey: (NSString*)key
+{
+  [self willChangeValueForKey: key];
+  [values setObject: value forKey: key];
+  if ([controller appliesImmediately])
+    [[controller defaults] setObject: value forKey: key];
+  [self didChangeValueForKey: key];
+}
+
+- (void) revert
+{
+  NSEnumerator *e;
+  NSString *key;
+
+  e = [values keyEnumerator];
+  while ((key = (NSString *)[e nextObject]))
+    {
+      [self willChangeValueForKey: key];
+      [values removeObjectForKey: key];
+      [self didChangeValueForKey: key];
+    }
+}
+
+- (void) revertToInitialValues: (NSDictionary *)initial
+{
+  NSEnumerator *e;
+  NSString *key;
+
+  e = [values keyEnumerator];
+  while ((key = (NSString *)[e nextObject]))
+    {
+      id val = [values objectForKey: key];
+      id oldVal = [initial objectForKey: key];
+        
+      if (oldVal && ![val isEqual: oldVal])
+        {
+          [self willChangeValueForKey: key];
+          [values setObject: oldVal forKey: key];
+          // When appliesImmediately is YES, should we save these values?
+          [self didChangeValueForKey: key];
+        }
+   }
+}
+
+- (void) defaultsDidChange: (NSUserDefaults *)defaults
+{
+  NSEnumerator *e;
+  NSString *key;
+
+  e = [values keyEnumerator];
+  while ((key = (NSString *)[e nextObject]))
+    {
+      id val = [values objectForKey: key];
+      id newVal = [defaults objectForKey: key];
+
+      if (newVal && ![val isEqual: newVal])
+        {
+          [self willChangeValueForKey: key];
+          [values setObject: newVal forKey: key];
+          [self didChangeValueForKey: key];
+        }      
+    }
+}
+
+@end
 
 @implementation NSUserDefaultsController
 
@@ -38,9 +166,9 @@ static id shared = nil;
 {
   if (shared == nil)
     {
-	shared = [[NSUserDefaultsController alloc] 
-		     initWithDefaults: nil
-		     initialValues: nil];    
+      shared = [[NSUserDefaultsController alloc] 
+                   initWithDefaults: nil
+                   initialValues: nil];    
     }
   return shared;
 }
@@ -51,15 +179,33 @@ static id shared = nil;
   if ((self = [super init]) != nil)
     {
       if (defaults == nil)
-	{
-	  defaults = [NSUserDefaults standardUserDefaults];
-	}
-	
+        {
+          defaults = [NSUserDefaults standardUserDefaults];
+        }
+
       ASSIGN(_defaults, defaults);
+      [self setAppliesImmediately: YES];
       [self setInitialValues: initialValues];
+      _values = [[GSUserDefaultsHelper alloc] 
+                    initWithController: self];
+      // Watch for user default change notifications
+      [[NSNotificationCenter defaultCenter] 
+          addObserver: self
+          selector: @selector(defaultsDidChange:)
+          name: NSUserDefaultsDidChangeNotification
+          object: _defaults];
     }
 
   return self;
+}
+
+- (void) dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver: self];
+  RELEASE(_values);
+  RELEASE(_defaults);
+  RELEASE(_initial_values);
+  [super dealloc];
 }
 
 - (NSUserDefaults*) defaults
@@ -69,8 +215,7 @@ static id shared = nil;
 
 - (id) values
 {
-  // TODO
-  return nil;  
+  return _values;  
 }
 
 - (NSDictionary*) initialValues
@@ -80,7 +225,7 @@ static id shared = nil;
 
 - (void) setInitialValues: (NSDictionary*)values
 {
-  ASSIGN(_initial_values, values);
+  ASSIGNCOPY(_initial_values, values);
 }
 
 - (BOOL) appliesImmediately
@@ -98,18 +243,79 @@ static id shared = nil;
   [self discardEditing];
   if (![self appliesImmediately])
     {
-      // TODO
+      [_values revert];
     } 
 }
 
 - (void) revertToInitialValues: (id)sender
 {
-  // TODO
+  [self discardEditing];
+  [_values revertToInitialValues: _initial_values];
 }
 
 - (void) save: (id)sender
 {
-  // TODO
+  if (![self appliesImmediately])
+    {
+      NSDictionary *values = ((GSUserDefaultsHelper*)_values)->values;
+      NSEnumerator *e;
+      NSString *key;
+      
+      e = [values keyEnumerator];
+      while ((key = (NSString *)[e nextObject]))
+        {
+          [_defaults setObject: [values objectForKey: key] forKey: key];
+        }
+    }
+}
+
+- (BOOL) hasUnappliedChanges
+{
+  NSDictionary *values = ((GSUserDefaultsHelper*)_values)->values;
+  NSEnumerator *e;
+  NSString *key;
+
+  e = [values keyEnumerator];
+  while ((key = (NSString *)[e nextObject]))
+    {
+      id val = [values objectForKey: key];
+      id newVal = [_defaults objectForKey: key];
+
+      if (![val isEqual: newVal])
+        {
+          return YES;
+        }      
+    }
+  return NO;
+}
+
+- (void) defaultsDidChange: (NSNotification*)notification
+{
+  [_values defaultsDidChange: _defaults];
+}
+
+- (void) encodeWithCoder: (NSCoder *)aCoder
+{ 
+  if ([aCoder allowsKeyedCoding])
+    if (self == [NSUserDefaultsController sharedUserDefaultsController])
+      {
+        [aCoder encodeBool: YES forKey: @"NSSharedInstance"];
+        return;
+      }
+
+  [super encodeWithCoder: aCoder];
+}
+
+- (id) initWithCoder: (NSCoder *)aDecoder
+{
+  if ([aDecoder allowsKeyedCoding])
+    if ([aDecoder decodeBoolForKey: @"NSSharedInstance"])
+      {
+        RELEASE(self);
+        return [NSUserDefaultsController sharedUserDefaultsController];
+      }
+
+  return [super initWithCoder: aDecoder];
 }
 
 @end
