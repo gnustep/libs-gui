@@ -1,5 +1,11 @@
 2009-01-05 Richard Frith-Macdonald <rfm@gnu.org>
 
+	* Source/NSScroller.m: Fixup/reorganisation of setting names for
+	components parts of scroller for theming.
+	* Source/GSThemeDrawing.m: Fix memory leak spotted by Fred.
+
+2009-01-05 Richard Frith-Macdonald <rfm@gnu.org>
+
 	* Headers/Additions/GNUstepGUI/GSTheme.h:
 	* Source/GSTheme.m:
 	* Source/NSButtonCell.m:

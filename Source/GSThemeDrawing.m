@@ -327,13 +327,13 @@
 
 - (NSCell*) cellForScrollerKnob: (BOOL)horizontal
 {
-  NSButtonCell	*knobCell;
+  NSButtonCell	*cell;
 
-  knobCell = [NSButtonCell new];
-  [knobCell setButtonType: NSMomentaryChangeButton];
-  [knobCell setImage: [NSImage imageNamed: @"common_Dimple"]];
-  [knobCell setImagePosition: NSImageOnly];
-  return knobCell;
+  cell = [NSButtonCell new];
+  [cell setButtonType: NSMomentaryChangeButton];
+  [cell setImage: [NSImage imageNamed: @"common_Dimple"]];
+  [cell setImagePosition: NSImageOnly];
+  return AUTORELEASE(cell);
 }
 
 - (NSCell*) cellForScrollerKnobSlot: (BOOL)horizontal
