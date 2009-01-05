@@ -1311,8 +1311,9 @@ typedef struct _GSButtonCellFlags
           buttonState = GSThemeSelectedState;
         }
 
-      borderSize = [[GSTheme theme] buttonBorderForStyle: _bezel_style 
-                                                   state: buttonState];
+      borderSize = [[GSTheme theme] buttonBorderForCell: self
+						  style: _bezel_style 
+                                                  state: buttonState];
     }
   else
     borderSize = NSZeroSize;
@@ -1374,15 +1375,16 @@ typedef struct _GSButtonCellFlags
           buttonState = GSThemeSelectedState;
         }
 
-      borderSize = [[GSTheme theme] buttonBorderForStyle: _bezel_style 
-                                                   state: buttonState];
+      borderSize = [[GSTheme theme] buttonBorderForCell: self
+						  style: _bezel_style 
+                                                  state: buttonState];
       interiorFrame = NSInsetRect(theRect, borderSize.width, borderSize.height);
 
       /* Pushed in buttons contents are displaced to the bottom right 1px.  */
       if (mask & NSPushInCellMask)
         {
-          interiorFrame
-            = NSOffsetRect(interiorFrame, 1.0, [_control_view isFlipped] ? 1.0 : -1.0);
+          interiorFrame = NSOffsetRect(interiorFrame, 1.0,
+	    [_control_view isFlipped] ? 1.0 : -1.0);
         }
       return interiorFrame;
     }

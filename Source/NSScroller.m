@@ -336,6 +336,21 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
   return [self initWithFrame: NSZeroRect];
 }
 
+- (void) dealloc
+{
+  GSTheme *theme = [GSTheme theme];
+
+  [theme setName: nil forElement: upCell];
+  [theme setName: nil forElement: downCell];
+  [theme setName: nil forElement: leftCell];
+  [theme setName: nil forElement: rightCell];
+  [theme setName: nil forElement: verticalKnobCell];
+  [theme setName: nil forElement: horizontalKnobCell];
+  [theme setName: nil forElement: verticalKnobSlotCell];
+  [theme setName: nil forElement: horizontalKnobSlotCell];
+  [super dealloc];
+}
+
 /**
  *  Cache images for scroll arrows and knob.  If you override +scrollerWidth
  *  you may need to override this as well (to provide images for the new
@@ -344,23 +359,48 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
  */
 - (void) drawParts
 {
-  GSTheme *theme = [GSTheme theme] ;
+  GSTheme *theme;
 
   if (upCell)
     return;
 
+  theme = [GSTheme theme];
+
+  [theme setName: nil forElement: upCell];
   ASSIGN(upCell ,[theme cellForScrollerArrow:
     NSScrollerDecrementArrow horizontal:NO]);
+  [theme setName: GSScrollerUpArrow forElement: upCell];
+
+  [theme setName: nil forElement: downCell];
   ASSIGN(downCell, [theme cellForScrollerArrow:
     NSScrollerIncrementArrow horizontal:NO]);
+  [theme setName: GSScrollerDownArrow forElement: downCell];
+
+  [theme setName: nil forElement: leftCell];
   ASSIGN(leftCell, [theme cellForScrollerArrow:
     NSScrollerDecrementArrow horizontal:YES]);
+  [theme setName: GSScrollerLeftArrow forElement: leftCell];
+
+  [theme setName: nil forElement: rightCell];
   ASSIGN(rightCell, [theme cellForScrollerArrow:
     NSScrollerIncrementArrow horizontal:YES]);
+  [theme setName: GSScrollerRightArrow forElement: rightCell];
+
+  [theme setName: nil forElement: verticalKnobCell];
   ASSIGN(verticalKnobCell, [theme cellForScrollerKnob: NO]);
+  [theme setName: GSScrollerVerticalKnob forElement: verticalKnobCell];
+
+  [theme setName: nil forElement: horizontalKnobCell];
   ASSIGN(horizontalKnobCell, [theme cellForScrollerKnob: YES]);
+  [theme setName: GSScrollerHorizontalKnob forElement: horizontalKnobCell];
+
+  [theme setName: nil forElement: verticalKnobSlotCell];
   ASSIGN(verticalKnobSlotCell, [theme cellForScrollerKnobSlot: NO]);
+  [theme setName: GSScrollerVerticalSlot forElement: verticalKnobSlotCell];
+
+  [theme setName: nil forElement: horizontalKnobSlotCell];
   ASSIGN(horizontalKnobSlotCell, [theme cellForScrollerKnobSlot: YES]);
+  [theme setName: GSScrollerHorizontalSlot forElement: horizontalKnobSlotCell];
 
   [downCell setContinuous: YES];
   [downCell sendActionOn: (NSLeftMouseDownMask | NSPeriodicMask)];

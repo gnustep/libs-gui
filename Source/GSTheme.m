@@ -57,6 +57,15 @@
 #import "AppKit/PSOperators.h"
 #import "GSThemePrivate.h"
 
+// Scroller part names
+NSString	*GSScrollerDownArrow = @"GSScrollerDownArrow";
+NSString	*GSScrollerHorizontalKnob = @"GSScrollerHorizontalKnob";
+NSString	*GSScrollerHorizontalSlot = @"GSScrollerHorizontalSlot";
+NSString	*GSScrollerLeftArrow = @"GSScrollerLeftArrow";
+NSString	*GSScrollerRightArrow = @"GSScrollerRightArrow";
+NSString	*GSScrollerUpArrow = @"GSScrollerUpArrow";
+NSString	*GSScrollerVerticalKnob = @"GSScrollerVerticalKnob";
+NSString	*GSScrollerVerticalSlot = @"GSScrollerVerticalSlot";
 
 NSString	*GSThemeDidActivateNotification
   = @"GSThemeDidActivateNotification";
@@ -80,18 +89,22 @@ typedef	struct {
   NSBundle		*bundle;
   NSColorList		*colors;
   NSMutableDictionary	*images;
-  NSMutableDictionary	*tiles;
+  NSMutableDictionary	*normalTiles;
+  NSMutableDictionary	*highlightedTiles;
+  NSMutableDictionary	*selectedTiles;
   NSImage		*icon;
   NSString		*name;
 } internal;
 
-#define	_internal ((internal*)_reserved)
-#define	_bundle	_internal->bundle
-#define	_colors	_internal->colors
-#define	_images	_internal->images
-#define	_tiles	_internal->tiles
-#define	_icon	_internal->icon
-#define	_name	_internal->name
+#define	_internal 		((internal*)_reserved)
+#define	_bundle			_internal->bundle
+#define	_colors			_internal->colors
+#define	_images			_internal->images
+#define	_normalTiles		_internal->normalTiles
+#define	_highlightedTiles	_internal->highlightedTiles
+#define	_selectedTiles		_internal->selectedTiles
+#define	_icon			_internal->icon
+#define	_name			_internal->name
 
 + (void) defaultsDidChange: (NSNotification*)n
 {
@@ -322,7 +335,7 @@ typedef	struct {
 
   /*
    * We could cache tile info here, but it's probably better for the
-   * tilesNamed:cache: method to do it lazily.
+   * tilesNamed:state:cache: method to do it lazily.
    */
 
   /*
@@ -475,7 +488,9 @@ typedef	struct {
       RELEASE(_bundle);
       RELEASE(_colors);
       RELEASE(_images);
-      RELEASE(_tiles);
+      RELEASE(_normalTiles);
+      RELEASE(_highlightedTiles);
+      RELEASE(_selectedTiles);
       RELEASE(_icon);
       NSZoneFree ([self zone], _reserved);
     }
@@ -514,7 +529,9 @@ typedef	struct {
 
   ASSIGN(_bundle, bundle);
   _images = [NSMutableDictionary new];
-  _tiles = [NSMutableDictionary new];
+  _normalTiles = [NSMutableDictionary new];
+  _highlightedTiles = [NSMutableDictionary new];
+  _selectedTiles = [NSMutableDictionary new];
   ASSIGN(_name,
     [[[_bundle bundlePath] lastPathComponent] stringByDeletingPathExtension]);
 
@@ -539,10 +556,6 @@ typedef	struct {
 {
   NSString	*name = (NSString*)NSMapGet(names, (void*)anObject);
 
-  if (name == nil)
-    {
-      name = NSStringFromClass([anObject class]);
-    }
   return name;
 }
 
@@ -556,18 +569,26 @@ typedef	struct {
 
 - (void) setName: (NSString*)aString forElement: (id)anObject
 {
-  if (anObject == nil)
-    {
-      [NSException raise: NSInvalidArgumentException
-		  format: @"[%@-%@] nil object supplied",
-	NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
-    }
   if (aString == nil)
     {
+      if (anObject == nil)
+	{
+	  /* Ignore this ... it's most likely a partially initialised
+	   * control being deallocated and removing the name for a
+	   * subsidiary item which was never allocated in the first place.
+	   */
+	  return;
+	}
       NSMapRemove(names, (void*)anObject);
     }
   else
     {
+      if (anObject == nil)
+	{
+	  [NSException raise: NSInvalidArgumentException
+		      format: @"[%@-%@] nil object supplied",
+	    NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
+	}
       NSMapInsert(names, (void*)anObject, (void*)aString);
     }
 }
@@ -577,15 +598,45 @@ typedef	struct {
   return [GSThemeInspector sharedThemeInspector];
 }
 
-- (GSDrawTiles*) tilesNamed: (NSString*)aName cache: (BOOL)useCache
+- (GSDrawTiles*) tilesNamed: (NSString*)aName
+		      state: (GSThemeControlState)elementState
+		      cache: (BOOL)useCache
 {
-  GSDrawTiles	*tiles;
+  GSDrawTiles		*tiles;
+  NSMutableDictionary	*cache;
 
-  tiles = (useCache == YES) ? [_tiles objectForKey: aName] : nil;
+  switch (elementState)
+    {
+      case GSThemeNormalState:
+	cache = _normalTiles;
+	break;
+      case GSThemeHighlightedState:
+	cache = _highlightedTiles;
+	break;
+      case GSThemeSelectedState:
+	cache = _selectedTiles;
+	break;
+    }
+
+  tiles = (useCache == YES) ? [cache objectForKey: aName] : nil;
   if (tiles == nil)
     {
       NSDictionary	*info;
       NSImage		*image;
+      NSString		*fullName;
+
+      switch (elementState)
+	{
+	  case GSThemeNormalState:
+	    fullName = aName;
+	    break;
+	  case GSThemeHighlightedState:
+	    fullName = [aName stringByAppendingString: @"Highlighted"];
+	    break;
+	  case GSThemeSelectedState:
+	    fullName = [aName stringByAppendingString: @"Selected"];
+	    break;
+	}
 
       /* The GSThemeTiles entry in the info dictionary should be a
        * dictionary containing information about each set of tiles.
@@ -595,7 +646,7 @@ typedef	struct {
        * VerticalDivision	Where to divide the image into rows.
        */
       info = [self infoDictionary];
-      info = [[info objectForKey: @"GSThemeTiles"] objectForKey: aName];
+      info = [[info objectForKey: @"GSThemeTiles"] objectForKey: fullName];
       if ([info isKindOfClass: [NSDictionary class]] == YES)
         {
 	  float		x;
@@ -639,7 +690,7 @@ typedef	struct {
 	    {
 	      NSString	*ext = [imageTypes objectAtIndex: count];
 
-	      imagePath = [_bundle pathForResource: aName
+	      imagePath = [_bundle pathForResource: fullName
 					    ofType: ext
 				       inDirectory: @"ThemeTiles"];
 	      if (imagePath != nil)
@@ -657,11 +708,11 @@ typedef	struct {
 
       if (tiles == nil)
         {
-	  [_tiles setObject: null forKey: aName];
+	  [cache setObject: null forKey: aName];
 	}
       else
         {
-	  [_tiles setObject: tiles forKey: aName];
+	  [cache setObject: tiles forKey: aName];
 	  RELEASE(tiles);
 	}
     }

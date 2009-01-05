@@ -2,9 +2,15 @@
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h:
 	* Source/GSTheme.m:
+	* Source/NSButtonCell.m:
+	* Source/NSScroller.m:
+	* Source/GSThemeDrawing.m:
 	Add methods to name specific elements in the gui so that we can
 	locate resources for them and so that override methods can handle
 	them specially.
+	Change tile image lookup for improved consistency/simplicity and
+	to use new naming.
+	Add naming of component parts of a scroller.
 
 2009-01-04 18:32-EST Gregory John Casamento <greg_casamento@yahoo.com>
 

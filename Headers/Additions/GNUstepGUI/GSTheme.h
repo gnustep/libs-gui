@@ -155,6 +155,18 @@
 @class NSMenuView;
 @class GSDrawTiles;
 
+/* Names for the component parts of a scroller,
+ * allowing tiles and/or colors to be set for them.
+ */
+APPKIT_EXPORT	NSString	*GSScrollerDownArrow;
+APPKIT_EXPORT	NSString	*GSScrollerHorizontalKnob;
+APPKIT_EXPORT	NSString	*GSScrollerHorizontalSlot;
+APPKIT_EXPORT	NSString	*GSScrollerLeftArrow;
+APPKIT_EXPORT	NSString	*GSScrollerRightArrow;
+APPKIT_EXPORT	NSString	*GSScrollerUpArrow;
+APPKIT_EXPORT	NSString	*GSScrollerVerticalKnob;
+APPKIT_EXPORT	NSString	*GSScrollerVerticalSlot;
+
 /**
  * This defines how the values in a tile array should be used when
  * drawing a rectangle.  Mostly this just effects the center, middle
@@ -379,8 +391,8 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 - (NSString*) name;
 
 /** Returns the name used to locate theming resources for a particular gui
- * element.  If no name has been set for the particular object, the name
- * for the class of object is returned.
+ * element.  If no name has been set for the particular object this method
+ * returns nil.
  */
 - (NSString*) nameForElement: (id)anObject;
 
@@ -389,12 +401,16 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 - (void) setName: (NSString*)aString;
 
 /** Set the name that is used to identify theming resources for a particular
- * control or other gui element.  The name set for a specific element will
- * override the default (the name of the class of the element), and this is
- * used so that where an element is part of a control, it can be displayed
- * differently from the same class of element used outside that control.<br />
+ * control or other gui element.  This is used so that where an element is
+ * part of a control it can be displayed differently from the same class of
+ * element used outside that control.<br />
  * Supplying a nil value for aString simply removes any name setting for
- * anObject.
+ * anObject.<br />
+ * Supplying nil for anObject is illegal (raises an exception) unless
+ * the value of aString is also nil (and the method does nothing).<br />
+ * Any control which uses this method to set names for subsidiary elements
+ * must also make sure to remove the name mapping before that element is
+ * deallocated.
  */
 - (void) setName: (NSString*)aString forElement: (id)anObject;
 
@@ -417,10 +433,14 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * information to draw user interface elements.  The tile information
  * returned by this method can be passed to the
  * -fillRect:withTiles:background:fillStyle: method.<br />
+ * The elementState argument specifies the state for which tiles are
+ * requested.<br />
  * The useCache argument controls whether the information is retrieved
  * from cache or regenerated from information in the theme bundle.
  */
-- (GSDrawTiles*) tilesNamed: (NSString*)aName cache: (BOOL)useCache; 
+- (GSDrawTiles*) tilesNamed: (NSString*)aName
+		      state: (GSThemeControlState)elementState
+		      cache: (BOOL)useCache; 
 @end
 
 /**
@@ -441,8 +461,9 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 /**
  * Amount by which the button is inset by the border.
  */
-- (NSSize) buttonBorderForStyle: (int)style 
-                          state: (GSThemeControlState)state;
+- (NSSize) buttonBorderForCell: (NSCell*)cell
+			 style: (int)style 
+                         state: (GSThemeControlState)state;
 
 /** 
  * Draws the indicator (normally a dotted rectangle) to show that

@@ -41,23 +41,27 @@
 {
   GSDrawTiles	*tiles = nil;
   NSColor	*color = nil;
+  NSString	*name = [self nameForElement: cell];
+
+  if (name == nil)
+    {
+      name = @"NSButton";
+    }
 
   if (state == GSThemeNormalState)
     {
-      tiles = [self tilesNamed: @"NSButtonNormal" cache: YES];
       color = [NSColor controlBackgroundColor];
     }
   else if (state == GSThemeHighlightedState)
     {
-      tiles = [self tilesNamed: @"NSButtonHighlighted" cache: YES];
       color = [NSColor selectedControlColor];
     }
   else if (state == GSThemeSelectedState)
     {
-      tiles = [self tilesNamed: @"NSButtonPushed" cache: YES];
       color = [NSColor selectedControlColor];
     }
 
+  tiles = [self tilesNamed: name state: state cache: YES];
   if (tiles == nil)
     {
       switch (style)
@@ -124,24 +128,19 @@
     }
 }
 
-- (NSSize) buttonBorderForStyle: (int)style 
-			  state: (GSThemeControlState)state
+- (NSSize) buttonBorderForCell: (NSCell*)cell
+			 style: (int)style 
+			 state: (GSThemeControlState)state
 {
   GSDrawTiles	*tiles = nil;
+  NSString	*name = [self nameForElement: cell];
 
-  if (state == GSThemeNormalState)
+  if (name == nil)
     {
-      tiles = [self tilesNamed: @"NSButtonNormal" cache: YES];
-    }
-  else if (state == GSThemeHighlightedState)
-    {
-      tiles = [self tilesNamed: @"NSButtonHighlighted" cache: YES];
-    }
-  else if (state == GSThemeSelectedState)
-    {
-      tiles = [self tilesNamed: @"NSButtonPushed" cache: YES];
+      name = @"NSButton";
     }
 
+  tiles = [self tilesNamed: name state: state cache: YES];
   if (tiles == nil)
     {
       switch (style)
