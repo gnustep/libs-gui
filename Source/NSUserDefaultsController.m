@@ -89,7 +89,6 @@ static id shared = nil;
       if (value)
         [values setObject: value forKey: key];
     }
-  NSLog(@"returning %@ for key %@", value, key);
 
   return value;
 }
