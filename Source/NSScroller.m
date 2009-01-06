@@ -697,8 +697,33 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 					   fromView: nil]];
 	  if (floatValue != _floatValue)
 	    {
-	      [self setFloatValue: floatValue];
-	      [self sendAction: _action to: _target];
+	      NSInterfaceStyle interfaceStyle;
+
+	      interfaceStyle
+		= NSInterfaceStyleForKey(@"NSScrollerInterfaceStyle", self);
+
+              if (interfaceStyle == NSNextStepInterfaceStyle 
+	        || interfaceStyle == GSWindowMakerInterfaceStyle)
+		{
+		  /* NeXTstep style is to scroll to point.
+		   */
+	          [self setFloatValue: floatValue];
+	          [self sendAction: _action to: _target];
+		}
+	      else
+		{
+		  /* Windows style is to scroll by a page.
+		   */
+		  if (floatValue > _floatValue)
+		    {
+		      _hitPart = NSScrollerIncrementPage;
+		    }
+		  else
+		    {
+		      _hitPart = NSScrollerDecrementPage;
+		    }
+	          [self sendAction: _action to: _target];
+		}
 	    }
 	  [self trackKnob: theEvent];
 	  break;
