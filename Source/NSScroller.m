@@ -933,6 +933,11 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
   static NSRect rectForPartDecrementLine;
   static NSRect rectForPartKnobSlot;
 
+  if (upCell == nil)
+    {
+      [self drawParts];
+      [self checkSpaceForParts];
+    }
   if (_cacheValid == NO)
     {
       rectForPartIncrementLine = [self rectForPart: NSScrollerIncrementLine];
@@ -975,6 +980,11 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 	(whichButton == NSScrollerIncrementArrow ? "increment" : "decrement"),
 	rect.origin.x, rect.origin.y);
 
+  if (upCell == nil)
+    {
+      [self drawParts];
+      [self checkSpaceForParts];
+    }
   switch (whichButton)
     {
       case NSScrollerDecrementArrow:
@@ -993,6 +1003,11 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
  */
 - (void) drawKnob
 {
+  if (upCell == nil)
+    {
+      [self drawParts];
+      [self checkSpaceForParts];
+    }
   if (_isHorizontal)
     [horizontalKnobCell drawWithFrame: [self rectForPart: NSScrollerKnob]
 			       inView: self];
@@ -1005,6 +1020,11 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 {
   static NSRect rect;
 
+  if (upCell == nil)
+    {
+      [self drawParts];
+      [self checkSpaceForParts];
+    }
   if (_cacheValid == NO)
     {
       rect = [self rectForPart: NSScrollerKnobSlot];
@@ -1051,6 +1071,11 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 
   NSInterfaceStyle interfaceStyle = NSInterfaceStyleForKey(@"NSScrollerInterfaceStyle",self);
 
+  if (upCell == nil)
+    {
+      [self drawParts];
+      [self checkSpaceForParts];
+    }
   /* We use the button offset if we in the NeXTstep interface style. */
   if (interfaceStyle == NSNextStepInterfaceStyle
     || interfaceStyle == GSWindowMakerInterfaceStyle)
