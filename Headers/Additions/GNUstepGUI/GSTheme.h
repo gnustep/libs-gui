@@ -410,9 +410,14 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * the value of aString is also nil (and the method does nothing).<br />
  * Any control which uses this method to set names for subsidiary elements
  * must also make sure to remove the name mapping before that element is
- * deallocated.
+ * deallocated, unless the takeOwnership option is YES, in which case
+ * anObject is retained, the name mapping lasts only until the receiver
+ * is deactivated, and at that point anObject is released.
  */
-- (void) setName: (NSString*)aString forElement: (id)anObject;
+- (void) setName: (NSString*)aString
+      forElement: (id)anObject
+       temporary: (BOOL)takeOwnership;
+	
 
 /**
  * <p>Provides a standard inspector window used to display information about

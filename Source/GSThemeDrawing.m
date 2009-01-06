@@ -282,6 +282,7 @@
 			    horizontal: (BOOL)horizontal
 {
   NSButtonCell	*cell;
+  NSString	*name;
   
   cell = [NSButtonCell new];
   if (horizontal)
@@ -293,6 +294,7 @@
 	  [cell setImage: [NSImage imageNamed: @"common_ArrowLeft"]];
 	  [cell setAlternateImage: [NSImage imageNamed: @"common_ArrowLeftH"]];
 	  [cell setImagePosition: NSImageOnly];
+          name = GSScrollerLeftArrow;
 	}
       else
 	{
@@ -301,6 +303,7 @@
 	  [cell setImage: [NSImage imageNamed: @"common_ArrowRight"]];
 	  [cell setAlternateImage: [NSImage imageNamed: @"common_ArrowRightH"]];
 	  [cell setImagePosition: NSImageOnly];
+          name = GSScrollerRightArrow;
 	}
     }
   else
@@ -312,6 +315,7 @@
 	  [cell setImage: [NSImage imageNamed: @"common_ArrowUp"]];
 	  [cell setAlternateImage: [NSImage imageNamed: @"common_ArrowUpH"]];
 	  [cell setImagePosition: NSImageOnly];
+          name = GSScrollerDownArrow;
 	}
       else
 	{
@@ -320,9 +324,12 @@
 	  [cell setImage: [NSImage imageNamed: @"common_ArrowDown"]];
 	  [cell setAlternateImage: [NSImage imageNamed: @"common_ArrowDownH"]];
 	  [cell setImagePosition: NSImageOnly];
+          name = GSScrollerUpArrow;
 	}
     }
-  return AUTORELEASE(cell);
+  [self setName: name forElement: cell temporary: YES];
+  RELEASE(cell);
+  return cell;
 }
 
 - (NSCell*) cellForScrollerKnob: (BOOL)horizontal
@@ -333,7 +340,16 @@
   [cell setButtonType: NSMomentaryChangeButton];
   [cell setImage: [NSImage imageNamed: @"common_Dimple"]];
   [cell setImagePosition: NSImageOnly];
-  return AUTORELEASE(cell);
+  if (horizontal)
+    {
+      [self setName: GSScrollerHorizontalKnob forElement: cell temporary: YES];
+    }
+  else
+    {
+      [self setName: GSScrollerVerticalKnob forElement: cell temporary: YES];
+    }
+  RELEASE(cell);
+  return cell;
 }
 
 - (NSCell*) cellForScrollerKnobSlot: (BOOL)horizontal
@@ -344,7 +360,16 @@
   [cell setBordered: NO];
   [cell setStringValue: nil];
   [cell setBackgroundColor: [NSColor scrollBarColor]];
-  return AUTORELEASE(cell);
+  if (horizontal)
+    {
+      [self setName: GSScrollerHorizontalSlot forElement: cell temporary: YES];
+    }
+  else
+    {
+      [self setName: GSScrollerVerticalSlot forElement: cell temporary: YES];
+    }
+  RELEASE(cell);
+  return cell;
 }
 
 - (float) defaultScrollerWidth

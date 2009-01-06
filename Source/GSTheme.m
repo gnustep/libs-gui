@@ -76,6 +76,10 @@ NSString	*GSThemeWillActivateNotification
 NSString	*GSThemeWillDeactivateNotification
   = @"GSThemeWillDeactivateNotification";
 
+@interface	GSTheme (Private)
+- (void) _revokeOwnerships;
+@end
+
 @implementation GSTheme
 
 static GSTheme			*defaultTheme = nil;
@@ -92,6 +96,7 @@ typedef	struct {
   NSMutableDictionary	*normalTiles;
   NSMutableDictionary	*highlightedTiles;
   NSMutableDictionary	*selectedTiles;
+  NSMutableSet		*owned;
   NSImage		*icon;
   NSString		*name;
 } internal;
@@ -103,6 +108,7 @@ typedef	struct {
 #define	_normalTiles		_internal->normalTiles
 #define	_highlightedTiles	_internal->highlightedTiles
 #define	_selectedTiles		_internal->selectedTiles
+#define	_owned			_internal->owned
 #define	_icon			_internal->icon
 #define	_name			_internal->name
 
@@ -473,6 +479,8 @@ typedef	struct {
     }
   [_images removeAllObjects];
 
+  [self _revokeOwnerships];
+
   /* Tell everything that we have become inactive.
    */
   [[NSNotificationCenter defaultCenter]
@@ -492,6 +500,8 @@ typedef	struct {
       RELEASE(_highlightedTiles);
       RELEASE(_selectedTiles);
       RELEASE(_icon);
+      [self _revokeOwnerships];
+      RELEASE(_owned);
       NSZoneFree ([self zone], _reserved);
     }
   [super dealloc];
@@ -532,6 +542,8 @@ typedef	struct {
   _normalTiles = [NSMutableDictionary new];
   _highlightedTiles = [NSMutableDictionary new];
   _selectedTiles = [NSMutableDictionary new];
+  _owned = [NSMutableSet new];
+
   ASSIGN(_name,
     [[[_bundle bundlePath] lastPathComponent] stringByDeletingPathExtension]);
 
@@ -567,7 +579,9 @@ typedef	struct {
     }
 }
 
-- (void) setName: (NSString*)aString forElement: (id)anObject
+- (void) setName: (NSString*)aString
+      forElement: (id)anObject
+       temporary: (BOOL)takeOwnership
 {
   if (aString == nil)
     {
@@ -580,6 +594,7 @@ typedef	struct {
 	  return;
 	}
       NSMapRemove(names, (void*)anObject);
+      [_owned removeObject: anObject];
     }
   else
     {
@@ -590,6 +605,10 @@ typedef	struct {
 	    NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
 	}
       NSMapInsert(names, (void*)anObject, (void*)aString);
+      if (takeOwnership == YES)
+	{
+	  [_owned addObject: anObject];
+	}
     }
 }
 
@@ -723,5 +742,19 @@ typedef	struct {
   return tiles;
 }
 
+@end
+
+@implementation	GSTheme (Private)
+/* Remove all temporarily named objects from our registry, releasing them.
+ */
+- (void) _revokeOwnerships
+{
+  id	o;
+
+  while ((o = [_owned anyObject]) != nil)
+    {
+      [self setName: nil forElement: o temporary: YES];
+    }
+}
 @end
 

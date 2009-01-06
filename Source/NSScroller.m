@@ -69,30 +69,20 @@ static float	scrollerWidth = 18.0;
 
 static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 
-+ (void) _themeWillActivate: (NSNotification*)n
++ (void) _themeWillDeactivate: (NSNotification*)n
 {
-  GSTheme *theme = [GSTheme theme];
-
   /* Clear cached information from the old theme ... will get info from
    * the new theme as required.
    */
   scrollerWidth = 0.0;
-  [theme setName: nil forElement: upCell];
-  DESTROY(upCell);
-  [theme setName: nil forElement: downCell];
-  DESTROY(downCell);
-  [theme setName: nil forElement: leftCell];
-  DESTROY(leftCell);
-  [theme setName: nil forElement: rightCell];
-  DESTROY(rightCell);
-  [theme setName: nil forElement: verticalKnobCell];
-  DESTROY(horizontalKnobCell);
-  [theme setName: nil forElement: horizontalKnobCell];
-  DESTROY(verticalKnobCell);
-  [theme setName: nil forElement: verticalKnobSlotCell];
-  DESTROY(horizontalKnobSlotCell);
-  [theme setName: nil forElement: horizontalKnobSlotCell];
-  DESTROY(verticalKnobSlotCell);
+  upCell = nil;
+  downCell = nil;
+  leftCell = nil;
+  rightCell = nil;
+  horizontalKnobCell = nil;
+  verticalKnobCell = nil;
+  horizontalKnobSlotCell = nil;
+  verticalKnobSlotCell = nil;
 }
 
 /*
@@ -104,8 +94,8 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
     {
       [self setVersion: 1];
       [[NSNotificationCenter defaultCenter] addObserver: self
-	selector: @selector(_themeWillActivate:)
-	name: GSThemeWillActivateNotification
+	selector: @selector(_themeWillDeactivate:)
+	name: GSThemeWillDeactivateNotification
 	object: nil];
     }
 }
@@ -368,33 +358,18 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 
   theme = [GSTheme theme];
 
-  ASSIGN(upCell ,[theme cellForScrollerArrow:
-    NSScrollerDecrementArrow horizontal:NO]);
-  [theme setName: GSScrollerUpArrow forElement: upCell];
-
-  ASSIGN(downCell, [theme cellForScrollerArrow:
-    NSScrollerIncrementArrow horizontal:NO]);
-  [theme setName: GSScrollerDownArrow forElement: downCell];
-
-  ASSIGN(leftCell, [theme cellForScrollerArrow:
-    NSScrollerDecrementArrow horizontal:YES]);
-  [theme setName: GSScrollerLeftArrow forElement: leftCell];
-
-  ASSIGN(rightCell, [theme cellForScrollerArrow:
-    NSScrollerIncrementArrow horizontal:YES]);
-  [theme setName: GSScrollerRightArrow forElement: rightCell];
-
-  ASSIGN(verticalKnobCell, [theme cellForScrollerKnob: NO]);
-  [theme setName: GSScrollerVerticalKnob forElement: verticalKnobCell];
-
-  ASSIGN(horizontalKnobCell, [theme cellForScrollerKnob: YES]);
-  [theme setName: GSScrollerHorizontalKnob forElement: horizontalKnobCell];
-
-  ASSIGN(verticalKnobSlotCell, [theme cellForScrollerKnobSlot: NO]);
-  [theme setName: GSScrollerVerticalSlot forElement: verticalKnobSlotCell];
-
-  ASSIGN(horizontalKnobSlotCell, [theme cellForScrollerKnobSlot: YES]);
-  [theme setName: GSScrollerHorizontalSlot forElement: horizontalKnobSlotCell];
+  upCell
+    = [theme cellForScrollerArrow: NSScrollerDecrementArrow horizontal:NO];
+  downCell
+    = [theme cellForScrollerArrow: NSScrollerIncrementArrow horizontal:NO];
+  leftCell
+    = [theme cellForScrollerArrow: NSScrollerDecrementArrow horizontal:YES];
+  rightCell
+    = [theme cellForScrollerArrow: NSScrollerIncrementArrow horizontal:YES];
+  verticalKnobCell = [theme cellForScrollerKnob: NO];
+  horizontalKnobCell = [theme cellForScrollerKnob: YES];
+  verticalKnobSlotCell = [theme cellForScrollerKnobSlot: NO];
+  horizontalKnobSlotCell = [theme cellForScrollerKnobSlot: YES];
 
   [downCell setContinuous: YES];
   [downCell sendActionOn: (NSLeftMouseDownMask | NSPeriodicMask)];
@@ -994,9 +969,11 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 - (void) drawKnob
 {
   if (_isHorizontal)
-    [horizontalKnobCell drawWithFrame: [self rectForPart: NSScrollerKnob] inView: self];
+    [horizontalKnobCell drawWithFrame: [self rectForPart: NSScrollerKnob]
+			       inView: self];
   else
-    [verticalKnobCell drawWithFrame: [self rectForPart: NSScrollerKnob] inView: self];
+    [verticalKnobCell drawWithFrame: [self rectForPart: NSScrollerKnob]
+			     inView: self];
 }
 
 - (void) drawKnobSlot
@@ -1009,9 +986,9 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
     }
 
   if (_isHorizontal)
-    [horizontalKnobSlotCell drawWithFrame:rect inView:self];
+    [horizontalKnobSlotCell drawWithFrame: rect inView: self];
   else
-    [verticalKnobSlotCell drawWithFrame:rect inView:self];
+    [verticalKnobSlotCell drawWithFrame: rect inView: self];
 }
 
 /**<p>Highlights the button whose under the mouse. Does nothing if the mouse
