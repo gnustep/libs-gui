@@ -92,6 +92,7 @@ static NSMapTable		*names = 0;
 typedef	struct {
   NSBundle		*bundle;
   NSColorList		*colors;
+  NSColorList		*extraColors;
   NSMutableDictionary	*images;
   NSMutableDictionary	*normalTiles;
   NSMutableDictionary	*highlightedTiles;
@@ -104,6 +105,7 @@ typedef	struct {
 #define	_internal 		((internal*)_reserved)
 #define	_bundle			_internal->bundle
 #define	_colors			_internal->colors
+#define	_extraColors		_internal->extraColors
 #define	_images			_internal->images
 #define	_normalTiles		_internal->normalTiles
 #define	_highlightedTiles	_internal->highlightedTiles
@@ -286,6 +288,8 @@ typedef	struct {
    */
   [_colors release];
   _colors = nil;
+  [_extraColors release];
+  _extraColors = nil;
 
   /*
    * We step through all the bundle image resources and load them in
@@ -495,6 +499,7 @@ typedef	struct {
     {
       RELEASE(_bundle);
       RELEASE(_colors);
+      RELEASE(_extraColors);
       RELEASE(_images);
       RELEASE(_normalTiles);
       RELEASE(_highlightedTiles);
@@ -505,6 +510,31 @@ typedef	struct {
       NSZoneFree ([self zone], _reserved);
     }
   [super dealloc];
+}
+
+- (NSColorList*) extraColors
+{
+  if (_extraColors == nil)
+    {
+      NSString	*colorsPath;
+
+      colorsPath = [_bundle pathForResource: @"ThemeExtraColors"
+				     ofType: @"clr"]; 
+      if (colorsPath == nil)
+	{
+	  _extraColors = [null retain];
+	}
+      else
+	{
+	  _extraColors = [[NSColorList alloc] initWithName: @"ThemeExtra"
+					          fromFile: colorsPath];
+	}
+    }
+  if ((id)_extraColors == (id)null)
+    {
+      return nil;
+    }
+  return _extraColors;
 }
 
 - (NSImage*) icon

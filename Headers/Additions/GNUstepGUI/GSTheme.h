@@ -338,6 +338,15 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 - (void) deactivate;
 
 /**
+ * Returns the extra color list defined by the receiver.<br />
+ * This is a set of named colors to be used for particular parts of the
+ * gui which have been named by the -setName:forElement:temporary:
+ * method.  The presence of a color in this list may override the default
+ * system color for a control.
+ */
+- (NSColorList*) extraColors;
+
+/**
  * Returns the theme's icon.
  */
 - (NSImage*) icon;

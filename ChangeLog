@@ -1,3 +1,10 @@
+2009-01-07 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSTheme.m:
+	* Source/GSThemeDrawing.m:
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	Add support for setting color of named parts.
+
 2009-01-06 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSWindowDecorationView.m: No longer adjust the size of

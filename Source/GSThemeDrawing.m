@@ -27,6 +27,7 @@
 */
 
 #import "GSThemePrivate.h"
+#import "AppKit/NSColorList.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
 
@@ -41,6 +42,7 @@
 {
   GSDrawTiles	*tiles = nil;
   NSColor	*color = nil;
+  NSColorList	*extra = [self extraColors];
   NSString	*name = [self nameForElement: cell];
 
   if (name == nil)
@@ -50,15 +52,29 @@
 
   if (state == GSThemeNormalState)
     {
-      color = [NSColor controlBackgroundColor];
+      color = [extra colorWithKey: name];
+      if (color == nil)
+	{
+          color = [NSColor controlBackgroundColor];
+	}
     }
   else if (state == GSThemeHighlightedState)
     {
-      color = [NSColor selectedControlColor];
+      color = [extra colorWithKey: 
+	[name stringByAppendingString: @"Highlighted"]];
+      if (color == nil)
+	{
+          color = [NSColor selectedControlColor];
+	}
     }
   else if (state == GSThemeSelectedState)
     {
-      color = [NSColor selectedControlColor];
+      color = [extra colorWithKey: 
+	[name stringByAppendingString: @"Selected"]];
+      if (color == nil)
+	{
+          color = [NSColor selectedControlColor];
+	}
     }
 
   tiles = [self tilesNamed: name state: state cache: YES];
@@ -315,7 +331,7 @@
 	  [cell setImage: [NSImage imageNamed: @"common_ArrowUp"]];
 	  [cell setAlternateImage: [NSImage imageNamed: @"common_ArrowUpH"]];
 	  [cell setImagePosition: NSImageOnly];
-          name = GSScrollerDownArrow;
+          name = GSScrollerUpArrow;
 	}
       else
 	{
@@ -324,7 +340,7 @@
 	  [cell setImage: [NSImage imageNamed: @"common_ArrowDown"]];
 	  [cell setAlternateImage: [NSImage imageNamed: @"common_ArrowDownH"]];
 	  [cell setImagePosition: NSImageOnly];
-          name = GSScrollerUpArrow;
+          name = GSScrollerDownArrow;
 	}
     }
   [self setName: name forElement: cell temporary: YES];
@@ -354,20 +370,29 @@
 
 - (NSCell*) cellForScrollerKnobSlot: (BOOL)horizontal
 {
-  NSButtonCell		*cell;
+  NSButtonCell	*cell;
+  NSColorList	*extra = [self extraColors];
+  NSColor	*color;
 
   cell = [NSButtonCell new];
   [cell setBordered: NO];
   [cell setStringValue: nil];
-  [cell setBackgroundColor: [NSColor scrollBarColor]];
+
   if (horizontal)
     {
+      color = [extra colorWithKey: GSScrollerHorizontalSlot];
       [self setName: GSScrollerHorizontalSlot forElement: cell temporary: YES];
     }
   else
     {
+      color = [extra colorWithKey: GSScrollerVerticalSlot];
       [self setName: GSScrollerVerticalSlot forElement: cell temporary: YES];
     }
+  if (color == nil)
+    {
+      color = [NSColor scrollBarColor];
+    }
+  [cell setBackgroundColor: color];
   RELEASE(cell);
   return cell;
 }
