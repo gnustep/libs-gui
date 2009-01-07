@@ -546,8 +546,7 @@ static GSValidationCenter *vc = nil;
 - (void) dealloc
 { 
   //NSLog(@"Toolbar dealloc %@", self);
-  
-  [vc removeObserver: self window: nil];
+  [self _setToolbarView: nil];
   
   // Use DESTROY ?
   RELEASE(_identifier);
@@ -567,10 +566,8 @@ static GSValidationCenter *vc = nil;
 // FIXME: Hack
 - (void) release
 { 
-  // We currently only worry about when our toolbar view is deallocated.
-  // Views which belongs to a window which is deallocated, are released.
-  // In such case, it's necessary to remove the toolbar which belongs to this
-  // view from the master list when nobody else still retains us, so that it
+  // When a toolbar has no external references any more, it's necessary 
+  // to remove the toolbar from the master list, so that it
   // doesn't cause a memory leak.
   if ([self retainCount] == 2)
     [toolbars removeObjectIdenticalTo: self];
@@ -1206,18 +1203,24 @@ static GSValidationCenter *vc = nil;
 
 - (void) _setToolbarView: (GSToolbarView *)toolbarView
 {
+  if (_toolbarView == toolbarView)
+    return;
+
   if (_toolbarView != nil)
     {
+      // We unset the toolbar from the previous toolbar view
+      [_toolbarView setToolbar: nil];
       [vc removeObserver: self window: nil];
     }
     
-  // Don't do an ASSIGN here, the toolbar itself retains us.
-  _toolbarView = toolbarView;
+  ASSIGN(_toolbarView, toolbarView);
   
   if (toolbarView != nil)
     {
-      [vc addObserver: self window: [toolbarView window]];
       // In the case the window parameter is a nil value, nothing happens.
+      [vc addObserver: self window: [toolbarView window]];
+      // We set the toolbar on the new toolbar view
+      [_toolbarView setToolbar: self];
     }
 }
 

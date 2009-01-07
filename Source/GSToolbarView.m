@@ -325,7 +325,6 @@ static void initSystemExtensionsColors(void)
   
   [[NSNotificationCenter defaultCenter] removeObserver: self];
   
-  RELEASE(_toolbar);
   RELEASE(_clippedItemsMark);
   RELEASE(_clipView);
 
@@ -567,11 +566,7 @@ static void initSystemExtensionsColors(void)
   if (_toolbar == toolbar)
     return;
 
-  // We unset the toolbar view from the previous toolbar    
-  [_toolbar _setToolbarView: nil];
-  ASSIGN(_toolbar, toolbar);
-  // We set the toolbar view on the new toolbar
-  [_toolbar _setToolbarView: self];
+  _toolbar = toolbar;
 
   [_clippedItemsMark setToolbar: _toolbar];
   // Load the toolbar in the toolbar view

@@ -60,11 +60,6 @@
       [_wv addToolbarView: [toolbar _toolbarView]];
     }
 
-  // Important to set _visible after the toolbar view has been toggled because
-  // NSWindow method _contentViewWithoutToolbar uses [NSToolbar visible]
-  // when we toggle the toolbar
-  // example : the toolbar needs to be still known visible in order to hide
-  // it.
   [toolbar setVisible: !isVisible];
 
   [self display];
@@ -84,16 +79,11 @@
 
   if (_toolbar != nil)
     {
-      GSToolbarView *toolbarView = [_toolbar _toolbarView];
-
       // We throw the last toolbar out
       if ([_toolbar isVisible])
         {
-          [_wv removeToolbarView: toolbarView];
+          [_wv removeToolbarView: [_toolbar _toolbarView]];
         }
-      [toolbarView setToolbar: nil];
-      // Release the toolbarView, this may release the toolbar
-      RELEASE(toolbarView);
     }
   
   ASSIGN(_toolbar, toolbar);
@@ -102,27 +92,22 @@
     {
       GSToolbarView *toolbarView = [toolbar _toolbarView];
   
-      if (toolbarView != nil)
-        {
-          NSLog(@"Error: the new toolbar is still owned by a toolbar view");
-        }
-      else
+      if (toolbarView == nil)
         {
           // Instantiate the toolbar view
-          // FIXME: Currently this is reatined until the toolbar
-          // gets removed from the window.
           toolbarView = [[GSToolbarView alloc] 
                             initWithFrame: 
                                 NSMakeRect(0, 0, 
                                            [NSWindow contentRectForFrameRect: [self frame]
                                                      styleMask: [self styleMask]].size.width, 100)];
-          // _toggleToolbarView method will set the toolbar view to the right
+          // addToolbarView: method will set the toolbar view to the right
           // frame
           [toolbarView setAutoresizingMask: NSViewWidthSizable | NSViewMinYMargin];
           [toolbarView setBorderMask: GSToolbarViewBottomBorder];
-          // Load the toolbar inside the toolbar view
-          // Will set the _toolbarView variable for the toolbar
-          [toolbarView setToolbar: toolbar];
+
+          // Load the toolbar view inside the toolbar
+          [toolbar _setToolbarView: toolbarView];
+          RELEASE(toolbarView);
         }
     
       // Make the toolbar view visible

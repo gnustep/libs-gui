@@ -1,3 +1,10 @@
+2009-01-07 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow+Toolbar.m,
+	* Source/NSToolbar.m,
+	* Source/GSToolbarView.m: Revert the relationship between
+	NSToolbar and GSToolbarView, now the toolbar retains the view.
+	
 2009-01-07 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTheme.m:
