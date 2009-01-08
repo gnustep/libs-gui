@@ -1,6 +1,8 @@
 2009-01-08 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTheme.m: Fix nil pointer exception.
+	* Source/NSScrollView.m: Fix to notice theme activation and support
+	themed color for separators.
 
 2009-01-07 Fred Kiefer <FredKiefer@gmx.de>
 

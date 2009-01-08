@@ -35,6 +35,7 @@
 #include <Foundation/NSNotification.h>
 
 #include "AppKit/NSColor.h"
+#include "AppKit/NSColorList.h"
 #include "AppKit/NSCell.h"
 #include "AppKit/NSClipView.h"
 #include "AppKit/NSEvent.h"
@@ -737,7 +738,8 @@ static float scrollerWidth;
     }
 
   // FIXME: Should we just hide the scroll bar or remove it?
-  if ((_autohidesScrollers) && (documentFrame.size.height > clipViewBounds.size.height))
+  if ((_autohidesScrollers)
+    && (documentFrame.size.height > clipViewBounds.size.height))
     {
       [self setHasVerticalScroller: YES];        
     } 
@@ -774,7 +776,8 @@ static float scrollerWidth;
         }
     }
 
-  if ((_autohidesScrollers) && (documentFrame.size.width > clipViewBounds.size.width))
+  if ((_autohidesScrollers)
+    && (documentFrame.size.width > clipViewBounds.size.width))
     {
       [self setHasHorizontalScroller: YES];        
     } 
@@ -981,6 +984,7 @@ static float scrollerWidth;
   NSInterfaceStyle style;
 
   style = NSInterfaceStyleForKey(@"NSScrollViewInterfaceStyle", nil);
+
   if (style == NSMacintoshInterfaceStyle
     || style == NSWindows95InterfaceStyle)
     {
@@ -1113,6 +1117,20 @@ static float scrollerWidth;
 - (void) drawRect: (NSRect)rect
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
+  GSTheme	*theme = [GSTheme theme];
+  NSColor	*color;
+  NSString	*name;
+
+  name = [theme nameForElement: self];
+  if (name == nil)
+    {
+      name = @"NSScrollView";
+    }
+  color = [[theme extraColors] colorWithKey: name];
+  if (color == nil)
+    {
+      color = [NSColor controlDarkShadowColor];
+    }
   
   switch (_borderType)
     {
@@ -1120,20 +1138,20 @@ static float scrollerWidth;
         break;
 
       case NSLineBorder:
-        [[NSColor controlDarkShadowColor] set];
+        [color set];
         NSFrameRect(_bounds);
         break;
 
       case NSBezelBorder:
-        [[GSTheme theme] drawGrayBezel: _bounds withClip: rect];
+        [theme drawGrayBezel: _bounds withClip: rect];
         break;
 
       case NSGrooveBorder:
-        [[GSTheme theme] drawGroove: _bounds withClip: rect];
+        [theme drawGroove: _bounds withClip: rect];
         break;
     }
 
-  [[NSColor controlDarkShadowColor] set];
+  [color set];
   DPSsetlinewidth(ctxt, 1);
 
   if (_hasVertScroller)
@@ -1594,6 +1612,12 @@ static float scrollerWidth;
       
       NSDebugLLog(@"NSScrollView", @"NSScrollView: finish decoding\n");
     }
+
+  [[NSNotificationCenter defaultCenter]
+    addObserver: self
+    selector: @selector(_themeDidActivate:)
+    name: GSThemeDidActivateNotification
+    object: nil];
 
   return self;
 }
