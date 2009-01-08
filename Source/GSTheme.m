@@ -654,6 +654,10 @@ typedef	struct {
   GSDrawTiles		*tiles;
   NSMutableDictionary	*cache;
 
+  if (aName == nil)
+    {
+      return nil;
+    }
   switch (elementState)
     {
       case GSThemeNormalState:

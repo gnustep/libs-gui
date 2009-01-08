@@ -1,3 +1,7 @@
+2009-01-08 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSTheme.m: Fix nil pointer exception.
+
 2009-01-07 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWindow+Toolbar.m,

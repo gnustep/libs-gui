@@ -442,7 +442,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 
 /**
  * Returns the tile image information for a particular image name,
- * or nil if there is no such information.<br />
+ * or nil if there is no such information or the name is nil.<br />
  * The GUI library uses this internally to handling tiling of image
  * information to draw user interface elements.  The tile information
  * returned by this method can be passed to the
