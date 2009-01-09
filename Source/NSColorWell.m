@@ -115,7 +115,7 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
   return _the_color;
 }
 
-/** <p>Desactivates the NSColorWell and marks self for display.
+/** <p>Deactivates the NSColorWell and marks self for display.
     It is usally call from an observer, when another NSColorWell is 
     activate.</p><p>See Also: -activate:</p>
  */
@@ -360,6 +360,10 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
          
   NSDebugLLog(@"NSColorWell", @"%@: performDragOperation", self);
   [self setColor: [NSColor colorFromPasteboard: pb]];
+  /* When our color is changed by having a new color dropped on us,
+   * we send our action.
+   */
+  [self sendAction: _action to: _target];
   return YES;
 }
  
@@ -382,13 +386,16 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
   [self setNeedsDisplay: YES];
 }
 
-/** <p>Sets the NSColorWell to color. Sets the NSColorPanel if active,
-    notify the target that the color changed and marks self for display.</p>
-    <p>See Also: -color</p>
+/** <p>Sets the NSColorWell to color and marks self for display.<br />
+ * Sets the NSColorPanel if active.<br />
+ * Does NOT notify target of color change.
+ * </p>
+ * <p>See Also: -color</p>
  */
 - (void) setColor: (NSColor *)color
 {
   ASSIGN(_the_color, color);
+  [self setNeedsDisplay: YES];
   /*
    * Experimentation with NeXTstep shows that when the color of an active
    * colorwell is set, the color of the shared color panel is set too,
@@ -401,9 +408,6 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
 
       [colorPanel setColor: _the_color];
     }
-  // Notify our target of colour change
-  [self sendAction: _action to: _target];
-  [self setNeedsDisplay: YES];
 }
 
 - (void) setTarget: (id)target
@@ -412,7 +416,7 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
 }
 
 /** <p>Sets the NSColorWell's color to the sender color.</p>
-    <p>See Also: -setColor: </p>
+ *  <p>See Also: -setColor: </p>
  */
 - (void) takeColorFrom: (id)sender
 {
@@ -428,10 +432,16 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
 
   if ([sender respondsToSelector: @selector(color)])
     {
+      /* Don't use -setColor: as that would send a message back to the
+       * panel telling it to se its color again.
+       * Instead we assign the color and mark for redisplay directly.
+       */
       ASSIGN(_the_color, [(id)sender color]);
-      
-      [self sendAction: _action to: _target];
       [self setNeedsDisplay: YES];
+      /* When our color is changed from the color panel, we should
+       * send our action.
+       */
+      [self sendAction: _action to: _target];
     }
 }
 
