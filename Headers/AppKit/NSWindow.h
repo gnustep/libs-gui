@@ -3,7 +3,7 @@
 
    The window class
 
-   Copyright (C) 1996,1999 Free Software Foundation, Inc.
+   Copyright (C) 1996,1999,2004 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -11,6 +11,8 @@
    Date: June 1998
    Modified:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date:  1998,1999
+   Author:  Quentin Mathe <qmathe@club-internet.fr>
+   Date: January 2004
 
    This file is part of the GNUstep GUI Library.
 
@@ -744,6 +746,15 @@ APPKIT_EXPORT NSSize NSTokenSize;
 - (void) setDisplaysWhenScreenProfileChanges: (BOOL)flag;
 #endif
 
+@end
+
+@class NSToolbar;
+
+@interface NSWindow (Toolbar)
+- (void) runToolbarCustomizationPalette: (id)sender;
+- (void) toggleToolbarShown: (id)sender;
+- (NSToolbar *) toolbar;
+- (void) setToolbar: (NSToolbar*)toolbar;
 @end
 
 #if OS_API_VERSION(GS_API_NONE, GS_API_NONE)

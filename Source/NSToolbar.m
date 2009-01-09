@@ -48,7 +48,6 @@
 #include "AppKit/NSToolbarItem.h"
 #include "AppKit/NSView.h"
 #include "AppKit/NSWindow.h"
-#include "AppKit/NSWindow+Toolbar.h"
 #include "GNUstepGUI/GSToolbarView.h"
 #include "AppKit/NSToolbar.h"
 
@@ -837,8 +836,12 @@ static GSValidationCenter *vc = nil;
 
 - (void) setShowsBaselineSeparator: (BOOL)flag
 {
-  // FIXME
   _showsBaselineSeparator = flag;
+
+  if (_showsBaselineSeparator)
+    [_toolbarView setBorderMask: GSToolbarViewBottomBorder];
+  else
+    [_toolbarView setBorderMask: 0];
 }
 
 // Private methods
@@ -1226,6 +1229,26 @@ static GSValidationCenter *vc = nil;
 
 - (GSToolbarView *) _toolbarView 
 {
+  if (_toolbarView == nil)
+    {
+      // Instantiate the toolbar view
+      // addToolbarView: method will set the toolbar view to the right
+      // frame
+      GSToolbarView *toolbarView = [[GSToolbarView alloc] 
+                                       initWithFrame: 
+                                           NSMakeRect(0, 0, 100, 100)];
+
+      [toolbarView setAutoresizingMask: NSViewWidthSizable | NSViewMinYMargin];
+      if (_showsBaselineSeparator)
+          [toolbarView setBorderMask: GSToolbarViewBottomBorder];
+      else
+          [toolbarView setBorderMask: 0];
+
+      // Load the toolbar view inside the toolbar
+      _toolbarView = toolbarView;
+      [_toolbarView setToolbar: self];
+    }
+
   return _toolbarView;
 }
 

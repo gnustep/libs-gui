@@ -32,7 +32,6 @@
 
 #include "AppKit/NSToolbar.h"
 #include "AppKit/NSToolbarItem.h"
-#include "AppKit/NSWindow+Toolbar.h"
 #include "GNUstepGUI/GSToolbarView.h"
 
 #include "GSWindowDecorationView.h"

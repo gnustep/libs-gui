@@ -1,3 +1,15 @@
+2009-01-09 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSWindow+Toolbar.h,
+	* Source/NSWindow+Toolbar.m: Remove these file and move all code ...
+	* Headers/AppKit/NSWindow.h,
+	* Source/NSWindow.m: ... to here.
+	* Source/NSToolbarFrameworkPrivate.h,
+	* Headers/AppKit/AppKit.h,
+	* Source/GNUmakefile: Remove references to these files.
+	* Source/NSToolbar.m (-_toolbarView): Create the toolbar view here
+	and not in [NSWindow setToolbar:].
+
 2009-01-08 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTheme.m: Fix nil pointer exception.

@@ -74,13 +74,13 @@
 #include "AppKit/NSTextFieldCell.h"
 #include "AppKit/NSView.h"
 #include "AppKit/NSWindow.h"
-#include "AppKit/NSWindow+Toolbar.h"
 #include "AppKit/NSWindowController.h"
 #include "AppKit/PSOperators.h"
 #include "GNUstepGUI/GSTrackingRect.h"
 #include "GNUstepGUI/GSDisplayServer.h"
 #include "GSToolTips.h"
 #include "GSWindowDecorationView.h"
+#include "NSToolbarFrameworkPrivate.h"
 
 static GSToolTips *toolTipVisible = nil;
 static id<GSWindowDecorator> windowDecorator = nil;
@@ -5070,6 +5070,73 @@ current key view.<br />
 - (NSWindow *) attachedSheet
 {
   return nil;
+}
+
+@end
+
+@implementation NSWindow (Toolbar)
+
+- (void) runToolbarCustomizationPalette: (id)sender
+{
+  [[self toolbar] runCustomizationPalette: sender];
+}
+
+- (void) toggleToolbarShown: (id)sender
+{
+  NSToolbar *toolbar = [self toolbar];
+  BOOL isVisible = [toolbar isVisible];
+
+  if (!toolbar)
+    return;
+  
+  if (isVisible)
+    {
+      [_wv removeToolbarView: [toolbar _toolbarView]];
+    }
+  else
+    {
+      [_wv addToolbarView: [toolbar _toolbarView]];
+    }
+
+  [toolbar setVisible: !isVisible];
+
+  [self display];
+}
+
+// Accessors
+
+- (NSToolbar *) toolbar
+{
+  return _toolbar;
+}
+
+- (void) setToolbar: (NSToolbar*)toolbar
+{
+  if (toolbar == _toolbar)
+    return;
+
+  if (_toolbar != nil)
+    {
+      if ([_toolbar isVisible])
+        {
+          // Throw the last toolbar view out
+          [_wv removeToolbarView: [_toolbar _toolbarView]];
+        }
+    }
+  
+  ASSIGN(_toolbar, toolbar);
+
+  if (_toolbar != nil)
+    {
+      if ([_toolbar isVisible])
+        {
+          // Make the new toolbar view visible
+          [_wv addToolbarView: [_toolbar _toolbarView]];
+        }
+    }
+
+  // To show the changed toolbar
+  [self displayIfNeeded];
 }
 
 @end

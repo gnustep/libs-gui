@@ -180,7 +180,6 @@ NSTokenField.m \
 NSTokenFieldCell.m \
 NSUserDefaultsController.m \
 NSView.m \
-NSWindow+Toolbar.m \
 NSWindow.m \
 NSWindowController.m \
 NSWorkspace.m \
@@ -378,7 +377,6 @@ NSUserDefaultsController.h \
 NSView.h \
 NSWindow.h \
 NSWindowController.h \
-NSWindow+Toolbar.h \
 NSWorkspace.h \
 NSAttributedString.h \
 NSColorPicking.h \

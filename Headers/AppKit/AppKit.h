@@ -175,7 +175,6 @@
 #include <AppKit/NSUserDefaultsController.h>
 #include <AppKit/NSUserInterfaceValidation.h>
 #include <AppKit/NSWindowController.h>
-#include <AppKit/NSWindow+Toolbar.h>
 #endif
 
 #include <AppKit/PSOperators.h>
