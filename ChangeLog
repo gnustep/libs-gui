@@ -1,3 +1,9 @@
+2009-01-10 15:49-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSToolbarItem.m: Added _sendAction: method to send
+	the action with the NSToolbarItem instance as the sender
+	when the toolbar item is represented by an NSMenuItem.  
+
 2009-01-09 23:09-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSMenu.m: Correction to previous change.  Update when

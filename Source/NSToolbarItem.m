@@ -1384,14 +1384,27 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
   return _backView;
 }
 
+//
+// This method invokes using the toolbar item as the sender.
+// When invoking from the menu, it shouldn't send the menuitem as the
+// sender since some applications check this and try to get additional
+// information about the toolbar item which this is coming from.
+//
+- (void) _sendAction: (id)sender
+{
+  [NSApp sendAction: [self action] 
+	 to: [self target]
+	 from: self];
+}
+
 - (NSMenuItem *) _defaultMenuFormRepresentation
 {
   NSMenuItem *menuItem;
   
   menuItem = [[NSMenuItem alloc] initWithTitle: [self label]  
-                                        action: [self action] 
+				 action: @selector(_sendAction:) 
                                  keyEquivalent: @""];
-  [menuItem setTarget: [self target]];
+  [menuItem setTarget: self];
   AUTORELEASE(menuItem);
   
   return menuItem;
