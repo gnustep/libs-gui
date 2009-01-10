@@ -1,3 +1,9 @@
+2009-01-09 23:09-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSMenu.m: Correction to previous change.  Update when
+	setAutoenableItems: value is changed.  Altered update to 
+	enable menu items when autoenable is not being performed.
+
 2009-01-09 22:53-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSMenuItemCell.m: encode menu item in encodeWithCoder: 
