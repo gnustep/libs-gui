@@ -155,7 +155,6 @@ static NSPrintInfo *sharedPrintInfo = nil;
   [self setJobDisposition: NSPrintSpoolJob];
   [self setHorizontallyCentered: YES];
   [self setVerticallyCentered: YES];
-  [self setOrientation: NSPortraitOrientation];
 
   printer = [NSPrintInfo defaultPrinter];
   [self setPrinter: printer];
@@ -176,6 +175,7 @@ static NSPrintInfo *sharedPrintInfo = nil;
   [self setLeftMargin: 36];
   [self setTopMargin: 72];
   [self setBottomMargin: 72];
+  [self setOrientation: NSPortraitOrientation];  
   
   if (aDict != nil)
     {

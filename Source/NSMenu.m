@@ -1408,7 +1408,20 @@ static BOOL menuBarVisible = YES;
 
   if ([aDecoder allowsKeyedCoding])
     {
-      dAuto = YES;
+      //
+      // NSNoAutoenable is present when the "Autoenable" option is NOT checked.
+      // NO = Autoenable menus, YES = Don't auto enable menus.  We, therefore,
+      // have to invert the values of this flag in order to get the value of
+      // dAuto.
+      //
+      if ([aDecoder containsValueForKey: @"NSNoAutoenable"])
+        {
+	  dAuto = ([aDecoder decodeBoolForKey: @"NSNoAutoenable"] == NO) ? YES : NO;
+	}
+      else
+	{
+	  dAuto = NO;
+	}
       dTitle = [aDecoder decodeObjectForKey: @"NSTitle"];
       dItems = [aDecoder decodeObjectForKey: @"NSMenuItems"];
     }

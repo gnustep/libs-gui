@@ -1048,21 +1048,25 @@ static NSImage *_pbc_image[5];
   [super encodeWithCoder: aCoder];
   if ([aCoder allowsKeyedCoding])
     {
-      [aCoder encodeBool: [self altersStateOfSelectedItem] forKey: @"NSAltersState"];
-      [aCoder encodeBool: [self usesItemFromMenu] forKey: @"NSUsesItemFromMenu"];
-      [aCoder encodeInt: [self arrowPosition] forKey: @"NSArrowPosition"];
-      [aCoder encodeInt: [self preferredEdge] forKey: @"NSPreferredEdge"];
-      
+      [aCoder encodeBool: [self altersStateOfSelectedItem] 
+	      forKey: @"NSAltersState"];
+      [aCoder encodeBool: [self usesItemFromMenu] 
+	      forKey: @"NSUsesItemFromMenu"];
+      [aCoder encodeInt:  [self arrowPosition] 
+	      forKey: @"NSArrowPosition"];
+      [aCoder encodeInt:  [self preferredEdge] 
+	      forKey: @"NSPreferredEdge"];
+      [aCoder encodeInt:  [self indexOfSelectedItem] 
+	      forKey: @"NSSelectedIndex"];
+      [aCoder encodeBool: [self pullsDown]
+	      forKey: @"NSPullDown"];
+
       // encode the menu, if present.
       if (_menu != nil)
         {
-          [aCoder encodeObject: _menu forKey: @"NSMenu"];
+          [aCoder encodeObject: _menu 
+		  forKey: @"NSMenu"];
         }
-
-      if (_menuItem != nil)
-	{
-	  [aCoder encodeObject: _menuItem forKey: @"NSMenuItem"];
-	}
     }
   else
     {    
@@ -1107,7 +1111,7 @@ static NSImage *_pbc_image[5];
       if ([aDecoder containsValueForKey: @"NSArrowPosition"])
         {
           NSPopUpArrowPosition position = [aDecoder decodeIntForKey: 
-                                                        @"NSArrowPosition"];
+						      @"NSArrowPosition"];
           
           [self setArrowPosition: position];
         }
@@ -1117,10 +1121,23 @@ static NSImage *_pbc_image[5];
           
           [self setPreferredEdge: edge];
         }
+      if ([aDecoder containsValueForKey: @"NSSelectedIndex"])
+        {
+	  int selectedIdx = [aDecoder decodeIntForKey: 
+					@"NSSelectedIndex"];
+	  [self selectItem: [self itemAtIndex: selectedIdx]];
+	}
+      if ([aDecoder containsValueForKey: @"NSPullDown"])
+        {
+	  BOOL pullDown = [aDecoder decodeBoolForKey: @"NSPullDown"];
+	  [self setPullsDown: pullDown];
+	}
 
       menu = [aDecoder decodeObjectForKey: @"NSMenu"];
       [self setMenu: nil];
       [self setMenu: menu];
+      [self setAutoenablesItems: NO];
+      [self setEnabled: YES];
     }
   else
     {

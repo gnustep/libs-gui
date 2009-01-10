@@ -883,8 +883,15 @@ static NSImage *arrowImage = nil; /* Cache arrow image. */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-
-  [aCoder encodeConditionalObject: _menuItem];
+  if ([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeObject: _menuItem 
+	      forKey: @"NSMenuItem"];
+    }
+  else
+    {
+      [aCoder encodeConditionalObject: _menuItem];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
