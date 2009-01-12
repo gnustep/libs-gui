@@ -228,6 +228,11 @@ static BOOL _isInInterfaceBuilder = NO;
 }
 @end
 
+/**
+ * NSWindowTemplate
+ *
+ * Instances of this class take the place of all windows in the nib file.
+ */
 @implementation NSWindowTemplate
 + (void) initialize
 {
@@ -247,6 +252,9 @@ static BOOL _isInInterfaceBuilder = NO;
   [super dealloc];
 }
 
+/**
+ * Designated initializer for NSWindowTemplate.
+ */
 - (id) initWithWindow: (NSWindow *)window
             className: (NSString *)windowClass
            isDeferred: (BOOL) deferred
@@ -378,6 +386,9 @@ static BOOL _isInInterfaceBuilder = NO;
     }
 }
 
+/**
+ * This method is used to get the real object when connections are established.
+ */
 - (id) nibInstantiate
 {
   if (_realObject == nil)
@@ -436,133 +447,214 @@ static BOOL _isInInterfaceBuilder = NO;
 }
 
 // setters and getters
+/**
+ * sets the type of backing store the window uses.
+ */
 - (void) setBackingStoreType: (NSBackingStoreType)type
 {
   _backingStoreType = type;
 }
 
+/**
+ * Returns the type of backing store which is used.
+ */
 - (NSBackingStoreType) backingStoreType
 {
   return _backingStoreType;
 }
 
+/**
+ * Sets whether or not the window is deferred.
+ */
 - (void) setDeferred: (BOOL)flag
 {
   _flags.isDeferred = flag;
 }
 
+/**
+ * Returns YES, if the window is deferred, NO otherwise.
+ */
 - (BOOL) isDeferred
 {
   return _flags.isDeferred;
 }
 
+/**
+ * Sets the maximum size of the window.
+ */
 - (void) setMaxSize: (NSSize)maxSize
 {
   _maxSize = maxSize;
 }
 
+/**
+ * Returns the maximum size of the window.
+ */
 - (NSSize) maxSize
 {
   return _maxSize;
 }
 
+/**
+ * Sets the minimum size of the window.
+ */
 - (void) setMinSize: (NSSize)minSize
 {
   _minSize = minSize;
 }
 
+/**
+ * Returns the maximum size of the window.
+ */
 - (NSSize) minSize
 {
   return _minSize;
 }
 
+/**
+ * Sets the window style.
+ */
 - (void) setWindowStyle: (unsigned)style
 {
   _windowStyle = style;
 }
 
+/** 
+ * Returns the window style.
+ */
 - (unsigned) windowStyle
 {
   return _windowStyle;
 }
 
+/**
+ * Sets the window title.
+ */
 - (void) setTitle: (NSString *) title
 {
   ASSIGN(_title, title);
 }
 
+/**
+ * Returns the window style.
+ */
 - (NSString *)title;
 {
   return _title;
 }
 
+/**
+ * Sets the class used for the content view.
+ */
 - (void) setViewClass: (NSString *)viewClass
 {
   ASSIGN(_viewClass,viewClass);
 }
 
+/**
+ * Returns the name of the class used for the content view.
+ */
 - (NSString *)viewClass
 {
   return _viewClass;
 }
 
+/**
+ * Sets the window rect.
+ */
 - (void) setWindowRect: (NSRect)rect
 {
   _windowRect = rect;
 }
 
+/**
+ * Returns the window rect.
+ */
 - (NSRect)windowRect
 {
   return _windowRect;
 }
 
+/**
+ * Sets the screen rect.
+ */
 - (void) setScreenRect: (NSRect)rect
 {
   _screenRect = rect;
 }
 
+/**
+ * Returns the screen rect.
+ */
 - (NSRect) screenRect
 {
   return _screenRect;
 }
 
+/**
+ * Sets the instantiated object/real object.
+ */
 - (void) setRealObject: (id)o
 {
   ASSIGN(_realObject,o);
 }
 
+/**
+ * Returns the real object represented by this template.
+ */
 - (id) realObject
 {
   return _realObject;
 }
 
+/**
+ * Sets the view instance.
+ */ 
 - (void) setView: (id)view
 {
   ASSIGN(_view,view);
 }
 
+/** 
+ * Gets the view instance.
+ */
 - (id) view
 {
   return _view;
 }
 
+/**
+ * sets the class name to be used when unarchiving the window.
+ */
 - (void) setClassName: (NSString *)name
 {
   ASSIGN(_windowClass, name);
 }
 
+/**
+ * Returns the class instance.
+ */
 - (NSString *)className
 {
   return _windowClass;
 }
 
+/**
+ * Returns the base window class.   This is usually NSWindow, but this method
+ * is overriden in the editor so that a different class may be used to take the
+ * place of the window.   In the case of Gorm, this is GormNSWindow.
+ */
 - (Class) baseWindowClass
 {
   return _baseWindowClass;
 }
 @end
 
-// Template for any classes which derive from NSView
+/*
+ * NSViewTemplate
+ *
+ * Template for any classes which derive from NSView
+ */
 @implementation NSViewTemplate
 + (void) initialize
 {
@@ -572,6 +664,9 @@ static BOOL _isInInterfaceBuilder = NO;
     }
 }
 
+/**
+ * Designated initializer for NSViewTemplate.
+ */
 - (id) initWithObject: (id)o
 	    className: (NSString *)name
 {
@@ -635,21 +730,33 @@ static BOOL _isInInterfaceBuilder = NO;
 }
 
 // setters and getters
+/**
+ * Set the class name to be used by the NSView subclass.
+ */
 - (void) setClassName: (NSString *)name
 {
   ASSIGN(_className, name);
 }
 
+/**
+ * Returns the classname.
+ */
 - (NSString *)className
 {
   return _className;
 }
 
+/**
+ * Set the real object of the template.
+ */
 - (void) setRealObject: (id)o
 {
   ASSIGN(_realObject, o);
 }
 
+/**
+ * Get the real object represented by the template.
+ */
 - (id) realObject
 {
   return _realObject;
@@ -667,7 +774,11 @@ static BOOL _isInInterfaceBuilder = NO;
 }
 @end
 
-// Template for any classes which derive from NSTextView
+/**
+ * NSTextViewTemplate 
+ *
+ * Template for any classes which derive from NSTextView
+ */
 @implementation NSTextViewTemplate
 + (void) initialize
 {
