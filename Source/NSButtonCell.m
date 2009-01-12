@@ -1764,6 +1764,13 @@ typedef struct _GSButtonCellFlags
           _shows_border_only_while_mouse_inside = tmp;
         }
     }
+
+  // Hack to correct a Gorm problem, there "\n" is used instead of "\r".
+  if ([_keyEquivalent isEqualToString: @"\n" ])
+    {
+      [self setKeyEquivalent: @"\r"];
+    }
+
   return self;
 }
 
