@@ -336,7 +336,7 @@ static BOOL _isInInterfaceBuilder = NO;
         }
       if ([coder containsValueForKey: @"NSFrameAutosaveName"])
         {
-          ASSIGN(_autosaveName, [coder decodeObjectForKey: @"NSFrameAutosaveName"]);
+	  ASSIGN(_autosaveName, [coder decodeObjectForKey: @"NSFrameAutosaveName"]);
         }
       if ([coder containsValueForKey: @"NSWindowTitle"])
         {
@@ -1025,6 +1025,9 @@ static BOOL _isInInterfaceBuilder = NO;
 }
 @end
 
+/**
+ * This class represents an image or a sound which is referenced by the nib file.
+ */
 @implementation NSCustomResource
 - (void) setClassName: (NSString *)className
 {
@@ -1090,7 +1093,15 @@ static BOOL _isInInterfaceBuilder = NO;
 }
 @end
 
+/**
+ * Category to add methods to NSKeyedUnarchiver which are needed during
+ * nib reading.
+ */
 @implementation NSKeyedUnarchiver (NSClassSwapperPrivate)
+/**
+ * This method is used to replace oldObj with newObj
+ * in the map that is maintained in NSKeyedUnarchiver.
+ */
 - (BOOL) replaceObject: (id)oldObj withObject: (id)newObj
 {
   unsigned int i = 0;
@@ -1111,11 +1122,18 @@ static BOOL _isInInterfaceBuilder = NO;
   return NO;
 }
 
+/**
+ * This method is private and is purely for debugging purposes.
+ */
 - (NSDictionary *)keyMap
 {
   return _keyMap;
 }
 
+/**
+ * This method returns the class which replaces the class named
+ * by className.   It uses the classes map to do this.
+ */
 - (Class) replacementClassForClassName: (NSString *)className
 {
   Class aClass;
@@ -1132,6 +1150,15 @@ static BOOL _isInInterfaceBuilder = NO;
 }
 @end
 
+/**
+ * NSClassSwapper
+ *
+ * This class is used to stand-in for objects which need to be replaced by another object.  
+ * When this class is loaded in the live application, it unarchives and immediately replaces
+ * itself with the instance of the object requested.   This is necessary since IB/Gorm does 
+ * have objects this is used for in palettes, so there is no "live" or actual instance saved
+ * in the gorm file... only this object as a stand in.
+ */
 @implementation NSClassSwapper
 - (id) initWithObject: (id)object 
         withClassName: (NSString *)className
@@ -1146,46 +1173,75 @@ static BOOL _isInInterfaceBuilder = NO;
   return self;
 }
 
+/**
+ * This class method keeps track of whether or not we are operating within IB/Gorm.   
+ * When unarchiving in IB/Gorm some behavior may need to be surpressed for some objects
+ * or it 
+ */
 + (void) setIsInInterfaceBuilder: (BOOL)flag
 {
   _isInInterfaceBuilder = flag;
 }
 
+/**
+ * returns YES, if we are currently in IB/Gorm.
+ */
 + (BOOL) isInInterfaceBuilder
 {
   return _isInInterfaceBuilder;
 }
 
+/**
+ * Sets the template represented by temp.
+ */
 - (void) setTemplate: (id)temp
 {
   ASSIGN(_template, temp);
 }
 
+/**
+ * Returns the template.
+ */
 - (id) template
 {
   return _template;
 }
 
+/**
+ * Sets the class name.
+ */
 - (void) setClassName: (NSString *)className
 {
   ASSIGNCOPY(_className, className);
 }
 
+/**
+ * Returns the class name.
+ */
 - (NSString *)className
 {
   return _className;
 }
 
+/**
+ * Sets the original class name.
+ */
 - (void) setOriginalClassName: (NSString *)className
 {
   ASSIGNCOPY(_originalClassName, className);
 }
 
+/**
+ * Returns the original class name.
+ */
 - (NSString *)originalClassName
 {
   return _originalClassName;
 }
 
+/** 
+ * Instantiates the real object using className.
+ */
 - (void) instantiateRealObject: (NSCoder *)coder withClassName: (NSString *)className
 {
   Class newClass = nil;
@@ -1213,7 +1269,11 @@ static BOOL _isInInterfaceBuilder = NO;
   [decoder setDelegate: nil]; // unset the delegate...
 }
 
-// Delegate method...
+/**
+ * This delegate method makes the proper substitution for cellClass
+ * when the object needs to have it's own cell.   An example of this
+ * is NSSecureTextField/NSSecureTextFieldCell.
+ */
 - (id) unarchiver: (NSKeyedUnarchiver *)coder
   didDecodeObject: (id)obj
 {
@@ -1246,6 +1306,9 @@ static BOOL _isInInterfaceBuilder = NO;
   return result;
 }
 
+/**
+ * Decode NSClassSwapper.
+ */
 - (id) initWithCoder: (NSCoder *)coder
 {
   if ([coder allowsKeyedCoding])
@@ -1273,6 +1336,9 @@ static BOOL _isInInterfaceBuilder = NO;
   return _template;
 }
 
+/**
+ * Encode NSClassSwapper.
+ */
 - (void) encodeWithCoder: (NSCoder *)coder
 {
   if ([coder allowsKeyedCoding])
@@ -1289,6 +1355,9 @@ static BOOL _isInInterfaceBuilder = NO;
     }
 }
 
+/**
+ * Deallocate NSClassSwapper instance.
+ */
 - (void) dealloc
 {
   RELEASE(_className);
@@ -1299,14 +1368,26 @@ static BOOL _isInInterfaceBuilder = NO;
 @end
 
 @implementation NSNibConnector (NibCompatibility)
+/**
+ * This method causes the connection to instantiate the objects in it's source
+ * and destination.   The instantiator is the object which holds any custom
+ * class information which might be needed to do the proprer substitution of
+ * objects based on the contents of the maps.
+ */
 - (void) instantiateWithInstantiator: (id<GSInstantiator>)instantiator
 {
-  _src = [instantiator instantiateObject: _src];
-  _dst = [instantiator instantiateObject: _dst];
+  [self setSource: [instantiator instantiateObject: _src]];
+  [self setDestination: [instantiator instantiateObject: _dst]];
 }
 @end
 
 @implementation NSNibControlConnector (NibCompatibility)
+/**
+ * This method overrides the default implementation of instantiate with
+ * instantiator.   It also corrects a common issue in some nib files
+ * by adding a colon to the end if none was given.   It then calls the
+ * superclass with the corrected label.
+ */
 - (void) instantiateWithInstantiator: (id<GSInstantiator>)instantiator
 {
   NSRange colonRange = [_tag rangeOfString: @":"];
@@ -1322,6 +1403,23 @@ static BOOL _isInInterfaceBuilder = NO;
 }
 @end
 
+/**
+ * NSIBObjectData
+ *
+ * This class is the container for all of the nib data.  It contains several maps.
+ * The maps are the following:
+ * 
+ *     name -> object (name table)
+ *     object -> name (name table reverse lookup)
+ *     classes -> object (for custom class storage)
+ *     oids -> object (for relating the oid to each object)
+ *     accessibilityOids -> object 
+ *
+ * The maps are stored in the nib itself as a set of synchronized 
+ * arrays one array containing the keys and the other the values.  This is why, in the
+ * initWithCoder: and encodeWithCoder: methods they are saved as arrays and then 
+ * loaded into NSMapTables.   
+ */
 @implementation NSIBObjectData
 /**
  * Get the values from the map in the same order as the keys.
@@ -1362,7 +1460,7 @@ static BOOL _isInInterfaceBuilder = NO;
 }
 
 /**
- * Encode the NSIBObjectData.
+ * Encode the NSIBObjectData container
  */
 - (void) encodeWithCoder: (NSCoder *)coder
 {
@@ -1408,7 +1506,7 @@ static BOOL _isInInterfaceBuilder = NO;
 }
 
 /**
- * Decode the NSIBObjectData.
+ * Decode the NSIBObjectData container.
  */
 - (id) initWithCoder: (NSCoder *)coder
 {
@@ -1425,15 +1523,38 @@ static BOOL _isInInterfaceBuilder = NO;
       NSArray *accessibilityOidsKeys = nil;
       NSArray *accessibilityOidsValues = nil;
 
+      //
+      // Get root, font, framwork and oid. 
+      // Retain objects since NSKeyedUnarchiver autoreleases unarchived objects.
+      //
       ASSIGN(_root, [coder decodeObjectForKey: @"NSRoot"]);
-      ASSIGN(_visibleWindows,  
-	     (NSMutableArray *)[coder decodeObjectForKey: @"NSVisibleWindows"]);
-      ASSIGN(_accessibilityConnectors, 
-	     (NSMutableArray *)[coder decodeObjectForKey: @"NSAccessibilityConnectors"]);
       ASSIGN(_fontManager, [coder decodeObjectForKey: @"NSFontManager"]);
       ASSIGN(_framework, [coder decodeObjectForKey: @"NSFramework"]);
       _nextOid = [coder decodeIntForKey: @"NSNextOid"];
 
+      // get connections.
+      ASSIGN(_connections, (NSMutableArray *)
+	[coder decodeObjectForKey: @"NSConnections"]);
+      ASSIGN(_accessibilityConnectors, (NSMutableArray *)
+	[coder decodeObjectForKey: @"NSAccessibilityConnectors"]);
+
+      // get visible windows
+      ASSIGN(_visibleWindows, (NSMutableArray *)
+	[coder decodeObjectForKey: @"NSVisibleWindows"]);
+
+      // instantiate the maps..
+      _classes = NSCreateMapTable(NSObjectMapKeyCallBacks,
+				  NSObjectMapValueCallBacks, 2);
+      _names = NSCreateMapTable(NSObjectMapKeyCallBacks,
+				NSObjectMapValueCallBacks, 2);
+      _objects = NSCreateMapTable(NSObjectMapKeyCallBacks,
+				  NSObjectMapValueCallBacks, 2);
+      
+      // 
+      // Get the maps.  There is no need to retain these, 
+      // since they are going to be placed into the NSMapTable
+      // structures anyway.
+      //
       nameKeys = (NSArray *)
 	[coder decodeObjectForKey: @"NSNamesKeys"];
       nameValues = (NSArray *)
@@ -1442,14 +1563,30 @@ static BOOL _isInInterfaceBuilder = NO;
 	[coder decodeObjectForKey: @"NSClassesKeys"];
       classValues = (NSArray *)
 	[coder decodeObjectForKey: @"NSClassesValues"];
+      objectsKeys = (NSArray *)
+	[coder decodeObjectForKey: @"NSObjectsKeys"];
+      objectsValues = (NSArray *)
+	[coder decodeObjectForKey: @"NSObjectsValues"];
 
-      // Only get this when in the editor...
+      // Fill in the maps...
+      [self _buildMap: _classes 
+	    withKeys: classKeys 
+	    andValues: classValues];
+      [self _buildMap: _names 
+	    withKeys: nameKeys 
+	    andValues: nameValues];
+      [self _buildMap: _objects 
+	    withKeys: objectsKeys 
+	    andValues: objectsValues];
+      
+      //
+      // Only get these maps when in the editor.  They
+      // aren't useful outside of it and only waste memory if
+      // unarchived in the live application.
+      //
       if([NSClassSwapper isInInterfaceBuilder])
 	{
-	  objectsKeys = (NSArray *)
-	    [coder decodeObjectForKey: @"NSObjectsKeys"];
-	  objectsValues = (NSArray *)
-	    [coder decodeObjectForKey: @"NSObjectsValues"];
+	  // Only get these when in the editor...
 	  oidsKeys = (NSArray *)
 	    [coder decodeObjectForKey: @"NSOidsKeys"];
 	  oidsValues = (NSArray *)
@@ -1458,46 +1595,19 @@ static BOOL _isInInterfaceBuilder = NO;
 	    [coder decodeObjectForKey: @"NSAccessibilityOidsKeys"];
 	  accessibilityOidsValues = (NSArray *)
 	    [coder decodeObjectForKey: @"NSAccessibilityOidsValues"];      
-	}
 
-      // instantiate the maps..
-      _objects = NSCreateMapTable(NSObjectMapKeyCallBacks,
-                                  NSObjectMapValueCallBacks, 2);
-      _names = NSCreateMapTable(NSObjectMapKeyCallBacks,
-				NSObjectMapValueCallBacks, 2);
-      _oids = NSCreateMapTable(NSObjectMapKeyCallBacks,
-                               NSObjectMapValueCallBacks, 2);
-      _classes = NSCreateMapTable(NSObjectMapKeyCallBacks,
-				  NSObjectMapValueCallBacks, 2);
-      _accessibilityOids = NSCreateMapTable(NSObjectMapKeyCallBacks,
-                                            NSObjectMapValueCallBacks, 2);
-      
-      // Fill in the maps...
-      /*
-      */
-      [self _buildMap: _classes 
-	    withKeys: classKeys 
-	    andValues: classValues];
-      [self _buildMap: _names 
-	    withKeys: nameKeys 
-	    andValues: nameValues];
-
-      // Only get this when in the editor.
-      if([NSClassSwapper isInInterfaceBuilder])
-	{
+	  _accessibilityOids = NSCreateMapTable(NSObjectMapKeyCallBacks,
+						NSObjectMapValueCallBacks, 2);	  
+	  _oids = NSCreateMapTable(NSObjectMapKeyCallBacks,
+				   NSObjectMapValueCallBacks, 2);
 	  [self _buildMap: _accessibilityOids 
 		withKeys: accessibilityOidsKeys 
 		andValues: accessibilityOidsValues];
-	  [self _buildMap: _objects 
-		withKeys: objectsKeys 
-		andValues: objectsValues];
 	  [self _buildMap: _oids 
 		withKeys: oidsKeys 
 		andValues: oidsValues];
 	}
 
-      ASSIGN(_connections,  [[coder decodeObjectForKey: @"NSConnections"] mutableCopy]);
-      
       // instantiate...
       _topLevelObjects = [[NSMutableSet alloc] init];
     }
@@ -1512,7 +1622,7 @@ static BOOL _isInInterfaceBuilder = NO;
 }
 
 /**
- * Instantiate a new one.
+ * Initialize a new NSIBObjectData.
  */
 - (id) init
 {
@@ -1543,16 +1653,20 @@ static BOOL _isInInterfaceBuilder = NO;
 }
 
 /**
- * Deallocate.
+ * Deallocate NSIBObjectData.
  */
 - (void) dealloc
 {
   // free the maps.
   NSFreeMapTable(_objects);
   NSFreeMapTable(_names);
-  NSFreeMapTable(_oids);
   NSFreeMapTable(_classes);
-  NSFreeMapTable(_accessibilityOids);
+  // these are not allocated when not in interface builder.
+  if([NSClassSwapper isInInterfaceBuilder])
+    {
+      NSFreeMapTable(_oids);
+      NSFreeMapTable(_accessibilityOids);
+    }
 
   // free other objects.
   RELEASE(_accessibilityConnectors);
@@ -1702,67 +1816,108 @@ static BOOL _isInInterfaceBuilder = NO;
   return result;
 }
 
+/**
+ * Set the root object.
+ */
 - (void) setRoot: (id) root
 {
   ASSIGN(_root, root);
 }
 
+/**
+ * Return the root object.
+ */
 - (id) root
 {
   return _root;
 }
 
+/**
+ * Set the value of the next available oid.
+ */
 - (void) setNextOid: (int)noid
 {
   _nextOid = noid;
 }
 
+/**
+ * Get the value of the next available oid.
+ */
 - (int) nextOid
 {
   return _nextOid;
 }
 
+/**
+ * Connections between objects.
+ */
 - (NSMutableArray *) connections
 {
   return _connections;
 }
 
+/**
+ * Set of top level objects.
+ */
 - (NSMutableSet *) topLevelObjects
 {
   return _topLevelObjects;
 }
 
+/**
+ * Names to objects
+ */
 - (NSMutableDictionary *) nameTable
 {
   return nil;
 }
 
+/**
+ * Set of all visible windows.
+ */
 - (NSMutableArray *) visibleWindows
 {
   return _visibleWindows;
 }
 
+/**
+ * Objects to names table.
+ */
 - (NSMapTable *) objects
 {
   return _objects;
 }
 
+/**
+ * Names to objects table.
+ */
 - (NSMapTable *) names
 {
   return _names;
 }
 
+/**
+ * Classes to objects table.
+ */
 - (NSMapTable *) classes
 {
   return _classes;
 }
 
+/**
+ * Oids to objects table.
+ */ 
 - (NSMapTable *) oids
 {
   return _oids;
 }
 @end
 
+/**
+ * NSButtonImageSource
+ * 
+ * This class is used by buttons to pull the correct image based on a given state.
+ */
 @implementation NSButtonImageSource
 - (id) initWithCoder: (NSCoder *)coder
 {
@@ -1795,6 +1950,9 @@ static BOOL _isInInterfaceBuilder = NO;
     }
 }
 
+/**
+ * Initializes with image name.
+ */
 - (id) initWithImageNamed: (NSString *)name
 {
   if ((self = [super init]) != nil)
@@ -1804,6 +1962,9 @@ static BOOL _isInInterfaceBuilder = NO;
   return self;
 }
 
+/**
+ * Returns imageName.
+ */
 - (NSString *)imageName
 {
   return imageName;
@@ -1941,13 +2102,26 @@ static BOOL _isInInterfaceBuilder = NO;
 
 @end
 
-// ...dummy/placeholder classes...
-// overridden in NSTableView to be GSTableCornerView, 
-// but the class needs to be present to be overridden.
+/**
+ * NSCornerView
+ *
+ * Overridden in NSTableView to be GSTableCornerView, 
+ * but the class needs to be present to be overridden.
+ * 
+ * Currently this is a place-holder class.
+ */
 @implementation _NSCornerView
 @end
 
-// class needed for nib encoding/decoding by
+/**
+ * NSPSMatrix.
+ *
+ * This class is needed for nib encoding/decoding by transforms.  
+ * Currently it's only referenced in the NSProgressIndicator,
+ * as far as I can tell.
+ *
+ * Place holder class.
+ */
 @implementation NSPSMatrix
 - (void) encodeWithCoder: (NSCoder *)coder
 {
@@ -1956,7 +2130,6 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (id) initWithCoder: (NSCoder *)coder
 {
-  // what's NSPSMatix all about?
   // NSLog(@"NSPSMatrix = %@",[(NSKeyedUnarchiver *)coder keyMap]);
   return self;
 }

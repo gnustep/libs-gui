@@ -1,3 +1,9 @@
+2009-01-11 20:49-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibLoading.m: Reorganization and simplification of
+	nib loading logic in NSIBObjectData.  Also documentation for 
+	NSIBObjectData and NSClassSwapper.
+
 2009-01-10 15:49-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSToolbarItem.m: Added _sendAction: method to send
