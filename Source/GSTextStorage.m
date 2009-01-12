@@ -133,7 +133,7 @@ unCacheAttributes(NSDictionary *attrs)
 
 
 
-@interface	GSTextInfo : NSObject <GCFinalization>
+@interface	GSTextInfo : NSObject
 {
 @public
   unsigned	loc;
@@ -167,7 +167,7 @@ unCacheAttributes(NSDictionary *attrs)
 
 - (void) dealloc
 {
-  [self gcFinalize];
+  [self finalize];
   NSDeallocateObject(self);
   GSNOSUPERDEALLOC;
 }
@@ -187,7 +187,7 @@ unCacheAttributes(NSDictionary *attrs)
     }
 }
 
-- (void) gcFinalize
+- (void) finalize
 {
   unCacheAttributes(attrs);
   DESTROY(attrs);
