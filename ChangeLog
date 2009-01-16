@@ -1,3 +1,9 @@
+2009-01-16 12:04-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSMenuItem.m: Retain the GSMenuSeparator instance if
+	the menu item is a separator since we want to make sure the 
+	object isn't prematurely released.  
+
 2009-01-16 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSAnimation.m: _gs_startAnimationInOwnLoop hopefully fixed

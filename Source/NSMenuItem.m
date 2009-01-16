@@ -561,9 +561,19 @@ static Class imageClass;
       if (isSeparator)
         {
           RELEASE(self);
-          return [NSMenuItem separatorItem];
+
+	  //
+	  // An object returned from initWithCoder: 
+	  // should not be autoreleased.  Do a retain
+	  // to prevent it from being released automatically.
+	  //
+          return RETAIN([NSMenuItem separatorItem]);
         }
 
+      //
+      // Not retained, because we're calling the designated init with
+      // the values.
+      //
       title = [aDecoder decodeObjectForKey: @"NSTitle"];
       action = [aDecoder decodeObjectForKey: @"NSAction"];
       key = [aDecoder decodeObjectForKey: @"NSKeyEquiv"];
