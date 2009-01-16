@@ -1,3 +1,8 @@
+2009-01-16 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSAnimation.m: _gs_startAnimationInOwnLoop hopefully fixed
+	bug #25327
+
 2009-01-12 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSTextStorage.m: Change to use new GC finalization API.

@@ -1132,12 +1132,28 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
 - (void) _gs_startAnimationInOwnLoop
 {
+  NSRunLoop	*loop;
+  NSDate	*end;
+
   [_animator setRunLoopModesForAnimating:
     [NSArray arrayWithObject: NSAnimationBlockingRunLoopMode]];
   [_animator startAnimation];
-  while ( [[NSRunLoop currentRunLoop]
-          runMode: NSAnimationBlockingRunLoopMode
-       beforeDate: [NSDate distantFuture]] )
+  loop = [NSRunLoop currentRunLoop];
+  end = [NSDate distantFuture];
+  for (;;)
+    {
+      if ([loop runMode: NSAnimationBlockingRunLoopMode beforeDate: end] == NO)
+	{
+	  NSDate	*d;
+
+	  d = [loop limitDateForMode: NSAnimationBlockingRunLoopMode];
+	  if (d == nil)
+	    {
+	      break;	// No inputs and no timers.
+	    }
+	  [NSThread sleepUntilDate: d];
+	}
+    }
     /* do nothing */;
 }
 
