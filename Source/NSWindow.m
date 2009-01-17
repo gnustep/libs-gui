@@ -3530,8 +3530,14 @@ resetCursorRectsForView(NSView *theView)
                     }
                 }
               /* Activate the app *after* making the receiver key, as app
-                 activation tries to make the previous key window key. */
-              if ([NSApp isActive] == NO && self != [NSApp iconWindow])
+                 activation tries to make the previous key window key.
+		 However, don't activate the app after a single click into
+		 the app icon or a miniwindow. This allows dragging app
+		 icons and miniwindows without unnecessarily switching
+		 applications (cf. Sect. 4 of the OpenStep UI Guidelines).
+	      */
+              if ((_styleMask & (NSIconWindowMask | NSMiniWindowMask)) == 0
+	          && [NSApp isActive] == NO)
                 {
                   v = nil;
                   [NSApp activateIgnoringOtherApps: YES];

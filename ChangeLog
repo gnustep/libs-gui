@@ -6,6 +6,9 @@
 	* Source/NSWindow.m (-undoManager, -dealloc): Create an undo
 	manager for a window when necessary.
 
+	* Source/NSWindow.m (-sendEvent:): Don't activate an application
+	upon a single click into a miniwindow.
+
 2009-01-16 12:04-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSMenuItem.m: Retain the GSMenuSeparator instance if
