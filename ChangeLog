@@ -3,6 +3,9 @@
 	* Source/NSDocument.m (-windowForSheet): Return nil if the
 	document has no window controllers.
 
+	* Source/NSWindow.m (-undoManager, -dealloc): Create an undo
+	manager for a window when necessary.
+
 2009-01-16 12:04-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSMenuItem.m: Retain the GSMenuSeparator instance if

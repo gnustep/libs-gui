@@ -597,7 +597,8 @@ static IMP        ctImp;
 static Class      responderClass;
 static Class      viewClass;
 static NSMutableSet *autosaveNames;
-static NSMapTable* windowmaps = NULL;
+static NSMapTable *windowmaps = NULL;
+static NSMapTable *windowUndoManagers = NULL;
 static NSNotificationCenter *nc = nil;
 
 /*
@@ -737,6 +738,9 @@ many times.
 
   NSAssert([NSApp keyWindow] != self, @"window being deallocated is key");
   NSAssert([NSApp mainWindow] != self, @"window being deallocated is main");
+
+  if (windowUndoManagers != NULL)
+    NSMapRemove(windowUndoManagers, self);
 
   if (_autosaveName != nil)
     {
@@ -2939,33 +2943,41 @@ resetCursorRectsForView(NSView *theView)
 }
 
 /**
-   Get a undo manager from the delegate or create one.
+   Get an undo manager from the delegate or create one.
  */
 - (NSUndoManager*) undoManager
 {
-  NSUndoManager *undo;
+  NSUndoManager *undo = nil;
 
   if ([_delegate respondsToSelector: @selector(windowWillReturnUndoManager:)])
     {
-      return [_delegate windowWillReturnUndoManager: self];
+      undo = [_delegate windowWillReturnUndoManager: self];
     }
-  else
+  else if (_windowController)
     {
-      // FIXME: This is more a hack to get an undo manager. 
-      if (_windowController)
-        {
-          NSDocument *document = [_windowController document];
+      NSDocument *document = [_windowController document];
 
-          if (document && (undo = [document undoManager]) != nil)
-            {
-              return undo;
-            }
-        }
-
-      // FIXME: We should reuse the same undo manager all the time!!!
-      //return AUTORELEASE([[NSUndoManager alloc] init]);
-      return nil;
+      if (document)
+        undo = [document undoManager];
     }
+
+  if (undo == nil)
+    {
+      if (windowUndoManagers == NULL)
+	windowUndoManagers =
+	    NSCreateMapTable(NSNonRetainedObjectMapKeyCallBacks,
+			     NSObjectMapValueCallBacks, 0);
+      else
+	undo = NSMapGet(windowUndoManagers, self);
+
+      if (undo == nil)
+        {
+          undo = [[NSUndoManager alloc] init];
+          NSMapInsertKnownAbsent(windowUndoManagers, self, undo);
+          [undo release];
+        }
+    }
+  return undo;
 }
 
 - (void) undo: (id)sender
