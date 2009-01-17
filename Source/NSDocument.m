@@ -353,7 +353,13 @@ withContentsOfURL: (NSURL *)url
       return win;
     }
 
-  return [NSApp mainWindow];
+  /* Note: While Apple's documentation says that this method returns
+   * [NSApp mainWindow] if the document has no window controllers, the
+   * actual implementation returns nil and, in fact, the header files
+   * on OS X also say so. Since it would be very unreasonable to attach a
+   * document modal sheet to a window that doesn't belong to this document,
+   * we do the same here, too. */
+  return nil;
 }
 
 /**
