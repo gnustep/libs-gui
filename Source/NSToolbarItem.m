@@ -1348,28 +1348,27 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 - (void) validate
 {
-  /* Validate by default, we know that all of the
-     "standard" items are correct. */
-  NSMenuItem *menuItem = [self menuFormRepresentation];
-  id target = [self target];
+  BOOL enabled = YES;
+  id target;
 
-  // No validation for custom views
+  /* No validation for custom views */
   if (_view)
     return;
 
-  if ([[self toolbar] displayMode] == NSToolbarDisplayModeLabelOnly 
-    && menuItem != nil)
+  target = [NSApp targetForAction: [self action] to: [self target] from: self];
+  if (target == nil || ![target respondsToSelector: [self action]])
     {
-      if ([target respondsToSelector: @selector(validateMenuItem:)])
-        [self setEnabled: [target validateMenuItem: menuItem]];
+      enabled = NO;
     }
-  else
+  else if ([target respondsToSelector: @selector(validateToolbarItem:)])
     {
-      if ([target respondsToSelector: @selector(validateToolbarItem:)])
-        [self setEnabled: [target validateToolbarItem: self]];
-    } 
-    
-  // We can get a crash here when the target is pointing garbage memory...
+      enabled = [target validateToolbarItem: self];
+    }
+  else if ([target respondsToSelector: @selector(validateUserInterfaceItem:)])
+    {
+      enabled = [target validateUserInterfaceItem: self];
+    }
+  [self setEnabled: enabled];
 }
 
 - (NSView *) view
@@ -1388,13 +1387,19 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 // This method invokes using the toolbar item as the sender.
 // When invoking from the menu, it shouldn't send the menuitem as the
 // sender since some applications check this and try to get additional
-// information about the toolbar item which this is coming from.
+// information about the toolbar item which this is coming from. Since
+// we implement the menu's action, we must also validate it.
 //
 - (void) _sendAction: (id)sender
 {
   [NSApp sendAction: [self action] 
 	 to: [self target]
 	 from: self];
+}
+
+- (BOOL) validateMenuItem: (NSMenuItem *)menuItem
+{
+  return [self isEnabled];
 }
 
 - (NSMenuItem *) _defaultMenuFormRepresentation

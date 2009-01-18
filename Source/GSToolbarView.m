@@ -174,7 +174,7 @@ static void initSystemExtensionsColors(void)
 - (id) init;
 
 // Accessors 
-- (NSMenu *) returnMenu; 
+- (NSMenu *) overflowMenu; 
 /* This method cannot be called "menu" otherwise it would override NSResponder
    method with the same name. */
 
@@ -235,13 +235,13 @@ static void initSystemExtensionsColors(void)
 {
   if ([event type] == NSLeftMouseDown)
     {
-      return [self returnMenu];
+      return [self overflowMenu];
     }
     
   return nil;
 }
 
-- (NSMenu *) returnMenu 
+- (NSMenu *) overflowMenu 
 {
   /* This method cannot be called "menu" otherwise it would
      override NSResponder method with the same name. */
@@ -264,7 +264,10 @@ static void initSystemExtensionsColors(void)
             menuItem = [item _defaultMenuFormRepresentation];
             
           if (menuItem != nil)
-            [menu addItem: menuItem];
+            {
+              [item validate];
+              [menu addItem: menuItem];
+            }
         }
     }
 

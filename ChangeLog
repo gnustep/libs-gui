@@ -1,3 +1,6 @@
+2009-01-18  Wolfgang Lux  <wlux@uni-muenster.de>
+
+
 2009-01-18  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSMenu.m (-update, -setAutoenablesItems:, initWithCoder):
@@ -6,6 +9,14 @@
 	* Source/NSMenu.m (-update): Improve menu item validation by
 	falling back to -validateUserInterfaceItem: if the validator
 	doesn't respond to -validateMenuItem:.
+
+	* Source/NSToolbarItem.m (-validate): Fix broken implementation.
+	* Source/NSToolbarItem.m (-validateMenuItem:) Add implementation
+	to validate menu items in text only representation and in an
+	overflow menu.
+	* Source/GSToolbarView.m (-overflowMenu): Validate each toolbar
+	item before adding a menu item to an overflow menu. Also rename
+	method to make its purpose clear.
 
 2009-01-17  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
