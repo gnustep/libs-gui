@@ -1,6 +1,3 @@
-2009-01-18  Wolfgang Lux  <wlux@uni-muenster.de>
-
-
 2009-01-18  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSMenu.m (-update, -setAutoenablesItems:, initWithCoder):
@@ -17,6 +14,12 @@
 	* Source/GSToolbarView.m (-overflowMenu): Validate each toolbar
 	item before adding a menu item to an overflow menu. Also rename
 	method to make its purpose clear.
+
+	* Source/NSApplication.m (-targetForAction:to:from:): Make sure
+	toolbar items are validated w.r.t. the responder chain of their
+	respective window.
+	* Source/NSApplication.m (-_targetForAction:keyWindow:mainWindow:):
+	Helper method to consolidate target look up in the responder chain.
 
 2009-01-17  Wolfgang Lux  <wolfgang.lux@gmail.com>
 

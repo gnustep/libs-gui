@@ -74,6 +74,7 @@
 #include "AppKit/NSPageLayout.h"
 #include "AppKit/NSPanel.h"
 #include "AppKit/NSPasteboard.h"
+#include "AppKit/NSToolbarItem.h"
 #include "AppKit/NSWorkspace.h"
 #include "AppKit/NSScreen.h"
 #include "AppKit/PSOperators.h"
@@ -84,6 +85,7 @@
 #include "GNUstepGUI/GSInfoPanel.h"
 #include "GNUstepGUI/GSVersion.h"
 #include "NSDocumentFrameworkPrivate.h"
+#include "NSToolbarFrameworkPrivate.h"
 
 /* The -gui thread. See the comment in initialize_gnustep_backend. */
 NSThread *GSAppKitThread;
@@ -360,6 +362,9 @@ struct _NSModalSession {
 - _appIconInit;
 - (NSDictionary*) _notificationUserInfo;
 - (void) _openDocument: (NSString*)name;
+- (id) _targetForAction: (SEL)aSelector
+	      keyWindow: (NSWindow *)keyWindow
+	     mainWindow: (NSWindow *)mainWindow;
 - (void) _windowDidBecomeKey: (NSNotification*) notification;
 - (void) _windowDidBecomeMain: (NSNotification*) notification;
 - (void) _windowDidResignKey: (NSNotification*) notification;
@@ -2053,49 +2058,28 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
     {
       return theTarget;
     }
+  else if ([sender isKindOfClass: [NSToolbarItem class]])
+    {
+      /* Special case for toolbar items which must look up the target in the
+         responder chain of the window containing their toolbar not in the key
+         or main window.
+         Note: If (and only if) the toolbar's window is key window we must
+         pass it as such to _targetForAction:... so that toolbar items in a
+         modal dialog panel work.
+       */
+      NSWindow *toolbarWindow =
+          [[[(NSToolbarItem *)sender toolbar] _toolbarView] window];
+      NSWindow *keyWindow = [self keyWindow];
+      if (keyWindow != toolbarWindow)
+        keyWindow = nil;
+      return [self _targetForAction: theAction
+                   keyWindow: keyWindow
+                   mainWindow: toolbarWindow];
+    }
   else
     {
       return [self targetForAction: theAction];
     }
-}
-
-/*
- * Helper method to avoid duplicating code for key and main window
- */
-- (id) targetForAction: (SEL)aSelector forWindow: (NSWindow	*)window
-{
-  id resp, delegate;
-
-  resp = [window firstResponder];
-  while (resp != nil && resp != self)
-    {
-      if ([resp respondsToSelector: aSelector])
-        {
-          return resp;
-        }
-      if (resp == window)
-        {
-	  delegate = [window delegate];
-	  if ([delegate respondsToSelector: aSelector])
-	    {
-	      return delegate;
-	    }
-        }
-      resp = [resp nextResponder];
-    }
-
-  if ([NSDocumentController isDocumentBasedApplication])
-    {
-      resp = [[NSDocumentController sharedDocumentController]
-                 documentForWindow: window];
-      
-      if (resp != nil && [resp respondsToSelector: aSelector])
-        {
-          return resp;
-        }
-    }
-
-  return nil;
 }
 
 /** 
@@ -2109,51 +2093,11 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
  */
 - (id) targetForAction: (SEL)aSelector
 {
-  NSWindow *keyWindow;
-  NSWindow *mainWindow;
-  id resp;
-
-  if (aSelector == NULL)
-      return nil;
-
-  keyWindow = [self keyWindow];
-  if (keyWindow != nil)
-    {
-      resp = [self targetForAction: aSelector forWindow: keyWindow];
-      if (resp != nil)
-        return resp;
-    }
-
-  if (_session != 0)
-    return nil;
-
-  mainWindow = [self mainWindow];
-  if (keyWindow != mainWindow && mainWindow != nil)
-    {
-      resp = [self targetForAction: aSelector forWindow: mainWindow];
-      if (resp != nil)
-        return resp;
-    }
-
-  if ([self respondsToSelector: aSelector])
-    {
-      return self;
-    }
-
-  if (_delegate != nil && [_delegate respondsToSelector: aSelector])
-    {
-      return _delegate;
-    }
-
-  if ([NSDocumentController isDocumentBasedApplication]
-      && [[NSDocumentController sharedDocumentController]
-             respondsToSelector: aSelector])
-    {
-      return [NSDocumentController sharedDocumentController];
-    }
-   
-  return nil;
+  return [self _targetForAction: aSelector
+	       keyWindow: [self keyWindow]
+	       mainWindow: [self mainWindow]];
 }
+
 
 /**
  * Attempts to perform aSelector using [NSResponder-tryToPerform:with:]
@@ -3612,6 +3556,97 @@ struct _DelegateWrapper
 - (void) _openDocument: (NSString*)filePath
 {
   [_listener application: self openFile: filePath];
+}
+
+- (id) _targetForAction: (SEL)aSelector
+	      keyWindow: (NSWindow *)keyWindow
+	     mainWindow: (NSWindow *)mainWindow
+{
+  id resp, delegate;
+  NSWindow *window;
+
+  if (aSelector == NULL)
+      return nil;
+
+  /* if we have a key window, start looking in its responder chain, ... */
+  if (keyWindow != nil)
+    {
+      window = keyWindow;
+    }
+  /* ... otherwise in the main window's responder chain */
+  else
+    {
+      if (_session != 0)
+	return nil;
+      window = mainWindow;
+    }
+
+  if (window != nil)
+    {
+      /* traverse the responder chain including the window's delegate */
+      resp = [window firstResponder];
+      while (resp != nil && resp != self)
+        {
+	  if ([resp respondsToSelector: aSelector])
+	    {
+	      return resp;
+	    }
+	  if (resp == window)
+	    {
+	      delegate = [window delegate];
+	      if ([delegate respondsToSelector: aSelector])
+	        {
+		  return delegate;
+		}
+	    }
+	  resp = [resp nextResponder];
+	}
+
+      /* in a document based app try the window's document */
+      if ([NSDocumentController isDocumentBasedApplication])
+        {
+	  resp = [[NSDocumentController sharedDocumentController]
+		     documentForWindow: window];
+
+	  if (resp != nil && [resp respondsToSelector: aSelector])
+	    {
+	      return resp;
+	    }
+	}
+    }
+
+  /* if we've found no target in the key window start over without key window */
+  if (keyWindow != nil)
+    {
+      if (_session != 0)
+	return nil;
+      if (mainWindow != nil && mainWindow != keyWindow)
+	return [self _targetForAction: aSelector
+		     keyWindow: nil
+		     mainWindow: mainWindow];
+    }
+
+  /* try the shared application imstance and its delegate */
+  if ([self respondsToSelector: aSelector])
+    {
+      return self;
+    }
+
+  if (_delegate != nil && [_delegate respondsToSelector: aSelector])
+    {
+      return _delegate;
+    }
+
+  /* as a last resort in a document based app, try the document controller */
+  if ([NSDocumentController isDocumentBasedApplication]
+      && [[NSDocumentController sharedDocumentController]
+             respondsToSelector: aSelector])
+    {
+      return [NSDocumentController sharedDocumentController];
+    }
+
+  /* give up */
+  return nil;
 }
 
 - (void) _windowDidBecomeKey: (NSNotification*) notification
