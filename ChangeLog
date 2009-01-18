@@ -1,3 +1,8 @@
+2009-01-18  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSMenu.m (-upate, -setAutoenablesItems:, initWithCoder):
+	Revert NSMenu changes from r27569.
+
 2009-01-17  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSDocument.m (-windowForSheet): Return nil if the

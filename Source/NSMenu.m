@@ -933,7 +933,6 @@ static BOOL menuBarVisible = YES;
 - (void) setAutoenablesItems: (BOOL)flag
 {
   _menu.autoenable = flag;
-  [self update];
 }
 
 - (BOOL) autoenablesItems
@@ -1056,20 +1055,6 @@ static BOOL menuBarVisible = YES;
           
       // Reenable displaying of menus
       [self setMenuChangedMessagesEnabled: YES];
-    }
-  else
-    {
-      id<NSMenuItem> item = nil;
-      NSEnumerator *en = [_items objectEnumerator];
-     
-      //
-      // If the menu items are not autoenabled, they should be enabled by default
-      // sincer we're not checking them.
-      //
-      while((item = [en nextObject]) != nil)
-	{
-	  [item setEnabled: YES];
-	}
     }
 
   if (_menu.needsSizing && ([_aWindow isVisible] || [_bWindow isVisible]))
@@ -1435,7 +1420,7 @@ static BOOL menuBarVisible = YES;
 	}
       else
 	{
-	  dAuto = YES; // if the no-autoenable flag isn't present, then autoenable.
+	  dAuto = NO;
 	}
       dTitle = [aDecoder decodeObjectForKey: @"NSTitle"];
       dItems = [aDecoder decodeObjectForKey: @"NSMenuItems"];
