@@ -21,6 +21,10 @@
 	* Source/NSApplication.m (-_targetForAction:keyWindow:mainWindow:):
 	Helper method to consolidate target look up in the responder chain.
 
+	* Source/NSWindow.m (-initWithContentRect:..., -setContentView:):
+	Include a window's decoration view in its responder chain so that
+	dynamic target look up works for toolbar items.
+
 2009-01-17  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSDocument.m (-windowForSheet): Return nil if the

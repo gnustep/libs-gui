@@ -1008,6 +1008,7 @@ many times.
   _wv = [windowDecorator newWindowDecorationViewWithFrame: cframe
                                                    window: self];
   [_wv _viewWillMoveToWindow: self];
+  [_wv setNextResponder: self];
 
   /* Create the content view */
   cframe.origin = NSZeroPoint;
@@ -1119,8 +1120,6 @@ many times.
   _contentView = aView;
 
   [_wv setContentView: _contentView];
-
-  [_contentView setNextResponder: self];
 }
 
 /*
