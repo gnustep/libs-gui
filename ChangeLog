@@ -1,7 +1,11 @@
 2009-01-18  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
-	* Source/NSMenu.m (-upate, -setAutoenablesItems:, initWithCoder):
+	* Source/NSMenu.m (-update, -setAutoenablesItems:, initWithCoder):
 	Revert NSMenu changes from r27569.
+
+	* Source/NSMenu.m (-update): Improve menu item validation by
+	falling back to -validateUserInterfaceItem: if the validator
+	doesn't respond to -validateMenuItem:.
 
 2009-01-17  Wolfgang Lux  <wolfgang.lux@gmail.com>
 

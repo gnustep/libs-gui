@@ -1042,6 +1042,11 @@ static BOOL menuBarVisible = YES;
 	    {
 	      shouldBeEnabled = [validator validateMenuItem: item];
 	    }
+	  else if ([validator
+		     respondsToSelector: @selector(validateUserInterfaceItem:)])
+	    {
+	      shouldBeEnabled = [validator validateUserInterfaceItem: item];
+	    }
 	  else
 	    {
 	      shouldBeEnabled = YES;
