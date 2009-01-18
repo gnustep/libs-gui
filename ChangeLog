@@ -1,3 +1,10 @@
+2009-01-18 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSAnimator.h: Remove unneeded ivar.
+	* Source/GSAnimator.m: Remove retain cycle with NSAnimation and
+	simplify implementation.
+	* Source/NSAnimation.m: Replace NSDebugFLLog with NSDebugMLLog.
+
 2009-01-18  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSMenu.m (-update, -setAutoenablesItems:, initWithCoder):

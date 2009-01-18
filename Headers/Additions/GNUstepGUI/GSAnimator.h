@@ -58,7 +58,6 @@
 @interface GSAnimator : NSObject
 {
   id<GSAnimation> _animation; // The Object to be animated
-  NSDate *_startTime;         // The time the animation did started
   BOOL _running;              // Indicates that the animator is looping
 
   NSTimeInterval _elapsed;    // Elapsed time since the animator started
@@ -84,7 +83,7 @@
  * initialized with the specified object to be animated. */
 + (GSAnimator*) animatorWithAnimation: (id<GSAnimation>)anAnimation
                             frameRate: (float)fps
-			         zone: (NSZone*)aZone;
+                                 zone: (NSZone*)aZone;
 
 /** Returns a GSAnimator object initialized with the specified object
  * to be animated. The given NSRunLoop is used in NSDefaultRunLoopMode.*/
@@ -106,7 +105,6 @@
 
 - (void) stepAnimation;
 
-- (void) animationLoopEvent: (NSEvent*)e;
 @end
 
 #endif /* _GNUstep_H_GSAnimator_ */

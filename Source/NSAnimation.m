@@ -195,8 +195,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
   if (_isThreaded)                  \
   {                                 \
     NSAssert(__gs_isLocked == NO, NSInternalInconsistencyException); \
-    NSDebugFLLog(@"NSAnimationLock",\
-                 @"%@ LOCK %@",self,[NSThread currentThread]);\
+    NSDebugMLLog(@"NSAnimationLock",\
+                 @"LOCK %@", [NSThread currentThread]);\
     [_isAnimatingLock lock];        \
     __gs_isLocked = YES;            \
    }
@@ -205,8 +205,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
   if (__gs_isLocked)                \
   {                                 \
     /* NSAssert(__gs_isLocked == YES, NSInternalInconsistencyException); */ \
-    NSDebugFLLog(@"NSAnimationLock",\
-                 @"%@ UNLOCK %@",self,[NSThread currentThread]);\
+    NSDebugMLLog(@"NSAnimationLock",\
+                 @"UNLOCK %@", [NSThread currentThread]);\
     __gs_isLocked = NO;             \
     [_isAnimatingLock unlock];      \
   }
@@ -238,9 +238,9 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
   if (GSIArrayCount(_progressMarks) == 0)
     { // First mark
       GSIArrayAddItem (_progressMarks,progress);
-      NSDebugFLLog (@"NSAnimationMark",
-                    @"%@ Insert 1st mark for %f (next:#%d)",
-                    self,progress,_nextMark);
+      NSDebugMLLog (@"NSAnimationMark",
+                    @"Insert 1st mark for %f (next:#%d)",
+                    progress, _nextMark);
       _nextMark = (progress >= [self currentProgress])? 0 : 1;
     }
   else 
@@ -254,9 +254,9 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
             && progress < GSIArrayItemAtIndex(_progressMarks,_nextMark))
           _nextMark++;
       GSIArrayInsertItem (_progressMarks,progress,index);
-      NSDebugFLLog (@"NSAnimationMark",
-                    @"%@ Insert mark #%d/%d for %f (next:#%d)",
-                    self,index,GSIArrayCount(_progressMarks),progress,_nextMark);
+      NSDebugMLLog (@"NSAnimationMark",
+                    @"Insert mark #%d/%d for %f (next:#%d)",
+                    index,GSIArrayCount(_progressMarks),progress,_nextMark);
     }
   _isCachedProgressMarkNumbersValid = NO;
 
@@ -333,8 +333,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
   if (_delegate_animationValueForProgress)
     { // method is cached (the animation is running)
-      NSDebugFLLog (@"NSAnimationDelegate",
-                    @"%@ [delegate animationValueForProgress] (cached)",self);
+      NSDebugMLLog (@"NSAnimationDelegate",
+                    @"[delegate animationValueForProgress] (cached)");
       value = (*_delegate_animationValueForProgress)
                 (GS_GC_UNHIDE (_currentDelegate),
                  @selector (animation:valueForProgress:),
@@ -345,8 +345,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
          && [GS_GC_UNHIDE (_delegate) respondsToSelector:
                @selector (animation:valueForProgress:)] )
       {
-        NSDebugFLLog (@"NSAnimationDelegate",
-                      @"%@ [delegate animationValueForProgress]",self);
+        NSDebugMLLog (@"NSAnimationDelegate",
+                      @"[delegate animationValueForProgress]");
         value = [GS_GC_UNHIDE (_delegate) animation: self
                                    valueForProgress: _currentProgress];
       }
@@ -545,10 +545,11 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
       GSIArrayRemoveItemAtIndex (_progressMarks,index);
       _isCachedProgressMarkNumbersValid = NO;
       if (_nextMark > index) _nextMark--;
-      NSDebugFLLog (@"NSAnimationMark",@"%@ Remove mark #%d for (next:#%d)",self,index,progress,_nextMark);
+      NSDebugMLLog(@"NSAnimationMark",@"Remove mark #%d for (next:#%d)",
+                   index, progress, _nextMark);
     }
   else
-    NSWarnFLog (@"%@ Unexistent progress mark",self);
+    NSWarnMLog(@"Unexistent progress mark");
 
   _NSANIMATION_UNLOCK;
 }
@@ -668,11 +669,11 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
       _nextMark = GSIArrayInsertionPosition (_progressMarks,progress,&nsanimation_progressMarkSorter);
 
       if (_nextMark < GSIArrayCount(_progressMarks))
-        NSDebugFLLog (@"NSAnimationMark",@"%@ Next mark #%d for %f",
-            self,_nextMark, GSIArrayItemAtIndex (_progressMarks,_nextMark));
+        NSDebugMLLog(@"NSAnimationMark",@"Next mark #%d for %f",
+                     _nextMark, GSIArrayItemAtIndex(_progressMarks,_nextMark));
     }
 
-  NSDebugFLLog (@"NSAnimation",@"%@ Progress = %f",self,progress);
+  NSDebugMLLog(@"NSAnimation",@"Progress = %f", progress);
   _currentProgress = progress;
 
   if (progress >= 1.0 && _animator != nil)
@@ -745,12 +746,12 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
   if ([self isAnimating])
     return;
 
-  NSDebugFLLog (@"NSAnimationStart",@"%@",self);
+  NSDebugMLLog(@"NSAnimationStart",@"");
 
   for (i=0; i<GSIArrayCount(_progressMarks); i++)
-    NSDebugFLLog (@"NSAnimationMark",
-                  @"%@ Mark #%d : %f",
-                  self,i,GSIArrayItemAtIndex(_progressMarks,i));
+    NSDebugMLLog(@"NSAnimationMark",
+                 @"Mark #%d : %f",
+                 i, GSIArrayItemAtIndex(_progressMarks,i));
 
   if ([self currentProgress] >= 1.0) 
     {
@@ -765,8 +766,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
     {
       id delegate;
 
-      NSDebugFLLog (@"NSAnimationDelegate",
-                    @"%@ Cache delegation methods",self);
+      NSDebugMLLog(@"NSAnimationDelegate",
+                   @"Cache delegation methods");
       // delegation methods are cached while the animation is running
       delegate = GS_GC_UNHIDE (_delegate);
       _delegate_animationDidReachProgressMark =
@@ -794,19 +795,19 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
         (BOOL (*)(id,SEL,NSAnimation*))
         [delegate methodForSelector: @selector (animationShouldStart:)]
         : NULL;
-      NSDebugFLLog (@"NSAnimationDelegate",
-                    @"%@ Delegation methods : %x %x %x %x %x", self,
-          _delegate_animationDidReachProgressMark,
-          _delegate_animationValueForProgress,
-          _delegate_animationDidEnd,
-          _delegate_animationDidStop,
-          _delegate_animationShouldStart);
+      NSDebugMLLog(@"NSAnimationDelegate",
+                   @"Delegation methods : %x %x %x %x %x",
+                   _delegate_animationDidReachProgressMark,
+                   _delegate_animationValueForProgress,
+                   _delegate_animationDidEnd,
+                   _delegate_animationDidStop,
+                   _delegate_animationShouldStart);
       _currentDelegate = _delegate;
     }
   else
     {
-      NSDebugFLLog (@"NSAnimationDelegate",
-                    @"%@ No delegate : clear delegation methods",self);
+      NSDebugMLLog(@"NSAnimationDelegate",
+                   @" No delegate : clear delegation methods");
       _delegate_animationDidReachProgressMark =
         (void (*)(id,SEL,NSAnimation*,NSAnimationProgress)) NULL;
       _delegate_animationValueForProgress =
@@ -830,7 +831,7 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
                          zone: [self zone]];
       NSAssert (_animator,@"Can not create a GSAnimator");
       RETAIN (_animator);
-      NSDebugFLLog (@"NSAnimationAnimator",@"%@ New GSAnimator: %@", self,[_animator class]);
+      NSDebugMLLog(@"NSAnimationAnimator", @"New GSAnimator: %@", [_animator class]);
       _isANewAnimatorNeeded = NO;
     }
 
@@ -872,7 +873,7 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
   _startMark = start;
 
   [_startAnimation addProgressMark: _startMark];
-  NSDebugFLLog (@"NSAnimationMark",@"%@ register for progress %f",self,start);
+  NSDebugMLLog (@"NSAnimationMark",@"register for progress %f", start);
   [[NSNotificationCenter defaultCenter]
     addObserver: self
        selector: @selector (_gs_startAnimationReachesProgressMark:)
@@ -905,7 +906,7 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
   _stopMark = stop;
 
   [_stopAnimation addProgressMark: _stopMark];
-  NSDebugFLLog (@"NSAnimationMark",@"%@ register for progress %f",self,stop);
+  NSDebugMLLog (@"NSAnimationMark",@"register for progress %f", stop);
   [[NSNotificationCenter defaultCenter]
     addObserver: self
        selector: @selector (_gs_stopAnimationReachesProgressMark:)
@@ -934,7 +935,7 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
   id delegate;
   _NSANIMATION_LOCKING_SETUP;
 
-  NSDebugFLLog (@"NSAnimationAnimator",@"%@",self);
+  NSDebugMLLog(@"NSAnimationAnimator",@"");
 
   _NSANIMATION_LOCK;
 
@@ -942,7 +943,7 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
   if (_delegate_animationShouldStart) // method is cached (the animation is running)
     {
-      NSDebugFLLog (@"NSAnimationDelegate",@"%@ [delegate animationShouldStart] (cached)",self);
+      NSDebugMLLog(@"NSAnimationDelegate",@"[delegate animationShouldStart] (cached)");
       _delegate_animationShouldStart (delegate,@selector(animationShouldStart:),self);
     }
   RETAIN (self);
@@ -955,7 +956,7 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
   id delegate;
   _NSANIMATION_LOCKING_SETUP;
 
-  NSDebugFLLog (@"NSAnimationAnimator",@"%@ Progress = %f",self,_currentProgress);
+  NSDebugMLLog(@"NSAnimationAnimator",@"Progress = %f", _currentProgress);
 
   _NSANIMATION_LOCK;
 
@@ -964,7 +965,7 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
     {
       if (_delegate_animationDidStop) // method is cached (the animation is running)
         {
-          NSDebugFLLog (@"NSAnimationDelegate",@"%@ [delegate animationDidStop] (cached)",self);
+          NSDebugMLLog(@"NSAnimationDelegate",@"[delegate animationDidStop] (cached)");
           _delegate_animationDidStop (delegate,@selector(animationDidStop:),self);
         }
     }
@@ -972,7 +973,7 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
     {
       if (_delegate_animationDidEnd) // method is cached (the animation is running)
         {
-          NSDebugFLLog (@"NSAnimationDelegate",@"%@ [delegate animationDidEnd] (cached)",self);
+          NSDebugMLLog(@"NSAnimationDelegate",@"[delegate animationDidEnd] (cached)");
           _delegate_animationDidEnd (delegate,@selector(animationDidEnd:),self);
         }
     }
@@ -986,7 +987,7 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
   NSAnimationProgress progress;
   _NSANIMATION_LOCKING_SETUP;
 
-  NSDebugFLLog (@"NSAnimationAnimator",@"%@ Elapsed time : %f",self,elapsedTime);
+  NSDebugMLLog(@"NSAnimationAnimator", @"Elapsed time : %f", elapsedTime);
 
   _NSANIMATION_LOCK;
 
@@ -1023,8 +1024,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
   animation = [notification object];
   mark = [[[notification userInfo] objectForKey: NSAnimationProgressMark] floatValue];
 
-  NSDebugFLLog (@"NSAnimationMark",
-                @"%@ Start Animation %@ reaches %f",self,animation,mark);
+  NSDebugMLLog(@"NSAnimationMark",
+               @"Start Animation %@ reaches %f", animation, mark);
 
   if ( animation == _startAnimation && mark == _startMark)
     {
@@ -1046,8 +1047,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
   animation = [notification object];
   mark = [[[notification userInfo] objectForKey: NSAnimationProgressMark] floatValue];
 
-  NSDebugFLLog (@"NSAnimationMark",
-                @"%@ Stop Animation %@ reaches %f",self,animation,mark);
+  NSDebugMLLog(@"NSAnimationMark",
+               @"Stop Animation %@ reaches %f",animation, mark);
 
 
   if ( animation == _stopAnimation && mark == _stopMark)
@@ -1067,15 +1068,15 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 {
   _NSANIMATION_LOCKING_SETUP;
 
-  NSDebugFLLog (@"NSAnimationMark",@"%@ progress %f",self, progress);
+  NSDebugMLLog(@"NSAnimationMark", @"progress %f", progress);
 
   _NSANIMATION_LOCK;
 
   // calls delegate's method
   if (_delegate_animationDidReachProgressMark) // method is cached (the animation is running)
     {
-      NSDebugFLLog (@"NSAnimationDelegate",
-                    @"%@ [delegate animationdidReachProgressMark] (cached)",self);
+      NSDebugMLLog(@"NSAnimationDelegate",
+                   @"[delegate animationdidReachProgressMark] (cached)");
       _delegate_animationDidReachProgressMark (GS_GC_UNHIDE(_currentDelegate),
                                                @selector(animation:didReachProgressMark:),
                                                self,progress);
@@ -1085,14 +1086,14 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
          && [GS_GC_UNHIDE (_delegate)
               respondsToSelector: @selector(animation:didReachProgressMark:)] )
       {
-        NSDebugFLLog (@"NSAnimationDelegate",
-                      @"%@ [delegate animationdidReachProgressMark]",self);
+        NSDebugMLLog(@"NSAnimationDelegate",
+                     @"[delegate animationdidReachProgressMark]");
         [GS_GC_UNHIDE (_delegate) animation: self didReachProgressMark: progress];
       }
 
   // posts a notification
-  NSDebugFLLog (@"NSAnimationNotification",
-                @"%@ Post NSAnimationProgressMarkNotification : %f",self,progress);
+  NSDebugMLLog(@"NSAnimationNotification",
+               @"Post NSAnimationProgressMarkNotification : %f", progress);
   [[NSNotificationCenter defaultCenter]
     postNotificationName: NSAnimationProgressMarkNotification
 		  object: self
@@ -1111,20 +1112,20 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
   _NSANIMATION_UNLOCK;
 
-  NSDebugFLLog (@"NSAnimationMark",
-                @"%@ Next mark #%d for %f",
-                self,_nextMark,GSIArrayItemAtIndex(_progressMarks,_nextMark));
+  NSDebugMLLog(@"NSAnimationMark",
+               @"Next mark #%d for %f",
+               _nextMark, GSIArrayItemAtIndex(_progressMarks, _nextMark - 1));
 }
 
 - (void) _gs_startThreadedAnimation
 {
   // NSAssert(_isThreaded);
   CREATE_AUTORELEASE_POOL (pool);
-  NSDebugFLLog (@"NSAnimationThread",
-                @"%@ Start of %@",self,[NSThread currentThread]);
+  NSDebugMLLog(@"NSAnimationThread",
+               @"Start of %@", [NSThread currentThread]);
   [self _gs_startAnimationInOwnLoop];
-  NSDebugFLLog (@"NSAnimationThread",
-                @"%@ End of %@",self,[NSThread currentThread]);
+  NSDebugMLLog(@"NSAnimationThread",
+               @"End of %@", [NSThread currentThread]);
   RELEASE (pool);
   _isThreaded = NO;
 }
