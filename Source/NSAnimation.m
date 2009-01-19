@@ -459,21 +459,21 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 {
   [self stopAnimation];
 
-  GSIArrayEmpty (_progressMarks);
-  NSZoneFree ([self zone], _progressMarks);
+  GSIArrayEmpty(_progressMarks);
+  NSZoneFree([self zone], _progressMarks);
   if (_cachedProgressMarkNumbers != NULL)
     {
       unsigned i;
-      for ( i=0; i<_cachedProgressMarkNumberCount; i++)
-        RELEASE (_cachedProgressMarkNumbers[i]);
-      NSZoneFree ([self zone], _cachedProgressMarkNumbers);
+
+      for (i = 0; i < _cachedProgressMarkNumberCount; i++)
+        RELEASE(_cachedProgressMarkNumbers[i]);
+      NSZoneFree([self zone], _cachedProgressMarkNumbers);
     }
 
   [self clearStartAnimation];
   [self clearStopAnimation];
 
-  TEST_RELEASE (_animator);
-
+  TEST_RELEASE(_animator);
   RELEASE(_isAnimatingLock);
 
   [super dealloc];
@@ -485,7 +485,7 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
   _NSANIMATION_LOCKING_SETUP;
 
   _NSANIMATION_LOCK;
-  f = (_animator != nil)? [_animator isAnimationRunning] : NO;
+  f = (_animator != nil) ? [_animator isAnimationRunning] : NO;
   _NSANIMATION_UNLOCK;
   return f;
 }
@@ -498,7 +498,7 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
   _NSANIMATION_LOCK;
 
-  count = GSIArrayCount (_progressMarks);
+  count = GSIArrayCount(_progressMarks);
 
   if (!_isCachedProgressMarkNumbersValid)
     {
@@ -506,17 +506,19 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
       if (_cachedProgressMarkNumbers != NULL)
         {   
-          for ( i=0; i<_cachedProgressMarkNumberCount; i++)
-            RELEASE (_cachedProgressMarkNumbers[i]);
+          for (i = 0; i < _cachedProgressMarkNumberCount; i++)
+            RELEASE(_cachedProgressMarkNumbers[i]);
           _cachedProgressMarkNumbers =
-           (NSNumber**)NSZoneRealloc ([self zone], _cachedProgressMarkNumbers,count*sizeof(NSNumber*));
+           (NSNumber**)NSZoneRealloc([self zone], _cachedProgressMarkNumbers,
+                                     count * sizeof(NSNumber*));
         }
       else
         {
           _cachedProgressMarkNumbers =
-           (NSNumber**)NSZoneMalloc ([self zone], count*sizeof(NSNumber*));
+           (NSNumber**)NSZoneMalloc([self zone], count * sizeof(NSNumber*));
         }
-      for ( i=0; i<count; i++)
+
+      for (i = 0; i < count; i++)
         {
           _cachedProgressMarkNumbers[i] =
            [NSNumber numberWithFloat: GSIArrayItemAtIndex (_progressMarks,i)];
@@ -538,11 +540,12 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
   _NSANIMATION_LOCK;
 
-  index = GSIArraySearch (_progressMarks,progress,nsanimation_progressMarkSorter);
-  if ( index < GSIArrayCount(_progressMarks)
-      && progress == GSIArrayItemAtIndex (_progressMarks,index) )
+  index = GSIArraySearch(_progressMarks, progress, 
+                         nsanimation_progressMarkSorter);
+  if (index < GSIArrayCount(_progressMarks)
+      && progress == GSIArrayItemAtIndex (_progressMarks,index))
     {
-      GSIArrayRemoveItemAtIndex (_progressMarks,index);
+      GSIArrayRemoveItemAtIndex(_progressMarks,index);
       _isCachedProgressMarkNumbersValid = NO;
       if (_nextMark > index) _nextMark--;
       NSDebugMLLog(@"NSAnimationMark",@"Remove mark #%d for (next:#%d)",
@@ -727,13 +730,14 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
   _NSANIMATION_LOCKING_SETUP;
 
   _NSANIMATION_LOCK;
-  GSIArrayEmpty (_progressMarks);
+  GSIArrayEmpty(_progressMarks);
   _nextMark = 0;
   if (marks != nil)
     {
-      unsigned i, count=[marks count];
-      for (i=0;i<count;i++)
-        [self addProgressMark:[(NSNumber*)[marks objectAtIndex:i] floatValue]];
+      unsigned i, count = [marks count];
+
+      for (i = 0; i < count; i++)
+        [self addProgressMark: [(NSNumber*)[marks objectAtIndex:i] floatValue]];
     }
   _isCachedProgressMarkNumbersValid = NO;
   _NSANIMATION_UNLOCK;
@@ -748,9 +752,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
   NSDebugMLLog(@"NSAnimationStart",@"");
 
-  for (i=0; i<GSIArrayCount(_progressMarks); i++)
-    NSDebugMLLog(@"NSAnimationMark",
-                 @"Mark #%d : %f",
+  for (i = 0; i < GSIArrayCount(_progressMarks); i++)
+    NSDebugMLLog(@"NSAnimationMark", @"Mark #%d : %f",
                  i, GSIArrayItemAtIndex(_progressMarks,i));
 
   if ([self currentProgress] >= 1.0) 
@@ -766,10 +769,9 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
     {
       id delegate;
 
-      NSDebugMLLog(@"NSAnimationDelegate",
-                   @"Cache delegation methods");
+      NSDebugMLLog(@"NSAnimationDelegate", @"Cache delegation methods");
       // delegation methods are cached while the animation is running
-      delegate = GS_GC_UNHIDE (_delegate);
+      delegate = GS_GC_UNHIDE(_delegate);
       _delegate_animationDidReachProgressMark =
         ([delegate respondsToSelector: @selector (animation:didReachProgressMark:)]) ?
         (void (*)(id,SEL,NSAnimation*,NSAnimationProgress))
@@ -821,17 +823,15 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
       _currentDelegate = nil;
     }
   
-  if (_animator==nil || _isANewAnimatorNeeded)
+  if (_animator == nil || _isANewAnimatorNeeded)
     {
-      TEST_RELEASE (_animator);
+      TEST_RELEASE(_animator);
 
-      _animator = [GSAnimator
-        animatorWithAnimation: self
-                    frameRate: _frameRate
-                         zone: [self zone]];
-      NSAssert (_animator,@"Can not create a GSAnimator");
-      RETAIN (_animator);
-      NSDebugMLLog(@"NSAnimationAnimator", @"New GSAnimator: %@", [_animator class]);
+      _animator = [[GSAnimator allocWithZone: [self zone]]
+                      initWithAnimation: self
+                      frameRate: _frameRate];
+      NSAssert(_animator,@"Can not create a GSAnimator");
+      NSDebugMLLog(@"NSAnimationAnimator", @"New GSAnimator: %@", _animator);
       _isANewAnimatorNeeded = NO;
     }
 
@@ -845,7 +845,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
         break;
       case NSAnimationNonblocking:
         {
-          NSArray* runLoopModes;
+          NSArray *runLoopModes;
+
           runLoopModes = [self runLoopModesForAnimating];
           if (runLoopModes == nil)
             runLoopModes = _NSAnimationDefaultRunLoopModes;
@@ -1105,8 +1106,8 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 
   // skips marks with the same progress value
   while (
-    (++_nextMark) < GSIArrayCount (_progressMarks)
-    && GSIArrayItemAtIndex (_progressMarks,_nextMark) == progress
+    (++_nextMark) < GSIArrayCount(_progressMarks)
+    && GSIArrayItemAtIndex(_progressMarks, _nextMark) == progress
     )
   ;
 
@@ -1120,13 +1121,13 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 - (void) _gs_startThreadedAnimation
 {
   // NSAssert(_isThreaded);
-  CREATE_AUTORELEASE_POOL (pool);
+  CREATE_AUTORELEASE_POOL(pool);
   NSDebugMLLog(@"NSAnimationThread",
                @"Start of %@", [NSThread currentThread]);
   [self _gs_startAnimationInOwnLoop];
   NSDebugMLLog(@"NSAnimationThread",
                @"End of %@", [NSThread currentThread]);
-  RELEASE (pool);
+  RELEASE(pool);
   _isThreaded = NO;
 }
 
@@ -1134,7 +1135,7 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 - (void) _gs_startAnimationInOwnLoop
 {
   NSRunLoop	*loop;
-  NSDate	*end;
+  NSDate *end;
 
   [_animator setRunLoopModesForAnimating:
     [NSArray arrayWithObject: NSAnimationBlockingRunLoopMode]];
@@ -1144,18 +1145,20 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
   for (;;)
     {
       if ([loop runMode: NSAnimationBlockingRunLoopMode beforeDate: end] == NO)
-	{
-	  NSDate	*d;
+        {
+          NSDate	*d;
+          CREATE_AUTORELEASE_POOL(pool);
 
-	  d = [loop limitDateForMode: NSAnimationBlockingRunLoopMode];
-	  if (d == nil)
-	    {
-	      break;	// No inputs and no timers.
-	    }
-	  [NSThread sleepUntilDate: d];
-	}
+          d = [loop limitDateForMode: NSAnimationBlockingRunLoopMode];
+          if (d == nil)
+            {
+              RELEASE(pool);
+              break;	// No inputs and no timers.
+            }
+          [NSThread sleepUntilDate: d];
+          RELEASE(pool);
+        }
     }
-    /* do nothing */;
 }
 
 - (_NSAnimationCurveDesc*) _gs_curveDesc
@@ -1402,16 +1405,15 @@ NSString *NSViewAnimationFadeOutEffect = @"NSViewAnimationFadeOutEffect";
   if (self)
     {
       [self setAnimationBlockingMode: NSAnimationNonblocking];
-      _viewAnimations = [animations retain];
-      _viewAnimationDesc = nil;
+      [self setViewAnimations: animations];
     }
   return self;
 }
 
 - (void) dealloc
 {
-  RELEASE (_viewAnimations);
-  RELEASE (_viewAnimationDesc);
+  RELEASE(_viewAnimations);
+  RELEASE(_viewAnimationDesc);
   [super dealloc];
 }
 
@@ -1421,8 +1423,8 @@ NSString *NSViewAnimationFadeOutEffect = @"NSViewAnimationFadeOutEffect";
 
   _NSANIMATION_LOCK;
   if (_viewAnimations != animations)
-    DESTROY (_viewAnimationDesc);
-  ASSIGN (_viewAnimations, animations) ;
+    DESTROY(_viewAnimationDesc);
+  ASSIGN(_viewAnimations, animations) ;
   _NSANIMATION_UNLOCK;
 }
 
@@ -1443,17 +1445,21 @@ NSString *NSViewAnimationFadeOutEffect = @"NSViewAnimationFadeOutEffect";
 
   _NSANIMATION_LOCK;
   if (_viewAnimationDesc == nil)
-  {
-    unsigned i,c;
-    c = [_viewAnimations count];
-    _viewAnimationDesc = [NSMutableArray arrayWithCapacity: c];
-    RETAIN (_viewAnimationDesc);
-    for (i=0;i<c;i++)
-      [_viewAnimationDesc
-	addObject: [[_GSViewAnimationBaseDesc alloc]
-                      initWithProperties: [_viewAnimations objectAtIndex:i]]
-      ];
-  }
+    {
+      unsigned int i, c;
+
+      c = [_viewAnimations count];
+      _viewAnimationDesc = [[NSMutableArray alloc] initWithCapacity: c];
+      for (i = 0; i < c; i++)
+        {
+          _GSViewAnimationBaseDesc *vabd;
+
+          vabd = [[_GSViewAnimationBaseDesc alloc]
+                     initWithProperties: [_viewAnimations objectAtIndex:i]];
+          [_viewAnimationDesc addObject: vabd];
+          RELEASE(vabd);
+        }
+    }
   [super startAnimation];
   _NSANIMATION_UNLOCK;
 }
@@ -1471,11 +1477,12 @@ NSString *NSViewAnimationFadeOutEffect = @"NSViewAnimationFadeOutEffect";
 - (void) _gs_updateViewsWithValue: (NSNumber*) value
 {
   // Runs in main thread : must not call any NSAnimation method to avoid a deadlock
-  unsigned i,c;
+  unsigned int i, c;
   float v;
+
   v = [value floatValue];
   if (_viewAnimationDesc != nil)
-    for (i=0, c=[_viewAnimationDesc count];i<c;i++)
+    for (i = 0, c = [_viewAnimationDesc count]; i < c; i++)
       [[_viewAnimationDesc objectAtIndex: i] setCurrentProgress: v];
 }
 

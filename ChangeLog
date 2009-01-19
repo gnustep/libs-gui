@@ -1,3 +1,9 @@
+2009-01-19 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSAnimation.m (-_gs_startAnimationInOwnLoop): Use an auto
+	release pool inside of the loop.
+	* Source/NSAnimation.m: A bit of reformatting and clean up.
+
 2009-01-18 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Additions/GNUstepGUI/GSAnimator.h: Remove unneeded ivar.
