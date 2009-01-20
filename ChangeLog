@@ -1,3 +1,10 @@
+2009-01-20  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSImage.m (-compositeToPoint:fromRect:operation:,
+	-compositeToPoint:fromRect:operation:fraction:,
+	-dissolveToPoint:fromRect:fraction:): Fix invalid return
+	statements between NS_DURING and NS_HANDLER.
+
 2009-01-19 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSAnimation.m (-_gs_startAnimationInOwnLoop): Use an auto

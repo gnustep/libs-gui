@@ -752,7 +752,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       NSCachedImageRep *cache = nil;
 
       if (rep == nil)
-        return;
+        NS_VOIDRETURN;
 
       if (([GSCurrentContext() isDrawingToScreen] == YES)
           && _cacheMode != NSImageCacheNever)
@@ -823,7 +823,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       NSCachedImageRep *cache = nil;
 
       if (rep == nil)
-        return;
+        NS_VOIDRETURN;
 
       if (([GSCurrentContext() isDrawingToScreen] == YES)
           && _cacheMode != NSImageCacheNever)
@@ -900,7 +900,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       NSCachedImageRep *cache = nil;
 
       if (rep == nil)
-        return;
+        NS_VOIDRETURN;
 
       if (([GSCurrentContext() isDrawingToScreen] == YES)
           && _cacheMode != NSImageCacheNever)
