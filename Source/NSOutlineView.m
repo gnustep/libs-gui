@@ -1716,9 +1716,12 @@ static NSImage *unexpandable  = nil;
   id sitem = (startitem == nil) ? (id)[NSNull null] : (id)startitem;
   NSMutableArray *anarray = nil;
 
-  // Check to see if item is expandable before getting the number of
-  // items.
-  if([_dataSource outlineView: self isItemExpandable: startitem])
+  /* Check to see if item is expandable before getting the number of
+   * items. For macos compatibility the topmost item (startitem==nil)
+   * is always considered expandable and must not be checked.
+   */
+  if (startitem == nil
+    || [_dataSource outlineView: self isItemExpandable: startitem])
     {
       num = [_dataSource outlineView: self
 			 numberOfChildrenOfItem: startitem];

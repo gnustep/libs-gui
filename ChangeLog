@@ -1,3 +1,9 @@
+2009-01-21 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSOutlineView.m: Don't ask if the topmost item is expandable.
+	On MacOS-X the delegate is not asked ... we just assume that it is.
+	Fix for bug #25369
+
 2009-01-20  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSImage.m (-compositeToPoint:fromRect:operation:,
