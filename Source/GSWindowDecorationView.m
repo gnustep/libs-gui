@@ -29,6 +29,7 @@
 #include <Foundation/NSException.h>
 
 #include "AppKit/NSColor.h"
+#include "AppKit/NSMenuView.h"
 #include "AppKit/NSWindow.h"
 #include "GNUstepGUI/GSDisplayServer.h"
 #include "GNUstepGUI/GSTheme.h"
@@ -122,7 +123,11 @@
                           styleMask: aStyle];
   NSToolbar *tb = [_window toolbar];
 
-  // TODO: Handle toolbar and others
+  if ([_window menu] != nil)
+    {
+      content.size.height -= [NSMenuView menuBarHeight];
+    }
+
   if ([tb isVisible])
     {
       GSToolbarView *tv = [tb _toolbarView];
@@ -138,7 +143,11 @@
 {
   NSToolbar *tb = [_window toolbar];
 
-  // TODO: Handle toolbar and others
+  if ([_window menu] != nil)
+    {
+      aRect.size.height += [NSMenuView menuBarHeight];
+    }
+
   if ([tb isVisible])
     {
       GSToolbarView *tv = [tb _toolbarView];
@@ -193,31 +202,34 @@
     [GSServerForWindow(window) docedited: documentEdited : windowNumber];
 }
 
-/*
- * Special setFrame: implementation - a minimal autoresize mechanism
- */
-- (void) setFrame: (NSRect)frameRect
+- (void) layout
 {
-  NSSize oldSize = _frame.size;
-  NSView *cv = [_window contentView];
+  // Should resize all subviews
+  NSRect contentViewFrame;
   NSToolbar *tb = [_window toolbar];
+  NSRect frame = [window frame];
 
-  // Wouldn't it be better to rely on the autoresize mechanism?
-  _autoresizes_subviews = NO;
-  [super setFrame: frameRect];
+  frame.origin = NSZeroPoint;
+  contentViewFrame = [isa contentRectForFrameRect: frame
+                          styleMask: [window styleMask]];
 
-  contentRect = [isa contentRectForFrameRect: frameRect
-                      styleMask: [window styleMask]];
+  if ([_window menu] != nil)
+    {
+      NSMenuView *menuView;
+      float menuBarHeight = [NSMenuView menuBarHeight];
 
-  // Safety Check.
-  [cv setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
-  [cv resizeWithOldSuperviewSize: oldSize];
+      menuView = [[_window menu] menuRepresentation];
+      [menuView setFrame: NSMakeRect(
+              contentViewFrame.origin.x,
+              NSMaxY(contentViewFrame) - menuBarHeight, 
+              contentViewFrame.size.width, 
+              menuBarHeight)];
+      contentViewFrame.size.height -= menuBarHeight;
+    }
 
-  // FIXME: Should resize all subviews
   if ([tb isVisible])
     {
       GSToolbarView *tv = [tb _toolbarView];
-      NSRect contentViewFrame = [cv frame];
       float newToolbarViewHeight;
       
       // If the width changed we may need to recalculate the height
@@ -230,10 +242,58 @@
       newToolbarViewHeight = [tv _heightFromLayout];
       [tv setFrame: NSMakeRect(
               contentViewFrame.origin.x,
-              NSMaxY(contentViewFrame), 
+              NSMaxY(contentViewFrame) - newToolbarViewHeight, 
               contentViewFrame.size.width, 
               newToolbarViewHeight)];
+      contentViewFrame.size.height -= newToolbarViewHeight;
     }
+}
+
+- (void) changeWindowHeight: (float)difference
+{
+  NSRect orgWindowFrame;
+  NSRect windowFrame;
+  NSRect windowContentFrame;
+
+  contentRect.size.height += difference;
+  windowFrame = [isa frameRectForContentRect: contentRect
+                     styleMask: [window styleMask]];
+
+  // Set the local frame without changing the contents view
+  windowContentFrame = windowFrame;
+  windowContentFrame.origin = NSZeroPoint;
+  _autoresizes_subviews = NO;
+  [super setFrame: windowContentFrame];
+  
+  // Keep the top of the window at the same place
+  orgWindowFrame = [window frame];
+  windowFrame.origin.y = orgWindowFrame.origin.y + orgWindowFrame.size.height - windowFrame.size.height;
+  windowFrame.origin.x = orgWindowFrame.origin.x;
+
+  // then resize the window
+  [window setFrame: windowFrame display: YES];
+}
+
+/*
+ * Special setFrame: implementation - a minimal autoresize mechanism
+ */
+- (void) setFrame: (NSRect)frameRect
+{
+  NSSize oldSize = _frame.size;
+  NSView *cv = [_window contentView];
+
+  // Wouldn't it be better to rely on the autoresize mechanism?
+  _autoresizes_subviews = NO;
+  [super setFrame: frameRect];
+
+  contentRect = [isa contentRectForFrameRect: frameRect
+                      styleMask: [window styleMask]];
+
+  // Safety Check.
+  [cv setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+  [cv resizeWithOldSuperviewSize: oldSize];
+
+  [self layout];
 }
 
 - (void) setInputState: (int)state
@@ -291,74 +351,32 @@
 
 - (void) addToolbarView: (GSToolbarView*)toolbarView
 {
-  NSView *contentView = [window contentView];
-  NSRect contentViewFrame = [contentView frame];
   float newToolbarViewHeight;
-  NSRect orgWindowFrame;
-  NSRect windowFrame;
-  NSRect windowContentFrame;
 
-  [toolbarView setFrameSize: NSMakeSize(contentViewFrame.size.width, 100)];
+  [toolbarView setFrameSize: NSMakeSize(contentRect.size.width, 100)];
   // Will recalculate the layout
   [toolbarView _reload];
   newToolbarViewHeight = [toolbarView _heightFromLayout];
   
   // Plug the toolbar view
   [toolbarView setFrame: NSMakeRect(
-          contentViewFrame.origin.x,
-          NSMaxY(contentViewFrame), 
-          contentViewFrame.size.width, 
+          contentRect.origin.x,
+          NSMaxY(contentRect), 
+          contentRect.size.width, 
           newToolbarViewHeight)];
   [self addSubview: toolbarView];
-  
-  orgWindowFrame = [window frame];
-  windowContentFrame = [isa contentRectForFrameRect: orgWindowFrame
-                            styleMask: [window styleMask]];
-  windowContentFrame.size.height += newToolbarViewHeight;
-  windowFrame = [isa frameRectForContentRect: windowContentFrame
-                     styleMask: [window styleMask]];
-  // Keep the top of the window at the same place
-  windowFrame.origin.y += orgWindowFrame.size.height - windowFrame.size.height;
-  
-  // Set the local frames
-  contentRect = windowContentFrame;
-  windowContentFrame = windowFrame;
-  windowContentFrame.origin = NSZeroPoint;
-  _autoresizes_subviews = NO;
-  [super setFrame: windowContentFrame];
-  
-  // then resize the window
-  [window setFrame: windowFrame display: YES];
+
+  [self changeWindowHeight: newToolbarViewHeight];  
 }
 
 - (void) removeToolbarView: (GSToolbarView *)toolbarView
 {
   float toolbarViewHeight = [toolbarView frame].size.height;
-  NSRect orgWindowFrame;
-  NSRect windowFrame;
-  NSRect windowContentFrame;
 
   // Unplug the toolbar view
   [toolbarView removeFromSuperviewWithoutNeedingDisplay];
   
-  orgWindowFrame = [window frame];
-  windowContentFrame = [isa contentRectForFrameRect: orgWindowFrame
-                            styleMask: [window styleMask]];
-  windowContentFrame.size.height -= toolbarViewHeight;
-  windowFrame = [isa frameRectForContentRect: windowContentFrame
-                     styleMask: [window styleMask]];
-  // Keep the top of the window at the same place
-  windowFrame.origin.y += orgWindowFrame.size.height - windowFrame.size.height;
-
-  // Set the local frames
-  contentRect = windowContentFrame;
-  windowContentFrame = windowFrame;
-  windowContentFrame.origin = NSZeroPoint;
-  _autoresizes_subviews = NO;
-  [super setFrame: windowContentFrame];
-  
-  // then resize the window and display
-  [window setFrame: windowFrame display: YES];
+  [self changeWindowHeight: -toolbarViewHeight];  
 }
 
 - (void) adjustToolbarView: (GSToolbarView *)toolbarView
@@ -370,35 +388,47 @@
   
   if (toolbarViewHeight != newToolbarViewHeight)
     {
-      NSRect orgWindowFrame;
-      NSRect windowFrame;
-      NSRect windowContentFrame;
-
       [toolbarView setFrame: NSMakeRect(
               toolbarViewFrame.origin.x,
               toolbarViewFrame.origin.y + (toolbarViewHeight - newToolbarViewHeight),
               toolbarViewFrame.size.width, 
               newToolbarViewHeight)];
           
-      orgWindowFrame = [window frame];
-      windowContentFrame = [isa contentRectForFrameRect: orgWindowFrame
-                                styleMask: [window styleMask]];
-      windowContentFrame.size.height -= toolbarViewHeight - newToolbarViewHeight;
-      windowFrame = [isa frameRectForContentRect: windowContentFrame
-                         styleMask: [window styleMask]];
-      windowFrame.origin.y += orgWindowFrame.size.height - windowFrame.size.height;
-      // Set the local frames
-      contentRect = windowContentFrame;
-      windowContentFrame = windowFrame;
-      windowContentFrame.origin = NSZeroPoint;
-      _frame = windowContentFrame;
-
-      // then resize the window and display
-      [window setFrame: windowFrame display: YES];
+      [self changeWindowHeight: newToolbarViewHeight - toolbarViewHeight];  
     }
 }
 
 @end
+
+@implementation GSWindowDecorationView (Menu)
+
+- (void) addMenuView: (NSMenuView*)menuView
+{
+  float	menubarHeight = [NSMenuView menuBarHeight];
+  
+  // Plug the menu view
+  [menuView setFrame: NSMakeRect(
+          contentRect.origin.x,
+          NSMaxY(contentRect), 
+          contentRect.size.width, 
+          menubarHeight)];
+  [self addSubview: menuView];
+  
+  [self changeWindowHeight: menubarHeight];  
+}
+
+- (void) removeMenuView: (NSMenuView*)menuView
+{
+  float	menubarHeight = [NSMenuView menuBarHeight];
+
+  // Unplug the menu view
+  [menuView removeFromSuperviewWithoutNeedingDisplay];
+  
+  [self changeWindowHeight: -menubarHeight];  
+}
+
+@end
+
 
 @implementation GSBackendWindowDecorationView
 

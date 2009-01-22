@@ -5106,6 +5106,8 @@ current key view.<br />
   if (!toolbar)
     return;
   
+  [toolbar setVisible: !isVisible];
+
   if (isVisible)
     {
       [_wv removeToolbarView: [toolbar _toolbarView]];
@@ -5114,8 +5116,6 @@ current key view.<br />
     {
       [_wv addToolbarView: [toolbar _toolbarView]];
     }
-
-  [toolbar setVisible: !isVisible];
 
   [self display];
 }
@@ -5154,6 +5154,28 @@ current key view.<br />
 
   // To show the changed toolbar
   [self displayIfNeeded];
+}
+
+@end
+
+@implementation NSWindow (Menu)
+
+- (void) setMenu: (NSMenu *)menu
+{
+  NSMenuView *menuView;
+
+  menuView = [[self menu] menuRepresentation];
+  if (menuView != nil)
+    [_wv removeMenuView: menuView];
+  [super setMenu: menu];
+  menuView = [menu menuRepresentation];
+  if (menuView != nil)
+    {
+      [menu close];
+      [menuView setHorizontal: YES];
+      [menuView sizeToFit];
+      [_wv addMenuView: menuView];
+    }
 }
 
 @end

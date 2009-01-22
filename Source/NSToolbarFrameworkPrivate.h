@@ -30,6 +30,7 @@
 #ifndef _NSToolbarFrameworkPrivate_h_INCLUDE
 #define _NSToolbarFrameworkPrivate_h_INCLUDE
 
+#include "AppKit/NSMenuView.h"
 #include "AppKit/NSToolbar.h"
 #include "AppKit/NSToolbarItem.h"
 #include "GNUstepGUI/GSToolbarView.h"
@@ -112,6 +113,10 @@
 - (void) addToolbarView: (GSToolbarView*)toolbarView;
 - (void) removeToolbarView: (GSToolbarView *)toolbarView;
 - (void) adjustToolbarView: (GSToolbarView *)toolbarView;
+@end
+@interface GSWindowDecorationView (Menu)
+- (void) addMenuView: (NSMenuView*)menuView;
+- (void) removeMenuView: (NSMenuView*)menuView;
 @end
 
 #endif // _NSToolbarFrameworkPrivate_h_INCLUDE

@@ -296,10 +296,14 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 {
   if (flag == YES && _horizontal == NO)
     {
+      NSRect scRect = [[NSScreen mainScreen] frame];
       GSIArray a = NSZoneMalloc(NSDefaultMallocZone(), sizeof(GSIArray_t));
 
       GSIArrayInitWithZoneAndCapacity(a, NSDefaultMallocZone(), 8);
       NSMapInsert(viewInfo, self, a);
+
+      scRect.size.height = [NSMenuView menuBarHeight];
+      [self setFrameSize: scRect.size];
     }
   else if (flag == NO && _horizontal == YES)
     {
@@ -644,13 +648,16 @@ _addLeftBorderOffsetToRect(NSRect aRect)
       unsigned i;
       unsigned howMany = [_itemCells count];
       float currentX = 8;
-      NSRect scRect = [[NSScreen mainScreen] frame];
+//      NSRect scRect = [[NSScreen mainScreen] frame];
 
       GSIArrayRemoveAllItems(cellRects);
 
+/*
       scRect.size.height = [NSMenuView menuBarHeight];
       [self setFrameSize: scRect.size];
       _cellSize.height = scRect.size.height;
+*/
+      _cellSize.height = [NSMenuView menuBarHeight];
 
       for (i = 0; i < howMany; i++)
         {
@@ -947,6 +954,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
     {
       NSRect aRect = [self rectOfItemAtIndex: i];
       
+      //NSLog(@"indexOfItemAtPoint called for %@ %@ %d %@", self, NSStringFromPoint(point), i, NSStringFromRect(aRect));
       aRect = _addLeftBorderOffsetToRect(aRect);
 
       if (NSMouseInRect(point, aRect, NO))
@@ -1347,6 +1355,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
           int index;
 
           location = [_window mouseLocationOutsideOfEventStream];
+
           index    = [self indexOfItemAtPoint: location];
 
           if (event == original)
