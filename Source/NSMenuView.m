@@ -106,15 +106,6 @@ static NSMapTable *viewInfo = 0;
 
 @implementation NSMenuView
 
-static NSRect
-_addLeftBorderOffsetToRect(NSRect aRect)
-{
-  aRect.origin.x--;
-  aRect.size.width++;
-
-  return aRect;
-}
-
 /*
  * Class methods.
  */
@@ -398,6 +389,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   // Mark the new cell and the menu view as needing resizing.
   [cell setNeedsSizing: YES];
   [self setNeedsSizing: YES];
+  [self setNeedsDisplayForItemAtIndex: index];
 }
 
 - (NSMenuItemCell*) menuItemCellForItemAtIndex: (int)index
@@ -449,10 +441,10 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   [aCell setEnabled: [[aCell menuItem] isEnabled]];
   // Mark the cell associated with the item as needing resizing.
   [aCell setNeedsSizing: YES];
-  [self setNeedsDisplayForItemAtIndex: index];
 
   // Mark the menu view as needing to be resized.
   [self setNeedsSizing: YES];
+  [self setNeedsDisplayForItemAtIndex: index];
 }
 
 - (void) itemAdded: (NSNotification*)notification
@@ -490,6 +482,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
   // Mark the menu view as needing to be resized.
   [self setNeedsSizing: YES];
+  [self setNeedsDisplay: YES];
 }
 
 - (void) itemRemoved: (NSNotification*)notification
@@ -510,6 +503,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
     }
   // Mark the menu view as needing to be resized.
   [self setNeedsSizing: YES];
+  [self setNeedsDisplay: YES];
 }
 
 /*
@@ -955,7 +949,8 @@ _addLeftBorderOffsetToRect(NSRect aRect)
       NSRect aRect = [self rectOfItemAtIndex: i];
       
       //NSLog(@"indexOfItemAtPoint called for %@ %@ %d %@", self, NSStringFromPoint(point), i, NSStringFromRect(aRect));
-      aRect = _addLeftBorderOffsetToRect(aRect);
+      aRect.origin.x -= _leftBorderOffset;
+      aRect.size.width +=  _leftBorderOffset;
 
       if (NSMouseInRect(point, aRect, NO))
         return (int)i;
@@ -969,7 +964,8 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   NSRect aRect;
 
   aRect = [self rectOfItemAtIndex: index];
-  aRect = _addLeftBorderOffsetToRect(aRect);
+  aRect.origin.x -= _leftBorderOffset;
+  aRect.size.width +=  _leftBorderOffset;
   [self setNeedsDisplayInRect: aRect];
 }
 
@@ -992,10 +988,9 @@ _addLeftBorderOffsetToRect(NSRect aRect)
                                  [aSubmenu menuRepresentation])
           == GSWindowMakerInterfaceStyle)
         {
-          NSRect aRect = [self rectOfItemAtIndex: 
-            [_attachedMenu indexOfItemWithSubmenu: aSubmenu]];
-          NSPoint subOrigin = [_window convertBaseToScreen: 
-            NSMakePoint(aRect.origin.x, aRect.origin.y)];
+          NSRect aRect =  [self convertRect: [self rectOfItemAtIndex: 
+            [_attachedMenu indexOfItemWithSubmenu: aSubmenu]] toView: nil];
+          NSPoint subOrigin = [_window convertBaseToScreen: aRect.origin];
 
           return NSMakePoint (NSMaxX(frame),
             subOrigin.y - NSHeight(submenuFrame) - 3 +
@@ -1003,10 +998,10 @@ _addLeftBorderOffsetToRect(NSRect aRect)
         }
       else if ([self _rootIsHorizontal: 0] == YES)
         {
-          NSRect aRect = [self rectOfItemAtIndex:
-            [_attachedMenu indexOfItemWithSubmenu: aSubmenu]];
-          NSPoint subOrigin = [_window convertBaseToScreen:
-            NSMakePoint(aRect.origin.x, aRect.origin.y)];
+          NSRect aRect =  [self convertRect: [self rectOfItemAtIndex: 
+            [_attachedMenu indexOfItemWithSubmenu: aSubmenu]] toView: nil];
+          NSPoint subOrigin = [_window convertBaseToScreen: aRect.origin];
+
           // FIXME ... why is the offset +1 needed below? 
           return NSMakePoint (NSMaxX(frame),
             subOrigin.y - NSHeight(submenuFrame) + aRect.size.height + 1);
@@ -1019,11 +1014,9 @@ _addLeftBorderOffsetToRect(NSRect aRect)
     }
   else
     {
-      NSRect aRect = [self rectOfItemAtIndex: 
-                       [_attachedMenu indexOfItemWithSubmenu: aSubmenu]];
-      NSPoint subOrigin = [_window convertBaseToScreen: 
-                                    NSMakePoint(NSMinX(aRect),
-                                    NSMinY(aRect))];
+      NSRect aRect =  [self convertRect: [self rectOfItemAtIndex: 
+	[_attachedMenu indexOfItemWithSubmenu: aSubmenu]] toView: nil];
+      NSPoint subOrigin = [_window convertBaseToScreen: aRect.origin];
 
       return NSMakePoint(subOrigin.x, subOrigin.y - NSHeight(submenuFrame));
     }
@@ -1355,8 +1348,8 @@ _addLeftBorderOffsetToRect(NSRect aRect)
           int index;
 
           location = [_window mouseLocationOutsideOfEventStream];
-
-          index    = [self indexOfItemAtPoint: location];
+          index = [self indexOfItemAtPoint: 
+            [self convertPoint: location fromView: nil]];
 
           if (event == original)
             {

@@ -1,3 +1,12 @@
+2009-01-23 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenuView.m: Convert between the window and the view 
+	coordinate system.
+	* Source/NSDocument.m (dataOfType:error:): Call dataRepresentationofType: 
+	when that method was overriden. 
+	* Source/NSDocument.m (writeToURL:ofType:error:): Use dataOfType:error:
+	instead of dataRepresentationofType:. 
+
 2009-01-22 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSWindowDecorationView.m: Add handling of in-window

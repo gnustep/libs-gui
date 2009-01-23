@@ -679,6 +679,13 @@ withContentsOfURL: (NSURL *)url
                ofType: (NSString *)type
                 error: (NSError **)error
 {
+  if (OVERRIDDEN(loadDataRepresentation:ofType:))
+    {
+      *error = nil; 
+      return [self loadDataRepresentation: data
+                   ofType: type];
+    }
+
   [NSException raise: NSInternalInconsistencyException format:@"%@ must implement %@",
                NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
   return NO;
@@ -959,9 +966,9 @@ withContentsOfURL: (NSURL *)url
     }
   else
     {
-      NSData *data = [self dataRepresentationOfType: type];
+      NSData *data =  [self dataOfType: type error: error];
   
-      if (data == nil) 
+      if (data == nil)
           return NO;
       
       return [url setResourceData: data];
