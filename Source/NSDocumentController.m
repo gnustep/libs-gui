@@ -1121,6 +1121,10 @@ static BOOL _shouldClose = YES;
     {
       return [self hasEditedDocuments];
     }
+  if (sel_eq([anItem action], @selector(newDocument:)))
+    {
+      return ([self defaultType] != nil); 
+    }
   return YES;
 }
 
