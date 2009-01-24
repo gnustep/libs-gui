@@ -3275,6 +3275,8 @@ resetCursorRectsForView(NSView *theView)
               BOOL now;
               GSTrackingRect *r = rects[i];
 
+              if ([r isValid] == NO)
+                continue;
               /* Check mouse at last point */
               last = NSMouseInRect(_lastPoint, r->rectangle, NO);
               /* Check mouse at current point */

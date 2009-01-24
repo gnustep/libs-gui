@@ -1,3 +1,8 @@
+2009-01-23 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWindow.m: ignore invalid rects when checking
+	tracking rectangles.
+
 2009-01-23 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenuView.m: Convert between the window and the view 
