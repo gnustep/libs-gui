@@ -1,5 +1,10 @@
 2009-01-25 Fred Kiefer <FredKiefer@gmx.de>
 
+	* TextConverters/RTF/RTFProducer.m (RTFDProducer -produceFileFrom:...):
+	Always create a directory, even for simple RTF files.
+
+2009-01-25 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSDocument.m (-runModalSavePanelForSaveOperation:...): 
 	Correct the name of the selector being tested.
 

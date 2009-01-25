@@ -81,7 +81,8 @@
                                             inlineGraphics: NO]
                    dataUsingEncoding: NSASCIIStringEncoding];
 
-  if ([aText containsAttachments])
+//  if ([aText containsAttachments])
+  if (YES)
     {
       NSMutableDictionary *fileDict;
       NSFileWrapper *txt;
