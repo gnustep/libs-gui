@@ -1,3 +1,10 @@
+2009-01-25 06:47-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSMenuView.m: Refactor code which executes the action 
+	of a menu item at a given index into a separate method to make it
+	easier to override this behavior when necessary.   Added method 
+	_executeItemAtIndex:removeSubmenu:.
+
 2009-01-25 Fred Kiefer <FredKiefer@gmx.de>
 
 	* TextConverters/RTF/RTFProducer.m (RTFDProducer -produceFileFrom:...):

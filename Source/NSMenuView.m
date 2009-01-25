@@ -1278,6 +1278,57 @@ static NSMapTable *viewInfo = 0;
 #define MOVE_THRESHOLD_DELTA 2.0
 #define DELAY_MULTIPLIER     10
 
+- (BOOL) _executeItemAtIndex: (int)indexOfActionToExecute
+	       removeSubmenu: (BOOL)subMenusNeedRemoving
+{
+  if (indexOfActionToExecute == -1)
+    {
+      return YES;
+    }
+  
+  if (indexOfActionToExecute >= 0
+      && [_attachedMenu attachedMenu] != nil && [_attachedMenu attachedMenu] ==
+      [[_items_link objectAtIndex: indexOfActionToExecute] submenu])
+    {
+#if 1
+      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self)
+	  == NSMacintoshInterfaceStyle)
+        {
+          /*
+           * FIXME ... always remove submenus in mac mode ... this is not
+           * quite the way the mac behaves, but it's closer than the normal
+           * behavior.
+           */
+          subMenusNeedRemoving = YES;
+        }
+#endif
+      if (subMenusNeedRemoving)
+        {
+          [self detachSubmenu];
+        }
+      // Clicked on a submenu.
+      return NO;
+    }
+  
+  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self)
+      == NSMacintoshInterfaceStyle)
+    {
+      NSMenu *tmp = _attachedMenu;
+      
+      do
+        {
+          if ([tmp isEqual: [NSApp mainMenu]] == NO)
+            {
+              [tmp close];
+            }
+          tmp = [tmp supermenu];
+        }
+      while (tmp != nil);
+    }
+
+  return YES;
+}
+
 - (BOOL) trackWithEvent: (NSEvent*)event
 {
   unsigned eventMask = NSPeriodicMask;
@@ -1538,75 +1589,35 @@ static NSMapTable *viewInfo = 0;
   indexOfActionToExecute = _highlightedItemIndex;
 
   // remove transient menus. --------------------------------------------
+  {
+    NSMenu *currentMenu = _attachedMenu;
+    
+    while (currentMenu && ![currentMenu isTransient])
+      {
+	currentMenu = [currentMenu attachedMenu];
+      }
+    
+    while ([currentMenu isTransient] && [currentMenu supermenu])
+      {
+	currentMenu = [currentMenu supermenu];
+      }
+    
+    [[currentMenu menuRepresentation] detachSubmenu];
+    
+    if ([currentMenu isTransient])
+      {
+	[currentMenu closeTransient];
+      }
+  }
+  
+  if([self _executeItemAtIndex: indexOfActionToExecute
+	   removeSubmenu: subMenusNeedRemoving] == NO)
     {
-      NSMenu *currentMenu = _attachedMenu;
-
-      while (currentMenu && ![currentMenu isTransient])
-        {
-          currentMenu = [currentMenu attachedMenu];
-        }
-
-      while ([currentMenu isTransient] && [currentMenu supermenu])
-        {
-          currentMenu = [currentMenu supermenu];
-        }
-
-      [[currentMenu menuRepresentation] detachSubmenu];
-
-      if ([currentMenu isTransient])
-        {
-          [currentMenu closeTransient];
-        }
-    }
-
-  // ---------------------------------------------------------------------
-  if (indexOfActionToExecute == -1)
-    {
-      return YES;
-    }
-
-  if (indexOfActionToExecute >= 0
-    && [_attachedMenu attachedMenu] != nil && [_attachedMenu attachedMenu] ==
-    [[_items_link objectAtIndex: indexOfActionToExecute] submenu])
-    {
-#if 1
-      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self)
-        == NSMacintoshInterfaceStyle)
-        {
-          /*
-           * FIXME ... always remove submenus in mac mode ... this is not
-           * quite the way the mac behaves, but it's closer than the normal
-           * behavior.
-           */
-          subMenusNeedRemoving = YES;
-        }
-#endif
-      if (subMenusNeedRemoving)
-        {
-          [self detachSubmenu];
-        }
-      // Clicked on a submenu.
       return NO;
     }
 
-  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self)
-    == NSMacintoshInterfaceStyle)
-    {
-      NSMenu *tmp = _attachedMenu;
-
-      do
-        {
-          if ([tmp isEqual: [NSApp mainMenu]] == NO)
-            {
-              [tmp close];
-            }
-          tmp = [tmp supermenu];
-        }
-      while (tmp != nil);
-    }
-
   [_attachedMenu performActionForItemAtIndex: indexOfActionToExecute];
-
+  
   /*
    * Remove highlighting.
    * We first check if it still highlighted because it could be the
