@@ -1281,11 +1281,6 @@ static NSMapTable *viewInfo = 0;
 - (BOOL) _executeItemAtIndex: (int)indexOfActionToExecute
 	       removeSubmenu: (BOOL)subMenusNeedRemoving
 {
-  if (indexOfActionToExecute == -1)
-    {
-      return YES;
-    }
-  
   if (indexOfActionToExecute >= 0
       && [_attachedMenu attachedMenu] != nil && [_attachedMenu attachedMenu] ==
       [[_items_link objectAtIndex: indexOfActionToExecute] submenu])
@@ -1610,6 +1605,11 @@ static NSMapTable *viewInfo = 0;
       }
   }
   
+  if (indexOfActionToExecute == -1)
+    {
+      return YES;
+    }
+
   if([self _executeItemAtIndex: indexOfActionToExecute
 	   removeSubmenu: subMenusNeedRemoving] == NO)
     {
