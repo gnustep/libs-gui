@@ -415,7 +415,7 @@ typedef	struct {
   [[NSApp mainMenu] setMain: YES];
 
   /*
-   * Mark all windows as needing redisplaying to thos the new theme.
+   * Mark all windows as needing redisplaying to show the new theme.
    */
   enumerator = [[NSApp windows] objectEnumerator];
   while ((window = [enumerator nextObject]) != nil)

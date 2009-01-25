@@ -1,3 +1,12 @@
+2009-01-25 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSWindowDecorationView.m:
+	* Source/NSMenu.m:
+	* Source/NSWindow.m:
+	* Source/NSToolbarFrameworkPrivate.h:
+	Tweaks to allow setting of a menu in a window (and unsetting it)
+	repeatedly as you switch between themes.
+
 2009-01-25 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSDocumentController.m (-_nameForHumanReadableType:): Also 

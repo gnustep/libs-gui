@@ -128,8 +128,8 @@ static BOOL _isInInterfaceBuilder = NO;
 	  NSMenuView	*newRep;
 
 	  newRep = [[NSMenuView alloc] initWithFrame: NSZeroRect];
-	  if (newStyle == NSMacintoshInterfaceStyle ||
-	      newStyle == NSWindows95InterfaceStyle)
+	  if (newStyle == NSMacintoshInterfaceStyle
+	    || newStyle == NSWindows95InterfaceStyle)
 	    {
 	      [newRep setHorizontal: YES];
 	    }

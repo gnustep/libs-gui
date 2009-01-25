@@ -26,6 +26,7 @@
 
 #include "GSWindowDecorationView.h"
 
+#include <Foundation/NSEnumerator.h>
 #include <Foundation/NSException.h>
 
 #include "AppKit/NSColor.h"
@@ -417,14 +418,26 @@
   [self changeWindowHeight: menubarHeight];  
 }
 
-- (void) removeMenuView: (NSMenuView*)menuView
+- (NSMenuView*) removeMenuView
 {
-  float	menubarHeight = [NSMenuView menuBarHeight];
+  NSEnumerator	*e = [[self subviews] objectEnumerator];
+  NSView	*v;
 
-  // Unplug the menu view
-  [menuView removeFromSuperviewWithoutNeedingDisplay];
+  while ((v = [e nextObject]) != nil)
+    {
+      if ([v isKindOfClass: [NSMenuView class]] == YES)
+	{
+	  float	menubarHeight = [NSMenuView menuBarHeight];
+
+	  /* Unplug the menu view and return it so that it can be
+           * restored to its original menu if necessary.
+	   */
+	  [RETAIN(v) removeFromSuperviewWithoutNeedingDisplay];
   
-  [self changeWindowHeight: -menubarHeight];  
+	  [self changeWindowHeight: -menubarHeight];  
+	  return AUTORELEASE(v);
+	}
+    }
 }
 
 @end

@@ -116,7 +116,7 @@
 @end
 @interface GSWindowDecorationView (Menu)
 - (void) addMenuView: (NSMenuView*)menuView;
-- (void) removeMenuView: (NSMenuView*)menuView;
+- (NSMenuView*) removeMenuView;
 @end
 
 #endif // _NSToolbarFrameworkPrivate_h_INCLUDE

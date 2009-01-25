@@ -146,8 +146,8 @@ static BOOL menuBarVisible = YES;
 - (NSString*) _locationKey
 {
   NSInterfaceStyle style = NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
-  if (style == NSMacintoshInterfaceStyle || 
-      style == NSWindows95InterfaceStyle)
+  if (style == NSMacintoshInterfaceStyle
+    || style == NSWindows95InterfaceStyle)
     {
       return nil;
     }
@@ -1208,14 +1208,35 @@ static BOOL menuBarVisible = YES;
       return;
     }
 
-  _menu.horizontal = [menuRep isHorizontal];
+  /* If we are replacing a menu representation with a new version,
+   * we should display it in the same view as the old representation.
+   * If we can't find a view for that, we display in the content view
+   * of our default window.
+   */
+  if ([_view superview] == nil)
+    {
+      contentView = [_aWindow contentView];
+    }
+  else
+    {
+      contentView = [_view superview];
+    }
 
   if (_view == menuRep)
     {
+      /* Hack ... if the representation was 'borrowed' for an in-window
+       * menu, we will still have it recorded as ours, but it won't be
+       * in our view hierarchy, so we have to re-add it.
+       */
+      if (contentView != [menuRep superview])
+	{
+          [contentView addSubview: menuRep];
+	}
       return;
     }
 
-  contentView = [_aWindow contentView];
+  _menu.horizontal = [menuRep isHorizontal];
+
   if (_view != nil)
     {
       // remove the old representation
@@ -1507,8 +1528,8 @@ static BOOL menuBarVisible = YES;
 - (void) _showTornOffMenuIfAny: (NSNotification*)notification
 {
   NSInterfaceStyle style = NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
-  if (style == NSMacintoshInterfaceStyle || 
-      style == NSWindows95InterfaceStyle)
+  if (style == NSMacintoshInterfaceStyle
+    || style == NSWindows95InterfaceStyle)
     {
       return;
     }
@@ -1748,8 +1769,8 @@ static BOOL menuBarVisible = YES;
 	  NSMenuView	*newRep;
 
 	  newRep = [[NSMenuView alloc] initWithFrame: NSZeroRect];
-	  if (newStyle == NSMacintoshInterfaceStyle ||
-	      newStyle == NSWindows95InterfaceStyle)
+	  if (newStyle == NSMacintoshInterfaceStyle
+	    || newStyle == NSWindows95InterfaceStyle)
 	    {
 	      [newRep setHorizontal: YES];
 	    }
@@ -1761,12 +1782,23 @@ static BOOL menuBarVisible = YES;
 	  [self setMenuRepresentation: newRep];
 	  [self _organizeMenu];
 	  RELEASE(newRep);
+	  if (newStyle == NSWindows95InterfaceStyle)
+	    {
+	      [[NSApp mainWindow] setMenu: self];
+	    }
+	  else if ([[NSApp mainWindow] menu] == self)
+	    {
+	      [[NSApp mainWindow] setMenu: nil];
+	    }
 	}
 
-      [[self window] setTitle: [[NSProcessInfo processInfo] processName]];
-      [[self window] setLevel: NSMainMenuWindowLevel];
-      [self _setGeometry];
-      [self sizeToFit];
+      if (newStyle != NSWindows95InterfaceStyle)
+	{
+          [[self window] setTitle: [[NSProcessInfo processInfo] processName]];
+          [[self window] setLevel: NSMainMenuWindowLevel];
+          [self _setGeometry];
+          [self sizeToFit];
+	}
 
       if ([NSApp isActive])
         {

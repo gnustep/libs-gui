@@ -5164,19 +5164,30 @@ current key view.<br />
 
 - (void) setMenu: (NSMenu *)menu
 {
-  NSMenuView *menuView;
-
-  menuView = [[self menu] menuRepresentation];
-  if (menuView != nil)
-    [_wv removeMenuView: menuView];
-  [super setMenu: menu];
-  menuView = [menu menuRepresentation];
-  if (menuView != nil)
+  if ([self menu] != menu)
     {
-      [menu close];
-      [menuView setHorizontal: YES];
-      [menuView sizeToFit];
-      [_wv addMenuView: menuView];
+      NSMenuView *menuView;
+
+      /* Restore the old representation to its original menu after
+       * removing it from the window.  If we didn't do this, the menu
+       * representation would be left without a partent view or
+       * window to draw in.
+       */
+      menuView = [_wv removeMenuView];
+      [[self menu] setMenuRepresentation: menuView];
+
+      /* Set the new menu, and transfer the new menu representation
+       * to the window decoration view.
+       */
+      [super setMenu: menu];
+      menuView = [menu menuRepresentation];
+      if (menuView != nil)
+	{
+	  [menu close];
+	  [menuView setHorizontal: YES];
+	  [menuView sizeToFit];
+	  [_wv addMenuView: menuView];
+	}
     }
 }
 
