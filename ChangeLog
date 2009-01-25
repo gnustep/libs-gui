@@ -1,3 +1,8 @@
+2009-01-25 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSDocumentController.m (-_nameForHumanReadableType:): Also 
+	look at CFBundleTypeName.
+
 2009-01-25 06:47-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSMenuView.m: Refactor code which executes the action 

@@ -1377,9 +1377,16 @@ static BOOL _shouldClose = YES;
   return [self _editorTypesForClass: documentClass];
 }
 
-- (NSString *) _nameForHumanReadableType: (NSString *)type
+- (NSString *) _nameForHumanReadableType: (NSString *)typeHR
 {
-  return [HR_TYPE_INFO(type) objectForKey: NSNameKey];
+  NSDictionary *typeInfo = HR_TYPE_INFO(typeHR);
+  NSString *type = [typeInfo objectForKey: NSNameKey];
+
+  if(type == nil)
+    {
+      type = [typeInfo objectForKey: CFBundleTypeName];
+    }
+  return type;
 }
 
 - (NSArray *) _displayNamesForTypes: (NSArray *)types
