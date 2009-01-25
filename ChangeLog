@@ -1,3 +1,10 @@
+2009-01-25 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSMenu.m: Keep the main menu in the main window (or visible
+	if there is no main menu) when using microsoft style menus.
+	* Source/NSWindow.m: If the main windows closes and it contains
+	the main menu, unset the menu.
+
 2009-01-25 11:51-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSMenuView.m: Return from the trackWithEvent: method

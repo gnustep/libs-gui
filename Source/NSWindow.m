@@ -1775,6 +1775,12 @@ many times.
         {
           [_wv setInputState: GSTitleBarNormal];
         }
+      if ([self menu] == [NSApp mainMenu])
+	{
+	  /* This window contains the main menu ... remove it.
+	   */
+	  [self setMenu: nil];
+	}
       [nc postNotificationName: NSWindowDidResignMainNotification object: self];
     }
 }
@@ -2645,9 +2651,7 @@ resetCursorRectsForView(NSView *theView)
       _f.has_opened = NO;
       [NSApp removeWindowsItem: self];
       [self orderOut: self];
-
       RELEASE(pool);
-      
       _f.has_closed = YES;
       RELEASE(self);
     }
@@ -5175,6 +5179,7 @@ current key view.<br />
        */
       menuView = [_wv removeMenuView];
       [[self menu] setMenuRepresentation: menuView];
+      [menuView sizeToFit];
 
       /* Set the new menu, and transfer the new menu representation
        * to the window decoration view.

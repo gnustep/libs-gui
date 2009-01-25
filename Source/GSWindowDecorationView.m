@@ -438,6 +438,7 @@
 	  return AUTORELEASE(v);
 	}
     }
+  return nil;
 }
 
 @end

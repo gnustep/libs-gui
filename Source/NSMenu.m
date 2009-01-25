@@ -942,6 +942,31 @@ static BOOL menuBarVisible = YES;
 
 - (void) update
 {
+  if (self == [NSApp mainMenu])
+    {
+      /* For microsoft style menus, we attempt to notice that we have
+       * a main window, and make sure that the menu appears in it.
+       */
+      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil) == 
+        NSWindows95InterfaceStyle)
+	{
+	  NSWindow	*w = [NSApp mainWindow];
+
+	  if (w == nil)
+	    {
+	      /* Make sure we are set up properly and displayed.
+	       */
+	      if ([_aWindow isVisible] == NO)
+		{
+	          [self setMain: YES];
+		}
+	    }
+	  else if ([w menu] != self)
+	    {
+	      [w setMenu: self];
+	    }
+	}
+    }
   if (_delegate)
     {
       if ([_delegate respondsToSelector:@selector(menuNeedsUpdate:)])
@@ -1186,10 +1211,10 @@ static BOOL menuBarVisible = YES;
 
 - (void) setDelegate: (id)delegate
 {
-  _delegate=delegate;
+  _delegate = delegate;
 }
 
-- (float)menuBarHeight
+- (float) menuBarHeight
 {
   // FIXME
   return [NSMenuView menuBarHeight];
@@ -1683,7 +1708,6 @@ static BOOL menuBarVisible = YES;
 {
   NSMenu *sub = [self attachedMenu];
 
-
   if (_menu.transient)
     {
       NSDebugLLog (@"NSMenu", @"We should not close ordinary menu while transient version is still open");
@@ -1784,15 +1808,22 @@ static BOOL menuBarVisible = YES;
 	  RELEASE(newRep);
 	  if (newStyle == NSWindows95InterfaceStyle)
 	    {
+	      /* Put menu in the main window for microsoft style.
+	       */
 	      [[NSApp mainWindow] setMenu: self];
 	    }
 	  else if ([[NSApp mainWindow] menu] == self)
 	    {
+	      /* Remove the menu from the main window.
+	       */
 	      [[NSApp mainWindow] setMenu: nil];
 	    }
 	}
 
-      if (newStyle != NSWindows95InterfaceStyle)
+      /* Adjust the menu window to suit the menu view unless the menu
+       * is being displayed in the application main window.
+       */
+      if ([[NSApp mainWindow] menu] != self)
 	{
           [[self window] setTitle: [[NSProcessInfo processInfo] processName]];
           [[self window] setLevel: NSMainMenuWindowLevel];
