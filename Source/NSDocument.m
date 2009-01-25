@@ -1172,7 +1172,7 @@ originalContentsURL: (NSURL *)orig
 {
   // FIXME: Commit registered editors
 
-  if (OVERRIDDEN(saveToFile:saveOperation:delegate:didSaveSelector:))
+  if (OVERRIDDEN(saveToFile:saveOperation:delegate:didSaveSelector:contextInfo:))
     {
       NSString *fileName;
 

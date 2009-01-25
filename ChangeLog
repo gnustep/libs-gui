@@ -1,3 +1,8 @@
+2009-01-25 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSDocument.m (-runModalSavePanelForSaveOperation:...): 
+	Correct the name of the selector being tested.
+
 2009-01-24 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSDocumentController.m (-validateUserInterfaceItem:):
