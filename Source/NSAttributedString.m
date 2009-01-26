@@ -841,6 +841,7 @@ documentAttributes: (NSDictionary **)dict
       return nil;
     }
 
+  // FIXME: Pass on baseURL
   return [self initWithData: data
                options: options
                documentAttributes: dict
@@ -858,7 +859,43 @@ documentAttributes: (NSDictionary **)dict
         documentAttributes: (NSDictionary *)dict
                      error: (NSError **)error
 {
-  // FIXME
+  NSString *type = [dict objectForKey: NSDocumentTypeDocumentOption];
+
+  if (type == nil)
+    {
+      // FIXME: set error
+      return nil;
+    }
+
+  if ([type isEqualToString: NSDocFormatTextDocumentType])
+    {
+      return [self docFormatFromRange: range
+                   documentAttributes: dict];
+    }
+  else if ([type isEqualToString: NSHTMLTextDocumentType])
+    {
+      // FIXME
+    }
+  else if ([type isEqualToString: NSRTFDTextDocumentType])
+    {
+      return [self RTFDFromRange: range
+                   documentAttributes: dict];
+    }
+  else if ([type isEqualToString: NSRTFTextDocumentType])
+    {
+      return [self RTFFromRange: range
+                   documentAttributes: dict];
+    }
+  else if ([type isEqualToString: NSPlainTextDocumentType])
+    {
+      NSStringEncoding encoding = [[dict objectForKey: @"CharacterEncoding"] 
+                                      intValue];
+      
+      if (!encoding)
+        encoding = [NSString defaultCStringEncoding];
+      return [[self string] dataUsingEncoding: encoding];
+    }
+
   return nil;
 }
 
@@ -866,7 +903,20 @@ documentAttributes: (NSDictionary **)dict
                       documentAttributes: (NSDictionary *)dict
                                    error: (NSError **)error
 {
-  // FIXME
+  NSFileWrapper *wrapper;
+  NSData *data;
+
+  // FIXME: This wont work for directory bundles.
+  data = [self dataFromRange: range
+	  documentAttributes: dict
+		       error: error];
+  if (data != nil)
+    {
+      wrapper = [[NSFileWrapper alloc] initRegularFileWithContents: data];
+      return AUTORELEASE(wrapper);
+    }
+
+  // FIXME: Set error
   return nil;
 }
 
