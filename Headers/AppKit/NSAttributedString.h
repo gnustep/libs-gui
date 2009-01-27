@@ -219,6 +219,10 @@ enum
 + (NSArray *) textUnfilteredFileTypes;
 + (NSArray *) textUnfilteredPasteboardTypes;
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
++ (NSArray *) textTypes;
++ (NSArray *) textUnfilteredTypes;
+#endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (NSData *) docFormatFromRange: (NSRange)range
              documentAttributes: (NSDictionary *)dict;

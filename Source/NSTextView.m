@@ -4810,8 +4810,13 @@ other than copy/paste or dragging. */
 
 	      if (cell != nil)
 		{
-		  /* TODO: Where to get the cellFrame? */
-		  NSRect cellFrame = NSMakeRect(0, 0, 0, 0);
+		  NSRect cellFrame;
+
+		  cellFrame.origin = [_layoutManager 
+				       locationForGlyphAtIndex: startIndex];
+		  cellFrame.size = [_layoutManager 
+				     attachmentSizeForGlyphAtIndex: startIndex];
+		  cellFrame.origin.y -= cellFrame.size.height;
 
 		  /* TODO: What about the insertion point ? */
 		  if ([cell wantsToTrackMouseForEvent: theEvent

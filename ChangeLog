@@ -1,3 +1,15 @@
+2009-01-27 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSAttributedString.h: Add missing MacOSX methods.
+	* Source/NSAttributedString.m: Rewrote data loading and add
+	setting of NSError.
+	* Headers/AppKit/NSLayoutManager.h (-attachmentSizeForGlyphAtIndex:, 
+	showAttachmentCell:inRect:characterIndex:): Declare these missing
+	methods. 
+	* Source/NSLayoutManager.m: Implement and use them.
+	* Source/NSTextView.m (-dragSelectionWithEvent:...): Use layout
+	manager attachment methods.
+
 2009-01-26 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSAttributedString.m (-dataFromRange:...,

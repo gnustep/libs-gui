@@ -1275,6 +1275,56 @@ container
   }
 }
 
+static inline NSSize
+attachmentSize(linefrag_t *lf, NSUInteger glyphIndex)
+{
+  linefrag_attachment_t *la;
+  int la_i;
+
+  la = lf->attachments;
+  la_i = 0;
+
+  while (la->pos != glyphIndex && la_i < lf->num_attachments)
+    {
+      la++;
+      la_i++;
+    }
+
+  if (la_i >= lf->num_attachments)
+    return NSMakeSize(-1.0, -1.0);
+  
+  return la->size;
+}
+
+- (NSSize) attachmentSizeForGlyphAtIndex: (NSUInteger)glyphIndex
+{
+  textcontainer_t *tc;
+  int i;
+  linefrag_t *lf;
+
+  for (i = 0, tc = textcontainers; i < num_textcontainers; i++, tc++)
+    if (tc->pos + tc->length > glyphIndex)
+      break;
+  if (i == num_textcontainers)
+    {
+      NSLog(@"%s: can't find text container for glyph (internal error)", __PRETTY_FUNCTION__);
+      return NSMakeSize(-1.0, -1.0);
+    }
+
+  LINEFRAG_FOR_GLYPH(glyphIndex);
+
+  return attachmentSize(lf, glyphIndex);
+}
+
+- (void) showAttachmentCell: (NSCell *)cell
+		     inRect: (NSRect)rect
+	     characterIndex: (NSUInteger)attachmentIndex
+{
+  [(id <NSTextAttachmentCell>)cell drawWithFrame: rect
+                              inView: [NSView focusView]
+                              characterIndex: attachmentIndex
+                              layoutManager: self];
+}
 
 -(void) drawGlyphsForGlyphRange: (NSRange)range
 			atPoint: (NSPoint)containerOrigin
@@ -1283,9 +1333,6 @@ container
   textcontainer_t *tc;
   linefrag_t *lf;
   linefrag_point_t *lp;
-
-  linefrag_attachment_t *la;
-  int la_i;
 
   NSPoint p;
   unsigned int g;
@@ -1315,8 +1362,6 @@ container
   NSGlyph gbuf[GBUF_SIZE];
   int gbuf_len, gbuf_size;
   NSPoint gbuf_point = NSZeroPoint;
-
-  NSView *controlView = nil;
 
   if (!range.length)
     return;
@@ -1355,9 +1400,6 @@ container
     range.length = tc->pos + tc->length - range.location;
 
   LINEFRAG_FOR_GLYPH(range.location);
-
-  la = lf->attachments;
-  la_i = 0;
 
   j = 0;
   lp = lf->points;
@@ -1451,8 +1493,6 @@ container
 	      lf++;
 	      j = 0;
 	      lp = lf->points;
-	      la = lf->attachments;
-	      la_i = 0;
 	    }
 	  p = lp->p;
 	  p.x += lf->rect.origin.x + containerOrigin.x;
@@ -1502,9 +1542,7 @@ container
 	{
 	  if (glyph->g == GSAttachmentGlyph)
 	    {
-	      /* Silently ignore if we don't have any size information for
-	      it. */
-	      if (g >= range.location && la)
+	      if (g >= range.location)
 		{
 		  unsigned int char_index =
 		    [self characterRangeForGlyphRange: NSMakeRange(g, 1)
@@ -1514,20 +1552,14 @@ container
 			effectiveRange: NULL] attachmentCell];
 		  NSRect cellFrame;
 
-		  if (!controlView)
-		    controlView = [NSView focusView];
-
-		  while (la->pos != g && la_i < lf->num_attachments)
-		    {
-		      la++;
-		      la_i++;
-		    }
-		  if (la_i >= lf->num_attachments)
-		    continue;
-
 		  cellFrame.origin = p;
-		  cellFrame.size = la->size;
+		  cellFrame.size = attachmentSize(lf, g);
 		  cellFrame.origin.y -= cellFrame.size.height;
+
+		  /* Silently ignore if we don't have any size information for
+		     it. */
+		  if (NSEqualSizes(cellFrame.size, NSMakeSize(-1.0, -1.0)))
+		    continue;
 
 		  /* Drawing the cell might mess up our state, so we reset
 		  the font and color afterwards. */
@@ -1540,10 +1572,9 @@ container
 
 		  should they really be drawn in our coordinate system?
 		  */
-		  [cell drawWithFrame: cellFrame
-		    inView: controlView
-		    characterIndex: char_index
-		    layoutManager: self];
+		  [self showAttachmentCell: (NSCell*)cell
+				    inRect: cellFrame
+            characterIndex: char_index];
 		  [f set];
 		  [color set];
 		}

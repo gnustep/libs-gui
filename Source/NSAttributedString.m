@@ -33,6 +33,7 @@
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSCharacterSet.h>
 #include <Foundation/NSDebug.h>
+#include <Foundation/NSError.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSPathUtilities.h>
@@ -231,6 +232,17 @@ static Class converter_class(NSString *format, BOOL producer)
   return Nil;
 }
 
+static inline NSError*
+create_error(int code, NSString* desc)
+{
+  return [NSError errorWithDomain: @"NSAttributedString"
+			     code: code 
+			 userInfo: [NSDictionary 
+					dictionaryWithObjectsAndKeys: 
+				       NSLocalizedString(desc, @"Error description"), 
+				     NSLocalizedDescriptionKey, nil]];
+}
+
 @implementation NSAttributedString (AppKit)
 
 + (NSArray *) textFileTypes
@@ -254,6 +266,30 @@ static Class converter_class(NSString *format, BOOL producer)
 {
   return [NSArray arrayWithObjects: NSStringPboardType, NSRTFPboardType, 
 		  NSRTFDPboardType, NSHTMLPboardType, nil];
+}
+
++ (NSArray *) textTypes
+{
+  // FIXME
+  return [self textUnfilteredTypes];
+}
+
++ (NSArray *) textUnfilteredTypes
+{
+  return [NSArray arrayWithObjects: @"public.plain-text",
+		  @"public.rtf",
+		  @"com.apple.rtfd",
+		  @"public.html",
+		  /*
+		  @"public.xml",
+		  @"com.apple.webarchive",
+		  @"com.microsoft.word.doc",
+		  @"com.microsoft.word.wordml",
+		  @"org.openxmlformats.wordprocessingml.document",
+		  @"org.oasis-open.opendocument.text",
+		  @"com.apple.traditional-mac-plain-text",
+		  */
+		  nil];
 }
 
 + (NSAttributedString *) attributedStringWithAttachment: 
@@ -359,8 +395,16 @@ static Class converter_class(NSString *format, BOOL producer)
   return [dictionaryClass dictionary];
 }
 
-- (unsigned) lineBreakBeforeIndex: (unsigned)location
-                      withinRange: (NSRange)aRange
+- (NSUInteger) lineBreakByHyphenatingBeforeIndex: (NSUInteger)location
+				     withinRange: (NSRange)aRange
+{
+  // FIXME
+  return [self lineBreakBeforeIndex: location
+                      withinRange: aRange];
+}
+
+- (NSUInteger) lineBreakBeforeIndex: (NSUInteger)location
+			withinRange: (NSRange)aRange
 {
   NSString *str = [self string];
   unsigned length = [str length];
@@ -604,37 +648,6 @@ static Class converter_class(NSString *format, BOOL producer)
     }
 }
 
-- (id) initWithPath: (NSString *)path
- documentAttributes: (NSDictionary **)dict
-{
-  // FIXME: This expects the file to be RTFD
-  NSFileWrapper *fw;
-
-  if (path == nil)
-    {
-      RELEASE (self);
-      return nil;
-    }
-
-  fw = [[NSFileWrapper alloc] initWithPath: path];
-  AUTORELEASE (fw);
-  
-  return [self initWithRTFDFileWrapper: fw documentAttributes: dict];
-}
-
-- (id) initWithURL: (NSURL *)url 
-documentAttributes: (NSDictionary **)dict
-{
-  NSError *error;
-  NSDictionary *options = [NSDictionary dictionaryWithObject: [url baseURL]
-                                        forKey: NSBaseURLDocumentOption];
-
-  return [self initWithURL: url
-               options: options
-               documentAttributes: dict
-               error: &error];
-}
-
 - (id) initWithRTFDFileWrapper: (NSFileWrapper *)wrapper
             documentAttributes: (NSDictionary **)dict
 {
@@ -707,6 +720,21 @@ documentAttributes: (NSDictionary **)dict
             baseURL: (NSURL *)base
  documentAttributes: (NSDictionary **)dict
 {
+  NSDictionary *options = nil;
+
+  if (base != nil)
+    options = [NSDictionary dictionaryWithObject: base
+					  forKey: NSBaseURLDocumentOption];
+
+  return [self initWithHTML: data
+		    options: options
+               documentAttributes: dict];
+}
+
+- (id) initWithHTML: (NSData *)data
+            options: (NSDictionary *)options
+ documentAttributes: (NSDictionary **)dict
+{
   if (data == nil)
     {
       RELEASE (self);
@@ -715,6 +743,169 @@ documentAttributes: (NSDictionary **)dict
 
   // FIXME: Not implemented
   return self;
+}
+
+- (id) initWithDocFormat: (NSData *)data
+      documentAttributes: (NSDictionary **)dict
+{
+  NSAttributedString *new;
+
+  if (data == nil)
+    {
+      RELEASE (self);
+      return nil;
+    }
+
+  new = [converter_class(@"DOC", NO)
+			parseData: data
+			documentAttributes: dict
+			class: [self class]];
+  // We do not return self but the newly created object
+  RELEASE (self);
+  return RETAIN (new); 
+}
+
+- (id) initWithData: (NSData *)data
+            options: (NSDictionary *)options
+ documentAttributes: (NSDictionary **)dict
+              error: (NSError **)error
+{
+  NSString *type = [options objectForKey: NSDocumentTypeDocumentOption];
+
+  if (data == nil)
+    {
+      *error = create_error(0, @"No data specified for data loading.");
+      RELEASE(self);
+      return nil;
+    }
+
+  if (type == nil)
+    {
+      // FIXME: try to determine type
+      *error = create_error(0, @"No type specified for data.");
+      RELEASE(self);
+      return nil;
+    }
+
+  if ([type isEqualToString: NSDocFormatTextDocumentType])
+    {
+      return [self initWithDocFormat: data
+                   documentAttributes: dict];
+    }
+  else if ([type isEqualToString: NSHTMLTextDocumentType]
+           || [type isEqualToString: @"public.html"]
+           || [type isEqualToString: @"html"])
+    {
+      return [self initWithHTML: data
+                   options: options
+                   documentAttributes: dict];
+    }
+  else if ([type isEqualToString: NSRTFDTextDocumentType]
+           || [type isEqualToString: @"com.apple.rtfd"]
+           || [type isEqualToString: @"rtfd"])
+    {
+      return [self initWithRTFD: data
+                   documentAttributes: dict];
+    }
+  else if ([type isEqualToString: NSRTFTextDocumentType]
+           || [type isEqualToString: @"public.rtf"]
+           || [type isEqualToString: @"rtf"])
+    {
+      return [self initWithRTF: data
+                   documentAttributes: dict];
+    }
+  else if ([type isEqualToString: NSPlainTextDocumentType]
+           || [type isEqualToString: @"public.plain-text"]
+           || [type isEqualToString: @"text"])
+    {
+      NSStringEncoding encoding = [[options objectForKey: @"CharacterEncoding"] 
+				      intValue];
+      NSDictionary *defaultAttrs = [options objectForKey: @"DefaultAttributes"];
+      NSString *str = [[NSString alloc] initWithData: data 
+                                        encoding: encoding];
+
+      self = [self initWithString: str
+                   attributes: defaultAttrs];
+      RELEASE(str);
+      return self;
+    }
+
+  *error = create_error(0, @"Could not load data.");
+  RELEASE(self);
+  return nil;
+}
+
+- (id) initWithPath: (NSString *)path
+ documentAttributes: (NSDictionary **)dict
+{
+  BOOL isDir = NO;
+
+  if (path == nil)
+    {
+      RELEASE (self);
+      return nil;
+    }
+
+  if ([[NSFileManager defaultManager]
+          fileExistsAtPath: path isDirectory: &isDir] && isDir)
+    {
+      // FIXME: This expects the file to be RTFD
+      NSFileWrapper *fw;
+
+      fw = [[NSFileWrapper alloc] initWithPath: path];
+      AUTORELEASE (fw);
+  
+      return [self initWithRTFDFileWrapper: fw documentAttributes: dict];
+    }
+  else
+   {
+     return [self initWithURL:  [NSURL fileURLWithPath: path]
+		  documentAttributes: dict];
+   }
+}
+
+- (id) initWithURL: (NSURL *)url 
+documentAttributes: (NSDictionary **)dict
+{
+  NSError *error = nil;
+  NSDictionary *options = [NSDictionary dictionaryWithObject: [url baseURL]
+                                        forKey: NSBaseURLDocumentOption];
+
+  return [self initWithURL: url
+               options: options
+               documentAttributes: dict
+               error: &error];
+}
+
+- (id) initWithURL: (NSURL *)url
+           options: (NSDictionary *)options
+documentAttributes: (NSDictionary **)dict
+             error: (NSError **)error
+{
+  NSData *data = [url resourceDataUsingCache: YES];
+
+  if (data == nil)
+    {
+      *error = create_error(0, @"Could not load data from URL.");
+      RELEASE(self);
+      return nil;
+    }
+
+  // Pass on baseURL
+  if (options == nil)
+    options = [NSDictionary dictionaryWithObject: [url baseURL]
+					  forKey: NSBaseURLDocumentOption];
+  else if ([options objectForKey: NSBaseURLDocumentOption] == nil)
+    {
+      options = AUTORELEASE([options mutableCopy]);
+      [(NSMutableDictionary*)options setObject: [url baseURL]
+                             forKey: NSBaseURLDocumentOption];
+    }
+
+  return [self initWithData: data
+               options: options
+               documentAttributes: dict
+               error: error];
 }
 
 - (NSData *) RTFFromRange: (NSRange)range
@@ -744,110 +935,6 @@ documentAttributes: (NSDictionary **)dict
 			 documentAttributes: dict];
 }
 
-- (id) initWithDocFormat: (NSData *)data
-      documentAttributes: (NSDictionary **)dict
-{
-  NSAttributedString *new;
-
-  if (data == nil)
-    {
-      RELEASE (self);
-      return nil;
-    }
-
-  new = [converter_class(@"DOC", NO)
-			parseData: data
-			documentAttributes: dict
-			class: [self class]];
-  // We do not return self but the newly created object
-  RELEASE (self);
-  return RETAIN (new); 
-}
-
-- (id) initWithHTML: (NSData *)data
-            options: (NSDictionary *)options
- documentAttributes: (NSDictionary **)dict
-{
-  NSURL *baseURL = [options objectForKey: NSBaseURLDocumentOption];
-
-  return [self initWithHTML: data
-               baseURL: baseURL
-               documentAttributes: dict];
-}
-
-- (id) initWithData: (NSData *)data
-            options: (NSDictionary *)options
- documentAttributes: (NSDictionary **)dict
-              error: (NSError **)error
-{
-  NSString *type = [options objectForKey: NSDocumentTypeDocumentOption];
-
-  if (type == nil)
-    {
-      // FIXME: try to determine type
-    }
-
-  if ([type isEqualToString: NSDocFormatTextDocumentType])
-    {
-      return [self initWithDocFormat: data
-                   documentAttributes: dict];
-    }
-  else if ([type isEqualToString: NSHTMLTextDocumentType])
-    {
-      return [self initWithHTML: data
-                   options: options
-                   documentAttributes: dict];
-    }
-  else if ([type isEqualToString: NSRTFDTextDocumentType])
-    {
-      return [self initWithRTFD: data
-                   documentAttributes: dict];
-    }
-  else if ([type isEqualToString: NSRTFTextDocumentType])
-    {
-      return [self initWithRTF: data
-                   documentAttributes: dict];
-    }
-  else if ([type isEqualToString: NSPlainTextDocumentType])
-    {
-      NSStringEncoding encoding = [[options objectForKey: @"CharacterEncoding"] 
-				      intValue];
-      NSDictionary *defaultAttrs = [options objectForKey: @"DefaultAttributes"];
-      NSString *str = [[NSString alloc] initWithData: data 
-                                        encoding: encoding];
-
-      self = [self initWithString: str
-                   attributes: defaultAttrs];
-      RELEASE(str);
-      return self;
-    }
-
-  // FIXME: Set error
-  RELEASE(self);
-  return nil;
-}
-
-- (id) initWithURL: (NSURL *)url
-           options: (NSDictionary *)options
-documentAttributes: (NSDictionary **)dict
-             error: (NSError **)error
-{
-  NSData *data = [url resourceDataUsingCache: YES];
-
-  if (data == nil)
-    {
-      // FIXME: Set error
-      RELEASE(self);
-      return nil;
-    }
-
-  // FIXME: Pass on baseURL
-  return [self initWithData: data
-               options: options
-               documentAttributes: dict
-               error: error];
-}
-
 - (NSData *) docFormatFromRange: (NSRange)range
              documentAttributes: (NSDictionary *)dict
 {
@@ -863,7 +950,7 @@ documentAttributes: (NSDictionary **)dict
 
   if (type == nil)
     {
-      // FIXME: set error
+      *error = create_error(0, @"No type specified for data.");
       return nil;
     }
 
@@ -896,6 +983,7 @@ documentAttributes: (NSDictionary **)dict
       return [[self string] dataUsingEncoding: encoding];
     }
 
+  *error = create_error(0, @"Could not create data for type.");
   return nil;
 }
 
@@ -916,15 +1004,10 @@ documentAttributes: (NSDictionary **)dict
       return AUTORELEASE(wrapper);
     }
 
-  // FIXME: Set error
-  return nil;
-}
+  if (*error == nil)
+    *error = create_error(0, @"Could not create data for type.");
 
-- (unsigned) lineBreakByHyphenatingBeforeIndex: (unsigned)location
-                                   withinRange: (NSRange)aRange
-{
-  // FIXME
-  return NSNotFound;
+  return nil;
 }
 
 - (NSRange) itemNumberInTextList: (NSTextList *)list
@@ -1476,78 +1559,19 @@ static NSMutableDictionary *cachedCSets = nil;
   documentAttributes: (NSDictionary **)documentAttributes
                error: (NSError **)error
 {
-  NSString *extension;
-  NSString *type;
+  NSAttributedString *attr;
 
-  if (![url isFileURL])
-    return NO;
-
-  extension = [[url path] pathExtension];
-  type = [[NSDocumentController sharedDocumentController] 
-	     typeFromFileExtension: extension];
-  if (type == nil)
-    return NO;
-  
-  if ([type isEqualToString: @"html"])
+  attr = [[NSAttributedString alloc] 
+                 initWithURL: url
+		     options: options
+	  documentAttributes: documentAttributes
+		       error: error];
+  if (attr != nil)
     {
-      NSData *data = [url resourceDataUsingCache: YES];
-      NSAttributedString *attr;
-      
-      attr = [[NSAttributedString alloc] 
-                 initWithHTML: data
-                 options: options
-                 documentAttributes: documentAttributes];
       [self setAttributedString: attr];
       RELEASE(attr);
-
-      return YES;
-    }
-  else if ([type isEqualToString: @"rtfd"])
-    {
-      NSData *data = [url resourceDataUsingCache: YES];
-      NSAttributedString *attr;
-      
-      attr = [[NSAttributedString alloc] 
-                 initWithRTFD: data
-                 documentAttributes: documentAttributes];
-      [self setAttributedString: attr];
-      RELEASE(attr);
-
-      return YES;
-    }
-  else if ([type isEqualToString: @"rtf"])
-    {
-      NSData *data = [url resourceDataUsingCache: YES];
-      NSAttributedString *attr;
-      
-      attr = [[NSAttributedString alloc] 
-                 initWithRTF: data
-                 documentAttributes: documentAttributes];
-      [self setAttributedString: attr];
-      RELEASE(attr);
-
-      return YES;
-    }
-  else if ([type isEqualToString: @"text"])
-    {
-      NSData *data = [url resourceDataUsingCache: YES];
-      NSStringEncoding encoding = [[options objectForKey: @"CharacterEncoding"] 
-				      intValue];
-      NSDictionary *defaultAttrs = [options objectForKey: @"DefaultAttributes"];
-      NSString *str = [[NSString alloc] initWithData: data 
-					encoding: encoding];
-      NSAttributedString *attr;
-
-      attr = [[NSAttributedString alloc] 
-                 initWithString: str
-                 attributes: defaultAttrs];
-      RELEASE(str);
-      [self setAttributedString: attr];
-      RELEASE(attr);
-
       return YES; 
     }
-  // FIXME This should also support all converter bundles
 
   return NO;
 }

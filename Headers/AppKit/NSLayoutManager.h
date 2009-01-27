@@ -181,6 +181,11 @@ GNUstep extension.
 
 /* TODO: underline */
 
+- (NSSize) attachmentSizeForGlyphAtIndex: (NSUInteger)glyphIndex;
+- (void) showAttachmentCell: (NSCell *)cell
+                     inRect: (NSRect)rect
+             characterIndex: (NSUInteger)attachmentIndex;
+
 @end
 
 @interface NSLayoutManager (temporaryattributes)
