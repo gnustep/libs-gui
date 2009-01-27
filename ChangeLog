@@ -1,3 +1,11 @@
+2009-01-27 15:28-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibLoading.m: Temporarily comment out the release of 
+	connections until we find the cause of some current crashes.  This
+	will be reverted ASAP.
+	* Source/NSDrawer.m: Don't slide the window out, just appear where it
+	needs to be.
+
 2009-01-27 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSAttributedString.h: Add missing MacOSX methods.

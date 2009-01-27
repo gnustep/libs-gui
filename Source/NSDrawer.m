@@ -202,7 +202,7 @@ static NSNotificationCenter *nc = nil;
 
 - (void) startTimer
 {
-  NSTimeInterval time = 3.0;
+  NSTimeInterval time = 0.1;
   _timer = [NSTimer scheduledTimerWithTimeInterval: time
 		    target: self
 		    selector: @selector(_timedWindowReset)
@@ -237,14 +237,14 @@ static NSNotificationCenter *nc = nil;
 {
   [self orderFront: self];
   [self slide];
-  // [self startTimer];
+  [self startTimer];
 }
 
 - (void) closeOnEdge
 {
   NSRect frame = [self frameFromParentWindowFrame];
 
-  //  [self stopTimer];
+  [self stopTimer];
   [self slide];
   [self setFrame: frame display: YES];
   [self orderOut: self];
@@ -260,56 +260,28 @@ static NSNotificationCenter *nc = nil;
 - (void) slide
 {
   NSRect frame = [self frame];
-  float i;
   NSRectEdge edge = [_drawer preferredEdge];
   NSSize size = [_drawer maxContentSize];
-  float factor = 1.0;
-
-  // if it's open, then slide it closed.
-  if ([_drawer state] == NSDrawerClosingState)
-    {
-      factor = -factor;
-    }
-  else if ([_drawer state] == NSDrawerOpeningState)
-    {
-      factor = 1.0;
-    }
 
   if (edge == NSMinXEdge) // left
     {
-      // slide left...
-      for (i = 0; i < size.width; i++)
-	{
-	  frame.origin.x -= factor;
-	  [self setFrame: frame display: YES];
-	}
+      frame.origin.x -= size.width;
+      [self setFrame: frame display: YES];
     }
   else if (edge == NSMinYEdge) // bottom
     {
-      // slide down...
-      for (i = 0; i < size.height; i++)
-	{
-	  frame.origin.y -= factor;
-	  [self setFrame: frame display: YES];
-	}
+      frame.origin.y -= size.height;
+      [self setFrame: frame display: YES];      
     }
   else if (edge == NSMaxXEdge) // right
     {
-      // slide right...
-      for (i = 0; i < size.width; i++)
-	{
-	  frame.origin.x += factor;
-	  [self setFrame: frame display: YES];
-	}
+      frame.origin.x += size.width;
+      [self setFrame: frame display: YES];
     }
   else if (edge == NSMaxYEdge) // top
     {
-      // slide up...
-      for (i = 0; i < size.height; i++)
-	{
-	  frame.origin.y += factor;
-	  [self setFrame: frame display: YES];
-	}
+      frame.origin.y += size.height;
+      [self setFrame: frame display: YES];
     }
 }
 
