@@ -5336,5 +5336,7 @@ NSArray* GSAllWindows(void)
 
 NSWindow* GSWindowWithNumber(int num)
 {
-  return (NSWindow*)NSMapGet(windowmaps, (void*)(intptr_t)num);
+  if (windowmaps)
+    return (NSWindow*)NSMapGet(windowmaps, (void*)(intptr_t)num);
+  return nil;
 }
