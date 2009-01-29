@@ -828,7 +828,10 @@ static NSImage *_pbc_image[5];
       onScreen: [cvWin screen]
       preferredEdge: _pbcFlags.preferredEdge
       popUpSelectedItem: selectedItem];
-  
+
+  // Set to be above the main window
+  [cvWin addChildWindow: [mr window] ordered: NSWindowAbove];
+
   // Last, display the window
   [[mr window] orderFrontRegardless];
 
@@ -844,11 +847,17 @@ static NSImage *_pbc_image[5];
 - (void) dismissPopUp
 {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  NSMenuView *mr = [_menu menuRepresentation];
+  NSWindow *mWin;
 
   [nc removeObserver: self
       name: NSMenuDidSendActionNotification
       object: _menu];
   [_menu close];
+
+  // remove from main window
+  mWin = [mr window];
+  [[mWin parentWindow] removeChildWindow: mWin];
 }
 
 /* Private method handles all cases after doing a selection from 

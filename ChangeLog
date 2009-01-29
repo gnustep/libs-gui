@@ -1,3 +1,14 @@
+2009-01-29 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h
+	(-setPartentWindow:forChildWindow:),
+	* Source/GSDisplayServer.m (-setPartentWindow:forChildWindow:):
+	New method.
+	* Source/NSWindow.m (-setParentWindow:, -_initBackendWindow): Use
+	this new method.
+	* Source/NSPopUpButtonCell.m (-attachPopUpWithFrame:inView:,
+	-dismissPopUp):  Use child window mechanism for the popup menu.
+
 2009-01-28 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWindow.m (GSWindowWithNumber): Protect agains

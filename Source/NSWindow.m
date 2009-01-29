@@ -856,6 +856,9 @@ many times.
                     : _styleMask
                     : [_screen screenNumber]];
   [srv setwindowlevel: [self level] : _windowNum];
+  if (_parent != nil)
+    [srv setPartentWindow: [_parent windowNumber] 
+         forChildWindow: _windowNum];
 
   // Set up context
   [self _startBackendWindow];
@@ -4741,8 +4744,13 @@ current key view.<br />
 
 - (void) setParentWindow: (NSWindow *)window
 {
-  // FIXME
   _parent = window;  
+
+  if (_windowNum)
+    {
+      [GSServerForWindow(self) setPartentWindow: [_parent windowNumber] 
+                        forChildWindow: _windowNum];
+    }
 }
 
 - (BOOL) allowsToolTipsWhenApplicationIsInactive
