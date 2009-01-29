@@ -1,5 +1,10 @@
 2009-01-29 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSParagraphStyle.m: Fix all copying code to handle
+	textBlocks and textLists correctly.
+
+2009-01-29 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/Additions/GNUstepGUI/GSDisplayServer.h
 	(-setPartentWindow:forChildWindow:),
 	* Source/GSDisplayServer.m (-setPartentWindow:forChildWindow:):

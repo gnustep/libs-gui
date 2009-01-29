@@ -449,7 +449,8 @@ static NSParagraphStyle	*defaultStyle = nil;
       NSParagraphStyle	*c;
 
       c = (NSParagraphStyle*)NSCopyObject (self, 0, aZone);
-      c->_tabStops = [_tabStops mutableCopyWithZone: aZone];
+      c->_textBlocks = [_textBlocks mutableCopyWithZone: aZone];
+      c->_textLists = [_textLists mutableCopyWithZone: aZone];
       return c;
     }
 }
@@ -781,6 +782,9 @@ static NSParagraphStyle	*defaultStyle = nil;
   [_tabStops removeAllObjects];
   [_tabStops addObjectsFromArray: p->_tabStops];
 
+  [self setTextBlocks: [p textBlocks]];
+  [self setTextLists: [p textLists]];
+
   _alignment = p->_alignment;
   _firstLineHeadIndent = p->_firstLineHeadIndent;
   _headIndent = p->_headIndent;
@@ -808,7 +812,9 @@ static NSParagraphStyle	*defaultStyle = nil;
   c->isa = [NSParagraphStyle class];
   GSDebugAllocationAdd(c->isa, c);
   c->_tabStops = [_tabStops mutableCopyWithZone: aZone];
-  return c;
+  c->_textBlocks = [_textBlocks mutableCopyWithZone: aZone];
+  c->_textLists = [_textLists mutableCopyWithZone: aZone];
+   return c;
 }
 
 @end
