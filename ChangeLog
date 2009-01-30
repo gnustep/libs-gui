@@ -1,3 +1,14 @@
+2009-01-30 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSApplication.m: Try to get behavior to match MacOS-X
+	by moving call to -updateWindows to be done before getting the
+	next event.  Updating is done only if it was flagged as needing
+	to be done since the last update, but if we are in NSDefaultRunLoopMode
+	or NSModalRunLoopMode we automatically set the flag before handling
+	each event ... so unless the application explicitly turns it off,
+	it's always done in these modes.
+	Should fix #25384
+
 2009-01-29 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSParagraphStyle.m: Fix all copying code to handle

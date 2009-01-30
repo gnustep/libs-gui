@@ -579,9 +579,9 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
       while (!done)
 	{
 	  theEvent = [NSApp nextEventMatchingMask: eventMask
-					 untilDate: theDistantFuture
-					    inMode: NSEventTrackingRunLoopMode
-					   dequeue: YES];
+					untilDate: theDistantFuture
+					   inMode: NSEventTrackingRunLoopMode
+					  dequeue: YES];
 	
 	  switch ([theEvent type])
 	    {
@@ -1427,12 +1427,6 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 	    }
 	}
 
-      // send an update message to all visible windows
-      if (_windows_need_update)
-	{
-	  [self updateWindows];
-	}
-
       DESTROY (_runLoopPool);
     }
 
@@ -1721,10 +1715,6 @@ See Also: -runModalForWindow:
 	    {
 	      [self stopModal];
 	    }
-	  if (_windows_need_update)
-	    {
-	      [self updateWindows];
-	    }
 	}
       RELEASE (pool);
     }
@@ -1963,6 +1953,10 @@ See -runModalForWindow:
 {
   NSEvent	*event;
 
+  if (_windows_need_update)
+    {
+      [self updateWindows];
+    }
   if (!expiration)
     expiration = [NSDate distantFuture];
 
@@ -1980,6 +1974,7 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
        */
       if (mode != NSEventTrackingRunLoopMode && event != null_event)
 	{
+	  _windows_need_update = YES;
 	  if ([NSCursor isHiddenUntilMouseMoves])
 	    {
 	      NSEventType type = [event type];
@@ -2434,6 +2429,9 @@ image.</p><p>See Also: -applicationIconImage</p>
  * Set whether the main run loop will request all visible windows update
  * themselves after the current or next event is processed.  (Update occurs
  * after event dispatch in the loop.)
+ * This is needed when in NSEventTrackingRunLoopMode.  When the application
+ * is using NSDefaultRunLoopMode or NSModalRunLoopMode windows are updated
+ * after each loop iteration irrespective of this setting.
  */
 - (void) setWindowsNeedUpdate: (BOOL)flag
 {
@@ -2442,8 +2440,9 @@ image.</p><p>See Also: -applicationIconImage</p>
 
 /**
  * Sends each of the app's visible windows an [NSWindow-update] message.
- * This method is called once per iteration of the main run loop managed
- * by -run .
+ * This method is called automatically for every iteration of the run loop
+ * in NSDefaultRunLoopMode or NSModalRunLoopMode, but is only called during
+ * NSEventTrackingRunLoopMode if -setWindowsNeedUpdate: is set to YES.
  */
 - (void) updateWindows
 {
