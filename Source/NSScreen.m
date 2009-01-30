@@ -72,7 +72,7 @@ static NSMutableArray *screenArray = nil;
 
 + (void) resetScreens
 {
-  screenArray = nil;
+  DESTROY(screenArray);
 }
 
 /**
@@ -260,49 +260,54 @@ static NSMutableArray *screenArray = nil;
  */
 - (NSDictionary*) deviceDescription
 {
-  NSMutableDictionary	*devDesc;
-  int			bps = 0;
-  NSSize		screenResolution;
-  NSString		*colorSpaceName = nil;
-  GSDisplayServer *srv;
-
-  /*
-   * This method generates a dictionary from the
-   * information we have gathered from the screen.
-   */
-
-  // Set the screen number in the current object.
-  devDesc = [NSMutableDictionary dictionary];
-  [devDesc setObject: [NSNumber numberWithInt: _screenNumber]
-	      forKey: @"NSScreenNumber"];
-
-  // This is assumed since we are in NSScreen.
-  [devDesc setObject: @"YES"  forKey: NSDeviceIsScreen];
-
-  // Add the NSDeviceSize dictionary item
-  [devDesc setObject: [NSValue valueWithSize: _frame.size]
-	      forKey: NSDeviceSize];
-
-  // Add the NSDeviceResolution dictionary item
-  srv = GSCurrentServer();
-  if (srv != nil)
+  if (_reserved == 0)
     {
-      screenResolution = [srv resolutionForScreen: _screenNumber];
-      [devDesc setObject: [NSValue valueWithSize: screenResolution]
-               forKey: NSDeviceResolution];
+      NSMutableDictionary	*devDesc;
+      int			bps = 0;
+      NSSize			screenResolution;
+      NSString			*colorSpaceName = nil;
+      GSDisplayServer		*srv;
+
+      /*
+       * This method generates a dictionary from the
+       * information we have gathered from the screen.
+       */
+
+      // Set the screen number in the current object.
+      devDesc = [[NSMutableDictionary alloc] initWithCapacity: 8];
+      [devDesc setObject: [NSNumber numberWithInt: _screenNumber]
+		  forKey: @"NSScreenNumber"];
+
+      // This is assumed since we are in NSScreen.
+      [devDesc setObject: @"YES"  forKey: NSDeviceIsScreen];
+
+      // Add the NSDeviceSize dictionary item
+      [devDesc setObject: [NSValue valueWithSize: _frame.size]
+		  forKey: NSDeviceSize];
+
+      // Add the NSDeviceResolution dictionary item
+      srv = GSCurrentServer();
+      if (srv != nil)
+	{
+	  screenResolution = [srv resolutionForScreen: _screenNumber];
+	  [devDesc setObject: [NSValue valueWithSize: screenResolution]
+		      forKey: NSDeviceResolution];
+	}
+
+      // Add the bits per sample entry
+      bps = NSBitsPerSampleFromDepth(_depth);
+      [devDesc setObject: [NSNumber numberWithInt: bps]
+		  forKey: NSDeviceBitsPerSample];
+
+      // Add the color space entry.
+      colorSpaceName = NSColorSpaceFromDepth(_depth);
+      [devDesc setObject: colorSpaceName
+		  forKey: NSDeviceColorSpaceName];
+		    
+      _reserved = (void*)[devDesc copy];
+      RELEASE(devDesc);
     }
-
-  // Add the bits per sample entry
-  bps = NSBitsPerSampleFromDepth(_depth);
-  [devDesc setObject: [NSNumber numberWithInt: bps]
-	      forKey: NSDeviceBitsPerSample];
-
-  // Add the color space entry.
-  colorSpaceName = NSColorSpaceFromDepth(_depth);
-  [devDesc setObject: colorSpaceName
-	      forKey: NSDeviceColorSpaceName];
-		
-  return [NSDictionary dictionaryWithDictionary: devDesc];
+  return (NSDictionary*)_reserved;
 }
 
 // Mac OS X methods
@@ -393,7 +398,10 @@ static NSMutableArray *screenArray = nil;
     {
       NSZoneFree(NSDefaultMallocZone(), _supportedWindowDepths);
     }
-
+  if (_reserved != 0)
+    {
+      [(id)_reserved release];
+    }
   [super dealloc];
 }
 

@@ -476,6 +476,28 @@
   unsigned		count;
   float			y;
 
+  if (rect.size.width <= 0.0)
+    [NSException raise: NSInvalidArgumentException
+		format: @"[%@-%@] rect width is not positive",
+      NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
+  if (rect.size.height <= 0.0)
+    [NSException raise: NSInvalidArgumentException
+		format: @"[%@-%@] rect height is not positive",
+      NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
+  if (source.size.width <= 0.0)
+    [NSException raise: NSInvalidArgumentException
+		format: @"[%@-%@] source width is not positive",
+      NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
+  if (source.size.height <= 0.0)
+    [NSException raise: NSInvalidArgumentException
+		format: @"[%@-%@] source height is not positive",
+      NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
+  if (image == nil)
+    [NSException raise: NSInvalidArgumentException
+		format: @"[%@-%@] image is nil",
+      NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
+
+  ctxt = GSCurrentContext();
   DPSgsave (ctxt);
   path = [NSBezierPath bezierPathWithRect: rect];
   [path addClip];
@@ -500,7 +522,7 @@ withRepeatedImage: (NSImage*)image
 	 fromRect: (NSRect)source
 	   center: (BOOL)center
 {
-  NSGraphicsContext	*ctxt = GSCurrentContext ();
+  NSGraphicsContext	*ctxt;
   NSBezierPath		*path;
   NSSize		size;
   unsigned		xrepetitions;
@@ -508,6 +530,28 @@ withRepeatedImage: (NSImage*)image
   unsigned		x;
   unsigned		y;
 
+  if (rect.size.width <= 0.0)
+    [NSException raise: NSInvalidArgumentException
+		format: @"[%@-%@] rect width is not positive",
+      NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
+  if (rect.size.height <= 0.0)
+    [NSException raise: NSInvalidArgumentException
+		format: @"[%@-%@] rect height is not positive",
+      NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
+  if (source.size.width <= 0.0)
+    [NSException raise: NSInvalidArgumentException
+		format: @"[%@-%@] source width is not positive",
+      NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
+  if (source.size.height <= 0.0)
+    [NSException raise: NSInvalidArgumentException
+		format: @"[%@-%@] source height is not positive",
+      NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
+  if (image == nil)
+    [NSException raise: NSInvalidArgumentException
+		format: @"[%@-%@] image is nil",
+      NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
+
+  ctxt = GSCurrentContext ();
   DPSgsave (ctxt);
   path = [NSBezierPath bezierPathWithRect: rect];
   [path addClip];
@@ -545,8 +589,22 @@ withRepeatedImage: (NSImage*)image
   NSSize		bls = tiles->rects[TileBL].size;
   NSSize		bms = tiles->rects[TileBM].size;
   NSSize		brs = tiles->rects[TileBR].size;
+  NSSize		tsz;
   NSRect		inFill;
   BOOL			flipped = [[ctxt focusView] isFlipped];
+
+  if (rect.size.width <= 0.0)
+    [NSException raise: NSInvalidArgumentException
+		format: @"[%@-%@] rect width is not positive",
+      NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
+  if (rect.size.height <= 0.0)
+    [NSException raise: NSInvalidArgumentException
+		format: @"[%@-%@] rect height is not positive",
+      NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
+  if (tiles == nil)
+    [NSException raise: NSInvalidArgumentException
+		format: @"[%@-%@] tiles is nil",
+      NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
 
   if (color == nil)
     {
@@ -557,6 +615,19 @@ withRepeatedImage: (NSImage*)image
       [color set];
     }
   NSRectFill(rect);
+
+  tsz.width = tiles->rects[TileTL].size.width
+    + tiles->rects[TileTR].size.width;
+  if (tiles->images[TileTM] == nil)
+    {
+      tsz.width += tiles->rects[TileTM].size.width;
+    }
+  tsz.height = tiles->rects[TileTL].size.height
+    + tiles->rects[TileBL].size.height;
+  if (tiles->images[TileCL] == nil)
+    {
+      tsz.height += tiles->rects[TileCL].size.height;
+    }
 
   if (style == GSThemeFillStyleMatrix)
     {
@@ -569,31 +640,21 @@ withRepeatedImage: (NSImage*)image
       inFill = NSZeroRect;
       if (tiles->images[TileTM] == nil)
         {
-	  grid.size.width = (tiles->rects[TileTL].size.width
-	    + tiles->rects[TileTR].size.width
-	    + space * 3.0);
+	  grid.size.width = tsz.width + space * 3.0;
 	}
       else
         {
-	  grid.size.width = (tiles->rects[TileTL].size.width
-	    + tiles->rects[TileTM].size.width
-	    + tiles->rects[TileTR].size.width
-	    + space * 4.0);
+	  grid.size.width = tsz.width + space * 4.0;
 	}
       scale = floor(rect.size.width / grid.size.width);
 
       if (tiles->images[TileCL] == nil)
         {
-	  grid.size.height = (tiles->rects[TileTL].size.height
-	    + tiles->rects[TileBL].size.height
-	    + space * 3.0);
+	  grid.size.height = tsz.height + space * 3.0;
 	}
       else
         {
-	  grid.size.height = (tiles->rects[TileTL].size.height
-	    + tiles->rects[TileCL].size.height
-	    + tiles->rects[TileBL].size.height
-	    + space * 4.0);
+	  grid.size.height = tsz.height + space * 4.0;
 	}
       if ((rect.size.height / grid.size.height) < scale)
         {
@@ -717,64 +778,71 @@ withRepeatedImage: (NSImage*)image
     }
   else if (flipped)
     {
-      [self fillHorizontalRect:
-	NSMakeRect (rect.origin.x + bls.width,
-	  rect.origin.y + rect.size.height - bms.height,
-	  rect.size.width - bls.width - brs.width,
-	  bms.height)
-	withImage: tiles->images[TileBM]
-	fromRect: tiles->rects[TileBM]
-	flipped: YES];
-      [self fillHorizontalRect:
-	NSMakeRect (rect.origin.x + tls.width,
-	  rect.origin.y,
-	  rect.size.width - tls.width - trs.width,
-	  tms.height)
-	withImage: tiles->images[TileTM]
-	fromRect: tiles->rects[TileTM]
-	flipped: YES];
-      [self fillVerticalRect:
-	NSMakeRect (rect.origin.x,
-	  rect.origin.y + bls.height,
-	  cls.width,
-	  rect.size.height - bls.height - tls.height)
-	withImage: tiles->images[TileCL]
-	fromRect: tiles->rects[TileCL]
-	flipped: NO];
-      [self fillVerticalRect:
-	NSMakeRect (rect.origin.x + rect.size.width - crs.width,
-	  rect.origin.y + brs.height,
-	  crs.width,
-	  rect.size.height - brs.height - trs.height)
-	withImage: tiles->images[TileCR]
-	fromRect: tiles->rects[TileCR]
-	flipped: NO];
+      if (tsz.width <= rect.size.width && tsz.height <= rect.size.height)
+	{
+	  [self fillHorizontalRect:
+	    NSMakeRect (rect.origin.x + bls.width,
+	      rect.origin.y + rect.size.height - bms.height,
+	      rect.size.width - bls.width - brs.width,
+	      bms.height)
+	    withImage: tiles->images[TileBM]
+	    fromRect: tiles->rects[TileBM]
+	    flipped: YES];
+	  [self fillHorizontalRect:
+	    NSMakeRect (rect.origin.x + tls.width,
+	      rect.origin.y,
+	      rect.size.width - tls.width - trs.width,
+	      tms.height)
+	    withImage: tiles->images[TileTM]
+	    fromRect: tiles->rects[TileTM]
+	    flipped: YES];
+	  [self fillVerticalRect:
+	    NSMakeRect (rect.origin.x,
+	      rect.origin.y + bls.height,
+	      cls.width,
+	      rect.size.height - bls.height - tls.height)
+	    withImage: tiles->images[TileCL]
+	    fromRect: tiles->rects[TileCL]
+	    flipped: NO];
+	  [self fillVerticalRect:
+	    NSMakeRect (rect.origin.x + rect.size.width - crs.width,
+	      rect.origin.y + brs.height,
+	      crs.width,
+	      rect.size.height - brs.height - trs.height)
+	    withImage: tiles->images[TileCR]
+	    fromRect: tiles->rects[TileCR]
+	    flipped: NO];
 
-      [tiles->images[TileTL] compositeToPoint:
-	NSMakePoint (rect.origin.x,
-	  rect.origin.y)
-	fromRect: tiles->rects[TileTL]
-	operation: NSCompositeSourceOver];
-      [tiles->images[TileTR] compositeToPoint:
-	NSMakePoint (rect.origin.x + rect.size.width - tls.width,
-	rect.origin.y)
-	fromRect: tiles->rects[TileTR]
-	operation: NSCompositeSourceOver];
-      [tiles->images[TileBL] compositeToPoint:
-	NSMakePoint (rect.origin.x,
-	  rect.origin.y + rect.size.height - tls.height)
-	fromRect: tiles->rects[TileBL]
-	operation: NSCompositeSourceOver];
-      [tiles->images[TileBR] compositeToPoint:
-	NSMakePoint (rect.origin.x + rect.size.width - brs.width,
-	  rect.origin.y + rect.size.height - tls.height)
-	fromRect: tiles->rects[TileBR]
-	operation: NSCompositeSourceOver];
+	  [tiles->images[TileTL] compositeToPoint:
+	    NSMakePoint (rect.origin.x,
+	      rect.origin.y)
+	    fromRect: tiles->rects[TileTL]
+	    operation: NSCompositeSourceOver];
+	  [tiles->images[TileTR] compositeToPoint:
+	    NSMakePoint (rect.origin.x + rect.size.width - tls.width,
+	    rect.origin.y)
+	    fromRect: tiles->rects[TileTR]
+	    operation: NSCompositeSourceOver];
+	  [tiles->images[TileBL] compositeToPoint:
+	    NSMakePoint (rect.origin.x,
+	      rect.origin.y + rect.size.height - tls.height)
+	    fromRect: tiles->rects[TileBL]
+	    operation: NSCompositeSourceOver];
+	  [tiles->images[TileBR] compositeToPoint:
+	    NSMakePoint (rect.origin.x + rect.size.width - brs.width,
+	      rect.origin.y + rect.size.height - tls.height)
+	    fromRect: tiles->rects[TileBR]
+	    operation: NSCompositeSourceOver];
 
-      inFill = NSMakeRect (rect.origin.x + cls.width,
-	rect.origin.y + bms.height,
-	rect.size.width - cls.width - crs.width,
-	rect.size.height - bms.height - tms.height);
+	  inFill = NSMakeRect (rect.origin.x + cls.width,
+	    rect.origin.y + bms.height,
+	    rect.size.width - cls.width - crs.width,
+	    rect.size.height - bms.height - tms.height);
+	}
+      else
+	{
+	  inFill = rect;
+	}
       if (style == GSThemeFillStyleCenter)
 	{
 	  NSRect	r = tiles->rects[TileCM];
@@ -794,6 +862,8 @@ withRepeatedImage: (NSImage*)image
 	    withRepeatedImage: tiles->images[TileCM]
 	    fromRect: tiles->rects[TileCM]
 	    center: NO];
+	  NSLog(@"rect %@ too small fire tiles %@",
+	    NSStringFromSize(rect.size), NSStringFromSize(tsz));
 	}
       else if (style == GSThemeFillStyleScale)
 	{
@@ -822,73 +892,81 @@ withRepeatedImage: (NSImage*)image
     }
   else
     {
-      [self fillHorizontalRect:
-	NSMakeRect(
-	  rect.origin.x + tls.width,
-	  rect.origin.y + rect.size.height - tms.height,
-	  rect.size.width - bls.width - brs.width,
-	  tms.height)
-	withImage: tiles->images[TileTM]
-	fromRect: tiles->rects[TileTM]
-	flipped: NO];
-      [self fillHorizontalRect:
-	NSMakeRect(
-	  rect.origin.x + bls.width,
-	  rect.origin.y,
-	  rect.size.width - bls.width - brs.width,
-	  bms.height)
-	withImage: tiles->images[TileBM]
-	fromRect: tiles->rects[TileBM]
-	flipped: NO];
-      [self fillVerticalRect:
-	NSMakeRect(
-	  rect.origin.x,
-	  rect.origin.y + bls.height,
-	  cls.width,
-	  rect.size.height - tls.height - bls.height)
-	withImage: tiles->images[TileCL]
-	fromRect: tiles->rects[TileCL]
-	flipped: NO];
-      [self fillVerticalRect:
-	NSMakeRect(
-	  rect.origin.x + rect.size.width - crs.width,
-	  rect.origin.y + brs.height,
-	  crs.width,
-	  rect.size.height - trs.height - brs.height)
-	withImage: tiles->images[TileCR]
-	fromRect: tiles->rects[TileCR]
-	flipped: NO];
+      if (tsz.width <= rect.size.width && tsz.height <= rect.size.height)
+	{
+	  [self fillHorizontalRect:
+	    NSMakeRect(
+	      rect.origin.x + tls.width,
+	      rect.origin.y + rect.size.height - tms.height,
+	      rect.size.width - bls.width - brs.width,
+	      tms.height)
+	    withImage: tiles->images[TileTM]
+	    fromRect: tiles->rects[TileTM]
+	    flipped: NO];
+	  [self fillHorizontalRect:
+	    NSMakeRect(
+	      rect.origin.x + bls.width,
+	      rect.origin.y,
+	      rect.size.width - bls.width - brs.width,
+	      bms.height)
+	    withImage: tiles->images[TileBM]
+	    fromRect: tiles->rects[TileBM]
+	    flipped: NO];
+	  [self fillVerticalRect:
+	    NSMakeRect(
+	      rect.origin.x,
+	      rect.origin.y + bls.height,
+	      cls.width,
+	      rect.size.height - tls.height - bls.height)
+	    withImage: tiles->images[TileCL]
+	    fromRect: tiles->rects[TileCL]
+	    flipped: NO];
+	  [self fillVerticalRect:
+	    NSMakeRect(
+	      rect.origin.x + rect.size.width - crs.width,
+	      rect.origin.y + brs.height,
+	      crs.width,
+	      rect.size.height - trs.height - brs.height)
+	    withImage: tiles->images[TileCR]
+	    fromRect: tiles->rects[TileCR]
+	    flipped: NO];
 
-      [tiles->images[TileTL] compositeToPoint:
-	NSMakePoint (
-	  rect.origin.x,
-	  rect.origin.y + rect.size.height - tls.height)
-	fromRect: tiles->rects[TileTL]
-	operation: NSCompositeSourceOver];
-      [tiles->images[TileTR] compositeToPoint:
-	NSMakePoint(
-	  rect.origin.x + rect.size.width - trs.width,
-	  rect.origin.y + rect.size.height - trs.height)
-	fromRect: tiles->rects[TileTR]
-	operation: NSCompositeSourceOver];
-      [tiles->images[TileBL] compositeToPoint:
-	NSMakePoint(
-	  rect.origin.x,
-	  rect.origin.y)
-	fromRect: tiles->rects[TileBL]
-	operation: NSCompositeSourceOver];
-      [tiles->images[TileBR] compositeToPoint:
-	NSMakePoint(
-	  rect.origin.x + rect.size.width - brs.width,
-	  rect.origin.y)
-	fromRect: tiles->rects[TileBR]
-	operation: NSCompositeSourceOver];
+	  [tiles->images[TileTL] compositeToPoint:
+	    NSMakePoint (
+	      rect.origin.x,
+	      rect.origin.y + rect.size.height - tls.height)
+	    fromRect: tiles->rects[TileTL]
+	    operation: NSCompositeSourceOver];
+	  [tiles->images[TileTR] compositeToPoint:
+	    NSMakePoint(
+	      rect.origin.x + rect.size.width - trs.width,
+	      rect.origin.y + rect.size.height - trs.height)
+	    fromRect: tiles->rects[TileTR]
+	    operation: NSCompositeSourceOver];
+	  [tiles->images[TileBL] compositeToPoint:
+	    NSMakePoint(
+	      rect.origin.x,
+	      rect.origin.y)
+	    fromRect: tiles->rects[TileBL]
+	    operation: NSCompositeSourceOver];
+	  [tiles->images[TileBR] compositeToPoint:
+	    NSMakePoint(
+	      rect.origin.x + rect.size.width - brs.width,
+	      rect.origin.y)
+	    fromRect: tiles->rects[TileBR]
+	    operation: NSCompositeSourceOver];
 
-      inFill = NSMakeRect (rect.origin.x +cls.width,
-	rect.origin.y + bms.height,
-	rect.size.width - cls.width - crs.width,
-	rect.size.height - bms.height - tms.height);
-
+	  inFill = NSMakeRect (rect.origin.x +cls.width,
+	    rect.origin.y + bms.height,
+	    rect.size.width - cls.width - crs.width,
+	    rect.size.height - bms.height - tms.height);
+	}
+      else
+	{
+	  inFill = rect;
+	  NSLog(@"rect %@ too small fire tiles %@",
+	    NSStringFromSize(rect.size), NSStringFromSize(tsz));
+	}
       if (style == GSThemeFillStyleCenter)
 	{
 	  NSRect	r = tiles->rects[TileCM];
@@ -941,12 +1019,33 @@ withRepeatedImage: (NSImage*)image
 		 fromRect: (NSRect)source
 		  flipped: (BOOL)flipped
 {
-  NSGraphicsContext	*ctxt = GSCurrentContext();
+  NSGraphicsContext	*ctxt;
   NSBezierPath		*path;
   unsigned		repetitions;
   unsigned		count;
   NSPoint		p;
 
+  if (rect.size.width <= 0.0)
+    [NSException raise: NSInvalidArgumentException
+		format: @"[%@-%@] rect width is not positive",
+      NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
+  if (rect.size.height <= 0.0)
+    [NSException raise: NSInvalidArgumentException
+		format: @"[%@-%@] rect height is not positive",
+      NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
+  if (source.size.width <= 0.0)
+    [NSException raise: NSInvalidArgumentException
+		format: @"[%@-%@] source width is not positive",
+      NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
+  if (source.size.height <= 0.0)
+    [NSException raise: NSInvalidArgumentException
+		format: @"[%@-%@] source height is not positive",
+      NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
+  if (image == nil)
+    [NSException raise: NSInvalidArgumentException
+		format: @"[%@-%@] image is nil",
+      NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
+  ctxt = GSCurrentContext();
   DPSgsave (ctxt);
   path = [NSBezierPath bezierPathWithRect: rect];
   [path addClip];

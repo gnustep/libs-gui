@@ -1,5 +1,18 @@
 2009-01-30 Richard Frith-Macdonald <rfm@gnu.org>
 
+	* Source/GSThemeTools.m: Add checks to prevent problems in the case
+	where the control being drawn is actually smaller than the tiles used.
+	* Headers/AppKit/NSScreen.h:
+	* Source/NSScreen.m: Cache device description dictionary ... when
+	debugging the problem with theme tools (which caused a loop to
+	repeatedly composite the tile image instead of doing it once), I
+	noticed that almost every time I stopped the app in gdb, it was in
+	the process of creating a device description, strongly suggesting
+	that this is actually quite a time consuming part of drawing
+	images.
+
+2009-01-30 Richard Frith-Macdonald <rfm@gnu.org>
+
 	* Source/NSApplication.m: Try to get behavior to match MacOS-X
 	by moving call to -updateWindows to be done before getting the
 	next event.  Updating is done only if it was flagged as needing

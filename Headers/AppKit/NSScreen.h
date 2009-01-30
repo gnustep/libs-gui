@@ -47,7 +47,8 @@
   NSWindowDepth        _depth;
   NSRect               _frame;
   int                  _screenNumber;
-  NSWindowDepth       *_supportedWindowDepths;
+  NSWindowDepth		*_supportedWindowDepths;
+  void			*_reserved;
 }
 
 /*
@@ -56,7 +57,7 @@
 + (NSScreen*) mainScreen;
 + (NSScreen*) deepestScreen;
 + (NSArray*) screens;
-+ (void)resetScreens;
++ (void) resetScreens;
 
 /*
  * Reading Screen Information
