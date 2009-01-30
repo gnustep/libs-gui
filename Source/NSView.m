@@ -3299,9 +3299,12 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       m = (GSTrackingRect*)[_tracking_rects objectAtIndex: i];
       if ([m tag] == tag)
 	{
+	  [m invalidate];
 	  [_tracking_rects removeObjectAtIndex: i];
 	  if ([_tracking_rects count] == 0)
-	    _rFlags.has_trkrects = 0;
+	    {
+	      _rFlags.has_trkrects = 0;
+	    }
 	  return;
 	}
     }

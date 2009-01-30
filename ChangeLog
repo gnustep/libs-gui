@@ -7,7 +7,10 @@
 	or NSModalRunLoopMode we automatically set the flag before handling
 	each event ... so unless the application explicitly turns it off,
 	it's always done in these modes.
-	Should fix #25384
+	Might fix #25384
+	* Source/NSView.m: Invalidate tracking rects when they are removed
+	from the view.
+	Might fix #25385
 
 2009-01-29 Fred Kiefer <FredKiefer@gmx.de>
 

@@ -340,6 +340,7 @@ static BOOL		restoreMouseMoved;
       if (rect->owner == self)
         {
 	  RELEASE((GSTTProvider*)rect->user_data);
+	  rect->user_data = 0;
           [view removeTrackingRect: rect->tag];
 	}
     }
@@ -357,6 +358,7 @@ static BOOL		restoreMouseMoved;
       if (rect->tag == tag && rect->owner == self)
 	{
 	  RELEASE((GSTTProvider*)rect->user_data);
+	  rect->user_data = 0;
 	  [view removeTrackingRect: tag];
 	}
     }
