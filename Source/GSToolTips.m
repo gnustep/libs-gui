@@ -73,17 +73,33 @@
 }
 - (void) dealloc
 {
+  [self setObject: nil];
+  [super dealloc];
+}
+- (id) initWithObject: (id)o userData: (void*)d rect: (NSRect)r
+{
+  data = d;
+  viewRect = r;
+  [self setObject: o];
+  return self;
+}
+- (id) object
+{
+  return object;
+}
+- (void) setObject: (id)o
+{
+  /* Experimentation on MacOS-X shows that the object is not retained.
+   * However, if the object does not provide a string, we must use a
+   * copy of its description ... and we have to retain that until we
+   * are done with it.
+   */
   if ([object respondsToSelector:
     @selector(view:stringForToolTip:point:userData:)] == NO)
     {
       /* Object must be a string rather than something which provides one */
       RELEASE(object);
     }
-  [super dealloc];
-}
-- (id) initWithObject: (id)o userData: (void*)d rect: (NSRect)r
-{
-  data = d;
   object = o;
   if ([object respondsToSelector:
     @selector(view:stringForToolTip:point:userData:)] == NO)
@@ -93,16 +109,6 @@
        */
       object = [[object description] copy];
     }
-  viewRect = r;
-  return self;
-}
-- (id) object
-{
-  return object;
-}
-- (void) setObject: (id)o
-{
-  object = o;
 }
 - (NSRect) viewRect
 {

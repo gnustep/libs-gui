@@ -270,14 +270,22 @@ static GSValidationCenter *vc = nil;
 
 - (void) validate
 { 
-  _validating = YES;
-  
-  // NSLog(@"vobj validate");
-  
-  [_observers makeObjectsPerformSelector: @selector(_validate:) 
-                              withObject: _window];
-  
-  _validating = NO;
+  if (_validating == NO)
+    {
+      _validating = YES;
+      NS_DURING 
+	{
+          [_observers makeObjectsPerformSelector: @selector(_validate:) 
+                                      withObject: _window];
+          _validating = NO;
+	}
+      NS_HANDLER
+	{
+          _validating = NO;
+	  NSLog(@"Problem validating toolbar: %@", localException);
+	}
+      NS_ENDHANDLER
+    }
 }
 
 - (void) mouseEntered: (NSEvent *)event
