@@ -896,8 +896,8 @@ GSCurrentServer(void)
   [self subclassResponsibility: _cmd];
 }
 
-- (void) setPartentWindow: (int)partentWin 
-           forChildWindow: (int)childWin
+- (void) setParentWindow: (int)partentWin 
+          forChildWindow: (int)childWin
 {
   [self subclassResponsibility: _cmd];
 }

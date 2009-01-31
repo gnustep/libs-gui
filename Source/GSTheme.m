@@ -92,11 +92,9 @@ static NSMapTable		*names = 0;
 typedef	struct {
   NSBundle		*bundle;
   NSColorList		*colors;
-  NSColorList		*extraColors;
+  NSColorList		*extraColors[GSThemeSelectedState+1];
   NSMutableDictionary	*images;
-  NSMutableDictionary	*normalTiles;
-  NSMutableDictionary	*highlightedTiles;
-  NSMutableDictionary	*selectedTiles;
+  NSMutableDictionary	*tiles[GSThemeSelectedState+1];
   NSMutableSet		*owned;
   NSImage		*icon;
   NSString		*name;
@@ -107,9 +105,7 @@ typedef	struct {
 #define	_colors			_internal->colors
 #define	_extraColors		_internal->extraColors
 #define	_images			_internal->images
-#define	_normalTiles		_internal->normalTiles
-#define	_highlightedTiles	_internal->highlightedTiles
-#define	_selectedTiles		_internal->selectedTiles
+#define	_tiles			_internal->tiles
 #define	_owned			_internal->owned
 #define	_icon			_internal->icon
 #define	_name			_internal->name
@@ -283,13 +279,17 @@ typedef	struct {
   NSArray		*imageTypes;
   NSDictionary		*infoDict;
   NSWindow		*window;
-
+  GSThemeControlState	state;
+  
   /* Get rid of any cached colors list so that we regenerate it when needed
    */
   [_colors release];
   _colors = nil;
-  [_extraColors release];
-  _extraColors = nil;
+  for (state = 0; state <= GSThemeSelectedState; state++)
+    {
+      [_extraColors[state] release];
+      _extraColors[state] = nil;
+    }
 
   /*
    * We step through all the bundle image resources and load them in
@@ -434,6 +434,72 @@ typedef	struct {
   return _bundle;
 }
 
+- (NSColor*) colorNamed: (NSString*)aName
+		  state: (GSThemeControlState)elementState
+	          cache: (BOOL)useCache
+{
+  NSColor	*c = nil;
+
+  NSAssert(elementState <= GSThemeSelectedState, NSInvalidArgumentException);
+
+  if (aName != nil)
+    {
+      if (useCache == NO)
+	{
+	  [_extraColors[elementState] release];
+	  _extraColors[elementState] = nil;
+	}
+      if (_extraColors[elementState] == nil)
+	{
+	  NSString	*colorsPath;
+	  NSString	*listName;
+	  NSString	*resourceName;
+
+	  /* Attempt to load color list ... if the list is not found
+	   * or the load fails, set a null marker.
+	   */
+	  switch (elementState)
+	    {
+	      case GSThemeNormalState:
+		listName = @"ThemeExtra";
+		break;
+	      case GSThemeHighlightedState:
+		listName = @"ThemeExtraHighlighted";
+		break;
+	      case GSThemeSelectedState:
+		listName = @"ThemeExtraSelected";
+		break;
+	    }
+	  resourceName = [listName stringByAppendingString: @"Colors"];
+	  colorsPath = [_bundle pathForResource: resourceName
+					 ofType: @"clr"]; 
+	  if (colorsPath != nil)
+	    {
+	      _extraColors[elementState]
+		= [[NSColorList alloc] initWithName: listName
+					   fromFile: colorsPath];
+	      /* If the list is actually empty, we get rid of it to avoid
+	       * unnecessary lookups.
+	       */
+	      if ([[_extraColors[elementState] allKeys] count] == 0)
+		{
+		  [_extraColors[elementState] release];
+		  _extraColors[elementState] = nil;
+		}
+	    }
+	  if (_extraColors[elementState] == nil)
+	    {
+	      _extraColors[elementState] = [null retain];
+	    }
+	}
+      if (_extraColors[elementState] != (id)null)
+	{
+          c = [_extraColors[elementState] colorWithKey: aName];
+	}
+    }
+  return c;
+}
+
 - (NSColorList*) colors
 {
   if (_colors == nil)
@@ -497,44 +563,22 @@ typedef	struct {
 {
   if (_reserved != 0)
     {
+      GSThemeControlState	state;
+
+      for (state = 0; state <= GSThemeSelectedState; state++)
+	{
+          RELEASE(_extraColors[state]);
+          RELEASE(_tiles[state]);
+	}
       RELEASE(_bundle);
       RELEASE(_colors);
-      RELEASE(_extraColors);
       RELEASE(_images);
-      RELEASE(_normalTiles);
-      RELEASE(_highlightedTiles);
-      RELEASE(_selectedTiles);
       RELEASE(_icon);
       [self _revokeOwnerships];
       RELEASE(_owned);
       NSZoneFree ([self zone], _reserved);
     }
   [super dealloc];
-}
-
-- (NSColorList*) extraColors
-{
-  if (_extraColors == nil)
-    {
-      NSString	*colorsPath;
-
-      colorsPath = [_bundle pathForResource: @"ThemeExtraColors"
-				     ofType: @"clr"]; 
-      if (colorsPath == nil)
-	{
-	  _extraColors = [null retain];
-	}
-      else
-	{
-	  _extraColors = [[NSColorList alloc] initWithName: @"ThemeExtra"
-					          fromFile: colorsPath];
-	}
-    }
-  if ((id)_extraColors == (id)null)
-    {
-      return nil;
-    }
-  return _extraColors;
 }
 
 - (NSImage*) icon
@@ -565,13 +609,16 @@ typedef	struct {
 
 - (id) initWithBundle: (NSBundle*)bundle
 {
+  GSThemeControlState	state;
+
   _reserved = NSZoneCalloc ([self zone], 1, sizeof(internal));
 
   ASSIGN(_bundle, bundle);
   _images = [NSMutableDictionary new];
-  _normalTiles = [NSMutableDictionary new];
-  _highlightedTiles = [NSMutableDictionary new];
-  _selectedTiles = [NSMutableDictionary new];
+  for (state = 0; state <= GSThemeSelectedState; state++)
+    {
+      _tiles[state] = [NSMutableDictionary new];
+    }
   _owned = [NSMutableSet new];
 
   ASSIGN(_name,
@@ -654,23 +701,12 @@ typedef	struct {
   GSDrawTiles		*tiles;
   NSMutableDictionary	*cache;
 
+  NSAssert(elementState <= GSThemeSelectedState, NSInvalidArgumentException);
   if (aName == nil)
     {
       return nil;
     }
-  switch (elementState)
-    {
-      case GSThemeNormalState:
-	cache = _normalTiles;
-	break;
-      case GSThemeHighlightedState:
-	cache = _highlightedTiles;
-	break;
-      case GSThemeSelectedState:
-	cache = _selectedTiles;
-	break;
-    }
-
+  cache = _tiles[elementState];
   tiles = (useCache == YES) ? [cache objectForKey: aName] : nil;
   if (tiles == nil)
     {

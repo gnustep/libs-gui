@@ -162,8 +162,8 @@ APPKIT_EXPORT NSString * GSScreenNumber;
 - (void) imagecursor: (NSPoint)hotp : (int)w : (int)h : (int)colors
 		    : (const unsigned char *) image : (void**)cid;
 - (void) setcursorcolor: (NSColor *)fg : (NSColor *)bg : (void*)cid;
-- (void) setPartentWindow: (int)partentWin 
-           forChildWindow: (int)childWin;
+- (void) setParentWindow: (int)parentWin 
+          forChildWindow: (int)childWin;
 
 @end
 

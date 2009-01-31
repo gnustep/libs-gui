@@ -187,11 +187,13 @@ typedef enum {
  * This enumeration provides constants for informing drawing methods
  * what state a control is in (and consequently how the display element
  * being drawn should be presented).
+ * NB. GSThemeNormalState must be 0 and GSThemeSelectedState must be the
+ * last state, in order to allow code to iterate through all the states.
  */
 typedef enum {
-  GSThemeNormalState,		/** A control in its normal state */
+  GSThemeNormalState = 0,	/** A control in its normal state */
   GSThemeHighlightedState,	/** A control which is highlighted */
-  GSThemeSelectedState,		/** A control which is selected */
+  GSThemeSelectedState		/** A control which is selected */
 } GSThemeControlState;
 
 /** Notification sent when a theme has just become active.<br />
@@ -317,6 +319,18 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 - (NSBundle*) bundle;
 
 /**
+ * This returns the color for drawing the item whose name is aName in
+ * the specified state.  If aName is nil or if there is no color defined
+ * for the particular combination of item name and state, the method
+ * returns nil.<br />
+ * The useCache argument controls whether the information is retrieved
+ * from cache or regenerated from information in the theme bundle.
+ */
+- (NSColor*) colorNamed: (NSString*)aName
+		  state: (GSThemeControlState)elementState
+	          cache: (BOOL)useCache; 
+
+/**
  * Returns the system color list defined by the receiver.<br />
  * The default implementation returns the color list provided in the
  * theme bundle (if any) or the default system color list.
@@ -336,15 +350,6 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * </p>
  */
 - (void) deactivate;
-
-/**
- * Returns the extra color list defined by the receiver.<br />
- * This is a set of named colors to be used for particular parts of the
- * gui which have been named by the -setName:forElement:temporary:
- * method.  The presence of a color in this list may override the default
- * system color for a control.
- */
-- (NSColorList*) extraColors;
 
 /**
  * Returns the theme's icon.

@@ -857,8 +857,8 @@ many times.
                     : [_screen screenNumber]];
   [srv setwindowlevel: [self level] : _windowNum];
   if (_parent != nil)
-    [srv setPartentWindow: [_parent windowNumber] 
-         forChildWindow: _windowNum];
+    [srv setParentWindow: [_parent windowNumber] 
+          forChildWindow: _windowNum];
 
   // Set up context
   [self _startBackendWindow];
@@ -4748,8 +4748,8 @@ current key view.<br />
 
   if (_windowNum)
     {
-      [GSServerForWindow(self) setPartentWindow: [_parent windowNumber] 
-                        forChildWindow: _windowNum];
+      [GSServerForWindow(self) setParentWindow: [_parent windowNumber] 
+				forChildWindow: _windowNum];
     }
 }
 

@@ -1,5 +1,15 @@
 2009-01-31 Richard Frith-Macdonald <rfm@gnu.org>
 
+	* Source/GSDisplayServer.m: Fix typo
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h: ditto
+	* Source/NSWindow.m: ditto
+	* Source/GSTheme.m: Make color handling more efficient
+	* Headers/Additions/GNUstepGUI/GSTheme.h: ditto
+	* Source/GSThemeDrawing.m: ditto
+	* Source/NSScrollView.m: ditto
+
+2009-01-31 Richard Frith-Macdonald <rfm@gnu.org>
+
 	* Source/GSToolTips.m: Fix retain/release problem.
 	* Source/NSToolbar.m: Add exception handler round unsafe code.
 

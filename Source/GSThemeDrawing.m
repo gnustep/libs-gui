@@ -42,7 +42,6 @@
 {
   GSDrawTiles	*tiles = nil;
   NSColor	*color = nil;
-  NSColorList	*extra = [self extraColors];
   NSString	*name = [self nameForElement: cell];
 
   if (name == nil)
@@ -50,28 +49,18 @@
       name = @"NSButton";
     }
 
-  if (state == GSThemeNormalState)
+  color = [self colorNamed: name state: state cache: YES];
+  if (color == nil)
     {
-      color = [extra colorWithKey: name];
-      if (color == nil)
+      if (state == GSThemeNormalState)
 	{
           color = [NSColor controlBackgroundColor];
 	}
-    }
-  else if (state == GSThemeHighlightedState)
-    {
-      color = [extra colorWithKey: 
-	[name stringByAppendingString: @"Highlighted"]];
-      if (color == nil)
+      else if (state == GSThemeHighlightedState)
 	{
           color = [NSColor selectedControlColor];
 	}
-    }
-  else if (state == GSThemeSelectedState)
-    {
-      color = [extra colorWithKey: 
-	[name stringByAppendingString: @"Selected"]];
-      if (color == nil)
+      else if (state == GSThemeSelectedState)
 	{
           color = [NSColor selectedControlColor];
 	}
@@ -371,7 +360,6 @@
 - (NSCell*) cellForScrollerKnobSlot: (BOOL)horizontal
 {
   NSButtonCell	*cell;
-  NSColorList	*extra = [self extraColors];
   NSColor	*color;
 
   cell = [NSButtonCell new];
@@ -380,12 +368,16 @@
 
   if (horizontal)
     {
-      color = [extra colorWithKey: GSScrollerHorizontalSlot];
+      color = [self colorNamed: GSScrollerHorizontalSlot
+			 state: GSThemeNormalState
+			 cache: YES];
       [self setName: GSScrollerHorizontalSlot forElement: cell temporary: YES];
     }
   else
     {
-      color = [extra colorWithKey: GSScrollerVerticalSlot];
+      color = [self colorNamed: GSScrollerVerticalSlot
+			 state: GSThemeNormalState
+			 cache: YES];
       [self setName: GSScrollerVerticalSlot forElement: cell temporary: YES];
     }
   if (color == nil)
