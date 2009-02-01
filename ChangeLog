@@ -1,3 +1,10 @@
+2009-02-01 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView.m (-dragSelectionWithEvent:...): Correct
+	computation of attachment cell frame.
+	* Source/NSParagraphStyle.m (NSMutableParagraphStyle
+	-setParagraphStyle:): Set only existing text blocks and text lists.
+
 2009-01-31 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSDisplayServer.m: Fix typo

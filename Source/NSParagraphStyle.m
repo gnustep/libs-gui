@@ -220,15 +220,14 @@ static NSParagraphStyle	*defaultStyle = nil;
       int		i;
 
       for (i = 0; i < 12; i++)
-	{
-	  NSTextTab	*tab;
+        {
+          NSTextTab	*tab;
 
-	  /* FIXME: (i * 1) ? */
-	  tab = [[NSTextTab alloc] initWithType: NSLeftTabStopType
-				       location: (i * 1) * 28.0];
-	  [style->_tabStops addObject: tab];
-	  RELEASE(tab);
-	}
+          tab = [[NSTextTab alloc] initWithType: NSLeftTabStopType
+                                   location: (i + 1) * 28.0];
+          [style->_tabStops addObject: tab];
+          RELEASE(tab);
+        }
       defaultStyle = style;
     }
   return defaultStyle;
@@ -782,8 +781,10 @@ static NSParagraphStyle	*defaultStyle = nil;
   [_tabStops removeAllObjects];
   [_tabStops addObjectsFromArray: p->_tabStops];
 
-  [self setTextBlocks: [p textBlocks]];
-  [self setTextLists: [p textLists]];
+  if (p->_textBlocks)
+    [self setTextBlocks: p->_textBlocks];
+  if (p->_textLists)
+    [self setTextLists: p->_textLists];
 
   _alignment = p->_alignment;
   _firstLineHeadIndent = p->_firstLineHeadIndent;
