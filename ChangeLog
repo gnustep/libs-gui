@@ -1,3 +1,8 @@
+2009-02-03 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSNibLoading.m (NSButtonImageSource -initWithCoder:): Add
+	missing retain of the named image.
+
 2009-02-03 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSTextContainer.m: Add some frame size checks.
