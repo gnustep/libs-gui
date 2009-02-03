@@ -140,7 +140,10 @@ static NSHelpPanel	*_sharedPanel = nil;
       NSTextView	*v;
       NSRect		r;
 
-      self = [super initWithContentRect: NSMakeRect(100,100,400,500)
+      /* We have a standard start size.
+       */
+      contentRect = NSMakeRect(100,100,400,500);
+      self = [super initWithContentRect: contentRect
 	styleMask: NSTitledWindowMask|NSClosableWindowMask|NSResizableWindowMask
 	backing: NSBackingStoreBuffered
 	defer: NO
@@ -164,7 +167,7 @@ static NSHelpPanel	*_sharedPanel = nil;
       [v setMaxSize: NSMakeSize (1E7, 1E7)];
       [v setAutoresizingMask: NSViewHeightSizable | NSViewWidthSizable];
       [[v textContainer] setContainerSize:
-	NSMakeSize (r.size.width, 1e7)];
+	NSMakeSize (MAX(r.size.width, 0.0), 1e7)];
       [[v textContainer] setWidthTracksTextView: YES];
 
       [s setDocumentView: v];

@@ -71,8 +71,7 @@ use bounds rectangle instead of frame? */
         }
       if (_heightTracksTextView)
         {
-          size.height = MAX(newTextViewSize.height - (inset.height * 2.0),
-                            0.0);
+          size.height = MAX(newTextViewSize.height - (inset.height * 2.0), 0.0);
         }
 
       [self setContainerSize: size];
@@ -94,6 +93,16 @@ use bounds rectangle instead of frame? */
 - (id) initWithContainerSize: (NSSize)aSize
 {
   NSDebugLLog(@"NSText", @"NSTextContainer initWithContainerSize");
+  if (aSize.width < 0)
+    {
+      NSWarnMLog(@"given negative width", 0);
+      aSize.width = 0;
+    }
+  if (aSize.height < 0)
+    {
+      NSWarnMLog(@"given negative height", 0);
+      aSize.height = 0;
+    }
   _layoutManager = nil;
   _textView = nil;
   _containerRect.size = aSize;
@@ -221,6 +230,17 @@ framework intact.
   if (NSEqualSizes(_containerRect.size, aSize))
     {
       return;
+    }
+
+  if (aSize.width < 0)
+    {
+      NSWarnMLog(@"given negative width", 0);
+      aSize.width = 0;
+    }
+  if (aSize.height < 0)
+    {
+      NSWarnMLog(@"given negative height", 0);
+      aSize.height = 0;
     }
 
   _containerRect = NSMakeRect(0, 0, aSize.width, aSize.height);

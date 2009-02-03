@@ -1,3 +1,9 @@
+2009-02-03 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSTextContainer.m: Add some frame size checks.
+	* Source/NSScrollView.m: ditto
+	* Source/NSHelpPanel.m: Make sure we create with a reasonable size.
+
 2009-02-01 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView.m (-dragSelectionWithEvent:...): Correct

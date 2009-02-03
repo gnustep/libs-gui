@@ -1005,6 +1005,11 @@ static float scrollerWidth;
 
   /* Prepare the contentRect by insetting the borders.  */
   contentRect = NSInsetRect(_bounds, border.width, border.height);
+  if (contentRect.size.width < 0 || contentRect.size.height < 0)
+    {
+      NSWarnMLog(@"given too small a size to tile", 0);
+      return;
+    }
   
   [self _synchronizeHeaderAndCornerView];
   
