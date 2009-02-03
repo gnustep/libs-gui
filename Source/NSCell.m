@@ -1367,6 +1367,31 @@ static NSColor *dtxtCol;
     [self performClickWithFrame: [cv bounds] inView: cv];
 }
 
+/*
+ * Helper method used to send actions. Sender normally is [self controlView].
+ */
+- (BOOL) _sendActionFrom: (id)sender
+{
+  SEL action = [self action];
+
+  if ([sender respondsTo: @selector(sendAction:to:)])
+    {
+      return [sender sendAction: action to: [self target]];
+    }
+  else
+    {
+      if (sender == nil)
+        sender = self;
+
+      if (action)
+        {
+          return [NSApp sendAction: action to: [self target] from: sender];
+        }
+    }
+
+  return NO;
+}
+
 /**
  * Simulates a single click in the cell.
  * The display of the cell with this event
@@ -1375,8 +1400,6 @@ static NSColor *dtxtCol;
  */
 - (void) performClickWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
 {
-  SEL action = [self action];
-
   if (_cell.is_disabled == YES)
     {
       return;
@@ -1399,34 +1422,9 @@ static NSColor *dtxtCol;
       [self highlight: NO withFrame: cellFrame inView: controlView];
       [cvWin flushWindow];
       [controlView unlockFocus];
+    }
 
-      NS_DURING
-        {
-          [(NSControl*)controlView sendAction: action to: [self target]];
-        }
-      NS_HANDLER
-        {
-          [localException raise];
-        }
-      NS_ENDHANDLER
-    }
-  else  // We have no control view.  The best we can do is the following. 
-    {
-      if (action)
-        {
-          NS_DURING
-            {
-              [[NSApplication sharedApplication] sendAction: action
-                                                 to: [self target]
-                                                 from: self];
-            }
-          NS_HANDLER
-            {
-              [localException raise];
-            }
-          NS_ENDHANDLER
-        }
-    }
+  [self _sendActionFrom: controlView];
 }
 
 /*
@@ -1556,8 +1554,6 @@ static NSColor *dtxtCol;
   NSPoint point = [controlView convertPoint: location fromView: nil];
   float delay;
   float interval;
-  id target = [self target];
-  SEL action = [self action];
   NSPoint last_point = point;
   BOOL done;
   BOOL mouseWentUp;
@@ -1575,7 +1571,7 @@ static NSColor *dtxtCol;
 
   if ((_action_mask & NSLeftMouseDownMask) 
       && [theEvent type] == NSLeftMouseDown)
-    [(NSControl*)controlView sendAction: action to: target];
+    [self _sendActionFrom: controlView];
 
   if (_action_mask & NSPeriodicMask)
     {
@@ -1667,7 +1663,7 @@ static NSColor *dtxtCol;
                           && (_action_mask & NSLeftMouseDraggedMask))
                           || ((eventType == NSPeriodic)
                           && (_action_mask & NSPeriodicMask))))
-            [(NSControl*)controlView sendAction: action to: target];
+            [self _sendActionFrom: controlView];
         }
       
       if (!done)
@@ -1690,7 +1686,7 @@ static NSColor *dtxtCol;
     {
       [self setNextState];
       if ((_action_mask & NSLeftMouseUpMask))
-        [(NSControl*)controlView sendAction: action to: target];
+        [self _sendActionFrom: controlView];
     }
 
   // Return YES only if the mouse went up within the cell
