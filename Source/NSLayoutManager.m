@@ -2292,11 +2292,12 @@ no_soft_invalidation:
 
   if ([aDecoder allowsKeyedCoding])
     {
+      /*
       int i;
-      id delegate = [aDecoder decodeObjectForKey: @"NSDelegate"];
       int flags;
       NSArray *array = [aDecoder decodeObjectForKey: @"NSTextContainers"];
       NSTextStorage *storage = [aDecoder decodeObjectForKey: @"NSTextStorage"];
+      id delegate = [aDecoder decodeObjectForKey: @"NSDelegate"];
       
       if ([aDecoder containsValueForKey: @"NSLMFlags"])
         {
@@ -2311,7 +2312,7 @@ no_soft_invalidation:
         { 
 	  [self addTextContainer: [array objectAtIndex: i]];
 	}
-
+      */
       return self;
     }
   else

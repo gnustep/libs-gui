@@ -1786,7 +1786,7 @@ static BOOL _isInInterfaceBuilder = NO;
 
   // free other objects.
   RELEASE(_accessibilityConnectors);
-  // RELEASE(_connections);
+  RELEASE(_connections);
   RELEASE(_fontManager);
   RELEASE(_framework);
   RELEASE(_visibleWindows);

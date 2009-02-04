@@ -137,7 +137,7 @@
       // report a problem if there is one.
       if (loaded == NO)
 	{
-	  NSLog(@"Could not load Gorm file: %@",fileName);
+	  NSLog(@"Could not load Nib file: %@",fileName);
 	}
     }
       

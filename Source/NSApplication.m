@@ -2133,12 +2133,21 @@ image.</p><p>See Also: -applicationIconImage</p>
   NSEnumerator	*iterator = [[self windows] objectEnumerator];
   NSWindow	*current;
   NSImage	*old_app_icon = _app_icon;
+  NSSize        miniWindowSize = [_app_icon_window frame].size;
+  NSSize        imageSize = [anImage size];
 
   RETAIN(old_app_icon);
   [_app_icon setName: nil];
   [anImage setName: @"NSApplicationIcon"];
   [anImage setScalesWhenResized: YES];
-  [anImage setSize: NSMakeSize(48,48)];
+
+  // restrict size when the icon is larger than the mini window.
+  if(imageSize.width > miniWindowSize.width ||
+     imageSize.height > miniWindowSize.height)
+    {
+      [anImage setSize: miniWindowSize];
+    }
+
   ASSIGN(_app_icon, anImage);
 
   [_main_menu _organizeMenu];	// Let horizontal menu change icon

@@ -1,3 +1,15 @@
+2009-02-04 01:53-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibLoader.m: Correct the message to indicate an issue 
+	loading a nib, not a gorm, file.
+	* Source/GSNibLoading.m: Uncomment the release in the dealloc
+	method.
+	* Source/NSApplication.m: Restrict the icon size to the size of the
+	miniwindow if it's larger, but don't expand it, if it's smaller.
+	* Source/NSLayoutManager.m: -initWithCoder: Initialize when 
+	loading a nib in the same way that we initialize when loading 
+	a gorm file.
+
 2009-02-03 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSCell.m (-_sendActionFrom:): New helper method for
