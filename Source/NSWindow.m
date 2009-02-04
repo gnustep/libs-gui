@@ -82,6 +82,16 @@
 #include "GSWindowDecorationView.h"
 #include "NSToolbarFrameworkPrivate.h"
 
+#define GSI_ARRAY_TYPES 0
+#define GSI_ARRAY_TYPE NSWindow *
+#define GSI_ARRAY_NO_RELEASE 1
+#define GSI_ARRAY_NO_RETAIN 1
+
+#ifdef GSIArray
+#undef GSIArray
+#endif
+#include <GNUstepBase/GSIArray.h>
+
 static GSToolTips *toolTipVisible = nil;
 static id<GSWindowDecorator> windowDecorator = nil;
 
@@ -149,16 +159,6 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 }
 
 static NSArray *modes = nil;
-
-#define GSI_ARRAY_TYPES 0
-#define GSI_ARRAY_TYPE NSWindow *
-#define GSI_ARRAY_NO_RELEASE 1
-#define GSI_ARRAY_NO_RETAIN 1
-
-#ifdef GSIArray
-#undef GSIArray
-#endif
-#include <GNUstepBase/GSIArray.h>
 
 /* Array of windows we might need to handle autodisplay for (in practice
 a list of windows that are, wrt. -gui, on-screen). */

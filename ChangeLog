@@ -1,3 +1,7 @@
+2009-02-04 17:51-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSWindow.m: Correct compilation error.
+
 2009-02-04 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSApplication.m: Don't attempt to set app icon until
