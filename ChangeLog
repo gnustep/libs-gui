@@ -1,3 +1,11 @@
+2009-02-04 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSApplication.m: Don't attempt to set app icon until
+	creating the window (if we are going to create it).
+	Fix size checks when setting image to cope if window does not
+ 	exist (was previously the normal case) to avoid streams of X
+	errors on most systems and segmentation fault on sparc.
+
 2009-02-04 01:53-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibLoader.m: Correct the message to indicate an issue 
