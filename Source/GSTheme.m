@@ -686,6 +686,10 @@ typedef	struct {
 	{
 	  [_owned addObject: anObject];
 	}
+      else
+	{
+	  [_owned removeObject: anObject];
+	}
     }
 }
 

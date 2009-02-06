@@ -65,9 +65,10 @@ typedef enum {
  */
 - (id) initWithImage: (NSImage*)image horizontal: (float)x vertical: (float)y;
 
-/* Scale the images up by the specified factor.
+/* Scale the imge to the specified value.
  */
-- (void) scaleUp: (int)multiple;
+- (void) scaleTo: (float)multiple;
+
 @end
 
 /** This is the panel used to select and inspect themes.
