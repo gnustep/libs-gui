@@ -1,3 +1,7 @@
+2009-02-07 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSThemeTools.m: Add a few checks for tile sizes
+
 2009-02-06 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTheme.m:

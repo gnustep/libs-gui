@@ -793,7 +793,7 @@ withRepeatedImage: (NSImage*)image
     }
   else if (flipped)
     {
-      if (rect.size.width > tls.width + trs.width)
+      if (rect.size.width > tls.width + trs.width && tms.height > 0)
 	{
 	  [self fillHorizontalRect:
 	    NSMakeRect (rect.origin.x + tls.width,
@@ -805,7 +805,7 @@ withRepeatedImage: (NSImage*)image
 	  flipped: flipped];
 	}
 
-      if (rect.size.width > bls.width + brs.width)
+      if (rect.size.width > bls.width + brs.width && bms.height > 0)
 	{
 	  [self fillHorizontalRect:
 	    NSMakeRect (rect.origin.x + bls.width,
@@ -817,7 +817,7 @@ withRepeatedImage: (NSImage*)image
 	    flipped: flipped];
 	}
 
-      if (rect.size.height > bls.height + tls.height)
+      if (rect.size.height > bls.height + tls.height && cls.width > 0)
 	{
 	  [self fillVerticalRect:
 	    NSMakeRect (rect.origin.x,
@@ -829,7 +829,7 @@ withRepeatedImage: (NSImage*)image
 	    flipped: flipped];
 	}
 
-      if (rect.size.height > brs.height + trs.height)
+      if (rect.size.height > brs.height + trs.height && crs.width > 0)
 	{
 	  [self fillVerticalRect:
 	    NSMakeRect (rect.origin.x + rect.size.width - crs.width,
@@ -921,7 +921,7 @@ withRepeatedImage: (NSImage*)image
     {
       NSPoint	p;
 
-      if (rect.size.width > tls.width + trs.width)
+      if (rect.size.width > tls.width + trs.width && tms.height > 0)
 	{
 	  [self fillHorizontalRect:
 	    NSMakeRect(
@@ -934,7 +934,7 @@ withRepeatedImage: (NSImage*)image
 	    flipped: flipped];
 	}
 
-      if (rect.size.width > bls.width + brs.width)
+      if (rect.size.width > bls.width + brs.width && bms.height > 0)
 	{
 	  [self fillHorizontalRect:
 	    NSMakeRect(
@@ -947,7 +947,7 @@ withRepeatedImage: (NSImage*)image
 	    flipped: flipped];
 	}
 
-      if (rect.size.height > tls.height + bls.height)
+      if (rect.size.height > tls.height + bls.height && cls.width > 0)
 	{
 	  [self fillVerticalRect:
 	    NSMakeRect(
@@ -960,7 +960,7 @@ withRepeatedImage: (NSImage*)image
 	    flipped: flipped];
 	}
 
-      if (rect.size.height > trs.height + brs.height)
+      if (rect.size.height > trs.height + brs.height && crs.width > 0)
 	{
 	  [self fillVerticalRect:
 	    NSMakeRect(
