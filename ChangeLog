@@ -1,6 +1,7 @@
 2009-02-07 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSThemeTools.m: Add a few checks for tile sizes
+	* Source/GSTheme.m: Limit icon size to 48x48
 
 2009-02-06 Richard Frith-Macdonald <rfm@gnu.org>
 

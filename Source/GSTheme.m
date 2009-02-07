@@ -603,6 +603,23 @@ typedef	struct {
         {
 	  _icon = RETAIN([NSImage imageNamed: @"GNUstep"]);
 	}
+      else
+	{
+	  NSSize	s = [_icon size];
+	  float		scale = 1.0;
+
+	  if (s.height > 48.0)
+	    scale = 48.0 / s.height;
+	  if (48.0 / s.width < scale)
+	    scale = 48.0 / s.width;
+	  if (scale != 1.0)
+	    {
+	      [_icon setScalesWhenResized: YES];
+	      s.height *= scale;
+	      s.width *= scale;
+	      [_icon setSize: s];
+	    }
+	}
     }
   return _icon;
 }
