@@ -27,9 +27,12 @@
 */
 
 #import "GSThemePrivate.h"
+#include "AppKit/NSBezierPath.h"
 #import "AppKit/NSColorList.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
+
+#include "GNUstepGUI/GSToolbarView.h"
 
 
 @implementation	GSTheme (Drawing)
@@ -392,6 +395,41 @@
 - (float) defaultScrollerWidth
 {
   return 18.0;
+}
+
+- (void) drawToobarRect: (NSRect)aRect
+                  frame: (NSRect)viewFrame
+             borderMask: (unsigned int)borderMask
+{
+  // We draw the background
+  [[NSColor toolbarBackgroundColor] set];
+  [NSBezierPath fillRect: aRect];
+  
+  // We draw the border
+  [[NSColor toolbarBorderColor] set];
+  if (borderMask & GSToolbarViewBottomBorder)
+    {
+      [NSBezierPath strokeLineFromPoint: NSMakePoint(0, 0.5) 
+                    toPoint: NSMakePoint(viewFrame.size.width, 0.5)];
+    }
+  if (borderMask & GSToolbarViewTopBorder)
+    {
+      [NSBezierPath strokeLineFromPoint: NSMakePoint(0, 
+                                                     viewFrame.size.height - 0.5) 
+                    toPoint: NSMakePoint(viewFrame.size.width, 
+                                         viewFrame.size.height -  0.5)];
+    }
+  if (borderMask & GSToolbarViewLeftBorder)
+    {
+      [NSBezierPath strokeLineFromPoint: NSMakePoint(0.5, 0) 
+                    toPoint: NSMakePoint(0.5, viewFrame.size.height)];
+    }
+  if (borderMask & GSToolbarViewRightBorder)
+    {
+      [NSBezierPath strokeLineFromPoint: NSMakePoint(viewFrame.size.width - 0.5,0)
+                    toPoint: NSMakePoint(viewFrame.size.width - 0.5, 
+                                         viewFrame.size.height)];
+    }
 }
 
 @end

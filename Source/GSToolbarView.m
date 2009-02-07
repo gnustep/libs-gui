@@ -30,11 +30,11 @@
 #include <Foundation/NSObject.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDictionary.h>
+#include <Foundation/NSEnumerator.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSString.h>
-#include "AppKit/NSBezierPath.h"
 #include "AppKit/NSButton.h"
 #include "AppKit/NSClipView.h"
 #include "AppKit/NSColor.h"
@@ -48,6 +48,8 @@
 #include "AppKit/NSToolbarItem.h"
 #include "AppKit/NSView.h"
 #include "AppKit/NSWindow.h"
+
+#include "GNUstepGUI/GSTheme.h"
 #include "GNUstepGUI/GSToolbarView.h"
 
 #include "NSToolbarFrameworkPrivate.h"
@@ -63,10 +65,6 @@ static const int ClippedItemsViewWidth = 28;
 // Internal
 static const int current_version = 1;
 static NSColorList *SystemExtensionsColors;
-static NSColor *StandardBackgroundColor;
-static NSColor *BackgroundColor;
-static NSColor *BorderColor;
-
 
 // Toolbar color extensions
 
@@ -77,24 +75,18 @@ static void initSystemExtensionsColors(void)
   NSDictionary *colors;
   
   /* Set up a dictionary containing the names of all the system extensions 
-     colors as keys and with colors in string format as values. */
+     colours as keys and with colours as values. */
   toolbarBorderColor = [NSColor colorWithCalibratedRed: 0.5 
                                                  green: 0.5 
                                                   blue: 0.5 
                                                  alpha: 1.0];
   
-  // Window background color by tranparency                                                 
+  // Window background color by tranparency
   toolbarBackgroundColor = [NSColor clearColor]; 
   
-  // Window backgound color hardcoded
-  /* toolbarBackgroundColor = [NSColor colorWithCalibratedRed: 0.8 
-                                                        green: 0.8 
-                                                         blue: 0.8 
-                                                        alpha: 1.0]; */
-                                                        
   colors = [[NSDictionary alloc] initWithObjectsAndKeys: 
-    toolbarBackgroundColor, @"toolbarBackgroundColor",toolbarBorderColor,
-    @"toolbarBorderColor", nil];
+    toolbarBackgroundColor, @"toolbarBackgroundColor",
+    toolbarBorderColor, @"toolbarBorderColor", nil];
                                                              
   SystemExtensionsColors = [NSColorList colorListNamed: @"System extensions"];
   if (SystemExtensionsColors == nil)
@@ -126,20 +118,6 @@ static void initSystemExtensionsColors(void)
       if (changed)
         [SystemExtensionsColors writeToFile: nil];
     }
-
-
-  /* Never released, but that's not a problem because the variables are 
-     static and then will be deallocated with the class when the application
-     quits. */
-  StandardBackgroundColor = 
-      [NSColor colorWithCalibratedRed: 0.8 green: 0.8 blue: 0.8 alpha: 1.0];
-  RETAIN(StandardBackgroundColor);
-  BackgroundColor = 
-      [SystemExtensionsColors colorWithKey: @"toolbarBackgroundColor"];
-  BorderColor = 
-      [SystemExtensionsColors colorWithKey: @"toolbarBorderColor"];
-  RETAIN(BackgroundColor);
-  RETAIN(BorderColor);
 }
 
 @implementation NSColor (GSToolbarViewAdditions)
@@ -309,6 +287,7 @@ static void initSystemExtensionsColors(void)
                                       NSMakeRect(0, 0, frame.size.width, 
                                                  _heightFromLayout)];
   [_clipView setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
+  [_clipView setDrawsBackground: NO];
   [self addSubview: _clipView];
   // Adjust the clip view frame
   [self setBorderMask: GSToolbarViewTopBorder | GSToolbarViewBottomBorder 
@@ -436,47 +415,14 @@ static void initSystemExtensionsColors(void)
 
 - (void) drawRect: (NSRect)aRect
 {
-  NSRect viewFrame = [self frame];
-  
-  // We draw the background
-  if (![BackgroundColor isEqual: [NSColor clearColor]])
-    {
-      [BackgroundColor set];
-      [NSBezierPath fillRect: aRect];
-    }
-  
-  // We draw the border
-  [BorderColor set];
-  if (_borderMask & GSToolbarViewBottomBorder)
-    {
-      [NSBezierPath strokeLineFromPoint: NSMakePoint(0, 0.5) 
-                    toPoint: NSMakePoint(viewFrame.size.width, 0.5)];
-    }
-  if (_borderMask & GSToolbarViewTopBorder)
-    {
-      [NSBezierPath strokeLineFromPoint: NSMakePoint(0, 
-                                                     viewFrame.size.height - 0.5) 
-                    toPoint: NSMakePoint(viewFrame.size.width, 
-                                         viewFrame.size.height -  0.5)];
-    }
-  if (_borderMask & GSToolbarViewLeftBorder)
-    {
-      [NSBezierPath strokeLineFromPoint: NSMakePoint(0.5, 0) 
-                    toPoint: NSMakePoint(0.5, viewFrame.size.height)];
-    }
-  if (_borderMask & GSToolbarViewRightBorder)
-    {
-      [NSBezierPath strokeLineFromPoint: NSMakePoint(viewFrame.size.width - 0.5,0)
-                    toPoint: NSMakePoint(viewFrame.size.width - 0.5, 
-                                         viewFrame.size.height)];
-    }
-  
-  [super drawRect: aRect];
+  [[GSTheme theme] drawToobarRect: aRect
+                   frame: [self frame]
+                   borderMask: _borderMask];
 }
 
 - (BOOL) isOpaque
 {
-  if ([BackgroundColor isEqual: [NSColor clearColor]])
+  if ([[NSColor toolbarBackgroundColor] alphaComponent] < 1.0)
     {
       return NO;
     }
@@ -574,11 +520,6 @@ static void initSystemExtensionsColors(void)
   [_clippedItemsMark setToolbar: _toolbar];
   // Load the toolbar in the toolbar view
   [self _reload];
-}
-
-- (NSColor *) standardBackgroundColor
-{
-  return StandardBackgroundColor;
 }
 
 // Private methods
@@ -837,21 +778,21 @@ static void initSystemExtensionsColors(void)
   
 }
 
+- (NSColor *) standardBackgroundColor
+{
+  NSLog(@"Use of deprecated method %@", NSStringFromSelector(_cmd));
+  return nil;
+}
+
 - (BOOL) _usesStandardBackgroundColor
 {
-  return [BackgroundColor isEqual: [self standardBackgroundColor]];
+  NSLog(@"Use of deprecated method %@", NSStringFromSelector(_cmd));
+  return NO;
 }
 
 - (void) _setUsesStandardBackgroundColor: (BOOL)standard
 {
-  if (standard)
-    {
-      ASSIGN(BackgroundColor, [self standardBackgroundColor]);
-    }
-  else
-    {
-      ASSIGN(BackgroundColor, [NSColor clearColor]);
-    }
+  NSLog(@"Use of deprecated method %@", NSStringFromSelector(_cmd));
 }
 
 @end

@@ -1,3 +1,11 @@
+2009-02-07 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h,
+	* Source/GSTheme.m (-drawToobarRect:frame:borderMask:): New method
+	for toolbar view drawing
+	* Source/GSToolbarView.m (-drawRect:): Use new theme method.
+	Clean up use of colours.
+
 2009-02-07 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSThemeTools.m: Add a few checks for tile sizes

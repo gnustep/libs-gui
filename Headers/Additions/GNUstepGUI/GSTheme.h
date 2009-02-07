@@ -528,6 +528,13 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 - (NSCell*) cellForScrollerKnob: (BOOL)horizontal;
 - (NSCell*) cellForScrollerKnobSlot: (BOOL)horizontal;
 - (float) defaultScrollerWidth;
+
+/** Method for toolbar theming.
+ */
+- (void) drawToobarRect: (NSRect)aRect
+                  frame: (NSRect)viewFrame
+             borderMask: (unsigned int)borderMask;
+
 @end
 
 /**
