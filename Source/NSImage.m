@@ -34,6 +34,7 @@
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSFileManager.h>
+#include <Foundation/NSInvocation.h>
 #include <Foundation/NSKeyedArchiver.h>
 #include <Foundation/NSProxy.h>
 #include <Foundation/NSString.h>
