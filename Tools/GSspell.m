@@ -80,7 +80,7 @@ findMisspelledWordInString:(NSString *)stringToCheck
         {
           [inputScanner scanUpToCharactersFromSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]
 			intoString: NULL];
-          *wordCount++;
+          (*wordCount)++;
 	}
     }
   else
@@ -169,6 +169,7 @@ findMisspelledWordInString:(NSString *)stringToCheck
 #ifdef HAVE_ASPELL_H
       // initialization...
       config  = new_aspell_config();
+      aspell_config_replace(config, "lang", "en_US");
       speller = to_aspell_speller(new_aspell_speller(config));
       checker = to_aspell_document_checker(new_aspell_document_checker(speller));
 #endif
