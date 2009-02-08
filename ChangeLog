@@ -1,43 +1,6 @@
 2009-02-08 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSImage.m: Fix missing header.
-	Explanation for Fred because my outgoing email from FOSDEM is not
-	working.  Please delete once read ...
-
-On 8 Feb 2009, at 13:07, Fred Kiefer wrote:
-
-could you please explain a bit the motivation behind this change? It not
-only gives me warnings when compiling
-
-Sorry ... wrong version committed ... missing a header is all.
-
-what is worse I don't understand
-the reason for this code when inspecting it.
-
-Simple ... theming ... when a button (for instance) is created with a certain named image (one of the system images), the named image is looked up and set in the button.
-If you then change the theme, the new system images for the new theme are loaded, but any existing buttons still have the old images set in them, so won't draw themselves with the new theme's images.
-Now, we have a proxy for the loaded image, so when a button draws itsself the image it has set is actually a proxy, which obtains the *current* system image ... so the button dras itsself as it should for the new theme.
-
-Is the GSImageProxy a real proxy for a remote image, if so where does
-the remote image come from? And if not what do we gaonby this indirection?
-
-It's a proxy for the system image (local), not a remote image.
-
-I know that the old code couls lead to problems as an image could never
-be released when it was a named one. Is this what you are trying to improve?
-
-No, the new code has the same problem ... but perhaps it's worth thinking about.  The proxy could monitor its own retain count and release the actual image when its retain count gets to 1 perhaps.
-
-
-On 8 Feb 2009, at 13:35, Fred Kiefer wrote:
-
-Where does such image caching happen in our code, wouldn't it be easier
-to remove these places?
-
-I don't know all the places it might.  Whenever you create specialised buttons the setImage: method will be called I guess.  I don't think you can remove it ... if you didn't set the image in the button then the button would not know what image to use to draw itsself.  I'm sure we could code around that by adding new ivars to store the name of the system images being used for the normal and highlighted button etc, or perhaps other maechanisms are possible, but such cures seem a lot more complex and hard to maintain than the simple insertion of a proxy.  Of course, if there are unforseen problems using a proxy, we might need to find another method, but this is precisely the sort of situaton proxies ae supposed to be good for, so I think it's likely to be the simplest solution.
-
-Incidentally, we are going to need to do something similar for system colors and fonts (when we get round to adding theming for fonts).
-
 
 2009-02-08 Fred Kiefer <FredKiefer@gmx.de>
 
