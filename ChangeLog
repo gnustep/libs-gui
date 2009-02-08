@@ -1,3 +1,8 @@
+2009-02-08  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSWorkspace.m (-findApplications): Retain cached path of
+	make_services tool.
+
 2009-02-08 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSImage.m: Fix missing header.

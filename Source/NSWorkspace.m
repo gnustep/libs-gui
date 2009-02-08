@@ -1274,7 +1274,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
    */
   if (path == nil)
     {
-      path = [NSTask launchPathForTool: @"make_services"];
+      path = [[NSTask launchPathForTool: @"make_services"] retain];
     }
   task = [NSTask launchedTaskWithLaunchPath: path
 				  arguments: nil];
