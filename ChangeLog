@@ -1,3 +1,9 @@
+2009-02-08 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBundleAdditions.m (NSNibOutletConnector
+	-establishConnection): Use KVC call setValue:forKey: to establish
+	the outlet connection. This will result in ivars being properly retained.
+
 2009-02-08 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSImage.m: WARNING ... this change may have unforseen

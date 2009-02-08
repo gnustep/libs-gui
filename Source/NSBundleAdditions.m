@@ -31,27 +31,17 @@
 */ 
 
 #include "config.h"
-#include <Foundation/NSArchiver.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSCoder.h>
-#include <Foundation/NSData.h>
 #include <Foundation/NSDictionary.h>
-#include <Foundation/NSDebug.h>
 #include <Foundation/NSEnumerator.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSInvocation.h>
-#include <Foundation/NSObjCRuntime.h>
-#include <Foundation/NSPathUtilities.h>
-#include <Foundation/NSFileManager.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSKeyValueCoding.h>
-#include <Foundation/NSNotification.h>
 #include <AppKit/NSControl.h>
 #include "AppKit/NSNibConnector.h"
 #include "AppKit/NSNibLoading.h"
-#include "GNUstepGUI/GSInstantiator.h"
 #include "GNUstepGUI/GSModelLoaderFactory.h"
 
 @implementation	NSNibConnector
@@ -191,36 +181,7 @@
 {
   if (_src != nil)
     {
-      NSString *selName;
-      SEL sel;
-
-      selName = [NSString stringWithFormat: @"set%@%@:",
-			  [[_tag substringToIndex: 1] uppercaseString],
-			  [_tag substringFromIndex: 1]];
-      sel = NSSelectorFromString(selName);
-	      
-      if (sel && [_src respondsToSelector: sel])
-	{
-	  [_src performSelector: sel withObject: _dst];
-	}
-      else
-	{
-	  const char *nam = [_tag cString];
-	  const char *type;
-	  unsigned int size;
-	  int offset;
-
-	  /*
-	   * Use the GNUstep additional function to set the instance
-	   * variable directly.
-	   * FIXME - need some way to do this for libFoundation and
-	   * Foundation based systems.
-	   */
-	  if (GSObjCFindVariable(_src, nam, &type, &size, &offset))
-	    {
-	      GSObjCSetVariable(_src, offset, size, (void*)&_dst); 
-	    }
-	}
+      [_src setValue: _dst forKey: _tag];
     }
 }
 @end
