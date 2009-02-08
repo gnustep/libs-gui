@@ -7,6 +7,10 @@
 	variable used by the aspell checker.  This prevents a crash of
 	the spelling server during its initialization.
 
+	* Source/NSSavePanel.m (-browser:createRowsForColumn:inMatrix:):
+	Make sure the contents of the initial directory is always shown.
+	This should fix bug #25363.
+
 2009-02-08 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSImage.m: Fix missing header.

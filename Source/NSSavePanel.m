@@ -1663,21 +1663,32 @@ createRowsForColumn: (int)column
       pathAndFile = [path stringByAppendingPathComponent: file];
       exists = [_fm fileExistsAtPath: pathAndFile 
 		    isDirectory: &isDir];
-      if (isDir && !_treatsFilePackagesAsDirectories
-	&& [ws isFilePackageAtPath: pathAndFile])
-        {
-	  isDir = NO;
-	}
-      if (_delegateHasShowFilenameFilter)
-	{
-	  exists = [_delegate panel: self shouldShowFilename: pathAndFile];
-	}
 
-      if (exists && !isDir)
+      /* Note: The initial directory and its parents are always shown, even if
+       * it they are file packages or would be rejected by the validator. */
+#define HAS_PATH_PREFIX(aPath, otherPath) \
+  ([aPath isEqualToString: otherPath] || \
+   [aPath hasPrefix: [otherPath stringByAppendingString: @"/"]])
+
+      if (exists && (!isDir || !HAS_PATH_PREFIX(_directory, pathAndFile)))
 	{
-	  exists = [self _shouldShowExtension: extension];
-	}
-      
+	  if (isDir && !_treatsFilePackagesAsDirectories
+	      && [ws isFilePackageAtPath: pathAndFile])
+	    {
+	      isDir = NO;
+	    }
+
+	  if (_delegateHasShowFilenameFilter)
+	    {
+	      exists = [_delegate panel: self shouldShowFilename: pathAndFile];
+	    }
+
+	  if (exists && !isDir)
+	    {
+	      exists = [self _shouldShowExtension: extension];
+	    }
+	} 
+
       if (exists)
 	{
 	  if (addedRows == 0)
