@@ -1007,7 +1007,8 @@ static float scrollerWidth;
   contentRect = NSInsetRect(_bounds, border.width, border.height);
   if (contentRect.size.width < 0 || contentRect.size.height < 0)
     {
-      NSWarnMLog(@"given too small a size to tile", 0);
+      /* FIXME ... should we do something else when given
+       * too small a size to tile? */
       return;
     }
   

@@ -1,3 +1,12 @@
+2009-02-08 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSImage.m: WARNING ... this change may have unforseen
+	consequences.  Named images are replaced by proxies to the images
+	so that all image drawing the the gui updates instantly when the
+	theme changes.  It's possible that sme code uses the image in an
+	unexpected way that the proxy does not support ... plase look out
+	for that and report any problems so I can fix them.
+
 2009-02-08 01:17-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSApplication.m: Added code to handle exceptions in 
