@@ -1361,6 +1361,38 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 		userInfo: [self _notificationUserInfo]];
 }
 
+#define NSLogUncaughtExceptionMask 1
+#define NSHandleUncaughtExceptionMask 2
+#define NSLogUncaughtSystemExceptionMask 4
+#define NSHandleUncaughtSystemExceptionMask 8
+#define NSLogRuntimeErrorMask 16
+#define NSLogUncaughtRuntimeErrorMask 32
+
+/**
+ * Private method to handle an exception which occurs in the application runloop.
+ */
+- (void) _handleException: (NSException *)exception
+{
+  int mask = [[NSUserDefaults standardUserDefaults] integerForKey: @"NSExceptionHandlerMask"];
+
+  /**
+   * If we are in debug mode, then rethrow the exception so that
+   * the application can be stopped.
+   **/
+
+  // log the exception.
+  if(mask & NSLogUncaughtExceptionMask) 
+    {
+      [self reportException: exception];
+    }
+
+  // allow the default handler to handle the exception.
+  if(mask & NSHandleUncaughtExceptionMask) 
+    {
+      [exception raise];
+    }
+}
+
 /*
  * Running the main event loop
  */
@@ -1378,7 +1410,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 {
   NSEvent *e;
   id distantFuture = [NSDate distantFuture];     /* Cache this, safe */
-  
+
   if (_runLoopPool != nil)
     {
       [NSException raise: NSInternalInconsistencyException
@@ -1409,24 +1441,33 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
       IF_NO_GC(_runLoopPool = [arpClass new]);
 
       e = [self nextEventMatchingMask: NSAnyEventMask
-			    untilDate: distantFuture
-			       inMode: NSDefaultRunLoopMode
-			      dequeue: YES];
-
+		untilDate: distantFuture
+		inMode: NSDefaultRunLoopMode
+		dequeue: YES];
+      
       if (e != nil &&  e != null_event)
 	{
 	  NSEventType	type = [e type];
 
-	  [self sendEvent: e];
+	  // Catch and report any uncaught exceptions.
+	  NS_DURING
+	    {	  	  
+	      [self sendEvent: e];
 
-	  // update (en/disable) the services menu's items
-	  if (type != NSPeriodic && type != NSMouseMoved)
-	    {
-	      [_listener updateServicesMenu];
-	      [_main_menu update];
+	      // update (en/disable) the services menu's items
+	      if (type != NSPeriodic && type != NSMouseMoved)
+		{
+		  [_listener updateServicesMenu];
+		  [_main_menu update];
+		}
 	    }
+	  NS_HANDLER
+	    {
+	      [self _handleException: localException];
+	    }
+	  NS_ENDHANDLER;
 	}
-
+      
       DESTROY (_runLoopPool);
     }
 
