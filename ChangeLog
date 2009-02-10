@@ -1,3 +1,21 @@
+2009-02-10 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSToolbarFrameworkPrivate.h: Add method
+	_setCustomizationPaletteIsRunning:. 
+	* Source/NSToolbar.m: (-runCustomizationPalette:): Code to run
+	customization palette.
+	* Source/NSToolbarItem.m (-copyWithZone:): Try to copy the view.
+	* Source/GSToolbarCustomizationPalette.h
+	* Source/GSToolbarCustomizationPalette.m: New files.
+	* GNUmakefile: Add new files.
+	* Panels/English.lproj/GSToolbarCustomizationPalette.gorm
+	* Panels/English.lproj/GSToolbarCustomizationPalette.gorm/data.info
+	* Panels/English.lproj/GSToolbarCustomizationPalette.gorm/data.classes
+	* Panels/English.lproj/GSToolbarCustomizationPalette.gorm/objects.gorm
+	* Panels/GNUmakefile: Add new panel.
+	This is a stripped down version of the toolbar customization
+	branch by Quentin Mathe <qmathe@club-internet.fr>.
+
 2009-02-08 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSThemePrivate.h:

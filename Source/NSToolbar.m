@@ -45,13 +45,14 @@
 #include "AppKit/NSEvent.h"
 #include "AppKit/NSMenu.h"
 #include "AppKit/NSNibLoading.h"
+#include "AppKit/NSToolbar.h"
 #include "AppKit/NSToolbarItem.h"
 #include "AppKit/NSView.h"
 #include "AppKit/NSWindow.h"
 #include "GNUstepGUI/GSToolbarView.h"
-#include "AppKit/NSToolbar.h"
 
 #include "NSToolbarFrameworkPrivate.h"
+#include "GSToolbarCustomizationPalette.h"
 
 // internal
 static NSNotificationCenter *nc = nil;
@@ -598,13 +599,20 @@ static GSValidationCenter *vc = nil;
 
 - (void) runCustomizationPalette: (id)sender
 {
-  _customizationPaletteIsRunning = 
-    [NSBundle loadNibNamed: @"GSToolbarCustomizationPalette" owner: self];
+  GSToolbarCustomizationPalette *palette;
 
-  if (!_customizationPaletteIsRunning)
+  if (_customizationPaletteIsRunning)
     {
-      NSLog(@"Failed to load gorm for GSToolbarCustomizationPalette");
+      NSLog(@"Customization palette is already running for toolbar: %@", self);
+      return;
     }
+
+  palette = [GSToolbarCustomizationPalette palette];
+
+  if (palette != nil)
+    _customizationPaletteIsRunning = YES;
+
+  [palette showForToolbar: self];
 }
 
 - (void) validateVisibleItems
@@ -638,6 +646,11 @@ static GSValidationCenter *vc = nil;
 - (BOOL) customizationPaletteIsRunning
 {
   return _customizationPaletteIsRunning;
+}
+
+- (void) _setCustomizationPaletteIsRunning: (BOOL)isRunning
+{
+  _customizationPaletteIsRunning = isRunning;
 }
 
 - (id) delegate

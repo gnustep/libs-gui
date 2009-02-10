@@ -33,6 +33,7 @@ LOCALIZED_RESOURCE_COMPONENTS = \
   GSDataLinkPanel.gorm \
   GSPageLayout.gorm \
   GSPrintPanel.gorm \
+	GSToolbarCustomizationPalette.gorm \
   GSSpellPanel.gorm
 
 -include GNUmakefile.preamble

@@ -219,6 +219,7 @@ GSNibLoading.m \
 GSTitleView.m \
 GSToolTips.m \
 GSToolbarView.m \
+GSToolbarCustomizationPalette.m \
 GSStandardWindowDecorationView.m \
 GSWindowDecorationView.m \
 GSPrinting.m \

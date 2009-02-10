@@ -103,8 +103,11 @@
 - (void) _toolbarViewWillMoveToSuperview: (NSView *)newSuperview;
 
 // Accessors
+- (void) _setCustomizationPaletteIsRunning: (BOOL)isRunning;
 - (void) _setToolbarView: (GSToolbarView *)toolbarView;
 - (GSToolbarView *) _toolbarView;
+
+// Deprecated
 - (void) setUsesStandardBackgroundColor: (BOOL)standard;
 - (BOOL) usesStandardBackgroundColor;
 @end
