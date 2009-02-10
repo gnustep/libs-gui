@@ -1,3 +1,10 @@
+2009-02-09 20:16-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSToolbar.m: (-windowDidUpdate:): Automatically update
+	the toolbar on every window update.  This makes sure that
+	no matter what window an event happens in the toolbar gets
+	properly updated for ALL windows.
+
 2009-02-08  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSWorkspace.m (-findApplications): Retain cached path of

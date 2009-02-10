@@ -306,14 +306,7 @@ static GSValidationCenter *vc = nil;
 
 - (void) windowDidUpdate: (NSNotification *)notification
 {
-  // NSLog(@"Window update %d", [[NSApp currentEvent] type]);
-  
-  if (!_inside || _validating || [[NSApp currentEvent] type] == NSMouseMoved)
-    return;
-  // _validating permits in the case the UI/window is refreshed by a validation to 
-  // avoid have windowDidUpdate called, which would cause a loop like that :
-  // validate -> view update -> windowDidUpdate -> validate etc.
-    
+  // Validate the toolbar for each update of the window.
   [self validate];
 }
 
