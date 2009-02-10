@@ -1,3 +1,13 @@
+2009-02-08 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSThemePrivate.h:
+	* Source/GSTheme.m:
+	* Source/NSImage.m:
+	Move/rename new proxy code to GSTheme.m and declare it in
+	GSThemePrivate.h so that all code in the GUI can use it
+	(we will need to allow other resources to automatically update
+	to the current theme, not just images).
+
 2009-02-09 20:16-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSToolbar.m: (-windowDidUpdate:): Automatically update

@@ -25,7 +25,10 @@
    Free Software Foundation, 51 Franklin Street, Fifth Floor, 
    Boston, MA 02110-1301, USA.
 */
+#ifndef	_INCLUDED_GSTHEMEPRIVATE_H
+#define	_INCLUDED_GSTHEMEPRIVATE_H
 
+#import	<Foundation/NSProxy.h>
 #import	"AppKit/NSPanel.h"
 #import "GNUstepGUI/GSTheme.h"
 
@@ -148,4 +151,22 @@ typedef enum {
 - (void) drawRoundBezel: (NSRect)cellFrame
 	      withColor: (NSColor*)backgroundColor;
 @end
+
+/* The GSThemeProxy class provides a simple proxy object for intermal use
+ * by the GUI library when dealing with references to resources which may
+ * be changed by activating a new theme, but which will be set in other
+ * GUI objects.  Having objects store a proxy to the orignal resource
+ * rather than storing the original resource itsself means that, when the
+ * new theme is activated the new resource can be used for drawing rather
+ * than the old version.
+ */
+@interface	GSThemeProxy : NSProxy
+{
+  id	_resource;
+}
+- (id) _resource;
+- (void) _setResource: (id)resource;
+@end
+
+#endif
 

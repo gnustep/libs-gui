@@ -34,9 +34,7 @@
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSFileManager.h>
-#include <Foundation/NSInvocation.h>
 #include <Foundation/NSKeyedArchiver.h>
-#include <Foundation/NSProxy.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSValue.h>
 
@@ -54,6 +52,7 @@
 #include "AppKit/NSWindow.h"
 #include "AppKit/PSOperators.h"
 #include "GNUstepGUI/GSDisplayServer.h"
+#include "GSThemePrivate.h"
 
 
 /* Helpers.  Would be nicer to use the C99 fmin/fmax functions, but that
@@ -72,60 +71,6 @@ static double gs_max(double x, double y)
   else
     return x;
 }
-
-@interface	GSImageProxy : NSProxy
-{
-  NSImage	*_image;
-}
-- (NSImage*) _image;
-- (void) _setImage: (NSImage*)image;
-@end
-@implementation	GSImageProxy
-- (NSImage*) _image
-{
-  return _image;
-}
-- (void) _setImage: (NSImage*)image
-{
-  ASSIGN(_image, image);
-}
-- (void) dealloc
-{
-  DESTROY(_image);
-  [super dealloc];
-}
-- (void) forwardInvocation: (NSInvocation*)anInvocation
-{
-  [anInvocation invokeWithTarget: _image];
-}
-- (NSMethodSignature*) methodSignatureForSelector: (SEL)aSelector
-{
-  if (_image != nil)
-    {
-      return [_image methodSignatureForSelector: aSelector];
-    }
-  else
-    {
-      /*
-       * Evil hack to prevent recursion - if we are asking a remote
-       * object for a method signature, we can't ask it for the
-       * signature of methodSignatureForSelector:, so we hack in
-       * the signature required manually :-(
-       */
-      if (sel_eq(aSelector, _cmd))
-	{
-	  static	NSMethodSignature	*sig = nil;
-
-	  if (sig == nil)
-	    {
-	      sig = RETAIN([NSMethodSignature signatureWithObjCTypes: "@@::"]);
-	    }
-	  return sig;
-	}
-      return nil;
-    }
-}
-@end
 
 BOOL NSImageForceCaching = NO; /* use on missmatch */
 
@@ -526,8 +471,8 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   RELEASE(_reps);
   /* Make sure we don't remove name from the nameDict if we are just a copy
      of the named image, not the original image */
-  if (_name && self == [[nameDict objectForKey: _name] _image]) 
-    [[nameDict objectForKey: _name] _setImage: nil];
+  if (_name && self == [[nameDict objectForKey: _name] _resource]) 
+    [[nameDict objectForKey: _name] _setResource: nil];
   RELEASE(_name);
   TEST_RELEASE(_fileName);
   RELEASE(_color);
@@ -565,34 +510,28 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 - (BOOL) setName: (NSString *)aName
 {
-  GSImageProxy	*proxy = nil;
-  BOOL retained = NO;
+  GSThemeProxy	*proxy = nil;
   
-  if (!aName || [[nameDict objectForKey: aName] _image] != nil)
-    return NO;
-
-  if (_name && self == [(proxy = [nameDict objectForKey: _name]) _image])
+  if (!aName || [[nameDict objectForKey: aName] _resource] != nil)
     {
-      /* We retain self in case removing from the dictionary releases
-         us */
-      RETAIN (self);
-      retained = YES;
-      [proxy _setImage: nil];
+      return NO;
+    }
+  if (_name && self == [(proxy = [nameDict objectForKey: _name]) _resource])
+    {
+      /* We retain self in case removing from the dictionary releases us */
+      IF_NO_GC([[self retain] autorelease]);
+      [proxy _setResource: nil];
     }
   
   ASSIGN(_name, aName);
   
   if ((proxy = [nameDict objectForKey: _name]) == nil)
     {
-      proxy = [GSImageProxy alloc];
+      proxy = [GSThemeProxy alloc];
       [nameDict setObject: proxy forKey: _name];
       [proxy release]; 
     }
-  [proxy _setImage: self];
-  if (retained)
-    {
-      RELEASE (self);
-    }
+  [proxy _setResource: self];
   
   return YES;
 }

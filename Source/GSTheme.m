@@ -26,15 +26,17 @@
    Boston, MA 02110-1301, USA.
 */
 
-#import "Foundation/NSBundle.h"
-#import "Foundation/NSDictionary.h"
-#import "Foundation/NSFileManager.h"
-#import "Foundation/NSMapTable.h"
-#import "Foundation/NSNotification.h"
-#import "Foundation/NSNull.h"
-#import "Foundation/NSPathUtilities.h"
-#import "Foundation/NSSet.h"
-#import "Foundation/NSUserDefaults.h"
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSInvocvation.h>
+#import <Foundation/NSMapTable.h>
+#import <Foundation/NSMethodSignature.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSNull.h>
+#import <Foundation/NSPathUtilities.h>
+#import <Foundation/NSSet.h>
+#import <Foundation/NSUserDefaults.h>
 #import "GNUstepGUI/GSTheme.h"
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSButton.h"
@@ -845,6 +847,53 @@ typedef	struct {
   while ((o = [_owned anyObject]) != nil)
     {
       [self setName: nil forElement: o temporary: YES];
+    }
+}
+@end
+
+@implementation	GSThemeProxy
+- (id) _resource
+{
+  return _resource;
+}
+- (void) _setResource: (id)resource
+{
+  ASSIGN(_resource, resource);
+}
+- (void) dealloc
+{
+  DESTROY(_resource);
+  [super dealloc];
+}
+- (void) forwardInvocation: (NSInvocation*)anInvocation
+{
+  [anInvocation invokeWithTarget: _resource];
+}
+- (NSMethodSignature*) methodSignatureForSelector: (SEL)aSelector
+{
+  if (_resource != nil)
+    {
+      return [_resource methodSignatureForSelector: aSelector];
+    }
+  else
+    {
+      /*
+       * Evil hack to prevent recursion - if we are asking a remote
+       * object for a method signature, we can't ask it for the
+       * signature of methodSignatureForSelector:, so we hack in
+       * the signature required manually :-(
+       */
+      if (sel_eq(aSelector, _cmd))
+	{
+	  static	NSMethodSignature	*sig = nil;
+
+	  if (sig == nil)
+	    {
+	      sig = RETAIN([NSMethodSignature signatureWithObjCTypes: "@@::"]);
+	    }
+	  return sig;
+	}
+      return nil;
     }
 }
 @end
