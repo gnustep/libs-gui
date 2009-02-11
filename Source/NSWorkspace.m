@@ -65,6 +65,7 @@
 #include "AppKit/NSWorkspace.h"
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSImage.h"
+#include "AppKit/NSPasteboard.h"
 #include "AppKit/NSView.h"
 #include "AppKit/NSPanel.h"
 #include "AppKit/NSWindow.h"
@@ -803,7 +804,55 @@ static NSString			*_rootPath = @"/";
     }
   else
     {
-      return NO;
+      NSDictionary	*map;
+      NSString		*appName;
+
+      /* Look up an application to handle this URL scheme.
+       */
+      map = [applications objectForKey: @"GSSchemesMap"];
+      appName = [map objectForKey: [[url scheme] lowercaseString]];
+      if (appName != nil)
+	{
+	  NSString	*urlString = [url absoluteString];
+	  id		app;
+
+	  /* Now try to get the application to open the URL.
+	   */
+	  app = [self _connectApplication: appName];
+	  if (app == nil)
+	    {
+	      NSArray *args;
+
+	      args = [NSArray arrayWithObjects: @"-GSFilePath", urlString, nil];
+	      return [self _launchApplication: appName arguments: args];
+	    }
+	  else
+	    {
+	      NS_DURING
+		{
+	          [app application: NSApp openFile: urlString];
+		}
+	      NS_HANDLER
+		{
+		  NSWarnLog(@"Failed to contact '%@' to open file", appName);
+		  return NO;
+		}
+	      NS_ENDHANDLER
+	    }
+          [NSApp deactivate];
+	  return YES;
+	}
+      else
+	{
+          NSPasteboard      *pb;
+
+	  /* No application found to open the URL.
+	   * Try any OpenURL service available.
+	   */
+	  pb = [NSPasteboard pasteboardWithUniqueName];
+	  [url writeToPasteboard: pb];
+	  return NSPerformService(@"OpenURL", pb);
+	}
     }
 }
 

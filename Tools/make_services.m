@@ -57,6 +57,7 @@ static	NSMutableDictionary	*printMap;
 static	NSMutableDictionary	*spellMap;
 static	NSMutableDictionary	*applicationMap;
 static	NSMutableDictionary	*extensionsMap;
+static	NSMutableDictionary	*schemesMap;
 
 static Class aClass;
 static Class dClass;
@@ -132,6 +133,7 @@ main(int argc, char** argv, char **env_c)
   spellMap = [NSMutableDictionary dictionaryWithCapacity: 8];
   applicationMap = [NSMutableDictionary dictionaryWithCapacity: 64];
   extensionsMap = [NSMutableDictionary dictionaryWithCapacity: 64];
+  schemesMap = [NSMutableDictionary dictionaryWithCapacity: 64];
 
   env = [proc environment];
   args = [proc arguments];
@@ -280,6 +282,7 @@ main(int argc, char** argv, char **env_c)
       oldMap = nil;
     }
   [applicationMap setObject: extensionsMap forKey: @"GSExtensionsMap"];
+  [applicationMap setObject: schemesMap forKey: @"GSSchemesMap"];
   if ([applicationMap isEqual: oldMap] == NO)
     {
       data = [NSSerializer serializePropertyList: applicationMap];
@@ -294,6 +297,95 @@ main(int argc, char** argv, char **env_c)
 
   [pool release];
   exit(EXIT_SUCCESS);
+}
+
+/*
+ * Load information about the shemes of URLs that an application supports.
+ * For each scheme found, produce a dictionary, keyed by app name, that
+ * contains dictionaries giving scheme info for that extension.
+ * NB. in order to make schemes case-insensiteve - we always convert
+ * to lowercase.
+ */
+static void addSchemesForApplication(NSDictionary *info, NSString *app)
+{
+  unsigned int  i;
+  id            o0;
+  NSArray       *a0;
+
+
+  o0 = [info objectForKey: @"CFBundleURLTypes"];
+
+  if (o0)
+    {
+      if ([o0 isKindOfClass: aClass] == NO)
+        {
+	  if (verbose > 0)
+	    NSLog(@"bad app CFBundleURLTypes (not an array) - %@", app);
+          return;
+        }
+      a0 = (NSArray*)o0;
+      i = [a0 count];
+      while (i-- > 0)
+        {
+          NSDictionary          *t;
+          NSArray               *a1;
+          id                    o1 = [a0 objectAtIndex: i];
+          unsigned int          j;
+
+          if ([o1 isKindOfClass: dClass] == NO)
+            {
+	      if (verbose > 0)
+		NSLog(@"bad app CFBundleURLTypes (type not a dictionary) - %@",
+		  app);
+              return;
+            }
+	  /*
+	   * Set 't' to the dictionary defining a particular file type.
+	   */
+          t = (NSDictionary*)o1;
+
+	  if (o1 == nil)
+	    {
+	      o1 = [t objectForKey: @"CFBundleURLSchemes"];
+	    }
+          if (o1 == nil)
+            {
+              continue;
+            }
+          if ([o1 isKindOfClass: aClass] == NO)
+            {
+	      if (verbose > 0)
+		NSLog(@"bad app CFBundleURLTypes (schemes not an array) - %@",
+		  app);
+              return;
+            }
+          a1 = (NSArray*)o1;
+          j = [a1 count];
+          while (j-- > 0)
+            {
+              NSString			*e;
+              NSMutableDictionary	*d;
+
+              e = [[a1 objectAtIndex: j] lowercaseString];
+	      if ([e length] == 0)
+		{
+		  if (verbose > 0)
+		    NSLog(@"Illegal (nul) scheme ignored for - %@", app);
+		  return;
+		}
+              d = [schemesMap objectForKey: e];
+              if (d == nil)
+                {
+                  d = [NSMutableDictionary dictionaryWithCapacity: 1];
+                  [schemesMap setObject: d forKey: e];
+                }
+              if ([d objectForKey: app] == nil)
+                {
+                  [d setObject: t forKey: app];
+                }
+            }
+        }
+    }
 }
 
 /*
@@ -345,7 +437,7 @@ static void addExtensionsForApplication(NSDictionary *info, NSString *app)
           t = (NSDictionary*)o1;
           o1 = [t objectForKey: @"NSUnixExtensions"];
 
-	  if(o1 == nil)
+	  if (o1 == nil)
 	    {
 	      o1 = [t objectForKey: @"CFBundleTypeExtensions"];
 	    }
@@ -391,7 +483,7 @@ static void addExtensionsForApplication(NSDictionary *info, NSString *app)
       NSDictionary	*extensions;
 
       o0 = [info objectForKey: @"NSExtensions"];
-      if(o0 == nil)
+      if (o0 == nil)
 	{
 	  o0 = [info objectForKey: @"CFBundleTypeExtensions"];
 	}
@@ -511,6 +603,7 @@ scanDirectory(NSMutableDictionary *services, NSString *path)
 		    }
 
 		  addExtensionsForApplication(info, name);
+		  addSchemesForApplication(info, name);
 		}
 	      else if (verbose > 0)
 		{
@@ -653,6 +746,7 @@ scanApplications(NSMutableDictionary *services, NSString *path)
 		    }
 
 		  addExtensionsForApplication(info, name);
+		  addSchemesForApplication(info, name);
 		}
 	      else if (verbose > 0)
 		{

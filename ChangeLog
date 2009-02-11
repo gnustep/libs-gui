@@ -1,5 +1,13 @@
 2009-02-11 Richard Frith-Macdonald <rfm@gnu.org>
 
+	* Tools/make_services.m: Check applications for CFBundleURLTypes
+	(see http://developer.apple.com/documentation/MacOSX/conceptual/BPRuntimeConfig/Articles/PListKeys.html)
+	* Source/NSWorkspace.m: ([-openURL:]) try to open non-file URLs using
+	an app found based on CFBundleURLTypes, and if that fails try to use
+	any available 'OpenURL' service.
+
+2009-02-11 Richard Frith-Macdonald <rfm@gnu.org>
+
 	* Source/GSTheme.m: Fix typo in include
 	* Source/NSTableView.m: Fix to compile with GC (reported by Lu Liyi)
 
