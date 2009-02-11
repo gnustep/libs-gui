@@ -3874,7 +3874,7 @@ if (currentRow >= 0 && currentRow < _numberOfRows) \
 		  getNextEvent = YES;
 		}
 	    }
-	  DESTROY(arp);
+	  IF_NO_GC(DESTROY(arp));
 	}
 
       if (startedPeriodicEvents == YES)

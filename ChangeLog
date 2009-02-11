@@ -1,3 +1,8 @@
+2009-02-11 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSTheme.m: Fix typo in include
+	* Source/NSTableView.m: Fix to compile with GC (reported by Lu Liyi)
+
 2009-02-11 00:49-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSBundleAdditions.m: 

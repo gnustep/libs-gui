@@ -29,7 +29,7 @@
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSFileManager.h>
-#import <Foundation/NSInvocvation.h>
+#import <Foundation/NSInvocation.h>
 #import <Foundation/NSMapTable.h>
 #import <Foundation/NSMethodSignature.h>
 #import <Foundation/NSNotification.h>
