@@ -1,3 +1,9 @@
+2009-02-11 00:49-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSBundleAdditions.m: 
+	-[NSNibOutletConnector establishConnection] report exceptions when
+	establishing a connection, but don't fail to load.  
+
 2009-02-10 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSToolbarFrameworkPrivate.h: Add method

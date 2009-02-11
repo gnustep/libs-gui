@@ -179,10 +179,18 @@
 @implementation	NSNibOutletConnector
 - (void) establishConnection
 {
-  if (_src != nil)
+  NS_DURING
     {
-      [_src setValue: _dst forKey: _tag];
+      if (_src != nil)
+	{
+	  [_src setValue: _dst forKey: _tag];
+	}
     }
+  NS_HANDLER
+    {
+      NSLog(@"Error while establishing connection %@: %@",self,[localException reason]);
+    }
+  NS_ENDHANDLER;
 }
 @end
 
