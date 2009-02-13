@@ -343,11 +343,7 @@ static void addSchemesForApplication(NSDictionary *info, NSString *app)
 	   * Set 't' to the dictionary defining a particular file type.
 	   */
           t = (NSDictionary*)o1;
-
-	  if (o1 == nil)
-	    {
-	      o1 = [t objectForKey: @"CFBundleURLSchemes"];
-	    }
+	  o1 = [t objectForKey: @"CFBundleURLSchemes"];
           if (o1 == nil)
             {
               continue;

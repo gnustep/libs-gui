@@ -1,3 +1,7 @@
+2009-02-12 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Tools/make_services.m: Fix error parsing CFBundleURLTypes
+
 2009-02-11 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Tools/make_services.m: Check applications for CFBundleURLTypes
