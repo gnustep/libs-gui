@@ -441,7 +441,6 @@ static NSColor *dtxtCol;
         }
       else
         {
-	  NSLog(@"not a string, setObjectValue: %@", aString);
           [self setObjectValue: aString];
         }
     }
