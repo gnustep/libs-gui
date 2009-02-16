@@ -236,6 +236,7 @@ AC_ARG_ENABLE(png,
 
 if test $enable_png = yes; then
   AC_CHECK_LIB(png, png_sig_cmp)
+  AC_CHECK_HEADERS(libpng/png.h)
 
   if test "$ac_cv_lib_png_png_sig_cmp" = no; then
     echo "GNUstep requires libpng to support PNG images, but this library"

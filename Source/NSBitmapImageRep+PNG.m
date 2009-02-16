@@ -32,7 +32,11 @@
 
 #if HAVE_LIBPNG
 
+#ifdef HAVE_LIBPNG_PNG_H
+#include <libpng/png.h>
+#else
 #include <png.h>
+#endif
 
 #include <Foundation/NSData.h>
 #include <Foundation/NSException.h>
