@@ -126,15 +126,15 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 	  else
 	    {
 	      [self _selectCellName: [[_form cellAtIndex: 0] stringValue]];
-	      //	      [_form selectTextAtIndex: 0];
-	      [_okButton setEnabled: YES];
+	      [_okButton setEnabled: 
+			   [self _shouldShowExtension:
+				   [[_browser path] pathExtension]]]; 
 	    }
 	}
       else
 	{
 	  [_form abortEditing];
 	  [[_form cellAtIndex: 0] setStringValue:@""];
-	  //	  [_form selectTextAtIndex: 0];
 	  [_form setNeedsDisplay: YES];
 	  [_okButton setEnabled: YES];
 	}
@@ -148,11 +148,12 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 	  if ([[[_form cellAtIndex: 0] stringValue] length] > 0)
 	    {
 	      [self _selectCellName: [[_form cellAtIndex: 0] stringValue]];
-	      //	      [_form selectTextAtIndex: 0];
 	      [_form setNeedsDisplay: YES];
 	    }
 
-	  [_okButton setEnabled: YES];
+	  [_okButton setEnabled: 
+		       [self _shouldShowExtension:
+			       [[_browser path] pathExtension]]]; 
 	}
     }
 }

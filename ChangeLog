@@ -1,3 +1,8 @@
+2009-02-15 22:21-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSOpenPanel.m: Corrects bug #25471.  Only enable
+	the OK button when a file the application can open is selected.
+
 2009-02-15 19:38-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSCell.m: Change to implement 10.3 and later behavior for
