@@ -2,6 +2,7 @@
 
 	* configure.ac: Look for libpng/png.h
 	* Source/NSBitmapImageRep+PNG.m: Use found loction of png.h
+	(Fixes #24111).
 
 2009-02-16 Riccardo Mottola <rmottola@users.sf.net>
 
