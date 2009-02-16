@@ -329,10 +329,23 @@ static NSColor *dtxtCol;
         }
       else
         {
-          newContents = [_object_value description];
-          _cell.contents_is_attributed_string = NO;
-          _cell.has_valid_object_value = YES;
-        }
+	  ///
+	  // If the thing that was assigned is not a string, but 
+	  // responds to stringValue then get that.
+	  ///
+	  if([_object_value respondsToSelector: @selector(attributedStringValue)])
+	    {
+	      newContents = [_object_value attributedStringValue];
+	    }
+	  else if([_object_value respondsToSelector: @selector(stringValue)])
+	    {
+	      newContents = [_object_value stringValue];
+	    }
+
+	  newContents = [_object_value description];
+	  _cell.contents_is_attributed_string = NO;
+	  _cell.has_valid_object_value = YES;
+	}
   }
   else
     {
@@ -420,6 +433,22 @@ static NSColor *dtxtCol;
 
   if (_formatter == nil)
     {
+      if([string isKindOfClass: [NSString class]] == NO)
+	{
+	  ///
+	  // If the thing that was assigned is not a string, but 
+	  // responds to stringValue then get that.
+	  ///
+	  if([string respondsToSelector: @selector(attributedStringValue)])
+	    {
+	      string = (NSString *)[(id)string attributedStringValue];
+	    }
+	  else if([string respondsToSelector: @selector(stringValue)])
+	    {
+	      string = (NSString *)[(id)string stringValue];
+	    }
+	}
+      
       ASSIGN (_contents, string);
       ASSIGN (_object_value, string);
       _cell.has_valid_object_value = YES;

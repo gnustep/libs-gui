@@ -1,3 +1,10 @@
+2009-02-15 19:38-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSCell.m: Change to implement 10.3 and later behavior for
+	the method setStringValue: as documented in Apple's documentation
+	for the method.  This behavior was observed on Cocoa under 
+	Mac OS 10.5.
+
 2009-02-12 Riccardo Mottola <rmottola@users.sf.net>
 	
 	* Source/NSSavePanel.m: Return autoreleased copy of the directory
