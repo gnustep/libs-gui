@@ -1,3 +1,8 @@
+2009-02-16 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSCell.m (-setStringValue:, -setObjectValue:): Try to fix
+	bugs in last change.
+
 2009-02-15 22:21-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSOpenPanel.m: Corrects bug #25471.  Only enable
