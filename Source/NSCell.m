@@ -431,7 +431,19 @@ static NSColor *dtxtCol;
 
   if (_formatter == nil)
     {
-      [self setObjectValue: aString];
+      /* if we are a string, we do an optimization and set the value here instead of using setObjectValue
+       * also, we check for nil, since isKindOfClass fails for nil objects */
+      if([aString isKindOfClass: [NSString class]] == YES || aString == nil)
+        {
+          ASSIGN (_contents, aString);
+          ASSIGN (_object_value, aString);
+          _cell.has_valid_object_value = YES;
+        }
+      else
+        {
+	  NSLog(@"not a string, setObjectValue: %@", aString);
+          [self setObjectValue: aString];
+        }
     }
   else
     {

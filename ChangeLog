@@ -1,3 +1,8 @@
+2009-02-16 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Source/NSCell.m (-setStringValue): Try to fix bugs in last change.
+	Optimize in case of common string and check for nil.
+
 2009-02-16 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSCell.m (-setStringValue:, -setObjectValue:): Try to fix
