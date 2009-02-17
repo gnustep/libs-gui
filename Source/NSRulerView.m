@@ -184,7 +184,7 @@ static NSMutableDictionary *units = nil;
       NSArray *array2;
       NSArray *array10;
 
-      [self setVersion: 0.01];
+      [self setVersion: 1];
 
       units = [[NSMutableDictionary alloc] init];
       array05 = [NSArray arrayWithObject: [NSNumber numberWithFloat: 0.5]];

@@ -1,3 +1,7 @@
+2009-02-17 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSRulerView.m (+initialize): Correct version to be an integer.
+
 2009-02-16  Adam Fedor  <fedor@gnu.org>
 
 	* configure.ac: Look for libpng/png.h
