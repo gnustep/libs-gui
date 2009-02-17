@@ -1,5 +1,10 @@
 2009-02-17 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSImageView.m (-initWithFrame:): Set non-editable as
+	default. Fixes #25484.
+
+2009-02-17 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSMenu.m (-_organizeMenu): Try to better switch between
 	Apple menu layout and ours.
 

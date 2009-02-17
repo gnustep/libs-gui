@@ -82,7 +82,7 @@ static Class imageCellClass;
   [self setImageAlignment: NSImageAlignCenter];
   [self setImageFrameStyle: NSImageFrameNone];
   [self setImageScaling: NSScaleProportionally];
-  [self setEditable: YES];
+  [self setEditable: NO];
 
   return self;
 }
