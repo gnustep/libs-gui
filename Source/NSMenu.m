@@ -208,132 +208,202 @@ static BOOL menuBarVisible = YES;
 
 - (void) _organizeMenu
 {
-  int		i;
+  NSString *infoString = NSLocalizedString(@"Info", @"Info");
+  NSString *servicesString = NSLocalizedString(@"Services", @"Services");
+  int i;
 
   if ([self isEqual: [NSApp mainMenu]] == YES)
     {
-      NSString		*appTitle;
-      NSMenu		*appMenu;
-      id <NSMenuItem>	appItem;
+      NSString *appTitle;
+      NSMenu *appMenu;
+      id <NSMenuItem> appItem;
 
       appTitle = [[NSProcessInfo processInfo] processName];
       appItem = [self itemWithTitle: appTitle];
       appMenu = [appItem submenu];
 
       if (_menu.horizontal == YES)
-	{
-	  NSMutableArray	*itemsToMove;
-	  NSImage		*ti;
-	  float			bar;
+        {
+          NSMutableArray *itemsToMove;
+          NSImage *ti;
+          float bar;
 
-	  ti = [[NSApp applicationIconImage] copy];
-	  if (ti == nil)
-	    {
-	      ti = [[NSImage imageNamed: @"GNUstep"] copy];
-	    }
-	  [ti setScalesWhenResized: YES];
-	  bar = [NSMenuView menuBarHeight] - 4;
-	  [ti setSize: NSMakeSize(bar, bar)];
+          ti = [[NSApp applicationIconImage] copy];
+          if (ti == nil)
+            {
+              ti = [[NSImage imageNamed: @"GNUstep"] copy];
+            }
+          [ti setScalesWhenResized: YES];
+          bar = [NSMenuView menuBarHeight] - 4;
+          [ti setSize: NSMakeSize(bar, bar)];
+          
+          itemsToMove = [NSMutableArray new];
+          
+          if (appMenu == nil)
+            {
+              [self insertItemWithTitle: appTitle
+                    action: NULL
+                    keyEquivalent: @"" 
+                    atIndex: 0];
+              appItem = [self itemAtIndex: 0];
+              appMenu = [NSMenu new];
+              [self setSubmenu: appMenu forItem: appItem];
+              RELEASE(appMenu);
+            }
+          else
+            {
+              int index = [self indexOfItem: appItem];
+              
+              if (index != 0)
+                {
+                  RETAIN (appItem);
+                  [self removeItemAtIndex: index];
+                  [self insertItem: appItem atIndex: 0];
+                  RELEASE (appItem);
+                }
+            }
+          [appItem setImage: ti];
+          RELEASE(ti);
+          
+          // Collect all simple items plus "Info" and "Services"
+          for (i = 1; i < [_items count]; i++)
+            {
+              NSMenuItem *anItem = [_items objectAtIndex: i];
+              NSString *title = [anItem title];
+              NSMenu *submenu = [anItem submenu];
 
-	  itemsToMove = [NSMutableArray new];
+              if (submenu == nil)
+                {
+                  [itemsToMove addObject: anItem];
+                }
+              else
+                {
+                  // The menu may not be localized, so we have to 
+                  // check both the English and the local version.
+                  if ([title isEqual: @"Info"] ||
+                      [title isEqual: @"Services"] ||
+                      [title isEqual: infoString] ||
+                      [title isEqual: servicesString])
+                    {
+                      [itemsToMove addObject: anItem];
+                    }
+                }
+            }
+          
+          for (i = 0; i < [itemsToMove count]; i++)
+            {
+              NSMenuItem *anItem = [itemsToMove objectAtIndex: i];
 
-	  if (appMenu == nil)
-	    {
-	      [self insertItemWithTitle: appTitle
-				 action: NULL
-			  keyEquivalent: @"" 
-				atIndex: 0];
-	      appItem = [self itemAtIndex: 0];
-	      appMenu = [NSMenu new];
-	      [self setSubmenu: appMenu forItem: appItem];
-	      RELEASE(appMenu);
-	    }
-	  else
-	    {
-	      int index = [self indexOfItem: appItem];
-
-	      if (index != 0)
-		{
-		  RETAIN (appItem);
-		  [self removeItemAtIndex: index];
-		  [self insertItem: appItem atIndex: 0];
-		  RELEASE (appItem);
-		}
-	    }
-	  [appItem setImage: ti];
-	  RELEASE(ti);
-
-	  for (i = 1; i < [_items count]; i++)
-	    {
-	      NSMenuItem	*anItem = [_items objectAtIndex: i];
-	      NSString	*title = [anItem title];
-	      NSMenu	*submenu = [anItem submenu];
-
-	      if (submenu == nil)
-		{
-		  [itemsToMove addObject: anItem];
-		}
-	      else
-		{
-		  if ([title isEqual: NSLocalizedString (@"Info", @"Info")])
-		    {
-		      [itemsToMove addObject: anItem];
-		    }
-		  [[submenu menuRepresentation] update];
-		}
-	    }
-
-	  for (i = 0; i < [itemsToMove count]; i++)
-	    {
-	      [self removeItem: [itemsToMove objectAtIndex: i]];
-	      [appMenu addItem: [itemsToMove objectAtIndex: i]];
-	    }
-	  [[appMenu menuRepresentation] update];
-
-	  RELEASE(itemsToMove);
-	}      
+              [self removeItem: anItem];
+              [appMenu addItem: anItem];
+            }
+          
+          RELEASE(itemsToMove);
+        }      
       else 
-	{
-	  [appItem setImage: nil];
-	  if (appMenu != nil)
-	    {
-	      NSArray	*array = [NSArray arrayWithArray: [appMenu itemArray]];
+        {
+          [appItem setImage: nil];
+          if (appMenu != nil)
+            {
+              NSArray	*array = [NSArray arrayWithArray: [appMenu itemArray]];
+              /* 
+               * Everything above the Serives menu goes into the info submenu,
+               * the rest into the main menu.
+               */
+              int k = [appMenu indexOfItemWithTitle: servicesString];
 
-	      for (i = 0; i < [array count]; i++)
-	        {
-		  NSMenuItem	*anItem = [array objectAtIndex: i];
-		  NSMenu	*submenu = [anItem submenu];
+              // The menu may not be localized, so we have to 
+              // check both the English and the local version.
+              if (k == -1)
+                k = [appMenu indexOfItemWithTitle: @"Services"];
 
-		  [appMenu removeItem: anItem];
-		  if (submenu == nil)
-		    {
-		      [self addItem: anItem];
-		    }
-		  else
-		    {
-		      [self insertItem: anItem atIndex: 0];	// Info menu
-		    }
-		}
-	      [self removeItem: appItem];
-	    }
-	}  
+              if ((k > 0) && ([[array objectAtIndex: k - 1] isSeparatorItem]))
+                k--;
+
+              if (k == 1)
+                {
+                  // Exactly one info item
+                  NSMenuItem *anItem = [array objectAtIndex: 0];
+
+                  [appMenu removeItem: anItem];
+                  [self insertItem: anItem atIndex: 0];
+                }
+              else if (k > 1)
+                {
+                  id <NSMenuItem> infoItem;
+                  NSMenu *infoMenu;
+
+                  // Multiple info items, add a submenu for them
+                  [self insertItemWithTitle: infoString
+                        action: NULL
+                        keyEquivalent: @"" 
+                        atIndex: 0];
+                  infoItem = [self itemAtIndex: 0];
+                  infoMenu = [NSMenu new];
+                  [self setSubmenu: infoMenu forItem: infoItem];
+                  RELEASE(infoMenu);
+
+                  for (i = 0; i < k; i++)
+                    {
+                      NSMenuItem *anItem = [array objectAtIndex: i];
+                  
+                      [appMenu removeItem: anItem];
+                      [infoMenu addItem: anItem];
+                    }
+                }
+              else
+                {
+                  // No service menu, or it is the first item.
+                  // We still look for an info item.
+                  NSMenuItem *anItem = [array objectAtIndex: 0];
+                  NSString *title = [anItem title];
+
+                  // The menu may not be localized, so we have to 
+                  // check both the English and the local version.
+                  if ([title isEqual: @"Info"] ||
+                      [title isEqual: infoString])
+                    {
+                      [appMenu removeItem: anItem];
+                      [self insertItem: anItem atIndex: 0];
+                      k = 1;
+                    }
+                  else
+                    {
+                      k = 0;
+                    }
+                }
+
+              // Copy the remaining entries.
+              for (i = k; i < [array count]; i++)
+                {
+                  NSMenuItem *anItem = [array objectAtIndex: i];
+                  
+                  [appMenu removeItem: anItem];
+                  [self addItem: anItem];
+                }
+
+              [self removeItem: appItem];
+            }
+        }  
     }
 
+  // recurse over all submenus
   for (i = 0; i < [_items count]; i++)
     {
-      NSMenuItem	*anItem = [_items objectAtIndex: i];
-      NSMenu		*submenu = [anItem submenu];
+      NSMenuItem *anItem = [_items objectAtIndex: i];
+      NSMenu *submenu = [anItem submenu];
 
       if (submenu != nil)
-	{
-	  if ([submenu isTransient])
-	    {
-	      [submenu closeTransient];
-	    }
-	  [submenu close];
-	  [submenu _organizeMenu];
-	}
+        {
+          if ([submenu isTransient])
+            {
+              [submenu closeTransient];
+            }
+          [submenu close];
+          [submenu _organizeMenu];
+        }
     }
+
   [[self menuRepresentation] update];
   [self sizeToFit];
 }
@@ -1790,51 +1860,51 @@ static BOOL menuBarVisible = YES;
        */
       if (oldStyle != newStyle)
         {
-	  NSMenuView	*newRep;
+          NSMenuView *newRep;
 
-	  newRep = [[NSMenuView alloc] initWithFrame: NSZeroRect];
-	  if (newStyle == NSMacintoshInterfaceStyle
-	    || newStyle == NSWindows95InterfaceStyle)
-	    {
-	      [newRep setHorizontal: YES];
-	    }
-	  else
-	    {
-	      [newRep setHorizontal: NO];
-	    }
-	  [newRep setInterfaceStyle: newStyle];
-	  [self setMenuRepresentation: newRep];
-	  [self _organizeMenu];
-	  RELEASE(newRep);
-	  if (newStyle == NSWindows95InterfaceStyle)
-	    {
-	      /* Put menu in the main window for microsoft style.
-	       */
-	      [[NSApp mainWindow] setMenu: self];
-	    }
-	  else if ([[NSApp mainWindow] menu] == self)
-	    {
-	      /* Remove the menu from the main window.
-	       */
-	      [[NSApp mainWindow] setMenu: nil];
-	    }
-	}
-
+          newRep = [[NSMenuView alloc] initWithFrame: NSZeroRect];
+          if (newStyle == NSMacintoshInterfaceStyle
+              || newStyle == NSWindows95InterfaceStyle)
+            {
+              [newRep setHorizontal: YES];
+            }
+          else
+            {
+              [newRep setHorizontal: NO];
+            }
+          [newRep setInterfaceStyle: newStyle];
+          [self setMenuRepresentation: newRep];
+          [self _organizeMenu];
+          RELEASE(newRep);
+          if (newStyle == NSWindows95InterfaceStyle)
+            {
+              /* Put menu in the main window for microsoft style.
+               */
+              [[NSApp mainWindow] setMenu: self];
+            }
+          else if ([[NSApp mainWindow] menu] == self)
+            {
+              /* Remove the menu from the main window.
+               */
+              [[NSApp mainWindow] setMenu: nil];
+            }
+        }
+      
       /* Adjust the menu window to suit the menu view unless the menu
        * is being displayed in the application main window.
        */
       if ([[NSApp mainWindow] menu] != self)
-	{
+        {
           [[self window] setTitle: [[NSProcessInfo processInfo] processName]];
           [[self window] setLevel: NSMainMenuWindowLevel];
           [self _setGeometry];
           [self sizeToFit];
-	}
-
+        }
+      
       if ([NSApp isActive])
         {
-	  [self display];
-	}
+          [self display];
+        }
     }
   else 
     {
