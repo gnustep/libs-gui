@@ -68,6 +68,7 @@ static NSNotificationCenter *nc = nil;
 - (NSDrawer *) drawer;
 
 // handle notifications...
+- (void) handleWindowDidBecomeKey: (NSNotification *)notification;
 - (void) handleWindowClose: (NSNotification *)notification;
 - (void) handleWindowMiniaturize: (NSNotification *)notification;
 - (void) handleWindowMove: (NSNotification *)notification;
@@ -145,39 +146,42 @@ static NSNotificationCenter *nc = nil;
   NSRectEdge edge = [_drawer preferredEdge];
   int state = [_drawer state];
   BOOL opened = (state == NSDrawerOpenState);
-  NSSize size = [_drawer maxContentSize];
+  NSSize size = [_parentWindow frame].size; // [_drawer maxContentSize];
+  newFrame.size.width = [_drawer minContentSize].width;
   
   if (edge == NSMinXEdge) // left
     {
       newFrame.size.height -= total;
-      newFrame.origin.y += [_drawer trailingOffset];
+      newFrame.origin.y += [_drawer trailingOffset] - (total/2);
       newFrame.origin.x -= (opened)?size.width:0;
     }
   else if (edge == NSMinYEdge) // bottom
     {
       newFrame.size.width -= total;
-      newFrame.origin.x += [_drawer leadingOffset];
+      newFrame.origin.x += [_drawer leadingOffset] + (total/2);
       newFrame.origin.y -= (opened)?size.height:0;
     }
   else if (edge == NSMaxXEdge) // right
     {
       newFrame.size.height -= total;
-      newFrame.origin.y += [_drawer trailingOffset];
+      newFrame.origin.y += [_drawer trailingOffset] - (total/2);
       newFrame.origin.x += (opened)?size.width:0;
     }
   else if (edge == NSMaxYEdge) // top
     {
       newFrame.size.width -= total;
-      newFrame.origin.x += [_drawer leadingOffset];
+      newFrame.origin.x += [_drawer leadingOffset] + (total/2);
       newFrame.origin.y += (opened)?size.height:0;
     }
 
   return newFrame;
 }
+
+
  
 - (BOOL) canBecomeKeyWindow
 {
-  return NO;
+  return YES;
 }
 
 - (BOOL) canBecomeMainWindow
@@ -185,6 +189,7 @@ static NSNotificationCenter *nc = nil;
   return NO;
 }
 
+/*
 - (void) orderFront: (id)sender
 {
   NSPoint holdOrigin = [self frame].origin;
@@ -195,10 +200,11 @@ static NSNotificationCenter *nc = nil;
   tempFrame.origin = newOrigin;
   [self setFrame: tempFrame display: NO];
   [super orderFront: sender];
-  [_parentWindow orderWindow: NSWindowAbove relativeTo: [self windowNumber]];  
+  // [_parentWindow orderWindow: NSWindowAbove relativeTo: [self windowNumber]];  
   tempFrame.origin = holdOrigin;
-  [self setFrame: tempFrame display: YES];
+  // [self setFrame: tempFrame display: YES];
 }
+*/
 
 - (void) startTimer
 {
@@ -235,9 +241,9 @@ static NSNotificationCenter *nc = nil;
 
 - (void) openOnEdge
 {
-  NSRect frame = [self frameFromParentWindowFrame];
+  // NSRect frame = [self frameFromParentWindowFrame];
 
-  [self setFrame: frame display: YES];
+  // [self setFrame: frame display: YES];
   [self slide];
   [self orderFront: self];
   [self startTimer];
@@ -264,7 +270,7 @@ static NSNotificationCenter *nc = nil;
 {
   NSRect frame = [self frame];
   NSRectEdge edge = [_drawer preferredEdge];
-  NSSize size = [_drawer maxContentSize];
+  NSSize size = frame.size; // [_drawer maxContentSize];
 
   [super setParentWindow: nil];
   if (edge == NSMinXEdge) // left
@@ -320,6 +326,15 @@ static NSNotificationCenter *nc = nil;
   [self _resetWindowPosition];
 }
 
+- (void) handleWindowDidBecomeKey: (NSNotification *)notification
+{
+  if([_drawer state] == NSDrawerOpenState)
+    {
+      [self _resetWindowPosition];
+      [self orderFront: self];
+    }
+}
+
 - (void) setParentWindow: (NSWindow *)window
 {
   if (_parentWindow != window)
@@ -351,7 +366,12 @@ static NSNotificationCenter *nc = nil;
 	  [nc addObserver: self
 	      selector: @selector(handleWindowMove:)
 	      name: NSWindowDidResizeNotification
-	      object: _parentWindow];	  
+	      object: _parentWindow];
+	  
+	  [nc addObserver: self
+	      selector: @selector(handleWindowDidBecomeKey:)
+	      name: NSWindowDidBecomeKeyNotification
+	      object: _parentWindow];
 	}
     }
 }

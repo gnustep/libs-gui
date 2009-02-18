@@ -1,3 +1,9 @@
+2009-02-18 02:45-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibLoading.m: Rollback of previous change.  Found a 
+	minor problem.
+	* Source/NSDrawer.m: Improvements to NSDrawer handling.
+
 2009-02-17 23:09-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibLoading.m: use the new code committed to NSMenu to 
