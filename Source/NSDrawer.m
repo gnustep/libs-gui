@@ -304,7 +304,7 @@ static NSNotificationCenter *nc = nil;
 
 - (void) _timedWindowReset
 {
-  NSRect frame = [_parentWindow frame];
+  // NSRect frame = [_parentWindow frame];
   [self _resetWindowPosition];
   // [_parentWindow setFrame: frame display: YES];
 }

@@ -2709,111 +2709,121 @@ static SEL getSel;
   NSArray *array;
   int i = 0, count = 0;
 
-  [super initWithCoder: aDecoder];
+  self = [super initWithCoder: aDecoder];
+  if (!self)
+    return nil;
 
   if ([aDecoder allowsKeyedCoding])
     {
       if ([aDecoder containsValueForKey: @"NSBackgroundColor"])
         {
-	  [self setBackgroundColor: [aDecoder decodeObjectForKey: @"NSBackgroundColor"]];
-	}
+          [self setBackgroundColor: [aDecoder decodeObjectForKey: @"NSBackgroundColor"]];
+        }
       if ([aDecoder containsValueForKey: @"NSCellBackgroundColor"])
         {
-	  [self setCellBackgroundColor: [aDecoder decodeObjectForKey: @"NSCellBackgroundColor"]];
-	}
+          [self setCellBackgroundColor: [aDecoder decodeObjectForKey: @"NSCellBackgroundColor"]];
+        }
       if ([aDecoder containsValueForKey: @"NSProtoCell"])
         {
-	  [self setPrototype: [aDecoder decodeObjectForKey: @"NSProtoCell"]];
-	}
+          [self setPrototype: [aDecoder decodeObjectForKey: @"NSProtoCell"]];
+        }
       if ([aDecoder containsValueForKey: @"NSCellClass"])
         {
-	    class = NSClassFromString((NSString *)[aDecoder decodeObjectForKey: @"NSCellClass"]);
-	    if (class != Nil)
-	      {
-		[self setCellClass: class]; 
-	      }
-	}
+          class = NSClassFromString((NSString *)[aDecoder decodeObjectForKey: @"NSCellClass"]);
+          if (class != Nil)
+            {
+              [self setCellClass: class]; 
+            }
+        }
       if ([aDecoder containsValueForKey: @"NSCellSize"])
         {
-	  // Don't use method here as this would change the frame
-	  _cellSize = [aDecoder decodeSizeForKey: @"NSCellSize"];
-	}
+          // Don't use method here as this would change the frame
+          _cellSize = [aDecoder decodeSizeForKey: @"NSCellSize"];
+        }
       if ([aDecoder containsValueForKey: @"NSIntercellSpacing"])
         {
-	  // Don't use method here as this would change the frame
-	  _intercell = [aDecoder decodeSizeForKey: @"NSIntercellSpacing"];
-	}
+          // Don't use method here as this would change the frame
+          _intercell = [aDecoder decodeSizeForKey: @"NSIntercellSpacing"];
+        }
       if ([aDecoder containsValueForKey: @"NSMatrixFlags"])
         {
-	  int mFlags = [aDecoder decodeIntForKey: @"NSMatrixFlags"];
-	  GSMatrixFlags matrixFlags;
-	  memcpy((void *)&matrixFlags,(void *)&mFlags,sizeof(struct _GSMatrixFlags));
+          int mFlags = [aDecoder decodeIntForKey: @"NSMatrixFlags"];
+          GSMatrixFlags matrixFlags;
 
-	  if (matrixFlags.isRadio)
-	    {
-	      [self setMode: NSRadioModeMatrix];
-	    }
-	  else if (matrixFlags.isList)
-	    {
-	      [self setMode: NSListModeMatrix];
-	    }
-	  else if (matrixFlags.isHighlight)
-	    {
-	      [self setMode: NSHighlightModeMatrix];
-	    }
+          memcpy((void *)&matrixFlags,(void *)&mFlags,sizeof(struct _GSMatrixFlags));
+          
+          if (matrixFlags.isRadio)
+            {
+              [self setMode: NSRadioModeMatrix];
+            }
+          else if (matrixFlags.isList)
+            {
+              [self setMode: NSListModeMatrix];
+            }
+          else if (matrixFlags.isHighlight)
+            {
+              [self setMode: NSHighlightModeMatrix];
+            }
 
-	  [self setAllowsEmptySelection: matrixFlags.allowsEmptySelection];
-	  [self setSelectionByRect: matrixFlags.selectionByRect];
-	  [self setDrawsCellBackground: matrixFlags.drawCellBackground];
-	  [self setDrawsBackground: matrixFlags.drawBackground];
-	  _autosizesCells = matrixFlags.autosizesCells;
-	  _tabKeyTraversesCells = matrixFlags.tabKeyTraversesCells;
-	}
+          [self setAllowsEmptySelection: matrixFlags.allowsEmptySelection];
+          [self setSelectionByRect: matrixFlags.selectionByRect];
+          [self setDrawsCellBackground: matrixFlags.drawCellBackground];
+          [self setDrawsBackground: matrixFlags.drawBackground];
+          _autosizesCells = matrixFlags.autosizesCells;
+          _tabKeyTraversesCells = matrixFlags.tabKeyTraversesCells;
+        }
       if ([aDecoder containsValueForKey: @"NSNumCols"])
         {
-	  columns = [aDecoder decodeIntForKey: @"NSNumCols"];
-	}
+          columns = [aDecoder decodeIntForKey: @"NSNumCols"];
+        }
       if ([aDecoder containsValueForKey: @"NSNumRows"])
         {
-	  rows = [aDecoder decodeIntForKey: @"NSNumRows"];
-	}
+          rows = [aDecoder decodeIntForKey: @"NSNumRows"];
+        }
 
       array = [aDecoder decodeObjectForKey: @"NSCells"];
-      [self renewRows: rows  columns: columns];
+      [self renewRows: rows columns: columns];
       count = [array count];
       if (count != rows * columns)
         {
-	  NSLog (@"Trying to decode an invalid NSMatrix: cell number does not fit matrix dimension");
-	  // Quick fix to do what we can
-	  if (count > rows * columns)
-	    {
-	      count = rows * columns;
-	    }
-	}
+          NSLog (@"Trying to decode an invalid NSMatrix: cell number does not fit matrix dimension");
+          // Quick fix to do what we can
+          if (count > rows * columns)
+            {
+              count = rows * columns;
+            }
+        }
+
+      _selectedRow = _selectedColumn = -1;
 
       for (i = 0; i < count; i++)
         {
-	  int row, column;
-	  cell = [array objectAtIndex: i];
-	  
-	  row = i / columns;
-	  column = i % columns;
-	  
-	  [self putCell:cell   atRow: row   column: column];
-	  if ([cell state])
-	    {
-	      [self selectCellAtRow: row   column: column];
-	    }
-	}
+          int row, column;
+          
+          cell = [array objectAtIndex: i];
+          row = i / columns;
+          column = i % columns;
+          
+          [self putCell: cell atRow: row column: column];
+          if ([cell state])
+            {
+              [self selectCellAtRow: row column: column];
+            }
+        }
 
+      // mis-use these variables for selection
+      rows = -1;
+      columns = -1;
       if ([aDecoder containsValueForKey: @"NSSelectedCol"])
         {
-	  _selectedColumn = [aDecoder decodeIntForKey: @"NSSelectedCol"];
-	}
+          columns = [aDecoder decodeIntForKey: @"NSSelectedCol"];
+        }
       if ([aDecoder containsValueForKey: @"NSSelectedRow"])
         {
-	  _selectedRow = [aDecoder decodeIntForKey: @"NSSelectedRow"];
-	}
+          rows = [aDecoder decodeIntForKey: @"NSSelectedRow"];
+        }
+      if ((rows != -1) && (columns != -1))
+        [self selectCellAtRow: rows column: columns];
     }
   else
     {
@@ -2833,19 +2843,19 @@ static SEL getSel;
       class = NSClassFromString ((NSString *)[aDecoder decodeObject]);
       if (class != Nil)
         {
-	  [self setCellClass: class]; 
-	}
+          [self setCellClass: class]; 
+        }
       
       cell = [aDecoder decodeObject];
       if (cell != nil)
         {
-	  [self setPrototype: cell];
-	}
+          [self setPrototype: cell];
+        }
       
       if (_cellPrototype == nil)
         {
-	  [self setCellClass: [isa cellClass]];
-	}
+          [self setCellClass: [isa cellClass]];
+        }
       
       [aDecoder decodeValueOfObjCType: @encode (int) at: &rows];
       [aDecoder decodeValueOfObjCType: @encode (int) at: &columns];
@@ -2856,30 +2866,30 @@ static SEL getSel;
       count = [array count];
       if (count != rows * columns)
         {
-	  NSLog (@"Trying to decode an invalid NSMatrix: cell number does not fit matrix dimension");
-	  // Quick fix to do what we can
-	  if (count > rows * columns)
-	    {
-	      count = rows * columns;
-	    }
-	}
-
-      _selectedRow = _selectedColumn = 0;
+          NSLog (@"Trying to decode an invalid NSMatrix: cell number does not fit matrix dimension");
+          // Quick fix to do what we can
+          if (count > rows * columns)
+            {
+              count = rows * columns;
+            }
+        }
+      
+      _selectedRow = _selectedColumn = -1;
 
       for (i = 0; i < count; i++)
         {
-	  int row, column;
-	  cell = [array objectAtIndex: i];
-	  
-	  row = i / columns;
-	  column = i % columns;
-	  
-	  [self putCell: cell   atRow: row   column: column];
-	  if ([cell state])
-	    {
-	      [self selectCellAtRow: row   column: column];
-	    }
-	}
+          int row, column;
+
+          cell = [array objectAtIndex: i];
+          row = i / columns;
+          column = i % columns;
+          
+          [self putCell: cell atRow: row column: column];
+          if ([cell state])
+            {
+              [self selectCellAtRow: row column: column];
+            }
+        }
       
       [aDecoder decodeValueOfObjCType: @encode (id) at: &_delegate];
       [aDecoder decodeValueOfObjCType: @encode (id) at: &_target];
