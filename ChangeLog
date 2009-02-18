@@ -1,3 +1,12 @@
+2009-02-17 23:09-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibLoading.m: use the new code committed to NSMenu to 
+	lay out the menu when vertical.  Get rid of the duplicate code here.
+	* Source/NSDrawer.m: set the child window position when opening.
+	* Source/NSMatrix.m: -_selectCell:atRow:column: Check to make 
+	sure the selectedRow and selectedColumn are > -1.  This check is 
+	done elsewhere and was not done here.  This was causing a crash.
+
 2009-02-17 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSImageView.m (-initWithFrame:): Set non-editable as

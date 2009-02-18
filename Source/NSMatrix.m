@@ -1185,7 +1185,7 @@ static SEL getSel;
 
       if (_selectedCell && _selectedCell != aCell)
 	{
-          if (_mode == NSRadioModeMatrix)
+          if (_mode == NSRadioModeMatrix && _selectedRow > -1 && _selectedColumn > -1)
             {
               _selectedCells[_selectedRow][_selectedColumn] = NO;
               [_selectedCell setState: NSOffState];

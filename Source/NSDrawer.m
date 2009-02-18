@@ -235,8 +235,11 @@ static NSNotificationCenter *nc = nil;
 
 - (void) openOnEdge
 {
-  [self orderFront: self];
+  NSRect frame = [self frameFromParentWindowFrame];
+
+  [self setFrame: frame display: YES];
   [self slide];
+  [self orderFront: self];
   [self startTimer];
 }
 
@@ -263,6 +266,7 @@ static NSNotificationCenter *nc = nil;
   NSRectEdge edge = [_drawer preferredEdge];
   NSSize size = [_drawer maxContentSize];
 
+  [super setParentWindow: nil];
   if (edge == NSMinXEdge) // left
     {
       frame.origin.x -= size.width;
@@ -283,6 +287,7 @@ static NSNotificationCenter *nc = nil;
       frame.origin.y += size.height;
       [self setFrame: frame display: YES];
     }
+  [super setParentWindow: _parentWindow];
 }
 
 - (void) _resetWindowPosition
@@ -295,7 +300,7 @@ static NSNotificationCenter *nc = nil;
 {
   NSRect frame = [_parentWindow frame];
   [self _resetWindowPosition];
-  [_parentWindow setFrame: frame display: YES];
+  // [_parentWindow setFrame: frame display: YES];
 }
 
 - (void) handleWindowClose: (NSNotification *)notification
@@ -319,6 +324,7 @@ static NSNotificationCenter *nc = nil;
 {
   if (_parentWindow != window)
     {
+      [super setParentWindow: window];
       ASSIGN(_parentWindow, window);
       [nc removeObserver: self];
 
