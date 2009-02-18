@@ -1,3 +1,8 @@
+2009-02-18 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSServicesManager.m: Clean up update of services menu,
+	removing useless check and obsolete code.
+
 2009-02-18 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSApplication.m (NSAppIconView-setImage:): Protect

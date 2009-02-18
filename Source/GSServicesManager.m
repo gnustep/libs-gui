@@ -1397,18 +1397,6 @@ static NSString         *disabledName = @".GNUstepDisabled";
     {
       NSArray   	*a;
       unsigned  	i;
-      NSMenu		*mainMenu = [_application mainMenu];
-      BOOL		found = NO;
-
-      a = [mainMenu itemArray];
-      for (i = 0; i < [a count]; i++)
-	if ([[a objectAtIndex: i] submenu] == _servicesMenu)
-	  found = YES;
-      if (found == NO)
-	{
-	  NSLog(@"Services menu not in main menu!\n");
-	  return;
-	}
 
       a = [_servicesMenu itemArray];
 
@@ -1449,18 +1437,17 @@ static NSString         *disabledName = @".GNUstepDisabled";
 		  if (subWasEnabled != subShouldBeEnabled)
 		    {
 		      [subitem setEnabled: subShouldBeEnabled];
-//		      [subMenuCells setNeedsDisplayInRect:
-//				[subMenuCells cellFrameAtRow: j]];
 		    }
 		}
 	    }
 	  else
-	    shouldBeEnabled = [self validateMenuItem: item];
+	    {
+	      shouldBeEnabled = [self validateMenuItem: item];
+	    }
 
           if (wasEnabled != shouldBeEnabled)
             {
               [item setEnabled: shouldBeEnabled];
-//	      [menuCells setNeedsDisplayInRect: [menuCells cellFrameAtRow: i]];
             }
         }
     }
