@@ -641,9 +641,14 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 - (void) setImage: (NSImage *)anImage
 {
   NSImage *imgCopy = [anImage copy];
-  NSSize imageSize = [imgCopy size]; 
-  [imgCopy setScalesWhenResized: YES];
-  [imgCopy setSize: scaledIconSizeForSize(imageSize)];
+
+  if (imgCopy)
+    {
+      NSSize imageSize = [imgCopy size];
+
+      [imgCopy setScalesWhenResized: YES];
+      [imgCopy setSize: scaledIconSizeForSize(imageSize)];
+    }
   [dragCell setImage: imgCopy];
   RELEASE(imgCopy);
   [self setNeedsDisplay: YES];
