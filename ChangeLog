@@ -1,3 +1,9 @@
+2009-02-20 12:08-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSToolbarCustomizationPalette.m: Look up default items before
+	calling the delegate like in NSToolbar.m.   This was causing an
+	exception which prevented the panel from showing.
+
 2009-02-18 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSServicesManager.m: Clean up update of services menu,

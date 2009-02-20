@@ -254,18 +254,28 @@
   e = [itemIdentifiers objectEnumerator];
   while ((identifier = [e nextObject]) != nil)
     {
-      [_allowedItems addObject: [delegate toolbar: toolbar 
-                            itemForItemIdentifier: identifier
-                        willBeInsertedIntoToolbar: NO]];
+      NSToolbarItem *item = [toolbar _toolbarItemForIdentifier: identifier];      
+      if(item == nil)
+	{
+	  item = [delegate toolbar: toolbar 
+			   itemForItemIdentifier: identifier
+			   willBeInsertedIntoToolbar: NO];
+	}  
+      [_allowedItems addObject: item]; 
     }
 
   itemIdentifiers = [delegate toolbarDefaultItemIdentifiers: toolbar];
   e = [itemIdentifiers objectEnumerator];
   while ((identifier = [e nextObject]) != nil)
     {
-      [_defaultItems addObject: [delegate toolbar: toolbar 
-                            itemForItemIdentifier: identifier
-                        willBeInsertedIntoToolbar: NO]];
+      NSToolbarItem *item = [toolbar _toolbarItemForIdentifier: identifier];      
+      if(item == nil)
+	{
+	  item = [delegate toolbar: toolbar 
+			   itemForItemIdentifier: identifier
+			   willBeInsertedIntoToolbar: NO];
+	}  
+      [_defaultItems addObject: item];
     }
 
   [_customizationView setToolbarItems: _allowedItems];
