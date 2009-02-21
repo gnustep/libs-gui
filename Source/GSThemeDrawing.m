@@ -367,7 +367,7 @@
 
   cell = [NSButtonCell new];
   [cell setBordered: NO];
-  [cell setStringValue: nil];
+  [cell setTitle: nil];
 
   if (horizontal)
     {

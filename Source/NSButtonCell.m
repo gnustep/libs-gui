@@ -199,7 +199,7 @@ typedef struct _GSButtonCellFlags
  */
 - (NSString*) title
 {
-  return [self stringValue];
+  return [super stringValue];
 }
 
 /** <p>Returns the NSButtonCell's alternate title ( used when highlighted ).
@@ -327,7 +327,7 @@ typedef struct _GSButtonCellFlags
  */
 - (void) setTitle: (NSString*)aString
 {
-  [self setStringValue: aString];
+  [super setStringValue: aString];
 }
 
 /**<p>Sets the NSButtonCell's alternate title ( used when highlighted ) 
@@ -364,21 +364,17 @@ typedef struct _GSButtonCellFlags
 - (void)setAttributedAlternateTitle:(NSAttributedString *)aString
 {
   // TODO
-  NSString *alternateTitle;
-  
-  alternateTitle = AUTORELEASE ([[aString string] copy]);
-  
-  [self setAlternateTitle: alternateTitle];
+  [self setAlternateTitle: [aString string]];
 }
 
 - (NSAttributedString *)attributedTitle
 {
-  return [self attributedStringValue];
+  return [super attributedStringValue];
 }
 
 - (void)setAttributedTitle:(NSAttributedString *)aString
 {
-  [self setAttributedStringValue: aString];
+  [super setAttributedStringValue: aString];
 }
 
 - (void)setTitleWithMnemonic:(NSString *)aString
@@ -809,7 +805,28 @@ typedef struct _GSButtonCellFlags
   else // NSMixedState
     {        
       return [NSNumber numberWithInt: -1];
-    }
+   }
+}
+
+- (void) setStringValue: (NSString *)aString
+{
+  [self setState: ([aString length] != 0)];
+}
+
+- (NSString *) stringValue
+{
+  return _cell.state ? @"1" : @"";
+}
+
+- (void) setAttributedStringValue: (NSAttributedString *)attrString
+{
+  [self setState: ([attrString length] != 0)];
+}
+
+- (NSAttributedString *) attributedStringValue
+{
+  return AUTORELEASE([[NSAttributedString alloc] 
+                         initWithString: [self stringValue]]); 
 }
 
 /*

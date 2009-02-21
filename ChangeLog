@@ -1,3 +1,12 @@
+2009-02-22 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSButtonCell.m: Changed all title methods to use the
+	super string value methods and redefine the local string value
+	methods to work with the object value. 
+	Patch by Matt Rice <ratmice@gmail.com>.
+	* Source/GSThemeDrawing.m (-cellForScrollerKnobSlot:): Use
+	setTitle: instead of setStringValue:. 
+	
 2009-02-20 12:08-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSToolbarCustomizationPalette.m: Look up default items before
