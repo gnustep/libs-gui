@@ -1113,7 +1113,7 @@ selectCellWithString: (NSString*)title
 - (NSString*) directory
 {
   if (_directory)
-    return [NSString stringWithString:_directory];
+    return AUTORELEASE([_directory copy]);
   else 
     return @"";
 }

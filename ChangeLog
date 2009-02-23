@@ -1,3 +1,7 @@
+2009-02-23 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSavePanel.m (-directory): Optimize last change.
+
 2009-02-22 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSButtonCell.m: Changed all title methods to use the
