@@ -1137,16 +1137,6 @@ Fills in all glyph holes up to last. only looking at levels below level
     }
 #endif
 
-  /* TODO: this case is also dubious, but it makes sense to return like this,
-  so it's mostly the caller's fault */
-  if (charRange.length == 0)
-    {
-      NSLog(@"Warning: %s called with zero-length range", __PRETTY_FUNCTION__);
-      if (actualCharRange)
-        *actualCharRange = NSMakeRange(0, 0);
-      return NSMakeRange(0, 0);
-    }
-
   pos = NSMaxRange(charRange) - 1;
   [self _generateGlyphsUpToCharacter: pos];
   if (glyphs->char_length <= pos)

@@ -1,3 +1,15 @@
+2009-02-26 00:35-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSLayoutManager.m: do not return (0,0) when a zero length
+	range is passed into glyphRangeForCharacterRange:
+	actualCharacterRange:.  Tests on Mac OS X indicate that this is
+	a valid case.
+	* Source/GSNibLoading.m: Fixed some memory leaks.
+	* Source/NSRulerMarker.m: Use the bounds of the containing view 
+	instead of markersRect.   I will revisit if the _markersRect method
+	needs to be corrected, but this code seems to correct problems 
+	observed when dragging markers in and out of the rulerView.
+
 2009-02-23 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSSavePanel.m (-directory): Optimize last change.
@@ -312,7 +324,7 @@
 
 2009-01-28 Fred Kiefer <FredKiefer@gmx.de>
 
-	* Source/NSWindow.m (GSWindowWithNumber): Protect agains
+	* Source/NSWindow.m (GSWindowWithNumber): Protect against
 	windowmaps not being set.
 
 2009-01-27 15:28-EST Gregory John Casamento <greg_casamento@yahoo.com>

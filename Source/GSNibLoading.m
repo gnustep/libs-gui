@@ -205,9 +205,7 @@ static BOOL _isInInterfaceBuilder = NO;
 @implementation NSView (NibCompatibility)
 - (void) _setWindow: (id) w
 {
-  // FIXME: Why is this an ASSIGN? The view is held by the window 
-  // not the othe way around.
-  ASSIGN(_window,w);
+  _window = w;
 }
 
 - (void) _fixSubviews
@@ -804,7 +802,7 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (id) initWithCoder: (NSCoder *)aCoder
 {
-  // FIXME: Should release self
+  RELEASE(self);
   return nil;
 }
 
@@ -1440,6 +1438,8 @@ static BOOL _isInInterfaceBuilder = NO;
         {
           [self instantiateRealObject: coder withClassName: _className];
 	} 
+      
+      RELEASE(self);
     }
   else
     {
@@ -1448,7 +1448,6 @@ static BOOL _isInInterfaceBuilder = NO;
                    NSStringFromClass([coder class])];
     }
 
-  // FIXME: Needs to release self
   return _template;
 }
 

@@ -241,6 +241,7 @@
   NSRect markersRect;
   float location;
   NSRect drawRect;
+  NSRect bounds = [_rulerView bounds];
   NSPoint drawPoint;
   BOOL returnValue = NO;
   NSWindow *window;
@@ -341,9 +342,9 @@
   while (_isDragging)
     {
       newEvent = [NSApp nextEventMatchingMask: eventMask
-                                    untilDate: [NSDate distantFuture]
-                                       inMode: NSEventTrackingRunLoopMode
-                                      dequeue: YES];
+			untilDate: [NSDate distantFuture]
+			inMode: NSEventTrackingRunLoopMode
+			dequeue: YES];
       switch ([newEvent type]) 
         {
 	  case NSLeftMouseDragged:
@@ -364,7 +365,7 @@
 	      /* see if mouse is far from ruler area (to remove marker) */
               mousePositionInRuler = [_rulerView convertPoint: mousePositionInWindow
                                                      fromView: nil];
-	      isFar = !NSMouseInRect(mousePositionInRuler, markersRect, flipped);
+	      isFar = !NSMouseInRect(mousePositionInRuler, bounds, flipped);
 	      
 	      /* if it is the first time it's far from the ruler area,
 	         see if it can be removed */
