@@ -1,3 +1,13 @@
+2009-03-01 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Resources/English.lproj/Localizable.strings: Regenerate this file.
+	* Resources/German.lproj/Localizable.strings: Regnerate and add
+	translation and escaping of non-ASCII characters.
+	* Source/NSAttributedString.m,
+	* Source/NSMenu.m: Add include of GSGuiPrivate.h for correct localization.
+	* Source/NSAttributedString.m: Better handling of localization of
+	error strings. 
+
 2009-02-26 00:35-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSLayoutManager.m: do not return (0,0) when a zero length

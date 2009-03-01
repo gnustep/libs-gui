@@ -1,176 +1,277 @@
-﻿/* Translator: Ingolf Jandt <i.jandt@web.de>
+/* Translator: Ingolf Jandt <i.jandt@web.de>
  * Date: April 2006
+ * Translator: Fred Kiefer <fredkiefer@gmx.de>
+ * Date: Febuary 2009
  */
 
 /***
 German.lproj/Localizable.strings
-updated by make_strings 2006-04-03 14:01:41 +0200
+updated by make_strings 2009-03-01 18:34:45 +0100
 add comments above this one
 ***/
 
 
 /*** Keys found in multiple places ***/
 
-/* File: ../Source/GSPrintOperation.m:158 */
-/* File: ../Source/NSSavePanel.m:1147 */
-/* File: ../Source/NSSavePanel.m:1158 */
+/* File: ../Source/GSPrintOperation.m:159 */
+/* File: ../Source/NSSavePanel.m:1238 */
+/* File: ../Source/NSSavePanel.m:1249 */
 "Dismiss" = "Verwerfen";
 
-/* File: ../Source/NSApplication.m:2615 */
+/* File: ../Source/GSNibLoading.m:151 */
+/* Comment: Info */
+/* File: ../Source/NSApplication.m:2674 */
 /* Comment: Title of the Info Panel */
-/* File: ../Source/NSMenu.m:236 */
+/* File: ../Source/NSMenu.m:212 */
 /* Comment: Info */
-/* File: ../Source/NSMenu.m:302 */
-/* Comment: Info */
-"Info" = "Info";
+"Info" = "Information";
 
-/* File: ../Source/NSApplication.m:3092 */
-/* File: ../Source/NSDocumentController.m:558 */
+/* File: ../Source/GSNibLoading.m:153 */
+/* Comment: Quit */
+/* File: ../Source/NSApplication.m:3269 */
+/* File: ../Source/NSDocumentController.m:969 */
 "Quit" = "Beenden";
 
-/* File: ../Source/NSDocument.m:283 */
-/* File: ../Source/NSDocument.m:510 */
-/* File: ../Source/NSDocument.m:694 */
-/* File: ../Source/NSSavePanel.m:1135 */
-/* File: ../Source/NSSavePanel.m:1145 */
-/* File: ../Source/NSSavePanel.m:1156 */
-/* File: ../Source/NSSavePanel.m:1167 */
+/* File: ../Source/NSDocument.m:456 */
+/* File: ../Source/NSDocument.m:791 */
+/* File: ../Source/NSDocument.m:1131 */
+/* File: ../Source/NSSavePanel.m:1226 */
+/* File: ../Source/NSSavePanel.m:1236 */
+/* File: ../Source/NSSavePanel.m:1247 */
+/* File: ../Source/NSSavePanel.m:1258 */
 "Save" = "Speichern";
 
-/* File: ../Source/NSDocument.m:283 */
-/* File: ../Source/NSDocument.m:694 */
-/* File: ../Source/NSDocument.m:825 */
-/* File: ../Source/NSDocumentController.m:487 */
-/* File: ../Source/NSSavePanel.m:1169 */
+/* File: ../Source/NSAlert.m:1510 */
+/* File: ../Source/NSDocument.m:456 */
+/* File: ../Source/NSDocument.m:791 */
+/* File: ../Source/NSDocument.m:1577 */
+/* File: ../Source/NSDocumentController.m:875 */
+/* File: ../Source/NSDocumentController.m:907 */
+/* File: ../Source/NSSavePanel.m:1260 */
 "Cancel" = "Abbrechen";
 
-/* File: ../Source/NSDocument.m:506 */
-/* File: ../Source/NSSavePanel.m:855 */
+/* File: ../Source/NSDocument.m:1127 */
+/* File: ../Source/NSSavePanel.m:883 */
 "Save As" = "Speichern als";
+
+/* File: ../Source/GSHelpManagerPanel.m:101 */
+/* File: ../Source/NSAlert.m:1427 */
+"OK" = "Ok";
+
+/* File: ../Source/NSAlert.m:1514 */
+/* File: ../Source/NSDocument.m:456 */
+"Don't Save" = "Verwerfen";
+
+
+/*** Strings from ../Source/GSHelpManagerPanel.m ***/
+/* File: ../Source/GSHelpManagerPanel.m:70 */
+"Help" = "Hilfe";
+
+
+/*** Strings from ../Source/GSInfoPanel.m ***/
+/* File: ../Source/GSInfoPanel.m:465 */
+/* File: ../Source/GSInfoPanel.m:192 */
+"Current theme" = "Aktuelles Thema";
 
 
 /*** Strings from ../Source/GSPrintOperation.m ***/
-/* File: ../Source/GSPrintOperation.m:156 */
-"Preview" = "Vorschau";
 /* File: ../Source/GSPrintOperation.m:157 */
+"Preview" = "Vorschau";
+/* File: ../Source/GSPrintOperation.m:158 */
 "Problem running the preview application '%@' perhaps you need to set your NSPreviewApp user default"
-= "Vorschau-Anwendung »%@« kann nicht ausgeführt werden. Vielleicht muss der Default-Eintrag NSPreviewApp gesetzt werden";
+= "Vorschau-Anwendung \U00BB%@\U00AB kann nicht ausgef\U00FChrt werden. Vielleicht muss der Default-Eintrag NSPreviewApp gesetzt werden";
 
 
 /*** Strings from ../Source/NSAlert.m ***/
-/* File: ../Source/NSAlert.m:1264 */
-"OK" = "Ok";
+/* File: ../Source/NSAlert.m:1603 */
+"Alert" = "Hinweis";
 
 
 /*** Strings from ../Source/NSApplication.m ***/
-/* File: ../Source/NSApplication.m:120 */
+/* File: ../Source/NSApplication.m:133 */
 "Abort" = "Abbrechen";
-/* File: ../Source/NSApplication.m:296 */
+/* File: ../Source/NSApplication.m:310 */
 "Backend at path %@ doesn't contain the GSBackend class"
-= "Backend bei %@ enthält keine GSBackend-Klasse";
-/* File: ../Source/NSApplication.m:284 */
+= "Backend bei %@ enth\U00E4lt keine GSBackend-Klasse";
+/* File: ../Source/NSApplication.m:298 */
 "Can't create NSBundle object for backend at path %@"
-= "Kann kein NSBundle-Objekt für Backend bei %@ erstellen";
-/* File: ../Source/NSApplication.m:304 */
-"Can't find backend context" = "Backend-Kontext nicht gefunden";
-/* File: ../Source/NSApplication.m:289 */
+= "Kann kein NSBundle-Objekt f\U00FCr Backend bei %@ erstellen";
+/* File: ../Source/NSApplication.m:303 */
 "Can't load object file from backend at path %@"
 = "Kann Objekt-Datei des Backends bei %@ nicht laden";
-/* File: ../Source/NSApplication.m:951 */
+/* File: ../Source/NSApplication.m:969 */
 "Cannot load the main model file '%@'"
-= "Kann Haupt-Model-Datei »%@« nicht laden";
-/* File: ../Source/NSApplication.m:117 */
+= "Kann Haupt-Model-Datei \U00BB%@\U00AB nicht laden";
+/* File: ../Source/NSApplication.m:130 */
 "Critical Error in %@" = "Kritischer Fehler in %@";
-/* File: ../Source/NSApplication.m:123 */
+/* File: ../Source/NSApplication.m:136 */
 "Debug" = "Debug";
-/* File: ../Source/NSApplication.m:1083 */
+/* File: ../Source/NSApplication.m:1132 */
 "Problem during launch app notification: %@"
 = "Problem beim Starten von App-Notifikation: %@";
-/* File: ../Source/NSApplication.m:277 */
+/* File: ../Source/NSApplication.m:291 */
 "Unable to find backend %@" = "Backend %@ nicht gefunden";
-/* File: ../Source/NSApplication.m:897 */
+/* File: ../Source/NSApplication.m:903 */
 "[NSApplication -init] called more than once"
 = "[NSApplication -init] mehrfach aufgerufen";
-/* File: ../Source/NSApplication.m:3070 */
-"reported exception - %@" = "meldet Ausnahme - %@ ";
+/* File: ../Source/NSApplication.m:3129 */
+"reported exception - %@" = "meldet Ausnahme - %@";
+
+
+/*** Strings from ../Source/NSAttributedString.m ***/
+/* File: ../Source/NSAttributedString.m:992 */
+/* Comment: Error description */
+/* File: ../Source/NSAttributedString.m:1015 */
+/* Comment: Error description */
+"Could not create data for type."
+= "F\U00FCr den Typ konnten keine Daten erzeugt werden.";
+/* File: ../Source/NSAttributedString.m:893 */
+/* Comment: Error description */
+"Could not load data from URL."
+= "Die Daten konnten nicht vom URL geladen werden.";
+/* File: ../Source/NSAttributedString.m:836 */
+/* Comment: Error description */
+"Could not load data." = "Die Daten konnten nicht geladen werden.";
+/* File: ../Source/NSAttributedString.m:778 */
+/* Comment: Error description */
+"No data specified for data loading."
+= "Es wurden keine Daten zum Laden angegeben.";
+/* File: ../Source/NSAttributedString.m:787 */
+/* Comment: Error description */
+/* File: ../Source/NSAttributedString.m:958 */
+/* Comment: Error description */
+"No type specified for data."
+= "F\U00FCr die Daten wurde kein Typ angegeben.";
 
 
 /*** Strings from ../Source/NSBitmapImageRep.m ***/
-/* File: ../Source/NSBitmapImageRep.m:832 */
+/* File: ../Source/NSBitmapImageRep.m:1644 */
 "CCITTFAX3 Compression" = "CCITTFAX3-Kompression";
-/* File: ../Source/NSBitmapImageRep.m:833 */
+/* File: ../Source/NSBitmapImageRep.m:1645 */
 "CCITTFAX4 Compression" = "CCITTFAX4-Kompression";
-/* File: ../Source/NSBitmapImageRep.m:835 */
+/* File: ../Source/NSBitmapImageRep.m:1647 */
 "JPEG Compression" = "JPEG-Kompression";
-/* File: ../Source/NSBitmapImageRep.m:834 */
+/* File: ../Source/NSBitmapImageRep.m:1646 */
 "LZW Compression" = "LZW-Kompression";
-/* File: ../Source/NSBitmapImageRep.m:836 */
+/* File: ../Source/NSBitmapImageRep.m:1648 */
 "NEXT Compression" = "NEXT-Kompression";
-/* File: ../Source/NSBitmapImageRep.m:831 */
+/* File: ../Source/NSBitmapImageRep.m:1643 */
 "No Compression" = "Keine Kompression";
-/* File: ../Source/NSBitmapImageRep.m:838 */
+/* File: ../Source/NSBitmapImageRep.m:1650 */
 "Old JPEG Compression" = "alte JPEG-Kompression";
-/* File: ../Source/NSBitmapImageRep.m:837 */
+/* File: ../Source/NSBitmapImageRep.m:1649 */
 "PackBits Compression" = "PackBits-Kompression";
 
 
+/*** Strings from ../Source/NSColorSpace.m ***/
+/* File: ../Source/NSColorSpace.m:140 */
+/* Comment: color space */
+"CMYK" = "CMYK";
+/* File: ../Source/NSColorSpace.m:144 */
+/* Comment: color space */
+"DeviceN" = "DeviceN";
+/* File: ../Source/NSColorSpace.m:136 */
+/* Comment: color space */
+"Grayscale" = "Graustufen";
+/* File: ../Source/NSColorSpace.m:142 */
+/* Comment: color space */
+"LAB" = "LAB";
+/* File: ../Source/NSColorSpace.m:138 */
+/* Comment: color space */
+"RGB" = "RGB";
+/* File: ../Source/NSColorSpace.m:134 */
+/* Comment: color space */
+"unknown" = "unbekannt";
+
+
 /*** Strings from ../Source/NSDocument.m ***/
-/* File: ../Source/NSDocument.m:824 */
+/* File: ../Source/NSDocument.m:1576 */
 "%@ has been edited.  Are you sure you want to undo changes?"
-= "%@ wurde geändert. Wollen Sie die Änderungen wirklich verwerfen?";
-/* File: ../Source/NSDocument.m:282 */
-"%@ has changed.  Save?" = "%@ geändert. Speichern?";
-/* File: ../Source/NSDocument.m:693 */
+= "%@ wurde ge\U00E4ndert. Wollen Sie die \U00C4nderungen wirklich verwerfen?";
+/* File: ../Source/NSDocument.m:455 */
+"%@ has changed.  Save?" = "%@ ge\U00E4ndert. Speichern?";
+/* File: ../Source/NSDocument.m:790 */
 "Can't create backup file.  Save anyways?"
 = "Kann Backup-Datei nicht anlegen. Dennoch Speichern?";
-/* File: ../Source/NSDocument.m:281 */
-"Close" = "Schließen";
-/* File: ../Source/NSDocument.m:129 */
+/* File: ../Source/NSDocument.m:454 */
+"Close" = "Schlie\U00DFen";
+/* File: ../Source/NSDocument.m:136 */
 "Could not load URL %@." = "Konnte URL %@ nicht laden";
-/* File: ../Source/NSDocument.m:103 */
+/* File: ../Source/NSDocument.m:113 */
 "Could not load file %@." = "Konnte Datei %@ nicht laden.";
-/* File: ../Source/NSDocument.m:283 */
-"Don't Save" = "Verwerfen";
-/* File: ../Source/NSDocument.m:692 */
+/* File: ../Source/NSDocument.m:789 */
 "File Error" = "Dateifehler";
-/* File: ../Source/NSDocument.m:128 */
-/* File: ../Source/NSDocument.m:102 */
+/* File: ../Source/NSDocument.m:135 */
+/* File: ../Source/NSDocument.m:112 */
 "Load failed" = "Laden fehlgeschlagen";
-/* File: ../Source/NSDocument.m:825 */
-/* File: ../Source/NSDocument.m:823 */
-"Revert" = "Zurücksetzen";
-/* File: ../Source/NSDocument.m:507 */
+/* File: ../Source/NSDocument.m:1577 */
+/* File: ../Source/NSDocument.m:1575 */
+"Revert" = "Zur\U00FCcksetzen";
+/* File: ../Source/NSDocument.m:1128 */
 "Save To" = "Speichern in";
-/* File: ../Source/NSDocument.m:361 */
+/* File: ../Source/NSDocument.m:551 */
 "Untitled-%d" = "unbenannt-%d";
 
 
 /*** Strings from ../Source/NSDocumentController.m ***/
-/* File: ../Source/NSDocumentController.m:565 */
+/* File: ../Source/NSDocumentController.m:1602 */
+"Clear List" = "List Leeren";
+/* File: ../Source/NSDocumentController.m:976 */
 "Power Off" = "Aus";
-/* File: ../Source/NSDocumentController.m:502 */
+/* File: ../Source/NSDocumentController.m:928 */
+/* File: ../Source/NSDocumentController.m:886 */
 "Quit Anyway" = "Dennoch beenden";
-/* File: ../Source/NSDocumentController.m:500 */
+/* File: ../Source/NSDocumentController.m:926 */
+/* File: ../Source/NSDocumentController.m:884 */
 "Review Unsaved" = "Ansehen";
-/* File: ../Source/NSDocumentController.m:499 */
+/* File: ../Source/NSDocumentController.m:933 */
+/* File: ../Source/NSDocumentController.m:883 */
 "You have unsaved documents" = "Sie haben ungespeicherte Dokumente";
 
 
+/*** Strings from ../Source/NSMenu.m ***/
+/* File: ../Source/NSMenu.m:213 */
+/* Comment: Services */
+"Services" = "Dienste";
+
+
 /*** Strings from ../Source/NSSavePanel.m ***/
-/* File: ../Source/NSSavePanel.m:1137 */
+/* File: ../Source/NSSavePanel.m:1228 */
 "No" = "Nein";
-/* File: ../Source/NSSavePanel.m:1169 */
-"Replace" = "Überschreiben";
-/* File: ../Source/NSSavePanel.m:1146 */
+/* File: ../Source/NSSavePanel.m:1260 */
+"Replace" = "\U00DCberschreiben";
+/* File: ../Source/NSSavePanel.m:1237 */
 "The directory '%@' could not be created."
-= "Das Verzeichnis »%@« konnte nicht erstellt werden.";
-/* File: ../Source/NSSavePanel.m:1136 */
+= "Das Verzeichnis \U00BB%@\U00AB konnte nicht erstellt werden.";
+/* File: ../Source/NSSavePanel.m:1227 */
 "The directory '%@' does not exist, do you want to create it?"
-= "Das Verzeichnis »%@« existiert nicht. Wollen Sie es anlegen?";
-/* File: ../Source/NSSavePanel.m:1168 */
+= "Das Verzeichnis \U00BB%@\U00AB existiert nicht. Wollen Sie es anlegen?";
+/* File: ../Source/NSSavePanel.m:1259 */
 "The file '%@' in '%@' exists. Replace it?"
-= "Die datei »%@« in »%@« existiert bereits. Überschreiben?";
-/* File: ../Source/NSSavePanel.m:1157 */
-"The path '%@' is not a directory." = "»%@« ist kein Verzeichnis.";
-/* File: ../Source/NSSavePanel.m:1137 */
+= "Die Datei \U00BB%@\U00AB in \U00BB%@\U00AB existiert bereits. \U00DCberschreiben?";
+/* File: ../Source/NSSavePanel.m:1248 */
+"The path '%@' is not a directory." = "\U00BB%@\U00AB ist kein Verzeichnis.";
+/* File: ../Source/NSSavePanel.m:1228 */
 "Yes" = "Ja";
+
+
+/*** Strings from ../Source/NSToolbarItem.m ***/
+/* File: ../Source/NSToolbarItem.m:949 */
+"Colors" = "Farben";
+/* File: ../Source/NSToolbarItem.m:995 */
+"Customize" = "Anpassen";
+/* File: ../Source/NSToolbarItem.m:904 */
+"Flexible Space" = "Flexibler Zwischenraum";
+/* File: ../Source/NSToolbarItem.m:972 */
+"Fonts" = "Schriften";
+/* File: ../Source/NSToolbarItem.m:1018 */
+"Print..." = "Drucken...";
+/* File: ../Source/NSToolbarItem.m:881 */
+"Space" = "Zwischenraum";
+
+
+/*** Strings from ../Source/NSWindow.m ***/
+/* File: ../Source/NSWindow.m:4861 */
+"Hide Toolbar" = "Toolbar Verstecken";
+/* File: ../Source/NSWindow.m:4866 */
+"Show Toolbar" = "Toolbar Anzeigen";

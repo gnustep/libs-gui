@@ -1,86 +1,276 @@
 /***
 English.lproj/Localizable.strings
-updated by make_strings 2002-09-25 03:20:19 +0100
+updated by make_strings 2009-02-27 12:03:33 +0100
 add comments above this one
 ***/
 
 
+/*** Keys found in multiple places ***/
+
+/* File: ../Source/GSNibLoading.m:151 */
+/* Comment: Info */
+/* File: ../Source/NSApplication.m:2674 */
+/* Comment: Title of the Info Panel */
+/* File: ../Source/NSMenu.m:211 */
+/* Comment: Info */
+"Info" = "Info";
+
+/* File: ../Source/GSNibLoading.m:153 */
+/* Comment: Quit */
+/* File: ../Source/NSApplication.m:3269 */
+/* File: ../Source/NSDocumentController.m:969 */
+"Quit" = "Quit";
+
+/* File: ../Source/NSAlert.m:1510 */
+/* File: ../Source/NSDocument.m:456 */
+/* File: ../Source/NSDocument.m:791 */
+/* File: ../Source/NSDocument.m:1577 */
+/* File: ../Source/NSDocumentController.m:875 */
+/* File: ../Source/NSDocumentController.m:907 */
+/* File: ../Source/NSSavePanel.m:1260 */
+"Cancel" = "Cancel";
+
+/* File: ../Source/NSAlert.m:1514 */
+/* File: ../Source/NSDocument.m:456 */
+"Don't Save" = "Don't Save";
+
+/* File: ../Source/NSDocument.m:456 */
+/* File: ../Source/NSDocument.m:791 */
+/* File: ../Source/NSDocument.m:1131 */
+/* File: ../Source/NSSavePanel.m:1226 */
+/* File: ../Source/NSSavePanel.m:1236 */
+/* File: ../Source/NSSavePanel.m:1247 */
+/* File: ../Source/NSSavePanel.m:1258 */
+"Save" = "Save";
+
+/* File: ../Source/NSDocument.m:1127 */
+/* File: ../Source/NSSavePanel.m:883 */
+"Save As" = "Save As";
+
+/* File: ../Source/GSHelpManagerPanel.m:101 */
+/* File: ../Source/NSAlert.m:1427 */
+"OK" = "OK";
+
+/* File: ../Source/GSPrintOperation.m:159 */
+/* File: ../Source/NSSavePanel.m:1238 */
+/* File: ../Source/NSSavePanel.m:1249 */
+"Dismiss" = "Dismiss";
+
+
+/*** Unmatched/untranslated keys ***/
+
+
+/*** Strings from ../Source/GSHelpManagerPanel.m ***/
+/* File: ../Source/GSHelpManagerPanel.m:70 */
+"Help" = "Help";
+
+
+/*** Strings from ../Source/GSInfoPanel.m ***/
+/* File: ../Source/GSInfoPanel.m:192 */
+/* File: ../Source/GSInfoPanel.m:465 */
+"Current theme" = "Current theme";
+
+
+/*** Strings from ../Source/GSPrintOperation.m ***/
+/* File: ../Source/GSPrintOperation.m:157 */
+"Preview" = "Preview";
+/* File: ../Source/GSPrintOperation.m:158 */
+"Problem running the preview application '%@' perhaps you need to set your NSPreviewApp user default"
+= "Problem running the preview application '%@' perhaps you need to set your NSPreviewApp user default";
+
+
+/*** Strings from ../Source/NSAlert.m ***/
+/* File: ../Source/NSAlert.m:1603 */
+"Alert" = "Alert";
+
+
 /*** Strings from ../Source/NSApplication.m ***/
-/* File: ../Source/NSApplication.m:109 */
+/* File: ../Source/NSApplication.m:133 */
 "Abort" = "Abort";
-/* File: ../Source/NSApplication.m:209 */
+/* File: ../Source/NSApplication.m:310 */
 "Backend at path %@ doesn't contain the GSBackend class"
 = "Backend at path %@ doesn't contain the GSBackend class";
-/* File: ../Source/NSApplication.m:198 */
+/* File: ../Source/NSApplication.m:298 */
 "Can't create NSBundle object for backend at path %@"
 = "Can't create NSBundle object for backend at path %@";
-/* File: ../Source/NSApplication.m:217 */
-"Can't find backend context" = "Can't find backend context";
-/* File: ../Source/NSApplication.m:203 */
+/* File: ../Source/NSApplication.m:303 */
 "Can't load object file from backend at path %@"
 = "Can't load object file from backend at path %@";
-/* File: ../Source/NSApplication.m:686 */
+/* File: ../Source/NSApplication.m:969 */
 "Cannot load the main model file '%@'"
 = "Cannot load the main model file '%@'";
-/* File: ../Source/NSApplication.m:106 */
+/* File: ../Source/NSApplication.m:130 */
 "Critical Error in %@" = "Critical Error in %@";
-/* File: ../Source/NSApplication.m:112 */
+/* File: ../Source/NSApplication.m:136 */
 "Debug" = "Debug";
-/* File: ../Source/NSApplication.m:110 */
-"Ignore" = "Ignore";
-/* File: ../Source/NSApplication.m:1926 */
-/* Comment: Title of the Info Panel */
-"Info" = "Info";
-/* File: ../Source/NSApplication.m:812 */
+/* File: ../Source/NSApplication.m:1132 */
 "Problem during launch app notification: %@"
 = "Problem during launch app notification: %@";
-/* File: ../Source/NSApplication.m:2314 */
-"Quit" = "Quit";
-/* File: ../Source/NSApplication.m:191 */
+/* File: ../Source/NSApplication.m:291 */
 "Unable to find backend %@" = "Unable to find backend %@";
-/* File: ../Source/NSApplication.m:595 */
+/* File: ../Source/NSApplication.m:903 */
 "[NSApplication -init] called more than once"
 = "[NSApplication -init] called more than once";
-/* File: ../Source/NSApplication.m:2297 */
+/* File: ../Source/NSApplication.m:3129 */
 "reported exception - %@" = "reported exception - %@";
+/* File: ../Source/NSApplication.m:110 */
+"Ignore" = "Ignore";
+/* File: ../Source/NSApplication.m:217 */
+"Can't find backend context" = "Can't find backend context";
+
+
+
+/*** Strings from ../Source/NSAttributedString.m ***/
+/* File: ../Source/NSAttributedString.m:1014 */
+/* Comment: Error description */
+/* File: ../Source/NSAttributedString.m:991 */
+/* Comment: Error description */
+"Could not create data for type." = "Could not create data for type.";
+/* File: ../Source/NSAttributedString.m:892 */
+/* Comment: Error description */
+"Could not load data from URL." = "Could not load data from URL.";
+/* File: ../Source/NSAttributedString.m:835 */
+/* Comment: Error description */
+"Could not load data." = "Could not load data.";
+/* File: ../Source/NSAttributedString.m:777 */
+/* Comment: Error description */
+"No data specified for data loading."
+= "No data specified for data loading.";
+/* File: ../Source/NSAttributedString.m:957 */
+/* Comment: Error description */
+/* File: ../Source/NSAttributedString.m:786 */
+/* Comment: Error description */
+"No type specified for data." = "No type specified for data.";
+
+
+/*** Strings from ../Source/NSBitmapImageRep.m ***/
+/* File: ../Source/NSBitmapImageRep.m:1644 */
+"CCITTFAX3 Compression" = "CCITTFAX3 Compression";
+/* File: ../Source/NSBitmapImageRep.m:1645 */
+"CCITTFAX4 Compression" = "CCITTFAX4 Compression";
+/* File: ../Source/NSBitmapImageRep.m:1647 */
+"JPEG Compression" = "JPEG Compression";
+/* File: ../Source/NSBitmapImageRep.m:1646 */
+"LZW Compression" = "LZW Compression";
+/* File: ../Source/NSBitmapImageRep.m:1648 */
+"NEXT Compression" = "NEXT Compression";
+/* File: ../Source/NSBitmapImageRep.m:1643 */
+"No Compression" = "No Compression";
+/* File: ../Source/NSBitmapImageRep.m:1650 */
+"Old JPEG Compression" = "Old JPEG Compression";
+/* File: ../Source/NSBitmapImageRep.m:1649 */
+"PackBits Compression" = "PackBits Compression";
+
+
+/*** Strings from ../Source/NSColorSpace.m ***/
+/* File: ../Source/NSColorSpace.m:140 */
+/* Comment: color space */
+"CMYK" = "CMYK";
+/* File: ../Source/NSColorSpace.m:144 */
+/* Comment: color space */
+"DeviceN" = "DeviceN";
+/* File: ../Source/NSColorSpace.m:136 */
+/* Comment: color space */
+"Grayscale" = "Grayscale";
+/* File: ../Source/NSColorSpace.m:142 */
+/* Comment: color space */
+"LAB" = "LAB";
+/* File: ../Source/NSColorSpace.m:138 */
+/* Comment: color space */
+"RGB" = "RGB";
+/* File: ../Source/NSColorSpace.m:134 */
+/* Comment: color space */
+"unknown" = "unknown";
 
 
 /*** Strings from ../Source/NSDocument.m ***/
-/* File: ../Source/NSDocument.m:702 */
+/* File: ../Source/NSDocument.m:1576 */
 "%@ has been edited.  Are you sure you want to undo changes?"
 = "%@ has been edited.  Are you sure you want to undo changes?";
-/* File: ../Source/NSDocument.m:253 */
+/* File: ../Source/NSDocument.m:455 */
 "%@ has changed.  Save?" = "%@ has changed.  Save?";
-/* File: ../Source/NSDocument.m:600 */
+/* File: ../Source/NSDocument.m:790 */
 "Can't create backup file.  Save anyways?"
 = "Can't create backup file.  Save anyways?";
-/* File: ../Source/NSDocument.m:703 */
-/* File: ../Source/NSDocument.m:601 */
-/* File: ../Source/NSDocument.m:254 */
-"Cancel" = "Cancel";
-/* File: ../Source/NSDocument.m:252 */
+/* File: ../Source/NSDocument.m:454 */
 "Close" = "Close";
-/* File: ../Source/NSDocument.m:109 */
+/* File: ../Source/NSDocument.m:136 */
 "Could not load URL %@." = "Could not load URL %@.";
-/* File: ../Source/NSDocument.m:88 */
+/* File: ../Source/NSDocument.m:113 */
 "Could not load file %@." = "Could not load file %@.";
-/* File: ../Source/NSDocument.m:254 */
-"Don't Save" = "Don't Save";
-/* File: ../Source/NSDocument.m:599 */
+/* File: ../Source/NSDocument.m:789 */
 "File Error" = "File Error";
-/* File: ../Source/NSDocument.m:108 */
-/* File: ../Source/NSDocument.m:87 */
+/* File: ../Source/NSDocument.m:135 */
+/* File: ../Source/NSDocument.m:112 */
 "Load failed" = "Load failed";
-/* File: ../Source/NSDocument.m:703 */
-/* File: ../Source/NSDocument.m:701 */
+/* File: ../Source/NSDocument.m:1577 */
+/* File: ../Source/NSDocument.m:1575 */
 "Revert" = "Revert";
-/* File: ../Source/NSDocument.m:254 */
-/* File: ../Source/NSDocument.m:601 */
-/* File: ../Source/NSDocument.m:476 */
-"Save" = "Save";
-/* File: ../Source/NSDocument.m:477 */
-"Save As" = "Save As";
-/* File: ../Source/NSDocument.m:478 */
+/* File: ../Source/NSDocument.m:1128 */
 "Save To" = "Save To";
-/* File: ../Source/NSDocument.m:336 */
+/* File: ../Source/NSDocument.m:551 */
 "Untitled-%d" = "Untitled-%d";
+
+
+/*** Strings from ../Source/NSDocumentController.m ***/
+/* File: ../Source/NSDocumentController.m:1602 */
+"Clear List" = "Clear List";
+/* File: ../Source/NSDocumentController.m:976 */
+"Power Off" = "Power Off";
+/* File: ../Source/NSDocumentController.m:928 */
+/* File: ../Source/NSDocumentController.m:886 */
+"Quit Anyway" = "Quit Anyway";
+/* File: ../Source/NSDocumentController.m:884 */
+/* File: ../Source/NSDocumentController.m:926 */
+"Review Unsaved" = "Review Unsaved";
+/* File: ../Source/NSDocumentController.m:933 */
+/* File: ../Source/NSDocumentController.m:883 */
+"You have unsaved documents" = "You have unsaved documents";
+
+
+/*** Strings from ../Source/NSMenu.m ***/
+/* File: ../Source/NSMenu.m:212 */
+/* Comment: Services */
+"Services" = "Services";
+
+
+/*** Strings from ../Source/NSSavePanel.m ***/
+/* File: ../Source/NSSavePanel.m:1228 */
+"No" = "No";
+/* File: ../Source/NSSavePanel.m:1260 */
+"Replace" = "Replace";
+/* File: ../Source/NSSavePanel.m:1237 */
+"The directory '%@' could not be created."
+= "The directory '%@' could not be created.";
+/* File: ../Source/NSSavePanel.m:1227 */
+"The directory '%@' does not exist, do you want to create it?"
+= "The directory '%@' does not exist, do you want to create it?";
+/* File: ../Source/NSSavePanel.m:1259 */
+"The file '%@' in '%@' exists. Replace it?"
+= "The file '%@' in '%@' exists. Replace it?";
+/* File: ../Source/NSSavePanel.m:1248 */
+"The path '%@' is not a directory." = "The path '%@' is not a directory.";
+/* File: ../Source/NSSavePanel.m:1228 */
+"Yes" = "Yes";
+
+
+/*** Strings from ../Source/NSToolbarItem.m ***/
+/* File: ../Source/NSToolbarItem.m:949 */
+"Colors" = "Colors";
+/* File: ../Source/NSToolbarItem.m:995 */
+"Customize" = "Customize";
+/* File: ../Source/NSToolbarItem.m:904 */
+"Flexible Space" = "Flexible Space";
+/* File: ../Source/NSToolbarItem.m:972 */
+"Fonts" = "Fonts";
+/* File: ../Source/NSToolbarItem.m:1018 */
+"Print..." = "Print...";
+/* File: ../Source/NSToolbarItem.m:881 */
+"Space" = "Space";
+
+
+/*** Strings from ../Source/NSWindow.m ***/
+/* File: ../Source/NSWindow.m:4861 */
+"Hide Toolbar" = "Hide Toolbar";
+/* File: ../Source/NSWindow.m:4866 */
+"Show Toolbar" = "Show Toolbar";

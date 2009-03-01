@@ -54,6 +54,7 @@
 #include "AppKit/NSGraphics.h"
 
 #include "GNUstepGUI/GSTextConverter.h"
+#include "GSGuiPrivate.h"
 
 /* Cache class pointers to avoid the expensive lookup by string. */ 
 static Class dictionaryClass = nil;
@@ -236,11 +237,10 @@ static inline NSError*
 create_error(int code, NSString* desc)
 {
   return [NSError errorWithDomain: @"NSAttributedString"
-			     code: code 
-			 userInfo: [NSDictionary 
-					dictionaryWithObjectsAndKeys: 
-				       NSLocalizedString(desc, @"Error description"), 
-				     NSLocalizedDescriptionKey, nil]];
+                  code: code 
+                  userInfo: [NSDictionary 
+                                dictionaryWithObjectsAndKeys: desc,
+                                NSLocalizedDescriptionKey, nil]];
 }
 
 @implementation NSAttributedString (AppKit)
@@ -774,7 +774,8 @@ create_error(int code, NSString* desc)
 
   if (data == nil)
     {
-      *error = create_error(0, @"No data specified for data loading.");
+      *error = create_error(0, NSLocalizedString(@"No data specified for data loading.", 
+                                                 @"Error description"));
       RELEASE(self);
       return nil;
     }
@@ -782,7 +783,8 @@ create_error(int code, NSString* desc)
   if (type == nil)
     {
       // FIXME: try to determine type
-      *error = create_error(0, @"No type specified for data.");
+      *error = create_error(0, NSLocalizedString(@"No type specified for data.", 
+                                                 @"Error description"));
       RELEASE(self);
       return nil;
     }
@@ -830,7 +832,8 @@ create_error(int code, NSString* desc)
       return self;
     }
 
-  *error = create_error(0, @"Could not load data.");
+  *error = create_error(0, NSLocalizedString(@"Could not load data.", 
+                                             @"Error description"));
   RELEASE(self);
   return nil;
 }
@@ -886,7 +889,8 @@ documentAttributes: (NSDictionary **)dict
 
   if (data == nil)
     {
-      *error = create_error(0, @"Could not load data from URL.");
+      *error = create_error(0, NSLocalizedString(@"Could not load data from URL.", 
+                                                 @"Error description"));
       RELEASE(self);
       return nil;
     }
@@ -950,7 +954,8 @@ documentAttributes: (NSDictionary **)dict
 
   if (type == nil)
     {
-      *error = create_error(0, @"No type specified for data.");
+      *error = create_error(0, NSLocalizedString(@"No type specified for data.", 
+                                                 @"Error description"));
       return nil;
     }
 
@@ -983,7 +988,8 @@ documentAttributes: (NSDictionary **)dict
       return [[self string] dataUsingEncoding: encoding];
     }
 
-  *error = create_error(0, @"Could not create data for type.");
+  *error = create_error(0, NSLocalizedString(@"Could not create data for type.", 
+                                             @"Error description"));
   return nil;
 }
 
@@ -1005,7 +1011,8 @@ documentAttributes: (NSDictionary **)dict
     }
 
   if (*error == nil)
-    *error = create_error(0, @"Could not create data for type.");
+      *error = create_error(0, NSLocalizedString(@"Could not create data for type.",
+                                                 @"Error description"));
 
   return nil;
 }

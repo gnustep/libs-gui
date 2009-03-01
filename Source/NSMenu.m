@@ -56,6 +56,7 @@
 #include "AppKit/NSScreen.h"
 #include "AppKit/NSAttributedString.h"
 
+#include "GSGuiPrivate.h"
 
 /*
   Drawing related:
