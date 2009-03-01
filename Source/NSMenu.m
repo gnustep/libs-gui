@@ -209,8 +209,8 @@ static BOOL menuBarVisible = YES;
 
 - (void) _organizeMenu
 {
-  NSString *infoString = NSLocalizedString(@"Info", @"Info");
-  NSString *servicesString = NSLocalizedString(@"Services", @"Services");
+  NSString *infoString = _(@"Info");
+  NSString *servicesString = _(@"Services");
   int i;
 
   if ([self isEqual: [NSApp mainMenu]] == YES)

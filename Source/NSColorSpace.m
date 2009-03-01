@@ -29,6 +29,7 @@
 
 #import <Foundation/Foundation.h>
 #import <AppKit/NSColorSpace.h>
+#include "GSGuiPrivate.h"
 
 @implementation NSColorSpace
 

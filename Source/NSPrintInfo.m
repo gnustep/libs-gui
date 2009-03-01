@@ -36,6 +36,7 @@
 #include "AppKit/NSPrinter.h"
 #include "AppKit/NSPrintInfo.h"
 #include "GNUstepGUI/GSPrinting.h"
+#include "GSGuiPrivate.h"
 
 // Class variables:
 static NSPrintInfo *sharedPrintInfo = nil;

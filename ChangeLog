@@ -3,6 +3,9 @@
 	* Resources/English.lproj/Localizable.strings: Regenerate this file.
 	* Resources/German.lproj/Localizable.strings: Regnerate and add
 	translation and escaping of non-ASCII characters.
+	* Source/NSColor.m
+	* Source/NSColorSpace.m
+	* Source/NSPrintInfo.m
 	* Source/NSAlert.m,
 	* Source/NSWindow.m,
 	* Source/GSPrintOperation.m,

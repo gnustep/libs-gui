@@ -48,6 +48,7 @@
 #include "AppKit/NSGraphics.h"
 #include "AppKit/PSOperators.h"
 #include "GNUstepGUI/GSTheme.h"
+#include "GSGuiPrivate.h"
 
 static Class	NSColorClass;
 
