@@ -78,6 +78,7 @@
 #include "AppKit/PSOperators.h"
 #include "GNUstepGUI/GSTrackingRect.h"
 #include "GNUstepGUI/GSDisplayServer.h"
+#include "GSGuiPrivate.h"
 #include "GSToolTips.h"
 #include "GSWindowDecorationView.h"
 #include "NSToolbarFrameworkPrivate.h"

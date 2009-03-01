@@ -55,6 +55,7 @@
 #include "GNUstepGUI/IMLoading.h"
 #include "GNUstepGUI/GMAppKit.h"
 #include "GNUstepGUI/GMArchiver.h"
+#include "GSGuiPrivate.h"
 
 extern NSThread *GSAppKitThread;
 

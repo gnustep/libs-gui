@@ -43,7 +43,7 @@
 #include "AppKit/NSWorkspace.h"
 #include "GNUstepGUI/GSPrinting.h"
 #include "GNUstepGUI/GSPrintOperation.h"
-
+#include "GSGuiPrivate.h"
 
 
 

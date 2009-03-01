@@ -43,7 +43,7 @@
 #include "AppKit/NSTextField.h"
 #include "GNUstepGUI/GSInfoPanel.h"
 #include "GNUstepGUI/GSTheme.h"
-
+#include "GSGuiPrivate.h"
 
 static id
 value_from_info_plist_for_key (NSString *key)

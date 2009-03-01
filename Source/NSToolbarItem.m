@@ -52,6 +52,7 @@
 #include "AppKit/NSToolbarItem.h"
 
 #include "NSToolbarFrameworkPrivate.h"
+#include "GSGuiPrivate.h"
 
 /*
  * Each NSToolbarItem object are coupled with a backView which is their 
