@@ -51,6 +51,7 @@
 #include <Foundation/NSKeyedArchiver.h>
 #include "AppKit/AppKit.h"
 #include <GNUstepBase/GSObjCRuntime.h>
+#include "GSGuiPrivate.h"
 
 /*
  *      Setup for inline operation of arrays.
