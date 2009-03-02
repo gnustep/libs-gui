@@ -1,3 +1,17 @@
+2009-03-02 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSliderCell.m,
+	* Source/NSTableHeaderView.m,
+	* Source/NSWindow.m,
+	* Source/GSStandardWindowDecorationView.m,
+	* Source/NSControl.m,
+	* Source/NSScroller.m,
+	* Source/NSTextView.m,
+	* Source/NSComboBoxCell.m,
+	* Source/NSStepperCell.m,
+	* Source/NSCell.m: Replace nil with [NSDate distantFuture] in
+	calls to nextEventMatchingMask:...dequeue:.
+
 2009-03-01 20:17-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSApplication.m: Fix bug #24643.   Application icon is no

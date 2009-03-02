@@ -1627,7 +1627,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
           if (isMouseUp == NO)
 	    {
 	      e = [NSApp nextEventMatchingMask: eventMask
-			             untilDate: nil
+			             untilDate: [NSDate distantFuture]
 		  		        inMode: NSEventTrackingRunLoopMode
 				       dequeue: YES];
             

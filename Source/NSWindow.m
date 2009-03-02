@@ -3237,7 +3237,7 @@ resetCursorRectsForView(NSView *theView)
 - (NSEvent*) nextEventMatchingMask: (unsigned int)mask
 {
   return [NSApp nextEventMatchingMask: mask
-                            untilDate: nil
+                            untilDate: [NSDate distantFuture]
                                inMode: NSEventTrackingRunLoopMode
                               dequeue: YES];
 }

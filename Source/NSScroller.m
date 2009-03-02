@@ -846,7 +846,7 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 
        /* Get the next event, blocking if necessary. */
        theEvent = [NSApp nextEventMatchingMask: eventMask
-                     untilDate: nil /* No limit, block until we get an event. */
+                     untilDate: [NSDate distantFuture] /* No limit, block until we get an event. */
                      inMode: NSEventTrackingRunLoopMode
                      dequeue: YES];
        eventType = [theEvent type];

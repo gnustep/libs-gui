@@ -811,7 +811,7 @@
             }
 
           event = [theApp nextEventMatchingMask: NSLeftMouseUpMask
-                          untilDate: nil
+                          untilDate: [NSDate distantFuture]
                           inMode: NSEventTrackingRunLoopMode
                           dequeue: NO];
           

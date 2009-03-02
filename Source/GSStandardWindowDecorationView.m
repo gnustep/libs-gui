@@ -413,7 +413,7 @@ static NSColor *titleColor[3];
 
 
       currentEvent = [_window nextEventMatchingMask: mask
-			untilDate: nil
+			untilDate: [NSDate distantFuture]
 			inMode: NSEventTrackingRunLoopMode
 			dequeue: YES];
     } while ([currentEvent type] != NSLeftMouseUp);
@@ -510,7 +510,7 @@ calc_new_frame(NSRect frame, NSPoint point, NSPoint firstPoint,
 	break;
 
       currentEvent = [_window nextEventMatchingMask: mask
-			untilDate: nil
+			untilDate: [NSDate distantFuture]
 			inMode: NSEventTrackingRunLoopMode
 			dequeue: YES];
     } while ([currentEvent type] != NSLeftMouseUp);

@@ -685,7 +685,7 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   while (eventType != NSLeftMouseUp)
     {
       theEvent = [NSApp nextEventMatchingMask: eventMask
-			untilDate: nil
+			untilDate: [NSDate distantFuture]
 			inMode: NSEventTrackingRunLoopMode
 			dequeue: YES];
       eventType = [theEvent type];

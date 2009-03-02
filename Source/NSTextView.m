@@ -4896,7 +4896,7 @@ other than copy/paste or dragging. */
     NSEvent *currentEvent;
 
     currentEvent = [_window nextEventMatchingMask: mask
-  			      untilDate: nil
+  			      untilDate: [NSDate distantFuture]
   			      inMode: NSEventTrackingRunLoopMode
   			      dequeue: YES];
     if ([currentEvent type] == NSLeftMouseDragged)
@@ -4924,7 +4924,7 @@ other than copy/paste or dragging. */
 	  stillSelecting: YES];
 
     currentEvent = [_window nextEventMatchingMask: mask
-		     untilDate: nil
+		     untilDate: [NSDate distantFuture]
 		     inMode: NSEventTrackingRunLoopMode
 		     dequeue: YES];
     gettingPeriodic = NO;
@@ -4988,7 +4988,7 @@ other than copy/paste or dragging. */
 	  stillSelecting: YES];
 
 	currentEvent = [_window nextEventMatchingMask: mask
-			 untilDate: nil
+			 untilDate: [NSDate distantFuture]
 			 inMode: NSEventTrackingRunLoopMode
 			 dequeue: YES];
       } while ([currentEvent type] != NSLeftMouseUp);

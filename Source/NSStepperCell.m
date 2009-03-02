@@ -361,7 +361,7 @@ static inline void HighlightDownButton(NSRect aRect)
       NSEventType	eventType;
 
       theEvent = [NSApp nextEventMatchingMask: event_mask
-			untilDate: nil
+			untilDate: [NSDate distantFuture]
 			inMode: NSEventTrackingRunLoopMode
 			dequeue: YES];
       eventType = [theEvent type];

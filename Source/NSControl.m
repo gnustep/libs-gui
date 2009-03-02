@@ -897,7 +897,7 @@ static NSNotificationCenter *nc;
 	}
 
       e = [NSApp nextEventMatchingMask: event_mask
-		 untilDate: nil
+		 untilDate: [NSDate distantFuture]
 		 inMode: NSEventTrackingRunLoopMode
 		 dequeue: YES];
       if ([e type] == NSLeftMouseUp)

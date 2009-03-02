@@ -1608,7 +1608,7 @@ static NSColor *dtxtCol;
     theEvent = [NSApp currentEvent];
   else
     theEvent = [theApp nextEventMatchingMask: event_mask
-                       untilDate: nil
+                       untilDate: [NSDate distantFuture]
                        inMode: NSEventTrackingRunLoopMode
                        dequeue: YES];
                  
@@ -1689,7 +1689,7 @@ static NSColor *dtxtCol;
       
       if (!done)
         theEvent = [theApp nextEventMatchingMask: event_mask
-                                       untilDate: nil
+                                       untilDate: [NSDate distantFuture]
                                           inMode: NSEventTrackingRunLoopMode
                                          dequeue: YES];
     }
