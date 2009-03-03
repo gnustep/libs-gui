@@ -1,3 +1,17 @@
+2009-03-04 Xavier Glattard <xavier.glattard@online.fr>
+
+	* Headers/NSView.h,
+	  Source/NSView.m: Add a flag 'ignoresBacking' that indicates the
+	  receiver do not draw on the backing store, and so prevent the
+	  backing store to be flushed by [-unlocFocus:]
+	* Headers/NSView.h,
+	  Source/NSView.m,
+	  Source/externs.m: Define NSViewGlobalFrameDidChangeNotification that
+	  should be catched by NSOpenGLView (To Do)
+	* Headers/NSOpenGL.h,
+	  Headers/NSOpenGLView.h: Some improvements, compatibility and/or bug
+	  fix. NSOpenGLView catches NSViewGlobalFrameDidChangeNotification.
+
 2009-03-02 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSSliderCell.m,

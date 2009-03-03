@@ -2050,6 +2050,16 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
   GSWSetViewIsFlipped(ctxt, _rFlags.flipped_view);
 }
 
+- (void) _setIgnoresBacking: (BOOL) flag
+{
+  _rFlags.ignores_backing = flag;
+}
+
+- (BOOL) _ignoresBacking
+{
+  return _rFlags.ignores_backing;
+}
+
 - (void) unlockFocusNeedsFlush: (BOOL)flush
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
@@ -2078,7 +2088,7 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
       NSRect        rect;
       struct	NSWindow_struct *window_t;
       window_t = (struct NSWindow_struct *)_window;
-      if (flush)
+      if (flush && !_rFlags.ignores_backing)
         {
           rect = [[window_t->_rectsBeingDrawn lastObject] rectValue];
           window_t->_rectNeedingFlush =

@@ -35,6 +35,7 @@
 // Declare a private method of NSView
 @interface NSView (Private)
 - (void) _lockFocusInContext: (NSGraphicsContext *)ctxt inRect: (NSRect)rect;
+- (void) _viewWillMoveToWindow: (NSWindow*)newWindow;
 @end
 
 /**
@@ -100,16 +101,17 @@ static NSOpenGLPixelFormatAttribute attrs[] =
     {
       [glcontext clearDrawable];
       DESTROY(glcontext);
+      prepared = NO;
     }
 }
 
 - (void) setOpenGLContext: (NSOpenGLContext*)context
 {
-  [self clearGLContext];
-  ASSIGN(glcontext, context);
-  [glcontext setView: self];
-  [glcontext makeCurrentContext];
-  [self prepareOpenGL];
+  if ( context != glcontext )
+    {
+      [self clearGLContext];
+      ASSIGN(glcontext, context);
+    }
 }
 
 - (void) prepareOpenGL
@@ -128,6 +130,8 @@ static NSOpenGLPixelFormatAttribute attrs[] =
                                      shareContext: nil];
 
       [self setOpenGLContext: context];
+      [context setView: self];
+
       RELEASE(context);
     }
   return glcontext;
@@ -152,6 +156,12 @@ static NSOpenGLPixelFormatAttribute attrs[] =
 
   ASSIGN(pixel_format, format);
 
+  [[NSNotificationCenter defaultCenter] 
+    addObserver: self
+    selector: @selector(_frameChanged:)
+    name: NSViewGlobalFrameDidChangeNotification
+    object: self];
+
   [self setPostsFrameChangedNotifications: YES];
   [[NSNotificationCenter defaultCenter] 
     addObserver: self
@@ -165,8 +175,8 @@ static NSOpenGLPixelFormatAttribute attrs[] =
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver: self];
+  [self clearGLContext];
   RELEASE(pixel_format);
-  RELEASE(glcontext);
   NSDebugMLLog(@"GL", @"deallocating");
   [super dealloc];
 }
@@ -187,12 +197,22 @@ static NSOpenGLPixelFormatAttribute attrs[] =
 
 - (void) update
 {
-  [glcontext update];
+  NSOpenGLContext *context;
+  context = [self openGLContext];
+  if ([context view] == self)
+    {
+      [context update];
+    }
+}
+
+- (BOOL) isOpaque
+{
+  return YES;
 }
 
 - (void) _frameChanged: (NSNotification *) aNot
 {
-  NSDebugMLLog(@"GL", @"our frame has changed");
+  [[self openGLContext] makeCurrentContext];
   [self update];
   [self reshape];
 }
@@ -201,8 +221,32 @@ static NSOpenGLPixelFormatAttribute attrs[] =
  */
 - (void) _lockFocusInContext: (NSGraphicsContext *)ctxt inRect: (NSRect)rect
 {
+  NSOpenGLContext *context;
+  context = [self openGLContext];
+
   [super _lockFocusInContext: ctxt inRect: rect];
-  [[self openGLContext] makeCurrentContext];
+  [context makeCurrentContext];
+  if ([context view] != self)
+    {
+      [context setView:self];
+    }
+  if (!prepared)
+    {
+      [self prepareOpenGL];
+      prepared = YES;
+      [self reshape];
+    }
+}
+
+-(void) _viewWillMoveToWindow: (NSWindow *) newWindow
+{
+  [super _viewWillMoveToWindow: newWindow];
+
+  if ([self window] != newWindow)
+    {
+      // the context will be recreated in the new window if needed
+      [[self openGLContext] clearDrawable];
+    }
 }
 
 @end

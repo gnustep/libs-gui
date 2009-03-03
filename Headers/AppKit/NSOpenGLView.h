@@ -36,7 +36,7 @@
 {
   NSOpenGLContext 	*glcontext;
   NSOpenGLPixelFormat	*pixel_format;
-  BOOL			attached;
+  BOOL			prepared;
 }
 
 + (NSOpenGLPixelFormat*) defaultPixelFormat;

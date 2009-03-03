@@ -381,6 +381,8 @@ NSString *NSViewFrameDidChangeNotification
     = @"NSViewFrameDidChangeNotification";
 NSString *NSViewBoundsDidChangeNotification
     = @"NSViewBoundsDidChangeNotification";
+NSString *NSViewGlobalFrameDidChangeNotification
+    = @"NSViewGlobalFrameDidChangeNotification";
 
 // NSMenu notifications
 NSString* const NSMenuDidSendActionNotification = @"MenuDidSendAction";

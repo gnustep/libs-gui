@@ -136,6 +136,8 @@ typedef enum _NSFocusRingType {
     unsigned	valid_rects:1;		/* Some cursor rects may be ok.	*/
     unsigned	needs_display:1;	/* view needs display.   	*/
     unsigned	has_tooltips:1;		/* The view has tooltips set.	*/
+    unsigned	ignores_backing:1;      /* The view does not trigger    */
+                                        /* backing flush when drawn     */
   } _rFlags;
 
   BOOL _is_rotated_from_base;
@@ -588,6 +590,10 @@ typedef enum _NSFocusRingType {
 
 - (NSAffineTransform*) _matrixToWindow;
 - (NSAffineTransform*) _matrixFromWindow;
+
+- (void) _setIgnoresBacking: (BOOL) flag;
+- (BOOL) _ignoresBacking;
+
 @end
 #endif
 
@@ -600,5 +606,6 @@ APPKIT_EXPORT NSArray *GSGetDragTypes(NSView* aView);
 APPKIT_EXPORT NSString *NSViewFrameDidChangeNotification;
 APPKIT_EXPORT NSString *NSViewBoundsDidChangeNotification;
 APPKIT_EXPORT NSString *NSViewFocusDidChangeNotification;
+APPKIT_EXPORT NSString *NSViewGlobalFrameDidChangeNotification;
 
 #endif // _GNUstep_H_NSView

@@ -44,9 +44,13 @@ typedef enum {
   NSOpenGLPFAMaximumPolicy = 52,
   NSOpenGLPFAOffScreen = 53,
   NSOpenGLPFAFullScreen = 54,
-  NSOpenGLPFASampleBuffers = 55,
-  NSOpenGLPFASamples = 56,
-  NSOpenGLPFAAuxDepthStencil = 57,
+  NSOpenGLPFASampleBuffers = 55,        // 10.2
+  NSOpenGLPFASamples = 56,              // 10.2
+  NSOpenGLPFAAuxDepthStencil = 57,      // 10.2
+  NSOpenGLPFAColorFloat = 58,           // 10.4
+  NSOpenGLPFAMultisample = 59,          // 10.4
+  NSOpenGLPFASupersample = 60,          // 10.4
+  NSOpenGLPFASampleAlpha = 61,          // 10.4
   NSOpenGLPFARendererID = 70,
   NSOpenGLPFASingleRenderer = 71,
   NSOpenGLPFANoRecovery = 72,
@@ -59,7 +63,9 @@ typedef enum {
   NSOpenGLPFAMultiScreen = 81,
   NSOpenGLPFACompliant = 83,
   NSOpenGLPFAScreenMask = 84,
-  NSOpenGLPFAVirtualScreenCount = 128
+  NSOpenGLPFAPixelBuffer = 90,          // 10.3
+  NSOpenGLPFAAllowOfflineRenderers = 96,// 10.5
+  NSOpenGLPFAVirtualScreenCount = 128   // 10.2
 } NSOpenGLPixelFormatAttribute;
 
 typedef enum {
