@@ -1,5 +1,6 @@
 2009-03-05 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Resources/GNUmakefile: Add French localisation. 
 	* Resources/French.lproj/Localizable.strings: New localisation file.
 	Patch by Philippe Roussel <p.o.roussel@free.fr>.
 
