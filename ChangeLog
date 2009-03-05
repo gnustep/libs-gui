@@ -1,3 +1,8 @@
+2009-03-05 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Resources/French.lproj/Localizable.strings: New localisation file.
+	Patch by Philippe Roussel <p.o.roussel@free.fr>.
+
 2009-03-04 Xavier Glattard <xavier.glattard@online.fr>
 
 	* Headers/NSView.h,
