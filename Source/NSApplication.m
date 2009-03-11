@@ -2178,16 +2178,20 @@ image.</p><p>See Also: -applicationIconImage</p>
 */
 - (void) setApplicationIconImage: (NSImage*)anImage
 {
-  NSEnumerator	*iterator = [[self windows] objectEnumerator];
-  NSWindow	*current;
+  NSEnumerator *iterator;
+  NSWindow *current;
   NSImage	*old_app_icon = _app_icon;
-  NSSize        miniWindowSize = [GSCurrentServer() iconSize];
-  NSSize        imageSize = [anImage size];
+  NSSize miniWindowSize = [GSCurrentServer() iconSize];
+  NSSize imageSize = [anImage size];
 
   RETAIN(old_app_icon);
   [_app_icon setName: nil];
-  [anImage setName: @"NSApplicationIcon"];
-  [anImage setScalesWhenResized: YES];
+
+  // Use a copy as we change the name and size
+  ASSIGNCOPY(_app_icon, anImage);
+
+  [_app_icon setName: @"NSApplicationIcon"];
+  [_app_icon setScalesWhenResized: YES];
 
   if (miniWindowSize.width <= 0 || miniWindowSize.height <= 0) 
     {
@@ -2198,23 +2202,23 @@ image.</p><p>See Also: -applicationIconImage</p>
   if (imageSize.width > miniWindowSize.width
     || imageSize.height > miniWindowSize.height)
     {
-      [anImage setSize: miniWindowSize];
+      [_app_icon setSize: miniWindowSize];
     }
 
-  ASSIGN(_app_icon, anImage);
-
-  [_main_menu _organizeMenu];	// Let horizontal menu change icon
+	// Let horizontal menu change icon
+  [_main_menu _organizeMenu];
 
   if (_app_icon_window != nil)
     {
-      [(NSAppIconView *)[_app_icon_window contentView] setImage: anImage];
+      [(NSAppIconView *)[_app_icon_window contentView] setImage: _app_icon];
     }
 
   // Swap the old image for the new one wherever it's used
+  iterator = [[self windows] objectEnumerator];
   while ((current = [iterator nextObject]) != nil)
     {
       if ([current miniwindowImage] == old_app_icon)
-	[current setMiniwindowImage: anImage];
+        [current setMiniwindowImage: _app_icon];
     }
 
   DESTROY(old_app_icon);

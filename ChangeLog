@@ -1,3 +1,9 @@
+2009-03-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSApplication.m (-setApplicationIconImage:): Copy the new
+	application image before assigning the name "NSApplicationIcon" to
+	it. This solves bug #25793.
+
 2009-03-05 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Resources/GNUmakefile: Add French localisation. 
