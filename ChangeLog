@@ -1,3 +1,14 @@
+2009-03-12 19:47-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSPrintOperation.m: Correct issues with handling of 
+	rectangle passed back from rectForPage: callback in NSView 
+	subclasses.  This rect should override existing calculations 
+	when it is passed in.
+	* Source/NSView.m: Change to use NSPrintPaperBounds if and only if
+	aRect is passed in as a blank rect.  Previously the code was
+	using the NSPrintPaperBounds value and ignoring the passed in
+	value.
+
 2009-03-11 Richard Frith-Macdonald <rfm@gnu.org>
 
         * Source/NSMatrix.m: GC fixups ... change code that was attempting

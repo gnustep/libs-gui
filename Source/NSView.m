@@ -4247,11 +4247,16 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   NSGraphicsContext *ctxt = [printOp context];
   NSDictionary *dict = [[printOp printInfo] dictionary];
 
-  if ([dict objectForKey: @"NSPrintPaperBounds"])
-    bounds = [[dict objectForKey: @"NSPrintPaperBounds"] rectValue];
+  if (NSIsEmptyRect(aRect))
+    {
+      if ([dict objectForKey: @"NSPrintPaperBounds"])
+	bounds = [[dict objectForKey: @"NSPrintPaperBounds"] rectValue];
+    }
   else
-    bounds = aRect;
-      
+    {
+      bounds = aRect;
+    }
+
   nup = [[dict objectForKey: NSPrintPagesPerSheet] intValue];
   if (nup > 1)
     {
@@ -4285,7 +4290,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     }
 
   /* Translate to placement */
-  if (location.x != 0 || location.y != 0)
+  if (location.x != 0 || location.y != 0 && NSIsEmptyRect(aRect) == YES)
     DPStranslate(ctxt, location.x, location.y);
 
   // FIXME: Need to place this correctly. Maybe it isn't needed at all, 

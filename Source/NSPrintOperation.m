@@ -121,7 +121,8 @@ typedef struct _page_info_t {
 
 @interface NSView (NSPrintOperation)
 - (void) _displayPageInRect: (NSRect)pageRect
-                   withInfo: (page_info_t)info;
+                   withInfo: (page_info_t)info
+	     knowsPageRange: (BOOL)knowsPageRange;
 @end
 
 @interface NSView (NPrintOperationPrivate)
@@ -1045,7 +1046,8 @@ scaleRect(NSRect rect, double scale)
 
       /* Draw using our special view routine */
       [_view _displayPageInRect: pageRect
-                       withInfo: info];
+	     withInfo: info
+	     knowsPageRange: knowsPageRange];
              
       // We could end up in this case for each row/column not just the lase page.
       if (!knowsPageRange && dir > 0 && _currentPage == info.last && allPages == YES)
@@ -1093,6 +1095,7 @@ scaleRect(NSRect rect, double scale)
 
 - (void) _displayPageInRect: (NSRect)pageRect
                    withInfo: (page_info_t)info
+	     knowsPageRange: (BOOL)knowsPageRange
 {
   int currentPage;
   int numberOnSheet;
@@ -1109,6 +1112,12 @@ scaleRect(NSRect rect, double scale)
   if (numberOnSheet == 0)
     {
       NSString *label;
+      NSRect boundsForPage = info.sheetBounds;
+
+      if(knowsPageRange)
+	{
+	  boundsForPage = pageRect;
+	}
 
       label = nil;
       if (info.nup == 1)
@@ -1116,15 +1125,19 @@ scaleRect(NSRect rect, double scale)
 
       [self beginPage: floor((currentPage - info.first)/info.nup)+1
             label: label
-            bBox: info.sheetBounds
+            bBox: boundsForPage
             fonts: nil];
       if (info.orient == NSLandscapeOrientation)
         {
           DPSrotate(ctxt, 90);
           DPStranslate(ctxt, 0, -info.paperSize.height);
         }
-      /* Also offset by margins */
-      DPStranslate(ctxt, NSMinX(info.paperBounds), NSMinY(info.paperBounds));
+      
+      if(!knowsPageRange)
+	{
+	  /* Also offset by margins */
+	  DPStranslate(ctxt, NSMinX(info.paperBounds), NSMinY(info.paperBounds));
+	}
 
       /* End page setup for multi page */
       if (info.nup != 1)
