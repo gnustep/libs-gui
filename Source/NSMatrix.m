@@ -391,7 +391,11 @@ static SEL getSel;
 	  [_cells[i][j] release];
 	}
       NSZoneFree(_myZone, _cells[i]);
-      NSZoneFree(GSAtomicMallocZone(), _selectedCells[i]);
+#if     GS_WITH_GC
+      _selectedCells[i] = 0;
+#else
+      NSZoneFree(_myZone, _selectedCells[i]);
+#endif
     }
   NSZoneFree(_myZone, _cells);
   NSZoneFree(_myZone, _selectedCells);
@@ -778,9 +782,9 @@ static SEL getSel;
 	{
 	  [_cells[row][i] autorelease];
 	}
+      NSZoneFree(_myZone, _selectedCells[row]);
 #endif
       NSZoneFree(_myZone, _cells[row]);
-      NSZoneFree(GSAtomicMallocZone(), _selectedCells[row]);
       for (i = row + 1; i < _maxRows; i++)
 	{
 	  _cells[i-1] = _cells[i];
@@ -3899,8 +3903,13 @@ static SEL getSel;
       for (i = 0; i < oldMaxR; i++)
 	{
 	  _cells[i] = NSZoneRealloc(_myZone, _cells[i], col * sizeof(id));
-	  _selectedCells[i] = NSZoneRealloc(GSAtomicMallocZone(),
+#if     GS_WITH_GC
+	  _selectedCells[i] = NSReallocateCollectable(
+	    _selectedCells[i], col * sizeof(BOOL), 0);
+#else
+	  _selectedCells[i] = NSZoneRealloc(_myZone,
 	    _selectedCells[i], col * sizeof(BOOL));
+#endif
 
 	  for (j = oldMaxC; j < col; j++)
 	    {
@@ -3930,9 +3939,11 @@ static SEL getSel;
       for (i = oldMaxR; i < row; i++)
 	{
 	  _cells[i] = NSZoneMalloc(_myZone, _maxCols * sizeof(id));
-	  _selectedCells[i] = NSZoneMalloc(GSAtomicMallocZone(),
-	    _maxCols * sizeof(BOOL));
-
+#if     GS_WITH_GC
+	  _selectedCells[i] = NSAllocateCollectable(_maxCols * sizeof(BOOL), 0);
+#else
+	  _selectedCells[i] = NSZoneMalloc(_myZone, _maxCols * sizeof(BOOL));
+#endif
 	  if (i == end)
 	    {
 	      for (j = 0; j < _maxCols; j++)
