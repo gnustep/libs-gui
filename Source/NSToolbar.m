@@ -930,6 +930,15 @@ static GSValidationCenter *vc = nil;
 {
   if (![_items containsObject: item])
     {
+      if (newIndex > [_items count] - 1)
+	{
+	  newIndex = [_items count] - 1;
+	}
+      else if(newIndex < 0)
+	{
+	  newIndex = 0;
+	}
+	
       [_items insertObject: item atIndex: newIndex];
     }
   else

@@ -398,11 +398,20 @@ static void initSystemExtensionsColors(void)
   NSToolbarItem *item = [[info draggingSource] toolbarItem];
   int newIndex = [self _insertionIndexAtPoint: [info draggingLocation]]; 
   // Calculate the index
-      
-  [toolbar _insertPassivelyItem:item atIndex: index];
-  RELEASE(item);
-  [toolbar _moveItemFromIndex: index toIndex: newIndex broadcast: YES]; 
-  
+
+  if(index == -1)
+    {
+      [toolbar _insertPassivelyItem:item atIndex: newIndex];
+      RELEASE(item);
+      [toolbar _moveItemFromIndex: newIndex toIndex: newIndex broadcast: YES]; 
+    }
+  else
+    {
+      [toolbar _insertPassivelyItem:item atIndex: index];
+      RELEASE(item);
+      [toolbar _moveItemFromIndex: index toIndex: newIndex broadcast: YES]; 
+    }
+
   return YES;
 }
 

@@ -1,3 +1,8 @@
+2009-03-13 01:01-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSToolbarView.m:
+	* Source/NSToolbar.m: Partial fix for toolbar drag and drop issues.
+
 2009-03-12 19:47-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSPrintOperation.m: Correct issues with handling of 
