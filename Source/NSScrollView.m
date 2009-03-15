@@ -63,17 +63,21 @@ typedef struct _scrollViewFlags
 #ifdef WORDS_BIGENDIAN
   unsigned int __unused4:22;
   unsigned int autohidesScrollers:1;
-  unsigned int __unused1:3;
+  unsigned int __unused1:2;
+  unsigned int nonDynamic:1;
   unsigned int hasHScroller:1;
   unsigned int hasVScroller:1;
-  unsigned int __unused0:2;
+  unsigned int hScrollerRequired:1;
+  unsigned int vScrollerRequired:1;
   NSBorderType border:2;
 #else
   NSBorderType border:2;
-  unsigned int __unused0:2;
+  unsigned int vScrollerRequired:1;
+  unsigned int hScrollerRequired:1;
   unsigned int hasVScroller:1;
   unsigned int hasHScroller:1;
-  unsigned int __unused1:3;
+  unsigned int nonDynamic:1;
+  unsigned int __unused1:2;
   unsigned int autohidesScrollers:1;
   unsigned int __unused4:22;
 #endif  
@@ -1514,13 +1518,17 @@ static float scrollerWidth;
         {
           int flags = [aDecoder decodeInt32ForKey: @"NSsFlags"];
           GSScrollViewFlags scrollViewFlags;
-          // FIXME: Why not just use a cast?
+	  
+	  //
+	  // Do a memory copy here since the compiler errors out on casts from
+	  // scalar (int/float/long) types to structs.
+	  //
           memcpy((void *)&scrollViewFlags,(void *)&flags,sizeof(struct _scrollViewFlags));
 
           _hasVertScroller = scrollViewFlags.hasVScroller;
           _hasHorizScroller = scrollViewFlags.hasHScroller;
           _autohidesScrollers = scrollViewFlags.autohidesScrollers;
-          // _scrollsDynamically = (!scrollViewFlags.notDynamic);
+          _scrollsDynamically = (!scrollViewFlags.nonDynamic);
           // _rulersVisible = scrollViewFlags.rulersVisible;
           // _hasHorizRuler = scrollViewFlags.hasHRuler;
           // _hasVertRuler = scrollViewFlags.hasVRuler;

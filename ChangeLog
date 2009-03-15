@@ -1,3 +1,9 @@
+2009-03-15 15:09-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSScrollView.m: Remove FIXME comment and provided an 
+	explaination for why a cast wasn't used.   Added nonDynamic flag
+	as well as other flags from the nib file.
+
 2009-03-15 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSInfoPanel.m: Use setTitle: instead of setStringValue:
