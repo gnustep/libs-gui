@@ -1,3 +1,8 @@
+2009-03-15 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSInfoPanel.m: Use setTitle: instead of setStringValue:
+	for theme button.
+
 2009-03-13 01:01-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSToolbarView.m:

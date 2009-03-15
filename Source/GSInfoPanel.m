@@ -190,7 +190,7 @@ new_label (NSString *value)
 
 	  s = [NSString stringWithFormat: @"%@: %@",
 	    _(@"Current theme"), [[GSTheme theme] name]];
-	  [b setStringValue: s];
+	  [b setTitle: s];
 	  [b sizeToFit];
 	  f = [b frame];
 	  f.origin.x = ([c frame].size.width - f.size.width) / 2;
@@ -464,7 +464,7 @@ new_label (NSString *value)
   theme = [NSString stringWithFormat: @"%@: %@",
     _(@"Current theme"), [[GSTheme theme] name]];
   themeLabel = AUTORELEASE([NSButton new]);
-  [themeLabel setStringValue: theme];
+  [themeLabel setTitle: theme];
   [themeLabel setBordered: NO];
   [themeLabel setAlignment: NSLeftTextAlignment];
   [themeLabel setFont: smallFont];
