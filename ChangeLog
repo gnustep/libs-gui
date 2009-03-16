@@ -1,3 +1,7 @@
+2009-03-15 22:09-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSScrollView.m: Use the flags in initWithCoder:
+
 2009-03-15 20:28-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSScrollView.m: Added more flags for nib loading.

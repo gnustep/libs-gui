@@ -1547,7 +1547,7 @@ static float scrollerWidth;
           _hasHorizScroller = scrollViewFlags.hasHScroller;
           _autohidesScrollers = scrollViewFlags.autohidesScrollers;
           _scrollsDynamically = (!scrollViewFlags.nonDynamic);
-          // _rulersVisible = scrollViewFlags.rulersVisible;
+          _rulersVisible = scrollViewFlags.showRulers;
           _hasHorizRuler = scrollViewFlags.hasHRuler;
           _hasVertRuler = scrollViewFlags.hasVRuler;
           // [self setDrawsBackground: (!scrollViewFlags.doesNotDrawBack)];
@@ -1571,6 +1571,7 @@ static float scrollerWidth;
               [content setFrame: frame];
             }
 
+	  // set the document view into the content.
           [self setContentView: content];
         }
      
