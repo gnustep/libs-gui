@@ -61,9 +61,18 @@
 typedef struct _scrollViewFlags 
 {
 #ifdef WORDS_BIGENDIAN
-  unsigned int __unused4:22;
+  unsigned int __unused6:14;
+  unsigned int __unused5:1;
   unsigned int autohidesScrollers:1;
-  unsigned int __unused1:2;
+  unsigned int __unused4:1;
+  unsigned int __unused3:1;
+  unsigned int __unused2:1;
+  unsigned int doesNotDrawBackground:1;
+  unsigned int __unused1:1;
+  unsigned int hasVRuler:1;
+  unsigned int hasHRuler:1;
+  unsigned int showRulers:1;
+  unsigned int oldRulerInstalled:1;
   unsigned int nonDynamic:1;
   unsigned int hasHScroller:1;
   unsigned int hasVScroller:1;
@@ -77,9 +86,18 @@ typedef struct _scrollViewFlags
   unsigned int hasVScroller:1;
   unsigned int hasHScroller:1;
   unsigned int nonDynamic:1;
-  unsigned int __unused1:2;
+  unsigned int oldRulerInstalled:1;
+  unsigned int showRulers:1;
+  unsigned int hasHRuler:1;
+  unsigned int hasVRuler:1;
+  unsigned int __unused1:1;
+  unsigned int doesNotDrawBackground:1;
+  unsigned int __unused2:1;
+  unsigned int __unused3:1;
+  unsigned int __unused4:1;
   unsigned int autohidesScrollers:1;
-  unsigned int __unused4:22;
+  unsigned int __unused5:1;
+  unsigned int __unused6:14;
 #endif  
 } GSScrollViewFlags;
 
@@ -1530,8 +1548,8 @@ static float scrollerWidth;
           _autohidesScrollers = scrollViewFlags.autohidesScrollers;
           _scrollsDynamically = (!scrollViewFlags.nonDynamic);
           // _rulersVisible = scrollViewFlags.rulersVisible;
-          // _hasHorizRuler = scrollViewFlags.hasHRuler;
-          // _hasVertRuler = scrollViewFlags.hasVRuler;
+          _hasHorizRuler = scrollViewFlags.hasHRuler;
+          _hasVertRuler = scrollViewFlags.hasVRuler;
           // [self setDrawsBackground: (!scrollViewFlags.doesNotDrawBack)];
           _borderType = scrollViewFlags.border;
         }
