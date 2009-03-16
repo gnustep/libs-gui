@@ -1525,7 +1525,12 @@ static float scrollerWidth;
       NSScroller *hScroller = [aDecoder decodeObjectForKey: @"NSHScroller"];
       NSScroller *vScroller = [aDecoder decodeObjectForKey: @"NSVScroller"];
       NSClipView *content = [aDecoder decodeObjectForKey: @"NSContentView"]; 
+      NSView *docView = [content documentView];
+      BOOL post_frame = [docView postsFrameChangedNotifications];
+      BOOL post_bound = [docView postsBoundsChangedNotifications];
 
+      [docView setPostsFrameChangedNotifications: NO];
+      [docView setPostsBoundsChangedNotifications: NO];
       _hLineScroll = 10;
       _hPageScroll = 10;
       _vLineScroll = 10;
@@ -1593,6 +1598,8 @@ static float scrollerWidth;
         }
 
       [self tile];
+      [docView setPostsFrameChangedNotifications: post_frame];
+      [docView setPostsBoundsChangedNotifications: post_bound];
     }
   else
     {
