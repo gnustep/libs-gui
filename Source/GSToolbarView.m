@@ -397,13 +397,16 @@ static void initSystemExtensionsColors(void)
   NSToolbar *toolbar = [self toolbar];
   NSToolbarItem *item = [[info draggingSource] toolbarItem];
   int newIndex = [self _insertionIndexAtPoint: [info draggingLocation]]; 
-  // Calculate the index
 
   if(index == -1)
     {
-      [toolbar _insertItemWithItemIdentifier: [item itemIdentifier] 
-	       atIndex: newIndex
-	       broadcast: YES];
+      NSString *identifier = [item itemIdentifier];
+      if([_toolbar _containsItemWithIdentifier: identifier] == NO)
+	{
+	  [toolbar _insertItemWithItemIdentifier: identifier 
+		   atIndex: newIndex
+		   broadcast: YES];
+	}
       RELEASE(item);
     }
   else
@@ -412,6 +415,9 @@ static void initSystemExtensionsColors(void)
       RELEASE(item);
       [toolbar _moveItemFromIndex: index toIndex: newIndex broadcast: YES]; 
     }
+  
+  // save the configuration...
+  [toolbar _saveConfig];
 
   return YES;
 }

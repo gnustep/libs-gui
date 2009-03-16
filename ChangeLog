@@ -1,3 +1,16 @@
+2009-03-16 03:29-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSToolbarView.m: Added code to save the configuration when
+	deleting an item as well as saving an item.
+	* Source/NSToolbarFrameworkPrivate.h: removed old _loadConfig method
+	added new methods to track changes to toolbars.
+	* Source/NSToolbar.m: Added check for items already in the toolbar,
+	removed calls to _loadConfig which were commented out, implemented
+	setConfigurationFromDictionary: as described in the documentation,
+	changed _build to get dictionary from defaults if it's there. 
+	Implemented new method _containsItemWithIdentifier: and 
+	_itemsFromConfig.
+
 2009-03-16 01:22-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSToolbarView.m: Call the _insertItemWithItemIdentifier:..

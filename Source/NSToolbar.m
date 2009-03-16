@@ -41,6 +41,7 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSTimer.h>
 #include <Foundation/NSUserDefaults.h>
+#include <Foundation/NSDecimalNumber.h>
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSEvent.h"
 #include "AppKit/NSMenu.h"
@@ -520,8 +521,6 @@ static GSValidationCenter *vc = nil;
       _displayMode = [toolbarModel displayMode];
       _sizeMode = [toolbarModel sizeMode]; 
       _visible = [toolbarModel isVisible];
-        
-      // [self _loadConfig];
     }
   else
     {
@@ -532,8 +531,6 @@ static GSValidationCenter *vc = nil;
       _displayMode = NSToolbarDisplayModeIconAndLabel; 
       _sizeMode = NSToolbarSizeModeRegular;
       _visible = YES;
-
-      // [self _loadConfig];
     }
   
   _delegate = nil;
@@ -707,7 +704,33 @@ static GSValidationCenter *vc = nil;
 
 - (void) setConfigurationFromDictionary: (NSDictionary *)configDict
 {
+  int i = 0; 
+  id item = nil;
+  NSArray *items = nil;
+  NSEnumerator *en = nil;
+
   ASSIGN(_configurationDictionary, configDict);
+  
+  // set
+  _visible = [[_configurationDictionary objectForKey: @"isVisible"] boolValue];
+  _displayMode = [[_configurationDictionary objectForKey: @"displayMode"] intValue];
+
+  // remove all items...
+  for(i = 0; i < [_items count]; i++)
+    {
+      [self _removeItemAtIndex: 0 broadcast: YES];      
+    }  
+  
+  // add all of the items...
+  i = 0;
+  items = [_configurationDictionary objectForKey: @"items"];
+  en = [items objectEnumerator];
+  while((item = [en nextObject]) != nil)
+    {
+      [self _insertItemWithItemIdentifier: item
+	    atIndex: i++
+	    broadcast: YES];     
+    }
 }
 
 /**
@@ -885,15 +908,19 @@ static GSValidationCenter *vc = nil;
     }
     
   toolbarModel = [self _toolbarModel];
-
-  if (toolbarModel != nil)
+  
+  wantedItemIdentifiers = [self _itemsFromConfig];
+  if(wantedItemIdentifiers == nil)
     {
-      wantedItemIdentifiers = 
-        [[toolbarModel items] valueForKey: @"_itemIdentifier"];
-    }
-  else
-    {        
-      wantedItemIdentifiers = [_delegate toolbarDefaultItemIdentifiers:self];
+      if (toolbarModel != nil)
+	{
+	  wantedItemIdentifiers = 
+	    [[toolbarModel items] valueForKey: @"_itemIdentifier"];
+	}
+      else
+	{        
+	  wantedItemIdentifiers = [_delegate toolbarDefaultItemIdentifiers:self];
+	}
     }
     
   e = [wantedItemIdentifiers objectEnumerator];
@@ -947,8 +974,64 @@ static GSValidationCenter *vc = nil;
     }
 }
 
-- (void) _loadConfig
+- (void) _saveConfig
 {
+  if (_identifier != nil)
+    { 
+      NSUserDefaults     *defaults;
+      NSString           *tableKey;
+      id                  config;
+      NSMutableArray     *items = [NSMutableArray array];
+      id                  item;
+      NSEnumerator       *en = [_items objectEnumerator];
+
+      defaults  = [NSUserDefaults standardUserDefaults];
+      tableKey = 
+        [NSString stringWithFormat: @"NSToolbar Config %@",_identifier];
+
+      config = [defaults objectForKey: tableKey];
+      
+      if (config == nil) 
+        {
+          config = [NSMutableDictionary dictionary]; 
+        }
+      else
+	{
+	  config = [config mutableCopy];
+	}
+
+      [config setObject: [NSNumber numberWithBool: _visible] forKey: @"isVisible"];
+      [config setObject: [NSNumber numberWithInt: _displayMode] forKey: @"displayMode"];
+      while((item = [en nextObject]) != nil)
+	{
+	  [items addObject: [item itemIdentifier]];
+	}
+      [config setObject: items forKey: @"items"];
+      
+      // write to defaults
+      [defaults setObject: config forKey: tableKey];
+      ASSIGN(_configurationDictionary, config);      
+    }
+}
+
+- (BOOL) _containsItemWithIdentifier: (NSString *)identifier
+{
+  NSEnumerator *en = [_items objectEnumerator];
+  id item = nil;
+
+  while((item = [en nextObject]) != nil)
+    {
+      if([identifier isEqual: [item itemIdentifier]])
+	{
+	  return YES;
+	}
+    }
+  return NO;
+}
+
+- (NSArray *) _itemsFromConfig
+{
+  NSArray *items = nil;
   if (_identifier != nil)
     { 
       NSUserDefaults     *defaults;
@@ -958,14 +1041,15 @@ static GSValidationCenter *vc = nil;
       defaults  = [NSUserDefaults standardUserDefaults];
       tableKey = 
         [NSString stringWithFormat: @"NSToolbar Config %@",_identifier];
-
+      
       config = [defaults objectForKey: tableKey];
       
       if (config != nil) 
         {
-          [self setConfigurationFromDictionary: config];
+	  items = [config objectForKey: @"items"];
         }
     }
+  return items;
 }
 
 - (NSToolbar *) _toolbarModel
@@ -1098,6 +1182,7 @@ static GSValidationCenter *vc = nil;
 {
   [_items removeObject: item];
   [_toolbarView _reload];
+  [self _saveConfig];
 }
 
 - (void) _concludeRemoveItem: (NSToolbarItem *)item atIndex: (int)index broadcast: (BOOL)broadcast
