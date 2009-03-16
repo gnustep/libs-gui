@@ -401,9 +401,10 @@ static void initSystemExtensionsColors(void)
 
   if(index == -1)
     {
-      [toolbar _insertPassivelyItem:item atIndex: newIndex];
+      [toolbar _insertItemWithItemIdentifier: [item itemIdentifier] 
+	       atIndex: newIndex
+	       broadcast: YES];
       RELEASE(item);
-      [toolbar _moveItemFromIndex: newIndex toIndex: newIndex broadcast: YES]; 
     }
   else
     {

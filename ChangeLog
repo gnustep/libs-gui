@@ -1,3 +1,11 @@
+2009-03-16 01:22-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSToolbarView.m: Call the _insertItemWithItemIdentifier:..
+	method to add items when they are not being dragged from within 
+	the toolbar and are being added from the palette.
+	* Source/NSToolbarItem.m: Added information to the description
+	to help with debugging.
+
 2009-03-15 18:37-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSScrollView.m: Fix for infinite notification loop which 

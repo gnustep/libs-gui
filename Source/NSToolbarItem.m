@@ -1586,4 +1586,8 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
   return new;
 }
 
+- (NSString *) description
+{
+  return [NSString stringWithFormat: @"<%@ - <%@>>",[super description],[self itemIdentifier]];
+}
 @end
