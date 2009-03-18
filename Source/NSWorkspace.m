@@ -808,9 +808,13 @@ static NSString			*_rootPath = @"/";
       NSString		*appName;
 
       /* Look up an application to handle this URL scheme.
+       * We get a dictionary containing all apps for the scheme.
+       * FIXME ... we just use the last app in the dictionary,
+       * but we really ought to have some way of saying which we want.
        */
       map = [applications objectForKey: @"GSSchemesMap"];
-      appName = [map objectForKey: [[url scheme] lowercaseString]];
+      map = [map objectForKey: [[url scheme] lowercaseString]];
+      appName = [[map allKeys] lastObject];
       if (appName != nil)
 	{
 	  NSString	*urlString = [url absoluteString];

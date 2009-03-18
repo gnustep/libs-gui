@@ -1,3 +1,8 @@
+2009-03-18 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWorksace.m: ([openURL:]) fix to open some app which
+	supports the URL scheme.
+
 2009-03-18 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSView.m (-beginPageInRect:atPlacement:): Add parentheses
