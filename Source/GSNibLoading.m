@@ -1411,10 +1411,10 @@ static BOOL _isInInterfaceBuilder = NO;
       [_className isEqualToString: _originalClassName] == NO)
     {
       Class newCellClass = [newClass cellClass];
-      if(newCellClass != [NSCell class])
-	{
-	  result = [[newCellClass alloc] initWithCoder: coder];      
-	}
+      if (newCellClass != [NSCell class])
+        {
+          result = [[newCellClass alloc] initWithCoder: coder];      
+        }
     }
 
   return result;
@@ -1432,15 +1432,21 @@ static BOOL _isInInterfaceBuilder = NO;
 
       // build the real object...
       if ([NSClassSwapper isInInterfaceBuilder] == YES)
-	{
+        {
           [self instantiateRealObject: coder withClassName: _originalClassName];
         }
       else
         {
           [self instantiateRealObject: coder withClassName: _className];
-	} 
+        }
       
-      RELEASE(self);
+      {
+        id object;
+
+        object = RETAIN(_template);
+        RELEASE(self);
+        return AUTORELEASE(object);
+      }
     }
   else
     {
@@ -1449,7 +1455,7 @@ static BOOL _isInInterfaceBuilder = NO;
                    NSStringFromClass([coder class])];
     }
 
-  return _template;
+  return self;
 }
 
 /**

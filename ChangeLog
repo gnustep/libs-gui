@@ -8,6 +8,8 @@
 	expresions in condition to avoid possible access to uninitialized
 	memory.
 	* Source/NSScrollView.m (-initWithCoder:): Don't set _hasCornerView.
+	* Source/GSNibLoading.m (NSClassSwapper-initWithCoder:): Don't
+	reference freed memory.
 
 2009-03-18 Richard Frith-Macdonald <rfm@gnu.org>
 
