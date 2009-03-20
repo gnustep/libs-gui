@@ -1,6 +1,10 @@
 2009-03-20 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Tools/gopen.m: Extend to open URLs as well as files.
+	* Source/GSServicesManager.m:
+	* Source/NSSworkspace.m:
+	Additions so that any app using a document controller can open a URL
+	(also any app where its delegate implements -application:openURL:).
 
 2009-03-20 Fred Kiefer <FredKiefer@gmx.de>
 

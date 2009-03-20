@@ -73,6 +73,12 @@
 #include "GNUstepGUI/GSServicesManager.h"
 #include "GNUstepGUI/GSDisplayServer.h"
 
+/* Informal protocol for method to ask an app to open a URL.
+ */
+@interface NSObject (OpenURL)
+- (BOOL) application: (NSApplication*)a openURL: (NSURL*)u;
+@end
+
 /* Private method to check that a process exists.
  */
 @interface NSProcessInfo (Private)
@@ -806,6 +812,7 @@ static NSString			*_rootPath = @"/";
     {
       NSDictionary	*map;
       NSString		*appName;
+      NSPasteboard      *pb;
 
       /* Look up an application to handle this URL scheme.
        * We get a dictionary containing all apps for the scheme.
@@ -817,24 +824,16 @@ static NSString			*_rootPath = @"/";
       appName = [[map allKeys] lastObject];
       if (appName != nil)
 	{
-	  NSString	*urlString = [url absoluteString];
 	  id		app;
 
 	  /* Now try to get the application to open the URL.
 	   */
-	  app = [self _connectApplication: appName];
-	  if (app == nil)
-	    {
-	      NSArray *args;
-
-	      args = [NSArray arrayWithObjects: @"-GSFilePath", urlString, nil];
-	      return [self _launchApplication: appName arguments: args];
-	    }
-	  else
+	  app = GSContactApplication(appName, nil, nil);
+	  if (app != nil)
 	    {
 	      NS_DURING
 		{
-	          [app application: NSApp openFile: urlString];
+	          [app application: NSApp openURL: url];
 		}
 	      NS_HANDLER
 		{
@@ -842,21 +841,16 @@ static NSString			*_rootPath = @"/";
 		  return NO;
 		}
 	      NS_ENDHANDLER
+	      [NSApp deactivate];
+	      return YES;
 	    }
-          [NSApp deactivate];
-	  return YES;
 	}
-      else
-	{
-          NSPasteboard      *pb;
-
-	  /* No application found to open the URL.
-	   * Try any OpenURL service available.
-	   */
-	  pb = [NSPasteboard pasteboardWithUniqueName];
-	  [url writeToPasteboard: pb];
-	  return NSPerformService(@"OpenURL", pb);
-	}
+      /* No application found to open the URL.
+       * Try any OpenURL service available.
+       */
+      pb = [NSPasteboard pasteboardWithUniqueName];
+      [url writeToPasteboard: pb];
+      return NSPerformService(@"OpenURL", pb);
     }
 }
 

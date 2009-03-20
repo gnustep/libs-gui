@@ -340,7 +340,7 @@ NSRegisterServicesProvider(id provider, NSString *name)
 
   /*
    * We assume that messages of the form 'application:...' are all
-   * safe and do mnot need to be listed in GSPermittedMessages.
+   * safe and do not need to be listed in GSPermittedMessages.
    * They can be handled either by the application delegate or by
    * the shared GSServicesManager instance.
    */
@@ -615,6 +615,31 @@ static NSString         *disabledName = @".GNUstepDisabled";
 
   [[NSFileManager defaultManager] removeFileAtPath: file handler: nil];
 
+  return result;
+}
+
+- (BOOL) application: (NSApplication*)theApp
+	     openURL: (NSURL*)aURL
+{
+  id	del = [NSApp delegate];
+  BOOL	result = NO;
+
+  if ([del respondsToSelector: _cmd])
+    {
+      result = [del application: theApp openURL: aURL];
+    }
+  else if ([[NSDocumentController sharedDocumentController]
+    openDocumentWithContentsOfURL: aURL display: YES] != nil)
+    {
+      [NSApp activateIgnoringOtherApps: YES];
+      result = YES;
+    }
+  else
+    {
+      NSString	*s = [aURL absoluteString];
+
+      result = [self application: theApp openFile: s];
+    }
   return result;
 }
 
