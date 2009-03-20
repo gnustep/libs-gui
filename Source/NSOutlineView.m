@@ -814,7 +814,7 @@ static NSImage *unexpandable  = nil;
   /* Determine starting column as fast as possible */
   x_pos = NSMinX (aRect);
   i = 0;
-  while ((x_pos > _columnOrigins[i]) && (i < _numberOfColumns))
+  while ((i < _numberOfColumns) && (x_pos > _columnOrigins[i]))
     {
       i++;
     }
@@ -826,7 +826,7 @@ static NSImage *unexpandable  = nil;
   /* Determine ending column as fast as possible */
   x_pos = NSMaxX (aRect);
   // Nota Bene: we do *not* reset i
-  while ((x_pos > _columnOrigins[i]) && (i < _numberOfColumns))
+  while ((i < _numberOfColumns) && (x_pos > _columnOrigins[i]))
     {
       i++;
     }

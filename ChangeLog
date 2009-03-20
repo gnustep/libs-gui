@@ -1,3 +1,8 @@
+2009-03-20 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSOutlineView.m (-drawRow:clipRect:): Changed order of
+	expresions in condition to avoid possible access to uninitialized memory.
+
 2009-03-18 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorksace.m: ([openURL:]) fix to open some app which
