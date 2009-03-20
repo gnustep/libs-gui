@@ -1,7 +1,12 @@
+2009-03-20 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Tools/gopen.m: Extend to open URLs as well as files.
+
 2009-03-20 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSOutlineView.m (-drawRow:clipRect:): Changed order of
-	expresions in condition to avoid possible access to uninitialized memory.
+	expresions in condition to avoid possible access to uninitialized
+	memory.
 	* Source/NSScrollView.m (-initWithCoder:): Don't set _hasCornerView.
 
 2009-03-18 Richard Frith-Macdonald <rfm@gnu.org>

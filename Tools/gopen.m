@@ -36,6 +36,7 @@
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSFileHandle.h>
 #include <Foundation/NSPathUtilities.h>
+#include <Foundation/NSURL.h>
 #include <Foundation/NSValue.h>
 #include <Foundation/NSUserDefaults.h>
 #include <AppKit/NSApplication.h>
@@ -66,6 +67,9 @@ main(int argc, char** argv, char **env_c)
   NSString      *filetoopen = nil;
   NSString      *filetoprint = nil;
   NSString      *nxhost = nil;
+  BOOL		isDir;
+  BOOL		exists;
+  NSURL		*u;
 
 #ifdef GS_PASS_ARGUMENTS
   [NSProcessInfo initializeWithArguments:argv count:argc environment:env_c];
@@ -96,9 +100,21 @@ main(int argc, char** argv, char **env_c)
   
   if (filetoopen)
     {
-      filetoopen = absolutePath(fm, filetoopen);
-      [workspace openFile: filetoopen
-	  withApplication: application];
+      exists = [fm fileExistsAtPath: arg isDirectory: &isDir];
+      if (exists == NO)
+	{
+	  if ([filetoopen hasPrefix: @"/"] == NO
+	    && (u = [NSURL URLWithString: filetoopen]) != nil)
+	    {
+	      [workspace openURL: u];
+	    }
+	}
+      else
+	{
+	  filetoopen = absolutePath(fm, filetoopen);
+	  [workspace openFile: filetoopen
+	      withApplication: application];
+	}
     }
 
   if (filetoprint)
@@ -144,37 +160,40 @@ main(int argc, char** argv, char **env_c)
 	{
 	  NS_DURING
 	    {
-	      BOOL isDir = NO, exists = NO;
-
 	      exists = [fm fileExistsAtPath: arg isDirectory: &isDir];
 	      if (exists == YES)
 		{
 		  arg = absolutePath(fm, arg);
-		}
-	      if (exists && !isDir && [fm isExecutableFileAtPath: arg])
-		{
-		  [workspace openFile: arg withApplication: terminal];
-		}
-	      else // no argument specified
-		{
-		  // First check to see if it's an application
-		  if ([ext isEqualToString: @"app"]
-		    || [ext isEqualToString: @"debug"]
-		    || [ext isEqualToString: @"profile"])
+		  if (isDir == NO && [fm isExecutableFileAtPath: arg])
 		    {
-		      [workspace launchApplication: arg];
+		      [workspace openFile: arg withApplication: terminal];
 		    }
-		  else
+		  else // no argument specified
 		    {
-		      if (![workspace openFile: arg
-			       withApplication: application])
+		      // First check to see if it's an application
+		      if ([ext isEqualToString: @"app"]
+			|| [ext isEqualToString: @"debug"]
+			|| [ext isEqualToString: @"profile"])
 			{
-			  // no recognized extension,
-			  // run application indicated by environment var.
-			  NSLog(@"Opening %@ with %@",arg,editor);
-			  [workspace openFile: arg withApplication: editor];
+			  [workspace launchApplication: arg];
+			}
+		      else
+			{
+			  if (![workspace openFile: arg
+				   withApplication: application])
+			    {
+			      // no recognized extension,
+			      // run application indicated by environment var.
+			      NSLog(@"Opening %@ with %@",arg,editor);
+			      [workspace openFile: arg withApplication: editor];
+			    }
 			}
 		    }
+		}
+	      else if ([arg hasPrefix: @"/"] == NO
+		&& (u = [NSURL URLWithString: arg]) != nil)
+		{
+		  [workspace openURL: u];
 		}
 	    }
 	  NS_HANDLER
