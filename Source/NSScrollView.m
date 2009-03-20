@@ -1107,7 +1107,7 @@ static float scrollerWidth;
   /* Now place the corner view.  */
   if (_hasCornerView)
     {
-      NSPoint        p = headerRect.origin;
+      NSPoint p = headerRect.origin;
 
       if (verticalScrollerEdge == NSMaxXEdge)
         {
@@ -1593,7 +1593,6 @@ static float scrollerWidth;
       if ([aDecoder containsValueForKey: @"NSHeaderClipView"])
         {
           _hasHeaderView = YES;
-          _hasCornerView = YES;          
           _headerClipView = [aDecoder decodeObjectForKey: @"NSHeaderClipView"];
         }
 
