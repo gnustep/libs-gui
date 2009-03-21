@@ -1,3 +1,13 @@
+2009-03-21 12:27-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Panels/English.lproj/GSToolbarCustomizationPalette.gorm: Added
+	size: method to class in gorm file.  Added connection to size: method
+	from the switch.
+	* Source/GSToolbarCustomizationPalette.m: Added size: method 
+	implementation.
+	* Source/NSToolbar.m: Added code to save and load sizeMode attribute
+	for toolbar.
+
 2009-03-21 12:13-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Panels/English.lproj/GSToolbarCustomizationPalette.gorm: Changed

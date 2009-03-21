@@ -303,6 +303,19 @@
   [_toolbar _resetConfig];
 }
 
+- (void) size: (id) sender
+{
+  NSToolbarSizeMode mode = NSToolbarSizeModeRegular;
+
+  if([sender state] == NSOnState)
+    {
+      mode = NSToolbarSizeModeSmall;
+    }
+
+  [_toolbar setSizeMode: mode];
+  [_toolbar _saveConfig];
+}
+
 - (void) paletteDidEnd: (NSNotification *)notif
 {
   [_toolbar _setCustomizationPaletteIsRunning: NO];

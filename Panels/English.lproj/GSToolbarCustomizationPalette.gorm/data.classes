@@ -2,6 +2,7 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     FirstResponder = {
 	Actions = (
+	    "size:",
 	    "reset:",
 	    "show:"
 	);
@@ -10,7 +11,8 @@
     GSToolbarCustomizationPalette = {
 	Actions = (
 	    "show:",
-	    "reset:"
+	    "reset:",
+	    "size:"
 	);
 	Outlets = (
 	    _customizationWindow,

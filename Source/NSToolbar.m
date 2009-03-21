@@ -899,11 +899,14 @@ static GSValidationCenter *vc = nil;
     [NSString stringWithFormat: @"NSToolbar Config %@",_identifier];
   NSDictionary *config = [defaults objectForKey: tableKey];
   NSToolbarDisplayMode displayMode = 0;
+  NSToolbarSizeMode sizeMode = 0;
 
   if(config)
     {
       displayMode = (NSToolbarDisplayMode)[[config objectForKey: @"displayMode"] intValue];
       [self setDisplayMode: displayMode];
+      sizeMode = (NSToolbarDisplayMode)[[config objectForKey: @"sizeMode"] intValue];
+      [self setSizeMode: sizeMode];
     }
 
   // Switch off toolbar view reload
@@ -1022,6 +1025,7 @@ static GSValidationCenter *vc = nil;
 
       [config setObject: [NSNumber numberWithBool: _visible] forKey: @"isVisible"];
       [config setObject: [NSNumber numberWithInt: _displayMode] forKey: @"displayMode"];
+      [config setObject: [NSNumber numberWithInt: _sizeMode] forKey: @"sizeMode"];
       while((item = [en nextObject]) != nil)
 	{
 	  [items addObject: [item itemIdentifier]];
