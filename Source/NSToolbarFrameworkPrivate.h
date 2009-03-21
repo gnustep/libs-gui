@@ -100,6 +100,7 @@
 - (void) _validate: (NSWindow *)observedWindow;
 - (void) _toolbarViewWillMoveToSuperview: (NSView *)newSuperview;
 - (void) _saveConfig;
+- (void) _resetConfig;
 - (NSArray *) _itemsFromConfig;
 - (BOOL) _containsItemWithIdentifier: (NSString *) identifier;
 

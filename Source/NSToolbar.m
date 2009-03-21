@@ -949,6 +949,15 @@ static GSValidationCenter *vc = nil;
     [_toolbarView _reload];
 }
 
+- (void) _resetConfig
+{
+  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+  NSString *tableKey = 
+    [NSString stringWithFormat: @"NSToolbar Config %@",_identifier];
+  [defaults removeObjectForKey: tableKey];  
+  [self _build];
+}
+
 - (BOOL) usesStandardBackgroundColor
 {
   return [_toolbarView _usesStandardBackgroundColor];

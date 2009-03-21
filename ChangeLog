@@ -1,3 +1,12 @@
+2009-03-21 12:13-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Panels/English.lproj/GSToolbarCustomizationPalette.gorm: Changed
+	formatting.  Added text field and buttons.
+	* Source/GSToolbarCustomizationPalette.m: Added reset button and
+	done button. 
+	* Source/NSToolbarFrameworkPrivate.h: Added _resetConfig method.
+	* Source/NSToolbar.m: Added _resetConfig method.
+
 2009-03-21 09:57-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Panels/English.lproj/GSToolbarCustomizationPalette.gorm: Add

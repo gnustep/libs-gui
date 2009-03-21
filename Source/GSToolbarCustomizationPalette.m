@@ -297,6 +297,12 @@
   [_customizationWindow close];
 }
 
+- (void) reset: (id) sender
+{
+  // reset the toolbar to it's defaults.
+  [_toolbar _resetConfig];
+}
+
 - (void) paletteDidEnd: (NSNotification *)notif
 {
   [_toolbar _setCustomizationPaletteIsRunning: NO];
