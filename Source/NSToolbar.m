@@ -894,7 +894,18 @@ static GSValidationCenter *vc = nil;
   NSEnumerator *e;
   id itemIdentifier;
   int i = 0;
-  
+  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+  NSString *tableKey = 
+    [NSString stringWithFormat: @"NSToolbar Config %@",_identifier];
+  NSDictionary *config = [defaults objectForKey: tableKey];
+  NSToolbarDisplayMode displayMode = 0;
+
+  if(config)
+    {
+      displayMode = (NSToolbarDisplayMode)[[config objectForKey: @"displayMode"] intValue];
+      [self setDisplayMode: displayMode];
+    }
+
   // Switch off toolbar view reload
   _build = YES;
 

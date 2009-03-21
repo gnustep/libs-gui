@@ -1,3 +1,13 @@
+2009-03-21 09:57-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Panels/English.lproj/GSToolbarCustomizationPalette.gorm: Add
+	Default item to popup and make the connection to the show: method
+	to allow setting the toolbar display mode.
+	* Source/GSToolbarCustomizationPalette.m: Enable changing of
+	text, text & icon, icon only on the toolbar.   
+	* Source/NSToolbar.m: Change _build method to load the 
+	displayMode setting. 
+
 2009-03-20 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Tools/gopen.m: Extend to open URLs as well as files.

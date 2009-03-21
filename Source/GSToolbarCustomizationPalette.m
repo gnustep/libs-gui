@@ -34,7 +34,7 @@
 #include "AppKit/NSWindow.h"
 #include "AppKit/NSToolbar.h"
 #include "AppKit/NSToolbarItem.h"
-
+#include "AppKit/NSPopUpButton.h"
 #include "NSToolbarFrameworkPrivate.h"
 #include "GSToolbarCustomizationPalette.h"
 
@@ -238,10 +238,12 @@
   NSArray *itemIdentifiers = nil;
   NSEnumerator *e = nil;
   NSString *identifier = nil;
+  NSToolbarDisplayMode tag = [toolbar displayMode];
   id delegate = [toolbar delegate];
 
   [_allowedItems removeAllObjects];
   [_defaultItems removeAllObjects];
+  [_displayPopup selectItemWithTag: tag];
 
   if (delegate == nil)
     {
@@ -302,6 +304,14 @@
 
   /* We can now get rid safely of the extra retain done in -showForToolbar: */
   RELEASE(self);
+}
+
+- (void) show: (id) sender
+{
+  NSToolbarDisplayMode displayMode = (NSToolbarDisplayMode)
+    [[sender selectedItem] tag];
+  [_toolbar setDisplayMode: displayMode];
+  [_toolbar _saveConfig];
 }
 
 @end
