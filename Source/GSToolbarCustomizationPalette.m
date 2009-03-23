@@ -239,12 +239,23 @@
   NSEnumerator *e = nil;
   NSString *identifier = nil;
   NSToolbarDisplayMode tag = [toolbar displayMode];
+  NSToolbarSizeMode size = [toolbar sizeMode];
   id delegate = [toolbar delegate];
 
   [_allowedItems removeAllObjects];
   [_defaultItems removeAllObjects];
   [_displayPopup selectItemWithTag: tag];
 
+  // Set toolbar size checkbox...
+  if(size == NSToolbarSizeModeSmall)
+    {
+      [_sizeCheckBox setState: NSOnState];
+    }
+  else
+    {
+      [_sizeCheckBox setState: NSOffState];
+    }
+  
   if (delegate == nil)
     {
       NSLog(@"The toolbar %@ needs a delegate to allow customization", 

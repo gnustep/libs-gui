@@ -1,3 +1,10 @@
+2009-03-22 23:57-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Panels/English.lproj/GSToolbarCustomizationPalette.gorm: Add 
+	connection to _doneButton outlet.
+	* Source/GSToolbarCustomizationPalette.m: Added code in init
+	to set the state of the size checkbox.
+
 2009-03-21 12:27-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Panels/English.lproj/GSToolbarCustomizationPalette.gorm: Added
