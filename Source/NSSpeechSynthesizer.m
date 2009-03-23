@@ -145,6 +145,7 @@ NSString *NSSpeechDictionaryEntryPhonemes = @"NSSpeechDictionaryEntryPhonemes";
      forProperty: (NSString *)property 
            error: (NSError **)error 
 {
+  [self subclassResponsibility: _cmd];
   return nil;
 }
 
@@ -170,7 +171,8 @@ NSString *NSSpeechDictionaryEntryPhonemes = @"NSSpeechDictionaryEntryPhonemes";
 }
 
 + (NSString *) defaultVoice 
-{
+{ 
+  [self subclassResponsibility: _cmd];
   return nil;
 }
 
@@ -183,29 +185,44 @@ NSString *NSSpeechDictionaryEntryPhonemes = @"NSSpeechDictionaryEntryPhonemes";
 // Synthesizing..
 - (BOOL) isSpeaking 
 {
-  return NO;
+  return _isSpeaking;
 }
 
 - (BOOL) startSpeakingString: (NSString *)text 
 {
+  [self subclassResponsibility: _cmd];
   return NO;
 }
 
 - (BOOL) startSpeakingString: (NSString *)text toURL: (NSURL *)url 
 {
+  [self subclassResponsibility: _cmd];
   return NO;
 }
 
-- (void) stopSpeaking {}
+- (void) stopSpeaking 
+{
+  [self subclassResponsibility: _cmd];
+}
 
-- (void) stopSpeakingAtBoundary: (NSSpeechBoundary)boundary {}
+- (void) stopSpeakingAtBoundary: (NSSpeechBoundary)boundary 
+{
+  [self subclassResponsibility: _cmd];
+}
 
-- (void) pauseSpeakingAtBoundary: (NSSpeechBoundary)boundary {}
+- (void) pauseSpeakingAtBoundary: (NSSpeechBoundary)boundary 
+{ 
+  [self subclassResponsibility: _cmd];
+}
 
-- (void) continueSpeaking {}
+- (void) continueSpeaking 
+{
+  [self subclassResponsibility: _cmd]; 
+}
 
 - (NSString *) phonemesFromText: (NSString *)text
 {
+  [self subclassResponsibility: _cmd];
   return nil;
 }
 @end

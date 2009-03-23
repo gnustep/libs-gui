@@ -103,6 +103,7 @@ extern NSString *NSSpeechDictionaryEntryPhonemes;
   id                   _delegate;
   NSMutableArray      *_dictionaries;
   NSMutableDictionary *_properties;
+  BOOL                 _isSpeaking;
 }
 
 // init...
