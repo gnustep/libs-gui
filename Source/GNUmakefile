@@ -152,6 +152,7 @@ NSSelection.m \
 NSSlider.m \
 NSSliderCell.m \
 NSSound.m  \
+NSSpeechSynthesizer.m \
 NSSpellChecker.m \
 NSSplitView.m \
 NSStepper.m \
@@ -348,6 +349,7 @@ NSSelection.h \
 NSSlider.h \
 NSSliderCell.h \
 NSSound.h  \
+NSSpeechSynthesizer.h \
 NSSpellChecker.h \
 NSSpellServer.h \
 NSSplitView.h \

@@ -156,6 +156,7 @@
 #include <AppKit/NSSearchFieldCell.h>
 #include <AppKit/NSSecureTextField.h>
 #include <AppKit/NSSound.h>
+#include <AppKit/NSSpeechSynthesizer.h>
 #include <AppKit/NSStepper.h>
 #include <AppKit/NSStepperCell.h>
 #include <AppKit/NSTableColumn.h>

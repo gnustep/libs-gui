@@ -1,3 +1,11 @@
+2009-03-23 02:36-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/AppKit/AppKit.h: Add include for NSSpeechSynthesizer.h
+	* Headers/AppKit/NSSpeechSynthesizer.h: Declarations.
+	* Source/GNUmakefile: Add new files.
+	* Source/NSSpeechSynthesizer.m: Add initial skeleton for
+	NSSpeechSynthesizer class.
+
 2009-03-22 23:57-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Panels/English.lproj/GSToolbarCustomizationPalette.gorm: Add 
