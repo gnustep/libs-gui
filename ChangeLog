@@ -1,5 +1,11 @@
 2009-03-25 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSGraphicsContext.m (-restoreGraphicsState,
+	-saveGraphicsState:)  Try to deal with the case when there is no
+	current context. May happen in secondard threads. Fixes #25943.
+
+2009-03-25 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSTextView.m (-initWithFrame:textContainer:,
 	-initWithCoder:): Set values for minSize, maxSize,
 	horizontallyResizable and verticallyResizable consistently.

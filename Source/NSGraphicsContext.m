@@ -236,15 +236,20 @@ NSGraphicsContext	*GSCurrentContext(void)
   NSGraphicsContext *ctxt;
   NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
   NSMutableArray *stack = [dict objectForKey: NSGraphicsContextStackKey];
-  if (stack == nil || [stack count] == 0)
+
+  if (stack == nil)
     {
       [NSException raise: NSGenericException
 		   format: @"restoreGraphicsState without previous save"];
     }
+  // might be nil, i.e. no current context
   ctxt = [stack lastObject];
   [NSGraphicsContext setCurrentContext: ctxt];
-  [stack removeLastObject];
-  [ctxt restoreGraphicsState];
+  if (ctxt)
+    {
+      [stack removeLastObject];
+      [ctxt restoreGraphicsState];
+    }
 }
 
 + (void) saveGraphicsState
@@ -257,9 +262,13 @@ NSGraphicsContext	*GSCurrentContext(void)
       stack = [[NSMutableArray allocWithZone: _globalGSZone] init];
       [dict setObject: stack forKey: NSGraphicsContextStackKey];
     }
+  // might be nil, i.e. no current context
   ctxt = GSCurrentContext();
-  [ctxt saveGraphicsState];
-  [stack addObject: ctxt];
+  if (ctxt)
+    {
+      [ctxt saveGraphicsState];
+      [stack addObject: ctxt];
+    }
 }
 
 + (void) setGraphicsState: (int)graphicsState
