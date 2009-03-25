@@ -637,8 +637,8 @@ If a text view is added to an empty text network, it keeps its attributes.
   if (!did_register_for_services)
     [isa registerForServices];
 
-  _minSize = NSMakeSize(0, 0);
-  _maxSize = NSMakeSize(HUGE,HUGE);
+  _minSize = frameRect.size;
+  _maxSize = NSMakeSize(frameRect.size.width, HUGE);
   _textContainerInset = NSMakeSize(2, 0);
 
   ASSIGN(_insertionPointColor, [NSColor textColor]);
@@ -651,7 +651,7 @@ If a text view is added to an empty text network, it keeps its attributes.
 
   _tf.draws_background = YES;
   _tf.is_horizontally_resizable = NO;
-  _tf.is_vertically_resizable = NO;
+  _tf.is_vertically_resizable = YES;
 
   /* We set defaults for all shared attributes here. If container is already
   part of a text network, we reset the attributes in -setTextContainer:. */
@@ -730,6 +730,7 @@ that makes decoding and encoding compatible with the old code.
       [aCoder encodeSize: [self maxSize] forKey: @"NSMaxSize"];
       [aCoder encodeSize: [self minSize] forKey: @"NSMinSize"];
       [aCoder encodeObject: tvsd forKey: @"NSSharedData"];
+      RELEASE(tvsd);
       [aCoder encodeObject: [self textStorage] forKey: @"NSTextStorage"];
       [aCoder encodeObject: [self textContainer] forKey: @"NSTextContainer"];
       [aCoder encodeInt: 0 forKey: @"NSTVFlags"]; // no delegates, etc... set to zero.      
@@ -792,17 +793,24 @@ that makes decoding and encoding compatible with the old code.
         {
           [self setMaxSize: [aDecoder decodeSizeForKey: @"NSMaxSize"]];
         }
-
-      if ([aDecoder containsValueForKey: @"NSMinize"])
+      else
         {
-          // it's NSMinize in pre-10.3 formats.
-          [self setMinSize: [aDecoder decodeSizeForKey: @"NSMinize"]];
+          [self setMaxSize: NSMakeSize(_frame.size.width, HUGE)];            
         }
 
       if ([aDecoder containsValueForKey: @"NSMinSize"])
         {
-          // However, if NSMinSize is present we want to use it.
+          // If NSMinSize is present we want to use it.
           [self setMinSize: [aDecoder decodeSizeForKey: @"NSMinSize"]];
+        }
+      else if ([aDecoder containsValueForKey: @"NSMinize"])
+        {
+          // it's NSMinize in pre-10.3 formats.
+          [self setMinSize: [aDecoder decodeSizeForKey: @"NSMinize"]];
+        }
+      else
+        {
+          [self setMinSize: _frame.size];
         }
 
       if ([aDecoder containsValueForKey: @"NSSharedData"])
@@ -831,7 +839,7 @@ that makes decoding and encoding compatible with the old code.
           _tf.allows_undo = ((0x40000000 & flags) > 0);	  
           
           _tf.owns_text_network = YES;
-          _tf.is_horizontally_resizable = YES;
+          _tf.is_horizontally_resizable = NO;
           _tf.is_vertically_resizable = YES;
         }
 
@@ -1672,10 +1680,12 @@ incorrectly. */
 
   _tf.is_vertically_resizable = flag;
 }
+
 - (BOOL) isHorizontallyResizable
 {
   return _tf.is_horizontally_resizable;
 }
+
 - (BOOL) isVerticallyResizable
 {
   return _tf.is_vertically_resizable;
@@ -1686,14 +1696,17 @@ incorrectly. */
 {
   return _maxSize;
 }
+
 - (NSSize) minSize
 {
   return _minSize;
 }
+
 - (void) setMaxSize: (NSSize)newMaxSize
 {
   _maxSize = newMaxSize;
 }
+
 - (void) setMinSize: (NSSize)newMinSize
 {
   _minSize = newMinSize;

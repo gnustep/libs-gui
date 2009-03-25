@@ -1,3 +1,11 @@
+2009-03-25 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView.m (-initWithFrame:textContainer:,
+	-initWithCoder:): Set values for minSize, maxSize,
+	horizontallyResizable and verticallyResizable consistently.
+	* Source/NSTextView.m (-encodeWithCoder:) : Release the temporary
+	shared data object.
+
 2009-03-23 12:13-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSSpeechSynthesizer.[hm]: Add code to tell the developer
