@@ -2006,7 +2006,7 @@ See -runModalForWindow:
       [self updateWindows];
     }
   if (!expiration)
-    expiration = [NSDate distantFuture];
+    expiration = [NSDate distantPast];
 
   if (flag)
     event = DPSGetEvent(GSCurrentServer(), mask, expiration, mode);

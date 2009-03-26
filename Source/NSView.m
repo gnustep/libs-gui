@@ -2634,6 +2634,8 @@ in the main thread.
   NSNumber *n = [[NSNumber alloc] initWithBool: flag];
   if (GSCurrentThread() != GSAppKitThread)
     {
+      NSDebugMLLog (@"MacOSXCompatibility", 
+                    @"setNeedsDisplay: called on secondary thread");
       [self performSelectorOnMainThread: @selector(_setNeedsDisplay_real:)
             withObject: n
             waitUntilDone: NO];
@@ -2702,11 +2704,14 @@ in the main thread.
   NSValue *v = [[NSValue alloc]
 		 initWithBytes: &invalidRect
 		 objCType: @encode(NSRect)];
+
   if (GSCurrentThread() != GSAppKitThread)
     {
+      NSDebugMLLog (@"MacOSXCompatibility", 
+                    @"setNeedsDisplayInRect: called on secondary thread");
       [self performSelectorOnMainThread: @selector(_setNeedsDisplayInRect_real:)
-	withObject: v
-	waitUntilDone: NO];
+            withObject: v
+            waitUntilDone: NO];
     }
   else
     {

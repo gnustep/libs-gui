@@ -1,3 +1,12 @@
+2009-03-26 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSView.m (-setNeedsDisplay:, -setNeedsDisplayInRect:):
+	Warn about the GNUstep secondary thread behaviour not being
+	portable to Cocoa.
+	* Source/NSApplication.m
+	(-nextEventMatchingMask:untilDate:inMode:dequeue:): 
+	Use distantPast instead of distantFuture as default of expiration.
+
 2009-03-25 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSGraphicsContext.m (-restoreGraphicsState,
