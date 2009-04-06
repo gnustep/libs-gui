@@ -1,3 +1,10 @@
+2009-04-07 Sergii Stoian <stoyan255@gmail.com>
+
+	* Source/NSSplitView.m (-mouseDown:): When checking if divider
+	position also check orientaion for _isVertical == NO situation.
+	This fix avoids situation when split view is vertical, postion
+	changed but method exists after next 'else if' check.
+	
 2009-03-26 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSView.m (-setNeedsDisplay:, -setNeedsDisplayInRect:):

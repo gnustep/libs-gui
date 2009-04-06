@@ -600,7 +600,7 @@ static NSNotificationCenter *nc = nil;
       [self setNeedsDisplay: YES];
       return;
     }
-  else if (p.y == op.y)   
+  else if (_isVertical == NO && p.y == op.y)   
     {
       [self setNeedsDisplay: YES];
       return;
