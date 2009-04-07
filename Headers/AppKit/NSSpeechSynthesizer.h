@@ -104,6 +104,7 @@ extern NSString *NSSpeechDictionaryEntryPhonemes;
   NSMutableArray      *_dictionaries;
   NSMutableDictionary *_properties;
   BOOL                 _isSpeaking;
+  id                   _module;
 }
 
 // init...

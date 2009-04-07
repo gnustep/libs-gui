@@ -1,3 +1,10 @@
+2009-04-07 18:43-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/AppKit/NSSpeechSynthesizer.h: Added _module ivar.
+	* Source/NSDrawer.m: Don't set the timer since it eats a lot of CPU.
+	* Source/NSPasteboard.m: Retain the path since it's autoreleased.
+	* Source/NSTextView.m: Set the textview to allow undos by default.
+
 2009-04-07 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSAlert.m (NSBeginAlertSheet, NSBeginCriticalAlertSheet,

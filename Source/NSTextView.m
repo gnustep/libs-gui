@@ -734,6 +734,7 @@ that makes decoding and encoding compatible with the old code.
       [aCoder encodeObject: [self textStorage] forKey: @"NSTextStorage"];
       [aCoder encodeObject: [self textContainer] forKey: @"NSTextContainer"];
       [aCoder encodeInt: 0 forKey: @"NSTVFlags"]; // no delegates, etc... set to zero.      
+      [self setAllowsUndo: YES];
     }
   else
     {

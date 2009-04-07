@@ -1980,7 +1980,7 @@ static  NSMapTable              *mimeMap = NULL;
 
 	  if (cmd == nil && recursion ==NO)
 	    {
-	      cmd = [NSTask launchPathForTool: @"gpbs"];
+	      cmd = RETAIN([NSTask launchPathForTool: @"gpbs"]);
 	    }
 	  if (recursion == YES || cmd == nil)
 	    {
