@@ -1,5 +1,11 @@
 2009-04-07 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSAlert.m (NSBeginAlertSheet, NSBeginCriticalAlertSheet,
+	NSBeginInformationalAlertSheet): Correct the calling of delegate
+	methods. This should fix #26101.
+
+2009-04-07 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSSplitView.h
 	(-maxPossiblePositionOfDividerAtIndex:,
 	-minPossiblePositionOfDividerAtIndex:,

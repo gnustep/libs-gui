@@ -1298,9 +1298,17 @@ void NSBeginAlertSheet(NSString *title,
   [NSApp beginSheet: panel
 	 modalForWindow: docWindow
 	 modalDelegate: modalDelegate
-	 didEndSelector: didEndSelector
+	 didEndSelector: willEndSelector
 	 contextInfo: contextInfo];
   [panel close];
+  if (modalDelegate && [modalDelegate respondsToSelector: didEndSelector])
+    {
+      void (*didEnd)(id, SEL, id, int, void*);
+
+      didEnd = (void (*)(id, SEL, id, int, void*))[modalDelegate methodForSelector: 
+								 didEndSelector];
+      didEnd(modalDelegate, didEndSelector, panel, [panel result], contextInfo);
+    }
   NSReleaseAlertPanel(panel);
 }
 
@@ -1330,9 +1338,17 @@ void NSBeginCriticalAlertSheet(NSString *title,
   [NSApp beginSheet: panel
 	 modalForWindow: docWindow
 	 modalDelegate: modalDelegate
-	 didEndSelector: didEndSelector
+	 didEndSelector: willEndSelector
 	 contextInfo: contextInfo];
   [panel close];
+  if (modalDelegate && [modalDelegate respondsToSelector: didEndSelector])
+    {
+      void (*didEnd)(id, SEL, id, int, void*);
+
+      didEnd = (void (*)(id, SEL, id, int, void*))[modalDelegate methodForSelector: 
+								 didEndSelector];
+      didEnd(modalDelegate, didEndSelector, panel, [panel result], contextInfo);
+    }
   NSReleaseAlertPanel(panel);
 }
 
@@ -1364,9 +1380,17 @@ void NSBeginInformationalAlertSheet(NSString *title,
   [NSApp beginSheet: panel
 	 modalForWindow: docWindow
 	 modalDelegate: modalDelegate
-	 didEndSelector: didEndSelector
+	 didEndSelector: willEndSelector
 	 contextInfo: contextInfo];
   [panel close];
+  if (modalDelegate && [modalDelegate respondsToSelector: didEndSelector])
+    {
+      void (*didEnd)(id, SEL, id, int, void*);
+
+      didEnd = (void (*)(id, SEL, id, int, void*))[modalDelegate methodForSelector: 
+								 didEndSelector];
+      didEnd(modalDelegate, didEndSelector, panel, [panel result], contextInfo);
+    }
   NSReleaseAlertPanel(panel);
 }
 
@@ -1635,23 +1659,14 @@ void NSBeginInformationalAlertSheet(NSString *title,
 		      contextInfo: (void *)contextInfo
 {
   [self _setupPanel];
-  if (GSCurrentThread() != GSAppKitThread)
-    {
-      [self performSelectorOnMainThread: _cmd
-			     withObject: nil
-			  waitUntilDone: YES];
-    }
-  else
-    {
-      _modalDelegate = delegate;
-      _didEndSelector = didEndSelector;
-      [NSApp beginSheet: _window
-	 modalForWindow: window
-	  modalDelegate: self
+  _modalDelegate = delegate;
+  _didEndSelector = didEndSelector;
+  [NSApp beginSheet: _window
+         modalForWindow: window
+         modalDelegate: self
          didEndSelector: @selector(_alertDidEnd:returnCode:contextInfo:)
-	    contextInfo: contextInfo];
-      DESTROY(_window);
-    }
+         contextInfo: contextInfo];
+  DESTROY(_window);
 }
 
 - (void) _alertDidEnd: (NSWindow *)sheet
