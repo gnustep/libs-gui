@@ -36,22 +36,23 @@
 
 @interface NSSplitView : NSView
 {
-  id	    _delegate;
-  float     _dividerWidth;
-  float     _draggedBarWidth;
-  BOOL      _isVertical;
+  id	      _delegate;
   NSImage  *_dimpleImage;
   NSColor  *_backgroundColor; 
   NSColor  *_dividerColor;
-  BOOL      _never_displayed_before;
   NSString *_autosaveName;
+  CGFloat   _dividerWidth;
+  CGFloat   _draggedBarWidth;
+  BOOL      _isVertical;
+  BOOL      _never_displayed_before;
+  BOOL      _is_pane_splitter;
 }
 
 - (void) setDelegate: (id)anObject;
 - (id) delegate;
 - (void) adjustSubviews;
 - (void) drawDividerInRect: (NSRect)aRect;
-- (float) dividerThickness;
+- (CGFloat) dividerThickness;
 
 /* Vertical splitview has a vertical split bar */ 
 - (void) setVertical: (BOOL)flag;
@@ -61,8 +62,15 @@
 - (BOOL) isSubviewCollapsed: (NSView *)subview;
 - (BOOL) isPaneSplitter;
 - (void) setIsPaneSplitter: (BOOL)flag;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 - (void) setAutosaveName: (NSString *)autosaveName;
 - (NSString *) autosaveName;
+
+- (CGFloat) maxPossiblePositionOfDividerAtIndex: (NSInteger)dividerIndex;
+- (CGFloat) minPossiblePositionOfDividerAtIndex: (NSInteger)dividerIndex;
+- (void) setPosition: (CGFloat)position ofDividerAtIndex: (NSInteger)dividerIndex;
 #endif
 
 @end
@@ -70,8 +78,8 @@
 #if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
 @interface NSSplitView (GNUstepExtra)
 /* extra methods to make it more usable */
-- (float) draggedBarWidth;
-- (void) setDraggedBarWidth: (float)newWidth;
+- (CGFloat) draggedBarWidth;
+- (void) setDraggedBarWidth: (CGFloat)newWidth;
 /* if flag is yes, dividerThickness is reset to the height/width of the dimple
    image + 1;
 */

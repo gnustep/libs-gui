@@ -1,3 +1,14 @@
+2009-04-07 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSSplitView.h
+	(-maxPossiblePositionOfDividerAtIndex:,
+	-minPossiblePositionOfDividerAtIndex:,
+	-setPosition:ofDividerAtIndex:): New MacOSX 10.5 methods. 
+	* Source/NSSplitView.m: Basic implementation of these methods. 
+	* Headers/AppKit/NSSplitView.h: Add ivars, will break binary compatibility.
+	* Source/NSSplitView.m (-isPaneSplitter, -setIsPaneSplitter:):
+	Implement these methods.
+
 2009-04-07 Sergii Stoian <stoyan255@gmail.com>
 
 	* Source/NSSplitView.m (-mouseDown:): When checking if divider

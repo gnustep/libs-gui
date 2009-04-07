@@ -76,6 +76,7 @@ static NSNotificationCenter *nc = nil;
 
       _never_displayed_before = YES;
       _autoresizes_subviews = NO;
+      _is_pane_splitter = YES;
     }
   return self;
 }
@@ -100,57 +101,57 @@ static NSNotificationCenter *nc = nil;
 {
   if (_autosaveName != nil) 
     {
-      NSUserDefaults      *defaults;
-      NSString            *splitViewKey;
+      NSUserDefaults *defaults;
+      NSString *splitViewKey;
       NSMutableDictionary *config;
-      NSArray	*subs = [self subviews];
-      unsigned	count = [subs count];
-      NSView	*views[count];
+      NSArray *subs = [self subviews];
+      unsigned count = [subs count];
+      NSView *views[count];
 
-      defaults  = [NSUserDefaults standardUserDefaults];
+      defaults = [NSUserDefaults standardUserDefaults];
       splitViewKey = [NSString stringWithFormat: @"NSSplitView Dividers %@", 
-			       _autosaveName];
+                               _autosaveName];
       config = [NSMutableDictionary new];
 
       [subs getObjects: views];
 
       /* Compute the proportions and store them.  */
       if (count > 0)
-	{
-	  int i;
-	  float  oldTotal = 0.0;
-	  NSRect frames[count];
-	  
-	  for (i = 0; i < count; i++)
-	    {
-	      frames[i] = [views[i] frame];
-	      if (_isVertical == NO)
-		{
-		  oldTotal +=  NSHeight(frames[i]);
-		}
-	      else
-		{
-		  oldTotal +=  NSWidth(frames[i]);
-		}
-	    }
+        {
+          int i;
+          float oldTotal = 0.0;
+          NSRect frames[count];
+          
+          for (i = 0; i < count; i++)
+            {
+              frames[i] = [views[i] frame];
+              if (_isVertical == NO)
+                {
+                  oldTotal +=  NSHeight(frames[i]);
+                }
+              else
+                {
+                  oldTotal +=  NSWidth(frames[i]);
+                }
+            }
 
-	  for (i = 0; i < (count - 1); i++)
-	    {
-	      double proportion;
-	      
-	      if (_isVertical == NO)
-		{
-		  proportion = (NSHeight(frames[i]))/oldTotal;
-		}
-	      else
-		{
-		  proportion = (NSWidth(frames[i]))/oldTotal;	      
-		}
-	      
-	      [config setObject: [NSNumber numberWithDouble: proportion]
-		      forKey: [NSNumber numberWithInt: i]];
-	    }
-	}
+          for (i = 0; i < (count - 1); i++)
+            {
+              double proportion;
+              
+              if (_isVertical == NO)
+                {
+                  proportion = (NSHeight(frames[i]))/oldTotal;
+                }
+              else
+                {
+                  proportion = (NSWidth(frames[i]))/oldTotal;              
+                }
+              
+              [config setObject: [NSNumber numberWithDouble: proportion]
+                      forKey: [NSNumber numberWithInt: i]];
+            }
+        }
       
       [defaults setObject: config  forKey: splitViewKey];
       [defaults synchronize];
@@ -165,22 +166,22 @@ static NSNotificationCenter *nc = nil;
 
 - (void) mouseDown: (NSEvent*)theEvent
 {
-  NSApplication	*app = [NSApplication sharedApplication];
-  static NSRect	oldRect; //only one can be dragged at a time
-  static BOOL	lit = NO;
-  NSPoint	p, op;
-  NSEvent	*e;
-  NSRect	r, r1, bigRect, vis;
-  id		v = nil, prev = nil;
-  float		minCoord, maxCoord;
-  NSArray	*subs = [self subviews];
-  int		offset = 0, i, count = [subs count];
-  float		divVertical, divHorizontal;
-  NSDate	*farAway = [NSDate distantFuture];
-  NSDate	*longTimeAgo = [NSDate distantPast];
-  unsigned	int eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask;
+  NSApplication *app = [NSApplication sharedApplication];
+  static NSRect oldRect; //only one can be dragged at a time
+  static BOOL lit = NO;
+  NSPoint p, op;
+  NSEvent *e;
+  NSRect r, r1, bigRect, vis;
+  id v = nil, prev = nil;
+  float minCoord, maxCoord;
+  NSArray *subs = [self subviews];
+  int offset = 0, i, count = [subs count];
+  float divVertical, divHorizontal;
+  NSDate *farAway = [NSDate distantFuture];
+  NSDate *longTimeAgo = [NSDate distantPast];
+  unsigned int eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask;
   /* YES if delegate implements splitView:constrainSplitPosition:ofSubviewAt:*/
-  BOOL          delegateConstrains = NO;
+  BOOL delegateConstrains = NO;
   SEL constrainSel = @selector(splitView:constrainSplitPosition:ofSubviewAt:);
   typedef float (*floatIMP)(id, SEL, id, float, int);
   floatIMP constrainImp = NULL;
@@ -205,72 +206,72 @@ static NSNotificationCenter *nc = nil;
       v = [subs objectAtIndex: i];
       r = [v frame];
       /* if the click is inside of a subview, return.  this should
-	 happen only if a subview has leaked a mouse down to next
-	 responder
-	 */
+         happen only if a subview has leaked a mouse down to next
+         responder
+         */
       if (NSPointInRect(p, r))
-	{
-	  NSDebugLLog(@"NSSplitView",
-	    @"NSSplitView got mouseDown in subview area");
-	  return;
-	}
+        {
+          NSDebugLLog(@"NSSplitView",
+            @"NSSplitView got mouseDown in subview area");
+          return;
+        }
       if (_isVertical == NO)
         {
-	  if (NSMinY(r) >= p.y)
+          if (NSMinY(r) >= p.y)
             {
-	      offset = i - 1;
+              offset = i - 1;
 
-	      /* get the enclosing rect for the two views */
-	      if (prev != nil)
-		{
-		  r = [prev frame];
-		}
-	      else
-		{
-		  /*
-		   * This happens if user pressed exactly on the
-		   * top of the top subview
-		   */
-		  return;
-		}
-	      if (v != nil)
-		{
-		  r1 = [v frame];
-		}
-	      bigRect = r;
-	      bigRect = NSUnionRect(r1 , bigRect);
-	      break;
+              /* get the enclosing rect for the two views */
+              if (prev != nil)
+                {
+                  r = [prev frame];
+                }
+              else
+                {
+                  /*
+                   * This happens if user pressed exactly on the
+                   * top of the top subview
+                   */
+                  return;
+                }
+              if (v != nil)
+                {
+                  r1 = [v frame];
+                }
+              bigRect = r;
+              bigRect = NSUnionRect(r1 , bigRect);
+              break;
             }
-	  prev = v;
+          prev = v;
         }
       else
         {
-	  if (NSMinX(r) >= p.x)
+          if (NSMinX(r) >= p.x)
             {
-	      offset = i - 1;
+              offset = i - 1;
 
-	      /* get the enclosing rect for the two views */
-	      if (prev != nil)
-		{
-		  r = [prev frame];
-		}
-	      else
-		{
-		  /*
-		   * This happens if user pressed exactly on the
-		   * left of the left subview
-		   */
-		  return;
-		}
-	      if (v != nil)
-		{
-		  r1 = [v frame];
-		}
-	      bigRect = r;
-	      bigRect = NSUnionRect(r1 , bigRect);
-	      break;
+              /* get the enclosing rect for the two views */
+              if (prev != nil)
+                {
+                  r = [prev frame];
+                }
+              else
+                {
+                  /*
+                   * This happens if user pressed exactly on the
+                   * left of the left subview
+                   */
+                  return;
+                }
+              if (v != nil)
+                {
+                  r1 = [v frame];
+                }
+              bigRect = r;
+              bigRect = NSUnionRect(r1 , bigRect);
+              break;
             }
-	  prev = v;
+          prev = v;
         }
     }
 
@@ -278,8 +279,8 @@ static NSNotificationCenter *nc = nil;
      certain positions */
   if (_delegate 
       && [_delegate 
-	   respondsToSelector:
-	     @selector(splitView:constrainSplitPosition:ofSubviewAt:)])
+           respondsToSelector:
+             @selector(splitView:constrainSplitPosition:ofSubviewAt:)])
     {
       delegateConstrains = YES;
     }
@@ -308,40 +309,40 @@ static NSNotificationCenter *nc = nil;
       float delMin = minCoord, delMax = maxCoord;
 
       if ([_delegate respondsToSelector:
-		     @selector(splitView:constrainMinCoordinate:maxCoordinate:ofSubviewAt:)])
+                     @selector(splitView:constrainMinCoordinate:maxCoordinate:ofSubviewAt:)])
         {
-	  [_delegate splitView: self
-		     constrainMinCoordinate: &delMin
-		     maxCoordinate: &delMax
-		     ofSubviewAt: offset];
-	}
+          [_delegate splitView: self
+                     constrainMinCoordinate: &delMin
+                     maxCoordinate: &delMax
+                     ofSubviewAt: offset];
+        }
       else 
         {
-	  if ([_delegate respondsToSelector:
-			 @selector(splitView:constrainMinCoordinate:ofSubviewAt:)])
-	    {
-	      delMin = [_delegate splitView: self
-				  constrainMinCoordinate: minCoord
-				  ofSubviewAt: offset];
-	    }
-	  if ([_delegate respondsToSelector:
-			 @selector(splitView:constrainMaxCoordinate:ofSubviewAt:)])
-	    {
-	      delMax = [_delegate splitView: self
-				  constrainMaxCoordinate: maxCoord
-				  ofSubviewAt: offset];
-	    }
-	}
+          if ([_delegate respondsToSelector:
+                         @selector(splitView:constrainMinCoordinate:ofSubviewAt:)])
+            {
+              delMin = [_delegate splitView: self
+                                  constrainMinCoordinate: minCoord
+                                  ofSubviewAt: offset];
+            }
+          if ([_delegate respondsToSelector:
+                         @selector(splitView:constrainMaxCoordinate:ofSubviewAt:)])
+            {
+              delMax = [_delegate splitView: self
+                                  constrainMaxCoordinate: maxCoord
+                                  ofSubviewAt: offset];
+            }
+        }
 
       /* we are still constrained by the original bounds */
       if (delMin > minCoord)
         {
-	  minCoord = delMin;
-	}
+          minCoord = delMin;
+        }
       if (delMax < maxCoord)
         {
-	  maxCoord = delMax;
-	}
+          maxCoord = delMax;
+        }
     }
 
   oldRect = NSZeroRect;
@@ -353,9 +354,9 @@ static NSNotificationCenter *nc = nil;
   r.size.width = divHorizontal;
   r.size.height = divVertical;
   e = [app nextEventMatchingMask: eventMask
-		       untilDate: farAway
-			  inMode: NSEventTrackingRunLoopMode
-			 dequeue: YES];
+                       untilDate: farAway
+                          inMode: NSEventTrackingRunLoopMode
+                         dequeue: YES];
 
   if (delegateConstrains)
     {
@@ -370,217 +371,217 @@ static NSNotificationCenter *nc = nil;
     {
       p = [self convertPoint: [e locationInWindow] fromView: nil];
       if (delegateConstrains)
-	{
-	  if (_isVertical)
-	    {
-	      p.x = (*constrainImp)(_delegate, constrainSel, self,
-				    p.x, offset);
-	    }
-	  else
-	    {
-	      p.y = (*constrainImp)(_delegate, constrainSel, self,
-				    p.y, offset);
-	    }
-	}
+        {
+          if (_isVertical)
+            {
+              p.x = (*constrainImp)(_delegate, constrainSel, self,
+                                    p.x, offset);
+            }
+          else
+            {
+              p.y = (*constrainImp)(_delegate, constrainSel, self,
+                                    p.y, offset);
+            }
+        }
       
       if (_isVertical == NO)
-	{
-	  if (p.y < minCoord)
-	    {
-	      p.y = minCoord;
-	    }
-	  if (p.y > maxCoord)
-	    {
-	      p.y = maxCoord;
-	    }
-	  r.origin.y = p.y - (divVertical/2.);
-	  r.origin.x = NSMinX(vis);
-	}
+        {
+          if (p.y < minCoord)
+            {
+              p.y = minCoord;
+            }
+          if (p.y > maxCoord)
+            {
+              p.y = maxCoord;
+            }
+          r.origin.y = p.y - (divVertical/2.);
+          r.origin.x = NSMinX(vis);
+        }
       else
-	{
-	  if (p.x < minCoord)
-	    {
-	      p.x = minCoord;
-	    }
-	  if (p.x > maxCoord)
-	    {
-	      p.x = maxCoord;
-	    }
-	  r.origin.x = p.x - (divHorizontal/2.);
-	  r.origin.y = NSMinY(vis);
-	}
+        {
+          if (p.x < minCoord)
+            {
+              p.x = minCoord;
+            }
+          if (p.x > maxCoord)
+            {
+              p.x = maxCoord;
+            }
+          r.origin.x = p.x - (divHorizontal/2.);
+          r.origin.y = NSMinY(vis);
+        }
       if (NSEqualRects(r, oldRect) == NO)
-	{
-	  NSDebugLLog(@"NSSplitView", @"drawing divider at %@\n",
-		      NSStringFromRect(r));
-	  [_dividerColor set];
-	
-	    
-	  if (lit == YES)
-	    {
-	      if (_isVertical == NO)
-		{
-		  if ((NSMinY(r) > NSMaxY(oldRect)) 
-		      || (NSMaxY(r) < NSMinY(oldRect)))
-		    // the two rects don't intersect
-		    {
-		      NSHighlightRect(oldRect);
-		      NSHighlightRect(r);
-		    }
-		  else
-		    // the two rects intersect
-		    {
-		      if (NSMinY(r) > NSMinY(oldRect))
-			{
-			  NSRect onRect, offRect;
-			  onRect.size.width = r.size.width;
-			  onRect.origin.x = r.origin.x;
-			  offRect.size.width = r.size.width;
-			  offRect.origin.x = r.origin.x;
+        {
+          NSDebugLLog(@"NSSplitView", @"drawing divider at %@\n",
+                      NSStringFromRect(r));
+          [_dividerColor set];
+        
+            
+          if (lit == YES)
+            {
+              if (_isVertical == NO)
+                {
+                  if ((NSMinY(r) > NSMaxY(oldRect)) 
+                      || (NSMaxY(r) < NSMinY(oldRect)))
+                    // the two rects don't intersect
+                    {
+                      NSHighlightRect(oldRect);
+                      NSHighlightRect(r);
+                    }
+                  else
+                    // the two rects intersect
+                    {
+                      if (NSMinY(r) > NSMinY(oldRect))
+                        {
+                          NSRect onRect, offRect;
+                          onRect.size.width = r.size.width;
+                          onRect.origin.x = r.origin.x;
+                          offRect.size.width = r.size.width;
+                          offRect.origin.x = r.origin.x;
 
-			  offRect.origin.y = NSMinY(oldRect);
-			  offRect.size.height = 
-			    NSMinY(r) - NSMinY(oldRect);
+                          offRect.origin.y = NSMinY(oldRect);
+                          offRect.size.height = 
+                            NSMinY(r) - NSMinY(oldRect);
 
-			  onRect.origin.y = NSMaxY(oldRect);
-			  onRect.size.height = 
-			    NSMaxY(r) - NSMaxY(oldRect);
+                          onRect.origin.y = NSMaxY(oldRect);
+                          onRect.size.height = 
+                            NSMaxY(r) - NSMaxY(oldRect);
 
-			  NSHighlightRect(onRect);
-			  NSHighlightRect(offRect);
+                          NSHighlightRect(onRect);
+                          NSHighlightRect(offRect);
 
-			  //NSLog(@"on : %@", NSStringFromRect(onRect));
-			  //NSLog(@"off : %@", NSStringFromRect(offRect));
-			  //NSLog(@"old : %@", NSStringFromRect(oldRect));
-			  //NSLog(@"r : %@", NSStringFromRect(r));
-			}
-		      else
-			{
-			  NSRect onRect, offRect;
-			  onRect.size.width = r.size.width;
-			  onRect.origin.x = r.origin.x;
-			  offRect.size.width = r.size.width;
-			  offRect.origin.x = r.origin.x;
+                          //NSLog(@"on : %@", NSStringFromRect(onRect));
+                          //NSLog(@"off : %@", NSStringFromRect(offRect));
+                          //NSLog(@"old : %@", NSStringFromRect(oldRect));
+                          //NSLog(@"r : %@", NSStringFromRect(r));
+                        }
+                      else
+                        {
+                          NSRect onRect, offRect;
+                          onRect.size.width = r.size.width;
+                          onRect.origin.x = r.origin.x;
+                          offRect.size.width = r.size.width;
+                          offRect.origin.x = r.origin.x;
 
-			  offRect.origin.y = NSMaxY(r);
-			  offRect.size.height = 
-			    NSMaxY(oldRect) - NSMaxY(r);
+                          offRect.origin.y = NSMaxY(r);
+                          offRect.size.height = 
+                            NSMaxY(oldRect) - NSMaxY(r);
 
-			  onRect.origin.y = NSMinY(r);
-			  onRect.size.height = 
-			    NSMinY(oldRect) - NSMinY(r);
+                          onRect.origin.y = NSMinY(r);
+                          onRect.size.height = 
+                            NSMinY(oldRect) - NSMinY(r);
 
-			  NSHighlightRect(onRect);
-			  NSHighlightRect(offRect);
+                          NSHighlightRect(onRect);
+                          NSHighlightRect(offRect);
 
-			  //NSLog(@"on : %@", NSStringFromRect(onRect));
-			  //NSLog(@"off : %@", NSStringFromRect(offRect));
-			  //NSLog(@"old : %@", NSStringFromRect(oldRect));
-			  //NSLog(@"r : %@", NSStringFromRect(r));
-			}
-		    }
-		}
-	      else
-		{
-		  if ((NSMinX(r) > NSMaxX(oldRect)) 
-		      || (NSMaxX(r) < NSMinX(oldRect)))
-		    // the two rects don't intersect
-		    {
-		      NSHighlightRect (oldRect);
-		      NSHighlightRect(r);
-		    }
-		  else
-		    // the two rects intersect
-		    {
-		      if (NSMinX(r) > NSMinX(oldRect))
-			{
-			  NSRect onRect, offRect;
-			  onRect.size.height = r.size.height;
-			  onRect.origin.y = r.origin.y;
-			  offRect.size.height = r.size.height;
-			  offRect.origin.y = r.origin.y;
+                          //NSLog(@"on : %@", NSStringFromRect(onRect));
+                          //NSLog(@"off : %@", NSStringFromRect(offRect));
+                          //NSLog(@"old : %@", NSStringFromRect(oldRect));
+                          //NSLog(@"r : %@", NSStringFromRect(r));
+                        }
+                    }
+                }
+              else
+                {
+                  if ((NSMinX(r) > NSMaxX(oldRect)) 
+                      || (NSMaxX(r) < NSMinX(oldRect)))
+                    // the two rects don't intersect
+                    {
+                      NSHighlightRect(oldRect);
+                      NSHighlightRect(r);
+                    }
+                  else
+                    // the two rects intersect
+                    {
+                      if (NSMinX(r) > NSMinX(oldRect))
+                        {
+                          NSRect onRect, offRect;
+                          onRect.size.height = r.size.height;
+                          onRect.origin.y = r.origin.y;
+                          offRect.size.height = r.size.height;
+                          offRect.origin.y = r.origin.y;
 
-			  offRect.origin.x = NSMinX(oldRect);
-			  offRect.size.width = 
-			    NSMinX(r) - NSMinX(oldRect);
+                          offRect.origin.x = NSMinX(oldRect);
+                          offRect.size.width = 
+                            NSMinX(r) - NSMinX(oldRect);
 
-			  onRect.origin.x = NSMaxX(oldRect);
-			  onRect.size.width = 
-			    NSMaxX(r) - NSMaxX(oldRect);
+                          onRect.origin.x = NSMaxX(oldRect);
+                          onRect.size.width = 
+                            NSMaxX(r) - NSMaxX(oldRect);
 
-			  NSHighlightRect(onRect);
-			  NSHighlightRect(offRect);
-			}
-		      else
-			{
-			  NSRect onRect, offRect;
-			  onRect.size.height = r.size.height;
-			  onRect.origin.y = r.origin.y;
-			  offRect.size.height = r.size.height;
-			  offRect.origin.y = r.origin.y;
+                          NSHighlightRect(onRect);
+                          NSHighlightRect(offRect);
+                        }
+                      else
+                        {
+                          NSRect onRect, offRect;
+                          onRect.size.height = r.size.height;
+                          onRect.origin.y = r.origin.y;
+                          offRect.size.height = r.size.height;
+                          offRect.origin.y = r.origin.y;
 
-			  offRect.origin.x = NSMaxX(r);
-			  offRect.size.width = 
-			    NSMaxX(oldRect) - NSMaxX(r);
+                          offRect.origin.x = NSMaxX(r);
+                          offRect.size.width = 
+                            NSMaxX(oldRect) - NSMaxX(r);
 
-			  onRect.origin.x = NSMinX(r);
-			  onRect.size.width = 
-			    NSMinX(oldRect) - NSMinX(r);
+                          onRect.origin.x = NSMinX(r);
+                          onRect.size.width = 
+                            NSMinX(oldRect) - NSMinX(r);
 
-			  NSHighlightRect(onRect);
-			  NSHighlightRect(offRect);
-			}
-		    }
+                          NSHighlightRect(onRect);
+                          NSHighlightRect(offRect);
+                        }
+                    }
 
-		}
-	    }
-	  else
-	    {
-	      NSHighlightRect(r);
-	    }
-	  [_window flushWindow];
-	  /*
-	  if (lit == YES)
-	    {
-	      NSHighlightRect(oldRect);
-	      lit = NO;
-	    }
-	  NSHighlightRect(r);
-	  */
-	  lit = YES;
-	  oldRect = r;
-	}
+                }
+            }
+          else
+            {
+              NSHighlightRect(r);
+            }
+          [_window flushWindow];
+          /*
+          if (lit == YES)
+            {
+              NSHighlightRect(oldRect);
+              lit = NO;
+            }
+          NSHighlightRect(r);
+          */
+          lit = YES;
+          oldRect = r;
+        }
 
       {
-	NSEvent *ee;
+        NSEvent *ee;
 
-	e = [app nextEventMatchingMask: eventMask
-		  untilDate: farAway
-		  inMode: NSEventTrackingRunLoopMode
-		  dequeue: YES];
+        e = [app nextEventMatchingMask: eventMask
+                  untilDate: farAway
+                  inMode: NSEventTrackingRunLoopMode
+                  dequeue: YES];
 
-	if ((ee = [app nextEventMatchingMask: NSLeftMouseUpMask
-		       untilDate: longTimeAgo
-		       inMode: NSEventTrackingRunLoopMode
-		       dequeue: YES]) != nil)
-	  {
-	    [app discardEventsMatchingMask:NSLeftMouseDraggedMask
-		 beforeEvent:ee];
-	    e = ee;
-	  }
-	else
-	  {
-	    ee = e;
-	    do
-	      {
-		e = ee;
-		ee = [app nextEventMatchingMask: NSLeftMouseDraggedMask
-			  untilDate: longTimeAgo
-			  inMode: NSEventTrackingRunLoopMode
-			  dequeue: YES];
-	      }
-	    while (ee != nil);
-	  }
+        if ((ee = [app nextEventMatchingMask: NSLeftMouseUpMask
+                       untilDate: longTimeAgo
+                       inMode: NSEventTrackingRunLoopMode
+                       dequeue: YES]) != nil)
+          {
+            [app discardEventsMatchingMask:NSLeftMouseDraggedMask
+                 beforeEvent:ee];
+            e = ee;
+          }
+        else
+          {
+            ee = e;
+            do
+              {
+                e = ee;
+                ee = [app nextEventMatchingMask: NSLeftMouseDraggedMask
+                          untilDate: longTimeAgo
+                          inMode: NSEventTrackingRunLoopMode
+                          dequeue: YES];
+              }
+            while (ee != nil);
+          }
       }
       
     }
@@ -607,7 +608,7 @@ static NSNotificationCenter *nc = nil;
     }
 
   [nc postNotificationName: NSSplitViewWillResizeSubviewsNotification
-		    object: self];
+                    object: self];
 
   /* resize the subviews accordingly */
   r = [prev frame];
@@ -615,58 +616,58 @@ static NSNotificationCenter *nc = nil;
     {
       r.size.height = p.y - NSMinY(bigRect) - (divVertical/2.);
       if (NSHeight(r) < 1.)
-	{
-	  r.size.height = 1.;
-	}
+        {
+          r.size.height = 1.;
+        }
     }
   else
     {
       r.size.width = p.x - NSMinX(bigRect) - (divHorizontal/2.);
       if (NSWidth(r) < 1.)
-	{
-	  r.size.width = 1.;
-	}
+        {
+          r.size.width = 1.;
+        }
     }
   [prev setFrame: r];
   NSDebugLLog(@"NSSplitView", @"drawing PREV at x: %d, y: %d, w: %d, h: %d\n",
-	     (int)NSMinX(r),(int)NSMinY(r),(int)NSWidth(r),(int)NSHeight(r));
+             (int)NSMinX(r),(int)NSMinY(r),(int)NSWidth(r),(int)NSHeight(r));
 
   r1 = [v frame];
   if (_isVertical == NO)
     {
       r1.origin.y = p.y + (divVertical/2.);
       if (NSMinY(r1) < 0.)
-	{
-	  r1.origin.y = 0.;
-	}
+        {
+          r1.origin.y = 0.;
+        }
       r1.size.height = NSHeight(bigRect) - NSHeight(r) - divVertical;
       if (NSHeight(r) < 1.)
-	{
-	  r.size.height = 1.;
-	}
+        {
+          r.size.height = 1.;
+        }
     }
   else
     {
       r1.origin.x = p.x + (divHorizontal/2.);
       if (NSMinX(r1) < 0.)
-	{
-	  r1.origin.x = 0.;
-	}
+        {
+          r1.origin.x = 0.;
+        }
       r1.size.width = NSWidth(bigRect) - NSWidth(r) - divHorizontal;
       if (NSWidth(r1) < 1.)
-	{
-	  r1.size.width = 1.;
-	}
+        {
+          r1.size.width = 1.;
+        }
     }
   [v setFrame: r1];
   NSDebugLLog(@"NSSplitView", @"drawing LAST at x: %d, y: %d, w: %d, h: %d\n",
-	     (int)NSMinX(r1),(int)NSMinY(r1),(int)NSWidth(r1),
-	     (int)NSHeight(r1));
+             (int)NSMinX(r1),(int)NSMinY(r1),(int)NSWidth(r1),
+             (int)NSHeight(r1));
 
   [_window invalidateCursorRectsForView: self];
 
   [nc postNotificationName: NSSplitViewDidResizeSubviewsNotification
-		    object: self];
+                    object: self];
 
   [self _autosaveSubviewProportions];
 
@@ -695,13 +696,13 @@ static NSNotificationCenter *nc = nil;
    * no autosaved view proportions, then manually adjust subviews
    * proportionally to their current sizes.
    */
-  NSArray	*subs = [self subviews];
-  unsigned	count = [subs count];
-  NSView	*views[count];
-  NSSize	newSize;
-  NSPoint	newPoint;
-  unsigned	i;
-  BOOL   autoloading = NO;
+  NSArray *subs = [self subviews];
+  unsigned count = [subs count];
+  NSView *views[count];
+  NSSize newSize;
+  NSPoint newPoint;
+  unsigned i;
+  BOOL autoloading = NO;
   double proportions[count];
 
   if (count == 0)
@@ -715,38 +716,38 @@ static NSNotificationCenter *nc = nil;
    * whole area occupied by the views.  */
   if (_autosaveName != nil) 
     { 
-      NSUserDefaults     *defaults;
-      NSDictionary       *config;
-      NSString           *splitViewKey;
+      NSUserDefaults *defaults;
+      NSDictionary *config;
+      NSString *splitViewKey;
       
       defaults  = [NSUserDefaults standardUserDefaults];
       splitViewKey = [NSString stringWithFormat: @"NSSplitView Dividers %@", 
-			       _autosaveName];
+                               _autosaveName];
       config = [defaults objectForKey: splitViewKey];
       if (config != nil) 
-	{
-	  autoloading = YES;
-	  /* Please note that we don't save the 'proportion' of the
-	   * last view; it will be set up to take exactly the
-	   * remaining available space.  */
-	  for (i = 0; i < (count - 1); i++)
-	    {
-	      NSNumber *proportion = [config objectForKey: [NSNumber numberWithInt: i]];
+        {
+          autoloading = YES;
+          /* Please note that we don't save the 'proportion' of the
+           * last view; it will be set up to take exactly the
+           * remaining available space.  */
+          for (i = 0; i < (count - 1); i++)
+            {
+              NSNumber *proportion = [config objectForKey: [NSNumber numberWithInt: i]];
 
-	      if (proportion == nil)
-		{
-		  /* If any autosaved proportion is missing, do not do
-		   * any autoloading.
-		   */
-		  autoloading = NO;
-		  break;
-		}
-	      else
-		{
-		  proportions[i] = [proportion doubleValue];
-		}
-	    }
-	}
+              if (proportion == nil)
+                {
+                  /* If any autosaved proportion is missing, do not do
+                   * any autoloading.
+                   */
+                  autoloading = NO;
+                  break;
+                }
+              else
+                {
+                  proportions[i] = [proportion doubleValue];
+                }
+            }
+        }
     }
 
   [subs getObjects: views];
@@ -755,33 +756,33 @@ static NSNotificationCenter *nc = nil;
    * default proportions using the current view sizes.  */
   if (autoloading == NO)
     {
-      float  oldTotal = 0.0;
+      float oldTotal = 0.0;
       NSRect frames[count];
       
       for (i = 0; i < count; i++)
-	{
-	  frames[i] = [views[i] frame];
-	  if (_isVertical == NO)
-	    {
-	      oldTotal +=  NSHeight(frames[i]);
-	    }
-	  else
-	    {
-	      oldTotal +=  NSWidth(frames[i]);
-	    }
-	}
+        {
+          frames[i] = [views[i] frame];
+          if (_isVertical == NO)
+            {
+              oldTotal +=  NSHeight(frames[i]);
+            }
+          else
+            {
+              oldTotal +=  NSWidth(frames[i]);
+            }
+        }
 
       for (i = 0; i < (count - 1); i++)
-	{
-	  if (_isVertical == NO)
-	    {
-	      proportions[i] = (NSHeight(frames[i]))/oldTotal;
-	    }
-	  else
-	    {
-	      proportions[i] = (NSWidth(frames[i]))/oldTotal;	      
-	    }
-	}
+        {
+          if (_isVertical == NO)
+            {
+              proportions[i] = (NSHeight(frames[i]))/oldTotal;
+            }
+          else
+            {
+              proportions[i] = (NSWidth(frames[i]))/oldTotal;              
+            }
+        }
     }
 
   if (_isVertical == NO)
@@ -790,25 +791,25 @@ static NSNotificationCenter *nc = nil;
       float running = 0.0;
 
       for (i = 0; i < count; i++)
-	{
-	  float	newHeight;
-	  
-	  if (i < (count - 1))
-	    {
-	      newHeight = proportions[i] * newTotal;
-	    }
-	  else
-	    {
-	      /* Size the last view to take exactly the remaining
-	       * space.  */
-	      newHeight = NSHeight(_bounds) - running;
-	    }
-	  newSize = NSMakeSize(NSWidth(_bounds), newHeight);
-	  newPoint = NSMakePoint(0.0, running);
-	  running += newHeight + _dividerWidth;
-	  [views[i] setFrameSize: newSize];
-	  [views[i] setFrameOrigin: newPoint];
-	}
+        {
+          float newHeight;
+          
+          if (i < (count - 1))
+            {
+              newHeight = proportions[i] * newTotal;
+            }
+          else
+            {
+              /* Size the last view to take exactly the remaining
+               * space.  */
+              newHeight = NSHeight(_bounds) - running;
+            }
+          newSize = NSMakeSize(NSWidth(_bounds), newHeight);
+          newPoint = NSMakePoint(0.0, running);
+          running += newHeight + _dividerWidth;
+          [views[i] setFrameSize: newSize];
+          [views[i] setFrameOrigin: newPoint];
+        }
     }
   else
     {
@@ -816,23 +817,23 @@ static NSNotificationCenter *nc = nil;
       float running = 0.0;
 
       for (i = 0; i < count; i++)
-	{
-	  float	newWidth;
-	  
-	  if (i < (count - 1))
-	    {
-	      newWidth = proportions[i] * newTotal;
-	    }
-	  else
-	    {
-	      newWidth = NSWidth(_bounds) - running;
-	    }
-	  newSize = NSMakeSize(newWidth, NSHeight(_bounds));
-	  newPoint = NSMakePoint(running, 0.0);
-	  running += newWidth + _dividerWidth;
-	  [views[i] setFrameSize: newSize];
-	  [views[i] setFrameOrigin: newPoint];
-	}
+        {
+          float newWidth;
+          
+          if (i < (count - 1))
+            {
+              newWidth = proportions[i] * newTotal;
+            }
+          else
+            {
+              newWidth = NSWidth(_bounds) - running;
+            }
+          newSize = NSMakeSize(newWidth, NSHeight(_bounds));
+          newPoint = NSMakePoint(running, 0.0);
+          running += newWidth + _dividerWidth;
+          [views[i] setFrameSize: newSize];
+          [views[i] setFrameOrigin: newPoint];
+        }
     }
 
   [self setNeedsDisplay: YES];
@@ -848,7 +849,7 @@ static NSNotificationCenter *nc = nil;
     }
 }
 
-- (float) dividerThickness 
+- (CGFloat) dividerThickness 
 {
   /*
    * You need to override this method in subclasses to change the
@@ -889,7 +890,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       dimpleOrigin.y += dimpleSize.height;
     }
   [_dimpleImage compositeToPoint: dimpleOrigin 
-		operation: NSCompositeSourceOver];
+                operation: NSCompositeSourceOver];
 }
 
 /* Vertical splitview has a vertical split bar */
@@ -905,19 +906,17 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 
 - (BOOL) isSubviewCollapsed: (NSView *)subview
 {
-  // FIXME
-  return NO;
+  return NSIsEmptyRect([subview frame]);
 }
 
 - (BOOL) isPaneSplitter
 {
-  /* TODO */
-  return NO;
+  return _is_pane_splitter;
 }
 
 - (void) setIsPaneSplitter: (BOOL)flag
 {
-  /* TODO */
+  _is_pane_splitter = flag;
 }
 
 - (NSString *) autosaveName
@@ -929,6 +928,149 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 {
   ASSIGN(_autosaveName, autosaveName);
 }
+
+- (CGFloat) maxPossiblePositionOfDividerAtIndex: (NSInteger)dividerIndex
+{
+  NSArray *subs = [self subviews];
+  unsigned count = [subs count];
+  NSView *view;
+
+  if ((dividerIndex >= count - 1) || (dividerIndex < 0))
+    {
+      if (_isVertical)
+        {
+          return NSMaxX([self bounds]);
+        }
+      else
+        {
+          return NSMaxY([self bounds]);
+        }
+    }
+
+  view = [subs objectAtIndex: dividerIndex + 1];
+  if (_isVertical)
+    {
+      return NSMaxX([view frame]);
+    }
+  else
+    {
+      return NSMaxY([view frame]);
+    }
+}
+
+- (CGFloat) minPossiblePositionOfDividerAtIndex: (NSInteger)dividerIndex
+{
+  NSArray *subs = [self subviews];
+  unsigned count = [subs count];
+  NSView *view;
+
+  if ((dividerIndex >= count - 1) || (dividerIndex < 0))
+    {
+      if (_isVertical)
+        {
+          return NSMinX([self bounds]);
+        }
+      else
+        {
+          return NSMinY([self bounds]);
+        }
+    }
+
+  view = [subs objectAtIndex: dividerIndex];
+  if (_isVertical)
+    {
+      return NSMinX([view frame]);
+    }
+  else
+    {
+      return NSMinY([view frame]);
+    }
+}
+
+- (void) setPosition: (CGFloat)position 
+    ofDividerAtIndex: (NSInteger)dividerIndex
+{
+  NSArray *subs = [self subviews];
+  unsigned count = [subs count];
+  CGFloat old_position;
+  NSView *prev;
+  NSView *next;
+  NSRect r, r1;
+
+  if ((dividerIndex >= count - 1) || (dividerIndex < 0))
+    {
+      return;
+    }
+
+  if (_delegate && 
+      [_delegate respondsToSelector: 
+                     @selector(splitView:constrainSplitPosition:ofSubviewAt:)])
+    {
+       position = [_delegate splitView: self
+                             constrainSplitPosition: position
+                             ofSubviewAt: dividerIndex]; 
+    }
+
+  // FIXME
+  [nc postNotificationName: NSSplitViewWillResizeSubviewsNotification
+                    object: self];
+
+  prev = [subs objectAtIndex: dividerIndex];
+  next = [subs objectAtIndex: dividerIndex + 1];
+  r = [prev frame];
+  r1 = [next frame];
+  // Compute the old split position
+  if (_isVertical == NO)
+    {
+      old_position = (NSMaxY(r) + NSMinY(r1)) / 2;
+    }
+  else
+    {
+      old_position = (NSMaxX(r) + NSMinX(r1)) / 2;
+    }
+
+  // Compute new rectangles
+  if (_isVertical == NO)
+    {
+      r.size.height += position - old_position;
+      if (NSHeight(r) < 1.)
+        {
+          r.size.height = 1.;
+        }
+    }
+  else
+    {
+      r.size.width += position - old_position;
+      if (NSWidth(r) < 1.)
+        {
+          r.size.width = 1.;
+        }
+    }
+
+  if (_isVertical == NO)
+    {
+      r1.origin.y += position - old_position;
+      r1.size.height -= position - old_position;
+      if (NSHeight(r) < 1.)
+        {
+          r.size.height = 1.;
+        }
+    }
+  else
+    {
+      r1.origin.x += position - old_position;
+      r1.size.width -= position - old_position;
+      if (NSWidth(r1) < 1.)
+        {
+          r1.size.width = 1.;
+        }
+    }
+
+  /* resize the subviews accordingly */
+  [prev setFrame: r];
+  [next setFrame: r1];
+}
+
 
 /* Overridden Methods */
 - (void) drawRect: (NSRect)r
@@ -950,15 +1092,15 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       v = [subs objectAtIndex: i];
       divRect = [v frame];
       if (_isVertical == NO)
-	{
-	  divRect.origin.y = NSMaxY (divRect);
-	  divRect.size.height = _dividerWidth;
-	}
+        {
+          divRect.origin.y = NSMaxY (divRect);
+          divRect.size.height = _dividerWidth;
+        }
       else
-	{
-	  divRect.origin.x = NSMaxX (divRect);
-	  divRect.size.width = _dividerWidth;
-	}
+        {
+          divRect.origin.x = NSMaxX (divRect);
+          divRect.size.width = _dividerWidth;
+        }
       [self drawDividerInRect: divRect];
     }
 }
@@ -1012,9 +1154,9 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 #define SET_DELEGATE_NOTIFICATION(notif_name) \
   if ([_delegate respondsToSelector: @selector(splitView##notif_name:)]) \
     [nc addObserver: _delegate \
-	   selector: @selector(splitView##notif_name:) \
-	       name: NSSplitView##notif_name##Notification \
-	     object: self]
+           selector: @selector(splitView##notif_name:) \
+               name: NSSplitView##notif_name##Notification \
+             object: self]
 
   SET_DELEGATE_NOTIFICATION(DidResizeSubviews);
   SET_DELEGATE_NOTIFICATION(WillResizeSubviews);
@@ -1034,19 +1176,19 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   else
     {
       /*
-       *	Encode objects we don't own.
+       *        Encode objects we don't own.
        */
       [aCoder encodeConditionalObject: _delegate];
       
       /*
-       *	Encode the objects we do own.
+       *        Encode the objects we do own.
        */
       [aCoder encodeObject: _dimpleImage];
       [aCoder encodeObject: _backgroundColor];
       [aCoder encodeObject: _dividerColor];
       
       /*
-       *	Encode the rest of the ivar data.
+       *        Encode the rest of the ivar data.
        */
       [aCoder encodeValueOfObjCType: @encode(int) at: &_draggedBarWidth];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isVertical];
@@ -1061,13 +1203,13 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
     {
       if ([aDecoder containsValueForKey: @"NSIsVertical"])
         {
-	  [self setVertical: [aDecoder decodeBoolForKey: @"NSIsVertical"]];
-	}
+          [self setVertical: [aDecoder decodeBoolForKey: @"NSIsVertical"]];
+        }
 
       if ([aDecoder containsValueForKey: @"NSAutosaveName"])
         {
-	  [self setAutosaveName: [aDecoder decodeObjectForKey: @"NSAutosaveName"]];
-	}
+          [self setAutosaveName: [aDecoder decodeObjectForKey: @"NSAutosaveName"]];
+        }
 
       _dividerWidth = [self dividerThickness];
       _draggedBarWidth = 8; // default bigger than dividerThickness
@@ -1075,6 +1217,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       ASSIGN(_backgroundColor, [NSColor controlBackgroundColor]);
       ASSIGN(_dimpleImage, [NSImage imageNamed: @"common_Dimple"]); 
       _never_displayed_before = YES;
+      _is_pane_splitter = YES;
     }
   else
     {
@@ -1084,7 +1227,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       // Decode objects that we do retain.
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_dimpleImage];
       if (_dimpleImage == nil)
-	ASSIGN(_dimpleImage, [NSImage imageNamed: @"common_Dimple"]);
+        ASSIGN(_dimpleImage, [NSImage imageNamed: @"common_Dimple"]);
 
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_backgroundColor];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_dividerColor];
@@ -1108,13 +1251,13 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
  * FIXME: Perhaps the following two should be removed and _dividerWidth 
  * should be used also for dragging?
  */
-- (float) draggedBarWidth
+- (CGFloat) draggedBarWidth
 {
   //defaults to 8
   return _draggedBarWidth;
 }
 
-- (void) setDraggedBarWidth: (float)newWidth
+- (void) setDraggedBarWidth: (CGFloat)newWidth
 {
   _draggedBarWidth = newWidth;
 }
@@ -1128,11 +1271,11 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       NSSize s = NSMakeSize(6., 6.);
 
       if (_dimpleImage)
-	s = [_dimpleImage size];
+        s = [_dimpleImage size];
       if (_isVertical)
-	_dividerWidth = s.width;
+        _dividerWidth = s.width;
       else
-	_dividerWidth = s.height;
+        _dividerWidth = s.height;
     }
 }
 
