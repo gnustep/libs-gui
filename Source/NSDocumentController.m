@@ -122,7 +122,6 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
 - (IBAction) _openRecentDocument: (id)sender;
 @end
 
-
 /** <p>
     NSDocumentController is a class that controls a set of NSDocuments
     for an application. As an application delegate, it responds to the
@@ -1173,9 +1172,14 @@ static BOOL _shouldClose = YES;
 
 - (NSString *) typeForContentsOfURL: (NSURL *)url error: (NSError **)err
 {
-  // FIXME: open connection and get response to determine mine/type
-  // Should we only do this if [url isFileURL] is YES?
-  return [self typeFromFileExtension: [[url path] pathExtension]];
+  NSString *type = [self typeFromFileExtension: [[url path] pathExtension]];
+
+  if([url isFileURL] == NO && type == nil)
+    {
+      return [self defaultType];
+    }
+
+  return type;
 }
 
 - (NSArray *) fileExtensionsFromType: (NSString *)type

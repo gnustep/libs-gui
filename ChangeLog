@@ -1,3 +1,9 @@
+2009-04-07 22:21-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSDocumentController.m: Return default type if the
+	URL is not a file URL and the call to typeFromFileExtension: returns
+	nil in typeForContentsOfURL:.
+
 2009-04-07 18:43-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/AppKit/NSSpeechSynthesizer.h: Added _module ivar.
