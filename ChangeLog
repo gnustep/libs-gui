@@ -1,3 +1,9 @@
+2009-04-10 13:31-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSDrawer.m: Correction for NSDrawer issues with draw
+	temporarily showing up above the window and not syncing with
+	window position.
+
 2009-04-10 10:24-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSAlert.m: in the method _initWithoutGModel add a call

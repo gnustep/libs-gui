@@ -208,7 +208,7 @@ static NSNotificationCenter *nc = nil;
 
 - (void) startTimer
 {
-  NSTimeInterval time = 2.0;
+  NSTimeInterval time = 1.0;
   _timer = [NSTimer scheduledTimerWithTimeInterval: time
 		    target: self
 		    selector: @selector(_timedWindowReset)
@@ -246,14 +246,14 @@ static NSNotificationCenter *nc = nil;
   // [self setFrame: frame display: YES];
   [self slide];
   [self orderFront: self];
-  // [self startTimer];
+  [self startTimer];
 }
 
 - (void) closeOnEdge
 {
   NSRect frame = [self frameFromParentWindowFrame];
 
-  // [self stopTimer];
+  [self stopTimer];
   [self slide];
   [self setFrame: frame display: YES];
   [self orderOut: self];
@@ -270,7 +270,7 @@ static NSNotificationCenter *nc = nil;
 {
   NSRect frame = [self frame];
   NSRectEdge edge = [_drawer preferredEdge];
-  NSSize size = frame.size; // [_drawer maxContentSize];
+  NSSize size = [_parentWindow frame].size;
 
   [super setParentWindow: nil];
   if (edge == NSMinXEdge) // left
@@ -311,13 +311,13 @@ static NSNotificationCenter *nc = nil;
 
 - (void) handleWindowClose: (NSNotification *)notification
 {
-  // [self stopTimer];
+  [self stopTimer];
   [self close];
 }
 
 - (void) handleWindowMiniaturize: (NSNotification *)notification
 {
-  // [self stopTimer];
+  [self stopTimer];
   [self close];
 }
 
@@ -404,7 +404,7 @@ static NSNotificationCenter *nc = nil;
 
 - (void) dealloc
 {
-  // [self stopTimer];
+  [self stopTimer];
   RELEASE(_parentWindow);
   TEST_RELEASE(_pendingParentWindow);
   [super dealloc];
