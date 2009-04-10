@@ -4486,7 +4486,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
           // We are lucky here, Apple use the same constants
           // in the lower bits of the flags
           [self setAutoresizingMask: vFlags & 0x3F];
-          [self setAutoresizesSubviews: ((vFlags & 0x100) == 0x100)];
+          [self setAutoresizesSubviews: YES]; // ((vFlags & 0x100) == 0x100)];
           [self setHidden: ((vFlags & 0x80000000) == 0x80000000)];
         }
 
