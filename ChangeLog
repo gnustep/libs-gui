@@ -1,3 +1,8 @@
+2009-04-09 22:55-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSRulerMarker.m: Changes suggested by Doug Simons for
+	allowing markers to be set on an NSMouseDown event.
+
 2009-04-07 22:21-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSDocumentController.m: Return default type if the

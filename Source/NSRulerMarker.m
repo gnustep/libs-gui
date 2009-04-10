@@ -227,7 +227,7 @@
 - (BOOL)trackMouse:(NSEvent *)theEvent adding:(BOOL)adding
 {
   NSView *client = [_rulerView clientView];
-  NSEvent *newEvent;
+  NSEvent *newEvent = nil;
   int eventMask = NSLeftMouseDraggedMask | NSLeftMouseUpMask;
   BOOL isFar = NO;
   BOOL askedCanRemove = NO;
@@ -341,12 +341,22 @@
   /* loop processing events until mouse up */
   while (_isDragging)
     {
-      newEvent = [NSApp nextEventMatchingMask: eventMask
-			untilDate: [NSDate distantFuture]
-			inMode: NSEventTrackingRunLoopMode
-			dequeue: YES];
+      if(newEvent == nil) 
+	{
+	  newEvent = theEvent;
+	  previousMousePositionInWindow = NSMakePoint(0,0); 
+	}
+      else
+	{
+	  newEvent = [NSApp nextEventMatchingMask: eventMask
+			    untilDate: [NSDate distantFuture]
+			    inMode: NSEventTrackingRunLoopMode
+			    dequeue: YES];
+	}
+
       switch ([newEvent type]) 
-        {
+	{
+	  case NSLeftMouseDown:
 	  case NSLeftMouseDragged:
 	      /* take mouse position from outside of event stream
 	         and ignore event if in same position as previous event, 
