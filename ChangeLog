@@ -1,3 +1,10 @@
+2009-04-10 10:24-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSAlert.m: in the method _initWithoutGModel add a call
+	to setLevel: to set the level to NSModalPanelWindowLevel.   This was
+	not previously being done and was causing alert panels to get lost 
+	behind other application windows.
+
 2009-04-10 01:32-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSMenuView.m: Removed adjustment to Y coords in the

@@ -351,6 +351,7 @@ setControl(NSView* content, id control, NSString *title)
     return nil;
 
   [self setTitle: @" "];
+  [self setLevel: NSModalPanelWindowLevel];
   content = [self contentView];
   
   // we're an ATTENTION panel, therefore:
