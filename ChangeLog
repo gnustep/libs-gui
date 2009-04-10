@@ -1,3 +1,12 @@
+2009-04-10 00:53-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSMenuView.m: In the method
+	- (void) setWindowFrameForAttachingToRect:... changed how
+	popup/pulldown buttons handle the preferred edge.
+	Per Cocoa documentation, the selected cell should always show up
+	over the button for popups.   For pull down menus, the preferred 
+	edge is relevant.   This is also apparent from testing under Cocoa.
+	
 2009-04-09 22:55-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSRulerMarker.m: Changes suggested by Doug Simons for

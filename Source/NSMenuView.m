@@ -1154,29 +1154,38 @@ static NSMapTable *viewInfo = 0;
     }  
   
   // Update position, if needed, using the preferredEdge
-  if (edge == NSMinYEdge)
+  if([_attachedMenu _ownedByPopUp])
     {
-/*
-      if ([_attachedMenu _ownedByPopUp] && 
-          ([[_attachedMenu _owningPopUp] pullsDown]))
-        {
-          screenFrame.origin.y -= screenRect.size.height;  
-        }
-*/
+      // Per Cocoa documentation, the selected cell should always show up
+      // over the button for popups.   For pull down menus, the preferred 
+      // edge is relevant.   This is also apparent from testing under Cocoa.
+      if([[_attachedMenu _owningPopUp] pullsDown])
+	{
+	  if (edge == NSMinYEdge)
+	    {
+	      /*
+		if ([_attachedMenu _ownedByPopUp] && 
+		([[_attachedMenu _owningPopUp] pullsDown]))
+		{
+		screenFrame.origin.y -= screenRect.size.height;  
+		}
+	      */
+	    }
+	  else if (edge == NSMaxYEdge)
+	    {
+	      screenFrame.origin.y += screenRect.size.height;  
+	    }
+	  else if (edge == NSMaxXEdge)
+	    {
+	      screenFrame.origin.x += screenRect.size.width;
+	    }
+	  else if (edge == NSMinXEdge)
+	    {
+	      screenFrame.origin.x -= screenRect.size.width;
+	    }
+	}
     }
-  else if (edge == NSMaxYEdge)
-    {
-      screenFrame.origin.y += screenRect.size.height;  
-    }
-  else if (edge == NSMaxXEdge)
-    {
-      screenFrame.origin.x += screenRect.size.width;
-    }
-  else if (edge == NSMinXEdge)
-    {
-      screenFrame.origin.x -= screenRect.size.width;
-    }
-  
+
   // Get the frameRect
   r = [NSWindow frameRectForContentRect: screenFrame
                 styleMask: [_window styleMask]];
