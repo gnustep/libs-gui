@@ -1218,6 +1218,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       ASSIGN(_dimpleImage, [NSImage imageNamed: @"common_Dimple"]); 
       _never_displayed_before = YES;
       _is_pane_splitter = YES;
+      [self setAutoresizesSubviews: YES];
     }
   else
     {
