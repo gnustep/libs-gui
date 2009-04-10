@@ -1162,6 +1162,7 @@ static NSMapTable *viewInfo = 0;
       if ([[_attachedMenu _owningPopUp] pullsDown])
 	{
 	  // Handle the Y edge...
+	  /*
 	  if ([[[_attachedMenu _owningPopUp] controlView] isFlipped])
 	    {
 	      if (edge == NSMaxYEdge)
@@ -1176,6 +1177,7 @@ static NSMapTable *viewInfo = 0;
 		  screenFrame.origin.y += screenRect.size.height;  
 		}
 	    }
+	  */
 
 	  // Handle the X edge...
 	  if (edge == NSMaxXEdge)

@@ -1,3 +1,10 @@
+2009-04-10 01:32-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSMenuView.m: Removed adjustment to Y coords in the
+	setWindowFrame... method.  This adjustment is only supposed to be
+	done when a popup is under "restrictive screen conditions" which
+	is currently unimplemented.
+
 2009-04-10 01:15-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSMenuView.m: In the method
