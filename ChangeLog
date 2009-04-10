@@ -1,3 +1,9 @@
+2009-04-10 01:15-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSMenuView.m: In the method
+	- (void) setWindowFrameForAttachingToRect:... test if the view
+	is flipped and make the adjustment.
+	
 2009-04-10 00:53-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSMenuView.m: In the method

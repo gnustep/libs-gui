@@ -1154,28 +1154,31 @@ static NSMapTable *viewInfo = 0;
     }  
   
   // Update position, if needed, using the preferredEdge
-  if([_attachedMenu _ownedByPopUp])
+  if ([_attachedMenu _ownedByPopUp])
     {
       // Per Cocoa documentation, the selected cell should always show up
       // over the button for popups.   For pull down menus, the preferred 
       // edge is relevant.   This is also apparent from testing under Cocoa.
-      if([[_attachedMenu _owningPopUp] pullsDown])
+      if ([[_attachedMenu _owningPopUp] pullsDown])
 	{
-	  if (edge == NSMinYEdge)
+	  // Handle the Y edge...
+	  if ([[[_attachedMenu _owningPopUp] controlView] isFlipped])
 	    {
-	      /*
-		if ([_attachedMenu _ownedByPopUp] && 
-		([[_attachedMenu _owningPopUp] pullsDown]))
+	      if (edge == NSMaxYEdge)
 		{
-		screenFrame.origin.y -= screenRect.size.height;  
+		  screenFrame.origin.y += screenRect.size.height;  
 		}
-	      */
 	    }
-	  else if (edge == NSMaxYEdge)
+	  else
 	    {
-	      screenFrame.origin.y += screenRect.size.height;  
+	      if (edge == NSMinYEdge)
+		{
+		  screenFrame.origin.y += screenRect.size.height;  
+		}
 	    }
-	  else if (edge == NSMaxXEdge)
+
+	  // Handle the X edge...
+	  if (edge == NSMaxXEdge)
 	    {
 	      screenFrame.origin.x += screenRect.size.width;
 	    }
