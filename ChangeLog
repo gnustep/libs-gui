@@ -1,3 +1,9 @@
+2009-04-10 14:03-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSTabView.m: Autoresize subviews when loaded from the nib
+	and set the mask to the make height and width resizable when the
+	tab is selected.
+
 2009-04-10 13:31-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSDrawer.m: Correction for NSDrawer issues with draw

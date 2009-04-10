@@ -254,6 +254,7 @@
       if (selectedView != nil)
         {
           [self addSubview: selectedView];
+	  [selectedView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
           [selectedView setFrame: [self contentRect]];
           [_window makeFirstResponder: [_selected initialFirstResponder]];
         }
@@ -868,6 +869,7 @@
           [self setControlSize: ((vFlags & 0x0c000000) >> 26)];
           [self setTabViewType: (vFlags & 0x00000007)];
         }
+      [self setAutoresizesSubviews: YES];
     }
   else
     {
