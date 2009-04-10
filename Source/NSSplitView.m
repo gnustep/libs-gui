@@ -1201,6 +1201,9 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
  
   if ([aDecoder allowsKeyedCoding])
     {
+      id subview = nil;
+      NSEnumerator *en = [[self subviews] objectEnumerator];
+
       if ([aDecoder containsValueForKey: @"NSIsVertical"])
         {
           [self setVertical: [aDecoder decodeBoolForKey: @"NSIsVertical"]];
@@ -1219,6 +1222,11 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       _never_displayed_before = YES;
       _is_pane_splitter = YES;
       [self setAutoresizesSubviews: YES];
+
+      while((subview = [en nextObject]) != nil)
+	{
+	  [subview setAutoresizesSubviews: YES];
+	}
     }
   else
     {

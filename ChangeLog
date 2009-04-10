@@ -1,3 +1,9 @@
+2009-04-10 15:00-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSSplitView.m: Set subviews to resize when loaded from 
+	the nib. 
+	* Source/NSView.m: Partial revert of previous change.
+
 2009-04-10 14:27-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSView.m: Autoresize subviews since it is not pulling it
