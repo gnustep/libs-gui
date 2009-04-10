@@ -4489,6 +4489,10 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
           [self setAutoresizesSubviews: YES]; // ((vFlags & 0x100) == 0x100)];
           [self setHidden: ((vFlags & 0x80000000) == 0x80000000)];
         }
+      else
+	{
+          [self setAutoresizesSubviews: YES]; // ((vFlags & 0x100) == 0x100)];
+	}
 
       // iterate over subviews and put them into the view...
       subs = [aDecoder decodeObjectForKey: @"NSSubviews"];
