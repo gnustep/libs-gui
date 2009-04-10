@@ -3702,6 +3702,20 @@ struct _DelegateWrapper
       return _delegate;
     }
 
+  /* 
+   * Try the NSApplication's responder list to determine if any of them 
+   * respond to the selector.
+   */
+  resp = [self nextResponder];
+  while(resp != nil)
+    {
+      if([resp respondsToSelector: aSelector])
+	{
+	  return resp;
+	}
+      resp = [resp nextResponder];
+    }
+
   /* as a last resort in a document based app, try the document controller */
   if ([NSDocumentController isDocumentBasedApplication]
       && [[NSDocumentController sharedDocumentController]

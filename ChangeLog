@@ -1,3 +1,8 @@
+2009-04-10 15:30-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSApplication.m: Follow the NSApplication responder
+	chain.
+
 2009-04-10 15:00-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSSplitView.m: Set subviews to resize when loaded from 
