@@ -44,6 +44,10 @@
  * and so on.  */
 static NSImage *_pbc_image[5];
 
+@interface NSPopUpButtonCell (CocoaExtensions)
+- (void) _popUpItemAction: (id)sender;
+@end
+
 @implementation NSPopUpButtonCell
 + (void) initialize
 {
@@ -384,6 +388,9 @@ static NSImage *_pbc_image[5];
   // FIXME: The documentation is unclear what to set here.
   //[anItem setAction: [self action]];
   //[anItem setTarget: [self target]];
+  // Or
+  //[anItem setAction: @selector(_popUpItemAction:)];
+  //[anItem setTarget: self];
 
   // Select the new item if there isn't any selection.
   if (_selectedItem == nil)
@@ -1204,6 +1211,18 @@ static NSImage *_pbc_image[5];
     }
 
   return self;
+}
+
+@end
+
+@implementation NSPopUpButtonCell (CocoaExtensions)
+
+/*
+ * The selector for this method gets used by menu items in Apple NIB files.
+ */
+- (void) _popUpItemAction: (id)sender
+{
+  [NSApp sendAction: [self action] to: [self target] from: self];
 }
 
 @end
