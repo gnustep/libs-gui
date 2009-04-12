@@ -1,3 +1,8 @@
+2009-04-12 15:11-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSSearchFieldCell.m: Correct issue displaying images for
+	search field.  Fix in initWithCoder: to reset image names.
+
 2009-04-11 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPopUpButtonCell.m (-_popUpItemAction:): New method used

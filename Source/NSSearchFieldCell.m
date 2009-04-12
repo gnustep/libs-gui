@@ -424,22 +424,28 @@
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   self = [super initWithCoder: aDecoder];
-  
-  if ([aDecoder allowsKeyedCoding])
+
+  if(self != nil)
     {
-      [self setSearchButtonCell: [aDecoder decodeObjectForKey: @"NSSearchButtonCell"]];
-      [self setCancelButtonCell: [aDecoder decodeObjectForKey: @"NSCancelButtonCell"]];
-      [self setRecentsAutosaveName: [aDecoder decodeObjectForKey: @"NSRecentsAutosaveName"]];
-      [self setSendsWholeSearchString: [aDecoder decodeBoolForKey: @"NSSendsWholeSearchString"]];
-      [self setMaximumRecents: [aDecoder decodeIntForKey: @"NSMaximumRecents"]];
-    }
-  else
-    {
-      [self setSearchButtonCell: [aDecoder decodeObject]];
-      [self setCancelButtonCell: [aDecoder decodeObject]];
-      [self setRecentsAutosaveName: [aDecoder decodeObject]];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_sends_whole_search_string];
-      [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &_max_recents];
+      if ([aDecoder allowsKeyedCoding])
+	{
+	  [self setSearchButtonCell: [aDecoder decodeObjectForKey: @"NSSearchButtonCell"]];
+	  [self setCancelButtonCell: [aDecoder decodeObjectForKey: @"NSCancelButtonCell"]];
+	  [self setRecentsAutosaveName: [aDecoder decodeObjectForKey: @"NSRecentsAutosaveName"]];
+	  [self setSendsWholeSearchString: [aDecoder decodeBoolForKey: @"NSSendsWholeSearchString"]];
+	  [self setMaximumRecents: [aDecoder decodeIntForKey: @"NSMaximumRecents"]];
+	}
+      else
+	{
+	  [self setSearchButtonCell: [aDecoder decodeObject]];
+	  [self setCancelButtonCell: [aDecoder decodeObject]];
+	  [self setRecentsAutosaveName: [aDecoder decodeObject]];
+	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_sends_whole_search_string];
+	  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &_max_recents];
+	}
+      
+      [self resetCancelButtonCell];
+      [self resetSearchButtonCell];
     }
 
   return self;
