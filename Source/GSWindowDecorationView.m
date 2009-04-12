@@ -65,7 +65,7 @@
 + (NSRect) contentRectForFrameRect: (NSRect)aRect
 			 styleMask: (unsigned int)aStyle
 {
-  float t, b, l, r;
+  float t = 0.0, b = 0.0, l = 0.0, r = 0.0;
 
   [self offsets: &l : &r : &t : &b forStyleMask: aStyle];
   aRect.size.width -= l + r;
@@ -78,7 +78,7 @@
 + (NSRect) frameRectForContentRect: (NSRect)aRect
 			 styleMask: (unsigned int)aStyle
 {
-  float t, b, l, r;
+  float t = 0.0, b = 0.0, l = 0.0, r = 0.0;
 
   [self offsets: &l : &r : &t : &b forStyleMask: aStyle];
   aRect.size.width += l + r;

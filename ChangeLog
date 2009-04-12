@@ -1,3 +1,8 @@
+2009-04-12 15:16-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSWindowDecorationView.m: initialize offsets to prevent
+	negative value warnings suggested by Doug.
+
 2009-04-12 15:11-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSSearchFieldCell.m: Correct issue displaying images for
