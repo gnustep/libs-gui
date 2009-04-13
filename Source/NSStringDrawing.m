@@ -89,7 +89,7 @@ static NSTextStorage   *scratchTextStorage;
 static NSLayoutManager *scratchLayoutManager;
 static NSTextContainer *scratchTextContainer;
 
-static NSRecursiveLock *cacheLock;
+static NSRecursiveLock *cacheLock = nil;
 
 static int total, hits, misses, hash_hits;
 
