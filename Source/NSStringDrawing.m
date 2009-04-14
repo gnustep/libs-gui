@@ -571,7 +571,7 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
   int ci;
   NSSize result;
 
-  [cacheLock lock];
+  // [cacheLock lock];
   NS_DURING
     {
       ci = cache_lookup_attributed_string(self, 0, NSZeroSize, 1);
@@ -585,11 +585,11 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
     }
   NS_HANDLER
     {
-      [cacheLock unlock];
+      // [cacheLock unlock];
       [localException raise];
     }
   NS_ENDHANDLER;
-  [cacheLock unlock];
+  // [cacheLock unlock];
 
   return result;
 }
@@ -600,7 +600,7 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
   int ci;
   NSRect result;
 
-  [cacheLock lock];
+  // [cacheLock lock];
   NS_DURING
     {    
       // FIXME: This ignores options
@@ -615,11 +615,11 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
     }
   NS_HANDLER
     {
-      [cacheLock unlock];
+      // [cacheLock unlock];
       [localException raise];
     }
   NS_ENDHANDLER;
-  [cacheLock unlock];
+  // [cacheLock unlock];
 
   return result;
 }
