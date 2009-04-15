@@ -347,7 +347,6 @@ static int cache_lookup_attributed_string(NSAttributedString *string,
   
   if (hit)
     {
-      cache_unlock();
       return ci;
     }
   
