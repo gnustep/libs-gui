@@ -121,52 +121,49 @@ static void init_string_drawing(void)
     return;
   did_init = YES;
 
+#ifdef STATS
+  atexit(NSStringDrawing_dump_stats);
+#endif
+  
+  for (i = 0; i < NUM_CACHE_ENTRIES + 1; i++)
+    {
+      textStorage = [[NSTextStorage alloc] init];
+      layoutManager = [[NSLayoutManager alloc] init];
+      [textStorage addLayoutManager: layoutManager];
+      [layoutManager release];
+      textContainer = [[NSTextContainer alloc]
+			initWithContainerSize: NSMakeSize(10, 10)];
+      [layoutManager addTextContainer: textContainer];
+      [textContainer release];
+      
+      if (i < NUM_CACHE_ENTRIES)
+	{
+	  cache[i].textStorage = textStorage;
+	  cache[i].layoutManager = layoutManager;
+	  cache[i].textContainer = textContainer;
+	}
+      else
+	{
+	  scratchTextStorage = textStorage;
+	  scratchLayoutManager = layoutManager;
+	  scratchTextContainer = textContainer;
+	}
+    }
+}
+
+static void cache_lock()
+{
   if(cacheLock == nil)
     {
       cacheLock = [[NSRecursiveLock alloc] init];
     }
-
   [cacheLock lock];
-  NS_DURING
-    {
-#ifdef STATS
-      atexit(NSStringDrawing_dump_stats);
-#endif
-      
-      for (i = 0; i < NUM_CACHE_ENTRIES + 1; i++)
-	{
-	  textStorage = [[NSTextStorage alloc] init];
-	  layoutManager = [[NSLayoutManager alloc] init];
-	  [textStorage addLayoutManager: layoutManager];
-	  [layoutManager release];
-	  textContainer = [[NSTextContainer alloc]
-			    initWithContainerSize: NSMakeSize(10, 10)];
-	  [layoutManager addTextContainer: textContainer];
-	  [textContainer release];
-	  
-	  if (i < NUM_CACHE_ENTRIES)
-	    {
-	      cache[i].textStorage = textStorage;
-	      cache[i].layoutManager = layoutManager;
-	      cache[i].textContainer = textContainer;
-	    }
-	  else
-	    {
-	      scratchTextStorage = textStorage;
-	      scratchLayoutManager = layoutManager;
-	      scratchTextContainer = textContainer;
-	    }
-	}
-    }
-  NS_HANDLER
-    {
-      [cacheLock unlock];
-      [localException raise];
-    }
-  NS_ENDHANDLER;
-  [cacheLock unlock];
 }
 
+static void cache_unlock()
+{
+  [cacheLock unlock];
+}
 
 static int cache_match(int hasSize, NSSize size, int useScreenFonts, int *matched)
 {
@@ -284,59 +281,47 @@ static int cache_lookup_string(NSString *string, NSDictionary *attributes,
   if (!did_init)
     init_string_drawing();
 
-  [cacheLock lock];
-  NS_DURING
+  /*
+    This is a hack, but it's an efficient way of getting the layout manager
+    to just ditch all old information, and here, we don't want it to try to
+    be clever and cache or soft-invalidate anything since the new string has
+    nothing to do with the old one.
+    
+    TODO: the layout manager should realize this by itself
+  */
+  [scratchLayoutManager setTextStorage: scratchTextStorage];
+  
+  [scratchTextStorage beginEditing];
+  [scratchTextStorage replaceCharactersInRange: NSMakeRange(0, [scratchTextStorage length])
+		      withString: @""];
+  if ([string length])
     {
-      /*
-	This is a hack, but it's an efficient way of getting the layout manager
-	to just ditch all old information, and here, we don't want it to try to
-	be clever and cache or soft-invalidate anything since the new string has
-	nothing to do with the old one.
-	
-	TODO: the layout manager should realize this by itself
-      */
-      [scratchLayoutManager setTextStorage: scratchTextStorage];
-      
-      [scratchTextStorage beginEditing];
-      [scratchTextStorage replaceCharactersInRange: NSMakeRange(0, [scratchTextStorage length])
-			  withString: @""];
-      if ([string length])
-	{
-	  [scratchTextStorage replaceCharactersInRange: NSMakeRange(0, 0)
-			      withString: string];
-	  [scratchTextStorage setAttributes: attributes
-			      range: NSMakeRange(0, [string length])];
-	}
-      [scratchTextStorage endEditing];
-      
-      ci = cache_match(hasSize, size, useScreenFonts, &hit);
-      
-      if (hit)
-	{
-	  [cacheLock unlock];
-	  NS_VALRETURN( ci );
-	}
-      c = &cache[ci];
-      
-      textStorage = c->textStorage;
-      layoutManager = c->layoutManager;
-      textContainer = c->textContainer;
-      
-      if (hasSize)
-	[textContainer setContainerSize: NSMakeSize(size.width, LARGE_SIZE)];
-      else
-	[textContainer setContainerSize: NSMakeSize(LARGE_SIZE, LARGE_SIZE)];
-      [layoutManager setUsesScreenFonts: useScreenFonts];
-      
-      c->usedRect = [layoutManager usedRectForTextContainer: textContainer];
+      [scratchTextStorage replaceCharactersInRange: NSMakeRange(0, 0)
+			  withString: string];
+      [scratchTextStorage setAttributes: attributes
+			  range: NSMakeRange(0, [string length])];
     }
-  NS_HANDLER
+  [scratchTextStorage endEditing];
+  
+  ci = cache_match(hasSize, size, useScreenFonts, &hit);
+  
+  if (hit)
     {
-      [cacheLock unlock];
-      [localException raise];
+      return ci;
     }
-  NS_ENDHANDLER;
-  [cacheLock unlock];
+  c = &cache[ci];
+  
+  textStorage = c->textStorage;
+  layoutManager = c->layoutManager;
+  textContainer = c->textContainer;
+  
+  if (hasSize)
+    [textContainer setContainerSize: NSMakeSize(size.width, LARGE_SIZE)];
+  else
+    [textContainer setContainerSize: NSMakeSize(LARGE_SIZE, LARGE_SIZE)];
+  [layoutManager setUsesScreenFonts: useScreenFonts];
+  
+  c->usedRect = [layoutManager usedRectForTextContainer: textContainer];
 
   return ci;
 }
@@ -353,43 +338,32 @@ static int cache_lookup_attributed_string(NSAttributedString *string,
   if (!did_init)
     init_string_drawing();
   
-  [cacheLock lock];
-  NS_DURING
+  [scratchTextStorage replaceCharactersInRange: NSMakeRange(0, [scratchTextStorage length])
+		      withString: @""];
+  [scratchTextStorage replaceCharactersInRange: NSMakeRange(0, 0)
+		      withAttributedString: string];
+  
+  ci = cache_match(hasSize, size, useScreenFonts, &hit);
+  
+  if (hit)
     {
-      [scratchTextStorage replaceCharactersInRange: NSMakeRange(0, [scratchTextStorage length])
-			  withString: @""];
-      [scratchTextStorage replaceCharactersInRange: NSMakeRange(0, 0)
-			  withAttributedString: string];
-      
-      ci = cache_match(hasSize, size, useScreenFonts, &hit);
-      
-      if (hit)
-	{
-	  [cacheLock unlock];
-	  NS_VALRETURN(ci);
-	}
-
-      c = &cache[ci];
-      
-      textStorage = c->textStorage;
-      layoutManager = c->layoutManager;
-      textContainer = c->textContainer;
-      
-      if (hasSize)
-	[textContainer setContainerSize: NSMakeSize(size.width, LARGE_SIZE)];
-      else
-	[textContainer setContainerSize: NSMakeSize(LARGE_SIZE, LARGE_SIZE)];
-      [layoutManager setUsesScreenFonts: useScreenFonts];
-
-      c->usedRect = [layoutManager usedRectForTextContainer: textContainer];
+      cache_unlock();
+      return ci;
     }
-  NS_HANDLER
-    {
-      [cacheLock unlock];
-      [localException raise];
-    }
-  NS_ENDHANDLER;
-  [cacheLock unlock];
+  
+  c = &cache[ci];
+  
+  textStorage = c->textStorage;
+  layoutManager = c->layoutManager;
+  textContainer = c->textContainer;
+  
+  if (hasSize)
+    [textContainer setContainerSize: NSMakeSize(size.width, LARGE_SIZE)];
+  else
+    [textContainer setContainerSize: NSMakeSize(LARGE_SIZE, LARGE_SIZE)];
+  [layoutManager setUsesScreenFonts: useScreenFonts];
+  
+  c->usedRect = [layoutManager usedRectForTextContainer: textContainer];
 
   return ci;
 }
@@ -410,8 +384,6 @@ static int use_screen_fonts(void)
       return 1;
     }
 }
-
-
 
 /*
 This is an ugly hack to get text to display correctly in non-flipped views.
@@ -435,7 +407,7 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
   NSRange r;
   NSGraphicsContext *ctxt = GSCurrentContext();
 
-  [cacheLock lock];
+  cache_lock();
 
   NS_DURING
     {
@@ -466,11 +438,11 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
     }
   NS_HANDLER
     {
-      [cacheLock unlock];
+      cache_unlock();
       [localException raise];
     }
   NS_ENDHANDLER;
-  [cacheLock unlock];
+  cache_unlock();
 
   if (![[NSView focusView] isFlipped])
     {
@@ -492,7 +464,7 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
     return;
       
 
-  [cacheLock lock];
+  cache_lock();
 
   NS_DURING
     {
@@ -540,11 +512,11 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
     }
   NS_HANDLER
     {
-      [cacheLock unlock];
+      cache_unlock();
       [localException raise];
     }
   NS_ENDHANDLER;
-  [cacheLock unlock];
+  cache_unlock();
 
   [NSFont _setFontFlipHack: NO];
   if (![[NSView focusView] isFlipped])
@@ -571,7 +543,7 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
   int ci;
   NSSize result;
 
-  // [cacheLock lock];
+  cache_lock();
   NS_DURING
     {
       ci = cache_lookup_attributed_string(self, 0, NSZeroSize, 1);
@@ -585,11 +557,11 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
     }
   NS_HANDLER
     {
-      // [cacheLock unlock];
+      cache_unlock();
       [localException raise];
     }
   NS_ENDHANDLER;
-  // [cacheLock unlock];
+  cache_unlock();
 
   return result;
 }
@@ -600,7 +572,7 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
   int ci;
   NSRect result;
 
-  // [cacheLock lock];
+  cache_lock();
   NS_DURING
     {    
       // FIXME: This ignores options
@@ -615,11 +587,11 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
     }
   NS_HANDLER
     {
-      // [cacheLock unlock];
+      cache_unlock();
       [localException raise];
     }
   NS_ENDHANDLER;
-  // [cacheLock unlock];
+  cache_unlock();
 
   return result;
 }
@@ -640,7 +612,7 @@ NSAttributedString to do the job.
   NSRange r;
   NSGraphicsContext *ctxt = GSCurrentContext();
 
-  [cacheLock lock];
+  cache_lock();
   NS_DURING
     {
       ci = cache_lookup_string(self, attrs, 0, NSZeroSize, use_screen_fonts());
@@ -670,11 +642,11 @@ NSAttributedString to do the job.
     }
   NS_HANDLER
     {
-      [cacheLock unlock];
+      cache_unlock();
       [localException raise];
     }
   NS_ENDHANDLER;
-  [cacheLock unlock];
+  cache_unlock();
 
   if (![[NSView focusView] isFlipped])
     {
@@ -695,7 +667,7 @@ NSAttributedString to do the job.
   if (rect.size.width <= 0 || rect.size.height <= 0)
     return;
   
-  [cacheLock lock];
+  cache_lock();
   NS_DURING
     {    
       ci = cache_lookup_string(self, attrs, 1, rect.size, use_screen_fonts());
@@ -742,11 +714,11 @@ NSAttributedString to do the job.
     }
   NS_HANDLER
     {
-      [cacheLock unlock];
+      cache_unlock();
       [localException raise];
     }
   NS_ENDHANDLER;
-  [cacheLock unlock];
+  cache_unlock();
       
   [NSFont _setFontFlipHack: NO];
   if (![[NSView focusView] isFlipped])
@@ -774,7 +746,7 @@ NSAttributedString to do the job.
   int ci;
   NSSize result;
 
-  [cacheLock lock];
+  cache_lock();
   NS_DURING
     {
       ci = cache_lookup_string(self, attrs, 0, NSZeroSize, 1);
@@ -788,11 +760,11 @@ NSAttributedString to do the job.
     }
   NS_HANDLER
     {
-      [cacheLock unlock];
+      cache_unlock();
       [localException raise];
     }
   NS_ENDHANDLER;
-  [cacheLock unlock];
+  cache_unlock();
 
   return result;
 }
@@ -804,7 +776,7 @@ NSAttributedString to do the job.
   int ci;
   NSRect result;
 
-  [cacheLock lock];
+  cache_lock();
   NS_DURING
     {
       // FIXME: This ignores options
@@ -819,11 +791,11 @@ NSAttributedString to do the job.
     }
   NS_HANDLER
     {
-      [cacheLock unlock];
+      cache_unlock();
       [localException raise];
     }
   NS_ENDHANDLER;
-  [cacheLock unlock];
+  cache_unlock();
 
   return result;
 }
