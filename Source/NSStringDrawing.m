@@ -33,6 +33,7 @@
 #include <math.h>
 
 #include <Foundation/NSException.h>
+#include <Foundation/NSLock.h>
 
 #include "AppKit/NSAffineTransform.h"
 #include "AppKit/NSLayoutManager.h"
@@ -84,10 +85,11 @@ typedef struct
 static BOOL did_init;
 static cache_t cache[NUM_CACHE_ENTRIES];
 
-static NSTextStorage *scratchTextStorage;
+static NSTextStorage   *scratchTextStorage;
 static NSLayoutManager *scratchLayoutManager;
 static NSTextContainer *scratchTextContainer;
 
+static NSRecursiveLock *cacheLock = nil;
 
 static int total, hits, misses, hash_hits;
 
@@ -122,7 +124,7 @@ static void init_string_drawing(void)
 #ifdef STATS
   atexit(NSStringDrawing_dump_stats);
 #endif
-
+  
   for (i = 0; i < NUM_CACHE_ENTRIES + 1; i++)
     {
       textStorage = [[NSTextStorage alloc] init];
@@ -133,7 +135,7 @@ static void init_string_drawing(void)
 			initWithContainerSize: NSMakeSize(10, 10)];
       [layoutManager addTextContainer: textContainer];
       [textContainer release];
-
+      
       if (i < NUM_CACHE_ENTRIES)
 	{
 	  cache[i].textStorage = textStorage;
@@ -149,6 +151,19 @@ static void init_string_drawing(void)
     }
 }
 
+static void cache_lock()
+{
+  if(cacheLock == nil)
+    {
+      cacheLock = [[NSRecursiveLock alloc] init];
+    }
+  [cacheLock lock];
+}
+
+static void cache_unlock()
+{
+  [cacheLock unlock];
+}
 
 static int cache_match(int hasSize, NSSize size, int useScreenFonts, int *matched)
 {
@@ -266,45 +281,46 @@ static int cache_lookup_string(NSString *string, NSDictionary *attributes,
   if (!did_init)
     init_string_drawing();
 
-
   /*
-  This is a hack, but it's an efficient way of getting the layout manager
-  to just ditch all old information, and here, we don't want it to try to
-  be clever and cache or soft-invalidate anything since the new string has
-  nothing to do with the old one.
-
-  TODO: the layout manager should realize this by itself
+    This is a hack, but it's an efficient way of getting the layout manager
+    to just ditch all old information, and here, we don't want it to try to
+    be clever and cache or soft-invalidate anything since the new string has
+    nothing to do with the old one.
+    
+    TODO: the layout manager should realize this by itself
   */
   [scratchLayoutManager setTextStorage: scratchTextStorage];
-
+  
   [scratchTextStorage beginEditing];
   [scratchTextStorage replaceCharactersInRange: NSMakeRange(0, [scratchTextStorage length])
-			     withString: @""];
+		      withString: @""];
   if ([string length])
     {
       [scratchTextStorage replaceCharactersInRange: NSMakeRange(0, 0)
-				 withString: string];
+			  withString: string];
       [scratchTextStorage setAttributes: attributes
-			   range: NSMakeRange(0, [string length])];
+			  range: NSMakeRange(0, [string length])];
     }
   [scratchTextStorage endEditing];
-
+  
   ci = cache_match(hasSize, size, useScreenFonts, &hit);
+  
   if (hit)
-    return ci;
-
+    {
+      return ci;
+    }
   c = &cache[ci];
-
+  
   textStorage = c->textStorage;
   layoutManager = c->layoutManager;
   textContainer = c->textContainer;
-
+  
   if (hasSize)
     [textContainer setContainerSize: NSMakeSize(size.width, LARGE_SIZE)];
   else
     [textContainer setContainerSize: NSMakeSize(LARGE_SIZE, LARGE_SIZE)];
   [layoutManager setUsesScreenFonts: useScreenFonts];
-
+  
   c->usedRect = [layoutManager usedRectForTextContainer: textContainer];
 
   return ci;
@@ -321,28 +337,31 @@ static int cache_lookup_attributed_string(NSAttributedString *string,
 
   if (!did_init)
     init_string_drawing();
-
+  
   [scratchTextStorage replaceCharactersInRange: NSMakeRange(0, [scratchTextStorage length])
-			     withString: @""];
+		      withString: @""];
   [scratchTextStorage replaceCharactersInRange: NSMakeRange(0, 0)
-		   withAttributedString: string];
-
+		      withAttributedString: string];
+  
   ci = cache_match(hasSize, size, useScreenFonts, &hit);
+  
   if (hit)
-    return ci;
-
+    {
+      return ci;
+    }
+  
   c = &cache[ci];
-
+  
   textStorage = c->textStorage;
   layoutManager = c->layoutManager;
   textContainer = c->textContainer;
-
+  
   if (hasSize)
     [textContainer setContainerSize: NSMakeSize(size.width, LARGE_SIZE)];
   else
     [textContainer setContainerSize: NSMakeSize(LARGE_SIZE, LARGE_SIZE)];
   [layoutManager setUsesScreenFonts: useScreenFonts];
-
+  
   c->usedRect = [layoutManager usedRectForTextContainer: textContainer];
 
   return ci;
@@ -364,8 +383,6 @@ static int use_screen_fonts(void)
       return 1;
     }
 }
-
-
 
 /*
 This is an ugly hack to get text to display correctly in non-flipped views.
@@ -389,30 +406,42 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
   NSRange r;
   NSGraphicsContext *ctxt = GSCurrentContext();
 
-  ci = cache_lookup_attributed_string(self, 0, NSZeroSize, use_screen_fonts());
-  c = &cache[ci];
+  cache_lock();
 
-  r = NSMakeRange(0, [c->layoutManager numberOfGlyphs]);
-
-  if (![[NSView focusView] isFlipped])
+  NS_DURING
     {
-      DPSscale(ctxt, 1, -1);
-      point.y = -point.y;
-
-      /*
-      Adjust point.y so the lower left corner of the used rect is at the
-      point that was passed to us.
-      */
-      point.y -= NSMaxY(c->usedRect);
-
-      [NSFont _setFontFlipHack: YES];
+      ci = cache_lookup_attributed_string(self, 0, NSZeroSize, use_screen_fonts());
+      c = &cache[ci];
+      
+      r = NSMakeRange(0, [c->layoutManager numberOfGlyphs]);
+      
+      if (![[NSView focusView] isFlipped])
+	{
+	  DPSscale(ctxt, 1, -1);
+	  point.y = -point.y;
+	  
+	  /*
+	    Adjust point.y so the lower left corner of the used rect is at the
+	    point that was passed to us.
+	  */
+	  point.y -= NSMaxY(c->usedRect);
+	  
+	  [NSFont _setFontFlipHack: YES];
+	}
+      
+      [c->layoutManager drawBackgroundForGlyphRange: r
+	atPoint: point];
+      
+      [c->layoutManager drawGlyphsForGlyphRange: r
+	atPoint: point];
     }
-
-  [c->layoutManager drawBackgroundForGlyphRange: r
-					atPoint: point];
-
-  [c->layoutManager drawGlyphsForGlyphRange: r
-				    atPoint: point];
+  NS_HANDLER
+    {
+      cache_unlock();
+      [localException raise];
+    }
+  NS_ENDHANDLER;
+  cache_unlock();
 
   if (![[NSView focusView] isFlipped])
     {
@@ -432,48 +461,61 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
 
   if (rect.size.width <= 0 || rect.size.height <= 0)
     return;
+      
 
-  ci = cache_lookup_attributed_string(self, 1, rect.size, use_screen_fonts());
-  c = &cache[ci];
+  cache_lock();
 
-  /*
-  If the used rect fits completely in the rect we draw in, we save time
-  by avoiding the DPSrectclip (and the state save and restore).
-
-  This isn't completely safe; the used rect isn't guaranteed to contain
-  all parts of all glyphs.
-  */
-  if (c->usedRect.origin.x >= 0 && c->usedRect.origin.y <= 0
-      && NSMaxX(c->usedRect) <= rect.size.width
-      && NSMaxY(c->usedRect) <= rect.size.height)
+  NS_DURING
     {
-      need_clip = NO;
+      ci = cache_lookup_attributed_string(self, 1, rect.size, use_screen_fonts());
+      c = &cache[ci];
+      
+      /*
+	If the used rect fits completely in the rect we draw in, we save time
+	by avoiding the DPSrectclip (and the state save and restore).
+	
+	This isn't completely safe; the used rect isn't guaranteed to contain
+	all parts of all glyphs.
+      */
+      if (c->usedRect.origin.x >= 0 && c->usedRect.origin.y <= 0
+	  && NSMaxX(c->usedRect) <= rect.size.width
+	  && NSMaxY(c->usedRect) <= rect.size.height)
+	{
+	  need_clip = NO;
+	}
+      else
+	{
+	  need_clip = YES;
+	  DPSgsave(ctxt);
+	  DPSrectclip(ctxt, rect.origin.x, rect.origin.y,
+		      rect.size.width, rect.size.height);
+	}
+      
+      r = [c->layoutManager
+	    glyphRangeForBoundingRect: NSMakeRect(0, 0, rect.size.width,
+						  rect.size.height)
+	    inTextContainer: c->textContainer];
+      
+      if (![[NSView focusView] isFlipped])
+	{
+	  DPSscale(ctxt, 1, -1);
+	  rect.origin.y = -NSMaxY(rect);
+	  [NSFont _setFontFlipHack: YES];
+	}
+      
+      [c->layoutManager drawBackgroundForGlyphRange: r
+	atPoint: rect.origin];
+      
+      [c->layoutManager drawGlyphsForGlyphRange: r
+	atPoint: rect.origin];
     }
-  else
+  NS_HANDLER
     {
-      need_clip = YES;
-      DPSgsave(ctxt);
-      DPSrectclip(ctxt, rect.origin.x, rect.origin.y,
-		  rect.size.width, rect.size.height);
+      cache_unlock();
+      [localException raise];
     }
-
-  r = [c->layoutManager
-	glyphRangeForBoundingRect: NSMakeRect(0, 0, rect.size.width,
-					      rect.size.height)
-		  inTextContainer: c->textContainer];
-
-  if (![[NSView focusView] isFlipped])
-    {
-      DPSscale(ctxt, 1, -1);
-      rect.origin.y = -NSMaxY(rect);
-      [NSFont _setFontFlipHack: YES];
-    }
-
-  [c->layoutManager drawBackgroundForGlyphRange: r
-					atPoint: rect.origin];
-
-  [c->layoutManager drawGlyphsForGlyphRange: r
-				    atPoint: rect.origin];
+  NS_ENDHANDLER;
+  cache_unlock();
 
   [NSFont _setFontFlipHack: NO];
   if (![[NSView focusView] isFlipped])
@@ -498,28 +540,59 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
 - (NSSize) size
 {
   int ci;
-  ci = cache_lookup_attributed_string(self, 0, NSZeroSize, 1);
-  /*
-  An argument could be made for using NSMaxX/NSMaxY here, but that fails
-  horribly on right-aligned strings. For now, we handle that case in a
-  useful way and ignore indents.
-  */
-  return cache[ci].usedRect.size;
+  NSSize result;
+
+  cache_lock();
+  NS_DURING
+    {
+      ci = cache_lookup_attributed_string(self, 0, NSZeroSize, 1);
+      /*
+	An argument could be made for using NSMaxX/NSMaxY here, but that fails
+	horribly on right-aligned strings. For now, we handle that case in a
+	useful way and ignore indents.
+      */
+      
+      result = cache[ci].usedRect.size; 
+    }
+  NS_HANDLER
+    {
+      cache_unlock();
+      [localException raise];
+    }
+  NS_ENDHANDLER;
+  cache_unlock();
+
+  return result;
 }
 
 - (NSRect) boundingRectWithSize: (NSSize)size
                         options: (NSStringDrawingOptions)options
 {
   int ci;
+  NSRect result;
 
-  // FIXME: This ignores options
-  ci = cache_lookup_attributed_string(self, 1, size, 1);
-  /*
-  An argument could be made for using NSMaxX/NSMaxY here, but that fails
-  horribly on right-aligned strings. For now, we handle that case in a
-  useful way and ignore indents.
-  */
-  return cache[ci].usedRect;
+  cache_lock();
+  NS_DURING
+    {    
+      // FIXME: This ignores options
+      ci = cache_lookup_attributed_string(self, 1, size, 1);
+      /*
+	An argument could be made for using NSMaxX/NSMaxY here, but that fails
+	horribly on right-aligned strings. For now, we handle that case in a
+	useful way and ignore indents.
+      */
+      
+      result = cache[ci].usedRect;
+    }
+  NS_HANDLER
+    {
+      cache_unlock();
+      [localException raise];
+    }
+  NS_ENDHANDLER;
+  cache_unlock();
+
+  return result;
 }
 
 @end
@@ -538,30 +611,41 @@ NSAttributedString to do the job.
   NSRange r;
   NSGraphicsContext *ctxt = GSCurrentContext();
 
-  ci = cache_lookup_string(self, attrs, 0, NSZeroSize, use_screen_fonts());
-  c = &cache[ci];
-
-  r = NSMakeRange(0, [c->layoutManager numberOfGlyphs]);
-
-  if (![[NSView focusView] isFlipped])
+  cache_lock();
+  NS_DURING
     {
-      DPSscale(ctxt, 1, -1);
-      point.y = -point.y;
-
-      /*
-      Adjust point.y so the lower left corner of the used rect is at the
-      point that was passed to us.
-      */
-      point.y -= NSMaxY(c->usedRect);
-
-      [NSFont _setFontFlipHack: YES];
+      ci = cache_lookup_string(self, attrs, 0, NSZeroSize, use_screen_fonts());
+      c = &cache[ci];
+      
+      r = NSMakeRange(0, [c->layoutManager numberOfGlyphs]);
+      
+      if (![[NSView focusView] isFlipped])
+	{
+	  DPSscale(ctxt, 1, -1);
+	  point.y = -point.y;
+	  
+	  /*
+	    Adjust point.y so the lower left corner of the used rect is at the
+	    point that was passed to us.
+	  */
+	  point.y -= NSMaxY(c->usedRect);
+	  
+	  [NSFont _setFontFlipHack: YES];
+	}
+      
+      [c->layoutManager drawBackgroundForGlyphRange: r
+	atPoint: point];
+      
+      [c->layoutManager drawGlyphsForGlyphRange: r
+	atPoint: point];
     }
-
-  [c->layoutManager drawBackgroundForGlyphRange: r
-					atPoint: point];
-
-  [c->layoutManager drawGlyphsForGlyphRange: r
-				    atPoint: point];
+  NS_HANDLER
+    {
+      cache_unlock();
+      [localException raise];
+    }
+  NS_ENDHANDLER;
+  cache_unlock();
 
   if (![[NSView focusView] isFlipped])
     {
@@ -581,49 +665,60 @@ NSAttributedString to do the job.
 
   if (rect.size.width <= 0 || rect.size.height <= 0)
     return;
-
-  ci = cache_lookup_string(self, attrs, 1, rect.size, use_screen_fonts());
-  c = &cache[ci];
-
-  /*
-  If the used rect fits completely in the rect we draw in, we save time
-  by avoiding the DPSrectclip (and the state save and restore).
-
-  This isn't completely safe; the used rect isn't guaranteed to contain
-  all parts of all glyphs.
-  */
-  if (c->usedRect.origin.x >= 0 && c->usedRect.origin.y <= 0
-      && NSMaxX(c->usedRect) <= rect.size.width
-      && NSMaxY(c->usedRect) <= rect.size.height)
-    {
-      need_clip = NO;
+  
+  cache_lock();
+  NS_DURING
+    {    
+      ci = cache_lookup_string(self, attrs, 1, rect.size, use_screen_fonts());
+      c = &cache[ci];
+      
+      /*
+	If the used rect fits completely in the rect we draw in, we save time
+	by avoiding the DPSrectclip (and the state save and restore).
+	
+	This isn't completely safe; the used rect isn't guaranteed to contain
+	all parts of all glyphs.
+      */
+      if (c->usedRect.origin.x >= 0 && c->usedRect.origin.y <= 0
+	  && NSMaxX(c->usedRect) <= rect.size.width
+	  && NSMaxY(c->usedRect) <= rect.size.height)
+	{
+	  need_clip = NO;
+	}
+      else
+	{
+	  need_clip = YES;
+	  DPSgsave(ctxt);
+	  DPSrectclip(ctxt, rect.origin.x, rect.origin.y,
+		      rect.size.width, rect.size.height);
+	}
+      
+      r = [c->layoutManager
+	    glyphRangeForBoundingRect: NSMakeRect(0, 0, rect.size.width,
+						  rect.size.height)
+	    inTextContainer: c->textContainer];
+      
+      if (![[NSView focusView] isFlipped])
+	{
+	  DPSscale(ctxt, 1, -1);
+	  rect.origin.y = -NSMaxY(rect);
+	  [NSFont _setFontFlipHack: YES];
+	}
+      
+      [c->layoutManager drawBackgroundForGlyphRange: r
+	atPoint: rect.origin];
+      
+      [c->layoutManager drawGlyphsForGlyphRange: r
+	atPoint: rect.origin];      
     }
-  else
+  NS_HANDLER
     {
-      need_clip = YES;
-      DPSgsave(ctxt);
-      DPSrectclip(ctxt, rect.origin.x, rect.origin.y,
-		  rect.size.width, rect.size.height);
+      cache_unlock();
+      [localException raise];
     }
-
-  r = [c->layoutManager
-	glyphRangeForBoundingRect: NSMakeRect(0, 0, rect.size.width,
-					      rect.size.height)
-		  inTextContainer: c->textContainer];
-
-  if (![[NSView focusView] isFlipped])
-    {
-      DPSscale(ctxt, 1, -1);
-      rect.origin.y = -NSMaxY(rect);
-      [NSFont _setFontFlipHack: YES];
-    }
-
-  [c->layoutManager drawBackgroundForGlyphRange: r
-					atPoint: rect.origin];
-
-  [c->layoutManager drawGlyphsForGlyphRange: r
-				    atPoint: rect.origin];
-
+  NS_ENDHANDLER;
+  cache_unlock();
+      
   [NSFont _setFontFlipHack: NO];
   if (![[NSView focusView] isFlipped])
     {
@@ -648,13 +743,29 @@ NSAttributedString to do the job.
 - (NSSize) sizeWithAttributes: (NSDictionary *)attrs
 {
   int ci;
-  ci = cache_lookup_string(self, attrs, 0, NSZeroSize, 1);
-  /*
-  An argument could be made for using NSMaxX/NSMaxY here, but that fails
-  horribly on right-aligned strings (which may be the right thing). For now,
-  we handle that case in a useful way and ignore indents.
-  */
-  return cache[ci].usedRect.size;
+  NSSize result;
+
+  cache_lock();
+  NS_DURING
+    {
+      ci = cache_lookup_string(self, attrs, 0, NSZeroSize, 1);
+      /*
+	An argument could be made for using NSMaxX/NSMaxY here, but that fails
+	horribly on right-aligned strings (which may be the right thing). For now,
+	we handle that case in a useful way and ignore indents.
+      */
+      
+      result = cache[ci].usedRect.size;
+    }
+  NS_HANDLER
+    {
+      cache_unlock();
+      [localException raise];
+    }
+  NS_ENDHANDLER;
+  cache_unlock();
+
+  return result;
 }
 
 - (NSRect) boundingRectWithSize: (NSSize)size
@@ -662,15 +773,30 @@ NSAttributedString to do the job.
                      attributes: (NSDictionary *)attributes
 {
   int ci;
+  NSRect result;
 
-  // FIXME: This ignores options
-  ci = cache_lookup_string(self, attributes, 1, size, 1);
-  /*
-  An argument could be made for using NSMaxX/NSMaxY here, but that fails
-  horribly on right-aligned strings (which may be the right thing). For now,
-  we handle that case in a useful way and ignore indents.
-  */
-  return cache[ci].usedRect;
+  cache_lock();
+  NS_DURING
+    {
+      // FIXME: This ignores options
+      ci = cache_lookup_string(self, attributes, 1, size, 1);
+      /*
+	An argument could be made for using NSMaxX/NSMaxY here, but that fails
+	horribly on right-aligned strings (which may be the right thing). For now,
+	we handle that case in a useful way and ignore indents.
+      */
+      
+      result = cache[ci].usedRect;
+    }
+  NS_HANDLER
+    {
+      cache_unlock();
+      [localException raise];
+    }
+  NS_ENDHANDLER;
+  cache_unlock();
+
+  return result;
 }
 
 @end

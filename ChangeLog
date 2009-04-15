@@ -1,3 +1,13 @@
+2009-04-14 21:24-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSHorizontalTypesetter.m: Use thread dictionary to hold
+	the instance of the typesetter for that thread.
+	* Source/NSStringDrawing.m: Add locks to methods to prevent modification
+	of static variables by separate threads from causing the application
+	to get glyph generation errors.
+	NOTE: These changes based on suggestions/ideas from Doug 
+	Simons <doug@riverrock.org>.
+
 2009-04-12 15:16-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSWindowDecorationView.m: initialize offsets to prevent

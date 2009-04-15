@@ -78,12 +78,21 @@ cache fairly aggressively without having to worry about memory consumption.
 
 +(GSHorizontalTypesetter *) sharedInstance
 {
-static GSHorizontalTypesetter *shared;
+  NSMutableDictionary *threadDict = 
+    [[NSThread currentThread] threadDictionary];
+  GSHorizontalTypesetter *shared = 
+    [threadDict objectForKey: @"sharedHorizontalTypesetter"];
+
   if (!shared)
-    shared = [[self alloc] init];
+    {
+      shared = [[self alloc] init];
+      [threadDict setObject: shared
+		  forKey: @"sharedHorizontalTypesetter"];
+      RELEASE(shared);
+    }
+
   return shared;
 }
-
 
 #define CACHE_INITIAL 192
 #define CACHE_STEP 192
