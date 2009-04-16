@@ -1,3 +1,7 @@
+2009-04-16 16:05-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSAlert.m: Revert last change.
+
 2009-04-16 15:02-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSAlert.m: Order front regardless to prevent reported 
@@ -8,9 +12,9 @@
 
 	* Source/GSHorizontalTypesetter.m: Use thread dictionary to hold
 	the instance of the typesetter for that thread.
-	* Source/NSStringDrawing.m: Add locks to methods to prevent modification
-	of static variables by separate threads from causing the application
-	to get glyph generation errors.
+	* Source/NSStringDrawing.m: Add locks to methods to prevent 
+	modification of static variables by separate threads from 
+	causing applications to get glyph generation errors.
 	NOTE: These changes based on suggestions/ideas from Doug 
 	Simons <doug@riverrock.org>.
 

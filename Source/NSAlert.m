@@ -1108,8 +1108,6 @@ NSRunAlertPanel(
 
   panel = getSomePanel(&standardAlertPanel, defaultTitle, title, message,
     defaultButton, alternateButton, otherButton);
-  [panel orderFrontRegardless];
-
   result = [panel runModal];
   NSReleaseAlertPanel(panel);
   return result;
@@ -1157,8 +1155,6 @@ NSRunLocalizedAlertPanel(
 
   panel = getSomePanel(&standardAlertPanel, @"Alert", title, message,
 		     defaultButton, alternateButton, otherButton);
-  [panel orderFrontRegardless];
-
   result = [panel runModal];
   NSReleaseAlertPanel(panel);
   return result;
@@ -1205,8 +1201,6 @@ NSRunCriticalAlertPanel(
 
   panel = getSomePanel(&criticalAlertPanel, @"Critical", title, message,
     defaultButton, alternateButton, otherButton);
-  [panel orderFrontRegardless];
-
   result = [panel runModal];
   NSReleaseAlertPanel(panel);
   return result;
@@ -1254,8 +1248,6 @@ NSRunInformationalAlertPanel(
 		      @"Information",
 		      title, message,
 		      defaultButton, alternateButton, otherButton);
-  [panel orderFrontRegardless];
-
   result = [panel runModal];
   NSReleaseAlertPanel(panel);
   return result;
@@ -1302,8 +1294,6 @@ void NSBeginAlertSheet(NSString *title,
 
   panel = getSomePanel(&standardAlertPanel, defaultTitle, title, message,
     defaultButton, alternateButton, otherButton);
-  [panel orderFrontRegardless];
-
   // FIXME: We should also change the button action to call endSheet:
   [NSApp beginSheet: panel
 	 modalForWindow: docWindow
@@ -1343,8 +1333,6 @@ void NSBeginCriticalAlertSheet(NSString *title,
 
   panel = getSomePanel(&criticalAlertPanel, @"Critical", title, message,
     defaultButton, alternateButton, otherButton);
-  [panel orderFrontRegardless];
-
   // FIXME: We should also change the button action to call endSheet:
   [NSApp beginSheet: panel
 	 modalForWindow: docWindow
@@ -1386,8 +1374,6 @@ void NSBeginInformationalAlertSheet(NSString *title,
 		      @"Information",
 		      title, message,
 		      defaultButton, alternateButton, otherButton);
-  [panel orderFrontRegardless];
-
   // FIXME: We should also change the button action to call endSheet:
   [NSApp beginSheet: panel
 	 modalForWindow: docWindow
