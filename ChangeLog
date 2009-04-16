@@ -1,3 +1,9 @@
+2009-04-16 15:02-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSAlert.m: Order front regardless to prevent reported 
+	cases of problems when sheets/panels bring up additional 
+	sheets/panels.
+
 2009-04-14 21:24-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSHorizontalTypesetter.m: Use thread dictionary to hold
