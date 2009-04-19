@@ -1,3 +1,12 @@
+2009-04-19 00:46-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSSearchFieldCell.h: Give the values assigned in 
+	Cocoa to the enum.  Patch by: doug@riverrock.org
+	* Source/NSSearchFieldCell.m: Implemented search menu template and
+	recent items.  Patch by: doug@rivverrock.org
+	* Source/NSSearchField.m: Call cell methods to use search menu.
+	Patch by: doug@riverrock.org
+
 2009-04-19 00:23-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSApplication.m: Make certain that a sheet is always placed

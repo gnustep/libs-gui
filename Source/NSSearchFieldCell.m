@@ -34,6 +34,7 @@
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSUserDefaults.h>
+#include <AppKit/NSApplication.h>
 #include <AppKit/NSButtonCell.h>
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSImage.h>
@@ -61,7 +62,7 @@
   if (self)
     {
       NSButtonCell *c;
-      NSMenu *template;
+      // NSMenu *template;
 
       c = [[NSButtonCell alloc] initImageCell: nil];
       [self setCancelButtonCell: c];
@@ -73,12 +74,15 @@
       RELEASE(c);
       [self resetSearchButtonCell];
 
+/* Don't set the searchMenuTemplate unless it is explicitly set in code or by a nib connection
       template = [self _buildTemplate];
       [self setSearchMenuTemplate: template];
       RELEASE(template);
+*/
 
-      //_recent_searches = nil;
+      //_recent_searches = [[NSMutableArray alloc] init];
       //_recents_autosave_name = nil;
+      [self _loadSearches];
       _max_recents = 10;
     }
 
@@ -102,7 +106,7 @@
 
   c->_cancel_button_cell = [_cancel_button_cell copyWithZone: zone];
   c->_search_button_cell = [_search_button_cell copyWithZone: zone];
-  c->_recent_searches = [_recent_searches copyWithZone: zone];
+  c->_recent_searches = [_recent_searches mutableCopyWithZone: zone];
   c->_recents_autosave_name = [_recents_autosave_name copyWithZone: zone];
   c->_menu_template = [_menu_template copyWithZone: zone];
 
@@ -175,6 +179,12 @@
   return _recents_autosave_name; 
 }
 
+- (void) setRecentsAutosaveName: (NSString *)name
+{
+  ASSIGN(_recents_autosave_name, name);
+  [self _loadSearches];
+}
+
 - (void) setRecentSearches: (NSArray *)searches
 {
   int max;
@@ -185,14 +195,28 @@
       id buffer[max];
 
       [searches getObjects: buffer range: NSMakeRange(0, max)];
-      searches = [NSArray arrayWithObjects: buffer count: max];
+      searches = [NSMutableArray arrayWithObjects: buffer count: max];
+    }
+  else
+    {
+      searches = [NSMutableArray arrayWithArray:searches];
     }
   ASSIGN(_recent_searches, searches);
+  [self _saveSearches];
 }
  
-- (void) setRecentsAutosaveName: (NSString *)name
+- (void) addToRecentSearches:(NSString *)searchTerm
 {
-  ASSIGN(_recents_autosave_name, name);
+  if (!_recent_searches)
+    {
+      ASSIGN(_recent_searches, [NSMutableArray array]);
+    }
+  if (searchTerm != nil && [searchTerm length] > 0
+	&& [_recent_searches indexOfObject:searchTerm] == NSNotFound)
+    {
+      [_recent_searches addObject:searchTerm];
+      [self _saveSearches];
+    }
 }
 
 - (NSMenu *) searchMenuTemplate
@@ -203,6 +227,16 @@
 - (void) setSearchMenuTemplate: (NSMenu *)menu
 {
   ASSIGN(_menu_template, menu);
+  if (menu)
+    {
+      [[self searchButtonCell] setTarget:self];
+      [[self searchButtonCell] setAction:@selector(_openPopup:)];
+      [[self searchButtonCell] sendActionOn:NSLeftMouseDownMask];
+    }
+  else
+    {
+      [self resetSearchButtonCell];
+    }
 }
 
 - (NSButtonCell *) cancelButtonCell
@@ -256,8 +290,11 @@
   [c setEditable: NO];
   [c setImagePosition: NSImageOnly];
   [c setImage: [NSImage imageNamed: @"GSSearch"]];
-  [c setAction: [self action]];
-  [c setTarget: [self target]];
+//  [c setAction: [self action]];
+//  [c setTarget: [self target]];
+  [c setAction: @selector(performClick:)];
+  [c setTarget: self];
+  [c sendActionOn:NSLeftMouseUpMask];
   [c setKeyEquivalent: @"\r"];
 }
 
@@ -328,6 +365,7 @@
 
 - (void) endEditing: (NSText *)editor
 {
+  [self addToRecentSearches:[[[editor string] copy] autorelease]];
   [super endEditing: editor];
   [[NSNotificationCenter defaultCenter] 
       removeObserver: self 
@@ -504,8 +542,9 @@
   NSMenuView *mr;
   NSWindow *cvWin;
   NSRect cellFrame;
-  NSRect textRect;
   int i;
+  int recentCount = [_recent_searches count];
+  // NSRect textRect;
 
   template = [self searchMenuTemplate];
   popupmenu = [[NSMenu alloc] init];
@@ -514,42 +553,68 @@
   for (i = 0; i < [template numberOfItems]; i++)
     {
       int tag;
-      NSMenuItem *item;
-      int count = [_recent_searches count];
+      NSMenuItem *item, *newItem = nil;
 
       item = (NSMenuItem*)[template itemAtIndex: i];
       tag = [item tag];
-      if ((tag == NSSearchFieldRecentsTitleMenuItemTag) || 
-	  (tag == NSSearchFieldClearRecentsMenuItemTag) ||
-	  ((tag == NSSearchFieldRecentsMenuItemTag) && ((count == 0))))
+      if (tag == NSSearchFieldRecentsTitleMenuItemTag)
+	{
+	  if (recentCount > 0) // only show items with this tag if there are recent searches
+	    {
+	      newItem = [[item copy] autorelease];
+	    }
+	}
+      else if (tag == NSSearchFieldClearRecentsMenuItemTag)
+	{
+	  if (recentCount > 0) // only show items with this tag if there are recent searches
+	    {
+	      newItem = [[item copy] autorelease];
+	      [newItem setTarget:self];
+	      [newItem setAction:@selector(_clearSearches:)];
+	    }
+	}
+      else if (tag == NSSearchFieldNoRecentsMenuItemTag)
         { 
-	  NSMenuItem *copy;
-	  
-	  copy = [item copy];
-	  [popupmenu addItem: copy];
-	  RELEASE(copy);
+	  if (recentCount == 0) // only show items with this tag if there are NO recent searches
+	    {
+	      newItem = [[item copy] autorelease];
+	    }
 	}
       else if (tag == NSSearchFieldRecentsMenuItemTag)
         {
 	  int j;
 
-	  for (j = 0; j < count; j++)
+	  for (j = 0; j < recentCount; j++)
 	    {
-	      [popupmenu addItemWithTitle: [_recent_searches objectAtIndex: j]
-			 action: [item action]
-			 keyEquivalent: [item keyEquivalent]];
+	      NSMenuItem *searchItem = [popupmenu addItemWithTitle: 
+						    [_recent_searches objectAtIndex: j]
+						  action: 
+						    @selector(_searchForRecent:)
+						  keyEquivalent: 
+						    [item keyEquivalent]];
+	      [searchItem setTarget:self];
 	    }
+	}
+      else // copy all other items without special tags from the template into the popup
+	{
+	  newItem = [[item copy] autorelease];
+	}
+
+      if (newItem != nil)
+	{
+	  [popupmenu addItem:newItem];
 	}
     } 
 
   // Prepare to display the popup
   cvWin = [_control_view window];
-  cellFrame = [_control_view bounds];
-  textRect = [self searchTextRectForBounds: cellFrame] ;
+  cellFrame = [_control_view frame];
+  cellFrame = [[_control_view superview] convertRect:cellFrame toView:nil]; // convert to window coordinates
+  cellFrame.origin = [cvWin convertBaseToScreen:cellFrame.origin]; // convert to screen coordinates
   mr = [popupmenu menuRepresentation];
 
   // Ask the MenuView to attach the menu to this rect
-  [mr setWindowFrameForAttachingToRect: textRect
+  [mr setWindowFrameForAttachingToRect: cellFrame
       onScreen: [cvWin screen]
       preferredEdge: NSMinYEdge
       popUpSelectedItem: -1];
@@ -557,7 +622,15 @@
   // Last, display the window
   [[mr window] orderFrontRegardless];
 
+  [mr mouseDown:[NSApp currentEvent]];
   AUTORELEASE(popupmenu);
+}
+
+- (void) _searchForRecent: (id)sender
+{
+  NSString *searchTerm = [sender title];
+  [(id)_control_view setStringValue:searchTerm];
+  [self performClick:self];  // do the search
 }
 
 - (void) _clearSearches: (id)sender
@@ -569,19 +642,23 @@
 {
   NSArray *list;
   NSString *name = [self recentsAutosaveName];
-
-  list = [[NSUserDefaults standardUserDefaults] 
-	     stringArrayForKey: name];
-  [self setRecentSearches: list];
+  if (name)
+    {
+      list = [[NSUserDefaults standardUserDefaults] 
+	         stringArrayForKey: name];
+      [self setRecentSearches: list];
+    }
 }
 
 - (void) _saveSearches
 {
   NSArray *list = [self recentSearches];
   NSString *name = [self recentsAutosaveName];
-
-  [[NSUserDefaults standardUserDefaults] 
-      setObject: list forKey: name];
+  if (name && list)
+    {
+      [[NSUserDefaults standardUserDefaults] 
+          setObject: list forKey: name];
+    }
 }
 
 @end /* NSSearchFieldCell Private */

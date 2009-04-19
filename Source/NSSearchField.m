@@ -81,4 +81,42 @@ static Class usedCellClass;
   [[self cell] setRecentsAutosaveName: name];
 }
 
+//
+// Handling Events
+//
+- (void) mouseDown: (NSEvent*)theEvent
+{
+  [[self cell] trackMouse: theEvent 
+	     inRect: [self bounds] 
+	     ofView: self 
+       untilMouseUp: YES];
+}
+
+- (void)delete:(id)sender
+{
+  [self setStringValue:@""]; // this may need to do more (like send action), but start here...
+  [[self cell] performClick:self];
+}
+
+// Cocoa only defines these methods on the cell, but nib loading targets the field itself
+- (void) setSearchMenuTemplate:(NSMenu *)newTemplate
+{
+  [[self cell] setSearchMenuTemplate:newTemplate];
+}
+
+- (void) setSendsWholeSearchString: (BOOL)flag
+{
+  [[self cell] setSendsWholeSearchString: flag];
+}
+
+- (void) setSendsSearchStringImmediately: (BOOL)flag
+{
+  [[self cell] setSendsSearchStringImmediately: flag];
+}
+
+- (void) setMaximumRecents: (int)max
+{
+  [[self cell] setMaximumRecents: max];
+}
+
 @end /* NSSearchField */

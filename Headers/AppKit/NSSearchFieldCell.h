@@ -37,15 +37,15 @@
 
 enum
 {
-    NSSearchFieldRecentsTitleMenuItemTag,
-    NSSearchFieldRecentsMenuItemTag,
-    NSSearchFieldClearRecentsMenuItemTag,
-    NSSearchFieldNoRecentsMenuItemTag
+    NSSearchFieldRecentsTitleMenuItemTag = 1000,
+    NSSearchFieldRecentsMenuItemTag = 1001,
+    NSSearchFieldClearRecentsMenuItemTag = 1002,
+    NSSearchFieldNoRecentsMenuItemTag = 1003
 };
 
 @interface NSSearchFieldCell : NSTextFieldCell
 {
-    NSArray *_recent_searches;
+    NSMutableArray *_recent_searches;
     NSString *_recents_autosave_name;
     NSButtonCell *_search_button_cell;
     NSButtonCell *_cancel_button_cell;
