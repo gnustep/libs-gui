@@ -1,3 +1,14 @@
+2009-04-18 23:21-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSScrollView.m: If the scrollview has scrollers,
+	don't pay attention to the hidden flag in nib loading.
+	* Source/NSTableView.m: if the table has a cornerview, don't
+	pay attention to the hidden flag in nib loading.  
+	NOTE: In both instances it appears that Cocoa sets the hidden flag 
+	when autohide is set to true.   GNUstep handles this case differently,
+	so it's okay to ignore this flag when the scroller is in an
+	NSScrollView.
+
 2009-04-16 16:05-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSAlert.m: Revert last change.

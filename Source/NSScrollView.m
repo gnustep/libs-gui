@@ -1561,7 +1561,7 @@ static float scrollerWidth;
 
       if (content != nil)
         {
-          // FIXME: I think this is not needed as we re-tile anyway.
+          // Move the content view since it is not moved when we retile.
           NSRect frame = [content frame];
           float w = [vScroller frame].size.width;
 
@@ -1575,19 +1575,18 @@ static float scrollerWidth;
               frame.origin.x += w;
               [content setFrame: frame];
             }
-
-	  // set the document view into the content.
-          [self setContentView: content];
         }
      
       if (hScroller != nil && _hasHorizScroller)
         {
           [self setHorizontalScroller: hScroller];
+	  [hScroller setHidden: NO];
         }
 
       if (vScroller != nil && _hasVertScroller)
         {
           [self setVerticalScroller: vScroller];
+	  [vScroller setHidden: NO];
         }
 
       if ([aDecoder containsValueForKey: @"NSHeaderClipView"])
@@ -1596,7 +1595,10 @@ static float scrollerWidth;
           _headerClipView = [aDecoder decodeObjectForKey: @"NSHeaderClipView"];
         }
 
-      [self tile];
+      // [self tile];
+      // set the document view into the content.
+      [self addSubview: vScroller];
+      [self setContentView: content];
       [docView setPostsFrameChangedNotifications: post_frame];
       [docView setPostsBoundsChangedNotifications: post_bound];
     }

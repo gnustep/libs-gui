@@ -5746,7 +5746,9 @@ static BOOL selectContiguousRegion(NSTableView *self,
                             forClassName: @"_NSCornerView"];
       if ([aDecoder containsValueForKey: @"NSCornerView"])
         {
-          [self setCornerView: [aDecoder decodeObjectForKey: @"NSCornerView"]];
+	  NSView *aView = [aDecoder decodeObjectForKey: @"NSCornerView"];
+          [self setCornerView: aView];
+	  [aView setHidden: NO];
         }
       else
         {
