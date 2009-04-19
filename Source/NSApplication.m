@@ -1849,6 +1849,8 @@ See -runModalForWindow:
 	relativeToWindow: (NSWindow *)docWindow
 {
   // FIXME
+  [theWindow orderWindow: NSWindowAbove
+	     relativeTo: [docWindow windowNumber]];
   return [self runModalForWindow: theWindow];
 }
 

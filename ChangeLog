@@ -1,3 +1,9 @@
+2009-04-19 00:23-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSApplication.m: Make certain that a sheet is always placed
+	above the window it's supposed to appear relative to.   Change
+	to runModalForWindow:relativeToWindow:.
+
 2009-04-18 23:21-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSScrollView.m: If the scrollview has scrollers,
