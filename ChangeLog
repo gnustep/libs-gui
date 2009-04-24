@@ -1,3 +1,8 @@
+2009-04-24 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSColorWell.m: Only send action if color changes ... fix
+	for bug #26277
+
 2009-04-19 00:46-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/NSSearchFieldCell.h: Give the values assigned in 
