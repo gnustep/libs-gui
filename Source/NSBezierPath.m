@@ -146,6 +146,20 @@ typedef struct _PathElement
   return path;
 }
 
++ (NSBezierPath *)bezierPathWithRoundedRect: (NSRect)aRect
+                                    xRadius: (CGFloat)xRadius
+                                    yRadius: (CGFloat)yRadius
+{
+  NSBezierPath *path;
+
+  path = [self bezierPath];
+  [path appendBezierPathWithRoundedRect: aRect
+                                xRadius: xRadius
+                                yRadius: yRadius];
+
+  return path;
+}
+
 //
 // Immediate mode drawing of common paths
 //
@@ -1173,6 +1187,49 @@ typedef struct _PathElement
                    path: self];
 }
 
+- (void) appendBezierPathWithRoundedRect: (NSRect)aRect
+                                 xRadius: (CGFloat)xRadius
+                                 yRadius: (CGFloat)yRadius
+{
+  NSPoint startp, endp, controlp1, controlp2, topLeft, topRight, bottomRight;
+
+  xRadius = MIN(xRadius, aRect.size.width);
+  yRadius = MIN(yRadius, aRect.size.height);
+
+  topLeft = NSMakePoint(NSMinX(aRect), NSMaxY(aRect));
+  topRight = NSMakePoint(NSMaxX(aRect), NSMaxY(aRect));
+  bottomRight = NSMakePoint(NSMaxX(aRect), NSMinY(aRect));
+
+  startp = NSMakePoint(aRect.origin.x, aRect.origin.y + yRadius);
+  endp = NSMakePoint(aRect.origin.x + xRadius, aRect.origin.y);
+  controlp1 = NSMakePoint(startp.x, startp.y - (KAPPA * yRadius));
+  controlp2 = NSMakePoint(endp.x - (KAPPA * xRadius), endp.y);
+  [self moveToPoint: startp];
+  [self curveToPoint: endp controlPoint1: controlp1 controlPoint2: controlp2];
+
+  startp = NSMakePoint(bottomRight.x - xRadius, bottomRight.y);
+  endp = NSMakePoint(bottomRight.x, bottomRight.y + yRadius);
+  controlp1 = NSMakePoint(startp.x + (KAPPA * xRadius), startp.y);
+  controlp2 = NSMakePoint(endp.x, endp.y - (KAPPA * yRadius));
+  [self lineToPoint: startp];
+  [self curveToPoint: endp controlPoint1: controlp1 controlPoint2: controlp2];
+
+  startp = NSMakePoint(topRight.x, topRight.y - yRadius);
+  endp = NSMakePoint(topRight.x - xRadius, topRight.y);
+  controlp1 = NSMakePoint(startp.x, startp.y + (KAPPA * yRadius));
+  controlp2 = NSMakePoint(endp.x + (KAPPA * xRadius), endp.y);
+  [self lineToPoint: startp];
+  [self curveToPoint: endp controlPoint1: controlp1 controlPoint2: controlp2];
+
+  startp = NSMakePoint(topLeft.x + xRadius, topLeft.y);
+  endp = NSMakePoint(topLeft.x, topLeft.y - yRadius);
+  controlp1 = NSMakePoint(startp.x - (KAPPA * xRadius), startp.y);
+  controlp2 = NSMakePoint(endp.x, endp.y + (KAPPA * yRadius));
+  [self lineToPoint: startp];
+  [self curveToPoint: endp controlPoint1: controlp1 controlPoint2: controlp2];
+
+  [self closePath];
+}
 
 /* We use our own point structure with double elements while recursing to
    avoid losing accuracy at really fine subdivisions of curves.  */
