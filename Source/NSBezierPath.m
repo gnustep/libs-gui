@@ -1193,18 +1193,31 @@ typedef struct _PathElement
 {
   NSPoint startp, endp, controlp1, controlp2, topLeft, topRight, bottomRight;
 
-  xRadius = MIN(xRadius, aRect.size.width);
-  yRadius = MIN(yRadius, aRect.size.height);
+  xRadius = MIN(xRadius, aRect.size.width / 2.0);
+  yRadius = MIN(yRadius, aRect.size.height / 2.0);
+
+  if (xRadius == 0.0 || yRadius == 0.0)
+    {
+      [self appendBezierPathWithRect: aRect];
+      return;
+    }
 
   topLeft = NSMakePoint(NSMinX(aRect), NSMaxY(aRect));
   topRight = NSMakePoint(NSMaxX(aRect), NSMaxY(aRect));
   bottomRight = NSMakePoint(NSMaxX(aRect), NSMinY(aRect));
 
+  startp = NSMakePoint(topLeft.x + xRadius, topLeft.y);
+  endp = NSMakePoint(topLeft.x, topLeft.y - yRadius);
+  controlp1 = NSMakePoint(startp.x - (KAPPA * xRadius), startp.y);
+  controlp2 = NSMakePoint(endp.x, endp.y + (KAPPA * yRadius));
+  [self moveToPoint: startp];
+  [self curveToPoint: endp controlPoint1: controlp1 controlPoint2: controlp2];
+
   startp = NSMakePoint(aRect.origin.x, aRect.origin.y + yRadius);
   endp = NSMakePoint(aRect.origin.x + xRadius, aRect.origin.y);
   controlp1 = NSMakePoint(startp.x, startp.y - (KAPPA * yRadius));
   controlp2 = NSMakePoint(endp.x - (KAPPA * xRadius), endp.y);
-  [self moveToPoint: startp];
+  [self lineToPoint: startp];
   [self curveToPoint: endp controlPoint1: controlp1 controlPoint2: controlp2];
 
   startp = NSMakePoint(bottomRight.x - xRadius, bottomRight.y);
@@ -1218,13 +1231,6 @@ typedef struct _PathElement
   endp = NSMakePoint(topRight.x - xRadius, topRight.y);
   controlp1 = NSMakePoint(startp.x, startp.y + (KAPPA * yRadius));
   controlp2 = NSMakePoint(endp.x + (KAPPA * xRadius), endp.y);
-  [self lineToPoint: startp];
-  [self curveToPoint: endp controlPoint1: controlp1 controlPoint2: controlp2];
-
-  startp = NSMakePoint(topLeft.x + xRadius, topLeft.y);
-  endp = NSMakePoint(topLeft.x, topLeft.y - yRadius);
-  controlp1 = NSMakePoint(startp.x - (KAPPA * xRadius), startp.y);
-  controlp2 = NSMakePoint(endp.x, endp.y + (KAPPA * yRadius));
   [self lineToPoint: startp];
   [self curveToPoint: endp controlPoint1: controlp1 controlPoint2: controlp2];
 

@@ -1,3 +1,9 @@
+2009-04-27 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBezierPath.m	(-appendBezierPathWithRoundedRect:xRadius:yRadius:):
+	Small rearangment of code.
+	Patch by Fred Morcos <fred.morcos@gmail.com>
+
 2009-04-25 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSBezierPath.h,
