@@ -49,31 +49,17 @@
 
 + (float) height
 {
-  static float height = 0.0;
-
-  if (height == 0.0)
-    {
-      NSFont *font = [NSFont menuFontOfSize: 0.0];
-
-      /* Minimum title height is 23 */
-      height = ([font boundingRectForFont].size.height) + 9;
-      if (height < 23)
-	{
-	  height = 23;
-	}
-    }
-
-  return height;
+  return [NSMenuView menuBarHeight] + 1;
 }
 
 - (id) init
 {
   self = [super init];
+  if (!self)
+    return nil;
 
   _owner = nil;
   _ownedByMenu = NO;
-  _hasCloseButton = NO;
-  _hasMiniaturizeButton = NO;
   _isKeyWindow = NO;
   _isMainWindow = NO;
   _isActiveApplication = NO;
@@ -91,7 +77,10 @@
 
 - (id) initWithOwner: (id)owner
 {
-  [self init];
+  self = [self init];
+  if (!self)
+    return nil;
+
   [self setOwner: owner];
 
   return self;
@@ -101,7 +90,7 @@
 {
   NSNotificationCenter *theCenter = [NSNotificationCenter defaultCenter];
 
-  if ([owner isKindOfClass:[NSWindow class]])
+  if ([owner isKindOfClass: [NSWindow class]])
     {
       NSDebugLLog(@"GSTitleView", @"owner is NSWindow or NSPanel");
       _owner = owner;
@@ -112,13 +101,13 @@
                     [_owner frame].size.width+2, [GSTitleView height])];
 
       if ([_owner styleMask] & NSClosableWindowMask)
-	{
-	  [self addCloseButtonWithAction:@selector (performClose:)];
-	}
+        {
+          [self addCloseButtonWithAction: @selector(performClose:)];
+        }
       if ([_owner styleMask] & NSMiniaturizableWindowMask)
-	{
-	  [self addMiniaturizeButtonWithAction:@selector (performMiniaturize:)];
-	}
+        {
+          [self addMiniaturizeButtonWithAction: @selector(performMiniaturize:)];
+        }
 
       // NSWindow observers
       [theCenter addObserver: self
@@ -148,7 +137,7 @@
                         name: NSApplicationWillResignActiveNotification
                       object: NSApp];
     }
-  else if ([owner isKindOfClass:[NSMenu class]])
+  else if ([owner isKindOfClass: [NSMenu class]])
     {
       NSDebugLLog(@"GSTitleView", @"owner is NSMenu");
       _owner = owner;
@@ -177,11 +166,13 @@
 {
   if (!_ownedByMenu)
     {
-      [[NSNotificationCenter defaultCenter] removeObserver:self];
+      [[NSNotificationCenter defaultCenter] removeObserver: self];
     }
 
-  RELEASE (textAttributes);
-  RELEASE (titleColor);
+  RELEASE(textAttributes);
+  RELEASE(titleColor);
+  TEST_RELEASE(closeButton);
+  TEST_RELEASE(miniaturizeButton);
 
   [super dealloc];
 }
@@ -313,17 +304,17 @@
             {
               NSPoint origin = [_window frame].origin;
 
-	      moved = YES;
+              moved = YES;
               origin.x += (location.x - lastLocation.x);
               origin.y += (location.y - lastLocation.y);
-	      if (_ownedByMenu)
-		{
-		  [_owner nestedSetFrameOrigin: origin];
-		}
-	      else
-		{
-		  [_owner setFrameOrigin: origin];
-		}
+              if (_ownedByMenu)
+                {
+                  [_owner nestedSetFrameOrigin: origin];
+                }
+              else
+                {
+                  [_owner setFrameOrigin: origin];
+                }
             }
           break;
 
@@ -338,9 +329,9 @@
       endWindowOrigin = [_window frame].origin;
       if ((startWindowOrigin.x != endWindowOrigin.x 
 	   || startWindowOrigin.y != endWindowOrigin.y))
-	{
-	  [_owner setTornOff: YES];
-	}
+        {
+          [_owner setTornOff: YES];
+        }
     }
 
   [NSEvent stopPeriodicEvents];
@@ -349,7 +340,7 @@
     {
       // Let everything know the window has moved.
       [[NSNotificationCenter defaultCenter]
-	postNotificationName: NSWindowDidMoveNotification object: _window];
+          postNotificationName: NSWindowDidMoveNotification object: _window];
     }
 }
 
@@ -427,49 +418,32 @@
 // ==== Buttons
 // ============================================================================
 
-- (NSButton *) _createButtonWithImage: (NSImage *)image
-                       highlightImage: (NSImage *)imageH
-                               action: (SEL)action
-{
-  NSButton *button;
-  NSSize   imageSize = [image size]; 
-  NSRect   rect = NSMakeRect (0, 0, imageSize.width+3, imageSize.height+3);
-
-  button = [[NSButton alloc] initWithFrame: rect];
-  [button setRefusesFirstResponder: YES];
-  [button setButtonType: NSMomentaryChangeButton];
-  [button setImagePosition: NSImageOnly];
-  [button setBordered: YES];
-  [button setAutoresizingMask: NSViewMaxXMargin | NSViewMaxYMargin];
-  [button setImage: image];
-  [button setAlternateImage: imageH];
-  [button setTarget: _owner];
-  [button setAction: action];
-
-  return button;
-}
-            
 - (void) addCloseButtonWithAction: (SEL)closeAction
 {
   if (closeButton == nil)
     {
-      NSImage *closeImage = [NSImage imageNamed: @"common_Close"];
-      NSImage *closeHImage = [NSImage imageNamed: @"common_CloseH"];
-
       NSSize viewSize;
       NSSize buttonSize;
       
-      closeButton = [self _createButtonWithImage: closeImage 
-                                  highlightImage: closeHImage
-                                          action: closeAction];
+      ASSIGN(closeButton, 
+             [NSWindow standardWindowButton: 
+                           NSWindowCloseButton 
+                       forStyleMask: 
+                           NSTitledWindowMask | NSClosableWindowMask 
+                       | NSMiniaturizableWindowMask]);
+
+      [closeButton setTarget: _owner];
+      [closeButton setAction: closeAction];
 
       viewSize = [self frame].size;
-      buttonSize = [closeButton frame].size;
+      buttonSize = [[closeButton image] size];
+      buttonSize = NSMakeSize(buttonSize.width + 3, buttonSize.height + 3);
 
       // Update location
-      [closeButton setFrameOrigin:
-        NSMakePoint (viewSize.width - buttonSize.width - 4,
-                     (viewSize.height - buttonSize.height) / 2)];
+      [closeButton setFrame:
+        NSMakeRect(viewSize.width - buttonSize.width - 4,
+                   (viewSize.height - buttonSize.height) / 2,
+                   buttonSize.width, buttonSize.height)];
 
       [closeButton setAutoresizingMask: NSViewMinXMargin | NSViewMaxYMargin];
     }
@@ -477,7 +451,6 @@
   if ([closeButton superview] == nil)
     {
       [self addSubview: closeButton];
-      RELEASE (closeButton);
       [self setNeedsDisplay: YES];
     }
 }
@@ -491,7 +464,6 @@
 {
   if ([closeButton superview] != nil)
     {
-      RETAIN (closeButton);
       [closeButton removeFromSuperview];
     }
 }
@@ -500,31 +472,33 @@
 {
   if (miniaturizeButton == nil)
     {
-      NSImage *miniImage = [NSImage imageNamed: @"common_Miniaturize"];
-      NSImage *miniHImage = [NSImage imageNamed: @"common_MiniaturizeH"];
-
       NSSize viewSize;
       NSSize buttonSize;
       
-      miniaturizeButton = [self _createButtonWithImage: miniImage
-                                        highlightImage: miniHImage
-                                                action: miniaturizeAction];
+      ASSIGN(miniaturizeButton, 
+             [NSWindow standardWindowButton: 
+                           NSWindowMiniaturizeButton 
+                       forStyleMask: 
+                           NSTitledWindowMask | NSClosableWindowMask 
+                       | NSMiniaturizableWindowMask]);
+      [miniaturizeButton setTarget: _owner];
+      [miniaturizeButton setAction: miniaturizeAction];
 
       viewSize = [self frame].size;
-      buttonSize = [miniaturizeButton frame].size;
+      buttonSize = [[miniaturizeButton image] size];
+      buttonSize = NSMakeSize(buttonSize.width + 3, buttonSize.height + 3);
 
       // Update location
-      [miniaturizeButton setFrameOrigin:
-        NSMakePoint (4, (viewSize.height - buttonSize.height) / 2)];
+      [miniaturizeButton setFrame:
+        NSMakeRect(4, (viewSize.height - buttonSize.height) / 2,
+                   buttonSize.width, buttonSize.height)];
 
-      [miniaturizeButton setAutoresizingMask: 
-        NSViewMaxXMargin | NSViewMaxYMargin];
+      [miniaturizeButton setAutoresizingMask: NSViewMaxXMargin | NSViewMaxYMargin];
     }
     
   if ([miniaturizeButton superview] == nil)
     {
       [self addSubview: miniaturizeButton];
-      RELEASE (miniaturizeButton);
       [self setNeedsDisplay: YES];
     }
 }
@@ -538,10 +512,8 @@
 {
   if ([miniaturizeButton superview] != nil)
     {
-      RETAIN (miniaturizeButton);
       [miniaturizeButton removeFromSuperview];
     }
 }
 
 @end 
-

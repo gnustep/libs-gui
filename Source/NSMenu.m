@@ -466,45 +466,45 @@ static BOOL menuBarVisible = YES;
       NSDebugLLog (@"NSMenu", @"Synchronizing user defaults");
       key = [self _locationKey];
       if (key != nil)
-	{
-	  NSUserDefaults	*defaults;
-	  NSMutableDictionary	*menuLocations;
-	  NSString		*locString;
+        {
+          NSUserDefaults	*defaults;
+          NSMutableDictionary	*menuLocations;
+          NSString		*locString;
 
-	  defaults = [NSUserDefaults standardUserDefaults];
-	  menuLocations = [defaults objectForKey: NSMenuLocationsKey];
-	  if ([menuLocations isKindOfClass: [NSDictionary class]])
-	    menuLocations = [menuLocations mutableCopy];
-	  else
-	    menuLocations = nil;
+          defaults = [NSUserDefaults standardUserDefaults];
+          menuLocations = [defaults objectForKey: NSMenuLocationsKey];
+          if ([menuLocations isKindOfClass: [NSDictionary class]])
+            menuLocations = AUTORELEASE([menuLocations mutableCopy]);
+          else
+            menuLocations = nil;
 
-	  if ([_aWindow isVisible]
-	    && ([self isTornOff] || ([NSApp mainMenu] == self)))
-	    {
-	      if (menuLocations == nil)
-		{
-		  menuLocations = AUTORELEASE([[NSMutableDictionary alloc]
-		    initWithCapacity: 2]);
-		}
-	      locString = [[self window] stringWithSavedFrame];
-	      [menuLocations setObject: locString forKey: key];
-	    }
-	  else
-	    {
-	      [menuLocations removeObjectForKey: key];
-	    }
-
-	  if ([menuLocations count] > 0)
-	    {
-	      [defaults setObject: menuLocations
-			   forKey: NSMenuLocationsKey];
-	    }
-	  else
-	    {
-	      [defaults removeObjectForKey: NSMenuLocationsKey];
-	    }
-	  [defaults synchronize];
-	}
+          if ([_aWindow isVisible]
+              && ([self isTornOff] || ([NSApp mainMenu] == self)))
+            {
+              if (menuLocations == nil)
+                {
+                  menuLocations = AUTORELEASE([[NSMutableDictionary alloc]
+                                                  initWithCapacity: 2]);
+                }
+              locString = [[self window] stringWithSavedFrame];
+              [menuLocations setObject: locString forKey: key];
+            }
+          else
+            {
+              [menuLocations removeObjectForKey: key];
+            }
+          
+          if ([menuLocations count] > 0)
+            {
+              [defaults setObject: menuLocations
+                        forKey: NSMenuLocationsKey];
+            }
+          else
+            {
+              [defaults removeObjectForKey: NSMenuLocationsKey];
+            }
+          [defaults synchronize];
+        }
     }
 }
 

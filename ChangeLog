@@ -1,3 +1,11 @@
+2009-05-02 Fred Kiefer <FredKiefer@gmx.de>
+	
+	* Source/NSMenu.m (-_updateUserDefaults:): Fix small memory leak.
+	* Source/GSTitleView.m (+height: Get height from NSMenuView.
+	* Source/GSTitleView.m (-addCloseButtonWithAction:,
+	-addMiniaturizeButtonWithAction:): Get buttons from NSWindow. 
+	* Source/GSTitleView.m: Clean up a bit.
+
 2009-04-27 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBezierPath.m	(-appendBezierPathWithRoundedRect:xRadius:yRadius:):
