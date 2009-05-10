@@ -20,6 +20,42 @@
 	migrate to using a newer version of the library.
       </p>
       <section>
+      	<heading>Version 0.17.0</heading>
+	<p>Many many bug fixes and almost complete reorganization of NSToolbar
+	code.
+	</p>
+	<deflist>
+            <term>NSBezierPath, NSAttributedString, NSLayoutManager</term>
+            <desc>
+	      New Mac OS X 10.5 methods.
+            </desc>
+            <term>NSSpeechSynthesizer</term>
+            <desc>
+	      New class.
+            </desc>
+            <term>NSSplitView</term>
+            <desc>
+	      Added new Mac OS X 10.5 methods and some ivars
+            </desc>
+            <term>Toolbars</term>
+            <desc>
+	      Many improvements. NSToolbar methods rearragned and ivar removed.
+            </desc>
+            <term>Menus</term>
+            <desc>
+	      MS Window-stype menus inside a window implemented
+            </desc>
+            <term>Garbage Collection</term>
+            <desc>
+	      Several improvements to work better with GC
+            </desc>
+            <term>HelpViewer</term>
+            <desc>
+	      GSHelpViewer use default added.
+            </desc>
+  	</deflist>
+      </section>
+      <section>
       	<heading>Version 0.16.0</heading>
 	<p>This is an stable release. A lot of improvements and bug
 	fixes went into this release. Thanks to Wolfgang Lux for fixing plenty
@@ -56,7 +92,7 @@
             <desc>
 	      New methods added to handle temporary attributes.
             </desc>
-            <term>NSWindowContrller</term>
+            <term>NSWindowController</term>
             <desc>
 	      NSWindowController was made a subclass of NSResponder.
             </desc>
@@ -66,7 +102,7 @@
             </desc>
             <term>NSTokenField, NSTokenFieldCell</term>
             <desc>
-	      Ned classes added.
+	      New classes added.
             </desc>
 	</deflist>
       </section>

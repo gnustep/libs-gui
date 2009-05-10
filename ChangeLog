@@ -1,3 +1,7 @@
+2009-05-10  Adam Fedor  <fedor@gnu.org>
+
+	* Version 0.17.0
+
 2009-05-02 Fred Kiefer <FredKiefer@gmx.de>
 	
 	* Source/NSMenu.m (-_updateUserDefaults:): Fix small memory leak.

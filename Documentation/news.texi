@@ -9,6 +9,16 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.17.0}
+
+@itemize @bullet
+@item New Mac OS X 10.5 methods in many classes
+@item Toolbars have been completely rewritten and improved.
+@item Several improvements for Garbage Collection
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.16.0}
 
 @itemize @bullet
@@ -17,8 +27,6 @@ The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSIO
 @item NSWindowController made a subclass of NSResponder
 @item NSTokenField and netokenFiledCell classes added.
 @end itemize
-
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.14.0}
 
