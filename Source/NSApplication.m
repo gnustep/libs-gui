@@ -3456,7 +3456,7 @@ struct _DelegateWrapper
 - (NSArray *) orderedWindows
 {
   NSArray *arr = GSOrderedWindows();
-  NSMutableArray *ret = [[NSArray alloc] initWithCapacity:[arr count]];
+  NSMutableArray *ret = [[NSMutableArray alloc] initWithCapacity:[arr count]];
   NSEnumerator *iter = [arr objectEnumerator];
   id win;
   while ((win = [iter nextObject]))
