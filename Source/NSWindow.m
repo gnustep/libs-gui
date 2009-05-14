@@ -986,6 +986,7 @@ many times.
   [super init];
   [self _initDefaults];
 
+  _attachedSheet = nil;
   _backingType = bufferingType;
   _styleMask = aStyle;
   if (aScreen == nil)
@@ -5101,7 +5102,7 @@ current key view.<br />
 
 - (NSWindow *) attachedSheet
 {
-  return nil;
+  return _attachedSheet;
 }
 
 @end

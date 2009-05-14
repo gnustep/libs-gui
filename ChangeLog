@@ -1,3 +1,10 @@
+2009-05-14 14:15-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/AppKit/NSWindow.h: Added ivar to contain attachedSheet.
+	* Source/NSAlert.m: New class GSSheetPanel.  Initial changes for 
+	sheet implementation. 
+	* Source/NSWindow.m: Added code to return value of new ivar.
+
 2009-05-10  Adam Fedor  <fedor@gnu.org>
 
 	* Version 0.17.0

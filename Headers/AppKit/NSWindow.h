@@ -203,6 +203,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
   NSWindow       *_parent;
   NSCachedImageRep *_cachedImage;
   NSPoint        _cachedImageOrigin;
+  NSWindow       *_attachedSheet;
 
   struct GSWindowFlagsType {
     unsigned	accepts_drag:1;

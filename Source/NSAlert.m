@@ -893,6 +893,28 @@ setControl(NSView* content, id control, NSString *title)
 @end /* GSAlertPanel GMArchiverMethods */
 
 /*
+  GSAlertSheet.  This class provides a borderless window which is
+  attached to the parent window.
+ */
+@interface GSAlertSheet : GSAlertPanel
+@end
+
+@implementation GSAlertSheet
+- (id) initWithContentRect: (NSRect)contentRect
+                 styleMask: (unsigned int)aStyle
+                   backing: (NSBackingStoreType)bufferingType
+                     defer: (BOOL)flag
+                    screen: (NSScreen*)aScreen
+{
+  return [super initWithContentRect: contentRect
+		styleMask: NSBorderlessWindowMask
+		backing: bufferingType
+		defer: flag
+		screen: aScreen];
+}
+@end
+
+/*
   These functions may be called "recursively". For example, from a
   timed event. Therefore, there  may be several alert panel active
   at  the  same  time,  but   only  the  first  one  will  be  THE
