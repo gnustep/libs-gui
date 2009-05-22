@@ -164,11 +164,241 @@ static NSNotificationCenter *nc = nil;
   return YES;
 }
 
+/**
+ * Utility function to draw the xor-ed splitview divider
+ * It is only used in the non-live resize mode.
+ */
+- (BOOL) _drawHighlightedDividerWithSize: (NSRect) r
+                   andOldSize: (NSRect) oldRect
+                        isLit: (BOOL) lit
+{
+  if (NSEqualRects(r, oldRect) == YES)
+    {
+      return lit;
+    }
+
+  NSDebugLLog(@"NSSplitView", @"drawing divider at %@\n",
+              NSStringFromRect(r));
+  [_dividerColor set];
+
+    
+  if (lit == YES)
+    {
+      if (_isVertical == NO)
+        {
+          if ((NSMinY(r) > NSMaxY(oldRect)) 
+              || (NSMaxY(r) < NSMinY(oldRect)))
+            // the two rects don't intersect
+            {
+              NSHighlightRect(oldRect);
+              NSHighlightRect(r);
+            }
+          else
+            // the two rects intersect
+            {
+              if (NSMinY(r) > NSMinY(oldRect))
+                {
+                  NSRect onRect, offRect;
+                  onRect.size.width = r.size.width;
+                  onRect.origin.x = r.origin.x;
+                  offRect.size.width = r.size.width;
+                  offRect.origin.x = r.origin.x;
+
+                  offRect.origin.y = NSMinY(oldRect);
+                  offRect.size.height = 
+                    NSMinY(r) - NSMinY(oldRect);
+
+                  onRect.origin.y = NSMaxY(oldRect);
+                  onRect.size.height = 
+                    NSMaxY(r) - NSMaxY(oldRect);
+
+                  NSHighlightRect(onRect);
+                  NSHighlightRect(offRect);
+
+                  //NSLog(@"on : %@", NSStringFromRect(onRect));
+                  //NSLog(@"off : %@", NSStringFromRect(offRect));
+                  //NSLog(@"old : %@", NSStringFromRect(oldRect));
+                  //NSLog(@"r : %@", NSStringFromRect(r));
+                }
+              else
+                {
+                  NSRect onRect, offRect;
+                  onRect.size.width = r.size.width;
+                  onRect.origin.x = r.origin.x;
+                  offRect.size.width = r.size.width;
+                  offRect.origin.x = r.origin.x;
+
+                  offRect.origin.y = NSMaxY(r);
+                  offRect.size.height = 
+                    NSMaxY(oldRect) - NSMaxY(r);
+
+                  onRect.origin.y = NSMinY(r);
+                  onRect.size.height = 
+                    NSMinY(oldRect) - NSMinY(r);
+
+                  NSHighlightRect(onRect);
+                  NSHighlightRect(offRect);
+
+                  //NSLog(@"on : %@", NSStringFromRect(onRect));
+                  //NSLog(@"off : %@", NSStringFromRect(offRect));
+                  //NSLog(@"old : %@", NSStringFromRect(oldRect));
+                  //NSLog(@"r : %@", NSStringFromRect(r));
+                }
+            }
+        }
+      else
+        {
+          if ((NSMinX(r) > NSMaxX(oldRect)) 
+              || (NSMaxX(r) < NSMinX(oldRect)))
+            // the two rects don't intersect
+            {
+              NSHighlightRect(oldRect);
+              NSHighlightRect(r);
+            }
+          else
+            // the two rects intersect
+            {
+              if (NSMinX(r) > NSMinX(oldRect))
+                {
+                  NSRect onRect, offRect;
+                  onRect.size.height = r.size.height;
+                  onRect.origin.y = r.origin.y;
+                  offRect.size.height = r.size.height;
+                  offRect.origin.y = r.origin.y;
+
+                  offRect.origin.x = NSMinX(oldRect);
+                  offRect.size.width = 
+                    NSMinX(r) - NSMinX(oldRect);
+
+                  onRect.origin.x = NSMaxX(oldRect);
+                  onRect.size.width = 
+                    NSMaxX(r) - NSMaxX(oldRect);
+
+                  NSHighlightRect(onRect);
+                  NSHighlightRect(offRect);
+                }
+              else
+                {
+                  NSRect onRect, offRect;
+                  onRect.size.height = r.size.height;
+                  onRect.origin.y = r.origin.y;
+                  offRect.size.height = r.size.height;
+                  offRect.origin.y = r.origin.y;
+
+                  offRect.origin.x = NSMaxX(r);
+                  offRect.size.width = 
+                    NSMaxX(oldRect) - NSMaxX(r);
+
+                  onRect.origin.x = NSMinX(r);
+                  onRect.size.width = 
+                    NSMinX(oldRect) - NSMinX(r);
+
+                  NSHighlightRect(onRect);
+                  NSHighlightRect(offRect);
+                }
+            }
+        }
+    }
+  else
+    {
+      NSHighlightRect(r);
+    }
+  [_window flushWindow];
+  /*
+  if (lit == YES)
+    {
+      NSHighlightRect(oldRect);
+      lit = NO;
+    }
+  NSHighlightRect(r);
+  */
+  return YES;
+}
+
+/**
+ * Utility function handling the splitview resize after
+ * the divider has been moved
+ */
+- (void) _resize: (id) v withOldSplitView: (id) prev
+   withFrame: (NSRect) r fromPoint: (NSPoint) p
+   withBigRect: (NSRect) bigRect divHorizontal: (float) divHorizontal
+   divVertical: (float) divVertical
+{
+  NSRect r1 = NSZeroRect;
+
+  [nc postNotificationName: NSSplitViewWillResizeSubviewsNotification
+                    object: self];
+
+  /* resize the subviews accordingly */
+  r = [prev frame];
+  if (_isVertical == NO)
+    {
+      r.size.height = p.y - NSMinY(bigRect) - (divVertical/2.);
+      if (NSHeight(r) < 1.)
+        {
+          r.size.height = 1.;
+        }
+    }
+  else
+    {
+      r.size.width = p.x - NSMinX(bigRect) - (divHorizontal/2.);
+      if (NSWidth(r) < 1.)
+        {
+          r.size.width = 1.;
+        }
+    }
+  [prev setFrame: r];
+  NSDebugLLog(@"NSSplitView", @"drawing PREV at x: %d, y: %d, w: %d, h: %d\n",
+             (int)NSMinX(r),(int)NSMinY(r),(int)NSWidth(r),(int)NSHeight(r));
+
+  r1 = [v frame];
+  if (_isVertical == NO)
+    {
+      r1.origin.y = p.y + (divVertical/2.);
+      if (NSMinY(r1) < 0.)
+        {
+          r1.origin.y = 0.;
+        }
+      r1.size.height = NSHeight(bigRect) - NSHeight(r) - divVertical;
+      if (NSHeight(r) < 1.)
+        {
+          r.size.height = 1.;
+        }
+    }
+  else
+    {
+      r1.origin.x = p.x + (divHorizontal/2.);
+      if (NSMinX(r1) < 0.)
+        {
+          r1.origin.x = 0.;
+        }
+      r1.size.width = NSWidth(bigRect) - NSWidth(r) - divHorizontal;
+      if (NSWidth(r1) < 1.)
+        {
+          r1.size.width = 1.;
+        }
+    }
+  [v setFrame: r1];
+  NSDebugLLog(@"NSSplitView", @"drawing LAST at x: %d, y: %d, w: %d, h: %d\n",
+             (int)NSMinX(r1),(int)NSMinY(r1),(int)NSWidth(r1),
+             (int)NSHeight(r1));
+
+  [nc postNotificationName: NSSplitViewDidResizeSubviewsNotification
+                    object: self];
+
+}
+
+/**
+ * In -mouseDown we intercept the mouse event to handle the
+ * splitview divider move. Moving the divider will do a live
+ * resize of the subviews by default. Users can revert to
+ * a "ghost" display of the splitview (without doing the 
+ * resize) by doing:
+ * defaults write NSGlobalDomain GSUseGhostResize YES
+ */
 - (void) mouseDown: (NSEvent*)theEvent
 {
   NSApplication *app = [NSApplication sharedApplication];
-  static NSRect oldRect; //only one can be dragged at a time
-  static BOOL lit = NO;
   NSPoint p, op;
   NSEvent *e;
   NSRect r, r1, bigRect, vis;
@@ -185,6 +415,9 @@ static NSNotificationCenter *nc = nil;
   SEL constrainSel = @selector(splitView:constrainSplitPosition:ofSubviewAt:);
   typedef float (*floatIMP)(id, SEL, id, float, int);
   floatIMP constrainImp = NULL;
+  BOOL liveResize = ![[NSUserDefaults standardUserDefaults] boolForKey: @"GSUseGhostResize"];
+  NSRect oldRect; //only one can be dragged at a time
+  BOOL lit = NO;
 
   /*  if there are less the two subviews, there is nothing to do */
   if (count < 2)
@@ -345,12 +578,15 @@ static NSNotificationCenter *nc = nil;
         }
     }
 
-  oldRect = NSZeroRect;
-  [self lockFocus];
+  if (!liveResize)
+    {
+      oldRect = NSZeroRect;
+      [self lockFocus];
+      [_dividerColor set];
+    }
 
   [[NSRunLoop currentRunLoop] limitDateForMode: NSEventTrackingRunLoopMode];
 
-  [_dividerColor set];
   r.size.width = divHorizontal;
   r.size.height = divVertical;
   e = [app nextEventMatchingMask: eventMask
@@ -363,12 +599,20 @@ static NSNotificationCenter *nc = nil;
       constrainImp = (floatIMP)[_delegate methodForSelector: constrainSel];
     }
     
-  // Save the old position
-  op = p;
+  if (!liveResize)
+    {
+      // Save the old position
+      op = p;
+    }
 
   // user is moving the knob loop until left mouse up
   while ([e type] != NSLeftMouseUp)
     {
+      if (liveResize)
+        {
+          // Save the old position
+          op = p;
+        }
       p = [self convertPoint: [e locationInWindow] fromView: nil];
       if (delegateConstrains)
         {
@@ -410,145 +654,12 @@ static NSNotificationCenter *nc = nil;
           r.origin.x = p.x - (divHorizontal/2.);
           r.origin.y = NSMinY(vis);
         }
-      if (NSEqualRects(r, oldRect) == NO)
+
+      if (!liveResize)
         {
-          NSDebugLLog(@"NSSplitView", @"drawing divider at %@\n",
-                      NSStringFromRect(r));
-          [_dividerColor set];
-        
-            
-          if (lit == YES)
-            {
-              if (_isVertical == NO)
-                {
-                  if ((NSMinY(r) > NSMaxY(oldRect)) 
-                      || (NSMaxY(r) < NSMinY(oldRect)))
-                    // the two rects don't intersect
-                    {
-                      NSHighlightRect(oldRect);
-                      NSHighlightRect(r);
-                    }
-                  else
-                    // the two rects intersect
-                    {
-                      if (NSMinY(r) > NSMinY(oldRect))
-                        {
-                          NSRect onRect, offRect;
-                          onRect.size.width = r.size.width;
-                          onRect.origin.x = r.origin.x;
-                          offRect.size.width = r.size.width;
-                          offRect.origin.x = r.origin.x;
-
-                          offRect.origin.y = NSMinY(oldRect);
-                          offRect.size.height = 
-                            NSMinY(r) - NSMinY(oldRect);
-
-                          onRect.origin.y = NSMaxY(oldRect);
-                          onRect.size.height = 
-                            NSMaxY(r) - NSMaxY(oldRect);
-
-                          NSHighlightRect(onRect);
-                          NSHighlightRect(offRect);
-
-                          //NSLog(@"on : %@", NSStringFromRect(onRect));
-                          //NSLog(@"off : %@", NSStringFromRect(offRect));
-                          //NSLog(@"old : %@", NSStringFromRect(oldRect));
-                          //NSLog(@"r : %@", NSStringFromRect(r));
-                        }
-                      else
-                        {
-                          NSRect onRect, offRect;
-                          onRect.size.width = r.size.width;
-                          onRect.origin.x = r.origin.x;
-                          offRect.size.width = r.size.width;
-                          offRect.origin.x = r.origin.x;
-
-                          offRect.origin.y = NSMaxY(r);
-                          offRect.size.height = 
-                            NSMaxY(oldRect) - NSMaxY(r);
-
-                          onRect.origin.y = NSMinY(r);
-                          onRect.size.height = 
-                            NSMinY(oldRect) - NSMinY(r);
-
-                          NSHighlightRect(onRect);
-                          NSHighlightRect(offRect);
-
-                          //NSLog(@"on : %@", NSStringFromRect(onRect));
-                          //NSLog(@"off : %@", NSStringFromRect(offRect));
-                          //NSLog(@"old : %@", NSStringFromRect(oldRect));
-                          //NSLog(@"r : %@", NSStringFromRect(r));
-                        }
-                    }
-                }
-              else
-                {
-                  if ((NSMinX(r) > NSMaxX(oldRect)) 
-                      || (NSMaxX(r) < NSMinX(oldRect)))
-                    // the two rects don't intersect
-                    {
-                      NSHighlightRect(oldRect);
-                      NSHighlightRect(r);
-                    }
-                  else
-                    // the two rects intersect
-                    {
-                      if (NSMinX(r) > NSMinX(oldRect))
-                        {
-                          NSRect onRect, offRect;
-                          onRect.size.height = r.size.height;
-                          onRect.origin.y = r.origin.y;
-                          offRect.size.height = r.size.height;
-                          offRect.origin.y = r.origin.y;
-
-                          offRect.origin.x = NSMinX(oldRect);
-                          offRect.size.width = 
-                            NSMinX(r) - NSMinX(oldRect);
-
-                          onRect.origin.x = NSMaxX(oldRect);
-                          onRect.size.width = 
-                            NSMaxX(r) - NSMaxX(oldRect);
-
-                          NSHighlightRect(onRect);
-                          NSHighlightRect(offRect);
-                        }
-                      else
-                        {
-                          NSRect onRect, offRect;
-                          onRect.size.height = r.size.height;
-                          onRect.origin.y = r.origin.y;
-                          offRect.size.height = r.size.height;
-                          offRect.origin.y = r.origin.y;
-
-                          offRect.origin.x = NSMaxX(r);
-                          offRect.size.width = 
-                            NSMaxX(oldRect) - NSMaxX(r);
-
-                          onRect.origin.x = NSMinX(r);
-                          onRect.size.width = 
-                            NSMinX(oldRect) - NSMinX(r);
-
-                          NSHighlightRect(onRect);
-                          NSHighlightRect(offRect);
-                        }
-                    }
-
-                }
-            }
-          else
-            {
-              NSHighlightRect(r);
-            }
-          [_window flushWindow];
-          /*
-          if (lit == YES)
-            {
-              NSHighlightRect(oldRect);
-              lit = NO;
-            }
-          NSHighlightRect(r);
-          */
-          lit = YES;
+          lit = [self _drawHighlightedDividerWithSize: r
+                                           andOldSize: oldRect
+                                                isLit: lit];
           oldRect = r;
         }
 
@@ -583,91 +694,46 @@ static NSNotificationCenter *nc = nil;
             while (ee != nil);
           }
       }
+
+      if (liveResize)
+        {
+          // If the splitview was moved, we resize the subviews
+          if ((_isVertical == YES && p.x != op.x)
+               || (_isVertical == NO && p.y != op.y))
+            {
+              [self _resize: v withOldSplitView: prev withFrame: r fromPoint: p 
+                withBigRect: bigRect divHorizontal: divHorizontal
+                divVertical: divVertical];
+              [_window invalidateCursorRectsForView: self];
+              [self setNeedsDisplay: YES];
+            }
+        }
       
     }
 
-  if (lit == YES)
+  if (!liveResize)
     {
-      [_dividerColor set];
-      NSHighlightRect(oldRect);
-      lit = NO;
-    }
-
-  [self unlockFocus];
-
-  // Divider position hasn't changed don't try to resize subviews  
-  if (_isVertical == YES && p.x == op.x)
-    {
-      [self setNeedsDisplay: YES];
-      return;
-    }
-  else if (_isVertical == NO && p.y == op.y)   
-    {
-      [self setNeedsDisplay: YES];
-      return;
-    }
-
-  [nc postNotificationName: NSSplitViewWillResizeSubviewsNotification
-                    object: self];
-
-  /* resize the subviews accordingly */
-  r = [prev frame];
-  if (_isVertical == NO)
-    {
-      r.size.height = p.y - NSMinY(bigRect) - (divVertical/2.);
-      if (NSHeight(r) < 1.)
+      if (lit == YES)
         {
-          r.size.height = 1.;
+          [_dividerColor set];
+          NSHighlightRect(oldRect);
+          lit = NO;
+        }
+      [self unlockFocus];
+    }
+
+  if (!liveResize)
+    {
+      // If the splitview was moved, we resize the subviews
+      if ((_isVertical == YES && p.x != op.x)
+           || (_isVertical == NO && p.y != op.y))
+        {
+          [self _resize: v withOldSplitView: prev withFrame: r fromPoint: p 
+            withBigRect: bigRect divHorizontal: divHorizontal
+            divVertical: divVertical];
+          [_window invalidateCursorRectsForView: self];
         }
     }
-  else
-    {
-      r.size.width = p.x - NSMinX(bigRect) - (divHorizontal/2.);
-      if (NSWidth(r) < 1.)
-        {
-          r.size.width = 1.;
-        }
-    }
-  [prev setFrame: r];
-  NSDebugLLog(@"NSSplitView", @"drawing PREV at x: %d, y: %d, w: %d, h: %d\n",
-             (int)NSMinX(r),(int)NSMinY(r),(int)NSWidth(r),(int)NSHeight(r));
-
-  r1 = [v frame];
-  if (_isVertical == NO)
-    {
-      r1.origin.y = p.y + (divVertical/2.);
-      if (NSMinY(r1) < 0.)
-        {
-          r1.origin.y = 0.;
-        }
-      r1.size.height = NSHeight(bigRect) - NSHeight(r) - divVertical;
-      if (NSHeight(r) < 1.)
-        {
-          r.size.height = 1.;
-        }
-    }
-  else
-    {
-      r1.origin.x = p.x + (divHorizontal/2.);
-      if (NSMinX(r1) < 0.)
-        {
-          r1.origin.x = 0.;
-        }
-      r1.size.width = NSWidth(bigRect) - NSWidth(r) - divHorizontal;
-      if (NSWidth(r1) < 1.)
-        {
-          r1.size.width = 1.;
-        }
-    }
-  [v setFrame: r1];
-  NSDebugLLog(@"NSSplitView", @"drawing LAST at x: %d, y: %d, w: %d, h: %d\n",
-             (int)NSMinX(r1),(int)NSMinY(r1),(int)NSWidth(r1),
-             (int)NSHeight(r1));
-
-  [_window invalidateCursorRectsForView: self];
-
-  [nc postNotificationName: NSSplitViewDidResizeSubviewsNotification
-                    object: self];
 
   [self _autosaveSubviewProportions];
 
