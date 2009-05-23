@@ -852,16 +852,19 @@ that makes decoding and encoding compatible with the old code.
       
       // currently not used....
       if ([aDecoder containsValueForKey: @"NSTextContainer"])
-        {      
+        { 
+	  /*
           NSSize size = NSMakeSize(0,_maxSize.height);
           NSTextContainer *aTextContainer = [self buildUpTextNetwork: NSZeroSize];
           [aTextContainer setTextView: (NSTextView *)self];
-          /* See initWithFrame: for comments on this RELEASE */
+          // See initWithFrame: for comments on this RELEASE 
           RELEASE(self);
           
           [aTextContainer setContainerSize: size];
           [aTextContainer setWidthTracksTextView: YES];
           [aTextContainer setHeightTracksTextView: NO];
+	  */
+	  _textContainer = [aDecoder decodeObjectForKey: @"NSTextContainer"];
         }
 
       if ([aDecoder containsValueForKey: @"NSTVFlags"])

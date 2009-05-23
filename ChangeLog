@@ -1,3 +1,13 @@
+2009-05-23 11:48-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSStandardWindowDecorationView.m: Live window resize changes
+	for when using GNUstep decorations in resizeWindowStartingWithEvent:.
+	* Source/NSLayoutManager.m: Unarchive the text containers into an 
+	array in initWithCoder:.
+	* Source/NSTextContainer.m: Get the layout manager in initWithCoder:.
+	* Source/NSTextView.m: Changes to include text container from nib
+	file into the nib loading process in initWithCoder:.   
+
 2009-05-22 Nicolas Roard <nicolas@roard.com>
 	Add a live resize for splitviews. Users can revert to the old behaviour
 	by doing: defaults write NSGlobalDomain GSUseGhostResize YES
@@ -5,7 +15,8 @@
 
 2009-05-14 Riccardo Mottola <rmottola@users.sf.net>
 
-	* Source/NSApplication.m: fixed allocation of Mutable array instead of Array
+	* Source/NSApplication.m: fixed allocation of Mutable array instead of
+	Array
 
 2009-05-14 14:15-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
@@ -2425,8 +2436,8 @@
 2008-05-03 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTableView.m (-selectRow:byExtendingSelection:,
-	-selectColumn:byExtendingSelection:, -rectOfColumn:, -rectOfRow:): Don't
-	raise an exception for invalid indexes.
+	-selectColumn:byExtendingSelection:, -rectOfColumn:, -rectOfRow:): 
+	Don't raise an exception for invalid indexes.
 
 2008-05-01 Fred Kiefer <FredKiefer@gmx.de>
 
