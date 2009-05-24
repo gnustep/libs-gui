@@ -1,3 +1,8 @@
+2009-05-23 22:17-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSWorkspace.m: Improve handling of CFBundleType...
+	constants in the private method _extIconForApp:info:.
+
 2009-05-23 11:48-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSStandardWindowDecorationView.m: Live window resize changes

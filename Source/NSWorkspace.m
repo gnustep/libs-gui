@@ -2136,10 +2136,29 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 {
   NSDictionary	*typeInfo = [extInfo objectForKey: appName];
   NSString	*file = [typeInfo objectForKey: @"NSIcon"];
-
+  
+  //
+  // If the NSIcon entry isn't there and the CFBundle entries are,
+  // get the first icon in the list if it's an array, or assign
+  // the icon to file if it's a string.
+  //
+  // FIXME: CFBundleTypeExtensions/IconFile can be arrays which assign
+  // multiple types to icons.  This needs to be handled eventually.
+  //
   if(file == nil)
     {
-      file = [typeInfo objectForKey: @"CFBundleTypeIconFile"];
+      id icon = [typeInfo objectForKey: @"CFBundleTypeIconFile"];
+      if([icon isKindOfClass: [NSArray class]])
+	{
+	  if([icon count])
+	    {
+	      file = [icon objectAtIndex: 0];
+	    }
+	}
+      else
+	{
+	  file = icon;
+	}
     }
 
   if (file && [file length] != 0)
