@@ -736,9 +736,12 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 {
   NSInvocation *inv;
 
-  // This uses a GNUstep extension on NSInvocation
-  inv = [[NSInvocation alloc] initWithTarget: target 
-			      selector: selector, argument];
+  inv = [[NSInvocation alloc] 
+            invocationWithMethodSignature: 
+                [target methodSignatureForSelector: selector]]; 
+  [inv setTarget: target];
+  [inv setSelector: selector];
+  [inv setArgument: argument atIndex: 2];
   [NSThread detachNewThreadSelector: @selector(_invokeWithAutoreleasePool:) 
 	    toTarget: self 
 	    withObject: inv];

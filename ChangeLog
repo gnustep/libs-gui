@@ -1,5 +1,11 @@
 2009-05-31 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSApplication.m (detachDrawingThread:toTarget:withObject:): 
+	Replace a call to a now longer existing extension on NSInvocation
+	with the correct method calls.
+
+2009-05-31 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/GSDisplayServer.m (+initialize,
 	-_setWindowOwnedByServer:(), -dealloc): Set the windowmaps
 	variable in the initialize method and protect all usages.
