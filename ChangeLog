@@ -1,3 +1,9 @@
+2009-05-31 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSDisplayServer.m (+initialize,
+	-_setWindowOwnedByServer:(), -dealloc): Set the windowmaps
+	variable in the initialize method and protect all usages.
+
 2009-05-23 22:17-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSWorkspace.m: Improve handling of CFBundleType...
