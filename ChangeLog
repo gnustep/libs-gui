@@ -1,3 +1,9 @@
+2009-06-02 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSDocument.m (-runModalSavePanelForSaveOperation:...): 
+	Check whether there is a returned save panel, this wont be the case
+	when the user cancels the save operation.
+	
 2009-05-31 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSApplication.m (detachDrawingThread:toTarget:withObject:): 

@@ -1171,29 +1171,27 @@ originalContentsURL: (NSURL *)orig
                                contextInfo: (void *)contextInfo
 {
   // FIXME: Commit registered editors
+  NSSavePanel *savePanel = [self _runSavePanelForSaveOperation: saveOperation];
 
-  if (OVERRIDDEN(saveToFile:saveOperation:delegate:didSaveSelector:contextInfo:))
+  if (savePanel)
     {
-      NSString *fileName;
-
-      fileName = [self fileNameFromRunningSavePanelForSaveOperation: saveOperation];
-      [self saveToFile: fileName 
-            saveOperation: saveOperation 
-            delegate: delegate
-            didSaveSelector: didSaveSelector 
-            contextInfo: contextInfo];
-    }
-  else
-    {
-      NSSavePanel *savePanel = [self _runSavePanelForSaveOperation: saveOperation];
-      NSURL *url = [savePanel URL];
-
-      [self saveToURL: url 
-            ofType: [self fileTypeFromLastRunSavePanel]
-            forSaveOperation: saveOperation 
-            delegate: delegate
-            didSaveSelector: didSaveSelector 
-            contextInfo: contextInfo];
+      if (OVERRIDDEN(saveToFile:saveOperation:delegate:didSaveSelector:contextInfo:))
+        {
+          [self saveToFile: [savePanel filename] 
+                saveOperation: saveOperation 
+                delegate: delegate
+                didSaveSelector: didSaveSelector 
+                contextInfo: contextInfo];
+        }
+      else
+        {
+          [self saveToURL: [savePanel URL] 
+                ofType: [self fileTypeFromLastRunSavePanel]
+                forSaveOperation: saveOperation 
+                delegate: delegate
+                didSaveSelector: didSaveSelector 
+                contextInfo: contextInfo];
+        }
     }
 }
 
