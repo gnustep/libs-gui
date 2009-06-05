@@ -95,17 +95,6 @@ extern NSString *NSSpeechDictionaryEntryPhonemes;
 
 // class declaration...
 @interface NSSpeechSynthesizer : NSObject
-{
-  NSString            *_voice;
-  BOOL                 _usesFeedbackWindow;
-  float                _rate;
-  float                _volume;
-  id                   _delegate;
-  NSMutableArray      *_dictionaries;
-  NSMutableDictionary *_properties;
-  BOOL                 _isSpeaking;
-  id                   _module;
-}
 
 // init...
 - (id) initWithVoice: (NSString *)voice;

@@ -29,7 +29,10 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSArray.h>
+#include <Foundation/NSThread.h>
 #include <Foundation/NSError.h>
+#include <Foundation/NSConnection.h>
+#include "AppKit/NSWorkspace.h"
 #include "AppKit/NSSpeechSynthesizer.h"
 
 // Keys for properties...
@@ -83,53 +86,106 @@ NSString *NSSpeechDictionaryAbreviations = @"NSSpeechDictionaryAbreviations";
 NSString *NSSpeechDictionaryEntrySpelling = @"NSSpeechDictionaryEntrySpelling";
 NSString *NSSpeechDictionaryEntryPhonemes = @"NSSpeechDictionaryEntryPhonemes";
 
-// class declaration...
+// Speech daemon
+static id server;
+// Flag indicating whether we should wait for the daemon to finish launching.
+static BOOL serverLaunchTested;
+// Class of the NSSpeechSynthesizer
+static Class NSSpeechSynthesizerClass;
+// Informal protocol used for the server.
+@interface NSObject (GSSpeechServer)
+- (NSSpeechSynthesizer*)newSynthesizer;
+@end
+
 @implementation NSSpeechSynthesizer 
-// init...
 - (id) initWithVoice: (NSString *)voice 
 {
   return self;
+}
++ (void)initialize
+{
+	NSSpeechSynthesizerClass = [NSSpeechSynthesizer class];
+	server = [[NSConnection rootProxyForConnectionWithRegisteredName: @"GSSpeechServer"
+	                                                            host: nil] retain];
+	if (nil == server)
+	{
+		NSWorkspace *ws = [NSWorkspace sharedWorkspace];
+		[ws launchApplication: @"GSSpeechServer"
+		             showIcon: NO
+		           autolaunch: NO];
+	}
+}
++ (BOOL)isAnyApplicationSpeaking
+{
+	return [server isSpeaking];
+}
+// Never really allocate one of these.  
++ (id)allocWithZone: (NSZone*)aZone
+{
+	if (self == NSSpeechSynthesizerClass)
+	{
+		if (nil == server && !serverLaunchTested)
+		{
+			unsigned int i=0;
+			// Wait for up to five seconds  for the server to launch, then give up.
+			for (i=0 ; i<50 ; i++)
+			{
+				server = 
+					[[NSConnection rootProxyForConnectionWithRegisteredName: 
+					@"GSSpeechServer"
+	                                                                   host: nil] 
+																retain];
+				if (nil != server)
+				{
+					break;
+				}
+				[NSThread sleepForTimeInterval: 0.1];
+			}
+			// Set a flag so we don't bother waiting for the speech server to
+			// launch the next time if it didn't work this time.
+			serverLaunchTested = YES;
+		}
+		// If there is no server, this will return nil
+		return [server newSynthesizer];
+	}
+	return [super allocWithZone: aZone];
 }
 
 // configuring speech synthesis
 - (BOOL) usesFeebackWindow 
 {
-  return _usesFeedbackWindow;
+  return NO;
 }
 
 - (void) setUsesFeebackWindow: (BOOL)flag 
 {
-  _usesFeedbackWindow = flag;
 }
 
 - (NSString *) voice 
 {
-  return _voice;
+  return nil;
 }
 
 - (void) setVoice: (NSString *)voice 
 {
-  ASSIGN(_voice, voice);
 }
 
 - (float) rate 
 {
-  return _rate;
+  return 0;
 }
 
 - (void) setRate: (float)rate 
 {
-  _rate = rate;
 }
 
 - (float) volume 
 {
-  return _volume;
+  return 0;
 }
 
 - (void) setVolume: (float)volume 
 {
-  _volume = volume;
 }
 
 - (void) addSpeechDictionary: (NSDictionary *)speechDictionary 
@@ -145,18 +201,16 @@ NSString *NSSpeechDictionaryEntryPhonemes = @"NSSpeechDictionaryEntryPhonemes";
      forProperty: (NSString *)property 
            error: (NSError **)error 
 {
-  [self subclassResponsibility: _cmd];
   return nil;
 }
 
 - (id) delegate 
 {
-  return _delegate;
+  return nil;
 }
 
 - (void) setDelegate: (id)delegate
 {
-  _delegate = delegate;
 }
 
 // Getting information...
@@ -172,57 +226,43 @@ NSString *NSSpeechDictionaryEntryPhonemes = @"NSSpeechDictionaryEntryPhonemes";
 
 + (NSString *) defaultVoice 
 { 
-  [self subclassResponsibility: _cmd];
   return nil;
-}
-
-// Getting state...
-+ (BOOL) isAnyApplicationSpeaking 
-{
-  return NO;
 }
 
 // Synthesizing..
 - (BOOL) isSpeaking 
 {
-  return _isSpeaking;
+  return NO;
 }
 
 - (BOOL) startSpeakingString: (NSString *)text 
 {
-  [self subclassResponsibility: _cmd];
   return NO;
 }
 
 - (BOOL) startSpeakingString: (NSString *)text toURL: (NSURL *)url 
 {
-  [self subclassResponsibility: _cmd];
   return NO;
 }
 
 - (void) stopSpeaking 
 {
-  [self subclassResponsibility: _cmd];
 }
 
 - (void) stopSpeakingAtBoundary: (NSSpeechBoundary)boundary 
 {
-  [self subclassResponsibility: _cmd];
 }
 
 - (void) pauseSpeakingAtBoundary: (NSSpeechBoundary)boundary 
 { 
-  [self subclassResponsibility: _cmd];
 }
 
 - (void) continueSpeaking 
 {
-  [self subclassResponsibility: _cmd]; 
 }
 
 - (NSString *) phonemesFromText: (NSString *)text
 {
-  [self subclassResponsibility: _cmd];
   return nil;
 }
 @end

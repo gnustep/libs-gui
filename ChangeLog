@@ -1,3 +1,10 @@
+2009-06-05 18:21-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSSpeechSynthesizer.h: 
+	* Source/NSSpeechSynthesizer.m: Implementation of
+	NSSpeechSynthesizer.  
+	Patch by David Chisnall <theraven@sucs.org>
+
 2009-06-02 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSDocument.m (-runModalSavePanelForSaveOperation:...): 
@@ -62,7 +69,8 @@
 
 2009-04-27 Fred Kiefer <FredKiefer@gmx.de>
 
-	* Source/NSBezierPath.m	(-appendBezierPathWithRoundedRect:xRadius:yRadius:):
+	* Source/NSBezierPath.m	(-appendBezierPathWithRoundedRect:xRadius:
+	yRadius:):
 	Small rearangment of code.
 	Patch by Fred Morcos <fred.morcos@gmail.com>
 
