@@ -1,5 +1,10 @@
 2009-06-22 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSUserDefaultsController.m (-initWithCoder:): Retain the
+	shared controller before returning it.
+
+2009-06-22 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSKeyValueBinding.m (GSKeyValueBinding+initialize):
 	Correc the setup of the map tables.
 	* Source/NSKeyValueBinding.m (GSKeyValueBinding+unbindAllForObject):
