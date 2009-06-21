@@ -1,3 +1,10 @@
+2009-06-22 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSKeyValueBinding.m (GSKeyValueBinding+initialize):
+	Correc the setup of the map tables.
+	* Source/NSKeyValueBinding.m (GSKeyValueBinding+unbindAllForObject):
+	Use a copy of the keys for the enumerator.
+
 2009-06-05 18:21-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/NSSpeechSynthesizer.h: 

@@ -141,9 +141,9 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
     {
       bindingLock = [GSLazyRecursiveLock new];
       classTable = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
-          NSOwnedPointerMapValueCallBacks, 128);
-      objectTable = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
-          NSOwnedPointerMapValueCallBacks, 128);
+          NSObjectMapValueCallBacks, 128);
+      objectTable = NSCreateMapTable(NSNonRetainedObjectMapKeyCallBacks,
+          NSObjectMapValueCallBacks, 128);
     }
 }
 
@@ -155,9 +155,9 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
   bindings = (NSMutableArray *)NSMapGet(classTable, (void*)clazz);
   if (bindings == nil)
     {
-      // Need to retain it ourselves
       bindings = [[NSMutableArray alloc] initWithCapacity: 5];
       NSMapInsert(classTable, (void*)clazz, (void*)bindings);
+      RELEASE(bindings);
     }
   [bindings addObject: binding];
   [bindingLock unlock];
@@ -249,13 +249,14 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
   list = (NSDictionary *)NSMapGet(objectTable, (void *)anObject);
   if (list != nil)
     {
-      enumerator = [list keyEnumerator];
+      NSArray *keys = [list allKeys];
+
+      enumerator = [keys objectEnumerator];
       while ((binding = [enumerator nextObject]))
         {
           [anObject unbind: binding];
         }
       NSMapRemove(objectTable, (void *)anObject);
-      RELEASE(list);
     }
   [bindingLock unlock];
 }
@@ -297,6 +298,7 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
     {
       bindings = [NSMutableDictionary new];
       NSMapInsert(objectTable, (void*)source, (void*)bindings);
+      RELEASE(bindings);
     }
   [bindings setObject: self forKey: name];
   [bindingLock unlock];
