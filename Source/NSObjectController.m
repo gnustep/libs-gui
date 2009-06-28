@@ -32,7 +32,12 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSArchiver.h>
 #include <Foundation/NSKeyedArchiver.h>
+#include <Foundation/NSKeyValueObserving.h>
+#include <Foundation/NSKeyValueCoding.h>
 #include <AppKit/NSObjectController.h>
+
+#include "AppKit/NSKeyValueBinding.h"
+#include "GSBindingHelpers.h"
 
 @interface _NSManagedProxy : NSObject
 {
@@ -91,6 +96,20 @@
 
 @implementation NSObjectController
 
++ (void) initialize
+{
+  if (self == [NSObjectController class])
+    {
+      [self exposeBinding: NSContentObjectBinding];
+      [self setKeys: [NSArray arrayWithObject: @"editable"] 
+            triggerChangeNotificationsForDependentKey: @"canAdd"];
+      [self setKeys: [NSArray arrayWithObject: @"editable"] 
+            triggerChangeNotificationsForDependentKey: @"canRemove"];
+      [self setKeys: [NSArray arrayWithObject: @"content"] 
+            triggerChangeNotificationsForDependentKey: @"selectedObjects"];
+    }
+}
+
 - (id) initWithContent: (id)content
 {
   if ((self = [super init]) != nil)
@@ -111,9 +130,11 @@
 
 - (void) dealloc
 {
+  [GSKeyValueBinding unbindAllForObject: self];
   RELEASE(_content);
   RELEASE(_entity_name_key);
   RELEASE(_fetch_predicate);
+  RELEASE(_selection);
   [super dealloc];
 }
 
@@ -174,7 +195,43 @@
 
 - (void) setContent: (id)content
 {
+  NSMutableArray *selection;
+
   ASSIGN(_content, content);
+  if (content)
+    {
+        selection = [[NSMutableArray alloc] initWithObjects: &content count: 1];
+    }
+  else
+    {
+      selection = [[NSMutableArray alloc] init];
+    }
+  ASSIGN(_selection, selection);
+  RELEASE(selection);
+}
+
+- (void)bind: (NSString *)binding 
+    toObject: (id)anObject
+ withKeyPath: (NSString *)keyPath
+     options: (NSDictionary *)options
+{
+  if ([binding isEqual:NSContentObjectBinding])
+    {
+      [self unbind: binding];
+      [[GSKeyValueBinding alloc] initWithBinding: @"content" 
+                                        withName: binding
+                                        toObject: anObject
+                                     withKeyPath: keyPath
+                                         options: options
+                                      fromObject: self];
+    }
+  else
+    {
+      [super bind: binding 
+         toObject: anObject 
+      withKeyPath: keyPath 
+          options: options];
+    }
 }
 
 - (Class) objectClass
@@ -212,40 +269,62 @@
 
 - (void) add: (id)sender
 {
-  id new = [self newObject];
+  if ([self canAdd])
+    {
+      id new = [self newObject];
 
-  [self addObject: new];
-  RELEASE(new);
+      [self addObject: new];
+      RELEASE(new);
+    }
 }
 
 - (void) addObject: (id)obj
 {
+  NSDictionary * bindingInfo = [self infoForBinding: NSContentObjectBinding];
+
   [self setContent: obj];
-  // TODO
+  if (bindingInfo)
+    {
+      // Change the relationship of the object that our content is bound to.
+      id masterObject = [bindingInfo objectForKey: NSObservedObjectKey];
+      NSString * keyPath = [bindingInfo objectForKey: NSObservedKeyPathKey];
+      [masterObject setValue: obj forKeyPath: keyPath];
+    }
 }
 
 - (void) remove: (id)sender
 {
-  [self removeObject: [self content]];
+  if ([self canRemove])
+    {
+      [self removeObject: [self content]];
+    }
 }
 
 - (void) removeObject: (id)obj
 {
   if (obj == [self content])
     {
+      NSDictionary * bindingInfo = [self infoForBinding: NSContentObjectBinding];
+
       [self setContent: nil];
-      // TODO
+      if (bindingInfo)
+        {
+          // Change the relationship of the object that our content is bound to.
+          id masterObject = [bindingInfo objectForKey: NSObservedObjectKey];
+          NSString * keyPath = [bindingInfo objectForKey: NSObservedKeyPathKey];
+          [masterObject setValue: nil forKeyPath: keyPath];
+        }
     }
 }
 
 - (BOOL) canAdd
 {
-  return YES;
+  return [self isEditable];
 }
 
 - (BOOL) canRemove
 {
-  return YES;
+  return [self isEditable] && [[self selectedObjects] count] > 0;
 }
 
 - (BOOL) isEditable
@@ -261,7 +340,7 @@
 - (NSArray*) selectedObjects
 {
   // TODO
-  return nil;
+  return _selection;
 }
 
 - (id) selection

@@ -1,3 +1,11 @@
+2009-06-29 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSKeyValueBinding.h,
+	* Source/externs.m: Add NSContentObjectBinding.
+	* Source/NSObjectController.m: Add more implementation to this
+	class.
+	Patch by Andy Balholm <andy@balholm.com>.
+
 2009-06-28 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/AppKit.h : Addd NSFontDescriptor.h.

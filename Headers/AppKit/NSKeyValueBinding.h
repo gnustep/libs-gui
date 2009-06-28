@@ -103,6 +103,7 @@ APPKIT_EXPORT id NSNotApplicableMarker;
 
 // Binding name constants
 APPKIT_EXPORT NSString *NSAlignmentBinding;
+APPKIT_EXPORT NSString *NSContentObjectBinding;
 APPKIT_EXPORT NSString *NSEditableBinding;
 APPKIT_EXPORT NSString *NSEnabledBinding;
 APPKIT_EXPORT NSString *NSFontBinding;
