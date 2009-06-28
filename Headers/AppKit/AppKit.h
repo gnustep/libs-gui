@@ -131,6 +131,7 @@
 #include <AppKit/NSDocumentController.h>
 #include <AppKit/NSDrawer.h>
 #include <AppKit/NSFileWrapper.h>
+#include <AppKit/NSFontDescriptor.h>
 #include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSHelpManager.h>
 #include <AppKit/NSInputManager.h>
