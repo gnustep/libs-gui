@@ -847,7 +847,7 @@ that makes decoding and encoding compatible with the old code.
       // currently not used....
       if ([aDecoder containsValueForKey: @"NSTextStorage"])
         {
-          _textStorage = [aDecoder decodeObjectForKey: @"NSTextStorage"];
+          _textStorage = RETAIN([aDecoder decodeObjectForKey: @"NSTextStorage"]);
         }
       
       // currently not used....
@@ -864,7 +864,7 @@ that makes decoding and encoding compatible with the old code.
           [aTextContainer setWidthTracksTextView: YES];
           [aTextContainer setHeightTracksTextView: NO];
 	  */
-	  _textContainer = [aDecoder decodeObjectForKey: @"NSTextContainer"];
+	  _textContainer = RETAIN([aDecoder decodeObjectForKey: @"NSTextContainer"]);
         }
 
       if ([aDecoder containsValueForKey: @"NSTVFlags"])
