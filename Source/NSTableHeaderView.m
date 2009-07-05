@@ -348,6 +348,12 @@
       /* Resizing */
       if (_resizedColumn != -1)
         {
+          float p;
+          NSEvent *e;
+          BOOL lit;
+          unsigned int eventMask;
+          BOOL liveResize;
+
           /* Width of the highlighted area. */
           const float divWidth = 4;
           /* Coordinates of visible part of table */
@@ -368,13 +374,10 @@
           highlightRect.size.width = divWidth;
           
           /* Mouse position */
-          float p;
           /* YES if some highlighting was done and needs to be undone */
-          BOOL lit = NO;
-          NSEvent *e;
-          unsigned int eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask
-            | NSPeriodicMask;
-          BOOL liveResize = ![[NSUserDefaults standardUserDefaults] boolForKey: @"GSUseGhostResize"];
+          lit = NO;
+          eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask | NSPeriodicMask;
+          liveResize = ![[NSUserDefaults standardUserDefaults] boolForKey: @"GSUseGhostResize"];
           
           if ([column isResizable] == NO)
             {
