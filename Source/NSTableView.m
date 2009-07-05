@@ -5950,7 +5950,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
 }
 
 -(BOOL) _editNextEditableCellAfterRow: (int)row
-			       column: (int)column
+                               column: (int)column
 {
   int i, j;
   
@@ -5958,62 +5958,124 @@ static BOOL selectContiguousRegion(NSTableView *self,
     {
       // First look for cells in the same row
       for (j = column + 1; j < _numberOfColumns; j++)
-	{
-	  if ([self _isCellEditableColumn: j row: row])
-	    {
-	      [self editColumn: j  row: row  withEvent: nil  select: YES];
-	      return YES;
-	    }
-	}
+        {
+          if ([self _isCellEditableColumn: j row: row])
+            {
+              [self editColumn: j row: row withEvent: nil select: YES];
+              return YES;
+            }
+        }
     }
+
   // Otherwise, make the big cycle.
   for (i = row + 1; i < _numberOfRows; i++)
     {
-      // Need to select row to be able to edit it.
-      [self selectRow: i byExtendingSelection: NO];
       for (j = 0; j < _numberOfColumns; j++)
-	{
-	  if ([self _isCellEditableColumn: j row: i])
-	    {
-	      [self editColumn: j  row: i  withEvent: nil  select: YES];
-	      return YES;
-	    }
-	}
+        {
+          if ([self _isCellEditableColumn: j row: i])
+            {
+              // Need to select row to be able to edit it.
+              [self selectRow: i byExtendingSelection: NO];
+              [self editColumn: j row: i withEvent: nil select: YES];
+              return YES;
+            }
+        }
     }
+
+  // Nothing found? Search in the rows before the current
+  for (i = 0; i < row; i++)
+    {
+      for (j = 0; j < _numberOfColumns; j++)
+        {
+          if ([self _isCellEditableColumn: j row: i])
+            {
+              // Need to select row to be able to edit it.
+              [self selectRow: i byExtendingSelection: NO];
+              [self editColumn: j row: i withEvent: nil select: YES];
+              return YES;
+            }
+        }
+    }
+
+  // Still nothing? Look at the beginning of the current row
+  if (row > -1)
+    {
+      // First look for cells in the same row
+      for (j = 0; j < column; j++)
+        {
+          if ([self _isCellEditableColumn: j row: row])
+            {
+              [self editColumn: j row: row withEvent: nil select: YES];
+              return YES;
+            }
+        }
+    }
+
   return NO;
 }
 
 -(BOOL) _editPreviousEditableCellBeforeRow: (int)row
 				    column: (int)column
 {
-  int i,j;
+  int i, j;
 
-  if (row < _numberOfRows)
+  if (row > -1)
     {
       // First look for cells in the same row
       for (j = column - 1; j > -1; j--)
-	{
-	  if ([self _isCellEditableColumn: j row: row])
-	    {
-	      [self editColumn: j  row: row  withEvent: nil  select: YES];
-	      return YES;
-	    }
-	}
+        {
+          if ([self _isCellEditableColumn: j row: row])
+            {
+              [self editColumn: j row: row withEvent: nil select: YES];
+              return YES;
+            }
+        }
     }
+
   // Otherwise, make the big cycle.
   for (i = row - 1; i > -1; i--)
     {
-      // Need to select row to be able to edit it.
-      [self selectRow: i byExtendingSelection: NO];
       for (j = _numberOfColumns - 1; j > -1; j--)
-	{
-	  if ([self _isCellEditableColumn: j row: i])
-	    {
-	      [self editColumn: j  row: i  withEvent: nil  select: YES];
-	      return YES;
-	    }
-	}
+        {
+          if ([self _isCellEditableColumn: j row: i])
+            {
+              // Need to select row to be able to edit it.
+              [self selectRow: i byExtendingSelection: NO];
+              [self editColumn: j row: i withEvent: nil select: YES];
+              return YES;
+            }
+        }
     }
+
+  // Nothing found? Search in the rows after the current
+  for (i = _numberOfRows - 1; i > row; i--)
+    {
+      for (j = _numberOfColumns - 1; j > -1; j--)
+        {
+          if ([self _isCellEditableColumn: j row: i])
+            {
+              // Need to select row to be able to edit it.
+              [self selectRow: i byExtendingSelection: NO];
+              [self editColumn: j row: i withEvent: nil select: YES];
+              return YES;
+            }
+        }
+    }
+
+  // Still nothing? Look at the end of the current row
+  if (row > -1)
+    {
+      // First look for cells in the same row
+      for (j = _numberOfColumns - 1; j > column; j++)
+        {
+          if ([self _isCellEditableColumn: j row: row])
+            {
+              [self editColumn: j row: row withEvent: nil select: YES];
+              return YES;
+            }
+        }
+    }
+
   return NO;
 }
 

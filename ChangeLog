@@ -1,3 +1,9 @@
+2009-07-05 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableView.m (-_editPreviousEditableCellBeforeRow:column:,
+	-_editNextEditableCellAfterRow:column:): Try to handle all cases
+	of changing the current edited cell correctly.
+
 2009-07-05 Riccardo Mottola <rmottola@users.sf.net>
 
 	* Source/NSTableHeaderView.m
