@@ -5987,7 +5987,8 @@ static BOOL selectContiguousRegion(NSTableView *self,
 				    column: (int)column
 {
   int i,j;
-  if (row < _numberOfColumns)
+
+  if (row < _numberOfRows)
     {
       // First look for cells in the same row
       for (j = column - 1; j > -1; j--)

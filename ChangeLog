@@ -1,4 +1,11 @@
+2009-07-05 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTableView.m (_editPreviousEditableCellBeforeRow:column:):
+	Compare row against _numberOfRows not _numberOfColumns.
+	Patch by Tim Schmielau <tim@smmo.org>.
+
 2009-06-30 Nicolas Roard <nicolas@roard.com>
+
 	* Source/NSTableHeaderView.m: Apply patch from Eric
 	Wasylishen <ewasylishen@gmail.com>, add live resize and
 	live moving for table columns if GSUseGhostResize is
