@@ -2676,7 +2676,8 @@ in the main thread.
           [firstOpaque setNeedsDisplayInRect: invalidRect];
         }
     }
-  /*
+
+ /*
    * Must make sure that superviews know that we need display.
    * NB. we may have been marked as needing display and then moved to another
    * parent, so we can't assume that our parent is marked simply because we are.
@@ -2686,6 +2687,8 @@ in the main thread.
       currentView->_rFlags.needs_display = YES;
       currentView = currentView->_super_view;
     }
+  // Also mark the window, as this may not happen above
+  [_window setViewsNeedDisplay: YES];
 }
 
 /**
