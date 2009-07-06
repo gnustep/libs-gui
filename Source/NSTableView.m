@@ -5982,6 +5982,8 @@ static BOOL selectContiguousRegion(NSTableView *self,
         }
     }
 
+// Should we loop around or not?
+#if 0
   // Nothing found? Search in the rows before the current
   for (i = 0; i < row; i++)
     {
@@ -6010,6 +6012,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
             }
         }
     }
+#endif
 
   return NO;
 }
@@ -6047,6 +6050,8 @@ static BOOL selectContiguousRegion(NSTableView *self,
         }
     }
 
+// Should we loop around or not?
+#if 0
   // Nothing found? Search in the rows after the current
   for (i = _numberOfRows - 1; i > row; i--)
     {
@@ -6075,6 +6080,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
             }
         }
     }
+#endif
 
   return NO;
 }

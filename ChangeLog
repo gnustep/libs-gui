@@ -1,5 +1,12 @@
 2009-07-06 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSTableView.m (-_editPreviousEditableCellBeforeRow:column:,
+	-_editNextEditableCellAfterRow:column:): Comment out the loop
+	around of the last change. This leads to wrong results, when the
+	table view isn't the only view in the window.
+
+2009-07-06 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSView.m (-_setNeedsDisplayInRect_real:) Set the window
 	views as needing display, even when the invalidated rectangle
 	didn't change.
