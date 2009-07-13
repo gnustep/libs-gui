@@ -59,6 +59,8 @@
 
 extern NSThread *GSAppKitThread;
 
+static NSNotificationCenter *nc = nil;
+
 #ifdef ALERT_TITLE
 static NSString	*defaultTitle = @"Alert";
 #else
@@ -897,20 +899,185 @@ setControl(NSView* content, id control, NSString *title)
   attached to the parent window.
  */
 @interface GSAlertSheet : GSAlertPanel
+{
+  NSWindow *_parentWindow;
+  id        _container;
+
+}
 @end
 
 @implementation GSAlertSheet
++ (void) initialize
+{
+  if (self == [GSAlertSheet class])
+    {
+      if (nc == nil)
+	{
+	  nc = [NSNotificationCenter defaultCenter];
+	}
+      [self setVersion: 0];
+    }
+}
+
+
 - (id) initWithContentRect: (NSRect)contentRect
                  styleMask: (unsigned int)aStyle
                    backing: (NSBackingStoreType)bufferingType
                      defer: (BOOL)flag
                     screen: (NSScreen*)aScreen
 {
-  return [super initWithContentRect: contentRect
+  if(NSIsEmptyRect(contentRect))
+    {
+      contentRect = NSMakeRect(0,0,100,100);
+    }
+
+  self = [super initWithContentRect: contentRect
 		styleMask: NSBorderlessWindowMask
 		backing: bufferingType
 		defer: flag
 		screen: aScreen];
+  if (self != nil)
+    {
+      NSRect rect = contentRect;
+      NSRect border = contentRect;
+      NSBox *borderBox = nil;
+
+      rect.origin.x += 6;
+      rect.origin.y += 6;
+      rect.size.width -= 16;
+      rect.size.height -= 16;
+
+      border.origin.x += 1;
+      border.origin.y += 1;
+      border.size.width -= 2;
+      border.size.height -= 2;
+
+      borderBox = [[NSBox alloc] initWithFrame: border];
+      [borderBox setTitle: @""];
+      [borderBox setTitlePosition: NSNoTitle];
+      [borderBox setBorderType: NSLineBorder];
+      [borderBox setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+      [borderBox setContentViewMargins: NSMakeSize(0,0)];
+      [[super contentView] addSubview: borderBox];      
+    }
+  return self;
+}
+
+- (NSRect) frameFromParentWindowFrame
+{
+  NSRect newFrame = [_parentWindow frame];
+  NSRect frame = [self frame];
+  NSRect contentRect = [[_parentWindow contentView] frame];
+
+  // Offset the panel by half of it's width and half of the of the parent window's.
+  newFrame.origin.x += ((newFrame.size.width - frame.size.width) / 2); 
+  newFrame.origin.y += (contentRect.size.height - frame.size.height) + 5;
+
+  return newFrame;
+}
+
+- (void) _resetWindowPosition
+{
+  NSRect frame = [self frameFromParentWindowFrame]; 
+  [self setFrame: frame display: YES];
+}
+
+
+- (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (int)otherWin
+{
+  [super orderWindow: place relativeTo: otherWin];
+}
+
+
+- (void) setParentWindow: (NSWindow *)window
+{
+  if (_parentWindow != window)
+    {
+      [super setParentWindow: window];
+      ASSIGN(_parentWindow, window);
+      [nc removeObserver: self];
+
+      if (_parentWindow != nil)
+	{
+	  [self _resetWindowPosition];
+
+	  // add observers....
+	  [nc addObserver: self
+	      selector: @selector(handleWindowClose:)
+	      name: NSWindowWillCloseNotification
+	      object: _parentWindow];
+
+	  [nc addObserver: self
+	      selector: @selector(handleWindowMiniaturize:)
+	      name: NSWindowWillMiniaturizeNotification
+	      object: _parentWindow];
+
+	  [nc addObserver: self
+	      selector: @selector(handleWindowMove:)
+	      name: NSWindowWillMoveNotification
+	      object: _parentWindow];
+
+	  [nc addObserver: self
+	      selector: @selector(handleWindowMove:)
+	      name: NSWindowDidResizeNotification
+	      object: _parentWindow];
+	  
+	  [nc addObserver: self
+	      selector: @selector(handleWindowDidBecomeKey:)
+	      name: NSWindowDidBecomeKeyNotification
+	      object: _parentWindow];
+	}
+    }
+}
+
+- (void) handleWindowClose: (NSNotification *)notification
+{
+  [self close];
+}
+
+- (void) handleWindowMiniaturize: (NSNotification *)notification
+{
+  [self close];
+}
+
+- (void) handleWindowMove: (NSNotification *)notification
+{
+  [self _resetWindowPosition];
+}
+
+- (void) handleWindowDidBecomeKey: (NSNotification *)notification
+{
+  [self _resetWindowPosition];
+  // [self orderWindow: NSWindowAbove relativeTo: [_parentWindow windowNumber]];
+}
+
+- (NSWindow *) parentWindow
+{
+  return _parentWindow;
+}
+
+/*
+- (NSView *) contentView
+{
+  return [_container contentView];
+}
+
+- (NSSize) contentSize
+{
+  return [[self contentView] frame].size;
+}
+
+- (void) setContentView: (NSView *)aView
+{
+  [_container setContentView: aView];
+}
+*/
+
+- (void) dealloc
+{
+  RELEASE(_parentWindow);
+  [nc removeObserver: self];
+  [super dealloc];
 }
 @end
 
@@ -958,6 +1125,7 @@ setControl(NSView* content, id control, NSString *title)
 	alternateButton: (NSString*)_alternateButton
 	    otherButton: (NSString*)_otherButton;
 - (void) makePanel;
+- (void) makeSheet;
 - (GSAlertPanel*) panel;
 @end
 
@@ -992,7 +1160,7 @@ setControl(NSView* content, id control, NSString *title)
 
 - (void) makePanel
 {
-  if (*instance != 0)
+  if (*instance != 0 && [*instance isMemberOfClass: [GSAlertPanel class]])
     {
       if ([*instance isActivePanel])
 	{				// c:
@@ -1006,6 +1174,34 @@ setControl(NSView* content, id control, NSString *title)
   else
     { 					// a:
       panel = [[GSAlertPanel alloc] init];
+      *instance = panel;
+    }
+
+  [panel setTitleBar: defaultTitle
+		icon: nil
+	       title: title
+	     message: message
+		 def: defaultButton
+		 alt: alternateButton
+	       other: otherButton];
+}
+
+- (void) makeSheet
+{
+  if (*instance != 0 && [*instance isMemberOfClass: [GSAlertSheet class]])
+    {
+      if ([*instance isActivePanel])
+	{				// c:
+	  panel = [[GSAlertSheet alloc] init];
+	}
+      else
+	{				// b:
+	  panel = *instance;
+	}
+    }
+  else
+    { 					// a:
+      panel = [[GSAlertSheet alloc] init];
       *instance = panel;
     }
 
@@ -1059,7 +1255,7 @@ getSomePanel(
     }
   else
     {
-      if (*instance != 0)
+      if (*instance != 0 && [*instance isMemberOfClass: [GSAlertPanel class]])
 	{
 	  if ([*instance isActivePanel])
 	    {				// c:
@@ -1073,6 +1269,69 @@ getSomePanel(
       else
 	{ 					// a:
 	  panel = [[GSAlertPanel alloc] init];
+	  *instance = panel;
+	}
+
+      [panel setTitleBar: defaultTitle
+		    icon: nil
+		   title: title
+		 message: message
+		     def: defaultButton
+		     alt: alternateButton
+		   other: otherButton];
+    }
+  return panel;
+}
+
+static GSAlertPanel*
+getSomeSheet(
+  GSAlertPanel **instance,
+  NSString *defaultTitle,
+  NSString *title,
+  NSString *message,
+  NSString *defaultButton,
+  NSString *alternateButton,
+  NSString *otherButton)
+{
+  GSAlertSheet	*panel;
+
+  if (GSCurrentThread() != GSAppKitThread)
+    {
+      _GSAlertCreation	*c;
+
+      NSWarnFLog(@"Alert Sheet functionality called from a thread other than"
+        @" the main one, this may not work on MacOS-X and could therefore be"
+	@" a portability problem in your code");
+      c = [_GSAlertCreation alloc];
+      c = [c initWithInstance: instance
+		 defaultTitle: defaultTitle
+			title: title
+		      message: message
+		defaultButton: defaultButton
+	      alternateButton: alternateButton
+		  otherButton: otherButton];
+      [c performSelectorOnMainThread: @selector(makeSheet)
+			  withObject: nil
+		       waitUntilDone: YES];
+      panel = (GSAlertSheet *)[c panel];
+      RELEASE(c);
+    }
+  else
+    {
+      if (*instance != 0 && [*instance isMemberOfClass: [GSAlertSheet class]])
+	{
+	  if ([*instance isActivePanel])
+	    {				// c:
+	      panel = [[GSAlertSheet alloc] init];
+	    }
+	  else
+	    {				// b:
+	      panel = (GSAlertSheet *)*instance;
+	    }
+	}
+      else
+	{ 					// a:
+	  panel = [[GSAlertSheet alloc] init];
 	  *instance = panel;
 	}
 
@@ -1314,7 +1573,7 @@ void NSBeginAlertSheet(NSString *title,
       defaultButton = @"OK";
     }
 
-  panel = getSomePanel(&standardAlertPanel, defaultTitle, title, message,
+  panel = getSomeSheet(&standardAlertPanel, defaultTitle, title, message,
     defaultButton, alternateButton, otherButton);
   // FIXME: We should also change the button action to call endSheet:
   [NSApp beginSheet: panel
@@ -1353,7 +1612,7 @@ void NSBeginCriticalAlertSheet(NSString *title,
   message = [NSString stringWithFormat: msg arguments: ap];
   va_end(ap);
 
-  panel = getSomePanel(&criticalAlertPanel, @"Critical", title, message,
+  panel = getSomeSheet(&criticalAlertPanel, @"Critical", title, message,
     defaultButton, alternateButton, otherButton);
   // FIXME: We should also change the button action to call endSheet:
   [NSApp beginSheet: panel
@@ -1392,7 +1651,7 @@ void NSBeginInformationalAlertSheet(NSString *title,
   message = [NSString stringWithFormat: msg arguments: ap];
   va_end(ap);
 
-  panel = getSomePanel(&informationalAlertPanel,
+  panel = getSomeSheet(&informationalAlertPanel,
 		      @"Information",
 		      title, message,
 		      defaultButton, alternateButton, otherButton);

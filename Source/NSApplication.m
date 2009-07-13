@@ -1877,6 +1877,7 @@ See -runModalForWindow:
   // FIXME
   int ret;
 
+  [sheet setParentWindow: docWindow];
   ret = [self runModalForWindow: sheet 
 	      relativeToWindow: docWindow];
 
