@@ -764,7 +764,10 @@ scaleRect(NSRect rect, double scale)
 
   info->paperSize = [_print_info paperSize];
   info->orient = [_print_info orientation];
-  info->printScale = [[dict objectForKey: NSPrintScalingFactor] doubleValue];
+  if ([dict objectForKey: NSPrintScalingFactor])
+    info->printScale = [[dict objectForKey: NSPrintScalingFactor] doubleValue];
+  else
+    info->printScale = 1.0;
   info->nup = [[dict objectForKey: NSPrintPagesPerSheet] intValue];
   info->nupScale = 1;
   if (info->nup < 1 || (info->nup > 1 && (((info->nup) & 0x1) == 1)))
