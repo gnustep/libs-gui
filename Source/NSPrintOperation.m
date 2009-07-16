@@ -760,14 +760,18 @@ scaleRect(NSRect rect, double scale)
 - (void) _printPaginateWithInfo: (page_info_t *)info knowsRange: (BOOL)knowsRange
 {
   NSMutableDictionary *dict;
+  NSNumber *value;
+
   dict = [_print_info dictionary];
 
   info->paperSize = [_print_info paperSize];
   info->orient = [_print_info orientation];
-  if ([dict objectForKey: NSPrintScalingFactor])
-    info->printScale = [[dict objectForKey: NSPrintScalingFactor] doubleValue];
+  value = [dict objectForKey: NSPrintScalingFactor];
+  if (value != nil)
+    info->printScale = [value doubleValue];
   else
     info->printScale = 1.0;
+
   info->nup = [[dict objectForKey: NSPrintPagesPerSheet] intValue];
   info->nupScale = 1;
   if (info->nup < 1 || (info->nup > 1 && (((info->nup) & 0x1) == 1)))
@@ -942,6 +946,7 @@ scaleRect(NSRect rect, double scale)
   BOOL knowsPageRange, allPages;
   NSRange viewPageRange;
   NSMutableDictionary *dict;
+  NSNumber *value;
   page_info_t info;
   
   dict = [_print_info dictionary];
@@ -962,7 +967,11 @@ scaleRect(NSRect rect, double scale)
 
   [dict setObject: NSNUMBER(NSMaxRange(viewPageRange))
            forKey: @"NSPrintTotalPages"];
-  allPages = [[dict objectForKey: NSPrintAllPages] boolValue];
+  value = [dict objectForKey: NSPrintAllPages];
+  if (value != nil)
+    allPages = [value boolValue];
+  else
+    allPages = YES;
   if (allPages == YES)
     {
       info.first = viewPageRange.location;
@@ -970,8 +979,18 @@ scaleRect(NSRect rect, double scale)
     }
   else
     {
-      info.first = [[dict objectForKey: NSPrintFirstPage] intValue];
-      info.last  = [[dict objectForKey: NSPrintLastPage] intValue];
+      value = [dict objectForKey: NSPrintFirstPage];
+      if (value != nil)
+	info.first = [value intValue];
+      else 
+	info.first = 1;
+
+      value = [dict objectForKey: NSPrintLastPage];
+      if (value != nil)
+	info.last  = [value intValue];
+      else
+	info.last  = INT_MAX;
+
       info.first = MAX(info.first, (int)viewPageRange.location);
       info.first = MIN(info.first, (int)(NSMaxRange(viewPageRange) - 1));
       info.last = MAX(info.last, info.first);

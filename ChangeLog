@@ -1,3 +1,8 @@
+2009-07-16 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPrintOperation.m (-_printPaginateWithInfo:knowsRange:, -_print):
+	Try to handle not set print information more graceful.
+	
 2009-07-14 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPrintOperation.m (-_printPaginateWithInfo:knowsRange:):
