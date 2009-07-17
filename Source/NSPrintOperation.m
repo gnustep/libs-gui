@@ -33,6 +33,7 @@
    Boston, MA 02110-1301, USA.
 */ 
 
+#include <limits.h>
 #include <math.h>
 #include "config.h"
 #include <Foundation/NSString.h>
