@@ -61,8 +61,8 @@ typedef enum _NSFontFamilyClass
   NSFontSymbolicClass = 12 << 28
 } NSFontFamilyClass;
 
-enum _NSFontFamiliyClassMask {
-    NSFontFamiliyClassMask = 0xF0000000
+enum _NSFontFamilyClassMask {
+    NSFontFamilyClassMask = 0xF0000000
 };
 
 enum _NSFontTrait
