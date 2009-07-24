@@ -844,28 +844,35 @@ that makes decoding and encoding compatible with the old code.
           _tf.is_vertically_resizable = YES;
         }
 
-      // currently not used....
       if ([aDecoder containsValueForKey: @"NSTextStorage"])
         {
-          _textStorage = RETAIN([aDecoder decodeObjectForKey: @"NSTextStorage"]);
+	  // FIXME: No idea why somebody added this, later this get overridden
+	  // when the text container gets loaded or generated. 
+	  // This code results in a memory leak.
+          //_textStorage = RETAIN([aDecoder decodeObjectForKey: @"NSTextStorage"]);
         }
       
-      // currently not used....
       if ([aDecoder containsValueForKey: @"NSTextContainer"])
         { 
-	  /*
+	  // Decode the text container, but don't retain it, as it will be owned by the
+	  // decoded layout manager.
+	  [aDecoder decodeObjectForKey: @"NSTextContainer"];
+          // See initWithFrame: for comments on this RELEASE 
+          RELEASE(self);
+        }
+      else
+	{
           NSSize size = NSMakeSize(0,_maxSize.height);
           NSTextContainer *aTextContainer = [self buildUpTextNetwork: NSZeroSize];
-          [aTextContainer setTextView: (NSTextView *)self];
+
+          [aTextContainer setTextView: self];
           // See initWithFrame: for comments on this RELEASE 
           RELEASE(self);
           
           [aTextContainer setContainerSize: size];
           [aTextContainer setWidthTracksTextView: YES];
           [aTextContainer setHeightTracksTextView: NO];
-	  */
-	  _textContainer = RETAIN([aDecoder decodeObjectForKey: @"NSTextContainer"]);
-        }
+	}
 
       if ([aDecoder containsValueForKey: @"NSTVFlags"])
         {
@@ -1028,7 +1035,14 @@ to this method from the text container or layout manager.
   /* Any of these three might be nil. */
   _textContainer = container;
   _layoutManager = (NSLayoutManager *)[container layoutManager];
-  _textStorage = [_layoutManager textStorage];
+  if (_tf.owns_text_network)
+    {
+      ASSIGN(_textStorage, [_layoutManager textStorage]);
+    }
+  else
+    {
+      _textStorage = [_layoutManager textStorage];
+    }
 
   /* Search for an existing text view attached to this layout manager. */
   tcs = [_layoutManager textContainers];
