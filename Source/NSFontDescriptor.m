@@ -57,7 +57,7 @@
       nil]];
 }
 
-+ (id) fontDescriptorWithName: (NSString *)name size: (float)size
++ (id) fontDescriptorWithName: (NSString *)name size: (CGFloat)size
 {
   return [self fontDescriptorWithFontAttributes:
     [NSDictionary dictionaryWithObjectsAndKeys:
@@ -74,11 +74,15 @@
 - (NSFontDescriptor *) fontDescriptorByAddingAttributes:
   (NSDictionary *)attributes
 {
-  NSMutableDictionary	*m = [_attributes mutableCopy];
+  NSMutableDictionary *m = [_attributes mutableCopy];
+  NSFontDescriptor *new;
 
   [m addEntriesFromDictionary: attributes];
 
-  return [isa fontDescriptorWithFontAttributes: m] ;
+  new = [isa fontDescriptorWithFontAttributes: m];
+  RELEASE(m);
+
+  return new;
 }
 
 - (NSFontDescriptor *) fontDescriptorWithFace: (NSString *)face
@@ -99,19 +103,36 @@
     [NSDictionary dictionaryWithObject: matrix forKey: NSFontMatrixAttribute]];
 }
 
-- (NSFontDescriptor *) fontDescriptorWithSize: (float)size
+- (NSFontDescriptor *) fontDescriptorWithSize: (CGFloat)size
 {
   return [self fontDescriptorByAddingAttributes:
-    [NSDictionary dictionaryWithObject: [NSNumber numberWithFloat: size]
+    [NSDictionary dictionaryWithObject: [NSString stringWithFormat:@"%f", size]
 				forKey: NSFontSizeAttribute]];
 }
 
 - (NSFontDescriptor *) fontDescriptorWithSymbolicTraits:
-  (NSFontSymbolicTraits)traits
+  (NSFontSymbolicTraits)symbolicTraits
 {
+  NSDictionary *traits;
+
+  traits = [_attributes objectForKey: NSFontTraitsAttribute];
+  if (traits == nil)
+    {
+      traits = [NSDictionary dictionaryWithObject: 
+			       [NSNumber numberWithUnsignedInt: symbolicTraits]
+			     forKey: NSFontSymbolicTrait];
+    }
+  else
+    {
+      traits = AUTORELEASE([traits mutableCopy]);
+      [(NSMutableDictionary*)traits setObject: 
+			       [NSNumber numberWithUnsignedInt: symbolicTraits]
+			     forKey: NSFontSymbolicTrait];
+    }
+
   return [self fontDescriptorByAddingAttributes:
-    [NSDictionary dictionaryWithObject: [NSNumber numberWithUnsignedInt: traits]
-				forKey: NSFontSymbolicTrait]];
+		 [NSDictionary dictionaryWithObject: traits
+			       forKey: NSFontTraitsAttribute]];
 }
 
 - (id) initWithFontAttributes: (NSDictionary *) attributes
@@ -134,7 +155,7 @@
     }
   else
     {
-      // FIXME
+      [aCoder encodeObject: _attributes];
     }
 }
 
@@ -146,7 +167,7 @@
     }
   else
     {
-      // FIXME
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_attributes];
     }
   return self;
 }
@@ -191,6 +212,7 @@
 
             if (value != nil)
               {
+		// FIXME: Special handling for NSFontTraitsAttribute
                 if (![value isEqual: [fd objectForKey: key]])
                   {
                     match = NO;
@@ -208,6 +230,19 @@
   return found;
 }
 
+- (NSFontDescriptor *) matchingFontDescriptorWithMandatoryKeys: (NSSet *)keys;
+{
+  NSArray *found = [self matchingFontDescriptorsWithMandatoryKeys: keys];
+
+  if (found && ([found count] > 0))
+    {
+      return [found objectAtIndex: 0];
+    }
+  else
+    {
+      return nil;
+    }
+}
 
 - (NSAffineTransform *) matrix
 {
@@ -219,7 +254,7 @@
   return [_attributes objectForKey: attribute];
 }
 
-- (float) pointSize
+- (CGFloat) pointSize
 {
   id size = [_attributes objectForKey: NSFontSizeAttribute];
 
@@ -233,14 +268,9 @@
     }
 }
 
-- (NSFontSymbolicTraits) symbolicTraits
-{
-  return [[_attributes objectForKey: NSFontSymbolicTrait] unsignedIntValue];
-}
-
 - (NSString *) postscriptName
 {
-  NSMutableString	*family;
+  NSMutableString *family;
   NSString *face;
 
   family = AUTORELEASE([[self objectForKey: NSFontFamilyAttribute] mutableCopy]);
@@ -252,6 +282,21 @@
   if ([face isEqualToString: @"Regular"])
     return family;
   return [NSString stringWithFormat: @"%@-%@", family, face];
+}
+
+- (NSFontSymbolicTraits) symbolicTraits
+{
+  NSDictionary *traits;
+
+  traits = [_attributes objectForKey: NSFontTraitsAttribute];
+  if (traits == nil)
+    {
+      return 0;
+    }
+  else
+    {
+      return [[traits objectForKey: NSFontSymbolicTrait] unsignedIntValue];
+    }
 }
 
 @end

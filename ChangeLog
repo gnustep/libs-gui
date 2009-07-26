@@ -1,3 +1,10 @@
+2009-07-26 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSFontDescriptor.h,
+	* Headers/AppKit/NSFont.h: Add missing interface method from 10.5.
+	* Source/NSFontDescriptor.m,
+	* Source/NSFont.m: Small fixes for font descriptor handling.
+
 2009-07-25 22:54-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSAlert.m: Offset color by less in -resetWindow.  Remove
@@ -2635,7 +2642,7 @@
 2008-04-07 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSFont.m (NSConvertGlyphsToPackedGlyphs): Store the glyph
-	count in th efirst byte.
+	count in the first byte.
 	* Source/NSBezierPath.m (-appendBezierPathWithPackedGlyphs): Send
 	this method on to the graphics context.
 	* Headers/AppKit/NSGraphicsContext.h,

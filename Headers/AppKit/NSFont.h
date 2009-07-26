@@ -133,9 +133,12 @@ APPKIT_EXPORT const float *NSFontIdentityMatrix;
 + (NSFont*) menuBarFontOfSize: (float)fontSize;
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
-+ (NSFont*) fontWithDescriptor: (NSFontDescriptor*)descriptor size: (float)size;
++ (NSFont*) fontWithDescriptor: (NSFontDescriptor*)descriptor size: (CGFloat)size;
 + (NSFont*) fontWithDescriptor: (NSFontDescriptor*)descriptor 
-                          size: (float)size
+                 textTransform: (NSAffineTransform*)transform;
+// This method was a mistake in the 10.4 documentation
++ (NSFont*) fontWithDescriptor: (NSFontDescriptor*)descriptor 
+                          size: (CGFloat)size
                  textTransform: (NSAffineTransform*)transform;
 #endif
 

@@ -503,43 +503,63 @@ static void setNSFont(NSString *key, NSFont *font)
 }
 
 + (NSFont *) fontWithDescriptor: (NSFontDescriptor *)descriptor
-                           size: (float)size
-{
-  return [self fontWithDescriptor: descriptor size: size textTransform: nil];
-}
-
-// the transform/matrix can be used to rotate/scale/shear the whole font (independently of the CTM!)
-
-+ (NSFont *) fontWithDescriptor: (NSFontDescriptor *)descriptor
-                           size: (float)size
-                  textTransform: (NSAffineTransform *)transform
+                           size: (CGFloat)size
 {
   NSArray *a;
-  NSFontDescriptor *fd;
 
-  if (size == 0.0)
-    size = [NSFont systemFontSize];        // default
-
-  descriptor = [descriptor fontDescriptorWithSize: size];
-  if (transform)
-    {
-      descriptor = [descriptor fontDescriptorByAddingAttributes:
-        [NSDictionary dictionaryWithObject: transform
-                                    forKey: NSFontMatrixAttribute]];
-    }
-
-  // match all keys
-  // FIXME: Matching on size and matrix seems nonsensical.
-  a = [descriptor matchingFontDescriptorsWithMandatoryKeys:
+  descriptor = [descriptor matchingFontDescriptorWithMandatoryKeys: 
     [NSSet setWithArray: [[descriptor fontAttributes] allKeys]]];
 
-  if ([a count] == 0)
+  if (descriptor == nil)
     return nil;
 
-        // return first matching font
-  fd = [a objectAtIndex: 0];
-  // FIXME: Use NSFontManger to get a font name and create that font
-  return nil;
+  a = [[NSFontManager sharedFontManager] availableFontNamesMatchingFontDescriptor: 
+					   descriptor];
+  if ((a == nil) || ([a count] == 0))
+    return nil;
+
+  return [self fontWithName: [a objectAtIndex: 0]
+	       size: size];
+}
+
++ (NSFont*) fontWithDescriptor: (NSFontDescriptor*)descriptor 
+                 textTransform: (NSAffineTransform*)transform
+{
+  NSArray *a;
+  float fontMatrix[6];
+
+  descriptor = [descriptor matchingFontDescriptorWithMandatoryKeys: 
+    [NSSet setWithArray: [[descriptor fontAttributes] allKeys]]];
+
+  if (descriptor == nil)
+    return nil;
+
+  a = [[NSFontManager sharedFontManager] availableFontNamesMatchingFontDescriptor: 
+					   descriptor];
+  if ((a == nil) || ([a count] == 0))
+    return nil;
+
+  // FIXME: This method is deprecated
+  [transform getMatrix: fontMatrix];
+
+  return [self fontWithName: [a objectAtIndex: 0]
+	       matrix: fontMatrix];
+}
+
++ (NSFont *) fontWithDescriptor: (NSFontDescriptor *)descriptor
+                           size: (CGFloat)size
+                  textTransform: (NSAffineTransform *)transform
+{
+  if (transform)
+    {
+      return [self fontWithDescriptor: descriptor 
+		   textTransform: transform];
+    }
+  else
+    {
+      return [self fontWithDescriptor: descriptor
+		   size: size];
+    }
 }
 
 
