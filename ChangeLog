@@ -1,3 +1,13 @@
+2009-07-25 20:25-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSAlert.m: GSAlertSheet - removed unecessary parentWindow 
+	and  container ivars in interface declaration.  Removed uneeded
+	accessors for parentWindow and contentRect.  Added check in
+	frameFromParentWindowFrame to check to see if parent is initialized
+	prior to using it.   Removed NSBox in the init.. method since it 
+	could cause issues with drawing.   Added code to lighten the 
+	color of the background of the sheet relative to the parent window.
+
 2009-07-24 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView.m (-initWithCoder:, -setTextContainer:):

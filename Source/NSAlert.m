@@ -898,12 +898,22 @@ setControl(NSView* content, id control, NSString *title)
   GSAlertSheet.  This class provides a borderless window which is
   attached to the parent window.
  */
-@interface GSAlertSheet : GSAlertPanel
-{
-  NSWindow *_parentWindow;
-  id        _container;
 
+@interface NSWindow (GSAlertSheetPrivate)
+- (void) setAttachedSheet: (id) sheet;
+@end
+
+@implementation NSWindow (GSAlertSheetPrivate)
+/**
+ * Associate sheet with the window it's attached to.  The window is not retained.
+ */ 
+- (void) setAttachedSheet: (id) sheet
+{
+  _attachedSheet = sheet;
 }
+@end
+
+@interface GSAlertSheet : GSAlertPanel
 @end
 
 @implementation GSAlertSheet
@@ -936,100 +946,99 @@ setControl(NSView* content, id control, NSString *title)
 		backing: bufferingType
 		defer: flag
 		screen: aScreen];
+
   if (self != nil)
     {
-      NSRect rect = contentRect;
-      NSRect border = contentRect;
-      NSBox *borderBox = nil;
-
-      rect.origin.x += 6;
-      rect.origin.y += 6;
-      rect.size.width -= 16;
-      rect.size.height -= 16;
-
-      border.origin.x += 1;
-      border.origin.y += 1;
-      border.size.width -= 2;
-      border.size.height -= 2;
-
-      borderBox = [[NSBox alloc] initWithFrame: border];
-      [borderBox setTitle: @""];
-      [borderBox setTitlePosition: NSNoTitle];
-      [borderBox setBorderType: NSLineBorder];
-      [borderBox setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
-      [borderBox setContentViewMargins: NSMakeSize(0,0)];
-      [[super contentView] addSubview: borderBox];      
+      // 
     }
   return self;
 }
 
 - (NSRect) frameFromParentWindowFrame
 {
-  NSRect newFrame = [_parentWindow frame];
+  id parent = [self parentWindow];
   NSRect frame = [self frame];
-  NSRect contentRect = [[_parentWindow contentView] frame];
-
-  // Offset the panel by half of it's width and half of the of the parent window's.
-  newFrame.origin.x += ((newFrame.size.width - frame.size.width) / 2); 
-  newFrame.origin.y += (contentRect.size.height - frame.size.height) + 5;
+  NSRect newFrame = NSZeroRect;  // return zero rect, if parent isn't set.
+  
+  if(parent != nil)
+    {
+      NSRect contentRect = [[parent contentView] frame];
+      
+      //
+      // The calculation is based on the contentRect of the parent window
+      // since we want the sheet to appear just inside of it.
+      //
+      newFrame = [parent frame];
+      newFrame.origin.x += ((newFrame.size.width - frame.size.width) / 2); 
+      newFrame.origin.y += (contentRect.size.height - frame.size.height) + 5;
+    }
 
   return newFrame;
 }
 
-- (void) _resetWindowPosition
+- (void) resetWindow
 {
   NSRect frame = [self frameFromParentWindowFrame]; 
+  NSWindow *parent = nil;
+
+  if((parent = [self parentWindow]) != nil)
+    {
+      NSColor *color = nil;
+      float r, g, b, a;
+      
+      [[[parent backgroundColor]
+	 colorUsingColorSpaceName: NSCalibratedRGBColorSpace] 
+	getRed: &r green: &g blue: &b alpha: &a];
+
+      color = [NSColor colorWithCalibratedRed: r + 0.1 
+		       green: g + 0.1 
+		       blue: b + 0.1 
+		       alpha: a];
+      [self setBackgroundColor: color];
+    }
+
   [self setFrame: frame display: YES];
 }
 
-
-- (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (int)otherWin
-{
-  [super orderWindow: place relativeTo: otherWin];
-}
-
-
 - (void) setParentWindow: (NSWindow *)window
 {
-  if (_parentWindow != window)
+  [super setParentWindow: window];
+  [self resetWindow];
+  /*
+  [nc removeObserver: self];
+
+  if (parent != nil)
     {
-      [super setParentWindow: window];
-      ASSIGN(_parentWindow, window);
-      [nc removeObserver: self];
-
-      if (_parentWindow != nil)
-	{
-	  [self _resetWindowPosition];
-
-	  // add observers....
-	  [nc addObserver: self
-	      selector: @selector(handleWindowClose:)
-	      name: NSWindowWillCloseNotification
-	      object: _parentWindow];
-
-	  [nc addObserver: self
-	      selector: @selector(handleWindowMiniaturize:)
-	      name: NSWindowWillMiniaturizeNotification
-	      object: _parentWindow];
-
-	  [nc addObserver: self
-	      selector: @selector(handleWindowMove:)
-	      name: NSWindowWillMoveNotification
-	      object: _parentWindow];
-
-	  [nc addObserver: self
-	      selector: @selector(handleWindowMove:)
-	      name: NSWindowDidResizeNotification
-	      object: _parentWindow];
-	  
-	  [nc addObserver: self
-	      selector: @selector(handleWindowDidBecomeKey:)
-	      name: NSWindowDidBecomeKeyNotification
-	      object: _parentWindow];
-	}
+      // add observers....
+      [nc addObserver: self
+	selector: @selector(handleWindowClose:)
+	name: NSWindowWillCloseNotification
+	object: parent];
+	
+      [nc addObserver: self
+	selector: @selector(handleWindowMiniaturize:)
+	name: NSWindowWillMiniaturizeNotification
+	object: parent];
+	
+      [nc addObserver: self
+	selector: @selector(handleWindowMove:)
+	name: NSWindowWillMoveNotification
+	object: parent];
+	
+      [nc addObserver: self
+	selector: @selector(handleWindowMove:)
+	name: NSWindowDidResizeNotification
+	object: parent];
+	
+      [nc addObserver: self
+	selector: @selector(handleWindowDidBecomeKey:)
+	name: NSWindowDidBecomeKeyNotification
+	object: parent];
     }
+  */
 }
 
+/*
 - (void) handleWindowClose: (NSNotification *)notification
 {
   [self close];
@@ -1048,37 +1057,14 @@ setControl(NSView* content, id control, NSString *title)
 - (void) handleWindowDidBecomeKey: (NSNotification *)notification
 {
   [self _resetWindowPosition];
-  // [self orderWindow: NSWindowAbove relativeTo: [_parentWindow windowNumber]];
 }
-
-- (NSWindow *) parentWindow
-{
-  return _parentWindow;
-}
-
-/*
-- (NSView *) contentView
-{
-  return [_container contentView];
-}
-
-- (NSSize) contentSize
-{
-  return [[self contentView] frame].size;
-}
-
-- (void) setContentView: (NSView *)aView
-{
-  [_container setContentView: aView];
-}
-*/
 
 - (void) dealloc
 {
-  RELEASE(_parentWindow);
   [nc removeObserver: self];
   [super dealloc];
 }
+*/
 @end
 
 /*
