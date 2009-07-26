@@ -1,3 +1,12 @@
+2009-07-25 22:54-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSAlert.m: Offset color by less in -resetWindow.  Remove
+	redundant logic for calling the "didEnd" method in the NSBeginSheet...
+	functions.
+	* Source/NSApplication.m: Add code to reset parent window in 
+	beginSheet:... method.  Also added check to make sure the
+	modalDelegate is not nil.
+
 2009-07-25 20:54-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSAlert.m: Remove category for setAttachedSheet method.

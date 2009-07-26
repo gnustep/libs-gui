@@ -1893,10 +1893,11 @@ See -runModalForWindow:
 
   [sheet setParentWindow: docWindow];
   [docWindow setAttachedSheet: sheet];
+
   ret = [self runModalForWindow: sheet 
 	      relativeToWindow: docWindow];
 
-  if ([modalDelegate respondsToSelector: didEndSelector])
+  if (modalDelegate && [modalDelegate respondsToSelector: didEndSelector])
     {
       void (*didEnd)(id, SEL, id, int, void*);
 
@@ -1904,7 +1905,9 @@ See -runModalForWindow:
 								 didEndSelector];
       didEnd(modalDelegate, didEndSelector, sheet, ret, contextInfo);
     }
+
   [docWindow setAttachedSheet: nil];
+  [sheet setParentWindow: nil];
 }
 
 /**

@@ -976,9 +976,9 @@ setControl(NSView* content, id control, NSString *title)
 	 colorUsingColorSpaceName: NSCalibratedRGBColorSpace] 
 	getRed: &r green: &g blue: &b alpha: &a];
 
-      color = [NSColor colorWithCalibratedRed: r + 0.1 
-		       green: g + 0.1 
-		       blue: b + 0.1 
+      color = [NSColor colorWithCalibratedRed: r + 0.05 
+		       green: g + 0.05 
+		       blue: b + 0.05 
 		       alpha: a];
       [self setBackgroundColor: color];
     }
@@ -1547,21 +1547,16 @@ void NSBeginAlertSheet(NSString *title,
 
   panel = getSomeSheet(&standardAlertPanel, defaultTitle, title, message,
     defaultButton, alternateButton, otherButton);
+
   // FIXME: We should also change the button action to call endSheet:
   [NSApp beginSheet: panel
 	 modalForWindow: docWindow
 	 modalDelegate: modalDelegate
 	 didEndSelector: willEndSelector
 	 contextInfo: contextInfo];
-  [panel close];
-  if (modalDelegate && [modalDelegate respondsToSelector: didEndSelector])
-    {
-      void (*didEnd)(id, SEL, id, int, void*);
 
-      didEnd = (void (*)(id, SEL, id, int, void*))[modalDelegate methodForSelector: 
-								 didEndSelector];
-      didEnd(modalDelegate, didEndSelector, panel, [panel result], contextInfo);
-    }
+  [panel close];
+
   NSReleaseAlertPanel(panel);
 }
 
@@ -1593,14 +1588,7 @@ void NSBeginCriticalAlertSheet(NSString *title,
 	 didEndSelector: willEndSelector
 	 contextInfo: contextInfo];
   [panel close];
-  if (modalDelegate && [modalDelegate respondsToSelector: didEndSelector])
-    {
-      void (*didEnd)(id, SEL, id, int, void*);
 
-      didEnd = (void (*)(id, SEL, id, int, void*))[modalDelegate methodForSelector: 
-								 didEndSelector];
-      didEnd(modalDelegate, didEndSelector, panel, [panel result], contextInfo);
-    }
   NSReleaseAlertPanel(panel);
 }
 
@@ -1634,14 +1622,7 @@ void NSBeginInformationalAlertSheet(NSString *title,
 	 didEndSelector: willEndSelector
 	 contextInfo: contextInfo];
   [panel close];
-  if (modalDelegate && [modalDelegate respondsToSelector: didEndSelector])
-    {
-      void (*didEnd)(id, SEL, id, int, void*);
 
-      didEnd = (void (*)(id, SEL, id, int, void*))[modalDelegate methodForSelector: 
-								 didEndSelector];
-      didEnd(modalDelegate, didEndSelector, panel, [panel result], contextInfo);
-    }
   NSReleaseAlertPanel(panel);
 }
 
