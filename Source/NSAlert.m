@@ -899,20 +899,6 @@ setControl(NSView* content, id control, NSString *title)
   attached to the parent window.
  */
 
-@interface NSWindow (GSAlertSheetPrivate)
-- (void) setAttachedSheet: (id) sheet;
-@end
-
-@implementation NSWindow (GSAlertSheetPrivate)
-/**
- * Associate sheet with the window it's attached to.  The window is not retained.
- */ 
-- (void) setAttachedSheet: (id) sheet
-{
-  _attachedSheet = sheet;
-}
-@end
-
 @interface GSAlertSheet : GSAlertPanel
 @end
 

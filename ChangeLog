@@ -1,3 +1,10 @@
+2009-07-25 20:54-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSAlert.m: Remove category for setAttachedSheet method.
+	* Source/NSApplication.m: Added private category to add 
+	setAttachedSheet: to NSWindow.  Modified beginSheet:... method
+	to call the new method with the sheet that is associated with it.
+
 2009-07-25 20:25-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSAlert.m: GSAlertSheet - removed unecessary parentWindow 

@@ -372,6 +372,20 @@ struct _NSModalSession {
 - (void) _workspaceNotification: (NSNotification*) notification;
 @end
 
+@interface NSWindow (ApplicationPrivate)
+- (void) setAttachedSheet: (id) sheet;
+@end
+
+@implementation NSWindow (ApplicationPrivate)
+/**
+ * Associate sheet with the window it's attached to.  The window is not retained.
+ */ 
+- (void) setAttachedSheet: (id) sheet
+{
+  _attachedSheet = sheet;
+}
+@end
+
 @interface NSIconWindow : NSWindow
 @end
 
@@ -1878,6 +1892,7 @@ See -runModalForWindow:
   int ret;
 
   [sheet setParentWindow: docWindow];
+  [docWindow setAttachedSheet: sheet];
   ret = [self runModalForWindow: sheet 
 	      relativeToWindow: docWindow];
 
@@ -1889,6 +1904,7 @@ See -runModalForWindow:
 								 didEndSelector];
       didEnd(modalDelegate, didEndSelector, sheet, ret, contextInfo);
     }
+  [docWindow setAttachedSheet: nil];
 }
 
 /**
