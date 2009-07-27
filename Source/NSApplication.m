@@ -382,7 +382,7 @@ struct _NSModalSession {
  */ 
 - (void) setAttachedSheet: (id) sheet
 {
-  _attachedSheet = sheet;
+  // _attachedSheet = sheet;
 }
 @end
 

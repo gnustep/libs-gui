@@ -969,18 +969,9 @@ setControl(NSView* content, id control, NSString *title)
 
   if((parent = [self parentWindow]) != nil)
     {
-      NSColor *color = nil;
-      float r, g, b, a;
-      
-      [[[parent backgroundColor]
-	 colorUsingColorSpaceName: NSCalibratedRGBColorSpace] 
-	getRed: &r green: &g blue: &b alpha: &a];
-
-      color = [NSColor colorWithCalibratedRed: r + 0.05 
-		       green: g + 0.05 
-		       blue: b + 0.05 
-		       alpha: a];
-      [self setBackgroundColor: color];
+      [self setBackgroundColor: 
+	      [[parent backgroundColor] 
+		highlightWithLevel: 0.4]];
     }
 
   [self setFrame: frame display: YES];
