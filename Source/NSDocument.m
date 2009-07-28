@@ -228,7 +228,19 @@ withContentsOfURL: (NSURL *)url
 
 - (void) setFileName: (NSString *)fileName
 {
-  NSURL *fileUrl = fileName ? [NSURL fileURLWithPath: fileName] : nil;
+  NSURL *fileUrl;
+
+  if (fileName && ![fileName isAbsolutePath])
+    {
+      NSString *dir = [[NSFileManager defaultManager] currentDirectoryPath];
+      
+      if (dir)
+	{
+	  fileName = [dir stringByAppendingPathComponent: fileName];
+	}
+    }
+
+  fileUrl = fileName ? [NSURL fileURLWithPath: fileName] : nil;
 
   // This check is to prevent super calls from recursing.
   if (!OVERRIDDEN(setFileName:))
