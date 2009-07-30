@@ -1,3 +1,9 @@
+2009-07-30 15:43-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSThemeTools.m: -[GSThemeTools drawRoundBezel:withColor:]
+	add code to draw highlights for rounded buttons to give them a 
+	better 3D look.
+
 2009-07-28 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSDocument.m (-setFileName:): Set the file name to the

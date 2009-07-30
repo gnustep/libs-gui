@@ -419,7 +419,10 @@
   point = cellFrame.origin;
   point.x += radius;
   point.y += radius;
+
+  // Draw initial path to enclose the button...
   // left half-circle
+  p = [NSBezierPath bezierPath];
   [p appendBezierPathWithArcWithCenter: point
 				radius: radius
 			    startAngle: 90.0
@@ -439,6 +442,26 @@
 
   // and stroke rounded button
   [[NSColor shadowColor] set];
+  [p stroke];
+
+  // Add highlights...
+  point = cellFrame.origin;
+  point.x += radius;
+  point.y += radius;
+  p = [NSBezierPath bezierPath];
+  [p setLineWidth: 2.0];
+  [p appendBezierPathWithArcWithCenter: point
+				radius: radius
+			    startAngle: 120.0
+			      endAngle: 270.0];
+
+  // line to first point and right halfcircle
+  point.x += cellFrame.size.width - cellFrame.size.height;
+  [p appendBezierPathWithArcWithCenter: point
+				radius: radius
+			    startAngle: 270.0
+			      endAngle: 270.0];
+  [[NSColor controlLightHighlightColor] set];
   [p stroke];
 }
 
