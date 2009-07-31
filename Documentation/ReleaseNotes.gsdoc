@@ -20,6 +20,21 @@
 	migrate to using a newer version of the library.
       </p>
       <section>
+      	<heading>Version 0.17.1</heading>
+	<p>Bug fixes.
+	</p>
+	<deflist>
+            <term>NSFont</term>
+            <desc>
+	      Add some missing interface methods from 10.5
+            </desc>
+            <term>NSSplitView</term>
+            <desc>
+	      Add live resize (can be turned off with GSUseGhostResize default)
+            </desc>
+  	</deflist>
+      </section>
+      <section>
       	<heading>Version 0.17.0</heading>
 	<p>Many many bug fixes and almost complete reorganization of NSToolbar
 	code.

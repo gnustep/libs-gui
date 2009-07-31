@@ -1,7 +1,7 @@
 1 ANNOUNCE
 **********
 
-This is version 0.17.0 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.17.1 of the GNUstep GUI library (`gnustep-gui').
 
 1.1 What is the GNUstep GUI Library?
 ====================================
@@ -27,19 +27,17 @@ systems.
 GNUstep Base Library, the TIFF Graphics library, and a back-end
 component like the GNUstep 'Back' Backend.
 
-1.2 Noteworthy changes in version `0.17.0'
+1.2 Noteworthy changes in version `0.17.1'
 ==========================================
 
-   * New Mac OS X 10.5 methods in many classes
+   * New Mac OS X 10.5 methods in NSFont
 
-   * Toolbars have been completely rewritten and improved.
-
-   * Several improvements for Garbage Collection
+   * Add live resize in NSSplitView
 
 1.3 Where can you get it?  How can you compile it?
 ==================================================
 
-The gstep-gui-0.17.0.tar.gz distribution file has been placed at
+The gstep-gui-0.17.1.tar.gz distribution file has been placed at
 `ftp://ftp.gnustep.org/pub/gnustep/core'.
 
 Read the INSTALL file or the GNUstep-HOWTO for installation
