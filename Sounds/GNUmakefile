@@ -1,9 +1,9 @@
 #
-#  Top level makefile for GNUstep GUI Library
+#  Sounds makefile for GNUstep GUI Library
+#  Copyright (C) 2009 Free Software Foundation, Inc.
 #
-#  Copyright (C) 1997 Free Software Foundation, Inc.
-#
-#  Author: Scott Christley <scottc@net-community.com>
+#  Author:  Gregory Casamento <greg.casamento@gmail.com>
+#  Date:  July 2009
 #
 #  This file is part of the GNUstep GUI Library.
 #
@@ -23,54 +23,25 @@
 #  Free Software Foundation, 51 Franklin Street, Fifth Floor, 
 #  Boston, MA 02110-1301, USA.
 
-ifeq ($(GNUSTEP_MAKEFILES),)
- GNUSTEP_MAKEFILES := $(shell gnustep-config --variable=GNUSTEP_MAKEFILES 2>/dev/null)
-endif
-
-ifeq ($(GNUSTEP_MAKEFILES),)
-  $(error You need to set GNUSTEP_MAKEFILES before compiling!)
-endif
-
 PACKAGE_NAME = gnustep-gui
-export PACKAGE_NAME
-RPM_DISABLE_RELOCATABLE=YES
-PACKAGE_NEEDS_CONFIGURE = YES
-
-SVN_MODULE_NAME = gui
-SVN_BASE_URL = svn+ssh://svn.gna.org/svn/gnustep/libs
-
-
-GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=gui.make
+GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=../gui.make
 include $(GNUSTEP_MAKEFILES)/common.make
 
-include ./Version
+include ../Version
 
-# Don't build docs by default
-doc=no
+sounddir = $(GNUSTEP_LIBRARY)/Sounds
 
-#
-# The list of subproject directories
-#
-SUBPROJECTS = \
-Source \
-Images \
-Sounds \
-Model \
-Tools \
-Panels \
-PrinterTypes \
-TextConverters \
-ColorPickers \
-KeyBindings \
-Resources \
-Printing
-
-ifeq ($(doc), yes)
-SUBPROJECTS += Documentation
-endif
+SOUND_FILES = \
+Basso.ogg \
+Blow.ogg \
+Bottle.ogg \
+Glass.ogg
 
 -include GNUmakefile.preamble
 
-include $(GNUSTEP_MAKEFILES)/aggregate.make
+-include GNUmakefile.local
+# We don't actually build anything in this directory so
+# just include the common makefile rules
+include $(GNUSTEP_MAKEFILES)/rules.make
 
 include GNUmakefile.postamble
