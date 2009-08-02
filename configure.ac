@@ -380,6 +380,23 @@ if test $have_portaudio19 = yes -a $have_portaudio = yes -a $enable_gsnd = yes; 
 fi
 AC_SUBST(BUILD_GSND)
 
+
+#--------------------------------------------------------------------
+# NSSpeechSynthesizer
+#--------------------------------------------------------------------
+AC_ARG_ENABLE(speech, 
+  [  --disable-speech          Disable speech server],,
+  enable_speech=yes)
+BUILD_SPEECH=
+
+# has flite, for speech synthesis.
+AC_CHECK_LIB(flite, new_utterance, have_speech=yes, have_speech=no)
+AC_CHECK_HEADERS(flite/flite.h)
+if test $have_speech = yes -a $enable_speech = yes; then
+   BUILD_SPEECH="speech say"
+fi
+AC_SUBST(BUILD_SPEECH)
+
 #--------------------------------------------------------------------
 # Find CUPS
 #--------------------------------------------------------------------

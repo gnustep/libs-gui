@@ -1,3 +1,21 @@
+2009-08-01 20:28-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* config.make.in: Change to include BUILD_SPEECH in output
+	* configure: Regenerated
+	* configure.ac: Check for flite library and flite.h header.
+	* Tools/GNUmakefile: Add ${BUILD_SPEECH} to subproject list.
+	* Tools/say/GNUmakefile
+	* Tools/say/say.m: Say utility
+	* Tools/speech/FliteSpeechEngine.m: 
+	* Tools/speech/GNUmakefile
+	* Tools/speech/GSSpeechEngine.[hm]
+	* Tools/speech/GSSpeechServer.[hm]
+	* Tools/speech/GSSpeechSynthesizer.[hm]: Speech synthesis engine
+	implementation using flite.
+	* Tools/speech/main.m: main for the server application.
+	Speech code by David Chisnall <theraven@sucs.org>
+	Changes to makefiles and config by Gregory Casamento.
+	
 2009-08-01 17:49-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Sounds/GNUmakefile: Change makefile to copy wav files.
