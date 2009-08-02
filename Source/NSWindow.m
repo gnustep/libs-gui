@@ -985,8 +985,8 @@ many times.
   /* Initialize attributes and flags */
   [super init];
   [self _initDefaults];
-
-  // _attachedSheet = nil;
+  
+  _attachedSheet = nil;
   _backingType = bufferingType;
   _styleMask = aStyle;
   if (aScreen == nil)
@@ -5102,8 +5102,7 @@ current key view.<br />
 
 - (NSWindow *) attachedSheet
 {
-  // return _attachedSheet;
-  return nil;
+  return _attachedSheet;
 }
 
 @end

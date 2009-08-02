@@ -1,3 +1,9 @@
+2009-08-02 10:15-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSWindow.h
+	* Source/NSApplication.m
+	* Source/NSWindow.m: Added ivar for attached sheet back.
+
 2009-08-01 20:28-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* config.make.in: Change to include BUILD_SPEECH in output
