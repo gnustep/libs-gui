@@ -89,25 +89,6 @@ enum _NSToolbarItemVisibilityPriority {
   // size
   NSSize _maxSize;
   NSSize _minSize;
-
-  // record the fact that the view responds to these
-  // to save time.
-  struct __flags
-  {
-    // gets
-    unsigned int _isEnabled:1;
-    unsigned int _action:1;
-    unsigned int _target:1;
-    unsigned int _image:1;
-    // sets
-    unsigned int _setEnabled:1;
-    unsigned int _setAction:1;
-    unsigned int _setTarget:1;
-    unsigned int _setImage:1;
-
-    // to even out the int.
-    unsigned int RESERVED:24;
-  } _flags;
 }
 
 // Instance methods

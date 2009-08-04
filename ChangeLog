@@ -1,3 +1,9 @@
+2009-08-04 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSToolbarItem.h: Move the _flags to the class
+	GSToolbarBackView in NSToolbarItem.m. 
+	* Source/NSToolbarItem.m: More clean up of code.
+	
 2009-08-02 10:15-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/NSWindow.h
