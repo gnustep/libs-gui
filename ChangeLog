@@ -1,3 +1,11 @@
+2009-08-08 03:06-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSTextStorage.m: In initWithCoder: don't overwrite the
+	contents of the text storage by attempting to unarchive when the
+	unarchiver is keyed.
+	* Source/NSTextView.m: In initWithCoder: retrieve the contents
+	of the text storage for display in the text view.
+
 2009-08-06 01:42-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSTextView.m: initWithCoder: temporarily remove decoding

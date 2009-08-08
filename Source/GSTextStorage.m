@@ -477,15 +477,21 @@ _attributesAtIndexEffectiveRange(
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_textChars];
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_infoArray];
+  if([aCoder allowsKeyedCoding] == NO)
+    {
+      [aCoder encodeValueOfObjCType: @encode(id) at: &_textChars];
+      [aCoder encodeValueOfObjCType: @encode(id) at: &_infoArray];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aCoder
 {
   self = [super initWithCoder: aCoder];
-  [aCoder decodeValueOfObjCType: @encode(id) at: &_textChars];
-  [aCoder decodeValueOfObjCType: @encode(id) at: &_infoArray];
+  if([aCoder allowsKeyedCoding] == NO)
+    {
+      [aCoder decodeValueOfObjCType: @encode(id) at: &_textChars];
+      [aCoder decodeValueOfObjCType: @encode(id) at: &_infoArray];
+    }
   return self;
 }
 

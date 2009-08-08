@@ -785,6 +785,7 @@ that makes decoding and encoding compatible with the old code.
   self = [super initWithCoder: aDecoder];
   if ([aDecoder allowsKeyedCoding])
     {  
+      NSString *textString = @"";
       if ([aDecoder containsValueForKey: @"NSDelegate"])
         {
           [self setDelegate: [aDecoder decodeObjectForKey: @"NSDelegate"]];
@@ -844,43 +845,36 @@ that makes decoding and encoding compatible with the old code.
           _tf.is_vertically_resizable = YES;
         }
 
-      if ([aDecoder containsValueForKey: @"NSTextStorage"])
-        {
-	  // FIXME: No idea why somebody added this, later this get overridden
-	  // when the text container gets loaded or generated. 
-	  // This code results in a memory leak.
-          //_textStorage = RETAIN([aDecoder decodeObjectForKey: @"NSTextStorage"]);
-        }
-      
-      /*  Don't currently unarchive the text container, as 
-	  we create it below and it's causing an issue with nib loading.
+      // Get the text container to retrieve the text which was previously archived
+      // so that it can be inserted into the current textview.
       if ([aDecoder containsValueForKey: @"NSTextContainer"])
         { 
-	  // Decode the text container, but don't retain it, as it will be owned by the
-	  // decoded layout manager.
-	  [aDecoder decodeObjectForKey: @"NSTextContainer"];
-          // See initWithFrame: for comments on this RELEASE 
-          RELEASE(self);
+	  NSTextContainer *container = [aDecoder decodeObjectForKey: @"NSTextContainer"];
+	  GSLayoutManager *lm = [container layoutManager];
+	  NSTextStorage *ts = [lm textStorage];
+	  textString = [ts string];	  
         }
-      else
-      */
-	{
-          NSSize size = NSMakeSize(0,_maxSize.height);
-          NSTextContainer *aTextContainer = [self buildUpTextNetwork: NSZeroSize];
 
-          [aTextContainer setTextView: self];
-          // See initWithFrame: for comments on this RELEASE 
-          RELEASE(self);
-          
-          [aTextContainer setContainerSize: size];
-          [aTextContainer setWidthTracksTextView: YES];
-          [aTextContainer setHeightTracksTextView: NO];
-	}
-
+      // set up the text network...
+      {
+	NSSize size = NSMakeSize(0,_maxSize.height);
+	NSTextContainer *aTextContainer = [self buildUpTextNetwork: NSZeroSize];
+	
+	[aTextContainer setTextView: self];
+	// See initWithFrame: for comments on this RELEASE 
+	RELEASE(self);
+        
+	[aTextContainer setContainerSize: size];
+	[aTextContainer setWidthTracksTextView: YES];
+	[aTextContainer setHeightTracksTextView: NO];
+      }
+      
       if ([aDecoder containsValueForKey: @"NSTVFlags"])
         {
           [aDecoder decodeIntForKey: @"NSTVFlags"];
         }
+
+      [self setString: textString];
     }
   else
     {
