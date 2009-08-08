@@ -1,3 +1,8 @@
+2009-08-08 13:06-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSTextView.m: initWithCoder: change to use text storage
+	more directly to allow the handling of attributed strings.
+
 2009-08-08 03:06-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSTextStorage.m: In initWithCoder: don't overwrite the

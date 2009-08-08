@@ -785,7 +785,7 @@ that makes decoding and encoding compatible with the old code.
   self = [super initWithCoder: aDecoder];
   if ([aDecoder allowsKeyedCoding])
     {  
-      NSString *textString = @"";
+      id textString = nil;
       if ([aDecoder containsValueForKey: @"NSDelegate"])
         {
           [self setDelegate: [aDecoder decodeObjectForKey: @"NSDelegate"]];
@@ -851,8 +851,8 @@ that makes decoding and encoding compatible with the old code.
         { 
 	  NSTextContainer *container = [aDecoder decodeObjectForKey: @"NSTextContainer"];
 	  GSLayoutManager *lm = [container layoutManager];
-	  NSTextStorage *ts = [lm textStorage];
-	  textString = [ts string];	  
+	  textString = [lm textStorage];
+	  [self setRichText: YES];
         }
 
       // set up the text network...
@@ -874,7 +874,7 @@ that makes decoding and encoding compatible with the old code.
           [aDecoder decodeIntForKey: @"NSTVFlags"];
         }
 
-      [self setString: textString];
+      [self insertText: textString];
     }
   else
     {
