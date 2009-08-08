@@ -1,3 +1,9 @@
+2009-08-06 01:42-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSTextView.m: initWithCoder: temporarily remove decoding
+	of NSTextContainer since it is causing a crash when editing a text
+	view's that was loaded from a nib file. 
+
 2009-08-04 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSToolbarItem.h: Move the _flags to the class

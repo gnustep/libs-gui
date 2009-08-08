@@ -852,6 +852,8 @@ that makes decoding and encoding compatible with the old code.
           //_textStorage = RETAIN([aDecoder decodeObjectForKey: @"NSTextStorage"]);
         }
       
+      /*  Don't currently unarchive the text container, as 
+	  we create it below and it's causing an issue with nib loading.
       if ([aDecoder containsValueForKey: @"NSTextContainer"])
         { 
 	  // Decode the text container, but don't retain it, as it will be owned by the
@@ -861,6 +863,7 @@ that makes decoding and encoding compatible with the old code.
           RELEASE(self);
         }
       else
+      */
 	{
           NSSize size = NSMakeSize(0,_maxSize.height);
           NSTextContainer *aTextContainer = [self buildUpTextNetwork: NSZeroSize];
