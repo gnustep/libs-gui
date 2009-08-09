@@ -1,3 +1,9 @@
+2009-08-08 23:26-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSMenuItem.m: encodeWithCoder: only encode the NSSubitems
+	key if the menu is not owned by a popup.   This avoids an
+	assertion error when loading the resulting nib into InterfaceBuilder.
+
 2009-08-08 13:06-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSTextView.m: initWithCoder: change to use text storage

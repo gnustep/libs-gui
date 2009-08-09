@@ -506,9 +506,17 @@ static Class imageClass;
       [aCoder encodeObject: _onStateImage forKey: @"NSOnImage"];
       [aCoder encodeObject: _offStateImage forKey: @"NSOffImage"]; // ???????
       [aCoder encodeObject: _mixedStateImage forKey: @"NSMixedImage"]; 
-      [aCoder encodeObject: _target forKey: @"NSTarget"]; 
+      [aCoder encodeObject: _target forKey: @"NSTarget"];
       [aCoder encodeObject: _menu forKey: @"NSMenu"];
-      [aCoder encodeObject: _submenu forKey: @"NSSubmenu"];
+
+      // If the menu is owned by a popup, then don't encode the children.
+      // This prevents an assertion error in IB as these keys should not 
+      // be present in a menu item when it's encoded as part of a popup. 
+      if([_menu _ownedByPopUp] == NO)
+	{
+	  [aCoder encodeObject: _submenu forKey: @"NSSubmenu"];
+	}
+
       [aCoder encodeInt: _keyEquivalentModifierMask forKey: @"NSKeyEquivModMask"];
       [aCoder encodeInt: _mnemonicLocation forKey: @"NSMnemonicLoc"];
       [aCoder encodeInt: _state forKey: @"NSState"];
