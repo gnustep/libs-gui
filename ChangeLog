@@ -1,3 +1,13 @@
+2009-08-10 23:25-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Sounds/Basso.wav
+	* Sounds/Hero.wav
+	* Sounds/Ping.wav
+	* Sounds/Pop.wav
+	* Sounds/Sosumi.wav
+	* Sounds/Tink.wav: Added new sound files.
+	* Sounds/GNUmakefile: Copy sound files.
+
 2009-08-08 23:26-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSMenuItem.m: encodeWithCoder: only encode the NSSubitems

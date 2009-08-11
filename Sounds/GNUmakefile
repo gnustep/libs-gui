@@ -32,10 +32,16 @@ include ../Version
 sounddir = $(GNUSTEP_LIBRARY)/Sounds
 
 SOUND_FILES = \
+Glass.wav \
 Basso.wav \
 Blow.wav \
 Bottle.wav \
-Glass.wav
+Glass.wav \
+Hero.wav \
+Ping.wav \
+Pop.wav \
+Sosumi.wav \
+Tink.wav
 
 -include GNUmakefile.preamble
 
