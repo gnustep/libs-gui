@@ -464,28 +464,9 @@ _attributesAtIndexEffectiveRange(
     }
 }
 
-- (Class) classForPortCoder
-{
-  return [self class];
-}
-
-- (id) replacementObjectForPortCoder: (NSPortCoder*)aCoder
-{
-  return self;
-}
-
-- (void) encodeWithCoder: (NSCoder*)aCoder
-{
-  [super encodeWithCoder: aCoder];
-  if([aCoder allowsKeyedCoding] == NO)
-    {
-      [aCoder encodeValueOfObjCType: @encode(id) at: &_textChars];
-      [aCoder encodeValueOfObjCType: @encode(id) at: &_infoArray];
-    }
-}
-
 - (id) initWithCoder: (NSCoder*)aCoder
 {
+  NSLog(@"Warning - decoding archive containing obsolete %@ object - please delete/replace this archive", NSStringFromClass([self class]));
   self = [super initWithCoder: aCoder];
   if([aCoder allowsKeyedCoding] == NO)
     {
@@ -498,20 +479,20 @@ _attributesAtIndexEffectiveRange(
 - (id) initWithString: (NSString*)aString
 	   attributes: (NSDictionary*)attributes
 {
-  NSZone	*z = [self zone];
+  NSZone *z = [self zone];
 
   self = [super initWithString: aString attributes: attributes];
   _infoArray = [[NSMutableArray allocWithZone: z] initWithCapacity: 1];
   if (aString != nil && [aString isKindOfClass: [NSAttributedString class]])
     {
-      NSAttributedString	*as = (NSAttributedString*)aString;
+      NSAttributedString *as = (NSAttributedString*)aString;
 
       aString = [as string];
       _setAttributesFrom(as, NSMakeRange(0, [aString length]), _infoArray);
     }
   else
     {
-      GSTextInfo	*info;
+      GSTextInfo *info;
 
       if (attributes == nil)
         {
@@ -541,7 +522,7 @@ _attributesAtIndexEffectiveRange(
 - (NSDictionary*) attributesAtIndex: (unsigned)index
 		     effectiveRange: (NSRange*)aRange
 {
-  unsigned	dummy;
+  unsigned dummy;
 
   return _attributesAtIndexEffectiveRange(
     index, aRange, [_textChars length], _infoArray, &dummy);

@@ -1,3 +1,12 @@
+2009-08-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextStorage.m (-classForCoder, -initWithCoder:,
+	-encodeWithCoder:): Encode this class and not the concrete 
+	one. Also call super encoding/decoding methods as they are
+	correct in base now.
+	* Source/GSTextStorage.m (-classForPortCoder, -encodeWithCoder:,
+	-replacementObjectForPortCoder:): Remove these methods.
+
 2009-08-10 23:25-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Sounds/Basso.wav

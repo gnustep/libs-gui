@@ -337,33 +337,36 @@ static NSNotificationCenter *nc = nil;
   [self fixAttributesInRange: range];
 }
 
+- (Class) classForCoder
+{
+  return abstract;
+}
+
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
+  self = [super initWithCoder: aDecoder];
   if ([aDecoder allowsKeyedCoding])
     {
       id delegate = [aDecoder decodeObjectForKey: @"NSDelegate"];
-      NSString *string = [aDecoder decodeObjectForKey: @"NSString"];
-      
-      self = [self initWithString: string];
+
       [self setDelegate: delegate];
     }
   else
     {
-	self = [super initWithCoder: aDecoder]; 
-    }      
+    }
+     
   return self;
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
+  [super encodeWithCoder: coder];
   if ([coder allowsKeyedCoding])
     {
       [coder encodeObject: [self delegate] forKey: @"NSDelegate"];
-      [coder encodeObject: [self string] forKey: @"NSString"];
     }
   else
     {
-      [super encodeWithCoder: coder];
     }
 }
 
