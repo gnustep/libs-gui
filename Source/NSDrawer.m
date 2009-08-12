@@ -218,7 +218,11 @@ static NSNotificationCenter *nc = nil;
 
 - (void) stopTimer
 {
-  [_timer invalidate];
+  if(_timer != nil)
+    {
+      [_timer invalidate];
+      DESTROY(_timer);
+    }
 }
 
 - (void) orderFrontRegardless

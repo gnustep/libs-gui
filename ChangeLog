@@ -1,3 +1,9 @@
+2009-08-12 18:26-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSDrawer.m: Changed - (void) stopTimer.  Fixed to
+	prevent a crash when the drawer is opened/closed and then the
+	window is then closed causing a double release.  
+	
 2009-08-12 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextStorage.m (-classForCoder, -initWithCoder:,
