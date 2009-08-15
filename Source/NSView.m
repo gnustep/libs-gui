@@ -548,7 +548,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   //_is_rotated_from_base = NO;
   //_is_rotated_or_scaled_from_base = NO;
   _rFlags.needs_display = YES;
-  //_post_frame_changes = NO;
+  _post_bounds_changes = YES;
+  _post_frame_changes = YES;
   _autoresizes_subviews = YES;
   _autoresizingMask = NSViewNotSizable;
   //_coordinates_valid = NO;
@@ -1783,11 +1784,19 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
   return new;
 }
 
+/** 
+ * Sets whether the receiver should post NSViewFrameDidChangeNotification 
+ * when its frame changed. 
+ */
 - (void) setPostsFrameChangedNotifications: (BOOL)flag
 {
   _post_frame_changes = flag;
 }
 
+/** 
+ * Sets whether the receiver should post NSViewBoundsDidChangeNotification 
+ * when its bound changed.
+ */
 - (void) setPostsBoundsChangedNotifications: (BOOL)flag
 {
   _post_bounds_changes = flag;
@@ -4462,7 +4471,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       _is_rotated_from_base = NO;
       _is_rotated_or_scaled_from_base = NO;
       _rFlags.needs_display = YES;
-      _post_frame_changes = NO;
+      _post_bounds_changes = YES;
+      _post_frame_changes = YES;
       _autoresizes_subviews = YES;
       _autoresizingMask = NSViewNotSizable;
       _coordinates_valid = NO;
@@ -4540,21 +4550,21 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       _super_view = nil;
       _window = nil;
       _rFlags.needs_display = YES;
-      _coordinates_valid = NO;
-      
-      _rFlags.flipped_view = [self isFlipped];
-      
       [aDecoder decodeValueOfObjCType: @encode(BOOL)
 				   at: &_is_rotated_from_base];
       [aDecoder decodeValueOfObjCType: @encode(BOOL)
 				   at: &_is_rotated_or_scaled_from_base];
+      _post_bounds_changes = YES;
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_post_frame_changes];
       [aDecoder decodeValueOfObjCType: @encode(BOOL)
 				   at: &_autoresizes_subviews];
       [aDecoder decodeValueOfObjCType: @encode(unsigned int)
 				   at: &_autoresizingMask];
+      _coordinates_valid = NO;
       [self setNextKeyView: [aDecoder decodeObject]];
       [[aDecoder decodeObject] setNextKeyView: self];
+
+      _rFlags.flipped_view = [self isFlipped];
       
       [aDecoder decodeValueOfObjCType: @encode(id) at: &subs];
       NSDebugLLog(@"NSView", @"NSView: finish decoding\n");
@@ -4683,11 +4693,23 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   return 0.0;
 }
 
+/** 
+ * Returns whether the receiver posts NSViewFrameDidChangeNotification when 
+ * its frame changed.
+ *
+ * Returns YES by default (as documented in Cocoa View Programming Guide). 
+ */
 - (BOOL) postsFrameChangedNotifications
 {
   return _post_frame_changes;
 }
 
+/** 
+ * Returns whether the receiver posts NSViewBoundsDidChangeNotification when 
+ * its bound changed. 
+ *
+ * Returns YES by default (as documented in Cocoa View Programming Guide). 
+ */
 - (BOOL) postsBoundsChangedNotifications
 {
   return _post_bounds_changes;

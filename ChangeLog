@@ -1,5 +1,11 @@
 2009-08-16 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSView.m (-initWithFrame:, -initWithCoder:) Set
+	_post_frame_changes and _post_bounds_changes to YES by default.
+	Patch by Quentin Mathe <qmathe@gmail.com>.
+
+2009-08-16 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSTextStorage.m (-replacementObjectForPortCoder:): Added
 	this method as suggested by Richard.
 
