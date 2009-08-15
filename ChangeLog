@@ -1,3 +1,8 @@
+2009-08-15 17:17-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Tools/say/GNUmakefile
+	* Tools/speech/GNUmakefile: Makefile corrections.
+
 2009-08-12 18:26-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSDrawer.m: Changed - (void) stopTimer.  Fixed to
