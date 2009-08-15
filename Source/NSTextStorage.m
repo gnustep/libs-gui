@@ -27,6 +27,7 @@
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSDebug.h>
+#include <Foundation/NSPorCoder.h>
 #include "AppKit/NSAttributedString.h"
 #include "AppKit/NSTextStorage.h"
 #include "GNUstepGUI/GSLayoutManager.h"
@@ -34,8 +35,8 @@
 
 @implementation NSTextStorage
 
-static	Class	abstract;
-static	Class	concrete;
+static Class abstract;
+static Class concrete;
 
 static NSNotificationCenter *nc = nil;
 
@@ -59,12 +60,8 @@ static NSNotificationCenter *nc = nil;
 
 - (void) dealloc
 {
+  [self setDelegate: nil];
   RELEASE (_layoutManagers);
-  if (_delegate != nil)
-    {
-      [nc removeObserver: _delegate  name: nil  object: self];
-      _delegate = nil;
-    }
   [super dealloc];
 }
 
@@ -340,6 +337,11 @@ static NSNotificationCenter *nc = nil;
 - (Class) classForCoder
 {
   return abstract;
+}
+
+- (id) replacementObjectForPortCoder: (NSPortCoder*)aCoder
+{
+  return self;
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder

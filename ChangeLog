@@ -1,3 +1,8 @@
+2009-08-16 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextStorage.m (-replacementObjectForPortCoder:): Added
+	this method as suggested by Richard.
+
 2009-08-15 17:17-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Tools/say/GNUmakefile
