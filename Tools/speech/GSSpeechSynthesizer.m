@@ -3,6 +3,10 @@
 static GSSpeechServer *server;
 static int clients;
 
+@interface GSSpeechSynthesizer (Private)
++ (void)connectionDied: (NSNotification*)aNotification;
+@end
+
 @implementation GSSpeechSynthesizer
 + (void)initialize
 {

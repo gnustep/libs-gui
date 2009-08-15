@@ -481,7 +481,7 @@ static inline void
 DPScurrentcmykcolor(GSCTXT *ctxt, float* c, float* m, float* y, float* k)
 {
   (ctxt->methods->DPScurrentcmykcolor____)
-    (ctxt, @selector(DPScurrentcmykcolor: : : : :), c, m, y, k);
+    (ctxt, @selector(DPScurrentcmykcolor: : : :), c, m, y, k);
 }
 
 static inline void
@@ -1125,7 +1125,7 @@ static inline void
 GSCurrentDevice(GSCTXT *ctxt, void** device, int* x, int* y)
 {
   (ctxt->methods->GSCurrentDevice___)
-    (ctxt, @selector(GSCurrentGCDevice: : :), device, x, y);
+    (ctxt, @selector(GSCurrentDevice: : :), device, x, y);
 }
 
 static inline void
@@ -1139,7 +1139,7 @@ static inline void
 GSSetDevice(GSCTXT *ctxt, void* device, int x, int y)
 {
   (ctxt->methods->GSSetDevice___)
-    (ctxt, @selector(GSSetGCDevice: : :), device, x, y);
+    (ctxt, @selector(GSSetDevice: : :), device, x, y);
 }
 
 static inline void
