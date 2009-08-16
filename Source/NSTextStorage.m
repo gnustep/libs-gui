@@ -27,7 +27,7 @@
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSDebug.h>
-#include <Foundation/NSPorCoder.h>
+#include <Foundation/NSPortCoder.h>
 #include "AppKit/NSAttributedString.h"
 #include "AppKit/NSTextStorage.h"
 #include "GNUstepGUI/GSLayoutManager.h"

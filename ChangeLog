@@ -1,3 +1,7 @@
+2009-08-16 15:14-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSTextStorage.m: Correct spelling of header file.
+
 2009-08-16 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSView.m (-initWithFrame:, -initWithCoder:) Set
