@@ -874,7 +874,11 @@ that makes decoding and encoding compatible with the old code.
           [aDecoder decodeIntForKey: @"NSTVFlags"];
         }
 
-      [self insertText: textString];
+      // Don't add the string if it's nil
+      if(textString != nil)
+	{
+	  [self insertText: textString];
+	}
     }
   else
     {

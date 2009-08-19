@@ -1,3 +1,8 @@
+2009-08-19 00:57-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSTextView.m: Don't add the text storage if it's nil
+	in initWithCoder:
+
 2009-08-16 15:14-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSTextStorage.m: Correct spelling of header file.
