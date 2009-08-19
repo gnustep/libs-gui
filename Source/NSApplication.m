@@ -372,20 +372,6 @@ struct _NSModalSession {
 - (void) _workspaceNotification: (NSNotification*) notification;
 @end
 
-@interface NSWindow (ApplicationPrivate)
-- (void) setAttachedSheet: (id) sheet;
-@end
-
-@implementation NSWindow (ApplicationPrivate)
-/**
- * Associate sheet with the window it's attached to.  The window is not retained.
- */ 
-- (void) setAttachedSheet: (id) sheet
-{
-  _attachedSheet = sheet;
-}
-@end
-
 @interface NSIconWindow : NSWindow
 @end
 
@@ -750,12 +736,9 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 {
   NSInvocation *inv;
 
-  inv = [[NSInvocation alloc] 
-            invocationWithMethodSignature: 
-                [target methodSignatureForSelector: selector]]; 
-  [inv setTarget: target];
-  [inv setSelector: selector];
-  [inv setArgument: argument atIndex: 2];
+  // This uses a GNUstep extension on NSInvocation
+  inv = [[NSInvocation alloc] initWithTarget: target 
+			      selector: selector, argument];
   [NSThread detachNewThreadSelector: @selector(_invokeWithAutoreleasePool:) 
 	    toTarget: self 
 	    withObject: inv];
@@ -1891,13 +1874,10 @@ See -runModalForWindow:
   // FIXME
   int ret;
 
-  [sheet setParentWindow: docWindow];
-  [docWindow setAttachedSheet: sheet];
-
   ret = [self runModalForWindow: sheet 
 	      relativeToWindow: docWindow];
 
-  if (modalDelegate && [modalDelegate respondsToSelector: didEndSelector])
+  if ([modalDelegate respondsToSelector: didEndSelector])
     {
       void (*didEnd)(id, SEL, id, int, void*);
 
@@ -1905,9 +1885,6 @@ See -runModalForWindow:
 								 didEndSelector];
       didEnd(modalDelegate, didEndSelector, sheet, ret, contextInfo);
     }
-
-  [docWindow setAttachedSheet: nil];
-  [sheet setParentWindow: nil];
 }
 
 /**
@@ -3479,7 +3456,7 @@ struct _DelegateWrapper
 - (NSArray *) orderedWindows
 {
   NSArray *arr = GSOrderedWindows();
-  NSMutableArray *ret = [[NSMutableArray alloc] initWithCapacity:[arr count]];
+  NSMutableArray *ret = [[NSArray alloc] initWithCapacity:[arr count]];
   NSEnumerator *iter = [arr objectEnumerator];
   id win;
   while ((win = [iter nextObject]))

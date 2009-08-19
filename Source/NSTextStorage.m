@@ -27,7 +27,6 @@
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSDebug.h>
-#include <Foundation/NSPortCoder.h>
 #include "AppKit/NSAttributedString.h"
 #include "AppKit/NSTextStorage.h"
 #include "GNUstepGUI/GSLayoutManager.h"
@@ -35,8 +34,8 @@
 
 @implementation NSTextStorage
 
-static Class abstract;
-static Class concrete;
+static	Class	abstract;
+static	Class	concrete;
 
 static NSNotificationCenter *nc = nil;
 
@@ -60,8 +59,12 @@ static NSNotificationCenter *nc = nil;
 
 - (void) dealloc
 {
-  [self setDelegate: nil];
   RELEASE (_layoutManagers);
+  if (_delegate != nil)
+    {
+      [nc removeObserver: _delegate  name: nil  object: self];
+      _delegate = nil;
+    }
   [super dealloc];
 }
 
@@ -334,41 +337,33 @@ static NSNotificationCenter *nc = nil;
   [self fixAttributesInRange: range];
 }
 
-- (Class) classForCoder
-{
-  return abstract;
-}
-
-- (id) replacementObjectForPortCoder: (NSPortCoder*)aCoder
-{
-  return self;
-}
-
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  self = [super initWithCoder: aDecoder];
   if ([aDecoder allowsKeyedCoding])
     {
       id delegate = [aDecoder decodeObjectForKey: @"NSDelegate"];
-
+      NSString *string = [aDecoder decodeObjectForKey: @"NSString"];
+      
+      self = [self initWithString: string];
       [self setDelegate: delegate];
     }
   else
     {
-    }
-     
+	self = [super initWithCoder: aDecoder]; 
+    }      
   return self;
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
-  [super encodeWithCoder: coder];
   if ([coder allowsKeyedCoding])
     {
       [coder encodeObject: [self delegate] forKey: @"NSDelegate"];
+      [coder encodeObject: [self string] forKey: @"NSString"];
     }
   else
     {
+      [super encodeWithCoder: coder];
     }
 }
 

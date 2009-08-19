@@ -2292,6 +2292,7 @@ no_soft_invalidation:
 
   if ([aDecoder allowsKeyedCoding])
     {
+      /*
       int i;
       int flags;
       NSArray *array = [aDecoder decodeObjectForKey: @"NSTextContainers"];
@@ -2311,6 +2312,7 @@ no_soft_invalidation:
         { 
 	  [self addTextContainer: [array objectAtIndex: i]];
 	}
+      */
       return self;
     }
   else

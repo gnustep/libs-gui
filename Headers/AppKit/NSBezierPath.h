@@ -95,11 +95,6 @@ typedef enum {
 + (NSBezierPath *)bezierPath;
 + (NSBezierPath *)bezierPathWithRect:(NSRect)aRect;
 + (NSBezierPath *)bezierPathWithOvalInRect:(NSRect)aRect;
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
-+ (NSBezierPath *)bezierPathWithRoundedRect:(NSRect)aRect
-                                    xRadius:(CGFloat)xRadius
-                                    yRadius:(CGFloat)yRadius;
-#endif
 
 //
 // Immediate mode drawing of common paths
@@ -224,11 +219,6 @@ typedef enum {
 			     count:(int)count
 			    inFont:(NSFont *)font;
 - (void)appendBezierPathWithPackedGlyphs:(const char *)packedGlyphs;
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
-- (void)appendBezierPathWithRoundedRect:(NSRect)aRect
-                                xRadius:(CGFloat)xRadius
-                                yRadius:(CGFloat)yRadius;
-#endif
 
 //
 // Hit detection  

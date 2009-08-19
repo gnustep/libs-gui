@@ -72,7 +72,6 @@ GSDisplayServer *
 GSServerForWindow(NSWindow *window)
 {
   int num;
-
   if (windowmaps == NULL)
     {
       NSLog(@"GSServerForWindow: No window server");
@@ -127,14 +126,12 @@ GSCurrentServer(void)
     {
       [gnustep_global_lock lock];
       if (serverLock == nil)
-        {
-          serverLock = [NSRecursiveLock new];
-          _globalGSZone = NSDefaultMallocZone();
-          defaultServerClass = [GSDisplayServer class];
-          NSCurrentServerThreadKey  = @"NSCurrentServerThreadKey";
-          windowmaps = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
-                                        NSNonOwnedPointerMapValueCallBacks, 20);
-        }
+	{
+	  serverLock = [NSRecursiveLock new];
+	  _globalGSZone = NSDefaultMallocZone();
+	  defaultServerClass = [GSDisplayServer class];
+	  NSCurrentServerThreadKey  = @"NSCurrentServerThreadKey";
+	}
       [gnustep_global_lock unlock];
     }
 }
@@ -178,6 +175,12 @@ GSCurrentServer(void)
 + (GSDisplayServer *) serverWithAttributes: (NSDictionary *)attributes
 {
   GSDisplayServer *server;
+
+  if (windowmaps == NULL)
+    {
+      windowmaps = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
+				    NSNonOwnedPointerMapValueCallBacks, 20);
+    }
 
   if (self == [GSDisplayServer class])
     {
@@ -248,23 +251,20 @@ GSCurrentServer(void)
   void			*key;
   void			*val;
 
-  if (windowmaps != NULL)
+  /*
+   * Remove the display server from the windows map.
+   * This depends on a property of GNUstep map tables, that an
+   * enumerated object can safely be removed from the map.
+   */
+  enumerator = NSEnumerateMapTable(windowmaps);
+  while (NSNextMapEnumeratorPair(&enumerator, &key, &val))
     {
-      /*
-       * Remove the display server from the windows map.
-       * This depends on a property of GNUstep map tables, that an
-       * enumerated object can safely be removed from the map.
-       */
-      enumerator = NSEnumerateMapTable(windowmaps);
-      while (NSNextMapEnumeratorPair(&enumerator, &key, &val))
-        {
-          if (val == (void*)self)
-            {
-              NSMapRemove(windowmaps, key);
-            }
-        }
-      NSEndMapTableEnumeration(&enumerator);
+      if (val == (void*)self)
+	{
+	  NSMapRemove(windowmaps, key);
+	}
     }
+  NSEndMapTableEnumeration(&enumerator);
 
   DESTROY(server_info);
   DESTROY(event_queue);
@@ -517,10 +517,7 @@ GSCurrentServer(void)
     for a window that has already been created */
 - (void) _setWindowOwnedByServer: (int)win
 {
-  if (windowmaps != NULL)
-    {
-      NSMapInsert(windowmaps, (void*)(intptr_t)win,  self);
-    }
+  NSMapInsert (windowmaps, (void*)(intptr_t)win,  self);
 }
 
 /** Creates a window whose location and size is described by frame and

@@ -61,8 +61,8 @@ typedef enum _NSFontFamilyClass
   NSFontSymbolicClass = 12 << 28
 } NSFontFamilyClass;
 
-enum _NSFontFamilyClassMask {
-    NSFontFamilyClassMask = 0xF0000000
+enum _NSFontFamiliyClassMask {
+    NSFontFamiliyClassMask = 0xF0000000
 };
 
 enum _NSFontTrait
@@ -109,7 +109,7 @@ extern NSString *NSFontVariationAxisNameKey;
 
 + (id) fontDescriptorWithFontAttributes: (NSDictionary *)attributes;
 + (id) fontDescriptorWithName: (NSString *)name
-                         size: (CGFloat)size;
+                         size: (float)size;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 + (id) fontDescriptorWithName: (NSString *)name
                        matrix: (NSAffineTransform *)matrix;
@@ -124,19 +124,16 @@ extern NSString *NSFontVariationAxisNameKey;
 - (NSFontDescriptor *) fontDescriptorWithFace: (NSString *)face;
 - (NSFontDescriptor *) fontDescriptorWithFamily: (NSString *)family;
 - (NSFontDescriptor *) fontDescriptorWithMatrix: (NSAffineTransform *)matrix;
-- (NSFontDescriptor *) fontDescriptorWithSize: (CGFloat)size;
+- (NSFontDescriptor *) fontDescriptorWithSize: (float)size;
 - (NSFontDescriptor *) fontDescriptorWithSymbolicTraits:
   (NSFontSymbolicTraits)traits;
 - (NSArray *) matchingFontDescriptorsWithMandatoryKeys: (NSSet *)keys;
 
 - (id) objectForKey: (NSString *)attribute;
 - (NSAffineTransform *) matrix;
-- (CGFloat) pointSize;
+- (float) pointSize;
 - (NSString *) postscriptName;
 - (NSFontSymbolicTraits) symbolicTraits;
-#endif
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
-- (NSFontDescriptor *) matchingFontDescriptorWithMandatoryKeys: (NSSet *)keys;
 #endif
 
 @end

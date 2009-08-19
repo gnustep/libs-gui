@@ -32,7 +32,6 @@
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSRunLoop.h>
-#include <Foundation/NSUserDefaults.h>
 #include "AppKit/NSTableHeaderCell.h"
 #include "AppKit/NSTableHeaderView.h"
 #include "AppKit/NSTableColumn.h"
@@ -271,13 +270,6 @@
   }
 }
 
-/**
- * In -mouseDown we intercept the mouse event to handle the
- * colum resize and rearrangement. Resizing or moving columns
- * will do a live resize/move of the columns by default. Users can revert to
- * a "ghost" resize/move indicator by doing:
- * defaults write NSGlobalDomain GSUseGhostResize YES
- */
 - (void) mouseDown: (NSEvent*)event
 {
   NSPoint location = [event locationInWindow];
@@ -348,150 +340,186 @@
       /* Resizing */
       if (_resizedColumn != -1)
         {
-          float p;
-          NSEvent *e;
-          BOOL lit;
-          unsigned int eventMask;
-          BOOL liveResize;
-
           /* Width of the highlighted area. */
           const float divWidth = 4;
-          /* Coordinates of visible part of table */
-          float minVisCoord = NSMinX([self visibleRect]);
-          float maxVisCoord = NSMaxX([self visibleRect]);
-          
-          NSPoint unconverted = [event locationInWindow];
-          NSArray *columns = [_tableView tableColumns];
+          /* Dragging limits */
+          float minCoord; 
+          float maxCoord; 
+          float minAbsCoord; 
+          float maxAbsCoord; 
+          float minVisCoord;
+          float maxVisCoord;
+          NSRect tvRect;
+          NSPoint unconverted;
+          NSArray *columns;
           /* Column on the left of resizing bound */
-          NSTableColumn *column = [columns objectAtIndex: _resizedColumn];
-          const float columnMinX = NSMinX([self headerRectOfColumn: _resizedColumn]);
-          const float columnMinWidth = [column minWidth];
-          const float columnMaxWidth = [column maxWidth];
-          float newColumnWidth;
-          float newColumnMaxX;
-          NSRect oldHighlightRect;
-          NSRect highlightRect = [self visibleRect];
-          highlightRect.size.width = divWidth;
-          
+          NSTableColumn *column;
+          NSRect rectLow = [self headerRectOfColumn: _resizedColumn];
+          /* Old highlighted rect, used to avoid useless redrawing */
+          NSRect oldRect = NSZeroRect;
+          /* Current highlighted rect */
+          NSRect r;
           /* Mouse position */
+          float p;
+          float q;
+          BOOL outside = NO;
           /* YES if some highlighting was done and needs to be undone */
-          lit = NO;
-          eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask | NSPeriodicMask;
-          liveResize = ![[NSUserDefaults standardUserDefaults] boolForKey: @"GSUseGhostResize"];
+          BOOL lit = NO;
+          /* YES if some dragging was actually done - to avoid
+             retiling/redrawing the table if no dragging is done */
+          BOOL dragged = NO;
+          NSEvent *e;
+          NSDate *farAway = [NSDate distantFuture];
+          unsigned int eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask
+            | NSPeriodicMask;
+
+          /* Determine dragging limits, constrained to visible rect */
+          rect = [self visibleRect];
+          minVisCoord = MAX (NSMinX (rectLow), NSMinX (rect)) + divWidth;
+          maxVisCoord = NSMaxX (rect) - divWidth;
           
+          /* Then constrain to minimum and maximum column width if any */
+          columns = [_tableView tableColumns];
+          /* Column at the left */
+          column = [columns objectAtIndex: _resizedColumn];
           if ([column isResizable] == NO)
             {
               _resizedColumn = -1;
               return;
             }
+          /* We use p as a temporary variable for a while */
+          minAbsCoord = NSMinX (rectLow) + [column minWidth];
+          maxAbsCoord = NSMinX (rectLow) + [column maxWidth];
+          minCoord = MAX (minAbsCoord, minVisCoord);
+          maxCoord = MIN (maxAbsCoord, maxVisCoord);
+          
 
           /* Do we need to check that we already fit into this area ? 
              We should */
 
-          if (!liveResize)
-            {
-              oldHighlightRect = NSZeroRect;
-              [self lockFocus];
-              [[NSColor lightGrayColor] set];
-            }
-            
+          [self lockFocus];
+          
           [[NSRunLoop currentRunLoop] limitDateForMode: NSEventTrackingRunLoopMode];
+          
+          [[NSColor lightGrayColor] set];
+          r.size.width = divWidth;
+          r.size.height = NSHeight (rect);
+          r.origin.y = NSMinY (rect);
           
           [NSEvent startPeriodicEventsAfterDelay: 0.05 withPeriod: 0.05];
           e = [NSApp nextEventMatchingMask: eventMask
-                     untilDate: [NSDate distantFuture]
+                     untilDate: farAway
                      inMode: NSEventTrackingRunLoopMode
                      dequeue: YES];
+
+          /* Safety assignment to make sure p is never left
+             unitialized - should make no difference with current code
+             but anyway */
+          p = NSMaxX (rectLow);
 
           while ([e type] != NSLeftMouseUp)
             {
               if ([e type] != NSPeriodic)
                 {
+                  dragged = YES;
                   unconverted = [e locationInWindow];
-                }
-                  
-              p = [self convertPoint: unconverted fromView: nil].x;        
-              minVisCoord = NSMinX([self visibleRect]);
-              maxVisCoord = NSMaxX([self visibleRect]);
-                
-              /* newColumnWidth is always positive, since we always resize
-                 the column to the left of the mouse pointer */
-              newColumnWidth = (p - columnMinX);
-              newColumnWidth = MAX(MIN(newColumnWidth, columnMaxWidth), columnMinWidth);
-              newColumnMaxX = columnMinX + newColumnWidth;
-              
-              if (liveResize && [column width] != newColumnWidth)
-                {
-                  [_tableView _userResizedTableColumn: _resizedColumn
-                              width: newColumnWidth];
-                }
-              else if (!liveResize)
-                {
-                  highlightRect.origin.x = newColumnMaxX;
-
-                  /* Only draw the divider if it is not the same as the currently
-                     drawn one, and lies within the header view area */
-                  if (!NSEqualRects(oldHighlightRect,highlightRect) && 
-                       highlightRect.origin.x > [self visibleRect].origin.x &&
-                       highlightRect.origin.x + divWidth < [self visibleRect].origin.x + [self visibleRect].size.width)
+                  p = [self convertPoint: unconverted fromView: nil].x;
+                  q = p;
+                  if (p > maxVisCoord || p < minVisCoord)
                     {
+                      outside = YES;
+                    }
+                  else
+                    {
+                      outside = NO;
+                    }
+                  if (p < minCoord)
+                    {
+                      p = minCoord;
+                    }
+                  else if (p > maxCoord)
+                    {
+                      p = maxCoord;
+                    }
+                  r.origin.x = p - (divWidth / 2.);
+                  
+                  if (!outside && NSEqualRects(r, oldRect) == NO)
+                    {
+                      if (lit == YES)
+                        {
+                          NSHighlightRect (oldRect);
+                        }
+                      NSHighlightRect (r);
+                      [_window flushWindow];
+                      lit = YES;
+                      oldRect = r;
+                    }
+                }
+              else
+                {
+                  if (outside)
+                    {
+                      q = [self convertPoint: unconverted
+                                fromView: nil].x;
                       if (lit)
                         {
-                          NSHighlightRect(oldHighlightRect);
+                          NSHighlightRect (oldRect);
+                          [_window flushWindow];
+                          lit = NO;
                         }
-                      NSHighlightRect(highlightRect);
-                      [_window flushWindow];                         
-                      lit = YES;
-                      oldHighlightRect = highlightRect;
+                      tvRect = [_tableView visibleRect];
+                      if (q > maxVisCoord)
+                        {
+                          if (q > maxAbsCoord + 5)
+                            q = maxAbsCoord + 5;
+                          tvRect.origin.x += (q - maxVisCoord)/2;
+                        }
+                      else if (q < minVisCoord)
+                        {
+                          if (q < minAbsCoord - 5)
+                            q = minAbsCoord - 5;
+                          tvRect.origin.x += (q - minVisCoord)/2;
+                        }
+                      else // TODO remove this condition
+                        {
+                          NSLog(@"not outside !");
+                        }
+                      [_tableView scrollPoint: tvRect.origin];
+                      rect = [self visibleRect];
+                      minVisCoord = NSMinX (rect) + divWidth;
+                      maxVisCoord = NSMaxX (rect) - divWidth;
+                      minCoord = MAX (minAbsCoord, minVisCoord);
+                      maxCoord = MIN (maxAbsCoord, maxVisCoord);
                     }
                 }
-
-              /* Scroll the tableview, if needed, so the user's desired new 
-                 column edge position lies at the edge of the visible part of 
-                 the table */
-              if ((p > maxVisCoord && newColumnMaxX > maxVisCoord)
-                || (p < minVisCoord && newColumnMaxX < minVisCoord))
-                {
-                  NSRect tvRect = [_tableView visibleRect];   
-              
-                  if (!liveResize && lit)
-                    {
-                      NSHighlightRect(oldHighlightRect);
-                      lit = NO;
-                      [_window flushWindow]; 
-                    }
-                  
-                  if (p > maxVisCoord) /* resizing to the right */
-                    tvRect.origin.x = newColumnMaxX - tvRect.size.width;
-                  else                /* resizing to the left */
-                    tvRect.origin.x = newColumnMaxX;
-                  
-                  [_tableView scrollPoint: tvRect.origin];
-                }
-                    
               e = [NSApp nextEventMatchingMask: eventMask
-                         untilDate: [NSDate distantFuture]
+                         untilDate: farAway
                          inMode: NSEventTrackingRunLoopMode
                          dequeue: YES];
             }
           [NSEvent stopPeriodicEvents];
-
-          if (!liveResize)
+          if (outside)
             {
-              if (lit)
-                {
-                  NSHighlightRect(oldHighlightRect);
-                  [_window flushWindow];
-                }
-              [self unlockFocus];
-              
-              /* The following tiles the table.  We use a private method 
-                 which avoids tiling the table twice. */
-              if ([column width] != newColumnWidth)
-                {
-                  [_tableView _userResizedTableColumn: _resizedColumn
-                              width: newColumnWidth];
-                }
+              p = [self convertPoint: [e locationInWindow] fromView: nil].x;
+              if (p > maxAbsCoord)
+                p = maxAbsCoord;
+              else if (p < minAbsCoord)
+                p = minAbsCoord;
+            }
+          if (lit == YES)
+            {
+              NSHighlightRect(oldRect);
+              [_window flushWindow];
+            }
+
+          [self unlockFocus];
+
+          /* The following tiles the table.  We use a private method 
+             which avoids tiling the table twice. */
+          if (dragged == YES)
+            {
+              [_tableView _userResizedTableColumn: _resizedColumn
+                          width: (p - NSMinX (rectLow))];
             }
 
           /* Clean up */
@@ -547,8 +575,7 @@
           NSRect highlightRect = NSZeroRect, oldRect = NSZeroRect;
           BOOL outside = NO;
           BOOL lit = NO;
-          BOOL liveResize = ![[NSUserDefaults standardUserDefaults] boolForKey: @"GSUseGhostResize"];
-          
+        
           BOOL mouseDragged = NO;
           float p;
           NSPoint unconverted;
@@ -572,11 +599,8 @@
           highlightRect.size.height = NSHeight (visibleRect);
           highlightRect.origin.y = NSMinY (visibleRect);
 
-          if (!liveResize)
-            {
-              [self lockFocus];
-              [[NSColor lightGrayColor] set];
-            }
+          [self lockFocus];
+          [[NSColor lightGrayColor] set];
           [NSEvent startPeriodicEventsAfterDelay: 0.05
                    withPeriod: 0.05];
           e = [NSApp nextEventMatchingMask: eventMask 
@@ -614,93 +638,76 @@
                           while (p < (_cO[i] + _cO[i-1]) / 2)
                             i--;
                         }
-                      if (!liveResize)
-                        {  
-                          if (i != columnIndex
-                              && i != columnIndex + 1)
+                      if (i != columnIndex
+                          && i != columnIndex + 1)
+                        {
+                          j = i;
+                          highlightRect.size.height = NSHeight (visibleRect);
+                          highlightRect.origin.y = NSMinY (visibleRect);
+                          highlightRect.size.width = 7;
+                          if (i == numberOfColumns)
                             {
-                              j = i;
-                              highlightRect.size.height = NSHeight (visibleRect);
-                              highlightRect.origin.y = NSMinY (visibleRect);
-                              highlightRect.size.width = 7;
-                              if (i == numberOfColumns)
-                                {
-                                  highlightRect.origin.x = _cO[i] - 3;
-                                }
-                              else if (i == 0)
-                                {
-                                  highlightRect.origin.x = _cO[i] - 3;
-                                }
-                              else
-                                {
-                                  highlightRect.origin.x = _cO[i] - 3;
-                                }
-                              if (!NSEqualRects(highlightRect, oldRect))
-                                {
-                                  if (lit)
-                                    NSHighlightRect(oldRect);
-                                  NSHighlightRect(highlightRect);
-                                  [_window flushWindow];
-                                }
-                              else if (!lit)
-                                {
-                                  NSHighlightRect(highlightRect);
-                                  [_window flushWindow];
-                                }
-                              oldRect = highlightRect;
-                              lit = YES;
+                              highlightRect.origin.x = _cO[i] - 3;
+                            }
+                          else if (i == 0)
+                            {
+                              highlightRect.origin.x = _cO[i] - 3;
                             }
                           else
                             {
-                              i = columnIndex;
-                              highlightRect.size.height = NSHeight (visibleRect);
-                              highlightRect.origin.y = NSMinY (visibleRect);
-                              highlightRect.origin.x = _cO[columnIndex];
-                              highlightRect.size.width = 
-                                _cO[columnIndex + 1] - _cO[columnIndex];
-                            
-                              if (!NSEqualRects(highlightRect, oldRect))
-                                {
-                                  if (lit)
-                                    NSHighlightRect(oldRect);
-                                  //  NSHighlightRect(highlightRect);
-                                  [_window flushWindow];
-                                }
-                              else if (!lit)
-                                {
-                                  //  NSHighlightRect(highlightRect);
-                                  // [_window flushWindow];
-                                }
-                              // oldRect = highlightRect;
-                              oldRect = NSZeroRect;
-                              lit = NO; //lit = YES;
+                              highlightRect.origin.x = _cO[i] - 3;
                             }
-                         }
-                       else if (liveResize)
-                         {
-                           if (i > columnIndex)
-                             i--;
-                           if (i != columnIndex)
-                             {
-                               [_tableView moveColumn: columnIndex
-                                           toColumn: i];
-                             }  
-                           columnIndex = i;
-                         }
+                          if (!NSEqualRects(highlightRect, oldRect))
+                            {
+                              if (lit)
+                                NSHighlightRect(oldRect);
+                              NSHighlightRect(highlightRect);
+                              [_window flushWindow];
+                            }
+                          else if (!lit)
+                            {
+                              NSHighlightRect(highlightRect);
+                              [_window flushWindow];
+                            }
+                          oldRect = highlightRect;
+                          lit = YES;
+                        }
+                      else
+                        {
+                          i = columnIndex;
+                          highlightRect.size.height = NSHeight (visibleRect);
+                          highlightRect.origin.y = NSMinY (visibleRect);
+                          highlightRect.origin.x = _cO[columnIndex];
+                          highlightRect.size.width = 
+                            _cO[columnIndex + 1] - _cO[columnIndex];
+                        
+                          if (!NSEqualRects(highlightRect, oldRect))
+                            {
+                              if (lit)
+                                NSHighlightRect(oldRect);
+                              //  NSHighlightRect(highlightRect);
+                              [_window flushWindow];
+                            }
+                          else if (!lit)
+                            {
+                              //  NSHighlightRect(highlightRect);
+                              // [_window flushWindow];
+                            }
+                          // oldRect = highlightRect;
+                          oldRect = NSZeroRect;
+                          lit = NO; //lit = YES;
+                        }
                     }
                   break;
                 case NSPeriodic:
                   if (outside == YES)
                     {
-                      if (!liveResize)
+                      if (lit)
                         {
-                          if (lit)
-                            {
-                              NSHighlightRect(oldRect);
-                              [_window flushWindow];
-                              lit = NO;
-                              oldRect = NSZeroRect;
-                            }
+                          NSHighlightRect(oldRect);
+                          [_window flushWindow];
+                          lit = NO;
+                          oldRect = NSZeroRect;
                         }
                       p = [self convertPoint: unconverted
                                 fromView: nil].x;
@@ -737,20 +744,17 @@
                          inMode: NSEventTrackingRunLoopMode 
                          dequeue: YES]; 
             }
-            
-          if (!liveResize)
+          if (lit)
             {
-              if (lit)
-                {
-                  NSHighlightRect(highlightRect);
-                  [_window flushWindow];
-                  lit = NO;
-                }
-              [self unlockFocus];
+              NSHighlightRect(highlightRect);
+              [_window flushWindow];
+              lit = NO;
             }
 
-          [NSEvent stopPeriodicEvents];       
-            
+
+
+          [NSEvent stopPeriodicEvents];        
+          [self unlockFocus];
           if (mouseDragged == NO)
             {
               [_tableView _selectColumn: columnIndex

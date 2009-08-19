@@ -54,7 +54,6 @@ doc=no
 SUBPROJECTS = \
 Source \
 Images \
-Sounds \
 Model \
 Tools \
 Panels \

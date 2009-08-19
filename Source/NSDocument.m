@@ -228,19 +228,7 @@ withContentsOfURL: (NSURL *)url
 
 - (void) setFileName: (NSString *)fileName
 {
-  NSURL *fileUrl;
-
-  if (fileName && ![fileName isAbsolutePath])
-    {
-      NSString *dir = [[NSFileManager defaultManager] currentDirectoryPath];
-      
-      if (dir)
-	{
-	  fileName = [dir stringByAppendingPathComponent: fileName];
-	}
-    }
-
-  fileUrl = fileName ? [NSURL fileURLWithPath: fileName] : nil;
+  NSURL *fileUrl = fileName ? [NSURL fileURLWithPath: fileName] : nil;
 
   // This check is to prevent super calls from recursing.
   if (!OVERRIDDEN(setFileName:))
@@ -1183,27 +1171,29 @@ originalContentsURL: (NSURL *)orig
                                contextInfo: (void *)contextInfo
 {
   // FIXME: Commit registered editors
-  NSSavePanel *savePanel = [self _runSavePanelForSaveOperation: saveOperation];
 
-  if (savePanel)
+  if (OVERRIDDEN(saveToFile:saveOperation:delegate:didSaveSelector:contextInfo:))
     {
-      if (OVERRIDDEN(saveToFile:saveOperation:delegate:didSaveSelector:contextInfo:))
-        {
-          [self saveToFile: [savePanel filename] 
-                saveOperation: saveOperation 
-                delegate: delegate
-                didSaveSelector: didSaveSelector 
-                contextInfo: contextInfo];
-        }
-      else
-        {
-          [self saveToURL: [savePanel URL] 
-                ofType: [self fileTypeFromLastRunSavePanel]
-                forSaveOperation: saveOperation 
-                delegate: delegate
-                didSaveSelector: didSaveSelector 
-                contextInfo: contextInfo];
-        }
+      NSString *fileName;
+
+      fileName = [self fileNameFromRunningSavePanelForSaveOperation: saveOperation];
+      [self saveToFile: fileName 
+            saveOperation: saveOperation 
+            delegate: delegate
+            didSaveSelector: didSaveSelector 
+            contextInfo: contextInfo];
+    }
+  else
+    {
+      NSSavePanel *savePanel = [self _runSavePanelForSaveOperation: saveOperation];
+      NSURL *url = [savePanel URL];
+
+      [self saveToURL: url 
+            ofType: [self fileTypeFromLastRunSavePanel]
+            forSaveOperation: saveOperation 
+            delegate: delegate
+            didSaveSelector: didSaveSelector 
+            contextInfo: contextInfo];
     }
 }
 

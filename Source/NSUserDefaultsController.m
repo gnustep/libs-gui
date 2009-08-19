@@ -200,12 +200,6 @@ static id shared = nil;
 
 - (void) dealloc
 {
-  if (self == shared)
-    {
-      // Should never get here
-      shared = nil;
-    }
-
   [[NSNotificationCenter defaultCenter] removeObserver: self];
   RELEASE(_values);
   RELEASE(_defaults);
@@ -302,7 +296,7 @@ static id shared = nil;
 - (void) encodeWithCoder: (NSCoder *)aCoder
 { 
   if ([aCoder allowsKeyedCoding])
-    if (self == shared)
+    if (self == [NSUserDefaultsController sharedUserDefaultsController])
       {
         [aCoder encodeBool: YES forKey: @"NSSharedInstance"];
         return;
@@ -317,7 +311,7 @@ static id shared = nil;
     if ([aDecoder decodeBoolForKey: @"NSSharedInstance"])
       {
         RELEASE(self);
-        return RETAIN([NSUserDefaultsController sharedUserDefaultsController]);
+        return [NSUserDefaultsController sharedUserDefaultsController];
       }
 
   return [super initWithCoder: aDecoder];

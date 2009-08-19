@@ -218,11 +218,7 @@ static NSNotificationCenter *nc = nil;
 
 - (void) stopTimer
 {
-  if(_timer != nil)
-    {
-      [_timer invalidate];
-      DESTROY(_timer);
-    }
+  [_timer invalidate];
 }
 
 - (void) orderFrontRegardless
@@ -411,7 +407,6 @@ static NSNotificationCenter *nc = nil;
   [self stopTimer];
   RELEASE(_parentWindow);
   TEST_RELEASE(_pendingParentWindow);
-  [nc removeObserver: self];
   [super dealloc];
 }
 @end

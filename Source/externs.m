@@ -626,7 +626,6 @@ NSString *NSValueTransformerNameBindingOption = @"NSValueTransformerName";
 NSString *NSValueTransformerBindingOption = @"NSValueTransformer";
  
 NSString *NSAlignmentBinding = @"alignment";
-NSString *NSContentObjectBinding = @"contentObject";
 NSString *NSEditableBinding = @"editable";
 NSString *NSEnabledBinding = @"enabled";
 NSString *NSFontBinding = @"font";

@@ -467,7 +467,6 @@ calc_new_frame(NSRect frame, NSPoint point, NSPoint firstPoint,
   NSPoint firstPoint, point;
   NSRect newFrame, frame;
   NSSize minSize, maxSize;
-  int num = 0;
 
   /*
   0 drag lower left corner
@@ -514,13 +513,6 @@ calc_new_frame(NSRect frame, NSPoint point, NSPoint firstPoint,
 			untilDate: [NSDate distantFuture]
 			inMode: NSEventTrackingRunLoopMode
 			dequeue: YES];
-
-      num++;
-      if(num == 5)
-	{
-	  [window setFrame: newFrame  display: YES];
-	  num = 0;
-	}
     } while ([currentEvent type] != NSLeftMouseUp);
   [window _releaseMouse: nil];
 

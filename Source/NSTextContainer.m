@@ -473,11 +473,7 @@ framework intact.
         }
 
       // decoding the manager adds this text container automatically...
-      if ([aDecoder containsValueForKey: @"NSLayoutManager"])
-	{
-	  _layoutManager = [aDecoder decodeObjectForKey: @"NSLayoutManager"];
-	}
-
+      [aDecoder decodeObjectForKey: @"NSLayoutManager"];
       [self setTextView: view];
       return self;
     }
