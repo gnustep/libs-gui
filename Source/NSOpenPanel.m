@@ -126,9 +126,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 	  else
 	    {
 	      [self _selectCellName: [[_form cellAtIndex: 0] stringValue]];
-	      [_okButton setEnabled: 
-			   [self _shouldShowExtension:
-				   [[_browser path] pathExtension]]]; 
+	      [_okButton setEnabled: (_fileTypes == nil || [_fileTypes containsObject: [[_browser path] pathExtension]])];
 	    }
 	}
       else
@@ -151,9 +149,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 	      [_form setNeedsDisplay: YES];
 	    }
 
-	  [_okButton setEnabled: 
-		       [self _shouldShowExtension:
-			       [[_browser path] pathExtension]]]; 
+	  [_okButton setEnabled: (_fileTypes == nil || [_fileTypes containsObject: [[_browser path] pathExtension]])];
 	}
     }
 }
