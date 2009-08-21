@@ -1,5 +1,12 @@
 2009-08-21 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSMenuItemCell.m (-drawStateImageWithFrame:inView:,
+	-drawTitleWithFrame:inView:): Remove specific drawing code, use
+	general code instead.
+	* Source/NSMenuItemCell.m (-drawingRectForBounds:): Add call to calcSize.
+	
+2009-08-21 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSBitmapImageRep+ICNS.m: Redefine icns_size_t to int, as
 	this needs to be a 32 bit integer and on 64 bit systems long uses
 	64 bits.

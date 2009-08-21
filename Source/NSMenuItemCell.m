@@ -545,6 +545,9 @@ static NSImage *arrowImage = nil; /* Cache arrow image. */
 
 - (NSRect) drawingRectForBounds: (NSRect)theRect
 {
+  if (_needs_sizing)
+    [self calcSize];
+
   if ([_menuView isHorizontal] == YES)
     {
       /* A horizontal menu does not have borders drawn by the cell,
@@ -603,7 +606,7 @@ static NSImage *arrowImage = nil; /* Cache arrow image. */
 // Drawing.
 //
 - (void) drawBorderAndBackgroundWithFrame: (NSRect)cellFrame
-                                  inView: (NSView *)controlView
+                                   inView: (NSView *)controlView
 {
   if ([_menuView isHorizontal] == YES)
     {
@@ -637,8 +640,8 @@ static NSImage *arrowImage = nil; /* Cache arrow image. */
   [self drawImage: _imageToDisplay withFrame: cellFrame inView: controlView];
 }
 
-- (void) drawKeyEquivalentWithFrame:(NSRect)cellFrame
-                            inView:(NSView *)controlView
+- (void) drawKeyEquivalentWithFrame: (NSRect)cellFrame
+			     inView: (NSView *)controlView
 {
   cellFrame = [self keyEquivalentRectForBounds: cellFrame];
 
@@ -686,8 +689,6 @@ static NSImage *arrowImage = nil; /* Cache arrow image. */
 - (void) drawStateImageWithFrame: (NSRect)cellFrame
                           inView: (NSView*)controlView
 {
-  NSSize size;
-  NSPoint position;
   NSImage *imageToDisplay;
 
   switch ([_menuItem state])
@@ -712,51 +713,14 @@ static NSImage *arrowImage = nil; /* Cache arrow image. */
     }
   
   cellFrame = [self stateImageRectForBounds: cellFrame];
-  // FIXME: We could call drawImage:withFrame:inView: here, if we knew that the code there is correct.
-  size = [imageToDisplay size];
-  position.x = MAX(NSMidX(cellFrame) - (size.width/2.),0.);
-  position.y = MAX(NSMidY(cellFrame) - (size.height/2.),0.);
-  /*
-   * Images are always drawn with their bottom-left corner at the origin
-   * so we must adjust the position to take account of a flipped view.
-   */
-  if ([controlView isFlipped])
-    {
-      position.y += size.height;
-    }
-  
-  [imageToDisplay compositeToPoint: position operation: NSCompositeSourceOver];
+  [self drawImage: imageToDisplay withFrame: cellFrame inView: controlView];
 }
 
-- (void) drawTitleWithFrame:(NSRect)cellFrame
-                    inView:(NSView *)controlView
+- (void) drawTitleWithFrame: (NSRect)cellFrame
+                     inView: (NSView *)controlView
 {
-  if ([_menuView isHorizontal] == YES)
-    {
-      // FIXME: Why do we have separate drawing coce here. The alignement already
-      // gets adjusted when the menu view is set and the text colour looks wrong here.
-      id value = [NSMutableParagraphStyle defaultParagraphStyle];
-      NSDictionary *attr;
-      NSRect cf = [self titleRectForBounds: cellFrame];
-
-      if (!_imageWidth)
-        [value setAlignment: NSCenterTextAlignment];
-
-      attr = [[NSDictionary alloc] initWithObjectsAndKeys:
-        value, NSParagraphStyleAttributeName,
-        _font, NSFontAttributeName,
-        [NSColor controlTextColor], NSForegroundColorAttributeName,
-        nil];
-
-      [[_menuItem title] drawInRect: cf withAttributes: attr];
-
-      RELEASE(attr);
-    }
-  else
-    {
-      [self _drawText: [_menuItem title]
-              inFrame: [self titleRectForBounds: cellFrame]];
-    }
+  [self _drawText: [_menuItem title]
+        inFrame: [self titleRectForBounds: cellFrame]];
 }
 
 - (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
