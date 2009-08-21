@@ -1,3 +1,9 @@
+2009-08-21 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBitmapImageRep+ICNS.m: Redefine icns_size_t to int, as
+	this needs to be a 32 bit integer and on 64 bit systems long uses
+	64 bits.
+
 2009-08-19 00:57-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSTextView.m: Don't add the text storage if it's nil

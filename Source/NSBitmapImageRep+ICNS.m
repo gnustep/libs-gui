@@ -55,7 +55,8 @@
  */
 
 typedef unsigned char icns_byte_t;
-typedef unsigned long icns_size_t;
+// must be a 32 bit integer
+typedef unsigned int icns_size_t;
 typedef struct _icns_type_t {
   char c[4];
 } icns_type_t;
