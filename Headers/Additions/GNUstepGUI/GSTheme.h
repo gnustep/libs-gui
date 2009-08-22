@@ -521,7 +521,8 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 - (NSSize) sizeForImageFrameStyle: (NSImageFrameStyle)frameStyle;
 
 
-/** Methods for scroller theming.
+/** 
+ * Methods for scroller theming.
  */
 - (NSButtonCell*) cellForScrollerArrow: (NSScrollerArrow)part
 			    horizontal: (BOOL)horizontal;
@@ -529,12 +530,34 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 - (NSCell*) cellForScrollerKnobSlot: (BOOL)horizontal;
 - (float) defaultScrollerWidth;
 
-/** Method for toolbar theming.
+/** 
+ * Method for toolbar theming.
  */
 - (void) drawToobarRect: (NSRect)aRect
                   frame: (NSRect)viewFrame
              borderMask: (unsigned int)borderMask;
 
+// Methods to deal with steppers..
+/**
+ * Draw light colored stepper using the border and clip rects
+ */
+- (NSRect) drawStepperLightButton: (NSRect) border :(NSRect) clip;
+/**
+ * Draw normal stepper up button.
+ */
+- (void) drawStepperUpButton: (NSRect) aRect;
+/**
+ * Draw highlighted up stepper button.
+ */
+- (void) drawStepperHighlightUpButton: (NSRect) aRect;
+/**
+ * Draw down button for stepper
+ */
+- (void) drawStepperDownButton: (NSRect) aRect;
+/**
+ * Draw highlighted stepper down button
+ */
+- (void) drawStepperHighlightDownButton: (NSRect) aRect;
 @end
 
 /**

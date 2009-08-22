@@ -1,3 +1,10 @@
+2009-08-22 19:49-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Add methods for drawing
+	stepper cell here.
+	* Source/GSThemeDrawing.m: Implementations for stepper cell functions.
+	* Source/NSStepperCell.m: Use new stepper cell functions.
+
 2009-08-21 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenuItemCell.m (-drawStateImageWithFrame:inView:,

@@ -27,12 +27,14 @@
 */
 
 #import "GSThemePrivate.h"
-#include "AppKit/NSBezierPath.h"
+
+#import "AppKit/NSBezierPath.h"
 #import "AppKit/NSColorList.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
+#import "AppKit/PSOperators.h"
 
-#include "GNUstepGUI/GSToolbarView.h"
+#import "GNUstepGUI/GSToolbarView.h"
 
 
 @implementation	GSTheme (Drawing)
@@ -430,6 +432,116 @@
                     toPoint: NSMakePoint(viewFrame.size.width - 0.5, 
                                          viewFrame.size.height)];
     }
+}
+
+- (NSRect) drawStepperLightButton: (NSRect) border :(NSRect) clip
+{
+/*
+  NSRect highlightRect = NSInsetRect(border, 1., 1.);
+  [[GSTheme theme] drawButton: border : clip];
+  return highlightRect;
+*/
+  NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, 
+			   NSMinXEdge, NSMaxYEdge}; 
+  NSRectEdge dn_sides[] = {NSMaxXEdge, NSMaxYEdge, 
+			   NSMinXEdge, NSMinYEdge}; 
+  // These names are role names not the actual colours
+  NSColor *dark = [NSColor controlShadowColor];
+  NSColor *white = [NSColor controlLightHighlightColor];
+  NSColor *colors[] = {dark, dark, white, white};
+
+  if ([[NSView focusView] isFlipped] == YES)
+    {
+      return NSDrawColorTiledRects(border, clip, dn_sides, colors, 4);
+    }
+  else
+    {
+      return NSDrawColorTiledRects(border, clip, up_sides, colors, 4);
+    }
+}
+
+- (void) drawStepperUpButton: (NSRect) aRect
+{
+  NSRect unHighlightRect = [self drawStepperLightButton: aRect :NSZeroRect];
+  [[NSColor controlBackgroundColor] set];
+  NSRectFill(unHighlightRect);
+      
+  PSsetlinewidth(1.0);
+  [[NSColor controlShadowColor] set];
+  PSmoveto(NSMaxX(aRect) - 5, NSMinY(aRect) + 3);
+  PSlineto(NSMaxX(aRect) - 8, NSMinY(aRect) + 9);
+  PSstroke();
+  [[NSColor controlDarkShadowColor] set];
+  PSmoveto(NSMaxX(aRect) - 8, NSMinY(aRect) + 9);
+  PSlineto(NSMaxX(aRect) - 11, NSMinY(aRect) + 4);
+  PSstroke();
+  [[NSColor controlLightHighlightColor] set];
+  PSmoveto(NSMaxX(aRect) - 11, NSMinY(aRect) + 3);
+  PSlineto(NSMaxX(aRect) - 5, NSMinY(aRect) + 3);
+  PSstroke();
+}
+
+- (void) drawStepperHighlightUpButton: (NSRect) aRect
+{
+  NSRect highlightRect = [self drawStepperLightButton: aRect :NSZeroRect];
+  [[NSColor selectedControlColor] set];
+  NSRectFill(highlightRect);
+  
+  PSsetlinewidth(1.0);
+  [[NSColor controlHighlightColor] set];
+  PSmoveto(NSMaxX(aRect) - 5, NSMinY(aRect) + 3);
+  PSlineto(NSMaxX(aRect) - 8, NSMinY(aRect) + 9);
+  PSstroke();
+  [[NSColor controlDarkShadowColor] set];
+  PSmoveto(NSMaxX(aRect) - 8, NSMinY(aRect) + 9);
+  PSlineto(NSMaxX(aRect) - 11, NSMinY(aRect) + 4);
+  PSstroke();
+  [[NSColor controlHighlightColor] set];
+  PSmoveto(NSMaxX(aRect) - 11, NSMinY(aRect) + 3);
+  PSlineto(NSMaxX(aRect) - 5, NSMinY(aRect) + 3);
+  PSstroke();
+}
+
+- (void) drawStepperDownButton: (NSRect) aRect
+{
+  NSRect unHighlightRect = [self drawStepperLightButton: aRect :NSZeroRect];
+  [[NSColor controlBackgroundColor] set];
+  NSRectFill(unHighlightRect);
+
+  PSsetlinewidth(1.0);
+  [[NSColor controlShadowColor] set];
+  PSmoveto(NSMinX(aRect) + 4, NSMaxY(aRect) - 3);
+  PSlineto(NSMinX(aRect) + 7, NSMaxY(aRect) - 8);
+  PSstroke();
+  [[NSColor controlLightHighlightColor] set];
+  PSmoveto(NSMinX(aRect) + 7, NSMaxY(aRect) - 8);
+  PSlineto(NSMinX(aRect) + 10, NSMaxY(aRect) - 3);
+  PSstroke();
+  [[NSColor controlDarkShadowColor] set];
+  PSmoveto(NSMinX(aRect) + 10, NSMaxY(aRect) - 2);
+  PSlineto(NSMinX(aRect) + 4, NSMaxY(aRect) - 2);
+  PSstroke();
+}
+
+- (void) drawStepperHighlightDownButton: (NSRect) aRect
+{
+  NSRect highlightRect = [self drawStepperLightButton: aRect :NSZeroRect];
+  [[NSColor selectedControlColor] set];
+  NSRectFill(highlightRect);
+  
+  PSsetlinewidth(1.0);
+  [[NSColor controlHighlightColor] set];
+  PSmoveto(NSMinX(aRect) + 4, NSMaxY(aRect) - 3);
+  PSlineto(NSMinX(aRect) + 7, NSMaxY(aRect) - 8);
+  PSstroke();
+  [[NSColor controlHighlightColor] set];
+  PSmoveto(NSMinX(aRect) + 7, NSMaxY(aRect) - 8);
+  PSlineto(NSMinX(aRect) + 10, NSMaxY(aRect) - 3);
+  PSstroke();
+  [[NSColor controlDarkShadowColor] set];
+  PSmoveto(NSMinX(aRect) + 10, NSMaxY(aRect) - 2);
+  PSlineto(NSMinX(aRect) + 4, NSMaxY(aRect) - 2);
+  PSstroke();
 }
 
 @end

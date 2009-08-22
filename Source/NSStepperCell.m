@@ -36,7 +36,6 @@
 #include "AppKit/NSGraphicsContext.h"
 #include "AppKit/NSStepperCell.h"
 #include "AppKit/NSWindow.h"
-#include "AppKit/PSOperators.h"
 #include "GNUstepGUI/GSTheme.h"
 
 // Hard coded values for button sizes
@@ -141,116 +140,6 @@
   _valueWraps = valueWraps;
 }
 
-static inline NSRect DrawLightButton(NSRect border, NSRect clip)
-{
-/*
-  NSRect highlightRect = NSInsetRect(border, 1., 1.);
-  [[GSTheme theme] drawButton: border : clip];
-  return highlightRect;
-*/
-  NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, 
-			   NSMinXEdge, NSMaxYEdge}; 
-  NSRectEdge dn_sides[] = {NSMaxXEdge, NSMaxYEdge, 
-			   NSMinXEdge, NSMinYEdge}; 
-  // These names are role names not the actual colours
-  NSColor *dark = [NSColor controlShadowColor];
-  NSColor *white = [NSColor controlLightHighlightColor];
-  NSColor *colors[] = {dark, dark, white, white};
-
-  if ([[NSView focusView] isFlipped] == YES)
-    {
-      return NSDrawColorTiledRects(border, clip, dn_sides, colors, 4);
-    }
-  else
-    {
-      return NSDrawColorTiledRects(border, clip, up_sides, colors, 4);
-    }
-}
-
-static inline void DrawUpButton(NSRect aRect)
-{
-  NSRect unHighlightRect = DrawLightButton(aRect, NSZeroRect);
-  [[NSColor controlBackgroundColor] set];
-  NSRectFill(unHighlightRect);
-      
-  PSsetlinewidth(1.0);
-  [[NSColor controlShadowColor] set];
-  PSmoveto(NSMaxX(aRect) - 5, NSMinY(aRect) + 3);
-  PSlineto(NSMaxX(aRect) - 8, NSMinY(aRect) + 9);
-  PSstroke();
-  [[NSColor controlDarkShadowColor] set];
-  PSmoveto(NSMaxX(aRect) - 8, NSMinY(aRect) + 9);
-  PSlineto(NSMaxX(aRect) - 11, NSMinY(aRect) + 4);
-  PSstroke();
-  [[NSColor controlLightHighlightColor] set];
-  PSmoveto(NSMaxX(aRect) - 11, NSMinY(aRect) + 3);
-  PSlineto(NSMaxX(aRect) - 5, NSMinY(aRect) + 3);
-  PSstroke();
-}
-
-static inline void HighlightUpButton(NSRect aRect)
-{
-  NSRect highlightRect = DrawLightButton(aRect, NSZeroRect);
-  [[NSColor selectedControlColor] set];
-  NSRectFill(highlightRect);
-  
-  PSsetlinewidth(1.0);
-  [[NSColor controlHighlightColor] set];
-  PSmoveto(NSMaxX(aRect) - 5, NSMinY(aRect) + 3);
-  PSlineto(NSMaxX(aRect) - 8, NSMinY(aRect) + 9);
-  PSstroke();
-  [[NSColor controlDarkShadowColor] set];
-  PSmoveto(NSMaxX(aRect) - 8, NSMinY(aRect) + 9);
-  PSlineto(NSMaxX(aRect) - 11, NSMinY(aRect) + 4);
-  PSstroke();
-  [[NSColor controlHighlightColor] set];
-  PSmoveto(NSMaxX(aRect) - 11, NSMinY(aRect) + 3);
-  PSlineto(NSMaxX(aRect) - 5, NSMinY(aRect) + 3);
-  PSstroke();
-}
-
-static inline void DrawDownButton(NSRect aRect)
-{
-  NSRect unHighlightRect = DrawLightButton(aRect, NSZeroRect);
-  [[NSColor controlBackgroundColor] set];
-  NSRectFill(unHighlightRect);
-
-  PSsetlinewidth(1.0);
-  [[NSColor controlShadowColor] set];
-  PSmoveto(NSMinX(aRect) + 4, NSMaxY(aRect) - 3);
-  PSlineto(NSMinX(aRect) + 7, NSMaxY(aRect) - 8);
-  PSstroke();
-  [[NSColor controlLightHighlightColor] set];
-  PSmoveto(NSMinX(aRect) + 7, NSMaxY(aRect) - 8);
-  PSlineto(NSMinX(aRect) + 10, NSMaxY(aRect) - 3);
-  PSstroke();
-  [[NSColor controlDarkShadowColor] set];
-  PSmoveto(NSMinX(aRect) + 10, NSMaxY(aRect) - 2);
-  PSlineto(NSMinX(aRect) + 4, NSMaxY(aRect) - 2);
-  PSstroke();
-}
-
-static inline void HighlightDownButton(NSRect aRect)
-{
-  NSRect highlightRect = DrawLightButton(aRect, NSZeroRect);
-  [[NSColor selectedControlColor] set];
-  NSRectFill(highlightRect);
-  
-  PSsetlinewidth(1.0);
-  [[NSColor controlHighlightColor] set];
-  PSmoveto(NSMinX(aRect) + 4, NSMaxY(aRect) - 3);
-  PSlineto(NSMinX(aRect) + 7, NSMaxY(aRect) - 8);
-  PSstroke();
-  [[NSColor controlHighlightColor] set];
-  PSmoveto(NSMinX(aRect) + 7, NSMaxY(aRect) - 8);
-  PSlineto(NSMinX(aRect) + 10, NSMaxY(aRect) - 3);
-  PSstroke();
-  [[NSColor controlDarkShadowColor] set];
-  PSmoveto(NSMinX(aRect) + 10, NSMaxY(aRect) - 2);
-  PSlineto(NSMinX(aRect) + 4, NSMaxY(aRect) - 2);
-  PSstroke();
-}
-
 - (void) drawInteriorWithFrame: (NSRect)cellFrame
 			inView: (NSView*)controlView
 {
@@ -267,14 +156,14 @@ static inline void HighlightDownButton(NSRect aRect)
   twoButtons.size.height = 2 * STEPPER_HEIGHT + 1;
 
   if (highlightUp)
-    HighlightUpButton(upRect);
+    [[GSTheme theme] drawStepperHighlightUpButton: upRect];
   else
-    DrawUpButton(upRect);
+    [[GSTheme theme] drawStepperUpButton: upRect];
 
   if (highlightDown)
-    HighlightDownButton(downRect);
+    [[GSTheme theme] drawStepperHighlightDownButton: downRect];
   else
-    DrawDownButton(downRect);
+    [[GSTheme theme] drawStepperDownButton: downRect];
 
   {
     NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge};
