@@ -673,7 +673,7 @@ OBJEXT
 CPP
 GREP
 EGREP
-BUILD_GSND
+BUILD_SOUNDS
 BUILD_SPEECH
 have_cups
 GSCUPS_CFLAGS
@@ -1283,7 +1283,6 @@ Optional Features:
   --disable-ungif         Disable libungif-based GIF support
   --enable-libgif         Enable libgif-based GIF support
   --disable-aspell        Disable aspell for spellchecker
-  --disable-gsnd          Disable gsnd server
   --disable-speech          Disable speech server
   --disable-cups          Disable cups printing support
 
@@ -6958,24 +6957,16 @@ fi
 #--------------------------------------------------------------------
 # NSSound
 #--------------------------------------------------------------------
-# Check whether --enable-gsnd was given.
-if test "${enable_gsnd+set}" = set; then
-  enableval=$enable_gsnd;
-else
-  enable_gsnd=yes
-fi
-
-BUILD_GSND=
-
-# This is only for gsnd, so don't add it to LIBS
-save_LIBS="$LIBS"
-{ echo "$as_me:$LINENO: checking for Pa_OpenDefaultStream in -lportaudio" >&5
-echo $ECHO_N "checking for Pa_OpenDefaultStream in -lportaudio... $ECHO_C" >&6; }
-if test "${ac_cv_lib_portaudio_Pa_OpenDefaultStream+set}" = set; then
+# Initialize to nothing...
+BUILD_SOUNDS=
+# Check for the libs...
+{ echo "$as_me:$LINENO: checking for sf_seek in -lsndfile" >&5
+echo $ECHO_N "checking for sf_seek in -lsndfile... $ECHO_C" >&6; }
+if test "${ac_cv_lib_sndfile_sf_seek+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lportaudio  $LIBS"
+LIBS="-lsndfile  $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -6989,11 +6980,11 @@ cat >>conftest.$ac_ext <<_ACEOF
 #ifdef __cplusplus
 extern "C"
 #endif
-char Pa_OpenDefaultStream ();
+char sf_seek ();
 int
 main ()
 {
-return Pa_OpenDefaultStream ();
+return sf_seek ();
   ;
   return 0;
 }
@@ -7016,36 +7007,33 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
 	 test ! -s conftest.err
        } && test -s conftest$ac_exeext &&
        $as_test_x conftest$ac_exeext; then
-  ac_cv_lib_portaudio_Pa_OpenDefaultStream=yes
+  ac_cv_lib_sndfile_sf_seek=yes
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-	ac_cv_lib_portaudio_Pa_OpenDefaultStream=no
+	ac_cv_lib_sndfile_sf_seek=no
 fi
 
 rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
       conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ echo "$as_me:$LINENO: result: $ac_cv_lib_portaudio_Pa_OpenDefaultStream" >&5
-echo "${ECHO_T}$ac_cv_lib_portaudio_Pa_OpenDefaultStream" >&6; }
-if test $ac_cv_lib_portaudio_Pa_OpenDefaultStream = yes; then
-  have_portaudio=yes
+{ echo "$as_me:$LINENO: result: $ac_cv_lib_sndfile_sf_seek" >&5
+echo "${ECHO_T}$ac_cv_lib_sndfile_sf_seek" >&6; }
+if test $ac_cv_lib_sndfile_sf_seek = yes; then
+  have_sndfile=yes
 else
-  have_portaudio=no
+  have_sndfile=no
 fi
 
-LIBS="$save_LIBS"
-
-
-{ echo "$as_me:$LINENO: checking for afGetVirtualFrameSize in -laudiofile" >&5
-echo $ECHO_N "checking for afGetVirtualFrameSize in -laudiofile... $ECHO_C" >&6; }
-if test "${ac_cv_lib_audiofile_afGetVirtualFrameSize+set}" = set; then
+{ echo "$as_me:$LINENO: checking for ao_open_live in -lao" >&5
+echo $ECHO_N "checking for ao_open_live in -lao... $ECHO_C" >&6; }
+if test "${ac_cv_lib_ao_ao_open_live+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-laudiofile  $LIBS"
+LIBS="-lao  $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -7059,11 +7047,11 @@ cat >>conftest.$ac_ext <<_ACEOF
 #ifdef __cplusplus
 extern "C"
 #endif
-char afGetVirtualFrameSize ();
+char ao_open_live ();
 int
 main ()
 {
-return afGetVirtualFrameSize ();
+return ao_open_live ();
   ;
   return 0;
 }
@@ -7086,200 +7074,30 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
 	 test ! -s conftest.err
        } && test -s conftest$ac_exeext &&
        $as_test_x conftest$ac_exeext; then
-  ac_cv_lib_audiofile_afGetVirtualFrameSize=yes
+  ac_cv_lib_ao_ao_open_live=yes
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-	ac_cv_lib_audiofile_afGetVirtualFrameSize=no
+	ac_cv_lib_ao_ao_open_live=no
 fi
 
 rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
       conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ echo "$as_me:$LINENO: result: $ac_cv_lib_audiofile_afGetVirtualFrameSize" >&5
-echo "${ECHO_T}$ac_cv_lib_audiofile_afGetVirtualFrameSize" >&6; }
-if test $ac_cv_lib_audiofile_afGetVirtualFrameSize = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBAUDIOFILE 1
-_ACEOF
-
-  LIBS="-laudiofile $LIBS"
-
-fi
-
-
-
-for ac_header in portaudio.h audiofile.h
-do
-as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
-if { as_var=$as_ac_Header; eval "test \"\${$as_var+set}\" = set"; }; then
-  { echo "$as_me:$LINENO: checking for $ac_header" >&5
-echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6; }
-if { as_var=$as_ac_Header; eval "test \"\${$as_var+set}\" = set"; }; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-ac_res=`eval echo '${'$as_ac_Header'}'`
-	       { echo "$as_me:$LINENO: result: $ac_res" >&5
-echo "${ECHO_T}$ac_res" >&6; }
+{ echo "$as_me:$LINENO: result: $ac_cv_lib_ao_ao_open_live" >&5
+echo "${ECHO_T}$ac_cv_lib_ao_ao_open_live" >&6; }
+if test $ac_cv_lib_ao_ao_open_live = yes; then
+  have_ao=yes
 else
-  # Is the header compilable?
-{ echo "$as_me:$LINENO: checking $ac_header usability" >&5
-echo $ECHO_N "checking $ac_header usability... $ECHO_C" >&6; }
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-$ac_includes_default
-#include <$ac_header>
-_ACEOF
-rm -f conftest.$ac_objext
-if { (ac_try="$ac_compile"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_compile") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest.$ac_objext; then
-  ac_header_compiler=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_header_compiler=no
+  have_ao=no
 fi
 
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-{ echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
-echo "${ECHO_T}$ac_header_compiler" >&6; }
-
-# Is the header present?
-{ echo "$as_me:$LINENO: checking $ac_header presence" >&5
-echo $ECHO_N "checking $ac_header presence... $ECHO_C" >&6; }
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-#include <$ac_header>
-_ACEOF
-if { (ac_try="$ac_cpp conftest.$ac_ext"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_cpp conftest.$ac_ext") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } >/dev/null && {
-	 test -z "$ac_c_preproc_warn_flag$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       }; then
-  ac_header_preproc=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-  ac_header_preproc=no
+# Only if we have both...
+if test $have_sndfile = yes -a $have_ao = yes; then
+   BUILD_SOUNDS="Sounds"
 fi
-
-rm -f conftest.err conftest.$ac_ext
-{ echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
-echo "${ECHO_T}$ac_header_preproc" >&6; }
-
-# So?  What about this header?
-case $ac_header_compiler:$ac_header_preproc:$ac_c_preproc_warn_flag in
-  yes:no: )
-    { echo "$as_me:$LINENO: WARNING: $ac_header: accepted by the compiler, rejected by the preprocessor!" >&5
-echo "$as_me: WARNING: $ac_header: accepted by the compiler, rejected by the preprocessor!" >&2;}
-    { echo "$as_me:$LINENO: WARNING: $ac_header: proceeding with the compiler's result" >&5
-echo "$as_me: WARNING: $ac_header: proceeding with the compiler's result" >&2;}
-    ac_header_preproc=yes
-    ;;
-  no:yes:* )
-    { echo "$as_me:$LINENO: WARNING: $ac_header: present but cannot be compiled" >&5
-echo "$as_me: WARNING: $ac_header: present but cannot be compiled" >&2;}
-    { echo "$as_me:$LINENO: WARNING: $ac_header:     check for missing prerequisite headers?" >&5
-echo "$as_me: WARNING: $ac_header:     check for missing prerequisite headers?" >&2;}
-    { echo "$as_me:$LINENO: WARNING: $ac_header: see the Autoconf documentation" >&5
-echo "$as_me: WARNING: $ac_header: see the Autoconf documentation" >&2;}
-    { echo "$as_me:$LINENO: WARNING: $ac_header:     section \"Present But Cannot Be Compiled\"" >&5
-echo "$as_me: WARNING: $ac_header:     section \"Present But Cannot Be Compiled\"" >&2;}
-    { echo "$as_me:$LINENO: WARNING: $ac_header: proceeding with the preprocessor's result" >&5
-echo "$as_me: WARNING: $ac_header: proceeding with the preprocessor's result" >&2;}
-    { echo "$as_me:$LINENO: WARNING: $ac_header: in the future, the compiler will take precedence" >&5
-echo "$as_me: WARNING: $ac_header: in the future, the compiler will take precedence" >&2;}
-
-    ;;
-esac
-{ echo "$as_me:$LINENO: checking for $ac_header" >&5
-echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6; }
-if { as_var=$as_ac_Header; eval "test \"\${$as_var+set}\" = set"; }; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  eval "$as_ac_Header=\$ac_header_preproc"
-fi
-ac_res=`eval echo '${'$as_ac_Header'}'`
-	       { echo "$as_me:$LINENO: result: $ac_res" >&5
-echo "${ECHO_T}$ac_res" >&6; }
-
-fi
-if test `eval echo '${'$as_ac_Header'}'` = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define `echo "HAVE_$ac_header" | $as_tr_cpp` 1
-_ACEOF
-
-fi
-
-done
-
-
-{ echo "$as_me:$LINENO: checking for portaudio version >= 19" >&5
-echo $ECHO_N "checking for portaudio version >= 19... $ECHO_C" >&6; }
-have_portaudio19=no
-if test $ac_cv_header_portaudio_h = yes; then
-  cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-#include <portaudio.h>
-
-_ACEOF
-if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP "PaStreamCallback" >/dev/null 2>&1; then
-  have_portaudio19=yes
-else
-  have_portaudio19=no
-fi
-rm -f conftest*
-
-fi
-{ echo "$as_me:$LINENO: result: $have_portaudio19" >&5
-echo "${ECHO_T}$have_portaudio19" >&6; }
-
-if test $have_portaudio19 = yes -a $have_portaudio = yes -a $enable_gsnd = yes; then
-  BUILD_GSND=gsnd
-fi
-
 
 
 #--------------------------------------------------------------------
@@ -8516,7 +8334,7 @@ OBJEXT!$OBJEXT$ac_delim
 CPP!$CPP$ac_delim
 GREP!$GREP$ac_delim
 EGREP!$EGREP$ac_delim
-BUILD_GSND!$BUILD_GSND$ac_delim
+BUILD_SOUNDS!$BUILD_SOUNDS$ac_delim
 BUILD_SPEECH!$BUILD_SPEECH$ac_delim
 have_cups!$have_cups$ac_delim
 GSCUPS_CFLAGS!$GSCUPS_CFLAGS$ac_delim

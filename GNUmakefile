@@ -66,6 +66,9 @@ Resources \
 Printing \
 Themes
 
+# Build and install sounds, if sound support is present.
+SUBPROJECTS += $(BUILD_SOUNDS)
+
 ifeq ($(doc), yes)
 SUBPROJECTS += Documentation
 endif

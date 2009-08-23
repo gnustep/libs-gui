@@ -1,3 +1,10 @@
+2009-08-23 03:45-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* config.make.in: Add BUILD_SOUNDS
+	* configure: Regenerate
+	* configure.ac: Add BUILD_SOUNDS and checks for libraries.
+	* GNUmakefile: Add to subprojects, if BUILD_SOUNDS is present.
+
 2009-08-23 00:18-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* GNUmakefile: Add themes directory
