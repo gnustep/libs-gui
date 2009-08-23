@@ -558,6 +558,16 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * Draw highlighted stepper down button
  */
 - (void) drawStepperHighlightDownButton: (NSRect) aRect;
+
+// Draw a button cell.
+/**
+ * In some themes it may be necessary to override the drawing 
+ * of an image a button cell and replace it with a rendered 
+ * version (from the native theme).
+ */
+- (void) drawButtonCellImage: (NSButtonCell *) cell 
+	           withFrame: (NSRect) aRect
+ 	            position: (NSPoint) position;
 @end
 
 /**

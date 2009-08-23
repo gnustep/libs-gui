@@ -915,16 +915,10 @@ typedef struct _GSButtonCellFlags
         {
           position.y += size.height;
         }
-      
-      if (_cell.is_disabled && _image_dims_when_disabled)
-        {
-          [anImage dissolveToPoint: position fraction: 0.5];
-        }
-      else
-        {
-          [anImage compositeToPoint: position 
-                          operation: NSCompositeSourceOver];
-        }
+
+      [[GSTheme theme] drawButtonCellImage: self
+		       withFrame: aRect
+		       position: position];
     }
 }
 

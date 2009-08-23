@@ -1,3 +1,12 @@
+2009-08-23 14:05-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Added new method declaration
+	for drawButtonCell:...
+	* Source/GSThemeDrawing.m: Added implementation for new method.  The
+	purpose of the method is to allow the theme to override images with
+	native images which may be theme dependent.
+	* Source/NSButtonCell.m: Use the new method.
+
 2009-08-23 Doug Simons <dpsimons@testplant.com>
 	
 	* Source/GSHorizontalTypesetter.m: Remove unlock and
