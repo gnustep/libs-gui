@@ -1283,6 +1283,7 @@ Optional Features:
   --disable-ungif         Disable libungif-based GIF support
   --enable-libgif         Enable libgif-based GIF support
   --disable-aspell        Disable aspell for spellchecker
+  --disable-sound          Disable sound
   --disable-speech          Disable speech server
   --disable-cups          Disable cups printing support
 
@@ -6957,6 +6958,13 @@ fi
 #--------------------------------------------------------------------
 # NSSound
 #--------------------------------------------------------------------
+# Check whether --enable-sound was given.
+if test "${enable_sound+set}" = set; then
+  enableval=$enable_sound;
+else
+  enable_sound=yes
+fi
+
 # Initialize to nothing...
 BUILD_SOUNDS=
 # Check for the libs...
@@ -7095,7 +7103,7 @@ else
 fi
 
 # Only if we have both...
-if test $have_sndfile = yes -a $have_ao = yes; then
+if test $have_sndfile = yes -a $have_ao = yes -a $enable_sound = yes; then
    BUILD_SOUNDS="Sounds"
 fi
 

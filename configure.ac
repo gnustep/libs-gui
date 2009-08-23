@@ -354,13 +354,16 @@ AC_CHECK_LIB(icns, icns_read_family_from_file)
 #--------------------------------------------------------------------
 # NSSound
 #--------------------------------------------------------------------
+AC_ARG_ENABLE(sound, 
+  [  --disable-sound          Disable sound],,
+  enable_sound=yes)
 # Initialize to nothing...
 BUILD_SOUNDS=
 # Check for the libs...
 AC_CHECK_LIB(sndfile, sf_seek, have_sndfile=yes, have_sndfile=no)
 AC_CHECK_LIB(ao, ao_open_live, have_ao=yes, have_ao=no)
 # Only if we have both...
-if test $have_sndfile = yes -a $have_ao = yes; then
+if test $have_sndfile = yes -a $have_ao = yes -a $enable_sound = yes; then
    BUILD_SOUNDS="Sounds"
 fi
 AC_SUBST(BUILD_SOUNDS)
