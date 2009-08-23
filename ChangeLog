@@ -1,3 +1,9 @@
+2009-08-23 17:35-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Sounds/Frog.wav: New sound.
+	* Sounds/GNUmakefile: Add new sound.
+	* Sounds/Submarine.wav: New sound
+
 2009-08-23 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Additions/GNUstepGUI/GSFontInfo.h,

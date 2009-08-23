@@ -36,11 +36,13 @@ Glass.wav \
 Basso.wav \
 Blow.wav \
 Bottle.wav \
+Frog.wav \
 Glass.wav \
 Hero.wav \
 Ping.wav \
 Pop.wav \
 Sosumi.wav \
+Submarine.wav \
 Tink.wav
 
 -include GNUmakefile.preamble
