@@ -1283,8 +1283,9 @@ NS_DURING
 
   *nextGlyphIndex = curGlyph;
 NS_HANDLER
-  [lock unlock];
-  [localException raise];
+  NSLog(@"GSHorizontalTypesetter - %@", [localException reason]);
+//  [lock unlock];
+//[localException raise];
   ret=0; /* This is never reached, but it shuts up the compiler. */
 NS_ENDHANDLER
   [lock unlock];

@@ -1,3 +1,12 @@
+2009-08-23 Doug Simons <dpsimons@testplant.com>
+	
+	* Source/GSHorizontalTypesetter.m: Remove unlock and
+	log the exception, but don't rethrow it.
+	* Source/GSLayoutManager.m: return a zero length range in
+	 -(NSRange)glyphRangeForCharacterRange:actualCharacterRange:
+	when charRange has a length and a location of 0.
+	Added by Gregory John Casamento <greg.casamento@gmail.com>
+	
 2009-08-23 17:16-BST David Chisnall <theraven@sucs.org>
 
 	* Tools/sound/GSOSSSoundSink.m: Added OSS sound back end
