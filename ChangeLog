@@ -1,3 +1,9 @@
+2009-08-23 11:50-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Tools/sound/GNUmakefile: Fix circular dependency issue.
+	Added _INCLUDE_DIRS and _LIB_DIRS for each entry so that
+	it can build when GNUstep is not installed.
+
 2009-08-23 03:52-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* configure: Regenerate
