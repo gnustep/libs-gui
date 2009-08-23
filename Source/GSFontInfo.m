@@ -29,14 +29,19 @@
 
 #include <math.h>
 
-#include "GNUstepGUI/GSFontInfo.h"
+#include "Foundation/NSAffineTransform.h"
+#include <Foundation/NSArray.h>
 #include <Foundation/NSCharacterSet.h>
 #include <Foundation/NSDictionary.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSSet.h>
-#include <Foundation/NSValue.h>
+#include <Foundation/NSEnumerator.h>
 #include <Foundation/NSException.h>
+#include <Foundation/NSSet.h>
+#include <Foundation/NSString.h>
+#include <Foundation/NSValue.h>
+
+#include "AppKit/NSFontDescriptor.h"
+
+#include "GNUstepGUI/GSFontInfo.h"
 
 static Class fontEnumeratorClass = Nil;
 static Class fontInfoClass = Nil;
@@ -98,6 +103,151 @@ static GSFontEnumerator *sharedEnumerator = nil;
   return [allFontFamilies objectForKey: family];
 }
 
+- (NSArray*) availableFontDescriptors
+{
+  if (allFontDescriptors == nil)
+    {
+      NSMutableArray *fontDescriptors;
+      NSEnumerator *keyEnumerator;
+      NSString *family;
+      
+      fontDescriptors = [NSMutableArray array];
+      keyEnumerator = [allFontFamilies keyEnumerator];
+      while ((family = [keyEnumerator nextObject]) != nil)
+        {
+          NSArray *fontDefs = [allFontFamilies objectForKey: family];
+          NSEnumerator *fdEnumerator;
+          NSArray *fontDef;
+          
+          fdEnumerator = [fontDefs objectEnumerator];
+          while ((fontDef = [fdEnumerator nextObject]) != nil)
+            {
+              NSFontDescriptor *fd;
+              NSDictionary *attributes;
+              NSNumber *weight = [fontDef objectAtIndex: 2];
+              NSNumber *traits = [fontDef objectAtIndex: 3];
+              NSDictionary *fontTraits;
+              float fweight = ([weight intValue] - 6) / 6.0;
+              
+              fontTraits = [NSDictionary dictionaryWithObjectsAndKeys:
+                                           traits, NSFontSymbolicTrait,
+                                         [NSNumber numberWithFloat: fweight], 
+                                         NSFontWeightTrait,
+                                         nil];
+              attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                           family, NSFontFamilyAttribute,
+                                         [fontDef objectAtIndex: 0], NSFontNameAttribute,
+                                     [fontDef objectAtIndex: 1], NSFontFaceAttribute,
+                                         fontTraits, NSFontTraitsAttribute,
+                                         nil];
+              fd = [[NSFontDescriptor alloc] initWithFontAttributes: attributes];
+              
+              [fontDescriptors addObject: fd];
+              RELEASE(fd);
+            }
+        }
+
+      allFontDescriptors = fontDescriptors;
+    }
+
+  return allFontDescriptors;
+}
+
+- (NSArray *) availableFontNamesMatchingFontDescriptor: (NSFontDescriptor *)descriptor
+{
+  NSString *fontName;
+  NSArray *fds;
+  NSMutableArray *found;
+  NSEnumerator *fdEnumerator;
+  NSFontDescriptor *fd;
+
+  fontName = [descriptor objectForKey: NSFontNameAttribute];
+  if (fontName != nil)
+    {
+      return [NSArray arrayWithObject: fontName];
+    }
+
+  found = [NSMutableArray array];
+  // Normalize the font descriptor
+  fds = [descriptor matchingFontDescriptorsWithMandatoryKeys: nil];
+  fdEnumerator = [fds objectEnumerator];
+  while ((fd = [fdEnumerator nextObject]) != nil)
+    {
+      fontName = [fd objectForKey: NSFontNameAttribute];
+      if (fontName != nil)
+        {
+          [found addObject: fontName];
+        }
+    }
+
+  return found;
+}
+
+- (NSArray *) matchingFontDescriptorsFor: (NSDictionary *)attributes
+{
+  NSMutableArray *found;
+  NSEnumerator *fdEnumerator;
+  NSFontDescriptor *fd;
+  NSArray *keys = [attributes allKeys];
+
+  found = [NSMutableArray arrayWithCapacity: 3];
+  // Get an enumerator for all available font descriptors
+  fdEnumerator = [[self availableFontDescriptors] objectEnumerator];
+  while ((fd = [fdEnumerator nextObject]) != nil)
+    {
+        NSEnumerator *keyEnumerator;
+        NSString *key;
+        BOOL match = YES;
+
+        keyEnumerator = [keys objectEnumerator];
+        while ((key = [keyEnumerator nextObject]) != nil)
+          {
+            id valueA = [attributes objectForKey: key];
+
+            if (valueA != nil)
+              {
+                id valueB = [fd objectForKey: key];
+
+                if (valueB == nil)
+                  {
+                    match = NO;
+                    break;
+                  }
+
+		// Special handling for NSFontTraitsAttribute
+                if ([key isEqual: NSFontTraitsAttribute])
+                  {
+                    NSNumber *traitsA = [valueA objectForKey: NSFontSymbolicTrait];
+                    NSNumber *traitsB = [valueB objectForKey: NSFontSymbolicTrait];
+
+                    // FIXME: For now we only compare symbolic traits
+                    if ((traitsA != nil) && 
+                        ((traitsB == nil) || 
+                         ([traitsA unsignedIntValue] != [traitsB unsignedIntValue])))
+                      {
+                        match = NO;
+                        break;
+                      }
+                  }
+                else 
+                  {
+                    if (![valueA isEqual: valueB])
+                      {
+                        match = NO;
+                        break;
+                      }
+                  }
+              }
+          }
+
+        if (match)
+          {
+            [found addObject: fd];
+          }
+    }
+
+  return found;
+}
 
 - (NSString *) defaultSystemFontName
 {
@@ -229,6 +379,7 @@ static GSFontEnumerator *sharedEnumerator = nil;
   RELEASE(fontName);
   RELEASE(familyName);
   RELEASE(encodingScheme);
+  TEST_RELEASE(fontDescriptor);
   [super dealloc];
 }
 
@@ -244,6 +395,7 @@ static GSFontEnumerator *sharedEnumerator = nil;
       copy->fontName = [fontName copyWithZone: zone];
       copy->familyName = [familyName copyWithZone: zone];
       copy->encodingScheme = [encodingScheme copyWithZone: zone];
+      copy->fontDescriptor = [fontDescriptor copyWithZone: zone];
     }
   return copy;
 }
@@ -258,6 +410,7 @@ static GSFontEnumerator *sharedEnumerator = nil;
   copy->fontName = [fontName copyWithZone: zone];
   copy->familyName = [familyName copyWithZone: zone];
   copy->encodingScheme = [encodingScheme copyWithZone: zone];
+  copy->fontDescriptor = [fontDescriptor copyWithZone: zone];
   return copy;
 }
 
@@ -599,6 +752,48 @@ static GSFontEnumerator *sharedEnumerator = nil;
     return (NSGlyph)theChar;
   else
     return NSNullGlyph;
+}
+
+- (NSFontDescriptor*) fontDescriptor
+{
+  if (fontDescriptor == nil)
+    {
+      // Create a new one
+      NSAffineTransform *transform = [NSAffineTransform new];
+      NSAffineTransformStruct ats;
+      NSDictionary *attributes;
+      NSDictionary *fontTraits;
+      float fweight = (weight - 6) / 6.0;
+      float fslant = italicAngle / 30.0;
+
+      ats.m11 = matrix[0];
+      ats.m12 = matrix[1];
+      ats.m21 = matrix[2];
+      ats.m22 = matrix[3];
+      ats.tX = matrix[4];
+      ats.tY = matrix[5];
+      [transform setTransformStruct: ats];
+
+      fontTraits = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   [NSNumber numberWithUnsignedInt: traits], 
+                                 NSFontSymbolicTrait,
+                                 [NSNumber numberWithFloat: fweight], 
+                                 NSFontWeightTrait,
+                                 [NSNumber numberWithFloat: fslant], 
+                                 NSFontSlantTrait,
+                                 nil];
+      attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   familyName, NSFontFamilyAttribute,
+                                 fontName, NSFontNameAttribute,
+                                 //fontFace, NSFontFaceAttribute,
+                                 fontTraits, NSFontTraitsAttribute,
+                                 transform, NSFontMatrixAttribute,
+                                 nil];
+      RELEASE(transform);
+      fontDescriptor = [[NSFontDescriptor alloc] initWithFontAttributes: attributes];
+    }
+
+  return fontDescriptor;
 }
 
 @end

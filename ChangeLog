@@ -1,3 +1,13 @@
+2009-08-23 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSFontInfo.h,
+	* Headers/AppKit/NSFontDescriptor.h,
+	* Source/NSFontDescriptor.m,
+	* Source/NSFontManager.m,
+	* Source/NSFont.m,
+	* Source/GSFontInfo.m: Add better support for font
+	descriptor. Requires a recompile of the backend.
+
 2009-08-23 14:23-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Add image parameter,

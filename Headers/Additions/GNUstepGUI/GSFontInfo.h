@@ -36,11 +36,13 @@
 @class NSMutableDictionary;
 @class NSArray;
 @class NSBezierPath;
+@class NSFontDescriptor;
 
 @interface GSFontEnumerator : NSObject
 {
   NSArray *allFontNames;
   NSMutableDictionary *allFontFamilies;
+  NSArray *allFontDescriptors;
 }
 
 + (void) setDefaultClass: (Class)defaultClass;
@@ -49,6 +51,9 @@
 - (NSArray*) availableFonts;
 - (NSArray*) availableFontFamilies;
 - (NSArray*) availableMembersOfFontFamily: (NSString*)family;
+- (NSArray*) availableFontDescriptors;
+- (NSArray *) availableFontNamesMatchingFontDescriptor: (NSFontDescriptor *)descriptor;
+- (NSArray *) matchingFontDescriptorsFor: (NSDictionary *)attributes;
 
 /* Note that these are only called once. NSFont will remember the returned
 values. Backends may override these. */
@@ -81,8 +86,9 @@ values. Backends may override these. */
   BOOL isBaseFont;
   int weight;
   NSFontTraitMask traits;
-  unsigned	numberOfGlyphs;
-  NSCharacterSet	*coveredCharacterSet;
+  unsigned numberOfGlyphs;
+  NSCharacterSet *coveredCharacterSet;
+  NSFontDescriptor *fontDescriptor;
 }
 
 + (GSFontInfo*) fontInfoForFontName: (NSString*)fontName 
@@ -144,6 +150,7 @@ values. Backends may override these. */
 - (float) widthOfString: (NSString*)string;
 - (float) xHeight;
 - (NSGlyph) glyphForCharacter: (unichar)theChar;
+- (NSFontDescriptor*) fontDescriptor;
 
 @end
 

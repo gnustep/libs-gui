@@ -37,8 +37,12 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSValue.h>
 
-#include "AppKit/NSAffineTransform.h"
 #include "AppKit/NSFontDescriptor.h"
+#include "AppKit/NSFontManager.h"
+
+@interface NSFontManager (GNUstep)
+- (NSArray *) matchingFontDescriptorsFor: (NSDictionary *)attributes;
+@end
 
 @implementation NSFontDescriptor
 
@@ -135,7 +139,7 @@
 			       forKey: NSFontTraitsAttribute]];
 }
 
-- (id) initWithFontAttributes: (NSDictionary *) attributes
+- (id) initWithFontAttributes: (NSDictionary *)attributes
 {
   if ((self = [super init]) != nil)
     {
@@ -189,45 +193,30 @@
   return f;
 }
 
-// this is the core font search engine that knows about font directories
 - (NSArray *) matchingFontDescriptorsWithMandatoryKeys: (NSSet *)keys
 {
-  NSMutableArray *found;
-  NSEnumerator *fdEnumerator;
-  NSFontDescriptor *fd;
+  NSMutableDictionary *attributes= [NSMutableDictionary dictionaryWithCapacity: 4];
+  NSEnumerator *keyEnumerator;
+  NSString *key;
 
-  found = [NSMutableArray arrayWithCapacity: 3];
-  // FIXME: Get an enumerator for all available font descriptors
-  fdEnumerator = nil;
-  while ((fd = [fdEnumerator nextObject]) != nil)
+  if (keys == nil)
     {
-        NSEnumerator *keyEnumerator;
-        NSString *key;
-        BOOL match = YES;
-
-        keyEnumerator = [keys objectEnumerator];
-        while ((key = [keyEnumerator nextObject]) != nil)
-          {
-            id value = [self objectForKey: key];
-
-            if (value != nil)
-              {
-		// FIXME: Special handling for NSFontTraitsAttribute
-                if (![value isEqual: [fd objectForKey: key]])
-                  {
-                    match = NO;
-                    break;
-                  }
-              }
-          }
-
-        if (match)
-          {
-            [found addObject: fd];
-          }
+      keys = [NSSet setWithObjects: NSFontNameAttribute, NSFontFamilyAttribute, 
+                    NSFontFaceAttribute, NSFontTraitsAttribute, nil];
     }
 
-  return found;
+  keyEnumerator = [keys objectEnumerator];
+  while ((key = [keyEnumerator nextObject]) != nil)
+    {
+      id value = [_attributes objectForKey: key];
+
+      if (value != nil)
+        {
+          [attributes setObject: value forKey: key];
+        }
+    }  
+
+  return [[NSFontManager sharedFontManager] matchingFontDescriptorsFor: attributes];
 }
 
 - (NSFontDescriptor *) matchingFontDescriptorWithMandatoryKeys: (NSSet *)keys;

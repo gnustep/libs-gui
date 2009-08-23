@@ -102,7 +102,7 @@ extern NSString *NSFontVariationAxisMaximumValueKey;
 extern NSString *NSFontVariationAxisDefaultValueKey;
 extern NSString *NSFontVariationAxisNameKey;
 
-@interface NSFontDescriptor : NSObject <NSCoding>
+@interface NSFontDescriptor : NSObject <NSCoding, NSCopying>
 {
   NSDictionary *_attributes;
 }

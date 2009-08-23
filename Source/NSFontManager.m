@@ -153,6 +153,11 @@ static Class         fontPanelClass = Nil;
   NSMutableArray *fontNames = [NSMutableArray array];
   NSFontTraitMask traits;
 
+  if (fontTraitMask == (NSUnitalicFontMask | NSUnboldFontMask))
+    {
+      fontTraitMask = 0;
+    }
+
   for (i = 0; i < [fontFamilies count]; i++)
     {
       NSArray *fontDefs = [self availableMembersOfFontFamily: 
@@ -160,7 +165,7 @@ static Class         fontPanelClass = Nil;
       
       for (j = 0; j < [fontDefs count]; j++)
         {
-          NSArray        *fontDef = [fontDefs objectAtIndex: j];
+          NSArray *fontDef = [fontDefs objectAtIndex: j];
 
           traits = [[fontDef objectAtIndex: 3] unsignedIntValue];
           // Check if the font has exactly the given mask
@@ -175,6 +180,17 @@ static Class         fontPanelClass = Nil;
 - (NSArray*) availableMembersOfFontFamily: (NSString*)family
 {
   return [_fontEnumerator availableMembersOfFontFamily: family];
+}
+
+- (NSArray *) availableFontNamesMatchingFontDescriptor: (NSFontDescriptor *)descriptor
+{
+  return [_fontEnumerator availableFontNamesMatchingFontDescriptor: descriptor];
+}
+
+// GNUstep extension
+- (NSArray *) matchingFontDescriptorsFor: (NSDictionary *)attributes
+{
+  return [_fontEnumerator matchingFontDescriptorsFor: attributes];
 }
 
 - (NSString*) localizedNameForFamily: (NSString*)family 
@@ -477,16 +493,6 @@ static Class         fontPanelClass = Nil;
       // If already have that trait then just return it
       return fontObject;
     }
-  else if (trait == NSUnboldFontMask)
-    {
-      return [self convertFont: fontObject 
-                   toNotHaveTrait: NSBoldFontMask];
-    }
-  else if (trait == NSUnitalicFontMask)
-    {
-      return [self convertFont: fontObject 
-                   toNotHaveTrait: NSItalicFontMask];
-    }
   else
     {
       // Else convert it
@@ -502,9 +508,19 @@ static Class         fontPanelClass = Nil;
           weight = 9;
           t = t & ~NSUnboldFontMask;
         }
+      else if (trait & NSUnboldFontMask)
+        {
+          // We cannot reuse the weight in an unbold
+          weight = 5;
+          t = t & ~NSBoldFontMask;
+        }
       if (trait == NSItalicFontMask)
         {
           t = t & ~NSUnitalicFontMask;
+        }
+      else if (trait & NSUnitalicFontMask)
+        {
+          t = t & ~NSItalicFontMask;
         }
 
       t = t | trait;
@@ -1058,15 +1074,10 @@ static Class         fontPanelClass = Nil;
       [a removeObject: descriptor];
     }
 }
+
 - (NSArray *) fontDescriptorsInCollection: (NSString *)collection
 {
   return [_collections objectForKey: collection];
-}
-
-- (NSArray *) availableFontNamesMatchingFontDescriptor: (NSFontDescriptor *)descriptor
-{
-  // FIXME
-  return nil;
 }
 
 - (NSDictionary *) convertAttributes: (NSDictionary *)attributes

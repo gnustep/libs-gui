@@ -527,6 +527,7 @@ static void setNSFont(NSString *key, NSFont *font)
 {
   NSArray *a;
   float fontMatrix[6];
+  NSAffineTransformStruct ats;
 
   descriptor = [descriptor matchingFontDescriptorWithMandatoryKeys: 
     [NSSet setWithArray: [[descriptor fontAttributes] allKeys]]];
@@ -539,8 +540,13 @@ static void setNSFont(NSString *key, NSFont *font)
   if ((a == nil) || ([a count] == 0))
     return nil;
 
-  // FIXME: This method is deprecated
-  [transform getMatrix: fontMatrix];
+  ats = [transform transformStruct];
+  fontMatrix[0] = ats.m11;
+  fontMatrix[1] = ats.m12;
+  fontMatrix[2] = ats.m21;
+  fontMatrix[3] = ats.m22;
+  fontMatrix[4] = ats.tX;
+  fontMatrix[5] = ats.tY;
 
   return [self fontWithName: [a objectAtIndex: 0]
 	       matrix: fontMatrix];
@@ -1140,8 +1146,7 @@ static BOOL flip_hack;
 
 - (NSFontDescriptor*) fontDescriptor
 {
-  // FIXME
-  return nil;
+  return [fontInfo fontDescriptor];
 }
 
 /* The following methods have to be implemented by backends */
