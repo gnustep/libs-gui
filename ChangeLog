@@ -1,3 +1,7 @@
+2009-08-23 17:16-BST David Chisnall <theraven@sucs.org>
+
+	* Tools/sound/GSOSSSoundSink.m: Added OSS sound back end
+
 2009-08-23 11:50-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Tools/sound/GNUmakefile: Fix circular dependency issue.
