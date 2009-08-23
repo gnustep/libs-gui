@@ -1,3 +1,10 @@
+2009-08-23 14:23-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Add image parameter,
+	* Source/GSThemeDrawing.m: Add image parameter.   Correctly
+	handle disabled buttons.
+	* Source/NSButtonCell.m: Change to use new signature.
+
 2009-08-23 14:05-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Added new method declaration

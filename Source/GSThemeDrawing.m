@@ -544,21 +544,21 @@
   PSstroke();
 }
 
-- (void) drawButtonCellImage: (NSButtonCell *) cell 
-	           withFrame: (NSRect) aRect
-	            position: (NSPoint) position
+- (void) drawImage: (NSImage *)image
+      inButtonCell: (NSButtonCell *) cell 
+	 withFrame: (NSRect) aRect
+	  position: (NSPoint) position
 {
-  NSImage *anImage = [cell image];
-  BOOL disabled = [cell isEnabled];
+  BOOL enabled = [cell isEnabled];
   BOOL dims = [cell imageDimsWhenDisabled];
 
-  if (disabled && dims)
+  if (!enabled && dims)
     {
-      [anImage dissolveToPoint: position fraction: 0.5];
+      [image dissolveToPoint: position fraction: 0.5];
     }
   else
     {
-      [anImage compositeToPoint: position 
+      [image compositeToPoint: position 
 	       operation: NSCompositeSourceOver];
     }
 } 

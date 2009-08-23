@@ -916,7 +916,8 @@ typedef struct _GSButtonCellFlags
           position.y += size.height;
         }
 
-      [[GSTheme theme] drawButtonCellImage: self
+      [[GSTheme theme] drawImage: anImage
+		       inButtonCell: self
 		       withFrame: aRect
 		       position: position];
     }

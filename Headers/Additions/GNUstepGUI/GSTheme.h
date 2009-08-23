@@ -565,9 +565,10 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * of an image a button cell and replace it with a rendered 
  * version (from the native theme).
  */
-- (void) drawButtonCellImage: (NSButtonCell *) cell 
-	           withFrame: (NSRect) aRect
- 	            position: (NSPoint) position;
+- (void) drawImage: (NSImage *)image
+      inButtonCell: (NSButtonCell *) cell 
+	 withFrame: (NSRect) aRect
+          position: (NSPoint) position;
 @end
 
 /**
