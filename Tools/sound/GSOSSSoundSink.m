@@ -27,7 +27,7 @@
 #endif
 
 
-@interface AudioOutputSink : NSObject <GSSoundSink>
+@interface GSOSSSoundSink : NSObject <GSSoundSink>
 {
 	NSString *devicePath;
 	int dev;
@@ -39,7 +39,7 @@
 
 const static NSString *DefaultDevice = @"/dev/dsp";
 
-@implementation AudioOutputSink
+@implementation GSOSSSoundSink
 + (BOOL)canInitWithPlaybackDevice: (NSString *)playbackDevice
 {
 	if (NULL == playbackDevice)
