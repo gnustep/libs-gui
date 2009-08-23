@@ -1308,7 +1308,7 @@ static NSMutableDictionary *cachedCSets = nil;
 - (void) fixFontAttributeInRange: (NSRange)range
 {
   NSString *string;
-  NSFont *font;
+  NSFont *font = nil;
   NSCharacterSet *charset = nil;
   NSRange fontRange = NSMakeRange(NSNotFound, 0);
   unsigned int i;

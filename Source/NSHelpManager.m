@@ -225,7 +225,7 @@
 	    {
 	      NSHelpPanel	*panel;
 	      NSTextView	*tv;
-	      id		object;
+	      id		object = nil;
 
 	      panel = [NSHelpPanel sharedHelpPanel];
 	      tv = [(NSScrollView*)[panel contentView] documentView];
