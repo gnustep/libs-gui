@@ -1,3 +1,14 @@
+2009-08-22 Stefan Bidigaray <stefanbidi@gmail.com>
+
+	* configure.ac: Updated
+	* Headers/Additions/GNUstepGUI/GSSoundSink.h
+	* Headers/Additions/GNUstepGUI/GSSoundSource.h: Added
+	* Headers/AppKit/NSSound.h: Added new methods
+	* Sound/SndfileSource.m
+	* Sound/AudioOutputSink.m: Added
+	* Source/NSSound.m: Implementation using new bundle based playback.
+	* Tools/gsnd: Removed
+
 2009-08-22 19:49-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Add methods for drawing

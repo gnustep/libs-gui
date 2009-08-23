@@ -2,10 +2,11 @@
 
    <abstract>Load, manipulate and play sounds</abstract>
 
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2009 Free Software Foundation, Inc.
    
-   Author: Enrico Sersale <enrico@imago.ro>
-   Date: Jul 2002
+   Author: Enrico Sersale <enrico@imago.ro>,
+             Stefan Bidigaray <stefanbidi@gmail.com>
+   Date: Jul 2002, Jul 2009
 
    This file is part of the GNUstep GUI Library.
    
@@ -26,25 +27,80 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include "config.h"
 #include <Foundation/Foundation.h>
-#include <GNUstepBase/NSTask+GS.h>
 #include "AppKit/NSPasteboard.h"
 #include "AppKit/NSSound.h"
 
-#ifdef HAVE_AUDIOFILE_H
-#include <audiofile.h>
-#endif
+#include "GNUstepGUI/GSSoundSource.h"
+#include "GNUstepGUI/GSSoundSink.h"
 
-#define BUFFER_SIZE_IN_FRAMES 4096
+// Private NSConditionLock conditions used for streaming
+enum
+{
+  SOUND_SHOULD_PLAY = 1,
+  SOUND_SHOULD_PAUSE
+};
 
-#define DEFAULT_CHANNELS 2
+#define BUFFER_SIZE 4096
 
 /* Class variables and functions for class methods */
 static NSMutableDictionary *nameDict = nil;
 static NSDictionary *nsmapping = nil;
+static NSArray *sourcePlugIns = nil;
+static NSArray *sinkPlugIns = nil;
 
-#define	GSNDNAME @"GNUstepGSSoundServer"
+static inline void _loadNSSoundPlugIns (void)
+{
+  NSString      *path;
+  NSArray       *paths;
+  NSBundle      *bundle;
+  NSEnumerator  *enumerator;
+  NSMutableArray *all,
+                 *_sourcePlugIns,
+                 *_sinkPlugIns;
+  Class plugInClass;
+
+  /* Gather up the paths */
+  paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+            NSAllDomainsMask, YES);
+
+  enumerator = [paths objectEnumerator];
+  all = [NSMutableArray array];
+  while ((path = [enumerator nextObject]) != nil)
+   {
+     bundle = [NSBundle bundleWithPath: path];
+     paths = [bundle pathsForResourcesOfType: @"nssound"
+                                 inDirectory: @"Bundles"];
+     [all addObjectsFromArray: paths];
+   }
+  
+  enumerator = [all objectEnumerator];
+  _sourcePlugIns = [NSMutableArray array];
+  _sinkPlugIns = [NSMutableArray array];
+  while ((path = [enumerator nextObject]) != nil)
+    {
+      NSBundle *nssoundBundle = [NSBundle bundleWithPath: path];
+      plugInClass = [nssoundBundle principalClass];
+      if ([plugInClass conformsToProtocol: @protocol(GSSoundSource)])
+        {
+          [_sourcePlugIns addObject:plugInClass];
+        }
+      else if ([plugInClass conformsToProtocol: @protocol(GSSoundSink)])
+        {
+          [_sinkPlugIns addObject:plugInClass];
+        }
+      else
+        {
+          NSLog (@"Bundle %@ does not conform to GSSoundSource or GSSoundSink",
+            path);
+        }
+    }
+  
+  sourcePlugIns = [[NSArray alloc] initWithArray: _sourcePlugIns];
+  sinkPlugIns = [[NSArray alloc] initWithArray: _sinkPlugIns];
+}
+
+
 
 @implementation NSBundle (NSSoundAdditions)
 
@@ -60,10 +116,10 @@ static NSDictionary *nsmapping = nil;
       unsigned	i;
 
       for (i = 0; path == nil && i < c; i++)
-	{
-	  ext = [types objectAtIndex: i];
-	  path = [self pathForResource: name ofType: ext];
-	}
+	      {
+	        ext = [types objectAtIndex: i];
+	        path = [self pathForResource: name ofType: ext];
+	      }
     }
   else
     {
@@ -75,266 +131,69 @@ static NSDictionary *nsmapping = nil;
 
 @end 
 
-@protocol GSSoundSvr
-
-- (BOOL) playSound: (id)aSound;
-- (BOOL) stopSoundWithIdentifier: (NSString *)identifier;
-- (BOOL) pauseSoundWithIdentifier: (NSString *)identifier;
-- (BOOL) resumeSoundWithIdentifier: (NSString *)identifier;
-- (BOOL) isPlayingSoundWithIdentifier: (NSString *)identifier;
-
-@end 
-
 @interface NSSound (PrivateMethods)
 
-+ (id<GSSoundSvr>) gsnd;
-+ (void) localServer: (id<GSSoundSvr>)s;
-+ (id) lostServer: (NSNotification*)notification;
-
-- (BOOL) getDataFromFileAtPath: (NSString *)path;
-- (void) setIdentifier: (NSString *)identifier;
-- (NSString *) identifier;
-- (float) samplingRate;
-- (float) frameSize;
-- (long) frameCount;
-- (NSData *) data;
+- (void)_stream;
+- (void)_finished: (NSNumber *)finishedPlaying;
 
 @end
 
 @implementation NSSound (PrivateMethods)
 
-#ifdef HAVE_AUDIOFILE_H
-static id<GSSoundSvr> the_server = nil;
-
-+ (id<GSSoundSvr>) gsnd
+- (void)_stream
 {
-  if (the_server == nil) 
-    {
-      NSString *host;
-      NSString *description;
-      
-      host = [[NSUserDefaults standardUserDefaults] stringForKey: @"NSHost"];
-      if (host == nil) 
-	{
-	  host = @"";
-	} 
-      else 
-	{
-	  NSHost *h = [NSHost hostWithName: host];
-	  if (h == nil) 
-	    {
-	      NSLog(@"Unknown NSHost (%@) ignored", host);
-	      host = @"";
-	    } 
-	  else if ([h isEqual: [NSHost currentHost]] == YES) 
-	    {
-	      host = @"";
-	    } 
-	  else 
-	    {
-	      host = [h name];
-	    }
-	}
-
-      if ([host length] == 0) 
-	{
-	  description = @"local host";
-	} 
-      else 
-	{
-	  description = host;
-	}
-
-      the_server = (id<GSSoundSvr>)[NSConnection
-	rootProxyForConnectionWithRegisteredName: GSNDNAME host: host];
-
-      if (the_server == nil && [host length] > 0) 
-	{
-	  NSString *service = [GSNDNAME stringByAppendingFormat: @"-%@", host];
-
-	  the_server = (id<GSSoundSvr>)[NSConnection
-	    rootProxyForConnectionWithRegisteredName: service host: @"*"];
-	}
-
-      if (RETAIN ((id)the_server) != nil) 
-	{
-	  NSConnection*	conn = [(id)the_server connectionForProxy];
-
-	  [[NSNotificationCenter defaultCenter]
-	    addObserver: self
-	    selector: @selector(lostServer:)
-	    name: NSConnectionDidDieNotification
-	    object: conn];
-	} 
-      else 
-	{
-	  static BOOL recursion = NO;
-	  static NSString	*cmd = nil;
-	  static NSArray *args = nil;
-	  
-	  if (cmd == nil && recursion == NO) 
-	    {
-	      cmd = [NSTask launchPathForTool: @"gnustep_sndd"];
-	    }
-
-	  if (recursion == YES || cmd == nil) 
-	    {
-	      NSLog(@"Unable to contact sound server - "
-		@"please ensure that gnustep_sndd is running for %@.",
-		description);
-	      return nil;
-	    } 
-	  else 
-	    {
-	      NSLog(@"\nI couldn't contact the sound server for %@ -\n"
-		    @"so I'm attempting to to start one - which will take a few seconds.\n"
-		    @"Trying to launch gnustep_sndd from %@ or a machine/operating-system subdirectory.\n"
-		    @"It is recommended that you start the sound server (gnustep_sndd) when\n"
-		    @"your windowing system is started up.\n", description,
-		    [cmd stringByDeletingLastPathComponent]);
-
-	      if ([host length] > 0) 
-		{
-		  args = [[NSArray alloc] initWithObjects: @"-NSHost", host, nil];
-		}
-
-	      [NSTask launchedTaskWithLaunchPath: cmd arguments: args];
-
-	      [NSTimer scheduledTimerWithTimeInterval: 5.0
-		       invocation: nil repeats: NO];
-
-	      [[NSRunLoop currentRunLoop] runUntilDate: 
-					      [NSDate dateWithTimeIntervalSinceNow: 5.0]];
-
-	      recursion = YES;
-	      [self gsnd];
-	      recursion = NO;
-	    }
-	}
-    }
-		
-  return the_server;
-}
-
-+ (void) localServer: (id<GSSoundSvr>)s
-{
-  the_server = s;
-}
-
-+ (id) lostServer: (NSNotification*)notification
-{
-  id obj = the_server;
-
-  the_server = nil;
-  [[NSNotificationCenter defaultCenter]
-    removeObserver: self
-    name: NSConnectionDidDieNotification
-    object: [notification object]];
-  RELEASE (obj);
-  return self;
-}
-
-- (BOOL) getDataFromFileAtPath: (NSString *)path
-{
-  NSMutableData *d;
-  AFfilehandle file;
-  AFframecount framesRead;
+  NSUInteger bytesRead;
+  BOOL success = NO;
   void *buffer;
-
-#define CHECK_AF_ERR(x) \
-if ((x) == -1) { \
-afCloseFile(file); \
-return NO; \
-}
-
-  if ((file = afOpenFile([path fileSystemRepresentation], "r", NULL)) 
-	== AF_NULL_FILEHANDLE) 
+  
+  // Exit with success = NO if device could not be open.
+  if ([_sink open])
     {
-      return NO;
+      // Allocate space for buffer and start writing.
+      buffer = NSZoneMalloc(NSDefaultMallocZone(), BUFFER_SIZE);
+      do
+        {
+          do
+            {
+              // If not SOUND_SHOULD_PLAY block thread
+              [_readLock lockWhenCondition: SOUND_SHOULD_PLAY];
+              if (_shouldStop)
+                {
+                  [_readLock unlock];
+                  break;
+                }
+              bytesRead = [_source readBytes: buffer
+                                     length: BUFFER_SIZE];
+              [_readLock unlock];
+              [_playbackLock lock];
+              success = [_sink playBytes: buffer length: bytesRead];
+              [_playbackLock unlock];
+            } while ((!_shouldStop) && (bytesRead > 0) && success);
+          
+          [_source setCurrentTime: 0.0];
+        } while (_shouldLoop == YES && _shouldStop == NO);
+      
+      [_sink close];
+      NSZoneFree (NSDefaultMallocZone(), buffer);
     }
+  
+  RETAIN(self);
+  [self performSelectorOnMainThread: @selector(_finished:)
+                         withObject: [NSNumber numberWithBool: success]
+                      waitUntilDone: YES];
+  RELEASE(self);
+}
 
-  _dataFormat = AF_SAMPFMT_TWOSCOMP;
-  CHECK_AF_ERR (afSetVirtualSampleFormat(file, AF_DEFAULT_TRACK, _dataFormat, 16));
-  _channelCount = DEFAULT_CHANNELS;
-  CHECK_AF_ERR (afSetVirtualChannels(file, AF_DEFAULT_TRACK, _channelCount));
-  CHECK_AF_ERR (_samplingRate = afGetRate(file, AF_DEFAULT_TRACK));	
-  CHECK_AF_ERR (_frameCount = afGetFrameCount(file, AF_DEFAULT_TRACK));	
-  CHECK_AF_ERR (_frameSize = afGetVirtualFrameSize(file, AF_DEFAULT_TRACK, 1));	
-  CHECK_AF_ERR (_dataLocation = afGetDataOffset(file, AF_DEFAULT_TRACK));
-		
-  buffer = NSZoneMalloc(NSDefaultMallocZone(), BUFFER_SIZE_IN_FRAMES * _frameSize);
-  d = [[NSMutableData alloc] initWithCapacity: 1];
-
-  CHECK_AF_ERR (framesRead = afReadFrames(file, AF_DEFAULT_TRACK, buffer, 
-					  BUFFER_SIZE_IN_FRAMES));
-  while (framesRead > 0) 
-    {	
-      [d appendBytes: (const void *)buffer 
-	 length: framesRead * _frameSize];
-      CHECK_AF_ERR (framesRead = afReadFrames(file, AF_DEFAULT_TRACK, buffer, 
-					      BUFFER_SIZE_IN_FRAMES));		
+- (void)_finished: (NSNumber *)finishedPlaying
+{
+  DESTROY(_readLock);
+  DESTROY(_playbackLock);
+  
+  /* FIXME: should I call -sound:didFinishPlaying: when -stop was sent? */
+  if ([_delegate respondsToSelector: @selector(sound:didFinishPlaying:)])
+    {
+      [_delegate sound: self didFinishPlaying: [finishedPlaying boolValue]];
     }
-
-  _data = d;	
-  _dataSize = [_data length];
-  NSZoneFree(NSDefaultMallocZone(), buffer);
-  afCloseFile(file);
-	
-  return YES;
-}
-
-#else
-/* No sound software */
-
-+ (id<GSSoundSvr>) gsnd
-{
-  return nil;
-}
-
-+ (void) localServer: (id<GSSoundSvr>)s
-{
-}
-
-+ (id) lostServer: (NSNotification*)notification
-{
-  return self;
-}
-
-- (BOOL) getDataFromFileAtPath: (NSString *)path
-{
-  NSLog(@"NSSound: No sound software installed, cannot get sound");
-  return NO;
-}
-#endif
-
-- (void) setIdentifier: (NSString *)identifier
-{
-  ASSIGN (_uniqueIdentifier, identifier);
-}
-
-- (NSString *) identifier
-{
-  return _uniqueIdentifier;
-}
-
-- (float) samplingRate
-{
-  return _samplingRate;
-}
-
-- (float) frameSize
-{
-  return _frameSize;
-}
-
-- (long) frameCount
-{
-  return _frameCount;
-}
-
-- (NSData *) data
-{
-  return _data;
 }
 
 @end
@@ -343,32 +202,42 @@ return NO; \
 
 + (void) initialize
 {
-  if (self == [NSSound class]) 
+  if (self == [NSSound class])
     {
       NSString *path = [NSBundle pathForLibraryResource: @"nsmapping"
-				                 ofType: @"strings"
-				             inDirectory: @"Sounds"];
-      [self setVersion: 1];
+                                                 ofType: @"strings"
+                                            inDirectory: @"Sounds"];
+      [self setVersion: 2];
 
       nameDict = [[NSMutableDictionary alloc] initWithCapacity: 10];
       
-      if (path) 
-	{
-	  nsmapping = RETAIN([[NSString stringWithContentsOfFile: path]
-			       propertyListFromStringsFileFormat]);
-	}
+      if (path)
+        {
+          nsmapping = RETAIN([[NSString stringWithContentsOfFile: path]
+                  propertyListFromStringsFileFormat]);
+        }
+      
+      /* FIXME: Not sure if this is the best way... */
+      _loadNSSoundPlugIns ();
     }
 }
 
 - (void) dealloc
 {
-  TEST_RELEASE (_data);
-  if ((_name != nil) && self == [nameDict objectForKey: _name]) 
-    { 
+  // Make sure sound is stopped before deallocating.
+  [self stop];
+  
+  RELEASE (_data);
+  if (self == [nameDict objectForKey: _name])
+    {
       [nameDict removeObjectForKey: _name];
     }
-  TEST_RELEASE (_name);
-  TEST_RELEASE (_uniqueIdentifier);
+  RELEASE (_name);
+  RELEASE (_playbackDeviceIdentifier);
+  RELEASE (_channelMapping);
+  RELEASE (_source);
+  RELEASE (_sink);
+  
   [super dealloc];
 }
 
@@ -377,21 +246,24 @@ return NO; \
 //
 - (id) initWithContentsOfFile: (NSString *)path byReference:(BOOL)byRef
 {
-  self = [super init];
-	
-  if (self) 
-    {			
-      _onlyReference = byRef;			
-      ASSIGN (_name, [path lastPathComponent]);
-      _uniqueIdentifier = nil;
-      if ([self getDataFromFileAtPath: path] == NO) 
-	{
-	  NSLog(@"Could not get sound data from %@", path);
-	  DESTROY (self);
-	}
+  NSData *fileData;
+  
+  // Problem here: should every NSSound instance have a _name set?
+  // The Apple docs are a bit confusing here.  For now, the only way
+  // _name will be set is if -setName: is called, or if the sound already
+  // exists in on of the Sounds/ directories.
+  _onlyReference = byRef;
+
+  
+  fileData = [NSData dataWithContentsOfMappedFile: path];
+  if (!fileData)
+    {
+      NSLog (@"Could not get sound data from: %@", path);
+      DESTROY(self);
+      return nil;
     }
-	
-  return self;
+  
+  return [self initWithData: fileData];
 }
 
 - (id) initWithContentsOfURL: (NSURL *)url byReference:(BOOL)byRef
@@ -400,16 +272,70 @@ return NO; \
   return [self initWithData: [NSData dataWithContentsOfURL: url]];
 }
 
-- (id) initWithData: (NSData *)data
+- (id) initWithData: (NSData *)data;
 {
-  [self notImplemented: _cmd];
-  return nil;
+  NSEnumerator *enumerator;
+  Class sourceClass,
+        sinkClass;
+    
+  _data = data;
+  RETAIN(_data);
+  
+  // Search for an GSSoundSource bundle that can play this data.
+  enumerator = [sourcePlugIns objectEnumerator];
+  while ((sourceClass = [enumerator nextObject]) != nil)
+    {
+      if ([sourceClass canInitWithData: _data])
+        {
+          _source = [[sourceClass alloc] initWithData: _data];
+          if (_source == nil)
+            {
+              NSLog (@"Could not read sound data!");
+              DESTROY(self);
+              return nil;
+            }
+          break;
+        }
+    }
+  
+  enumerator = [sinkPlugIns objectEnumerator];
+  /* FIXME: Grab the first available sink/device for now.  In the future
+       look for what is set in the GSSoundDeviceBundle default first. */
+  while ((sinkClass = [enumerator nextObject]) != nil)
+    {
+      if ([sinkClass canInitWithPlaybackDevice: nil])
+        {
+          _sink = [[sinkClass alloc] initWithEncoding: [_source encoding]
+                                             channels: [_source channelCount]
+                                           sampleRate: [_source sampleRate]
+                                            byteOrder: [_source byteOrder]];
+          if (_sink == nil)
+            {
+              NSLog (@"Could not open sound sink!");
+              DESTROY(self);
+              return nil;
+            }
+          break;
+        }
+    }
+  
+  /* FIXME: There has to be a better way to do this check??? */
+  if (sourceClass == nil || sinkClass == nil)
+    {
+      NSLog (@"Could not find suitable sound plug-in");
+      DESTROY(self);
+      return nil;
+    }
+  
+  return self;
 }
 
 - (id) initWithPasteboard: (NSPasteboard *)pasteboard
 {
-  if ([NSSound canInitWithPasteboard: pasteboard] == YES) 
-    {	
+  if ([isa canInitWithPasteboard: pasteboard] == YES)
+    {
+      /* FIXME: Should this be @"NSGeneralPboardType" or @"NSSoundPboardType"?
+           Apple also defines "NSString *NSSoundPboardType". */
       NSData *d = [pasteboard dataForType: @"NSGeneralPboardType"];	
       return [self initWithData: d];	
     }
@@ -417,47 +343,132 @@ return NO; \
 }
 
 //
-// Playing
+// Playing and Information
 //
 - (BOOL) pause 
 {
-  if (_uniqueIdentifier) 
+  // Do nothing if sound is already paused.
+  if ([_readLock condition] == SOUND_SHOULD_PAUSE)
     {
-      return [[NSSound gsnd] pauseSoundWithIdentifier: _uniqueIdentifier];
-    }	
-  return NO;
+      return NO;
+    }
+  
+  if ([_readLock tryLock] == NO)
+    {
+      return NO;
+    }
+  [_readLock unlockWithCondition: SOUND_SHOULD_PAUSE];
+  return YES;
 }
 
 - (BOOL) play
 {
-  return [[NSSound gsnd] playSound: self];
+  // If the locks exists this instance is already playing
+  if (_readLock != nil && _playbackLock != nil)
+    {
+      return NO;
+    }
+  
+  _readLock = [[NSConditionLock alloc] initWithCondition: SOUND_SHOULD_PAUSE];
+  _playbackLock = [[NSLock alloc] init];
+
+  if ([_readLock tryLock] != YES)
+    {
+      return NO;
+    }
+  _shouldStop = NO;
+  [NSThread detachNewThreadSelector: @selector(_stream)
+                           toTarget: self
+                         withObject: nil];
+  [_readLock unlockWithCondition: SOUND_SHOULD_PLAY];
+  
+  return YES;
 }
 
 - (BOOL) resume
 {
-  if (_uniqueIdentifier) 
+  // Do nothing if sound is already playing.
+  if ([_readLock condition] == SOUND_SHOULD_PLAY)
     {
-      return [[NSSound gsnd] resumeSoundWithIdentifier: _uniqueIdentifier];
-    }	
-  return NO;
+      return NO;
+    }
+  
+  if ([_readLock tryLock] == NO)
+    {
+      return NO;
+    }
+  [_readLock unlockWithCondition: SOUND_SHOULD_PLAY];
+  return YES;
 }
 
 - (BOOL) stop
 {
-  if (_uniqueIdentifier) 
+  if (_readLock == nil)
     {
-      return [[NSSound gsnd] stopSoundWithIdentifier: _uniqueIdentifier];
-    }	
-  return NO;
+      return NO;
+    }
+  
+  if ([_readLock tryLock] != YES)
+    {
+      return NO;
+    }
+  _shouldStop = YES;
+  // Set to SOUND_SHOULD_PLAY so that thread isn't blocked.
+  [_readLock unlockWithCondition: SOUND_SHOULD_PLAY];
+  
+  return YES;
 }
 
 - (BOOL) isPlaying
 {
-  if (_uniqueIdentifier) 
+  if (_readLock == nil)
     {
-      return [[NSSound gsnd] isPlayingSoundWithIdentifier: _uniqueIdentifier];
-    }	
+      return NO;
+    }
+  if ([_readLock condition] == SOUND_SHOULD_PLAY)
+    {
+      return YES;
+    }
   return NO;
+}
+
+- (float) volume
+{
+  return [_sink volume];
+}
+
+- (void) setVolume: (float) volume
+{
+  [_playbackLock lock];
+  [_sink setVolume: volume];
+  [_playbackLock unlock];
+}
+
+- (NSTimeInterval) currentTime;
+{
+  return [_source currentTime];
+}
+
+- (void) setCurrentTime: (NSTimeInterval) currentTime
+{
+  [_readLock lock];
+  [_source setCurrentTime: currentTime];
+  [_readLock unlock];
+}
+
+- (BOOL) loops;
+{
+  return _shouldLoop;
+}
+
+- (void) setLoops: (BOOL) loops
+{
+  _shouldLoop = loops;
+}
+
+- (NSTimeInterval) duration
+{
+  return [_source duration];
 }
 
 //
@@ -508,14 +519,14 @@ return NO; \
   NSString	*realName = [nsmapping objectForKey: name];
   NSSound	*sound;
 
-  if (realName) 
+  if (realName)
     {
       name = realName;
     }
 	
   sound = (NSSound *)[nameDict objectForKey: name];
  
-  if (sound == nil) 
+  if (sound == nil)
     {
       NSString	*extension;
       NSString	*path = nil;
@@ -530,7 +541,7 @@ return NO; \
       main_bundle = [NSBundle mainBundle];
       extension = [name pathExtension];
 		
-      if (extension != nil && [extension length] == 0) 
+      if (extension != nil && [extension length] == 0)
 	{
 	  extension = nil;
 	}
@@ -538,7 +549,7 @@ return NO; \
       /* Check if extension is one of the sound types */
       array = [NSSound soundUnfilteredFileTypes];
 	
-      if ([array indexOfObject: extension] != NSNotFound) 
+      if ([array indexOfObject: extension] != NSNotFound)
 	{
 	  /* Extension is one of the sound types
 	     So remove from the name */
@@ -553,7 +564,7 @@ return NO; \
 	}
 
       /* First search locally */
-      if (extension) 
+      if (extension)
 	{
 	  path = [main_bundle pathForResource: the_name ofType: extension];
 	} 
@@ -562,10 +573,10 @@ return NO; \
 	  id o, e;
 
 	  e = [array objectEnumerator];
-	  while ((o = [e nextObject])) 
+	  while ((o = [e nextObject]))
 	    {
 	      path = [main_bundle pathForResource: the_name ofType: o];
-	      if (path != nil && [path length] != 0) 
+	      if (path != nil && [path length] != 0)
 		{
 		  break;
 		}
@@ -573,9 +584,9 @@ return NO; \
 	}
 
       /* If not found then search in system */
-      if (!path) 
+      if (!path)
 	{
-	  if (extension) 
+	  if (extension)
 	    {
 	      path = [NSBundle pathForLibraryResource: the_name
 				               ofType: extension
@@ -590,7 +601,7 @@ return NO; \
 	      path = [NSBundle pathForLibraryResource: the_name
 				               ofType: o
 				          inDirectory: @"Sounds"];
-		if (path != nil && [path length] != 0) 
+		if (path != nil && [path length] != 0)
 		  {
 		    break;
 		  }
@@ -598,12 +609,12 @@ return NO; \
 	    }
 	}
 
-      if ([path length] != 0) 
+      if ([path length] != 0)
 	{
 	  sound = [[self allocWithZone: NSDefaultMallocZone()]
 		    initWithContentsOfFile: path byReference: NO];
 
-	  if (sound != nil) 
+	  if (sound != nil)
 	    {
 	      [sound setName: name];
 	      RELEASE(sound);	
@@ -619,7 +630,34 @@ return NO; \
 
 + (NSArray *) soundUnfilteredFileTypes
 {
-  return [NSArray arrayWithObjects: @"aiff", @"waw", @"snd", @"au", nil];
+  Class sourceClass;
+  NSMutableArray *array;
+  NSEnumerator *enumerator;
+  
+  array = [NSMutableArray arrayWithCapacity: 10];
+  enumerator = [sourcePlugIns objectEnumerator];
+  while ((sourceClass = [enumerator nextObject]) != nil)
+    {
+      [array addObjectsFromArray: [sourceClass soundUnfilteredFileTypes]];
+    }
+  
+  return array;
+}
+
++ (NSArray *) soundUnfilteredTypes
+{
+  Class sourceClass;
+  NSMutableArray *array;
+  NSEnumerator *enumerator;
+  
+  array = [NSMutableArray arrayWithCapacity: 10];
+  enumerator = [sourcePlugIns objectEnumerator];
+  while ((sourceClass = [enumerator nextObject]) != nil)
+    {
+      [array addObjectsFromArray: [sourceClass soundUnfilteredTypes]];
+    }
+  
+  return array;
 }
 
 - (NSString *) name
@@ -629,31 +667,48 @@ return NO; \
 
 - (BOOL) setName: (NSString *)aName
 {
-  BOOL retained = NO;
-  
-  if (!aName || [nameDict objectForKey: aName]) 
+  if (!aName || [nameDict objectForKey: aName])
     {
       return NO;
     }
 	
-  if ((_name != nil) && self == [nameDict objectForKey: _name]) 
+  if ((_name != nil) && self == [nameDict objectForKey: _name])
     {
-      /* We retain self in case removing from the dictionary releases
-	 us */
-      RETAIN (self);
-      retained = YES;
       [nameDict removeObjectForKey: _name];
     }
   
   ASSIGN(_name, aName);
   
   [nameDict setObject: self forKey: _name];
-  if (retained) 
-    {
-      RELEASE (self);
-    }
   
   return YES;
+}
+
+- (NSString *) playbackDeviceIdentifier
+{
+  return [_sink playbackDeviceIdentifier];
+}
+
+- (void) setPlaybackDeviceIdentifier: (NSString *)playbackDeviceIdentifier
+{
+  if ([[_sink class] canInitWithPlaybackDevice: playbackDeviceIdentifier])
+    {
+      [_playbackLock lock];
+      [_sink setPlaybackDeviceIdentifier: playbackDeviceIdentifier];
+      [_playbackLock unlock];
+    }
+}
+
+- (NSArray *) channelMapping
+{
+  return [_sink channelMapping];
+}
+
+- (void) setChannelMapping: (NSArray *)channelMapping
+{
+  [_playbackLock lock];
+  [_sink setChannelMapping: channelMapping];
+  [_playbackLock unlock];
 }
 
 //
@@ -670,26 +725,14 @@ return NO; \
       [coder encodeValueOfObjCType: @encode(BOOL) at: &_onlyReference];
       [coder encodeObject: _name];
       
-      if (_onlyReference == YES) 
-	{
-	  return;
-	}
-      
-      if (_uniqueIdentifier != nil) 
-	{
-	  [coder encodeObject: _uniqueIdentifier];
-	}
-      
+      if (_onlyReference == YES)
+      	{
+	        return;
+      	}
       [coder encodeConditionalObject: _delegate];
-      [coder encodeValueOfObjCType: @encode(long) at: &_dataLocation];
-      [coder encodeValueOfObjCType: @encode(long) at: &_dataSize];
-      [coder encodeValueOfObjCType: @encode(int) at: &_dataFormat];
-      [coder encodeValueOfObjCType: @encode(float) at: &_samplingRate];
-      [coder encodeValueOfObjCType: @encode(float) at: &_frameSize];
-      [coder encodeValueOfObjCType: @encode(long) at: &_frameCount];
-      [coder encodeValueOfObjCType: @encode(int) at: &_channelCount];
-      
       [coder encodeObject: _data];
+      [coder encodeObject: _playbackDeviceIdentifier];
+      [coder encodeObject: _channelMapping];
     }
 }
 
@@ -703,30 +746,23 @@ return NO; \
     {
       [decoder decodeValueOfObjCType: @encode(BOOL) at: &_onlyReference];
       
-      if (_onlyReference == YES) 
-	{
-	  NSString *theName = [decoder decodeObject];
-	  
-	  RELEASE (self);
-	  self = RETAIN ([NSSound soundNamed: theName]);
-	  [self setName: theName];	
-	} 
+      if (_onlyReference == YES)
+        {
+          NSString *theName = [decoder decodeObject];
+          RELEASE (self);
+          self = RETAIN ([NSSound soundNamed: theName]);
+          [self setName: theName];	
+        } 
       else 
-	{
-	  _name = TEST_RETAIN ([decoder decodeObject]);
-	  _uniqueIdentifier = TEST_RETAIN ([decoder decodeObject]);
-	  [self setDelegate: [decoder decodeObject]];
-	  
-	  [decoder decodeValueOfObjCType: @encode(long) at: &_dataLocation];
-	  [decoder decodeValueOfObjCType: @encode(long) at: &_dataSize];
-	  [decoder decodeValueOfObjCType: @encode(int) at: &_dataFormat];
-	  [decoder decodeValueOfObjCType: @encode(float) at: &_samplingRate];
-	  [decoder decodeValueOfObjCType: @encode(float) at: &_frameSize];
-	  [decoder decodeValueOfObjCType: @encode(long) at: &_frameCount];
-	  [decoder decodeValueOfObjCType: @encode(int) at: &_channelCount];
-	  
-	  _data = RETAIN([decoder decodeObject]);
-	}
+        {
+          _name = RETAIN ([decoder decodeObject]);
+          [self setDelegate: [decoder decodeObject]];
+          _data = RETAIN([decoder decodeObject]);
+          _playbackDeviceIdentifier = RETAIN([decoder decodeObject]);
+          _channelMapping = RETAIN([decoder decodeObject]);
+        }
+    
+    /* FIXME: Need to prepare the object for playback before going further. */
     }
   return self;
 }
@@ -742,11 +778,15 @@ return NO; \
 - (id) copyWithZone: (NSZone *)zone
 {
   NSSound *newSound = (NSSound *)NSCopyObject(self, 0, zone);
+
+  /* FIXME: Is all this correct?  And is this all that needs to be copied? */
+  newSound->_name = [_name copyWithZone: zone];
+  newSound->_data = [_data copyWithZone: zone];
+  newSound->_playbackDeviceIdentifier = [_playbackDeviceIdentifier
+                                          copyWithZone: zone];
+  newSound->_channelMapping = [_channelMapping copyWithZone: zone];
 	
-  newSound->_data = [_data copyWithZone: zone];	
-  newSound->_name = [_name copyWithZone: zone];		
-  newSound->_uniqueIdentifier = [_uniqueIdentifier copyWithZone: zone];
-	
+  /* FIXME: Need to prepare the object for playback before going further. */
   return newSound;
 }
 

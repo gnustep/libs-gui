@@ -432,7 +432,9 @@ GSPrintOperation.h \
 GSEPSPrintOperation.h \
 GSPDFPrintOperation.h \
 GSModelLoaderFactory.h \
-GSInstantiator.h 
+GSInstantiator.h \
+GSSoundSink.h \
+GSSoundSource.h
 
 libgnustep-gui_HEADER_FILES = ${GUI_HEADERS}
 

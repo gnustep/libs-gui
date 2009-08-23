@@ -2,8 +2,9 @@
 #  Sounds makefile for GNUstep GUI Library
 #  Copyright (C) 2009 Free Software Foundation, Inc.
 #
-#  Author:  Gregory Casamento <greg.casamento@gmail.com>
-#  Date:  July 2009
+#  Author:  Gregory Casamento <greg.casamento@gmail.com>,
+#             Stefan Bidigaray <stefanbidi@gmail.com>
+#  Date:  July 2009, August 2009
 #
 #  This file is part of the GNUstep GUI Library.
 #
@@ -43,11 +44,25 @@ Pop.wav \
 Sosumi.wav \
 Tink.wav
 
+BUNDLE_NAME = Sndfile AudioOutput
+BUNDLE_EXTENSION = .nssound
+
+OBJCFLAGS += -Wall -I../Headers/Additions
+
+Sndfile_OBJC_FILES = SndfileSource.m
+AudioOutput_OBJC_FILES = AudioOutputSink.m
+
+Sndfile_PRINCIPAL_CLASS = SndfileSource
+AudioOutput_PRINCIPAL_CLASS = AudioOutputSink
+
+Sndfile_BUNDLE_LIBS = -lsndfile
+AudioOutput_BUNDLE_LIBS = -lao
+
 -include GNUmakefile.preamble
 
 -include GNUmakefile.local
-# We don't actually build anything in this directory so
-# just include the common makefile rules
+
 include $(GNUSTEP_MAKEFILES)/rules.make
+include $(GNUSTEP_MAKEFILES)/bundle.make
 
 include GNUmakefile.postamble

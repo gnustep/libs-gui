@@ -6,9 +6,6 @@
 /* Define to 1 if you have the <aspell.h> header file. */
 #undef HAVE_ASPELL_H
 
-/* Define to 1 if you have the <audiofile.h> header file. */
-#undef HAVE_AUDIOFILE_H
-
 /* Define to 1 if you have the <cups/cups.h> header file. */
 #undef HAVE_CUPS_CUPS_H
 
@@ -23,9 +20,6 @@
 
 /* Define to 1 if you have the `aspell' library (-laspell). */
 #undef HAVE_LIBASPELL
-
-/* Define to 1 if you have the `audiofile' library (-laudiofile). */
-#undef HAVE_LIBAUDIOFILE
 
 /* Define to 1 if you have the `gif' library (-lgif). */
 #undef HAVE_LIBGIF
@@ -59,9 +53,6 @@
 
 /* Define to 1 if you have the <mntent.h> header file. */
 #undef HAVE_MNTENT_H
-
-/* Define to 1 if you have the <portaudio.h> header file. */
-#undef HAVE_PORTAUDIO_H
 
 /* Define to 1 if you have the `rint' function. */
 #undef HAVE_RINT
