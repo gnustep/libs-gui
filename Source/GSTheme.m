@@ -100,6 +100,8 @@ typedef	struct {
   NSMutableSet		*owned;
   NSImage		*icon;
   NSString		*name;
+  Class			colorClass;
+  Class			imageClass;
 } internal;
 
 #define	_internal 		((internal*)_reserved)
@@ -111,6 +113,8 @@ typedef	struct {
 #define	_owned			_internal->owned
 #define	_icon			_internal->icon
 #define	_name			_internal->name
+#define	_colorClass		_internal->colorClass
+#define	_imageClass		_internal->imageClass
 
 + (void) defaultsDidChange: (NSNotification*)n
 {
@@ -298,7 +302,7 @@ typedef	struct {
    * to memory, setting their names so that they are visible to
    * [NSImage+imageNamed:] and storing them in our local array.
    */
-  imageTypes = [NSImage imageFileTypes];
+  imageTypes = [_imageClass imageFileTypes];
   imagePaths = [_bundle pathsForResourcesOfType: nil
 				    inDirectory: @"ThemeImages"];
   enumerator = [imagePaths objectEnumerator];
@@ -317,7 +321,7 @@ typedef	struct {
 	  image = [_images objectForKey: imageName];
 	  if (image == nil)
 	    {
-	      image = [[NSImage alloc] initWithContentsOfFile: imagePath];
+	      image = [[_imageClass alloc] initWithContentsOfFile: imagePath];
 	      if (image != nil)
 		{
 		  [_images setObject: image forKey: imageName];
@@ -337,7 +341,7 @@ typedef	struct {
 		   * in use ... so we remove the name from the old
 		   * image and try again.
 		   */
-		  old = [NSImage imageNamed: imageName];
+		  old = [_imageClass imageNamed: imageName];
 		  [old setName: nil];
 	          [image setName: imageName];
 		}
@@ -436,6 +440,11 @@ typedef	struct {
   return _bundle;
 }
 
+- (Class) colorClass
+{
+  return [NSColorList class];
+}
+
 - (NSColor*) colorNamed: (NSString*)aName
 		  state: (GSThemeControlState)elementState
 	          cache: (BOOL)useCache
@@ -478,7 +487,7 @@ typedef	struct {
 	  if (colorsPath != nil)
 	    {
 	      _extraColors[elementState]
-		= [[NSColorList alloc] initWithName: listName
+		= [[_colorClass alloc] initWithName: listName
 					   fromFile: colorsPath];
 	      /* If the list is actually empty, we get rid of it to avoid
 	       * unnecessary lookups.
@@ -515,7 +524,7 @@ typedef	struct {
 	}
       else
 	{
-	  _colors = [[NSColorList alloc] initWithName: @"System"
+	  _colors = [[_colorClass alloc] initWithName: @"System"
 					     fromFile: colorsPath];
 	}
     }
@@ -598,12 +607,12 @@ typedef	struct {
 	  path = [_bundle pathForResource: path ofType: ext];
 	  if (path != nil)
 	    {
-	      _icon = [[NSImage alloc] initWithContentsOfFile: path];
+	      _icon = [[_imageClass alloc] initWithContentsOfFile: path];
 	    }
 	}
       if (_icon == nil)
         {
-	  _icon = RETAIN([NSImage imageNamed: @"GNUstep"]);
+	  _icon = RETAIN([_imageClass imageNamed: @"GNUstep"]);
 	}
       else
 	{
@@ -626,6 +635,11 @@ typedef	struct {
   return _icon;
 }
 
+- (Class) imageClass
+{
+  return [NSImage class];
+}
+
 - (id) initWithBundle: (NSBundle*)bundle
 {
   GSThemeControlState	state;
@@ -643,6 +657,8 @@ typedef	struct {
   ASSIGN(_name,
     [[[_bundle bundlePath] lastPathComponent] stringByDeletingPathExtension]);
 
+  _colorClass = [self colorClass];
+  _imageClass = [self imageClass];
   return self;
 }
 
@@ -781,7 +797,7 @@ typedef	struct {
 	    }
 	  else
 	    {
-	      image = [[NSImage alloc] initWithContentsOfFile: path];
+	      image = [[_imageClass alloc] initWithContentsOfFile: path];
 	      if (image != nil)
 		{
 		  tiles = [[GSDrawTiles alloc] initWithImage: image
@@ -797,7 +813,7 @@ typedef	struct {
 	  NSString	*imagePath;
 	  unsigned	count;
 
-	  imageTypes = [NSImage imageFileTypes];
+	  imageTypes = [_imageClass imageFileTypes];
 	  for (count = 0; count < [imageTypes count]; count++)
 	    {
 	      NSString	*ext = [imageTypes objectAtIndex: count];
@@ -807,7 +823,8 @@ typedef	struct {
 				       inDirectory: @"ThemeTiles"];
 	      if (imagePath != nil)
 		{
-		  image = [[NSImage alloc] initWithContentsOfFile: imagePath];
+		  image
+		    = [[_imageClass alloc] initWithContentsOfFile: imagePath];
 		  if (image != nil)
 		    {
 		      tiles = [[GSDrawTiles alloc] initWithImage: image];

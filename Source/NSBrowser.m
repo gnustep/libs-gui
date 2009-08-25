@@ -1342,11 +1342,11 @@ static NSTextFieldCell *titleCell;
   return browserColumn->_width;
 }
 
-- (void) setWidth: (float)columnWidth ofColumn: (int)column
+- (void) setWidth: (float)columnWidth ofColumn: (int)columnIndex
 {
   NSBrowserColumn *browserColumn;
 
-  browserColumn = [_browserColumns objectAtIndex: column];
+  browserColumn = [_browserColumns objectAtIndex: columnIndex];
 
   browserColumn->_width = columnWidth;
   // FIXME: Send a notifiaction

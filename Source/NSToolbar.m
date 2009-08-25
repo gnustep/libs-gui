@@ -775,7 +775,7 @@ static GSValidationCenter *vc = nil;
   [self _build];
 }
 
-- (void) setSelectedItemIdentifier: (NSString *)itemIdentifier
+- (void) setSelectedItemIdentifier: (NSString *)identifier
 {
   NSArray *selectedItems;
   NSArray *itemsToSelect;
@@ -815,7 +815,7 @@ static GSValidationCenter *vc = nil;
        return;
      }
    
-   itemsToSelect = [_items objectsWithValue: itemIdentifier 
+   itemsToSelect = [_items objectsWithValue: identifier 
                                      forKey: @"_itemIdentifier"]; 
    e = [itemsToSelect objectEnumerator];
    while ((item = [e nextObject]) != nil)
@@ -830,7 +830,7 @@ static GSValidationCenter *vc = nil;
    
    if (updated)
      {
-       ASSIGN(_selectedItemIdentifier, itemIdentifier);
+       ASSIGN(_selectedItemIdentifier, identifier);
      }
    else
      {

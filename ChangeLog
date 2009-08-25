@@ -1,3 +1,35 @@
+2009-08-25 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSTheme.m:
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	Add methods for changing the classes used for loading images and
+	color lists so that themes may dynamically update both in response
+	to external events (eg. integration with a native theming mechanism
+	of the system the application is running on).
+	* Source/NSBrowser.m:
+	* Source/NSSound.m:
+	* Source/GSDisplayServer.m:
+	* Source/NSParagraphStyle.m:
+	* Source/NSAttributedString.m:
+	* Source/NSFontManager.m:
+	* Source/NSButtonCell.m:
+	* Source/NSColor.m:
+	* Source/NSToolbar.m:
+	* Source/NSFont.m:
+	* Source/NSTabViewItem.m:
+	* Source/NSDocumentController.m:
+	* Source/NSTableView.m:
+	* Source/NSView.m:
+	* Source/NSDocument.m:
+	* Documentation/GuiUser/DefaultsSummary.gsdoc:
+	* Headers/AppKit/NSAttributedString.h:
+	* Headers/AppKit/NSButtonCell.h:
+	* Headers/AppKit/NSBitmapImageRep.h:
+	Fix argument name/type info for documentation, plus a markup error,
+	plus minor syntax errors reported by autogsdoc (semicolon within a
+	method implementation ... gcc is sloppy and ignores it, but clang may
+	be stricter ... best to fix).
+
 2009-08-24 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSAttributedString.m (-fixFontAttributeInRange:): Fix

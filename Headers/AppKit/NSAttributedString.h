@@ -190,7 +190,7 @@ enum
 - (BOOL) containsAttachments;
 - (NSDictionary*) fontAttributesInRange: (NSRange)range;
 - (NSDictionary*) rulerAttributesInRange: (NSRange)range;
-- (unsigned) lineBreakBeforeIndex: (unsigned)location
+- (unsigned) lineBreakBeforeIndex: (NSUInteger)location
 		      withinRange: (NSRange)aRange;
 - (NSRange) doubleClickAtIndex: (unsigned)location;
 - (unsigned) nextWordFromIndex: (unsigned)location forward: (BOOL)isForward;
@@ -232,7 +232,7 @@ enum
             options: (NSDictionary *)options
  documentAttributes: (NSDictionary **)dict;
 
-- (unsigned) lineBreakByHyphenatingBeforeIndex: (unsigned)location
+- (unsigned) lineBreakByHyphenatingBeforeIndex: (NSUInteger)location
                                    withinRange: (NSRange)aRange;
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)

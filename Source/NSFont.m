@@ -988,14 +988,15 @@ static BOOL flip_hack;
   [self setInContext: GSCurrentContext()];
 }
 
-- (void) setInContext: (NSGraphicsContext*)ctxt
+- (void) setInContext: (NSGraphicsContext*)context
 {
-  if (matrixExplicitlySet == NO && ([[NSView focusView] isFlipped] || flip_hack))
-    [ctxt GSSetFont: [[self _flippedViewFont] fontRef]];
+  if (matrixExplicitlySet == NO
+    && ([[NSView focusView] isFlipped] || flip_hack))
+    [context GSSetFont: [[self _flippedViewFont] fontRef]];
   else
-    [ctxt GSSetFont: [self fontRef]];
+    [context GSSetFont: [self fontRef]];
 
-  [ctxt useFont: fontName];
+  [context useFont: fontName];
 }
 
 //

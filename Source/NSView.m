@@ -2197,7 +2197,7 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
   return [self lockFocusIfCanDrawInContext: nil];
 }
 
-- (BOOL) lockFocusIfCanDrawInContext: (NSGraphicsContext *)context;
+- (BOOL) lockFocusIfCanDrawInContext: (NSGraphicsContext *)context
 {
   if ([self canDraw])
     {

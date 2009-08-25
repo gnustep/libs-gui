@@ -66,48 +66,48 @@
                     location: (float)loc 
                      options: (NSDictionary *)options
 {
-	NSTextTabType type;
+  NSTextTabType type;
 
   switch (align)
     {
-		default:
-		case NSLeftTextAlignment:	
-      type = NSLeftTabStopType; 
-      break;
-		case NSRightTextAlignment:
-      if ([options objectForKey: NSTabColumnTerminatorsAttributeName] != nil)
-        {
-          type = NSDecimalTabStopType;
-        }
-      else
-        {
-          type = NSRightTabStopType;
-        }
-      break;
-		case NSCenterTextAlignment:
-      type = NSCenterTabStopType;
-      break;
-		case NSJustifiedTextAlignment:
-      type = NSLeftTabStopType;
-      break;
-		case NSNaturalTextAlignment:
-      // FIXME: Get from language user setting
-      type = YES ? NSLeftTabStopType : NSRightTabStopType;
-      break;
+      default:
+      case NSLeftTextAlignment:	
+	type = NSLeftTabStopType; 
+	break;
+      case NSRightTextAlignment:
+	if ([options objectForKey: NSTabColumnTerminatorsAttributeName] != nil)
+	  {
+	    type = NSDecimalTabStopType;
+	  }
+	else
+	  {
+	    type = NSRightTabStopType;
+	  }
+	break;
+      case NSCenterTextAlignment:
+	type = NSCenterTabStopType;
+	break;
+      case NSJustifiedTextAlignment:
+	type = NSLeftTabStopType;
+	break;
+      case NSNaturalTextAlignment:
+	// FIXME: Get from language user setting
+	type = YES ? NSLeftTabStopType : NSRightTabStopType;
+	break;
     }
 
-	if ((self = [self initWithType: type location: loc]))
-		{
+  if ((self = [self initWithType: type location: loc]))
+    {
       _alignment = align;
       ASSIGN(_options, options);
-		}
-	return self;
+    }
+  return self;
 }
 
-- (void) dealloc;
+- (void) dealloc
 {
-	RELEASE(_options);
-	[super dealloc];
+  RELEASE(_options);
+  [super dealloc];
 }
 
 - (id) copyWithZone: (NSZone*)aZone
@@ -414,27 +414,27 @@ static NSParagraphStyle	*defaultStyle = nil;
   return _paragraphSpacingBefore;
 }
 
-- (int) headerLevel;
+- (int) headerLevel
 {
   return _headerLevel;
 }
 
-- (float) hyphenationFactor;
+- (float) hyphenationFactor
 {
   return _hyphenationFactor;
 }
 
-- (NSArray *) textBlocks;
+- (NSArray *) textBlocks
 {
   return _textBlocks;
 }
 
-- (NSArray *) textLists;
+- (NSArray *) textLists
 {
   return _textLists;
 }
 
-- (float) tighteningFactorForTruncation;
+- (float) tighteningFactorForTruncation
 {
   return _tighteningFactorForTruncation;
 }

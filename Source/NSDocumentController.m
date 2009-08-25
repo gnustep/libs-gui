@@ -385,29 +385,29 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
     }
 }
 
-- (BOOL) presentError: (NSError *)error
+- (BOOL) presentError: (NSError *)err
 {
-  error = [self willPresentError: error];
-  return [NSApp presentError: error];
+  err = [self willPresentError: err];
+  return [NSApp presentError: err];
 }
 
-- (void) presentError: (NSError *)error
-       modalForWindow: (NSWindow *)window
+- (void) presentError: (NSError *)err
+       modalForWindow: (NSWindow *)win
              delegate: (id)delegate 
    didPresentSelector: (SEL)sel
           contextInfo: (void *)context
 {
-  error = [self willPresentError: error];
-  [NSApp presentError: error
-         modalForWindow: window
+  err = [self willPresentError: err];
+  [NSApp presentError: err
+         modalForWindow: win
          delegate: delegate
          didPresentSelector: sel
          contextInfo: context];
 }
 
-- (NSError *) willPresentError: (NSError *)error
+- (NSError *) willPresentError: (NSError *)err
 {
-  return error;
+  return err;
 }
 
 - (NSString*) defaultType
@@ -551,7 +551,7 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
   return document;
 }
 
-- (id) openUntitledDocumentAndDisplay: (BOOL)display 
+- (id) openUntitledDocumentAndDisplay: (BOOL)flag 
                                 error: (NSError **)err
 {
   NSString *type;
@@ -560,7 +560,7 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
 
   if (OVERRIDDEN(openUntitledDocumentOfType:display:))
     {
-      return [self openUntitledDocumentOfType: type display: display];
+      return [self openUntitledDocumentOfType: type display: flag];
     }
   else
     {
@@ -576,7 +576,7 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
       if ([self shouldCreateUI])
         {
           [document makeWindowControllers];
-          if (display)
+          if (flag)
             {
               [document showWindows];
             }
@@ -587,13 +587,13 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
 }
 
 - (id) openDocumentWithContentsOfURL: (NSURL *)url
-                             display: (BOOL)display
+                             display: (BOOL)flag
                                error: (NSError **)err
 {
   if (OVERRIDDEN(openDocumentWithContentsOfFile:display:) && [url isFileURL])
     {
       return [self openDocumentWithContentsOfFile: [url path] 
-                   display: display];
+                   display: flag];
     }
   else
     {
@@ -628,7 +628,7 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
       // remember this document as opened
       [self noteNewRecentDocumentURL: url];
       
-      if (display && [self shouldCreateUI])
+      if (flag && [self shouldCreateUI])
         {
           [document showWindows];
         }

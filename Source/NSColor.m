@@ -502,7 +502,7 @@ systemColorWithName(NSString *name)
 		}
 }
 
-+ (NSControlTint) currentControlTint;
++ (NSControlTint) currentControlTint
 {
 	// FIXME: should be made a system setting
 	return NSBlueControlTint;

@@ -319,6 +319,18 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 - (NSBundle*) bundle;
 
 /**
+ * Returns the class used by the theme for loading color lists.  The default
+ * implementation returns the NSColorList class, but a subclass may override
+ * this to return a color list class whose values change dynamically in
+ * response to changes of a native theming API for instance.<br />
+ * The class returned by this method should be NSColorList or one of its
+ * subclasses.  Subclasses should note that GSTheme will initialise the
+ * instances of the class using the [NSColerList-initWithName:fromFile:]
+ * method.
+ */
+- (Class) colorClass;
+
+/**
  * This returns the color for drawing the item whose name is aName in
  * the specified state.  If aName is nil or if there is no color defined
  * for the particular combination of item name and state, the method
@@ -355,6 +367,19 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * Returns the theme's icon.
  */
 - (NSImage*) icon;
+
+/**
+ * Returns the class used by the theme for loading images. The default
+ * implementation returns the NSImage class, but a subclass may override
+ * this to return an image class whose instances dynamically alter what
+ * they draw in response to changes of a native theming API for instance.<br />
+ * This method must return the NSImage class or one of its subclasses.
+ * Subclass implementations should note that instances will be initialised
+ * using the [NSImage-initWithContentsOfFile:] method and will use the
+ * [NSImage-imageFileTypes] method to determine which image files can be
+ * loaded.
+ */
+- (Class) imageClass;
 
 /** <init />
  * Initialise an instance of a theme with the specified resource bundle.<br />

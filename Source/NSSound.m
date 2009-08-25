@@ -272,7 +272,7 @@ static inline void _loadNSSoundPlugIns (void)
   return [self initWithData: [NSData dataWithContentsOfURL: url]];
 }
 
-- (id) initWithData: (NSData *)data;
+- (id) initWithData: (NSData *)data
 {
   NSEnumerator *enumerator;
   Class sourceClass,
@@ -444,7 +444,7 @@ static inline void _loadNSSoundPlugIns (void)
   [_playbackLock unlock];
 }
 
-- (NSTimeInterval) currentTime;
+- (NSTimeInterval) currentTime
 {
   return [_source currentTime];
 }
@@ -456,7 +456,7 @@ static inline void _loadNSSoundPlugIns (void)
   [_readLock unlock];
 }
 
-- (BOOL) loops;
+- (BOOL) loops
 {
   return _shouldLoop;
 }

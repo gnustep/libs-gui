@@ -142,20 +142,20 @@ typedef enum _NSGradientType {
 // Setting the Titles 
 //
 - (NSString *)alternateTitle;
-- (void)setAlternateTitle:(NSString *)aString;
-- (void)setFont:(NSFont *)fontObject;
-- (void)setTitle:(NSString *)aString;
+- (void)setAlternateTitle: (NSString *)aString;
+- (void)setFont: (NSFont *)fontObject;
+- (void)setTitle: (NSString *)aString;
 - (NSString *)title;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (NSAttributedString *)attributedAlternateTitle;
 - (NSAttributedString *)attributedTitle;
-- (void)setAttributedAlternateTitle:(NSAttributedString *)aString;
-- (void)setAttributedTitle:(NSAttributedString *)aString;
-- (void)setTitleWithMnemonic:(NSString *)aString;
+- (void)setAttributedAlternateTitle: (NSAttributedString *)aString;
+- (void)setAttributedTitle: (NSAttributedString *)aString;
+- (void)setTitleWithMnemonic: (NSString *)aString;
 - (NSString *)alternateMnemonic;
 - (unsigned)alternateMnemonicLocation;
-- (void)setAlternateMnemonicLocation:(unsigned)location;
-- (void)setAlternateTitleWithMnemonic:(NSString *)aString;
+- (void)setAlternateMnemonicLocation: (unsigned)location;
+- (void)setAlternateTitleWithMnemonic: (NSString *)aString;
 #endif
 
 //
@@ -163,16 +163,16 @@ typedef enum _NSGradientType {
 //
 - (NSImage *)alternateImage;
 - (NSCellImagePosition)imagePosition;
-- (void)setAlternateImage:(NSImage *)anImage;
-- (void)setImagePosition:(NSCellImagePosition)aPosition;
+- (void)setAlternateImage: (NSImage *)anImage;
+- (void)setImagePosition: (NSCellImagePosition)aPosition;
 
 //
 // Setting the Repeat Interval 
 //
-- (void)getPeriodicDelay:(float *)delay
-		interval:(float *)interval;
-- (void)setPeriodicDelay:(float)delay
-		interval:(float)interval;
+- (void)getPeriodicDelay: (float *)delay
+		interval: (float *)interval;
+- (void)setPeriodicDelay: (float)delay
+		interval: (float)interval;
 
 //
 // Setting the Key Equivalent 
@@ -180,53 +180,53 @@ typedef enum _NSGradientType {
 - (NSString *)keyEquivalent;
 - (NSFont *)keyEquivalentFont;
 - (unsigned int)keyEquivalentModifierMask;
-- (void)setKeyEquivalent:(NSString *)key;
-- (void)setKeyEquivalentModifierMask:(unsigned int)mask;
-- (void)setKeyEquivalentFont:(NSFont *)fontObj;
-- (void)setKeyEquivalentFont:(NSString *)fontName 
-			size:(float)fontSize;
+- (void)setKeyEquivalent: (NSString *)key;
+- (void)setKeyEquivalentModifierMask: (unsigned int)mask;
+- (void)setKeyEquivalentFont: (NSFont *)fontObj;
+- (void)setKeyEquivalentFont: (NSString *)fontName 
+			size: (float)fontSize;
 
 //
 // Modifying Graphic Attributes 
 //
 - (BOOL)isTransparent;
-- (void)setTransparent:(BOOL)flag;
+- (void)setTransparent: (BOOL)flag;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (NSBezelStyle)bezelStyle;
-- (void)setBezelStyle:(NSBezelStyle)bezelStyle;
+- (void)setBezelStyle: (NSBezelStyle)bezelStyle;
 - (BOOL)showsBorderOnlyWhileMouseInside;
-- (void)setShowsBorderOnlyWhileMouseInside:(BOOL)show;
+- (void)setShowsBorderOnlyWhileMouseInside: (BOOL)show;
 - (NSGradientType)gradientType;
-- (void)setGradientType:(NSGradientType)gradientType;
+- (void)setGradientType: (NSGradientType)gradientType;
 - (BOOL)imageDimsWhenDisabled;
-- (void)setImageDimsWhenDisabled:(BOOL)flag;
+- (void)setImageDimsWhenDisabled: (BOOL)flag;
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
-- (NSColor *)backgroundColor;
-- (void)setBackgroundColor:(NSColor *)color;
-- (void)drawBezelWithFrame:(NSRect)frame inView:(NSView *)control;
-- (void)drawImage:(NSImage*)imageToDisplay 
-        withFrame:(NSRect)frame 
-           inView:(NSView *)control;
-- (void)drawTitle:(NSAttributedString*)titleToDisplay 
-        withFrame:(NSRect)frame 
-           inView:(NSView *)control;
+- (NSColor *) backgroundColor;
+- (void) setBackgroundColor: (NSColor *)color;
+- (void) drawBezelWithFrame: (NSRect)cellFrame inView: (NSView*)controlView;
+- (void) drawImage: (NSImage*)imageToDisplay 
+         withFrame: (NSRect)cellFrame 
+            inView: (NSView *)controlView;
+- (void) drawTitle: (NSAttributedString*)titleToDisplay 
+         withFrame: (NSRect)cellFrame 
+            inView: (NSView *)controlView;
 #endif
 
 //
 // Modifying Graphic Attributes 
 //
 - (int)highlightsBy;
-- (void)setHighlightsBy:(int)mask;
-- (void)setShowsStateBy:(int)mask;
-- (void)setButtonType:(NSButtonType)buttonType;
+- (void)setHighlightsBy: (int)mask;
+- (void)setShowsStateBy: (int)mask;
+- (void)setButtonType: (NSButtonType)buttonType;
 - (int)showsStateBy;
 
 //
 // Sound
 //
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
-- (void)setSound:(NSSound *)aSound;
+- (void)setSound: (NSSound *)aSound;
 - (NSSound *)sound;
 #endif
 
@@ -234,8 +234,8 @@ typedef enum _NSGradientType {
 // Mouse
 //
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
-- (void)mouseEntered:(NSEvent *)event;
-- (void)mouseExited:(NSEvent *)event;
+- (void)mouseEntered: (NSEvent *)event;
+- (void)mouseExited: (NSEvent *)event;
 #endif
 
 @end

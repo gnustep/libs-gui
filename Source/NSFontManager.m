@@ -1035,7 +1035,7 @@ static Class         fontPanelClass = Nil;
   return YES;
 }
 
-- (BOOL) removeCollection:(NSString *) collection;
+- (BOOL) removeCollection:(NSString *) collection
 {
   if ([_collections objectForKey: collection])
     {

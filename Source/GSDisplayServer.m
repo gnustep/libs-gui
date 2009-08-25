@@ -609,9 +609,9 @@ GSCurrentServer(void)
     typically by calling [NSGraphicsContext-GSSetDevice:::],
     although depending on the concrete implmentation, more information
     than this may need to be exchanged. */
-- (void) windowdevice: (int) win
+- (void) windowdevice: (int)winNum
 {
-  [self setWindowdevice: win forContext: GSCurrentContext()];
+  [self setWindowdevice: winNum forContext: GSCurrentContext()];
 }
 
 /** Sets the window device information for the NSGraphicsContext,
@@ -899,7 +899,7 @@ GSCurrentServer(void)
   [self subclassResponsibility: _cmd];
 }
 
-- (void) setParentWindow: (int)partentWin 
+- (void) setParentWindow: (int)parentWin 
           forChildWindow: (int)childWin
 {
   [self subclassResponsibility: _cmd];

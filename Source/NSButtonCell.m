@@ -893,19 +893,19 @@ typedef struct _GSButtonCellFlags
                    state: buttonState];
 }
 
-- (void) drawImage: (NSImage*)anImage 
-         withFrame: (NSRect)aRect 
+- (void) drawImage: (NSImage*)imageToDisplay 
+         withFrame: (NSRect)cellFrame 
             inView: (NSView*)controlView
 {
   // Draw image
-  if (anImage != nil)
+  if (imageToDisplay != nil)
     {
       NSSize size;
       NSPoint position;
       
-      size = [anImage size];
-      position.x = MAX(NSMidX(aRect) - (size.width / 2.), 0.);
-      position.y = MAX(NSMidY(aRect) - (size.height / 2.), 0.);
+      size = [imageToDisplay size];
+      position.x = MAX(NSMidX(cellFrame) - (size.width / 2.), 0.);
+      position.y = MAX(NSMidY(cellFrame) - (size.height / 2.), 0.);
       
       /*
        * Images are always drawn with their bottom-left corner at the origin
@@ -916,19 +916,19 @@ typedef struct _GSButtonCellFlags
           position.y += size.height;
         }
 
-      [[GSTheme theme] drawImage: anImage
-		       inButtonCell: self
-		       withFrame: aRect
-		       position: position];
+      [[GSTheme theme] drawImage: imageToDisplay
+		    inButtonCell: self
+		       withFrame: cellFrame
+		        position: position];
     }
 }
 
 - (void) drawTitle: (NSAttributedString*)titleToDisplay 
-         withFrame: (NSRect)frame 
-            inView: (NSView*)control
+         withFrame: (NSRect)cellFrame 
+            inView: (NSView*)controlView
 {
   [self _drawAttributedText: titleToDisplay
-        inFrame: frame];
+		    inFrame: cellFrame];
 }
 
 // Private helper method overridden in subclasses

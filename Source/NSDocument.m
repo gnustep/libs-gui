@@ -858,7 +858,7 @@ withContentsOfURL: (NSURL *)url
 
 - (BOOL) writeSafelyToURL: (NSURL *)url
                    ofType: (NSString *)type
-         forSaveOperation: (NSSaveOperationType)saveOp
+         forSaveOperation: (NSSaveOperationType)op
                     error: (NSError **)error
 {
   NSURL *original = [self fileURL];
@@ -868,15 +868,15 @@ withContentsOfURL: (NSURL *)url
       
   if (OVERRIDDEN(writeWithBackupToFile:ofType:saveOperation:))
     {
-      if (saveOp == NSAutosaveOperation)
+      if (op == NSAutosaveOperation)
         {
-          saveOp = NSSaveToOperation;
+          op = NSSaveToOperation;
         }
 
       *error = nil; 
       return [self writeWithBackupToFile: [url path] 
                    ofType: type 
-                   saveOperation: saveOp];
+                   saveOperation: op];
     }
 
   if (!isNativeType || (url == nil))
@@ -886,7 +886,7 @@ withContentsOfURL: (NSURL *)url
       return NO;
     }
   
-  if (saveOp == NSSaveOperation)
+  if (op == NSSaveOperation)
     {
       if ([url isFileURL])
         {
@@ -910,7 +910,7 @@ withContentsOfURL: (NSURL *)url
       
   if (![self writeToURL: url 
              ofType: type 
-             forSaveOperation: saveOp 
+             forSaveOperation: op 
              originalContentsURL: original
              error: error])
     {
@@ -923,18 +923,18 @@ withContentsOfURL: (NSURL *)url
 
       attrs = [self fileAttributesToWriteToURL: url
                     ofType: type 
-                    forSaveOperation: saveOp 
+                    forSaveOperation: op 
                     originalContentsURL: original
                     error: error];
       [fileManager changeFileAttributes: attrs atPath: [url path]];
     }
 
-  if (saveOp == NSAutosaveOperation)
+  if (op == NSAutosaveOperation)
     {
       [self setAutosavedContentsFileURL: url];
       [self updateChangeCount: NSChangeAutosaved];
     }
-  else if (saveOp != NSSaveToOperation)
+  else if (op != NSSaveToOperation)
     {
       [self _removeAutosavedContentsFile];
       [self setFileURL: url];
@@ -989,22 +989,22 @@ withContentsOfURL: (NSURL *)url
 
 - (BOOL) writeToURL: (NSURL *)url
              ofType: (NSString *)type
-   forSaveOperation: (NSSaveOperationType)saveOp
+   forSaveOperation: (NSSaveOperationType)op
 originalContentsURL: (NSURL *)orig
               error: (NSError **)error
 {
   if (OVERRIDDEN(writeToFile:ofType:originalFile:saveOperation:))
     {
-      if (saveOp == NSAutosaveOperation)
+      if (op == NSAutosaveOperation)
         {
-          saveOp = NSSaveToOperation;
+          op = NSSaveToOperation;
         }
 
       *error = nil; 
       return [self writeToFile: [url path] 
                    ofType: type 
                    originalFile: [orig path] 
-                   saveOperation: saveOp];
+                   saveOperation: op];
     }
 
   return [self writeToURL: url
@@ -1240,11 +1240,11 @@ originalContentsURL: (NSURL *)orig
   return NO;
 }
 
-- (NSString *) fileNameExtensionForType: (NSString *)type
+- (NSString *) fileNameExtensionForType: (NSString *)typeName
                           saveOperation: (NSSaveOperationType)saveOperation
 {
   NSArray *exts = [[NSDocumentController sharedDocumentController]
-                      fileExtensionsFromType: type];
+                      fileExtensionsFromType: typeName];
   
   if ([exts count])
     return (NSString *)[exts objectAtIndex: 0];
@@ -1312,7 +1312,7 @@ originalContentsURL: (NSURL *)orig
         contextInfo: printInfo];
 }
 
-- (void) runModalPageLayoutWithPrintInfo: (NSPrintInfo *)printInfo
+- (void) runModalPageLayoutWithPrintInfo: (NSPrintInfo *)info
                                 delegate: (id)delegate
                           didRunSelector: (SEL)sel
                              contextInfo: (void *)context
@@ -1322,7 +1322,7 @@ originalContentsURL: (NSURL *)orig
   pageLayout = [NSPageLayout pageLayout];
   if ([self preparePageLayout: pageLayout])
     {
-      [pageLayout beginSheetWithPrintInfo: printInfo
+      [pageLayout beginSheetWithPrintInfo: info
                   modalForWindow: [self windowForSheet]
                   delegate: delegate
                   didEndSelector: sel

@@ -58,7 +58,7 @@
   [super dealloc];
 }
 
-- (NSString*) description;
+- (NSString*) description
 {
   return [NSString stringWithFormat: @"%@: %@ (ident: %@)", 
 		   NSStringFromClass([self class]), _label, _ident];

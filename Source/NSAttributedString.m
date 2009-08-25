@@ -400,7 +400,7 @@ create_error(int code, NSString* desc)
 {
   // FIXME
   return [self lineBreakBeforeIndex: location
-                      withinRange: aRange];
+                        withinRange: aRange];
 }
 
 - (NSUInteger) lineBreakBeforeIndex: (NSUInteger)location

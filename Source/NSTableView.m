@@ -5532,7 +5532,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
 - (NSImage *) dragImageForRowsWithIndexes: (NSIndexSet*)rows
                              tableColumns: (NSArray*)cols
                                     event: (NSEvent*)event
-                                   offset: (NSPoint*)offset;
+                                   offset: (NSPoint*)offset
 {
   // FIXME
   NSArray *rowArray;

@@ -150,8 +150,8 @@ APPKIT_EXPORT NSString *NSImageEXIFData; // No GNUstep support yet; for reading 
 - (id) initWithBitmapDataPlanes: (unsigned char**)planes
 		     pixelsWide: (int)width
 		     pixelsHigh: (int)height
-		  bitsPerSample: (int)bps
-		samplesPerPixel: (int)spp
+		  bitsPerSample: (int)bitsPerSample
+		samplesPerPixel: (int)samplesPerPixel
 		       hasAlpha: (BOOL)alpha
 		       isPlanar: (BOOL)isPlanar
 		 colorSpaceName: (NSString*)colorSpaceName
