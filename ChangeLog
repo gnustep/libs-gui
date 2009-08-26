@@ -1,3 +1,7 @@
+2009-08-26 18:53-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/libgnustep-gui.def: Export GSTheme class.
+
 2009-08-25 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTheme.m:
