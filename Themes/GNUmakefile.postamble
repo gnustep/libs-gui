@@ -47,7 +47,7 @@ before-install:: $(themedir)
 
 # Things to do after installing
 after-install::
-	for file in $(THEME_FILES); do \
+	for file in $$THEME_FILES; do \
 	  cp -r $$file $(themedir)/$$file ; \
 	done
 
@@ -56,7 +56,7 @@ after-install::
 
 # Things to do after uninstalling
 after-uninstall::
-	for file in $(THEME_FILES); do \
+	for file in $$THEME_FILES; do \
 	  rm -f $(themedir)/$$file ; \
 	done
 
