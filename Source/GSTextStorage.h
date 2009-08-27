@@ -37,7 +37,6 @@
 {
   NSMutableString       *_textChars;
   NSMutableArray        *_infoArray;
-  NSString		*_textProxy;
 }
 @end
 

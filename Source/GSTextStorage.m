@@ -512,11 +512,7 @@ _attributesAtIndexEffectiveRange(
 
 - (NSString*) string
 {
-  if (_textProxy == nil)
-    {
-      _textProxy = RETAIN([_textChars immutableProxy]);
-    }
-  return _textProxy;
+  return [[_textChars copy] autorelease];
 }
 
 - (NSDictionary*) attributesAtIndex: (unsigned)index
@@ -815,7 +811,6 @@ changeInLength: [aString length] - range.length];
 
 - (void) dealloc
 {
-  TEST_RELEASE(_textProxy);
   RELEASE(_textChars);
   RELEASE(_infoArray);
   [super dealloc];

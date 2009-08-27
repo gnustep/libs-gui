@@ -2,6 +2,7 @@
 
 	* Source/NSImage.m: Image naming fixes so that setting nil as a name
 	works (so themes can replace/override system images).
+	* Source/GSTextStorage.m: Fix incorrect return of proxy to user code.
 
 2009-08-26 18:53-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
