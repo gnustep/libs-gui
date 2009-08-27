@@ -264,10 +264,11 @@ typedef	struct {
   if (theme != theTheme)
     {
       [theTheme deactivate];
+      DESTROY(currentThemeName);
       ASSIGN (theTheme, theme);
       [theTheme activate];
+      ASSIGN(currentThemeName, [theTheme name]);
     }
-  ASSIGN(currentThemeName, [theTheme name]);
 }
 
 + (GSTheme*) theme 
@@ -287,6 +288,7 @@ typedef	struct {
   NSWindow		*window;
   GSThemeControlState	state;
   
+  NSDebugMLLog(@"GSTheme", @"%@ %p", [self name], self);
   /* Get rid of any cached colors list so that we regenerate it when needed
    */
   [_colors release];
@@ -539,6 +541,8 @@ typedef	struct {
 {
   NSEnumerator	*enumerator;
   NSImage	*image;
+
+  NSDebugMLLog(@"GSTheme", @"%@ %p", [self name], self);
 
   /* Tell everything that we will become inactive.
    */
