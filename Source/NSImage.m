@@ -205,7 +205,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
   image = (NSImage*)[nameDict objectForKey: aName];
  
-  if (image == nil)
+  if (image == nil || [image _resource] == nil)
     {
       NSString *ext;
       NSString *path = nil;
@@ -508,21 +508,49 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   return copy;
 }
 
+/* This method is used by the GSTheme class to set the names of system
+ * images.  It *must* be possible to unset an old system image name by
+ * passing a nil value to aName.
+ * The images are actually accessed via proxy objects, so that when a
+ * new system image is set, the proxies for that image just start using
+ * the new version.
+ */
 - (BOOL) setName: (NSString *)aName
 {
   GSThemeProxy	*proxy = nil;
   
-  if (!aName || [[nameDict objectForKey: aName] _resource] != nil)
+  /* The name is already set... nothing to do.
+   */
+  if (aName == _name || [aName isEqual: _name] == YES)
+    {
+      return YES;
+    }
+
+  /* If the new name is already in use by another image,
+   * we must do nothing.
+   */
+  if (aName != nil && [[nameDict objectForKey: aName] _resource] != nil)
     {
       return NO;
     }
+
+  /* If this image had another name, we remove it.
+   */
   if (_name && self == [(proxy = [nameDict objectForKey: _name]) _resource])
     {
       /* We retain self in case removing from the dictionary releases us */
       IF_NO_GC([[self retain] autorelease]);
+      DESTROY(_name);
       [proxy _setResource: nil];
     }
   
+  /* If the new name is null, there is nothing more to do.
+   */
+  if (aName == nil)
+    {
+      return NO;
+    }
+
   ASSIGN(_name, aName);
   
   if ((proxy = [nameDict objectForKey: _name]) == nil)

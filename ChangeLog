@@ -1,3 +1,8 @@
+2009-08-27 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSImage.m: Image naming fixes so that setting nil as a name
+	works (so themes can replace/override system images).
+
 2009-08-26 18:53-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/libgnustep-gui.def: Export GSTheme class.
