@@ -1,3 +1,10 @@
+2009-08-28 17:32-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Images/common_DimpleHoriz.tiff: Add
+	* Images/common_DimpleH.tiff: Remove
+	* Images/GNUmakefile: Copy new image.
+	* Source/GSThemeDrawing.m: Correct image name.
+
 2009-08-28 17:19-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Images/common_DimpleH.tiff: Horizontal image for dimple.  This

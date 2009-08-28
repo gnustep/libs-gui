@@ -357,7 +357,7 @@
   else
     {
       [self setName: GSScrollerVerticalKnob forElement: cell temporary: YES];
-      [cell setImage: [NSImage imageNamed: @"common_DimpleH"]];
+      [cell setImage: [NSImage imageNamed: @"common_DimpleHoriz"]];
   
     }
   RELEASE(cell);
