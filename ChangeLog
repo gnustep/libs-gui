@@ -1,3 +1,8 @@
+2009-08-28 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSTheme.m: Fixes to properly restore previous common images
+	when a theme is deactivated.
+
 2009-08-27 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSImage.m: Image naming fixes so that setting nil as a name

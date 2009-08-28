@@ -96,6 +96,7 @@ typedef	struct {
   NSColorList		*colors;
   NSColorList		*extraColors[GSThemeSelectedState+1];
   NSMutableDictionary	*images;
+  NSMutableDictionary	*oldImages;
   NSMutableDictionary	*tiles[GSThemeSelectedState+1];
   NSMutableSet		*owned;
   NSImage		*icon;
@@ -109,6 +110,7 @@ typedef	struct {
 #define	_colors			_internal->colors
 #define	_extraColors		_internal->extraColors
 #define	_images			_internal->images
+#define	_oldImages		_internal->oldImages
 #define	_tiles			_internal->tiles
 #define	_owned			_internal->owned
 #define	_icon			_internal->icon
@@ -324,10 +326,39 @@ typedef	struct {
 	  if (image == nil)
 	    {
 	      image = [[_imageClass alloc] initWithContentsOfFile: imagePath];
-	      if (image != nil)
+	      if (image == nil)
 		{
+		  NSLog(@"GSTheme failed to load %@ from %@",
+		    imageName, imagePath);
+		}
+	      else
+		{
+		  NSImage	*old;
+
+		  /* OK, we have loaded a new image, so we cache it for the
+		   * lifetime of the theme, and we also make a record of
+		   * any previous/default image of the same name.
+		   */
 		  [_images setObject: image forKey: imageName];
 		  RELEASE(image);
+		  old = [NSImage imageNamed: imageName];
+		  if (old == nil)
+		    {
+		      /* This could potentially be a real problem ... if the
+		       * image form the current theme with this name is used
+		       * and the theme is unloaded, what happens when the
+		       * app tries to draw using the proxy to the unloaded
+		       * image?
+		       */
+		      NSLog(@"Help, could not load image '%@'", imageName);
+		    }
+		  else
+		    {
+		      /* Store the actual image, not the proxy.
+		       */
+		      old = [(id)old _resource];
+		      [_oldImages setObject: old forKey: imageName];
+		    }
 		}
 	    }
 
@@ -343,7 +374,7 @@ typedef	struct {
 		   * in use ... so we remove the name from the old
 		   * image and try again.
 		   */
-		  old = [_imageClass imageNamed: imageName];
+		  old = [NSImage imageNamed: imageName];
 		  [old setName: nil];
 	          [image setName: imageName];
 		}
@@ -541,6 +572,7 @@ typedef	struct {
 {
   NSEnumerator	*enumerator;
   NSImage	*image;
+  NSString	*name;
 
   NSDebugMLLog(@"GSTheme", @"%@ %p", [self name], self);
 
@@ -556,6 +588,8 @@ typedef	struct {
    * and our cache dictionary, so that we can be sure we reload afresh
    * when re-activated (in case the images on disk changed ... eg by a
    * theme editor modifying the theme).
+   * Restore old images in NSImage's lookup dictionary so that the app
+   * still has images to draw.
    */
   enumerator = [_images objectEnumerator];
   while ((image = [enumerator nextObject]) != nil)
@@ -563,6 +597,13 @@ typedef	struct {
       [image setName: nil];
     }
   [_images removeAllObjects];
+  enumerator = [_oldImages keyEnumerator];
+  while ((name = [enumerator nextObject]) != nil)
+    {
+      image = [_oldImages objectForKey: name];
+      [image setName: name];
+    }
+  [_oldImages removeAllObjects];
 
   [self _revokeOwnerships];
 
@@ -588,6 +629,7 @@ typedef	struct {
       RELEASE(_bundle);
       RELEASE(_colors);
       RELEASE(_images);
+      RELEASE(_oldImages);
       RELEASE(_icon);
       [self _revokeOwnerships];
       RELEASE(_owned);
@@ -652,6 +694,7 @@ typedef	struct {
 
   ASSIGN(_bundle, bundle);
   _images = [NSMutableDictionary new];
+  _oldImages = [NSMutableDictionary new];
   for (state = 0; state <= GSThemeSelectedState; state++)
     {
       _tiles[state] = [NSMutableDictionary new];
