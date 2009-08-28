@@ -1,3 +1,14 @@
+2009-08-28 17:19-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Images/common_DimpleH.tiff: Horizontal image for dimple.  This
+	image is not different from the vertical dimple for the default
+	theme.  It's here so that it can be overriden by a theme, if
+	needed.
+	* Images/GNUmakefile: Add new image.
+	* Source/GSThemeDrawing.m: Modify code in cellForScrollerKnob
+	to use common_Dimple.tiff or common_DimpleH.tiff depending
+	on the orientation of the scroller.
+
 2009-08-28 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTheme.m: Fixes to properly restore previous common images

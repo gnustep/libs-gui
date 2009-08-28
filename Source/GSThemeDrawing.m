@@ -348,15 +348,17 @@
 
   cell = [NSButtonCell new];
   [cell setButtonType: NSMomentaryChangeButton];
-  [cell setImage: [NSImage imageNamed: @"common_Dimple"]];
   [cell setImagePosition: NSImageOnly];
   if (horizontal)
     {
       [self setName: GSScrollerHorizontalKnob forElement: cell temporary: YES];
+      [cell setImage: [NSImage imageNamed: @"common_Dimple"]];
     }
   else
     {
       [self setName: GSScrollerVerticalKnob forElement: cell temporary: YES];
+      [cell setImage: [NSImage imageNamed: @"common_DimpleH"]];
+  
     }
   RELEASE(cell);
   return cell;

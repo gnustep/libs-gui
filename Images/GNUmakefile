@@ -88,6 +88,7 @@ common_UpAndDownArrowSmall.tiff \
 common_DownArrowSmall.tiff \
 common_Nibble.tiff \
 common_Dimple.tiff \
+common_DimpleH.tiff \
 common_ret.tiff \
 common_retH.tiff \
 common_Unknown.tiff \
