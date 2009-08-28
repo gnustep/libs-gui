@@ -352,12 +352,12 @@
   if (horizontal)
     {
       [self setName: GSScrollerHorizontalKnob forElement: cell temporary: YES];
-      [cell setImage: [NSImage imageNamed: @"common_Dimple"]];
+      [cell setImage: [NSImage imageNamed: @"common_DimpleHoriz"]];
     }
   else
     {
       [self setName: GSScrollerVerticalKnob forElement: cell temporary: YES];
-      [cell setImage: [NSImage imageNamed: @"common_DimpleHoriz"]];
+      [cell setImage: [NSImage imageNamed: @"common_Dimple"]];
   
     }
   RELEASE(cell);
