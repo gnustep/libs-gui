@@ -205,7 +205,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
   image = (NSImage*)[nameDict objectForKey: aName];
  
-  if (image == nil || [image _resource] == nil)
+  if (image == nil || [(id)image _resource] == nil)
     {
       NSString *ext;
       NSString *path = nil;
