@@ -2,6 +2,7 @@
 
 	* Source/GSTheme.m: Fixes to properly restore previous common images
 	when a theme is deactivated.
+	* Source/NSImage.m: Fix imageNamed to always return proxy.
 
 2009-08-27 Richard Frith-Macdonald <rfm@gnu.org>
 

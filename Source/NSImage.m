@@ -291,7 +291,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
               AUTORELEASE(image);
               image->_flags.archiveByName = YES;
             }
-          return image;
+          image = (NSImage*)[nameDict objectForKey: aName];
         }
     }
   
