@@ -1,3 +1,9 @@
+2009-08-31  Quentin Mathe <quentin.mathe@gmail.com>
+
+	* Images/nsmapping.strings: Added NSApplicationIcon to ensure -imageNamed: 
+	returns a non-nil image even when -[NSApplication finishLaunching] hasn't 
+	been called. The behavior is now the same than Cocoa.
+
 2009-08-28 17:32-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Images/common_DimpleHoriz.tiff: Add

@@ -2,6 +2,7 @@
    actual files where the GNUstep keeps them. The format is the "strings"
    format and content is trivial. */
 
+NSApplicationIcon = GNUstep;
 NSSwitch = common_SwitchOff;
 NSHighlightedSwitch = common_SwitchOn;
 NSRadioButton = common_RadioOff;
