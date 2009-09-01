@@ -2,6 +2,8 @@
 
 	* Source/GSToolTips.m: fix bug #25907 by ensuring windows is fully
 	displayed before we draw to it, and we then flush our drawing.
+	* Source/NSMenu.m: fix bug #27344 by telling the menu view that it
+	needs resizing every time we change menu title (or items).
 
 2009-08-31  Quentin Mathe <quentin.mathe@gmail.com>
 

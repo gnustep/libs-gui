@@ -676,6 +676,7 @@ static BOOL menuBarVisible = YES;
   
   [_items insertObject: newItem atIndex: index];
   _menu.needsSizing = YES;
+  [(NSMenuView*)_view setNeedsSizing: YES];
   
   // Create the notification for the menu representation.
   d = [NSDictionary
@@ -748,6 +749,7 @@ static BOOL menuBarVisible = YES;
   [anItem setMenu: nil];
   [_items removeObjectAtIndex: index];
   _menu.needsSizing = YES;
+  [(NSMenuView*)_view setNeedsSizing: YES];
   
   d = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt: index]
 		    forKey: @"NSMenuItemIndex"];
@@ -772,6 +774,7 @@ static BOOL menuBarVisible = YES;
     return;
 
   _menu.needsSizing = YES;
+  [(NSMenuView*)_view setNeedsSizing: YES];
 
   d = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt: index]
 		    forKey: @"NSMenuItemIndex"];
@@ -1264,6 +1267,7 @@ static BOOL menuBarVisible = YES;
   ASSIGN(_title, aTitle);
 
   _menu.needsSizing = YES;
+  [(NSMenuView*)_view setNeedsSizing: YES];
   if ([_aWindow isVisible] || [_bWindow isVisible])
     {
       [self sizeToFit];
@@ -1695,7 +1699,7 @@ static BOOL menuBarVisible = YES;
   if (_menu.transient)
     {
       NSDebugLLog (@"NSMenu", 
-                   @"trying to display while alreay displayed transient");
+                   @"trying to display while already displayed transient");
     }
 
   if (_menu.needsSizing)
