@@ -582,7 +582,11 @@ static BOOL		restoreMouseMoved;
 
   [window orderFront: nil];
 
+  [window setAutodisplay: NO];
+  [window display];
   [self _drawText: toolTipText];
+  [window flushWindow];
+
   RELEASE(toolTipText);
 }
 

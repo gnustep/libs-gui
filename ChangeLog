@@ -1,8 +1,14 @@
+2009-09-01 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSToolTips.m: fix bug #25907 by ensuring windows is fully
+	displayed before we draw to it, and we then flush our drawing.
+
 2009-08-31  Quentin Mathe <quentin.mathe@gmail.com>
 
-	* Images/nsmapping.strings: Added NSApplicationIcon to ensure -imageNamed: 
-	returns a non-nil image even when -[NSApplication finishLaunching] hasn't 
-	been called. The behavior is now the same than Cocoa.
+	* Images/nsmapping.strings: Added NSApplicationIcon to ensure
+	-imageNamed: returns a non-nil image even when
+	-[NSApplication finishLaunching] hasn't been called.
+	The behavior is now the same than Cocoa.
 
 2009-08-28 17:32-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
