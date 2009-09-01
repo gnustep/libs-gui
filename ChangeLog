@@ -1,3 +1,7 @@
+2009-09-01 19:45-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Images/common_ToolbarCustomizeToolbarItem.tiff: Minor cleanup
+
 2009-09-01 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSToolTips.m: fix bug #25907 by ensuring windows is fully
