@@ -1,3 +1,16 @@
+2009-09-04  Nicola  <nicola.pero@meta-innovation.com>
+
+	* Images/GNUmakefile: Rewritten using the standard
+	resource-set.make instead of duplicating resource installation
+	code in every makefile.  resource-set.make also has a lots of
+	additional features and provides robust, portable code.
+	* Sounds/GNUmakefile: Same change.
+	* Themes/GNUmakefile: Same change (this should also fix installing
+	gnustep-gui on Sun Solaris 7).
+	* Images/GNUmakefile.postamble: Removed.
+	* Sounds/GNUmakefile.postamble: Removed.
+	* Themes/GNUmakefile.postamble: Removed.
+	
 2009-09-01 19:45-EDT Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Images/common_ToolbarCustomizeToolbarItem.tiff: Minor cleanup

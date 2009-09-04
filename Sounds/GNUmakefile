@@ -2,8 +2,8 @@
 #  Sounds makefile for GNUstep GUI Library
 #  Copyright (C) 2009 Free Software Foundation, Inc.
 #
-#  Author:  Gregory Casamento <greg.casamento@gmail.com>
-#  Date:  July 2009
+#  Author: Nicola Pero <nicola.pero@meta-innovation.com>
+#  Date: September 2009
 #
 #  This file is part of the GNUstep GUI Library.
 #
@@ -29,27 +29,19 @@ include $(GNUSTEP_MAKEFILES)/common.make
 
 include ../Version
 
-sounddir = $(GNUSTEP_LIBRARY)/Sounds
+RESOURCE_SET_NAME = Sounds
+Sounds_INSTALL_DIR = $(GNUSTEP_LIBRARY)/Sounds
+Sounds_RESOURCE_FILES = \
+ Basso.wav \
+ Blow.wav \
+ Bottle.wav \
+ Frog.wav \
+ Glass.wav \
+ Hero.wav \
+ Ping.wav \
+ Pop.wav \
+ Sosumi.wav \
+ Submarine.wav \
+ Tink.wav
 
-SOUND_FILES = \
-Glass.wav \
-Basso.wav \
-Blow.wav \
-Bottle.wav \
-Frog.wav \
-Glass.wav \
-Hero.wav \
-Ping.wav \
-Pop.wav \
-Sosumi.wav \
-Submarine.wav \
-Tink.wav
-
--include GNUmakefile.preamble
-
--include GNUmakefile.local
-# We don't actually build anything in this directory so
-# just include the common makefile rules
-include $(GNUSTEP_MAKEFILES)/rules.make
-
-include GNUmakefile.postamble
+include $(GNUSTEP_MAKEFILES)/resource-set.make

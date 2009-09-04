@@ -2,8 +2,8 @@
 #  Themes makefile for GNUstep GUI Library
 #  Copyright (C) 2009 Free Software Foundation, Inc.
 #
-#  Author:  Gregory Casamento <greg.casamento@gmail.com>
-#  Date:  August 2009
+#  Author: Nicola Pero <nicola.pero@meta-innovation.com>
+#  Date: September 2009
 #
 #  This file is part of the GNUstep GUI Library.
 #
@@ -29,15 +29,12 @@ include $(GNUSTEP_MAKEFILES)/common.make
 
 include ../Version
 
-themedir = $(GNUSTEP_LIBRARY)/Themes
+#
+# We have no themes to install yet!  Once we have them, add them to
+# the Themes_RESOURCE_FILES variable.
+# 
+RESOURCE_SET_NAME = Themes
+Themes_INSTALL_DIR = $(GNUSTEP_LIBRARY)/Themes
+Themes_RESOURCE_FILES = 
 
-THEME_FILES =
-
--include GNUmakefile.preamble
-
--include GNUmakefile.local
-# We don't actually build anything in this directory so
-# just include the common makefile rules
-include $(GNUSTEP_MAKEFILES)/rules.make
-
-include GNUmakefile.postamble
+include $(GNUSTEP_MAKEFILES)/resource-set.make
