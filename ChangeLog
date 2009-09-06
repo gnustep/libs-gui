@@ -1,3 +1,9 @@
+2009-09-06 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPopUpButton.m (-selectedTag): Return the tag of the
+	selected item. 
+	Patch by Douglas Simons <doug.simons@testplant.com>.
+
 2009-09-04  Nicola  <nicola.pero@meta-innovation.com>
 
 	* Images/GNUmakefile: Rewritten using the standard

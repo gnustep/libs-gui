@@ -251,6 +251,14 @@ this to return nil to indicate that we have no context menu.
   return [_cell indexOfSelectedItem];
 }
 
+/**<p>Returns the tag of the selected item</p>
+   <p>See Also: [NSPopUpButtonCell-indexOfSelectedItem]</p>
+*/
+- (int) selectedTag
+{
+  return [[_cell selectedItem] tag];
+}
+
 - (void) selectItem: (id <NSMenuItem>)anObject
 {
   [self willChangeValueForKey: NSSelectedIndexBinding];
