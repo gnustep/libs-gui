@@ -1,5 +1,12 @@
 2009-09-07 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSScrollView.m (-initWithCoder:): Don't add the vertical
+	scroller directly into the subviews. Call tile to position all
+	subviews correctly.
+	Based on patch by Quentin Mathe <quentin.mathe@gmail.com>.
+
+2009-09-07 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSSearchFieldCell.h: Add version #ifdef's.
 	* Source/NSSearchFieldCell.m (-encodeWithCoder:, -initWithCoder:):
 	Correct encoding/decoding of maximumRecents.

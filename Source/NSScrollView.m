@@ -1559,24 +1559,24 @@ static float scrollerWidth;
           _borderType = scrollViewFlags.border;
         }
 
-      if (content != nil)
+      /* FIXME: This should only happen when we load a Mac NIB file.
+         And as far as I can tell tile is handling this correctly.
+      if (vScroller != nil && _hasVertScroller && content != nil)
         {
           // Move the content view since it is not moved when we retile.
           NSRect frame = [content frame];
           float w = [vScroller frame].size.width;
 
-          if (_hasVertScroller)
-            {
-              //
-              // Slide the content view over, since on Mac OS X the scroller is on the
-              // right, the content view is not properly positioned since our scroller
-              // is on the left.
-              //
-              frame.origin.x += w;
-              [content setFrame: frame];
-            }
+          //
+          // Slide the content view over, since on Mac OS X the scroller is on the
+          // right, the content view is not properly positioned since our scroller
+          // is on the left.
+          //
+          frame.origin.x += w;
+          [content setFrame: frame];
         }
-     
+      */
+
       if (hScroller != nil && _hasHorizScroller)
         {
           [self setHorizontalScroller: hScroller];
@@ -1595,10 +1595,10 @@ static float scrollerWidth;
           _headerClipView = [aDecoder decodeObjectForKey: @"NSHeaderClipView"];
         }
 
-      // [self tile];
       // set the document view into the content.
-      [self addSubview: vScroller];
       [self setContentView: content];
+      [self tile];
+      // Reenable notification sending.
       [docView setPostsFrameChangedNotifications: post_frame];
       [docView setPostsBoundsChangedNotifications: post_bound];
     }
@@ -1648,6 +1648,7 @@ static float scrollerWidth;
         {
           NSLog(@"unknown NSScrollView version (%d)", version);
           DESTROY(self);
+          return nil;
         }
       [self tile];
       
