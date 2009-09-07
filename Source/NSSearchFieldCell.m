@@ -150,12 +150,12 @@
   _sends_search_string_immediatly = flag;
 }
 
-- (int) maximumRecents
+- (NSInteger) maximumRecents
 { 
   return _max_recents;
 }
 
-- (void) setMaximumRecents: (int)max
+- (void) setMaximumRecents: (NSInteger)max
 {
   if (max > 254)
     {
@@ -448,22 +448,35 @@
 //
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
+  NSInteger max = [self maximumRecents];
+
   [super encodeWithCoder: aCoder];
 
-  [aCoder encodeObject: _search_button_cell];
-  [aCoder encodeObject: _cancel_button_cell];
-  [aCoder encodeObject: _recents_autosave_name];
-  [aCoder encodeValueOfObjCType: @encode(BOOL)
-			     at: &_sends_whole_search_string];
-  [aCoder encodeValueOfObjCType: @encode(unsigned int)
-			     at: &_max_recents];
+  if ([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeObject: _search_button_cell forKey: @"NSSearchButtonCell"];
+      [aCoder encodeObject: _cancel_button_cell forKey: @"NSCancelButtonCell"];
+      [aCoder encodeObject: _recents_autosave_name forKey: @"NSRecentsAutosaveName"];
+      [aCoder encodeBool: _sends_whole_search_string forKey: @"NSSendsWholeSearchString"];
+      [aCoder encodeInt: max forKey: @"NSMaximumRecents"];
+    }
+  else
+    {
+      [aCoder encodeObject: _search_button_cell];
+      [aCoder encodeObject: _cancel_button_cell];
+      [aCoder encodeObject: _recents_autosave_name];
+      [aCoder encodeValueOfObjCType: @encode(BOOL)
+              at: &_sends_whole_search_string];
+      [aCoder encodeValueOfObjCType: @encode(unsigned int)
+              at: &max];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   self = [super initWithCoder: aDecoder];
 
-  if(self != nil)
+  if (self != nil)
     {
       if ([aDecoder allowsKeyedCoding])
 	{
@@ -475,11 +488,14 @@
 	}
       else
 	{
+          NSInteger max;
+
 	  [self setSearchButtonCell: [aDecoder decodeObject]];
 	  [self setCancelButtonCell: [aDecoder decodeObject]];
 	  [self setRecentsAutosaveName: [aDecoder decodeObject]];
 	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_sends_whole_search_string];
-	  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &_max_recents];
+	  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &max];
+          [self setMaximumRecents: max];
 	}
       
       [self resetCancelButtonCell];
@@ -586,13 +602,13 @@
 
 	  for (j = 0; j < recentCount; j++)
 	    {
-	      NSMenuItem *searchItem = [popupmenu addItemWithTitle: 
+	      id <NSMenuItem> searchItem = [popupmenu addItemWithTitle: 
 						    [_recent_searches objectAtIndex: j]
 						  action: 
 						    @selector(_searchForRecent:)
 						  keyEquivalent: 
 						    [item keyEquivalent]];
-	      [searchItem setTarget:self];
+	      [searchItem setTarget: self];
 	    }
 	}
       else // copy all other items without special tags from the template into the popup
@@ -602,7 +618,7 @@
 
       if (newItem != nil)
 	{
-	  [popupmenu addItem:newItem];
+	  [popupmenu addItem: newItem];
 	}
     } 
 

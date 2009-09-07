@@ -1,3 +1,10 @@
+2009-09-07 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSSearchFieldCell.h: Add version #ifdef's.
+	* Source/NSSearchFieldCell.m (-encodeWithCoder:, -initWithCoder:):
+	Correct encoding/decoding of maximumRecents.
+	Based on patch by Quentin Mathe <quentin.mathe@gmail.com>.
+
 2009-09-06 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPopUpButton.m (-selectedTag): Return the tag of the

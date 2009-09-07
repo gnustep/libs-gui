@@ -30,6 +30,8 @@
 #ifndef _GNUstep_H_NSSearchFieldCell
 #define _GNUstep_H_NSSearchFieldCell
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+
 #include <AppKit/NSTextFieldCell.h>
 
 @class NSButtonCell;
@@ -75,12 +77,14 @@ enum
 // search mode
 - (BOOL) sendsWholeSearchString;
 - (void) setSendsWholeSearchString: (BOOL)flag;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 - (BOOL) sendsSearchStringImmediately;
 - (void) setSendsSearchStringImmediately: (BOOL)flag;
+#endif
 
 // search results
-- (int) maximumRecents;
-- (void) setMaximumRecents: (int)max;
+- (NSInteger) maximumRecents;
+- (void) setMaximumRecents: (NSInteger)max;
 - (NSArray *) recentSearches;
 - (NSString *) recentsAutosaveName;
 - (void) setRecentSearches: (NSArray *)searches;
@@ -88,4 +92,5 @@ enum
 
 @end
 
+#endif
 #endif /* _GNUstep_H_NSSearchFieldCell */
