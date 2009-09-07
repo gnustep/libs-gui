@@ -48,7 +48,7 @@
  * placed in a menu as a menu item.  The [NSMenuItem] class provides
  * a reference implementation suitable for most uses.
  */
-@protocol NSMenuItem <NSCopying, NSCoding, NSObject>
+@protocol NSMenuItem <NSValidatedUserInterfaceItem, NSCopying, NSCoding, NSObject>
 
 /**
    <p> Returns a seperator.   This is just a blank menu item which serves 
