@@ -1989,14 +1989,9 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
     }
   else
     {
-      if (_gstate)
+      if (_gstate && !_renew_gstate)
         {
           DPSsetgstate(ctxt, _gstate);
-          if (_renew_gstate)
-            {
-              [self setUpGState];
-              _renew_gstate = NO;
-            }
           DPSgsave(ctxt);
         }
       else
@@ -2011,13 +2006,19 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
           _renew_gstate = NO;
           if (_allocate_gstate)
             {
-              _gstate = GSDefineGState(ctxt);
+              if (_gstate)
+                {
+                  GSReplaceGState(ctxt, _gstate);
+                }
+              else
+                {
+                  _gstate = GSDefineGState(ctxt);
+                }
               /* Balance the previous gsave and install our own gstate */
               DPSgrestore(ctxt);
               DPSsetgstate(ctxt, _gstate);
               DPSgsave(ctxt);
             }
-          
         }
     }
 

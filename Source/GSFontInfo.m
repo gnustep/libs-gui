@@ -111,7 +111,7 @@ static GSFontEnumerator *sharedEnumerator = nil;
       NSEnumerator *keyEnumerator;
       NSString *family;
       
-      fontDescriptors = [NSMutableArray array];
+      fontDescriptors = [[NSMutableArray alloc] init];
       keyEnumerator = [allFontFamilies keyEnumerator];
       while ((family = [keyEnumerator nextObject]) != nil)
         {

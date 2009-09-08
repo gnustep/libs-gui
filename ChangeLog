@@ -1,3 +1,10 @@
+2009-09-09 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSView.m (-_lockFocusInContext:inRect:): Correct the
+	handling of renewgstate.
+	* Source/GSFontInfo.m (GSFontEnumerator-availableFontDescriptors):
+	Retain the generated list of font descriptors.
+
 2009-09-07 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSMenuItem.h: Let the protocol NSMenuItem
