@@ -1,9 +1,12 @@
 2009-09-10 Richard Frith-Macdonald <rfm@gnu.org>
 
-	* Source/GSInfoPanel.m: When trying to locate image, try
-	the applicationIconImage method before trying the image
-	named NSApplicationIcon (the generic app icon).  That way we get
-	the actual icon used by the application.
+	* Source/NSApplication.m: ([-setApplicationIconImage:]) ensure that
+	the new image has its name set to NSApplicationIcon
+	* Source/NSImage: ([+imageNamed:]) fixed bug exposed by recent change
+	of nsmappings.strings file.  The old code was using the mapped names
+	as the image names which meant that a subsequent ([-setName:]) using
+	the unmapped name would not effect the image retrieved by later calls
+	to ([+imageNamed:]).
 
 2009-09-09 Fred Kiefer <FredKiefer@gmx.de>
 

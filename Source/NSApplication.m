@@ -2210,12 +2210,17 @@ image.</p><p>See Also: -applicationIconImage</p>
   NSSize imageSize = [anImage size];
 
   RETAIN(old_app_icon);
-  [_app_icon setName: nil];
 
   // Use a copy as we change the name and size
   ASSIGNCOPY(_app_icon, anImage);
 
+  /* Set the new image to be named 'NSApplicationIcon' ... to do that we
+   * must first check that any existing eimage of the same name has their
+   * name removed.
+   */
+  [(NSImage*)[NSImage imageNamed: @"NSApplicationIcon"] setName: nil];
   [_app_icon setName: @"NSApplicationIcon"];
+
   [_app_icon setScalesWhenResized: YES];
 
   if (miniWindowSize.width <= 0 || miniWindowSize.height <= 0) 

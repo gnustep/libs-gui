@@ -179,7 +179,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     {
       NSString *path = [NSBundle pathForLibraryResource: @"nsmapping"
                                                  ofType: @"strings"
-                                             inDirectory: @"Images"];
+                                            inDirectory: @"Images"];
 
       // Initial version
       [self setVersion: 1];
@@ -197,27 +197,32 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 + (id) imageNamed: (NSString *)aName
 {
-  NSString *realName = [nsmapping objectForKey: aName];
-  NSImage *image;
-
-  if (realName)
-    aName = realName;
-
-  image = (NSImage*)[nameDict objectForKey: aName];
+  NSImage	*image = (NSImage*)[nameDict objectForKey: aName];
  
+  /* 2009-09-10 changed operation of nsmapping so that the loaded
+   * image is stored under the key 'aName', not under the mapped
+   * name.  That way the image is created with the correct name and
+   * a later call to -setName: will work properly.
+   */
   if (image == nil || [(id)image _resource] == nil)
     {
-      NSString *ext;
-      NSString *path = nil;
-      NSBundle *main_bundle;
-      NSArray  *array;
-      NSString *the_name = aName;
+      NSString	*realName = [nsmapping objectForKey: aName];
+      NSString	*ext;
+      NSString	*path = nil;
+      NSBundle	*main_bundle;
+      NSArray	*array;
+
+      if (realName == nil)
+	{
+          realName = aName;
+	}
+ 
 
       // FIXME: This should use [NSBundle pathForImageResource], but this will 
       // only allow imageUnfilteredFileTypes.
       /* If there is no image with that name, search in the main bundle */
       main_bundle = [NSBundle mainBundle];
-      ext = [aName pathExtension];
+      ext = [realName pathExtension];
       if (ext != nil && [ext length] == 0)
         {
           ext = nil;
@@ -225,23 +230,22 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
       /* Check if extension is one of the image types */
       array = [self imageFileTypes];
-      if ([array indexOfObject: ext] != NSNotFound)
+      if (ext != nil && [array indexOfObject: ext] != NSNotFound)
         {
           /* Extension is one of the image types
              So remove from the name */
-          the_name = [aName stringByDeletingPathExtension];
+          realName = [realName stringByDeletingPathExtension];
         }
       else
         {
           /* Otherwise extension is not an image type
              So leave it alone */
-          the_name = aName;
           ext = nil;
         }
 
       /* First search locally */
       if (ext)
-        path = [main_bundle pathForResource: the_name ofType: ext];
+        path = [main_bundle pathForResource: realName ofType: ext];
       else 
         {
           id o, e;
@@ -249,8 +253,8 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
           e = [array objectEnumerator];
           while ((o = [e nextObject]))
             {
-              path = [main_bundle pathForResource: the_name 
-                        ofType: o];
+              path = [main_bundle pathForResource: realName 
+					   ofType: o];
               if (path != nil && [path length] != 0)
                 break;
             }
@@ -261,7 +265,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
         {
           if (ext)
             {
-              path = [NSBundle pathForLibraryResource: the_name
+              path = [NSBundle pathForLibraryResource: realName
                                                ofType: ext
                                           inDirectory: @"Images"];
             }
@@ -272,8 +276,8 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
               e = [array objectEnumerator];
               while ((o = [e nextObject]))
                 {
-                  path = [NSBundle pathForLibraryResource: the_name
-                                                          ofType: o
+                  path = [NSBundle pathForLibraryResource: realName
+						   ofType: o
                                               inDirectory: @"Images"];
                   if (path != nil && [path length] != 0)
                     break;
