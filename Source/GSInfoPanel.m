@@ -282,10 +282,9 @@ new_label (NSString *value)
   
   if (nil_or_not_of_class (icon, [NSImage class]))
     {
-      icon = [NSImage imageNamed: @"NSApplicationIcon"];
-      
+      icon = [NSApp applicationIconImage];
       if (nil_or_not_of_class (icon, [NSImage class]))
-	icon = [NSApp applicationIconImage];
+        icon = [NSImage imageNamed: @"NSApplicationIcon"];
     }
   /* Release */
   if (dictionary)

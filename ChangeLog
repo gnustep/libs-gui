@@ -1,3 +1,10 @@
+2009-09-10 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSInfoPanel.m: When trying to locate image, try
+	the applicationIconImage method before trying the image
+	named NSApplicationIcon (the generic app icon).  That way we get
+	the actual icon used by the application.
+
 2009-09-09 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSView.m (-_lockFocusInContext:inRect:): Correct the
