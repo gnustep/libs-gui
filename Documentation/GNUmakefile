@@ -84,8 +84,8 @@ GuiAdditions_DOC_INSTALL_DIR = Developer/Gui/Additions
 -include GNUmakefile.local
 
 include $(GNUSTEP_MAKEFILES)/aggregate.make
-include $(GNUSTEP_MAKEFILES)/documentation.make
 include $(GNUSTEP_MAKEFILES)/aggregate.make
+include $(GNUSTEP_MAKEFILES)/documentation.make
 
 -include GNUmakefile.postamble
 
