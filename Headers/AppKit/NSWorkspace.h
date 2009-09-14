@@ -43,6 +43,26 @@
 @class NSView;
 @class NSURL;
 
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+enum {
+  NSWorkspaceLaunchAndPrint                  = 0x2,
+  NSWorkspaceLaunchInhibitingBackgroundOnly  = 0x80,
+  NSWorkspaceLaunchWithoutAddingToRecents    = 0x100,
+  NSWorkspaceLaunchWithoutActivation         = 0x200,
+  NSWorkspaceLaunchAsync                     = 0x10000,
+  NSWorkspaceLaunchAllowingClassicStartup    = 0x20000,
+  NSWorkspaceLaunchPreferringClassic         = 0x40000,
+  NSWorkspaceLaunchNewInstance               = 0x80000,
+  NSWorkspaceLaunchAndHide                   = 0x100000,
+  NSWorkspaceLaunchAndHideOthers             = 0x200000,
+  NSWorkspaceLaunchDefault                   = NSWorkspaceLaunchAsync | NSWorkspaceLaunchAllowingClassicStartup
+};
+
+typedef NSUInteger NSWorkspaceLaunchOptions;
+#endif
+
+
 @interface NSWorkspace : NSObject
 {
   NSMutableDictionary	*_iconMap;
