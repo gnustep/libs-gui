@@ -38,7 +38,10 @@
 @class NSEvent;
 
 typedef enum _NSScrollArrowPosition {
-  NSScrollerArrowsMaxEnd,
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_1, GS_API_LATEST)
+  NSScrollerArrowsDefaultSetting = 0,
+#endif
+  NSScrollerArrowsMaxEnd = 0,
   NSScrollerArrowsMinEnd,
   NSScrollerArrowsNone 
 } NSScrollArrowPosition;
@@ -60,29 +63,33 @@ typedef enum _NSScrollerUsablePart {
 } NSUsableScrollerParts;
 
 typedef enum _NSScrollerArrow {
-  NSScrollerIncrementArrow,
+  NSScrollerIncrementArrow = 0,
   NSScrollerDecrementArrow
 } NSScrollerArrow;
 
 @interface NSScroller : NSControl <NSCoding>
 {
-  float _floatValue;
+  double _doubleValue;
   float _knobProportion;
   float _pendingKnobProportion;
   id _target;
   SEL _action;
-  BOOL _isHorizontal;
-  BOOL _isEnabled;
   NSScrollerPart _hitPart;
   NSScrollArrowPosition _arrowsPosition;
   NSUsableScrollerParts _usableParts;
-  BOOL _cacheValid;
+  struct _scFlagsType { 
+    // total 7 bits.  25 bits left.
+    unsigned isHorizontal: 1;
+    unsigned isEnabled: 1;
+    unsigned control_tint: 3;
+    unsigned control_size: 2;
+  } _scFlags;
 }
 
 //
 // Laying out the NSScroller 
 //
-+ (float)scrollerWidth;
++ (CGFloat)scrollerWidth;
 - (NSScrollArrowPosition)arrowsPosition;
 - (void)checkSpaceForParts;
 - (NSRect)rectForPart:(NSScrollerPart)partCode;
@@ -92,8 +99,10 @@ typedef enum _NSScrollerArrow {
 //
 // Setting the NSScroller's Values
 //
-- (float)knobProportion;
-- (void)setFloatValue:(float)aFloat knobProportion:(float)ratio;
+- (CGFloat)knobProportion;
+#if OS_API_VERSION(GS_API_MACOSX, MAC_OS_X_VERSION_10_5)
+- (void)setFloatValue:(float)aFloat knobProportion:(CGFloat)ratio;
+#endif
 
 //
 // Displaying 
@@ -117,11 +126,16 @@ typedef enum _NSScrollerArrow {
 - (void)trackScrollButtons:(NSEvent *)theEvent;
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
-+ (float)scrollerWidthForControlSize:(NSControlSize)controlSize;
++ (CGFloat)scrollerWidthForControlSize:(NSControlSize)controlSize;
 - (void)setControlSize:(NSControlSize)controlSize;
 - (NSControlSize)controlSize;
 - (void)setControlTint:(NSControlTint)controlTint;
 - (NSControlTint)controlTint;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (void)setKnobProportion:(CGFloat)proportion;
+- (void)drawKnobSlotInRect:(NSRect)slotRect highlight:(BOOL)flag;
 #endif
 
 @end

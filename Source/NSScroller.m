@@ -106,6 +106,12 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
  */
 + (float) scrollerWidth
 {
+  return [self scrollerWidthForControlSize: NSRegularControlSize];
+}
+
++ (float) scrollerWidthForControlSize: (NSControlSize)controlSize
+{
+  // FIXME
   if (scrollerWidth == 0.0)
     {
       scrollerWidth = [[GSTheme theme] defaultScrollerWidth];  
@@ -164,9 +170,14 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
   return _hitPart;
 }
 
+- (double) doubleValue
+{
+  return _doubleValue;
+}
+
 - (float) floatValue
 {
-  return _floatValue;
+  return _doubleValue;
 }
 
 - (void) setAction: (SEL)action
@@ -193,11 +204,30 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 {
   [super encodeWithCoder: aCoder];
 
-  [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_arrowsPosition];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isEnabled];
-  [aCoder encodeConditionalObject: _target];
-  [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
-  /* We do not save float value, knob proportion. */
+  if ([aCoder allowsKeyedCoding])
+    {
+      if (_target)
+        {
+          [aCoder encodeObject: _target forKey: @"NSTarget"];
+        }
+      if (_action != NULL)
+        {
+          [aCoder encodeObject: NSStringFromSelector(_action) forKey: @"NSAction"];
+        }
+      [aCoder encodeFloat: [self floatValue] forKey: @"NSCurValue"];
+      [aCoder encodeFloat: [self knobProportion] * 100.0 forKey: @"NSPercent"];
+    }
+  else
+    {
+      BOOL flag;
+
+      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_arrowsPosition];
+      flag = _scFlags.isEnabled;
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [aCoder encodeConditionalObject: _target];
+      [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
+      /* We do not save float value, knob proportion. */
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -206,51 +236,64 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 
   if ([aDecoder allowsKeyedCoding])
     {
-      NSString *action = [aDecoder decodeObjectForKey: @"NSAction"];
-      id target = [aDecoder decodeObjectForKey: @"NSTarget"];
-      float value = 0.0;
-      float percent = 0.0;
-      int flags;
-
       if (_frame.size.width > _frame.size.height)
         {
-	  _isHorizontal = YES;
+	  _scFlags.isHorizontal = YES;
 	}
       else
         {
-	  _isHorizontal = NO;
+	  _scFlags.isHorizontal = NO;
 	}
 
-      if (_isHorizontal)
+      if (_scFlags.isHorizontal)
         {
-	  _floatValue = 0.0;
+	  _doubleValue = 0.0;
 	}
       else
         {
-	  _floatValue = 1.0;
+	  _doubleValue = 1.0;
 	}
 
-      if (action != nil)
+      if ([aDecoder containsValueForKey: @"NSAction"])
         {
-	  [self setAction: NSSelectorFromString(action)];
-	}
-      [self setTarget: target];
-      
+          NSString *action = [aDecoder decodeObjectForKey: @"NSAction"];
+          if (action != nil)
+            {
+              [self setAction: NSSelectorFromString(action)];
+            }
+        }
+      if ([aDecoder containsValueForKey: @"NSTarget"])
+        {
+          id target = [aDecoder decodeObjectForKey: @"NSTarget"];
+          [self setTarget: target];
+        }
       if ([aDecoder containsValueForKey: @"NSCurValue"])
         {
-	  value = [aDecoder decodeFloatForKey: @"NSCurValue"];
+	  float value = [aDecoder decodeFloatForKey: @"NSCurValue"];
+          [self setFloatValue: value];
 	}
       if ([aDecoder containsValueForKey: @"NSPercent"])
         {
-	  percent = [aDecoder decodeFloatForKey: @"NSPercent"];
+	  float percent = [aDecoder decodeFloatForKey: @"NSPercent"];
+          [self setKnobProportion: percent / 100.0];
 	}
-      [self setFloatValue: value knobProportion: percent];
 
       if ([aDecoder containsValueForKey: @"NSsFlags"])
         {
+          int flags;
+
 	  flags = [aDecoder decodeIntForKey: @"NSsFlags"];
 	  // is horiz is set above...
-	  
+          [self setControlTint: ((flags >> 16) & 7)];
+          [self setArrowsPosition: ((flags >> 29) & 3)];
+          _usableParts = ((flags >> 27) & 3);
+	}
+      if ([aDecoder containsValueForKey: @"NSsFlags2"])
+        {
+          int flags2;
+
+	  flags2 = [aDecoder decodeIntForKey: @"NSsFlags2"];
+          [self setControlSize: ((flags2 >> 26) & 3)];
 	}
 
       // setup...
@@ -261,33 +304,36 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
     }
   else
     {
+      BOOL flag;
+
       if (_frame.size.width > _frame.size.height)
         {
-	  _isHorizontal = YES;
+	  _scFlags.isHorizontal = YES;
 	}
       else
         {
-	  _isHorizontal = NO;
+	  _scFlags.isHorizontal = NO;
 	}
 
-      if (_isHorizontal)
+      if (_scFlags.isHorizontal)
         {
-	  _floatValue = 0.0;
+	  _doubleValue = 0.0;
 	}
       else
         {
-	  _floatValue = 1.0;
+	  _doubleValue = 1.0;
 	}
-      
-      _hitPart = NSScrollerNoPart;
       
       [aDecoder decodeValueOfObjCType: @encode(unsigned int)
 				   at: &_arrowsPosition];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isEnabled];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _scFlags.isEnabled = flag;
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_target];
       // Undo RETAIN by decoder
       TEST_RELEASE(_target);
       [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
+
+      _hitPart = NSScrollerNoPart;
 
       [self drawParts];
       [self checkSpaceForParts];
@@ -308,39 +354,36 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
    */
   if (frameRect.size.width > frameRect.size.height)
     {
-      _isHorizontal = YES;
+      _scFlags.isHorizontal = YES;
       frameRect.size.height = [isa scrollerWidth];
     }
   else
     {
-      _isHorizontal = NO;
+      _scFlags.isHorizontal = NO;
       frameRect.size.width = [isa scrollerWidth];
     }
 
-  [super initWithFrame: frameRect];
+  self = [super initWithFrame: frameRect];
+  if (!self)
+    return nil;
 
-  if (_isHorizontal)
+  if (_scFlags.isHorizontal)
     {
       _arrowsPosition = NSScrollerArrowsMinEnd;
-      _floatValue = 0.0;
+      _doubleValue = 0.0;
     }
   else
     {
       _arrowsPosition = NSScrollerArrowsMaxEnd;
-      _floatValue = 1.0;
+      _doubleValue = 1.0;
     }
 
   _hitPart = NSScrollerNoPart;
-  [self drawParts];
   [self setEnabled: NO];
+  [self drawParts];
   [self checkSpaceForParts];
 
   return self;
-}
-
-- (id) init
-{
-  return [self initWithFrame: NSZeroRect];
 }
 
 /**
@@ -411,9 +454,9 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 
 - (void) checkSpaceForParts
 {
-  NSSize	frameSize = _frame.size;
-  float		size = (_isHorizontal ? frameSize.width : frameSize.height);
-  int		buttonsWidth = [isa scrollerWidth] - buttonsOffset;
+  NSSize frameSize = _frame.size;
+  float size = (_scFlags.isHorizontal ? frameSize.width : frameSize.height);
+  int buttonsWidth = [isa scrollerWidth] - buttonsOffset;
 
   if (_arrowsPosition == NSScrollerArrowsNone)
     {
@@ -445,13 +488,12 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 
 - (void) setEnabled: (BOOL)flag
 {
-  if (_isEnabled == flag)
+  if (_scFlags.isEnabled == flag)
     {
       return;
     }
 
-  _isEnabled = flag;
-  _cacheValid = NO;
+  _scFlags.isEnabled = flag;
   [self setNeedsDisplay: YES];
 }
 
@@ -472,62 +514,61 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
     }
   
   _arrowsPosition = where;
-  _cacheValid = NO;
   [self setNeedsDisplay: YES];
 }
 
 - (void) setFloatValue: (float)aFloat
 {
-  if (_floatValue == aFloat)
+  [self setDoubleValue: aFloat];
+}
+
+- (void) setDoubleValue: (double)aDouble
+{
+  if (_doubleValue == aDouble)
     {
       /* Most likely our trackKnob method initiated this via NSScrollView */
       return;
     }
-  if (aFloat < 0)
+  if (aDouble < 0.0)
     {
-      _floatValue = 0;
+      _doubleValue = 0.0;
     }
-  else if (aFloat > 1)
+  else if (aDouble > 1.0)
     {
-      _floatValue = 1;
+      _doubleValue = 1.0;
     }
   else
     {
-      _floatValue = aFloat;
+      _doubleValue = aDouble;
     }
 
   [self setNeedsDisplayInRect: [self rectForPart: NSScrollerKnobSlot]];
 }
 
-- (void) setFloatValue: (float)aFloat knobProportion: (float)ratio
+- (void) setKnobProportion: (CGFloat)proportion
 {
-  if (_floatValue == aFloat && _knobProportion == ratio)
+  if (_knobProportion == proportion)
     {
       /* Most likely our trackKnob method initiated this via NSScrollView */
       return;
     }
 
-  if (ratio < 0)
+  if (proportion < 0.0)
     {
-      _pendingKnobProportion = 0;
+      _knobProportion = 0.0;
     }
-  else if (ratio > 1)
+  else if (proportion > 1.0)
     {
-      _pendingKnobProportion = 1;
+      _knobProportion = 1.0;
     }
   else
     {
-      _pendingKnobProportion = ratio;
+      _knobProportion = proportion;
     }
-    
-  if (_hitPart == NSScrollerNoPart)
-    {
-      _knobProportion = _pendingKnobProportion;
-      _pendingKnobProportion = 0;
-    }
+  [self setNeedsDisplayInRect: [self rectForPart: NSScrollerKnobSlot]];
 
   // Handle the case when parts should disappear
-  if (_knobProportion == 1)
+  if (_knobProportion == 1.0)
     {
       [self setEnabled: NO];
     }
@@ -535,12 +576,24 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
     {
       [self setEnabled: YES];
     }
-  
+}
+
+- (void) setFloatValue: (float)aFloat knobProportion: (CGFloat)ratio
+{
+  if (_hitPart == NSScrollerNoPart)
+    {
+      [self setKnobProportion: ratio];
+    }
+  else
+    {
+      _pendingKnobProportion = ratio;
+    }
+
   // Don't set float value if knob is being dragged
   if (_hitPart != NSScrollerKnobSlot && _hitPart != NSScrollerKnob)
     {
       /* Make sure we mark ourselves as needing redisplay.  */
-      _floatValue = -1;
+      _doubleValue = -1;
 
       [self setFloatValue: aFloat];
     }
@@ -553,12 +606,12 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
    */
   if (frameRect.size.width > frameRect.size.height)
     {
-      _isHorizontal = YES;
+      _scFlags.isHorizontal = YES;
       frameRect.size.height = [isa scrollerWidth];
     }
   else
     {
-      _isHorizontal = NO;
+      _scFlags.isHorizontal = NO;
       frameRect.size.width = [isa scrollerWidth];
     }
 
@@ -566,7 +619,7 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 
   if (_arrowsPosition != NSScrollerArrowsNone)
     {
-      if (_isHorizontal)
+      if (_scFlags.isHorizontal)
 	{
 	  _arrowsPosition = NSScrollerArrowsMinEnd;
 	}
@@ -577,23 +630,48 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
     }
 
   _hitPart = NSScrollerNoPart;
-  _cacheValid = NO;
   [self checkSpaceForParts];
 }
 
 - (void) setFrameSize: (NSSize)size
 {
+  /*
+   * determine the orientation of the scroller and adjust it's size accordingly
+   */
+  if (size.width > size.height)
+    {
+      _scFlags.isHorizontal = YES;
+      size.height = [isa scrollerWidth];
+    }
+  else
+    {
+      _scFlags.isHorizontal = NO;
+      size.width = [isa scrollerWidth];
+    }
+
   [super setFrameSize: size];
+
+  if (_arrowsPosition != NSScrollerArrowsNone)
+    {
+      if (_scFlags.isHorizontal)
+	{
+	  _arrowsPosition = NSScrollerArrowsMinEnd;
+	}
+      else
+	{
+	  _arrowsPosition = NSScrollerArrowsMaxEnd;
+	}
+    }
+
+  _hitPart = NSScrollerNoPart;
   [self checkSpaceForParts];
-  _cacheValid = NO;
-  [self setNeedsDisplay: YES];
 }
 
 /**<p>Returns the NSScroller's part under the point <var>thePoint</var>.
    See <ref type="type" id="NSScrollerPart">NSScrollerPart</ref> for more 
    informations</p>   
  */
-- (NSScrollerPart)testPart: (NSPoint)thePoint
+- (NSScrollerPart) testPart: (NSPoint)thePoint
 {
   /*
    * return what part of the scroller the mouse hit
@@ -635,7 +713,7 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
   return NSScrollerNoPart;
 }
 
-- (float) _floatValueForMousePoint: (NSPoint)point
+- (double) _doubleValueForMousePoint: (NSPoint)point
 {
   NSRect knobRect = [self rectForPart: NSScrollerKnob];
   NSRect slotRect = [self rectForPart: NSScrollerKnobSlot];
@@ -646,7 +724,7 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
   /*
    * Compute limits and mouse position
    */
-  if (_isHorizontal)
+  if (_scFlags.isHorizontal)
     {
       min_pos = NSMinX(slotRect) + NSWidth(knobRect) / 2;
       max_pos = NSMaxX(slotRect) - NSWidth(knobRect) / 2;
@@ -692,10 +770,10 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 
       case NSScrollerKnobSlot:
 	{
-	  float floatValue = [self _floatValueForMousePoint: 
+	  double doubleValue = [self _doubleValueForMousePoint: 
 				     [self convertPoint: location
 					   fromView: nil]];
-	  if (floatValue != _floatValue)
+	  if (doubleValue != _doubleValue)
 	    {
 	      NSInterfaceStyle interfaceStyle;
 
@@ -707,14 +785,14 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 		{
 		  /* NeXTstep style is to scroll to point.
 		   */
-	          [self setFloatValue: floatValue];
+	          [self setDoubleValue: doubleValue];
 	          [self sendAction: _action to: _target];
 		}
 	      else
 		{
 		  /* Windows style is to scroll by a page.
 		   */
-		  if (floatValue > _floatValue)
+		  if (doubleValue > _doubleValue)
 		    {
 		      _hitPart = NSScrollerIncrementPage;
 		    }
@@ -736,7 +814,8 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
   _hitPart = NSScrollerNoPart;
   if (_pendingKnobProportion)
     {
-      [self setFloatValue: _floatValue knobProportion: _pendingKnobProportion];
+      [self setKnobProportion: _pendingKnobProportion];
+      _pendingKnobProportion = 0.0;
     }
   else
     {
@@ -751,7 +830,7 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
   NSPoint	point;
   float		lastPosition;
   float		newPosition;
-  float		floatValue;
+  double	doubleValue;
   float		offset;
   float		initialOffset;
   NSEvent	*presentEvent = theEvent;
@@ -762,7 +841,7 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
   knobRect = [self rectForPart: NSScrollerKnob];
 
   point = [self convertPoint: [theEvent locationInWindow] fromView: nil];
-  if (_isHorizontal)
+  if (_scFlags.isHorizontal)
     {
       lastPosition = NSMidX(knobRect);
       offset = lastPosition - point.x;
@@ -801,7 +880,7 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
        point = [self convertPoint: [presentEvent locationInWindow] 
 			 fromView: nil];
 
-       if (_isHorizontal)
+       if (_scFlags.isHorizontal)
          newPosition = point.x + offset;
        else
 	 newPosition = point.y + offset;
@@ -823,13 +902,13 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 	       offset = initialOffset;
 	     }
 
-           // only one coordinate (X or Y) is used to compute floatValue.
+           // only one coordinate (X or Y) is used to compute doubleValue.
            point = NSMakePoint(newPosition, newPosition);
-	   floatValue = [self _floatValueForMousePoint: point];
+	   doubleValue = [self _doubleValueForMousePoint: point];
 
-	   if (floatValue != _floatValue)
+	   if (doubleValue != _doubleValue)
 	     {
-	       [self setFloatValue: floatValue];
+	       [self setDoubleValue: doubleValue];
 	       [self sendAction: _action to: _target];
 	     }
 	      
@@ -855,15 +934,11 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 
 - (void) trackScrollButtons: (NSEvent*)theEvent
 {
-  id		theCell = nil;
-  NSRect	rect;
-
-  [self lockFocus];
+  id theCell = nil;
 
   NSDebugLog (@"trackScrollButtons");
 
   _hitPart = [self testPart: [theEvent locationInWindow]];
-  rect = [self rectForPart: _hitPart];
 
   /*
    * A hit on a scroller button should be a page movement
@@ -878,7 +953,7 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 	  }
 	/* Fall through to next case */
       case NSScrollerIncrementPage:
-	theCell = (_isHorizontal ? rightCell : downCell);
+	theCell = (_scFlags.isHorizontal ? rightCell : downCell);
 	break;
 
       case NSScrollerDecrementLine:
@@ -888,7 +963,7 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 	  }
 	/* Fall through to next case */
       case NSScrollerDecrementPage:
-	theCell = (_isHorizontal ? leftCell : upCell);
+	theCell = (_scFlags.isHorizontal ? leftCell : upCell);
 	break;
 
       default:
@@ -902,6 +977,10 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
    */
   if (theCell)
     {
+      NSRect rect = [self rectForPart: _hitPart];
+
+      [self lockFocus];
+
       [theCell highlight: YES withFrame: rect inView: self];
       [_window flushWindow];
 
@@ -918,8 +997,9 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 
       [theCell highlight: NO withFrame: rect inView: self];
       [_window flushWindow];
+
+      [self unlockFocus];
     }
-  [self unlockFocus];
 
   NSDebugLog (@"return from trackScrollButtons");
 }
@@ -929,21 +1009,13 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
  */
 - (void) drawRect: (NSRect)rect
 {
-  static NSRect rectForPartIncrementLine;
-  static NSRect rectForPartDecrementLine;
-  static NSRect rectForPartKnobSlot;
+  NSRect rectForPartIncrementLine;
+  NSRect rectForPartDecrementLine;
+  NSRect rectForPartKnobSlot;
 
-  if (upCell == nil)
-    {
-      [self drawParts];
-      [self checkSpaceForParts];
-    }
-  if (_cacheValid == NO)
-    {
-      rectForPartIncrementLine = [self rectForPart: NSScrollerIncrementLine];
-      rectForPartDecrementLine = [self rectForPart: NSScrollerDecrementLine];
-      rectForPartKnobSlot = [self rectForPart: NSScrollerKnobSlot];
-    }
+  rectForPartIncrementLine = [self rectForPart: NSScrollerIncrementLine];
+  rectForPartDecrementLine = [self rectForPart: NSScrollerDecrementLine];
+  rectForPartKnobSlot = [self rectForPart: NSScrollerKnobSlot];
 
   [[_window backgroundColor] set];
   NSRectFill (rect);
@@ -956,11 +1028,13 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 
   if (NSIntersectsRect (rect, rectForPartDecrementLine) == YES)
     {
-      [self drawArrow: NSScrollerDecrementArrow highlight: NO];
+      [self drawArrow: NSScrollerDecrementArrow 
+            highlight: _hitPart == NSScrollerDecrementLine];
     }
   if (NSIntersectsRect (rect, rectForPartIncrementLine) == YES)
     {
-      [self drawArrow: NSScrollerIncrementArrow highlight: NO];
+      [self drawArrow: NSScrollerIncrementArrow 
+            highlight: _hitPart == NSScrollerIncrementLine];
     }
 }
 
@@ -988,10 +1062,10 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
   switch (whichButton)
     {
       case NSScrollerDecrementArrow:
-	theCell = (_isHorizontal ? leftCell : upCell);
+	theCell = (_scFlags.isHorizontal ? leftCell : upCell);
 	break;
       case NSScrollerIncrementArrow:
-	theCell = (_isHorizontal ? rightCell : downCell);
+	theCell = (_scFlags.isHorizontal ? rightCell : downCell);
 	break;
     }
 
@@ -1008,7 +1082,7 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
       [self drawParts];
       [self checkSpaceForParts];
     }
-  if (_isHorizontal)
+  if (_scFlags.isHorizontal)
     [horizontalKnobCell drawWithFrame: [self rectForPart: NSScrollerKnob]
 			       inView: self];
   else
@@ -1018,22 +1092,29 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 
 - (void) drawKnobSlot
 {
-  static NSRect rect;
+  [self drawKnobSlotInRect: [self rectForPart: NSScrollerKnobSlot] 
+        highlight: NO];
+}
+
+- (void) drawKnobSlotInRect: (NSRect)slotRect highlight: (BOOL)flag
+{
+  // FIXME: Not sure whether this method does the right thing
 
   if (upCell == nil)
     {
       [self drawParts];
       [self checkSpaceForParts];
     }
-  if (_cacheValid == NO)
+  if (_scFlags.isHorizontal)
     {
-      rect = [self rectForPart: NSScrollerKnobSlot];
+      [horizontalKnobSlotCell setHighlighted: flag];
+      [horizontalKnobSlotCell drawWithFrame: slotRect inView: self];
     }
-
-  if (_isHorizontal)
-    [horizontalKnobSlotCell drawWithFrame: rect inView: self];
   else
-    [verticalKnobSlotCell drawWithFrame: rect inView: self];
+    {
+      [verticalKnobSlotCell setHighlighted: flag];
+      [verticalKnobSlotCell drawWithFrame: slotRect inView: self];
+    }
 }
 
 /**<p>Highlights the button whose under the mouse. Does nothing if the mouse
@@ -1096,7 +1177,7 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
    * If the scroller is disabled then the scroller buttons and the
    * knob are not displayed at all.
    */
-  if (!_isEnabled)
+  if (!_scFlags.isEnabled)
     {
       usableParts = NSNoScrollerParts;
     }
@@ -1111,7 +1192,7 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
    * of its orientation.
    * but keeps track of the scroller's orientation.
    */
-  if (_isHorizontal)
+  if (_scFlags.isHorizontal)
     {
       width = scrollerFrame.size.height - 2;
       height = scrollerFrame.size.width - 2;
@@ -1148,9 +1229,7 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 	    knobHeight = buttonsWidth;
 
 	  /* calc knob's position */
-	  knobPosition = _floatValue * (slotHeight - knobHeight);
-	  knobPosition = floor(knobPosition);
-
+	  knobPosition = floor((float)_doubleValue * (slotHeight - knobHeight));
 
 	  /* calc actual position */
           if (interfaceStyle == NSNextStepInterfaceStyle
@@ -1245,7 +1324,7 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 	return NSZeroRect;
     }
 
-  if (_isHorizontal)
+  if (_scFlags.isHorizontal)
     {
       return NSMakeRect (y, x, height, width);
     }
@@ -1255,32 +1334,32 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
     }
 }
 
-+ (float) scrollerWidthForControlSize: (NSControlSize)controlSize
-{
-  // FIXME
-  return [self scrollerWidth];
-}
-
 - (void) setControlSize: (NSControlSize)controlSize
 {
-  // FIXME
+  if (_scFlags.control_size == controlSize)
+    return;
+
+  _scFlags.control_size = controlSize;
+  [self setNeedsDisplay: YES];
 }
 
 - (NSControlSize) controlSize
 {
-  // FIXME
-  return NSRegularControlSize;
+  return _scFlags.control_size;
 }
 
 - (void) setControlTint: (NSControlTint)controlTint
 {
-  // FIXME 
+  if (_scFlags.control_tint == controlTint)
+    return;
+
+  _scFlags.control_tint = controlTint;
+  [self setNeedsDisplay: YES];
 }
 
 - (NSControlTint) controlTint
 {
-  // FIXME
-  return NSDefaultControlTint;
+  return _scFlags.control_tint;
 }
 
 @end
