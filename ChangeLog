@@ -1,3 +1,10 @@
+2009-09-14 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSScroller.m,
+	* Headers/AppKit/NSScroller.h: Add new 10.5 methods and change
+	implementation to be similar to the currentApple one. Remove the
+	left over caching code that didn't do anything useful anymore.	
+
 2009-09-12 Riccardo Mottola <rmottola@users.sf.net>
 
 	* Images/common_Mount.tiff
