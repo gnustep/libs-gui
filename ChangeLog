@@ -1,3 +1,8 @@
+2009-09-14 Hans Baier <hansfbaier@googlemail.com>
+
+	* Headers/AppKit/NSWorkspace.h,
+	* Source/NSWorkspace.m: ([-launchAppWithBundleIdentifier:]) add dummy implementation
+	
 2009-09-14 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSScroller.m,

@@ -1448,6 +1448,17 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   return YES;
 }
 
+- (BOOL) launchAppWithBundleIdentifier: (NSString *)bundleIdentifier
+			       options: (NSWorkspaceLaunchOptions)options 
+	additionalEventParamDescriptor: (NSAppleEventDescriptor *)descriptor 
+		      launchIdentifier: (NSNumber **)identifier 
+{
+  // TODO: full implementation
+  return [self launchApplication: bundleIdentifier
+			showIcon: YES
+		      autolaunch: NO];
+}
+
 /**
  * Returns a description of the currently active application, containing
  * the name (NSApplicationName), path (NSApplicationPath) and process

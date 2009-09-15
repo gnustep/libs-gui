@@ -35,6 +35,7 @@
 #include <AppKit/AppKitDefines.h>
 
 @class NSString;
+@class NSNumber;
 @class NSArray;
 @class NSMutableArray;
 @class NSMutableDictionary;
@@ -148,6 +149,17 @@ typedef NSUInteger NSWorkspaceLaunchOptions;
 - (BOOL) launchApplication: (NSString*)appName
 		  showIcon: (BOOL)showIcon
 		autolaunch: (BOOL)autolaunch;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+// TODO: implement NSAppleEventDescriptor in gnustep-base
+typedef void NSAppleEventDescriptor;
+
+- (BOOL) launchAppWithBundleIdentifier: (NSString *)bundleIdentifier
+			       options: (NSWorkspaceLaunchOptions)options 
+	additionalEventParamDescriptor: (NSAppleEventDescriptor *)descriptor 
+		      launchIdentifier: (NSNumber **)identifier;
+#endif
+
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (NSDictionary*) activeApplication;
 - (NSArray*) launchedApplications;
