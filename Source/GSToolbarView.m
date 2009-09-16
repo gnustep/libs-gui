@@ -431,7 +431,7 @@ static void initSystemExtensionsColors(void)
 
 - (void) drawRect: (NSRect)aRect
 {
-  [[GSTheme theme] drawToobarRect: aRect
+  [[GSTheme theme] drawToolbarRect: aRect
                    frame: [self frame]
                    borderMask: _borderMask];
 }
