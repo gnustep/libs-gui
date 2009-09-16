@@ -401,9 +401,9 @@
   return 18.0;
 }
 
-- (void) drawToobarRect: (NSRect)aRect
-                  frame: (NSRect)viewFrame
-             borderMask: (unsigned int)borderMask
+- (void) drawToolbarRect: (NSRect)aRect
+                   frame: (NSRect)viewFrame
+              borderMask: (unsigned int)borderMask
 {
   // We draw the background
   [[NSColor toolbarBackgroundColor] set];

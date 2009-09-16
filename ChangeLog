@@ -1,3 +1,9 @@
+2009-09-16 Hans Baier <hansfbaier@googlemail.com>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h,
+	* Source/GSThemeDrawing.m: fix typo in method name:
+	drawToobarRect -> drawToolbarRect
+
 2009-09-14 Hans Baier <hansfbaier@googlemail.com>
 
 	* Headers/AppKit/NSWorkspace.h,

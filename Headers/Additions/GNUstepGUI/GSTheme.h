@@ -558,9 +558,9 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 /** 
  * Method for toolbar theming.
  */
-- (void) drawToobarRect: (NSRect)aRect
-                  frame: (NSRect)viewFrame
-             borderMask: (unsigned int)borderMask;
+- (void) drawToolbarRect: (NSRect)aRect
+                   frame: (NSRect)viewFrame
+              borderMask: (unsigned int)borderMask;
 
 // Methods to deal with steppers..
 /**
