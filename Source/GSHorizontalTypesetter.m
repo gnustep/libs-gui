@@ -188,6 +188,10 @@ the last time or not, we wouldn't need to clear the cache every time */
 					atIndex: i
 					longestEffectiveRange: &paragraphRange
 					inRange: paragraphRange];
+      if (curParagraphStyle == nil)
+        {
+          curParagraphStyle = [NSParagraphStyle defaultParagraphStyle];
+        }
 
       curFont = [curLayoutManager effectiveFontForGlyphAtIndex: glyph
 				range: &fontRange];
