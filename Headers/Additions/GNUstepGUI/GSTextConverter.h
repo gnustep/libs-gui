@@ -35,8 +35,7 @@
 #include <Foundation/NSAttributedString.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSData.h>
-#include <AppKit/NSFileWrapper.h>
-
+#include <Foundation/NSError.h>
 
 @protocol GSTextConverter
 + (Class) classForFormat: (NSString*)format 
@@ -45,9 +44,8 @@
 
 @protocol GSTextProducer
 + (NSData*) produceDataFrom: (NSAttributedString*) aText
-	 documentAttributes: (NSDictionary*)dict;
-+ (NSFileWrapper*) produceFileFrom: (NSAttributedString*) aText
-		documentAttributes: (NSDictionary*)dict;
+	 documentAttributes: (NSDictionary*)dict
+                      error: (NSError **)error;
 @end
 
 /* 
@@ -57,10 +55,9 @@
  */
 @protocol GSTextConsumer
 + (NSAttributedString*) parseData: (NSData *)aData 
+                          options: (NSDictionary *)options
 	       documentAttributes: (NSDictionary **)dict
-			    class: (Class)class;
-+ (NSAttributedString*) parseFile: (NSFileWrapper *)aFile 
-	       documentAttributes: (NSDictionary **)dict
+                            error: (NSError **)error
 			    class: (Class)class;
 @end
 

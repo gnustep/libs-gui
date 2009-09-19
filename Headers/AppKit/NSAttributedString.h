@@ -251,14 +251,14 @@ enum
 documentAttributes: (NSDictionary **)dict
              error: (NSError **)error;
 
-- (NSRange) itemNumberInTextList: (NSTextList *)list
-                         atIndex: (unsigned)location;
+- (NSInteger) itemNumberInTextList: (NSTextList *)list
+                           atIndex: (NSUInteger)location;
 - (NSRange) rangeOfTextBlock: (NSTextBlock *)block
-                     atIndex: (unsigned)location;
+                     atIndex: (NSUInteger)location;
 - (NSRange) rangeOfTextList: (NSTextList *)list
-                    atIndex: (unsigned)location;
+                    atIndex: (NSUInteger)location;
 - (NSRange) rangeOfTextTable: (NSTextTable *)table
-                     atIndex: (unsigned)location;
+                     atIndex: (NSUInteger)location;
 #endif
 @end
 

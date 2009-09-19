@@ -60,12 +60,6 @@
   int unnamedAttachmentCounter; /*" Count the number of unnamed attachments so we can name them uniquely "*/
 }
 
-+ (NSData *)produceDataFrom: (NSAttributedString *)aText
-         documentAttributes: (NSDictionary *)dict;
-
-+ (NSFileWrapper *)produceFileFrom: (NSAttributedString *)aText
-                documentAttributes: (NSDictionary *)dict;
-
 @end
 
 @interface RTFProducer: RTFDProducer

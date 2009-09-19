@@ -69,6 +69,7 @@
 
 + (NSFileWrapper *)produceFileFrom: (NSAttributedString *)aText
                 documentAttributes: (NSDictionary *)dict
+                             error: (NSError **)error
 {
   RTFDProducer *producer;
   NSData *encodedText;
@@ -122,9 +123,11 @@
 
 + (NSData *)produceDataFrom: (NSAttributedString *)aText
          documentAttributes: (NSDictionary *)dict
+                      error: (NSError **)error
 {
   return [[self produceFileFrom: aText
-             documentAttributes: dict] serializedRepresentation];
+                documentAttributes: dict
+                error: error] serializedRepresentation];
 }
 
 - (id)init
@@ -170,6 +173,7 @@
 
 + (NSData *)produceDataFrom: (NSAttributedString *)aText
          documentAttributes: (NSDictionary *)dict
+                      error: (NSError **)error
 {
   RTFProducer *producer;
   NSData *data;
@@ -187,10 +191,12 @@
 
 + (NSFileWrapper *)produceFileFrom: (NSAttributedString *)aText
                 documentAttributes: (NSDictionary *)dict
+                             error: (NSError **)error
 {
   return AUTORELEASE([[NSFileWrapper alloc]
             initRegularFileWithContents: [self produceDataFrom: aText
-                                            documentAttributes: dict]]);
+                                               documentAttributes: dict
+                                               error: error]]);
 }
 
 @end

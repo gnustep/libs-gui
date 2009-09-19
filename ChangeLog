@@ -1,3 +1,15 @@
+2009-09-19 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSTextConverter.h,
+	* TextConverters/RTF/RTFConsumer.m,
+	* TextConverters/RTF/RTFProducer.h,
+	* TextConverters/RTF/RTFProducer.m,
+	* Source/NSAttributedString.m: Unify the text converter handling.
+	* Headers/AppKit/NSAttributedString.h,
+	* Source/NSAttributedString.m (-itemNumberInTextList:atIndex:,
+	-rangeOfTextBlock:atIndex:, -rangeOfTextList:atIndex:): Correct
+	interface and add implementation for these methods.
+
 2009-09-16 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSToolbarView.m (-drawRect:): Also correct the only use

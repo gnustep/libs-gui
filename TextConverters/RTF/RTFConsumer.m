@@ -279,22 +279,30 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 
   if (flag)
     {
-      if ([format isEqual: @"RTFD"])
+      if (([format isEqual: NSRTFDTextDocumentType]) ||
+          ([format isEqual: @"com.apple.rtfd"]) ||
+          ([format isEqual: @"rtfd"]))
 	{
 	  cClass = [RTFDProducer class];
 	}
-      else if ([format isEqual: @"RTF"])
+      else if (([format isEqual: NSRTFTextDocumentType]) ||
+               ([format isEqual: @"public.rtf"]) ||
+               ([format isEqual: @"rtf"]))
 	{
 	  cClass = [RTFProducer class];
 	}
     }
   else
     {
-      if ([format isEqual: @"RTFD"])
+      if (([format isEqual: NSRTFDTextDocumentType]) ||
+          ([format isEqual: @"com.apple.rtfd"]) ||
+          ([format isEqual: @"rtfd"]))
 	{
 	  cClass = [RTFDConsumer class];
 	}
-      else if ([format isEqual: @"RTF"])
+      else if (([format isEqual: NSRTFTextDocumentType]) ||
+               ([format isEqual: @"public.rtf"]) ||
+               ([format isEqual: @"rtf"]))
 	{
 	  cClass = [RTFConsumer class];
 	}
@@ -303,7 +311,9 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 }
 
 + (NSAttributedString*) parseFile: (NSFileWrapper *)wrapper
+                          options: (NSDictionary *)options
 	       documentAttributes: (NSDictionary **)dict
+                            error: (NSError **)error
 			    class: (Class)class
 {
   NSAttributedString *text = nil;
@@ -337,7 +347,9 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 }
 
 + (NSAttributedString*) parseData: (NSData *)rtfData 
+                          options: (NSDictionary *)options
 	       documentAttributes: (NSDictionary **)dict
+                            error: (NSError **)error
 			    class: (Class)class
 {
   RTFConsumer *consumer = [RTFConsumer new];
@@ -406,14 +418,20 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 }
 
 + (NSAttributedString*) parseData: (NSData *)rtfData 
+                          options: (NSDictionary *)options
 	       documentAttributes: (NSDictionary **)dict
+                            error: (NSError **)error
 			    class: (Class)class
 {
   NSAttributedString *str;
   NSFileWrapper *wrapper = [[NSFileWrapper alloc] 
 			     initWithSerializedRepresentation: rtfData];
   
-  str = [self parseFile: wrapper  documentAttributes: dict  class: class];
+  str = [self parseFile: wrapper 
+              options: options 
+              documentAttributes: dict 
+              error: error 
+              class: class];
   RELEASE (wrapper);
 
   return str;

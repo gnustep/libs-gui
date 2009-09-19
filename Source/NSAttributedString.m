@@ -247,14 +247,20 @@ create_error(int code, NSString* desc)
 
 + (NSArray *) textFileTypes
 {
-  // FIXME
+  // FIXME: Apply service filters
   return [self textUnfilteredFileTypes];
 }
 
 + (NSArray *) textPasteboardTypes
 {
-  // FIXME
+  // FIXME: Apply service filters
   return [self textUnfilteredPasteboardTypes];
+}
+
++ (NSArray *) textTypes
+{
+  // FIXME: Apply service filters
+  return [self textUnfilteredTypes];
 }
 
 + (NSArray *) textUnfilteredFileTypes
@@ -266,12 +272,6 @@ create_error(int code, NSString* desc)
 {
   return [NSArray arrayWithObjects: NSStringPboardType, NSRTFPboardType, 
 		  NSRTFDPboardType, NSHTMLPboardType, nil];
-}
-
-+ (NSArray *) textTypes
-{
-  // FIXME
-  return [self textUnfilteredTypes];
 }
 
 + (NSArray *) textUnfilteredTypes
@@ -651,61 +651,34 @@ create_error(int code, NSString* desc)
 - (id) initWithRTFDFileWrapper: (NSFileWrapper *)wrapper
             documentAttributes: (NSDictionary **)dict
 {
-  NSAttributedString *new;
-
-  if (wrapper == nil)
-    {
-      RELEASE (self);
-      return nil;
-    }
-
-  new = [converter_class(@"RTFD", NO) 
-			parseFile: wrapper
-			documentAttributes: dict
-			class: [self class]];
-  // We do not return self but the newly created object
-  RELEASE (self);
-  return RETAIN (new); 
+  return [self initWithRTFD: [wrapper serializedRepresentation]
+                 documentAttributes: dict];
 }
 
 - (id) initWithRTFD: (NSData*)data
  documentAttributes: (NSDictionary**)dict
 {
-  NSAttributedString *new;
+  NSDictionary *options;
 
-  if (data == nil)
-    {
-      RELEASE (self);
-      return nil;
-    }
-
-  new = [converter_class(@"RTFD", NO)
-			parseData: data
-			documentAttributes: dict
-			class: [self class]];
-  // We do not return self but the newly created object
-  RELEASE (self);
-  return RETAIN (new); 
+  options = [NSDictionary dictionaryWithObject: NSRTFDTextDocumentType
+                          forKey: NSDocumentTypeDocumentOption];
+  return [self initWithData: data
+               options: options
+               documentAttributes: dict
+               error: NULL];
 }
 
 - (id) initWithRTF: (NSData *)data
   documentAttributes: (NSDictionary **)dict
 {
-  NSAttributedString *new;
+  NSDictionary *options;
 
-  if (data == nil)
-    {
-      RELEASE (self);
-      return nil;
-    }
-
-  new = [converter_class(@"RTF", NO) 
-			parseData: data
-			documentAttributes: dict
-			class: [self class]];
-  // We do not return self but the newly created object
-  RELEASE (self);
-  return RETAIN (new); 
+  options = [NSDictionary dictionaryWithObject: NSRTFTextDocumentType
+                          forKey: NSDocumentTypeDocumentOption];
+  return [self initWithData: data
+               options: options
+               documentAttributes: dict
+               error: NULL];
 }
 
 - (id) initWithHTML: (NSData *)data
@@ -727,7 +700,7 @@ create_error(int code, NSString* desc)
 					  forKey: NSBaseURLDocumentOption];
 
   return [self initWithHTML: data
-		    options: options
+               options: options
                documentAttributes: dict];
 }
 
@@ -735,34 +708,41 @@ create_error(int code, NSString* desc)
             options: (NSDictionary *)options
  documentAttributes: (NSDictionary **)dict
 {
-  if (data == nil)
+  if (options == nil)
     {
-      RELEASE (self);
-      return nil;
+      options = [NSDictionary dictionaryWithObject: NSHTMLTextDocumentType
+                                 forKey: NSDocumentTypeDocumentOption];
+    }
+  else if ([options objectForKey: NSDocumentTypeDocumentOption] == nil)
+    {
+      options = AUTORELEASE([options mutableCopy]);
+      [(NSMutableDictionary*)options setObject: NSHTMLTextDocumentType 
+                             forKey: NSDocumentTypeDocumentOption];
     }
 
-  // FIXME: Not implemented
-  return self;
+  /*
+    The converter should support:
+    NSHTMLTextDocumentType
+    @"public.html"
+    @"html"
+   */
+  return [self initWithData: data
+               options: options
+               documentAttributes: dict
+               error: NULL];
 }
 
 - (id) initWithDocFormat: (NSData *)data
       documentAttributes: (NSDictionary **)dict
 {
-  NSAttributedString *new;
+  NSDictionary *options;
 
-  if (data == nil)
-    {
-      RELEASE (self);
-      return nil;
-    }
-
-  new = [converter_class(@"DOC", NO)
-			parseData: data
-			documentAttributes: dict
-			class: [self class]];
-  // We do not return self but the newly created object
-  RELEASE (self);
-  return RETAIN (new); 
+  options = [NSDictionary dictionaryWithObject: NSDocFormatTextDocumentType
+                          forKey: NSDocumentTypeDocumentOption];
+  return [self initWithData: data
+               options: options
+               documentAttributes: dict
+               error: NULL];
 }
 
 - (id) initWithData: (NSData *)data
@@ -771,6 +751,7 @@ create_error(int code, NSString* desc)
               error: (NSError **)error
 {
   NSString *type = [options objectForKey: NSDocumentTypeDocumentOption];
+  Class converter;
 
   if (data == nil)
     {
@@ -789,43 +770,33 @@ create_error(int code, NSString* desc)
       return nil;
     }
 
-  if ([type isEqualToString: NSDocFormatTextDocumentType])
+  converter = converter_class(type, NO);
+  if (converter != Nil)
     {
-      return [self initWithDocFormat: data
-                   documentAttributes: dict];
-    }
-  else if ([type isEqualToString: NSHTMLTextDocumentType]
-           || [type isEqualToString: @"public.html"]
-           || [type isEqualToString: @"html"])
-    {
-      return [self initWithHTML: data
-                   options: options
-                   documentAttributes: dict];
-    }
-  else if ([type isEqualToString: NSRTFDTextDocumentType]
-           || [type isEqualToString: @"com.apple.rtfd"]
-           || [type isEqualToString: @"rtfd"])
-    {
-      return [self initWithRTFD: data
-                   documentAttributes: dict];
-    }
-  else if ([type isEqualToString: NSRTFTextDocumentType]
-           || [type isEqualToString: @"public.rtf"]
-           || [type isEqualToString: @"rtf"])
-    {
-      return [self initWithRTF: data
-                   documentAttributes: dict];
+      NSAttributedString *new;
+
+      new = [converter
+              parseData: data
+              options: options
+              documentAttributes: dict
+              error: error
+              class: [self class]];
+      // We do not return self but the newly created object
+      RELEASE(self);
+      return RETAIN(new); 
     }
   else if ([type isEqualToString: NSPlainTextDocumentType]
            || [type isEqualToString: @"public.plain-text"]
            || [type isEqualToString: @"text"])
     {
+      // FIXME: Should we have a proper converter for this type?
       NSStringEncoding encoding = [[options objectForKey: @"CharacterEncoding"] 
 				      intValue];
       NSDictionary *defaultAttrs = [options objectForKey: @"DefaultAttributes"];
-      NSString *str = [[NSString alloc] initWithData: data 
-                                        encoding: encoding];
+      NSString *str;
 
+      str = [[NSString alloc] initWithData: data 
+                              encoding: encoding];
       self = [self initWithString: str
                    attributes: defaultAttrs];
       RELEASE(str);
@@ -862,7 +833,7 @@ create_error(int code, NSString* desc)
     }
   else
    {
-     return [self initWithURL:  [NSURL fileURLWithPath: path]
+     return [self initWithURL: [NSURL fileURLWithPath: path]
 		  documentAttributes: dict];
    }
 }
@@ -915,35 +886,70 @@ documentAttributes: (NSDictionary **)dict
 - (NSData *) RTFFromRange: (NSRange)range
        documentAttributes: (NSDictionary *)dict
 {
-  return [converter_class(@"RTF", YES) 
-			 produceDataFrom: 
-			   [self attributedSubstringFromRange: range]
-			 documentAttributes: dict];
+  if (dict == nil)
+    {
+      dict = [NSDictionary dictionaryWithObject: NSRTFTextDocumentType
+                                 forKey: NSDocumentTypeDocumentOption];
+    }
+  else if ([dict objectForKey: NSDocumentTypeDocumentOption] == nil)
+    {
+      dict = AUTORELEASE([dict mutableCopy]);
+      [(NSMutableDictionary*)dict setObject: NSRTFTextDocumentType 
+                             forKey: NSDocumentTypeDocumentOption];
+    }
+
+  return [self dataFromRange: range
+               documentAttributes: dict
+               error: NULL];
 }
 
 - (NSData *) RTFDFromRange: (NSRange)range
 	documentAttributes: (NSDictionary *)dict
 {
-  return [converter_class(@"RTFD", YES)  
-			 produceDataFrom: 
-			   [self attributedSubstringFromRange: range]
-			 documentAttributes: dict];
+  if (dict == nil)
+    {
+      dict = [NSDictionary dictionaryWithObject: NSRTFDTextDocumentType
+                                 forKey: NSDocumentTypeDocumentOption];
+    }
+  else if ([dict objectForKey: NSDocumentTypeDocumentOption] == nil)
+    {
+      dict = AUTORELEASE([dict mutableCopy]);
+      [(NSMutableDictionary*)dict setObject: NSRTFDTextDocumentType 
+                             forKey: NSDocumentTypeDocumentOption];
+    }
+
+  return [self dataFromRange: range
+               documentAttributes: dict
+               error: NULL];
 }
 
 - (NSFileWrapper *) RTFDFileWrapperFromRange: (NSRange)range
 			  documentAttributes: (NSDictionary *)dict
 {
-  return [converter_class(@"RTFD", YES)
-			 produceFileFrom: 
-			   [self attributedSubstringFromRange: range]
-			 documentAttributes: dict];
+  return AUTORELEASE([[NSFileWrapper alloc]
+                       initWithSerializedRepresentation: 
+                         [self RTFDFromRange: range
+                               documentAttributes: dict]]);
 }
 
 - (NSData *) docFormatFromRange: (NSRange)range
              documentAttributes: (NSDictionary *)dict
 {
-  // FIXME
-  return nil;
+  if (dict == nil)
+    {
+      dict = [NSDictionary dictionaryWithObject: NSDocFormatTextDocumentType
+                                 forKey: NSDocumentTypeDocumentOption];
+    }
+  else if ([dict objectForKey: NSDocumentTypeDocumentOption] == nil)
+    {
+      dict = AUTORELEASE([dict mutableCopy]);
+      [(NSMutableDictionary*)dict setObject: NSDocFormatTextDocumentType 
+                             forKey: NSDocumentTypeDocumentOption];
+    }
+
+  return [self dataFromRange: range
+               documentAttributes: dict
+               error: NULL];
 }
 
 - (NSData *) dataFromRange: (NSRange)range
@@ -951,6 +957,7 @@ documentAttributes: (NSDictionary **)dict
                      error: (NSError **)error
 {
   NSString *type = [dict objectForKey: NSDocumentTypeDocumentOption];
+  Class converter;
 
   if (type == nil)
     {
@@ -959,26 +966,18 @@ documentAttributes: (NSDictionary **)dict
       return nil;
     }
 
-  if ([type isEqualToString: NSDocFormatTextDocumentType])
+  converter = converter_class(type, YES);
+  if (converter != Nil)
     {
-      return [self docFormatFromRange: range
-                   documentAttributes: dict];
+      return [converter
+               produceDataFrom: 
+                 [self attributedSubstringFromRange: range]
+               documentAttributes: dict
+               error: error];
     }
-  else if ([type isEqualToString: NSHTMLTextDocumentType])
-    {
-      // FIXME
-    }
-  else if ([type isEqualToString: NSRTFDTextDocumentType])
-    {
-      return [self RTFDFromRange: range
-                   documentAttributes: dict];
-    }
-  else if ([type isEqualToString: NSRTFTextDocumentType])
-    {
-      return [self RTFFromRange: range
-                   documentAttributes: dict];
-    }
-  else if ([type isEqualToString: NSPlainTextDocumentType])
+  else if ([type isEqualToString: NSPlainTextDocumentType]
+           || [type isEqualToString: @"public.plain-text"]
+           || [type isEqualToString: @"text"])
     {
       NSStringEncoding encoding = [[dict objectForKey: @"CharacterEncoding"] 
                                       intValue];
@@ -1000,12 +999,12 @@ documentAttributes: (NSDictionary **)dict
   NSFileWrapper *wrapper;
   NSData *data;
 
-  // FIXME: This wont work for directory bundles.
   data = [self dataFromRange: range
 	  documentAttributes: dict
 		       error: error];
   if (data != nil)
     {
+      // FIXME: This wont work for directory bundles.
       wrapper = [[NSFileWrapper alloc] initRegularFileWithContents: data];
       return AUTORELEASE(wrapper);
     }
@@ -1017,29 +1016,139 @@ documentAttributes: (NSDictionary **)dict
   return nil;
 }
 
-- (NSRange) itemNumberInTextList: (NSTextList *)list
-                         atIndex: (unsigned)location
+- (NSInteger) itemNumberInTextList: (NSTextList *)list
+                           atIndex: (NSUInteger)location
 {
-  // FIXME
-  return NSMakeRange(NSNotFound, 0);
+  NSParagraphStyle *style = [self attribute: NSParagraphStyleAttributeName
+                                  atIndex: location
+                                  effectiveRange: NULL];
+  if (style != nil)
+    {
+      NSArray *textLists = [style textLists];
+
+      if (textLists != nil)
+        {
+          return [textLists indexOfObject: list];
+        }
+    }
+
+  return NSNotFound;
 }
 
 - (NSRange) rangeOfTextBlock: (NSTextBlock *)block
-                     atIndex: (unsigned)location
+                     atIndex: (NSUInteger)location
 {
-  // FIXME
+  NSRange effRange;
+  NSParagraphStyle *style = [self attribute: NSParagraphStyleAttributeName
+                                  atIndex: location
+                                  effectiveRange: &effRange];
+  if (style != nil)
+    {
+      NSArray *textBlocks = [style textBlocks];
+
+      if ((textBlocks != nil) && [textBlocks containsObject: block])
+        {
+          NSRange newEffRange;
+          unsigned len = [self length];
+
+          while ((effRange.location > 0) && style && textBlocks)
+            {
+              style = [self attribute: NSParagraphStyleAttributeName
+                            atIndex: effRange.location - 1
+                            effectiveRange: &newEffRange];
+              if (style != nil)
+                {
+                  textBlocks = [style textBlocks];
+                  
+                  if ((textBlocks != nil) && [textBlocks containsObject: block])
+                    {
+                      effRange.location = newEffRange.location;
+                      effRange.length += newEffRange.length;
+                    }
+                }
+            }
+
+          while (NSMaxRange(effRange) < len && style && textBlocks) 
+            {
+              style = [self attribute: NSParagraphStyleAttributeName
+                            atIndex: NSMaxRange(effRange)
+                            effectiveRange: &newEffRange];
+              if (style != nil)
+                {
+                  textBlocks = [style textBlocks];
+                  
+                  if ((textBlocks != nil) && [textBlocks containsObject: block])
+                    {
+                      effRange.length += newEffRange.length;
+                    }
+                }
+            }
+
+          return effRange;
+        }
+    }
+
   return NSMakeRange(NSNotFound, 0);
 }
 
 - (NSRange) rangeOfTextList: (NSTextList *)list
-                    atIndex: (unsigned)location
+                    atIndex: (NSUInteger)location
 {
-  // FIXME
+  NSRange effRange;
+  NSParagraphStyle *style = [self attribute: NSParagraphStyleAttributeName
+                                  atIndex: location
+                                  effectiveRange: &effRange];
+  if (style != nil)
+    {
+      NSArray *textLists = [style textLists];
+
+      if ((textLists != nil) && [textLists containsObject: list])
+        {
+          NSRange newEffRange;
+          unsigned len = [self length];
+
+          while ((effRange.location > 0) && style && textLists)
+            {
+              style = [self attribute: NSParagraphStyleAttributeName
+                            atIndex: effRange.location - 1
+                            effectiveRange: &newEffRange];
+              if (style != nil)
+                {
+                  textLists = [style textLists];
+                  
+                  if ((textLists != nil) && [textLists containsObject: list])
+                    {
+                      effRange.location = newEffRange.location;
+                      effRange.length += newEffRange.length;
+                    }
+                }
+            }
+
+          while (NSMaxRange(effRange) < len && style && textLists) 
+            {
+              style = [self attribute: NSParagraphStyleAttributeName
+                            atIndex: NSMaxRange(effRange)
+                            effectiveRange: &newEffRange];
+              if (style != nil)
+                {
+                  textLists = [style textLists];
+                  
+                  if ((textLists != nil) && [textLists containsObject: list])
+                    {
+                      effRange.length += newEffRange.length;
+                    }
+                }
+            }
+
+          return effRange;
+        }
+    }
+
   return NSMakeRange(NSNotFound, 0);
 }
 
 - (NSRange) rangeOfTextTable: (NSTextTable *)table
-                     atIndex: (unsigned)location
+                     atIndex: (NSUInteger)location
 {
   // FIXME
   return NSMakeRange(NSNotFound, 0);
@@ -1619,9 +1728,9 @@ static NSMutableDictionary *cachedCSets = nil;
                            range: (NSRange)range
 {
 	[self setAttributes: [NSDictionary dictionaryWithObject: 
-                                         [NSNumber numberWithInt: writingDirection]
-													forKey: @"WritingDirection"]
-				  range: range];
+                                             [NSNumber numberWithInt: writingDirection]
+                                           forKey: @"WritingDirection"]
+              range: range];
 }
 
 @end
