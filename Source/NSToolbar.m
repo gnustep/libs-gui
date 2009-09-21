@@ -1339,8 +1339,6 @@ static GSValidationCenter *vc = nil;
   return nil;
 }
 
-// This method wont make a toolbar visible or invisible by itself.
-// Use [NSWindow toggleToolbarShown:]
 - (void) _setVisible: (BOOL)shown broadcast: (BOOL)broadcast
 {
   if (_visible != shown)
