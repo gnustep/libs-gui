@@ -1,3 +1,12 @@
+2009-09-21 Fred Kiefer <FredKiefer@gmx.de>
+	
+	* Source/NSWindow.m (+standardWindowButton:forStyleMask:): Add
+	support for toolbar button.
+	* Source/NSWindow.m (-toggleToolbarShown:): Reorder the code.
+	* Source/NSToolbar.m (_setVisible:broadcast:): Add code to really
+	make the toolbar visible.
+	* Source/NSToolbar.m (_window): New helper method for this.
+
 2009-09-19 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSHorizontalTypesetter.m (-_cacheMoveTo:): Use default

@@ -2902,6 +2902,9 @@ resetCursorRectsForView(NSView *theView)
         break;
 
       case NSWindowToolbarButton:
+        // FIXME
+        [newButton setAction: @selector(toggleToolbarShown:)];
+        break;
       case NSWindowDocumentIconButton:
       default:
         // FIXME
@@ -5121,9 +5124,8 @@ current key view.<br />
 
   if (!toolbar)
     return;
-  
-  [toolbar setVisible: !isVisible];
 
+  // We do this again on a lower level, but doing it here is faster.
   if (isVisible)
     {
       [_wv removeToolbarView: [toolbar _toolbarView]];
@@ -5132,6 +5134,8 @@ current key view.<br />
     {
       [_wv addToolbarView: [toolbar _toolbarView]];
     }
+
+  [toolbar setVisible: !isVisible];
 
   [self display];
 }

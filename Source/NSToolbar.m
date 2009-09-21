@@ -898,11 +898,12 @@ static GSValidationCenter *vc = nil;
   NSString *tableKey = 
     [NSString stringWithFormat: @"NSToolbar Config %@",_identifier];
   NSDictionary *config = [defaults objectForKey: tableKey];
-  NSToolbarDisplayMode displayMode = 0;
-  NSToolbarSizeMode sizeMode = 0;
 
-  if(config)
+  if (config)
     {
+      NSToolbarDisplayMode displayMode = 0;
+      NSToolbarSizeMode sizeMode = 0;
+
       displayMode = (NSToolbarDisplayMode)[[config objectForKey: @"displayMode"] intValue];
       [self setDisplayMode: displayMode];
       sizeMode = (NSToolbarDisplayMode)[[config objectForKey: @"sizeMode"] intValue];
@@ -1319,6 +1320,25 @@ static GSValidationCenter *vc = nil;
     }
 }
 
+
+- (NSWindow*) _window
+{
+  NSWindow *window = [_toolbarView window];
+  NSEnumerator *wenum;
+
+  if (window)
+    return window;
+
+  wenum = [GSAllWindows() objectEnumerator];
+  while ((window = [wenum nextObject]))
+    {
+      if ([window toolbar] == self)
+        return window;
+    }
+
+  return nil;
+}
+
 // This method wont make a toolbar visible or invisible by itself.
 // Use [NSWindow toggleToolbarShown:]
 - (void) _setVisible: (BOOL)shown broadcast: (BOOL)broadcast
@@ -1326,7 +1346,29 @@ static GSValidationCenter *vc = nil;
   if (_visible != shown)
     {  
        _visible = shown; 
-    
+
+       if (shown)
+         [self _build];
+
+       if (shown)
+         {
+           if ((_toolbarView == nil) || ([_toolbarView superview] == nil))
+             {
+               NSWindow *w = [self _window];
+
+               [(id)[w _windowView] addToolbarView: [self _toolbarView]];
+             }
+         }
+       else
+         {
+           if ((_toolbarView != nil) && ([_toolbarView superview] != nil))
+             {
+               NSWindow *w = [self _window];
+
+               [(id)[w _windowView] removeToolbarView: [self _toolbarView]];
+             }
+         }
+
        if (broadcast) 
          {
            TRANSMIT(_setVisible: _visible broadcast: NO);
