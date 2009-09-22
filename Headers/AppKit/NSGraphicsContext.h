@@ -60,11 +60,27 @@ typedef enum _NSBackingStoreType
 
 } NSBackingStoreType;
 
-/*
- * Compositing operators
+/** NSCompositingOperation defines how an image is drawn or composited onto another.
+ * <list>
+ *  <item>NSCompositeClear: Cleans out an area</item>
+ *  <item> NSCompositeCopy: <em>(Common)</em> Draws over the destination replacing it and carrying over transparency to the destination</item>
+ *  <item> NSCompositeSourceOver: <em>(Common)</em> Draws over the destination with transparency</item>
+ *  <item> NSCompositeSourceIn</item>
+ *  <item> NSCompositeSourceOut</item>
+ *  <item> NSCompositeSourceAtop</item>
+ *  <item> NSCompositeDestinationOver</item>
+ *  <item> NSCompositeDestinationIn</item>
+ *  <item> NSCompositeDestinationOut</item>
+ *  <item> NSCompositeDestinationAtop</item>
+ *  <item> NSCompositeXOR</item>
+ *  <item> NSCompositePlusDarker</item>
+ *  <item> NSCompositeHighlight</item>
+ *  <item> NSCompositePlusLighter</item>
+ * </list>
  */
 typedef enum _NSCompositingOperation
 {
+ 
   NSCompositeClear,
   NSCompositeCopy,
   NSCompositeSourceOver,
