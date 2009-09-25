@@ -114,6 +114,11 @@ use bounds rectangle instead of frame? */
   return self;
 }
 
+- (id) init
+{
+  return [self initWithContainerSize: NSZeroSize];
+}
+
 - (void) dealloc
 {
   if (_textView != nil)

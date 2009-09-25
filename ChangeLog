@@ -1,3 +1,8 @@
+2009-09-26 Fred Kiefer <FredKiefer@gmx.de>
+	
+	* Source/NSTextContainer.m (init):  Add this method as suggested
+	by Derek Fawcus <dfawcus@cisco.com>.
+
 2009-09-21 Fred Kiefer <FredKiefer@gmx.de>
 	
 	* Source/NSWindow.m (+standardWindowButton:forStyleMask:): Add
