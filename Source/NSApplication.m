@@ -972,6 +972,17 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
     {
       image = [NSImage imageNamed: @"GNUstep"];
     }
+  else
+    {
+      /* Set the new image to be named 'NSApplicationIcon' ... to do that we
+       * must first check that any existing image of the same name has its
+       * name removed.
+       */
+      [(NSImage*)[NSImage imageNamed: @"NSApplicationIcon"] setName: nil];
+      // We need to copy the image as we may have a proxy here
+      image = AUTORELEASE([image copy]);
+      [image setName: @"NSApplicationIcon"];
+    }
 
   [self setApplicationIconImage: image];
 
@@ -2214,13 +2225,6 @@ image.</p><p>See Also: -applicationIconImage</p>
   // Use a copy as we change the name and size
   ASSIGNCOPY(_app_icon, anImage);
 
-  /* Set the new image to be named 'NSApplicationIcon' ... to do that we
-   * must first check that any existing eimage of the same name has their
-   * name removed.
-   */
-  [(NSImage*)[NSImage imageNamed: @"NSApplicationIcon"] setName: nil];
-  [_app_icon setName: @"NSApplicationIcon"];
-
   [_app_icon setScalesWhenResized: YES];
 
   if (miniWindowSize.width <= 0 || miniWindowSize.height <= 0) 
@@ -2235,7 +2239,7 @@ image.</p><p>See Also: -applicationIconImage</p>
       [_app_icon setSize: miniWindowSize];
     }
 
-	// Let horizontal menu change icon
+  // Let horizontal menu change icon
   [_main_menu _organizeMenu];
 
   if (_app_icon_window != nil)
