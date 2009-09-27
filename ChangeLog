@@ -1,3 +1,11 @@
+2009-09-27 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSImage.m: ([-setName:]) fix bug which was removing the	
+	wrong name when given an image which already had a name.
+	Make named images thread-safe using a lock.
+	Add private method to update names on theme change.
+	* Source/GSTheme.m: Use new method to update theme images.
+	
 2009-09-26 Fred Kiefer <FredKiefer@gmx.de>
 	
 	* Source/NSApplication.m (-setApplicationIconImage:,

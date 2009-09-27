@@ -78,6 +78,10 @@ NSString	*GSThemeWillActivateNotification
 NSString	*GSThemeWillDeactivateNotification
   = @"GSThemeWillDeactivateNotification";
 
+@interface	NSImage (GSTheme)
++ (NSImage*) _setImage: (NSImage*)image name: (NSString*)name;
+@end
+
 @interface	GSTheme (Private)
 - (void) _revokeOwnerships;
 @end
@@ -366,18 +370,7 @@ typedef	struct {
 	   */
 	  if (image != nil && [[image name] isEqualToString: imageName] == NO)
 	    {
-	      if ([image setName: imageName] == NO)
-	        {
-		  NSImage	*old;
-
-		  /* Couldn't set image name ... presumably already
-		   * in use ... so we remove the name from the old
-		   * image and try again.
-		   */
-		  old = [NSImage imageNamed: imageName];
-		  [old setName: nil];
-	          [image setName: imageName];
-		}
+	      [NSImage _setImage: image name: imageName];
 	    }
 	}
     }
@@ -584,26 +577,26 @@ typedef	struct {
     userInfo: nil];
 
   /*
-   * Remove all cached bundle images from both NSImage's name dictionary
+   * Restore old images in NSImage's lookup dictionary so that the app
+   * still has images to draw.
+   * The remove all cached bundle images from both NSImage's name dictionary
    * and our cache dictionary, so that we can be sure we reload afresh
    * when re-activated (in case the images on disk changed ... eg by a
    * theme editor modifying the theme).
-   * Restore old images in NSImage's lookup dictionary so that the app
-   * still has images to draw.
    */
+  enumerator = [_oldImages keyEnumerator];
+  while ((name = [enumerator nextObject]) != nil)
+    {
+      image = [_oldImages objectForKey: name];
+      [NSImage _setImage: image name: name];
+    }
+  [_oldImages removeAllObjects];
   enumerator = [_images objectEnumerator];
   while ((image = [enumerator nextObject]) != nil)
     {
       [image setName: nil];
     }
   [_images removeAllObjects];
-  enumerator = [_oldImages keyEnumerator];
-  while ((name = [enumerator nextObject]) != nil)
-    {
-      image = [_oldImages objectForKey: name];
-      [image setName: name];
-    }
-  [_oldImages removeAllObjects];
 
   [self _revokeOwnerships];
 

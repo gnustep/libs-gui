@@ -28,31 +28,32 @@
 #include <string.h>
 #include <math.h>
 
-#include <Foundation/NSArray.h>
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSFileManager.h>
-#include <Foundation/NSKeyedArchiver.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSValue.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSLock.h>
+#import <Foundation/NSKeyedArchiver.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSValue.h>
 
-#include "AppKit/NSImage.h"
+#import "AppKit/NSImage.h"
 
-#include "AppKit/AppKitExceptions.h"
-#include "AppKit/NSAffineTransform.h"
-#include "AppKit/NSBitmapImageRep.h"
-#include "AppKit/NSCachedImageRep.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSPasteboard.h"
-#include "AppKit/NSPrintOperation.h"
-#include "AppKit/NSScreen.h"
-#include "AppKit/NSView.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/PSOperators.h"
-#include "GNUstepGUI/GSDisplayServer.h"
-#include "GSThemePrivate.h"
+#import "AppKit/AppKitExceptions.h"
+#import "AppKit/NSAffineTransform.h"
+#import "AppKit/NSBitmapImageRep.h"
+#import "AppKit/NSCachedImageRep.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSPasteboard.h"
+#import "AppKit/NSPrintOperation.h"
+#import "AppKit/NSScreen.h"
+#import "AppKit/NSView.h"
+#import "AppKit/NSWindow.h"
+#import "AppKit/PSOperators.h"
+#import "GNUstepGUI/GSDisplayServer.h"
+#import "GSThemePrivate.h"
 
 
 /* Helpers.  Would be nicer to use the C99 fmin/fmax functions, but that
@@ -134,9 +135,10 @@ BOOL NSImageForceCaching = NO; /* use on missmatch */
 @end
 
 /* Class variables and functions for class methods */
-static NSMutableDictionary *nameDict = nil;
-static NSDictionary *nsmapping = nil;
-static NSColor *clearColor = nil;
+static NSRecursiveLock		*imageLock = nil;
+static NSMutableDictionary	*nameDict = nil;
+static NSDictionary		*nsmapping = nil;
+static NSColor			*clearColor = nil;
 static Class cachedClass = 0;
 static Class bitmapClass = 0;
 
@@ -175,35 +177,42 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 + (void) initialize
 {
-  if (self == [NSImage class])
+  if (imageLock == nil)
     {
-      NSString *path = [NSBundle pathForLibraryResource: @"nsmapping"
-                                                 ofType: @"strings"
-                                            inDirectory: @"Images"];
+      NSString *path;
+
+      imageLock = [NSRecursiveLock new];
+      [imageLock lock];
 
       // Initial version
       [self setVersion: 1];
 
       // initialize the class variables
       nameDict = [[NSMutableDictionary alloc] initWithCapacity: 10];
+      path = [NSBundle pathForLibraryResource: @"nsmapping"
+				       ofType: @"strings"
+				  inDirectory: @"Images"];
       if (path)
         nsmapping = RETAIN([[NSString stringWithContentsOfFile: path]
                                propertyListFromStringsFileFormat]);
       clearColor = RETAIN([NSColor clearColor]);
       cachedClass = [NSCachedImageRep class];
       bitmapClass = [NSBitmapImageRep class];
+      [imageLock unlock];
     }
 }
 
 + (id) imageNamed: (NSString *)aName
 {
-  NSImage	*image = (NSImage*)[nameDict objectForKey: aName];
+  NSImage	*image;
  
   /* 2009-09-10 changed operation of nsmapping so that the loaded
    * image is stored under the key 'aName', not under the mapped
    * name.  That way the image is created with the correct name and
    * a later call to -setName: will work properly.
    */
+  [imageLock lock];
+  image = (NSImage*)[nameDict objectForKey: aName];
   if (image == nil || [(id)image _resource] == nil)
     {
       NSString	*realName = [nsmapping objectForKey: aName];
@@ -217,7 +226,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
           realName = aName;
 	}
  
-
       // FIXME: This should use [NSBundle pathForImageResource], but this will 
       // only allow imageUnfilteredFileTypes.
       /* If there is no image with that name, search in the main bundle */
@@ -298,7 +306,8 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
           image = (NSImage*)[nameDict objectForKey: aName];
         }
     }
-  
+  IF_NO_GC([[image retain] autorelease]);
+  [imageLock unlock];
   return image;
 }
 
@@ -512,9 +521,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   return copy;
 }
 
-/* This method is used by the GSTheme class to set the names of system
- * images.  It *must* be possible to unset an old system image name by
- * passing a nil value to aName.
+/*
  * The images are actually accessed via proxy objects, so that when a
  * new system image is set, the proxies for that image just start using
  * the new version.
@@ -523,10 +530,13 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 {
   GSThemeProxy	*proxy = nil;
   
+  [imageLock lock];
+
   /* The name is already set... nothing to do.
    */
   if (aName == _name || [aName isEqual: _name] == YES)
     {
+      [imageLock unlock];
       return YES;
     }
 
@@ -535,23 +545,25 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
    */
   if (aName != nil && [[nameDict objectForKey: aName] _resource] != nil)
     {
+      [imageLock unlock];
       return NO;
     }
 
   /* If this image had another name, we remove it.
    */
-  if (_name && self == [(proxy = [nameDict objectForKey: _name]) _resource])
+  if (_name != nil)
     {
       /* We retain self in case removing from the dictionary releases us */
       IF_NO_GC([[self retain] autorelease]);
+      [nameDict removeObjectForKey: _name];
       DESTROY(_name);
-      [proxy _setResource: nil];
     }
   
   /* If the new name is null, there is nothing more to do.
    */
   if (aName == nil)
     {
+      [imageLock unlock];
       return NO;
     }
 
@@ -565,12 +577,18 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     }
   [proxy _setResource: self];
   
+  [imageLock unlock];
   return YES;
 }
 
 - (NSString *) name
 {
-  return _name;
+  NSString	*name;
+
+  [imageLock lock];
+  name = [[_name retain] autorelease];
+  [imageLock unlock];
+  return name;
 }
 
 - (void) setSize: (NSSize)aSize
@@ -2035,6 +2053,40 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
           return repd;
         }
     }
+}
+
+@end
+
+@implementation	NSImage (GSTheme)
+
++ (NSImage*) _setImage: (NSImage*)image name: (NSString*)name
+{
+  GSThemeProxy	*proxy = nil;
+  
+  NSAssert([image isKindOfClass: [NSImage class]], NSInvalidArgumentException);
+  NSAssert(![image isProxy], NSInvalidArgumentException);
+  NSAssert([name isKindOfClass: [NSString class]], NSInvalidArgumentException);
+  NSAssert([name length] > 0, NSInvalidArgumentException);
+  NSAssert([image name] == nil, NSInvalidArgumentException);
+
+  [imageLock lock];
+  ASSIGNCOPY(image->_name, name);
+  if ((proxy = [nameDict objectForKey: image->_name]) == nil)
+    {
+      proxy = [GSThemeProxy alloc];
+      [nameDict setObject: proxy forKey: image->_name];
+      [proxy release]; 
+    }
+  else
+    {
+      /* Remove the name from the old image.
+       */
+      DESTROY(((NSImage*)[proxy _resource])->_name);
+    }
+  [proxy _setResource: image];
+  IF_NO_GC([[proxy retain] autorelease]);
+  [imageLock unlock];
+  return (NSImage*)proxy;
 }
 
 @end
