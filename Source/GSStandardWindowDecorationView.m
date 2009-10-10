@@ -25,6 +25,7 @@
 */
 
 #include <Foundation/NSException.h>
+#include <Foundation/NSNotification.h>
 
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSAttributedString.h"
@@ -37,17 +38,20 @@
 #include "AppKit/NSWindow.h"
 #include "AppKit/PSOperators.h"
 #include "GNUstepGUI/GSDisplayServer.h"
+#include "GNUstepGUI/GSTheme.h"
 #include "GSWindowDecorationView.h"
 
-@implementation GSStandardWindowDecorationView
+@interface GSStandardWindowDecorationView (GSTheme)
+- (void) _themeDidActivate: (NSNotification*)notification;
+@end
 
-/* These include the black border. */
-#define TITLE_HEIGHT 23.0
-#define RESIZE_HEIGHT 9.0
+@implementation GSStandardWindowDecorationView
 
 + (void) offsets: (float *)l : (float *)r : (float *)t : (float *)b
     forStyleMask: (unsigned int)style
 {
+  GSTheme *theme = [GSTheme theme];
+
   if (style
     & (NSTitledWindowMask | NSClosableWindowMask
       | NSMiniaturizableWindowMask | NSResizableWindowMask))
@@ -62,11 +66,11 @@
   if (style
     & (NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask))
     {
-      *t = TITLE_HEIGHT;
+      *t = [theme titlebarHeight];
     }
   if (style & NSResizableWindowMask)
     {
-      *b = RESIZE_HEIGHT;
+      *b = [theme resizebarHeight];
     }
 }
 
@@ -86,20 +90,20 @@
   return width;
 }
 
-
-static NSDictionary *titleTextAttributes[3];
-static NSColor *titleColor[3];
-
 - (void) updateRects
 {
+  GSTheme *theme = [GSTheme theme];
+
   if (hasTitleBar)
     {
-      titleBarRect = NSMakeRect(0.0, _frame.size.height - TITLE_HEIGHT,
-	_frame.size.width, TITLE_HEIGHT);
+      float titleHeight = [theme titlebarHeight];
+
+      titleBarRect = NSMakeRect(0.0, _frame.size.height - titleHeight,
+	_frame.size.width, titleHeight);
     }
   if (hasResizeBar)
     {
-      resizeBarRect = NSMakeRect(0.0, 0.0, _frame.size.width, RESIZE_HEIGHT);
+      resizeBarRect = NSMakeRect(0.0, 0.0, _frame.size.width, [theme resizebarHeight]);
     }
   if (hasCloseButton)
     {
@@ -119,230 +123,63 @@ static NSColor *titleColor[3];
 - (id) initWithFrame: (NSRect)frame
 	      window: (NSWindow *)w
 {
-  if (!titleTextAttributes[0])
-    {
-      NSMutableParagraphStyle	*p;
-
-      p = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-      [p setLineBreakMode: NSLineBreakByClipping];
-
-      titleTextAttributes[0] = [[NSMutableDictionary alloc]
-	initWithObjectsAndKeys:
-	  [NSFont titleBarFontOfSize: 0], NSFontAttributeName,
-	  [NSColor windowFrameTextColor], NSForegroundColorAttributeName,
-	  p, NSParagraphStyleAttributeName,
-	  nil];
-
-      titleTextAttributes[1] = [[NSMutableDictionary alloc]
-	initWithObjectsAndKeys:
-	  [NSFont titleBarFontOfSize: 0], NSFontAttributeName,
-	  [NSColor blackColor], NSForegroundColorAttributeName, /* TODO: need a named color for this */
-	  p, NSParagraphStyleAttributeName,
-	  nil];
-
-      titleTextAttributes[2] = [[NSMutableDictionary alloc]
-	initWithObjectsAndKeys:
-	  [NSFont titleBarFontOfSize: 0], NSFontAttributeName,
-	  [NSColor windowFrameTextColor], NSForegroundColorAttributeName,
-	  p, NSParagraphStyleAttributeName,
-	  nil];
-
-      RELEASE(p);
-      titleColor[0] = RETAIN([NSColor windowFrameColor]);
-      titleColor[1] = RETAIN([NSColor lightGrayColor]);
-      titleColor[2] = RETAIN([NSColor darkGrayColor]);
-    }
+  unsigned int styleMask;
 
   self = [super initWithFrame: frame window: w];
   if (!self) return nil;
 
-  if ([w styleMask]
+  styleMask = [w styleMask];
+  if (styleMask
     & (NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask))
     {
       hasTitleBar = YES;
     }
-  if ([w styleMask] & NSTitledWindowMask)
+  if (styleMask & NSTitledWindowMask)
     {
       isTitled = YES;
     }
-  if ([w styleMask] & NSClosableWindowMask)
+  if (styleMask & NSClosableWindowMask)
     {
       hasCloseButton = YES;
 
       closeButton = [NSWindow standardWindowButton: NSWindowCloseButton 
-                              forStyleMask: [w styleMask]];
+                              forStyleMask: styleMask];
       [closeButton setTarget: window];
       [self addSubview: closeButton];
     }
-  if ([w styleMask] & NSMiniaturizableWindowMask)
+  if (styleMask & NSMiniaturizableWindowMask)
     {
       hasMiniaturizeButton = YES;
 
       miniaturizeButton = [NSWindow standardWindowButton: NSWindowMiniaturizeButton 
-                              forStyleMask: [w styleMask]];
+                              forStyleMask: styleMask];
       [miniaturizeButton setTarget: window];
       [self addSubview: miniaturizeButton];
     }
-  if ([w styleMask] & NSResizableWindowMask)
+  if (styleMask & NSResizableWindowMask)
     {
       hasResizeBar = YES;
     }
   [self updateRects];
 
+  [[NSNotificationCenter defaultCenter]
+    addObserver: self
+    selector: @selector(_themeDidActivate:)
+    name: GSThemeDidActivateNotification
+    object: nil];
   return self;
-}
-
-
-- (void) drawTitleBar
-{
-  static const NSRectEdge edges[4] = {NSMinXEdge, NSMaxYEdge,
-				    NSMaxXEdge, NSMinYEdge};
-  float grays[3][4] =
-    {{NSLightGray, NSLightGray, NSDarkGray, NSDarkGray},
-    {NSWhite, NSWhite, NSDarkGray, NSDarkGray},
-    {NSLightGray, NSLightGray, NSBlack, NSBlack}};
-  NSRect workRect;
-  NSString *title = [window title];
-
-  /*
-  Draw the black border towards the rest of the window. (The outer black
-  border is drawn in -drawRect: since it might be drawn even if we don't have
-  a title bar.
-  */
-  [[NSColor blackColor] set];
-  PSmoveto(0, NSMinY(titleBarRect) + 0.5);
-  PSrlineto(titleBarRect.size.width, 0);
-  PSstroke();
-
-  /*
-  Draw the button-like border.
-  */
-  workRect = titleBarRect;
-  workRect.origin.x += 1;
-  workRect.origin.y += 1;
-  workRect.size.width -= 2;
-  workRect.size.height -= 2;
-
-  workRect = NSDrawTiledRects(workRect, workRect, edges, grays[inputState], 4);
- 
-  /*
-  Draw the background.
-  */
-  [titleColor[inputState] set];
-  NSRectFill(workRect);
-
-  /* Draw the title. */
-  if (isTitled)
-    {
-      NSSize titleSize;
-    
-      if (hasMiniaturizeButton)
-	{
-	  workRect.origin.x += 17;
-	  workRect.size.width -= 17;
-	}
-      if (hasCloseButton)
-	{
-	  workRect.size.width -= 17;
-	}
-  
-      titleSize = [title sizeWithAttributes: titleTextAttributes[inputState]];
-      if (titleSize.width <= workRect.size.width)
-	workRect.origin.x = NSMidX(workRect) - titleSize.width / 2;
-      workRect.origin.y = NSMidY(workRect) - titleSize.height / 2;
-      workRect.size.height = titleSize.height;
-      [title drawInRect: workRect
-	 withAttributes: titleTextAttributes[inputState]];
-    }
-}
-
-- (void) drawResizeBar
-{
-  [[NSColor lightGrayColor] set];
-  PSrectfill(1.0, 1.0, resizeBarRect.size.width - 2.0, RESIZE_HEIGHT - 3.0);
-
-  PSsetlinewidth(1.0);
-
-  [[NSColor blackColor] set];
-  PSmoveto(0.0, 0.5);
-  PSlineto(resizeBarRect.size.width, 0.5);
-  PSstroke();
-
-  [[NSColor darkGrayColor] set];
-  PSmoveto(1.0, RESIZE_HEIGHT - 0.5);
-  PSlineto(resizeBarRect.size.width - 1.0, RESIZE_HEIGHT - 0.5);
-  PSstroke();
-
-  [[NSColor whiteColor] set];
-  PSmoveto(1.0, RESIZE_HEIGHT - 1.5);
-  PSlineto(resizeBarRect.size.width - 1.0, RESIZE_HEIGHT - 1.5);
-  PSstroke();
-
-
-  /* Only draw the notches if there's enough space. */
-  if (resizeBarRect.size.width < 30 * 2)
-    return;
-
-  [[NSColor darkGrayColor] set];
-  PSmoveto(27.5, 1.0);
-  PSlineto(27.5, RESIZE_HEIGHT - 2.0);
-  PSmoveto(resizeBarRect.size.width - 28.5, 1.0);
-  PSlineto(resizeBarRect.size.width - 28.5, RESIZE_HEIGHT - 2.0);
-  PSstroke();
-
-  [[NSColor whiteColor] set];
-  PSmoveto(28.5, 1.0);
-  PSlineto(28.5, RESIZE_HEIGHT - 2.0);
-  PSmoveto(resizeBarRect.size.width - 27.5, 1.0);
-  PSlineto(resizeBarRect.size.width - 27.5, RESIZE_HEIGHT - 2.0);
-  PSstroke();
 }
 
 - (void) drawRect: (NSRect)rect
 {
-  if (hasTitleBar && NSIntersectsRect(rect, titleBarRect))
-    {
-      [self drawTitleBar];
-    }
-
-  if (hasResizeBar && NSIntersectsRect(rect, resizeBarRect))
-    {
-      [self drawResizeBar];
-    }
-
-  if (hasResizeBar || hasTitleBar)
-    {
-      PSsetlinewidth(1.0);
-      [[NSColor blackColor] set];
-      if (NSMinX(rect) < 1.0)
-	{
-	  PSmoveto(0.5, 0.0);
-	  PSlineto(0.5, _frame.size.height);
-	  PSstroke();
-	}
-      if (NSMaxX(rect) > _frame.size.width - 1.0)
-	{
-	  PSmoveto(_frame.size.width - 0.5, 0.0);
-	  PSlineto(_frame.size.width - 0.5, _frame.size.height);
-	  PSstroke();
-	}
-      if (NSMaxY(rect) > _frame.size.height - 1.0)
-	{
-	  PSmoveto(0.0, _frame.size.height - 0.5);
-	  PSlineto(_frame.size.width, _frame.size.height - 0.5);
-	  PSstroke();
-	}
-      if (NSMinY(rect) < 1.0)
-	{
-	  PSmoveto(0.0, 0.5);
-	  PSlineto(_frame.size.width, 0.5);
-	  PSstroke();
-	}
-    }
+  [[GSTheme theme] drawWindowBorder: rect
+                   withFrame: _frame 
+                   forStyleMask: [window styleMask]
+                   state: inputState
+                   andTitle: [window title]];
 
   [super drawRect: rect];
 }
-
 
 - (void) setTitle: (NSString *)newTitle
 {
@@ -375,7 +212,6 @@ static NSColor *titleColor[3];
     }
   [super setDocumentEdited: flag];
 }
-
 
 - (NSPoint) mouseLocationOnScreenOutsideOfEventStream
 {
@@ -410,7 +246,6 @@ static NSColor *titleColor[3];
 
       if (currentEvent && [currentEvent type] == NSLeftMouseUp)
 	break;
-
 
       currentEvent = [_window nextEventMatchingMask: mask
 			untilDate: [NSDate distantFuture]
@@ -475,7 +310,6 @@ calc_new_frame(NSRect frame, NSPoint point, NSPoint firstPoint,
   2 drag lower edge
   */
   int mode;
-
 
   firstPoint = [event locationInWindow];
   if (resizeBarRect.size.width < 30 * 2
@@ -560,3 +394,12 @@ calc_new_frame(NSRect frame, NSPoint point, NSPoint firstPoint,
 
 @end
 
+@implementation GSStandardWindowDecorationView (GSTheme)
+
+- (void) _themeDidActivate: (NSNotification*)notification
+{
+  [self updateRects];
+  [self setNeedsDisplay: YES];
+}
+
+@end

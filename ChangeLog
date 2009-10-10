@@ -1,4 +1,11 @@
 2009-10-10 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSStandardWindowDecorationView.m,
+	* Headers/Additions/GNUstepGUI/GSTheme.h,
+	* Source/GSThemeDrawing.m: Move all the window border drawing code
+	into GSTheme.
+
+2009-10-10 Fred Kiefer <FredKiefer@gmx.de>
 	
 	* Source/NSEvent.m, 
 	* Source/NSImage.m,

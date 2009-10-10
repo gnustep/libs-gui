@@ -593,6 +593,16 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
       inButtonCell: (NSButtonCell *) cell 
 	 withFrame: (NSRect) aRect
           position: (NSPoint) position;
+
+- (float) titlebarHeight;
+
+- (float) resizebarHeight;
+
+- (void) drawWindowBorder: (NSRect)rect
+                withFrame: (NSRect)frame 
+             forStyleMask: (unsigned int)styleMask
+                    state: (int)inputState
+                 andTitle: (NSString*)title;
 @end
 
 /**

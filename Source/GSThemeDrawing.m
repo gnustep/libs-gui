@@ -28,10 +28,12 @@
 
 #import "GSThemePrivate.h"
 
+#import "AppKit/NSAttributedString.h"
 #import "AppKit/NSBezierPath.h"
 #import "AppKit/NSColorList.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
+#import "AppKit/NSParagraphStyle.h"
 #import "AppKit/PSOperators.h"
 
 #import "GNUstepGUI/GSToolbarView.h"
@@ -563,6 +565,233 @@
       [image compositeToPoint: position 
 	       operation: NSCompositeSourceOver];
     }
-} 
-@end
+}
 
+/* These include the black border. */
+#define TITLE_HEIGHT 23.0
+#define RESIZE_HEIGHT 9.0
+
+- (float) titlebarHeight
+{
+  return TITLE_HEIGHT;
+}
+
+- (float) resizebarHeight
+{
+  return RESIZE_HEIGHT;
+}
+
+static NSDictionary *titleTextAttributes[3];
+
+- (void) drawTitleBarRect: (NSRect)titleBarRect 
+             forStyleMask: (unsigned int)styleMask
+                    state: (int)inputState 
+                 andTitle: (NSString*)title
+{
+  static const NSRectEdge edges[4] = {NSMinXEdge, NSMaxYEdge,
+				    NSMaxXEdge, NSMinYEdge};
+  float grays[3][4] =
+    {{NSLightGray, NSLightGray, NSDarkGray, NSDarkGray},
+    {NSWhite, NSWhite, NSDarkGray, NSDarkGray},
+    {NSLightGray, NSLightGray, NSBlack, NSBlack}};
+  NSRect workRect;
+
+  if (!titleTextAttributes[0])
+    {
+      NSMutableParagraphStyle	*p;
+
+      p = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+      [p setLineBreakMode: NSLineBreakByClipping];
+
+      titleTextAttributes[0] = [[NSMutableDictionary alloc]
+	initWithObjectsAndKeys:
+	  [NSFont titleBarFontOfSize: 0], NSFontAttributeName,
+	  [NSColor windowFrameTextColor], NSForegroundColorAttributeName,
+	  p, NSParagraphStyleAttributeName,
+	  nil];
+
+      titleTextAttributes[1] = [[NSMutableDictionary alloc]
+	initWithObjectsAndKeys:
+	  [NSFont titleBarFontOfSize: 0], NSFontAttributeName,
+	  [NSColor blackColor], NSForegroundColorAttributeName, /* TODO: need a named color for this */
+	  p, NSParagraphStyleAttributeName,
+	  nil];
+
+      titleTextAttributes[2] = [[NSMutableDictionary alloc]
+	initWithObjectsAndKeys:
+	  [NSFont titleBarFontOfSize: 0], NSFontAttributeName,
+	  [NSColor windowFrameTextColor], NSForegroundColorAttributeName,
+	  p, NSParagraphStyleAttributeName,
+	  nil];
+
+      RELEASE(p);
+    }
+
+  /*
+  Draw the black border towards the rest of the window. (The outer black
+  border is drawn in -drawRect: since it might be drawn even if we don't have
+  a title bar.
+  */
+  [[NSColor blackColor] set];
+  PSmoveto(0, NSMinY(titleBarRect) + 0.5);
+  PSrlineto(titleBarRect.size.width, 0);
+  PSstroke();
+
+  /*
+  Draw the button-like border.
+  */
+  workRect = titleBarRect;
+  workRect.origin.x += 1;
+  workRect.origin.y += 1;
+  workRect.size.width -= 2;
+  workRect.size.height -= 2;
+
+  workRect = NSDrawTiledRects(workRect, workRect, edges, grays[inputState], 4);
+ 
+  /*
+  Draw the background.
+  */
+  switch (inputState) 
+    {
+    default:
+    case 0:
+      [[NSColor windowFrameColor] set];
+      break;
+    case 1:
+      [[NSColor lightGrayColor] set];
+      break;
+    case 2:
+      [[NSColor darkGrayColor] set];
+      break;
+    }
+  NSRectFill(workRect);
+
+  /* Draw the title. */
+  if (styleMask & NSTitledWindowMask)
+    {
+      NSSize titleSize;
+    
+      if (styleMask & NSMiniaturizableWindowMask)
+	{
+	  workRect.origin.x += 17;
+	  workRect.size.width -= 17;
+	}
+      if (styleMask & NSClosableWindowMask)
+	{
+	  workRect.size.width -= 17;
+	}
+  
+      titleSize = [title sizeWithAttributes: titleTextAttributes[inputState]];
+      if (titleSize.width <= workRect.size.width)
+	workRect.origin.x = NSMidX(workRect) - titleSize.width / 2;
+      workRect.origin.y = NSMidY(workRect) - titleSize.height / 2;
+      workRect.size.height = titleSize.height;
+      [title drawInRect: workRect
+	 withAttributes: titleTextAttributes[inputState]];
+    }
+}
+
+- (void) drawResizeBarRect: (NSRect)resizeBarRect
+{
+  [[NSColor lightGrayColor] set];
+  PSrectfill(1.0, 1.0, resizeBarRect.size.width - 2.0, RESIZE_HEIGHT - 3.0);
+
+  PSsetlinewidth(1.0);
+
+  [[NSColor blackColor] set];
+  PSmoveto(0.0, 0.5);
+  PSlineto(resizeBarRect.size.width, 0.5);
+  PSstroke();
+
+  [[NSColor darkGrayColor] set];
+  PSmoveto(1.0, RESIZE_HEIGHT - 0.5);
+  PSlineto(resizeBarRect.size.width - 1.0, RESIZE_HEIGHT - 0.5);
+  PSstroke();
+
+  [[NSColor whiteColor] set];
+  PSmoveto(1.0, RESIZE_HEIGHT - 1.5);
+  PSlineto(resizeBarRect.size.width - 1.0, RESIZE_HEIGHT - 1.5);
+  PSstroke();
+
+
+  /* Only draw the notches if there's enough space. */
+  if (resizeBarRect.size.width < 30 * 2)
+    return;
+
+  [[NSColor darkGrayColor] set];
+  PSmoveto(27.5, 1.0);
+  PSlineto(27.5, RESIZE_HEIGHT - 2.0);
+  PSmoveto(resizeBarRect.size.width - 28.5, 1.0);
+  PSlineto(resizeBarRect.size.width - 28.5, RESIZE_HEIGHT - 2.0);
+  PSstroke();
+
+  [[NSColor whiteColor] set];
+  PSmoveto(28.5, 1.0);
+  PSlineto(28.5, RESIZE_HEIGHT - 2.0);
+  PSmoveto(resizeBarRect.size.width - 27.5, 1.0);
+  PSlineto(resizeBarRect.size.width - 27.5, RESIZE_HEIGHT - 2.0);
+  PSstroke();
+}
+
+- (void) drawWindowBorder: (NSRect)rect 
+                withFrame: (NSRect)frame 
+             forStyleMask: (unsigned int)styleMask
+                    state: (int)inputState 
+                 andTitle: (NSString*)title
+{
+  if (styleMask & (NSTitledWindowMask | NSClosableWindowMask 
+                   | NSMiniaturizableWindowMask))
+    {
+      NSRect titleBarRect;
+
+      titleBarRect = NSMakeRect(0.0, frame.size.height - TITLE_HEIGHT,
+                                frame.size.width, TITLE_HEIGHT);
+      if (NSIntersectsRect(rect, titleBarRect))
+        [self drawTitleBarRect: titleBarRect 
+              forStyleMask: styleMask
+              state: inputState 
+              andTitle: title];
+    }
+
+  if (styleMask & NSResizableWindowMask)
+    {
+      NSRect resizeBarRect;
+
+      resizeBarRect = NSMakeRect(0.0, 0.0, frame.size.width, RESIZE_HEIGHT);
+      if (NSIntersectsRect(rect, resizeBarRect))
+        [self drawResizeBarRect: resizeBarRect];
+    }
+
+  if (styleMask & (NSTitledWindowMask | NSClosableWindowMask 
+                   | NSMiniaturizableWindowMask | NSResizableWindowMask))
+    {
+      PSsetlinewidth(1.0);
+      [[NSColor blackColor] set];
+      if (NSMinX(rect) < 1.0)
+	{
+	  PSmoveto(0.5, 0.0);
+	  PSlineto(0.5, frame.size.height);
+	  PSstroke();
+	}
+      if (NSMaxX(rect) > frame.size.width - 1.0)
+	{
+	  PSmoveto(frame.size.width - 0.5, 0.0);
+	  PSlineto(frame.size.width - 0.5, frame.size.height);
+	  PSstroke();
+	}
+      if (NSMaxY(rect) > frame.size.height - 1.0)
+	{
+	  PSmoveto(0.0, frame.size.height - 0.5);
+	  PSlineto(frame.size.width, frame.size.height - 0.5);
+	  PSstroke();
+	}
+      if (NSMinY(rect) < 1.0)
+	{
+	  PSmoveto(0.0, 0.5);
+	  PSlineto(frame.size.width, 0.5);
+	  PSstroke();
+	}
+    }
+}
+
+@end
