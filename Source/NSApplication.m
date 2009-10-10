@@ -1635,6 +1635,27 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
       [theSession->window setLevel: theSession->entryLevel];
     }
   NSZoneFree(NSDefaultMallocZone(), theSession);
+
+  // Bring the next modal window to front
+  if ((_session != 0) && 
+      ([windows indexOfObjectIdenticalTo: _session->window] != NSNotFound))
+    {
+      NSWindow *theWindow = _session->window;
+
+      // Same code as in beginModalSessionForWindow:
+      [theWindow orderFrontRegardless];      
+      if ([self isActive] == YES)
+        {
+          if ([theWindow canBecomeKeyWindow] == YES)
+            {
+              [theWindow makeKeyWindow];
+            }
+          else if ([theWindow canBecomeMainWindow] == YES)
+            {
+              [theWindow makeMainWindow];
+            }
+        }
+    }
 }
 
 /**
@@ -1786,8 +1807,8 @@ See Also: -runModalForWindow:
 	  /*
 	   *	Check to see if the window has gone away - if so, end session.
 	   */
-	  if ([[self windows] indexOfObjectIdenticalTo: _session->window] ==
-	    NSNotFound)
+	  if ([[self windows] indexOfObjectIdenticalTo: _session->window] == NSNotFound
+              || ![_session->window isVisible])
 	    {
 	      [self stopModal];
 	    }

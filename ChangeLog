@@ -1,3 +1,11 @@
+2009-10-10 Fred Kiefer <FredKiefer@gmx.de>
+	
+	* Source/NSApplication.m (-endModalSession:): Bring the window of
+	the next modal session to the front.
+	* Source/NSApplication.m (-runModalSession:): Better check whether
+	the current session window is gone.
+	* Source/NSPrintPanel.m (-_pickedButton:): Remove bogus log statement.
+
 2009-09-27 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSImage.m: ([-setName:]) fix bug which was removing the	

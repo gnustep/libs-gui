@@ -297,7 +297,6 @@ static NSPrintPanel *shared_instance;
   else if (tag == NSPPOptionsButton)
     {
       /* Open the options panel */
-      NSLog(@"Running _optionPanel modal");
       [NSApp runModalForWindow: _optionPanel];
       [_optionPanel orderOut: self];
       return;
