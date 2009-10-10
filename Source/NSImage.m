@@ -129,8 +129,7 @@ BOOL NSImageForceCaching = NO; /* use on missmatch */
 {
   TEST_RELEASE(rep);
   TEST_RELEASE(bg);
-  NSDeallocateObject(self);
-  GSNOSUPERDEALLOC;
+  [super dealloc];
 }
 @end
 

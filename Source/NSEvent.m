@@ -509,8 +509,7 @@ static Class eventClass;
     {
       RELEASE((id)event_data.tracking.user_data);
     }
-  NSDeallocateObject(self);
-  GSNOSUPERDEALLOC;
+  [super dealloc];
 }
 
 /**

@@ -1,5 +1,11 @@
 2009-10-10 Fred Kiefer <FredKiefer@gmx.de>
 	
+	* Source/NSEvent.m, 
+	* Source/NSImage.m,
+	* Source/GSTextStorage.m: Remove usage of NSDeallocateObject.
+
+2009-10-10 Fred Kiefer <FredKiefer@gmx.de>
+	
 	* Source/NSApplication.m (-endModalSession:): Bring the window of
 	the next modal session to the front.
 	* Source/NSApplication.m (-runModalSession:): Better check whether
