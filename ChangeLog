@@ -1,3 +1,10 @@
+2009-10-11 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSApplication.m: ([stopModalWithCode:]) correct the check to
+	see if a modal session is running.  This fixes the breakage caused by
+	the recent change sending -stopModal to invisible windows (like open
+	panels ordered out at the end of their modal loop).
+
 2009-10-11 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSStandardWindowDecorationView.m (-dealloc): Remove from

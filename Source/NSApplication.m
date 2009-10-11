@@ -1872,19 +1872,20 @@ See -runModalForWindow:
  */
 - (void) stopModalWithCode: (int)returnCode
 {
-  if (_session == 0)
+  /* According to the spec, there is no exception which is thrown
+   * if we are not currently in a modal session.   While it is not
+   * good practice to call this when we're not, we shouldn't throw
+   * an exception.
+   */
+  if (_session != 0 && _session->runState == NSRunContinuesResponse)
     {
-      // According to the spec, there is no exception which is thrown if we are not 
-      // currently in a modal session.   While it is not good practice to call this 
-      // when we're not, we shouldn't throw an exception.
-      return;
+      if (returnCode == NSRunContinuesResponse)
+	{
+	  [NSException raise: NSInvalidArgumentException
+	    format: @"stopModalWithCode: with NSRunContinuesResponse"];
+	}
+      _session->runState = returnCode;
     }
-  else if (returnCode == NSRunContinuesResponse)
-    {
-      [NSException raise: NSInvalidArgumentException
-		  format: @"stopModalWithCode: with NSRunContinuesResponse"];
-    }
-  _session->runState = returnCode;
 }
 
 /**
