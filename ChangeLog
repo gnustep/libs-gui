@@ -1,3 +1,8 @@
+2009-10-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSStandardWindowDecorationView.m (-dealloc): Remove from
+	the notification centre.
+
 2009-10-10 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSStandardWindowDecorationView.m,

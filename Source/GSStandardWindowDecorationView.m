@@ -170,6 +170,12 @@
   return self;
 }
 
+- (void) dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver: self];
+  [super dealloc];
+}
+
 - (void) drawRect: (NSRect)rect
 {
   [[GSTheme theme] drawWindowBorder: rect
