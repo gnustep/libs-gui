@@ -1,3 +1,9 @@
+2009-10-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSStandardWindowDecorationView.m
+	(-resizeWindowStartingWithEvent:): restructure event handling code
+	and add periodic event.
+
 2009-10-11 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSApplication.m: ([stopModalWithCode:]) correct the check to

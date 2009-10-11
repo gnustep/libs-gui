@@ -302,9 +302,10 @@ calc_new_frame(NSRect frame, NSPoint point, NSPoint firstPoint,
 
 - (void) resizeWindowStartingWithEvent: (NSEvent *)event
 {
-  unsigned int mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask;
+  unsigned int mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask | NSPeriodicMask;
   NSEvent *currentEvent = event;
   NSDate *distantPast = [NSDate distantPast];
+  NSDate *distantFuture = [NSDate distantFuture];
   NSPoint firstPoint, point;
   NSRect newFrame, frame;
   NSSize minSize, maxSize;
@@ -333,6 +334,7 @@ calc_new_frame(NSRect frame, NSPoint point, NSPoint firstPoint,
   maxSize = [window maxSize];
 
   [window _captureMouse: nil];
+  [NSEvent startPeriodicEventsAfterDelay: 0.1 withPeriod: 0.1];
   do
     {
       while (currentEvent && [currentEvent type] != NSLeftMouseUp)
@@ -350,18 +352,19 @@ calc_new_frame(NSRect frame, NSPoint point, NSPoint firstPoint,
       if (currentEvent && [currentEvent type] == NSLeftMouseUp)
 	break;
 
-      currentEvent = [_window nextEventMatchingMask: mask
-			untilDate: [NSDate distantFuture]
-			inMode: NSEventTrackingRunLoopMode
-			dequeue: YES];
-
       num++;
-      if(num == 5)
+      if (num == 5)
 	{
 	  [window setFrame: newFrame  display: YES];
 	  num = 0;
 	}
+
+      currentEvent = [_window nextEventMatchingMask: mask
+			untilDate: distantFuture
+			inMode: NSEventTrackingRunLoopMode
+			dequeue: YES];
     } while ([currentEvent type] != NSLeftMouseUp);
+  [NSEvent stopPeriodicEvents];
   [window _releaseMouse: nil];
 
   [window setFrame: newFrame  display: YES];
