@@ -1893,15 +1893,12 @@ static	NSRecursiveLock		*namedColorLock = nil;
 
 - (BOOL) isEqual: (id)other
 {
+  /* Instances of this class are uniqued, so a test for pointer equality
+   * is sufficient.
+   */
   if (other == self)
     return YES;
-  if ([other isKindOfClass: [self class]] == NO
-    || [[other catalogNameComponent] isEqualToString: _catalog_name] == NO
-    || [[other colorNameComponent] isEqualToString: _color_name] == NO)
-    {
-      return NO;
-    }
-  return YES;
+  return NO;
 }
 
 - (NSColor*) colorUsingColorSpaceName: (NSString *)colorSpace
