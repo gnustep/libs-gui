@@ -283,12 +283,11 @@ void initSystemColors(void)
 static NSColor*
 systemColorWithName(NSString *name)
 {
-  NSColor* col = [systemDict objectForKey: name];
+  NSColor	*col = [systemDict objectForKey: name];
 
   if (col == nil)
     {
-      col = [NSColor colorWithCatalogName: @"System"
-		     colorName: name];
+      col = [NSColor colorWithCatalogName: @"System" colorName: name];
       [systemDict setObject: col forKey: name];
     }
 
@@ -1217,7 +1216,7 @@ systemColorWithName(NSString *name)
 - (NSColor *) colorUsingColorSpace: (NSColorSpace *)space
 {
   // FIXME
-	return nil;
+  return nil;
 }
 
 - (int) numberOfComponents
@@ -1765,6 +1764,8 @@ systemColorWithName(NSString *name)
 {
   GSTheme	*theme = [notification object];
   NSColorList	*list = [theme colors];
+  NSEnumerator	*enumerator;
+  NSString	*name;
 
   if (list == nil)
     {
@@ -1779,7 +1780,11 @@ systemColorWithName(NSString *name)
    */
   list = [NSColorList colorListNamed: @"System"];
   ASSIGN(systemColors, list);
-  [systemDict removeAllObjects];
+  enumerator = [systemDict keyEnumerator];
+  while ((name = [enumerator nextObject]) != nil)
+    {
+      [[systemDict objectForKey: name] recache];
+    }
   [[NSNotificationCenter defaultCenter]
     postNotificationName: NSSystemColorsDidChangeNotification object: nil];
 }
@@ -1790,12 +1795,42 @@ systemColorWithName(NSString *name)
 // Named colours
 @implementation GSNamedColor
 
+static	NSMutableDictionary	*namedColors = nil;
+static	NSRecursiveLock		*namedColorLock = nil;
+
++ (void) initialize
+{
+  namedColorLock = [NSRecursiveLock new];
+  namedColors = [NSMutableDictionary new];
+}
+
 - (NSColor*) initWithCatalogName: (NSString *)listName
 		       colorName: (NSString *)colorName
 {
-  ASSIGN(_catalog_name, listName);
-  ASSIGN(_color_name, colorName);
+  NSMutableDictionary	*d;
+  NSColor		*c;
 
+  _catalog_name = [listName copy];
+  _color_name = [colorName copy];
+  [namedColorLock lock];
+  d = [namedColors objectForKey: _catalog_name];
+  if (d == nil)
+    {
+      d = [NSMutableDictionary new];
+      [namedColors setObject: d forKey: _catalog_name];
+      [d release];
+    }
+  c = [d objectForKey: _color_name];
+  if (c == nil)
+    {
+      [d setObject: self forKey: _color_name];
+    }
+  else
+    {
+      [self release];
+      self = [c retain];
+    }
+  [namedColorLock unlock];
   return self;
 }
 
@@ -1815,20 +1850,7 @@ systemColorWithName(NSString *name)
 
 - (id) copyWithZone: (NSZone*)aZone
 {
-  if (NSShouldRetainWithZone(self, aZone))
-    {
-      return RETAIN(self);
-    }
-  else
-    {
-      GSNamedColor *aCopy = (GSNamedColor*)NSCopyObject(self, 0, aZone);
-
-      aCopy->_catalog_name = [_catalog_name copyWithZone: aZone];
-      aCopy->_color_name = [_color_name copyWithZone: aZone];
-      aCopy->_cached_name_space = nil;
-      aCopy->_cached_color = nil;
-	 return aCopy;
-    }
+  return RETAIN(self);
 }
 
 - (NSString*) description
@@ -1891,8 +1913,8 @@ systemColorWithName(NSString *name)
 - (NSColor*) colorUsingColorSpaceName: (NSString *)colorSpace
 			       device: (NSDictionary *)deviceDescription
 {
-  NSColorList *list;
-  NSColor *real;
+  NSColorList	*list;
+  NSColor	*real;
 
   if (colorSpace == nil)
     {
@@ -1908,29 +1930,30 @@ systemColorWithName(NSString *name)
       return self;
     }
 
-
   // Is there a cache hit?
   // FIXME How would we detect that the cache has become invalid by a
   // change to the colour list?
-  if ([colorSpace isEqualToString: _cached_name_space])
+  [namedColorLock lock];
+  if (NO == [colorSpace isEqualToString: _cached_name_space])
     {
-      return _cached_color;
+      list = [NSColorList colorListNamed: _catalog_name];
+      real = [list colorWithKey: _color_name];
+      ASSIGN(_cached_color, [real colorUsingColorSpaceName: colorSpace
+	device: deviceDescription]);
+      ASSIGN(_cached_name_space, colorSpace);
     }
+  real = [[_cached_color retain] autorelease];
+  [namedColorLock unlock];
 
-  list = [NSColorList colorListNamed: _catalog_name];
-  real = [list colorWithKey: _color_name];
-
-  ASSIGN(_cached_color, [real colorUsingColorSpaceName: colorSpace
-		       device: deviceDescription]);
-  ASSIGN(_cached_name_space, colorSpace);
-
-  return _cached_color;
+  return real;
 }
 
 - (void) recache
 {
+  [namedColorLock lock];
   DESTROY(_cached_name_space);
   DESTROY(_cached_color);
+  [namedColorLock unlock];
 }
 
 //
@@ -1954,10 +1977,13 @@ systemColorWithName(NSString *name)
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_catalog_name];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_color_name];
-
-  return self;
+  NSString	*listName;
+  NSString	*colorName;
+  
+  listName = [aDecoder decodeObject];
+  colorName = [aDecoder decodeObject];
+  return [self initWithCatalogName: listName
+		         colorName: colorName];
 }
 
 @end
@@ -2022,9 +2048,11 @@ systemColorWithName(NSString *name)
     {
       GSWhiteColor *col = (GSWhiteColor*)other;
 
-      if (col->_white_component != _white_component ||
-	  col->_alpha_component != _alpha_component)
+      if ([col whiteComponent] != _white_component
+	|| [col alphaComponent] != _alpha_component)
+	{
 	  return NO;
+	}
       return YES;
     }
   return NO;
@@ -2333,13 +2361,27 @@ systemColorWithName(NSString *name)
     {
       GSDeviceCMYKColor *col = (GSDeviceCMYKColor*)other;
 
-      if (col->_cyan_component != _cyan_component
-	|| col->_magenta_component != _magenta_component
-	|| col->_yellow_component != _yellow_component
-	|| col->_black_component != _black_component
-	|| col->_alpha_component != _alpha_component)
+      if ([other isProxy])
 	{
-	  return NO;
+	  if ([col cyanComponent] != _cyan_component
+	    || [col magentaComponent] != _magenta_component
+	    || [col yellowComponent] != _yellow_component
+	    || [col blackComponent] != _black_component
+	    || [col alphaComponent] != _alpha_component)
+	    {
+	      return NO;
+	    }
+	}
+      else
+	{
+	  if (col->_cyan_component != _cyan_component
+	    || col->_magenta_component != _magenta_component
+	    || col->_yellow_component != _yellow_component
+	    || col->_black_component != _black_component
+	    || col->_alpha_component != _alpha_component)
+	    {
+	      return NO;
+	    }
 	}
       return YES;
     }
@@ -2579,11 +2621,23 @@ systemColorWithName(NSString *name)
     {
       GSRGBColor *col = (GSRGBColor*)other;
 
-      if (col->_red_component != _red_component
-	|| col->_green_component != _green_component
-	|| col->_blue_component != _blue_component)
+      if ([other isProxy])
 	{
-	  return NO;
+	  if ([col redComponent] != _red_component
+	    || [col greenComponent] != _green_component
+	    || [col blueComponent] != _blue_component)
+	    {
+	      return NO;
+	    }
+	}
+      else
+	{
+	  if (col->_red_component != _red_component
+	    || col->_green_component != _green_component
+	    || col->_blue_component != _blue_component)
+	    {
+	      return NO;
+	    }
 	}
       return YES;
     }
@@ -3091,7 +3145,7 @@ systemColorWithName(NSString *name)
     {
       GSPatternColor *col = (GSPatternColor*)other;
 
-      if ([col->_pattern isEqual: _pattern] == NO)
+      if ([[col patternImage] isEqual: _pattern] == NO)
 	return NO;
       return YES;
     }

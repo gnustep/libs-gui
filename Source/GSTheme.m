@@ -922,6 +922,10 @@ typedef	struct {
   DESTROY(_resource);
   [super dealloc];
 }
+- (NSString*) description
+{
+  return [_resource description];
+}
 - (void) forwardInvocation: (NSInvocation*)anInvocation
 {
   [anInvocation invokeWithTarget: _resource];

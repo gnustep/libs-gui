@@ -1,3 +1,10 @@
+2009-10-11 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSTheme.m: Implement -description for proxies.
+	* Source/NSColor.m: Fix theme activation to recache catalogue colors.
+	Write code to unique catalogue color instances.
+	Add locking to make catalogue colors thread-safe.
+
 2009-10-11 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSStandardWindowDecorationView.m
