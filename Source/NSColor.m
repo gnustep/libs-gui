@@ -1197,20 +1197,20 @@ systemColorWithName(NSString *name)
 {
   NSString *name = [self colorSpaceName];
 
-	if ([name isEqualToString: NSCalibratedRGBColorSpace])
+  if ([name isEqualToString: NSCalibratedRGBColorSpace])
     return [NSColorSpace genericRGBColorSpace];
-	if ([name isEqualToString: NSDeviceRGBColorSpace])
+  if ([name isEqualToString: NSDeviceRGBColorSpace])
     return [NSColorSpace deviceRGBColorSpace];
-	if ([name isEqualToString: NSCalibratedBlackColorSpace]
-      || [name isEqualToString: NSCalibratedWhiteColorSpace])
+  if ([name isEqualToString: NSCalibratedBlackColorSpace]
+    || [name isEqualToString: NSCalibratedWhiteColorSpace])
     return [NSColorSpace genericGrayColorSpace];
-	if ([name isEqualToString: NSDeviceBlackColorSpace]
-      || [name isEqualToString: NSDeviceWhiteColorSpace])
+  if ([name isEqualToString: NSDeviceBlackColorSpace]
+    || [name isEqualToString: NSDeviceWhiteColorSpace])
     return [NSColorSpace deviceGrayColorSpace];
-	if ([name isEqualToString: NSDeviceCMYKColorSpace])
+  if ([name isEqualToString: NSDeviceCMYKColorSpace])
     return [NSColorSpace deviceCMYKColorSpace];
 
-	return nil;
+  return nil;
 }
 
 - (NSColor *) colorUsingColorSpace: (NSColorSpace *)space
@@ -1895,17 +1895,13 @@ static	NSRecursiveLock		*namedColorLock = nil;
 {
   if (other == self)
     return YES;
-  if ([other isKindOfClass: [self class]] == NO)
-    return NO;
-  else
+  if ([other isKindOfClass: [self class]] == NO
+    || [[other catalogNameComponent] isEqualToString: _catalog_name] == NO
+    || [[other colorNameComponent] isEqualToString: _color_name] == NO)
     {
-      if (![[other catalogNameComponent] isEqualToString: _catalog_name])
-	return NO;
-      if (![[other colorNameComponent] isEqualToString: _color_name])
-	return NO;
-      return YES;
+      return NO;
     }
-  return NO;
+  return YES;
 }
 
 - (NSColor*) colorUsingColorSpaceName: (NSString *)colorSpace
@@ -2040,18 +2036,13 @@ static	NSRecursiveLock		*namedColorLock = nil;
 {
   if (other == self)
     return YES;
-  if ([other isKindOfClass: [self class]] == NO)
-    return NO;
-  else
+  if ([other isKindOfClass: [self class]] == NO
+    || [other whiteComponent] != _white_component
+    || [other alphaComponent] != _alpha_component)
     {
-      if ([other whiteComponent] != _white_component
-	|| [other alphaComponent] != _alpha_component)
-	{
-	  return NO;
-	}
-      return YES;
+      return NO;
     }
-  return NO;
+  return YES;
 }
 
 - (NSColor*) colorWithAlphaComponent: (float)alpha
@@ -2351,21 +2342,16 @@ static	NSRecursiveLock		*namedColorLock = nil;
 {
   if (other == self)
     return YES;
-  if ([other isKindOfClass: [self class]] == NO)
-    return NO;
-  else
+  if ([other isKindOfClass: [self class]] == NO
+    || [other cyanComponent] != _cyan_component
+    || [other magentaComponent] != _magenta_component
+    || [other yellowComponent] != _yellow_component
+    || [other blackComponent] != _black_component
+    || [other alphaComponent] != _alpha_component)
     {
-      if ([other cyanComponent] != _cyan_component
-          || [other magentaComponent] != _magenta_component
-          || [other yellowComponent] != _yellow_component
-          || [other blackComponent] != _black_component
-          || [other alphaComponent] != _alpha_component)
-        {
-          return NO;
-        }
-      return YES;
+      return NO;
     }
-  return NO;
+  return YES;
 }
 
 - (NSColor*) colorWithAlphaComponent: (float)alpha
@@ -2595,20 +2581,14 @@ static	NSRecursiveLock		*namedColorLock = nil;
 {
   if (other == self)
     return YES;
-  if ([other isKindOfClass: [self class]] == NO)
-    return NO;
-  else
+  if ([other isKindOfClass: [self class]] == NO
+    || [other redComponent] != _red_component
+    || [other greenComponent] != _green_component
+    || [other blueComponent] != _blue_component)
     {
-      if ([other redComponent] != _red_component
-          || [other greenComponent] != _green_component
-          || [other blueComponent] != _blue_component)
-        {
-          return NO;
-        }
-      return YES;
+      return NO;
     }
-
-  return NO;
+  return YES;
 }
 
 - (NSColor*) colorWithAlphaComponent: (float)alpha
@@ -3105,16 +3085,12 @@ static	NSRecursiveLock		*namedColorLock = nil;
 {
   if (other == self)
     return YES;
-  if ([other isKindOfClass: [self class]] == NO)
-    return NO;
-  else
+  if ([other isKindOfClass: [self class]] == NO
+    || [[other patternImage] isEqual: _pattern] == NO)
     {
-      if ([[other patternImage] isEqual: _pattern] == NO)
-	return NO;
-      return YES;
+      return NO;
     }
-
-  return NO;
+  return YES;
 }
 
 - (id) copyWithZone: (NSZone*)aZone
