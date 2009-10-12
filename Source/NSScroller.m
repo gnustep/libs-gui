@@ -781,7 +781,8 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 		= NSInterfaceStyleForKey(@"NSScrollerInterfaceStyle", self);
 
               if (interfaceStyle == NSNextStepInterfaceStyle 
-	        || interfaceStyle == GSWindowMakerInterfaceStyle)
+                  || interfaceStyle == NSMacintoshInterfaceStyle
+                  || interfaceStyle == GSWindowMakerInterfaceStyle)
 		{
 		  /* NeXTstep style is to scroll to point.
 		   */
@@ -1159,7 +1160,8 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
     }
   /* We use the button offset if we in the NeXTstep interface style. */
   if (interfaceStyle == NSNextStepInterfaceStyle
-    || interfaceStyle == GSWindowMakerInterfaceStyle)
+      || interfaceStyle == NSMacintoshInterfaceStyle
+      || interfaceStyle == GSWindowMakerInterfaceStyle)
     { 
       buttonsWidth = ([isa scrollerWidth] - buttonsOffset);
       x = y = 1.0;
@@ -1233,7 +1235,8 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 
 	  /* calc actual position */
           if (interfaceStyle == NSNextStepInterfaceStyle
-	    || interfaceStyle == GSWindowMakerInterfaceStyle)
+              || interfaceStyle == NSMacintoshInterfaceStyle
+              || interfaceStyle == GSWindowMakerInterfaceStyle)
 	    {
 	      y += knobPosition + ((_arrowsPosition == NSScrollerArrowsMaxEnd
 		|| _arrowsPosition == NSScrollerArrowsNone)
@@ -1262,14 +1265,16 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 	    break;
 	  }
 	height -= buttonsSize;
-	if ( (interfaceStyle == NSNextStepInterfaceStyle || 
-              interfaceStyle == GSWindowMakerInterfaceStyle) 
-            && _arrowsPosition == NSScrollerArrowsMinEnd)
+	if ( (interfaceStyle == NSNextStepInterfaceStyle 
+              || interfaceStyle == NSMacintoshInterfaceStyle
+              || interfaceStyle == GSWindowMakerInterfaceStyle))
 	  {
-	    y += buttonsSize;
+            if (_arrowsPosition == NSScrollerArrowsMinEnd)
+              {
+                y += buttonsSize;
+              }
 	  }
-        else if (interfaceStyle != NSNextStepInterfaceStyle
-	  && interfaceStyle != GSWindowMakerInterfaceStyle)
+        else
           {
             y += buttonsWidth;
             width = buttonsWidth;
@@ -1284,6 +1289,7 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 	    return NSZeroRect;
 	  }
 	else if ((interfaceStyle == NSNextStepInterfaceStyle
+	  || interfaceStyle == NSMacintoshInterfaceStyle
 	  || interfaceStyle == GSWindowMakerInterfaceStyle)
 	  && _arrowsPosition == NSScrollerArrowsMaxEnd)
 	  {
@@ -1301,6 +1307,7 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 	    return NSZeroRect;
 	  }
         else if (interfaceStyle == NSNextStepInterfaceStyle 
+	  || interfaceStyle == NSMacintoshInterfaceStyle
 	  || interfaceStyle == GSWindowMakerInterfaceStyle)
           {
 	    if (_arrowsPosition == NSScrollerArrowsMaxEnd)
