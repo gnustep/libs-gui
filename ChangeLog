@@ -1,5 +1,10 @@
 2009-10-12 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSApplication.m (-runModalForWindow:, -runModalSession:):
+	Use NSModalPanelRunLoopMode instead of NSDefaultRunLoopMode.
+
+2009-10-12 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSScroller.m: Handle NSMacintoshInterfaceStyle the same
 	as NSNextStepInterfaceStyle.
 

@@ -1689,7 +1689,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 	      /*
 	       * Wait until there are more events to handle.
 	       */
-	      DPSPeekEvent(srv, NSAnyEventMask, limit, NSDefaultRunLoopMode);
+	      DPSPeekEvent(srv, NSAnyEventMask, limit, NSModalPanelRunLoopMode);
 	    }
 	}
 
@@ -1765,7 +1765,7 @@ See Also: -runModalForWindow:
     {
       IF_NO_GC(pool = [arpClass new]);
 
-      event = DPSGetEvent(srv, NSAnyEventMask, limit, NSDefaultRunLoopMode);
+      event = DPSGetEvent(srv, NSAnyEventMask, limit, NSModalPanelRunLoopMode);
       if (event != nil)
 	{
 	  NSWindow	*eventWindow = [event window];
@@ -2552,7 +2552,7 @@ image.</p><p>See Also: -applicationIconImage</p>
  * themselves after the current or next event is processed.  (Update occurs
  * after event dispatch in the loop.)
  * This is needed when in NSEventTrackingRunLoopMode.  When the application
- * is using NSDefaultRunLoopMode or NSModalRunLoopMode windows are updated
+ * is using NSDefaultRunLoopMode or NSModalPanelRunLoopMode windows are updated
  * after each loop iteration irrespective of this setting.
  */
 - (void) setWindowsNeedUpdate: (BOOL)flag
@@ -2563,7 +2563,7 @@ image.</p><p>See Also: -applicationIconImage</p>
 /**
  * Sends each of the app's visible windows an [NSWindow-update] message.
  * This method is called automatically for every iteration of the run loop
- * in NSDefaultRunLoopMode or NSModalRunLoopMode, but is only called during
+ * in NSDefaultRunLoopMode or NSModalPanelRunLoopMode, but is only called during
  * NSEventTrackingRunLoopMode if -setWindowsNeedUpdate: is set to YES.
  */
 - (void) updateWindows
