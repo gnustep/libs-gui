@@ -1899,11 +1899,9 @@ static	NSRecursiveLock		*namedColorLock = nil;
     return NO;
   else
     {
-      GSNamedColor *col = (GSNamedColor*)other;
-
-      if (![[col catalogNameComponent] isEqualToString: _catalog_name])
+      if (![[other catalogNameComponent] isEqualToString: _catalog_name])
 	return NO;
-      if (![[col colorNameComponent] isEqualToString: _color_name])
+      if (![[other colorNameComponent] isEqualToString: _color_name])
 	return NO;
       return YES;
     }
@@ -2046,10 +2044,8 @@ static	NSRecursiveLock		*namedColorLock = nil;
     return NO;
   else
     {
-      GSWhiteColor *col = (GSWhiteColor*)other;
-
-      if ([col whiteComponent] != _white_component
-	|| [col alphaComponent] != _alpha_component)
+      if ([other whiteComponent] != _white_component
+	|| [other alphaComponent] != _alpha_component)
 	{
 	  return NO;
 	}
@@ -2359,30 +2355,14 @@ static	NSRecursiveLock		*namedColorLock = nil;
     return NO;
   else
     {
-      GSDeviceCMYKColor *col = (GSDeviceCMYKColor*)other;
-
-      if ([other isProxy])
-	{
-	  if ([col cyanComponent] != _cyan_component
-	    || [col magentaComponent] != _magenta_component
-	    || [col yellowComponent] != _yellow_component
-	    || [col blackComponent] != _black_component
-	    || [col alphaComponent] != _alpha_component)
-	    {
-	      return NO;
-	    }
-	}
-      else
-	{
-	  if (col->_cyan_component != _cyan_component
-	    || col->_magenta_component != _magenta_component
-	    || col->_yellow_component != _yellow_component
-	    || col->_black_component != _black_component
-	    || col->_alpha_component != _alpha_component)
-	    {
-	      return NO;
-	    }
-	}
+      if ([other cyanComponent] != _cyan_component
+          || [other magentaComponent] != _magenta_component
+          || [other yellowComponent] != _yellow_component
+          || [other blackComponent] != _black_component
+          || [other alphaComponent] != _alpha_component)
+        {
+          return NO;
+        }
       return YES;
     }
   return NO;
@@ -2619,26 +2599,12 @@ static	NSRecursiveLock		*namedColorLock = nil;
     return NO;
   else
     {
-      GSRGBColor *col = (GSRGBColor*)other;
-
-      if ([other isProxy])
-	{
-	  if ([col redComponent] != _red_component
-	    || [col greenComponent] != _green_component
-	    || [col blueComponent] != _blue_component)
-	    {
-	      return NO;
-	    }
-	}
-      else
-	{
-	  if (col->_red_component != _red_component
-	    || col->_green_component != _green_component
-	    || col->_blue_component != _blue_component)
-	    {
-	      return NO;
-	    }
-	}
+      if ([other redComponent] != _red_component
+          || [other greenComponent] != _green_component
+          || [other blueComponent] != _blue_component)
+        {
+          return NO;
+        }
       return YES;
     }
 
@@ -3143,9 +3109,7 @@ static	NSRecursiveLock		*namedColorLock = nil;
     return NO;
   else
     {
-      GSPatternColor *col = (GSPatternColor*)other;
-
-      if ([[col patternImage] isEqual: _pattern] == NO)
+      if ([[other patternImage] isEqual: _pattern] == NO)
 	return NO;
       return YES;
     }

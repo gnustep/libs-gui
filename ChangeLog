@@ -1,3 +1,8 @@
+2009-10-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSColor.m: Remove special proxy handling introduced in
+	last change.
+
 2009-10-11 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTheme.m: Implement -description for proxies.
