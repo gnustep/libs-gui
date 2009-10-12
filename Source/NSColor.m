@@ -1891,14 +1891,22 @@ static	NSRecursiveLock		*namedColorLock = nil;
   return NSLocalizedString(_color_name, @"colour name");
 }
 
+- (NSUInteger) hash
+{
+  return [_catalog_name hash] + [_color_name hash];
+}
+
 - (BOOL) isEqual: (id)other
 {
-  /* Instances of this class are uniqued, so a test for pointer equality
-   * is sufficient.
-   */
   if (other == self)
     return YES;
-  return NO;
+  if ([other isKindOfClass: [self class]] == NO
+    || [[other catalogNameComponent] isEqualToString: _catalog_name] == NO
+    || [[other colorNameComponent] isEqualToString: _color_name] == NO)
+    {
+      return NO;
+    }
+  return YES;
 }
 
 - (NSColor*) colorUsingColorSpaceName: (NSString *)colorSpace
@@ -2027,6 +2035,24 @@ static	NSRecursiveLock		*namedColorLock = nil;
     *white = _white_component;
   if (alpha)
     *alpha = _alpha_component;
+}
+
+- (NSUInteger) hash
+{
+  union {
+    uint8_t	bytes[sizeof(float)*2];
+    float	floats[2];
+  } u;
+  NSUInteger	h = 0;
+  unsigned	i;
+
+  u.floats[0] = _white_component;
+  u.floats[1] = _alpha_component;
+  for (i = 0; i < sizeof(u); i++)
+    {
+      h = (h << 5) + h + u.bytes[i];
+    }
+  return h;
 }
 
 - (BOOL) isEqual: (id)other
