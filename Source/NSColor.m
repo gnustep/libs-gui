@@ -2361,27 +2361,6 @@ static	NSRecursiveLock		*namedColorLock = nil;
     *alpha = _alpha_component;
 }
 
-- (NSUInteger) hash
-{
-  union {
-    uint8_t	bytes[sizeof(float)*5];
-    float	floats[5];
-  } u;
-  NSUInteger	h = 0;
-  unsigned	i;
-
-  u.floats[0] = _cyan_component;
-  u.floats[1] = _magenta_component;
-  u.floats[2] = _yellow_component;
-  u.floats[3] = _black_component;
-  u.floats[4] = _alpha_component;
-  for (i = 0; i < sizeof(u); i++)
-    {
-      h = (h << 5) + h + u.bytes[i];
-    }
-  return h;
-}
-
 - (BOOL) isEqual: (id)other
 {
   if (other == self)
@@ -2619,25 +2598,6 @@ static	NSRecursiveLock		*namedColorLock = nil;
     *blue = _blue_component;
   if (alpha)
     *alpha = _alpha_component;
-}
-
-- (NSUInteger) hash
-{
-  union {
-    uint8_t	bytes[sizeof(float)*3];
-    float	floats[3];
-  } u;
-  NSUInteger	h = 0;
-  unsigned	i;
-
-  u.floats[0] = _red_component;
-  u.floats[1] = _green_component;
-  u.floats[2] = _blue_component;
-  for (i = 0; i < sizeof(u); i++)
-    {
-      h = (h << 5) + h + u.bytes[i];
-    }
-  return h;
 }
 
 - (BOOL) isEqual: (id)other
