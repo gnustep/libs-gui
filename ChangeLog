@@ -1,5 +1,10 @@
 2009-10-12 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSColor.m (-hash): Turned Richards specific hash method
+	into a generic one.
+
+2009-10-12 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSColor.m: Remove special proxy handling introduced in
 	last change.
 

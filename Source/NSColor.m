@@ -1219,6 +1219,24 @@ systemColorWithName(NSString *name)
   return nil;
 }
 
+- (NSUInteger) hash
+{
+  int nums = [self numberOfComponents];
+  union {
+    uint8_t	bytes[sizeof(float) * nums];
+    float	floats[nums];
+  } u;
+  NSUInteger	h = 0;
+  unsigned	i;
+
+  [self getComponents: u.floats];
+  for (i = 0; i < sizeof(u); i++)
+    {
+      h = (h << 5) + h + u.bytes[i];
+    }
+  return h;
+}
+
 - (int) numberOfComponents
 {
   [NSException raise: NSInternalInconsistencyException
@@ -2035,24 +2053,6 @@ static	NSRecursiveLock		*namedColorLock = nil;
     *white = _white_component;
   if (alpha)
     *alpha = _alpha_component;
-}
-
-- (NSUInteger) hash
-{
-  union {
-    uint8_t	bytes[sizeof(float)*2];
-    float	floats[2];
-  } u;
-  NSUInteger	h = 0;
-  unsigned	i;
-
-  u.floats[0] = _white_component;
-  u.floats[1] = _alpha_component;
-  for (i = 0; i < sizeof(u); i++)
-    {
-      h = (h << 5) + h + u.bytes[i];
-    }
-  return h;
 }
 
 - (BOOL) isEqual: (id)other
