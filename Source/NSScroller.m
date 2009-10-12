@@ -788,6 +788,8 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 		   */
 	          [self setDoubleValue: doubleValue];
 	          [self sendAction: _action to: _target];
+                  // And then track the knob
+                  [self trackKnob: theEvent];
 		}
 	      else
 		{
@@ -802,9 +804,12 @@ static const float buttonsOffset = 2; // buttonsWidth = sw - buttonsOffset
 		      _hitPart = NSScrollerDecrementPage;
 		    }
 	          [self sendAction: _action to: _target];
+                  /* FIXME: Here we should not track the knob but keep on moving it
+                     towards the mouse until the button goes up. If the mouse moves,
+                     move towards it, but only if this is in the original direction.
+                   */
 		}
 	    }
-	  [self trackKnob: theEvent];
 	  break;
 	}
 
