@@ -465,12 +465,15 @@ _attributesAtIndexEffectiveRange(
 
 - (id) initWithCoder: (NSCoder*)aCoder
 {
-  NSLog(@"Warning - decoding archive containing obsolete %@ object - please delete/replace this archive", NSStringFromClass([self class]));
   self = [super initWithCoder: aCoder];
   if([aCoder allowsKeyedCoding] == NO)
     {
-      [aCoder decodeValueOfObjCType: @encode(id) at: &_textChars];
-      [aCoder decodeValueOfObjCType: @encode(id) at: &_infoArray];
+      if ([aCoder versionForClassName: @"GSTextStorage"] != (NSInteger)NSNotFound)
+        {
+          NSLog(@"Warning - decoding archive containing obsolete %@ object - please delete/replace this archive", NSStringFromClass([self class]));
+          [aCoder decodeValueOfObjCType: @encode(id) at: &_textChars];
+          [aCoder decodeValueOfObjCType: @encode(id) at: &_infoArray];
+        }
     }
   return self;
 }
