@@ -269,6 +269,16 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 }
 
 /**
+ * Loads a theme from a theme bundle of the specified name, which may be
+ * either a full path name of the theme bundle, or a simple theme name
+ * (in which case the standard directories are searched for it) or nil
+ * (in which case the default GNUstep theme is returned).<br />
+ * Returns the loaded theme but does not make it the current theme,
+ * to do that you will need to call the +setTheme: method.
+ */
++ (GSTheme*) loadThemeNamed: (NSString*)themeName;
+
+/**
  * Creates and displays a panel allowing selection of different themes
  * and display of the current theme inspector.
  */
