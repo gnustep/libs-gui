@@ -1,3 +1,7 @@
+2009-10-17 Sheldon Gill  <sheldon@westnet.net.au>
+
+	* Source/NSApplication.m: centralise GSGuiBundle() routine
+
 2009-10-16 Sheldon Gill  <sheldon@westnet.net.au>
 
 	* Source/NSEvent.m: add default for unknown events

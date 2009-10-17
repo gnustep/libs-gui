@@ -152,13 +152,20 @@ _NSAppKitUncaughtExceptionHandler (NSException *exception)
     }
 }
 
-/* This is the bundle from where we load localization of messages.  */
-static NSBundle *guiBundle = nil;
-
 /* Get the bundle.  */
 NSBundle *
 GSGuiBundle(void)
 {
+  /* This is the bundle from where we load localization of messages.  */
+  static NSBundle *guiBundle = nil;
+
+  if (!guiBundle)
+    {
+      /* Create the gui bundle we use to localize messages.  */
+      guiBundle = [NSBundle bundleForLibrary: @"gnustep-gui"
+			    version: OBJC_STRINGIFY(GNUSTEP_GUI_MAJOR_VERSION.GNUSTEP_GUI_MINOR_VERSION)];
+      RETAIN(guiBundle);
+    }
   return guiBundle;
 }
 
@@ -716,12 +723,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
       GSStringDrawingDummyFunction();
 
       [self setVersion: 1];
-      
-      /* Create the gui bundle we use to localize messages.  */
-      guiBundle = [NSBundle bundleForLibrary: @"gnustep-gui"
-			    version: OBJC_STRINGIFY(GNUSTEP_GUI_MAJOR_VERSION.GNUSTEP_GUI_MINOR_VERSION)];
-      RETAIN(guiBundle);
-      
+     
       /* Cache the NSAutoreleasePool class */
       arpClass = [NSAutoreleasePool class];
       nc = [NSNotificationCenter defaultCenter];
