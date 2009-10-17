@@ -111,7 +111,7 @@ _NSAppKitUncaughtExceptionHandler (NSException *exception)
 
   /* Reset the exception handler to the Base library's one, to prevent
      recursive calls to the gui one. */
-  NSSetUncaughtExceptionHandler (defaultUncaughtExceptionHandler);  
+  NSSetUncaughtExceptionHandler(defaultUncaughtExceptionHandler);  
 
   /*
    * If there is no graphics context to run the alert panel in or
@@ -156,7 +156,8 @@ _NSAppKitUncaughtExceptionHandler (NSException *exception)
 static NSBundle *guiBundle = nil;
 
 /* Get the bundle.  */
-NSBundle *GSGuiBundle (void)
+NSBundle *
+GSGuiBundle(void)
 {
   return guiBundle;
 }
@@ -167,7 +168,7 @@ NSBundle *GSGuiBundle (void)
 @end
 
 static NSString *
-gnustep_backend_path (NSString *dir, NSString *name)
+gnustep_backend_path(NSString *dir, NSString *name)
 {
   NSString *path;
   NSEnumerator *benum;
@@ -193,7 +194,7 @@ gnustep_backend_path (NSString *dir, NSString *name)
    such as 'GNUstep-back', or simply 'back', or for historical reasons,
    'libgnustep-back'.  */
 static NSString *
-gnustep_backend_framework (NSString *bundleName)
+gnustep_backend_framework(NSString *bundleName)
 {
   if (bundleName == nil)
     bundleName = @"GNUstep_back.framework";
@@ -720,9 +721,6 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
       guiBundle = [NSBundle bundleForLibrary: @"gnustep-gui"
 			    version: OBJC_STRINGIFY(GNUSTEP_GUI_MAJOR_VERSION.GNUSTEP_GUI_MINOR_VERSION)];
       RETAIN(guiBundle);
-
-      /* Save the base library exception handler */
-      defaultUncaughtExceptionHandler = NSGetUncaughtExceptionHandler ();
       
       /* Cache the NSAutoreleasePool class */
       arpClass = [NSAutoreleasePool class];
@@ -819,7 +817,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   GSDisplayServer *srv;
   NSDictionary *attributes;
   /* Initialization must be enclosed in an autorelease pool.  */
-  CREATE_AUTORELEASE_POOL (_app_init_pool);
+  CREATE_AUTORELEASE_POOL(_app_init_pool);
  
   /* 
    * Set NSApp as soon as possible, since other gui classes (which
@@ -859,8 +857,10 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   //_main_menu = nil;
   _windows_need_update = YES;
 
+  /* Save the base library exception handler */
+  defaultUncaughtExceptionHandler = NSGetUncaughtExceptionHandler();
   /* Set a new exception handler for the gui library.  */
-  NSSetUncaughtExceptionHandler (_NSAppKitUncaughtExceptionHandler);
+  NSSetUncaughtExceptionHandler(_NSAppKitUncaughtExceptionHandler);
 
   _listener = [GSServicesManager newWithApplication: self];
 
@@ -871,7 +871,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   /* We are the end of responder chain.  */
   [self setNextResponder: nil];
 
-  RELEASE (_app_init_pool);
+  RELEASE(_app_init_pool);
 }
 
 

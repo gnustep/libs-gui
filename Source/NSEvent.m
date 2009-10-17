@@ -683,9 +683,17 @@ static const char *eventTypes[] = {
           event_data.mouse.deltaZ];
         break;
 
+      // FIXME: Tablet events
       case NSTabletPoint:
       case NSTabletProximity:
-        // FIXME: Tablet events
+        break;
+
+      default:
+        return [NSString stringWithFormat:
+          @"NSEvent: eventType = UNKNOWN!, point = { %f, %f }, modifiers = %u,"
+          @" time = %f, window = %d"
+          location_point.x, location_point.y,
+          modifier_flags, event_time, window_num];
         break;
     }
 
@@ -765,7 +773,7 @@ static const char *eventTypes[] = {
   if (!(NSEventMaskFromType(event_type) & GSMouseEventMask) && 
       !(NSEventMaskFromType(event_type) & GSEnterExitEventMask))
     [NSException raise: NSInternalInconsistencyException
-                format: @"eventNumber requested for non-mouse event"];
+                format: @"eventNumber requested for non-tracking event"];
 
   if ((event_type == NSMouseEntered) || (event_type == NSMouseExited))
     return event_data.tracking.event_num;

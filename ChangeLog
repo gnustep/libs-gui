@@ -1,3 +1,9 @@
+2009-10-16 Sheldon Gill  <sheldon@westnet.net.au>
+
+	* Source/NSEvent.m: add default for unknown events
+	* Source/NSApplication.m: Move saving defaultExceptionHandler to
+	when it is required (in _init) rather than early in +[initialize]
+
 2009-10-13 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSTextStorage.m (-initWithCoder:): Display the warning
