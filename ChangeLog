@@ -1,3 +1,9 @@
+2009-10-17  Wolfgang Lux  <wlux@uni-muenster.de>
+
+	* Source/NSApplication.m (-finishLaunching): Open a new document
+	by default when a document based application is started and there
+	is no file to open.
+
 2009-10-17 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWindow.m:

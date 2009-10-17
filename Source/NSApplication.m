@@ -1129,14 +1129,30 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
       [_listener application: self printFile: filePath];
       [self terminate: self];
     }
-  else if (!didAutoreopen && ![defs boolForKey: @"autolaunch"]
-    && [_delegate respondsToSelector:
-      @selector(applicationShouldOpenUntitledFile:)]
-    && ([_delegate applicationShouldOpenUntitledFile: self])
-    && [_delegate respondsToSelector:
-      @selector(applicationOpenUntitledFile:)])
+  else if (!didAutoreopen && ![defs boolForKey: @"autolaunch"])
     {
-      [_delegate applicationOpenUntitledFile: self];
+      if ([_delegate respondsToSelector:
+                       @selector(applicationShouldOpenUntitledFile:)])
+        {
+          if ([_delegate applicationShouldOpenUntitledFile: self]
+              && [_delegate respondsToSelector:
+                              @selector(applicationOpenUntitledFile:)])
+            {
+              [_delegate applicationOpenUntitledFile: self];
+            }
+        }
+      else if ([NSDocumentController isDocumentBasedApplication])
+        {
+          NSError *err;
+          NSDocumentController *sdc =
+            [NSDocumentController sharedDocumentController];
+
+          if ([sdc openUntitledDocumentAndDisplay: YES error: &err] == nil &&
+              [sdc presentError: err] == NO)
+            {
+              [self terminate: self];
+            }
+        }
     }
 }
 
