@@ -87,6 +87,9 @@
 #include "NSDocumentFrameworkPrivate.h"
 #include "NSToolbarFrameworkPrivate.h"
 
+// minimize icon when suppressed?
+#define	MINI_ICON	0
+
 /* The -gui thread. See the comment in initialize_gnustep_backend. */
 NSThread *GSAppKitThread;
 
@@ -439,6 +442,19 @@ NSApplication	*NSApp = nil;
   [self setTitle: [[NSProcessInfo processInfo] processName]];
   [self setExcludedFromWindowsMenu: YES];
   [self setReleasedWhenClosed: NO];
+
+#if	MINI_ICON
+  /* Hack ... 
+   * At least one window manager won't miniaturize a window unless
+   * it's at the standard level.  If the app icon is suppressed, we
+   * may still want a miniaturised version while the app is hidden.
+   */
+  if (YES == [[NSUserDefaults standardUserDefaults]
+    boolForKey: @"GSSuppressAppIcon"])
+    {
+      return;
+    }
+#endif
   _windowLevel = NSDockWindowLevel;
 }
 
@@ -2343,12 +2359,25 @@ image.</p><p>See Also: -applicationIconImage</p>
           [win orderOut: self];
         }
       _app_is_hidden = YES;
-      [[_app_icon_window contentView] setNeedsDisplay: YES];
 
-      if ([[NSUserDefaults standardUserDefaults]
+      if (YES == [[NSUserDefaults standardUserDefaults]
 	boolForKey: @"GSSuppressAppIcon"])
 	{
+#if	MINI_ICON
+	  NSRect	f = [[[self mainMenu] window] frame];
+	  NSPoint	p = f.origin;
+
+	  p.y += f.size.height;
+          [_app_icon_window setFrameTopLeftPoint: p];
 	  [_app_icon_window orderFrontRegardless];
+          [_app_icon_window miniaturize: self];
+#else
+	  [_app_icon_window orderFrontRegardless];
+#endif
+	}
+      else
+	{
+	  [[_app_icon_window contentView] setNeedsDisplay: YES];
 	}
 
       /*
@@ -3611,9 +3640,20 @@ struct _DelegateWrapper
   NSAppIconView	*iv;
   NSSize iconSize = [GSCurrentServer() iconSize];
   NSRect iconRect = NSMakeRect(0, 0, iconSize.width, iconSize.height);
+  unsigned	mask = NSIconWindowMask;
+  BOOL	suppress;
+
+  suppress = [[NSUserDefaults standardUserDefaults]
+    boolForKey: @"GSSuppressAppIcon"];
+#if	MINI_ICON
+  if (suppress)
+    {
+      mask = NSMiniaturizableWindowMask;
+    }
+#endif
 
   _app_icon_window = [[NSIconWindow alloc] initWithContentRect: iconRect 
-				styleMask: NSIconWindowMask
+				styleMask: mask
 				  backing: NSBackingStoreRetained
 				    defer: NO
 				   screen: nil];
@@ -3623,8 +3663,7 @@ struct _DelegateWrapper
   [_app_icon_window setContentView: iv];
   RELEASE(iv);
 
-  if (NO == [[NSUserDefaults standardUserDefaults]
-    boolForKey: @"GSSuppressAppIcon"])
+  if (NO == suppress)
     {
       /* The icon window is not suppressed ... display it.
        */

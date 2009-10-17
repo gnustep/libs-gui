@@ -1,5 +1,15 @@
 2009-10-17 Richard Frith-Macdonald <rfm@gnu.org>
 
+	* Source/NSWindow.m:
+	* Source/NSApplication.m:
+	* Headers/AppKit/NSEvent.h:
+	Changes to unhide app when a suppressed app icon is deminiaturised.
+	Code conditional on defining MINI_ICON to 1 in NSApplication.m
+	Currently doesn't work because the backend is not notifying the gui
+	when a window is deminiaturised :-(
+
+2009-10-17 Richard Frith-Macdonald <rfm@gnu.org>
+
 	* Source/NSApplication.m: Make GSSuppressAppIconhide the icon window
 	(leave it ordered out) rather than making it not exist at all.
 	Add new default GSBackgroundApp for an application which should not

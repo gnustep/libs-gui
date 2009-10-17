@@ -2673,8 +2673,18 @@ resetCursorRectsForView(NSView *theView)
 */
 - (void) _didDeminiaturize: sender
 {
-  _f.is_miniaturized = NO;
-  [nc postNotificationName: NSWindowDidDeminiaturizeNotification object: self];
+  if (_f.is_miniaturized == YES)
+    {
+      _f.is_miniaturized = NO;
+      _f.visible = YES;
+      if (self == [NSApp iconWindow])
+	{
+	  [NSApp unhide: self];
+	  [self orderOut: self];
+	}
+      [nc postNotificationName: NSWindowDidDeminiaturizeNotification
+			object: self];
+    }
 }
 
 /**
@@ -2728,11 +2738,27 @@ resetCursorRectsForView(NSView *theView)
   GSDisplayServer *srv = GSServerForWindow(self);
   NSSize iconSize = [GSCurrentServer() iconSize];
 
-  if (_f.is_miniaturized
-      || (!(_styleMask & NSMiniaturizableWindowMask))
-      || (_styleMask & (NSIconWindowMask | NSMiniWindowMask))
-      || (![self isVisible]))
-    return;
+  if (_f.is_miniaturized || (_styleMask & NSMiniWindowMask))
+    {
+      /* Can't miniaturize a miniwindow or a miniaturized window.
+       */
+      return;
+    }
+
+  if (self == [NSApp iconWindow])
+    {
+      if (NO == [[NSUserDefaults standardUserDefaults]
+	boolForKey: @"GSSuppressAppIcon"])
+	{
+	  return;
+	}
+    }
+  else if ((!(_styleMask & (NSIconWindowMask | NSMiniaturizableWindowMask)))
+    || (_styleMask & NSMiniWindowMask)
+    || (![self isVisible]))
+    {
+      return;
+    }
 
   [nc postNotificationName: NSWindowWillMiniaturizeNotification
                     object: self];
@@ -3835,37 +3861,41 @@ resetCursorRectsForView(NSView *theView)
               [self performClose: NSApp];
               break;
                 
+            case GSAppKitWindowDeminiaturize:
+              [self _didDeminiaturize: NSApp];
+              break;
+
             case GSAppKitWindowMiniaturize:
               [self performMiniaturize: NSApp];
               break;
 
             case GSAppKitWindowFocusIn:
               if (_f.is_miniaturized)
-          {
-            /* Window Manager just deminiaturized us */
-            [self deminiaturize: self];
-          }
+		{
+		  /* Window Manager just deminiaturized us */
+		  [self deminiaturize: self];
+		}
               if ([NSApp modalWindow]
-            && self != [NSApp modalWindow])
-          {
-            /* Ignore this request. We're in a modal loop and the
-               user pressed on the title bar of another window. */
-            break;
-          }
+		&& self != [NSApp modalWindow])
+		{
+		  /* Ignore this request. We're in a modal loop and the
+		     user pressed on the title bar of another window. */
+		  break;
+		}
               if ([self canBecomeKeyWindow] == YES)
-          {
-            NSDebugLLog(@"Focus", @"Making %d key", _windowNum);
-            [self makeKeyWindow];
-            [self makeMainWindow];
-            [NSApp activateIgnoringOtherApps: YES];
-          }
+		{
+		  NSDebugLLog(@"Focus", @"Making %d key", _windowNum);
+		  [self makeKeyWindow];
+		  [self makeMainWindow];
+		  [NSApp activateIgnoringOtherApps: YES];
+		}
               if (self == [[NSApp mainMenu] window])
-          {
-            /* We should really find another window that can become
-               key (if possible)
-            */
-            [self _lossOfKeyOrMainWindow];
-          }
+		{
+		  /* We should really find another window that can become
+		     key (if possible)
+		  */
+		  [self _lossOfKeyOrMainWindow];
+		}
               break;
 
             case GSAppKitWindowFocusOut:
