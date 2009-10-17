@@ -1,4 +1,13 @@
-2009-10-17  Wolfgang Lux  <wlux@uni-muenster.de>
+2009-10-17  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSApplication.m (-_windowWillClose:): When using MS
+	Windows style menus terminate an application by default when its
+	last window is closed.
+	In addition, fix a bug where the application was not terminated
+	when the last window is closed while the application is in the
+	background.
+
+2009-10-17  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSApplication.m (-finishLaunching): Open a new document
 	by default when a document based application is started and there

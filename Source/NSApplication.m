@@ -3903,7 +3903,6 @@ struct _DelegateWrapper
 - (void) _windowWillClose: (NSNotification*) notification
 {
   NSWindow *win = [notification object];
-  BOOL wasMain = [win isMainWindow];
 
   if (_app_is_running)
     {
@@ -3928,7 +3927,7 @@ struct _DelegateWrapper
   
       /* If there's only one window left, and that's the one being closed, 
          then we ask the delegate if the app is to be terminated. */
-      if (wasMain && count == 0)
+      if (count == 0)
         {
           if ([_delegate respondsToSelector:
 	    @selector(applicationShouldTerminateAfterLastWindowClosed:)])
@@ -3938,6 +3937,17 @@ struct _DelegateWrapper
                 {
                   [self terminate: self];
                 }
+            }
+	  /*
+	    wlux 2009-10-17: If we use MS Windows style menus, we terminate
+	    the application by default if the last window is closed.
+	    FIXME: I think we should send [self interfaceStyle] here, but
+	    this does not return a meaningful result at present.
+	  */
+          else if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil) == 
+		   NSWindows95InterfaceStyle)
+            {
+              [self terminate: self];
             }
         }
     }
