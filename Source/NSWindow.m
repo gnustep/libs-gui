@@ -1647,6 +1647,12 @@ many times.
   GSDisplayServer *srv = GSServerForWindow(self);
   BOOL display = NO;
 
+  if (YES == [[NSUserDefaults standardUserDefaults]
+    boolForKey: @"GSBackgroundApp"])
+    {
+      return;
+    }
+
   if (place == NSWindowOut)
     {
       if (_windowNum == 0)

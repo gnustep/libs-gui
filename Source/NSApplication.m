@@ -431,18 +431,6 @@ NSApplication	*NSApp = nil;
   return YES;
 }
 
-- (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (int)otherWin
-{
-  if ((place == NSWindowOut) && [NSApp isRunning])
-    {
-      NSLog (@"Argh - icon window ordered out");
-    }
-  else
-    {
-      [super orderWindow: place relativeTo: otherWin];
-    }
-}
-
 - (void) _initDefaults
 {
   [super _initDefaults];
@@ -987,11 +975,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
     }
 
   [self setApplicationIconImage: image];
-
-  if (![defs boolForKey: @"GSSuppressAppIcon"])
-    {
-      [self _appIconInit];
-    }
+  [self _appIconInit];
 
   mainModelFile = [infoDict objectForKey: @"NSMainNibFile"];
   if (mainModelFile != nil && [mainModelFile isEqual: @""] == NO)
@@ -1239,6 +1223,12 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
           object: self];
 
       _app_is_active = YES;
+
+      if ([[NSUserDefaults standardUserDefaults]
+	boolForKey: @"GSSuppressAppIcon"])
+	{
+	  [_app_icon_window orderOut: self];
+	}
 
       /* Make sure to calculate count after the notification, since
          inactive status might be changed by a notifiee.  */
@@ -2354,6 +2344,12 @@ image.</p><p>See Also: -applicationIconImage</p>
         }
       _app_is_hidden = YES;
       [[_app_icon_window contentView] setNeedsDisplay: YES];
+
+      if ([[NSUserDefaults standardUserDefaults]
+	boolForKey: @"GSSuppressAppIcon"])
+	{
+	  [_app_icon_window orderFrontRegardless];
+	}
 
       /*
        * On hiding we also deactivate the application which will make the menus
@@ -3627,7 +3623,13 @@ struct _DelegateWrapper
   [_app_icon_window setContentView: iv];
   RELEASE(iv);
 
-  [_app_icon_window orderFrontRegardless];
+  if (NO == [[NSUserDefaults standardUserDefaults]
+    boolForKey: @"GSSuppressAppIcon"])
+    {
+      /* The icon window is not suppressed ... display it.
+       */
+      [_app_icon_window orderFrontRegardless];
+    }
   return self;
 }
 

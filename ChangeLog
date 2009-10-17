@@ -1,3 +1,13 @@
+2009-10-17 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSApplication.m: Make GSSuppressAppIconhide the icon window
+	(leave it ordered out) rather than making it not exist at all.
+	Add new default GSBackgroundApp for an application which should not
+	display the window at all.
+	* Soure/NSWindow.m: Don't order any windows in if this is a background
+	application.
+	* Source/NSEvent.m: fix missing commaa causing comple fail.
+
 2009-10-17 Sheldon Gill  <sheldon@westnet.net.au>
 
 	* Source/NSApplication.m: centralise GSGuiBundle() routine

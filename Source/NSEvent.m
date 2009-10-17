@@ -691,7 +691,7 @@ static const char *eventTypes[] = {
       default:
         return [NSString stringWithFormat:
           @"NSEvent: eventType = UNKNOWN!, point = { %f, %f }, modifiers = %u,"
-          @" time = %f, window = %d"
+          @" time = %f, window = %d",
           location_point.x, location_point.y,
           modifier_flags, event_time, window_num];
         break;
