@@ -1377,6 +1377,22 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
             }
         }
       
+      if (YES == [[NSUserDefaults standardUserDefaults]
+	boolForKey: @"GSSuppressAppIcon"])
+	{
+#if	MINI_ICON
+	  NSRect	f = [[[self mainMenu] window] frame];
+	  NSPoint	p = f.origin;
+
+	  p.y += f.size.height;
+          [_app_icon_window setFrameTopLeftPoint: p];
+	  [_app_icon_window orderFrontRegardless];
+          [_app_icon_window miniaturize: self];
+#else
+	  [_app_icon_window orderFrontRegardless];
+#endif
+	}
+
       info = [self _notificationUserInfo];
       [nc postNotificationName: NSApplicationDidResignActiveNotification
           object: self

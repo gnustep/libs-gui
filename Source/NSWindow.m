@@ -1727,8 +1727,8 @@ many times.
               NSString *aString;
               
               aString = [NSString stringWithFormat: @"%@  --  %@", 
-                          [_representedFilename lastPathComponent],
-                          [_representedFilename stringByDeletingLastPathComponent]];                                                            
+		[_representedFilename lastPathComponent],
+		[_representedFilename stringByDeletingLastPathComponent]];                                                            
               isFileName = [_windowTitle isEqual: aString]; 
 
               [NSApp addWindowsItem: self
@@ -2679,8 +2679,15 @@ resetCursorRectsForView(NSView *theView)
       _f.visible = YES;
       if (self == [NSApp iconWindow])
 	{
-	  [NSApp unhide: self];
 	  [self orderOut: self];
+	  if ([NSApp isActive] == NO)
+	    {
+	      [NSApp activateIgnoringOtherApps: YES];
+	    }
+	  if ([NSApp isHidden] == YES)
+	    {
+	      [NSApp unhide: self];
+	    }
 	}
       [nc postNotificationName: NSWindowDidDeminiaturizeNotification
 			object: self];
