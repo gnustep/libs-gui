@@ -1307,10 +1307,10 @@ withRepeatedImage: (NSImage*)image
   // Draw Bottom-Middle image repeated
   if (rect.size.width > bls.width + brs.width && bms.height > 0)
     {
-      float y = rect.origin.y + rect.size.height - bms.height;
+      float y = rect.origin.y;
       if (flipped)
         {
-          y = rect.origin.y;
+          y = rect.origin.y + rect.size.height - bms.height;
         }
       [[GSTheme theme] fillHorizontalRect:
 	NSMakeRect (rect.origin.x + bls.width, y,
