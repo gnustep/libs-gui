@@ -613,6 +613,16 @@ withRepeatedImage: (NSImage*)image
 - (NSRect) fillRect: (NSRect)rect
 	  withTiles: (GSDrawTiles*)tiles
 	 background: (NSColor*)color
+{
+  return [self fillRect: rect
+	      withTiles: tiles
+	     background: color
+	      fillStyle: [tiles fillStyle]];
+}
+
+- (NSRect) fillRect: (NSRect)rect
+	  withTiles: (GSDrawTiles*)tiles
+	 background: (NSColor*)color
 	  fillStyle: (GSThemeFillStyle)style
 {
   if (rect.size.width <= 0.0)
@@ -746,6 +756,7 @@ withRepeatedImage: (NSImage*)image
 	  c->images[i] = [images[i] copy];
 	}
     }
+  c->style = style;
   return c;
 }
 
@@ -798,10 +809,11 @@ withRepeatedImage: (NSImage*)image
   NSSize s = [image size];
   NSBitmapImageRep* rep = [[image representations] objectAtIndex: 0];
 
-  for (i=0; i<s.width; i++)
+  for (i = 0; i < s.width; i++)
     {
-      NSColor *pixelColor = [rep colorAtX:i y:s.height-1];
-      [pixelColor getRed:&r green:&g blue:&b alpha:&a];
+      NSColor	*pixelColor = [rep colorAtX: i y: s.height - 1];
+
+      [pixelColor getRed: &r green: &g blue: &b alpha: &a];
       if (a > 0 && x1 == -1)
         {
           x1 = i;
@@ -813,10 +825,11 @@ withRepeatedImage: (NSImage*)image
         }
     }
 
-  for (i=0; i<s.height; i++)
+  for (i = 0; i < s.height; i++)
     {
-      NSColor *pixelColor = [rep colorAtX:0 y:i];
-      [pixelColor getRed:&r green:&g blue:&b alpha:&a];
+      NSColor	*pixelColor = [rep colorAtX: 0 y: i];
+
+      [pixelColor getRed: &r green: &g blue: &b alpha: &a];
       if (a > 0 && y1 == -1)
         {
           y1 = i;
@@ -829,6 +842,7 @@ withRepeatedImage: (NSImage*)image
     }
 
   scaleFactor  = 1.0f;
+  style = GSThemeFillStyleNone;
 
   rects[TileTL] = NSMakeRect(1, s.height - y1 -1, x1, y1);
   rects[TileTM] = NSMakeRect(x1, s.height - y1 -1, x2 - x1, y1);
@@ -847,6 +861,7 @@ withRepeatedImage: (NSImage*)image
 - (void) validateTilesSizeWithImage: (NSImage*)image
 {
   int i;
+
   for (i = 0; i < 9; i++)
     {
       if (rects[i].origin.x < 0.0 || rects[i].origin.y < 0.0
@@ -880,6 +895,8 @@ withRepeatedImage: (NSImage*)image
   rects[TileBL] = NSMakeRect(0.0, 0.0, x, y);
   rects[TileBM] = NSMakeRect(x, 0.0, s.width - 2.0 * x, y);
   rects[TileBR] = NSMakeRect(s.width - x, 0.0, x, y);
+
+  style = GSThemeFillStyleNone;
 
   [self validateTilesSizeWithImage: image];
   return self;
@@ -931,8 +948,14 @@ withRepeatedImage: (NSImage*)image
 }
 
 - (NSRect) fillRect: (NSRect)rect
-         background: (NSColor*) color
-          fillStyle: (GSThemeFillStyle)style
+         background: (NSColor*)color
+{
+  return [self fillRect: rect background: color fillStyle: style];
+}
+
+- (NSRect) fillRect: (NSRect)rect
+         background: (NSColor*)color
+          fillStyle: (GSThemeFillStyle)aStyle
 {
   if (color == nil)
     {
@@ -944,7 +967,7 @@ withRepeatedImage: (NSImage*)image
     }
   NSRectFill(rect);
 
-  switch (style)
+  switch (aStyle)
     {
       case GSThemeFillStyleNone:
            return [self noneStyleFillRect: rect];
@@ -964,14 +987,13 @@ withRepeatedImage: (NSImage*)image
 - (NSSize) computeTotalTilesSize
 {
   NSSize tsz;
-  tsz.width = rects[TileTL].size.width
-    + rects[TileTR].size.width;
+
+  tsz.width = rects[TileTL].size.width + rects[TileTR].size.width;
   if (images[TileTM] != nil)
     {
       tsz.width += rects[TileTM].size.width;
     }
-  tsz.height = rects[TileTL].size.height
-    + rects[TileBL].size.height;
+  tsz.height = rects[TileTL].size.height + rects[TileBL].size.height;
   if (images[TileCL] != nil)
     {
       tsz.height += rects[TileCL].size.height;
@@ -985,11 +1007,11 @@ withRepeatedImage: (NSImage*)image
   NSSize bms = rects[TileBM].size;
   NSSize crs = rects[TileCR].size;
   NSSize tms = rects[TileTM].size;
-
-  NSRect inFill = NSMakeRect (rect.origin.x + cls.width,
-	rect.origin.y + bms.height,
-	rect.size.width - cls.width - crs.width,
-	rect.size.height - bms.height - tms.height);
+  NSRect inFill = NSMakeRect (
+    rect.origin.x + cls.width,
+    rect.origin.y + bms.height,
+    rect.size.width - cls.width - crs.width,
+    rect.size.height - bms.height - tms.height);
 
   [self repeatFillRect: rect];
   [self drawCornersRect: rect];
@@ -1004,11 +1026,11 @@ withRepeatedImage: (NSImage*)image
   NSSize bms = rects[TileBM].size;
   NSSize crs = rects[TileCR].size;
   NSSize tms = rects[TileTM].size;
-
-  NSRect inFill = NSMakeRect (rect.origin.x + cls.width,
-	rect.origin.y + bms.height,
-	rect.size.width - cls.width - crs.width,
-	rect.size.height - bms.height - tms.height);
+  NSRect inFill = NSMakeRect (
+    rect.origin.x + cls.width,
+    rect.origin.y + bms.height,
+    rect.size.width - cls.width - crs.width,
+    rect.size.height - bms.height - tms.height);
 
   NSRect r = rects[TileCM];
 
@@ -1039,11 +1061,11 @@ withRepeatedImage: (NSImage*)image
   NSSize bms = rects[TileBM].size;
   NSSize crs = rects[TileCR].size;
   NSSize tms = rects[TileTM].size;
-
-  NSRect inFill = NSMakeRect (rect.origin.x + cls.width,
-	rect.origin.y + bms.height,
-	rect.size.width - cls.width - crs.width,
-	rect.size.height - bms.height - tms.height);
+  NSRect inFill = NSMakeRect (
+    rect.origin.x + cls.width,
+    rect.origin.y + bms.height,
+    rect.size.width - cls.width - crs.width,
+    rect.size.height - bms.height - tms.height);
 
   [[GSTheme theme] fillRect: inFill
     withRepeatedImage: images[TileCM]
@@ -1065,10 +1087,11 @@ withRepeatedImage: (NSImage*)image
   NSSize crs = rects[TileCR].size;
   NSSize tms = rects[TileTM].size;
 
-  NSRect inFill = NSMakeRect (rect.origin.x + cls.width,
-	rect.origin.y + bms.height,
-	rect.size.width - cls.width - crs.width,
-	rect.size.height - bms.height - tms.height);
+  NSRect inFill = NSMakeRect (
+    rect.origin.x + cls.width,
+    rect.origin.y + bms.height,
+    rect.size.width - cls.width - crs.width,
+    rect.size.height - bms.height - tms.height);
 
   NSImage *im = [images[TileCM] copy];
   NSRect r =  rects[TileCM];
@@ -1373,6 +1396,16 @@ withRepeatedImage: (NSImage*)image
   [images[TileBR] compositeToPoint: p
                           fromRect: rects[TileBR]
                          operation: NSCompositeSourceOver];
+}
+
+- (GSThemeFillStyle) fillStyle
+{
+  return style;
+}
+
+- (void) setFillStyle: (GSThemeFillStyle)aStyle
+{
+  style = aStyle;
 }
 
 @end

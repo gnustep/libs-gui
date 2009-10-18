@@ -135,8 +135,7 @@
        */
       [self fillRect: frame
 	   withTiles: tiles
-	  background: color
-	   fillStyle: GSThemeFillStyleNone];
+	  background: color];
     }
 }
 

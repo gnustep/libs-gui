@@ -700,6 +700,22 @@ withRepeatedImage: (NSImage*)image
 	  fillStyle: (GSThemeFillStyle)style;
 
 /**
+ * Method to tile a rectangle given a group of up to nine tile images.<br />
+ * The GSDrawTiles object encapsulates the tile images and information
+ * about what parts of each image are used for tiling.<br />
+ * This draws the left, right, top and bottom borders by tiling the
+ * images at left, right, top and bottom.  It then draws the four corner
+ * images and finally deals with the remaining space in the middle according
+ * to the default style set for the GSDrawTiles object used.<br />
+ * The background color specified is used to fill the center where
+ * style is FillStyleNone.<br />
+ * The return value is the central rectangle (inside the border images).
+ */
+- (NSRect) fillRect: (NSRect)rect
+	  withTiles: (GSDrawTiles*)tiles
+	 background: (NSColor*)color;
+
+/**
  * Method to tile the supplied image to fill the vertical rectangle.<br />
  * The rect argument is the rectangle to be filled.<br />
  * The image argument is the data to fill with.<br />

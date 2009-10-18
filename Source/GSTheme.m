@@ -817,12 +817,38 @@ typedef	struct {
       info = [[info objectForKey: @"GSThemeTiles"] objectForKey: fullName];
       if ([info isKindOfClass: [NSDictionary class]] == YES)
         {
-	  float		x;
-	  float		y;
-	  NSString	*path;
-	  NSString	*file;
-	  NSString	*ext;
+	  float			x;
+	  float			y;
+	  NSString		*name;
+	  NSString		*path;
+	  NSString		*file;
+	  NSString		*ext;
+	  GSThemeFillStyle	style = GSThemeFillStyleNone;
 
+	  name = [info objectForKey: @"FillStyle"];
+	  if ([name length] > 0)
+	    {
+	      if ([name isEqualToString: @"Scale"])
+	 	{
+		  style = GSThemeFillStyleScale;
+		}
+	      else if ([name isEqualToString: @"Repeat"])
+	 	{
+		  style = GSThemeFillStyleRepeat;
+		}
+	      else if ([name isEqualToString: @"Center"])
+	 	{
+		  style = GSThemeFillStyleCenter;
+		}
+	      else if ([name isEqualToString: @"Matrix"])
+	 	{
+		  style = GSThemeFillStyleMatrix;
+		}
+	      else if ([name isEqualToString: @"ScaleAll"])
+	 	{
+		  style = GSThemeFillStyleScaleAll;
+		}
+	    }
 	  x = [[info objectForKey: @"HorizontalDivision"] floatValue];
 	  y = [[info objectForKey: @"VerticalDivision"] floatValue];
 	  file = [info objectForKey: @"FileName"];
@@ -844,6 +870,7 @@ typedef	struct {
 						  horizontal: x
 						    vertical: y];
 
+		  [tiles setFillStyle: style];
 //TODO(rio)	  tiles = [[GSDrawTiles alloc] initWithNinePatchImage: image];
 		  RELEASE(image);
 		}

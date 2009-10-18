@@ -56,11 +56,13 @@ typedef enum {
   NSImage	*images[9];	/** The tile images */
   NSRect	rects[9];	/** The rectangles to use when drawing */
   float		scaleFactor;
+  GSThemeFillStyle	style;	/** The default style for filling a rect */
 }
 - (id) copyWithZone: (NSZone*)zone;
 
 /* Initialise with a single image, using 'annotations' to determinate
- * where the tiles are in the image, in the form of black pixels in a 1-pixel surrounding border.
+ * where the tiles are in the image, in the form of black pixels in a
+ * 1-pixel surrounding border.
  * It is similar to http://developer.android.com/guide/topics/graphics/2d-graphics.html#nine-patch
  */
 - (id) initWithNinePatchImage: (NSImage*)image;
@@ -87,8 +89,10 @@ typedef enum {
 - (void) scaleTo: (float)multiple;
 
 - (NSRect) fillRect: (NSRect)rect
-         background: (NSColor*) color
+         background: (NSColor*)color
           fillStyle: (GSThemeFillStyle)style;
+- (NSRect) fillRect: (NSRect)rect
+         background: (NSColor*)color;
 
 - (NSSize) computeTotalTilesSize;
 - (void) drawCornersRect: (NSRect)rect;
@@ -103,6 +107,9 @@ typedef enum {
  */ 
 - (NSRect) matrixStyleFillRect: (NSRect)rect;
 - (void) repeatFillRect: (NSRect)rect;
+
+- (GSThemeFillStyle) fillStyle;
+- (void) setFillStyle: (GSThemeFillStyle)aStyle;
 
 @end
 
