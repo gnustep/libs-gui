@@ -179,7 +179,10 @@ typedef enum {
   GSThemeFillStyleScale,	/** CM image is scaled to fit */
   GSThemeFillStyleRepeat,	/** CM image is tiled from bottom left */
   GSThemeFillStyleCenter,	/** CM image is tiled from the center */
-  GSThemeFillStyleMatrix	/** a matrix of nine separated images */
+  GSThemeFillStyleMatrix,	/** a matrix of nine separated images */
+  GSThemeFillStyleScaleAll      /** All 'stretchable' images (i.e. not
+                                    the four corners) are scaled to fill
+                                    their area, instead of being repeated */
 } GSThemeFillStyle;
 
 

@@ -55,8 +55,15 @@ typedef enum {
 @public
   NSImage	*images[9];	/** The tile images */
   NSRect	rects[9];	/** The rectangles to use when drawing */
+  float		scaleFactor;
 }
 - (id) copyWithZone: (NSZone*)zone;
+
+/* Initialise with a single image, using 'annotations' to determinate
+ * where the tiles are in the image, in the form of black pixels in a 1-pixel surrounding border.
+ * It is similar to http://developer.android.com/guide/topics/graphics/2d-graphics.html#nine-patch
+ */
+- (id) initWithNinePatchImage: (NSImage*)image;
 
 /* Initialise with a single image assuming division into nine equally
  * sized sections.
@@ -68,9 +75,34 @@ typedef enum {
  */
 - (id) initWithImage: (NSImage*)image horizontal: (float)x vertical: (float)y;
 
-/* Scale the imge to the specified value.
+/*
+ * Verify the individual tiles size
+ * If incorrect, we nullify the corresponding image
+ * otherwise, we retain it.
+ */
+- (void) validateTilesSizeWithImage: (NSImage*)image;
+
+/* Scale the image to the specified value.
  */
 - (void) scaleTo: (float)multiple;
+
+- (NSRect) fillRect: (NSRect)rect
+         background: (NSColor*) color
+          fillStyle: (GSThemeFillStyle)style;
+
+- (NSSize) computeTotalTilesSize;
+- (void) drawCornersRect: (NSRect)rect;
+- (void) repeatFillRect: (NSRect)rect;
+
+- (NSRect) noneStyleFillRect: (NSRect)rect;
+- (NSRect) centerStyleFillRect: (NSRect)rect;
+- (NSRect) repeatStyleFillRect: (NSRect)rect;
+- (NSRect) scaleStyleFillRect: (NSRect)rect;
+
+/* Draw GSThemeFillStyleMatrix
+ */ 
+- (NSRect) matrixStyleFillRect: (NSRect)rect;
+- (void) repeatFillRect: (NSRect)rect;
 
 @end
 

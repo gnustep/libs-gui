@@ -1,3 +1,14 @@
+2009-10-18 Nicolas Roard <nicolas@roard.com>
+
+	* Source/GSTheme.m,
+	* Source/GSThemeTools.m,
+	* Source/GSThemePrivate.h,
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Refactoring of
+	GSDrawTiles, splitting fillRect:withTiles:background:fillStyle:
+	in smaller methods, letting GSDrawTiles be in charge of its own
+	drawing. Also added a 'nine patch' init method, to create
+	a GSDrawTiles from a specially crafted image (see comments).
+
 2009-10-17  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSApplication.m (-_windowWillClose:): When using MS

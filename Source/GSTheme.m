@@ -843,6 +843,8 @@ typedef	struct {
 		  tiles = [[GSDrawTiles alloc] initWithImage: image
 						  horizontal: x
 						    vertical: y];
+
+//TODO(rio)	  tiles = [[GSDrawTiles alloc] initWithNinePatchImage: image];
 		  RELEASE(image);
 		}
 	    }

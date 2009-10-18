@@ -615,19 +615,6 @@ withRepeatedImage: (NSImage*)image
 	 background: (NSColor*)color
 	  fillStyle: (GSThemeFillStyle)style
 {
-  NSGraphicsContext	*ctxt = GSCurrentContext();
-  NSSize		tls = tiles->rects[TileTL].size;
-  NSSize		tms = tiles->rects[TileTM].size;
-  NSSize		trs = tiles->rects[TileTR].size;
-  NSSize		cls = tiles->rects[TileCL].size;
-  NSSize		crs = tiles->rects[TileCR].size;
-  NSSize		bls = tiles->rects[TileBL].size;
-  NSSize		bms = tiles->rects[TileBM].size;
-  NSSize		brs = tiles->rects[TileBR].size;
-  NSSize		tsz;
-  NSRect		inFill;
-  BOOL			flipped = [[ctxt focusView] isFlipped];
-
   if (rect.size.width <= 0.0)
     [NSException raise: NSInvalidArgumentException
 		format: @"[%@-%@] rect width is not positive",
@@ -641,438 +628,7 @@ withRepeatedImage: (NSImage*)image
 		format: @"[%@-%@] tiles is nil",
       NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
 
-  if (color == nil)
-    {
-      [[NSColor redColor] set];
-    }
-  else
-    {
-      [color set];
-    }
-  NSRectFill(rect);
-
-  tsz.width = tiles->rects[TileTL].size.width
-    + tiles->rects[TileTR].size.width;
-  if (tiles->images[TileTM] != nil)
-    {
-      tsz.width += tiles->rects[TileTM].size.width;
-    }
-  tsz.height = tiles->rects[TileTL].size.height
-    + tiles->rects[TileBL].size.height;
-  if (tiles->images[TileCL] != nil)
-    {
-      tsz.height += tiles->rects[TileCL].size.height;
-    }
-
-  if (style == GSThemeFillStyleMatrix)
-    {
-      NSRect	grid = NSZeroRect;
-      float	x;
-      float	y;
-      float	space = 3.0;
-      float	scale;
-
-      inFill = NSZeroRect;
-      if (tiles->images[TileTM] == nil)
-        {
-	  grid.size.width = tsz.width + space * 3.0;
-	}
-      else
-        {
-	  grid.size.width = tsz.width + space * 4.0;
-	}
-      scale = rect.size.width / grid.size.width;
-
-      if (tiles->images[TileCL] == nil)
-        {
-	  grid.size.height = tsz.height + space * 3.0;
-	}
-      else
-        {
-	  grid.size.height = tsz.height + space * 4.0;
-	}
-      if ((rect.size.height / grid.size.height) < scale)
-        {
-	  scale = rect.size.height / grid.size.height;
-	}
-
-      if (floor(scale) >= 1)
-        {
-	  scale = floor(scale);
-	}
-      if (scale != 1)
-	{
-	  /* We need to scale the tiles down to fit.
-	   */
-	  grid.size.width *= scale;
-	  grid.size.height *= scale;
-	  space *= scale;
-	  tiles = AUTORELEASE([tiles copy]);
-	  [tiles scaleTo: scale];
-	}
-
-      grid.origin.x = rect.origin.x + (rect.size.width - grid.size.width) / 2;
-      x = grid.origin.x;
-      if (flipped)
-        {
-	  grid.origin.y
-	    = NSMaxY(rect) - (rect.size.height - grid.size.height) / 2;
-	  y = NSMaxY(grid);
-	}
-      else
-        {
-	  grid.origin.y
-	    = rect.origin.y + (rect.size.height - grid.size.height) / 2;
-	  y = grid.origin.y;
-	}
-
-      /* Draw bottom row
-       */
-      if (flipped)
-        {
-          y -= (tiles->rects[TileBL].size.height + space);
-	}
-      else
-        {
-	  y += space;
-	}
-      [tiles->images[TileBL] compositeToPoint: NSMakePoint(x, y)
-        fromRect: tiles->rects[TileBL]
-	operation: NSCompositeSourceOver];
-      x += tiles->rects[TileBL].size.width + space;
-      if (tiles->images[TileBM] != nil)
-        {
-	  [tiles->images[TileBM] compositeToPoint: NSMakePoint(x, y)
-            fromRect: tiles->rects[TileBM]
-	    operation: NSCompositeSourceOver];
-	  x += tiles->rects[TileBM].size.width + space;
-	}
-      [tiles->images[TileBR] compositeToPoint: NSMakePoint(x, y)
-	fromRect: tiles->rects[TileBR]
-	operation: NSCompositeSourceOver];
-      if (!flipped)
-        {
-          y += tiles->rects[TileBL].size.height;
-	}
-
-      if (tiles->images[TileCL] != nil)
-	{
-	  /* Draw middle row
-	   */
-	  x = grid.origin.x;
-	  if (flipped)
-	    {
-	      y -= (tiles->rects[TileCL].size.height + space);
-	    }
-	  else
-	    {
-	      y += space;
-	    }
-	  [tiles->images[TileCL] compositeToPoint: NSMakePoint(x, y)
-	    fromRect: tiles->rects[TileCL]
-	    operation: NSCompositeSourceOver];
-	  x += tiles->rects[TileCL].size.width + space;
-	  if (tiles->images[TileCM] != nil)
-	    {
-	      [tiles->images[TileCM] compositeToPoint: NSMakePoint(x, y)
-		fromRect: tiles->rects[TileCM]
-		operation: NSCompositeSourceOver];
-	      x += tiles->rects[TileCM].size.width + space;
-	    }
-	  [tiles->images[TileCR] compositeToPoint: NSMakePoint(x, y)
-	    fromRect: tiles->rects[TileCR]
-	    operation: NSCompositeSourceOver];
-	  if (!flipped)
-	    {
-	      y += tiles->rects[TileCL].size.height;
-	    }
-	}
-
-      /* Draw top row
-       */
-      x = grid.origin.x;
-      if (flipped)
-	{
-	  y -= (tiles->rects[TileTL].size.height + space);
-	}
-      else
-	{
-	  y += space;
-	}
-      [tiles->images[TileTL] compositeToPoint: NSMakePoint(x, y)
-	fromRect: tiles->rects[TileTL]
-	operation: NSCompositeSourceOver];
-      x += tiles->rects[TileTL].size.width + space;
-      if (tiles->images[TileTM] != nil)
-	{
-	  [tiles->images[TileTM] compositeToPoint: NSMakePoint(x, y)
-	    fromRect: tiles->rects[TileTM]
-	    operation: NSCompositeSourceOver];
-	  x += tiles->rects[TileTM].size.width + space;
-	}
-      [tiles->images[TileTR] compositeToPoint: NSMakePoint(x, y)
-	fromRect: tiles->rects[TileTR]
-	operation: NSCompositeSourceOver];
-    }
-  else if (flipped)
-    {
-      if (rect.size.width > tls.width + trs.width && tms.height > 0)
-	{
-	  [self fillHorizontalRect:
-	    NSMakeRect (rect.origin.x + tls.width,
-	    rect.origin.y,
-	    rect.size.width - tls.width - trs.width,
-	    tms.height)
-	  withImage: tiles->images[TileTM]
-	  fromRect: tiles->rects[TileTM]
-	  flipped: flipped];
-	}
-
-      if (rect.size.width > bls.width + brs.width && bms.height > 0)
-	{
-	  [self fillHorizontalRect:
-	    NSMakeRect (rect.origin.x + bls.width,
-	      rect.origin.y + rect.size.height - bms.height,
-	      rect.size.width - bls.width - brs.width,
-	      bms.height)
-	    withImage: tiles->images[TileBM]
-	    fromRect: tiles->rects[TileBM]
-	    flipped: flipped];
-	}
-
-      if (rect.size.height > bls.height + tls.height && cls.width > 0)
-	{
-	  [self fillVerticalRect:
-	    NSMakeRect (rect.origin.x,
-	      rect.origin.y + bls.height,
-	      cls.width,
-	      rect.size.height - bls.height - tls.height)
-	    withImage: tiles->images[TileCL]
-	    fromRect: tiles->rects[TileCL]
-	    flipped: flipped];
-	}
-
-      if (rect.size.height > brs.height + trs.height && crs.width > 0)
-	{
-	  [self fillVerticalRect:
-	    NSMakeRect (rect.origin.x + rect.size.width - crs.width,
-	      rect.origin.y + brs.height,
-	      crs.width,
-	      rect.size.height - brs.height - trs.height)
-	    withImage: tiles->images[TileCR]
-	    fromRect: tiles->rects[TileCR]
-	    flipped: flipped];
-	}
-
-      [tiles->images[TileTL] compositeToPoint:
-	NSMakePoint (rect.origin.x,
-	  rect.origin.y + tls.height)
-	fromRect: tiles->rects[TileTL]
-	operation: NSCompositeSourceOver];
-
-      [tiles->images[TileTR] compositeToPoint:
-	NSMakePoint (rect.origin.x + rect.size.width - tls.width,
-	rect.origin.y + tls.height)
-	fromRect: tiles->rects[TileTR]
-	operation: NSCompositeSourceOver];
-
-      [tiles->images[TileBL] compositeToPoint:
-	NSMakePoint (rect.origin.x,
-	  rect.origin.y + rect.size.height)
-	fromRect: tiles->rects[TileBL]
-	operation: NSCompositeSourceOver];
-
-      [tiles->images[TileBR] compositeToPoint:
-	NSMakePoint (rect.origin.x + rect.size.width - brs.width,
-	  rect.origin.y + rect.size.height)
-	fromRect: tiles->rects[TileBR]
-	operation: NSCompositeSourceOver];
-
-      inFill = NSMakeRect (rect.origin.x + cls.width,
-	rect.origin.y + bms.height,
-	rect.size.width - cls.width - crs.width,
-	rect.size.height - bms.height - tms.height);
-
-      if (style == GSThemeFillStyleCenter)
-	{
-	  NSRect	r = tiles->rects[TileCM];
-
-	  r.origin.x
-	    = inFill.origin.x + (inFill.size.width - r.size.width) / 2;
-	  r.origin.y
-	    = inFill.origin.y + (inFill.size.height - r.size.height) / 2;
-	  r.origin.y += r.size.height;	// Allow for flip of image rectangle
-	  [tiles->images[TileCM] compositeToPoint: r.origin
-					 fromRect: tiles->rects[TileCM]
-					operation: NSCompositeSourceOver];
-	}
-      else if (style == GSThemeFillStyleRepeat)
-	{
-	  [self fillRect: inFill
-	    withRepeatedImage: tiles->images[TileCM]
-	    fromRect: tiles->rects[TileCM]
-	    center: NO];
-	  NSLog(@"rect %@ too small fire tiles %@",
-	    NSStringFromSize(rect.size), NSStringFromSize(tsz));
-	}
-      else if (style == GSThemeFillStyleScale)
-	{
-	  NSImage	*im = [tiles->images[TileCM] copy];
-	  NSRect	r =  tiles->rects[TileCM];
-	  NSSize	s = [tiles->images[TileCM] size];
-	  NSPoint	p = inFill.origin;
-	  float		sx = inFill.size.width / r.size.width;
-	  float		sy = inFill.size.height / r.size.height;
-
-	  r.size.width = inFill.size.width;
-	  r.size.height = inFill.size.height;
-	  r.origin.x *= sx;
-	  r.origin.y *= sy;
-	  s.width *= sx;
-	  s.height *= sy;
-	  p.y += inFill.size.height;	// In flipped view
-	  
-	  [im setScalesWhenResized: YES];
-	  [im setSize: s];
-	  [im compositeToPoint: p
-		      fromRect: r
-		     operation: NSCompositeSourceOver];
-	  RELEASE(im);
-	}
-    }
-  else
-    {
-      NSPoint	p;
-
-      if (rect.size.width > tls.width + trs.width && tms.height > 0)
-	{
-	  [self fillHorizontalRect:
-	    NSMakeRect(
-	      rect.origin.x + tls.width,
-	      rect.origin.y + rect.size.height - tms.height,
-	      rect.size.width - tls.width - trs.width,
-	      tms.height)
-	    withImage: tiles->images[TileTM]
-	    fromRect: tiles->rects[TileTM]
-	    flipped: flipped];
-	}
-
-      if (rect.size.width > bls.width + brs.width && bms.height > 0)
-	{
-	  [self fillHorizontalRect:
-	    NSMakeRect(
-	      rect.origin.x + bls.width,
-	      rect.origin.y,
-	      rect.size.width - bls.width - brs.width,
-	      bms.height)
-	    withImage: tiles->images[TileBM]
-	    fromRect: tiles->rects[TileBM]
-	    flipped: flipped];
-	}
-
-      if (rect.size.height > tls.height + bls.height && cls.width > 0)
-	{
-	  [self fillVerticalRect:
-	    NSMakeRect(
-	      rect.origin.x,
-	      rect.origin.y + bls.height,
-	      cls.width,
-	      rect.size.height - tls.height - bls.height)
-	    withImage: tiles->images[TileCL]
-	    fromRect: tiles->rects[TileCL]
-	    flipped: flipped];
-	}
-
-      if (rect.size.height > trs.height + brs.height && crs.width > 0)
-	{
-	  [self fillVerticalRect:
-	    NSMakeRect(
-	      rect.origin.x + rect.size.width - crs.width,
-	      rect.origin.y + brs.height,
-	      crs.width,
-	      rect.size.height - trs.height - brs.height)
-	    withImage: tiles->images[TileCR]
-	    fromRect: tiles->rects[TileCR]
-	    flipped: flipped];
-	}
-
-      p = NSMakePoint (rect.origin.x,
-	  rect.origin.y + rect.size.height - tls.height);
-      [tiles->images[TileTL] compositeToPoint: p
-	fromRect: tiles->rects[TileTL]
-	operation: NSCompositeSourceOver];
-
-      p = NSMakePoint(
-	  rect.origin.x + rect.size.width - trs.width,
-	  rect.origin.y + rect.size.height - trs.height);
-      [tiles->images[TileTR] compositeToPoint: p
-	fromRect: tiles->rects[TileTR]
-	operation: NSCompositeSourceOver];
-
-      p = NSMakePoint(
-	  rect.origin.x,
-	  rect.origin.y);
-      [tiles->images[TileBL] compositeToPoint: p
-	fromRect: tiles->rects[TileBL]
-	operation: NSCompositeSourceOver];
-
-      p = NSMakePoint(
-	  rect.origin.x + rect.size.width - brs.width,
-	  rect.origin.y);
-      [tiles->images[TileBR] compositeToPoint: p
-	fromRect: tiles->rects[TileBR]
-	operation: NSCompositeSourceOver];
-
-      inFill = NSMakeRect (rect.origin.x + cls.width,
-	rect.origin.y + bms.height,
-	rect.size.width - cls.width - crs.width,
-	rect.size.height - bms.height - tms.height);
-
-      if (style == GSThemeFillStyleCenter)
-	{
-	  NSRect	r = tiles->rects[TileCM];
-
-	  r.origin.x
-	    = inFill.origin.x + (inFill.size.width - r.size.width) / 2;
-	  r.origin.y
-	    = inFill.origin.y + (inFill.size.height - r.size.height) / 2;
-	  [tiles->images[TileCM] compositeToPoint: r.origin
-					 fromRect: tiles->rects[TileCM]
-					operation: NSCompositeSourceOver];
-	}
-      else if (style == GSThemeFillStyleRepeat)
-	{
-	  [self fillRect: inFill
-	    withRepeatedImage: tiles->images[TileCM]
-	    fromRect: tiles->rects[TileCM]
-	    center: YES];
-	}
-      else if (style == GSThemeFillStyleScale)
-	{
-	  NSImage	*im = [tiles->images[TileCM] copy];
-	  NSRect	r =  tiles->rects[TileCM];
-	  NSSize	s = [tiles->images[TileCM] size];
-	  NSPoint	p = inFill.origin;
-	  float		sx = inFill.size.width / r.size.width;
-	  float		sy = inFill.size.height / r.size.height;
-
-	  r.size.width = inFill.size.width;
-	  r.size.height = inFill.size.height;
-	  r.origin.x *= sx;
-	  r.origin.y *= sy;
-	  s.width *= sx;
-	  s.height *= sy;
-	  
-
-	  [im setScalesWhenResized: YES];
-	  [im setSize: s];
-	  [im compositeToPoint: p
-		      fromRect: r
-		     operation: NSCompositeSourceOver];
-	  RELEASE(im);
-	}
-    }
-  return inFill;
+  return [tiles fillRect: rect background: color fillStyle: style];
 }
 
 - (void) fillVerticalRect: (NSRect)rect
@@ -1161,7 +717,7 @@ withRepeatedImage: (NSImage*)image
 
 @end
 
-
+
 
 @implementation	GSDrawTiles
 - (id) copyWithZone: (NSZone*)zone
@@ -1231,13 +787,89 @@ withRepeatedImage: (NSImage*)image
 		    vertical: s.height / 3.0];
 }
 
+- (id) initWithNinePatchImage: (NSImage*)image
+{
+  int i;
+  float r,g,b,a;
+  int x1 = -1;
+  int x2 = -1;
+  int y1 = -1;
+  int y2 = -1;
+  NSSize s = [image size];
+  NSBitmapImageRep* rep = [[image representations] objectAtIndex: 0];
+
+  for (i=0; i<s.width; i++)
+    {
+      NSColor *pixelColor = [rep colorAtX:i y:s.height-1];
+      [pixelColor getRed:&r green:&g blue:&b alpha:&a];
+      if (a > 0 && x1 == -1)
+        {
+          x1 = i;
+        }
+      else if (a == 0 && x1 != -1)
+        {
+          x2 = i - 1;
+          break;
+        }
+    }
+
+  for (i=0; i<s.height; i++)
+    {
+      NSColor *pixelColor = [rep colorAtX:0 y:i];
+      [pixelColor getRed:&r green:&g blue:&b alpha:&a];
+      if (a > 0 && y1 == -1)
+        {
+          y1 = i;
+        }
+      else if (a == 0 && y1 != -1)
+        {
+          y2 = i - 1;
+          break;
+        }
+    }
+
+  scaleFactor  = 1.0f;
+
+  rects[TileTL] = NSMakeRect(1, s.height - y1 -1, x1, y1);
+  rects[TileTM] = NSMakeRect(x1, s.height - y1 -1, x2 - x1, y1);
+  rects[TileTR] = NSMakeRect(x2, s.height - y1 -1, s.width - x2 -1, y1);
+  rects[TileCL] = NSMakeRect(1, s.height - y2, x1, y2 - y1);
+  rects[TileCM] = NSMakeRect(x1, s.height - y2, x2 - x1, y2 - y1);
+  rects[TileCR] = NSMakeRect(x2, s.height - y2, s.width - x2 -1, y2 - y1);
+  rects[TileBL] = NSMakeRect(1, 1, x1, y1);
+  rects[TileBM] = NSMakeRect(x1, 1, x2 - x1, y1);
+  rects[TileBR] = NSMakeRect(x2, 1, x1, y1);
+  
+  [self validateTilesSizeWithImage: image];
+  return self;
+}
+
+- (void) validateTilesSizeWithImage: (NSImage*)image
+{
+  int i;
+  for (i = 0; i < 9; i++)
+    {
+      if (rects[i].origin.x < 0.0 || rects[i].origin.y < 0.0
+        || rects[i].size.width <= 0.0 || rects[i].size.height <= 0.0)
+        {
+          images[i] = nil;
+          rects[i] = NSZeroRect;
+        }
+      else
+        {
+          images[i] = RETAIN(image);
+        }
+    }
+}
+
 - (id) initWithImage: (NSImage*)image horizontal: (float)x vertical: (float)y
 {
-  unsigned	i;
-  NSSize	s = [image size];
+  NSSize s = [image size];
 
   x = floor(x);
   y = floor(y);
+
+  scaleFactor  = 1.0;
 
   rects[TileTL] = NSMakeRect(0.0, s.height - y, x, y);
   rects[TileTM] = NSMakeRect(x, s.height - y, s.width - 2.0 * x, y);
@@ -1249,20 +881,7 @@ withRepeatedImage: (NSImage*)image
   rects[TileBM] = NSMakeRect(x, 0.0, s.width - 2.0 * x, y);
   rects[TileBR] = NSMakeRect(s.width - x, 0.0, x, y);
 
-  for (i = 0; i < 9; i++)
-    {
-      if (rects[i].origin.x < 0.0 || rects[i].origin.y < 0.0
-	|| rects[i].size.width <= 0.0 || rects[i].size.height <= 0.0)
-        {
-	  images[i] = nil;
-	  rects[i] = NSZeroRect;
-	}
-      else
-        {
-	  images[i] = RETAIN(image);
-	}
-    }  
-
+  [self validateTilesSizeWithImage: image];
   return self;
 }
 
@@ -1270,6 +889,11 @@ withRepeatedImage: (NSImage*)image
 {
   unsigned	i;
   NSSize	s;
+
+  if (scale == scaleFactor)
+    {
+      return;
+    }
 
   [images[0] setScalesWhenResized: YES];
   s = [images[0] size];
@@ -1304,6 +928,451 @@ withRepeatedImage: (NSImage*)image
       rects[i].origin.x *= scale;
       rects[i].origin.y *= scale;
     }
+}
+
+- (NSRect) fillRect: (NSRect)rect
+         background: (NSColor*) color
+          fillStyle: (GSThemeFillStyle)style
+{
+  if (color == nil)
+    {
+      [[NSColor redColor] set];
+    }
+  else
+    {
+      [color set];
+    }
+  NSRectFill(rect);
+
+  switch (style)
+    {
+      case GSThemeFillStyleNone:
+           return [self noneStyleFillRect: rect];
+      case GSThemeFillStyleScale:
+           return [self scaleStyleFillRect: rect];
+      case GSThemeFillStyleRepeat:
+           return [self repeatStyleFillRect: rect];
+      case GSThemeFillStyleCenter:
+           return [self centerStyleFillRect: rect];
+      case GSThemeFillStyleMatrix:
+           return [self matrixStyleFillRect: rect];
+    }
+
+  return NSZeroRect;
+}
+
+- (NSSize) computeTotalTilesSize
+{
+  NSSize tsz;
+  tsz.width = rects[TileTL].size.width
+    + rects[TileTR].size.width;
+  if (images[TileTM] != nil)
+    {
+      tsz.width += rects[TileTM].size.width;
+    }
+  tsz.height = rects[TileTL].size.height
+    + rects[TileBL].size.height;
+  if (images[TileCL] != nil)
+    {
+      tsz.height += rects[TileCL].size.height;
+    }
+  return tsz;
+}
+
+- (NSRect) noneStyleFillRect: (NSRect)rect
+{
+  NSSize cls = rects[TileCL].size;
+  NSSize bms = rects[TileBM].size;
+  NSSize crs = rects[TileCR].size;
+  NSSize tms = rects[TileTM].size;
+
+  NSRect inFill = NSMakeRect (rect.origin.x + cls.width,
+	rect.origin.y + bms.height,
+	rect.size.width - cls.width - crs.width,
+	rect.size.height - bms.height - tms.height);
+
+  [self repeatFillRect: rect];
+  [self drawCornersRect: rect];
+  return inFill;
+}
+
+- (NSRect) centerStyleFillRect: (NSRect)rect
+{
+  BOOL flipped = [[GSCurrentContext() focusView] isFlipped];
+
+  NSSize cls = rects[TileCL].size;
+  NSSize bms = rects[TileBM].size;
+  NSSize crs = rects[TileCR].size;
+  NSSize tms = rects[TileTM].size;
+
+  NSRect inFill = NSMakeRect (rect.origin.x + cls.width,
+	rect.origin.y + bms.height,
+	rect.size.width - cls.width - crs.width,
+	rect.size.height - bms.height - tms.height);
+
+  NSRect r = rects[TileCM];
+
+  [self repeatFillRect: rect];
+  [self drawCornersRect: rect];
+
+  r.origin.x = inFill.origin.x + (inFill.size.width - r.size.width) / 2;
+  r.origin.y = inFill.origin.y + (inFill.size.height - r.size.height) / 2;
+
+  if (flipped)
+    {
+      r.origin.y += r.size.height; 
+    }
+
+  [images[TileCM] compositeToPoint: r.origin
+                          fromRect: rects[TileCM]
+                         operation: NSCompositeSourceOver];
+
+  return inFill;
+}
+
+- (NSRect) repeatStyleFillRect: (NSRect)rect
+{
+  BOOL flipped = [[GSCurrentContext() focusView] isFlipped];
+
+  NSSize tsz = [self computeTotalTilesSize];
+  NSSize cls = rects[TileCL].size;
+  NSSize bms = rects[TileBM].size;
+  NSSize crs = rects[TileCR].size;
+  NSSize tms = rects[TileTM].size;
+
+  NSRect inFill = NSMakeRect (rect.origin.x + cls.width,
+	rect.origin.y + bms.height,
+	rect.size.width - cls.width - crs.width,
+	rect.size.height - bms.height - tms.height);
+
+  [[GSTheme theme] fillRect: inFill
+    withRepeatedImage: images[TileCM]
+    fromRect: rects[TileCM]
+    center: !flipped];
+  
+  NSLog(@"rect %@ too small fire tiles %@",
+    NSStringFromSize(rect.size), NSStringFromSize(tsz));
+
+  return inFill;
+}
+
+- (NSRect) scaleStyleFillRect: (NSRect)rect
+{
+  BOOL flipped = [[GSCurrentContext() focusView] isFlipped];
+
+  NSSize cls = rects[TileCL].size;
+  NSSize bms = rects[TileBM].size;
+  NSSize crs = rects[TileCR].size;
+  NSSize tms = rects[TileTM].size;
+
+  NSRect inFill = NSMakeRect (rect.origin.x + cls.width,
+	rect.origin.y + bms.height,
+	rect.size.width - cls.width - crs.width,
+	rect.size.height - bms.height - tms.height);
+
+  NSImage *im = [images[TileCM] copy];
+  NSRect r =  rects[TileCM];
+  NSSize s = [images[TileCM] size];
+  NSPoint p = inFill.origin;
+  float sx = inFill.size.width / r.size.width;
+  float sy = inFill.size.height / r.size.height;
+
+  [self repeatFillRect: rect];
+  [self drawCornersRect: rect];
+
+  r.size.width = inFill.size.width;
+  r.size.height = inFill.size.height;
+  r.origin.x *= sx;
+  r.origin.y *= sy;
+  s.width *= sx;
+  s.height *= sy;
+
+  if (flipped)
+    {
+      p.y += inFill.size.height;
+    }
+  
+  [im setScalesWhenResized: YES];
+  [im setSize: s];
+  [im compositeToPoint: p
+              fromRect: r
+             operation: NSCompositeSourceOver];
+  RELEASE(im);
+
+  return inFill;
+}
+
+- (NSRect) matrixStyleFillRect: (NSRect)rect
+{
+  NSSize tsz = [self computeTotalTilesSize];
+  NSRect grid = NSZeroRect;
+  float x;
+  float y;
+  float space = 3.0;
+  float scale;
+  BOOL flipped = [[GSCurrentContext() focusView] isFlipped];
+
+  if (images[TileTM] == nil)
+    {
+      grid.size.width = tsz.width + space * 3.0;
+    }
+  else
+    {
+      grid.size.width = tsz.width + space * 4.0;
+    }
+  scale = rect.size.width / grid.size.width;
+
+  if (images[TileCL] == nil)
+    {
+      grid.size.height = tsz.height + space * 3.0;
+    }
+  else
+    {
+      grid.size.height = tsz.height + space * 4.0;
+    }
+
+  if ((rect.size.height / grid.size.height) < scale)
+    {
+      scale = rect.size.height / grid.size.height;
+    }
+
+  if (floor(scale) >= 1)
+    {
+      scale = floor(scale);
+    }
+
+  if (scale != 1)
+    {
+      // We need to scale the tiles down to fit. 
+      grid.size.width *= scale;
+      grid.size.height *= scale;
+      space *= scale;
+      [self scaleTo: scale];
+    }
+
+  grid.origin.x = rect.origin.x + (rect.size.width - grid.size.width) / 2;
+  x = grid.origin.x;
+  if (flipped)
+    {
+      grid.origin.y = NSMaxY(rect) - (rect.size.height - grid.size.height) / 2;
+      y = NSMaxY(grid);
+    }
+  else
+    {
+      grid.origin.y = rect.origin.y + (rect.size.height - grid.size.height) / 2;
+      y = grid.origin.y;
+    }
+
+  // Draw bottom row
+  if (flipped)
+    {
+      y -= (rects[TileBL].size.height + space);
+    }
+  else
+    {
+      y += space;
+    }
+  [images[TileBL] compositeToPoint: NSMakePoint(x, y)
+                                 fromRect: rects[TileBL]
+                                operation: NSCompositeSourceOver];
+  x += rects[TileBL].size.width + space;
+  if (images[TileBM] != nil)
+    {
+      [images[TileBM] compositeToPoint: NSMakePoint(x, y)
+                                     fromRect: rects[TileBM]
+	                            operation: NSCompositeSourceOver];
+      x += rects[TileBM].size.width + space;
+    }
+  [images[TileBR] compositeToPoint: NSMakePoint(x, y)
+	                         fromRect: rects[TileBR]
+                                operation: NSCompositeSourceOver];
+  if (!flipped)
+    {
+      y += rects[TileBL].size.height;
+    }
+
+  // Draw middle row
+  if (images[TileCL] != nil)
+    {
+      x = grid.origin.x;
+      if (flipped)
+        {
+          y -= (rects[TileCL].size.height + space);
+	}
+      else
+	{
+          y += space;
+	}
+      [images[TileCL] compositeToPoint: NSMakePoint(x, y)
+                                     fromRect: rects[TileCL]
+                                    operation: NSCompositeSourceOver];
+      x += rects[TileCL].size.width + space;
+      if (images[TileCM] != nil)
+        {
+	  [images[TileCM] compositeToPoint: NSMakePoint(x, y)
+                                         fromRect: rects[TileCM]
+                                        operation: NSCompositeSourceOver];
+          x += rects[TileCM].size.width + space;
+        }
+      [images[TileCR] compositeToPoint: NSMakePoint(x, y)
+                                     fromRect: rects[TileCR]
+                                    operation: NSCompositeSourceOver];
+      if (!flipped)
+        {
+          y += rects[TileCL].size.height;
+        }
+    }
+
+  // Draw top row
+  x = grid.origin.x;
+  if (flipped)
+    {
+      y -= (rects[TileTL].size.height + space);
+    }
+  else
+    {
+      y += space;
+    }
+  [images[TileTL] compositeToPoint: NSMakePoint(x, y)
+                                 fromRect: rects[TileTL]
+                                operation: NSCompositeSourceOver];
+  x += rects[TileTL].size.width + space;
+  if (images[TileTM] != nil)
+    {
+      [images[TileTM] compositeToPoint: NSMakePoint(x, y)
+                                     fromRect: rects[TileTM]
+                                    operation: NSCompositeSourceOver];
+      x += rects[TileTM].size.width + space;
+    }
+  [images[TileTR] compositeToPoint: NSMakePoint(x, y)
+                                 fromRect: rects[TileTR]
+                                 operation: NSCompositeSourceOver];
+  return NSZeroRect;
+}
+
+- (void) repeatFillRect: (NSRect)rect
+{
+  BOOL flipped = [[GSCurrentContext() focusView] isFlipped];
+
+  NSSize tls = rects[TileTL].size;
+  NSSize tms = rects[TileTM].size;
+  NSSize trs = rects[TileTR].size;
+  NSSize cls = rects[TileCL].size;
+  NSSize crs = rects[TileCR].size;
+  NSSize bls = rects[TileBL].size;
+  NSSize bms = rects[TileBM].size;
+  NSSize brs = rects[TileBR].size;
+
+  // Draw Top-Middle image repeated
+  if (rect.size.width > tls.width + trs.width && tms.height > 0)
+    {
+      float y = rect.origin.y + rect.size.height - tms.height;
+      if (flipped)
+        {
+          y = rect.origin.y;
+        }
+
+      [[GSTheme theme] fillHorizontalRect:
+        NSMakeRect (rect.origin.x + tls.width, y,
+	    rect.size.width - tls.width - trs.width,
+	    tms.height)
+	withImage: images[TileTM]
+	fromRect: rects[TileTM]
+	flipped: flipped];
+    }
+
+  // Draw Bottom-Middle image repeated
+  if (rect.size.width > bls.width + brs.width && bms.height > 0)
+    {
+      float y = rect.origin.y + rect.size.height - bms.height;
+      if (flipped)
+        {
+          y = rect.origin.y;
+        }
+      [[GSTheme theme] fillHorizontalRect:
+	NSMakeRect (rect.origin.x + bls.width, y,
+	      rect.size.width - bls.width - brs.width,
+	      bms.height)
+	withImage: images[TileBM]
+	fromRect: rects[TileBM]
+	flipped: flipped];
+    }
+
+  // Draw Center-Left image repeated
+
+  if (rect.size.height > bls.height + tls.height && cls.width > 0)
+    {
+      [[GSTheme theme] fillVerticalRect:
+	NSMakeRect (rect.origin.x,
+	      rect.origin.y + bls.height,
+	      cls.width,
+	      rect.size.height - bls.height - tls.height)
+	withImage: images[TileCL]
+	fromRect: rects[TileCL]
+	flipped: flipped];
+    }
+
+  // Draw Center-Right image repeated
+
+  if (rect.size.height > brs.height + trs.height && crs.width > 0)
+    {
+      [[GSTheme theme] fillVerticalRect:
+	NSMakeRect (rect.origin.x + rect.size.width - crs.width,
+	      rect.origin.y + brs.height,
+	      crs.width,
+	      rect.size.height - brs.height - trs.height)
+	withImage: images[TileCR]
+	fromRect: rects[TileCR]
+	flipped: flipped];
+    }    
+}
+
+- (void) drawCornersRect: (NSRect)rect
+{
+  BOOL flipped = [[GSCurrentContext() focusView] isFlipped];
+
+  NSSize tls = rects[TileTL].size;
+  NSSize trs = rects[TileTR].size;
+  NSSize brs = rects[TileBR].size;
+  NSPoint p;
+
+  p = NSMakePoint (rect.origin.x,
+    rect.origin.y + rect.size.height - tls.height);
+  if (flipped)
+    {
+      p.y = rect.origin.y + tls.height;
+    }
+  [images[TileTL] compositeToPoint: p
+                          fromRect: rects[TileTL]
+                         operation: NSCompositeSourceOver];
+
+  p = NSMakePoint(rect.origin.x + rect.size.width - trs.width,
+        rect.origin.y + rect.size.height - trs.height);
+  if (flipped)
+    {
+      p.y = rect.origin.y + tls.height;
+    }
+  [images[TileTR] compositeToPoint: p
+                          fromRect: rects[TileTR]
+                         operation: NSCompositeSourceOver];
+
+  p = NSMakePoint(rect.origin.x, rect.origin.y);
+  if (flipped)
+    {
+      p.y = rect.origin.y + rect.size.height;
+    }
+  [images[TileBL] compositeToPoint: p
+                          fromRect: rects[TileBL]
+                         operation: NSCompositeSourceOver];
+
+  p = NSMakePoint(rect.origin.x + rect.size.width - brs.width, rect.origin.y);
+  if (flipped)
+    {
+      p.y = rect.origin.y + rect.size.height;
+    }
+  [images[TileBR] compositeToPoint: p
+                          fromRect: rects[TileBR]
+                         operation: NSCompositeSourceOver];
 }
 
 @end
