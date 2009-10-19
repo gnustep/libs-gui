@@ -866,12 +866,18 @@ typedef	struct {
 	      image = [[_imageClass alloc] initWithContentsOfFile: path];
 	      if (image != nil)
 		{
-		  tiles = [[GSDrawTiles alloc] initWithImage: image
-						  horizontal: x
-						    vertical: y];
-
-		  [tiles setFillStyle: style];
-//TODO(rio)	  tiles = [[GSDrawTiles alloc] initWithNinePatchImage: image];
+                  if ([[info objectForKey: @"NinePatch"] boolValue])
+                    {
+                      tiles = [[GSDrawTiles alloc] initWithNinePatchImage: image];
+		      [tiles setFillStyle: GSThemeFillStyleScaleAll];
+                    }
+                  else
+                    {
+		      tiles = [[GSDrawTiles alloc] initWithImage: image
+                                                      horizontal: x
+                                                        vertical: y];
+		      [tiles setFillStyle: style];
+                    }
 		  RELEASE(image);
 		}
 	    }

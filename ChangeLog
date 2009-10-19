@@ -1,3 +1,12 @@
+2009-10-19 Nicolas Roard <nicolas@roard.com>
+	* Source/GSTheme.m:
+	* Source/GSThemeTools.m:
+	* Source/GSThemePrivate.h:
+	Added the 'NinePatch' drawing style, and modified GSDrawTiles
+	to save the corresponding nine images from an original image,
+	instead of only remembering the rects... The other styles need
+	to be modified accordingly in a future patch.
+
 2009-10-18 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTheme.m:

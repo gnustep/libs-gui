@@ -83,6 +83,7 @@ typedef enum {
  * otherwise, we retain it.
  */
 - (void) validateTilesSizeWithImage: (NSImage*)image;
+- (NSImage*) extractImageFrom: (NSImage*) image withRect: (NSRect) rect;
 
 /* Scale the image to the specified value.
  */
@@ -94,19 +95,21 @@ typedef enum {
 - (NSRect) fillRect: (NSRect)rect
          background: (NSColor*)color;
 
+/* Style drawing methods
+ */
+- (NSRect) noneStyleFillRect: (NSRect)rect;
+- (NSRect) centerStyleFillRect: (NSRect)rect;
+- (NSRect) matrixStyleFillRect: (NSRect)rect;
+- (NSRect) repeatStyleFillRect: (NSRect)rect;
+- (NSRect) scaleStyleFillRect: (NSRect)rect;
+- (NSRect) scaleAllStyleFillRect: (NSRect)rect;
+
+/* Utility methods
+ */
 - (NSSize) computeTotalTilesSize;
 - (void) drawCornersRect: (NSRect)rect;
 - (void) repeatFillRect: (NSRect)rect;
-
-- (NSRect) noneStyleFillRect: (NSRect)rect;
-- (NSRect) centerStyleFillRect: (NSRect)rect;
-- (NSRect) repeatStyleFillRect: (NSRect)rect;
-- (NSRect) scaleStyleFillRect: (NSRect)rect;
-
-/* Draw GSThemeFillStyleMatrix
- */ 
-- (NSRect) matrixStyleFillRect: (NSRect)rect;
-- (void) repeatFillRect: (NSRect)rect;
+- (void) scaleFillRect: (NSRect)rect;
 
 - (GSThemeFillStyle) fillStyle;
 - (void) setFillStyle: (GSThemeFillStyle)aStyle;
