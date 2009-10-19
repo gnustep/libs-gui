@@ -78,7 +78,7 @@ NSString	*GSThemeWillActivateNotification
 NSString	*GSThemeWillDeactivateNotification
   = @"GSThemeWillDeactivateNotification";
 
-extern const NSString *
+NSString *
 GSThemeStringFromFillStyle(GSThemeFillStyle s)
 {
   switch (s)
@@ -93,7 +93,7 @@ GSThemeStringFromFillStyle(GSThemeFillStyle s)
   return nil;
 }
 
-extern GSThemeFillStyle
+GSThemeFillStyle
 GSThemeFillStyleFromString(NSString *s)
 {
   if ([s isEqualToString: @"None"])

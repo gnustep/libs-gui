@@ -188,7 +188,7 @@ typedef enum {
 /** Function to convert a fill style enumeration value to a string.<br />
  * Returns nil on failure.
  */
-extern const NSString *
+extern NSString *
 GSThemeStringFromFillStyle(GSThemeFillStyle s);
 
 /** Function to convert a string to a fill style enumeration value.<br />
