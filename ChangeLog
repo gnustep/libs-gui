@@ -2,6 +2,7 @@
 
 	* Source/GSThemeTools.m: Fix broken drawing due to error in
 	the ([-validateTilesSizeWithImage:]) method.
+	Fix broken ([-drawCornersRect:]) too.
 
 2009-10-19 Richard Frith-Macdonald <rfm@gnu.org>
 

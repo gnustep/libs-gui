@@ -1521,7 +1521,6 @@ withRepeatedImage: (NSImage*)image
   NSSize tls = rects[TileTL].size;
   NSSize trs = rects[TileTR].size;
   NSSize brs = rects[TileBR].size;
-  NSRect r;
   NSPoint p;
 
   p = NSMakePoint (rect.origin.x,
@@ -1530,20 +1529,19 @@ withRepeatedImage: (NSImage*)image
     {
       p.y = rect.origin.y + tls.height;
     }
-  r = NSMakeRect(0, 0, rects[TileTL].size.width, rects[TileTL].size.height);
   [images[TileTL] compositeToPoint: p
-                          fromRect: r
+                          fromRect: rects[TileTL]
                          operation: NSCompositeSourceOver];
-
-  p = NSMakePoint(rect.origin.x + rect.size.width - trs.width + 1,
+// Is this right?
+//  p = NSMakePoint(rect.origin.x + rect.size.width - trs.width + 1,
+  p = NSMakePoint(rect.origin.x + rect.size.width - trs.width,
     rect.origin.y + rect.size.height - trs.height);
   if (flipped)
     {
       p.y = rect.origin.y + tls.height;
     }
-  r = NSMakeRect(0, 0, rects[TileTR].size.width, rects[TileTR].size.height);
   [images[TileTR] compositeToPoint: p
-                          fromRect: r
+                          fromRect: rects[TileTR]
                          operation: NSCompositeSourceOver];
 
   p = NSMakePoint(rect.origin.x, rect.origin.y);
@@ -1551,20 +1549,20 @@ withRepeatedImage: (NSImage*)image
     {
       p.y = rect.origin.y + rect.size.height;
     }
-  r = NSMakeRect(0, 0, rects[TileBL].size.width, rects[TileBL].size.height);
   [images[TileBL] compositeToPoint: p
-                          fromRect: r
+                          fromRect: rects[TileBL]
                          operation: NSCompositeSourceOver];
 
-  p = NSMakePoint(rect.origin.x + rect.size.width - brs.width + 1,
+// Is this right?
+//  p = NSMakePoint(rect.origin.x + rect.size.width - brs.width + 1,
+  p = NSMakePoint(rect.origin.x + rect.size.width - brs.width,
     rect.origin.y);
   if (flipped)
     {
       p.y = rect.origin.y + rect.size.height;
     }
-  r = NSMakeRect(0, 0, rects[TileBR].size.width, rects[TileBR].size.height);
   [images[TileBR] compositeToPoint: p
-                          fromRect: r
+                          fromRect: rects[TileBR]
                          operation: NSCompositeSourceOver];
 }
 
