@@ -1,5 +1,10 @@
 2009-10-19 Richard Frith-Macdonald <rfm@gnu.org>
 
+	* Source/GSThemeTools.m: Fix broken drawing due to error in
+	the ([-validateTilesSizeWithImage:]) method.
+
+2009-10-19 Richard Frith-Macdonald <rfm@gnu.org>
+
 	* Source/GSThemeTools.m: Fix last changes to compile again (variable
 	declarations not at startof block only work on some compilers).
 	* Source/GSTheme.m: Functions for working with fill style names.

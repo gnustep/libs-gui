@@ -883,8 +883,11 @@ withRepeatedImage: (NSImage*)image
         }
       else
         {
+          images[i] = RETAIN(image);
+/* This breaks drawing at present.
           images[i]
 	    = [[self extractImageFrom: image withRect: rects[i]] retain];
+*/
         }
     }
 }
@@ -1079,6 +1082,9 @@ withRepeatedImage: (NSImage*)image
     rect.origin.y + bms.height,
     rect.size.width - cls.width - crs.width,
     rect.size.height - bms.height - tms.height);
+
+  [self repeatFillRect: rect];
+  [self drawCornersRect: rect];
 
   [[GSTheme theme] fillRect: inFill
     withRepeatedImage: images[TileCM]
