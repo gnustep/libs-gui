@@ -72,12 +72,16 @@ static NSString *NSViewerRole = @"Viewer";
 
 static NSDocumentController *sharedController = nil;
 
+static NSArray	*allTypes = nil;
+static NSArray	*classNames = nil;
+
 #define TYPE_INFO(name) TypeInfoForName(_types, name)
 #define HR_TYPE_INFO(name) TypeInfoForHumanReadableName(_types, name)
 
 static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
 {
   int i, count = [types count];
+
   for (i = 0; i < count; i++)
     {
       NSDictionary *dict = [types objectAtIndex: i];
@@ -86,7 +90,8 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
         {
           return dict;
         }
-      else if ([[dict objectForKey: CFBundleTypeName] isEqualToString: typeName])
+      else if ([[dict objectForKey: CFBundleTypeName]
+	isEqualToString: typeName])
         {
           return dict;
         }
@@ -95,18 +100,22 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
   return nil;
 }
 
-static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
+static NSDictionary *
+TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
 {
   int i, count = [types count];
+
   for (i = 0; i < count; i++)
     {
       NSDictionary *dict = [types objectAtIndex: i];
 
-      if ([[dict objectForKey: NSHumanReadableNameKey] isEqualToString: typeName])
+      if ([[dict objectForKey: NSHumanReadableNameKey]
+	isEqualToString: typeName])
         {
           return dict;
         }
-      else if ([[dict objectForKey: CFBundleTypeName] isEqualToString: typeName])
+      else if ([[dict objectForKey: CFBundleTypeName]
+	isEqualToString: typeName])
         {
           return dict;
         }
@@ -167,6 +176,76 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
 */
 @implementation NSDocumentController
 
+
++ (void) initialize
+{
+  static BOOL	beenHere = NO;
+
+  if (beenHere == NO)
+    {
+      NSArray	*types;
+
+      beenHere = YES;
+      types = [[[NSBundle mainBundle] infoDictionary]
+        objectForKey: NSTypesKey];
+      if (types == nil)
+	{
+          types = [[[NSBundle mainBundle] infoDictionary]
+            objectForKey: CFBundleDocumentTypes];
+	}
+      if (YES == [types isKindOfClass: [NSArray class]])
+	{
+	  unsigned	count = [types count];
+	  unsigned	src;
+	  unsigned	dst = 0;
+	  NSString	*names[count];
+	  NSDictionary	*valid[count];
+
+	  for (src = 0; src < count; src++)
+	    {
+	      NSDictionary	*d = [types objectAtIndex: src];
+
+	      if (YES == [d isKindOfClass: [NSDictionary class]])
+		{
+		  NSString	*name = [d objectForKey: NSDocumentClassKey];
+
+		  /* Is this type handled by an NSDocument subclass?
+		   */
+	          if (YES == [name isKindOfClass: [NSString class]])
+		    {
+		      Class	c = NSClassFromString(name);
+
+		      if (YES == [c isSubclassOfClass: [NSDocument class]])
+			{
+			  names[dst] = name;
+			  valid[dst++] = d;
+			}
+		      else if (c == 0)
+			{
+			  NSLog(@"NSDocumentClass %@ not found", name);
+			}
+		      else
+			{
+			  NSLog(@"NSDocumentClass %@ not NSDocument subclass",
+			    name);
+			}
+		    }
+		}
+	      else
+		{
+		  NSLog(@"Bad item at index %u in %@",
+		    src, CFBundleDocumentTypes);
+		}
+	    }
+	  if (dst > 0)
+	    {
+	      classNames = [[NSArray alloc] initWithObjects: names count: dst];
+	      allTypes = [[NSArray alloc] initWithObjects: valid count: dst];
+	    }
+	}
+    }
+}
+
 /** Returns the shared instance of the document controller class. You
     should always use this method to get the NSDocumentController. */
 + (id) sharedDocumentController
@@ -180,30 +259,13 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
   return sharedController;
 }
 
-/* Private method for use by NSApplication to determine if it should
-   instantiate an NSDocumentController.
-*/
-+ (BOOL) isDocumentBasedApplication
-{
-  return ([[[NSBundle mainBundle] infoDictionary] objectForKey: NSTypesKey] ||
-          [[[NSBundle mainBundle] infoDictionary] objectForKey: CFBundleDocumentTypes]) 
-    ? YES : NO;
-}
-
 /** </init>Initializes the document controller class. The first
     instance of a document controller class that gets initialized
     becomes the shared instance.
  */
 - init
 {
-  NSDictionary *customDict = [[NSBundle mainBundle] infoDictionary];
-        
-  ASSIGN (_types, [customDict objectForKey: NSTypesKey]);
-
-  if(_types == nil)
-    {
-      ASSIGN(_types, [customDict objectForKey: CFBundleDocumentTypes]);
-    }
+  _types = RETAIN(allTypes);
 
   _documents = [[NSMutableArray alloc] init];
   
@@ -413,11 +475,11 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
 - (NSString*) defaultType
 {
   NSString *defaultName = nil;
-	int i, count = [_types count];
+  int i, count = [_types count];
 
-	for (i = 0; i < count; i++)
-		{
-      NSDictionary *typeInfo = (NSDictionary*)[_types objectAtIndex: i];		
+  for (i = 0; i < count; i++)
+    {
+      NSDictionary *typeInfo = (NSDictionary*)[_types objectAtIndex: i];
       NSString *role;
 
       role = [typeInfo objectForKey: NSRoleKey];
@@ -434,10 +496,10 @@ static NSDictionary *TypeInfoForHumanReadableName (NSArray *types, NSString *typ
 
           return defaultName;
         }
-		}
+    }
 
-	// none found
-	return nil;
+  // none found
+  return nil;
 }
 
 - (void) addDocument: (NSDocument *)document
@@ -1026,14 +1088,14 @@ static BOOL _shouldClose = YES;
       directory = [[document fileName] stringByDeletingLastPathComponent];
     }
   if (directory == nil || [directory isEqual: @""]
-      || [manager fileExistsAtPath: directory  isDirectory: &isDir] == NO
-      || isDir == NO)
+    || [manager fileExistsAtPath: directory  isDirectory: &isDir] == NO
+    || isDir == NO)
     {
       directory = [[NSOpenPanel openPanel] directory];
     }
   if (directory == nil || [directory isEqual: @""]
-      || [manager fileExistsAtPath: directory  isDirectory: &isDir] == NO
-      || isDir == NO)
+    || [manager fileExistsAtPath: directory  isDirectory: &isDir] == NO
+    || isDir == NO)
     {
       directory = NSHomeDirectory ();
     }
@@ -1151,15 +1213,15 @@ static BOOL _shouldClose = YES;
       NSDictionary *typeInfo = [_types objectAtIndex: i];
       
       if ([[typeInfo objectForKey: NSUnixExtensionsKey] 
-            containsObject: fileExtension] ||
-          [[typeInfo objectForKey: NSDOSExtensionsKey]  
-            containsObject: fileExtension] ||
-          [[typeInfo objectForKey: CFBundleTypeExtensions]
-            containsObject: fileExtension])
+          containsObject: fileExtension]
+	|| [[typeInfo objectForKey: NSDOSExtensionsKey]  
+          containsObject: fileExtension]
+	|| [[typeInfo objectForKey: CFBundleTypeExtensions]
+          containsObject: fileExtension])
         {
           NSString *type = [typeInfo objectForKey: NSNameKey];
 
-          if(type == nil)
+          if (type == nil)
             {
               type = [typeInfo objectForKey: CFBundleTypeName];
             }
@@ -1174,7 +1236,7 @@ static BOOL _shouldClose = YES;
 {
   NSString *type = [self typeFromFileExtension: [[url path] pathExtension]];
 
-  if([url isFileURL] == NO && type == nil)
+  if ([url isFileURL] == NO && type == nil)
     {
       return [self defaultType];
     }
@@ -1201,30 +1263,9 @@ static BOOL _shouldClose = YES;
   return className ? NSClassFromString(className) : Nil;
 }
 
-- (NSArray *)documentClassNames
+- (NSArray*) documentClassNames
 {
-  int i, count = [_types count];
-  NSMutableArray *classNames;
-
-  classNames = [[NSMutableArray alloc] initWithCapacity: count];
-        
-  for (i = 0; i < count; i++)
-    {
-      NSDictionary *typeInfo = [_types objectAtIndex: i];
-      NSString *className = [typeInfo objectForKey: NSDocumentClassKey];
-
-      if(className != nil)
-        {
-          [classNames addObject: className];
-        }
-      else
-        {
-          NSLog(@"WARN: The entry does not have an NSDocumentClass name defined: %@",
-                typeInfo);
-        }
-    }
- 
-  return AUTORELEASE(classNames);
+  return classNames;
 }
 
 
@@ -1330,7 +1371,7 @@ static BOOL _shouldClose = YES;
         {
           NSString *name = [typeInfo objectForKey: NSNameKey];
 
-          if(name == nil)
+          if (name == nil)
             {
               name = [typeInfo objectForKey: CFBundleTypeName];
             }
@@ -1364,7 +1405,7 @@ static BOOL _shouldClose = YES;
         {
           NSString *name = [typeInfo objectForKey: NSNameKey];
 
-          if(name == nil)
+          if (name == nil)
             {
               name = [typeInfo objectForKey: CFBundleTypeName];
             }
@@ -1386,7 +1427,7 @@ static BOOL _shouldClose = YES;
   NSDictionary *typeInfo = HR_TYPE_INFO(typeHR);
   NSString *type = [typeInfo objectForKey: NSNameKey];
 
-  if(type == nil)
+  if (type == nil)
     {
       type = [typeInfo objectForKey: CFBundleTypeName];
     }
@@ -1572,29 +1613,30 @@ static NSString *processName = nil;
 // should be handled by making us the delegate of the recent's menu
 - (void) _updateOpenRecentMenu
 {
-	NSMenu *recentMenu;
-	int i;
+  NSMenu *recentMenu;
+  int i;
 
-	recentMenu = [self _recentMenu];
-	if (!recentMenu)
-		{
+  recentMenu = [self _recentMenu];
+  if (!recentMenu)
+    {
       return;
-		}
+    }
 
-	// don't update (to keep Clear List status consistent)
-	[recentMenu setAutoenablesItems: NO];
-	[recentMenu setMenuChangedMessagesEnabled: NO];
+  // don't update (to keep Clear List status consistent)
+  [recentMenu setAutoenablesItems: NO];
+  [recentMenu setMenuChangedMessagesEnabled: NO];
 
-	while ([recentMenu numberOfItems] > 0)
-		[recentMenu removeItemAtIndex: 0];	// remove them all
-
-	for (i = [_recent_documents count]; i >= -2; i--)
-		{
+  while ([recentMenu numberOfItems] > 0)
+    {
+      [recentMenu removeItemAtIndex: 0];	// remove them all
+    }
+  for (i = [_recent_documents count]; i >= -2; i--)
+    {
       // add all items incl. a Clear List item if needed
       NSMenuItem *item;
 
       if (i == -1)
-			  {
+	{
           if ([_recent_documents count] == 0)
             continue;	// skip if menu is empty
           item = (NSMenuItem *) [NSMenuItem separatorItem];
@@ -1602,7 +1644,7 @@ static NSString *processName = nil;
           RETAIN(item);
         }
       else if (i == -2)
-			  {
+	{
           item = [[NSMenuItem alloc] initWithTitle: _(@"Clear List")
                                      action: @selector(clearRecentDocuments:) 
                                      keyEquivalent: nil];
@@ -1610,11 +1652,12 @@ static NSString *processName = nil;
           [item setEnabled: [_recent_documents count] > 0];
         }
       else
-			  {
+	{
           // standard item
           NSURL *u = [_recent_documents objectAtIndex: i];	// get URL
           if ([u isFileURL])
-            item = [[NSMenuItem alloc] initWithTitle: [[u path] lastPathComponent] 
+            item = [[NSMenuItem alloc]
+	      initWithTitle: [[u path] lastPathComponent] 
                                        action: @selector(_openRecentDocument:)
                                        keyEquivalent:nil];
           else
@@ -1626,24 +1669,24 @@ static NSString *processName = nil;
       [item setTarget: self];
       [recentMenu addItem: item];
       RELEASE(item);
-		}
+    }
 
-	[recentMenu setMenuChangedMessagesEnabled: YES];
+  [recentMenu setMenuChangedMessagesEnabled: YES];
 }
 
 - (IBAction) _openRecentDocument: (id)sender
 {
   // action to open recent document by tag index
-	NSURL *url;
-	int idx = [sender tag];
+  NSURL *url;
+  int idx = [sender tag];
 
-	if (idx < 0 || idx >= [_recent_documents count])
-		{
+  if (idx < 0 || idx >= [_recent_documents count])
+    {
       // something went wrong, ignore
       [self _updateOpenRecentMenu];
       return;
-		}
-	url = (NSURL *)[_recent_documents objectAtIndex: idx];
+    }
+  url = (NSURL *)[_recent_documents objectAtIndex: idx];
   [self openDocumentWithContentsOfURL: url display: YES];
 }
 

@@ -3,7 +3,13 @@
 	* Source/GSThemeTools.m: Fix last changes to compile again (variable
 	declarations not at startof block only work on some compilers).
 	* Source/NSApplication.m: Fixup to show suppressed icon when app is
-	deactivated.
+	deactivated.  Fix uninitialisaed variable causing crashes on failing
+	to use document controller to open an untitled document.
+	Drop non-standard method (which didn't work) for determining whether
+	we have a document based app.
+	* Source/NSDocumentController.m: Rewrite code for determining 
+	whether the current app is document based. Cache singleton information
+	in static variables rether than ivars.
 
 2009-10-19 Nicolas Roard <nicolas@roard.com>
 	* Source/GSTheme.m:

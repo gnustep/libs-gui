@@ -365,10 +365,6 @@ struct _NSModalSession {
   NSModalSession	previous;
 };
  
-@interface NSDocumentController (ApplicationPrivate)
-+ (BOOL) isDocumentBasedApplication;
-@end
-
 @interface NSApplication (Private)
 - _appIconInit;
 - (NSDictionary*) _notificationUserInfo;
@@ -950,6 +946,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 {
   NSBundle		*mainBundle = [NSBundle mainBundle];
   NSDictionary		*infoDict = [mainBundle infoDictionary];
+  NSDocumentController	*sdc;
   NSString		*mainModelFile;
   NSString		*appIconFile;
   NSUserDefaults	*defs = [NSUserDefaults standardUserDefaults];
@@ -1104,11 +1101,10 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
    * Instantiate the NSDocumentController if we are a doc-based app
    * and eventually reopen all autosaved documents
    */
-  if ([NSDocumentController isDocumentBasedApplication])
+  sdc = [NSDocumentController sharedDocumentController];
+  if ([[sdc documentClassNames] count] > 0)
     {
-      didAutoreopen =
-	  [[NSDocumentController sharedDocumentController]
-	      _reopenAutosavedDocuments];
+      didAutoreopen = [sdc _reopenAutosavedDocuments];
     }
 
   /*
@@ -1135,23 +1131,21 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
                        @selector(applicationShouldOpenUntitledFile:)])
         {
           if ([_delegate applicationShouldOpenUntitledFile: self]
-              && [_delegate respondsToSelector:
+            && [_delegate respondsToSelector:
                               @selector(applicationOpenUntitledFile:)])
             {
               [_delegate applicationOpenUntitledFile: self];
             }
         }
-      else if ([NSDocumentController isDocumentBasedApplication])
+      else if ([[sdc documentClassNames] count] > 0)
         {
-          NSError *err;
-          NSDocumentController *sdc =
-            [NSDocumentController sharedDocumentController];
+	  NSError *err = nil;
 
-          if ([sdc openUntitledDocumentAndDisplay: YES error: &err] == nil &&
-              [sdc presentError: err] == NO)
-            {
-              [self terminate: self];
-            }
+	  if ([sdc openUntitledDocumentAndDisplay: YES error: &err] == nil
+	    && [sdc presentError: err] == NO)
+	    {
+	      [self terminate: self];
+	    }
         }
     }
 }
@@ -3376,11 +3370,13 @@ struct _DelegateWrapper
     }
   else
     {
-      if ([NSDocumentController isDocumentBasedApplication])
+      NSDocumentController	*sdc;
+
+      sdc = [NSDocumentController sharedDocumentController];
+      if ([[sdc documentClassNames] count] > 0)
 	{
-	  if ([[NSDocumentController sharedDocumentController] 
-            reviewUnsavedDocumentsWithAlertTitle: _(@"Quit")
-            cancellable: YES] == YES)
+	  if ([sdc reviewUnsavedDocumentsWithAlertTitle: _(@"Quit")
+					    cancellable: YES] == YES)
             {
               termination = NSTerminateNow;
             }
@@ -3758,6 +3754,7 @@ struct _DelegateWrapper
 	      keyWindow: (NSWindow *)keyWindow
 	     mainWindow: (NSWindow *)mainWindow
 {
+  NSDocumentController	*sdc;
   id resp, delegate;
   NSWindow *window;
 
@@ -3779,6 +3776,8 @@ struct _DelegateWrapper
 
   if (window != nil)
     {
+      NSDocumentController	*sdc;
+
       /* traverse the responder chain including the window's delegate */
       resp = [window firstResponder];
       while (resp != nil && resp != self)
@@ -3799,10 +3798,10 @@ struct _DelegateWrapper
 	}
 
       /* in a document based app try the window's document */
-      if ([NSDocumentController isDocumentBasedApplication])
+      sdc = [NSDocumentController sharedDocumentController];
+      if ([[sdc documentClassNames] count] > 0)
         {
-	  resp = [[NSDocumentController sharedDocumentController]
-		     documentForWindow: window];
+	  resp = [sdc documentForWindow: window];
 
 	  if (resp != nil && [resp respondsToSelector: aSelector])
 	    {
@@ -3848,9 +3847,9 @@ struct _DelegateWrapper
     }
 
   /* as a last resort in a document based app, try the document controller */
-  if ([NSDocumentController isDocumentBasedApplication]
-      && [[NSDocumentController sharedDocumentController]
-             respondsToSelector: aSelector])
+  sdc = [NSDocumentController sharedDocumentController];
+  if ([[sdc documentClassNames] count] > 0
+    && [sdc respondsToSelector: aSelector])
     {
       return [NSDocumentController sharedDocumentController];
     }
