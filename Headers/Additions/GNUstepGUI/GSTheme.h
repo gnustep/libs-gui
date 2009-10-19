@@ -192,7 +192,7 @@ extern NSString *
 GSThemeStringFromFillStyle(GSThemeFillStyle s);
 
 /** Function to convert a string to a fill style enumeration value.<br />
- * Returns -1 on failure.
+ * Returns GSThemeFillStyleNone if the string is not a valid name.
  */
 extern GSThemeFillStyle
 GSThemeFillStyleFromString(NSString *s);

@@ -96,7 +96,7 @@ GSThemeStringFromFillStyle(GSThemeFillStyle s)
 GSThemeFillStyle
 GSThemeFillStyleFromString(NSString *s)
 {
-  if ([s isEqualToString: @"None"])
+  if (s == nil || [s isEqualToString: @"None"])
     {
       return GSThemeFillStyleNone;
     }
@@ -120,7 +120,7 @@ GSThemeFillStyleFromString(NSString *s)
     {
       return GSThemeFillStyleScaleAll;
     }
-  return -1;
+  return GSThemeFillStyleNone;
 }
 
 
