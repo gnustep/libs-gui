@@ -2,6 +2,7 @@
 
 	* Source/GSThemeTools.m: Fix last changes to compile again (variable
 	declarations not at startof block only work on some compilers).
+	* Source/GSTheme.m: Functions for working with fill style names.
 	* Source/NSApplication.m: Fixup to show suppressed icon when app is
 	deactivated.  Fix uninitialisaed variable causing crashes on failing
 	to use document controller to open an untitled document.

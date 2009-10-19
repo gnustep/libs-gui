@@ -78,6 +78,52 @@ NSString	*GSThemeWillActivateNotification
 NSString	*GSThemeWillDeactivateNotification
   = @"GSThemeWillDeactivateNotification";
 
+extern const NSString *
+GSThemeStringFromFillStyle(GSThemeFillStyle s)
+{
+  switch (s)
+    {
+      case GSThemeFillStyleNone: return @"None";
+      case GSThemeFillStyleScale: return @"Scale";
+      case GSThemeFillStyleRepeat: return @"Repeat";
+      case GSThemeFillStyleCenter: return @"Center";
+      case GSThemeFillStyleMatrix: return @"Matrix";
+      case GSThemeFillStyleScaleAll: return @"ScaleAll";
+    }
+  return nil;
+}
+
+extern GSThemeFillStyle
+GSThemeFillStyleFromString(NSString *s)
+{
+  if ([s isEqualToString: @"None"])
+    {
+      return GSThemeFillStyleNone;
+    }
+  if ([s isEqualToString: @"Scale"])
+    {
+      return GSThemeFillStyleScale;
+    }
+  if ([s isEqualToString: @"Repeat"])
+    {
+      return GSThemeFillStyleRepeat;
+    }
+  if ([s isEqualToString: @"Center"])
+    {
+      return GSThemeFillStyleCenter;
+    }
+  if ([s isEqualToString: @"Matrix"])
+    {
+      return GSThemeFillStyleMatrix;
+    }
+  if ([s isEqualToString: @"ScaleAll"])
+    {
+      return GSThemeFillStyleScaleAll;
+    }
+  return -1;
+}
+
+
 @interface	NSImage (GSTheme)
 + (NSImage*) _setImage: (NSImage*)image name: (NSString*)name;
 @end
@@ -823,32 +869,11 @@ typedef	struct {
 	  NSString		*path;
 	  NSString		*file;
 	  NSString		*ext;
-	  GSThemeFillStyle	style = GSThemeFillStyleNone;
+	  GSThemeFillStyle	style;
 
 	  name = [info objectForKey: @"FillStyle"];
-	  if ([name length] > 0)
-	    {
-	      if ([name isEqualToString: @"Scale"])
-	 	{
-		  style = GSThemeFillStyleScale;
-		}
-	      else if ([name isEqualToString: @"Repeat"])
-	 	{
-		  style = GSThemeFillStyleRepeat;
-		}
-	      else if ([name isEqualToString: @"Center"])
-	 	{
-		  style = GSThemeFillStyleCenter;
-		}
-	      else if ([name isEqualToString: @"Matrix"])
-	 	{
-		  style = GSThemeFillStyleMatrix;
-		}
-	      else if ([name isEqualToString: @"ScaleAll"])
-	 	{
-		  style = GSThemeFillStyleScaleAll;
-		}
-	    }
+	  style = GSThemeFillStyleFromString(name);
+	  if (style < GSThemeFillStyleNone) style = GSThemeFillStyleNone;
 	  x = [[info objectForKey: @"HorizontalDivision"] floatValue];
 	  y = [[info objectForKey: @"VerticalDivision"] floatValue];
 	  file = [info objectForKey: @"FileName"];

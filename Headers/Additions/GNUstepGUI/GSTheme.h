@@ -185,6 +185,17 @@ typedef enum {
                                     their area, instead of being repeated */
 } GSThemeFillStyle;
 
+/** Function to convert a fill style enumeration value to a string.<br />
+ * Returns nil on failure.
+ */
+extern const NSString *
+GSThemeStringFromFillStyle(GSThemeFillStyle s);
+
+/** Function to convert a string to a fill style enumeration value.<br />
+ * Returns -1 on failure.
+ */
+extern GSThemeFillStyle
+GSThemeFillStyleFromString(NSString *s);
 
 /**
  * This enumeration provides constants for informing drawing methods
