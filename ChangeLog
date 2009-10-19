@@ -1,3 +1,8 @@
+2009-10-19 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Source/GSWindowDecorationView.h: add method declaration 
+	so that certain compilers pick up the correct signature
+
 2009-10-19 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSThemeTools.m: Fix broken drawing due to error in

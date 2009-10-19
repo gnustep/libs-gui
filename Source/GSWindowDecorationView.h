@@ -69,6 +69,8 @@ this, either directly, or indirectly (by using the backend).
 - (NSRect) frameRectForContentRect: (NSRect)aRect
 			 styleMask: (unsigned int)aStyle;
 
+- (void) changeWindowHeight: (float)difference;
+
 - (void) setBackgroundColor: (NSColor *)color;
 - (void) setContentView: (NSView *)contentView;
 - (void) setDocumentEdited: (BOOL)flag;
