@@ -175,12 +175,12 @@ APPKIT_EXPORT	NSString	*GSScrollerVerticalSlot;
  * to display the tile.
  */
 typedef enum {
-  GSThemeFillStyleNone,		/** CM image is not drawn */
-  GSThemeFillStyleScale,	/** CM image is scaled to fit */
-  GSThemeFillStyleRepeat,	/** CM image is tiled from bottom left */
-  GSThemeFillStyleCenter,	/** CM image is tiled from the center */
-  GSThemeFillStyleMatrix,	/** a matrix of nine separated images */
-  GSThemeFillStyleScaleAll      /** All 'stretchable' images (i.e. not
+  GSThemeFillStyleNone = 0,	/** CM image is not drawn */
+  GSThemeFillStyleScale = 1,	/** CM image is scaled to fit */
+  GSThemeFillStyleRepeat = 2,	/** CM image is tiled from bottom left */
+  GSThemeFillStyleCenter = 3,	/** CM image is tiled from the center */
+  GSThemeFillStyleMatrix = 4,	/** a matrix of nine separated images */
+  GSThemeFillStyleScaleAll = 5      /** All 'stretchable' images (i.e. not
                                     the four corners) are scaled to fill
                                     their area, instead of being repeated */
 } GSThemeFillStyle;

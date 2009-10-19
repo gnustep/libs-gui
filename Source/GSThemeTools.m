@@ -1085,7 +1085,7 @@ withRepeatedImage: (NSImage*)image
     fromRect: rects[TileCM]
     center: !flipped];
   
-  NSLog(@"rect %@ too small fire tiles %@",
+  NSLog(@"rect %@ too small for tiles %@",
     NSStringFromSize(rect.size), NSStringFromSize(tsz));
 
   return inFill;
