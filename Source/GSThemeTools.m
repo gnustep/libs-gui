@@ -825,8 +825,6 @@ withRepeatedImage: (NSImage*)image
         }
     }
 
-  NSLog(@"x1: %d x2: %d", x1, x2);
-
   for (i = 0; i < s.height; i++)
     {
       NSColor	*pixelColor = [rep colorAtX: 0 y: i];
@@ -842,7 +840,6 @@ withRepeatedImage: (NSImage*)image
           break;
         }
     }
-  NSLog(@"y1: %d y2: %d", y1, y2);
 
   scaleFactor  = 1.0f;
   style = GSThemeFillStyleScaleAll;
@@ -885,7 +882,6 @@ withRepeatedImage: (NSImage*)image
         }
       else
         {
-//          images[i] = RETAIN(image);
           images[i] = [[self extractImageFrom: image withRect: rects[i]] retain];
         }
     }

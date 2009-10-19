@@ -83,7 +83,6 @@ typedef enum {
  * otherwise, we retain it.
  */
 - (void) validateTilesSizeWithImage: (NSImage*)image;
-- (NSImage*) extractImageFrom: (NSImage*) image withRect: (NSRect) rect;
 
 /* Scale the image to the specified value.
  */
@@ -106,6 +105,7 @@ typedef enum {
 
 /* Utility methods
  */
+- (NSImage*) extractImageFrom: (NSImage*) image withRect: (NSRect) rect;
 - (NSSize) computeTotalTilesSize;
 - (void) drawCornersRect: (NSRect)rect;
 - (void) repeatFillRect: (NSRect)rect;
