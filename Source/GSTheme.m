@@ -868,7 +868,8 @@ typedef	struct {
 		{
                   if ([[info objectForKey: @"NinePatch"] boolValue])
                     {
-                      tiles = [[GSDrawTiles alloc] initWithNinePatchImage: image];
+                      tiles = [[GSDrawTiles alloc]
+			initWithNinePatchImage: image];
 		      [tiles setFillStyle: GSThemeFillStyleScaleAll];
                     }
                   else

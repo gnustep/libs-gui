@@ -556,9 +556,9 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
           while ((aWin = [iter nextObject]))
             { 
               if ([aWin isVisible] == YES && [aWin isMiniaturized] == NO
-                  && aWin != [NSApp keyWindow] && aWin != [NSApp mainWindow]
-                  && aWin != [self window] 
-                  && ([aWin styleMask] & NSMiniWindowMask) == 0)
+                && aWin != [NSApp keyWindow] && aWin != [NSApp mainWindow]
+                && aWin != [self window] 
+                && ([aWin styleMask] & NSMiniWindowMask) == 0)
                 {
                   [aWin orderFrontRegardless];
                 }
@@ -579,15 +579,15 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
                   /* We need give input focus to some window otherwise we'll 
                      never get keyboard events. FIXME: doesn't work. */
                     NSWindow *menu_window= [[NSApp mainMenu] window];
-                    NSDebugLLog(@"Focus", @"No key on activation - make menu key");
+                    NSDebugLLog(@"Focus",
+		      @"No key on activation - make menu key");
                     [GSServerForWindow(menu_window) setinputfocus:
-                                          [menu_window windowNumber]];
+		      [menu_window windowNumber]];
                 }
             }
 	  
           RELEASE(windows);
         }
-       
       [NSApp unhide: self]; // or activate or do nothing.
     }
   else

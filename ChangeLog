@@ -1,3 +1,10 @@
+2009-10-19 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSThemeTools.m: Fix last changes to compile again (variable
+	declarations not at startof block only work on some compilers).
+	* Source/NSApplication.m: Fixup to show suppressed icon when app is
+	deactivated.
+
 2009-10-19 Nicolas Roard <nicolas@roard.com>
 	* Source/GSTheme.m:
 	* Source/GSThemeTools.m:

@@ -127,8 +127,7 @@
   // These names are role names not the actual colours
   NSColor *black = [NSColor controlDarkShadowColor];
   NSColor *dark = [NSColor controlShadowColor];
-  NSColor *colors[] = {dark, dark, dark, dark, 
-		       black,black};
+  NSColor *colors[] = {dark, dark, dark, dark, black,black};
 
   if ([[NSView focusView] isFlipped] == YES)
     {
@@ -498,6 +497,7 @@
   unsigned		repetitions;
   float			remainder;
   unsigned		count;
+  NSPoint		p;
   float			y;
 
   if (rect.size.width <= 0.0)
@@ -533,16 +533,13 @@
   
   for (count = 0; count < repetitions; count++)
     {
-      NSPoint p = NSMakePoint (rect.origin.x + count * source.size.width, y);
-
+      p = NSMakePoint (rect.origin.x + count * source.size.width, y);
       [image compositeToPoint: p
 		     fromRect: source
 		    operation: NSCompositeSourceOver];
     }
   if (remainder > 0)
     {
-      NSPoint p;
-
       p = NSMakePoint (rect.origin.x + repetitions * source.size.width, y);
       source.size.width = remainder;
       [image compositeToPoint: p
@@ -860,9 +857,13 @@ withRepeatedImage: (NSImage*)image
 
 - (NSImage*) extractImageFrom: (NSImage*) image withRect: (NSRect) rect
 {
-  NSImage* img = [[NSImage alloc] initWithSize: rect.size];
+  NSImage *img = [[NSImage alloc] initWithSize: rect.size];
+
   [img lockFocus];
-    [image drawAtPoint: NSMakePoint(0,0) fromRect: rect operation: NSCompositeSourceOver fraction: 1.0];
+  [image drawAtPoint: NSMakePoint(0, 0)
+	    fromRect: rect
+	   operation: NSCompositeSourceOver
+	    fraction: 1.0];
   [img unlockFocus];
   [img TIFFRepresentation]; // creates a proper NSBitmapImageRep
   return [img autorelease];
@@ -882,7 +883,8 @@ withRepeatedImage: (NSImage*)image
         }
       else
         {
-          images[i] = [[self extractImageFrom: image withRect: rects[i]] retain];
+          images[i]
+	    = [[self extractImageFrom: image withRect: rects[i]] retain];
         }
     }
 }
@@ -1038,13 +1040,12 @@ withRepeatedImage: (NSImage*)image
   NSSize bms = rects[TileBM].size;
   NSSize crs = rects[TileCR].size;
   NSSize tms = rects[TileTM].size;
+  NSRect r = rects[TileCM];
   NSRect inFill = NSMakeRect (
     rect.origin.x + cls.width,
     rect.origin.y + bms.height,
     rect.size.width - cls.width - crs.width,
     rect.size.height - bms.height - tms.height);
-
-  NSRect r = rects[TileCM];
 
   [self repeatFillRect: rect];
   [self drawCornersRect: rect];
@@ -1140,33 +1141,38 @@ withRepeatedImage: (NSImage*)image
 - (NSRect) scaleAllStyleFillRect: (NSRect)rect
 {
   BOOL flipped = [[GSCurrentContext() focusView] isFlipped];
-
   NSSize cls = rects[TileCL].size;
   NSSize bms = rects[TileBM].size;
   NSSize crs = rects[TileCR].size;
   NSSize tms = rects[TileTM].size;
+  NSImage *img;
+  NSRect imgRect;
+  NSRect inFill;
 
-  NSRect inFill = NSMakeRect (
-        rect.origin.x + cls.width,
-	rect.origin.y + bms.height,
-	rect.size.width - cls.width - crs.width,
-	rect.size.height - bms.height - tms.height);
+  inFill = NSMakeRect (
+    rect.origin.x + cls.width,
+    rect.origin.y + bms.height,
+    rect.size.width - cls.width - crs.width,
+    rect.size.height - bms.height - tms.height);
 
   [self scaleFillRect: rect];
   [self drawCornersRect: rect];
 
   // Draw center scaled
 
-  NSImage* img = images[TileCM];
-  NSRect imgRect = NSMakeRect(0, 0,
-                              rect.size.width - cls.width - crs.width,
-                              rect.size.height - tms.height - bms.height);
+  img = images[TileCM];
+  imgRect = NSMakeRect(0, 0,
+    rect.size.width - cls.width - crs.width,
+    rect.size.height - tms.height - bms.height);
+
   if (imgRect.size.width > 0 && imgRect.size.height > 0)
     {
+      NSPoint p;
+
       [img setScalesWhenResized: YES];
       [img setSize: imgRect.size];
-      NSPoint p = NSMakePoint(rect.origin.x + cls.width,
-                              rect.origin.y + bms.height);
+      p = NSMakePoint(rect.origin.x + cls.width,
+	rect.origin.y + bms.height);
       if (flipped)
         {
           p.y = rect.origin.y + rect.size.height - bms.height;
@@ -1344,6 +1350,7 @@ withRepeatedImage: (NSImage*)image
   if (rect.size.width > tls.width + trs.width && tms.height > 0)
     {
       float y = rect.origin.y + rect.size.height - tms.height;
+
       if (flipped)
         {
           y = rect.origin.y;
@@ -1362,6 +1369,7 @@ withRepeatedImage: (NSImage*)image
   if (rect.size.width > bls.width + brs.width && bms.height > 0)
     {
       float y = rect.origin.y;
+
       if (flipped)
         {
           y = rect.origin.y + rect.size.height - bms.height;
@@ -1407,6 +1415,9 @@ withRepeatedImage: (NSImage*)image
 - (void) scaleFillRect: (NSRect)rect
 {
   BOOL flipped = [[GSCurrentContext() focusView] isFlipped];
+  NSImage *img;
+  NSRect imgRect;
+  NSPoint p;
 
   NSSize tls = rects[TileTL].size;
   NSSize tms = rects[TileTM].size;
@@ -1419,14 +1430,15 @@ withRepeatedImage: (NSImage*)image
 
   // Draw Top-Middle image scaled
 
-  NSImage* img = images[TileTM];
-  NSRect imgRect = NSMakeRect(0, 0, rect.size.width - tls.width - trs.width + 2, tms.height);
+  img = images[TileTM];
+  imgRect = NSMakeRect(0, 0,
+    rect.size.width - tls.width - trs.width + 2, tms.height);
   if (imgRect.size.width > 0 && imgRect.size.height > 0)
     {
       [img setScalesWhenResized: YES];
       [img setSize: imgRect.size];
-      NSPoint p = NSMakePoint(rect.origin.x + tls.width,
-                              rect.origin.y + rect.size.height - tms.height);
+      p = NSMakePoint(rect.origin.x + tls.width,
+	rect.origin.y + rect.size.height - tms.height);
       if (flipped)
         {
           p.y = rect.origin.y + tms.height;
@@ -1439,12 +1451,13 @@ withRepeatedImage: (NSImage*)image
   // Draw Bottom-Middle image scaled
 
   img = images[TileBM];
-  imgRect = NSMakeRect(0, 0, rect.size.width - bls.width - brs.width + 2, bms.height);
+  imgRect = NSMakeRect(0, 0,
+    rect.size.width - bls.width - brs.width + 2, bms.height);
   if (imgRect.size.width > 0 && imgRect.size.height > 0)
     {
       [img setScalesWhenResized: YES];
       [img setSize: imgRect.size];
-      NSPoint p = NSMakePoint(rect.origin.x + bls.width, rect.origin.y);
+      p = NSMakePoint(rect.origin.x + bls.width, rect.origin.y);
       if (flipped)
         {
           p.y = rect.origin.y + rect.size.height;
@@ -1457,12 +1470,13 @@ withRepeatedImage: (NSImage*)image
   // Draw Center-Left image scaled
 
   img = images[TileCL];
-  imgRect = NSMakeRect(0, 0, cls.width, rect.size.height - tls.height - bls.height + 2);
+  imgRect = NSMakeRect(0, 0,
+    cls.width, rect.size.height - tls.height - bls.height + 2);
   if (imgRect.size.width > 0 && imgRect.size.height > 0)
     {
       [img setScalesWhenResized: YES];
       [img setSize: imgRect.size];
-      NSPoint p = NSMakePoint(rect.origin.x, rect.origin.y + bls.height);
+      p = NSMakePoint(rect.origin.x, rect.origin.y + bls.height);
       if (flipped)
         {
           p.y = rect.origin.y + rect.size.height - bls.height;
@@ -1475,12 +1489,14 @@ withRepeatedImage: (NSImage*)image
   // Draw Center-Right image scaled
 
   img = images[TileCR];
-  imgRect = NSMakeRect(0, 0, crs.width + 1, rect.size.height - trs.height - brs.height + 2);
+  imgRect = NSMakeRect(0, 0,
+    crs.width + 1, rect.size.height - trs.height - brs.height + 2);
   if (imgRect.size.width > 0 && imgRect.size.height > 0)
     {
       [img setScalesWhenResized: YES];
       [img setSize: imgRect.size];
-      NSPoint p = NSMakePoint(rect.origin.x + rect.size.width - crs.width, rect.origin.y + brs.height);
+      p = NSMakePoint(rect.origin.x + rect.size.width - crs.width,
+	rect.origin.y + brs.height);
       if (flipped)
         {
           p.y = rect.origin.y + rect.size.height - brs.height;
@@ -1489,7 +1505,6 @@ withRepeatedImage: (NSImage*)image
                    fromRect: imgRect
                   operation: NSCompositeSourceOver]; 
     }
-
 }
 
 
@@ -1500,6 +1515,7 @@ withRepeatedImage: (NSImage*)image
   NSSize tls = rects[TileTL].size;
   NSSize trs = rects[TileTR].size;
   NSSize brs = rects[TileBR].size;
+  NSRect r;
   NSPoint p;
 
   p = NSMakePoint (rect.origin.x,
@@ -1508,18 +1524,20 @@ withRepeatedImage: (NSImage*)image
     {
       p.y = rect.origin.y + tls.height;
     }
+  r = NSMakeRect(0, 0, rects[TileTL].size.width, rects[TileTL].size.height);
   [images[TileTL] compositeToPoint: p
-                          fromRect: NSMakeRect(0, 0, rects[TileTL].size.width, rects[TileTL].size.height)
+                          fromRect: r
                          operation: NSCompositeSourceOver];
 
   p = NSMakePoint(rect.origin.x + rect.size.width - trs.width + 1,
-        rect.origin.y + rect.size.height - trs.height);
+    rect.origin.y + rect.size.height - trs.height);
   if (flipped)
     {
       p.y = rect.origin.y + tls.height;
     }
+  r = NSMakeRect(0, 0, rects[TileTR].size.width, rects[TileTR].size.height);
   [images[TileTR] compositeToPoint: p
-                          fromRect: NSMakeRect(0, 0, rects[TileTR].size.width, rects[TileTR].size.height)
+                          fromRect: r
                          operation: NSCompositeSourceOver];
 
   p = NSMakePoint(rect.origin.x, rect.origin.y);
@@ -1527,17 +1545,20 @@ withRepeatedImage: (NSImage*)image
     {
       p.y = rect.origin.y + rect.size.height;
     }
+  r = NSMakeRect(0, 0, rects[TileBL].size.width, rects[TileBL].size.height);
   [images[TileBL] compositeToPoint: p
-                          fromRect: NSMakeRect(0, 0, rects[TileBL].size.width, rects[TileBL].size.height)
+                          fromRect: r
                          operation: NSCompositeSourceOver];
 
-  p = NSMakePoint(rect.origin.x + rect.size.width - brs.width + 1, rect.origin.y);
+  p = NSMakePoint(rect.origin.x + rect.size.width - brs.width + 1,
+    rect.origin.y);
   if (flipped)
     {
       p.y = rect.origin.y + rect.size.height;
     }
+  r = NSMakeRect(0, 0, rects[TileBR].size.width, rects[TileBR].size.height);
   [images[TileBR] compositeToPoint: p
-                          fromRect: NSMakeRect(0, 0, rects[TileBR].size.width, rects[TileBR].size.height)
+                          fromRect: r
                          operation: NSCompositeSourceOver];
 }
 
