@@ -603,7 +603,7 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
     }
   
   // remember this document as opened
-  [self noteNewRecentDocumentURL: url];
+  [self noteNewRecentDocument: document];
 
   if (display && [self shouldCreateUI])
     {
@@ -688,7 +688,7 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
         }
       
       // remember this document as opened
-      [self noteNewRecentDocumentURL: url];
+      [self noteNewRecentDocument: document];
       
       if (flag && [self shouldCreateUI])
         {

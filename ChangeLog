@@ -1,5 +1,9 @@
 2009-10-20  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSDocumentController.m(-openDocumentWithContentsOfURL:display:,
+	-openDocumentWithContentsOfURL:display:error:): Call
+	-noteNewRecentDocument: instead of -noteNewRecentDocumentURL:.
+
 	* Source/NSDocumentController.m (-_updateOpenRecentMenu): Fix an
 	off by one error which would crash programs with an open recent
 	menu.
