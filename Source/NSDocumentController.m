@@ -1630,7 +1630,7 @@ static NSString *processName = nil;
     {
       [recentMenu removeItemAtIndex: 0];	// remove them all
     }
-  for (i = [_recent_documents count]; i >= -2; i--)
+  for (i = [_recent_documents count] - 1; i >= -2; i--)
     {
       // add all items incl. a Clear List item if needed
       NSMenuItem *item;
