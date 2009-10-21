@@ -1186,7 +1186,7 @@ systemColorWithName(NSString *name)
                       alpha: comp[4]];
     }
 
-	return nil;
+  return nil;
 }
 				
 /*
@@ -1216,7 +1216,31 @@ systemColorWithName(NSString *name)
 - (NSColor *) colorUsingColorSpace: (NSColorSpace *)space
 {
   // FIXME
-  return nil;
+  NSString *colorSpaceName;
+
+  if ([space isEqualTo: [self colorSpace]])
+    {
+      return self;
+    }
+
+  switch ([space colorSpaceModel])
+    {
+      default:
+      case NSUnknownColorSpaceModel: 
+        return nil;
+      case NSGrayColorSpaceModel:
+        colorSpaceName = NSDeviceWhiteColorSpace;
+      case NSRGBColorSpaceModel:
+        colorSpaceName = NSDeviceRGBColorSpace;
+      case NSCMYKColorSpaceModel:
+        colorSpaceName = NSDeviceCMYKColorSpace;
+      case NSLABColorSpaceModel:
+        return nil;
+      case NSDeviceNColorSpaceModel:
+        return nil;
+    }
+  return [self colorUsingColorSpaceName: colorSpaceName
+				 device: nil];
 }
 
 - (NSUInteger) hash

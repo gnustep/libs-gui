@@ -45,7 +45,6 @@
 #include <AppKit/NSGraphics.h>
 
 #include <AppKit/NSActionCell.h>
-#include <AppKit/NSAnimation.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSAttributedString.h>
 #include <AppKit/NSBitmapImageRep.h>
@@ -103,8 +102,6 @@
 #include <AppKit/NSScreen.h>
 #include <AppKit/NSScroller.h>
 #include <AppKit/NSScrollView.h>
-#include <AppKit/NSSegmentedCell.h>
-#include <AppKit/NSSegmentedControl.h>
 #include <AppKit/NSSelection.h>
 #include <AppKit/NSSlider.h>
 #include <AppKit/NSSliderCell.h>
@@ -121,6 +118,7 @@
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 #include <AppKit/NSAlert.h>
+#include <AppKit/NSAnimation.h>
 #include <AppKit/NSAffineTransform.h>
 #include <AppKit/NSArrayController.h>
 #include <AppKit/NSBezierPath.h>
@@ -132,6 +130,7 @@
 #include <AppKit/NSDrawer.h>
 #include <AppKit/NSFileWrapper.h>
 #include <AppKit/NSFontDescriptor.h>
+#include <AppKit/NSGradient.h>
 #include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSHelpManager.h>
 #include <AppKit/NSInputManager.h>
@@ -156,6 +155,8 @@
 #include <AppKit/NSSearchField.h>
 #include <AppKit/NSSearchFieldCell.h>
 #include <AppKit/NSSecureTextField.h>
+#include <AppKit/NSSegmentedCell.h>
+#include <AppKit/NSSegmentedControl.h>
 #include <AppKit/NSSound.h>
 #include <AppKit/NSSpeechSynthesizer.h>
 #include <AppKit/NSStepper.h>

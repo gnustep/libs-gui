@@ -35,20 +35,20 @@
 
 - (id) _initWithColorSpaceModel: (NSColorSpaceModel)model
 {
-	if ((self = [super init]))
-		{
+  if ((self = [super init]))
+    {
       // FIXME: Load corresponding data
 
       _colorSpaceModel = model;
-		}
-	return self;
+    }
+  return self;
 }
 
 #define COLORSPACE(model) \
-	static NSColorSpace *csp; \
-	if (!csp) \
-		csp = [[self alloc] _initWithColorSpaceModel: model]; \
-	return csp;
+  static NSColorSpace *csp;                     \
+  if (!csp)                                                           \
+    csp = [[self alloc] _initWithColorSpaceModel: model];             \
+  return csp;
 
 + (NSColorSpace *) deviceCMYKColorSpace
 {
@@ -82,8 +82,8 @@
 
 - (id) initWithColorSyncProfile: (void *)prof
 {
-	if ((self = [super init]))
-		{
+  if ((self = [super init]))
+    {
       _colorSyncProfile = prof;
       _colorSpaceModel = NSUnknownColorSpaceModel;
     }
@@ -92,8 +92,8 @@
 
 - (id) initWithICCProfileData: (NSData *)iccData
 {
-	if ((self = [super init]))
-		{
+  if ((self = [super init]))
+    {
       ASSIGN(_iccData, iccData);
       _colorSpaceModel = NSUnknownColorSpaceModel;
     }
@@ -163,7 +163,7 @@
 - (void) encodeWithCoder: (NSCoder *)coder
 {
   // FIXME
-	if ([coder allowsKeyedCoding])
+  if ([coder allowsKeyedCoding])
     {
     }
   else
@@ -174,13 +174,13 @@
 - (id) initWithCoder: (NSCoder *)aDecoder
 {
   // FIXME
-	if ([aDecoder allowsKeyedCoding])
+  if ([aDecoder allowsKeyedCoding])
     {
     }
   else
     {
     }
-	return self;
+  return self;
 }
 
 @end

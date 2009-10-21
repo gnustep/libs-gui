@@ -1,3 +1,14 @@
+2009-10-21 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSColor.m (-colorUsingColorSpace): Add some dummy
+	implementation for this method.
+	* Source/NSColorSpace.m: Correct indention.
+	* Header/AppKit/NSGradient.h,
+	* Source/NSGradient.m: New files implementing the gui part of
+	colour gradients.
+	* Headers/AppKit/AppKit.h: Add include for NSGradient.h
+	* Source/GNUmakefile: Add new files.
+	
 2009-10-20  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSDocumentController.m(-openDocumentWithContentsOfURL:display:,

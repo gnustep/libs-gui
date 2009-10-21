@@ -94,6 +94,7 @@ NSFontManager.m \
 NSFontPanel.m \
 NSForm.m \
 NSFormCell.m \
+NSGradient.m \
 NSGlyphGenerator.m \
 NSGraphicsContext.m \
 NSHelpPanel.m \
@@ -295,6 +296,7 @@ NSFontManager.h \
 NSFontPanel.h \
 NSForm.h \
 NSFormCell.h \
+NSGradient.h \
 NSGlyphGenerator.h \
 NSGraphicsContext.h \
 NSHelpPanel.h \
