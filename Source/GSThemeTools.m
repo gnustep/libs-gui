@@ -883,11 +883,10 @@ withRepeatedImage: (NSImage*)image
         }
       else
         {
-          images[i] = RETAIN(image);
-/* This breaks drawing at present.
           images[i]
 	    = [[self extractImageFrom: image withRect: rects[i]] retain];
-*/
+          rects[i].origin.x = 0;
+          rects[i].origin.y = 0;
         }
     }
 }
@@ -1336,6 +1335,10 @@ withRepeatedImage: (NSImage*)image
   [images[TileTR] compositeToPoint: NSMakePoint(x, y)
                                  fromRect: rects[TileTR]
                                  operation: NSCompositeSourceOver];
+  if (scale != 1)
+    {
+      [self scaleTo: 1.0f/scale];
+    }
   return NSZeroRect;
 }
 

@@ -1,3 +1,9 @@
+2009-10-22 Nicolas Roard <nicolas@roard.com>
+
+	* Source/GSThemeTools.m: Switched back extracting the individual
+	images in GSDrawTiles, fixing the problem with the matrix style
+	and allowing the nine patch style to work.
+
 2009-10-21 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSColor.m (-colorUsingColorSpace): Add some dummy
