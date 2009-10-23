@@ -48,6 +48,7 @@
 @class NSFont;
 @class NSSet;
 @class NSBitmapImageRep;
+@class NSGradient;
 
 /*
  * Backing Store Types
@@ -502,6 +503,21 @@ transform between current user space and image space for this image.</desc>
 - (void) endTrailer;
 - (void) printerProlog;
 - (void) showPage;
+
+@end
+
+@interface NSGraphicsContext (NSGradient)
+- (void) drawGradient: (NSGradient*)gradient
+           fromCenter: (NSPoint)startCenter
+               radius: (CGFloat)startRadius
+             toCenter: (NSPoint)endCenter 
+               radius: (CGFloat)endRadius
+              options: (NSUInteger)options;
+
+- (void) drawGradient: (NSGradient*)gradient
+            fromPoint: (NSPoint)startPoint
+              toPoint: (NSPoint)endPoint
+              options: (NSUInteger)options;
 
 @end
 

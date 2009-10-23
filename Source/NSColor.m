@@ -1218,7 +1218,7 @@ systemColorWithName(NSString *name)
   // FIXME
   NSString *colorSpaceName;
 
-  if ([space isEqualTo: [self colorSpace]])
+  if (space == [self colorSpace])
     {
       return self;
     }

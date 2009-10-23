@@ -1,5 +1,13 @@
 2009-10-23 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSGraphicsContext.h,
+	* Source/NSGraphicsContext.m: Define empty gradient methods.
+	* Source/NSGradient.m: Use these methods.
+	* Source/NSColor.m (-colorUsingColorSpace): Don't use isEqual: on
+	color space.
+
+2009-10-23 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSGradient.m: Add context savig/restore and first attempt
 	at geometry maths.
 

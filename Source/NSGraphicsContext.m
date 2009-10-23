@@ -1780,3 +1780,24 @@ NSGraphicsContext	*GSCurrentContext(void)
 }
 
 @end
+
+@implementation NSGraphicsContext (NSGradient)
+- (void) drawGradient: (NSGradient*)gradient
+           fromCenter: (NSPoint)startCenter
+               radius: (CGFloat)startRadius
+             toCenter: (NSPoint)endCenter 
+               radius: (CGFloat)endRadius
+              options: (NSUInteger)options
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) drawGradient: (NSGradient*)gradient
+            fromPoint: (NSPoint)startPoint
+              toPoint: (NSPoint)endPoint
+              options: (NSUInteger)options
+{
+  [self subclassResponsibility: _cmd];
+}
+
+@end

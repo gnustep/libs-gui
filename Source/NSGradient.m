@@ -55,14 +55,22 @@
                  radius: (CGFloat)endRadius
                 options: (NSGradientDrawingOptions)options
 {
-  // FIXME: New backend call
+  [[NSGraphicsContext currentContext] drawGradient: self
+                                      fromCenter: startCenter
+                                      radius: startRadius
+                                      toCenter: endCenter 
+                                      radius: endRadius
+                                      options: options];
 }
 
 - (void) drawFromPoint: (NSPoint)startPoint
                toPoint: (NSPoint)endPoint
                options: (NSGradientDrawingOptions)options
 {
-  // FIXME: New backend call
+  [[NSGraphicsContext currentContext] drawGradient: self
+                                      fromPoint: startPoint
+                                      toPoint: endPoint
+                                      options: options];
 }
 
 - (void) drawInBezierPath: (NSBezierPath *)path angle: (CGFloat)angle
@@ -197,7 +205,7 @@ relativeCenterPosition: (NSPoint)relativeCenterPoint
 {
   return [self initWithColors: colorArray 
                atLocations: NULL
-               colorSpace: null];
+               colorSpace: nil];
 }
 
 - (id) initWithColors: (NSArray *)colorArray
@@ -208,7 +216,7 @@ relativeCenterPosition: (NSPoint)relativeCenterPoint
     {
       _numberOfColorStops = [colorArray count];
       NSAssert(_numberOfColorStops >= 2, @"NSGradient needs at least 2 locations");
-      if (colorSpace == null)
+      if (colorSpace == nil)
         {
           colorSpace = [[colorArray objectAtIndex: 0] colorSpace];
         }
@@ -261,7 +269,7 @@ relativeCenterPosition: (NSPoint)relativeCenterPoint
 
   self = [self initWithColors: colorArray
                atLocations: locations
-               colorSpace: null];
+               colorSpace: nil];
 
   RELEASE(colorArray);
   objc_free(locations);
