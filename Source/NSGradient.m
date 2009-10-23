@@ -34,8 +34,13 @@
 #import "AppKit/NSColor.h"
 #import "AppKit/NSColorSpace.h"
 #import "AppKit/NSGradient.h"
+#import "AppKit/NSGraphicsContext.h"
 
 #include <math.h>
+
+#ifndef PI
+#define PI 3.1415926535897932384626434
+#endif
 
 @implementation NSGradient
 
@@ -62,21 +67,32 @@
 
 - (void) drawInBezierPath: (NSBezierPath *)path angle: (CGFloat)angle
 {
+  NSGraphicsContext *currentContext = [NSGraphicsContext currentContext];
+
+  [currentContext saveGraphicsState];
   [path addClip];
   [self drawInRect: [path bounds] angle: angle];
+  [currentContext restoreGraphicsState];
 }
 
 - (void) drawInBezierPath: (NSBezierPath *)path
    relativeCenterPosition: (NSPoint)relativeCenterPoint
 {
+  NSGraphicsContext *currentContext = [NSGraphicsContext currentContext];
+
+  [currentContext saveGraphicsState];
   [path addClip];
   [self drawInRect: [path bounds] relativeCenterPosition: relativeCenterPoint];
+  [currentContext restoreGraphicsState];
 }
 
 - (void) drawInRect: (NSRect)rect angle: (CGFloat)angle
 {
+  NSGraphicsContext *currentContext = [NSGraphicsContext currentContext];
   NSPoint startPoint;
   NSPoint endPoint;
+  float rad;
+  float length;
 
   // Normalize to 0.0 <= angle <= 360.0
   while (angle < 0.0)
@@ -88,32 +104,33 @@
       angle -= 360.0;
     }
 
-  // FIXME: Does not take angle fully into account to compute endPoint
+  rad = PI * angle / 180;
   if (angle < 90.0)
     {
       startPoint = NSMakePoint(NSMinX(rect), NSMinY(rect));
-      endPoint = NSMakePoint(NSMaxX(rect), NSMaxY(rect));
     }
   else if (angle < 180.0)
     {
       startPoint = NSMakePoint(NSMaxX(rect), NSMinY(rect));
-      endPoint = NSMakePoint(NSMinX(rect), NSMaxY(rect));
     }
-  else if (angle < 180.0)
+  else if (angle < 270.0)
     {
       startPoint = NSMakePoint(NSMaxX(rect), NSMaxY(rect));
-      endPoint = NSMakePoint(NSMinX(rect), NSMinY(rect));
     }
   else
     {
       startPoint = NSMakePoint(NSMinX(rect), NSMaxY(rect));
-      endPoint = NSMakePoint(NSMaxX(rect), NSMinY(rect));
     }
+  length = NSWidth(rect) * cos(rad) + NSHeight(rect) * sin(rad);
+  endPoint = NSMakePoint(startPoint.x + length * cos(rad), 
+                         startPoint.y + length * sin(rad));
 
+  [currentContext saveGraphicsState];
   [NSBezierPath clipRect: rect];
   [self  drawFromPoint: startPoint
          toPoint: endPoint
          options: 0];
+  [currentContext restoreGraphicsState];
 }
 
 static inline float sqr(float a)
@@ -129,13 +146,14 @@ static inline float euclidian_distance(NSPoint start, NSPoint end)
 - (void) drawInRect: (NSRect)rect 
 relativeCenterPosition: (NSPoint)relativeCenterPoint
 {
+  NSGraphicsContext *currentContext = [NSGraphicsContext currentContext];
   NSPoint startCenter;
   NSPoint endCenter;
   CGFloat endRadius;
   CGFloat distance;
 
-  NSAssert(relativeCenterPoint.x >= 0.0 && relativeCenterPoint.x <= 1.0, @"invalid relative center point");
-  NSAssert(relativeCenterPoint.y >= 0.0 && relativeCenterPoint.y <= 1.0, @"invalid relative center point");
+  NSAssert(relativeCenterPoint.x >= 0.0 && relativeCenterPoint.x <= 1.0, @"NSGradient invalid relative center point");
+  NSAssert(relativeCenterPoint.y >= 0.0 && relativeCenterPoint.y <= 1.0, @"NSGradient invalid relative center point");
   startCenter = NSMakePoint(NSMidX(rect), NSMidY(rect));
   endCenter = NSMakePoint(startCenter.x + rect.size.width * relativeCenterPoint.x, 
                           startCenter.y + rect.size.height * relativeCenterPoint.y);
@@ -153,19 +171,21 @@ relativeCenterPosition: (NSPoint)relativeCenterPoint
   if (endRadius < distance)
     endRadius = distance;
 
+  [currentContext saveGraphicsState];
   [NSBezierPath clipRect: rect];
   [self drawFromCenter: startCenter
         radius: 0.0
         toCenter: endCenter 
         radius: endRadius
         options: 0];
+  [currentContext restoreGraphicsState];
 }
 
 - (void) getColor: (NSColor **)color
          location: (CGFloat *)location
           atIndex: (NSInteger)index
 {
-  NSAssert(index >= 0 && index < _numberOfColorStops, @"invalid index");
+  NSAssert(index >= 0 && index < _numberOfColorStops, @"NSGradient invalid index");
 
   if (color)
     *color = [_colors objectAtIndex: index];
@@ -177,7 +197,7 @@ relativeCenterPosition: (NSPoint)relativeCenterPoint
 {
   return [self initWithColors: colorArray 
                atLocations: NULL
-               colorSpace: [[colorArray objectAtIndex: 0] colorSpace]];
+               colorSpace: null];
 }
 
 - (id) initWithColors: (NSArray *)colorArray
@@ -187,7 +207,13 @@ relativeCenterPosition: (NSPoint)relativeCenterPoint
   if ((self = [super init]))
     {
       _numberOfColorStops = [colorArray count];
-      NSAssert(_numberOfColorStops >= 2, @"needs at least 2 locations");
+      NSAssert(_numberOfColorStops >= 2, @"NSGradient needs at least 2 locations");
+      if (colorSpace == null)
+        {
+          colorSpace = [[colorArray objectAtIndex: 0] colorSpace];
+        }
+      ASSIGN(_colorSpace, colorSpace);
+      
       // FIXME: Convert all colours to colour space
       ASSIGN(_colors, colorArray);
 
@@ -205,7 +231,6 @@ relativeCenterPosition: (NSPoint)relativeCenterPoint
           for (i = 0; i < _numberOfColorStops; i++)
             _locations[i] = (float)i / (_numberOfColorStops - 1);
         }
-      ASSIGN(_colorSpace, colorSpace);
     }
   return self;
 }
@@ -235,8 +260,8 @@ relativeCenterPosition: (NSPoint)relativeCenterPoint
   va_end(ap);
 
   self = [self initWithColors: colorArray
-          atLocations: locations
-           colorSpace: [[colorArray objectAtIndex: 0] colorSpace]];
+               atLocations: locations
+               colorSpace: null];
 
   RELEASE(colorArray);
   objc_free(locations);

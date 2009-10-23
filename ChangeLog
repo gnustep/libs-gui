@@ -1,3 +1,8 @@
+2009-10-23 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSGradient.m: Add context savig/restore and first attempt
+	at geometry maths.
+
 2009-10-23 Riccardo Mottola <rmottola@users.sf.net>
 	
 	* Headers/AppKit/NSBezierPath.h: added some documentation
