@@ -105,8 +105,14 @@ typedef enum {
 // Immediate mode drawing of common paths
 //
 + (void)fillRect:(NSRect)aRect;
+
+/** Using default stroke color and default drawing attributes, strokes 
+    a rectangle using the specified rect. */
 + (void)strokeRect:(NSRect)aRect;
 + (void)clipRect:(NSRect)aRect;
+
+/** Using default stroke color and default drawing attributes, draws a line 
+    between the two points specified. */
 + (void)strokeLineFromPoint:(NSPoint)point1 toPoint:(NSPoint)point2;
 + (void)drawPackedGlyphs: (const char *)packedGlyphs atPoint: (NSPoint)aPoint;
 
