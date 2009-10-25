@@ -112,7 +112,6 @@
       angle -= 360.0;
     }
 
-  rad = PI * angle / 180;
   if (angle < 90.0)
     {
       startPoint = NSMakePoint(NSMinX(rect), NSMinY(rect));
@@ -129,7 +128,8 @@
     {
       startPoint = NSMakePoint(NSMinX(rect), NSMaxY(rect));
     }
-  length = NSWidth(rect) * cos(rad) + NSHeight(rect) * sin(rad);
+  rad = PI * angle / 180;
+  length = abs(NSWidth(rect) * cos(rad) + NSHeight(rect) * sin(rad));
   endPoint = NSMakePoint(startPoint.x + length * cos(rad), 
                          startPoint.y + length * sin(rad));
 
