@@ -953,6 +953,10 @@ typedef	struct {
   return tiles;
 }
 
+- (NSString*) versionString
+{
+  return [[self infoDictionary] objectForKey: @"GSThemeVersion"];
+}
 @end
 
 @implementation	GSTheme (Private)

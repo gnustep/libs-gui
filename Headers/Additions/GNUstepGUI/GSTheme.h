@@ -509,6 +509,11 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 - (GSDrawTiles*) tilesNamed: (NSString*)aName
 		      state: (GSThemeControlState)elementState
 		      cache: (BOOL)useCache; 
+/**
+ * Return the theme's version string.
+ */
+- (NSString*) versionString;
+
 @end
 
 /**
