@@ -106,6 +106,8 @@ static GSThemeInspector	*sharedInspector = nil;
   NSTextField	*tf;
   NSRect	nameFrame;
   NSRect	frame;
+  int		width;
+  int		fsize = 32;
 
   while ((view = [[content subviews] lastObject]) != nil)
     {
@@ -116,12 +118,17 @@ static GSThemeInspector	*sharedInspector = nil;
   [iv setImage: [[GSTheme theme] icon]];
   [content addSubview: iv];
 
+  width = cFrame.size.width - 58;
   tf = new_label([theme name]);
-  [tf setFont: [NSFont boldSystemFontOfSize: 32]];
-  [tf sizeToFit];
-  nameFrame = [tf frame];
-  nameFrame.origin.x
-    = (cFrame.size.width - frame.size.width - nameFrame.size.width) / 2;
+  do
+    {
+      [tf setFont: [NSFont boldSystemFontOfSize: fsize]];
+      fsize -= 2;
+      [tf sizeToFit];
+      nameFrame = [tf frame];
+    }
+  while (nameFrame.size.width > width && fsize > 8);
+  nameFrame.origin.x = (width - nameFrame.size.width) / 2;
   nameFrame.origin.y = cFrame.size.height - nameFrame.size.height - 25;
   [tf setFrame: nameFrame];
   [content addSubview: tf];
