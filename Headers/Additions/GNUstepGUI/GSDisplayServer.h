@@ -156,6 +156,7 @@ APPKIT_EXPORT NSString * GSScreenNumber;
 - (NSPoint) mouseLocationOnScreen: (int)aScreen window: (int *)win;
 - (BOOL) capturemouse: (int)win;
 - (void) releasemouse;
+- (void) setMouseLocation: (NSPoint)mouseLocation onScreen: (int)aScreen;
 - (void) hidecursor;
 - (void) showcursor;
 - (void) standardcursor: (int) style : (void**)cid;

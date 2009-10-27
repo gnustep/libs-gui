@@ -860,6 +860,12 @@ GSCurrentServer(void)
   [self subclassResponsibility: _cmd];
 }
 
+/** Set mouse cursor position. */
+- (void) setMouseLocation: (NSPoint)mouseLocation onScreen: (int)aScreen
+{
+  [self subclassResponsibility: _cmd];
+}
+
 /** Hides the cursor */
 - (void) hidecursor
 {

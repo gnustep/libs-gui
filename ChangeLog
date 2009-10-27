@@ -1,3 +1,9 @@
+2009-10-27 Thomas Gamper <icicle@cg.tuwien.ac.at>
+
+    * Source/GSDisplayServer.m
+    * Headers/Additions/GNUstepGUI/GSDisplayServer.h:
+      Add cursor position setter (setMouseLocation:onScreen:).
+
 2009-10-25 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSGradient.m (-drawInRect:angle:): Correct the math by
