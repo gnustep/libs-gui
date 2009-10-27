@@ -15,7 +15,7 @@
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
    Lesser General Public License for more details.
 
    You should have received a copy of the GNU Lesser General Public
@@ -27,46 +27,64 @@
 
 #ifndef _GNUstep_H_NSProgressIndicator
 #define _GNUstep_H_NSProgressIndicator
+#import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSView.h>
+#import <AppKit/NSView.h>
+
+/* For NSControlTint */
+#import <AppKit/NSColor.h>
+
+/* For NSControlSize */
+#import <AppKit/NSCell.h>
 
 @class NSTimer;
 @class NSThread;
 
-/* For NSControlTint */
-#include <AppKit/NSColor.h>
+typedef enum _NSProgressIndicatorThickness
+{
+  NSProgressIndicatorPreferredThickness = 14,
+  NSProgressIndicatorPreferredSmallThickness = 10,
+  NSProgressIndicatorPreferredLargeThickness = 18,
+  NSProgressIndicatorPreferredAquaThickness = 12
+} NSProgressIndicatorThickness;
 
-/* For NSControlSize */
-#include <AppKit/NSCell.h>
-
-#define NSProgressIndicatorPreferredThickness 14
-#define NSProgressIndicatorPreferredSmallThickness 10
-#define NSProgressIndicatorPreferredLargeThickness 18
-#define NSProgressIndicatorPreferredAquaThickness 12
+typedef enum _NSProgressIndicatorStyle
+{
+  NSProgressIndicatorBarStyle = 0,
+  NSProgressIndicatorSpinningStyle = 1
+} NSProgressIndicatorStyle;
 
 @interface NSProgressIndicator : NSView
 {
-  BOOL			_isIndeterminate;
-  BOOL			_isBezeled;
-  BOOL			_usesThreadedAnimation;
-  NSTimeInterval	_animationDelay;
-  double		_doubleValue;
-  double		_minValue;
-  double		_maxValue;
-  BOOL			_isVertical;
+  double _doubleValue;
+  double _minValue;
+  double _maxValue;
+  NSTimeInterval _animationDelay;
+  NSProgressIndicatorStyle _style;
+  BOOL _isIndeterminate;
+  BOOL _isBezeled;
+  BOOL _usesThreadedAnimation;
+  BOOL _isDisplayedWhenStopped;
+  NSControlTint _controlTint;
+  NSControlSize _controlSize;
 @private
-  BOOL                  _isRunning;
-  int                   _count;  
-  NSTimer              *_timer;
-  NSThread             *_thread;
+  BOOL _isVertical;
+  BOOL _isRunning;
+  int _count;  
+  NSTimer *_timer;
+  NSThread *_thread;
 }
 
 //
 // Animating the progress indicator
 //
+
+#if OS_API_VERSION(GS_API_LATEST, MAC_OS_X_VERSION_10_5)
 - (void)animate:(id)sender;
 - (NSTimeInterval)animationDelay;
 - (void)setAnimationDelay:(NSTimeInterval)delay;
+#endif
+
 - (void)startAnimation:(id)sender;
 - (void)stopAnimation:(id)sender;
 - (BOOL)usesThreadedAnimation;
@@ -98,6 +116,14 @@
 - (void)setControlSize:(NSControlSize)size;
 - (NSControlTint)controlTint;
 - (void)setControlTint:(NSControlTint)tint;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
+- (BOOL)isDisplayedWhenStopped;
+- (void)setDisplayedWhenStopped:(BOOL)flag;
+- (void)setStyle:(NSProgressIndicatorStyle)style;
+- (NSProgressIndicatorStyle)style;
+- (void)sizeToFit;
+#endif
 
 @end
 

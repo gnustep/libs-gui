@@ -128,6 +128,20 @@ Images_RESOURCE_FILES = \
  common_outlineUnexpandable.tiff \
  common_ret.tiff \
  common_retH.tiff \
+ common_ProgressIndeterminate_1.tiff \
+ common_ProgressIndeterminate_2.tiff \
+ common_ProgressIndeterminate_3.tiff \
+ common_ProgressIndeterminate_4.tiff \
+ common_ProgressIndeterminate_5.tiff \
+ common_ProgressIndeterminate_6.tiff \
+ common_ProgressSpinning_1.tiff \
+ common_ProgressSpinning_2.tiff \
+ common_ProgressSpinning_3.tiff \
+ common_ProgressSpinning_4.tiff \
+ common_ProgressSpinning_5.tiff \
+ common_ProgressSpinning_6.tiff \
+ common_ProgressSpinning_7.tiff \
+ common_ProgressSpinning_8.tiff \
  nsmapping.strings \
  page_landscape.tiff \
  page_portrait.tiff

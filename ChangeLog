@@ -1,8 +1,19 @@
+2009-10-27 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSProgressIndicator.h,
+	* Source/NSProgressIndicator.m: Add missing OSX 10.5 methods and
+	use the pattern colour patch by Uli Kusterer
+	<witness.of.teachtext@gmx.net>.
+	* Images/common_ProgressSpinning_?.tiff
+	* Images/common_ProgressIndeterminate_?.tiff
+	New image files by Uli Kusterer <witness.of.teachtext@gmx.net>.
+	* Images/GNUmakefile: Add the new images.
+	
 2009-10-27 Thomas Gamper <icicle@cg.tuwien.ac.at>
 
-    * Source/GSDisplayServer.m
-    * Headers/Additions/GNUstepGUI/GSDisplayServer.h:
-      Add cursor position setter (setMouseLocation:onScreen:).
+	* Source/GSDisplayServer.m
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h:
+	Add cursor position setter (setMouseLocation:onScreen:).
 
 2009-10-25 Fred Kiefer <FredKiefer@gmx.de>
 

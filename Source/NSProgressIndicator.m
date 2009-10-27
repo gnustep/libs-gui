@@ -14,7 +14,7 @@
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
    Lesser General Public License for more details.
 
    You should have received a copy of the GNU Lesser General Public
@@ -27,6 +27,7 @@
 #include <Foundation/NSTimer.h>
 #include "AppKit/NSProgressIndicator.h"
 #include "AppKit/NSGraphics.h"
+#include "AppKit/NSImage.h"
 #include "AppKit/NSWindow.h"
 #include "GNUstepGUI/GSTheme.h"
 #include "GNUstepGUI/GSNibLoading.h"
@@ -34,32 +35,72 @@
 @implementation NSProgressIndicator
 
 static NSColor *fillColour = nil;
-#define maxCount 1
-//static NSImage *images[maxCount];
+#define MaxCount 10
+static int indeterminateMaxCount = MaxCount;
+static int spinningMaxCount = MaxCount;
+static NSColor *indeterminateColors[MaxCount];
+static NSImage *spinningImages[MaxCount];
+
 
 + (void) initialize
 {
   if (self == [NSProgressIndicator class])
     {
+      int i;
+          
       [self setVersion: 1];
       // FIXME: Should come from defaults and should be reset when defaults change
       // FIXME: Should probably get the color from the color extension list (see NSToolbar)
       fillColour = RETAIN([NSColor controlShadowColor]);
-      // FIXME: Load the images and set maxCount
+
+      // Load images for indeterminate style
+      for (i = 0; i < MaxCount; i++)
+        {
+          NSString *imgName = [NSString stringWithFormat: @"common_ProgressIndeterminate_%d", i + 1];
+          NSImage *image = [NSImage imageNamed: imgName];
+
+          if (image == nil)
+            {
+              indeterminateMaxCount = i;
+              break;
+            }
+          indeterminateColors[i] = RETAIN([NSColor colorWithPatternImage: image]);
+        }
+
+      // Load images for spinning style
+      for (i = 0; i < MaxCount; i++)
+        {
+          NSString *imgName = [NSString stringWithFormat: @"common_ProgressSpinning_%d", i + 1];
+          NSImage *image = [NSImage imageNamed: imgName];
+
+          if (image == nil)
+            {
+              spinningMaxCount = i;
+              break;
+            }
+          spinningImages[i] = RETAIN(image); 
+        }
     }
 }
  
 - (id)initWithFrame:(NSRect)frameRect
 {
   self = [super initWithFrame: frameRect];
+  if (!self)
+    return nil;
+
   _isIndeterminate = YES;
   _isBezeled = YES;
   _isVertical = NO;
   _usesThreadedAnimation = NO;
-  _animationDelay = 5.0 / 60.0;	// 1 twelfth a a second
+  _animationDelay = 5.0 / 60.0;  // 1 twelfth a a second
   _doubleValue = 0.0;
   _minValue = 0.0;
   _maxValue = 100.0;
+  _controlTint = NSDefaultControlTint;
+  _controlSize = NSRegularControlSize;
+  [self setStyle: NSProgressIndicatorBarStyle];
+
   return self;
 }
 
@@ -80,13 +121,18 @@ static NSColor *fillColour = nil;
     return;
 
   _count++;
-  if (_count == maxCount)
+  if (((_style == NSProgressIndicatorSpinningStyle) && (_count >= spinningMaxCount))
+      || ((_style == NSProgressIndicatorBarStyle) && (_count >= indeterminateMaxCount)))
     _count = 0;
 
   [self setNeedsDisplay:YES];
 }
 
-- (NSTimeInterval)animationDelay { return _animationDelay; }
+- (NSTimeInterval)animationDelay
+{
+  return _animationDelay;
+}
+
 - (void)setAnimationDelay:(NSTimeInterval)delay
 {
   _animationDelay = delay;
@@ -100,14 +146,14 @@ static NSColor *fillColour = nil;
   if (!_usesThreadedAnimation)
     {
       ASSIGN(_timer, [NSTimer scheduledTimerWithTimeInterval: _animationDelay 
-			      target: self 
-			      selector: @selector(animate:)
-			      userInfo: nil
-			      repeats: YES]);
+                              target: self 
+                              selector: @selector(animate:)
+                              userInfo: nil
+                              repeats: YES]);
     }
   else
     {
-      // Not implemented
+      // FIXME: Not implemented
     }
 
   _isRunning = YES;
@@ -125,7 +171,7 @@ static NSColor *fillColour = nil;
     }
   else
     {
-      // Not implemented
+      // FIXME: Not implemented
     }
 
   _isRunning = NO;
@@ -143,62 +189,82 @@ static NSColor *fillColour = nil;
       BOOL wasRunning = _isRunning;
 
       if (wasRunning)
-	[self stopAnimation: self];
+        [self stopAnimation: self];
 
       _usesThreadedAnimation = flag;
 
       if (wasRunning)
-	[self startAnimation: self];
+        [self startAnimation: self];
     }
 }
 
 - (void)incrementBy:(double)delta
 {
   _doubleValue += delta;
-  [self setNeedsDisplay:YES];
+  [self setNeedsDisplay: YES];
 }
 
-- (double)doubleValue { return _doubleValue; }
+- (double)doubleValue
+{
+  return _doubleValue;
+}
+
 - (void)setDoubleValue:(double)aValue
 {
   if (_doubleValue != aValue)
     {
       _doubleValue = aValue;
-      [self setNeedsDisplay:YES];
+      [self setNeedsDisplay: YES];
     }
 }
 
-- (double)minValue { return _minValue; }
+- (double)minValue
+{
+  return _minValue;
+}
+
 - (void)setMinValue:(double)newMinimum
 {
   if (_minValue != newMinimum)
     {
       _minValue = newMinimum;
-      [self setNeedsDisplay:YES];
+      [self setNeedsDisplay: YES];
     }
 }
 
-- (double)maxValue { return _maxValue; }
+- (double)maxValue
+{
+  return _maxValue;
+}
+
 - (void)setMaxValue:(double)newMaximum
 {
   if (_maxValue != newMaximum)
     {
       _maxValue = newMaximum;
-      [self setNeedsDisplay:YES];
+      [self setNeedsDisplay: YES];
     }
 }
 
-- (BOOL)isBezeled { return _isBezeled; }
+- (BOOL)isBezeled
+{
+  return _isBezeled;
+}
+
 - (void)setBezeled:(BOOL)flag
 {
   if (_isBezeled != flag)
     {
       _isBezeled = flag;
-      [self setNeedsDisplay:YES];
+      [self setNeedsDisplay: YES];
     }
 }
 
-- (BOOL)isIndeterminate { return _isIndeterminate; }
+- (BOOL)isIndeterminate
+{
+  return _isIndeterminate;
+}
+
 - (void)setIndeterminate:(BOOL)flag
 {
   _isIndeterminate = flag;
@@ -207,31 +273,56 @@ static NSColor *fillColour = nil;
     [self stopAnimation: self];
 }
 
+- (BOOL)isDisplayedWhenStopped
+{
+  return _isDisplayedWhenStopped;
+}
+
+- (void)setDisplayedWhenStopped:(BOOL)flag
+{
+  _style = _isDisplayedWhenStopped;
+}
+
+- (NSProgressIndicatorStyle) style
+{
+  return _style;
+}
+
+- (void)setStyle:(NSProgressIndicatorStyle)style
+{
+  _style = style;
+  _count = 0;
+  [self setDisplayedWhenStopped: (style == NSProgressIndicatorBarStyle)];
+}
+
 - (NSControlSize)controlSize
 {
-  // FIXME
-  return NSRegularControlSize;
+  return _controlSize;
 }
 
 - (void)setControlSize:(NSControlSize)size
 {
-  // FIXME 
+  _controlSize = size;
 }
 
 - (NSControlTint)controlTint
 {
-  // FIXME
-  return NSDefaultControlTint;
+  return _controlTint;
 }
 
 - (void)setControlTint:(NSControlTint)tint
 {
-  // FIXME 
+  _controlTint = tint;
+}
+
+- (void) sizeToFit  
+{
+  // FIXME
 }
 
 - (void)drawRect:(NSRect)rect
 {
-   NSRect	r;
+   NSRect r;
 
    // Draw the Bezel
    if (_isBezeled)
@@ -240,34 +331,51 @@ static NSColor *fillColour = nil;
        r = [[GSTheme theme] drawGrayBezel: _bounds withClip: rect];
      }
    else
-     r = _bounds;
-
-   if (_isIndeterminate)		// Draw indeterminate
      {
-       // FIXME: Do nothing at this stage
+       r = _bounds;
      }
-   else				// Draw determinate 
-     {
-       if (_doubleValue > _minValue)
-         {
-	   double val;
-	   
-	   if (_doubleValue > _maxValue)
-	     val = _maxValue - _minValue;
-	   else 
-	     val = _doubleValue - _minValue;
 
-	   if (_isVertical)
-	     r.size.height = NSHeight(r) * (val / (_maxValue - _minValue));
-	   else
-	     r.size.width = NSWidth(r) * (val / (_maxValue - _minValue));
-	   r = NSIntersectionRect(r,rect);
-	   if (!NSIsEmptyRect(r))
-	     {
-	       [fillColour set];
-	       NSRectFill(r);
-	     }
-	 }
+   if (_style == NSProgressIndicatorSpinningStyle)
+     {
+       NSRect imgBox = {{0,0}, {0,0}};
+
+       imgBox.size = [spinningImages[_count] size];
+       [spinningImages[_count] drawInRect: r 
+                      fromRect: imgBox 
+                      operation: NSCompositeSourceOver
+                      fraction: 1.0];
+     }
+   else
+     {
+       if (_isIndeterminate)
+         {
+           [indeterminateColors[_count] set];
+           NSRectFill(r);
+         }
+       else
+         {
+           // Draw determinate 
+           if (_doubleValue > _minValue)
+             {
+               double val;
+               
+               if (_doubleValue > _maxValue)
+                 val = _maxValue - _minValue;
+               else 
+                 val = _doubleValue - _minValue;
+               
+               if (_isVertical)
+                 r.size.height = NSHeight(r) * (val / (_maxValue - _minValue));
+               else
+                 r.size.width = NSWidth(r) * (val / (_maxValue - _minValue));
+               r = NSIntersectionRect(r,rect);
+               if (!NSIsEmptyRect(r))
+                 {
+                   [fillColour set];
+                   NSRectFill(r);
+                 }
+             }
+         }
      }
 }
 
@@ -277,7 +385,7 @@ static NSColor *fillColour = nil;
 // NSCopying
 /* - (id)copyWithZone:(NSZone *)zone
 {
-   NSProgressIndicator	*newInd;
+   NSProgressIndicator  *newInd;
 
    newInd = [super copyWithZone:zone];
    [newInd setIndeterminate:_isIndeterminate];
@@ -344,45 +452,45 @@ static NSColor *fillColour = nil;
       // id matrix = [aDecoder decodeObjectForKey: @"NSDrawMatrix"];
       if ([aDecoder containsValueForKey: @"NSMaxValue"])
         {
-	  int max = [aDecoder decodeDoubleForKey: @"NSMaxValue"];
+    int max = [aDecoder decodeDoubleForKey: @"NSMaxValue"];
 
-	  [self setMaxValue: max];
-	}
+    [self setMaxValue: max];
+  }
       if ([aDecoder containsValueForKey: @"NSMinValue"])
         {
-	  int min = [aDecoder decodeDoubleForKey: @"NSMinValue"];
+    int min = [aDecoder decodeDoubleForKey: @"NSMinValue"];
 
-	  [self setMinValue: min];
-	}
+    [self setMinValue: min];
+  }
       if ([aDecoder containsValueForKey: @"NSpiFlags"])
         {
-	  int flags = [aDecoder decodeIntForKey: @"NSpiFlags"];
+    int flags = [aDecoder decodeIntForKey: @"NSpiFlags"];
 
-	  _isIndeterminate = ((flags & 2) == 2);
-	  // ignore the rest, since they are not pertinent to GNUstep.
-	}
+    _isIndeterminate = ((flags & 2) == 2);
+    // ignore the rest, since they are not pertinent to GNUstep.
+  }
 
       // things which Gorm encodes, but IB doesn't care about.
       if ([aDecoder containsValueForKey: @"GSDoubleValue"])
-	{
-	  _doubleValue = [aDecoder decodeDoubleForKey: @"GSDoubleValue"];
-	}
+  {
+    _doubleValue = [aDecoder decodeDoubleForKey: @"GSDoubleValue"];
+  }
       if ([aDecoder containsValueForKey: @"GSIsBezeled"])
-	{
-	  _isBezeled = [aDecoder decodeBoolForKey: @"GSIsBezeled"];
-	}
+  {
+    _isBezeled = [aDecoder decodeBoolForKey: @"GSIsBezeled"];
+  }
       if ([aDecoder containsValueForKey: @"GSIsVertical"])
-	{
-	  _isVertical = [aDecoder decodeBoolForKey: @"GSIsVertical"];
-	}
+  {
+    _isVertical = [aDecoder decodeBoolForKey: @"GSIsVertical"];
+  }
       if ([aDecoder containsValueForKey: @"GSUsesThreadAnimation"])
-	{
-	  _usesThreadedAnimation = [aDecoder decodeBoolForKey: @"GSUsesThreadAnimation"];
-	}      
+  {
+    _usesThreadedAnimation = [aDecoder decodeBoolForKey: @"GSUsesThreadAnimation"];
+  }      
       if ([aDecoder containsValueForKey: @"GSAnimationDelay"])
-	{
-	  _animationDelay = [aDecoder decodeDoubleForKey: @"GSAnimationDelay"];
-	}
+  {
+    _animationDelay = [aDecoder decodeDoubleForKey: @"GSAnimationDelay"];
+  }
     }
   else
     {
@@ -390,7 +498,7 @@ static NSColor *fillColour = nil;
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at:&_isBezeled];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at:&_usesThreadedAnimation];
       [aDecoder decodeValueOfObjCType: @encode(NSTimeInterval)
-		                   at:&_animationDelay];
+                at:&_animationDelay];
       [aDecoder decodeValueOfObjCType: @encode(double) at:&_doubleValue];
       [aDecoder decodeValueOfObjCType: @encode(double) at:&_minValue];
       [aDecoder decodeValueOfObjCType: @encode(double) at:&_maxValue];
