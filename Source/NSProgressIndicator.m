@@ -24,6 +24,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include <Foundation/NSAutoreleasePool.h>
+#include <Foundation/NSThread.h>
 #include <Foundation/NSTimer.h>
 #include "AppKit/NSProgressIndicator.h"
 #include "AppKit/NSGraphics.h"
@@ -90,9 +92,8 @@ static NSImage *spinningImages[MaxCount];
     return nil;
 
   _isIndeterminate = YES;
+  _isDisplayedWhenStopped = YES;
   _isBezeled = YES;
-  _isVertical = NO;
-  _usesThreadedAnimation = NO;
   _animationDelay = 5.0 / 60.0;  // 1 twelfth a a second
   _doubleValue = 0.0;
   _minValue = 0.0;
@@ -100,13 +101,15 @@ static NSImage *spinningImages[MaxCount];
   _controlTint = NSDefaultControlTint;
   _controlSize = NSRegularControlSize;
   [self setStyle: NSProgressIndicatorBarStyle];
+  //_isVertical = NO;
+  //_usesThreadedAnimation = NO;
 
   return self;
 }
 
 - (void)dealloc
 {
-  TEST_RELEASE(_timer);
+  [self stopAnimation: self];
   [super dealloc];
 }
 
@@ -125,7 +128,7 @@ static NSImage *spinningImages[MaxCount];
       || ((_style == NSProgressIndicatorBarStyle) && (_count >= indeterminateMaxCount)))
     _count = 0;
 
-  [self setNeedsDisplay:YES];
+  [self setNeedsDisplay: YES];
 }
 
 - (NSTimeInterval)animationDelay
@@ -136,13 +139,31 @@ static NSImage *spinningImages[MaxCount];
 - (void)setAnimationDelay:(NSTimeInterval)delay
 {
   _animationDelay = delay;
+  if (_isRunning && _isIndeterminate)
+    {
+      [self stopAnimation: self];
+      [self startAnimation: self];
+    }
+}
+
+- (void)_animationLoop
+{
+  while (_isRunning)
+    {
+      CREATE_AUTORELEASE_POOL(pool);
+
+      [self animate: self];
+      [NSThread sleepForTimeInterval: _animationDelay];
+      RELEASE(pool);
+    }
 }
 
 - (void)startAnimation:(id)sender
 {
-  if (!_isIndeterminate)
+  if (!_isIndeterminate || _isRunning)
     return;
 
+  _isRunning = YES;
   if (!_usesThreadedAnimation)
     {
       ASSIGN(_timer, [NSTimer scheduledTimerWithTimeInterval: _animationDelay 
@@ -153,10 +174,10 @@ static NSImage *spinningImages[MaxCount];
     }
   else
     {
-      // FIXME: Not implemented
+      [NSThread detachNewThreadSelector: @selector(_animationLoop) 
+                toTarget: self 
+                withObject: nil];
     }
-
-  _isRunning = YES;
 }
 
 - (void)stopAnimation:(id)sender
@@ -171,7 +192,7 @@ static NSImage *spinningImages[MaxCount];
     }
   else
     {
-      // FIXME: Not implemented
+      // Done automatically
     }
 
   _isRunning = NO;
@@ -200,8 +221,7 @@ static NSImage *spinningImages[MaxCount];
 
 - (void)incrementBy:(double)delta
 {
-  _doubleValue += delta;
-  [self setNeedsDisplay: YES];
+  [self setDoubleValue: _doubleValue + delta];
 }
 
 - (double)doubleValue
@@ -211,6 +231,11 @@ static NSImage *spinningImages[MaxCount];
 
 - (void)setDoubleValue:(double)aValue
 {
+  if (aValue > _maxValue)
+    aValue = _maxValue;
+  else if (aValue < _minValue)
+    aValue = _minValue;
+
   if (_doubleValue != aValue)
     {
       _doubleValue = aValue;
@@ -271,6 +296,8 @@ static NSImage *spinningImages[MaxCount];
    // Maybe we need more functionality here when we implement indeterminate
   if (flag == NO && _isRunning)
     [self stopAnimation: self];
+
+  [self setNeedsDisplay: YES];
 }
 
 - (BOOL)isDisplayedWhenStopped
@@ -280,7 +307,8 @@ static NSImage *spinningImages[MaxCount];
 
 - (void)setDisplayedWhenStopped:(BOOL)flag
 {
-  _style = _isDisplayedWhenStopped;
+  _isDisplayedWhenStopped = _isDisplayedWhenStopped;
+  [self setNeedsDisplay: YES];
 }
 
 - (NSProgressIndicatorStyle) style
@@ -293,6 +321,8 @@ static NSImage *spinningImages[MaxCount];
   _style = style;
   _count = 0;
   [self setDisplayedWhenStopped: (style == NSProgressIndicatorBarStyle)];
+  [self sizeToFit];
+  [self setNeedsDisplay: YES];
 }
 
 - (NSControlSize)controlSize
@@ -303,6 +333,8 @@ static NSImage *spinningImages[MaxCount];
 - (void)setControlSize:(NSControlSize)size
 {
   _controlSize = size;
+  [self sizeToFit];
+  [self setNeedsDisplay: YES];
 }
 
 - (NSControlTint)controlTint
@@ -313,6 +345,7 @@ static NSImage *spinningImages[MaxCount];
 - (void)setControlTint:(NSControlTint)tint
 {
   _controlTint = tint;
+  [self setNeedsDisplay: YES];
 }
 
 - (void) sizeToFit  
@@ -365,9 +398,17 @@ static NSImage *spinningImages[MaxCount];
                  val = _doubleValue - _minValue;
                
                if (_isVertical)
-                 r.size.height = NSHeight(r) * (val / (_maxValue - _minValue));
+                 {
+                   float height = NSHeight(r) * (val / (_maxValue - _minValue));
+
+                   // Compensate for the flip
+                   r.origin.y = NSHeight(r) - height;
+                   r.size.height = height;
+                 }
                else
-                 r.size.width = NSWidth(r) * (val / (_maxValue - _minValue));
+                 {
+                   r.size.width = NSWidth(r) * (val / (_maxValue - _minValue));
+                 }
                r = NSIntersectionRect(r,rect);
                if (!NSIsEmptyRect(r))
                  {
@@ -415,13 +456,11 @@ static NSImage *spinningImages[MaxCount];
 
        // add flag values.
        flags |= (_isIndeterminate)? 2 : 0;
-
-       //
-       // Hard coded... this value forces it to be a regular-sized, 
-       // bar type progress indicator since this is the only type
-       // gnustep supports. 
-       //
-       flags |= 8200; 
+       // Hard coded... 
+       flags |= 8;
+       flags |= (_controlSize == NSSmallControlSize) ? 0x100 : 0;
+       flags |= (_style == NSProgressIndicatorSpinningStyle) ? 0x1000 : 0;
+       flags |= _isDisplayedWhenStopped ? 0x2000 : 0;
        [aCoder encodeInt: flags forKey: @"NSpiFlags"];
 
        // things which Gorm encodes, but IB doesn't care about.
@@ -433,14 +472,14 @@ static NSImage *spinningImages[MaxCount];
      }
    else
      {
-       [aCoder encodeValueOfObjCType: @encode(BOOL) at:&_isIndeterminate];
-       [aCoder encodeValueOfObjCType: @encode(BOOL) at:&_isBezeled];
-       [aCoder encodeValueOfObjCType: @encode(BOOL) at:&_usesThreadedAnimation];
-       [aCoder encodeValueOfObjCType: @encode(NSTimeInterval) at:&_animationDelay];
-       [aCoder encodeValueOfObjCType: @encode(double) at:&_doubleValue];
-       [aCoder encodeValueOfObjCType: @encode(double) at:&_minValue];
-       [aCoder encodeValueOfObjCType: @encode(double) at:&_maxValue];
-       [aCoder encodeValueOfObjCType: @encode(BOOL) at:&_isVertical];
+       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isIndeterminate];
+       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isBezeled];
+       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_usesThreadedAnimation];
+       [aCoder encodeValueOfObjCType: @encode(NSTimeInterval) at: &_animationDelay];
+       [aCoder encodeValueOfObjCType: @encode(double) at: &_doubleValue];
+       [aCoder encodeValueOfObjCType: @encode(double) at: &_minValue];
+       [aCoder encodeValueOfObjCType: @encode(double) at: &_maxValue];
+       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isVertical];
      }
 }
 
@@ -455,57 +494,108 @@ static NSImage *spinningImages[MaxCount];
       // id matrix = [aDecoder decodeObjectForKey: @"NSDrawMatrix"];
       if ([aDecoder containsValueForKey: @"NSMaxValue"])
         {
-          int max = [aDecoder decodeDoubleForKey: @"NSMaxValue"];
+          double max = [aDecoder decodeDoubleForKey: @"NSMaxValue"];
           
           [self setMaxValue: max];
         }
+      else
+        {
+          _maxValue = 100.0;
+        }
       if ([aDecoder containsValueForKey: @"NSMinValue"])
         {
-          int min = [aDecoder decodeDoubleForKey: @"NSMinValue"];
+          double min = [aDecoder decodeDoubleForKey: @"NSMinValue"];
           
           [self setMinValue: min];
         }
+      else
+        {
+          _minValue = 0.0;
+        }
+
       if ([aDecoder containsValueForKey: @"NSpiFlags"])
         {
           int flags = [aDecoder decodeIntForKey: @"NSpiFlags"];
           
           _isIndeterminate = ((flags & 2) == 2);
+          _controlTint = NSDefaultControlTint;
+          _controlSize = (flags & 0x100) ? NSSmallControlSize : NSRegularControlSize;
+          [self setStyle: (flags & 0x1000) ? NSProgressIndicatorSpinningStyle 
+                : NSProgressIndicatorBarStyle];
+          _isDisplayedWhenStopped = ((flags & 0x2000) == 0x2000);
           // ignore the rest, since they are not pertinent to GNUstep.
         }
-      
+      else
+        {
+          _isIndeterminate = YES;
+          _isDisplayedWhenStopped = YES;
+          _controlTint = NSDefaultControlTint;
+          _controlSize = NSRegularControlSize;
+          [self setStyle: NSProgressIndicatorBarStyle];
+        }
+
       // things which Gorm encodes, but IB doesn't care about.
       if ([aDecoder containsValueForKey: @"GSDoubleValue"])
         {
           _doubleValue = [aDecoder decodeDoubleForKey: @"GSDoubleValue"];
         }
+      else
+        {
+          _doubleValue = _minValue;
+        }
+
       if ([aDecoder containsValueForKey: @"GSIsBezeled"])
         {
           _isBezeled = [aDecoder decodeBoolForKey: @"GSIsBezeled"];
         }
+      else
+        {
+          _isBezeled = YES;
+        }
+
       if ([aDecoder containsValueForKey: @"GSIsVertical"])
         {
           _isVertical = [aDecoder decodeBoolForKey: @"GSIsVertical"];
         }
+      else
+        {
+          _isVertical = NO;
+        }
+
       if ([aDecoder containsValueForKey: @"GSUsesThreadAnimation"])
         {
           _usesThreadedAnimation = [aDecoder decodeBoolForKey: @"GSUsesThreadAnimation"];
-        }      
+        }
+      else
+        {
+          _usesThreadedAnimation = NO;
+        } 
+     
       if ([aDecoder containsValueForKey: @"GSAnimationDelay"])
         {
           _animationDelay = [aDecoder decodeDoubleForKey: @"GSAnimationDelay"];
         }
+      else
+        {
+          _animationDelay = 5.0 / 60.0;  // 1 twelfth a a second
+        }
     }
   else
     {
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at:&_isIndeterminate];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at:&_isBezeled];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at:&_usesThreadedAnimation];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isIndeterminate];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isBezeled];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_usesThreadedAnimation];
       [aDecoder decodeValueOfObjCType: @encode(NSTimeInterval)
-                at:&_animationDelay];
-      [aDecoder decodeValueOfObjCType: @encode(double) at:&_doubleValue];
-      [aDecoder decodeValueOfObjCType: @encode(double) at:&_minValue];
-      [aDecoder decodeValueOfObjCType: @encode(double) at:&_maxValue];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at:&_isVertical];
+                at: &_animationDelay];
+      [aDecoder decodeValueOfObjCType: @encode(double) at: &_doubleValue];
+      [aDecoder decodeValueOfObjCType: @encode(double) at: &_minValue];
+      [aDecoder decodeValueOfObjCType: @encode(double) at: &_maxValue];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isVertical];
+
+      _isDisplayedWhenStopped = YES;
+      _controlTint = NSDefaultControlTint;
+      _controlSize = NSRegularControlSize;
+      [self setStyle: NSProgressIndicatorBarStyle];
     }
    return self;
 }
