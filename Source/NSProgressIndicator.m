@@ -446,51 +446,54 @@ static NSImage *spinningImages[MaxCount];
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
-  self = [super initWithCoder:aDecoder];
+  self = [super initWithCoder: aDecoder];
+  if (!self)
+    return nil;
+
   if ([aDecoder allowsKeyedCoding])
     {
       // id matrix = [aDecoder decodeObjectForKey: @"NSDrawMatrix"];
       if ([aDecoder containsValueForKey: @"NSMaxValue"])
         {
-    int max = [aDecoder decodeDoubleForKey: @"NSMaxValue"];
-
-    [self setMaxValue: max];
-  }
+          int max = [aDecoder decodeDoubleForKey: @"NSMaxValue"];
+          
+          [self setMaxValue: max];
+        }
       if ([aDecoder containsValueForKey: @"NSMinValue"])
         {
-    int min = [aDecoder decodeDoubleForKey: @"NSMinValue"];
-
-    [self setMinValue: min];
-  }
+          int min = [aDecoder decodeDoubleForKey: @"NSMinValue"];
+          
+          [self setMinValue: min];
+        }
       if ([aDecoder containsValueForKey: @"NSpiFlags"])
         {
-    int flags = [aDecoder decodeIntForKey: @"NSpiFlags"];
-
-    _isIndeterminate = ((flags & 2) == 2);
-    // ignore the rest, since they are not pertinent to GNUstep.
-  }
-
+          int flags = [aDecoder decodeIntForKey: @"NSpiFlags"];
+          
+          _isIndeterminate = ((flags & 2) == 2);
+          // ignore the rest, since they are not pertinent to GNUstep.
+        }
+      
       // things which Gorm encodes, but IB doesn't care about.
       if ([aDecoder containsValueForKey: @"GSDoubleValue"])
-  {
-    _doubleValue = [aDecoder decodeDoubleForKey: @"GSDoubleValue"];
-  }
+        {
+          _doubleValue = [aDecoder decodeDoubleForKey: @"GSDoubleValue"];
+        }
       if ([aDecoder containsValueForKey: @"GSIsBezeled"])
-  {
-    _isBezeled = [aDecoder decodeBoolForKey: @"GSIsBezeled"];
-  }
+        {
+          _isBezeled = [aDecoder decodeBoolForKey: @"GSIsBezeled"];
+        }
       if ([aDecoder containsValueForKey: @"GSIsVertical"])
-  {
-    _isVertical = [aDecoder decodeBoolForKey: @"GSIsVertical"];
-  }
+        {
+          _isVertical = [aDecoder decodeBoolForKey: @"GSIsVertical"];
+        }
       if ([aDecoder containsValueForKey: @"GSUsesThreadAnimation"])
-  {
-    _usesThreadedAnimation = [aDecoder decodeBoolForKey: @"GSUsesThreadAnimation"];
-  }      
+        {
+          _usesThreadedAnimation = [aDecoder decodeBoolForKey: @"GSUsesThreadAnimation"];
+        }      
       if ([aDecoder containsValueForKey: @"GSAnimationDelay"])
-  {
-    _animationDelay = [aDecoder decodeDoubleForKey: @"GSAnimationDelay"];
-  }
+        {
+          _animationDelay = [aDecoder decodeDoubleForKey: @"GSAnimationDelay"];
+        }
     }
   else
     {
@@ -511,7 +514,11 @@ static NSImage *spinningImages[MaxCount];
 
 @implementation NSProgressIndicator (GNUstepExtensions)
 
-- (BOOL)isVertical { return _isVertical; }
+- (BOOL)isVertical
+{
+  return _isVertical;
+}
+
 - (void)setVertical:(BOOL)flag
 {
   if (_isVertical != flag)
