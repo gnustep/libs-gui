@@ -4,6 +4,8 @@
 
    Author:  Gerrit van Dyk <gerritvd@decimax.com>
    Date: 1999
+   Author:  Fred Kiefer <fredkiefer@gmx.de>
+   Date: 2009
 
    This file is part of the GNUstep GUI Library.
 
@@ -120,7 +122,7 @@ static NSImage *spinningImages[MaxCount];
 
 - (void)animate:(id)sender
 {
-  if (!_isIndeterminate)
+  if (!_isIndeterminate && (_style == NSProgressIndicatorBarStyle))
     return;
 
   _count++;
@@ -139,7 +141,8 @@ static NSImage *spinningImages[MaxCount];
 - (void)setAnimationDelay:(NSTimeInterval)delay
 {
   _animationDelay = delay;
-  if (_isRunning && _isIndeterminate)
+  if (_isRunning && (_isIndeterminate 
+                     || (_style == NSProgressIndicatorSpinningStyle)))
     {
       [self stopAnimation: self];
       [self startAnimation: self];
@@ -160,7 +163,8 @@ static NSImage *spinningImages[MaxCount];
 
 - (void)startAnimation:(id)sender
 {
-  if (!_isIndeterminate || _isRunning)
+  if (_isRunning || (!_isIndeterminate 
+                     && (_style == NSProgressIndicatorBarStyle)))
     return;
 
   _isRunning = YES;
@@ -182,7 +186,8 @@ static NSImage *spinningImages[MaxCount];
 
 - (void)stopAnimation:(id)sender
 {
-  if (!_isIndeterminate || !_isRunning)
+  if (!_isRunning || (!_isIndeterminate 
+                      && (_style == NSProgressIndicatorBarStyle)))
     return;
 
   if (!_usesThreadedAnimation)
@@ -253,6 +258,8 @@ static NSImage *spinningImages[MaxCount];
   if (_minValue != newMinimum)
     {
       _minValue = newMinimum;
+      if (_minValue > _doubleValue)
+        _doubleValue = _minValue;
       [self setNeedsDisplay: YES];
     }
 }
@@ -267,6 +274,8 @@ static NSImage *spinningImages[MaxCount];
   if (_maxValue != newMaximum)
     {
       _maxValue = newMaximum;
+      if (_maxValue < _doubleValue)
+        _doubleValue = _maxValue;
       [self setNeedsDisplay: YES];
     }
 }
@@ -357,6 +366,9 @@ static NSImage *spinningImages[MaxCount];
 {
    NSRect r;
 
+   if (!_isRunning && !_isDisplayedWhenStopped)
+     return;
+
    // Draw the Bezel
    if (_isBezeled)
      {
@@ -401,8 +413,11 @@ static NSImage *spinningImages[MaxCount];
                  {
                    float height = NSHeight(r) * (val / (_maxValue - _minValue));
 
-                   // Compensate for the flip
-                   r.origin.y = NSHeight(r) - height;
+                   if ([self isFlipped])
+                     {
+                       // Compensate for the flip
+                       r.origin.y += NSHeight(r) - height;
+                     }
                    r.size.height = height;
                  }
                else

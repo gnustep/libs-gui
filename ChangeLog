@@ -1,3 +1,7 @@
+2009-10-29 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSProgressIndicator.m: Correct flipped drawing.
+
 2009-10-28 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSProgressIndicator.m: Fill more methods.
