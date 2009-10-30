@@ -562,7 +562,7 @@
   else
     {
       [image compositeToPoint: position 
-	       operation: NSCompositeSourceOver];
+	            operation: NSCompositeSourceOver];
     }
 }
 

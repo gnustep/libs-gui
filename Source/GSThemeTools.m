@@ -883,10 +883,15 @@ withRepeatedImage: (NSImage*)image
         }
       else
         {
+#if 0
+/* This code raises an exception on windows (tested 30/10/2009) ... why? */
           images[i]
 	    = [[self extractImageFrom: image withRect: rects[i]] retain];
           rects[i].origin.x = 0;
           rects[i].origin.y = 0;
+#else
+	  images[i] = [image retain];
+#endif
         }
     }
 }
