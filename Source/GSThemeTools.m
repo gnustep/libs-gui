@@ -883,7 +883,7 @@ withRepeatedImage: (NSImage*)image
         }
       else
         {
-#if 0
+#if !defined(__MINGW32__)
 /* This code raises an exception on windows (tested 30/10/2009) ... why? */
           images[i]
 	    = [[self extractImageFrom: image withRect: rects[i]] retain];
