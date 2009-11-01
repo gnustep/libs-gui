@@ -778,11 +778,10 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 - (void) compositeToPoint: (NSPoint)aPoint 
                 operation: (NSCompositingOperation)op
 {
-  NSRect rect;
   // Might not be computed up to now
   NSSize size = [self size];
+  NSRect rect = NSMakeRect(0, 0, size.width, size.height);
 
-  rect = NSMakeRect(0, 0, size.width, size.height);
   [self compositeToPoint: aPoint fromRect: rect operation: op];
 }
 
@@ -790,64 +789,10 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
                  fromRect: (NSRect)aRect
                 operation: (NSCompositingOperation)op
 {
-#if 0
   [self compositeToPoint: aPoint
         fromRect: aRect
         operation: op
         fraction: 1.0];
-#else 
-  NS_DURING
-    { 
-      NSImageRep *rep = [self bestRepresentationForDevice: nil];
-      NSCachedImageRep *cache = nil;
-
-      if (rep == nil)
-        NS_VOIDRETURN;
-
-      if (([GSCurrentContext() isDrawingToScreen] == YES)
-          && _cacheMode != NSImageCacheNever)
-        cache = [self _doImageCache: rep];
-
-      if (cache != nil)
-        {
-          NSRect rect;
-
-          rect = [cache rect];
-          NSDebugLLog(@"NSImage", @"composite rect %@ in %@", 
-                      NSStringFromRect(rect), NSStringFromRect(aRect));
-          // Move the drawing rectangle to the origin of the image rep
-          // and intersect the two rects.
-          aRect.origin.x += rect.origin.x;
-          aRect.origin.y += rect.origin.y;
-          rect = NSIntersectionRect(aRect, rect);
-          
-          PScomposite(NSMinX(rect), NSMinY(rect), NSWidth(rect), NSHeight(rect),
-                      [[cache window] gState], aPoint.x, aPoint.y, op);
-        }
-      else        
-        {
-          NSRect rect;
-
-          rect = NSMakeRect(aPoint.x, aPoint.y, _size.width, _size.height);
-          [self drawRepresentation: rep inRect: rect];
-        }
-    }
-  NS_HANDLER
-    {
-      NSLog(@"NSImage: compositeToPoint:fromRect:operation: failed due to %@: %@", 
-            [localException name], [localException reason]);
-      if ([_delegate respondsToSelector: @selector(imageDidNotDraw:inRect:)])
-        {
-          NSImage *image = [_delegate imageDidNotDraw: self inRect: aRect];
-
-          if (image != nil)
-            [image compositeToPoint: aPoint
-                   fromRect: aRect 
-                   operation: op];
-        }
-    }
-  NS_ENDHANDLER
-#endif
 }
 
 - (void) compositeToPoint: (NSPoint)aPoint
@@ -881,9 +826,8 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
       if (cache != nil)
         {
-          NSRect rect;
+          NSRect rect = [cache rect];
 
-          rect = [cache rect];
           NSDebugLLog(@"NSImage", @"composite rect %@ in %@", 
                       NSStringFromRect(rect), NSStringFromRect(srcRect));
           // Move the drawing rectangle to the origin of the image rep
@@ -938,63 +882,10 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
                 fromRect: (NSRect)aRect 
                 fraction: (float)aFloat
 {
-#if 0
   [self compositeToPoint: aPoint
         fromRect: aRect
         operation: NSCompositeSourceOver
         fraction: aFloat];
-#else 
-  NS_DURING
-    {
-      NSImageRep *rep = [self bestRepresentationForDevice: nil];
-      NSCachedImageRep *cache = nil;
-
-      if (rep == nil)
-        NS_VOIDRETURN;
-
-      if (([GSCurrentContext() isDrawingToScreen] == YES)
-          && _cacheMode != NSImageCacheNever)
-        cache = [self _doImageCache: rep];
-
-      if (cache != nil)
-        {
-          NSRect rect;
-          
-          rect = [cache rect];
-          // Move the drawing rectangle to the origin of the image rep
-          // and intersect the two rects.
-          aRect.origin.x += rect.origin.x;
-          aRect.origin.y += rect.origin.y;
-          rect = NSIntersectionRect(aRect, rect);
-          PSdissolve(NSMinX(rect), NSMinY(rect), NSWidth(rect), NSHeight(rect),
-                     [[cache window] gState], aPoint.x, aPoint.y, aFloat);
-        }
-      else
-        {
-          NSRect rect;
-
-          /* FIXME: Here we are supposed to composite directly from the source
-             but how do you do that? */
-          rect = NSMakeRect(aPoint.x, aPoint.y, _size.width, _size.height);
-          [self drawRepresentation: rep inRect: rect];
-        }
-    }
-  NS_HANDLER
-    {
-      NSLog(@"NSImage: dissolve failed due to %@: %@", 
-            [localException name], [localException reason]);
-      if ([_delegate respondsToSelector: @selector(imageDidNotDraw:inRect:)])
-        {
-          NSImage *image = [_delegate imageDidNotDraw: self inRect: aRect];
-
-          if (image != nil)
-            [image dissolveToPoint: aPoint
-                   fromRect: aRect 
-                   fraction: aFloat];
-        }
-    }
-  NS_ENDHANDLER
-#endif
 }
 
 - (BOOL) drawRepresentation: (NSImageRep *)imageRep inRect: (NSRect)aRect

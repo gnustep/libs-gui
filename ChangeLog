@@ -1,3 +1,8 @@
+2009-11-01 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSImage.m: Switch to the new shared composite and
+	dissolve code.
+
 2009-10-29 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSProgressIndicator.m: Correct flipped drawing.
