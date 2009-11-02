@@ -108,8 +108,8 @@ static NSImage *arrowImage = nil; /* Cache arrow image. */
 
 - (NSColor *) backgroundColor
 {
-  NSColor *backgroundColor = nil;
   unsigned  mask;
+  GSThemeControlState menuState = GSThemeNormalState;
 
   if (_cell.is_highlighted)
     {
@@ -126,14 +126,16 @@ static NSImage *arrowImage = nil; /* Cache arrow image. */
   // Determine the background color
   if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
     {
-      backgroundColor = [NSColor selectedMenuItemColor];
+      menuState = GSThemeHighlightedState;
     }
 
-  // TODO: Should we also check the ivar _backgroundColor?
-  if (backgroundColor == nil)
-    backgroundColor = [NSColor controlBackgroundColor];
-  
-  return backgroundColor;
+  if (mask & NSPushInCellMask)
+    {
+      menuState = GSThemeSelectedState;
+    }
+
+  return [[GSTheme theme] backgroundColorForMenuItemCell: self
+                          state: menuState];
 }
 
 - (void) setMenuItem: (NSMenuItem *)item
@@ -608,29 +610,43 @@ static NSImage *arrowImage = nil; /* Cache arrow image. */
 - (void) drawBorderAndBackgroundWithFrame: (NSRect)cellFrame
                                    inView: (NSView *)controlView
 {
-  if ([_menuView isHorizontal] == YES)
+  unsigned mask;
+  GSThemeControlState menuState = GSThemeNormalState;
+
+  // set the mask
+  if (_cell.is_highlighted)
     {
-      cellFrame = [self drawingRectForBounds: cellFrame];
-      [[self backgroundColor] set];
-      NSRectFill(cellFrame);
-      return;
+      mask = _highlightsByMask;
+      if (_cell.state)
+        {
+          mask &= ~_showAltStateMask;
+        }
     }
-
-  // Set cell's background color
-  [[self backgroundColor] set];
-  NSRectFill(cellFrame);
-
-  if (!_cell.is_bordered)
-    return;
-
-  if (_cell.is_highlighted && (_highlightsByMask & NSPushInCellMask))
-    {
-      [[GSTheme theme] drawGrayBezel: cellFrame withClip: NSZeroRect];
-    }
+  else if (_cell.state)
+    mask = _showAltStateMask;
   else
+    mask = NSNoCellMask;
+
+  /* Determine the background color. 
+     We draw when there is a border or when highlightsByMask
+     is NSChangeBackgroundCellMask or NSChangeGrayCellMask,
+     as required by our nextstep-like look and feel.  */
+  if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
     {
-      [[GSTheme theme] drawButton: cellFrame withClip: NSZeroRect];
+      menuState = GSThemeHighlightedState;
     }
+
+  /* Pushed in buttons contents are displaced to the bottom right 1px.  */
+  if (mask & NSPushInCellMask)
+    {
+      menuState = GSThemeSelectedState;
+    }
+
+  [[GSTheme theme] drawBorderAndBackgroundForMenuItemCell: self
+                   withFrame: cellFrame
+                   inView: controlView
+                   state: menuState
+                   isHorizontal: [_menuView isHorizontal]];
 }
 
 - (void) drawImageWithFrame: (NSRect)cellFrame

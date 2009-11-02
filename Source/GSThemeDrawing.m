@@ -402,16 +402,44 @@
   return 18.0;
 }
 
+- (NSColor *) toolbarBackgroundColor
+{
+  NSColor *color;
+
+  color = [self colorNamed: @"toolbarBackgroundColor"
+                state: GSThemeNormalState
+                cache: YES];
+  if (color == nil)
+    {
+      color = [NSColor clearColor];
+    }
+  return color;
+}
+
+- (NSColor *) toolbarBorderColor
+{
+  NSColor *color;
+
+  color = [self colorNamed: @"toolbarBorderColor"
+                state: GSThemeNormalState
+                cache: YES];
+  if (color == nil)
+    {
+      color = [NSColor grayColor];
+    }
+  return color;
+}
+
 - (void) drawToolbarRect: (NSRect)aRect
                    frame: (NSRect)viewFrame
               borderMask: (unsigned int)borderMask
 {
   // We draw the background
-  [[NSColor toolbarBackgroundColor] set];
+  [[self toolbarBackgroundColor] set];
   [NSBezierPath fillRect: aRect];
   
   // We draw the border
-  [[NSColor toolbarBorderColor] set];
+  [[self toolbarBorderColor] set];
   if (borderMask & GSToolbarViewBottomBorder)
     {
       [NSBezierPath strokeLineFromPoint: NSMakePoint(0, 0.5) 
@@ -434,6 +462,18 @@
       [NSBezierPath strokeLineFromPoint: NSMakePoint(viewFrame.size.width - 0.5,0)
                     toPoint: NSMakePoint(viewFrame.size.width - 0.5, 
                                          viewFrame.size.height)];
+    }
+}
+
+- (BOOL) toolbarIsOpaque
+{
+  if ([[self toolbarBackgroundColor] alphaComponent] < 1.0)
+    {
+      return NO;
+    }
+  else
+    {
+      return YES;
     }
 }
 
@@ -566,6 +606,56 @@
     }
 }
 
+// menu item cell drawing methods
+- (NSColor *) backgroundColorForMenuItemCell: (NSMenuItemCell *)cell
+                                       state: (GSThemeControlState)state
+{
+  if ((state == GSThemeHighlightedState) || (state == GSThemeSelectedState))
+    {
+      return [NSColor selectedMenuItemColor];
+    }
+  else
+    {
+      return [NSColor controlBackgroundColor];
+    }
+}
+
+- (void) drawBorderAndBackgroundForMenuItemCell: (NSMenuItemCell *)cell
+                                      withFrame: (NSRect)cellFrame
+                                         inView: (NSView *)controlView
+                                          state: (GSThemeControlState)state
+                                   isHorizontal: (BOOL)isHorizontal
+{
+  NSColor *backgroundColor = [self backgroundColorForMenuItemCell: cell
+                                   state: state];
+
+  if (isHorizontal)
+    {
+      cellFrame = [cell drawingRectForBounds: cellFrame];
+      [backgroundColor set];
+      NSRectFill(cellFrame);
+      return;
+    }
+
+  // Set cell's background color
+  [backgroundColor set];
+  NSRectFill(cellFrame);
+
+  if (![cell isBordered])
+    return;
+
+  if (state == GSThemeSelectedState)
+    {
+      [self drawGrayBezel: cellFrame withClip: NSZeroRect];
+    }
+  else
+    {
+      [self drawButton: cellFrame withClip: NSZeroRect];
+    }
+}
+
+
+// Window decoration drawing methods
 /* These include the black border. */
 #define TITLE_HEIGHT 23.0
 #define RESIZE_HEIGHT 9.0

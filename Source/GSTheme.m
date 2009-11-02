@@ -243,7 +243,7 @@ typedef	struct {
   bundle = [themes objectForKey: theme];
   if (bundle == nil)
     {
-      NSString		*path;
+      NSString		*path = nil;
       NSFileManager	*mgr = [NSFileManager defaultManager];
       BOOL 		isDir;
 
@@ -543,6 +543,7 @@ typedef	struct {
 	   */
 	  switch (elementState)
 	    {
+              default:
 	      case GSThemeNormalState:
 		listName = @"ThemeExtra";
 		break;
@@ -841,6 +842,7 @@ typedef	struct {
 
       switch (elementState)
 	{
+          default:
 	  case GSThemeNormalState:
 	    fullName = aName;
 	    break;

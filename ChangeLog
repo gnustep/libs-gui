@@ -1,3 +1,12 @@
+2009-11-02 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSTheme.m: Remove some compiler warnings.
+	* Source/NSMenuItemCell.m,
+	* Source/GSToolbarView.m,
+	* Source/GSThemeDrawing.m,
+	* Headers/Additions/GNUstepGUI/GSTheme.h: New theme methods for
+	toolbar and menu item drawing.
+	
 2009-11-01 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSImage.m: Switch to the new shared composite and

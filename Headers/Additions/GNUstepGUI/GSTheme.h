@@ -585,11 +585,14 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 - (float) defaultScrollerWidth;
 
 /** 
- * Method for toolbar theming.
+ * Method fors toolbar theming.
  */
+- (NSColor *) toolbarBackgroundColor;
+- (NSColor *) toolbarBorderColor;
 - (void) drawToolbarRect: (NSRect)aRect
                    frame: (NSRect)viewFrame
               borderMask: (unsigned int)borderMask;
+- (BOOL) toolbarIsOpaque;
 
 // Methods to deal with steppers..
 /**
@@ -622,6 +625,15 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
       inButtonCell: (NSButtonCell *) cell 
 	 withFrame: (NSRect) aRect
           position: (NSPoint) position;
+
+// menu item cell drawing methods
+- (NSColor *) backgroundColorForMenuItemCell: (NSMenuItemCell *)cell
+                                       state: (GSThemeControlState)state;
+- (void) drawBorderAndBackgroundForMenuItemCell: (NSMenuItemCell *)cell
+                                      withFrame: (NSRect)cellFrame
+                                         inView: (NSView *)controlView
+                                          state: (GSThemeControlState)state
+                                   isHorizontal: (BOOL)isHorizontal;
 
 - (float) titlebarHeight;
 
