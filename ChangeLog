@@ -1,5 +1,10 @@
 2009-11-02 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSApplication.m (-nextEventMatchingMask:...): Only set
+	the current event when dequeuing and never return the null_event.
+	
+2009-11-02 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/GSTheme.m: Remove some compiler warnings.
 	* Source/NSMenuItemCell.m,
 	* Source/GSToolbarView.m,

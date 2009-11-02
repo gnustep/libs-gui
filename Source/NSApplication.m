@@ -1514,7 +1514,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 		inMode: NSDefaultRunLoopMode
 		dequeue: YES];
       
-      if (e != nil &&  e != null_event)
+      if (e != nil)
 	{
 	  NSEventType	type = [e type];
 
@@ -2105,6 +2105,12 @@ See -runModalForWindow:
   else
     event = DPSPeekEvent(GSCurrentServer(), mask, expiration, mode);
 
+  if (event == null_event)
+    {
+      // Never return the null_event
+      event = nil;
+    }
+
   if (event)
     {
 IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
@@ -2112,7 +2118,7 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
        * If we are not in a tracking loop, we may want to unhide a hidden
        * because the mouse has been moved.
        */
-      if (mode != NSEventTrackingRunLoopMode && event != null_event)
+      if (mode != NSEventTrackingRunLoopMode)
 	{
 	  _windows_need_update = YES;
 	  if ([NSCursor isHiddenUntilMouseMoves])
@@ -2129,7 +2135,8 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
 	    }
 	}
 
-      ASSIGN(_current_event, event);
+      if (flag)
+        ASSIGN(_current_event, event);
     }
   return event;
 }
