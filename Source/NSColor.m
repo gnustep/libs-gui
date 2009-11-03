@@ -1166,6 +1166,13 @@ systemColorWithName(NSString *name)
                             count: (int)number
 {
   // FIXME
+  if (space == [NSColorSpace genericRGBColorSpace] && (number == 4)) 
+    {
+      return [self colorWithCalibratedRed: comp[0]
+                   green: comp[1]
+                   blue: comp[2]
+                   alpha: comp[3]];
+    }
   if (space == [NSColorSpace deviceRGBColorSpace] && (number == 4)) 
     {
       return [self colorWithDeviceRed: comp[0]
@@ -1173,9 +1180,21 @@ systemColorWithName(NSString *name)
                    blue: comp[2]
                    alpha: comp[3]];
     }
+  if (space == [NSColorSpace genericGrayColorSpace] && (number == 2)) 
+    {
+      return [NSColor colorWithCalibratedWhite: comp[0] alpha: comp[1]];
+    }
   if (space == [NSColorSpace deviceGrayColorSpace] && (number == 2)) 
     {
       return [NSColor colorWithDeviceWhite: comp[0] alpha: comp[1]];
+    }
+  if (space == [NSColorSpace genericCMYKColorSpace] && (number == 5)) 
+    {
+      return [NSColor colorWithDeviceCyan: comp[0] 
+                      magenta: comp[1]
+                      yellow: comp[2] 
+                      black: comp[3] 
+                      alpha: comp[4]];
     }
   if (space == [NSColorSpace deviceCMYKColorSpace] && (number == 5)) 
     {

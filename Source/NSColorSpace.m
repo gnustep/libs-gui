@@ -45,7 +45,7 @@
 }
 
 #define COLORSPACE(model) \
-  static NSColorSpace *csp;                     \
+  static NSColorSpace *csp = nil;                     \
   if (!csp)                                                           \
     csp = [[self alloc] _initWithColorSpaceModel: model];             \
   return csp;

@@ -1,5 +1,10 @@
 2009-11-03 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSColor.m (-colorUsingColorSpace): Support more color spaces.
+	* Source/NSColorSpace.m (COLORSPACE): Initialize the static variable. 
+	
+2009-11-03 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/GSThemeDrawing.m: Add more includes to apeace Riccardo's compiler.
 
 2009-11-03 Fred Kiefer <FredKiefer@gmx.de>
