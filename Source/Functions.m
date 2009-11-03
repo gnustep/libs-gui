@@ -817,22 +817,22 @@ NSFrameLinkRect(NSRect aRect, BOOL isDestination)
 
 void NSSetFocusRingStyle(NSFocusRingPlacement placement)
 {
-	// FIXME: NIMP
-	NSLog(@"*** NSSetFocusRingStyle not implemented ***");
+  // FIXME: NIMP
+  NSLog(@"*** NSSetFocusRingStyle not implemented ***");
 }
 
 void 
 NSConvertGlobalToWindowNumber(int globalNum, unsigned int *winNum)
 {
-// TODO
-  *winNum = 0;
+  // TODO
+  *winNum = (unsigned int)globalNum;
 }
 
 void 
 NSConvertWindowNumberToGlobal(int winNum, unsigned int *globalNum)
 {
-// TODO
-  *globalNum = 0;
+  // TODO
+  *globalNum = (int)winNum;
 }
 
 void 

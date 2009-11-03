@@ -1,3 +1,8 @@
+2009-11-03 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/Functions.m (NSConvertGlobalToWindowNumber,
+	NSConvertWindowNumberToGlobal): Add dummy implementation. 
+
 2009-11-02 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSApplication.m (-nextEventMatchingMask:...): Only set
