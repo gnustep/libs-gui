@@ -1,5 +1,9 @@
 2009-11-03 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/GSThemeDrawing.m: Add more includes to apeace Riccardo's compiler.
+
+2009-11-03 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/Functions.m (NSConvertGlobalToWindowNumber,
 	NSConvertWindowNumberToGlobal): Add dummy implementation. 
 

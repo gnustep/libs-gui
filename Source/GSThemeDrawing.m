@@ -30,10 +30,16 @@
 
 #import "AppKit/NSAttributedString.h"
 #import "AppKit/NSBezierPath.h"
+#import "AppKit/NSButtonCell.h"
+#import "AppKit/NSCell.h"
+#import "AppKit/NSColor.h"
 #import "AppKit/NSColorList.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
+#import "AppKit/NSMenuItemCell.h"
 #import "AppKit/NSParagraphStyle.h"
+#import "AppKit/NSScroller.h"
+#import "AppKit/NSView.h"
 #import "AppKit/PSOperators.h"
 
 #import "GNUstepGUI/GSToolbarView.h"
