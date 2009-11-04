@@ -2603,12 +2603,12 @@ static	NSRecursiveLock		*namedColorLock = nil;
   components[0] = _red_component;
   components[1] = _green_component;
   components[2] = _blue_component;
-  components[4] = _alpha_component;
+  components[3] = _alpha_component;
 }
 
 - (int) numberOfComponents
 {
-	return 4;
+  return 4;
 }
 
 - (void) getHue: (float*)hue
