@@ -62,9 +62,10 @@
   "Control-e" = "moveToEndOfLine:";
   "Control-f" = "moveForward:";
   "Control-h" = "deleteBackward:";
-  /* "Control-l" = "centerSelectionInVisibleArea:"; */
+  "Control-l" = "centerSelectionInVisibleArea:";
   "Control-k" = "deleteToEndOfLine:";
   "Control-n" = "moveDown:";
+  "Control-o" = ( "insertNewlineIgnoringFieldEditor:", "moveBackward:" );
   "Control-p" = "moveUp:";
   "Control-t" = "transpose:";
   "Control-v" = "pageDown:";

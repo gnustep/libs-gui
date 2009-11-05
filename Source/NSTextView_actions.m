@@ -548,6 +548,16 @@ static NSNumber *float_plus_one(NSNumber *cur)
   //[self insertText: @"\t"];
 }
 
+- (void) insertNewlineIgnoringFieldEditor: (id)sender
+{
+  [self insertText: @"\n"];
+}
+
+- (void) insertTabIgnoringFieldEditor: (id)sender
+{
+  [self insertText: @"\t"];
+}
+
 
 - (void) deleteForward: (id)sender
 {

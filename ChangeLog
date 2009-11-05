@@ -1,5 +1,10 @@
 2009-11-05  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* KeyBindings/DefaultKeyBindings.dict: Enable Ctrl-l key binding
+	and add Ctrl-o key binding as in Emacs and Cocoa.
+	* Source/NSTextView_actions.m (-insertNewlineIgnoringFieldEditor:,
+	-insertTabIgnoringFieldEditor): Implement NSResponder methods.
+
 	* Source/NSWindow.m (-dealloc): Release the toolbar without
 	updating the window's geometry and thus avoid calling the delegate
 	during deallocation.
