@@ -1,5 +1,9 @@
 2009-11-05  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSWindow.m (-dealloc): Release the toolbar without
+	updating the window's geometry and thus avoid calling the delegate
+	during deallocation.
+
 	* Source/NSAlert.m (NSBeginAlertSheet, NSBeginCriticalAlertSheet,
 	NSBeginInformationalAlertSheet): Call the didEndSelector after the
 	sheet has been closed.

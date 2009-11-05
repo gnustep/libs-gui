@@ -731,7 +731,7 @@ many times.
 
 - (void) dealloc
 {
-  [self setToolbar: nil];
+  RELEASE(_toolbar);
   [nc removeObserver: self];
   [isa _removeAutodisplayedWindow: self];
   [NSApp removeWindowsItem: self];
