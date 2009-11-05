@@ -102,7 +102,9 @@
 	  A theme might simply define a new system color list, so that
 	  controls are drawn in a new color range, though they would
 	  still function the same way.  Even specifying new colors can
-	  make the GUI look quite different though.
+	  make the GUI look quite different though.<br />
+	  Beyond system colors, the theming API also provides a mechanism
+	  for specifying colors for particular parts of GUI controls.
 	</desc>
 	<term>Image tiling</term>
 	<desc>
@@ -154,6 +156,10 @@
 @class NSMenuItemCell;
 @class NSMenuView;
 @class GSDrawTiles;
+
+/* First, declare names used for obtaining colors and/or tiles for specific
+ * controls and parts of controls.
+ */
 
 /* Names for the component parts of a scroller,
  * allowing tiles and/or colors to be set for them.
@@ -359,8 +365,12 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * the specified state.  If aName is nil or if there is no color defined
  * for the particular combination of item name and state, the method
  * returns nil.<br />
+ * The standard names used for the parts of various controls are declared
+ * in GSTheme.h<br />
+ * See also the -tilesNamed:state:cache: method.<br />
  * The useCache argument controls whether the information is retrieved
- * from cache or regenerated from information in the theme bundle.
+ * from cache or regenerated from information in the theme bundle, and
+ * should normally be YES.
  */
 - (NSColor*) colorNamed: (NSString*)aName
 		  state: (GSThemeControlState)elementState
@@ -497,6 +507,8 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 /**
  * Returns the tile image information for a particular image name,
  * or nil if there is no such information or the name is nil.<br />
+ * The standard names used for the parts of various controls are declared
+ * in GSTheme.h<br />
  * The GUI library uses this internally to handling tiling of image
  * information to draw user interface elements.  The tile information
  * returned by this method can be passed to the
@@ -504,7 +516,10 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * The elementState argument specifies the state for which tiles are
  * requested.<br />
  * The useCache argument controls whether the information is retrieved
- * from cache or regenerated from information in the theme bundle.
+ * from cache or regenerated from information in the theme bundle, and
+ * should normally be YES.<br />
+ * See the -colorNamed:state:cache: method for determining colors to be
+ * used for drawing specific gui elements.
  */
 - (GSDrawTiles*) tilesNamed: (NSString*)aName
 		      state: (GSThemeControlState)elementState
@@ -517,7 +532,21 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 @end
 
 /**
- * Theme drawing methods
+ * Theme drawing methods.<br />
+ * Methods which return information/resources are generally expected
+ * (ie unless explicitly documented otherwise) to be returning something
+ * which persists until the mewthod is called again or until the current
+ * theme is deactivated (whichever comes first).<br />
+ * This means that drawing code should <strong>not</strong> need to
+ * retain/release any returned object (the theme is responsible for
+ * retaining the object), and should also be able to cache size information
+ * etc for later drawing.<br />
+ * This simple rule means that drawing code can be written to be as
+ * efficient as possible while keeping caching strategies simple and
+ * uniform.<br />
+ * To facilitate this within the theme code itsself, it is recommended
+ * that you make use of the -setName:forElement:temporary: method to
+ * retain any vended object until deactivation.
  */
 @interface	GSTheme (Drawing)
 
@@ -576,12 +605,40 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 
 
 /** 
- * Methods for scroller theming.
+ * Creates and returns the cell to be used to draw a scroller arrow of the
+ * specified type and orientation.<br />
+ * The theme instance is responsible for ensuring that the cell continues
+ * to exist until the theme is deactivated (the default implementation does
+ * this by naming the cell using the -setName:forElement:temporary:
+ * method, which also provides a name for the cell color and image).
  */
 - (NSButtonCell*) cellForScrollerArrow: (NSScrollerArrow)part
 			    horizontal: (BOOL)horizontal;
+
+/** 
+ * Creates and returns the cell to be used to draw a scroller knob of the
+ * specified orientation.<br />
+ * The theme instance is responsible for ensuring that the cell continues
+ * to exist until the theme is deactivated (the default implementation does
+ * this by naming the cell using the -setName:forElement:temporary:
+ * method).
+ */
 - (NSCell*) cellForScrollerKnob: (BOOL)horizontal;
+
+/** 
+ * Creates and returns the cell to be used to draw a scroller slot of the
+ * specified orientation.<br />
+ * The theme instance is responsible for ensuring that the cell continues
+ * to exist until the theme is deactivated (the default implementation does
+ * this by naming the cell using the -setName:forElement:temporary:
+ * method).
+ */
 - (NSCell*) cellForScrollerKnobSlot: (BOOL)horizontal;
+
+/** Returns the width which should be allowed for a scroller within the
+ * current theme.  Drawing code is entitled to assume that this value will
+ * remain constant until the theme is deactivated.
+ */
 - (float) defaultScrollerWidth;
 
 /** 
