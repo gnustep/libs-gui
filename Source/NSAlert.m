@@ -1547,6 +1547,13 @@ void NSBeginAlertSheet(NSString *title,
 	 contextInfo: contextInfo];
 
   [panel close];
+  if (modalDelegate && [modalDelegate respondsToSelector: didEndSelector])
+    {
+      void (*didEnd)(id, SEL, id, int, void*);
+      didEnd = (void (*)(id, SEL, id, int, void*))[modalDelegate
+        methodForSelector: didEndSelector];
+      didEnd(modalDelegate, didEndSelector, panel, [panel result], contextInfo);
+    }
 
   NSReleaseAlertPanel(panel);
 }
@@ -1579,6 +1586,13 @@ void NSBeginCriticalAlertSheet(NSString *title,
 	 didEndSelector: willEndSelector
 	 contextInfo: contextInfo];
   [panel close];
+  if (modalDelegate && [modalDelegate respondsToSelector: didEndSelector])
+    {
+      void (*didEnd)(id, SEL, id, int, void*);
+      didEnd = (void (*)(id, SEL, id, int, void*))[modalDelegate
+        methodForSelector: didEndSelector];
+      didEnd(modalDelegate, didEndSelector, panel, [panel result], contextInfo);
+    }
 
   NSReleaseAlertPanel(panel);
 }
@@ -1613,6 +1627,13 @@ void NSBeginInformationalAlertSheet(NSString *title,
 	 didEndSelector: willEndSelector
 	 contextInfo: contextInfo];
   [panel close];
+  if (modalDelegate && [modalDelegate respondsToSelector: didEndSelector])
+    {
+      void (*didEnd)(id, SEL, id, int, void*);
+      didEnd = (void (*)(id, SEL, id, int, void*))[modalDelegate
+        methodForSelector: didEndSelector];
+      didEnd(modalDelegate, didEndSelector, panel, [panel result], contextInfo);
+    }
 
   NSReleaseAlertPanel(panel);
 }
