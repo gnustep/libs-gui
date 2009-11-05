@@ -48,14 +48,14 @@
 {
   // FIXME: Should allow for filterable types
   return [[NSDocumentController sharedDocumentController]
-          _editorAndViewerTypesForClass: self];
+          _readableTypesForClass: self];
 }
 
 + (NSArray *) writableTypes
 {
   // FIXME: Should allow for filterable types
   return [[NSDocumentController sharedDocumentController] 
-          _editorTypesForClass: self];
+          _writableTypesForClass: self];
 }
 
 + (BOOL) isNativeType: (NSString *)type
@@ -1016,10 +1016,9 @@ originalContentsURL: (NSURL *)orig
 { 
   NSDocumentController *controller = 
     [NSDocumentController sharedDocumentController];
-  NSArray *extensions = nil;
+  NSArray *extensions;
 
-  ASSIGN(_save_type, [controller _nameForHumanReadableType: 
-                                  [sender titleOfSelectedItem]]);
+  ASSIGN(_save_type, [[sender selectedItem] representedObject]);
   extensions = [controller fileExtensionsFromType: _save_type];
   [(NSSavePanel *)[sender window] setAllowedFileTypes: extensions];
 }
@@ -1076,32 +1075,27 @@ originalContentsURL: (NSURL *)orig
 
 - (void) _addItemsToSpaButtonFromArray: (NSArray *)types
 {
-  NSEnumerator *en = [types objectEnumerator];
-  NSString *title = nil;
-  int i = 0;
+  NSString *type, *title;
+  int i, count = [types count];
 
-  while ((title = [en nextObject]) != nil)
+  [_spa_button removeAllItems];
+  for (i = 0; i < count; i++)
     {
+      type = [types objectAtIndex: i];
+      title = [[NSDocumentController sharedDocumentController]
+		displayNameForType: type];
       [_spa_button addItemWithTitle: title];
-      i++;
+      [[_spa_button itemAtIndex: i] setRepresentedObject: type];
     }
 
   // if it's more than one, then
-  [_spa_button setEnabled: (i > 0)];
+  [_spa_button setEnabled: (count > 0)];
   
   // if we have some items, select the current filetype.
-  if (i > 0)
+  if (count > 0)
     {
-      NSString *title = [[NSDocumentController sharedDocumentController] 
-                          displayNameForType: [self fileType]];
-      if ([_spa_button itemWithTitle: title] != nil)
-        {
-          [_spa_button selectItemWithTitle: title];
-        }
-      else
-        {
-          [_spa_button selectItemAtIndex: 0];
-        }
+      [_spa_button selectItemAtIndex:
+	[_spa_button indexOfItemWithRepresentedObject: [self fileType]]];
     }
 }
 
@@ -1110,25 +1104,25 @@ originalContentsURL: (NSURL *)orig
   NSView *accessory = nil;
   NSString *title;
   NSString *directory;
-  NSArray *displayNames;
+  NSArray *types;
   NSDocumentController *controller;
   NSSavePanel *savePanel = [NSSavePanel savePanel];
 
   ASSIGN(_save_type, [self fileType]); 
   controller = [NSDocumentController sharedDocumentController];
-  displayNames = [controller _displayNamesForClass: [self class]];
-  
+  types = [self writableTypesForSaveOperation: saveOperation];
+
   if ([self shouldRunSavePanelWithAccessoryView])
     {
       if (_save_panel_accessory == nil)
         [self _createPanelAccessory];
       
-      [self _addItemsToSpaButtonFromArray: displayNames];
+      [self _addItemsToSpaButtonFromArray: types];
       
       accessory = _save_panel_accessory;
     }
 
-  if ([displayNames count] > 0)
+  if ([types count] > 0)
     {
       NSArray *extensions = [controller fileExtensionsFromType: [self fileType]];
       [savePanel setAllowedFileTypes: extensions];

@@ -1,5 +1,16 @@
 2009-11-05  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSDocumentController.m (+initialize): Don't ignore types
+	without an associated document class.
+	* Source/NSDocument.m (+reaableTypes, +writableTypes): 
+	* Source/NSDocumentController.m(-_readableTypesForClass:,
+	-_writableTypesForClass:): Add the exportable types to the
+	writable types. Rename private NSDocumentController methods.
+	* Source/NSDocument.m (-_addItemsToSpaButtonFromArray,
+	-changeSaveType, _runSavePanelForSaveOperation): Save panel
+	accessory pop up now allows the user to select one of the
+	exportable types for NSSaveToOperation.
+
 	* KeyBindings/DefaultKeyBindings.dict: Enable Ctrl-l key binding
 	and add Ctrl-o key binding as in Emacs and Cocoa.
 	* Source/NSTextView_actions.m (-insertNewlineIgnoringFieldEditor:,

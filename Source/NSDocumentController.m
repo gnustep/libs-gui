@@ -56,6 +56,7 @@ static NSString *NSDOSExtensionsKey     = @"NSDOSExtensions";
 //static NSString *NSMacOSTypesKey        = @"NSMacOSTypes";
 //static NSString *NSMIMETypesKey         = @"NSMIMETypes";
 static NSString *NSDocumentClassKey     = @"NSDocumentClass";
+static NSString *NSExportableAsKey      = @"NSExportableAs";
 
 static NSString *CFBundleDocumentTypes  = @"CFBundleDocumentTypes";
 static NSString *CFBundleTypeExtensions = @"CFBundleTypeExtensions";
@@ -196,19 +197,21 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
       if (YES == [types isKindOfClass: [NSArray class]])
 	{
 	  unsigned	count = [types count];
-	  unsigned	src;
-	  unsigned	dst = 0;
+	  unsigned	i;
+	  unsigned	nNames = 0;
+	  unsigned	nValid = 0;
 	  NSString	*names[count];
 	  NSDictionary	*valid[count];
 
-	  for (src = 0; src < count; src++)
+	  for (i = 0; i < count; i++)
 	    {
-	      NSDictionary	*d = [types objectAtIndex: src];
+	      NSDictionary	*d = [types objectAtIndex: i];
 
 	      if (YES == [d isKindOfClass: [NSDictionary class]])
 		{
 		  NSString	*name = [d objectForKey: NSDocumentClassKey];
 
+		  valid[nValid++] = d;
 		  /* Is this type handled by an NSDocument subclass?
 		   */
 	          if (YES == [name isKindOfClass: [NSString class]])
@@ -217,8 +220,7 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
 
 		      if (YES == [c isSubclassOfClass: [NSDocument class]])
 			{
-			  names[dst] = name;
-			  valid[dst++] = d;
+			  names[nNames++] = name;
 			}
 		      else if (c == 0)
 			{
@@ -234,13 +236,17 @@ TypeInfoForHumanReadableName (NSArray *types, NSString *typeName)
 	      else
 		{
 		  NSLog(@"Bad item at index %u in %@",
-		    src, CFBundleDocumentTypes);
+		    i, CFBundleDocumentTypes);
 		}
 	    }
-	  if (dst > 0)
+	  if (nNames > 0)
 	    {
-	      classNames = [[NSArray alloc] initWithObjects: names count: dst];
-	      allTypes = [[NSArray alloc] initWithObjects: valid count: dst];
+	      classNames = [[NSArray alloc] initWithObjects: names
+						      count: nNames];
+	    }
+	  if (nValid > 0)
+	    {
+	      allTypes = [[NSArray alloc] initWithObjects: valid count: nValid];
 	    }
 	}
     }
@@ -1346,7 +1352,7 @@ static BOOL _shouldClose = YES;
 
 @implementation NSDocumentController (Private)
 
-- (NSArray *) _editorAndViewerTypesForClass: (Class)documentClass
+- (NSArray *) _readableTypesForClass: (Class)documentClass
 {
   int i, count = [_types count];
   NSMutableArray *types = [NSMutableArray arrayWithCapacity: count];
@@ -1382,7 +1388,7 @@ static BOOL _shouldClose = YES;
   return types;
 }
 
-- (NSArray *) _editorTypesForClass: (Class)documentClass
+- (NSArray *) _writableTypesForClass: (Class)documentClass
 {
   int i, count = [_types count];
   NSMutableArray *types = [NSMutableArray arrayWithCapacity: count];
@@ -1393,6 +1399,7 @@ static BOOL _shouldClose = YES;
       NSDictionary *typeInfo = [_types objectAtIndex: i];
       NSString     *className = [typeInfo objectForKey: NSDocumentClassKey];
       NSString     *role      = [typeInfo objectForKey: NSRoleKey];
+      NSArray      *exportableAs = [typeInfo objectForKey: NSExportableAsKey];
       
       // if the standard one isn't filled... check the CF key.
       if (role == nil)
@@ -1411,46 +1418,22 @@ static BOOL _shouldClose = YES;
             }
           [types addObject: name];
         }
+
+      if ([exportableAs isKindOfClass: [NSArray class]])
+        {
+	  int i, count = [exportableAs count];
+	  NSString *name;
+
+	  for (i = 0; i < count; i++)
+	    {
+	      name = [exportableAs objectAtIndex: i];
+	      if ([name isKindOfClass: [NSString class]])
+		[types addObject: name];
+	    }
+	}
     }
   
   return types;
-}
-
-- (NSArray *) _exportableTypesForClass: (Class)documentClass
-{
-  // Dunno what this method is for; maybe looks for filter types
-  return [self _editorTypesForClass: documentClass];
-}
-
-- (NSString *) _nameForHumanReadableType: (NSString *)typeHR
-{
-  NSDictionary *typeInfo = HR_TYPE_INFO(typeHR);
-  NSString *type = [typeInfo objectForKey: NSNameKey];
-
-  if (type == nil)
-    {
-      type = [typeInfo objectForKey: CFBundleTypeName];
-    }
-  return type;
-}
-
-- (NSArray *) _displayNamesForTypes: (NSArray *)types
-{
-  NSEnumerator *en = [types objectEnumerator];
-  NSString *type = nil;
-  NSMutableArray *result = [NSMutableArray arrayWithCapacity: 10];
-  while ((type = (NSString *)[en nextObject]) != nil)
-    {
-      NSString *name = [self displayNameForType: type];
-      [result addObject: name];
-    }
-  return result;
-}
-
-- (NSArray *) _displayNamesForClass: (Class)documentClass
-{
-  return [self _displayNamesForTypes: 
-                 [self _editorTypesForClass: documentClass]];
 }
 
 static NSMapTable *autosavedDocuments = NULL;
