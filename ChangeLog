@@ -1,5 +1,14 @@
 2009-11-08 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSActionCell.m,
+	* Source/NSAffineTransform.m
+	White space changes and cleanup.
+	* Headers/AppKit/NSAnimation.h: Change to new MacOSX type definitions.
+	* Source/NSAnimation.m: Remove externs and white space changes.
+	* Source/externs.m: Move externs from NSAnimation to here.
+	
+2009-11-08 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSApplication.m (-finishLaunching): Only activate the
 	application if it isn't hidden.
 	* Source/Functions.m (NSConvertGlobalToWindowNumber,

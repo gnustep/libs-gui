@@ -33,13 +33,13 @@
 #include "config.h"
 #include <math.h>
 
-#include <Foundation/NSArray.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSString.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSString.h>
 
-#include "AppKit/NSAffineTransform.h"
-#include "AppKit/NSBezierPath.h"
-#include "AppKit/PSOperators.h"
+#import "AppKit/NSAffineTransform.h"
+#import "AppKit/NSBezierPath.h"
+#import "AppKit/PSOperators.h"
 
 /* Private definitions */
 #define A matrix.m11
@@ -67,7 +67,7 @@ static const float pi = 3.1415926535897932384626434;
  */
 - (void) concat
 {
-  NSAffineTransformStruct	matrix = [self transformStruct];
+  NSAffineTransformStruct matrix = [self transformStruct];
 
   PSconcat((float*)&matrix);
 }
@@ -194,9 +194,9 @@ static const float pi = 3.1415926535897932384626434;
 
 - (BOOL) isRotated
 {
-  NSAffineTransformStruct	matrix = [self transformStruct];
+  NSAffineTransformStruct matrix = [self transformStruct];
 
-  if (B == 0  &&  C == 0)
+  if (B == 0 && C == 0)
     {
       return NO;
     }
@@ -208,7 +208,7 @@ static const float pi = 3.1415926535897932384626434;
 
 - (void) boundingRectFor: (NSRect)rect result: (NSRect*)newRect
 {
-  NSAffineTransformStruct	matrix = [self transformStruct];
+  NSAffineTransformStruct matrix = [self transformStruct];
   /* Shortcuts of the usual rect values */
   float x = rect.origin.x;
   float y = rect.origin.y;
@@ -261,7 +261,7 @@ static const float pi = 3.1415926535897932384626434;
 
 - (NSPoint) deltaPointInMatrixSpace: (NSPoint)point
 {
-  NSAffineTransformStruct	matrix = [self transformStruct];
+  NSAffineTransformStruct matrix = [self transformStruct];
   NSPoint new;
 
   new.x = A * point.x + C * point.y;
@@ -300,7 +300,7 @@ static const float pi = 3.1415926535897932384626434;
 
 - (void) setMatrix: (const float[6])replace
 {
-  NSAffineTransformStruct	matrix;
+  NSAffineTransformStruct matrix;
 
   GSOnceMLog(@"deprecated ... use -setTransformStruct:");
   matrix.m11 = replace[0];
@@ -314,7 +314,7 @@ static const float pi = 3.1415926535897932384626434;
 
 - (void) getMatrix: (float[6])replace
 {
-  NSAffineTransformStruct	matrix = [self transformStruct];
+  NSAffineTransformStruct matrix = [self transformStruct];
 
   GSOnceMLog(@"deprecated ... use -transformStruct");
   replace[0] = matrix.m11;
@@ -327,7 +327,7 @@ static const float pi = 3.1415926535897932384626434;
 
 - (void) takeMatrixFromTransform: (NSAffineTransform *)aTransform
 {
-  NSAffineTransformStruct	matrix;
+  NSAffineTransformStruct matrix;
 
   GSOnceMLog(@"deprecated ... use -transformStruct and setTransformStruct:");
   matrix = [aTransform transformStruct];

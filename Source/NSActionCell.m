@@ -27,9 +27,9 @@
 */ 
 
 #include "config.h"
-#include <Foundation/NSCoder.h>
-#include "AppKit/NSActionCell.h"
-#include "AppKit/NSControl.h"
+#import <Foundation/NSCoder.h>
+#import "AppKit/NSActionCell.h"
+#import "AppKit/NSControl.h"
 
 @implementation NSActionCell
 
@@ -145,7 +145,7 @@ static Class controlClass;
 /**
  * Retrieve the value of the receiver
  */
-- (id)objectValue
+- (id) objectValue
 {
   if (_cell.in_editing && _control_view)
     if ([_control_view isKindOfClass: controlClass])
@@ -156,7 +156,7 @@ static Class controlClass;
 /**
  * Retrieve the value of the receiver as an NSAttributedString.
  */
-- (NSAttributedString*)attributedStringValue
+- (NSAttributedString*) attributedStringValue
 {
   if (_cell.in_editing && _control_view)
     if ([_control_view isKindOfClass: controlClass])
@@ -167,7 +167,7 @@ static Class controlClass;
 /**
  * Retrieve the value of the receiver as an NSString.
  */
-- (NSString *)stringValue
+- (NSString *) stringValue
 {
   if (_cell.in_editing && _control_view)
     if ([_control_view isKindOfClass: controlClass])
@@ -178,7 +178,7 @@ static Class controlClass;
 /**
  * Retrieve the value of the receiver as a double.
  */
-- (double)doubleValue
+- (double) doubleValue
 {
   if (_cell.in_editing && _control_view)
     if ([_control_view isKindOfClass: controlClass])
@@ -189,7 +189,7 @@ static Class controlClass;
 /**
  * Retrieve the value of the receiver as a float.
  */
-- (float)floatValue
+- (float) floatValue
 {
   if (_cell.in_editing && _control_view)
     if ([_control_view isKindOfClass: controlClass])
@@ -200,7 +200,7 @@ static Class controlClass;
 /**
  * Retrieve the value of the receiver as an int.
  */
-- (int)intValue
+- (int) intValue
 {
   if (_cell.in_editing && _control_view)
     if ([_control_view isKindOfClass: controlClass])
@@ -287,7 +287,7 @@ static Class controlClass;
 /**
  * Returns the control view of the receiver.
  */
--(NSView *)controlView
+-(NSView *) controlView
 {
   return _control_view;
 }
@@ -318,11 +318,11 @@ static Class controlClass;
   if ([aCoder allowsKeyedCoding])
     {
       [aCoder encodeInt: [self tag] forKey: @"NSTag"];
-      if([self target] != nil)
+      if ([self target] != nil)
 	{
 	  [aCoder encodeObject: [self target] forKey: @"NSTarget"];
 	}
-      if([self action] != NULL)
+      if ([self action] != NULL)
 	{
 	  [aCoder encodeObject: NSStringFromSelector([self action]) forKey: @"NSAction"];
 	}
@@ -341,6 +341,8 @@ static Class controlClass;
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   self = [super initWithCoder: aDecoder];
+  if (!self)
+    return nil;
 
   if ([aDecoder allowsKeyedCoding])
     {

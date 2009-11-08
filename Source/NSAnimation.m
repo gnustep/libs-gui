@@ -26,41 +26,32 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <AppKit/NSAnimation.h>
+#import <Foundation/NSDate.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSLock.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSRunLoop.h>
+#import <Foundation/NSThread.h>
+#import <Foundation/NSValue.h>
 #include <GNUstepBase/GSLock.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSValue.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSRunLoop.h>
-#include <Foundation/NSThread.h>
-#include <Foundation/NSLock.h>
-#include <Foundation/NSDate.h>
-#include <AppKit/NSApplication.h>
 
+#import <AppKit/NSAnimation.h>
+#import <AppKit/NSApplication.h>
 // needed by NSViewAnimation
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSView.h>
+#import <AppKit/NSView.h>
+#import <AppKit/NSWindow.h>
 
-#include <Foundation/NSDebug.h>
+#include <math.h>
+
+NSString* NSAnimationBlockingRunLoopMode = @"NSAnimationBlockingRunLoopMode";
 
 /*===================*
  * NSAnimation class *
  *===================*/
-
-NSString* NSAnimationProgressMarkNotification
-= @"NSAnimationProgressMarkNotification";
-
-NSString *NSAnimationProgressMark
-= @"NSAnimationProgressMark";
-
-NSString* NSAnimationBlockingRunLoopMode
-= @"NSAnimationBlockingRunLoopMode";
-
 #define	GSI_ARRAY_NO_RETAIN
 #define	GSI_ARRAY_NO_RELEASE
 #define	GSIArrayItem NSAnimationProgress
-
-#include <math.h>
 #include <GNUstepBase/GSIArray.h>
 
 // 'reasonable value' ?
@@ -69,7 +60,7 @@ NSString* NSAnimationBlockingRunLoopMode
 static NSArray* _NSAnimationDefaultRunLoopModes;
 
 static inline void 
-_GSBezierComputeCoefficients ( _GSBezierDesc *b )
+_GSBezierComputeCoefficients(_GSBezierDesc *b)
 {
   b->a[0] =     b->p[0];
   b->a[1] =-3.0*b->p[0] + 3.0*b->p[1];
@@ -79,49 +70,50 @@ _GSBezierComputeCoefficients ( _GSBezierDesc *b )
 }
 
 static inline float 
-_GSBezierEval (_GSBezierDesc *b, float t )
+_GSBezierEval(_GSBezierDesc *b, float t)
 {
   if (!b->areCoefficientsComputed)
-    _GSBezierComputeCoefficients (b);
+    _GSBezierComputeCoefficients(b);
   return b->a[0] + t * (b->a[1] + t * (b->a[2] + t * b->a[3]));
 }
 
 static inline float 
-_GSBezierDerivEval (_GSBezierDesc *b, float t )
+_GSBezierDerivEval(_GSBezierDesc *b, float t)
 {
   if (!b->areCoefficientsComputed)
-    _GSBezierComputeCoefficients (b);
+    _GSBezierComputeCoefficients(b);
   return b->a[1] + t * (2.0 * b->a[2] + t * 3.0 * b->a[3]);
 }
 
 static inline void 
-_GSRationalBezierComputeBezierDesc (_GSRationalBezierDesc *rb )
+_GSRationalBezierComputeBezierDesc(_GSRationalBezierDesc *rb)
 {
   unsigned i;
-  for (i=0; i<4; i++)
+
+  for (i = 0; i < 4; i++)
     rb->n.p[i] = (rb->d.p[i] = rb->w[i]) * rb->p[i];
-  _GSBezierComputeCoefficients (&rb->n);
-  _GSBezierComputeCoefficients (&rb->d);
+  _GSBezierComputeCoefficients(&rb->n);
+  _GSBezierComputeCoefficients(&rb->d);
   rb->areBezierDescComputed = YES;
 }
  
 static inline float
-_GSRationalBezierEval (_GSRationalBezierDesc *rb, float t)
+_GSRationalBezierEval(_GSRationalBezierDesc *rb, float t)
 {
   if (!rb->areBezierDescComputed)
-    _GSRationalBezierComputeBezierDesc (rb);
-  return _GSBezierEval(&(rb->n),t) / _GSBezierEval(&(rb->d),t);
+    _GSRationalBezierComputeBezierDesc(rb);
+  return _GSBezierEval(&(rb->n), t) / _GSBezierEval(&(rb->d), t);
 }
 
 static inline float
-_GSRationalBezierDerivEval (_GSRationalBezierDesc *rb, float t)
+_GSRationalBezierDerivEval(_GSRationalBezierDesc *rb, float t)
 {
   float h;
   if (!rb->areBezierDescComputed)
-    _GSRationalBezierComputeBezierDesc (rb);
-  h = _GSBezierEval (&(rb->d),t);
-  return ( _GSBezierDerivEval(&(rb->n),t) * h 
-           - _GSBezierEval   (&(rb->n),t) * _GSBezierDerivEval(&(rb->d),t) )
+    _GSRationalBezierComputeBezierDesc(rb);
+  h = _GSBezierEval(&(rb->d), t);
+  return (_GSBezierDerivEval(&(rb->n), t) * h 
+          - _GSBezierEval   (&(rb->n), t) * _GSBezierDerivEval(&(rb->d), t))
     / (h*h);
 }
 
@@ -144,7 +136,7 @@ _NSAnimationCurveDesc _gs_animationCurveDesc[] =
  * gradients) to GSRBezier data (4 control points), then evaluate it.
  */
 static inline float
-_gs_animationValueForCurve ( _NSAnimationCurveDesc *c, float t, float t0 )
+_gs_animationValueForCurve(_NSAnimationCurveDesc *c, float t, float t0)
 {
   if (!c->isRBezierComputed)
     {
@@ -172,10 +164,10 @@ _gs_animationValueForCurve ( _NSAnimationCurveDesc *c, float t, float t0 )
 @end
 
 NSComparisonResult
-nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress second)
+nsanimation_progressMarkSorter(NSAnimationProgress first, NSAnimationProgress second)
 {
   float diff = first - second;
-  return (NSComparisonResult)(diff / fabs (diff));
+  return (NSComparisonResult)(diff / fabs(diff));
 }
 
 /* Thread locking/unlocking support macros.
@@ -216,8 +208,9 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
 + (void) initialize
 {
   unsigned i;
-  for (i=0; i<5; i++) // compute Bezier curve parameters...
-    _gs_animationValueForCurve (&_gs_animationCurveDesc[i],0.0,0.0);
+
+  for (i = 0; i < 5; i++) // compute Bezier curve parameters...
+    _gs_animationValueForCurve(&_gs_animationCurveDesc[i], 0.0, 0.0);
   _NSAnimationDefaultRunLoopModes
     = [[NSArray alloc] initWithObjects:
         NSDefaultRunLoopMode,
@@ -232,7 +225,6 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
   
   if (progress < 0.0) progress = 0.0;
   if (progress > 1.0) progress = 1.0;
-
 
   _NSANIMATION_LOCK;
   if (GSIArrayCount(_progressMarks) == 0)
@@ -1208,14 +1200,6 @@ nsanimation_progressMarkSorter ( NSAnimationProgress first,NSAnimationProgress s
  * NSViewAnimation class *
  *=======================*/
 
-NSString *NSViewAnimationTargetKey     = @"NSViewAnimationTargetKey";
-NSString *NSViewAnimationStartFrameKey = @"NSViewAnimationStartFrameKey";
-NSString *NSViewAnimationEndFrameKey   = @"NSViewAnimationEndFrameKey";
-NSString *NSViewAnimationEffectKey     = @"NSViewAnimationEffectKey";
-
-NSString *NSViewAnimationFadeInEffect  = @"NSViewAnimationFadeInEffect";
-NSString *NSViewAnimationFadeOutEffect = @"NSViewAnimationFadeOutEffect";
-
 @interface _GSViewAnimationBaseDesc : NSObject
 {
   id _target;
@@ -1231,7 +1215,7 @@ NSString *NSViewAnimationFadeOutEffect = @"NSViewAnimationFadeOutEffect";
 @end
 
 @interface _GSViewAnimationDesc : _GSViewAnimationBaseDesc
-                               {
+{
   BOOL _shouldHide;
   BOOL _shouldUnhide;
 }
@@ -1251,17 +1235,18 @@ NSString *NSViewAnimationFadeOutEffect = @"NSViewAnimationFadeOutEffect";
     {
       NSZone* zone;
       id target;
+
       zone = [self zone];
       RELEASE (self);
       target = [properties objectForKey: NSViewAnimationTargetKey];
-      if (target!=nil)
+      if (target != nil)
         {
           if ([target isKindOfClass: [NSView class]])
             self = [[_GSViewAnimationDesc allocWithZone: zone]
-                      initWithProperties : properties];
+                      initWithProperties: properties];
           else if ([target isKindOfClass: [NSWindow class]])
             self = [(_GSWindowAnimationDesc*)[_GSWindowAnimationDesc allocWithZone: zone]
-                      initWithProperties : properties];
+                      initWithProperties: properties];
           else
             [NSException
                raise: NSInvalidArgumentException
@@ -1296,11 +1281,12 @@ NSString *NSViewAnimationFadeOutEffect = @"NSViewAnimationFadeOutEffect";
   return self;
 }
 
-- (void) setCurrentProgress: (float) progress
+- (void) setCurrentProgress: (float)progress
 {
   if (progress < 1.0f)
     {
       NSRect r;
+
       r.origin.x    = _startFrame.origin.x
         + progress*( _endFrame.origin.x - _startFrame.origin.x );
       r.origin.y    = _startFrame.origin.y
@@ -1310,7 +1296,7 @@ NSString *NSViewAnimationFadeOutEffect = @"NSViewAnimationFadeOutEffect";
       r.size.height = _startFrame.size.height
         + progress*( _endFrame.size.height - _startFrame.size.height );
 
-      [self setTargetFrame:r];
+      [self setTargetFrame: r];
 
       if (_effect == NSViewAnimationFadeOutEffect)
         /* subclassResponsibility */;
@@ -1323,8 +1309,10 @@ NSString *NSViewAnimationFadeOutEffect = @"NSViewAnimationFadeOutEffect";
     }
 }
 
-- (void) setTargetFrame: (NSRect) frame;
-{ [self subclassResponsibility: _cmd]; }
+- (void) setTargetFrame: (NSRect)frame
+{
+ [self subclassResponsibility: _cmd];
+}
 
 @end // implementation _GSViewAnimationDesc
 
@@ -1342,7 +1330,7 @@ NSString *NSViewAnimationFadeOutEffect = @"NSViewAnimationFadeOutEffect";
   return self;
 }
 
-- (void) setCurrentProgress: (float) progress
+- (void) setCurrentProgress: (float)progress
 {
   [super setCurrentProgress: progress];
   if (_effect == NSViewAnimationFadeOutEffect)
@@ -1359,8 +1347,10 @@ NSString *NSViewAnimationFadeOutEffect = @"NSViewAnimationFadeOutEffect";
     }
 }
 
-- (void) setTargetFrame: (NSRect) frame;
-{ [_target setFrame:frame]; }
+- (void) setTargetFrame: (NSRect)frame
+{
+  [_target setFrame: frame];
+}
 
 @end // implementation _GSViewAnimationDesc
 
@@ -1375,15 +1365,15 @@ NSString *NSViewAnimationFadeOutEffect = @"NSViewAnimationFadeOutEffect";
   return self;
 }
 
-- (void) setCurrentProgress: (float) progress
+- (void) setCurrentProgress: (float)progress
 {
   [super setCurrentProgress: progress];
   if (_effect == NSViewAnimationFadeOutEffect)
-    [_target setAlphaValue: _startAlpha*(1.0f-progress)];
+    [_target setAlphaValue: _startAlpha * (1.0f - progress)];
   if (_effect == NSViewAnimationFadeInEffect)
-    [_target setAlphaValue: _startAlpha+(1.0f-_startAlpha)*progress];
+    [_target setAlphaValue: _startAlpha + (1.0f - _startAlpha) * progress];
 
-  if (progress>=1.0f)
+  if (progress >= 1.0f)
     {
       if (_effect == NSViewAnimationFadeOutEffect)
         [_target orderBack: self];
@@ -1392,8 +1382,10 @@ NSString *NSViewAnimationFadeOutEffect = @"NSViewAnimationFadeOutEffect";
     }
 }
 
-- (void) setTargetFrame: (NSRect) frame;
-{ [_target setFrame:frame display:YES]; }
+- (void) setTargetFrame: (NSRect) frame
+{
+  [_target setFrame: frame display: YES];
+}
 
 @end // implementation _GSWindowAnimationDesc
 

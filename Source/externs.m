@@ -76,6 +76,13 @@ NSString *NSWordTablesWriteException = @"WordTablesWrite";
 
 NSString *GSWindowServerInternalException = @"WindowServerInternal";
 
+// NSAnimation
+NSString* NSAnimationProgressMarkNotification
+= @"NSAnimationProgressMarkNotification";
+NSString *NSAnimationProgressMark = @"NSAnimationProgressMark";
+NSString *NSAnimationTriggerOrderIn = @"NSAnimationTriggerOrderIn"; 
+NSString *NSAnimationTriggerOrderOut = @"NSAnimationTriggerOrderOut"; 
+
 // Application notifications
 NSString *NSApplicationDidBecomeActiveNotification
               = @"ApplicationDidBecomeActive";
@@ -383,6 +390,15 @@ NSString *NSViewBoundsDidChangeNotification
     = @"NSViewBoundsDidChangeNotification";
 NSString *NSViewGlobalFrameDidChangeNotification
     = @"NSViewGlobalFrameDidChangeNotification";
+
+// NSViewAnimation 
+NSString *NSViewAnimationTargetKey     = @"NSViewAnimationTargetKey";
+NSString *NSViewAnimationStartFrameKey = @"NSViewAnimationStartFrameKey";
+NSString *NSViewAnimationEndFrameKey   = @"NSViewAnimationEndFrameKey";
+NSString *NSViewAnimationEffectKey     = @"NSViewAnimationEffectKey";
+NSString *NSViewAnimationFadeInEffect  = @"NSViewAnimationFadeInEffect";
+NSString *NSViewAnimationFadeOutEffect = @"NSViewAnimationFadeOutEffect";
+
 
 // NSMenu notifications
 NSString* const NSMenuDidSendActionNotification = @"MenuDidSendAction";

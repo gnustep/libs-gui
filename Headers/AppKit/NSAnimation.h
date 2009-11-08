@@ -33,8 +33,8 @@
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 
-#include <Foundation/NSObject.h>
-#include <AppKit/AppKitDefines.h>
+#import <Foundation/NSObject.h>
+#import <AppKit/AppKitDefines.h>
 #include <GNUstepGUI/GSAnimator.h>
 
 @class NSString;
@@ -45,22 +45,24 @@
 
 /** These constants describe the curve of an animation,
     that is, the relative speed of an animation from start to finish. */
-typedef enum _NSAnimationCurve
+enum _NSAnimationCurve
 {
   NSAnimationEaseInOut = 0, // default
   NSAnimationEaseIn,
   NSAnimationEaseOut,
   NSAnimationLinear,
   NSAnimationSpeedInOut // GNUstep only
-} NSAnimationCurve;
+};
+typedef NSUInteger NSAnimationCurve;
 
 /** These constants indicate the blocking mode of an NSAnimation object when it is running. */
-typedef enum _NSAnimationBlockingMode
+enum _NSAnimationBlockingMode
 {
   NSAnimationBlocking,
   NSAnimationNonblocking,
   NSAnimationNonblockingThreaded
-} NSAnimationBlockingMode;
+};
+typedef NSUInteger NSAnimationBlockingMode;
 
 typedef float NSAnimationProgress;
 
@@ -96,6 +98,9 @@ APPKIT_EXPORT NSString *NSAnimationProgressMarkNotification;
 
 /** Key used in the [NSNotification-userInfo] disctionary to access the current progress mark. */
 APPKIT_EXPORT NSString *NSAnimationProgressMark;
+
+APPKIT_EXPORT NSString *NSAnimationTriggerOrderIn; 
+APPKIT_EXPORT NSString *NSAnimationTriggerOrderOut; 
 
 /**
  * Objects of the NSAnimation class manage the timing and progress of
