@@ -1,3 +1,10 @@
+2009-11-08 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSApplication.m (-finishLaunching): Only activate the
+	application if it isn't hidden.
+	* Source/Functions.m (NSConvertGlobalToWindowNumber,
+	NSConvertWindowNumberToGlobal): Add a slightly better implementation. 
+
 2009-11-05  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSDocumentController.m (+initialize): Don't ignore types

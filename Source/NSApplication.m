@@ -852,7 +852,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   _hidden = [[NSMutableArray alloc] init];
   _inactive = [[NSMutableArray alloc] init];
   _unhide_on_activation = YES;
-  _app_is_hidden = YES;
+  _app_is_hidden = NO;
   /* Ivar already automatically initialized to NO when the app is
      created.  */
   //_app_is_active = NO;
@@ -1095,7 +1095,11 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
     addObserver: self selector: @selector(_workspaceNotification:)
       name: GSUnhideAllApplicationsNotification object: nil];
 
-  [self activateIgnoringOtherApps: YES];
+  // Don't activate the application, when the delegate hid it
+  if (![self isHidden])
+    {
+      [self activateIgnoringOtherApps: YES];
+    }
 
   /*
    * Instantiate the NSDocumentController if we are a doc-based app
