@@ -1,5 +1,14 @@
 2009-11-09 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/Additions/GNUstepGUI/GSTheme.h,
+	* Source/GSThemeDrawing.m,
+	* Source/NSTableView.m: Move corner view drawing into GSTheme.
+	* Source/NSTextFieldCell.m: White space changes.
+	* Headers/AppKit/NSTableHeaderCell.h,
+	* Source/NSTableHeaderCell.m: Add new 10.3 methods.
+	
+2009-11-09 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSControl.m,
 	* Headers/AppKit/NSStepper.h,
 	* Headers/AppKit/NSStepperCell.h,

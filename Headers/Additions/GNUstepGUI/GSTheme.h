@@ -697,6 +697,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 	 withFrame: (NSRect) aRect
           position: (NSPoint) position;
 
+
 // menu item cell drawing methods
 - (NSColor *) backgroundColorForMenuItemCell: (NSMenuItemCell *)cell
                                        state: (GSThemeControlState)state;
@@ -705,6 +706,12 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
                                          inView: (NSView *)controlView
                                           state: (GSThemeControlState)state
                                    isHorizontal: (BOOL)isHorizontal;
+
+
+// Table drawing methods
+- (void) drawTableCornerView: (NSView*)cornerView
+                    withClip: (NSRect)aRect;
+
 
 - (float) titlebarHeight;
 

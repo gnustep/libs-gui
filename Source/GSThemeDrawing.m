@@ -728,6 +728,28 @@
     }
 }
 
+// Table drawing methods
+- (void) drawTableCornerView: (NSView*)cornerView
+                   withClip: (NSRect)aRect
+{
+  NSRect divide;
+  NSRect rect;
+
+  if ([cornerView isFlipped])
+    {
+      NSDivideRect(aRect, &divide, &rect, 1.0, NSMaxYEdge);
+    }
+  else
+    {
+      NSDivideRect(aRect, &divide, &rect, 1.0, NSMinYEdge);
+    }
+
+  [[NSColor blackColor] set];
+  NSRectFill(divide);
+  rect = [self drawDarkButton: rect withClip: aRect];
+  [[NSColor controlShadowColor] set];
+  NSRectFill(rect);
+}
 
 // Window decoration drawing methods
 /* These include the black border. */

@@ -1934,23 +1934,7 @@ static void computeNewSelection
 
 - (void) drawRect: (NSRect)aRect
 {
-  NSRect divide;
-  NSRect rect;
-
-  if ([self isFlipped])
-    {
-      NSDivideRect(aRect, &divide, &rect, 1.0, NSMaxYEdge);
-    }
-  else
-    {
-      NSDivideRect(aRect, &divide, &rect, 1.0, NSMinYEdge);
-    }
-
-  [[NSColor blackColor] set];
-  NSRectFill(divide);
-  rect = [[GSTheme theme] drawDarkButton: rect withClip: aRect];
-  [[NSColor controlShadowColor] set];
-  NSRectFill(rect);
+  [[GSTheme theme] drawTableCornerView: self withClip: aRect];
 }
 
 @end

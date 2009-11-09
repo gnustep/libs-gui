@@ -24,19 +24,20 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include "AppKit/NSTableHeaderCell.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSFont.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSTableHeaderCell.h"
 #include "GNUstepGUI/GSTheme.h"
 
 @implementation NSTableHeaderCell
-{
-}
 
 // Default appearance of NSTableHeaderCell
 - (id) initTextCell: (NSString *)aString
 {
-  [super initTextCell: aString];
+  self = [super initTextCell: aString];
+  if (!self)
+    return nil;
 
   [self setAlignment: NSCenterTextAlignment];
   [self setTextColor: [NSColor windowFrameTextColor]];
@@ -73,6 +74,36 @@
     }
 
   [self _drawBackgroundWithFrame: cellFrame inView: controlView];
+}
+
+- (void) drawSortIndicatorWithFrame: (NSRect)cellFrame
+                             inView: (NSView *)controlView
+                          ascending: (BOOL)ascending
+                           priority: (int)priority
+{
+  NSImage *img;
+
+  cellFrame = [self sortIndicatorRectForBounds: cellFrame];
+  if (ascending)
+    img = [NSImage imageNamed: @"NSAscendingSortIndicator"];
+  else
+    img = [NSImage imageNamed: @"NSDescendingSortIndicator"];
+
+  [img drawAtPoint: cellFrame.origin 
+       fromRect: NSZeroRect
+       operation: NSCompositeSourceOver
+       fraction: 1.0];
+}
+
+- (NSRect) sortIndicatorRectForBounds: (NSRect)theRect
+{
+  NSImage *img = [NSImage imageNamed: @"NSAscendingSortIndicator"];
+  NSSize size = [img size];
+
+  theRect.origin.x = NSMaxX(theRect) - size.width;
+  theRect.size = size;
+
+  return theRect;
 }
 
 - (void) setHighlighted: (BOOL)flag

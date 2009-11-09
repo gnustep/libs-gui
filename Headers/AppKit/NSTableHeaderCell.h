@@ -27,12 +27,22 @@
 
 #ifndef _GNUstep_H_NSTableHeaderCell
 #define _GNUstep_H_NSTableHeaderCell
+#include <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSTextFieldCell.h>
+#import <AppKit/NSTextFieldCell.h>
 
 @interface NSTableHeaderCell : NSTextFieldCell
 {
 }
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (void)drawSortIndicatorWithFrame: (NSRect)cellFrame 
+                            inView: (NSView *)controlView
+                         ascending: (BOOL)ascending 
+                          priority: (int)priority;
+- (NSRect)sortIndicatorRectForBounds: (NSRect)theRect;
+#endif
+
 @end
 
 #endif

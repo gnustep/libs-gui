@@ -202,13 +202,13 @@
                            inView: (NSView*)controlView
 {
   if (_textfieldcell_draws_background)
-	  {
+    {
       if ([self isEnabled])
-	      {
+        {
           [_background_color set];
         }
       else
-	      {
+        {
           [[NSColor controlBackgroundColor] set];
         }
       NSRectFill([self drawingRectForBounds: cellFrame]);
