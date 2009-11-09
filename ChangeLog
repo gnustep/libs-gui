@@ -1,3 +1,8 @@
+2009-11-09 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSScroller.m: make offset of buttons inside scroller adjustable
+	for theming.
+
 2009-11-08 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSActionCell.m,
