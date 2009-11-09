@@ -34,6 +34,7 @@
 #import "AppKit/NSCell.h"
 #import "AppKit/NSColor.h"
 #import "AppKit/NSColorList.h"
+#import "AppKit/NSColorWell.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
 #import "AppKit/NSMenuItemCell.h"
@@ -726,6 +727,56 @@
     {
       [self drawButton: cellFrame withClip: NSZeroRect];
     }
+}
+
+// NSColorWell drawing method
+- (NSRect) drawColorWellBorder: (NSColorWell*)well
+                    withBounds: (NSRect)bounds
+                      withClip: (NSRect)clipRect
+{
+  NSRect aRect = bounds;
+
+  if ([well isBordered])
+    {
+      /*
+       * Draw border.
+       */
+      [self drawButton: aRect withClip: clipRect];
+
+      /*
+       * Fill in control color.
+       */
+      if ([well isActive])
+	{
+	  [[NSColor selectedControlColor] set];
+	}
+      else
+	{
+	  [[NSColor controlColor] set];
+	}
+      aRect = NSInsetRect(aRect, 2.0, 2.0);
+      NSRectFill(NSIntersectionRect(aRect, clipRect));
+
+      /*
+       * Set an inset rect for the color area
+       */
+      aRect = NSInsetRect(bounds, 8.0, 8.0);
+    }
+
+  /*
+   * OpenStep 4.2 behavior is to omit the inner border for
+   * non-enabled NSColorWell objects.
+   */
+  if ([well isEnabled])
+    {
+      /*
+       * Draw inner frame.
+       */
+      [self drawGrayBezel: aRect withClip: clipRect];
+      aRect = NSInsetRect(aRect, 2.0, 2.0);
+    }
+
+  return aRect;
 }
 
 // Table drawing methods

@@ -2,6 +2,13 @@
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h,
 	* Source/GSThemeDrawing.m,
+	* Source/NSColorWell.m: Move colour well border drawing into GSTheme.
+	This change makes the dragable area of the well a bit smaller.	
+
+2009-11-09 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h,
+	* Source/GSThemeDrawing.m,
 	* Source/NSTableView.m: Move corner view drawing into GSTheme.
 	* Source/NSTextFieldCell.m: White space changes.
 	* Headers/AppKit/NSTableHeaderCell.h,

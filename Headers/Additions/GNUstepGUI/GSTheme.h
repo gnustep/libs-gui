@@ -151,6 +151,7 @@
 @class NSButton;
 @class NSColor;
 @class NSColorList;
+@class NSColorWell;
 @class NSDictionary;
 @class NSImage;
 @class NSMenuItemCell;
@@ -707,6 +708,10 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
                                           state: (GSThemeControlState)state
                                    isHorizontal: (BOOL)isHorizontal;
 
+// NSColorWell drawing method
+- (NSRect) drawColorWellBorder: (NSColorWell*)well
+                    withBounds: (NSRect)bounds
+                      withClip: (NSRect)clipRect;
 
 // Table drawing methods
 - (void) drawTableCornerView: (NSView*)cornerView
