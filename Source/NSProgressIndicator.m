@@ -38,56 +38,15 @@
 
 @implementation NSProgressIndicator
 
-static NSColor *fillColour = nil;
-#define MaxCount 10
-static int indeterminateMaxCount = MaxCount;
-static int spinningMaxCount = MaxCount;
-static NSColor *indeterminateColors[MaxCount];
-static NSImage *spinningImages[MaxCount];
-
-
 + (void) initialize
 {
   if (self == [NSProgressIndicator class])
     {
-      int i;
-          
       [self setVersion: 1];
-      // FIXME: Should come from defaults and should be reset when defaults change
-      // FIXME: Should probably get the color from the color extension list (see NSToolbar)
-      fillColour = RETAIN([NSColor controlShadowColor]);
-
-      // Load images for indeterminate style
-      for (i = 0; i < MaxCount; i++)
-        {
-          NSString *imgName = [NSString stringWithFormat: @"common_ProgressIndeterminate_%d", i + 1];
-          NSImage *image = [NSImage imageNamed: imgName];
-
-          if (image == nil)
-            {
-              indeterminateMaxCount = i;
-              break;
-            }
-          indeterminateColors[i] = RETAIN([NSColor colorWithPatternImage: image]);
-        }
-
-      // Load images for spinning style
-      for (i = 0; i < MaxCount; i++)
-        {
-          NSString *imgName = [NSString stringWithFormat: @"common_ProgressSpinning_%d", i + 1];
-          NSImage *image = [NSImage imageNamed: imgName];
-
-          if (image == nil)
-            {
-              spinningMaxCount = i;
-              break;
-            }
-          spinningImages[i] = RETAIN(image); 
-        }
     }
 }
  
-- (id)initWithFrame:(NSRect)frameRect
+- (id) initWithFrame: (NSRect)frameRect
 {
   self = [super initWithFrame: frameRect];
   if (!self)
@@ -109,7 +68,7 @@ static NSImage *spinningImages[MaxCount];
   return self;
 }
 
-- (void)dealloc
+- (void) dealloc
 {
   [self stopAnimation: self];
   [super dealloc];
@@ -120,25 +79,23 @@ static NSImage *spinningImages[MaxCount];
   return YES;
 }
 
-- (void)animate:(id)sender
+- (void) animate: (id)sender
 {
   if (!_isIndeterminate && (_style == NSProgressIndicatorBarStyle))
     return;
 
+  // Let this value overflow when it reachs the limit
   _count++;
-  if (((_style == NSProgressIndicatorSpinningStyle) && (_count >= spinningMaxCount))
-      || ((_style == NSProgressIndicatorBarStyle) && (_count >= indeterminateMaxCount)))
-    _count = 0;
 
   [self setNeedsDisplay: YES];
 }
 
-- (NSTimeInterval)animationDelay
+- (NSTimeInterval) animationDelay
 {
   return _animationDelay;
 }
 
-- (void)setAnimationDelay:(NSTimeInterval)delay
+- (void) setAnimationDelay: (NSTimeInterval)delay
 {
   _animationDelay = delay;
   if (_isRunning && (_isIndeterminate 
@@ -149,7 +106,7 @@ static NSImage *spinningImages[MaxCount];
     }
 }
 
-- (void)_animationLoop
+- (void) _animationLoop
 {
   while (_isRunning)
     {
@@ -161,7 +118,7 @@ static NSImage *spinningImages[MaxCount];
     }
 }
 
-- (void)startAnimation:(id)sender
+- (void) startAnimation: (id)sender
 {
   if (_isRunning || (!_isIndeterminate 
                      && (_style == NSProgressIndicatorBarStyle)))
@@ -184,7 +141,7 @@ static NSImage *spinningImages[MaxCount];
     }
 }
 
-- (void)stopAnimation:(id)sender
+- (void) stopAnimation: (id)sender
 {
   if (!_isRunning || (!_isIndeterminate 
                       && (_style == NSProgressIndicatorBarStyle)))
@@ -203,12 +160,12 @@ static NSImage *spinningImages[MaxCount];
   _isRunning = NO;
 }
 
-- (BOOL)usesThreadedAnimation
+- (BOOL) usesThreadedAnimation
 {
   return _usesThreadedAnimation;
 }
 
-- (void)setUsesThreadedAnimation:(BOOL)flag
+- (void) setUsesThreadedAnimation: (BOOL)flag
 {
   if (_usesThreadedAnimation != flag)
     {
@@ -224,17 +181,17 @@ static NSImage *spinningImages[MaxCount];
     }
 }
 
-- (void)incrementBy:(double)delta
+- (void) incrementBy: (double)delta
 {
   [self setDoubleValue: _doubleValue + delta];
 }
 
-- (double)doubleValue
+- (double) doubleValue
 {
   return _doubleValue;
 }
 
-- (void)setDoubleValue:(double)aValue
+- (void) setDoubleValue: (double)aValue
 {
   if (aValue > _maxValue)
     aValue = _maxValue;
@@ -248,12 +205,12 @@ static NSImage *spinningImages[MaxCount];
     }
 }
 
-- (double)minValue
+- (double) minValue
 {
   return _minValue;
 }
 
-- (void)setMinValue:(double)newMinimum
+- (void) setMinValue: (double)newMinimum
 {
   if (_minValue != newMinimum)
     {
@@ -264,12 +221,12 @@ static NSImage *spinningImages[MaxCount];
     }
 }
 
-- (double)maxValue
+- (double) maxValue
 {
   return _maxValue;
 }
 
-- (void)setMaxValue:(double)newMaximum
+- (void) setMaxValue: (double)newMaximum
 {
   if (_maxValue != newMaximum)
     {
@@ -285,7 +242,7 @@ static NSImage *spinningImages[MaxCount];
   return _isBezeled;
 }
 
-- (void)setBezeled:(BOOL)flag
+- (void) setBezeled: (BOOL)flag
 {
   if (_isBezeled != flag)
     {
@@ -294,12 +251,12 @@ static NSImage *spinningImages[MaxCount];
     }
 }
 
-- (BOOL)isIndeterminate
+- (BOOL) isIndeterminate
 {
   return _isIndeterminate;
 }
 
-- (void)setIndeterminate:(BOOL)flag
+- (void) setIndeterminate: (BOOL)flag
 {
   _isIndeterminate = flag;
    // Maybe we need more functionality here when we implement indeterminate
@@ -309,12 +266,12 @@ static NSImage *spinningImages[MaxCount];
   [self setNeedsDisplay: YES];
 }
 
-- (BOOL)isDisplayedWhenStopped
+- (BOOL) isDisplayedWhenStopped
 {
   return _isDisplayedWhenStopped;
 }
 
-- (void)setDisplayedWhenStopped:(BOOL)flag
+- (void) setDisplayedWhenStopped: (BOOL)flag
 {
   _isDisplayedWhenStopped = _isDisplayedWhenStopped;
   [self setNeedsDisplay: YES];
@@ -325,7 +282,7 @@ static NSImage *spinningImages[MaxCount];
   return _style;
 }
 
-- (void)setStyle:(NSProgressIndicatorStyle)style
+- (void) setStyle: (NSProgressIndicatorStyle)style
 {
   _style = style;
   _count = 0;
@@ -334,24 +291,24 @@ static NSImage *spinningImages[MaxCount];
   [self setNeedsDisplay: YES];
 }
 
-- (NSControlSize)controlSize
+- (NSControlSize) controlSize
 {
   return _controlSize;
 }
 
-- (void)setControlSize:(NSControlSize)size
+- (void) setControlSize: (NSControlSize)size
 {
   _controlSize = size;
   [self sizeToFit];
   [self setNeedsDisplay: YES];
 }
 
-- (NSControlTint)controlTint
+- (NSControlTint) controlTint
 {
   return _controlTint;
 }
 
-- (void)setControlTint:(NSControlTint)tint
+- (void) setControlTint: (NSControlTint)tint
 {
   _controlTint = tint;
   [self setNeedsDisplay: YES];
@@ -362,77 +319,24 @@ static NSImage *spinningImages[MaxCount];
   // FIXME
 }
 
-- (void)drawRect:(NSRect)rect
+- (void) drawRect: (NSRect)rect
 {
-   NSRect r;
+   double val;
 
    if (!_isRunning && !_isDisplayedWhenStopped)
      return;
 
-   // Draw the Bezel
-   if (_isBezeled)
-     {
-       // Calc the inside rect to be drawn
-       r = [[GSTheme theme] drawGrayBezel: _bounds withClip: rect];
-     }
-   else
-     {
-       r = _bounds;
-     }
-
-   if (_style == NSProgressIndicatorSpinningStyle)
-     {
-       NSRect imgBox = {{0,0}, {0,0}};
-
-       imgBox.size = [spinningImages[_count] size];
-       [spinningImages[_count] drawInRect: r 
-                      fromRect: imgBox 
-                      operation: NSCompositeSourceOver
-                      fraction: 1.0];
-     }
-   else
-     {
-       if (_isIndeterminate)
-         {
-           [indeterminateColors[_count] set];
-           NSRectFill(r);
-         }
-       else
-         {
-           // Draw determinate 
-           if (_doubleValue > _minValue)
-             {
-               double val;
-               
-               if (_doubleValue > _maxValue)
-                 val = _maxValue - _minValue;
-               else 
-                 val = _doubleValue - _minValue;
-               
-               if (_isVertical)
-                 {
-                   float height = NSHeight(r) * (val / (_maxValue - _minValue));
-
-                   if ([self isFlipped])
-                     {
-                       // Compensate for the flip
-                       r.origin.y += NSHeight(r) - height;
-                     }
-                   r.size.height = height;
-                 }
-               else
-                 {
-                   r.size.width = NSWidth(r) * (val / (_maxValue - _minValue));
-                 }
-               r = NSIntersectionRect(r,rect);
-               if (!NSIsEmptyRect(r))
-                 {
-                   [fillColour set];
-                   NSRectFill(r);
-                 }
-             }
-         }
-     }
+   if (_doubleValue < _minValue)
+     val = 0.0;
+   else if (_doubleValue > _maxValue)
+     val = 1.0;
+   else 
+     val = (_doubleValue - _minValue) / (_maxValue - _minValue);
+   [[GSTheme theme] drawProgressIndicator: self
+                    withBounds: _bounds
+                    withClip: rect
+                    atCount: _count
+                    forValue: val];
 }
 
 // It does not seem that Gnustep has a copyWithZone: on NSView, it is private
@@ -457,9 +361,9 @@ static NSImage *spinningImages[MaxCount];
 */
 
 // NSCoding
-- (void)encodeWithCoder:(NSCoder *)aCoder
+- (void) encodeWithCoder: (NSCoder *)aCoder
 {
-   [super encodeWithCoder:aCoder];
+   [super encodeWithCoder: aCoder];
    if ([aCoder allowsKeyedCoding])
      {
        unsigned long flags = 0;
@@ -498,7 +402,7 @@ static NSImage *spinningImages[MaxCount];
      }
 }
 
-- (id)initWithCoder:(NSCoder *)aDecoder
+- (id) initWithCoder: (NSCoder *)aDecoder
 {
   self = [super initWithCoder: aDecoder];
   if (!self)
@@ -619,12 +523,12 @@ static NSImage *spinningImages[MaxCount];
 
 @implementation NSProgressIndicator (GNUstepExtensions)
 
-- (BOOL)isVertical
+- (BOOL) isVertical
 {
   return _isVertical;
 }
 
-- (void)setVertical:(BOOL)flag
+- (void) setVertical: (BOOL)flag
 {
   if (_isVertical != flag)
     {

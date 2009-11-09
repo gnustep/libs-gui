@@ -39,6 +39,7 @@
 #import "AppKit/NSImage.h"
 #import "AppKit/NSMenuItemCell.h"
 #import "AppKit/NSParagraphStyle.h"
+#import "AppKit/NSProgressIndicator.h"
 #import "AppKit/NSScroller.h"
 #import "AppKit/NSView.h"
 #import "AppKit/PSOperators.h"
@@ -779,6 +780,123 @@
   return aRect;
 }
 
+// progress indicator drawing methods
+static NSColor *fillColour = nil;
+#define MaxCount 10
+static int indeterminateMaxCount = MaxCount;
+static int spinningMaxCount = MaxCount;
+static NSColor *indeterminateColors[MaxCount];
+static NSImage *spinningImages[MaxCount];
+
+- (void) initProgressIndicatorDrawing
+{
+  int i;
+  
+  // FIXME: Should come from defaults and should be reset when defaults change
+  // FIXME: Should probably get the color from the color extension list (see NSToolbar)
+  fillColour = RETAIN([NSColor controlShadowColor]);
+
+  // Load images for indeterminate style
+  for (i = 0; i < MaxCount; i++)
+    {
+      NSString *imgName = [NSString stringWithFormat: @"common_ProgressIndeterminate_%d", i + 1];
+      NSImage *image = [NSImage imageNamed: imgName];
+      
+      if (image == nil)
+        {
+          indeterminateMaxCount = i;
+          break;
+        }
+          indeterminateColors[i] = RETAIN([NSColor colorWithPatternImage: image]);
+    }
+  
+  // Load images for spinning style
+  for (i = 0; i < MaxCount; i++)
+    {
+      NSString *imgName = [NSString stringWithFormat: @"common_ProgressSpinning_%d", i + 1];
+      NSImage *image = [NSImage imageNamed: imgName];
+      
+      if (image == nil)
+        {
+          spinningMaxCount = i;
+          break;
+        }
+      spinningImages[i] = RETAIN(image); 
+    }
+}
+
+- (void) drawProgressIndicator: (NSProgressIndicator*)progress
+                    withBounds: (NSRect)bounds
+                      withClip: (NSRect)rect
+                       atCount: (int)count
+                      forValue: (double)val
+{
+   NSRect r;
+
+   if (fillColour == nil)
+     {
+       [self initProgressIndicatorDrawing];
+     }
+
+   // Draw the Bezel
+   if ([progress isBezeled])
+     {
+       // Calc the inside rect to be drawn
+       r = [self drawGrayBezel: bounds withClip: rect];
+     }
+   else
+     {
+       r = bounds;
+     }
+
+   if ([progress style] == NSProgressIndicatorSpinningStyle)
+     {
+       NSRect imgBox = {{0,0}, {0,0}};
+
+       count = count % spinningMaxCount;
+       imgBox.size = [spinningImages[count] size];
+       [spinningImages[count] drawInRect: r 
+                      fromRect: imgBox 
+                      operation: NSCompositeSourceOver
+                      fraction: 1.0];
+     }
+   else
+     {
+       if ([progress isIndeterminate])
+         {
+           count = count % indeterminateMaxCount;
+           [indeterminateColors[count] set];
+           NSRectFill(r);
+         }
+       else
+         {
+           // Draw determinate 
+           if ([progress isVertical])
+             {
+               float height = NSHeight(r) * val;
+               
+               if ([progress isFlipped])
+                 {
+                   // Compensate for the flip
+                   r.origin.y += NSHeight(r) - height;
+                 }
+               r.size.height = height;
+             }
+           else
+             {
+               r.size.width = NSWidth(r) * val;
+             }
+           r = NSIntersectionRect(r, rect);
+           if (!NSIsEmptyRect(r))
+             {
+               [fillColour set];
+               NSRectFill(r);
+             }
+         }
+     }
+}
+
+
 // Table drawing methods
 - (void) drawTableCornerView: (NSView*)cornerView
                    withClip: (NSRect)aRect
@@ -817,7 +935,7 @@
   return RESIZE_HEIGHT;
 }
 
-static NSDictionary *titleTextAttributes[3];
+static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 
 - (void) drawTitleBarRect: (NSRect)titleBarRect 
              forStyleMask: (unsigned int)styleMask
@@ -834,7 +952,7 @@ static NSDictionary *titleTextAttributes[3];
 
   if (!titleTextAttributes[0])
     {
-      NSMutableParagraphStyle	*p;
+      NSMutableParagraphStyle *p;
 
       p = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
       [p setLineBreakMode: NSLineBreakByClipping];

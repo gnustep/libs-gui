@@ -2,6 +2,13 @@
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h,
 	* Source/GSThemeDrawing.m,
+	* Source/NSProgressIndicator.m: Move initialiation and drawing
+	into GSTheme.
+
+2009-11-09 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h,
+	* Source/GSThemeDrawing.m,
 	* Source/NSColorWell.m: Move colour well border drawing into GSTheme.
 	This change makes the dragable area of the well a bit smaller.	
 

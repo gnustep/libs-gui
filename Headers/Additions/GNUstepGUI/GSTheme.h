@@ -148,14 +148,16 @@
 #if	OS_API_VERSION(GS_API_NONE,GS_API_NONE)
 @class NSArray;
 @class NSBundle;
+@class NSDictionary;
+
 @class NSButton;
 @class NSColor;
 @class NSColorList;
 @class NSColorWell;
-@class NSDictionary;
 @class NSImage;
 @class NSMenuItemCell;
 @class NSMenuView;
+@class NSProgressIndicator;
 @class GSDrawTiles;
 
 /* First, declare names used for obtaining colors and/or tiles for specific
@@ -712,6 +714,13 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 - (NSRect) drawColorWellBorder: (NSColorWell*)well
                     withBounds: (NSRect)bounds
                       withClip: (NSRect)clipRect;
+
+// progress indicator drawing methods
+- (void) drawProgressIndicator: (NSProgressIndicator*)progress
+                    withBounds: (NSRect)bounds
+                      withClip: (NSRect)rect
+                       atCount: (int)count
+                      forValue: (double)val;
 
 // Table drawing methods
 - (void) drawTableCornerView: (NSView*)cornerView
