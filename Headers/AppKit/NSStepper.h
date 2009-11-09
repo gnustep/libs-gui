@@ -30,18 +30,18 @@
 #ifndef _GNUstep_H_NSStepper
 #define _GNUstep_H_NSStepper
 
-#include <AppKit/NSControl.h>
+#import <AppKit/NSControl.h>
 
 @interface NSStepper : NSControl
 {
   // Attributes
 }
-- (double) maxValue;
-- (void) setMaxValue: (double)maxValue;
-- (double) minValue;
-- (void) setMinValue: (double)minValue;
-- (double) increment;
-- (void) setIncrement: (double)increment;
+- (double)maxValue;
+- (void)setMaxValue: (double)maxValue;
+- (double)minValue;
+- (void)setMinValue: (double)minValue;
+- (double)increment;
+- (void)setIncrement: (double)increment;
 
 - (BOOL)autorepeat;
 - (void)setAutorepeat: (BOOL)autorepeat;

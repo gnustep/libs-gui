@@ -28,19 +28,12 @@
 
 #include "config.h"
 
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSControl.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSGraphicsContext.h"
-#include "AppKit/NSStepperCell.h"
-#include "AppKit/NSWindow.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSControl.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSStepperCell.h"
+#import "AppKit/NSWindow.h"
 #include "GNUstepGUI/GSTheme.h"
-
-// Hard coded values for button sizes
-#define STEPPER_WIDTH 15
-#define STEPPER_HEIGHT 11
 
 @interface NSStepperCell (Private)
 - (void) _increment;
@@ -49,8 +42,6 @@
 	       upButton: (BOOL)upButton
 	      withFrame: (NSRect)frame
 		 inView: (NSView*)controlView;
-- (NSRect) upButtonRectWithFrame: (NSRect)frame;
-- (NSRect) downButtonRectWithFrame: (NSRect)frame;
 @end
 
 @implementation NSStepperCell
@@ -74,6 +65,8 @@
 - (id) init
 {
   self = [super init];
+  if (!self)
+    return nil;
 
   [self setIntValue: 0];
   [self setAlignment: NSRightTextAlignment];
@@ -120,22 +113,22 @@
   _increment = increment;
 }
 
-- (BOOL)autorepeat
+- (BOOL) autorepeat
 {
   return _autorepeat;
 }
 
-- (void)setAutorepeat: (BOOL)autorepeat
+- (void) setAutorepeat: (BOOL)autorepeat
 {
   _autorepeat = autorepeat;
 }
 
-- (BOOL)valueWraps
+- (BOOL) valueWraps
 {
   return _valueWraps;
 }
 
-- (void)setValueWraps: (BOOL)valueWraps
+- (void) setValueWraps: (BOOL)valueWraps
 {
   _valueWraps = valueWraps;
 }
@@ -143,36 +136,11 @@
 - (void) drawInteriorWithFrame: (NSRect)cellFrame
 			inView: (NSView*)controlView
 {
-  NSRect upRect;
-  NSRect downRect;
-  NSRect twoButtons;
-
-  upRect = [self upButtonRectWithFrame: cellFrame];
-  downRect = [self downButtonRectWithFrame: cellFrame];
-  
-  twoButtons = downRect;
-  twoButtons.origin.y--;
-  twoButtons.size.width++;
-  twoButtons.size.height = 2 * STEPPER_HEIGHT + 1;
-
-  if (highlightUp)
-    [[GSTheme theme] drawStepperHighlightUpButton: upRect];
-  else
-    [[GSTheme theme] drawStepperUpButton: upRect];
-
-  if (highlightDown)
-    [[GSTheme theme] drawStepperHighlightDownButton: downRect];
-  else
-    [[GSTheme theme] drawStepperDownButton: downRect];
-
-  {
-    NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge};
-    NSColor *black = [NSColor controlDarkShadowColor];
-    NSColor *grays[] = {black, black}; 
-    
-    NSDrawColorTiledRects(twoButtons, NSZeroRect,
-			  up_sides, grays, 2);
-  }
+  [[GSTheme theme] drawStepperCell: self
+                   withFrame: cellFrame
+                   inView: controlView
+                   highlightUp: highlightUp
+                   highlightDown: highlightDown];
 }
 
 - (void) getPeriodicDelay: (float*)delay interval: (float*)interval
@@ -214,8 +182,8 @@
   if ([theEvent type] != NSLeftMouseDown)
     return NO;
 
-  upRect = [self upButtonRectWithFrame: cellFrame];
-  downRect = [self downButtonRectWithFrame: cellFrame];
+  upRect = [[GSTheme theme] stepperUpButtonRectWithFrame: cellFrame];
+  downRect = [[GSTheme theme] stepperDownButtonRectWithFrame: cellFrame];
   
   // Did the mouse go down in the up or in the down part?
   if (NSMouseInRect(point, upRect, NO))
@@ -473,28 +441,6 @@
     }
 
   [controlView setNeedsDisplayInRect: frame];
-}
-
-- (NSRect) upButtonRectWithFrame: (NSRect)frame
-{
-  NSRect upRect;
-
-  upRect.size.width = STEPPER_WIDTH;
-  upRect.size.height = STEPPER_HEIGHT;
-  upRect.origin.x = NSMaxX(frame) - STEPPER_WIDTH - 1;
-  upRect.origin.y = NSMinY(frame) + ((int)frame.size.height / 2) + 1;
-  return upRect;
-}
-
-- (NSRect) downButtonRectWithFrame: (NSRect)frame
-{
-  NSRect downRect;
-
-  downRect.size.width = STEPPER_WIDTH;
-  downRect.size.height = STEPPER_HEIGHT;
-  downRect.origin.x = NSMaxX(frame) - STEPPER_WIDTH - 1;
-  downRect.origin.y = NSMinY(frame) + ((int)frame.size.height / 2) - STEPPER_HEIGHT + 1;
-  return downRect;
 }
 
 @end

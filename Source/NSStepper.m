@@ -26,14 +26,9 @@
 
 #include "config.h"
 
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSException.h>
-#include "AppKit/NSStepper.h"
-#include "AppKit/NSControl.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSStepperCell.h"
+#import "AppKit/NSStepper.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSStepperCell.h"
 
 //
 // class variables

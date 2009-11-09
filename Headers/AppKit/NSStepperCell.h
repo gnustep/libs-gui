@@ -28,7 +28,7 @@
 #ifndef _GNUstep_H_NSStepperCell
 #define _GNUstep_H_NSStepperCell
 
-#include <AppKit/NSActionCell.h>
+#import <AppKit/NSActionCell.h>
 
 @interface NSStepperCell : NSActionCell
 {

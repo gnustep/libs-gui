@@ -828,12 +828,12 @@ static NSNotificationCenter *nc;
   [_cell performClickWithFrame: [self bounds] inView: self];
 }
 
-- (BOOL)refusesFirstResponder
+- (BOOL) refusesFirstResponder
 {
   return [[self selectedCell] refusesFirstResponder];
 }
 
-- (void)setRefusesFirstResponder:(BOOL)flag
+- (void) setRefusesFirstResponder:(BOOL)flag
 {
   [[self selectedCell] setRefusesFirstResponder: flag];
 }

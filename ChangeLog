@@ -1,3 +1,13 @@
+2009-11-09 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSControl.m,
+	* Headers/AppKit/NSStepper.h,
+	* Headers/AppKit/NSStepperCell.h,
+	* Source/NSStepper.m: White space changes and cleanup.
+	* Source/NSStepperCell.m,
+	* Headers/Additions/GNUstepGUI/GSTheme.h,
+	* Source/GSThemeDrawing.m: Move stepper drawing code into GSTheme.
+
 2009-11-09 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSScroller.m: make offset of buttons inside scroller adjustable

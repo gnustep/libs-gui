@@ -653,25 +653,39 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 
 // Methods to deal with steppers..
 /**
+ * Draw a stepper cell
+ */
+- (void) drawStepperCell: (NSCell*)cell
+               withFrame: (NSRect)cellFrame
+                  inView: (NSView*)controlView
+             highlightUp: (BOOL)highlightUp
+           highlightDown: (BOOL)highlightDown;
+
+// Stepper cell helper methods
+- (NSRect) stepperUpButtonRectWithFrame: (NSRect)frame;
+- (NSRect) stepperDownButtonRectWithFrame: (NSRect)frame;
+- (void) drawStepperBorder: (NSRect)frame;
+
+/**
  * Draw light colored stepper using the border and clip rects
  */
-- (NSRect) drawStepperLightButton: (NSRect) border :(NSRect) clip;
+- (NSRect) drawStepperLightButton: (NSRect)border : (NSRect)clip;
 /**
  * Draw normal stepper up button.
  */
-- (void) drawStepperUpButton: (NSRect) aRect;
+- (void) drawStepperUpButton: (NSRect)aRect;
 /**
  * Draw highlighted up stepper button.
  */
-- (void) drawStepperHighlightUpButton: (NSRect) aRect;
+- (void) drawStepperHighlightUpButton: (NSRect)aRect;
 /**
  * Draw down button for stepper
  */
-- (void) drawStepperDownButton: (NSRect) aRect;
+- (void) drawStepperDownButton: (NSRect)aRect;
 /**
  * Draw highlighted stepper down button
  */
-- (void) drawStepperHighlightDownButton: (NSRect) aRect;
+- (void) drawStepperHighlightDownButton: (NSRect)aRect;
 
 /**
  * In some themes it may be necessary to override the drawing 

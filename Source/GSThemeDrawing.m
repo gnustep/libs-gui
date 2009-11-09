@@ -483,7 +483,50 @@
     }
 }
 
-- (NSRect) drawStepperLightButton: (NSRect) border :(NSRect) clip
+// NSStepperCell drawing
+// Hard coded values for button sizes
+#define STEPPER_WIDTH 15
+#define STEPPER_HEIGHT 11
+
+- (NSRect) stepperUpButtonRectWithFrame: (NSRect)frame
+{
+  NSRect upRect;
+
+  upRect.size.width = STEPPER_WIDTH;
+  upRect.size.height = STEPPER_HEIGHT;
+  upRect.origin.x = NSMaxX(frame) - STEPPER_WIDTH - 1;
+  upRect.origin.y = NSMinY(frame) + ((int)frame.size.height / 2) + 1;
+  return upRect;
+}
+
+- (NSRect) stepperDownButtonRectWithFrame: (NSRect)frame
+{
+  NSRect downRect;
+
+  downRect.size.width = STEPPER_WIDTH;
+  downRect.size.height = STEPPER_HEIGHT;
+  downRect.origin.x = NSMaxX(frame) - STEPPER_WIDTH - 1;
+  downRect.origin.y = NSMinY(frame) + ((int)frame.size.height / 2) - STEPPER_HEIGHT + 1;
+  return downRect;
+}
+
+- (void) drawStepperBorder: (NSRect)frame
+{
+  NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge};
+  NSColor *black = [NSColor controlDarkShadowColor];
+  NSColor *grays[] = {black, black}; 
+  NSRect twoButtons;
+  
+  twoButtons.origin.x = NSMaxX(frame) - STEPPER_WIDTH - 1;
+  twoButtons.origin.y = NSMinY(frame) + ((int)frame.size.height / 2) - STEPPER_HEIGHT;
+  twoButtons.size.width = STEPPER_WIDTH + 1;
+  twoButtons.size.height = 2 * STEPPER_HEIGHT + 1;
+  
+  NSDrawColorTiledRects(twoButtons, NSZeroRect,
+                        up_sides, grays, 2);
+}
+
+- (NSRect) drawStepperLightButton: (NSRect)border : (NSRect)clip
 {
 /*
   NSRect highlightRect = NSInsetRect(border, 1., 1.);
@@ -509,9 +552,9 @@
     }
 }
 
-- (void) drawStepperUpButton: (NSRect) aRect
+- (void) drawStepperUpButton: (NSRect)aRect
 {
-  NSRect unHighlightRect = [self drawStepperLightButton: aRect :NSZeroRect];
+  NSRect unHighlightRect = [self drawStepperLightButton: aRect : NSZeroRect];
   [[NSColor controlBackgroundColor] set];
   NSRectFill(unHighlightRect);
       
@@ -530,9 +573,9 @@
   PSstroke();
 }
 
-- (void) drawStepperHighlightUpButton: (NSRect) aRect
+- (void) drawStepperHighlightUpButton: (NSRect)aRect
 {
-  NSRect highlightRect = [self drawStepperLightButton: aRect :NSZeroRect];
+  NSRect highlightRect = [self drawStepperLightButton: aRect : NSZeroRect];
   [[NSColor selectedControlColor] set];
   NSRectFill(highlightRect);
   
@@ -551,9 +594,9 @@
   PSstroke();
 }
 
-- (void) drawStepperDownButton: (NSRect) aRect
+- (void) drawStepperDownButton: (NSRect)aRect
 {
-  NSRect unHighlightRect = [self drawStepperLightButton: aRect :NSZeroRect];
+  NSRect unHighlightRect = [self drawStepperLightButton: aRect : NSZeroRect];
   [[NSColor controlBackgroundColor] set];
   NSRectFill(unHighlightRect);
 
@@ -572,9 +615,9 @@
   PSstroke();
 }
 
-- (void) drawStepperHighlightDownButton: (NSRect) aRect
+- (void) drawStepperHighlightDownButton: (NSRect)aRect
 {
-  NSRect highlightRect = [self drawStepperLightButton: aRect :NSZeroRect];
+  NSRect highlightRect = [self drawStepperLightButton: aRect : NSZeroRect];
   [[NSColor selectedControlColor] set];
   NSRectFill(highlightRect);
   
@@ -591,6 +634,31 @@
   PSmoveto(NSMinX(aRect) + 10, NSMaxY(aRect) - 2);
   PSlineto(NSMinX(aRect) + 4, NSMaxY(aRect) - 2);
   PSstroke();
+}
+
+- (void) drawStepperCell: (NSCell*)cell
+               withFrame: (NSRect)cellFrame
+                  inView: (NSView*)controlView
+             highlightUp: (BOOL)highlightUp
+           highlightDown: (BOOL)highlightDown
+{
+  NSRect upRect;
+  NSRect downRect;
+
+  [self drawStepperBorder: cellFrame];
+
+  upRect = [self stepperUpButtonRectWithFrame: cellFrame];
+  downRect = [self stepperDownButtonRectWithFrame: cellFrame];
+  
+  if (highlightUp)
+    [self drawStepperHighlightUpButton: upRect];
+  else
+    [self drawStepperUpButton: upRect];
+
+  if (highlightDown)
+    [self drawStepperHighlightDownButton: downRect];
+  else
+    [self drawStepperDownButton: downRect];
 }
 
 - (void) drawImage: (NSImage *)image
