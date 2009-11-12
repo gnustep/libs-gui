@@ -2070,15 +2070,6 @@ many times.
       frameRect = [self constrainFrameRect: frameRect toScreen: [self screen]];
     }
         
-  if (NSEqualSizes(frameRect.size, _frame.size) == NO)
-    {
-      if ([_delegate respondsToSelector: @selector(windowWillResize:toSize:)])
-        {
-          frameRect.size = [_delegate windowWillResize: self
-                                                toSize: frameRect.size];
-        }
-    }
-
   // If nothing changes, don't send it to the backend and don't redisplay 
   if (NSEqualRects(_frame, frameRect))
     return;
@@ -3802,6 +3793,9 @@ resetCursorRectsForView(NSView *theView)
                    is stored in the event location field. */
                 newFrame.origin = [theEvent locationInWindow];
 
+                /* FIXME: For a user resize we should call windowWillResize:toSize:
+                   on the delegate.
+                 */
                 _frame = newFrame;
                 newFrame.origin = NSZeroPoint;
                 [_wv setFrame: newFrame];
@@ -4567,14 +4561,24 @@ current key view.<br />
        */
       if ((fRect.size.height + fRect.origin.y) > nRect.size.height)
 	{
-	  fRect.origin.y = fRect.origin.y - ((fRect.size.height + fRect.origin.y) - nRect.size.height); 
+	  fRect.origin.y = nRect.size.height - fRect.size.height; 
 	}
     }
 
+  // FIXME: Is this check needed?
   /* If we aren't resizable (ie. if we don't have a resize bar), make sure
-  we don't change the size. */
+     we don't change the size. */
   if (!(_styleMask & NSResizableWindowMask))
     fRect.size = _frame.size;
+
+  if (NSEqualSizes(fRect.size, _frame.size) == NO)
+    {
+      if ([_delegate respondsToSelector: @selector(windowWillResize:toSize:)])
+        {
+          fRect.size = [_delegate windowWillResize: self
+                                  toSize: fRect.size];
+        }
+    }
 
   /*
    * Set frame.
@@ -4593,6 +4597,7 @@ current key view.<br />
   obj = [defs objectForKey: key];
   if (obj == nil)
     return NO;
+
   [self setFrameFromString: obj];
   return YES;
 }
@@ -4601,7 +4606,10 @@ current key view.<br />
                      force: (BOOL)force
 {
   // FIXME
-  return [self setFrameUsingName: name];
+  if ((_styleMask & NSResizableWindowMask) || force)
+    return [self setFrameUsingName: name];
+  else
+    return NO;
 }
 
 - (NSString *) stringWithSavedFrame
@@ -4612,7 +4620,7 @@ current key view.<br />
   fRect = _frame;
 
   /*
-   * The screen rectangle should gives the area of the screen in which
+   * The screen rectangle should give the area of the screen in which
    * the window could be placed (ie a rectangle excluding the dock).
    */
   sRect = [[self screen] visibleFrame];
@@ -4661,13 +4669,34 @@ current key view.<br />
  * Zooming
  */
 
+#define DIST 3
+
 /**
    Returns yes, if the receiver is zoomed.
  */
 - (BOOL) isZoomed
 {
-  // FIXME: Method is missing  
-  return NO;
+  NSRect maxRect = [[self screen] visibleFrame];
+
+  if ([_delegate respondsToSelector: @selector(windowWillUseStandardFrame:defaultFrame:)])
+    {
+      maxRect = [_delegate windowWillUseStandardFrame: self defaultFrame: maxRect];
+    }
+  else if ([self respondsToSelector: @selector(windowWillUseStandardFrame:defaultFrame:)])
+    {
+      maxRect = [self windowWillUseStandardFrame: self defaultFrame: maxRect];
+    }
+  else if ([_delegate respondsToSelector: @selector(windowWillResize:toSize:)])
+    {
+      maxRect.size = [_delegate windowWillResize: self toSize: maxRect.size];
+    }
+  else if ([self respondsToSelector: @selector(windowWillResize:toSize:)])
+    {
+      maxRect.size = [self windowWillResize: self toSize: maxRect.size];
+    }
+
+  // Compare the new frame with the current one
+  return NSEqualRects(maxRect, _frame);
 }
 
 /**
@@ -4678,8 +4707,6 @@ current key view.<br />
   // FIXME: We should check for the style and highlight the button
   [self zoom: sender];
 }
-
-#define DIST 3
 
 /**
    Zooms the receiver.   This method calls the delegate method 

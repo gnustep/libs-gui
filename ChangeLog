@@ -1,3 +1,8 @@
+2009-11-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m: Implement isZommed. Move the call to
+	windowWillResize:toSize: from setFrame:display into setFrameFromString:.
+
 2009-11-09 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h,
