@@ -1,3 +1,7 @@
+2009-11-12 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSImage.m: fixup copy/dealloc handling of named images
+
 2009-11-12 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWindow.m: Implement isZommed. Move the call to

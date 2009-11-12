@@ -480,16 +480,18 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 - (void) dealloc
 {
-  RELEASE(_reps);
-  /* Make sure we don't remove name from the nameDict if we are just a copy
-     of the named image, not the original image */
-  if (_name && self == [[nameDict objectForKey: _name] _resource]) 
-    [[nameDict objectForKey: _name] _setResource: nil];
-  RELEASE(_name);
-  TEST_RELEASE(_fileName);
-  RELEASE(_color);
-
-  [super dealloc];
+  if (_name == nil)
+    {
+      RELEASE(_reps);
+      TEST_RELEASE(_fileName);
+      RELEASE(_color);
+      [super dealloc];
+    }
+  else
+    {
+      [self retain];
+      NSLog(@"Warning ... attempt to deallocate image with name: %@", _name);
+    }
 }
 
 - (id) copyWithZone: (NSZone *)zone
@@ -501,7 +503,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
   copy = (NSImage*)NSCopyObject (self, 0, zone);
 
-  RETAIN(_name);
+  _name = nil;
   RETAIN(_fileName);
   RETAIN(_color);
   copy->_lockedView = nil;
