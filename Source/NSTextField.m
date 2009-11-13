@@ -575,30 +575,28 @@ static Class textFieldCellClass;
   [super textDidEndEditing: aNotification];
 
   textMovement = [[aNotification userInfo] objectForKey: @"NSTextMovement"];
-  if (textMovement)
+  int movement = [(NSNumber *)textMovement intValue];
+        
+  if (textMovement != nil && movement == NSReturnTextMovement)
     {
-      switch ([(NSNumber *)textMovement intValue])
+      if ([self sendAction: [self action] to: [self target]] == NO)
         {
-        case NSReturnTextMovement:
-          if ([self sendAction: [self action] to: [self target]] == NO)
-            {
-              if ([self performKeyEquivalent: [_window currentEvent]] == NO)
-                [self selectText: self];
-            }
-          break;
-        case NSTabTextMovement:
-          [_window selectKeyViewFollowingView: self];
-
-          if ([_window firstResponder] == _window)
+          if ([self performKeyEquivalent: [_window currentEvent]] == NO)
             [self selectText: self];
-          break;
-        case NSBacktabTextMovement:
-          [_window selectKeyViewPrecedingView: self];
+        }      
+    }
+  else
+    {
+      if ([[self cell] sendsActionOnEndEditing])
+	[self sendAction: [self action] to: [self target]];
 
-          if ([_window firstResponder] == _window)
-            [self selectText: self];
-          break;
-        }
+      if (textMovement != nil && movement == NSTabTextMovement)
+        [_window selectKeyViewFollowingView: self];
+      else if (textMovement != nil && movement == NSBacktabTextMovement)
+        [_window selectKeyViewPrecedingView: self];
+
+      if ([_window firstResponder] == _window)
+        [self selectText: self];
     }
 }
 
