@@ -432,7 +432,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   return self;
 }
 
-- (id)initWithContentsOfURL:(NSURL *)anURL
+- (id) initWithContentsOfURL: (NSURL *)anURL
 {
   NSArray *array = [NSImageRep imageRepsWithContentsOfURL: anURL];
 
@@ -503,7 +503,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
   copy = (NSImage*)NSCopyObject (self, 0, zone);
 
-  _name = nil;
+  copy->_name = nil;
   RETAIN(_fileName);
   RETAIN(_color);
   copy->_lockedView = nil;
