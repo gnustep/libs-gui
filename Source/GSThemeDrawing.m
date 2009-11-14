@@ -682,6 +682,11 @@
     }
 }
 
+- (NSImage *) arrowImageForMenuItemCell
+{
+  return [NSImage imageNamed: @"NSMenuArrow"];
+}
+
 // menu item cell drawing methods
 - (NSColor *) backgroundColorForMenuItemCell: (NSMenuItemCell *)cell
                                        state: (GSThemeControlState)state

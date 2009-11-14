@@ -50,15 +50,11 @@
 
 @implementation NSMenuItemCell
 
-static NSImage *arrowImage = nil; /* Cache arrow image. */
-
-
 + (void) initialize
 {
   if (self == [NSMenuItemCell class])
     {
       [self setVersion: 2];
-      arrowImage = [[NSImage imageNamed: @"NSMenuArrow"] copy];
     }
 }
 
@@ -298,7 +294,7 @@ static NSImage *arrowImage = nil; /* Cache arrow image. */
   // Submenu Arrow
   if ([_menuItem hasSubmenu])
     {
-      componentSize = [arrowImage size];
+      componentSize = [[[GSTheme theme] arrowImageForMenuItemCell] size];
       _keyEquivalentWidth = componentSize.width;
       if (componentSize.height > neededMenuItemHeight)
         neededMenuItemHeight = componentSize.height;
@@ -661,12 +657,12 @@ static NSImage *arrowImage = nil; /* Cache arrow image. */
 {
   cellFrame = [self keyEquivalentRectForBounds: cellFrame];
 
-  if ([_menuItem hasSubmenu] && arrowImage != nil)
+  if ([_menuItem hasSubmenu] && [[GSTheme theme] arrowImageForMenuItemCell] != nil)
     {
       NSSize size;
       NSPoint position;
 
-      size = [arrowImage size];
+      size = [[[GSTheme theme] arrowImageForMenuItemCell] size];
       position.x = cellFrame.origin.x + cellFrame.size.width - size.width;
       position.y = MAX(NSMidY(cellFrame) - (size.height/2.), 0.);
       /*
@@ -676,7 +672,7 @@ static NSImage *arrowImage = nil; /* Cache arrow image. */
       if ([controlView isFlipped])
         position.y += size.height;
 
-      [arrowImage compositeToPoint: position operation: NSCompositeSourceOver];
+      [[[GSTheme theme] arrowImageForMenuItemCell] compositeToPoint: position operation: NSCompositeSourceOver];
     }
   /* FIXME/TODO here - decide a consistent policy for images.
    *

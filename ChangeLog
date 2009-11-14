@@ -1,3 +1,9 @@
+2009-11-14 Hans Baier <hansfbaier@googlemail.com>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h,
+	* Source/GSThemeDrawing.m,
+	* Source/NSMenuItemCell.m: Make the menu arrow image themeable
+
 2009-11-12 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSImage.m (-copyWithZone:): Set the name of the copy to

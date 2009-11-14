@@ -702,6 +702,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 
 
 // menu item cell drawing methods
+- (NSImage *) arrowImageForMenuItemCell;
 - (NSColor *) backgroundColorForMenuItemCell: (NSMenuItemCell *)cell
                                        state: (GSThemeControlState)state;
 - (void) drawBorderAndBackgroundForMenuItemCell: (NSMenuItemCell *)cell
@@ -709,6 +710,7 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
                                          inView: (NSView *)controlView
                                           state: (GSThemeControlState)state
                                    isHorizontal: (BOOL)isHorizontal;
+
 
 // NSColorWell drawing method
 - (NSRect) drawColorWellBorder: (NSColorWell*)well
