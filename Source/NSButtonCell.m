@@ -131,7 +131,7 @@ typedef struct _GSButtonCellFlags
   [self setButtonType: NSMomentaryPushInButton];
   _delayInterval = 0.4;
   _repeatInterval = 0.075;
-  _keyEquivalentModifierMask = NSCommandKeyMask;
+  _keyEquivalentModifierMask = 0; //NSCommandKeyMask;
   _keyEquivalent = @"";
   _altContents = @"";
   _gradient_type = NSGradientNone;
