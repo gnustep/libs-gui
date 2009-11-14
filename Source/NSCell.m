@@ -2129,30 +2129,7 @@ static NSColor *dtxtCol;
   [textObject setMaxSize: maxRect.size];
   [textObject setMinSize: titleRect.size];
 
-  if (_formatter != nil)
-    {
-      NSString *contents; 
-
-      contents = [_formatter editingStringForObjectValue: _object_value];
-      if (contents == nil)
-        {
-          contents = _contents;
-        }
-      [textObject setText: contents];
-    }
-  else
-    {
-      if (_cell.contents_is_attributed_string == NO)
-        {
-          [textObject setText: _contents];
-        }
-      else
-        {
-          // The curent text has size 0, so this replaces the whole text.
-          [textObject replaceCharactersInRange: NSMakeRange(0, 0)
-                      withAttributedString: (NSAttributedString *)_contents];
-        }
-    }
+  [self _updateFieldEditor: textObject];
 
   [textObject sizeToFit];
   [textObject setSelectedRange: selection];
@@ -2874,6 +2851,34 @@ static NSColor *dtxtCol;
 - (BOOL) _sendsActionOn:(int)eventTypeMask
 {
   return (_action_mask & eventTypeMask);
+}
+
+- (void) _updateFieldEditor: (NSText*)textObject
+{
+  if (_formatter != nil)
+    {
+      NSString *contents; 
+
+      contents = [_formatter editingStringForObjectValue: _object_value];
+      if (contents == nil)
+        {
+          contents = _contents;
+        }
+      [textObject setText: contents];
+    }
+  else
+    {
+      if (_cell.contents_is_attributed_string == NO)
+        {
+          [textObject setText: _contents];
+        }
+      else
+        {
+          NSRange range = NSMakeRange(0, [[textObject string] length]);
+	  [textObject replaceCharactersInRange: range
+                      withAttributedString: (NSAttributedString *)_contents];
+        }
+    }
 }
 
 @end

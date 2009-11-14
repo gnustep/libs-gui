@@ -491,6 +491,7 @@ enum {
                                     inView: (NSView*)controlView;
 - (void) _drawFocusRingWithFrame: (NSRect)cellFrame 
                           inView: (NSView*)controlView;
+- (void) _updateFieldEditor: (NSText*)textObject;
 @end
 
 #endif // _GNUstep_H_NSCell

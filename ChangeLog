@@ -1,7 +1,15 @@
+2009-11-14  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSCell.m(-_setupTextWithFrame:inView:editor:delegate:range:,
+	-_updateFieldEditor):
+	* Source/NSActionCell.m (-setObjectValue:, -setStringValue:):
+	Fix NSActionCell implementation so that -setObjectValue: and
+	-setStringValue: have an effect while the cell is edited.
+
 2009-11-14 Hans Baier <hansfbaier@googlemail.com>
 
 	* Source/GSThemeDrawing.m: fix bug introduced in last commit
-	(progress bar fills the whole area)	
+	(progress bar fills the whole area)
 
 2009-11-14 Hans Baier <hansfbaier@googlemail.com>
 

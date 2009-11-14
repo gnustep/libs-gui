@@ -215,8 +215,17 @@ static Class controlClass;
 {
   [super setObjectValue: anObject];
   if (_control_view)
-    if ([_control_view isKindOfClass: controlClass])
-      [(NSControl *)_control_view updateCell: self];
+    {
+	if ([_control_view isKindOfClass: controlClass])
+	{
+	  if (_cell.in_editing)
+	    {
+	      [self _updateFieldEditor:
+		      [(NSControl *)_control_view currentEditor]];
+	    }
+	  [(NSControl *)_control_view updateCell: self];
+	}
+    }
 }
 
 /**
@@ -228,8 +237,17 @@ static Class controlClass;
 {
   [super setStringValue: aString];
   if (_control_view)
-    if ([_control_view isKindOfClass: controlClass])
-      [(NSControl *)_control_view updateCell: self];
+    {
+      if ([_control_view isKindOfClass: controlClass])
+	{
+	  if (_cell.in_editing)
+	    {
+	      [self _updateFieldEditor:
+		      [(NSControl *)_control_view currentEditor]];
+	    }
+	  [(NSControl *)_control_view updateCell: self];
+	}
+    }
 }
 
 /*
