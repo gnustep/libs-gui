@@ -49,16 +49,16 @@ typedef uint32_t NSFontSymbolicTraits;
 typedef enum _NSFontFamilyClass
 {
   NSFontUnknownClass = 0 << 28,
-  NSFontOldStyleSerifsClass = 1 << 28,
-  NSFontTransitionalSerifsClass = 2 << 28,
-  NSFontModernSerifsClass = 3 << 28,
-  NSFontClarendonSerifsClass = 4 << 28,
-  NSFontSlabSerifsClass = 5 << 28,
-  NSFontFreeformSerifsClass = 7 << 28,
-  NSFontSansSerifClass = 8 << 28,
-  NSFontOrnamentalsClass = 9 << 28,
-  NSFontScriptsClass = 10 << 28,
-  NSFontSymbolicClass = 12 << 28
+  NSFontOldStyleSerifsClass = 1U << 28,
+  NSFontTransitionalSerifsClass = 2U << 28,
+  NSFontModernSerifsClass = 3U << 28,
+  NSFontClarendonSerifsClass = 4U << 28,
+  NSFontSlabSerifsClass = 5U << 28,
+  NSFontFreeformSerifsClass = 7U << 28,
+  NSFontSansSerifClass = 8U << 28,
+  NSFontOrnamentalsClass = 9U << 28,
+  NSFontScriptsClass = 10U << 28,
+  NSFontSymbolicClass = 12U << 28
 } NSFontFamilyClass;
 
 enum _NSFontFamilyClassMask {
