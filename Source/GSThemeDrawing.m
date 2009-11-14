@@ -894,7 +894,7 @@ static NSImage *spinningImages[MaxCount];
            r = NSIntersectionRect(r, rect);
            if (!NSIsEmptyRect(r))
              {
-               [self drawProgressIndicatorBarDeterminate: (NSRect)bounds];
+               [self drawProgressIndicatorBarDeterminate: (NSRect)r];
              }
          }
      }
