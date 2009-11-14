@@ -847,7 +847,7 @@ static NSImage *spinningImages[MaxCount];
    if ([progress isBezeled])
      {
        // Calc the inside rect to be drawn
-       r = [self drawGrayBezel: bounds withClip: rect];
+       r = [self drawProgressIndicatorBezel: bounds withClip: rect];
      }
    else
      {
@@ -894,13 +894,22 @@ static NSImage *spinningImages[MaxCount];
            r = NSIntersectionRect(r, rect);
            if (!NSIsEmptyRect(r))
              {
-               [fillColour set];
-               NSRectFill(r);
+               [self drawProgressIndicatorBarDeterminate: (NSRect)bounds];
              }
          }
      }
 }
 
+- (NSRect) drawProgressIndicatorBezel: (NSRect)bounds withClip: (NSRect) rect
+{
+  return [self drawGrayBezel: bounds withClip: rect];
+}
+
+- (void) drawProgressIndicatorBarDeterminate: (NSRect)bounds
+{
+  [fillColour set];
+  NSRectFill(bounds);
+}
 
 // Table drawing methods
 - (void) drawTableCornerView: (NSView*)cornerView

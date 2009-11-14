@@ -724,6 +724,9 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
                        atCount: (int)count
                       forValue: (double)val;
 
+- (NSRect) drawProgressIndicatorBezel: (NSRect)bounds withClip: (NSRect) rect;
+- (void) drawProgressIndicatorBarDeterminate: (NSRect)bounds;
+
 // Table drawing methods
 - (void) drawTableCornerView: (NSView*)cornerView
                     withClip: (NSRect)aRect;

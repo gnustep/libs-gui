@@ -1,6 +1,12 @@
 2009-11-14 Hans Baier <hansfbaier@googlemail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h,
+	* Source/GSThemeDrawing.m: Factor out drawing of progress
+	indicator's bezel and bar
+
+2009-11-14 Hans Baier <hansfbaier@googlemail.com>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h,
 	* Source/GSThemeDrawing.m,
 	* Source/NSMenuItemCell.m: Make the menu arrow image themeable
 
