@@ -1,5 +1,11 @@
 2009-11-14  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSTextView_actions.m (-validateMenuItem:,
+	-validateUserIntefaceItem:): Implement menu and user interface
+	item validation for NSTextView. The list of validated actions is
+	incomplete but at least includes all items from a standard Edit
+	menu.
+
 	* Source/NSCell.m(-_setupTextWithFrame:inView:editor:delegate:range:,
 	-_updateFieldEditor):
 	* Source/NSActionCell.m (-setObjectValue:, -setStringValue:):
