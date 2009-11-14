@@ -3729,7 +3729,23 @@ resetCursorRectsForView(NSView *theView)
         break;
 
       case NSKeyDown:
-        [_firstResponder keyDown: theEvent];
+	/* Always shift keyboard focus to the next and previous key view,
+	 * respectively, upon receiving Ctrl-Tab and Ctrl-Shift-Tab keyboard
+	 * events. This means that the key view loop won't get stuck in views
+	 * that interpret the Tab key differently, e.g., NSTextView. (cf. the
+	 * Keyboard Interface Control section in Apple's Cocoa Event-Handling
+	 * Guide).
+	 */
+	if (([theEvent modifierFlags] & NSControlKeyMask)
+	    && [[theEvent charactersIgnoringModifiers] isEqualToString: @"\t"])
+	  {
+	    if ([theEvent modifierFlags] & NSShiftKeyMask)
+	      [self selectPreviousKeyView: self];
+	    else
+	      [self selectNextKeyView: self];
+	  }
+	else
+	  [_firstResponder keyDown: theEvent];
         break;
         
       case NSKeyUp:

@@ -1,5 +1,9 @@
 2009-11-14  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSWindow.m (-sendEvent:): Always shift keyboard focus to
+	the next and previous key view, respectively, upon receiving
+	Ctrl-Tab and Ctrl-Shift-Tab keyboard events.
+
 	* Source/NSTextView_actions.m (-validateMenuItem:,
 	-validateUserIntefaceItem:): Implement menu and user interface
 	item validation for NSTextView. The list of validated actions is
