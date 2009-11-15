@@ -275,6 +275,7 @@
   [c setAction: @selector(delete:)];
   [c setTarget: nil];
   [c setKeyEquivalent: @"\e"];
+  [c setKeyEquivalentModifierMask: 0];
 }
 
 - (void) resetSearchButtonCell
@@ -296,6 +297,7 @@
   [c setTarget: self];
   [c sendActionOn:NSLeftMouseUpMask];
   [c setKeyEquivalent: @"\r"];
+  [c setKeyEquivalentModifierMask: 0];
 }
 
 #define ICON_WIDTH	16

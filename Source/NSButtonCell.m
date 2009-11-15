@@ -131,7 +131,7 @@ typedef struct _GSButtonCellFlags
   [self setButtonType: NSMomentaryPushInButton];
   _delayInterval = 0.4;
   _repeatInterval = 0.075;
-  _keyEquivalentModifierMask = NSCommandKeyMask;
+  _keyEquivalentModifierMask = 0;
   _keyEquivalent = @"";
   _altContents = @"";
   _gradient_type = NSGradientNone;
@@ -537,7 +537,7 @@ typedef struct _GSButtonCellFlags
 /** <p>Returns the modifier mask of the NSButtonCell's key equivalent. 
     The key equivalent and its modifier mask are used to simulate the click
     of the button in  [NSButton-performKeyEquivalent:]. The default mask is 
-    NSCommandKeyMask.</p><p>See Also: -setKeyEquivalentModifierMask:
+    0.</p><p>See Also: -setKeyEquivalentModifierMask:
     -keyEquivalent [NSButton-performKeyEquivalent:]</p>
  */
 - (unsigned int) keyEquivalentModifierMask
@@ -559,7 +559,7 @@ typedef struct _GSButtonCellFlags
 /** <p>Sets the modifier mask of the NSButtonCell's key equivalent to
     <var>mask</var>. The key equivalent and its modifier mask are used to
     simulate the click of the button in [NSButton-performKeyEquivalent:]. 
-    By default the mask is NSCommandKeyMask.</p>
+    By default the mask is 0.</p>
     <p>See Also: -keyEquivalentModifierMask  
     -setKeyEquivalent: [NSButton-performKeyEquivalent:]</p>
 */
@@ -1538,6 +1538,7 @@ typedef struct _GSButtonCellFlags
       // style and border.
       bFlags2 != [self showsBorderOnlyWhileMouseInside] ? 0x8 : 0;
       bFlags2 |= (([self bezelStyle] & 0x7) | (([self bezelStyle] & 0x18) << 2));
+      bFlags2 |= [self keyEquivalentModifierMask] << 8;
       [aCoder encodeInt: bFlags2 forKey: @"NSButtonFlags2"];
 
       // alternate image encoding...
@@ -1693,6 +1694,8 @@ typedef struct _GSButtonCellFlags
           bFlags2 = [aDecoder decodeIntForKey: @"NSButtonFlags2"];
           [self setShowsBorderOnlyWhileMouseInside: (bFlags2 & 0x8)];
           [self setBezelStyle: (bFlags2 & 0x7) | ((bFlags2 & 0x20) >> 2)];
+          [self setKeyEquivalentModifierMask: ((bFlags2 >> 8) & 
+                                               NSDeviceIndependentModifierFlagsMask)];
         }
       if ([aDecoder containsValueForKey: @"NSAlternateImage"])
         {

@@ -1,3 +1,17 @@
+2009-11-15 Fred Kiefer <FredKiefer@gmx.de>
+	
+	* Source/NSButtonCell.m: Change default value for
+	keyEquivalentModifierMask to 0. Add keyed decoding and encoding of
+	keyEquivalentModifierMask. 
+	* Source/NSSearchFieldCell.m,
+	* Source/NSSpellChecker.m: Add explicit keyEquivalentModifierMask setting.
+
+	* Source/NSInputManager.m: Add handling of escape character to
+	call cancelOperation: 
+	* Source/NSTextField.m: Fix textDidEndEditing: to send action
+	when sendsActionOnEndEditing is set. 
+	Patch by Douglas Simons <doug.simons@testplant.com>.
+
 2009-11-14  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSWindow.m (-sendEvent:): Always shift keyboard focus to

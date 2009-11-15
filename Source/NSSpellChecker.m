@@ -31,26 +31,27 @@
 */ 
 
 #include "config.h"
-#include <Foundation/NSArray.h>
-#include <Foundation/NSSet.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSProxy.h>
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSSpellServer.h>
-#include <Foundation/NSValue.h>
-#include "AppKit/NSNibLoading.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSSpellChecker.h"
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSTextField.h"
-#include "AppKit/NSMatrix.h"
-#include "AppKit/NSBrowser.h"
-#include "AppKit/NSBrowserCell.h"
-#include "AppKit/NSPopUpButton.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/NSPanel.h"
+#import <Foundation/NSArray.h>
+#import <Foundation/NSSet.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSProxy.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSSpellServer.h>
+#import <Foundation/NSValue.h>
+#import "AppKit/NSNibLoading.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSSpellChecker.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSTextField.h"
+#import "AppKit/NSMatrix.h"
+#import "AppKit/NSBrowser.h"
+#import "AppKit/NSBrowserCell.h"
+#import "AppKit/NSPopUpButton.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSWindow.h"
+#import "AppKit/NSPanel.h"
 #include "GSGuiPrivate.h"
 #include "GNUstepGUI/GSServicesManager.h"
 
@@ -674,11 +675,17 @@ inSpellDocumentWithTag:(int)tag
   [_accessoryView setDoubleAction: @selector(_correct:)];
 
   [_findNextButton setKeyEquivalent: @"n"];
+  [_findNextButton setKeyEquivalentModifierMask: NSCommandKeyMask];
   [_ignoreButton setKeyEquivalent: @"i"];
+  [_ignoreButton setKeyEquivalentModifierMask: NSCommandKeyMask];
   [_learnButton setKeyEquivalent: @"l"];
+  [_learnButton setKeyEquivalentModifierMask: NSCommandKeyMask];
   [_forgetButton setKeyEquivalent: @"f"];
+  [_forgetButton setKeyEquivalentModifierMask: NSCommandKeyMask];
   [_guessButton setKeyEquivalent: @"g"];
+  [_guessButton setKeyEquivalentModifierMask: NSCommandKeyMask];
   [_correctButton setKeyEquivalent: @"c"];
+  [_correctButton setKeyEquivalentModifierMask: NSCommandKeyMask];
   [_correctButton setImagePosition: NSImageRight];
   [_correctButton setImage: [NSImage imageNamed: @"common_ret"]];
   [_correctButton setAlternateImage: [NSImage imageNamed: @"common_retH"]];

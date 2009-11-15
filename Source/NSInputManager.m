@@ -650,6 +650,10 @@ static NSInputManager *currentInputManager = nil;
           [self doCommandBySelector: @selector (deleteBackward:)];
           break;
           
+        case '\e': // escape
+          [self doCommandBySelector: @selector (cancelOperation:)];
+          break;
+
         case NSTabCharacter:
           if (flags & NSShiftKeyMask)
             {
