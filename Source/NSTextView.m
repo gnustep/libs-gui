@@ -2832,12 +2832,6 @@ Scroll so that the beginning of the range is visible.
 {
 }
 
-- (BOOL) validateUserInterfaceItem: (id <NSValidatedUserInterfaceItem>)anItem
-{
-  // FIXME
-  return YES;
-}
-
 @end
 
 

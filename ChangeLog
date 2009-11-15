@@ -1,4 +1,10 @@
 2009-11-15 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView.m (-validateUserIntefaceItem:): Remove the
+	dummy implementation of this method as there is now a proper one
+	in NSTextView_actions.m.
+
+2009-11-15 Fred Kiefer <FredKiefer@gmx.de>
 	
 	* Source/NSButtonCell.m: Change default value for
 	keyEquivalentModifierMask to 0. Add keyed decoding and encoding of
