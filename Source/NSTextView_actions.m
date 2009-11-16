@@ -46,17 +46,16 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSValue.h>
-#include "AppKit/NSAttributedString.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSLayoutManager.h"
-#include "AppKit/NSMenuItem.h"
-#include "AppKit/NSPasteboard.h"
-#include "AppKit/NSScrollView.h"
-#include "AppKit/NSTextStorage.h"
-#include "AppKit/NSTextView.h"
-#include "AppKit/NSParagraphStyle.h"
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSValue.h>
+#import "AppKit/NSAttributedString.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSLayoutManager.h"
+#import "AppKit/NSPasteboard.h"
+#import "AppKit/NSScrollView.h"
+#import "AppKit/NSTextStorage.h"
+#import "AppKit/NSTextView.h"
+#import "AppKit/NSParagraphStyle.h"
 
 /*
 These methods are for user actions, ie. they are normally called from
@@ -1514,51 +1513,4 @@ and layout is left-to-right */
   // FIXME
 }
 
-- (BOOL) validateMenuItem: (NSMenuItem *)item
-{
-  return [self validateUserInterfaceItem: item];
-}
-
-- (BOOL) validateUserInterfaceItem: (id<NSValidatedUserInterfaceItem>)item
-{
-  SEL action = [item action];
-
-  // FIXME The list of validated actions below is far from complete
-
-  if (sel_eq(action, @selector(cut:)) || sel_eq(action, @selector(delete:)))
-    return [self isEditable] && [self selectedRange].length > 0;
-
-  if (sel_eq(action, @selector(copy:)))
-    return [self selectedRange].length > 0;
-
-  if (sel_eq(action, @selector(paste:))
-   || sel_eq(action, @selector(pasteAsPlainText:))
-      || sel_eq(action, @selector(pasteAsRichText:)))
-    {
-      if ([self isEditable])
-	{
-	  NSArray *types;
-	  NSString *available;
-
-	  if (sel_eq(action, @selector(paste:)))
-	    types = [self readablePasteboardTypes];
-	  else if (sel_eq(action, @selector(pasteAsPlainText:)))
-	    types = [NSArray arrayWithObject: NSStringPboardType];
-	  else /*if (sel_eq(action, @selector(pasteAsRichText:)))*/
-	    types = [NSArray arrayWithObject: NSRTFPboardType];
-
-	  available = [[NSPasteboard generalPasteboard]
-			availableTypeFromArray: types];
-	  return available != nil;
-	}
-      else
-	return NO;
-    }
-
-  if (sel_eq(action, @selector(selectAll:))
-   || sel_eq(action, @selector(centerSelectionInVisibleArea:)))
-    return [self isSelectable];
-
-  return YES;
-}
 @end

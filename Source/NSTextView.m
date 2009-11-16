@@ -45,44 +45,44 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "AppKit/NSTextView.h"
-
 #include "config.h"
-#include <Foundation/NSArchiver.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSKeyedArchiver.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSRunLoop.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSTimer.h>
-#include <Foundation/NSUndoManager.h>
-#include <Foundation/NSValue.h>
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSAttributedString.h"
-#include "AppKit/NSClipView.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSColorPanel.h"
-#include "AppKit/NSControl.h"
-#include "AppKit/NSDragging.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSFileWrapper.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSLayoutManager.h"
-#include "AppKit/NSParagraphStyle.h"
-#include "AppKit/NSPasteboard.h"
-#include "AppKit/NSRulerMarker.h"
-#include "AppKit/NSRulerView.h"
-#include "AppKit/NSScrollView.h"
-#include "AppKit/NSSpellChecker.h"
-#include "AppKit/NSTextAttachment.h"
-#include "AppKit/NSTextContainer.h"
-#include "AppKit/NSTextStorage.h"
-#include "AppKit/NSWindow.h"
+#import <Foundation/NSArchiver.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSCoder.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSKeyedArchiver.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSRunLoop.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSTimer.h>
+#import <Foundation/NSUndoManager.h>
+#import <Foundation/NSValue.h>
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSAttributedString.h"
+#import "AppKit/NSClipView.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSColorPanel.h"
+#import "AppKit/NSControl.h"
+#import "AppKit/NSDragging.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSFileWrapper.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSLayoutManager.h"
+#import "AppKit/NSMenuItem.h"
+#import "AppKit/NSParagraphStyle.h"
+#import "AppKit/NSPasteboard.h"
+#import "AppKit/NSRulerMarker.h"
+#import "AppKit/NSRulerView.h"
+#import "AppKit/NSScrollView.h"
+#import "AppKit/NSSpellChecker.h"
+#import "AppKit/NSTextAttachment.h"
+#import "AppKit/NSTextContainer.h"
+#import "AppKit/NSTextStorage.h"
+#import "AppKit/NSTextView.h"
+#import "AppKit/NSWindow.h"
 
 
 /*
@@ -2820,6 +2820,63 @@ Scroll so that the beginning of the range is visible.
   return _layoutManager->_selected_range;
 }
 
+- (BOOL) validateMenuItem: (NSMenuItem *)item
+{
+  return [self validateUserInterfaceItem: item];
+}
+
+- (BOOL) validateUserInterfaceItem: (id<NSValidatedUserInterfaceItem>)item
+{
+  SEL action = [item action];
+
+  // FIXME The list of validated actions below is far from complete
+
+  if (sel_eq(action, @selector(cut:)) || sel_eq(action, @selector(delete:)))
+    return [self isEditable] && [self selectedRange].length > 0;
+
+  if (sel_eq(action, @selector(copy:)))
+    return [self selectedRange].length > 0;
+
+  if (sel_eq(action, @selector(copyFont:))
+      || sel_eq(action, @selector(copyRuler:)))
+    return [self selectedRange].location != NSNotFound;
+
+  if (sel_eq(action, @selector(paste:))
+      || sel_eq(action, @selector(pasteAsPlainText:))
+      || sel_eq(action, @selector(pasteAsRichText:))
+      || sel_eq(action, @selector(pasteFont:))
+      || sel_eq(action, @selector(pasteRuler:)))
+    {
+      if ([self isEditable])
+	{
+	  NSArray *types = nil;
+	  NSString *available;
+
+	  if (sel_eq(action, @selector(paste:)))
+	    types = [self readablePasteboardTypes];
+	  else if (sel_eq(action, @selector(pasteAsPlainText:)))
+	    types = [NSArray arrayWithObject: NSStringPboardType];
+	  else if (sel_eq(action, @selector(pasteAsRichText:)))
+	    types = [NSArray arrayWithObject: NSRTFPboardType];
+	  else if (sel_eq(action, @selector(pasteFont:)))
+	    types = [NSArray arrayWithObject: NSFontPboardType];
+	  else if (sel_eq(action, @selector(pasteRuler:)))
+	    types = [NSArray arrayWithObject: NSRulerPboard];
+
+	  available = [[NSPasteboard generalPasteboard]
+			availableTypeFromArray: types];
+	  return available != nil;
+	}
+      else
+	return NO;
+    }
+
+  if (sel_eq(action, @selector(selectAll:))
+      || sel_eq(action, @selector(centerSelectionInVisibleArea:)))
+    return [self isSelectable];
+
+  return YES;
+}
 
 /* Private, internal methods to help input method handling in some backends
 (XIM, currently). Backends may override these in categories with the real
