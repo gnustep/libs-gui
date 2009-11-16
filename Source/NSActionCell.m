@@ -223,7 +223,10 @@ static Class controlClass;
 	      [self _updateFieldEditor:
 		      [(NSControl *)_control_view currentEditor]];
 	    }
-	  [(NSControl *)_control_view updateCell: self];
+          else
+            {
+              [(NSControl *)_control_view updateCell: self];
+            }
 	}
     }
 }
@@ -232,7 +235,7 @@ static Class controlClass;
  * Set the value of the receiver from aString.
  */
 // This method is currently needed, as NSCells implementation 
-// does not call setObjectValue:
+// sometimes does not call setObjectValue:
 - (void) setStringValue: (NSString*)aString
 {
   [super setStringValue: aString];
@@ -245,7 +248,10 @@ static Class controlClass;
 	      [self _updateFieldEditor:
 		      [(NSControl *)_control_view currentEditor]];
 	    }
-	  [(NSControl *)_control_view updateCell: self];
+          else
+            {
+              [(NSControl *)_control_view updateCell: self];
+            }
 	}
     }
 }

@@ -1,5 +1,12 @@
 2009-11-16 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSCell.m (-setObjectValue:, -setStringValue:): Handle a
+	value of nil identically in both cases.
+	* Source/NSActionCell.m (-setObjectValue:, -setStringValue:):
+	Only mark the cell for redraw when there is no editor.
+
+2009-11-16 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSTextView.m (-validateUserIntefaceItem:): Move this
 	method over from NSTextView_actions.m as the compiler is expecting
 	it here. Add a few more actions.

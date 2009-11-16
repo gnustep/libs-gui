@@ -33,35 +33,35 @@
 */
 
 #include "config.h"
-#include <Foundation/NSString.h>
-#include <Foundation/NSGeometry.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSValue.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSNumberFormatter.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSFormatter.h>
-#include <Foundation/NSRunLoop.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSGeometry.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSValue.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSNumberFormatter.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSFormatter.h>
+#import <Foundation/NSRunLoop.h>
 #include <GNUstepBase/GSCategories.h>
 
-#include "AppKit/AppKitExceptions.h"
-#include "AppKit/NSAttributedString.h"
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSControl.h"
-#include "AppKit/NSCell.h"
-#include "AppKit/NSClipView.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSCursor.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSMenu.h"
-#include "AppKit/NSParagraphStyle.h"
-#include "AppKit/NSTextView.h"
-#include "AppKit/NSTextContainer.h"
-#include "AppKit/NSView.h"
-#include "AppKit/NSWindow.h"
+#import "AppKit/AppKitExceptions.h"
+#import "AppKit/NSAttributedString.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSControl.h"
+#import "AppKit/NSCell.h"
+#import "AppKit/NSClipView.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSCursor.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSMenu.h"
+#import "AppKit/NSParagraphStyle.h"
+#import "AppKit/NSTextView.h"
+#import "AppKit/NSTextContainer.h"
+#import "AppKit/NSView.h"
+#import "AppKit/NSWindow.h"
 #include "GNUstepGUI/GSTheme.h"
 
 static Class colorClass;
@@ -315,7 +315,7 @@ static NSColor *dtxtCol;
   
   if (_formatter == nil) 
     {
-      if ([object isKindOfClass: [NSString class]] == YES)
+      if (object == nil || [object isKindOfClass: [NSString class]] == YES)
         {
           newContents = object;
           _cell.contents_is_attributed_string = NO;
@@ -327,7 +327,7 @@ static NSColor *dtxtCol;
           _cell.contents_is_attributed_string = YES;
           _cell.has_valid_object_value = YES;
         }
-      else if([_object_value respondsToSelector: @selector(attributedStringValue)])
+      else if ([_object_value respondsToSelector: @selector(attributedStringValue)])
         {
           newContents = [_object_value attributedStringValue];
           _cell.contents_is_attributed_string = YES;
@@ -431,12 +431,14 @@ static NSColor *dtxtCol;
 
   if (_formatter == nil)
     {
-      /* if we are a string, we do an optimization and set the value here instead of using setObjectValue
+      /* if we are a string, we do an optimization and set the value here instead of 
+       * using setObjectValue.
        * also, we check for nil, since isKindOfClass fails for nil objects */
-      if([aString isKindOfClass: [NSString class]] == YES || aString == nil)
+      if (aString == nil || [aString isKindOfClass: [NSString class]] == YES)
         {
           ASSIGN (_contents, aString);
           ASSIGN (_object_value, aString);
+          _cell.contents_is_attributed_string = NO;
           _cell.has_valid_object_value = YES;
         }
       else
