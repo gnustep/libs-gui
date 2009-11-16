@@ -94,7 +94,7 @@
 
 - (NSColor *)textColor
 {
-  if(_cell.is_highlighted && [self isEnabled])
+  if (_cell.is_highlighted && [self isEnabled])
     {
       return [NSColor selectedMenuItemTextColor];
     }
@@ -104,8 +104,9 @@
 
 - (NSColor *) backgroundColor
 {
-  unsigned  mask;
-  GSThemeControlState menuState = GSThemeNormalState;
+  unsigned	mask;
+  NSColor	*color;
+  GSThemeControlState state = GSThemeNormalState;
 
   if (_cell.is_highlighted)
     {
@@ -122,16 +123,28 @@
   // Determine the background color
   if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
     {
-      menuState = GSThemeHighlightedState;
+      state = GSThemeHighlightedState;
     }
 
   if (mask & NSPushInCellMask)
     {
-      menuState = GSThemeSelectedState;
+      state = GSThemeSelectedState;
     }
 
-  return [[GSTheme theme] backgroundColorForMenuItemCell: self
-                          state: menuState];
+  color = [[GSTheme theme] colorNamed: @"NSMenuItem" state: state cache: YES];
+  if (color == nil)
+    {
+      if ((state == GSThemeHighlightedState) || (state == GSThemeSelectedState))
+	{
+	  color = [NSColor selectedMenuItemColor];
+	}
+      else
+	{
+	  color = [NSColor controlBackgroundColor];
+	}
+    }
+
+  return color;
 }
 
 - (void) setMenuItem: (NSMenuItem *)item
@@ -294,7 +307,16 @@
   // Submenu Arrow
   if ([_menuItem hasSubmenu])
     {
-      componentSize = [[[GSTheme theme] arrowImageForMenuItemCell] size];
+      NSImage	*arrow = [NSImage imageNamed: @"NSMenuArrow"];
+
+      if (arrow != nil)
+	{
+          componentSize = [arrow size];
+	}
+      else
+	{
+	  componentSize = NSMakeSize(0, 0);
+	}
       _keyEquivalentWidth = componentSize.width;
       if (componentSize.height > neededMenuItemHeight)
         neededMenuItemHeight = componentSize.height;
@@ -607,7 +629,7 @@
                                    inView: (NSView *)controlView
 {
   unsigned mask;
-  GSThemeControlState menuState = GSThemeNormalState;
+  GSThemeControlState state = GSThemeNormalState;
 
   // set the mask
   if (_cell.is_highlighted)
@@ -629,19 +651,19 @@
      as required by our nextstep-like look and feel.  */
   if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
     {
-      menuState = GSThemeHighlightedState;
+      state = GSThemeHighlightedState;
     }
 
   /* Pushed in buttons contents are displaced to the bottom right 1px.  */
   if (mask & NSPushInCellMask)
     {
-      menuState = GSThemeSelectedState;
+      state = GSThemeSelectedState;
     }
 
   [[GSTheme theme] drawBorderAndBackgroundForMenuItemCell: self
                    withFrame: cellFrame
                    inView: controlView
-                   state: menuState
+                   state: state
                    isHorizontal: [_menuView isHorizontal]];
 }
 
@@ -655,14 +677,16 @@
 - (void) drawKeyEquivalentWithFrame: (NSRect)cellFrame
 			     inView: (NSView *)controlView
 {
+  NSImage	*arrow = [NSImage imageNamed: @"NSMenuArrow"];
+
   cellFrame = [self keyEquivalentRectForBounds: cellFrame];
 
-  if ([_menuItem hasSubmenu] && [[GSTheme theme] arrowImageForMenuItemCell] != nil)
+  if ([_menuItem hasSubmenu] && arrow != nil)
     {
       NSSize size;
       NSPoint position;
 
-      size = [[[GSTheme theme] arrowImageForMenuItemCell] size];
+      size = [arrow size];
       position.x = cellFrame.origin.x + cellFrame.size.width - size.width;
       position.y = MAX(NSMidY(cellFrame) - (size.height/2.), 0.);
       /*
@@ -672,7 +696,7 @@
       if ([controlView isFlipped])
         position.y += size.height;
 
-      [[[GSTheme theme] arrowImageForMenuItemCell] compositeToPoint: position operation: NSCompositeSourceOver];
+      [arrow compositeToPoint: position operation: NSCompositeSourceOver];
     }
   /* FIXME/TODO here - decide a consistent policy for images.
    *

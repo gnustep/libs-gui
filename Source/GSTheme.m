@@ -395,7 +395,7 @@ typedef	struct {
 		  if (old == nil)
 		    {
 		      /* This could potentially be a real problem ... if the
-		       * image form the current theme with this name is used
+		       * image from the current theme with this name is used
 		       * and the theme is unloaded, what happens when the
 		       * app tries to draw using the proxy to the unloaded
 		       * image?

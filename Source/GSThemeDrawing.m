@@ -682,33 +682,13 @@
     }
 }
 
-- (NSImage *) arrowImageForMenuItemCell
-{
-  return [NSImage imageNamed: @"NSMenuArrow"];
-}
-
-// menu item cell drawing methods
-- (NSColor *) backgroundColorForMenuItemCell: (NSMenuItemCell *)cell
-                                       state: (GSThemeControlState)state
-{
-  if ((state == GSThemeHighlightedState) || (state == GSThemeSelectedState))
-    {
-      return [NSColor selectedMenuItemColor];
-    }
-  else
-    {
-      return [NSColor controlBackgroundColor];
-    }
-}
-
 - (void) drawBorderAndBackgroundForMenuItemCell: (NSMenuItemCell *)cell
                                       withFrame: (NSRect)cellFrame
                                          inView: (NSView *)controlView
                                           state: (GSThemeControlState)state
                                    isHorizontal: (BOOL)isHorizontal
 {
-  NSColor *backgroundColor = [self backgroundColorForMenuItemCell: cell
-                                   state: state];
+  NSColor	*backgroundColor = [cell backgroundColor];
 
   if (isHorizontal)
     {

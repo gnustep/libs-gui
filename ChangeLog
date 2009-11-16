@@ -1,3 +1,16 @@
+2009-11-16 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSMenuItemCell.m:
+	* Source/GSThemeDrawing.m:
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	Removed duplicate theming methods...
+	The ([-arrowImageForMenuItemCell]) method seems to have duplicated the
+	([-imageNamed:]) method (for the @"NSMenuItem" image) and the
+	([-backgroundColorForMenuItemCell:state:]) method seemed to have
+	duplicated the ([colorNamed:state:cache]) method.
+	We must not introduce extra APIs for getting images and colors or
+	things will get unmaintainable.
+
 2009-11-16 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSSlider.m: Clean up.
