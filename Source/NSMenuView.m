@@ -43,6 +43,7 @@
 #include "AppKit/NSImage.h"
 
 #include "GNUstepGUI/GSTitleView.h"
+#include "GNUstepGUI/GSDisplayServer.h"
 
 #include <Foundation/Foundation.h>
 
@@ -1353,6 +1354,14 @@ static NSMapTable *viewInfo = 0;
   NSEventType type;
   NSEventType end;
 
+  /* Find out whether the window is really where it thinks it is. */
+  /* In some cases, the back end adjusts its location without the window knowing it. */
+  GSDisplayServer *srv = GSServerForWindow(_window);
+  NSRect displayServerBounds = [srv windowbounds: [_window windowNumber]];
+  NSRect windowFrame = [_window frame];
+  NSPoint discrepancy = NSMakePoint(displayServerBounds.origin.x - windowFrame.origin.x,
+					displayServerBounds.origin.y - windowFrame.origin.y);
+
   /*
    * The original event is unused except to determine whether the method
    * was invoked in response to a right or left mouse down.
@@ -1408,6 +1417,9 @@ static NSMapTable *viewInfo = 0;
           int index;
 
           location = [_window mouseLocationOutsideOfEventStream];
+	  location.x -= discrepancy.x;
+	  location.y -= discrepancy.y;
+
           index = [self indexOfItemAtPoint: 
             [self convertPoint: location fromView: nil]];
 
