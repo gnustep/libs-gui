@@ -28,18 +28,18 @@
 
 #include <math.h>                  // (float)rintf(float x)
 #include "config.h"
-#include <Foundation/NSString.h>
-#include <Foundation/NSException.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSException.h>
 
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSControl.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSSliderCell.h"
-#include "AppKit/NSTextFieldCell.h"
-#include "AppKit/NSWindow.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSControl.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSSliderCell.h"
+#import "AppKit/NSTextFieldCell.h"
+#import "AppKit/NSWindow.h"
 
 DEFINE_RINT_IF_MISSING
 
@@ -132,12 +132,15 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 - (id) init
 {
   self = [self initImageCell: nil];
+  if (self == nil)
+    return nil;
+
   _altIncrementValue = -1;
   _isVertical = -1;
   _minValue = 0;
   _maxValue = 1;
   _cell.is_bordered = YES;
-  _cell.is_bezeled = YES;
+  _cell.is_bezeled = NO;
 
   _knobCell = [NSCell new];
   _titleCell = [NSTextFieldCell new];
@@ -157,17 +160,16 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 
 - (id) copyWithZone:(NSZone *)zone
 {
-  NSSliderCell *cpy = [super copyWithZone:zone];
+  NSSliderCell *cpy = [super copyWithZone: zone];
 
-  /* since NSCells call to NSCopyObject only copies object addresses */
-  RETAIN(cpy->_titleCell);
-  RETAIN(cpy->_knobCell);
+  if (cpy != nil)
+    {
+      /* since NSCells call to NSCopyObject only copies object addresses */
+      cpy->_titleCell = [_titleCell copyWithZone: zone];
+      cpy->_knobCell = [_knobCell copyWithZone: zone];
+    }
+
   return cpy;
-}
-
-- (BOOL) isFlipped
-{
-  return YES;
 }
 
 /** <p>Draws the slider's track, not including the bezel, in <var>aRect</var>
@@ -193,10 +195,10 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   only.</p> */
 - (NSRect) knobRectFlipped: (BOOL)flipped
 {
-  NSImage	*image = [_knobCell image];
-  NSSize	size;
-  NSPoint	origin;
-  float		floatValue = [self floatValue];
+  NSImage *image = [_knobCell image];
+  NSSize size;
+  NSPoint origin;
+  float floatValue = [self floatValue];
 
   if (_isVertical && flipped)
     {
@@ -259,9 +261,9 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  BOOL		vertical = (cellFrame.size.height > cellFrame.size.width);
-  NSImage	*image;
-  NSSize	size;
+  BOOL vertical = (cellFrame.size.height > cellFrame.size.width);
+  NSImage *image;
+  NSSize size;
 
   cellFrame = [self drawingRectForBounds: cellFrame];
 
@@ -325,7 +327,7 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
     }
   else 
     {
-	return 0;
+      return 0;
     }
 
   return _isVertical ? size.height : size.width;
@@ -744,6 +746,9 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 - (id) initWithCoder: (NSCoder*)decoder
 {
   self = [super initWithCoder: decoder];
+  if (self == nil)
+    return nil;
+
   if ([decoder allowsKeyedCoding])
     {
       _allowsTickMarkValuesOnly = [decoder decodeBoolForKey: @"NSAllowsTickMarkValuesOnly"];

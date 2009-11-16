@@ -26,13 +26,12 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSRunLoop.h>
+#include "math.h" // fabs
+#import <Foundation/NSString.h>
 
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSSlider.h"
-#include "AppKit/NSSliderCell.h"
-#include "AppKit/NSWindow.h"
-#include "math.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSSlider.h"
+#import "AppKit/NSSliderCell.h"
 
 /**
   <unit>
@@ -92,7 +91,9 @@ static Class cellClass;
 
 - (id) initWithFrame: (NSRect)frameRect
 {
-  [super initWithFrame: frameRect];
+  self = [super initWithFrame: frameRect];
+  if (self == nil)
+    return nil;
 
   [_cell setState: 1];
   [_cell setContinuous: YES];
@@ -262,7 +263,7 @@ static Class cellClass;
   return YES;
 }
 
-- (void) keyDown:(NSEvent *)ev
+- (void) keyDown: (NSEvent *)ev
 {
   NSString *characters = [ev characters];
   int i, length = [characters length];
@@ -284,8 +285,8 @@ static Class cellClass;
     {
       if ([_cell numberOfTickMarks])
         {
-  	  double tick0 = [_cell tickMarkValueAtIndex:0];
-	  double tick1 = [_cell tickMarkValueAtIndex:1];
+  	  double tick0 = [_cell tickMarkValueAtIndex: 0];
+	  double tick1 = [_cell tickMarkValueAtIndex: 1];
           diff = tick1 - tick0;
 	}
       else
@@ -300,7 +301,7 @@ static Class cellClass;
   
   for (i = 0; i < length; i++)
     {
-      switch([characters characterAtIndex:i])
+      switch ([characters characterAtIndex: i])
         {
 	   case NSLeftArrowFunctionKey:
 	   case NSDownArrowFunctionKey:
@@ -334,7 +335,7 @@ static Class cellClass;
   if (valueChanged)
     {
       if (only_ticks)
-        value = [_cell closestTickMarkValueToValue:value];
+        value = [_cell closestTickMarkValueToValue: value];
       
       if (value < min)
 	{ 
@@ -345,12 +346,12 @@ static Class cellClass;
 	  value = max;
 	}
       
-      [self setDoubleValue:value];
-      [self sendAction:[self action] to:[self target]];
+      [self setDoubleValue: value];
+      [self sendAction: [self action] to: [self target]];
       return;
     }
 
-  [super keyDown:ev];
+  [super keyDown: ev];
 }
 
 // ticks

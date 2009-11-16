@@ -1,5 +1,11 @@
 2009-11-16 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSSlider.m: Clean up.
+	* Source/NSSliderCell.m: Remove isFlipped method, correct
+	copyWithZone:, clean up.
+	
+2009-11-16 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSCell.m (-setObjectValue:, -setStringValue:): Handle a
 	value of nil identically in both cases.
 	* Source/NSActionCell.m (-setObjectValue:, -setStringValue:):
