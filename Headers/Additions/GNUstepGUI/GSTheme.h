@@ -458,6 +458,14 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  */
 - (Class) colorClass;
 
+/** Removes the name from the color cache forcing it to be re-created next
+ * time the named color is required.<br />
+ * Passing nil for aName removes all named colors.<br />
+ * Passing a negative value for elementState applies to all caches.
+ */
+- (void) colorFlush: (NSString*)aName
+	      state: (GSThemeControlState)elementState;
+
 /**
  * This returns the color for drawing the item whose name is aName in
  * the specified state.  If aName is nil or if there is no color defined
@@ -465,14 +473,10 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * returns nil.<br />
  * The standard names used for the parts of various controls are declared
  * in GSTheme.h<br />
- * See also the -tilesNamed:state:cache: method.<br />
- * The useCache argument controls whether the information is retrieved
- * from cache or regenerated from information in the theme bundle, and
- * should normally be YES.
+ * See also the -tilesNamed:state: method.
  */
 - (NSColor*) colorNamed: (NSString*)aName
-		  state: (GSThemeControlState)elementState
-	          cache: (BOOL)useCache; 
+		  state: (GSThemeControlState)elementState;
 
 /**
  * Returns the system color list defined by the receiver.<br />
@@ -611,6 +615,14 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  */
 - (NSWindow*) themeInspector;
 
+/** Removes the name tile images from cahce, forcing re-creation next
+ * time the named tiles are required.<br />
+ * Passing nil for aName removes all named tiles.<br />
+ * Passing a negative value for elementState applies to all caches.
+ */
+- (void) tilesFlush: (NSString*)aName
+	      state: (GSThemeControlState)elementState;
+
 /**
  * Returns the tile image information for a particular image name,
  * or nil if there is no such information or the name is nil.<br />
@@ -621,16 +633,13 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * returned by this method can be passed to the
  * -fillRect:withTiles:background:fillStyle: method.<br />
  * The elementState argument specifies the state for which tiles are
- * requested.<br />
- * The useCache argument controls whether the information is retrieved
- * from cache or regenerated from information in the theme bundle, and
- * should normally be YES.<br />
- * See the -colorNamed:state:cache: method for determining colors to be
+ * requested.
+ * See the -colorNamed:state: method for determining colors to be
  * used for drawing specific gui elements.
  */
 - (GSDrawTiles*) tilesNamed: (NSString*)aName
-		      state: (GSThemeControlState)elementState
-		      cache: (BOOL)useCache; 
+		      state: (GSThemeControlState)elementState;
+
 /**
  * Return the theme's version string.
  */

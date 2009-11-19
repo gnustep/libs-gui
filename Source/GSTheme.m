@@ -37,6 +37,7 @@
 #import <Foundation/NSPathUtilities.h>
 #import <Foundation/NSSet.h>
 #import <Foundation/NSUserDefaults.h>
+#import "GNUstepBase/GSObjCRuntime.h"
 #import "GNUstepGUI/GSTheme.h"
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSButton.h"
@@ -422,11 +423,6 @@ typedef	struct {
     }
 
   /*
-   * We could cache tile info here, but it's probably better for the
-   * tilesNamed:state:cache: method to do it lazily.
-   */
-
-  /*
    * Use the GSThemeDomain key in the info dictionary of the theme to
    * set a defaults domain which will establish user defaults values
    * but will not override any defaults set explicitly by the user.
@@ -517,21 +513,44 @@ typedef	struct {
   return [NSColorList class];
 }
 
+- (void) colorFlush: (NSString*)aName
+	      state: (GSThemeControlState)elementState
+{
+  int	pos;
+  int	end;
+
+  NSAssert(elementState <= GSThemeSelectedState, NSInvalidArgumentException);
+  if (elementState < 0)
+    {
+      pos = 0;
+      end = GSThemeSelectedState;
+    }
+  else
+    {
+      pos = elementState;
+      end = elementState;
+    }
+  while (pos <= end)
+    {
+      if (_extraColors[pos] != nil)
+	{
+	  [_extraColors[pos] release];
+	  _extraColors[pos] = nil;
+	}
+      pos++;
+    }
+}
+
 - (NSColor*) colorNamed: (NSString*)aName
 		  state: (GSThemeControlState)elementState
-	          cache: (BOOL)useCache
 {
   NSColor	*c = nil;
 
   NSAssert(elementState <= GSThemeSelectedState, NSInvalidArgumentException);
+  NSAssert(elementState >= 0, NSInvalidArgumentException);
 
   if (aName != nil)
     {
-      if (useCache == NO)
-	{
-	  [_extraColors[elementState] release];
-	  _extraColors[elementState] = nil;
-	}
       if (_extraColors[elementState] == nil)
 	{
 	  NSString	*colorsPath;
@@ -754,6 +773,29 @@ typedef	struct {
   return [_bundle infoDictionary];
 }
 
+- (void) mapMethod: (SEL)src toMethod: (SEL)dst ofClass: (Class)c
+{
+  GSMethod	method;
+  BOOL		instance = YES;
+
+  method = GSGetMethod([self class], src, instance, NO);
+  if (method == 0)
+    {
+      instance = NO;
+      method = GSGetMethod([self class], src, instance, NO);
+    }
+  if (method != 0)
+    {
+      GSMethodList	list;
+
+      list = GSAllocMethodList(1);
+      GSAppendMethodToList(list,
+	dst, method->method_types, method->method_imp, YES);
+      GSAddMethodList(c, list, instance);
+      GSFlushMethodCacheForClass(c);
+    }
+}
+
 - (NSString*) name
 {
   if (self == defaultTheme)
@@ -820,20 +862,53 @@ typedef	struct {
   return [GSThemeInspector sharedThemeInspector];
 }
 
+- (void) tilesFlush: (NSString*)aName
+	      state: (GSThemeControlState)elementState
+{
+  int	pos;
+  int	end;
+
+  NSAssert(elementState <= GSThemeSelectedState, NSInvalidArgumentException);
+  if (elementState < 0)
+    {
+      pos = 0;
+      end = GSThemeSelectedState;
+    }
+  else
+    {
+      pos = elementState;
+      end = elementState;
+    }
+  while (pos <= end)
+    {
+      NSMutableDictionary	*cache;
+
+      cache = _tiles[pos++];
+      if (aName == nil)
+	{
+	  return [cache removeAllObjects];
+	}
+      else
+	{
+	  [cache removeObjectForKey: aName];
+	}
+    }
+}
+
 - (GSDrawTiles*) tilesNamed: (NSString*)aName
 		      state: (GSThemeControlState)elementState
-		      cache: (BOOL)useCache
 {
   GSDrawTiles		*tiles;
   NSMutableDictionary	*cache;
 
   NSAssert(elementState <= GSThemeSelectedState, NSInvalidArgumentException);
+  NSAssert(elementState >= 0, NSInvalidArgumentException);
   if (aName == nil)
     {
       return nil;
     }
   cache = _tiles[elementState];
-  tiles = (useCache == YES) ? [cache objectForKey: aName] : nil;
+  tiles = [cache objectForKey: aName];
   if (tiles == nil)
     {
       NSDictionary	*info;
@@ -959,6 +1034,7 @@ typedef	struct {
 {
   return [[self infoDictionary] objectForKey: @"GSThemeVersion"];
 }
+
 @end
 
 @implementation	GSTheme (Private)

@@ -131,7 +131,7 @@
       state = GSThemeSelectedState;
     }
 
-  color = [[GSTheme theme] colorNamed: @"NSMenuItem" state: state cache: YES];
+  color = [[GSTheme theme] colorNamed: @"NSMenuItem" state: state];
   if (color == nil)
     {
       if ((state == GSThemeHighlightedState) || (state == GSThemeSelectedState))

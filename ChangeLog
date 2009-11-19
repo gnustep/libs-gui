@@ -1,5 +1,14 @@
 2009-11-19 Richard Frith-Macdonald <rfm@gnu.org>
 
+	* Source/GSTheme.m:
+	* Source/NSMenuItemCell.m:
+	* Source/GSThemeDrawing.m:
+	* Source/NSScrollView.m:
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	Separate cache control from normal fetching of tiles and colors.
+
+2009-11-19 Richard Frith-Macdonald <rfm@gnu.org>
+
 	* Headers/Additions/GNUstepGUI/GSTheme.h:
 	Improve documentation of -activate and -deactivate
 

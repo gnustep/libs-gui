@@ -1154,7 +1154,7 @@ static float scrollerWidth;
     {
       name = @"NSScrollView";
     }
-  color = [theme colorNamed: name state: GSThemeNormalState cache: YES];
+  color = [theme colorNamed: name state: GSThemeNormalState];
   if (color == nil)
     {
       color = [NSColor controlDarkShadowColor];

@@ -64,7 +64,7 @@
       name = @"NSButton";
     }
 
-  color = [self colorNamed: name state: state cache: YES];
+  color = [self colorNamed: name state: state];
   if (color == nil)
     {
       if (state == GSThemeNormalState)
@@ -81,7 +81,7 @@
 	}
     }
 
-  tiles = [self tilesNamed: name state: state cache: YES];
+  tiles = [self tilesNamed: name state: state];
   if (tiles == nil)
     {
       switch (style)
@@ -159,7 +159,7 @@
       name = @"NSButton";
     }
 
-  tiles = [self tilesNamed: name state: state cache: YES];
+  tiles = [self tilesNamed: name state: state];
   if (tiles == nil)
     {
       switch (style)
@@ -385,15 +385,13 @@
   if (horizontal)
     {
       color = [self colorNamed: GSScrollerHorizontalSlot
-			 state: GSThemeNormalState
-			 cache: YES];
+			 state: GSThemeNormalState];
       [self setName: GSScrollerHorizontalSlot forElement: cell temporary: YES];
     }
   else
     {
       color = [self colorNamed: GSScrollerVerticalSlot
-			 state: GSThemeNormalState
-			 cache: YES];
+			 state: GSThemeNormalState];
       [self setName: GSScrollerVerticalSlot forElement: cell temporary: YES];
     }
   if (color == nil)
@@ -415,8 +413,7 @@
   NSColor *color;
 
   color = [self colorNamed: @"toolbarBackgroundColor"
-                state: GSThemeNormalState
-                cache: YES];
+                state: GSThemeNormalState];
   if (color == nil)
     {
       color = [NSColor clearColor];
@@ -429,8 +426,7 @@
   NSColor *color;
 
   color = [self colorNamed: @"toolbarBorderColor"
-                state: GSThemeNormalState
-                cache: YES];
+                state: GSThemeNormalState];
   if (color == nil)
     {
       color = [NSColor grayColor];
