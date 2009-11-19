@@ -327,9 +327,9 @@ static NSNotificationCenter *nc = nil;
   // prepare drawer contents before sliding...
   NSRect frame = [self frameFromParentWindowFrameInState:NSDrawerOpenState];
   [self setFrame:frame display: YES]; // make sure it's the full (open) size before locking the borderBox
-  [self lockBorderBoxForSliding];
   if ([_parentWindow isVisible]) // don't order front until parent window is visible
     {
+      [self lockBorderBoxForSliding];
       [self orderFront: self];
       [self slideOpen:YES];
       [self performSelector:@selector(unlockBorderBoxAfterSliding) withObject:nil afterDelay:0.01];
