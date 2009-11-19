@@ -222,28 +222,37 @@ typedef enum {
 /** Notification sent when a theme has just become active.<br />
  * The notification is posted by the -activate method.<br />
  * This is primarily for internal use by AppKit controls which
- * need to readjust how they are displayed when a new theme is in use.
+ * need to readjust how they are displayed when a new theme is in use.<br />
+ * Theme subclasses must ensure that the theme is ready for use by the
+ * time this notification is posted (which generally means that
+ * they should have finished putting all resources in place in
+ * response to a GSThemeWillActivateNotification).
  */
 APPKIT_EXPORT	NSString	*GSThemeDidActivateNotification;
 
 /** Notification sent when a theme has just become inactive.<br />
  * The notification is posted by the -deactivate method.<br />
  * This is primarily for use by subclasses of GSTheme which need to perform
- * additional cleanup when the theme stops being used.
+ * additional cleanup after the theme stops being used.
  */
 APPKIT_EXPORT	NSString	*GSThemeDidDeactivateNotification;
 
 /** Notification sent when a theme is about to become active.<br />
  * The notification is posted by the -activate method.<br />
- * This is primarily for use by subclasses of GSTheme which need to perform
- * additional setup before the theme starts being used by the AppKit controls.
+ * This is for use by subclasses of GSTheme which need to perform
+ * additional setup before the theme starts being used by AppKit controls.<br />
+ * At the point when this notification is called, the color, image, and
+ * defaults information from the theme will have been installed and the
+ * theme subclass may perform final adjustments.
  */
 APPKIT_EXPORT	NSString	*GSThemeWillActivateNotification;
 
 /** Notification sent when a theme is about to become inactive.<br />
  * The notification is posted by the -deactivate method.<br />
  * This allows code to make preparatory changes before the current theme
- * is deactivated.
+ * is deactivated, but subclasses should not make the theme unusable
+ * at this point as the AppKit may be doing its own cleanup in response
+ * to the notification.
  */
 APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 
@@ -325,18 +334,28 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 /**
  * <p>This method is called automatically when the receiver is made into
  * the currently active theme by the +setTheme: method. Subclasses may
- * override it to perform startup operations, but should call the super
- * class implementation after doing their own thing.
+ * override it to perform startup operations, however, the method is not
+ * really intended to be overridden, and subcasses should generally
+ * handle activation work in response to the GSThemeWillActivatenotification
+ * posted by this method.
  * </p>
  * <p>The base implementation handles setup and caching of the system
  * color list, standard image information, tiling information,
  * and user defaults.<br />
- * It then sends a GSThemeWillActivateNotification and a
- * GSThemeDidActivateNotification to allow other
- * parts of the GUI library to update themselves from the new theme.
+ * It then sends a GSThemeWillActivateNotification to allow subclasses to
+ * perform further activation work, and a GSThemeDidActivateNotification
+ * to allow other parts of the GUI library to update themselves from the
+ * new theme.
  * </p>
  * <p>Finally, this method marks all windows in the application as needing
  * update ... so they will draw themselves with the new theme information.
+ * </p>
+ * <p>NB. If a GSTheme subclass is integrating to an external native themeing
+ * mechanism in order to make GNUstep apps look like native apps, then the
+ * external theme may change dynamically and the GSTheme subclass may need
+ * to change the GNUstep application to reflect this change.  When this
+ * happens, the update should be handled by the subclass calling -deactivate
+ * and then -activate to make the changes 'live'.
  * </p>
  */
 - (void) activate;
@@ -390,12 +409,21 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * <p>This method is called automatically when the receiver is stopped from
  * being the currently active theme by the use of the +setTheme: method
  * to make another theme active. Subclasses may override it to perform
- * shutdown operations, but should call the super class implementation
- * after their own.
+ * shutdown operations, but it is preferred for subclasses to perform
+ * their own deactivation in response to a GSThemeWillDeactivateNotification.
  * </p>
- * <p>The base implementation handles some cleanup and then sends a
- * GSThemeDidDeactivateNotification to allow other parts of the GUI library
- * to update themselves.
+ * <p>The base implementation sends a GSThemeWillDeactivateNotification to
+ * allow subclasses to perform cleanup, then restores image, color and default
+ * information to the state before the theme was activates, and finally
+ * sends a GSThemeDidDeactivateNotification to allow other parts of the
+ * GUI library to update themselves.
+ * </p>
+ * <p>NB. If a GSTheme subclass is integrating to an external native themeing
+ * mechanism in order to make GNUstep apps look like native apps, then the
+ * external theme may change dynamically and the GSTheme subclass may need
+ * to change the GNUstep application to reflect this change.  When this
+ * happens, the update should be handled by the subclass calling -deactivate
+ * and then -activate to make the changes 'live'.
  * </p>
  */
 - (void) deactivate;
