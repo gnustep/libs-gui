@@ -126,7 +126,83 @@
 	  behavior.
 	</desc>
       </deflist>
+    </section>
 
+    <section>
+      <heading>Subclassing GSTheme</heading>
+      <p>
+	While many themes can be created without subclassing GSTheme,
+	there are some cases where writing code is necessary (most
+	notably when interfacing to a native themeing engine for some
+	platform in order to make a GNUstep app have a native look).<br />
+	In these cases the subclass should follow certain rules in order
+	to operate cleanly and efficiently:
+      </p>
+      <deflist>
+	<term>Stability</term>
+	<desc>
+	  Theme operation should remain consistent while it is in use,
+	  particularly in the provision of resources such as images and
+	  colors.<br />
+	  If a theme needs to change a resource (such as an image) then
+	  it should do so by calling -deactivate, making the change, and
+	  then calling -activate.  This sequence ensures that the GUI
+	  library is made aware of any changes and can redraw the screen.<br />
+	  The deactivation/activation sequence is expensive, so the
+	  subclass should attempt to combine multiple resource updates
+	  into a group rather than performing the deactivation/activation
+	  for each resource individually.
+	</desc>
+        <term>Activation</term>
+	<desc>
+	  The standard -activate method replaces existing system images,
+	  colors, interface style settings and other user defaults settings
+	  with versions stored in the theme bundle.<br />
+	  If a subclass wishes to dynamically provide these resources rather
+	  than supplying them as static information in the bundle, it may
+	  update the in-memory information after the normal opertation has
+	  taken place.  This should be done by the theme registering itsself
+	  as an observer of GSThemeWillActivateNotification and adding the
+	  resources just before the theme bocomes active.<br />
+	  Cleanup may be done in response to a GSThemeWillDeactivateNotification
+	  (called before the default cleanup) or a
+	  GSThemeDidDeactivateNotification (called after the default cleanup).
+	</desc>
+        <term>Versioning</term>
+	<desc>
+	  With a theme which contains opnly static resources, versioning is
+	  not much of an issue, but with a code-based theme (ie where you
+	  subclass GSTheme) versioning does become very important.  This is
+	  because, while you can load code from a bundle, you can't unload
+	  it again ... so if you have two versions of a theme where the
+	  subclass has the same name, then you have a conflict and can't
+	  load both and swap between the two.<br />
+	  Thematic.app solves this problem my incorporating a version number
+	  into the name of the GSTheme subclasses it creates, but that's
+	  not the only consideration...<br />
+	  You must also ensure that either you do not define any other
+	  classes in your theme or that, if you do define them you make
+	  sure that each of them incorporates the theme version number.<br />
+	  A similar consideration would apply to any categories, however
+	  category conflicts are far more difficult to resolve since
+	  even with different version names of the categories, the
+	  categories all effect the same class/methods.  In fact this
+	  issue is so tricky to deal with that you should simply not
+	  use categories within your theme code.
+	</desc>
+	<term>Image override</term>
+	<desc>
+	  System images (those returned by the [NSImage+imageNamed:] method)
+	  are handled by the default theming mechanism, for each system image
+	  supplied in the theme bundle, the image is loaded from the bundle
+	  and used while the theme is active.  Any pre-existing in-memory image
+	  is saved on theme activation and restored on theme deactivation.<br />
+	  A theme subclass may override the -imageClass method to change the
+	  class used to load each image from the bundle ... thus allowing
+	  customisation of not just the images but also of the image
+	  behavior in the (very rare) cases where this is desirable.
+	</desc>
+      </deflist>
     </section>
   </chapter>
 
