@@ -133,6 +133,46 @@ GSThemeFillStyleFromString(NSString *s)
 - (void) _revokeOwnerships;
 @end
 
+@interface GSThemeMethod : NSObject
+{
+@public
+  NSString	*cName;
+  NSString	*sName;
+  const char	*types;
+  Class		cls;
+  SEL		sel;
+  IMP		imp;
+}
+@end
+
+@implementation	GSThemeMethod
+- (void) dealloc
+{
+  [cName release];
+  [sName release];
+  [super dealloc];
+}
+@end
+
+/* Holder for lists of overridden methods for a class.
+ */
+@interface GSThemeOverride : NSObject
+{
+  @public
+  GSMethodList	cList;
+  GSMethodList	iList;
+}
+@end
+
+@implementation GSThemeOverride
+- (void) dealloc
+{
+  if (cList != 0) free(cList);
+  if (iList != 0) free(iList);
+  [super dealloc];
+}
+@end
+
 @implementation GSTheme
 
 static GSTheme			*defaultTheme = nil;
@@ -154,6 +194,9 @@ typedef	struct {
   NSString		*name;
   Class			colorClass;
   Class			imageClass;
+  NSMutableDictionary	*cMethods;
+  NSMutableDictionary	*iMethods;
+  NSMutableDictionary	*overrides;
 } internal;
 
 #define	_internal 		((internal*)_reserved)
@@ -168,6 +211,9 @@ typedef	struct {
 #define	_name			_internal->name
 #define	_colorClass		_internal->colorClass
 #define	_imageClass		_internal->imageClass
+#define	_cMethods		_internal->cMethods
+#define	_iMethods		_internal->iMethods
+#define	_overrides		_internal->overrides
 
 + (void) defaultsDidChange: (NSNotification*)n
 {
@@ -467,8 +513,33 @@ typedef	struct {
     }
   RELEASE(searchList);
 
+  /* Install any overridden methods.
+   */
+  if (_overrides != nil)
+    {
+      NSEnumerator	*e;
+      NSString		*cName;
+
+      e = [_overrides keyEnumerator];
+      while ((cName = [e nextObject]) != nil)
+	{
+	  GSThemeOverride	*o = [_overrides objectForKey: cName];
+	  Class			c = NSClassFromString(cName);
+
+	  if (o->iList != 0)
+	    {
+	      GSAddMethodList(c, o->iList, YES);
+	    }
+	  if (o->cList != 0)
+	    {
+	      GSAddMethodList(c, o->cList, YES);
+	    }
+          GSFlushMethodCacheForClass(c);
+	}
+    }
+
   /*
-   * Tell all other classes that new theme information is about to be present.
+   * Tell subclass that basic activation is done and it can do its own.
    */
   [[NSNotificationCenter defaultCenter]
     postNotificationName: GSThemeWillActivateNotification
@@ -642,6 +713,31 @@ typedef	struct {
     object: self
     userInfo: nil];
 
+  /* Remove any overridden methods.
+   */
+  if (_overrides != nil)
+    {
+      NSEnumerator	*e;
+      NSString		*cName;
+
+      e = [_overrides keyEnumerator];
+      while ((cName = [e nextObject]) != nil)
+	{
+	  GSThemeOverride	*o = [_overrides objectForKey: cName];
+	  Class			c = NSClassFromString(cName);
+
+	  if (o->iList != 0)
+	    {
+	      GSRemoveMethodList(c, o->iList, YES);
+	    }
+	  if (o->cList != 0)
+	    {
+	      GSRemoveMethodList(c, o->cList, YES);
+	    }
+          GSFlushMethodCacheForClass(c);
+	}
+    }
+
   /*
    * Restore old images in NSImage's lookup dictionary so that the app
    * still has images to draw.
@@ -691,6 +787,9 @@ typedef	struct {
       RELEASE(_oldImages);
       RELEASE(_icon);
       [self _revokeOwnerships];
+      RELEASE(_cMethods);
+      RELEASE(_iMethods);
+      RELEASE(_overrides);
       RELEASE(_owned);
       NSZoneFree ([self zone], _reserved);
     }
@@ -747,7 +846,13 @@ typedef	struct {
 
 - (id) initWithBundle: (NSBundle*)bundle
 {
-  GSThemeControlState	state;
+  Class				c = [self class];
+  NSString			*cName;
+  NSString			*sName;
+  struct objc_method_list	*mlist;
+  GSThemeMethod			*mth;
+  GSThemeControlState		state;
+  NSMutableDictionary		*d;
 
   _reserved = NSZoneCalloc ([self zone], 1, sizeof(internal));
 
@@ -765,35 +870,198 @@ typedef	struct {
 
   _colorClass = [self colorClass];
   _imageClass = [self imageClass];
+
+  /* Now we look through our methods to find those which are actually
+   * replacements to override methods in other classes.
+   */
+  for (mlist = c->methods; mlist; mlist = mlist->method_next)
+    {
+      int counter;
+
+      counter = mlist->method_count ? mlist->method_count - 1 : 1;
+
+      while (counter >= 0)
+        {
+          struct objc_method	*method = &(mlist->method_list[counter--]);
+	  const char		*name = sel_get_name(method->method_name);
+	  const char		*ptr;
+
+	  if (strncmp(name, "_override", 9) == 0
+	    && (ptr = strstr(name, "Method_")) > 0)
+	    {
+	      mth = [[GSThemeMethod new] autorelease];
+	      mth->types = method->method_types;
+	      mth->imp = method->method_imp;
+	      cName = [[NSString alloc] initWithBytes: name + 9
+					       length: (ptr - name) - 9
+					     encoding: NSUTF8StringEncoding];
+	      mth->cName = cName;
+	      mth->cls = NSClassFromString(mth->cName);
+	      if (mth->cls == 0)
+		{
+		  NSLog(@"Unable to find class '%@' for '%s'", cName, name);
+		  continue;
+		}
+	      sName = [[NSString alloc] initWithBytes: ptr + 7
+					       length: strlen(ptr + 7)
+					     encoding: NSUTF8StringEncoding];
+	      mth->sName = sName;
+	      mth->sel = NSSelectorFromString(mth->sName);
+	      if (mth->sel == 0)
+		{
+		  NSLog(@"Unable to find selector '-%@' for '%s'", sName, name);
+		  continue;
+		}
+	      if (NO == [mth->cls instancesRespondToSelector: mth->sel])
+		{
+		  NSLog(@"Instances do not respond for '%s'", name);
+		  continue;
+		}
+	      /* Now store this method information keyed by class and name
+	       */
+	      if (_iMethods == nil)
+		{
+		  _iMethods = [NSMutableDictionary new];
+		}
+	      if ((d = [_iMethods objectForKey: cName]) == nil)
+		{
+		  d = [NSMutableDictionary new];
+		  [_iMethods setObject: d forKey: cName];
+		  [d release];
+		}
+	      if ([d objectForKey: sName] == nil)
+		{
+		  [d setObject: mth forKey: sName];
+		}
+	    }
+	}
+    }
+  for (mlist = c->class_pointer->methods; mlist; mlist = mlist->method_next)
+    {
+      int counter;
+
+      counter = mlist->method_count ? mlist->method_count - 1 : 1;
+
+      while (counter >= 0)
+        {
+          struct objc_method	*method = &(mlist->method_list[counter--]);
+	  const char		*name = sel_get_name(method->method_name);
+	  const char		*ptr;
+
+	  if (strncmp(name, "_override", 9) == 0
+	    && (ptr = strstr(name, "Method_")) > 0)
+	    {
+	      mth = [[GSThemeMethod new] autorelease];
+	      mth->types = method->method_types;
+	      mth->imp = method->method_imp;
+	      cName = [[NSString alloc] initWithBytes: name + 9
+					       length: (ptr - name) - 9
+					     encoding: NSUTF8StringEncoding];
+	      mth->cName = cName;
+	      mth->cls = NSClassFromString(mth->cName);
+	      if (mth->cls == 0)
+		{
+		  NSLog(@"Unable to find class '%@' for '%s'", cName, name);
+		  continue;
+		}
+	      sName = [[NSString alloc] initWithBytes: ptr + 7
+					       length: strlen(ptr + 7)
+					     encoding: NSUTF8StringEncoding];
+	      mth->sel = NSSelectorFromString(mth->sName);
+	      if (mth->sel == 0)
+		{
+		  NSLog(@"Unable to find selector '+%@' for '%s'", sName, name);
+		  continue;
+		}
+	      if (NO == [mth->cls respondsToSelector: mth->sel])
+		{
+		  NSLog(@"Class does not respond for '%s'", name);
+		  continue;
+		}
+	      /* Now store this method information keyed by class and name
+	       */
+	      if (_cMethods == nil)
+		{
+		  _cMethods = [NSMutableDictionary new];
+		}
+	      if ((d = [_cMethods objectForKey: cName]) == nil)
+		{
+		  d = [NSMutableDictionary new];
+		  [_cMethods setObject: d forKey: cName];
+		  [d release];
+		}
+	      if ([d objectForKey: sName] == nil)
+		{
+		  [d setObject: mth forKey: sName];
+		}
+	    }
+	}
+    }
+
+  /* Build override method lists for when the theme is activated.
+   */
+  if (_iMethods || _cMethods)
+    {
+      NSEnumerator	*ce;
+      NSEnumerator	*ie;
+      GSThemeOverride	*o;
+
+      _overrides = [NSMutableDictionary new];
+      ce = [_iMethods keyEnumerator];
+      while ((cName = [ce nextObject]) != nil)
+	{
+	  d = [_iMethods objectForKey: cName];
+	  if ([d count] > 0)
+	    {
+	      o = [_overrides objectForKey: cName];
+	      if (o == nil)
+		{
+		  o = [GSThemeOverride new];
+		  [_overrides setObject: o forKey: cName];
+		  [o release];
+		}
+	      o->iList = GSAllocMethodList([d count]);
+	      ie = [d objectEnumerator];
+	      while ((mth = [ie nextObject]) != nil)
+		{
+		  GSAppendMethodToList(o->iList,
+		    mth->sel, mth->types, mth->imp, YES);
+//NSLog(@"Instance %s, %s, %p", sel_get_name(mth->sel), mth->types, mth->imp);
+		}
+	    }
+	}
+
+      ce = [_cMethods keyEnumerator];
+      while ((cName = [ce nextObject]) != nil)
+	{
+	  d = [_cMethods objectForKey: cName];
+	  if ([d count] > 0)
+	    {
+	      o = [_overrides objectForKey: cName];
+	      if (o == nil)
+		{
+		  o = [GSThemeOverride new];
+		  [_overrides setObject: o forKey: cName];
+		  [o release];
+		}
+	      o->cList = GSAllocMethodList([d count]);
+	      ie = [d objectEnumerator];
+	      while ((mth = [ie nextObject]) != nil)
+		{
+		  GSAppendMethodToList(o->cList,
+		    mth->sel, mth->types, mth->imp, YES);
+//NSLog(@"Class %s, %s, %p", sel_get_name(mth->sel), mth->types, mth->imp);
+		}
+	    }
+	}
+    }
+
   return self;
 }
 
 - (NSDictionary*) infoDictionary
 {
   return [_bundle infoDictionary];
-}
-
-- (void) mapMethod: (SEL)src toMethod: (SEL)dst ofClass: (Class)c
-{
-  GSMethod	method;
-  BOOL		instance = YES;
-
-  method = GSGetMethod([self class], src, instance, NO);
-  if (method == 0)
-    {
-      instance = NO;
-      method = GSGetMethod([self class], src, instance, NO);
-    }
-  if (method != 0)
-    {
-      GSMethodList	list;
-
-      list = GSAllocMethodList(1);
-      GSAppendMethodToList(list,
-	dst, method->method_types, method->method_imp, YES);
-      GSAddMethodList(c, list, instance);
-      GSFlushMethodCacheForClass(c);
-    }
 }
 
 - (NSString*) name
@@ -810,6 +1078,32 @@ typedef	struct {
   NSString	*name = (NSString*)NSMapGet(names, (void*)anObject);
 
   return name;
+}
+
+- (IMP) overriddenMethod: (SEL)selector for: (id)receiver
+{
+  NSString	*cName;
+  NSString	*sName = NSStringFromSelector(selector);
+  BOOL		instance = GSObjCIsInstance(receiver);
+  NSDictionary	*d;
+  GSThemeMethod	*m;
+
+  if (YES == instance)
+    {
+      cName = NSStringFromClass([receiver class]);
+      d = [_iMethods objectForKey: cName];
+    }
+  else
+    {
+      cName = NSStringFromClass(receiver);
+      d = [_cMethods objectForKey: cName];
+    }
+  m = [d objectForKey: sName];
+  if (nil == m)
+    {
+      return (IMP)0;
+    }
+  return m->imp;
 }
 
 - (void) setName: (NSString*)aString

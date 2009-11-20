@@ -188,7 +188,11 @@
 	  even with different version names of the categories, the
 	  categories all effect the same class/methods.  In fact this
 	  issue is so tricky to deal with that you should simply not
-	  use categories within your theme code.
+	  use categories within your theme code.<br />
+	  To work around this limitation, the GSTheme class supports
+	  overriding of the methods of any other class while the theme
+	  is active.  See the -overriddenMethod:for: method for more
+	  information.
 	</desc>
 	<term>Image override</term>
 	<desc>
@@ -579,6 +583,21 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * returns nil.
  */
 - (NSString*) nameForElement: (id)anObject;
+
+/** <p>Returns the original implementation of a method overridden by this
+ * theme, or zero if the method was not overridden.
+ * </p>
+ * <p>A theme may override a method of another class by implementing a method
+ * whose name is '_overrideXXXMethod_YYY' where 'XXX' is the name of the
+ * class whose method is to be overridden, and 'YYY' is the normal name of
+ * the method in that class.<br />
+ * eg. _overrideNSScrollerMethod_drawRect:
+ * </p>
+ * <p>NB. The overriding method may not access instance variable directly and
+ * must cast all uses of 'self' to be the correct class.
+ * </p>
+ */
+- (IMP) overriddenMethod: (SEL)selector for: (id)receiver;
 
 /** Set the name of this theme ... used for testing by Thematic.app
  */

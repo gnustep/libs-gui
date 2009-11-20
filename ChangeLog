@@ -1,3 +1,10 @@
+2009-11-20 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSTheme.m:
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	Added support for overriding methods in any class by implementing
+	a corresponding method in your GSTheme subclass.
+
 2009-11-19 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTheme.m:
