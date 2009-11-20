@@ -1821,6 +1821,7 @@ See Also: -runModalForWindow:
 	    }
 	  else
 	    {
+NSLog(@"Discard %@", event);
 	      event = nil;	// Ignore/discard this event.
 	    }
 	}
@@ -1845,8 +1846,9 @@ See Also: -runModalForWindow:
 	  /*
 	   *	Check to see if the window has gone away - if so, end session.
 	   */
-	  if ([[self windows] indexOfObjectIdenticalTo: _session->window] == NSNotFound
-              || ![_session->window isVisible])
+	  if ([[self windows] indexOfObjectIdenticalTo: _session->window]
+	    == NSNotFound
+            || ![_session->window isVisible])
 	    {
 	      [self stopModal];
 	    }
@@ -2045,11 +2047,11 @@ See -runModalForWindow:
 	  if (!theEvent)
 	    NSDebugLLog(@"NSEvent", @"NSEvent is nil!\n");
 	  if (type == NSMouseMoved)
-	    NSDebugLLog(@"NSMotionEvent", @"Send move (%d) to window %d", 
-			type, [window windowNumber]);
+	    NSDebugLLog(@"NSMotionEvent", @"Send move (%d) to %@", 
+			type, window);
 	  else
-	    NSDebugLLog(@"NSEvent", @"Send NSEvent type: %d to window %d", 
-			type, [window windowNumber]);
+	    NSDebugLLog(@"NSEvent", @"Send NSEvent type: %d to %@", 
+			type, window);
 	  if (window)
 	    [window sendEvent: theEvent];
 	  else if (type == NSRightMouseDown)
@@ -3877,7 +3879,7 @@ struct _DelegateWrapper
     {
       _key_window = obj;
     }
-  else
+  else if (_key_window != obj)
     {
       NSLog(@"Bogus attempt to set key window");
     }
@@ -3891,7 +3893,7 @@ struct _DelegateWrapper
     {
       _main_window = obj;
     }
-  else
+  else if (_main_window != obj)
     {
       NSLog(@"Bogus attempt to set main window");
     }

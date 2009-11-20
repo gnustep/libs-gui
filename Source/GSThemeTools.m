@@ -732,26 +732,9 @@ withRepeatedImage: (NSImage*)image
   GSDrawTiles	*c = (GSDrawTiles*)NSCopyObject(self, 0, zone);
   unsigned	i;
 
-  c->images[0] = [images[0] copy];
-  for (i = 1; i < 9; i++)
+  for (i = 0; i < 9; i++)
     {
-      unsigned	j;
-
-      for (j = 0; j < i; j++)
-        {
-	  if (images[i] == images[j])
-	    {
-	      break;
-	    }
-	}
-      if (j < i)
-        {
-	  c->images[i] = RETAIN(c->images[j]);
-	}
-      else
-        {
-	  c->images[i] = [images[i] copy];
-	}
+      c->images[i] = [images[i] copyWithZone: zone];
     }
   c->style = style;
   return c;
@@ -883,15 +866,10 @@ withRepeatedImage: (NSImage*)image
         }
       else
         {
-#if !defined(__MINGW32__)
-/* This code raises an exception on windows (tested 30/10/2009) ... why? */
           images[i]
 	    = [[self extractImageFrom: image withRect: rects[i]] retain];
           rects[i].origin.x = 0;
           rects[i].origin.y = 0;
-#else
-	  images[i] = [image retain];
-#endif
         }
     }
 }

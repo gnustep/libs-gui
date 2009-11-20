@@ -800,6 +800,12 @@ many times.
   [super dealloc];
 }
 
+- (NSString*) description
+{
+  return [[super description] stringByAppendingFormat: @"Number: %d Title: %@",
+    [self windowNumber], [self title]];
+}
+
 - (void) _startBackendWindow
 {
   NSDictionary *info;
@@ -3539,7 +3545,10 @@ resetCursorRectsForView(NSView *theView)
   We let NSAppKitDefined events through since they deal with window ordering.
   */
   if (!_f.visible && [theEvent type] != NSAppKitDefined)
-    return;
+    {
+      NSDebugLLog(@"NSEvent", @"Discard (window not visible) %@", theEvent);
+      return;
+    }
 
   if (!_f.cursor_rects_valid)
     {
@@ -3548,8 +3557,9 @@ resetCursorRectsForView(NSView *theView)
 
   type = [theEvent type];
   if ([self ignoresMouseEvents] 
-      && GSMouseEventMask == NSEventMaskFromType(type))
+    && GSMouseEventMask == NSEventMaskFromType(type))
     {
+      NSDebugLLog(@"NSEvent", @"Discard (window ignoring mouse) %@", theEvent);
       return;
     }
 
@@ -3626,6 +3636,10 @@ resetCursorRectsForView(NSView *theView)
                     [self mouseDown: theEvent];
                 }
             }
+	  else
+	    {
+              NSDebugLLog(@"NSEvent", @"Discard (window closed) %@", theEvent);
+	    }
           _lastPoint = [theEvent locationInWindow];
           break;
         }

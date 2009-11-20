@@ -597,8 +597,7 @@ typedef	struct {
   int	pos;
   int	end;
 
-  NSAssert(elementState <= GSThemeSelectedState, NSInvalidArgumentException);
-  if (elementState < 0)
+  if (elementState < 0 || elementState > GSThemeSelectedState)
     {
       pos = 0;
       end = GSThemeSelectedState;
@@ -1177,8 +1176,7 @@ typedef	struct {
   int	pos;
   int	end;
 
-  NSAssert(elementState <= GSThemeSelectedState, NSInvalidArgumentException);
-  if (elementState < 0)
+  if (elementState < 0 || elementState > GSThemeSelectedState)
     {
       pos = 0;
       end = GSThemeSelectedState;
