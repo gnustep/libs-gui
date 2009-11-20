@@ -133,15 +133,20 @@ GSThemeFillStyleFromString(NSString *s)
 - (void) _revokeOwnerships;
 @end
 
+/* This private internal class is used to store information about a method
+ * in some other class which is overridden while the current theme is
+ * active.
+ */
 @interface GSThemeMethod : NSObject
 {
 @public
-  NSString	*cName;
-  NSString	*sName;
-  const char	*types;
-  Class		cls;
-  SEL		sel;
-  IMP		imp;
+  NSString	*cName;	// Name of class whose method is being overridden
+  NSString	*sName;	// Name of the method
+  const char	*types;	// encoded type signature for the method
+  Class		cls;	// The actual class
+  SEL		sel;	// The actual selector
+  IMP		imp;	// The new method implementation
+  IMP		old;	// The original method implementation
 }
 @end
 
@@ -154,7 +159,9 @@ GSThemeFillStyleFromString(NSString *s)
 }
 @end
 
-/* Holder for lists of overridden methods for a class.
+/* Holder for lists of overridden methods for a class.  The list of methods
+ * are added to the class when the theme becomes active, and removed again
+ * when it is deactivated.
  */
 @interface GSThemeOverride : NSObject
 {
@@ -873,6 +880,12 @@ typedef	struct {
 
   /* Now we look through our methods to find those which are actually
    * replacements to override methods in other classes.
+   * That's determined by method name ... any method of the form
+   * '_override' <classname> 'Method_' <originalmethodname>
+   * is used to replace the original method in the class.
+   * We maintain dictionaries (keyed by class) for instance and class
+   * methods, so we can look up the original methods at runtime if the
+   * replacement methods want to call them.
    */
   for (mlist = c->methods; mlist; mlist = mlist->method_next)
     {
@@ -917,6 +930,7 @@ typedef	struct {
 		  NSLog(@"Instances do not respond for '%s'", name);
 		  continue;
 		}
+	      mth->old = [mth->cls instanceMethodForSelector: mth->sel];
 	      /* Now store this method information keyed by class and name
 	       */
 	      if (_iMethods == nil)
@@ -978,6 +992,7 @@ typedef	struct {
 		  NSLog(@"Class does not respond for '%s'", name);
 		  continue;
 		}
+	      mth->old = [mth->cls methodForSelector: mth->sel];
 	      /* Now store this method information keyed by class and name
 	       */
 	      if (_cMethods == nil)
@@ -1103,7 +1118,7 @@ typedef	struct {
     {
       return (IMP)0;
     }
-  return m->imp;
+  return m->old;
 }
 
 - (void) setName: (NSString*)aString
