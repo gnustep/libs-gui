@@ -1821,7 +1821,6 @@ See Also: -runModalForWindow:
 	    }
 	  else
 	    {
-NSLog(@"Discard %@", event);
 	      event = nil;	// Ignore/discard this event.
 	    }
 	}
