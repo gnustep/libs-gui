@@ -2173,18 +2173,12 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
 
   if (resp != nil)
     {
-      NSInvocation	*inv;
-      NSMethodSignature	*sig;
-
-      sig = [resp methodSignatureForSelector: aSelector];
-      inv = [NSInvocation invocationWithMethodSignature: sig];
-      [inv setSelector: aSelector];
-      if ([sig numberOfArguments] > 2)
-	{
-	  [inv setArgument: &sender atIndex: 2];
-	}
-      [inv invokeWithTarget: resp];
-      return YES;
+      IMP actionIMP = [resp methodForSelector: aSelector];
+      if (0 != actionIMP)
+        {
+          actionIMP(resp, aSelector, sender);
+          return YES;
+        }
     }
 
   return NO;
@@ -2260,18 +2254,12 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
     }
   if (_delegate != nil && [_delegate respondsToSelector: aSelector])
     {
-      NSInvocation	*inv;
-      NSMethodSignature	*sig;
-
-      sig = [_delegate methodSignatureForSelector: aSelector];
-      inv = [NSInvocation invocationWithMethodSignature: sig];
-      [inv setSelector: aSelector];
-      if ([sig numberOfArguments] > 2)
-	{
-	  [inv setArgument: &anObject atIndex: 2];
-	}
-      [inv invokeWithTarget: _delegate];
-      return YES;
+      IMP actionIMP = [_delegate methodForSelector: aSelector];
+      if (0 != actionIMP)
+        {
+          actionIMP(_delegate, aSelector, anObject);
+          return YES;
+        }
     }
   return NO;
 }
