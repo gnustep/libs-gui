@@ -1376,6 +1376,10 @@ typedef	struct {
 {
   return [_resource description];
 }
+- (id) forwardingTargetForSelector:(SEL)aSelector
+{
+  return _resource;
+}
 - (void) forwardInvocation: (NSInvocation*)anInvocation
 {
   [anInvocation invokeWithTarget: _resource];
