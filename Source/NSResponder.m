@@ -111,17 +111,12 @@
   /* Can we perform the action -then do it */
   if ([self respondsToSelector: anAction])
     {
-      NSInvocation	*inv;
-      NSMethodSignature	*sig;
-
-      sig = [self methodSignatureForSelector: anAction];
-      inv = [NSInvocation invocationWithMethodSignature: sig];
-      [inv setSelector: anAction];
-      if ([sig numberOfArguments] > 2)
-	{
-	  [inv setArgument: &anObject atIndex: 2];
-	}
-      [inv invokeWithTarget: self];
+      IMP actionIMP = [self methodForSelector: anAction];
+      if (0 != actionIMP)
+        {
+          actionIMP(self, anAction, anObject);
+          return YES;
+        }
       return YES;
     }
   else
