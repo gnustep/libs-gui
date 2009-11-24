@@ -600,12 +600,17 @@ static Class textFieldCellClass;
         [self sendAction: [self action] to: [self target]];
 
       if (movement == NSTabTextMovement)
-        [_window selectKeyViewFollowingView: self];
+        {
+          [_window selectKeyViewFollowingView: self];
+          if ([_window firstResponder] == _window)
+            [self selectText: self];
+        }
       else if (movement == NSBacktabTextMovement)
+        {
           [_window selectKeyViewPrecedingView: self];
-
-      if ([_window firstResponder] == _window)
-        [self selectText: self];
+          if ([_window firstResponder] == _window)
+            [self selectText: self];
+        }
     }
 }
 
