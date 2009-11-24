@@ -968,11 +968,15 @@ static NSColor *dtxtCol;
           /* What about the attributed string ?  We are loosing it. */
           return;
         }
+      _cell.has_valid_object_value = NO;
+    }
+  else
+    {
+      _cell.has_valid_object_value = YES;
+      ASSIGN (_object_value, attribStr);
     }
 
-  /* In all other cases */
   ASSIGN (_contents, attribStr);
-  _cell.has_valid_object_value = NO;
   _cell.contents_is_attributed_string = YES;
 }
 
@@ -2866,19 +2870,24 @@ static NSColor *dtxtCol;
         {
           contents = _contents;
         }
-      [textObject setText: contents];
+      if (![contents isEqualToString: [textObject string]])
+	[textObject setText: contents];
     }
   else
     {
       if (_cell.contents_is_attributed_string == NO)
         {
-          [textObject setText: _contents];
+	  if (![_contents isEqualToString:[textObject string]])
+	    [textObject setText: _contents];
         }
       else
         {
+	  // FIXME what about attribute changes?
           NSRange range = NSMakeRange(0, [[textObject string] length]);
-	  [textObject replaceCharactersInRange: range
-                      withAttributedString: (NSAttributedString *)_contents];
+	  if (![[(NSAttributedString *)_contents string] isEqualToString:
+		 [textObject string]])
+	    [textObject replaceCharactersInRange: range
+			withAttributedString: (NSAttributedString *)_contents];
         }
     }
 }

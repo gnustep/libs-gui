@@ -1,5 +1,12 @@
 2009-11-25  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSCell.m (-_updateFieldEditor:): Don't write back
+	unchanged strings to the field editor. Should prevent the editor's
+	selection from changing when -validateEditing is called.
+
+	* Source/NSCell.m (-setAttributedStringValue:): Consider the
+	attributed string a valid object if the cell has no formatter.
+
 	* Source/NSTextField.m (-textDidEndEditing:): Fix bug in
 	textDidEndEditing:.
 	Patch by Doug Simons <doug.simons@testplant.com>.
