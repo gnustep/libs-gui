@@ -2174,6 +2174,7 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
   if (resp != nil)
     {
       IMP actionIMP = [resp methodForSelector: aSelector];
+
       if (0 != actionIMP)
         {
           actionIMP(resp, aSelector, sender);

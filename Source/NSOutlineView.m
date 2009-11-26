@@ -139,7 +139,7 @@ static NSImage *unexpandable  = nil;
  * the superclass method initWithFrame: as well to initialize the object.
  *
  */
-- (id)initWithFrame: (NSRect)frame
+- (id) initWithFrame: (NSRect)frame
 {
  self = [super initWithFrame: frame];
 
@@ -177,8 +177,8 @@ static NSImage *unexpandable  = nil;
 }
 
 /**
- * Causes the outline column, the column containing the expand/collapse gadget, to
- * resize based on the amount of space needed by widest content.
+ * Causes the outline column, the column containing the expand/collapse
+ * gadget, to resize based on the amount of space needed by widest content.
  */
 - (BOOL)autoResizesOutlineColumn
 {
@@ -186,8 +186,8 @@ static NSImage *unexpandable  = nil;
 }
 
 /**
- * Causes the outline column, the column containing the expand/collapse gadget, to
- * resize based on the amount of space needed by widest content.
+ * Causes the outline column, the column containing the expand/collapse
+ * gadget, to resize based on the amount of space needed by widest content.
  */
 - (BOOL)autosaveExpandedItems
 {
@@ -198,17 +198,17 @@ static NSImage *unexpandable  = nil;
  * Collapses the given item only.  This is the equivalent of calling 
  * [NSOutlineView-collapseItem:collapseChildren:] with NO.
  */
-- (void)collapseItem: (id)item
+- (void) collapseItem: (id)item
 {
   [self collapseItem: item collapseChildren: NO];
 }
 
 /**
- * Collapses the specified item.  If collapseChildren is set to YES, then all of the
- * expandable children of this item all also collapsed in a recursive fashion (i.e.
- * all children, grandchildren and etc).
+ * Collapses the specified item.  If collapseChildren is set to YES,
+ * then all of the expandable children of this item all also collapsed
+ * in a recursive fashion (i.e. all children, grandchildren and etc).
  */
-- (void)collapseItem: (id)item collapseChildren: (BOOL)collapseChildren
+- (void) collapseItem: (id)item collapseChildren: (BOOL)collapseChildren
 {
   const SEL shouldSelector = @selector(outlineView:shouldCollapseItem:);
   BOOL canCollapse = YES;
@@ -250,7 +250,7 @@ static NSImage *unexpandable  = nil;
           allChildren = NSMapGet(_itemDict, sitem);
           numchild = [allChildren count];
 
-          for (index = 0;index < numchild;index++)
+          for (index = 0; index < numchild; index++)
             {
               id child = [allChildren objectAtIndex: index];
 
@@ -328,7 +328,7 @@ static NSImage *unexpandable  = nil;
           allChildren = NSMapGet(_itemDict, sitem);
           numchild = [allChildren count];
 
-          for (index = 0;index < numchild;index++)
+          for (index = 0; index < numchild; index++)
             {
               id child = [allChildren objectAtIndex: index];
 
@@ -930,7 +930,7 @@ static NSImage *unexpandable  = nil;
   if (_autoResizesOutlineColumn)
     {
       float widest = 0;
-      for (index = 0;index < _numberOfRows; index++)
+      for (index = 0; index < _numberOfRows; index++)
         {
           float offset = [self levelForRow: index] * 
             [self indentationPerLevel];
@@ -1764,7 +1764,7 @@ static NSImage *unexpandable  = nil;
 
   // For the close method it doesn't matter what order they are 
   // removed in.
-  for (i=0; i < numchildren; i++)
+  for (i = 0; i < numchildren; i++)
     {
       id child = [removeAll objectAtIndex: i];
       [_items removeObject: child];
@@ -1798,7 +1798,7 @@ static NSImage *unexpandable  = nil;
       insertionPoint++;
     }
 
-  for (i=numchildren-1; i >= 0; i--)
+  for (i = numchildren-1; i >= 0; i--)
     {
       id obj = NSMapGet(_itemDict, sitem);
       id child = [obj objectAtIndex: i];

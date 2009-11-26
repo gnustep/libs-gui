@@ -4414,6 +4414,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
 - (void) setFrame: (NSRect)frameRect
 {
   NSRect tmpRect = frameRect;
+
   if ([_super_view respondsToSelector: @selector(documentVisibleRect)])
     {
       float rowsHeight = ((_numberOfRows * _rowHeight) + 1);
@@ -4758,6 +4759,8 @@ static BOOL selectContiguousRegion(NSTableView *self,
 
 - (void) noteNumberOfRowsChanged
 {
+  NSRect newFrame;
+
   _numberOfRows = [self _numRows];
  
   /* If we are selecting rows, we have to check that we have no
@@ -4832,10 +4835,13 @@ static BOOL selectContiguousRegion(NSTableView *self,
         }
     }
   
-  [self setFrame: NSMakeRect (_frame.origin.x, 
-			      _frame.origin.y,
-			      _frame.size.width, 
-			      (_numberOfRows * _rowHeight) + 1)];
+  newFrame = _frame;
+  newFrame.size.height = (_numberOfRows * _rowHeight) + 1;
+  if (NO == NSEqualRects(newFrame, NSUnionRect(newFrame, _frame)))
+    {
+      [_super_view setNeedsDisplayInRect: _frame];
+    }
+  [self setFrame: newFrame];
 
   /* If we are shorter in height than the enclosing clipview, we
      should redraw us now. */
@@ -4844,7 +4850,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
       NSRect superviewBounds; // Get this *after* [self setFrame:]
       superviewBounds = [_super_view bounds];
       if ((superviewBounds.origin.x <= _frame.origin.x) 
-          && (NSMaxY(superviewBounds) >= NSMaxY(_frame)))
+        && (NSMaxY(superviewBounds) >= NSMaxY(_frame)))
         {
           [self setNeedsDisplay: YES];
         }
