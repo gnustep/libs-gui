@@ -137,6 +137,7 @@ static NSNotificationCenter *nc = nil;
 
           for (i = 0; i < (count - 1); i++)
             {
+	      NSString	*key;
               double proportion;
               
               if (_isVertical == NO)
@@ -147,9 +148,9 @@ static NSNotificationCenter *nc = nil;
                 {
                   proportion = (NSWidth(frames[i]))/oldTotal;              
                 }
-              
+              key = [NSString stringWithFormat: @"%u", i];
               [config setObject: [NSNumber numberWithDouble: proportion]
-                      forKey: [NSNumber numberWithInt: i]];
+                         forKey: key];
             }
         }
       
@@ -726,7 +727,7 @@ static NSNotificationCenter *nc = nil;
     {
       // If the splitview was moved, we resize the subviews
       if ((_isVertical == YES && p.x != op.x)
-           || (_isVertical == NO && p.y != op.y))
+        || (_isVertical == NO && p.y != op.y))
         {
           [self _resize: v withOldSplitView: prev withFrame: r fromPoint: p 
             withBigRect: bigRect divHorizontal: divHorizontal
@@ -798,8 +799,11 @@ static NSNotificationCenter *nc = nil;
            * remaining available space.  */
           for (i = 0; i < (count - 1); i++)
             {
-              NSNumber *proportion = [config objectForKey: [NSNumber numberWithInt: i]];
+              NSNumber	*proportion;
+	      NSString	*key;
 
+	      key = [NSString stringWithFormat: @"%u", i];
+              proportion = [config objectForKey: key];
               if (proportion == nil)
                 {
                   /* If any autosaved proportion is missing, do not do

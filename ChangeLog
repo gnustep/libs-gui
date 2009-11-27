@@ -1,6 +1,12 @@
+2009-11-27 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSSplitView.m: Correct the storing of the splitter locations
+	in the defaults system (the autosave mechanism) ... was using NSNumber
+	keys which was causing this to fail.
+
 2009-11-26 Richard Frith-Macdonald <rfm@gnu.org>
 
-	* Source/NSTableView.m: ([-noteNumberOfRowsChanged]) fid to redraw
+	* Source/NSTableView.m: ([-noteNumberOfRowsChanged]) fixed to redraw
 	the rectangle in the superview if the receiver shrinks.
 
 2009-11-25  Wolfgang Lux  <wolfgang.lux@gmail.com>
