@@ -113,7 +113,7 @@ static BOOL _isInInterfaceBuilder = NO;
       NSInterfaceStyle	newStyle;
       NSString          *processName;
 
-      if([self numberOfItems] == 0)
+      if ([self numberOfItems] == 0)
         return;
 
       oldRep = [self menuRepresentation];
@@ -150,6 +150,7 @@ static BOOL _isInInterfaceBuilder = NO;
       if (_menu.horizontal == NO)
         {
           NSMenuItem *appItem;
+	  NSMenu *sub;
 	  SEL	sel = @selector(terminate:);
           
 	  /* The title of the main menu should be the process name.
@@ -173,21 +174,18 @@ static BOOL _isInInterfaceBuilder = NO;
               [self addItem: quitItem];
 	    }
 
-	  /* An OSX main menu has the first item named with the process name
-	   * and this item points to a submenu whose contents are much the
-	   * same as a GNUstep info menu.
+	  /* An OSX main menu has the first item pointing to a submenu
+	   * whose contents are much the same as a GNUstep info menu.
 	   */
           appItem = (NSMenuItem*)[self itemAtIndex: 0]; // Info item.
-	  if (YES == [[appItem title] isEqualToString: processName]
-	    && [appItem submenu] != nil)
+	  sub = [appItem submenu];
+	  if (sub != nil)
 	    {
               NSString	*infoString;
-	      NSMenu	*sub;
 	      NSInteger	index;
 
 	      infoString = NSLocalizedString (@"Info", @"Info");
 	      [appItem setTitle: infoString];
-	      sub = [appItem submenu];
 	      [sub setTitle: infoString];
 	      /* The submenu may contain a 'quit' item ... if so we need to
 	       * remove it as we already added one to the main menu.
@@ -710,7 +708,7 @@ static BOOL _isInInterfaceBuilder = NO;
 - (id) initWithObject: (id)o
 	    className: (NSString *)name
 {
-  if((self = [super init]) != nil)
+  if ((self = [super init]) != nil)
     {
       [self setRealObject: o];
       [self setClassName: name];
@@ -957,7 +955,7 @@ static BOOL _isInInterfaceBuilder = NO;
                        format: @"Unable to find class '%@'", _className];
         }
 
-      if(GSObjCIsKindOf(aClass, [NSApplication class]) || 
+      if (GSObjCIsKindOf(aClass, [NSApplication class]) || 
 	 [_className isEqual: @"NSApplication"])
 	{
 	  _object = [aClass sharedApplication];
@@ -973,7 +971,7 @@ static BOOL _isInInterfaceBuilder = NO;
 - (void) awakeFromNib
 {
   NSDebugLog(@"Called awakeFromNib on an NSCustomObject instance: %@", self);
-  if([_object respondsToSelector: @selector(awakeFromNib)])
+  if ([_object respondsToSelector: @selector(awakeFromNib)])
     {
       [_object awakeFromNib];
     }
@@ -1030,7 +1028,7 @@ static BOOL _isInInterfaceBuilder = NO;
     }
   
   // If the class name is nil, assume NSView.
-  if(_className == nil)
+  if (_className == nil)
     {
       aClass = [NSView class];
     }
@@ -1055,7 +1053,7 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (id) nibInstantiateWithCoder: (NSCoder *)coder
 {
-  if([NSClassSwapper isInInterfaceBuilder])
+  if ([NSClassSwapper isInInterfaceBuilder])
     {
       return _view;
     }
@@ -1113,7 +1111,7 @@ static BOOL _isInInterfaceBuilder = NO;
 - (id) initWithCoder: (NSCoder *)coder
 {
   // if in interface builder, then initialize as normal.
-  if([NSClassSwapper isInInterfaceBuilder])
+  if ([NSClassSwapper isInInterfaceBuilder])
     {
       self = [super initWithCoder: coder];
     }
@@ -1139,12 +1137,12 @@ static BOOL _isInInterfaceBuilder = NO;
           ASSIGN(_className, [coder decodeObjectForKey: @"NSClassName"]);
           ASSIGN(_extension, [coder decodeObjectForKey: @"NSExtension"]);
 
-	  if([self nibInstantiate] != nil)
+	  if ([self nibInstantiate] != nil)
 	    {
 	      [self nibInstantiateWithCoder: coder];
 	    }
 
-	  if(self != _view)
+	  if (self != _view)
 	    {
 	      AUTORELEASE(self);
 	      [(NSKeyedUnarchiver *)coder replaceObject: self withObject: _view];
@@ -1401,7 +1399,7 @@ static BOOL _isInInterfaceBuilder = NO;
   id object = nil;
   NSKeyedUnarchiver *decoder = (NSKeyedUnarchiver *)coder;
 
-  if([NSClassSwapper isInInterfaceBuilder] == YES)
+  if ([NSClassSwapper isInInterfaceBuilder] == YES)
     {
       newClass = [decoder replacementClassForClassName: _originalClassName];
     }
@@ -1613,7 +1611,7 @@ static BOOL _isInInterfaceBuilder = NO;
   while ((key = [ken nextObject]) != nil && (value = [ven nextObject]) != nil)
     {
       NSMapInsert(mapTable, key, value);
-      if(value == nil)
+      if (value == nil)
 	{
 	  NSLog(@"==> WARNING: Value for key %@ is %@",key , value);
 	}
@@ -1745,7 +1743,7 @@ static BOOL _isInInterfaceBuilder = NO;
       // aren't useful outside of it and only waste memory if
       // unarchived in the live application.
       //
-      if([NSClassSwapper isInInterfaceBuilder])
+      if ([NSClassSwapper isInInterfaceBuilder])
 	{
 	  // Only get these when in the editor...
 	  oidsKeys = (NSArray *)
@@ -1823,7 +1821,7 @@ static BOOL _isInInterfaceBuilder = NO;
   NSFreeMapTable(_names);
   NSFreeMapTable(_classes);
   // these are not allocated when not in interface builder.
-  if([NSClassSwapper isInInterfaceBuilder])
+  if ([NSClassSwapper isInInterfaceBuilder])
     {
       NSFreeMapTable(_oids);
       NSFreeMapTable(_accessibilityOids);
@@ -1933,12 +1931,12 @@ static BOOL _isInInterfaceBuilder = NO;
   id owner = [context objectForKey: @"NSOwner"];
 
   // get using the alternate names.
-  if(tlo == nil)
+  if (tlo == nil)
     {
       tlo = [context objectForKey: @"NSNibTopLevelObjects"];
     }
 
-  if(owner == nil)
+  if (owner == nil)
     {
       owner = [context objectForKey: @"NSNibOwner"];
     }
@@ -2196,7 +2194,7 @@ static BOOL _isInInterfaceBuilder = NO;
 
 - (void) establishConnection
 {
-  if([_dst respondsToSelector: @selector(setToolTip:)])
+  if ([_dst respondsToSelector: @selector(setToolTip:)])
     {
       [_dst setToolTip: _marker];
     }
