@@ -1,3 +1,8 @@
+2009-11-28 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSNibLoading.m: Fix/improve handling of main menu to be
+	more intelligent about moving the 'quit' item and 'info' submenu.
+
 2009-11-27 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSSplitView.m: Correct the storing of the splitter locations

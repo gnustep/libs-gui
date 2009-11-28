@@ -892,7 +892,7 @@ static BOOL menuBarVisible = YES;
       if (actionSelector == 0 || sel_eq([menuItem action], actionSelector))
         {
           // There are different possibilities to implement the check here
-            if ([menuItem target] == anObject)
+          if ([menuItem target] == anObject)
             {
               return i;
             }

@@ -147,22 +147,61 @@ static BOOL _isInInterfaceBuilder = NO;
       [[self window] setLevel: NSMainMenuWindowLevel];
 
       // if it's a standard menu, transform it to be more NeXT'ish/GNUstep-like
-      if(_menu.horizontal == NO)
+      if (_menu.horizontal == NO)
         {
-          NSString *infoString = NSLocalizedString (@"Info", @"Info");
-          NSString *quitString = [NSString stringWithFormat: @"%@ %@", 
-                                           NSLocalizedString (@"Quit", @"Quit"), processName];
-          NSMenuItem *quitItem = [[NSMenuItem alloc] initWithTitle: quitString
-                                                     action: @selector(terminate:)
-                                                     keyEquivalent: @"q"];
           NSMenuItem *appItem;
+	  SEL	sel = @selector(terminate:);
           
-          appItem = (NSMenuItem*)[self itemAtIndex: 0]; // Info item.
-
-          [self addItem: quitItem];
+	  /* The title of the main menu should be the process name.
+	   */
           [self setTitle: processName];
-          [appItem setTitle: infoString];
-          [[appItem submenu] setTitle: infoString];
+
+	  /* If there is no 'quite' item (one which sends a -terminate:
+	   * actions) we add one.
+	   */
+	  if ([self indexOfItemWithTarget: nil andAction: sel] < 0
+	    && [self indexOfItemWithTarget: NSApp andAction: sel] < 0)
+	    {
+	      NSString *quitString;
+	      NSMenuItem *quitItem;
+
+	      quitString = [NSString stringWithFormat: @"%@ %@", 
+		NSLocalizedString (@"Quit", @"Quit"), processName];
+	      quitItem = [[NSMenuItem alloc] initWithTitle: quitString
+		action: @selector(terminate:)
+		keyEquivalent: @"q"];
+              [self addItem: quitItem];
+	    }
+
+	  /* An OSX main menu has the first item named with the process name
+	   * and this item points to a submenu whose contents are much the
+	   * same as a GNUstep info menu.
+	   */
+          appItem = (NSMenuItem*)[self itemAtIndex: 0]; // Info item.
+	  if (YES == [[appItem title] isEqualToString: processName]
+	    && [appItem submenu] != nil)
+	    {
+              NSString	*infoString;
+	      NSMenu	*sub;
+	      NSInteger	index;
+
+	      infoString = NSLocalizedString (@"Info", @"Info");
+	      [appItem setTitle: infoString];
+	      sub = [appItem submenu];
+	      [sub setTitle: infoString];
+	      /* The submenu may contain a 'quit' item ... if so we need to
+	       * remove it as we already added one to the main menu.
+	       */
+	      index = [sub indexOfItemWithTarget: nil andAction: sel];
+	      if (index < 0)
+		{
+	          index = [sub indexOfItemWithTarget: NSApp andAction: sel];
+		}
+	      if (index >= 0)
+		{
+		  [sub removeItemAtIndex: index];
+		}
+	    }
         }
 
       [self _setGeometry];
