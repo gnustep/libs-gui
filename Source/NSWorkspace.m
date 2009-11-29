@@ -1489,8 +1489,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 /**
  * Returns an array listing all the applications known to have been
  * launched.  Each entry in the array is a dictionary providing
- * the name, path and process identfier of an application.<br />
- * NB. The contents of this array are not guaranteed to be up to date.
+ * the name, path and process identfier of an application.
  */
 - (NSArray*) launchedApplications
 {
