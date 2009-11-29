@@ -117,6 +117,7 @@ setPath(NSBrowser *browser, NSString *path)
 - (void) _unmountMedia;
 - (void) _selectTextInColumn: (int)column;
 - (void) _selectCellName: (NSString *)title;
+- (void) _setFileName: (NSString *)name;
 - (void) _setupForDirectory: (NSString *)path file: (NSString *)name;
 - (BOOL) _shouldShowExtension: (NSString *)extension;
 - (void) _windowResized: (NSNotification*)n;
@@ -559,6 +560,14 @@ selectCellWithString: (NSString*)title
   return YES;
 }
 
+- (void) _setFileName: (NSString *)filename
+{
+  [self _selectCellName: filename];
+  [[_form cellAtIndex: 0] setStringValue: filename];
+  [_form selectTextAtIndex: 0];
+  [_form setNeedsDisplay: YES];
+}
+
 - (void) _setupForDirectory: (NSString *)path file: (NSString *)filename
 {
   if (path == nil)
@@ -576,13 +585,7 @@ selectCellWithString: (NSString*)title
     filename = @"";
   ASSIGN(_fullFileName, [_directory stringByAppendingPathComponent: filename]);
   setPath(_browser, _fullFileName);
-
-  [self _selectCellName: filename];
-  [_form abortEditing]; // FIXME This is necessary because we cannot set a
-                        // cell's value while it is being edited.
-  [[_form cellAtIndex: 0] setStringValue: filename];
-  [_form selectTextAtIndex: 0];
-  [_form setNeedsDisplay: YES];
+  [self _setFileName: filename];
 
   [self _browser: _browser
 	selectCellWithString: [[_browser selectedCell] stringValue] 
@@ -1172,7 +1175,7 @@ selectCellWithString: (NSString*)title
 {
   NSMatrix      *matrix;
   NSBrowserCell *selectedCell;
-  NSString      *filename;
+  NSString      *filename, *ext, *req;
   BOOL		isDir = NO;
 
   matrix = [_browser matrixInColumn: [_browser lastColumn]];
@@ -1208,13 +1211,64 @@ selectCellWithString: (NSString*)title
 	  ASSIGN (_directory, [filename stringByDeletingLastPathComponent]);
 	  ASSIGN (_fullFileName, filename);
 	  setPath(_browser, _fullFileName);
+	  [self _setFileName: [_fullFileName lastPathComponent]];
+	}
+    }
 
-	  filename = [_fullFileName lastPathComponent];
+  /* Warn user if a wrong extension was entered */
+  req = [self requiredFileType];
+  ext = [_fullFileName pathExtension];
+  if ([req length] > 0 && ![ext isEqualToString: req])
+    {
+      int result;
+      NSString *msgFormat, *butFormat;
+      NSString *altExt;
 
-	  [self _selectCellName: filename];
-	  [[_form cellAtIndex: 0] setStringValue: filename];
-	  [_form selectTextAtIndex: 0];
-	  [_form setNeedsDisplay: YES];
+      if ([self allowsOtherFileTypes])
+	{
+	  msgFormat =
+	    _(@"You have used the extension '.%@'.\n"
+	      @"The standard extension is '.%@'.'");
+	  butFormat = _(@"Use .%@");
+  	  altExt = ext;
+	}
+      else
+	{
+	  msgFormat =
+	    _(@"You cannot save this document with extension '.%@'.\n"
+	      @"The required extension is '.%@'.");
+	  butFormat = _(@"Use .%@");
+  	  altExt = [ext stringByAppendingPathExtension: req];
+	}
+
+      result = NSRunAlertPanel(_(@"Save"),
+		 msgFormat,
+		 [NSString stringWithFormat: butFormat, req],
+		 _(@"Cancel"),
+		 [NSString stringWithFormat: butFormat, altExt],
+		 ext, req);
+      switch (result)
+	{
+	case NSAlertDefaultReturn:
+	  filename = [_fullFileName stringByDeletingPathExtension];
+	  filename = [filename stringByAppendingPathExtension: req];
+
+	  ASSIGN (_fullFileName, filename);
+	  setPath(_browser, _fullFileName);
+	  [self _setFileName: [_fullFileName lastPathComponent]];
+	  break;
+	case NSAlertOtherReturn:
+	  if (altExt != ext)
+	    {
+	      filename = [_fullFileName stringByAppendingPathExtension: req];
+
+	      ASSIGN (_fullFileName, filename);
+	      setPath(_browser, _fullFileName);
+	      [self _setFileName: [_fullFileName lastPathComponent]];
+	    }
+	  break;
+	default:
+	  return;
 	}
     }
 
