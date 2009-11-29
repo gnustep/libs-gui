@@ -583,7 +583,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
    * First we do the obvious stuff using the standard methods.
    */
   [self setNextKeyView: nil];
-  [[self previousKeyView] setNextKeyView: nil];
+  tmp = [self previousKeyView];
+  if ([tmp nextKeyView] == self)
+    [tmp setNextKeyView: nil];
 
   /*
    * Now, we locate any remaining cases where a view has us as its next

@@ -1,5 +1,8 @@
 2009-11-29  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSView.m (-dealloc): Fix bug where -dealloc could break
+	the key view chain.
+
 	* Source/NSSavePanel.m (-ok:): Present a warning when the user has
 	entered a filename with a wrong extension.
 
