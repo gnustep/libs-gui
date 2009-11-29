@@ -9,6 +9,7 @@
 2009-11-29 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSOutlineView.m: Improve display of insertion point for DnD
+	Add auto-expand/collapse while dragging over expandable items.
 
 2009-11-28 Richard Frith-Macdonald <rfm@gnu.org>
 

@@ -60,7 +60,7 @@
 static NSNotificationCenter *nc = nil;
 static const int current_version = 1;
 
-int NSOutlineViewDropOnItemIndex = -1;
+const int NSOutlineViewDropOnItemIndex = -1;
 
 static int lastVerticalQuarterPosition;
 static int lastHorizontalHalfPosition;
@@ -71,6 +71,9 @@ static int oldProposedDropRow;
 static int currentDropRow;
 static int oldDropLevel;
 static int currentDropLevel;
+static NSMutableSet *autoExpanded = nil;
+static NSDate	*lastDragUpdate = nil;
+static NSDate	*lastDragChange = nil;
 
 
 // Cache the arrow images...
@@ -118,6 +121,10 @@ static NSImage *unexpandable  = nil;
 - (void) _removeChildren: (id)startitem;
 @end
 
+@interface	NSOutlineView (Private)
+- (void) _autoCollapse;
+@end
+
 @implementation NSOutlineView
 
 // Initialize the class when it is loaded
@@ -130,6 +137,7 @@ static NSImage *unexpandable  = nil;
       collapsed    = [NSImage imageNamed: @"common_outlineCollapsed"];
       expanded     = [NSImage imageNamed: @"common_outlineExpanded"];
       unexpandable = [NSImage imageNamed: @"common_outlineUnexpandable"];
+      autoExpanded = [NSMutableSet new];
     }
 }
 
@@ -277,11 +285,11 @@ static NSImage *unexpandable  = nil;
 }
 
 /**
- * Expands the specified item.  If expandChildren is set to YES, then all of the
- * expandable children of this item all also expanded in a recursive fashion (i.e.
- * all children, grandchildren and etc).
+ * Expands the specified item.  If expandChildren is set to YES, then all
+ * of the expandable children of this item all also expanded in a recursive
+ * fashion (i.e.  all children, grandchildren and etc).
  */
-- (void)expandItem: (id)item expandChildren: (BOOL)expandChildren
+- (void) expandItem: (id)item expandChildren: (BOOL)expandChildren
 {
   const SEL shouldExpandSelector = @selector(outlineView:shouldExpandItem:);
   BOOL canExpand = YES;
@@ -350,7 +358,7 @@ static NSImage *unexpandable  = nil;
  * Returns whether or not the indentation marker or "knob" is indented
  * along with the content inside the cell.
  */
-- (BOOL)indentationMarkerFollowsCell
+- (BOOL) indentationMarkerFollowsCell
 {
   return _indentationMarkerFollowsCell;
 }
@@ -359,7 +367,7 @@ static NSImage *unexpandable  = nil;
  * Returns the amount of indentation, in points, for each level 
  * of the tree represented by the outline view.
  */
-- (float)indentationPerLevel
+- (float) indentationPerLevel
 {
   return _indentationPerLevel;
 }
@@ -367,7 +375,7 @@ static NSImage *unexpandable  = nil;
 /**
  * Returns YES, if the item is able to be expanded, NO otherwise.
  */
-- (BOOL)isExpandable: (id)item
+- (BOOL) isExpandable: (id)item
 {
   return [_dataSource outlineView: self isItemExpandable: item];
 }
@@ -375,11 +383,12 @@ static NSImage *unexpandable  = nil;
 /**
  * Returns YES if the item is expanded or open, NO otherwise.
  */
-- (BOOL)isItemExpanded: (id)item
+- (BOOL) isItemExpanded: (id)item
 {
   if (item == nil)
+    {
       return YES;
-
+    }
   // Check the array to determine if it is expanded.
   return([_expandedItems containsObject: item]);
 }
@@ -388,7 +397,7 @@ static NSImage *unexpandable  = nil;
  * Returns the item at a given row. If no item exists for the given row, 
  * returns nil.
  */
-- (id)itemAtRow: (int)row
+- (id) itemAtRow: (int)row
 {
   if ((row >= [_items count]) || (row < 0))
     {
@@ -400,7 +409,7 @@ static NSImage *unexpandable  = nil;
 /**
  * Returns the level for a given item.
  */
-- (int)levelForItem: (id)item
+- (int) levelForItem: (id)item
 {
   if (item != nil)
     {
@@ -414,7 +423,7 @@ static NSImage *unexpandable  = nil;
 /**
  * Returns the level for the given row.
  */
-- (int)levelForRow: (int)row
+- (int) levelForRow: (int)row
 {
   return [self levelForItem: [self itemAtRow: row]];
 }
@@ -422,7 +431,7 @@ static NSImage *unexpandable  = nil;
 /**
  * Returns the outline table column.
  */
-- (NSTableColumn *)outlineTableColumn
+- (NSTableColumn *) outlineTableColumn
 {
   return _outlineTableColumn;
 }
@@ -441,7 +450,7 @@ static NSImage *unexpandable  = nil;
  * set to YES, if it's set to NO, then only the item itself is refreshed
  * from the datasource.
  */
-- (void)reloadItem: (id)item reloadChildren: (BOOL)reloadChildren
+- (void) reloadItem: (id)item reloadChildren: (BOOL)reloadChildren
 {
   int index;
   id parent;
@@ -561,7 +570,7 @@ static NSImage *unexpandable  = nil;
  * Otherwise, the indentation marker will remain at the left most position of
  * the view regardless of how many levels in the content is indented.
  */
-- (void)setIndentationMarkerFollowsCell: (BOOL)followsCell
+- (void) setIndentationMarkerFollowsCell: (BOOL)followsCell
 {
   _indentationMarkerFollowsCell = followsCell;
 }
@@ -990,31 +999,42 @@ static NSImage *unexpandable  = nil;
 - (void) draggingExited: (id <NSDraggingInfo>) sender
 {
   [self setNeedsDisplayInRect: oldDraggingRect];
+  [self _autoCollapse];
   [self displayIfNeeded];
+  DESTROY(lastDragUpdate);
+  DESTROY(lastDragChange);
 }
 
 - (NSDragOperation) draggingUpdated: (id <NSDraggingInfo>) sender
 {
   NSPoint p = [sender draggingLocation];
   NSRect newRect;
+  id item;
   int row;
   int verticalQuarterPosition;
   int horizontalHalfPosition;
   int levelBefore;
   int levelAfter;
   int level;
+  BOOL dropOn = NO;
   NSDragOperation dragOperation = [sender draggingSourceOperationMask];
  
+  ASSIGN(lastDragUpdate, [NSDate date]);
 //NSLog(@"draggingUpdated");
+
   p = [self convertPoint: p fromView: nil];
   verticalQuarterPosition = 
-    (p.y - _bounds.origin.y) / _rowHeight * 4.;
+    ((p.y - _bounds.origin.y) / _rowHeight) * 4.;
   horizontalHalfPosition = 
-    (p.x - _bounds.origin.y) / _indentationPerLevel * 2.;
+    ((p.x - _bounds.origin.y) / _indentationPerLevel) * 2.;
 
 
-  if ((verticalQuarterPosition - oldProposedDropRow * 4 <= 2) &&
-      (verticalQuarterPosition - oldProposedDropRow * 4 >= -3))
+  row = verticalQuarterPosition;
+  row = row % 4;
+  if (row == 1 || row == 2) dropOn = YES;
+  
+  if ((verticalQuarterPosition - oldProposedDropRow * 4 <= 2)
+    && (verticalQuarterPosition - oldProposedDropRow * 4 >= -3))
     {
       row = oldProposedDropRow;
     }
@@ -1057,7 +1077,6 @@ static NSImage *unexpandable  = nil;
   if ((lastVerticalQuarterPosition != verticalQuarterPosition)
     || (lastHorizontalHalfPosition != horizontalHalfPosition))
     {
-      id item;
       int childIndex;
 
       if (horizontalHalfPosition / 2 < levelAfter)
@@ -1101,21 +1120,26 @@ static NSImage *unexpandable  = nil;
         childIndex = j;
       }
 
+      if (YES == dropOn)
+	{
+	  childIndex = NSOutlineViewDropOnItemIndex;
+	}
 
       oldProposedDropRow = currentDropRow;
       if ([_dataSource respondsToSelector: 
 	@selector(outlineView:validateDrop:proposedItem:proposedChildIndex:)])
         {
            dragOperation = [_dataSource outlineView: self
-                                        validateDrop: sender
-                                        proposedItem: item
-                                        proposedChildIndex: childIndex];
+                                       validateDrop: sender
+                                       proposedItem: item
+				 proposedChildIndex: childIndex];
         }
       
       if ((currentDropRow != oldDropRow) || (currentDropLevel != oldDropLevel))
         {
 	  NSBezierPath	*path;
 
+	  ASSIGN(lastDragChange, lastDragUpdate);
           [self lockFocus];
           
           [self setNeedsDisplayInRect: oldDraggingRect];
@@ -1223,14 +1247,53 @@ static NSImage *unexpandable  = nil;
           oldDropRow = currentDropRow;
           oldDropLevel = currentDropLevel;
         }
+      else
+	{
+	  if (YES == dropOn)
+	    {
+	      item = [_items objectAtIndex: currentDropRow];
+	      if ([self isExpandable: item] && ![self isItemExpanded: item])
+		{
+		  [self expandItem: item expandChildren: NO];
+		  if ([self isItemExpanded: item])
+		    {
+		      [autoExpanded addObject: item];
+		    }
+		}
+	    }
+	}
     }
-
+  else
+    {
+      /* If we have been hovering over an item for more than half a second,
+       * we should expand it.
+       */
+      if (YES == dropOn
+	&& [lastDragUpdate timeIntervalSinceDate: lastDragChange] >= 0.5)
+	{
+	  item = [_items objectAtIndex: currentDropRow];
+	  if ([self isExpandable: item] && ![self isItemExpanded: item])
+	    {
+	      [self expandItem: item expandChildren: NO];
+	      if ([self isItemExpanded: item])
+		{
+		  [autoExpanded addObject: item];
+		}
+	    }
+	  /* Set the change date even if we didn't actually expand ... so
+	   * we don't keep trying to expand the same item unnecessarily.
+	   */
+	  ASSIGN(lastDragChange, lastDragUpdate);
+	}
+    }
 
   return dragOperation;
 }
 
 - (BOOL) performDragOperation: (id<NSDraggingInfo>)sender
 {
+  BOOL	result = NO;
+
   if ([_dataSource 
         respondsToSelector: 
           @selector(outlineView:acceptDrop:item:childIndex:)])
@@ -1267,14 +1330,15 @@ static NSImage *unexpandable  = nil;
           childIndex = j;
         }
       
-      return [_dataSource 
-               outlineView: self
-               acceptDrop: sender
-               item: item
-               childIndex: childIndex];
+      result = [_dataSource outlineView: self
+			     acceptDrop: sender
+				   item: item
+			     childIndex: childIndex];
     }
 
-  return NO;
+  [self _autoCollapse];
+
+  return result;
 }
 
 - (BOOL) prepareForDragOperation: (id<NSDraggingInfo>)sender
@@ -1874,4 +1938,21 @@ static NSImage *unexpandable  = nil;
   [anarray removeAllObjects];
 }
 
+@end
+
+@implementation	NSOutlineView (Private)
+/* Collapse all the items which were automatically expanded to allow drop.
+ */
+- (void) _autoCollapse
+{
+  NSEnumerator	*e;
+  id		item;
+
+  e = [autoExpanded objectEnumerator];
+  while ((item = [e nextObject]) != nil)
+    {
+      [self collapseItem: item collapseChildren: YES];
+    }
+  [autoExpanded removeAllObjects];
+}
 @end

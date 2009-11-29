@@ -52,30 +52,30 @@
 }
 
 // Instance methods
-- (BOOL)autoResizesOutlineColumn;
-- (BOOL)autosaveExpandedItems;
-- (void)collapseItem: (id)item;
-- (void)collapseItem: (id)item collapseChildren: (BOOL)collapseChildren;
-- (void)expandItem: (id)item;
-- (void)expandItem:(id)item expandChildren:(BOOL)expandChildren;
-- (BOOL)indentationMarkerFollowsCell;
-- (float)indentationPerLevel;
-- (BOOL)isExpandable: (id)item;
-- (BOOL)isItemExpanded: (id)item;
-- (id)itemAtRow: (int)row;
-- (int)levelForItem: (id)item;
-- (int)levelForRow:(int)row;
-- (NSTableColumn *)outlineTableColumn;
-- (void)reloadItem: (id)item;
-- (void)reloadItem: (id)item reloadChildren: (BOOL)reloadChildren;
-- (int)rowForItem: (id)item;
-- (void)setAutoresizesOutlineColumn: (BOOL)resize;
-- (void)setAutosaveExpandedItems: (BOOL)flag;
-- (void)setDropItem:(id)item dropChildIndex: (int)childIndex;
-- (void)setIndentationMarkerFollowsCell: (BOOL)followsCell;
-- (void)setIndentationPerLevel: (float)newIndentLevel;
-- (void)setOutlineTableColumn: (NSTableColumn *)outlineTableColumn;
-- (BOOL)shouldCollapseAutoExpandedItemsForDeposited: (BOOL)deposited;
+- (BOOL) autoResizesOutlineColumn;
+- (BOOL) autosaveExpandedItems;
+- (void) collapseItem: (id)item;
+- (void) collapseItem: (id)item collapseChildren: (BOOL)collapseChildren;
+- (void) expandItem: (id)item;
+- (void) expandItem: (id)item expandChildren: (BOOL)expandChildren;
+- (BOOL) indentationMarkerFollowsCell;
+- (float) indentationPerLevel;
+- (BOOL) isExpandable: (id)item;
+- (BOOL) isItemExpanded: (id)item;
+- (id) itemAtRow: (int)row;
+- (int) levelForItem: (id)item;
+- (int) levelForRow: (int)row;
+- (NSTableColumn *) outlineTableColumn;
+- (void) reloadItem: (id)item;
+- (void) reloadItem: (id)item reloadChildren: (BOOL)reloadChildren;
+- (int) rowForItem: (id)item;
+- (void) setAutoresizesOutlineColumn: (BOOL)resize;
+- (void) setAutosaveExpandedItems: (BOOL)flag;
+- (void) setDropItem: (id)item dropChildIndex: (int)childIndex;
+- (void) setIndentationMarkerFollowsCell: (BOOL)followsCell;
+- (void) setIndentationPerLevel: (float)newIndentLevel;
+- (void) setOutlineTableColumn: (NSTableColumn *)outlineTableColumn;
+- (BOOL) shouldCollapseAutoExpandedItemsForDeposited: (BOOL)deposited;
 
 @end /* interface of NSOutlineView */
 
@@ -87,82 +87,81 @@
  * Called to perform drop operation and returns YES if successful,
  * and NO otherwise.
  */
-- (BOOL)outlineView: (NSOutlineView *)outlineView 
-         acceptDrop: (id <NSDraggingInfo>)info 
-               item: (id)item 
-         childIndex: (int)index;
+- (BOOL) outlineView: (NSOutlineView *)outlineView 
+          acceptDrop: (id <NSDraggingInfo>)info 
+                item: (id)item 
+          childIndex: (int)index;
 /**
  * Implementation of this method is required.  Returns the child at 
  * the specified index for the given item.
  */
-- (id)outlineView: (NSOutlineView *)outlineView 
-            child: (int)index 
-           ofItem: (id)item;
+- (id) outlineView: (NSOutlineView *)outlineView 
+             child: (int)index 
+            ofItem: (id)item;
 /**
  * This is a required method.  Returns whether or not the outline view
  * item specified is expandable or not.
  */
-- (BOOL)outlineView: (NSOutlineView *)outlineView
-   isItemExpandable: (id)item;
+- (BOOL) outlineView: (NSOutlineView *)outlineView
+    isItemExpandable: (id)item;
 
 /**
  * Returns the item for the given persistent object.
  */
-- (id)outlineView: (NSOutlineView *)outlineView 
-itemForPersistentObject:(id)object;
+- (id) outlineView: (NSOutlineView *)outlineView 
+  itemForPersistentObject: (id)object;
 
 /*
  * This is a required method.  Returns the number of children of
  * the given item.
  */
-- (int)outlineView: (NSOutlineView *)outlineView
-numberOfChildrenOfItem: (id)item;
+- (int) outlineView: (NSOutlineView *)outlineView
+  numberOfChildrenOfItem: (id)item;
 
 /**
  * This is a required method.  Returns the object corresponding to the
  * item representing it in the outline view.
  */
-- (id)outlineView: (NSOutlineView *)outlineView 
-objectValueForTableColumn:(NSTableColumn *)tableColumn 
-           byItem:(id)item;
+- (id) outlineView: (NSOutlineView *)outlineView 
+  objectValueForTableColumn: (NSTableColumn *)tableColumn 
+  byItem: (id)item;
 
 /**
  * Returns the persistent object for the item specified.
  */
-- (id)outlineView: (NSOutlineView *)outlineView
-persistentObjectForItem: (id)item;
+- (id) outlineView: (NSOutlineView *)outlineView
+  persistentObjectForItem: (id)item;
 
 /**
- * Sets the object value of the given item in the given table column to the object provided.
+ * Sets the object value of the given item in the given table column
+ * to the object provided.
  */
-- (void)outlineView: (NSOutlineView *)outlineView 
-     setObjectValue: (id)object
-     forTableColumn: (NSTableColumn *)tableColumn
-             byItem: (id)item;
+- (void) outlineView: (NSOutlineView *)outlineView 
+      setObjectValue: (id)object
+      forTableColumn: (NSTableColumn *)tableColumn
+              byItem: (id)item;
 
 /**
  * Used by the Drag and Drop system.  Returns the drag operation which should
  * be used when -outlineView:acceptDrop:item:childIndex: is called.
  */
-- (NSDragOperation)outlineView: (NSOutlineView*)outlineView 
-                  validateDrop: (id <NSDraggingInfo>)info 
-                  proposedItem: (id)item 
-            proposedChildIndex: (int)index;
+- (NSDragOperation) outlineView: (NSOutlineView*)outlineView 
+                   validateDrop: (id <NSDraggingInfo>)info 
+                   proposedItem: (id)item 
+             proposedChildIndex: (int)index;
 
 /**
  * Causes the outline view to write the specified items to the pastboard.
  */
-- (BOOL)outlineView: (NSOutlineView *)outlineView 
-         writeItems: (NSArray*)items 
-       toPasteboard: (NSPasteboard*)pboard;
+- (BOOL) outlineView: (NSOutlineView *)outlineView 
+          writeItems: (NSArray*)items 
+        toPasteboard: (NSPasteboard*)pboard;
 @end
 
 /*
  * Constants
  */
-extern int NSOutlineViewDropOnItemIndex;
-
-//enum { NSOutlineViewDropOnItemIndex = -1 };
+extern const int NSOutlineViewDropOnItemIndex;
 
 /*
  * Notifications
