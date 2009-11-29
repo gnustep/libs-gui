@@ -42,6 +42,7 @@
 #include <Foundation/NSValue.h>
 
 #include "AppKit/NSApplication.h"
+#include "AppKit/NSBezierPath.h"
 #include "AppKit/NSCell.h"
 #include "AppKit/NSClipView.h"
 #include "AppKit/NSColor.h"
@@ -1004,6 +1005,7 @@ static NSImage *unexpandable  = nil;
   int level;
   NSDragOperation dragOperation = [sender draggingSourceOperationMask];
  
+//NSLog(@"draggingUpdated");
   p = [self convertPoint: p fromView: nil];
   verticalQuarterPosition = 
     (p.y - _bounds.origin.y) / _rowHeight * 4.;
@@ -1053,7 +1055,7 @@ static NSImage *unexpandable  = nil;
     levelBefore = levelAfter;
 
   if ((lastVerticalQuarterPosition != verticalQuarterPosition)
-      || (lastHorizontalHalfPosition != horizontalHalfPosition))
+    || (lastHorizontalHalfPosition != horizontalHalfPosition))
     {
       id item;
       int childIndex;
@@ -1102,7 +1104,7 @@ static NSImage *unexpandable  = nil;
 
       oldProposedDropRow = currentDropRow;
       if ([_dataSource respondsToSelector: 
-                         @selector(outlineView:validateDrop:proposedItem:proposedChildIndex:)])
+	@selector(outlineView:validateDrop:proposedItem:proposedChildIndex:)])
         {
            dragOperation = [_dataSource outlineView: self
                                         validateDrop: sender
@@ -1112,6 +1114,8 @@ static NSImage *unexpandable  = nil;
       
       if ((currentDropRow != oldDropRow) || (currentDropLevel != oldDropLevel))
         {
+	  NSBezierPath	*path;
+
           [self lockFocus];
           
           [self setNeedsDisplayInRect: oldDraggingRect];
@@ -1129,27 +1133,53 @@ static NSImage *unexpandable  = nil;
                   newRect = NSMakeRect([self visibleRect].origin.x,
                                        currentDropRow * _rowHeight,
                                        [self visibleRect].size.width,
-                                       3);
+                                       2);
                 }
               else if (currentDropRow == _numberOfRows)
                 {
                   newRect = NSMakeRect([self visibleRect].origin.x,
                                        currentDropRow * _rowHeight - 2,
                                        [self visibleRect].size.width,
-                                       3);
+                                       2);
                 }
               else
                 {
                   newRect = NSMakeRect([self visibleRect].origin.x,
                                        currentDropRow * _rowHeight - 1,
                                        [self visibleRect].size.width,
-                                       3);
+                                       2);
                 }
               newRect.origin.x += currentDropLevel * _indentationPerLevel;
               newRect.size.width -= currentDropLevel * _indentationPerLevel;
+	      /* The rectangle is a line across the cell indicating the
+	       * insertion position.  We adjust by enough pixels to allow for
+	       * a ring drawn on the left end.
+	       */
+	      newRect.size.width -= 7;
+	      newRect.origin.x += 7;
               NSRectFill(newRect);
+	      /* We make the redraw rectangle big enough to hold both the
+	       * line and the circle (8 pixels high).
+	       */
+	      newRect.size.width += 7;
+	      newRect.origin.x -= 7;
+	      newRect.size.height = 8;
+	      newRect.origin.y -= 3;
               oldDraggingRect = newRect;
-
+	      /* We draw the circle at the left of the line, and make it
+	       * a little smaller than the redraw rectangle so that the 
+	       * bezier path will draw entirely inside the redraw area
+	       * and we won't leave artifacts behind on the screen.
+	       */
+	      if (newRect.size.width < 8)
+		oldDraggingRect.size.width = 8;
+	      newRect.size.width = 7;
+	      newRect.size.height = 7;
+	      newRect.origin.x += 0.5;
+	      newRect.origin.y += 0.5;
+	      path = [NSBezierPath bezierPath];
+	      [path appendBezierPathWithOvalInRect: newRect];
+	      [path stroke];
             }
           else
             {
