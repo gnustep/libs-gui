@@ -1,3 +1,10 @@
+2009-11-30 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSOutlineView.m: Improve DnD allowing drop on items as well
+	as inside them. Attempt to mimix OSX behavior.  Simplify code.
+	Use triangular images similar to OSX appearance.
+	Doubtless needs more polishing.
+
 2009-11-29  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSView.m (-dealloc): Fix bug where -dealloc could break
