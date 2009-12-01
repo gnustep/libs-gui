@@ -4453,6 +4453,14 @@ current key view.<br />
     }
   fRect.size.height = value;
 
+  // if toolbar is showing, adjust saved frame to add the toolbar back in
+  if ([_toolbar isVisible])
+    {
+      int toolbarHeight = [[_toolbar _toolbarView] frame].size.height;
+      fRect.size.height += toolbarHeight;
+      fRect.origin.y -= toolbarHeight;
+    }
+
   /*
    * Scan in the frame for the area the window was placed in in screen.
    */
@@ -4563,6 +4571,14 @@ current key view.<br />
   NSRect sRect;
 
   fRect = _frame;
+
+  // if toolbar is showing, adjust saved frame to not include the toolbar
+  if ([_toolbar isVisible])
+    {
+      int toolbarHeight = [[_toolbar _toolbarView] frame].size.height;
+      fRect.size.height -= toolbarHeight;
+      fRect.origin.y += toolbarHeight;
+    }
 
   /*
    * The screen rectangle should gives the area of the screen in which
