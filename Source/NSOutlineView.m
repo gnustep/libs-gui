@@ -1287,8 +1287,7 @@ static NSImage *unexpandable  = nil;
       /* If we have been hovering over an item for more than half a second,
        * we should expand it.
        */
-      if (positionInRow > 0 && positionInRow < 3
-	&& [lastDragUpdate timeIntervalSinceDate: lastDragChange] >= 0.5)
+      if ([lastDragUpdate timeIntervalSinceDate: lastDragChange] >= 0.5)
 	{
 	  item = [_items objectAtIndex: row];
 	  if ([self isExpandable: item] && ![self isItemExpanded: item])
