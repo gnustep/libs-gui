@@ -57,6 +57,8 @@
 #include "AppKit/NSTextFieldCell.h"
 #include "AppKit/NSWindow.h"
 
+#include <math.h>
+
 static NSNotificationCenter *nc = nil;
 static const int current_version = 1;
 
@@ -383,14 +385,22 @@ static NSImage *unexpandable  = nil;
 
 /**
  * Returns YES, if the item is able to be expanded, NO otherwise.
+ *
+ * Returns NO when the item is nil (as Cocoa does).
  */
 - (BOOL) isExpandable: (id)item
 {
+  if (item == nil)
+    {
+      return NO;
+    }
   return [_dataSource outlineView: self isItemExpandable: item];
 }
 
 /**
  * Returns YES if the item is expanded or open, NO otherwise.
+ *
+ * Returns YES when the item is nil (as Cocoa does).
  */
 - (BOOL) isItemExpanded: (id)item
 {
@@ -1004,40 +1014,241 @@ static NSImage *unexpandable  = nil;
   DESTROY(lastDragChange);
 }
 
+// TODO: Move the part that starts at 'Compute the indicator rect area' to GSTheme
+- (void) drawDropAboveIndicatorWithDropItem: (id)currentDropItem childDropIndex: (int)currentDropIndex
+{
+  int numberOfChildren = [_dataSource outlineView: self 
+                           numberOfChildrenOfItem: currentDropItem];
+  int row = 0;
+  int level = 0;
+  id item = nil;
+  NSBezierPath *path = nil;
+  NSRect newRect = NSZeroRect;
+
+  if (currentDropIndex >= numberOfChildren)
+    {
+      /* The index lies beyond the last item,
+       * so we get the last but one item and we
+       * use the row after it.  If there are no
+       * children at all, we use the parent item row.
+       */
+      if (numberOfChildren == 0)
+        {
+          row = [self rowForItem: currentDropItem];
+        }
+      else
+        {
+          item = [_dataSource outlineView: self
+                                    child: numberOfChildren - 1
+                                   ofItem: currentDropItem];
+    
+          row = [self rowForItem: item] + 1;
+        }
+    }
+  else
+    {
+      /* Find the row for the item containing the child
+       * we will be dropping on.
+       */
+      item = [_dataSource outlineView: self
+                                child: currentDropIndex
+                               ofItem: currentDropItem];
+      row = [self rowForItem: item];
+    }
+
+  /* Compute the indicator rect area */
+  if (currentDropItem == nil && currentDropIndex == 0)
+    {
+      newRect = NSMakeRect([self visibleRect].origin.x,
+                           0,
+                           [self visibleRect].size.width,
+                           2);
+    }
+  else if (row == _numberOfRows)
+    {
+      newRect = NSMakeRect([self visibleRect].origin.x,
+                           row * _rowHeight - 2,
+                           [self visibleRect].size.width,
+                           2);
+    }
+  else
+    {
+      newRect = NSMakeRect([self visibleRect].origin.x,
+                           row * _rowHeight - 1,
+                           [self visibleRect].size.width,
+                           2);
+    }
+  level = [self levelForItem: item] + 1;
+  newRect.origin.x += level * _indentationPerLevel;
+  newRect.size.width -= level * _indentationPerLevel;
+
+  [[NSColor darkGrayColor] set];
+
+  /* The rectangle is a line across the cell indicating the
+   * insertion position.  We adjust by enough pixels to allow for
+   * a ring drawn on the left end.
+   */
+  newRect.size.width -= 7;
+  newRect.origin.x += 7;
+  NSRectFill(newRect);
+
+  /* We make the redraw rectangle big enough to hold both the
+   * line and the circle (8 pixels high).
+   */
+  newRect.size.width += 7;
+  newRect.origin.x -= 7;
+  newRect.size.height = 8;
+  newRect.origin.y -= 3;
+  oldDraggingRect = newRect;
+  if (newRect.size.width < 8)
+    oldDraggingRect.size.width = 8;
+
+  /* We draw the circle at the left of the line, and make it
+   * a little smaller than the redraw rectangle so that the
+   * bezier path will draw entirely inside the redraw area
+   * and we won't leave artifacts behind on the screen.
+   */
+  newRect.size.width = 7;
+  newRect.size.height = 7;
+  newRect.origin.x += 0.5;
+  newRect.origin.y += 0.5;
+  path = [NSBezierPath bezierPath];
+  [path appendBezierPathWithOvalInRect: newRect];
+  [path stroke];
+}
+
+/* When the drop item is nil and the drop child index is -1 */
+- (void) drawDropOnRootIndicator
+{
+  NSRect indicatorRect = [self visibleRect];
+
+  /* Remember indicator area to be redrawn next time */
+  oldDraggingRect = indicatorRect;
+
+  [[NSColor darkGrayColor] set];
+  NSFrameRectWithWidth(indicatorRect, 2.0);
+}
+
+// TODO: Move a method common to -drapOnRootIndicator and the one below to GSTheme
+- (void) drawDropOnIndicatorWithDropItem: (id)currentDropItem
+{
+  int row = [_items indexOfObject: currentDropItem];
+  int level = [self levelForItem: currentDropItem];
+  NSRect newRect = [self frameOfCellAtColumn: 0
+                                         row: row];
+
+  newRect.origin.x = _bounds.origin.x;
+  newRect.size.width = _bounds.size.width + 2;
+  newRect.origin.x -= _intercellSpacing.height / 2;
+  newRect.size.height += _intercellSpacing.height;
+
+  /* Remember indicator area to be redrawn next time */
+  oldDraggingRect = newRect;
+  oldDraggingRect.origin.y -= 1;
+  oldDraggingRect.size.height += 2;
+  
+  newRect.size.height -= 1;
+  newRect.origin.x += 3;
+  newRect.size.width -= 3;
+
+  if (_drawsGrid)
+    {
+      //newRect.origin.y += 1;
+      //newRect.origin.x += 1;
+      //newRect.size.width -= 2;
+      newRect.size.height += 1;
+    }
+ 
+  newRect.origin.x += level * _indentationPerLevel;
+  newRect.size.width -= level * _indentationPerLevel;
+
+  [[NSColor darkGrayColor] set];
+  NSFrameRectWithWidth(newRect, 2.0);
+}
+
+/* Returns the row whose item is the parent that owns the child at the given row. 
+Also returns the child index relative to this parent. */
+- (int) parentRowForRow: (int)row atLevel: (int)level andReturnChildIndex: (int *)childIndex
+{
+  int i;
+  int lvl;
+
+  *childIndex = 0;
+
+  for (i = row - 1; i >= 0; i--)
+    {
+      lvl = [self levelForRow: i];
+
+      BOOL foundParent = (lvl == level - 1);
+      BOOL foundSibling = (lvl == level);
+
+      if (foundParent)
+      {
+          break;
+      }
+      else if (foundSibling)
+      {
+        (*childIndex)++;
+      }
+    }
+
+  return i;
+}
+
 - (NSDragOperation) draggingUpdated: (id <NSDraggingInfo>) sender
 {
-  NSPoint p = [sender draggingLocation];
-  NSRect newRect;
-  id item;
+  NSPoint p = [self convertPoint: [sender draggingLocation] fromView: nil];
+  /* The insertion row.
+   * The insertion row is identical to the hovered row, except when p is in 
+   * the hovered row bottom part (the last quarter).
+   */
   int row;
+  /* A row can be divided into 4 vertically stacked portions.
+   * We call each portion a quarter. 
+   * verticalQuarterPosition is the number of quarters that exists between the 
+   * top left origin (NSOutlineView is flipped) and the hovered row (precisely 
+   * up to the quarter occupied by the pointer in this row). 
+   */
   int verticalQuarterPosition;
+  /* An indentation unit can be divided into 2 portions (left and right).
+   * We call each portion a half.
+   * We use it to compute the insertion level. */
   int horizontalHalfPosition;
+  /* The quarter (0, 1, 2 or 3) occupied by the pointer within the hovered row
+   * (not in the insertion row). */
   int positionInRow;
+  /* The previous row level (the row before the insertion row) */
   int levelBefore;
+  /* The next row level (the row after the insertion row) */
   int levelAfter;
+  /* The insertion level that may vary with the horizontal pointer position, 
+   * when the pointer is between two rows and the bottom row is a parent.
+   */
   int level;
   NSDragOperation dragOperation = [sender draggingSourceOperationMask];
 
   ASSIGN(lastDragUpdate, [NSDate date]);
-//NSLog(@"draggingUpdated");
+  //NSLog(@"draggingUpdated");
 
-  p = [self convertPoint: p fromView: nil];
+  /* _bounds.origin is (0, 0) when the outline view is not clipped.
+   * When the view is scrolled, _bounds.origin.y returns the scrolled height. */
   verticalQuarterPosition =
-    ((p.y - _bounds.origin.y) / _rowHeight) * 4.;
+    rint(((p.y + _bounds.origin.y) / _rowHeight) * 4.);
   horizontalHalfPosition =
-    ((p.x - _bounds.origin.y) / _indentationPerLevel) * 2.;
+    rint(((p.x + _bounds.origin.y) / _indentationPerLevel) * 2.);
 
+  /* We add an extra quarter to shift the insertion row below the hovered row. */
   row = (verticalQuarterPosition + 1) / 4;
   positionInRow = verticalQuarterPosition % 4;
   if (row > _numberOfRows)
     {
-      row = _numberOfRows;	// beyond the last real row
-      positionInRow = 1;	// inside the root item
+      row = _numberOfRows; // beyond the last real row
+      positionInRow = 1;   // inside the root item (we could also use 2)
     }
 
   //NSLog(@"horizontalHalfPosition = %d", horizontalHalfPosition);
-
-  //NSLog(@"dropRow %d", row);
+  //NSLog(@"verticalQuarterPosition = %d", verticalQuarterPosition);
+  //NSLog(@"insertion row = %d", row);
 
   if (row == 0)
     {
@@ -1055,18 +1266,15 @@ static NSImage *unexpandable  = nil;
     {
       levelAfter = [self levelForRow: row];
     }
-
-  //NSLog(@"horizontalHalfPosition = %d", horizontalHalfPosition);
   //NSLog(@"level before = %d", levelBefore);
   //NSLog(@"level after = %d", levelAfter);
-
-  if (levelBefore < levelAfter)
-    levelBefore = levelAfter;
 
   if ((lastVerticalQuarterPosition != verticalQuarterPosition)
     || (lastHorizontalHalfPosition != horizontalHalfPosition))
     {
-      int childIndex;
+      int minInsertionLevel = levelAfter;
+      int maxInsertionLevel = MAX(levelBefore, levelAfter);
+      int pointerInsertionLevel = rint((float)horizontalHalfPosition / 2.);
 
       /* Save positions to avoid executing this code when the general
        * position of the mouse is unchanged.
@@ -1074,67 +1282,72 @@ static NSImage *unexpandable  = nil;
       lastVerticalQuarterPosition = verticalQuarterPosition;
       lastHorizontalHalfPosition = horizontalHalfPosition;
 
-      if (horizontalHalfPosition / 2 < levelAfter)
-        horizontalHalfPosition = levelAfter * 2;
-      else if (horizontalHalfPosition / 2 > levelBefore)
-        horizontalHalfPosition = levelBefore * 2 + 1;
-      level = horizontalHalfPosition / 2;
+      /* Find the insertion level to be used with a drop above
+       *
+       * In the outline below, when the pointer moves horizontally on 
+       * the dashed line, it can insert at three levels: x level, C level or 
+       * B/D level but not at A level.
+       * 
+       * + A
+       *    + B
+       *       + C
+       *          - x
+       * --- pointer ---
+       *    + D 
+       */
+      if (pointerInsertionLevel < minInsertionLevel)
+        {
+          level = minInsertionLevel;
+        }
+      else if (pointerInsertionLevel > maxInsertionLevel)
+        {
+          level = maxInsertionLevel;
+        }
+      else
+        {
+          level = pointerInsertionLevel; 
+        }
 
-      //NSLog(@"horizontalHalfPosition = %d", horizontalHalfPosition);
-      //NSLog(@"verticalQuarterPosition = %d", verticalQuarterPosition);
+      //NSLog(@"min insert level = %d", minInsertionLevel);
+      //NSLog(@"max insert level = %d", maxInsertionLevel);
+      //NSLog(@"insert level = %d", level);
+      //NSLog(@"row = %d and position in row = %d", row, positionInRow);
 
-      if (positionInRow > 0 && positionInRow < 3)
+      if (positionInRow > 0 && positionInRow < 3) /* Drop on */
 	{
 	  /* We are directly over the middle of a row ... so the drop
 	   * should be directory on the item in that row.
 	   */
-	  item = [self itemAtRow: row];
-	  childIndex = NSOutlineViewDropOnItemIndex;
+	  currentDropItem = [self itemAtRow: row];
+	  currentDropIndex = NSOutlineViewDropOnItemIndex;
 	}
-      else
+      else /* Drop above */
 	{
-	  int i;
-	  int j = 0;
-	  int lvl;
-	  for (i = row - 1; i >= 0; i--)
-	    {
-	      lvl = [self levelForRow: i];
-	      if (lvl == level - 1)
-		{
-		  break;
-		}
-	      else if (lvl == level)
-		{
-		  j++;
-		}
-	    }
-	  //NSLog(@"found %d (proposed childIndex = %d)", i, j);
-	  if (i == -1)
-	    item = nil;
-	  else
-	    item = [self itemAtRow: i];
+          int childIndex = 0;
+          int parentRow = [self parentRowForRow: row 
+                                        atLevel: level 
+                            andReturnChildIndex: &childIndex];
 
-	  childIndex = j;
+	  //NSLog(@"found %d (proposed childIndex = %d)", parentRow, childIndex);
+
+	  currentDropItem = (parentRow == -1 ? nil : [self itemAtRow: parentRow]);
+          currentDropIndex = childIndex;
 	}
-
-      currentDropItem = item;
-      currentDropIndex = childIndex;
 
       if ([_dataSource respondsToSelector:
 	@selector(outlineView:validateDrop:proposedItem:proposedChildIndex:)])
         {
            dragOperation = [_dataSource outlineView: self
                                        validateDrop: sender
-                                       proposedItem: item
-				 proposedChildIndex: childIndex];
+                                       proposedItem: currentDropItem
+				 proposedChildIndex: currentDropIndex];
         }
 
-//NSLog(@"Drop on %@ %d", currentDropItem, currentDropIndex);
+      //NSLog(@"Drop on %@ %d", currentDropItem, currentDropIndex);
+
       if ((currentDropItem != oldDropItem)
 	|| (currentDropIndex != oldDropIndex))
         {
-	  NSBezierPath	*path;
-
           oldDropItem = currentDropItem;
           oldDropIndex = currentDropIndex;
 
@@ -1144,152 +1357,32 @@ static NSImage *unexpandable  = nil;
           [self setNeedsDisplayInRect: oldDraggingRect];
           [self displayIfNeeded];
 
-          [[NSColor darkGrayColor] set];
-
-          if (currentDropIndex != NSOutlineViewDropOnItemIndex)
+          if (currentDropIndex != NSOutlineViewDropOnItemIndex && currentDropItem != nil)
             {
-	      int	numberOfChildren;
-
-	      numberOfChildren = [_dataSource outlineView: self
-		      numberOfChildrenOfItem: currentDropItem];
-
-	      if (currentDropIndex >= numberOfChildren)
-		{
-		  /* The index lies beyond the last item,
-		   * so we get the last but one item and we
-		   * use the row after it.  If there are no
-		   * children at all, we use the parent item row.
-		   */
-		  if (numberOfChildren == 0)
-		    {
-		      row = [self rowForItem: currentDropItem];
-		    }
-		  else
-		    {
-	              item = [_dataSource outlineView: self
-						child: numberOfChildren - 1
-					       ofItem: currentDropItem];
-
-		      row = [self rowForItem: item] + 1;
-		    }
-		}
-	      else
-		{
-		  /* Find the row for the item containing the child
-		   * we will be dropping on.
-		   */
-		  item = [_dataSource outlineView: self
-					    child: currentDropIndex
-					   ofItem: currentDropItem];
-	          row = [self rowForItem: item];
-		}
-
-	      level = [self levelForItem: item];
-              if (currentDropItem == nil && currentDropIndex == 0)
-                {
-                  newRect = NSMakeRect([self visibleRect].origin.x,
-                                       0,
-                                       [self visibleRect].size.width,
-                                       2);
-                }
-              else if (row == _numberOfRows)
-                {
-                  newRect = NSMakeRect([self visibleRect].origin.x,
-                                       row * _rowHeight - 2,
-                                       [self visibleRect].size.width,
-                                       2);
-                }
-              else
-                {
-                  newRect = NSMakeRect([self visibleRect].origin.x,
-                                       row * _rowHeight - 1,
-                                       [self visibleRect].size.width,
-                                       2);
-                }
-	      level++;
-              newRect.origin.x += level * _indentationPerLevel;
-              newRect.size.width -= level * _indentationPerLevel;
-	      /* The rectangle is a line across the cell indicating the
-	       * insertion position.  We adjust by enough pixels to allow for
-	       * a ring drawn on the left end.
-	       */
-	      newRect.size.width -= 7;
-	      newRect.origin.x += 7;
-              NSRectFill(newRect);
-	      /* We make the redraw rectangle big enough to hold both the
-	       * line and the circle (8 pixels high).
-	       */
-	      newRect.size.width += 7;
-	      newRect.origin.x -= 7;
-	      newRect.size.height = 8;
-	      newRect.origin.y -= 3;
-              oldDraggingRect = newRect;
-	      /* We draw the circle at the left of the line, and make it
-	       * a little smaller than the redraw rectangle so that the
-	       * bezier path will draw entirely inside the redraw area
-	       * and we won't leave artifacts behind on the screen.
-	       */
-	      if (newRect.size.width < 8)
-		oldDraggingRect.size.width = 8;
-	      newRect.size.width = 7;
-	      newRect.size.height = 7;
-	      newRect.origin.x += 0.5;
-	      newRect.origin.y += 0.5;
-	      path = [NSBezierPath bezierPath];
-	      [path appendBezierPathWithOvalInRect: newRect];
-	      [path stroke];
+              [self drawDropAboveIndicatorWithDropItem: currentDropItem childDropIndex: currentDropIndex];
+            }
+          else if (currentDropIndex == NSOutlineViewDropOnItemIndex && currentDropItem == nil)
+            {
+              [self drawDropOnRootIndicator];
             }
           else
             {
-	      row = [_items indexOfObject: currentDropItem];
-	      level = [self levelForItem: currentDropItem];
-              newRect = [self frameOfCellAtColumn: 0
-                              row: row];
-              newRect.origin.x = _bounds.origin.x;
-              newRect.size.width = _bounds.size.width + 2;
-              newRect.origin.x -= _intercellSpacing.height / 2;
-              newRect.size.height += _intercellSpacing.height;
-              oldDraggingRect = newRect;
-              oldDraggingRect.origin.y -= 1;
-              oldDraggingRect.size.height += 2;
+              [self drawDropOnIndicatorWithDropItem: currentDropItem];
+            }
 
-              newRect.size.height -= 1;
-
-              newRect.origin.x += 3;
-              newRect.size.width -= 3;
-
-              if (_drawsGrid)
-                {
-                  //newRect.origin.y += 1;
-                  //newRect.origin.x += 1;
-                  //newRect.size.width -= 2;
-                  newRect.size.height += 1;
-                }
-              else
-                {
-                }
-
-              newRect.origin.x += level * _indentationPerLevel;
-              newRect.size.width -= level * _indentationPerLevel;
-
-              NSFrameRectWithWidth(newRect, 2.0);
-              //              NSRectFill(newRect);
-
-              }
           [_window flushWindow];
-
           [self unlockFocus];
 
         }
     }
-  else
+  else if (row != _numberOfRows)
     {
       /* If we have been hovering over an item for more than half a second,
        * we should expand it.
        */
       if ([lastDragUpdate timeIntervalSinceDate: lastDragChange] >= 0.5)
 	{
-	  item = [_items objectAtIndex: row];
+	  id item = [_items objectAtIndex: row];
 	  if ([self isExpandable: item] && ![self isItemExpanded: item])
 	    {
 	      [self expandItem: item expandChildren: NO];

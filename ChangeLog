@@ -1,3 +1,21 @@
+2009-12-05 Quentin Mathe <quentin.mathe@gmail.com>
+
+	* Source/NSOutlineView.m (-draggingUpdated): Further simplified.
+	Wrote detailed code documentation since the overall behavior is pretty 
+	complex.
+	Fixed to compute the vertical and horizontal positions correctly when 
+	the view is scrolled.
+	Fixed out of bounds exception when the pointer moves into the empty 
+	area below the rows (was trying to auto-expand the root item).
+	Implemented drop on root indicator in addition to drop on row and drop 
+	drop above (works the same as Mac OS X).
+	(-isExpandable:): Modified to always return NO when the item is nil (as 
+	Mac OS X does).
+	(-drawDropAboveIndicatorWithDropItem:childDropIndex:, 
+	-drawDropOnRootIndicator, -drawDropOnWithDropItem:, 
+	-parentRowForRow:atLevel:andReturnChildIndex:): New methods extracted 
+	from -draggingUpdated.
+
 2009-11-30 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSOutlineView.m: Improve DnD allowing drop on items as well
