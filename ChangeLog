@@ -1,5 +1,10 @@
 2009-12-05 Quentin Mathe <quentin.mathe@gmail.com>
 
+	* Source/NSTableView.m (-_startDragOperationWithEvent:): Modified to call 
+	-canDragRowsWithIndexes:atPoint: as expected.
+
+2009-12-05 Quentin Mathe <quentin.mathe@gmail.com>
+
 	* Source/NSOutlineView.m (-draggingUpdated): Further simplified.
 	Wrote detailed code documentation since the overall behavior is pretty 
 	complex.

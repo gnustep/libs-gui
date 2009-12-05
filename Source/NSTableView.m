@@ -3440,11 +3440,12 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
 - (BOOL) _startDragOperationWithEvent: (NSEvent *) theEvent
 {
-  NSPasteboard *pboard;
+  NSPasteboard *pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
+  NSPoint startPoint = [self convertPoint: [theEvent locationInWindow] 
+                                 fromView: nil];
 
-  pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
-  if ([self _writeRows: _selectedRows
-            toPasteboard: pboard] == YES)
+  if ([self canDragRowsWithIndexes: _selectedRows atPoint: startPoint]
+    && [self _writeRows: _selectedRows toPasteboard: pboard])
     {
       NSPoint	p = NSZeroPoint;
       NSImage	*dragImage;
@@ -3468,12 +3469,12 @@ static inline float computePeriod(NSPoint mouseLocationWin,
        s.height = p.y + s.height/2; // View is flipped
 
        /*
-	* Find the current mouse location and adjust
+	* Reuse the current mouse location and adjust
 	* it to determine the location of the bottom
 	* left corner of the image in this view's
 	* coordinate system.
 	*/
-       p = [self convertPoint: [theEvent locationInWindow] fromView: nil];
+       p = startPoint;
        p.x += s.width;
        p.y += s.height;
 	
