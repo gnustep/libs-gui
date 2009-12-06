@@ -1015,46 +1015,11 @@ static NSImage *unexpandable  = nil;
 }
 
 // TODO: Move the part that starts at 'Compute the indicator rect area' to GSTheme
-- (void) drawDropAboveIndicatorWithDropItem: (id)currentDropItem childDropIndex: (int)currentDropIndex
+- (void) drawDropAboveIndicatorWithDropItem: (id)currentDropItem atRow: (int)row childDropIndex: (int)currentDropIndex
 {
-  int numberOfChildren = [_dataSource outlineView: self 
-                           numberOfChildrenOfItem: currentDropItem];
-  int row = 0;
   int level = 0;
-  id item = nil;
   NSBezierPath *path = nil;
   NSRect newRect = NSZeroRect;
-
-  if (currentDropIndex >= numberOfChildren)
-    {
-      /* The index lies beyond the last item,
-       * so we get the last but one item and we
-       * use the row after it.  If there are no
-       * children at all, we use the parent item row.
-       */
-      if (numberOfChildren == 0)
-        {
-          row = [self rowForItem: currentDropItem];
-        }
-      else
-        {
-          item = [_dataSource outlineView: self
-                                    child: numberOfChildren - 1
-                                   ofItem: currentDropItem];
-    
-          row = [self rowForItem: item] + 1;
-        }
-    }
-  else
-    {
-      /* Find the row for the item containing the child
-       * we will be dropping on.
-       */
-      item = [_dataSource outlineView: self
-                                child: currentDropIndex
-                               ofItem: currentDropItem];
-      row = [self rowForItem: item];
-    }
 
   /* Compute the indicator rect area */
   if (currentDropItem == nil && currentDropIndex == 0)
@@ -1078,7 +1043,7 @@ static NSImage *unexpandable  = nil;
                            [self visibleRect].size.width,
                            2);
     }
-  level = [self levelForItem: item] + 1;
+  level = [self levelForItem: currentDropItem] + 1;
   newRect.origin.x += level * _indentationPerLevel;
   newRect.size.width -= level * _indentationPerLevel;
 
@@ -1273,7 +1238,7 @@ Also returns the child index relative to this parent. */
     || (lastHorizontalHalfPosition != horizontalHalfPosition))
     {
       int minInsertionLevel = levelAfter;
-      int maxInsertionLevel = MAX(levelBefore, levelAfter);
+      int maxInsertionLevel = levelBefore;
       int pointerInsertionLevel = rint((float)horizontalHalfPosition / 2.);
 
       /* Save positions to avoid executing this code when the general
@@ -1281,6 +1246,14 @@ Also returns the child index relative to this parent. */
        */
       lastVerticalQuarterPosition = verticalQuarterPosition;
       lastHorizontalHalfPosition = horizontalHalfPosition;
+
+      /* When the row before is an empty parent, we allow to insert the dragged 
+       * item as its child. 
+       */
+      if ([self isExpandable: [self itemAtRow: (row - 1)]])
+        {
+          maxInsertionLevel++;
+        } 
 
       /* Find the insertion level to be used with a drop above
        *
@@ -1359,7 +1332,7 @@ Also returns the child index relative to this parent. */
 
           if (currentDropIndex != NSOutlineViewDropOnItemIndex && currentDropItem != nil)
             {
-              [self drawDropAboveIndicatorWithDropItem: currentDropItem childDropIndex: currentDropIndex];
+              [self drawDropAboveIndicatorWithDropItem: currentDropItem atRow: row childDropIndex: currentDropIndex];
             }
           else if (currentDropIndex == NSOutlineViewDropOnItemIndex && currentDropItem == nil)
             {
