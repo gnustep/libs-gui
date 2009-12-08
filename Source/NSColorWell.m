@@ -46,6 +46,8 @@
 static NSString *GSColorWellDidBecomeExclusiveNotification =
                     @"GSColorWellDidBecomeExclusiveNotification";
 
+static NSPoint _lastMouseDownPoint;
+
 @implementation NSColorWell
 
 /*
@@ -289,16 +291,11 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
   //
   if ([self isEnabled])
     {
-      NSPoint point = [self convertPoint: [theEvent locationInWindow]
-                            fromView: nil];
+      _lastMouseDownPoint = 
+         [self convertPoint: [theEvent locationInWindow]
+                   fromView: nil];
 
-      if ([self mouse: point inRect: _wellRect])
-	{
-	  [NSColorPanel dragColor: _the_color
-			withEvent: theEvent
-			fromView: self];
-	}
-      else if (_is_active == NO)
+      if (_is_active == NO)
 	{
 	  [self activate: YES];
 	}
@@ -306,6 +303,19 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
 	{
 	  [self deactivate];
 	}
+    }
+}
+
+- (void) mouseDragged: (NSEvent *)theEvent
+{
+  if ([self isEnabled])
+    {
+      if ([self mouse: _lastMouseDownPoint inRect: _wellRect])
+        {
+          [NSColorPanel dragColor: _the_color
+			withEvent: theEvent
+			fromView: self];
+        }
     }
 }
 
