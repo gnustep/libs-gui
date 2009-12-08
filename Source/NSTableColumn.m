@@ -64,6 +64,7 @@
 
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSValue.h>
+#include <Foundation/NSSortDescriptor.h>
 #include "AppKit/NSTableHeaderCell.h"
 #include "AppKit/NSTableColumn.h"
 #include "AppKit/NSTableView.h"
@@ -105,12 +106,15 @@
   _width = 100;
   _min_width = 10;
   _max_width = 100000;
+  _resizing_mask = NSTableColumnAutoresizingMask | NSTableColumnUserResizingMask;
   _is_resizable = YES;
   _is_editable = YES;
+  _is_hidden = NO;
   _tableView = nil;
 
   _headerCell = [NSTableHeaderCell new];
   _dataCell = [NSTextFieldCell new];
+  _headerToolTip = nil;
 
   ASSIGN (_identifier, anObject);
   return self;
@@ -119,6 +123,7 @@
 - (void)dealloc
 {
   RELEASE (_headerCell);
+  RELEASE (_headerToolTip);
   RELEASE (_dataCell);
   TEST_RELEASE (_identifier);
   [super dealloc];
@@ -264,6 +269,15 @@
 - (void)setResizable: (BOOL)flag
 {
   _is_resizable = flag;
+  // TODO: To match Cocoa behavior, should be replaced by
+  //if (flag)
+  //  {
+  //    [self setResizingMask: NSTableColumnAutoresizingMask | NSTableColumnUserResizingMask)];
+  //  }
+  //else
+  //  {
+  //    [self setResizingMask: NSTableColumnNoResizing];
+  //  }
 }
 
 /**
@@ -272,8 +286,25 @@
 - (BOOL)isResizable
 {
   return _is_resizable;
+  // TODO: To match Cocoa behavior, should be replaced by
+  //return (BOOL)[self autoresizingMask];
 }
 
+/**
+Return the resizing mask that describes whether the column is resizable and how 
+it resizes. */
+- (void) setResizingMask: (NSUInteger)resizingMask;
+{
+  _resizing_mask = resizingMask;
+}
+
+/**
+Set the resizing mask that describes whether the column is resizable and how 
+it resizes. */
+- (NSUInteger) resizingMask;
+{
+  return _resizing_mask;
+}
 /**
   Change the width of the column to be just enough to display its
   header; change the minimum width and maximum width to allow the
@@ -294,6 +325,23 @@
   
   // For easier subclassing we dont do it directly
   [self setWidth: new_width];
+}
+
+/**
+Set whether the column is invisible or not. */
+- (void) setHidden: (BOOL)hidden;
+{
+  _is_hidden = hidden;
+}
+
+/**
+Return whether the column is invisible or not.
+
+When the column is hidden, it remains present in the column array returned 
+by -[NSTableView tableColumns]. */
+- (BOOL) isHidden
+{
+  return _is_hidden;
 }
 
 /*
@@ -341,6 +389,20 @@
 }
 
 /**
+Set the tool tip text displayed when the pointer is in the header area. */
+- (void) setHeaderToolTip: (NSString *)aString;
+{
+  ASSIGN(_headerToolTip, aString);
+}
+
+/**
+Return the toop tip text displayed when the pointer is in the header area. */
+- (NSString *) headerToolTip
+{
+  return _headerToolTip;
+}
+
+/**
   Set the cell used to display data in the column.  aCell can't be
   nil, otherwise a warning will be generated and the method ignored.
   The old cell is released, the new one is retained.  If you want to
@@ -368,6 +430,27 @@
 - (NSCell*)dataCellForRow: (int)row
 {
   return [self dataCell];
+}
+
+/*
+ * Sorting
+ */
+
+/** 
+Return the sort descriptor bound to the column. */
+- (NSSortDescriptor *) sortDescriptorPrototype
+{
+  return _sortDescriptorPrototype;
+}
+
+/** Return the sort descriptor bound to the column. 
+
+This sort descriptor will be added to -[NSTableView sortDescriptors] when you 
+bind a column to another object and NSCreateSortDescriptorBindingOption is set 
+to YES. */
+- (void) setSortDescriptorPrototype: (NSSortDescriptor *)aSortDescriptor
+{
+  ASSIGN(_sortDescriptorPrototype, aSortDescriptor);
 }
 
 /*

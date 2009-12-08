@@ -34,8 +34,27 @@
 #include <Foundation/NSObject.h>
 #include <AppKit/AppKitDefines.h>
 
+@class NSSortDescriptor;
 @class NSCell;
 @class NSTableView;
+
+// TODO: Finish to implement hidden, header tool tip and resizing mask 
+// and update the archiving code to support them.
+
+/**
+Describe the resizing styles accepted by the column.
+
+The final resizing behavior also depends on -[NSTableView columnAutoresizingStyle]. 
+The table view uses the resizing mask set on each column and its column 
+autoresizing style to determine how to resize each column. */
+enum {
+  NSTableColumnNoResizing = 0, 
+  /** Disallow any resizing. */
+  NSTableColumnAutoresizingMask = 1, 
+  /** Allow automatic resizing when the table view is resized. */
+  NSTableColumnUserResizingMask = 2
+  /** Allow the user to resize the column manually. */
+};
 
 @interface NSTableColumn : NSObject <NSCoding>
 {
@@ -44,10 +63,14 @@
   float _width;
   float _min_width;
   float _max_width;
+  NSUInteger _resizing_mask;
   BOOL _is_resizable;
   BOOL _is_editable;
+  BOOL _is_hidden;
   NSCell *_headerCell;
   NSCell *_dataCell;
+  NSString *_headerToolTip;
+  NSSortDescriptor *_sortDescriptorPrototype;
 }
 /* 
  * Initializing an NSTableColumn instance 
@@ -64,7 +87,7 @@
 - (void) setTableView: (NSTableView *)aTableView;
 - (NSTableView *) tableView;
 /*
- * Controlling size 
+ * Controlling size & visibility
  */
 - (void) setWidth: (float)newWidth;
 - (float) width; 
@@ -73,8 +96,16 @@
 - (void) setMaxWidth: (float)maxWidth;
 - (float) maxWidth; 
 - (void) setResizable: (BOOL)flag;
-- (BOOL) isResizable; 
+- (BOOL) isResizable;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+- (void) setResizingMask: (NSUInteger)resizingMask;
+- (NSUInteger) resizingMask;
+#endif
 - (void) sizeToFit;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (void) setHidden: (BOOL)hidden;
+- (BOOL) isHidden;
+#endif
 /*
  * Controlling editability 
  */
@@ -84,10 +115,21 @@
  * Setting component cells 
  */
 - (void) setHeaderCell: (NSCell *)aCell;
-- (NSCell *) headerCell; 
+- (NSCell *) headerCell;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (void) setHeaderToolTip: (NSString *)aString;
+- (NSString *) headerToolTip;
+#endif
 - (void) setDataCell: (NSCell *)aCell; 
 - (NSCell *) dataCell;
 - (NSCell *) dataCellForRow: (int)row;
+/*
+ * Sorting
+ */
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (void) setSortDescriptorPrototype: (NSSortDescriptor *)aSortDescriptor;
+- (NSSortDescriptor *) sortDescriptorPrototype;
+#endif
 @end
 
 /* Notifications */

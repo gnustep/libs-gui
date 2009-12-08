@@ -1,4 +1,13 @@
+2009-12-08 Quentin Mathe <quentin.mathe@gmail.com>
+
+	* Headers/NSTableColumn.h:
+	* Source/NSTableColumn.m: 
+	Added all new table column methods and constants up to Mac OS X 10.6.
+	These new additions remain to be fully implemented and the archiving code 
+	to be updated.
+
 2009-12-08 Hans Baier <hansfbaier@googlemail.com>
+
 	* Source/NSColorWell.m (-mouseDragged:, -mouseDown:): Applied
 	patch from Eric Wasylishen to activate it on click inside the
 	colored rectangle (same behavior as in OS X)
