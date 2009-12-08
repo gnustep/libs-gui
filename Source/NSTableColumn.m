@@ -116,6 +116,8 @@
   _dataCell = [NSTextFieldCell new];
   _headerToolTip = nil;
 
+  _sortDescriptorPrototype = nil;
+
   ASSIGN (_identifier, anObject);
   return self;
 }
@@ -125,6 +127,7 @@
   RELEASE (_headerCell);
   RELEASE (_headerToolTip);
   RELEASE (_dataCell);
+  RELEASE (_sortDescriptorPrototype);
   TEST_RELEASE (_identifier);
   [super dealloc];
 }

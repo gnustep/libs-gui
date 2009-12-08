@@ -1,5 +1,10 @@
 2009-12-08 Quentin Mathe <quentin.mathe@gmail.com>
 
+	* Source/NSTableColumn.m (-dealloc): Fixed missing release for 
+	_sortDescriptorPrototype ivar.
+
+2009-12-08 Quentin Mathe <quentin.mathe@gmail.com>
+
 	* Headers/NSTableColumn.h:
 	* Source/NSTableColumn.m: 
 	Added all new table column methods and constants up to Mac OS X 10.6.
