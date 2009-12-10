@@ -66,6 +66,7 @@
 #include "AppKit/NSFont.h"
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSHelpManager.h"
+#include "AppKit/NSKeyValueBinding.h"
 #include "AppKit/NSImage.h"
 #include "AppKit/NSMenu.h"
 #include "AppKit/NSPasteboard.h"
@@ -75,6 +76,7 @@
 #include "AppKit/NSView.h"
 #include "AppKit/NSWindow.h"
 #include "AppKit/NSWindowController.h"
+#include "GSBindingHelpers.h"
 #include "AppKit/PSOperators.h"
 #include "GNUstepGUI/GSTrackingRect.h"
 #include "GNUstepGUI/GSDisplayServer.h"
@@ -620,6 +622,8 @@ static NSNotificationCenter *nc = nil;
       windowmaps = NSCreateMapTable(NSIntMapKeyCallBacks,
                                     NSNonRetainedObjectMapValueCallBacks, 20);
       nc = [NSNotificationCenter defaultCenter];
+
+      [self exposeBinding: NSTitleBinding];
     }
 }
 
@@ -5177,6 +5181,28 @@ current key view.<br />
     }
 
   return self;
+}
+
+- (void) bind: (NSString *)binding
+     toObject: (id)anObject
+  withKeyPath: (NSString *)keyPath
+      options: (NSDictionary *)options
+{
+  if ([binding isEqual: NSTitleBinding])
+    {
+      [self unbind: binding];
+      [[GSKeyValueBinding alloc] initWithBinding: @"title"
+                                        withName: NSTitleBinding
+                                        toObject: anObject
+                                     withKeyPath: keyPath
+                                         options: options
+                                      fromObject: self];
+    }
+  else
+    {
+      [super bind: binding toObject: anObject withKeyPath: keyPath 
+        options: options];
+    }
 }
 
 /**

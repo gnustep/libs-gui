@@ -649,6 +649,7 @@ NSString *NSFontBinding = @"font";
 NSString *NSHiddenBinding = @"hidden";
 NSString *NSSelectedIndexBinding = @"selectedIndex";
 NSString *NSTextColorBinding = @"textColor";
+NSString *NSTitleBinding = @"title";
 NSString *NSToolTipBinding = @"toolTip";
 NSString *NSValueBinding = @"value";
 

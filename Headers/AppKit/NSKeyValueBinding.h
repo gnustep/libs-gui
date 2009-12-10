@@ -110,6 +110,7 @@ APPKIT_EXPORT NSString *NSFontBinding;
 APPKIT_EXPORT NSString *NSHiddenBinding;
 APPKIT_EXPORT NSString *NSSelectedIndexBinding;
 APPKIT_EXPORT NSString *NSTextColorBinding;
+APPKIT_EXPORT NSString *NSTitleBinding;
 APPKIT_EXPORT NSString *NSToolTipBinding;
 APPKIT_EXPORT NSString *NSValueBinding;
 
