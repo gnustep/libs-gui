@@ -1,3 +1,13 @@
+2009-12-11 13:09-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibLoader.m: Added logging to help debugging of issues
+	with nib loading.
+	* Source/NSTextContainer.m: -[NSTextContainer initWithCoder:]
+	removed call to unarchive the textview to prevent a leak.  Also
+	don't set the textview as the text container.   Currently we 
+	just get the contents of the text container and rebuild it
+	in NSTextView.m.
+
 2009-12-10 Quentin Mathe <quentin.mathe@gmail.com>
 
 	* Headers/AppKit/NSKKeyValueBinding.h:

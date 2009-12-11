@@ -84,8 +84,20 @@
 		      NSLog(@"Nib without container object!");
 		    }
 		}
+	      else
+		{
+		  NSLog(@"IB.objectdata not found when loading nib.");
+		}
 	      RELEASE(unarchiver);
 	    }
+	  else
+	    {
+	      NSLog(@"Could not instantiate unarchiver.");
+	    }
+	}
+      else
+	{
+	  NSLog(@"Data passed to nib loading method is nil.");
 	}
     }
   NS_HANDLER
@@ -139,6 +151,10 @@
 	{
 	  NSLog(@"Could not load Nib file: %@",fileName);
 	}
+    }
+  else
+    {
+      NSLog(@"Nib file specified %@, could not be found.",fileName);
     }
       
   return loaded;

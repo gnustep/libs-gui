@@ -459,8 +459,8 @@ framework intact.
 {
   if ([aDecoder allowsKeyedCoding])
     {
-      NSTextView *view = [aDecoder decodeObjectForKey: @"NSTextView"];
       NSSize size = NSZeroSize;
+      // NSTextView *view = [aDecoder decodeObjectForKey: @"NSTextView"];
 
       if ([aDecoder containsValueForKey: @"NSWidth"])
         {
@@ -483,7 +483,7 @@ framework intact.
 	  _layoutManager = [aDecoder decodeObjectForKey: @"NSLayoutManager"];
 	}
 
-      [self setTextView: view];
+      // [self setTextView: view];
       return self;
     }
   else
