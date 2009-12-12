@@ -1,3 +1,8 @@
+2009-12-12 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSApplication (-setWindowsMenu:): Only add windows that 
+	are either visible or miniaturized. 
+
 2009-12-11 13:09-EST Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibLoader.m: Added logging to help debugging of issues
@@ -10,7 +15,7 @@
 
 2009-12-10 Quentin Mathe <quentin.mathe@gmail.com>
 
-	* Headers/AppKit/NSKKeyValueBinding.h:
+	* Headers/AppKit/NSKeyValueBinding.h:
 	* Source/externs.m:
 	* Source/NSWindow.m (+initialize, -bind:toObject:withKeyPath:options:): 
 	Added NSWindow 'title' binding.

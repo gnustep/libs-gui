@@ -3121,7 +3121,8 @@ image.</p><p>See Also: -applicationIconImage</p>
       {
 	NSWindow	*win = [windows objectAtIndex: i];
 	
-	if ([win isExcludedFromWindowsMenu] == NO)
+	if (([win isExcludedFromWindowsMenu] == NO)
+	    && ([win isVisible] || [win isMiniaturized]))
 	  {
 	    NSString	*t = [win title];
 	    NSString	*f = [win representedFilename];
