@@ -824,16 +824,16 @@ withRepeatedImage: (NSImage*)image
   scaleFactor  = 1.0f;
   style = GSThemeFillStyleScaleAll;
 
-  rects[TileTL] = NSMakeRect(1, s.height - y1 -1, x1, y1);
-  rects[TileTM] = NSMakeRect(x1, s.height - y1 -1, 1 + x2 - x1, y1);
-  rects[TileTR] = NSMakeRect(x2 + 1, s.height - y1 -1, s.width - x2, y1);
-  rects[TileCL] = NSMakeRect(1, s.height - y2, x1, 1 + y2 - y1);
-  rects[TileCM] = NSMakeRect(x1, s.height - y2, 1 + x2 - x1, 1 + y2 - y1);
-  rects[TileCR] = NSMakeRect(x2 + 1, s.height - y2, s.width - x2, 1 + y2 - y1);
-  rects[TileBL] = NSMakeRect(1, 1, x1, y1);
-  rects[TileBM] = NSMakeRect(x1, 1, 1 + x2 - x1, y1);
-  rects[TileBR] = NSMakeRect(x2 + 1, 1, s.width - x2, y1);
-  
+  rects[TileTL] = NSMakeRect(1, s.height - y1, x1 - 1, y1 - 1);
+  rects[TileTM] = NSMakeRect(x1, s.height - y1, 1 + x2 - x1, y1 - 1);
+  rects[TileTR] = NSMakeRect(x2 + 1, s.height - y1, s.width - x2 - 2, y1 - 1);
+  rects[TileCL] = NSMakeRect(1, s.height - y2 - 1, x1 - 1, 1 + y2 - y1);
+  rects[TileCM] = NSMakeRect(x1, s.height - y2 - 1, 1 + x2 - x1, 1 + y2 - y1);
+  rects[TileCR] = NSMakeRect(x2 + 1, s.height - y2 - 1, s.width - x2 - 2, 1 + y2 - y1);
+  rects[TileBL] = NSMakeRect(1, 1, x1 - 1, s.height - y2 - 2);
+  rects[TileBM] = NSMakeRect(x1, 1, 1 + x2 - x1, s.height - y2 - 2);
+  rects[TileBR] = NSMakeRect(x2 + 1, 1, s.width - x2 - 2, s.height - y2 - 2);
+ 
   [self validateTilesSizeWithImage: image];
   return self;
 }
@@ -1424,7 +1424,7 @@ withRepeatedImage: (NSImage*)image
 
   img = images[TileTM];
   imgRect = NSMakeRect(0, 0,
-    rect.size.width - tls.width - trs.width + 2, tms.height);
+    rect.size.width - tls.width - trs.width, tms.height);
   if (imgRect.size.width > 0 && imgRect.size.height > 0)
     {
       [img setScalesWhenResized: YES];
@@ -1444,7 +1444,7 @@ withRepeatedImage: (NSImage*)image
 
   img = images[TileBM];
   imgRect = NSMakeRect(0, 0,
-    rect.size.width - bls.width - brs.width + 2, bms.height);
+    rect.size.width - bls.width - brs.width, bms.height);
   if (imgRect.size.width > 0 && imgRect.size.height > 0)
     {
       [img setScalesWhenResized: YES];
@@ -1463,7 +1463,7 @@ withRepeatedImage: (NSImage*)image
 
   img = images[TileCL];
   imgRect = NSMakeRect(0, 0,
-    cls.width, rect.size.height - tls.height - bls.height + 2);
+    cls.width, rect.size.height - tls.height - bls.height);
   if (imgRect.size.width > 0 && imgRect.size.height > 0)
     {
       [img setScalesWhenResized: YES];
@@ -1482,7 +1482,7 @@ withRepeatedImage: (NSImage*)image
 
   img = images[TileCR];
   imgRect = NSMakeRect(0, 0,
-    crs.width + 1, rect.size.height - trs.height - brs.height + 2);
+    crs.width, rect.size.height - trs.height - brs.height);
   if (imgRect.size.width > 0 && imgRect.size.height > 0)
     {
       [img setScalesWhenResized: YES];

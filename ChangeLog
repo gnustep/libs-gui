@@ -1,3 +1,8 @@
+2009-12-11 Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/GSThemeTools.m: Correct the destination rect coordinates in
+	scaleFillRect:, and the image slicing in initWithNinePatchImage:
+
 2009-12-12 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/NSBitmapImageRep.m:
