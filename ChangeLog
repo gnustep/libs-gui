@@ -1,3 +1,11 @@
+2009-12-12 Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/NSBitmapImageRep.m:
+	* Source/GSThemeTools.m: 
+	Change the colorAtX:y: and related methods in NSBitmapImageRep
+	to use flipped coordinates, matching OS X. colorAtX:0 y:0 now 
+	returns the top-left pixel instead of the bottom left.
+
 2009-12-12 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSApplication (-setWindowsMenu:): Only add windows that 

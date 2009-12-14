@@ -791,7 +791,7 @@ withRepeatedImage: (NSImage*)image
 
   for (i = 0; i < s.width; i++)
     {
-      NSColor	*pixelColor = [rep colorAtX: i y: s.height - 1];
+      NSColor	*pixelColor = [rep colorAtX: i y: 0];
 
       [pixelColor getRed: &r green: &g blue: &b alpha: &a];
       if (a > 0 && x1 == -1)

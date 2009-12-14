@@ -756,6 +756,10 @@ _get_bit_value(unsigned char *base, long msb_off, int bit_width)
   return value & ((1<<bit_width)-1);
 }
 
+/**
+ * Returns the values of the components of pixel (x,y), where (0,0) is the 
+ * top-left pixel in the image, by storing them in the array pixelData.
+ */
 - (void) getPixel: (unsigned int[])pixelData atX: (int)x y: (int)y
 {
   int i;
@@ -768,9 +772,7 @@ _get_bit_value(unsigned char *base, long msb_off, int bit_width)
       return;
     }
 
-  // FIXME: The y value is taken from the bottom of the image. 
-  // Not sure if this is correct.
-  line_offset = _bytesPerRow * (_pixelsHigh - 1 - y);
+  line_offset = _bytesPerRow * y;
   if (_isPlanar)
     {
       if (_bitsPerSample == 8)
@@ -847,6 +849,10 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   base[byte2] = (value & 255) | (base[byte2] ^ (all & 255));
 }
 
+/**
+ * Sets the components of pixel (x,y), where (0,0) is the top-left pixel in
+ * the image, to the given array of pixel components. 
+ */
 - (void) setPixel: (unsigned int[])pixelData atX: (int)x y: (int)y
 {
   int i;
@@ -865,9 +871,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
       [self bitmapData];
     }
 
-  // FIXME: The y value is taken from the bottom of the image. 
-  // Not sure if this is correct.
-  line_offset = _bytesPerRow * (_pixelsHigh - 1 - y);
+  line_offset = _bytesPerRow * y;
   if(_isPlanar)
     {
       if (_bitsPerSample == 8)
@@ -911,6 +915,10 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
     }
 }
 
+/**
+ * Returns an NSColor object representing the color of the pixel (x,y), where
+ * (0,0) is the top-left pixel in the image.
+ */
 - (NSColor*) colorAtX: (int)x y: (int)y
 {
 	unsigned int pixelData[5];
@@ -1159,6 +1167,10 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
 	return nil;
 }
 
+/**
+ * Sets the color of pixel (x,y), where (0,0) is the top-left pixel in the
+ * image.
+ */
 - (void) setColor: (NSColor*)color atX: (int)x y: (int)y
 {
 	unsigned int pixelData[5];
