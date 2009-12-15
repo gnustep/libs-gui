@@ -1,3 +1,18 @@
+2009-12-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSSavePanel.m (-ok:): Avoid the bogus warning that was
+	shown when the panel requires a file type extension and the user
+	has entered a file name without an extension.
+
+	* Source/NSSavePanel.m (-filename): Do not replace an existing
+	file type extension if allowsOtherFileTypes is set.
+
+	* Source/NSSavePanel.m (-runModalForDirectory:file,
+	-runModalForDirectory:file:relativeToWindow:,
+	-beginSheetForDirectory:file:modalForWindow:modalDelegate:...):
+	Initially enable the panel's OK button if a file name is provided
+	to the modal session.
+
 2009-12-15 Riccardo Mottola <rmottola@users.sf.net>
 
 	* Source/NSOutlineView.m: removed c99-isms

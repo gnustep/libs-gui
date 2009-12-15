@@ -1082,6 +1082,8 @@ selectCellWithString: (NSString*)title
 - (int) runModalForDirectory: (NSString*)path file: (NSString*)filename
 {
   [self _setupForDirectory: path file: filename];
+  if ([filename length] > 0)
+    [_okButton setEnabled: YES];
   return [NSApp runModalForWindow: self];
 }
 
@@ -1090,6 +1092,8 @@ selectCellWithString: (NSString*)title
 	    relativeToWindow: (NSWindow*)window
 {
   [self _setupForDirectory: path file: filename];
+  if ([filename length] > 0)
+    [_okButton setEnabled: YES];
   return [NSApp runModalForWindow: self
 		relativeToWindow: window];
 }
@@ -1102,6 +1106,8 @@ selectCellWithString: (NSString*)title
 		    contextInfo: (void *)contextInfo
 {
   [self _setupForDirectory: path file: filename];
+  if ([filename length] > 0)
+    [_okButton setEnabled: YES];
   [NSApp beginSheet: self
 	 modalForWindow: docWindow
 	 modalDelegate: delegate
@@ -1136,17 +1142,20 @@ selectCellWithString: (NSString*)title
       [_allowedFileTypes indexOfObject: @""] != NSNotFound)
     return _fullFileName;
 
-  /* add filetype extension only if the filename does not include an
-     allowed one already */
+  /* add file type extension if the file name does not have an extension or
+     the file name's extension is not one of the allowed extensions and the
+     save panel does not allow other extensions */
   fileType = [_fullFileName pathExtension];
-  if ([_allowedFileTypes indexOfObject: fileType] != NSNotFound)
-    {
-      return _fullFileName;
-    }
-  else
+  if ([fileType length] == 0 ||
+      ((!_allowsOtherFileTypes &&
+	[_allowedFileTypes indexOfObject: fileType] == NSNotFound)))
     {
       fileType = [_allowedFileTypes objectAtIndex: 0];
       return [_fullFileName stringByAppendingPathExtension: fileType];
+    }
+  else
+    {
+      return _fullFileName;
     }
 }
 
@@ -1175,7 +1184,7 @@ selectCellWithString: (NSString*)title
 {
   NSMatrix      *matrix;
   NSBrowserCell *selectedCell;
-  NSString      *filename, *ext, *req;
+  NSString      *filename;
   BOOL		isDir = NO;
 
   matrix = [_browser matrixInColumn: [_browser lastColumn]];
@@ -1216,59 +1225,66 @@ selectCellWithString: (NSString*)title
     }
 
   /* Warn user if a wrong extension was entered */
-  req = [self requiredFileType];
-  ext = [_fullFileName pathExtension];
-  if ([req length] > 0 && ![ext isEqualToString: req])
+  if (_allowedFileTypes != nil &&
+      [_allowedFileTypes indexOfObject: @""] == NSNotFound)
     {
-      int result;
-      NSString *msgFormat, *butFormat;
-      NSString *altExt;
-
-      if ([self allowsOtherFileTypes])
+      NSString *fileType = [_fullFileName pathExtension];
+      if ([fileType length] != 0 &&
+	  [_allowedFileTypes indexOfObject: fileType] == NSNotFound)
 	{
-	  msgFormat =
-	    _(@"You have used the extension '.%@'.\n"
-	      @"The standard extension is '.%@'.'");
-	  butFormat = _(@"Use .%@");
-  	  altExt = ext;
-	}
-      else
-	{
-	  msgFormat =
-	    _(@"You cannot save this document with extension '.%@'.\n"
-	      @"The required extension is '.%@'.");
-	  butFormat = _(@"Use .%@");
-  	  altExt = [ext stringByAppendingPathExtension: req];
-	}
+	  int result;
+	  NSString *msgFormat, *butFormat;
+	  NSString *altType, *requiredType;
 
-      result = NSRunAlertPanel(_(@"Save"),
-		 msgFormat,
-		 [NSString stringWithFormat: butFormat, req],
-		 _(@"Cancel"),
-		 [NSString stringWithFormat: butFormat, altExt],
-		 ext, req);
-      switch (result)
-	{
-	case NSAlertDefaultReturn:
-	  filename = [_fullFileName stringByDeletingPathExtension];
-	  filename = [filename stringByAppendingPathExtension: req];
-
-	  ASSIGN (_fullFileName, filename);
-	  setPath(_browser, _fullFileName);
-	  [self _setFileName: [_fullFileName lastPathComponent]];
-	  break;
-	case NSAlertOtherReturn:
-	  if (altExt != ext)
+	  requiredType = [self requiredFileType];
+	  if ([self allowsOtherFileTypes])
 	    {
-	      filename = [_fullFileName stringByAppendingPathExtension: req];
+	      msgFormat =
+		_(@"You have used the extension '.%@'.\n"
+		  @"The standard extension is '.%@'.'");
+	      butFormat = _(@"Use .%@");
+	      altType = fileType;
+	    }
+	  else
+	    {
+	      msgFormat =
+		_(@"You cannot save this document with extension '.%@'.\n"
+		  @"The required extension is '.%@'.");
+	      butFormat = _(@"Use .%@");
+	      altType = [fileType stringByAppendingPathExtension: requiredType];
+	    }
+
+	  result = NSRunAlertPanel(_(@"Save"),
+		     msgFormat,
+		     [NSString stringWithFormat: butFormat, requiredType],
+		     _(@"Cancel"),
+		     [NSString stringWithFormat: butFormat, altType],
+		     fileType, requiredType);
+	  switch (result)
+	    {
+	    case NSAlertDefaultReturn:
+	      filename = [_fullFileName stringByDeletingPathExtension];
+	      filename =
+		[filename stringByAppendingPathExtension: requiredType];
 
 	      ASSIGN (_fullFileName, filename);
 	      setPath(_browser, _fullFileName);
 	      [self _setFileName: [_fullFileName lastPathComponent]];
+	      break;
+	    case NSAlertOtherReturn:
+	      if (altType != fileType)
+		{
+		  filename =
+		    [_fullFileName stringByAppendingPathExtension: requiredType];
+
+		  ASSIGN (_fullFileName, filename);
+		  setPath(_browser, _fullFileName);
+		  [self _setFileName: [_fullFileName lastPathComponent]];
+		}
+	      break;
+	    default:
+	      return;
 	    }
-	  break;
-	default:
-	  return;
 	}
     }
 
