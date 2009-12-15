@@ -91,7 +91,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
   [self setCanChooseFiles: YES];
   [self setCanChooseDirectories: YES];
   [self setAllowsMultipleSelection: NO];
-  [_okButton setEnabled: YES];
+  [_okButton setEnabled: NO];
 }
 
 - (BOOL) _shouldShowExtension: (NSString *)extension
@@ -124,12 +124,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 	     [[matrix selectedCell] isLeaf] == YES)
 	    [super _selectTextInColumn: column];
 	  else
-	    {
-	      [self _selectCellName: [[_form cellAtIndex: 0] stringValue]];
-	      [_okButton setEnabled: 
-			   [self _shouldShowExtension:
-				   [[_browser path] pathExtension]]]; 
-	    }
+	    [self _selectCellName: [[_form cellAtIndex: 0] stringValue]];
 	}
       else
 	{
@@ -144,17 +139,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
       if (_canChooseDirectories == NO || [[matrix selectedCell] isLeaf] == YES)
 	[super _selectTextInColumn: column];
       else
-	{
-	  if ([[[_form cellAtIndex: 0] stringValue] length] > 0)
-	    {
-	      [self _selectCellName: [[_form cellAtIndex: 0] stringValue]];
-	      [_form setNeedsDisplay: YES];
-	    }
-
-	  [_okButton setEnabled: 
-		       [self _shouldShowExtension:
-			       [[_browser path] pathExtension]]]; 
-	}
+	[self _selectCellName: [[_form cellAtIndex: 0] stringValue]];
     }
 }
 
@@ -174,7 +159,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
   titleLength = [title length];
   if (!titleLength)
     {
-      [_okButton setEnabled: NO];
+      [_okButton setEnabled: _canChooseDirectories];
       return;
     }
 
@@ -205,6 +190,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
       else if (result == NSOrderedDescending)
 	break;
     }
+  [_okButton setEnabled: NO];
 }
 
 - (void) _setupForDirectory: (NSString *)path file: (NSString *)filename
@@ -516,12 +502,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 	}
       else
 	{
-	  if (_canChooseDirectories == NO)
-	    {
-	      if (selectedColumn == lastColumn)
-		selectedCell = [matrix selectedCell];
-	    }
-	  else if (selectedColumn == lastColumn)
+	  if (selectedColumn == lastColumn)
 	    selectedCell = [matrix selectedCell];
 	}
     }
@@ -539,8 +520,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 	}
     }
   else if (_canChooseDirectories == NO
-    && (![_browser allowsMultipleSelection] || !selectedCells
-	 || selectedColumn != lastColumn || ![selectedCells count]))
+    && (selectedColumn != lastColumn || ![selectedCells count]))
     {
       [_form selectTextAtIndex: 0];
       [_form setNeedsDisplay: YES];
@@ -653,8 +633,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
   if (sLength == 0)
     {
       [matrix deselectAllCells];
-      if (_canChooseDirectories == NO)
-	[_okButton setEnabled: NO];
+      [_okButton setEnabled: _canChooseDirectories];
       return;
     }
 
@@ -732,7 +711,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
     }
 
   [matrix deselectAllCells];
-  [_okButton setEnabled: YES];
+  [_okButton setEnabled: NO];
 }
 
 @end /* NSOpenPanel */

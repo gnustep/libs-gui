@@ -1,5 +1,11 @@
 2009-12-16  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSOpenPanel.m (-_selectTextInColumn:, _selectCellName:,
+	-controlTextDidChange:): Do better job on validating the OK
+	button. Replaces the previous fix for bug #25471, which made it
+	impossible to use the open panel for choosing directories (except
+	by entering a fake file name into the panel).
+
 	* Source/NSBrowser.m (-doClick:): Fix NSBrowser so that branch
 	cells are really deselected when multiple selection is enabled and
 	allowsBranchSelection is set to NO. Also replace the workaround
