@@ -1,3 +1,10 @@
+2009-12-16  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSBrowser.m (-doClick:): Fix NSBrowser so that branch
+	cells are really deselected when multiple selection is enabled and
+	allowsBranchSelection is set to NO. Also replace the workaround
+	for bug #18881 by a better fix.
+
 2009-12-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSSavePanel.m (-ok:): Avoid the bogus warning that was

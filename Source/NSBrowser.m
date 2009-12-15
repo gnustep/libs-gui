@@ -533,7 +533,7 @@ static NSTextFieldCell *titleCell;
  * implements it).  If this call to the delegate returns NO then
  * the attempt to set the path fails.<br />
  * If the delegate does not implement the method, the browser attempts
- * to locate and select the cell itsself, and the method fails if it
+ * to locate and select the cell itself, and the method fails if it
  * is unable to locate the cell by matching its [NSCell-stringValue] with
  * the component of the path.
  * </p>
@@ -2130,19 +2130,21 @@ static NSTextFieldCell *titleCell;
 
   selectedCellsCount = [selectedCells count];
 
-/* FIXME why were we reselecting already selected cells?
- * this caused bug #18881 because -selectCell: will scroll the row to visible.
- */
-#if 0
-
-  // Select cells that should be selected
-  if (selectedCellsCount > 0)
+  /* If some branch cells were selected but branch selection is not allowed
+     reset the selection and select only the leaf cells. It is a pity that
+     we cannot deselect cells individually. */
+  if (selectedCellsCount != aCount)
     {
+      BOOL autoscroll = [sender isAutoscroll];
+
+      /* Note: Temporarily disable autoscrolling to prevent bug #18881 */
+      [sender setAutoscroll: NO];
+      [sender deselectAllCells];
       enumerator = [selectedCells objectEnumerator];
       while ((cell = [enumerator nextObject]))
         [sender selectCell: cell];
+      [sender setAutoscroll: autoscroll];
     }
-#endif
 
   [self setLastColumn: column];
   // Single selection
