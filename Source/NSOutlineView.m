@@ -1142,10 +1142,13 @@ Also returns the child index relative to this parent. */
 
   for (i = row - 1; i >= 0; i--)
     {
+      BOOL foundParent;
+      BOOL foundSibling;
+
       lvl = [self levelForRow: i];
 
-      BOOL foundParent = (lvl == level - 1);
-      BOOL foundSibling = (lvl == level);
+      foundParent = (lvl == level - 1);
+      foundSibling = (lvl == level);
 
       if (foundParent)
       {
