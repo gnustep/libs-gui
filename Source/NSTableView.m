@@ -5548,26 +5548,17 @@ static BOOL selectContiguousRegion(NSTableView *self,
 - (void) setDropRow: (int)row
       dropOperation: (NSTableViewDropOperation)operation
 {
-  
-  if (row < 0)
+  if (row < -1 || row > _numberOfRows 
+    || (operation == NSTableViewDropOn && row == _numberOfRows))    
     {
-      currentDropRow = 0;
-    }
-  else if (operation == NSTableViewDropOn)
-    {
-      if (row >= _numberOfRows)
-	currentDropRow = _numberOfRows;
-    }
-  else if (row > _numberOfRows)
-    {
-      currentDropRow = _numberOfRows;
+      currentDropRow = -1;
+      currentDropOperation = NSTableViewDropOn;
     }
   else
     {
       currentDropRow = row;
+      currentDropOperation = operation;
     }
-  
-  currentDropOperation = operation;
 }
 
 - (void) setVerticalMotionCanBeginDrag: (BOOL)flag
@@ -6341,10 +6332,13 @@ static BOOL selectContiguousRegion(NSTableView *self,
     }
 
   // Are we in the two middle quarters of the row? Use TableViewDropOn
-  if (positionInRow > _rowHeight/4 && positionInRow <= (3*_rowHeight)/4)
+  if ((positionInRow > _rowHeight / 4 && positionInRow <= (3 * _rowHeight) / 4)
+   || row > _numberOfRows)
     {
       currentDropRow  = (int)(p.y - _bounds.origin.y) / (int)_rowHeight;
       currentDropOperation = NSTableViewDropOn;
+      if (currentDropRow >= _numberOfRows)
+        currentDropRow = -1;
     }
   else // drop above
     {
@@ -6377,7 +6371,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
 	  
 	  [[NSColor darkGrayColor] set];
 
-	  if (currentDropRow > _numberOfRows)
+	  if (currentDropRow == -1)
 	    {
 	      newRect = [self bounds];
 	      NSFrameRectWithWidth(newRect, 2.0);
