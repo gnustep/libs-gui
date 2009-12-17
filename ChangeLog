@@ -1,5 +1,17 @@
 2009-12-17  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSComboBoxCell.m (-drawInteriorWithFrame:inView:): Fix
+	bug where the field editor of an edited combo box cell overlaps
+	the cell's ellipsis button.
+
+	* Source/NSComboBoxCell.m (-endEditing): Make sure the pop up
+	window is closed when editing ends.
+
+	* Source/NSComboBoxCell.m (-validateSelection): Remove obsolete
+	workaround code.
+
+2009-12-17  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSCell.m (-wraps, -setWraps:, -setLineBreakMode:,
 	-initWithCoder:): Phase out the wraps cell attribute since it is
 	implied by the lineBreakMode attribute. Note that with this change

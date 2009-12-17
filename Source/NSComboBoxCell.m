@@ -711,12 +711,6 @@ static GSComboWindow *gsWindow = nil;
           [_cell setStringValue: [_cell _stringValueAtIndex: 
             [_cell indexOfSelectedItem]]]; 
           // Will update the editor when needed
-      
-          // FIXME: Because NSCell doesn't behave correctly the line just over has 
-          // no effect, to correct this fact, the code below is needed.
-          [textObject setString: [_cell _stringValueAtIndex:
-          [_cell indexOfSelectedItem]]];
-          // End of the code to remove 
         }
       
       if  (textObject != nil)
@@ -1518,21 +1512,21 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
   return mySize;
 }
 
-- (void) drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
+- (void) drawInteriorWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
 {
   NSRect rect = cellFrame;
 
   // FIX ME: Is this test case below with the method call really needed ?
   if ([GSCurrentContext() isDrawingToScreen]) 
     {		           
-      [super drawWithFrame: rect
-	            inView: controlView];
+      [super drawInteriorWithFrame: textCellFrameFromRect(rect)
+			    inView: controlView];
       [_buttonCell drawWithFrame: buttonCellFrameFromRect(rect)
 		          inView: controlView];
     }
   else
     {
-      [super drawWithFrame: rect inView: controlView];
+      [super drawInteriorWithFrame: rect inView: controlView];
     }
     
   // Used by GSComboWindow to appear in the right position
@@ -1801,6 +1795,11 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 
 - (void) endEditing: (NSText *)editor
 {
+  /* Close the pop up if it is still open. This may happen, e.g., when the
+     user presses the Tab key to shift focus to a different cell or view. */
+  if (_popup)
+    [_popup onWindowEdited: nil];
+
   [super endEditing: editor];
   [nc removeObserver: self name: NSTextDidChangeNotification object: editor];
   [nc removeObserver: self 
