@@ -834,20 +834,26 @@ static NSImage *spinningImages[MaxCount];
      {
        NSRect imgBox = {{0,0}, {0,0}};
 
-       count = count % spinningMaxCount;
-       imgBox.size = [spinningImages[count] size];
-       [spinningImages[count] drawInRect: r 
-                      fromRect: imgBox 
-                      operation: NSCompositeSourceOver
-                      fraction: 1.0];
+       if (spinningMaxCount != 0)
+	 {
+	   count = count % spinningMaxCount;
+	   imgBox.size = [spinningImages[count] size];
+	   [spinningImages[count] drawInRect: r 
+				    fromRect: imgBox 
+				   operation: NSCompositeSourceOver
+				    fraction: 1.0];
+	 }
      }
    else
      {
        if ([progress isIndeterminate])
          {
-           count = count % indeterminateMaxCount;
-           [indeterminateColors[count] set];
-           NSRectFill(r);
+	   if (indeterminateMaxCount != 0)
+	     {
+	       count = count % indeterminateMaxCount;
+	       [indeterminateColors[count] set];
+	       NSRectFill(r);
+	     }
          }
        else
          {

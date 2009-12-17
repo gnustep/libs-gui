@@ -1,5 +1,15 @@
 2009-12-17  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/GSThemeDrawing.m (-drawProgressIndicator:withBounds:...):
+	Prevent division by zero exception if no images are available for
+	a spinning or indeterminate progress indicator.
+
+	* Source/NSProgressIndicator.m (-setIndeterminate): Ensure that a
+	running animation is stopped when an indeterminate indicator is
+	changed into a determinate one.
+
+2009-12-17  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSComboBoxCell.m (-drawInteriorWithFrame:inView:): Fix
 	bug where the field editor of an edited combo box cell overlaps
 	the cell's ellipsis button.

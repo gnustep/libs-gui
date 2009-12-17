@@ -258,10 +258,13 @@
 
 - (void) setIndeterminate: (BOOL)flag
 {
-  _isIndeterminate = flag;
-   // Maybe we need more functionality here when we implement indeterminate
+  /* Note: We must stop a running animation before setting _isIndeterminate
+     because -stopAnimation: has no effect when _isIndeterminate is NO. */
   if (flag == NO && _isRunning)
     [self stopAnimation: self];
+
+  _isIndeterminate = flag;
+   // Maybe we need more functionality here when we implement indeterminate
 
   [self setNeedsDisplay: YES];
 }
