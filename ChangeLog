@@ -1,5 +1,22 @@
 2009-12-17  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSCell.m (-wraps, -setWraps:, -setLineBreakMode:,
+	-initWithCoder:): Phase out the wraps cell attribute since it is
+	implied by the lineBreakMode attribute. Note that with this change
+	cells now wrap by default, as has always been the case on OS X.
+
+	* Source/NSBrowserCell.m (-initTextCell:, -initImageCell:):
+	* Source/NSTableColumn.m (-initWithIdentifier): Set default line
+	break mode to NSLineBreakByTruncatingTail as on OS X.
+
+	* Source/NSCell.m (-setUpFieldEditorAttributes:): Set the typing
+	attributes of the field editor so that it uses the same paragraph
+	style and in particular the same line break mode as the edited
+	cell. This fixes an inconsistency where wrapped text would be
+	displayed in a single line during editing.
+
+2009-12-17  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSCell.m (-_setupTextWithFrame:inView:editor:delegate:range):
 	* Source/NSCell.m (-endEditing:):
 	Properly set up the field editor and its text container to handle

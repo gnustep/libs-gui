@@ -109,6 +109,7 @@ static NSFont *_leafFont;
   //_alternateImage = nil;
   //_browsercell_is_leaf = NO; 
   //_browsercell_is_loaded = NO;
+  [self setLineBreakMode: NSLineBreakByTruncatingTail];
 
   if (_gsFontifyCells)
     [self setFont: _nonLeafFont];
@@ -122,6 +123,7 @@ static NSFont *_leafFont;
   //_alternateImage = nil;
   //_browsercell_is_leaf = NO; 
   //_browsercell_is_loaded = NO;
+  [self setLineBreakMode: NSLineBreakByTruncatingTail];
 
   if (_gsFontifyCells)
     [self setFont: _nonLeafFont];

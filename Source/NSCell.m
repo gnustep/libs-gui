@@ -173,6 +173,7 @@ static NSColor *dtxtCol;
   //_cell.is_scrollable = NO;
   //_cell.is_selectable = NO;
   //_cell.state = 0;
+  //_cell.line_break_mode = NSLineBreakByWordWrapping;
   _action_mask = NSLeftMouseUpMask;
   _menu = [isa defaultMenu];
   [self setFocusRingType: [isa defaultFocusRingType]];
@@ -203,6 +204,7 @@ static NSColor *dtxtCol;
   //_cell.is_bezeled = NO;
   //_cell.is_scrollable = NO;
   //_cell.is_selectable = NO;
+  //_cell.line_break_mode = NSLineBreakByWordWrapping;
   _action_mask = NSLeftMouseUpMask;
   _menu = [isa defaultMenu];
   [self setFocusRingType: [isa defaultFocusRingType]];
@@ -935,22 +937,22 @@ static NSColor *dtxtCol;
 
 - (void) setWraps: (BOOL)flag
 {
-  _cell.wraps = flag;  
-
   if (flag)
     {
-      _cell.is_scrollable = NO;
-      [self setLineBreakMode: NSLineBreakByWordWrapping];
+      if (![self wraps])
+	[self setLineBreakMode: NSLineBreakByWordWrapping];
     }
   else
     {
-      [self setLineBreakMode: NSLineBreakByClipping];
+      if ([self wraps])
+	[self setLineBreakMode: NSLineBreakByClipping];
     }
 }
 
 - (BOOL) wraps
 {
-  return _cell.wraps;
+  return _cell.line_break_mode == NSLineBreakByWordWrapping
+      || _cell.line_break_mode == NSLineBreakByCharWrapping;
 }
 
 - (void) setAttributedStringValue: (NSAttributedString*)attribStr
@@ -1056,6 +1058,10 @@ static NSColor *dtxtCol;
 
 - (void) setLineBreakMode: (NSLineBreakMode)mode
 {
+  if (mode == NSLineBreakByCharWrapping || mode == NSLineBreakByWordWrapping)
+    {
+      _cell.is_scrollable = NO;
+    }
   _cell.line_break_mode = mode;
 }
 
@@ -2098,6 +2104,9 @@ static NSColor *dtxtCol;
   [textObject setRichText: [self allowsEditingTextAttributes]];
   [textObject setImportsGraphics: [self importsGraphics]];
   [(NSTextView*)textObject setAllowsUndo: [self allowsUndo]];
+  NSDictionary *attr = [self _nonAutoreleasedTypingAttributes];
+  [(NSTextView*)textObject setTypingAttributes: attr];
+  RELEASE(attr);
 
   return textObject;
 }
@@ -2534,7 +2543,7 @@ static NSColor *dtxtCol;
     }
   else
     {
-      BOOL flag;
+      BOOL flag, wraps;
       unsigned int tmp_int;
       id formatter, menu;
       int version = [aDecoder versionForClassName: @"NSCell"];
@@ -2575,7 +2584,9 @@ static NSColor *dtxtCol;
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       _cell.allows_mixed_state = flag;
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-      _cell.wraps = flag;
+      /* The wraps attribute has been superseded by lineBreakMode. However,
+	 we may need it to set lineBreakMode when reading old archives. */
+      wraps = flag;
       [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
       _cell.text_align = tmp_int;
       [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
@@ -2717,6 +2728,12 @@ static NSColor *dtxtCol;
           [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
           _cell.base_writing_direction = tmp_int;
         }
+      else
+	{
+	  /* Backward compatibility: Derive lineBreakMode from the superseded
+	     wraps attribute. */
+	  [self setWraps: wraps];
+	}
     }
   return self;
 }

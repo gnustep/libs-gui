@@ -140,7 +140,7 @@ enum {
     unsigned is_bordered: 1;   
     unsigned is_bezeled: 1;   
     unsigned is_scrollable: 1;
-    unsigned wraps: 1;
+    unsigned reserved: 1;
     unsigned text_align: 3; // 5 values
     unsigned is_selectable: 1;
     unsigned allows_mixed_state: 1;
