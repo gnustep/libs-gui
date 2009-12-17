@@ -225,15 +225,20 @@
 
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  NSRect titleRect;
+  if (_cell.in_editing)
+    [self _drawEditorWithFrame: cellFrame inView: controlView];
+  else
+    {
+      NSRect titleRect;
 
-  /* Make sure we are a text cell; titleRect might return an incorrect
-     rectangle otherwise. Note that the type could be different if the
-     user has set an image on us, which we just ignore (OS X does so as
-     well). */
-  _cell.type = NSTextCellType;
-  titleRect = [self titleRectForBounds: cellFrame];
-  [[self _drawAttributedString] drawInRect: titleRect];
+      /* Make sure we are a text cell; titleRect might return an incorrect
+         rectangle otherwise. Note that the type could be different if the
+         user has set an image on us, which we just ignore (OS X does so as
+         well). */
+      _cell.type = NSTextCellType;
+      titleRect = [self titleRectForBounds: cellFrame];
+      [[self _drawAttributedString] drawInRect: titleRect];
+    }
 }
 
 /* 

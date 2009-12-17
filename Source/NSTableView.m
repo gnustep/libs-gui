@@ -2178,6 +2178,16 @@ static void computeNewSelection
       [_selectedColumns addIndex: newIndex];
     }
 
+  /* Update edited cell */
+  if (_editedColumn == columnIndex)
+    {
+      _editedColumn = newIndex;
+    }
+  else if ((_editedColumn >= minRange) && (_editedColumn <= maxRange)) 
+    {
+      _editedColumn += shift;
+    }
+
   /* Now really move the column */
   if (columnIndex < newIndex)
     {
@@ -4948,20 +4958,21 @@ static BOOL selectContiguousRegion(NSTableView *self,
   /* Draw the row between startingColumn and endingColumn */
   for (i = startingColumn; i <= endingColumn; i++)
     {
-      if (i != _editedColumn || rowIndex != _editedRow)
-	{
-	  tb = [_tableColumns objectAtIndex: i];
-	  cell = [tb dataCellForRow: rowIndex];
-	  [self _willDisplayCell: cell
-		forTableColumn: tb
-		row: rowIndex];
-	  [cell setObjectValue: [_dataSource tableView: self
-					     objectValueForTableColumn: tb
-					     row: rowIndex]]; 
-	  drawingRect = [self frameOfCellAtColumn: i
-			      row: rowIndex];
-	  [cell drawWithFrame: drawingRect inView: self];
-	}
+      tb = [_tableColumns objectAtIndex: i];
+      cell = [tb dataCellForRow: rowIndex];
+      if (i == _editedColumn && rowIndex == _editedRow)
+	[cell _setInEditing: YES];
+      [self _willDisplayCell: cell
+	    forTableColumn: tb
+	    row: rowIndex];
+      [cell setObjectValue: [_dataSource tableView: self
+					 objectValueForTableColumn: tb
+					 row: rowIndex]]; 
+      drawingRect = [self frameOfCellAtColumn: i
+			  row: rowIndex];
+      [cell drawWithFrame: drawingRect inView: self];
+      if (i == _editedColumn && rowIndex == _editedRow)
+	[cell _setInEditing: NO];
     }
 }
 

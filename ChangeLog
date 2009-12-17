@@ -1,3 +1,32 @@
+2009-12-17  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSCell.m (-_setupTextWithFrame:inView:editor:delegate:range):
+	* Source/NSCell.m (-endEditing:):
+	Properly set up the field editor and its text container to handle
+	cells whose text is wrapped, cells which truncate their text, and
+	cells with scrollable contents, respectively, and prepare the
+	field editor and its enclosing clip view to be resizable. Use a
+	clip view only when necessary.
+	* Source/NSCell.m (-_drawEditorWithFrame:inView:): Auxiliary
+	method to update the frame of a cell's editor when the cell has
+	been resized or moved.
+	* Source/NSCell.m (-_setInEditing:): Helper method that allows
+	control views to flag their edited cell.
+
+	* Source/NSCell.m (-drawInteriorWithFrame:inView):
+	* Source/NSTextFieldCell.m (-drawInteriorWithFrame:inView): Do not
+	draw the interior of an edited cell.
+
+	* Source/NSTableView.m (-moveColumn:toColumn:): Update the column
+	index of the edited cell if necessary.
+
+	* Source/NSControl.m (-drawRect:):
+	* Source/NSTableView.m (-drawRow:clipRect:):
+	* Source/NSOutlineView.m (-drawRow:clipRect): Remove obsolete
+	workarounds to prevent an edited cell from being drawn twice.
+
+	The preceding changes also should fix #22678.
+
 2009-12-16  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSTextFieldCell.m (-drawInteriorWithFrame:inView:):

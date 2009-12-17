@@ -491,6 +491,9 @@ enum {
                                     inView: (NSView*)controlView;
 - (void) _drawFocusRingWithFrame: (NSRect)cellFrame 
                           inView: (NSView*)controlView;
+- (void) _drawEditorWithFrame: (NSRect)cellFrame
+		       inView: (NSView*)controlView;
+- (void) _setInEditing: (BOOL)flag;
 - (void) _updateFieldEditor: (NSText*)textObject;
 @end
 

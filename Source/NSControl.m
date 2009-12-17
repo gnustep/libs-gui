@@ -625,23 +625,6 @@ static NSNotificationCenter *nc;
 
 - (void) drawRect: (NSRect)aRect
 {
-  /* Do nothing if there is already a text editor doing the drawing;
-   * otherwise, we draw everything twice.  That is bad if there are
-   * any transparency involved (eg, even an anti-alias font!) because
-   * if the semi-transparent pixels are drawn over themselves they
-   * become less transparent (eg, an anti-alias font becomes darker
-   * and gives the impression of being bold).
-   */
-  if ([self currentEditor] != nil)
-    {
-      /* Make sure the cell's control view is always set up.
-       * FIXME Need to draw the cell's border which is not covered by
-       *       the field editor if the cell is bordered.
-       */
-      [_cell setControlView: self];
-      return;
-    }
-
   [self drawCell: _cell];
 }
 

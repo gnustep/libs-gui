@@ -1950,23 +1950,26 @@ static NSColor *dtxtCol;
  */
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  cellFrame = [self drawingRectForBounds: cellFrame];
+  NSRect drawingRect = [self drawingRectForBounds: cellFrame];
 
   //FIXME: Check if this is also neccessary for images,
   // Add spacing between border and inside 
   if (_cell.is_bordered || _cell.is_bezeled)
     {
-      cellFrame.origin.x += 3;
-      cellFrame.size.width -= 6;
-      cellFrame.origin.y += 1;
-      cellFrame.size.height -= 2;
+      drawingRect.origin.x += 3;
+      drawingRect.size.width -= 6;
+      drawingRect.origin.y += 1;
+      drawingRect.size.height -= 2;
     }
 
   switch (_cell.type)
     {
       case NSTextCellType:
-        [self _drawAttributedText: [self _drawAttributedString]
-              inFrame: cellFrame];
+	if (_cell.in_editing)
+	  [self _drawEditorWithFrame: cellFrame inView: controlView];
+	else
+	  [self _drawAttributedText: [self _drawAttributedString]
+			    inFrame: drawingRect];
         break;
 
       case NSImageCellType:
@@ -1976,8 +1979,8 @@ static NSColor *dtxtCol;
             NSPoint position;
             
             size = [_cell_image size];
-            position.x = MAX(NSMidX(cellFrame) - (size.width/2.),0.);
-            position.y = MAX(NSMidY(cellFrame) - (size.height/2.),0.);
+            position.x = MAX(NSMidX(drawingRect) - (size.width/2.),0.);
+            position.y = MAX(NSMidY(drawingRect) - (size.height/2.),0.);
             /*
              * Images are always drawn with their bottom-left corner
              * at the origin so we must adjust the position to take
@@ -2105,39 +2108,68 @@ static NSColor *dtxtCol;
                     delegate: (id)anObject
                        range: (NSRange)selection
 {
+  BOOL needsClipView;
+  BOOL wraps = [self wraps];
+  NSTextContainer *ct;
+  NSSize maxSize;
   NSRect titleRect = [self titleRectForBounds: aRect];
-  NSClipView *cv = [[NSClipView alloc] initWithFrame: titleRect];
-  NSTextContainer *ct = [(NSTextView*)textObject textContainer];
-  NSRect maxRect;
 
-  // A clip view should is only created for scrollable text
-  if ([self isScrollable])
+  /* We always add a clip view if the cell is editable so that the user
+     can edit the whole contents even if the cell's contents normally is
+     clipped. */
+  needsClipView = [self isScrollable] || [self isEditable];
+  if (needsClipView)
     {
-      /* See comments in NSStringDrawing.m about the choice of maximum size. */
-      maxRect = NSMakeRect(0, 0, 1e6, titleRect.size.height);
+      NSClipView *cv;
+
+      cv = [[NSClipView alloc] initWithFrame: titleRect];
+      [cv setDocumentView: textObject];
+      [controlView addSubview: cv];
+      RELEASE(cv);
     }
   else
-    {
-      maxRect = NSMakeRect(0, 0, titleRect.size.width, titleRect.size.height);
-    }
+    [controlView addSubview: textObject];
 
-  [controlView addSubview: cv];
-  RELEASE(cv);
-  [cv setAutoresizesSubviews: NO];
-  [cv setDocumentView: textObject];
-  [ct setContainerSize: maxRect.size];
+  /* Note: The order of statements matters here. We must set the text object's
+     horizontallyResizable and verticallyResizable attributes before setting
+     its frame size. Otherwise, the text object's width and/or height might
+     incorrectly be reduced to zero (since the text object has no contents at
+     this point) if the text object was resizable by its text container before.
+     Of course we could also have set the text object's minimum size to the
+     intended frame size, but then we must update the minimum size whenever
+     the field editor's frame is changed in -_drawEditorWithFrame:inView:.
+     Note that the minimum size is not relevant when a clip view is used. */
+  [textObject setMinSize: NSZeroSize];
+  [textObject setMaxSize: NSMakeSize(1e6, 1e6)];
+  [textObject setHorizontallyResizable: needsClipView && !wraps];
+  [textObject setVerticallyResizable: needsClipView];
+  [textObject setFrame: titleRect];
+  if (needsClipView)
+    [textObject setAutoresizingMask: NSViewWidthSizable + NSViewHeightSizable];
+  else
+    [textObject setAutoresizingMask: NSViewNotSizable];
+
+  /* Note: Order of statements matters again. The heightTracksTextView
+     and widthTracksTextView container attributes must be set after setting
+     the horizontallyResizable and verticallyResizable text view attributes
+     because NSTextView's setter methods include "safety code", which
+     always updates the container attributes along with the text view
+     attributes.
+     FIXME Fix NSTextView to only reset the text container attributes, but
+     never set them. However note that this may break some sloppily written
+     code which forgets to set the text container attributes. */
+  /* See comments in NSStringDrawing.m about the choice of maximum size. */
+  ct = [(NSTextView*)textObject textContainer];
+  if (wraps)
+    maxSize = NSMakeSize(NSWidth(titleRect), 1e6);
+  else
+    maxSize = NSMakeSize(1e6, 1e6);
+  [ct setContainerSize: maxSize];
+  [ct setWidthTracksTextView: wraps];
   [ct setHeightTracksTextView: NO];
-  [ct setWidthTracksTextView: NO];
-
-  [textObject setFrame: maxRect];
-  [textObject setHorizontallyResizable: NO];
-  [textObject setVerticallyResizable: NO];
-  [textObject setMaxSize: maxRect.size];
-  [textObject setMinSize: titleRect.size];
 
   [self _updateFieldEditor: textObject];
 
-  [textObject sizeToFit];
   [textObject setSelectedRange: selection];
   [textObject scrollRangeToVisible: selection];
 
@@ -2159,8 +2191,13 @@ static NSColor *dtxtCol;
   [textObject setDelegate: nil];
   
   clipView = (NSClipView*)[textObject superview];
-  [textObject removeFromSuperview];
-  [clipView removeFromSuperview];
+  if ([clipView isKindOfClass: [NSClipView class]])
+    {
+      [clipView setDocumentView: nil];
+      [clipView removeFromSuperview];
+    }
+  else
+    [textObject removeFromSuperview];
 }
 
 /*
@@ -2854,9 +2891,34 @@ static NSColor *dtxtCol;
     }
 }
 
+- (void) _drawEditorWithFrame: (NSRect)cellFrame
+		       inView: (NSView *)controlView
+{
+  /* Look Ma', no drawing here... */
+
+  /* Adjust the text editor's frame to match cell's frame (minus the border) */
+  NSRect titleRect = [self titleRectForBounds: cellFrame];
+  NSText *textObject = [(NSControl*)controlView currentEditor];
+  NSView *clipView = [textObject superview];
+
+  if ([clipView isKindOfClass: [NSClipView class]])
+    {
+      [clipView setFrame: titleRect];
+    }
+  else
+    {
+      [textObject setFrame: titleRect];
+    }
+}
+
 - (BOOL) _sendsActionOn:(int)eventTypeMask
 {
   return (_action_mask & eventTypeMask);
+}
+
+- (void) _setInEditing: (BOOL)flag
+{
+  _cell.in_editing = flag;
 }
 
 - (void) _updateFieldEditor: (NSText*)textObject

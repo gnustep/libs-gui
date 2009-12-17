@@ -867,88 +867,89 @@ static NSImage *unexpandable  = nil;
   /* Draw the row between startingColumn and endingColumn */
   for (i = startingColumn; i <= endingColumn; i++)
     {
-      if (i != _editedColumn || rowIndex != _editedRow)
+      id item = [self itemAtRow: rowIndex];
+
+      tb = [_tableColumns objectAtIndex: i];
+      cell = [tb dataCellForRow: rowIndex];
+      if (i == _editedColumn && rowIndex == _editedRow)
+        [cell _setInEditing: YES];
+      [self _willDisplayCell: cell
+            forTableColumn: tb
+            row: rowIndex];
+      [cell setObjectValue: [_dataSource outlineView: self
+                                         objectValueForTableColumn: tb
+                                         byItem: item]];
+      drawingRect = [self frameOfCellAtColumn: i
+                          row: rowIndex];
+
+      if (tb == _outlineTableColumn)
         {
-          id item = [self itemAtRow: rowIndex];
+          NSImage *image = nil;
+          int level = 0;
+          float indentationFactor = 0.0;
+          // float originalWidth = drawingRect.size.width;
 
-          tb = [_tableColumns objectAtIndex: i];
-          cell = [tb dataCellForRow: rowIndex];
-          [self _willDisplayCell: cell
-                forTableColumn: tb
-                row: rowIndex];
-          [cell setObjectValue: [_dataSource outlineView: self
-                                             objectValueForTableColumn: tb
-                                             byItem: item]];
-          drawingRect = [self frameOfCellAtColumn: i
-                              row: rowIndex];
-
-          if (tb == _outlineTableColumn)
+          // display the correct arrow...
+          if ([self isItemExpanded: item])
             {
-              NSImage *image = nil;
-              int level = 0;
-              float indentationFactor = 0.0;
-              // float originalWidth = drawingRect.size.width;
-
-              // display the correct arrow...
-              if ([self isItemExpanded: item])
-                {
-                  image = expanded;
-                }
-              else
-                {
-                  image = collapsed;
-                }
-
-              if (![self isExpandable: item])
-                {
-                  image = unexpandable;
-                }
-
-              level = [self levelForItem: item];
-              indentationFactor = _indentationPerLevel * level;
-              imageCell = [[NSCell alloc] initImageCell: image];
-
-              if (_indentationMarkerFollowsCell)
-                {
-                  imageRect.origin.x = drawingRect.origin.x + indentationFactor;
-                  imageRect.origin.y = drawingRect.origin.y;
-                }
-              else
-                {
-                  imageRect.origin.x = drawingRect.origin.x;
-                  imageRect.origin.y = drawingRect.origin.y;
-                }
-
-              if ([_delegate respondsToSelector: @selector(outlineView:willDisplayOutlineCell:forTableColumn:item:)])
-                {
-                  [_delegate outlineView: self
-                             willDisplayOutlineCell: imageCell
-                             forTableColumn: tb
-                             item: item];
-                }
-
-              /* Do not indent if the delegate set the image to nil. */
-              if ([imageCell image])
-                {
-                  imageRect.size.width = [image size].width;
-                  imageRect.size.height = [image size].height;
-                  [imageCell drawWithFrame: imageRect inView: self];
-                  drawingRect.origin.x
-                    += indentationFactor + [image size].width + 5;
-                  drawingRect.size.width
-                    -= indentationFactor + [image size].width + 5;
-                }
-              else
-                {
-                  drawingRect.origin.x += indentationFactor;
-                  drawingRect.size.width -= indentationFactor;
-                }
-
-              RELEASE(imageCell);
+              image = expanded;
+            }
+          else
+            {
+              image = collapsed;
             }
 
-          [cell drawWithFrame: drawingRect inView: self];
+          if (![self isExpandable: item])
+            {
+              image = unexpandable;
+            }
+
+          level = [self levelForItem: item];
+          indentationFactor = _indentationPerLevel * level;
+          imageCell = [[NSCell alloc] initImageCell: image];
+
+          if (_indentationMarkerFollowsCell)
+            {
+              imageRect.origin.x = drawingRect.origin.x + indentationFactor;
+              imageRect.origin.y = drawingRect.origin.y;
+            }
+          else
+            {
+              imageRect.origin.x = drawingRect.origin.x;
+              imageRect.origin.y = drawingRect.origin.y;
+            }
+
+          if ([_delegate respondsToSelector: @selector(outlineView:willDisplayOutlineCell:forTableColumn:item:)])
+            {
+              [_delegate outlineView: self
+                         willDisplayOutlineCell: imageCell
+                         forTableColumn: tb
+                         item: item];
+            }
+
+          /* Do not indent if the delegate set the image to nil. */
+          if ([imageCell image])
+            {
+              imageRect.size.width = [image size].width;
+              imageRect.size.height = [image size].height;
+              [imageCell drawWithFrame: imageRect inView: self];
+              drawingRect.origin.x
+                += indentationFactor + [image size].width + 5;
+              drawingRect.size.width
+                -= indentationFactor + [image size].width + 5;
+            }
+          else
+            {
+              drawingRect.origin.x += indentationFactor;
+              drawingRect.size.width -= indentationFactor;
+            }
+
+          RELEASE(imageCell);
         }
+
+      [cell drawWithFrame: drawingRect inView: self];
+      if (i == _editedColumn && rowIndex == _editedRow)
+        [cell _setInEditing: NO];
     }
 }
 
