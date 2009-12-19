@@ -1,3 +1,11 @@
+2009-12-19 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSTextTable.h,
+	* Source/NSTextTable.m,
+	* Source/NSTextBlock.m,
+	* Source/NSTextTableBlock.m: First attempt at implementing these classes.
+	Code mostly by Nikolaus Schaller <hns@computer.org>.
+
 2009-12-11 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/NSSliderCell.m:

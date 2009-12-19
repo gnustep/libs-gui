@@ -55,7 +55,7 @@
 - (void) dealloc
 {
   RELEASE(_table);
-	[super dealloc];
+  [super dealloc];
 }
 
 - (int) columnSpan
@@ -90,6 +90,43 @@
   TEST_RETAIN(_table);
 
   return t;
+}
+
+- (NSRect) boundsRectForContentRect: (NSRect)content
+                             inRect: (NSRect)rect
+                      textContainer: (NSTextContainer *)container
+                     characterRange: (NSRange)range
+{
+  return [_table boundsRectForBlock: self
+                 contentRect: content
+                 inRect: rect
+                 textContainer: container
+                 characterRange: range];
+}
+
+- (NSRect) rectForLayoutAtPoint: (NSPoint)point
+                         inRect: (NSRect)rect
+                  textContainer: (NSTextContainer *)container
+                 characterRange: (NSRange)range
+{
+  return [_table rectForBlock: self
+                 layoutAtPoint: point
+                 inRect: rect
+                 textContainer: container
+                 characterRange: range];
+}
+
+- (void) drawBackgroundWithFrame: (NSRect)rect
+                          inView: (NSView *)view 
+                  characterRange: (NSRange)range
+                   layoutManager: (NSLayoutManager *)lm
+{
+  // override to handle span
+  // we can ask [_table numberOfColumns] for sizing purposes
+  return [super drawBackgroundWithFrame: rect
+                inView: view
+                characterRange: range
+                layoutManager: lm];
 }
 
 @end

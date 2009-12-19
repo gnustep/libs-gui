@@ -26,11 +26,13 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSString.h>
+#import <Foundation/NSCoder.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSString.h>
 
-#include "AppKit/NSColor.h"
-#include "AppKit/NSTextTable.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSTextTable.h"
 
 @implementation NSTextBlock
 
@@ -42,12 +44,12 @@
 
 - (void) dealloc
 {
-	RELEASE(_backgroundColor);
+  RELEASE(_backgroundColor);
   RELEASE(_borderColorForEdge[NSMinXEdge]);
   RELEASE(_borderColorForEdge[NSMinYEdge]);
   RELEASE(_borderColorForEdge[NSMaxXEdge]);
   RELEASE(_borderColorForEdge[NSMaxYEdge]);
-	[super dealloc];
+  [super dealloc];
 }
 
 - (NSColor *) backgroundColor
@@ -67,6 +69,9 @@
 
 - (void) setBorderColor: (NSColor *)color forEdge: (NSRectEdge)edge
 {
+  if (edge < 0 || edge >= sizeof(_borderColorForEdge) / sizeof(_borderColorForEdge[0]))
+    [NSException raise: NSInvalidArgumentException
+                 format: @"invalid edge %d", edge];
   ASSIGN(_borderColorForEdge[edge], color);
 }
 
@@ -80,18 +85,17 @@
 
 - (float) contentWidth
 {
-  return _contentWidth;
+  return [self valueForDimension: NSTextBlockWidth];
 }
 
 - (NSTextBlockValueType) contentWidthValueType
 {
-  return _contentWidthValueType;
+  return [self valueTypeForDimension: NSTextBlockWidth];
 }
 
 - (void) setContentWidth: (float)val type: (NSTextBlockValueType)type
 {
-  _contentWidth = val;
-  _contentWidthValueType = type;
+  [self setValue: val type: type forDimension: NSTextBlockWidth];
 }
 
 - (NSTextBlockVerticalAlignment) verticalAlignment
@@ -106,30 +110,75 @@
 
 - (float) valueForDimension: (NSTextBlockDimension)dimension
 {
+  if (dimension < 0 || dimension >= sizeof(_valueType) / sizeof(_valueType[0]))
+    [NSException raise: NSInvalidArgumentException
+		 format: @"invalid dimension %d", dimension];
   return _value[dimension];
 }
 
 - (NSTextBlockValueType) valueTypeForDimension: (NSTextBlockDimension)dimension
 {
+  if (dimension < 0 || dimension >= sizeof(_valueType) / sizeof(_valueType[0]))
+    [NSException raise: NSInvalidArgumentException
+		 format: @"invalid dimension %d", dimension];
   return _valueType[dimension];
+}
+
+- (float) _scaledValue: (NSTextBlockDimension)dimension : (NSSize)size
+{
+  if (_valueType[dimension] == NSTextBlockAbsoluteValueType)
+    {
+      return _value[dimension];
+    }
+  else
+    {
+      // specified in percent
+      switch(dimension)
+        {
+        case NSTextBlockWidth:
+        case NSTextBlockMinimumWidth:
+        case NSTextBlockMaximumWidth:
+          return _value[dimension] * size.width;
+        case NSTextBlockHeight:
+        case NSTextBlockMinimumHeight:
+        case NSTextBlockMaximumHeight:
+          return _value[dimension] * size.height;
+        }
+    }
+  return 0.0;	
 }
 
 - (void) setValue: (float)val 
              type: (NSTextBlockValueType)type
      forDimension: (NSTextBlockDimension)dimension
 {
+  if (dimension < 0 || dimension >= sizeof(_valueType) / sizeof(_valueType[0]))
+    [NSException raise: NSInvalidArgumentException
+		 format: @"invalid dimension %d", dimension];
   _value[dimension] = val;
   _valueType[dimension] = type;
 }
 
 - (float) widthForLayer: (NSTextBlockLayer)layer edge: (NSRectEdge)edge
 {
+  if (layer < 0 || layer >= sizeof(_width) / sizeof(_width[0]))
+    [NSException raise: NSInvalidArgumentException
+		 format: @"invalid layer %d", layer];
+  if (edge < 0 || edge >= sizeof(_width[0]) / sizeof(_width[0][0]))
+    [NSException raise: NSInvalidArgumentException
+		 format: @"invalid edge %d", edge];
   return _width[layer][edge];
 }
 
 - (NSTextBlockValueType) widthValueTypeForLayer: (NSTextBlockLayer)layer
                                            edge: (NSRectEdge)edge
 {
+  if (layer < 0 || layer >= sizeof(_width) / sizeof(_width[0]))
+    [NSException raise: NSInvalidArgumentException
+		 format: @"invalid layer %d", layer];
+  if (edge < 0 || edge >= sizeof(_width[0]) / sizeof(_width[0][0]))
+    [NSException raise: NSInvalidArgumentException
+		 format: @"invalid edge %d", edge];
   return _widthType[layer][edge];
 }
 
@@ -138,6 +187,12 @@
          forLayer: (NSTextBlockLayer)layer
              edge: (NSRectEdge)edge
 {
+  if (layer < 0 || layer >= sizeof(_width) / sizeof(_width[0]))
+    [NSException raise: NSInvalidArgumentException
+		 format: @"invalid layer %d", layer];
+  if (edge < 0 || edge >= sizeof(_width[0]) / sizeof(_width[0][0]))
+    [NSException raise: NSInvalidArgumentException
+		 format: @"invalid edge %d", edge];
   _width[layer][edge] = val;
   _widthType[layer][edge] = type;
 }
@@ -146,6 +201,9 @@
              type: (NSTextBlockValueType)type 
          forLayer: (NSTextBlockLayer)layer
 {
+  if (layer < 0 || layer >= sizeof(_width) / sizeof(_width[0]))
+    [NSException raise: NSInvalidArgumentException
+		 format: @"invalid layer %d", layer];
   _width[layer][NSMinXEdge] = val;
   _widthType[layer][NSMinXEdge] = type;
   _width[layer][NSMinYEdge] = val;
@@ -156,30 +214,123 @@
   _widthType[layer][NSMaxYEdge] = type;
 }
 
+- (float) _scaledWidthValue: (NSTextBlockLayer) layer : (NSRectEdge) edge : (NSSize) size
+{
+  if (_widthType[layer][edge] == NSTextBlockAbsoluteValueType)
+    {
+      // absolute
+      return _width[layer][edge];
+    }
+  else
+    {
+      // specified in percent
+      switch(edge)
+        {
+        case NSMinXEdge:
+        case NSMaxXEdge:
+          return _widthType[layer][edge]*size.width;
+        case NSMinYEdge:
+        case NSMaxYEdge:
+          return _widthType[layer][edge]*size.height;
+        }
+    }
+  return 0.0;	
+}
+
 - (NSRect) boundsRectForContentRect: (NSRect)cont
                              inRect: (NSRect)rect
                       textContainer: (NSTextContainer *)container
                      characterRange: (NSRange)range
 {
-  // FIXME
-  return NSZeroRect;
+  float minx = [self _scaledWidthValue: NSTextBlockPadding : NSMinXEdge: rect.size] 
+    + [self _scaledWidthValue: NSTextBlockBorder : NSMinXEdge : rect.size]
+    + [self _scaledWidthValue: NSTextBlockMargin : NSMinXEdge : rect.size];
+
+  float maxx = [self _scaledWidthValue: NSTextBlockPadding: NSMaxXEdge: rect.size]
+    + [self _scaledWidthValue: NSTextBlockBorder : NSMaxXEdge : rect.size]
+    + [self _scaledWidthValue: NSTextBlockMargin : NSMaxXEdge : rect.size];
+  float miny= [self _scaledWidthValue: NSTextBlockPadding : NSMinYEdge: rect.size] 
+    + [self _scaledWidthValue: NSTextBlockBorder : NSMinYEdge : rect.size]
+    + [self _scaledWidthValue: NSTextBlockMargin : NSMinYEdge : rect.size];
+
+  float maxy = [self _scaledWidthValue: NSTextBlockPadding: NSMaxYEdge: rect.size]
+    + [self _scaledWidthValue: NSTextBlockBorder : NSMaxYEdge : rect.size]
+    + [self _scaledWidthValue: NSTextBlockMargin : NSMaxYEdge : rect.size];
+
+  cont.origin.x -= minx;
+  cont.size.width += minx + maxx;
+  cont.origin.y -= miny;
+  cont.size.height += miny + maxy;
+  return cont;
 }
 
+/**
+ * POINT is the point in NSTextContainer where the TextBlock should be laid out.
+ * RECT is the bounding rect (e.g. the rect of the container or the rect of the 
+ * outer table cell) 
+ * what are we doing with CONT? Do we limit to width of container?
+ * what are we doing with RANGE? We don't know the layout manager
+ * This is the default implementation for a single-cell 
+ * (NSTextTableBlock can handle cell span)
+ * raises internal inconsisteny exception if the layout manager 
+ * (the one owning the textContainer)
+ * does not have a table at the given characterRange
+ */
 - (NSRect) rectForLayoutAtPoint: (NSPoint)point
                          inRect: (NSRect)rect
                   textContainer: (NSTextContainer *)cont
                  characterRange: (NSRange)range
 {
-  // FIXME
-  return NSZeroRect;
+  NSRect r;
+  NSSize size = (NSSize){[self _scaledValue: NSTextBlockWidth : rect.size], 
+			 [self _scaledValue: NSTextBlockHeight : rect.size]};
+  // when and how do we define size by content? If size is (0, 0)?
+  // or is this the input to calculating size of enclosed text?
+  size.width = MAX(size.width, [self _scaledValue: NSTextBlockMinimumWidth : rect.size]);
+  // not smaller than minimum
+  size.height = MAX(size.height, [self _scaledValue: NSTextBlockMinimumHeight : rect.size]);
+  size.width = MIN(size.width, [self _scaledValue: NSTextBlockMaximumWidth : rect.size]);
+  // but also not larger than maximum
+  size.height = MIN(size.height, [self _scaledValue: NSTextBlockMaximumHeight : rect.size]);
+  r = (NSRect){point, size};
+  // who handles vertical alignment?
+  // limit to what is available
+  return NSIntersectionRect(r, rect);
 }
 
-- (void) drawBackgroundWithFrame: (NSRect)rect
+- (void) drawBackgroundWithFrame: (NSRect)rect	// this is the frame of the cell
                           inView: (NSView *)view 
                   characterRange: (NSRange)range
                    layoutManager: (NSLayoutManager *)lm
 {
-  // FIXME
+  float minx = [self _scaledWidthValue: NSTextBlockPadding : NSMinXEdge : rect.size];
+  float maxx = [self _scaledWidthValue: NSTextBlockPadding : NSMaxXEdge : rect.size];
+  float miny = [self _scaledWidthValue: NSTextBlockPadding : NSMinYEdge : rect.size];
+  float maxy = [self _scaledWidthValue: NSTextBlockPadding : NSMaxYEdge : rect.size];
+
+  // FIXME - inset from frame by margin in the first step
+  rect.origin.x -= minx;
+  rect.size.width += minx + maxx;
+  rect.origin.y -= miny;
+  rect.size.height += miny + maxy;
+  [_backgroundColor set];
+  // fill inner rect
+  NSRectFill(rect);
+  
+  minx = [self _scaledWidthValue: NSTextBlockBorder : NSMinXEdge : rect.size];
+  maxx = [self _scaledWidthValue: NSTextBlockBorder : NSMaxXEdge : rect.size];
+  miny = [self _scaledWidthValue: NSTextBlockBorder : NSMinYEdge : rect.size];
+  maxy = [self _scaledWidthValue: NSTextBlockBorder : NSMaxYEdge : rect.size];
+  [_borderColorForEdge[NSMinXEdge] set];
+  NSRectFill(NSMakeRect(rect.origin.x - minx, rect.origin.y, minx, rect.size.height));
+  [_borderColorForEdge[NSMaxYEdge] set];
+  NSRectFill(NSMakeRect(rect.origin.x, rect.origin.y + rect.size.height + maxy, rect.size.width, maxy));
+  [_borderColorForEdge[NSMaxXEdge] set];
+  NSRectFill(NSMakeRect(rect.origin.x + rect.size.width, rect.origin.y, minx, rect.size.height));
+  [_borderColorForEdge[NSMinYEdge] set];
+  NSRectFill(NSMakeRect(rect.origin.x, rect.origin.y - maxy, rect.size.width, maxy));
+  // FIXME: how do we handle the corners of differenly sized and colored borders? 
+  // Do we have to fill trapezoids?
 }
 
 - (id) copyWithZone: (NSZone*)zone

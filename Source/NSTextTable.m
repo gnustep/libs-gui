@@ -35,7 +35,7 @@
 
 - (BOOL) collapsesBorders
 {
-  return _collapsesBorders;
+  return _collapsesBorders;	// if true: ???
 }
 
 - (void) setCollapsesBorders: (BOOL)flag
@@ -45,7 +45,7 @@
 
 - (BOOL) hidesEmptyCells
 {
-  return _hidesEmptyCells;
+  return _hidesEmptyCells;	// if true: don't draw border and fill
 }
 
 - (void) setHidesEmptyCells: (BOOL)flag
@@ -100,6 +100,42 @@
                   layoutManager: (NSLayoutManager *)manager
 {
   // FIXME
+}
+
+// are these called for the whole table?
+
+- (NSRect) boundsRectForContentRect: (NSRect)cont
+                             inRect: (NSRect)rect
+                      textContainer: (NSTextContainer *)container
+                     characterRange: (NSRange)range
+{
+  // FIXME
+  return [super boundsRectForContentRect: cont 
+                inRect: rect
+                textContainer: container
+                characterRange: range];
+}
+
+- (NSRect) rectForLayoutAtPoint: (NSPoint)point
+                         inRect: (NSRect)rect
+                  textContainer: (NSTextContainer *)cont
+                 characterRange: (NSRange)range
+{
+  return [super rectForLayoutAtPoint: point
+                inRect: rect
+                textContainer: cont
+                characterRange: range];
+}
+
+- (void) drawBackgroundWithFrame: (NSRect)rect
+                          inView: (NSView *)view 
+                  characterRange: (NSRange)range
+                   layoutManager: (NSLayoutManager *)lm
+{
+  return [super drawBackgroundWithFrame: rect
+                inView: view
+                characterRange: range
+                layoutManager: lm];
 }
 
 @end

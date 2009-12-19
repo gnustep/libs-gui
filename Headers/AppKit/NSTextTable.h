@@ -76,8 +76,6 @@ typedef enum _NSTextBlockVerticalAlignment
 	NSColor *_borderColorForEdge[NSMaxYEdge + 1];
 	NSTextBlockVerticalAlignment _verticalAlignment;
   // The following ivars come in pairs
-	float _contentWidth;
-	NSTextBlockValueType _contentWidthValueType;
 	float _value[NSTextBlockMaximumHeight + 1];
 	NSTextBlockValueType _valueType[NSTextBlockMaximumHeight + 1];
 	float _width[NSTextBlockMargin + 1][NSMaxYEdge + 1];
