@@ -30,6 +30,7 @@
 #include "config.h"
 #import <Foundation/NSString.h>
 #import <Foundation/NSException.h>
+#import <Foundation/NSValue.h>
 
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSColor.h"
@@ -137,8 +138,8 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 
   _altIncrementValue = -1;
   _isVertical = -1;
-  _minValue = 0;
-  _maxValue = 1;
+  [self setMinValue: 0];
+  [self setMaxValue: 1];
   _cell.is_bordered = YES;
   _cell.is_bezeled = NO;
 
@@ -380,6 +381,8 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 - (void) setMinValue: (double)aDouble
 {
   _minValue = aDouble;
+  if ([self doubleValue] < _minValue)
+    [self setDoubleValue: _minValue];
 }
 
 /** <p>Sets the maximum value that the sliders represents to 
@@ -388,6 +391,70 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 - (void) setMaxValue: (double)aDouble
 {
   _maxValue = aDouble;
+  if ([self doubleValue] > _maxValue)
+    [self setDoubleValue: _maxValue];
+}
+
+- (void) setObjectValue:(id)anObject
+{
+  // We substitute an NSNumber containing minValue or maxValue if the given
+  // object's doubleValue lies outside the allowed range, matching OS X 
+  // behaviour.
+  if ([anObject respondsToSelector: @selector(doubleValue)])
+    {
+      double aDouble = [anObject doubleValue];
+      if (aDouble < _minValue)
+        [super setObjectValue: [NSNumber numberWithDouble: _minValue]];
+      else if (aDouble > _maxValue)
+        [super setObjectValue: [NSNumber numberWithDouble: _maxValue]];
+      else
+        [super setObjectValue: anObject];
+    }
+  else
+    [super setObjectValue: [NSNumber numberWithDouble: _minValue]];
+}
+
+- (void) setStringValue:(NSString *)aString
+{
+  // We call setDoubleValue with minValue or maxValue if the given string's
+  // doubleValue lies outside the allowed range.
+  double aDouble = [aString doubleValue];
+  if (aDouble < _minValue)
+    [super setDoubleValue: _minValue];
+  else if (aDouble > _maxValue)
+    [super setDoubleValue: _maxValue];
+  else
+    [super setStringValue: aString];
+}
+
+- (void) setDoubleValue:(double)aDouble
+{
+  if (aDouble < _minValue)
+    [super setDoubleValue: _minValue];
+  else if (aDouble > _maxValue)
+    [super setDoubleValue: _maxValue];
+  else
+    [super setDoubleValue: aDouble];
+}
+
+- (void) setFloatValue:(float)aFloat
+{
+  if (aFloat < _minValue)
+    [super setDoubleValue: _minValue];
+  else if (aFloat > _maxValue)
+    [super setDoubleValue: _maxValue];
+  else
+    [super setFloatValue: aFloat];
+}
+
+- (void) setIntValue:(int)anInt
+{
+  if (anInt < _minValue)
+    [super setDoubleValue: _minValue];
+  else if (anInt > _maxValue)
+    [super setDoubleValue: _maxValue];
+  else
+    [super setIntValue: anInt];
 }
 
 /**<p>Returns the cell used to draw the title.</p>
@@ -504,17 +571,6 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 - (double) maxValue
 {
   return _maxValue;
-}
-
-- (float) floatValue
-{
-  float	aFloat = [super floatValue];
-
-  if (aFloat < _minValue)
-    return _minValue;
-  else if (aFloat > _maxValue)
-    return _maxValue;
-  return aFloat;
 }
 
 // ticks
@@ -754,8 +810,8 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
       _allowsTickMarkValuesOnly = [decoder decodeBoolForKey: @"NSAllowsTickMarkValuesOnly"];
       _numberOfTickMarks = [decoder decodeIntForKey: @"NSNumberOfTickMarks"];
       _tickMarkPosition = [decoder decodeIntForKey: @"NSTickMarkPosition"];
-      _minValue = [decoder decodeFloatForKey: @"NSMinValue"];
-      _maxValue = [decoder decodeFloatForKey: @"NSMaxValue"];
+      [self setMinValue: [decoder decodeFloatForKey: @"NSMinValue"]];
+      [self setMaxValue: [decoder decodeFloatForKey: @"NSMaxValue"]];
       _altIncrementValue = [decoder decodeFloatForKey: @"NSAltIncValue"];
 
       // do these here, since the Cocoa version of the class does not save these values...
@@ -769,13 +825,16 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
       // information is not in the nib.
       [self setBordered: YES];
       [self setBezeled: NO];
-
+      [self setContinuous: YES];
       _isVertical = -1;
     }
   else
     {
+      float minValue, maxValue;
       [decoder decodeValuesOfObjCTypes: "fffi",
-	       &_minValue, &_maxValue, &_altIncrementValue, &_isVertical];
+	       &minValue, &maxValue, &_altIncrementValue, &_isVertical];
+      [self setMinValue: minValue];
+      [self setMaxValue: maxValue];
       [decoder decodeValueOfObjCType: @encode(id) at: &_titleCell];
       [decoder decodeValueOfObjCType: @encode(id) at: &_knobCell];
       if ([decoder versionForClassName: @"NSSliderCell"] >= 2)
