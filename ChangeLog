@@ -1,5 +1,16 @@
 2009-12-19 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSCell.m (-setStringValue:): Remove optimisation for
+	simple string case. Now -setObjectValue: is called in most cases.
+	* Source/NSButtonCell.m (-attributedTitle, -setAttributedTitle:,
+	-title, -setTitle:): Replace calls to super implementation with a
+	simple local implementation.
+	* Source/NSSliderCell.m: Remove most of the value setter methods,
+	as they just duplicated super class behaviour.
+	Move the setContinues: call into the init method.
+
+2009-12-19 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSTextTable.h,
 	* Source/NSTextTable.m,
 	* Source/NSTextBlock.m,

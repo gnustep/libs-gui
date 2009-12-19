@@ -335,7 +335,7 @@ static NSColor *dtxtCol;
           _cell.contents_is_attributed_string = YES;
           _cell.has_valid_object_value = YES;
         }
-      else if([_object_value respondsToSelector: @selector(stringValue)])
+      else if ([_object_value respondsToSelector: @selector(stringValue)])
         {
           // If the thing that was assigned is not a string, but 
           // responds to stringValue then get that.
@@ -433,20 +433,7 @@ static NSColor *dtxtCol;
 
   if (_formatter == nil)
     {
-      /* if we are a string, we do an optimization and set the value here instead of 
-       * using setObjectValue.
-       * also, we check for nil, since isKindOfClass fails for nil objects */
-      if (aString == nil || [aString isKindOfClass: [NSString class]] == YES)
-        {
-          ASSIGN (_contents, aString);
-          ASSIGN (_object_value, aString);
-          _cell.contents_is_attributed_string = NO;
-          _cell.has_valid_object_value = YES;
-        }
-      else
-        {
-          [self setObjectValue: aString];
-        }
+      [self setObjectValue: aString];
     }
   else
     {

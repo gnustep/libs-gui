@@ -142,7 +142,8 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   [self setMaxValue: 1];
   _cell.is_bordered = YES;
   _cell.is_bezeled = NO;
-
+  [self setContinuous: YES];
+      
   _knobCell = [NSCell new];
   _titleCell = [NSTextFieldCell new];
   [_titleCell setTextColor: [NSColor controlTextColor]];
@@ -395,7 +396,7 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
     [self setDoubleValue: _maxValue];
 }
 
-- (void) setObjectValue:(id)anObject
+- (void) setObjectValue: (id)anObject
 {
   // We substitute an NSNumber containing minValue or maxValue if the given
   // object's doubleValue lies outside the allowed range, matching OS X 
@@ -412,49 +413,6 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
     }
   else
     [super setObjectValue: [NSNumber numberWithDouble: _minValue]];
-}
-
-- (void) setStringValue:(NSString *)aString
-{
-  // We call setDoubleValue with minValue or maxValue if the given string's
-  // doubleValue lies outside the allowed range.
-  double aDouble = [aString doubleValue];
-  if (aDouble < _minValue)
-    [super setDoubleValue: _minValue];
-  else if (aDouble > _maxValue)
-    [super setDoubleValue: _maxValue];
-  else
-    [super setStringValue: aString];
-}
-
-- (void) setDoubleValue:(double)aDouble
-{
-  if (aDouble < _minValue)
-    [super setDoubleValue: _minValue];
-  else if (aDouble > _maxValue)
-    [super setDoubleValue: _maxValue];
-  else
-    [super setDoubleValue: aDouble];
-}
-
-- (void) setFloatValue:(float)aFloat
-{
-  if (aFloat < _minValue)
-    [super setDoubleValue: _minValue];
-  else if (aFloat > _maxValue)
-    [super setDoubleValue: _maxValue];
-  else
-    [super setFloatValue: aFloat];
-}
-
-- (void) setIntValue:(int)anInt
-{
-  if (anInt < _minValue)
-    [super setDoubleValue: _minValue];
-  else if (anInt > _maxValue)
-    [super setDoubleValue: _maxValue];
-  else
-    [super setIntValue: anInt];
 }
 
 /**<p>Returns the cell used to draw the title.</p>
@@ -825,7 +783,6 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
       // information is not in the nib.
       [self setBordered: YES];
       [self setBezeled: NO];
-      [self setContinuous: YES];
       _isVertical = -1;
     }
   else

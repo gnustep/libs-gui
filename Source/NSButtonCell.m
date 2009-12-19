@@ -195,11 +195,18 @@ typedef struct _GSButtonCellFlags
 }
 
 /** <p>Returns the NSButtonCell's title.</p>
-    <p>See Also: -setTitle: [NSCell-stringValue]</p>
  */
 - (NSString*) title
 {
-  return [super stringValue];
+  if (_cell.contents_is_attributed_string == NO)
+    {
+      // If we have a formatter this is also the string of the _object_value
+      return _contents;
+    }
+  else
+    {
+      return [(NSAttributedString *)_contents string];
+    }
 }
 
 /** <p>Returns the NSButtonCell's alternate title ( used when highlighted ).
@@ -323,11 +330,11 @@ typedef struct _GSButtonCellFlags
 }
 
 /**<p>Sets the NSButtonCell's title to <var>aString</var>.</p>
-   <p>See Also: -title [NSCell-setStringValue:]</p>
  */
 - (void) setTitle: (NSString*)aString
 {
-  [super setStringValue: aString];
+  ASSIGNCOPY(_contents, aString);
+  _cell.contents_is_attributed_string = NO;
 }
 
 /**<p>Sets the NSButtonCell's alternate title ( used when highlighted ) 
@@ -369,12 +376,27 @@ typedef struct _GSButtonCellFlags
 
 - (NSAttributedString *)attributedTitle
 {
-  return [super attributedStringValue];
+  if (_cell.contents_is_attributed_string)
+    {
+      return (NSAttributedString *)_contents;
+    }
+  else
+    {
+      NSDictionary *dict;
+      NSAttributedString *attrStr;
+
+      dict = [self _nonAutoreleasedTypingAttributes];
+      attrStr = [[NSAttributedString alloc] initWithString: _contents 
+                                            attributes: dict];
+      RELEASE(dict);
+      return AUTORELEASE(attrStr);
+    }
 }
 
 - (void)setAttributedTitle:(NSAttributedString *)aString
 {
-  [super setAttributedStringValue: aString];
+  ASSIGNCOPY(_contents, aString);
+  _cell.contents_is_attributed_string = YES;
 }
 
 - (void)setTitleWithMnemonic:(NSString *)aString
