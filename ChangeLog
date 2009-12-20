@@ -1,3 +1,8 @@
+2009-11-24 David Chisnall <theraven@gna.org>
+
+	* Source/NSApplication.m: Replaced two superfluous NSInvocation
+	construction occurrences with direct calls to the IMP in question.
+
 2009-12-19 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/NSBezierPath.m: Change default flatness to 0.6 matching OS X
