@@ -1,3 +1,8 @@
+2009-12-21 Fred Kiefer <FredKiefer@gmx.de>
+	
+	* Source/NSTableColumn.m (-initWithCoder:, -encodeWithCoder:): Add
+	the keyed encoding/decoding code for Quentin's extensions.
+
 2009-12-20 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/NSSliderCell.m: Some more changes to NSSliderCell to get

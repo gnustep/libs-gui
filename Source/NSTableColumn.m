@@ -62,12 +62,12 @@
  </chapter>
 */  
 
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSValue.h>
-#include <Foundation/NSSortDescriptor.h>
-#include "AppKit/NSTableHeaderCell.h"
-#include "AppKit/NSTableColumn.h"
-#include "AppKit/NSTableView.h"
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSValue.h>
+#import <Foundation/NSSortDescriptor.h>
+#import "AppKit/NSTableHeaderCell.h"
+#import "AppKit/NSTableColumn.h"
+#import "AppKit/NSTableView.h"
 
 /**
   <p>
@@ -97,7 +97,7 @@
   Initialize the column.  anObject is an object used to identify the
   column; it is usually a string, but might be any kind of object.
   anObject is retained.  */
-- (id)initWithIdentifier: (id)anObject
+- (id) initWithIdentifier: (id)anObject
 {
   self = [super init];
   if (!self)
@@ -112,8 +112,8 @@
   _is_hidden = NO;
   _tableView = nil;
 
-  _headerCell = [NSTableHeaderCell new];
-  _dataCell = [NSTextFieldCell new];
+  _headerCell = [[NSTableHeaderCell alloc] init];
+  _dataCell = [[NSTextFieldCell alloc] init];
   [_dataCell setLineBreakMode: NSLineBreakByTruncatingTail];
   _headerToolTip = nil;
 
@@ -123,7 +123,7 @@
   return self;
 }
 
-- (void)dealloc
+- (void) dealloc
 {
   RELEASE (_headerCell);
   RELEASE (_headerToolTip);
@@ -139,7 +139,7 @@
 /**
   Set the identifier used to identify the table.  The old identifier
   is released, and the new one is retained.  */
-- (void)setIdentifier: (id)anObject
+- (void) setIdentifier: (id)anObject
 {
   ASSIGN (_identifier, anObject);
 }
@@ -148,7 +148,7 @@
   Return the column identifier, an object used to identify the column.
   This object is usually a string, but might be any kind of object.
   */
-- (id)identifier
+- (id) identifier
 {
   return _identifier;
 }
@@ -161,7 +161,7 @@
   directly; it is exposed because you may want to override it in
   subclasses.  To use the table column in a table view, you should use
   NSTableView's addTableColumn: instead.  */
-- (void)setTableView: (NSTableView*)aTableView
+- (void) setTableView: (NSTableView*)aTableView
 {
   // We do *not* RETAIN aTableView. 
   // On the contrary, aTableView is supposed to RETAIN us.
@@ -171,7 +171,7 @@
 /**
   Return the table view the column belongs to, or nil if the table
   column was not added to any table view.  */
-- (NSTableView *)tableView
+- (NSTableView *) tableView
 {
   return _tableView;
 }
@@ -190,7 +190,7 @@
   is redisplayed (by calling tile), and the
   NSTableViewColumnDidResizeNotification is posted on behalf of the
   table view.  */
-- (void)setWidth: (float)newWidth
+- (void) setWidth: (float)newWidth
 {
   float oldWidth = _width;
 
@@ -221,7 +221,7 @@
 
 /** Return the width of the table column. The 
     default width is 100. */
-- (float)width
+- (float) width
 {
   return _width;
 }
@@ -230,7 +230,7 @@
   Set the min width of the table column, eventually adjusting the
   width of the column if it is smaller than the new min width.  In no
   way a table column can be made smaller than its min width.  */
-- (void)setMinWidth: (float)minWidth
+- (void) setMinWidth: (float)minWidth
 {
   _min_width = minWidth;
   if (_width < _min_width)
@@ -241,7 +241,7 @@
   Return the column's min width.  The column can in no way be resized
   to a width smaller than this min width.  The default min width is
   10.  */
-- (float)minWidth
+- (float) minWidth
 {
   return _min_width;
 }
@@ -250,7 +250,7 @@
   Set the max width of the table column, eventually adjusting the
   width of the column if it is bigger than the new max width.  In no
   way a table column can be made bigger than its max width.  */
-- (void)setMaxWidth: (float)maxWidth
+- (void) setMaxWidth: (float)maxWidth
 {
   _max_width = maxWidth;
   if (_width > _max_width)
@@ -261,7 +261,7 @@
   Return the column's max width.  The column can in no way be resized
   to a width bigger than this max width.  The default max width is
   100000.  */
-- (float)maxWidth
+- (float) maxWidth
 {
   return _max_width;
 }
@@ -270,7 +270,7 @@
   Set whether the user can resize the table column by dragging the
   border of its header with the mouse.  The table column can be
   resized programmatically regardless of this setting.  */
-- (void)setResizable: (BOOL)flag
+- (void) setResizable: (BOOL)flag
 {
   _is_resizable = flag;
   // TODO: To match Cocoa behavior, should be replaced by
@@ -287,7 +287,7 @@
 /**
   Return whether the column might be resized by the user by dragging
   the column header border.  */
-- (BOOL)isResizable
+- (BOOL) isResizable
 {
   return _is_resizable;
   // TODO: To match Cocoa behavior, should be replaced by
@@ -297,7 +297,7 @@
 /**
 Return the resizing mask that describes whether the column is resizable and how 
 it resizes. */
-- (void) setResizingMask: (NSUInteger)resizingMask;
+- (void) setResizingMask: (NSUInteger)resizingMask
 {
   _resizing_mask = resizingMask;
 }
@@ -305,7 +305,7 @@ it resizes. */
 /**
 Set the resizing mask that describes whether the column is resizable and how 
 it resizes. */
-- (NSUInteger) resizingMask;
+- (NSUInteger) resizingMask
 {
   return _resizing_mask;
 }
@@ -315,7 +315,7 @@ it resizes. */
   column to have this width (if the minimum width is bigger than the
   column header width, it is reduced to it; if the maximum width is
   smaller than the column header width, it is increased to it).  */
-- (void)sizeToFit
+- (void) sizeToFit
 {
   float new_width;
 
@@ -333,7 +333,7 @@ it resizes. */
 
 /**
 Set whether the column is invisible or not. */
-- (void) setHidden: (BOOL)hidden;
+- (void) setHidden: (BOOL)hidden
 {
   _is_hidden = hidden;
 }
@@ -354,7 +354,7 @@ by -[NSTableView tableColumns]. */
 /**
   Set whether data in the column might be edited by the user by
   double-cliking on them.  */
-- (void)setEditable: (BOOL)flag
+- (void) setEditable: (BOOL)flag
 {
   _is_editable = flag;
 }
@@ -362,7 +362,7 @@ by -[NSTableView tableColumns]. */
 /**
   Return whether data displayed in the column can be edited by the
   user by double-cliking on them.  */
-- (BOOL)isEditable
+- (BOOL) isEditable
 {
   return _is_editable;
 }
@@ -374,7 +374,7 @@ by -[NSTableView tableColumns]. */
   Set the cell used to display the column header.  aCell can't be nil,
   otherwise a warning will be generated and the method call ignored.
   The old cell is released, the new one is retained.  */
-- (void)setHeaderCell: (NSCell*)aCell
+- (void) setHeaderCell: (NSCell*)aCell
 {
   if (aCell == nil)
     {
@@ -387,14 +387,14 @@ by -[NSTableView tableColumns]. */
 /** 
   Return the cell used to display the column title.  The default
   header cell is an NSTableHeaderCell.  */
-- (NSCell*)headerCell
+- (NSCell*) headerCell
 {
   return _headerCell;
 }
 
 /**
 Set the tool tip text displayed when the pointer is in the header area. */
-- (void) setHeaderToolTip: (NSString *)aString;
+- (void) setHeaderToolTip: (NSString *)aString
 {
   ASSIGN(_headerToolTip, aString);
 }
@@ -413,7 +413,7 @@ Return the toop tip text displayed when the pointer is in the header area. */
   change the attributes in which a single row in a column is
   displayed, you should better use a delegate for your NSTableView
   implementing tableView:willDisplayCell:forTableColumn:row:.  */
-- (void)setDataCell: (NSCell*)aCell
+- (void) setDataCell: (NSCell*)aCell
 {
   if (aCell == nil)
     {
@@ -426,12 +426,12 @@ Return the toop tip text displayed when the pointer is in the header area. */
 /** 
   Return the cell used to display data in the column.  The default
   data cell is an NSTextFieldCell.  */
-- (NSCell*)dataCell
+- (NSCell*) dataCell
 {
   return _dataCell;
 }
 
-- (NSCell*)dataCellForRow: (int)row
+- (NSCell*) dataCellForRow: (int)row
 {
   return [self dataCell];
 }
@@ -473,6 +473,12 @@ to YES. */
       [aCoder encodeFloat: _max_width forKey: @"NSMaxWidth"];
       [aCoder encodeFloat: _min_width forKey: @"NSMinWidth"];
       [aCoder encodeFloat: _width forKey: @"NSWidth"];
+      [aCoder encodeObject: _sortDescriptorPrototype 
+              forKey: @"NSSortDescriptorPrototype"];
+      [aCoder encodeInt: _resizing_mask forKey: @"NSResizingMask"];
+      [aCoder encodeObject: _headerToolTip forKey: @"NSHeaderToolTip"];
+      [aCoder encodeBool: _is_hidden forKey: @"NSHidden"];
+      [aCoder encodeObject: _tableView forKey: @"NSTableView"];
     }
   else
     {
@@ -511,17 +517,9 @@ to YES. */
         {
           [self setResizable: [aDecoder decodeBoolForKey: @"NSIsResizeable"]];
         }
-      else
-        {
-          [self setResizable: NO];
-        }
       if ([aDecoder containsValueForKey: @"NSIsEditable"])
         {
           [self setEditable: [aDecoder decodeBoolForKey: @"NSIsEditable"]];
-        }
-      else
-        {
-          [self setEditable: NO];
         }
       if ([aDecoder containsValueForKey: @"NSWidth"])
         {
@@ -534,6 +532,27 @@ to YES. */
       if ([aDecoder containsValueForKey: @"NSMaxWidth"])
         {
           [self setMaxWidth: [aDecoder decodeFloatForKey: @"NSMaxWidth"]];
+        }
+      if ([aDecoder containsValueForKey: @"NSSortDescriptorPrototype"])
+        {
+          [self setSortDescriptorPrototype: 
+                  [aDecoder decodeObjectForKey: @"NSSortDescriptorPrototype"]];
+        }
+      if ([aDecoder containsValueForKey: @"NSResizingMask"])
+        {
+          [self setResizingMask: [aDecoder decodeIntForKey: @"NSResizingMask"]];
+        }
+      if ([aDecoder containsValueForKey: @"NSHeaderToolTip"])
+        {
+          [self setHeaderToolTip: [aDecoder decodeObjectForKey: @"NSHeaderToolTip"]];
+        }
+      if ([aDecoder containsValueForKey: @"NSHidden"])
+        {
+          [self setHidden: [aDecoder decodeBoolForKey: @"NSHidden"]];
+        }
+      if ([aDecoder containsValueForKey: @"NSTableView"])
+        {
+          [self setTableView: [aDecoder decodeObjectForKey: @"NSTableView"]];
         }
     }
   else
