@@ -140,6 +140,7 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   _isVertical = -1;
   [self setMinValue: 0];
   [self setMaxValue: 1];
+  [self setDoubleValue: 0];
   _cell.is_bordered = YES;
   _cell.is_bezeled = NO;
   [self setContinuous: YES];
@@ -172,6 +173,23 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
     }
 
   return cpy;
+}
+
+- (BOOL) isContinuous
+{
+  return (_action_mask & NSLeftMouseDraggedMask) != 0;
+}
+
+- (void) setContinuous: (BOOL)flag
+{
+  if (flag)
+    {
+      _action_mask |= NSLeftMouseDraggedMask;
+    }
+  else
+    {
+      _action_mask &= ~NSLeftMouseDraggedMask;
+    }
 }
 
 /** <p>Draws the slider's track, not including the bezel, in <var>aRect</var>
@@ -398,10 +416,13 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 
 - (void) setObjectValue: (id)anObject
 {
-  // We substitute an NSNumber containing minValue or maxValue if the given
-  // object's doubleValue lies outside the allowed range, matching OS X 
-  // behaviour.
-  if ([anObject respondsToSelector: @selector(doubleValue)])
+  // If the provided object doesn't respond to doubeValue, or our minValue
+  // is greater than our maxValue, we set our value to our minValue
+  // (this arbitrary choice matches OS X)
+  if ([anObject respondsToSelector: @selector(doubleValue)] == NO ||
+      _minValue > _maxValue)
+    [super setObjectValue: [NSNumber numberWithDouble: _minValue]];
+  else
     {
       double aDouble = [anObject doubleValue];
       if (aDouble < _minValue)
@@ -411,8 +432,6 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
       else
         [super setObjectValue: anObject];
     }
-  else
-    [super setObjectValue: [NSNumber numberWithDouble: _minValue]];
 }
 
 /**<p>Returns the cell used to draw the title.</p>
@@ -770,6 +789,7 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
       _tickMarkPosition = [decoder decodeIntForKey: @"NSTickMarkPosition"];
       [self setMinValue: [decoder decodeFloatForKey: @"NSMinValue"]];
       [self setMaxValue: [decoder decodeFloatForKey: @"NSMaxValue"]];
+      [self setFloatValue: [decoder decodeFloatForKey: @"NSValue"]];
       _altIncrementValue = [decoder decodeFloatForKey: @"NSAltIncValue"];
 
       // do these here, since the Cocoa version of the class does not save these values...

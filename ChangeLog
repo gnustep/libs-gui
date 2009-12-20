@@ -1,3 +1,15 @@
+2009-12-20 Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/NSSliderCell.m: Some more changes to NSSliderCell to get
+	BezierPathLab working, and a test suite in 
+	tests/testsuite/gui/NSSliderCell. Set the doubleValue to 0 in -init,
+	unarchive the @"NSValue" key and set the floatValue to it when
+	unarchiving, adjust setObjectValue: so that when minValue > maxValue,
+	the slider cell takes its value to be minValue.
+	Also override setContinuous: and isContinuous to use
+	NSLeftMouseDraggedMask rather than NSPeriodicMask, which makes
+	the continuous setting of sliders in Nibs work properly in GNUstep. 
+
 2009-11-24 David Chisnall <theraven@gna.org>
 
 	* Source/NSApplication.m: Replaced two superfluous NSInvocation
