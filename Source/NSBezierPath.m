@@ -51,7 +51,7 @@ static Class NSBezierPath_concrete_class = nil;
 
 static NSWindingRule default_winding_rule = NSNonZeroWindingRule;
 static float default_line_width = 1.0;
-static float default_flatness = 1.0;
+static float default_flatness = 0.6;
 static NSLineJoinStyle default_line_join_style = NSMiterLineJoinStyle;
 static NSLineCapStyle default_line_cap_style = NSButtLineCapStyle;
 static float default_miter_limit = 10.0;

@@ -1,3 +1,7 @@
+2009-12-19 Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/NSBezierPath.m: Change default flatness to 0.6 matching OS X
+
 2009-12-19 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSCell.m (-setStringValue:): Remove optimisation for
