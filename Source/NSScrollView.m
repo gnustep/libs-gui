@@ -1290,7 +1290,7 @@ static float scrollerWidth;
 
 - (BOOL) isOpaque
 {
-  return YES;
+  return [_contentView isOpaque];
 }
 
 - (NSBorderType) borderType

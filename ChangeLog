@@ -1,5 +1,8 @@
 2009-12-21  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSScrollView.m (-isOpaque): Fix bug where an NSScrollView
+	incorrectly claimed to be opaque while its clip view is not.
+
 	* Source/NSOpenPanel.m (-setCanChooseDirectories): Reset the
 	current selection of an open panel when directory selection is
 	disabled. This prevents bogus directories being returned from the
