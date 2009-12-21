@@ -1,5 +1,10 @@
 2009-12-20 Eric Wasylishen <ewasylishen@gmail.com>
 
+	* Source/NSColorWell.m: Draw a black-and-white pattern behind
+	transparent color swatches. 
+
+2009-12-20 Eric Wasylishen <ewasylishen@gmail.com>
+
 	* Source/NSColor.m: -[GSRGBColor isEqual:] was ignoring the alpha
 	channel when testing equality.
 

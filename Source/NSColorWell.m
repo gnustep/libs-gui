@@ -31,6 +31,7 @@
 #include "config.h"
 #include "AppKit/NSActionCell.h"
 #include "AppKit/NSApplication.h"
+#include "AppKit/NSBezierPath.h"
 #include "AppKit/NSColorPanel.h"
 #include "AppKit/NSColorWell.h"
 #include "AppKit/NSColor.h"
@@ -189,6 +190,22 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
   if (NSIsEmptyRect(insideRect))
     {
       return;
+    }
+  if ([_the_color alphaComponent] < 1.0)
+    {
+      NSBezierPath *triangle = [NSBezierPath bezierPath];
+
+      [[NSColor whiteColor] set];
+      NSRectFill(insideRect);
+
+      [triangle moveToPoint: NSMakePoint(insideRect.origin.x,
+		insideRect.origin.y + insideRect.size.height)];
+      [triangle lineToPoint: NSMakePoint(insideRect.origin.x + insideRect.size.width, 
+		insideRect.origin.y + insideRect.size.height)];
+      [triangle lineToPoint: insideRect.origin];
+      [triangle closePath];
+      [[NSColor blackColor] set];
+      [triangle fill];
     }
   [_the_color drawSwatchInRect: insideRect];
 }
