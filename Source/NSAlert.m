@@ -160,9 +160,15 @@ static NSString	*defaultTitle = @" ";
     The width of the scroll is the rest of the width of the content rect
     minus the margins.
 
-    ((wsize.width <= ssize.width)
+    In order to prevent alert panels from obscuring the whole screen, we
+    limit the width and height of a panel to at most a factor of SIZE_SCALE
+    of the screen size. At present, we use 60% for SIZE_SCALE, which means
+    that the limit is greater than the minimum width and height even on a
+    640x400 screen.
+
+    ((wsize.width <= ssize.width * SIZE_SCALE)
      and ([messageField frame].size.width+2*MessageHorzMargin <= wsize.width))
-    or ((wsize.width == ssize.width)
+    or ((wsize.width == ssize.width * SIZE_SCALE)
         and ([scroll frame].size.width = wsize.width-2*MessageHorzMargin));
 
     ...
@@ -228,6 +234,7 @@ static const float ButtonInterspace = 10.0;
 static const float ButtonMinHeight = 24.0;
 static const float ButtonMinWidth = 72.0;
 
+#define SIZE_SCALE 0.6
 #define MessageFont [NSFont messageFontOfSize: 14]
 
 + (void) initialize
@@ -282,7 +289,7 @@ makeScrollViewWithRect(NSRect rect)
 
   [scroll setBorderType: NSLineBorder];
   [scroll setBackgroundColor: [NSColor controlBackgroundColor]];
-  [scroll setHasHorizontalScroller: YES];
+  [scroll setHasHorizontalScroller: NO];
   [scroll setHasVerticalScroller: YES];
   [scroll setScrollsDynamically: YES];
   [scroll setLineScroll: lineHeight];
@@ -476,6 +483,9 @@ setControl(NSView* content, id control, NSString *title)
   bounds = [screen frame];
   bounds = [NSWindow contentRectForFrameRect: bounds styleMask: mask];
   ssize = bounds.size;
+  /* Do not let a panel grow beyond a factor of SIZE_SCALE of the screen */
+  ssize.width = SIZE_SCALE * ssize.width;
+  ssize.height = SIZE_SCALE * ssize.height;
 
   // Let's size the title.
   if (useControl(titleField))
@@ -549,8 +559,17 @@ setControl(NSView* content, id control, NSString *title)
 	{
 	  wsize.width = width;
 	}
-      // The title could be large too, without implying a scroll view.
-      needsScroll = (ssize.width < width);
+
+      /* If the message is too wide, wrap its text. Apparently, we cannot
+	 use -sizeToFit to compute the height of the message. */
+      [messageField setAlignment: NSLeftTextAlignment];
+      width = ssize.width - 2*MessageHorzMargin;
+      rect.size =
+	[[messageField attributedStringValue]
+	  boundingRectWithSize: NSMakeSize(width, 1e6)
+		       options: 0].size;
+      [messageField setFrame: rect];
+
       /*
        * But only the messageField can impose a great height, therefore
        * we check it along in the next paragraph.
@@ -621,6 +640,7 @@ setControl(NSView* content, id control, NSString *title)
       if (needsScroll)
 	{
 	  NSRect	srect;
+	  float		width;
 
 	  // The scroll view takes all the space that is available.
 	  srect.origin.x = bounds.origin.x + MessageHorzMargin;
@@ -641,17 +661,23 @@ setControl(NSView* content, id control, NSString *title)
 	    {
 	      [content addSubview: scroll];
 	    }
+
+	  /* Adjust the message field's width again so that it does not
+	     exceed the scroll view's visible rectangle and we do not
+	     need a horizontal scroller. */
 	  [messageField removeFromSuperview];
-	  mrect.origin.x
-	    = srect.origin.x + srect.size.width - mrect.size.width;
-	  mrect.origin.y
-	    = srect.origin.y + srect.size.height - mrect.size.height;
+	  width =
+	    [NSScrollView contentSizeForFrameSize: srect.size
+			    hasHorizontalScroller: NO
+			      hasVerticalScroller: YES
+				       borderType: [scroll borderType]].width;
+	  mrect.origin = NSZeroPoint;
+	  mrect.size =
+	    [[messageField attributedStringValue]
+	      boundingRectWithSize: NSMakeSize(width, 1e6)
+			   options: 0].size;
 	  [messageField setFrame: mrect];
 	  [scroll setDocumentView: messageField];
-	  [[scroll contentView] scrollToPoint:
-	    NSMakePoint(mrect.origin.x, mrect.origin.y + mrect.size.height
-	      - [[scroll contentView] bounds].size.height)];
-	  [scroll reflectScrolledClipView: [scroll contentView]];
 	}
       else
 	{
@@ -659,7 +685,7 @@ setControl(NSView* content, id control, NSString *title)
 
 	  /*
 	   * We must center vertically the messageField because
-	   * the window has a minimum size, thus may be greated
+	   * the window has a minimum size, thus may be greater
 	   * than expected.
 	   */
 	  mrect.origin.x = (wsize.width - mrect.size.width)/2;

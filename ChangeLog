@@ -1,3 +1,14 @@
+2009-12-22  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSAlert.m (makeScrollViewWithRect):
+	* Source/NSAlert.m (-sizePanelToFit): If the message text is too
+	wide to fit into the panel wrap its text to the scroll view's
+	width.
+
+	* Source/NSAlert.m (-sizePanelToFit): Limit the width and height
+	of an alert panel to 60% of the screen's width and height,
+	respectively.
+
 2009-12-21  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSScrollView.m (-isOpaque): Fix bug where an NSScrollView
