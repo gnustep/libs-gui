@@ -2650,7 +2650,8 @@ static	NSRecursiveLock		*namedColorLock = nil;
   if ([other isKindOfClass: [self class]] == NO
     || [other redComponent] != _red_component
     || [other greenComponent] != _green_component
-    || [other blueComponent] != _blue_component)
+    || [other blueComponent] != _blue_component
+    || [other alphaComponent] != _alpha_component)
     {
       return NO;
     }
