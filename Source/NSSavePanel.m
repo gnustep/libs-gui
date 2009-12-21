@@ -413,6 +413,7 @@ setPath(NSBrowser *browser, NSString *path)
   [self setPrompt: @"Name:"];
   [self setTitle: @"Save"];
   [self setAllowedFileTypes: nil];
+  [self setAllowsOtherFileTypes: NO];
   [self setTreatsFilePackagesAsDirectories: NO];
   [self setDelegate: nil];
   [self setAccessoryView: nil];
