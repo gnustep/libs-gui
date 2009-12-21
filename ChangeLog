@@ -1,5 +1,10 @@
 2009-12-21  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSOpenPanel.m (-setCanChooseDirectories): Reset the
+	current selection of an open panel when directory selection is
+	disabled. This prevents bogus directories being returned from the
+	next modal session of the panel.
+
 	* Source/NSSavePanel.m (-resetDefaults): Also reset the
 	allowsOtherFileTypes attribute to its default when a fresh save
 	panel is requested.

@@ -312,8 +312,20 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 */
 - (void) setCanChooseDirectories: (BOOL)flag
 {
-  _canChooseDirectories = flag;
-  [_browser setAllowsBranchSelection: flag];
+  if (flag != _canChooseDirectories)
+    {
+      _canChooseDirectories = flag;
+      [_browser setAllowsBranchSelection: flag];
+      if (!flag)
+	{
+	  /* FIXME If the user disables directory selection we should deselect
+	     any directories that are currently selected. This is achieved by
+	     calling _reloadBrowser, but this may be considered overkill, since
+	     the displayed files are the same whether canChooseDirectories is
+	     enabled or not. */
+	  [self _reloadBrowser];
+	}
+    }
 }
 
 /** <p>Returns YES if the user is allowed to choose directories  The
