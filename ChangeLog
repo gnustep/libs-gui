@@ -1,3 +1,13 @@
+2009-12-21 Fred Kiefer <FredKiefer@gmx.de>
+	
+	* Source/GSIconManager.h,
+	* Source/GSIconManager.m: New files. Allows to get icon placement
+	from separate process.
+	* Source/GNUmakefile: Add new file.
+	* Source/NSWindow.m,
+	* Source/NSApplication.m: Move icon handling into new file.
+	Patch by German Arias <german@xelalug.org>.
+
 2009-12-20 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/NSColorWell.m: Draw a black-and-white pattern behind

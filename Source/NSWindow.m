@@ -82,6 +82,7 @@
 #include "GNUstepGUI/GSDisplayServer.h"
 #include "GSGuiPrivate.h"
 #include "GSToolTips.h"
+#include "GSIconManager.h"
 #include "GSWindowDecorationView.h"
 #include "NSToolbarFrameworkPrivate.h"
 
@@ -386,7 +387,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 {
   NSSize iconSize, retSize;
 
-  iconSize = [GSCurrentServer() iconSize];
+  iconSize = GSGetIconSize();
   retSize.width = imageSize.width * iconSize.width / 64;
   retSize.height = imageSize.height * iconSize.height / 64;
   return retSize;
@@ -399,7 +400,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   NSImage *tileImage;
   NSSize iconSize;
   
-  iconSize = [GSCurrentServer() iconSize];
+  iconSize = GSGetIconSize();
   
   tileImage = [[GSCurrentServer() iconTileImage] copy];
   [tileImage setScalesWhenResized: YES];
@@ -424,7 +425,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 
 - (void) drawRect: (NSRect)rect
 {   
-  NSSize iconSize = [GSCurrentServer() iconSize];
+  NSSize iconSize = GSGetIconSize();
 
   [tileCell drawWithFrame: NSMakeRect(0, 0, iconSize.width, iconSize.height)
                      inView: self];
@@ -2663,6 +2664,13 @@ resetCursorRectsForView(NSView *theView)
       _f.has_opened = NO;
       [NSApp removeWindowsItem: self];
       [self orderOut: self];
+
+      if (_f.is_miniaturized == YES)
+	{
+	  NSWindow *mini = GSWindowWithNumber(_counterpart);
+	  GSRemoveIcon(mini);
+	}
+
       RELEASE(pool);
       _f.has_closed = YES;
       RELEASE(self);
@@ -2711,6 +2719,7 @@ resetCursorRectsForView(NSView *theView)
     {
       NSWindow *mini = GSWindowWithNumber(_counterpart);
 
+      GSRemoveIcon(mini);
       [mini orderOut: self];
     }
 
@@ -2808,7 +2817,10 @@ resetCursorRectsForView(NSView *theView)
    */
   if (_counterpart != 0)
     {
+      NSRect iconRect;
       NSWindow *mini = GSWindowWithNumber(_counterpart);
+      iconRect = GSGetIconFrame(mini);
+      [mini setFrame: iconRect display: YES];
       [mini orderFront: self];
     }
   [nc postNotificationName: NSWindowDidMiniaturizeNotification

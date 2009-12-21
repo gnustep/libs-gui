@@ -79,6 +79,7 @@
 #include "AppKit/NSScreen.h"
 #include "AppKit/PSOperators.h"
 
+#include "GSIconManager.h"
 #include "GNUstepGUI/GSDisplayServer.h"
 #include "GNUstepGUI/GSServicesManager.h"
 #include "GSGuiPrivate.h"
@@ -466,7 +467,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 {
   NSSize iconSize, retSize;
   
-  iconSize = [GSCurrentServer() iconSize];
+  iconSize = GSGetIconSize();
   retSize.width = imageSize.width * iconSize.width / 64;
   retSize.height = imageSize.height * iconSize.height / 64;
   return retSize;
@@ -477,7 +478,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   NSImage	*tileImage;
   NSSize	iconSize;
 
-  iconSize = [GSCurrentServer() iconSize];
+  iconSize = GSGetIconSize();
   /* _appIconInit will set our image */
   dragCell = [[NSCell alloc] initImageCell: nil];
   [dragCell setBordered: NO];
@@ -515,7 +516,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 
 - (void) drawRect: (NSRect)rect
 {
-  NSSize iconSize = [GSCurrentServer() iconSize];
+  NSSize iconSize = GSGetIconSize();
   
   [tileCell drawWithFrame: NSMakeRect(0, 0, iconSize.width, iconSize.height)
   		   inView: self];
@@ -3391,6 +3392,7 @@ struct _DelegateWrapper
 
   if (termination == NSTerminateNow)
     {
+      GSRemoveIcon(_app_icon_window);
       [self replyToApplicationShouldTerminate: YES];
     }
   /*
@@ -3668,8 +3670,7 @@ struct _DelegateWrapper
 - _appIconInit
 {
   NSAppIconView	*iv;
-  NSSize iconSize = [GSCurrentServer() iconSize];
-  NSRect iconRect = NSMakeRect(0, 0, iconSize.width, iconSize.height);
+  NSRect iconRect;
   unsigned	mask = NSIconWindowMask;
   BOOL	suppress;
 
@@ -3682,11 +3683,14 @@ struct _DelegateWrapper
     }
 #endif
 
-  _app_icon_window = [[NSIconWindow alloc] initWithContentRect: iconRect 
+  _app_icon_window = [[NSIconWindow alloc] initWithContentRect: NSZeroRect 
 				styleMask: mask
 				  backing: NSBackingStoreRetained
 				    defer: NO
 				   screen: nil];
+
+  iconRect = GSGetIconFrame(_app_icon_window);
+  [_app_icon_window setFrame: iconRect display: YES];
 
   iv = [[NSAppIconView alloc] initWithFrame: iconRect]; 
   [iv setImage: _app_icon];

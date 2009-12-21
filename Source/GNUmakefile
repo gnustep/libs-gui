@@ -217,6 +217,7 @@ GSLayoutManager.m \
 GSTypesetter.m \
 GSHorizontalTypesetter.m \
 GSGormLoading.m \
+GSIconManager.m \
 GSNibLoading.m \
 GSTitleView.m \
 GSToolTips.m \
