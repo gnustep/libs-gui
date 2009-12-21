@@ -728,7 +728,7 @@
       /*
        * Fill in control color.
        */
-      if ([well isActive])
+      if ([[well cell] isHighlighted] || [well isActive])
 	{
 	  [[NSColor selectedControlColor] set];
 	}

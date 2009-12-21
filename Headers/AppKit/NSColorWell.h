@@ -45,6 +45,8 @@
   NSRect _wellRect;
   id _target;
   SEL _action;
+  // Mouse tracking
+  NSPoint _mouseDownPoint;
 }
 
 //

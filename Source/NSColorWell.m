@@ -46,8 +46,6 @@
 static NSString *GSColorWellDidBecomeExclusiveNotification =
                     @"GSColorWellDidBecomeExclusiveNotification";
 
-static NSPoint _lastMouseDownPoint;
-
 @implementation NSColorWell
 
 /*
@@ -147,6 +145,10 @@ static NSPoint _lastMouseDownPoint;
   NSDragOperation sourceDragMask;
        
   NSDebugLLog(@"NSColorWell", @"%@: draggingEntered", self);
+
+  if ([self isEnabled] == NO)
+    return NSDragOperationNone;
+ 
   sourceDragMask = [sender draggingSourceOperationMask];
   pb = [sender draggingPasteboard];
  
@@ -289,12 +291,65 @@ static NSPoint _lastMouseDownPoint;
   // OPENSTEP 4.2 and OSX behavior indicates that the colorwell doesn't
   // work when the widget is marked as disabled.
   //
-  if ([self isEnabled])
-    {
-      _lastMouseDownPoint = 
-         [self convertPoint: [theEvent locationInWindow]
-                   fromView: nil];
+  if ([self isEnabled] == NO)
+    return;
 
+  // Unbordered color wells start a drag immediately upon mouse down
+  if ([self isBordered] == NO)
+    {
+      [NSColorPanel dragColor: _the_color
+		    withEvent: theEvent
+		    fromView: self];
+      return;
+    }
+
+  _mouseDownPoint = [self convertPoint: [theEvent locationInWindow]
+			  fromView: nil];
+  [[self cell] setHighlighted: YES];
+  [self setNeedsDisplay: YES];
+}
+
+- (void) mouseDragged: (NSEvent *)theEvent
+{
+  NSPoint point = [self convertPoint: [theEvent locationInWindow]
+			fromView: nil];
+  BOOL inside = [self mouse: point inRect: [self bounds]];
+  BOOL startedInWell = [self mouse: _mouseDownPoint inRect: _wellRect];
+
+  if ([self isEnabled] == NO)
+    return;
+
+  if (startedInWell)
+    {
+      [[self cell] setHighlighted: NO];
+      [self setNeedsDisplay: YES];
+
+      [NSColorPanel dragColor: _the_color
+		    withEvent: theEvent
+		    fromView: self];
+      return;
+    }
+  else
+    {
+      [[self cell] setHighlighted: inside];
+      [self setNeedsDisplay: YES];
+    }
+}
+
+- (void) mouseUp: (NSEvent *)theEvent
+{
+  NSPoint point = [self convertPoint: [theEvent locationInWindow]
+			fromView: nil];
+  BOOL inside = [self mouse: point inRect: [self bounds]];
+
+  if ([self isEnabled] == NO)
+    return;
+
+  [[self cell] setHighlighted: NO];
+  [self setNeedsDisplay: YES];
+
+  if (inside)
+    {
       if (_is_active == NO)
 	{
 	  [self activate: YES];
@@ -303,19 +358,6 @@ static NSPoint _lastMouseDownPoint;
 	{
 	  [self deactivate];
 	}
-    }
-}
-
-- (void) mouseDragged: (NSEvent *)theEvent
-{
-  if ([self isEnabled])
-    {
-      if ([self mouse: _lastMouseDownPoint inRect: _wellRect])
-        {
-          [NSColorPanel dragColor: _the_color
-			withEvent: theEvent
-			fromView: self];
-        }
     }
 }
 

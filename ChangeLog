@@ -1,3 +1,19 @@
+2209-12-20 Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/NSColorWell.m
+	* Source/GSThemeDrawing.m
+	* Source/NSColorPanel.m
+	* Headers/AppKit/NSColorWell.h: 
+	Finish NSColorWell interaction tweaks:
+	- activation of the now happens on mouseUp, not mouseDown
+	- non-bordered NSColorWells can't be activated by clicking
+	- non-bordered NSColorWells start a drag operation upon mouseDown
+	- disabled NSColorWells don't accept colours being dropped on them
+	- dropping a colour on the well inside the NSColorPanel now
+	  also updates the active NSColorWell
+	Also moved the static variable for keeping track of where the mouseDown
+	occurred to an instance variable.
+
 2009-12-21 Fred Kiefer <FredKiefer@gmx.de>
 	
 	* Source/NSTableColumn.m (-initWithCoder:, -encodeWithCoder:): Add

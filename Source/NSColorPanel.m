@@ -356,7 +356,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 
 - (void) _updatePicker: (id) sender
 {
-  [_currentPicker setColor: [_colorWell color]];
+  [self setColor: [_colorWell color]];
 }
 
 - (void) _bottomWellAction: (id) sender
