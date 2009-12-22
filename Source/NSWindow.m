@@ -3045,12 +3045,12 @@ resetCursorRectsForView(NSView *theView)
 
 - (void) undo: (id)sender
 {
-  [[self undoManager] undo];
+  [[_firstResponder undoManager] undo];
 }
 
 - (void) redo: (id)sender
 {
-  [[self undoManager] redo];
+  [[_firstResponder undoManager] redo];
 }
 
 /**
@@ -4908,7 +4908,7 @@ current key view.<br />
  * Menu item validation
  */
 
-- (BOOL) validateMenuItem: (NSMenuItem *)anItem
+- (BOOL) validateUserInterfaceItem: (id <NSValidatedUserInterfaceItem>)anItem
 {
   BOOL result = YES;
   SEL  action = [anItem action];
@@ -4927,43 +4927,41 @@ current key view.<br />
     }
   else if (sel_eq(action, @selector(undo:)))
     {
-      NSUndoManager *undo = [self undoManager];
+      NSUndoManager *undo = [_firstResponder undoManager];
       if (undo == nil)
         {
           result = NO;
         }
       else
         {
-          if ([undo canUndo])
+          result = [undo canUndo];
+          if ([(id)anItem respondsToSelector: @selector(setTitle:)])
             {
-              [anItem setTitle: [undo undoMenuItemTitle]];
-              result = YES;
-            }
-          else
-            {
-              [anItem setTitle: [undo undoMenuTitleForUndoActionName: @""]];
-              result = NO;
+              if (result)
+                [(id)anItem setTitle: [undo undoMenuItemTitle]];
+              else
+                [(id)anItem setTitle:
+		       [undo undoMenuTitleForUndoActionName: @""]];
             }
         }
     }
   else if (sel_eq(action, @selector(redo:)))
     {
-      NSUndoManager *undo = [self undoManager];
+      NSUndoManager *undo = [_firstResponder undoManager];
       if (undo == nil)
         {
           result = NO;
         }
       else
         {
-          if ([undo canRedo])
+          result = [undo canRedo];
+          if ([(id)anItem respondsToSelector: @selector(setTitle:)])
             {
-              [anItem setTitle: [undo redoMenuItemTitle]];
-              result = YES;
-            }
-          else
-            {
-              [anItem setTitle: [undo redoMenuTitleForUndoActionName: @""]];
-              result = NO;
+              if (result)
+                [(id)anItem setTitle: [undo redoMenuItemTitle]];
+              else
+                [(id)anItem setTitle:
+		       [undo redoMenuTitleForUndoActionName: @""]];
             }
         }
     }
@@ -4977,20 +4975,23 @@ current key view.<br />
         }
       else
         {
-          if ([toolbar isVisible])
+          result = YES;
+          if ([(id)anItem respondsToSelector: @selector(setTitle:)])
             {
-              [anItem setTitle: _(@"Hide Toolbar")];
-              result = YES;
-            }
-          else
-            {
-              [anItem setTitle: _(@"Show Toolbar")];
-              result = YES;
+              if ([toolbar isVisible])
+                [(id)anItem setTitle: _(@"Hide Toolbar")];
+              else
+                [(id)anItem setTitle: _(@"Show Toolbar")];
             }
         }
     }
     
   return result;
+}
+
+- (BOOL) validateMenuItem: (NSMenuItem *)anItem
+{
+  return [self validateUserInterfaceItem: anItem];
 }
 
 /*

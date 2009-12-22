@@ -1,5 +1,16 @@
 2009-12-22  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSWindow.m (-validateUserInterfaceItem):
+	* Source/NSWindow.m (-validateMenuItem): Generalize user interface
+	validation for NSWindow.
+
+	* Source/NSWindow.m (-undo:, -redo:): Use the first responder's
+	undo manager if available. Avoids the need for overriding these
+	methods in any responder class which supports undo/redo and is
+	compatible with OS X.
+
+2009-12-22  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSAlert.m (makeScrollViewWithRect):
 	* Source/NSAlert.m (-sizePanelToFit): If the message text is too
 	wide to fit into the panel wrap its text to the scroll view's
