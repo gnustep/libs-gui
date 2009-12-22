@@ -3596,6 +3596,7 @@ if (currentRow >= 0 && currentRow < _numberOfRows) \
       BOOL mouseBelowView = NO;
       BOOL done = NO;
       BOOL mouseMoved = NO;
+      BOOL didTrackCell = NO;
       BOOL dragOperationPossible = [self _isDraggingSource];
       NSRect visibleRect = [self convertRect: [self visibleRect]
 				 toView: nil];
@@ -3687,7 +3688,7 @@ if (currentRow >= 0 && currentRow < _numberOfRows) \
 		      COMPUTE_NEW_SELECTION;
 		    }
 		  
-		  if (dragOperationPossible == YES)
+		  if (!didTrackCell && currentRow == _clickedRow)
 		    {
 		      /*
 		       * a dragging operation is still possible so
@@ -3773,6 +3774,7 @@ if (currentRow >= 0 && currentRow < _numberOfRows) \
 		      [self _trackCellAtColumn: _clickedColumn
 				row: _clickedRow
 				withEvent: theEvent];
+		      didTrackCell = NO;
 
 		      if ([[cell class] prefersTrackingUntilMouseUp])
 		        {
