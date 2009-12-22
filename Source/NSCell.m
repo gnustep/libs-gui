@@ -1552,7 +1552,7 @@ static NSColor *dtxtCol;
     return NO;
 }
 
-/**<p>TODO</p>
+/**<p>Default implementation of this method in NSCell does nothing.</p>
  */
 - (void) stopTracking: (NSPoint)lastPoint
                    at: (NSPoint)stopPoint

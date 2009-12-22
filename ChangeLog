@@ -1,3 +1,8 @@
+2009-12-22 17:31-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSCell.m: Corrected documentation in GUI to reflect that
+	this does nothing in the default implementation, according to spec.
+
 2009-12-22  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSWindow.m (-validateUserInterfaceItem):
@@ -34,6 +39,7 @@
 	allowsOtherFileTypes attribute to its default when a fresh save
 	panel is requested.
 
+>>>>>>> .r29159
 2009-12-21 Fred Kiefer <FredKiefer@gmx.de>
 	
 	* Source/GSIconManager.h,
