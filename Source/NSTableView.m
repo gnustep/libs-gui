@@ -3774,7 +3774,7 @@ if (currentRow >= 0 && currentRow < _numberOfRows) \
 		      [self _trackCellAtColumn: _clickedColumn
 				row: _clickedRow
 				withEvent: theEvent];
-		      didTrackCell = NO;
+		      didTrackCell = YES;
 
 		      if ([[cell class] prefersTrackingUntilMouseUp])
 		        {
