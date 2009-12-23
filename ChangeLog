@@ -1,5 +1,11 @@
 2009-12-23  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSTextView.m (-dealloc, -breakUndoCoalescing,
+	-shouldChangeTextInRange:replacementString:): Implement coalescing
+	of undo actions for typing events.
+
+2009-12-23  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSTableView.m (-mouseDown:): A single click into a cell
 	of an unselected row can now change the cell's state even when the
 	table view allows dragging.

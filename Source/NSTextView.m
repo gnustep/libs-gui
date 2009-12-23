@@ -106,6 +106,21 @@ a new internal method called from NSLayoutManager when text has changed.
 */
 
 
+@interface NSTextViewUndoObject : NSObject
+{
+  NSRange range;
+  NSAttributedString *string;
+  NSRange selectedRange;
+}
+- (id) initWithRange: (NSRange)aRange
+    attributedString: (NSAttributedString *)aString
+       selectedRange: (NSRange)selected;
+- (NSRange) range;
+- (void) setRange: (NSRange)aRange;
+- (void) performUndo: (NSTextStorage *)aTextStorage;
+- (NSTextView *) bestTextViewForTextStorage: (NSTextStorage *)aTextStorage;
+@end
+
 
 /*
 Interface for a bunch of internal methods that need to be cleaned up.
@@ -128,13 +143,6 @@ Interface for a bunch of internal methods that need to be cleaned up.
 - (void) pasteSelection;
 @end
 
-
-@interface NSTextStorage(NSTextViewUndoSupport)
-- (NSTextView *)_bestTextViewForUndo;
-- (void)_undoReplaceCharactersInRange: (NSRange)undoRange
-		 withAttributedString: (NSAttributedString *)undoString
-		        selectedRange: (NSRange)selectedRange;
-@end
 
 // This class is a helper for keyed unarchiving only
 @interface NSTextViewSharedData : NSObject 
@@ -278,6 +286,11 @@ Interface for a bunch of internal methods that need to be cleaned up.
 @end
 
 
+@interface NSTextStorage(NSTextViewUndoSupport)
+- (void) _undoTextChange: (NSTextViewUndoObject *)anObject;
+@end
+
+
 /**** Misc. helpers and stuff ****/
 
 static const int currentVersion = 2;
@@ -385,7 +398,7 @@ some cases, so it needs to be safe wrt. that.
 
 
 /* 
-_syncTextViewsCalling:withFlag: calls a set method on all text
+_syncTextViewsByCalling:withFlag: calls a set method on all text
 views sharing the same layout manager as this one.  It sets the
 IS_SYNCHRONIZING_FLAGS flag to YES to prevent recursive calls;
 calls the specified action on all the textviews (this one included)
@@ -406,7 +419,7 @@ editing is turned on or off.
   if (IS_SYNCHRONIZING_FLAGS == YES)
     {
       [NSException raise: NSGenericException
-	format: @"_syncTextViewsCalling:withFlag: called recursively"];
+	format: @"_syncTextViewsByCalling:withFlag: called recursively"];
     }
 
   array = [_layoutManager textContainers];
@@ -518,6 +531,14 @@ this happens when layout has been invalidated, and when we are resized.
 
 @end
 
+@interface NSUndoManager(UndoCoalescing)
+/* Auxiliary method to support coalescing undo actions for typing events
+   in NSTextView.  However, the implementation is not restricted to that
+   purpose. */
+- (BOOL) _canCoalesceUndoWithTarget: (id)target
+			   selector: (SEL)aSelector
+			     object: (id)anObject;
+@end
 
 
 @implementation NSTextView
@@ -1009,6 +1030,7 @@ that makes decoding and encoding compatible with the old code.
   DESTROY(_backgroundColor);
   DESTROY(_defaultParagraphStyle);
   DESTROY(_linkTextAttributes);
+  DESTROY(_undoObject);
 
   [super dealloc];
 }
@@ -2507,8 +2529,8 @@ TextDidEndEditing notification _without_ asking the delegate
   if (_tf.delegate_responds_to_should_change)
     {
       result = [_delegate textView: self
-	    shouldChangeTextInRange: affectedCharRange
-	          replacementString: replacementString];
+	   shouldChangeTextInRange: affectedCharRange
+	         replacementString: replacementString];
     }
 
   if (result && [self allowsUndo])
@@ -2516,8 +2538,61 @@ TextDidEndEditing notification _without_ asking the delegate
       NSUndoManager *undo;
       NSRange undoRange;
       NSAttributedString *undoString;
+      NSTextViewUndoObject *undoObject;
+      BOOL isTyping;
+      NSEvent *event;
+      static BOOL undoManagerCanCoalesce = NO;
+
+      {
+	// FIXME This code (together with undoManagerCanCoalesce) is a
+	// temporary workaround to allow using an out of date version of
+	// base. Removed this upon the next release of base.
+	static BOOL didCheck = NO;
+	if (!didCheck)
+	  {
+	    undoManagerCanCoalesce =
+	      [NSUndoManager instancesRespondToSelector:
+		 @selector(_canCoalesceUndoWithTarget:selector:object:)];
+	    if (!undoManagerCanCoalesce)
+	      {
+		NSLog(@"This version of NSUndoManager does not\n"
+		      "support coalescing undo operations. "
+		      "Upgrade gnustep-base to r29163 or newer to\n"
+		      "get rid of this one-time warning.");
+	      }
+	    didCheck = YES; 
+	  }
+      }
 
       undo = [self undoManager];
+
+      /* Coalesce consecutive typing events into a single undo action using
+	 currently private undo manager functionality. An event is considered
+	 a typing event if it is a keyboard event and the event's characters
+	 match our replacement string.
+	 Note: Typing events are coalesced only when the previous action was
+	 a typing event too and the current character follows the previous one
+	 immediately. We never coalesce actions when the current selection is
+	 not empty. */
+      event = [NSApp currentEvent];
+      isTyping = [event type] == NSKeyDown
+	      && [[event characters] isEqualToString: replacementString];
+      if (undoManagerCanCoalesce && _undoObject)
+	{
+	  undoRange = [_undoObject range];
+	  if (isTyping &&
+	      NSMaxRange(undoRange) == affectedCharRange.location &&
+	      affectedCharRange.length == 0 &&	      
+	      [undo _canCoalesceUndoWithTarget: _textStorage
+				      selector: @selector(_undoTextChange:)
+					object: _undoObject])
+	    {
+	      undoRange.length += [replacementString length];
+	      [_undoObject setRange: undoRange];
+	      return result;
+	    }
+	  DESTROY(_undoObject);
+        }
 
       // The length of the undoRange is the length of the replacement, if any.
       if (replacementString != nil)
@@ -2530,10 +2605,18 @@ TextDidEndEditing notification _without_ asking the delegate
           undoRange = affectedCharRange;
         }
       undoString = [self attributedSubstringFromRange: affectedCharRange];
-      [[undo prepareWithInvocationTarget: [self textStorage]]
-	  _undoReplaceCharactersInRange: undoRange
-		   withAttributedString: undoString
-			  selectedRange: [self selectedRange]];
+
+      undoObject =
+	[[NSTextViewUndoObject alloc] initWithRange: undoRange
+				   attributedString: undoString
+				      selectedRange: [self selectedRange]];
+      [undo registerUndoWithTarget: _textStorage
+			  selector: @selector(_undoTextChange:)
+			    object: undoObject];
+      if (isTyping)
+	_undoObject = undoObject;
+      else
+	RELEASE(undoObject);
     }
 
   return result;
@@ -5191,7 +5274,7 @@ configuation! */
 
 - (void) breakUndoCoalescing
 {
-  // FIXME
+  DESTROY(_undoObject);
 }
 
 - (void) complete: (id)sender
@@ -5349,12 +5432,56 @@ configuation! */
 
 @end
 
-@implementation NSTextStorage(NSTextViewUndoSupport)
-/* FIXME: Should this code be moved to NSTextStorage? */
-- (NSTextView *)_bestTextViewForUndo
+@implementation NSTextViewUndoObject
+
+- (id) initWithRange: (NSRange)aRange
+    attributedString: (NSAttributedString *)aString
+       selectedRange: (NSRange)selected
+{
+  if ((self = [super init]) != nil)
+    {
+      range = aRange;
+      string = RETAIN(aString);
+      selectedRange = selected;
+    }
+  return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(string);
+  [super dealloc];
+}
+
+- (NSRange) range
+{
+  return range;
+}
+
+- (void) setRange: (NSRange)aRange
+{
+  range = aRange;
+}
+
+- (void) performUndo: (NSTextStorage *)aTextStorage
+{
+  NSTextView *tv = [self bestTextViewForTextStorage: aTextStorage];
+
+  if ([tv shouldChangeTextInRange: range
+		replacementString: (string ? (NSString*)[string string]
+					   : (NSString*)@"")])
+    {
+      [tv replaceCharactersInRange: range
+	      withAttributedString: string];
+      [tv setSelectedRange: selectedRange];
+      [tv didChangeText];
+    }
+}
+
+- (NSTextView *) bestTextViewForTextStorage: (NSTextStorage *)aTextStorage
 {
   int i, j;
-  NSArray *textContainers;
+  NSArray *layoutManagers, *textContainers;
   NSTextView *tv, *first = nil, *best = nil;
   NSWindow *win;
 
@@ -5365,9 +5492,10 @@ configuation! */
    * by default if a NSTextView is not editable, we consider only editable
    * views here.
    */
-  for (i = 0; i < [_layoutManagers count]; i++)
+  layoutManagers = [aTextStorage layoutManagers];
+  for (i = 0; i < [layoutManagers count]; i++)
     {
-      textContainers = [[_layoutManagers objectAtIndex: i] textContainers];
+      textContainers = [[layoutManagers objectAtIndex: i] textContainers];
       for (j = 0; j < [textContainers count]; j++)
         {
           tv = [[textContainers objectAtIndex: j] textView];
@@ -5399,20 +5527,13 @@ configuation! */
   return best != nil ? best : first;
 }
 
-- (void)_undoReplaceCharactersInRange: (NSRange)undoRange
-		 withAttributedString: (NSAttributedString *)undoString
-			selectedRange: (NSRange)selectedRange
-{
-  NSTextView *tv = [self _bestTextViewForUndo];
+@end
 
-  if ([tv shouldChangeTextInRange: undoRange
-          replacementString: undoString ? (NSString*)[undoString string] : 
-              (NSString*)@""])
-    {
-      [tv replaceCharactersInRange: undoRange
-	      withAttributedString: undoString];
-      [tv setSelectedRange: selectedRange];
-      [tv didChangeText];
-    }
+@implementation NSTextStorage(NSTextViewUndoSupport)
+
+- (void) _undoTextChange: (NSTextViewUndoObject *)anObject
+{
+  [anObject performUndo: self];
 }
+
 @end

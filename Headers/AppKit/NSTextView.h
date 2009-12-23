@@ -228,13 +228,12 @@ therefore be stored in the NSLayoutManager to avoid problems.
 
   /* Ivar to store the location where text is going to be inserted during
    * a DnD operation.
-   * Note: This used to be a range attribute with a different meaning; the
-   * _dragTargetUnused attribute is present just to preserve the size of
-   * NSTextView instances.
-   * FIXME: Drop this attribute on the next major release.
    */
   unsigned int _dragTargetLocation;
-  unsigned int _dragTargetUnused;
+
+  /* Ivar used to implement coalescing of undo operations */
+  id _undoObject;
+
   /*
   TODO:
   Still need to figure out what "proper behavior" is when moving between two
