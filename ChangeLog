@@ -4,6 +4,9 @@
 	-shouldChangeTextInRange:replacementString:): Implement coalescing
 	of undo actions for typing events.
 
+	* Source/NSTextView.m (-selectedRange): Prevent crash when the
+	receiver has no layout manager.
+
 2009-12-23  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSTableView.m (-mouseDown:): A single click into a cell

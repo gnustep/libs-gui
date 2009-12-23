@@ -2900,6 +2900,8 @@ Scroll so that the beginning of the range is visible.
 
 - (NSRange) selectedRange
 {
+  if (!_layoutManager)
+    return NSMakeRange(0, 0);
   return _layoutManager->_selected_range;
 }
 
