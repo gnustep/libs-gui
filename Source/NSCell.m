@@ -2069,6 +2069,8 @@ static NSColor *dtxtCol;
 
 - (NSText*) setUpFieldEditorAttributes: (NSText*)textObject
 {
+  NSDictionary *attr;
+
   // Reset the string to have a well defined state. The real string gets set later on.
   [textObject setString: @""];
 
@@ -2091,7 +2093,7 @@ static NSColor *dtxtCol;
   [textObject setRichText: [self allowsEditingTextAttributes]];
   [textObject setImportsGraphics: [self importsGraphics]];
   [(NSTextView*)textObject setAllowsUndo: [self allowsUndo]];
-  NSDictionary *attr = [self _nonAutoreleasedTypingAttributes];
+  attr = [self _nonAutoreleasedTypingAttributes];
   [(NSTextView*)textObject setTypingAttributes: attr];
   RELEASE(attr);
 
