@@ -1,5 +1,6 @@
 2009-12-26 Riccardo Mottola <rmottola@users.sf.net>
 
+	* Source/NSTextView.m: Corrected multi-line string constant
 	* Source/NSCell.m: Corrected c99-ism
 
 2009-12-23  Wolfgang Lux  <wolfgang.lux@gmail.com>

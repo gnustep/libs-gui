@@ -2556,9 +2556,9 @@ TextDidEndEditing notification _without_ asking the delegate
 	    if (!undoManagerCanCoalesce)
 	      {
 		NSLog(@"This version of NSUndoManager does not\n"
-		      "support coalescing undo operations. "
-		      "Upgrade gnustep-base to r29163 or newer to\n"
-		      "get rid of this one-time warning.");
+		      @"support coalescing undo operations. "
+		      @"Upgrade gnustep-base to r29163 or newer to\n"
+		      @"get rid of this one-time warning.");
 	      }
 	    didCheck = YES; 
 	  }
