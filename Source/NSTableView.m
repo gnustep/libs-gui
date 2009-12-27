@@ -4278,6 +4278,35 @@ static BOOL selectContiguousRegion(NSTableView *self,
   return rect;
 }
 
+/** Returns the indexes of the table columns which intersects the given rect.
+
+The rect is expressed in  the receiver coordinate space.
+
+Hidden table columns are never tested. */
+- (NSIndexSet *) columnIndexesInRect: (NSRect)aRect
+{
+  NSRange range = [self columnsInRect: aRect];
+  NSMutableIndexSet *indexes = [NSMutableIndexSet indexSetWithIndexesInRange: range];
+  int i;
+
+  for (i = range.location; i < range.length; i++)
+    {
+      NSTableColumn *tableColumn = [_tableColumns objectAtIndex: i];
+
+      if ([tableColumn isHidden])
+        [indexes removeIndex: i];
+    }
+
+  return indexes;
+} 
+
+/** Returns the index range of the table columns which intersects the given rect.
+
+The rect is expressed in  the receiver coordinate space.
+
+The returned range can include hidden table column indexes.
+
+This method is deprecated, use -columnIndexesInRect:. */
 - (NSRange) columnsInRect: (NSRect)aRect
 {
   NSRange range;

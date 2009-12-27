@@ -1,3 +1,9 @@
+2009-12-27 Quentin Mathe <quentin.mathe@gmail.com>
+
+	* Headers/NSTableView.h
+	* Source/NSTableView.m
+	(-columnIndexesInRect:): Added new Mac OS 10.5 method.
+
 2009-12-26 Riccardo Mottola <rmottola@users.sf.net>
 
 	* Source/NSTextView.m: Corrected multi-line string constant
@@ -59,7 +65,6 @@
 	allowsOtherFileTypes attribute to its default when a fresh save
 	panel is requested.
 
->>>>>>> .r29159
 2009-12-21 Fred Kiefer <FredKiefer@gmx.de>
 	
 	* Source/GSIconManager.h,

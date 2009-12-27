@@ -237,6 +237,9 @@ typedef enum _NSTableViewColumnAutoresizingStyle
 /* Layout */
 - (NSRect) rectOfColumn: (int)columnIndex;
 - (NSRect) rectOfRow: (int)rowIndex;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (NSIndexSet *) columnIndexesInRect: (NSRect)aRect;
+#endif
 - (NSRange) columnsInRect: (NSRect)aRect;
 - (NSRange) rowsInRect: (NSRect)aRect;
 - (int) columnAtPoint: (NSPoint)aPoint;
