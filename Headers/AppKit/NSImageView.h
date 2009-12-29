@@ -29,14 +29,14 @@
 #define _GNUstep_H_NSImageView
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSControl.h>
-#include <AppKit/NSImageCell.h>
+#import <AppKit/NSControl.h>
+#import <AppKit/NSImageCell.h>
 
 @interface NSImageView : NSControl
 {
   id _target;
   SEL _action;
-	BOOL _allowsCutCopyPaste;
+  BOOL _allowsCutCopyPaste;
 }
 
 - (NSImage *)image;

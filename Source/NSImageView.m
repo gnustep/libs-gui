@@ -26,13 +26,14 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "AppKit/NSDragging.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSImageCell.h"
-#include "AppKit/NSImageView.h"
-#include "AppKit/NSPasteboard.h"
-#include "AppKit/NSWindow.h"
+#import "AppKit/NSDragging.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSImageCell.h"
+#import "AppKit/NSImageView.h"
+#import "AppKit/NSMenuItem.h"
+#import "AppKit/NSPasteboard.h"
+#import "AppKit/NSWindow.h"
 
 /*
  * Class variables
@@ -69,14 +70,11 @@ static Class imageCellClass;
 }
 
 
-- (id) init
-{
-  return [self initWithFrame: NSZeroRect];
-}
-
 - (id) initWithFrame: (NSRect)aFrame
 {
-  [super initWithFrame: aFrame];
+  self = [super initWithFrame: aFrame];
+  if (!self)
+    return self;
 
   // set the default values
   [self setImageAlignment: NSImageAlignCenter];
@@ -170,9 +168,86 @@ static Class imageCellClass;
   _allowsCutCopyPaste = flag;
 }
 
-@end
+- (void) delete: (id)sender
+{
+  if (_allowsCutCopyPaste)
+    [self setImage: nil];
+}
 
-@implementation NSImageView (NSDraggingDestination)
+- (void) deleteBackward: (id)sender
+{
+  if (_allowsCutCopyPaste)
+    [self setImage: nil];
+}
+
+- (void) cut: (id)sender
+{
+  if (_allowsCutCopyPaste)
+    {
+      [self copy];
+      [self setImage: nil];
+    }
+}
+
+- (void) copy: (id)sender
+{
+  if (_allowsCutCopyPaste)
+    {
+      NSImage *anImage = [self image];
+
+      if (anImage != nil)
+        {
+          // copy to pasteboard
+          NSPasteboard *pboard = [NSPasteboard generalPasteboard];
+          
+          [pboard declareTypes: [NSArray arrayWithObject: NSTIFFPboardType] 
+                         owner: self];
+          [pboard setData: [anImage TIFFRepresentation]
+                  forType: NSTIFFPboardType];
+        }
+    }
+}
+
+- (void) paste: (id)sender
+{
+  if (_allowsCutCopyPaste)
+    {
+      // paste from pasteboard
+      NSPasteboard *pboard = [NSPasteboard generalPasteboard];
+      NSImage *image = [[NSImage alloc] initWithPasteboard: pboard];
+
+      if (image != nil)
+        {
+          [self setImage: image];
+          RELEASE(image);
+        }
+    }
+}
+
+- (BOOL) validateUserInterfaceItem: (id <NSValidatedUserInterfaceItem>)anItem
+{
+  SEL action = [anItem action];
+
+  if (_allowsCutCopyPaste)
+    {
+      if (sel_eq(action, @selector(cut:)) ||
+          sel_eq(action, @selector(copy:)) ||
+          sel_eq(action, @selector(deleteBackward:)) ||
+          sel_eq(action, @selector(delete:)))
+        return [self image] != nil;
+      if (sel_eq(action, @selector(paste:)))
+        {
+          return [NSImage canInitWithPasteboard: 
+                            [NSPasteboard generalPasteboard]];
+        }
+    }
+  return NO;
+}
+
+- (BOOL) validateMenuItem: (NSMenuItem *)anItem
+{
+  return [self validateUserInterfaceItem: anItem];
+}
 
 - (NSDragOperation) draggingEntered: (id <NSDraggingInfo>)sender
 {
@@ -187,6 +262,8 @@ static Class imageCellClass;
       return NSDragOperationNone;
     }
 }
+
+// NSDraggingDestination protocol
 
 - (void) draggingExited: (id <NSDraggingInfo>)sender
 {
@@ -303,6 +380,8 @@ static Class imageCellClass;
   [super encodeWithCoder: aCoder];
   if ([aCoder allowsKeyedCoding])
     {
+      [aCoder encodeObject: [NSImage imagePasteboardTypes] 
+                    forKey: @"NSDragTypes"];
       [aCoder encodeBool: [self isEditable] forKey: @"NSEditable"];
     }
   else
@@ -315,6 +394,8 @@ static Class imageCellClass;
 - (id) initWithCoder: (NSCoder *)aDecoder
 {
   self = [super initWithCoder: aDecoder];
+  if (!self)
+    return self;
 
   if ([aDecoder allowsKeyedCoding])
     {

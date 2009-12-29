@@ -1,3 +1,9 @@
+2009-12-29 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSImageView.h: Clean up.
+	* Source/NSImageView.m: Clean up and addition of cut/copy/paste
+	methods, based on code by Nikolaus Schaller <hns@computer.org>.
+
 2009-12-27 Quentin Mathe <quentin.mathe@gmail.com>
 
 	* Headers/NSTableView.h
@@ -66,7 +72,7 @@
 	panel is requested.
 
 2009-12-21 Fred Kiefer <FredKiefer@gmx.de>
-	
+
 	* Source/GSIconManager.h,
 	* Source/GSIconManager.m: New files. Allows to get icon placement
 	from separate process.
@@ -102,7 +108,7 @@
 	occurred to an instance variable.
 
 2009-12-21 Fred Kiefer <FredKiefer@gmx.de>
-	
+
 	* Source/NSTableColumn.m (-initWithCoder:, -encodeWithCoder:): Add
 	the keyed encoding/decoding code for Quentin's extensions.
 
@@ -444,7 +450,7 @@
 	* Source/NSSlider.m: Clean up.
 	* Source/NSSliderCell.m: Remove isFlipped method, correct
 	copyWithZone:, clean up.
-	
+
 2009-11-16 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSCell.m (-setObjectValue:, -setStringValue:): Handle a
@@ -465,7 +471,7 @@
 	in NSTextView_actions.m.
 
 2009-11-15 Fred Kiefer <FredKiefer@gmx.de>
-	
+
 	* Source/NSButtonCell.m: Change default value for
 	keyEquivalentModifierMask to 0. Add keyed decoding and encoding of
 	keyEquivalentModifierMask. 
@@ -549,7 +555,7 @@
 	* Source/NSTextFieldCell.m: White space changes.
 	* Headers/AppKit/NSTableHeaderCell.h,
 	* Source/NSTableHeaderCell.m: Add new 10.3 methods.
-	
+
 2009-11-09 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSControl.m,
@@ -573,7 +579,7 @@
 	* Headers/AppKit/NSAnimation.h: Change to new MacOSX type definitions.
 	* Source/NSAnimation.m: Remove externs and white space changes.
 	* Source/externs.m: Move externs from NSAnimation to here.
-	
+
 2009-11-08 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSApplication.m (-finishLaunching): Only activate the
@@ -616,7 +622,7 @@
 
 	* Source/NSColor.m (-colorUsingColorSpace): Support more color spaces.
 	* Source/NSColorSpace.m (COLORSPACE): Initialize the static variable. 
-	
+
 2009-11-03 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSThemeDrawing.m: Add more includes to apeace Riccardo's compiler.
@@ -630,7 +636,7 @@
 
 	* Source/NSApplication.m (-nextEventMatchingMask:...): Only set
 	the current event when dequeuing and never return the null_event.
-	
+
 2009-11-02 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSTheme.m: Remove some compiler warnings.
@@ -639,7 +645,7 @@
 	* Source/GSThemeDrawing.m,
 	* Headers/Additions/GNUstepGUI/GSTheme.h: New theme methods for
 	toolbar and menu item drawing.
-	
+
 2009-11-01 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSImage.m: Switch to the new shared composite and
@@ -663,7 +669,7 @@
 	* Images/common_ProgressIndeterminate_?.tiff
 	New image files by Uli Kusterer <witness.of.teachtext@gmx.net>.
 	* Images/GNUmakefile: Add the new images.
-	
+
 2009-10-27 Thomas Gamper <icicle@cg.tuwien.ac.at>
 
 	* Source/GSDisplayServer.m
@@ -689,11 +695,11 @@
 	at geometry maths.
 
 2009-10-23 Riccardo Mottola <rmottola@users.sf.net>
-	
+
 	* Headers/AppKit/NSBezierPath.h: added some documentation
 
 2009-10-22 Riccardo Mottola <rmottola@users.sf.net>
-	
+
 	* Images/common_3DArrowRightH.tiff: Made background transparent,
 	allows for better theming
 
@@ -713,7 +719,7 @@
 	colour gradients.
 	* Headers/AppKit/AppKit.h: Add include for NSGradient.h
 	* Source/GNUmakefile: Add new files.
-	
+
 2009-10-20  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSDocumentController.m(-openDocumentWithContentsOfURL:display:,
@@ -886,13 +892,13 @@
 	into GSTheme.
 
 2009-10-10 Fred Kiefer <FredKiefer@gmx.de>
-	
+
 	* Source/NSEvent.m, 
 	* Source/NSImage.m,
 	* Source/GSTextStorage.m: Remove usage of NSDeallocateObject.
 
 2009-10-10 Fred Kiefer <FredKiefer@gmx.de>
-	
+
 	* Source/NSApplication.m (-endModalSession:): Bring the window of
 	the next modal session to the front.
 	* Source/NSApplication.m (-runModalSession:): Better check whether
@@ -901,25 +907,25 @@
 
 2009-09-27 Richard Frith-Macdonald <rfm@gnu.org>
 
-	* Source/NSImage.m: ([-setName:]) fix bug which was removing the	
+	* Source/NSImage.m: ([-setName:]) fix bug which was removing the
 	wrong name when given an image which already had a name.
 	Make named images thread-safe using a lock.
 	Add private method to update names on theme change.
 	* Source/GSTheme.m: Use new method to update theme images.
-	
+
 2009-09-26 Fred Kiefer <FredKiefer@gmx.de>
-	
+
 	* Source/NSApplication.m (-setApplicationIconImage:,
 	-finishLaunching): Move the set name code to finishLaunching, as
 	the image called NSApplicationIcon should stay the same all the time.
 
 2009-09-26 Fred Kiefer <FredKiefer@gmx.de>
-	
+
 	* Source/NSTextContainer.m (init):  Add this method as suggested
 	by Derek Fawcus <dfawcus@cisco.com>.
 
 2009-09-21 Fred Kiefer <FredKiefer@gmx.de>
-	
+
 	* Source/NSWindow.m (+standardWindowButton:forStyleMask:): Add
 	support for toolbar button.
 	* Source/NSWindow.m (-toggleToolbarShown:): Reorder the code.
