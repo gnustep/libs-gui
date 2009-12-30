@@ -59,7 +59,7 @@ StandardPicker_RESOURCE_FILES = GSRGBColorPicker.tiff \
 				GSGrayColorPicker.tiff \
 				GSCMYKColorPicker.tiff
 StandardPicker_LOCALIZED_RESOURCE_FILES = StandardPicker.strings
-StandardPicker_LANGUAGES = English French Swedish
+StandardPicker_LANGUAGES = English French Spanish Swedish
 
 NamedPicker_RESOURCE_FILES = GSNamedColorPicker.tiff
 WheelPicker_RESOURCE_FILES = GSWheelColorPicker.tiff

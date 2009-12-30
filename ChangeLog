@@ -1,3 +1,7 @@
+2009-12-30 German Arias <german@xelalug.org>
+
+	* ColorPickers/Spanish.lproj/StandardPicker.strings: Added.
+
 2009-12-29 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSImageView.h: Clean up.
