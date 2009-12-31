@@ -1,3 +1,8 @@
+2009-12-31 German Arias <german@xelalug.org>
+
+	*  Resources/Spanish.lproj/Localizable.strings: Added.
+	*  Resources/GNUmakefile: Added Spanish language.
+
 2009-12-30 German Arias <german@xelalug.org>
 
 	*  Panels/Spanish.lproj/GSDataLinkPanel.gorm,
