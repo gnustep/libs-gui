@@ -28,7 +28,7 @@ PACKAGE_NAME = gnustep-gui
 GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=../gui.make
 include $(GNUSTEP_MAKEFILES)/common.make
 
-LANGUAGES = English
+LANGUAGES = English Spanish
 LOCALIZED_RESOURCE_COMPONENTS = \
   GSDataLinkPanel.gorm \
   GSPageLayout.gorm \

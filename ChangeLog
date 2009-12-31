@@ -1,5 +1,14 @@
 2009-12-30 German Arias <german@xelalug.org>
 
+	*  Panels/Spanish.lproj/GSDataLinkPanel.gorm,
+	*  Panels/Spanish.lproj/GSPageLayout.gorm,
+	*  Panels/Spanish.lproj/GSToolbarCustomizationPalette.gorm,
+	*  Panels/Spanish.lproj/GSPrintPanel.gorm,
+	*  Panels/Spanish.lproj/GSSpellPanel.gorm: Added.
+	*  Panels/GNUmakefile: Added Spanish language.
+
+2009-12-30 German Arias <german@xelalug.org>
+
 	* ColorPickers/Spanish.lproj/StandardPicker.strings: Added.
 
 2009-12-29 Fred Kiefer <FredKiefer@gmx.de>
