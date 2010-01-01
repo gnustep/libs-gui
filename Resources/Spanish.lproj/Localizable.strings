@@ -68,7 +68,7 @@ add comments above this one
 /*** Strings from ../Source/GSInfoPanel.m ***/
 /* File: ../Source/GSInfoPanel.m:192 */
 /* File: ../Source/GSInfoPanel.m:465 */
-"Current theme" = "Tema actual";
+"Current theme" = "Tema Actual";
 
 
 /*** Strings from ../Source/GSPrintOperation.m ***/
@@ -76,7 +76,7 @@ add comments above this one
 "Preview" = "Vista Previa";
 /* File: ../Source/GSPrintOperation.m:158 */
 "Problem running the preview application '%@' perhaps you need to set your NSPreviewApp user default"
-= "Problema con la aplicación de vista previa '%@' talvez necesite establecer NSPreviewApp para su usuario";
+= "Problema con la aplicaci\U00F3n de vista previa '%@' talvez usted necesite establecer NSPreviewApp para su usuario";
 
 
 /*** Strings from ../Source/NSAlert.m ***/
@@ -92,31 +92,31 @@ add comments above this one
 = "El backend en la ruta %@ no contiene la clase GSBackend";
 /* File: ../Source/NSApplication.m:298 */
 "Can't create NSBundle object for backend at path %@"
-= "Imposible crear el objeto NSBundle para el backend en la ruta %@";
+= "No se puede crear el objeto NSBundle para el backend en la ruta %@";
 /* File: ../Source/NSApplication.m:303 */
 "Can't load object file from backend at path %@"
-= "Imposible leer el archivo desde el backend en la ruta %@";
+= "No se puede leer el archivo desde el backend en la ruta %@";
 /* File: ../Source/NSApplication.m:969 */
 "Cannot load the main model file '%@'"
-= "Imposible leer el archivo de modelo principal '%@'";
+= "No se puede leer el archivo del m\U00F3delo principal '%@'";
 /* File: ../Source/NSApplication.m:130 */
-"Critical Error in %@" = "Error critico en %@";
+"Critical Error in %@" = "Error Cr\U00EDtico en %@";
 /* File: ../Source/NSApplication.m:136 */
 "Debug" = "Depurar";
 /* File: ../Source/NSApplication.m:1132 */
 "Problem during launch app notification: %@"
-= "Problema durante la notificación de aplicación iniciada: %@";
+= "Problema durante la notificaci\U00F3n de aplicaci\U00F3n iniciada: %@";
 /* File: ../Source/NSApplication.m:291 */
 "Unable to find backend %@" = "Incapaz de encontrar el backend %@";
 /* File: ../Source/NSApplication.m:903 */
 "[NSApplication -init] called more than once"
-= "[NSApplication -init] llamada más de una vez";
+= "[NSApplication -init] llamada m\U00E1s de una vez";
 /* File: ../Source/NSApplication.m:3129 */
-"reported exception - %@" = "excepción reportada - %@";
+"reported exception - %@" = "excepci\U00F3n reportada - %@";
 /* File: ../Source/NSApplication.m:110 */
 "Ignore" = "Ignorar";
 /* File: ../Source/NSApplication.m:217 */
-"Can't find backend context" = "Imposible encontrar el contexto del backend";
+"Can't find backend context" = "No se encuentra el contexto del backend";
 
 
 
@@ -125,7 +125,7 @@ add comments above this one
 /* Comment: Error description */
 /* File: ../Source/NSAttributedString.m:991 */
 /* Comment: Error description */
-"Could not create data for type." = "No se pueden crear los datos por tipo.";
+"Could not create data for type." = "No se puede crear el dato para el tipo.";
 /* File: ../Source/NSAttributedString.m:892 */
 /* Comment: Error description */
 "Could not load data from URL." = "No se pueden leer los datos desde la URL.";
@@ -135,7 +135,7 @@ add comments above this one
 /* File: ../Source/NSAttributedString.m:777 */
 /* Comment: Error description */
 "No data specified for data loading."
-= "No hay datos especificados en la información leida.";
+= "No hay datos especificados en la informaci\U00F3n le\U00EDda.";
 /* File: ../Source/NSAttributedString.m:957 */
 /* Comment: Error description */
 /* File: ../Source/NSAttributedString.m:786 */
@@ -145,21 +145,21 @@ add comments above this one
 
 /*** Strings from ../Source/NSBitmapImageRep.m ***/
 /* File: ../Source/NSBitmapImageRep.m:1644 */
-"CCITTFAX3 Compression" = "Compresión CCITTFAX3";
+"CCITTFAX3 Compression" = "Compresi\U00F3n CCITTFAX3";
 /* File: ../Source/NSBitmapImageRep.m:1645 */
-"CCITTFAX4 Compression" = "Compresión CCITTFAX4";
+"CCITTFAX4 Compression" = "Compresi\U00F3n CCITTFAX4";
 /* File: ../Source/NSBitmapImageRep.m:1647 */
-"JPEG Compression" = "Compresión JPEG";
+"JPEG Compression" = "Compresi\U00F3n JPEG";
 /* File: ../Source/NSBitmapImageRep.m:1646 */
-"LZW Compression" = "Compresión LZW";
+"LZW Compression" = "Compresi\U00F3n LZW";
 /* File: ../Source/NSBitmapImageRep.m:1648 */
-"NEXT Compression" = "Compresión NEXT";
+"NEXT Compression" = "Compresi\U00F3n NEXT";
 /* File: ../Source/NSBitmapImageRep.m:1643 */
-"No Compression" = "No hay Compresión";
+"No Compression" = "Sin Compresi\U00F3n";
 /* File: ../Source/NSBitmapImageRep.m:1650 */
-"Old JPEG Compression" = "Vieja Compresión JPEG";
+"Old JPEG Compression" = "Antigua Compresi\U00F3n JPEG";
 /* File: ../Source/NSBitmapImageRep.m:1649 */
-"PackBits Compression" = "Compresión PackBits";
+"PackBits Compression" = "Compresi\U00F3n PackBits";
 
 
 /*** Strings from ../Source/NSColorSpace.m ***/
@@ -186,28 +186,28 @@ add comments above this one
 /*** Strings from ../Source/NSDocument.m ***/
 /* File: ../Source/NSDocument.m:1576 */
 "%@ has been edited.  Are you sure you want to undo changes?"
-= "%@ ha sido editado.  ¿Esta seguro de querer revertir los cambios?";
+= "%@ ha sido editado.  \U00BFEsta seguro de querer revertir los cambios?";
 /* File: ../Source/NSDocument.m:455 */
-"%@ has changed.  Save?" = "%@ ha cambiado.  ¿Guardar?";
+"%@ has changed.  Save?" = "%@ ha cambiado.  \U00BFGuardar?";
 /* File: ../Source/NSDocument.m:790 */
 "Can't create backup file.  Save anyways?"
-= "Imposible crear archivo de respaldo.  ¿Guardar de cualquier modo?";
+= "No se puede crear el archivo de respaldo.  \U00BFGuardar de cualquier forma?";
 /* File: ../Source/NSDocument.m:454 */
 "Close" = "Cerrar";
 /* File: ../Source/NSDocument.m:136 */
-"Could not load URL %@." = "Imposible leer la URL %@.";
+"Could not load URL %@." = "No se puede leer la URL %@.";
 /* File: ../Source/NSDocument.m:113 */
-"Could not load file %@." = "Imposible leer el archivo %@.";
+"Could not load file %@." = "No se puede leer el archivo %@.";
 /* File: ../Source/NSDocument.m:789 */
-"File Error" = "Error de archivo";
+"File Error" = "Error de Archivo";
 /* File: ../Source/NSDocument.m:135 */
 /* File: ../Source/NSDocument.m:112 */
-"Load failed" = "Carga fallida";
+"Load failed" = "Lectura fallida";
 /* File: ../Source/NSDocument.m:1577 */
 /* File: ../Source/NSDocument.m:1575 */
 "Revert" = "Revertir";
 /* File: ../Source/NSDocument.m:1128 */
-"Save To" = "Grabar Para";
+"Save To" = "Guardar Para";
 /* File: ../Source/NSDocument.m:551 */
 "Untitled-%d" = "Sin nombre-%d";
 
@@ -222,10 +222,10 @@ add comments above this one
 "Quit Anyway" = "Salir de Cualquier Forma";
 /* File: ../Source/NSDocumentController.m:884 */
 /* File: ../Source/NSDocumentController.m:926 */
-"Review Unsaved" = "Revisión sin Grabar";
+"Review Unsaved" = "Revisi\U00F3n sin Guardar";
 /* File: ../Source/NSDocumentController.m:933 */
 /* File: ../Source/NSDocumentController.m:883 */
-"You have unsaved documents" = "Usted tiene documentos sin grabar";
+"You have unsaved documents" = "Usted tiene documentos sin guardar";
 
 
 /*** Strings from ../Source/NSMenu.m ***/
@@ -244,10 +244,10 @@ add comments above this one
 = "El directorio '%@' no se pudo crear.";
 /* File: ../Source/NSSavePanel.m:1227 */
 "The directory '%@' does not exist, do you want to create it?"
-= "El directorio '%@' no existe, ¿quiere crearlo?";
+= "El directorio '%@' no existe, \U00BFquiere crearlo?";
 /* File: ../Source/NSSavePanel.m:1259 */
 "The file '%@' in '%@' exists. Replace it?"
-= "El archivo '%@' en '%@' existe. ¿Remplazarlo?";
+= "El archivo '%@' en '%@' existe. \U00BFRemplazarlo?";
 /* File: ../Source/NSSavePanel.m:1248 */
 "The path '%@' is not a directory." = "La ruta '%@' no es un directorio.";
 /* File: ../Source/NSSavePanel.m:1228 */
@@ -271,6 +271,6 @@ add comments above this one
 
 /*** Strings from ../Source/NSWindow.m ***/
 /* File: ../Source/NSWindow.m:4861 */
-"Hide Toolbar" = "Ocultar la Barra";
+"Hide Toolbar" = "Ocultar Barra";
 /* File: ../Source/NSWindow.m:4866 */
-"Show Toolbar" = "Mostrar la Barra";
+"Show Toolbar" = "Mostrar Barra";

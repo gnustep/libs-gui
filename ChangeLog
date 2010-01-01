@@ -1,5 +1,10 @@
 2009-12-31 German Arias <german@xelalug.org>
 
+	* ColorPickers/Spanish.lproj/StandardPicker.strings,
+	* Resources/Spanish.lproj/Localizable.strings: Fixed incorrect characters.
+
+2009-12-31 German Arias <german@xelalug.org>
+
 	*  Resources/Spanish.lproj/Localizable.strings: Added.
 	*  Resources/GNUmakefile: Added Spanish language.
 

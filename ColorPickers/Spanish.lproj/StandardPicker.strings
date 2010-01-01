@@ -1,5 +1,5 @@
 /***
-Spanish.lproj/StandardPicker.strings
+English.lproj/StandardPicker.strings
 updated by make_strings 2002-05-23 16:24:57 +0200
 add comments above this one
 ***/
@@ -27,7 +27,7 @@ add comments above this one
 /* File: GSHSBColorPicker.m:47 */
 "Hue" = "Tinte";
 /* File: GSHSBColorPicker.m:48 */
-"Saturation" = "Saturación";
+"Saturation" = "Saturaci\U00F3n";
 
 
 /*** Strings from GSRGBColorPicker.m ***/
