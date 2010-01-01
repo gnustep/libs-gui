@@ -157,6 +157,7 @@
 #include <AppKit/NSSecureTextField.h>
 #include <AppKit/NSSegmentedCell.h>
 #include <AppKit/NSSegmentedControl.h>
+#include <AppKit/NSShadow.h>
 #include <AppKit/NSSound.h>
 #include <AppKit/NSSpeechSynthesizer.h>
 #include <AppKit/NSStepper.h>

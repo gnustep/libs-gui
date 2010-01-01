@@ -150,6 +150,7 @@ NSScroller.m \
 NSScrollView.m \
 NSSecureTextField.m \
 NSSelection.m \
+NSShadow.m \
 NSSlider.m \
 NSSliderCell.m \
 NSSound.m  \
@@ -349,6 +350,7 @@ NSSecureTextField.h \
 NSSegmentedCell.h \
 NSSegmentedControl.h \
 NSSelection.h \
+NSShadow.h \
 NSSlider.h \
 NSSliderCell.h \
 NSSound.h  \

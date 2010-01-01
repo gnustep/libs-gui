@@ -1,3 +1,8 @@
+2009-12-31 Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/NSShadow.m, Headers/AppKit/NSShadow.h:
+	Added NSShadow implementation; doesn't actually draw anything yet.
+
 2009-12-31 German Arias <german@xelalug.org>
 
 	* ColorPickers/Spanish.lproj/StandardPicker.strings,
