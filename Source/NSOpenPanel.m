@@ -7,10 +7,10 @@
    Author: Scott Christley <scottc@net-community.com>
    Date: 1996
 
-   Author: Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de>
+   Author: Daniel Boehringer <boehring@biomed.ruhr-uni-bochum.de>
    Date: August 1998
 
-   Source by Daniel Bðhringer integrated into Scott Christley's preliminary
+   Source by Daniel Boehringer integrated into Scott Christley's preliminary
    implementation by Felipe A. Rodriguez <far@ix.netcom.com>
 
    Author: Nicola Pero <n.pero@mi.flashnet.it>
@@ -38,19 +38,20 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSString.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSFileManager.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSURL.h>
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSBrowser.h"
-#include "AppKit/NSBrowserCell.h"
-#include "AppKit/NSButton.h"
-#include "AppKit/NSForm.h"
-#include "AppKit/NSMatrix.h"
-#include "AppKit/NSOpenPanel.h"
+#import <Foundation/NSArray.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSURL.h>
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSBrowser.h"
+#import "AppKit/NSBrowserCell.h"
+#import "AppKit/NSButton.h"
+#import "AppKit/NSForm.h"
+#import "AppKit/NSMatrix.h"
+#import "AppKit/NSOpenPanel.h"
 
 static NSString	*
 pathToColumn(NSBrowser *browser, int column)
@@ -87,7 +88,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 - (void) _resetDefaults
 {
   [super _resetDefaults];
-  [self setTitle: @"Open"];
+  [self setTitle: _(@"Open")];
   [self setCanChooseFiles: YES];
   [self setCanChooseDirectories: YES];
   [self setAllowsMultipleSelection: NO];
@@ -129,7 +130,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
       else
 	{
 	  [_form abortEditing];
-	  [[_form cellAtIndex: 0] setStringValue:@""];
+	  [[_form cellAtIndex: 0] setStringValue: @""];
 	  [_form setNeedsDisplay: YES];
 	  [_okButton setEnabled: YES];
 	}

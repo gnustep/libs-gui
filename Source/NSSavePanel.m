@@ -32,29 +32,29 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSAutoreleasePool.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSFileManager.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSPathUtilities.h>
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSURL.h>
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSBox.h"
-#include "AppKit/NSBrowser.h"
-#include "AppKit/NSBrowserCell.h"
-#include "AppKit/NSButton.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSForm.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSImageView.h"
-#include "AppKit/NSMatrix.h"
-#include "AppKit/NSPasteboard.h"
-#include "AppKit/NSDragging.h"
-#include "AppKit/NSSavePanel.h"
-#include "AppKit/NSTextField.h"
-#include "AppKit/NSWorkspace.h"
+#import <Foundation/NSAutoreleasePool.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSPathUtilities.h>
+#import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSURL.h>
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSBox.h"
+#import "AppKit/NSBrowser.h"
+#import "AppKit/NSBrowserCell.h"
+#import "AppKit/NSButton.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSForm.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSImageView.h"
+#import "AppKit/NSMatrix.h"
+#import "AppKit/NSPasteboard.h"
+#import "AppKit/NSDragging.h"
+#import "AppKit/NSSavePanel.h"
+#import "AppKit/NSTextField.h"
+#import "AppKit/NSWorkspace.h"
 
 #include "GSGuiPrivate.h"
 
@@ -233,7 +233,7 @@ setPath(NSBrowser *browser, NSString *path)
 
   r = NSMakeRect (8, 39, 291, 21);
   _form = [NSForm new];
-  [_form addEntry: @"Name:"];
+  [_form addEntry: _(@"Name:")];
   [_form setFrame: r];
   // Force the size we want
   [_form setCellSize: NSMakeSize (291, 21)];
@@ -296,7 +296,7 @@ setPath(NSBrowser *browser, NSString *path)
   r = NSMakeRect (148, 6, 71, 27);
   button = [[NSButton alloc] initWithFrame: r]; 
   [button setBordered: YES];
-  [button setTitle:  @"Cancel"];
+  [button setTitle:  _(@"Cancel")];
   [button setImagePosition: NSNoImage]; 
   [button setTarget: self];
   [button setAction: @selector(cancel:)];
@@ -312,7 +312,7 @@ setPath(NSBrowser *browser, NSString *path)
   r = NSMakeRect (228, 6, 71, 27);
   _okButton = [[NSButton alloc] initWithFrame: r]; 
   [_okButton setBordered: YES];
-  [_okButton setTitle:  @"OK"];
+  [_okButton setTitle:  _(@"OK")];
   [_okButton setImagePosition: NSImageRight]; 
   [_okButton setImage: [NSImage imageNamed: @"common_ret"]];
   [_okButton setAlternateImage: [NSImage imageNamed: @"common_retH"]];
@@ -410,8 +410,8 @@ setPath(NSBrowser *browser, NSString *path)
 - (void) _resetDefaults
 {
   [self _setDefaultDirectory];
-  [self setPrompt: @"Name:"];
-  [self setTitle: @"Save"];
+  [self setPrompt: _(@"Name:")];
+  [self setTitle: _(@"Save")];
   [self setAllowedFileTypes: nil];
   [self setAllowsOtherFileTypes: NO];
   [self setTreatsFilePackagesAsDirectories: NO];
@@ -1699,7 +1699,7 @@ createRowsForColumn: (int)column
     {
       display_progress = YES;
       base_frac = count / 4;
-      progressString = [@"Reading Directory " stringByAppendingString: path];
+      progressString = [_(@"Reading Directory ") stringByAppendingString: path];
       [super setTitle: progressString];
       // Is the following really safe? 
       [self flushWindow];
@@ -1848,7 +1848,7 @@ createRowsForColumn: (int)column
   NSComparisonResult  result;
   NSRange             range;
 
-  s = [[[aNotification userInfo] objectForKey:@"NSFieldEditor"] string];
+  s = [[[aNotification userInfo] objectForKey: @"NSFieldEditor"] string];
 
   /*
    * If the user typed in an absolute path, display it.

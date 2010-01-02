@@ -222,7 +222,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 			    backing: NSBackingStoreRetained
 			      defer: NO
 			     screen: nil];
-  [self setTitle: @"Colors"];
+  [self setTitle: _(@"Colors")];
 
   v = [self contentView];
 
@@ -284,7 +284,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
   [_alphaSlider setMaxValue: MAX_ALPHA_VALUE];
   [_alphaSlider setFloatValue: MAX_ALPHA_VALUE];
   [_alphaSlider setContinuous: YES];
-  [_alphaSlider setTitle: @"Opacity"];
+  [_alphaSlider setTitle: _(@"Opacity")];
   [[_alphaSlider cell] setBezeled: YES];
   [_alphaSlider setTarget: self];
   [_alphaSlider setAction: @selector(_alphaChanged:)];

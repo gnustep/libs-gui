@@ -1,3 +1,9 @@
+2010-01-02 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSColorPanel.m,
+	* Source/NSOpenPanel.m,
+	* Source/NSSavePanel.m: Add missing internationalisation.
+
 2009-12-31 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/NSShadow.m, Headers/AppKit/NSShadow.h:
