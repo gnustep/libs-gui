@@ -1,3 +1,9 @@
+2010-01-03 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Resources/English.lproj/Localizable.strings: Regenerate this file.
+	* Resources/German.lproj/Localizable.strings: Regnerate and add
+	some translations.
+
 2010-01-03 German Arias <german@xelalug.org>
 
 	* Panels/Spanish.lproj/GSPageLayout.gorm/objects.gorm,
@@ -54,17 +60,17 @@
 
 2009-12-31 German Arias <german@xelalug.org>
 
-	*  Resources/Spanish.lproj/Localizable.strings: Added.
-	*  Resources/GNUmakefile: Added Spanish language.
+	* Resources/Spanish.lproj/Localizable.strings: Added.
+	* Resources/GNUmakefile: Added Spanish language.
 
 2009-12-30 German Arias <german@xelalug.org>
 
-	*  Panels/Spanish.lproj/GSDataLinkPanel.gorm,
-	*  Panels/Spanish.lproj/GSPageLayout.gorm,
-	*  Panels/Spanish.lproj/GSToolbarCustomizationPalette.gorm,
-	*  Panels/Spanish.lproj/GSPrintPanel.gorm,
-	*  Panels/Spanish.lproj/GSSpellPanel.gorm: Added.
-	*  Panels/GNUmakefile: Added Spanish language.
+	* Panels/Spanish.lproj/GSDataLinkPanel.gorm,
+	* Panels/Spanish.lproj/GSPageLayout.gorm,
+	* Panels/Spanish.lproj/GSToolbarCustomizationPalette.gorm,
+	* Panels/Spanish.lproj/GSPrintPanel.gorm,
+	* Panels/Spanish.lproj/GSSpellPanel.gorm: Added.
+	* Panels/GNUmakefile: Added Spanish language.
 
 2009-12-30 German Arias <german@xelalug.org>
 
