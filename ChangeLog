@@ -1,5 +1,10 @@
 2010-01-03 German Arias <german@xelalug.org>
 
+	* Panels/Spanish.lproj/GSPageLayout.gorm/objects.gorm,
+	* Panels/Spanish.lproj/GSPrintPanel.gorm/objects.gorm: Changed some strings.
+
+2010-01-03 German Arias <german@xelalug.org>
+
 	* Source/GSInfoPanel.m: Added missing internationalisation.
 	* Source/GSThemePanel.m: Added missing internationalisation.
 	* Source/NSHelpPanel.m: Added missing internationalisation.
