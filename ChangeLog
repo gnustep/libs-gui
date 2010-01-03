@@ -1,3 +1,7 @@
+2010-01-03 German Arias <german@xelalug.org>
+
+	* Resources/Spanish.lproj/Localizable.strings: More strings in spanish.
+
 2010-01-02 German Arias <german@xelalug.org>
 
 	* Source/NSOpenPanel.m: Reverted some previous changes, added GSGuiPrivate.h.

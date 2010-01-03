@@ -284,6 +284,15 @@ add comments above this one
 "Yes" = "Si";
 /* File: ../Source/NSSavePanel.m:236 */
 "Name:" = "Nombre:";
+/* File: ../Source/NSSavePanel.m:1244 */
+"You have used the extension '.%@'.\nThe standard extension is '.%@'.'" = "Usted ha puesto la extensi\U00F3n '.%@'.\nLa extensi\U00F3n esperada es '.%@'.'";
+/* File: ../Source/NSSavePanel.m:1252 */
+"You cannot save this document with extension '.%@'.\nThe required extension is '.%@'." = "Usted no puede guardar este documento con la extensi\U00F3n '.%@'.\nLa extensi\U00F3n requerida es '.%@'.";
+/* File: ../Source/NSSavePanel.m:1246 */
+/* File: ../Source/NSSavePanel.m:1254 */
+"Use .%@" = "Usar .%@";
+/* File: ../Source/NSSavePanel.m:1702 */
+"Reading Directory " = "Leyendo Directorio ";
 
 
 /*** Strings from ../Source/NSToolbarItem.m ***/
