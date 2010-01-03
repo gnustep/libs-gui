@@ -48,6 +48,8 @@
 #include "AppKit/NSButton.h"
 #include "AppKit/NSBox.h"
 
+#include "GSGuiPrivate.h"
+
 #define _SAVE_PANEL_X_PAD	5
 #define _SAVE_PANEL_Y_PAD	4
 
@@ -234,7 +236,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   if (flag)
     {
       // TODO: Unselect all items and show a message
-      [previewArea setStringValue: @"Multiple fonts selected"];
+      [previewArea setStringValue: _(@"Multiple fonts selected")];
       _family = -1;
       _face = -1;
     }
@@ -539,7 +541,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 			    backing: NSBackingStoreRetained
 			      defer: YES
 			     screen: nil];
-  [self setTitle: @"Font Panel"];
+  [self setTitle: _(@"Font Panel")];
 
   v = [self contentView];
 
@@ -563,7 +565,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   [previewArea setSelectable: NO];
   //[previewArea setUsesFontPanel: NO];
   [previewArea setAlignment: NSCenterTextAlignment];
-  [previewArea setStringValue: @"Font preview"];
+  [previewArea setStringValue: _(@"Font preview")];
   [previewArea setAutoresizingMask: (NSViewWidthSizable|NSViewHeightSizable)];
 
   [previewArea setTag: NSFPPreviewField];
@@ -624,7 +626,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   [label setEditable: NO];
   [label setTextColor: [NSColor windowFrameTextColor]];
   [label setBackgroundColor: [NSColor controlShadowColor]];
-  [label setStringValue: @"Size"];
+  [label setStringValue: _(@"Size")];
   [label setAutoresizingMask: NSViewMinXMargin | NSViewMinYMargin];
   [label setTag: NSFPSizeTitle];
   [bottomSplit addSubview: label];
@@ -682,7 +684,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
   // cancel button
   revertButton = [[NSButton alloc] initWithFrame: revertButtonRect];
-  [revertButton setTitle: @"Revert"];
+  [revertButton setTitle: _(@"Revert")];
   [revertButton setAction: @selector(cancel:)];
   [revertButton setTarget: self];
   [revertButton setTag: NSFPRevertButton];
@@ -692,7 +694,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
   // toggle button for preview
   previewButton = [[NSButton alloc] initWithFrame: previewButtonRect];
-  [previewButton setTitle: @"Preview"];
+  [previewButton setTitle: _(@"Preview")];
   [previewButton setButtonType: NSOnOffButton];
   [previewButton setAction: @selector(_togglePreview:)];
   [previewButton setTarget: self];
@@ -705,7 +707,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
   // button to set the font
   setButton = [[NSButton alloc] initWithFrame: setButtonRect];
-  [setButton setTitle: @"Set"];
+  [setButton setTitle: _(@"Set")];
   [setButton setAction: @selector(ok:)];
   [setButton setTarget: self];
   [setButton setTag: NSFPSetButton];
@@ -780,7 +782,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 	}
       if (_family == -1)
 	{
-	  familyName = @"NoFamily";
+	  familyName = _(@"NoFamily");
 	}
       else
 	{
@@ -788,7 +790,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 	}
       if (_face == -1 || ![_faceList count])
 	{
-	  faceName = @"NoFace";
+	  faceName = _(@"NoFace");
 	}
       else
 	{
@@ -1102,11 +1104,11 @@ static int score_difference(int weight1, int traits1,
     {
     case NSFPFamilyBrowser:
       {
-	return @"Family";
+	return _(@"Family");
       }
     case NSFPFaceBrowser:
       {
-	return @"Typeface";
+	return _(@"Typeface");
       }
     default:
       {

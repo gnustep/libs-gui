@@ -70,21 +70,27 @@ add comments above this one
 
 
 /*** Strings from ../Source/NSFontPanel.m ***/
-/* File: ../Source/NSFontPanel.m:542 */
+/* File: ../Source/NSFontPanel.m:239 */
+"Multiple fonts selected" = "Varias fuentes seleccionadas";
+/* File: ../Source/NSFontPanel.m:544 */
 "Font Panel" = "Fuentes";
-/* File: ../Source/NSFontPanel.m:566 */
+/* File: ../Source/NSFontPanel.m:568 */
 "Font preview" = "Vista Previa";
-/* File: ../Source/NSFontPanel.m:627 */
+/* File: ../Source/NSFontPanel.m:629 */
 "Size" = "Tama\U00F1o";
-/* File: ../Source/NSFontPanel.m:685 */
+/* File: ../Source/NSFontPanel.m:687 */
 "Revert" = "Revertir";
-/* File: ../Source/NSFontPanel.m:695 */
+/* File: ../Source/NSFontPanel.m:697 */
 "Preview" = "Previa";
-/* File: ../Source/NSFontPanel.m:708 */
+/* File: ../Source/NSFontPanel.m:710 */
 "Set" = "Aplicar";
-/* File: ../Source/NSFontPanel.m:1105 */
+/* File: ../Source/NSFontPanel.m:785 */
+"NoFamily" = "No hay fuente";
+/* File: ../Source/NSFontPanel.m:793 */
+"NoFace" = "No hay estilo";
+/* File: ../Source/NSFontPanel.m:1107 */
 "Family" = "Fuente";
-/* File: ../Source/NSFontPanel.m:1109 */
+/* File: ../Source/NSFontPanel.m:1111 */
 "Typeface" = "Estilo";
 
 
