@@ -335,7 +335,7 @@ new_label (NSString *value)
   /* NB: fullVersionID can be nil! */
 
   /* Now we prepare the complete release string */
-  release = [@"Release: " stringByAppendingString: release];
+  release = [_(@"Release: ") stringByAppendingString: release];
   if (fullVersionID)
     {
       release = [release stringByAppendingString: @" ("];
@@ -377,7 +377,7 @@ new_label (NSString *value)
 	    (@"NSHumanReadableCopyright");
 	  
 	  if (nil_or_not_of_class (copyright, [NSString class]))
-	    copyright = @"Copyright Information Not Available";
+	    copyright = _(@"Copyright Information Not Available");
 	}
     }
   /* Copyright Description */
@@ -431,11 +431,11 @@ new_label (NSString *value)
     }
   else if ([authors count] == 1)
     {
-      authorTitleLabel = new_label (@"Author: ");
+      authorTitleLabel = new_label (_(@"Author: "));
     }
   else
     {
-      authorTitleLabel = new_label (@"Authors: ");
+      authorTitleLabel = new_label (_(@"Authors: "));
     }
   [authorTitleLabel setFont: smallFont];
   [authorTitleLabel sizeToFit];

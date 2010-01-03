@@ -13,7 +13,7 @@ add comments above this one
 /* Comment: Title of the Info Panel */
 /* File: ../Source/NSMenu.m:211 */
 /* Comment: Info */
-"Info" = "Info";
+"Info" = "Informaci\U00F3n";
 
 /* File: ../Source/GSNibLoading.m:153 */
 /* Comment: Quit */
@@ -70,7 +70,16 @@ add comments above this one
 /* File: ../Source/NSPageLayout.m:1060 */
 /* File: ../Source/NSPrintPanel.m:454 */
 /* File: ../Source/NSPrintPanel.m:500 */
+/* File: ../Source/GSInfoPanel.m:313 */
 "Unknown" = "Desconocido";
+
+/* File: ../Source/GSHelpManagerPanel.m:70 */
+/* File: ../Source/NSHelpPanel.m:153 */
+"Help" = "Ayuda";
+
+/* File: ../Source/NSFontPanel.m:697 */
+/* File: ../Source/GSPrintOperation.m:157 */
+"Preview" = "Vista Previa";
 
 
 /*** Unmatched/untranslated keys ***/
@@ -89,8 +98,6 @@ add comments above this one
 "Font preview" = "Vista Previa";
 /* File: ../Source/NSFontPanel.m:629 */
 "Size" = "Tama\U00F1o";
-/* File: ../Source/NSFontPanel.m:697 */
-"Preview" = "Previa";
 /* File: ../Source/NSFontPanel.m:710 */
 "Set" = "Aplicar";
 /* File: ../Source/NSFontPanel.m:785 */
@@ -142,9 +149,26 @@ add comments above this one
 "Faxing of print file not implemented" = "El faxeo de archivos no esta implementado";
 
 
-/*** Strings from ../Source/GSHelpManagerPanel.m ***/
-/* File: ../Source/GSHelpManagerPanel.m:70 */
-"Help" = "Ayuda";
+/*** Strings from ../Source/GSInoPanel.m ***/
+/* File: ../Source/GSInfoPanel.m:338 */
+"Release: " = "Versi\U00F3n: ";
+/* File: ../Source/GSInfoPanel.m:380 */
+"Copyright Information Not Available" = "Informaci\U00F3n no disponible";
+/* File: ../Source/GSInfoPanel.m:434 */
+"Author: " = "Autor: ";
+/* File: ../Source/GSInfoPanel.m:438 */
+"Authors: " = "Autores: ";
+
+
+/*** Strings from ../Source/GSThemePanel.m ***/
+/* File: ../Source/GSThemePanel.m:114 */
+"Themes" = "Temas";
+/* File: ../Source/GSThemePanel.m:192 */
+/* File: ../Source/GSThemePanel.m:232 */
+"Revert default theme" = "Regresar al tema por defecto";
+/* File: ../Source/GSThemePanel.m:196 */
+/* File: ../Source/GSThemePanel.m:227 */
+"Make this the default theme" = "Hacer este el tema por defecto";
 
 
 /*** Strings from ../Source/GSInfoPanel.m ***/
@@ -154,8 +178,6 @@ add comments above this one
 
 
 /*** Strings from ../Source/GSPrintOperation.m ***/
-/* File: ../Source/GSPrintOperation.m:157 */
-"Preview" = "Vista Previa";
 /* File: ../Source/GSPrintOperation.m:158 */
 "Problem running the preview application '%@' perhaps you need to set your NSPreviewApp user default"
 = "Problema con la aplicaci\U00F3n de vista previa '%@' talvez usted necesite establecer NSPreviewApp para su usuario";

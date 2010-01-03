@@ -34,6 +34,7 @@
 #include "AppKit/NSMatrix.h"
 #include "AppKit/NSScrollView.h"
 #include "GSThemePrivate.h"
+#include "GSGuiPrivate.h"
 
 
 @implementation	GSThemePanel
@@ -110,7 +111,7 @@ static GSThemePanel	*sharedPanel = nil;
   [container addSubview: bottomView];
   RELEASE(bottomView);
 
-  [self setTitle: @"Themes"];
+  [self setTitle: _(@"Themes")];
   
   [[NSNotificationCenter defaultCenter]
     addObserver: self
@@ -188,11 +189,11 @@ static GSThemePanel	*sharedPanel = nil;
       dName = [[NSUserDefaults standardUserDefaults] stringForKey: @"GSTheme"];
       if ([[[n object] name] isEqual: dName] == YES)
         {
-	  [button setTitle: @"Revert default theme"];
+	  [button setTitle: _(@"Revert default theme")];
 	}
       else
 	{
-	  [button setTitle: @"Make this the default theme"];
+	  [button setTitle: _(@"Make this the default theme")];
 	}
       [button sizeToFit];
       frame = [button frame];
@@ -223,12 +224,12 @@ static GSThemePanel	*sharedPanel = nil;
   if ([cName isEqual: dName] == YES)
     {
       [defs removeObjectForKey: @"GSTheme"];
-      [button setTitle: @"Make this the default theme"];
+      [button setTitle: _(@"Make this the default theme")];
     }
   else
     {
       [defs setObject: cName forKey: @"GSTheme"];
-      [button setTitle: @"Revert default theme"];
+      [button setTitle: _(@"Revert default theme")];
     }
   [defs synchronize];
   [button sizeToFit];

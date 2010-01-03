@@ -30,6 +30,7 @@
 #include "AppKit/NSScrollView.h"
 #include "AppKit/NSTextView.h"
 #include "AppKit/NSTextContainer.h"
+#include "GSGuiPrivate.h" 
 
 
 @implementation NSApplication (NSHelpPanel)
@@ -149,7 +150,7 @@ static NSHelpPanel	*_sharedPanel = nil;
 	defer: NO
 	screen: nil];
       [self setReleasedWhenClosed: NO];
-      [self setTitle: @"Help"];
+      [self setTitle: _(@"Help")];
       s = [[NSScrollView alloc] initWithFrame: contentRect];
       [s setHasHorizontalScroller: YES];
       [s setHasVerticalScroller: YES];
