@@ -49,6 +49,7 @@ add comments above this one
 
 /* File: ../Source/GSHelpManagerPanel.m:101 */
 /* File: ../Source/NSAlert.m:1427 */
+/* File: ../Source/NSPrintPanel.m:285 */
 "OK" = "Aceptar";
 
 /* File: ../Source/GSPrintOperation.m:159 */
@@ -64,6 +65,12 @@ add comments above this one
 /* File: ../Source/NSDocument.m:1577 */
 /* File: ../Source/NSDocument.m:1575 */
 "Revert" = "Revertir";
+
+/* File: ../Source/NSPageLayout.m:989 */
+/* File: ../Source/NSPageLayout.m:1060 */
+/* File: ../Source/NSPrintPanel.m:454 */
+/* File: ../Source/NSPrintPanel.m:500 */
+"Unknown" = "Desconocido";
 
 
 /*** Unmatched/untranslated keys ***/
@@ -116,13 +123,23 @@ add comments above this one
 "Left Margin" = "Margen Izquierdo";
 /* File: ../Source/NSPageLayout.m:988 */
 "Right Margin" = "Margen Derecho";
-/* File: ../Source/NSPageLayout.m:989 */
-/* File: ../Source/NSPageLayout.m:1060 */
-"Unknown" = "Desconocido";
 /* File: ../Source/NSPageLayout.m:1038 */
 "Portrait" = "Vertical";
 /* File: ../Source/NSPageLayout.m:1042 */
 "Landscape" = "Horizontal";
+
+
+/*** Strings from ../Source/NSPrintPanel.m ***/
+/* File: ../Source/NSPrintPanel.m:169 */
+"1 up" = "1 p\U00E1gina";
+"2 up" = "2 p\U00E1ginas";
+"4 up" = "4 p\U00E1ginas";
+"6 up" = "6 p\U00E1ginas";
+/* File: ../Source/NSPrintPanel.m:169 */
+"8 up" = "8 p\U00E1ginas";
+/* File: ../Source/NSPrintPanel.m:284 */
+"Sorry" = "Error";
+"Faxing of print file not implemented" = "El faxeo de archivos no esta implementado";
 
 
 /*** Strings from ../Source/GSHelpManagerPanel.m ***/

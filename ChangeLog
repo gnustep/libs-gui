@@ -1,5 +1,10 @@
 2010-01-03 German Arias <german@xelalug.org>
 
+	* Source/NSPrintPanel.m: Added missing internationalisation.
+	* Resources/Spanish.lproj/Localizable.strings: More strings in spanish.
+
+2010-01-03 German Arias <german@xelalug.org>
+
 	* Source/NSPageLayout.m: Added missing internationalisation.
 	* Resources/Spanish.lproj/Localizable.strings: More strings in spanish.
 

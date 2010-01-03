@@ -166,8 +166,8 @@ static NSPrintPanel *shared_instance;
 
   /* Setup the layout popup */
   control = CONTROL(self, NSPPLayoutButton);
-  list = [NSArray arrayWithObjects: @"1 up", @"2 up", @"4 up", @"6 up", 
-		  @"8 up", nil];
+  list = [NSArray arrayWithObjects: _(@"1 up"), _(@"2 up"), _(@"4 up"), _(@"6 up"), 
+		  _(@"8 up"), nil];
   [control removeAllItems];
   for (i = 0; i < [list count]; i++)
     {
@@ -281,8 +281,8 @@ static NSPrintPanel *shared_instance;
   else if (tag ==NSFaxButton)
     {
       _picked = NSFaxButton;
-      NSRunAlertPanel(@"Sorry", @"Faxing of print file not implemented", 
-		      @"OK", NULL, NULL);
+      NSRunAlertPanel(_(@"Sorry"), _(@"Faxing of print file not implemented"), 
+		      _(@"OK"), NULL, NULL);
       /* Don't stop the modal session */
       return;
     }
@@ -451,7 +451,7 @@ static NSPrintPanel *shared_instance;
 	}
     }
   else
-    [control addItemWithTitle: @"Unknown"];
+    [control addItemWithTitle: _(@"Unknown")];
 
   /* Setup the paper feed popup */
   control = CONTROL(_optionPanel, NSPPPaperFeedButton);
@@ -497,7 +497,7 @@ static NSPrintPanel *shared_instance;
 	}
     }
   else
-    [control addItemWithTitle: @"Unknown"];
+    [control addItemWithTitle: _(@"Unknown")];
 
 }
 
