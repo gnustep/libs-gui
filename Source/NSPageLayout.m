@@ -751,9 +751,9 @@ enum {
   printerNames = [NSPrinter printerNames];
   if ([printerNames count] == 0)  //NO PRINTERS
     {
-      [printerPopUp addItemWithTitle: @"(none)"];
+      [printerPopUp addItemWithTitle: _(@"(none)")];
       [printerPopUp setEnabled: NO];
-      [standardPaperSizePopUp addItemWithTitle: @"(none)"];
+      [standardPaperSizePopUp addItemWithTitle: _(@"(none)")];
       [standardPaperSizePopUp setEnabled: NO];
       radioButton = [paperRadioMatrix cellAtRow: 0
                                          column: 0];
@@ -978,15 +978,15 @@ enum {
         {
           switch(index)
             {
-              case 0:  return @"Name";
-              case 1:  return @"Dimensions";
-              case 2:  return @"Orientation";
-              case 3:  return @"Scale";
-              case 4:  return @"Top Margin";
-              case 5:  return @"Bottom Margin";
-              case 6:  return @"Left Margin";
-              case 7:  return @"Right Margin";
-              default: return @"Unknown";
+              case 0:  return _(@"Name");
+              case 1:  return _(@"Dimensions");
+              case 2:  return _(@"Orientation");
+              case 3:  return _(@"Scale");
+              case 4:  return _(@"Top Margin");
+              case 5:  return _(@"Bottom Margin");
+              case 6:  return _(@"Left Margin");
+              case 7:  return _(@"Right Margin");
+              default: return _(@"Unknown");
             }
         }
       else //The value column
@@ -1035,11 +1035,11 @@ enum {
               case 2:
                 if ([paperOrientationMatrix selectedColumn] == 0)
                   {
-                    return @"Portrait";
+                    return _(@"Portrait");
                   }
                 else
                   {
-                    return @"Landscape" ;
+                    return _(@"Landscape") ;
                   }
               case 3:
                 return [NSString stringWithFormat: @"%@%%",
@@ -1057,7 +1057,7 @@ enum {
                 return [NSString stringWithFormat: @"%.2f %@", rightMargin,
                         measurementString];
               default: 
-                return @"Unknown";
+                return _(@"Unknown");
             }
         }
     }

@@ -56,17 +56,21 @@ add comments above this one
 /* File: ../Source/NSSavePanel.m:1249 */
 "Dismiss" = "Despedir";
 
+/* File: ../Source/NSColorPanel.m:227 */
+/* File: ../Source/NSToolbarItem.m:949 */
+"Colors" = "Colores";
+
+/* File: ../Source/NSFontPanel.m:687 */
+/* File: ../Source/NSDocument.m:1577 */
+/* File: ../Source/NSDocument.m:1575 */
+"Revert" = "Revertir";
+
 
 /*** Unmatched/untranslated keys ***/
 
 /*** Strings from ../Source/NSOpenPanel.m ***/
 /* File: ../Source/NSOpenPanel.m:92 */
 "Open" = "Abrir";
-
-
-/*** Strings from ../Source/NSColorPanel.m ***/
-/* File: ../Source/NSColorPanel.m:227 */
-"Colors" = "Colores";
 
 
 /*** Strings from ../Source/NSFontPanel.m ***/
@@ -78,8 +82,6 @@ add comments above this one
 "Font preview" = "Vista Previa";
 /* File: ../Source/NSFontPanel.m:629 */
 "Size" = "Tama\U00F1o";
-/* File: ../Source/NSFontPanel.m:687 */
-"Revert" = "Revertir";
 /* File: ../Source/NSFontPanel.m:697 */
 "Preview" = "Previa";
 /* File: ../Source/NSFontPanel.m:710 */
@@ -92,6 +94,35 @@ add comments above this one
 "Family" = "Fuente";
 /* File: ../Source/NSFontPanel.m:1111 */
 "Typeface" = "Estilo";
+
+
+/*** Strings from ../Source/NSPageLayout.m ***/
+/* File: ../Source/NSPageLayout.m:754 */
+/* File: ../Source/NSPageLayout.m:756 */
+"(none)" = "(ninguno)";
+/* File: ../Source/NSPageLayout.m:981 */
+"Name" = "Nombre";
+/* File: ../Source/NSPageLayout.m:982 */
+"Dimensions" = "Dimensiones";
+/* File: ../Source/NSPageLayout.m:983 */
+"Orientation" = "Orientaci\U00F3n";
+/* File: ../Source/NSPageLayout.m:984 */
+"Scale" = "Escala";
+/* File: ../Source/NSPageLayout.m:985 */
+"Top Margin" = "Margen Superior";
+/* File: ../Source/NSPageLayout.m:986 */
+"Bottom Margin" = "Margen Inferior";
+/* File: ../Source/NSPageLayout.m:987 */
+"Left Margin" = "Margen Izquierdo";
+/* File: ../Source/NSPageLayout.m:988 */
+"Right Margin" = "Margen Derecho";
+/* File: ../Source/NSPageLayout.m:989 */
+/* File: ../Source/NSPageLayout.m:1060 */
+"Unknown" = "Desconocido";
+/* File: ../Source/NSPageLayout.m:1038 */
+"Portrait" = "Vertical";
+/* File: ../Source/NSPageLayout.m:1042 */
+"Landscape" = "Horizontal";
 
 
 /*** Strings from ../Source/GSHelpManagerPanel.m ***/
@@ -237,9 +268,6 @@ add comments above this one
 /* File: ../Source/NSDocument.m:135 */
 /* File: ../Source/NSDocument.m:112 */
 "Load failed" = "Lectura fallida";
-/* File: ../Source/NSDocument.m:1577 */
-/* File: ../Source/NSDocument.m:1575 */
-"Revert" = "Revertir";
 /* File: ../Source/NSDocument.m:1128 */
 "Save To" = "Guardar Para";
 /* File: ../Source/NSDocument.m:551 */
@@ -302,8 +330,6 @@ add comments above this one
 
 
 /*** Strings from ../Source/NSToolbarItem.m ***/
-/* File: ../Source/NSToolbarItem.m:949 */
-"Colors" = "Colores";
 /* File: ../Source/NSToolbarItem.m:995 */
 "Customize" = "Modificar";
 /* File: ../Source/NSToolbarItem.m:904 */
