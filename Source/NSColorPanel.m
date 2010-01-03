@@ -46,6 +46,8 @@
 #include "AppKit/NSWindow.h"
 #include "GNUstepGUI/IMLoading.h"
 
+#include "GSGuiPrivate.h"
+
 #define MAX_ALPHA_VALUE 100.0
 static NSLock *_gs_gui_color_panel_lock = nil;
 static NSColorPanel *_gs_gui_color_panel = nil;

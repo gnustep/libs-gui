@@ -39,7 +39,6 @@
 */
 
 #import <Foundation/NSArray.h>
-#import <Foundation/NSBundle.h>
 #import <Foundation/NSException.h>
 #import <Foundation/NSFileManager.h>
 #import <Foundation/NSNotification.h>
@@ -52,6 +51,8 @@
 #import "AppKit/NSForm.h"
 #import "AppKit/NSMatrix.h"
 #import "AppKit/NSOpenPanel.h"
+
+#include "GSGuiPrivate.h"
 
 static NSString	*
 pathToColumn(NSBrowser *browser, int column)

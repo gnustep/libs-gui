@@ -1061,7 +1061,7 @@ originalContentsURL: (NSURL *)orig
       NSRect spaFrame = NSMakeRect(115,14,150,22);
 
       _save_panel_accessory = [[NSBox alloc] initWithFrame: accessoryFrame];
-      [(NSBox *)_save_panel_accessory setTitle: @"File Type"];
+      [(NSBox *)_save_panel_accessory setTitle: _(@"File Type")];
       [_save_panel_accessory setAutoresizingMask: 
                             NSViewWidthSizable | NSViewHeightSizable];
       _spa_button = [[NSPopUpButton alloc] initWithFrame: spaFrame];

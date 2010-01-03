@@ -59,6 +59,34 @@ add comments above this one
 
 /*** Unmatched/untranslated keys ***/
 
+/*** Strings from ../Source/NSOpenPanel.m ***/
+/* File: ../Source/NSOpenPanel.m:92 */
+"Open" = "Abrir";
+
+
+/*** Strings from ../Source/NSColorPanel.m ***/
+/* File: ../Source/NSColorPanel.m:227 */
+"Colors" = "Colores";
+
+
+/*** Strings from ../Source/NSFontPanel.m ***/
+/* File: ../Source/NSFontPanel.m:542 */
+"Font Panel" = "Fuentes";
+/* File: ../Source/NSFontPanel.m:566 */
+"Font preview" = "Vista Previa";
+/* File: ../Source/NSFontPanel.m:627 */
+"Size" = "Tama\U00F1o";
+/* File: ../Source/NSFontPanel.m:685 */
+"Revert" = "Revertir";
+/* File: ../Source/NSFontPanel.m:695 */
+"Preview" = "Previa";
+/* File: ../Source/NSFontPanel.m:708 */
+"Set" = "Aplicar";
+/* File: ../Source/NSFontPanel.m:1105 */
+"Family" = "Fuente";
+/* File: ../Source/NSFontPanel.m:1109 */
+"Typeface" = "Estilo";
+
 
 /*** Strings from ../Source/GSHelpManagerPanel.m ***/
 /* File: ../Source/GSHelpManagerPanel.m:70 */
@@ -210,6 +238,8 @@ add comments above this one
 "Save To" = "Guardar Para";
 /* File: ../Source/NSDocument.m:551 */
 "Untitled-%d" = "Sin nombre-%d";
+/* File: ../Source/NSDocument.m:1064 */
+"File Type" = "Tipo de Archivo";
 
 
 /*** Strings from ../Source/NSDocumentController.m ***/
@@ -252,6 +282,8 @@ add comments above this one
 "The path '%@' is not a directory." = "La ruta '%@' no es un directorio.";
 /* File: ../Source/NSSavePanel.m:1228 */
 "Yes" = "Si";
+/* File: ../Source/NSSavePanel.m:236 */
+"Name:" = "Nombre:";
 
 
 /*** Strings from ../Source/NSToolbarItem.m ***/

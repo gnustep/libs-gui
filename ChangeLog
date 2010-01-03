@@ -1,3 +1,10 @@
+2010-01-02 German Arias <german@xelalug.org>
+
+	* Source/NSOpenPanel.m: Reverted some previous changes, added GSGuiPrivate.h.
+	* Source/NSColorPanel.m: Added GSGuiPrivate.h.
+	* Source/NSDocument.m: Added missing internationalisation.
+	* Resources/Spanish.lproj/Localizable.strings: More strings on spanish.
+
 2010-01-02 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSColorPanel.m,
