@@ -54,11 +54,11 @@ this, either directly, or indirectly (by using the backend).
 {
   NSWindow *window; /* not retained */
   int windowNumber;
-
   NSRect contentRect;
-
   int inputState;
   BOOL documentEdited;
+  BOOL hasMenu;
+  BOOL hasToolbar;
 }
 + (id<GSWindowDecorator>) windowDecorator;
 
@@ -101,7 +101,7 @@ Standard OPENSTEP-ish window decorations.
 @interface GSStandardWindowDecorationView : GSWindowDecorationView
 {
   BOOL hasTitleBar, hasResizeBar, hasCloseButton, hasMiniaturizeButton;
-  BOOL isTitled;
+  BOOL isTitled; //, hasToolbar, hasMenu;
   NSRect titleBarRect;
   NSRect resizeBarRect;
   NSRect closeButtonRect;

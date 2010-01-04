@@ -1,3 +1,9 @@
+2010-01-04 00:25-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSWindowDecorationView.[hm]: Addition of ivars to track
+	if a toolbar or menu is present in the window decorations.  Modified
+	code to set these to YES/NO.
+
 2010-01-04 Riccardo Mottola <rmottola@users.sf.net>
 
 	* Source/GSWindowDecorationView.m: When adding a toolbar take in account

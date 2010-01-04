@@ -108,6 +108,8 @@
   self = [super initWithFrame: frame];
   if (self != nil)
     {
+      hasToolbar = NO;
+      hasMenu = NO;
       window = w;
       // Content rect will be everything apart from the border
       // that is including menu, toolbar and the like.
@@ -209,12 +211,12 @@
   NSRect contentViewFrame;
   NSToolbar *tb = [_window toolbar];
   NSRect frame = [window frame];
-
+      
   frame.origin = NSZeroPoint;
   contentViewFrame = [isa contentRectForFrameRect: frame
                           styleMask: [window styleMask]];
 
-  if ([_window menu] != nil)
+  if (hasMenu)
     {
       NSMenuView *menuView;
       float menuBarHeight = [NSMenuView menuBarHeight];
@@ -228,25 +230,28 @@
       contentViewFrame.size.height -= menuBarHeight;
     }
 
-  if ([tb isVisible])
+  if(hasToolbar)
     {
-      GSToolbarView *tv = [tb _toolbarView];
-      float newToolbarViewHeight;
-      
-      // If the width changed we may need to recalculate the height
-      if (contentViewFrame.size.width != [tv frame].size.width)
-        {
-          [tv setFrameSize: NSMakeSize(contentViewFrame.size.width, 100)];
-          // Will recalculate the layout
-          [tv _reload];
-        }
-      newToolbarViewHeight = [tv _heightFromLayout];
-      [tv setFrame: NSMakeRect(
-              contentViewFrame.origin.x,
-              NSMaxY(contentViewFrame) - newToolbarViewHeight, 
-              contentViewFrame.size.width, 
-              newToolbarViewHeight)];
-      contentViewFrame.size.height -= newToolbarViewHeight;
+      if ([tb isVisible])
+	{
+	  GSToolbarView *tv = [tb _toolbarView];
+	  float newToolbarViewHeight;
+	  
+	  // If the width changed we may need to recalculate the height
+	  if (contentViewFrame.size.width != [tv frame].size.width)
+	    {
+	      [tv setFrameSize: NSMakeSize(contentViewFrame.size.width, 100)];
+	      // Will recalculate the layout
+	      [tv _reload];
+	    }
+	  newToolbarViewHeight = [tv _heightFromLayout];
+	  [tv setFrame: NSMakeRect(
+				   contentViewFrame.origin.x,
+				   NSMaxY(contentViewFrame) - newToolbarViewHeight,
+				   contentViewFrame.size.width, 
+				   newToolbarViewHeight)];
+	  contentViewFrame.size.height -= newToolbarViewHeight;
+	}
     }
 }
 
@@ -355,6 +360,7 @@
   float newToolbarViewHeight;
   float contentYOrigin;
 
+  hasToolbar = YES;
   [toolbarView setFrameSize: NSMakeSize(contentRect.size.width, 100)];
   // Will recalculate the layout
   [toolbarView _reload];
@@ -362,9 +368,11 @@
 
   // take in account of the menubar when calculating the origin
   contentYOrigin = NSMaxY(contentRect);
-  if ([_window menu] != nil)
+  if(hasMenu)
+    {
       contentYOrigin -= [NSMenuView menuBarHeight];
-  
+    }
+
   // Plug the toolbar view
   [toolbarView setFrame: NSMakeRect(
           contentRect.origin.x,
@@ -381,8 +389,9 @@
   float toolbarViewHeight = [toolbarView frame].size.height;
 
   // Unplug the toolbar view
+  hasToolbar = NO;
   [toolbarView removeFromSuperviewWithoutNeedingDisplay];
-  
+
   [self changeWindowHeight: -toolbarViewHeight];  
 }
 
@@ -413,6 +422,7 @@
 {
   float	menubarHeight = [NSMenuView menuBarHeight];
   
+  hasMenu = YES;
   // Plug the menu view
   [menuView setFrame: NSMakeRect(
           contentRect.origin.x,
@@ -428,42 +438,23 @@
 {
   NSEnumerator	*e = [[self subviews] objectEnumerator];
   NSView	*v;
-
+  
   while ((v = [e nextObject]) != nil)
     {
       if ([v isKindOfClass: [NSMenuView class]] == YES)
 	{
-	  float	menubarHeight = [NSMenuView menuBarHeight];
-
 	  /* Unplug the menu view and return it so that it can be
-           * restored to its original menu if necessary.
+	   * restored to its original menu if necessary.
 	   */
+
+	  hasMenu = NO;
 	  [RETAIN(v) removeFromSuperviewWithoutNeedingDisplay];
-  
-	  [self changeWindowHeight: -menubarHeight];  
+	  
+	  [self changeWindowHeight: -([NSMenuView menuBarHeight])];  
 	  return AUTORELEASE(v);
 	}
-      else if ([v isKindOfClass: [GSToolbarView class]] == YES)
-        {
-          GSToolbarView *tv = (GSToolbarView *)v;
-          NSRect         toolViewRect;
-
-          if ([[_window toolbar] isVisible])
-            {
-              /* recalculate the origin of the toolbar view */
-              toolViewRect = [tv frame];
-              toolViewRect = NSMakeRect(
-                               toolViewRect.origin.x,
-                               toolViewRect.origin.y + [NSMenuView menuBarHeight],
-                               toolViewRect.size.width,
-                               toolViewRect.size.height); 
-
-              /* move the toolbar view up of the menubar height */
-              [tv setFrame: toolViewRect];
-              [tv setNeedsDisplay:YES];
-            }
-        }
     }
+
   return nil;
 }
 
