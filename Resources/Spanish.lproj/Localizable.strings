@@ -50,6 +50,7 @@ add comments above this one
 /* File: ../Source/GSHelpManagerPanel.m:101 */
 /* File: ../Source/NSAlert.m:1427 */
 /* File: ../Source/NSPrintPanel.m:285 */
+/* File: ../Source/NSPrintOperation.m:681 */
 "OK" = "Aceptar";
 
 /* File: ../Source/GSPrintOperation.m:159 */
@@ -87,6 +88,17 @@ add comments above this one
 /*** Strings from ../Source/NSOpenPanel.m ***/
 /* File: ../Source/NSOpenPanel.m:92 */
 "Open" = "Abrir";
+
+
+/*** Strings from ../Source/GSThemeInspector.m ***/
+/* File: ../Source/GSThemeInspector.m:140 */
+"Version: %@" = "Versi\U00F3n: %@";
+
+
+/*** Strings from ../Source/NSPrintOperation.m ***/
+/* File: ../Source/NSPrintOperation.m:680 */
+"Error" = "Error";
+"Printing error: %@" = "Error de impresi\U00F3n: %@";
 
 
 /*** Strings from ../Source/NSFontPanel.m ***/
@@ -147,6 +159,10 @@ add comments above this one
 /* File: ../Source/NSPrintPanel.m:284 */
 "Sorry" = "Error";
 "Faxing of print file not implemented" = "El faxeo de archivos no esta implementado";
+/* File: ../Source/NSPrintPanel.m:467 */
+/* File: ../Source/NSPrintPanel.m:602 */
+/* File: ../Source/NSPrintPanel.m:609 */
+"Manual" = "Manual";
 
 
 /*** Strings from ../Source/GSInoPanel.m ***/

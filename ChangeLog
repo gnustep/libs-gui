@@ -1,3 +1,12 @@
+2010-01-03 German Arias <german@xelalug.org>
+
+	* Source/NSPrintPanel.m,
+	* Source/NSPrintOperation.m,
+	* Source/GSThemeInspector.m: Added missing internationalisation, now is
+        completed (or so I hope).
+	* Resources/Spanish.lproj/Localizable.strings: More strings in spanish
+        (with this the translation to spanish is finished).
+
 2010-01-03 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Resources/English.lproj/Localizable.strings: Regenerate this file.

@@ -464,7 +464,7 @@ static NSPrintPanel *shared_instance;
 
       manual = [printer stringForKey:@"DefaultManualFeed" inTable: @"PPD"];
       if (manual)
-	[control addItemWithTitle: @"Manual"];
+	[control addItemWithTitle: _(@"Manual")];
       list = [printer stringListForKey:@"InputSlot" inTable: @"PPD"];
       if ([list count])
 	{
@@ -599,14 +599,14 @@ static NSPrintPanel *shared_instance;
       if (manual)
 	{
 	  if (selected == 0)
-	    sel = @"Manual";
+	    sel = _(@"Manual");
 	  else
 	    selected--;
 	}
       if (sel == nil)
 	sel = [list objectAtIndex: selected];
       def = [printer stringForKey:@"DefaultInputSlot" inTable: @"PPD"];
-      if ([sel isEqual: @"Manual"] == YES)
+      if ([sel isEqual: _(@"Manual")] == YES)
 	{
 	  [dict setObject: NSPrintManualFeed forKey: NSPrintPaperFeed];
 	  /* FIXME: This needs to be more robust. I'm just assuming

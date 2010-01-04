@@ -60,6 +60,7 @@
 #include "GNUstepGUI/GSEPSPrintOperation.h"
 #include "GNUstepGUI/GSPDFPrintOperation.h"
 #include "GNUstepGUI/GSPrintOperation.h"
+#include "GSGuiPrivate.h"
 
 #define NSNUMBER(a) [NSNumber numberWithInt: (a)]
 #define NSFNUMBER(a) [NSNumber numberWithFloat: (a)]
@@ -676,8 +677,8 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
     {
       [_view _cleanupPrinting];
       [NSGraphicsContext setCurrentContext: oldContext];
-      NSRunAlertPanel(@"Error", @"Printing error: %@", 
-                      @"OK", NULL, NULL, localException);
+      NSRunAlertPanel(_(@"Error"), _(@"Printing error: %@"), 
+                      _(@"OK"), NULL, NULL, localException);
     }
   NS_ENDHANDLER
   [self destroyContext];

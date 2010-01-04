@@ -33,6 +33,7 @@
 #include "AppKit/NSTextView.h"
 #include "AppKit/NSWindow.h"
 #include "GSThemePrivate.h"
+#include "GSGuiPrivate.h"
 
 static NSTextField *
 new_label (NSString *value)
@@ -136,7 +137,7 @@ static GSThemeInspector	*sharedInspector = nil;
   version = [[theme infoDictionary] objectForKey: @"GSThemeVersion"];
   if ([version length] > 0)
     {
-      version = [NSString stringWithFormat: @"Version: %@", version];
+      version = [NSString stringWithFormat: _(@"Version: %@"), version];
       tf = new_label(version);
       [tf setFont: [NSFont systemFontOfSize: 12]];
       [tf sizeToFit];
