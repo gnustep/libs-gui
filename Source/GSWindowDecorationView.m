@@ -353,16 +353,22 @@
 - (void) addToolbarView: (GSToolbarView*)toolbarView
 {
   float newToolbarViewHeight;
+  float contentYOrigin;
 
   [toolbarView setFrameSize: NSMakeSize(contentRect.size.width, 100)];
   // Will recalculate the layout
   [toolbarView _reload];
   newToolbarViewHeight = [toolbarView _heightFromLayout];
+
+  // take in account of the menubar when calculating the origin
+  contentYOrigin = NSMaxY(contentRect);
+  if ([_window menu] != nil)
+      contentYOrigin -= [NSMenuView menuBarHeight];
   
   // Plug the toolbar view
   [toolbarView setFrame: NSMakeRect(
           contentRect.origin.x,
-          NSMaxY(contentRect), 
+          contentYOrigin, 
           contentRect.size.width, 
           newToolbarViewHeight)];
   [self addSubview: toolbarView];
@@ -437,6 +443,26 @@
 	  [self changeWindowHeight: -menubarHeight];  
 	  return AUTORELEASE(v);
 	}
+      else if ([v isKindOfClass: [GSToolbarView class]] == YES)
+        {
+          GSToolbarView *tv = (GSToolbarView *)v;
+          NSRect         toolViewRect;
+
+          if ([[_window toolbar] isVisible])
+            {
+              /* recalculate the origin of the toolbar view */
+              toolViewRect = [tv frame];
+              toolViewRect = NSMakeRect(
+                               toolViewRect.origin.x,
+                               toolViewRect.origin.y + [NSMenuView menuBarHeight],
+                               toolViewRect.size.width,
+                               toolViewRect.size.height); 
+
+              /* move the toolbar view up of the menubar height */
+              [tv setFrame: toolViewRect];
+              [tv setNeedsDisplay:YES];
+            }
+        }
     }
   return nil;
 }
