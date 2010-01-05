@@ -1,3 +1,8 @@
+2010-01-05 Fred Kiefer <FredKiefer@gmx.de>
+
+	* TextConverters/RTF/RTFConsumer.m (-parseRTF:...class:): Try to
+	determine the encoding of the RTF data.
+
 2010-01-05 03:39-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSMenu.m: Do not show the menu at the top of the screen in 

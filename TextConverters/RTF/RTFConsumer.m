@@ -539,11 +539,40 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
   CREATE_AUTORELEASE_POOL(pool);
   RTFscannerCtxt scanner;
   StringContext stringCtxt;
-  // We should read in the first few characters to find out which
+  NSString *rtfString;
+  char buffer[5];
+  NSStringEncoding encoding = NSASCIIStringEncoding;
+
+  // We read in the first few characters to find out which
   // encoding we have
-  NSString *rtfString = [[NSString alloc] 
+  if ([rtfData length] < 10)
+    {
+      // Too short to be an RTF
+      return nil;
+    }
+  [rtfData getBytes: buffer range: NSMakeRange(7, 3)];
+  if (strncmp(buffer, "mac", 3) == 0)
+    {
+      encoding = NSMacOSRomanStringEncoding;
+    }
+  else if (strncmp(buffer, "pc", 2) == 0)
+    {
+      // FIXME: Code page 437 kCFStringEncodingDOSLatinUS
+      encoding = NSASCIIStringEncoding;
+    }
+  else if (strncmp(buffer, "pca", 3) == 0)
+    {
+      // FIXME: Code page 850 kCFStringEncodingDOSLatin1
+      encoding = NSASCIIStringEncoding;
+    }
+  else if (strncmp(buffer, "ansi", 2) == 0)
+    {
+      encoding = NSASCIIStringEncoding;
+    }
+
+  rtfString = [[NSString alloc] 
 			  initWithData: rtfData
-			  encoding: NSASCIIStringEncoding];
+                              encoding: encoding];
 
   // Reset this RFTConsumer, as it might already have been used!
   _class = class;
