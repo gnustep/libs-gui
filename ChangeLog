@@ -1,3 +1,8 @@
+2010-01-05 03:39-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSMenu.m: Do not show the menu at the top of the screen in 
+	NSWindows95InterfaceStyle mode.  
+
 2010-01-04 00:25-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSWindowDecorationView.[hm]: Addition of ivars to track

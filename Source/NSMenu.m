@@ -108,6 +108,9 @@
 
 /* Subclass of NSPanel since menus cannot become key */
 @interface NSMenuPanel : NSPanel
+{
+  NSMenu *_the_menu;
+}
 @end
 
 @interface NSMenuView (GNUstepPrivate)
@@ -133,12 +136,31 @@ static BOOL menuBarVisible = YES;
 
 
 @implementation NSMenuPanel
+- (void) _setmenu: (NSMenu *)menu
+{
+  _the_menu = menu;
+}
+
 - (BOOL) canBecomeKeyWindow
 {
   /* See [NSWindow-_lossOfKeyOrMainWindow] */
   if (self == (NSMenuPanel *)[[NSApp mainMenu] window])
     return YES;
   return NO;
+}
+
+- (void) orderFrontRegardless
+{
+  NSInterfaceStyle style = NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
+  if (style == NSWindows95InterfaceStyle)
+    {
+      // if we're the top level menu in Windows mode, don't show it.
+      if([_the_menu supermenu] == nil)
+	{
+	  return;
+	}
+    }
+  [super orderFrontRegardless];
 }
 @end
 
@@ -185,6 +207,7 @@ static BOOL menuBarVisible = YES;
   [win setLevel: NSSubmenuWindowLevel];
   [win setWorksWhenModal: NO];
   [win setBecomesKeyOnlyIfNeeded: YES];
+  [win _setmenu: self];
 
   return win;
 }
@@ -1328,10 +1351,12 @@ static BOOL menuBarVisible = YES;
        * menu, we will still have it recorded as ours, but it won't be
        * in our view hierarchy, so we have to re-add it.
        */
+      /*
       if (contentView != [menuRep superview])
 	{
           [contentView addSubview: menuRep];
 	}
+      */
       return;
     }
 
