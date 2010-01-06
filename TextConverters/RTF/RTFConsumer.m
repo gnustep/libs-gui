@@ -451,13 +451,16 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
       if (wrapper != nil)
         {
           NSImage* image = [[NSImage alloc] initWithData: [wrapper regularFileContents]];
-          NSTextAttachmentCell* attachedCell = [[NSTextAttachmentCell alloc] initImageCell: image];
-          NSTextAttachment* attachment = [[NSTextAttachment alloc] initWithFileWrapper: wrapper];
+          NSTextAttachment* attachment;
           RTFAttribute* attr = [self attr];
           NSMutableDictionary* attributes = nil;
           NSMutableAttributedString* str = nil;
 
-          [attachment setAttachmentCell: attachedCell];
+          if (image != nil)
+            {
+              [wrapper setIcon: image];
+            }
+          attachment = [[NSTextAttachment alloc] initWithFileWrapper: wrapper];
         
           attributes = [[NSMutableDictionary alloc]
 			 initWithObjectsAndKeys:
@@ -474,7 +477,6 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
           
           RELEASE(attributes);
           RELEASE(attachment);
-          RELEASE(attachedCell);
           RELEASE(image);
         }
     }
