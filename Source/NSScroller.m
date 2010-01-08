@@ -66,7 +66,7 @@ static NSCell	*horizontalKnobCell = nil;
 static NSCell	*verticalKnobCell = nil;
 static NSCell	*horizontalKnobSlotCell = nil;
 static NSCell	*verticalKnobSlotCell = nil;
-static float	scrollerWidth = 18.0;
+static float	scrollerWidth = 0.0;
 
 /* This is the distance by which buttons are offset inside the scroller slot.
  */

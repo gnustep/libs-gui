@@ -1,3 +1,8 @@
+2010-01-08 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Source/NSScroller: init scrollerWidth to 0.0, so that GSTheme
+	can properly override it.
+
 2010-01-06 Fred Kiefer <FredKiefer@gmx.de>
 
 	* TextConverters/RTF/RTFConsumer.m (RTFDConsumer-appendImage:):
