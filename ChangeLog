@@ -1,3 +1,9 @@
+2010-01-09  Wolfgang Lux  <wolfgang.lux@mail.com>
+
+	* Source/NSTextView.m (-performDragOperation:): Fix a bug that
+	prevented changing the color of the selected text of a text view
+	via drag and drop.
+
 2010-01-08 Riccardo Mottola <rmottola@users.sf.net>
 
 	* Source/NSScroller: init scrollerWidth to 0.0, so that GSTheme
@@ -710,7 +716,7 @@
 
 	* Source/NSDocumentController.m (+initialize): Don't ignore types
 	without an associated document class.
-	* Source/NSDocument.m (+reaableTypes, +writableTypes): 
+	* Source/NSDocument.m (+readableTypes, +writableTypes): 
 	* Source/NSDocumentController.m(-_readableTypesForClass:,
 	-_writableTypesForClass:): Add the exportable types to the
 	writable types. Rename private NSDocumentController methods.

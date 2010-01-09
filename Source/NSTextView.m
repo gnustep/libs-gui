@@ -4819,10 +4819,17 @@ other than copy/paste or dragging. */
 
 - (BOOL) performDragOperation: (id <NSDraggingInfo>)sender
 {
+  /* In general, the position where the dragging source was dropped is given by
+     _dragTargetLocation. However, when dragging a color onto a text view, the
+     cursor is not updated, since the color change always effects the current
+     selection and hence _dragTargetLocation==NSNotFound in that case. */
   NSRange sourceRange = [self selectedRange];
-  NSRange changeRange = NSMakeRange(_dragTargetLocation, 0);
-  [self _draggingReleaseInsertionPoint];
-  [self setSelectedRange: changeRange];
+  if (_dragTargetLocation != NSNotFound)
+    {
+      NSRange changeRange = NSMakeRange(_dragTargetLocation, 0);
+      [self _draggingReleaseInsertionPoint];
+      [self setSelectedRange: changeRange];
+    }
 
   if ([sender draggingSource] == self &&
       ([sender draggingSourceOperationMask] & NSDragOperationGeneric))
