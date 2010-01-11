@@ -1,3 +1,8 @@
+2010-01-11  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSProgressIndicator.m (-setDisplayedWhenStopped): Fix
+	incorrect assignment which made this method a no-op.
+
 2010-01-11 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Resources/Italian.lproj/Localizable.strings: Regenerate this
@@ -18,7 +23,7 @@
 	* Source/NSAttributedString.m (-fixAttachmentAttributeInRange:):
 	Keep the local copy of string up to date.
 
-2010-01-09  Wolfgang Lux  <wolfgang.lux@mail.com>
+2010-01-09  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSTextView.m (-performDragOperation:): Fix a bug that
 	prevented changing the color of the selected text of a text view

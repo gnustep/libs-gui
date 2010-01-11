@@ -276,8 +276,11 @@
 
 - (void) setDisplayedWhenStopped: (BOOL)flag
 {
-  _isDisplayedWhenStopped = _isDisplayedWhenStopped;
-  [self setNeedsDisplay: YES];
+  if (flag != _isDisplayedWhenStopped)
+    {
+      _isDisplayedWhenStopped = flag;
+      [self setNeedsDisplay: YES];
+    }
 }
 
 - (NSProgressIndicatorStyle) style
