@@ -1412,7 +1412,6 @@ Also returns the child index relative to this parent. */
   [self _autoloadExpandedItems];
 }
 
-
 - (void) editColumn: (int) columnIndex
                 row: (int) rowIndex
           withEvent: (NSEvent *) theEvent
@@ -1472,16 +1471,6 @@ Also returns the child index relative to this parent. */
   [_editedCell setObjectValue: [self _objectValueForTableColumn: tb
                                      row: rowIndex]];
 
-  // We really want the correct background color!
-  if ([_editedCell respondsToSelector: @selector(setBackgroundColor:)])
-    {
-      [(NSTextFieldCell *)_editedCell setBackgroundColor: _backgroundColor];
-    }
-  else
-    {
-      [t setBackgroundColor: _backgroundColor];
-    }
-
   // But of course the delegate can mess it up if it wants
   [self _willDisplayCell: _editedCell
         forTableColumn: tb
@@ -1503,6 +1492,9 @@ Also returns the child index relative to this parent. */
     }
 
   _textObject = [_editedCell setUpFieldEditorAttributes: t];
+  // FIXME: Which background color do we want here?
+  [_textObject setBackgroundColor: [NSColor selectedControlColor]];
+  [_textObject setDrawsBackground: YES];
 
   drawingRect = [self frameOfCellAtColumn: columnIndex  row: rowIndex];
 

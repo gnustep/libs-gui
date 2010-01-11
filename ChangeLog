@@ -1,3 +1,8 @@
+2010-01-11 Quentin Mathe <quentin.mathe@gmail.com>
+
+	* Source/NSOutlineView.m (-editColumn:row:withEvent:select:): Fixed broken 
+	cell editability by replicating NSTableView changes r25091.
+
 2010-01-06 Fred Kiefer <FredKiefer@gmx.de>
 
 	* TextConverters/RTF/RTFConsumer.m (RTFDConsumer-appendImage:):
