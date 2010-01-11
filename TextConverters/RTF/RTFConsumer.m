@@ -461,6 +461,11 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
               [wrapper setIcon: image];
             }
           attachment = [[NSTextAttachment alloc] initWithFileWrapper: wrapper];
+          if (attachment == nil)
+            {
+              NSLog(@"No attachment at %d", oldPosition);
+              return;
+            }
         
           attributes = [[NSMutableDictionary alloc]
 			 initWithObjectsAndKeys:
@@ -474,7 +479,7 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
           [str addAttributes: attributes range: NSMakeRange (0, [str length])];
           
           [result replaceCharactersInRange: insertionRange withAttributedString: str];
-          
+          attr->changed = YES;
           RELEASE(attributes);
           RELEASE(attachment);
           RELEASE(image);
@@ -764,11 +769,15 @@ void GSRTFmangleText (void *ctxt, const char *text)
 
 void GSRTFunicode (void *ctxt, int uchar)
 {
-  unichar chars = uchar;
-  NSString *str = [[NSString alloc] initWithCharacters: &chars 
-				    length: 1];
-  [(RTFConsumer *)ctxt appendString: str];
-  DESTROY(str);
+  // Don't add the attachment character, this gets handled separatly
+  if (uchar != (int)NSAttachmentCharacter)
+    {
+      unichar chars = uchar;
+      NSString *str = [[NSString alloc] initWithCharacters: &chars 
+                                                    length: 1];
+      [(RTFConsumer *)ctxt appendString: str];
+      DESTROY(str);
+    }
 }
 
 void GSRTFregisterFont (void *ctxt, const char *fontName, 

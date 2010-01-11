@@ -1604,6 +1604,7 @@ static NSMutableDictionary *cachedCSets = nil;
 
   // Check for attachment characters without attachments
   location = range.location;
+  string = [self string];
   while (location < end)
     {
       NSRange eRange = [string rangeOfString: attachmentString
@@ -1623,6 +1624,8 @@ static NSMutableDictionary *cachedCSets = nil;
           [self deleteCharactersInRange: NSMakeRange (eRange.location, 1)];
           eRange.length--;
           end--;
+          // Need to reset this after every character change
+          string = [self string];
         }
 
       location = NSMaxRange (eRange);

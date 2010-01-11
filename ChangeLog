@@ -1,3 +1,13 @@
+2010-01-06 Fred Kiefer <FredKiefer@gmx.de>
+
+	* TextConverters/RTF/RTFConsumer.m (RTFDConsumer-appendImage:):
+	Flag the attributes as being changed. This prevents the next
+	appended string from getting that attachment attribute.
+	* TextConverters/RTF/RTFConsumer.m (GSRTFunicode): Don't append
+	the attachment character.
+	* Source/NSAttributedString.m (-fixAttachmentAttributeInRange:):
+	Keep the local copy of string up to date.
+
 2010-01-09  Wolfgang Lux  <wolfgang.lux@mail.com>
 
 	* Source/NSTextView.m (-performDragOperation:): Fix a bug that
