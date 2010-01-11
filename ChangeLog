@@ -1,6 +1,10 @@
 2010-01-11  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
-	* Source/NSProgressIndicator.m (-setDisplayedWhenStopped): Fix
+	* Source/NSDocument.m (-writeSafelyToURL:ofType:...): Ensure
+	proper working of autosaving for subclasses that override
+	-writeWithBackupToFile:ofType:saveOperation.
+
+	* Source/NSProgressIndicator.m (-setDisplayedWhenStopped:): Fix
 	incorrect assignment which made this method a no-op.
 
 2010-01-11 Fred Kiefer <FredKiefer@gmx.de>

@@ -868,15 +868,28 @@ withContentsOfURL: (NSURL *)url
       
   if (OVERRIDDEN(writeWithBackupToFile:ofType:saveOperation:))
     {
+      BOOL isAutosave = NO;
+
       if (op == NSAutosaveOperation)
         {
           op = NSSaveToOperation;
+          isAutosave = YES;
         }
 
       *error = nil; 
-      return [self writeWithBackupToFile: [url path] 
-                   ofType: type 
-                   saveOperation: op];
+      if (![self writeWithBackupToFile: [url path] 
+                 ofType: type 
+                 saveOperation: op])
+	{
+	  return NO;
+	}
+
+      if (isAutosave)
+	{
+	  [self setAutosavedContentsFileURL: url];
+	  [self updateChangeCount: NSChangeAutosaved];
+	}
+      return YES;
     }
 
   if (!isNativeType || (url == nil))
