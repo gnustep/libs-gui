@@ -983,5 +983,11 @@ withRepeatedImage: (NSImage*)image
 		  flipped: (BOOL)flipped;
 @end
 
+@interface GSTheme (Menus)
+- (void) setMenu: (NSMenu *)menu
+       forWindow: (NSWindow *)window;
+- (void) processCommand: (void *)context;
+@end 
+
 #endif /* OS_API_VERSION */
 #endif /* _GNUstep_H_GSTheme */

@@ -42,11 +42,15 @@ typedef	enum {
   NSMacintoshInterfaceStyle = 2,
   NSWindows95InterfaceStyle = 3,
 
-/*
- * GNUstep specific. Blame: Michael Hanni.
- */ 
+  /*
+   * GNUstep specific. Blame: Michael Hanni.
+   */ 
+  GSWindowMakerInterfaceStyle = 4,
 
-  GSWindowMakerInterfaceStyle = 4
+  /*
+   * GNUstep specific style for native menus.
+   */
+  GSNativeInterfaceStyle = 5
 
 } NSInterfaceStyle;
 

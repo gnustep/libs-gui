@@ -1,3 +1,21 @@
+2010-01-13 15:49-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Added methods
+	to support adding menus and processing commands from windows, if
+	appropriate.
+	* Headers/Additions/GNUstepGUI/GSWindowDecorationView.h: Added
+	new methods for menu and toolbar flags.
+	* Headers/AppKit/NSInterfaceStyle.h: Added new interface style.
+	* Source/GNUmakefile: Added header.
+	* Source/GSStandardWindowDecorationView.m: Change include
+	to include header in new location.
+	* Source/GSThemeMenu.m: Default theme implementation for
+	Menus.
+	* Source/GSWindowDecorationView.m: Add the setHasMenu:/setHasToolbar:
+	flags.
+	* Source/NSWindow.m: Use the theme to set the menu instead of
+	setting it directly.
+
 2010-01-11  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSDocument.m (-writeSafelyToURL:ofType:...): Ensure

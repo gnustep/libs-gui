@@ -24,7 +24,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "GSWindowDecorationView.h"
+#include <GNUstepGUI/GSWindowDecorationView.h>
 
 #include <Foundation/NSEnumerator.h>
 #include <Foundation/NSException.h>
@@ -117,6 +117,16 @@
                           styleMask: [w styleMask]];
     }
   return self;
+}
+
+- (void) setHasMenu: (BOOL) flag
+{
+  hasMenu = flag;
+}
+
+- (void) setHasToolbar: (BOOL) flag
+{
+  hasToolbar = flag;
 }
 
 - (NSRect) contentRectForFrameRect: (NSRect)aRect

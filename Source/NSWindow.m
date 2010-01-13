@@ -78,13 +78,15 @@
 #include "AppKit/NSWindowController.h"
 #include "GSBindingHelpers.h"
 #include "AppKit/PSOperators.h"
+#include "GNUstepGUI/GSTheme.h"
 #include "GNUstepGUI/GSTrackingRect.h"
 #include "GNUstepGUI/GSDisplayServer.h"
 #include "GSGuiPrivate.h"
 #include "GSToolTips.h"
 #include "GSIconManager.h"
-#include "GSWindowDecorationView.h"
 #include "NSToolbarFrameworkPrivate.h"
+
+#include <GNUstepGUI/GSWindowDecorationView.h>
 
 #define GSI_ARRAY_TYPES 0
 #define GSI_ARRAY_TYPE NSWindow *
@@ -5321,32 +5323,11 @@ current key view.<br />
 
 - (void) setMenu: (NSMenu *)menu
 {
-  if ([self menu] != menu)
-    {
-      NSMenuView *menuView;
+  // Do theme specific logic...
+  [[GSTheme theme] setMenu: menu forWindow: self];
 
-      /* Restore the old representation to its original menu after
-       * removing it from the window.  If we didn't do this, the menu
-       * representation would be left without a partent view or
-       * window to draw in.
-       */
-      menuView = [_wv removeMenuView];
-      [[self menu] setMenuRepresentation: menuView];
-      [menuView sizeToFit];
-
-      /* Set the new menu, and transfer the new menu representation
-       * to the window decoration view.
-       */
-      [super setMenu: menu];
-      menuView = [menu menuRepresentation];
-      if (menuView != nil)
-	{
-	  [menu close];
-	  [menuView setHorizontal: YES];
-	  [menuView sizeToFit];
-	  [_wv addMenuView: menuView];
-	}
-    }
+  if([self menu] != menu)
+    [super setMenu: menu];
 }
 
 @end

@@ -39,7 +39,8 @@
 #include "AppKit/PSOperators.h"
 #include "GNUstepGUI/GSDisplayServer.h"
 #include "GNUstepGUI/GSTheme.h"
-#include "GSWindowDecorationView.h"
+
+#include <GNUstepGUI/GSWindowDecorationView.h>
 
 @interface GSStandardWindowDecorationView (GSTheme)
 - (void) _themeDidActivate: (NSNotification*)notification;

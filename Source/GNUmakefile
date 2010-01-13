@@ -203,6 +203,7 @@ linking.m \
 GSTheme.m \
 GSThemeDrawing.m \
 GSThemeInspector.m \
+GSThemeMenu.m \
 GSThemePanel.m \
 GSThemeTools.m \
 GSDragView.m \
@@ -439,7 +440,8 @@ GSPDFPrintOperation.h \
 GSModelLoaderFactory.h \
 GSInstantiator.h \
 GSSoundSink.h \
-GSSoundSource.h
+GSSoundSource.h \
+GSWindowDecorationView.h
 
 libgnustep-gui_HEADER_FILES = ${GUI_HEADERS}
 
