@@ -2346,6 +2346,9 @@ image.</p><p>See Also: -applicationIconImage</p>
  */
 - (void) hide: (id)sender
 {
+#ifdef __MINGW32__
+  [self miniaturizeAll: sender];
+#else
   if (_app_is_hidden == NO)
     {
       NSArray		*windows_list;
@@ -2424,6 +2427,7 @@ image.</p><p>See Also: -applicationIconImage</p>
 		      object: [NSWorkspace sharedWorkspace]
 		    userInfo: info];
     }
+#endif
 }
 
 /**<p>Returns whether app is currently in hidden state.</p>
