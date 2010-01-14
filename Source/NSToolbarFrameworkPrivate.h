@@ -35,7 +35,7 @@
 #include "AppKit/NSToolbarItem.h"
 #include "GNUstepGUI/GSToolbarView.h"
 
-#include "GSWindowDecorationView.h"
+#include <GNUstepGUI/GSWindowDecorationView.h>
 
 @interface GSToolbarView (GNUstepPrivate)
 - (void) _reload;

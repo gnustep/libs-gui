@@ -1,3 +1,8 @@
+2010-01-14 04:07-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSToolbarFrameworkPrivate.h: Correct include for new
+	location of GSWidnowDecorationView.h.
+
 2010-01-14 03:19-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSWindowDecorationView.h: Removed from here since I moved
