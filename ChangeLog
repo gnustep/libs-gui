@@ -1,3 +1,8 @@
+2010-01-14 03:19-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSWindowDecorationView.h: Removed from here since I moved
+	it to the GNUstepGUI headers.
+
 2010-01-13 15:49-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Added methods
