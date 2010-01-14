@@ -869,6 +869,8 @@ many times.
                     : _backingType
                     : _styleMask
                     : [_screen screenNumber]];
+  if (_windowNum == 0)
+    [NSException raise:@"No Window" format:@"Failed to obtain window from the back end"];
   [srv setwindowlevel: [self level] : _windowNum];
   if (_parent != nil)
     [srv setParentWindow: [_parent windowNumber] 

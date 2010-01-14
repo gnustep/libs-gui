@@ -1,3 +1,9 @@
+2010-01-14  Doug Simons  <doug.simons@testplant.com>
+
+	* Source/NSWindow.m (-_initBackendWindow): Raise an
+	exception instead of crashing (at least on Windows) when we
+	fail to obtain a window from the back end.
+
 2010-01-14 07:08-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSApplication.m: For hide: perform miniaturizeAll: 
