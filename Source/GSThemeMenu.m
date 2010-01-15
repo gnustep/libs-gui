@@ -29,6 +29,7 @@
 #include <Foundation/NSString.h>
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSWindow.h>
+#include <AppKit/NSMenuView.h>
 
 #include <GNUstepGUI/GSTheme.h>
 #include <GNUstepGUI/GSWindowDecorationView.h>
@@ -82,6 +83,11 @@
 {
   // this is only implemented when we handle native menus.
   // put code in here to handle commands from the native menu structure.
+}
+
+- (float) menuHeightForWindow: (NSWindow *)window
+{
+  return [NSMenuView menuBarHeight];
 }
 @end
 

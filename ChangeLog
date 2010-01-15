@@ -1,3 +1,13 @@
+2010-01-15 13:08-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Added method to call
+	back menuHeightForWindow:
+	* Source/GSThemeMenu.m: Added default implementation of 
+	menuHeightForWindow:.  Default implementation returns NSMenuView
+	menuBarHeight.
+	* Source/GSWindowDecorationView.m: Use menuHeightForWindow: instead
+	of getting it directly from the menu view.
+
 2010-01-14  Doug Simons  <doug.simons@testplant.com>
 
 	* Source/NSWindow.m (-_initBackendWindow): Raise an

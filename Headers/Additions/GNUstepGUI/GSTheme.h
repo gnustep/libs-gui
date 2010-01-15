@@ -987,6 +987,7 @@ withRepeatedImage: (NSImage*)image
 - (void) setMenu: (NSMenu *)menu
        forWindow: (NSWindow *)window;
 - (void) processCommand: (void *)context;
+- (float) menuHeightForWindow: (NSWindow *)window;
 @end 
 
 #endif /* OS_API_VERSION */

@@ -138,7 +138,11 @@
 
   if ([_window menu] != nil)
     {
-      content.size.height -= [NSMenuView menuBarHeight];
+      float	menubarHeight = [[GSTheme theme] 
+				  menuHeightForWindow: 
+				    [self window]];
+  
+      content.size.height -= menubarHeight;
     }
 
   if ([tb isVisible])
@@ -158,7 +162,11 @@
 
   if ([_window menu] != nil)
     {
-      aRect.size.height += [NSMenuView menuBarHeight];
+      float	menubarHeight = [[GSTheme theme] 
+				  menuHeightForWindow: 
+				    [self window]];
+
+      aRect.size.height += menubarHeight;
     }
 
   if ([tb isVisible])
@@ -229,8 +237,10 @@
   if (hasMenu)
     {
       NSMenuView *menuView;
-      float menuBarHeight = [NSMenuView menuBarHeight];
-
+      float menuBarHeight = [[GSTheme theme] 
+				  menuHeightForWindow: 
+				[self window]];
+      
       menuView = [[_window menu] menuRepresentation];
       [menuView setFrame: NSMakeRect(
               contentViewFrame.origin.x,
@@ -380,7 +390,11 @@
   contentYOrigin = NSMaxY(contentRect);
   if(hasMenu)
     {
-      contentYOrigin -= [NSMenuView menuBarHeight];
+      float menuBarHeight = [[GSTheme theme] 
+				  menuHeightForWindow: 
+				[self window]];
+
+      contentYOrigin -= menuBarHeight;
     }
 
   // Plug the toolbar view
@@ -430,8 +444,9 @@
 
 - (void) addMenuView: (NSMenuView*)menuView
 {
-  float	menubarHeight = [NSMenuView menuBarHeight];
-  
+  float	menubarHeight = [[GSTheme theme] 
+			  menuHeightForWindow: 
+			    [self window]];
   hasMenu = YES;
   // Plug the menu view
   [menuView setFrame: NSMakeRect(
@@ -448,6 +463,9 @@
 {
   NSEnumerator	*e = [[self subviews] objectEnumerator];
   NSView	*v;
+  float	menubarHeight = [[GSTheme theme] 
+			  menuHeightForWindow: 
+			    [self window]];
   
   while ((v = [e nextObject]) != nil)
     {
@@ -460,7 +478,7 @@
 	  hasMenu = NO;
 	  [RETAIN(v) removeFromSuperviewWithoutNeedingDisplay];
 	  
-	  [self changeWindowHeight: -([NSMenuView menuBarHeight])];  
+	  [self changeWindowHeight: -(menubarHeight)];  
 	  return AUTORELEASE(v);
 	}
     }
