@@ -267,6 +267,26 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
             }
         }
 
+      /* Second search on theme bundle */
+      if (!path)
+	{
+	  if (ext)
+	    path = [[[GSTheme theme] bundle] pathForResource: realName ofType: ext];
+	  else 
+	    {
+	      id o, e;
+	      
+	      e = [array objectEnumerator];
+	      while ((o = [e nextObject]))
+		{
+		  path = [[[GSTheme theme] bundle] pathForResource: realName 
+				                            ofType: o];
+		  if (path != nil && [path length] != 0)
+		    break;
+		}
+	    }
+	}
+
       /* If not found then search in system */
       if (!path)
         {

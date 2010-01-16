@@ -1,3 +1,7 @@
+2010-01-15 German Arias <german@xelalug.org>
+
+	* Source/NSImage.m: Changes to fix bug #28580.
+
 2010-01-15 13:08-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Added method to call
