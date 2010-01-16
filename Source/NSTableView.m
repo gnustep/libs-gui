@@ -38,6 +38,7 @@
 #include <Foundation/NSIndexSet.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSSet.h>
+#include <Foundation/NSSortDescriptor.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSValue.h>
 #include <Foundation/NSKeyedArchiver.h>
@@ -119,6 +120,8 @@ typedef struct _tableViewFlags
 - (BOOL) _shouldSelectRow: (int)rowIndex;
 
 - (BOOL) _shouldSelectionChange;
+- (void) _didChangeSortDescriptors: (NSArray *)oldSortDescriptors;
+- (void) _didClickTableColumn: (NSTableColumn *)tc;
 - (BOOL) _shouldEditTableColumn: (NSTableColumn *)tableColumn
 			    row: (int) rowIndex;
 - (void) _willDisplayCell: (NSCell*)cell
@@ -1991,6 +1994,7 @@ static void computeNewSelection
   _draggingSourceOperationMaskForLocal = NSDragOperationCopy 
       | NSDragOperationLink | NSDragOperationGeneric | NSDragOperationPrivate;
   _draggingSourceOperationMaskForRemote = NSDragOperationNone;
+  ASSIGN(_sortDescriptors, [NSArray array]);
 }
 
 - (id) initWithFrame: (NSRect)frameRect
@@ -2021,6 +2025,7 @@ static void computeNewSelection
   RELEASE (_tableColumns);
   RELEASE (_selectedColumns);
   RELEASE (_selectedRows);
+  RELEASE (_sortDescriptors);
   TEST_RELEASE (_headerView);
   TEST_RELEASE (_cornerView);
   if (_autosaveTableColumns == YES)
@@ -5650,6 +5655,11 @@ This method is deprecated, use -columnIndexesInRect:. */
           [aCoder encodeObject: _cornerView forKey: @"NSCornerView"];
         }
 
+      if ([[self sortDescriptors] count] > 0)
+        {
+          [aCoder encodeObject: _sortDescriptors forKey: @"NSSortDescriptors"];
+        }
+
       tableViewFlags.columnSelection = [self allowsColumnSelection];
       tableViewFlags.multipleSelection = [self allowsMultipleSelection];
       tableViewFlags.emptySelection = [self allowsEmptySelection];
@@ -5710,6 +5720,7 @@ This method is deprecated, use -columnIndexesInRect:. */
       ASSIGN(_gridColor, [NSColor gridColor]); 
       ASSIGN(_backgroundColor, [NSColor controlBackgroundColor]); 
       ASSIGN(_tableColumns, [NSMutableArray array]);
+      ASSIGN(_sortDescriptors, [NSArray array]);
 
       if ([aDecoder containsValueForKey: @"NSDataSource"])
         {
@@ -5784,6 +5795,11 @@ This method is deprecated, use -columnIndexesInRect:. */
           [self setHeaderView: [aDecoder decodeObjectForKey: @"NSHeaderView"]];
         }
 
+      if ([aDecoder containsValueForKey: @"NSSortDescriptors"])
+        {
+          ASSIGN(_sortDescriptors, [aDecoder decodeObjectForKey: @"NSSortDescriptors"]);
+        }
+
       if ([aDecoder containsValueForKey: @"NSTvFlags"])
         {
           unsigned long flags = [aDecoder decodeIntForKey: @"NSTvFlags"];
@@ -5797,7 +5813,7 @@ This method is deprecated, use -columnIndexesInRect:. */
           [self setAllowsColumnResizing: tableViewFlags.columnResizing];
           [self setAllowsColumnReordering: tableViewFlags.columnOrdering];
         }
-      
+ 
       // get the table columns...
       columns = [aDecoder decodeObjectForKey: @"NSTableColumns"];
       e = [columns objectEnumerator];
@@ -5941,15 +5957,40 @@ This method is deprecated, use -columnIndexesInRect:. */
     }
 }
 
-- (void) _didClickTableColumn: (NSTableColumn *)tc
+- (void) _clickTableColumn: (NSTableColumn *)tc
 {
-  if ([_delegate 
-	respondsToSelector:
-	  @selector(tableView:didClickTableColumn:)])
+  NSSortDescriptor *oldMainSortDescriptor = nil;
+  NSSortDescriptor *newMainSortDescriptor = [tc sortDescriptorPrototype];
+  NSMutableArray *newSortDescriptors = 
+    [NSMutableArray arrayWithArray: [self sortDescriptors]];
+  NSEnumerator *e = [newSortDescriptors objectEnumerator];
+  NSSortDescriptor *descriptor = nil;
+  NSMutableArray *outdatedDescriptors = [NSMutableArray array];
+
+  if ([[self sortDescriptors] count] > 0)
     {
-      [_delegate tableView: self
-		 didClickTableColumn: tc];
+      oldMainSortDescriptor = [[self sortDescriptors] objectAtIndex: 0];
     }
+
+  /* Remove every main descriptor equivalents (normally only one) */
+  while ((descriptor = [e nextObject]) != nil)
+    {
+      if ([[descriptor key] isEqual: [newMainSortDescriptor key]])
+        [outdatedDescriptors addObject: descriptor];
+    }
+
+  /* Invert the sort direction when the same column header is clicked twice */
+  if ([[newMainSortDescriptor key] isEqual: [oldMainSortDescriptor key]])
+    {
+      newMainSortDescriptor = [newMainSortDescriptor reversedSortDescriptor];
+    }
+
+  [newSortDescriptors removeObjectsInArray: outdatedDescriptors];
+  [newSortDescriptors insertObject: newMainSortDescriptor atIndex: 0];
+
+  [self setSortDescriptors: newSortDescriptors];
+
+  [self _didClickTableColumn: tc];
 }
 
 - (void) _editNextCellAfterRow: (int) row
@@ -6513,15 +6554,59 @@ This method is deprecated, use -columnIndexesInRect:. */
 /* 
  * sorting 
  */
-- (void) setSortDescriptors: (NSArray *)array
+
+/** Sets the sort descriptors used to sort the rows and delegates the sorting 
+to -tableView:didChangeSortDescriptors or -outlineView:didChangeSortDescriptors:
+in NSOutlineView.
+
+The delegate methods can retrieve the new sort descriptors with 
+-sortDescriptors and override them with -setSortDescriptors:.<br />
+The first object in the new sort descriptor array is the sort descriptor 
+prototype returned by the table column whose header was the last clicked.
+See -[NSTableColumn sortDescriptorPrototype].
+ 
+This method is called automatically when you click on a table column header, 
+so you shouldn't need to call it usually.
+
+Take note the sort descriptors are encoded by the keyed archiving (rarely used 
+since neither IB or Gorm support to set these directly). */
+- (void) setSortDescriptors: (NSArray *)sortDescriptors
 {
-  // FIXME
+  NSArray *oldSortDescriptors = [self sortDescriptors];
+  NSArray *newSortDescriptors = nil;
+
+  /* To replicate precisely the Cocoa behavior */
+  if (sortDescriptors == nil)
+    {
+      newSortDescriptors = [NSArray array];
+    }
+  else
+    {
+      /* _sortDescriptors must remain immutable since -sortDescriptors doesn't 
+         return a defensive copy */
+      newSortDescriptors = [NSArray arrayWithArray: sortDescriptors];
+    }
+
+  if ([newSortDescriptors isEqual: oldSortDescriptors])
+    return;
+
+  RETAIN(oldSortDescriptors);
+
+  ASSIGN(_sortDescriptors, newSortDescriptors);
+  [self _didChangeSortDescriptors: oldSortDescriptors];
+
+  RELEASE(oldSortDescriptors);
 }
 
+/** Returns the current sort descriptors, usually updated every time a click 
+happens on a table column header.
+
+By default, returns an empty array.
+
+For a more detailed explanation, -setSortDescriptors:. */
 - (NSArray *)sortDescriptors
 {
-  // FIXME
-  return nil;
+  return _sortDescriptors;
 }
 
 /*
@@ -6614,6 +6699,26 @@ This method is deprecated, use -columnIndexesInRect:. */
     }
   
   return YES;
+}
+
+- (void) _didChangeSortDescriptors: (NSArray *)oldSortDescriptors
+{
+  if ([_delegate 
+	respondsToSelector: @selector(tableView:sortDescriptorsDidChange:)])
+    {
+      [_delegate tableView: self sortDescriptorsDidChange: oldSortDescriptors];
+    }
+}
+
+- (void) _didClickTableColumn: (NSTableColumn *)tc
+{
+  if ([_delegate 
+	respondsToSelector:
+	  @selector(tableView:didClickTableColumn:)])
+    {
+      [_delegate tableView: self
+		 didClickTableColumn: tc];
+    }
 }
 
 - (BOOL) _shouldEditTableColumn: (NSTableColumn *)tableColumn

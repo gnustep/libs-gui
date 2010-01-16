@@ -104,6 +104,7 @@ typedef enum _NSTableViewColumnAutoresizingStyle
   BOOL               _autosaveTableColumns;
   NSString          *_autosaveName;
   BOOL              _verticalMotionDrag;
+  NSArray           *_sortDescriptors;
 
   /*
    * Ivars Acting as Cache 
@@ -318,8 +319,10 @@ typedef enum _NSTableViewColumnAutoresizingStyle
 #endif
 
 /* sorting */
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (void) setSortDescriptors: (NSArray *)array;
 - (NSArray *) sortDescriptors;
+#endif
 
 @end /* interface of NSTableView */
 
@@ -375,12 +378,16 @@ APPKIT_EXPORT NSString *NSTableViewSelectionIsChangingNotification;
 @interface NSObject (NSTableViewDelegate)
 
 - (BOOL) selectionShouldChangeInTableView: (NSTableView *)aTableView;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (void) tableView: (NSTableView*)tableView
+  sortDescriptorsDidChange: (NSArray *)oldSortDescriptors;
 - (void) tableView: (NSTableView*)tableView
 didClickTableColumn: (NSTableColumn *)tableColumn;
 - (void) tableView: (NSTableView*)tableView
 didDragTableColumn: (NSTableColumn *)tableColumn;
 - (void) tableView: (NSTableView*)tableView
 mouseDownInHeaderOfTableColumn: (NSTableColumn *)tableColumn;
+#endif
 - (BOOL)tableView: (NSTableView *)aTableView 
 shouldEditTableColumn: (NSTableColumn *)aTableColumn 
 	      row: (int)rowIndex;

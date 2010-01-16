@@ -264,6 +264,14 @@ willDisplayOutlineCell: (id)cell
  * the selection is allowed and NO, if not.
  */
 - (BOOL) selectionShouldChangeInOutlineView: (NSOutlineView *)outlineView;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
+- (void) outlineView: (NSOutlineView *)outlineView
+  sortDescriptorsDidChange: (NSArray *)oldSortDescriptors;
+- (void) outlineView: (NSOutlineView *)outlineView
+  didClickTableColumn: (NSTableColumn *)aTableColumn;
+#endif
+
 @end
 
 #endif /* _GNUstep_H_NSOutlineView */

@@ -55,7 +55,7 @@
                            width: (float)width;
 - (float *) _columnOrigins;
 - (void) _mouseDownInHeaderOfTableColumn: (NSTableColumn *)tc;
-- (void) _didClickTableColumn: (NSTableColumn *)tc;
+- (void) _clickTableColumn: (NSTableColumn *)tc;
 @end
 
 @implementation NSTableHeaderView
@@ -753,11 +753,8 @@
             
           if (mouseDragged == NO)
             {
-              [_tableView _selectColumn: columnIndex
-                          modifiers: modifiers];
-              
-              [_tableView _didClickTableColumn:
-                           currentColumn];
+              [_tableView _selectColumn: columnIndex modifiers: modifiers];
+              [_tableView _clickTableColumn: currentColumn];
 
               [self setNeedsDisplay: YES];;
             }
@@ -842,10 +839,8 @@
             }
           else
             {
-              [_tableView _selectColumn: columnIndex
-                          modifiers: modifiers];
-              [_tableView _didClickTableColumn:
-                           currentColumn];
+              [_tableView _selectColumn: columnIndex modifiers: modifiers];
+              [_tableView _clickTableColumn: currentColumn];
 
               [self setNeedsDisplay: YES];
               /*              

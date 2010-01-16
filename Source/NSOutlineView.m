@@ -1663,6 +1663,24 @@ Also returns the child index relative to this parent. */
   return YES;
 }
 
+- (void) _didChangeSortDescriptors: (NSArray *)oldSortDescriptors
+{
+  if ([_delegate 
+	respondsToSelector: @selector(outlineView:sortDescriptorsDidChange:)])
+    {
+      [_delegate outlineView: self sortDescriptorsDidChange: oldSortDescriptors];
+    }
+}
+
+- (void) _didClickTableColumn: (NSTableColumn *)tc
+{
+  if ([_delegate 
+	respondsToSelector: @selector(outlineView:didClickTableColumn:)])
+    {
+      [_delegate outlineView: self didClickTableColumn: tc];
+    }
+}
+
 - (BOOL) _shouldEditTableColumn: (NSTableColumn *)tableColumn
                             row: (int) rowIndex
 {

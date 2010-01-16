@@ -1,3 +1,26 @@
+2010-01-16 Quentin Mathe <quentin.mathe@gmail.com>
+
+	Finished to implement the NSTable/OutlineView sort descriptor support.
+	More changes are needed to get proper sorting support (e.g. visual 
+	feedback).
+	* Headers/NSTableView.h:
+	Added _sortDescriptors ivar.
+	(-tableView:sortDescriptorsDidChange:): Declared.
+	* Source/NSTableView.m
+	(-_clickTableColumn:, -_didChangeSortDescriptors:): Added. 
+	(-_initDefaults, -dealloc): Modified to initialize/release 
+	_sortDescriptors ivar.
+	(-initWithCoder:, -encodeWithCoder:): Modified to support archiving 
+	the sort descriptors.
+	(-setSortSelectors:, -sortSelectors): Implemented.
+	* Source/NSTableHeaderView.m (-mouseDown:): Modified to now call 
+	-_clickTableColumn which prepares the sort descriptors among other 
+	things. -_didClickTableColumn: will be called by -_clickTableColumn:.
+	* Headers/NSOutlineView.h (-outlineView:sortDescriptorsDidChange:, 
+	-outlineView:didClickTableColumn:): Declared.
+	* Source/NSOutlineView.m (-_didClickTableColumn:, 
+	-_didChangeSortDescriptors:): Added overriden NSTableView methods.
+
 2010-01-15 German Arias <german@xelalug.org>
 
 	* Source/NSImage.m: Changes to fix bug #28580.
