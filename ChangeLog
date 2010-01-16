@@ -1,3 +1,11 @@
+2010-01-16 Quentin Mathe <quentin.mathe@gmail.com>
+
+	* Source/NSTableView.m (-_selectColumn:modifiers:): Rewrote to be 
+	simpler, support selection by range as Cocoa does and to remove the 
+	toggle selection behavior when a column is clicked twice. This toggle 
+	behavior was in conflict with the ability to change the sort direction 
+	by clicking in an already selected column header.
+
 2010-01-16 14:55-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSWindow.m: Don't use the flags for key/main window tracking.

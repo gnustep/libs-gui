@@ -2359,84 +2359,62 @@ static void computeNewSelection
 /*
  * And this when it gets a simple click which turns out to be for 
  * selecting/deselecting a column.
+ * We don't support subtracting a column from the selection (Cocoa doesn't 
+ * either).
+ * However we support adding a distinct column with the control key (unlike 
+ * Cocoa where the user can only make column range selection).
  */
-
 - (void) _selectColumn: (int)columnIndex
 	     modifiers: (unsigned int)modifiers
 {
-  if (_allowsColumnSelection == NO)
+  NSIndexSet *oldIndexes = [self selectedColumnIndexes];
+  BOOL addRange = ((modifiers & NSShiftKeyMask)
+    && _allowsMultipleSelection && [oldIndexes count] > 0);
+  BOOL addSingle = ((modifiers & NSControlKeyMask)
+    && _allowsMultipleSelection);
+  BOOL shouldSelect = ([self _shouldSelectionChange] 
+    && [self _shouldSelectTableColumn: [_tableColumns objectAtIndex: columnIndex]]);
+  NSIndexSet *newIndexes = [NSIndexSet indexSetWithIndex: columnIndex];
+
+  if (_allowsColumnSelection == NO || shouldSelect == NO)
     {
       return;
     }
 
-  if ([self isColumnSelected: columnIndex] == YES)
+  if (_selectingColumns == NO)
     {
-      if (([_selectedColumns count] == 1) && (_allowsEmptySelection == NO))
-	{
-	  return;
-	}
-	  
-      if ([self _shouldSelectionChange] == NO)
-	{
-	  return;
-	}
-
-      if (_selectingColumns == NO)
-	{
-	  [self _setSelectingColumns: YES];
-	}
-
-      [self deselectColumn: columnIndex];
-      return;
+      [self _setSelectingColumns: YES];
     }
-  else // column is not selected 
+
+  /* Single select has priority over range select when both modifiers are pressed */
+  if (addSingle)
+    { 
+      [self selectColumnIndexes: newIndexes byExtendingSelection: YES];
+    }
+  else if (addRange)
     {
-      BOOL newSelection;
-      
-      if ((modifiers & (NSShiftKeyMask | NSAlternateKeyMask)) 
-	  && _allowsMultipleSelection)
-	{
-	  newSelection = NO;
-	}
+      NSUInteger firstIndex = [oldIndexes firstIndex];
+      NSUInteger lastIndex = [oldIndexes lastIndex];
+      NSRange range;
+
+      /* We extend the selection to the left or the right of the last selected 
+         column. */
+      if (columnIndex > [self selectedColumn])
+        {
+          lastIndex = columnIndex;
+        }
       else
-	{
-	  newSelection = YES;
-	}
+        {
+          firstIndex = columnIndex;
+        }
 
-      if (([_selectedColumns count] > 0) && (_allowsMultipleSelection == NO)
-	  && (newSelection == NO))
-	{
-	  return;
-	}
-      
-      if ([self _shouldSelectionChange] == NO)
-	{
-	  return;
-	}
-      
-      {
-	NSTableColumn *tc = [_tableColumns objectAtIndex: columnIndex];
-	if ([self _shouldSelectTableColumn: tc] == NO)
-	  {
-	    return;
-	  }
-      }
-
-      if (_selectingColumns == NO)
-	{
-	  [self _setSelectingColumns: YES];
-	}
-
-      if (newSelection == YES)
-	{
-	  /* No shift or alternate key pressed: clear the old selection */
-	  [self selectColumn: columnIndex  byExtendingSelection: NO];
-	}
-      else
-	{
-	  /* Simply add to the old selection */
-	  [self selectColumn: columnIndex  byExtendingSelection: YES];
-	}
+      range = NSMakeRange(firstIndex, lastIndex - firstIndex + 1);
+      newIndexes = [NSIndexSet indexSetWithIndexesInRange: range]; 
+      [self selectColumnIndexes: newIndexes byExtendingSelection: YES];
+    }
+  else
+    {
+      [self selectColumnIndexes: newIndexes byExtendingSelection: NO];
     }
 }
 
