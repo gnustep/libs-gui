@@ -1,3 +1,17 @@
+2010-01-16 14:55-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSWindow.m: Don't use the flags for key/main window tracking.
+	These flags are getting out of sync due to different behavior on
+	different backends.  Also, it's better to keep the state in one place
+	instead of keeping them in sync.  I changed all of the instances of
+	_f.is_key to [self isKeyWindow] and all of the instances of _f.is_main
+	to [self isMainWindow] and those methods now check with NSApp to 
+	determine if the current window is main.   I realize this is slower
+	than the previous method of using flags, but it is also more resilient
+	and reliable when the backend sends extra events.  This corrects the
+	issue on Windows where we were losing the main window and had two 
+	windows marked as "main".
+
 2010-01-16 Quentin Mathe <quentin.mathe@gmail.com>
 
 	Finished to implement the NSTable/OutlineView sort descriptor support.
@@ -25,6 +39,7 @@
 
 	* Source/NSImage.m: Changes to fix bug #28580.
 
+>>>>>>> .r29294
 2010-01-15 13:08-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Added method to call
