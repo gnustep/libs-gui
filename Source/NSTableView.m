@@ -5960,7 +5960,7 @@ This method is deprecated, use -columnIndexesInRect:. */
   /* Invert the sort direction when the same column header is clicked twice */
   if ([[newMainSortDescriptor key] isEqual: [oldMainSortDescriptor key]])
     {
-      newMainSortDescriptor = [newMainSortDescriptor reversedSortDescriptor];
+      newMainSortDescriptor = [oldMainSortDescriptor reversedSortDescriptor];
     }
 
   [newSortDescriptors removeObjectsInArray: outdatedDescriptors];
