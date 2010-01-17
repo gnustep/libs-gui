@@ -869,6 +869,8 @@ many times.
                     : _backingType
                     : _styleMask
                     : [_screen screenNumber]];
+  if (_windowNum == 0)
+    [NSException raise:@"No Window" format:@"Failed to obtain window from the back end"];
   [srv setwindowlevel: [self level] : _windowNum];
   if (_parent != nil)
     [srv setParentWindow: [_parent windowNumber] 
@@ -1440,8 +1442,10 @@ many times.
  */
 - (void) becomeKeyWindow
 {
-  if ([self isKeyWindow])
+  if (_f.is_key == NO)
     {
+      _f.is_key = YES;
+
       if ((!_firstResponder) || (_firstResponder == self))
         {
           if (_initialFirstResponder)
@@ -1467,9 +1471,10 @@ many times.
 
 - (void) becomeMainWindow
 {
-  if ([self isMainWindow] == NO)
+  if (_f.is_main == NO)
     {
-       if ([self isKeyWindow] == NO)
+      _f.is_main = YES;
+      if (_f.is_key == NO)
         {
           [_wv setInputState: GSTitleBarMain];
         }
@@ -1522,12 +1527,12 @@ many times.
 
 - (BOOL) isKeyWindow
 {
-  return ([NSApp keyWindow] == self);
+  return _f.is_key;
 }
 
 - (BOOL) isMainWindow
 {
-  return ([NSApp mainWindow] == self);
+  return _f.is_main;
 }
 
 - (BOOL) isMiniaturized
@@ -1565,7 +1570,7 @@ many times.
 
 - (void) makeKeyWindow
 {
-  if (!_f.visible || _f.is_miniaturized || [self isKeyWindow])
+  if (!_f.visible || _f.is_miniaturized || _f.is_key == YES)
     {
       return;
     }
@@ -1578,11 +1583,10 @@ many times.
 
 - (void) makeMainWindow
 {
-    if (!_f.visible || _f.is_miniaturized || [self isMainWindow])
+  if (!_f.visible || _f.is_miniaturized || _f.is_main == YES)
     {
       return;
     }
-
   if (![self canBecomeMainWindow])
     return;
   [[NSApp mainWindow] resignMainWindow];
@@ -1762,13 +1766,15 @@ many times.
 
 - (void) resignKeyWindow
 {
-  if ([self isKeyWindow])
+  if (_f.is_key == YES)
     {
       if ((_firstResponder != self)
           && [_firstResponder respondsToSelector: @selector(resignKeyWindow)])
         [_firstResponder resignKeyWindow];
 
-      if ([self isMainWindow])
+      _f.is_key = NO;
+
+      if (_f.is_main == YES)
         {
           [_wv setInputState: GSTitleBarMain];
         }
@@ -1784,9 +1790,10 @@ many times.
 
 - (void) resignMainWindow
 {
-  if ([self isMainWindow])
+  if (_f.is_main == YES)
     {
-      if ([self isKeyWindow])
+      _f.is_main = NO;
+      if (_f.is_key == YES)
         {
           [_wv setInputState: GSTitleBarKey];
         }
@@ -2565,7 +2572,7 @@ discardCursorRectsForView(NSView *theView)
 
       if (_f.cursor_rects_valid)
         {
-          if ([self isKeyWindow] && _f.cursor_rects_enabled)
+          if (_f.is_key && _f.cursor_rects_enabled)
             {
               NSEvent *e = [NSEvent otherEventWithType: NSAppKitDefined
                                               location: NSMakePoint(-1, -1)
@@ -2616,7 +2623,7 @@ resetCursorRectsForView(NSView *theView)
   resetCursorRectsForView(_wv);
   _f.cursor_rects_valid = YES;
 
-  if ([self isKeyWindow] && _f.cursor_rects_enabled)
+  if (_f.is_key && _f.cursor_rects_enabled)
     {
       NSPoint loc = [self mouseLocationOutsideOfEventStream];
       if (NSMouseInRect(loc, [_wv bounds], NO))
@@ -3580,12 +3587,12 @@ resetCursorRectsForView(NSView *theView)
     {
       case NSLeftMouseDown:
         {
-          BOOL wasKey = [self isKeyWindow];
+          BOOL wasKey = _f.is_key;
 
           if (_f.has_closed == NO)
             {
               v = [_wv hitTest: [theEvent locationInWindow]];
-              if ([self isKeyWindow] == NO && _windowLevel != NSDesktopWindowLevel)
+              if (_f.is_key == NO && _windowLevel != NSDesktopWindowLevel)
                 {
                   /* NSPanel modification: check becomesKeyOnlyIfNeeded. */
                   if (![self becomesKeyOnlyIfNeeded]
@@ -3737,7 +3744,7 @@ resetCursorRectsForView(NSView *theView)
          */
         (*ctImp)(self, ctSel, _wv, theEvent);
         
-        if ([self isKeyWindow])
+        if (_f.is_key)
           {
             /*
              * We need to go through all of the views, and if there is any with
@@ -3952,7 +3959,7 @@ resetCursorRectsForView(NSView *theView)
                * determine if we should send a NSMouseExited event.  */
               (*ctImp)(self, ctSel, _wv, theEvent);
 
-              if ([self isKeyWindow])
+              if (_f.is_key)
                 {
                   /*
                    * We need to go through all of the views, and if
