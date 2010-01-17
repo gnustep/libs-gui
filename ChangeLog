@@ -1,3 +1,8 @@
+2010-01-18 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Source/NSImage.m: _useFromFile: make extension checking case
+	insensitive
+
 2010-01-17 01:04-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSWindow.m: Temporarily revert previous change for debugging.

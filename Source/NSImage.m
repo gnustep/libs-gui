@@ -1810,7 +1810,7 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
       return NO;
     }
 
-  ext = [fileName pathExtension];
+  ext = [[fileName pathExtension] lowercaseString];
   if (!ext)
     return NO;
   array = [isa imageFileTypes];
