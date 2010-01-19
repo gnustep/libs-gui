@@ -155,7 +155,7 @@ static BOOL menuBarVisible = YES;
   if (style == NSWindows95InterfaceStyle)
     {
       // if we're the top level menu in Windows mode, don't show it.
-      if([_the_menu supermenu] == nil)
+      if([_the_menu supermenu] == nil && [_the_menu _ownedByPopUp] == NO)
 	{
 	  return;
 	}

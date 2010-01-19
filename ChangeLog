@@ -1,3 +1,8 @@
+2010-01-19 13:49-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSMenu.m: Allow menus attached to popups to come up
+	in Windows95 mode.
+
 2010-01-19 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenu.m (-initWithCoder:): Use YES as default value for
