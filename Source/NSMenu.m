@@ -612,7 +612,9 @@ static BOOL menuBarVisible = YES;
 {
   NSMenuView *menuRep;
 
-  [super init];
+  self = [super init];
+  if (!self)
+    return nil;
 
   // Keep the title.
   ASSIGN(_title, aTitle);
@@ -1567,11 +1569,11 @@ static BOOL menuBarVisible = YES;
       //
       if ([aDecoder containsValueForKey: @"NSNoAutoenable"])
         {
-	  dAuto = ([aDecoder decodeBoolForKey: @"NSNoAutoenable"] == NO) ? YES : NO;
+	  dAuto = ![aDecoder decodeBoolForKey: @"NSNoAutoenable"];
 	}
       else
 	{
-	  dAuto = NO;
+	  dAuto = YES;
 	}
       dTitle = [aDecoder decodeObjectForKey: @"NSTitle"];
       dItems = [aDecoder decodeObjectForKey: @"NSMenuItems"];
