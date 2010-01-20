@@ -1,3 +1,9 @@
+2010-01-20 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Source/NSWindow: do not process GSAppKitWindowLeave events for
+	closed windows
+
+	* Source/NSImage.m: _useFromFile: make extension checking case
 2010-01-19 13:49-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSMenu.m: Allow menus attached to popups to come up

@@ -3953,6 +3953,10 @@ resetCursorRectsForView(NSView *theView)
               break;
 
             case GSAppKitWindowLeave:
+	      /* we ignore this event for a window that is already closed */
+	      if (_f.has_closed == YES); 
+	        break;
+
               /*
                * We need to go through all of the views, and if there
                * is any with a tracking rectangle then we need to
