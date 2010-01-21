@@ -85,6 +85,10 @@ add comments above this one
 
 /*** Unmatched/untranslated keys ***/
 
+/*** Strings from ../Source/NSColorPanel.m ***/
+/* File: ../Source/NSColorPanel.m:289 */
+"Opacity" = "Opacidad";
+
 /*** Strings from ../Source/NSOpenPanel.m ***/
 /* File: ../Source/NSOpenPanel.m:92 */
 "Open" = "Abrir";
