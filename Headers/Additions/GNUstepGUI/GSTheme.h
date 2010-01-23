@@ -984,10 +984,10 @@ withRepeatedImage: (NSImage*)image
 @end
 
 @interface GSTheme (Menus)
-- (void) setMenu: (NSMenu *)menu
-       forWindow: (NSWindow *)window;
-- (void) processCommand: (void *)context;
+- (void)  setMenu: (NSMenu *)menu forWindow: (NSWindow *)window;
+- (void)  processCommand: (void *)context;
 - (float) menuHeightForWindow: (NSWindow *)window;
+- (void)  updateMenu: (NSMenu *)menu forWindow: (NSWindow *)window;
 @end 
 
 #endif /* OS_API_VERSION */

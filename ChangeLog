@@ -1,3 +1,13 @@
+2010-01-23 18:41-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Add updateMenu:forWindow:
+	* Source/GSThemeMenu.m: Add default implementation of new method.
+	* Source/GSWindowDecorationView.m: Add code to use value
+	returned from menuHeightForWindow:.
+	* Source/NSWindow.m: initWithContentRect:.. call setMenu: here so that
+	the menu is added immediately when the window is created.  Also
+	add code to update menus.  
+
 2010-01-20 German Arias <german@xelalug.org>
 
 	* Resources/Spanish.lproj/Localizable.strings: Added translation to "Opacity".

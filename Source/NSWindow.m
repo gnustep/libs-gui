@@ -983,6 +983,8 @@ many times.
                     screen: (NSScreen*)aScreen
 {
   NSRect  cframe;
+  NSInterfaceStyle style = 
+    NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
 
   NSAssert(NSApp,
     @"The shared NSApplication instance must be created before windows "
@@ -1055,6 +1057,14 @@ many times.
          selector: @selector(colorListChanged:)
              name: NSColorListChangedNotification
            object: nil];
+
+  if (style == NSWindows95InterfaceStyle)
+    {
+      if([self canBecomeMainWindow])
+	{
+	  [self setMenu: [NSApp mainMenu]];
+	}
+    }
 
   NSDebugLLog(@"NSWindow", @"NSWindow end of init\n");
   return self;
@@ -2300,8 +2310,19 @@ many times.
     }
 }
 
-- (void) update
+- (void) _menuUpdate
 {
+   NSInterfaceStyle style = 
+     NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
+   if(style == NSWindows95InterfaceStyle)
+     {
+       //[[GSTheme theme] updateMenu: [self menu] forWindow: self];
+     }
+}
+
+- (void) update
+{									
+  [self _menuUpdate];
   [nc postNotificationName: NSWindowDidUpdateNotification object: self];
 }
 

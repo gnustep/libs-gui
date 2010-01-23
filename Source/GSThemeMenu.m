@@ -89,5 +89,10 @@
 {
   return [NSMenuView menuBarHeight];
 }
+
+- (void) updateMenu: (NSMenu *)menu forWindow: (NSWindow *)window
+{
+  // default implementation of this method does nothing.
+}
 @end
 

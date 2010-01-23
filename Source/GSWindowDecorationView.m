@@ -139,8 +139,8 @@
   if ([_window menu] != nil)
     {
       float	menubarHeight = [[GSTheme theme] 
-				  menuHeightForWindow: 
-				    [self window]];
+					 menuHeightForWindow: 
+				    _window];
   
       content.size.height -= menubarHeight;
     }
@@ -164,7 +164,7 @@
     {
       float	menubarHeight = [[GSTheme theme] 
 				  menuHeightForWindow: 
-				    [self window]];
+				    _window];
 
       aRect.size.height += menubarHeight;
     }
@@ -229,7 +229,7 @@
   NSRect contentViewFrame;
   NSToolbar *tb = [_window toolbar];
   NSRect frame = [window frame];
-      
+
   frame.origin = NSZeroPoint;
   contentViewFrame = [isa contentRectForFrameRect: frame
                           styleMask: [window styleMask]];
@@ -237,9 +237,8 @@
   if (hasMenu)
     {
       NSMenuView *menuView;
-      float menuBarHeight = [[GSTheme theme] 
-				  menuHeightForWindow: 
-				[self window]];
+      GSTheme *theme = [GSTheme theme];
+      float menuBarHeight = [theme menuHeightForWindow: _window];
       
       menuView = [[_window menu] menuRepresentation];
       [menuView setFrame: NSMakeRect(
@@ -390,10 +389,7 @@
   contentYOrigin = NSMaxY(contentRect);
   if(hasMenu)
     {
-      float menuBarHeight = [[GSTheme theme] 
-				  menuHeightForWindow: 
-				[self window]];
-
+      float menuBarHeight = [[GSTheme theme] menuHeightForWindow: _window];
       contentYOrigin -= menuBarHeight;
     }
 
@@ -446,7 +442,7 @@
 {
   float	menubarHeight = [[GSTheme theme] 
 			  menuHeightForWindow: 
-			    [self window]];
+			    _window];
   hasMenu = YES;
   // Plug the menu view
   [menuView setFrame: NSMakeRect(
@@ -465,7 +461,7 @@
   NSView	*v;
   float	menubarHeight = [[GSTheme theme] 
 			  menuHeightForWindow: 
-			    [self window]];
+			    _window];
   
   while ((v = [e nextObject]) != nil)
     {
