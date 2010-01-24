@@ -65,6 +65,8 @@ static NSMapTable *viewInfo = 0;
 
 #define cellRects ((GSIArray)NSMapGet(viewInfo, self))
 
+#define HORIZONTAL_MENU_LEFT_PADDING 8
+
 /*
   NSMenuView contains:
 
@@ -641,7 +643,7 @@ static NSMapTable *viewInfo = 0;
     {
       unsigned i;
       unsigned howMany = [_itemCells count];
-      float currentX = 8;
+      float currentX = HORIZONTAL_MENU_LEFT_PADDING;
 //      NSRect scRect = [[NSScreen mainScreen] frame];
 
       GSIArrayRemoveAllItems(cellRects);
@@ -951,6 +953,14 @@ static NSMapTable *viewInfo = 0;
       //NSLog(@"indexOfItemAtPoint called for %@ %@ %d %@", self, NSStringFromPoint(point), i, NSStringFromRect(aRect));
       aRect.origin.x -= _leftBorderOffset;
       aRect.size.width +=  _leftBorderOffset;
+
+      // For horizontal menus, clicking in the left padding should be treated
+      // as hitting the first menu item.
+      if (_horizontal == YES && i == 0)
+        {
+          aRect.origin.x -= HORIZONTAL_MENU_LEFT_PADDING;
+          aRect.size.width += HORIZONTAL_MENU_LEFT_PADDING;
+        }
 
       if (NSMouseInRect(point, aRect, NO))
         return (int)i;

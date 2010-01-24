@@ -1,3 +1,11 @@
+2010-01-23 Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/NSMenuView.m: For horizontal menus, treat clicking in the
+	8 pixels of padding to the left of the first menu item as activating
+	the first menu item.
+	This lets you open the application menu with a Macintosh-syle
+	menu bar when the mouse is on the top-left pixel of the screen. 
+
 2010-01-23 18:41-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Add updateMenu:forWindow:
