@@ -1,5 +1,14 @@
 2010-01-23 Eric Wasylishen <ewasylishen@gmail.com>
 
+	* Source/GSWindowDecorationView.m: In drawRect:, clear the window
+	background before getting the theme to draw its background.
+	This makes windows with semitransparent background colors work
+	properly.
+	NOTE: While the clear operation is very fast, we may want to only do
+	it if the window background colour has an alpha value of < 1.
+
+2010-01-23 Eric Wasylishen <ewasylishen@gmail.com>
+
 	* Source/NSMenuView.m: For horizontal menus, treat clicking in the
 	8 pixels of padding to the left of the first menu item as activating
 	the first menu item.

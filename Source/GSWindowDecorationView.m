@@ -355,6 +355,9 @@
 {
   if (NSIntersectsRect(rect, contentRect))
     {
+      // Since this is the outermost view, we have to clear the contentRect
+      // in case the theme's window background is not opaque.
+      NSRectFillUsingOperation(contentRect, NSCompositeClear);  
       [[GSTheme theme] drawWindowBackground: contentRect view: self];
     }
 }
