@@ -1,3 +1,8 @@
+2010-01-24 03:07-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSWindow.m: Uncomment updateMenu:.. method call in 
+	-[NSWindow update] method.
+
 2010-01-23 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/NSColorWell.m: Add a minimum distance which you need to
@@ -34,8 +39,10 @@
 
 2010-01-20 German Arias <german@xelalug.org>
 
-	* Resources/Spanish.lproj/Localizable.strings: Added translation to "Opacity".
-	* ColorPickers/Spanish.lproj/StandardPicker.strings: Corrected the file path in the commentary.
+	* Resources/Spanish.lproj/Localizable.strings: Added translation 
+	to "Opacity".
+	* ColorPickers/Spanish.lproj/StandardPicker.strings: Corrected the 
+	file path in the commentary.
 
 2010-01-20 Riccardo Mottola <rmottola@users.sf.net>
 

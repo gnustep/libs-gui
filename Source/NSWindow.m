@@ -2316,7 +2316,7 @@ many times.
      NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
    if(style == NSWindows95InterfaceStyle)
      {
-       //[[GSTheme theme] updateMenu: [self menu] forWindow: self];
+       [[GSTheme theme] updateMenu: [self menu] forWindow: self];
      }
 }
 
