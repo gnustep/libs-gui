@@ -1,5 +1,12 @@
 2010-01-23 Eric Wasylishen <ewasylishen@gmail.com>
 
+	* Source/NSColorWell.m: Add a minimum distance which you need to
+	drag the color from a well before it is treated as a drag.
+	TODO: Unify this with the dragging threshold in other parts of
+	gui and make a user default called GSDragThreshold, maybe?
+
+2010-01-23 Eric Wasylishen <ewasylishen@gmail.com>
+
 	* Source/GSWindowDecorationView.m: In drawRect:, clear the window
 	background before getting the theme to draw its background.
 	This makes windows with semitransparent background colors work

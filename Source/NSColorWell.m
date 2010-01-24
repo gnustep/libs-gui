@@ -43,6 +43,7 @@
 #include "GNUstepGUI/GSTheme.h"
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSNotification.h>
+#include <math.h>
 
 static NSString *GSColorWellDidBecomeExclusiveNotification =
                     @"GSColorWellDidBecomeExclusiveNotification";
@@ -332,6 +333,14 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
 			fromView: nil];
   BOOL inside = [self mouse: point inRect: [self bounds]];
   BOOL startedInWell = [self mouse: _mouseDownPoint inRect: _wellRect];
+
+  NSSize delta = NSMakeSize(_mouseDownPoint.x - point.x,
+                            _mouseDownPoint.y - point.y);
+  double distance = sqrt(delta.width*delta.width + delta.height*delta.height);
+
+  // FIXME: Make the dragging threshold a user default
+  if (distance < 4)
+    return;
 
   if ([self isEnabled] == NO)
     return;
