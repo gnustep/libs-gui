@@ -839,7 +839,13 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
                                          inView: (NSView *)controlView
                                           state: (GSThemeControlState)state
                                    isHorizontal: (BOOL)isHorizontal;
-
+/**
+ * Returns the class used to create the title bar in the given menu view.
+ *
+ * By default, returns GSTitleView.<br />
+ * A subclass can be returned to customize the title view look and behavior.
+ */
+- (Class) titleViewClassForMenuView: (NSMenuView *)aMenuView;
 
 // NSColorWell drawing method
 - (NSRect) drawColorWellBorder: (NSColorWell*)well

@@ -42,6 +42,7 @@
 #include "AppKit/PSOperators.h"
 #include "AppKit/NSImage.h"
 
+#include "GNUstepGUI/GSTheme.h"
 #include "GNUstepGUI/GSTitleView.h"
 
 #include <Foundation/Foundation.h>
@@ -600,7 +601,8 @@ static NSMapTable *viewInfo = 0;
 
   if (needTitleView == YES && _titleView == nil)
     {
-      _titleView = [[GSTitleView alloc] initWithOwner: _attachedMenu];
+      Class titleViewClass = [[GSTheme theme] titleViewClassForMenuView: self];
+      _titleView = [[titleViewClass alloc] initWithOwner: _attachedMenu];
       [self addSubview: _titleView];
       RELEASE(_titleView);
     }

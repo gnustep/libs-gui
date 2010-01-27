@@ -46,6 +46,7 @@
 #import "AppKit/PSOperators.h"
 
 #import "GNUstepGUI/GSToolbarView.h"
+#import "GNUstepGUI/GSTitleView.h"
 
 
 @implementation	GSTheme (Drawing)
@@ -715,6 +716,11 @@
     {
       [self drawButton: cellFrame withClip: NSZeroRect];
     }
+}
+
+- (Class) titleViewClassForMenuView: (NSMenuView *)aMenuView
+{
+  return [GSTitleView class];
 }
 
 // NSColorWell drawing method

@@ -1,6 +1,15 @@
 2010-01-27 Quentin Mathe <quentin.mathe@gmail.com>
 
-	* NSApplication.m (-_postAndSendEvent:): Added.
+	* Headers/GNUstepGUI/GSTheme.h:
+	* Source/GSThemeDrawing.m:
+	(-titleViewClassForMenuView:): Added the possibility to customize the 
+	title view with this new method.
+	* Source/NSMenuView.m (-update): Modified to loop uk the title view 
+	class through the active theme rather than just using GSTitleView.
+
+2010-01-27 Quentin Mathe <quentin.mathe@gmail.com>
+
+	* Source/NSApplication.m (-_postAndSendEvent:): Added.
 	* Source/GSDragView 
 	(-_sendLocalEvent:action:position:timestamp:toWindow:): Dispatch drag 
 	events -[NSApp _postAndSendEvent:] to match Mac OS X behavior.
