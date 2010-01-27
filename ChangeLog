@@ -1,5 +1,11 @@
 2010-01-27 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSColor.m: (-hash): Don't use a dynamic union, as clang
+	doesn't support this.
+	Patch by Niels Grewe <niels.grewe@halbordnung.de>.
+
+2010-01-27 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSAttributedString.m (-rangeOfTextTable:atIndex:): Add
 	implementation for this method, done during LindauSTEP.
 

@@ -1265,17 +1265,14 @@ systemColorWithName(NSString *name)
 - (NSUInteger) hash
 {
   int nums = [self numberOfComponents];
-  union {
-    uint8_t	bytes[sizeof(float) * nums];
-    float	floats[nums];
-  } u;
+  float floats[nums];
   NSUInteger	h = 0;
   unsigned	i;
 
-  [self getComponents: u.floats];
-  for (i = 0; i < sizeof(u); i++)
+  [self getComponents: &floats[0]];
+  for (i = 0; i < sizeof(floats); i++)
     {
-      h = (h << 5) + h + u.bytes[i];
+      h = (h << 5) + h + *(uint8_t*)(((uintptr_t)&floats[0])+(i*sizeof(uint8_t)));
     }
   return h;
 }
