@@ -1079,69 +1079,13 @@ withRepeatedImage: (NSImage*)image
 
 - (NSRect) contentRectForRect: (NSRect)rect
 {
-  NSRect contentRectParts[9];
-  NSRect scaledContentRect;
-  int i;
-  float centerHScale, centerVScale;
-
-  // Divide the content rect into 9 parts
-  for (i = 0; i < 9; i++)
-    {
-      contentRectParts[i] = NSIntersectionRect(contentRect, rects[i]);
-    }
-
-  if (rects[TileCM].size.width > 0)
-    {
-      centerHScale = (rect.size.width - rects[TileCL].size.width - 
-        rects[TileCR].size.width) / rects[TileCM].size.width; 
-    }
-  else
-    {
-      centerHScale = 0;
-    }
-
-  if (rects[TileCM].size.height > 0)
-    {
-      centerVScale = (rect.size.height - rects[TileCL].size.height - 
-        rects[TileCR].size.height) / rects[TileCM].size.height; 
-    }
-  else
-    {
-      centerVScale = 0;
-    }
-
-  contentRectParts[TileTM].size.width *= centerHScale;
-  contentRectParts[TileCM].size.width *= centerHScale;
-  contentRectParts[TileBM].size.width *= centerHScale;
-
-  contentRectParts[TileCL].size.height *= centerVScale;
-  contentRectParts[TileCM].size.height *= centerVScale;
-  contentRectParts[TileCR].size.height *= centerVScale;
-
-  // Recalculate the origins of the top row and right column of the
-  // contentRectParts
-  
-  contentRectParts[TileTL].origin.y = contentRectParts[TileCL].origin.y + 
-    contentRectParts[TileCL].size.height;
-
-  contentRectParts[TileTM].origin.y = contentRectParts[TileTL].origin.y;
-
-  contentRectParts[TileTR].origin.y = contentRectParts[TileTL].origin.y;
-  contentRectParts[TileTR].origin.x = contentRectParts[TileTM].origin.x + 
-    contentRectParts[TileTM].size.width;
-
-  contentRectParts[TileCR].origin.x = contentRectParts[TileTR].origin.x;
-
-  contentRectParts[TileBR].origin.x = contentRectParts[TileTR].origin.x;
- 
-  // Return the union of the scaled contentRectParts
-  // NOTE: NSUnionRect ignores rects with width and height of 0
-  scaledContentRect = NSZeroRect;
-  for (i = 0; i < 9; i++)
-    {
-      scaledContentRect = NSUnionRect(scaledContentRect, contentRectParts[i]);
-    }
-  return scaledContentRect;
+  NSSize total = [self computeTotalTilesSize];
+  NSRect inFill = NSMakeRect(
+    rect.origin.x + contentRect.origin.x,
+    rect.origin.y + contentRect.origin.y,
+    rect.size.width - (total.width - contentRect.size.width),
+    rect.size.height - (total.height - contentRect.size.height));
+  return inFill;
 }
 
 - (NSRect) noneStyleFillRect: (NSRect)rect

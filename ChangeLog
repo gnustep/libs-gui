@@ -1,5 +1,9 @@
 2010-01-27 Eric Wasylishen <ewasylishen@gmail.com>
 
+	* Source/GSThemeTools.m: Correct implementation of contentRectForRect:
+
+2010-01-27 Eric Wasylishen <ewasylishen@gmail.com>
+
 	* Source/GSThemeTools.m:
 	* Source/GSThemePrivate.m: Added a contentRect feature to 
 	GSDrawTiles. Previously, GSDrawTiles assumed that the rect the user
