@@ -52,6 +52,7 @@
 #include "AppKit/NSFontManager.h"
 // For the colour name spaces
 #include "AppKit/NSGraphics.h"
+#import "AppKit/NSTextTable.h"
 
 #include "GNUstepGUI/GSTextConverter.h"
 #include "GSGuiPrivate.h"
@@ -1147,10 +1148,75 @@ documentAttributes: (NSDictionary **)dict
   return NSMakeRange(NSNotFound, 0);
 }
 
+static inline
+BOOL containsTable(NSArray *textBlocks, NSTextTable *table)
+{
+  NSEnumerator *benum = [textBlocks objectEnumerator];
+  NSTextTableBlock *block;
+
+  while ((block = [benum nextObject]))
+    {
+      if ([table isEqual: [block table]])
+	{
+	  return YES;
+	}
+    }
+  return NO;
+}
+
 - (NSRange) rangeOfTextTable: (NSTextTable *)table
                      atIndex: (NSUInteger)location
 {
-  // FIXME
+  NSRange effRange;
+  NSParagraphStyle *style = [self attribute: NSParagraphStyleAttributeName
+                                  atIndex: location
+                                  effectiveRange: &effRange];
+  if (style != nil)
+    {
+      NSArray *textBlocks = [style textBlocks];
+
+      if ((textBlocks != nil) && containsTable(textBlocks, table))
+        {
+	  NSRange newEffRange;
+	  unsigned len = [self length];
+	  
+	  while ((effRange.location > 0) && style && textBlocks)
+	    {
+	      style = [self attribute: NSParagraphStyleAttributeName
+			      atIndex: effRange.location - 1
+		       effectiveRange: &newEffRange];
+	      if (style != nil)
+		{
+		  textBlocks = [style textBlocks];
+		  
+		  if ((textBlocks != nil) && containsTable(textBlocks, table))
+                    {
+                      effRange.location = newEffRange.location;
+                      effRange.length += newEffRange.length;
+                    }
+                }
+            }
+
+          while (NSMaxRange(effRange) < len && style && textBlocks) 
+            {
+              style = [self attribute: NSParagraphStyleAttributeName
+                            atIndex: NSMaxRange(effRange)
+                            effectiveRange: &newEffRange];
+              if (style != nil)
+                {
+                  textBlocks = [style textBlocks];
+                  
+                  if ((textBlocks != nil) && containsTable(textBlocks, table))
+                    {
+                      effRange.length += newEffRange.length;
+                    }
+                }
+            }
+
+          return effRange;
+        }
+    }
+
   return NSMakeRange(NSNotFound, 0);
 }
 

@@ -1,3 +1,8 @@
+2010-01-27 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSAttributedString.m (-rangeOfTextTable:atIndex:): Add
+	implementation for this method, done during LindauSTEP.
+
 2010-01-27 Quentin Mathe <quentin.mathe@gmail.com>
 
 	* Headers/GNUstepGUI/GSTheme.h:
