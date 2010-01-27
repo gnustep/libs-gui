@@ -2801,6 +2801,18 @@ in the main thread.
               [GSDisplayServer addDragTypes: t toWindow: _window];
             }
         }
+      if (_rFlags.has_subviews)
+        {
+          // The _visibleRect of subviews will be NSZeroRect, because when they
+          // were calculated in -[_rebuildCoordinates], they were intersected
+          // with the result of calling -[visibleRect] on the hidden superview,
+          // which returns NSZeroRect for hidden views.
+          //
+          // So, recalculate the subview coordinates now to make them correct.
+
+          [_sub_views makeObjectsPerformSelector: 
+            @selector(_invalidateCoordinates)];
+        }
     }
   [self setNeedsDisplay: YES];
 }
