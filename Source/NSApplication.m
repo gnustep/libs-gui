@@ -2007,6 +2007,13 @@ See -runModalForWindow:
  * Getting, removing, and posting events
  */
 
+/* Private method used by GSDragView to dispatch drag events as Cocoa does. */
+- (void) _postAndSendEvent: (NSEvent *)anEvent
+{
+  ASSIGN(_current_event, anEvent);
+  [self sendEvent: anEvent];
+}
+
 /**
  * Called by -run to dispatch events that are received according to AppKit's
  * forwarding conventions.  You rarely need to invoke this directly.  If you

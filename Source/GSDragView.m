@@ -57,6 +57,10 @@
 @interface GSRawWindow : NSWindow
 @end
 
+@interface NSApplication (GNUstepPrivate)
+- (void) _postAndSendEvent: (NSEvent *)anEvent;
+@end
+
 @interface NSCursor (BackendPrivate)
 - (void *)_cid;
 - (void) _setCid: (void *)val;
@@ -576,7 +580,7 @@ static	GSDragView *sharedDragView = nil;
 	                  subtype: subtype
 	                    data1: dragWindowRef
 	                    data2: action];
-  [dWindow sendEvent: e];
+  [NSApp _postAndSendEvent: e];
 }
 
 /*
