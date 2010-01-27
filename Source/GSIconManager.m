@@ -132,10 +132,8 @@ GSGetIconFrame(NSWindow *window)
     }
   else
     {
-      NSSize iconSize;
-
-      iconSize = [GSCurrentServer() iconSize];
-      iconRect = NSMakeRect(0, 0, iconSize.height, iconSize.width); 
+      iconRect = [window frame];
+      iconRect.size = [GSCurrentServer() iconSize];
     }
 
   return iconRect;

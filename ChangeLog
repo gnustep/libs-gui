@@ -1,3 +1,10 @@
+2010-01-28  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/GSIconManager.m (GSGetIconFrame): Don't touch icon
+	positions when the icon manager is not used, so that any icon
+	placement performed by the user does not get lost when a
+	miniwindow is deminiaturized.
+
 2010-01-27  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSTextView.m (smartLeftChars, smartRightChars, +initialize,
