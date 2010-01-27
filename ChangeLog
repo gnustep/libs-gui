@@ -1,3 +1,26 @@
+2010-01-27  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSTextView.m (smartLeftChars, smartRightChars, +initialize,
+	-copy:, -smartDeleteRangeForPropsoedRange:, -smartInsertAfterString...,
+	-smartInsertBeforeString..., -readSelectionFromPasteboard:type:,
+	-writablePasteboardTypes, -writeSelectionToPasteboard:types:,
+	-performDragOperation:, -dragSelectionWithEvent:offset:slideBack:)
+	* Source/NSTextView_actions.m (-deleteForward:, -deleteBackward:):
+	Implement smart insert and delete and use it when cutting,
+	copying, pasting, and deleting full words.
+
+	Note: I have changed NSTextView initialization to enable smart
+	insert and delete by default, since this is the default on OS X.
+	(It is even documented, though in a maybe obscure place, cf. "Text
+	Editing Programming Guide for Cocoa: Subclassing NSTextView".)
+	However, this means that support for this feature will be somewhat
+	inconsistent. Smart insert and delete is enabled for text views
+	created programmatically (including the field editor), but not for
+	text views loaded from existing nib files.
+
+	* Source/NSTextView.m (-toggleSmartInsertDelete:):
+	Implement missing method introduced in Mac OS X 10.5.
+
 2010-01-27 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/GSThemeDrawing.m (-buttonBorderForCell:style:state:):

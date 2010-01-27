@@ -586,6 +586,11 @@ static NSNumber *float_plus_one(NSNumber *cur)
 	  return;
 	}
     }
+  else if ([self smartInsertDeleteEnabled] &&
+	   [self selectionGranularity] == NSSelectByWord)
+    {
+      range = [self smartDeleteRangeForProposedRange: range];
+    }
   
   if (![self shouldChangeTextInRange: range  replacementString: @""])
     {
@@ -624,6 +629,11 @@ static NSNumber *float_plus_one(NSNumber *cur)
 	  NSBeep ();
 	  return;
 	}
+    }
+  else if ([self smartInsertDeleteEnabled] &&
+	   [self selectionGranularity] == NSSelectByWord)
+    {
+      range = [self smartDeleteRangeForProposedRange: range];
     }
   
   if (![self shouldChangeTextInRange: range  replacementString: @""])

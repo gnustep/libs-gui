@@ -580,11 +580,18 @@ already been laid out. */
 
 /*** Smart copy/paste/delete support ***/
 
--(NSRange) smartDeleteRangeForProposedRange: (NSRange)proposedCharRange;
--(void) smartInsertForString: (NSString *)aString
-	      replacingRange: (NSRange)charRange
-		beforeString: (NSString **)beforeString
-		 afterString: (NSString **)afterString;
+- (NSRange) smartDeleteRangeForProposedRange: (NSRange)proposedCharRange;
+- (void) smartInsertForString: (NSString *)aString
+	       replacingRange: (NSRange)charRange
+		 beforeString: (NSString **)beforeString
+		  afterString: (NSString **)afterString;
+- (NSString *) smartInsertAfterStringForString: (NSString *)aString
+				replacingRange: (NSRange)charRange;
+- (NSString *) smartInsertBeforeStringForString: (NSString *)aString
+				 replacingRange: (NSRange)charRange;
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (void) toggleSmartInsertDelete: (id)sender;
+#endif
 
 
 /** TODO: categorize */

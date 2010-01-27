@@ -544,14 +544,40 @@ this happens when layout has been invalidated, and when we are resized.
 @implementation NSTextView
 
 
+/* The sets smartLeftChars and smartRightChars are used for smart insert
+   and delete. If users paste text into a text view and the character to
+   the left (right) side of the new word is not in the set smartLeftChars
+   (smartRightChars), an extra space is added to that side. Inversely, if
+   users delete a word followed (preceded) by a character in smartRightChars
+   (smartLeftChars), a space character on the other side of the word is
+   deleted as well.
+ */
+static NSCharacterSet *smartLeftChars;
+static NSCharacterSet *smartRightChars;
+
+/* Private pasteboard type for adjoining smart paste information with
+   text on the pasteboard. */
+static NSString *NSSmartPastePboardType = @"NSSmartPastePboardType";
+
 /**** Misc. class methods ****/
 
 +(void) initialize
 {
   if ([self class] == [NSTextView class])
     {
+      NSMutableCharacterSet *temp;
+
       [self setVersion: currentVersion];
       notificationCenter = [NSNotificationCenter defaultCenter];
+
+      /* The sets smartLeftChars and smartRightChars were derived from OS X. */
+      temp = [[NSCharacterSet whitespaceAndNewlineCharacterSet] mutableCopy];
+      [temp addCharactersInString: @"\"#$\'(-/[`{"];
+      smartLeftChars = [temp copy];
+      [temp formUnionWithCharacterSet:
+	      [NSCharacterSet punctuationCharacterSet]];
+      smartRightChars = [temp copy];
+      [temp release];
     }
 }
 
@@ -685,7 +711,7 @@ If a text view is added to an empty text network, it keeps its attributes.
   _tf.uses_ruler = YES;
   _tf.is_ruler_visible = NO;
   _tf.allows_undo = NO;
-  _tf.smart_insert_delete = NO;
+  _tf.smart_insert_delete = YES;
   _tf.uses_find_panel = NO;
   _tf.accepts_glyph_info = NO;
   _tf.allows_document_background_color_change = YES;
@@ -2375,6 +2401,10 @@ Move to NSTextView_actions.m?
   if (_tf.is_rich_text)
     [types addObject: NSRTFPboardType];
 
+  if ([self smartInsertDeleteEnabled] &&
+      [self selectionGranularity] == NSSelectByWord)
+    [types addObject: NSSmartPastePboardType];
+
   [types addObject: NSStringPboardType];
 
   [self writeSelectionToPasteboard: [NSPasteboard generalPasteboard]
@@ -3234,30 +3264,81 @@ This method is for user changes; see NSTextView_actions.m.
 
 /**** Smart insert/delete ****/
 
+static inline BOOL
+is_preceded_by_smart_char(NSString *string, NSRange range)
+{
+  NSUInteger start = range.location;
+  return start == 0
+    || [smartLeftChars characterIsMember: [string characterAtIndex: start - 1]];
+}
+
+static inline BOOL
+is_followed_by_smart_char(NSString *string, NSRange range)
+{
+  NSUInteger end = NSMaxRange(range);
+  return end == [string length]
+    || [smartRightChars characterIsMember: [string characterAtIndex: end]];
+}
+
 - (NSRange) smartDeleteRangeForProposedRange: (NSRange)proposedCharRange
 {
-  /* TODO */
+  if ([self smartInsertDeleteEnabled])
+    {
+      NSString *string = [_textStorage string];
+      NSUInteger start = proposedCharRange.location;
+      NSUInteger end = NSMaxRange(proposedCharRange);
+
+      /* Like Mac OS X, we only propose a space character (0x20) for deletion
+	 and we choose either the character preceding the selection or the one
+	 after the selection, but not both. */
+      if (start > 0 && [string characterAtIndex: start - 1] == ' ' &&
+	  is_followed_by_smart_char(string, proposedCharRange))
+	{
+	  proposedCharRange.location--;
+	  proposedCharRange.length++;
+	}
+      else if (end < [string length] && [string characterAtIndex: end] == ' ' &&
+	       is_preceded_by_smart_char(string, proposedCharRange))
+	{
+	  proposedCharRange.length++;
+	}
+    }
+
   return proposedCharRange;
 }
 
 - (NSString *)smartInsertAfterStringForString: (NSString *)aString
-			      replacingRange: (NSRange)charRange
+			       replacingRange: (NSRange)charRange
 {
-  /* TODO */
+  if ([self smartInsertDeleteEnabled] && aString != nil &&
+      !is_followed_by_smart_char([_textStorage string], charRange))
+    {
+      NSUInteger l = [aString length];
+      NSCharacterSet *ws = [NSCharacterSet whitespaceAndNewlineCharacterSet];
+      if (l == 0 || ![ws characterIsMember: [aString characterAtIndex: l - 1]])
+	return @" ";
+    }
   return nil;
 }
 
 - (NSString *)smartInsertBeforeStringForString: (NSString *)aString
-			       replacingRange: (NSRange)charRange
+				replacingRange: (NSRange)charRange
 {
-  /* TODO */
+  if ([self smartInsertDeleteEnabled] && aString != nil &&
+      !is_preceded_by_smart_char([_textStorage string], charRange))
+    {
+      NSUInteger l = [aString length];
+      NSCharacterSet *ws = [NSCharacterSet whitespaceAndNewlineCharacterSet];
+      if (l == 0 || ![ws characterIsMember: [aString characterAtIndex: 0]])
+	return @" ";
+    }
   return nil;
 }
 
 - (void) smartInsertForString: (NSString *)aString
-	      replacingRange: (NSRange)charRange
-		beforeString: (NSString **)beforeString
-		 afterString: (NSString **)afterString
+	       replacingRange: (NSRange)charRange
+		 beforeString: (NSString **)beforeString
+		  afterString: (NSString **)afterString
 {
 /*
 Determines whether whitespace needs to be added around aString to
@@ -3286,6 +3367,10 @@ afterString in order over charRange.
 			 replacingRange: charRange];
 }
 
+- (void) toggleSmartInsertDelete: (id)sender
+{
+  [self setSmartInsertDeleteEnabled: ![self smartInsertDeleteEnabled]];
+}
 
 /**** Selection management ****/
 
@@ -4308,15 +4393,33 @@ right.)
         {
 	  NSString *s = [pboard stringForType: NSStringPboardType];
 
-	  if ([self shouldChangeTextInRange: changeRange
-		    replacementString: s])
+	  if (s != nil)
 	    {
-	      [self replaceCharactersInRange: changeRange
-		    withString: s];
-	      [self didChangeText];
-	      changeRange.length = [s length];
-	      [self setSelectedRange: changeRange];
+	      if ([self smartInsertDeleteEnabled] &&
+		  [pboard dataForType: NSSmartPastePboardType] != nil)
+		{
+		  NSString *after, *before;
+		  [self smartInsertForString: s
+			      replacingRange: changeRange
+				beforeString: &before
+				 afterString: &after];
+		  if (before)
+		    s = [before stringByAppendingString: s];
+		  if (after)
+		    s = [s stringByAppendingString: after];
+		}
+	      if ([self shouldChangeTextInRange: changeRange
+			replacementString: s])
+	        {
+		  [self replaceCharactersInRange: changeRange
+			withString: s];
+		  [self didChangeText];
+		  changeRange.length = [s length];
+		  [self setSelectedRange: changeRange];
+		}
 	    }
+	  else
+	    return NO;
 	}
       return YES;
     } 
@@ -4332,17 +4435,36 @@ right.)
 	{
 	  if (changeRange.location != NSNotFound)
 	    {
-	      NSAttributedString *as;
+	      NSMutableAttributedString *as;
 	      NSData *d = [pboard dataForType: NSRTFPboardType];
 
-	      as = [[NSAttributedString alloc] initWithRTF: d
-		     documentAttributes: NULL];
+	      as = [[NSMutableAttributedString alloc] initWithRTF: d
+					       documentAttributes: NULL];
+	      if ([self smartInsertDeleteEnabled] &&
+		  [pboard dataForType: NSSmartPastePboardType] != nil)
+		{
+		  NSString *after, *before;
 
+		  [self smartInsertForString: [as string]
+			      replacingRange: changeRange
+				beforeString: &before
+				 afterString: &after];
+		  if (before)
+		    {
+		      [as replaceCharactersInRange: NSMakeRange(0, 0)
+					withString: before];
+		    }
+		  if (after)
+		    {
+		      [as replaceCharactersInRange: NSMakeRange([as length], 0)
+					withString: after];
+		    }
+		}
 	      if ([self shouldChangeTextInRange: changeRange
-		    replacementString: [as string]])
+			      replacementString: [as string]])
 		{
 		  [self replaceCharactersInRange: changeRange
-		    withAttributedString: as];
+			    withAttributedString: as];
 		  [self didChangeText];
 		  changeRange.length = [as length];
 		  [self setSelectedRange: changeRange];
@@ -4360,17 +4482,37 @@ right.)
 	{
 	  if (changeRange.location != NSNotFound)
 	    {
-	      NSAttributedString *as;
+	      NSMutableAttributedString *as;
 	      NSData *d = [pboard dataForType: NSRTFDPboardType];
 
-	      as = [[NSAttributedString alloc] initWithRTFD: d
-		     documentAttributes: NULL];
+	      as = [[NSMutableAttributedString alloc] initWithRTFD: d
+						documentAttributes: NULL];
 
+	      if ([self smartInsertDeleteEnabled] &&
+		  [pboard dataForType: NSSmartPastePboardType] != nil)
+		{
+		  NSString *after, *before;
+
+		  [self smartInsertForString: [as string]
+			      replacingRange: changeRange
+				beforeString: &before
+				 afterString: &after];
+		  if (before)
+		    {
+		      [as replaceCharactersInRange: NSMakeRange(0, 0)
+					withString: before];
+		    }
+		  if (after)
+		    {
+		      [as replaceCharactersInRange: NSMakeRange([as length], 0)
+					withString: after];
+		    }
+		}
 	      if ([self shouldChangeTextInRange: changeRange
-		    replacementString: [as string]])
+			      replacementString: [as string]])
 		{
 		  [self replaceCharactersInRange: changeRange
-		    withAttributedString: as];
+			    withAttributedString: as];
 		  [self didChangeText];
 		  changeRange.length = [as length];
 		  [self setSelectedRange: changeRange];
@@ -4539,6 +4681,14 @@ right.)
 - (NSArray *) writablePasteboardTypes
 {
   // the selected text can be written to the pasteboard with which types.
+  if ([self smartInsertDeleteEnabled])
+    {
+      /* We write this type to the pasteboard, but it does not have a meaning
+	 by itself. Therefore, we do not add it in -readablePasteboardTypes. */
+      NSMutableArray *ret = [[self readablePasteboardTypes] mutableCopy];
+      [ret addObject: NSSmartPastePboardType];
+      return [ret autorelease];
+    }
   return [self readablePasteboardTypes];
 }
 
@@ -4603,6 +4753,12 @@ other than copy/paste or dragging. */
         {
 	  ret = [pboard setData: [self RTFDFromRange: _layoutManager->_selected_range]
 			forType: NSRTFDPboardType] || ret;
+	}
+
+      if ([type isEqualToString: NSSmartPastePboardType])
+	{
+	  ret = [pboard setData: [NSData data]
+			forType: NSSmartPastePboardType] || ret;
 	}
 
       if ([type isEqualToString: NSColorPboardType])
@@ -4823,6 +4979,7 @@ other than copy/paste or dragging. */
      _dragTargetLocation. However, when dragging a color onto a text view, the
      cursor is not updated, since the color change always effects the current
      selection and hence _dragTargetLocation==NSNotFound in that case. */
+  NSSelectionGranularity gran = [self selectionGranularity];
   NSRange sourceRange = [self selectedRange];
   if (_dragTargetLocation != NSNotFound)
     {
@@ -4834,6 +4991,8 @@ other than copy/paste or dragging. */
   if ([sender draggingSource] == self &&
       ([sender draggingSourceOperationMask] & NSDragOperationGeneric))
     {
+      if ([self smartInsertDeleteEnabled] && gran == NSSelectByWord)
+	sourceRange = [self smartDeleteRangeForProposedRange: sourceRange];
       if (![self shouldChangeTextInRange: sourceRange replacementString: @""])
         {
 	  return NO;
@@ -4887,6 +5046,8 @@ other than copy/paste or dragging. */
     [types addObject: NSRTFPboardType];
 
   [types addObject: NSStringPboardType];
+  if ([self smartInsertDeleteEnabled])
+    [types addObject: NSSmartPastePboardType];
 
   [self writeSelectionToPasteboard: pboard types: types];
 
