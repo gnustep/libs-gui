@@ -55,6 +55,9 @@ typedef enum {
 @public
   NSImage	*images[9];	/** The tile images */
   NSRect	rects[9];	/** The rectangles to use when drawing */
+  NSRect	contentRect;    /** Rectangle in which content should be
+        	                 *  drawn, normally rects[TileCM], but can
+        	                 *  be customized in the nine-patch format */
   float		scaleFactor;
   GSThemeFillStyle	style;	/** The default style for filling a rect */
 }
@@ -93,6 +96,13 @@ typedef enum {
           fillStyle: (GSThemeFillStyle)style;
 - (NSRect) fillRect: (NSRect)rect
          background: (NSColor*)color;
+
+/**
+ * Returns the space available to draw content in when the tiles are
+ * drawn in the given rect, or NSZeroRect if the given rect is too small
+ * to draw the tiles in.
+ */
+- (NSRect) contentRectForRect: (NSRect)rect;
 
 /* Style drawing methods
  */

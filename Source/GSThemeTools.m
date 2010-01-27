@@ -833,7 +833,73 @@ withRepeatedImage: (NSImage*)image
   rects[TileBL] = NSMakeRect(1, 1, x1 - 1, s.height - y2 - 2);
   rects[TileBM] = NSMakeRect(x1, 1, 1 + x2 - x1, s.height - y2 - 2);
   rects[TileBR] = NSMakeRect(x2 + 1, 1, s.width - x2 - 2, s.height - y2 - 2);
- 
+
+  // Measure the content rect (the right and bottom edges of the nine-patch
+  // data)
+
+  x1 = -1;
+  x2 = -1;
+  y1 = -1;
+  y2 = -1;
+
+  for (i = 0; i < s.width; i++)
+    {
+      NSColor	*pixelColor = [rep colorAtX: i y: s.height - 1];
+
+      [pixelColor getRed: &r green: &g blue: &b alpha: &a];
+      if (a > 0 && x1 == -1)
+        {
+          x1 = i;
+        }
+      else if (a == 0 && x1 != -1)
+        {
+          x2 = i - 1;
+          break;
+        }
+    }
+
+  for (i = 0; i < s.height; i++)
+    {
+      NSColor	*pixelColor = [rep colorAtX: s.width - 1 y: i];
+
+      [pixelColor getRed: &r green: &g blue: &b alpha: &a];
+      if (a > 0 && y1 == -1)
+        {
+          y1 = i;
+        }
+      else if (a == 0 && y1 != -1)
+        {
+          y2 = i - 1;
+          break;
+        }
+    }
+
+  // Specifying the content rect part of the nine-patch image is optional
+  // ; if either the horizontal or vertical information is missing, use the
+  // geometry from rects[TileCM]
+
+  if (x1 == -1)
+    {
+      contentRect.origin.x = rects[TileCM].origin.x;
+      contentRect.size.width = rects[TileCM].size.width;
+    }
+  else
+    {
+      contentRect.origin.x = x1;
+      contentRect.size.width = 1 + x2 - x1;
+    }
+
+  if (y1 == -1)
+    {
+      contentRect.origin.y = rects[TileCM].origin.y;
+      contentRect.size.height = rects[TileCM].size.height;
+    }
+  else
+    {
+      contentRect.origin.y = s.height - y2 - 1;
+      contentRect.size.height = 1 + y2 - y1;
+    }
+
   [self validateTilesSizeWithImage: image];
   return self;
 }
@@ -872,6 +938,12 @@ withRepeatedImage: (NSImage*)image
           rects[i].origin.y = 0;
         }
     }
+
+    if (contentRect.origin.x < 0.0 || contentRect.origin.y < 0.0
+      || contentRect.size.width <= 0.0 || contentRect.size.height <= 0.0)
+      {
+        contentRect = rects[TileCM];
+      }
 }
 
 - (id) initWithImage: (NSImage*)image horizontal: (float)x vertical: (float)y
@@ -892,6 +964,7 @@ withRepeatedImage: (NSImage*)image
   rects[TileBL] = NSMakeRect(0.0, 0.0, x, y);
   rects[TileBM] = NSMakeRect(x, 0.0, s.width - 2.0 * x, y);
   rects[TileBR] = NSMakeRect(s.width - x, 0.0, x, y);
+  contentRect = rects[TileCM];
 
   style = GSThemeFillStyleNone;
 
@@ -942,6 +1015,10 @@ withRepeatedImage: (NSImage*)image
       rects[i].origin.x *= scale;
       rects[i].origin.y *= scale;
     }
+  contentRect.size.height *= scale;
+  contentRect.size.width *= scale;
+  contentRect.origin.x *= scale;
+  contentRect.origin.y *= scale;
 }
 
 - (NSRect) fillRect: (NSRect)rect
@@ -1000,18 +1077,76 @@ withRepeatedImage: (NSImage*)image
   return tsz;
 }
 
+- (NSRect) contentRectForRect: (NSRect)rect
+{
+  NSRect contentRectParts[9];
+  NSRect scaledContentRect;
+  int i;
+  float centerHScale, centerVScale;
+
+  // Divide the content rect into 9 parts
+  for (i = 0; i < 9; i++)
+    {
+      contentRectParts[i] = NSIntersectionRect(contentRect, rects[i]);
+    }
+
+  if (rects[TileCM].size.width > 0)
+    {
+      centerHScale = (rect.size.width - rects[TileCL].size.width - 
+        rects[TileCR].size.width) / rects[TileCM].size.width; 
+    }
+  else
+    {
+      centerHScale = 0;
+    }
+
+  if (rects[TileCM].size.height > 0)
+    {
+      centerVScale = (rect.size.height - rects[TileCL].size.height - 
+        rects[TileCR].size.height) / rects[TileCM].size.height; 
+    }
+  else
+    {
+      centerVScale = 0;
+    }
+
+  contentRectParts[TileTM].size.width *= centerHScale;
+  contentRectParts[TileCM].size.width *= centerHScale;
+  contentRectParts[TileBM].size.width *= centerHScale;
+
+  contentRectParts[TileCL].size.height *= centerVScale;
+  contentRectParts[TileCM].size.height *= centerVScale;
+  contentRectParts[TileCR].size.height *= centerVScale;
+
+  // Recalculate the origins of the top row and right column of the
+  // contentRectParts
+  
+  contentRectParts[TileTL].origin.y = contentRectParts[TileCL].origin.y + 
+    contentRectParts[TileCL].size.height;
+
+  contentRectParts[TileTM].origin.y = contentRectParts[TileTL].origin.y;
+
+  contentRectParts[TileTR].origin.y = contentRectParts[TileTL].origin.y;
+  contentRectParts[TileTR].origin.x = contentRectParts[TileTM].origin.x + 
+    contentRectParts[TileTM].size.width;
+
+  contentRectParts[TileCR].origin.x = contentRectParts[TileTR].origin.x;
+
+  contentRectParts[TileBR].origin.x = contentRectParts[TileTR].origin.x;
+ 
+  // Return the union of the scaled contentRectParts
+  // NOTE: NSUnionRect ignores rects with width and height of 0
+  scaledContentRect = NSZeroRect;
+  for (i = 0; i < 9; i++)
+    {
+      scaledContentRect = NSUnionRect(scaledContentRect, contentRectParts[i]);
+    }
+  return scaledContentRect;
+}
+
 - (NSRect) noneStyleFillRect: (NSRect)rect
 {
-  NSSize cls = rects[TileCL].size;
-  NSSize bms = rects[TileBM].size;
-  NSSize crs = rects[TileCR].size;
-  NSSize tms = rects[TileTM].size;
-  NSRect inFill = NSMakeRect (
-    rect.origin.x + cls.width,
-    rect.origin.y + bms.height,
-    rect.size.width - cls.width - crs.width,
-    rect.size.height - bms.height - tms.height);
-
+  NSRect inFill = [self contentRectForRect: rect];
   [self repeatFillRect: rect];
   [self drawCornersRect: rect];
   return inFill;
@@ -1021,17 +1156,8 @@ withRepeatedImage: (NSImage*)image
 {
   BOOL flipped = [[GSCurrentContext() focusView] isFlipped];
 
-  NSSize cls = rects[TileCL].size;
-  NSSize bms = rects[TileBM].size;
-  NSSize crs = rects[TileCR].size;
-  NSSize tms = rects[TileTM].size;
   NSRect r = rects[TileCM];
-  NSRect inFill = NSMakeRect (
-    rect.origin.x + cls.width,
-    rect.origin.y + bms.height,
-    rect.size.width - cls.width - crs.width,
-    rect.size.height - bms.height - tms.height);
-
+  NSRect inFill = [self contentRectForRect: rect];
   [self repeatFillRect: rect];
   [self drawCornersRect: rect];
 
@@ -1055,16 +1181,7 @@ withRepeatedImage: (NSImage*)image
   BOOL flipped = [[GSCurrentContext() focusView] isFlipped];
 
   NSSize tsz = [self computeTotalTilesSize];
-  NSSize cls = rects[TileCL].size;
-  NSSize bms = rects[TileBM].size;
-  NSSize crs = rects[TileCR].size;
-  NSSize tms = rects[TileTM].size;
-  NSRect inFill = NSMakeRect (
-    rect.origin.x + cls.width,
-    rect.origin.y + bms.height,
-    rect.size.width - cls.width - crs.width,
-    rect.size.height - bms.height - tms.height);
-
+  NSRect inFill = [self contentRectForRect: rect];
   [self repeatFillRect: rect];
   [self drawCornersRect: rect];
 
@@ -1083,16 +1200,7 @@ withRepeatedImage: (NSImage*)image
 {
   BOOL flipped = [[GSCurrentContext() focusView] isFlipped];
 
-  NSSize cls = rects[TileCL].size;
-  NSSize bms = rects[TileBM].size;
-  NSSize crs = rects[TileCR].size;
-  NSSize tms = rects[TileTM].size;
-
-  NSRect inFill = NSMakeRect (
-    rect.origin.x + cls.width,
-    rect.origin.y + bms.height,
-    rect.size.width - cls.width - crs.width,
-    rect.size.height - bms.height - tms.height);
+  NSRect inFill = [self contentRectForRect: rect];
 
   NSImage *im = [images[TileCM] copy];
   NSRect r =  rects[TileCM];
@@ -1135,14 +1243,8 @@ withRepeatedImage: (NSImage*)image
   NSSize tms = rects[TileTM].size;
   NSImage *img;
   NSRect imgRect;
-  NSRect inFill;
 
-  inFill = NSMakeRect (
-    rect.origin.x + cls.width,
-    rect.origin.y + bms.height,
-    rect.size.width - cls.width - crs.width,
-    rect.size.height - bms.height - tms.height);
-
+  NSRect inFill = [self contentRectForRect: rect];
   [self scaleFillRect: rect];
   [self drawCornersRect: rect];
 

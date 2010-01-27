@@ -1,3 +1,15 @@
+2010-01-27 Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/GSThemeTools.m:
+	* Source/GSThemePrivate.m: Added a contentRect feature to 
+	GSDrawTiles. Previously, GSDrawTiles assumed that the rect the user
+	would draw in was exactly the center middle rect; i.e. the 
+	return value of the xxStlyeFillRect: methods was the center middle
+	rect scaled to fit inside the drawing rect.
+
+	Now this can be customized in Nine Patch tiles; see the diagrams at:
+	http://developer.android.com/guide/topics/graphics/2d-graphics.html#nine-patch
+
 2010-01-27 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSColor.m: (-hash): Don't use a dynamic union, as clang
