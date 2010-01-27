@@ -2789,6 +2789,7 @@ in the main thread.
               [GSDisplayServer removeDragTypes: t fromWindow: _window];
             }
         }
+      [[self superview] setNeedsDisplay: YES];
     }
   else
     {
@@ -2813,8 +2814,8 @@ in the main thread.
           [_sub_views makeObjectsPerformSelector: 
             @selector(_invalidateCoordinates)];
         }
+      [self setNeedsDisplay: YES];
     }
-  [self setNeedsDisplay: YES];
 }
 
 - (BOOL) isHidden

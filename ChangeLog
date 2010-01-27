@@ -1,5 +1,10 @@
 2010-01-26 Eric Wasylishen <ewasylishen@gmail.com>
 
+	* Source/NSView.m (-setHidden:): When hiding a view, we need to 
+	call -setNeedsDisplay:YES on the superview, rather than self
+
+2010-01-26 Eric Wasylishen <ewasylishen@gmail.com>
+
 	* Source/NSView.m (-setHidden:): Fix un-hiding of hidden views, loaded
 	from nib's, with subviews. The subview coordinates just need to be
 	invalidated when the view is unhidden.
