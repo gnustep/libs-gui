@@ -1,5 +1,10 @@
 2010-01-27 Eric Wasylishen <ewasylishen@gmail.com>
 
+	* Source/GSThemeDrawing.m (-buttonBorderForCell:style:state:):
+	Use the new contentRect when calculating the border for tiles
+
+2010-01-27 Eric Wasylishen <ewasylishen@gmail.com>
+
 	* Source/GSThemeTools.m: Correct implementation of contentRectForRect:
 
 2010-01-27 Eric Wasylishen <ewasylishen@gmail.com>

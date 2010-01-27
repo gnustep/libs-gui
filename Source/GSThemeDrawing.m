@@ -195,10 +195,10 @@
     }
   else
     {
-      NSSize cls = tiles->rects[TileCL].size;
-      NSSize bms = tiles->rects[TileBM].size;
-
-      return NSMakeSize(cls.width, bms.height);
+      // FIXME: We assume the button's top and right padding are the same as
+      // its bottom and left.
+      return NSMakeSize(tiles->contentRect.origin.x,
+                        tiles->contentRect.origin.y);
     }
 }
 
