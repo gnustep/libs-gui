@@ -94,7 +94,7 @@ typedef enum _NSBezelStyle {
   NSTexturedSquareBezelStyle,
   NSHelpButtonBezelStyle,
   NSSmallSquareBezelStyle,
-  NSTexturedRoundBezelStyle,
+  NSTexturedRoundedBezelStyle,
   NSRoundRectBezelStyle,
   NSRecessedBezelStyle,
   NSRoundedDisclosureBezelStyle,

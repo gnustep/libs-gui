@@ -88,7 +88,7 @@
       switch (style)
         {
 	  case NSRoundRectBezelStyle:
-	  case NSTexturedRoundBezelStyle:
+	  case NSTexturedRoundedBezelStyle:
 	  case NSRoundedBezelStyle:
 	    [self drawRoundBezel: frame withColor: color];
 	    break;
@@ -166,7 +166,7 @@
       switch (style)
         {
 	  case NSRoundRectBezelStyle:
-	  case NSTexturedRoundBezelStyle:
+	  case NSTexturedRoundedBezelStyle:
 	  case NSRoundedBezelStyle:
 	    return NSMakeSize(5, 5);
 	  case NSTexturedSquareBezelStyle:
