@@ -1223,23 +1223,12 @@ static NSMapTable *viewInfo = 0;
 {
   int        i;
   int        howMany = [_itemCells count];
-  NSRectEdge sides[2]; 
-  float      grays[] = {NSDarkGray, NSDarkGray};
 
-  if (_horizontal == YES)
-    {
-      sides[0] = NSMinYEdge;
-      sides[1] = NSMinYEdge;
-      NSDrawTiledRects(_bounds, rect, sides, grays, 2);
-    }
-  else
-    {
-      sides[0] = NSMinXEdge;
-      sides[1] = NSMaxYEdge;
-      // Draw the dark gray upper left lines.
-      NSDrawTiledRects(_bounds, rect, sides, grays, 2);
-    }
-  
+  [[GSTheme theme] drawBackgroundForMenuView: self
+                                   withFrame: _bounds
+                                   dirtyRect: rect
+                                  horizontal: _horizontal];
+ 
   // Draw the menu cells.
   for (i = 0; i < howMany; i++)
     {

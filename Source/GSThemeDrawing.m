@@ -679,6 +679,29 @@
     }
 }
 
+- (void) drawBackgroundForMenuView: (NSMenuView*)menuView
+                         withFrame: (NSRect)bounds
+                         dirtyRect: (NSRect)dirtyRect
+                        horizontal: (BOOL)horizontal 
+{
+  NSRectEdge sides[2]; 
+  float      grays[] = {NSDarkGray, NSDarkGray};
+
+  if (horizontal == YES)
+    {
+      sides[0] = NSMinYEdge;
+      sides[1] = NSMinYEdge;
+      NSDrawTiledRects(bounds, dirtyRect, sides, grays, 2);
+    }
+  else
+    {
+      sides[0] = NSMinXEdge;
+      sides[1] = NSMaxYEdge;
+      // Draw the dark gray upper left lines.
+      NSDrawTiledRects(bounds, dirtyRect, sides, grays, 2);
+    }
+}
+
 - (void) drawBorderAndBackgroundForMenuItemCell: (NSMenuItemCell *)cell
                                       withFrame: (NSRect)cellFrame
                                          inView: (NSView *)controlView

@@ -1,5 +1,13 @@
 2010-01-27 Eric Wasylishen <ewasylishen@gmail.com>
 
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	* Source/NSMenuView.m:
+	* Source/GSThemeDrawing.m: 
+	Create a new GSTheme method for drawing the background of NSMenuView,
+	-drawBackgroundForMenuView:withFrame:dirtyRect:horizontal:
+
+10-01-27 Eric Wasylishen <ewasylishen@gmail.com>
+
 	* Source/GSThemeDrawing.m: Undo an accidental commit of some testing
 	code in r29416
 

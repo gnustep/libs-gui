@@ -832,6 +832,10 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 	 withFrame: (NSRect) aRect
           position: (NSPoint) position;
 
+- (void) drawBackgroundForMenuView: (NSMenuView*)menuView
+                         withFrame: (NSRect)bounds
+                         dirtyRect: (NSRect)dirtyRect
+                        horizontal: (BOOL)horizontal;
 
 // menu item cell drawing method
 - (void) drawBorderAndBackgroundForMenuItemCell: (NSMenuItemCell *)cell
