@@ -238,6 +238,7 @@
 @class NSMenuItemCell;
 @class NSMenuView;
 @class NSProgressIndicator;
+@class NSTableHeaderCell;
 @class GSDrawTiles;
 
 /* First, declare names used for obtaining colors and/or tiles for specific
@@ -869,7 +870,10 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
 // Table drawing methods
 - (void) drawTableCornerView: (NSView*)cornerView
                     withClip: (NSRect)aRect;
-
+- (void) drawTableHeaderCell: (NSTableHeaderCell *)cell
+                   withFrame: (NSRect)cellFrame
+                      inView: (NSView *)controlView
+                       state: (GSThemeControlState)state;
 
 - (float) titlebarHeight;
 

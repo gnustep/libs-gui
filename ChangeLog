@@ -1,3 +1,11 @@
+2010-01-28 Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	* Source/NSTableHeaderCell.m:
+	* Source/GSThemeDrawing.m: Factor out table header cell drawing into
+	a new GSTheme method,
+	-drawTableHeaderCell:withFrame:inView:state:
+
 2010-01-27 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h:

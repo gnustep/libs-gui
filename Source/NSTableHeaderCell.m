@@ -64,15 +64,22 @@
 - (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame 
                                     inView: (NSView*)controlView
 {
+  GSThemeControlState state;
   if (_cell.is_highlighted == YES)
     {
-      [[GSTheme theme] drawButton: cellFrame withClip: cellFrame];
+      state = GSThemeHighlightedState;
     }
   else
     {
-      [[GSTheme theme] drawDarkButton: cellFrame withClip: cellFrame];
+      state = GSThemeNormalState;
     }
 
+  [[GSTheme theme] drawTableHeaderCell: self
+                             withFrame: cellFrame
+                                inView: controlView
+                                 state: state];
+
+  // Draw the label
   [self _drawBackgroundWithFrame: cellFrame inView: controlView];
 }
 

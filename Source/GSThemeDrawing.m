@@ -945,6 +945,22 @@ static NSImage *spinningImages[MaxCount];
   NSRectFill(rect);
 }
 
+- (void) drawTableHeaderCell: (NSTableHeaderCell *)cell
+                   withFrame: (NSRect)cellFrame
+                      inView: (NSView *)controlView
+                       state: (GSThemeControlState)state
+{
+  if (state == GSThemeHighlightedState)
+    {
+      [self drawButton: cellFrame withClip: cellFrame];
+    }
+  else
+    {
+      [self drawDarkButton: cellFrame withClip: cellFrame];
+    }
+}
+
+
 // Window decoration drawing methods
 /* These include the black border. */
 #define TITLE_HEIGHT 23.0
