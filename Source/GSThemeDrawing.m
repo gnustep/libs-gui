@@ -28,7 +28,6 @@
 
 #import "GSThemePrivate.h"
 
-#import "AppKit/NSApplication.h"
 #import "AppKit/NSAttributedString.h"
 #import "AppKit/NSBezierPath.h"
 #import "AppKit/NSButtonCell.h"
@@ -212,11 +211,6 @@
   NSColor *c;
 
   c = [[view window] backgroundColor];
-
-  if ([[view window] isMainWindow] && 
-      [[NSApplication sharedApplication] isActive])
-    c = [NSColor whiteColor];
-
   [c set];
   NSRectFill (frame);
 }

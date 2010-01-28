@@ -1,3 +1,8 @@
+2010-01-27 Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/GSThemeDrawing.m: Undo an accidental commit of some testing
+	code in r29416
+
 2010-01-28  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSApplication.m (-_windowWillClose:, -_lastWindowClosed:):
