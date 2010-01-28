@@ -3932,56 +3932,62 @@ struct _DelegateWrapper
     }
 }
 
+- (void) _lastWindowClosed
+{
+  if ([_delegate respondsToSelector:
+    @selector(applicationShouldTerminateAfterLastWindowClosed:)])
+    {
+      if ([_delegate
+	applicationShouldTerminateAfterLastWindowClosed: self])
+        {
+          [self terminate: self];
+        }
+    }
+  /* wlux 2009-10-17: If we use MS Windows style menus, terminate
+     the application by default when the last window is closed. */
+  else if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil) == 
+	   NSWindows95InterfaceStyle)
+    {
+      [self terminate: self];
+    }
+}
+
 - (void) _windowWillClose: (NSNotification*) notification
 {
   NSWindow *win = [notification object];
 
   if (_app_is_running)
     {
+      /* FIXME Don't use GSOrderedWindows(), since it may not return all
+	 windows when the application is hidden. E.g., given a hidden
+	 application with a single window with canHide == NO, if the user
+	 closes this window it would appear as if the last window was closed. */
       NSArray *windows_list = GSOrderedWindows();
-      unsigned count = [windows_list count];
       NSEnumerator *iter = [windows_list objectEnumerator];
-      NSMutableArray *list = [NSMutableArray arrayWithCapacity: count];
+      BOOL wasLast = YES;
       NSWindow *tmp;
 
-      /* FIXME: Why are non-visible windows not counted? When there are
-         minimized windows left over, this would still terminate the application.
-      */
       while ((tmp = [iter nextObject]))
         {
-          if ([tmp canBecomeMainWindow] == YES && [tmp isVisible] == YES)
+          if (tmp != win && [tmp canBecomeMainWindow] == YES)
             {
-              [list addObject: tmp];
+              wasLast = NO;
+	      break;
             }
         }
-      [list removeObjectIdenticalTo: win];
-      count = [list count];
-  
-      /* If there's only one window left, and that's the one being closed, 
-         then we ask the delegate if the app is to be terminated. */
-      if (count == 0)
-        {
-          if ([_delegate respondsToSelector:
-	    @selector(applicationShouldTerminateAfterLastWindowClosed:)])
-            {
-              if ([_delegate
-		applicationShouldTerminateAfterLastWindowClosed: self])
-                {
-                  [self terminate: self];
-                }
-            }
-	  /*
-	    wlux 2009-10-17: If we use MS Windows style menus, we terminate
-	    the application by default if the last window is closed.
-	    FIXME: I think we should send [self interfaceStyle] here, but
-	    this does not return a meaningful result at present.
-	  */
-          else if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil) == 
-		   NSWindows95InterfaceStyle)
-            {
-              [self terminate: self];
-            }
-        }
+
+      /* Perform _lastWindowDidClose at the end of the event loop cycle so
+	 that all interested objects are notified before we terminate the
+	 application. In particular, this means that a modified document
+	 associated with the closed window has been closed before -terminate:
+	 is called and therefore the user isn't asked twice whether she wants
+	 to save that document's unsaved changes. */
+      if (wasLast)
+	{
+	  [self performSelector: @selector(_lastWindowClosed)
+		     withObject: nil
+		     afterDelay: 0.1];
+	}
     }
 }
 

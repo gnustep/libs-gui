@@ -1,5 +1,15 @@
 2010-01-28  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSApplication.m (-_windowWillClose:, -_lastWindowClosed:):
+	Send -applicationShouldTerminateAfterLastWindowClosed: to the
+	delegate only after a short delay so that all observers can
+	process the NSWindowWillCloseNotification. This ensures that a
+	modified document associated with the closed window has been
+	closed before -terminate: is called and therefore the user isn't
+	asked twice whether she wants to save the unsaved changes.
+
+2010-01-28  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/GSIconManager.m (GSGetIconFrame): Don't touch icon
 	positions when the icon manager is not used, so that any icon
 	placement performed by the user does not get lost when a
