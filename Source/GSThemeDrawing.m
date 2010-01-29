@@ -660,6 +660,23 @@
     [self drawStepperDownButton: downRect];
 }
 
+// NSSegmentedControl drawing methods
+
+- (void) drawSegmentedControlSegment: (NSCell *)cell
+                           withFrame: (NSRect)cellFrame
+                              inView: (NSView *)controlView
+                               style: (NSSegmentStyle)style  
+                               state: (GSThemeControlState)state
+                         roundedLeft: (BOOL)roundedLeft
+                        roundedRight: (BOOL)roundedRight
+{
+  [[GSTheme theme] drawButton: cellFrame
+                   in: cell
+                   view: controlView
+                   style: NSRegularSquareBezelStyle
+                   state: state];
+}
+
 - (void) drawImage: (NSImage *)image
       inButtonCell: (NSButtonCell *) cell 
 	 withFrame: (NSRect) aRect

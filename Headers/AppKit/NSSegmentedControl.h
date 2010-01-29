@@ -27,7 +27,18 @@
 #define _GNUstep_H_NSSegmentedControl
 
 #include <AppKit/NSControl.h>
-#include <AppKit/NSSegmentedCell.h>
+
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
+typedef enum _NSSegmentStyle {
+  NSSegmentStyleAutomatic = 0,
+  NSSegmentStyleRounded = 1,
+  NSSegmentStyleTexturedRounded = 2,
+  NSSegmentStyleRoundRect = 3,
+  NSSegmentStyleTexturedSquare = 4,
+  NSSegmentStyleCapsule = 5,
+  NSSegmentStyleSmallSquare = 6
+} NSSegmentStyle;
+#endif
 
 @interface NSSegmentedControl : NSControl
 
@@ -53,6 +64,12 @@
 - (BOOL) isSelectedForSegment: (int)segment;
 - (void) setEnabled: (BOOL)flag forSegment: (int)segment;
 - (BOOL) isEnabledForSegment: (int)segment;
+
+// Setting the style of the segments
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
+- (void)setSegmentStyle:(NSSegmentStyle)style;
+- (NSSegmentStyle)segmentStyle;
+#endif
 
 @end
 #endif

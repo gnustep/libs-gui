@@ -545,6 +545,8 @@
   NSRect textFrame = frame;
   float x_offset = (frame.size.width - textSize.width) / 2;
   GSThemeControlState state = GSThemeNormalState;
+  BOOL roundedLeft = NO;
+  BOOL roundedRight = NO;
 
   textFrame.origin.x += x_offset;
   textFrame.size.width -= x_offset;
@@ -555,12 +557,19 @@
       state = GSThemeSelectedState;
     }
 
-  [[GSTheme theme] drawButton: frame
-		   in: self
-		   view: [self controlView]
-		   style: NSRegularSquareBezelStyle
-		   state: state];
+  if (seg == 0)
+    roundedLeft = YES;
 
+  if (seg == ([_items count] - 1))
+    roundedRight = YES;
+
+   [[GSTheme theme] drawSegmentedControlSegment: self
+                                      withFrame: frame
+                                         inView: [self controlView]
+                                          style: [self segmentStyle]
+                                          state: state
+                                    roundedLeft: roundedLeft
+                                   roundedRight: roundedRight];
   [self _drawText: [segment label] inFrame: textFrame];
 }
 
@@ -587,6 +596,17 @@
     }
 }
 
+// Setting the style of the segments
+- (void)setSegmentStyle:(NSSegmentStyle)style
+{
+  _segmentCellFlags._style = style;
+}
+
+- (NSSegmentStyle)segmentStyle
+{
+  return _segmentCellFlags._style;
+}
+
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
@@ -596,11 +616,15 @@
       [aCoder encodeObject: _items forKey: @"NSSegmentImages"];
       if (_selected_segment != -1)
         [aCoder encodeInt: _selected_segment forKey: @"NSSelectedSegment"];
+      [aCoder encodeInt: _segmentCellFlags._style forKey: @"NSSegmentStyle"];
     }
   else
     {
+      int style;
       [aCoder encodeObject: _items];
       [aCoder encodeValueOfObjCType: @encode(int) at: &_selected_segment];
+      style = _segmentCellFlags._style;
+      [aCoder encodeValueOfObjCType: @encode(int) at: &style];
     }
 }
 
@@ -615,12 +639,16 @@
       if ([aDecoder containsValueForKey: @"NSSegmentImages"])
         ASSIGN(_items, [aDecoder decodeObjectForKey: @"NSSegmentImages"]);
       if ([aDecoder containsValueForKey: @"NSSelectedSegment"])
-        _selected_segment = [aDecoder decodeIntForKey: @"NSSelectedSegment"]; 
+        _selected_segment = [aDecoder decodeIntForKey: @"NSSelectedSegment"];
+      _segmentCellFlags._style = [aDecoder decodeIntForKey: @"NSSegmentStyle"];
     }
   else
     {
+      int style;
       ASSIGN(_items,[aDecoder decodeObject]);
       [aDecoder decodeValueOfObjCType: @encode(int) at: &_selected_segment];
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &style];
+      _segmentCellFlags._style = style;
     }
   return self;
 }

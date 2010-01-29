@@ -25,6 +25,7 @@
 
 #include <AppKit/NSControl.h>
 #include <AppKit/NSSegmentedControl.h>
+#include <AppKit/NSSegmentedCell.h>
 #include <AppKit/NSEvent.h>
 
 static Class segmentedControlCellClass;
@@ -131,6 +132,16 @@ static Class segmentedControlCellClass;
 - (BOOL) isEnabledForSegment: (int)segment
 {
   return [_cell isEnabledForSegment: segment];
+}
+
+- (void)setSegmentStyle:(NSSegmentStyle)style
+{
+  [_cell setSegmentStyle: style];
+}
+
+- (NSSegmentStyle)segmentStyle
+{
+  return [_cell segmentStyle];
 }
 
 /*

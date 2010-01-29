@@ -27,6 +27,7 @@
 #define _GNUstep_H_NSSegmentedCell
 
 #include <AppKit/NSActionCell.h>
+#include <AppKit/NSSegmentedControl.h>
 
 // tracking types...
 typedef enum {
@@ -52,9 +53,11 @@ typedef enum {
     unsigned int _tracking_mode:3;
     unsigned int _trimmed_labels:1;
     unsigned int _drawing:1;
-    unsigned int _style:1;
+    unsigned int unused1:2;
     unsigned int _recalcToolTips:1;
-    unsigned int unused:24;
+    unsigned int unused2:3;
+    unsigned int _style:8;
+    unsigned int unused3:13;
   } _segmentCellFlags;
 }
 
@@ -95,5 +98,12 @@ typedef enum {
 - (void) drawSegment: (int)segment 
              inFrame: (NSRect)frame 
             withView: (NSView *)view;
+
+// Setting the style of the segments
+#if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
+- (void)setSegmentStyle:(NSSegmentStyle)style;
+- (NSSegmentStyle)segmentStyle;
+#endif
+
 @end
 #endif

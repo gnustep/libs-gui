@@ -1,5 +1,16 @@
 2010-01-28 Eric Wasylishen <ewasylishen@gmail.com>
 
+	* Source/GSThemeDrawing.m:
+	* Source/NSSegmentedCell.m:
+	* Source/NSSegmentedControl.m:
+	* Headers/AppKit/NSSegmentedCell.h:
+	* Headers/AppKit/NSSegmentedControl.h:
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	Add GSTheme method for NSSegmentedCell drawing.
+	Implemented segmentStyle and setSegmentStyle: methods.
+
+2010-01-28 Eric Wasylishen <ewasylishen@gmail.com>
+
 	* Source/NSButtonCell.m -isOpaque: Return NO if the button cell has a
 	bezel style set. This is consistent with OS X, and fixes drawing
 	glitches seen in the GSTest NSButton test.

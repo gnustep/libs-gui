@@ -224,6 +224,8 @@
 #include <AppKit/NSImageCell.h>
 // For scroller constants
 #include <AppKit/NSScroller.h>
+// For segmented control style constants
+#include <AppKit/NSSegmentedControl.h>
 
 #if	OS_API_VERSION(GS_API_NONE,GS_API_NONE)
 @class NSArray;
@@ -822,6 +824,16 @@ APPKIT_EXPORT	NSString	*GSThemeWillDeactivateNotification;
  * Draw highlighted stepper down button
  */
 - (void) drawStepperHighlightDownButton: (NSRect)aRect;
+
+// NSSegmentedControl drawing methods
+
+- (void) drawSegmentedControlSegment: (NSCell *)cell
+                           withFrame: (NSRect)cellFrame
+                              inView: (NSView *)controlView
+                               style: (NSSegmentStyle)style
+                               state: (GSThemeControlState)state
+                         roundedLeft: (BOOL)roundedLeft
+                        roundedRight: (BOOL)roundedRight;
 
 /**
  * In some themes it may be necessary to override the drawing 
