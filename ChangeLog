@@ -1,5 +1,11 @@
 2010-01-29 Eric Wasylishen <ewasylishen@gmail.com>
 
+	* Source/GSThemeDrawing.m (-cellForScrollerKnobSlot:): If there are
+	tiles available, set the button cell as bordered so the tiles are
+	used in drawing the scroller slot.
+
+2010-01-29 Eric Wasylishen <ewasylishen@gmail.com>
+
 	* Source/GSTheme.m:
 	* Source/GSThemeDrawing.m:
 	* Source/GSThemePrivate.h: Add GSStringFromBezelStyle and

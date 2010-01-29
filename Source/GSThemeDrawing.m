@@ -386,25 +386,29 @@
 
 - (NSCell*) cellForScrollerKnobSlot: (BOOL)horizontal
 {
+  GSDrawTiles   *tiles;
   NSButtonCell	*cell;
   NSColor	*color;
-
-  cell = [NSButtonCell new];
-  [cell setBordered: NO];
-  [cell setTitle: nil];
+  NSString      *name;
 
   if (horizontal)
     {
-      color = [self colorNamed: GSScrollerHorizontalSlot
-			 state: GSThemeNormalState];
-      [self setName: GSScrollerHorizontalSlot forElement: cell temporary: YES];
+      name = GSScrollerHorizontalSlot;
     }
   else
     {
-      color = [self colorNamed: GSScrollerVerticalSlot
-			 state: GSThemeNormalState];
-      [self setName: GSScrollerVerticalSlot forElement: cell temporary: YES];
+      name = GSScrollerVerticalSlot;
     }
+
+  tiles = [self tilesNamed: name state: GSThemeNormalState];
+  color = [self colorNamed: name state: GSThemeNormalState];
+
+  cell = [NSButtonCell new];
+  [cell setBordered: (tiles != nil)];
+  [cell setTitle: nil];
+
+  [self setName: name forElement: cell temporary: YES];
+ 
   if (color == nil)
     {
       color = [NSColor scrollBarColor];
