@@ -40,6 +40,7 @@
 #import "GNUstepBase/GSObjCRuntime.h"
 #import "GNUstepGUI/GSTheme.h"
 #import "AppKit/NSApplication.h"
+#import "AppKit/NSButtonCell.h"
 #import "AppKit/NSButton.h"
 #import "AppKit/NSColor.h"
 #import "AppKit/NSColorList.h"
@@ -50,6 +51,7 @@
 #import "AppKit/NSMenu.h"
 #import "AppKit/NSPanel.h"
 #import "AppKit/NSScrollView.h"
+#import "AppKit/NSSegmentedControl.h"
 #import "AppKit/NSTextContainer.h"
 #import "AppKit/NSTextField.h"
 #import "AppKit/NSTextView.h"
@@ -124,6 +126,49 @@ GSThemeFillStyleFromString(NSString *s)
   return GSThemeFillStyleNone;
 }
 
+NSString *
+GSStringFromSegmentStyle(NSSegmentStyle segmentStyle)
+{
+  switch (segmentStyle)
+    {
+      case NSSegmentStyleAutomatic:       return @"NSSegmentStyleAutomatic";
+      case NSSegmentStyleRounded:         return @"NSSegmentStyleRounded";
+      case NSSegmentStyleTexturedRounded: return @"NSSegmentStyleTexturedRounded";
+      case NSSegmentStyleRoundRect:       return @"NSSegmentStyleRoundRect";
+      case NSSegmentStyleTexturedSquare:  return @"NSSegmentStyleTexturedSquare";
+      case NSSegmentStyleCapsule:         return @"NSSegmentStyleCapsule";
+      case NSSegmentStyleSmallSquare:     return @"NSSegmentStyleSmallSquare";
+      default:                            return nil;
+    }
+}
+
+NSString *
+GSStringFromBezelStyle(NSBezelStyle bezelStyle)
+{
+  switch (bezelStyle)
+    {
+      case NSRoundedBezelStyle:           return @"NSRoundedBezelStyle";
+      case NSRegularSquareBezelStyle:     return @"NSRegularSquareBezelStyle";
+      case NSThickSquareBezelStyle:       return @"NSThickSquareBezelStyle";
+      case NSThickerSquareBezelStyle:     return @"NSThickerSquareBezelStyle";
+      case NSDisclosureBezelStyle:        return @"NSDisclosureBezelStyle";
+      case NSShadowlessSquareBezelStyle:  return @"NSShadowlessSquareBezelStyle";
+      case NSCircularBezelStyle:          return @"NSCircularBezelStyle";
+      case NSTexturedSquareBezelStyle:    return @"NSTexturedSquareBezelStyle";
+      case NSHelpButtonBezelStyle:        return @"NSHelpButtonBezelStyle";
+      case NSSmallSquareBezelStyle:       return @"NSSmallSquareBezelStyle";
+      case NSTexturedRoundedBezelStyle:   return @"NSTexturedRoundedBezelStyle";
+      case NSRoundRectBezelStyle:         return @"NSRoundRectBezelStyle";
+      case NSRecessedBezelStyle:          return @"NSRecessedBezelStyle";
+      case NSRoundedDisclosureBezelStyle: return @"NSRoundedDisclosureBezelStyle";
+      case NSNeXTBezelStyle:              return @"NSNeXTBezelStyle";
+      case NSPushButtonBezelStyle:        return @"NSPushButtonBezelStyle";
+      case NSSmallIconButtonBezelStyle:   return @"NSSmallIconButtonBezelStyle";
+      case NSMediumIconButtonBezelStyle:  return @"NSMediumIconButtonBezelStyle";
+      case NSLargeIconButtonBezelStyle:   return @"NSLargeIconButtonBezelStyle";
+      default:                            return nil;
+    }
+}
 
 @interface	NSImage (GSTheme)
 + (NSImage*) _setImage: (NSImage*)image name: (NSString*)name;

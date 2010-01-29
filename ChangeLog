@@ -1,3 +1,15 @@
+2010-01-29 Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/GSTheme.m:
+	* Source/GSThemeDrawing.m:
+	* Source/GSThemePrivate.h: Add GSStringFromBezelStyle and
+	GSStringFromSegmentStyle functions which return the string name of
+	the style constant for buttons and segmented controls.
+	In -[GSThemeDrawing drawButton:view:style:state], use
+	GSStringFromBezelStyle to try to get tiles for the specified bezel
+	style, falling back to the normal NSButton tiles if the fancy tiles
+	aren't present.
+
 2010-01-28 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Headers/AppKit/NSPanel.h: Added panel style constants

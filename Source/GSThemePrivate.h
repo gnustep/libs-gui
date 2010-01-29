@@ -30,9 +30,14 @@
 
 #import	<Foundation/NSProxy.h>
 #import	"AppKit/NSPanel.h"
+#import "AppKit/NSButtonCell.h"
+#import "AppKit/NSSegmentedControl.h"
 #import "GNUstepGUI/GSTheme.h"
 
 @class	NSImage, NSMatrix, NSScrollView, NSView;
+
+NSString *GSStringFromSegmentStyle(NSSegmentStyle segmentStyle);
+NSString *GSStringFromBezelStyle(NSBezelStyle bezelStyle);
 
 /** These are the nine types of tile used to draw a rectangular object.
  */

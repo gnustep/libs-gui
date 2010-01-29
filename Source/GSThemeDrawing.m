@@ -62,7 +62,7 @@
 
   if (name == nil)
     {
-      name = @"NSButton";
+      name = GSStringFromBezelStyle(style);
     }
 
   color = [self colorNamed: name state: state];
@@ -83,6 +83,11 @@
     }
 
   tiles = [self tilesNamed: name state: state];
+  if (tiles == nil)
+    {
+      tiles = [self tilesNamed: @"NSButton" state: state];
+    }
+
   if (tiles == nil)
     {
       switch (style)
@@ -157,10 +162,15 @@
 
   if (name == nil)
     {
-      name = @"NSButton";
+      name = GSStringFromBezelStyle(style);
     }
 
   tiles = [self tilesNamed: name state: state];
+  if (tiles == nil)
+    {
+      tiles = [self tilesNamed: @"NSButton" state: state];
+    } 
+
   if (tiles == nil)
     {
       switch (style)
