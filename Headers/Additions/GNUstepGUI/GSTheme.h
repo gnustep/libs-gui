@@ -259,6 +259,11 @@ APPKIT_EXPORT	NSString	*GSScrollerUpArrow;
 APPKIT_EXPORT	NSString	*GSScrollerVerticalKnob;
 APPKIT_EXPORT	NSString	*GSScrollerVerticalSlot;
 
+/* Names for table view parts */
+APPKIT_EXPORT	NSString	*GSTableHeader;
+APPKIT_EXPORT	NSString	*GSTableCorner;
+
+
 /**
  * This defines how the values in a tile array should be used when
  * drawing a rectangle.  Mostly this just effects the center, middle

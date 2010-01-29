@@ -959,6 +959,7 @@ static NSImage *spinningImages[MaxCount];
 {
   NSRect divide;
   NSRect rect;
+  GSDrawTiles *tiles = [self tilesNamed: GSTableCorner state: GSThemeNormalState];
 
   if ([cornerView isFlipped])
     {
@@ -969,11 +970,20 @@ static NSImage *spinningImages[MaxCount];
       NSDivideRect(aRect, &divide, &rect, 1.0, NSMinYEdge);
     }
 
-  [[NSColor blackColor] set];
-  NSRectFill(divide);
-  rect = [self drawDarkButton: rect withClip: aRect];
-  [[NSColor controlShadowColor] set];
-  NSRectFill(rect);
+  if (tiles == nil)
+    { 
+      [[NSColor blackColor] set];
+      NSRectFill(divide);
+      rect = [self drawDarkButton: rect withClip: aRect];
+      [[NSColor controlShadowColor] set];
+      NSRectFill(rect);
+    }
+  else
+    {
+       [self fillRect: aRect
+            withTiles: tiles
+           background: [NSColor clearColor]];
+    }
 }
 
 - (void) drawTableHeaderCell: (NSTableHeaderCell *)cell
@@ -981,13 +991,29 @@ static NSImage *spinningImages[MaxCount];
                       inView: (NSView *)controlView
                        state: (GSThemeControlState)state
 {
-  if (state == GSThemeHighlightedState)
+  GSDrawTiles *tiles = [self tilesNamed: GSTableHeader state: state];
+
+  if (tiles == nil)
     {
-      [self drawButton: cellFrame withClip: cellFrame];
+      NSRect rect;
+      if (state == GSThemeHighlightedState)
+        {
+          rect = [self drawButton: cellFrame withClip: cellFrame];
+          [[NSColor controlColor] set];
+          NSRectFill(rect);        
+        }
+      else
+        {
+          rect = [self drawDarkButton: cellFrame withClip: cellFrame];
+          [[NSColor controlShadowColor] set];
+          NSRectFill(rect);
+        }
     }
   else
     {
-      [self drawDarkButton: cellFrame withClip: cellFrame];
+      [self fillRect: cellFrame
+           withTiles: tiles
+          background: [NSColor clearColor]];
     }
 }
 

@@ -78,9 +78,6 @@
                              withFrame: cellFrame
                                 inView: controlView
                                  state: state];
-
-  // Draw the label
-  [self _drawBackgroundWithFrame: cellFrame inView: controlView];
 }
 
 - (void) drawSortIndicatorWithFrame: (NSRect)cellFrame

@@ -1,5 +1,15 @@
 2010-01-29 Eric Wasylishen <ewasylishen@gmail.com>
 
+	* Source/NSTableHeaderCell.m:
+	* Source/GSTheme.m:
+	* Source/NSTableHeaderView.m:
+	* Source/GSThemeDrawing.m:
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Use theme tiles (if available)
+	to draw table headers. New tile names are GSTableHeader and 
+	GSTableCorner.
+
+2010-01-29 Eric Wasylishen <ewasylishen@gmail.com>
+
 	* Source/GSThemeDrawing.m (-cellForScrollerKnobSlot:): If there are
 	tiles available, set the button cell as bordered so the tiles are
 	used in drawing the scroller slot.

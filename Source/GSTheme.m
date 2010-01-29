@@ -72,6 +72,12 @@ NSString	*GSScrollerUpArrow = @"GSScrollerUpArrow";
 NSString	*GSScrollerVerticalKnob = @"GSScrollerVerticalKnob";
 NSString	*GSScrollerVerticalSlot = @"GSScrollerVerticalSlot";
 
+// Table view part names
+NSString	*GSTableHeader = @"GSTableHeader";
+NSString	*GSTableCorner = @"GSTableCorner";
+
+
+
 NSString	*GSThemeDidActivateNotification
   = @"GSThemeDidActivateNotification";
 NSString	*GSThemeDidDeactivateNotification

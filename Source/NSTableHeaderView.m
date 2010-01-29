@@ -254,21 +254,6 @@
                            inView: self];
       drawingRect.origin.x += width;
     }
-
-  {
-    NSRectEdge up_sides[] = {NSMinYEdge, NSMaxXEdge};
-    NSRectEdge dn_sides[] = {NSMaxYEdge, NSMaxXEdge};
-    float grays[] = {NSBlack, NSBlack};
-    
-    if (![self isFlipped])
-      {
-        NSDrawTiledRects(_bounds, aRect, up_sides, grays, 2);
-      }
-    else
-      {
-        NSDrawTiledRects(_bounds, aRect, dn_sides, grays, 2);
-      }
-  }
 }
 
 /**
