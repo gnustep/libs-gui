@@ -37,7 +37,9 @@
 
 enum {
   NSUtilityWindowMask = 16,
-  NSDocModalWindowMask = 32
+  NSDocModalWindowMask = 32,
+  NSNonactivatingPanelMask = 128,
+  NSHUDWindowMask = 8192
 };
 
 enum {
