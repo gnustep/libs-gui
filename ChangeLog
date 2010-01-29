@@ -1,5 +1,11 @@
 2010-01-28 Eric Wasylishen <ewasylishen@gmail.com>
 
+	* Source/NSButtonCell.m -isOpaque: Return NO if the button cell has a
+	bezel style set. This is consistent with OS X, and fixes drawing
+	glitches seen in the GSTest NSButton test.
+
+2010-01-28 Eric Wasylishen <ewasylishen@gmail.com>
+
 	* Headers/AppKit/NSButtonCell.h: Correct a typo:
 	NSTexturedRoundBezelStyle should be
 	NSTexturedRoundedBezelStyle
