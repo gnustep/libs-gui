@@ -74,7 +74,9 @@
 - (id) init
 {
   self = [super init];
-  
+ 
+  _enabled = YES;
+ 
   return self;
 }
 

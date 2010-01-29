@@ -1,5 +1,9 @@
 2010-01-28 Eric Wasylishen <ewasylishen@gmail.com>
 
+	* Source/NSSegmentedCell.m: NSSegmentItem should be enabled by default
+
+2010-01-28 Eric Wasylishen <ewasylishen@gmail.com>
+
 	* Source/GSThemeDrawing.m:
 	* Source/NSSegmentedCell.m:
 	* Source/NSSegmentedControl.m:
