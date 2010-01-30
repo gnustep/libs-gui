@@ -1015,11 +1015,39 @@ withRepeatedImage: (NSImage*)image
 @end
 
 @interface GSTheme (Menus)
+/**
+ * This method sets the menu for the window using the current theme 
+ * In the default theme this calls the setMenu: method on the window
+ * giving the menu parameter as the argument. 
+ */ 
 - (void)  setMenu: (NSMenu *)menu forWindow: (NSWindow *)window;
+
+/**
+ * Processes menu events for the theme.   The default implementation
+ * does nothing.  
+ */
 - (void)  processCommand: (void *)context;
+
+/**
+ * Calculate the height of the menu for in-window menus.  The default
+ * implementation returns [NSMenuView menuBarHeight];
+ */
 - (float) menuHeightForWindow: (NSWindow *)window;
+
+/**
+ * Update the menu for the window.  This refreshes the menu contents.
+ * The default implementation of this method does nothing.
+ */
 - (void)  updateMenu: (NSMenu *)menu forWindow: (NSWindow *)window;
+- (void) updateAllWindowsWithMenu: (NSMenu *) menu;
 @end 
+
+@interface GSTheme (OpenSavePanels)
+/**
+ * This method displays and returns the open panel needed by the
+ * native environment.
+ */ 
+@end
 
 #endif /* OS_API_VERSION */
 #endif /* _GNUstep_H_GSTheme */

@@ -94,5 +94,10 @@
 {
   // default implementation of this method does nothing.
 }
+
+- (void) updateAllWindowsWithMenu: (NSMenu *) menu
+{
+  // default implementation of this method does nothing.
+}
 @end
 

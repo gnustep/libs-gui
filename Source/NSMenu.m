@@ -57,6 +57,7 @@
 #include "AppKit/NSAttributedString.h"
 
 #include "GSGuiPrivate.h"
+#include "GNUstepGUI/GSTheme.h"
 
 /*
   Drawing related:
@@ -1064,6 +1065,8 @@ static BOOL menuBarVisible = YES;
 	    {
 	      [w setMenu: self];
 	    }
+
+	  [[GSTheme theme] updateAllWindowsWithMenu: self];
 	}
     }
   if (_delegate)

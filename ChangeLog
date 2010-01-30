@@ -1,3 +1,12 @@
+2010-01-29 22:14-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Added new method
+	declaration for updateAllWindowsWithMenu:
+	* Source/GSThemeMenu.m: Added default implementation of 
+	updateAllWindowsWithMenu:
+	* Source/NSMenu.m: Added call to updateAllWindowsWithMenu: on
+	current theme.
+
 2010-01-29 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/NSTableHeaderCell.m:
