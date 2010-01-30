@@ -715,21 +715,33 @@
                          dirtyRect: (NSRect)dirtyRect
                         horizontal: (BOOL)horizontal 
 {
-  NSRectEdge sides[2]; 
-  float      grays[] = {NSDarkGray, NSDarkGray};
-
-  if (horizontal == YES)
+  NSString  *name = horizontal ? GSMenuHorizontalBackground : 
+    GSMenuVerticalBackground;
+  GSDrawTiles *tiles = [self tilesNamed: name state: GSThemeNormalState];
+ 
+  if (tiles == nil)
     {
-      sides[0] = NSMinYEdge;
-      sides[1] = NSMinYEdge;
-      NSDrawTiledRects(bounds, dirtyRect, sides, grays, 2);
+     NSRectEdge sides[2]; 
+     float      grays[] = {NSDarkGray, NSDarkGray};
+     if (horizontal == YES)
+        {
+          sides[0] = NSMinYEdge;
+          sides[1] = NSMinYEdge;
+          NSDrawTiledRects(bounds, dirtyRect, sides, grays, 2);
+        }
+      else
+        {
+          sides[0] = NSMinXEdge;
+          sides[1] = NSMaxYEdge;
+          // Draw the dark gray upper left lines.
+          NSDrawTiledRects(bounds, dirtyRect, sides, grays, 2);
+        }
     }
   else
     {
-      sides[0] = NSMinXEdge;
-      sides[1] = NSMaxYEdge;
-      // Draw the dark gray upper left lines.
-      NSDrawTiledRects(bounds, dirtyRect, sides, grays, 2);
+      [self fillRect: bounds
+           withTiles: tiles
+          background: [NSColor clearColor]];
     }
 }
 
@@ -739,30 +751,44 @@
                                           state: (GSThemeControlState)state
                                    isHorizontal: (BOOL)isHorizontal
 {
-  NSColor	*backgroundColor = [cell backgroundColor];
-
-  if (isHorizontal)
+  NSString  *name = isHorizontal ? GSMenuHorizontalItem :
+    GSMenuVerticalItem;
+  GSDrawTiles *tiles = [self tilesNamed: name state: state];
+ 
+  if (tiles == nil)
     {
-      cellFrame = [cell drawingRectForBounds: cellFrame];
+ 
+      NSColor	*backgroundColor = [cell backgroundColor];
+
+      if (isHorizontal)
+	{
+	  cellFrame = [cell drawingRectForBounds: cellFrame];
+	  [backgroundColor set];
+	  NSRectFill(cellFrame);
+	  return;
+	}
+
+      // Set cell's background color
       [backgroundColor set];
       NSRectFill(cellFrame);
-      return;
-    }
 
-  // Set cell's background color
-  [backgroundColor set];
-  NSRectFill(cellFrame);
+      if (![cell isBordered])
+	return;
 
-  if (![cell isBordered])
-    return;
-
-  if (state == GSThemeSelectedState)
-    {
-      [self drawGrayBezel: cellFrame withClip: NSZeroRect];
+      if (state == GSThemeSelectedState)
+	{
+          [self drawGrayBezel: cellFrame withClip: NSZeroRect];
+        }
+      else
+        {
+          [self drawButton: cellFrame withClip: NSZeroRect];
+        }
     }
   else
     {
-      [self drawButton: cellFrame withClip: NSZeroRect];
+      [self fillRect: cellFrame
+           withTiles: tiles
+          background: [NSColor clearColor]];
     }
 }
 

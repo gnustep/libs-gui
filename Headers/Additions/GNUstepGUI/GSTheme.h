@@ -263,6 +263,14 @@ APPKIT_EXPORT	NSString	*GSScrollerVerticalSlot;
 APPKIT_EXPORT	NSString	*GSTableHeader;
 APPKIT_EXPORT	NSString	*GSTableCorner;
 
+/*
+ * Menu part names.
+ */
+APPKIT_EXPORT  NSString        *GSMenuHorizontalBackground;
+APPKIT_EXPORT  NSString        *GSMenuVerticalBackground;
+APPKIT_EXPORT  NSString        *GSMenuHorizontalItem;
+APPKIT_EXPORT  NSString        *GSMenuVerticalItem;
+
 
 /**
  * This defines how the values in a tile array should be used when

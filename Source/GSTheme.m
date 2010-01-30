@@ -76,7 +76,11 @@ NSString	*GSScrollerVerticalSlot = @"GSScrollerVerticalSlot";
 NSString	*GSTableHeader = @"GSTableHeader";
 NSString	*GSTableCorner = @"GSTableCorner";
 
-
+// Menu part names
+NSString        *GSMenuHorizontalBackground = @"GSMenuHorizontalBackground";
+NSString        *GSMenuVerticalBackground = @"GSMenuVerticalBackground";
+NSString        *GSMenuHorizontalItem = @"GSMenuHorizontalItem";
+NSString        *GSMenuVerticalItem = @"GSMenuVerticalItem";
 
 NSString	*GSThemeDidActivateNotification
   = @"GSThemeDidActivateNotification";

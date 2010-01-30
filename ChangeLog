@@ -1,3 +1,14 @@
+2010-01-29 Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/GSTheme.m:
+	* Source/GSThemeDrawing.m:
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Use theme tiles (if available)
+	to draw menu backgrounds and items. New tile names:
+	GSMenuHorizontalBackground
+	GSMenuVerticalBackground
+	GSMenuHorizontalItem
+	GSMenuVerticalItem
+
 2010-01-29 22:14-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Added new method
