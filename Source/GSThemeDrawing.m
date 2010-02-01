@@ -684,11 +684,33 @@
                          roundedLeft: (BOOL)roundedLeft
                         roundedRight: (BOOL)roundedRight
 {
-  [[GSTheme theme] drawButton: cellFrame
-                   in: cell
-                   view: controlView
-                   style: NSRegularSquareBezelStyle
-                   state: state];
+  GSDrawTiles *tiles;
+  NSString  *name = GSStringFromSegmentStyle(style);
+  if (roundedLeft)
+    {
+      name = [name stringByAppendingString: @"RoundedLeft"];
+    }
+  if (roundedRight)
+    {
+      name = [name stringByAppendingString: @"RoundedRight"];
+    }
+
+  tiles = [self tilesNamed: name state: state];
+ 
+  if (tiles == nil)
+    {
+      [self drawButton: cellFrame
+                    in: cell
+                  view: controlView
+                 style: NSRegularSquareBezelStyle
+                 state: state];
+    }
+  else
+    {
+      [self fillRect: cellFrame
+           withTiles: tiles
+          background: [NSColor clearColor]];
+    }
 }
 
 - (void) drawImage: (NSImage *)image
