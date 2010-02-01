@@ -80,6 +80,10 @@
 	{
           color = [NSColor selectedControlColor];
 	}
+      else
+    	{
+          color = [NSColor controlBackgroundColor];
+	}
     }
 
   tiles = [self tilesNamed: name state: state];
@@ -140,6 +144,10 @@
 	    else if (state == GSThemeSelectedState)
 	      {
 		[self drawGrayBezel: frame withClip: NSZeroRect];
+	      }
+	    else
+	      {
+		[self drawButton: frame withClip: NSZeroRect];
 	      }
 	}
     }

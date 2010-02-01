@@ -910,6 +910,11 @@ typedef struct _GSButtonCellFlags
       buttonState = GSThemeSelectedState;
     }
 
+  if (_cell.is_disabled && buttonState != GSThemeHighlightedState)
+    {
+      buttonState = GSThemeDisabledState;
+    }
+
   [[GSTheme theme] drawButton: cellFrame 
                    in: self 
                    view: controlView

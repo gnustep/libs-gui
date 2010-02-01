@@ -1287,6 +1287,9 @@ typedef	struct {
 	  case GSThemeNormalState:
 	    fullName = aName;
 	    break;
+	  case GSThemeDisabledState:
+	    fullName = [aName stringByAppendingString: @"Disabled"];
+	    break;
 	  case GSThemeHighlightedState:
 	    fullName = [aName stringByAppendingString: @"Highlighted"];
 	    break;

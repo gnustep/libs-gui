@@ -1,4 +1,12 @@
-2010-01-29 Eric Wasylishen <ewasylishen@gmail.com>
+2010-02-01 Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/GSTheme.m:
+	* Source/GSThemeDrawing.m:
+	* Source/NSButtonCell.m
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	Add a new theme state, GSThemeDisabledState.
+
+2010-01-31 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/GSTheme.m:
 	* Source/GSThemeDrawing.m:
