@@ -28,6 +28,7 @@
 
 #include "config.h"
 
+#import <Foundation/NSValue.h>
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSControl.h"
 #import "AppKit/NSEvent.h"
@@ -73,8 +74,8 @@
   [self setWraps: NO];
   _autorepeat = YES;
   _valueWraps = YES;
-  _maxValue = 59;
-  _minValue = 0;
+  [self setMaxValue: 59];
+  [self setMinValue: 0];
   _increment = 1;
 
   highlightUp = NO;
@@ -91,6 +92,8 @@
 - (void) setMaxValue: (double)maxValue
 {
   _maxValue = maxValue;
+  if ([self doubleValue] > _maxValue)
+    [self setDoubleValue: _maxValue];
 }
 
 - (double) minValue
@@ -101,6 +104,31 @@
 - (void) setMinValue: (double)minValue
 {
   _minValue = minValue;
+  if ([self doubleValue] < _minValue)
+    [self setDoubleValue: _minValue];
+}
+
+- (void) setObjectValue: (id)anObject
+{
+  // NOTE: valueWraps has no effect on setObjectValue:
+  // FIXME: Copied from NSSliderCell.. can we share the code somehow?
+
+  // If the provided object doesn't respond to doubeValue, or our minValue
+  // is greater than our maxValue, we set our value to our minValue
+  // (this arbitrary choice matches OS X)
+  if ([anObject respondsToSelector: @selector(doubleValue)] == NO ||
+      _minValue > _maxValue)
+    [super setObjectValue: [NSNumber numberWithDouble: _minValue]];
+  else
+    {
+      double aDouble = [anObject doubleValue];
+      if (aDouble < _minValue)
+        [super setObjectValue: [NSNumber numberWithDouble: _minValue]];
+      else if (aDouble > _maxValue)
+        [super setObjectValue: [NSNumber numberWithDouble: _maxValue]];
+      else
+        [super setObjectValue: anObject];
+    }
 }
 
 - (double) increment
@@ -391,13 +419,6 @@
       else if (newValue < minValue)
 	newValue = newValue + maxValue - minValue + 1;
     }
-  else
-    {
-      if (newValue > maxValue)
-	newValue = maxValue;
-      else if (newValue < minValue)
-	 newValue = minValue;
-    }
   [self setDoubleValue: newValue];
 }
 
@@ -415,13 +436,6 @@
 	newValue = newValue - maxValue + minValue - 1;
       else if (newValue < minValue)
 	newValue = newValue + maxValue - minValue + 1;
-    }
-  else
-    {
-      if (newValue > maxValue)
-	newValue = maxValue;
-      else if (newValue < minValue)
-	 newValue = minValue;
     }
   [self setDoubleValue: newValue];
 }
