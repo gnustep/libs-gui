@@ -1,5 +1,10 @@
 2010-02-01 Eric Wasylishen <ewasylishen@gmail.com>
 
+	* Source/GSThemeDrawing.m: Preliminary support for themeing the window
+	resize bar with tiles.
+
+2010-02-01 Eric Wasylishen <ewasylishen@gmail.com>
+
 	* Source/GSTheme.m:
 	* Source/GSThemeDrawing.m:
 	* Source/NSButtonCell.m

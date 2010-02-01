@@ -1211,46 +1211,58 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }
 }
 
+// FIXME: Would be good if this took the window as a param
 - (void) drawResizeBarRect: (NSRect)resizeBarRect
 {
-  [[NSColor lightGrayColor] set];
-  PSrectfill(1.0, 1.0, resizeBarRect.size.width - 2.0, RESIZE_HEIGHT - 3.0);
+  GSDrawTiles *tiles;
+  tiles = [self tilesNamed: @"GSWindowResizeBar" state: GSThemeNormalState];
+  if (tiles == nil)
+    {
+      [[NSColor lightGrayColor] set];
+      PSrectfill(1.0, 1.0, resizeBarRect.size.width - 2.0, RESIZE_HEIGHT - 3.0);
 
-  PSsetlinewidth(1.0);
+      PSsetlinewidth(1.0);
 
-  [[NSColor blackColor] set];
-  PSmoveto(0.0, 0.5);
-  PSlineto(resizeBarRect.size.width, 0.5);
-  PSstroke();
+      [[NSColor blackColor] set];
+      PSmoveto(0.0, 0.5);
+      PSlineto(resizeBarRect.size.width, 0.5);
+      PSstroke();
 
-  [[NSColor darkGrayColor] set];
-  PSmoveto(1.0, RESIZE_HEIGHT - 0.5);
-  PSlineto(resizeBarRect.size.width - 1.0, RESIZE_HEIGHT - 0.5);
-  PSstroke();
+      [[NSColor darkGrayColor] set];
+      PSmoveto(1.0, RESIZE_HEIGHT - 0.5);
+      PSlineto(resizeBarRect.size.width - 1.0, RESIZE_HEIGHT - 0.5);
+      PSstroke();
 
-  [[NSColor whiteColor] set];
-  PSmoveto(1.0, RESIZE_HEIGHT - 1.5);
-  PSlineto(resizeBarRect.size.width - 1.0, RESIZE_HEIGHT - 1.5);
-  PSstroke();
+      [[NSColor whiteColor] set];
+      PSmoveto(1.0, RESIZE_HEIGHT - 1.5);
+      PSlineto(resizeBarRect.size.width - 1.0, RESIZE_HEIGHT - 1.5);
+      PSstroke();
 
 
-  /* Only draw the notches if there's enough space. */
-  if (resizeBarRect.size.width < 30 * 2)
-    return;
+      /* Only draw the notches if there's enough space. */
+      if (resizeBarRect.size.width < 30 * 2)
+	return;
 
-  [[NSColor darkGrayColor] set];
-  PSmoveto(27.5, 1.0);
-  PSlineto(27.5, RESIZE_HEIGHT - 2.0);
-  PSmoveto(resizeBarRect.size.width - 28.5, 1.0);
-  PSlineto(resizeBarRect.size.width - 28.5, RESIZE_HEIGHT - 2.0);
-  PSstroke();
+      [[NSColor darkGrayColor] set];
+      PSmoveto(27.5, 1.0);
+      PSlineto(27.5, RESIZE_HEIGHT - 2.0);
+      PSmoveto(resizeBarRect.size.width - 28.5, 1.0);
+      PSlineto(resizeBarRect.size.width - 28.5, RESIZE_HEIGHT - 2.0);
+      PSstroke();
 
-  [[NSColor whiteColor] set];
-  PSmoveto(28.5, 1.0);
-  PSlineto(28.5, RESIZE_HEIGHT - 2.0);
-  PSmoveto(resizeBarRect.size.width - 27.5, 1.0);
-  PSlineto(resizeBarRect.size.width - 27.5, RESIZE_HEIGHT - 2.0);
-  PSstroke();
+      [[NSColor whiteColor] set];
+      PSmoveto(28.5, 1.0);
+      PSlineto(28.5, RESIZE_HEIGHT - 2.0);
+      PSmoveto(resizeBarRect.size.width - 27.5, 1.0);
+      PSlineto(resizeBarRect.size.width - 27.5, RESIZE_HEIGHT - 2.0);
+      PSstroke();
+    }
+  else
+    {
+      [self fillRect: resizeBarRect
+           withTiles: tiles
+          background: [NSColor clearColor]];
+    }
 }
 
 - (void) drawWindowBorder: (NSRect)rect 
