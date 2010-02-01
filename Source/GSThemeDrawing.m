@@ -997,8 +997,20 @@ static NSImage *spinningImages[MaxCount];
 
 - (void) drawProgressIndicatorBarDeterminate: (NSRect)bounds
 {
-  [fillColour set];
-  NSRectFill(bounds);
+  GSDrawTiles *tiles = [self tilesNamed: GSProgressIndicatorBarDeterminate
+                                  state: GSThemeNormalState];
+
+  if (tiles == nil)
+    {
+      [fillColour set];
+      NSRectFill(bounds);
+    }
+  else
+    {
+      [self fillRect: bounds
+           withTiles: tiles
+          background: fillColour];
+    }
 }
 
 // Table drawing methods

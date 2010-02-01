@@ -82,6 +82,10 @@ NSString        *GSMenuVerticalBackground = @"GSMenuVerticalBackground";
 NSString        *GSMenuHorizontalItem = @"GSMenuHorizontalItem";
 NSString        *GSMenuVerticalItem = @"GSMenuVerticalItem";
 
+// Progress indicator part names
+NSString        *GSProgressIndicatorBarDeterminate 
+  = @"GSProgressIndicatorBarDeterminate";
+
 NSString	*GSThemeDidActivateNotification
   = @"GSThemeDidActivateNotification";
 NSString	*GSThemeDidDeactivateNotification

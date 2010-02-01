@@ -271,6 +271,10 @@ APPKIT_EXPORT  NSString        *GSMenuVerticalBackground;
 APPKIT_EXPORT  NSString        *GSMenuHorizontalItem;
 APPKIT_EXPORT  NSString        *GSMenuVerticalItem;
 
+/*
+ * Progress Indicator part names.
+ */
+APPKIT_EXPORT  NSString        *GSProgressIndicatorBarDeterminate;
 
 /**
  * This defines how the values in a tile array should be used when
