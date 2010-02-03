@@ -3645,7 +3645,12 @@ resetCursorRectsForView(NSView *theView)
                 {
                   DESTROY(_lastView);
                 }
-              if (_firstResponder != v)
+              // Don't make buttons first responder otherwise they cannot 
+              // send actions to the current first responder.
+              // TODO: First responder status update would more cleanly 
+              // handled by -mouseDown in each control subclass (Mac OS X 
+              // seems to do that).
+              if (_firstResponder != v && ![v isKindOfClass: [NSButton class]])
                 {
                   // Only try to set first responder, when the view wants it.
                   if ([v acceptsFirstResponder] && ![self makeFirstResponder: v])

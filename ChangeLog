@@ -1,3 +1,9 @@
+2010-02-03 Quentin Mathe <quentin.mathe@gmail.com>
+
+	* Source/NSWindow.m (-sendEvent:): Fixed button action which were sent 
+	to the button itself when the target is the first responder. We don't 
+	give anymore the first responder status to a button on a click.
+
 2010-02-01 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/NSStepperCell.m: Correct clamping behaviour as I did to
