@@ -124,9 +124,19 @@
   hasMenu = flag;
 }
 
+- (BOOL) hasMenu
+{
+  return hasMenu;
+}
+
 - (void) setHasToolbar: (BOOL) flag
 {
   hasToolbar = flag;
+}
+
+- (BOOL) hasToolbar
+{
+  return hasToolbar;
 }
 
 - (NSRect) contentRectForFrameRect: (NSRect)aRect

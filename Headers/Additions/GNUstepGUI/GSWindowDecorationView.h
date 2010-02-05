@@ -86,6 +86,8 @@ windowNumber will be 0.
 // Flags controlling if elements are present
 - (void) setHasMenu: (BOOL) flag;
 - (void) setHasToolbar: (BOOL) flag;
+- (BOOL) hasMenu;
+- (BOOL) hasToolbar;
 @end
 
 

@@ -1,3 +1,10 @@
+2010-02-05 16:26-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSWindowDecorationView.h: Added
+	declarations for hasMenu/hasToolbar methods.
+	* Source/GSWindowDecorationView.m: Added methods to check if a menu/
+	toolbar are present.
+
 2010-02-03 Quentin Mathe <quentin.mathe@gmail.com>
 
 	* Source/NSWindow.m (-sendEvent:): Fixed button action which were sent 
