@@ -1,3 +1,23 @@
+2010-02-06 Quentin Mathe <quentin.mathe@gmail.com>
+
+	Fixed table header/content random disappearance with unarchived table 
+	views.
+	* Source/NSTableView.m (-initWithCoder:): Fixed _columnsOrigin to be 
+	always initialized by calling -tile with non-keyed unarchiving. Until 
+	now, in case no method that invokes -tile was called before the 
+	display, the table header view was not drawing the table header cells 
+	but just an empty black stroked rect, since -columnAtPoint: was 
+	returning invalid values. This was rarely visible since you usually 
+	set a data source with an outlet and -setDataSource: calls -tile.
+	Also fixed a _columnOrigins memory with keyed unarchiving.
+	(-initWithCoder:, -encodeWithCoder:): Added double action keyed 
+	archiving.
+	* Source/NSScrollView.m (-initWithCoder:): Fixed to only decode the 
+	flags we really encode, otherwise we read random memory and the 
+	flags are then incorrect. This can prevent the table header/content to 
+	be drawn in a table view enclosed in a scroll view, and also result 
+	in keyed archiving exceptions complaning about some NaN rect values.
+
 2010-02-05 16:26-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSWindowDecorationView.h: Added

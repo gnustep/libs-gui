@@ -1536,6 +1536,8 @@ static float scrollerWidth;
       _vLineScroll = 10;
       _vPageScroll = 10;
       _scrollsDynamically = YES;
+      /* _autohidesScroller, _rulersVisible, _hasHorizRuler and _hasVertRuler 
+         implicitly set to NO */
 
       if ([aDecoder containsValueForKey: @"NSsFlags"])
         {
@@ -1550,11 +1552,13 @@ static float scrollerWidth;
 
           _hasVertScroller = scrollViewFlags.hasVScroller;
           _hasHorizScroller = scrollViewFlags.hasHScroller;
-          _autohidesScrollers = scrollViewFlags.autohidesScrollers;
-          _scrollsDynamically = (!scrollViewFlags.nonDynamic);
-          _rulersVisible = scrollViewFlags.showRulers;
-          _hasHorizRuler = scrollViewFlags.hasHRuler;
-          _hasVertRuler = scrollViewFlags.hasVRuler;
+          // TODO: Enable once we encode the next values in 
+          // -encodeWithCoder:, but not before otherwise we read random memory.
+          //_autohidesScrollers = scrollViewFlags.autohidesScrollers;
+          //_scrollsDynamically = (!scrollViewFlags.nonDynamic);
+          //_rulersVisible = scrollViewFlags.showRulers;
+          //_hasHorizRuler = scrollViewFlags.hasHRuler;
+          //_hasVertRuler = scrollViewFlags.hasVRuler;
           // [self setDrawsBackground: (!scrollViewFlags.doesNotDrawBack)];
           _borderType = scrollViewFlags.border;
         }

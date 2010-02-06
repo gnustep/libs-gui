@@ -5616,6 +5616,10 @@ This method is deprecated, use -columnIndexesInRect:. */
 	{
 	  [aCoder encodeObject: NSStringFromSelector([self action]) forKey: @"NSAction"];
 	}
+      if ([self doubleAction] != NULL)
+	{
+	  [aCoder encodeObject: NSStringFromSelector([self doubleAction]) forKey: @"NSDoubleAction"];
+	}
 
       [aCoder encodeObject: [self backgroundColor] forKey: @"NSBackgroundColor"];
       [aCoder encodeObject: [self gridColor] forKey: @"NSGridColor"];
@@ -5717,6 +5721,12 @@ This method is deprecated, use -columnIndexesInRect:. */
           NSString *action = [aDecoder decodeObjectForKey: @"NSAction"];
           [self setAction: NSSelectorFromString(action)];
         }
+      if ([aDecoder containsValueForKey: @"NSDoubleAction"])
+        {
+          NSString *action = [aDecoder decodeObjectForKey: @"NSDoubleAction"];
+          [self setDoubleAction: NSSelectorFromString(action)];
+        }
+
       if ([aDecoder containsValueForKey: @"NSBackgroundColor"])
         {
           [self setBackgroundColor: [aDecoder decodeObjectForKey: @"NSBackgroundColor"]];
@@ -5797,16 +5807,12 @@ This method is deprecated, use -columnIndexesInRect:. */
       e = [columns objectEnumerator];
       while ((col = [e nextObject]) != nil)
         {
+          /* Will initialize -[NSTableColumn tableView], _numberOfColumns and 
+             allocate _columnsOrigins */
           [self addTableColumn: col];
-          [col setTableView: self];
         }
 
-      _numberOfColumns = [columns count];
-      if (_numberOfColumns)
-        _columnOrigins = NSZoneMalloc(NSDefaultMallocZone (), 
-                                      sizeof(float) * _numberOfColumns);
-
-      [self tile];
+      [self tile]; /* Initialize _columnOrigins */
     }
   else
     {
@@ -5854,14 +5860,12 @@ This method is deprecated, use -columnIndexesInRect:. */
           [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_verticalMotionDrag];
         }
      
-      if (_numberOfColumns)
-        _columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), 
-                                       sizeof(float) * _numberOfColumns);
-      
-      if (version == 2)
+      if (_numberOfColumns > 0)
         {
-          [self tile];
+          _columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), 
+                                         sizeof(float) * _numberOfColumns);
         }
+      [self tile]; /* Initialize _columnOrigins */
     }
   
   return self;
