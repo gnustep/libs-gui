@@ -330,7 +330,7 @@
   [s setAutoresizingMask: NSViewHeightSizable];
   [s setCell: [[GSColorSliderCell alloc] init]];
   [(GSColorSliderCell *)[s cell] _setColorSliderCellMode: 10];
-  [s setContinuous: NO];
+  [s setContinuous: YES];
   [s setMinValue: 0.0];
   [s setMaxValue: 1.0];
   [s setTarget: self];

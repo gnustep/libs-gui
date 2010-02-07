@@ -1,5 +1,10 @@
 2010-02-07 Eric Wasylishen <ewasylishen@gmail.com>
 
+	* ColorPickers/GSWheelColorPicker.m: Make the brightness slider
+	for the wheel picker continuous.
+
+2010-02-07 Eric Wasylishen <ewasylishen@gmail.com>
+
 	* Source/GSThemeDrawing.m
 	(-drawTitleBarRect:forStyleMask:state:andTitle:):
 	Draw window title bar with image tiles, if available
