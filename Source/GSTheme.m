@@ -184,6 +184,21 @@ GSStringFromBezelStyle(NSBezelStyle bezelStyle)
     }
 }
 
+NSString *
+GSStringFromBorderType(NSBorderType borderType)
+{
+  switch (borderType)
+    {
+      case NSNoBorder:                    return @"NSNoBorder";
+      case NSLineBorder:                  return @"NSLineBorder";
+      case NSBezelBorder:                 return @"NSBezelBorder";
+      case NSGrooveBorder:                return @"NSGrooveBorder";
+      default:                            return nil;
+    }
+}
+
+
+
 @interface	NSImage (GSTheme)
 + (NSImage*) _setImage: (NSImage*)image name: (NSString*)name;
 @end

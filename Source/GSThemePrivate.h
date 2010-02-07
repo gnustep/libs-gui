@@ -38,6 +38,7 @@
 
 NSString *GSStringFromSegmentStyle(NSSegmentStyle segmentStyle);
 NSString *GSStringFromBezelStyle(NSBezelStyle bezelStyle);
+NSString *GSStringFromBorderType(NSBorderType borderType);
 
 /** These are the nine types of tile used to draw a rectangular object.
  */

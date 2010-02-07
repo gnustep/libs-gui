@@ -237,37 +237,62 @@
                   frame: (NSRect)frame 
                    view: (NSView*)view
 {
-  switch (aType)
+  NSString      *name = GSStringFromBorderType(aType);
+  GSDrawTiles   *tiles = [self tilesNamed: name state: GSThemeNormalState];
+
+  if (tiles == nil)
     {
-      case NSLineBorder:
-        [[NSColor controlDarkShadowColor] set];
-        NSFrameRect(frame);
-        break;
-      case NSGrooveBorder:
-        [self drawGroove: frame withClip: NSZeroRect];
-        break;
-      case NSBezelBorder:
-        [self drawWhiteBezel: frame withClip: NSZeroRect];
-        break;
-      case NSNoBorder: 
-      default:
-        break;
+      switch (aType)
+	{
+	  case NSLineBorder:
+	    [[NSColor controlDarkShadowColor] set];
+	    NSFrameRect(frame);
+	    break;
+	  case NSGrooveBorder:
+	    [self drawGroove: frame withClip: NSZeroRect];
+	    break;
+	  case NSBezelBorder:
+	    [self drawWhiteBezel: frame withClip: NSZeroRect];
+	    break;
+	  case NSNoBorder: 
+	  default:
+	    break;
+	}
+    }
+  else
+    {
+      [self fillRect: frame
+           withTiles: tiles
+          background: [NSColor clearColor]];
     }
 }
 
 - (NSSize) sizeForBorderType: (NSBorderType)aType
 {
-  // Returns the size of a border
-  switch (aType)
+  NSString      *name = GSStringFromBorderType(aType);
+  GSDrawTiles   *tiles = [self tilesNamed: name state: GSThemeNormalState];
+
+  if (tiles == nil)
     {
-      case NSLineBorder:
-        return NSMakeSize(1, 1);
-      case NSGrooveBorder:
-      case NSBezelBorder:
-        return NSMakeSize(2, 2);
-      case NSNoBorder: 
-      default:
-        return NSZeroSize;
+      // Returns the size of a border
+      switch (aType)
+	{
+	  case NSLineBorder:
+	    return NSMakeSize(1, 1);
+	  case NSGrooveBorder:
+	  case NSBezelBorder:
+	    return NSMakeSize(2, 2);
+	  case NSNoBorder: 
+	  default:
+	    return NSZeroSize;
+	}
+    }
+  else
+    {
+      // FIXME: We assume the button's top and right padding are the same as
+      // its bottom and left.
+      return NSMakeSize(tiles->contentRect.origin.x,
+                        tiles->contentRect.origin.y);
     }
 }
 

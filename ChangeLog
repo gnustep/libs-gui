@@ -1,5 +1,12 @@
 2010-02-07 Eric Wasylishen <ewasylishen@gmail.com>
 
+	* Source/GSTheme.m:
+	* Source/GSThemePrivate.h: 
+	* Source/GSThemeDrawing.m (-drawBorderType:frame:view:): 
+	Draw borders using image tiles, if available.
+
+2010-02-07 Eric Wasylishen <ewasylishen@gmail.com>
+
 	* Source/NSPopUpButtonCell.m (-selectItem:): Mark the previously
 	selected item as needing display. This fixes the 'popup' indicators
 	not being erased.
