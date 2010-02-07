@@ -616,6 +616,8 @@ static NSImage *_pbc_image[5];
 
 - (void) selectItem: (id <NSMenuItem>)item
 {
+  id<NSMenuItem> oldSelectedItem = _selectedItem;
+
   if (_selectedItem == item)
     return;
 
@@ -640,6 +642,9 @@ static NSImage *_pbc_image[5];
   /* Set the item in the menu */
   [[_menu menuRepresentation] setHighlightedItemIndex: 
                    [_menu indexOfItem: _selectedItem]];
+
+  [[_menu menuRepresentation] setNeedsDisplayForItemAtIndex:
+                   [_menu indexOfItem: oldSelectedItem]];
 }
 
 - (void) selectItemAtIndex: (int)index

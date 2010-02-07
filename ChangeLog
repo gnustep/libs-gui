@@ -1,3 +1,9 @@
+2010-02-07 Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/NSPopUpButtonCell.m (-selectItem:): Mark the previously
+	selected item as needing display. This fixes the 'popup' indicators
+	not being erased.
+
 2010-02-07 Riccardo Mottola <rmottola@users.sf.net>
 
 	* Source/NSToolbarItem.m (_isFlexibleSpace): use proper class check
