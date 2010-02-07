@@ -1,3 +1,10 @@
+2010-02-07 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Source/NSToolbarItem.m (_isFlexibleSpace): use proper class check
+	instead of quick and dirty size check for flexible space property.
+	Otherwise items are not allowed to have differing minimum and maximum
+	sizes.
+
 2010-02-06 Quentin Mathe <quentin.mathe@gmail.com>
 
 	Fixed table header/content random disappearance with unarchived table 

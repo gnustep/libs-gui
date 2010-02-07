@@ -1472,7 +1472,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 - (BOOL) _isFlexibleSpace
 {
-  return (_minSize.width != _maxSize.width);
+  return [self isKindOfClass:[GSToolbarFlexibleSpaceItem class]];
 }
 
 - (BOOL) _selectable
