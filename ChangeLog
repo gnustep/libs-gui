@@ -1,5 +1,11 @@
 2010-02-07 Eric Wasylishen <ewasylishen@gmail.com>
 
+	* Source/GSThemeDrawing.m
+	(-drawTitleBarRect:forStyleMask:state:andTitle:):
+	Draw window title bar with image tiles, if available
+
+2010-02-07 Eric Wasylishen <ewasylishen@gmail.com>
+
 	* Source/GSTheme.m:
 	* Source/GSThemePrivate.h: 
 	* Source/GSThemeDrawing.m (-drawBorderType:frame:view:): 

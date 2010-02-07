@@ -1140,6 +1140,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     {NSWhite, NSWhite, NSDarkGray, NSDarkGray},
     {NSLightGray, NSLightGray, NSBlack, NSBlack}};
   NSRect workRect;
+  GSDrawTiles *tiles = nil;
 
   if (!titleTextAttributes[0])
     {
@@ -1172,45 +1173,55 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
       RELEASE(p);
     }
 
-  /*
-  Draw the black border towards the rest of the window. (The outer black
-  border is drawn in -drawRect: since it might be drawn even if we don't have
-  a title bar.
-  */
-  [[NSColor blackColor] set];
-  PSmoveto(0, NSMinY(titleBarRect) + 0.5);
-  PSrlineto(titleBarRect.size.width, 0);
-  PSstroke();
-
-  /*
-  Draw the button-like border.
-  */
-  workRect = titleBarRect;
-  workRect.origin.x += 1;
-  workRect.origin.y += 1;
-  workRect.size.width -= 2;
-  workRect.size.height -= 2;
-
-  workRect = NSDrawTiledRects(workRect, workRect, edges, grays[inputState], 4);
- 
-  /*
-  Draw the background.
-  */
-  switch (inputState) 
+  tiles = [self tilesNamed: @"GSWindowTitleBar" state: GSThemeNormalState];
+  if (tiles == nil)
     {
-    default:
-    case 0:
-      [[NSColor windowFrameColor] set];
-      break;
-    case 1:
-      [[NSColor lightGrayColor] set];
-      break;
-    case 2:
-      [[NSColor darkGrayColor] set];
-      break;
-    }
-  NSRectFill(workRect);
+      /*
+      Draw the black border towards the rest of the window. (The outer black
+      border is drawn in -drawRect: since it might be drawn even if we don't have
+      a title bar.
+      */
+      [[NSColor blackColor] set];
+      PSmoveto(0, NSMinY(titleBarRect) + 0.5);
+      PSrlineto(titleBarRect.size.width, 0);
+      PSstroke();
 
+      /*
+      Draw the button-like border.
+      */
+      workRect = titleBarRect;
+      workRect.origin.x += 1;
+      workRect.origin.y += 1;
+      workRect.size.width -= 2;
+      workRect.size.height -= 2;
+
+      workRect = NSDrawTiledRects(workRect, workRect, edges, grays[inputState], 4);
+     
+      /*
+      Draw the background.
+      */
+      switch (inputState) 
+	{
+	default:
+	case 0:
+	  [[NSColor windowFrameColor] set];
+	  break;
+	case 1:
+	  [[NSColor lightGrayColor] set];
+	  break;
+	case 2:
+	  [[NSColor darkGrayColor] set];
+	  break;
+	}
+      NSRectFill(workRect);
+    }
+  else
+    {
+      [self fillRect: titleBarRect
+          withTiles: tiles
+         background: [NSColor windowFrameColor]];
+      workRect = titleBarRect;
+    }
   /* Draw the title. */
   if (styleMask & NSTitledWindowMask)
     {
