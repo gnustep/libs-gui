@@ -570,11 +570,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   // Remove all key value bindings for this view.
   [GSKeyValueBinding unbindAllForObject: self];
 
-  while ([_sub_views count] > 0)
-    {
-      [[_sub_views lastObject] removeFromSuperviewWithoutNeedingDisplay];
-    }
-
   /*
    * Remove self from view chain.  Try to mimic MacOS-X behavior ...
    * We send setNextKeyView: messages to all view for which we are the
@@ -667,6 +662,15 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       GSIArrayClear(nKV(self));
       NSZoneFree(NSDefaultMallocZone(), nKV(self));
       _nextKeyView = 0;
+    }
+
+  /*
+   * Now remove our subviews, AFTER cleaning up the view chain, in case
+   * any of our subviews were in the chain.
+   */
+  while ([_sub_views count] > 0)
+    {
+      [[_sub_views lastObject] removeFromSuperviewWithoutNeedingDisplay];
     }
 
   RELEASE(_matrixToWindow);

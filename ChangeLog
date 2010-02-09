@@ -1,3 +1,9 @@
+2010-01-14  Doug Simons  <doug.simons@testplant.com>
+
+	* Source/NSView.m (-dealloc): Remove subviews AFTER
+	next/previous key views have been cleaned up, in case
+	any subviews were in the view chain.
+
 2010-02-09 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTextStorage.m: Restore return of proxy to user code.
@@ -420,7 +426,6 @@
 
 	* Source/NSImage.m: Changes to fix bug #28580.
 
->>>>>>> .r29294
 2010-01-15 13:08-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Added method to call
