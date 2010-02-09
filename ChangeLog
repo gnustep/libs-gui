@@ -1,3 +1,10 @@
+2010-02-09 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSTextStorage.m: Restore return of proxy to user code.
+	Add comments so we know we should be doing that.
+	* Headers/AppKit/NSTextStorage.h: Document the behavior of the
+	-string method.
+
 2010-02-07 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* ColorPickers/GSWheelColorPicker.m: Make the brightness slider

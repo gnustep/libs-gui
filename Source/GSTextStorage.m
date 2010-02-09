@@ -41,17 +41,19 @@
  *		attributes argument and use the values from the string.
  */
 
-#include <Foundation/NSAttributedString.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSRange.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSZone.h>
-#include <Foundation/NSLock.h>
-#include <Foundation/NSThread.h>
-#include <Foundation/NSNotification.h>
-#include "AppKit/NSTextStorage.h"
-#include "GSTextStorage.h"
+#import <Foundation/NSAttributedString.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSRange.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSZone.h>
+#import <Foundation/NSLock.h>
+#import <Foundation/NSThread.h>
+#import <Foundation/NSProxy.h>
+#import <Foundation/NSInvocation.h>
+#import <Foundation/NSNotification.h>
+#import "AppKit/NSTextStorage.h"
+#import "GSTextStorage.h"
 
 #define		SANITY_CHECKS	0
 
@@ -76,6 +78,103 @@ static IMP		unlockImp;
 
 #define	ALOCK()	if (attrLock != nil) (*lockImp)(attrLock, lockSel)
 #define	AUNLOCK() if (attrLock != nil) (*unlockImp)(attrLock, unlockSel)
+
+@interface GSTextStorageProxy : NSProxy
+{
+  NSString	*string;
+}
+- (id) _initWithString: (NSString*)s;
+@end
+
+@implementation	GSTextStorageProxy
+
+static Class NSObjectClass = nil;
+static Class NSStringClass = nil;
+
++ (void) initialize
+{
+  NSObjectClass = [NSObject class];
+  NSStringClass = [NSString class];
+}
+
+- (Class) class
+{
+  return NSStringClass;
+}
+
+- (void) dealloc
+{
+  [string release];
+  [super dealloc];
+}
+
+- (void) forwardInvocation: (NSInvocation*)anInvocation
+{
+  SEL	aSel = [anInvocation selector];
+
+  if (YES == [NSStringClass instancesRespondToSelector: aSel])
+    {
+      [anInvocation invokeWithTarget: string];
+    }
+  else
+    {
+      [NSException raise: NSGenericException
+	          format: @"NSString(instance) does not recognize %s",
+	aSel ? GSNameFromSelector(aSel) : "(null)"];
+    }
+}
+
+- (NSUInteger) hash
+{
+  return [string hash];
+}
+
+- (id) _initWithString: (NSString*)s
+{
+  string = [s retain];
+  return self;
+}
+
+- (BOOL) isEqual: (id)other
+{
+  return [string isEqual: other];
+}
+
+- (BOOL) isMemberOfClass: (Class)c
+{
+  return (c == NSStringClass) ? YES : NO;
+}
+
+- (BOOL) isKindOfClass: (Class)c
+{
+  return (c == NSStringClass || c == NSObjectClass) ? YES : NO;
+}
+
+- (NSMethodSignature*) methodSignatureForSelector: (SEL)aSelector
+{
+  NSMethodSignature	*sig;
+
+  if (YES == [NSStringClass instancesRespondToSelector: aSelector])
+    {
+      sig = [string methodSignatureForSelector: aSelector];
+    }
+  else
+    {
+      sig = [super methodSignatureForSelector: aSelector];
+    }
+  return sig;
+}
+
+- (BOOL) respondsToSelector: (SEL)aSelector
+{
+  if (YES == [NSStringClass instancesRespondToSelector: aSelector])
+    {
+      return YES;
+    }
+  return [super respondsToSelector: aSelector];
+}
+
+@end
 
 /*
  * Add a dictionary to the cache - if it was not already there, return
@@ -514,7 +613,14 @@ _attributesAtIndexEffectiveRange(
 
 - (NSString*) string
 {
-  return [[_textChars copy] autorelease];
+  /* NB. This method is SUPPOSED to return a proxy to the mutable string!
+   * This is a performance feature documented ifor OSX.
+   */
+  if (_textProxy == nil)
+    {
+      _textProxy = [[_textChars immutableProxy] retain];
+    }
+  return _textProxy;
 }
 
 - (NSDictionary*) attributesAtIndex: (unsigned)index
@@ -815,6 +921,7 @@ changeInLength: [aString length] - range.length];
 {
   RELEASE(_textChars);
   RELEASE(_infoArray);
+  RELEASE(_textProxy);
   [super dealloc];
 }
 

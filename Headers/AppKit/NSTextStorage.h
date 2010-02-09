@@ -146,6 +146,17 @@ enum
 - (void) invalidateAttributesInRange: (NSRange)range;
 #endif
 
+/** Returns the string data stored by the receiver.<br />
+ * For performance reasons (and OSX compatibility) this is actually
+ * a proxy to the internal representation of the string.<br />
+ * This proxy provides an immutable string interface,
+ * but you must be aware that the underlying information may be modified
+ * by the receiver at any point, so if you need a consistent/fixed
+ * snapshot of the data (or if you are going to pass the string to other
+ * code which expects to be working with a constant string), you should
+ * copy the object returned by this method rather than simply retaining it.
+ */
+- (NSString*) string;
 @end
 
 
