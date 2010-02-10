@@ -1,5 +1,17 @@
 2010-01-14  Doug Simons  <doug.simons@testplant.com>
 
+	* Source/NSDrawer.m: Make drawers work, including:
+	- implement drawer sliding (by resizing, since window ordering
+		can't be controlled cleanly)
+	- properly handle top and bottom drawers as well as left and right
+	- keep track of _latestParentFrame for efficiency, and speed up
+		timer for better responsiveness
+	- bring parent window to front when drawer is clicked
+	- keep drawer positioned properly when window is miniaturized
+		and deminiaturized
+
+2010-01-14  Doug Simons  <doug.simons@testplant.com>
+
 	* Source/NSView.m (-dealloc): Remove subviews AFTER
 	next/previous key views have been cleaned up, in case
 	any subviews were in the view chain.
