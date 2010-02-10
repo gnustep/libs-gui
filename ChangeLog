@@ -1,3 +1,8 @@
+2010-02-10 Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/NSScrollView.m (-scrollWheel:): Respond to horizontal
+	scrolling.
+
 2010-01-14  Doug Simons  <doug.simons@testplant.com>
 
 	* Source/NSDrawer.m: Make drawers work, including:

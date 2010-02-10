@@ -387,7 +387,8 @@ static float scrollerWidth;
 - (void) scrollWheel: (NSEvent *)theEvent
 {
   NSRect clipViewBounds;
-  float delta = [theEvent deltaY];
+  float deltaY = [theEvent deltaY];
+  float deltaX = [theEvent deltaX];
   float amount;
   NSPoint point;
 
@@ -401,45 +402,48 @@ static float scrollerWidth;
     }
   point = clipViewBounds.origin;
 
-
-  if (_hasHorizScroller == YES
-    && ([theEvent modifierFlags] & NSShiftKeyMask) == NSShiftKeyMask)
+  // Holding shift converts vertical scrolling to horizontal
+  if (([theEvent modifierFlags] & NSShiftKeyMask) == NSShiftKeyMask)
     {
-      if (([theEvent modifierFlags] & NSAlternateKeyMask) == NSAlternateKeyMask)
-        {
-          amount = - (clipViewBounds.size.width - _hPageScroll) * delta;
-        }
-      else
-        {
-          amount = - _hLineScroll * delta;
-        }
-      NSDebugLLog (@"NSScrollView", 
-        @"increment/decrement: amount = %f, horizontal", amount);
+      deltaX = -deltaY;
+      deltaY = 0;
+    }
 
-      point.x = clipViewBounds.origin.x + amount;
+  // Scroll horizontally
+  if (([theEvent modifierFlags] & NSAlternateKeyMask) == NSAlternateKeyMask)
+    {
+      amount = (clipViewBounds.size.width - _hPageScroll) * deltaX;
     }
   else
     {
-      if (([theEvent modifierFlags] & NSAlternateKeyMask) == NSAlternateKeyMask)
-        {
-          amount = - (clipViewBounds.size.height - _vPageScroll) * delta;
-        }
-      else
-        {
-          amount = - _vLineScroll * delta;
-        }
-
-      if (_contentView != nil && !_contentView->_rFlags.flipped_view)
-        {
-          /* If view is flipped reverse the scroll direction */
-          amount = -amount;
-        }
-      NSDebugLLog (@"NSScrollView", 
-        @"increment/decrement: amount = %f, flipped = %d",
-        amount, _contentView ? _contentView->_rFlags.flipped_view : 0);
-
-      point.y = clipViewBounds.origin.y + amount;
+      amount = _hLineScroll * deltaX;
     }
+
+  NSDebugLLog (@"NSScrollView", 
+    @"increment/decrement: amount = %f, horizontal", amount);
+
+  point.x = clipViewBounds.origin.x + amount;
+
+  // Scroll vertically
+  if (([theEvent modifierFlags] & NSAlternateKeyMask) == NSAlternateKeyMask)
+    {
+      amount = - (clipViewBounds.size.height - _vPageScroll) * deltaY;
+    }
+  else
+    {
+      amount = - _vLineScroll * deltaY;
+    }
+
+  if (_contentView != nil && !_contentView->_rFlags.flipped_view)
+    {
+      /* If view is flipped reverse the scroll direction */
+      amount = -amount;
+    }
+  NSDebugLLog (@"NSScrollView", 
+    @"increment/decrement: amount = %f, flipped = %d",
+    amount, _contentView ? _contentView->_rFlags.flipped_view : 0);
+
+  point.y = clipViewBounds.origin.y + amount;
 
   /* scrollToPoint: will call reflectScrolledClipView:, which will
    * update rules, headers, and scrollers.  */
