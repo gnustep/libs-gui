@@ -312,8 +312,9 @@ static SEL getSel;
 
   _tabKeyTraversesCells = YES;
   [self setBackgroundColor: [NSColor controlBackgroundColor]];
-  [self setDrawsBackground: YES];
+  [self setDrawsBackground: NO];
   [self setCellBackgroundColor: [NSColor controlBackgroundColor]];
+  [self setDrawsCellBackground: NO];
   [self setSelectionByRect: YES];
   _dottedRow = _dottedColumn = -1;
   if (_mode == NSRadioModeMatrix && _numRows > 0 && _numCols > 0)

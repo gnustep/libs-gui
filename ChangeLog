@@ -1,6 +1,8 @@
 2010-02-10 Riccardo Mottola <rmottola@users.sf.net>
 
 	* Source/NSSavePanel.m: Do not draw Form background.
+	* Source/NSMatrix.m: drawsBackground and drawsCellBackground default
+	to NO, to match Cocoa behaviour (and improve theming)
 
 2010-02-10 Eric Wasylishen <ewasylishen@gmail.com>
 
