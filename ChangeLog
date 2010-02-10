@@ -1,3 +1,7 @@
+2010-02-10 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Source/NSSavePanel.m: Do not draw Form background.
+
 2010-02-10 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/NSScrollView.m (-scrollWheel:): Respond to horizontal

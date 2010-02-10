@@ -1481,8 +1481,10 @@ many times.
 
 - (void) becomeMainWindow
 {
+
   if (_f.is_main == NO)
     {
+  NSLog(@"become main %@  %d",[self title], _f.is_main);
       _f.is_main = YES;
       if (_f.is_key == NO)
         {
@@ -1593,10 +1595,12 @@ many times.
 
 - (void) makeMainWindow
 {
+  NSLog(@"make main %@ %d %d %d",[self title], _f.visible, _f.is_miniaturized, _f.is_main);
   if (!_f.visible || _f.is_miniaturized || _f.is_main == YES)
     {
       return;
     }
+
   if (![self canBecomeMainWindow])
     return;
   [[NSApp mainWindow] resignMainWindow];
@@ -1802,6 +1806,8 @@ many times.
 {
   if (_f.is_main == YES)
     {
+  NSLog(@"resign main %@ %d",[self title],  _f.is_main);
+
       _f.is_main = NO;
       if (_f.is_key == YES)
         {
@@ -3843,7 +3849,7 @@ resetCursorRectsForView(NSView *theView)
           int action;
           NSEvent *e;
           GSAppKitSubtype sub = [theEvent subtype];
-
+	
           switch (sub)
             {
             case GSAppKitWindowMoved:
@@ -3971,6 +3977,7 @@ resetCursorRectsForView(NSView *theView)
 		  /* We should really find another window that can become
 		     key (if possible)
 		  */
+		  NSLog(@"Hey, I focus the main menu window");
 		  [self _lossOfKeyOrMainWindow];
 		}
               break;
@@ -3979,10 +3986,8 @@ resetCursorRectsForView(NSView *theView)
               break;
 
             case GSAppKitWindowLeave:
-	      /* we ignore this event for a window that is already closed */
 	      if (_f.has_closed == YES); 
 	        break;
-
               /*
                * We need to go through all of the views, and if there
                * is any with a tracking rectangle then we need to

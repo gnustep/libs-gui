@@ -240,6 +240,7 @@ setPath(NSBrowser *browser, NSString *path)
   [_form setEntryWidth: 291];
   [_form setInterlineSpacing: 0];
   [_form setAutosizesCells: YES];
+  [_form setDrawsBackground: NO];
   [_form setTag: NSFileHandlingPanelForm];
   [_form setAutoresizingMask: NSViewWidthSizable];
   [_form setDelegate: self];
