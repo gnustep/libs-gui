@@ -1,4 +1,3 @@
-GNUmakefile.local
 *obj
 *.app
 *.debug
