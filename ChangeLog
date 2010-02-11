@@ -1,8 +1,28 @@
 2010-02-11  Nicola Pero  <nicola.pero@meta-innovation.com>
 
-	* Source/GNUmakefile: Do not try including non-existing
+	* Source/GNUmakefile: Do not try including the non-existing
 	GNUmakefile.local file.
+	* ColorPickers/GNUmakefile: Same change.
+	* Documentation/GNUmakefile: Same change.
+	* Model/GNUmakefile: Same change.
+	* Panels/GNUmakefile: Same change.
+	* PrinterTypes/GNUmakefile: Same change.
+	* Tools/GNUmakefile: Same change, plus do not try including the
+	non-existing GNUmakefile.local.service file either.
 
+	* Model/GNUmakefile.postamble (after-distclean): Do not remove the
+	non-existing GNUmakefile.local file.
+	* Source/GNUmakefile.postamble (after-distclean): Same change.
+	* Tools/GNUmakefile.postamble (after-distclean): Do not remove the
+	non-existing GNUmakefile.local and GNUmakefile.local.service
+	files.
+	
+	* Documentation/GNUmakefile: Do not include aggregate.make twice.
+	* KeyBindings/GNUmakefile (after-uninstall): Remove the
+	$(GNUSTEP_LIBRARY)/KeyBindings directory if empty.
+	* Model/GNUmakefile: Do not include library.make when GUI_LIB =
+	gnu.
+	
 2010-02-11 Riccardo Mottola <rmottola@users.sf.net>
 
 	* Source/NSWindow.m: revert accidental commit

@@ -34,3 +34,4 @@ after-install:: $(GNUSTEP_LIBRARY)/KeyBindings
 
 after-uninstall::
 	rm -f $(GNUSTEP_LIBRARY)/KeyBindings/DefaultKeyBindings.dict
+	-rmdir $(GNUSTEP_LIBRARY)/KeyBindings

@@ -32,5 +32,3 @@ before-libgmodel-all:: \
 # Additional dependencies
 $(GNUSTEP_OBJ_DIR)/GMArchiver.o: GMArchiveObjects.m
 
-after-distclean::
-	rm -f GNUmakefile.local

@@ -33,11 +33,10 @@ LOCALIZED_RESOURCE_COMPONENTS = \
   GSDataLinkPanel.gorm \
   GSPageLayout.gorm \
   GSPrintPanel.gorm \
-	GSToolbarCustomizationPalette.gorm \
+  GSToolbarCustomizationPalette.gorm \
   GSSpellPanel.gorm
 
 -include GNUmakefile.preamble
--include GNUmakefile.local
 
 include $(GNUSTEP_MAKEFILES)/rules.make
 

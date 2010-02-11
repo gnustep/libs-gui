@@ -85,12 +85,11 @@ libgmodel_BUNDLE_LIBS += $(libgmodel_LIBRARIES_DEPEND_UPON)
 nib2gmodel_LIBRARIES_DEPEND_UPON = $(BACKEND_LIBS) $(GUI_LIBS) \
 	$(FND_LIBS) $(SYSTEM_LIBS)
 
--include GNUmakefile.local
-
 ifeq ($(GUI_LIB), gnu)
   include $(GNUSTEP_MAKEFILES)/bundle.make
+else
+  include $(GNUSTEP_MAKEFILES)/library.make
 endif
-include $(GNUSTEP_MAKEFILES)/library.make
 include $(GNUSTEP_MAKEFILES)/tool.make
 include $(GNUSTEP_MAKEFILES)/application.make
 

@@ -47,8 +47,6 @@ GSspell_OBJC_FILES = GSspell.m
 
 include GNUmakefile.preamble
 
--include GNUmakefile.local
-
 ifeq ($(CROSS_COMPILING),yes)
   GNUSTEP_MAKE_SERVICES=:
 else
@@ -59,5 +57,4 @@ include $(GNUSTEP_MAKEFILES)/tool.make
 include $(GNUSTEP_MAKEFILES)/service.make
 include $(GNUSTEP_MAKEFILES)/aggregate.make
 
--include GNUmakefile.local.service
 include GNUmakefile.postamble

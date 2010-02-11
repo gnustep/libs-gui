@@ -88,7 +88,6 @@ after-clean::
 
 # Things to do after distcleaning
 after-distclean::
-	rm -f GNUmakefile.local 
 	rm -rf $(GNUSTEP_TARGET_DIR)/config.h
 	rm -rf ../Headers/Additions/GNUstepGUI/config.h
 
