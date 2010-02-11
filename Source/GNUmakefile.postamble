@@ -109,13 +109,6 @@ $(GNUSTEP_TARGET_DIR)/config.h: ../config.status
 	-touch $(GNUSTEP_TARGET_DIR)/config.h
 
 #
-#       Files that need a rebuild if config.h is changed.
-#
-
-$(GNUSTEP_OBJ_DIR)/*.o \
-	: $(GNUSTEP_TARGET_DIR)/config.h
-
-#
 # Make list of class names for DLL exports. Uses the actual classes from
 # the .o files, so it should really have everything needed.
 #

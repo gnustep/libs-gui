@@ -1,5 +1,12 @@
 2010-02-11  Nicola Pero  <nicola.pero@meta-innovation.com>
 
+	* Source/GNUmakefile.postamble: Removed obsolete manual dependency
+	rules.  Dependencies of object files on header files are
+	automatically computed by gnustep-make, so these rules were
+	superfluous.
+
+2010-02-11  Nicola Pero  <nicola.pero@meta-innovation.com>
+
 	* Source/GNUmakefile: Do not try including the non-existing
 	GNUmakefile.local file.
 	* ColorPickers/GNUmakefile: Same change.
