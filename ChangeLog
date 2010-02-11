@@ -1,8 +1,8 @@
 2010-02-11  Nicola Pero  <nicola.pero@meta-innovation.com>
 
 	* Source/GNUmakefile.postamble: Removed obsolete manual dependency
-	rules.  Dependencies of object files on header files are
-	automatically computed by gnustep-make, so these rules were
+	rule.  Dependencies of object files on header files are
+	automatically computed by gnustep-make, so this rule was
 	superfluous.
 
 2010-02-11  Nicola Pero  <nicola.pero@meta-innovation.com>
