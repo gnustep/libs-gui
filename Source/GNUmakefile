@@ -464,8 +464,6 @@ libgnustep-gui_DLL_DEF = libgnustep-gui.def
 
 include GNUmakefile.preamble
 
--include GNUmakefile.local
-
 include $(GNUSTEP_MAKEFILES)/library.make
 include $(GNUSTEP_MAKEFILES)/resource-set.make
 

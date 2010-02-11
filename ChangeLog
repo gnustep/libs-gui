@@ -1,3 +1,8 @@
+2010-02-11  Nicola Pero  <nicola.pero@meta-innovation.com>
+
+	* Source/GNUmakefile: Do not try including non-existing
+	GNUmakefile.local file.
+
 2010-02-11 Riccardo Mottola <rmottola@users.sf.net>
 
 	* Source/NSWindow.m: revert accidental commit
