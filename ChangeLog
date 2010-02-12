@@ -1,5 +1,18 @@
 2010-02-12  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSTextView.m (-_characterIndexForPoint:respectFraction:):
+	Fix issue where the insertion point was put at the end of the last
+	but one line when the user clicks in or	below the last line with
+	the mouse and the last line is empty.
+	* Source/NSLayoutManager.m (-characterIndexMoving:...): Add extra
+	test to allow moving downward into an empty last line. Fixes #15893.
+	* Source/NSLayoutManager.m (-_insertionPointRect...:textContainer:):
+	Add special case for end of text. Fixes an issue where the
+	insertion point is not set correctly when the last line ends with
+	an invisible character (e.g., a tab).
+
+2010-02-12  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSAttributedString.m:
 	* Source/NSDocument.m: Fix a whole bunch of potential crashers
 	where the error return parameter was written to without a null

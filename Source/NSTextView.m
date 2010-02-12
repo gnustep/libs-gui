@@ -1936,6 +1936,13 @@ or add guards
   point.x -= _textContainerOrigin.x;
   point.y -= _textContainerOrigin.y;
 
+  if ([_layoutManager extraLineFragmentTextContainer] == _textContainer)
+    {
+      NSRect extraRect = [_layoutManager extraLineFragmentRect];
+      if (point.y >= NSMinY(extraRect))
+	return [_textStorage length];
+    }
+
   index = [_layoutManager glyphIndexForPoint: point 
 			     inTextContainer: _textContainer
 	      fractionOfDistanceThroughGlyph: &fraction];

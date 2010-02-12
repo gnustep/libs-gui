@@ -802,7 +802,7 @@ has the same y origin and height as the line frag rect it is in.
       if (extra_textcontainer)
 	{
 	  for (tc = textcontainers, i = 0; i < num_textcontainers; i++, tc++)
-	    if (tc == textcontainers)
+	    if (tc->textContainer == extra_textcontainer)
 	      break;
 	  NSAssert(i < num_textcontainers, @"invalid extraTextContainer");
 	  *textContainer = i;
@@ -821,8 +821,9 @@ has the same y origin and height as the line frag rect it is in.
 	}
       fraction_through = 1.0;
     }
+  else
+    [self _doLayoutToGlyph: glyph_index];
 
-  [self _doLayoutToGlyph: glyph_index];
   for (tc = textcontainers, i = 0; i < num_textcontainers; i++, tc++)
     if (tc->pos + tc->length > glyph_index)
       break;
@@ -835,6 +836,20 @@ has the same y origin and height as the line frag rect it is in.
   *textContainer = i;
 
   LINEFRAG_FOR_GLYPH(glyph_index);
+
+  /* Special case if we are asked for the insertion point rectangle at the
+     end of text, since the standard code yields an incorrect result if the
+     last line fragment ends with an invisible character (e.g., a tab).
+     Note that fraction_through is always less than 1 except when
+     -_glyphIndexForCharacterIndex:fractionThrough: is called for
+     cindex == [_textStorage length], in which case we set it to 1. */
+  if (fraction_through == 1.0)
+    {
+      r = lf->used_rect;
+      r.origin.x += r.size.width;
+      r.size.width = 1;
+      return r;
+    }
 
   {
     unsigned int i;
@@ -1023,6 +1038,12 @@ has the same y origin and height as the line frag rect it is in.
 
 	  if (i == tc->num_linefrags)
 	    {
+	      /* Special case for moving into the extra line at the end */
+	      if (tc->textContainer == extra_textcontainer &&
+		  NSMaxY(extra_rect) >= distance + NSMaxY(from_rect) &&
+		  NSMinY(extra_rect) != NSMinY(from_rect))
+		return length;
+
 	      /* We can't move as far as we want to. In fact, we might not
 	      have been able to move at all.
 	      TODO: figure out how to handle this
