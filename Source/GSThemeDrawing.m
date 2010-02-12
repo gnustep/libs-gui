@@ -1089,6 +1089,14 @@ static NSImage *spinningImages[MaxCount];
   if (tiles == nil)
     {
       NSRect rect;
+
+      // Leave a 1pt thick horizontal line underneath the header
+      if (![controlView isFlipped])
+        {
+          cellFrame.origin.y++;
+        }
+      cellFrame.size.height--;
+
       if (state == GSThemeHighlightedState)
         {
           rect = [self drawButton: cellFrame withClip: cellFrame];

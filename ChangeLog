@@ -1,3 +1,12 @@
+2010-02-11 Eric Wasylishen <ewasylishen@gmail.com>
+
+	* NSTableHeaderView.m:
+	* GSThemeDrawing.m: Move code in NSTableHeaderView which leaves a 
+	1pt gap underneath table headers to GSThemeDrawing, since it only
+	looks decent with a NeXT-like theme. This fixes the
+	misalignment between the table corner and the table headers visible
+	in the Narcissus theme.
+
 2010-02-11  Nicola Pero  <nicola.pero@meta-innovation.com>
 
 	* Source/GNUmakefile.postamble: Removed obsolete manual dependency

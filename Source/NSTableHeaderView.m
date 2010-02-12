@@ -188,12 +188,7 @@
     lastColumnToDraw = [_tableView numberOfColumns] - 1;
 
   drawingRect = [self headerRectOfColumn: firstColumnToDraw];
-  if (![self isFlipped])
-    {
-      drawingRect.origin.y++;
-    }
-  drawingRect.size.height--;
-
+  
   columns = [_tableView tableColumns];
   highlightedTableColumn = [_tableView highlightedTableColumn];
   
