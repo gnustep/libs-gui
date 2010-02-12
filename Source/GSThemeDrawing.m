@@ -1153,28 +1153,53 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   if (!titleTextAttributes[0])
     {
       NSMutableParagraphStyle *p;
+      NSColor *keyColor, *normalColor, *mainColor;
 
       p = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
       [p setLineBreakMode: NSLineBreakByClipping];
 
+      // FIXME: refine color names based on style mask
+      // (HUD or textured or regular window)
+
+      keyColor = [self colorNamed: @"keyWindowFrameTextColor"
+                            state: GSThemeNormalState];
+      if (nil == keyColor)
+        {
+          keyColor = [NSColor windowFrameTextColor];
+        }
+
+      normalColor = [self colorNamed: @"normalWindowFrameTextColor"
+                               state: GSThemeNormalState];
+      if (nil == normalColor)
+        {
+          normalColor = [NSColor blackColor];
+        }
+ 
+      mainColor = [self colorNamed: @"mainWindowFrameTextColor"
+                             state: GSThemeNormalState];
+      if (nil == mainColor)
+        {
+          mainColor = [NSColor windowFrameTextColor];
+        }
+ 
       titleTextAttributes[0] = [[NSMutableDictionary alloc]
 	initWithObjectsAndKeys:
 	  [NSFont titleBarFontOfSize: 0], NSFontAttributeName,
-	  [NSColor windowFrameTextColor], NSForegroundColorAttributeName,
+	  keyColor, NSForegroundColorAttributeName,
 	  p, NSParagraphStyleAttributeName,
 	  nil];
 
       titleTextAttributes[1] = [[NSMutableDictionary alloc]
 	initWithObjectsAndKeys:
 	  [NSFont titleBarFontOfSize: 0], NSFontAttributeName,
-	  [NSColor blackColor], NSForegroundColorAttributeName, /* TODO: need a named color for this */
+	  normalColor, NSForegroundColorAttributeName,
 	  p, NSParagraphStyleAttributeName,
 	  nil];
 
       titleTextAttributes[2] = [[NSMutableDictionary alloc]
 	initWithObjectsAndKeys:
 	  [NSFont titleBarFontOfSize: 0], NSFontAttributeName,
-	  [NSColor windowFrameTextColor], NSForegroundColorAttributeName,
+	  mainColor, NSForegroundColorAttributeName,
 	  p, NSParagraphStyleAttributeName,
 	  nil];
 

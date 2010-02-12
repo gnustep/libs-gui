@@ -1,3 +1,12 @@
+2010-02-12 Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/GSThemeDrawing.m: Allow customization of window title text
+	color for key/normal/main windows. New color names are:
+
+	keyWindowFrameTextColor
+	normalWindowFrameTextColor
+	mainWindowFrameTextColor
+
 2010-02-12 German Arias <german@xelalug.org>
 
 	* Source/GSTitleView.m: Search in theme colors: GSMenuBar and 
