@@ -69,5 +69,5 @@
   "Control-p" = "moveUp:";
   "Control-t" = "transpose:";
   "Control-v" = "pageDown:";
-/*  "Control-y" = "yank:"; */
+  "Control-y" = "yank:";
 }

@@ -115,6 +115,12 @@ send -shouldChangeTextInRange:replacementString: or -didChangeText.
 
 */
 
+/* global kill buffer shared between all text views */
+/* Note: I'm not using an attributed string here because Apple apparently is
+   using a plain string either. Maybe this is because NeXT was using the X11
+   cut buffer for the kill buffer, which can hold only plain strings? */
+static NSString *killBuffer = @"";
+  
 /** First some helpers **/
 
 @interface NSTextView (UserActionHelpers)
@@ -697,10 +703,16 @@ static NSNumber *float_plus_one(NSNumber *cur)
       return;
     }
 
+  ASSIGN(killBuffer, [[_textStorage string] substringWithRange: range]);
   [_textStorage beginEditing];
   [_textStorage deleteCharactersInRange: range];
   [_textStorage endEditing];
   [self didChangeText];
+}
+
+- (void) yank: (id)sender
+{
+  [self insertText: killBuffer];
 }
 
 

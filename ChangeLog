@@ -1,5 +1,14 @@
 2010-02-12  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSTextView_actions.m (killBuffer, -deleteToEndOfLine:,
+	-yank:): Implement the NSText kill buffer; -deleteToEndOfLine:
+	saves the deleted text to the kill buffer, -yank: inserts the
+	contents of the kill buffer.
+	* KeyBindings/DefaultKeyBindings.dict: Enable the keybinding for
+	the yank: command.
+
+2010-02-12  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSTextView.m (-_characterIndexForPoint:respectFraction:):
 	Fix issue where the insertion point was put at the end of the last
 	but one line when the user clicks in or	below the last line with
