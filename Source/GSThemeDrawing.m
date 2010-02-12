@@ -1236,7 +1236,14 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
       border is drawn in -drawRect: since it might be drawn even if we don't have
       a title bar.
       */
-      [[NSColor blackColor] set];
+      NSColor *borderColor = [self colorNamed: @"windowBorderColor"
+                                        state: GSThemeNormalState];
+      if (nil == borderColor)
+        {
+          borderColor = [NSColor blackColor];
+        }
+      [borderColor set];
+ 
       PSmoveto(0, NSMinY(titleBarRect) + 0.5);
       PSrlineto(titleBarRect.size.width, 0);
       PSstroke();
@@ -1388,8 +1395,14 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   if (styleMask & (NSTitledWindowMask | NSClosableWindowMask 
                    | NSMiniaturizableWindowMask | NSResizableWindowMask))
     {
+      NSColor *borderColor = [self colorNamed: @"windowBorderColor"
+                                        state: GSThemeNormalState];
+      if (nil == borderColor)
+        {
+          borderColor = [NSColor blackColor];
+        }
+      [borderColor set];
       PSsetlinewidth(1.0);
-      [[NSColor blackColor] set];
       if (NSMinX(rect) < 1.0)
 	{
 	  PSmoveto(0.5, 0.0);
