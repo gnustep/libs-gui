@@ -1,5 +1,12 @@
 2010-02-12 Eric Wasylishen <ewasylishen@gmail.com>
 
+	* Headers/Additions/GNUstepGUI/GSTheme.h:
+	* Source/GSTheme.m:
+	* Source/GSThemeDrawing.m: Allow themeing NSColorWell. The part names
+	is GSColorWell
+
+2010-02-12 Eric Wasylishen <ewasylishen@gmail.com>
+
 	* Source/GSThemeDrawing.m: Allow customization of window title text
 	color for key/normal/main windows. New color names are:
 

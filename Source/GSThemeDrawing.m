@@ -861,24 +861,46 @@
 
   if ([well isBordered])
     {
-      /*
-       * Draw border.
-       */
-      [self drawButton: aRect withClip: clipRect];
+      GSThemeControlState state;
+      GSDrawTiles *tiles;
 
-      /*
-       * Fill in control color.
-       */
       if ([[well cell] isHighlighted] || [well isActive])
 	{
-	  [[NSColor selectedControlColor] set];
+          state = GSThemeHighlightedState;
 	}
       else
 	{
-	  [[NSColor controlColor] set];
+          state = GSThemeNormalState;
 	}
-      aRect = NSInsetRect(aRect, 2.0, 2.0);
-      NSRectFill(NSIntersectionRect(aRect, clipRect));
+
+      tiles = [self tilesNamed: GSColorWell state: state];
+      if (tiles == nil)
+        {
+	  /*
+	   * Draw border.
+	   */
+	  [self drawButton: aRect withClip: clipRect];
+
+	  /*
+	   * Fill in control color.
+	   */
+	  if (state == GSThemeHighlightedState)
+	    {
+	      [[NSColor selectedControlColor] set];
+	    }
+	  else
+	    {
+	      [[NSColor controlColor] set];
+	    }
+	  aRect = NSInsetRect(aRect, 2.0, 2.0);
+	  NSRectFill(NSIntersectionRect(aRect, clipRect));
+        }
+      else
+        {
+          aRect = [self fillRect: aRect
+                       withTiles: tiles
+                      background: [NSColor clearColor]];
+        }
 
       /*
        * Set an inset rect for the color area

@@ -86,6 +86,9 @@ NSString        *GSMenuVerticalItem = @"GSMenuVerticalItem";
 NSString        *GSProgressIndicatorBarDeterminate 
   = @"GSProgressIndicatorBarDeterminate";
 
+// Color well part names
+NSString	*GSColorWell = @"GSColorWell";
+
 NSString	*GSThemeDidActivateNotification
   = @"GSThemeDidActivateNotification";
 NSString	*GSThemeDidDeactivateNotification

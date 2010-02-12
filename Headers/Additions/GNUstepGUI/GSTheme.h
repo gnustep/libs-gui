@@ -276,6 +276,13 @@ APPKIT_EXPORT  NSString        *GSMenuVerticalItem;
  */
 APPKIT_EXPORT  NSString        *GSProgressIndicatorBarDeterminate;
 
+/*
+ * Color well part names.
+ */
+APPKIT_EXPORT  NSString        *GSColorWell;
+
+
+
 /**
  * This defines how the values in a tile array should be used when
  * drawing a rectangle.  Mostly this just effects the center, middle
