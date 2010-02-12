@@ -142,11 +142,23 @@
       NSDebugLLog(@"GSTitleView", @"owner is NSMenu");
       _owner = owner;
       _ownedByMenu = YES;
+      NSColor *textColor;
+      GSTheme *theme = [GSTheme theme];
 
       RELEASE (titleColor);
-      titleColor = RETAIN ([NSColor blackColor]);
-      [textAttributes setObject: [NSColor whiteColor] 
-                         forKey: NSForegroundColorAttributeName];
+      titleColor = RETAIN ([theme colorNamed: @"GSMenuBar" state: GSThemeNormalState]);
+      if (titleColor == nil)
+	{
+	  titleColor = RETAIN ([NSColor blackColor]);
+	}
+
+      textColor = [theme colorNamed: @"GSMenuBarTitle" state: GSThemeNormalState];
+      if (textColor == nil)
+	{
+	  textColor = [NSColor whiteColor];
+	}
+      [textAttributes setObject: textColor 
+		      forKey: NSForegroundColorAttributeName];
     }
   else
     {

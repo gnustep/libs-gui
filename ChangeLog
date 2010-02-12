@@ -1,3 +1,9 @@
+2010-02-12 German Arias <german@xelalug.org>
+
+	* Source/GSTitleView.m: Search in theme colors: GSMenuBar and 
+	GSMenuBarTitle (both GSThemeNormalState). If not present, set
+	black and white respectively.
+
 2010-02-12  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSTextView_actions.m (killBuffer, -deleteToEndOfLine:,
