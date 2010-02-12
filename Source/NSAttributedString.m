@@ -756,8 +756,9 @@ create_error(int code, NSString* desc)
 
   if (data == nil)
     {
-      *error = create_error(0, NSLocalizedString(@"No data specified for data loading.", 
-                                                 @"Error description"));
+      if (error)
+	*error = create_error(0, NSLocalizedString(@"No data specified for data loading.",
+						   @"Error description"));
       RELEASE(self);
       return nil;
     }
@@ -765,8 +766,9 @@ create_error(int code, NSString* desc)
   if (type == nil)
     {
       // FIXME: try to determine type
-      *error = create_error(0, NSLocalizedString(@"No type specified for data.", 
-                                                 @"Error description"));
+      if (error)
+	*error = create_error(0, NSLocalizedString(@"No type specified for data.",
+						   @"Error description"));
       RELEASE(self);
       return nil;
     }
@@ -804,8 +806,9 @@ create_error(int code, NSString* desc)
       return self;
     }
 
-  *error = create_error(0, NSLocalizedString(@"Could not load data.", 
-                                             @"Error description"));
+  if (error)
+    *error = create_error(0, NSLocalizedString(@"Could not load data.", 
+					       @"Error description"));
   RELEASE(self);
   return nil;
 }
@@ -842,14 +845,13 @@ create_error(int code, NSString* desc)
 - (id) initWithURL: (NSURL *)url 
 documentAttributes: (NSDictionary **)dict
 {
-  NSError *error = nil;
   NSDictionary *options = [NSDictionary dictionaryWithObject: [url baseURL]
                                         forKey: NSBaseURLDocumentOption];
 
   return [self initWithURL: url
                options: options
                documentAttributes: dict
-               error: &error];
+               error: NULL];
 }
 
 - (id) initWithURL: (NSURL *)url
@@ -861,8 +863,9 @@ documentAttributes: (NSDictionary **)dict
 
   if (data == nil)
     {
-      *error = create_error(0, NSLocalizedString(@"Could not load data from URL.", 
-                                                 @"Error description"));
+      if (error)
+	*error = create_error(0, NSLocalizedString(@"Could not load data from URL.", 
+						   @"Error description"));
       RELEASE(self);
       return nil;
     }
@@ -962,8 +965,9 @@ documentAttributes: (NSDictionary **)dict
 
   if (type == nil)
     {
-      *error = create_error(0, NSLocalizedString(@"No type specified for data.", 
-                                                 @"Error description"));
+      if (error)
+	*error = create_error(0, NSLocalizedString(@"No type specified for data.",
+						   @"Error description"));
       return nil;
     }
 
@@ -988,8 +992,9 @@ documentAttributes: (NSDictionary **)dict
       return [[self string] dataUsingEncoding: encoding];
     }
 
-  *error = create_error(0, NSLocalizedString(@"Could not create data for type.", 
-                                             @"Error description"));
+  if (error)
+    *error = create_error(0, NSLocalizedString(@"Could not create data for type.",
+					       @"Error description"));
   return nil;
 }
 
@@ -1010,9 +1015,9 @@ documentAttributes: (NSDictionary **)dict
       return AUTORELEASE(wrapper);
     }
 
-  if (*error == nil)
-      *error = create_error(0, NSLocalizedString(@"Could not create data for type.",
-                                                 @"Error description"));
+  if (error)
+    *error = create_error(0, NSLocalizedString(@"Could not create data for type.",
+					       @"Error description"));
 
   return nil;
 }

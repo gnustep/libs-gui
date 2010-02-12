@@ -581,7 +581,8 @@ withContentsOfURL: (NSURL *)url
 {
   if (OVERRIDDEN(dataRepresentationOfType:))
     {
-      *error = nil; 
+      if (error)
+	*error = nil; 
       return [self dataRepresentationOfType: type];
     }
 
@@ -614,7 +615,8 @@ withContentsOfURL: (NSURL *)url
   
   if (OVERRIDDEN(fileWrapperRepresentationOfType:))
     {
-      *error = nil; 
+      if (error)
+	*error = nil; 
       return [self fileWrapperRepresentationOfType: type];
     }
 
@@ -693,7 +695,8 @@ withContentsOfURL: (NSURL *)url
 {
   if (OVERRIDDEN(loadDataRepresentation:ofType:))
     {
-      *error = nil; 
+      if (error)
+	*error = nil; 
       return [self loadDataRepresentation: data
                    ofType: type];
     }
@@ -709,7 +712,8 @@ withContentsOfURL: (NSURL *)url
 {
   if (OVERRIDDEN(loadFileWrapperRepresentation:ofType:))
     {
-      *error = nil; 
+      if (error)
+	*error = nil; 
       return [self loadFileWrapperRepresentation: wrapper ofType: type];
     }
 
@@ -721,7 +725,8 @@ withContentsOfURL: (NSURL *)url
     }
 
   // FIXME: Set error
-  *error = nil;
+  if (error)
+    *error = nil;
   return NO;
 }
 
@@ -735,7 +740,8 @@ withContentsOfURL: (NSURL *)url
       
       if (OVERRIDDEN(readFromFile:ofType:))
         {
-          *error = nil;
+	  if (error)
+	    *error = nil;
           return [self readFromFile: fileName ofType: type];
         }
       else
@@ -876,7 +882,8 @@ withContentsOfURL: (NSURL *)url
           isAutosave = YES;
         }
 
-      *error = nil; 
+      if (error)
+	*error = nil; 
       if (![self writeWithBackupToFile: [url path] 
                  ofType: type 
                  saveOperation: op])
@@ -895,7 +902,8 @@ withContentsOfURL: (NSURL *)url
   if (!isNativeType || (url == nil))
     {
       // FIXME: Set error
-      *error = nil; 
+      if (error)
+	*error = nil; 
       return NO;
     }
   
@@ -914,7 +922,8 @@ withContentsOfURL: (NSURL *)url
                          toFile: backupFilename])
                 {
                   // FIXME: Set error.
-                  *error = nil; 
+		  if (error)
+		    *error = nil; 
                   return NO;
                 }
             }
@@ -973,7 +982,8 @@ withContentsOfURL: (NSURL *)url
 
       if (OVERRIDDEN(writeToFile:ofType:))
         {
-          *error = nil; 
+	  if (error)
+	    *error = nil; 
           return [self writeToFile: [url path] ofType: type];
         }
 
@@ -982,11 +992,13 @@ withContentsOfURL: (NSURL *)url
       if (wrapper == nil)
         {
           // FIXME: Set error
-          *error = nil; 
+	  if (error)
+	    *error = nil; 
           return NO;
         }
-   
-      *error = nil; 
+
+      if (error)
+	*error = nil; 
       return [wrapper writeToFile: [url path] atomically: YES updateFilenames: YES];
     }
   else
@@ -1013,7 +1025,8 @@ originalContentsURL: (NSURL *)orig
           op = NSSaveToOperation;
         }
 
-      *error = nil; 
+      if (error)
+	*error = nil; 
       return [self writeToFile: [url path] 
                    ofType: type 
                    originalFile: [orig path] 
@@ -1393,7 +1406,8 @@ originalContentsURL: (NSURL *)orig
 - (NSPrintOperation *) printOperationWithSettings: (NSDictionary *)settings
                                             error: (NSError **)error
 {
-  *error = nil; 
+  if (error)
+    *error = nil; 
   return nil;
 }
 
@@ -1463,7 +1477,8 @@ originalContentsURL: (NSURL *)orig
                                         error: (NSError **)error
 {
   // FIXME: Implement. Should set NSFileExtensionHidden
-  *error = nil; 
+  if (error)
+    *error = nil; 
 
   return [NSDictionary dictionary];
 }

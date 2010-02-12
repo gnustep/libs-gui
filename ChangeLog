@@ -1,3 +1,10 @@
+2010-02-12  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSAttributedString.m:
+	* Source/NSDocument.m: Fix a whole bunch of potential crashers
+	where the error return parameter was written to without a null
+	pointer check.
+
 2010-02-11 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* NSTableHeaderView.m:
