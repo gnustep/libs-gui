@@ -1,5 +1,12 @@
 2010-02-12 Eric Wasylishen <ewasylishen@gmail.com>
 
+	* Source/NSMenuView.m (-isOpaque): Return NO from isOpaque,
+	so -[GSThemeDrawing
+	drawBackgroundForMenuView:withFrame:dirtyRect:horizontal:]
+	can draw semitransparent menus if the theme author wishes.
+
+2010-02-12 Eric Wasylishen <ewasylishen@gmail.com>
+
 	* Source/GSThemeDrawing.m: Make the window border color customizable
 
 2010-02-12 Eric Wasylishen <ewasylishen@gmail.com>

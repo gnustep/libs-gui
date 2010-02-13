@@ -1216,7 +1216,7 @@ static NSMapTable *viewInfo = 0;
  */
 - (BOOL) isOpaque
 {
-  return YES;
+  return NO;
 }
 
 - (void) drawRect: (NSRect)rect
