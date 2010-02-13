@@ -1,3 +1,8 @@
+2010-02-12 19:44-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSBrowser.m: Make sure that the matrix used in the 
+	browser draws its cell backgrounds properly.
+
 2010-02-12 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/NSMenuView.m (-isOpaque): Return NO from isOpaque,

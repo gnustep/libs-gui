@@ -3074,6 +3074,13 @@ static NSTextFieldCell *titleCell;
       [matrix setIntercellSpacing: matrixIntercellSpace];
       [matrix setAllowsEmptySelection: _allowsEmptySelection];
       [matrix setAutoscroll: YES];
+
+      // Set up background colors.
+      [matrix setBackgroundColor: [NSColor controlBackgroundColor]];
+      [matrix setDrawsBackground: YES];
+      [matrix setCellBackgroundColor: [NSColor controlBackgroundColor]];
+      [matrix setDrawsCellBackground: YES];
+
       if (!_allowsMultipleSelection)
         {
           [matrix setMode: NSRadioModeMatrix];
