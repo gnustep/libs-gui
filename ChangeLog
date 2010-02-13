@@ -1,3 +1,12 @@
+2010-02-12 Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/NSMenu.m: Make the background color of NSMenuPanel clear
+	* Source/GSThemeDrawing.m:
+	in drawBackgroundForMenuView:withFrame:dirtyRect:horizontal:,
+	when not using tiles, fill the background of the menu with 
+	the window background color.
+	Now themes can draw semitransparent menus, and they work properly.
+
 2010-02-12 19:44-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSBrowser.m: Make sure that the matrix used in the 

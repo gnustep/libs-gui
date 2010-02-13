@@ -778,6 +778,10 @@
     {
      NSRectEdge sides[2]; 
      float      grays[] = {NSDarkGray, NSDarkGray};
+
+     [[NSColor windowBackgroundColor] set];
+     NSRectFill(NSIntersectionRect(bounds, dirtyRect));
+
      if (horizontal == YES)
         {
           sides[0] = NSMinYEdge;

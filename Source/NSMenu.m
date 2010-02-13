@@ -205,6 +205,7 @@ static BOOL menuBarVisible = YES;
 		     styleMask: NSBorderlessWindowMask
 		     backing: NSBackingStoreBuffered
 		     defer: YES];
+  [win setBackgroundColor: [NSColor clearColor]];
   [win setLevel: NSSubmenuWindowLevel];
   [win setWorksWhenModal: NO];
   [win setBecomesKeyOnlyIfNeeded: YES];
