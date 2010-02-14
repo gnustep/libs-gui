@@ -693,7 +693,7 @@ static	GSDragView *sharedDragView = nil;
         {
           [self _sendLocalEvent: GSAppKitDraggingDrop
                          action: 0
-                       position: NSZeroPoint
+                       position: dragPosition
 		                  timestamp: [theEvent timestamp]
                        toWindow: destWindow];
         }
@@ -701,7 +701,7 @@ static	GSDragView *sharedDragView = nil;
         {
           [self sendExternalEvent: GSAppKitDraggingDrop
                            action: 0
-		                     position: NSZeroPoint
+		                     position: dragPosition
 		                    timestamp: [theEvent timestamp]
 		                     toWindow: targetWindowRef];
         }

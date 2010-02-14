@@ -1,3 +1,8 @@
+2010-02-14 Quentin Mathe <quentin.mathe@gmail.com>
+
+	* Source/GSDragView.m (-_handleDrag:slidePoint:): Fixed to create a 
+	GSAppKitDraggingDrop event with a valid location.
+
 2010-02-12 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/NSMenu.m: Make the background color of NSMenuPanel clear
