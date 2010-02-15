@@ -534,9 +534,9 @@ inSpellDocumentWithTag:(int)tag
 
 - _findNext: (id)sender
 {
-  BOOL processed = [NSApp sendAction: @selector(checkSpelling:) 
-			  to: nil 
-			  from: _spellPanel];
+  BOOL processed = [[[NSApp mainWindow] firstResponder]
+		       tryToPerform: @selector(checkSpelling:)
+			       with: _spellPanel];
 
   if (!processed)
     {
@@ -593,9 +593,9 @@ inSpellDocumentWithTag:(int)tag
 
 - _ignore: (id)sender
 {
-  BOOL processed = [NSApp sendAction: @selector(ignoreSpelling:) 
-			  to: nil 
-			  from: _wordField];
+  BOOL processed = [[[NSApp mainWindow] firstResponder]
+		       tryToPerform: @selector(ignoreSpelling:)
+			       with: _wordField];
 
   if (!processed)
     {
@@ -616,9 +616,9 @@ inSpellDocumentWithTag:(int)tag
 
 - _correct: (id)sender
 {
-  BOOL processed = [NSApp sendAction: @selector(changeSpelling:) 
-			  to: nil 
-			  from: _wordField];
+  BOOL processed = [[[NSApp mainWindow] firstResponder]
+		       tryToPerform: @selector(changeSpelling:)
+			       with: _wordField];
 
   if (!processed)
     {

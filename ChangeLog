@@ -1,5 +1,11 @@
 2010-02-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSSpellChecker.m (_findNext:, _ignore:, _correct:): Send
+	messages down to the responder chain of the main window only, to
+	avoid spell checking the Spelling panel's own text field.
+
+2010-02-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSTextView.m (-setSelectedRange:affinity:stillSelecting:):
 	Update the typing attributes of a rich text view also if the
 	selected range has a non-zero length. Fixes a problem where, e.g.,
