@@ -30,8 +30,9 @@
 
 // get the configuration.
 #include "config.h"
-#include <AppKit/AppKit.h>
-#include <Foundation/Foundation.h>
+#import <AppKit/AppKit.h>
+#import <Foundation/Foundation.h>
+#import <GNUstepBase/Unicode.h>
 
 #ifdef HAVE_ASPELL_H
 #include <aspell.h>
@@ -63,6 +64,26 @@
 @end
 
 @implementation GNUSpellChecker
+
+static inline unsigned int
+uniLength(unsigned char *buf, unsigned int len)
+{
+  unsigned int i, size;
+
+  for (i = 0; i < len; i++)
+    {
+      if (buf[i] >= 0x80)
+	{
+	  if (GSToUnicode(0, &size, buf, len, NSUTF8StringEncoding, 0, 0))
+	    {
+	      len = size;
+	    }
+	  break;
+	}
+    }
+  return len;
+}
+
 - (NSRange)spellServer:(NSSpellServer *)sender
 findMisspelledWordInString:(NSString *)stringToCheck
                   language:(NSString *)language
@@ -91,7 +112,8 @@ findMisspelledWordInString:(NSString *)stringToCheck
 
       aspell_document_checker_process(checker, p, length);
       token = aspell_document_checker_next_misspelling(checker);
-      r = NSMakeRange(token.offset,token.len);
+      r = NSMakeRange(uniLength((unsigned char *)p, token.offset),
+		      uniLength((unsigned char *)p + token.offset, token.len));
     }
 #else
   NSLog(@"spellServer:findMisspelledWordInString:...  invoked, spell server not configured.");
