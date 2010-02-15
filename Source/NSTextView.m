@@ -3562,6 +3562,17 @@ afterString in order over charRange.
 	  // Store the selected text in the selection pasteboard
 	  [self copySelection];
 
+	  if (_tf.is_rich_text)
+	    {
+	      NSDictionary *dict;
+
+	      /* always set the typing attributes to the attributes of the
+		 first selected character */
+	      dict = [_textStorage attributesAtIndex: charRange.location
+				      effectiveRange: NULL];
+	      [self setTypingAttributes: dict];
+	    }
+
 	  /* TODO: insertion point */
 	}
       else  /* no selection, only insertion point */

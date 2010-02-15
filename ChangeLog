@@ -1,3 +1,10 @@
+2010-02-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSTextView.m (-setSelectedRange:affinity:stillSelecting:):
+	Update the typing attributes of a rich text view also if the
+	selected range has a non-zero length. Fixes a problem where, e.g.,
+	corrections from the spell panel could use wrong attributes.
+
 2010-02-14 Quentin Mathe <quentin.mathe@gmail.com>
 
 	* Source/GSDragView.m (-_handleDrag:slidePoint:): Fixed to create a 
