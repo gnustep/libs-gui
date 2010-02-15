@@ -647,7 +647,7 @@ restart: ;
 			     sweepDirection: NSLineSweepRight
 			     movementDirection: line_frags_num?NSLineDoesntMove:NSLineMoveDown
 			     remainingRect: &remain];
-      if (NSEqualRects(rect, NSZeroRect))
+      if (NSIsEmptyRect(rect))
         break;
 
       line_frags_num++;

@@ -217,6 +217,9 @@ framework intact.
               selector: @selector(_textViewFrameChanged:)
               name: NSViewFrameDidChangeNotification
               object: _textView];
+          [self _textViewFrameChanged: 
+                  [NSNotification notificationWithName: NSViewFrameDidChangeNotification
+                                                object: _textView]];
         }
     }
 

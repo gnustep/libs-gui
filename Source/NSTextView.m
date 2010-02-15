@@ -1142,13 +1142,16 @@ to this method from the text container or layout manager.
   [self _updateMultipleTextViews];
 }
 
-
-
-
-
 - (void) replaceTextContainer: (NSTextContainer *)newContainer
 {
-  NSLog(@"TODO! [NSTextView -replaceTextContainer:] isn't implemented");
+  NSLayoutManager *lm = RETAIN(_layoutManager);
+  unsigned int index = [[lm textContainers] indexOfObject: _textContainer];
+
+  [_textContainer setTextView: nil];
+  [lm removeTextContainerAtIndex: index];
+  [lm insertTextContainer: newContainer atIndex: index];
+  [newContainer setTextView: self];
+  RELEASE(lm);
 }
 
 - (NSTextContainer *) textContainer

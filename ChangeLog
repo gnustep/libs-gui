@@ -1,3 +1,12 @@
+2010-02-15 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView.m (-replaceTextContainer:): Implement this
+	missing method.
+	* Source/NSTextContainer.m (-setTextView:): Adjust the container
+	size to the new view.
+	* Source/GSHorizontalTypesetter.m (-layoutLineNewParagraph:):
+	Better break condition for loop.
+
 2010-02-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSSpellChecker.m (_findNext:, _ignore:, _correct:): Send
