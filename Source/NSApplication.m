@@ -217,7 +217,7 @@ gnustep_backend_framework(NSString *bundleName)
 	{
 	if  ([bundleName hasPrefix: @"libgnustep-"])
 	  {
-	    bundleName = [bundleName stringByDeletingPrefix: @"libgnustep-"];
+	    bundleName = [bundleName substringFromIndex: [@"libgnustep-" length]];
 	  }
 	bundleName = [NSString stringWithFormat: @"GNUstep-%@.framework",
 			       bundleName];

@@ -293,6 +293,22 @@ static NSColor *dtxtCol;
     }
 }
 
+/**<p>Returns the cell's value as an NSInteger. </p>
+ *<p>See Also: -setIntegerValue:</p>
+ */
+- (NSInteger) integerValue
+{
+  if ((_cell.has_valid_object_value == YES) &&
+      ([_object_value respondsToSelector: @selector(integerValue)]))
+    {
+      return [_object_value integerValue];
+    }
+  else
+    {
+      return [[self stringValue] integerValue];
+    }
+}
+
 /**<p>Returns the cell's value as a NSString.</p>
  *<p>See Also: -setStringValue: </p>
  */
@@ -409,6 +425,20 @@ static NSColor *dtxtCol;
   // NB: GNUstep can set an int value for an image cell. 
 
   number = [NSNumber numberWithInt: anInt];
+  [self setObjectValue: number];
+}
+
+/**
+ *<p>Sets the NSCell's value to anInt.</p>
+ *<p>See Also: -integerValue</p> 
+ */
+- (void) setIntegerValue: (NSInteger)anInt
+{
+  NSNumber *number;
+
+  // NB: GNUstep can set an int value for an image cell. 
+
+  number = [NSNumber numberWithInteger: anInt];
   [self setObjectValue: number];
 }
 
@@ -1335,12 +1365,19 @@ static NSColor *dtxtCol;
 
 - (void) setTitleWithMnemonic: (NSString*)aString
 {
-  unsigned int location = [aString rangeOfString: @"&"].location;
+  NSRange r = [aString rangeOfString: @"&"];
 
-  [self setTitle: [aString stringByReplacingString: @"&"
-                                 withString: @""]];
-  // TODO: We should underline this character
-  [self setMnemonicLocation: location];
+  if (r.length > 0)
+    {
+      unsigned int location = r.location;
+      
+      
+      [self setTitle: [[aString substringToIndex: location] 
+                        stringByAppendingString: 
+                          [aString substringFromIndex: NSMaxRange(r)]]];
+      // TODO: We should underline this character
+      [self setMnemonicLocation: location];
+    }
 }
 
 - (NSString*) mnemonic
@@ -1477,6 +1514,14 @@ static NSColor *dtxtCol;
 - (void) takeIntValueFrom: (id)sender
 {
   [self setIntValue: [sender intValue]];
+}
+
+/** <p>Sets the NSCell's NSInteger value to sender's NSInteger value</p>
+    <p>See Also: -setIntegerValue:</p>
+ */
+- (void) takeIntegerValueFrom: (id)sender
+{
+  [self setIntegerValue: [sender integerValue]];
 }
 
 /** <p>Sets the NSCell's NSString value to sender's NSSting value</p>

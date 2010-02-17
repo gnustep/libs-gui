@@ -1,3 +1,13 @@
+2010-02-17 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSApplication.m (gnustep_backend_framework): Replace base
+	extension method with standard one.
+	* Source/NSCell.m (-setTitleWithMnemonic:): Replace base
+	extension method with standard one.
+	* Headers/AppKit/NSCell.h:
+	* Source/NSCell.m (-takeIntegerValueFrom:, -setIntegerValue:)
+	(-integerValue): Add OSX 10.5 methods.
+
 2010-02-15 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView.m (-replaceTextContainer:): Implement this

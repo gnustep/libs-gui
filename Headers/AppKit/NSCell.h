@@ -205,7 +205,11 @@ enum {
 - (void)setFloatValue:(float)aFloat;
 - (void)setIntValue:(int)anInt;
 - (void)setStringValue:(NSString *)aString;
-
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (NSInteger) integerValue;
+- (void) setIntegerValue: (NSInteger)anInt;
+- (void) takeIntegerValueFrom: (id)sender;
+#endif
 //
 // Setting Parameters 
 //
