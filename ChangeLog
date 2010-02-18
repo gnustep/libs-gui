@@ -1,3 +1,9 @@
+2010-02-18 17:21-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSWindow.m: Remove private menu - (void) _menuUpdate, since 
+	it was causing performance issue on windows as the menu was updating
+	each time through the runloop.
+
 2010-02-17 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSApplication.m (gnustep_backend_framework): Replace base

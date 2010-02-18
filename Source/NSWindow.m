@@ -2310,19 +2310,8 @@ many times.
     }
 }
 
-- (void) _menuUpdate
-{
-   NSInterfaceStyle style = 
-     NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil);
-   if(style == NSWindows95InterfaceStyle)
-     {
-       [[GSTheme theme] updateMenu: [self menu] forWindow: self];
-     }
-}
-
 - (void) update
 {									
-  [self _menuUpdate];
   [nc postNotificationName: NSWindowDidUpdateNotification object: self];
 }
 
