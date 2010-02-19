@@ -4776,7 +4776,8 @@ other than copy/paste or dragging. */
 			forType: NSRTFDPboardType] || ret;
 	}
 
-      if ([type isEqualToString: NSSmartPastePboardType])
+      if ([type isEqualToString: NSSmartPastePboardType] &&
+	  [self selectionGranularity] == NSSelectByWord)
 	{
 	  ret = [pboard setData: [NSData data]
 			forType: NSSmartPastePboardType] || ret;

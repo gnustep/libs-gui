@@ -1,3 +1,9 @@
+2010-02-20  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSTextView.m (-writeSelectionToPasteboard:types:): Add
+	forgotten test to apply smart insert and delete during drag and
+	drop only when selection granularity is select by word.
+
 2010-02-18 17:21-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSWindow.m: Remove private menu - (void) _menuUpdate, since 
