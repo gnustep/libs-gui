@@ -403,7 +403,7 @@
   // grok paragraph spacing \saN. Should be no problem with other RTF parsers
   // as this command will be ignored. So this is for compatibility with OS X.
   result = (NSMutableString *)[NSMutableString stringWithString: 
-      @"{\\rtf1\\ansi\\ansicpg10000\\cocoartf102"];
+      @"{\\rtf1\\ansi\\ansicpg1252\\cocoartf102"];
 
   [result appendString: [self fontTable]];
   [result appendString: [self colorTable]];

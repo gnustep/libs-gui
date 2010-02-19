@@ -36,6 +36,7 @@
 @interface RTFConsumer: NSObject <GSTextConsumer>
 {
 @public
+  NSStringEncoding encoding;
   NSMutableDictionary *documentAttributes;
   NSMutableDictionary *fonts;
   NSMutableArray *colours;

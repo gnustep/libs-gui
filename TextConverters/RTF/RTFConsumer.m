@@ -34,24 +34,23 @@
 
 /*  we have to satisfy the scanner with a stream reading function */
 typedef struct {
-  NSString	*string;
+  const char	*string;
   int		position;
   int		length;
 } StringContext;
 
 static void	
-initStringContext (StringContext *ctxt, NSString *string)
+initStringContext (StringContext *ctxt, NSData *data)
 {
-  ctxt->string = string;
+  ctxt->string = [data bytes];
   ctxt->position = 0;
-  ctxt->length = [string length];
+  ctxt->length = [data length];
 }
 
 static int	
-readNSString (StringContext *ctxt)
+readString (StringContext *ctxt)
 {
-  return (ctxt->position < ctxt->length )
-    ? [ctxt->string characterAtIndex:ctxt->position++]: EOF;
+  return ctxt->position < ctxt->length ? ctxt->string[ctxt->position++] : EOF;
 }
 
 // Hold the attributs of the current run
@@ -367,6 +366,7 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 {
   ignore = 0;  
   result = nil;
+  encoding = NSISOLatin1StringEncoding;
   documentAttributes = nil;
   fonts = nil;
   attrs = nil;
@@ -546,9 +546,7 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
   CREATE_AUTORELEASE_POOL(pool);
   RTFscannerCtxt scanner;
   StringContext stringCtxt;
-  NSString *rtfString;
   char buffer[5];
-  NSStringEncoding encoding = NSASCIIStringEncoding;
 
   // We read in the first few characters to find out which
   // encoding we have
@@ -565,28 +563,25 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
   else if (strncmp(buffer, "pc", 2) == 0)
     {
       // FIXME: Code page 437 kCFStringEncodingDOSLatinUS
-      encoding = NSASCIIStringEncoding;
+      encoding = NSISOLatin1StringEncoding;
     }
   else if (strncmp(buffer, "pca", 3) == 0)
     {
       // FIXME: Code page 850 kCFStringEncodingDOSLatin1
-      encoding = NSASCIIStringEncoding;
+      encoding = NSISOLatin1StringEncoding;
     }
-  else if (strncmp(buffer, "ansi", 2) == 0)
+  else
     {
-      encoding = NSASCIIStringEncoding;
+      encoding = NSISOLatin1StringEncoding;
     }
 
-  rtfString = [[NSString alloc] 
-			  initWithData: rtfData
-                              encoding: encoding];
 
   // Reset this RFTConsumer, as it might already have been used!
   _class = class;
   [self reset];
 
-  initStringContext(&stringCtxt, rtfString);
-  lexInitContext(&scanner, &stringCtxt, (int (*)(void*))readNSString);
+  initStringContext(&stringCtxt, rtfData);
+  lexInitContext(&scanner, &stringCtxt, (int (*)(void*))readString);
   [result beginEditing];
   NS_DURING
     GSRTFparse((void *)self, &scanner);
@@ -597,7 +592,6 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
   NS_ENDHANDLER
   [result endEditing];
 
-  RELEASE(rtfString);
   RELEASE(pool);
   // document attributes
   if (dict)
@@ -677,6 +671,7 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 #define IGNORE	((RTFConsumer *)ctxt)->ignore
 #define TEXTPOSITION [RESULT length]
 #define DOCUMENTATTRIBUTES ((RTFConsumer*)ctxt)->documentAttributes
+#define ENCODING ((RTFConsumer *)ctxt)->encoding
 
 #define FILES ((RTFDConsumer*)ctxt)->files
 
@@ -760,7 +755,7 @@ void GSRTFmangleText (void *ctxt, const char *text)
   NSData *data = [[NSData alloc] initWithBytes: (void*)text 
 				 length: strlen(text)];
   NSString *str = [[NSString alloc] initWithData: data
-				    encoding: NSISOLatin1StringEncoding];
+				    encoding: ENCODING];
 
   [(RTFConsumer *)ctxt appendString: str];
   DESTROY(str);

@@ -1,5 +1,20 @@
 2010-02-20  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* TextConverters/RTF/RTFConsumer.h: Add encoding attribute to
+	RTFConsumer.
+	* TextConverters/RTF/RTFConsumer.m (initStringContext, readString,
+	-init, -parseRTF:documentAttributes:class:, GSRTFmangleText):
+	Convert characters to Unicode only after all hex-escapes, which
+	use the document's code page, have been expanded. Fixes an issue
+	where some non-ASCII characters in RTF documents created on Mac OS
+	(X) got mixed up.
+	* TextConverters/RTF/RTFProducer.m (-_headerString): Fix RTF
+	header to use code page 1252 instead of 10000. Fixes an issue
+	where some RTF readers would assume our encoding is Mac OS Roman
+	and hence mix up some non-ASCII characters in our documents.
+
+2010-02-20  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSTextView.m (-writeSelectionToPasteboard:types:): Add
 	forgotten test to apply smart insert and delete during drag and
 	drop only when selection granularity is select by word.
