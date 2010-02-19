@@ -29,6 +29,10 @@
 	messages down to the responder chain of the main window only, to
 	avoid spell checking the Spelling panel's own text field.
 
+	* Tools/GSspell.m (uniLength, -spellServer:findMisspelledWord...):
+	Fix up the returned range when the checked string contains
+	non-ASCII characters.
+
 2010-02-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSTextView.m (-setSelectedRange:affinity:stillSelecting:):
