@@ -1,5 +1,16 @@
 2010-02-20  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSSpellChecker.m (-awakeFromNib): Set
+	becomesKeyOnlyIfNeeded panel attribute to YES.
+	* Panels/English.lproj/GSSpellPanel.gorm:
+	* Panels/Spanish.lproj/GSSpellPanel.gorm: Fix attribute settings
+	for the guess list browser: There is just one column, the browser
+	therefore needs no horizontal scroller, and it makes no sense to
+	enable multiple selection (which in addition would prevent the
+	browser from working when the spell panel is not key).
+
+2010-02-20  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSColorPanel.m (-_initWithoutGModel):
 	* Source/NSFontPanel.m (-_initWithoutGModel): Set
 	becomesKeyOnlyIfNeeded panel attribute to YES.

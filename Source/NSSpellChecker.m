@@ -690,6 +690,7 @@ inSpellDocumentWithTag:(int)tag
   [_correctButton setImage: [NSImage imageNamed: @"common_ret"]];
   [_correctButton setAlternateImage: [NSImage imageNamed: @"common_retH"]];
   [_spellPanel makeFirstResponder: _correctButton];
+  [_spellPanel setBecomesKeyOnlyIfNeeded: YES];
 }
 @end
 
