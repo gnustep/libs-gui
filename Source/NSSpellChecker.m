@@ -236,7 +236,8 @@ static int __documentTag = 0;
 - (void)_populateDictionaryPulldown: (NSArray *)dictionaries
 {
   [_dictionaryPulldown removeAllItems];
-  [_dictionaryPulldown addItemsWithTitles: dictionaries];
+  [_dictionaryPulldown addItemsWithTitles:
+    [dictionaries sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)]];
   [_dictionaryPulldown selectItemWithTitle: _language];
 }
 

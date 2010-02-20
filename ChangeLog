@@ -1,5 +1,17 @@
 2010-02-20  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Tools/GSspell.m: Rewrite to support multiple languages. The
+	spell server at runtime detects aspell's installed dictionaries
+	and publishes each supported language.
+	* Source/NSSpellChecker.m (-_popuplateDictionaryPulldown:): Sort
+	dictionaries in the pop up menu.
+
+	Note: At present, users or an administrator must manually update
+	the Info.plist file of GSspell.service to really be able to use
+	languages besides American English.
+
+2010-02-20  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Source/NSSpellChecker.m (-awakeFromNib): Set
 	becomesKeyOnlyIfNeeded panel attribute to YES.
 	* Panels/English.lproj/GSSpellPanel.gorm:
