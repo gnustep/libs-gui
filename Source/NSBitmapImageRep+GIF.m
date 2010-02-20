@@ -31,6 +31,7 @@
 
 #include "config.h"
 #include "NSBitmapImageRep+GIF.h"
+#include "GSGuiPrivate.h"
 
 #if HAVE_LIBUNGIF || HAVE_LIBGIF
 

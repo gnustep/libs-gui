@@ -72,6 +72,7 @@
 #include "AppKit/NSScreen.h"
 #include "GNUstepGUI/GSServicesManager.h"
 #include "GNUstepGUI/GSDisplayServer.h"
+#include "GSGuiPrivate.h"
 
 /* Informal protocol for method to ask an app to open a URL.
  */

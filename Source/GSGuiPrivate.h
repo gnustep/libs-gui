@@ -31,6 +31,7 @@
 #define _GNUstep_H_GSGuiPrivate
 
 #include <Foundation/NSBundle.h>
+#include "GNUstepBase/preface.h"
 
 /*
  * Return the gnustep-gui bundle used to load gnustep-gui resources.

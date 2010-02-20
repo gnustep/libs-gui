@@ -40,6 +40,7 @@
 #include "AppKit/PSOperators.h"
 
 #include <GNUstepGUI/GSNibLoading.h>
+#include "GSGuiPrivate.h"
 
 #include <math.h>
 

@@ -59,6 +59,7 @@
 #include "AppKit/NSDocumentController.h"
 
 #include "GNUstepGUI/GSServicesManager.h"
+#include "GSGuiPrivate.h"
 
 static GSServicesManager	*manager = nil;
 

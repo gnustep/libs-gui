@@ -50,6 +50,7 @@
 #include "AppKit/NSImage.h"
 #include "AppKit/NSSplitView.h"
 #include "AppKit/NSWindow.h"
+#include "GSGuiPrivate.h"
 
 static NSNotificationCenter *nc = nil;
 

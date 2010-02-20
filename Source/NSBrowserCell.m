@@ -39,6 +39,7 @@
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSEvent.h"
 #include "AppKit/NSWindow.h"
+#include "GSGuiPrivate.h"
 
 /*
  * Class variables

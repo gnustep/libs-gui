@@ -54,6 +54,7 @@
 #include "AppKit/NSWindow.h"
 #include "GNUstepGUI/GSTheme.h"
 #include "GNUstepGUI/GSNibLoading.h"
+#include "GSGuiPrivate.h"
 
 #include <math.h>
 

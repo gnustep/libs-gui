@@ -64,6 +64,7 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSEnumerator.h>
+#include "GSGuiPrivate.h"
 
 #include <math.h>
 #include <stdlib.h>

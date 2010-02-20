@@ -28,13 +28,13 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "AppKit/NSBezierPath.h"
-
 #include "AppKit/NSAffineTransform.h"
+#include "AppKit/NSBezierPath.h"
 #include "AppKit/NSFont.h"
 #include "AppKit/NSImage.h"
 #include "AppKit/PSOperators.h"
 #include "GNUstepGUI/GSFontInfo.h"
+#include "GSGuiPrivate.h"
 
 #include <math.h>
 

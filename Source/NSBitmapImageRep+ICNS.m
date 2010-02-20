@@ -37,6 +37,7 @@
 #include <Foundation/NSException.h>
 #include <Foundation/NSValue.h>
 #include "AppKit/NSGraphics.h"
+#include "GSGuiPrivate.h"
 
 #define ICNS_HEADER "icns"
 

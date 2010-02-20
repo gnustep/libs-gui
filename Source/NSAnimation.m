@@ -28,6 +28,7 @@
 
 #import <Foundation/NSDate.h>
 #import <Foundation/NSDebug.h>
+#import <Foundation/NSDictionary.h>
 #import <Foundation/NSException.h>
 #import <Foundation/NSLock.h>
 #import <Foundation/NSNotification.h>

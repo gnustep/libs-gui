@@ -28,12 +28,12 @@
 
 */ 
 
-#include <Foundation/NSAutoreleasePool.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSProcessInfo.h>
-#include <Foundation/NSString.h>
-#include <AppKit/NSApplication.h>
-
+#include <stdlib.h>
+#import <Foundation/NSAutoreleasePool.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSProcessInfo.h>
+#import <Foundation/NSString.h>
+#import "AppKit/NSApplication.h"
 
 int
 main(int argc, char** argv, char **env)

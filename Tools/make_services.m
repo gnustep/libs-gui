@@ -26,19 +26,20 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include	<Foundation/NSArray.h>
-#include	<Foundation/NSBundle.h>
-#include	<Foundation/NSDictionary.h>
-#include	<Foundation/NSSet.h>
-#include	<Foundation/NSFileManager.h>
-#include	<Foundation/NSString.h>
-#include	<Foundation/NSProcessInfo.h>
-#include	<Foundation/NSData.h>
-#include	<Foundation/NSDebug.h>
-#include	<Foundation/NSDistributedLock.h>
-#include	<Foundation/NSAutoreleasePool.h>
-#include	<Foundation/NSPathUtilities.h>
-#include	<Foundation/NSSerialization.h>
+#include <stdlib.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSSet.h>
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSProcessInfo.h>
+#import <Foundation/NSData.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSDistributedLock.h>
+#import <Foundation/NSAutoreleasePool.h>
+#import <Foundation/NSPathUtilities.h>
+#import <Foundation/NSSerialization.h>
 
 static void scanApplications(NSMutableDictionary *services, NSString *path);
 static void scanServices(NSMutableDictionary *services, NSString *path);

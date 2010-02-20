@@ -36,6 +36,7 @@
 #include <Foundation/NSException.h>
 #include <Foundation/NSValue.h>
 #include "AppKit/NSGraphics.h"
+#include "GSGuiPrivate.h"
 
 #include <jerror.h>
 #if defined(__MINGW32__)

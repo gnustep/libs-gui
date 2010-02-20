@@ -43,6 +43,7 @@
 #include "AppKit/NSColor.h"
 #include "AppKit/NSScrollView.h"
 #include "AppKit/NSGraphics.h"
+#include "GSGuiPrivate.h"
 
 /*
  * Number of pixels in either direction that will be counted as a hit 

@@ -77,6 +77,7 @@
 #include "GNUstepGUI/GSNibLoading.h"
 #include "GSToolTips.h"
 #include "GSBindingHelpers.h"
+#include "GSGuiPrivate.h"
 
 /*
  * We need a fast array that can store objects without retain/release ...

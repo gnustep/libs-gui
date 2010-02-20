@@ -46,6 +46,7 @@
 #include "AppKit/NSMenuView.h"
 #include "AppKit/NSParagraphStyle.h"
 #include "GNUstepGUI/GSTheme.h"
+#include "GSGuiPrivate.h"
 
 
 @implementation NSMenuItemCell

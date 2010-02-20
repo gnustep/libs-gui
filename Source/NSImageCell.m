@@ -33,6 +33,7 @@
 #include "AppKit/NSImageCell.h"
 #include "AppKit/NSImage.h"
 #include "GNUstepGUI/GSTheme.h"
+#include "GSGuiPrivate.h"
 
 @implementation NSImageCell
 

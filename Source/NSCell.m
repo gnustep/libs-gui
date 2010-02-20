@@ -63,6 +63,7 @@
 #import "AppKit/NSView.h"
 #import "AppKit/NSWindow.h"
 #include "GNUstepGUI/GSTheme.h"
+#include "GSGuiPrivate.h"
 
 static Class colorClass;
 static Class cellClass;

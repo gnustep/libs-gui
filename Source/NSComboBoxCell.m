@@ -53,6 +53,7 @@
 #include "AppKit/NSTableView.h"
 #include "AppKit/NSTextView.h"
 #include "GNUstepGUI/GSTheme.h"
+#include "GSGuiPrivate.h"
 
 static NSNotificationCenter *nc;
 static const BOOL ForceBrowser = NO;

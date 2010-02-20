@@ -83,6 +83,7 @@
 #import "AppKit/NSTextStorage.h"
 #import "AppKit/NSTextView.h"
 #import "AppKit/NSWindow.h"
+#include "GSGuiPrivate.h"
 
 
 /*

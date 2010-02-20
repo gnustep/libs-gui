@@ -35,6 +35,7 @@
 #include "AppKit/NSTextStorage.h"
 #include "AppKit/NSTextView.h"
 #include "GNUstepGUI/GSLayoutManager.h"
+#include "GSGuiPrivate.h"
 
 @interface NSTextContainer (TextViewObserver)
 - (void) _textViewFrameChanged: (NSNotification*)aNotification;
