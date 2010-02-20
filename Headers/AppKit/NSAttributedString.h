@@ -190,10 +190,10 @@ enum
 - (BOOL) containsAttachments;
 - (NSDictionary*) fontAttributesInRange: (NSRange)range;
 - (NSDictionary*) rulerAttributesInRange: (NSRange)range;
-- (unsigned) lineBreakBeforeIndex: (NSUInteger)location
-		      withinRange: (NSRange)aRange;
-- (NSRange) doubleClickAtIndex: (unsigned)location;
-- (unsigned) nextWordFromIndex: (unsigned)location forward: (BOOL)isForward;
+- (NSUInteger) lineBreakBeforeIndex: (NSUInteger)location
+                        withinRange: (NSRange)aRange;
+- (NSRange) doubleClickAtIndex: (NSUInteger)location;
+- (NSUInteger) nextWordFromIndex: (NSUInteger)location forward: (BOOL)isForward;
 
 - (id) initWithRTF: (NSData*)data documentAttributes: (NSDictionary**)dict;
 - (id) initWithRTFD: (NSData*)data documentAttributes: (NSDictionary**)dict;
@@ -232,8 +232,8 @@ enum
             options: (NSDictionary *)options
  documentAttributes: (NSDictionary **)dict;
 
-- (unsigned) lineBreakByHyphenatingBeforeIndex: (NSUInteger)location
-                                   withinRange: (NSRange)aRange;
+- (NSUInteger) lineBreakByHyphenatingBeforeIndex: (NSUInteger)location
+                                     withinRange: (NSRange)aRange;
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 - (NSData *) dataFromRange: (NSRange)range

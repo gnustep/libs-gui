@@ -66,7 +66,7 @@ static NSCell	*horizontalKnobCell = nil;
 static NSCell	*verticalKnobCell = nil;
 static NSCell	*horizontalKnobSlotCell = nil;
 static NSCell	*verticalKnobSlotCell = nil;
-static float	scrollerWidth = 0.0;
+static CGFloat	scrollerWidth = 0.0;
 
 /* This is the distance by which buttons are offset inside the scroller slot.
  */
@@ -107,12 +107,12 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
    <p>Subclasses can override this to provide different scrollbar width.  But
    you may need to also override -drawParts .</p>
  */
-+ (float) scrollerWidth
++ (CGFloat) scrollerWidth
 {
   return [self scrollerWidthForControlSize: NSRegularControlSize];
 }
 
-+ (float) scrollerWidthForControlSize: (NSControlSize)controlSize
++ (CGFloat) scrollerWidthForControlSize: (NSControlSize)controlSize
 {
   // FIXME
   if (scrollerWidth == 0.0)
@@ -159,7 +159,7 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
 /**<p>Returns a float value ( between 0.0 and 1.0 ) indicating the ratio
    between the NSScroller length and the knob length</p>
  */
-- (float) knobProportion
+- (CGFloat) knobProportion
 {
   return _knobProportion;
 }
@@ -1226,7 +1226,7 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
     {
       case NSScrollerKnob:
 	{
-	  float knobHeight, knobPosition, slotHeight;
+	  CGFloat knobHeight, knobPosition, slotHeight;
 
 	  if (usableParts == NSNoScrollerParts
 	    || usableParts == NSOnlyScrollerArrows)

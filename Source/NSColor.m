@@ -1405,7 +1405,7 @@ systemColorWithName(NSString *name)
 
       if ((colorSpace == 1) || (colorSpace == 2))
         {
-	  unsigned length;
+	  NSUInteger length;
 	  const uint8_t *data;
 	  float red = 0.0;
 	  float green = 0.0;
@@ -1445,7 +1445,7 @@ systemColorWithName(NSString *name)
 	}
       else if ((colorSpace == 3) || (colorSpace == 4))
         {
-	  unsigned length;
+	  NSUInteger length;
 	  const uint8_t *data;
 	  float white = 0.0;
 	  float alpha = 1.0;
@@ -1477,7 +1477,7 @@ systemColorWithName(NSString *name)
 	}
       else if (colorSpace == 5)
         {
-	  unsigned length;
+	  NSUInteger length;
 	  const uint8_t *data;
 	  float cyan = 0.0;
 	  float yellow = 0.0;

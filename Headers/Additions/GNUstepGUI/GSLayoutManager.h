@@ -295,9 +295,9 @@ invalidation.)
 
 - (NSTextContainer *) textContainerForGlyphAtIndex: (NSUInteger)glyphIndex
 	effectiveRange: (NSRange *)effectiveRange;
-- (NSRect) lineFragmentRectForGlyphAtIndex: (unsigned int)glyphIndex
+- (NSRect) lineFragmentRectForGlyphAtIndex: (NSUInteger)glyphIndex
 	effectiveRange: (NSRange *)effectiveGlyphRange;
-- (NSRect) lineFragmentUsedRectForGlyphAtIndex: (unsigned int)glyphIndex
+- (NSRect) lineFragmentUsedRectForGlyphAtIndex: (NSUInteger)glyphIndex
 	effectiveRange: (NSRange *)effectiveGlyphRange;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 - (NSTextContainer *) textContainerForGlyphAtIndex: (NSUInteger)glyphIndex

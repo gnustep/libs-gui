@@ -449,7 +449,7 @@ create_error(int code, NSString* desc)
     }
 }
 
-- (NSRange) doubleClickAtIndex: (unsigned)location
+- (NSRange) doubleClickAtIndex: (NSUInteger)location
 {
   NSString *str = [self string];
   unsigned length = [str length];
@@ -555,7 +555,7 @@ create_error(int code, NSString* desc)
   return NSMakeRange (location, length);
 }
 
-- (unsigned) nextWordFromIndex: (unsigned)location
+- (NSUInteger) nextWordFromIndex: (NSUInteger)location
 		       forward: (BOOL)isForward
 {
   NSString *str = [self string];

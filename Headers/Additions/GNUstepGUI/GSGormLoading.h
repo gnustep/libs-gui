@@ -28,14 +28,9 @@
 #ifndef _GNUstep_H_GSNibTemplates
 #define _GNUstep_H_GSNibTemplates
 
-#include <Foundation/NSObject.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSMenu.h>
-#include <AppKit/NSView.h>
-#include <AppKit/NSText.h>
-#include <AppKit/NSTextView.h>
-#include <AppKit/NSControl.h>
-#include "GNUstepGUI/GSNibContainer.h"
+#import <Foundation/NSObject.h>
+#import "GNUstepGUI/GSNibContainer.h"
+
 
 // version of the nib container and the templates.
 #define GNUSTEP_NIB_VERSION 2
@@ -48,10 +43,11 @@
 #define GSMENUT_VERSION     0
 #define GSOBJECTT_VERSION   0
 
-@class	NSString;
-@class	NSDictionary;
-@class	NSMutableDictionary;
-@class  NSMutableSet;
+@class NSString;
+@class NSDictionary;
+@class NSMutableDictionary;
+@class NSMutableSet;
+@class NSWindow;
 
 /** Window template autopositioning constants */
 enum {

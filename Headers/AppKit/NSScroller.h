@@ -70,8 +70,8 @@ typedef enum _NSScrollerArrow {
 @interface NSScroller : NSControl <NSCoding>
 {
   double _doubleValue;
-  float _knobProportion;
-  float _pendingKnobProportion;
+  CGFloat _knobProportion;
+  CGFloat _pendingKnobProportion;
   id _target;
   SEL _action;
   NSScrollerPart _hitPart;

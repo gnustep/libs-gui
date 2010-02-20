@@ -114,7 +114,7 @@ static Class usedCellClass;
   [[self cell] setSendsSearchStringImmediately: flag];
 }
 
-- (void) setMaximumRecents: (int)max
+- (void) setMaximumRecents: (NSInteger)max
 {
   [[self cell] setMaximumRecents: max];
 }

@@ -26,34 +26,23 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSArray.h>
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSData.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSInvocation.h>
-#include <Foundation/NSObjCRuntime.h>
-#include <Foundation/NSPathUtilities.h>
-#include <Foundation/NSFileManager.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSKeyValueCoding.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSArchiver.h>
-#include <Foundation/NSSet.h>
-#include <AppKit/NSMenu.h>
-#include <AppKit/NSView.h>
-#include <AppKit/NSTextView.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSNibLoading.h>
-#include <AppKit/NSNibConnector.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSScreen.h>
-#include <GNUstepBase/GSObjCRuntime.h>
-#include <GNUstepGUI/GSGormLoading.h>
+#import <Foundation/NSCoder.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSKeyValueCoding.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSArchiver.h>
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSControl.h"
+#import "AppKit/NSMenu.h"
+#import "AppKit/NSNibLoading.h"
+#import "AppKit/NSNibConnector.h"
+#import "AppKit/NSTextView.h"
+#import "AppKit/NSView.h"
+#import "AppKit/NSWindow.h"
+#import "GNUstepGUI/GSGormLoading.h"
 
 static const int currentVersion = 1; // GSNibItem version number...
 

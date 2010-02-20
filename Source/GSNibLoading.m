@@ -2227,7 +2227,7 @@ static BOOL _isInInterfaceBuilder = NO;
   NSDecimalNumber *dn = nil;
   if ([coder allowsKeyedCoding])
     {
-      unsigned int len = 0;
+      NSUInteger len = 0;
       short exponent = (short)[coder decodeIntForKey: @"NS.exponent"];
       NSByteOrder bo = [coder decodeIntForKey: @"NS.mantissa.bo"];
       BOOL negative = [coder decodeBoolForKey: @"NS.negative"];
