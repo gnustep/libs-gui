@@ -1,5 +1,24 @@
 2010-02-20  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSColorPanel.m (-_initWithoutGModel):
+	* Source/NSFontPanel.m (-_initWithoutGModel): Set
+	becomesKeyOnlyIfNeeded panel attribute to YES.
+
+	* ColorPickers/GSWheelColorPicker.m (-acceptsFirstMouse:,
+	acceptsFirstResponder): Accept first mouse, so that the color
+	wheel can be used when the Color panel is not key window.
+
+	* Source/NSTextField.m (-needsPanelToBecomeKey):
+	* Source/NSTextView.m (-needsPanelToBecomeKey): Return YES also if
+	a text field or view is selectable but not editable. Primarily
+	makes the combo box in the color list picker usable if the Color
+	panel is not first responder. In addition, this change ensures
+	that the standard key equivalents Cmd-C and Cmd-A (Copy and Select
+	All) will work as expected after clicking selectable text in a
+	window that is not key.
+
+2010-02-20  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* TextConverters/RTF/RTFConsumer.h: Add encoding attribute to
 	RTFConsumer.
 	* TextConverters/RTF/RTFConsumer.m (initStringContext, readString,

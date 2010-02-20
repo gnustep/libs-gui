@@ -151,6 +151,16 @@
   PSrectfill(x - 1, y - 1, 2, 2);
 }
 
+- (BOOL) acceptsFirstMouse: (NSEvent *)theEvent
+{
+  return YES;
+}
+
+- (BOOL) acceptsFirstResponder
+{
+  return NO;
+}
+
 - (void) mouseDown: (NSEvent *)theEvent
 {
   unsigned int eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask

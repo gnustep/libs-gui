@@ -1494,7 +1494,7 @@ to make sure syncing is handled properly in all cases.
 
 - (BOOL) needsPanelToBecomeKey
 {
-  return _tf.is_editable;
+  return _tf.is_editable || _tf.is_selectable;
 }
 
 - (BOOL) acceptsFirstResponder

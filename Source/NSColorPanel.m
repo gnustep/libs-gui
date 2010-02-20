@@ -225,6 +225,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 			      defer: NO
 			     screen: nil];
   [self setTitle: _(@"Colors")];
+  [self setBecomesKeyOnlyIfNeeded: YES];
 
   v = [self contentView];
 
