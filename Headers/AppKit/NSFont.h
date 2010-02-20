@@ -75,12 +75,12 @@ typedef enum _NSFontRenderingMode
 } NSFontRenderingMode;
 #endif
 
-APPKIT_EXPORT const float *NSFontIdentityMatrix;
+APPKIT_EXPORT const CGFloat *NSFontIdentityMatrix;
 
 @interface NSFont : NSObject <NSCoding, NSCopying>
 {
   NSString *fontName;
-  float matrix[6];
+  CGFloat matrix[6];
   BOOL matrixExplicitlySet;
   BOOL screenFont;
 
@@ -113,24 +113,24 @@ APPKIT_EXPORT const float *NSFontIdentityMatrix;
 //
 // Creating a Font Object
 //
-+ (NSFont*) boldSystemFontOfSize: (float)fontSize;
++ (NSFont*) boldSystemFontOfSize: (CGFloat)fontSize;
 + (NSFont*) fontWithName: (NSString*)aFontName 
-		  matrix: (const float*)fontMatrix;
+		  matrix: (const CGFloat*)fontMatrix;
 + (NSFont*) fontWithName: (NSString*)aFontName
-		    size: (float)fontSize;
-+ (NSFont*) systemFontOfSize: (float)fontSize;
-+ (NSFont*) userFixedPitchFontOfSize: (float)fontSize;
-+ (NSFont*) userFontOfSize: (float)fontSize;
+		    size: (CGFloat)fontSize;
++ (NSFont*) systemFontOfSize: (CGFloat)fontSize;
++ (NSFont*) userFixedPitchFontOfSize: (CGFloat)fontSize;
++ (NSFont*) userFontOfSize: (CGFloat)fontSize;
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
-+ (NSFont*) titleBarFontOfSize: (float)fontSize;
-+ (NSFont*) menuFontOfSize: (float)fontSize;
-+ (NSFont*) messageFontOfSize: (float)fontSize;
-+ (NSFont*) paletteFontOfSize: (float)fontSize;
-+ (NSFont*) toolTipsFontOfSize: (float)fontSize;
-+ (NSFont*) controlContentFontOfSize: (float)fontSize;
-+ (NSFont*) labelFontOfSize: (float)fontSize;
-+ (NSFont*) menuBarFontOfSize: (float)fontSize;
++ (NSFont*) titleBarFontOfSize: (CGFloat)fontSize;
++ (NSFont*) menuFontOfSize: (CGFloat)fontSize;
++ (NSFont*) messageFontOfSize: (CGFloat)fontSize;
++ (NSFont*) paletteFontOfSize: (CGFloat)fontSize;
++ (NSFont*) toolTipsFontOfSize: (CGFloat)fontSize;
++ (NSFont*) controlContentFontOfSize: (CGFloat)fontSize;
++ (NSFont*) labelFontOfSize: (CGFloat)fontSize;
++ (NSFont*) menuBarFontOfSize: (CGFloat)fontSize;
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 + (NSFont*) fontWithDescriptor: (NSFontDescriptor*)descriptor size: (CGFloat)size;
@@ -146,10 +146,10 @@ APPKIT_EXPORT const float *NSFontIdentityMatrix;
 // Font Sizes
 //
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
-+ (float) labelFontSize;
-+ (float) smallSystemFontSize;
-+ (float) systemFontSize;
-+ (float) systemFontSizeForControlSize: (NSControlSize)controlSize;
++ (CGFloat) labelFontSize;
++ (CGFloat) smallSystemFontSize;
++ (CGFloat) systemFontSize;
++ (CGFloat) systemFontSizeForControlSize: (NSControlSize)controlSize;
 #endif
 
 //
@@ -182,24 +182,24 @@ APPKIT_EXPORT const float *NSFontIdentityMatrix;
 - (NSString*) encodingScheme;
 - (BOOL) isFixedPitch;
 - (BOOL) isBaseFont;
-- (const float*) matrix;
-- (float) pointSize;
+- (const CGFloat*) matrix;
+- (CGFloat) pointSize;
 - (NSFont*) printerFont;
 - (NSFont*) screenFont;
-- (float) ascender;
-- (float) descender;
-- (float) capHeight;
-- (float) italicAngle;
+- (CGFloat) ascender;
+- (CGFloat) descender;
+- (CGFloat) capHeight;
+- (CGFloat) italicAngle;
 - (NSSize) maximumAdvancement;
 - (NSSize) minimumAdvancement;
-- (float) underlinePosition;
-- (float) underlineThickness;
-- (float) xHeight;
-- (float) widthOfString: (NSString*)string;
-- (float) defaultLineHeightForFont;
+- (CGFloat) underlinePosition;
+- (CGFloat) underlineThickness;
+- (CGFloat) xHeight;
+- (CGFloat) widthOfString: (NSString*)string;
+- (CGFloat) defaultLineHeightForFont;
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
-- (unsigned) numberOfGlyphs;
+- (NSUInteger) numberOfGlyphs;
 - (NSCharacterSet*) coveredCharacterSet;
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)

@@ -29,19 +29,19 @@
 
 #include <math.h>
 
-#include "Foundation/NSAffineTransform.h"
-#include <Foundation/NSArray.h>
-#include <Foundation/NSCharacterSet.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSSet.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSValue.h>
+#import <Foundation/NSAffineTransform.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSCharacterSet.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSSet.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSValue.h>
 
-#include "AppKit/NSFontDescriptor.h"
+#import "AppKit/NSFontDescriptor.h"
 
-#include "GNUstepGUI/GSFontInfo.h"
+#import "GNUstepGUI/GSFontInfo.h"
 
 static Class fontEnumeratorClass = Nil;
 static Class fontInfoClass = Nil;
@@ -268,7 +268,7 @@ static GSFontEnumerator *sharedEnumerator = nil;
 
 @interface GSFontInfo (Backend)
 -initWithFontName: (NSString *)fontName
-	   matrix: (const float *)fmatrix
+	   matrix: (const CGFloat *)fmatrix
        screenFont: (BOOL)screenFont;
 @end
 
@@ -280,7 +280,7 @@ static GSFontEnumerator *sharedEnumerator = nil;
 }
 
 + (GSFontInfo*) fontInfoForFontName: (NSString*)nfontName 
-                             matrix: (const float *)fmatrix
+                             matrix: (const CGFloat *)fmatrix
 			 screenFont: (BOOL)screenFont;
 {
   NSAssert(fontInfoClass,
@@ -514,17 +514,17 @@ static GSFontEnumerator *sharedEnumerator = nil;
   return familyName;
 }
 
-- (const float*) matrix
+- (const CGFloat*) matrix
 {
   return matrix;
 }
 
-- (unsigned) numberOfGlyphs
+- (NSUInteger) numberOfGlyphs
 {
   return numberOfGlyphs;
 }
 
-- (float) pointSize
+- (CGFloat) pointSize
 {
   return matrix[0];
 }
@@ -544,22 +544,22 @@ static GSFontEnumerator *sharedEnumerator = nil;
   return isFixedPitch; 
 }
 
-- (float) ascender
+- (CGFloat) ascender
 { 
   return ascender; 
 }
 
-- (float) descender
+- (CGFloat) descender
 { 
   return descender; 
 }
 
-- (float) capHeight
+- (CGFloat) capHeight
 { 
   return capHeight; 
 }
 
-- (float) italicAngle
+- (CGFloat) italicAngle
 { 
   return italicAngle; 
 }
@@ -574,22 +574,22 @@ static GSFontEnumerator *sharedEnumerator = nil;
   return minimumAdvancement; 
 }
 
-- (float) underlinePosition
+- (CGFloat) underlinePosition
 { 
   return underlinePosition; 
 }
 
-- (float) underlineThickness
+- (CGFloat) underlineThickness
 { 
   return underlineThickness; 
 }
 
-- (float) xHeight
+- (CGFloat) xHeight
 { 
   return xHeight; 
 }
 
-- (float) defaultLineHeightForFont
+- (CGFloat) defaultLineHeightForFont
 {
   /*
   In the absence of a more accurate line height from the font itself, we
@@ -723,7 +723,7 @@ static GSFontEnumerator *sharedEnumerator = nil;
   return mostCompatibleStringEncoding;
 }
 
-- (float) widthOfString: (NSString*)string
+- (CGFloat) widthOfString: (NSString*)string
 {
   return 0;
 }

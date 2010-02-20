@@ -1,5 +1,15 @@
 2010-02-20 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSFont.h,
+	* Headers/Additions/GNUstepGUI/GSFontInfo.h,
+	* Source/GSFontInfo.m,
+	* Source/NSAffineTransform.m,
+	* Source/externs.m,
+	* Source/NSFont.m: Adopt to the fact that NSAffineTransform now
+	uses a matrix of CGFloats.
+
+2010-02-20 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/AppKit/NSAttributedString.h,
 	* Source/NSAttributedString.m,
 	* Source/GSNibLoading.m,

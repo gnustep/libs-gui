@@ -583,7 +583,7 @@ NSString *NSToolbarPrintItemIdentifier = @"NSToolbarPrintItemIdentifier";
 NSString *NSOldSelectedCharacterRange = @"NSOldSelectedCharacterRange";
 
 /* NSFont matrix */
-const float NSFontIdentityMatrix[] = {1, 0, 0, 1, 0, 0};
+const CGFloat NSFontIdentityMatrix[] = {1, 0, 0, 1, 0, 0};
 
 /* Drawing engine externs */
 NSString *NSBackendContext = @"NSBackendContext";

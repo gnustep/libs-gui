@@ -30,8 +30,8 @@
 #ifndef __GSFontInfo_h_INCLUDE_
 #define __GSFontInfo_h_INCLUDE_
 
-#include <AppKit/NSFont.h>
-#include <AppKit/NSFontManager.h>
+#import <AppKit/NSFont.h>
+#import <AppKit/NSFontManager.h>
 
 @class NSMutableDictionary;
 @class NSArray;
@@ -69,14 +69,14 @@ values. Backends may override these. */
   // metrics of the font
   NSString *fontName;
   NSString *familyName;
-  float matrix[6];
-  float italicAngle;
-  float underlinePosition;
-  float underlineThickness;
-  float capHeight;
-  float xHeight;
-  float descender;
-  float ascender;
+  CGFloat matrix[6];
+  CGFloat italicAngle;
+  CGFloat underlinePosition;
+  CGFloat underlineThickness;
+  CGFloat capHeight;
+  CGFloat xHeight;
+  CGFloat descender;
+  CGFloat ascender;
   NSSize maximumAdvancement;
   NSSize minimumAdvancement;
   NSString *encodingScheme;
@@ -92,25 +92,25 @@ values. Backends may override these. */
 }
 
 + (GSFontInfo*) fontInfoForFontName: (NSString*)fontName 
-                             matrix: (const float *)fmatrix
+                             matrix: (const CGFloat*)fmatrix
 			 screenFont: (BOOL)screenFont;
 + (void) setDefaultClass: (Class)defaultClass;
-+ (NSString *) stringForWeight: (int)weight;
-+ (int) weightForString: (NSString *)weightString;
++ (NSString*) stringForWeight: (int)weight;
++ (int) weightForString: (NSString*)weightString;
 
 - (NSSize) advancementForGlyph: (NSGlyph)aGlyph;
-- (NSDictionary *) afmDictionary;
-- (NSString *) afmFileContents;
-- (void) appendBezierPathWithGlyphs: (NSGlyph *)glyphs
+- (NSDictionary*) afmDictionary;
+- (NSString*) afmFileContents;
+- (void) appendBezierPathWithGlyphs: (NSGlyph*)glyphs
 			      count: (int)count
-		       toBezierPath: (NSBezierPath *)path;
-- (float) ascender;
+		       toBezierPath: (NSBezierPath*)path;
+- (CGFloat) ascender;
 - (NSRect) boundingRectForGlyph: (NSGlyph)aGlyph;
 - (NSRect) boundingRectForFont;
-- (float) capHeight;
+- (CGFloat) capHeight;
 - (NSCharacterSet*) coveredCharacterSet;
-- (float) defaultLineHeightForFont;
-- (float) descender;
+- (CGFloat) defaultLineHeightForFont;
+- (CGFloat) descender;
 - (NSString *) displayName;
 - (NSString *) encodingScheme;
 - (NSString *) familyName;
@@ -120,12 +120,12 @@ values. Backends may override these. */
 - (NSGlyph) glyphWithName: (NSString*)glyphName;
 - (BOOL) isFixedPitch;
 - (BOOL) isBaseFont;
-- (float) italicAngle;
-- (const float*) matrix;
+- (CGFloat) italicAngle;
+- (const CGFloat*) matrix;
 - (NSSize) maximumAdvancement;
 - (NSSize) minimumAdvancement;
 - (NSStringEncoding) mostCompatibleStringEncoding;
-- (unsigned) numberOfGlyphs;
+- (NSUInteger) numberOfGlyphs;
 - (NSPoint) positionOfGlyph: (NSGlyph)aGlyph 
                forCharacter: (unichar)aChar 
              struckOverRect: (NSRect)aRect;
@@ -144,11 +144,11 @@ values. Backends may override these. */
 	   totalAdvancement: (NSSize *)offset 
 	       metricsExist: (BOOL *)flag;
 - (NSFontTraitMask) traits;
-- (float) underlinePosition;
-- (float) underlineThickness;
+- (CGFloat) underlinePosition;
+- (CGFloat) underlineThickness;
 - (int) weight;
-- (float) widthOfString: (NSString*)string;
-- (float) xHeight;
+- (CGFloat) widthOfString: (NSString*)string;
+- (CGFloat) xHeight;
 - (NSGlyph) glyphForCharacter: (unichar)theChar;
 - (NSFontDescriptor*) fontDescriptor;
 

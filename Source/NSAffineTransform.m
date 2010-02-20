@@ -67,9 +67,16 @@ static const float pi = 3.1415926535897932384626434;
  */
 - (void) concat
 {
-  NSAffineTransformStruct matrix = [self transformStruct];
+  NSAffineTransformStruct ats = [self transformStruct];
+  float floatMatrix[6];
 
-  PSconcat((float*)&matrix);
+  floatMatrix[0] = ats.m11;
+  floatMatrix[1] = ats.m12;
+  floatMatrix[2] = ats.m21;
+  floatMatrix[3] = ats.m22;
+  floatMatrix[4] = ats.tX;
+  floatMatrix[5] = ats.tY;
+  PSconcat(floatMatrix);
 }
 
 
