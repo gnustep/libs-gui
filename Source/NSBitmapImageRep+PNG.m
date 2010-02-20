@@ -361,7 +361,7 @@ static void writer_func(png_structp png_struct, png_bytep data,
     png_write_png(png_struct, png_info, transforms, NULL);
   }
                
-  NSLog(@"PNG representation is experimental: %i bytes written", [PNGRep length]);
+  //NSLog(@"PNG representation is experimental: %i bytes written", [PNGRep length]);
   png_destroy_write_struct(&png_struct, &png_info);
   return PNGRep;
 }
