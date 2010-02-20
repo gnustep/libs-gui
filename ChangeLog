@@ -1,3 +1,32 @@
+2010-02-20 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSGuiPrivate.h: Include preface.h from base.
+	* Source/NSImageCell.m,
+	* Source/NSTableHeaderView.m,
+	* Source/NSWorkspace.m,
+	* Source/NSTextBlock.m,
+	* Source/NSButtonCell.m,
+	* Source/NSClipView.m,
+	* Source/NSSplitView.m,
+	* Source/NSBezierPath.m,
+	* Source/NSApplication.m,
+	* Source/NSMenuItemCell.m,
+	* Source/NSTextContainer.m,
+	* Source/NSBitmapImageRep+GIF.m,
+	* Source/NSTextView.m,
+	* Source/NSBitmapImageRep+JPEG.m,
+	* Source/NSComboBoxCell.m,
+	* Source/tiff.m,
+	* Source/GSServicesManager.m,
+	* Source/NSCell.m,
+	* Source/NSBrowserCell.m,
+	* Source/NSView.m,
+	* Source/NSBitmapImageRep+ICNS.m,
+	* Source/NSAnimation.m,
+	* Tools/set_show_service.m,
+	* Tools/make_services.m: Fix up includes to make gui compile again
+	with latest base.
+
 2010-02-20  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Tools/GSspell.m: Rewrite to support multiple languages. The
