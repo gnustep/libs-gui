@@ -47,7 +47,7 @@
 @class GSDisplayServer;
 @class NSGraphicsContext;
 
-#ifndef	NO_GNUSTEP
+#if !NO_GNUSTEP
 APPKIT_EXPORT GSDisplayServer * GSServerForWindow(NSWindow *window);
 APPKIT_EXPORT GSDisplayServer * GSCurrentServer(void);
 
