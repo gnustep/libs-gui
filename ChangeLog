@@ -1,5 +1,13 @@
 2010-02-22  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
+	* Source/NSButtonCell.m (-setImagePosition): Never call NSCell's
+	-setType: to change the cell's type, as this could eventually
+	reset the button's image or title. Neither of this is desirable
+	as it prevents temporarily hiding the image or title by changing
+	the image position.
+
+2010-02-22  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
 	* Tools/GSspell.m (-spellServer:findMisspelledWord...): Check
 	misspelled words reported by aspell against the user dictionaries
 	so that the current document's ignored words are not returned back

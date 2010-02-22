@@ -481,35 +481,18 @@ typedef struct _GSButtonCellFlags
    
   // In the GNUstep NSButtonCell implementation, the cell type depends only on
   // the image position. 
-    
+  /* NOTE: We set the cell type attribute directly here instead of calling
+     NSCell's -setType: method because it may change the title or image of
+     the button cell. This is to make our implementation compatible with
+     the behavior of Mac OS X, which does not change the cell's type and
+     hence does not involve any of the side effects of -setType: either. */
   if (_cell.image_position == NSNoImage)
     {
-      /* NOTE: If we always call -setType: on superclass, the cell _content will
-         be reset each time. When we alter a button displaying both an image and
-         a title, by just calling -setImagePosition: with 'NSNoImage' value,
-         the current title is reset to NSCell default one. That's why we have to
-         set cell type ourself when a custom title (or attributed title) is
-         already in use. 
-         Take note that [self title] is able to return the attributed title in
-         NSString form.
-         We precisely match Mac OS X behavior currently. That means... When you
-         switch from 'NSNoImage' option to another one, the title will be the
-         one in use before you switched to 'NSNoImage'. The reverse with the
-         image isn't true, when you switch to 'NSNoImage' option, the current
-         image is lost (image value being reset to nil).
-      */
-      if ([self title] == nil || [[self title] isEqualToString: @""])
-        {
-          [super setType: NSTextCellType];
-        }
-      else
-        { 
-          _cell.type = NSTextCellType;
-        }
+      _cell.type = NSTextCellType;
     }
   else
     {
-      [super setType: NSImageCellType];
+      _cell.type = NSImageCellType;
     }
 }
 
