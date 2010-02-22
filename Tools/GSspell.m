@@ -284,6 +284,8 @@ findMisspelledWordInString: (NSString *)stringToCheck
   const char *p;
   AspellToken token;
   AspellDocumentChecker *checker;
+  NSRange r;
+  NSString *word;
   int length;
 
   if (countOnly)
@@ -300,11 +302,23 @@ findMisspelledWordInString: (NSString *)stringToCheck
 
   checker = [self documentCheckerForLanguage: language];
   aspell_document_checker_process(checker, p, length);
-  token = aspell_document_checker_next_misspelling(checker);
 
-  return NSMakeRange(uniLength((unsigned char *)p, token.offset),
-		     uniLength((unsigned char *)p + token.offset, token.len));
+  /* Even though we add learned words to aspell's user dictionary, we must
+     ask the server for words in its user dictionaries so that words that
+     the user has ignored won't be returned as misspelled. */
+  do
+    {
+      token = aspell_document_checker_next_misspelling(checker);
+      if (token.len == 0)
+	return NSMakeRange(NSNotFound, 0);
 
+      r = NSMakeRange(uniLength((unsigned char *)p, token.offset),
+		      uniLength((unsigned char *)p + token.offset, token.len));
+      word = [stringToCheck substringWithRange: r];
+    }
+  while ([sender isWordInUserDictionaries: word caseSensitive: YES]);
+
+  return r;
 }
 
 - (NSArray *) spellServer: (NSSpellServer *)sender

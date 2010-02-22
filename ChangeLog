@@ -1,3 +1,10 @@
+2010-02-22  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Tools/GSspell.m (-spellServer:findMisspelledWord...): Check
+	misspelled words reported by aspell against the user dictionaries
+	so that the current document's ignored words are not returned back
+	to the spell checker.
+
 2010-02-21 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Additions/GNUstepGUI/GSDisplayServer.h:
