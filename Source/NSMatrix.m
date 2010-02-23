@@ -311,9 +311,9 @@ static SEL getSel;
   [self setFrame: frameRect];
 
   _tabKeyTraversesCells = YES;
-  [self setBackgroundColor: [NSColor controlBackgroundColor]];
+  [self setBackgroundColor: [NSColor controlColor]];
   [self setDrawsBackground: NO];
-  [self setCellBackgroundColor: [NSColor controlBackgroundColor]];
+  [self setCellBackgroundColor: [NSColor controlColor]];
   [self setDrawsCellBackground: NO];
   [self setSelectionByRect: YES];
   _dottedRow = _dottedColumn = -1;

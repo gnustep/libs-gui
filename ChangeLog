@@ -1,3 +1,9 @@
+2010-02-24 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Source/NSBrowser.m,
+	* Source/NSMatrix.m: use controlColor for the background to match
+	Cocoa behaviour.
+
 2010-02-22  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSButtonCell.m (-setImagePosition): Never call NSCell's

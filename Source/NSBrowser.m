@@ -3076,10 +3076,8 @@ static NSTextFieldCell *titleCell;
       [matrix setAutoscroll: YES];
 
       // Set up background colors.
-      [matrix setBackgroundColor: [NSColor controlBackgroundColor]];
+      [matrix setBackgroundColor: [NSColor controlColor]];
       [matrix setDrawsBackground: YES];
-      [matrix setCellBackgroundColor: [NSColor controlBackgroundColor]];
-      [matrix setDrawsCellBackground: YES];
 
       if (!_allowsMultipleSelection)
         {
