@@ -1,3 +1,7 @@
+2010-02-24 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSPasteboard.m: remove obsolete code for setting up invocation.
+
 2010-02-24 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPopUpButtonCell.m (-setObjectValue:): Synchronise the title.

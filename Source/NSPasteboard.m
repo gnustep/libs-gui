@@ -970,19 +970,16 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
        */
       NS_DURING
 	{
-	  const char		*cName;
 	  SEL			sel;
 	  NSMethodSignature	*sig;
 
-	  cName = [selName UTF8String];
-	  sel = GSSelectorFromNameAndTypes(cName, 0); 
+	  sel = NSSelectorFromString(selName);
 	  sig = [provider methodSignatureForSelector: sel];
 	  if (sig != nil)
 	    {
 	      NSInvocation	*inv;
 	      NSString		**errPtr = &error;
 
-	      sel = GSSelectorFromNameAndTypes(cName, [sig methodType]); 
 	      inv = [NSInvocation invocationWithMethodSignature: sig];
 	      [inv setTarget: provider];
 	      [inv setSelector: sel];
