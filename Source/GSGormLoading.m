@@ -34,11 +34,13 @@
 #import <Foundation/NSKeyValueCoding.h>
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSArchiver.h>
+#import <Foundation/NSSet.h>
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSControl.h"
 #import "AppKit/NSMenu.h"
 #import "AppKit/NSNibLoading.h"
 #import "AppKit/NSNibConnector.h"
+#import "AppKit/NSScreen.h"
 #import "AppKit/NSTextView.h"
 #import "AppKit/NSView.h"
 #import "AppKit/NSWindow.h"
