@@ -547,6 +547,7 @@ static NSImage *_pbc_image[5];
       int i = [object intValue];
         
       [self selectItemAtIndex: i];
+      [self synchronizeTitleAndSelectedItem];
     }
 }
 
