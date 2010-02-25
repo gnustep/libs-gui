@@ -38,6 +38,7 @@
 #include "AppKit/NSButton.h"
 #include "AppKit/NSClipView.h"
 #include "AppKit/NSColor.h"
+#include "AppKit/NSColorList.h"
 #include "AppKit/NSDragging.h"
 #include "AppKit/NSEvent.h"
 #include "AppKit/NSImage.h"
@@ -63,6 +64,73 @@ static const int ClippedItemsViewWidth = 28;
 
 // Internal
 static const int current_version = 1;
+static NSColorList *SystemExtensionsColors;
+
+// Toolbar color extensions
+
+static void initSystemExtensionsColors(void)
+{
+  NSColor *toolbarBackgroundColor;
+  NSColor *toolbarBorderColor;
+  NSDictionary *colors;
+  
+  /* Set up a dictionary containing the names of all the system extensions 
+     colours as keys and with colours as values. */
+  toolbarBorderColor = [NSColor colorWithCalibratedRed: 0.5 
+                                                 green: 0.5 
+                                                  blue: 0.5 
+                                                 alpha: 1.0];
+  
+  // Window background color by tranparency
+  toolbarBackgroundColor = [NSColor clearColor]; 
+  
+  colors = [[NSDictionary alloc] initWithObjectsAndKeys: 
+    toolbarBackgroundColor, @"toolbarBackgroundColor",
+    toolbarBorderColor, @"toolbarBorderColor", nil];
+                                                             
+  SystemExtensionsColors = [NSColorList colorListNamed: @"System extensions"];
+  if (SystemExtensionsColors == nil)
+    {
+      SystemExtensionsColors = [[NSColorList alloc] initWithName: @"System extensions"];
+    }
+
+    {
+      NSEnumerator *e;
+      NSString *colorKey;
+      NSColor *color;
+      BOOL changed = NO;
+
+      // Set up default system extensions colors
+
+      e = [colors keyEnumerator];
+  
+      while ((colorKey = (NSString *)[e nextObject])) 
+        {
+          if ([SystemExtensionsColors colorWithKey: colorKey])
+            continue;
+
+          color = [colors objectForKey: colorKey];
+          [SystemExtensionsColors setColor: color forKey: colorKey];
+
+          changed = YES;
+        }
+
+      if (changed)
+        [SystemExtensionsColors writeToFile: nil];
+    }
+}
+
+@implementation NSColor (GSToolbarViewAdditions)
++ (NSColor *) toolbarBackgroundColor
+{
+  return [SystemExtensionsColors colorWithKey: @"toolbarBackgroundColor"];
+}
+
++ (NSColor *) toolbarBorderColor
+{
+  return [SystemExtensionsColors colorWithKey: @"toolbarBorderColor"]; 
+}
+@end
 
 /*
  * Toolbar related code
@@ -201,8 +269,7 @@ static const int current_version = 1;
 + (void) initialize
 {
   if (self == [GSToolbarView class])
-    {
-    }
+    initSystemExtensionsColors();
 }
 
 - (id) initWithFrame: (NSRect)frame
@@ -371,7 +438,14 @@ static const int current_version = 1;
 
 - (BOOL) isOpaque
 {
-  return [[GSTheme theme] toolbarIsOpaque];
+  if ([[NSColor toolbarBackgroundColor] alphaComponent] < 1.0)
+    {
+      return NO;
+    }
+  else
+    {
+      return YES;
+    }
 }
 
 - (void) windowDidResize: (NSNotification *)notification
