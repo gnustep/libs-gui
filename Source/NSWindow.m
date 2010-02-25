@@ -4562,6 +4562,15 @@ current key view.<br />
       return;
     }
   fRect.size.height = value;
+  
+  /*
+   * Check that the window will come up on screen
+   */
+  if (fRect.origin.x + fRect.size.width < 0)
+  {
+    NSLog(@"Bad screen frame  - window is off screen");  
+	return;
+  }
 
   /*
    * Scan in the frame for the area the window was placed in in screen.
@@ -4599,7 +4608,7 @@ current key view.<br />
    * the window could be placed (ie a rectangle excluding the dock).
    */
   nRect = [[self screen] visibleFrame];
-
+  
   /*
    * If the new screen drawable area has moved relative to the one in
    * which the window was saved, adjust the window position accordingly.
