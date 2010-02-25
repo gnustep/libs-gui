@@ -139,11 +139,13 @@
     }
   else if ([owner isKindOfClass: [NSMenu class]])
     {
+      NSColor *textColor;
+      GSTheme *theme;
+
       NSDebugLLog(@"GSTitleView", @"owner is NSMenu");
       _owner = owner;
       _ownedByMenu = YES;
-      NSColor *textColor;
-      GSTheme *theme = [GSTheme theme];
+      theme = [GSTheme theme];
 
       RELEASE (titleColor);
       titleColor = RETAIN ([theme colorNamed: @"GSMenuBar" state: GSThemeNormalState]);
