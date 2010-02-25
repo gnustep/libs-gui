@@ -1714,8 +1714,7 @@ NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
    */
   NS_DURING
     {
-      const char	*name = [selName UTF8String];
-      SEL		sel = GSSelectorFromNameAndTypes(name, 0); 
+      SEL		sel = NSSelectorFromString(selName); 
       NSMethodSignature	*sig = [provider methodSignatureForSelector: sel];
 
       if (sig != nil)
@@ -1723,7 +1722,6 @@ NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
 	  NSInvocation	*inv;
 	  NSString	**errPtr = &error;
 
-	  sel = GSSelectorFromNameAndTypes(name, [sig methodType]); 
 	  inv = [NSInvocation invocationWithMethodSignature: sig];
 	  [inv setTarget: provider];
 	  [inv setSelector: sel];
