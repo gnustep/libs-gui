@@ -1,3 +1,7 @@
+2010-02-25 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Source/NSDrawer.m: removed c99-isms
+
 2010-02-24 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSPasteboard.m: remove obsolete code for setting up invocation.

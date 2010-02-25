@@ -509,13 +509,15 @@ static const int current_version = 1;
 - (void) _takeInAccountFlexibleSpaces
 {
   NSArray *items = [_toolbar items];
-  NSEnumerator *e = [items objectEnumerator];
+  NSEnumerator *e;
   NSToolbarItem *item;
   NSView *backView; 
   NSRect lastBackViewFrame;
   float lengthAvailable;
-  unsigned int flexibleSpaceItemsNumber = 0;
-  BOOL mustAdjustNext = NO;
+  unsigned int flexibleSpaceItemsNumber;
+  unsigned int resizableItemsNumber;
+  float resizableSpaceFromMins;
+  BOOL mustAdjustNext;
   float x = 0;
   
   if ([items count] == 0)
@@ -527,17 +529,36 @@ static const int current_version = 1;
   if (lengthAvailable < 1)
     return;
   
+
+  /* search for flexible spaces or for items which are resizable */
+  flexibleSpaceItemsNumber = 0;
+  resizableItemsNumber = 0;
+  resizableSpaceFromMins = 0;
+  e = [items objectEnumerator];
   while ((item = [e nextObject]) != nil) 
-  {
-    if ([item _isFlexibleSpace])
     {
-      flexibleSpaceItemsNumber++;
+      float currWidth;
+      float minWidth;
+
+      currWidth = [[item _backView] frame].size.width;
+      minWidth = [item minSize].width;
+      if ([item _isFlexibleSpace])
+        {
+          flexibleSpaceItemsNumber++;
+        }
+      else if (([item maxSize].width > minWidth) && (currWidth > minWidth))
+        {
+          resizableItemsNumber++;
+          resizableSpaceFromMins += currWidth - minWidth;
+          NSLog(@"%@: min, curr width: %f %f",  [item itemIdentifier], minWidth, currWidth);       
+        }
     }
-  }
-  
-  if (lengthAvailable < flexibleSpaceItemsNumber)
+  NSLog(@"length available 1: %f", lengthAvailable);
+  NSLog(@"resizable space %f in %d items", resizableSpaceFromMins, resizableItemsNumber);
+  if (flexibleSpaceItemsNumber < 1 && resizableSpaceFromMins <= 0)
     return; 
   
+  mustAdjustNext = NO;
   e = [items objectEnumerator];
   while ((item = [e nextObject]) != nil)
   {
@@ -560,7 +581,47 @@ static const int current_version = 1;
     }
     x += [backView frame].size.width;
   }
+
+  lastBackViewFrame = [[[items lastObject] _backView] frame];
+  lengthAvailable = [self frame].size.width - NSMaxX(lastBackViewFrame);
+  NSLog(@"length available 2: %f", lengthAvailable);
+  if (lengthAvailable <= 0 || resizableItemsNumber < 0)
+    return; 
   
+  /* we adjusted all the flexible spaces, now we can try to adjust views to their minimum */
+  mustAdjustNext = NO;
+  e = [items objectEnumerator];
+  while ((item = [e nextObject]) != nil)
+  {
+    float currWidth;
+    float minWidth;
+    NSRect backViewFrame;
+
+    backView = [item _backView];
+    backViewFrame = [backView frame];
+    currWidth = backViewFrame.size.width;
+    minWidth = [item minSize].width;
+    if (([item maxSize].width > minWidth) && (currWidth > minWidth))
+    {
+      float newWidth;
+      
+      newWidth = currWidth - (lengthAvailable / resizableItemsNumber);
+      if (newWidth < minWidth)
+	newWidth = minWidth;
+
+      [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
+	newWidth, 
+        backViewFrame.size.height)];
+      mustAdjustNext = YES;
+    }
+    else if (mustAdjustNext)
+    {
+      [backView setFrame: NSMakeRect(x, backViewFrame.origin.y,
+        backViewFrame.size.width, backViewFrame.size.height)];
+    }
+    x += backViewFrame.size.width;
+  }
+
 }
 
 - (void) _handleViewsVisibility

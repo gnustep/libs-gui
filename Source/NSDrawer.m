@@ -112,6 +112,7 @@ static NSNotificationCenter *nc = nil;
     {
       NSRect rect = contentRect;
       NSRect border = contentRect;
+      NSSize containerContentSize;
 
       rect.origin.x += 6;
       rect.origin.y += 6;
@@ -140,7 +141,7 @@ static NSNotificationCenter *nc = nil;
       [_borderBox addSubview: _container]; 
 
       // determine the difference between the container's content size and the window content size
-      NSSize containerContentSize = [[_container contentView] frame].size;
+      containerContentSize = [[_container contentView] frame].size;
       _borderSize = NSMakeSize(contentRect.size.width - containerContentSize.width,
 				contentRect.size.height - containerContentSize.height);
     }
@@ -339,12 +340,14 @@ static NSNotificationCenter *nc = nil;
 
 - (void) closeOnEdge
 {
+  NSRect frame;
+
   [self stopTimer];
   [self lockBorderBoxForSliding];
   [self slideOpen:NO];
   [self orderOut: self];
 
-  NSRect frame = [self frameFromParentWindowFrameInState:NSDrawerOpenState];
+  frame = [self frameFromParentWindowFrameInState:NSDrawerOpenState];
   [self setFrame:frame display: YES]; // make sure it's the full (open) size again (offscreen) before unlocking
   [self performSelector:@selector(unlockBorderBoxAfterSliding) withObject:nil afterDelay:0.01];
 
