@@ -778,7 +778,8 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
       [self setAutoresizesSubviews: YES];
 
       [self setBackgroundColor: [aDecoder decodeObjectForKey: @"NSBGColor"]];
-      [self setDocumentCursor: [aDecoder decodeObjectForKey: @"NSCursor"]];
+      [self setDocumentCursor: 
+	      RETAIN([aDecoder decodeObjectForKey: @"NSCursor"])];
 
       if ([aDecoder containsValueForKey: @"NScvFlags"])
         {
