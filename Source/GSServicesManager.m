@@ -536,7 +536,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
   if (str == nil)
     {
       str = [[NSHomeDirectory() stringByAppendingPathComponent:
-			       @"GNUstep"] stringByAppendingPathComponent: @"Library"];
+        @"GNUstep"] stringByAppendingPathComponent: @"Library"];
     }
   str = [str stringByAppendingPathComponent: @"Services"];
   path = [str stringByAppendingPathComponent: servicesName];
@@ -1786,5 +1786,12 @@ NSShowsServicesMenuItem(NSString *name)
 void
 NSUpdateDynamicServices(void)
 {
+  /* Get the workspace manager to make sure that cached service info is
+   * up to date.
+   */
+  [[NSWorkspace sharedWorkspace] findApplications];
+
+  /* Reload service information from disk cache.
+   */
   [[GSServicesManager manager] loadServices];
 }

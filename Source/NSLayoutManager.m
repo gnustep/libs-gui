@@ -845,7 +845,7 @@ has the same y origin and height as the line frag rect it is in.
      cindex == [_textStorage length], in which case we set it to 1. */
   if (fraction_through == 1.0)
     {
-      r = lf->used_rect;
+      r = (lf == 0) ? NSZeroRect : lf->used_rect;
       r.origin.x += r.size.width;
       r.size.width = 1;
       return r;

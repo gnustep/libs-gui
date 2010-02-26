@@ -1,3 +1,11 @@
+2010-02-26 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSServicesManager.m: NSUpdateDynamicServices() ask workspace
+	to rebuild cache of application information so the update from cache is
+	actually loading the latest data.
+	* Source/NSLayoutManager.m: Fix for insertion point of empty document.
+	Not sure this is ever needed in normal use.
+
 2010-02-25 22:37-EST Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSClipView.m: Correction for crash.
