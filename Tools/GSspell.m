@@ -57,6 +57,35 @@
 }
 @end
 
+// A category for NSBundle so that we can determine the languages
+// vended by a service bundle
+@interface NSBundle (MethodsForSpellChecker)
+- (NSArray *) serviceLanguages;
+@end
+
+@implementation NSBundle (MethodsForSpellChecker)
+- (NSArray *) serviceLanguages
+{
+  NSDictionary *infoDict = [self infoDictionary];
+  if ([infoDict isKindOfClass: [NSDictionary class]])
+    {
+      NSArray *services = [infoDict objectForKey: @"NSServices"];
+      if ([services isKindOfClass: [NSArray class]] && [services count] > 0)
+	{
+	  NSDictionary *serviceDict = [services objectAtIndex: 0];
+	  if ([serviceDict isKindOfClass: [NSDictionary class]])
+	    {
+	      NSArray *languages = [serviceDict objectForKey: @"NSLanguages"];
+	      if ([languages isKindOfClass: [NSArray class]])
+		{
+		  return languages;
+		}
+	    }
+	}
+    }
+  return nil;
+}
+@end
 
 // The base class.  Its spell checker just provides a dumb spell checker
 // for American English as fallback if aspell is not available.
@@ -93,6 +122,109 @@
 - (NSArray *) languages
 {
   return [NSArray arrayWithObject: @"AmericanEnglish"];
+}
+
+- (BOOL) createBundleAtPath: (NSString *)path languages: (NSArray *)languages
+{
+  NSDictionary *infoDict, *serviceDict;
+  NSFileManager *fm = [NSFileManager defaultManager];
+  NSString *execPath;
+
+  if ([fm fileExistsAtPath: path] && ![fm removeFileAtPath: path handler: nil])
+    {
+      NSLog(@"cannot remove %@", path);
+      return NO;
+    }
+
+  path = [path stringByAppendingPathComponent: @"Resources"];
+  if (![fm createDirectoryAtPath: path attributes: nil])
+    {
+      NSLog(@"cannot not create bundle directory %@", path);
+      return NO;
+    }
+
+  path = [path stringByAppendingPathComponent: @"Info-gnustep"];
+  path = [path stringByAppendingPathExtension: @"plist"];
+
+  /* FIXME Not sure if the executable path is needed in the service dictionary.
+     However, GSspellInfo.plist has it and so we include it here too. */
+  execPath = [[NSBundle mainBundle] executablePath];
+  serviceDict =
+    [NSDictionary dictionaryWithObjectsAndKeys:
+		    execPath, @"NSExecutable",
+		    languages, @"NSLanguages",
+		    @"GNU", @"NSSpellChecker",
+		    nil];
+  infoDict =
+    [NSDictionary dictionaryWithObjectsAndKeys:
+		    execPath, @"NSExecutable",
+		    [NSArray arrayWithObject: serviceDict], @"NSServices",
+		    nil];
+  if (![infoDict writeToFile: path atomically: YES])
+    {
+      NSLog(@"cannot save info dictionary to %@", path);
+      return NO;
+    }
+  return YES;
+}
+
+- (BOOL) removeBundleAtPath: (NSString *)path
+{
+  NSFileManager *fm = [NSFileManager defaultManager];
+
+  if (![fm fileExistsAtPath: path])
+    {
+      return NO;
+    }
+  if (![fm removeFileAtPath: path handler: nil])
+    {
+      NSLog(@"cannot remove %@", path);
+      return NO;
+    }
+  return YES;
+}
+
+/* The installed services bundle only vends a spelling service for the
+   AmericanEnglish language. In order to make other languages available,
+   we maintain a bundle in the user's Services directory that vends those
+   languages. The bundle shares our server executable through its info
+   dictionary. */
+- (void) synchronizeLanguages
+{
+  NSArray *paths;
+  NSString *path;
+  NSMutableArray *otherLanguages;
+
+  paths =
+    NSSearchPathForDirectoriesInDomains (NSLibraryDirectory,
+					 NSUserDomainMask,
+					 YES);
+  path = [paths objectAtIndex:0];
+  path = [path stringByAppendingPathComponent: @"Services"];
+  path = [path stringByAppendingPathComponent: @"GSspell"];
+  path = [path stringByAppendingPathExtension: @"service"];
+
+  otherLanguages = [[[self languages] mutableCopy] autorelease];
+  [otherLanguages removeObject: @"AmericanEnglish"];
+  [otherLanguages sortUsingSelector: @selector(compare:)];
+  if ([otherLanguages count])
+    {
+      if (![otherLanguages isEqual:
+	     [[NSBundle bundleWithPath: path] serviceLanguages]])
+	{
+	  if ([self createBundleAtPath: path languages: otherLanguages])
+	    {
+	      [[NSWorkspace sharedWorkspace] findApplications];
+	    }
+	}
+    }
+  else
+    {
+      if ([self removeBundleAtPath: path])
+	{
+	  [[NSWorkspace sharedWorkspace] findApplications];
+	}
+    }
 }
 
 - (NSRange) spellServer: (NSSpellServer *)sender
@@ -387,6 +519,7 @@ int main(int argc, char** argv)
   GNUSpellChecker *aSpellChecker = [[GNU_SPELL_CHECKER_CLASS alloc] init];
 
   NSLog(@"NSLanguages = %@", [aSpellChecker languages]);
+  [aSpellChecker synchronizeLanguages];
   if ([aSpellChecker registerLanguagesWithServer: aServer])
     {
       [aServer setDelegate: aSpellChecker];

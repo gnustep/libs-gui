@@ -1,3 +1,10 @@
+2010-02-26  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Tools/GSspell.m (-createBundleAtPath:languages:,
+	-removeBundleAtPath:, -synchronizeLanguages, main): Maintain a
+	small bundle in the user's Services directory to automatically
+	vend the supported languages besides AmericanEnglish.
+
 2010-02-26 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSServicesManager.m: NSUpdateDynamicServices() ask workspace
