@@ -53,6 +53,7 @@
 #import "AppKit/NSOpenPanel.h"
 
 #include "GSGuiPrivate.h"
+#include "GNUstepGUI/GSTheme.h"
 
 static NSString	*
 pathToColumn(NSBrowser *browser, int column)
@@ -262,8 +263,10 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 + (NSOpenPanel *) openPanel
 {
   if (!_gs_gui_open_panel)
-    _gs_gui_open_panel = [[NSOpenPanel alloc] init];
-
+    {
+      Class openPanelClass = [[GSTheme theme] openPanelClass];
+      _gs_gui_open_panel = [[openPanelClass alloc] init];
+    }
   [_gs_gui_open_panel _resetDefaults];
 
   return _gs_gui_open_panel;

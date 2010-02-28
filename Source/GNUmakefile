@@ -204,6 +204,7 @@ GSTheme.m \
 GSThemeDrawing.m \
 GSThemeInspector.m \
 GSThemeMenu.m \
+GSThemeOpenSavePanels.m \
 GSThemePanel.m \
 GSThemeTools.m \
 GSDragView.m \

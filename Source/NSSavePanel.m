@@ -57,6 +57,7 @@
 #import "AppKit/NSWorkspace.h"
 
 #include "GSGuiPrivate.h"
+#include "GNUstepGUI/GSTheme.h"
 
 #define _SAVE_PANEL_X_PAD	5
 #define _SAVE_PANEL_Y_PAD	4
@@ -671,7 +672,8 @@ selectCellWithString: (NSString*)title
 {
   if (_gs_gui_save_panel == nil)
     {
-      _gs_gui_save_panel = [[NSSavePanel alloc] init];
+      Class savePanelClass = [[GSTheme theme] savePanelClass];
+      _gs_gui_save_panel = [[savePanelClass alloc] init]; 
     }
 
   [_gs_gui_save_panel _resetDefaults];

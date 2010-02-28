@@ -1064,9 +1064,16 @@ withRepeatedImage: (NSImage*)image
 
 @interface GSTheme (OpenSavePanels)
 /**
- * This method displays and returns the open panel needed by the
+ * This method returns the open panel class needed by the
  * native environment.
  */ 
+- (Class) openPanelClass;
+
+/**
+ * This method returns the open panel class needed by the
+ * native environment.
+ */ 
+- (Class) savePanelClass;
 @end
 
 #endif /* OS_API_VERSION */
