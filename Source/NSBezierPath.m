@@ -1884,7 +1884,7 @@ static NSPoint point_on_curve(double t, NSPoint a, NSPoint b, NSPoint c,
   NSZone *zone;
 
   self = [super init];
-  zone = GSObjCZone(self);
+  zone = [self zone];
   pathElements = NSZoneMalloc(zone, sizeof(GSIArray_t));
   GSIArrayInitWithZoneAndCapacity(pathElements, zone, 8);
   flat = YES;
@@ -1895,7 +1895,7 @@ static NSPoint point_on_curve(double t, NSPoint a, NSPoint b, NSPoint c,
 - (void)dealloc
 {
   GSIArrayEmpty(pathElements);
-  NSZoneFree(GSObjCZone(self), pathElements);
+  NSZoneFree([self zone], pathElements);
   [super dealloc];
 }
 
