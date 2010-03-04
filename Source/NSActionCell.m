@@ -26,8 +26,9 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include "config.h"
+#import "config.h"
 #import <Foundation/NSCoder.h>
+
 #import "AppKit/NSActionCell.h"
 #import "AppKit/NSControl.h"
 
@@ -206,6 +207,17 @@ static Class controlClass;
     if ([_control_view isKindOfClass: controlClass])
       [(NSControl *)_control_view validateEditing];
   return [super intValue];
+}
+
+/**
+ * Retrieve the value of the receiver as an NSInteger.
+ */
+- (NSInteger) integerValue
+{
+  if (_cell.in_editing && _control_view)
+    if ([_control_view isKindOfClass: controlClass])
+      [(NSControl *)_control_view validateEditing];
+  return [super integerValue];
 }
 
 /**

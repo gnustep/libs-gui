@@ -31,17 +31,16 @@
 #define _GNUstep_H_NSCell
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSGeometry.h>
+#import <Foundation/NSGeometry.h>
 
 // For tint
-#include <AppKit/NSColor.h>
+#import <AppKit/NSColor.h>
 // for NSWritingDirection
-#include <AppKit/NSParagraphStyle.h>
+#import <AppKit/NSParagraphStyle.h>
 // For text alignment
-#include <AppKit/NSText.h>
+#import <AppKit/NSText.h>
 // for NSFocusRingType
-#include <AppKit/NSView.h>
+#import <AppKit/NSView.h>
 
 @class NSString;
 @class NSMutableDictionary;

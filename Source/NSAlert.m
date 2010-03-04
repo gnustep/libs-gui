@@ -34,28 +34,36 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
+#import "config.h"
 
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSError.h>
-#include <Foundation/NSString.h>
-#include "AppKit/NSAlert.h"
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSBox.h"
-#include "AppKit/NSButton.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSHelpManager.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSMatrix.h"
-#include "AppKit/NSPanel.h"
-#include "AppKit/NSScreen.h"
-#include "AppKit/NSScrollView.h"
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSError.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSThread.h>
+#import "AppKit/NSAlert.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSAttributedString.h"
+#import "AppKit/NSBox.h"
+#import "AppKit/NSBrowser.h"
+#import "AppKit/NSBrowserCell.h"
+#import "AppKit/NSButton.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSHelpManager.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSMatrix.h"
+#import "AppKit/NSPanel.h"
+#import "AppKit/NSScreen.h"
+#import "AppKit/NSScroller.h"
+#import "AppKit/NSScrollView.h"
+#import "AppKit/NSTextField.h"
+#import "AppKit/NSTextView.h"
 
-#include "GNUstepGUI/IMLoading.h"
-#include "GNUstepGUI/GMAppKit.h"
-#include "GNUstepGUI/GMArchiver.h"
-#include "GSGuiPrivate.h"
+#import "GNUstepGUI/GMAppKit.h"
+#import "GNUstepGUI/GMArchiver.h"
+#import "GSGuiPrivate.h"
 
 extern NSThread *GSAppKitThread;
 

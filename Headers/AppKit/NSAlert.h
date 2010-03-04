@@ -30,7 +30,7 @@
 #define _GNUstep_H_NSAlert
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSObject.h>
+#import <Foundation/NSObject.h>
 
 @class NSArray;
 @class NSError;

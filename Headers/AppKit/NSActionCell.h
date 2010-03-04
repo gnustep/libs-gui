@@ -31,7 +31,7 @@
 #define _GNUstep_H_NSActionCell
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSCell.h>
+#import <AppKit/NSCell.h>
 
 @interface NSActionCell : NSCell
 {

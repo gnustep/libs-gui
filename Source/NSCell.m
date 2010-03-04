@@ -32,17 +32,17 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
-#import <Foundation/NSString.h>
-#import <Foundation/NSGeometry.h>
+#import "config.h"
+#import <Foundation/NSCoder.h>
+#import <Foundation/NSDebug.h>
 #import <Foundation/NSException.h>
+#import <Foundation/NSFormatter.h>
 #import <Foundation/NSValue.h>
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSNumberFormatter.h>
-#import <Foundation/NSDebug.h>
-#import <Foundation/NSFormatter.h>
 #import <Foundation/NSRunLoop.h>
-#include <GNUstepBase/GSCategories.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSGeometry.h>
 
 #import "AppKit/AppKitExceptions.h"
 #import "AppKit/NSAttributedString.h"
@@ -62,8 +62,8 @@
 #import "AppKit/NSTextContainer.h"
 #import "AppKit/NSView.h"
 #import "AppKit/NSWindow.h"
-#include "GNUstepGUI/GSTheme.h"
-#include "GSGuiPrivate.h"
+#import "GNUstepGUI/GSTheme.h"
+#import "GSGuiPrivate.h"
 
 static Class colorClass;
 static Class cellClass;
