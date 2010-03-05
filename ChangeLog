@@ -1,3 +1,10 @@
+2005-03-05  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWorkspace.m: update NSTask header
+	* Source/NSPasteboard.m: ditto
+	* Source/GSTheme.m: Rewrite method replacement code to use new runtime
+	API... turns out to be rather simpler than using the old API.
+
 2010-03-04 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/AppKit.h,

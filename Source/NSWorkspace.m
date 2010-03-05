@@ -51,7 +51,7 @@
 #include <Foundation/NSPathUtilities.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSTask.h>
-#include <GNUstepBase/NSTask+GS.h>
+#include <GNUstepBase/NSTask+GNUstepBase.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSNotificationQueue.h>
