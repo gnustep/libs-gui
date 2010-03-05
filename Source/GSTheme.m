@@ -497,8 +497,11 @@ typedef	struct {
 		       * and the theme is unloaded, what happens when the
 		       * app tries to draw using the proxy to the unloaded
 		       * image?
+		       * To avoid that possibility, we save the new image
+		       * as if it were the old one ... so when the theme is
+		       * unloaded the old image persists.
 		       */
-		      NSLog(@"Help, could not load image '%@'", imageName);
+		      [_oldImages setObject: image forKey: imageName];
 		    }
 		  else
 		    {
