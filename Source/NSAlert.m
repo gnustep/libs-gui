@@ -1379,6 +1379,12 @@ NSRunAlertPanel(
   message = [NSString stringWithFormat: msg arguments: ap];
   va_end(ap);
 
+  if (NSApp == nil)
+    {
+      // No NSApp ... not running in a gui application so just log.
+      NSLog(@"%@", message);
+      return NSAlertFirstButtonReturn;
+    }
   if (defaultButton == nil)
     {
       defaultButton = @"OK";

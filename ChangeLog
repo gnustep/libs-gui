@@ -1,3 +1,10 @@
+2005-03-07  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSAlert.m: Cope gracefully with being called from an non-gui
+	applications (ie where NSApp is not initialized).
+	* Tools/gopen.m: Print same warning as OSX if item to open is not a
+	URL and the named fiel does not exist.
+
 2005-03-05  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: update NSTask header
