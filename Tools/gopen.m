@@ -191,9 +191,15 @@ main(int argc, char** argv, char **env_c)
 		    }
 		}
 	      else if ([arg hasPrefix: @"/"] == NO
-		&& (u = [NSURL URLWithString: arg]) != nil)
+		&& (u = [NSURL URLWithString: arg]) != nil
+		&& [u scheme] != nil)
 		{
 		  [workspace openURL: u];
+		}
+	      else 
+		{
+		  arg = absolutePath(fm, arg);
+		  GSPrintf(stdout, @"The file %@ does not exist.\n", arg);
 		}
 	    }
 	  NS_HANDLER
