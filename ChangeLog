@@ -1,3 +1,10 @@
+2005-03-09  Doug Simons <doug.simons@testplant.com>
+
+	* Source/NSMenu.m: Protect changedMessagesEnabled flag against getting
+	stuck off if exceptions occur during update.
+	* Source/NSApplication.m: Update menu after modal session, and when
+	the key or main window has changed.
+
 2005-03-07  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSAlert.m: Cope gracefully with being called from an non-gui

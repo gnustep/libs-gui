@@ -1124,68 +1124,75 @@ static BOOL menuBarVisible = YES;
       
       // Temporary disable automatic displaying of menu.
       [self setMenuChangedMessagesEnabled: NO];
-      
-      for (i = 0; i < count; i++)
+
+      NS_DURING
 	{
-	  NSMenuItem *item = [_items objectAtIndex: i];
-	  SEL	      action = [item action];
-	  id	      validator = nil;
-	  BOOL	      wasEnabled = [item isEnabled];
-	  BOOL	      shouldBeEnabled;
-
-	  // Update the submenu items if any.
-	  if ([item hasSubmenu])
-	    [[item submenu] update];
-
-	  // If there is no action - there can be no validator for the item.
-	  if (action)
+	  for (i = 0; i < count; i++)
 	    {
-	      validator = [NSApp targetForAction: action 
-				 to: [item target]
-				 from: item];
-	    }
-	  else if (_popUpButtonCell != nil)
-	    {
-	      if (NULL != (action = [_popUpButtonCell action]))
+	      NSMenuItem *item = [_items objectAtIndex: i];
+	      SEL	      action = [item action];
+	      id	      validator = nil;
+	      BOOL	      wasEnabled = [item isEnabled];
+	      BOOL	      shouldBeEnabled;
+
+	      // Update the submenu items if any.
+	      if ([item hasSubmenu])
+	        [[item submenu] update];
+
+	      // If there is no action - there can be no validator for the item.
+	      if (action)
 	        {
-		  validator = [NSApp targetForAction: action
-				     to: [_popUpButtonCell target]
-				     from: [_popUpButtonCell controlView]];
-		}
-	    }
+	          validator = [NSApp targetForAction: action 
+				     to: [item target]
+				     from: item];
+	        }
+	      else if (_popUpButtonCell != nil)
+	        {
+	          if (NULL != (action = [_popUpButtonCell action]))
+	            {
+		      validator = [NSApp targetForAction: action
+				         to: [_popUpButtonCell target]
+				         from: [_popUpButtonCell controlView]];
+		    }
+	        }
 
-	  if (validator == nil)
-	    {
-	      if ((action == NULL) && (_popUpButtonCell != nil))
-		{
-		  shouldBeEnabled = YES;
-		}
-	      else 
-		{
-		  shouldBeEnabled = NO;
-		}
-	    }
-	  else if ([validator
-		     respondsToSelector: @selector(validateMenuItem:)])
-	    {
-	      shouldBeEnabled = [validator validateMenuItem: item];
-	    }
-	  else if ([validator
-		     respondsToSelector: @selector(validateUserInterfaceItem:)])
-	    {
-	      shouldBeEnabled = [validator validateUserInterfaceItem: item];
-	    }
-	  else
-	    {
-	      shouldBeEnabled = YES;
-	    }
+	      if (validator == nil)
+	        {
+	          if ((action == NULL) && (_popUpButtonCell != nil))
+		    {
+		      shouldBeEnabled = YES;
+		    }
+	          else 
+		    {
+		      shouldBeEnabled = NO;
+		    }
+	        }
+	      else if ([validator
+		         respondsToSelector: @selector(validateMenuItem:)])
+	        {
+	          shouldBeEnabled = [validator validateMenuItem: item];
+	        }
+	      else if ([validator
+		         respondsToSelector: @selector(validateUserInterfaceItem:)])
+	        {
+	          shouldBeEnabled = [validator validateUserInterfaceItem: item];
+	        }
+	      else
+	        {
+	          shouldBeEnabled = YES;
+	        }
 
-	  if (shouldBeEnabled != wasEnabled)
-	    {
-	      [item setEnabled: shouldBeEnabled];
+	      if (shouldBeEnabled != wasEnabled)
+	        {
+	          [item setEnabled: shouldBeEnabled];
+	        }
 	    }
-	}
-          
+          }
+	NS_HANDLER
+	  {
+	    NSLog(@"Error Occurred While Updating Menu %@: %@", [self title], localException);
+	  }
+	NS_ENDHANDLER
       // Reenable displaying of menus
       [self setMenuChangedMessagesEnabled: YES];
     }
@@ -1209,7 +1216,7 @@ static BOOL menuBarVisible = YES;
   NSEventType   type = [theEvent type];
   unsigned	modifiers = [theEvent modifierFlags];
   NSString	*keyEquivalent = [theEvent charactersIgnoringModifiers];
-         
+
   if (type != NSKeyDown && type != NSKeyUp) 
     return NO;
              

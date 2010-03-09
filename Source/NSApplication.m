@@ -1696,6 +1696,10 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
             }
         }
     }
+  else
+    {
+      [_main_menu update];
+    }
 }
 
 /**
@@ -3883,6 +3887,7 @@ struct _DelegateWrapper
   if (_key_window == nil && [obj isKindOfClass: [NSWindow class]])
     {
       _key_window = obj;
+      [_main_menu update];
     }
   else if (_key_window != obj)
     {
@@ -3897,6 +3902,7 @@ struct _DelegateWrapper
   if (_main_window == nil && [obj isKindOfClass: [NSWindow class]])
     {
       _main_window = obj;
+      [_main_menu update];
     }
   else if (_main_window != obj)
     {
