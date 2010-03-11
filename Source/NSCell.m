@@ -2948,18 +2948,21 @@ static NSColor *dtxtCol;
 {
   /* Look Ma', no drawing here... */
 
-  /* Adjust the text editor's frame to match cell's frame (minus the border) */
-  NSRect titleRect = [self titleRectForBounds: cellFrame];
-  NSText *textObject = [(NSControl*)controlView currentEditor];
-  NSView *clipView = [textObject superview];
+  if ([controlView isKindOfClass: [NSControl class]])
+    {
+      /* Adjust the text editor's frame to match cell's frame (w/o border) */
+      NSRect titleRect = [self titleRectForBounds: cellFrame];
+      NSText *textObject = [(NSControl*)controlView currentEditor];
+      NSView *clipView = [textObject superview];
 
-  if ([clipView isKindOfClass: [NSClipView class]])
-    {
-      [clipView setFrame: titleRect];
-    }
-  else
-    {
-      [textObject setFrame: titleRect];
+      if ([clipView isKindOfClass: [NSClipView class]])
+	{
+	  [clipView setFrame: titleRect];
+	}
+      else
+	{
+	  [textObject setFrame: titleRect];
+	}
     }
 }
 

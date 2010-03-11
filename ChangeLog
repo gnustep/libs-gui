@@ -1,3 +1,10 @@
+2010-03-11  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Source/NSCell.m (-_drawEditorWithFrame:inView:): Fix some
+	optimistic coding which expected the controlView argument to
+	always be a subclass of NSControl and was causing a crash in
+	AddressManager.app.
+
 2005-03-09  Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSMenu.m: Protect changedMessagesEnabled flag against getting
