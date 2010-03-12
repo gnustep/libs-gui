@@ -700,7 +700,7 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 
 - (BOOL) isFlipped
 {
-  return (_documentView != nil) ? _documentView->_rFlags.flipped_view : NO;
+  return (_documentView != nil) ? [_documentView isFlipped] : NO;
 }
 
 /* Disable rotation of clip view */

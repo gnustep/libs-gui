@@ -1,3 +1,8 @@
+2005-03-11  Doug Simons <doug.simons@testplant.com>
+
+	* Source/NSClipView.m: Call isFlipped rather than accessing
+	flag directly (fixes a problem with view loaded from a nib).
+
 2010-03-11  Wolfgang Lux  <wolfgang.lux@gmail.com>
 
 	* Source/NSCell.m (-_drawEditorWithFrame:inView:): Fix some
