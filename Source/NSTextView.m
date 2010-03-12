@@ -5257,7 +5257,7 @@ other than copy/paste or dragging. */
     currentEvent = [_window nextEventMatchingMask: mask
   			      untilDate: [NSDate distantFuture]
   			      inMode: NSEventTrackingRunLoopMode
-  			      dequeue: YES];
+  			      dequeue: NO];
     if ([currentEvent type] == NSLeftMouseDragged)
       {
   	if (![self dragSelectionWithEvent: theEvent
@@ -5269,7 +5269,7 @@ other than copy/paste or dragging. */
   	return;
       }
   }
-  else
+  
   /* Enter modal loop tracking the mouse */
   {
     unsigned int mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask

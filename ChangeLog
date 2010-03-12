@@ -1,3 +1,11 @@
+2005-03-12  Doug Simons <doug.simons@testplant.com>
+
+	* Source/NSTextView.m: (-mouseDown:): Only try to drag text
+	if the user starts by dragging the mouse. A simple click within
+	the selection will now set the insertion point.
+	* Source/NSView.m: (-setNeedsDisplayInRect:): Avoid unnecessary
+	work when invalid rectangle is empty.
+
 2005-03-11  Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSClipView.m: Call isFlipped rather than accessing
