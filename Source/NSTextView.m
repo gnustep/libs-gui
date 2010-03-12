@@ -4437,7 +4437,7 @@ right.)
 			withString: s];
 		  [self didChangeText];
 		  changeRange.length = [s length];
-		  [self setSelectedRange: changeRange];
+		  [self setSelectedRange: NSMakeRange(NSMaxRange(changeRange),0)];
 		}
 	    }
 	  else
@@ -4489,7 +4489,7 @@ right.)
 			    withAttributedString: as];
 		  [self didChangeText];
 		  changeRange.length = [as length];
-		  [self setSelectedRange: changeRange];
+		  [self setSelectedRange: NSMakeRange(NSMaxRange(changeRange),0)];
 		}
 
 	      DESTROY(as);
@@ -4537,7 +4537,7 @@ right.)
 			    withAttributedString: as];
 		  [self didChangeText];
 		  changeRange.length = [as length];
-		  [self setSelectedRange: changeRange];
+		  [self setSelectedRange: NSMakeRange(NSMaxRange(changeRange),0)];
 		}
 
 	      DESTROY(as);
@@ -4565,7 +4565,7 @@ right.)
 			    withAttributedString: as];
 		  [self didChangeText];
 		  changeRange.length = [as length];
-		  [self setSelectedRange: changeRange];
+		  [self setSelectedRange: NSMakeRange(NSMaxRange(changeRange),0)];
 		}
 	      RELEASE(attachment);
 	      RELEASE(image);
@@ -4589,7 +4589,7 @@ right.)
 		withAttributedString: as];
 	      [self didChangeText];
 	      changeRange.length = [as length];
-	      [self setSelectedRange: changeRange];
+	      [self setSelectedRange: NSMakeRange(NSMaxRange(changeRange),0)];
 	    }
 	  RELEASE(attachment);
 	  return YES;

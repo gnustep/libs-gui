@@ -1,5 +1,10 @@
 2005-03-12  Doug Simons <doug.simons@testplant.com>
 
+	* Source/NSTextView.m: (-readSelectionFromPasteboard:type:): 
+	Set insertion point _after_ pasted text, don't select it. 
+
+2005-03-12  Doug Simons <doug.simons@testplant.com>
+
 	* Source/NSTextView.m: (-mouseDown:): Only try to drag text
 	if the user starts by dragging the mouse. A simple click within
 	the selection will now set the insertion point.
