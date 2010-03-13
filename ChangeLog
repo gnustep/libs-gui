@@ -1,5 +1,11 @@
 2010-03-13 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSWindow.m (-_borderView),
+	* Source/NSView.m (-_subtreeDescription): Add two Cocoa debug
+	helper methods.
+
+2010-03-13 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSBundleAdditions.m (NSNibOutletConnector
 	-establishConnection): Undo the last change to this method, as
 	it should not retain the assign value.

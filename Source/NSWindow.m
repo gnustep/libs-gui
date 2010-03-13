@@ -344,6 +344,15 @@ has blocked and waited for events.
 {
   return _wv;
 }
+
+/*
+ * This is just the Apple name for our _windowView method.
+ */
+- (NSView *) _borderView
+{
+  return _wv;
+}
+ 
 @end
 
 

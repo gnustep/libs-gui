@@ -458,6 +458,33 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   return frame;
 }
 
+
+- (NSString*) _subtreeDescriptionWithPrefix: (NSString*)prefix
+{
+  NSMutableString *desc = [[NSMutableString alloc] init];
+  NSEnumerator *e;
+  NSView *v;
+
+  [desc appendFormat: @"%@%@\n", prefix, [self description], nil];
+
+  prefix = [prefix stringByAppendingString: @"  "];
+  e = [_sub_views objectEnumerator];
+  while ((v = (NSView*)[e nextObject]) != nil)
+    {
+      [desc appendString: [v _subtreeDescriptionWithPrefix: prefix]];
+    }
+
+  return desc;
+}
+
+/*
+ * Unofficial Cocoa method for debugging a view hierarchy.
+ */
+- (NSString*) _subtreeDescription
+{
+  return [self _subtreeDescriptionWithPrefix: @""]; 
+}
+
 /*
  * Class methods
  */
