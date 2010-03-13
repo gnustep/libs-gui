@@ -1,3 +1,9 @@
+2010-03-13 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBundleAdditions.m (NSNibOutletConnector
+	-establishConnection): Undo the last change to this method, as
+	it should not retain the assign value.
+
 2005-03-12  Doug Simons <doug.simons@testplant.com>
 
 	* Source/NSTextView.m: (-readSelectionFromPasteboard:type:): 
