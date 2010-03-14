@@ -236,6 +236,7 @@ GSModelLoaderFactory.m \
 GSGormLoader.m \
 GSGModelLoader.m \
 GSNibLoader.m \
+GSXibLoader.m \
 NSManagedObjectContext.m
 
 # Turn off NSMenuItem warning that NSMenuItem conforms to <NSObject>,

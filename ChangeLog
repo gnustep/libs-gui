@@ -1,3 +1,9 @@
+2010-03-15 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSXibLoader.m: New file with basic XIB format
+	loading.
+	* Source/GNUmakefile: Add new file.
+
 2010-03-13 German Arias <german@xelalug.org>
 
 	* Source/NSSpellChecker.m: Added missing internationalisation.
