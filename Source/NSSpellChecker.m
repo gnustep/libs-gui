@@ -738,7 +738,7 @@ inSpellDocumentWithTag:(int)tag
 
 - (NSString*) browser: (NSBrowser*)sender titleOfColumn: (int)column
 {
-  return @"Guess";
+  return _(@"Guess");
 }
 
 - (void) browser: (NSBrowser *)sender 

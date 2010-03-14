@@ -390,6 +390,11 @@ add comments above this one
 "Reading Directory " = "Leyendo Directorio ";
 
 
+/*** Strings from ../Source/NSSpellChecker.m ***/
+/* File: ../Source/NSSpellChecker.m:741 */
+"Guess" = "Sugerencias";
+
+
 /*** Strings from ../Source/NSToolbarItem.m ***/
 /* File: ../Source/NSToolbarItem.m:995 */
 "Customize" = "Modificar";

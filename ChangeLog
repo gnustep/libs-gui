@@ -1,5 +1,11 @@
 2010-03-13 German Arias <german@xelalug.org>
 
+	* Source/NSSpellChecker.m: Added missing internationalisation.
+	* Resources/Spanish.lproj/Localizable.strings: Spanish translation
+ 	to string "Guess".
+
+2010-03-13 German Arias <german@xelalug.org>
+
 	* Resources/Spanish.lproj/Localizable.strings: Spanish translation
  	to title "Print Panel".
 
