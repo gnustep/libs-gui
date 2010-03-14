@@ -155,6 +155,9 @@ static NSPrintPanel *shared_instance;
       return nil;
     }
 
+  /* Set the title */
+  [self setTitle: _(@"Print Panel")];
+
   /* Transfer the objects to us. FIXME: There must be a way to 
      instantiate the panel directly */
   subviews = [[_panel contentView] subviews];

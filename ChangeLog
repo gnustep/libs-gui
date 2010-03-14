@@ -1,3 +1,9 @@
+2010-03-13 German Arias <german@xelalug.org>
+
+	* Source/NSPrintPanel.m: Set the title of the panel (Print Panel),
+        because the panel show the title "window" even when gorm file have
+	other title.
+
 2010-03-13 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWindow.m (-_borderView),
