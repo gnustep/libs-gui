@@ -153,6 +153,8 @@ add comments above this one
 
 
 /*** Strings from ../Source/NSPrintPanel.m ***/
+/* File: ../Source/NSPrintPanel.m:159 */
+"Print Panel" = "Panel de Impresi\U00F3n";
 /* File: ../Source/NSPrintPanel.m:169 */
 "1 up" = "1 p\U00E1gina";
 "2 up" = "2 p\U00E1ginas";

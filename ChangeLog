@@ -1,5 +1,10 @@
 2010-03-13 German Arias <german@xelalug.org>
 
+	* Resources/Spanish.lproj/Localizable.strings: Spanish translation
+ 	to title "Print Panel".
+
+2010-03-13 German Arias <german@xelalug.org>
+
 	* Source/NSPrintPanel.m: Set the title of the panel (Print Panel),
         because the panel show the title "window" even when gorm file have
 	other title.
