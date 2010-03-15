@@ -1,3 +1,14 @@
+2010-03-14 Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/NSOpenGLView.m:
+	Add an -initWithCoder: implementation which subscribes to
+	the frame change notifications like -init.
+	Without this addition, NSOpenGLViews loaded from nibs 
+	weren't resizing properly.
+	
+	Note: it should also probably set a pixel format, but I
+	didn't add that because it was causing an error.
+
 2010-03-15 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSXibLoader.m: New file with basic XIB format

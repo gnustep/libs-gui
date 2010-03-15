@@ -249,6 +249,28 @@ static NSOpenGLPixelFormatAttribute attrs[] =
     }
 }
 
+- (id) initWithCoder: (NSCoder *)aCoder
+{
+  self = [super initWithCoder: aCoder];
+
+  // FIXME: Should set a pixel format like -init does
+  
+  [[NSNotificationCenter defaultCenter] 
+    addObserver: self
+    selector: @selector(_frameChanged:)
+    name: NSViewGlobalFrameDidChangeNotification
+    object: self];
+
+  [self setPostsFrameChangedNotifications: YES];
+  [[NSNotificationCenter defaultCenter] 
+    addObserver: self
+    selector: @selector(_frameChanged:)
+    name: NSViewFrameDidChangeNotification
+    object: self];
+
+  return self;
+}
+
 @end
 
 
