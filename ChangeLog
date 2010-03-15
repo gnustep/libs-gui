@@ -1,5 +1,10 @@
 2010-03-15 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSTextView.m (-replaceTextContainer:): Retain self not
+	the layout manager during container replacement.
+
+2010-03-15 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSView.m (-description): Add some useful output to the
 	decription method.
 	* Source/NSView.m (-initWithCoder:): Decode the NSBounds value.

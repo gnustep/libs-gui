@@ -1145,14 +1145,15 @@ to this method from the text container or layout manager.
 
 - (void) replaceTextContainer: (NSTextContainer *)newContainer
 {
-  NSLayoutManager *lm = RETAIN(_layoutManager);
+  NSLayoutManager *lm = _layoutManager;
   unsigned int index = [[lm textContainers] indexOfObject: _textContainer];
 
+  RETAIN(self);
   [_textContainer setTextView: nil];
   [lm removeTextContainerAtIndex: index];
   [lm insertTextContainer: newContainer atIndex: index];
   [newContainer setTextView: self];
-  RELEASE(lm);
+  RELEASE(self);
 }
 
 - (NSTextContainer *) textContainer
