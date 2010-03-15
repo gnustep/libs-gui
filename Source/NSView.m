@@ -485,6 +485,31 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   return [self _subtreeDescriptionWithPrefix: @""]; 
 }
 
+- (NSString*) _flagDescription
+{
+  return @"";
+}
+
+- (NSString*) _resizeDescription
+{
+  return [NSString stringWithFormat: @"h=%c%c%c v=%c%c%c", 
+                   (_autoresizingMask & NSViewMinXMargin) ? '&' : '-',
+                   (_autoresizingMask & NSViewWidthSizable) ? '&' : '-',
+                   (_autoresizingMask & NSViewMaxXMargin) ? '&' : '-',
+                   (_autoresizingMask & NSViewMinYMargin) ? '&' : '-',
+                   (_autoresizingMask & NSViewHeightSizable) ? '&' : '-',
+                   (_autoresizingMask & NSViewMaxYMargin) ? '&' : '-',
+                   nil];
+}
+
+- (NSString*) description
+{
+  return [NSString stringWithFormat: @"%@ %@ %@ f=%@ b=%@", 
+                   [self _flagDescription], 
+                   [self _resizeDescription], [super description], 
+                   NSStringFromRect(_frame), NSStringFromRect(_bounds), nil];
+}
+
 /*
  * Class methods
  */
@@ -4318,7 +4343,14 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   if (NSIsEmptyRect(aRect))
     {
       if ([dict objectForKey: @"NSPrintPaperBounds"])
-        bounds = [[dict objectForKey: @"NSPrintPaperBounds"] rectValue];
+        {
+          bounds = [[dict objectForKey: @"NSPrintPaperBounds"] rectValue];
+        }
+      else
+        {
+          // FIXME: What should we use here?
+          bounds = aRect;
+        }
     }
   else
     {
@@ -4512,8 +4544,16 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
             }
         }
 
-      _bounds.origin = NSZeroPoint;		// Set bounds rectangle
-      _bounds.size = _frame.size;
+      // Set bounds rectangle
+      if ([aDecoder containsValueForKey: @"NSBounds"])
+        {
+          _bounds = [aDecoder decodeRectForKey: @"NSBounds"];
+        }
+      else
+        {
+          _bounds.origin = NSZeroPoint;
+          _bounds.size = _frame.size;
+        }
       
       _sub_views = [NSMutableArray new];
       _tracking_rects = [NSMutableArray new];
