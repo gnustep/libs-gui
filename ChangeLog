@@ -1,5 +1,10 @@
 2010-03-15 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/GSXibLoader.m: Correct the decoding of the <bytes>
+	element. Use the GSNibLoaging method to set the main menu.
+
+2010-03-15 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSCursor.m (-initWithCoder:): Retain self, when using a
 	predefined cursor.
 	* Source/NSClipView.m (-initWithCoder:): Undo Greg's hack to

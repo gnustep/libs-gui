@@ -41,6 +41,10 @@
 #import "GNUstepGUI/GSModelLoaderFactory.h"
 #import "GNUstepGUI/GSNibLoading.h"
 
+@interface NSApplication (NibCompatibility)
+- (void) _setMainMenu: (NSMenu*)aMenu;
+@end
+
 // Hack: This allows the class name FirstResponder in NSCustomObject and
 // correctly returns nil as the corresponding object.
 @interface FirstResponder: NSObject
@@ -611,7 +615,7 @@
             {
               obj = [obj nibInstantiate];
             }
-          [NSApp setMainMenu: obj];
+          [NSApp _setMainMenu: obj];
         }
       /*
         else
@@ -1096,6 +1100,7 @@ didStartElement: (NSString *)elementName
     {
       id new = [[element value] dataUsingEncoding: NSASCIIStringEncoding
                            allowLossyConversion: NO];
+      new = [GSMimeDocument decodeBase64: new];
 
       if (key != nil)
         [decoded setObject: new forKey: key];
