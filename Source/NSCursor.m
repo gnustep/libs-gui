@@ -547,7 +547,8 @@ backgroundColorHint:(NSColor *)bg
 	  // FIXME
 	  self = [NSCursor arrowCursor];
 	}
-      
+      RETAIN(self);
+
       if ([aDecoder containsValueForKey: @"NSHotSpot"])
         {
 	  hotSpot = [aDecoder decodePointForKey: @"NSHotSpot"];

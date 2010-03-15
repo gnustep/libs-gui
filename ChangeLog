@@ -1,5 +1,15 @@
 2010-03-15 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSCursor.m (-initWithCoder:): Retain self, when using a
+	predefined cursor.
+	* Source/NSClipView.m (-initWithCoder:): Undo Greg's hack to
+	retain the cursor.
+	* Source/NSView.m (-initWithCoder:),
+	* Source/NSTextView.m (-initWithCoder:): Small improvements for
+	keyed decoding.
+
+2010-03-15 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSTextView.m (-replaceTextContainer:): Retain self not
 	the layout manager during container replacement.
 

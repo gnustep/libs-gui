@@ -4518,7 +4518,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   NSArray	*subs;
 
   // decode the superclass...
-  [super initWithCoder: aDecoder];
+  self = [super initWithCoder: aDecoder];
+  if (!self)
+    return nil;
 
   // initialize these here, since they're needed in either case.
   // _frameMatrix = [NSAffineTransform new];    // Map fromsuperview to frame
@@ -4545,14 +4547,11 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
         }
 
       // Set bounds rectangle
+      _bounds.origin = NSZeroPoint;
+      _bounds.size = _frame.size;
       if ([aDecoder containsValueForKey: @"NSBounds"])
         {
-          _bounds = [aDecoder decodeRectForKey: @"NSBounds"];
-        }
-      else
-        {
-          _bounds.origin = NSZeroPoint;
-          _bounds.size = _frame.size;
+          [self setBounds: [aDecoder decodeRectForKey: @"NSBounds"]];
         }
       
       _sub_views = [NSMutableArray new];

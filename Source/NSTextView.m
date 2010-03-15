@@ -831,6 +831,9 @@ that makes decoding and encoding compatible with the old code.
 - (id) initWithCoder: (NSCoder *)aDecoder
 {
   self = [super initWithCoder: aDecoder];
+  if (!self)
+    return nil;
+
   if ([aDecoder allowsKeyedCoding])
     {  
       id textString = nil;
@@ -919,8 +922,9 @@ that makes decoding and encoding compatible with the old code.
       
       if ([aDecoder containsValueForKey: @"NSTVFlags"])
         {
-          [aDecoder decodeIntForKey: @"NSTVFlags"];
+          //[aDecoder decodeIntForKey: @"NSTVFlags"];
         }
+      //@"NSDragTypes"
 
       // Don't add the string if it's nil
       if(textString != nil)
