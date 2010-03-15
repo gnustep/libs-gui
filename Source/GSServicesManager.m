@@ -509,7 +509,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
  */
 + (GSServicesManager*) newWithApplication: (NSApplication*)app
 {
-  NSString	*str;
+  NSString	*str = nil;
   NSArray       *paths;
   NSString      *path = nil;
 
