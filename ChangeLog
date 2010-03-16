@@ -1,3 +1,7 @@
+2010-03-16 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSEvent.m: Handle type flagsChanged correctly.
+
 2010-03-15 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSXibLoader.m: Correct the decoding of the <bytes>
@@ -1958,7 +1962,7 @@
 	display the window at all.
 	* Soure/NSWindow.m: Don't order any windows in if this is a background
 	application.
-	* Source/NSEvent.m: fix missing commaa causing comple fail.
+	* Source/NSEvent.m: fix missing comma causing comple fail.
 
 2009-10-17 Sheldon Gill  <sheldon@westnet.net.au>
 

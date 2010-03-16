@@ -73,7 +73,7 @@ static Class eventClass;
 {
   if (self == [NSEvent class])
     {
-      [self setVersion: 2];
+      [self setVersion: 3];
       eventClass = [NSEvent class];
     }
 }
@@ -105,7 +105,6 @@ static Class eventClass;
   AUTORELEASE(e);
 
   e->event_type = type;
-
   e->location_point = location;
   e->modifier_flags = flags;
   e->event_time = time;
@@ -452,7 +451,7 @@ static Class eventClass;
 {
   NSEvent *e = (NSEvent*)NSCopyObject (self, 0, zone);
 
-  if ((event_type == NSKeyUp) || (event_type == NSKeyDown))
+  if ((NSEventMaskFromType(event_type) & GSKeyEventMask))
     {
       event_data.key.char_keys = [event_data.key.char_keys copyWithZone: zone];
       event_data.key.unmodified_keys
@@ -500,7 +499,7 @@ static Class eventClass;
 
 - (void) dealloc
 {
-  if ((event_type == NSKeyUp) || (event_type == NSKeyDown))
+  if ((NSEventMaskFromType(event_type) & GSKeyEventMask))
     {
       RELEASE(event_data.key.char_keys);
       RELEASE(event_data.key.unmodified_keys);
@@ -596,6 +595,7 @@ static const char *eventTypes[] = {
     "applicationDefined",
     "periodic",
     "cursorUpdate",
+    "", "", "", "",
     "scrollWheel",
     "tabletPoint",
     "tabletProximity",
@@ -637,6 +637,7 @@ static const char *eventTypes[] = {
 
       case NSKeyDown:
       case NSKeyUp:
+      case NSFlagsChanged:
         return [NSString stringWithFormat:
           @"NSEvent: eventType = %s, point = { %f, %f }, modifiers = %u,"
           @" time = %f, window = %d, dpsContext = %p, "
@@ -648,7 +649,6 @@ static const char *eventTypes[] = {
           event_data.key.key_code];
         break;
 
-      case NSFlagsChanged:
       case NSPeriodic:
       case NSCursorUpdate:
       case NSAppKitDefined:
@@ -737,6 +737,7 @@ static const char *eventTypes[] = {
 
       case NSKeyDown:
       case NSKeyUp:
+      case NSFlagsChanged:
         [aCoder encodeValueOfObjCType: @encode(BOOL)
                                    at: &event_data.key.repeat];
         [aCoder encodeObject: event_data.key.char_keys];
@@ -744,7 +745,6 @@ static const char *eventTypes[] = {
         [aCoder encodeValueOfObjCType: "S" at: &event_data.key.key_code];
         break;
 
-      case NSFlagsChanged:
       case NSPeriodic:
       case NSAppKitDefined:
       case NSSystemDefined:
@@ -821,6 +821,14 @@ static const char *eventTypes[] = {
         }  
     }
 
+  // Previously flag change events where encoded wrongly
+  if ((version == 2) && (event_type == NSFlagsChanged))
+    {
+        [aDecoder decodeValuesOfObjCTypes: "sii", &event_data.misc.sub_type,
+          &event_data.misc.data1, &event_data.misc.data2];
+        return self;
+    }
+
   // Decode the event date based upon the event type
   switch (event_type)
     {
@@ -852,6 +860,7 @@ static const char *eventTypes[] = {
 
       case NSKeyDown:
       case NSKeyUp:
+      case NSFlagsChanged:
         [aDecoder decodeValueOfObjCType: @encode(BOOL)
                                      at: &event_data.key.repeat];
         event_data.key.char_keys = [aDecoder decodeObject];
@@ -859,7 +868,6 @@ static const char *eventTypes[] = {
         [aDecoder decodeValueOfObjCType: "S" at: &event_data.key.key_code];
         break;
 
-      case NSFlagsChanged:
       case NSPeriodic:
       case NSAppKitDefined:
       case NSSystemDefined:
@@ -898,8 +906,7 @@ static const char *eventTypes[] = {
  */
 - (unsigned short) keyCode
 {
-  if ((event_type != NSKeyUp) && (event_type != NSKeyDown)
-    && (event_type != NSFlagsChanged))
+  if (!(NSEventMaskFromType(event_type) & GSKeyEventMask))
     {
       [NSException raise: NSInternalInconsistencyException
                   format: @"keyCode requested for non-keyboard event"];
