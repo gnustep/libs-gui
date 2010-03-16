@@ -1,3 +1,8 @@
+2010-03-16 German Arias <german@xelalug.org>
+
+	* Resources/French.lproj/Localizable.strings: Added patch 
+        by Philippe Roussel.
+
 2010-03-16 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSEvent.m: Handle type flagsChanged correctly.
