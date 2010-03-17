@@ -1,3 +1,8 @@
+2010-03-17 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView.m (-readSelectionFromPasteboard:type:): Fix
+	potential memory leak for colour pasting.
+
 2010-03-16 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/NSSliderCell.m:

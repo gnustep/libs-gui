@@ -2999,7 +2999,7 @@ Scroll so that the beginning of the range is visible.
 	  return available != nil;
 	}
       else
-	return NO;
+ 	return NO;
     }
 
   if (sel_eq(action, @selector(selectAll:))
@@ -4606,14 +4606,14 @@ right.)
     {
       /* This is an attribute change, so we use a different range. */
       NSRange aRange = [self rangeForUserCharacterAttributeChange];
-      NSColor *color = [NSColor colorFromPasteboard: pboard];
-      NSMutableDictionary	*d = [[self typingAttributes] mutableCopy];
-
 
       if (aRange.location != NSNotFound &&
 	  [self shouldChangeTextInRange: aRange
 	    replacementString: nil])
 	{
+          NSColor *color = [NSColor colorFromPasteboard: pboard];
+          NSMutableDictionary *d = [[self typingAttributes] mutableCopy];
+
 	  [self setTextColor: color range: aRange];
 	  [d setObject: color forKey: NSForegroundColorAttributeName];
 	  [self setTypingAttributes: d];
