@@ -1,3 +1,11 @@
+2010-03-16 Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/NSSliderCell.m:
+	* Headers/AppKit/NSSliderCell.h:
+	Initial implementation of circular sliders.
+	I need to refactor NSSliderCell drawing code out to GSTheme
+	some time soon.
+
 2010-03-16 German Arias <german@xelalug.org>
 
 	* Resources/French.lproj/Localizable.strings: Added patch 

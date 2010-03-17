@@ -33,6 +33,7 @@
 #import <Foundation/NSValue.h>
 
 #import "AppKit/NSApplication.h"
+#import "AppKit/NSBezierPath.h"
 #import "AppKit/NSColor.h"
 #import "AppKit/NSControl.h"
 #import "AppKit/NSEvent.h"
@@ -44,55 +45,80 @@
 
 DEFINE_RINT_IF_MISSING
 
+#ifndef M_PI
+#define M_PI 3.1415926535897932384626434
+#endif
+
 static inline
 float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 				NSRect slotRect, BOOL isVertical, 
 				float minValue, float maxValue, 
-				NSSliderCell *theCell, BOOL flipped)
+				NSSliderCell *theCell, BOOL flipped, 
+				BOOL isCircular)
 {
   float floatValue = 0;
   float position;
 
-  // Adjust the point to lie inside the knob slot. We don't
-  // have to worry whether the view is flipped or not.
-  if (isVertical)
+  if (isCircular)
     {
-      if (point.y < slotRect.origin.y + knobRect.size.height / 2)
-	{
-	  position = slotRect.origin.y + knobRect.size.height / 2;
-	}
-      else if (point.y > slotRect.origin.y + slotRect.size.height
-	- knobRect.size.height / 2)
-	{
-	  position = slotRect.origin.y + slotRect.size.height
-	    - knobRect.size.height / 2;
-	}
-      else
-	position = point.y;
-      // Compute the float value
-      floatValue = (position - (slotRect.origin.y + knobRect.size.height/2))
-	/ (slotRect.size.height - knobRect.size.height);
+      NSPoint slotCenter = NSMakePoint(NSMidX(slotRect), NSMidY(slotRect));
+      NSPoint pointRelativeToKnobCenter = NSMakePoint(point.x - slotCenter.x,
+						      point.y - slotCenter.y);
       if (flipped)
-	floatValue = 1 - floatValue;
+	{
+	  pointRelativeToKnobCenter.y *= -1.0;
+	}
+      floatValue = atan2f(pointRelativeToKnobCenter.x,
+			  pointRelativeToKnobCenter.y) / (2.0 * M_PI);
+      if (floatValue < 0)
+	{
+	  floatValue += 1.0;
+	}
+      // floatValue is 0 for up, 0.25 for right, 0.5 for down, 0.75 for left, etc.
     }
   else
     {
-      if (point.x < slotRect.origin.x + knobRect.size.width / 2)
+      // Adjust the point to lie inside the knob slot. We don't
+      // have to worry whether the view is flipped or not.
+      if (isVertical)
 	{
-	  position = slotRect.origin.x + knobRect.size.width / 2;
-	}
-      else if (point.x > slotRect.origin.x + slotRect.size.width
-	- knobRect.size.width / 2)
-	{
-	  position = slotRect.origin.x + slotRect.size.width
-	    - knobRect.size.width / 2;
+	  if (point.y < slotRect.origin.y + knobRect.size.height / 2)
+	    {
+	      position = slotRect.origin.y + knobRect.size.height / 2;
+	    }
+	  else if (point.y > slotRect.origin.y + slotRect.size.height
+		   - knobRect.size.height / 2)
+	    {
+	      position = slotRect.origin.y + slotRect.size.height
+		- knobRect.size.height / 2;
+	    }
+	  else
+	    position = point.y;
+	  // Compute the float value
+	  floatValue = (position - (slotRect.origin.y + knobRect.size.height/2))
+	    / (slotRect.size.height - knobRect.size.height);
+	  if (flipped)
+	    floatValue = 1 - floatValue;
 	}
       else
-	position = point.x;
+	{
+	  if (point.x < slotRect.origin.x + knobRect.size.width / 2)
+	    {
+	      position = slotRect.origin.x + knobRect.size.width / 2;
+	    }
+	  else if (point.x > slotRect.origin.x + slotRect.size.width
+		   - knobRect.size.width / 2)
+	    {
+	      position = slotRect.origin.x + slotRect.size.width
+		- knobRect.size.width / 2;
+	    }
+	  else
+	    position = point.x;
 
-      // Compute the float value given the knob size
-      floatValue = (position - (slotRect.origin.x + knobRect.size.width / 2))
-	/ (slotRect.size.width - knobRect.size.width);
+	  // Compute the float value given the knob size
+	  floatValue = (position - (slotRect.origin.x + knobRect.size.width / 2))
+	    / (slotRect.size.width - knobRect.size.width);
+	}
     }
 
   return floatValue * (maxValue - minValue) + minValue;
@@ -144,6 +170,7 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   _cell.is_bordered = YES;
   _cell.is_bezeled = NO;
   [self setContinuous: YES];
+  [self setSliderType: NSLinearSlider];
       
   _knobCell = [NSCell new];
   _titleCell = [NSTextFieldCell new];
@@ -200,8 +227,11 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   only.</p> */
 - (void) drawBarInside: (NSRect)rect flipped: (BOOL)flipped
 {
-  [[NSColor scrollBarColor] set];
-  NSRectFill(rect);
+  if (_type == NSLinearSlider)
+    {
+      [[NSColor scrollBarColor] set];
+      NSRectFill(rect);
+    }
 }
 
 /**<p>Returns the rect in which to draw the knob, based on the
@@ -219,6 +249,8 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
   NSSize size;
   NSPoint origin;
   float floatValue = [self floatValue];
+
+  // FIXME: this method needs to be refactored out to GSTheme
 
   if (_isVertical && flipped)
     {
@@ -281,55 +313,101 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  BOOL vertical = (cellFrame.size.height > cellFrame.size.width);
-  NSImage *image;
-  NSSize size;
-
   cellFrame = [self drawingRectForBounds: cellFrame];
+  _trackRect = cellFrame;
 
-  if (vertical != _isVertical)
+  if (_type == NSCircularSlider)
     {
-      if (vertical == YES)
+      NSBezierPath *circle;
+      NSPoint knobCenter;
+      NSPoint point;
+      NSRect knobRect;
+      float fraction, angle, radius;
+
+      if (cellFrame.size.width > cellFrame.size.height)
 	{
-	  image = [NSImage imageNamed: @"common_SliderVert"];
-	  if (image != nil)
-	    {
-	      size = [image size];
-	      [image setScalesWhenResized: YES];
-	      [image setSize: NSMakeSize(cellFrame.size.width, size.height)];
-	    }
+	  knobRect = NSMakeRect(cellFrame.origin.x + ((cellFrame.size.width -
+						       cellFrame.size.height) / 2.0),
+				cellFrame.origin.y,
+				cellFrame.size.height,
+				cellFrame.size.height);
 	}
       else
 	{
-	  image = [NSImage imageNamed: @"common_SliderHoriz"];
-	  if (image != nil)
-	    {
-	      size = [image size];
-	      [image setScalesWhenResized: YES];
-	      [image setSize: NSMakeSize(size.width, cellFrame.size.height)];
-	    }
+	  knobRect = NSMakeRect(cellFrame.origin.x,
+				cellFrame.origin.y + ((cellFrame.size.height -
+						       cellFrame.size.width) / 2.0),
+				cellFrame.size.width,
+				cellFrame.size.width);
 	}
-      [_knobCell setImage: image];
+      knobCenter = NSMakePoint(NSMidX(knobRect), NSMidY(knobRect));
+
+      circle = [NSBezierPath bezierPathWithOvalInRect: knobRect];
+      [[NSColor controlBackgroundColor] set];    
+      [circle fill];
+      [[NSColor blackColor] set];
+      [circle stroke];
+
+      fraction = ([self floatValue] - [self minValue]) /
+	([self maxValue] - [self minValue]);
+      angle = (fraction * (2.0 * M_PI)) - (M_PI / 2.0);
+      radius = (knobRect.size.height / 2) - 4;
+      point = NSMakePoint((radius * cos(angle)) + knobCenter.x,
+			  (radius * sin(angle)) + knobCenter.y);
+          
+      [[NSBezierPath bezierPathWithOvalInRect: NSMakeRect(point.x - 2,
+							  point.y - 2,
+							  4,
+							  4)] stroke];
     }
-  _isVertical = vertical;
-
-  _trackRect = cellFrame;
-
-  [self drawBarInside: cellFrame flipped: [controlView isFlipped]];
-
-  /* Draw title - Uhmmm - shouldn't this better go into
-     drawBarInside:flipped: ? */
-  if (_isVertical == NO)
+  else if (_type == NSLinearSlider)
     {
-      [_titleCell drawInteriorWithFrame: cellFrame inView: controlView];
-    }
+      BOOL vertical = (cellFrame.size.height > cellFrame.size.width);
+      NSImage *image;
+      NSSize size;
 
-  [self drawKnob];
+      if (vertical != _isVertical)
+	{
+	  if (vertical == YES)
+	    {
+	      image = [NSImage imageNamed: @"common_SliderVert"];
+	      if (image != nil)
+		{
+		  size = [image size];
+		  [image setScalesWhenResized: YES];
+		  [image setSize: NSMakeSize(cellFrame.size.width, size.height)];
+		}
+	    }
+	  else
+	    {
+	      image = [NSImage imageNamed: @"common_SliderHoriz"];
+	      if (image != nil)
+		{
+		  size = [image size];
+		  [image setScalesWhenResized: YES];
+		  [image setSize: NSMakeSize(size.width, cellFrame.size.height)];
+		}
+	    }
+	  [_knobCell setImage: image];
+	}
+      _isVertical = vertical;
+
+      [self drawBarInside: cellFrame flipped: [controlView isFlipped]];
+
+      /* Draw title - Uhmmm - shouldn't this better go into
+	 drawBarInside:flipped: ? */
+      if (_isVertical == NO)
+	{
+	  [_titleCell drawInteriorWithFrame: cellFrame inView: controlView];
+	}
+
+      [self drawKnob];
+    }
 }
 
 - (BOOL) isOpaque
 {
-  return YES;
+  return NO;
 }
 
 /**<p> Returns the thickness of the slider's knob.  This value is in
@@ -495,6 +573,32 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 - (void) setTitleFont: (NSFont*)font
 {
   [_titleCell setFont: font];
+}
+
+/**<p>Returns the slider type: linear or circular.</p>
+   <p>See Also: -setSliderType:</p>
+*/
+- (NSSliderType)sliderType
+{
+  return _type;
+}
+
+/**<p> Sets the type of the slider: linear or circular.
+ </p><p>See Also: -sliderType</p>
+*/
+- (void) setSliderType: (NSSliderType)type
+{
+  _type = type;
+  if (_type == NSLinearSlider)
+    {
+      [self setBordered: YES];
+      [self setBezeled: NO];
+    }
+  else if (_type == NSCircularSlider)
+    {
+      [self setBordered: NO];
+      [self setBezeled: NO];
+    }
 }
 
 /**Returns whether or not the slider is vertical.  If, for some
@@ -702,7 +806,8 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
       floatValue = _floatValueForMousePoint(point, knobRect, 
 					    slotRect, isVertical, 
 					    minValue, maxValue,
-					    self, isFlipped); 
+					    self, isFlipped,
+					    (_type == NSCircularSlider)); 
       [self setFloatValue: floatValue];
       if (isContinuous)
         {
@@ -744,7 +849,8 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 	  floatValue = _floatValueForMousePoint(point, knobRect,
 						slotRect, isVertical, 
 						minValue, maxValue, 
-						self, isFlipped); 
+						self, isFlipped,
+						(_type == NSCircularSlider)); 
 	  if (floatValue != oldFloatValue)
 	    {
 	      if (_allowsTickMarkValuesOnly)
@@ -791,7 +897,8 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
       [self setMaxValue: [decoder decodeFloatForKey: @"NSMaxValue"]];
       [self setFloatValue: [decoder decodeFloatForKey: @"NSValue"]];
       _altIncrementValue = [decoder decodeFloatForKey: @"NSAltIncValue"];
-
+      [self setSliderType: [decoder decodeIntForKey: @"NSSliderType"]];
+	  
       // do these here, since the Cocoa version of the class does not save these values...
       _knobCell = [NSCell new];
       _titleCell = [NSTextFieldCell new];
@@ -799,10 +906,6 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
       [_titleCell setStringValue: @""];
       [_titleCell setAlignment: NSCenterTextAlignment];
 
-      // if it's from a nib, make it bordered and bezeled so it's more attractive, this
-      // information is not in the nib.
-      [self setBordered: YES];
-      [self setBezeled: NO];
       _isVertical = -1;
     }
   else
@@ -836,6 +939,7 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
       [coder encodeFloat: _maxValue forKey: @"NSMaxValue"];
       [coder encodeFloat: _altIncrementValue forKey: @"NSAltIncValue"];
       [coder encodeFloat: _minValue forKey: @"NSValue"]; // encoded for compatibility
+      [coder encodeInt: _type forKey: @"NSSliderType"];
     }
   else
     {

@@ -43,6 +43,12 @@ typedef enum _NSTickMarkPosition
     NSTickMarkRight
 } NSTickMarkPosition;
 
+typedef enum _NSSliderType
+{
+    NSLinearSlider = 0,
+    NSCircularSlider
+} NSSliderType;
+
 @interface NSSliderCell : NSActionCell <NSCoding>
 {
   float		_minValue;
@@ -55,6 +61,7 @@ typedef enum _NSTickMarkPosition
   BOOL          _allowsTickMarkValuesOnly;
   int           _numberOfTickMarks;
   NSTickMarkPosition _tickMarkPosition;
+  NSSliderType		_type;
 }
 
 /* Asking about the cell's behavior */
@@ -78,6 +85,7 @@ typedef enum _NSTickMarkPosition
 - (id) titleCell;
 - (NSColor*) titleColor;
 - (NSFont*) titleFont;
+- (NSSliderType) sliderType;
 
 /* Changing the cell's appearance */
 - (void) setKnobThickness: (float)thickness;
@@ -85,6 +93,7 @@ typedef enum _NSTickMarkPosition
 - (void) setTitleCell: (NSCell*)aCell;
 - (void) setTitleColor: (NSColor*)color;
 - (void) setTitleFont: (NSFont*)font;
+- (void) setSliderType:(NSSliderType)type;
 
 /* Asking about the value limits */
 - (double) minValue;
