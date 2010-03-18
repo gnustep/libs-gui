@@ -350,6 +350,8 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
   struct jpeg_decompress_struct  cinfo;
   struct gs_jpeg_error_mgr  jerrMgr;
 
+  memset((void*)&cinfo, 0, sizeof(struct jpeg_decompress_struct));
+
   /* Be sure imageData contains data */
   if (![imageData length])
     {
@@ -399,6 +401,8 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
 
   if (!(self = [super init]))
     return nil;
+
+  memset((void*)&cinfo, 0, sizeof(struct jpeg_decompress_struct));
 
   /* Establish the our custom error handler */
   gs_jpeg_error_mgr_init(&jerrMgr);
@@ -548,6 +552,8 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
         NSLog (em);
       return nil;
     }
+
+  memset((void*)&cinfo, 0, sizeof(struct jpeg_decompress_struct));
 
   imageSource = [self bitmapData];
   sPP = [self samplesPerPixel];

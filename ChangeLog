@@ -1,3 +1,9 @@
+2010-03-18 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBitmapImageRep+JPEG.m: Put cinfo into a defined state
+	before using it.
+	Patch by Vincent Richomme <forumer@smartmobili.com>.
+
 2010-03-17 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView.m (-readSelectionFromPasteboard:type:): Fix
