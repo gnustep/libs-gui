@@ -28,19 +28,19 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include "config.h"
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSException.h>
-#include <GNUstepBase/GSCategories.h>
-#include "AppKit/NSCell.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSKeyValueBinding.h"
-#include "AppKit/NSMenuItem.h"
-#include "AppKit/NSMenu.h"
-#include "GSBindingHelpers.h"
+#import "config.h"
+#import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSException.h>
+
+#import "AppKit/NSCell.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSKeyValueBinding.h"
+#import "AppKit/NSMenuItem.h"
+#import "AppKit/NSMenu.h"
+#import "GSBindingHelpers.h"
 
 static BOOL usesUserKeyEquivalents = NO;
 static Class imageClass;
@@ -56,6 +56,9 @@ static Class imageClass;
   self = [super initWithTitle: @"-----------"
 		action: NULL
 		keyEquivalent: @""];
+  if (self == nil)
+    return nil;
+
   _enabled = NO;
   _changesState = NO;
   return self;
@@ -66,7 +69,7 @@ static Class imageClass;
   return YES;
 }
 
-// FIXME: We need a lot of methods to switch of changes for a separator
+// FIXME: We need a lot of methods to switch off changes for a separator
 @end
 
 
@@ -127,6 +130,9 @@ static Class imageClass;
        keyEquivalent: (NSString*)charCode
 {
   self = [super init];
+  if (self == nil)
+    return nil;
+
   //_menu = nil;
   [self setTitle: aString];
   [self setKeyEquivalent: charCode];

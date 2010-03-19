@@ -31,30 +31,29 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
-#include <Foundation/NSLock.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSValue.h>
-#include <GNUstepBase/GSCategories.h>
+#import "config.h"
+#import <Foundation/NSLock.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSValue.h>
 
-#include "AppKit/AppKitExceptions.h"
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSBezierPath.h"
-#include "AppKit/NSButtonCell.h"
-#include "AppKit/NSButton.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSSound.h"
-#include "AppKit/NSWindow.h"
-#include "GNUstepGUI/GSTheme.h"
-#include "GNUstepGUI/GSNibLoading.h"
-#include "GSGuiPrivate.h"
+#import "AppKit/AppKitExceptions.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSBezierPath.h"
+#import "AppKit/NSButtonCell.h"
+#import "AppKit/NSButton.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSSound.h"
+#import "AppKit/NSWindow.h"
+#import "GNUstepGUI/GSTheme.h"
+#import "GNUstepGUI/GSNibLoading.h"
+#import "GSGuiPrivate.h"
 
 #include <math.h>
 

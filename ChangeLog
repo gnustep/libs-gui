@@ -1,3 +1,9 @@
+2010-03-19 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSButtonCell.m,
+	* Source/NSMenuItem.m: Remove include of GSCategories.h, as this
+	file no longer exists.
+
 2010-03-18 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBitmapImageRep+JPEG.m: Put cinfo into a defined state
