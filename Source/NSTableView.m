@@ -5007,7 +5007,7 @@ This method is deprecated, use -columnIndexesInRect:. */
   int endingColumn;
 
   NSGraphicsContext *ctxt = GSCurrentContext ();
-  float position;
+  float position = 0.0;
 
   int startingRow    = [self rowAtPoint: 
 			       NSMakePoint (_bounds.origin.x, minY)];
@@ -5968,7 +5968,8 @@ This method is deprecated, use -columnIndexesInRect:. */
     }
 
   [newSortDescriptors removeObjectsInArray: outdatedDescriptors];
-  [newSortDescriptors insertObject: newMainSortDescriptor atIndex: 0];
+  if (newMainSortDescriptor != nil)
+	[newSortDescriptors insertObject: newMainSortDescriptor atIndex: 0];
 
   [self setSortDescriptors: newSortDescriptors];
 
