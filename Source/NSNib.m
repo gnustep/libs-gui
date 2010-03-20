@@ -38,23 +38,22 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <AppKit/NSNib.h>
-#include <AppKit/NSNibLoading.h>
-#include <Foundation/NSData.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSURL.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSArchiver.h>
-#include <Foundation/NSFileManager.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSException.h>
+#import "config.h"
+#import <Foundation/NSArray.h>
+#import <Foundation/NSArchiver.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSData.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSURL.h>
 
-#include "GNUstepGUI/GSModelLoaderFactory.h"
-#include "GNUstepGUI/GSGormLoading.h"
-#include "GNUstepGUI/IMLoading.h"
+#import "AppKit/NSNib.h"
+#import "AppKit/NSNibLoading.h"
+#import "GNUstepGUI/GSModelLoaderFactory.h"
+#import "GNUstepGUI/GSGormLoading.h"
+#import "GNUstepGUI/IMLoading.h"
 
 @implementation NSNib
 
@@ -66,12 +65,12 @@
     {
       NSString *newFileName = [GSModelLoaderFactory supportedModelFileAtPath: fileName];
       ASSIGN(_nibData, [NSData dataWithContentsOfFile: newFileName]);
-      ASSIGN(_loader, [GSModelLoaderFactory modelLoaderForFileName: newFileName]);
-      NSDebugLog(@"Loaded data from %@...",newFileName);
+      ASSIGN(_loader, [GSModelLoaderFactory modelLoaderForFileType: [newFileName pathExtension]]);
+      NSDebugLog(@"Loaded data from %@...", newFileName);
     }
   NS_HANDLER
     {
-      NSLog(@"Exception occured while loading model: %@",[localException reason]);
+      NSLog(@"Exception occured while loading model: %@", [localException reason]);
     }
   NS_ENDHANDLER
 }
@@ -118,9 +117,27 @@
 {
   if ((self = [super init]) != nil)
     {
-      // load the nib data into memory...
-      _nibData = [NSData dataWithContentsOfURL: nibFileURL];
       ASSIGN(_url, nibFileURL);
+
+      if ([nibFileURL isFileURL])
+        {
+          [self _readNibData: [nibFileURL path]];
+        }
+      else
+        {
+          NS_DURING
+            {
+              // load the nib data into memory...
+              _nibData = [NSData dataWithContentsOfURL: nibFileURL];
+              ASSIGN(_loader, [GSModelLoaderFactory modelLoaderForFileType: 
+                                                      [[nibFileURL path] pathExtension]]);
+            }
+          NS_HANDLER
+            {
+              NSLog(@"Exception occured while loading model: %@", [localException reason]);
+            }
+          NS_ENDHANDLER
+        }
     }
   return self;
 }
@@ -135,6 +152,9 @@
   if ((self = [super init]) != nil)
     {
       NSString *fileName = nil;
+
+      // Keep the bundle for resource creation
+      ASSIGN(_bundle, bundle);
 
       if (bundle == nil)
 	{
@@ -243,6 +263,7 @@
 {
   RELEASE(_nibData);
   RELEASE(_loader);
+  TEST_RELEASE(_bundle);
   TEST_RELEASE(_url);
   [super dealloc];
 }

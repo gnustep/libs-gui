@@ -43,8 +43,8 @@
 #define _GNUstep_H_NSNib
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSZone.h>
+#import <Foundation/NSObject.h>
+#import <Foundation/NSZone.h>
 
 @class NSData;
 @class NSDictionary;
@@ -59,6 +59,7 @@
   NSData *_nibData;
   id _loader;
   NSURL *_url;
+  NSBundle *_bundle;
 }
 
 // reading the data...

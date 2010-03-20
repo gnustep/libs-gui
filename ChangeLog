@@ -1,3 +1,18 @@
+2010-03-20 Fred Kiefer <FredKiefer@gmx.de>
+
+	* gui/Headers/AppKit/NSNib.h,
+	* gui/Headers/AppKit/NSNibConnector.h,
+	* gui/Headers/AppKit/NSNibLoading.h,
+	* gui/Headers/Additions/GNUstepGUI/GSModelLoaderFactory.h,
+	* gui/Headers/Additions/GNUstepGUI/GSInstantiator.h,
+	* gui/Headers/Additions/GNUstepGUI/GSNibLoading.h,
+	* gui/Source/GSXibLoader.m,
+	* gui/Source/GSNibLoader.m,
+	* gui/Source/GSNibLoading.m,
+	* gui/Source/GSModelLoaderFactory.m,
+	* gui/Source/NSBundleAdditions.m: Clean up includes.
+	* gui/Source/NSNib.m: Add loading of NIB files via URL.
+
 2010-03-19 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSButtonCell.m,

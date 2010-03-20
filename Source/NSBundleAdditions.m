@@ -30,19 +30,20 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include "config.h"
-#include <Foundation/NSArray.h>
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSKeyValueCoding.h>
-#include <AppKit/NSControl.h>
-#include "AppKit/NSNibConnector.h"
-#include "AppKit/NSNibLoading.h"
-#include "GNUstepGUI/GSModelLoaderFactory.h"
+#import "config.h"
+#import <Foundation/NSArray.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSCoder.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSKeyValueCoding.h>
+#import <AppKit/NSControl.h>
+#import "AppKit/NSNibConnector.h"
+#import "AppKit/NSNibLoading.h"
+#import "GNUstepGUI/GSModelLoaderFactory.h"
 
 @implementation	NSNibConnector
 

@@ -31,14 +31,13 @@
 #define _GNUstep_H_NSNibLoading
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSGeometry.h>
+#import <Foundation/NSObject.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSZone.h>
 
-@class	NSString;
-@class	NSDictionary;
-@class	NSMutableDictionary;
+@class NSString;
+@class NSDictionary;
+@class NSMutableDictionary;
 
 @interface NSObject (NSNibAwaking)
 

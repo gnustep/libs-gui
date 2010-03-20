@@ -29,40 +29,39 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/NSClassDescription.h>
-#include <Foundation/NSArchiver.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSByteOrder.h>
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSData.h>
-#include <Foundation/NSDecimalNumber.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSInvocation.h>
-#include <Foundation/NSObjCRuntime.h>
-#include <Foundation/NSPathUtilities.h>
-#include <Foundation/NSFileManager.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSKeyValueCoding.h>
-#include <Foundation/NSKeyedArchiver.h>
-#include "AppKit/AppKit.h"
-#include <GNUstepBase/GSObjCRuntime.h>
-#include "GSGuiPrivate.h"
+#import <Foundation/NSArchiver.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSByteOrder.h>
+#import <Foundation/NSCoder.h>
+#import <Foundation/NSData.h>
+#import <Foundation/NSDecimalNumber.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSKeyedArchiver.h>
+#import <Foundation/NSObjCRuntime.h>
+#import <Foundation/NSString.h>
 
+// FIXME: Used for NSKeyedArchiver access. All this should be moved into base.
 /*
  *      Setup for inline operation of arrays.
  */
 #define GSI_ARRAY_RETAIN(A, X)	RETAIN((X).obj)
 #define GSI_ARRAY_RELEASE(A, X)	RELEASE((X).obj)
 #define GSI_ARRAY_TYPES GSUNION_OBJ
-#include <GNUstepBase/GSIArray.h>
+#import <GNUstepBase/GSIArray.h>
 
-#include <GNUstepGUI/GSNibLoading.h>
-#include <GNUstepGUI/GSInstantiator.h>
+#import "GNUstepGUI/GSNibLoading.h"
+#import "AppKit/NSApplication.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSMenuItem.h"
+#import "AppKit/NSMenuView.h"
+#import "AppKit/NSScreen.h"
+#import "AppKit/NSSound.h"
+#import "GNUstepGUI/GSInstantiator.h"
+#import "GSGuiPrivate.h"
 
 static BOOL _isInInterfaceBuilder = NO;
 
@@ -98,7 +97,7 @@ static BOOL _isInInterfaceBuilder = NO;
 @interface NSMenu (NibCompatibility)
 - (void) _setMain: (BOOL)isMain;
 @end
-@interface	NSMenu (GNUstepPrivate)
+@interface NSMenu (GNUstepPrivate)
 - (void) _setGeometry;
 @end
 

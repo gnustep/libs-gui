@@ -26,10 +26,15 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include <Foundation/Foundation.h>
-#include <AppKit/AppKit.h>
-#include "GNUstepGUI/GSModelLoaderFactory.h"
-#include "GNUstepBase/GSObjCRuntime.h"
+#import "config.h"
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSString.h>
+
+#import "GNUstepGUI/GSModelLoaderFactory.h"
 
 @implementation GSModelLoader
 + (NSString *) type

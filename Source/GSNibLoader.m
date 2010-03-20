@@ -26,11 +26,18 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/Foundation.h>
-#include <AppKit/AppKit.h>
+#import "config.h"
+#import <Foundation/NSArchiver.h>
+#import <Foundation/NSData.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSKeyedArchiver.h>
+#import <Foundation/NSString.h>
 
-#include "GNUstepGUI/GSModelLoaderFactory.h"
-#include "GNUstepGUI/GSNibLoading.h"
+#import "GNUstepGUI/GSModelLoaderFactory.h"
+#import "GNUstepGUI/GSNibLoading.h"
 
 @interface GSNibLoader : GSModelLoader
 @end

@@ -29,11 +29,9 @@
 #define _GNUstep_H_NSNibConnector
 #import <GNUstepBase/GSVersionMacros.h>
 
-#ifndef GNUSTEP
-#include <Foundation/Foundation.h>
-#else
-#include <Foundation/NSObject.h>
-#endif
+#import <Foundation/NSObject.h>
+
+@class NSString;
 
 @interface NSNibConnector : NSObject <NSCoding>
 {

@@ -38,6 +38,7 @@
 #import	<GNUstepBase/GSMime.h>
 
 #import "AppKit/NSApplication.h"
+#import "AppKit/NSNibLoading.h"
 #import "GNUstepGUI/GSModelLoaderFactory.h"
 #import "GNUstepGUI/GSNibLoading.h"
 

@@ -29,7 +29,13 @@
 #ifndef _GNUstep_H_GSModelLoaderFactory
 #define _GNUstep_H_GSModelLoaderFactory
 
-#include <Foundation/Foundation.h>
+#import <Foundation/NSObject.h>
+#import <Foundation/NSZone.h>
+
+@class NSData;
+@class NSDictionary;
+@class NSString;
+@class NSBundle;
 
 @interface GSModelLoader : NSObject
 + (NSString *) type;

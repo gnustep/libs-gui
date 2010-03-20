@@ -28,23 +28,29 @@
 #ifndef _GNUstep_H_GSNibCompatibility
 #define _GNUstep_H_GSNibCompatibility
 
-#include <Foundation/NSObject.h>
+#import <Foundation/NSObject.h>
 
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSMenu.h>
-#include <AppKit/NSView.h>
-#include <AppKit/NSText.h>
-#include <AppKit/NSTextView.h>
-#include <AppKit/NSControl.h>
-#include <AppKit/NSButton.h>
-#include <AppKit/NSGraphicsContext.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/NSResponder.h>
-#include <AppKit/NSEvent.h>
-#include <AppKit/NSNibConnector.h>
+#import <AppKit/NSButton.h>
+#import <AppKit/NSControl.h>
+#import <AppKit/NSEvent.h>
+#import <AppKit/NSGraphicsContext.h>
+#import <AppKit/NSGraphics.h>
+#import <AppKit/NSMenu.h>
+#import <AppKit/NSNibConnector.h>
+#import <AppKit/NSResponder.h>
+#import <AppKit/NSText.h>
+#import <AppKit/NSTextView.h>
+#import <AppKit/NSView.h>
+#import <AppKit/NSWindow.h>
 
-#include "GNUstepGUI/GSNibContainer.h"
-#include "GNUstepGUI/GSInstantiator.h"
+#import "GNUstepGUI/GSNibContainer.h"
+#import "GNUstepGUI/GSInstantiator.h"
+
+@class NSDictionary;
+@class NSMapTable;
+@class NSMutableArray;
+@class NSMutableSet;
+@class NSString;
 
 // templates
 @protocol OSXNibTemplate

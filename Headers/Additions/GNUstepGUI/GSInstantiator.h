@@ -28,9 +28,8 @@
 #ifndef _GNUstep_H_GSInstantiator
 #define _GNUstep_H_GSInstantiator
 
-#include <Foundation/NSObject.h>
-#include <AppKit/NSNibLoading.h>
-#include <AppKit/NSNibConnector.h>
+#import <Foundation/NSObject.h>
+#import <AppKit/NSNibConnector.h>
 
 // instantiator
 @protocol GSInstantiator
