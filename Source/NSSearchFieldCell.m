@@ -357,12 +357,6 @@
 	        editor: textObject
 	      delegate: anObject
 	         event: theEvent];
-  [[NSNotificationCenter defaultCenter] 
-      addObserver: self 
-         selector: @selector(textDidChange:)
-             name: NSTextDidChangeNotification 
-           object: textObject];
-
 }
 
 - (void) endEditing: (NSText *)editor
@@ -389,6 +383,11 @@
 	        delegate: anObject
 	           start: selStart
 	          length: selLength];
+  [[NSNotificationCenter defaultCenter] 
+      addObserver: self 
+         selector: @selector(textDidChange:)
+             name: NSTextDidChangeNotification 
+           object: textObject];
 }
 
 - (BOOL) trackMouse: (NSEvent *)event 

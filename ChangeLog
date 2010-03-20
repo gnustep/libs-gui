@@ -1,3 +1,16 @@
+2010-03-20 Eric Wasylishen <ewasylishen@gmail.com>
+
+	* Source/NSSearchFieldCell.m:
+	Move subscription to NSTextDidChangeNotification from
+	-editWithFrame:... to -selectWithFrame:...
+
+	The reason for this is -editWithFrame:... is not always called
+	when the field starts being edited. (This seems odd but matches
+	OS X behaviour). -selectWithFrame: is always called, however.
+
+	This fixes the bug where NSSearchField doesn't send action
+	messages while the user is typing, when it is supposed to.
+	
 2010-03-20 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView.m (-buildUpTextNetwork:): Prevent retain cycle
