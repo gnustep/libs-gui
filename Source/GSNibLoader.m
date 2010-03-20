@@ -28,6 +28,7 @@
 
 #import "config.h"
 #import <Foundation/NSArchiver.h>
+#import <Foundation/NSAutoreleasePool.h>
 #import <Foundation/NSData.h>
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSDictionary.h>
@@ -62,14 +63,14 @@
      externalNameTable: (NSDictionary *)context
               withZone: (NSZone *)zone;
 {
-  BOOL		loaded = NO;
-  NSUnarchiver *unarchiver = nil;
+  BOOL loaded = NO;
+  CREATE_AUTORELEASE_POOL(pool);
 
   NS_DURING
     {
       if (data != nil)
 	{
-	  unarchiver = [[NSKeyedUnarchiver alloc] 
+	  NSUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] 
 			 initForReadingWithData: data];
 	  if (unarchiver != nil)
 	    {
@@ -119,6 +120,7 @@
       NSLog(@"Failed to load Nib\n");
     }
 
+  RELEASE(pool);
   return loaded;
 }
 

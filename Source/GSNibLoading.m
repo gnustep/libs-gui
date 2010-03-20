@@ -1289,12 +1289,15 @@ static BOOL _isInInterfaceBuilder = NO;
   Class aClass;
   if ((aClass = [self classForClassName: className]) == nil)
     {
-      aClass = NSClassFromString(className);
-    }
-  if (aClass == nil)
-    {
-      [NSException raise: NSInternalInconsistencyException
-                   format: @"NSClassSwapper unable to find class '%@'", className];
+      if ((aClass = [[self class] classForClassName: className]) == nil)
+        {
+          aClass = NSClassFromString(className);
+          if (aClass == nil)
+            {
+              [NSException raise: NSInternalInconsistencyException
+                          format: @"NSClassSwapper unable to find class '%@'", className];
+            }
+        }
     }
   return aClass;
 }

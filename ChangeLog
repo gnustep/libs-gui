@@ -1,5 +1,16 @@
 2010-03-20 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSTextView.m (-buildUpTextNetwork:): Prevent retain cycle
+	by storing reference to retained text storage in ivar.
+	* gui/Source/GSNibLoader.m
+	(-loadModelData:externalNameTable:withZone:): Use an auto release
+	pool while loading a NIB file.
+	* gui/Source/GSNibLoading.m
+	(NSKeyedUnarchiver-replacementClassForClassName:): Check for class
+	level replacement as well.
+
+2010-03-20 Fred Kiefer <FredKiefer@gmx.de>
+
 	* gui/Headers/AppKit/NSNib.h,
 	* gui/Headers/AppKit/NSNibConnector.h,
 	* gui/Headers/AppKit/NSNibLoading.h,

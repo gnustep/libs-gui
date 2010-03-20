@@ -660,15 +660,17 @@ If a text view is added to an empty text network, it keeps its attributes.
   [layoutManager addTextContainer: textContainer];
   RELEASE(textContainer);
 
+  /* We keep a flag to remember that we are directly responsible for 
+     managing the text network. */
+  _tf.owns_text_network = YES;
+  // This value gets set once more in setTextContainer: to the same value.
+  _textStorage = textStorage;
+
   /* The situation at this point is as follows: 
 
      textView (us) --RETAINs--> textStorage 
      textStorage   --RETAINs--> layoutManager 
      layoutManager --RETAINs--> textContainer */
-
-  /* We keep a flag to remember that we are directly responsible for 
-     managing the text network. */
-  _tf.owns_text_network = YES;
 
   return textContainer;
 }
