@@ -1649,6 +1649,7 @@ originalContentsURL: (NSURL *)orig
             [array[count] close];
         }
       [self _removeAutosavedContentsFile];
+      AUTORELEASE(RETAIN(self));
       [[NSDocumentController sharedDocumentController] removeDocument: self];
     }
 }

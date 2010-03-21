@@ -1,3 +1,9 @@
+2010-03-22 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSDocument.m (-close): Retain and autorelease self before
+	removing from the document controller. This will keep the document
+	valid until the window is completely closed.
+
 2010-03-20 Eric Wasylishen <ewasylishen@gmail.com>
 
 	* Source/NSSearchFieldCell.m:
