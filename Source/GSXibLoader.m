@@ -693,41 +693,28 @@
   return loaded;
 }
 
-- (BOOL) loadModelFile: (NSString *)fileName
-     externalNameTable: (NSDictionary *)context
-              withZone: (NSZone *)zone;
+- (NSData *) dataForFile: (NSString *)fileName
 {
   NSFileManager	*mgr = [NSFileManager defaultManager];
   BOOL isDir = NO;
-  BOOL loaded = NO;
 
   NSDebugLog(@"Loading Xib `%@'...\n", fileName);
-
   if ([mgr fileExistsAtPath: fileName isDirectory: &isDir])
     {
-      NSData *data = nil;
-      
       if (isDir == NO)
 	{
-	  data = [NSData dataWithContentsOfFile: fileName];
-	  NSDebugLog(@"Loaded data from file...");
-          loaded = [self loadModelData: data 
-		     externalNameTable: context
-                              withZone: zone];
-	}
-
-      // report a problem if there is one.
-      if (loaded == NO)
-	{
-	  NSLog(@"Could not load Xib file: %@",fileName);
-	}
+	  return [NSData dataWithContentsOfFile: fileName];
+        }
+      else
+        {
+          NSLog(@"Xib file specified %@, is directory.", fileName);
+        }
     }
   else
     {
-      NSLog(@"Xib file specified %@, could not be found.",fileName);
+      NSLog(@"Xib file specified %@, could not be found.", fileName);
     }
-      
-  return loaded;
+  return nil;
 }
 
 @end

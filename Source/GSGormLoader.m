@@ -26,11 +26,18 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/Foundation.h>
-#include <AppKit/AppKit.h>
+#import "config.h"
+#import <Foundation/NSArchiver.h>
+#import <Foundation/NSAutoreleasePool.h>
+#import <Foundation/NSData.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSString.h>
 
-#include "GNUstepGUI/GSModelLoaderFactory.h"
-#include "GNUstepGUI/GSGormLoading.h"
+#import "GNUstepGUI/GSModelLoaderFactory.h"
+#import "GNUstepGUI/GSGormLoading.h"
 
 @interface GSGormLoader : GSModelLoader
 @end
@@ -104,19 +111,15 @@
   return loaded;
 }
 
-- (BOOL) loadModelFile: (NSString *)fileName
-     externalNameTable: (NSDictionary *)context
-              withZone: (NSZone *)zone;
+- (NSData *) dataForFile: (NSString *)fileName
 {
   NSFileManager	*mgr = [NSFileManager defaultManager];
-  BOOL          isDir = NO;
-  BOOL          loaded = NO;
+  BOOL isDir = NO;
 
   NSDebugLog(@"Loading Gorm `%@'...\n", fileName);
-
   if ([mgr fileExistsAtPath: fileName isDirectory: &isDir])
     {
-      NSData	*data = nil;
+      NSData *data = nil;
       
       // if the data is in a directory, then load from objects.gorm in the directory
       if (isDir == NO)
@@ -130,18 +133,13 @@
 	  data = [NSData dataWithContentsOfFile: newFileName];
 	  NSDebugLog(@"Loaded data from %@...",newFileName);
 	}
-
-      loaded = [self loadModelData: data 
-		     externalNameTable: context
-		     withZone: zone];
-
-      // report a problem if there is one.
-      if (loaded == NO)
-	{
-	  NSLog(@"Could not load Gorm file: %@",fileName);
-	}
+      return data;
     }
-      
-  return loaded;
+  else
+    {
+      NSLog(@"Gorm file specified %@, could not be found.", fileName);
+    }
+  return nil;
 }
+
 @end

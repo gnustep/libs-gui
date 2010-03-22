@@ -9,6 +9,8 @@
 
    Author: Gregory John Casamento
    Date: 2003, 2005
+   Author: Fred Kiefer
+   Date: 2003, 2010
 
    This file is part of the GNUstep GUI Library.
 
@@ -286,6 +288,7 @@ static BOOL _isInInterfaceBuilder = NO;
   RELEASE(_windowClass);
   RELEASE(_view);
   RELEASE(_autosaveName);
+  RELEASE(_realObject);
   [super dealloc];
 }
 
@@ -701,6 +704,13 @@ static BOOL _isInInterfaceBuilder = NO;
     }
 }
 
+- (void) dealloc
+{
+  RELEASE(_className);
+  RELEASE(_realObject);
+  [super dealloc];
+}
+
 /**
  * Designated initializer for NSViewTemplate.
  */
@@ -835,6 +845,13 @@ static BOOL _isInInterfaceBuilder = NO;
     {
       [self setVersion: 0];
     }
+}
+
+- (void) dealloc
+{
+  RELEASE(_menuClass);
+  RELEASE(_realObject);
+  [super dealloc];
 }
 
 - (id) initWithCoder: (NSCoder *)aCoder
@@ -988,6 +1005,7 @@ static BOOL _isInInterfaceBuilder = NO;
 {
   RELEASE(_className);
   RELEASE(_extension);
+  RELEASE(_object);
   [super dealloc];
 }
 @end
@@ -1858,15 +1876,16 @@ static BOOL _isInInterfaceBuilder = NO;
  */
 - (void) nibInstantiateWithOwner: (id)owner topLevelObjects: (NSMutableArray *)topLevelObjects
 {
-  NSEnumerator *en = [_connections objectEnumerator];
-  NSArray *objs = NSAllMapTableKeys([self names]);
+  NSEnumerator *en;
+  NSArray *objs;
   id obj = nil;
   id menu = nil;
-  
+
   // set the new root object.
   [_root setRealObject: owner];
 
-  // iterate over connections, instantiate, and then establish them.
+  // iterate over connections, instantiate and then establish them.
+  en = [_connections objectEnumerator];
   while ((obj = [en nextObject]) != nil)
     {
       if ([obj respondsToSelector: @selector(instantiateWithInstantiator:)])
@@ -1876,24 +1895,23 @@ static BOOL _isInInterfaceBuilder = NO;
         }
     }
 
-  // iterate over all objects instantiate windows, awaken objects and fill
+  // iterate over all objects, instantiate, awaken objects and fill
   // in top level array.
+  objs = NSAllMapTableKeys(_objects);
   en = [objs objectEnumerator];
   while ((obj = [en nextObject]) != nil)
     {
-      // instantiate all windows and fill in the top level array.
-      if ([obj isKindOfClass: [NSWindowTemplate class]])
+      id v = NSMapGet(_objects, obj);
+      obj = [self instantiateObject: obj];
+      // Object is top level if it isn't the owner but points to it. 
+      if ((v == owner || v == _root) && (obj != owner) && (obj != _root))
         {
-          if ([obj realObject] == nil)
+          if (topLevelObjects == nil)
             {
-              obj = [self instantiateObject: obj];
-              [topLevelObjects addObject: obj];
+              // When there is no top level object array, just retain these objects
+              RETAIN(obj);
             }
-        }
-      else
-        {
-          id v = NSMapGet(_objects, obj);
-          if (v == nil || v == owner)
+          else
             {
               [topLevelObjects addObject: obj];
             }

@@ -28,6 +28,7 @@
 
 #import "config.h"
 #import <Foundation/NSArray.h>
+#import <Foundation/NSData.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSEnumerator.h>
 #import <Foundation/NSException.h>
@@ -60,9 +61,26 @@
      externalNameTable: (NSDictionary *)context
               withZone: (NSZone *)zone
 {
-  [NSException raise: NSInternalInconsistencyException
-	       format: @"Abstract model loader."];
-  return NO;
+  NSData *data = [self dataForFile: fileName];
+
+  if (data != nil)
+    {
+      BOOL loaded = [self loadModelData: data
+                      externalNameTable: context
+                               withZone: zone];
+      if (!loaded)
+        NSLog(@"Could not load Nib file: %@", fileName);
+      return loaded;
+    }
+  else
+    {
+      return NO;
+    }
+}
+
+- (NSData *) dataForFile: (NSString *)fileName
+{
+  return [NSData dataWithContentsOfFile: fileName];
 }
 
 + (NSComparisonResult) _comparePriority: (Class)loader

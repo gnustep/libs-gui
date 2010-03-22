@@ -46,6 +46,7 @@
 - (BOOL) loadModelFile: (NSString *)fileName
      externalNameTable: (NSDictionary *)context
               withZone: (NSZone *)zone;
+- (NSData *)dataForFile: (NSString *)fileName;
 @end
 
 @interface GSModelLoaderFactory : NSObject

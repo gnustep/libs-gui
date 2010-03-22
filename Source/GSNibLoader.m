@@ -124,19 +124,15 @@
   return loaded;
 }
 
-- (BOOL) loadModelFile: (NSString *)fileName
-     externalNameTable: (NSDictionary *)context
-              withZone: (NSZone *)zone;
+- (NSData *) dataForFile: (NSString *)fileName
 {
   NSFileManager	*mgr = [NSFileManager defaultManager];
-  BOOL          isDir = NO;
-  BOOL          loaded = NO;
+  BOOL isDir = NO;
 
   NSDebugLog(@"Loading Nib `%@'...\n", fileName);
-
   if ([mgr fileExistsAtPath: fileName isDirectory: &isDir])
     {
-      NSData	*data = nil;
+      NSData *data = nil;
       
       // if the data is in a directory, then load from keyedobjects.nib in the directory
       if (isDir == NO)
@@ -148,24 +144,14 @@
 	{
 	  NSString *newFileName = [fileName stringByAppendingPathComponent: @"keyedobjects.nib"];
 	  data = [NSData dataWithContentsOfFile: newFileName];
-	  NSDebugLog(@"Loaded data from %@...",newFileName);
+	  NSDebugLog(@"Loaded data from %@...", newFileName);
 	}
-
-      loaded = [self loadModelData: data 
-		     externalNameTable: context
-		     withZone: zone];
-
-      // report a problem if there is one.
-      if (loaded == NO)
-	{
-	  NSLog(@"Could not load Nib file: %@",fileName);
-	}
+      return data;
     }
   else
     {
-      NSLog(@"Nib file specified %@, could not be found.",fileName);
+      NSLog(@"NIB file specified %@, could not be found.", fileName);
     }
-      
-  return loaded;
+  return nil;
 }
 @end

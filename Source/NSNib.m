@@ -52,8 +52,6 @@
 #import "AppKit/NSNib.h"
 #import "AppKit/NSNibLoading.h"
 #import "GNUstepGUI/GSModelLoaderFactory.h"
-#import "GNUstepGUI/GSGormLoading.h"
-#import "GNUstepGUI/IMLoading.h"
 
 @implementation NSNib
 
@@ -64,8 +62,8 @@
   NS_DURING
     {
       NSString *newFileName = [GSModelLoaderFactory supportedModelFileAtPath: fileName];
-      ASSIGN(_nibData, [NSData dataWithContentsOfFile: newFileName]);
       ASSIGN(_loader, [GSModelLoaderFactory modelLoaderForFileType: [newFileName pathExtension]]);
+      ASSIGN(_nibData, [_loader dataForFile: newFileName]);
       NSDebugLog(@"Loaded data from %@...", newFileName);
     }
   NS_HANDLER
@@ -73,37 +71,6 @@
       NSLog(@"Exception occured while loading model: %@", [localException reason]);
     }
   NS_ENDHANDLER
-}
-
-- (NSDictionary *) _copyTable: (NSDictionary *)dict
-{
-  NSMutableDictionary *ctx = nil;
-
-  if (dict != nil)
-    {
-      id obj = nil;
-
-      // copy the dictionary...
-      ctx = [NSMutableDictionary dictionaryWithDictionary: dict];
-
-      // remove and set the owner...
-      obj = [ctx objectForKey: @"NSNibOwner"];
-      if (obj != nil)
-	{
-	  [ctx removeObjectForKey: @"NSNibOwner"];
-	  [ctx setObject: obj forKey: @"NSOwner"];
-	}
-
-      // Remove and set the top level objects...
-      obj = [ctx objectForKey: @"NSNibTopLevelObjects"];
-      if (obj != nil)
-	{
-	  [ctx removeObjectForKey: @"NSNibTopLevelObjects"];
-	  [ctx setObject: obj forKey: @"NSTopLevelObjects"];
-	}
-    }
-
-  return ctx;
 }
 
 // Public methods...
@@ -127,10 +94,10 @@
         {
           NS_DURING
             {
-              // load the nib data into memory...
-              _nibData = [NSData dataWithContentsOfURL: nibFileURL];
               ASSIGN(_loader, [GSModelLoaderFactory modelLoaderForFileType: 
                                                       [[nibFileURL path] pathExtension]]);
+              // load the nib data into memory...
+              _nibData = [NSData dataWithContentsOfURL: nibFileURL];
             }
           NS_HANDLER
             {
@@ -163,6 +130,11 @@
 
       // initialize the bundle...
       fileName = [bundle pathForNibResource: nibNamed];
+      if (fileName == nil)
+        {
+          DESTROY(self);
+          return nil;
+        }
 
       // load the nib data into memory...
       [self _readNibData: fileName];

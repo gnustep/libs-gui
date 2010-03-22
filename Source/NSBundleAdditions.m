@@ -38,9 +38,11 @@
 #import <Foundation/NSEnumerator.h>
 #import <Foundation/NSException.h>
 #import <Foundation/NSString.h>
+#import <Foundation/NSURL.h>
 #import <Foundation/NSUserDefaults.h>
 #import <Foundation/NSKeyValueCoding.h>
-#import <AppKit/NSControl.h>
+#import "AppKit/NSControl.h"
+#import "AppKit/NSNib.h"
 #import "AppKit/NSNibConnector.h"
 #import "AppKit/NSNibLoading.h"
 #import "GNUstepGUI/GSModelLoaderFactory.h"
@@ -229,10 +231,11 @@
    externalNameTable: (NSDictionary*)context
 	    withZone: (NSZone*)zone
 {
-  GSModelLoader *loader = [GSModelLoaderFactory modelLoaderForFileName: fileName];
-  BOOL loaded = [loader loadModelFile: fileName
-			externalNameTable: context
-			withZone: zone];
+  NSNib *nib = [[NSNib alloc] initWithContentsOfURL: [NSURL fileURLWithPath: fileName]];
+  BOOL loaded = [nib instantiateNibWithExternalNameTable: context
+                                                withZone: zone];
+
+  RELEASE(nib);
   return loaded;
 }
 
@@ -246,7 +249,7 @@
     {
       return NO;
     }
-  table = [NSDictionary dictionaryWithObject: owner forKey: @"NSOwner"];
+  table = [NSDictionary dictionaryWithObject: owner forKey: @"NSNibOwner"];
 
   /*
    * First look for the NIB in the bundle corresponding to the owning class,

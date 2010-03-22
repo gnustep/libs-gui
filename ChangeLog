@@ -1,5 +1,18 @@
 2010-03-22 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/Additions/GNUstepGUI/GSModelLoaderFactory.h,
+	* Source/GSModelLoaderFactory.m,
+	* Source/GSGormLoader.m,
+	* Source/GSXibLoader.m,
+	* Source/GSNibLoader.m: New method dataForFile: on GSModelLoader
+	and its subclasses.
+	* Source/NSNib.m: Use this new method to load NIB files.
+	* Source/NSBundleAdditions.m: Use NSNib for NIB loading.
+	* Source/GSNibLoading.m: Correctly handle top level objects and
+	clean up dealloc for most classes here.
+
+2010-03-22 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSDocument.m (-close): Retain and autorelease self before
 	removing from the document controller. This will keep the document
 	valid until the window is completely closed.
