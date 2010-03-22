@@ -745,12 +745,12 @@ static BOOL _isInInterfaceBuilder = NO;
 	    }
 	  else
 	    {
-	      _realObject = [[aClass allocWithZone: NSDefaultMallocZone()] initWithCoder: coder];
+	      ASSIGN(_realObject, [[aClass allocWithZone: NSDefaultMallocZone()] initWithCoder: coder]);
 	      [[self superview] replaceSubview: self with: _realObject]; // replace the old view...
 	    }
 	}
-      
-      // FIXME: Should release self
+
+      AUTORELEASE(self);
       return _realObject;
     }
   else
@@ -974,7 +974,7 @@ static BOOL _isInInterfaceBuilder = NO;
       if (GSObjCIsKindOf(aClass, [NSApplication class]) || 
 	 [_className isEqual: @"NSApplication"])
 	{
-	  _object = [aClass sharedApplication];
+	  _object = RETAIN([aClass sharedApplication]);
 	}
       else
 	{
@@ -1225,7 +1225,7 @@ static BOOL _isInInterfaceBuilder = NO;
       ASSIGN(_className, [coder decodeObjectForKey: @"NSClassName"]);
       ASSIGN(_resourceName, [coder decodeObjectForKey: @"NSResourceName"]);
 
-      // this is a hack, but for now it should do.
+      // FIXME: this is a hack, but for now it should do.
       if ([_className isEqual: @"NSSound"])
         {
           realObject = RETAIN([NSSound soundNamed: _resourceName]);
@@ -2111,7 +2111,7 @@ static BOOL _isInInterfaceBuilder = NO;
                    NSStringFromClass([coder class])];
     }
 
-  RELEASE(self);
+  AUTORELEASE(self);
   return RETAIN([NSImage imageNamed: imageName]);
 }
 
@@ -2162,9 +2162,16 @@ static BOOL _isInInterfaceBuilder = NO;
   if ((self = [super init]) != nil)
     {
       _file = nil;
-      _marker = @"NSToolTipHelpKey";
+      ASSIGN(_marker, @"NSToolTipHelpKey");
     }
   return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_file);
+  RELEASE(_marker);
+  [super dealloc];
 }
 
 - (id) initWithCoder: (NSCoder *)coder
@@ -2175,17 +2182,17 @@ static BOOL _isInInterfaceBuilder = NO;
         {
           if ([coder containsValueForKey: @"NSFile"])
             {
-              _file = RETAIN([coder decodeObjectForKey: @"NSFile"]);
+              ASSIGN(_file, [coder decodeObjectForKey: @"NSFile"]);
             }
           if ([coder containsValueForKey: @"NSMarker"])
             {
-              _marker = RETAIN([coder decodeObjectForKey: @"NSMarker"]);
+              ASSIGN(_marker, [coder decodeObjectForKey: @"NSMarker"]);
             }
         }
       else
         {
-          _file = RETAIN([coder decodeObject]);
-          _marker = RETAIN([coder decodeObject]);
+          ASSIGN(_file, [coder decodeObject]);
+          ASSIGN(_marker, [coder decodeObject]);
         }
     }
   return self;
@@ -2276,7 +2283,8 @@ static BOOL _isInInterfaceBuilder = NO;
                                     exponent: exponent
                                     isNegative: negative];
     }
-  // FIXME: Needs to release self
+
+  RELEASE(self);
   return dn;
 }
 
@@ -2314,5 +2322,3 @@ static BOOL _isInInterfaceBuilder = NO;
   return self;
 }
 @end
-
-

@@ -1,5 +1,11 @@
 2010-03-22 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/GSGormLoading.m (-awakeWithContext:): Add old NIB loading
+	keys to context. Bug pointed out by Wolfgang Lux  <wolfgang.lux@gmail.com>.
+	* Source/GSNibLoading.m: Retain the NSApp and fix other memory issues.
+
+2010-03-22 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/Additions/GNUstepGUI/GSModelLoaderFactory.h,
 	* Source/GSModelLoaderFactory.m,
 	* Source/GSGormLoader.m,

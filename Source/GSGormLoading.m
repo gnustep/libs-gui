@@ -154,6 +154,19 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
       NSMutableArray    *topObjects; 
       id                 obj;
 
+      // Add these objects with there old names as the code expects them
+      context = AUTORELEASE([context mutableCopyWithZone: [context zone]]);
+      obj = [context objectForKey: @"NSNibTopLevelObjects"];
+      if (obj != nil)
+        {
+          [(NSMutableDictionary*)context setObject: obj forKey: @"NSTopLevelObjects"];
+        }
+      obj = [context objectForKey: @"NSNibOwner"];
+      if (obj != nil)
+        {
+          [(NSMutableDictionary*)context setObject: obj forKey: @"NSOwner"];
+        }
+
       isAwake = YES;
       /*
        *	Add local entries into name table.
