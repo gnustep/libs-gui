@@ -3215,7 +3215,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   return nil;
 }
 
-- (id) viewWithTag: (int)aTag
+- (id) viewWithTag: (NSInteger)aTag
 {
   NSView	*view = nil;
 
@@ -4743,7 +4743,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   return _rFlags.needs_display;
 }
 
-- (int) tag
+- (NSInteger) tag
 {
   return -1;
 }

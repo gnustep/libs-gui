@@ -1,3 +1,18 @@
+ 2010-03-23 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSUserInterfaceValidation.h
+	* Headers/AppKit/NSControl.h
+	* Headers/AppKit/NSMenuItem.h
+	* Headers/AppKit/NSCell.h
+	* Headers/AppKit/NSView.h
+	* Source/NSActionCell.m
+	* Source/NSControl.m
+	* Source/NSMenuItem.m
+	* Source/NSSegmentedCell.m
+	* Source/NSCell.m
+	* Source/NSView.m: Change tag to NSInteger.
+	Patch by Anibal Rindisbacher <anibal784@gmail.com>.
+
 2010-03-23 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextContainer.m (-replaceLayoutManager:): Retain the

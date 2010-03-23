@@ -293,7 +293,7 @@
    Sets the tag of the reciever as <var>anInt</var>.
    </p>
  */
-- (void) setTag: (int)anInt;
+- (void) setTag: (NSInteger)anInt;
 
 /**
    <p>
@@ -332,7 +332,7 @@
    Returns the tag of the receiver.
    </p>
  */
-- (int) tag;
+- (NSInteger) tag;
 
 /**
    <p>

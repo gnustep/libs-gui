@@ -307,7 +307,7 @@ static Class controlClass;
 /**
  * Assigning a Tag. 
  */
-- (void) setTag: (int)anInt
+- (void) setTag: (NSInteger)anInt
 {
   _tag = anInt;
 }
@@ -315,7 +315,7 @@ static Class controlClass;
 /**
  * Return the tag.
  */
-- (int) tag
+- (NSInteger) tag
 {
   return _tag;
 }

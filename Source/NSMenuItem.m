@@ -411,12 +411,12 @@ static Class imageClass;
   return _action;
 }
 
-- (void) setTag: (int)anInt
+- (void) setTag: (NSInteger)anInt
 {
   _tag = anInt;
 }
 
-- (int) tag
+- (NSInteger) tag
 {
   return _tag;
 }

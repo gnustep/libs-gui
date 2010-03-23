@@ -1207,7 +1207,7 @@ static NSColor *dtxtCol;
     The NSCell implementation raises an NSInvalidArgumentException.</p>
     <p>See Also: -tag</p>
  */
-- (void) setTag: (int)anInt
+- (void) setTag: (NSInteger)anInt
 {
   [NSException raise: NSInternalInconsistencyException
               format: @"attempt to set a tag in an NSCell"];
@@ -1216,7 +1216,7 @@ static NSColor *dtxtCol;
 /**<p>Implemented by subclasses to Return the tag. 
    The NSCell implementation returns -1 </p><p>See Also: -setTag:</p>
  */
-- (int) tag
+- (NSInteger) tag
 {
   return -1;
 }

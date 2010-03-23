@@ -35,7 +35,7 @@
 @protocol NSValidatedUserInterfaceItem
 
 - (SEL)action;
-- (int)tag;
+- (NSInteger)tag;
 @end
 
 @protocol NSUserInterfaceValidations

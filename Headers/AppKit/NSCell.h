@@ -304,8 +304,8 @@ enum {
 //
 // Assigning a Tag 
 //
-- (void)setTag:(int)anInt;
-- (int)tag;
+- (void)setTag:(NSInteger)anInt;
+- (NSInteger)tag;
 
 //
 // Formatting Data and Validating Input 

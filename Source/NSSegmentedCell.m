@@ -40,7 +40,7 @@
 {
   BOOL _selected;
   BOOL _enabled;
-  int _tag;
+  NSInteger _tag;
   float _width;
   NSMenu *_menu;
   NSString *_label;
@@ -61,8 +61,8 @@
 - (void) setToolTip: (NSString *)toolTip;
 - (NSImage *) image;
 - (void) setImage: (NSImage *)image;
-- (int) tag;
-- (void) setTag: (int)tag;
+- (NSInteger) tag;
+- (void) setTag: (NSInteger)tag;
 - (float) width;
 - (void) setWidth: (float)width;
 - (NSRect) frame;
@@ -150,12 +150,12 @@
   ASSIGN(_image, image);
 }
 
-- (int) tag
+- (NSInteger) tag
 {
   return _tag;
 }
 
-- (void) setTag: (int)tag
+- (void) setTag: (NSInteger)tag
 {
   _tag = tag;
 }

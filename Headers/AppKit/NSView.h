@@ -194,8 +194,8 @@ typedef enum _NSFocusRingType {
 /*
  * Assigning a Tag
  */
-- (int) tag;
-- (id) viewWithTag: (int)aTag;
+- (NSInteger) tag;
+- (id) viewWithTag: (NSInteger)aTag;
 
 /*
  * Modifying the Frame Rectangle

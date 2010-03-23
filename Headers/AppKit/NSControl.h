@@ -47,7 +47,7 @@
 @interface NSControl : NSView
 {
   // Attributes
-  int _tag;
+  NSInteger _tag;
   id _cell; // id so compiler wont complain too much for subclasses
   BOOL _ignoresMultiClick;
 }
@@ -70,7 +70,7 @@
 // Identifying the Selected Cell 
 //
 - (id)selectedCell;
-- (int)selectedTag;
+- (NSInteger)selectedTag;
 
 //
 // Setting the Control's Value 
@@ -166,8 +166,8 @@
 //
 // Assigning a Tag 
 //
-- (void)setTag:(int)anInt;
-- (int)tag;
+- (void)setTag:(NSInteger)anInt;
+- (NSInteger)tag;
 
 //
 // Activation

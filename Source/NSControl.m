@@ -168,7 +168,7 @@ static NSNotificationCenter *nc;
 /** <p>Returns the tag of the NSControl's selected cell (if exists).
     -1 otherwise.</p><p>See Also: [NSCell-tag]</p>
  */
-- (int) selectedTag
+- (NSInteger) selectedTag
 {
   NSCell *selected = [self selectedCell];
 
@@ -784,7 +784,7 @@ static NSNotificationCenter *nc;
 
 /** Assigning a Tag
  */
-- (void) setTag: (int)anInt
+- (void) setTag: (NSInteger)anInt
 {
   _tag = anInt;
 }
@@ -792,7 +792,7 @@ static NSNotificationCenter *nc;
 /**<p>Returns the NSControl tag</p>
    <p>See Also: -setTag:</p>
  */
-- (int) tag
+- (NSInteger) tag
 {
   return _tag;
 }
