@@ -166,6 +166,7 @@ framework intact.
       GSLayoutManager *oldLayoutManager = _layoutManager;
 
       RETAIN(oldLayoutManager);
+      RETAIN(textStorage);
       [textStorage removeLayoutManager: _layoutManager];
       [textStorage addLayoutManager: aLayoutManager];
 
@@ -186,6 +187,7 @@ framework intact.
           [[container textView] setTextContainer: container];
           RELEASE(container);
         }
+      RELEASE(textStorage);
       RELEASE(oldLayoutManager);
     }
 }

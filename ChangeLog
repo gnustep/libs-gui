@@ -1,5 +1,10 @@
 2010-03-23 Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSTextContainer.m (-replaceLayoutManager:): Retain the
+	text storage while replacing the layout manager. See last patch.
+
+2010-03-23 Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/GSXibLoader.m: Try to be a bit closer to the current NIB
 	loading code.
 	* Source/NSTextView.m (-replaceTextContainer:): Retain the text
