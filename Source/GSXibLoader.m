@@ -576,13 +576,13 @@
   NSEnumerator *en;
   id obj;
   IBObjectContainer *objects;
-  NSMutableArray *tlo = [context objectForKey: @"NSTopLevelObjects"];
+  NSMutableArray *topLevelObjects = [context objectForKey: @"NSTopLevelObjects"];
   id owner = [context objectForKey: @"NSOwner"];
 
   // get using the alternate names.
-  if (tlo == nil)
+  if (topLevelObjects == nil)
     {
-      tlo = [context objectForKey: @"NSNibTopLevelObjects"];
+      topLevelObjects = [context objectForKey: @"NSNibTopLevelObjects"];
     }
 
   if (owner == nil)
@@ -593,41 +593,40 @@
   objects = [data objectForKey: @"IBDocument.Objects"];
   [objects nibInstantiate];
   
+  // FIXME: Use the owner as first root object
   rootObjects = [data objectForKey: @"IBDocument.RootObjects"];
+  NSDebugLog(@"rootObjects %@", rootObjects);
   en = [rootObjects objectEnumerator];
   while ((obj = [en nextObject]) != nil)
     {
-      // instantiate all windows and fill in the top level array.
-      if ([obj isKindOfClass: [NSWindowTemplate class]])
+      if ([obj respondsToSelector: @selector(nibInstantiate)])
         {
-          NSWindow *w = [obj nibInstantiate];
-          [tlo addObject: w];
-
-          // bring visible windows to front...
-          //if ([w isVisible])
+          obj = [obj nibInstantiate];
+          if (topLevelObjects == nil)
             {
-              [w orderFront: self];
+              // When there is no top level object array, just retain these objects
+              RETAIN(obj);
+            }
+          else
+            {
+              [topLevelObjects addObject: obj];
+            }
+        }
+
+      // instantiate all windows and fill in the top level array.
+      if ([obj isKindOfClass: [NSWindow class]])
+        {
+          // bring visible windows to front...
+          //if ([obj isVisible])
+            {
+              [(NSWindow *)obj orderFront: self];
             }
         }
       else if ([obj isKindOfClass: [NSMenu class]])
         {
           // add the menu...
-          if ([obj respondsToSelector: @selector(nibInstantiate)])
-            {
-              obj = [obj nibInstantiate];
-            }
           [NSApp _setMainMenu: obj];
         }
-      /*
-        else
-        {
-        id v = NSMapGet(_objects, obj);
-        if (v == nil || v == owner)
-        {
-        [tlo addObject: obj];
-        }
-        }
-      */
       
       // awaken the object.
       if ([obj respondsToSelector: @selector(awakeFromNib)])

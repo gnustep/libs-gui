@@ -1,3 +1,10 @@
+2010-03-23 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSXibLoader.m: Try to be a bit closer to the current NIB
+	loading code.
+	* Source/NSTextView.m (-replaceTextContainer:): Retain the text
+	storage, the last change in buildUpTextNetwork: made this more volatile.
+
 2010-03-22 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSGormLoading.m (-awakeWithContext:): Add old NIB loading

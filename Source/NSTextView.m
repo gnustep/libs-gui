@@ -1153,12 +1153,15 @@ to this method from the text container or layout manager.
 {
   NSLayoutManager *lm = _layoutManager;
   unsigned int index = [[lm textContainers] indexOfObject: _textContainer];
+  NSTextStorage *ts = _textStorage;
 
   RETAIN(self);
+  RETAIN(ts);
   [_textContainer setTextView: nil];
   [lm removeTextContainerAtIndex: index];
   [lm insertTextContainer: newContainer atIndex: index];
   [newContainer setTextView: self];
+  RELEASE(ts);
   RELEASE(self);
 }
 
