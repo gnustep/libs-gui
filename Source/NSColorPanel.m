@@ -26,27 +26,32 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#include "config.h"
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSEnumerator.h>
-#include <Foundation/NSFileManager.h>
-#include <Foundation/NSLock.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSPathUtilities.h>
-#include "AppKit/NSButtonCell.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSColorPanel.h"
-#include "AppKit/NSColorPicker.h"
-#include "AppKit/NSColorPicking.h"
-#include "AppKit/NSColorWell.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSPasteboard.h"
-#include "AppKit/NSWindow.h"
-#include "GNUstepGUI/IMLoading.h"
+#import "config.h"
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSEnumerator.h>
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSLock.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSPathUtilities.h>
+#import "AppKit/NSBox.h"
+#import "AppKit/NSButton.h"
+#import "AppKit/NSButtonCell.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSColorPanel.h"
+#import "AppKit/NSColorPicker.h"
+#import "AppKit/NSColorPicking.h"
+#import "AppKit/NSColorWell.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSMatrix.h"
+#import "AppKit/NSPasteboard.h"
+#import "AppKit/NSSlider.h"
+#import "AppKit/NSSplitView.h"
+#import "AppKit/NSWindow.h"
+#import "GNUstepGUI/IMLoading.h"
 
-#include "GSGuiPrivate.h"
+#import "GSGuiPrivate.h"
 
 #define MAX_ALPHA_VALUE 100.0
 static NSLock *_gs_gui_color_panel_lock = nil;

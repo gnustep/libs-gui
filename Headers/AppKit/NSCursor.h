@@ -31,7 +31,8 @@
 #define _GNUstep_H_NSCursor
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSCoder.h>
+#import <Foundation/NSGeometry.h>
+#import <Foundation/NSObject.h>
 
 @class NSImage;
 @class NSEvent;

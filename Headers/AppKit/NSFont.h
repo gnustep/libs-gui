@@ -32,11 +32,11 @@
 #define _GNUstep_H_NSFont
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSGeometry.h>
-#include <AppKit/AppKitDefines.h>
+#import <Foundation/NSObject.h>
+#import <Foundation/NSGeometry.h>
+#import <AppKit/AppKitDefines.h>
 // For NSControlSize
-#include <AppKit/NSColor.h>
+#import <AppKit/NSColor.h>
 
 @class NSAffineTransform;
 @class NSCharacterSet;

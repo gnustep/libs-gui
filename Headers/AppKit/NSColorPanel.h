@@ -31,20 +31,21 @@
 #define _GNUstep_H_NSColorPanel
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSBox.h>
-#include <AppKit/NSButton.h>
-#include <AppKit/NSColorPicking.h>
-#include <AppKit/NSColorWell.h>
-#include <AppKit/NSMatrix.h>
-#include <AppKit/NSNibDeclarations.h>
-#include <AppKit/NSPanel.h>
-#include <AppKit/NSSlider.h>
-#include <AppKit/NSSplitView.h>
+#import <AppKit/AppKitDefines.h>
+#import <AppKit/NSApplication.h>
+#import <AppKit/NSColorPicking.h>
+#import <AppKit/NSColorWell.h>
+#import <AppKit/NSNibDeclarations.h>
+#import <AppKit/NSPanel.h>
 
-@class NSView;
+@class NSBox;
+@class NSButton;
 @class NSColorList;
 @class NSEvent;
+@class NSMatrix;
+@class NSSlider;
+@class NSSplitView;
+@class NSView;
 
 enum {
   NSGrayModeColorPanel,

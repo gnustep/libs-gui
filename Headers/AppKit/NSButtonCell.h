@@ -32,7 +32,7 @@
 #define _GNUstep_H_NSButtonCell
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSActionCell.h>
+#import <AppKit/NSActionCell.h>
 
 @class NSFont;
 @class NSSound;

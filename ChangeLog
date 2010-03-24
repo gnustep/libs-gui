@@ -1,3 +1,49 @@
+2010-03-24 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSColorList.h
+	* Headers/AppKit/NSBox.h
+	* Headers/AppKit/NSFontManager.h
+	* Headers/AppKit/NSFormCell.h
+	* Headers/AppKit/NSButtonCell.h
+	* Headers/AppKit/NSColorPicker.h
+	* Headers/AppKit/NSClipView.h
+	* Headers/AppKit/NSDataLinkManager.h
+	* Headers/AppKit/NSBitmapImageRep.h
+	* Headers/AppKit/NSBezierPath.h
+	* Headers/AppKit/NSGraphics.h
+	* Headers/AppKit/NSColorWell.h
+	* Headers/AppKit/NSApplication.h
+	* Headers/AppKit/NSForm.h
+	* Headers/AppKit/NSComboBox.h
+	* Headers/AppKit/NSButton.h
+	* Headers/AppKit/NSColor.h
+	* Headers/AppKit/NSCachedImageRep.h
+	* Headers/AppKit/NSColorSpace.h
+	* Headers/AppKit/NSFontDescriptor.h
+	* Headers/AppKit/NSCursor.h
+	* Headers/AppKit/NSControl.h
+	* Headers/AppKit/NSFont.h
+	* Headers/AppKit/NSFileWrapper.h
+	* Headers/AppKit/NSDragging.h
+	* Headers/AppKit/NSDocumentController.h
+	* Headers/AppKit/NSColorPicking.h
+	* Headers/AppKit/NSDrawer.h
+	* Headers/AppKit/NSCustomImageRep.h
+	* Headers/AppKit/NSComboBoxCell.h
+	* Headers/AppKit/NSDataLink.h
+	* Headers/AppKit/NSColorPanel.h
+	* Headers/AppKit/NSEPSImageRep.h
+	* Headers/AppKit/NSDataLinkPanel.h
+	* Headers/AppKit/NSEvent.h
+	* Headers/AppKit/NSBrowserCell.h
+	* Headers/AppKit/NSDocument.h
+	* Headers/AppKit/NSBrowser.h
+	* Headers/AppKit/NSFontPanel.h
+	* Source/NSPanel.m
+	* Source/NSColor.m
+	* Source/NSColorSpace.m
+	* Source/NSColorPanel.m: Another bit of #include -> #import replacement.
+
 2010-03-24 Doug Simons <doug.simons@testplant.com>
 
 	* Source/GSToolTips.m: Use NSPanel instead of NSWindow for

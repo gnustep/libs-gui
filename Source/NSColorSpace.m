@@ -27,9 +27,11 @@
    Boston, MA 02110-1301, USA.
 */ 
 
-#import <Foundation/Foundation.h>
+#import <Foundation/NSCoder.h>
+#import <Foundation/NSData.h>
+#import <Foundation/NSString.h>
 #import <AppKit/NSColorSpace.h>
-#include "GSGuiPrivate.h"
+#import "GSGuiPrivate.h"
 
 @implementation NSColorSpace
 

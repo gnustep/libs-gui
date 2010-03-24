@@ -31,13 +31,14 @@
 #define _GNUstep_H_NSBitmapImageRep
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSImageRep.h>
-#include <Foundation/NSDictionary.h>
+#import <AppKit/NSImageRep.h>
 
 @class NSArray;
 @class NSString;
 @class NSData;
+@class NSDictionary;
 @class NSMutableData;
+@class NSMutableDictionary;
 @class NSColor;
 
 /** Describes the type of compression used on an image.  Possible compressions:

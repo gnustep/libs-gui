@@ -31,8 +31,8 @@
 #define _GNUstep_H_NSCachedImageRep
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSImageRep.h>
-#include <AppKit/NSGraphics.h>
+#import <AppKit/NSImageRep.h>
+#import <AppKit/NSGraphics.h>
 
 @class NSWindow;
 

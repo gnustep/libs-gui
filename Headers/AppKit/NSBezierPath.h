@@ -29,7 +29,6 @@
 #define BEZIERPATH_H
 #import <GNUstepBase/GSVersionMacros.h>
 
-//#import <Foundation/Foundation.h>
 #import <Foundation/NSGeometry.h>
 #import <Foundation/NSObject.h>
 #import <AppKit/NSFont.h>

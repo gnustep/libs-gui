@@ -31,7 +31,7 @@
 #define _GNUstep_H_NSDataLinkManager
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSCoder.h>
+#import <Foundation/NSObject.h>
 
 @class NSString;
 @class NSEnumerator;

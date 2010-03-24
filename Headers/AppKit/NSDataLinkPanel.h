@@ -31,8 +31,8 @@
 #define _GNUstep_H_NSDataLinkPanel
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSPanel.h>
+#import <AppKit/NSApplication.h>
+#import <AppKit/NSPanel.h>
 
 @class NSDataLink;
 @class NSDataLinkManager;
@@ -95,12 +95,6 @@
 - (void)pickedOpenSource:(id)sender;
 - (void)pickedUpdateDestination:(id)sender;
 - (void)pickedUpdateMode:(id)sender;
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder: (NSCoder *)aCoder;
-- initWithCoder: (NSCoder *)aDecoder;
 
 @end
 

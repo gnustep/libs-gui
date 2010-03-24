@@ -30,18 +30,19 @@
 
 #ifndef _GNUstep_H_NSFontDescriptor
 #define _GNUstep_H_NSFontDescriptor
-
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSObject.h>
+#import <Foundation/NSObject.h>
+#import <AppKit/AppKitDefines.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 
-@class NSAffineTransform;
 @class NSArray;
 @class NSCoder;
+@class NSDictionary;
 @class NSSet;
 @class NSString;
+@class NSAffineTransform;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 typedef uint32_t NSFontSymbolicTraits;
@@ -78,29 +79,29 @@ enum _NSFontTrait
 
 #endif 
 
-extern NSString *NSFontFamilyAttribute;
-extern NSString *NSFontNameAttribute;
-extern NSString *NSFontFaceAttribute;
-extern NSString *NSFontSizeAttribute; 
-extern NSString *NSFontVisibleNameAttribute; 
-extern NSString *NSFontColorAttribute;
-extern NSString *NSFontMatrixAttribute;
-extern NSString *NSFontVariationAttribute;
-extern NSString *NSFontCharacterSetAttribute;
-extern NSString *NSFontCascadeListAttribute;
-extern NSString *NSFontTraitsAttribute;
-extern NSString *NSFontFixedAdvanceAttribute;
+APPKIT_EXPORT NSString *NSFontFamilyAttribute;
+APPKIT_EXPORT NSString *NSFontNameAttribute;
+APPKIT_EXPORT NSString *NSFontFaceAttribute;
+APPKIT_EXPORT NSString *NSFontSizeAttribute; 
+APPKIT_EXPORT NSString *NSFontVisibleNameAttribute; 
+APPKIT_EXPORT NSString *NSFontColorAttribute;
+APPKIT_EXPORT NSString *NSFontMatrixAttribute;
+APPKIT_EXPORT NSString *NSFontVariationAttribute;
+APPKIT_EXPORT NSString *NSFontCharacterSetAttribute;
+APPKIT_EXPORT NSString *NSFontCascadeListAttribute;
+APPKIT_EXPORT NSString *NSFontTraitsAttribute;
+APPKIT_EXPORT NSString *NSFontFixedAdvanceAttribute;
 
-extern NSString *NSFontSymbolicTrait;
-extern NSString *NSFontWeightTrait;
-extern NSString *NSFontWidthTrait;
-extern NSString *NSFontSlantTrait;
+APPKIT_EXPORT NSString *NSFontSymbolicTrait;
+APPKIT_EXPORT NSString *NSFontWeightTrait;
+APPKIT_EXPORT NSString *NSFontWidthTrait;
+APPKIT_EXPORT NSString *NSFontSlantTrait;
 
-extern NSString *NSFontVariationAxisIdentifierKey;
-extern NSString *NSFontVariationAxisMinimumValueKey;
-extern NSString *NSFontVariationAxisMaximumValueKey;
-extern NSString *NSFontVariationAxisDefaultValueKey;
-extern NSString *NSFontVariationAxisNameKey;
+APPKIT_EXPORT NSString *NSFontVariationAxisIdentifierKey;
+APPKIT_EXPORT NSString *NSFontVariationAxisMinimumValueKey;
+APPKIT_EXPORT NSString *NSFontVariationAxisMaximumValueKey;
+APPKIT_EXPORT NSString *NSFontVariationAxisDefaultValueKey;
+APPKIT_EXPORT NSString *NSFontVariationAxisNameKey;
 
 @interface NSFontDescriptor : NSObject <NSCoding, NSCopying>
 {

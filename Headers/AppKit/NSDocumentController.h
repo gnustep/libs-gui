@@ -33,9 +33,9 @@
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST) 
 
-#include <Foundation/NSObject.h>
-#include <AppKit/NSNibDeclarations.h>
-#include <AppKit/NSUserInterfaceValidation.h>
+#import <Foundation/NSObject.h>
+#import <AppKit/NSNibDeclarations.h>
+#import <AppKit/NSUserInterfaceValidation.h>
 
 @class NSArray;
 @class NSError;

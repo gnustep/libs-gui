@@ -32,7 +32,10 @@
 #import <GNUstepBase/GSVersionMacros.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
-#import <Foundation/Foundation.h>
+#import <Foundation/NSObject.h>
+
+@class NSData;
+@class NSString;
 
 typedef enum _NSColorSpaceModel
 {
@@ -46,7 +49,7 @@ typedef enum _NSColorSpaceModel
 
 @interface NSColorSpace : NSObject <NSCoding>
 {
-	NSColorSpaceModel _colorSpaceModel;
+  NSColorSpaceModel _colorSpaceModel;
   NSData *_iccData;
   void *_colorSyncProfile;
 }

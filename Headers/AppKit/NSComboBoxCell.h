@@ -29,8 +29,8 @@
 #define _GNUstep_H_NSComboBoxCell
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSGeometry.h>
-#include <AppKit/NSTextFieldCell.h>
+#import <Foundation/NSGeometry.h>
+#import <AppKit/NSTextFieldCell.h>
 
 @class NSButtonCell;
 @class NSMutableArray;

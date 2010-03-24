@@ -31,8 +31,8 @@
 #define _GNUstep_H_NSFontPanel
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSPanel.h>
-#include <AppKit/NSFontManager.h>
+#import <AppKit/NSPanel.h>
+#import <AppKit/NSFontManager.h>
 
 @class NSFont;
 @class NSView;

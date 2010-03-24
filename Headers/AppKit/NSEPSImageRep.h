@@ -31,8 +31,8 @@
 #define _GNUstep_H_NSEPSImageRep
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSGeometry.h>
-#include <AppKit/NSImageRep.h>
+#import <Foundation/NSGeometry.h>
+#import <AppKit/NSImageRep.h>
 
 @class NSData;
 

@@ -34,9 +34,9 @@
 #define _GNUstep_H_NSDocument
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSObject.h>
-#include <AppKit/NSNibDeclarations.h>
-#include <AppKit/NSUserInterfaceValidation.h>
+#import <Foundation/NSObject.h>
+#import <AppKit/NSNibDeclarations.h>
+#import <AppKit/NSUserInterfaceValidation.h>
 
 
 /* Foundation classes */

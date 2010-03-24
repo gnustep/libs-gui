@@ -31,11 +31,14 @@
 #define _GNUstep_H_NSFileWrapper
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSDictionary.h>
-#include <AppKit/NSImage.h>
+#import <Foundation/NSObject.h>
+#import <AppKit/NSImage.h>
 
-@class NSImage;
+@class NSData;
+@class NSDictionary;
+@class NSMutableDictionary;
 @class NSString;
+@class NSImage;
 
 typedef enum
 {

@@ -34,7 +34,7 @@
 #define _GNUstep_H_NSFontManager
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSObject.h>
+#import <Foundation/NSObject.h>
 
 @class NSString;
 @class NSArray;

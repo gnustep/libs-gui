@@ -31,7 +31,7 @@
 #define _GNUstep_H_NSBrowserCell
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSCell.h>
+#import <AppKit/NSCell.h>
 
 @class NSImage;
 

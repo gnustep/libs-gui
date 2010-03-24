@@ -31,8 +31,8 @@
 #define _GNUstep_H_NSDrawer
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSGeometry.h>
-#include <AppKit/NSResponder.h>
+#import <Foundation/NSGeometry.h>
+#import <AppKit/NSResponder.h>
 
 @class NSWindow;
 @class NSView;

@@ -31,7 +31,7 @@
 #define _GNUstep_H_NSCustomImageRep
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSImageRep.h>
+#import <AppKit/NSImageRep.h>
 
 @interface NSCustomImageRep : NSImageRep
 {

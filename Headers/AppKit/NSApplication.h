@@ -39,7 +39,7 @@
 #define _GNUstep_H_NSApplication
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSResponder.h>
+#import <AppKit/NSResponder.h>
 
 @class NSArray;
 @class NSAutoreleasePool;

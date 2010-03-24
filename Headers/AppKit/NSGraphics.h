@@ -29,11 +29,11 @@
 #define __NSGraphics_h__
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSGeometry.h>
+#import <Foundation/NSObject.h>
+#import <Foundation/NSGeometry.h>
 
-#include <AppKit/NSGraphicsContext.h>
-#include <AppKit/AppKitDefines.h>
+#import <AppKit/NSGraphicsContext.h>
+#import <AppKit/AppKitDefines.h>
 
 @class NSString;
 @class NSColor;

@@ -26,14 +26,14 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
+#import "config.h"
 
-#include <Foundation/NSCoder.h>
-#include "AppKit/NSButton.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSPanel.h"
-#include "AppKit/NSTextField.h"
+#import <Foundation/NSCoder.h>
+#import "AppKit/NSButton.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSPanel.h"
+#import "AppKit/NSTextField.h"
 
 @implementation	NSPanel
 

@@ -31,8 +31,9 @@
 #define _GNUstep_H_NSColor
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSCoder.h>
-#include <AppKit/AppKitDefines.h>
+#import <Foundation/NSCoder.h>
+#import <Foundation/NSObject.h>
+#import <AppKit/AppKitDefines.h>
 
 @class NSString;
 @class NSDictionary;

@@ -28,27 +28,28 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
-#include <Foundation/NSString.h>
-#include <Foundation/NSArchiver.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSScanner.h>
+#import "config.h"
+#import <Foundation/NSString.h>
+#import <Foundation/NSArchiver.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSLock.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSScanner.h>
 
-#include "AppKit/NSColor.h"
-#include "AppKit/NSColorList.h"
-#include "AppKit/NSColorSpace.h"
-#include "AppKit/NSPasteboard.h"
-#include "AppKit/NSView.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/PSOperators.h"
-#include "GNUstepGUI/GSTheme.h"
-#include "GSGuiPrivate.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSColorList.h"
+#import "AppKit/NSColorSpace.h"
+#import "AppKit/NSPasteboard.h"
+#import "AppKit/NSView.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/PSOperators.h"
+#import "GNUstepGUI/GSTheme.h"
+#import "GSGuiPrivate.h"
 
 static Class	NSColorClass;
 

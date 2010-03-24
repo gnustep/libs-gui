@@ -31,9 +31,10 @@
 #define _GNUstep_H_NSEvent
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSGeometry.h>
-#include <Foundation/NSDate.h>
+#import <Foundation/NSObject.h>
+#import <Foundation/NSGeometry.h>
+// For NSTimeInterval
+#import <Foundation/NSDate.h>
 
 @class NSString;
 @class NSWindow;

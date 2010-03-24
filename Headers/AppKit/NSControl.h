@@ -32,8 +32,8 @@
 #import <GNUstepBase/GSVersionMacros.h>
 
 // for NSWritingDirection
-#include <AppKit/NSParagraphStyle.h>
-#include <AppKit/NSView.h>
+#import <AppKit/NSParagraphStyle.h>
+#import <AppKit/NSView.h>
 
 @class NSString;
 @class NSNotification;

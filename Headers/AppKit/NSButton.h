@@ -32,9 +32,10 @@
 #define _GNUstep_H_NSButton
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSControl.h>
-#include <AppKit/NSButtonCell.h>
+#import <AppKit/NSControl.h>
+#import <AppKit/NSButtonCell.h>
 
+@class NSAttributedString;
 @class NSString;
 @class NSEvent;
 

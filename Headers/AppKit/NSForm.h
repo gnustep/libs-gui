@@ -31,7 +31,7 @@
 #define _GNUstep_H_NSForm
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSMatrix.h>
+#import <AppKit/NSMatrix.h>
 
 @class NSFormCell;
 @class NSFont;

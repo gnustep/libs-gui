@@ -31,7 +31,7 @@
 #define _GNUstep_H_NSDragging
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/NSGeometry.h>
+#import <Foundation/NSGeometry.h>
 
 @class NSWindow;
 @class NSPasteboard;

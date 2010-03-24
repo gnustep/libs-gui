@@ -31,7 +31,7 @@
 #define _GNUstep_H_NSClipView
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSView.h>
+#import <AppKit/NSView.h>
 
 @class NSNotification;
 @class NSCursor;

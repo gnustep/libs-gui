@@ -29,8 +29,9 @@
 #define _GNUstep_H_NSComboBox
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSTextField.h>
+#import <AppKit/NSTextField.h>
 
+@class NSArray;
 @class NSString;
 @class NSNotification;
 
