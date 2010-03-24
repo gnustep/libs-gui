@@ -32,7 +32,7 @@
 #include "AppKit/NSEvent.h"
 #include "AppKit/NSScreen.h"
 #include "AppKit/NSView.h"
-#include "AppKit/NSWindow.h"
+#include "AppKit/NSPanel.h"
 #include "GNUstepGUI/GSTrackingRect.h"
 #include "GSToolTips.h"
 
@@ -132,7 +132,7 @@ typedef struct NSView_struct
 static NSMapTable	*viewsMap = 0;
 static NSTimer		*timer = nil;
 static GSToolTips       *timedObject = nil;
-static NSWindow		*window = nil;
+static NSPanel		*window = nil;
 static NSSize		offset;
 static BOOL		restoreMouseMoved;
 
@@ -568,7 +568,7 @@ static BOOL		restoreMouseMoved;
   offset.height = rect.origin.y - mouseLocation.y;
   offset.width = rect.origin.x - mouseLocation.x;
 
-  window = [[NSWindow alloc] initWithContentRect: rect
+  window = [[NSPanel alloc] initWithContentRect: rect
 				       styleMask: NSBorderlessWindowMask
 					 backing: NSBackingStoreRetained
 					   defer: YES];
