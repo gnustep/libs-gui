@@ -34,6 +34,7 @@
 #include <math.h>
 
 #import <Foundation/NSArray.h>
+#import <Foundation/NSDebug.h>
 #import <Foundation/NSException.h>
 #import <Foundation/NSString.h>
 

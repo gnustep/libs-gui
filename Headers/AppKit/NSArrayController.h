@@ -29,7 +29,7 @@
 #ifndef _GNUstep_H_NSArrayController
 #define _GNUstep_H_NSArrayController
 
-#include <AppKit/NSObjectController.h>
+#import <AppKit/NSObjectController.h>
 
 #if OS_API_VERSION(100300,GS_API_LATEST)
 

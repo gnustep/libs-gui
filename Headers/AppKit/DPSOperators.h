@@ -28,7 +28,7 @@
 #define _DPSOperators_h_INCLUDE
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/NSGraphicsContext.h>
+#import <AppKit/NSGraphicsContext.h>
 
 #define	GSCTXT	NSGraphicsContext
 

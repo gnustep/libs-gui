@@ -29,8 +29,10 @@
 #define BEZIERPATH_H
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <Foundation/Foundation.h>
-#include <AppKit/NSFont.h>
+//#import <Foundation/Foundation.h>
+#import <Foundation/NSGeometry.h>
+#import <Foundation/NSObject.h>
+#import <AppKit/NSFont.h>
 
 @class NSAffineTransform;
 @class NSImage;

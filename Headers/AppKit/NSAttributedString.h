@@ -33,13 +33,13 @@
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 
-#include <Foundation/NSAttributedString.h>
-#include <Foundation/NSRange.h>
-#include <AppKit/NSFontManager.h>
+#import <Foundation/NSAttributedString.h>
+#import <Foundation/NSRange.h>
+#import <AppKit/NSFontManager.h>
 // for NSWritingDirection
-#include <AppKit/NSParagraphStyle.h>
-#include <AppKit/NSText.h>
-#include <AppKit/AppKitDefines.h>
+#import <AppKit/NSParagraphStyle.h>
+#import <AppKit/NSText.h>
+#import <AppKit/AppKitDefines.h>
 
 @class NSTextAttachment;
 @class NSFileWrapper;

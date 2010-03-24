@@ -28,13 +28,14 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "AppKit/NSAffineTransform.h"
-#include "AppKit/NSBezierPath.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSImage.h"
-#include "AppKit/PSOperators.h"
-#include "GNUstepGUI/GSFontInfo.h"
-#include "GSGuiPrivate.h"
+#import <Foundation/NSDebug.h>
+#import "AppKit/NSAffineTransform.h"
+#import "AppKit/NSBezierPath.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/PSOperators.h"
+#import "GNUstepGUI/GSFontInfo.h"
+#import "GSGuiPrivate.h"
 
 #include <math.h>
 
@@ -78,7 +79,7 @@ typedef struct _PathElement
 #ifdef GSIArray
 #undef GSIArray
 #endif
-#include <GNUstepBase/GSIArray.h>
+#import <GNUstepBase/GSIArray.h>
 
 @interface GSBezierPath : NSBezierPath
 {

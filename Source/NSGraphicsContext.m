@@ -28,29 +28,30 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSGeometry.h> 
-#include <Foundation/NSString.h> 
-#include <Foundation/NSArray.h> 
-#include <Foundation/NSValue.h> 
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSData.h>
-#include <Foundation/NSLock.h>
-#include <Foundation/NSRunLoop.h>
-#include <Foundation/NSSet.h>
-#include <Foundation/NSThread.h>
-#include <Foundation/NSZone.h>
-#include "AppKit/AppKitExceptions.h"
-#include "AppKit/NSGraphicsContext.h"
-#include "AppKit/NSAffineTransform.h"
-#include "AppKit/NSBezierPath.h"
-#include "AppKit/NSPrintInfo.h"
-#include "AppKit/NSPrintOperation.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/NSView.h"
-#include "AppKit/DPSOperators.h"
-#include "GNUstepGUI/GSVersion.h"
-#include "GNUstepGUI/GSDisplayServer.h"
+#import <Foundation/NSGeometry.h> 
+#import <Foundation/NSString.h> 
+#import <Foundation/NSArray.h> 
+#import <Foundation/NSBundle.h> 
+#import <Foundation/NSValue.h> 
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSData.h>
+#import <Foundation/NSLock.h>
+#import <Foundation/NSRunLoop.h>
+#import <Foundation/NSSet.h>
+#import <Foundation/NSThread.h>
+#import <Foundation/NSZone.h>
+#import "AppKit/AppKitExceptions.h"
+#import "AppKit/NSGraphicsContext.h"
+#import "AppKit/NSAffineTransform.h"
+#import "AppKit/NSBezierPath.h"
+#import "AppKit/NSPrintInfo.h"
+#import "AppKit/NSPrintOperation.h"
+#import "AppKit/NSWindow.h"
+#import "AppKit/NSView.h"
+#import "AppKit/DPSOperators.h"
+#import "GNUstepGUI/GSVersion.h"
+#import "GNUstepGUI/GSDisplayServer.h"
 
 typedef struct { @defs(NSThread) } *TInfo;
 

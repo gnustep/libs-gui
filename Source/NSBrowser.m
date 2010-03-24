@@ -35,25 +35,26 @@
 */
 
 #include <math.h>                  // (float)rintf(float x)
-#include "config.h"
-#include <Foundation/NSArray.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSException.h>
-#include "AppKit/NSBrowser.h"
-#include "AppKit/NSBrowserCell.h"
-#include "AppKit/AppKitExceptions.h"
-#include "AppKit/NSScroller.h"
-#include "AppKit/NSCell.h"
-#include "AppKit/NSColor.h"
-#include "AppKit/NSFont.h"
-#include "AppKit/NSScrollView.h"
-#include "AppKit/NSGraphics.h"
-#include "AppKit/NSMatrix.h"
-#include "AppKit/NSTableHeaderCell.h"
-#include "AppKit/NSEvent.h"
-#include "AppKit/NSWindow.h"
-#include "AppKit/NSBezierPath.h"
-#include "GNUstepGUI/GSTheme.h"
+#import "config.h"
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSUserDefaults.h>
+#import "AppKit/NSBrowser.h"
+#import "AppKit/NSBrowserCell.h"
+#import "AppKit/AppKitExceptions.h"
+#import "AppKit/NSScroller.h"
+#import "AppKit/NSCell.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSScrollView.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSMatrix.h"
+#import "AppKit/NSTableHeaderCell.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSWindow.h"
+#import "AppKit/NSBezierPath.h"
+#import "GNUstepGUI/GSTheme.h"
 
 DEFINE_RINT_IF_MISSING
 

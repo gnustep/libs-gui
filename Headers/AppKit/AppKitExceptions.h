@@ -29,7 +29,7 @@
 #define __AppKit_AppKitExceptions_h__
 #import <GNUstepBase/GSVersionMacros.h>
 
-#include <AppKit/AppKitDefines.h>
+#import <AppKit/AppKitDefines.h>
 
 @class NSString;
 

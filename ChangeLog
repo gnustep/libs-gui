@@ -1,4 +1,19 @@
- 2010-03-23 Fred Kiefer <FredKiefer@gmx.de>
+2010-03-24 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/AppKitExceptions.h,
+	* Headers/AppKit/NSAttributedString.h,
+	* Headers/AppKit/NSBezierPath.h,
+	* Headers/AppKit/DPSOperators.h,
+	* Headers/AppKit/NSArrayController.h,
+	* Headers/AppKit/NSAnimation.h,
+	* Source/NSBrowser.m,
+	* Source/NSAffineTransform.m,
+	* Source/GSTheme.m,
+	* Source/NSBezierPath.m,
+	* Source/GSThemeTools.m,
+	* Source/NSGraphicsContext.m: Next bit of #include -> #import replacement.
+
+2010-03-23 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSUserInterfaceValidation.h
 	* Headers/AppKit/NSControl.h

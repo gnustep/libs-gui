@@ -27,7 +27,9 @@
 */
 
 #import <Foundation/NSBundle.h>
+#import <Foundation/NSDebug.h>
 #import <Foundation/NSDictionary.h>
+#import <Foundation/NSException.h>
 #import <Foundation/NSFileManager.h>
 #import <Foundation/NSInvocation.h>
 #import <Foundation/NSMapTable.h>

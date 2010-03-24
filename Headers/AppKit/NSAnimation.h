@@ -29,13 +29,13 @@
 #ifndef _GNUstep_H_NSAnimation_
 #define _GNUstep_H_NSAnimation_
 
-#include <GNUstepBase/GSVersionMacros.h>
+#import <GNUstepBase/GSVersionMacros.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 
 #import <Foundation/NSObject.h>
 #import <AppKit/AppKitDefines.h>
-#include <GNUstepGUI/GSAnimator.h>
+#import <GNUstepGUI/GSAnimator.h>
 
 @class NSString;
 @class NSArray;
